@@ -49,10 +49,12 @@ cMpiPack::cMpiPack()
   mBufferSize = 0;
   mPosition = 0;
   mMsgSize = 0;
+  MPI_Comm_rank(MPI_COMM_WORLD, &mMy_Rank);
 }
 
 cMpiPack::~cMpiPack()
 {
+	printf("Rank %d, cMpiPack destructor()\n", mMy_Rank);
   if(mBuffer!=0)
     delete[] mBuffer;
 
@@ -64,6 +66,7 @@ cMpiPack::~cMpiPack()
 
 void cMpiPack::addBufferSize(int datalength)
 {
+	printf("Rank %d, addBufferSize()\n", mMy_Rank);
   int tempSize = mBufferSize;
   mBufferSize += datalength;
 
@@ -90,34 +93,245 @@ void cMpiPack::addBufferSize(int datalength)
   }
 }
 
+int cMpiPack::pack_data(void* data, MPI_Datatype datatype, MPI_Comm comm)
+{
+	printf("Rank %d, pack_data(void*)\n", mMy_Rank);
+	int status, sendBuffSize = 0;
+
+	printf("Rank %d, pack_data()\n", mMy_Rank);
+	MPI_Pack_size(1, datatype, comm, &sendBuffSize);
+	addBufferSize(sendBuffSize);
+	status = MPI_Pack(data, 1, datatype, mBuffer, mBufferSize, &mPosition, comm);
+
+	return status;
+}
+
 int cMpiPack::pack_data(void* data, MPI_Datatype datatype, int datalength, MPI_Comm comm)
 {
+	printf("Rank %d, pack_data(void**)\n", mMy_Rank);
   int status;
+  int   dataSize = 0;
 
   // space needed to send a single MPI element
   int sendBuffSize = 0;
 
-  // only if the data is of string type, the string length is required
-  if(datatype == MPI_CHAR || datatype == MPI_BYTE)
+  MPI_Pack_size(1, MPI_INT, comm, &dataSize);
+  sendBuffSize = dataSize;
+
+  if (datatype == MPI_CHAR)
   {
-    datalength = strlen((char*)data)+1;
+    char  nullElem = 0;
+	char *tempData;
 
-    char* tempData = (char*)malloc(datalength);
-    tempData[0] = strlen((char*)data); // store the string length first
+	if (data == NULL || datalength <= 0) {
+		printf("caught null string\n");
+		data = &nullElem;
+		datalength = 1;
+		tempData   = (char*)data;
+	}
+	else {
+		printf("non-null string\n");
+		tempData = new char[datalength+1];
+		strncpy(tempData, (const char*)data, datalength);
+		tempData[datalength] = 0;
+		datalength++;
+	}
 
-    strcpy(tempData+1, (char*)data);
-
-    MPI_Pack_size(datalength, datatype, comm, &sendBuffSize);
+	MPI_Pack_size(datalength, datatype, comm, &dataSize);
+	sendBuffSize += dataSize;
     addBufferSize(sendBuffSize);
-    status = MPI_Pack(tempData, datalength, datatype, mBuffer, mBufferSize, &mPosition, comm);
+	status  = MPI_Pack(&datalength, 1, MPI_INT, mBuffer, mBufferSize, &mPosition, comm);
+    status |= MPI_Pack(tempData, datalength, datatype, mBuffer, mBufferSize, &mPosition, comm);
 
-    free(tempData);
+	if (tempData != &nullElem) delete [] tempData;
+	printf("handled string\n");
   }
-  else
+  else if (datatype == MPI_BYTE)
   {
-    MPI_Pack_size(datalength, datatype, comm, &sendBuffSize);
+    char  nullElem = 0;
+	char *tempData;
+
+	if (data == NULL || datalength <= 0) {
+		data = &nullElem;
+		datalength = 1;
+		tempData = (char*)data;
+	}
+	else {
+		tempData = new char[datalength+1];
+		strncpy(tempData, (const char*)data, datalength);
+		tempData[datalength] = 0;
+		datalength++;
+	}
+
+	MPI_Pack_size(datalength, datatype, comm, &dataSize);
+	sendBuffSize += dataSize;
     addBufferSize(sendBuffSize);
-    status = MPI_Pack(data, datalength, datatype, mBuffer, mBufferSize, &mPosition, comm);
+	status  = MPI_Pack(&datalength, 1, MPI_INT, mBuffer, mBufferSize, &mPosition, comm);
+    status |= MPI_Pack(tempData, datalength, datatype, mBuffer, mBufferSize, &mPosition, comm);
+
+	if (tempData != &nullElem) delete [] tempData;
+  }
+  else if (datatype == MPI_INT)
+  {
+	int nullElem = 0;
+
+	if (data == NULL || datalength <= 0) {
+		data = &nullElem;
+		datalength = 1;
+	}
+
+	MPI_Pack_size(datalength, datatype, comm, &dataSize);
+	sendBuffSize += dataSize;
+    addBufferSize(sendBuffSize);
+	status  = MPI_Pack(&datalength, 1, MPI_INT, mBuffer, mBufferSize, &mPosition, comm);
+    status |= MPI_Pack(data, datalength, datatype, mBuffer, mBufferSize, &mPosition, comm);
+  }
+  else if (datatype == MPI_LONG)
+  {
+	long nullElem = 0;
+
+	if (data == NULL || datalength <= 0) {
+		data = &nullElem;
+		datalength = 1;
+	}
+
+	MPI_Pack_size(datalength, datatype, comm, &dataSize);
+	sendBuffSize += dataSize;
+    addBufferSize(sendBuffSize);
+	status  = MPI_Pack(&datalength, 1, MPI_INT, mBuffer, mBufferSize, &mPosition, comm);
+    status |= MPI_Pack(data, datalength, datatype, mBuffer, mBufferSize, &mPosition, comm);
+  }
+  else if (datatype == MPI_SHORT)
+  {
+	short nullElem = 0;
+	if (data == NULL || datalength <= 0) {
+		data = &nullElem;
+		datalength = 1;
+	}
+
+	MPI_Pack_size(datalength, datatype, comm, &dataSize);
+	sendBuffSize += dataSize;
+    addBufferSize(sendBuffSize);
+	status  = MPI_Pack(&datalength, 1, MPI_INT, mBuffer, mBufferSize, &mPosition, comm);
+    status |= MPI_Pack(data, datalength, datatype, mBuffer, mBufferSize, &mPosition, comm);
+  }
+  else if (datatype == MPI_FLOAT)
+  {
+	float nullElem = 0;
+
+	if (data == NULL || datalength <= 0) {
+		data = &nullElem;
+		datalength = 1;
+	}
+
+	MPI_Pack_size(datalength, datatype, comm, &dataSize);
+	sendBuffSize += dataSize;
+    addBufferSize(sendBuffSize);
+	status  = MPI_Pack(&datalength, 1, MPI_INT, mBuffer, mBufferSize, &mPosition, comm);
+    status |= MPI_Pack(data, datalength, datatype, mBuffer, mBufferSize, &mPosition, comm);
+  }
+  else if (datatype == MPI_DOUBLE)
+  {
+	double nullElem = 0;
+
+	if (data == NULL || datalength <= 0) {
+		data = &nullElem;
+		datalength = 1;
+	}
+
+	MPI_Pack_size(datalength, datatype, comm, &dataSize);
+	sendBuffSize += dataSize;
+    addBufferSize(sendBuffSize);
+	status  = MPI_Pack(&datalength, 1, MPI_INT, mBuffer, mBufferSize, &mPosition, comm);
+    status |= MPI_Pack(data, datalength, datatype, mBuffer, mBufferSize, &mPosition, comm);
+  }
+  else if (datatype == MPI_LONG_DOUBLE)
+  {
+	long double nullElem = 0;
+
+	if (data == NULL || datalength <= 0) {
+		data = &nullElem;
+		datalength = 1;
+	}
+
+	MPI_Pack_size(datalength, datatype, comm, &dataSize);
+	sendBuffSize += dataSize;
+    addBufferSize(sendBuffSize);
+	status  = MPI_Pack(&datalength, 1, MPI_INT, mBuffer, mBufferSize, &mPosition, comm);
+    status |= MPI_Pack(data, datalength, datatype, mBuffer, mBufferSize, &mPosition, comm);
+  }
+  else if (datatype == MPI_UNSIGNED)
+  {
+	unsigned nullElem = 0;
+
+	if (data == NULL || datalength <= 0) {
+		data = &nullElem;
+		datalength = 1;
+	}
+
+	MPI_Pack_size(datalength, datatype, comm, &dataSize);
+	sendBuffSize += dataSize;
+    addBufferSize(sendBuffSize);
+	status  = MPI_Pack(&datalength, 1, MPI_INT, mBuffer, mBufferSize, &mPosition, comm);
+    status |= MPI_Pack(data, datalength, datatype, mBuffer, mBufferSize, &mPosition, comm);
+  }
+  else if (datatype == MPI_UNSIGNED_SHORT)
+  {
+	unsigned short nullElem = 0;
+
+	if (data == NULL || datalength <= 0) {
+		data = &nullElem;
+		datalength = 1;
+	}
+
+	MPI_Pack_size(datalength, datatype, comm, &dataSize);
+	sendBuffSize += dataSize;
+    addBufferSize(sendBuffSize);
+	status  = MPI_Pack(&datalength, 1, MPI_INT, mBuffer, mBufferSize, &mPosition, comm);
+    status |= MPI_Pack(data, datalength, datatype, mBuffer, mBufferSize, &mPosition, comm);
+  }
+  else if (datatype == MPI_UNSIGNED_LONG)
+  {
+	unsigned long nullElem = 0;
+
+	if (data == NULL || datalength <= 0) {
+		data = &nullElem;
+		datalength = 1;
+	}
+
+	MPI_Pack_size(datalength, datatype, comm, &dataSize);
+	sendBuffSize += dataSize;
+    addBufferSize(sendBuffSize);
+	status  = MPI_Pack(&datalength, 1, MPI_INT, mBuffer, mBufferSize, &mPosition, comm);
+    status |= MPI_Pack(data, datalength, datatype, mBuffer, mBufferSize, &mPosition, comm);
+  }
+  else if (datatype == MPI_UNSIGNED_CHAR)
+  {
+	unsigned char  nullElem = 0;
+	unsigned char *tempData;
+
+	if (data == NULL || datalength <= 0) {
+		data       = &nullElem;
+		datalength = 1;
+		tempData   = (unsigned char*)data;
+	}
+	else {
+		tempData = new unsigned char[datalength+1];
+		strncpy((char*)tempData, (const char*)data, datalength);
+		tempData[datalength] = 0;
+		datalength++;
+	}
+
+	MPI_Pack_size(datalength, datatype, comm, &dataSize);
+	sendBuffSize += dataSize;
+    addBufferSize(sendBuffSize);
+	status  = MPI_Pack(&datalength, 1, MPI_INT, mBuffer, mBufferSize, &mPosition, comm);
+    status |= MPI_Pack(tempData, datalength, datatype, mBuffer, mBufferSize, &mPosition, comm);
+
+	if (tempData != &nullElem) delete [] tempData;
+  }
+  else {
+	printf("Unknown TYPE\n");
   }
 
   return status;
@@ -125,6 +339,7 @@ int cMpiPack::pack_data(void* data, MPI_Datatype datatype, int datalength, MPI_C
 
 int cMpiPack::send_pack(int destination, int tag, bool delFlag, MPI_Comm comm)
 {
+	printf("Rank %d, send_pack()\n", mMy_Rank);
   //**** test code ********
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -150,6 +365,7 @@ int cMpiPack::send_pack(int destination, int tag, bool delFlag, MPI_Comm comm)
 // blocking receive
 MPI_Status cMpiPack::recv_pack(int source, int tag, MPI_Comm comm)
 {
+	printf("Rank %d, recv_pack()\n", mMy_Rank);
   MPI_Status status;
 
   if(mBuffer!=0)
@@ -180,6 +396,7 @@ printf("*** BLOCKING RECV || In Rank %d | From Source %d | Message tag %d \n", r
 // non-blocking receive
 MPI_Status cMpiPack::nrecv_pack(int source, int tag, int& recvflag, MPI_Comm comm)
 {
+	printf("Rank %d, nrecv_pack()\n", mMy_Rank);
   MPI_Status status;
   MPI_Request request;
   mBuffer = new char[MAXSIZE];
@@ -191,6 +408,7 @@ MPI_Status cMpiPack::nrecv_pack(int source, int tag, int& recvflag, MPI_Comm com
     if(recvflag==1)
       break;
   }
+
   int size;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   if(recvflag==0 || (status.MPI_SOURCE < MPIMASTER) || (status.MPI_SOURCE >= size))
@@ -216,70 +434,44 @@ printf("**** NON-BLOCKING RECV In Rank %d || From Source %d | Message tag %d \n"
 
 int cMpiPack::unpack_data(void** data, MPI_Datatype datatype, MPI_Comm comm)
 {
-  int datalength;
+	printf("Rank %d, unpack_data(void**)\n", mMy_Rank);
+  int datalength = 0;
 
   int status;
 
-  if(datatype == MPI_CHAR || datatype == MPI_BYTE)
-  {
-    datalength = (int)mBuffer[mPosition]; // string length is the first slot of the element
-    mPosition++; // move the position pointing to the string
-  }
+  MPI_Unpack(mBuffer, mMsgSize, &mPosition, &datalength, 1, MPI_INT, comm);
 
-  // type casting
-  switch(datatype)
-  {
-    case MPI_CHAR:
-      {
-	*data= new char[datalength+1]; // extra space for null terminator
-	char* data_addr = (char*)*data;
-	data_addr[datalength] = '\0';
-      }
-      break;
-    case MPI_UNSIGNED_CHAR:
-      {
-	*data= new unsigned char[datalength+1]; // extra space for null terminator
-	char* data_addr = (char*)*data;
-	data_addr[datalength] = '\0';
-      }
-      break;
-    case MPI_SHORT:
-      *data= new short int[datalength];
-      break;
-    case MPI_UNSIGNED_SHORT:
-      *data= new unsigned short int[datalength];
-      break;
-    case MPI_INT:
-      *data= new int[datalength];
-      break;
-    case MPI_UNSIGNED:
-      *data= new unsigned int[datalength];
-      break;
-    case MPI_LONG:
-      *data= new long int[datalength];
-      break;
-    case MPI_FLOAT:
-      *data= new float[datalength];
-      break;
-    case MPI_DOUBLE:
-      *data= new double[datalength];
-      break;
-    case MPI_LONG_DOUBLE:
-      *data= new long double[datalength];
-      break;
-    case MPI_BYTE:
-      *data= new char[datalength];
-      break;
-    case MPI_UNSIGNED_LONG:
-      *data= new unsigned long int[datalength];
-      break;
-  }
+  if (datatype == MPI_CHAR)                { *data = new char[datalength]; }
+  else if (datatype == MPI_UNSIGNED_CHAR)  { *data = new unsigned char[datalength+1]; }
+  else if (datatype == MPI_SHORT)          { *data = new short int[datalength]; }
+  else if (datatype == MPI_UNSIGNED_SHORT) { *data = new unsigned short int[datalength]; }
+  else if (datatype == MPI_INT)            { *data = new int[datalength]; }
+  else if (datatype == MPI_UNSIGNED)       { *data = new unsigned int[datalength]; }
+  else if (datatype == MPI_LONG)           { *data = new long int[datalength]; }
+  else if (datatype == MPI_FLOAT)          { *data = new float[datalength]; }
+  else if (datatype == MPI_DOUBLE)         { *data = new double[datalength]; }
+  else if (datatype == MPI_LONG_DOUBLE)    { *data = new long double[datalength]; }
+  else if (datatype == MPI_BYTE)           { *data = new char[datalength]; }
+  else if (datatype == MPI_UNSIGNED_LONG)  { *data = new unsigned long int[datalength]; }
+
   status = MPI_Unpack(mBuffer, mMsgSize, &mPosition, *data, datalength, datatype, comm);
+
+  if (datatype == MPI_CHAR                &&           ((char*)*data)[0] == 0) { delete []           (char*)*data; *data = NULL; }
+  else if (datatype == MPI_UNSIGNED_CHAR  &&  ((unsigned char*)*data)[0] == 0) { delete []  (unsigned char*)*data; *data = NULL; }
+  else if (datatype == MPI_SHORT          &&          ((short*)*data)[0] == 0) { delete []          (short*)*data; *data = NULL; }
+  else if (datatype == MPI_UNSIGNED_SHORT && ((unsigned short*)*data)[0] == 0) { delete [] (unsigned short*)*data; *data = NULL; }
+  else if (datatype == MPI_INT            &&            ((int*)*data)[0] == 0) { delete []            (int*)*data; *data = NULL; }
+  else if (datatype == MPI_UNSIGNED       &&       ((unsigned*)*data)[0] == 0) { delete []       (unsigned*)*data; *data = NULL; }
+  else if (datatype == MPI_LONG           &&           ((long*)*data)[0] == 0) { delete []           (long*)*data; *data = NULL; }
+  else if (datatype == MPI_FLOAT          &&          ((float*)*data)[0] == 0) { delete []          (float*)*data; *data = NULL; }
+  else if (datatype == MPI_DOUBLE         &&         ((double*)*data)[0] == 0) { delete []         (double*)*data; *data = NULL; }
+  else if (datatype == MPI_LONG_DOUBLE    &&    ((long double*)*data)[0] == 0) { delete []    (long double*)*data; *data = NULL; }
+  else if (datatype == MPI_BYTE           &&           ((char*)*data)[0] == 0) { delete []           (char*)*data; *data = NULL; }
+  else if (datatype == MPI_UNSIGNED_LONG  &&  ((unsigned long*)*data)[0] == 0) { delete []  (unsigned long*)*data; *data = NULL; }
 
   if(mPosition == mMsgSize)
   {
-    if(mBuffer!=0)
-      delete[] mBuffer;
+    if(mBuffer!=0) delete[] mBuffer;
 
     mBuffer = 0;
     mBufferSize = 0;
@@ -292,14 +484,32 @@ int cMpiPack::unpack_data(void** data, MPI_Datatype datatype, MPI_Comm comm)
 
 int cMpiPack::unpack_data(void* data, MPI_Datatype datatype, MPI_Comm comm)
 {
+	printf("Rank %d, unpack_data(void*)\n", mMy_Rank);
   int status;
 
-  if(datatype == MPI_BYTE || datatype == MPI_CHAR)
+  status = MPI_Unpack(mBuffer, mMsgSize, &mPosition, data, 1, datatype, comm);
+
+  if(mPosition == mMsgSize)
   {
-    mPosition++;
+    if(mBuffer!=0) delete[] mBuffer;
+
+    mBuffer     = 0;
+    mBufferSize = 0;
+    mPosition   = 0;
+    mMsgSize    = 0;
   }
 
-  status = MPI_Unpack(mBuffer, mMsgSize, &mPosition, data, 1, datatype, comm);
+  return status;
+}
+
+int cMpiPack::unpack_ptr(void** ptr, MPI_Comm comm)
+{
+	printf("Rank %d, unpack_ptr\n", mMy_Rank);
+  int status;
+  int pointer = 0;
+
+  status = MPI_Unpack(mBuffer, mMsgSize, &mPosition, &pointer, 1, MPI_INT, comm);
+  *ptr   = (int*)pointer;
 
   if(mPosition == mMsgSize)
   {
@@ -317,11 +527,12 @@ int cMpiPack::unpack_data(void* data, MPI_Datatype datatype, MPI_Comm comm)
 
 void cMpiPack::remove_buffer(void)
 {
+	printf("Rank %d, remove_buffer()\n", mMy_Rank);
   if(mBuffer!=0)
   {
     delete[] mBuffer;
-    mBuffer=0;
 
+    mBuffer     = 0;
     mBufferSize = 0;
     mPosition = 0;
     mMsgSize = 0;
@@ -334,23 +545,27 @@ void cMpiPack::remove_buffer(void)
 
 int notnull(void *ptr, int& err)
 {
+	printf("notnull()\n");
   cMpiPack* pack = cMpiPack::instance();
 
   char flag=0;
 
-  if (ptr)
-    flag=1;
-  err=err||pack->pack_data(&flag, MPI_BYTE);
+  if (ptr) flag = 1;
+
+  err=err||pack->pack_data((void*)&flag, MPI_INT);
+
   return flag;
 }
 
 int chkflag(int& err)
 {
+	printf("chkflag()\n");
   cMpiPack* pack = cMpiPack::instance();
 
-  char flag;
+  char flag = 0;
 
-  err=err||pack->unpack_data((void*)&flag, MPI_BYTE);
+  err=err||pack->unpack_data((void*)&flag, MPI_INT);
+
   return flag;
 }
 
@@ -359,13 +574,22 @@ int chkflag(int& err)
 //=========================================================================
 cObject *upack_object(int& err)
 {
+	printf("upack_object()\n");
   cMpiPack* pack = cMpiPack::instance();
   char* clname;
+  
   err=pack->unpack_data((void**)&clname, MPI_CHAR);
-  if (err) {delete clname; return NULL;}
-  cObject *obj = createOne(clname);
+  
+  if (err) {
+	delete [] clname;
+	return NO(cObject);
+  }
+
+  cObject *obj = (cObject*)createOne(clname);
   obj->netUnpack();
-  delete clname;
+  
+  delete [] clname;
+
   return obj;
 }
 
@@ -377,8 +601,43 @@ int cObject::netPack()
 {
   int err=0;
   cMpiPack* pack = cMpiPack::instance();
-  err=pack->pack_data(const_cast<char*> (className()), MPI_CHAR);
-  err=err||pack->pack_data(namestr, MPI_CHAR);
+  const char *pack_string;
+  char        nullChar;
+  int         pack_length;
+  int         obj_ptr;
+
+  printf("Packing cObject\n");
+
+  pack_string = className();
+  // If className() is NULL, then critical error has occurred, so can just relie on pack_data() to gracefully exit
+  if (!pack_string) return err = 1;
+  err |= pack->pack_data(const_cast<char*>(className()), MPI_CHAR, opp_strlen(className()));
+  err |= err||pack->pack_data(namestr,   MPI_CHAR, opp_strlen(namestr));
+
+  stor = stor == 'A' || stor == 'A' || stor == 'D' ? stor : 'S';
+  err=err||pack->pack_data(&stor,        MPI_CHAR);
+  err=err||pack->pack_data(&tkownership, MPI_INT);
+  err=err||pack->pack_data(&staticflag,  MPI_INT);
+  err=err||pack->pack_data(&heapflag,    MPI_INT);
+
+// --> ** TODO
+// Make sure the addresses of the ptrs are maintained correctly using this method!
+// Perhaps replace MPI_INT with MPI_UNSIGNED_INT or even MPI_UNSIGNED_LONG or MPI_LONG??
+
+  obj_ptr = (int)ownerp;
+  err=err||pack->pack_data(&obj_ptr, MPI_INT);
+  obj_ptr = (int)prevp;
+  err=err||pack->pack_data(&obj_ptr, MPI_INT);
+  obj_ptr = (int)nextp;
+  err=err||pack->pack_data(&obj_ptr, MPI_INT);
+  obj_ptr = (int)firstchildp;
+  err=err||pack->pack_data(&obj_ptr, MPI_INT);
+// <-- **
+
+  err=err||pack->pack_data(fullpathbuf, MPI_CHAR, opp_strlen(fullpathbuf));
+
+  printf("Finished packing cobject\n");
+
   return err;
 }
 
@@ -387,66 +646,90 @@ int  cObject::netUnpack()
   cMpiPack* pack = cMpiPack::instance();
   int err=0;
 
+  printf("Unpacking cObject\n");
   // upacking className() string already done by upack_object() at this point
+
   err=pack->unpack_data((void**)&namestr, MPI_CHAR);
+  
+  err=pack->unpack_data((void*)&stor,        MPI_CHAR);
+  err=pack->unpack_data((void*)&tkownership, MPI_INT);
+  err=pack->unpack_data((void*)&staticflag,  MPI_INT);
+  err=pack->unpack_data((void*)&heapflag,    MPI_INT);
+
+  err=pack->unpack_ptr ((void**)&ownerp);
+  err=pack->unpack_ptr ((void**)&prevp);
+  err=pack->unpack_ptr ((void**)&nextp);
+  err=pack->unpack_ptr ((void**)&firstchildp);
+
+  err=pack->unpack_data((void**)&fullpathbuf, MPI_CHAR);
+
+  printf("Finished Unpacking cObject\n");
+
   return err;
 }
 
 int cPar::netPack()
 {
+	printf("Packing cPar\n");
   cMpiPack* pack = cMpiPack::instance();
 
   int err=0;
+
   err|=cObject::netPack();
 
-  err|=pack->pack_data(&typechar, MPI_BYTE);
-  err|=pack->pack_data(&inputflag, MPI_BYTE);
-  err|=pack->pack_data(&changedflag, MPI_BYTE);
-  err|=pack->pack_data((void*)(promptstr.buffer()), MPI_CHAR);
+  typechar = typechar == 'S' || typechar == 'C' || typechar == 'L' || typechar == 'D' || typechar == 'F' || typechar == 'T'
+                             || typechar == 'I' || typechar == 'X' || typechar == 'P' || typechar == 'O' ? typechar : 'L';
+  err|=pack->pack_data(&typechar,    MPI_CHAR);
+  err|=pack->pack_data(&inputflag,   MPI_INT);
+  err|=pack->pack_data(&changedflag, MPI_INT);
+  err|=pack->pack_data(promptstr.buffer(), MPI_CHAR, opp_strlen(promptstr.buffer()));
 
   cFunctionType *ff;
   switch (typechar)
   {
     case 'S':
-      err|=pack->pack_data(&(ls.sht), MPI_BYTE);
-      if (notnull(ls.str,err))
-	err|=pack->pack_data(ls.str, MPI_CHAR);
+	  err|=pack->pack_data(&(ls.sht), MPI_INT);
+	  if (ls.sht) err|=pack->pack_data(ls.str, MPI_CHAR, opp_strlen(ls.str));
+	  else        err|=pack->pack_data(ss.str, MPI_CHAR, opp_strlen(ss.str));
       break;
-    case 'C':
-      err|=pack->pack_data(&(ss.sht), MPI_BYTE);
-      if (notnull(ss.str,err))
-	err|=pack->pack_data(ss.str, MPI_CHAR);
-      break;
+
     case 'L':
       err|=pack->pack_data(&(lng.val), MPI_LONG);
       break;
+
     case 'D':
       err|=pack->pack_data(&(dbl.val), MPI_DOUBLE);
       break;
+
     case 'F':
       ff = findfunctionbyptr(func.f);
       if (ff==NULL)
 	throw new cException("cPar::netPack(): cannot transmit unregistered function");
 
-      err|=pack->pack_data(const_cast<char*> (ff->name()), MPI_CHAR);
+	  err|=pack->pack_data(const_cast<char*> (ff->name()), MPI_CHAR, opp_strlen(ff->name()));
       err|=pack->pack_data(&(func.argc), MPI_INT);
       err|=pack->pack_data(&(func.p1), MPI_DOUBLE);
       err|=pack->pack_data(&(func.p2), MPI_DOUBLE);
       err|=pack->pack_data(&(func.p3), MPI_DOUBLE);
       break;
+
     case 'T':
       if (dtr.res && dtr.res->owner()!=this)
 	throw new cException("cPar::netPack(): cannot transmit pointer to \"external\" object");
       if (notnull(dtr.res,err))
 	err|=dtr.res->netPack();
       break;
+
     case 'I':
       throw new cException("cPar::netPack(): transmitting indirect values (type 'I') not supported");
+
     case 'X':
       // not implemented, because there are functions and pointers in it.
       throw new cException("cPar::netPack(): transmitting expressions (type 'X') not supported");
+
     case 'P':
       throw new cException("cPar::netPack(): cannot transmit pointer to unknown data structure (type 'P')");
+
     case 'O':
       if (obj.obj && obj.obj->owner()!=this)
 	throw new cException("cPar::netPack(): cannot transmit pointer to \"external\" object");
@@ -463,45 +746,42 @@ int cPar::netUnpack()
 
   cMpiPack* pack = cMpiPack::instance();
 
+  char *tempBuff;
+
   int err=0;
+
   err|=cObject::netUnpack();
 
-  err|=pack->unpack_data((void*)&typechar, MPI_BYTE);
-  err|=pack->unpack_data((void*)&inputflag, MPI_BYTE);
-  err|=pack->unpack_data((void*)&changedflag, MPI_BYTE);
-  err|=pack->unpack_data((void**)&promptstr, MPI_CHAR);
+  err|=pack->unpack_data((void*)&typechar,    MPI_CHAR);
+  err|=pack->unpack_data((void*)&inputflag,   MPI_INT);
+  err|=pack->unpack_data((void*)&changedflag, MPI_INT);
+  err|=pack->unpack_data((void**)&tempBuff,   MPI_CHAR);
+  promptstr = tempBuff;
+  delete [] tempBuff;
 
   char *tip;
   cFunctionType *ff;
   switch (typechar)
   {
     case 'S':
-      void* ls_sht;
-      err|=pack->unpack_data((void*)&ls_sht, MPI_BYTE);
-      err|=pack->unpack_data((void**)&(ls.str), MPI_CHAR);
+      err|=pack->unpack_data((void*)&ls.sht, MPI_INT);
+	  ss.sht = ls.sht;
+	  if (ls.sht) err|=pack->unpack_data((void**)&ss.str, MPI_CHAR);
+	  else        err|=pack->unpack_data((void**)&ls.str, MPI_CHAR);
       break;
 
-    case 'C':
-      void* ss_sht;
-      err|=pack->unpack_data((void*)&ss_sht, MPI_BYTE);
-      err|=pack->unpack_data((void**)&tip, MPI_CHAR);
-      if (tip)
-	strcpy(ss.str,tip);
-      break;
     case 'L':
-      void* lng_val;
-      err|=pack->unpack_data((void*)&lng_val, MPI_LONG);
+      err|=pack->unpack_data((void*)&lng.val, MPI_LONG);
       break;
     case 'D':
-      void* dbl_val;
-      err|=pack->unpack_data((void*)&dbl_val, MPI_DOUBLE);
+      err|=pack->unpack_data((void*)&dbl.val, MPI_DOUBLE);
       break;
     case 'F':
       err|=pack->unpack_data((void**)&funcname, MPI_CHAR);
       ff = findFunction(funcname);
       if (ff==NULL)
       {
-	  delete funcname;
+	  delete [] funcname;
 	  throw new cException("cPar::netUnpack(): transmitted function `%s' not registered here",funcname);
       }
       func.f = ff->f;
@@ -509,19 +789,22 @@ int cPar::netUnpack()
       err|=pack->unpack_data((void*)&(func.p1), MPI_DOUBLE);
       err|=pack->unpack_data((void*)&(func.p2), MPI_DOUBLE);
       err|=pack->unpack_data((void*)&(func.p3), MPI_DOUBLE);
-      delete funcname;
+      delete [] funcname;
       break;
+
     case 'T':
       if (!chkflag(err))
 	dtr.res=NULL;
       else
 	take( dtr.res = (cStatistic *)upack_object(err) );
       break;
+
     case 'I':
     case 'X':
     case 'P':
       // sending of 'X' not implemented
       throw new cException("cPar::netUnpack(): WHAT???");
+
     case 'O':
       if (!chkflag(err))
 	obj.obj=NULL;
@@ -558,8 +841,13 @@ int cBag::netUnpack()
   err|=pack->unpack_data((void*)&delta, MPI_INT);
   err|=pack->unpack_data((void*)&lastused, MPI_INT);
   err|=pack->unpack_data((void*)&firstfree, MPI_INT);
-  err|=pack->unpack_data((void**)&vect, MPI_BYTE, size*(sizeof(bool)+elemsize));
 
+//  --> ** TODO
+  err|=pack->unpack_data((void**)&vect, MPI_BYTE);
+//  err|=pack->unpack_data((void**)&vect, MPI_BYTE, size*(sizeof(bool)+elemsize));
+// <-- **
+
+	printf("Finished unpacking cBag\n");
   return err;
 }
 
@@ -646,7 +934,7 @@ int cArray::netUnpack()
 
   int err=0;
   err=cObject::netUnpack();
-  delete vect;
+  delete [] vect;
 
   err|=pack->unpack_data((void*)&size, MPI_INT);
   err|=pack->unpack_data((void*)&delta, MPI_INT);
@@ -679,22 +967,38 @@ int cMessage::netPack()
   cMpiPack* pack = cMpiPack::instance();
 
   int err=0;
+  int obj_ptr;
+
   err|=cObject::netPack();
 
   err|=pack->pack_data(&msgkind, MPI_INT);
   err|=pack->pack_data(&prior, MPI_INT);
   err|=pack->pack_data(&len, MPI_LONG);
+  err|=pack->pack_data(&error,   MPI_INT);
   err|=pack->pack_data(&tstamp, MPI_DOUBLE);
-  err|=pack->pack_data(&error, MPI_BYTE);
+
+// --> ** TODO
+// Check if memory address can be stored in integer datatypes, possibly use unsigned long?
+  obj_ptr = (int)contextptr;
+  err|=pack->pack_data(&obj_ptr, MPI_INT);
+// <-- **
+
   err|=pack->pack_data(&frommod, MPI_INT);
   err|=pack->pack_data(&fromgate, MPI_INT);
   err|=pack->pack_data(&tomod, MPI_INT);
   err|=pack->pack_data(&togate, MPI_INT);
+  err|=pack->pack_data(&created,    MPI_DOUBLE);
   err|=pack->pack_data(&sent, MPI_DOUBLE);
   err|=pack->pack_data(&delivd, MPI_DOUBLE);
+  err|=pack->pack_data(&heapindex,  MPI_INT);
+  err|=pack->pack_data(&insertordr, MPI_UNSIGNED_LONG);
 
   if (notnull(parlistp,err))
     parlistp->netPack();
+
+  if (notnull(encapmsg,err))
+    encapmsg->netPack();
+
   return err;
 }
 
@@ -708,17 +1012,26 @@ int cMessage::netUnpack()
   err|=pack->unpack_data((void*)&msgkind, MPI_INT);
   err|=pack->unpack_data((void*)&prior, MPI_INT);
   err|=pack->unpack_data((void*)&len, MPI_LONG);
+  err|=pack->unpack_data((void*)&error,   MPI_INT);
   err|=pack->unpack_data((void*)&tstamp, MPI_DOUBLE);
-  err|=pack->unpack_data((void*)&error, MPI_BYTE);
+
+  err|=pack->unpack_ptr((void**)&contextptr);
+
   err|=pack->unpack_data((void*)&frommod, MPI_INT);
   err|=pack->unpack_data((void*)&fromgate, MPI_INT);
   err|=pack->unpack_data((void*)&tomod, MPI_INT);
   err|=pack->unpack_data((void*)&togate, MPI_INT);
+  err|=pack->unpack_data((void*)&created,    MPI_DOUBLE);
   err|=pack->unpack_data((void*)&sent, MPI_DOUBLE);
   err|=pack->unpack_data((void*)&delivd, MPI_DOUBLE);
+  err|=pack->unpack_data((void*)&heapindex,  MPI_INT);
+  err|=pack->unpack_data((void*)&insertordr, MPI_UNSIGNED_LONG);
 
   if (chkflag(err))
     take(parlistp = (cArray *)upack_object(err));
+
+  if (chkflag(err)) take(encapmsg = (cMessage *)upack_object(err));
+
   return err;
 }
 
@@ -906,7 +1219,10 @@ int cDensityEstBase::netUnpack()
   transfd=(t!=0);
 
   if (chkflag(err))
-    err|=pack->unpack_data((void**)&firstvals, MPI_DOUBLE, num_firstvals);
+// --> ** TODO
+	err|=pack->unpack_data((void**)&firstvals, MPI_DOUBLE);
+    // err|=pack->unpack_data((void**)&firstvals, MPI_DOUBLE, num_firstvals);
+// <-- **
 
   return err;
 }
@@ -934,7 +1250,10 @@ int cHistogramBase::netUnpack()
 
   if (chkflag(err))
   {
-    err|=pack->unpack_data((void**)&cellv, MPI_UNSIGNED, num_cells);
+// --> ** TODO
+    err|=pack->unpack_data((void**)&cellv, MPI_UNSIGNED);
+//	err|=pack->unpack_data((void**)&cellv, MPI_UNSIGNED, num_cells);
+// <-- **
   }
   return err;
 }
@@ -1016,10 +1335,17 @@ int cVarHistogram::netUnpack()
   delete cellv; cellv=NULL; // must recreate with different size
 
   if (chkflag(err))
-    err|=pack->unpack_data((void**)&cellv, MPI_UNSIGNED, max_num_cells);
+// --> ** TODO
+//    err|=pack->unpack_data((void**)&cellv, MPI_UNSIGNED, max_num_cells);
+	err|=pack->unpack_data((void**)&cellv, MPI_UNSIGNED);
+// <-- **
 
   if (chkflag(err))
-    err|=pack->unpack_data((void**)&bin_bounds, MPI_DOUBLE, max_num_cells+1);
+// --> ** TODO
+//    err|=pack->unpack_data((void**)&bin_bounds, MPI_DOUBLE, max_num_cells+1);
+    err|=pack->unpack_data((void**)&bin_bounds, MPI_DOUBLE);
+// <-- **
+	printf("Finished unpacking cVarHistogram\n");
   return err;
 }
 
@@ -1052,9 +1378,16 @@ int cPSquare::netUnpack()
   err|=pack->unpack_data((void*)&numobs, MPI_LONG);
 
   if (chkflag(err))
-    err|=pack->unpack_data((void**)&n, MPI_INT, numcells+2);
+// --> ** TODO
+//  err|=pack->unpack_data((void**)&n, MPI_INT, numcells+2);
+	err|=pack->unpack_data((void**)&n, MPI_INT);
+// <-- **
+
   if (chkflag(err))
-    err|=pack->unpack_data((void**)&q, MPI_DOUBLE, numcells+2);
+// --> ** TODO
+//	err|=pack->unpack_data((void**)&q, MPI_DOUBLE, numcells+2);
+    err|=pack->unpack_data((void**)&q, MPI_DOUBLE);
+// <-- **
 
   return err;
 }

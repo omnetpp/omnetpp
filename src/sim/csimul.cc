@@ -458,7 +458,7 @@ cSimpleModule *cSimulation::selectNextModule()
         if (netInterface()!=NULL)
         {
              while (msgQueue.empty())
-                 netInterface()->process_netmsg_blocking();
+                 netInterface()->process_netmsgs();
              return selectNextModule();
         }
 

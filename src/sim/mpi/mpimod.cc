@@ -23,6 +23,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h> /* FIXME */
+#include <sys/param.h>
 #include "cmessage.h"
 #include "cmodule.h"
 #include "csimul.h"
@@ -42,6 +44,7 @@ extern cObject *upack_object(int& err);
 //=========================================================================
 int is_started_as_master()
 {
+	printf("is_started_as_master\n");
     int argc = 0;
     char** argv = 0;
 
@@ -70,12 +73,14 @@ int is_started_as_master()
 // The copy constructor.
 cNetGate::cNetGate(const cNetGate& gate) : cGate(NULL,0)
 {
+	printf("cNetGate() constructor\n");
     operator=(gate);
 }
 
 // The constructor.
 cNetGate::cNetGate(const char *name, int type) : cGate(name,type)
 {
+	printf("cNetGate() constructor\n");
    target_Proc=0;
    target_Gate=-1;
 }
@@ -83,6 +88,7 @@ cNetGate::cNetGate(const char *name, int type) : cGate(name,type)
 // The copy operator (though unnecessary in the case of a network gate)
 cNetGate& cNetGate::operator=(cNetGate& gate)
 {
+	printf("cNetGate() operator=()\n");
    if (this==&gate) return *this;
 
    cGate::operator=(gate);
@@ -98,7 +104,7 @@ cNetGate& cNetGate::operator=(cNetGate& gate)
 // The constructor
 cMpiMod::cMpiMod()
 {
-
+	printf("Rank %d, cMpiMod::constructor\n", mMy_Rank);
     mNum_Ingates=0;
     mNum_Outgates=0;
     syncpoints=NULL;
@@ -109,11 +115,27 @@ cMpiMod::cMpiMod()
 
     pack = cMpiPack::instance();
 
+// --> ** TODO
+// Better to use an MPI function... but what is it?
+	char *hostname = new char[MAXHOSTNAMELEN];
+
+	if (gethostname(hostname, MAXHOSTNAMELEN) == 0)
+		my_host = hostname;
+	else
+		my_host = NULL;
+
+	printf("hostname: %s\n", hostname);
+	delete [] hostname;
+	printf("my_host: %s\n", (const char*)my_host);
+// <-- **
+
     int data, status;
 
     if(ev.runningMode()==SLAVE_MODE)
     {
+	    	printf("Rank %d, calling recv_pack\n", mMy_Rank);
       pack->recv_pack(MPIMASTER, MPIMSG_BROADCAST);
+	    	printf("Rank %d, finished calling recv_pack\n", mMy_Rank);
       pack->unpack_data(&data, MPI_INT);
 
       if(data == MPIMSG_OK)
@@ -130,8 +152,13 @@ cMpiMod::cMpiMod()
 // Destructor function
 cMpiMod::~cMpiMod()
 {
-  delete pack;
-  //  MPI_Finalize();
+	printf("Rank %d, cMpiMod::destructor\n", mMy_Rank);
+// ** --> TODO
+// Uncomment after major debugging has been done.
+//  if (pack)
+//	delete pack;
+// <-- **
+MPI_Finalize();
 }
 
 //-------------------------------------------------------------------------
@@ -139,6 +166,7 @@ cMpiMod::~cMpiMod()
 
 int cMpiMod::multicast(int tag, MPI_Comm comm)
 {
+	printf("Rank %d cMpiMod::multicast()\n", mMy_Rank);
   int status = MPI_SUCCESS;
 
   for(int i=0; i<mSize; i++)
@@ -164,7 +192,8 @@ int cMpiMod::multicast(int tag, MPI_Comm comm)
 // info: Simple information
 void cMpiMod::info(char *buf)
 {
-    cNetMod::info(buf);
+	printf("Rank %d cMpiMod::info()\n", mMy_Rank);
+    sprintf(buf,"%-15.15s (%s,#%d)", fullName(), className(), id() );
 }
 
 //-------------------------------------------------------------------------
@@ -174,6 +203,7 @@ void cMpiMod::info(char *buf)
 
 void cMpiMod::callInitialize()
 {
+	printf("Rank %d cMpiMod::callInitialize()\n", mMy_Rank);
     // This is the interface for calling initialize().
     // We switch to the module's context for the duration of the call.
 
@@ -190,6 +220,7 @@ void cMpiMod::callInitialize()
 
 void cMpiMod::callFinish()
 {
+	printf("Rank %d cMpiMod::callFinish()\n", mMy_Rank);
     // This is the interface for calling finish().
     // We switch to the module's context for the duration of the call.
 
@@ -211,6 +242,7 @@ void cMpiMod::callFinish()
 
 short cMpiMod::start_segments(cArray& host_list,int argc,char * argv[])
 {
+	printf("Rank %d cMpiMod::start_segments()\n", mMy_Rank);
     if (ev.runningMode()!=MASTER_MODE)
       throw new cException("start_segments() can only be called on Master process");
 
@@ -242,20 +274,22 @@ short cMpiMod::start_segments(cArray& host_list,int argc,char * argv[])
 
 void cMpiMod::setup_connections()
 {
+	printf("Rank %d cMpiMod::setup_connections()\n", mMy_Rank);
+	synchronize();
     ev.printf("Setting up connections across segments...\n");
 
     // status of the MPI functions
     MPI_Status status;
     char ***temp_link_table = new char **[mSize];
-    int i,j;
+    char      *str, *tempStr;
+	int        pack_length;
     int err = 0;
-    char* str;
     int* segm_numgates =  new int[mSize];
 
     // sending information about my output gates
-    pack->pack_data(&mNum_Outgates, MPI_INT);
-    for (i=0;i<mNum_Outgates;i++)
-      err|=pack->pack_data((void*)mOutgates[i]->name(), MPI_CHAR);
+	err|=pack->pack_data(&mNum_Outgates, MPI_INT);
+	for (int i = 0; i < mNum_Outgates; i++)
+		err|=pack->pack_data((void*)mOutgates[i]->name(), MPI_CHAR, opp_strlen(mOutgates[i]->name()));
 
     multicast(MPIMSG_SETUP_LINK);
     if (err)
@@ -263,7 +297,7 @@ void cMpiMod::setup_connections()
 
 
     // receiving information from others
-    for (i=0;i<mSize;i++)
+    for (int i = 0; i < mSize; i++)
     {
       if(i != mMy_Rank)
       {
@@ -275,7 +309,7 @@ void cMpiMod::setup_connections()
         if(segm_numgates[i]!=0)
         {
           temp_link_table[i] = new char *[segm_numgates[i]];
-          for (j=0;j<segm_numgates[i];j++)
+          for (int j = 0; j < segm_numgates[i]; j++)
           {
             err=0;
             err|=pack->unpack_data((void**)&str, MPI_CHAR); // --LG
@@ -292,11 +326,11 @@ printf("In rank: %d, receives from Rank %d , Gates[%d] is %s \n", mMy_Rank, i, j
     // in the temporary link table, which contains all the input gates
     // of all the MPI modules.
     int sernum=0;
-    for (i=0;i<mSize;i++)
+    for (int i = 0; i < mSize; i++)
     {
       if(mMy_Rank != i)
       {
-        for (j=0; j<segm_numgates[i];j++)
+		for (int j = 0; j < segm_numgates[i]; j++)
         {
           if ((sernum=gatev.find(temp_link_table[i][j]))>=0)
           {
@@ -308,12 +342,12 @@ printf("FOUND!!! the matched gate info = %s with matrix, %d x %d \n", temp_link_
     }
 
     // free the temp_link_table...
-    for (i=0; i<mSize; i++)
+    for (int i = 0; i < mSize; i++)
     {
       if(mMy_Rank != i)
       {
-        for (j=0; j<segm_numgates[i]; j++)
-            delete temp_link_table[i][j]; // -- delete a string
+        for (int j = 0; j < segm_numgates[i]; j++)
+            delete [] temp_link_table[i][j]; // -- delete a string
         delete[] temp_link_table[i]; // delete array of strings
       }
     }
@@ -333,6 +367,7 @@ printf("FOUND!!! the matched gate info = %s with matrix, %d x %d \n", temp_link_
 //-------------------------------------------------------------------------
 void cMpiMod::sync_after_modinits()
 {
+	printf("Rank %d cMpiMod::sync_after_modinits()\n", mMy_Rank);
     ev.printf("Blocking until all module activity()s have been started...\n");
     synchronize();
     ev.printf("Continuing...\n");
@@ -345,9 +380,9 @@ void cMpiMod::sync_after_modinits()
 //   Overrides the virtual function in cSimpleModule. The message will
 //   be sent out immediately to the other MPI module.
 
-void cMpiMod::arrived(cMessage *msg,int ongate, simtime_t at)
+void cMpiMod::arrived(cMessage *msg,int ongate)
 {
-    msg->setArrival(this,ongate,at);
+	printf("Rank %dcMpiMod::arrived() fullPath() %s\n", mMy_Rank, fullPath());
     net_sendmsg( msg, ongate);
 }
 
@@ -359,6 +394,7 @@ void cMpiMod::arrived(cMessage *msg,int ongate, simtime_t at)
 
 int cMpiMod::net_addgate(cModule * mod,int gate, char tp)
 {
+	printf("Rank %d cMpiMod::net_addgate()\n", mMy_Rank);
     int retval=0;
     cNetGate *newg = new cNetGate( mod->gate(gate)->fullPath(), tp);
     if (tp=='I')   // 'I': input gate
@@ -382,6 +418,7 @@ int cMpiMod::net_addgate(cModule * mod,int gate, char tp)
 
 void cMpiMod::net_sendmsg(cMessage *msg,int ongate)
 {
+	printf("Rank %d cMpiMod::net_sendmsg()\n", mMy_Rank);
     int gate_num = ((cNetGate *)gatev[ongate])->t_gate();
     int mpi_dest = ((cNetGate *)gatev[ongate])->t_proc();
 
@@ -404,8 +441,9 @@ void cMpiMod::putmsg_onconsole(const char *strmsg)
 {
     int err=0;
 
+	printf("Rank %d, putmsg_onconsole(): %s\n", mMy_Rank, strmsg);
     err=err||pack->pack_data(&mMy_Rank, MPI_INT);
-    err=err||pack->pack_data((void*)strmsg, MPI_CHAR);
+    err = err||pack->pack_data((void*)strmsg, MPI_CHAR, opp_strlen(strmsg));
 printf("File %s, Line %d from Rank %d \n", __FILE__, __LINE__, mMy_Rank);
     err=err||pack->send_pack(MPIMASTER, MPIMSG_PUTMSG_ONCONSOLE);
     if (err)
@@ -419,11 +457,16 @@ printf("File %s, Line %d from Rank %d \n", __FILE__, __LINE__, mMy_Rank);
 void cMpiMod::puts_onconsole(const char *strmsg)
 {
     int err=0;
+	int   pack_length;
 
+	printf("Rank %d puts_onconsole(): %s\n", mMy_Rank, strmsg);
     err=err||pack->pack_data(&mMy_Rank, MPI_INT);
-    err=err||pack->pack_data((void*)strmsg, MPI_CHAR);
+    err=err||pack->pack_data((void*)strmsg, MPI_CHAR, opp_strlen(strmsg));
+
     cModule* mod = simulation.contextModule();
-    err=err||pack->pack_data(const_cast<char *>(mod ? mod->fullPath() : "") , MPI_CHAR);
+	pack_length  = mod ? opp_strlen(mod->fullPath()) : 0;
+    err=err||pack->pack_data(const_cast<char *>(mod ? mod->fullPath() : "") , MPI_CHAR, pack_length);
+
 printf("File %s, Line %d from Rank %d \n", __FILE__, __LINE__, mMy_Rank);
     err=err||pack->send_pack(MPIMASTER, MPIMSG_PUTS_ONCONSOLE);
     if (err)
@@ -441,11 +484,12 @@ bool cMpiMod::gets_onconsole(const char *promptstr, char *buffer,int len)
     int err=0;
     char* buff;
 
+	printf("Rank %d cMpiMod::gets_onconsole()\n", mMy_Rank);
     // send to Master(console)
 
     err=err||pack->pack_data(&mMy_Rank, MPI_INT);
-    err=err||pack->pack_data((void*)promptstr, MPI_CHAR);
-    err=err||pack->pack_data((void*)buffer, MPI_CHAR);
+    err=err||pack->pack_data((void*)promptstr, MPI_CHAR, opp_strlen(promptstr));
+    err=err||pack->pack_data((void*)buffer, MPI_CHAR, opp_strlen(buffer));
     err=err||pack->pack_data(&len, MPI_INT);
 printf("File %s, Line %d from Rank %d \n", __FILE__, __LINE__, mMy_Rank);
     err=err||pack->send_pack(MPIMASTER, MPIMSG_GETS_ONCONSOLE);
@@ -479,10 +523,11 @@ printf("File %s, Line %d from Rank %d \n", __FILE__, __LINE__, mMy_Rank);
 
 bool cMpiMod::askyesno_onconsole(const char *question)
 {
+	printf("Rank %d cMpiMod::askyesno_onconsole()\n", mMy_Rank);
   int err=0;
 
   err=err||pack->pack_data(&mMy_Rank, MPI_INT);
-  err=err||pack->pack_data((char*)question, MPI_CHAR);
+  err=err||pack->pack_data((char*)question, MPI_CHAR, opp_strlen(question));
 printf("File %s, Line %d from Rank %d \n", __FILE__, __LINE__, mMy_Rank);
   err=err||pack->send_pack(MPIMASTER, MPIMSG_ASKYESNO_ONCONSOLE);
 
@@ -508,6 +553,7 @@ printf("File %s, Line %d from Rank %d \n", __FILE__, __LINE__, mMy_Rank);
 //-------------------------------------------------------------------------
 void cMpiMod::clear()
 {
+	printf("Rank %d cMpiMod::clear()\n", mMy_Rank);
   gatev.clear();
   mOutgates.clear();
 }
@@ -519,6 +565,10 @@ void cMpiMod::clear()
 void cMpiMod::stop_all_segments()
 {
   int err=0;
+
+  printf("Rank %d stop_all_segments()\n", mMy_Rank);
+  if (mMy_Rank != 0) request_stopsimulation();
+  else {
   ev.printf("Stopping simulation execution on all segments...\n");
   err=err||pack->pack_data(&mMy_Rank, MPI_INT);
 printf("File %s, Line %d from Rank %d \n", __FILE__, __LINE__, mMy_Rank);
@@ -526,6 +576,7 @@ printf("File %s, Line %d from Rank %d \n", __FILE__, __LINE__, mMy_Rank);
 
   if (err)
     ev.printfmsg("MPI error in stop_all_segments()");
+}
 }
 
 //-------------------------------------------------------------------------
@@ -537,6 +588,7 @@ printf("File %s, Line %d from Rank %d \n", __FILE__, __LINE__, mMy_Rank);
 //-------------------------------------------------------------------------
 void cMpiMod::request_stopsimulation()
 {
+	printf("Rank %d reques_stopsimulation()\n", mMy_Rank);
 printf("File %s, Line %d from Rank %d \n", __FILE__, __LINE__, mMy_Rank);
   if (ev.runningMode()==MASTER_MODE)
   {
@@ -551,7 +603,6 @@ printf("File %s, Line %d from Rank %d \n", __FILE__, __LINE__, mMy_Rank);
     if (err)
       throw new cException("request_stopsimulation()");
   }
-  MPI_Finalize();
 }
 
 //==========================================================================
@@ -559,6 +610,7 @@ printf("File %s, Line %d from Rank %d \n", __FILE__, __LINE__, mMy_Rank);
 //==========================================================================
 void cMpiMod::process_netmsgs()
 {
+	printf("Rank %d cMpiMod::process_netmsgs()\n", mMy_Rank);
 printf("Rank %d, File %s, Line %d \n", mMy_Rank, __FILE__, __LINE__);
     int flag;
     MPI_Status status;
@@ -576,6 +628,7 @@ printf("Rank %d, File %s, Line %d \n", mMy_Rank, __FILE__, __LINE__);
 //==========================================================================
 void cMpiMod::process_netmsg_blocking()
 {
+	printf("Rank %d cMpiMod::process_netmsg_blocking()\n", mMy_Rank);
 printf("Rank %d, File %s, Line %d \n", mMy_Rank, __FILE__, __LINE__);
     MPI_Status status;
     status = pack->recv_pack(MPI_ANY_SOURCE, MPI_ANY_TAG);
@@ -588,6 +641,8 @@ printf("Rank %d, File %s, Line %d \n", mMy_Rank, __FILE__, __LINE__);
 //==========================================================================
 void cMpiMod::do_process_netmsg(int tag)
 {
+	printf("Rank %d, do_process_netmsg()\n", mMy_Rank);
+
     int err=0;
     int gate_num;
     double t;
@@ -606,13 +661,16 @@ void cMpiMod::do_process_netmsg(int tag)
     {
         // cMessage for a simple module
         case MPIMSG_SIMULATION_CMSG:
+			printf("simulation message\n");
             err=0;
             err|=pack->unpack_data((void*)&gate_num, MPI_INT);
             msg = (cMessage *)upack_object(err);
             if (err)
               throw new cException("do_process_netmsg()/unpacking the message");
 
-            del_syncpoint(msg->arrivalTime(),gate_num);
+
+            //FIXME            
+            // del_syncpoint(msg->arrivalTime(),gate_num);
 
             netg = (cNetGate *)mOutgates[gate_num];
             if (netg->toGate()==NULL)
@@ -679,8 +737,8 @@ void cMpiMod::do_process_netmsg(int tag)
             res=ev.gets(promptstr,buff,length); // hostname?
 
             err=0;
-            err=err||pack->pack_data(buff, MPI_CHAR);
-            err=err||pack->pack_data(&res, MPI_BYTE);
+			err=err||pack->pack_data(buff, MPI_CHAR, opp_strlen(buff));
+			err=err||pack->pack_data(&res, MPI_CHAR);
             err=err||pack->send_pack(incomingRank, MPIMSG_GETS_ONCONSOLE);
 
             if (err)
@@ -699,7 +757,7 @@ void cMpiMod::do_process_netmsg(int tag)
 
             err=0;
 
-            err=err||pack->pack_data(&res, MPI_BYTE);
+            err=err||pack->pack_data(&res, MPI_CHAR);
             err=err||pack->send_pack(incomingRank, MPIMSG_ASKYESNO_ONCONSOLE);
 
             if (err)
@@ -714,6 +772,7 @@ void cMpiMod::do_process_netmsg(int tag)
             throw new cTerminationException(eSTOPSIMRCVD, hostname);
             // CAUTION: The error code eSTOPSIMRCVD must be kept!
             //  (it is checked at other places in sim)
+            break;
 
         // A message or query to stop the simulation.
         case MPIMSG_REQUEST_STOPSIM:
@@ -736,8 +795,7 @@ void cMpiMod::do_process_netmsg(int tag)
 
 void cMpiMod::send_syncpoint( simtime_t t, int ongate)
 {
-
-
+	printf("Rank %d cMpiMod::send_syncpoint()\n", mMy_Rank);
   int mpi_dest = ((cNetGate *)gatev[ongate])->t_proc();
   int gate_num = ((cNetGate *)gatev[ongate])->t_gate();
 
@@ -758,8 +816,7 @@ void cMpiMod::send_syncpoint( simtime_t t, int ongate)
 
 void cMpiMod::send_cancelsyncpoint( simtime_t t, int ongate)
 {
-
-
+	printf("Rank %d cMpiMod::send_cancelsyncpoint()\n", mMy_Rank);
   int mpi_dest = ((cNetGate *)gatev[ongate])->t_proc();
   int gate_num = ((cNetGate *)gatev[ongate])->t_gate();
 
@@ -781,11 +838,12 @@ void cMpiMod::send_cancelsyncpoint( simtime_t t, int ongate)
 
 bool cMpiMod::block_on_syncpoint( simtime_t nextlocalevent)
 {
-
+	printf("Rank %d cMpiMod::block_on_syncpoint()\n", mMy_Rank);
     MPI_Status status;
 
     if (nextlocalevent>next_syncpoint())
     {
+		printf("blocking on sycpoint!!!!!!\n");
        // wait until syncpoint gets deleted by a cMessage from another segment
        while (nextlocalevent>next_syncpoint())
        {
@@ -807,6 +865,7 @@ bool cMpiMod::block_on_syncpoint( simtime_t nextlocalevent)
 //==========================================================================
 void cMpiMod::add_syncpoint( simtime_t t, int ongate)
 {
+	printf("Rank %d cMpiMod::add_syncpoint()\n", mMy_Rank);
   sSyncPoint **pp = &syncpoints;
   while (*pp && t>(*pp)->t)
     pp = &((*pp)->next);
@@ -823,13 +882,17 @@ void cMpiMod::add_syncpoint( simtime_t t, int ongate)
 //==========================================================================
 void cMpiMod::del_syncpoint(simtime_t msgtime, int gate)
 {
+	printf("Rank %d cMpiMod::del_syncpoint()\n", mMy_Rank);
   sSyncPoint **pp = &syncpoints;
   while (*pp && (*pp)->gate!=gate)
     pp = &((*pp)->next);
 
   if (!*pp)
   {
-    opp_warning("cMessage from another segment received with no syncpoint");
+/* --> ** TODO
+// Handle all syncpoints afterwards
+//    opp_warning("cMessage from another segment received with no syncpoint");
+*/
     return;
   }
   if ((*pp)->t > msgtime)
@@ -847,6 +910,7 @@ void cMpiMod::del_syncpoint(simtime_t msgtime, int gate)
 //==========================================================================
 void cMpiMod::cancel_syncpoint(simtime_t t, int gate)
 {
+	printf("Rank %d cMpiMod::cancel_syncpoint()\n", mMy_Rank);
   sSyncPoint **pp = &syncpoints;
   while (*pp && ((*pp)->gate!=gate || (*pp)->t!=t))
     pp = &((*pp)->next);
@@ -869,6 +933,7 @@ void cMpiMod::cancel_syncpoint(simtime_t t, int gate)
 //==========================================================================
 simtime_t cMpiMod::next_syncpoint()
 {
+	printf("Rank %d, cMpiMod::next_syncpoint()\n", mMy_Rank);
   return syncpoints ? syncpoints->t : MAXTIME;
 }
 
@@ -879,6 +944,7 @@ simtime_t cMpiMod::next_syncpoint()
 //==========================================================================
 void cMpiMod::synchronize()
 {
+	printf("Rank %d cMpiMod::synchronize()\n", mMy_Rank);
   if (MPI_Barrier(MPI_COMM_WORLD)!=MPI_SUCCESS)
     throw new cException("synchronize()");
 }
@@ -893,6 +959,7 @@ void cMpiMod::synchronize()
 
 int cMpiMod::findingate(const char *s)
 {
+	printf("Rank %d cMpiMod::findingate()\n", mMy_Rank);
   return gatev.find(s);
 }
 
@@ -901,6 +968,7 @@ int cMpiMod::findingate(const char *s)
 
 cGate* cMpiMod::ingate(const char *s)
 {
+	printf("Rank %d cMpiMod::ingate()\n", mMy_Rank);
   int i=gatev.find(s);
   if (i==-1)
     {opp_warning(eNULLREF,className(),fullPath()); return NULL;}
@@ -913,6 +981,7 @@ cGate* cMpiMod::ingate(const char *s)
 
 int cMpiMod::findoutgate(const char *s)
 {
+	printf("Rank %d cMpiMod::findoutgate()\n", mMy_Rank);
   return mOutgates.find(s);
 }
 
@@ -921,6 +990,7 @@ int cMpiMod::findoutgate(const char *s)
 
 cGate* cMpiMod::outgate(const char *s)
 {
+	printf("Rank %d cMpiMod::outgate()\n", mMy_Rank);
   int i=mOutgates.find(s);
   if (i==-1)
     {opp_warning(eNULLREF,className(),fullPath()); return NULL;}
@@ -932,6 +1002,7 @@ cGate* cMpiMod::outgate(const char *s)
 
 int cMpiMod::receive_runnumber()
 {
+	printf("Rank %d cMpiMod::receive_runnumber()\n", mMy_Rank);
   ev.printf("Waiting for run number...\n");
 
   pack->recv_pack(MPIMASTER, MPIMSG_RUNNUMBER);
@@ -950,6 +1021,7 @@ printf("FILE: %s, LINE: %d \n", __FILE__, __LINE__);
 
 void cMpiMod::send_runnumber(int run_nr)
 {
+	printf("Rank %d cMpiMod::send_runnumber()\n", mMy_Rank);
   ev.printf("Sending run number %d to other segments...\n",run_nr);
 
   int err=pack->pack_data(&run_nr, MPI_INT);
@@ -962,8 +1034,12 @@ printf("File %s, Line %d from Rank %d \n", __FILE__, __LINE__, mMy_Rank);
 
 const char* cMpiMod::localhost()
 {
-  //Local buffer to return hostname.  Not thread safe.
-  static char myhost[5]; // extra space for null terminator
-  sprintf(myhost, "%d", mMy_Rank);
-  return myhost;
+	printf("Rank %d cMpiMod::localhost()\n", mMy_Rank);
+	printf("...Local host is %s\n", (const char*)my_host);
+  return my_host;
+}
+
+int cMpiMod::rank ()
+{
+	return mMy_Rank;
 }

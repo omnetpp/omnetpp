@@ -34,6 +34,7 @@ class cMpiPack
   int mBufferSize;
   int mPosition;
   int mMsgSize; // used for receiving end
+  int mMy_Rank;
 
  private:
   void addBufferSize(int datalength);
@@ -52,6 +53,13 @@ class cMpiPack
   // [IN] communication group
   // [IN] delete flag (for broacasting purpose)
   int send_pack(int destination, int tag, bool delFlag = true, MPI_Comm comm = MPI_COMM_WORLD);
+
+  // Pack the element
+  // ---------------------
+  // [IN] data element
+  // [IN] data type
+  // [IN] communication group
+  int pack_data(void* data, MPI_Datatype, MPI_Comm comm = MPI_COMM_WORLD); // FIXME remove?
 
   // Pack the element
   // ---------------------
@@ -86,6 +94,12 @@ class cMpiPack
   // [IN] communication group
   int unpack_data(void** data, MPI_Datatype, MPI_Comm comm = MPI_COMM_WORLD); // for string 
   int unpack_data(void* data, MPI_Datatype, MPI_Comm comm = MPI_COMM_WORLD);  
+
+  // Unpack the ptr to an object
+  // ------------------------------
+  // [OUT] pointer
+  // [IN]  communication group
+  int unpack_ptr(void** pointer, MPI_Comm comm = MPI_COMM_WORLD);  // FIXME remove!
 
   // Remove the buffer explicitely
   void remove_buffer(void);

@@ -64,6 +64,8 @@ class cMpiMod : public cNetMod
     int mNum_Outgates, mNum_Ingates; // gate counts
     cArray mOutgates; // seperate list for output gates
 
+    opp_string my_host;
+
     cMpiPack* pack;
 
  private:
@@ -129,6 +131,7 @@ class cMpiMod : public cNetMod
 
     virtual void stop_all_segments();       // halts the simulation immediately
     virtual void request_stopsimulation();  // asks the console to stop simulation
+    virtual int  rank();
 };
 
 #endif
