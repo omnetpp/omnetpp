@@ -1,3 +1,9 @@
+2005-02-18  Andras Varga
+
+	* cenvir.cc: ev.printf() fixed: it printed the buffer pointer value 
+	instead of the string itself. (char buf[20]; strcpy(buf,"hello");
+	cout << buf; prints buf's address not "hello"!!!)
+
 2005-02-07  Andras Varga
 
 	* cakaroarng.cc: fix: added missing #include

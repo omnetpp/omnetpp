@@ -211,7 +211,7 @@ void TOmnetApp::setup()
 const char *TOmnetApp::getRunSectionName(int runnumber)
 {
     static int lastrunnumber = -1;
-    static char section[16];
+    static char section[16] = "";
 
     if (runnumber!=lastrunnumber)
     {

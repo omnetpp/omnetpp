@@ -380,7 +380,7 @@ void cEnvir::printf(const char *fmt,...)
     va_end(va);
 
     // has to go through ostream (and so sputn() too) to preserve ordering
-    *this << buffer;
+    *this << (char *)buffer;  // Note: the cast is necessary! otherwise the pointer value gets printed.
 }
 
 void cEnvir::puts(const char *s)
