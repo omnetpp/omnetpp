@@ -1265,10 +1265,9 @@ functions are called.
 
 All the simulation programmer needs to care about coroutines is to
 choose the processor stack size\index{coroutine!stack size} for them.
-This cannot be automated (Eerrr... at least not without hardware
-support, some trick with virtual memory handling).
+This cannot be automated.
 
-16 kbytes is usually a good choice, but you may need more if the
+16 or 32 kbytes is usually a good choice, but you may need more if the
 module uses recursive functions or has local variables which occupy a
 lot of stack space. {\opp} has a built-mechanism that will usually
 detect if the module stack is too small and
@@ -1403,9 +1402,8 @@ reverse as with \fname{initialize()}: first submodules, then the
 containing compound module. (The bottom line is that at the moment
 there's no ``official'' possibility to redefine \fname{initialize()}
 and \fname{finish()} for compound modules; the unofficial way is to
-write into the nedc-generated C++ code. Future versions of {\opp} will
-support adding these functions to compound
-modules.)
+write into the nedtool-generated C++ code. Future versions of {\opp} will
+support adding these functions to compound modules.)
 
 This is summarized in the following pseudocode (although you
 won't find this code ``as is'' in the simulation
