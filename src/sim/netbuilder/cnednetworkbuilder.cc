@@ -448,7 +448,10 @@ double cNEDNetworkBuilder::evaluate(cModule *modp, ExpressionNode *expr, cModule
 
 cPar *cNEDNetworkBuilder::resolveParamRef(ParamRefNode *node, cModule *parentmodp, cModule *submodp)
 {
-    // FIXME submodp may be network module, then parentmodp==NULL?
+    // submodp may be network module, then parentmodp==NULL
+    if (!parentmodp)
+        throw new cException("dynamic module builder: parameter reference occurs in wrong context");
+
     const char *paramname = node->getParamName();
     cPar *par;
     if (node->getIsAncestor())
@@ -727,7 +730,9 @@ static void printXElems(char *buf, cPar::ExprElem *xelems, int n)
 
 void cNEDNetworkBuilder::assignParamValue(cPar& p, ExpressionNode *expr, cModule *parentmodp)
 {
-    cModule *submodp = check_and_cast<cModulePar *>(&p)->ownerModule();
+    // when p is a connection or channel attribute, submodp==NULL (with channel attr, even parentmodp!)
+    cModulePar *mp = dynamic_cast<cModulePar *>(&p);
+    cModule *submodp = mp ? mp->ownerModule() : NULL;
 
     // handle "input" here (it must be single item in expression)
     FunctionNode *fnode = expr->getFirstFunctionChild();
@@ -737,8 +742,14 @@ void cNEDNetworkBuilder::assignParamValue(cPar& p, ExpressionNode *expr, cModule
         NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
 
         // op1 is default value
-        if (op1)
+        if (op1 && op1->getTagCode()==NED_CONST && ((ConstNode *)op1)->getType()==NED_CONST_STRING)
         {
+            // string literal
+            p.setStringValue(((ConstNode *)op1)->getValue());
+        }
+        else if (op1)
+        {
+            // numeric expression
             double d = evaluateNode(op1, parentmodp, submodp);
             p.setDoubleValue(d);
         }
@@ -801,25 +812,29 @@ bool cNEDNetworkBuilder::needsDynamicExpression(ExpressionNode *expr)
 {
     // FIXME this has to be revised!
 
-    // if simple expr, no expression class necessary
+    // if simple expr, no reverse Polish expression necessary
     NEDElement *node = expr->getFirstChild();
     if (!node)  {INTERNAL_ERROR0(expr, "needsExpressionClass(): empty expression");return false;}
     int tag = node->getTagCode();
 
-    // only non-const parameter assignments and channel attrs need expression classes (?)
+    // only non-const parameter assignments and channel attrs need reverse Polish expression(?)
     int parenttag = expr->getParent()->getTagCode();
     if (parenttag!=NED_SUBSTPARAM && parenttag!=NED_CHANNEL_ATTR && parenttag!=NED_CONN_ATTR)
         return false;
 
-    // also: if the parameter is non-volatile (that is, const), we don't need expr class
+    // also: if the parameter is non-volatile (that is, const), we don't need reverse Polish expression
     if (parenttag==NED_SUBSTPARAM && false /*FIXME ...and param is const*/)
         return false;
 
-    // identifiers and constants never need expression classes
+    // identifiers and constants never need reverse Polish expression
     if (tag==NED_IDENT || tag==NED_CONST)
         return false;
 
-    // special functions (INPUT, INDEX, SIZEOF) may also go without expression classes
+    // also, non-ref bare parameter references never need reverse Polish expression
+    if (tag==NED_PARAM_REF && !((ParamRefNode *)node)->getIsRef())
+        return false;
+
+    // special functions (INPUT, INDEX, SIZEOF) may also go without reverse Polish expression
     if (tag==NED_FUNCTION)
     {
         const char *funcname = ((FunctionNode *)node)->getName();
@@ -953,6 +968,8 @@ void cNEDNetworkBuilder::addXElemsOperator(OperatorNode *node, cPar::ExprElem *x
 
 void cNEDNetworkBuilder::addXElemsFunction(FunctionNode *node, cPar::ExprElem *xelems, int& pos, cModule *submodp)
 {
+    ASSERT(submodp); // FIXME we're in trouble here: for conn parameters, where do we get a parentmodp???
+
     // get function name, arg count, args
     const char *funcname = node->getName();
     int argcount = node->getNumChildren();
@@ -969,8 +986,12 @@ void cNEDNetworkBuilder::addXElemsFunction(FunctionNode *node, cPar::ExprElem *x
         ASSERT(op1);
         const char *name = op1->getName();
 
-        // find among local module gates
-        cGate *g = submodp->gate(name);
+        cModule *parentmodp = submodp->parentModule();
+        if (!parentmodp)
+            throw new cException("dynamic module builder: evaluate: sizeof() occurs in wrong context", name);
+
+        // find among parent module gates
+        cGate *g = parentmodp->gate(name);
         if (g)
         {
             xelems[pos++] = g->size();
@@ -978,8 +999,6 @@ void cNEDNetworkBuilder::addXElemsFunction(FunctionNode *node, cPar::ExprElem *x
         }
 
         // if not found, find among submodules
-        cModule *parentmodp = submodp->parentModule();
-        // FIXME submodp may be network module, then parentmodp==NULL?
         cModule *m = parentmodp->submodule(name);
         if (!m) m = parentmodp->submodule(name,0);
         if (m)
@@ -987,7 +1006,6 @@ void cNEDNetworkBuilder::addXElemsFunction(FunctionNode *node, cPar::ExprElem *x
             xelems[pos++] = m->size();
             return;
         }
-
         throw new cException("dynamic module builder: evaluate: sizeof(%s) failed -- no such gate or module", name);
     }
     else if (!strcmp(funcname,"input"))
@@ -1021,7 +1039,9 @@ void cNEDNetworkBuilder::addXElemsFunction(FunctionNode *node, cPar::ExprElem *x
 
 void cNEDNetworkBuilder::addXElemsParamref(ParamRefNode *node, cPar::ExprElem *xelems, int& pos, cModule *submodp)
 {
-    cModule *parentmodp = submodp->parentModule(); // FIXME what if submodp==NULL?????
+    ASSERT(submodp); // FIXME we're in trouble here: for conn parameters, where do we get a parentmodp???
+
+    cModule *parentmodp = submodp->parentModule();
     cPar *par = resolveParamRef(node,parentmodp,submodp);
 
     // store either the object itself or a copy
