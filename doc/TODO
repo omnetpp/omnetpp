@@ -1,6 +1,6 @@
 Further plans...
 ~~~~~~~~~~~~~~~~
-Aug 25 1998, somewhat updated in Aug 1999 and Jan 2000
+Aug 25 1998, somewhat updated in Aug 1999, Jan 2000, Feb 2001
 
 
 COMPREHENSIVE TEST SUITE
@@ -31,20 +31,10 @@ demo executable with all samples and Tkenv (with InstallShield)
 libraries & utils compiled with MSVC (with InstallShield)
 
 
-move towards XML
-~~~~~~~~~~~~~~~~
-release NED's XML binding (preliminary DTD already exists)
-find or write suitable DOM library (for parser, use expat)
-move GNED's and NEDC's internal data structure to DOM
-this would enable:
- - easier presentation, importing/exporting of NED files via XML
- - building a model directly from NED or XML, without nedc compilation 
-
-
 improve the simulation core
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 direct support for message subclassing (1st priority but takes time)
-use "generation gap" oo design pattern for the generated code (modules, 
+use "generation gap" oo design pattern for the generated code (modules,
   channels etc).
 proper connection objects
 more flexible connections
@@ -56,35 +46,19 @@ multi-thread simple modules
 
 develop GNED
 ~~~~~~~~~~~~
-GNED's TODO file has a nice list, plus some very remote plans:
-
-support for module/gate vectors, conditional sections and 
-other NED niceties.
-
-turn GNED into a general development IDE: project management
-(automatic makefile creation, running 'make', executing the 
-resulting simulation program etc.)
-
-find out the possibility of integrating GNED with Tkenv 
+see GNED's TODO file...
 
 
-NED, nedc
-~~~~~~~~~
-write white paper about future NED extensions and architecture
+NED II
+~~~~~~
+See NED II draft on web site...
+- OO extensions to NED, message/packet types, more flexible channels etc
+- XML binding for NED
 
-extensions:
- - add inheritance to the NED language. A derived module could add new
-   parameters and gates, give values to parameters, fix gate vector sizes.
-   This would allow NED descriptions to follow simple module inheritance tree.
- - data structure descriptions
- - references to parameters of sibling submods
- - arbitrary parameters for channels 
- - 'generation gap' design pattern
-  - ...
 
 foundations towards a consistent model library
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-conventions for development of protocol models so that 
+conventions for development of protocol models so that
 models models from different people can directly work together:
 message passing conventions, conventions on message parameter names,
 module gate names etc.
@@ -96,12 +70,6 @@ by deriving new simple module classes from them).
 
 add more simulation models
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-most important: TCP and IP models
-
-
-OMNeT++ community
-~~~~~~~~~~~~~~~~~
-maintain FAQ
-set up and maintain a repository for contributed models/utilities
-advertise request for contributions
-
+contact people who showed interest in OMNeT++ & ask them if they'
+maintain a repository for contributed models/utilities
+CVS server for models (Karlsruhe?)
