@@ -307,6 +307,10 @@ if ($screenshots)
         {
            print "see Ghostscript warnings in $outdir/ghostscript.err\n" if $verbose;
         }
+	else
+	{
+	    unlink("$outdir/ghostscript.err");
+	}
 
         # must convert $outdir to absolute path, otherwise xslt will take it
         # as relative to the sylesheet (@#$#@$!!)
@@ -360,6 +364,10 @@ if ($have_dot)
     if (-s "$outdir/dot.err")
     {
        print "see warnings from $DOT in $outdir/dot.err\n" if $verbose;
+    }
+    else
+    {
+	unlink("$outdir/dot.err");
     }
 }
 
