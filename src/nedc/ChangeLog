@@ -1,6 +1,9 @@
 2002-04-06  Andras Varga
 
-	* version number upped to 2.2
+        * jar.c: made text of "version mismatch" #error in generated code
+        more intuitive
+
+       	* jar.c: version number upped to 2.2
 
 2002-04-05  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
