@@ -1,8 +1,9 @@
 #!/usr/bin/wish
 
-puts {Plove - part of the OMNeT++.
+puts {
+Plove - Output vector plotting front-end for Gnuplot, part of the OMNeT++.
 (c) 1992,99 Andras Varga, TU Budapest
-See the license for distribution terms and warranty disclaimer
+See the license for distribution terms and warranty disclaimer.
 }
 
 if [catch {file readlink $argv0} link] {set link ""} 
