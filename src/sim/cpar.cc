@@ -246,7 +246,9 @@ cPar& cPar::setStringValue(char *s)
      deleteold();
      typechar = 'S';
      inputflag=FALSE;
-     if ((ls.sht=(strlen(s)<=SHORTSTR))!=0)
+     if (!s)
+         {ls.sht=true; *ss.str='\0';}
+     else if ((ls.sht=(strlen(s)<=SHORTSTR))!=0)
          opp_strcpy(ss.str, s);
      else
          ls.str = opp_strdup(s);
@@ -498,7 +500,8 @@ char *cPar::stringValue()
     if (typechar=='S')
          return ss.sht ? ss.str : ls.str;
     else
-         {opp_error(eBADCAST,className(),name(),typechar,'S');return NULL;}
+         //{opp_error(eBADCAST,className(),name(),typechar,'S');return NULL;}
+         {opp_error(eBADCAST,className(),fullPath(),typechar,'S');return NULL;}
 }
 
 long cPar::longValue()

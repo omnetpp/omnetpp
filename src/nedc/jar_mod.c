@@ -512,7 +512,7 @@ void do_on_mach(char * maname)  /* --LG */
         }
         if (!is_system)
         {
-            fprintf (tmp,  "%smachines.add( *new cPar = mod->machinePar(\"%s\") );\n",
+            fprintf (tmp,  "%smachines.add( *new cPar() = mod->machinePar(\"%s\") );\n",
                            indent, maname );
         }
         else
@@ -525,7 +525,7 @@ void do_on_mach(char * maname)  /* --LG */
             else
                phys_mach = nl_retr_ith( &machine_list, idx )->parstr;
 
-            fprintf (tmp,  "%smachines.add( *new cPar = \"%s\" );\n",
+            fprintf (tmp,  "%smachines.add( *new cPar() = \"%s\" );\n",
                             indent, phys_mach );
         }
         fprintf (tmp, "%scheck_error(); check_memory();\n\n",
@@ -900,19 +900,19 @@ char *do_channeldescr(char *link_name, char *delay_expr, char *error_expr, char 
         if (delay_expr!=NULL)
         {
             get_expression(delay_expr,tmp,value);
-            fprintf(tmp, "%sdelay_p = new cPar; *delay_p = %s;\n",
+            fprintf(tmp, "%sdelay_p = new cPar(); *delay_p = %s;\n",
                      indent,value);
         }
         if (error_expr!=NULL)
         {
             get_expression(error_expr,tmp,value);
-            fprintf (tmp, "%serror_p = new cPar; *error_p = %s;\n",
+            fprintf (tmp, "%serror_p = new cPar(); *error_p = %s;\n",
                      indent,value);
         }
         if (datarate_expr!=NULL)
         {
             get_expression(datarate_expr,tmp,value);
-            fprintf (tmp, "%sdatarate_p = new cPar; *datarate_p = %s;\n",
+            fprintf (tmp, "%sdatarate_p = new cPar(); *datarate_p = %s;\n",
                      indent,value);
         }
 

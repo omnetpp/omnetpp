@@ -361,7 +361,7 @@ void TOmnetTkApp::callFinish()
     // print banner into main window
     if (opt_use_mainwindow)
          CHK(Tcl_VarEval(interp,
-              ".main.text insert end {** Calling finish() for modules} event\n"
+              ".main.text insert end {** Calling finish() for modules\n} event\n"
               ".main.text see end", NULL));
 
     // should print banner into per module windows too!
