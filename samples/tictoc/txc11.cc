@@ -37,37 +37,6 @@ class Txc11 : public cSimpleModule
 
 Define_Module(Txc11);
 
-TicTocMsg11 *Txc11::generateMessage()
-{
-    // Produce source and destination addresses.
-    int src = index();   // our module index
-    int n = size();      // module vector size
-    int dest = intuniform(0,n-2);
-    if (dest>=src) dest++;
-
-    char msgname[20];
-    sprintf(msgname, "tic-%d-to-%d", src, dest);
-
-    // Create message object and set source and destination field.
-    TicTocMsg11 *msg = new TicTocMsg11(msgname);
-    msg->setSource(src);
-    msg->setDestination(dest);
-    return msg;
-}
-
-void Txc11::forwardMessage(TicTocMsg11 *msg)
-{
-    // Increment hop count.
-    msg->setHopCount(msg->getHopCount()+1);
-
-    // Same routing as before: random gate.
-    int n = gate("out")->size();
-    int k = intuniform(0,n-1);
-
-    ev << "Forwarding message " << msg << " on port out[" << k << "]\n";
-    send(msg, "out", k);
-}
-
 void Txc11::initialize()
 {
     // Initialize variables
@@ -113,6 +82,37 @@ void Txc11::handleMessage(cMessage *msg)
         // We need to forward the message.
         forwardMessage(ttmsg);
     }
+}
+
+TicTocMsg11 *Txc11::generateMessage()
+{
+    // Produce source and destination addresses.
+    int src = index();   // our module index
+    int n = size();      // module vector size
+    int dest = intuniform(0,n-2);
+    if (dest>=src) dest++;
+
+    char msgname[20];
+    sprintf(msgname, "tic-%d-to-%d", src, dest);
+
+    // Create message object and set source and destination field.
+    TicTocMsg11 *msg = new TicTocMsg11(msgname);
+    msg->setSource(src);
+    msg->setDestination(dest);
+    return msg;
+}
+
+void Txc11::forwardMessage(TicTocMsg11 *msg)
+{
+    // Increment hop count.
+    msg->setHopCount(msg->getHopCount()+1);
+
+    // Same routing as before: random gate.
+    int n = gate("out")->size();
+    int k = intuniform(0,n-1);
+
+    ev << "Forwarding message " << msg << " on port out[" << k << "]\n";
+    send(msg, "out", k);
 }
 
 void Txc11::updateDisplay()

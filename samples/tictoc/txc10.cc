@@ -45,37 +45,6 @@ class Txc10 : public cSimpleModule
 
 Define_Module(Txc10);
 
-TicTocMsg10 *Txc10::generateMessage()
-{
-    // Produce source and destination addresses.
-    int src = index();   // our module index
-    int n = size();      // module vector size
-    int dest = intuniform(0,n-2);
-    if (dest>=src) dest++;
-
-    char msgname[20];
-    sprintf(msgname, "tic-%d-to-%d", src, dest);
-
-    // Create message object and set source and destination field.
-    TicTocMsg10 *msg = new TicTocMsg10(msgname);
-    msg->setSource(src);
-    msg->setDestination(dest);
-    return msg;
-}
-
-void Txc10::forwardMessage(TicTocMsg10 *msg)
-{
-    // Increment hop count.
-    msg->setHopCount(msg->getHopCount()+1);
-
-    // Same routing as before: random gate.
-    int n = gate("out")->size();
-    int k = intuniform(0,n-1);
-
-    ev << "Forwarding message " << msg << " on port out[" << k << "]\n";
-    send(msg, "out", k);
-}
-
 void Txc10::initialize()
 {
     // Module 0 sends the first message
@@ -109,5 +78,36 @@ void Txc10::handleMessage(cMessage *msg)
         // We need to forward the message.
         forwardMessage(ttmsg);
     }
+}
+
+TicTocMsg10 *Txc10::generateMessage()
+{
+    // Produce source and destination addresses.
+    int src = index();   // our module index
+    int n = size();      // module vector size
+    int dest = intuniform(0,n-2);
+    if (dest>=src) dest++;
+
+    char msgname[20];
+    sprintf(msgname, "tic-%d-to-%d", src, dest);
+
+    // Create message object and set source and destination field.
+    TicTocMsg10 *msg = new TicTocMsg10(msgname);
+    msg->setSource(src);
+    msg->setDestination(dest);
+    return msg;
+}
+
+void Txc10::forwardMessage(TicTocMsg10 *msg)
+{
+    // Increment hop count.
+    msg->setHopCount(msg->getHopCount()+1);
+
+    // Same routing as before: random gate.
+    int n = gate("out")->size();
+    int k = intuniform(0,n-1);
+
+    ev << "Forwarding message " << msg << " on port out[" << k << "]\n";
+    send(msg, "out", k);
 }
 
