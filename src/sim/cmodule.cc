@@ -55,6 +55,7 @@ cModule::cModule(const cModule& mod) : cObject(),
     take( &members );
 
     idx=0; vectsize=-1;
+    fullname = NULL;
 
     setName(mod.name());
     operator=(mod);
@@ -75,11 +76,17 @@ cModule::cModule(const char *name, cModule *parentmod) :
     warn = true;
     parentmodp = parentmod;
     idx=0; vectsize=-1;
+    fullname = NULL;
 
     notify_inspector = NULL;
     data_for_inspector = NULL;
 
     /* cModuleType::create() call will create gates, params and machines */
+}
+
+cModule::~cModule()
+{
+    delete [] fullname;
 }
 
 cModule& cModule::operator=(const cModule&)
@@ -119,17 +126,24 @@ void cModule::setModuleType(cModuleType *mtype)
 
 const char *cModule::fullName() const
 {
-    static char buf[256];
+    // if not in a vector, normal name() will do
     if (!isVector())
        return name();
-    else
-    {
-       sprintf(buf, "%s[%d]", name(), index() );
-       return buf;
-    }
+
+    // produce index with name here (lazy solution: produce name in each call,
+    // instead of overriding both setName() and setIndex()...)
+    if (fullname)  delete [] fullname;
+    fullname = new char[opp_strlen(name())+10];
+    sprintf(fullname, "%s[%d]", name(), index() );
+    return fullname;
 }
 
-const char *cModule::fullPath2(char *buffer, int bufsize) const
+const char *cModule::fullPath() const
+{
+    return fullPath(fullpathbuf,FULLPATHBUF_SIZE);
+}
+
+const char *cModule::fullPath(char *buffer, int bufsize) const
 {
     // check we got a decent buffer
     if (!buffer || bufsize<4)
@@ -143,7 +157,7 @@ const char *cModule::fullPath2(char *buffer, int bufsize) const
     char *buf = buffer;
     if (parentmodp!=NULL)
     {
-       parentmodp->fullPath2(buf,bufsize);
+       parentmodp->fullPath(buf,bufsize);
        int len = strlen(buf);
        buf+=len;
        bufsize-=len;

@@ -5,7 +5,6 @@
 //              Discrete System Simulation in C++
 //
 //   Member functions of
-//    cOutFileMgr        : manages output files
 //    cOutVector         : represents a vector in the output file
 //
 //   Original version:  Gabor Lencse
@@ -33,7 +32,7 @@ cOutVector::cOutVector(const char *name, int tupl) : cObject(name)
 {
     enabled = true;
     handle = NULL;
-    num_recorded = 0;
+    num_received = 0;
     num_stored = 0;
     record_in_inspector = NULL;
     tuple = tupl;
@@ -44,25 +43,29 @@ cOutVector::cOutVector(const char *name, int tupl) : cObject(name)
         opp_error("(%s)%s: constructor: invalid value (%d) for tuple; supported values are 1 and 2", className(), fullPath(), tupl);
         return;
     }
-
-    handle = ev.registerOutputVector(simulation.contextModule()->fullPath(), name, tuple);
 }
 
 cOutVector::~cOutVector()
 {
-    ev.deregisterOutputVector(handle);
+    if (handle)
+        ev.deregisterOutputVector(handle);
 }
 
 void cOutVector::setName(const char *name)
 {
-    opp_error("(%s)%s: setName(): changing name of an output vector after creation is not supported", className(), fullPath());
+    if (handle)
+        {opp_error("(%s)%s: setName(): changing name of an output vector after record() calls is not allowed", className(), fullPath());return;}
+    cObject::setName(name);
     return;
 }
 
 void cOutVector::info(char *buf)
 {
     cObject::info(buf);
-    sprintf( buf+strlen(buf), " (received %ld values, stored %ld)", num_recorded, num_stored);
+    if (handle)
+        sprintf( buf+strlen(buf), " (received %ld values, stored %ld)", num_received, num_stored);
+    else
+        sprintf( buf+strlen(buf), " (no values recorded yet)");
 }
 
 bool cOutVector::record(double value)
@@ -71,6 +74,8 @@ bool cOutVector::record(double value)
     if (tuple!=1)
         {opp_error(eNUMARGS,className(),fullPath(),1);return false;}
 
+    num_received++;
+
     // pass data to inspector
     if (record_in_inspector)
         record_in_inspector(data_for_inspector,value,0.0);
@@ -78,8 +83,11 @@ bool cOutVector::record(double value)
     if (!enabled)
         return false;
 
+    // initialize if not yet done
+    if (!handle)
+        handle = ev.registerOutputVector(simulation.contextModule()->fullPath(), name(), tuple);
+
     // pass data to envir for storage
-    num_recorded++;
     bool stored = ev.recordInOutputVector(handle, simulation.simTime(), value);
     if (stored) num_stored++;
     return stored;
@@ -91,6 +99,8 @@ bool cOutVector::record(double value1, double value2)
     if (tuple!=2)
         {opp_error(eNUMARGS,className(),fullPath(),2);return false;}
 
+    num_received++;
+
     // pass data to inspector
     if (record_in_inspector)
         record_in_inspector(data_for_inspector,value1,value2);
@@ -98,8 +108,11 @@ bool cOutVector::record(double value1, double value2)
     if (!enabled)
         return false;
 
+    // initialize if not yet done
+    if (!handle)
+        handle = ev.registerOutputVector(simulation.contextModule()->fullPath(), name(), tuple);
+
     // pass data to envir for storage
-    num_recorded++;
     bool stored = ev.recordInOutputVector(handle, simulation.simTime(), value1, value2);
     if (stored) num_stored++;
     return stored;

@@ -297,7 +297,7 @@ bool cCoroutine::setup( CoroutineFnp fnp, void *arg, unsigned stack_size )
     return task!=NULL;
 }
 
-void cCoroutine::free()
+void cCoroutine::destroy()
 {
     task_free(task);
     task = NULL;
@@ -418,12 +418,12 @@ bool cCoroutine::setup( CoroutineFnp _fnp, void *_arg, unsigned _stack_size )
 
 cCoroutine::~cCoroutine()
 {
-    free();
+    destroy();
 }
 
-void cCoroutine::free()
+void cCoroutine::destroy()
 {
-    if (stack) delete stack;
+    if (stack) delete [] stack;
     stack = NULL;
     stack_size = 0;
 }
@@ -432,7 +432,7 @@ cCoroutine& cCoroutine::operator=(const cCoroutine& cor)
 {
     if (this==&cor) return *this;
 
-    if (stack) delete stack;
+    if (stack) delete [] stack;
     setup( cor.fnp, cor.arg, cor.stack_size );
     return *this;
 }

@@ -1,3 +1,15 @@
+2002-03-04  Andras Varga
+
+	* cObject::free(cObject *) renamed to dealloc() throughout to avoid
+        misunderstandings
+
+	* coutvect.cc: vector registration made on-demand to allow initial
+        setName() calls
+
+        * cobject.cc, cmodule.cc, cgate.cc, cpar.cc, csimul.cc: fullPath2()
+        renamed to fullPath(); see include/ChangeLog for details. fullName()
+        methods in cGate and cModule also changed (no longer use static buffer).
+
 2002-03-03  Andras Varga
 
 	* several delete operators replaced with delete []. [suggestion by

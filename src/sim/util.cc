@@ -433,6 +433,12 @@ bool opp_strmatch(const char *s1, const char *s2)
     }
 }
 
+int opp_strlen(const char *s)
+{
+    if (!s) return 0;
+    return strlen(s);
+}
+
 char *opp_concat(const char *s1,
                  const char *s2,
                  const char *s3,

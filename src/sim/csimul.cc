@@ -135,7 +135,12 @@ void cSimulation::forEach( ForeachFunc do_fn )
     do_fn(this,false);
 }
 
-const char *cSimulation::fullPath2(char *buffer, int bufsize) const
+const char *cSimulation::fullPath() const
+{
+    return fullPath(fullpathbuf,FULLPATHBUF_SIZE);
+}
+
+const char *cSimulation::fullPath(char *buffer, int bufsize) const
 {
     // check we got a decent buffer
     if (!buffer || bufsize<4)

@@ -89,7 +89,7 @@ void cPar::deleteold()
     else if (typechar=='T')
     {
         if (dtr.res->owner()==this)
-            free( dtr.res );
+            dealloc( dtr.res );
     }
     else if (typechar=='P')
     {
@@ -104,13 +104,13 @@ void cPar::deleteold()
     else if (typechar=='O')
     {
         if (obj.obj->owner()==this)
-            free( obj.obj );
+            dealloc( obj.obj );
     }
     else if (typechar=='X')
     {
         for(int i=0; i<expr.n; i++)
             if (expr.xelem[i].type=='R')  // should be ours
-                free( expr.xelem[i].p );
+                dealloc( expr.xelem[i].p );
         delete [] expr.xelem;
     }
     typechar = 'L';
@@ -1161,7 +1161,12 @@ cModulePar::~cModulePar()
 
 // other member functions
 
-const char *cModulePar::fullPath2(char *buffer, int bufsize) const
+const char *cModulePar::fullPath() const
+{
+    return fullPath(fullpathbuf,FULLPATHBUF_SIZE);
+}
+
+const char *cModulePar::fullPath(char *buffer, int bufsize) const
 {
     // check we got a decent buffer
     if (!buffer || bufsize<4)
@@ -1175,7 +1180,7 @@ const char *cModulePar::fullPath2(char *buffer, int bufsize) const
     char *buf = buffer;
     if (omodp!=NULL)
     {
-       omodp->fullPath2(buf,bufsize);
+       omodp->fullPath(buf,bufsize);
        int len = strlen(buf);
        buf+=len;
        bufsize-=len;

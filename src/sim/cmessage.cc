@@ -140,7 +140,7 @@ cMessage& cMessage::operator=(const cMessage& msg)
         parlistp = msg.parlistp;
 
     if (encapmsg && encapmsg->owner()==this)
-        free( encapmsg );
+        dealloc( encapmsg );
     if (msg.encapmsg && msg.encapmsg->owner()==const_cast<cMessage*>(&msg))
         take( encapmsg = (cMessage *)msg.encapmsg->dup() );
     else

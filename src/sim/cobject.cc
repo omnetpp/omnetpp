@@ -46,6 +46,9 @@ Register_Class( cObject )
 static bool _do_find(cObject *obj, bool beg, const char *objname, cObject *&p, bool deep);
 static bool _do_list(cObject *obj, bool beg, ostream& s);
 
+char cObject::fullpathbuf[FULLPATHBUF_SIZE];
+
+
 /*--------------------------------------------------------------*\
 
    Object ownership/contains relationships:
@@ -65,11 +68,11 @@ static bool _do_list(cObject *obj, bool beg, ostream& s);
       - an object created thru the copy constructor:
           - will have the same owner as original;
           - does not dup() or take objects owned by the original.
-      - destructor calls free() for owned objects (see later).
+      - destructor calls dealloc() for owned objects (see later).
    Objects contained as data members:
       the enclosing object should own them.
    What container objects derived from cObject should do:
-      - they use the functions: take(obj), drop(obj), free(obj)
+      - they use the functions: take(obj), drop(obj), dealloc(obj)
       - when an object is inserted, if takeOwnership() is true, should
         take ownership of object by calling take(obj).
         TAKEOWNERSHIP() DEFAULTS TO true.
@@ -77,7 +80,7 @@ static bool _do_list(cObject *obj, bool beg, ostream& s);
         they were the owner.
       - copy constructor copies should dup() and take ownership of objects
         that were owned by the original.
-      - destructor doesn't need not call free() for objects: this will be
+      - destructor doesn't need not call dealloc() for objects: this will be
         done in cObject's destructor.
    cHead:
       special case: behaves as a container, displaying objects it owns as
@@ -144,7 +147,7 @@ cObject::~cObject()
 
     /* delete owned objects */
     while (firstchildp!=NULL)
-        free( firstchildp );
+        dealloc( firstchildp );
     ev.objectDeleted( this );
 }
 
@@ -234,11 +237,10 @@ void cObject::destructChildren()
 
 const char *cObject::fullPath() const
 {
-    static char buf[1024];
-    return fullPath2(buf,1024);
+    return fullPath(fullpathbuf,FULLPATHBUF_SIZE);
 }
 
-const char *cObject::fullPath2(char *buffer, int bufsize) const
+const char *cObject::fullPath(char *buffer, int bufsize) const
 {
     // check we got a decent buffer
     if (!buffer || bufsize<4)
@@ -251,7 +253,7 @@ const char *cObject::fullPath2(char *buffer, int bufsize) const
     char *buf = buffer;
     if (owner()!=NULL)
     {
-       owner()->fullPath2(buf,bufsize);
+       owner()->fullPath(buf,bufsize);
        int len = strlen(buf);
        buf+=len;
        bufsize-=len;

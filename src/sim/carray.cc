@@ -294,7 +294,7 @@ void cArray::clear()
     for (int i=0; i<=last; i++)
     {
         if (vect[i] && vect[i]->owner()==this)
-           free( vect[i] );
+           dealloc( vect[i] );
         vect[i] = NULL;  // this is not strictly necessary
     }
     firstfree = 0;

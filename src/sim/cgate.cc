@@ -37,6 +37,8 @@
 
 cGate::cGate(const cGate& gate) : cObject()
 {
+    fullname = NULL;
+
     linkp = NULL;
     delayp = errorp = dataratep = NULL;
 
@@ -51,6 +53,8 @@ cGate::cGate(const cGate& gate) : cObject()
 
 cGate::cGate(const char *s, char tp) : cObject(s)
 {
+    fullname = NULL;
+
     fromgatep = togatep = NULL;
     typ = tp;
 
@@ -68,6 +72,11 @@ cGate::cGate(const char *s, char tp) : cObject(s)
     data_for_inspector = NULL;
 
     takeOwnership( false );
+}
+
+cGate::~cGate()
+{
+    delete [] fullname;
 }
 
 void cGate::forEach(ForeachFunc do_fn)
@@ -111,16 +120,24 @@ cGate& cGate::operator=(const cGate& gate)
 
 const char *cGate::fullName() const
 {
-      static char buf[256];
-      if (!isVector())
-         return name();
-      else {
-         sprintf(buf, "%s[%d]", name(), index() );
-         return buf;
-      }
+    // if not in a vector, normal name() will do
+    if (!isVector())
+       return name();
+
+    // produce index with name here (lazy solution: produce name in each call,
+    // instead of overriding both setName() and setIndex()...)
+    if (fullname)  delete [] fullname;
+    fullname = new char[opp_strlen(name())+10];
+    sprintf(fullname, "%s[%d]", name(), index() );
+    return fullname;
 }
 
-const char *cGate::fullPath2(char *buffer, int bufsize) const
+const char *cGate::fullPath() const
+{
+    return fullPath(fullpathbuf,FULLPATHBUF_SIZE);
+}
+
+const char *cGate::fullPath(char *buffer, int bufsize) const
 {
      // check we got a decent buffer
      if (!buffer || bufsize<4)
@@ -134,7 +151,7 @@ const char *cGate::fullPath2(char *buffer, int bufsize) const
      char *buf = buffer;
      if (omodp!=NULL)
      {
-        omodp->fullPath2(buf,bufsize);
+        omodp->fullPath(buf,bufsize);
         int len = strlen(buf);
         buf+=len;
         bufsize-=len;
@@ -261,21 +278,21 @@ void cGate::setLink(cLinkType *lnk)
 
 void cGate::setDelay(cPar *p)
 {
-      if (delayp && delayp->owner()==this)  free( delayp );
+      if (delayp && delayp->owner()==this)  dealloc( delayp );
       delayp = p;
       if (delayp && takeOwnership()) take( delayp );
 }
 
 void cGate::setError(cPar *p)
 {
-      if (errorp && errorp->owner()==this)  free( errorp );
+      if (errorp && errorp->owner()==this)  dealloc( errorp );
       errorp = p;
       if (errorp && takeOwnership()) take( errorp );
 }
 
 void cGate::setDataRate(cPar *p)
 {
-      if (dataratep && dataratep->owner()==this)  free( dataratep );
+      if (dataratep && dataratep->owner()==this)  dealloc( dataratep );
       dataratep = p;
       if (dataratep && takeOwnership()) take( dataratep );
 }

@@ -114,7 +114,7 @@ void cMessageHeap::clear()
 {
     for (int i=1; i<=n; i++)
         if (h[i] && h[i]->owner()==this)
-            {h[i]->heapindex=-1; free(h[i]);}
+            {h[i]->heapindex=-1; dealloc(h[i]);}
     n=0;
 }
 

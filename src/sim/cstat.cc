@@ -63,8 +63,8 @@ cStatistic& cStatistic::operator=(const cStatistic& res)   //--VA
 
     cObject::operator=( res );
     genk = res.genk;
-    if (td && td->owner()==this)  free(td);
-    if (ra && ra->owner()==this)  free(ra);
+    if (td && td->owner()==this)  dealloc(td);
+    if (ra && ra->owner()==this)  dealloc(ra);
     td = res.td;
     if (td && td->owner()==const_cast<cStatistic*>(&res))
         take( td = (cTransientDetection *)td->dup() );
