@@ -26,6 +26,7 @@ OBJS=ebnf.tab.o lex.yy.o jar.o jar_lib.o jar_mod.o jar_expr.o jar_mem.o
 # Targets
 #
 all: nedc nedtool
+	chmod +x opp_msgc
 	cp opp_msgc $(OMNETPP_BIN_DIR)
 
 nedtool: main.o
