@@ -1,3 +1,7 @@
+2004-01-06  Andras Varga
+
+	* cmdenv.h: added isGUI()
+
 2003-12-11  Andras Varga
 
 	* all files: follow changes in sim/; C-style casts replaced with 

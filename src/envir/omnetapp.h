@@ -182,6 +182,7 @@ class ENVIR_API TOmnetApp
      * Default versions use standard I/O.
      */
     //@{
+    virtual bool isGUI() = 0;
     virtual void putmsg(const char *s) = 0;
     virtual void puts(const char *s) = 0;
     virtual void flush() = 0;

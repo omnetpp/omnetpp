@@ -201,6 +201,7 @@ void cEnvir::setup(int argc, char *argv[])
         ::printf("Setting up %s...\n", appreg->description());
         app = appreg->createOne(args, ini_file);
         app->setup();
+        isgui = app->isGUI();
     }
     catch (cException *e)
     {
