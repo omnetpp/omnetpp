@@ -37,7 +37,10 @@ using std::ios;
 
 Register_Class(cFileOutputVectorManager);
 
-#define CHECK(fprintf)    if (fprintf<0) throw new cRuntimeError(eOUTVECT)
+#ifdef CHECK
+#undef CHECK
+#endif
+#define CHECK(fprintf)    if (fprintf<0) throw new cRuntimeError("Cannot write output vector file `%s'", fname.c_str())
 
 // helper function
 static void createFileName(opp_string& fname, int run_no, const char *configentry, const char *defaultval)
@@ -50,6 +53,11 @@ static void createFileName(opp_string& fname, int run_no, const char *configentr
     ev.app->processFileName(fname);
 }
 
+static void removeFile(const char *fname, const char *descr)
+{
+    if (unlink(fname)!=0 && errno!=ENOENT)
+        throw new cRuntimeError("Cannot remove %s `%s': %s", descr, fname, strerror(errno));
+}
 
 cFileOutputVectorManager::cFileOutputVectorManager()
 {
@@ -96,7 +104,7 @@ void cFileOutputVectorManager::startRun()
     // clean up file from previous runs
     closeFile();
     createFileName(fname, simulation.runNumber(), "output-vector-file", "omnetpp.vec");
-    remove(fname.c_str());
+    removeFile(fname.c_str(), "old output vector file");
 }
 
 void cFileOutputVectorManager::endRun()
@@ -141,7 +149,7 @@ bool cFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double va
         if (!vp->initialised)
             initVector(vp);
         assert(f!=NULL);
-        CHECK(fprintf(f,"%ld\t%.9g\t%.9g\n",vp->id, t, value));
+        CHECK(fprintf(f,"%ld\t%.9g\t%.9g\n", vp->id, t, value));
         return true;
     }
     return false;
@@ -175,7 +183,10 @@ const char *cFileOutputVectorManager::fileName() const
 
 Register_Class(cFileOutputScalarManager);
 
-#define CHECK(fprintf)    if (fprintf<0) throw new cRuntimeError(eOUTVECT)
+#ifdef CHECK
+#undef CHECK
+#endif
+#define CHECK(fprintf)    if (fprintf<0) throw new cRuntimeError("Cannot write output scalar file `%s'", fname.c_str())
 
 cFileOutputScalarManager::cFileOutputScalarManager()
 {
@@ -227,7 +238,7 @@ void cFileOutputScalarManager::init()
     if (!initialized)
     {
         initialized = true;
-        fprintf(f,"run %d \"%s\"\n", simulation.runNumber(), simulation.networkType()->name());
+        CHECK(fprintf(f,"run %d \"%s\"\n", simulation.runNumber(), simulation.networkType()->name()));
     }
 }
 
@@ -238,7 +249,7 @@ void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, d
 
     if (!f) return;
 
-    fprintf(f,"scalar \"%s\" \t\"%s\" \t%.9g\n", module->fullPath().c_str(), name? name : "(null)", value);
+    CHECK(fprintf(f,"scalar \"%s\" \t\"%s\" \t%.9g\n", module->fullPath().c_str(), name ? name : "(null)", value));
 }
 
 const char *cFileOutputScalarManager::fileName() const
@@ -262,7 +273,7 @@ void cFileSnapshotManager::startRun()
 {
     // clean up file from previous runs
     createFileName(fname, simulation.runNumber(), "snapshot-file", "omnetpp.sna");
-    remove(fname.c_str());
+    removeFile(fname.c_str(), "old snapshot file");
 }
 
 void cFileSnapshotManager::endRun()

@@ -3,6 +3,9 @@
 	* cinifile.cc: fix: getAsFilenames() crashed if ini file entry is was ""
 	[reported by Tom Parker]
 
+	* filemgrs.cc: throw error when output vector file from previous run
+	cannot be removed
+
 2005-03-31  ------ omnetpp-3.1 released ------
 
 2005-03-22  Andras Varga
