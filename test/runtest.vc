@@ -1,0 +1,20 @@
+#! /bin/sh
+# 
+# usage: runtest [<testfile>...]
+# without args, runs all *.test files in the current directory   
+#
+TESTFILES=$*
+if [ "x$TESTFILES" = "x" ]; then TESTFILES='*.test'; fi
+if [ ! -d work ];  then mkdir work; fi
+perl ../bin/opp_test -g -v $TESTFILES || exit 1
+echo
+(
+cd work && \
+perl ../../src/utils/opp_makemake_vc.pl -f -e cc -u cmdenv && \
+cmd /c "..\\make_vc.bat"
+# cmd /c "call ..\\vcvars32.bat && nmake -f makefile.vc" -- this doesn't work for some reason
+) || exit 1
+echo
+perl ../bin/opp_test -r -v $TESTFILES || exit 1
+echo
+echo Results can be found in ./work
