@@ -27,6 +27,7 @@ for i in `find . -name ChangeLog`; do
     echo $line >> /tmp/xxx
     sed "/^$/d" /tmp/xxx > $i
 done
+cvs commit -m "--$relname released-- line added to ChangeLog by omnetpp/_tag"
 
 # enter tag into CVS (move tag if exists)
 echo $relname > Version
