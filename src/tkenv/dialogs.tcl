@@ -263,7 +263,7 @@ proc options_dialog {} {
     $w.f.f3.methdelay.e config -length 200 -from 0 -to 3000 -resolution 1 -variable opp(methdelay)
     checkbutton $w.f.f3.msgnam -text {Display Message names during animation} -variable opp(msgnam)
     checkbutton $w.f.f3.msgcol -text {Color coding by message kind} -variable opp(msgcol)
-    commentlabel $w.f.f3.c {Color code (message->kind() mod 7):
+    commentlabel $w.f.f3.c {Color code (message->kind() mod 8):
      0=red 1=green 2=blue 3=white
      4=yellow 5=cyan 6=magenta 7=black}
     checkbutton $w.f.f3.penguin -text {Penguin mode} -variable opp(penguin)
