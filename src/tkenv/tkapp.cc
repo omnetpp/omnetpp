@@ -450,6 +450,16 @@ bool TOmnetTkApp::doRunSimulationExpress()
     //
     // EXPRESS does not support rununtil_module!
     //
+    if (opt_use_mainwindow)
+         CHK(Tcl_VarEval(interp,
+              ".main.text insert end {...running in Express mode...\n} event\n"
+              ".main.text see end", NULL));
+
+    // should print banner into per module windows too!
+    // TO BE IMPLEMENTED
+
+
+
     Speedometer speedometer;
     ev.disable_tracing = true;
     animating = false;

@@ -265,7 +265,7 @@ void cSimpleChannel::setError(double d)
 {
     if (!errorp)
     {
-        delayp = new cPar("error");
+        errorp = new cPar("error");
         _parList().set(errorp);
     }
     errorp->setDoubleValue(d);
@@ -275,7 +275,7 @@ void cSimpleChannel::setDatarate(double d)
 {
     if (!dataratep)
     {
-        delayp = new cPar("datarate");
+        dataratep = new cPar("datarate");
         _parList().set(dataratep);
     }
     dataratep->setDoubleValue(d);

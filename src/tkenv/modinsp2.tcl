@@ -529,8 +529,8 @@ proc create_graphicalmodwindow {name geom} {
     set help_tips($w.toolbar.ascont)  {Inspect as object}
     set help_tips($w.toolbar.win)     {See module output}
     set help_tips($w.toolbar.parent)  {Inspect parent module}
-    set help_tips($w.toolbar.mrun)    {Run until next local event}
-    set help_tips($w.toolbar.mfast)   {Fast run until next local event (Ctrl-F4)}
+    set help_tips($w.toolbar.mrun)    {Run until next event in this module}
+    set help_tips($w.toolbar.mfast)   {Fast run until next event in this module (Ctrl-F4)}
     set help_tips($w.toolbar.stop)    {Stop running simulation (F8)}
     set help_tips($w.toolbar.redraw)  {Re-layout}
     set help_tips($w.toolbar.animspeed) {Animation speed -- see Options dialog}
