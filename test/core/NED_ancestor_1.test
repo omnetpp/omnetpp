@@ -1,0 +1,62 @@
+%description:
+Test parameters taken by the "ancestor" operator
+
+%file: {}.ned
+
+module {Foo}
+endmodule
+
+simple {Simple}
+   parameters:
+      p;
+endsimple
+
+module {Mid1}
+    submodules:
+        a: {Simple};
+            parameters:
+                p = ancestor par;
+endmodule
+
+module {Mid2}
+    submodules:
+        a: {Mid1};
+endmodule
+
+module {Mid3}
+    submodules:
+        a: {Mid2};
+endmodule
+
+module {Top}
+    parameters:
+        par;
+    submodules:
+        a: {Mid2};
+endmodule
+
+network {network}: {Top}
+    parameters:
+        par = 100;
+endnetwork
+
+%file: {}.cc
+
+#include <omnetpp.h>
+
+class {Simple} : public cSimpleModule
+{
+    Module_Class_Members({Simple},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Simple});
+
+void {Simple}::activity()
+{
+    ev << par("p").name() << "=" << (double)par("p") << endl;
+}
+
+%contains: stdout
+p=100
+
