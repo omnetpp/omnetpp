@@ -28,7 +28,7 @@ components: libs progs install-local samples
 #
 #=====================================================================
 
-LIBS=sim envir cmdenv tkenv tvenv
+LIBS=sim envir cmdenv tkenv
 PROGS=utils nedc gned plove
 SAMPLES=dyna fddi fifo1 fifo2 hcube hist nim pvmex token demo
 
@@ -56,10 +56,6 @@ cmdenv:
 
 tkenv:
 	cd $(OMNETPP_SRC_DIR)/tkenv && $(MAKE)
-
-tvenv:
-	cd $(OMNETPP_SRC_DIR)/tvenv && $(MAKE)
-
 
 #
 # Programs

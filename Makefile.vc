@@ -7,7 +7,7 @@
 #
 # Directories
 #
-!include configuser.vc
+include configuser.vc
 
 MAKEFILE=/F Makefile.vc
 
@@ -30,7 +30,6 @@ components: libs progs install-local samples
 #=====================================================================
 
 LIBS=sim envir cmdenv tkenv
-# tvenv removed
 PROGS=utils nedc gned plove
 SAMPLES=dyna fddi fifo1 fifo2 hcube hist nim pvmex token demo
 
@@ -58,10 +57,6 @@ cmdenv:
 
 tkenv:
 	cd /d $(OMNETPP_SRC_DIR:/=\)\tkenv && $(MAKE) $(MAKEFILE)
-
-tvenv:
-	cd /d $(OMNETPP_SRC_DIR:/=\)\tvenv && $(MAKE) $(MAKEFILE)
-
 
 #
 # Programs
