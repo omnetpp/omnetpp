@@ -44,7 +44,7 @@ proc regexp_to_stringmatch {expr} {
     return $expr
 }
 
-proc focusOnPanel {n} {
+proc focusToPanel {n} {
     global g;
     if {$n=="1"} {
         focus $g(listbox1)
@@ -226,6 +226,7 @@ proc moveVectors {fr to} {
             $g(listbox$fr) delete $i
         }
     }
+    focusToPanel $to
     status 1
     status 2
 }
@@ -242,7 +243,9 @@ proc copyVectors {fr to} {
             set id [lindex [$g(listbox$fr) get $v] end]
             dupVector $id $to
         }
+        $g(listbox$fr) selection clear 0 end
     }
+    focusToPanel $to
     status 1
     status 2
 }

@@ -95,10 +95,28 @@ proc savePicture {} {
     # create dialog with OK and Cancel buttons
     createOkCancelDialog .ize "Save picture"
 
+    set termlist {
+        {postscript eps color}
+        {latex courier 10}
+        {latex roman 12}
+        {emtex courier 10}
+        {emtex roman 12}
+        {gif transparent small size 200, 150}
+        {gif transparent medium size 640,480}
+        {gif transparent large size 1000,750}
+        {png small monochrome}
+        {png small gray}
+        {png small color}
+        {png medium monochrome}
+        {png medium gray}
+        {png medium color}
+    }
+
     # add entry fields and focus on first one
     frame .ize.f.f1 -relief groove -border 2
-    label-entry .ize.f.f1.term "set terminal:" $gp(picterm)
-    commentlabel .ize.f.f1.c "Type 'set term' in gnuplot to see options available in your gnuplot."
+    label-combo .ize.f.f1.term "set terminal:" $termlist $gp(picterm)
+    commentlabel .ize.f.f1.c "The above are only some of the possible Gnuplot outputs. Type 'set term', 'help postscript', 'help latex' or 'help gif', etc in Gnuplot to explore options available in your copy of Gnuplot."
+    commentlabel .ize.f.f1.c2 "On Windows, you may also use the clipboard instead of this dialog -- try the Options|Copy to Clipboard item in the system menu of the main Gnuplot window, then pasting it into Word."
 
     frame .ize.f.f2 -relief groove -border 2
     label-entry .ize.f.f2.fname "File name:" $gp(picfile)
@@ -107,6 +125,7 @@ proc savePicture {} {
     pack .ize.f.f1 .ize.f.f2 -anchor center -expand 1 -fill x -side top
     pack .ize.f.f1.term -anchor center -expand 1 -fill x -side top
     pack .ize.f.f1.c -anchor center -expand 0 -fill x -side top
+    pack .ize.f.f1.c2 -anchor center -expand 0 -fill x -side top
     pack .ize.f.f2.fname -anchor n -expand 1 -fill x -side left
     pack .ize.f.f2.but -anchor n -expand 0 -fill none -side right
     focus .ize.f.f2.fname.e

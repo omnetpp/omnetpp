@@ -368,7 +368,7 @@ proc createMainArea {w} {
     bind .            <Escape>      {.left_popup unpost; .right_popup unpost}
     bind $g(listbox1) <Any-Key>     {after 1 {status 1}}
     bind $g(listbox1) <Any-ButtonRelease>  {status 1}
-    bind $g(listbox1) <Tab>         {after 1 {focusOnPanel 2}}
+    bind $g(listbox1) <Tab>         {after 1 {focusToPanel 2}}
     bind $g(listbox1) <Return>      {moveOrCopyVectors 1 2}
     bind $g(listbox1) <Delete>      {delVectors 1}
     bind $g(listbox1) *             {invertSelection 1}
@@ -380,14 +380,14 @@ proc createMainArea {w} {
     bind $g(listbox1) <F5>          {copyVectors 1 2}
     bind $g(listbox1) <F6>          {moveVectors 1 2}
     bind $g(listbox1) <F8>          {delVectors 1}
-    bind $g(listbox1) <1>           {focusOnPanel 1}
-    bind $g(listbox1) <Double-1>    {focusOnPanel 1; moveOrCopyVectors 1 2}
-    bind $g(listbox1) <3>           {focusOnPanel 1; $g(listbox1) activate @%x,%y; .left_popup post %X %Y}
+    bind $g(listbox1) <1>           {focusToPanel 1}
+    bind $g(listbox1) <Double-1>    {focusToPanel 1; moveOrCopyVectors 1 2}
+    bind $g(listbox1) <3>           {focusToPanel 1; $g(listbox1) activate @%x,%y; .left_popup post %X %Y}
 
     bind $g(listbox2) <Any-Key>     {after 1 {status 2}}
     bind $g(listbox2) <Any-ButtonRelease>  {status 2}
     bind $g(listbox2) <Return>      {doPlot}
-    bind $g(listbox2) <Tab>         {after 1 {focusOnPanel 1}}
+    bind $g(listbox2) <Tab>         {after 1 {focusToPanel 1}}
     bind $g(listbox2) <Delete>      {delVectors 2}
     bind $g(listbox2) *             {invertSelection 2}
     bind $g(listbox2) +             {selectVectors 2}
@@ -398,13 +398,13 @@ proc createMainArea {w} {
     bind $g(listbox2) <F5>          {copyVectors 2 1}
     bind $g(listbox2) <F6>          {moveVectors 2 1}
     bind $g(listbox2) <F8>          {delVectors 2}
-    bind $g(listbox2) <1>           {focusOnPanel 2}
-    bind $g(listbox2) <Double-1>    {focusOnPanel 2; doPlot}
-    bind $g(listbox2) <3>           {focusOnPanel 2; .right_popup post %X %Y}
+    bind $g(listbox2) <1>           {focusToPanel 2}
+    bind $g(listbox2) <Double-1>    {focusToPanel 2; doPlot}
+    bind $g(listbox2) <3>           {focusToPanel 2; .right_popup post %X %Y}
 
     status 1
     status 2
-    focusOnPanel 1
+    focusToPanel 1
 }
 
 proc createMainWindow {{geom ""}} {
@@ -462,7 +462,7 @@ proc createMainWindow {{geom ""}} {
       pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2
     }
 
-    set help_tips(.toolbar.load) {Open - add vectors in file to LEFT panel}
+    set help_tips(.toolbar.load) {Open file and add vectors in it to LEFT panel}
     set help_tips(.toolbar.sel)  {Select vectors by title}
     set help_tips(.toolbar.repl) {Find/replace in vector titles}
     set help_tips(.toolbar.del)  {Delete selected vectors from panel}
