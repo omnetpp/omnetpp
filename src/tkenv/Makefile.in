@@ -22,7 +22,7 @@ A_LIB_SUFFIX=@A_LIB_SUFFIX@
 SO_LIB_SUFFIX=@SO_LIB_SUFFIX@
 
 # The following is either '-e' (embedded Tcl code) or '' (no embedding)
-TKENV_EMBED_TCL=@TKENV_EMBED_TCL@
+TKENV_EMBED_SUFFIX=@TKENV_EMBED_SUFFIX@
 
 #
 # Local definitions
@@ -31,7 +31,7 @@ COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I../envir $(TK_CFLAGS)
 
 OMNETPP_TKENV_DIR=`pwd`
 
-OBJS = tkapp$(TKENV_EMBED_TCL).o tkcmd.o tklib.o objinsp.o modinsp.o statinsp.o inspect.o arrow.o
+OBJS = tkapp$(TKENV_EMBED_SUFFIX).o tkcmd.o tklib.o objinsp.o modinsp.o statinsp.o inspect.o arrow.o
 
 #
 # Targets
