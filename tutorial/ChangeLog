@@ -1,9 +1,9 @@
 May 6, 2001 (AV)
- - takeover from Qeues-0.1.
- - changes:
+ - takeover from Queues-0.1:
      - checked in sources, tutorial.tex and *.el files
      - cosmetics on sources (tabs to spaces, indentation, file headings, etc.)
-     - renamed 'some' script to 'run' (also in tutorial.tex)
-     - TODO: write makefile for compiling tutorial.tex into pdf
-     - added MSVC makefiles
-     - 
+ - renamed 'some' script to 'run' (also in tutorial.tex)
+ - removed the 'rm queues' line from the 'run' script, and removed the
+   corresponding sentence from tutorial.tex too.
+ - TODO: write makefile for compiling tutorial.tex into pdf
+ - added MSVC makefiles
