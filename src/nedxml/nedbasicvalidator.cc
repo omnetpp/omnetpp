@@ -509,7 +509,7 @@ void NEDBasicValidator::validateElement(ConstNode *node)
     // verify syntax of constant
     int type = node->getType();
     const char *value = node->getValue();
-    //const char *text = node->getText();
+    const char *text = node->getText();
 
     if (strnull(value))
         INTERNAL_ERROR0(node,"required attribute 'value' missing");
@@ -519,6 +519,7 @@ void NEDBasicValidator::validateElement(ConstNode *node)
         // check bool
         if (strcmp(value,"true") && strcmp(value,"false"))
             NEDError(node, "bool constant should be 'true' or 'false'");
+        // TBD check that if text is present, it's the same as value
     }
     else if (type==NED_CONST_INT)
     {
@@ -527,6 +528,7 @@ void NEDBasicValidator::validateElement(ConstNode *node)
         strtol(value, &s, 0);
         if (s && *s)
             NEDError(node, "invalid integer constant '%s'", value);
+        // TBD check that if text is present, it's the same as value
     }
     else if (type==NED_CONST_REAL)
     {
@@ -535,15 +537,20 @@ void NEDBasicValidator::validateElement(ConstNode *node)
         strtod(value, &s);
         if (s && *s)
             NEDError(node, "invalid real constant '%s'", value);
+        // TBD check that if text is present, it's the same as value
     }
     else if (type==NED_CONST_STRING)
     {
         // string: no restriction
+        // TBD check that if text is present, it's the same as value
     }
     else if (type==NED_CONST_TIME)
     {
-        // check time
-        // TBD
+        // value of a time constant is a real number; text is the original form
+        char *s;
+        strtod(value, &s);
+        if (s && *s)
+            NEDError(node, "invalid value for time constant '%s' (expected as real number)", value);
     }
 }
 
