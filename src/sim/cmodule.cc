@@ -82,12 +82,6 @@ cModule::cModule(const char *name, cModule *parentmod) :
     /* cModuleType::create() call will create gates, params and machines */
 }
 
-cObject *cModule::dup() const
-{
-    opp_error(eCANTDUP);
-    return NO(cObject);
-}
-
 cModule& cModule::operator=(const cModule&)
 {
     opp_error(eCANTDUP);

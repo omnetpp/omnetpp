@@ -1,3 +1,7 @@
+2001-09-06 Andras Varga
+
+	* cleanup around object copying (see include/ChangeLog for details)
+
 2001-09-01 Andras Varga
 
 	* _CONST patches made permanent: _CONST --> const, CONSTCAST() -->

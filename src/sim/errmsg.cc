@@ -69,7 +69,7 @@ char *emsg[] = {
   "This object cannot DUP itself",                       // eCANTDUP
   "FSM: infinite loop of transient states (now in state %s)", // eINFLOOP
   "FSM: state changed during state entry code (now in state %s)", // eSTATECHG
-  "",                                                    // eADDPAR
+  "(%s)%s: assignment, copying, dup() not supported by this class", // eCANTCOPY
   "Badly connected gate",                                // eBADGATE
   "Gate not connected to anything",                      // eNOTCONN
   "",                                                    // eBADKEY
