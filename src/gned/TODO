@@ -18,6 +18,7 @@ Drawing:
 - if canvas is scrolled, mouse selection works with wrong positions
 - shift+click leaves a dot on canvas
 - paste does not work between canvases
+- should support ovals
 
 Load/save:
 - save: for canvases switched to text, it should save the text version (not good!)
@@ -42,4 +43,12 @@ Manager:
 
 Dialogs:
 - TBD
+
+Longer plans:
+- bugfixing, general improvement (see all the above)
+- opening simple modules, networks, channels, etc. on canvas
+- do Properties dialogs
+- drag&drop simple/compound module types onto a compound module canvas
+- autoload a NED library on startup (sets of simple module,s etc.)
+- consistency checks (params, gates etc.)
 
