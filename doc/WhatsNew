@@ -1,6 +1,14 @@
 What's New
 ==========
 
+OMNeT++ 3.0 beta 1 (Nov 24 2004)
+--------------------------------
+- added new TicToc tutorial
+- nedtool: implemented -h option (place output into current dir, not source
+  file's dir) [patch from Johnny Lai]
+- several fixes and improvements
+
+
 OMNeT++ 3.0 alpha 9 (Nov 3 2004)
 --------------------------------
 - fixed configure script problems in alpha 8
