@@ -88,6 +88,12 @@ WITH_PARSIM=yes
 #TK_LIBS=
 
 #
+# FIXME explanation...
+#
+BLT_CFLAGS=
+BLT_LIBS=-lBLT
+
+#
 # Compiler and linker options for MPI (optional component).
 # Typing `mpicc -showme' can give you a hint about MPI_LIBS
 #
