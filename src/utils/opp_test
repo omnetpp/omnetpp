@@ -4,21 +4,22 @@ eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}' && eval 'exec perl -S $0 $
 #!perl
 #line 6
 #
-# opp_test.pl: simple testing tool for OMNeT++ regression tests
+# opp_test: simple testing tool for OMNeT++ regression tests
 #
 
-#
-# TODO/FIXME:
-#  - more powerful tests, not only %contains and %not-contains
-#  - %contains --> %check-output:
-#
 
-use Cwd;
+# Note: use of perl modules (e.g. cwd.pm) is avoided, because we don't want
+# to install a full-blown perl on windows, only a perl.exe
+sub cwd {
+   my $d=`pwd` || die "error running `pwd' program: cannot determine name of current directory, exiting";
+   chomp($d);
+   $d;
+}
 
 #
 # If no args, print usage
 #
-$Usage = 'OMNeT++ Regression Test Tool, (c) 2002 Andras Varga
+$Usage = 'opp_test - OMNeT++ Regression Test Tool, (c) 2002 Andras Varga
 See the license for distribution terms and warranty disclaimer.
 
 Syntax: opp_test [-g|-r] [-v] [-d] [-w <dir>] <testcase-file> ...

@@ -13,10 +13,18 @@ eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}' && eval 'exec perl -S $0 $
 #  --VA
 #
 
+
+# Note: use of perl modules (e.g. cwd.pm) is avoided, because we don't want
+# to install a full-blown perl on windows, only a perl.exe
+sub cwd {
+   my $d=`pwd` || die "error running `pwd' program: cannot determine name of current directory, exiting";
+   chomp($d);
+   $d;
+}
+
 #
 # process command line args
 #
-use Cwd;
 
 # input parameters
 $outfile = cwd;
