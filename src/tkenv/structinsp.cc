@@ -15,6 +15,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <memory>
 #include <string.h>
 #include <math.h>
 
@@ -180,7 +181,7 @@ void TStructPanel::update()
    CHK(Tcl_VarEval(interp, widgetname, ".txt delete 1.0 end", NULL));
 
    // get descriptor object
-   cStructDescriptor *sd = cStructDescriptor::createDescriptorFor( object );
+   cStructDescriptor *sd = object->createDescriptor();
    if (!sd)
    {
        CHK(Tcl_VarEval(interp, widgetname, ".txt insert 1.0 {No cStructDescriptor registered for this class!}", NULL));
@@ -203,11 +204,12 @@ void TStructPanel::writeBack()
 
 int TStructPanel::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
 {
-   // a Tcl-based struct inspector might use this...
-
+   //
+   // These functions are currently not used. Might be useful for a Tcl-based struct inspector.
+   //
    if (argc<1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
 
-   cStructDescriptor *sd = cStructDescriptor::createDescriptorFor( object ); // FIXME: not very effective!
+   std::auto_ptr<cStructDescriptor> sd(object->createDescriptor());
 
    if (strcmp(argv[0],"count")==0)   // 'opp_inspectorcommand <inspector> fieldcount ...'
    {
@@ -301,7 +303,6 @@ int TStructPanel::inspectorCommand(Tcl_Interp *interp, int argc, const char **ar
       Tcl_SetResult(interp, TCLCONST(sd->getFieldStructName(fld)), TCL_VOLATILE);
       return TCL_OK;
    }
-
    return TCL_ERROR;
 }
 

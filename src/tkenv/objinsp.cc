@@ -61,7 +61,10 @@ void TObjInspector::createWindow()
    Tcl_Interp *interp = getTkApplication()->getInterp();
    CHK(Tcl_VarEval(interp, "create_objinspector ", windowname, " \"", geometry, "\"", NULL ));
 
-   if (cStructDescriptor::hasDescriptor(object->className()))
+   // try if it has a descriptor
+   cStructDescriptor *sd = object->createDescriptor();
+   delete sd;
+   if (sd)
    {
        char fieldspagewidget[256];
        sprintf(fieldspagewidget, "%s.nb.fields", windowname);
@@ -195,7 +198,10 @@ void TMessageInspector::createWindow()
    Tcl_Interp *interp = getTkApplication()->getInterp();
    CHK(Tcl_VarEval(interp, "create_messageinspector ", windowname, " \"", geometry, "\"", NULL ));
 
-   if (cStructDescriptor::hasDescriptor(object->className()))
+   // try if it has a descriptor
+   cStructDescriptor *sd = object->createDescriptor();
+   delete sd;
+   if (sd)
    {
        char fieldspagewidget[256];
        sprintf(fieldspagewidget, "%s.nb.fields", windowname);
@@ -499,7 +505,10 @@ void TPacketInspector::createWindow()
    Tcl_Interp *interp = getTkApplication()->getInterp();
    CHK(Tcl_VarEval(interp, "create_packetinspector ", windowname, " \"", geometry, "\"", NULL ));
 
-   if (cStructDescriptor::hasDescriptor(object->className()))
+   // try if it has a descriptor
+   cStructDescriptor *sd = object->createDescriptor();
+   delete sd;
+   if (sd)
    {
        char fieldspagewidget[256];
        sprintf(fieldspagewidget, "%s.nb.fields", windowname);

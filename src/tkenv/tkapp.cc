@@ -427,7 +427,7 @@ bool TOmnetTkApp::doRunSimulation()
         // delay loop for slow simulation
         if (runmode==RUNMODE_SLOW)
         {
-            clock_t start = clock();
+            clock_t start = clock(); // FIXME should use gettimeofday()
             double dclk = opt_stepdelay / 1000.0 * CLOCKS_PER_SEC;
             while (clock()-start<dclk && !stopsimulation_flag)
                 Tcl_Eval(interp, "update");

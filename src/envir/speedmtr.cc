@@ -51,7 +51,7 @@ double Speedometer::secondsInThisInterval()
 
 void Speedometer::beginNewInterval()
 {
-    clock_t now = clock();
+    clock_t now = clock();  // FIXME we should use gettimeofday() here!
     long elapsed_clocks = now - intvstart_clock;
     if (elapsed_clocks<10 || events<10)
     {

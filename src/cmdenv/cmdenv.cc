@@ -308,7 +308,7 @@ void TCmdenvApp::makeOptionsEffective()
 void TCmdenvApp::simulate()
 {
     startClock();
-    clock_t clock_start = clock();
+    clock_t clock_start = clock();  // FIXME should use gettimeofday() instead of time() and clock()!
     sigint_received = false;
     try
     {
