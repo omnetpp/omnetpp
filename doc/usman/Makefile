@@ -3,7 +3,7 @@
 
 TEXSRC = ch-ana-sim.tex ch-introduction.tex ch-parallel-exec.tex ch-sim-lib.tex \
          ch-build-sim-progs.tex ch-ned-grammar.tex ch-neddoc.tex \
-         ch-opp-design.tex ch-simple-modules.tex title.tex ch-example-nim.tex \
+         ch-opp-design.tex ch-simple-modules.tex title.tex ch-example.tex \
          ch-ned-lang.tex ch-overview.tex ch-run-sim.tex history.tex usman.tex
 
 PSPICS = figures/*.eps
@@ -11,7 +11,7 @@ PDFPICS = figures/*.pdf
 
 # an imperfect attempt to filter out less important warnings...
 # LOGFILTER = | sed '/Underfull/{N;N;d;};/Overfull/{N;N;d;};/Token not allowed/{N;N;d;}'
-LOGFILTER = 
+LOGFILTER =
 
 #default: usman.dvi usman.pdf
 default: usman.pdf
@@ -46,7 +46,7 @@ PERL=perl
 HTM_FILES = history.htm \
             ch-introduction.htm \
             ch-overview.htm \
-            ch-example-nim.htm \
+            ch-example.htm \
             ch-ned-lang.htm \
             ch-simple-modules.htm \
             ch-messages.htm \
