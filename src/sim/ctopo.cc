@@ -33,7 +33,7 @@
 #include "cexception.h"
 
 //=== Registration
-Register_Class( cTopology )
+Register_Class(cTopology);
 
 //==========================================================================
 

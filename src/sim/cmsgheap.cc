@@ -29,7 +29,7 @@
 #include "cmsgheap.h"
 
 //=== Registration
-Register_Class( cMessageHeap );
+Register_Class(cMessageHeap);
 
 //==========================================================================
 

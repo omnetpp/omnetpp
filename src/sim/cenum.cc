@@ -29,7 +29,7 @@
 #include "cexception.h"
 
 //=== Registration
-Register_Class( cEnum );
+Register_Class(cEnum);
 
 //==========================================================================
 //=== cEnum - member functions

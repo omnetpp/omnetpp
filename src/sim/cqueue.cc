@@ -27,7 +27,7 @@
 #include "cexception.h"
 
 //=== Registration
-Register_Class( cQueue )
+Register_Class(cQueue);
 
 //=========================================================================
 //=== cQueue - member functions

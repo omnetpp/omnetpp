@@ -41,7 +41,7 @@ cHead inspectorfactories("inspector-factories");
 cHead enums("enums");
 
 //=== Registration
-Register_Class( cHead );
+Register_Class(cHead);
 
 //==========================================================================
 //=== cHead - member functions

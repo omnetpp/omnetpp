@@ -27,7 +27,7 @@
 #include "cexception.h"
 
 //=== Registration
-Register_Class( cLinkedList )
+Register_Class(cLinkedList);
 
 //=========================================================================
 //=== cLinkedList - member functions

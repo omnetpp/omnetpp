@@ -29,8 +29,8 @@
 #include "cexception.h"
 
 //=== Registration
-Register_Class( cBag )
-Register_Class( cArray )
+Register_Class(cBag);
+Register_Class(cArray);
 
 //==========================================================================
 //=== cBag - member functions

@@ -35,7 +35,7 @@ using std::endl;
 //=========================================================================
 //=== Registration
 
-Register_Class( cKSplit )
+Register_Class(cKSplit);
 
 //=========================================================================
 //#define DISTRIBUTE_ON_CHILD_SPLIT --obsolete

@@ -39,8 +39,8 @@
 //=========================================================================
 //=== Registration
 
-Register_Class( cLongHistogram )
-Register_Class( cDoubleHistogram )
+Register_Class(cLongHistogram);
+Register_Class(cDoubleHistogram);
 
 //==========================================================================
 // cHistogramBase - member functions

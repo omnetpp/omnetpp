@@ -29,7 +29,7 @@
 #include "cexception.h"
 
 //=== registration
-Register_Class( cMessage )
+Register_Class(cMessage);
 
 // static members of cMessage
 unsigned long cMessage::total_msgs;

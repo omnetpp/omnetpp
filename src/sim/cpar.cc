@@ -37,8 +37,7 @@ This file is distributed WITHOUT ANY WARRANTY. See the file
 
 //==============================================
 //=== Registration
-Register_Class( cPar )
-
+Register_Class(cPar);
 
 //==========================================================================
 //=== cDoubleExpression - member functions

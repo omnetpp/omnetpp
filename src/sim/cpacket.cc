@@ -25,7 +25,7 @@
 #include "cpacket.h"
 
 //=== registration
-Register_Class( cPacket )
+Register_Class(cPacket);
 
 //=========================================================================
 

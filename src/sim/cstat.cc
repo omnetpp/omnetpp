@@ -34,8 +34,8 @@
 
 //=========================================================================
 //=== Registration
-Register_Class( cStdDev )
-Register_Class( cWeightedStdDev )
+Register_Class(cStdDev);
+Register_Class(cWeightedStdDev);
 
 //=========================================================================
 // cStatistic - almost all functions are inline

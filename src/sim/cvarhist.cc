@@ -35,7 +35,7 @@
 
 //=========================================================================
 //=== Registration
-Register_Class( cVarHistogram )
+Register_Class(cVarHistogram);
 
 //=========================================================================
 // cVarHistogram - member functions

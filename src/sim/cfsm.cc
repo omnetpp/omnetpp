@@ -26,7 +26,8 @@
 #include "cfsm.h"
 
 //=== registration
-Register_Class( cFSM )
+Register_Class(cFSM);
+
 //=========================================================================
 
 cFSM::cFSM(const char *name) :

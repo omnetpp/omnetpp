@@ -38,7 +38,7 @@ int   cObject::staticflag;
 int   cObject::heapflag;
 
 //=== Registration
-Register_Class( cObject )
+Register_Class(cObject);
 
 //==========================================================================
 //=== cObject - member functions

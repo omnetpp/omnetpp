@@ -32,8 +32,8 @@
 #include "cchannel.h"
 
 //=== registration
-Register_Class( cChannel );
-Register_Class( cSimpleChannel );
+Register_Class(cChannel);
+Register_Class(cSimpleChannel);
 
 //=========================================================================
 //=== cChannel - member functions
