@@ -53,6 +53,9 @@ cMessage::cMessage(const char *name, int k, long ln, int pri, bool err) : cObjec
     parlistp = NULL;
     encapmsg = NULL;
     contextptr = NULL;
+    refcount=0;
+    srcprocid=0;
+
     frommod=fromgate=-1;
     tomod=togate=-1;
     created=simulation.simTime();
@@ -167,6 +170,8 @@ cMessage& cMessage::operator=(const cMessage& msg)
     len = msg.len;
     error = msg.error;
     tstamp = msg.tstamp;
+    srcprocid = msg.srcprocid; // probably redundant
+    // refcount should be left alone
 
     created = msg.created;  // hmm...
 
