@@ -45,10 +45,14 @@ NEDFileBuffer::~NEDFileBuffer()
 
 bool NEDFileBuffer::readFile(const char *filename)
 {
+    // load file into memory
     if (wholeFile) return false; // reinit not supported
 
-    // load file into memory
-    FILE *intmp = fopen(filename,"r");
+    // Note: must use binary mode on the file, otherwise due to CR/LF conversion
+    // the number of characters actually stored will be less than "size"
+    // (which is the same as fread()'s return value), and we'll get garbage
+    // at the end of the buffer.
+    FILE *intmp = fopen(filename,"rb");
     if (!intmp) return false;
 
     struct stat statbuf;
