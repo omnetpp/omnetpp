@@ -160,13 +160,36 @@ void TGraphicalModWindow::update()
    }
 }
 
-static int resolveNumericDispStrArg(const char *s, cModule *mod, int defaultval)
+static cPar *displayStringPar(const char *parname, cModule *mod, bool searchparent)
+{
+   cPar *par = NULL;
+   int k = mod->findPar(parname);
+   if (k>=0)
+      par = &(mod->par(k));
+
+   if (!par && searchparent && mod->parentModule())
+   {
+      k = mod->parentModule()->findPar( parname );
+      if (k>=0)
+         par = &(mod->parentModule()->par(k));
+   }
+   if (!par)
+   {
+      if (!searchparent)
+          throw new cException("module `%s' has no parameter `%s'", mod->fullPath(), parname);
+      else
+          throw new cException("module `%s' and its parent have no parameter `%s'", mod->fullPath(), parname);
+   }
+   return par;
+}
+
+static long resolveNumericDispStrArg(const char *s, cModule *mod, int defaultval)
 {
    if (!s || !*s)
        return defaultval;
    if (*s=='$')
-       return mod->par(s+1);
-   return (int) atol(s);
+       return displayStringPar(s+1, mod, true)->longValue();
+   return (long) atol(s);
 }
 
 void TGraphicalModWindow::relayoutAndRedrawAll()
@@ -666,7 +689,7 @@ int TGraphicalModWindow::inspectorCommand(Tcl_Interp *interp, int argc, const ch
    }
    else if (strcmp(argv[0],"relayout")==0)
    {
-      relayoutAndRedrawAll();
+      TRY( relayoutAndRedrawAll() );
       return TCL_OK;
    }
    else if (strcmp(argv[0],"dispstrpar")==0)
@@ -699,28 +722,9 @@ int TGraphicalModWindow::getDisplayStringPar(Tcl_Interp *interp, int argc, const
 
    const char *parname = argv[2];
    int k;
-   cPar *par = 0;
 
-   k = mod->findPar(parname);
-   if (k>=0)
-      par = &(mod->par(k));
-
-   if (!par && searchparents && mod->parentModule())
-   {
-      k = mod->parentModule()->findPar( parname );
-      if (k>=0)
-         par = &(mod->parentModule()->par(k));
-   }
-
-   if (!par)
-   {
-      static char buf[50+MAX_OBJECTFULLPATH+50];
-      sprintf(buf, (!searchparents ? "module '%s' has no '%.50s' parameter" :
-                                     "module '%s' or its parents have no '%.50s' parameter"),
-                    mod->fullPath(), parname);
-      Tcl_SetResult(interp, buf, TCL_VOLATILE);
-      return TCL_ERROR;
-   }
+   cPar *par;
+   TRY( par = displayStringPar(parname, mod, searchparents) );
 
    if (par->type()=='S')
    {

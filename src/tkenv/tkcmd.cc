@@ -227,16 +227,8 @@ int createSnapshot_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    TOmnetTkApp *app = getTkApplication();
-   try
-   {
-       app->createSnapshot( argv[1] );
-   }
-   catch (cException *e)
-   {
-       Tcl_SetResult(interp, const_cast<char *>(e->message()), TCL_VOLATILE);
-       delete e;
-       return TCL_ERROR;
-   }
+
+   TRY( app->createSnapshot(argv[1]) );
    return TCL_OK;
 }
 
@@ -909,16 +901,9 @@ int getModulePar_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
    if (!mod) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
    const char *parname = argv[2];
    static char buf[2000]; // FIXME constant!
-   try
-   {
-       mod->par(parname).getAsText(buf,2000);
-   }
-   catch (cException *e)
-   {
-       Tcl_SetResult(interp, const_cast<char *>(e->message()), TCL_VOLATILE);
-       delete e;
-       return TCL_ERROR;
-   }
+
+   TRY( mod->par(parname).getAsText(buf,2000) );
+
    Tcl_SetResult(interp, buf, TCL_VOLATILE);
    return TCL_OK;
 }
@@ -930,16 +915,9 @@ int setModulePar_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
    if (!mod) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
    const char *parname = argv[2];
    const char *value = argv[3];
-   try
-   {
-       mod->par(parname).setFromText(value,'?');
-   }
-   catch (cException *e)
-   {
-       Tcl_SetResult(interp, const_cast<char *>(e->message()), TCL_VOLATILE);
-       delete e;
-       return TCL_ERROR;
-   }
+
+   TRY( mod->par(parname).setFromText(value,'?') );
+
    return TCL_OK;
 }
 

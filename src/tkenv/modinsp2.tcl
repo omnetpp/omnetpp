@@ -563,7 +563,12 @@ proc create_graphicalmodwindow {name geom} {
 
     #update idletasks
     update
-    opp_inspectorcommand $w relayout
+    if [catch {
+       opp_inspectorcommand $w relayout
+    } errmsg] {
+       tk_messageBox -type ok -title Error -icon error -parent [winfo toplevel [focus]] \
+                     -message "Error displaying network graphics: $errmsg"
+    }
 }
 
 proc graphmodwin_dblclick c {

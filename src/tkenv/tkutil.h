@@ -26,6 +26,13 @@
   } while(0)
 #endif
 
+#define TRY(code) \
+  try {code;} catch (cException *e) { \
+      Tcl_SetResult(interp, const_cast<char *>(e->message()), TCL_VOLATILE); \
+      delete e; \
+      return TCL_ERROR; \
+  }
+
 class cObject;
 class cCollectObjectsVisitor;
 
