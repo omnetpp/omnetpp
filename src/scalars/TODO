@@ -13,3 +13,5 @@ Matching: do SUBSTRING search by default, and have a checkbox to select
 full string search
 
 Toolbar icons
+
+Handle command-line args, save rc file
