@@ -1,12 +1,15 @@
-//-------------------------------------------------------------
-// file: fifo1.ned
-//        (part of Fifo1 - an OMNeT++ demo simulation)
-//-------------------------------------------------------------
-
-
-// FF1PacketFifo --
 //
-// single-server queue, same service rate for each packet
+// This file is part of an OMNeT++ simulation example.
+//
+// Copyright (C) 1992-2003 Andras Varga
+//
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
+//
+
+
+//
+// Single-server queue, same service rate for each packet
 //
 simple FF1PacketFifo
     parameters:
@@ -17,9 +20,8 @@ simple FF1PacketFifo
 endsimple
 
 
-// FF1BitFifo --
 //
-// single-server queue, service rate based on message length
+// Single-server queue, service rate based on message length
 //
 simple FF1BitFifo
     parameters:

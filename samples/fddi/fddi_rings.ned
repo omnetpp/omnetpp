@@ -1,20 +1,13 @@
-//==========================================================================
-//  FDDI_RINGS.NED  -  Network Description file for
-//                     Discrete System Simulation in OMNeT++
 //
-//  Simulated system: TUB Northen&Southen FDDI Rings
+// This file is part of an OMNeT++ simulation example.
 //
-//  Author: Gabor.Lencse@hit.bme.hu
-//==========================================================================
+// Copyright (C) 1998-2003 Andras Varga
+// Copyright (C) 1996-97 Gabor Lencse, T.U.Budapest, Dept. of Telecommunications
+//
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
+//
 
-//--------------------------------------------------------------*
-//  Copyright (C) 1996,97 Gabor Lencse,
-//  Technical University of Budapest, Dept. of Telecommunications,
-//  Stoczek u.2, H-1111 Budapest, Hungary.
-//
-//  This file is distributed WITHOUT ANY WARRANTY. See the file
-//  `license' for details on this and other legal matters.
-//--------------------------------------------------------------*
 
 import
     "fddi_mac",
@@ -23,7 +16,6 @@ import
     "fddi_nodes";
 
 
-// FDDIRing --
 //
 // A simple FDDI ring of identical FDDIStation nodes. The stations are
 // connected in the form of a ring, plus each of them is connected to the
@@ -55,9 +47,9 @@ module FDDIRing
 endmodule
 
 
-// TUBNRing --
 //
 // Technical University of Budapest Northen FDDI ring.
+//
 // The stations are connected in the form of a ring plus there are some
 // concentrators. From the dual attached ring only one direction is modelled;
 // all the stations are modelled just with SAS, and all the concentrators are
@@ -258,11 +250,12 @@ module TUBNRing
 endmodule
 
 
-// TUBSRing --
 //
-// Technical University of Budapest Southen FDDI ring. The stations are
-// connected in the form of a ring. From the dual attached ring only one
-// direction is modelled; all the stations are modelled just with SAS.
+// Technical University of Budapest Southen FDDI ring.
+//
+// The stations are connected in the form of a ring. From the dual attached
+// ring only one direction is modelled; all the stations are modelled just
+// with SAS.
 //
 module TUBSRing
     parameters:

@@ -1,10 +1,11 @@
-//--------------------------------------------------
-// File: token.msg
 //
-// Message definitions for Token Ring
+// This file is part of an OMNeT++ simulation example.
 //
-// Author: Andras Varga
-//--------------------------------------------------
+// Copyright (C) 1992-2003 Andras Varga
+//
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
+//
 
 
 enum TRTypes

@@ -46,6 +46,10 @@ STD_KERNEL_LIBS=sim_std.lib
 MPI_KERNEL_LIBS=sim_mpi.lib $(MPI_LIBS)
 PVM_KERNEL_LIBS=sim_pvm.lib $(PVM_LIBS)
 
+!if "$(WITH_NETBUILDER)"=="yes"
+KERNEL_LIBS=$(KERNEL_LIBS) nedxml.lib $(XML_LIBS)
+!endif
+
 # Simulation kernel and user interface libraries
 OMNETPP_LIBS=/libpath:$(OMNETPP_LIB_DIR) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
 

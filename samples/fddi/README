@@ -52,6 +52,7 @@ This means that not the actual messages but the statistical characteristics
 of the message flow (frame length histograms etc) are exchanged between
 the two segments.
 
+FIXME following is obsolete:
 
 Setting up for distributed execution (with PVM)
 -----------------------------------------------

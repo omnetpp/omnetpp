@@ -1,23 +1,16 @@
-//==========================================================================
-//  OTHERMOD.NED - Simple module declarations for
-//                 Discrete System Simulation in OMNeT++
 //
-//  Author: Gabor.Lencse@hit.bme.hu
-//==========================================================================
-
-//--------------------------------------------------------------*
-//  Copyright (C) 1996,97 Gabor Lencse,
-//  Technical University of Budapest, Dept. of Telecommunications,
-//  Stoczek u.2, H-1111 Budapest, Hungary.
+// This file is part of an OMNeT++ simulation example.
 //
-//  This file is distributed WITHOUT ANY WARRANTY. See the file
-//  `license' for details on this and other legal matters.
-//--------------------------------------------------------------*/
+// Copyright (C) 1998-2003 Andras Varga
+// Copyright (C) 1996-97 Gabor Lencse, T.U.Budapest, Dept. of Telecommunications
+//
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
+//
 
 
-// FDDI_Generator --
 //
-// generates messages for an FDDI Station
+// Generates messages for an FDDI Station.
 //
 simple FDDI_Generator
     parameters:
@@ -28,9 +21,8 @@ simple FDDI_Generator
 endsimple
 
 
-// FDDI_Address_Generator --
 //
-// generates new addresses in an FDDI Router
+// Generates new addresses in an FDDI Router.
 //
 simple FDDI_Address_Generator
     parameters:
@@ -42,9 +34,8 @@ simple FDDI_Address_Generator
 endsimple
 
 
-// FDDI_Generator4Ring --
 //
-// generates messages
+// Generates messages.
 //
 simple FDDI_Generator4Ring
     parameters:
@@ -56,9 +47,8 @@ simple FDDI_Generator4Ring
 endsimple
 
 
-// FDDI_Generator4Sniffer --
 //
-// generates messages for an FDDI Sniffer
+// Generates messages for an FDDI Sniffer.
 //
 simple FDDI_Generator4Sniffer
     parameters:
@@ -69,21 +59,19 @@ simple FDDI_Generator4Sniffer
 endsimple
 
 
-// Stat --
 //
-// keeps track of statistical info
+// Keeps track of statistical info.
 //
 simple Stat
     parameters:
-        no_comps : numeric const; // it was: const no_comps;
+        no_comps : numeric const;
     gates:
         in: in[];
 endsimple
 
 
-// FDDI_Sink --
 //
-// disposes the messages
+// Destroys the messages.
 //
 simple FDDI_Sink
     gates:
@@ -91,9 +79,8 @@ simple FDDI_Sink
 endsimple
 
 
-// FDDI_Monitor --
 //
-// monitors the network
+// Monitors the network
 //
 simple FDDI_Monitor
     gates:
@@ -102,9 +89,8 @@ simple FDDI_Monitor
 endsimple
 
 
-// LoadControl --
 //
-// Ringwise Load Control: Changes the value of LoadMultiplier
+// Ringwise Load Control. It changes the value of LoadMultiplier
 //
 simple LoadControl
     parameters:

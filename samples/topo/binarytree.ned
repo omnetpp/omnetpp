@@ -1,3 +1,12 @@
+//
+// This file is part of an OMNeT++ simulation example.
+//
+// Copyright (C) 1992-2003 Andras Varga
+//
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
+//
+
 
 simple BinaryTreeNode
     parameters:
@@ -7,6 +16,7 @@ simple BinaryTreeNode
         out: downleft;
         out: downright;
 endsimple
+
 
 module BinaryTree1
     parameters:
@@ -25,6 +35,7 @@ module BinaryTree1
         endfor;
 endmodule
 
+
 module BinaryTree2
     parameters:
         height : numeric const;
@@ -42,10 +53,12 @@ module BinaryTree2
         endfor;
 endmodule
 
+
 network binaryTree1 : BinaryTree1
     parameters:
         height = input(5,"Height of the tree");
 endnetwork
+
 
 network binaryTree2 : BinaryTree2
     parameters:

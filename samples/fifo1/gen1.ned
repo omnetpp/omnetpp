@@ -1,12 +1,15 @@
-//-------------------------------------------------------------
-// file: gen1.ned
-//        (part of Fifo1 - an OMNeT++ demo simulation)
-//-------------------------------------------------------------
-
-
-// FF1Generator --
 //
-// generates messages (jobs,packets etc.)
+// This file is part of an OMNeT++ simulation example.
+//
+// Copyright (C) 1992-2003 Andras Varga
+//
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
+//
+
+
+//
+// Generates messages (jobs, packets etc.)
 //
 simple FF1Generator
     parameters:

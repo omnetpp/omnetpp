@@ -1,15 +1,15 @@
-//-------------------------------------------------------------
-// File: gensink.ned
 //
-// Declaration of simple module types
+// This file is part of an OMNeT++ simulation example.
 //
-// Author: Andras Varga (TU Budapest)
-//-------------------------------------------------------------
+// Copyright (C) 1992-2003 Andras Varga
+//
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
+//
 
 
-// HCGenerator --
 //
-// generates data packets
+// Generates data packets
 //
 simple HCGenerator
     parameters:
@@ -21,9 +21,8 @@ simple HCGenerator
 endsimple
 
 
-// HCSink --
 //
-// destroys the packets and creates statistics
+// Destroys packets and creates statistics
 //
 simple HCSink
     parameters:

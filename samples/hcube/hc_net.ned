@@ -1,11 +1,11 @@
-//--------------------------------------------------
-// File: hc_net.ned
 //
-// Definition of the hypercube network
+// This file is part of an OMNeT++ simulation example.
 //
-// Author: Andras Varga (TU Budapest)
+// Copyright (C) 1992-2003 Andras Varga
 //
-//--------------------------------------------------
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
+//
 
 
 import
@@ -14,7 +14,6 @@ import
     "hcube.ned";
 
 
-// HypercubeNode --
 //
 // Building block of the delection routing hypercube. The interface of
 // this module conforms to the HCNode interface defined in hcube.ned.
@@ -52,7 +51,6 @@ module HypercubeNode
 endmodule
 
 
-// hypercube --
 //
 // The actual hypercube network, instantiated as from the Hypercube
 // topology template, substituting HypercubeNode for HCNode.

@@ -1,20 +1,13 @@
-//==========================================================================
-//  FDDI_NETS.NED  -  Network Description file for
-//                    Discrete System Simulation in OMNeT++
 //
-//  Simulated system: TUB Northen&Southern FDDI Rings
+// This file is part of an OMNeT++ simulation example.
 //
-//  Author: Gabor.Lencse@hit.bme.hu
-//==========================================================================
+// Copyright (C) 1998-2003 Andras Varga
+// Copyright (C) 1996-97 Gabor Lencse, T.U.Budapest, Dept. of Telecommunications
+//
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
+//
 
-//--------------------------------------------------------------*
-//  Copyright (C) 1996,97 Gabor Lencse,
-//  Technical University of Budapest, Dept. of Telecommunications,
-//  Stoczek u.2, H-1111 Budapest, Hungary.
-//
-//  This file is distributed WITHOUT ANY WARRANTY. See the file
-//  `license' for details on this and other legal matters.
-//--------------------------------------------------------------*
 
 import
     "fddi_mac",
@@ -23,9 +16,8 @@ import
     "fddi_rings";
 
 
-// FDDI1 --
 //
-// Network: A ring with identical stations.
+// A ring with identical stations.
 //
 network FDDI1 : FDDIRing
     parameters:
@@ -37,9 +29,8 @@ network FDDI1 : FDDIRing
 endnetwork
 
 
-// NRing --
 //
-// Network: Technical University Northern Ring, modeled standalone.
+// Technical University Northern Ring, modeled standalone.
 //
 network NRing : TUBNRing
     parameters:
@@ -52,7 +43,7 @@ network NRing : TUBNRing
 endnetwork
 
 
-// TUB_wired --
+
 //
 // Technical University Northern & Southern rings.
 //
@@ -86,7 +77,7 @@ module TUB_wired
 endmodule
 
 
-// TUB_SSM --
+
 //
 // Technical University Northern & Southern rings, interconnected by
 // Statistical Synchronisation interfaces.

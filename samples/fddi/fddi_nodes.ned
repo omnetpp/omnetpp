@@ -1,20 +1,13 @@
-//==========================================================================
-//  FDDI_NODES.NED  -  Network Description file for
-//                     Discrete System Simulation in OMNeT++
 //
-//  Simulated system: TUB Northen&Southen FDDI Rings
+// This file is part of an OMNeT++ simulation example.
 //
-//  Author: Gabor.Lencse@hit.bme.hu
-//==========================================================================
+// Copyright (C) 1998-2003 Andras Varga
+// Copyright (C) 1996-97 Gabor Lencse, T.U.Budapest, Dept. of Telecommunications
+//
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
+//
 
-//--------------------------------------------------------------*
-//  Copyright (C) 1996,97 Gabor Lencse,
-//  Technical University of Budapest, Dept. of Telecommunications,
-//  Stoczek u.2, H-1111 Budapest, Hungary.
-//
-//  This file is distributed WITHOUT ANY WARRANTY. See the file
-//  `license' for details on this and other legal matters.
-//--------------------------------------------------------------*
 
 import
     "fddi_mac",
@@ -22,9 +15,8 @@ import
     "othermod";
 
 
-// FDDICable --
 //
-// used in the ring of identical nodes
+// Represents cable in the ring of identical nodes
 //
 channel FDDICable
     error 0;
@@ -32,9 +24,8 @@ channel FDDICable
 endchannel
 
 
-// FDDI_SAC_inside_wire --
 //
-// represents the latency of a SAC
+// Represents the latency of a SAC
 //
 channel FDDI_SAC_inside_wire
     error 0;
@@ -42,9 +33,9 @@ channel FDDI_SAC_inside_wire
 endchannel
 
 
-// FDDI_SAC --
+
 //
-// acts as a Single Attachment Concentrator
+// Single Attachment Concentrator
 //
 module FDDI_SAC
     parameters:
@@ -66,9 +57,8 @@ module FDDI_SAC
 endmodule
 
 
-// FDDIStation --
 //
-// a node in a ring of identical nodes
+// A node in a ring of identical nodes
 //
 module FDDIStation
     gates:
@@ -94,9 +84,8 @@ module FDDIStation
 endmodule
 
 
-// FDDI_SAS --
 //
-// a Single Attachment Station in the network
+// A Single Attachment Station in the network
 //
 module FDDI_SAS
     parameters:
@@ -126,7 +115,6 @@ module FDDI_SAS
 endmodule
 
 
-// FDDI_Sniffer --
 //
 // An FDDI Sniffer (a special SAS)
 //
@@ -157,7 +145,6 @@ module FDDI_Sniffer
 endmodule
 
 
-// FDDI_Router_port --
 //
 // Makes routing decision on the basis of the length distribution
 // of the packets from this station to other stations in the ring.

@@ -1,14 +1,13 @@
-//--------------------------------------------------
-// File: hcube.ned
 //
-// The Hypercube topology template
+// This file is part of an OMNeT++ simulation example.
 //
-// Author: Andras Varga (TU Budapest)
+// Copyright (C) 1992-2003 Andras Varga
 //
-//--------------------------------------------------
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
+//
 
 
-// HCNode --
 //
 // Interface of modules types that can be used as a node in a Hypercube;
 // see comment at the Hypercube module.
@@ -23,7 +22,8 @@ simple HCNode
 endsimple
 
 
-// Hypercube --
+//
+// Defines Hypercube topology.
 //
 // When the user creates an actual hypercube, he substitutes the name
 // of an existing module type (e.g. HypercubeNode) for the nodetype

@@ -1,19 +1,19 @@
-//--------------------------------------------------
-// File: token.ned
 //
-// Network description of a Token Ring network
+// This file is part of an OMNeT++ simulation example.
 //
-// Authors: Gabor Lencse, Andras Varga (TU Budapest)
-// Based on the code by:
-//          Maurits Andre, George van Montfort,
-//          Gerard van de Weerd (TU Delft)
+// Copyright (C) 1992-2003 Andras Varga
 //
-//--------------------------------------------------
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
+//
+// Authors: Gabor Lencse and Andras Varga (TU Budapest),
+// based on the code from Maurits Andre, George van Montfort,
+// and Gerard van de Weerd (TU Delft).
+//
 
 
-// TokenRingMAC --
 //
-// Implements the Token Ring protocol
+// Implements the Token Ring protocol.
 //
 simple TokenRingMAC
     parameters:
@@ -33,7 +33,6 @@ simple TokenRingMAC
 endsimple
 
 
-// Generator --
 //
 // Generates data packets for MAC.
 //
@@ -55,9 +54,8 @@ simple Generator
 endsimple
 
 
-// Sink --
 //
-// destroys the packets and creates statistics
+// Destroys the packets and creates statistics.
 //
 simple Sink
     gates:
@@ -65,7 +63,6 @@ simple Sink
 endsimple
 
 
-// Computer --
 //
 // A node in a Token Ring LAN. Each instance will be connected to its right neighbour.
 //
@@ -101,7 +98,6 @@ module Computer
 endmodule
 
 
-// TokenRing --
 //
 // Ring with a configurable number of Computers
 //
@@ -128,7 +124,6 @@ module TokenRing
 endmodule
 
 
-// token --
 //
 // Instance of the Token Ring
 //

@@ -1,3 +1,7 @@
+2003-11-04  Andras Varga
+
+	* ned and msg files: comments reformatted to make them opp_neddoc friendly.
+
 2003-06-16  ------ omnetpp-2.3 released ------
 
 2003-03-15  ------ omnetpp-2.3b2 released ------
