@@ -3,6 +3,10 @@
 	* Makefile.in: fixed bug which prevented plove from getting 
 	command-line arguments ($* didn't make it to the wrapper script)
 
+2003-11-29  Andras Varga
+
+	* widgets.tcl: added BLT support
+
 2003-06-16  ------ omnetpp-2.3 released ------
 
 2003-03-15  ------ omnetpp-2.3b2 released ------

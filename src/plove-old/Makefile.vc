@@ -6,7 +6,7 @@
 #
 # Local setup
 #
-!if "$(PLOVE_EMBED_TCL)"=="yes"
+!if "$(EMBED_TCL_CODE)"=="yes"
 PLOVE_EXE_IF_NEEDED=plove.exe
 !else
 PLOVE_EXE_IF_NEEDED=
