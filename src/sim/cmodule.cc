@@ -896,7 +896,7 @@ int cSimpleModule::sendDelayed(cMessage *msg, double delay, cGate *outgate)
         throw new cException("send()/sendDelayed(): not owner of message `%s'; owner is `%s'",
                              msg->name(),msg->owner()->fullPath());
     if (delay<0.0)
-        throw new cException("send()/sendDelayed(): negative delay %g",delay);
+        throw new cException("sendDelayed(): negative delay %g",delay);
 
     // when in debugging mode, switch back to main program for a moment
     if (pause_in_sendmsg && usesactivity)
@@ -938,10 +938,13 @@ int cSimpleModule::sendDirect(cMessage *msg, double propdelay,
 
 int cSimpleModule::sendDirect(cMessage *msg, double propdelay, cGate *togate)
 {
+    // Note: it is permitted to send to an output gate. It is especially useful
+    // with several submodules sending to a single output gate of their parent module.
     if (togate==NULL)
         throw new cException("sendDirect(): destination gate pointer is NULL");
-    if (togate->type()=='O')
-        throw new cException("sendDirect(): cannot send to an output gate (`%s')",togate->fullPath());
+    if (togate->fromGate())
+        throw new cException("sendDirect(): module must have dedicated gate(s) for receiving via sendDirect()"
+                             " (``from'' side of dest. gate `%s' should NOT be connected)",togate->fullPath());
 
     if (msg==NULL)
         throw new cException("sendDirect(): message pointer is NULL");
@@ -959,7 +962,7 @@ int cSimpleModule::sendDirect(cMessage *msg, double propdelay, cGate *togate)
     // set message parameters and send it
     msg->setSentFrom(this, -1, simTime());
     togate->deliver( msg, simTime()+propdelay);
-    ev.messageSent( msg );
+    ev.messageSent(msg, togate);
     return 0;
 }
 
