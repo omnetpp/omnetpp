@@ -813,7 +813,7 @@ toolbar button, and paste them e.g. into OpenOffice Calc, MS Excel or Gnumeric.
 The bar chart toolbar button creates -- well -- a bar chart in a new window.
 You can customize the chart by right-clicking on it and choosing from the
 context menu. It can also be exported to EPS, GIF, or as metafile via the
-Windows clipbard (the latter is not available on Unix of course).
+Windows clipboard (the latter is not available on Unix of course).
 
 <img src="sca2.gif">
 

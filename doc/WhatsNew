@@ -1,6 +1,9 @@
 What's New
 ==========
 
+- Readme.MSVC updated on how to build DLLs from simple modules
+
+
 OMNeT++ 3.1 (Mar 2005)
 ----------------------
 This release contains several bugfixes since 3.0, as well as new features
