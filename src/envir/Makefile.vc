@@ -11,7 +11,7 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 # Local definitions
 #
 COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /DBUILDING_ENVIR /DHAVE_DLOPEN=$(HAVE_DLOPEN)
-OBJS=args.obj cenvir.obj cinifile.obj main.obj omnetapp.obj slaveapp.obj seeds.obj patmatch.obj platdep.obj
+OBJS=args.obj cenvir.obj cinifile.obj main.obj omnetapp.obj slaveapp.obj seeds.obj patmatch.obj platdep.obj speedmtr.obj
 LIBS=$(OMNETPP_SRC_DIR)/sim/sim_std.ilib
 
 #
@@ -59,6 +59,9 @@ patmatch.obj : patmatch.cc
 
 platdep.obj : platdep.cc
 	$(CXX) $(COPTS) /c /Tp platdep.cc
+
+speedmtr.obj : speedmtr.cc
+	$(CXX) $(COPTS) /c /Tp speedmtr.cc
 
 depend:
 	@ echo *** make depend not (yet) supported with MSVC

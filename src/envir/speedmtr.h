@@ -21,6 +21,10 @@
 #ifndef __SPEEDMTR_H
 #define __SPEEDMTR_H
 
+#include <time.h>
+#include "defs.h"
+
+
 //
 // Speedometer: utility class to measure simulation speed
 //

@@ -253,3 +253,5 @@ June 19, 2000
  - bugfix: TOmnetApp::getOutVectorConfig() crashed when it was called with
    vecname being NULL (on Solaris; other systems seem to tolerate NULL
    being passed to sprintf() as a "%s" argument) [reported by Ulrich Kaage]
+Jan 16, 2001
+ - added Speedometer class
