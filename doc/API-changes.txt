@@ -56,6 +56,9 @@ Simulation library:
 (+)	cModule::bubble() added. It displays a transient "bubble" over the
 	module icon in Tkenv, does nothing in Cmdenv.
 
+(-)	discouraged use of classes cBag and cLinkedList. STL classes such as 
+	std::vector, std::list or std::deque should be used instead.
+
 ... FIXME TBD complete list
 
 
