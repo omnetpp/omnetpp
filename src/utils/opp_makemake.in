@@ -527,6 +527,7 @@ so)
     ;;
 o)
     echo '$(TARGET): $(OBJS)' $subdirs_target 'Makefile .tstamp'
+    echo '	@# do nothing'
     echo
     echo '.tstamp: $(OBJS)'
     echo '	echo>.tstamp'
