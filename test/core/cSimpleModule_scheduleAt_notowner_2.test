@@ -1,0 +1,16 @@
+%description:
+test scheduleAt(): what if message is in a queue
+
+%activity:
+wait(1);
+
+cMessage *msg = new cMessage("one");
+
+cQueue q;
+q.insert(msg);
+scheduleAt(3,msg);
+
+%exitcode: 1
+
+%contains-regex: stdout
+Error in module .*: scheduleAt\(\): cannot schedule message \(cMessage\)one: it is currently contained/owned by

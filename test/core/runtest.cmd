@@ -5,8 +5,8 @@ rem without args, runs all *.test files in the current directory
 rem
 
 rem Use -N to test with dynamic NED loading
-set OPT=
-:set OPT=-N
+:set OPT=
+set OPT=-N
 
 
 rem --- nothing to change below this line ---

@@ -1,0 +1,37 @@
+%description:
+test scheduleAt(): what if message is currently scheduled by another module
+
+%module_a: {Sender}
+
+class {Sender} : public cSimpleModule
+{
+    Module_Class_Members({Sender},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Sender});
+
+void {Sender}::activity()
+{
+    wait(1);
+
+    cMessage *msg = new cMessage("one");
+    send(msg,"out");
+    wait(1);  // give it some time to arrive
+    scheduleAt(3,msg);
+}
+
+%module_b: {Receiver}
+
+class {Receiver} : public cSimpleModule
+{
+    Module_Class_Members({Receiver},cSimpleModule,0)
+    virtual void handleMessage(cMessage *msg) {scheduleAt(1000,msg);}
+};
+
+Define_Module({Receiver});
+
+%exitcode: 1
+
+%contains-regex: stdout
+Error in module .*: scheduleAt\(\): cannot schedule message \(cMessage\)one: it is currently scheduled as self-message for ANOTHER module

@@ -1,0 +1,13 @@
+%description:
+test that scheduleAt() cannot schedule a message into the past
+
+%activity:
+
+wait(10);
+scheduleAt(9, new cMessage("one"));
+
+%exitcode: 1
+
+%contains-regex: stdout
+Error in module .*: Cannot schedule message .* to the past (t=...)
+

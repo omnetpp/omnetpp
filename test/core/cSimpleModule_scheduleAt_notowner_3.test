@@ -1,0 +1,36 @@
+%description:
+test scheduleAt(): what if message has been sent and is currently underway
+
+%module_a: {Sender}
+
+class {Sender} : public cSimpleModule
+{
+    Module_Class_Members({Sender},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Sender});
+
+void {Sender}::activity()
+{
+    wait(1);
+
+    cMessage *msg = new cMessage("one");
+    send(msg,"out");
+    scheduleAt(3,msg);
+}
+
+%module_b: {Receiver}
+
+class {Receiver} : public cSimpleModule
+{
+    Module_Class_Members({Receiver},cSimpleModule,0)
+    virtual void handleMessage(cMessage *) { } // ignore but do not delete
+};
+
+Define_Module({Receiver});
+
+%exitcode: 1
+
+%contains-regex: stdout
+Error in module .*: scheduleAt\(\): cannot schedule message \(cMessage\)one: it is currently in scheduled-events, being underway between two modules
