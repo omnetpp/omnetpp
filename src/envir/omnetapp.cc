@@ -38,27 +38,13 @@
 
 #ifdef PORTABLE_COROUTINES /* coroutine stacks reside in main stack area */
 
-#ifdef __MSDOS__  /* crippled platforms */
-#  if defined(__BORLANDC__) && defined(__DPMI16__)
-#    define TOTAL_STACK_KB     30
-#    define MAIN_STACK_KB       8
-#  else
-     extern unsigned _stklen = 49512;
-#    define TOTAL_STACK_KB     48
-#    define MAIN_STACK_KB       8
-#  endif
-#else /* decent platforms (Unix) */
-#  define TOTAL_STACK_KB     2048
-#  define MAIN_STACK_KB        64  /*32K not enough*/
-#endif
+# define TOTAL_STACK_KB     2048
+# define MAIN_STACK_KB        64  // 32K is not enough
 
 #else /* nonportable coroutines, stacks are allocated on heap */
 
 # define TOTAL_STACK_KB         0  // value won't be used
 # define MAIN_STACK_KB          0  // value won't be used
-# ifdef __MSDOS__
-   extern unsigned _stklen = 16384;
-# endif
 
 #endif
 
@@ -203,7 +189,7 @@ void TOmnetApp::getOutVectorConfig(char *modname,char *vecname, /*input*/
     char section[16];
     sprintf(section,"Run %d",simulation.runNumber());
 
-    sprintf(buffer, "%s.%s.", modname,vecname);  
+    sprintf(buffer, "%s.%s.", modname,vecname);
     char *end = buffer+strlen(buffer);
 
     // get 'module.vector.disabled=' entry
@@ -221,7 +207,7 @@ void TOmnetApp::getOutVectorConfig(char *modname,char *vecname, /*input*/
     }
 
     // parse interval string
-    char *ellipsis = strstr(s,"..");  
+    char *ellipsis = strstr(s,"..");
     if (!ellipsis)
     {
         opp_error("Error in output vector interval %s=%s"

@@ -205,6 +205,7 @@ class cSimulation : public cObject
      void warning(int errcode,char *message);   // message + question:continue/abort?
      bool ok()         {return err==eOK;}       // TRUE if sim. can go on
      int errorCode()   {return err;}            // error code
+     void setErrorCode(int e) {err=e;}          // set error code without giving error message
      bool normalTermination();                  // examines error code
      void resetError() {err=eOK;}               // reset error code
 

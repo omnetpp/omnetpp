@@ -210,3 +210,5 @@ Dec 5,1999
   - Makefile.vc added
 Jan 9,2000
   - bugfix: TOmnetApp's destructor made virtual
+Jan 15,2000
+  - MSDOS #defines removed from the code (omnetapp.cc)

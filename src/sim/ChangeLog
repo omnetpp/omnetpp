@@ -746,8 +746,9 @@ Dec 19,1999
      getHead() removed            (it can be expressed as q.remove(q.head()))
    Compatibility #defines added to defs.h for insertHead(a), peekTail(),
    peekHead(), getTail().
-Jan 4-15,2000
+Jan 4,2000
  - cPar::setStringValue() now accepts NULL (and treats it as "")
+Jan 15,2000
  - the 'explicit' keyword was added to a number of constructors, most notably
    cPar(char *name). The reason was that constructs like
       cPar p = "foo";
@@ -755,3 +756,5 @@ Jan 4-15,2000
    by an assignment), but to a cPar p("foo") constructor call, which is quite
    different! ("foo" becomes the object's NAME instead of its value.)
    The explicit keyword is supported to prevent this from happening.
+ - minor change: cSimulation::setErrorCode() added (was needed in Tkenv's
+   startup code)
