@@ -12,15 +12,16 @@ Legend:
 (+)     new feature
 (!!!)   incompatible change (old code will not compile or work as previously)
 (!)     incompatible but minor change (change on a rarely used feature)
-(-)     method/class became deprecated (possibly with a better replacement feature
-        becoming available), or a method/class was renamed and a corresponding
-        compatibility #define was added ('#define oldname newname')
+(-)     method/class became deprecated (possibly with a better replacement
+        feature becoming available), or a method/class was renamed and a
+        corresponding compatibility #define was added ('#define oldname
+        newname')
 (x)     removed a deprecated method, class or compatibility #define
 (i)     information
 
 
-OMNeT++ 3.0 (under development)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+OMNeT++ 3.0 (Dec 2004)
+~~~~~~~~~~~~~~~~~~~~~~
 Simulation library:
 (x)     removed setOwner() with no replacement. Use take() from within
         objects, e.g. foo->setOwner(this) should be replaced with
@@ -29,20 +30,25 @@ Simulation library:
 (x)     removed putAsideQueue, receiveOn(), receiveNewOn(), receiveNew();
         only receive() remained.
 
-(!!!)   wait() throws an exception if a message arrives during the hold period.
-        If messages should be allowed, use waitAndEnqueue().
+(!!!)   wait() throws an exception if a message arrives during the hold
+        period. If messages should be allowed, use waitAndEnqueue().
 
 (!!!)   fullPath() return value changed from const char * to std::string.
-        If it occurs in a printf-like function as "%s" (sprintf, ev.printf,...)
-        it has to be changed to fullPath().c_str() otherwise printf may crash.
+        If it occurs in a printf-like function as "%s" (sprintf,
+        ev.printf,...) it has to be changed to fullPath().c_str(),
+        otherwise printf may crash.
 
 (!)     signature of info(char buf, int buflen) changed to std::string info().
 
 (!)     cSimpleModule::recordScalar() for writing const char* data removed,
         with no replacement.
 
-(!)     cSimpleModule::recordStats() (which took cStatistic* arg) was removed.
-        Replacement for recordStats(x) is x->recordScalar().
+(!)     cSimpleModule::recordStats(cStatistic *x) was removed. Replacement
+        is x->recordScalar().
+
+(+)     added setControlInfo(), controlInfo(), removeControlInfo() methods
+        to cMessage. Control info is the preferred way of passing info
+        (additional to the packet itself) between protocol layers.
 
 (!)     cMessage default length changed from 1 to 0 (bits).
 
@@ -61,24 +67,26 @@ Simulation library:
 
 (+)     added cModule::changeParentTo()
 
-(-)     cDisplayStringParser renamed to cDisplayString (compatibility typedef
-        exists)
+(-)     cDisplayStringParser renamed to cDisplayString (compatibility
+        typedef exists)
 
 (+)     displayString() methods of cModule and cGate return reference to
-        internally stored cDisplayString objects which can now be manipulated
-        directly (no need for setDisplayString(const char *)).
+        internally stored cDisplayString objects which can now be manipu-
+        lated directly (no need for setDisplayString(const char *)).
 
-(+)     ev.isGUI() added. Returns true if simulation runs under Tkenv. Display
-        string updates and bubble() calls can be made conditional on this.
+(+)     ev.isGUI() added. Returns true if simulation runs under Tkenv.
+        Display string updates and bubble() calls can be made conditional
+        on this.
 
-(+)     added method bool disabled() to cEnvir (to ev object); returns true when
-        ev<< output is disabled, such as in Express mode in Tkenv and Cmdenv.
+(+)     added method bool disabled() to cEnvir (to ev object); returns true
+        when ev<< output is disabled, such as in Express mode in Tkenv and
+        Cmdenv.
 
 (+)     cModule::bubble() added. It displays a transient "bubble" over the
         module icon in Tkenv, does nothing in Cmdenv.
 
-(-)     discouraged use of classes cBag and cLinkedList. STL classes such as
-        std::vector, std::list or std::deque should be used instead.
+(-)     discouraged use of classes cBag and cLinkedList. STL classes such
+        as std::vector, std::list or std::deque should be used instead.
 
 (+)     cStatistic::recordScalar() added
 
@@ -86,38 +94,42 @@ Simulation library:
         cMersenneTwister and cLCG32; added cRNG *cEnvir::rng(k) and
         cRNG *Module::rng(k)
 
-(!)     New random number architecture. Following symbols/functions fell victim:
-        #define NUM_RANDOM_GENERATORS -- this is now an omnetpp.ini setting
-        #define INTRAND_MAX -- different for every RNG class;
-                               cRNG::intRandMax() returns it
-        int testrand() -- see cRNG::selfTest()
-        long opp_nextrand(long& seed) -- no replacement
-        void opp_randomize() -- no replacement
-        long randseed() -- no replacement (Mersenne Twister state is >32 bits!)
-        long randseed(long seed) -- no replacement (seeding from C++ not supported)
-        long intrand() -- see cRNG::intRand()
-        void genk_opp_randomize(int gen_nr) -- no replacement (see above)
-        long genk_randseed(int gen_nr) -- no replacement (see above)
-        long genk_randseed(int gen_nr, long seed) -- no replacement (see above)
-        long genk_intrand(int gen_nr) -- see cRNG::intRand()
+(!)     New random number architecture. Following symbols/functions fell
+        victim:
+          #define NUM_RANDOM_GENERATORS -- this is now in omnetpp.ini
+          #define INTRAND_MAX -- different for every RNG class;
+                                 cRNG::intRandMax() returns it
+          int testrand() -- see cRNG::selfTest()
+          long opp_nextrand(long& seed) -- no replacement
+          void opp_randomize() -- no replacement
+          long randseed() -- no replacement (Mersenne Twister state doesn't
+                             fit in 32 bits!)
+          long randseed(long seed) -- no replacement (seeding from C++ not
+                                      supported)
+          long intrand() -- see cRNG::intRand()
+          void genk_opp_randomize(int gen_nr) -- no replacement (see above)
+          long genk_randseed(int gen_nr) -- no replacement (see above)
+          long genk_randseed(int gen_nr, long seed) -- no replacement (see above)
+          long genk_intrand(int gen_nr) -- see cRNG::intRand()
 
 (+)     added two utility functions to cTopology:
-        void extractByModuleType(const char **types)
-        void extractByModuleType(const std::vector<std::string> types)
+          void extractByModuleType(const char **types)
+          void extractByModuleType(const std::vector<std::string> types)
 
 (+)     added class cXMLElement, to support NED's new XML parameter type
 
-(+)     added methods to cPar: setXMLValue(cXMLElement*), cXMLElement *xmlValue(),
-        op=(cXMLElement*), op cXMLElement*().
+(+)     added methods to cPar: setXMLValue(cXMLElement*),
+        cXMLElement *xmlValue(), op=(cXMLElement*), op cXMLElement*().
 
 (+)     added cConfiguration class, an abstract base class for configuration
-        managers (generalization of omnetpp.ini). cConfiguration makes it possible
-        to use different sources than omnetpp.ini, e.g. database or XML.
+        managers (generalization of omnetpp.ini). cConfiguration makes it
+        possible to use different sources than omnetpp.ini, e.g. database
+        or XML.
 
 (+)     added method cConfiguration *config() to cEnvir (i.e. ev object)
 
-(-)     deprecated classes cBag and cLinkedList. STL classes such as std::vector,
-        std::list or std::deque are recommended instead.
+(-)     deprecated classes cBag and cLinkedList. STL classes such as
+        std::vector, std::list or std::deque are recommended instead.
 
 
 OMNeT++ 2.3 (June 16, 2003)
