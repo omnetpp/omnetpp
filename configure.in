@@ -8,8 +8,7 @@ AC_INIT(src/sim/omnetpp.h)
 OMNETPP_VERSION="1.2"
 
 #
-# Location of various components, by default relative to the toplevel omnetpp directory.
-# You normally don't need to change anything here.
+# Location of various components. Can be overridden in configure.user.
 #
 OMNETPP_ROOT=`pwd`
 if test -n "$HOME"; then
@@ -28,28 +27,26 @@ OMNETPP_INCL_DIR="$OMNETPP_SRC_DIR/sim"
 OMNETPP_LIB_DIR="$OMNETPP_ROOT/lib"
 
 #
-# Select here if you want to build static or shared libraries
+# Default values for other variables that come from configure.user.
 #
 build_shared_libs=yes
 #build_shared_libs=no
 
-#
-# Here you may help configure to determine which compile switches (e.g. -Ixxx)
-# and which linker switches (e.g. -Lxxx -ltk80 -ltcl80 -lX11) are needed
-# to build an app with PVM, Tcl/Tk or Turbo Vision
-#
 PVM_CFLAGS=
 PVM_LIBS=
-
 TK_CFLAGS=
 TK_LIBS=
-
 TV_CFLAGS=
 TV_LIBS=
 
-#----------------------------------------------------------------
-# You should not need to modify below this line.
-#----------------------------------------------------------------
+CFLAGS='-g'
+#CFLAGS='-g -Wall'
+#CFLAGS='-O3 -DNDEBUG=1'
+
+#----------------------
+# Read in user settings
+#----------------------
+source configure.user
 
 
 dnl -------------------------------------------------------------
@@ -224,14 +221,6 @@ AC_FUNC_VPRINTF
 AC_CHECK_FUNCS(select strdup strspn strstr)
 
 #----------------------
-# Compile options. Use -g for debugging, -O3... for speed.
-#----------------------
-
-CFLAGS='-g'
-#CFLAGS='-g -Wall'
-#CFLAGS='-O3 -DNDEBUG=1'
-
-#----------------------
 # shared or static libraries
 #----------------------
 # If you change this setting, remember to delete the other set of libraries
@@ -358,19 +347,22 @@ EOT
 fi
 
 if test "$LIB_SUFFIX" = "so"; then
-  if echo $LD_LIBRARY_PATH | grep -q $OMNETPP_ROOT/lib; then
+  if echo $LD_LIBRARY_PATH | grep -q `eval echo $OMNETPP_LIB_DIR`; then
     echo "Your LD_LIBRARY_PATH is set. Good."
   else
     cat << EOT
 
-Note: Dynamic libraries are selected in configure (LIB_SUFFIX=so).
-You'll either have to create symbolic links from /usr/lib to the
-OMNeT++ shared libraries (as root) or set the LD_LIBRARY_PATH environment
-variable. Add the corresponding line to your startup file:
-  export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:\$HOME/omnetpp/lib
+Note: Shared libraries were selected in configure. So that the dynamic
+linker can find the OMNeT++ shared libs, you either have to create
+symbolic links from /usr/lib to the OMNeT++ shared libraries (as root),
+or better, set the LD_LIBRARY_PATH environment variable.
+
+Add the corresponding line to your startup file:
+  export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:$OMNETPP_LIB_DIR
          # into .(bash_)profile if you use bash or other sh-like shell
-  setenv LD_LIBRARY_PATH \$LD_LIBRARY_PATH:\$HOME/omnetpp/lib
+  setenv LD_LIBRARY_PATH \$LD_LIBRARY_PATH:$OMNETPP_LIB_DIR
          # into .cshrc if you use tcsh or other csh-like shell
+
 If you prefer static libraries, change LIB_SUFFIX='so' to
 LIB_SUFFIX='a' in the configure script, then re-run configure and make.
 EOT
