@@ -394,7 +394,7 @@ inline const char *correct(const char *s)
 inline void opp_appendindex(char *s, unsigned int i)
 {
    while (*s) s++;
-   *s = '[';
+   *s++ = '[';
    if (i<10)  
        {*s++ = '0'+i; *s++=']'; *s=0; return;}
    if (i<100) 
