@@ -19,6 +19,7 @@
 *--------------------------------------------------------------*/
 
 #include "cvisitor.h"
+#include "cobject.h"
 
 
 bool cVisitor::process(cObject *obj)
@@ -34,3 +35,15 @@ bool cVisitor::process(cObject *obj)
     return true;
 }
 
+bool cVisitor::processChildrenOf(cObject *obj)
+{
+    try
+    {
+        obj->forEachChild(this);
+    }
+    catch (EndTraversalException e)
+    {
+        return false;
+    }
+    return true;
+}

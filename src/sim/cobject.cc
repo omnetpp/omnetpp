@@ -371,7 +371,7 @@ void cObject::writeContents(ostream& os)
 {
     os << detailedInfo() << std::endl;
     cPrintInfoVisitor v(os);
-    forEachChild(&v);
+    v.processChildrenOf(this);
 }
 
 cObject *cObject::findObject(const char *objname, bool deep)
@@ -380,14 +380,14 @@ cObject *cObject::findObject(const char *objname, bool deep)
     {
         // recursively
         cRecursiveObjectFinderVisitor v(objname);
-        forEachChild(&v);
+        v.processChildrenOf(this);
         return v.getResult();
     }
     else
     {
         // among children
         cChildObjectFinderVisitor v(objname);
-        forEachChild(&v);
+        v.processChildrenOf(this);
         return v.getResult();
     }
 }
