@@ -3,6 +3,7 @@
 
 
 \section{Output vectors}
+\label{sec:ch-ana-sim:output-vectors}
 
 Output vectors are time series data: values with timestamps.
 You can use output vectors to record end-to-end delays or
@@ -269,12 +270,15 @@ are working with.
 
 
 \section{Scalar statistics}
+\label{sec:ch-ana-sim:output-scalars}
+
+% FIXME format of output vectors
 
 Output vectors capture the transient behaviour of the simulation run.
 However, to compare model behaviour under various parameter settings,
 output scalars are more useful.
 
-Output scalar results are recorded with recordScalar() calls,
+Output scalar results are recorded with \fname{recordScalar()} calls,
 usually from the \ttt{finish()} methods of modules.
 
 The \fprog{Scalars} tool can be used to visualize the contents of the

@@ -1894,6 +1894,9 @@ you can disable writing to the file, or limit it to a certain
 simulation time interval for recording (section
 \ref{sec:ch-run-sim:outvectors}).
 
+The format and processing of output vector files is described in section
+\ref{sec:ch-ana-sim:output-vectors}.
+
 If the output vector object is disabled or the simulation time is
 outside the specified interval, \fname{record()} doesn't write
 anything to the output file. However, if you have a Tkenv inspector
@@ -1909,6 +1912,7 @@ While output vectors are to record time series data and thus they
 typically record a large volume of data during a simulation run,
 output scalars\index{output!scalars} are supposed to record a single
 value per simulation run. You can use outputs scalars
+
 \begin{itemize}
 \item{to record summary data at the end of the simulation run}
 \item{to do several runs with different parameter settings/random seed
@@ -1917,32 +1921,63 @@ value per simulation run. You can use outputs scalars
     way to produce \textit{Throughput vs. Offered Load} plots.}
 \end{itemize}
 
-Output scalars are recorded with the \fname{recordScalar()} member
-function.  It is overloaded, you can use it to write doubles and
-strings (const char *):
+Output scalars are recorded with the \fname{recordScalar()} method of
+\cclass{cSimpleModule}, and you'll usually want to insert this code
+into the \fname{finish()} function. An example:
 
 \begin{verbatim}
-double avgThroughput = totalBits / simTime();
-recordScalar("Average throughput", avgThroughput);
+void Transmitter::finish()
+{
+    double avgThroughput = totalBits / simTime();
+    recordScalar("Average throughput", avgThroughput);
+}
 \end{verbatim}
 
-You can record whole statistics objects by calling \fname{recordStats()}:
+You can record whole statistics objects by calling their \fname{recordScalar()}
+methods, declared as part of \cclass{cStatistic}. In the following example
+we create a \ttt{Sink} module which calculates the mean, standard
+deviation, minimum and maximum values of a variable, and records them at the
+end of the simulation.
 
 \begin{verbatim}
-cStdDev *eedstats = new cStdDev;
-...
-recordStats("End-to-end Statistics", eedstats);
+class Sink : public cSimpleModule
+{
+  protected:
+    cStdDev eedStats;
+  public:
+    Module_Class_Members(Sink,cSimpleModule,0)
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+    virtual void finish();
+};
+
+void Sink::initialize()
+{
+    eedStats.setName("End-to-End Delay");
+}
+
+void Sink::handleMessage(cMessage *msg)
+{
+    simtime_t eed = simTime() - msg->creationTime();
+    eedStats.collect(eed);
+    delete msg;
+}
+
+void Sink::finish()
+{
+    recordScalar("Simulation duration", simTime());
+    eedStats.recordScalar();
+}
 \end{verbatim}
 
-Calls to \fname{recordScalar()} and \fname{recordStats()} are usually
-placed in the redefined \fname{finish()} member function of a
-simple module.
-
-The above calls write into the (textual) output scalar file.  The
-output scalar file is preserved across simulation runs (unlike the
-output vector file is, scalar files are not deleted at the beginning
-of each run). Data are always appended at the end of the file, and
+The above calls write into the \textit{output scalar file} which is named
+\ttt{omnetpp.sca} by default. The output scalar file is preserved across
+simulation runs (unlike the output vector file which gets deleted
+at the beginning of every simulation run).
+Data are always appended at the end of the file, and
 output from different simulation runs are separated by special lines.
+The format and processing of output vector files is described in section
+\ref{sec:ch-ana-sim:output-scalars}.
 
 
 
