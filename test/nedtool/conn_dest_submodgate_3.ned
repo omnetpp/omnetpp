@@ -1,4 +1,4 @@
-//ERROR: wrong destination gate for connection: extra gate index ('in' is not a vector gate)
+//ERROR: wrong destination gate for connection: extra gate index or '++' ('in' is not a vector gate)
 simple Node
     gates:
         in: in;

@@ -1,7 +1,7 @@
-//ERROR: wrong source gate for connection: input gate expected but 'out' is an output gate
+//ERROR: wrong source gate: '++' cannot be used on parent module's gates
 module Network
     gates:
-        out: out;
+        in: in[];
     connections:
-        out --> b.in;
+        in++ --> b.in;
 endmodule

@@ -1,4 +1,4 @@
-//ERROR: wrong source gate for connection: extra gate index ('out' is not a vector gate)
+//ERROR: wrong destination gate for connection: input gate expected but 'out' is an output gate
 simple Node
     gates:
         out: out;
@@ -8,5 +8,5 @@ module Network
     submodules:
         a: Node;
     connections:
-        a.out++ --> b.in;
+        a.out <-- b.out;
 endmodule

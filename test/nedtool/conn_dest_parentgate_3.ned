@@ -1,4 +1,4 @@
-//ERROR: wrong destination gate for connection: extra gate index ('out' is not a vector gate)
+//ERROR: wrong destination gate for connection: extra gate index or '++' ('out' is not a vector gate)
 module Network
     gates:
         out: out;
