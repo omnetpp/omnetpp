@@ -1060,24 +1060,35 @@ which modules you want to include in the topology:
 \end{itemize}
 
 First, you can specify which node types you want to include. The
-following code extracts all modules of type Router or User. (Router
-and User can be both simple and compound module types.)
+following code extracts all modules of type \ttt{Router} or \ttt{Host}.
+(\ttt{Router} and \ttt{Host} can be either simple or compound module types.)
 
 \begin{verbatim}
 cTopology topo;
-topo.extractByModuleType( "Router", "User", NULL );
+topo.extractByModuleType("Router", "Host", NULL);
 \end{verbatim}
 
+Any number of module types can be supplied; the list must be terminated by \ttt{NULL}.
 
-Any number of module types (up to 32) can be supplied; the list
-must be terminated by \ttt{NULL}.
+A dynamically assembled list of module types can be passed as a
+\ttt{NULL}-terminated array of \ttt{const char*} pointers, or
+in an STL string vector \ttt{std::vector<std::string>}.
+An example for the former:
+
+\begin{verbatim}
+cTopology topo;
+const char *typeNames[3];
+typeNames[0] = "Router";
+typeNames[1] = "Host";
+typeNames[2] = NULL;
+topo.extractByModuleType(typeNames);
+\end{verbatim}
 
 Second, you can extract all modules which have a certain parameter:
 
 \begin{verbatim}
 topo.extractByParameter( "ipAddress" );
 \end{verbatim}
-
 
 You can also specify that the parameter must have a certain value
 for the module to be included in the graph:
