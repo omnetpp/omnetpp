@@ -66,7 +66,8 @@ htmlfile_spec := $BASE.html
 :comm	:\hfill:::
 :comm	:\hrule:<hr>::
 :comm	:\vneg:::
-:comm	:\item([^]]+\])?:<li><strong>$1</strong>::
+# :comm	:\item([^]]+\])?:<li><strong>$1</strong>::
+:comm	:\item([^]]+\])?:<li>$1::
 :comm	:\def[^\n]+:::
 :comm	:\small:::
 :comm	:\normalsize:::

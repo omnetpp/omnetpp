@@ -1240,22 +1240,19 @@ If the expression matches several elements, the first element
 Expression syntax is the following:
 
 \begin{itemize}
-    \item An expression consists of \textit{path components} (or "steps")
-    separated by "\ttt{/}" or "\ttt{//}".
-
-    \item A path component can be an element tag name, "\ttt{*}", "\ttt{.}"
-    or "\ttt{..}". Element tag names and "\ttt{*}" can have an optional predicate
-    in the form "\ttt{[position]}" or "\ttt{[@attribute='value']}".
-
-    \item "\ttt{/}" means child element (just as e.g. in \ttt{/usr/bin/gcc});
-    "\ttt{//}" means an element any levels under the current element.
-
-    \item "\ttt{.}", "\ttt{..}" and "\ttt{*}" mean current element,
-    parent element, and an element with any tag name, respectively.
+  \item An expression consists of \textit{path components} (or "steps")
+        separated by "\ttt{/}" or "\ttt{//}".
+  \item A path component can be an element tag name, "\ttt{*}", "\ttt{.}"
+        or "\ttt{..}". Element tag names and "\ttt{*}" can have an optional predicate
+        in the form "\ttt{[position]}" or "\ttt{[@attribute='value']}".
+        Positions start from zero.
+  \item "\ttt{/}" means child element (just as e.g. in \ttt{/usr/bin/gcc});
+        "\ttt{//}" means an element any levels under the current element.
+  \item "\ttt{.}", "\ttt{..}" and "\ttt{*}" mean current element,
+        parent element, and an element with any tag name, respectively.
 \end{itemize}
 
 These interpretations are consistent with the XPath specification.
-
   \footnote{While the XPath specification defines other axes, alternative
   axis syntax (using "::") and more powerful predicates, for our purposes
   (finding elements in XML config files) the above support is completely
@@ -1263,18 +1260,17 @@ These interpretations are consistent with the XPath specification.
 
 Examples:
 
-% FIXME verify
 % FIXME list becomes bold in HTML after a while
 
 \begin{itemize}
-  \item \ttt{/} -- the root element
-  \item \ttt{/foo} -- first <foo> child of the root element
-  \item \ttt{/foo/bar} -- first <bar> child of first <foo> child of the root element
+  \item \ttt{/foo} -- the root element which must be called <foo>
+  \item \ttt{/foo/bar} -- first <bar> child of the <foo> root element
   \item \ttt{//bar} -- first <bar> anywhere (depth-first search!)
-  \item \ttt{/*/bar} -- first <bar> child two levels below root element
-  \item \ttt{/foo[0]} -- first <foo> child of the root element
-  \item \ttt{/foo[1]} -- second <foo> child of the root element
-  \item \ttt{/foo[@color='green']} -- first <foo> child which has attribute "color" with value "green"
+  \item \ttt{/*/bar} -- first <bar> child of the root element which may have any tag name
+  \item \ttt{/*/*/bar} -- first <bar> child two levels below the root element
+  \item \ttt{/*/foo[0]} -- first <foo> child of the root element
+  \item \ttt{/*/foo[1]} -- second <foo> child of the root element
+  \item \ttt{/*/foo[@color='green']} -- first <foo> child which has attribute "color" with value "green"
   \item \ttt{//bar[1]} -- a <bar> element anywhere which is the second <bar> among its siblings
   \item \ttt{//*[@color='yellow']} -- any element anywhere which has attribute "color" with value "yellow"
   \item \ttt{//*[@color='yellow']/foo/bar} -- first <bar> child of first <foo> child of a "yellow-colored" element anywhere
