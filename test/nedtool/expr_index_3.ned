@@ -1,4 +1,4 @@
-//ERROR: 'index' may only occur in a submodule vector's definition
+//ERROR: 'index' is not allowed here
 simple Gen
 endsimple
 

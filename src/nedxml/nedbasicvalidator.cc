@@ -423,13 +423,21 @@ void NEDBasicValidator::validateElement(FunctionNode *node)
     {
          if (args!=0)
              NEDError(node, "operator 'index' does not take arguments");
-         // find submodule node we're under
+
+         // find expression and submodule node we're under
          NEDElement *parent = node->getParent();
+         while (parent && parent->getTagCode()!=NED_EXPRESSION)
+             parent = parent->getParent();
+         NEDElement *expr = parent;
+
          while (parent && parent->getTagCode()!=NED_SUBMODULE)
              parent = parent->getParent();
-         if (!parent || parent->getFirstChildWithAttribute(NED_EXPRESSION, "target", "vector-size")==NULL)
+         NEDElement *submod = parent;
+
+         if (!submod || submod->getFirstChildWithAttribute(NED_EXPRESSION, "target", "vector-size")==NULL)
              NEDError(node, "'index' may only occur in a submodule vector's definition");
-         // TBD also check we're not part of this vector-size expression
+         if (expr->getParent()==submod)
+             NEDError(node, "'index' is not allowed here");
          return;
     }
     else if (!strcmp(func,"sizeof"))

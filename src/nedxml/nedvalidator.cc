@@ -1,5 +1,5 @@
 //==========================================================================
-// Part of the OMNeT++ Discrete System Simulation System
+// Part of the OMNeT++/OMNEST Discrete Event Simulation System
 //
 // Generated from ned.dtd by dtdclassgen.pl
 //
