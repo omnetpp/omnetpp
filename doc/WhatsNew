@@ -1,21 +1,34 @@
 What's New
 ==========
 
-In the OMNeT++ 2.1 (April 2001)
-------------------------------------------------
-BC++ support removed.
-Tkenv fix
-include dirs
-win98 toplevel makefile added
-tutorial integrated
-compiled-in tcl code for plove
-WinMain for plove & gned
-bugfixes in plove & gned
-MSVC stuff included
+In the OMNeT++ 2.1 (May 2001)
+-----------------------------
+This release is devoted to making OMNeT++ easier to install, easier
+to use and easier to learn. Most important, there is now a binary package
+for Windows. The install package comes with Tcl/Tk, Gnuplot and some
+Unix utilities (grep, awk) bundled, and in addition to the OMNeT++ programs
+and libraries compiled with MSVC, it also contains prebuilt executables
+of the sample simulations. To shorten the learning curve, the package
+contains Nick van Foreest's Queueing Tutorial. Some MSVC integration stuff
+(AppWizard, macro to add a NED file to the project) was also added to
+the package.
+
+Changes in the source distribution: it now includes the Tutorial and
+the sources of the MSVC integration components. To facilitate creating
+binary distributions, omnetpp.h and the other header files needed to build
+simulations have been moved out of src/sim/, to a new include/ directory.
+There was no change on the simulation kernel.
+
+Further enhancements: Plove can now be built as a single executable with
+compiled-in Tcl code; on Windows, Plove and GNED can now be compiled as GUI
+apps (using WinMain() instead of main()). I added makefiles for Win95/98/ME
+(although I couldn't test them). The Borland C++ is no longer supported:
+I removed the old project files (*.ide), and added back (unsupported)
+Makefile.bc's.
 
 
 In the OMNeT++ 2.0 patch 1 (March 2001)
-------------------------------------------------
+---------------------------------------
 Fixes build issues with Cygwin, PVM, and static libs under Unix.
 
 
