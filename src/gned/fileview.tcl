@@ -52,17 +52,13 @@ proc saveFile {win filename} {
 proc createFileViewer {filename} {
     # Open file viewer/editor window
 
-    # create a widget name from filename
-    set w $filename
-    if {$w == ""} return
-    regsub {[\. ]} $w {_} w
-    set w .[string tolower $w]
+    if {$filename == ""} return
 
-    if {[winfo exists $w]} {
-        wm deiconify $w
-        loadFile $w $filename
-        return
-    }
+    # create a widget name from filename
+    set w ".win[clock seconds]"
+    if {[winfo exists $w]} {destroy $w}
+
+    if {[winfo exists $w]} {destroy $w}
 
     ###################
     # CREATING WIDGETS

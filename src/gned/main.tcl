@@ -183,7 +183,7 @@ proc createMainWindow {} {
       {check -command {toggleGrid 0} -variable config(snaptogrid) -label {Snap to grid} -underline 0}
       {check -variable config(connmodeauto) -label {Default conn. drawing mode is auto} -underline 0}
       {separator}
-      {command -command optionsViewFile -label {View/edit file...} -underline 0}
+      {command -command optionsViewFile -label {View/edit text file...} -underline 0}
     } {
       eval .menubar.optionsmenu add $i
     }
