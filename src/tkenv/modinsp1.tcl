@@ -46,7 +46,7 @@ proc create_compoundmodinspector {name geom} {
     set help_tips($w.toolbar.mrun)    {Run until next local event}
     set help_tips($w.toolbar.mfast)   {Fast run until next local event (Ctrl-F4)}
     set help_tips($w.toolbar.stop)    {Stop running simulation (F8)}
-    set help_tips($w.toolbar.apply)   {Apply changes}
+    set help_tips($w.toolbar.apply)   {Apply changes (Enter)}
     set help_tips($w.toolbar.revert)  {Revert}
 
     set nb $w.nb
@@ -101,7 +101,7 @@ proc create_simplemodinspector {name geom} {
     set help_tips($w.toolbar.mrun)    {Run until next local event}
     set help_tips($w.toolbar.mfast)   {Fast run until next local event (Ctrl-F4)}
     set help_tips($w.toolbar.stop)    {Stop running simulation (F8)}
-    set help_tips($w.toolbar.apply)   {Apply changes}
+    set help_tips($w.toolbar.apply)   {Apply changes (Enter)}
     set help_tips($w.toolbar.revert)  {Revert}
 
     bind $w <Control-F4> "module_run_fast $w"

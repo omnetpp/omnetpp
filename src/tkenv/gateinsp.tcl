@@ -187,7 +187,7 @@ proc draw_conn {c srcgateptr destgateptr chanstr dispstr} {
        $c create text [expr $x+3] [expr ($y0+$y1)/2] -text $chanstr -anchor w
 
    } errmsg] {
-       tk_messageBox -type ok -title Error -icon error \
+       tk_messageBox -type ok -title Error -icon error -parent [winfo toplevel [focus]] \
                      -message "Error in display string of a connection: $errmsg"
    }
 }

@@ -68,7 +68,7 @@ proc create_containerinspector {name geom args} {
 }
 
 proc create_messageinspector {name geom} {
-    global fonts icons
+    global fonts icons help_tips
 
     set w $name
     create_inspector_toplevel $w $geom
@@ -78,7 +78,7 @@ proc create_messageinspector {name geom} {
     pack $w.toolbar.revert -anchor n -side right -padx 0 -pady 2
     pack $w.toolbar.apply -anchor n -side right -padx 0 -pady 2
 
-    set help_tips($w.toolbar.apply)   {Apply changes}
+    set help_tips($w.toolbar.apply)   {Apply changes (Enter)}
     set help_tips($w.toolbar.revert)  {Revert}
 
     set nb $w.nb
@@ -152,7 +152,7 @@ proc create_watchinspector {name geom} {
 }
 
 proc create_parinspector {name geom} {
-    global fonts icons
+    global fonts icons help_tips
 
     set w $name
     create_inspector_toplevel $w $geom
@@ -162,7 +162,7 @@ proc create_parinspector {name geom} {
     pack $w.toolbar.revert -anchor n -side right -padx 0 -pady 2
     pack $w.toolbar.apply -anchor n -side right -padx 0 -pady 2
 
-    set help_tips($w.toolbar.apply)   {Apply changes}
+    set help_tips($w.toolbar.apply)   {Apply changes (Enter)}
     set help_tips($w.toolbar.revert)  {Revert}
 
     frame $w.main

@@ -266,7 +266,7 @@ proc draw_submod {c submodptr x y name dispstr} {
        }
 
    } errmsg] {
-       tk_messageBox -type ok -title Error -icon error \
+       tk_messageBox -type ok -title Error -icon error -parent [winfo toplevel [focus]] \
                      -message "Error in display string of $name: $errmsg"
    }
 }
@@ -331,7 +331,7 @@ proc draw_enclosingmod {c ptr name dispstr} {
 
 
    } errmsg] {
-       tk_messageBox -type ok -title Error -icon error \
+       tk_messageBox -type ok -title Error -icon error -parent [winfo toplevel [focus]] \
                      -message "Error in display string of $name: $errmsg"
    }
 }
@@ -384,7 +384,7 @@ proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n
        $c create line $arrow_coords -arrow last -fill $fill -width $width -tags "dx tooltip conn $gateptr"
 
     } errmsg] {
-       tk_messageBox -type ok -title Error -icon error \
+       tk_messageBox -type ok -title Error -icon error -parent [winfo toplevel [focus]] \
                      -message "Error in display string of a connection: $errmsg"
     }
 }
