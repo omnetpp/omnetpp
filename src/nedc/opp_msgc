@@ -16,7 +16,12 @@ eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}' && eval 'exec perl -S $0 $
 $Usage = 'opp_msgc - part of OMNeT++. (c) 2002-2003 Andras Varga
 Message subclassing compiler (experimental prototype, written in Perl)
 
-usage: opp_msgc [-s <cc-file-suffix>] [-t <h-file-suffix>] <nedfile>
+Usage: opp_msgc [-s <cc-file-suffix>] [-t <h-file-suffix>]
+                [-I <dir> -I ...] [-h] <nedfile>
+  -I <dir>    add directory to include path
+  -s <suffix> output C++ file suffix (defaults to: _m.cc)
+  -t <suffix> output C++ header file suffix (defaults to: _m.h)
+  -h          output in current directory
 ';
 
 if ($#ARGV == -1)
@@ -52,6 +57,10 @@ while (@ARGV)
     {
         # import not supported: just ignore -I<dir> for now
     }
+    elsif ($arg eq "-h")
+    {
+        $here = "true";
+    }
     elsif ($filename eq '')
     {
         $filename = $arg;
@@ -70,11 +79,20 @@ $filename =~ /./ || die "*** no file name given\n";
 $filename =~ /\.[^\/]*$/ || die "*** file name must contain a dot\n";
 $hfile = $filename;
 $hfile =~ s/\.[^.]*$/$hsuffix/;
+if ($here eq "true")
+{
+    $hfile =~ s/^.*[\\\/]//;
+}
 $hdef =  $hfile;
 $hdef =~ s/\.[^.]*$/_H_/;
 $hdef =~ tr/[a-z]/[A-Z]/;
+$hdef =~ tr/[\/]/\_/;
 $ccfile = $filename;
 $ccfile =~ s/\.[^.]*$/$ccsuffix/;
+if ($here eq "true")
+{
+    $ccfile =~ s/^.*[\\\/]//;
+}
 
 $ret = 0;
 
