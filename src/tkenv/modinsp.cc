@@ -307,8 +307,8 @@ int TGraphicalModWindow::redrawMessages(Tcl_Interp *interp, int, const char **)
    cSimpleModule *mod = (cSimpleModule *)object;
 
    setInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
-   setInspectButton(".toolbar.params", &(mod->paramv),INSP_DEFAULT);
-   setInspectButton(".toolbar.gates", &(mod->gatev),INSP_DEFAULT);
+   //setInspectButton(".toolbar.params", &(mod->paramv),INSP_DEFAULT);
+   //setInspectButton(".toolbar.gates", &(mod->gatev),INSP_DEFAULT);
 
    // loop through all messages in the event queue and display them
    CHK(Tcl_VarEval(interp, canvas, " delete msg msgname", NULL));
@@ -410,8 +410,11 @@ int TGraphicalModWindow::getDisplayStringPar(Tcl_Interp *interp, int argc, const
    if (par->type()=='S')
      Tcl_SetResult(interp, const_cast<char*>(par->stringValue()), TCL_VOLATILE);
    else
-     sprintf(interp->result, "%g", par->doubleValue()); // FIXME use Tcl_SetResult()
-
+   {
+     char buf[30];
+     sprintf(buf, "%g", par->doubleValue());
+     Tcl_SetResult(interp, buf, TCL_VOLATILE);
+   }
    return TCL_OK;
 }
 
@@ -457,9 +460,11 @@ void TCompoundModInspector::update()
 
    setInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
 
-   setLabel(".nb.info.name.e", mod->fullPath());
-   char id[16]; sprintf(id,"#%ld", (long)mod->id());
+   setEntry(".nb.info.name.e", mod->name());
+   char id[16]; sprintf(id,"%ld", (long)mod->id());
    setLabel(".nb.info.id.e", id);
+   setEntry(".nb.info.dispstr.e", mod->displayString());
+   setEntry(".nb.info.dispstrpt.e", mod->displayStringAsParent());
 
    deleteInspectorListbox( ".nb.submods" );
    fillModuleListbox(".nb.submods", mod, infofunc_module, false, false);
@@ -469,7 +474,16 @@ void TCompoundModInspector::update()
 
    deleteInspectorListbox( ".nb.gates" );
    fillInspectorListbox(".nb.gates", &mod->gatev, infofunc_infotext, false);
+}
 
+void TCompoundModInspector::writeBack()
+{
+   cCompoundModule *mod = (cCompoundModule *)object;
+   mod->setName(getEntry(".nb.info.name.e"));
+   mod->setDisplayString(getEntry(".nb.info.dispstr.e"));
+   mod->setDisplayStringAsParent(getEntry(".nb.info.dispstrpt.e"));
+
+   TInspector::writeBack();    // must be there after all changes
 }
 
 //=======================================================================
@@ -514,11 +528,13 @@ void TSimpleModInspector::update()
    setInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
 
    char buf[40];
-   setLabel(".nb.info.name.e", mod->fullPath());
-   sprintf(buf,"#%ld", (long)mod->id());
+   setEntry(".nb.info.name.e", mod->name());
+   sprintf(buf,"%ld", (long)mod->id());
    setLabel(".nb.info.id.e", buf);
+   //setLabel(".nb.info.phase.e", mod->phase() );
+   setEntry(".nb.info.dispstr.e", mod->displayString() );
+   setEntry(".nb.info.dispstrpt.e", mod->displayStringAsParent() );
    setLabel(".nb.info.state.e",  modstate[ mod->moduleState() ]  );
-   setLabel(".nb.info.phase.e", mod->phase() );
    if (mod->usesActivity())
    {
       unsigned stk = mod->stackSize();
@@ -550,6 +566,16 @@ void TSimpleModInspector::update()
 
    deleteInspectorListbox( ".nb.submods" );
    fillModuleListbox(".nb.submods", mod, infofunc_module, false, false);
+}
+
+void TSimpleModInspector::writeBack()
+{
+   cSimpleModule *mod = (cSimpleModule *)object;
+   mod->setName(getEntry(".nb.info.name.e"));
+   mod->setDisplayString(getEntry(".nb.info.dispstr.e"));
+   mod->setDisplayStringAsParent(getEntry(".nb.info.dispstrpt.e"));
+
+   TInspector::writeBack();    // must be there after all changes
 }
 
 //=======================================================================

@@ -337,6 +337,7 @@ proc findDialog {w} {
     set tmp(case-sensitive)  $config(editor-case-sensitive)
     set tmp(whole-words)     $config(editor-whole-words)
     set tmp(regexp)          $config(editor-regexp)
+    set tmp(backwards)       $config(editor-backwards)
 
     # dialog should be child of the window which contains the text widget
     set dlg [winfo toplevel $w].dlg

@@ -175,7 +175,9 @@ int TStructPanel::inspectorCommand(Tcl_Interp *interp, int argc, const char **ar
    if (strcmp(argv[0],"count")==0)   // 'opp_inspectorcommand <inspector> fieldcount ...'
    {
       if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-      sprintf(interp->result, "%d", sd->getFieldCount()); // FIXME use Tcl_SetResult()
+      char buf[20];
+      sprintf(buf, "%d", sd->getFieldCount());
+      Tcl_SetResult(interp, buf, TCL_VOLATILE);
       return TCL_OK;
    }
 
@@ -208,7 +210,7 @@ int TStructPanel::inspectorCommand(Tcl_Interp *interp, int argc, const char **ar
    {
       if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[1]);
-      strcpy(interp->result, sd->getFieldName(fld)); // FIXME use Tcl_SetResult()
+      Tcl_SetResult(interp, const_cast<char *>(sd->getFieldName(fld)), TCL_VOLATILE);
       return TCL_OK;
    }
 
@@ -216,7 +218,7 @@ int TStructPanel::inspectorCommand(Tcl_Interp *interp, int argc, const char **ar
    {
       if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[1]);
-      strcpy(interp->result, sd->getFieldTypeString(fld)); // FIXME use Tcl_SetResult()
+      Tcl_SetResult(interp, const_cast<char *>(sd->getFieldTypeString(fld)), TCL_VOLATILE);
       return TCL_OK;
    }
 
@@ -224,7 +226,9 @@ int TStructPanel::inspectorCommand(Tcl_Interp *interp, int argc, const char **ar
    {
       if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[1]);
-      sprintf(interp->result, "%d", sd->getArraySize(fld)); // FIXME use Tcl_SetResult()
+      char buf[20];
+      sprintf(buf, "%d", sd->getArraySize(fld));
+      Tcl_SetResult(interp, buf, TCL_VOLATILE);
       return TCL_OK;
    }
 
@@ -235,8 +239,13 @@ int TStructPanel::inspectorCommand(Tcl_Interp *interp, int argc, const char **ar
       int i=0;
       if (argc==4)
          i = atoi(argv[2]);
-      if (!sd->getFieldAsString(fld, i, interp->result, 128))  // FIXME use Tcl_SetResult()
+      char buf[128];
+      if (!sd->getFieldAsString(fld, i, buf, 128))
+      {
+         Tcl_SetResult(interp, "error in getFieldAsString()", TCL_STATIC);
          return TCL_ERROR;
+      }
+      Tcl_SetResult(interp, buf, TCL_VOLATILE);
       return TCL_OK;
    }
 
@@ -244,7 +253,7 @@ int TStructPanel::inspectorCommand(Tcl_Interp *interp, int argc, const char **ar
    {
       if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[1]);
-      strcpy(interp->result, sd->getFieldEnumName(fld));   // FIXME use Tcl_SetResult()
+      Tcl_SetResult(interp, const_cast<char *>(sd->getFieldEnumName(fld)), TCL_VOLATILE);
       return TCL_OK;
    }
 
@@ -252,7 +261,7 @@ int TStructPanel::inspectorCommand(Tcl_Interp *interp, int argc, const char **ar
    {
       if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[1]);
-      strcpy(interp->result, sd->getFieldStructName(fld));   // FIXME use Tcl_SetResult()
+      Tcl_SetResult(interp, const_cast<char *>(sd->getFieldStructName(fld)), TCL_VOLATILE);
       return TCL_OK;
    }
 

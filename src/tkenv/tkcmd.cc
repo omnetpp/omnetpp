@@ -314,10 +314,10 @@ int createSnapshot_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
-   try 
+   try
    {
        app->createSnapshot( argv[1] );
-   } 
+   }
    catch (cException *e)
    {
        Tcl_SetResult(interp, const_cast<char *>(e->message()), TCL_VOLATILE);
@@ -790,7 +790,9 @@ int inspectMatching_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
          return TCL_ERROR;
    }
    int count = inspectMatchingObjects(&simulation, interp, pattern, type, countonly); // FIXME was 'superhead'!
-   sprintf(interp->result,"%d", count); // FIXME use Tcl_SetResult()
+   char buf[20];
+   sprintf(buf,"%d", count);
+   Tcl_SetResult(interp, buf, TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -905,7 +907,9 @@ int inspectorType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
         int type = insptype_code_from_name( argv[1] );
         if (type<0)
            {Tcl_SetResult(interp, "unrecognized inspector type", TCL_STATIC);return TCL_ERROR;}
-        sprintf( interp->result, "%d", type); // FIXME use Tcl_SetResult()
+        char buf[20];
+        sprintf(buf, "%d", type);
+        Tcl_SetResult(interp, buf, TCL_VOLATILE);
    }
    return TCL_OK;
 }

@@ -1,3 +1,13 @@
+2003-01-06  Andras Varga
+
+	* display string added to module inspectors (editable)
+
+	* inspector toolbar improved
+
+2003-01-05  Andras Varga
+
+	* misc improvements, e.g. New Run and New Network icons added to toolbar
+
 2002-12-21  Andras Varga
 
         * all inspector windows: added a "name bar" which displays object

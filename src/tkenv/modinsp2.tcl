@@ -369,11 +369,12 @@ proc create_graphicalmodwindow {name geom} {
     iconbutton $w.toolbar.sep2   -separator
     iconbutton $w.toolbar.step   -image $icons(step) -command "one_step_in_module $w"
     iconbutton $w.toolbar.sep3   -separator
-    iconbutton $w.toolbar.params -image $icons(params) ;#command assigned from C++
-    iconbutton $w.toolbar.gates  -image $icons(gates)  ;#command assigned from C++
-    iconbutton $w.toolbar.sep4   -separator
+    #iconbutton $w.toolbar.params -image $icons(params) ;#command assigned from C++
+    #iconbutton $w.toolbar.gates  -image $icons(gates)  ;#command assigned from C++
+    #iconbutton $w.toolbar.sep4   -separator
     iconbutton $w.toolbar.redraw -image $icons(redraw) -command "graphmodwin_redraw $w 1"
-    foreach i {ascont win sep1 parent sep2 step sep3 params gates sep4 redraw} {
+    #foreach i {ascont win sep1 parent sep2 step sep3 params gates sep4 redraw}
+    foreach i {ascont win sep1 parent sep2 step sep3 redraw} {
        pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
     }
     bind $w <Control-F4> "one_step_in_module $w"
@@ -382,8 +383,8 @@ proc create_graphicalmodwindow {name geom} {
     set help_tips($w.toolbar.win)     {See module output}
     set help_tips($w.toolbar.parent)  {Inspect parent module}
     set help_tips($w.toolbar.step)    {Stop at events in this module (Ctrl-F4)}
-    set help_tips($w.toolbar.params)  {Inspect parameters}
-    set help_tips($w.toolbar.gates)   {Inspect gates}
+    #set help_tips($w.toolbar.params)  {Inspect parameters}
+    #set help_tips($w.toolbar.gates)   {Inspect gates}
     set help_tips($w.toolbar.redraw)  {Rearrange randomly placed submodules}
 
     # create canvas

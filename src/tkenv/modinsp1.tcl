@@ -48,10 +48,14 @@ proc create_compoundmodinspector {name geom} {
     notebook_addpage $nb gates   {Gates}
 
     # page 1: info
-    label-sunkenlabel $nb.info.name {Module name:}
+    label-entry $nb.info.name {Module name:}
     label-sunkenlabel $nb.info.id {Module ID:}
+    label-entry $nb.info.dispstr {Display string:}
+    label-entry $nb.info.dispstrpt {Disp.str. as parent:}
     pack $nb.info.name -anchor center -fill x -side top
     pack $nb.info.id -anchor center -fill x -side top
+    pack $nb.info.dispstr -anchor center -fill x -side top
+    pack $nb.info.dispstrpt -anchor center -fill x -side top
 
     # other pages:
     create_inspector_listbox $nb.submods
@@ -92,16 +96,20 @@ proc create_simplemodinspector {name geom} {
     notebook_addpage $nb submods {Submods}
 
     # page 1: info
-    label-sunkenlabel $nb.info.name {Module name:}
+    label-entry $nb.info.name {Module name:}
     label-sunkenlabel $nb.info.id {Module ID:}
+    #label-sunkenlabel $nb.info.phase {Phase:}
+    label-entry $nb.info.dispstr {Display string:}
+    label-entry $nb.info.dispstrpt {Disp.str. as parent:}
     label-sunkenlabel $nb.info.state {State:}
-    label-sunkenlabel $nb.info.phase {Phase:}
     label-sunkenlabel $nb.info.stacksize {Stack size:}
     label-sunkenlabel $nb.info.stackused {Stack used:}
     pack $nb.info.name -anchor center -fill x -side top
     pack $nb.info.id -anchor center -fill x -side top
     pack $nb.info.state -anchor center  -fill x -side top
-    pack $nb.info.phase -anchor center  -fill x -side top
+    pack $nb.info.dispstr -anchor center -fill x -side top
+    pack $nb.info.dispstrpt -anchor center -fill x -side top
+    #pack $nb.info.phase -anchor center  -fill x -side top
     pack $nb.info.stacksize -anchor center  -fill x -side top
     pack $nb.info.stackused -anchor center  -fill x -side top
 

@@ -60,6 +60,7 @@ class TCompoundModInspector: public TInspector
       TCompoundModInspector(cObject *obj,int typ,const char *geom,void *dat=NULL);
       virtual void createWindow();
       virtual void update();
+      virtual void writeBack();
 };
 
 
@@ -69,6 +70,7 @@ class TSimpleModInspector: public TInspector
       TSimpleModInspector(cObject *obj,int typ,const char *geom,void *dat=NULL);
       virtual void createWindow();
       virtual void update();
+      virtual void writeBack();
 };
 
 
