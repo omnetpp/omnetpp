@@ -13,7 +13,6 @@ OMNETPP_SRC_DIR =       @OMNETPP_SRC_DIR@
 OMNETPP_INCL_DIR =      @OMNETPP_INCL_DIR@
 OMNETPP_DOC_DIR =       @OMNETPP_DOC_DIR@
 OMNETPP_SAMPLES_DIR =   @OMNETPP_SAMPLES_DIR@
-OMNETPP_TUTORIAL_DIR =  @OMNETPP_TUTORIAL_DIR@
 OMNETPP_TEST_DIR =      @OMNETPP_TEST_DIR@
 
 #=====================================================================
@@ -181,7 +180,6 @@ clean:
 	for i in $(SAMPLES); do \
 	    (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) clean); \
 	done
-	cd $(OMNETPP_TUTORIAL_DIR)/queues && $(MAKE) clean
 	cd $(OMNETPP_TEST_DIR) && $(MAKE) clean
 
 depend: utils
@@ -196,5 +194,4 @@ makefiles:
 	for i in $(SAMPLES); do \
 	    (cd $(OMNETPP_SAMPLES_DIR)/$$i && (opp_makemake -f; opp_makemake -f -m)); \
 	done
-	cd $(OMNETPP_TUTORIAL_DIR)/queues && (opp_makemake -f; opp_makemake -f -m)
 
