@@ -455,7 +455,7 @@ proc checkVersion {} {
       wm protocol . WM_DELETE_WINDOW {exit}
       tkwait variable ok
    }
-   if {[string compare $tk_patchLevel "8.0p1"]<0} {
+   if {$tk_patchLevel=="8.0"} {
       tk_messageBox -title {Warning} -type ok -icon warning \
         -message {Old Tcl/Tk version. At least 8.0p1 is strongly recommended!}
    }

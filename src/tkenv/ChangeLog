@@ -361,4 +361,6 @@ May 5, 2000
    to be explicitly stored)...
 May 7, 2000
  - Makefile.vc improvements from Balazs Kelemen
+ - tk_PatchLevel check corrected (complained about Tk 8.0.5) [reported by
+   Ulrich Kaage]
 
