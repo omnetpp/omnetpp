@@ -42,3 +42,5 @@ Mention Excel's Pivot Table and OpenOffice's Data Pilot functionality
 in the documentation
 
 implement "Copy special"
+
+require BLT 2.4z -- if {$blt_patchLevel!="2.4z"} {error "BLT too old"}
