@@ -98,3 +98,7 @@ Aug 13, 1999
 Sept 20, 1999
  - typo fixed in Makefile.in: $(CLFAGS) --> $(CFLAGS)
 ------ omnetpp-2.0b2 released ------
+Dec 4,1999
+  - compiled with MSVC. cmdenv.dsp added. NOTE: one has to rename all .cc files
+    to .cpp for compiling (ren *.cc *.cpp)!
+  - To Do: check heap.cc
