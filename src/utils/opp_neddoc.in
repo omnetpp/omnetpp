@@ -298,7 +298,7 @@ if ($screenshots)
     }
     else
     {
-        print "skipping diagram exporting (no Postscript-to-JPG converter configured)" if $verbose;
+        print "skipping diagram export (Ghostscript not available)\n" if $verbose;
         $imagesxml = "";
     }
 }
