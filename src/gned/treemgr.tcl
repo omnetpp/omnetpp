@@ -156,8 +156,10 @@ proc treemanagerDoubleClick {key} {
 
     if {$ned($key,type)=="nedfile"} {
         Tree:toggle $gned(manager).tree $key
-    } else {
+    } elseif {$ned($ned($key,parentkey),type)=="nedfile"} {
         openModuleOnCanvas $key
+    } else {
+        Tree:toggle $gned(manager).tree $key
     }
 }
 
@@ -191,8 +193,6 @@ proc nedfilePopup {key} {
       {separator}
       {command -command "moveUpItem $key; updateTreeManager" -label {Move up} -underline 5}
       {command -command "moveDownItem $key; updateTreeManager" -label {Move down} -underline 5}
-      {separator}
-      {command -command "deleteItem $key; updateTreeManager" -label {Delete}}
     } {
        eval .popup add $i
     }
@@ -213,8 +213,9 @@ proc toplevelComponentPopup {key} {
     global ned
     # FIXME:
     foreach i {
-      {command -command "openModuleOnCanvas $key" -label {Open on canvas} -underline 0}
       {command -command "displayCodeForItem $key" -label {Show NED code...} -underline 0}
+      {separator}
+      {command -command "openModuleOnCanvas $key" -label {Open on canvas} -underline 0}
       {separator}
       {command -command "moveUpItem $key; updateTreeManager" -label {Move up} -underline 5}
       {command -command "moveDownItem $key; updateTreeManager" -label {Move down} -underline 5}
@@ -299,7 +300,6 @@ proc displayCodeForItem {key} {
     # create widgets
     toplevel $w -class Toplevel
     wm focusmodel $w passive
-    wm geometry $w 512x275
     wm maxsize $w 1009 738
     wm minsize $w 1 1
     wm overrideredirect $w 0
@@ -309,19 +309,25 @@ proc displayCodeForItem {key} {
     frame $w.main
     scrollbar $w.main.sb -borderwidth 1 -command "$w.main.text yview"
     pack $w.main.sb -anchor center -expand 0 -fill y -side right
-    text $w.main.text -width 60 -yscrollcommand "$w.main.sb set" -wrap none -font $fonts(fixed) -bg #c0c0c0
+    text $w.main.text -width 60 -height 20 -yscrollcommand "$w.main.sb set" \
+         -wrap none -font $fonts(normal) -relief groove
     pack $w.main.text -anchor center -expand 1 -fill both -side left
 
     frame $w.butt
     button $w.butt.close -text Close -command "destroy $w"
-    pack $w.butt.close -anchor n -expand 0 -side right
+    pack $w.butt.close -anchor n -expand 0
 
-    pack $w.butt -expand 0 -fill x -side bottom
-    pack $w.main -expand 1 -fill both -side top
+    pack $w.butt -expand 0 -fill x -side bottom -padx 5 -pady 5
+    pack $w.main -expand 1 -fill both -side top -padx 5 -pady 5
+    focus $w.main.text
 
     # produce ned code and put it into text widget
     set nedcode [generateNed $key]
     $w.main.text insert end $nedcode
+    $w.main.text mark set insert 1.0
+
+    # must be left last because one can't insert text into a disabled widget even from program
+    $w.main.text config -state disabled
 }
 
 

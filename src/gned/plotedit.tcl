@@ -63,7 +63,7 @@ proc selectOrMoveBindings c {
     bind $c <Delete>           "deleteSelected"
     bind $c <Escape>           "catch {destroy .popup}"
     bind $c <Double-1>         "selectOrMoveEnd $c %x %y; openSubmodule $c"
-    bind $c <Button-3>         "popupMenu $c %x %y"
+    bind $c <Button-3>         "popupMenu $c %X %Y"
     bind $c <Button-1>         "selectOrMoveStart $c %x %y 0"
     bind $c <Control-Button-1> "selectOrMoveStart $c %x %y 1"
     bind $c <B1-Motion>        "selectOrMoveDrag $c %x %y"
