@@ -24,7 +24,7 @@ class cAccuracyDetection;
 // cStatistic - base class of different statistic collecting classes
 //   NOTE: Provides no functionality, only defines virtual functions
 
-class cStatistic : public cObject
+class SIM_API cStatistic : public cObject
 {
   public:
     cTransientDetection *td;    // ptr to associated object
@@ -86,7 +86,7 @@ class cStatistic : public cObject
 //==========================================================================
 // cStdDev - collects min, max, mean, standard deviation
 
-class cStdDev : public cStatistic
+class SIM_API cStdDev : public cStatistic
 {
   protected:
     long num_samples;
@@ -132,7 +132,7 @@ class cStdDev : public cStatistic
 //==========================================================================
 // cWeightedStdDev - collects min, max, mean, std. dev. of weighted stats
 
-class cWeightedStdDev : public cStdDev
+class SIM_API cWeightedStdDev : public cStdDev
 {
   protected:
     double sum_weights;
@@ -163,6 +163,5 @@ class cWeightedStdDev : public cStdDev
     virtual void loadFromFile(FILE *);
 
 };
-
 
 #endif

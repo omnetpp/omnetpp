@@ -25,7 +25,7 @@
 //  adds a vector of counters to cDensityEstBase
 //
 
-class cHistogramBase : public cDensityEstBase
+class SIM_API cHistogramBase : public cDensityEstBase
 {
   protected:
     int num_cells;        // nr. of categories
@@ -57,7 +57,7 @@ class cHistogramBase : public cDensityEstBase
 //==========================================================================
 // cEqdHistogramBase
 
-class cEqdHistogramBase : public cHistogramBase //--LG
+class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
 {
   protected:
     double cellsize;            // cell/category  sizes
@@ -92,7 +92,7 @@ class cEqdHistogramBase : public cHistogramBase //--LG
 //==========================================================================
 // cLongHistogram - long int distribution result
 
-class cLongHistogram : public cEqdHistogramBase
+class SIM_API cLongHistogram : public cEqdHistogramBase
 {
   public:
     cLongHistogram(cLongHistogram& r) : cEqdHistogramBase(r)
@@ -118,7 +118,7 @@ class cLongHistogram : public cEqdHistogramBase
 //==========================================================================
 // cDoubleHistogram - double distribution result
 
-class cDoubleHistogram : public cEqdHistogramBase
+class SIM_API cDoubleHistogram : public cEqdHistogramBase
 {
   public:
     cDoubleHistogram(cDoubleHistogram& r) : cEqdHistogramBase(r)

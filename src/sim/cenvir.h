@@ -34,7 +34,8 @@ class TOmnetApp;
 //=== class declared:
 class cEnvir;
 
-extern cEnvir ev;               // the environment object
+// the environment object global instance
+ENVIR_API extern cEnvir ev;
 
 // return codes for runningMode()
 enum { SLAVE_MODE = 0,  // must be 0
@@ -43,10 +44,12 @@ enum { SLAVE_MODE = 0,  // must be 0
        STARTUPERROR_MODE = 3
      };
 
+ENVIR_API bool memoryIsLow();
+
 //==========================================================================
 // cEnvir
 
-class cEnvir
+class ENVIR_API cEnvir
 {
   public:
     int argc;

@@ -39,7 +39,8 @@ enum {
 };
 
 //=== display string selector
-enum { dispSUBMOD=0,        // display string: "as submodule"
+enum {
+       dispSUBMOD=0,        // display string: "as submodule"
        dispENCLOSINGMOD=1,  // display string: "as enclosing module"
        dispNUMTYPES         // this one must always be the last element
 };
@@ -60,18 +61,18 @@ class  cSimulation;
 class  cNetworkType;
 
 //=== global vector of modules:
-extern cSimulation simulation;
+SIM_API extern cSimulation simulation;
 
 extern char *modstate[];
 
 //=== to connect two gates:
-void connect(cModule *frm, int frg,
-             cLinkType *linkp,
-             cModule *tom, int tog);
+SIM_API void connect(cModule *frm, int frg,
+                     cLinkType *linkp,
+                     cModule *tom, int tog);
 
-void connect(cModule *frm, int frg,
-             cPar *delayp, cPar *errorp, cPar *dataratep,
-             cModule *tom, int tog);
+SIM_API void connect(cModule *frm, int frg,
+                     cPar *delayp, cPar *errorp, cPar *dataratep,
+                     cModule *tom, int tog);
 
 //=== operator new used by the NEW() macro:
 class ___nosuchclass;
@@ -86,7 +87,7 @@ void *operator new(size_t m,___nosuchclass *);
 
 typedef TInspector *(InspCreateFunc)(cObject *, int, void *);
 
-class cModule : public cObject
+class SIM_API cModule : public cObject
 {
     friend class cGate;
     friend class cSimulation;
@@ -225,7 +226,7 @@ struct sBlock
 // cSimpleModule - represents a simple module in the simulation
 //     cSimpleModule is an abstract base class for user-written modules
 
-class cSimpleModule : public cCoroutine, public cModule
+class SIM_API cSimpleModule : public cCoroutine, public cModule
 {
     friend class cModule;
     friend class cSimulation;
@@ -357,7 +358,7 @@ class cSimpleModule : public cCoroutine, public cModule
 // cCompoundModule - represents a compound module in the simulation
 //   NOTE: dup() cannot be used. Use moduleType()->create() instead.
 
-class cCompoundModule : public cModule
+class SIM_API cCompoundModule : public cModule
 {
     friend class TCompoundModInspector;
   protected:
@@ -391,7 +392,7 @@ class cCompoundModule : public cModule
 //  cSubModIterator : iterates through submodules of a compound module
 //   NOTE: not a cObject descendant!
 
-class cSubModIterator
+class SIM_API cSubModIterator
 {
   private:
     cModule *parent;

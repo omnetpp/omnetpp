@@ -24,9 +24,29 @@
 #include <math.h>     // HUGE_VAL
 
 
+//=== Windows DLL IMPORT/EXPORT stuff
+#define DLLIMPORT  __declspec( dllimport )
+#define DLLEXPORT  __declspec( dllexport )
+
+#ifdef _WIN32
+#  ifdef BUILDING_SIM
+#    define SIM_API  DLLEXPORT
+#  else
+#    define SIM_API  DLLIMPORT
+#  endif
+#  ifdef BUILDING_ENVIR
+#    define ENVIR_API  DLLEXPORT
+#  else
+#    define ENVIR_API  DLLIMPORT
+#  endif
+#else
+#  define SIM_API
+#  define ENVIR_API
+#endif
+
 //=== NULL
 #ifndef NULL
-# define NULL ((void*)0)
+#define NULL ((void*)0)
 #endif
 
 #define NO(cXX)   ((cXX *)NULL)
@@ -34,8 +54,8 @@
 //=== other common defines
 
 #ifndef TRUE
-# define TRUE      true
-# define FALSE     false
+#define TRUE      true
+#define FALSE     false
 #endif
 
 //// old compilers which don't know bool are no longer supported

@@ -29,7 +29,7 @@
 // cPSquare - calculates quantile values without storing the observations
 //
 
-class cPSquare : public cDensityEstBase
+class SIM_API cPSquare : public cDensityEstBase
 {
   protected:
     int numcells;      // number of observations
@@ -58,7 +58,7 @@ class cPSquare : public cDensityEstBase
     virtual void setRangeAutoLower(double,int,double) {giveError();}
     virtual void setRangeAutoUpper(double,int,double) {giveError();}
     virtual void setNumFirstVals(int) {giveError();}
- private:
+  private:
     void giveError(); // issues error message
 
   protected:

@@ -39,7 +39,7 @@ struct sQElem
 //-------------------------------------------------------------------------
 // cQueue: a sorted queue of cObjs
 
-class cQueue : public cObject
+class SIM_API cQueue : public cObject
 {
     friend class cQueueIterator;
   private:
@@ -91,7 +91,7 @@ class cQueue : public cObject
 //  cQueueIterator : walks along a cQueue
 //   NOTE: not a cObject descendant!
 
-class cQueueIterator
+class SIM_API cQueueIterator
 {
   private:
     sQElem *p;

@@ -40,7 +40,7 @@ class  cInspectorFactory;
 // cHead : head of a cObject chain
 //    NOTE: CANNOT dup() itself! (dup() only creates a cObject)
 
-class cHead : public cObject
+class SIM_API cHead : public cObject
 {
        friend class cIterator;
        friend class cObject;
@@ -63,7 +63,7 @@ class cHead : public cObject
 //  cIterator : walks along a cHead-cObject list
 //   NOTE: not a cObject descendant!
 
-class cIterator
+class SIM_API cIterator
 {
    private:
       cObject *p;

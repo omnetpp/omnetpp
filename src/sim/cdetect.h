@@ -46,7 +46,7 @@ typedef void (*PostADFunc)(cAccuracyDetection *, void *);
 //===NL=====================================================================
 // cTransientDetection - virtual base class for transient detection
 
-class cTransientDetection : public cObject
+class SIM_API cTransientDetection : public cObject
 {
   private:
     cStatistic *back;          // ptr to cStatistic that uses this object
@@ -75,7 +75,7 @@ class cTransientDetection : public cObject
 //===NL=====================================================================
 // cAccuracyDetection - virtual base class for result accuracy detection
 
-class cAccuracyDetection : public cObject
+class SIM_API cAccuracyDetection : public cObject
 {
   private:
     cStatistic *back;              // ptr to cStatistic that uses this object
@@ -104,7 +104,7 @@ class cAccuracyDetection : public cObject
 //===NL======================================================================
 // cTDExpandingWindows - first algorithm for transient detection
 
-class cTDExpandingWindows : public cTransientDetection
+class SIM_API cTDExpandingWindows : public cTransientDetection
 {
   private:
     bool go;                  // collect & detect
@@ -149,7 +149,7 @@ class cTDExpandingWindows : public cTransientDetection
 //===NL======================================================================
 // cADByStddev - first algorithm for detecting result accuracy
 
-class cADByStddev : public cAccuracyDetection
+class SIM_API cADByStddev : public cAccuracyDetection
 {
   private:
     bool go;                    // start collecting if true

@@ -23,15 +23,12 @@
 
 #include "cmessage.h"
 
-//=== classes declared here:
-class  cPacket;
-
 //==========================================================================
 // cPacket: network packet class
 //  - adds protocol and PDU type to cMessage
 //  - message kind must be either MK_PACKET or MK_INFO for cPackets
 //
-class cPacket : public cMessage
+class SIM_API cPacket : public cMessage
 {
   protected:
     short _protocol;
@@ -54,7 +51,6 @@ class cPacket : public cMessage
     void setProtocol(short p) {_protocol=p;}
     void setPdu(short p)      {_pdu=p;}
 };
-
 
 #endif
 

@@ -100,7 +100,7 @@
 //
 // cFSM: class to store the state of an FSM
 //
-class cFSM : public cObject
+class SIM_API cFSM : public cObject
 {
   private:
     //

@@ -58,7 +58,7 @@ enum {
 //==========================================================================
 // cMessage: the message class
 
-class cMessage : public cObject
+class SIM_API cMessage : public cObject
 {
     friend class cGate;
     friend class cModule;

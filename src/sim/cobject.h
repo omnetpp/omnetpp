@@ -34,14 +34,14 @@ class  cIterator;
 class  cHead;
 
 //=== Global objects:
-extern cHead superhead;           // list of global lists
-extern cHead networks;            // list of available networks
-extern cHead modinterfaces;       // list of all module interfaces
-extern cHead modtypes;            // list of all module types
-extern cHead linktypes;           // list of link types
-extern cHead functions;           // list of function types
-extern cHead classes;             // list of cClassRegister objects
-extern cHead inspectorfactories;  // list of cInspectorFactory objects
+SIM_API extern cHead superhead;           // list of global lists
+SIM_API extern cHead networks;            // list of available networks
+SIM_API extern cHead modinterfaces;       // list of all module interfaces
+SIM_API extern cHead modtypes;            // list of all module types
+SIM_API extern cHead linktypes;           // list of link types
+SIM_API extern cHead functions;           // list of function types
+SIM_API extern cHead classes;             // list of cClassRegister objects
+SIM_API extern cHead inspectorfactories;  // list of cInspectorFactory objects
 
 typedef int (*CompareFunc)(cObject *, cObject *);
 typedef bool (*ForeachFunc)(cObject *,bool);
@@ -53,7 +53,7 @@ typedef bool (*ForeachFunc)(cObject *,bool);
 //         ownership control
 //         virtual functions for derived classes
 
-class cObject
+class SIM_API cObject
 {
     friend class cHead;
     friend class cIterator;
@@ -67,7 +67,8 @@ class cObject
     cObject *ownerp, *prevp, *nextp;  // ptr to owner; linked list ptrs
     cObject *firstchildp;             // list of owned objects
 
-    static int staticflag, heapflag;  // to determine 'storage'
+    static int staticflag;            // to determine 'storage' (1 while in main())
+    static int heapflag;              // to determine 'storage' (1 immediately after 'new')
 
   protected:
     //

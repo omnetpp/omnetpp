@@ -84,7 +84,7 @@ struct sXElem
 //   I indirection (refers to another cPar)
 //
 
-class cPar : public cObject
+class SIM_API cPar : public cObject
 {
   protected:
     static char *possibletypes;
@@ -235,7 +235,7 @@ inline void sXElem::operator=(cPar& _r)  {type='R'; p=(cPar *)_r.dup();}
 //
 //   NOTE: dup() creates only a cPar NOT a cModulePar!
 
-class cModulePar : public cPar
+class SIM_API cModulePar : public cPar
 {
     friend class cModule;
   private:

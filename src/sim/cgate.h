@@ -33,7 +33,7 @@ class  cLinkType;
 //==========================================================================
 // cGate - represents a gate
 
-class cGate : public cObject
+class SIM_API cGate : public cObject
 {
     friend class cModule;
   protected:

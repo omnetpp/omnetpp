@@ -33,7 +33,7 @@ class sTopoLinkIn;
 class sTopoLinkOut;
 
 
-class sTopoNode
+class SIM_API sTopoNode
 {
     friend class cTopology;
   private:
@@ -72,7 +72,7 @@ class sTopoNode
     sTopoLinkOut *path(int)     {return (sTopoLinkOut *)out_path;}
 };
 
-class sTopoLink
+class SIM_API sTopoLink
 {
     friend class cTopology;
   protected:
@@ -92,7 +92,7 @@ class sTopoLink
 
 // sTopoLinkIn, sTopoLinkOut: two different 'user interfaces' for sTopoLink
 
-class sTopoLinkIn : public sTopoLink
+class SIM_API sTopoLinkIn : public sTopoLink
 {
   public:
     sTopoNode *remoteNode()  {return src_node;}
@@ -102,7 +102,7 @@ class sTopoLinkIn : public sTopoLink
     cGate *localGate()       {return dest_node->module()->gate(dest_gate);}
 };
 
-class sTopoLinkOut : public sTopoLink
+class SIM_API sTopoLinkOut : public sTopoLink
 {
   public:
     sTopoNode *remoteNode()  {return dest_node;}
@@ -113,7 +113,7 @@ class sTopoLinkOut : public sTopoLink
 };
 
 
-class cTopology : public cObject
+class SIM_API cTopology : public cObject
 {
   protected:
     int num_nodes;

@@ -45,7 +45,7 @@
 //                rangemin                       rangemax
 //
 
-class cDensityEstBase : public cStdDev
+class SIM_API cDensityEstBase : public cStdDev
 {
   public:
     // to range_mode:

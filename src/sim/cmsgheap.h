@@ -29,7 +29,7 @@ class cMessage;
 // cMessageHeap: object to store future event set
 //    underlying data structure is heap; vector expands as needed
 
-class cMessageHeap : public cObject
+class SIM_API cMessageHeap : public cObject
 {
     friend class cMessageHeapIterator;
   private:
@@ -70,7 +70,7 @@ class cMessageHeap : public cObject
 //   Objects are not necessarily ordered by arrival time!
 //   Use msgheap->sort() if necessary before using the iterator.
 
-class cMessageHeapIterator
+class SIM_API cMessageHeapIterator
 {
   private:
     cMessageHeap *q;

@@ -51,7 +51,7 @@ enum {
 //   2: collect samples and transform() makes the boundaries
 //
 
-class cVarHistogram : public cHistogramBase //--LG
+class SIM_API cVarHistogram : public cHistogramBase //--LG
 {
   protected:
     int transform_type;     // one of the HIST_TR_xxx constants
@@ -102,3 +102,4 @@ class cVarHistogram : public cHistogramBase //--LG
 };
 
 #endif
+

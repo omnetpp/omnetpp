@@ -35,7 +35,7 @@ class cMessage;
 
 // is_started_as_master:
 //   called from envir to determine whether this is a master or slave
-int is_started_as_master();
+SIM_API int is_started_as_master();
 
 //===========================================================================
 //  cNetMod:
@@ -54,7 +54,7 @@ int is_started_as_master();
 //      interface.(e.g.:pvmmod.cc)
 //
 
-class cNetMod : public cModule
+class SIM_API cNetMod : public cModule
 {
     friend class cSimulation;
 

@@ -797,3 +797,5 @@ Mar 26, 2000
    replacements throughout the code) -- this will affect the UI libraries too
  - header files indentation uniformized; other little cleanups, e.g. some
    method parameter names made mode descriptive
+Mar 28, 2000
+ - SIM_API macro added to public classes and functions to export them on Windows

@@ -44,12 +44,12 @@ class  TModInspector;
 class  cStatistic;
 
 //=== global vector of modules:
-extern cSimulation simulation;
+SIM_API extern cSimulation simulation;
 
 //==========================================================================
 // cSimulation  : simulation management class; only one instance
 
-class cSimulation : public cObject
+class SIM_API cSimulation : public cObject
 {
      friend class cSimpleModule;
    private:

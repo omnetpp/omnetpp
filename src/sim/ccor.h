@@ -72,7 +72,7 @@ extern "C"
 // cCoroutine - low-level coroutine; used by cSimpleModule
 //   NOTE: Not a cObject-descendant
 
-class cCoroutine
+class SIM_API cCoroutine
 {
   private:
 #ifdef PORTABLE_COROUTINES

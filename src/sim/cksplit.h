@@ -59,7 +59,7 @@ struct sGrid
 //==========================================================================
 // cKSplit
 
-class cKSplit : public cDensityEstBase
+class SIM_API cKSplit : public cDensityEstBase
 {
     friend class cKSplitIterator;
 
@@ -139,7 +139,7 @@ class cKSplit : public cDensityEstBase
     sGrid& rootGrid()  {return gridv[rootgrid];}
 };
 
-class cKSplitIterator
+class SIM_API cKSplitIterator
 {
   private:
     cKSplit *ks;             // host object

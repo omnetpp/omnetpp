@@ -32,7 +32,7 @@ class  cBag;
 // cBag - container class to hold small non-class items (int, double etc.)
 //        cBag stores full copy of each item inserted and NOT the pointer
 
-class cBag : public cObject
+class SIM_API cBag : public cObject
 {
   private:
     char *vect;
@@ -76,7 +76,7 @@ class cBag : public cObject
 //    By default, cArray stores the pointers of the objects.
 //    If you want it to make an own copy, set takeOwnership().
 
-class cArray : public cObject
+class SIM_API cArray : public cObject
 {
   private:
     cObject **vect;   // vector of objects

@@ -39,7 +39,7 @@ struct sLLElem
 //-------------------------------------------------------------------------
 // cLinkedList: a double-linked list of items, with a cQueue-like interface
 
-class cLinkedList : public cObject
+class SIM_API cLinkedList : public cObject
 {
     friend class cLinkedListIterator;
   private:
@@ -95,7 +95,7 @@ class cLinkedList : public cObject
 //  cLinkedListIterator : walks along a cLinkedList
 //   NOTE: not a cObject descendant!
 
-class cLinkedListIterator
+class SIM_API cLinkedListIterator
 {
   private:
     sLLElem *p;

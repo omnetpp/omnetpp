@@ -37,7 +37,7 @@
 //   This class is responsible for handling the output file for cOutVectors.
 //   cOutFileMgr is also used in module parameter change logging
 
-class cOutFileMgr : public cObject
+class SIM_API cOutFileMgr : public cObject
 {
     long nextID;       // holds next free ID for output vectors
     opp_string fname;  // output file name
@@ -86,7 +86,7 @@ typedef void (*RecordFunc)(void *, double, double);
 class TOutVectorInspector;
 class TOutVectorWindow;
 
-class cOutVector : public cObject
+class SIM_API cOutVector : public cObject
 {
   protected:
     bool enabled;        // write to the output file can be enabled/disabled

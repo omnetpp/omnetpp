@@ -48,7 +48,7 @@ class  cWatch;
 //   or
 //       LWATCH( count );
 //
-class cWatch : public cObject
+class SIM_API cWatch : public cObject
 {
   private:
     void *ptr;

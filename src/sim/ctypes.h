@@ -81,7 +81,7 @@ struct sDescrItem {
     char type;
 };
 
-class cModuleInterface : public cObject
+class SIM_API cModuleInterface : public cObject
 {
     // structures used in a cModuleInterface
     struct sGateInfo {
@@ -142,7 +142,7 @@ class cModuleInterface : public cObject
 // user is responsible for writing it for each simple module type.
 //
 
-class cModuleType : public cObject
+class SIM_API cModuleType : public cObject
 {
     friend class cModule;
   private:
@@ -170,7 +170,7 @@ class cModuleType : public cObject
 //==========================================================================
 // cLinkType - holds a connection type: name, delay, bit error rate, data rate
 
-class cLinkType : public cObject
+class SIM_API cLinkType : public cObject
 {
   private:
     cPar *(*delayfunc)();     // delay
@@ -196,7 +196,7 @@ class cLinkType : public cObject
 // cNetworkType - Info to setup a network: name, no. of modules, setup function
 //  NOTE: CANNOT dup() itself!
 
-class cNetworkType : public cObject
+class SIM_API cNetworkType : public cObject
 {
   public:
     void (*setupfunc)();
@@ -213,7 +213,7 @@ class cNetworkType : public cObject
 // cFunctionType - Stores a function pointer (returning a double)
 //  NOTE: CANNOT dup() itself!
 
-class cFunctionType : public cObject
+class SIM_API cFunctionType : public cObject
 {
   public:
     MathFunc f;
@@ -233,7 +233,7 @@ cFunctionType *findfunctionbyptr(MathFunc f);
 // cClassRegister - knows how to create an object of a specific type
 //  NOTE: CANNOT dup() itself!
 
-class cClassRegister : public cObject
+class SIM_API cClassRegister : public cObject
 {
     cObject *(*creatorfunc)();
   public:
@@ -248,13 +248,13 @@ class cClassRegister : public cObject
     cObject *createOne()  {return creatorfunc();}
 };
 
-cObject *createOne(char *type);
+SIM_API cObject *createOne(char *type);
 
 //==========================================================================
 // cInspectorFactory - base class for inspector factories of specific classes
 //  NOTE: CANNOT dup() itself!
 
-class cInspectorFactory : public cObject
+class SIM_API cInspectorFactory : public cObject
 {
     TInspector *(*inspFactoryFunc)(cObject *,int,void *);
   public:
