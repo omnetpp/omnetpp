@@ -182,8 +182,6 @@ proc display_stopdialog {} {
           -borderwidth 6 -font $fonts(big) -command {opp_stopsimulation}
     checkbutton $w.autoupdate -text "auto-update inspectors" -variable opp(autoupdate) -command "stopdialog_autoupdate $w"
     button $w.updatebutton  -text "  Update now  " -borderwidth 1 -command {opp_updateinspectors}
-    #grid $w.stopbutton  -               -sticky news -padx 4 -pady 3
-    #grid $w.autoupdate  $w.updatebutton -sticky news -padx 4 -pady 3
 
     grid $w.stopbutton   -sticky news -padx 4 -pady 3
     grid $w.autoupdate   -sticky nes -padx 4 -pady 0

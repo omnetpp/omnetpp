@@ -788,29 +788,35 @@ proc graphmodwin_animate_senddirect_descent {win parentmodptr modptr msgptr mode
 # Called from C++ code. $mode="beg"/"thru"/"end".
 #
 proc graphmodwin_animate_senddirect_delivery {win modptr msgptr} {
-
     #puts "DBG: senddirect deliv $msgptr"
 
-    global animdelay
     set c $win.c
     set src  [get_submod_coords $c $modptr]
-
-    set sp [opp_getsimoption animation_speed]
-    set ad [expr $animdelay / (0.1+$sp*$sp)]
 
     # flash the message a few times before removing it
     for {set i 0} {$i<3} {incr i} {
        $c itemconfig $msgptr -state hidden
        update idletasks
-       for {set j 0} {$j<3*$ad} {incr j} {}
+       anim_flashing_delay
        $c itemconfig $msgptr -state normal
        update idletasks
-       for {set j 0} {$j<3*$ad} {incr j} {}
+       anim_flashing_delay
     }
 
     $c delete $msgptr
 }
 
+proc anim_flashing_delay {} {
+    global clicksPerSec
+    if ![opp_simulationisstopping] {
+        set tbeg [clock clicks]
+        set sp [opp_getsimoption animation_speed]
+        if {$sp>3} {set $sp 3}
+        if {$sp<0} {set $sp 0}
+        set clicks [expr (3-$sp)*$clicksPerSec*0.3]
+        while {[expr abs([clock clicks]-$tbeg)] < $clicks} {}
+    }
+}
 
 #
 # Helper for senddirect animations
@@ -837,7 +843,7 @@ proc graphmodwin_do_animate_senddirect {win x1 y1 x2 y2 msgptr mode} {
 #
 proc graphmodwin_do_animate {win x1 y1 x2 y2 msgptr {mode thru}} {
 
-    global animdelay fonts
+    global fonts clicksPerSec
     set c $win.c
 
     # remove "phantom messages" if any
@@ -866,14 +872,23 @@ proc graphmodwin_do_animate {win x1 y1 x2 y2 msgptr {mode thru}} {
        end {set steps 6}
     }
 
-    set sp [opp_getsimoption animation_speed]
-    set ad [expr $animdelay / (0.1+$sp*$sp)]
-
+    #set old_close_handler [wm protocol $win WM_DELETE_WINDOW]
+    #wm protocol $win WM_DELETE_WINDOW { }
     for {set i 0} {$i<$steps} {incr i} {
-       update idletasks
+       set tbeg [clock clicks]
+       update idletasks ;# note: window may even get closed during update!
        $c move $msgptr $dx $dy
-       for {set j 0} {$j<$ad} {incr j} {}
+       if ![opp_simulationisstopping] {
+           set sp [opp_getsimoption animation_speed]
+           if {$sp>3} {set $sp 3}
+           if {$sp<0} {set $sp 0}
+           # delay has the form of f(x) = c/(x-a)+b, where f(3)=0, f(1)=~1, f(0)=~6
+           set d [expr 2/($sp+0.3)-0.6]
+           set clicks [expr $d*$clicksPerSec*0.04]
+           while {[expr abs([clock clicks]-$tbeg)] < $clicks} {}
+       }
     }
+    #wm protocol $win WM_DELETE_WINDOW $old_close_handler
 }
 
 #
@@ -936,7 +951,6 @@ proc graphmodwin_animate_methodcall_horiz {win fromptr toptr methodlabel} {
 # Helper.
 #
 proc graphmodwin_do_draw_methodcall {win x1 y1 x2 y2 methodlabel} {
-    global animdelay
 
     set c $win.c
     #set arrow [$c create line $x1 $y1 $x2 $y2 -tags {methodcall} -width 2 -arrow last -arrowshape {15 20 6} -fill #808080]
@@ -952,15 +966,13 @@ proc graphmodwin_do_draw_methodcall {win x1 y1 x2 y2 methodlabel} {
     $c lower $rectid $txtid
 
     # flash arrow a bit
-    set sp [opp_getsimoption animation_speed]
-    set ad [expr $animdelay / (0.1+$sp*$sp)]
     for {set i 0} {$i<2} {incr i} {
        $c itemconfig $arrow -state hidden
        update idletasks
-       for {set j 0} {$j<3*$ad} {incr j} {}
+       anim_flashing_delay
        $c itemconfig $arrow -state normal
        update idletasks
-       for {set j 0} {$j<3*$ad} {incr j} {}
+       anim_flashing_delay
     }
 }
 
@@ -969,12 +981,9 @@ proc graphmodwin_do_draw_methodcall {win x1 y1 x2 y2 methodlabel} {
 # This function is invoked from the module inspector C++ code.
 #
 proc graphmodwin_animate_methodcall_wait {} {
-    global animdelay
-
     update idletasks
-    set sp [opp_getsimoption methodcalls_delay]
-    #set ad [expr int($animdelay / (0.1+$sp*$sp)/30)]
-    after $sp
+    set d [opp_getsimoption methodcalls_delay]
+    after $d
 }
 
 # graphmodwin_animate_methodcall_cleanup --
@@ -1153,42 +1162,18 @@ proc layouter_debugDraw_finish {c msg} {
     update idletasks
 }
 
-proc calibrate_animdelay {} {
+proc determine_clocks_per_sec {} {
+    global clicksPerSec
 
-   # animdelay: holds upper limit for delay `for' loop
-   global animdelay
-
-   # 100ms should be 100000 ticks on a PC -- verify that
-   set t0 [clock clicks]
-   after 100
-   set t1 [clock clicks]
-   set ms100 [expr $t1-$t0]
-   if {$ms100>80000 && $ms100<120000} {set ms100 100000}
-
-
-   # test proc speed: how many "clock clicks" does an empty 4000 loop take?
-   set repeatcount 10
-   while {1} {
-      #puts "dbg: repeatcount=$repeatcount"
-      set ad [expr 4000*$repeatcount]
-      set t0 [clock clicks]
-      for {set i 0} {$i<$ad} {incr i} {}
-      set t1 [clock clicks]
-      #puts "dbg: t0=$t0, t1=$t1"
-      if {$t1!=$t0} break
-      set repeatcount [expr 5*$repeatcount]
-   }
-   set loopticks [expr ($t1-$t0)/$repeatcount]
-   #puts "dbg: loopticks=$loopticks"
-
-   # calc preliminary animdelay from loopticks
-   set animdelay [expr 100*$ms100/$loopticks]
-
-   # empirical correction
-   set animdelay [expr int($animdelay * sqrt($animdelay/100))]
-
-   puts ""
-   puts "Anim-speed calibrated: $animdelay"
+    # if counter wraps during measurement, try it again
+    while 1 {
+        set tbeg [clock clicks]
+        after 200
+        set tend [clock clicks]
+        if [expr $tend>$tbeg] break;
+    }
+    set clicksPerSec [expr 5*($tend-$tbeg)]
+    #puts "Ticks per second: $clicksPerSec"
 }
 
 # animate2 is not currently used

@@ -73,6 +73,7 @@ int getSubObjects_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getSubObjectsFilt_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getSimulationState_cmd(ClientData, Tcl_Interp *, int, const char **);
 int stopSimulation_cmd(ClientData, Tcl_Interp *, int, const char **);
+int simulationIsStopping_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getSimOption_cmd(ClientData, Tcl_Interp *, int, const char **);
 int setSimOption_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getStringHashCode_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -143,11 +144,12 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getsubobjects",    getSubObjects_cmd        }, // args: <pointer> ret: list with all object ptrs in subtree
    { "opp_getsubobjectsfilt",getSubObjectsFilt_cmd    }, // args: <pointer> <args> ret: filtered list of object ptrs in subtree
    { "opp_getsimulationstate", getSimulationState_cmd }, // args: -  ret: NONET,READY,RUNNING,ERROR,TERMINATED,etc.
-   { "opp_stopsimulation",   stopSimulation_cmd   }, // args: -
-   { "opp_getsimoption",     getSimOption_cmd     }, // args: <option-namestr>
-   { "opp_setsimoption",     setSimOption_cmd     }, // args: <option-namestr> <value>
-   { "opp_getstringhashcode",getStringHashCode_cmd}, // args: <string> ret: numeric hash code
-   { "opp_displaystring",    displayString_cmd    }, // args: <displaystring> <command> <args>
+   { "opp_stopsimulation",   stopSimulation_cmd       }, // args: -
+   { "opp_simulationisstopping", simulationIsStopping_cmd}, // args: -
+   { "opp_getsimoption",     getSimOption_cmd         }, // args: <option-namestr>
+   { "opp_setsimoption",     setSimOption_cmd         }, // args: <option-namestr> <value>
+   { "opp_getstringhashcode",getStringHashCode_cmd    }, // args: <string> ret: numeric hash code
+   { "opp_displaystring",    displayString_cmd        }, // args: <displaystring> <command> <args>
    { "opp_hsb_to_rgb",       hsbToRgb_cmd             }, // args: <@hhssbb> ret: <#rrggbb>
    { "opp_modulebypath",     moduleByPath_cmd         }, // args: <fullpath> ret: modptr
    { "opp_getmodulepar",     getModulePar_cmd         }, // args: <modptr> <parname> ret: value
@@ -710,6 +712,15 @@ int stopSimulation_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    TOmnetTkApp *app = getTkApplication();
    app->setStopSimulationFlag();
+   return TCL_OK;
+}
+
+int simulationIsStopping_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
+{
+   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   TOmnetTkApp *app = getTkApplication();
+   bool stopping = app->getStopSimulationFlag();
+   Tcl_SetResult(interp, (stopping ? "1" : "0"), TCL_STATIC);
    return TCL_OK;
 }
 

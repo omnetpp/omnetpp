@@ -60,7 +60,7 @@ proc start_tkenv {} {
   load_bitmaps $OMNETPP_BITMAP_PATH
   load_plugins $OMNETPP_PLUGIN_PATH
   load_tkenvrc
-  calibrate_animdelay
+  determine_clocks_per_sec
 
   if {!$HAVE_BLT} {
       puts "\n*** BLT Tcl/Tk extension NOT FOUND -- please install it"

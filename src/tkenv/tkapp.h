@@ -185,6 +185,7 @@ class TOmnetTkApp : public TOmnetApp
 
       int getSimulationState() {return simstate;}
       void setStopSimulationFlag() {stopsimulation_flag = true;}
+      bool getStopSimulationFlag() {return stopsimulation_flag;}
       Tcl_Interp *getInterp() {return interp;}
 
       void updateGraphicalInspectorsBeforeAnimation();
