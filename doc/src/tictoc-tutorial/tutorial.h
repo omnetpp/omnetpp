@@ -425,21 +425,42 @@ Sources: @ref tictoc6.ned, @ref txc6.cc, @ref omnetpp.ini
 
 @section s7 Step 7: Timeout, cancelling timers
 
-Let us take a step back, and remove the random processing delay from the code.
-We'll leave in, however, losing the packet with a small probability.
-And, we'll we do something very common in telecommunication networks:
-if the packet doesn't arrive within a certain period, we'll assume it
-was lost and create another one. The timeout will be handled using
-(what else?) a self-message.
+In order to get one step closer to modelling networking protocols,
+let us transform our model into a stop-and-wait simulation.
+This time we'll have separate classes for tic and toc. The basic
+scenario is similar to the previous ones: tic and toc will be tossing a
+message to one another. However, toc will "lose" the message with some
+nonzero probability, and in that case tic will have to resend it.
 
-Note that if the packet does arrive in time, we need to cancel
-the time. This is done with the cancelEvent() call. However,
+Here's toc's code:
+
+@dontinclude txc7.cc
+@skip Toc7::handleMessage(
+@until else
+
+Thanks to the bubble() call in the code, toc'll display a callout whenever
+it drops the message.
+
+<img src="step7.gif">
+
+So, tic will start a timer whenever it sends the message. When
+the timer expires, we'll assume the message was lost and send another
+one. If toc's reply arrives, the timer has to be cancelled.
+The timer will be (what else?) a self-message.
+
+@dontinclude txc7.cc
+@skip Tic7::handleMessage
+@skipline scheduleAt(
+
+Cancelling the timer will be done with the cancelEvent() call. Note that
 this does not prevent us from being able to reuse the same
 timeout message over and over.
 
 @dontinclude txc7.cc
-@skip ::handleMessage
+@skip Tic7::handleMessage
 @skipline cancelEvent(
+
+You can read Tic's full source in @ref txc7.cc.
 
 Sources: @ref tictoc7.ned, @ref txc7.cc, @ref omnetpp.ini
 
