@@ -379,88 +379,147 @@ int poisson(double lambda, int rng)
     return X;
 }
 
-//---------------------------------------------------
+//---------------------------------------------------------------------------
 //
-//  Registration for NED
+// Registration of functions for NED and omnetpp.ini
 //
-//---------------------------------------------------
+// They must be wrapped because MathFunc take and return all doubles,
+// which isn't true for these functions.
+//
+//---------------------------------------------------------------------------
 
 // continuous
 
-static double _dbl_erlang_k(double k, double m)
+static double _wrap_uniform(double a, double b)
+{
+    return uniform(a, b);
+}
+
+static double _wrap_exponential(double p)
+{
+    return exponential(p);
+}
+
+static double _wrap_normal(double m, double d)
+{
+    return normal(m, d);
+}
+
+static double _wrap_truncnormal(double m, double d)
+{
+    return truncnormal(m, d);
+}
+
+static double _wrap_gamma_d(double alpha, double beta)
+{
+    return gamma_d(alpha, beta);
+}
+
+static double _wrap_beta(double alpha1, double alpha2)
+{
+    return beta(alpha1, alpha2);
+}
+
+static double _wrap_erlang_k(double k, double m)
 {
     return erlang_k( (unsigned int) k, m);
 }
 
-static double _dbl_chi_square( double k )
+static double _wrap_chi_square( double k )
 {
     return chi_square( (unsigned int) k);
 }
 
-static double _dbl_student_t( double i )
+static double _wrap_student_t( double i )
 {
     return student_t( (unsigned int) i);
 }
 
-Define_Function(uniform, 2);
-Define_Function(exponential, 1);
-Define_Function(normal, 2);
-Define_Function(truncnormal, 2);
-Define_Function(gamma_d, 2);
-Define_Function(beta, 2);
-Define_Function2(erlang_k, _dbl_erlang_k, 2);
-Define_Function2(chi_square, _dbl_chi_square, 1);
-Define_Function2(student_t, _dbl_student_t, 1);
-Define_Function(cauchy, 2);
-Define_Function(triang, 3);
-Define_Function(lognormal, 2);
-Define_Function(weibull, 2);
-Define_Function(pareto_shifted, 3);
+static double _wrap_cauchy(double a, double b)
+{
+    return cauchy(a, b);
+}
+
+static double _wrap_triang(double a, double b, double c)
+{
+    return triang(a, b, c);
+}
+
+static double _wrap_lognormal(double m, double d)
+{
+    return lognormal(m, d);
+}
+
+static double _wrap_weibull(double a, double b)
+{
+    return weibull(a, b);
+}
+
+static double _wrap_pareto_shifted(double a, double b, double c)
+{
+    return pareto_shifted(a, b, c);
+}
 
 // discrete
 
-static double _dbl_intuniform(double a, double b)
+static double _wrap_intuniform(double a, double b)
 {
     return (double) intuniform((int)a, (int)b);
 }
 
-static double _dbl_bernoulli(double p)
+static double _wrap_bernoulli(double p)
 {
     return (double) bernoulli(p);
 }
 
-static double _dbl_binomial(double n, double p)
+static double _wrap_binomial(double n, double p)
 {
     return (double) binomial( (int)n, p);
 }
 
-static double _dbl_geometric(double p)
+static double _wrap_geometric(double p)
 {
     return (double) geometric(p);
 }
 
-static double _dbl_negbinomial( double n, double p)
+static double _wrap_negbinomial( double n, double p)
 {
     return (double) negbinomial( (int)n, p);
 }
 
-static double _dbl_hypergeometric( double a, double b, double n)
+static double _wrap_hypergeometric( double a, double b, double n)
 {
     return (double) hypergeometric( (int)a, (int)b, (int)n);
 }
 
-static double _dbl_poisson(double lambda)
+static double _wrap_poisson(double lambda)
 {
     return (double) poisson(lambda);
 }
 
-Define_Function2(intuniform, _dbl_intuniform, 2);
-Define_Function2(bernoulli, _dbl_bernoulli, 1);
-Define_Function2(binomial, _dbl_binomial, 2);
-Define_Function2(geometric, _dbl_geometric, 1);
-Define_Function2(negbinomial, _dbl_negbinomial, 2);
-Define_Function2(hypergeometric, _dbl_hypergeometric, 2);
-Define_Function2(poisson, _dbl_poisson, 1);
+
+Define_Function2(uniform, _wrap_uniform, 2);
+Define_Function2(exponential, _wrap_exponential, 1);
+Define_Function2(normal, _wrap_normal, 2);
+Define_Function2(truncnormal, _wrap_truncnormal, 2);
+Define_Function2(gamma_d, _wrap_gamma_d, 2);
+Define_Function2(beta, _wrap_beta, 2);
+Define_Function2(erlang_k, _wrap_erlang_k, 2);
+Define_Function2(chi_square, _wrap_chi_square, 1);
+Define_Function2(student_t, _wrap_student_t, 1);
+Define_Function2(cauchy, _wrap_cauchy, 2);
+Define_Function2(triang, _wrap_triang, 3);
+Define_Function2(lognormal, _wrap_lognormal, 2);
+Define_Function2(weibull, _wrap_weibull, 2);
+Define_Function2(pareto_shifted, _wrap_pareto_shifted, 3);
+
+Define_Function2(intuniform, _wrap_intuniform, 2);
+Define_Function2(bernoulli, _wrap_bernoulli, 1);
+Define_Function2(binomial, _wrap_binomial, 2);
+Define_Function2(geometric, _wrap_geometric, 1);
+Define_Function2(negbinomial, _wrap_negbinomial, 2);
+Define_Function2(hypergeometric, _wrap_hypergeometric, 2);
+Define_Function2(poisson, _wrap_poisson, 1);
 
 
 // compatibility genk_ versions:
