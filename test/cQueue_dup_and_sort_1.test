@@ -1,0 +1,106 @@
+%name: cQueue_dup_and_sort_1
+
+%description:
+Check that cQueue::operator=() preserves order
+Check that compareFunc() works correctly
+
+%file: {test}.ned
+simple {Queues}
+endsimple
+
+network {net} : {Queues}
+endnetwork
+
+
+%file: {test}.cc
+
+#include "omnetpp.h"
+
+int compareFunc(cObject* a, cObject* b)
+{
+  if (atol(a->name()) > atol(b->name()))
+    return 1;
+  else if (atol(a->name()) < atol(b->name()))
+    return -1;
+  else
+    return 0;
+};
+
+class {Queues} : public cSimpleModule
+{
+	Module_Class_Members({Queues}, cSimpleModule, 16384);
+	virtual void activity();
+        void fillQueue(cQueue& q);
+        void output(cQueue& q, char* prefix);
+};
+
+Define_Module({Queues});
+
+void {Queues}::fillQueue(cQueue& q)
+{
+  cPar* parm = NULL;
+  parm = new cPar("1");
+  q.insert(parm);
+  parm = new cPar("3");
+  q.insert(parm);
+  parm = new cPar("2");
+  q.insert(parm);
+}
+
+void {Queues}::output(cQueue& q, char* prefix)
+{
+  ev << prefix << " "
+     << q.name() << ": "
+     << q.pop()->name() << " "
+     << q.pop()->name() << " "
+     << q.pop()->name() << endl;
+  
+}
+
+void {Queues}::activity()
+{
+  cQueue initial("Initial");
+  cQueue duplicate("Duplicate");
+
+
+  fillQueue(initial);
+  duplicate = initial;
+  output(initial, "Unsorted");
+  output(duplicate, "Unsorted");
+  
+  initial.clear();
+  duplicate.clear();
+
+  initial.setup(&compareFunc, false);
+
+  fillQueue(initial);
+  duplicate = initial;
+  output(initial, "Descending");
+  output(duplicate, "Descending");
+  
+  initial.clear();
+  duplicate.clear();
+
+  initial.setup(&compareFunc, true);
+
+  fillQueue(initial);
+  duplicate = initial;
+  output(initial, "Ascending");
+  output(duplicate, "Ascending");
+  
+  
+}
+
+%inifile: {test}.ini
+[General]
+network={net}
+
+%ignore-exitcode:1
+
+%contains: stdout
+Unsorted Initial: 1 3 2
+Unsorted Duplicate: 1 3 2
+Descending Initial: 1 2 3
+Descending Duplicate: 1 2 3
+Ascending Initial: 3 2 1
+Ascending Duplicate: 3 2 1
