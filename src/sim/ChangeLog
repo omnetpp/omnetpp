@@ -664,5 +664,7 @@ Sept 7, 1999
 Sept 20, 1999
   - a bug fixed in cWeightedStdDev::collect2(): cStdDev::collect() was called
     with val instead of weight*val.
+  - fixed a bug with misplaced ev.messageDelivered() calls in the receiveNew()
+    and receiveNewOn() functions
 
 Remaining -Wall warnings: "%lf", "%lg", "%le" in printf format strings.

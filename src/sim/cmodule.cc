@@ -971,6 +971,7 @@ cMessage *cSimpleModule::receiveNew(simtime_t t)
      if (newmsg==timeoutmsg)  // timeout expired
      {
          take(timeoutmsg);
+         ev.messageDelivered( timeoutmsg );
          return NO(cMessage);
      }
      else  // message received OK
@@ -1000,7 +1001,6 @@ cMessage *cSimpleModule::receiveNewOn(int g, simtime_t t)
                  {take(timeoutmsg); return NO(cMessage);}
              else
              {
-                ev.messageDelivered( newmsg );
                 if (newmsg->arrivedOn(g))  // OK!
                     {take(cancelEvent(timeoutmsg)); return newmsg;}
                 else   // not good --> put-aside queue
@@ -1013,8 +1013,7 @@ cMessage *cSimpleModule::receiveNewOn(int g, simtime_t t)
          for(;;)
          {
              cMessage *newmsg = receiveNew();
-             ev.messageDelivered( newmsg );
-             if(newmsg->arrivedOn(g))
+             if (newmsg->arrivedOn(g))
                  return newmsg;
              else
                  putAsideQueue.insertHead( newmsg );
