@@ -52,8 +52,8 @@ Configuration:
   and all filenames mentioned in them. All filenames are now understood as
   relative to the location of the file which contains the reference,
   rather than relative to the current working directory of the simulation.
-  This change is not backwards compatible, but only IPv6Suite was found to be
-  affected which has not even been ported to 3.0 yet.
+  This change is not backwards compatible, but has been found not to affect
+  any of the simulation frameworks already ported to 3.0.
 
 Tkenv:
 - Implemented the "t=<string>,<color>" display string tag for connections.
