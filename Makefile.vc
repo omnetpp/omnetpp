@@ -213,10 +213,10 @@ check-env:
 	@cd /d $(_TCL_LIBRARY:/=\) || echo ERROR: The directory $(_TCL_LIBRARY) does not exist. TK_DIR or TK_VER defined in configuser.vc might be wrong. && exit 1
 
 configsamples:
-
-FIXME:
 	@echo ===== Configuring .dsp files for samples =====
 	cd /d $(OMNETPP_SAMPLES_DIR:/=\) && cc2cpp.bat
+
+FIXME-put-this-back:
 	for %%i in ( $(SAMPLES) ) do \
 	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && \
 	    $(REPLACE:/=\) %%i.dsp.in - "@OMNETPP_INCL_DIR@" "$(OMNETPP_INCL_DIR)" | \
