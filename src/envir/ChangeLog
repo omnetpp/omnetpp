@@ -1,3 +1,31 @@
+2002-03-03  Andras Varga
+
+	* Various changes: management of output vectors, output scalars and
+	snapshots were moved into to the user interface library. See following
+	entries and include/ChangeLog.
+
+	* cenvir.cc: implementation of new cEnvir methods (just forward calls
+	to TOmnetApp.)
+
+	* omnetapp.h/cc: new methods; plugin mechanism: cOutputVectorManager,
+	cOutputScalarManager, cSnapshotManager. (see new file include/envirext.h)
+
+	* ini file entries no longer supported: [General]/log-parchanges,
+	[General]/parchange-file. (Parameter change logging no longer
+	supported, see include/ChangeLog).
+
+	* new ini file entries: [General]/outputvectormanager-class,
+        outputscalarmanager-class, snapshotmanager-class. They specify the name
+        of the output vector manager, etc class to be plugged into Envir.
+        The classes must have been registered with Register_Class().
+        The default values are cFileOutputVectorManager, cFileOutputScalarManager,
+        cFileSnapshotManager.
+
+	* filemgrs.h/cc: new files: implementation if plugin classes:
+	cFileOutputVectorManager, cFileOutputScalarManager, cFileSnapshotManager
+
+        * cenvir.cc: bugfix: TOmnetApp::shutdown() was never called from cEnvir.
+
 2002-02-24  Andras Varga
 
 	* exit with status 0 if simulation terminated normally (as determined
@@ -44,7 +72,7 @@
 2001-02-06  Andras Varga
 
 	* ------ omnetpp-2.0 released ------
-	
+
 	* added dllexport to Speedometer
 
 2001-01-16  Andras Varga
@@ -63,7 +91,7 @@
 	* ------ omnetpp-2.0b5 released ------
 
 	* ------ omnetpp-2.0b4 released ------
-	
+
 	* Makefile.vc improvements from Balazs Kelemen
 
 2000-04-10  Andras Varga
@@ -233,7 +261,7 @@
         * getOutVectorConfig() added to cEnvir and TOmnetApp classes
 
         * output vector config is taken from [OutVectors] or [Run nn] section.
-	
+
 	  Syntax:
 	    module.vectorname.enabled=yes/no
 	    module.vectorname.interval=10s..30s
@@ -354,7 +382,7 @@
 1997-08-08  Andras Varga
 
         * other [Slaves] options added that control whether different kinds of
-	
+
 	  textual messages should be routed to the console:
 	     errmsgs-to-console=
 	     infomsgs-to-console=
@@ -394,7 +422,7 @@
 
         * ini file options added to enable logging of messages produced by
 	slaves:
-	
+
 	     [Slaves]
 	     write-slavelog = true/false
 	     slavelog-file = slave.log
@@ -469,7 +497,7 @@
 1997-03-16  Andras Varga
 
         * Style of ini file [Machines] section changed from:
-	
+
 	    whale.hit.bme.hu = node1, node2
 	    dolphin.hit.bme.hu = node3
 	  to:

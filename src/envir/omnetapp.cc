@@ -19,6 +19,7 @@
 
 #include <ctype.h>
 #include <stdio.h>
+#include <assert.h>
 
 #include "args.h"
 #include "omnetapp.h"
@@ -56,6 +57,10 @@ TOmnetApp::TOmnetApp(ArgList *arglist, cIniFile *inifile)
      ini_file = inifile;
      opt_genk_randomseed = new long[NUM_RANDOM_GENERATORS];
      next_startingseed = 0;
+
+     outvectmgr = NULL;
+     outscalarmgr = NULL;
+     snapshotmgr = NULL;
 }
 
 TOmnetApp::~TOmnetApp()
@@ -63,12 +68,15 @@ TOmnetApp::~TOmnetApp()
      delete opt_genk_randomseed;
      delete args;
      delete ini_file;
+
+     delete outvectmgr;
+     delete outscalarmgr;
+     delete snapshotmgr;
 }
 
 void TOmnetApp::setup()
 {
      opt_inifile_name = ini_file->filename();
-
 
      // DEBUG code: print out ini file contents
      // for (cIniFileIterator i(ini_file); !i.end(); i++)
@@ -84,8 +92,36 @@ void TOmnetApp::setup()
         opt_total_stack_kb = MAIN_STACK_KB+4;
      }
      cCoroutine::init( 1024*opt_total_stack_kb, 1024*MAIN_STACK_KB );
-     simulation.setup();
+     simulation.init();
 
+     // install output vector manager
+     cOutputVectorManager *ovm = (cOutputVectorManager *)createOne(opt_outputvectormanager_class);
+     if (!ovm)
+     {
+         opp_error("Could not create output vector manager class \"%s\"", (const char *)opt_outputvectormanager_class);
+         return;
+     }
+     outvectmgr = ovm;
+
+     // install output scalar manager
+     cOutputScalarManager *osm = (cOutputScalarManager *)createOne(opt_outputscalarmanager_class);
+     if (!osm)
+     {
+         opp_error("Could not create output scalar manager class \"%s\"", (const char *)opt_outputscalarmanager_class);
+         return;
+     }
+     outscalarmgr = osm;
+
+     // install snapshot manager
+     cSnapshotManager *snsm = (cSnapshotManager *)createOne(opt_snapshotmanager_class);
+     if (!snsm)
+     {
+         opp_error("Could not create snapshot manager class \"%s\"", (const char *)opt_snapshotmanager_class);
+         return;
+     }
+     snapshotmgr = snsm;
+
+     // set up for distributed execution
      if (opt_distributed)
      {
          if (ev.runningMode()==NONPARALLEL_MODE)
@@ -98,35 +134,54 @@ void TOmnetApp::setup()
              opp_error("There was an error at startup, unable to run in parallel");
              return;
          }
-	 if (strcmp(opt_parallel_env.buffer(), "PVM")==0)
-	 {
-	   cNetMod *pvmmod = (cNetMod *)createOne( "cPvmMod");
+         if (strcmp(opt_parallel_env.buffer(), "PVM")==0)
+         {
+             cNetMod *pvmmod = (cNetMod *)createOne( "cPvmMod");
 
-	   if (!simulation.ok())
-         {
-             opp_error("Network interface did not initialize properly");
-	     delete pvmmod;
-             return;
+             if (!simulation.ok())
+             {
+                 opp_error("Network interface did not initialize properly");
+                 delete pvmmod;
+                 return;
+             }
+             simulation.setNetInterface( pvmmod );
          }
-	   simulation.setNetInterface( pvmmod );
-	 }
-       	 else if (strcmp(opt_parallel_env.buffer(), "MPI")==0)
-	 {
-	   cNetMod *mpimod = (cNetMod *)createOne( "cMpiMod");
-         if (!simulation.ok())
+         else if (strcmp(opt_parallel_env.buffer(), "MPI")==0)
          {
-             opp_error("Network interface did not initialize properly");
-	     delete mpimod;
-             return;
+             cNetMod *mpimod = (cNetMod *)createOne( "cMpiMod");
+             if (!simulation.ok())
+             {
+                 opp_error("Network interface did not initialize properly");
+                 delete mpimod;
+                 return;
+             }
+             simulation.setNetInterface( mpimod );
          }
-	   simulation.setNetInterface( mpimod );
-	 }
      }
 }
 
 void TOmnetApp::shutdown()
 {
+     simulation.deleteNetwork();
 }
+
+void TOmnetApp::startRun()
+{
+    outvectmgr->startRun();
+    outscalarmgr->startRun();
+    snapshotmgr->startRun();
+    simulation.startRun();
+}
+
+void TOmnetApp::endRun()
+{
+    simulation.endRun();
+    snapshotmgr->endRun();
+    outscalarmgr->endRun();
+    outvectmgr->endRun();
+}
+
+//-------------------------------------------------------------
 
 const char *TOmnetApp::getParameter(int run_no, const char *parname)
 {
@@ -151,13 +206,12 @@ const char *TOmnetApp::getPhysicalMachineFor(const char *logical_mach)
     }
 }
 
-void TOmnetApp::getOutVectorConfig(const char *modname,const char *vecname, /*input*/
-                                   bool& enabled, /*output*/
-                                   double& starttime, double& stoptime)
+void TOmnetApp::getOutVectorConfig(int run_no, const char *modname,const char *vecname, /*input*/
+                                   bool& enabled, double& starttime, double& stoptime /*output*/ )
 {
     // prepare section name and entry name
     char section[16];
-    sprintf(section,"Run %d",simulation.runNumber());
+    sprintf(section,"Run %d", run_no);
 
     sprintf(buffer, "%s.%s.", modname?modname:"", vecname?vecname:"");
     char *end = buffer+strlen(buffer);
@@ -209,6 +263,17 @@ const char *TOmnetApp::getDisplayString(int run_no, const char *name)
     return ini_file->getAsString2(section,"DisplayStrings",name,NULL);
 }
 
+const char *TOmnetApp::getConfigEntry(int run_no, const char *name)
+{
+    char section[16];
+    sprintf(section,"Run %d",run_no);
+
+    ini_file->error(); // clear error flag
+    return ini_file->getAsString2(section,"General",name,NULL);
+}
+
+//-------------------------------------------------------------
+
 void TOmnetApp::readOptions()
 {
     ini_file->error(); // clear error flag
@@ -220,9 +285,12 @@ void TOmnetApp::readOptions()
     opt_total_stack_kb = ini_file->getAsInt( "General", "total-stack-kb", TOTAL_STACK_KB );
     opt_distributed = ini_file->getAsBool( "General", "distributed", false );
     if(opt_distributed)
-      opt_parallel_env = ini_file->getAsString( "General", "parallel-system", "MPI" );
+        opt_parallel_env = ini_file->getAsString( "General", "parallel-system", "MPI" );
     opt_load_libs = ini_file->getAsString( "General", "load-libs", "" );
 
+    opt_outputvectormanager_class = ini_file->getAsString( "General", "outputvectormanager-class", "cFileOutputVectorManager" );
+    opt_outputscalarmanager_class = ini_file->getAsString( "General", "outputscalarmanager-class", "cFileOutputScalarManager" );
+    opt_snapshotmanager_class = ini_file->getAsString( "General", "snapshotmanager-class", "cFileSnapshotManager" );
     // other options are read on per-run basis
 }
 
@@ -233,11 +301,6 @@ void TOmnetApp::readPerRunOptions(int run_nr)
 
     // get options from ini file
     opt_network_name = ini_file->getAsString2( section, "General", "network", "default" );
-    opt_snapshotfile_name = ini_file->getAsString2( section, "General", "snapshot-file", "omnetpp.sna" );
-    opt_outvectfile_name = ini_file->getAsString2( section, "General", "output-vector-file", "omnetpp.vec" );
-    opt_scalarfile_name = ini_file->getAsString2( section, "General", "output-scalar-file", "omnetpp.sca" );
-    opt_logparchanges = ini_file->getAsBool2( section, "General", "log-parchanges", false );
-    opt_parchangefile_name = ini_file->getAsString2( section, "General", "parchange-file", "omnetpp.pch" );
     opt_pause_in_sendmsg = ini_file->getAsBool2( section, "General", "pause-in-sendmsg", false );
     opt_warnings = ini_file->getAsBool2( section, "General", "warnings", true );
     opt_simtimelimit = ini_file->getAsTime2( section, "General", "sim-time-limit", 0.0 );
@@ -291,17 +354,13 @@ void TOmnetApp::makeOptionsEffective()
      simulation.setSimTimeLimit( opt_simtimelimit );
      simulation.setTimeLimit( opt_cputimelimit );
      simulation.setNetIfCheckFreq( opt_netifcheckfreq );
-     simulation.outvectfilemgr.setFileName( opt_outvectfile_name );
-     simulation.scalarfilemgr.setFileName( opt_scalarfile_name );
-     simulation.snapshotfilemgr.setFileName( opt_snapshotfile_name );
-     simulation.logparchanges = opt_logparchanges;
-     simulation.parchangefilemgr.setFileName( opt_parchangefile_name );
+
      for(int i=0;i<NUM_RANDOM_GENERATORS;i++)
          genk_randseed( i, opt_genk_randomseed[i] );
 }
 
 //--------------------------------------------------------------------
-// default, stdio version of input/output function
+// default, stdio versions of input/output functions
 
 void TOmnetApp::putmsg(const char *s)
 {
@@ -358,6 +417,66 @@ void TOmnetApp::foreignPuts(const char *hostname, const char *mod, const char *s
     puts(buffer);
     puts(str);
 }
+
+//-------------------------------------------------------------
+
+void *TOmnetApp::registerOutputVector(const char *modulename, const char *vectorname, int tuple)
+{
+    assert(outvectmgr);
+    return outvectmgr->registerVector(modulename, vectorname, tuple);
+}
+
+void TOmnetApp::deregisterOutputVector(void *vechandle)
+{
+    assert(outvectmgr);
+    outvectmgr->deregisterVector(vechandle);
+}
+
+bool TOmnetApp::recordInOutputVector(void *vechandle, simtime_t t, double value)
+{
+    assert(outvectmgr);
+    return outvectmgr->record(vechandle, t, value);
+}
+
+bool TOmnetApp::recordInOutputVector(void *vechandle, simtime_t t, double value1, double value2)
+{
+    assert(outvectmgr);
+    return outvectmgr->record(vechandle, t, value1, value2);
+}
+
+//-------------------------------------------------------------
+
+void TOmnetApp::recordScalar(cModule *module, const char *name, double value)
+{
+    assert(outscalarmgr);
+    outscalarmgr->recordScalar(module, name, value);
+}
+
+void TOmnetApp::recordScalar(cModule *module, const char *name, const char *text)
+{
+    assert(outscalarmgr);
+    outscalarmgr->recordScalar(module, name, text);
+}
+
+void TOmnetApp::recordScalar(cModule *module, const char *name, cStatistic *stats)
+{
+    assert(outscalarmgr);
+    outscalarmgr->recordScalar(module, name, stats);
+}
+
+//-------------------------------------------------------------
+
+ostream *TOmnetApp::getStreamForSnapshot()
+{
+    return snapshotmgr->getStreamForSnapshot();
+}
+
+void TOmnetApp::releaseStreamForSnapshot(ostream *os)
+{
+    snapshotmgr->releaseStreamForSnapshot(os);
+}
+
+//-------------------------------------------------------------
 
 bool TOmnetApp::memoryIsLow()
 {

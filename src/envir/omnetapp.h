@@ -26,6 +26,7 @@
 #include "cenvir.h"
 #include "args.h"
 #include "envdefs.h"
+#include "envirext.h"
 
 
 class cIniFile;
@@ -59,12 +60,9 @@ class ENVIR_API TOmnetApp
      opp_string opt_parallel_env; // PVM, MPI or something else?
      opp_string opt_load_libs;
      opp_string opt_network_name;
-     opp_string opt_snapshotfile_name;
-     opp_string opt_outvectfile_name;
-     opp_string opt_scalarfile_name;
-
-     bool opt_logparchanges;
-     opp_string opt_parchangefile_name;
+     opp_string opt_outputvectormanager_class;
+     opp_string opt_outputscalarmanager_class;
+     opp_string opt_snapshotmanager_class;
 
      bool opt_pause_in_sendmsg;
      bool opt_warnings;
@@ -78,6 +76,10 @@ class ENVIR_API TOmnetApp
 
      int next_startingseed;  // index of next seed to use
 
+     cOutputVectorManager *outvectmgr;
+     cOutputScalarManager *outscalarmgr;
+     cSnapshotManager *snapshotmgr;
+
    public:
      TOmnetApp(ArgList *args, cIniFile *inifile);
      virtual ~TOmnetApp();
@@ -87,16 +89,19 @@ class ENVIR_API TOmnetApp
      virtual void run() = 0;
      virtual void shutdown();
 
+     virtual void startRun();
+     virtual void endRun();
+
      // called by cPar::read() to get param value from the ini file
      virtual const char *getParameter(int run_nr, const char *parname);
-     // called from JAR-generated network setup function to get
-     //  logical machine --> physical machine mapping
+     // called from nedc-generated network setup function to get logical machine --> physical machine mapping
      virtual const char *getPhysicalMachineFor(const char *logical_mach);
-     virtual void getOutVectorConfig(const char *modname, /*input*/
+     virtual void getOutVectorConfig(int run_no, const char *modname, /*input*/
                                      const char *vecname,
                                      bool& enabled, /*output*/
                                      double& starttime, double& stoptime);
      virtual const char *getDisplayString(int run_no,const char *name);
+     virtual const char *getConfigEntry(int run_no, const char *name);
 
      // used internally to read opt_xxxxx setting from ini file
      virtual void readOptions();
@@ -121,8 +126,23 @@ class ENVIR_API TOmnetApp
      virtual int  askYesNo(const char *question); //0==NO 1==YES -1==CANCEL
      virtual void foreignPuts(const char *hostname, const char *mod, const char *str);
 
-     // extraStackForEnvir() is called from cSimpleModule; returns how much extra
-     // stack space the user interface recommends for the simple modules
+     // methods for recording data from output vectors; called by cEnvir's similar functions
+     void *registerOutputVector(const char *modulename, const char *vectorname, int tuple);
+     void deregisterOutputVector(void *vechandle);
+     bool recordInOutputVector(void *vechandle, simtime_t t, double value);
+     bool recordInOutputVector(void *vechandle, simtime_t t, double value1, double value2);
+
+     // methods for output scalars; called by cEnvir's similar functions
+     void recordScalar(cModule *module, const char *name, double value);
+     void recordScalar(cModule *module, const char *name, const char *text);
+     void recordScalar(cModule *module, const char *name, cStatistic *stats);
+
+     // methods for snapshot management; called by cEnvir's similar functions
+     ostream *getStreamForSnapshot();
+     void releaseStreamForSnapshot(ostream *os);
+
+     // returns how much extra stack space the user interface recommends
+     // for the simple modules; called by cEnvir's similar function
      virtual unsigned extraStackForEnvir() {return 0;}
 
      // interface to memory manager

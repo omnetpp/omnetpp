@@ -26,7 +26,7 @@ HAVE_DLOPEN=@HAVE_DLOPEN@
 #
 COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -DBUILDING_ENVIR -DHAVE_DLOPEN=$(HAVE_DLOPEN)
 
-OBJS=args.o cenvir.o cinifile.o main.o omnetapp.o slaveapp.o seeds.o patmatch.o platdep.o speedmtr.o
+OBJS=args.o cenvir.o cinifile.o main.o omnetapp.o slaveapp.o seeds.o patmatch.o platdep.o speedmtr.o filemgrs.o
 
 #
 # Targets
@@ -72,6 +72,9 @@ platdep.o : platdep.cc
 speedmtr.o : speedmtr.cc
 	$(CXX) -c $(COPTS) speedmtr.cc
 
+filemgrs.o : filemgrs.cc
+	$(CXX) -c $(COPTS) filemgrs.cc
+
 depend:
 	$(MAKEDEPEND) -I. -I../../include -- *.cc
 	$(MAKEDEPEND) -I. -I../../include -fMakefile.in -- *.cc
@@ -101,6 +104,7 @@ cenvir.o: cenvir.cc \
   ../../include/util.h \
   ../../include/carray.h \
   ../../include/chead.h \
+  ../../include/envirext.h \
   ../../include/ccor.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
@@ -117,6 +121,30 @@ cinifile.o: cinifile.cc \
   ../../include/cpar.h \
   ../../include/cobject.h \
   envdefs.h
+filemgrs.o: filemgrs.cc \
+  ../../include/cenvir.h \
+  omnetapp.h \
+  ../../include/csimul.h \
+  ../../include/cmodule.h \
+  ../../include/cstat.h \
+  ../../include/macros.h \
+  filemgrs.h \
+  ../../include/defs.h \
+  ../../include/cpar.h \
+  ../../include/cobject.h \
+  ../../include/util.h \
+  ../../include/carray.h \
+  ../../include/chead.h \
+  args.h \
+  envdefs.h \
+  ../../include/envirext.h \
+  ../../include/errmsg.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccor.h \
+  ../../include/coutvect.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h \
+  ../../include/ctypes.h
 main.o: main.cc \
   ../../include/cobject.h \
   ../../include/csimul.h \
@@ -126,8 +154,8 @@ main.o: main.cc \
   ../../include/errmsg.h \
   ../../include/chead.h \
   ../../include/cmsgheap.h \
-  ../../include/coutvect.h \
   ../../include/ccor.h \
+  ../../include/coutvect.h \
   ../../include/cpar.h
 omnetapp.o: omnetapp.cc \
   args.h \
@@ -144,6 +172,7 @@ omnetapp.o: omnetapp.cc \
   ../../include/carray.h \
   ../../include/chead.h \
   ../../include/cenvir.h \
+  ../../include/envirext.h \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/errmsg.h \
@@ -169,6 +198,7 @@ seeds.o: seeds.cc \
   ../../include/cenvir.h \
   args.h \
   envdefs.h \
+  ../../include/envirext.h \
   ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h \
@@ -186,13 +216,14 @@ slaveapp.o: slaveapp.cc \
   ../../include/chead.h \
   ../../include/cenvir.h \
   args.h \
+  ../../include/envirext.h \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/cpar.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
-  ../../include/coutvect.h \
   ../../include/ccor.h \
+  ../../include/coutvect.h \
   ../../include/cmodule.h \
   ../../include/cqueue.h \
   ../../include/cgate.h

@@ -11,7 +11,7 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 # Local definitions
 #
 COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /DBUILDING_ENVIR /DHAVE_DLOPEN=$(HAVE_DLOPEN)
-OBJS=args.obj cenvir.obj cinifile.obj main.obj omnetapp.obj slaveapp.obj seeds.obj patmatch.obj platdep.obj speedmtr.obj
+OBJS=args.obj cenvir.obj cinifile.obj main.obj omnetapp.obj slaveapp.obj seeds.obj patmatch.obj platdep.obj speedmtr.obj filemgrs.obj
 LIBS=$(OMNETPP_SRC_DIR)/sim/sim_std.ilib
 
 #
@@ -63,6 +63,9 @@ platdep.obj : platdep.cc
 speedmtr.obj : speedmtr.cc
 	$(CXX) $(COPTS) /c /Tp speedmtr.cc
 
+filemgrs.obj : filemgrs.cc
+	$(CXX) $(COPTS) /c /Tp filemgrs.cc
+
 depend:
 	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc
 
@@ -92,6 +95,7 @@ cenvir.obj: cenvir.cc \
   ../../include/util.h \
   ../../include/carray.h \
   ../../include/chead.h \
+  ../../include/envirext.h \
   ../../include/ccor.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
@@ -108,6 +112,30 @@ cinifile.obj: cinifile.cc \
   ../../include/cpar.h \
   ../../include/cobject.h \
   envdefs.h
+filemgrs.obj: filemgrs.cc \
+  ../../include/cenvir.h \
+  omnetapp.h \
+  ../../include/csimul.h \
+  ../../include/cmodule.h \
+  ../../include/cstat.h \
+  ../../include/macros.h \
+  filemgrs.h \
+  ../../include/defs.h \
+  ../../include/cpar.h \
+  ../../include/cobject.h \
+  ../../include/util.h \
+  ../../include/carray.h \
+  ../../include/chead.h \
+  args.h \
+  envdefs.h \
+  ../../include/envirext.h \
+  ../../include/errmsg.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccor.h \
+  ../../include/coutvect.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h \
+  ../../include/ctypes.h
 main.obj: main.cc \
   ../../include/cobject.h \
   ../../include/csimul.h \
@@ -117,8 +145,8 @@ main.obj: main.cc \
   ../../include/errmsg.h \
   ../../include/chead.h \
   ../../include/cmsgheap.h \
-  ../../include/coutvect.h \
   ../../include/ccor.h \
+  ../../include/coutvect.h \
   ../../include/cpar.h
 omnetapp.obj: omnetapp.cc \
   args.h \
@@ -135,6 +163,7 @@ omnetapp.obj: omnetapp.cc \
   ../../include/carray.h \
   ../../include/chead.h \
   ../../include/cenvir.h \
+  ../../include/envirext.h \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/errmsg.h \
@@ -160,6 +189,7 @@ seeds.obj: seeds.cc \
   ../../include/cenvir.h \
   args.h \
   envdefs.h \
+  ../../include/envirext.h \
   ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h \
@@ -177,13 +207,14 @@ slaveapp.obj: slaveapp.cc \
   ../../include/chead.h \
   ../../include/cenvir.h \
   args.h \
+  ../../include/envirext.h \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/cpar.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
-  ../../include/coutvect.h \
   ../../include/ccor.h \
+  ../../include/coutvect.h \
   ../../include/cmodule.h \
   ../../include/cqueue.h \
   ../../include/cgate.h

@@ -31,6 +31,7 @@
 #include "cnetmod.h"
 #include "slaveapp.h"   // tslave_dummy_function()
 #include "speedmtr.h"   // tslave_dummy_function()
+#include "filemgrs.h"   // tslave_dummy_function()
 
 
 //=== Global objects:
@@ -58,10 +59,10 @@ void dummyDummy() {envirDummy();}
 //void dummyDummy() {cmdenvDummy();tkenvDummy();}
 //#endif
 
-// A dummy function to force UNIX linkers collect TSlaveApp's constructor
-// and Speedometer as linker symbols. Otherwise we'd get "undefined symbol"
-// for them...
-void tslave_dummy_function() {TSlaveApp x(0,NULL);Speedometer a;}
+// A dummy function to force UNIX linkers collect TSlaveApp, Speedometer
+// and cFileOutputVectorManager as linker symbols. Otherwise we'd get
+// "undefined symbol" messages...
+void tslave_dummy_function() {TSlaveApp x(0,NULL);Speedometer a;cFileOutputVectorManager o;}
 
 //========================================================================
 
@@ -219,6 +220,7 @@ void cEnvir::run()
 
 void cEnvir::shutdown()
 {
+    if (app) app->shutdown();
     delete app;
     app = NULL;
 }
@@ -233,13 +235,6 @@ const char *cEnvir::getParameter(int run_no, const char *parname)
 const char *cEnvir::getPhysicalMachineFor(const char *logical_mach)
 {
     return app->getPhysicalMachineFor(logical_mach);
-}
-
-void cEnvir::getOutVectorConfig(const char *modname,const char *vecname,
-                                bool& enabled,
-                                double& starttime, double& stoptime)
-{
-    app->getOutVectorConfig(modname,vecname,  enabled,starttime,stoptime);
 }
 
 const char *cEnvir::getDisplayString(int run_no,const char *name)
@@ -353,6 +348,59 @@ void cEnvir::foreignPuts(const char *hostname, const char *mod, const char *str)
 {
     app->foreignPuts(hostname,mod,str);
 }
+
+//---------------------------------------------------------
+
+void *cEnvir::registerOutputVector(const char *modulename, const char *vectorname, int tuple)
+{
+    return app->registerOutputVector(modulename, vectorname, tuple);
+}
+
+void cEnvir::deregisterOutputVector(void *vechandle)
+{
+    app->deregisterOutputVector(vechandle);
+}
+
+bool cEnvir::recordInOutputVector(void *vechandle, simtime_t t, double value)
+{
+    return app->recordInOutputVector(vechandle, t, value);
+}
+
+bool cEnvir::recordInOutputVector(void *vechandle, simtime_t t, double value1, double value2)
+{
+    return app->recordInOutputVector(vechandle, t, value1, value2);
+}
+
+//---------------------------------------------------------
+
+void cEnvir::recordScalar(cModule *module, const char *name, double value)
+{
+    app->recordScalar(module, name, value);
+}
+
+void cEnvir::recordScalar(cModule *module, const char *name, const char *text)
+{
+    app->recordScalar(module, name, text);
+}
+
+void cEnvir::recordScalar(cModule *module, const char *name, cStatistic *stats)
+{
+    app->recordScalar(module, name, stats);
+}
+
+//---------------------------------------------------------
+
+ostream *cEnvir::getStreamForSnapshot()
+{
+    return app->getStreamForSnapshot();
+}
+
+void cEnvir::releaseStreamForSnapshot(ostream *os)
+{
+    app->releaseStreamForSnapshot(os);
+}
+
+//---------------------------------------------------------
 
 unsigned cEnvir::extraStackForEnvir()
 {
