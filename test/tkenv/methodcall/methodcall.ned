@@ -5,6 +5,12 @@ endsimple
 simple Target 
 endsimple 
 
+module BoxedTarget 
+    submodules: 
+        target: Target; 
+            display: "b=32,30;p=70,57;i=sink";
+endmodule 
+
 module BoxedMod 
     submodules: 
         mod: Mod; 
@@ -13,12 +19,6 @@ module BoxedMod
             display: "p=220,97;b=40,28";
         target: Target; 
             display: "b=32,30;p=220,37;i=sink";
-endmodule 
-
-module BoxedTarget 
-    submodules: 
-        target: Target; 
-            display: "b=32,30;p=70,57;i=sink";
 endmodule 
 
 //

@@ -7,6 +7,8 @@ Does not (yet) test a bunch of features such as:
 - labels (t=)
 - status icon (i2=)
 - icon size (is=, is2=)
+- categorized icons
+- icon coloring
 - bubble()
 
 
