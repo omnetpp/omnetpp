@@ -1,0 +1,3 @@
+Oct 10, 1999
+ - standardized indentation of source files
+ - HC prefix added to Generator and Sink modules
