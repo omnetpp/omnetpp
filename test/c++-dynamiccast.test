@@ -1,0 +1,23 @@
+%description:
+Test that dynamic_cast works and accepts NULL pointer as input.
+
+%global:
+
+class A {public: virtual ~A() { } };
+class B : public A { };
+
+%activity:
+
+A *a1 = new A();
+A *a2 = new B();
+A *a3 = NULL;
+
+ev << (dynamic_cast<B *>(a1)!=0) << endl;
+ev << (dynamic_cast<B *>(a2)!=0) << endl;
+ev << (dynamic_cast<B *>(a3)!=0) << endl;
+
+%contains: stdout
+0
+1
+0
+

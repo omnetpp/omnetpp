@@ -51,6 +51,10 @@ void {Node1}::activity()
 
     PRINTGATESTATE();
 
+    wait(1.0);
+
+    PRINTGATESTATE();
+
     msg = new cMessage("msg1");
     msg->setLength(500);
     send(msg, g);
@@ -68,6 +72,11 @@ void {Node1}::activity()
     msg->setLength(200);
     send(msg, g);
 
+    PRINTGATESTATE();
+    wait(0.004);
+    PRINTGATESTATE();
+
+    wait(0.002);
     PRINTGATESTATE();
 
     wait(1.0);
@@ -103,12 +112,14 @@ express-mode=false
 event-banners=false
 
 %contains: stdout
-t=0: busy:0, finishes:-6.27744e+066
-t=0: busy:1, finishes:0.005
-t=0.105: msg1 arrived
-t=1: busy:0, finishes:0.005
+t=0: busy:0, finishes:0
+t=1: busy:0, finishes:0
 t=1: busy:1, finishes:1.005
-t=1.103: msg2 arrived
-t=1.105: msg3 arrived
+t=1.105: msg1 arrived
 t=2: busy:0, finishes:1.005
-
+t=2: busy:1, finishes:2.005
+t=2.004: busy:1, finishes:2.005
+t=2.006: busy:0, finishes:2.005
+t=2.103: msg2 arrived
+t=2.105: msg3 arrived
+t=3.006: busy:0, finishes:2.005
