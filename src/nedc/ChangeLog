@@ -4,6 +4,8 @@
         constructor for structs now). Fields without initializer are 
         initialized to zero.
 
+        * opp_msgc: "message" keyword is also accepted in forward declarations
+
 2004-09-24  ------ omnetpp-3.0a7 released ------
 
 2004-09-24  Andras Varga

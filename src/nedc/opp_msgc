@@ -215,7 +215,7 @@ while ($msg =~ s/import\s+(".*?");//s)
 }
 
 # parse type announcements in ned text
-while ($msg =~ s/(struct|cobject|noncobject|class|class\s+noncobject)\s+([A-Za-z_][A-Za-z0-9_]*)\s*;//s)
+while ($msg =~ s/(struct|cobject|noncobject|class|class\s+noncobject|message)\s+([A-Za-z_][A-Za-z0-9_]*)\s*;//s)
 {
     $class = $2;
     $type0 = $1;
@@ -228,7 +228,7 @@ while ($msg =~ s/(struct|cobject|noncobject|class|class\s+noncobject)\s+([A-Za-z
     } elsif ($type0 eq 'noncobject') {
         print STDERR "*** Warning: 'noncobject' is deprecated, write 'class noncobject' instead\n";
         $type = 'noncobject';
-    } elsif ($type0 eq 'class') {
+    } elsif ($type0 eq 'class' or $type0 eq 'message') {
         $type = 'cobject';
     } elsif ($type0 =~ /class\s+noncobject/) {
         $type = 'noncobject';
