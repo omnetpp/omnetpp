@@ -71,7 +71,17 @@ extern "C"
 //--------------------------------------------------------------------------
 
 /**
- * Low-level coroutine class, used by cSimpleModule.
+ * Low-level coroutine class, used by cSimpleModule. The present
+ * implementation uses Stig Kofoed's "Portable coroutines" (see Manual
+ * for reference). It creates all coroutine stacks within the main
+ * stack, and uses setjmp()/longjmp() for context switching. This
+ * implies that the maximum stack space allowed by the operating system
+ * for the OMNeT++ process must be sufficiently high (several,
+ * maybe several hundred megabytes), otherwise a segmentation fault
+ * will occur.
+ *
+ * Future versions may use platform-specific support for coroutines,
+ * such as the Fiber library in the Win32 API.
  *
  * @ingroup Internals
  */
@@ -92,20 +102,23 @@ class SIM_API cCoroutine
     JMP_BUF jmpbuf;         // task state (incl. stack ptr)
     bool started;           // true after 1st stack switch
 #endif
-  public:
 
+  public:
     /**
-     * MISSINGDOC: cCoroutine:static void init(unsigned,unsigned)
+     * Initializes the coroutine library. This function has to be called
+     * exactly once in a program, possibly at the top of main().
      */
     static void init( unsigned total_stack, unsigned main_stack);
 
     /**
-     * MISSINGDOC: cCoroutine:static void switchTo(cCoroutine*)
+     * Switch to another coroutine. The execution of the current coroutine
+     * is suspended and the other coroutine is resumed from the point it
+     * last left off.
      */
     static void switchTo( cCoroutine *cor );
 
     /**
-     * MISSINGDOC: cCoroutine:static void switchtoMain()
+     * Switch to the main coroutine (the one main() runs in).
      */
     static void switchtoMain();
 
@@ -120,57 +133,66 @@ class SIM_API cCoroutine
     ~cCoroutine();
 
     /**
-     * Assignment operator. The name member doesn't get copied;
-     * see cObject's operator=() for more details.
+     * Assignment is not implemented for coroutines.
      */
     cCoroutine& operator=(cCoroutine& cor);
 
     /**
-     * MISSINGDOC: cCoroutine:bool setup(CoroutineFnp,void*,unsigned)
+     * Sets up a coroutine. The arguments are the function that should be
+     * run in the coroutine, a pointer that is passed to the coroutine
+     * function, and the stack size.
      */
     bool setup( CoroutineFnp fnp, void *arg, unsigned stack_size );
 
     /**
-     * MISSINGDOC: cCoroutine:void free()
+     * Delete coroutine and release its stack space.
      */
     void free();
 
     /**
-     * MISSINGDOC: cCoroutine:void restart()
+     * Restart the coroutine.
      */
     void restart();
 
-
     /**
-     * MISSINGDOC: cCoroutine:bool stackOverflow()
+     * Returns true if there was a stack overflow during execution of the
+     * coroutine. It checks the intactness of a predefined byte pattern
+     * (0xdeadbeef) at the stack boundary, and report stack overflow
+     * if it was overwritten. The mechanism usually works fine, but occasionally
+     * it can be fooled by large uninitialized local variables
+     * (e.g. char buffer[256]): if the byte pattern happens to fall in the
+     * middle of such a local variable, it may be preserved intact and
+     * stack violation is not detected.
      */
     bool stackOverflow() _CONST;
 
     /**
-     * MISSINGDOC: cCoroutine:unsigned stackSize()
+     * Returns the stack size of the coroutine. This is the same number
+     * as the one passed to setup().
      */
     unsigned stackSize() _CONST;
 
     /**
-     * MISSINGDOC: cCoroutine:unsigned stackUsage()
+     * Returns the amount of stack actually used by the coroutine.
+     * It works by checking the intactness of predefined byte patterns
+     * (0xdeadbeef) placed in the stack.
      */
     unsigned stackUsage() _CONST;
 
+    /**
+     * Obsolete.
+     */
+    int stackLeft() _CONST;
 
     /**
-     * MISSINGDOC: cCoroutine:int stackLeft()
+     * Obsolete.
      */
-    int stackLeft() _CONST; // obsolete
+    bool stackLow() _CONST;
 
     /**
-     * MISSINGDOC: cCoroutine:bool stackLow()
+     * Obsolete.
      */
-    bool stackLow() _CONST; // obsolete
-
-    /**
-     * MISSINGDOC: cCoroutine:static int*getMainSP()
-     */
-    static int *getMainSP(); // obsolete
+    static int *getMainSP();
 };
 
 #ifdef PORTABLE_COROUTINES

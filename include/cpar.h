@@ -801,9 +801,10 @@ class SIM_API cModulePar : public cPar
     virtual const char *inspectorFactoryName() const {return "cModuleParIFC";}
 
     /**
-     * The original fullPath() method is redefined to suppress (hide) the internal
-     * parameter array object (a cArray used to store module parameters)
-     * in the object full name.
+     * The original fullPath() method is redefined to hide the
+     * internal array (a cArray) used to store the parameter objects.
+     * This method returns pointer to a static buffer which is
+     * overwritten by subsequent calls!
      */
     virtual const char *fullPath() const;
     //@}

@@ -158,14 +158,15 @@ class SIM_API cSimulation : public cObject
     virtual void writeContents(ostream& os);
 
     /**
-     * MISSINGDOC: cSimulation:char*fullPath()
+     * Returns the name of the simulation object, "simulation".
      */
     virtual const char *fullPath() const {return name();}
+    // FIXME: no dup(), op=!
     //@}
 
     // Internal: things that cannot be done from the constructor
     // (because it is called before main()).
-    void setup();
+    void setup();  // FIXME: why not private?
 
     /** @name Accessing modules. */
     //@{
@@ -229,17 +230,18 @@ class SIM_API cSimulation : public cObject
     cNetMod *netInterface() _CONST     {return netmodp;}
 
     /**
-     * MISSINGDOC: cSimulation:void resetClock()
+     * Resets the clock measuring the elapsed (real) time spent in this
+     * simulation run.
      */
     void resetClock();
 
     /**
-     * Start measuring elapsed (real) time.
+     * Start measuring elapsed (real) time spent in this simulation run.
      */
     void startClock();
 
     /**
-     * Stop measuring elapsed (real) time.
+     * Stop measuring elapsed (real) time spent in this simulation run.
      */
     void stopClock();
 
@@ -255,6 +257,7 @@ class SIM_API cSimulation : public cObject
 
     /**
      * Recursively calls finish() on the modules of the network.
+     * This method simply invokes callfinish() on the system module.
      */
     void callFinish();
 
@@ -269,17 +272,22 @@ class SIM_API cSimulation : public cObject
     void deleteNetwork();
 
     /**
-     * FIXME: set...
+     * Sets an execution time limit for the current simulation run.
+     * The value is understood in seconds.
      */
+    // FIXME: do time limits really belong to the simulation kernel??? why not in Envir?
     void setTimeLimit(long t)         {tmlimit=(time_t)t;}
 
     /**
-     * MISSINGDOC: cSimulation:void setSimTimeLimit(simtime_t)
+     * Sets a simulation time limit for the current simulation run.
      */
     void setSimTimeLimit(simtime_t t) {simtmlimit=t;}
 
     /**
-     * MISSINGDOC: cSimulation:void setNetIfCheckFreq(int)
+     * Used with distributed simulation, sets the frequency of checking
+     * messages arriving from other segments. This setting is mostly
+     * useful for performance tuning. The meaning of the value is:
+     * "check the network interface after every every f local events."
      */
     void setNetIfCheckFreq(int f)     {netif_check_freq=f;}
     //@}
@@ -288,12 +296,15 @@ class SIM_API cSimulation : public cObject
     //@{
 
     /**
-     * FIXME: get...
+     * Returns the cNetworkType object that was used to set up
+     * the current simulation model.
      */
     cNetworkType *networkType() _CONST     {return networktype;}
 
     /**
-     * MISSINGDOC: cSimulation:int runNumber()
+     * Returns the current run number. A run is the execution of a
+     * model with a given set of parameter settings. Runs can be defined
+     * in omnetpp.ini.
      */
     int  runNumber() _CONST           {return run_number;}
 
@@ -322,27 +333,34 @@ class SIM_API cSimulation : public cObject
     //@{
 
     /**
-     * FIXME: the scheduler function
+     * The scheduler function. Returns the module to which the
+     * next event (lowest timestamp event in the FES) belongs.
      */
     cSimpleModule *selectNextModule();
 
     /**
-     * FIXME: Executes one event.
+     * Executes one event. The argument should be the module
+     * returned by selectNextModule(); that is, the module
+     * to which the next event (lowest timestamp event in
+     * the FES) belongs.
      */
     void doOneEvent(cSimpleModule *m);
 
     /**
-     * MISSINGDOC: cSimulation:void incEventNumber()
+     * Increments the event number.
      */
     void incEventNumber()             {event_num++;}
 
     /**
-     * FIXME:
+     * Checks if the current simulation has reached the simulation
+     * or real time limits, and if so, stops the simulation with the
+     * appropriate message.
      */
     void checkTimes();
 
     /**
-     * Switches to simple module's coroutine.
+     * Switches to simple module's coroutine. This method is invoked
+     * from doOneEvent() for activity()-based modules.
      */
     int transferTo(cSimpleModule *p);
 
@@ -352,46 +370,55 @@ class SIM_API cSimulation : public cObject
     int transferToMain();
 
     /**
-     * Sets contextmodp and locallistp.
+     * Sets the module in context. Used internally.
      */
     void setContextModule(cModule *p);
 
     /**
-     * MISSINGDOC: cSimulation:void setGlobalContext()
+     * Sets global context. Used internally.
      */
-    void setGlobalContext()             {contextmodp=NULL;locallistp=&locals;}
+    void setGlobalContext()  {contextmodp=NULL;locallistp=&locals;}
 
     /**
-     * MISSINGDOC: cSimulation:void setLocalList(cHead*)
+     * Sets the 'locals' object for the current context.
      */
-    void setLocalList(cHead *p)         {locallistp=p;}
+    void setLocalList(cHead *p)  {locallistp=p;}
 
     /**
-     * MISSINGDOC: cSimulation:cSimpleModule*runningModule()
+     * Returns the currently executing simple module.
      */
     cSimpleModule *runningModule() _CONST {return runningmodp;}
 
     /**
-     * MISSINGDOC: cSimulation:cModule*contextModule()
+     * Returns the module currently in context.
      */
-    cModule       *contextModule() _CONST {return contextmodp;}
+    cModule *contextModule() _CONST {return contextmodp;}
 
     /**
-     * MISSINGDOC: cSimulation:cSimpleModule*contextSimpleModule()
+     * Returns the module currently in context as a simple module.
+     * If the module in context is not a simple module, returns NULL.
+     * This is a convenience function which simply calls contextModule().
      */
+     // FIXME: implementation should check isSimple() and return NULL if not OK!!!
     cSimpleModule *contextSimpleModule(); // cannot make inline! would require cmodule.h because of dynamic cast
 
     /**
-     * MISSINGDOC: cSimulation:cHead*localList()
+     * Returns the currently active 'locals' object. This object is usually the
+     * <tt>locals</tt> data member of the module in context, or the global
+     * <tt>locals</tt> object if we are in global context. This facility
+     * is used internally to manage ownership of user objects created within
+     * simple modules.
      */
-    cHead *localList()                   {return locallistp==NULL?(&locals):locallistp;}
+    cHead *localList() _CONST  {return locallistp==NULL?(&locals):locallistp;}
     //@}
 
     /** @name Statistics, snapshots. */
     //@{
 
     /**
-     * FIXME: snapshot(): to be called from cSimpleModule::snapshot()
+     * Writes a snapshot of the given object and its children to the
+     * textual snapshot file.
+     * This method is called internlly from cSimpleModule's snapshot().
      */
     bool snapshot(cObject *obj, const char *label);
 

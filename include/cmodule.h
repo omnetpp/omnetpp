@@ -237,7 +237,9 @@ class SIM_API cModule : public cObject
     virtual const char *fullName() const;
 
     /**
-     * MISSINGDOC: cModule:char*fullPath()
+     * Returns the full path name of the module. Example: "mynet.node[12].gen".
+     * Redefined in order to hide the global cSimulation instance in the
+     * path name (it would add "simulation." to the beginning of the full path).
      */
     virtual const char *fullPath() const;
     //@}
@@ -246,50 +248,53 @@ class SIM_API cModule : public cObject
     //@{
 
     /**
-     * FIXME: Set module ID. Used internally during setting up the module.
+     * Sets the module ID. Called internally as part of the module creation process.
      */
+    // FIXME why not private? cSimulation is friend anyway.
     virtual void setId(int n);
 
     /**
-     * FIXME: Set module index within vector (if module is part of
-     * a module vector). Used internally during setting up the module.
+     * Sets module index within vector (if module is part of
+     * a module vector). Called internally as part of the module creation process.
      */
     void setIndex(int i, int n);
 
     /**
-     * FIXME: Set associated cModuleType for the module. Used internally
-     * during setting up the module.
+     * Sets associated cModuleType for the module. Called internally
+     * as part of the module creation process.
      */
+    // FIXME why not private..?
     void setModuleType(cModuleType *mtype);
 
     /**
-     * Add a gate. The type character tp can be <tt>'I'</tt> or <tt>'O'</tt> for input
+     * Adds a gate. The type character tp can be <tt>'I'</tt> or <tt>'O'</tt> for input
      * and output, respectively.
      */
     void addGate(const char *s, char tp);
 
     /**
-     * Set gate vector size.
+     * Sets gate vector size.
      */
     void setGateSize(const char *s, int size);
 
     /**
-     * Add a parameter to the module.
+     * Adds a parameter to the module.
      */
     void addPar(const char *s);
 
     /**
-     * Add a machine parameter to the module.
+     * Adds a machine parameter to the module.
      */
     void addMachinePar(const char *pnam);
 
     /**
-     * Set value of a machine parameter.
+     * Sets value of a machine parameter.
      */
     void setMachinePar(const char *pnam, const char *val);
 
     /**
-     * FIXME: Build submodules & internal connections.
+     * Builds submodules and internal connections. This default implementation
+     * does nothing.
      */
     virtual void buildInside() {}
     //@}
@@ -305,13 +310,16 @@ class SIM_API cModule : public cObject
     virtual bool isSimple() _CONST = 0;
 
     /**
-     * MISSINGDOC: cModule:cModuleType*moduleType()
+     * Returns the cModuleType object associated with this module type.
      */
     cModuleType *moduleType() _CONST  {return mod_type;}
 
     /**
-     * Returns the index of the module in the module vector
-     * (cSimulation simulation).
+     * Returns the module ID. It is actually the index of the module
+     * in the module vector within the cSimulation simulation object.
+     * Module IDs are guaranteed to be unique during a simulation run
+     * (that is, IDs of deleted modules are not given out to newly created
+     * modules).
      */
     int id() _CONST               {return mod_id;}
 
@@ -461,17 +469,17 @@ class SIM_API cModule : public cObject
     //@{
 
     /**
-     * FIXME: machine parameters
+     * Returns the number of machine parameters.
      */
     int machinePars() _CONST  {return machinev.items();}    // NET
 
     /**
-     * MISSINGDOC: cModule:char*machinePar(int)
+     * Returns the value of the ith machine parameter.
      */
     const char *machinePar(int i);                   // NET
 
     /**
-     * MISSINGDOC: cModule:char*machinePar(char*)
+     * Returns a machine parameter by its name.
      */
     const char *machinePar(const char *machinename); // NET
     //@}
@@ -537,19 +545,28 @@ class SIM_API cModule : public cObject
 
     /** @name Display strings. */
     //@{
+    // FIXME: split to 2x2 functions, and get rid of 'type' parameter!
 
     /**
-     * FIXME: Change the display string for this module.
+     * Change the display string for this module. The type can be
+     * dispSUBMOD ("as submodule") or dispENCLOSINGMOD ("as enclosing module").
+     * The immediate flag selects whether the change should become effective
+     * right now or later (after finishing the current event); this
+     *
      */
     void setDisplayString(int type, const char *dispstr, bool immediate=true);
 
     /**
-     * Returns the display string for this module.
+     * Returns the display string for this module. The type can be
+     * dispSUBMOD ("as submodule") or dispENCLOSINGMOD ("as enclosing module").
      */
     const char *displayString(int type);
 
     /**
-     * MISSINGDOC: cModule:void setDisplayStringNotify(DisplayStringNotifyFunc,void*)
+     * Registers a notification function to be called when the display string
+     * changes. This function is used by graphical user interfaces (e.g. Tkenv)
+     * to get notified when the network graphics needs redraw due to a display
+     * string change.
      */
     void setDisplayStringNotify(DisplayStringNotifyFunc notify_func, void *data);
     //@}
@@ -611,12 +628,12 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
   protected:
     /** @name Hooks for defining module behaviour.
      *
-     * FIXME:
-     * activity() and handleMessage(), one of which has to be redefined in
-     * the user's simple modules.
+     * Exactly one of activity() and handleMessage() must be redefined
+     * by the user to add functionality to the simple module. See the
+     * manual for detailed guidance on how use to these two methods.
      *
-     * They are made protected because they shouldn't be called directly
-     * from outside.
+     * These methods are made protected because they shouldn't be called
+     * directly from outside.
      */
     //@{
 
@@ -705,13 +722,14 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     virtual bool isSimple() _CONST {return true;}
 
     /**
-     * FIXME: interface for calling initialize() and finish() from outside
-     *     //virtual void callInitialize();
+     * Calls initialize(int stage) in the context of this module.
+     * It does a single stage of initialization, and returns <tt>true</tt>
+     * if more stages are required.
      */
     virtual bool callInitialize(int stage);
 
     /**
-     * MISSINGDOC: cSimpleModule:void callFinish()
+     * Calls <tt>finish()</tt> in the context of this module.
      */
     virtual void callFinish();
 
@@ -1153,8 +1171,8 @@ class SIM_API cCompoundModule : public cModule
     virtual bool callInitialize(int stage);
 
     /**
-     * Redefined cModule method.
-     * Calls finish() first for submodules recursively, then for this module.
+     * Redefined cModule method. Calls finish() first for submodules
+     * recursively, then for this module.
      */
     virtual void callFinish();
 
@@ -1182,34 +1200,41 @@ class SIM_API cSubModIterator
   private:
     cModule *parent;
     int i;
+
   public:
     /**
-     * Constructor.
+     * Constructor. It takes the parent module.
      */
     cSubModIterator(cModule& p)  {parent=&p;i=0;operator++(0);}
 
     /**
-     * MISSINGDOC: cSubModIterator:void init(cModule&)
+     * Reinitializes the iterator.
      */
     void init(cModule& p)        {parent=&p;i=0;operator++(0);}
 
     /**
-     * MISSINGDOC: cSubModIterator:cModule&operator[]()
+     * Obsolete.
      */
-    cModule& operator[](int)     {return simulation[i];} //OBSOLETE
+    // FIXME: should really return NULL and not crash!
+    cModule& operator[](int)     {return simulation[i];}
 
     /**
-     * MISSINGDOC: cSubModIterator:cModule*operator()()
+     * Returns pointer to the current module. The pointer then
+     * may be cast to the appropriate cModule subclass.
+     * Returns NULL of the iterator has reached the end of the list.
      */
+    // FIXME: should really return NULL and not crash!
     cModule *operator()()        {return &simulation[i];}
 
     /**
-     * MISSINGDOC: cSubModIterator:bool end()
+     * Returns true of the iterator has reached the end of the list.
      */
     bool end() _CONST                   {return (i==-1);}
 
     /**
-     * MISSINGDOC: cSubModIterator:cModule*operator++()
+     * Returns the current module, then moves the iterator to the
+     * next module. Returns NULL if the iterator has already reached
+     * the end of the list.
      */
     cModule *operator++(int);    // sets i to -1 if end was reached
 };

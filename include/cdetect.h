@@ -56,6 +56,8 @@ class SIM_API cTransientDetection : public cObject
     cStatistic *back;          // ptr to cStatistic that uses this object
 
   public:
+    /** @name Constructors, destructor, assignment. */
+    //@{
 
     /**
      * Copy constructor.
@@ -71,8 +73,11 @@ class SIM_API cTransientDetection : public cObject
      * Destructor.
      */
     virtual ~cTransientDetection()  {}
+    // FIXME: no op=!
+    //@}
 
-    // redefined functions
+    /** @name Redefined cObject member functions. */
+    //@{
 
     /**
      * Returns pointer to a string containing the class name, "cTransientDetection".
@@ -92,44 +97,51 @@ class SIM_API cTransientDetection : public cObject
      * See cObject for more details.
      */
     virtual int netUnpack();
+    //@}
 
-    // new functions
+    /** @name Pure virtual functions to define the interface. */
+    //@{
 
     /**
-     * FIXME: new functions
+     * collect a value
      */
-    virtual void collect(double val)=0;  // collect a value
+    virtual void collect(double val)=0;
 
     /**
-     * MISSINGDOC: cTransientDetection:bool detected()
+     * transient period over
      */
-    virtual bool detected()=0;           // transient period over
+    virtual bool detected()=0;
 
     /**
-     * MISSINGDOC: cTransientDetection:void reset()
+     * reset detection
      */
-    virtual void reset()=0;              // reset detection
+    virtual void reset()=0;
 
     /**
-     * MISSINGDOC: cTransientDetection:void stop()
+     * stop detection
      */
-    virtual void stop()=0;               // stop detection
+    virtual void stop()=0;
 
     /**
-     * MISSINGDOC: cTransientDetection:void start()
+     * start detection
      */
-    virtual void start()=0;              // start detection
+    virtual void start()=0;
+    //@}
 
+    /** @name Host object. */
+    //@{
 
     /**
-     * MISSINGDOC: cTransientDetection:void setHostObject(cStatistic*)
+     * Sets the host object. This is internally called by cStatistic's
+     * addTransientDetection() method.
      */
     virtual void setHostObject(cStatistic *ptr)  {back = ptr;}
 
     /**
-     * MISSINGDOC: cTransientDetection:cStatistic*hostObject()
+     * Returns a pointer to the host object.
      */
     virtual cStatistic *hostObject() _CONST  {return back;}
+    //@}
 };
 
 //===NL=====================================================================
@@ -145,6 +157,8 @@ class SIM_API cAccuracyDetection : public cObject
     cStatistic *back;              // ptr to cStatistic that uses this object
 
   public:
+    /** @name Constructors, destructor, assignment. */
+    //@{
 
     /**
      * Copy constructor.
@@ -160,8 +174,11 @@ class SIM_API cAccuracyDetection : public cObject
      * Destructor.
      */
     virtual ~cAccuracyDetection()  {}
+    // FIXME: no op=!
+    //@}
 
-    // redefined functions
+    /** @name Redefined cObject member functions. */
+    //@{
 
     /**
      * Returns pointer to a string containing the class name, "cAccuracyDetection".
@@ -181,8 +198,10 @@ class SIM_API cAccuracyDetection : public cObject
      * See cObject for more details.
      */
     virtual int netUnpack();
+    //@}
 
-    // new functions
+    /** @name Pure virtual functions to define the interface. */
+    //@{
 
     /**
      * FIXME: new functions
@@ -208,17 +227,22 @@ class SIM_API cAccuracyDetection : public cObject
      * MISSINGDOC: cAccuracyDetection:void start()
      */
     virtual void start()=0;              // start detection
+    //@}
 
+    /** @name Host object. */
+    //@{
 
     /**
-     * MISSINGDOC: cAccuracyDetection:void setHostObject(cStatistic*)
+     * Sets the host object. This is internally called by cStatistic's
+     * addTransientDetection() method.
      */
     virtual void setHostObject(cStatistic *ptr)  {back = ptr;}
 
     /**
-     * MISSINGDOC: cAccuracyDetection:cStatistic*hostObject()
+     * Returns a pointer to the host object.
      */
     virtual cStatistic *hostObject() _CONST  {return back;}
+    //@}
 };
 
 //===NL======================================================================
@@ -247,13 +271,12 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
     void *pdfdata;            // data for PostDetectFunct
 
   private:
-
-    /**
-     * MISSINGDOC: cTDExpandingWindows:void detectTransient()
-     */
-    void detectTransient();   // computes new value of transval
+    // internal: computes new value of transval
+    void detectTransient();
 
   public:
+    /** @name Constructors, destructor, assignment. */
+    //@{
 
     /**
      * Copy constructor.
@@ -272,24 +295,24 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
      */
     virtual ~cTDExpandingWindows();
 
-    // redefined functions
+    /**
+     * Assignment operator. The name member doesn't get copied; see cObject's
+     * operator=() for more details.
+     */
+    cTDExpandingWindows& operator=(cTDExpandingWindows& res);
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
 
     /**
      * Returns pointer to a string containing the class name, "cTDExpandingWindows".
      */
     virtual const char *className() const {return "cTDExpandingWindows";}
+    //@}
 
-    /**
-     * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
-     */
-    cTDExpandingWindows& operator=(cTDExpandingWindows& res);
-
-    // redefined cTransientDetection functions
-
-    /**
-     * FIXME: redefined cTransientDetection functions
-     */
-    void setPostDetectFunction(PostTDFunc f, void *p) {pdf = f; pdfdata = p;}
+    /** @name Redefined cTransientDetection member functions. */
+    //@{
 
     /**
      * MISSINGDOC: cTDExpandingWindows:void collect(double)
@@ -315,12 +338,24 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
      * MISSINGDOC: cTDExpandingWindows:void start()
      */
     virtual void start()     {go = true;}
+    //@}
+
+    /** @name Setting up the detection object. */
+    //@{
 
     /**
-     * MISSINGDOC: cTDExpandingWindows:void setParameters(int,int,double,double)
+     * Adds a function that will be called when accuracy has reached the
+     * configured limit.
      */
-    void setParameters(int reps=3, int minw=4,   // set/change the detection parameters
+    // FIXME: why not in base class?
+    void setPostDetectFunction(PostTDFunc f, void *p) {pdf = f; pdfdata = p;}
+
+    /**
+     * Sets the parameters of the detection algorithm.
+     */
+    void setParameters(int reps=3, int minw=4,
                        double wind=1.3, double acc=0.3);
+    //@}
 };
 
 
@@ -346,29 +381,26 @@ class SIM_API cADByStddev : public cAccuracyDetection
     void *pdfdata;              // data for PostDetectFunc
 
   private:
+    // internal: compute new value of transval
+    void detectAccuracy();
 
-    /**
-     * MISSINGDOC: cADByStddev:void detectAccuracy()
-     */
-    void detectAccuracy();      // compute new value of transval
-
-    /**
-     * MISSINGDOC: cADByStddev:double stddev()
-     */
-    double stddev();            // compute the standard deviation
+    // internal: compute the standard deviation
+    double stddev();
 
   public:
+    /** @name Constructors, destructor, assignment. */
+    //@{
 
     /**
      * Copy constructor.
      */
     cADByStddev(cADByStddev& r);
-    explicit cADByStddev(const char *name=NULL,
-                         double acc=0.01, int reps=3,
 
     /**
      * Constructor.
      */
+    explicit cADByStddev(const char *name=NULL,
+                         double acc=0.01, int reps=3,
                          PostADFunc f=NULL, void *p=NULL);
 
     /**
@@ -376,25 +408,24 @@ class SIM_API cADByStddev : public cAccuracyDetection
      */
     virtual ~cADByStddev()  {}
 
-    // redefined functions
-
-    /**
-     * Returns pointer to a string containing the class name, "cADByStddev".
-     */
-    virtual const char *className() const {return "cADByStddev";}
-
     /**
      * Assignment operator. The name member doesn't get copied;
      * see cObject's operator=() for more details.
      */
     cADByStddev& operator=(cADByStddev& res);
+    //@}
 
-    // redefined cAccuracyDetection functions
+    /** @name Redefined cObject member functions. */
+    //@{
 
     /**
-     * FIXME: redefined cAccuracyDetection functions
+     * Returns pointer to a string containing the class name, "cADByStddev".
      */
-    void setPostDetectFunction(PostADFunc f, void *p) {pdf=f; pdfdata=p;}
+    virtual const char *className() const {return "cADByStddev";}
+    //@}
+
+    /** @name Redefined cAccuracyDetection functions. */
+    //@{
 
     /**
      * MISSINGDOC: cADByStddev:void collect(double)
@@ -420,12 +451,25 @@ class SIM_API cADByStddev : public cAccuracyDetection
      * MISSINGDOC: cADByStddev:void start()
      */
     virtual void start()  {go=true;}
+    //@}
+
+    /** @name Setting up the detection object. */
+    //@{
 
     /**
-     * MISSINGDOC: cADByStddev:void setParameters(double,int)
+     * Adds a function that will be called when accuracy has reached the
+     * configured limit.
      */
-    void setParameters(double acc=0.1, int reps=3)  //set the detection parameters
+    // FIXME: why not in base class?
+    void setPostDetectFunction(PostADFunc f, void *p) {pdf=f; pdfdata=p;}
+
+    /**
+     * Sets the parameters of the detection algorithm.
+     */
+    void setParameters(double acc=0.1, int reps=3)
         {accuracy=acc; repeats=detreps=reps;}
+    //@}
 };
 
 #endif
+

@@ -125,12 +125,18 @@ class SIM_API cGate : public cObject
     virtual void info(char *buf);
 
     /**
-     * MISSINGDOC: cGate:char*fullName()
+     * Returns the full name of the gate, which is name() plus the
+     * index in square brackets (e.g. "out[4]"). Redefined to add the
+     * index. This method returns pointer to a static buffer which is
+     * overwritten by subsequent calls!
      */
     virtual const char *fullName() const;
 
     /**
-     * MISSINGDOC: cGate:char*fullPath()
+     * The original fullPath() method is redefined to hide the
+     * internal array (a cArray) used to store the gate objects.
+     * This method returns pointer to a static buffer which is
+     * overwritten by subsequent calls!
      */
     virtual const char *fullPath() const;
 
@@ -142,9 +148,10 @@ class SIM_API cGate : public cObject
     //@}
 
     /**
-     * FIXME: This function is called internally by the send() functions
-     * to deliver the message to its destination. Why's this public???
+     * This function is called internally by the send() functions
+     * to deliver the message to its destination.
      */
+    // FIXME: why public?
     void deliver(cMessage *msg);
 
     /** @name Setting up the gate. */
@@ -169,14 +176,16 @@ class SIM_API cGate : public cObject
     //@{
 
     /**
-     * Redirect gates. This function will rarely be needed; unless maybe
-     * for dynamically created modules.
+     * Redirect gates. This method is mostly used internally during
+     * network setup to create the connections. It can also be used
+     * to manually create connections for for dynamically created modules.
      */
     void setFrom(cGate *g);
 
     /**
-     * Redirect gates. This function will rarely be needed; unless maybe
-     * for dynamically created modules.
+     * Redirect gates. This method is mostly used internally during
+     * network setup to create the connections. It can also be used
+     * to manually create connections for for dynamically created modules.
      */
     void setTo(cGate *g);
     //@}

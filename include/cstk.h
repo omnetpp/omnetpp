@@ -43,7 +43,9 @@
 
 
 //
-// enables stack switching with iSTK,vSTK
+// internal class: enables stack switching with the iSTK and vSTK macros
+//
+// ** OBSOLETE **
 //
 struct Stk
 {
@@ -53,15 +55,9 @@ struct Stk
    static JMP_BUF _jbuf;
    int _switched;
 
-    /**
-     * MISSINGDOC: Stk:Stk()
-     */
    Stk()  {_switched=0;}
    ~Stk() {if(_switched && _stkon) {_stkon=0;LONGJMP(_jbuf,1);}}
 
-    /**
-     * MISSINGDOC: Stk:long operator=(long)
-     */
    long operator=(long l) {return _retval=l;}
 };
 

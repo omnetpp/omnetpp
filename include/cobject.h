@@ -83,7 +83,8 @@ class SIM_API cObject
     static int heapflag;              // to determine 'storage' (1 immediately after 'new')
 
   protected:
-    /**@name Ownership control
+    /** @name Ownership control.
+     *
      * The following functions are intended to be used by derived container
      * classes to manage ownership of their contained objects.
      */
@@ -92,8 +93,12 @@ class SIM_API cObject
     /**
      * Makes this object the owner of 'object'.
      * The function called by the container object when it takes ownership
-     * of the obj object that is inserted into it. Implementation:
-     * obj->setOwner( this ).
+     * of the obj object that is inserted into it.
+     *
+     * Implementation:
+     * <pre>
+     *     obj->setOwner( this );
+     * </pre>
      */
     void take(cObject *object)
         {object->setOwner( this );}
@@ -103,9 +108,12 @@ class SIM_API cObject
      * back to its default owner.
      * The function called by the container object when obj
      * is removed from the container -- releases the ownership of the
-     * object and hands it over to its default owner. Implementation:
-     * <BR>
-     * obj->setOwner( obj->defaultOwner() );
+     * object and hands it over to its default owner.
+     *
+     * Implementation:
+     * <pre>
+     *     obj->setOwner( obj->defaultOwner() );
+     * </pre>
      */
     void drop(cObject *object)
         {object->setOwner( object->defaultOwner() );}
@@ -116,8 +124,15 @@ class SIM_API cObject
      * the contained object obj. It the object was dynamically
      * allocated (by new), it is deleted, otherwise (e.g., if
      * it is a global or a local variable) it is just removed from the
-     * ownership hierarchy. Implementation:<BR>
-     * {if(obj->storage()=='D') delete obj; else obj->setOwner(NULL);}
+     * ownership hierarchy.
+     *
+     * Implementation:
+     * <pre>
+     *     if(obj->storage()=='D')
+     *         delete obj;
+     *     else
+     *         obj->setOwner(NULL);
+     * </pre>
      */
     void free(cObject *object)
         {if(object->storage()=='D') delete object; else object->setOwner(NULL);}
@@ -125,13 +140,12 @@ class SIM_API cObject
     //@}
 
   public:
-    /**@name Creation, destruction, copying
-     */
+    /** @name Constructors, destructor, assignment. */
     //@{
 
     /**
      * Copy constructor. In derived classes, it is usually implemented
-     * as {operator=(obj);}.
+     * as <tt>{operator=(obj);</tt>
      */
     cObject(const cObject& obj);
 
@@ -148,7 +162,7 @@ class SIM_API cObject
     /**
      * Create object with given name and specified owner. The owner will
      * be the h object (if the pointer is not NULL),
-     * that is, the constructor contains a setOwner( h ) call.
+     * that is, the constructor contains a <tt>setOwner(h)</tt> call.
      */
     cObject(const char *name, cObject *ownerobj);
 
@@ -161,7 +175,8 @@ class SIM_API cObject
     /**
      * Duplicates this object.  Duplicates the object and returns
      * a pointer to the new one. Must be redefined in derived classes!
-     * In derived classes, it is usually implemented as {return new cObject(*this);}.
+     * In derived classes, it is usually implemented as
+     * <tt>return new cObject(*this)</tt>.
      */
     virtual cObject *dup()    {return new cObject(*this);}
 
@@ -173,17 +188,17 @@ class SIM_API cObject
     void destruct() {this->~cObject();}
 
     /**
-     * The assignment operator. Most derived classes contain a cSomeClass&<I>
-     * </I>cSomeClass:: operator=(cSomeClass&) function.
+     * The assignment operator. Most derived classes contain a
+     * <tt>cClassName& cClassName::operator=(cClassName&)</tt> function.
      * Copies the object EXCEPT for the NAME string; derived classes are
-     * expected to define similar functions (e.g.cPar::operator=(cPar&))
+     * expected to define similar functions (e.g. <tt>cPar::operator=(cPar&)</tt>)
      * If you want to copy the name string, you can do it by hand:
-     * setName(o.name()).
+     * <tt>setName(o.name()</tt>).
      */
     cObject& operator=(const cObject& o);
     //@}
 
-    /**@name Handling the name string.
+    /** @name Handling the name string.
      *
      * NOTE: "" and NULL are treated liberally: "" is stored as NULL and
      * NULL is returned as "".
@@ -224,8 +239,7 @@ class SIM_API cObject
     virtual const char *fullPath() const;
     //@}
 
-    /**@name Object ownership.
-     */
+    /** @name Object ownership. */
     //@{
 
     /**
@@ -234,21 +248,22 @@ class SIM_API cObject
     cObject *owner() const {return ownerp;}
 
     /**
-     * Sets the owner of the object. See documentation of cHead
-     * for more information.
+     * Sets the owner of the object. If NULL is passed, the default owner of
+     * the object will be used.
+     *
+     * @see defaultOwner()
      */
     void setOwner(cObject *newowner);
 
     /**
-     * Returns pointer to a default owner. This function should return
-     * a pointer to the default owner of the object.
-     * The function is used by the drop() member function, redefined
-     * in cObject-descendant container classes.
+     * Returns pointer to the default owner of the object.
+     * This function is used by the setOwner() and drop() member functions.
+     * drop() is used in container classes derived from cObject.
      */
     virtual cObject *defaultOwner();
     //@}
 
-    /**@name Ownership control flag.
+    /** @name Ownership control flag.
      *
      * The ownership control flag is to be used by derived container classes.
      * If the flag is set, the container should take() any object that is
@@ -271,13 +286,12 @@ class SIM_API cObject
     bool takeOwnership() _CONST   {return tkownership;}
     //@}
 
-    /**@name Reflection, support for debugging and snapshots.
-     */
+    /** @name Reflection, support for debugging and snapshots. */
     //@{
 
     /**
      * Returns a pointer to the class name string, "cObject".
-     * In derived classes, usual implementation is {return "classname";}.
+     * In derived classes, usual implementation is <tt>{return "classname";}</tt>.
      */
     virtual const char *className() const {return "cObject";}
 
@@ -322,7 +336,7 @@ class SIM_API cObject
     virtual void writeContents(ostream& os);
     //@}
 
-    /**@name Support for parallel execution.
+    /** @name Support for parallel execution.
      *
      * Packs/unpacks object from/to PVM or MPI send buffer.
      * These functions are used by the simulation kernel for parallel execution.
@@ -344,8 +358,7 @@ class SIM_API cObject
     virtual int netUnpack();
     //@}
 
-    /**@name Miscellaneous functions.
-     */
+    /** @name Miscellaneous functions. */
     //@{
 
     /**
@@ -355,11 +368,7 @@ class SIM_API cObject
      * Calls the <I>f</I> function recursively for each object contained
      * in this object.
      *
-     * <U><B>The </B></U><U><B>forEach()</B></U><U><B>
-     * mechanism</B></U>
-     *
-     * The forEach() mechanism implemented in OMNeT++ is very
-     * special and slightly odd. The passed function is called for each
+     * The passed function is called for each
      * object twice: once on entering and once on leaving the object.
      * In addition, after the first ('entering') call to the function,
      * it signals with its return value whether it wants to go deeper
@@ -386,34 +395,46 @@ class SIM_API cObject
      * be pointers where the result should be stored. ForeachFuncs
      * mustn't call themselves recursively!
      *
-     * <I>(I know this all is kind of weird, but I wrote it a long ago.
-     * Changing it now would take quite some work, and after all, it
-     * works..)</I>
+     * <I>I know the foreach() mechanism described here is a bit weird.
+     * Actually I wrote it a long ago, and changing it now would take quite
+     * some work. And after all, it works..</I>
      */
     virtual void forEach(ForeachFunc f);
 
     /**
-     * Returns the storage class of the object.
-     * The return value is one of the characters S/A/D which stand for
-     * static, auto and dynamic, respectively.
+     * Returns the storage class of the object. The return value is one
+     * of the characters S/A/D which stand for static, auto and dynamic,
+     * respectively. (The storage class is determined by the constructor,
+     * with some help from cObject's operator new().)
      */
     char storage() _CONST         {return stor;}
 
     /**
-     * cObject's operator new does more than the global
-     * new()<I>.</I> It cooperates with cObject's constructor
-     * to determine the storage class of the object (static, auto or
-     * dynamic).
+     * cObject's operator new does more than the global new().
+     * It cooperates with cObject's constructor to determine the storage
+     * class of the object (static, auto or dynamic).
+     *
+     * @see storage()
      */
     void *operator new(size_t m);
 
     /**
-     * MISSINGDOC: cObject:void deleteChildren()
+     * Deletes all dynamic objects (those allocated on the heap) whose owner
+     * is this object. Other owned objects are left intact.
      */
     void deleteChildren();
 
     /**
-     * MISSINGDOC: cObject:void destructChildren()
+     * Disposes of all objects whose owner is this object. This method is called
+     * internally when destroying a simple module with all objects it holds.
+     *
+     * The actual method of "disposing of" an object depends on the storage
+     * class of the object:
+     *   - <i>dynamic</i> (allocated on the heap): operator delete
+     *   - <i>auto<i> (allocated on the stack, i.e. it is a local variable of activity()): direct destructor call
+     *   - <i>static</i> (global variable): setOwner(NULL) which makes the object join its default owner
+     *
+     * @see storage()
      */
     void destructChildren();
 
