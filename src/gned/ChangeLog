@@ -140,3 +140,9 @@ Aug 15, 1999
   - fixed bugs in nedfile.cc (lines 86,91,92 contained "==" instead of "=")
 Aug 18, 1999
   - initial version of syntax highlight implemented
+Aug 26, 1999
+  - find/replace dialogs added
+Aug 28, 1999
+  - ddfields() array introduced for performance reasons
+Aug 30, 1999
+  - status bar added for text editor

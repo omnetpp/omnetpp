@@ -40,6 +40,7 @@ proc switchToNED {} {
 
     # initial syntax hightlight
     syntaxHighlight $t 1.0 end
+    updateTextStatusbar $t
 }
 
 
@@ -180,6 +181,8 @@ puts "dbg: drawing..."
     set ned($filekey,dirty) 1
     updateTreeManager
 
+    #dbg: this not so good...
+    $gned(statusbar).mode config -text "Ready"
 }
 
 # okToLoseChanges --

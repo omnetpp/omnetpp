@@ -34,14 +34,18 @@ proc configureEditor {w} {
 
     $w tag configure SELECT -back #808080 -fore #ffffff
 
-puts "dbg: syntax highlight: <paste> should update the whole file"
-
     bind $w <Key> {
         %W tag remove SELECT 0.0 end
-        after idle {syntaxHighlight %W {insert linestart - 1 lines} {insert lineend}}
+        after idle {
+            syntaxHighlight %W {insert linestart - 1 lines} {insert lineend}
+            updateTextStatusbar %W
+        }
     }
     bind $w <Button-1> {
         %W tag remove SELECT 0.0 end
+        after idle {
+            updateTextStatusbar %W
+        }
     }
     bind $w <Control-f> {editFind}
     bind $w <Control-F> {editFind}
@@ -103,6 +107,18 @@ proc syntaxHighlight {w startpos endpos} {
         $w tag add COMMENT $cur "$cur + $length char"
         set cur [$w index "$cur + $length char"]
     }
+}
+
+# updateTextStatusbar --
+#
+#
+proc updateTextStatusbar {w} {
+    global gned
+
+    set linecol [split [$w index insert] "."]
+    set line [lindex $linecol 0]
+    set col  [expr [lindex $linecol 1] + 1]
+    $gned(statusbar).mode config -text "Line $line Col $col"
 }
 
 # findReplaceDialog --
