@@ -612,15 +612,15 @@ double cNEDNetworkBuilder::evalFunction(FunctionNode *node, cModule *parentmodp,
 
         if (parentmodp)  // in network params, parentmodp==NULL
         {
+            // find among gates of parent module
+            cGate *g = parentmodp->gate(name);
+            if (g)
+                return g->size();
+
             // if not found, find among submodules
             cModule *m = parentmodp->submodule(name);
             if (m)
                 return m->size();
-
-            // if not found, find among gates of parent module
-            cGate *g = parentmodp->gate(name);
-            if (g)
-                return g->size();
         }
         throw new cException("dynamic module builder: evaluate: sizeof(%s) failed -- no such gate or module", name);
     }
