@@ -61,6 +61,7 @@ int connect_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 int arraybuilder_cmd(ClientData, Tcl_Interp *, int, const char **);
 int makeNamedPipe_cmd(ClientData, Tcl_Interp *, int, const char **);
+int checkmemory_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 int compoundFilterTypeCreate_cmd(ClientData, Tcl_Interp *, int, const char **);
 int compoundFilterType_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -83,6 +84,7 @@ OmnetTclCommand tcl_commands[] = {
 
    { "opp_arraybuilder",     arraybuilder_cmd   }, // args: <arraybuildernode> <command> ...
    { "opp_makenamedpipe",    makeNamedPipe_cmd  }, // args: <name>
+   { "opp_checkmemory",      checkmemory_cmd    }, // args: <numpoints>
 
    { "opp_compoundfiltertype_create", compoundFilterTypeCreate_cmd}, // args: <nodetype>
    { "opp_compoundfiltertype", compoundFilterType_cmd }, // args: <nodetype> <command> ...
@@ -319,7 +321,7 @@ int arraybuilder_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
        )
        return TCL_OK;
    }
-   else if (!strcmp(cmd,"getlength"))
+   else if (!strcmp(cmd,"length"))
    {
        Tcl_SetObjResult(interp, Tcl_NewIntObj(node->length()));
        return TCL_OK;
@@ -331,7 +333,7 @@ int arraybuilder_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
    }
    else
    {
-       Tcl_SetResult(interp, "2nd arg should be: getvectors, getlength or sort", TCL_STATIC);
+       Tcl_SetResult(interp, "2nd arg should be: getvectors, length or sort", TCL_STATIC);
        return TCL_ERROR;
    }
 }
@@ -351,6 +353,29 @@ int makeNamedPipe_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    }
    return TCL_OK;
 #endif
+}
+
+
+int checkmemory_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_checkmemory <numpoints>\"", TCL_STATIC); return TCL_ERROR;}
+   int numpoints = atoi(argv[1]);
+   // BLT seems to allocate a Point2D array (2x double) plus an int array for every "line".
+   // Plus it temporarily might need the same amount of memory.
+   // Hints: bltGrLine.c, look for "screenPts" and "indices".
+   // Empirical measurements suggest BLT might need about 40 bytes per point, but
+   // process size varies a lot (also on graph settings: lines yes/no, symbols yes/no etc)
+   // so this is not a very reliable estimate. However, better than nothing.
+   size_t pointsize = 2*sizeof(double)+sizeof(int);
+   size_t memrequired = (size_t)(numpoints*pointsize*2);
+   try {
+       char *tmp = new char[memrequired];
+       delete tmp;
+   } catch (...) {
+       Tcl_SetResult(interp, "BLT might not have enough memory for the plot", TCL_STATIC);
+       return TCL_ERROR;
+   }
+   return TCL_OK;
 }
 
 int compoundFilterTypeCreate_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)

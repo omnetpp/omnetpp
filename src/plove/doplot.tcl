@@ -38,6 +38,21 @@ proc getVectorsToPlot {} {
 }
 
 
+proc checkmemory {arraylist} {
+    array set arraybuilder $arraylist
+    set numpoints 0
+    foreach id [array names arraybuilder] {
+        incr numpoints [opp_arraybuilder $arraybuilder($id) length]
+    }
+    if [catch {opp_checkmemory $numpoints}] {
+        error "Not enough memory, plot contains too many points ($numpoints). \
+              You can decrease the number of points by selecting fewer vectors to plot, \
+              limit the time period plotted (\"crop\" filter), or aggregate points by \
+              using e.g. the \"winavg\" filter."
+    }
+}
+
+
 proc createVectorPlot {{idlist {}}} {
     global config vec elemcounter
 
@@ -50,7 +65,6 @@ proc createVectorPlot {{idlist {}}} {
         # hourglass...
         busyCursor "Processing..."
 
-        #puts "DBG: create"
         set net [opp_createnetwork]
 
         # collect distinct file names and create vector file readers
@@ -80,8 +94,11 @@ proc createVectorPlot {{idlist {}}} {
         }
 
         # execute
-        #puts "DBG: exec"
         opp_executenetwork $net
+
+        # check if we'll have enough memory (BLT has a tendency to just
+        # abort() when fails to malloc memory).
+        checkmemory [array get arraybuilder]
 
         # create graph
         busyCursor "Building graph..."
@@ -124,7 +141,6 @@ proc createVectorScatterPlot {idlist xid chartname} {
         # hourglass...
         busyCursor "Processing..."
 
-        #puts "DBG: create"
         set net [opp_createnetwork]
 
         # collect distinct file names and create vector file readers
@@ -162,8 +178,11 @@ proc createVectorScatterPlot {idlist xid chartname} {
         }
 
         # execute
-        #puts "DBG: exec"
         opp_executenetwork $net
+
+        # check if we'll have enough memory (BLT has a tendency to just
+        # abort() when fails to malloc memory).
+        checkmemory [array get arraybuilder]
 
         # create graph
         busyCursor "Building graph..."
