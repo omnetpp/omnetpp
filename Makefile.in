@@ -142,6 +142,3 @@ depend:
 	    (cd $$i; $(MAKE) depend); \
 	done
 
-dist:
-	echo 'to be done'
-
