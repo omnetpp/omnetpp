@@ -598,6 +598,17 @@ proc create_graphicalmodwindow {name geom} {
        tk_messageBox -type ok -title Error -icon error -parent [winfo toplevel [focus]] \
                      -message "Error displaying network graphics: $errmsg"
     }
+
+    if {$geom==""} {
+        # adjust window size to size of graphics
+        set bb [$c cget -scrollregion]
+        set w [expr [lindex $bb 2]-[lindex $bb 0]]
+        set h [expr [lindex $bb 3]-[lindex $bb 1]]
+        if {$w>900} {set w 900}
+        if {$h>600} {set h 600}
+        $c config -width $w
+        $c config -height $h
+    }
 }
 
 proc graphmodwin_dblclick c {
