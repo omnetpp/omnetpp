@@ -333,6 +333,18 @@ if test $tcltk_ok = no; then
     fi
 fi
 if test $tcltk_ok = no; then
+    OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk85 -ltcl85,
+                  tcltk_ok, TK_LIBS="$opp_x11lib -ltk85 -ltcl85")
+fi
+if test $tcltk_ok = no; then
+    OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk8.5 -ltcl8.5,
+                  tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.5 -ltcl8.5")
+fi
+if test $tcltk_ok = no -a "$cygwin" = yes; then
+    OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk85 -lcygtcl85,
+                  tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk85 -lcygtcl85")
+fi
+if test $tcltk_ok = no; then
     OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk84 -ltcl84,
                   tcltk_ok, TK_LIBS="$opp_x11lib -ltk84 -ltcl84")
 fi
@@ -343,26 +355,6 @@ fi
 if test $tcltk_ok = no -a "$cygwin" = yes; then
     OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk84 -lcygtcl84,
                   tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk84 -lcygtcl84")
-fi
-if test $tcltk_ok = no; then
-    OPP_CHECK_LIB(Tcl/Tk 8.3, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk83 -ltcl83,
-                  tcltk_ok, TK_LIBS="$opp_x11lib -ltk83 -ltcl83")
-fi
-if test $tcltk_ok = no; then
-    OPP_CHECK_LIB(Tcl/Tk 8.3, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk8.3 -ltcl8.3,
-                  tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.3 -ltcl8.3")
-fi
-if test $tcltk_ok = no -a "$cygwin" = yes; then
-    OPP_CHECK_LIB(Tcl/Tk 8.3, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk83 -lcygtcl83,
-                  tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk83 -lcygtcl83")
-fi
-if test $tcltk_ok = no; then
-    OPP_CHECK_LIB(Tcl/Tk 8.2, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk82 -ltcl82,
-                  tcltk_ok, TK_LIBS="$opp_x11lib -ltk82 -ltcl82")
-fi
-if test $tcltk_ok = no; then
-    OPP_CHECK_LIB(Tcl/Tk 8.2, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk8.2 -ltcl8.2,
-                  tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.2 -ltcl8.2")
 fi
 if test $tcltk_ok = yes; then
     TKENV_IF_POSSIBLE=tkenv
@@ -381,7 +373,7 @@ else
             AC_MSG_ERROR([cannot build Tcl/Tk apps, probably due to misconfigured or missing X11 headers or libs. Check config.log for more info!])
         fi
     else
-        AC_MSG_ERROR([Tcl/Tk not found, needed for all GUI parts; version 8.2+ needed])
+        AC_MSG_ERROR([Tcl/Tk not found, needed for all GUI parts; version 8.4.0+ needed])
     fi
 fi
 
