@@ -671,9 +671,6 @@ sub prepareForCodeGeneration
         if ($fisabstract{$fieldname} && !$gap) {
             print STDERR "*** Error: abstract fields need 'customize=true' property in '$msgname'\n"; $ret=1;
         }
-        if ($fval{$fieldname} ne '' && $classtype eq 'struct') {
-            print STDERR "*** Error: default values not possible with structs (no constructor is generated!) in '$msgname'\n"; $ret=1;
-        }
         if ($fenumname{$fieldname} ne '' && !grep(/^\Q$fenumname{$fieldname}\E$/,@enums)) {
             print STDERR "*** Error: undeclared enum '$fenumname{$fieldname}' used in '$msgname'\n"; $ret=1;
         }
@@ -1014,9 +1011,9 @@ sub generateClass
                 if ($classtype{$ftype{$fieldname}} eq 'cobject') {
                   print CC "    take(&(this->$var{$fieldname}));\n";
                 }
-              }
-          }
-      }
+            }
+        }
+    }
     print CC "}\n\n";
     if ($msgbaseclass eq "") {
         print CC "$msgclass\:\:$msgclass(const $msgclass& other)\n";
@@ -1261,6 +1258,7 @@ sub generateStruct
         print H "struct $msgclass : public $msgbaseclass\n";
     }
     print H "{\n";
+    print H "    $msgclass();\n";
     foreach $fieldname (@fieldlist)
     {
         if ($fisarray{$fieldname}) {
@@ -1274,6 +1272,28 @@ sub generateStruct
     print H "void doPacking(cCommBuffer *b, $msgclass& a);\n";
     print H "void doUnpacking(cCommBuffer *b, $msgclass& a);\n\n";
 
+    print CC "$msgclass::$msgclass()\n";
+    print CC "{\n";
+    my $hasarray=0;
+    foreach $fieldname (@fieldlist) {$hasarray=1 if ($fisarray{$fieldname});}
+    print CC "    unsigned int i;\n" if ($hasarray);
+    foreach $fieldname (@fieldlist)
+    {
+        die "abstract field not possible in struct" if ($fisabstract{$fieldname});
+        die "cObject field not possible in struct" if ($classtype{$ftype{$fieldname}} eq 'cobject');
+        die "dynamic array not possible in struct" if ($fisarray{$fieldname} && $farraysize{$fieldname} eq '');
+        if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
+            if ($fkind{$fieldname} eq 'basic') {
+                print CC "    for (i=0; i<$farraysize{$fieldname}; i++)\n";
+                print CC "        $var{$fieldname}\[i\] = $fval{$fieldname};\n";
+            }
+        } else {
+            if ($fval{$fieldname} ne '') {
+                print CC "    $var{$fieldname} = $fval{$fieldname};\n";
+            }
+        }
+    }
+    print CC "}\n\n";
     print CC "void doPacking(cCommBuffer *b, $msgclass& a)\n";
     print CC "{\n";
     if ($msgbaseclass ne "") {
