@@ -418,6 +418,10 @@ void TCmdenvApp::messageDelivered(cMessage *msg)
     }
 }
 
+void TCmdenvApp::moduleMethodCalled(cModule *, cModule *, const char *)
+{
+}
+
 void TCmdenvApp::help()
 {
     ev << "\n";

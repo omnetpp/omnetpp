@@ -1,3 +1,7 @@
+2003-10-02  Andras Varga
+
+	* cmdenv.cc/h: added new method cEnvir::moduleMethodCalled()
+
 2003-09-22  Andras Varga
 
 	* cmdenv.cc/h: messageSent() signature change, see include/ChangeLog
