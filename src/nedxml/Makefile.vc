@@ -24,7 +24,7 @@ OBJS= nedelements.obj nedelement.obj nederror.obj \
 .SUFFIXES : .cc
 
 .cc.obj:
-	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
+        $(CXX) /Fo"$@" $(COPTS) /c /Tp $<
 
 
 #
@@ -34,7 +34,7 @@ all : nedxml.lib
 
 nedxml.lib : unistd.h $(OBJS)
         $(AR) /nologo /out:nedxml.lib $(OBJS)
-	copy nedxml.lib $(OMNETPP_LIB_DIR:/=\)
+        copy nedxml.lib $(OMNETPP_LIB_DIR:/=\)
 
 nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl ned.dtd
         perl dtdclassgen.pl ned.dtd
@@ -50,16 +50,10 @@ lex.yy.cc: ned.lex
         del lex.yy.c
 
 unistd.h: 
-	echo. > unistd.h
-
-saxparser_expat.obj : saxparser_expat.cc
-        $(CXX) $(COPTS) /I $(EXPAT_INCL_DIR) /c /Tp saxparser_expat.cc
-
-saxparser_libxml.obj : saxparser_libxml.cc
-        $(CXX) $(COPTS) /I $(LIBXML_INCL_DIR) /c /Tp saxparser_libxml.cc
+        echo. > unistd.h
 
 doc:
-	$(DOXYGEN:/=\) doxy.cfg
+        $(DOXYGEN:/=\) doxy.cfg
 
 depend:
         $(MAKEDEPEND) -I. -fMakefile.vc -- *.cc

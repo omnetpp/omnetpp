@@ -45,12 +45,12 @@ XMLPARSER=libxml
 #XMLPARSER=none
 
 #
-# Location of Expat.
+# Location of Expat (only used if XMLPARSER=expat, see above)
 #
 EXPAT_DIR=d:/home/tools/expat-1.95.6
 
 #
-# Location of LibXML2 and its supporting library ICONV.
+# Location of LibXML2 and its supporting library ICONV (only used if XMLPARSER=libxml)
 #
 ICONV_DIR=d:/home/tools/iconv-1.8.win32
 LIBXML_DIR=d:/home/tools/libxml2-2.5.4.win32

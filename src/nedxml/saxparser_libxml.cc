@@ -128,6 +128,25 @@ xmlParserCtxtPtr ctxt;  //FIXME very ugly -- should be class member or something
 
 bool SAXParser::parse(FILE *f)
 {
+    //
+    // Attempts to do DTD validation and default attr completion:
+    //   xmlDoValidityCheckingDefaultValue = 1;
+    //   xmlLoadExtDtdDefaultValue |= XML_DETECT_IDS;
+    //   xmlLoadExtDtdDefaultValue |= XML_COMPLETE_ATTRS;
+    //   xmlSubstituteEntitiesDefaultValue = 1;
+    //
+    // This happens inside LibXML:
+    //   ctxt->loadsubset = xmlLoadExtDtdDefaultValue;
+    //   ctxt->validate = xmlDoValidityCheckingDefaultValue;
+    //
+    // Another (newer) way:
+    //   options |= XML_PARSE_DTDLOAD;
+    //   options |= XML_PARSE_DTDATTR;
+    //   options |= XML_PARSE_DTDVALID;
+    //   xmlCtxtUseOptions(ctxt, options);  (or xmlParseDoc(..., options))
+    //     ^^ this also sets ctxt->loadsubset,ctxt->validate
+    //  
+
     ctxt = xmlCreatePushParserCtxt(&libxmlSAXParser, saxhandler, NULL, 0, NULL);
 
     int n;
@@ -149,6 +168,16 @@ bool SAXParser::parse(FILE *f)
                 ctxt->errNo, // TODO something better
                 ctxt->input->line);
     }
+
+    if (!ctxt->valid)
+    {
+        // FIXME validation code, test it!!!
+        ok = false;
+        sprintf(errortext, "validation error %d at line %d",
+                ctxt->errNo, // TODO something better
+                ctxt->input->line);
+    }
+
     ctxt->sax = NULL;
 
     xmlFreeParserCtxt(ctxt);

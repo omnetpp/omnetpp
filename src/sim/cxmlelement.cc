@@ -199,7 +199,7 @@ cXMLElementList cXMLElement::getChildrenByTagName(const char *tagname) const
     return list;
 }
 
-cXMLElementList cXMLElement::getElementsByTagName(const char *tagname) const
+cXMLElementList cXMLElement::getElementsByTagName(const char *tagname) 
 {
     cXMLElementList list;
     if (!strcasecmp(getTagName(),tagname))
