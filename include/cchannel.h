@@ -96,12 +96,6 @@ class SIM_API cChannel : public cObject
     virtual void info(char *buf);
 
     /**
-     * Returns the name of the inspector factory class associated with this class.
-     * See cObject for more details.
-     */
-    virtual const char *inspectorFactoryName() const {return "cChannelIFC";}
-
-    /**
      * Call the passed function for each contained object.
      * See cObject for more details.
      */
@@ -253,12 +247,6 @@ class SIM_API cSimpleChannel : public cChannel
      * See cObject for more details.
      */
     virtual void info(char *buf);
-
-    /**
-     * Returns the name of the inspector factory class associated with this class.
-     * See cObject for more details.
-     */
-    virtual const char *inspectorFactoryName() const {return "cSimpleChannelIFC";}
 
     /**
      * Call the passed function for each contained object.

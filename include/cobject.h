@@ -391,8 +391,8 @@ class SIM_API cObject
 
     /**
      * Returns a pointer to the class name string. Since OMNeT++ 2.3, this method
-     * uses typeid (C+ RTTI) and it no longer needs to be redefined in each class
-     * to return a string literal.
+     * is implemented once here in cObject, using typeid (C+ RTTI), and 
+     * it no longer needs to be redefined in each class.
      */
     virtual const char *className() const;
 
@@ -402,14 +402,6 @@ class SIM_API cObject
      * also <I>Functions supporting snapshots</I>.
      */
     virtual void info(char *buf);
-
-    /**
-     * Returns the name of the inspector factory class associated with this class.
-     * Inspector factories are used by graphical user interfaces like Tkenv.
-     * They are capable of creating inspector windows for objects of this class
-     * (and maybe also other classes).
-     */
-    virtual const char *inspectorFactoryName() const {return "cObjectIFC";}
 
     /**
      * This function is called internally by cSimpleModule::snapshot().

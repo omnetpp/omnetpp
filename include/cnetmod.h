@@ -94,16 +94,6 @@ class SIM_API cNetMod : public cModule
     virtual cNetMod& operator=(const cNetMod& other);
     //@}
 
-    /** @name Redefined cObject member functions. */
-    //@{
-
-    /**
-     * Returns the name of the inspector factory class associated with this class.
-     * See cObject for more details.
-     */
-    virtual const char *inspectorFactoryName() const {return "cNetModIFC";}
-    //@}
-
     /** @name Redefined cModule member functions. */
     //@{
 

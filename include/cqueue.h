@@ -127,12 +127,6 @@ class SIM_API cQueue : public cObject
     virtual void info(char *buf);
 
     /**
-     * Returns the name of the inspector factory class associated with this class.
-     * See cObject for more details.
-     */
-    virtual const char *inspectorFactoryName() const {return "cQueueIFC";}
-
-    /**
      * Calls the given function for each contained
      * object.
      */

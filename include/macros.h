@@ -81,15 +81,6 @@
   void *CLASSNAME##__create() {return new CLASSNAME;} \
   EXECUTE_ON_STARTUP(CLASSNAME##__class, (new cClassRegister(#CLASSNAME,CLASSNAME##__create))->setOwner(&classes);)
 
-/**
- * Register inspector factory. Used internally by graphical interface
- * libraries like Tkenv.
- *
- * @hideinitializer
- */
-#define Register_InspectorFactory(FACTORYNAME,FUNCTION) \
-  TInspector *FUNCTION(cObject *, int, void *); \
-  EXECUTE_ON_STARTUP(FACTORYNAME##__ifc, (new cInspectorFactory (#FACTORYNAME,FUNCTION))->setOwner(&inspectorfactories);)
 //@}
 
 //=========================================================================

@@ -97,12 +97,6 @@ class SIM_API cBag : public cObject
     virtual void info(char *buf);
 
     /**
-     * Returns the name of the inspector factory class associated with this class.
-     * See cObject for more details.
-     */
-    virtual const char *inspectorFactoryName() const {return "cBagIFC";}
-
-    /**
      * Serializes the object into a PVM or MPI send buffer.
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
@@ -267,12 +261,6 @@ class SIM_API cArray : public cObject
      * See cObject for more details.
      */
     virtual void info(char *buf);
-
-    /**
-     * Returns the name of the inspector factory class associated with this class.
-     * See cObject for more details.
-     */
-    virtual const char *inspectorFactoryName() const {return "cArrayIFC";}
 
     /**
      * Calls the given function for each object

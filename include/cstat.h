@@ -86,12 +86,6 @@ class SIM_API cStatistic : public cObject
     /* Note: No dup() because this is an abstract class! */
 
     /**
-     * Returns the name of the inspector factory class associated with this class.
-     * See cObject for more details.
-     */
-    virtual const char *inspectorFactoryName() const {return "cStatisticIFC";}
-
-    /**
      * Serializes the object into a PVM or MPI send buffer.
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.

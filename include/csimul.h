@@ -133,12 +133,6 @@ class SIM_API cSimulation : public cObject
     virtual cObject *dup() const  {return new cSimulation(*this);}
 
     /**
-     * Returns the name of the inspector factory class associated with this class.
-     * See cObject for more details.
-     */
-    virtual const char *inspectorFactoryName() const {return "cSimulationIFC";}
-
-    /**
      * Call the passed function for each contained object.
      * See cObject for more details.
      */

@@ -104,12 +104,6 @@ class SIM_API cOutVector : public cObject
      * See cObject for more details.
      */
     virtual void info(char *buf);
-
-    /**
-     * Returns the name of the inspector factory class associated with this class.
-     * See cObject for more details.
-     */
-    virtual const char *inspectorFactoryName() const {return "cOutVectorIFC";}
     //@}
 
     /** @name Configuring and writing to output vectors. */

@@ -371,12 +371,6 @@ class SIM_API cPar : public cObject
     virtual void info(char *buf);
 
     /**
-     * Returns the name of the inspector factory class associated with this class.
-     * See cObject for more details.
-     */
-    virtual const char *inspectorFactoryName() const {return "cParIFC";}
-
-    /**
      * Writes textual information about this object to the stream.
      * See cObject for more details.
      */
@@ -861,12 +855,6 @@ class SIM_API cModulePar : public cPar
      * See cObject for more details.
      */
     virtual cObject *dup() const  {return new cPar(*this);}
-
-    /**
-     * Returns the name of the inspector factory class associated with this class.
-     * See cObject for more details.
-     */
-    virtual const char *inspectorFactoryName() const {return "cModuleParIFC";}
 
     /**
      * Redefined. (Reason: a C++ rule that overloaded virtual methods must be redefined together.)

@@ -104,12 +104,6 @@ class SIM_API cHead : public cObject
     virtual cObject *dup() const  {return new cHead(*this);}
 
     /**
-     * Returns the name of the inspector factory class associated with this class.
-     * See cObject for more details.
-     */
-    virtual const char *inspectorFactoryName() const {return "cHeadIFC";}
-
-    /**
      * Calls the function passed for each object
      * in the list.
      */

@@ -177,12 +177,6 @@ class SIM_API cWatch : public cObject
     virtual void info(char *buf);
 
     /**
-     * Returns the name of the inspector factory class associated with this class.
-     * See cObject for more details.
-     */
-    virtual const char *inspectorFactoryName() const {return "cWatchIFC";}
-
-    /**
      * Writes the value of the variable to the output stream.
      * The output looks like this: "int samples = 12 (12U, 0xC)".
      */

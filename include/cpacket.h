@@ -69,12 +69,6 @@ class SIM_API cPacket : public cMessage
     virtual cObject *dup() const {return new cPacket(*this);}
 
     /**
-     * Returns the name of the inspector factory class associated with this class.
-     * See cObject for more details.
-     */
-    virtual const char *inspectorFactoryName() const {return "cPacketIFC";}
-
-    /**
      * Produces a one-line description of object contents into the buffer passed as argument.
      * See cObject for more details.
      */

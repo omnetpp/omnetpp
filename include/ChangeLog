@@ -9,9 +9,12 @@
 	to compile every source using /GR, otherwise Tkenv crashes (RTTI 
 	exception)!
 
-	* cobject.h, ctypes.h, macros.h: removed TInspector, inspector() method
-	from cObject and the inspectorfactory stuff (they didn't really belong
-	here). The whole stuff was moved to Tkenv.
+	* cobject.h: removed inspector() and inspectorFactoryName() methods
+	from cObject
+	
+        * ctypes.h, macros.h: removed TInspector and the inspectorfactory 
+        stuff altogether (they didn't really belong here). The whole stuff 
+        was moved to Tkenv.
 
 2002-10-20  Andras Varga
 

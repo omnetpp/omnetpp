@@ -144,12 +144,6 @@ class SIM_API cMessage : public cObject
     virtual void info(char *buf);
 
     /**
-     * Returns the name of the inspector factory class associated with this class.
-     * See cObject for more details.
-     */
-    virtual const char *inspectorFactoryName() const {return "cMessageIFC";}
-
-    /**
      * Call the passed function for each contained object.
      * See cObject for more details.
      */

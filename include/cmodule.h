@@ -250,12 +250,6 @@ class SIM_API cModule : public cObject
     virtual void forEach(ForeachFunc f);
 
     /**
-     * Returns the name of the inspector factory class associated with this class.
-     * See cObject for more details.
-     */
-    virtual const char *inspectorFactoryName() const {return "cModuleIFC";}
-
-    /**
      * Returns the full name of the module, which is name() plus the
      * index in square brackets (e.g. "module[4]"). Redefined to add the
      * index.
@@ -769,12 +763,6 @@ class SIM_API cSimpleModule : public cModule
     virtual void info(char *buf);
 
     /**
-     * Returns the name of the inspector factory class associated with this class.
-     * See cObject for more details.
-     */
-    virtual const char *inspectorFactoryName() const {return "cSimpleModuleIFC";}
-
-    /**
      * Call the passed function for each contained object.
      * See cObject for more details.
      */
@@ -1257,12 +1245,6 @@ class SIM_API cCompoundModule : public cModule
      * See cObject for more details.
      */
     virtual void info(char *buf);
-
-    /**
-     * Returns the name of the inspector factory class associated with this class.
-     * See cObject for more details.
-     */
-    virtual const char *inspectorFactoryName() const {return "cCompoundModuleIFC";}
     //@}
 
     /** @name Redefined cModule functions. */
