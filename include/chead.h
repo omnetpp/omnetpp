@@ -80,11 +80,6 @@ class SIM_API cHead : public cObject
     cHead(const char *name=NULL);
 
     /**
-     * Constructor.
-     */
-    cHead(const char *name, cHead *h);
-
-    /**
      * Copy constructor.
      */
     cHead(const cHead& h) : cObject(h)  {setName(h.name());operator=(h);}

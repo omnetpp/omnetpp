@@ -116,7 +116,7 @@ class SIM_API cSimulation : public cObject
     /**
      * Constructor.
      */
-    explicit cSimulation(const char *name, cHead *h=NULL);
+    explicit cSimulation(const char *name);
 
     /**
      * Destructor.

@@ -41,7 +41,6 @@ class  cIterator;
 class  cHead;
 
 //=== Global objects:
-SIM_API extern cHead superhead;           ///< List of other global lists.
 SIM_API extern cHead networks;            ///< List of available networks.
 SIM_API extern cHead modinterfaces;       ///< List of all module interfaces.
 SIM_API extern cHead modtypes;            ///< List of all module types.
@@ -192,13 +191,6 @@ class SIM_API cObject
      * Create object with given name and default owner.
      */
     explicit cObject(const char *name);
-
-    /**
-     * Create object with given name and specified owner. The owner will
-     * be the h object (if the pointer is not NULL),
-     * that is, the constructor contains a <tt>setOwner(h)</tt> call.
-     */
-    cObject(const char *name, cObject *ownerobj);
 
     /**
      * Virtual destructor. Deletes the name and notifies the user interface

@@ -418,8 +418,7 @@ class SIM_API cNetworkType : public cObject
     /**
      * Constructor. It takes pointer to a function that can build up a network.
      */
-    cNetworkType(const char *name, void (*f)()) :
-      cObject(name,(cObject *)&networks), setupfunc(f) {}
+    cNetworkType(const char *name, void (*f)());
 
     /**
      * Destructor.
@@ -474,8 +473,7 @@ class SIM_API cFunctionType : public cObject
     /**
      * Constructor.
      */
-    cFunctionType(const char *name, MathFunc f0, int argc) :
-      cObject(name,(cObject *)&functions) {f=f0;argcount=argc;}
+    cFunctionType(const char *name, MathFunc f0, int argc);
 
     /**
      * Destructor.
@@ -533,8 +531,7 @@ class SIM_API cClassRegister : public cObject
     /**
      * Constructor.
      */
-    cClassRegister(const char *name, void *(*f)()) :
-      cObject(name,(cObject *)&classes), creatorfunc(f) {}
+    cClassRegister(const char *name, void *(*f)());
 
     /**
      * Destructor.
@@ -588,6 +585,7 @@ class SIM_API cClassRegister : public cObject
  * @see Register_Class() macro
  * @see cClassRegister class
  */
+// FIXME into some class, as static member!!!
 SIM_API void *createOne(const char *classname);
 //@}
 

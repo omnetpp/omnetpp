@@ -1,14 +1,28 @@
+2002-10-07  Andras Varga
+
+	* macros.h, cobject.h: refactoring of internal workings: way of 
+	constructing global registration lists (module types, networks, etc)
+	have been reorganized. Now it uses a new EXECUTE_ON_STARTUP() macro
+	instead of having hardwired into global objects' constructor to 
+	join lists. As a consequence, cObject constructors could be simplified.
+
+	* Interface() macro renamed to ModuleInterface() (name clashed with
+	COM stuff on Windows); Register_Interface() macro renamed to 
+	Register_ModuleInterface().
+
 2002-10-04  Andras Varga
 
-	* csimul.h: incEventCount() removed, incrementing event count
-	was moved into doOneEvent()
+        * csimul.h: refactoring on cSimulation object:
 
-	* csimul.h: responsibilities of startRun() and endRun() changed, 
-	see doc comment.
+	* incEventCount() removed, incrementing event count was moved into 
+	doOneEvent()
 
-	* csimul.h: several methods removed from cSimulation and moved
-	into the Envir library: timeLimit(), simTimeLimit(), startClock(),
-        stopClock(), resetClock(), checkTimes().
+	* responsibilities of startRun() and endRun() changed, see doc comment.
+
+	* several methods moved from cSimulation into the Envir library: 
+	timeLimit(), simTimeLimit(), startClock(), stopClock(), resetClock(), 
+	checkTimes(). It is no longer the scheduler function's responsibility
+	to stop the simulation if sim/real time limits have been reached
 
 	* cexception.h changed
 

@@ -54,6 +54,7 @@
 #include "cenvir.h"
 #include "cenum.h"
 #include "cstruct.h"
+#include "onstartup.h"
 #include "cchannel.h"
 #include "cdispstr.h"
 #include "envirext.h"

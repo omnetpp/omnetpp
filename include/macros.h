@@ -25,6 +25,7 @@
 #ifndef __MACROS_H
 #define __MACROS_H
 
+#include "onstartup.h"
 #include "ctypes.h"
 
 //=========================================================================
@@ -46,7 +47,7 @@
  */
 #define Define_Network(NAME,SETUPFUNC) \
   void SETUPFUNC(); \
-  static cNetworkType NAME##__network(#NAME,SETUPFUNC);
+  EXECUTE_ON_STARTUP(NAME##__net, (new cNetworkType(#NAME,SETUPFUNC))->setOwner(&networks);)
 
 /**
  * Link type definition. The macro expands to the definition of a cLinkType object;
@@ -56,7 +57,7 @@
  * @hideinitializer
  */
 #define Define_Link(NAME,DELAY,ERROR,DATARATE) \
-  static cLinkType NAME##__link(#NAME, DELAY, ERROR, DATARATE);
+  EXECUTE_ON_STARTUP(NAME##__linkt, (new cLinkType(#NAME, DELAY, ERROR, DATARATE))->setOwner(&linktypes);)
 
 /**
  * Registers a mathematical function that takes 0, 1, 2 or 3 double arguments
@@ -68,8 +69,8 @@
  *
  * @hideinitializer
  */
-#define Define_Function(FUNCTION,ARGCOUNT) \
-  cFunctionType FUNCTION##__functype(#FUNCTION,(MathFunc)FUNCTION,ARGCOUNT);
+#define Define_Function(NAME,ARGCOUNT) \
+  EXECUTE_ON_STARTUP(NAME##__func, (new cFunctionType(#NAME,(MathFunc)NAME,ARGCOUNT))->setOwner(&functions);)
 
 /**
  * Register class. This defines a factory object which makes it possible
@@ -79,7 +80,7 @@
  */
 #define Register_Class(CLASSNAME) \
   void *CLASSNAME##__create() {return new CLASSNAME;} \
-  cClassRegister CLASSNAME##__reg(#CLASSNAME,CLASSNAME##__create);
+  EXECUTE_ON_STARTUP(CLASSNAME##__class, (new cClassRegister(#CLASSNAME,CLASSNAME##__create))->setOwner(&classes);)
 
 /**
  * Register inspector factory. Used internally by graphical interface
@@ -89,7 +90,7 @@
  */
 #define Register_InspectorFactory(FACTORYNAME,FUNCTION) \
   TInspector *FUNCTION(cObject *, int, void *); \
-  cInspectorFactory FACTORYNAME##__inspfct(#FACTORYNAME,FUNCTION);
+  EXECUTE_ON_STARTUP(FACTORYNAME##__ifc, (new cInspectorFactory (#FACTORYNAME,FUNCTION))->setOwner(&inspectorfactories);)
 //@}
 
 //=========================================================================
@@ -112,11 +113,11 @@
  * @hideinitializer
  */
 #define Define_Module(CLASSNAME) \
-  static cModule *CLASSNAME##__create(const char *name, cModule *parentmod ) \
+  static cModule *CLASSNAME##__create(const char *name, cModule *parentmod) \
   { \
      return (cModule *) new CLASSNAME(name, parentmod); \
   } \
-  cModuleType CLASSNAME##__type(#CLASSNAME,#CLASSNAME,(ModuleCreateFunc)CLASSNAME##__create);
+  EXECUTE_ON_STARTUP(CLASSNAME##__mod, (new cModuleType(#CLASSNAME,#CLASSNAME,(ModuleCreateFunc)CLASSNAME##__create))->setOwner(&modtypes);)
 
 /**
  * Similar to Define_Module(), except that it couples the class with the
@@ -125,12 +126,12 @@
  *
  * @hideinitializer
  */
-#define Define_Module_Like(CLASSNAME,INTERFACE) \
-  static cModule *CLASSNAME##__create(const char *name, cModule *parentmod ) \
+#define Define_Module_Like(CLASSNAME,INTERFACENAME) \
+  static cModule *CLASSNAME##__create(const char *name, cModule *parentmod) \
   { \
      return (cModule *) new CLASSNAME(name, parentmod); \
   } \
-  cModuleType CLASSNAME##__type(#CLASSNAME,#INTERFACE,(ModuleCreateFunc)CLASSNAME##__create);
+  EXECUTE_ON_STARTUP(CLASSNAME##__mod, (new cModuleType(#CLASSNAME,#INTERFACENAME,(ModuleCreateFunc)CLASSNAME##__create))->setOwner(&modtypes);)
 
 /**
  * This macro facilitates the declaration of a simple module class.
@@ -163,21 +164,21 @@
 
 // internal: declaration of a module interface (module gates and params)
 // example:
-//    Interface(CLASSNAME)
+//    ModuleInterface(CLASSNAME)
 //        Gate(NAME,TYPE)
 //        Parameter(NAME,TYPES)
 //        Machine(NAME)
 //    EndInterface
 //
-#define Interface(CLASSNAME)    static sDescrItem CLASSNAME##__descr[] = {
+#define ModuleInterface(CLASSNAME)    static sDescrItem CLASSNAME##__descr[] = {
 #define Gate(NAME,TYPE)         {'G', #NAME, NULL,  TYPE},
 #define Parameter(NAME,TYPES)   {'P', #NAME, TYPES, 0   },
 #define Machine(NAME)           {'M', #NAME, NULL,  0   },
 #define EndInterface            {'E', NULL,  NULL,  0   }};
 
 // internal: registers a module interface specified with the Interface..EndInterface macros
-#define Register_Interface(CLASSNAME) \
-  static cModuleInterface CLASSNAME##__interface( #CLASSNAME, CLASSNAME##__descr);
+#define Register_ModuleInterface(CLASSNAME) \
+  EXECUTE_ON_STARTUP(CLASSNAME##__if, new cModuleInterface(#CLASSNAME, CLASSNAME##__descr))->setOwner(&modinterfaces);)
 
 // internal: gate types. To be used with module interface declarations.
 #define GateDir_Input      'I'
