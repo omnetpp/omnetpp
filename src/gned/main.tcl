@@ -71,15 +71,15 @@ proc createMainWindow {} {
 
     global gned fonts icons tcl_version help_tips config
 
+    # Set up toplevel.
+    # Note: do not deiconify yet -- this will be done in startGNED
+
     # toplevel . -class Toplevel
     wm focusmodel . passive
     wm geometry . 640x450
-
-    #wm maxsize . 1009 738
     wm minsize . 1 1
     wm overrideredirect . 0
     wm resizable . 1 1
-    wm deiconify .
     wm title . "OMNeT++/GNED"
     wm protocol . WM_DELETE_WINDOW {fileExit}
 

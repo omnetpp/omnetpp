@@ -74,7 +74,7 @@ if [info exist OMNETPP_GNED_DIR] {
 # Exec startup code
 #
 proc startGNED {argv} {
-   global config OMNETPP_BITMAP_PATH tcl_platform
+   global config OMNETPP_BITMAP_PATH
 
    wm withdraw .
    checkTclTkVersion
@@ -89,9 +89,42 @@ proc startGNED {argv} {
        set config(connmodeauto) 1  ;# FIXME deliberately change this setting; this line may be removed in the future
    }
    reflectConfigInGUI
+
    set convertandexit 0
    set imgsuffix "gif"
    set outdir "html"
+   set files {}
+   processCommandline $argv convertandexit imgsuffix outdir files
+
+   if {!$convertandexit} {
+       wm deiconify .
+   }
+
+   foreach fname $files {
+       if {!$convertandexit || [string match "*.ned" $fname]} {
+           if [file exist $fname] {
+               loadNED $fname
+           } else {
+               fileNewNedfile $fname
+           }
+       }
+   }
+
+   # implement the -c option
+   if {$convertandexit} {
+       # just save the canvases to file then exit
+       exportCanvasesToPostscript $outdir [file join $outdir "images.xml"] $imgsuffix
+       fileExit
+   }
+}
+
+proc processCommandline {argv _convertandexit _imgsuffix _outdir _files} {
+   upvar $_convertandexit convertandexit
+   upvar $_imgsuffix imgsuffix
+   upvar $_outdir outdir
+   upvar $_files files
+
+   global tcl_platform
 
    #foreach arg $argv ..
    for {set i 0} {$i<[llength $argv]} {incr i} {
@@ -111,30 +144,41 @@ proc startGNED {argv} {
            incr i
            set arg [lindex $argv $i]
            if {$arg!=""} {set imgsuffix $arg}
+       } elseif {[string match "-*" $arg]} {
+           puts stderr "<!> warning: invalid argument $arg, ignoring"
+       } elseif {[string match "@*" $arg]} {
+           # list file
+           if [catch {
+               set fname [string range $arg 1 end]
+               set f [open $fname "r"]
+               set listfile [read $f]
+               if {$tcl_platform(platform) == "windows"} {
+                  # Tcl on Windows doesn't like backslashes in file names
+                  regsub -all -- {\\} $listfile "/" listfile
+               }
+               close $f
+           } err] {
+               puts stderr "<!> warning: could not read list file '$fname' ($err), ignoring"
+           } else {
+               foreach line $listfile {
+                   foreach fname [glob -nocomplain $line] {
+                       lappend files $fname
+                   }
+               }
+           }
        } else {
            # expand wildcards (on Windows, the shell doesn't do it for us)
            if [catch {
                set files [glob $arg]
            }] {
-               # if no match, probably it should be a new file, open it
-               if {!$convertandexit} {
-                   fileNewNedfile $arg
-               }
+               # probably a new file that should be created
+               lappend files $arg
            } else {
-               # open all filenames
                foreach fname [glob -nocomplain $arg] {
-                   loadNED $fname
+                   lappend files $fname
                }
            }
        }
    }
-
-   # implement the -c option
-   if {$convertandexit} {
-       # just save the canvases to file, and exit
-       exportCanvasesToPostscript $outdir [file join $outdir "images.xml"] $imgsuffix
-       fileExit
-   }
 }
-
 

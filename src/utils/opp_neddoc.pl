@@ -3,11 +3,6 @@ eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}' && eval 'exec perl -S $0 $
 
 #!perl
 #line 6
-use Cwd;
-
-#$progdir = $ARGV[0];
-$progdir = "d:\\home\\omnetpp\\src\\utils";   #FIXME
-$temp = "d:/tmp";   #FIXME
 
 #-----------
 # to be configured:
@@ -16,11 +11,20 @@ $XSLTPROC = "d:\\home\\tools\\libxslt-1.0.27.win32\\util\\xsltproc.exe";
 $GNED = "d:\\home\\omnetpp\\bin\\gned.exe";
 $GHOSTSCRIPT = "d:\\home\\tools\\gs\\gs8.11\\bin\\gswin32c.exe";
 $GIFTRANS = "";
-$DOT = "d:\\home\\tools\\Graphviz\\bin\\dot.exe ";
+$DOT = "d:\\home\\tools\\Graphviz\\bin\\dot.exe";
 $PERL = "perl";
+#-----------
+
+use Cwd;
+
+$progdir = $0;
+$progdir =~ s|/|\\|g;
+$progdir =~ s|[^\\:]*$|\\|g;
+$progdir = "." if ($progdir eq "");
+
+# assume the stylesheet and the postprocessor are in the same directory as we
 $NEDDOC_XSL = "$progdir\\neddoc.xsl";
 $NEDDOC_PL = "$progdir\\neddocproc.pl";
-#-----------
 
 # process command-line options
 $outdir = "html";
@@ -176,11 +180,10 @@ else
 {
     if (@ARGV==())
     {
-        print STDERR "opp_neddoc: no input files specified, try . to include all *.ned and *.msg files in current directory and below\n";
+        print STDERR "opp_neddoc: no input files specified, type -h for help\n";
         exit(2);
     }
 
-    unlink("$outdir\\filelist.txt");
     while (@ARGV)
     {
         $arg = shift @ARGV;
@@ -198,7 +201,7 @@ else
 }
 
 # make file names in filelist.txt relative to current directory; also weed out
-# filenames not ending in .ned or .msg (i.e. backup files ending in .ned~0)
+# file names not ending in .ned or .msg (i.e. backup files ending in .ned~0)
 $currentdir = cwd();
 $currentdir =~ s|/|\\|g;
 rename("$outdir\\filelist.txt", "$outdir\\filelist.tmp");
@@ -211,6 +214,7 @@ while (<FLIN>)
     print FLOUT;
 }
 close FLOUT;
+close FLIN;
 unlink("$outdir\\filelist.tmp");
 
 #
@@ -223,9 +227,10 @@ if ($screenshots)
 {
     if ($GHOSTSCRIPT ne "")
     {
-        print "exporting screenshots (Postscript) using GNED...\n";
+        print "exporting screenshots in Postscript using GNED...\n";
         $nedfilesonly = `type $outdir\\filelist.txt`;
-        runprog("$GNED -- -s -c $outdir -e jpg $nedfilesonly")==0 || error("error invoking GNED");
+        #runprog("$GNED >nul -- -c $outdir -e jpg $nedfilesonly")==0 || error("error invoking GNED");
+        runprog("$GNED -- -c $outdir -e jpg \@$outdir\\filelist.txt >nul")==0 || error("error invoking GNED");
         print "converting Postscript to JPG with Ghostscript...\n";
         foreach $i (glob("$outdir/*.eps"))
         {
@@ -233,7 +238,6 @@ if ($screenshots)
            $jpg = $i;
            $jpg =~ s/eps$/jpg/;
            runprog("$GHOSTSCRIPT -dEPSCrop -sNOPAUSE -sBATCH -sDEVICE=jpeg -sOutputFile=$jpg $i >>$outdir\\gs.err")==0 || error("error invoking Ghostscript");
-           unlink($i)
         }
         print "\n";
 
@@ -259,7 +263,7 @@ if ($doxytagfile ne "") {
     $doxytagfile = absolutepath($doxytagfile);
 }
 
-print "applying xslt stylesheet...\n" if $verbose;
+print "applying XSLT stylesheet...\n" if $verbose;
 $xsltcommand = "$XSLTPROC".
                " --stringparam outputdir \"".toslash($outdir)."\"".
                " --stringparam imagesxml \"".toslash($imagesxml)."\"".
@@ -270,7 +274,6 @@ $xsltcommand = "$XSLTPROC".
                " --output nul".
                " $NEDDOC_XSL $outdir\\inputfiles.xml";
 runprog($xsltcommand)==0 || error("error invoking xsltproc");
-unlink("$outdir/inputfiles.xml");
 
 if ($have_dot)
 {
@@ -299,9 +302,21 @@ if ($have_dot)
 print "formatting comments...\n" if $verbose;
 runprog("$PERL $NEDDOC_PL $outdir")==0 || error("error invoking HTML formatter");
 
-print "documentation created in $outdir/ -- start page is index.html\n" if $verbose;
+if (!$debug)
+{
+    unlink(glob("$outdir/*.eps"));
+    unlink(glob("$outdir/*.dot"));
+    unlink(glob("$outdir/*.map"));
+    unlink("$outdir/inputfiles.xml");
+    unlink("$outdir/images.xml");
+    unlink("$outdir/filelist.txt");
+}
+else
+{
+    print "debug mode -- leaving intermediate files in $outdir/\n";
+}
 
-#unlink("$outdir\\filelist.txt");
+print "documentation created in $outdir/ -- start page is index.html\n" if $verbose;
 
 
 sub runprog
