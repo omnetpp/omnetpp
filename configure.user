@@ -1,6 +1,6 @@
 #
-# This file is intended to supply additional input for configure.
-# It is read in (sourced) during the configuration process. 
+# This file contains additional input for 'configure'. It is read (sourced)
+# during the configuration process. You are free to edit the settings in here.
 #
 # The settings in this file are all optional in the sense that they all
 # have reasonable default values in the configure script.
@@ -23,8 +23,8 @@ build_shared_libs=yes
 #
 # It is possible to have the Tcl files embedded into the compiled OMNeT++
 # libraries and executables. This can be useful if you want to ship 
-# standalone executables without having to worry about how to handle
-# the Tcl script parts.
+# self-contained standalone executables which do not rely on external
+# Tcl scripts.
 #
 # This option is available at present for Tkenv and GNED.
 #
@@ -35,12 +35,12 @@ GNED_EMBED_TCL=no
 #GNED_EMBED_TCL=yes
 
 #
-# Here you may help configure to determine which compile switches (e.g. -Ixxx) 
+# Here you may help 'configure' to determine which compile switches (e.g. -Ixxx) 
 # and which linker switches (e.g. -Lxxx -ltk80 -ltcl80 -lX11) are needed
 # to build an app with PVM, Tcl/Tk or Turbo Vision.
 #
-# Normally these settings are autodetected by configure, so you only need to
-# edit here if it isn't up the task.
+# Normally these settings are autodetected by 'configure', so you only need to
+# edit here if autodetection doesn't work.
 #
 # If you set TK_CFLAGS here, remember to include -fwritable-strings (or the
 # equivalent switch for your compiler).
