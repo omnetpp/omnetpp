@@ -1,3 +1,8 @@
+2003-06-16  Andras Varga
+
+	* opp_msgc: messages (cMessage subclasses) now accept message kind
+	as second, optional parameter to constructor.
+
 2003-05-01  Andras Varga
 
 	* opp_msgc fix: perl in RedHat 9 (rpm 5.8.0-88) is broken, it doesn't 

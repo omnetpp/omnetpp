@@ -731,7 +731,11 @@ sub generateClass
         print H "  public:\n";
     }
     if ($classtype eq "cobject") {
-        print H "    $msgclass(const char *name=NULL);\n";
+        if ($keyword eq "message") {
+            print H "    $msgclass(const char *name=NULL, int kind=0);\n";
+        } else {
+            print H "    $msgclass(const char *name=NULL);\n";
+        }
     } else {
         print H "    $msgclass();\n";
     }
@@ -784,7 +788,11 @@ sub generateClass
         print H "* {\n";
         print H "*   public:\n";
         if ($classtype eq "cobject") {
-            print H "*     $realmsgclass(const char *name=NULL) : $msgclass(name) {}\n";
+            if ($keyword eq "message") {
+                print H "*     $realmsgclass(const char *name=NULL, int kind=0) : $msgclass(name,kind) {}\n";
+            } else {
+                print H "*     $realmsgclass(const char *name=NULL) : $msgclass(name) {}\n";
+            }
         } else {
             print H "*     $realmsgclass() : $msgclass() {}\n";
         }
@@ -805,10 +813,16 @@ sub generateClass
     }
 
     if ($classtype eq "cobject") {
-        if ($msgbaseclass eq "") {
-            print CC "$msgclass\:\:$msgclass(const char *name)\n";
+        if ($keyword eq "message") {
+            # CAREFUL when assigning values to existing members gets implemented!
+            # The msg kind passed to the ctor should take priority!!!
+            print CC "$msgclass\:\:$msgclass(const char *name, int kind) : $msgbaseclass(name,kind)\n";
         } else {
-            print CC "$msgclass\:\:$msgclass(const char *name) : $msgbaseclass(name)\n";
+            if ($msgbaseclass eq "") {
+                print CC "$msgclass\:\:$msgclass(const char *name)\n";
+            } else {
+                print CC "$msgclass\:\:$msgclass(const char *name) : $msgbaseclass(name)\n";
+            }
         }
     } else {
         if ($msgbaseclass eq "") {
