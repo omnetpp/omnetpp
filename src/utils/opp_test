@@ -30,6 +30,10 @@ Syntax: opp_test [-g|-r] [-v] [-d] [-w <dir>] <testcase-file> ...
   -w <dir>   working directory (defaults to `./work\')
   -s <prog>  shell to use to run test program (not used on windows)
   -p <prog>  name of test program (defaults to name of working directory)
+  -a <args>  extra command-line arguments for the test program. You may need
+             to use quotes: opp_test -a "-f extrasettings.ini"
+  -N         run tests with dynamic NED loading. Runs the test program with an
+             extra ini file which contains the line preload-ned-files=*.ned
 
 Usage in nutshell:
    1. create *.test files
@@ -70,6 +74,8 @@ $mode='';
 $workingdir = 'work';
 $shell='/bin/sh';
 $testprogram='';
+$extraargs='';
+$dynamicned=0;
 $verbose=0;
 $debug=0;
 
@@ -91,6 +97,9 @@ while (@ARGV)
     elsif ($arg eq "-d") {
         $debug=1;
     }
+    elsif ($arg eq "-N") {
+        $dynamicned=1;
+    }
     elsif ($arg eq "-w") {
         $workingdir = shift @ARGV;
     }
@@ -99,6 +108,9 @@ while (@ARGV)
     }
     elsif ($arg eq "-p") {
         $testprogram = shift @ARGV;
+    }
+    elsif ($arg eq "-a") {
+        $extraargs = shift @ARGV;
     }
     elsif ($arg eq "-g") {
         $mode='gen';
@@ -148,9 +160,9 @@ if ($testprogram eq '') {
     $workingdir =~ /([^\/\\]*)$/;
     $tmp = $1;
     if ($isWindows) {
-      $testprogram = $tmp.'.exe';
+        $testprogram = $tmp.'.exe';
     } else {
-      $testprogram = './'.$tmp;
+        $testprogram = './'.$tmp;
     }
 
 }
@@ -461,8 +473,15 @@ sub testcase_run()
         $inifname = $testname.'.ini';
     }
 
+    # dynamic NED
+    $dynamicnedargs='';
+    if ($dynamicned) {
+        writefile("$workingdir/_nedfiles.ini","[General]\npreload-ned-files=*.ned\n");
+        $dynamicnedargs="-f _nedfiles.ini";
+    }
+
     # run the program
-    $exitcode = exec_program("$testprogram -f $inifname", $workingdir, $outfname, $errfname);
+    $exitcode = exec_program("$testprogram $extraargs $dynamicnedargs -f $inifname", $workingdir, $outfname, $errfname);
     if ($exitcode != 0) {
         if ($exitcode == -1) {
             unresolved($testfilename, "could not execute test program");

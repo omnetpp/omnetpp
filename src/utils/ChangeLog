@@ -1,6 +1,12 @@
+2004-02-22  Andras Varga
+
+	* opp_test: added -a, -N options. -N can be used to test dynamic
+	NED loading
+
 2004-02-18  Andras Varga
 
 	* opp_makemake.in: -N, --ignore-ned added (see below)
+
 2004-02-09  Andras Varga
 
     	* opp_nmakemake: added -N, --ignore-ned option which leaves out .ned 
