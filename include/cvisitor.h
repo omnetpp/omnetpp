@@ -24,7 +24,7 @@ class cObject;
 
 /**
  * Enables traversing the tree of (cObject-rooted) simulation objects.
- * Should be subclassed and the visit() method redefined according 
+ * Should be subclassed and the visit() method redefined according
  * to your needs.
  *
  * An example: the cRecursiveObjectFinderVisitor class (internal) has been
@@ -45,7 +45,7 @@ class cObject;
  *
  * \code
  * cRecursiveObjectFinderVisitor v(objectName);
- * root->forEachChild(&v);
+ * v.processChildrenOf(root);
  * cObject *result = v.getResult();
  * \endcode
  *
@@ -74,6 +74,14 @@ class cVisitor
     virtual bool process(cObject *obj);
 
     /**
+     * Similar to process(), except that it skips the object itself, i.e. it begins
+     * with processing the children. Calls obj->forEachChild(this),
+     * and catches EndTraversalException if one occurs. Return value is true if
+     * traversal went through and false if EndTraversalException was caught.
+     */
+    virtual bool processChildrenOf(cObject *obj);
+
+    /**
      * Method called from the forEachChild() methods of every class derived
      * from cObject, for each contained object. visit() should be
      * redefined by user to encapsulate the operation to be performed
@@ -81,7 +89,7 @@ class cVisitor
      * obj->forEachChild(this) from here.
      *
      * This method should NOT be called to to initiate the traversal -- use
-     * process() for that.
+     * process() or processChildrenOf() for that.
      */
     virtual void visit(cObject *obj) = 0;
 };
