@@ -1,0 +1,15 @@
+%description:
+ev.getXMLDocument(): file not found
+
+%activity:
+
+cXMLElement *node = ev.getXMLDocument("{}qwerty.xml");
+if (!node)
+    ev << "NULL\n";
+else
+    ev << node->getTagName() << " from " << node->getSourceLocation() << "\n";
+
+%exitcode: 1
+
+%contains: stdout
+Cannot open file
