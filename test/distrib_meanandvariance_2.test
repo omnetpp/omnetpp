@@ -1,0 +1,101 @@
+%description:
+Test mean and variance of random variates from different distributions.
+This doesn't guarantee that the shape of the distributions is also OK,
+but at least it's a guard against simple programming errors.
+
+Test 1: discrete distributions
+Test 2: continuous distributions
+
+%global:
+
+double mean_gamma(double alpha, double beta)
+{
+}
+
+double mean_beta (double alpha1, double alpha2)
+{
+}
+
+double mean_erlang_k (unsigned int k, double m)
+{
+}
+
+double mean_chi_square (unsigned int k)
+{
+}
+
+double mean_student_t (unsigned int i)
+{
+}
+
+double mean_cauchy (double a, double b)
+{
+}
+
+double mean_triang (double a, double b, double c)
+{
+}
+
+double mean_lognormal (double m, double s)
+{
+}
+
+double mean_weibull (double a, double b)
+{
+}
+
+double mean_pareto_shifted (double a, double b, double c)
+{
+}
+
+
+%activity:
+
+#define MEAN_AND_VARIANCE(f) \
+ {\
+   cStdDev s; for (int i=0; i<numrepl; i++) s.collect(f); \
+   ev.printf("%s: m=%lg v=%lg\n", #f, s.mean(), s.variance()); \
+ }
+
+int rng=1;
+int numrepl=100000;
+
+// uniform(a,b): m=(a+b)/2
+MEAN_AND_VARIANCE(uniform(0,1,rng));   // m=0.5
+MEAN_AND_VARIANCE(uniform(-5,5,rng));  // m=0
+ev << endl;
+
+// exponential(mean)
+MEAN_AND_VARIANCE(exponential(1.0,rng));  // m: same as arg.
+MEAN_AND_VARIANCE(exponential(0.01,rng));
+MEAN_AND_VARIANCE(exponential(5.0,rng));
+ev << endl;
+
+// normal(mean,stddev): variance=sqrt(stddev)
+MEAN_AND_VARIANCE(normal(0,1,rng));
+MEAN_AND_VARIANCE(normal(0,4,rng));
+MEAN_AND_VARIANCE(normal(-1,4,rng));
+ev << endl;
+
+MEAN_AND_VARIANCE(truncnormal(0,1,rng));
+MEAN_AND_VARIANCE(truncnormal(0,4,rng));
+MEAN_AND_VARIANCE(truncnormal(100,1,rng));
+MEAN_AND_VARIANCE(truncnormal(-1,1,rng));
+ev << endl;
+
+// TBD:  gamma_d (double alpha, double beta, int rng=0)
+// TBD:  beta (double alpha1, double alpha2, int rng=0)
+// TBD:  erlang_k (unsigned int k, double m, int rng=0)
+// TBD:  chi_square (unsigned int k, int rng=0)
+// TBD:  student_t (unsigned int i, int rng=0)
+// TBD:  cauchy (double a, double b, int rng=0)
+// TBD:  triang (double a, double b, double c, int rng=0)
+// TBD:  lognormal (double m, double s, int rng=0)
+// TBD:  weibull (double a, double b, int rng=0)
+// TBD:  pareto_shifted (double a, double b, double c, int rng=0)
+
+%contains: stdout
+
+%not-contains: stdout
+ERROR:
+

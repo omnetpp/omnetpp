@@ -1,0 +1,76 @@
+%description:
+Test mean and variance of random variates from different distributions.
+This doesn't guarantee that the shape of the distributions is also OK,
+but at least it's a guard against simple programming errors.
+
+Test 1: discrete distributions
+Test 2: continuous distributions
+
+%activity:
+
+#define MEAN_AND_VARIANCE(f) \
+ {\
+   cStdDev s; for (int i=0; i<numrepl; i++) s.collect(f); \
+   ev.printf("%s: m=%lg v=%lg\n", #f, s.mean(), s.variance()); \
+ }
+
+int rng=1;
+int numrepl=100000;
+
+MEAN_AND_VARIANCE(intuniform(1,1,rng));   // m=1
+MEAN_AND_VARIANCE(intuniform(0,1,rng));   // m=0.5
+MEAN_AND_VARIANCE(intuniform(0,10,rng));  // m=5
+MEAN_AND_VARIANCE(intuniform(-5,5,rng));  // m=0
+ev << endl;
+
+// bernoulli(p): mean=p
+MEAN_AND_VARIANCE(bernoulli(0.0,rng));    // m=0 (always fail)
+MEAN_AND_VARIANCE(bernoulli(1.0,rng));    // m=1 (always success)
+MEAN_AND_VARIANCE(bernoulli(0.5,rng));    // m=0.5
+MEAN_AND_VARIANCE(bernoulli(0.2,rng));    // m=0.2
+ev << endl;
+
+// binomial(n,p): mean=n*p
+// if (n==1) --> bernoulli(p)
+MEAN_AND_VARIANCE(binomial(1, 0.2,rng));  // m=1
+MEAN_AND_VARIANCE(binomial(2, 0.2,rng));  // m=0.4
+MEAN_AND_VARIANCE(binomial(10,0.2,rng));  // m=2
+MEAN_AND_VARIANCE(binomial(10,0,rng));    // m=0 (always fail)
+MEAN_AND_VARIANCE(binomial(10,1.0,rng));  // m=10 (always success)
+ev << endl;
+
+MEAN_AND_VARIANCE(geometric(1.0,rng));    // m=0 (1st is always success)
+MEAN_AND_VARIANCE(geometric(0.5,rng));    // m=1
+MEAN_AND_VARIANCE(geometric(0.9,rng));
+MEAN_AND_VARIANCE(geometric(0.1,rng));
+ev << endl;
+
+// negbinomial(n,p)
+// if (n==1) --> geometric(p)
+// if (p==1.0) --> always 0
+MEAN_AND_VARIANCE(negbinomial(0,1.0,rng));   // m=0, v=0 (because p=1)
+MEAN_AND_VARIANCE(negbinomial(10,1.0,rng));  // m=0, v=0 (because p=1)
+MEAN_AND_VARIANCE(negbinomial(1,0.5,rng));   // same as geom()
+MEAN_AND_VARIANCE(negbinomial(1,0.1,rng));   // same as geom()
+MEAN_AND_VARIANCE(negbinomial(5,0.1,rng));
+ev << endl;
+
+// hypergeometric (a,b,n)
+MEAN_AND_VARIANCE(hypergeometric(5,5,1,rng));
+MEAN_AND_VARIANCE(hypergeometric(5,5,2,rng));
+MEAN_AND_VARIANCE(hypergeometric(0,10,1,rng));
+//MEAN_AND_VARIANCE(hypergeometric(10,0,1,rng));
+//MEAN_AND_VARIANCE(hypergeometric(5,5,9,rng));
+ev << endl;
+
+// poisson(lambda): both mean and variance equal to lambda
+MEAN_AND_VARIANCE(poisson(1,rng));
+MEAN_AND_VARIANCE(poisson(0.01,rng));
+MEAN_AND_VARIANCE(poisson(25,rng));
+MEAN_AND_VARIANCE(poisson(50,rng));
+MEAN_AND_VARIANCE(poisson(1000,rng));
+ev << endl;
+
+%contains: stdout
+
+
