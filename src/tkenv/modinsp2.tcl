@@ -226,7 +226,6 @@ proc draw_submod {c submodptr name dispstr i n default_layout} {
 
        }
 
-#-----------
        # r=<radius>,<fillcolor>,<color>,<width>
        if {[info exists tags(r)]} {
            set radius [lindex $tags(r) 0]
@@ -247,7 +246,6 @@ proc draw_submod {c submodptr name dispstr i n default_layout} {
                -fill $rfill -width $rwidth -outline $routline]
            $c lower $circle    
        }
-#-----------
 
    } errmsg] {
        tk_messageBox -type ok -title Error -icon error \
