@@ -70,7 +70,7 @@
       body,td,p,ul,ol,li { font-size:10pt }
       h1 { font-size:18pt; text-align:center }
       pre.comment { font-size:10pt; padding-left:5pt }
-      pre.src { font-size:8pt; background:#E0E0E0; padding-left:5pt }
+      pre.src { font-size:8pt; background:#F8F8F8; padding:5pt; border:1px solid; border-color:#a0a0a0 }
       th { font-size:10pt; text-align:left; vertical-align:top; background:#E0E0f0 }
       td { font-size:10pt; text-align:left; vertical-align:top }
       tt { font-family:Courier,Courier New,Fixed,Terminal }
@@ -621,7 +621,7 @@
       <xsl:with-param name="href" select="concat('file-',generate-id(.),'.html')"/>
       <xsl:with-param name="content">
          <h2 class="comptitle">File <i><xsl:value-of select="@filename"/></i></h2>
-         <xsl:call-template name="process-comment"/>
+         <!-- <xsl:call-template name="process-comment"/> -->
          <h3 class="subtitle">Contains:</h3>
          <ul>
             <xsl:for-each select="simple-module|compound-module|channel|network|message|class|struct|enum">
@@ -632,6 +632,9 @@
                </li>
             </xsl:for-each>
          </ul>
+         <xsl:if test="@source-code">
+            <pre class="src"><xsl:value-of select="@source-code"/></pre>
+         </xsl:if>
       </xsl:with-param>
    </xsl:call-template>
    <xsl:apply-templates/>
