@@ -26,7 +26,7 @@
 switch $tcl_platform(platform) {
   unix {
     set Tree(font) \
-      -adobe-helvetica-medium-r-normal-*-11-80-100-100-p-56-iso8859-1
+      -Adobe-Helvetica-Medium-R-Normal-*-*-120-*-*-*-*-*-*
   }
   windows {
     set Tree(font) \
