@@ -248,7 +248,7 @@ sTopoNode *cTopology::nodeFor(cModule *mod)
           lo<index;
           index=(lo+up)/2 )
     {
-        // cycle invariant: nodev[lo].mod_id <= mod->id() <nodev[up].mod_id
+        // cycle invariant: nodev[lo].mod_id <= mod->id() < nodev[up].mod_id
         if (mod->id() < nodev[index].module_id)
              up = index;
           else
@@ -279,11 +279,11 @@ void cTopology::unweightedSingleShortestPathsTo(sTopoNode *_target)
 
     cLinkedList q;
 
-    q.insertHead( target );
+    q.insert( target );
 
     while (!q.empty())
     {
-       sTopoNode *v = (sTopoNode *) q.getTail();
+       sTopoNode *v = (sTopoNode *) q.pop();
 
        // for each w adjacent to v...
        for (int i=0; i<v->num_in_links; i++)
@@ -297,7 +297,7 @@ void cTopology::unweightedSingleShortestPathsTo(sTopoNode *_target)
            {
                w->dist = v->dist + 1;
                w->out_path = v->in_links[i];
-               q.insertHead( w );
+               q.insert( w );
            }
        }
     }

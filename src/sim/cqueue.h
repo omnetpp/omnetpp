@@ -43,7 +43,7 @@ class cQueue : public cObject
 {
         friend class cQueueIterator;
     private:
-        sQElem *head, *tail;            // inserting at head, removal at tail
+        sQElem *headp, *tailp;          // inserting at head, removal at tail
         int n;                          // number of items in queue
         CompareFunc compare;            // compare function
         bool asc;                       // order: TRUE=ascending
@@ -51,7 +51,7 @@ class cQueue : public cObject
         sQElem *find_qelem(cObject *obj);
         void insbefore_qelem(sQElem *p, cObject *obj);
         void insafter_qelem(sQElem *p, cObject *obj);
-        cObject *get_qelem(sQElem *p);
+        cObject *remove_qelem(sQElem *p);
 
     public:
         cQueue(cQueue& queue);
@@ -71,14 +71,13 @@ class cQueue : public cObject
         // new functions
         void setup(CompareFunc cmp=NULL, bool a=FALSE); //reconfig but not reorder!
 
-        void insertHead(cObject *obj);     // insert at head, using cmpfunc
-        void insertBefore(cObject *where, cObject *obj);
-        void insertAfter(cObject *where, cObject *obj);
-        cObject *peekTail()  {return n!=0 ? tail->obj : NO(cObject);}
-        cObject *peekHead()  {return n!=0 ? head->obj : NO(cObject);}
-        cObject *get(cObject *obj);
-        cObject *getTail();
-        cObject *getHead();
+        void insert(cObject *obj);                       // insert from head using cmpfunc
+        void insertBefore(cObject *where, cObject *obj); // insert at specific place
+        void insertAfter(cObject *where, cObject *obj);  // insert at specific place
+        cObject *head()  {return n!=0 ? headp->obj : NO(cObject);}  // peek head item
+        cObject *tail()  {return n!=0 ? tailp->obj : NO(cObject);}  // peek tail item
+        cObject *remove(cObject *obj);                   // remove item from queue
+        cObject *pop();                                  // remove item at tail
 
         int length() {return n;}        // number of items;
         bool empty() {return n==0;}     // see if queue is empty or not
@@ -98,9 +97,9 @@ class cQueueIterator
       sQElem *p;
    public:
       cQueueIterator(cQueue& q, int athead=1)
-              {p=&q ? (athead ? q.head : q.tail) : NO(sQElem);}
+              {p=&q ? (athead ? q.headp : q.tailp) : NO(sQElem);}
       void init(cQueue& q, int athead=1)
-              {p=&q ? (athead ? q.head : q.tail) : NO(sQElem);}
+              {p=&q ? (athead ? q.headp : q.tailp) : NO(sQElem);}
       cObject& operator[](int)  {return *p->obj;} //OBSOLETE
       cObject *operator()()     {return p->obj;}
       bool end()                {return (bool)(p==NULL);}

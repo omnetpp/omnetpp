@@ -72,7 +72,13 @@ typedef double       simtime_t;
 #define MAXTIME      HUGE_VAL
 
 //=== backwards compatibility defines
-#define isA()        className()
+#define isA()          className()
+// cQueue:
+#define insertHead(a)  insert(a)
+#define peekTail()     tail()
+#define peekHead()     head()
+#define getTail()      pop()
+
 
 //=== memory mgmt functions for void* pointers
 //    (used by cLinkedList and cPar)

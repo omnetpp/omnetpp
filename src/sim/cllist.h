@@ -43,8 +43,8 @@ class cLinkedList : public cObject
 {
         friend class cLinkedListIterator;
     private:
-        sLLElem *head, *tail;    // inserting at head, removal at tail
-        int n;                   // number of items in list
+        sLLElem *headp, *tailp;   // inserting at head, removal at tail
+        int n;                    // number of items in list
 
         VoidDelFunc delfunc;      // user func to free up item (NULL-->delete)
         VoidDupFunc dupfunc;      // user func to dupl. item (NULL-->new+memcpy)
@@ -57,7 +57,7 @@ class cLinkedList : public cObject
         sLLElem *find_llelem(void *item);
         void insbefore_llelem(sLLElem *p, void *item);
         void insafter_llelem(sLLElem *p, void *item);
-        void *get_llelem(sLLElem *p);
+        void *remove_llelem(sLLElem *p);
 
     public:
         cLinkedList(cLinkedList& llist);
@@ -76,14 +76,13 @@ class cLinkedList : public cObject
         // new functions
         void config( VoidDelFunc _delfunc, VoidDupFunc _dupfunc, size_t _itemsize=0);
 
-        void insertHead(void *item);
-        void insertBefore(void *where, void *item);
-        void insertAfter(void *where, void *item);
-        void *peekTail()  {return n!=0 ? tail->item : NULL;}
-        void *peekHead()  {return n!=0 ? head->item : NULL;}
-        void *get(void *item);
-        void *getTail();
-        void *getHead();
+        void insert(void *item);                     // insert item at head
+        void insertBefore(void *where, void *item);  // insert at specific position
+        void insertAfter(void *where, void *item);   // insert at specific position
+        void *head()  {return n!=0 ? headp->item : NULL;}  // peek head item
+        void *tail()  {return n!=0 ? tailp->item : NULL;}  // peek tail item
+        void *remove(void *item);                    // remove item
+        void *pop();                                 // remove item at tail
 
         int length() {return n;}        // number of items;
         bool empty() {return n==0;}     // see if queue is empty or not
@@ -102,9 +101,9 @@ class cLinkedListIterator
       sLLElem *p;
    public:
       cLinkedListIterator(cLinkedList& q, int athead=1)
-              {p=&q ? (athead ? q.head : q.tail) : NO(sLLElem);}
+              {p=&q ? (athead ? q.headp : q.tailp) : NO(sLLElem);}
       void init(cLinkedList& q, int athead=1)
-              {p=&q ? (athead ? q.head : q.tail) : NO(sLLElem);}
+              {p=&q ? (athead ? q.headp : q.tailp) : NO(sLLElem);}
       void *operator()()        {return p->item;}
       bool end()                {return (bool)(p==NULL);}
       void *operator++(int)  {sLLElem *t=p; if(p) p=p->next; return t->item;}

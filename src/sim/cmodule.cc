@@ -929,7 +929,7 @@ void cSimpleModule::wait(simtime_t t)
             else
             {
                 ev.messageDelivered( newmsg );
-                putAsideQueue.insertHead( newmsg );
+                putAsideQueue.insert( newmsg );
             }
         }
         take(timeoutmsg);
@@ -1005,7 +1005,7 @@ cMessage *cSimpleModule::receiveNewOn(int g, simtime_t t)
                 if (newmsg->arrivedOn(g))  // OK!
                     {take(cancelEvent(timeoutmsg)); return newmsg;}
                 else   // not good --> put-aside queue
-                    putAsideQueue.insertHead( newmsg );
+                    putAsideQueue.insert( newmsg );
              }
          }
      }
@@ -1019,7 +1019,7 @@ cMessage *cSimpleModule::receiveNewOn(int g, simtime_t t)
              if (newmsg->arrivedOn(g))
                  return newmsg;
              else
-                 putAsideQueue.insertHead( newmsg );
+                 putAsideQueue.insert( newmsg );
          }
      }
 }
@@ -1034,7 +1034,7 @@ cMessage *cSimpleModule::receiveNewOn(char *s, int sn, simtime_t t)
 cMessage *cSimpleModule::receive()
 {
     if (!putAsideQueue.empty())
-        return (cMessage *)putAsideQueue.getTail();
+        return (cMessage *)putAsideQueue.pop();
     else
         return receiveNew();
 }
@@ -1042,7 +1042,7 @@ cMessage *cSimpleModule::receive()
 cMessage *cSimpleModule::receive(simtime_t t)
 {
     if (!putAsideQueue.empty())
-        return (cMessage *)putAsideQueue.getTail();
+        return (cMessage *)putAsideQueue.pop();
     else
         return receiveNew( t );
 }
@@ -1054,7 +1054,7 @@ cMessage *cSimpleModule::receiveOn(int g, simtime_t t)
     {
         cMessage *msg = (cMessage *)qiter();
         if (msg->arrivedOn(g))
-            return (cMessage *)putAsideQueue.get( msg );
+            return (cMessage *)putAsideQueue.remove( msg );
     }
     // ok, get it from the message queue
     return receiveNewOn( g, t );

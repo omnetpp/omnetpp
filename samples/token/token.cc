@@ -109,7 +109,7 @@ void TokenRingMAC::activity()
 #endif
 
             // insert message into send buffer
-            send_queue.insertHead( msg );
+            send_queue.insert( msg );
             sendqueue_len.record( send_queue.length() );
         }
 
@@ -139,13 +139,13 @@ void TokenRingMAC::activity()
             while (!send_queue.empty())
             {
                 // peek at next message and see if it is within the THT
-                cMessage *m = (cMessage *) send_queue.peekTail();
+                cMessage *m = (cMessage *) send_queue.tail();
                 simtime_t transmission_time = m->length()/(double)datarate;
                 if (simTime()+transmission_time > tht_expires)
                   break; // no time left for this packet
 
                 // remove message from the send buffer
-                send_queue.getTail();
+                send_queue.pop();
                 sendqueue_len.record( send_queue.length() );
 
                 // add delivery time and send it
