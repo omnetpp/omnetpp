@@ -48,7 +48,7 @@ void printMsg(cMessage &msg)
   {
   char time1[64],time2[64];
   char msgname[32];
-  char *s=msg.fullName();
+  const char *s=msg.fullName();
   const int LEN = 21;
 
   strncpy(msgname,s,LEN);
