@@ -2,9 +2,6 @@
 # Definitions to be customized by configure
 #
 CXX=@CXX@
-CC=@CC@
-YACC=@YACC@
-LEX=@LEX@
 MAKEDEPEND=@MAKEDEPEND@
 
 CFLAGS=@CFLAGS@
@@ -21,8 +18,6 @@ OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
 #
 COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR)
 
-OBJS=ebnf.tab.o lex.yy.o jar.o jar_lib.o jar_mod.o jar_expr.o jar_mem.o
-
 #
 # Targets
 #
@@ -34,74 +29,15 @@ nedtool: main.o
 	$(CXX) $(LDFLAGS) -o nedtool main.o -L$(OMNETPP_LIB_DIR) -lnedxml $(XML_LIBS)
 	../utils/install-prog nedtool $(OMNETPP_BIN_DIR)
 
-nedc: $(OBJS)
-	$(CXX) $(LDFLAGS) $(OBJS) -o nedc
-	../utils/install-prog nedc $(OMNETPP_BIN_DIR)
-
 main.o: main.cc
 	$(CXX) -c $(COPTS) -I../nedxml main.cc
 
-lex.yy.o: jar_func.h lex.yy.c
-	$(CXX) -c $(COPTS) lex.yy.c
-
-ebnf.tab.o: jar_func.h ebnf.tab.h ebnf.tab.c
-	$(CXX) -c $(COPTS) ebnf.tab.c
-
-ebnf.tab.h: ebnf.y
-	$(YACC) -b ebnf -d ebnf.y
-
-ebnf.tab.c: ebnf.y
-	$(YACC) -b ebnf -d ebnf.y
-
-lex.yy.c: ebnf.lex
-	$(LEX) ebnf.lex
-
-jar.o: jar_lib.h jar_func.h jar.c
-	$(CXX) -c $(COPTS) jar.c
-
-jar_lib.o: jar_lib.h jar_func.h jar_lib.c
-	$(CXX) -c $(COPTS) jar_lib.c
-
-jar_mod.o: jar_lib.h jar_func.h jar_mod.c
-	$(CXX) -c $(COPTS) jar_mod.c
-
-jar_expr.o: jar_lib.h jar_func.h jar_expr.c
-	$(CXX) -c $(COPTS) jar_expr.c
-
-jar_mem.o: jar_func.h jar_mem.c
-	$(CXX) -c $(COPTS) jar_mem.c
-
 depend:
-	$(MAKEDEPEND) -I. -- *.c
-	$(MAKEDEPEND) -I. -fMakefile.in -- *.c
+	$(MAKEDEPEND) -I. -- *.cc
+	$(MAKEDEPEND) -I. -fMakefile.in -- *.cc
 
 clean:
-	rm -f *.o lex.yy.c ebnf.tab.c ebnf.tab.h nedc nedtool *_n.cc
+	rm -f *.o nedtool *_n.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-ebnf.tab.o: ebnf.tab.c \
-  ebnf.h \
-  ebnfcfg.h \
-  jar_func.h \
-  jar_lib.h
-jar.o: jar.c \
-  jar_func.h \
-  jar_lib.h \
-  ./unistd.h
-jar_expr.o: jar_expr.c \
-  jar_func.h \
-  jar_lib.h
-jar_lib.o: jar_lib.c \
-  jar_func.h \
-  jar_lib.h
-jar_mem.o: jar_mem.c \
-  jar_func.h
-jar_mod.o: jar_mod.c \
-  jar_func.h \
-  jar_lib.h
-lex.yy.o: lex.yy.c \
-  ./unistd.h \
-  ebnf.h \
-  ebnf.tab.h \
-  ebnfcfg.h \
-  jar_func.h
+

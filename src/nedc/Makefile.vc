@@ -8,13 +8,10 @@
 #
 COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)"
 
-OBJS=ebnf.tab.obj lex.yy.obj jar.obj jar_lib.obj jar_mod.obj jar_expr.obj jar_mem.obj
-
-
 #
 # Targets
 #
-all : nedc.exe nedtool.exe
+all : nedtool.exe
 	copy opp_msgc $(OMNETPP_BIN_DIR:/=\)
 	copy opp_msgc.cmd $(OMNETPP_BIN_DIR:/=\)
 
@@ -30,79 +27,14 @@ nedtool.exe : main.obj
 main.obj : main.cc
 	$(CXX) $(COPTS) /I ../nedxml /c /Tp main.cc
 
-#
-# nedc
-#
-nedc : nedc.exe
-
-nedc.exe: $(OBJS)
-	$(LINK) /out:"nedc.exe" $(OBJS) $(LDFLAGS)
-	copy nedc.exe $(OMNETPP_BIN_DIR:/=\)
-
-lex.yy.obj: jar_func.h lex.yy.c
-	$(CXX) /I "." $(COPTS) /c /Tp lex.yy.c
-
-ebnf.tab.obj: jar_func.h ebnf.tab.h ebnf.tab.c
-	$(CXX) $(COPTS) /c /Tp ebnf.tab.c
-
-ebnf.tab.h: ebnf.y
-	$(YACC:/=\) -b ebnf -d ebnf.y
-
-ebnf.tab.c: ebnf.y
-	$(YACC:/=\) -b ebnf -d ebnf.y
-
-lex.yy.c: ebnf.lex
-	$(LEX:/=\) ebnf.lex
-
-jar.obj: jar_lib.h jar_func.h jar.c
-	$(CXX) $(COPTS) /c /Tp jar.c
-
-jar_lib.obj: jar_lib.h jar_func.h jar_lib.c
-	$(CXX) $(COPTS) /c /Tp jar_lib.c
-
-jar_mod.obj: jar_lib.h jar_func.h jar_mod.c
-	$(CXX) $(COPTS) /c /Tp jar_mod.c
-
-jar_expr.obj: jar_lib.h jar_func.h jar_expr.c
-	$(CXX) $(COPTS) /c /Tp jar_expr.c
-
-jar_mem.obj: jar_func.h jar_mem.c
-	$(CXX) $(COPTS) /c /Tp jar_mem.c
-
 depend:
-	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.c
+	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc
 
 clean:
 	-del *.obj 2> nul
-	-del nedc.exe nedtool.exe 2> nul
+	-del nedtool.exe 2> nul
 	-del *_n.cc 2> nul
 	-del *.ilk *.idb *.pdb *.pch 2> nul
 
-realclean: clean
-	-del lex.yy.c ebnf.tab.c ebnf.tab.h 2> nul
-
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-ebnf.tab.obj: ebnf.tab.c \
-  ebnf.h \
-  ebnfcfg.h \
-  jar_func.h \
-  jar_lib.h
-jar.obj: jar.c \
-  jar_func.h \
-  jar_lib.h
-jar_expr.obj: jar_expr.c \
-  jar_func.h \
-  jar_lib.h
-jar_lib.obj: jar_lib.c \
-  jar_func.h \
-  jar_lib.h
-jar_mem.obj: jar_mem.c \
-  jar_func.h
-jar_mod.obj: jar_mod.c \
-  jar_func.h \
-  jar_lib.h
-lex.yy.obj: lex.yy.c \
-  ebnf.h \
-  ebnf.tab.h \
-  ebnfcfg.h \
-  jar_func.h
+
