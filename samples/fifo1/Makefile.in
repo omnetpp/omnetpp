@@ -12,9 +12,10 @@ TARGET = fifo1
 # USERIF_LIBS=$(CMDENV_LIBS)
 USERIF_LIBS=$(TKENV_LIBS)
 
-# Uncomment the second line for parallel execution (PVM3) support (-p option):
+# uncomment 1 of the 3 lines to support either serial or parallel operation
 KERNEL_LIBS=$(STD_KERNEL_LIBS)
 # KERNEL_LIBS=$(PVM_KERNEL_LIBS)
+# KERNEL_LIBS=$(MPI_KERNEL_LIBS)
 
 # .ned or .h include paths with -I
 INCLUDE_PATH=
@@ -45,6 +46,7 @@ OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
 OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
 
 TK_LIBS=@TK_LIBS@
+MPI_LIBS=@MPI_LIBS@
 PVM_LIBS=@PVM_LIBS@
 SYS_LIBS=@SYS_LIBS@
 SYS_LIBS_PURE=-lm $(shell $(CXX) -print-file-name=libstdc++.a)
@@ -55,44 +57,47 @@ TKENV_LIBS=-lenvir -ltkenv $(TK_LIBS)
 
 # Simulation kernel
 STD_KERNEL_LIBS=-lsim_std
+MPI_KERNEL_LIBS=-lsim_mpi $(MPI_LIBS)
 PVM_KERNEL_LIBS=-lsim_pvm $(PVM_LIBS)
 
 # Simulation kernel and user interface libraries
-OMNETPP_LIBS=-L$(OMNETPP_LIB_DIR) $(KERNEL_LIBS) $(USERIF_LIBS) $(SYS_LIBS)
+OMNETPP_LIBS=-L$(OMNETPP_LIB_DIR) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
 
 COPTS=$(CFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
+NEDCFLAGS=-gstabs+3 -pipe -fpermissive -Wall -Wno-unused
+NEDCOPTS=$(NEDCFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 
 #------------------------------------------------------------------------------
 
 # Object files from this directory to link
 OBJS= fifo1_n.o fifonet1_n.o gen1_n.o sink1_n.o fifo1.o gen1.o sink1.o
 
-$(TARGET): $(OBJS) $(EXRA_OBJS) Makefile
-	$(CC) $(LDFLAGS) $(OBJS) $(EXRA_OBJS) $(SUBDIR_OBJS) $(LIBS) $(OMNETPP_LIBS) -o $(TARGET)
+$(TARGET): $(OBJS) $(EXRA_OBJS) Makefile 
+	$(CXX) $(LDFLAGS) $(OBJS) $(EXRA_OBJS) $(SUBDIR_OBJS) $(LIBS) $(OMNETPP_LIBS) -o $(TARGET)
 
 purify: $(OBJS) $(EXRA_OBJS)   Makefile
-	purify $(CC) $(LDFLAGS) $(OBJS) $(EXRA_OBJS) $(SUBDIR_OBJS) $(LIBS) -L$(OMNETPP_LIB_DIR) $(KERNEL_LIBS) $(USERIF_LIBS) $(SYS_LIBS_PURE) -o $(TARGET).pure
+	purify $(CXX) $(LDFLAGS) $(OBJS) $(EXRA_OBJS) $(SUBDIR_OBJS) $(LIBS) -L$(OMNETPP_LIB_DIR) $(KERNEL_LIBS) $(USERIF_LIBS) $(SYS_LIBS_PURE) -o $(TARGET).pure
 
 fifo1_n.o: fifo1_n.cc
-	$(CXX) -c $(COPTS) fifo1_n.cc
+	$(CXX) -c $(NEDCOPTS) fifo1_n.cc
 
 fifo1_n.cc: fifo1.ned
 	$(NEDC) $(INCLUDE_PATH) fifo1.ned
 
 fifonet1_n.o: fifonet1_n.cc
-	$(CXX) -c $(COPTS) fifonet1_n.cc
+	$(CXX) -c $(NEDCOPTS) fifonet1_n.cc
 
 fifonet1_n.cc: fifonet1.ned
 	$(NEDC) $(INCLUDE_PATH) fifonet1.ned
 
 gen1_n.o: gen1_n.cc
-	$(CXX) -c $(COPTS) gen1_n.cc
+	$(CXX) -c $(NEDCOPTS) gen1_n.cc
 
 gen1_n.cc: gen1.ned
 	$(NEDC) $(INCLUDE_PATH) gen1.ned
 
 sink1_n.o: sink1_n.cc
-	$(CXX) -c $(COPTS) sink1_n.cc
+	$(CXX) -c $(NEDCOPTS) sink1_n.cc
 
 sink1_n.cc: sink1.ned
 	$(NEDC) $(INCLUDE_PATH) sink1.ned
@@ -121,9 +126,7 @@ re-makemake-m:
 	opp_makemake -f -m    #recreate Makefile.in
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-fifo1.o: fifo1.cc \
-  fifo1.h
-gen1.o: gen1.cc \
-  gen1.h
-sink1.o: sink1.cc \
-  sink1.h
+
+fifo1.o: fifo1.h
+gen1.o: gen1.h
+sink1.o: sink1.h

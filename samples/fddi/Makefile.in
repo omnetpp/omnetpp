@@ -12,9 +12,10 @@ TARGET = fddi
 # USERIF_LIBS=$(CMDENV_LIBS)
 USERIF_LIBS=$(TKENV_LIBS)
 
-# Uncomment the second line for parallel execution (PVM3) support (-p option):
+# uncomment 1 of the 3 lines to support either serial or parallel operation
 KERNEL_LIBS=$(STD_KERNEL_LIBS)
 # KERNEL_LIBS=$(PVM_KERNEL_LIBS)
+# KERNEL_LIBS=$(MPI_KERNEL_LIBS)
 
 # .ned or .h include paths with -I
 INCLUDE_PATH=
@@ -45,6 +46,7 @@ OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
 OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
 
 TK_LIBS=@TK_LIBS@
+MPI_LIBS=@MPI_LIBS@
 PVM_LIBS=@PVM_LIBS@
 SYS_LIBS=@SYS_LIBS@
 SYS_LIBS_PURE=-lm $(shell $(CXX) -print-file-name=libstdc++.a)
@@ -55,56 +57,59 @@ TKENV_LIBS=-lenvir -ltkenv $(TK_LIBS)
 
 # Simulation kernel
 STD_KERNEL_LIBS=-lsim_std
+MPI_KERNEL_LIBS=-lsim_mpi $(MPI_LIBS)
 PVM_KERNEL_LIBS=-lsim_pvm $(PVM_LIBS)
 
 # Simulation kernel and user interface libraries
-OMNETPP_LIBS=-L$(OMNETPP_LIB_DIR) $(KERNEL_LIBS) $(USERIF_LIBS) $(SYS_LIBS)
+OMNETPP_LIBS=-L$(OMNETPP_LIB_DIR) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
 
 COPTS=$(CFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
+NEDCFLAGS=-gstabs+3 -pipe -fpermissive -Wall -Wno-unused
+NEDCOPTS=$(NEDCFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 
 #------------------------------------------------------------------------------
 
 # Object files from this directory to link
 OBJS= fddi_mac_n.o fddi_nets_n.o fddi_nodes_n.o fddi_rings_n.o othermod_n.o ssm_ifs_n.o fddi_mac.o othermod.o ssm_ifs.o
 
-$(TARGET): $(OBJS) $(EXRA_OBJS) Makefile
-	$(CC) $(LDFLAGS) $(OBJS) $(EXRA_OBJS) $(SUBDIR_OBJS) $(LIBS) $(OMNETPP_LIBS) -o $(TARGET)
+$(TARGET): $(OBJS) $(EXRA_OBJS) Makefile 
+	$(CXX) $(LDFLAGS) $(OBJS) $(EXRA_OBJS) $(SUBDIR_OBJS) $(LIBS) $(OMNETPP_LIBS) -o $(TARGET)
 
 purify: $(OBJS) $(EXRA_OBJS)   Makefile
-	purify $(CC) $(LDFLAGS) $(OBJS) $(EXRA_OBJS) $(SUBDIR_OBJS) $(LIBS) -L$(OMNETPP_LIB_DIR) $(KERNEL_LIBS) $(USERIF_LIBS) $(SYS_LIBS_PURE) -o $(TARGET).pure
+	purify $(CXX) $(LDFLAGS) $(OBJS) $(EXRA_OBJS) $(SUBDIR_OBJS) $(LIBS) -L$(OMNETPP_LIB_DIR) $(KERNEL_LIBS) $(USERIF_LIBS) $(SYS_LIBS_PURE) -o $(TARGET).pure
 
 fddi_mac_n.o: fddi_mac_n.cc
-	$(CXX) -c $(COPTS) fddi_mac_n.cc
+	$(CXX) -c $(NEDCOPTS) fddi_mac_n.cc
 
 fddi_mac_n.cc: fddi_mac.ned
 	$(NEDC) $(INCLUDE_PATH) fddi_mac.ned
 
 fddi_nets_n.o: fddi_nets_n.cc
-	$(CXX) -c $(COPTS) fddi_nets_n.cc
+	$(CXX) -c $(NEDCOPTS) fddi_nets_n.cc
 
 fddi_nets_n.cc: fddi_nets.ned
 	$(NEDC) $(INCLUDE_PATH) fddi_nets.ned
 
 fddi_nodes_n.o: fddi_nodes_n.cc
-	$(CXX) -c $(COPTS) fddi_nodes_n.cc
+	$(CXX) -c $(NEDCOPTS) fddi_nodes_n.cc
 
 fddi_nodes_n.cc: fddi_nodes.ned
 	$(NEDC) $(INCLUDE_PATH) fddi_nodes.ned
 
 fddi_rings_n.o: fddi_rings_n.cc
-	$(CXX) -c $(COPTS) fddi_rings_n.cc
+	$(CXX) -c $(NEDCOPTS) fddi_rings_n.cc
 
 fddi_rings_n.cc: fddi_rings.ned
 	$(NEDC) $(INCLUDE_PATH) fddi_rings.ned
 
 othermod_n.o: othermod_n.cc
-	$(CXX) -c $(COPTS) othermod_n.cc
+	$(CXX) -c $(NEDCOPTS) othermod_n.cc
 
 othermod_n.cc: othermod.ned
 	$(NEDC) $(INCLUDE_PATH) othermod.ned
 
 ssm_ifs_n.o: ssm_ifs_n.cc
-	$(CXX) -c $(COPTS) ssm_ifs_n.cc
+	$(CXX) -c $(NEDCOPTS) ssm_ifs_n.cc
 
 ssm_ifs_n.cc: ssm_ifs.ned
 	$(NEDC) $(INCLUDE_PATH) ssm_ifs.ned
@@ -133,20 +138,7 @@ re-makemake-m:
 	opp_makemake -f -m    #recreate Makefile.in
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-fddi_mac.o: fddi_mac.cc \
-  fddi_def.h \
-  fddi_mac.h
-fddi_mac_n.o: fddi_mac_n.cc
-fddi_nets_n.o: fddi_nets_n.cc
-fddi_nodes_n.o: fddi_nodes_n.cc
-fddi_rings_n.o: fddi_rings_n.cc
-othermod.o: othermod.cc \
-  otherdef.h \
-  fddi_def.h \
-  othermod.h
-othermod_n.o: othermod_n.cc
-ssm_ifs.o: ssm_ifs.cc \
-  ssmifdef.h \
-  fddi_def.h \
-  ssm_ifs.h
-ssm_ifs_n.o: ssm_ifs_n.cc
+
+fddi_mac.o: fddi_def.h fddi_mac.h
+othermod.o: otherdef.h fddi_def.h othermod.h
+ssm_ifs.o: ssmifdef.h fddi_def.h ssm_ifs.h
