@@ -1,4 +1,9 @@
-2004-02-20  Andras Varga
+2004-02-23  Andras Varga
+
+	* cmodule.h: added changeParentTo() to cModule.
+	* cenvir.h: added moduleReparented() to cEnvir.
+
+2004-02-22  Andras Varga
 
 	* cmodule.h: added gateSize() to cModule.
 

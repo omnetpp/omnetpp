@@ -584,6 +584,33 @@ void cModule::deleteModule()
     delete this;
 }
 
+void cModule::changeParentTo(cModule *mod)
+{
+    if (!mod)
+        throw new cException(this, "changeParentTo(): got NULL pointer");
+
+    // gates must be unconnected to avoid connections break module hierarchy rules
+    int numgates = gates();
+    cGate *g;
+    for (int i=0; i<numgates; i++)
+        if (g=gate(i), g && g->isConnectedOutside())
+            throw new cException(this, "changeParentTo(): gates of the module must not be "
+                                       "connected (%s is connected now)", g->fullName());
+
+    // cannot insert module under one of its own submodules
+    for (cModule *m = mod; m; m = m->parentModule())
+        if (m==this)
+            throw new cException(this, "changeParentTo(): cannot move module under one of its own submodules");
+
+    // do it
+    cModule *oldparent = parentModule();
+    oldparent->removeSubmodule(this);
+    mod->insertSubmodule(this);
+
+    // notify environment
+    ev.moduleReparented(this,oldparent);
+}
+
 void cModule::initialize()
 {
     // Called before simulation starts (or usually after dynamic module was created).

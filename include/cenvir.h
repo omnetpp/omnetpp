@@ -166,6 +166,11 @@ class ENVIR_API cEnvir
     void messageSent(cMessage *msg, cGate *directToGate=NULL);
 
     /**
+     * Notifies the environment that a module changed parent.
+     */
+    void moduleReparented(cModule *module, cModule *oldparent);
+
+    /**
      * Notifies the environment that a message was delivered to its destination
      * module, that is, a message arrival event occurred. Details can be
      * extracted from the message object itself. The user interface

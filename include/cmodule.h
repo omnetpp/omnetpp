@@ -373,7 +373,7 @@ class SIM_API cModule : public cDefaultList
 
     /**
      * Returns the module's parent module. For the system module, it returns
-     * <tt>NULL</tt>.
+     * NULL.
      */
     cModule *parentModule() const  {return dynamic_cast<cModule *>(owner());}
 
@@ -557,6 +557,29 @@ class SIM_API cModule : public cDefaultList
      * (<tt>delete this</tt> is not allowed.)
      */
     virtual void deleteModule();
+
+    /**
+     * Moves the module under a new parent module. This functionality
+     * may be useful for some (rare) mobility scenarios.
+     *
+     * This function could bypass several rules which are enforced when you
+     * build the model using NED, so you must observe the following:
+     *
+     *  -# you cannot insert the module under one of its own submodules.
+     *     This is checked by this function.
+     *  -# gates of the module cannot be connected while you move it.
+     *     If you moved a module which is connected to its parent module
+     *     or to other submodules, you'd create connections that do not obey
+     *     the module hierarchy, and this is not permitted. This rule is
+     *     also enforced by the implementation of this function.
+     *  -# it is recommended that the module name be made unique among the
+     *     submodules of its new parent.
+     *  -# be aware that if the module is part of a module vector, its
+     *     isVector(), index() and size() functions will continue to deliver
+     *     the same info -- although other elements of the vector will not
+     *     necessarily be present under the same parent module.
+     */
+    virtual void changeParentTo(cModule *mod);
     //@}
 
     /** @name Display strings, animation. */

@@ -1,3 +1,7 @@
+2004-02-23  Andras Varga
+
+	* cmodule.cc: added changeParentTo() to cModule.
+
 2004-02-22  Andras Varga
 
 	* cmodule.cc: added gateSize() to cModule.
