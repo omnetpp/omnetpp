@@ -1,3 +1,7 @@
+2002-06-08  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
+
+	* Makefile.in: new targets nedtool, main.o
+
 2002-07-07  Andras Varga
 
 	* added main.cc and nedtool target to MSVC makefile; unix makefile

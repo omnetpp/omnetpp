@@ -12,6 +12,7 @@ LDFLAGS=@LDFLAGS@
 EXE_SUFFIX=@EXE_SUFFIX@
 
 OMNETPP_BIN_DIR=@OMNETPP_BIN_DIR@
+OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
 
 #
 # Local definitions
@@ -23,9 +24,19 @@ OBJS=ebnf.tab.o lex.yy.o jar.o jar_lib.o jar_mod.o jar_expr.o jar_mem.o
 #
 # Targets
 #
+all: nedc nedtool
+
+
+nedtool: main.o
+	$(CXX) $(LDFLAGS) -o nedtool main.o -L$(OMNETPP_LIB_DIR) -lnedxml -lexpat
+	../utils/install-prog nedtool $(OMNETPP_BIN_DIR)
+
 nedc: $(OBJS)
 	$(CXX) $(LDFLAGS) $(OBJS) -o nedc
 	../utils/install-prog nedc $(OMNETPP_BIN_DIR)
+
+main.o: main.cc
+	$(CXX) -c $(COPTS) -I../nedxml main.cc
 
 lex.yy.o: jar_func.h lex.yy.c
 	$(CXX) -c $(COPTS) lex.yy.c
@@ -62,7 +73,7 @@ depend:
 	$(MAKEDEPEND) -I. -fMakefile.in -- *.c
 
 clean:
-	rm -f *.o lex.yy.c ebnf.tab.c ebnf.tab.h nedc$(EXE_SUFFIX) *_n.cc
+	rm -f *.o lex.yy.c ebnf.tab.c ebnf.tab.h nedc nedtool *_n.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 ebnf.tab.o: ebnf.tab.c \
