@@ -1,0 +1,17 @@
+for i in `find . -name Makefile* -o -name *.h -o -name *.cc -o -name *.c`
+do
+    echo Removing ^M, $i
+    cp $i $i.b
+    sed 's/[[:cntrl:]]$//g' $i.b > $i
+    rm $i.b
+    shift
+done
+
+# while [ "$1" != "" ]
+# do
+#     echo Removing ^M, $1
+#     cp $1 $1.b
+#     sed 's/[[:cntrl:]]$//g' $1.b > $1
+#     rm $1.b
+#     shift
+# done
