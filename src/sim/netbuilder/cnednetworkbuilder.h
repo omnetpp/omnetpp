@@ -40,6 +40,7 @@ class cNEDNetworkBuilder
     int loopVarSP;
 
   protected:
+    virtual void addChannelAttr(cChannel *chanp, ChannelAttrNode *channelattr);
     virtual void addSubmodule(cModule *modp, SubmoduleNode *submod);
     virtual void setDisplayString(cModule *submodp, SubmoduleNode *submod);
     virtual void assignSubmoduleParams(cModule *submodp, NEDElement *submod);
@@ -51,7 +52,7 @@ class cNEDNetworkBuilder
     virtual cGate *resolveGate(cModule *modp, const char *modname, ExpressionNode *modindex,
                                const char *gatename, ExpressionNode *gateindex);
     virtual cChannel *createChannel(ConnectionNode *conn);
-    virtual ExpressionNode *getExpr(NEDElement *node, const char *exprname);
+    virtual ExpressionNode *findExpression(NEDElement *node, const char *exprname);
 
     virtual double evaluate(cModule *modp, ExpressionNode *expr, cModule *submodp=NULL);
 
@@ -75,8 +76,14 @@ class cNEDNetworkBuilder
     void addXElemsConst(ConstNode *node, cPar::ExprElem *xelems, int& pos, cModule *submodp);
 
   public:
-
+    /**
+     * Constructor.
+     */
     cNEDNetworkBuilder();
+
+    /**
+     * Destructor.
+     */
     virtual ~cNEDNetworkBuilder();
 
     /**
@@ -89,6 +96,11 @@ class cNEDNetworkBuilder
      * passed NEDElement tree.
      */
     virtual void buildInside(cModule *module, CompoundModuleNode *modulenode);
+
+    /**
+     * Creates a channel object, based on the info in the passed NEDElement tree.
+     */
+    virtual cChannel *createChannel(const char *name, ChannelNode *channelnode);
 
 };
 

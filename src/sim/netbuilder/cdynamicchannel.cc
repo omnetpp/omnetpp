@@ -1,5 +1,5 @@
 //==========================================================================
-//   CDYNAMICNETWORK.CC
+//   CDYNAMICCHANNEL.CC
 //            part of OMNeT++
 //
 //==========================================================================
@@ -17,36 +17,14 @@
 #include <time.h>
 #include <iostream>
 
-#include "cdynamicnetwork.h"
+#include "cdynamicchannel.h"
 #include "cnednetworkbuilder.h"
 
 
-cDynamicNetworkType::cDynamicNetworkType(const char *name, NetworkNode *networkNode) :
-  cNetworkType(name)
-{
-    networknode = networkNode;
-}
-
-cDynamicNetworkType::~cDynamicNetworkType()
-{
-    delete networknode;
-}
-
-
-void cDynamicNetworkType::setupNetwork()
-{
-    cNEDNetworkBuilder builder;
-    builder.setupNetwork(networknode);
-}
-
-
-//------------------
-
-#if 0
-cDynamicChannelType::cDynamicChannelType(const char *name, ChannelNode *channelNode) :
+cDynamicChannelType::cDynamicChannelType(const char *name, ChannelNode *chan) :
   cChannelType(name)
 {
-    channelnode = channelNode;
+    channelnode = chan;
 }
 
 cDynamicChannelType::~cDynamicChannelType()
@@ -54,9 +32,10 @@ cDynamicChannelType::~cDynamicChannelType()
     delete channelnode;
 }
 
-cChannel *cDynamicChannelType::create()
+cChannel *cDynamicChannelType::create(const char *name)
 {
     cNEDNetworkBuilder builder;
-    return builder.createChannel(channelnode);
+    cChannel *chan = builder.createChannel(name, channelnode);
+    return chan;
 }
-#endif
+

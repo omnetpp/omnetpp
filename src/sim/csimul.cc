@@ -358,6 +358,17 @@ void cSimulation::setupNetwork(cNetworkType *network, int run_num)
         deleteNetwork();
         throw;
     }
+    catch (std::exception e)
+    {
+        deleteNetwork();
+        throw new cException("standard C++ exception %s: %s",
+                             opp_typename(typeid(e)), e.what());
+    }
+    catch (...)
+    {
+        deleteNetwork();
+        throw new cException("unknown exception occurred");
+    }
 }
 
 // FIXME change according to doc comment...

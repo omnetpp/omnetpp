@@ -92,6 +92,23 @@ void cNEDNetworkBuilder::buildInside(cModule *modp, CompoundModuleNode *moduleno
                 addLoopConnection(modp, (ForLoopNode *)child);
         }
     }
+
+    // FIXME move buildinside here!!!!!
+}
+
+cChannel *cNEDNetworkBuilder::createChannel(const char *name, ChannelNode *channelnode)
+{
+    cSimpleChannel *chanp = new cSimpleChannel(name);
+    for (ChannelAttrNode *chattr=channelnode->getFirstChannelAttrChild(); chattr; chattr=chattr->getNextChannelAttrNodeSibling())
+    {
+        addChannelAttr(chanp, chattr);
+    }
+    return chanp;
+}
+
+void cNEDNetworkBuilder::addChannelAttr(cChannel *chanp, ChannelAttrNode *channelattr)
+{
+    // FIXME fill this in!
 }
 
 void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
@@ -114,7 +131,7 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
         throw new cException("dynamic module builder: module type definition `%s' for submodule %s in (%s)%s not found",
                              modtypename, modname, modp->className(), modp->fullPath());
 
-    ExpressionNode *vectorsizeexpr = getExpr(submod, "vector-size");
+    ExpressionNode *vectorsizeexpr = findExpression(submod, "vector-size");
 
     if (!vectorsizeexpr)
     {
@@ -159,7 +176,7 @@ void cNEDNetworkBuilder::assignSubmoduleParams(cModule *submodp, NEDElement *sub
     for (; substparams; substparams = substparams->getNextSubstparamsNodeSibling())
     {
         // evaluate condition
-        ExpressionNode *condexpr = getExpr(substparams, "condition");
+        ExpressionNode *condexpr = findExpression(substparams, "condition");
         bool cond = !condexpr || evaluate(modp, condexpr, submodp)!=0;
 
         // process section
@@ -170,7 +187,7 @@ void cNEDNetworkBuilder::assignSubmoduleParams(cModule *submodp, NEDElement *sub
                 // assign param value
                 const char *parname = par->getName();
                 cPar& p = submodp->par(parname);
-                assignParamValue(p, getExpr(par,"value"),modp);
+                assignParamValue(p, findExpression(par,"value"),modp);
             }
         }
     }
@@ -183,7 +200,7 @@ void cNEDNetworkBuilder::setupGateVectors(cModule *submodp, NEDElement *submod)
     for (; gatesizes; gatesizes = gatesizes->getNextGatesizesNodeSibling())
     {
         // evaluate condition
-        ExpressionNode *condexpr = getExpr(gatesizes, "condition");
+        ExpressionNode *condexpr = findExpression(gatesizes, "condition");
         bool cond = !condexpr || evaluate(modp, condexpr, submodp)!=0;
 
         // process section
@@ -193,7 +210,7 @@ void cNEDNetworkBuilder::setupGateVectors(cModule *submodp, NEDElement *submod)
             {
                 // set gate vector size
                 const char *gatename = gate->getName();
-                int vectorsize = (int) evaluate(modp, getExpr(gate, "vector-size"), submodp);
+                int vectorsize = (int) evaluate(modp, findExpression(gate, "vector-size"), submodp);
                 submodp->setGateSize(gatename, vectorsize);
                 printf("DBG: gatesize: %s.%s[%d]\n", submodp->fullPath(), gatename, vectorsize);
             }
@@ -223,8 +240,8 @@ void cNEDNetworkBuilder::doLoopVar(cModule *modp, LoopVarNode *loopvar)
 {
     ForLoopNode *forloop = (ForLoopNode *) loopvar->getParent();
 
-    int start = (int) evaluate(modp, getExpr(loopvar, "from-value"));
-    int end = (int) evaluate(modp, getExpr(loopvar, "to-value"));
+    int start = (int) evaluate(modp, findExpression(loopvar, "from-value"));
+    int end = (int) evaluate(modp, findExpression(loopvar, "to-value"));
     LoopVarNode *nextloopvar = loopvar->getNextLoopVarNodeSibling();
 
     // register loop var
@@ -262,7 +279,7 @@ void cNEDNetworkBuilder::doLoopVar(cModule *modp, LoopVarNode *loopvar)
 void cNEDNetworkBuilder::addConnection(cModule *modp, ConnectionNode *conn)
 {
     // check condition first
-    ExpressionNode *condexpr = getExpr(conn, "condition");
+    ExpressionNode *condexpr = findExpression(conn, "condition");
     if (condexpr)
     {
         bool cond = evaluate(modp, condexpr)!=0;
@@ -271,10 +288,10 @@ void cNEDNetworkBuilder::addConnection(cModule *modp, ConnectionNode *conn)
     }
 
     // find gates and create connection
-    cGate *srcg = resolveGate(modp, conn->getSrcModule(), getExpr(conn, "src-module-index"),
-                                    conn->getSrcGate(), getExpr(conn, "src-gate-index"));
-    cGate *destg = resolveGate(modp, conn->getDestModule(), getExpr(conn, "dest-module-index"),
-                                     conn->getDestGate(), getExpr(conn, "dest-gate-index"));
+    cGate *srcg = resolveGate(modp, conn->getSrcModule(), findExpression(conn, "src-module-index"),
+                                    conn->getSrcGate(), findExpression(conn, "src-gate-index"));
+    cGate *destg = resolveGate(modp, conn->getDestModule(), findExpression(conn, "dest-module-index"),
+                                     conn->getDestGate(), findExpression(conn, "dest-gate-index"));
     cChannel *channel = createChannel(conn);
 
     // connect
@@ -288,6 +305,7 @@ cGate *cNEDNetworkBuilder::resolveGate(cModule *parentmodp,
                                        const char *modname, ExpressionNode *modindexp,
                                        const char *gatename, ExpressionNode *gateindexp)
 {
+// FIXME plusplus!!!
     cModule *modp;
     if (strnull(modname))
     {
@@ -331,9 +349,19 @@ cChannel *cNEDNetworkBuilder::createChannel(ConnectionNode *conn)
 
     if (!strcmp(connattr->getName(),"channel"))
     {
+        // find channel name
+        ExpressionNode *expr = findExpression(connattr,"value");
+        ConstNode *cnode = expr->getFirstConstChild();
+        if (!cnode || cnode->getType()!=NED_CONST_STRING)
+            throw new cException("dynamic module builder: channel type should be string constant");
+        const char *channeltypename = cnode->getValue();
+
         // create channel
-	//cLinkType *linkp = findLink(connattr->getValue());
-        throw new cException("channel support not implemented yet"); // FIXME
+        cChannelType *channeltype = findChannelType(channeltypename);
+        if (!channeltype)
+            throw new cException("dynamic module builder: channel type %s not found", channeltypename);
+        cChannel *channel = channeltype->create("channel");
+        return channel;
     }
 
     // connection attributes
@@ -341,7 +369,7 @@ cChannel *cNEDNetworkBuilder::createChannel(ConnectionNode *conn)
     for (ConnAttrNode *child=conn->getFirstConnAttrChild(); child; child = child->getNextConnAttrNodeSibling())
     {
         const char *name = child->getName();
-        ExpressionNode *expr = getExpr(child,"value");
+        ExpressionNode *expr = findExpression(child,"value");
         cPar *par = new cPar(name);
         assignParamValue(*par, expr, NULL);
         channel->addPar(par);
@@ -349,7 +377,7 @@ cChannel *cNEDNetworkBuilder::createChannel(ConnectionNode *conn)
     return channel;
 }
 
-ExpressionNode *cNEDNetworkBuilder::getExpr(NEDElement *node, const char *exprname)
+ExpressionNode *cNEDNetworkBuilder::findExpression(NEDElement *node, const char *exprname)
 {
     // find expression with given name in node
     if (!node)
@@ -390,7 +418,7 @@ cPar *cNEDNetworkBuilder::resolveParamRef(ParamRefNode *node, cModule *parentmod
         else
         {
             const char *modname = node->getModule();
-            ExpressionNode *modindexp = getExpr(node, "module-index");
+            ExpressionNode *modindexp = findExpression(node, "module-index");
             int modindex = !modindexp ? 0 : (int) evaluate(parentmodp, modindexp,submodp);
             modp = parentmodp->submodule(modname,modindex);
             if (!modp)

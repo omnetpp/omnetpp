@@ -31,6 +31,7 @@
 #include "globals.h"
 #include "cdynamicmodule.h"
 #include "cdynamicnetwork.h"
+#include "cdynamicchannel.h"
 
 
 cModuleInterface *createModuleInterfaceFrom(NEDElement *modulenode)
@@ -151,7 +152,6 @@ void loadNedFile(const char *fname, bool isXML)
             if (oldmodif)
                 delete modinterfaces.instance()->remove(oldmodif);
             modinterfaces.instance()->add(modif);
-
         }
         else if (node->getTagCode()==NED_COMPOUND_MODULE)
         {
@@ -191,10 +191,25 @@ void loadNedFile(const char *fname, bool isXML)
             cNetworkType *networktype = new cDynamicNetworkType(name, networknode);
             networks.instance()->add(networktype);
         }
+        else if (node->getTagCode()==NED_CHANNEL)
+        {
+            ChannelNode *channelnode = (ChannelNode *)node;
+            const char *name = channelnode->getName();
+
+            // create channel type object
+            cDynamicChannelType *chantype = new cDynamicChannelType(name, channelnode);
+
+            // and replace existing one
+            cChannelType *oldchantype = findChannelType(name);
+            if (oldchantype)
+                delete channeltypes.instance()->remove(oldchantype);
+            channeltypes.instance()->add(chantype);
+        }
         else
         {
+            delete node;
             delete tree;
-            throw new cException("error loading `%s': channels not yet supported in dynamically loaded NED files", fname);
+            throw new cException("error loading `%s': unsupported element", fname);
         }
     }
 

@@ -17,15 +17,6 @@
 #include <time.h>
 #include <iostream>
 
-#include "nedelements.h"
-#include "nederror.h"
-
-#include "nedparser.h"
-#include "nedxmlparser.h"
-#include "neddtdvalidator.h"
-#include "nedbasicvalidator.h"
-#include "nedsemanticvalidator.h"
-
 #include "cdynamicmodule.h"
 #include "cnednetworkbuilder.h"
 
