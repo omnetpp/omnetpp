@@ -100,6 +100,7 @@ typedef basic_evbuf<char> evbuf;
  * the simulation kernel and the environment.
  *
  * @ingroup Envir
+ * @ingroup EnvirExtensions
  */
 ENVIR_API extern cEnvir ev;
 
