@@ -62,6 +62,10 @@
  *    - cMessage represents events, and also messages sent among modules
  *    - cGate represents module gates
  *    - cPar represents module and message parameters
+ *    - cSimulation stores all modules of the network and the 
+ *      data structure for scheduled events (the <i>future event set</i>)
+ *      Most methods are used internally, but some are useful for model
+ *      developers as well.
  *
  * Many other classes closely related to the above ones are not listed
  * here explicitly, but you can find them via 'See also' links from their
