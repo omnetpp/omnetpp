@@ -5,6 +5,8 @@ FIXME make inspectors more consistent:
   cWatchInspector: if cPolymorphic is watched, display its info() and detailedInfo()
   cWatchInspector probably not needed (cObjectInspector will do)
 FIXME cGate inspectors have now two "up" buttons!!!
+TBD there should be a limit on the number of inspector windows open, to prevent
+accidentally opening thousand windows with objects of identical names
 
 2004-03-18  Andras Varga
 

@@ -161,6 +161,7 @@ void cFilteredCollectObjectsVisitor::visit(cObject *obj)
         ((category&CATEGORY_VARIABLES) && (dynamic_cast<cWatch *>(obj) ||
                                            dynamic_cast<cFSM *>(obj))) ||
         ((category&CATEGORY_STATISTICS) &&(dynamic_cast<cOutVector *>(obj) ||
+                                           dynamic_cast<cWatch *>(obj) ||
                                            dynamic_cast<cStatistic *>(obj))) ||
         ((category&CATEGORY_MODPARAMS) &&(dynamic_cast<cModulePar *>(obj))) ||
         ((category&CATEGORY_CHANSGATES) &&(dynamic_cast<cChannel *>(obj) ||

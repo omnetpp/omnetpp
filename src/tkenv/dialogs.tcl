@@ -632,11 +632,11 @@ proc filteredobjectlist_dialog {} {
     labelframe $w.f.filter.cat -text "Object categories:"
     set cf $w.f.filter.cat
     checkbutton $cf.modules -text "modules" -variable tmp(cat-m)
-    checkbutton $cf.queues -text "queues" -variable tmp(cat-q)
     checkbutton $cf.modpars -text "module parameters" -variable tmp(cat-p)
-    checkbutton $cf.chansgates -text "gates, channels" -variable tmp(cat-c)
+    checkbutton $cf.queues -text "queues" -variable tmp(cat-q)
     checkbutton $cf.statistics -text "outvectors, statistics, variables" -variable tmp(cat-s)
     checkbutton $cf.messages -text "messages"  -variable tmp(cat-g)
+    checkbutton $cf.chansgates -text "gates, channels" -variable tmp(cat-c)
     checkbutton $cf.variables -text "FSM states, variables"  -variable tmp(cat-v)
     checkbutton $cf.other -text "other" -variable tmp(cat-o)
     grid $cf.modules   $cf.modpars     $cf.queues     $cf.statistics  -sticky nw
