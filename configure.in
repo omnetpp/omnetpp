@@ -1,18 +1,18 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(src/sim/omnetpp.h)
 
-dnl Defines.
-OMNETPP_ROOT=`pwd`
-AC_SUBST(OMNETPP_ROOT)
-
+dnl ----------------------
 dnl Checks for programs.
+dnl ----------------------
 AC_PROG_YACC
 AC_PROG_LEX
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_RANLIB
 
+dnl ----------------------
 dnl Checks for libraries.
+dnl ----------------------
 AC_CHECK_LIB(m, floor)
 AC_CHECK_LIB(dl, dlsym)
 AC_CHECK_LIB(stdc++, some_func_in_stdCPP)
@@ -25,7 +25,9 @@ AC_CHECK_LIB(tk, Tk_BindEvent,,, -lX11)
 AC_CHECK_LIB(tk8, Tk_BindEvent,,, -lX11)
 AC_CHECK_LIB(tv, some_cpp_func_in_TV)
 
+dnl ----------------------
 dnl Checks for header files.
+dnl ----------------------
 AC_HEADER_STDC
 AC_CHECK_HEADERS(malloc.h unistd.h)
 
@@ -35,7 +37,9 @@ AC_C_INLINE
 AC_TYPE_SIZE_T
 AC_STRUCT_TM
 
+dnl ----------------------
 dnl Checks for library functions.
+dnl ----------------------
 AC_FUNC_MEMCMP
 AC_TYPE_SIGNAL
 AC_FUNC_VPRINTF
@@ -43,61 +47,31 @@ AC_CHECK_FUNCS(select strdup strspn strstr)
 
 
 dnl OLD STUFF:
-#! /bin/sh
-#
-#    OMNeT++ config utility
-#
-#  configures paths and other options in makefiles
-#
 
-#----------------------------------------------------------------------
-# This script configures some variables in the makefiles
-#----------------------------------------------------------------------
 
-#Root directory and its subdirs
-# OMNETPP_ROOT
-# OMNETPP_SRC_DIR
-# OMNETPP_SAMPLES_DIR
-# OMNETPP_MODELS_DIR
-#
-#Programs
-# YACC    - yacc or bison
-# LEX     - lex or flex
-# CC     - plain C compiler
-# CXX      - C++ compiler
-# NEDC    - NED compiler
-# AS      - assembler
-# AR      - librarian
-# MAKE_SO - librarian to create shared objects
-# LD      - linker
-#
-#Dynamic linking and run-time loaded libraries
-# LIB_SUFFIX - possible values are `a' and `so'. Selects whether
-#              OMNeT++ libraries should be made static or shared
-# USE_DLOPEN - possible values: 1 or 0. Selects whether dlopen()
-#              is available
-#
-#Directories etc.
-# OMNETPP_INCLUDES - list of OMNeT++ header files needed for apps
-# OMNETPP_INCL_PATH, OMNETPP_LIB_PATH
-# OMNETPP_BITMAP_PATH
-# TV_INCL_PATH,  TV_LIB_PATH,  TV_LIBS
-# TK_INCL_PATH,  TK_LIB_PATH,  TK_LIBS
-# X_INCL_PATH,   X_LIB_PATH,   X_LIBS
-# PVM_INCL_PATH, PVM_LIB_PATH, PVM_LIBS
-# SYS_LIBS
-#
+dnl ----------------------
+dnl Defines.
+dnl ----------------------
 
-#
 # Directories where 'configur' will look to find library and include files.
 # Ordering is important if you have multiple files (e.g. multiple versions).
 #
 SEARCH_DIRS="/usr* /opt /local $HOME"
 
-#
 # The variables below will be substituted into makefiles, the makemake script etc.
 #
-OMNETPP_ROOT="$HOME/omnetpp"
+OMNETPP_ROOT=`pwd`
+OMNETPP_BIN_DIR=$OMNETPP_ROOT/bin
+OMNETPP_SRC_LIB=$OMNETPP_ROOT/lib
+
+OMNETPP_SRC_DIR=$OMNETPP_ROOT/src
+OMNETPP_SAMPLES_DIR=$OMNETPP_ROOT/samples
+OMNETPP_MODELS_DIR=$OMNETPP_ROOT/models
+OMNETPP_BITMAP_PATH=$OMNETPP_ROOT/bitmaps
+
+OMNETPP_INCL_PATH=-I$OMNETPP_SRC_DIR/sim
+OMNETPP_LIB_PATH=-L$OMNETPP_ROOT/lib
+OMNETPP_INCLUDES=
 
 #
 # a=static, so=shared libraries.
@@ -122,28 +96,10 @@ CFLAGS='-O3 -DNDEBUG=1'
 #
 # normally you do not need to touch the things below:
 #
-YACC='bison'
-LEX='flex'
-CC='gcc '$CFLAGS' -c'
-CXX='gcc '$CFLAGS' -I. -c -x c++'
-NEDC='nedc'
-AS='gcc -g -c'
-AR='ar rs'
+NEDC=$OMNETPP_BIN/nedc
 MAKE_SO='gcc -shared -o'
 LD='gcc'
 
-#
-# The script will try to figure out what to put in the ..._PATH variables,
-# unless you explicitly specify a value here:
-#
-OMNETPP_SRC_DIR='$OMNETPP_ROOT/src'
-OMNETPP_SAMPLES_DIR='$OMNETPP_ROOT/samples'
-OMNETPP_MODELS_DIR='$OMNETPP_ROOT/models'
-OMNETPP_BITMAP_PATH='$OMNETPP_ROOT/bitmaps'
-
-OMNETPP_INCL_PATH='-I$OMNETPP_SRC_DIR/sim'
-OMNETPP_LIB_PATH='-L$OMNETPP_ROOT/lib'
-OMNETPP_INCLUDES=
 
 # TV_INCL_PATH='-I/usr/include/tvision'
 # X_INCL_PATH='-I/usr/include/X11'
@@ -360,15 +316,13 @@ fi
 
 rm -f $TMPFILE
 
-#
-# prepare sed command that modifies files
-#
-#echo
-#echo Variables:
-sedcmd=""
-sedcmd2=""
-for var in \
-  OMNETPP_ROOT OMNETPP_SRC_DIR OMNETPP_SAMPLES_DIR OMNETPP_MODELS_DIR \
+dnl END OLD STUFF
+
+dnl ----------------------
+dnl Subtitutions.
+dnl ----------------------
+
+AC_SUBST(OMNETPP_ROOT OMNETPP_SRC_DIR OMNETPP_SAMPLES_DIR OMNETPP_MODELS_DIR \
   YACC LEX CC CXX NEDC AS AR MAKE_SO LD \
   LIB_SUFFIX USE_DLOPEN \
   TV_INCL_PATH  TV_LIB_PATH  TV_LIBS \
@@ -376,37 +330,7 @@ for var in \
   X_INCL_PATH   X_LIB_PATH   X_LIBS \
   PVM_INCL_PATH PVM_LIB_PATH PVM_LIBS \
   SYS_LIBS \
-  OMNETPP_INCLUDES OMNETPP_INCL_PATH OMNETPP_LIB_PATH OMNETPP_BITMAP_PATH
-do
-    # sedcmd: sed command for makefiles. $FOO in values modified to $(FOO)
-    # sedcmd2: sed command for scripts. Values are placed between quotes
-    val=`eval echo \\$$var`
-    val=`echo $val | sed 's/\//\\\//g'`
-    echo '  '$var' = '$val
-    if [ "$sedcmd" = "" ]; then
-        sedcmd="s/@$var@/$val/g"
-    else
-        sedcmd="$sedcmd;s/@$var@/$val/g"
-    fi
-done
+  OMNETPP_INCLUDES OMNETPP_INCL_PATH OMNETPP_LIB_PATH OMNETPP_BITMAP_PATH)
 
-#
-# modify makefiles and makemake using sed
-#
-echo
-echo Configuring all makefiles plus scripts in src/utils/
-makefile_ins=`find $OMNETPP_ROOT -name makefile.in`
-for infile in "$makefile_ins $OMNETPP_ROOT/src/utils/makemake.in"
-do
-    file=`echo $infile | sed 's/\.in$//'`
-    if sed "$sedcmd" < $infile > $file; then
-       : #echo "  $infile --> $file OK"
-    else
-       echo "Cannot create $file from $infile"
-    fi
-done
-echo
-
-dnl END OLD STUFF
 
 AC_OUTPUT(src/cmdenv/makefile samples/pvmex/makefile src/gned/makefile samples/fifo1/makefile samples/fifo2/makefile src/envir/makefile samples/fddi/makefile samples/hist/makefile src/tkenv/makefile src/sim/makefile samples/token/makefile src/utils/makefile samples/nim/makefile src/tvenv/makefile samples/hcube/makefile samples/dyna/makefile models/support/makefile Makefile src/nedc/makefile)
