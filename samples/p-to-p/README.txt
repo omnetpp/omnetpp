@@ -2,4 +2,24 @@ Point-to-point transmitter
 ==========================
 
 The model implements a point-to-point connection (for example, a leased line
-or a fiber optics cable). The line
+or a fiber optics cable).
+
+The line itself is modelled by a connection with data rate assigned.
+Transmissions on the link are controlled by PointToPointIF modules at both
+ends of the connection. A PointToPointIF module monitors the state of the
+link, and frames that arrive from the source while transmission is going on
+are queued up.
+
+While a bare connection with a data rate (and without PointToPointIF-style
+modules) can fullfill the basic functionality of a point-to-point connection
+(see the Manual for details on how it works), there are reasons for
+introducing PointToPointIF: extensibility and additional flexibility.
+
+The model can be easily extended to limit the length of the queue (i.e. discard
+frames if queue is too long), to make it possible to query the queue length
+from another module via a direct method call interface, to implement priority
+queueing (let "expedited" frames go first), or to collect link statistics
+(utilization, etc.)
+
+
+
