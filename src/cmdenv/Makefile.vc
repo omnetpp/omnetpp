@@ -46,10 +46,10 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-cmdenv.obj: cmdenv.h ..\sim\ctypes.h ..\sim\chead.h ..\sim\cobject.h
-cmdenv.obj: ..\sim\defs.h ..\sim\util.h ..\sim\csimul.h ..\sim\errmsg.h
-cmdenv.obj: ..\sim\cmsgheap.h ..\sim\coutvect.h ..\sim\ccor.h
-cmdenv.obj: ..\envir\omnetapp.h ..\sim\carray.h ..\sim\cenvir.h enumstr.h
-cmdenv.obj: ..\envir\slaveapp.h ..\envir\cinifile.h ..\sim\cmodule.h
-cmdenv.obj: ..\sim\cqueue.h ..\sim\cgate.h ..\sim\cnetmod.h ..\envir\args.h
+cmdenv.obj: cmdenv.h $(OMNETPP_INCL_DIR)/ctypes.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/cobject.h
+cmdenv.obj: $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/csimul.h $(OMNETPP_INCL_DIR)/errmsg.h
+cmdenv.obj: $(OMNETPP_INCL_DIR)/cmsgheap.h $(OMNETPP_INCL_DIR)/coutvect.h $(OMNETPP_INCL_DIR)/ccor.h
+cmdenv.obj: ..\envir\omnetapp.h $(OMNETPP_INCL_DIR)/carray.h $(OMNETPP_INCL_DIR)/cenvir.h enumstr.h
+cmdenv.obj: ..\envir\slaveapp.h ..\envir\cinifile.h $(OMNETPP_INCL_DIR)/cmodule.h
+cmdenv.obj: $(OMNETPP_INCL_DIR)/cqueue.h $(OMNETPP_INCL_DIR)/cgate.h $(OMNETPP_INCL_DIR)/cnetmod.h ..\envir\args.h
 enumstr.obj: enumstr.h

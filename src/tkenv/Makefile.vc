@@ -73,52 +73,52 @@ clean:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 arrow.obj: arrow.h
-inspect.obj: ..\sim\omnetpp.h ..\sim\defs.h ..\sim\util.h ..\sim\errmsg.h
-inspect.obj: ..\sim\cobject.h ..\sim\csimul.h ..\sim\chead.h ..\sim\cmsgheap.h
-inspect.obj: ..\sim\coutvect.h ..\sim\ccor.h ..\sim\macros.h ..\sim\ctypes.h
-inspect.obj: ..\sim\carray.h ..\sim\cqueue.h ..\sim\cllist.h ..\sim\cwatch.h
-inspect.obj: ..\sim\cpar.h ..\sim\cgate.h ..\sim\cmessage.h ..\sim\cpacket.h
-inspect.obj: ..\sim\cstk.h ..\sim\cmodule.h ..\sim\cstat.h ..\sim\cdensity.h
-inspect.obj: ..\sim\chist.h ..\sim\cvarhist.h ..\sim\cpsquare.h
-inspect.obj: ..\sim\cksplit.h ..\sim\cdetect.h ..\sim\ctopo.h ..\sim\cnetmod.h
-inspect.obj: ..\sim\cfsm.h ..\sim\protocol.h ..\sim\cenvir.h tkapp.h
+inspect.obj: $(OMNETPP_INCL_DIR)/omnetpp.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/errmsg.h
+inspect.obj: $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/csimul.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/cmsgheap.h
+inspect.obj: $(OMNETPP_INCL_DIR)/coutvect.h $(OMNETPP_INCL_DIR)/ccor.h $(OMNETPP_INCL_DIR)/macros.h $(OMNETPP_INCL_DIR)/ctypes.h
+inspect.obj: $(OMNETPP_INCL_DIR)/carray.h $(OMNETPP_INCL_DIR)/cqueue.h $(OMNETPP_INCL_DIR)/cllist.h $(OMNETPP_INCL_DIR)/cwatch.h
+inspect.obj: $(OMNETPP_INCL_DIR)/cpar.h $(OMNETPP_INCL_DIR)/cgate.h $(OMNETPP_INCL_DIR)/cmessage.h $(OMNETPP_INCL_DIR)/cpacket.h
+inspect.obj: $(OMNETPP_INCL_DIR)/cstk.h $(OMNETPP_INCL_DIR)/cmodule.h $(OMNETPP_INCL_DIR)/cstat.h $(OMNETPP_INCL_DIR)/cdensity.h
+inspect.obj: $(OMNETPP_INCL_DIR)/chist.h $(OMNETPP_INCL_DIR)/cvarhist.h $(OMNETPP_INCL_DIR)/cpsquare.h
+inspect.obj: $(OMNETPP_INCL_DIR)/cksplit.h $(OMNETPP_INCL_DIR)/cdetect.h $(OMNETPP_INCL_DIR)/ctopo.h $(OMNETPP_INCL_DIR)/cnetmod.h
+inspect.obj: $(OMNETPP_INCL_DIR)/cfsm.h $(OMNETPP_INCL_DIR)/protocol.h $(OMNETPP_INCL_DIR)/cenvir.h tkapp.h
 inspect.obj: ..\envir\omnetapp.h tklib.h tkinsp.h
-modinsp.obj: ..\sim\cmodule.h ..\sim\cobject.h ..\sim\defs.h ..\sim\util.h
-modinsp.obj: ..\sim\ccor.h ..\sim\chead.h ..\sim\carray.h ..\sim\cqueue.h
-modinsp.obj: ..\sim\cgate.h ..\sim\csimul.h ..\sim\errmsg.h ..\sim\cmsgheap.h
-modinsp.obj: ..\sim\coutvect.h ..\sim\cmessage.h ..\sim\cpar.h ..\sim\cnetmod.h
-modinsp.obj: ..\sim\cstat.h ..\sim\cdensity.h tkapp.h ..\envir\omnetapp.h
-modinsp.obj: ..\sim\cenvir.h tklib.h tkinsp.h arrow.h
-objinsp.obj: ..\sim\omnetpp.h ..\sim\defs.h ..\sim\util.h ..\sim\errmsg.h
-objinsp.obj: ..\sim\cobject.h ..\sim\csimul.h ..\sim\chead.h ..\sim\cmsgheap.h
-objinsp.obj: ..\sim\coutvect.h ..\sim\ccor.h ..\sim\macros.h ..\sim\ctypes.h
-objinsp.obj: ..\sim\carray.h ..\sim\cqueue.h ..\sim\cllist.h ..\sim\cwatch.h
-objinsp.obj: ..\sim\cpar.h ..\sim\cgate.h ..\sim\cmessage.h ..\sim\cpacket.h
-objinsp.obj: ..\sim\cstk.h ..\sim\cmodule.h ..\sim\cstat.h ..\sim\cdensity.h
-objinsp.obj: ..\sim\chist.h ..\sim\cvarhist.h ..\sim\cpsquare.h
-objinsp.obj: ..\sim\cksplit.h ..\sim\cdetect.h ..\sim\ctopo.h ..\sim\cnetmod.h
-objinsp.obj: ..\sim\cfsm.h ..\sim\protocol.h ..\sim\cenvir.h tkapp.h
+modinsp.obj: $(OMNETPP_INCL_DIR)/cmodule.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h
+modinsp.obj: $(OMNETPP_INCL_DIR)/ccor.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/carray.h $(OMNETPP_INCL_DIR)/cqueue.h
+modinsp.obj: $(OMNETPP_INCL_DIR)/cgate.h $(OMNETPP_INCL_DIR)/csimul.h $(OMNETPP_INCL_DIR)/errmsg.h $(OMNETPP_INCL_DIR)/cmsgheap.h
+modinsp.obj: $(OMNETPP_INCL_DIR)/coutvect.h $(OMNETPP_INCL_DIR)/cmessage.h $(OMNETPP_INCL_DIR)/cpar.h $(OMNETPP_INCL_DIR)/cnetmod.h
+modinsp.obj: $(OMNETPP_INCL_DIR)/cstat.h $(OMNETPP_INCL_DIR)/cdensity.h tkapp.h ..\envir\omnetapp.h
+modinsp.obj: $(OMNETPP_INCL_DIR)/cenvir.h tklib.h tkinsp.h arrow.h
+objinsp.obj: $(OMNETPP_INCL_DIR)/omnetpp.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/errmsg.h
+objinsp.obj: $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/csimul.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/cmsgheap.h
+objinsp.obj: $(OMNETPP_INCL_DIR)/coutvect.h $(OMNETPP_INCL_DIR)/ccor.h $(OMNETPP_INCL_DIR)/macros.h $(OMNETPP_INCL_DIR)/ctypes.h
+objinsp.obj: $(OMNETPP_INCL_DIR)/carray.h $(OMNETPP_INCL_DIR)/cqueue.h $(OMNETPP_INCL_DIR)/cllist.h $(OMNETPP_INCL_DIR)/cwatch.h
+objinsp.obj: $(OMNETPP_INCL_DIR)/cpar.h $(OMNETPP_INCL_DIR)/cgate.h $(OMNETPP_INCL_DIR)/cmessage.h $(OMNETPP_INCL_DIR)/cpacket.h
+objinsp.obj: $(OMNETPP_INCL_DIR)/cstk.h $(OMNETPP_INCL_DIR)/cmodule.h $(OMNETPP_INCL_DIR)/cstat.h $(OMNETPP_INCL_DIR)/cdensity.h
+objinsp.obj: $(OMNETPP_INCL_DIR)/chist.h $(OMNETPP_INCL_DIR)/cvarhist.h $(OMNETPP_INCL_DIR)/cpsquare.h
+objinsp.obj: $(OMNETPP_INCL_DIR)/cksplit.h $(OMNETPP_INCL_DIR)/cdetect.h $(OMNETPP_INCL_DIR)/ctopo.h $(OMNETPP_INCL_DIR)/cnetmod.h
+objinsp.obj: $(OMNETPP_INCL_DIR)/cfsm.h $(OMNETPP_INCL_DIR)/protocol.h $(OMNETPP_INCL_DIR)/cenvir.h tkapp.h
 objinsp.obj: ..\envir\omnetapp.h tklib.h tkinsp.h arrow.h
-statinsp.obj: ..\sim\cmodule.h ..\sim\cobject.h ..\sim\defs.h ..\sim\util.h
-statinsp.obj: ..\sim\ccor.h ..\sim\chead.h ..\sim\carray.h ..\sim\cqueue.h
-statinsp.obj: ..\sim\cgate.h ..\sim\csimul.h ..\sim\errmsg.h ..\sim\cmsgheap.h
-statinsp.obj: ..\sim\coutvect.h ..\sim\cmessage.h ..\sim\cpar.h
-statinsp.obj: ..\sim\cnetmod.h ..\sim\cstat.h ..\sim\cdensity.h tkapp.h
-statinsp.obj: ..\envir\omnetapp.h ..\sim\cenvir.h tklib.h tkinsp.h arrow.h
-tkapp.obj: ..\envir\slaveapp.h ..\envir\omnetapp.h ..\sim\carray.h
-tkapp.obj: ..\sim\cobject.h ..\sim\defs.h ..\sim\util.h ..\sim\cenvir.h
-tkapp.obj: ..\envir\cinifile.h ..\sim\cmodule.h ..\sim\ccor.h ..\sim\chead.h
-tkapp.obj: ..\sim\cqueue.h ..\sim\cgate.h ..\sim\csimul.h ..\sim\errmsg.h
-tkapp.obj: ..\sim\cmsgheap.h ..\sim\coutvect.h ..\sim\cmessage.h ..\sim\cpar.h
-tkapp.obj: ..\sim\cstk.h ..\sim\ctypes.h ..\sim\cnetmod.h tkapp.h tklib.h
+statinsp.obj: $(OMNETPP_INCL_DIR)/cmodule.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h
+statinsp.obj: $(OMNETPP_INCL_DIR)/ccor.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/carray.h $(OMNETPP_INCL_DIR)/cqueue.h
+statinsp.obj: $(OMNETPP_INCL_DIR)/cgate.h $(OMNETPP_INCL_DIR)/csimul.h $(OMNETPP_INCL_DIR)/errmsg.h $(OMNETPP_INCL_DIR)/cmsgheap.h
+statinsp.obj: $(OMNETPP_INCL_DIR)/coutvect.h $(OMNETPP_INCL_DIR)/cmessage.h $(OMNETPP_INCL_DIR)/cpar.h
+statinsp.obj: $(OMNETPP_INCL_DIR)/cnetmod.h $(OMNETPP_INCL_DIR)/cstat.h $(OMNETPP_INCL_DIR)/cdensity.h tkapp.h
+statinsp.obj: ..\envir\omnetapp.h $(OMNETPP_INCL_DIR)/cenvir.h tklib.h tkinsp.h arrow.h
+tkapp.obj: ..\envir\slaveapp.h ..\envir\omnetapp.h $(OMNETPP_INCL_DIR)/carray.h
+tkapp.obj: $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/cenvir.h
+tkapp.obj: ..\envir\cinifile.h $(OMNETPP_INCL_DIR)/cmodule.h $(OMNETPP_INCL_DIR)/ccor.h $(OMNETPP_INCL_DIR)/chead.h
+tkapp.obj: $(OMNETPP_INCL_DIR)/cqueue.h $(OMNETPP_INCL_DIR)/cgate.h $(OMNETPP_INCL_DIR)/csimul.h $(OMNETPP_INCL_DIR)/errmsg.h
+tkapp.obj: $(OMNETPP_INCL_DIR)/cmsgheap.h $(OMNETPP_INCL_DIR)/coutvect.h $(OMNETPP_INCL_DIR)/cmessage.h $(OMNETPP_INCL_DIR)/cpar.h
+tkapp.obj: $(OMNETPP_INCL_DIR)/cstk.h $(OMNETPP_INCL_DIR)/ctypes.h $(OMNETPP_INCL_DIR)/cnetmod.h tkapp.h tklib.h
 tkapp.obj: tkinsp.h
-tkcmd.obj: ..\sim\cenvir.h ..\sim\defs.h ..\sim\carray.h ..\sim\cobject.h
-tkcmd.obj: ..\sim\util.h ..\sim\csimul.h ..\sim\errmsg.h ..\sim\chead.h
-tkcmd.obj: ..\sim\cmsgheap.h ..\sim\coutvect.h ..\sim\ccor.h ..\sim\cmodule.h
-tkcmd.obj: ..\sim\cqueue.h ..\sim\cgate.h ..\sim\ctypes.h tkapp.h
+tkcmd.obj: $(OMNETPP_INCL_DIR)/cenvir.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/carray.h $(OMNETPP_INCL_DIR)/cobject.h
+tkcmd.obj: $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/csimul.h $(OMNETPP_INCL_DIR)/errmsg.h $(OMNETPP_INCL_DIR)/chead.h
+tkcmd.obj: $(OMNETPP_INCL_DIR)/cmsgheap.h $(OMNETPP_INCL_DIR)/coutvect.h $(OMNETPP_INCL_DIR)/ccor.h $(OMNETPP_INCL_DIR)/cmodule.h
+tkcmd.obj: $(OMNETPP_INCL_DIR)/cqueue.h $(OMNETPP_INCL_DIR)/cgate.h $(OMNETPP_INCL_DIR)/ctypes.h tkapp.h
 tkcmd.obj: ..\envir\omnetapp.h tklib.h tkinsp.h
-tklib.obj: ..\sim\cobject.h ..\sim\defs.h ..\sim\util.h ..\sim\cmodule.h
-tklib.obj: ..\sim\ccor.h ..\sim\chead.h ..\sim\carray.h ..\sim\cqueue.h
-tklib.obj: ..\sim\cgate.h ..\sim\csimul.h ..\sim\errmsg.h ..\sim\cmsgheap.h
-tklib.obj: ..\sim\coutvect.h tklib.h tkinsp.h ..\envir\omnetapp.h
-tklib.obj: ..\sim\cenvir.h tkapp.h
+tklib.obj: $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/cmodule.h
+tklib.obj: $(OMNETPP_INCL_DIR)/ccor.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/carray.h $(OMNETPP_INCL_DIR)/cqueue.h
+tklib.obj: $(OMNETPP_INCL_DIR)/cgate.h $(OMNETPP_INCL_DIR)/csimul.h $(OMNETPP_INCL_DIR)/errmsg.h $(OMNETPP_INCL_DIR)/cmsgheap.h
+tklib.obj: $(OMNETPP_INCL_DIR)/coutvect.h tklib.h tkinsp.h ..\envir\omnetapp.h
+tklib.obj: $(OMNETPP_INCL_DIR)/cenvir.h tkapp.h
