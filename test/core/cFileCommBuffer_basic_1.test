@@ -24,8 +24,8 @@ unsigned long t9 = 2000000;
 float  t10 = 0.45;
 double t11 = 0.2543;
 long double t12 = 0.3242;
-char *t13 = "Hello";
-opp_string t14 = "checckking";
+const char *t13 = "Hello";
+opp_string t14("checckking");
 
 ev << "Packing:\n";
 PRINT_AND_PACK(t1);
