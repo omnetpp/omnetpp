@@ -1,3 +1,7 @@
+2004-05-16  Andras Varga
+
+	* opp_msgc: fixed a bug introduced in 3.0 alpha versions
+
 2004-05-15  ------ omnetpp-3.0a4 released ------
 
 2004-03-22  ------ omnetpp-3.0a3 released ------

@@ -1363,10 +1363,18 @@ sub generateDescriptorClass
                 }
             }
         } elsif ($fkind{$fieldlist[$i]} eq 'struct') {
-            if ($fisarray{$fieldlist[$i]}) {
-                print CC "        case $i: {std::stringstream out; out << pp->$getter{$fieldlist[$i]}(i); opp_strprettytrunc(resultbuf,out.str().c_str(),bufsize-1); return true;}\n";
+            if ($classtype eq 'struct') {
+                if ($fisarray{$fieldlist[$i]}) {
+                    print CC "        case $i: {std::stringstream out; out << pp->$var{$fieldlist[$i]}\[i\]; opp_strprettytrunc(resultbuf,out.str().c_str(),bufsize-1); return true;}\n";
+                } else {
+                    print CC "        case $i: {std::stringstream out; out << pp->$var{$fieldlist[$i]}; opp_strprettytrunc(resultbuf,out.str().c_str(),bufsize-1); return true;}\n";
+                }
             } else {
-                print CC "        case $i: {std::stringstream out; out << pp->$getter{$fieldlist[$i]}(); opp_strprettytrunc(resultbuf,out.str().c_str(),bufsize-1); return true;}\n";
+                if ($fisarray{$fieldlist[$i]}) {
+                    print CC "        case $i: {std::stringstream out; out << pp->$getter{$fieldlist[$i]}(i); opp_strprettytrunc(resultbuf,out.str().c_str(),bufsize-1); return true;}\n";
+                } else {
+                    print CC "        case $i: {std::stringstream out; out << pp->$getter{$fieldlist[$i]}(); opp_strprettytrunc(resultbuf,out.str().c_str(),bufsize-1); return true;}\n";
+                }
             }
         } elsif ($fkind{$fieldlist[$i]} eq 'special') {
             print CC "        case $i: return false; // TBD\n";
