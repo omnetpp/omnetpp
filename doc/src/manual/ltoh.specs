@@ -1,0 +1,134 @@
+# Standard specifications for ltoh.
+# 	R. Quong 1996, 1997
+#	quong@best.com
+
+# Comments begin with optional whitespace followed by a '#', ';', or a '!'
+# We recommend you begin all comments with a '#'.
+# Each line contains:
+#
+
+author  := Russell W. Quong
+login   := quong
+email   := quong@best.com
+url     := http://www.best.com/~quong
+htmlfile_spec := $BASE.html
+
+# Don't monkey with (don't change) the following variable.
+# It sets how much debugging information is printed out.
+=***= warnlevel := 6
+
+# The general structure of a specification is
+# :type   :latex-macro:html-begin-spec-start:html-end-spec:reserved/not-used
+#
+# type is one of the following:
+#      {} = brace delimited command, \textbf{...}
+#     {N} = command, with brace delimited N arguments, \swap{xxx}{yyy}
+#    comm = command without any parameters
+#     b/e = begin/end delimited command \begin{xxx} ... \end{xxx}
+#
+
+:{}     :\textbf:<STRONG>:</>:
+:{}	:\textsl:<EM>:</>:
+:{}	:\textem:<EM>:</>:
+:{}	:\textit:<EM>:</>:
+:{}	:\texttt:<SAMP>:</>:
+:{}	:\textsf:<EM>:</>:
+:{}	:\underline:<EM>:</>:
+:{}	:\chapter:<hr><H1><FONT color=green>:</>:
+:{}	:\section:<hr><H2><FONT color=blue>:</>:
+:{}	:\subsection:<H3><FONT color=teal>:</>:
+:{}	:\subsubsection:<H4><FONT color=teal>:</>:
+:{}	:\centerline:<P align=center>:</>:
+:{}	:\footnote:<font size=-1>[:]</>:
+:{}	:\ensuremath:<IT>:</>:
+:{2}	:\renewcommand#1#2:::
+:{1}	:\makebox[^{]*#1:#1::
+:b/e	:\begin{center}:<DIV ALIGN=center>:</>:
+:b/e	:\begin{itemize}:<UL>:</>:
+:b/e	:\begin{enumerate}:<OL>:</>:
+:b/e	:\begin{description}:<DL>:</>:
+:b/e	:\begin{multques}(\{[^\}]*\})*:<OL>:</>:
+:b/e	:\begin{document}:::
+:b/e	:\begin{tabular}:\begin{tabular}:\end{tabular}:
+:b/e	:\begin{longtable}:\begin{longtable}:\end{longtable}:
+:b/e	:\begin{quote}:<BLOCKQUOTE>:</>:
+:b/e	:\begin{verse}:<BLOCKQUOTE>:</>:
+:comm	:\ldots:...::
+:comm	:\par:<p>::
+:comm	:\LaTeX[^ \t\n]*:LaTeX::
+:comm	:\qquad:::
+@comm	@\longrightarrow@ ===&gt; @@
+:comm	:\TeX[^ \t\n]*:TeX::
+:comm	:\backslash:@BS@::
+:comm	:\hfill:::
+:comm	:\hrule:<hr>::
+:comm	:\vneg:::
+:comm	:\item([^]]+\])?:<li><strong>$1</strong>::
+:comm	:\def[^\n]+:::
+:comm	:\small:::
+:comm	:\normalsize:::
+:comm	:\footnotesize:::
+:comm	:\large:::
+:comm	:\Large:::
+:comm	:\parindent[^\n]+:::
+:comm	:\noindent[^\n]+:::
+:comm	:\setcounter[^ \t\n]*:::
+:comm	:\addtocounter[^ \t\n]*:::
+:comm	:\raggedright:::
+:comm	:\raggedleft:::
+:comm	:\vspace[*]?\{[^\}]+\}:::
+:comm	:\hspace[*]?\{[^\}]+\}:::
+:comm	:\usepackage\{[^\}]+\}:::
+:comm	:\documentclass[^ \t\n]+:::
+:comm	:\thispagestyle{.*}:::
+:comm	:\pagestyle{.*}:::
+:comm	:\newpage:::
+:comm	:\vfill:::
+
+#
+# End specifications for standard Latex command
+#
+
+:{}     :\ttt:<tt>:</tt>:
+:{}     :\tbf:<b>:</b>:
+:{}     :\mathit:<i>:</i>:
+:{}     :\tilde:&:tilde;:
+:{}     :\label:<a name=":"/>:
+:{}     :\ref:<a href="#:">[click]</a>:
+:{1}    :\index:::
+:{2}    :\href#1#2:<a href="#1">#2</a>::
+@{}     @\caption@<center><i>Figure: @</i></center>@
+:comm   :\opp:OMNeT++::
+:comm   :\textbar:|::
+:comm   :\textasciicircum:^::
+:comm   :\textbackslash:\::
+:comm   :\Delta:delta::
+:comm   :\sim:~::
+:comm   :\dots:...::
+:comm   :\cdots:..::
+:comm   :\lambda:lambda::
+:comm   :\nobreakspace:&nbsp;::
+:comm   :\hline:::
+:comm   :\tabheadcol:::
+:comm   :\linebreak:<br>::
+:comm   :\newline:<br>::
+:comm   :\tab: ::
+:comm   :\sloppy:::
+:comm   :\fpar(\[.*?\])?{(.*?)}:<tt>$2</tt>::
+:comm   :\fdef(\[.*?\])?{(.*?)}:<tt>$2</tt>::
+:comm   :\fvar(\[.*?\])?{(.*?)}:<tt>$2</tt>::
+:comm   :\fname(\[.*?\])?{(.*?)}:<tt>$2</tt>::
+:comm   :\fprog(\[.*?\])?{(.*?)}:<tt>$2</tt>::
+:comm   :\cclass(\[.*?\])?{(.*?)}:<tt>$2</tt>::
+:comm   :\fmac(\[.*?\])?{(.*?)}:<tt>$2</tt>::
+:comm   :\includegraphics(\[.*?\])?{(.*?)}:<img src="$2.gif">::
+# WRONG --  :comm   :\chapter\*{(.*?)}:<br><br><br><b>$2</b>::
+# WRONG --  :comm   :$\^(.*)\$:<sup>$1</sup>::
+# WRONG --  :comm   :\'(.):&\1acute;:
+# WRONG --  :comm   :\"(.):&\1tilde;:
+:b/e	:\begin{figure}(\[.*?\])?:::
+:b/e	:\begin{equation}:<blockquote>:</blockquote>:
+:b/e	:\begin{Verbatim}(\[.*?\])?:<pre>:</pre>:
+:b/e	:\begin{sloppypar}:<p>:</p>:
+
+
