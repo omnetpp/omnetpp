@@ -16,7 +16,11 @@
 #ifndef __PLATDEP_MISC_H
 #define __PLATDEP_MISC_H
 
+//
+// Common Unix functionality
+//
 #ifdef _MSC_VER
+
 #include <process.h>
 #include <io.h>
 #include <direct.h>
@@ -37,6 +41,9 @@
 #endif
 
 
+//
+// Getting Windows error strings
+//
 #ifdef __WIN32__
 #include <windows.h>
 #undef min
@@ -61,6 +68,65 @@ inline std::string opp_getWindowsError(DWORD errorCode)
      std::string ret((const char *)lpMsgBuf, 0, len>3 ? len-3 : len); // chop ".\r\n"
      LocalFree( lpMsgBuf );
      return ret;
+}
+#endif
+
+
+//
+// Basic platform-independent way of getting the file listing of a directory
+//
+#ifdef _MSC_VER
+
+#include <io.h>
+#include <direct.h>
+static long _handle;
+static struct _finddata_t _fdata;
+static char _dir[_MAX_FNAME];
+static char _tmpfname[_MAX_FNAME];
+inline const char *findFirstFile(const char *mask)
+{
+    _handle = _findfirst(mask, &_fdata);
+    if (_handle<0) {_findclose(_handle); return NULL;}
+    strcpy(_dir,mask);
+    char *s = _dir + strlen(_dir);
+    while (--s>=_dir)
+        if (*s=='/' || *s=='\\')
+            {*(s+1)='\0'; break;}
+    strcpy(_tmpfname,_dir);
+    strcat(_tmpfname,_fdata.name);
+    return _tmpfname;
+}
+inline const char *findNextFile()
+{
+    int done=_findnext(_handle, &_fdata);
+    if (done) {_findclose(_handle); return NULL;}
+    strcpy(_tmpfname,_dir);
+    strcat(_tmpfname,_fdata.name);
+    return _tmpfname;
+}
+inline void findCleanup()
+{
+}
+
+#else
+
+#include <glob.h>
+static glob_t globdata;
+static int globpos;
+inline const char *findFirstFile(const char *mask)
+{
+    if (glob(mask, 0, NULL, &globdata)!=0)
+        return NULL;
+    globpos = 0;
+    return globdata.gl_pathv[globpos++];
+}
+inline char *findNextFile()
+{
+    return globdata.gl_pathv[globpos++];
+}
+inline void findCleanup()
+{
+    globfree(&globdata);
 }
 #endif
 

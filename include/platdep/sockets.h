@@ -18,6 +18,9 @@
 #ifndef __PLATDEP_SOCKETS_H
 #define __PLATDEP_SOCKETS_H
 
+//
+// Platform-independent handling of sockets
+//
 
 #ifdef _MSC_VER
 //

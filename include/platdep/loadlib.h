@@ -20,6 +20,9 @@
 #include "platdep/misc.h"  // opp_getWindowsError()
 
 
+//
+// Loading a dll or so file dynamically
+//
 inline bool opp_loadlibrary(const char *libname)
 {
 #if HAVE_DLOPEN

@@ -20,6 +20,10 @@
 
 #include <math.h>  // fmod()
 
+//
+// Platform-independent gettimeofday(), and some basic timeval operations
+//
+
 #ifndef _MSC_VER
 # include <sys/time.h>
 # include <unistd.h>
@@ -55,11 +59,11 @@ inline timeval timeval_add(const timeval& a, const timeval& b)
 
 inline timeval timeval_add(const timeval& a, double b)
 {
-    double byInt;
-    double byFrac = modf(b, &byInt);
+    double bInt;
+    double bFrac = modf(b, &bInt);
     timeval res;
-    res.tv_sec = a.tv_sec + (long)byInt;
-    res.tv_usec = a.tv_usec + (long)floor(1000000.0*byFrac);
+    res.tv_sec = a.tv_sec + (long)bInt;
+    res.tv_usec = a.tv_usec + (long)floor(1000000.0*bFrac);
     if (res.tv_usec>1000000) {
         res.tv_sec++;
         res.tv_usec -= 1000000;
