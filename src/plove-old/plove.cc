@@ -113,6 +113,12 @@ int main(int argc, char *argv[])
          fprintf(stderr, "**** Error: %s\n", interp->result);
          return 1;
     }
+    if (Tcl_Eval(interp,"startPlove $argv")==TCL_ERROR)
+    {
+         fprintf(stderr, "**** Error: %s\n", interp->result);
+         return 1;
+    }
+
     Tk_MainLoop();
     return 0;
 }

@@ -35,8 +35,14 @@ plove.obj: plove.cc tclcode.cc
 tclcode.cc: *.tcl
 	..\utils\tcl2c tclcode.cc *.tcl
 
+missing-library:
+	@ echo *** No Tk installation found -- skipping Plove
+
 depend:
+	@ echo *** make depend not (yet) supported with MSVC
 
 clean:
+	del tclcode.cc *.obj plove.exe 2> nul
+	del *.ilk *.idb *.pdb 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

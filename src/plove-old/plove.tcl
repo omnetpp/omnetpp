@@ -17,15 +17,18 @@ puts {Plove - Output vector plotting tool (Gnuplot front-end), part of OMNeT++.
 See the license for distribution terms and warranty disclaimer.
 }
 
-if [catch {file readlink $argv0} link] {set link ""}
-set plove_dir [file join [file dirname $argv0] [file dirname $link]]
-source [file join $plove_dir panes.tcl]
-source [file join $plove_dir filter.tcl]
-source [file join $plove_dir filtcfg.tcl]
-source [file join $plove_dir config.tcl]
-source [file join $plove_dir doplot.tcl]
-source [file join $plove_dir widgets.tcl]
-source [file join $plove_dir help.tcl]
-source [file join $plove_dir main.tcl]
+# OMNETPP_PLOVE_DIR is set from plove.cc or plove
+if [info exist OMNETPP_PLOVE_DIR] {
 
-startPlove $argv
+   set dir $OMNETPP_PLOVE_DIR
+
+   source [file join $dir panes.tcl]
+   source [file join $dir filter.tcl]
+   source [file join $dir filtcfg.tcl]
+   source [file join $dir config.tcl]
+   source [file join $dir doplot.tcl]
+   source [file join $dir widgets.tcl]
+   source [file join $dir help.tcl]
+   source [file join $dir main.tcl]
+}
+
