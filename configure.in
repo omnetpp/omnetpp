@@ -401,11 +401,11 @@ fi
 #----------------------
 # Check for XML parsers: EXPAT and/or LIBXML
 #----------------------
-OPP_CHECK_LIB(Expat XML parser, expat.h, XML_ParserCreate(0), $EXPAT_CFLAGS, $EXPAT_LIBS, expat_ok)
 OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $LIBXML_CFLAGS, $LIBXML_LIBS, libxml_ok)
+OPP_CHECK_LIB(Expat XML parser, expat.h, XML_ParserCreate(0), $EXPAT_CFLAGS, $EXPAT_LIBS, expat_ok)
 if test $libxml_ok = no; then
-    OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $LIBXML_CFLAGS, -lxml2,
-                  libxml_ok, LIBXML_LIBS="-lxml2")
+    OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $LIBXML_CFLAGS, -lxml2 -liconv,
+                  libxml_ok, LIBXML_LIBS="-lxml2 -liconv")
 fi
 if test $libxml_ok = no; then
     # for Cygwin:
@@ -413,19 +413,20 @@ if test $libxml_ok = no; then
                   libxml_ok, LIBXML_CFLAGS="-I/usr/include/libxml2")
 fi
 
-if test $expat_ok = yes; then
-   AC_MSG_NOTICE([Using Expat for XML parsing in NEDXML.])
-   XMLPARSER=expat
-   XML_CFLAGS=$EXPAT_CFLAGS
-   XML_LIBS=$EXPAT_LIBS
-elif test $libxml_ok = yes; then
-   AC_MSG_NOTICE([Using LIBXML for XML parsing in NEDXML.])
+if test $libxml_ok = yes; then
+   AC_MSG_NOTICE([Using LibXML for XML parsing])
    XMLPARSER=libxml
    XML_CFLAGS=$LIBXML_CFLAGS
    XML_LIBS=$LIBXML_LIBS
+elif test $expat_ok = yes; then
+   AC_MSG_NOTICE([Using Expat for XML parsing])
+   AC_MSG_WARN([DTD validation is not supported with Expat, only with LibXML!])
+   XMLPARSER=expat
+   XML_CFLAGS=$EXPAT_CFLAGS
+   XML_LIBS=$EXPAT_LIBS
 else
    XMLPARSER=none
-   AC_MSG_WARN([No suitable XML parser: nedtool and NEDXML lib won't support XML input])
+   AC_MSG_WARN([No suitable XML parser found: no support for XML input])
 fi
 
 #----------------------
