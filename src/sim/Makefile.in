@@ -24,7 +24,7 @@ SO_LIB_SUFFIX=@SO_LIB_SUFFIX@
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -Istd -Ipvm -DBUILDING_SIM
+COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I. -Istd -Ipvm -DBUILDING_SIM
 
 CPPOBJS= ccor.o ctypes.o carray.o cgate.o cmodule.o csimul.o cobject.o cpar.o \
 	 cstat.o chist.o cdensity.o cvarhist.o cpsquare.o cksplit.o \
