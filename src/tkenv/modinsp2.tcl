@@ -775,7 +775,8 @@ proc graphmodwin_do_animate_senddirect {win x1 y1 x2 y2 msgptr msgname msgkind m
     set c $win.c
     
     if [opp_getsimoption senddirect_arrows] {
-        set arrow [$c create line $x1 $y1 $x2 $y2 -tags {senddirect} -dash {.} -arrow last -fill black -width 1]
+        #$c create line $x1 $y1 $x2 $y2 -tags {senddirect} -arrow last -fill gray
+        $c create line $x1 $y1 $x2 $y2 -tags {senddirect} -arrow last -fill blue -dash {.}
         graphmodwin_do_animate $win $x1 $y1 $x2 $y2 $msgptr $msgname $msgkind "thru"
         #$c delete $arrow -- this will come in _cleanup
     } else {    
@@ -875,8 +876,8 @@ proc graphmodwin_do_draw_methodcall {win x1 y1 x2 y2 methodlabel} {
     global animdelay
 
     set c $win.c
-    #set arrow [$c create line $x1 $y1 $x2 $y2 -tags {methodcall} -width 3 -arrow last -arrowshape {15 20 6} -fill #808080]
-    set arrow [$c create line $x1 $y1 $x2 $y2 -tags {methodcall} -width 2 -arrow last -fill red]
+    #set arrow [$c create line $x1 $y1 $x2 $y2 -tags {methodcall} -width 2 -arrow last -arrowshape {15 20 6} -fill #808080]
+    set arrow [$c create line $x1 $y1 $x2 $y2 -tags {methodcall}  -dash {-} -arrow last -fill red]
 
     set x [expr ($x1+$x2)/2]
     set y [expr ($y1+$y2)/2]
@@ -916,7 +917,11 @@ proc graphmodwin_draw_nexteventmarker {c modptr type} {
     set x2 [expr [lindex $src 2]+2]
     set y2 [expr [lindex $src 3]+2]
     # $type==1 compound module, $type==2 simple module
-    $c create rect $x1 $y1 $x2 $y2 -tags {nexteventmarker} -outline red -width $type
+    if {$type==1} {
+        $c create rect $x1 $y1 $x2 $y2 -tags {nexteventmarker} -outline red -dash {.}
+    } else {
+        $c create rect $x1 $y1 $x2 $y2 -tags {nexteventmarker} -outline red 
+    }    
 }
 
 proc calibrate_animdelay {} {
