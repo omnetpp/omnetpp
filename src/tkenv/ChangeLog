@@ -15,6 +15,7 @@ TODO: treeview into each object inspector!
 TODO: BUSY cursor!!! at network setup, callfinish, etc
 TODO: needed function: "express run until next event in this module"
 TODO: needed new mode: express run for other modules, fast/normal for this module
+FIXME: container inspector listboxes: always prints "0 objects"
 
 2004-04-20  Andras Varga
 
