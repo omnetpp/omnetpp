@@ -1,0 +1,59 @@
+%description:
+Check xmldoc(): no such element in XML document
+
+%file: {}.xml
+
+<foo id="1">
+    <foo id="2" color="red">one</foo>
+    <foo id="3">
+        <bar id="3" color="yellow">
+            <baz id="5" color="green" weight="heavy">six</baz>
+        </bar>
+    </foo>
+</foo>
+
+%global:
+
+#ifdef _MSC_VER
+#pragma warning(disable:4786)
+#endif
+
+
+%file: {}.ned
+
+simple {Simple}
+    parameters:
+        xmlconfig: xml;
+endsimple
+
+network {Net} : {Simple}
+    parameters:
+        xmlconfig = xmldoc("{}.xml","foo/nothing");
+endnetwork
+
+%file: {}.cc
+
+#include <string.h>
+#include <omnetpp.h>
+
+class {Simple} : public cSimpleModule
+{
+    Module_Class_Members({Simple},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Simple});
+
+void {Simple}::activity()
+{
+}
+
+%inifile: {}.ini
+[General]
+network={Net}
+
+%exitcode: 1
+
+%contains: stdout
+element not found.
+

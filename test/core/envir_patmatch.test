@@ -1,0 +1,339 @@
+%description:
+Tests pattern matcher class used e.g. for ini file wildcard resolution.
+
+%global:
+
+#ifdef _MSC_VER
+#pragma warning(disable:4786)
+#endif
+
+#include "../../../src/envir/patmatch.h"
+
+// global vars
+static bool dottedpath;
+static bool fullstring;
+static bool casesensitive;
+
+static void match(const char *pattern, const char *line, bool expectedresult)
+{
+    cPatternMatcher pat;
+    pat.setPattern(pattern, dottedpath, fullstring, casesensitive);
+    bool result = pat.matches(line);
+    //pat.dump();
+    ev.printf("%s %s %s: %s\n", pattern, (expectedresult?"~":"!~"), line, (result==expectedresult?"ok":"FAIL"));
+}
+
+
+%activity:
+//__asm int 3;
+
+dottedpath = true;
+fullstring = true;
+casesensitive = true;
+
+//
+// string literals: basic
+//
+match("a", "a", true);
+match("alma", "alma", true);
+match("a", "b", false);
+match("a", "aa", false);
+match("aa", "a", false);
+match("alma", "what?", false);
+// case
+match("a", "A", false);
+match("A", "a", false);
+match("A", "A", true);
+// null string
+match("", "", true);
+match("a", "", false);
+match("", "a", false);
+// backslash
+match("\\a\\a\\a", "aaa", true);
+match("a\\%aa", "a%aa", true);
+match("a\\?\\[a-z\\]\\*x\\*\\*", "a?[a-z]*x**", true);
+// all ascii chars
+match(" !\"#$%&'()*+,-./0123456789:;<=>\\?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\\\]^_`abcdefghijklmnopqrstuvwxyz\\{|\\}~",
+      " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~",
+      true);
+
+//
+// "?" mark
+//
+match("a?ma", "alma", true);
+match("a?ma", "a!ma", true);
+match("a?ma", "ama", false);
+match("a?ma", "allma", false);
+// at beginning of string
+match("?ma", "lma", true);
+match("?ma", "!ma", true);
+match("?ma", "ma", false);
+match("?ma", "llma", false);
+// at end of string
+match("a?", "al", true);
+match("a?", "a!", true);
+match("a?", "a", false);
+match("a?", "all", false);
+// by itself
+match("?", "x", true);
+match("?", "\\", true);
+match("?", "7", true);
+match("?", "?", true);
+// doesn't match '.', '[', ']' in dottedpath mode
+match("?", ".", false);
+match("?", "[", false);
+match("?", "]", false);
+// several ones
+match("??aa?b?", "!!aa!b!", true);
+match("??aa?b?", "!!aa!b", false);
+
+//
+// sets
+//
+// note: {} or {ace} would be replaced by opp_test, so write it as 
+// ...{" "}... (exploiting C/C++ compile-time string concatenation)
+//
+match("{c-e}", "c", true);
+match("{c-e}", "d", true);
+match("{c-e}", "e", true);
+match("{c-e}", "-", false);
+match("{c-e}", "b", false);
+match("{c-e}", "f", false);
+// several ranges
+match("{c-e5-7}", "c", true);
+match("{c-e5-7}", "5", true);
+match("{c-e5-7}", "a", false);
+match("{c-e5-7}", "4", false);
+match("{c-e5-7}", "8", false);
+match("{c-e5-7}", "-", false);
+// char enumeration
+match("{" "ace}", "a", true);
+match("{" "ace}", "c", true);
+match("{" "ace}", "e", true);
+match("{" "ace}", "b", false);
+// "-" in the set
+match("{-ace}", "-", true);
+match("{-ace}", "a", true);
+match("{-ace}", "c", true);
+match("{-ace}", "b", false);
+match("{-ace0-59}", "0", true);
+match("{-ace0-59}", "3", true);
+match("{-ace0-59}", "9", true);
+match("{-ace0-59}", "-", true);
+match("{-ace0-59}", "e", true);
+match("{-ace0-59}", "b", false);
+match("{-ace0-59}", "8", false);
+// "}" in the set (must be first)
+match("{" "}ace}", "}", true);
+match("{" "}ace}", "a", true);
+match("{" "}ace}", "b", false);
+// special chars (backslash doesn't quote here)
+match("{-*\\?[]{" "}", "-", true); 
+match("{-*\\?[]{" "}", "*", true);
+match("{-*\\?[]{" "}", "\\", true);
+match("{-*\\?[]{" "}", "?", true);
+match("{-*\\?[]{" "}", "[", true);
+match("{-*\\?[]{" "}", "]", true);
+match("{-*\\?[]{" "}", "{", true);
+match("{-*\\?[]{" "}", "a", false);
+match("{-*\\?[]{" "}", "!", false);
+
+//
+// negated sets (test cases derived from set tests)
+//
+match("{^c-e}", "c", false);
+match("{^c-e}", "d", false);
+match("{^c-e}", "e", false);
+match("{^c-e}", "-", true);
+match("{^c-e}", "b", true);
+match("{^c-e}", "f", true);
+// several ranges
+match("{^c-e5-7}", "c", false);
+match("{^c-e5-7}", "5", false);
+match("{^c-e5-7}", "a", true);
+match("{^c-e5-7}", "4", true);
+match("{^c-e5-7}", "8", true);
+match("{^c-e5-7}", "-", true);
+// char enumeration
+match("{^ace}", "a", false);
+match("{^ace}", "c", false);
+match("{^ace}", "e", false);
+match("{^ace}", "b", true);
+// "-" in the set
+match("{^-ace}", "-", false);
+match("{^-ace}", "a", false);
+match("{^-ace}", "c", false);
+match("{^-ace}", "b", true);
+match("{^-ace0-59}", "0", false);
+match("{^-ace0-59}", "3", false);
+match("{^-ace0-59}", "9", false);
+match("{^-ace0-59}", "-", false);
+match("{^-ace0-59}", "e", false);
+match("{^-ace0-59}", "b", true);
+match("{^-ace0-59}", "8", true);
+// "}" in the set (must be first)
+match("{^}ace}", "}", false);
+match("{^}ace}", "a", false);
+match("{^}ace}", "b", true);
+// special chars (backslash doesn't quote here)
+match("{^-*\\?[]{" "}", "-", false);
+match("{^-*\\?[]{" "}", "*", false);
+match("{^-*\\?[]{" "}", "\\", false);
+match("{^-*\\?[]{" "}", "?", false);
+match("{^-*\\?[]{" "}", "[", false);
+match("{^-*\\?[]{" "}", "]", false);
+match("{^-*\\?[]{" "}", "{", false);
+match("{^-*\\?[]{" "}", "a", true);
+match("{^-*\\?[]{" "}", "!", true);
+
+//
+// "*"
+//
+// in itself
+match("*", "", true);
+match("*", "$#%$%#$", true);
+match("*", "%^${12!\\", true);
+// doesn't match '.', '[', ']'
+match("*", ".", false);
+match("*", "[", false);
+match("*", "]", false);
+// mid-pattern
+match("al*ma", "alma", true);
+match("al*ma", "al!!!ma", true);
+match("al*ma", "ala", false);
+match("al*ma", "ama", false);
+// at start of pattern
+match("*foo", "foo", true);
+match("*foo", "!!!foo", true);
+match("*foo", "oo", false);
+// at end of pattern
+match("foo*", "foo", true);
+match("foo*", "foo!!!", true);
+match("foo*", "fo", false);
+// several ones
+match("al*m*a", "allllllma", true);
+match("al*m*a", "alllllmla", true);
+match("al*m*a", "allmllmla", true);
+match("al*m*a", "almla", true);
+match("al*m*a", "alma", true);
+match("al**m*a", "alma", true);
+
+//
+// '**'
+//
+//...
+
+//
+// numeric range
+//
+// [n..m] syntax
+match("node[53..157]", "node[53]", true);
+match("node[53..157]", "node[157]", true);
+match("node[53..157]", "node[99]", true);
+match("node[53..157]", "node[6]", false);
+match("node[53..157]", "node[40]", false);
+match("node[53..157]", "node[52]", false);
+match("node[53..157]", "node[158]", false);
+match("node[53..157]", "node[]", false);
+match("node[53..157]", "node[ ]", false);
+// [n..]
+match("node[53..]", "node[53]", true);
+match("node[53..]", "node[99]", true);
+match("node[53..]", "node[52]", false);
+match("node[53..]", "node[9]", false);
+match("node[53..]", "node[]", false);
+match("node[53..]", "node[ ]", false);
+// [..m]
+match("node[..157]", "node[157]", true);
+match("node[..157]", "node[15]", true);
+match("node[..157]", "node[0]", true);
+match("node[..157]", "node[158]", false);
+match("node[..157]", "node[11111]", false);
+match("node[..157]", "node[]", false);
+match("node[..157]", "node[ ]", false);
+// {n..m} syntax
+match("node-{53..157}", "node-53", true);
+match("node-{53..157}", "node-157", true);
+match("node-{53..157}", "node-99", true);
+match("node-{53..157}", "node-6", false);
+match("node-{53..157}", "node-40", false);
+match("node-{53..157}", "node-52", false);
+match("node-{53..157}", "node-158", false);
+match("node-{53..157}", "node- ", false);
+// {n..}
+match("node-{53..}", "node-53", true);
+match("node-{53..}", "node-99", true);
+match("node-{53..}", "node-52", false);
+match("node-{53..}", "node-9", false);
+match("node-{53..}", "node-", false);
+match("node-{53..}", "node- ", false);
+// {..m}
+match("node-{..157}", "node-157", true);
+match("node-{..157}", "node-15", true);
+match("node-{..157}", "node-0", true);
+match("node-{..157}", "node-158", false);
+match("node-{..157}", "node-11111", false);
+match("node-{..157}", "node-", false);
+match("node-{..157}", "node- ", false);
+// intermixed with other stuff
+match("node{2..13}[53..157][0..1]{2-3}x", "node2[53][0]3x", true);
+match("node{2..13}[53..157][0..1]{2-3}x", "node13[157][1]2x", true);
+match("node{2..13}[53..157][0..1]{2-3}x", "node13[157][1]x", false);
+match("node{2..13}[53..157][0..1]{2-3}x", "node13[157][3]2x", false);
+
+//
+// case insensitive match
+//
+dottedpath = true;
+fullstring = true;
+casesensitive = false;
+
+// literal string
+match("alma", "alma", true);
+match("alma", "ALMA", true);
+match("ALMA", "alma", true);
+match("ALMA", "ALMA", true);
+match("AlMa", "aLmA", true);
+// character range
+match("a{a-m}ma", "alma", true);
+match("a{a-m}ma", "aLma", true);
+match("a{A-M}ma", "alma", true);
+match("a{A-M}ma", "aLma", true);
+match("a{a-m}ma", "azma", false);
+match("a{a-m}ma", "aZma", false);
+match("a{A-M}ma", "azma", false);
+match("a{A-M}ma", "aZma", false);
+
+//
+// substring match
+//
+dottedpath = true;
+fullstring = false;
+casesensitive = true;
+
+// literal string
+match("ate", "whatever", true);
+
+//
+// dottedpath off ('*' and '?' matches any character)
+//
+dottedpath = false;
+fullstring = true;
+casesensitive = true;
+
+// test '*', '?' and '**'
+match("*", ".", true);
+match("*", "]", true);
+match("*", "[", true);
+match("?", ".", true);
+match("?", "]", true);
+match("?", "[", true);
+match("**", ".", true);
+match("**", "]", true);
+match("**", "[", true);
+
+%exitcode: 0
+
+%not-contains: stdout
+FAIL
+

@@ -1,0 +1,68 @@
+%description:
+Check xmldoc("filename.xml") and xmldoc("filename.xml", "pathexpr")
+functionality in NED assignments
+
+%file: {}.xml
+
+<foo id="1">
+    <foo id="2" color="red">one</foo>
+    <foo id="3">
+        <bar id="3" color="yellow">
+            <baz id="5" color="green" weight="heavy">six</baz>
+        </bar>
+    </foo>
+</foo>
+
+%global:
+
+#ifdef _MSC_VER
+#pragma warning(disable:4786)
+#endif
+
+
+%file: {}.ned
+
+simple {Simple}
+    parameters:
+        xmlconfig1: xml,
+        xmlconfig2: xml;
+endsimple
+
+network {Net} : {Simple}
+    parameters:
+        xmlconfig1 = xmldoc("{}.xml"),
+        xmlconfig2 = xmldoc("{}.xml","foo/foo[1]//*[@color='green']");
+endnetwork
+
+%file: {}.cc
+
+#include <string.h>
+#include <omnetpp.h>
+
+class {Simple} : public cSimpleModule
+{
+    Module_Class_Members({Simple},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Simple});
+
+void {Simple}::activity()
+{
+    cXMLElement *node1 = par("xmlconfig1");
+    ASSERT(node1);
+    ev << node1->getTagName() << " at " << node1->getSourceLocation() << endl;
+
+    cXMLElement *node2 = par("xmlconfig2");
+    ASSERT(node2);
+    ev << node2->getTagName() << " at " << node2->getSourceLocation() << endl;
+}
+
+
+%inifile: {}.ini
+[General]
+network={Net}
+
+%contains: stdout
+foo at {}.xml:2
+baz at {}.xml:6
