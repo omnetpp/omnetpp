@@ -1,3 +1,9 @@
+2004-12-22  Andras Varga
+	
+	* chist.h: cLongHistogram: if number of cells is not specified,
+	it will be determined automatically from the range (more info in class
+	doc)
+
 2004-12-19  Andras Varga
 
 	* cstruct.h: added baseclassname, baseclassdesc

@@ -151,7 +151,7 @@ class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
     /**
      * Constructor.
      */
-    explicit cEqdHistogramBase(const char *name=NULL, int numcells=10);
+    explicit cEqdHistogramBase(const char *name=NULL, int numcells=-1);
 
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
@@ -232,20 +232,53 @@ class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
 
 /**
  * Equidistant histogram for integers. cLongHistogram is derived from
- * cEqdHistogramBase which contains most of the functionality.
+ * cEqdHistogramBase, which contains most of the functionality.
  *
- * The histogram is set up in the following way:
- * <UL>
- *   <LI> the cell size is always integer: 1, 2, 3 etc.
- *   <LI> <I>rangemin</I>, <I>rangemax</I> and the cell boundaries are
- *        at halves. For example 1.5, 10.5. This is done so to prevent
- *        misunderstandings.
- *   <LI> the number of cells is exactly <I>num_cells</I>
- *   <LI> the <I>range_ext_factor</I> is also kept. The actual histogram
- *        range will be: (<I>min</I>, <I>max</I>) extended
- *        <I>range_ext_factor</I> times and rounded up to the nearest integer
- *        multiple of <I>num_cells</I>.
- * </UL>
+ * The histogram will be set up in the following way:
+ *   - the cell size is - by definition - always integer. Cell boundaries
+ *     are at halves (for example 9.5, 10.5);
+ *   - the number of cells is exactly <i>num_cells</i>, if specified
+ *     using setNumCells() or as an argument to the constructor;
+ *   - if the number of cells is not specified, there will be one cell
+ *     for every integer in the histogram range, but maximum 10,000 cells.
+ *     Above 10,000, a >1 integer cell size will be chosen so that
+ *     <i>num_cells</i> gets below 10,000.
+ *   - the histogram range can be specified explicitly (via setRange()),
+ *     or can be determined automatically, after collecting a number of
+ *     initial observations (setRangeAuto(), setRangeAutoUpper(),
+ *     setRangeAutoLower()).
+ *   - the number of inition observations to collect for range determination
+ *     can be set via setNumFirstVals().
+ *   - if both <i>num_cells</i> and a histogram range (explicit or auto) was
+ *     specified, the histogram range will be inflated to be an integer
+ *     multiple of <i>num_cells</i> (so that cell size can be integer).
+ *
+ * Examples:
+ *
+ * This histogram will determine the range from the first few observations,
+ * then it will try to keep maintain 1 cell for each integer value in the
+ * range. If there would be more than 10,000 cells that way, it will make
+ * 2 or 3 or 4 etc. wide cells to reduce the number of cells below 10,000.
+ *
+ * \code
+ * cLongHistogram hist("hist");
+ * \endcode
+ *
+ * The following histogram will maintain one cell for every integer 0,1,...500.
+ *
+ * \code
+ * cLongHistogram hist("hist");
+ * hist.setRange(0,500);
+ * \endcode
+ *
+ * The next one will set up 100 cells, and the range will be auto-determined from
+ * the first few observations. If the range is <100 wide, every cell will be
+ * 1 wide; with the range width in 100..200, cells will be 2 wide, etc.
+ *
+ * \code
+ * cLongHistogram hist("hist");
+ * hist.setNumCells(100);
+ * \endcode
  *
  * @ingroup Statistics
  */
@@ -264,7 +297,7 @@ class SIM_API cLongHistogram : public cEqdHistogramBase
     /**
      * Constructor.
      */
-    explicit cLongHistogram(const char *name=NULL, int numcells=10);
+    explicit cLongHistogram(const char *name=NULL, int numcells=-1);
 
     /**
      * Destructor.
@@ -290,7 +323,7 @@ class SIM_API cLongHistogram : public cEqdHistogramBase
   protected:
     /**
      * Called internally by transform(), this method should determine and set up
-     * the histogram range
+     * the histogram range.
      */
     virtual void setupRange();
 
@@ -320,10 +353,62 @@ class SIM_API cLongHistogram : public cEqdHistogramBase
  * Equidistant histogram for doubles. cDoubleHistogram is derived from
  * cEqdHistogramBase which contains most of the functionality.
  *
+ *   - the number of cells is exactly <i>num_cells</i>, if specified
+ *     using setNumCells() or as an argument to the constructor;
+ *   - if the number of cells is not specified, it will default to 10.
+ *   - the histogram range can be specified explicitly (via setRange()),
+ *     or can be determined automatically, after collecting a number of
+ *     initial observations (setRangeAuto(), setRangeAutoUpper(),
+ *     setRangeAutoLower()).
+ *   - the number of inition observations to collect for range determination
+ *     can be set via setNumFirstVals().
+ *
+ * Examples:
+ *
+ * The following histogram will determine the range from the first few
+ * observations, then it set up 10 equal-size cells on it:
+ *
+ * \code
+ * cDoubleHistogram hist("hist");
+ * \endcode
+ *
+ * This one will create 30 cells, after determining the range from the
+ * first few observations:
+ *
+ * \code
+ * cDoubleHistogram hist("hist");
+ * hist.setNumCells(30);
+ * \endcode
+ *
+ * To explicitly control the cells, you can use the following:
+ *
+ * \code
+ * cDoubleHistogram hist("hist");
+ * hist.setRange(0,3);
+ * hist.setNumCells(30);
+ * \endcode
+ *
+ * If you only know that the numbers will be nonnegative, but you don't
+ * know their ranges, you can use the following (which will set up 20
+ * cells, between 0 and an auto-determined limit):
+ *
+ * \code
+ * cDoubleHistogram hist("hist");
+ * hist.setRangeAutoUpper(0);
+ * hist.setNumCells(20);
+ * \endcode
+ *
  * @ingroup Statistics
  */
 class SIM_API cDoubleHistogram : public cEqdHistogramBase
 {
+  protected:
+    /**
+     * Called internally by transform(), this method should determine and set up
+     * the histogram range. It also calculates the cell size.
+     */
+    virtual void setupRange();
+
   public:
     /** @name Constructors, destructor, assignment. */
     //@{
@@ -337,7 +422,7 @@ class SIM_API cDoubleHistogram : public cEqdHistogramBase
     /**
      * Constructor.
      */
-    explicit cDoubleHistogram(const char *name=NULL, int numcells=10);
+    explicit cDoubleHistogram(const char *name=NULL, int numcells=-1);
 
     /**
      * Destructor.
