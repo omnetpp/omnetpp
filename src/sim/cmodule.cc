@@ -54,6 +54,7 @@ cModule::cModule(const cModule& mod) :
     //take(&paramv);
 
     prevp = nextp = firstsubmodp = lastsubmodp = NULL;
+    mod_id = -1;
     idx=0; vectsize=-1;
     fullname = NULL;
 
@@ -75,6 +76,7 @@ cModule::cModule(const char *name, cModule *parentmod) :
     //take(&gatev);
     //take(&paramv);
 
+    mod_id = -1;
     idx=0; vectsize=-1;
     fullname = NULL;
 
@@ -129,7 +131,8 @@ cModule::~cModule()
     }
 
     // deregister ourselves
-    simulation.deregisterModule(this);
+    if (mod_id!=-1)
+        simulation.deregisterModule(this);
     if (parentModule())
         parentModule()->removeSubmodule(this);
 

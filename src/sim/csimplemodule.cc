@@ -157,8 +157,8 @@ cSimpleModule::cSimpleModule(const char *name, cModule *parentmod, unsigned stks
        coroutine = new cCoroutine;
        if (!coroutine->setup(cSimpleModule::activate, this, stksize+ev.extraStackForEnvir()))
            throw new cException("Cannot create coroutine with %d+%d bytes of stack space for module `%s' -- "
-                                "see Manual for hints to increase total stack size, or rewrite modules "
-                                "to use handleMessage() instead of activity()",
+                                "see Manual for hints on how to increase the number of coroutines that can be created, "
+                                "or rewrite modules to use handleMessage() instead of activity()",
                                 stksize,ev.extraStackForEnvir(),fullPath().c_str());
     }
 }
