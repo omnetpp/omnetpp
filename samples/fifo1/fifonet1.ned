@@ -25,7 +25,7 @@ module FifoNet1
         fifo: FF1BitFifo; 
             parameters: 
                 bits_per_sec = input; 
-            display: "p=164,78;i=queue";
+            display: "p=164,78;i=queue;q=queue";
         sink: FF1Sink; 
             display: "p=244,78;i=sink";
     connections: 
