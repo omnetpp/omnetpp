@@ -353,8 +353,10 @@ int createTkCommands( Tcl_Interp *interp, OmnetTclCommand *commands)
 {
     for(;commands->namestr!=NULL; commands++)
     {
-        Tcl_CreateCommand( interp, commands->namestr, commands->func,
-                           (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
+        Tcl_CreateCommand( interp, commands->namestr, 
+                                   (Tcl_CmdProc *)commands->func,
+                                   (ClientData)NULL, 
+                                   (Tcl_CmdDeleteProc *)NULL);
     }
     return TCL_OK;
 }

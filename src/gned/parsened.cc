@@ -143,14 +143,14 @@ void NEDParser::set(int key, char *attr, long value)
     char tmp[64], tmp2[64];
     sprintf(tmp, "%d,%s",key,attr);
     sprintf(tmp2,"%ld",value);
-    Tcl_SetVar2(interp,tmp_ned,tmp,tmp2,TCL_GLOBAL_ONLY);
+    Tcl_SetVar2(interp,const_cast<char *>(tmp_ned),tmp,tmp2,TCL_GLOBAL_ONLY);
 }
 
 void NEDParser::set(int key, char *attr, char *value)
 {
     char tmp[64];
     sprintf(tmp,"%d,%s",key,attr);
-    Tcl_SetVar2(interp,tmp_ned,tmp,value,TCL_GLOBAL_ONLY);
+    Tcl_SetVar2(interp,const_cast<char *>(tmp_ned),tmp,value,TCL_GLOBAL_ONLY);
 }
 
 void NEDParser::set(int key, char *attr, YYLTYPE valuepos)
@@ -162,7 +162,7 @@ const char *NEDParser::get(int key, char *attr)
 {
     char tmp[64];
     sprintf(tmp,"%d,%s",key,attr);
-    return Tcl_GetVar2(interp,tmp_ned,tmp,TCL_GLOBAL_ONLY);
+    return Tcl_GetVar2(interp,const_cast<char *>(tmp_ned),tmp,TCL_GLOBAL_ONLY);
 }
 
 void NEDParser::swap(int key, char *attr1, char *attr2)
@@ -171,13 +171,13 @@ void NEDParser::swap(int key, char *attr1, char *attr2)
     sprintf(tmp1, "%d,%s",key,attr1);
     sprintf(tmp2, "%d,%s",key,attr2);
 
-    const char *oldv1 = Tcl_GetVar2(interp,tmp_ned,tmp1,TCL_GLOBAL_ONLY);
-    const char *oldv2 = Tcl_GetVar2(interp,tmp_ned,tmp2,TCL_GLOBAL_ONLY);
+    const char *oldv1 = Tcl_GetVar2(interp,const_cast<char *>(tmp_ned),tmp1,TCL_GLOBAL_ONLY);
+    const char *oldv2 = Tcl_GetVar2(interp,const_cast<char *>(tmp_ned),tmp2,TCL_GLOBAL_ONLY);
     assert(oldv1!=0 && oldv2!=0);
 
     oldv1 = storeInTempBuf(oldv1);
-    Tcl_SetVar2(interp,tmp_ned,tmp1,oldv2,TCL_GLOBAL_ONLY);
-    Tcl_SetVar2(interp,tmp_ned,tmp2,oldv1,TCL_GLOBAL_ONLY);
+    Tcl_SetVar2(interp,const_cast<char *>(tmp_ned),tmp1,const_cast<char *>(oldv2),TCL_GLOBAL_ONLY);
+    Tcl_SetVar2(interp,const_cast<char *>(tmp_ned),tmp2,const_cast<char *>(oldv1),TCL_GLOBAL_ONLY);
 }
 
 //-----------
@@ -206,7 +206,7 @@ static void _setVar(Tcl_Interp *interp, const char *array, int key, char *attr, 
 {
     char tmp[64];
     sprintf(tmp,"%d,%s",key,attr);
-    Tcl_SetVar2(interp,array,tmp,value,TCL_GLOBAL_ONLY);
+    Tcl_SetVar2(interp,const_cast<char *>(array),tmp,value,TCL_GLOBAL_ONLY);
 }
 
 void NEDParser::error(char type, char *msg, int line, int col)

@@ -300,7 +300,7 @@ int getIniSectionNames_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    const char **sections = new const char *[n];
    for (int i=0; i<n; i++)
        sections[i] = inifile->getSectionName(i);
-   char *buf = Tcl_Merge(n,sections);
+   char *buf = Tcl_Merge(n,const_cast<char **>(sections));
    delete [] sections;
    Tcl_SetResult(interp, buf, TCL_DYNAMIC);
    return TCL_OK;
