@@ -22,7 +22,7 @@ proc create_objinspector {name geom} {
 
     set nb $w.nb
     notebook $nb
-    $nb config -width 460 -height 300
+    $nb config -width 460 -height 260
     pack $nb -expand 1 -fill both
 
     set fieldspage_needed [opp_hasdescriptor $w]
@@ -85,7 +85,7 @@ proc create_messageinspector {name geom} {
 
     set nb $w.nb
     notebook $nb
-    $nb config -width 460 -height 300
+    $nb config -width 460 -height 260
     pack $nb -expand 1 -fill both
 
     set fieldspage_needed [opp_hasdescriptor $w]
