@@ -197,6 +197,7 @@ class SIM_API cChannel : public cObject
  *
  * @ingroup SimCore
  */
+// FIXME we could probably find a better name for this
 class SIM_API cSimpleChannel : public cChannel
 {
   private:
