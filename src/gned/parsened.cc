@@ -211,7 +211,7 @@ static void _setVar(Tcl_Interp *interp, const char *array, int key, char *attr, 
 
 void NEDParser::error(char type, char *msg, int line, int col)
 {
-    printf("DBG: %c %s, at %d:%d\n", type, msg, line, col);
+    //printf("DBG: %c %s, at %d:%d\n", type, msg, line, col);
 
     char buf[32];
     _setVar(interp, tmp_errors, num_errors, "type",

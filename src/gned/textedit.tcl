@@ -63,7 +63,7 @@ proc configureEditor {w} {
 # Should be used like this:
 #   bind $w <Key> {after idle {syntaxHighlight %W 1.0 end}}
 #
-proc syntaxHighlight {w startpos endpos} {
+proc syntaxHighlight {w {startpos {1.0}} {endpos end}} {
 
     #
     # BUG: if the end of a string constant falls into a comment,

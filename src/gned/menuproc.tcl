@@ -335,6 +335,7 @@ proc editCut {} {
        nedClipboard:cut
    } else {
        tk_textCut $canvas($canv_id,textedit) 
+       syntaxHighlight $canvas($canv_id,textedit)
    }
 }
 
@@ -357,6 +358,7 @@ proc editPaste {} {
        nedClipboard:paste
    } else {
        tk_textPaste $canvas($canv_id,textedit) 
+       syntaxHighlight $canvas($canv_id,textedit)
    }    
 }
 
