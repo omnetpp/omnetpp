@@ -44,7 +44,7 @@
 //
 // Getting Windows error strings
 //
-#ifdef __WIN32__
+#ifdef _WIN32
 #include <windows.h>
 #undef min
 #undef max
