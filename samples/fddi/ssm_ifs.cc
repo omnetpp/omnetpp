@@ -114,7 +114,7 @@ void SSM_OIF_by_time::activity()
         // from <time> to <time> step <time>
     // where time is processed by the strToSimtime(char *) function of OMNeT++
     char *kind, simtime[50];
-    if ( kind = strstr(line,"every") )
+    if ( (kind=strstr(line,"every")) != NULL )
       { // do the requested command at <time>, 2*<time>, 3*<time>, etc.
       sscanf(kind+5,"%[0-9hmsun ]",simtime);
       double every = strToSimtime(simtime);
@@ -130,7 +130,7 @@ void SSM_OIF_by_time::activity()
       m->addPar( *new cPar("finish", 'D', -1.0) ); // never finish
       scheduleAt(every,m);
       }
-    else if ( kind = strstr(line,"at") )
+    else if ( (kind=strstr(line,"at")) != NULL )
       { // do the requested command at <time>
       sscanf(kind+2,"%[0-9hmsun ]",simtime);
       double at = strToSimtime(simtime);
@@ -145,7 +145,7 @@ void SSM_OIF_by_time::activity()
       m->addPar( *new cPar("repeat", 'D', 0.0) );
       scheduleAt(at,m);
       }
-    else if ( kind = strstr(line, "from") )
+    else if ( (kind=strstr(line, "from")) != NULL )
       { // do the requested command at from, from+i*step <= to, i= 1, 2, 3, ...
       sscanf(kind+4,"%[0-9hmsun ]",simtime);
       double from = strToSimtime(simtime);

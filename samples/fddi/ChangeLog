@@ -189,4 +189,5 @@ Oct 10, 1999
   - fddi_net.ned split to fddi_nodes.ned, fddi_rings.ned, fddi_nets.ned
   - proper README written
 Oct 17, 1999
-  - Computer renamed to FDDIStation (clashed with Token's Computer)
+  - Computer renamed to FDDIStation (clashed with Token's Computer when
+    linking all sample simulations into one executable)
