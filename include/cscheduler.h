@@ -46,7 +46,7 @@ class cMessage;
  * @ingroup EnvirExtensions
  * @ingroup Internals
  */
-class cScheduler : public cPolymorphic
+class SIM_API cScheduler : public cPolymorphic
 {
   protected:
     cSimulation *sim;
@@ -98,7 +98,7 @@ class cScheduler : public cPolymorphic
  *
  * @ingroup Internals
  */
-class cSequentialScheduler : public cScheduler
+class SIM_API cSequentialScheduler : public cScheduler
 {
   public:
     /**
@@ -142,7 +142,7 @@ class cSequentialScheduler : public cScheduler
  *
  * @ingroup Internals
  */
-class cRealTimeScheduler : public cScheduler
+class SIM_API cRealTimeScheduler : public cScheduler
 {
   protected:
     // configuration:

@@ -352,7 +352,7 @@ const char *opp_typename(const std::type_info& t);
  * @see cSimulation::contextModule(), cSimulation::setContextModule()
  * @ingroup Internals
  */
-class cContextSwitcher
+class SIM_API cContextSwitcher
 {
   private:
     cModule *callerContext;
@@ -395,9 +395,9 @@ inline void opp_appendindex(char *s, unsigned int i)
 {
    while (*s) s++;
    *s++ = '[';
-   if (i<10)  
+   if (i<10)
        {*s++ = '0'+i; *s++=']'; *s=0; return;}
-   if (i<100) 
+   if (i<100)
        {*s++ = '0'+i/10; *s++='0'+i%10; *s++=']'; *s=0; return;}
    sprintf(s,"%d]",i);
 }

@@ -57,7 +57,7 @@
  *
  * @ingroup SimSupport
  */
-class cDisplayString
+class SIM_API cDisplayString
 {
   private:
     struct Tag {

@@ -39,7 +39,7 @@ class cCommBuffer;
  * @ingroup ParsimBrief
  * @ingroup Parsim
  */
-class cParsimCommunications : public cPolymorphic
+class SIM_API cParsimCommunications : public cPolymorphic
 {
   public:
     /**

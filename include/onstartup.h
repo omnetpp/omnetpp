@@ -37,7 +37,7 @@
 
 //
 // Example:
-// EXECUTE_ON_STARTUP(EthernetModule, modules.add(new EthernetModuleType());)
+// EXECUTE_ON_STARTUP(EthernetModule, moduletypes->instance().add(new EthernetModuleType());)
 //
 
 /**
@@ -45,7 +45,7 @@
  *
  * @ingroup Internals
  */
-class ExecuteOnStartup
+class SIM_API ExecuteOnStartup
 {
      private:
          void (*code_to_exec)();
@@ -68,13 +68,12 @@ template<class T> class cSingleton
 {
   private:
     T *inst;
-	const char *tmpname;
+    const char *tmpname;
   public:
     cSingleton(const char *name) {tmpname = name;}
     ~cSingleton() {delete inst;}
     T *instance() {if (!inst) {inst=new T(tmpname); inst->removeFromOwnershipTree();} return inst;}
 };
-
 
 #endif
 

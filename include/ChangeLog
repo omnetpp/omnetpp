@@ -1,8 +1,14 @@
+2005-02-24  Andras Varga
+
+	* added missing SIM_API declarations to several classes and functions
+
 2005-01-10  Andras Varga
 
 	* create platdep/ subdirectory
 
-	* cscheduler.h: added cRealTimeScheduler class
+	* cscheduler.h: added cRealTimeScheduler class, added startRun(), 
+	endRun() virtual functions to cScheduler
+
 
 2004-12-29  ------ omnetpp-3.0 released ------
 

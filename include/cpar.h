@@ -41,7 +41,7 @@ class  cXMLElement;
  *
  * @see cPar
  */
-class cExpression
+class SIM_API cExpression
 {
   public:
     virtual ~cExpression() {}
@@ -75,7 +75,7 @@ class cExpression
  *
  * @see cPar
  */
-class cDoubleExpression : public cExpression
+class SIM_API cDoubleExpression : public cExpression
 {
   public:
     virtual std::string getAsText();

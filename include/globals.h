@@ -49,25 +49,25 @@ SIM_API extern cSingleton<cArray> enums;          ///< List of cEnum objects.
 //@{
 
 /** Find a cNetworkType. */
-cNetworkType *findNetwork(const char *s);
+SIM_API cNetworkType *findNetwork(const char *s);
 
 /** Find a cModuleType. */
-cModuleType *findModuleType(const char *s);
+SIM_API cModuleType *findModuleType(const char *s);
 
 /** Find a cModuleInterface. */
-cModuleInterface *findModuleInterface(const char *s);
+SIM_API cModuleInterface *findModuleInterface(const char *s);
 
 /** Find a cChannelType. */
-cChannelType *findChannelType(const char *s);
+SIM_API cChannelType *findChannelType(const char *s);
 
 /** DEPRECATED. */
-cLinkType *findLink(const char *s);
+SIM_API cLinkType *findLink(const char *s);
 
 /** Find a cFunctionType. */
-cFunctionType *findFunction(const char *s,int argcount);
+SIM_API cFunctionType *findFunction(const char *s,int argcount);
 
 /** Find a cEnum. */
-cEnum *findEnum(const char *s);
+SIM_API cEnum *findEnum(const char *s);
 //@}
 
 #endif

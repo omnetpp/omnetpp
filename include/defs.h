@@ -32,9 +32,13 @@
 #endif
 
 // OPP_DLLIMPORT/EXPORT are empty if not needed
-#if defined(__WIN32__) && defined(WIN32_DLL)
-#  define OPP_DLLIMPORT  __declspec(dllimport)
+#if defined(__WIN32__)
 #  define OPP_DLLEXPORT  __declspec(dllexport)
+#  if defined(WIN32_DLL)
+#    define OPP_DLLIMPORT  __declspec(dllimport)
+#  else
+#    define OPP_DLLIMPORT
+#  endif
 #else
 #  define OPP_DLLIMPORT
 #  define OPP_DLLEXPORT

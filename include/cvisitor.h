@@ -18,6 +18,7 @@
 #ifndef __CVISITOR_H
 #define __CVISITOR_H
 
+#include "defs.h"
 
 class cObject;
 
@@ -52,7 +53,7 @@ class cObject;
  * @ingroup SimCore
  * @ingroup SimSupport
  */
-class cVisitor
+class SIM_API cVisitor
 {
   protected:
     /**

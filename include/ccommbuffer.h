@@ -32,23 +32,23 @@ class opp_string;
  * buffer and also return it as bool. It is used when storing
  * dynamically allocated data.
  */
-bool notNull(void *ptr, cCommBuffer *buffer);
+SIM_API bool notNull(void *ptr, cCommBuffer *buffer);
 
 /**
  * Utility function: unpack a bool flag stored by notNull() and
  * return it.
  */
-bool checkFlag(cCommBuffer *buffer);
+SIM_API bool checkFlag(cCommBuffer *buffer);
 
 /**
  * Utility function: packs an object
  */
-void packObject(cObject *obj, cCommBuffer *buffer);
+SIM_API void packObject(cObject *obj, cCommBuffer *buffer);
 
 /**
  * Utility function: unpacks an object
  */
-cObject *unpackObject(cCommBuffer *buffer);
+SIM_API cObject *unpackObject(cCommBuffer *buffer);
 
 
 /**
@@ -63,7 +63,7 @@ cObject *unpackObject(cCommBuffer *buffer);
  * @ingroup ParsimBrief
  * @ingroup Parsim
  */
-class cCommBuffer : public cPolymorphic
+class SIM_API cCommBuffer : public cPolymorphic
 {
   public:
     /**
