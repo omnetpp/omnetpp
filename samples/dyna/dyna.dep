@@ -2,7 +2,7 @@
 
 .\client.cpp : \
 	"..\..\include\carray.h"\
-	"..\..\include\ccor.h"\
+	"..\..\include\ccoroutine.h"\
 	"..\..\include\cdensity.h"\
 	"..\..\include\cdetect.h"\
 	"..\..\include\cenvir.h"\
@@ -48,7 +48,7 @@
 
 .\server.cpp : \
 	"..\..\include\carray.h"\
-	"..\..\include\ccor.h"\
+	"..\..\include\ccoroutine.h"\
 	"..\..\include\cdensity.h"\
 	"..\..\include\cdetect.h"\
 	"..\..\include\cenvir.h"\
@@ -84,7 +84,7 @@
 
 .\servproc.cpp : \
 	"..\..\include\carray.h"\
-	"..\..\include\ccor.h"\
+	"..\..\include\ccoroutine.h"\
 	"..\..\include\cdensity.h"\
 	"..\..\include\cdetect.h"\
 	"..\..\include\cenvir.h"\
@@ -120,7 +120,7 @@
 
 .\switch.cpp : \
 	"..\..\include\carray.h"\
-	"..\..\include\ccor.h"\
+	"..\..\include\ccoroutine.h"\
 	"..\..\include\cdensity.h"\
 	"..\..\include\cdetect.h"\
 	"..\..\include\cenvir.h"\

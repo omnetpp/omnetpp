@@ -27,7 +27,7 @@
 
 #include <time.h>     // time_t, clock_t in cSimulation
 #include "cobject.h"
-#include "ccor.h"
+#include "ccoroutine.h"
 #include "chead.h"
 #include "carray.h"
 #include "cqueue.h"
@@ -668,7 +668,7 @@ struct sBlock
  *
  * @ingroup SimCore
  */
-class SIM_API cSimpleModule : public cCoroutine, public cModule
+class SIM_API cSimpleModule : public cModule
 {
     friend class cModule;
     friend class cSimulation;
@@ -679,6 +679,7 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     opp_string phasestr;    // a 'phase' string
     sBlock *heap;           // head of modfunc's heap list
     cMessage *timeoutmsg;   // msg used in wait() and receive() with timeout
+    cCoroutine *coroutine;
 
   private:
     // internal use
@@ -1120,6 +1121,36 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
      * Records a statistics object into the scalar result file.
      */
     void recordStats(const char *name, cStatistic *stats);
+    //@}
+
+    /** Coroutine stack info. Useful only if module uses activity(). */
+    //@{
+
+    /**
+     * Returns true if there was a stack overflow during execution of the
+     * coroutine. (Not implemented for every coroutine package - see cCoroutine
+     * documentation for more info.) If the module uses handleMessage(),
+     * this method always returns false.
+     *
+     * @see cCoroutine
+     */
+    virtual bool stackOverflow() const;
+
+    /**
+     * Returns the stack size of the coroutine. If the module uses handleMessage(),
+     * this method always returns 0.
+     */
+    virtual unsigned stackSize() const;
+
+    /**
+     * Returns the amount of stack actually used by the coroutine.
+     * (Not implemented for every coroutine package - see cCoroutine
+     * documentation for more info.) If the module uses handleMessage(),
+     * this method always returns 0.
+     *
+     * @see cCoroutine
+     */
+    virtual unsigned stackUsage() const;
     //@}
 
     /** @name Heap allocation. */

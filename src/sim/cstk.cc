@@ -33,6 +33,7 @@
 #include <float.h>
 #endif
 #include "cstk.h"
+#include "util.h"
 #include "errmsg.h"
 
 #ifndef __GNUC__        /* I couldn't find matherr() in Linux GNU C */

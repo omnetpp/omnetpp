@@ -76,7 +76,7 @@ class TCmdenvApp : public TOmnetApp
      virtual bool memoryIsLow();
 
      // SIG_USR1 handling
-     void setupSignals();	
+     void setupSignals();
      static void signalHandler(int signum);
 };
 

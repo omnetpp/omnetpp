@@ -1001,7 +1001,7 @@ int yydebug;			/*  nonzero means print parse trace	*/
 #ifndef YYMAXDEPTH
 #define YYMAXDEPTH 10000
 #endif
-
+
 /* Define __yy_memcpy.  Note that the size argument
    should be passed with type unsigned int, because that is what the non-GCC
    definitions require.  With GCC, __builtin_memcpy takes an arg
@@ -1045,7 +1045,7 @@ __yy_memcpy (char *to, char *from, unsigned int count)
 
 #endif
 #endif
-
+
 #line 217 "/usr/share/bison.simple"
 
 /* The user can define YYPARSE_PARAM as the name of an argument to be passed
@@ -2254,7 +2254,7 @@ case 288:
 }
    /* the action file gets copied in in place of this dollarsign */
 #line 543 "/usr/share/bison.simple"
-
+
   yyvsp -= yylen;
   yyssp -= yylen;
 #ifdef YYLSP_NEEDED

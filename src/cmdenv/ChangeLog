@@ -17,7 +17,7 @@
 	there's interest, it's possible that later I'll add makefiles for
 	the free command-line bc5.5 compiler.
 
-	
+
 	* ------ omnetpp-2.0p1 released ------
 
 	* ------ omnetpp-2.0 released ------
@@ -35,7 +35,7 @@
 	* ------ omnetpp-2.0b5 released ------
 
 	* ------ omnetpp-2.0b4 released ------
-	
+
 	* [Cmdenv]/extra-stack= option added, it specifies (in bytes) how
 	much extra stack each activity() module needs when executing under
 	Cmdenv.  This used to be hardcoded (8192), now users can fine-tune
@@ -89,13 +89,13 @@
 1999-09-20  Andras Varga
 
 	* ------ omnetpp-2.0b2 released ------
-	
+
 	* typo fixed in Makefile.in: $(CLFAGS) --> $(CFLAGS)
 
 1999-08-13  Andras Varga
 
 	* ------ omnetpp-2.0b released ------
-	
+
         * _dummy_for_tkenv_inspect() bug fixed
 
 1999-06-21  Andras Varga
@@ -201,7 +201,7 @@
 1997-07-31  Andras Varga
 
         * [General]/number-of-runs= ini file option was replaced by
-	
+
 	  [Cmdenv]/runs-to-execute=.
 	  Now it's possible to say things like:
 	     [Cmdenv]

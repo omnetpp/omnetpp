@@ -108,7 +108,6 @@ inspect.obj: inspect.cc \
   ../../include/cpacket.h \
   ../../include/cmsgheap.h \
   ../../include/cstk.h \
-  ../../include/ccor.h \
   ../../include/cmodule.h \
   ../../include/cstat.h \
   ../../include/cdensity.h \
@@ -124,7 +123,9 @@ inspect.obj: inspect.cc \
   ../../include/protocol.h \
   ../../include/cenvir.h \
   ../../include/cenum.h \
-  ../../include/cstruct.h
+  ../../include/cstruct.h \
+  ../../include/envirext.h \
+  ../../include/ccoroutine.h
 modinsp.obj: modinsp.cc \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
@@ -138,13 +139,13 @@ modinsp.obj: modinsp.cc \
   tklib.h \
   tkinsp.h \
   arrow.h \
+  ../../include/defs.h \
   ../../include/cobject.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/chead.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
   ../../include/csimul.h \
-  ../../include/defs.h \
   ../../include/util.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h
@@ -172,7 +173,6 @@ objinsp.obj: objinsp.cc \
   ../../include/cpacket.h \
   ../../include/cmsgheap.h \
   ../../include/cstk.h \
-  ../../include/ccor.h \
   ../../include/cmodule.h \
   ../../include/cstat.h \
   ../../include/cdensity.h \
@@ -188,7 +188,9 @@ objinsp.obj: objinsp.cc \
   ../../include/protocol.h \
   ../../include/cenvir.h \
   ../../include/cenum.h \
-  ../../include/cstruct.h
+  ../../include/cstruct.h \
+  ../../include/envirext.h \
+  ../../include/ccoroutine.h
 statinsp.obj: statinsp.cc \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
@@ -202,13 +204,13 @@ statinsp.obj: statinsp.cc \
   tklib.h \
   tkinsp.h \
   arrow.h \
+  ../../include/defs.h \
   ../../include/cobject.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/chead.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
   ../../include/csimul.h \
-  ../../include/defs.h \
   ../../include/util.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h
@@ -218,9 +220,9 @@ structinsp.obj: structinsp.cc \
   tklib.h \
   tkinsp.h \
   ../../include/cobject.h \
-  ../../include/defs.h \
-  ../../include/util.h
-tclcode.obj: tclcode.cc
+  ../../include/cenum.h \
+  ../../include/util.h \
+  ../../include/defs.h
 tkapp.obj: tkapp.cc \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
@@ -232,12 +234,11 @@ tkapp.obj: tkapp.cc \
   tkapp.h \
   tklib.h \
   tkinsp.h \
-  tclcode.cc \
   ../../include/defs.h \
   ../../include/cpar.h \
   ../../include/cobject.h \
   ../../include/util.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/chead.h \
   ../../include/carray.h \
   ../../include/cqueue.h \
@@ -252,6 +253,7 @@ tkcmd.obj: tkcmd.cc \
   ../../include/csimul.h \
   ../../include/cmodule.h \
   ../../include/ctypes.h \
+  ../../include/cstruct.h \
   tkapp.h \
   tklib.h \
   tkinsp.h \
@@ -262,10 +264,11 @@ tkcmd.obj: tkcmd.cc \
   ../../include/errmsg.h \
   ../../include/chead.h \
   ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
   ../../include/coutvect.h \
-  ../../include/ccor.h \
   ../../include/cqueue.h \
-  ../../include/cgate.h
+  ../../include/cgate.h \
+  ../../include/cenum.h
 tklib.obj: tklib.cc \
   ../../include/cobject.h \
   ../../include/cmodule.h \
@@ -273,9 +276,9 @@ tklib.obj: tklib.cc \
   tklib.h \
   tkinsp.h \
   tkapp.h \
-  ../../include/defs.h \
   ../../include/util.h \
-  ../../include/ccor.h \
+  ../../include/defs.h \
+  ../../include/ccoroutine.h \
   ../../include/chead.h \
   ../../include/carray.h \
   ../../include/cqueue.h \

@@ -600,7 +600,6 @@ void cSimpleModule::activate(void *p)
 }
 
 cSimpleModule::cSimpleModule(const cSimpleModule& mod) :
-  cCoroutine(),
   cModule( mod.name(), mod.parentmodp ),
   locals( NULL, NULL),
   putAsideQueue( NULL, NULL, false )
@@ -610,18 +609,19 @@ cSimpleModule::cSimpleModule(const cSimpleModule& mod) :
 
     heap = NULL;
     timeoutmsg = NULL;
+    coroutine = NULL;
     setName(mod.name());
     operator=( mod );
 }
 
 cSimpleModule::cSimpleModule(const char *name, cModule *parentmod, unsigned stksize) :
-  cCoroutine(),
   cModule( name, parentmod ),
   locals( "local-objects", NULL),
   putAsideQueue( "putaside-queue", cMessage::cmpbydelivtime, false )
 {
     state = sREADY;
     heap = NULL;
+    coroutine = NULL;
 
     usesactivity = (stksize!=0);
 
@@ -635,8 +635,9 @@ cSimpleModule::cSimpleModule(const char *name, cModule *parentmod, unsigned stks
     if (usesactivity)
     {
        // setup coroutine, allocate stack for it
-       if (!cCoroutine::setup(cSimpleModule::activate, this, stksize+ev.extraStackForEnvir()))
-           opp_error("Cannot allocate %d+%d bytes of stack for module `%s'",
+       coroutine = new cCoroutine;
+       if (!coroutine->setup(cSimpleModule::activate, this, stksize+ev.extraStackForEnvir()))
+           opp_error("Cannot allocate %d+%d bytes of stack for module `%s' (increase total stack size!)",
                              stksize,ev.extraStackForEnvir(),fullPath());
     }
 }
@@ -649,6 +650,7 @@ cSimpleModule::~cSimpleModule()
     putAsideQueue.clear();
     locals.destructChildren();
     clearHeap();
+    delete coroutine;
 }
 
 cSimpleModule& cSimpleModule::operator=(const cSimpleModule& other)
@@ -657,7 +659,10 @@ cSimpleModule& cSimpleModule::operator=(const cSimpleModule& other)
 
     usesactivity = other.usesactivity;
     cModule::operator=(other);
-    cCoroutine::operator=( other );
+    coroutine = new cCoroutine();
+    if (!coroutine->setup(cSimpleModule::activate, this, other.coroutine->stackSize()))
+        opp_error("Cannot allocate stack for module `%s' (increase total stack size!)",
+                  ev.extraStackForEnvir(),fullPath());
     return *this;
 }
 
@@ -1331,6 +1336,21 @@ void cSimpleModule::recordScalar(const char *name, const char *text)
 void cSimpleModule::recordStats(const char *name, cStatistic *stats)
 {
     ev.recordScalar(this, name, stats);
+}
+
+bool cSimpleModule::stackOverflow() const
+{
+    return coroutine ? coroutine->stackOverflow() : false;
+}
+
+unsigned cSimpleModule::stackSize() const
+{
+    return coroutine ? coroutine->stackSize() : 0;
+}
+
+unsigned cSimpleModule::stackUsage() const
+{
+    return coroutine ? coroutine->stackUsage() : 0;
 }
 
 //==========================================================================

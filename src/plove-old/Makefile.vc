@@ -62,6 +62,4 @@ clean:
 	-del *.ilk *.idb *.pdb *.pch 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-plove.obj: plove.cc \
-  tclcode.cc
-tclcode.obj: tclcode.cc
+plove.obj: plove.cc

@@ -81,7 +81,8 @@ realclean: clean
 ebnf.tab.obj: ebnf.tab.c \
   ebnf.h \
   ebnfcfg.h \
-  jar_func.h
+  jar_func.h \
+  jar_lib.h
 jar.obj: jar.c \
   jar_func.h \
   jar_lib.h
@@ -97,7 +98,6 @@ jar_mod.obj: jar_mod.c \
   jar_func.h \
   jar_lib.h
 lex.yy.obj: lex.yy.c \
-  unistd.h \
   ebnf.h \
   ebnf.tab.h \
   ebnfcfg.h \

@@ -59,8 +59,8 @@ cmdenv.obj: cmdenv.cc \
   ../../include/util.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
   ../../include/coutvect.h \
-  ../../include/ccor.h \
   ../../include/carray.h \
   ../../include/cqueue.h \
   ../../include/cgate.h

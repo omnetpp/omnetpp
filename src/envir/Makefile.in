@@ -105,7 +105,7 @@ cenvir.o: cenvir.cc \
   ../../include/carray.h \
   ../../include/chead.h \
   ../../include/envirext.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
   ../../include/csimul.h \
@@ -140,7 +140,7 @@ filemgrs.o: filemgrs.cc \
   ../../include/envirext.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/coutvect.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
@@ -154,7 +154,7 @@ main.o: main.cc \
   ../../include/errmsg.h \
   ../../include/chead.h \
   ../../include/cmsgheap.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/coutvect.h \
   ../../include/cpar.h
 omnetapp.o: omnetapp.cc \
@@ -163,7 +163,7 @@ omnetapp.o: omnetapp.cc \
   cinifile.h \
   patmatch.h \
   ../../include/ctypes.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/csimul.h \
   ../../include/cpar.h \
   ../../include/cnetmod.h \
@@ -222,7 +222,7 @@ slaveapp.o: slaveapp.cc \
   ../../include/cpar.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/coutvect.h \
   ../../include/cmodule.h \
   ../../include/cqueue.h \

@@ -2,7 +2,7 @@
 
 .\fifo2.cpp : \
 	"..\..\include\carray.h"\
-	"..\..\include\ccor.h"\
+	"..\..\include\ccoroutine.h"\
 	"..\..\include\cdensity.h"\
 	"..\..\include\cdetect.h"\
 	"..\..\include\cenvir.h"\
@@ -58,7 +58,7 @@
 
 .\gen2.cpp : \
 	"..\..\include\carray.h"\
-	"..\..\include\ccor.h"\
+	"..\..\include\ccoroutine.h"\
 	"..\..\include\cdensity.h"\
 	"..\..\include\cdetect.h"\
 	"..\..\include\cenvir.h"\
@@ -103,7 +103,7 @@
 
 .\sink2.cpp : \
 	"..\..\include\carray.h"\
-	"..\..\include\ccor.h"\
+	"..\..\include\ccoroutine.h"\
 	"..\..\include\cdensity.h"\
 	"..\..\include\cdetect.h"\
 	"..\..\include\cenvir.h"\

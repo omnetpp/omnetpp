@@ -15,7 +15,7 @@
 2001-05-18  Andras Varga
 
 	* ------ omnetpp-2.1 released ------
-	
+
 	* fixed a bug in startup code
 
 	* Windows: added rc file with icon

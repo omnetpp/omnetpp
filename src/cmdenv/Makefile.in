@@ -76,7 +76,7 @@ cmdenv.o: cmdenv.cc \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/carray.h \
   ../../include/cenvir.h \
   ../envir/envdefs.h \

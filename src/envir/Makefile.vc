@@ -88,6 +88,7 @@ cenvir.obj: cenvir.cc \
   ../../include/cnetmod.h \
   slaveapp.h \
   speedmtr.h \
+  filemgrs.h \
   envdefs.h \
   ../../include/defs.h \
   ../../include/cpar.h \
@@ -96,7 +97,7 @@ cenvir.obj: cenvir.cc \
   ../../include/carray.h \
   ../../include/chead.h \
   ../../include/envirext.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
   ../../include/csimul.h \
@@ -113,6 +114,7 @@ cinifile.obj: cinifile.cc \
   ../../include/cobject.h \
   envdefs.h
 filemgrs.obj: filemgrs.cc \
+  ../../include/defs.h \
   ../../include/cenvir.h \
   omnetapp.h \
   ../../include/csimul.h \
@@ -120,7 +122,6 @@ filemgrs.obj: filemgrs.cc \
   ../../include/cstat.h \
   ../../include/macros.h \
   filemgrs.h \
-  ../../include/defs.h \
   ../../include/cpar.h \
   ../../include/cobject.h \
   ../../include/util.h \
@@ -131,7 +132,7 @@ filemgrs.obj: filemgrs.cc \
   ../../include/envirext.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/coutvect.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
@@ -140,12 +141,12 @@ main.obj: main.cc \
   ../../include/cobject.h \
   ../../include/csimul.h \
   ../../include/cenvir.h \
-  ../../include/defs.h \
   ../../include/util.h \
+  ../../include/defs.h \
   ../../include/errmsg.h \
   ../../include/chead.h \
   ../../include/cmsgheap.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/coutvect.h \
   ../../include/cpar.h
 omnetapp.obj: omnetapp.cc \
@@ -154,7 +155,6 @@ omnetapp.obj: omnetapp.cc \
   cinifile.h \
   patmatch.h \
   ../../include/ctypes.h \
-  ../../include/ccor.h \
   ../../include/csimul.h \
   ../../include/cpar.h \
   ../../include/cnetmod.h \
@@ -168,6 +168,7 @@ omnetapp.obj: omnetapp.cc \
   ../../include/util.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
   ../../include/coutvect.h \
   ../../include/cmodule.h \
   ../../include/cqueue.h \
@@ -191,8 +192,8 @@ seeds.obj: seeds.cc \
   envdefs.h \
   ../../include/envirext.h \
   ../../include/cobject.h \
-  ../../include/defs.h \
   ../../include/util.h \
+  ../../include/defs.h \
   ../../include/cpar.h
 slaveapp.obj: slaveapp.cc \
   slaveapp.h \
@@ -213,7 +214,7 @@ slaveapp.obj: slaveapp.cc \
   ../../include/cpar.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/coutvect.h \
   ../../include/cmodule.h \
   ../../include/cqueue.h \

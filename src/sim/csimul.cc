@@ -597,7 +597,7 @@ int cSimulation::transferTo(cSimpleModule *sm)
         {opp_error("transferTo(): attempt to transfer to NULL");return -1;}
     runningmodp = sm;
     setContextModule( sm );
-    cCoroutine::switchTo( sm );     // stack switch
+    cCoroutine::switchTo(sm->coroutine);     // stack switch
     return 0;
 }
 
@@ -632,7 +632,7 @@ int cSimulation::transferToMain()
     if (runningmodp!=NULL)
     {
         runningmodp = NULL;
-        cCoroutine::switchtoMain();     // stack switch
+        cCoroutine::switchToMain();     // stack switch
     }
     return 0;
 }

@@ -28,7 +28,7 @@
 #include "errmsg.h"
 #include "chead.h"
 #include "cmsgheap.h"
-#include "ccor.h"
+#include "ccoroutine.h"
 #include "coutvect.h" //FIXME
 
 //=== classes mentioned:

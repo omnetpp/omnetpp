@@ -15,7 +15,7 @@
 #CFLAGS='-g -Wno-unused'
 #CFLAGS='-g -Wall'
 #CFLAGS='-gstabs+3 -Wall'
-CFLAGS='-O3 -DNDEBUG=1'
+CFLAGS='-O3 -DNDEBUG=1 -I /cygdrive/d/home/expat-1.95.2/Source/lib'
 
 # To suppress the 'unused variable' warnings in ned-generated _n.cc files
 # -Wno-unused is added to NEDCFLAGS
@@ -86,6 +86,12 @@ PVM_LIBS=
 #
 MPI_CFLAGS=
 MPI_LIBS=
+
+#
+# and expat
+#
+EXPAT_CFLAGS=-I ../expat-1.95.2/Source/lib/expat.h
+EXPAT_LIBS=
 
 #
 # You may override the settings below. This is only useful if you have moved

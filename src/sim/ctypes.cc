@@ -310,7 +310,7 @@ cModuleType::cModuleType(const char *classname,
     // We cannot find() the interface object (and store its pointer) yet,
     // because it might not have been created yet.
     interface_name = opp_strdup(interf_name);
-    interface = NULL;
+    iface = NULL;
 }
 
 
@@ -332,7 +332,7 @@ cModuleType& cModuleType::operator=(const cModuleType& mt)
 
     create_func = mt.create_func;
     interface_name = opp_strdup(mt.interface_name);
-    interface = mt.interface;
+    iface = mt.iface;
     return *this;
 }
 
@@ -379,13 +379,13 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, bool local
     }
 
     // find the module interface
-    if (!interface)
-        interface = findModuleInterface( interface_name );
-    if (!interface)
+    if (!iface)
+        iface = findModuleInterface( interface_name );
+    if (!iface)
         {opp_error(eNOMODIF, interface_name, name()); return mod;}
 
     // add parameters and gates to the new module
-    interface->addParametersGatesTo( mod );
+    iface->addParametersGatesTo( mod );
     return mod;
 }
 
@@ -394,12 +394,12 @@ void cModuleType::buildInside(cModule *mod)
     cModule *oldcontext = simulation.contextModule();
     simulation.setContextModule( mod );
 
-    if (!interface)
-        interface = findModuleInterface( interface_name );
-    if (!interface)
+    if (!iface)
+        iface = findModuleInterface( interface_name );
+    if (!iface)
         {opp_error(eNOMODIF, interface_name, name()); return;}
 
-    interface->checkParametersOf( mod );
+    iface->checkParametersOf( mod );
     if (!simulation.ok()) return;
 
     mod->buildInside();

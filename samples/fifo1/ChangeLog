@@ -13,7 +13,7 @@
 	relative paths, like ..\..\lib). This means the samples will
 	compile even when they're moved to another location in the file
 	system.
-	
+
 	* Borland C++ project file (*.ide) removed, Makefile.bc added
 	(unsupported!)
 

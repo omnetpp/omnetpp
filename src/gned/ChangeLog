@@ -48,7 +48,7 @@
 	(lex.yy.cc): mv lex.yy.c to lex.yy.cc
 	(lex.yy.o): renamed lex.yy.c to lex.yy.cc
 	(ebnf.tab.o): renamed ebnf.tab.c to ebnf.tab.cc
-	
+
 
 	* Makefile.vc
 	targets renamed:

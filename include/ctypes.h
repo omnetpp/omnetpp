@@ -229,7 +229,7 @@ class SIM_API cModuleType : public cObject
     friend class cModule;
   private:
     char *interface_name;
-    cModuleInterface *interface;
+    cModuleInterface *iface;
     ModuleCreateFunc create_func;
 
   public:

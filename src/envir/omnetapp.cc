@@ -27,13 +27,13 @@
 #include "patmatch.h"
 
 #include "ctypes.h"
-#include "ccor.h"
+#include "ccoroutine.h"
 #include "csimul.h"
 #include "cpar.h"
 #include "cnetmod.h"
 
 
-#ifdef PORTABLE_COROUTINES /* coroutine stacks reside in main stack area */
+#ifdef USE_PORTABLE_COROUTINES /* coroutine stacks reside in main stack area */
 
 # define TOTAL_STACK_KB     2048
 # define MAIN_STACK_KB       128  // for MSVC+Tkenv, 64K is not enough

@@ -14,7 +14,7 @@
 #ifndef __CSTK_H
 #define __CSTK_H
 
-#include "ccor.h"
+#include "ccoroutine.h"
 
 #if defined(__BORLANDC__) && __BCPLUSPLUS__<=0x310 && defined(__MSDOS__)
 //#  define USE_STK         /* enables stack switching with iSTK,vSTK */

@@ -2,7 +2,7 @@
 
 .\gensink.cpp : \
 	"..\..\include\carray.h"\
-	"..\..\include\ccor.h"\
+	"..\..\include\ccoroutine.h"\
 	"..\..\include\cdensity.h"\
 	"..\..\include\cdetect.h"\
 	"..\..\include\cenvir.h"\
@@ -58,7 +58,7 @@
 
 .\hc_rte.cpp : \
 	"..\..\include\carray.h"\
-	"..\..\include\ccor.h"\
+	"..\..\include\ccoroutine.h"\
 	"..\..\include\cdensity.h"\
 	"..\..\include\cdetect.h"\
 	"..\..\include\cenvir.h"\

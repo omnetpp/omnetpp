@@ -218,7 +218,7 @@ carray.o: carray.cc \
   ../../include/defs.h \
   ../../include/util.h
 ccor.o: ccor.cc \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h
@@ -239,7 +239,7 @@ cdetect.o: cdetect.cc \
   ../../include/errmsg.h \
   ../../include/chead.h \
   ../../include/cmsgheap.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/coutvect.h \
   ../../include/cobject.h \
   ../../include/cstat.h
@@ -254,7 +254,7 @@ cenum.o: cenum.cc \
   ../../include/util.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/coutvect.h
 cfsm.o: cfsm.cc \
   ../../include/macros.h \
@@ -276,7 +276,7 @@ cgate.o: cgate.cc \
   ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/chead.h \
   ../../include/cqueue.h \
   ../../include/errmsg.h \
@@ -330,7 +330,7 @@ cmessage.o: cmessage.cc \
   ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/carray.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
@@ -350,7 +350,7 @@ cmodule.o: cmodule.cc \
   ../../include/cnetmod.h \
   ../../include/cenvir.h \
   ../../include/cobject.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/chead.h \
   ../../include/cqueue.h \
   ../../include/defs.h \
@@ -371,7 +371,7 @@ cmsgheap.o: cmsgheap.cc \
   ../../include/cpar.h \
   ../../include/csimul.h \
   ../../include/errmsg.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/coutvect.h
 cnetmod.o: cnetmod.cc \
   ../../include/cpar.h \
@@ -381,7 +381,7 @@ cnetmod.o: cnetmod.cc \
   ../../include/defs.h \
   ../../include/util.h \
   ../../include/cmodule.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/chead.h \
   ../../include/carray.h \
   ../../include/cqueue.h \
@@ -400,7 +400,7 @@ cobject.o: cobject.cc \
   ../../include/errmsg.h \
   ../../include/chead.h \
   ../../include/cmsgheap.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/coutvect.h \
   ../../include/cpar.h \
   ../../include/ctypes.h
@@ -412,7 +412,7 @@ coutvect.o: coutvect.cc \
   ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/chead.h \
   ../../include/carray.h \
   ../../include/cqueue.h \
@@ -434,7 +434,7 @@ cpacket.o: cpacket.cc \
   ../../include/csimul.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/coutvect.h
 cpar.o: cpar.cc \
   ../../include/cpar.h \
@@ -449,7 +449,7 @@ cpar.o: cpar.cc \
   ../../include/util.h \
   ../../include/ctypes.h \
   ../../include/chead.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/carray.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
@@ -483,7 +483,7 @@ csimul.o: csimul.cc \
   ../../include/cnetmod.h \
   ../../include/cstat.h \
   ../../include/cobject.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/chead.h \
   ../../include/carray.h \
   ../../include/cqueue.h \
@@ -505,7 +505,7 @@ cstat.o: cstat.cc \
 cstk.o: cstk.cc \
   ../../include/cstk.h \
   ../../include/errmsg.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h
@@ -530,7 +530,7 @@ ctopo.o: ctopo.cc \
   ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/carray.h \
   ../../include/cqueue.h \
   ../../include/csimul.h \
@@ -545,7 +545,7 @@ ctypes.o: ctypes.cc \
   ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/chead.h \
   ../../include/carray.h \
   ../../include/cqueue.h \
@@ -581,7 +581,7 @@ util.o: util.cc \
   ../../include/errmsg.h \
   ../../include/chead.h \
   ../../include/cmsgheap.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/coutvect.h \
   ../../include/cobject.h \
   ../../include/ctypes.h \
@@ -608,7 +608,7 @@ std/netpack.o: std/netpack.cc \
   ../../include/cpacket.h \
   ../../include/cmsgheap.h \
   ../../include/cstk.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/cmodule.h \
   ../../include/cstat.h \
   ../../include/cdensity.h \
@@ -640,7 +640,7 @@ pvm/pvmmod.o: pvm/pvmmod.cc \
   ../../include/carray.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/chead.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
@@ -670,7 +670,7 @@ pvm/pvmpack.o: pvm/pvmpack.cc \
   ../../include/cpacket.h \
   ../../include/cmsgheap.h \
   ../../include/cstk.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/cmodule.h \
   ../../include/cstat.h \
   ../../include/cdensity.h \
@@ -704,7 +704,7 @@ mpi/mpimod.o: mpi/mpimod.cc \
   ../../include/carray.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/chead.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
@@ -736,7 +736,7 @@ mpi/mpipack.o: mpi/mpipack.cc \
   ../../include/cpacket.h \
   ../../include/cmsgheap.h \
   ../../include/cstk.h \
-  ../../include/ccor.h \
+  ../../include/ccoroutine.h \
   ../../include/cmodule.h \
   ../../include/cstat.h \
   ../../include/cdensity.h \
