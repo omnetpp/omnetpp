@@ -1293,7 +1293,6 @@ int colorizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    int redoffset = imgblock.offset[0];
    int greenoffset = imgblock.offset[1];
    int blueoffset = imgblock.offset[2];
-   int alphaoffset = imgblock.offset[3];
    for (int y=0; y<imgblock.height; y++)
    {
        unsigned char *pixel = imgblock.pixelPtr + y*imgblock.pitch;

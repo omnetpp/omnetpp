@@ -59,9 +59,11 @@ case $host in
     ;;
   *-*-cygwin*)
     cygwin=yes
+    windows=yes
     ;;
   *-*-mingw32*)
     mingw=yes
+    windows=yes
     ;;
   *-hp-hpux*)
     SO_LIB_SUFFIX=".sl"
@@ -136,7 +138,7 @@ fi
 # total stack size on NT defaults to 128MB (will be added to LDFLAGS later):
 CYGWIN_STACKSIZE=134217728
 
-build_shared_libs=if-not-cygwin
+build_shared_libs=if-not-windows
 #build_shared_libs=yes
 #build_shared_libs=no
 
@@ -154,6 +156,10 @@ else
    TK_CFLAGS=
 fi
 TK_LIBS=
+
+#
+# FIXME add BLT!!!!!
+#
 
 # for MPI
 MPI_CFLAGS=
@@ -287,7 +293,7 @@ fi
 # Check for wish.
 #----------------------
 AC_CHECK_PROGS(WISH, $WISH wish wish84 wish83 wish82 cygwish cygwish84 cygwish83 cygwish82, nope)
-if test "$WISH" = nope -a ! "$PLOVE_EMBED_TCL" = yes; then
+if test "$WISH" = nope -a ! "$EMBED_TCL_CODE" = yes; then
    AC_MSG_WARN([cannot find wish, part of Tcl/Tk - Plove will not work])
 fi
 
@@ -354,7 +360,7 @@ else
         if test "$cygwin" = yes; then
             AC_MSG_ERROR([cannot build Tcl/Tk apps, probably due to missing X11 headers -- try installing the XFree86 packages or get the X headers from the OMNeT++ site])
         else
-            AC_MSG_ERROR([cannot build Tcl/Tk apps, probably due to misconfigured or missing X11 headers or libs])
+            AC_MSG_ERROR([cannot build Tcl/Tk apps, probably due to misconfigured or missing X11 headers or libs. Check config.log for more info!])
         fi
     else
         AC_MSG_ERROR([Tcl/Tk not found, needed for all GUI parts; version 8.2+ needed])
@@ -426,8 +432,8 @@ fi
 #----------------------
 # If you change this setting, remember to delete the other set of libraries
 # (or at least the soft links from lib/).
-if test "$build_shared_libs" = if-not-cygwin; then
-    if test "$cygwin" = yes; then
+if test "$build_shared_libs" = if-not-windows; then
+    if test "$windows" = yes; then
         build_shared_libs=no
     else
         build_shared_libs=yes
@@ -448,24 +454,18 @@ fi
 # Tcl code embedding.
 #----------------------
 
-if test "$TKENV_EMBED_TCL" = yes; then
+if test "$EMBED_TCL_CODE" = yes; then
    TKENV_EMBED_SUFFIX=-e
+   GNED_EMBED_SUFFIX=-e
+   PLOVE_VARIANT=plove-exe
 else
    TKENV_EMBED_SUFFIX=
-fi
-
-if test "$GNED_EMBED_TCL" = yes; then
-   GNED_EMBED_SUFFIX=-e
-else
    GNED_EMBED_SUFFIX=
-fi
-
-if test "$PLOVE_EMBED_TCL" = yes; then
-   PLOVE_VARIANT=plove-exe
-elif test "$cygwin" = yes; then
-   PLOVE_VARIANT=plove-cyg
-else
-   PLOVE_VARIANT=plove-sh
+   if test "$cygwin" = yes; then
+      PLOVE_VARIANT=plove-cyg
+   else
+      PLOVE_VARIANT=plove-sh
+   fi
 fi
 
 

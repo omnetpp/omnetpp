@@ -33,6 +33,7 @@
 proc inspectorupdate_callback {} {
     inspectorlist_openinspectors
     notifyPlugins inspectorUpdate
+    #FIXME readParams
 }
 
 

@@ -240,6 +240,7 @@ proc create_omnetpp_window {} {
     scale .toolbar.animspeed -orient horizontal -length 50 -sliderlength 8 -showvalue 0 -bd 1
     .toolbar.animspeed config -from .5 -to 3 -resolution 0.01 -variable param(animspeed)
     pack .toolbar.animspeed -anchor c -expand 0 -fill none -side left -padx 5 -pady 0
+    #trace add variable param(animspeed)  write paramChanged
 
 
     set help_tips(.toolbar.loadned) {Load NED file for compound module definitions}
