@@ -93,14 +93,13 @@ std::string cMessageHeap::info() const
     return out.str();
 }
 
-void cMessageHeap::forEach( ForeachFunc do_fn )
+void cMessageHeap::forEachChild(cVisitor *v)
 {
     sort();
 
-    if (do_fn(this,true))
-        for (int i=1; i<=n; i++)
-            if (h[i]) h[i]->forEach( do_fn );
-    do_fn(this,false);
+    for (int i=1; i<=n; i++)
+        if (h[i])
+            v->visit(h[i]);
 }
 
 void cMessageHeap::clear()

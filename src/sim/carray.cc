@@ -356,17 +356,11 @@ std::string cArray::info() const
     return out.str();
 }
 
-void cArray::forEach( ForeachFunc do_fn )
+void cArray::forEachChild(cVisitor *v)
 {
-    if (do_fn(this,true))
-    {
-        for (int i=0; i<=last; i++)
-        {
-            cObject *p = vect[i];
-            if (p) p->forEach( do_fn );
-        }
-    }
-    do_fn(this,false);
+    for (int i=0; i<=last; i++)
+        if (vect[i])
+            v->visit(vect[i]);
 }
 
 void cArray::netPack(cCommBuffer *buffer)

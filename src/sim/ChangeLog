@@ -1,3 +1,8 @@
+2004-11-27  Andras Varga
+
+	* nearly all .cc files: forEach() methods ported to cVisitor, see 
+	include/ChangeLog
+
 2004-11-23  Andras Varga
 	
 	* cchannel.cc: parameter "disabled" of cSimpleChannel made to work

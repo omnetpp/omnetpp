@@ -119,16 +119,12 @@ std::string cMessage::info() const
     return out.str();
 }
 
-void cMessage::forEach( ForeachFunc do_fn )
+void cMessage::forEachChild(cVisitor *v)
 {
-    if (do_fn(this,true))
-    {
-        if (parlistp)
-            parlistp->forEach( do_fn );
-        if (encapmsg)
-            encapmsg->forEach( do_fn );
-    }
-    do_fn(this,false);
+    if (parlistp)
+        v->visit(parlistp);
+    if (encapmsg)
+        v->visit(encapmsg);
 }
 
 void cMessage::writeContents(ostream& os)

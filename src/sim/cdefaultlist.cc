@@ -143,14 +143,10 @@ std::string cDefaultList::info() const
     return out.str();
 }
 
-void cDefaultList::forEach(ForeachFunc do_fn)
+void cDefaultList::forEachChild(cVisitor *v)
 {
-    if (do_fn(this,true))
-    {
-        for (int i=0; i<count; i++)
-            vect[i]->forEach(do_fn);
-    }
-    do_fn(this,false);
+    for (int i=0; i<count; i++)
+        v->visit(vect[i]);
 }
 
 void cDefaultList::netPack(cCommBuffer *buffer)

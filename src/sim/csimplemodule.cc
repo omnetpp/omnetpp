@@ -212,9 +212,9 @@ std::string cSimpleModule::info() const
     return out.str();
 }
 
-void cSimpleModule::forEach(ForeachFunc do_fn)
+void cSimpleModule::forEachChild(cVisitor *v)
 {
-    cModule::forEach(do_fn);  // nothing new here
+    cModule::forEachChild(v);
 }
 
 void cSimpleModule::setId(int n)

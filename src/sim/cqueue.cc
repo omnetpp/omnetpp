@@ -68,13 +68,11 @@ std::string cQueue::info() const
     return out.str();
 }
 
-void cQueue::forEach( ForeachFunc do_fn )
+void cQueue::forEachChild(cVisitor *v)
 {
-    if (do_fn(this,true))
-        // loop through elements in reverse order
-        for( QElem *p=tailp; p!=NULL; p=p->prev )
-             p->obj->forEach( do_fn );
-    do_fn(this,false);
+    // loop through elements in reverse order
+    for (QElem *p=tailp; p!=NULL; p=p->prev)
+         v->visit(p->obj);
 }
 
 void cQueue::netPack(cCommBuffer *buffer)

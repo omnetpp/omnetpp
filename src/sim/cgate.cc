@@ -72,13 +72,10 @@ cGate::~cGate()
     delete [] fullname;
 }
 
-void cGate::forEach(ForeachFunc do_fn)
+void cGate::forEachChild(cVisitor *v)
 {
-    if (do_fn(this,true))
-    {
-       if (channelp)  channelp->forEach( do_fn );
-    }
-    do_fn(this,false);
+    if (channelp)
+        v->visit(channelp);
 }
 
 cGate& cGate::operator=(const cGate& gate)

@@ -149,15 +149,11 @@ cModule& cModule::operator=(const cModule&)
     throw new cException(this, eCANTDUP);
 }
 
-void cModule::forEach(ForeachFunc do_fn )
+void cModule::forEachChild(cVisitor *v)
 {
-    if (do_fn(this,true))
-    {
-       // Note: everything including paramv, gatev and submodules are on the cDefaultList
-       for (int i=0; i<defaultListItems(); i++)
-            defaultListGet(i)->forEach(do_fn);
-    }
-    do_fn(this,false);
+    // Note: everything including paramv, gatev and submodules are on the cDefaultList
+    for (int i=0; i<defaultListItems(); i++)
+         v->visit(defaultListGet(i));
 }
 
 void cModule::setId(int n)

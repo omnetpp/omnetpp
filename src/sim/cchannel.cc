@@ -82,11 +82,10 @@ std::string cChannel::info() const
     return out.str();
 }
 
-void cChannel::forEach( ForeachFunc do_fn )
+void cChannel::forEachChild(cVisitor *v)
 {
-    if (do_fn(this,true))
-        if (parlistp) parlistp->forEach( do_fn );
-    do_fn(this,false);
+    if (parlistp)
+        v->visit(parlistp);
 }
 
 void cChannel::writeContents(ostream& os)
@@ -194,13 +193,10 @@ std::string cBasicChannel::info() const
     return cChannel::info();
 }
 
-void cBasicChannel::forEach( ForeachFunc do_fn )
+void cBasicChannel::forEachChild(cVisitor *v)
 {
-    if (do_fn(this,true))
-    {
-        if (parlistp) parlistp->forEach( do_fn );
-    }
-    do_fn(this,false);
+    if (parlistp)
+        v->visit(parlistp);
 }
 
 void cBasicChannel::writeContents(ostream& os)

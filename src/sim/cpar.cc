@@ -233,21 +233,17 @@ void cPar::writeContents(ostream& os)
     }
 }
 
-void cPar::forEach(ForeachFunc do_fn)
+void cPar::forEachChild(cVisitor *v)
 {
-    if (do_fn(this,true))
+    if (typechar=='T')
     {
-        if (typechar=='T')
-        {
-            dtr.res->forEach( do_fn );
-        }
-        else if (typechar=='O')
-        {
-            if (obj.obj)
-                obj.obj->forEach( do_fn );
-        }
+        v->visit(dtr.res);
     }
-    do_fn(this,false);
+    else if (typechar=='O')
+    {
+        if (obj.obj)
+            v->visit(obj.obj);
+    }
 }
 
 void cPar::netPack(cCommBuffer *buffer)

@@ -133,15 +133,11 @@ void cSimulation::init()
     take(&msgQueue);
 }
 
-void cSimulation::forEach( ForeachFunc do_fn )
+void cSimulation::forEachChild(cVisitor *v)
 {
-    if (do_fn(this,true))
-    {
-        if (systemmodp!=NULL)
-            systemmodp->forEach( do_fn );
-        msgQueue.forEach( do_fn );
-    }
-    do_fn(this,false);
+    if (systemmodp!=NULL)
+        v->visit(systemmodp);
+    v->visit(&msgQueue);
 }
 
 std::string cSimulation::fullPath() const
@@ -163,16 +159,18 @@ const char *cSimulation::fullPath(char *buffer, int bufsize) const
     return buffer;
 }
 
-static bool _do_writesnapshot(cObject *obj, bool beg, ostream& s)
+class cSnapshotWriterVisitor : public cVisitor
 {
-    static ostream *os;
-
-    if (!obj) {os = &s;return false;} //setup call
-
-    if (os->fail()) return false;   // there was an error, quit
-    if (beg) obj->writeTo( *os );
-    return !os->fail();      // check stream status
-}
+  protected:
+    ostream& os;
+  public:
+    cSnapshotWriterVisitor(ostream& ostr) : os(ostr) {}
+    virtual void visit(cObject *obj) {
+        obj->writeTo(os);
+        if (os.fail()) throw EndTraversalException();
+        obj->forEachChild(this);
+    }
+};
 
 bool cSimulation::snapshot(cObject *object, const char *label)
 {
@@ -193,19 +191,14 @@ bool cSimulation::snapshot(cObject *object, const char *label)
     os << "| Sim. time:     " << simtimeToStr(simTime()) << "\n";
     os << "| Network:      `" << networktype->name() << "'\n";
     os << "| Run no.        " << run_number << '\n';
-    // os << "| Started at:    " << *localtime(&simbegtime) << '\n';
-    // os << "| Time:          " << *localtime(&simendtime) << '\n';
-    // os << "| Elapsed:       " << elapsedtime << " sec\n";
-    //if (err)
-    //   os << "| Simulation stopped with error message.\n";
     if (contextModule())
         os << "| Initiated from: `" << contextModule()->fullPath() << "'\n";
     else
         os << "| Initiated by:  user\n";
     os << "================================================" << "\n\n";
 
-    _do_writesnapshot( NULL,false, os );         // setup
-    object->forEach( (ForeachFunc)_do_writesnapshot );   // do
+    cSnapshotWriterVisitor v(os);
+    v.process(object);
 
     bool success = !os.fail();
     ev.releaseStreamForSnapshot(&os);

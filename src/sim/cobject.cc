@@ -74,12 +74,61 @@ cStructDescriptor *cPolymorphic::createDescriptor()
 
 
 //==========================================================================
+//=== Internally used visitors
+
+/**
+ * Calls os << obj->info() for every object.
+ */
+class cPrintInfoVisitor : public cVisitor
+{
+  protected:
+    ostream& os;
+  public:
+    cPrintInfoVisitor(ostream& ostr) : os(ostr) {}
+    virtual void visit(cObject *obj) {os << obj->info() << "\n";}
+};
+
+/**
+ * Finds a child object by name.
+ */
+class cChildObjectFinderVisitor : public cVisitor
+{
+  protected:
+    const char *name;
+    cObject *result;
+  public:
+    cChildObjectFinderVisitor(const char *objname) {name=objname; result=NULL;}
+    virtual void visit(cObject *obj) {
+        if (obj->isName(name)) {
+            result=obj;
+            throw EndTraversalException();
+        }
+    }
+    cObject *getResult() {return result;}
+};
+
+/**
+ * Recursively finds an object by name.
+ */
+class cRecursiveObjectFinderVisitor : public cVisitor
+{
+  protected:
+    const char *name;
+    cObject *result;
+  public:
+    cRecursiveObjectFinderVisitor(const char *objname) {name=objname; result=NULL;}
+    virtual void visit(cObject *obj) {
+        if (obj->isName(name)) {
+            result=obj;
+            throw EndTraversalException();
+        }
+        obj->forEachChild(this);
+    }
+    cObject *getResult() {return result;}
+};
+
+//==========================================================================
 //=== cObject - member functions
-
-// utility functions
-static bool _do_find(cObject *obj, bool beg, const char *objname, cObject *&p, bool deep);
-static bool _do_list(cObject *obj, bool beg, ostream& s);
-
 
 // static class members
 char cObject::fullpathbuf[MAX_OBJECTFULLPATH];
@@ -307,10 +356,8 @@ const char *cObject::fullPath(char *buffer, int bufsize) const
     return buffer;
 }
 
-void cObject::forEach( ForeachFunc do_fn )
+void cObject::forEachChild(cVisitor *v)
 {
-    do_fn(this,true);
-    do_fn(this,false);
 }
 
 void cObject::writeTo(ostream& os)
@@ -323,69 +370,32 @@ void cObject::writeTo(ostream& os)
 void cObject::writeContents(ostream& os)
 {
     os << detailedInfo() << std::endl;
-    _do_list( NULL, false, os );   // prepare do_list
-    forEach( (ForeachFunc)_do_list );
+    cPrintInfoVisitor v(os);
+    forEachChild(&v);
 }
 
 cObject *cObject::findObject(const char *objname, bool deep)
 {
-    cObject *p;
-    _do_find( NULL, false, objname, p, deep ); // give 'objname' and 'deep' to do_find
-    forEach( (ForeachFunc)_do_find );          // perform search
-    _do_find( NULL, false, objname, p, deep ); // get result into p
-    return p;
+    if (deep)
+    {
+        // recursively
+        cRecursiveObjectFinderVisitor v(objname);
+        v.process(this);
+        return v.getResult();
+    }
+    else
+    {
+        // among children
+        cChildObjectFinderVisitor v(objname);
+        forEachChild(&v);
+        return v.getResult();
+    }
 }
 
 int cObject::cmpbyname(cObject *one, cObject *other)
 {
     return opp_strcmp(one->name(), other->name());
 }
-
-static bool _do_find(cObject *obj, bool beg, const char *objname, cObject *&p, bool deep)
-{
-    static const char *name_str;
-    static cObject *r;
-    static int ctr;
-    static bool deepf;
-    if (!obj)
-    {
-        name_str = objname;
-        p = r;
-        r = NULL;
-        deepf = deep;
-        ctr = 0;
-        return true;
-    }
-    if (beg && obj->isName(name_str)) r=obj;
-    return deepf || ctr==0;
-}
-
-static bool _do_list(cObject *obj, bool beg, ostream& s)
-{
-    static char buf[256];
-    static int ctr;       // static is very important here!!!
-    static ostream *os;
-    if (!obj)
-    {        // setup call
-        ctr = 0;
-        os = &s;
-        return true;
-    }
-
-    if (beg)
-    {
-        if (ctr)
-        {
-            //*os << "  (" << obj->className() << ") `" << obj->name() << "'\n";
-            obj->info(buf);
-            *os << "   " << buf << "\n";
-        }
-        return ctr++ == 0;       // only one level!
-    }
-    else
-        return true;
-}
-
 
 ostream& operator<< (ostream& os, const cObject *p)
 {
