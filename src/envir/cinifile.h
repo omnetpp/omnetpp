@@ -48,7 +48,7 @@ class cIniFile
         char *value;            //  its value
         char *rawvalue;         //  if original was quoted, this is the
                                 //        strdupped version of it, otherwise 0
-        int accessed;           //  has it been accessed?
+        bool accessed;          //  has it been accessed?
     };
     int num_sections;           //total number of sections
     char *section[MAX_INI_SECTIONS]; //array of sectionnames

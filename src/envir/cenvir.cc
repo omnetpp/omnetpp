@@ -178,7 +178,7 @@ void cEnvir::puts(char *str)
 
 bool cEnvir::gets(char *promptstr, char *buf, int len)
 {
-    int esc = app->gets( promptstr, buf, len );
+    bool esc = app->gets( promptstr, buf, len );
     if (esc) opp_error(eCANCEL);
     return (bool)esc;
 }
@@ -190,7 +190,7 @@ bool cEnvir::askf(char *buf, int len, char *promptfmt,...)
     vsprintf(buffer, promptfmt, va);
     va_end(va);
 
-    int esc = app->gets( buffer, buf, len );
+    bool esc = app->gets( buffer, buf, len );
     if (esc) opp_error(eCANCEL);
     return (bool)esc;
 }
@@ -204,7 +204,7 @@ bool cEnvir::askYesNo(char *msgfmt,...)
 
     int ret = app->askYesNo( buffer );
     if (ret<0) opp_error(eCANCEL);
-    return (bool)ret;
+    return ret!=0;
 }
 
 void cEnvir::foreignPuts(char *hostname, char *mod, char *str)

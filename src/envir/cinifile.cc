@@ -383,7 +383,7 @@ double cIniFile::getAsTime(char *sect, char *ent, double defaultval)
 
 char *cIniFile::getRaw2(char *sect1, char *sect2, char *key, char *defaultval)
 {
-    int w = warnings; warnings = FALSE;
+    bool w = warnings; warnings = FALSE;
     char *a = getRaw(sect1,key,defaultval);
     if (_error)
          a = getRaw(sect2,key,defaultval);
@@ -396,7 +396,7 @@ char *cIniFile::getRaw2(char *sect1, char *sect2, char *key, char *defaultval)
 
 bool cIniFile::getAsBool2(char *sect1, char *sect2, char *key, bool defaultval)
 {
-    int w = warnings; warnings = FALSE;
+    bool w = warnings; warnings = FALSE;
     bool a = getAsBool(sect1,key,defaultval);
     if (_error)
          a = getAsBool(sect2,key,defaultval);
@@ -409,7 +409,7 @@ bool cIniFile::getAsBool2(char *sect1, char *sect2, char *key, bool defaultval)
 
 long cIniFile::getAsInt2(char *sect1, char *sect2, char *key, long defaultval)
 {
-    int w = warnings; warnings = FALSE;
+    bool w = warnings; warnings = FALSE;
     long a = getAsInt(sect1,key,defaultval);
     if (_error)
          a = getAsInt(sect2,key,defaultval);
@@ -422,7 +422,7 @@ long cIniFile::getAsInt2(char *sect1, char *sect2, char *key, long defaultval)
 
 double cIniFile::getAsDouble2(char *sect1, char *sect2, char *key, double defaultval)
 {
-    int w = warnings; warnings = FALSE;
+    bool w = warnings; warnings = FALSE;
     double a = getAsDouble(sect1,key,defaultval);
     if (_error)
          a = getAsDouble(sect2,key,defaultval);
@@ -435,7 +435,7 @@ double cIniFile::getAsDouble2(char *sect1, char *sect2, char *key, double defaul
 
 char *cIniFile::getAsString2(char *sect1, char *sect2, char *key, char *defaultval)
 {
-    int w = warnings; warnings = FALSE;
+    bool w = warnings; warnings = FALSE;
     char *a = getAsString(sect1,key,defaultval);
     if (_error)
          a = getAsString(sect2,key,defaultval);
@@ -448,7 +448,7 @@ char *cIniFile::getAsString2(char *sect1, char *sect2, char *key, char *defaultv
 
 double cIniFile::getAsTime2(char *sect1, char *sect2, char *key, double defaultval)
 {
-    int w = warnings; warnings = FALSE;
+    bool w = warnings; warnings = FALSE;
     double a = getAsTime(sect1,key,defaultval);
     if (_error)
          a = getAsTime(sect2,key,defaultval);

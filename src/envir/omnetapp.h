@@ -58,11 +58,11 @@ class TOmnetApp
      opp_string opt_outvectfile_name;
      opp_string opt_scalarfile_name;
 
-     int opt_logparchanges;
+     bool opt_logparchanges;
      opp_string opt_parchangefile_name;
 
-     int opt_pause_in_sendmsg;
-     int opt_warnings;
+     bool opt_pause_in_sendmsg;
+     bool opt_warnings;
 
      long *opt_genk_randomseed;
 
