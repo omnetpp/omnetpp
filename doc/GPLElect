@@ -1,37 +1,10 @@
-Using the GPL for certain components of OMNeT++
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Licensing change
+================
 
-Instead of using the original license, you may instead elect to use
-the GNU General Public License (GPL) for a particular copy of OMNeT++.
-The election to use the GPL is irrevocable for that particular copy.
+Since the 2.3 version, it is no longer possible to use OMNeT++ under the
+General Public License. For non-commercial users, the new OMNeT++ license
+("Academic Public License") provides very similar rights as you would
+enjoy under GPL.
 
-If you do elect to use the GPL, then you must replace the copyright notice
-on each affected file with the following:
+<explain why...>
 
------begin-----
-Copyright (C) 2000 Andras Varga
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
------end-----
-
-You must change the "README" and "License" files to say that an election
-has been made to use this copy under the GPL. If you redistribute OMNeT++,
-you should also include a copy of the GPL.
-
-Note that I will probably not accept patches under terms that allow
-me to distribute them only under the GPL.
-
-
-Andras Varga
