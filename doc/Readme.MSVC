@@ -1,10 +1,15 @@
 Using OMNeT++ with Microsoft Visual C++
 =======================================
 
-This is a HOWTO for OMNeT++ for Microsoft Visual C++ version 6.0.
+This is a HOWTO for using OMNeT++ with Microsoft Visual C++ version 6.0.
 
 Part of this documentation comes from a readme written by Balazs
 KELEMEN (kelemen@sch.bme.hu) in March 2000.
+
+IMPORTANT!
+  Recent change: you have to compile both OMNeT++ and model files with
+  exception handling and RTTI turned ON! Especially, if RTTI is not 
+  enabled, the simulation will crash in the className() method.
 
 
 1. Requirements
@@ -171,8 +176,8 @@ to have the standard samples compile in a different directory:
     Hint: if you 'Compile' the .ned files, the _n.cpp files will be created,
     and you can select them all at once in the 'Add files' dialog.
 
- 6. Make sure to turn off exception handling and RTTI (they interfere with the
-    coroutine library), and set the necessary reserved stack size.
+ 6. Required compiler settings: exception handling ON, run-time type info 
+    (RTTI) ON. Also, set the necessary reserved stack size.
 
  7. Choose the appropriate configuration from Build|Set active configuration...
     Note: for Tkenv, the simulation will be linked with sim_std.lib, envir.lib,
