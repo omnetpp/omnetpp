@@ -542,3 +542,5 @@ proc busy {{msg {}}} {
     }
 }
 
+set hints(insert-imports) {Here you can list other NED files which contain\
+modules that you want to use in this NED file.}

@@ -50,6 +50,14 @@ proc fileNewComponent {type {nedfilekey ""}} {
        openModuleOnNewCanvas $key
    }
    editProps $key
+
+   if {$type=="imports"} {
+       showTextOnceDialog insert-imports
+   } elseif {$type=="channel"} {
+   } elseif {$type=="simple"} {
+   } elseif {$type=="module"} {
+   } elseif {$type=="network"} {
+   }
 }
 
 proc fileOpen {{fname ""}} {
