@@ -478,7 +478,7 @@ htmldocs:
 	@echo Code documentation generated. Now, point your web browser to ./htmldoc/index.html.
 
 clean:
-	rm -f *.o *_n.cc *_n.h \$(TARGET)\$(EXE_SUFFIX)
+	rm -f *.o *_n.cc *_n.h *_m.cc *_m.h \$(TARGET)\$(EXE_SUFFIX)
 	rm -f *.vec *.sca
 	rm -rf neddoc.html htmldoc
 
