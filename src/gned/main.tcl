@@ -207,6 +207,8 @@ proc createMainWindow {} {
       {cut     -image $icons(cut)   -command {editCut}}
       {copy    -image $icons(copy)  -command {editCopy}}
       {paste   -image $icons(paste) -command {editPaste}}
+      {undo    -image $icons(undo)  -command {editUndo}}
+      {redo    -image $icons(redo)  -command {editRedo}}
       {sep2    -separator}
       {graph   -image $icons(graph) -command {switchToGraphics}}
       {ned     -image $icons(ned)   -command {switchToNED}}

@@ -310,7 +310,7 @@ proc editUndo {} {
        tk_messageBox -title "GNED" -icon info -type ok -message "Undo/redo not available in graphics mode."
        return
    }
-   $canvas($canv_id,textedit) edit undo
+   catch {$canvas($canv_id,textedit) edit undo}
 }
 
 proc editRedo {} {
@@ -321,7 +321,7 @@ proc editRedo {} {
        tk_messageBox -title "GNED" -icon info -type ok -message "Undo/redo not available in graphics mode."
        return
    }
-   $canvas($canv_id,textedit) edit redo
+   catch {$canvas($canv_id,textedit) edit redo}
 }
 
 proc editCut {} {
