@@ -11,9 +11,9 @@
 // derive abstract class Player from cSimpleModule
 class Player : public cSimpleModule
 {
-    Module_Class_Members( Player, cSimpleModule, 8192)
+    Module_Class_Members( Player, cSimpleModule, 16384)
        // this is a macro; it expands to constructor definition etc.
-       // 8192 is the size for the coroutine stack (in bytes)
+       // 16384 is the size for the coroutine stack (in bytes)
 
     virtual void activity();
        // this redefined virtual function holds the algorithm
@@ -24,21 +24,21 @@ class Player : public cSimpleModule
 
 class SimplePlayer : public Player
 {
-    Module_Class_Members( SimplePlayer, Player, 8192)
+    Module_Class_Members( SimplePlayer, Player, 16384)
     virtual char *playerName();
     virtual int calculateMove( int num_sticks );
 };
 
 class SmartPlayer : public Player
 {
-    Module_Class_Members( SmartPlayer, Player, 8192)
+    Module_Class_Members( SmartPlayer, Player, 16384)
     virtual char *playerName();
     virtual int calculateMove( int num_sticks );
 };
 
 class InteractivePlayer : public Player
 {
-    Module_Class_Members( InteractivePlayer, Player, 8192)
+    Module_Class_Members( InteractivePlayer, Player, 16384)
     virtual char *playerName();
     virtual int calculateMove( int num_sticks );
 };

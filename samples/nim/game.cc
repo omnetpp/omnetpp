@@ -11,9 +11,9 @@
 // derive Game from cSimpleModule
 class Game : public cSimpleModule
 {
-    Module_Class_Members(Game,cSimpleModule,8192)
+    Module_Class_Members(Game,cSimpleModule,16384)
        // this is a macro; it expands to constructor definition etc.
-       // 8192 is the size for the coroutine stack (in bytes)
+       // 16384 is the size for the coroutine stack (in bytes)
 
     virtual void activity();
        // this redefined virtual function holds the algorithm
