@@ -385,7 +385,7 @@ if test ! -d $omnetpp_bin_dir; then
    echo "PROBLEM: the $OMNETPP_BIN_DIR directory does not exist!"
 else
   # ...then we create a small tmp file to check if the dir is in the path
-  probefile=__tmp__
+  probefile=__probe__
   echo '' >$omnetpp_bin_dir/$probefile
   chmod +x  $omnetpp_bin_dir/$probefile
   if $probefile >/dev/null 2>/dev/null; then

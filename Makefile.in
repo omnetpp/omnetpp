@@ -114,7 +114,7 @@ demo:
 #=====================================================================
 
 check-env:
-	@probefile=__tmp__; \
+	@probefile=__probe__; \
 	if (echo '' >@OMNETPP_BIN_DIR@/$$probefile && \
 	    chmod +x @OMNETPP_BIN_DIR@/$$probefile) 2>/dev/null; then \
 	  if $$probefile >/dev/null 2>/dev/null; then :; else \
