@@ -221,7 +221,7 @@ void addExpression(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDE
 %%
 
 /*
- * Toplevel components (no shift-reduce conflict here)
+ * Top-level components (no shift-reduce conflict here)
  */
 networkdescription
         : somedefinitions
@@ -255,7 +255,7 @@ definition
         ;
 
 /*
- * Import stuff (no shift-reduce conflict here)
+ * Imports (no shift-reduce conflict here)
  */
 import
         : INCLUDE
@@ -284,12 +284,55 @@ filename
         ;
 
 /*
- * Channel stuff (no shift-reduce conflict here)
+ * Channel - old syntax
  */
 channeldefinition_old
-        : channelheader opt_channelattrblock_old endchannel
+        : channelheader_old opt_channelattrblock_old endchannel_old
         ;
 
+channelheader_old
+        : CHANNEL NAME
+                {
+                  ps.channel = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.nedfile );
+                  ps.channel->setName(toString(@2));
+                  setComments(ps.channel,@1,@2);
+                }
+        ;
+
+opt_channelattrblock_old
+        :
+        | channelattrblock_old
+        ;
+
+channelattrblock_old
+        : channelattrblock_old NAME expression opt_semicolon
+                {
+                  ps.chanattr = addChanAttr(ps.channel,toString(@2));
+                  addExpression(ps.chanattr, "value",@3,$3);
+                  setComments(ps.channel,@2,@3);
+                }
+        | NAME expression opt_semicolon
+                {
+                  ps.chanattr = addChanAttr(ps.channel,toString(@1));
+                  addExpression(ps.chanattr, "value",@2,$2);
+                  setComments(ps.channel,@1,@2);
+                }
+        ;
+
+endchannel_old
+        : ENDCHANNEL NAME opt_semicolon
+                {
+                  setTrailingComment(ps.channel,@2);
+                }
+        | ENDCHANNEL opt_semicolon
+                {
+                  setTrailingComment(ps.channel,@1);
+                }
+        ;
+
+/*
+ * Channel - new syntax
+ */
 channeldefinition
         : channelheader '{'
             opt_channelattrblock
@@ -328,45 +371,40 @@ channelattrblock
                 }
         ;
 
-opt_channelattrblock_old
-        :
-        | channelattrblock_old
-        ;
-
-channelattrblock_old
-        : channelattrblock_old NAME expression ';'
-                {
-                  ps.chanattr = addChanAttr(ps.channel,toString(@2));
-                  addExpression(ps.chanattr, "value",@3,$3);
-                  setComments(ps.channel,@2,@3);
-                }
-        | NAME expression ';'
-                {
-                  ps.chanattr = addChanAttr(ps.channel,toString(@1));
-                  addExpression(ps.chanattr, "value",@2,$2);
-                  setComments(ps.channel,@1,@2);
-                }
-        ;
-
-endchannel
-        : ENDCHANNEL NAME opt_semicolon
-                {
-                  setTrailingComment(ps.channel,@2);
-                }
-        | ENDCHANNEL opt_semicolon
-                {
-                  setTrailingComment(ps.channel,@1);
-                }
-        ;
-
+/*
+ * Simple module - old syntax
+ */
 simpledefinition_old
-        : simpleheader
-            opt_machineblock
-            opt_paramblock
-            opt_gateblock
-          endsimple
+        : simpleheader_old
+            opt_machineblock_old
+            opt_paramblock_old
+            opt_gateblock_old
+          endsimple_old
         ;
 
+simpleheader_old
+        : SIMPLE NAME
+                {
+                  ps.module = (SimpleModuleNode *)createNodeWithTag(NED_SIMPLE_MODULE, ps.nedfile );
+                  ((SimpleModuleNode *)ps.module)->setName(toString(@2));
+                  setComments(ps.module,@1,@2);
+                }
+        ;
+
+endsimple_old
+        : ENDSIMPLE NAME opt_semicolon
+                {
+                  setTrailingComment(ps.module,@2);
+                }
+        | ENDSIMPLE opt_semicolon
+                {
+                  setTrailingComment(ps.module,@1);
+                }
+        ;
+
+/*
+ * Simple module - new syntax
+ */
 simpledefinition
         : simpleheader '{'
             opt_machineblock
@@ -387,28 +425,44 @@ simpleheader
                 }
         ;
 
-endsimple
-        : ENDSIMPLE NAME opt_semicolon
+
+/*
+ * Module - old syntax
+ */
+moduledefinition_old
+        : moduleheader_old
+            opt_machineblock_old
+            opt_paramblock_old
+            opt_gateblock_old
+            opt_submodblock_old
+            opt_connblock_old
+            opt_displayblock_old
+          endmodule_old
+        ;
+
+moduleheader_old
+        : MODULE NAME
+                {
+                  ps.module = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.nedfile );
+                  ((CompoundModuleNode *)ps.module)->setName(toString(@2));
+                  setComments(ps.module,@1,@2);
+                }
+        ;
+
+endmodule_old
+        : ENDMODULE NAME opt_semicolon
                 {
                   setTrailingComment(ps.module,@2);
                 }
-        | ENDSIMPLE opt_semicolon
+        | ENDMODULE opt_semicolon
                 {
                   setTrailingComment(ps.module,@1);
                 }
         ;
 
-moduledefinition_old
-        : moduleheader
-            opt_machineblock
-            opt_paramblock
-            opt_gateblock
-            opt_submodblock
-            opt_connblock
-            opt_displayblock
-          endmodule
-        ;
-
+/*
+ * Module - new syntax
+ */
 moduledefinition
         : moduleheader '{'
             opt_machineblock
@@ -432,17 +486,48 @@ moduleheader
                 }
         ;
 
-endmodule
-        : ENDMODULE NAME opt_semicolon
+
+/*
+ * Machine block - old syntax
+ */
+opt_machineblock_old
+        : machineblock_old
+        |
+        ;
+
+machineblock_old
+        : MACHINES ':'
                 {
-                  setTrailingComment(ps.module,@2);
+                  ps.machines = (MachinesNode *)createNodeWithTag(NED_MACHINES, ps.module );
+                  setComments(ps.machines,@1,@2);
                 }
-        | ENDMODULE opt_semicolon
+          opt_machinelist_old
                 {
-                  setTrailingComment(ps.module,@1);
                 }
         ;
 
+opt_machinelist_old
+        : machinelist_old ';'
+        |
+        ;
+
+machinelist_old
+        : machinelist_old ',' machine_old
+        | machine_old
+        ;
+
+machine_old
+        : NAME
+                {
+                  ps.machine = (MachineNode *)createNodeWithTag(NED_MACHINE, ps.machines );
+                  ps.machine->setName(toString(@1));
+                  setComments(ps.machine,@1,@1);
+                }
+        ;
+
+/*
+ * Machine block - new syntax
+ */
 opt_machineblock
         : machineblock
         |
@@ -478,6 +563,24 @@ machine
                 }
         ;
 
+/*
+ * Display block - old syntax
+ */
+opt_displayblock_old
+        : displayblock_old
+        |
+        ;
+
+displayblock_old
+        : DISPLAY ':' STRINGCONSTANT ';'
+                {
+                  addDisplayString(ps.module,@3);
+                }
+        ;
+
+/*
+ * Display block - new syntax
+ */
 opt_displayblock
         : displayblock
         |
@@ -490,6 +593,44 @@ displayblock
                 }
         ;
 
+/*
+ * Parameters - old syntax
+ */
+opt_paramblock_old
+        : paramblock_old
+        |
+        ;
+
+paramblock_old
+        : PARAMETERS ':'
+                {
+                  ps.params = (ParamsNode *)createNodeWithTag(NED_PARAMS, ps.module );
+                  setComments(ps.params,@1,@2);
+                }
+          opt_parameters_old
+                {
+                }
+        ;
+
+opt_parameters_old
+        : parameters_old ';'
+        |
+        ;
+
+parameters_old
+        : parameters_old ',' parameter_old  /* comma as separator */
+                {
+                  setComments(ps.param,@2);
+                }
+        | parameter_old
+                {
+                  setComments(ps.param,@1);
+                }
+        ;
+
+/*
+ * Parameters - new syntax
+ */
 opt_paramblock
         : paramblock
         |
@@ -512,11 +653,7 @@ opt_parameters
         ;
 
 parameters
-        : parameters ';' parameter
-                {
-                  setComments(ps.param,@2);
-                }
-        | parameters ',' parameter
+        : parameters ';' parameter   /* semicolon as separator */
                 {
                   setComments(ps.param,@2);
                 }
@@ -524,6 +661,14 @@ parameters
                 {
                   setComments(ps.param,@1);
                 }
+        ;
+
+
+/*
+ * Parameter - identical old and new formats
+ */
+parameter_old
+        : parameter
         ;
 
 parameter
@@ -565,6 +710,76 @@ parameter
                 }
         ;
 
+/*
+ * Gates - old syntax
+ */
+opt_gateblock_old
+        : gateblock_old
+        |
+        ;
+
+gateblock_old
+        : GATES ':'
+                {
+                  ps.gates = (GatesNode *)createNodeWithTag(NED_GATES, ps.module );
+                  setComments(ps.gates,@1,@2);
+                }
+          opt_gates_old
+                {
+                }
+        ;
+
+opt_gates_old
+        : gates_old
+        |
+        ;
+
+gates_old
+        : gates_old IN gatesI_old ';'
+        | IN  gatesI_old ';'
+        | gates_old OUT gatesO_old ';'
+        | OUT gatesO_old ';'
+        ;
+
+gatesI_old
+        : gatesI_old ',' gateI_old
+        | gateI_old
+        ;
+
+gateI_old
+        : NAME '[' ']'
+                {
+                  ps.gate = addGate(ps.gates, @1, 1, 1 );
+                  setComments(ps.gate,@1,@3);
+                }
+        | NAME
+                {
+                  ps.gate = addGate(ps.gates, @1, 1, 0 );
+                  setComments(ps.gate,@1);
+                }
+        ;
+
+gatesO_old
+        : gatesO_old ',' gateO_old
+        | gateO_old
+        ;
+
+gateO_old
+        : NAME '[' ']'
+                {
+                  ps.gate = addGate(ps.gates, @1, 0, 1 );
+                  setComments(ps.gate,@1,@3);
+                }
+        | NAME
+                {
+                  ps.gate = addGate(ps.gates, @1, 0, 0 );
+                  setComments(ps.gate,@1);
+                }
+        ;
+
+/*
+ * Gates - new syntax
+ */
 opt_gateblock
         : gateblock
         |
@@ -629,6 +844,85 @@ gateO
                 }
         ;
 
+/*
+ * Submodules - old syntax
+ */
+opt_submodblock_old
+        : submodblock_old
+        |
+        ;
+
+submodblock_old
+        : SUBMODULES ':'
+                {
+                  ps.submods = (SubmodulesNode *)createNodeWithTag(NED_SUBMODULES, ps.module );
+                  setComments(ps.submods,@1,@2);
+                }
+          opt_submodules_old
+                {
+                }
+        ;
+
+opt_submodules_old
+        : submodules_old
+        |
+        ;
+
+submodules_old
+        : submodules_old submodule_old
+        | submodule_old
+        ;
+
+submodule_old
+        : NAME ':' NAME opt_semicolon
+                {
+                  ps.submod = addSubmodule(ps.submods, @1, @3, NULLPOS);
+                  setComments(ps.submod,@1,@4);
+                }
+          opt_on_blocks_old
+          submodule_body_old
+                {
+                }
+        | NAME ':' NAME vector opt_semicolon
+                {
+                  ps.submod = addSubmodule(ps.submods, @1, @3, NULLPOS);
+                  addVector(ps.submod, "vector-size",@4,$4);
+                  setComments(ps.submod,@1,@5);
+                }
+          opt_on_blocks_old
+          submodule_body_old
+                {
+                }
+        | NAME ':' NAME LIKE NAME opt_semicolon
+                {
+                  ps.submod = addSubmodule(ps.submods, @1, @3, @5);
+                  setComments(ps.submod,@1,@6);
+                }
+          opt_on_blocks_old
+          submodule_body_old
+                {
+                }
+        | NAME ':' NAME vector LIKE NAME opt_semicolon
+                {
+                  ps.submod = addSubmodule(ps.submods, @1, @3, @6);
+                  addVector(ps.submod, "vector-size",@4,$4);
+                  setComments(ps.submod,@1,@7);
+                }
+          opt_on_blocks_old
+          submodule_body_old
+                {
+                }
+        ;
+
+submodule_body_old
+        : opt_substparamblocks_old
+          opt_gatesizeblocks_old
+          opt_submod_displayblock_old
+        ;
+
+/*
+ * Submodules - new syntax
+ */
 opt_submodblock
         : submodblock
         |
@@ -702,6 +996,60 @@ submodule_body
           opt_submod_displayblock
         ;
 
+/*
+ * On-block - old syntax
+ */
+opt_on_blocks_old
+        : on_blocks_old
+        |
+        ;
+
+on_blocks_old
+        : on_blocks_old on_block_old
+        | on_block_old
+        ;
+
+on_block_old
+        : ON ':'
+                {
+                  ps.substmachines = (SubstmachinesNode *)createNodeWithTag(NED_SUBSTMACHINES, ps.inNetwork ? (NEDElement *)ps.network : (NEDElement *)ps.submod );
+                  setComments(ps.substmachines,@1,@2);
+                }
+          opt_on_list_old
+                {
+                }
+        | ON IF expression ':'
+                {
+                  ps.substmachines = (SubstmachinesNode *)createNodeWithTag(NED_SUBSTMACHINES, ps.inNetwork ? (NEDElement *)ps.network : (NEDElement *)ps.submod );
+                  addExpression(ps.substmachines, "condition",@3,$3);
+                  setComments(ps.substmachines,@1,@4);
+                }
+          opt_on_list_old
+                {
+                }
+        ;
+
+opt_on_list_old
+        : on_list_old ';'
+        |
+        ;
+
+on_list_old
+        : on_list_old ',' on_mach_old
+        | on_mach_old
+        ;
+
+on_mach_old
+        : NAME
+                {
+                  ps.substmachine = addSubstmachine(ps.substmachines,@1);
+                  setComments(ps.substmachine,@1);
+                }
+        ;
+
+/*
+ * On-block - new syntax
+ */
 opt_on_blocks
         : on_blocks
         |
@@ -712,7 +1060,7 @@ on_blocks
         | on_block
         ;
 
-on_block                            /* --LG */
+on_block
         : ON ':'
                 {
                   ps.substmachines = (SubstmachinesNode *)createNodeWithTag(NED_SUBSTMACHINES, ps.inNetwork ? (NEDElement *)ps.network : (NEDElement *)ps.submod );
@@ -750,6 +1098,62 @@ on_mach
                 }
         ;
 
+/*
+ * Substparameters - old syntax
+ */
+opt_substparamblocks_old
+        : substparamblocks_old
+        |
+        ;
+
+substparamblocks_old
+        : substparamblocks_old substparamblock_old
+        | substparamblock_old
+        ;
+
+substparamblock_old
+        : PARAMETERS ':'
+                {
+                  ps.substparams = (SubstparamsNode *)createNodeWithTag(NED_SUBSTPARAMS, ps.inNetwork ? (NEDElement *)ps.network : (NEDElement *)ps.submod );
+                  setComments(ps.substparams,@1,@2);
+                }
+          opt_substparameters_old
+                {
+                }
+        | PARAMETERS IF expression ':'
+                {
+                  ps.substparams = (SubstparamsNode *)createNodeWithTag(NED_SUBSTPARAMS, ps.inNetwork ? (NEDElement *)ps.network : (NEDElement *)ps.submod );
+                  addExpression(ps.substparams, "condition",@3,$3);
+                  setComments(ps.substparams,@1,@4);
+                }
+          opt_substparameters_old
+                {
+                }
+
+        ;
+
+opt_substparameters_old
+        : substparameters_old ';'
+        |
+        ;
+
+substparameters_old
+        : substparameters_old ',' substparameter_old   /* comma as separator */
+        | substparameter_old
+        ;
+
+substparameter_old
+        : NAME '=' expression
+                {
+                  ps.substparam = addSubstparam(ps.substparams,@1);
+                  addExpression(ps.substparam, "value",@3,$3);
+                  setComments(ps.substparam,@1,@3);
+                }
+        ;
+
+/*
+ * Substparameters - new syntax
+ */
 opt_substparamblocks
         : substparamblocks
         |
@@ -792,7 +1196,7 @@ substparameters
         ;
 
 substparameter
-        : NAME '=' expression ';'
+        : NAME '=' expression ';'   /* semicolon as separator */
                 {
                   ps.substparam = addSubstparam(ps.substparams,@1);
                   addExpression(ps.substparam, "value",@3,$3);
@@ -800,6 +1204,62 @@ substparameter
                 }
         ;
 
+/*
+ * Gatesizes - old syntax
+ */
+opt_gatesizeblocks_old
+        : opt_gatesizeblocks_old gatesizeblock_old
+        |
+        ;
+
+gatesizeblock_old
+        : GATESIZES ':'
+                {
+                  ps.gatesizes = (GatesizesNode *)createNodeWithTag(NED_GATESIZES, ps.submod );
+                  setComments(ps.gatesizes,@1,@2);
+                }
+          opt_gatesizes_old
+                {
+                }
+        | GATESIZES IF expression ':'
+                {
+                  ps.gatesizes = (GatesizesNode *)createNodeWithTag(NED_GATESIZES, ps.submod );
+                  addExpression(ps.gatesizes, "condition",@3,$3);
+                  setComments(ps.gatesizes,@1,@4);
+                }
+          opt_gatesizes_old
+                {
+                }
+        ;
+
+opt_gatesizes_old
+        : gatesizes_old ';'
+        |
+        ;
+
+gatesizes_old
+        : gatesizes_old ',' gatesize_old
+        | gatesize_old
+        ;
+
+gatesize_old
+        : NAME vector
+                {
+                  ps.gatesize = addGateSize(ps.gatesizes,@1);
+                  addVector(ps.gatesize, "vector-size",@2,$2);
+
+                  setComments(ps.gatesize,@1,@2);
+                }
+        | NAME
+                {
+                  ps.gatesize = addGateSize(ps.gatesizes,@1);
+                  setComments(ps.gatesize,@1);
+                }
+        ;
+
+/*
+ * Gatesizes - new syntax
+ */
 opt_gatesizeblocks
         : opt_gatesizeblocks gatesizeblock
         |
@@ -850,6 +1310,20 @@ gatesize
                 }
         ;
 
+/*
+ * Submodule-displayblock - old syntax
+ */
+opt_submod_displayblock_old
+        : DISPLAY ':' STRINGCONSTANT ';'
+                {
+                  addDisplayString(ps.submod,@3);
+                }
+        |
+        ;
+
+/*
+ * Submodule-displayblock - new syntax
+ */
 opt_submod_displayblock
         : DISPLAY ':' STRINGCONSTANT ';'
                 {
@@ -858,6 +1332,238 @@ opt_submod_displayblock
         |
         ;
 
+/*
+ * Connections - old syntax  (about 7 shift/reduce)
+ */
+opt_connblock_old
+        : connblock_old
+        |
+        ;
+
+connblock_old
+        : CONNECTIONS NOCHECK ':'
+                {
+                  ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.module );
+                  ps.conns->setCheckUnconnected( "false" );
+                  setComments(ps.conns,@1,@3);
+                }
+          opt_connections_old
+                {
+                }
+        | CONNECTIONS ':'
+                {
+                  ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.module );
+                  ps.conns->setCheckUnconnected( "yes" );
+                  setComments(ps.conns,@1,@2);
+                }
+          opt_connections_old
+                {
+                }
+        ;
+
+opt_connections_old
+        : connections_old
+        |
+        ;
+
+connections_old
+        : connections_old connection_old
+        | connection_old
+        ;
+
+connection_old
+        : loopconnection_old
+        | notloopconnection_old
+        ;
+
+loopconnection_old
+        : FOR
+                {
+                  ps.forloop = (ForLoopNode *)createNodeWithTag(NED_FOR_LOOP, ps.conns );
+                }
+          loopvarlist_old DO
+                {
+                  ps.inLoop=1;
+                }
+          notloopconnections_old ENDFOR opt_semicolon
+                {
+                  ps.inLoop=0;
+                  setComments(ps.forloop,@1,@4);
+                  setTrailingComment(ps.forloop,@7);
+                }
+        ;
+
+loopvarlist_old
+        : loopvar_old ',' loopvarlist_old
+        | loopvar_old
+        ;
+
+loopvar_old
+        : NAME '=' expression TO expression
+                {
+                  ps.loopvar = addLoopVar(ps.forloop,@1);
+                  addExpression(ps.loopvar, "from-value",@3,$3);
+                  addExpression(ps.loopvar, "to-value",@5,$5);
+                  setComments(ps.loopvar,@1,@5);
+                }
+        ;
+
+opt_conncondition_old
+        : IF expression
+                {
+                  addExpression(ps.conn, "condition",@2,$2);
+                }
+        |
+        ;
+
+opt_conn_displaystr_old
+        : DISPLAY STRINGCONSTANT
+                {
+                  addDisplayString(ps.conn,@2);
+                }
+        |
+        ;
+
+notloopconnections_old
+        : notloopconnections_old notloopconnection_old
+        | notloopconnection_old
+        ;
+
+notloopconnection_old
+        : leftgatespec_old RIGHT_ARROW rightgatespec_old opt_conncondition_old opt_conn_displaystr_old comma_or_semicolon
+                {
+                  ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
+                  setComments(ps.conn,@1,@5);
+                }
+        | leftgatespec_old RIGHT_ARROW channeldescr_old RIGHT_ARROW rightgatespec_old opt_conncondition_old opt_conn_displaystr_old comma_or_semicolon
+                {
+                  ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
+                  setComments(ps.conn,@1,@7);
+                }
+        | leftgatespec_old LEFT_ARROW rightgatespec_old opt_conncondition_old opt_conn_displaystr_old comma_or_semicolon
+                {
+                  swapConnection(ps.conn);
+                  ps.conn->setArrowDirection(NED_ARROWDIR_LEFT);
+                  setComments(ps.conn,@1,@5);
+                }
+        | leftgatespec_old LEFT_ARROW channeldescr_old LEFT_ARROW rightgatespec_old opt_conncondition_old opt_conn_displaystr_old comma_or_semicolon
+                {
+                  swapConnection(ps.conn);
+                  ps.conn->setArrowDirection(NED_ARROWDIR_LEFT);
+                  setComments(ps.conn,@1,@7);
+                }
+        ;
+
+leftgatespec_old
+        : leftmod_old '.' leftgate_old
+        | parentleftgate_old
+        ;
+
+leftmod_old
+        : NAME vector
+                {
+                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.forloop : (NEDElement*)ps.conns );
+                  ps.conn->setSrcModule( toString(@1) );
+                  addVector(ps.conn, "src-module-index",@2,$2);
+                }
+        | NAME
+                {
+                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.forloop : (NEDElement*)ps.conns );
+                  ps.conn->setSrcModule( toString(@1) );
+                }
+        ;
+
+leftgate_old
+        : NAME vector
+                {
+                  ps.conn->setSrcGate( toString( @1) );
+                  addVector(ps.conn, "src-gate-index",@2,$2);
+                }
+        | NAME
+                {
+                  ps.conn->setSrcGate( toString( @1) );
+                }
+        ;
+
+parentleftgate_old
+        : NAME vector
+                {
+                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.forloop : (NEDElement*)ps.conns );
+                  ps.conn->setSrcModule("");
+                  ps.conn->setSrcGate(toString(@1));
+                  addVector(ps.conn, "src-gate-index",@2,$2);
+                }
+        | NAME
+                {
+                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.forloop : (NEDElement*)ps.conns );
+                  ps.conn->setSrcModule("");
+                  ps.conn->setSrcGate(toString(@1));
+                }
+        ;
+
+rightgatespec_old
+        : rightmod_old '.' rightgate_old
+        | parentrightgate_old
+        ;
+
+rightmod_old
+        : NAME vector
+                {
+                  ps.conn->setDestModule( toString(@1) );
+                  addVector(ps.conn, "dest-module-index",@2,$2);
+                }
+        | NAME
+                {
+                  ps.conn->setDestModule( toString(@1) );
+                }
+        ;
+
+rightgate_old
+        : NAME vector
+                {
+                  ps.conn->setDestGate( toString( @1) );
+                  addVector(ps.conn, "dest-gate-index",@2,$2);
+                }
+        | NAME
+                {
+                  ps.conn->setDestGate( toString( @1) );
+                }
+        ;
+
+parentrightgate_old
+        : NAME vector
+                {
+                  ps.conn->setDestGate( toString( @1) );
+                  addVector(ps.conn, "dest-gate-index",@2,$2);
+                }
+        | NAME
+                {
+                  ps.conn->setDestGate( toString( @1) );
+                }
+        ;
+
+
+channeldescr_old
+        : NAME
+                {
+                  ps.connattr = addConnAttr(ps.conn,"channel");
+                  addExpression(ps.connattr, "value",@1,createExpression(createConst(NED_CONST_STRING, toString(@1))));
+                }
+        | NAME expression
+                {
+                  ps.connattr = addConnAttr(ps.conn,toString(@1));
+                  addExpression(ps.connattr, "value",@2,$2);
+                }
+        | channeldescr_old NAME expression
+                {
+                  ps.connattr = addConnAttr(ps.conn,toString(@2));
+                  addExpression(ps.connattr, "value",@3,$3);
+                }
+        ;
+
+/*
+ * Connections - new syntax  (about 7 shift/reduce)
+ */
 opt_connblock
         : connblock
         |
@@ -884,9 +1590,6 @@ connblock
                 }
         ;
 
-/*
- * Connections: around 7 shift/reduce conflict
- */
 opt_connections
         : connections
         |
@@ -934,7 +1637,7 @@ loopvar
                 }
         ;
 
-opt_conn_condition
+opt_conncondition
         : IF expression
                 {
                   addExpression(ps.conn, "condition",@2,$2);
@@ -956,23 +1659,23 @@ notloopconnections
         ;
 
 notloopconnection
-        : gate_spec_L RIGHT_ARROW gate_spec_R opt_conn_condition opt_conn_displaystr ';'
+        : leftgatespec RIGHT_ARROW rightgatespec opt_conncondition opt_conn_displaystr ';'
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
                   setComments(ps.conn,@1,@5);
                 }
-        | gate_spec_L RIGHT_ARROW channeldescr RIGHT_ARROW gate_spec_R opt_conn_condition opt_conn_displaystr ';'
+        | leftgatespec RIGHT_ARROW channeldescr RIGHT_ARROW rightgatespec opt_conncondition opt_conn_displaystr ';'
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
                   setComments(ps.conn,@1,@7);
                 }
-        | gate_spec_L LEFT_ARROW gate_spec_R opt_conn_condition opt_conn_displaystr ';'
+        | leftgatespec LEFT_ARROW rightgatespec opt_conncondition opt_conn_displaystr ';'
                 {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_LEFT);
                   setComments(ps.conn,@1,@5);
                 }
-        | gate_spec_L LEFT_ARROW channeldescr LEFT_ARROW gate_spec_R opt_conn_condition opt_conn_displaystr ';'
+        | leftgatespec LEFT_ARROW channeldescr LEFT_ARROW rightgatespec opt_conncondition opt_conn_displaystr ';'
                 {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_LEFT);
@@ -980,12 +1683,12 @@ notloopconnection
                 }
         ;
 
-gate_spec_L
-        : mod_L '.' gate_L
-        | parentgate_L
+leftgatespec
+        : leftmod '.' leftgate
+        | parentleftgate
         ;
 
-mod_L
+leftmod
         : NAME vector
                 {
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.forloop : (NEDElement*)ps.conns );
@@ -999,7 +1702,7 @@ mod_L
                 }
         ;
 
-gate_L
+leftgate
         : NAME vector
                 {
                   ps.conn->setSrcGate( toString( @1) );
@@ -1011,7 +1714,7 @@ gate_L
                 }
         ;
 
-parentgate_L
+parentleftgate
         : NAME vector
                 {
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.forloop : (NEDElement*)ps.conns );
@@ -1027,12 +1730,12 @@ parentgate_L
                 }
         ;
 
-gate_spec_R
-        : mod_R '.' gate_R
-        | parentgate_R
+rightgatespec
+        : rightmod '.' rightgate
+        | parentrightgate
         ;
 
-mod_R
+rightmod
         : NAME vector
                 {
                   ps.conn->setDestModule( toString(@1) );
@@ -1044,7 +1747,7 @@ mod_R
                 }
         ;
 
-gate_R
+rightgate
         : NAME vector
                 {
                   ps.conn->setDestGate( toString( @1) );
@@ -1056,7 +1759,7 @@ gate_R
                 }
         ;
 
-parentgate_R
+parentrightgate
         : NAME vector
                 {
                   ps.conn->setDestGate( toString( @1) );
@@ -1087,13 +1790,42 @@ channeldescr
                 }
         ;
 
+/*
+ * Network - old syntax
+ */
 networkdefinition_old
-        : networkheader
-            opt_on_blocks
-            opt_substparamblocks
-          endnetwork
+        : networkheader_old
+            opt_on_blocks_old
+            opt_substparamblocks_old
+          endnetwork_old
         ;
 
+networkheader_old
+        : NETWORK NAME ':' NAME opt_semicolon
+                {
+                  ps.network = addNetwork(ps.nedfile,@2,@4,NULLPOS);
+                  setComments(ps.network,@1,@5);
+                  ps.inNetwork=1;
+                }
+        | NETWORK NAME ':' NAME LIKE NAME opt_semicolon
+                {
+                  ps.network = addNetwork(ps.nedfile,@2,@4,@6);
+                  setComments(ps.network,@1,@7);
+                  ps.inNetwork=1;
+                }
+        ;
+
+endnetwork_old
+        : ENDNETWORK opt_semicolon
+                {
+                  setTrailingComment(ps.network,@1);
+                  ps.inNetwork=0;
+                }
+        ;
+
+/*
+ * Network - new syntax
+ */
 networkdefinition
         : networkheader '{'
             opt_on_blocks
@@ -1120,13 +1852,9 @@ networkheader
                 }
         ;
 
-endnetwork
-        : ENDNETWORK opt_semicolon
-                {
-                  setTrailingComment(ps.network,@1);
-                  ps.inNetwork=0;
-                }
-        ;
+/*
+ * Common part - old and new
+ */
 
 vector
         : '[' expression ']'
@@ -1616,6 +2344,8 @@ fieldvalue
         ;
 
 opt_semicolon : ';' | ;
+
+comma_or_semicolon : ',' | ';' ;
 
 %%
 

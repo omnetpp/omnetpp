@@ -54,7 +54,7 @@ void NEDXMLGenerator::setIndentSize(int indentsiz)
 void NEDXMLGenerator::generate(ostream& out, NEDElement *tree)
 {
     // xml header
-    out << "<?xml version=\"1.0\"?>" << endl << endl;
+    out << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>" << endl << endl;
 
     // recursively generate children
     doGenerate(out, tree, 0);

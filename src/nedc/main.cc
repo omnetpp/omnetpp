@@ -130,7 +130,8 @@ void printUsage()
 {
     fprintf(stderr,
        "nedtool -- part of OMNeT++, (c) 2002 Andras Varga\n"
-       "Syntax: nedtool [options] <files>\n"
+       "Syntax: nedtool [options] <file1> <file2> ...\n"
+       "    or: nedtool [options] @<filelist>\n"
        "  -c: generate C++ (default)\n"
        "  -x: generate XML\n"
        "  -n: generate NED\n"
@@ -300,6 +301,42 @@ bool processFile(const char *fname)
     return true;
 }
 
+
+bool processListFile(const char *listfilename)
+{
+    const int maxline=1024;
+    char line[maxline];
+
+    if (opt_verbose) fprintf(stderr,"processing list file '%s'...\n",listfilename);
+
+    ifstream in(listfilename, ios::in | ios::nocreate);
+    if (in.fail())
+    {
+        fprintf(stderr,"nedtool: cannot open list file '%s'\n",listfilename);
+        return false;
+    }
+
+    while (in.getline(line, maxline))
+    {
+        line[in.gcount()-1] = '\0';
+        if (!processFile(line))
+        {
+            in.close();
+            return false;
+        }
+    }
+    in.close();
+
+    if (in.fail())
+    {
+        fprintf(stderr,"nedtool: cannot read list file '%s'\n",listfilename);
+        return false;
+    }
+
+    return true;
+}
+
+
 int main(int argc, char **argv)
 {
     // print usage
@@ -332,7 +369,7 @@ int main(int argc, char **argv)
         {
             i++;
             if (i==argc) {
-                fprintf(stderr,"unexpected end of arguments after -I\n");
+                fprintf(stderr,"nedtool: unexpected end of arguments after -I\n");
                 return 1;
             }
             importresolver.addImportPath(argv[i]);
@@ -341,7 +378,7 @@ int main(int argc, char **argv)
         {
             i++;
             if (i==argc) {
-                fprintf(stderr,"unexpected end of arguments after -X\n");
+                fprintf(stderr,"nedtool: unexpected end of arguments after -X\n");
                 return 1;
             }
             if (!strcmp(argv[i],"ned"))
@@ -351,7 +388,7 @@ int main(int argc, char **argv)
             else if (!strcmp(argv[i],"off"))
                 opt_nextfiletype = NOTHING;
             else {
-                fprintf(stderr,"unknown file type %s after -X\n",argv[i]);
+                fprintf(stderr,"nedtool: unknown file type %s after -X\n",argv[i]);
                 return 1;
             }
         }
@@ -363,7 +400,7 @@ int main(int argc, char **argv)
         {
             i++;
             if (i==argc) {
-                fprintf(stderr,"unexpected end of arguments after -s\n");
+                fprintf(stderr,"nedtool: unexpected end of arguments after -s\n");
                 return 1;
             }
             opt_suffix = argv[i];
@@ -372,7 +409,7 @@ int main(int argc, char **argv)
         {
             i++;
             if (i==argc) {
-                fprintf(stderr,"unexpected end of arguments after -S\n");
+                fprintf(stderr,"nedtool: unexpected end of arguments after -S\n");
                 return 1;
             }
             opt_hdrsuffix = argv[i];
@@ -402,7 +439,7 @@ int main(int argc, char **argv)
         {
             i++;
             if (i==argc) {
-                fprintf(stderr,"unexpected end of arguments after -o\n");
+                fprintf(stderr,"nedtool: unexpected end of arguments after -o\n");
                 return 1;
             }
             opt_outputfile = argv[i];
@@ -413,20 +450,25 @@ int main(int argc, char **argv)
         }
         else if (argv[i][0]=='-')
         {
-            fprintf(stderr,"unknown flag %s\n",argv[i]);
+            fprintf(stderr,"nedtool: unknown flag %s\n",argv[i]);
             return 1;
+        }
+        else if (argv[i][0]=='@')
+        {
+            if (!processListFile(argv[i]+1))
+                return 1;
         }
         else
         {
             if (opt_mergeoutput && !opt_genxml && !opt_genned)
             {
-                fprintf(stderr,"option -m not supported with C++ output\n");
+                fprintf(stderr,"nedtool: option -m not supported with C++ output\n");
                 return 1;
             }
 #ifdef MUST_EXPAND_WILDCARDS
             const char *fname = findFirstFile(argv[i]);
             if (!fname) {
-                fprintf(stderr,"%s: not found: %s\n",argv[0],argv[i]);
+                fprintf(stderr,"nedtool: %s: not found: %s\n",argv[0],argv[i]);
                 return 1;
             }
             while (fname)

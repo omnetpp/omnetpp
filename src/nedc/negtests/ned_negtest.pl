@@ -25,7 +25,8 @@ foreach $testfile (@filenames)
     unlink($errfile);
     $status = system ("$nedtool $testfile 2>$errfile");
     if ($status eq '0') {
-        fail($testfile, "0 exit code: nedtool didn't detect the error in the NED file");
+        fail($testfile, "nedtool failed to detect detect error in NED file (exit code 0)");
+        next;
     }
     if (!open(IN,"$errfile")) {
         unresolved($testfile, "cannot read error output file `$errfile'");
