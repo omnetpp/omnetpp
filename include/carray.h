@@ -316,9 +316,10 @@ class SIM_API cArray : public cObject
     virtual std::string info() const;
 
     /**
-     * Calls the given function for each object contained.
+     * Calls v->visit(this) for each contained object.
+     * See cObject for more details.
      */
-    virtual void forEach(ForeachFunc f);
+    virtual void forEachChild(cVisitor *v);
 
     /**
      * Serializes the object into a PVM or MPI send buffer.

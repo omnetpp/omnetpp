@@ -127,10 +127,10 @@ class SIM_API cMessageHeap : public cObject
     virtual std::string info() const;
 
     /**
-     * Call the passed function for each contained object.
+     * Calls v->visit(this) for each contained object.
      * See cObject for more details.
      */
-    virtual void forEach(ForeachFunc f);
+    virtual void forEachChild(cVisitor *v);
 
     // no netPack() and netUnpack()
     //@}

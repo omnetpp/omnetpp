@@ -385,9 +385,10 @@ class SIM_API cPar : public cObject
     virtual void writeContents(std::ostream& os);
 
     /**
-     * Calls the given function for contained object, if there's any.
+     * Calls v->visit(this) for the contained object, if there's any.
+     * See cObject for more details.
      */
-    virtual void forEach(ForeachFunc f);
+    virtual void forEachChild(cVisitor *v);
 
     /**
      * Serializes the object into a PVM or MPI send buffer.

@@ -23,7 +23,7 @@
 
 
 /**
- * Internal class, used as a base class for cModule. cDefaultList acts 
+ * Internal class, used as a base class for cModule. cDefaultList acts
  * as a "soft owner" (see object ownership discussion in cObjct documentation).
  * Do not subclass your own classes from cDefaultList.
  *
@@ -107,9 +107,10 @@ class SIM_API cDefaultList : public cObject
     virtual std::string info() const;
 
     /**
-     * Calls the given function for each object contained.
+     * Calls v->visit(this) for each contained object.
+     * See cObject for more details.
      */
-    virtual void forEach(ForeachFunc f);
+    virtual void forEachChild(cVisitor *v);
 
     /**
      * Packing and unpacking cannot be supported with this class.

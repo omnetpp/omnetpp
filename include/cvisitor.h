@@ -18,7 +18,8 @@
 #ifndef __CVISITOR_H
 #define __CVISITOR_H
 
-#include "cobject.h"
+
+class cObject;
 
 
 /**
@@ -29,25 +30,11 @@
  */
 class cVisitor
 {
-  private:
-     // wraps old cObject::foreach()
-     static bool do_foreach_child_call_visitor(cObject *obj, bool beg, cObject *_parent, cVisitor *_visitor);
-
   protected:
     /**
      * Can be thrown to get out in the middle of the traversal process.
      */
      class EndTraversalException { public: EndTraversalException() {} };
-
-    /**
-     * Called on each immediate child object. Should be redefined by user.
-     */
-    virtual void visit(cObject *obj) = 0;
-
-    /**
-     * Emulate cObject::foreachChild() with the foreach() we have...
-     */
-    virtual void traverseChildrenOf(cObject *obj);
 
   public:
     /**
@@ -61,6 +48,13 @@ class cVisitor
      * traversal went through and false if EndTraversalException was caught.
      */
     virtual bool process(cObject *obj);
+
+    /**
+     * Should be redefined by user to encapsulate the operation to be performed
+     * on the object. If you want recursively traversal, call 
+     * obj->forearchChild(this) from here.
+     */
+    virtual void visit(cObject *obj) = 0;
 };
 
 #endif

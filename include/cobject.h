@@ -25,9 +25,11 @@
 #include "util.h"
 #include "cpolymorphic.h"
 #include "cexception.h"
+#include "cvisitor.h"
 
 
 #define MAX_INTERNAL_NAME 11  /* should be 4n+3 */
+
 
 //=== classes declared here
 class cObject;
@@ -37,6 +39,7 @@ class cStaticFlag;
 class cCommBuffer;
 class cArray;
 class cDefaultList;
+
 
 /**
  * Prototype for functions that can be used by cQueue objects configured as
@@ -48,13 +51,6 @@ class cDefaultList;
  * @ingroup EnumsTypes
  */
 typedef int (*CompareFunc)(cObject *a, cObject *b);
-
-/**
- * Prototype for functions that can be used with the foreach() mechanism
- * defined in cObject.
- * @ingroup EnumsTypes
- */
-typedef bool (*ForeachFunc)(cObject *,bool);
 
 
 /**
@@ -400,43 +396,14 @@ class SIM_API cObject : public cPolymorphic
     //@{
 
     /**
-     * Call f for each contained object.
+     * Enables traversing the object tree, performing some operation on
+     * each object. The operation is encapsulated in the particular subclass
+     * of cVisitor.
      *
-     * Makes sense with container objects derived from cObject.
-     * Calls the <I>f</I> function recursively for each object contained
-     * in this object.
-     *
-     * The passed function is called for each
-     * object twice: once on entering and once on leaving the object.
-     * In addition, after the first ('entering') call to the function,
-     * it signals with its return value whether it wants to go deeper
-     * in the contained objects or not.
-     *
-     * Functions passed to forEach() will use static variables
-     * to store other necessary information. (Yes, this limits their
-     * recursive use :-( ).
-     *
-     * forEach() takes a function do_fn (of ForeachFunc
-     * type) with 2 arguments: a cObject* and a bool.
-     * First, forEach() should call do_fn(this,true)
-     * to inform the function about entering the object. Then, if this
-     * call returned true, it must call forEach(do_fn)
-     * for every contained object. Finally, it must call do_fn(this,false)
-     * to let do_fn know that there's no more contained object.
-     *
-     * Functions using forEach() work in the following way:
-     * they call do_fn(NULL, false, <additional args>)
-     * to initialize the static variables inside the function with the
-     * additional args passed. Then they call forEach(do_fn)
-     * for the given object. Finally, read the results by calling do_fn(NULL,
-     * false, additional-args), where additional-args can
-     * be pointers where the result should be stored. ForeachFuncs
-     * mustn't call themselves recursively!
-     *
-     * <i>The foreach() mechamism will soon be replaced by a design
-     * based on the Visitor pattern.</i>
+     * This method should be redefined in every subclass to call v->visit(obj)
+     * for every obj object contained.
      */
-    virtual void forEach(ForeachFunc f);
+    virtual void forEachChild(cVisitor *v);
 
     /**
      * Finds the object with the given name. This function is useful when called
@@ -446,6 +413,8 @@ class SIM_API cObject : public cPolymorphic
      * been found. If deep is false, only objects directly
      * contained will be searched, otherwise the function searches the
      * whole subtree for the object. It uses the forEach() mechanism.
+     *
+     * Do not use it for finding submodules!
      */
     cObject *findObject(const char *name, bool deep=true);
 

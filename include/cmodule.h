@@ -280,10 +280,10 @@ class SIM_API cModule : public cDefaultList
     /* No dup() because this is an abstract class. */
 
     /**
-     * Call the passed function for each contained object.
+     * Calls v->visit(this) for each contained object.
      * See cObject for more details.
      */
-    virtual void forEach(ForeachFunc f);
+    virtual void forEachChild(cVisitor *v);
 
     /**
      * Returns the full name of the module, which is name() plus the

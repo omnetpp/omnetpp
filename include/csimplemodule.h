@@ -150,10 +150,10 @@ class SIM_API cSimpleModule : public cModule
     virtual std::string info() const;
 
     /**
-     * Call the passed function for each contained object.
+     * Calls v->visit(this) for each contained object.
      * See cObject for more details.
      */
-    virtual void forEach(ForeachFunc f);
+    virtual void forEachChild(cVisitor *v);
     //@}
 
     /** @name Redefined cModule functions. */

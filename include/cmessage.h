@@ -157,10 +157,10 @@ class SIM_API cMessage : public cObject
     virtual std::string info() const;
 
     /**
-     * Call the passed function for each contained object.
+     * Calls v->visit(this) for each contained object.
      * See cObject for more details.
      */
-    virtual void forEach( ForeachFunc do_fn );
+    virtual void forEachChild(cVisitor *v);
 
     /**
      * Writes textual information about this object to the stream.

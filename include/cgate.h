@@ -104,10 +104,10 @@ class SIM_API cGate : public cObject
     virtual cObject *dup() const  {return new cGate(*this);}
 
     /**
-     * Call the passed function for each contained object.
+     * Calls v->visit(this) for each contained object.
      * See cObject for more details.
      */
-    virtual void forEach(ForeachFunc f);
+    virtual void forEachChild(cVisitor *v);
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.

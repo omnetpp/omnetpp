@@ -123,10 +123,10 @@ class SIM_API cSimulation : public cObject
     virtual cObject *dup() const  {return new cSimulation(*this);}
 
     /**
-     * Call the passed function for each contained object.
+     * Calls v->visit(this) for each contained object.
      * See cObject for more details.
      */
-    virtual void forEach(ForeachFunc f);
+    virtual void forEachChild(cVisitor *v);
 
     /**
      * Writes textual information about this object to the stream.
