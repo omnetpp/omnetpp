@@ -41,6 +41,7 @@ void cAkaroaRNG::selfTest()
 
 unsigned long cAkaroaRNG::intRand()
 {
+    numDrawn++;
     return AkRandom()-1;
 }
 
@@ -52,23 +53,27 @@ unsigned long cAkaroaRNG::intRandMax()
 unsigned long cAkaroaRNG::intRand(unsigned long n)
 {
     // UniformInt() is also from Akaroa, and it's based on AkRandomReal()
+    numDrawn++;
     return UniformInt(0, n-1);
 }
 
 double cAkaroaRNG::doubleRand()
 {
-    // khmm, can't do better... see class doc.
+    // khmm, this cannot return zero, but we cannot do better... see class doc.
+    numDrawn++;
     return AkRandomReal();
 }
 
 double cAkaroaRNG::doubleRandNonz()
 {
+    numDrawn++;
     return AkRandomReal();
 }
 
 double cAkaroaRNG::doubleRandIncl1()
 {
-    // khmm, can't do better... see class doc.
+    // khmm, this cannot return 1, but we cannot do better... see class doc.
+    numDrawn++;
     return AkRandomReal();
 }
 
