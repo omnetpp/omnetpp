@@ -101,7 +101,7 @@ class cProxyGate : public cGate
      * Invokes the cParsimPartition::processOutgoingMessage() method
      * to transmit the message, then deletes the message object.
      */
-    virtual void deliver(cMessage *msg, simtime_t at);
+    virtual bool deliver(cMessage *msg, simtime_t at);
     //@}
 
     /** @name Address of remote gate */

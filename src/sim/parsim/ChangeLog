@@ -1,3 +1,8 @@
+2004-02-12  Andras Varga
+
+	* cproxygate.cc/.h: fix: local copy of messages sent out from the 
+	partition was not deleted
+
 2004-02-11  Andras Varga
 
 	* receiveNonblocking() changed to return false if it was interrupted;
