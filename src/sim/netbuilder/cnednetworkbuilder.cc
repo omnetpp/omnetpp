@@ -375,7 +375,7 @@ cGate *cNEDNetworkBuilder::resolveGate(cModule *parentmodp,
     {
         if (modp == parentmodp)
             gatep = getFirstUnusedParentModGate(modp, gatename);
-        else if (isplusplus)
+        else
             gatep = getFirstUnusedSubmodGate(modp, gatename);
     }
     else // (gateindexp)
