@@ -173,7 +173,23 @@ was removed in 2.0beta4. The built libraries and programs are immediately
 copied to the lib/ and bin/ subdirs.
 
 
-8. Using Plove
+8. Using DLLs
+~~~~~~~~~~~~~
+It is possible to build a DLL version of the OMNeT++ libraries. To do so,
+set the desired library suffix to ".dll" in configuser.vc:
+  LIB_SUFFIX=.dll
+After re-building OMNeT++, the DLLs should appear in the lib/ directory,
+together with the respective import libraries which have the .ilib suffix.
+(You may want to rename them manually to .lib.)
+
+There's one trick when using the DLLs: when you compile your model sources,
+you must have the WIN32_DLL symbol #defined! It is best to pass them
+to the compiler from your makefile (or if you use the IDE, add it to
+Settings--> C/C++ --> Preprocessor --> Preprocessor definitions). If you
+fail to do so, you'll get undefined linker symbols!
+
+
+9. Using Plove
 ~~~~~~~~~~~~~~
 
 If you want to use Plove, you should download and install Gnuplot.
