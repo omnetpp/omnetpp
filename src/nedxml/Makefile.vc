@@ -16,7 +16,7 @@ OBJS= nedelements.obj nedelement.obj nederror.obj \
       nedbasicvalidator.obj nedsemanticvalidator.obj nedcompiler.obj \
       cppgenerator.obj cppmsggenerator.obj cppexprgenerator.obj nedgenerator.obj \
       nedfilebuffer.obj nedparser.obj ned.tab.obj lex.yy.obj nedutil.obj \
-      xmlgenerator.obj nedxmlparser.obj nedsaxhandler.obj saxparser.obj \
+      xmlgenerator.obj nedxmlparser.obj nedsaxhandler.obj saxparser_$(XMLPARSER).obj \
 
 
 #
@@ -103,9 +103,11 @@ nedxmlparser.obj : nedxmlparser.cc
 nedsaxhandler.obj : nedsaxhandler.cc
         $(CXX) $(COPTS) /c /Tp nedsaxhandler.cc
 
-saxparser.obj : saxparser.cc
-        $(CXX) $(COPTS) /c /Tp saxparser.cc
+saxparser_expat.obj : saxparser_expat.cc
+        $(CXX) $(COPTS) /I $(EXPAT_INCL_DIR) /c /Tp saxparser_expat.cc
 
+saxparser_libxml.obj : saxparser_libxml.cc
+        $(CXX) $(COPTS) /I $(LIBXML_INCL_DIR) /c /Tp saxparser_libxml.cc
 
 depend:
         $(MAKEDEPEND) -I. -fMakefile.vc -- *.cc
@@ -209,7 +211,9 @@ nedxmlparser.obj: nedxmlparser.cc \
   nedsaxhandler.h \
   nederror.h \
   nedelement.h
-saxparser.obj: saxparser.cc \
+saxparser_expat.obj: saxparser_expat.cc \
+  saxparser.h
+saxparser_libxml.obj: saxparser_libxml.cc \
   saxparser.h
 xmlgenerator.obj: xmlgenerator.cc \
   nedelements.h \
