@@ -1,1 +1,1 @@
-@e:\tcl\bin\wish82.exe -f e:/home/omnetpp/samples/demo/rundemo 
+@d:\tcl\bin\wish82.exe -f d:/home/omnetpp/samples/demo/rundemo 

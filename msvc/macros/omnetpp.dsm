@@ -37,8 +37,8 @@ Sub addNEDfileToProject()
     on error goto 0
 
     ' ask NED file name
-    nedfname = inputbox("Enter name of new NED file: ", _
-                        "New NED file","untitled.ned")
+    nedfname = inputbox("Name of NED file to add: (new or existing file in project directory) ", _
+                        "Add NED file to project","untitled.ned")
     if nedfname="" then
         exit sub
     end if

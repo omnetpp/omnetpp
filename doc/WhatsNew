@@ -6,6 +6,12 @@ In the OMNeT++ 2.1 (April 2001)
 BC++ support removed.
 Tkenv fix
 include dirs
+win98 toplevel makefile added
+tutorial integrated
+compiled-in tcl code for plove
+WinMain for plove & gned
+bugfixes in plove & gned
+MSVC stuff included
 
 
 In the OMNeT++ 2.0 patch 1 (March 2001)
