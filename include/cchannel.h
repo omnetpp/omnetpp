@@ -197,7 +197,7 @@ class SIM_API cChannel : public cObject
  *
  * @ingroup SimCore
  */
-class SIM_API cSimpleChannel : public cChannel
+class SIM_API cBasicChannel : public cChannel
 {
   private:
     cPar *disabledp;    // if not NULL and value is nonzero, channel is down (will delete all packets). Points to an object in the parlist.
@@ -213,23 +213,23 @@ class SIM_API cSimpleChannel : public cChannel
     /**
      * Constructor.
      */
-    explicit cSimpleChannel(const char *name=NULL);
+    explicit cBasicChannel(const char *name=NULL);
 
     /**
      * Copy constructor.
      */
-    cSimpleChannel(const cSimpleChannel& ch);
+    cBasicChannel(const cBasicChannel& ch);
 
     /**
      * Destructor.
      */
-    virtual ~cSimpleChannel();
+    virtual ~cBasicChannel();
 
     /**
-     * Assignment operator. Duplication and the assignment operator work all right with cSimpleChannel.
+     * Assignment operator. Duplication and the assignment operator work all right with cBasicChannel.
      * The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cSimpleChannel& operator=(const cSimpleChannel& msg);
+    cBasicChannel& operator=(const cBasicChannel& msg);
     //@}
 
     /** @name Redefined cObject functions. */
@@ -239,7 +239,7 @@ class SIM_API cSimpleChannel : public cChannel
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() const  {return new cSimpleChannel(*this);}
+    virtual cObject *dup() const  {return new cBasicChannel(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.

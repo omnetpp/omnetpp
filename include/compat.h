@@ -48,8 +48,9 @@ typedef cTopology::LinkIn      sTopoLinkIn;
 typedef cTopology::LinkOut     sTopoLinkOut;
 typedef cTopology::Node        sTopoNode;
 
-// renamed class:
+// renamed classes:
 typedef cDisplayString cDisplayStringParser;
+typedef cBasicChannel  cSimpleChannel;
 
 #endif
 

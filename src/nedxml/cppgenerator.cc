@@ -411,9 +411,9 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "}\n";
     out << "\n";
 
-    out << "static cChannel *_createNonTypedSimpleChannel(double delay, double error, double datarate)\n";
+    out << "static cChannel *_createNonTypedBasicChannel(double delay, double error, double datarate)\n";
     out << "{\n";
-    out << "    cSimpleChannel *channel = new cSimpleChannel(\"channel\");\n";
+    out << "    cBasicChannel *channel = new cBasicChannel(\"channel\");\n";
     out << "    if (delay!=0) channel->setDelay(delay);\n";
     out << "    if (error!=0) channel->setError(error);\n";
     out << "    if (datarate!=0) channel->setDatarate(datarate);\n";
@@ -486,7 +486,7 @@ void NEDCppGenerator::doChannel(ChannelNode *node, const char *indent, int mode,
     // factory method
     out << "cChannel *" << channelname << "::create(const char *name)\n";
     out << "{\n";
-    out << "    cChannel *chan = new cSimpleChannel(name);\n";
+    out << "    cChannel *chan = new cBasicChannel(name);\n";
     out << "    cPar tmpval, *p;\n\n";
 
     // generate channel attributes code
@@ -976,7 +976,7 @@ void NEDCppGenerator::resolveConnectionAttributes(ConnectionNode *node, const ch
     if (isDelaySimple && isErrorSimple && isDatarateSimple)
     {
         // generate optimized code: delay, error, datarate with a specialized function
-        out << indent << "channel = _createNonTypedSimpleChannel("
+        out << indent << "channel = _createNonTypedBasicChannel("
             << (delay ? delay->getValue() : "0") << ", "
             << (error ? error->getValue() : "0") << ", "
             << (datarate ? datarate->getValue() : "0") << ");\n";
@@ -997,7 +997,7 @@ void NEDCppGenerator::resolveConnectionAttributes(ConnectionNode *node, const ch
     {
         // fallback: general code
         out << "\n" << indent << "// add channel\n";
-        out << indent << "channel = new cSimpleChannel(\"channel\");\n";
+        out << indent << "channel = new cBasicChannel(\"channel\");\n";
         generateChildrenWithTags(node, "conn-attr", indent);
     }
 }

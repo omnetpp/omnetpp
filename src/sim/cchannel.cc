@@ -39,7 +39,7 @@ using std::ostream;
 
 //=== registration
 Register_Class(cChannel);
-Register_Class(cSimpleChannel);
+Register_Class(cBasicChannel);
 
 //=========================================================================
 //=== cChannel - member functions
@@ -170,13 +170,13 @@ bool cChannel::deliver(cMessage *msg, simtime_t t)
 
 //=========================================================
 
-cSimpleChannel::cSimpleChannel(const char *name) : cChannel(name)
+cBasicChannel::cBasicChannel(const char *name) : cChannel(name)
 {
     disabledp = errorp = delayp = dataratep = NULL;
     transm_finishes = 0.0;
 }
 
-cSimpleChannel::cSimpleChannel(const cSimpleChannel& ch) : cChannel()
+cBasicChannel::cBasicChannel(const cBasicChannel& ch) : cChannel()
 {
     disabledp = errorp = delayp = dataratep = NULL;
     transm_finishes = 0.0;
@@ -185,18 +185,18 @@ cSimpleChannel::cSimpleChannel(const cSimpleChannel& ch) : cChannel()
     operator=( ch );
 }
 
-cSimpleChannel::~cSimpleChannel()
+cBasicChannel::~cBasicChannel()
 {
 }
 
-std::string cSimpleChannel::info() const
+std::string cBasicChannel::info() const
 {
     return cChannel::info();
     // append other info
     //TBD
 }
 
-void cSimpleChannel::forEach( ForeachFunc do_fn )
+void cBasicChannel::forEach( ForeachFunc do_fn )
 {
     if (do_fn(this,true))
     {
@@ -205,7 +205,7 @@ void cSimpleChannel::forEach( ForeachFunc do_fn )
     do_fn(this,false);
 }
 
-void cSimpleChannel::writeContents(ostream& os)
+void cBasicChannel::writeContents(ostream& os)
 {
     cChannel::writeContents( os );
 
@@ -217,17 +217,17 @@ void cSimpleChannel::writeContents(ostream& os)
     }
 }
 
-void cSimpleChannel::netPack(cCommBuffer *buffer)
+void cBasicChannel::netPack(cCommBuffer *buffer)
 {
     throw new cException(this,"netPack() not implemented");
 }
 
-void cSimpleChannel::netUnpack(cCommBuffer *buffer)
+void cBasicChannel::netUnpack(cCommBuffer *buffer)
 {
     throw new cException(this,"netUnpack() not implemented");
 }
 
-cSimpleChannel& cSimpleChannel::operator=(const cSimpleChannel& ch)
+cBasicChannel& cBasicChannel::operator=(const cBasicChannel& ch)
 {
     if (this==&ch) return *this;
 
@@ -243,7 +243,7 @@ cSimpleChannel& cSimpleChannel::operator=(const cSimpleChannel& ch)
 }
 
 
-void cSimpleChannel::setDelay(double d)
+void cBasicChannel::setDelay(double d)
 {
     if (!delayp)
     {
@@ -253,7 +253,7 @@ void cSimpleChannel::setDelay(double d)
     delayp->setDoubleValue(d);
 }
 
-void cSimpleChannel::setError(double d)
+void cBasicChannel::setError(double d)
 {
     if (!errorp)
     {
@@ -263,7 +263,7 @@ void cSimpleChannel::setError(double d)
     errorp->setDoubleValue(d);
 }
 
-void cSimpleChannel::setDatarate(double d)
+void cBasicChannel::setDatarate(double d)
 {
     if (!dataratep)
     {
@@ -273,7 +273,7 @@ void cSimpleChannel::setDatarate(double d)
     dataratep->setDoubleValue(d);
 }
 
-void cSimpleChannel::setDisabled(bool d)
+void cBasicChannel::setDisabled(bool d)
 {
     if (!disabledp)
     {
@@ -283,7 +283,7 @@ void cSimpleChannel::setDisabled(bool d)
     disabledp->setBoolValue(d);
 }
 
-void cSimpleChannel::setDelay(cPar *p)
+void cBasicChannel::setDelay(cPar *p)
 {
     if (!p)
     {
@@ -296,7 +296,7 @@ void cSimpleChannel::setDelay(cPar *p)
     delayp = p;
 }
 
-void cSimpleChannel::setError(cPar *p)
+void cBasicChannel::setError(cPar *p)
 {
     if (!p)
     {
@@ -309,7 +309,7 @@ void cSimpleChannel::setError(cPar *p)
     errorp = p;
 }
 
-void cSimpleChannel::setDatarate(cPar *p)
+void cBasicChannel::setDatarate(cPar *p)
 {
     if (!p)
     {
@@ -322,7 +322,7 @@ void cSimpleChannel::setDatarate(cPar *p)
     dataratep = p;
 }
 
-cPar& cSimpleChannel::addPar(const char *s)
+cPar& cBasicChannel::addPar(const char *s)
 {
     cPar *p = new cPar(s);
     _parList().set(p);
@@ -338,7 +338,7 @@ cPar& cSimpleChannel::addPar(const char *s)
     return *p;
 }
 
-cPar& cSimpleChannel::addPar(cPar *p)
+cPar& cBasicChannel::addPar(cPar *p)
 {
     _parList().set(p);
     const char *s = p->name();
@@ -353,12 +353,12 @@ cPar& cSimpleChannel::addPar(cPar *p)
     return *p;
 }
 
-bool cSimpleChannel::isBusy() const
+bool cBasicChannel::isBusy() const
 {
     return simulation.simTime()<transm_finishes;
 }
 
-bool cSimpleChannel::deliver(cMessage *msg, simtime_t t)
+bool cBasicChannel::deliver(cMessage *msg, simtime_t t)
 {
     // if channel is disabled, signal that message should be deleted
     if (disabledp && (long)(*disabledp)!=0)

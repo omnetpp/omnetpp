@@ -270,62 +270,62 @@ class SIM_API cGate : public cObject
     //@{
 
     /**
-     * DEPRECATED! Use cChannel/cSimpleChannel and setChannel() instead.
+     * DEPRECATED! Use cChannel/cBasicChannel and setChannel() instead.
      *
      * Sets the parameters of the link to those specified by the link type.
      */
     void setLink(cChannelType *l);
 
     /**
-     * DEPRECATED! Use cSimpleChannel and setChannel() instead.
+     * DEPRECATED! Use cBasicChannel and setChannel() instead.
      *
-     * Creates a channel (of class cSimpleChannel) if the gate does not have
+     * Creates a channel (of class cBasicChannel) if the gate does not have
      * one, and calls setDelay() on it. If the gate already has a channel, it must
-     * be of class cSimpleChannel or one subclassed from it.
+     * be of class cBasicChannel or one subclassed from it.
      */
     void setDelay(cPar *p);
 
     /**
-     * DEPRECATED! Use cSimpleChannel and setChannel() instead.
+     * DEPRECATED! Use cBasicChannel and setChannel() instead.
      *
-     * Creates a channel (of class cSimpleChannel) if the gate does not have
+     * Creates a channel (of class cBasicChannel) if the gate does not have
      * one, and calls setError() on it. If the gate already has a channel, it must
-     * be of class cSimpleChannel or one subclassed from it.
+     * be of class cBasicChannel or one subclassed from it.
      */
     void setError(cPar *p);
 
     /**
-     * DEPRECATED! Use cSimpleChannel and setChannel() instead.
+     * DEPRECATED! Use cBasicChannel and setChannel() instead.
      *
-     * Creates a channel (of class cSimpleChannel) if the gate does not have
+     * Creates a channel (of class cBasicChannel) if the gate does not have
      * one, and calls setDataRate() on it. If the gate already has a channel, it must
-     * be of class cSimpleChannel or one subclassed from it.
+     * be of class cBasicChannel or one subclassed from it.
      */
     void setDataRate(cPar *p);
 
     /**
-     * DEPRECATED! Use channel() and cSimpleChannel::delay() instead.
+     * DEPRECATED! Use channel() and cBasicChannel::delay() instead.
      *
      * If the gate has a channel, calls delay() on it. The channel must
-     * be of class cSimpleChannel or one subclassed from it. If the gate
+     * be of class cBasicChannel or one subclassed from it. If the gate
      * has no channel, the method returns NULL.
      */
     cPar *delay() const;
 
     /**
-     * DEPRECATED! Use channel() and cSimpleChannel::error() instead.
+     * DEPRECATED! Use channel() and cBasicChannel::error() instead.
      *
      * If the gate has a channel, calls error() on it. The channel must
-     * be of class cSimpleChannel or one subclassed from it. If the gate
+     * be of class cBasicChannel or one subclassed from it. If the gate
      * has no channel, the method returns NULL.
      */
     cPar *error() const;
 
     /**
-     * DEPRECATED! Use channel() and cSimpleChannel::datarate() instead.
+     * DEPRECATED! Use channel() and cBasicChannel::datarate() instead.
      *
      * If the gate has a channel, calls datarate() on it. The channel must
-     * be of class cSimpleChannel or one subclassed from it. If the gate
+     * be of class cBasicChannel or one subclassed from it. If the gate
      * has no channel, the method returns NULL.
      */
     cPar *datarate() const;
@@ -335,14 +335,14 @@ class SIM_API cGate : public cObject
     //@{
 
     /**
-     * If the gate has a channel subclassed from cSimpleChannel,
+     * If the gate has a channel subclassed from cBasicChannel,
      * the methods calls isBusy() on it and returns the result.
      * Otherwise, it returns false.
      */
     bool isBusy() const;
 
     /**
-     * If the gate has a channel subclassed from cSimpleChannel,
+     * If the gate has a channel subclassed from cBasicChannel,
      * the methods calls transmissionFinishes() on it and returns
      * the result. Otherwise, it returns 0.0.
      */

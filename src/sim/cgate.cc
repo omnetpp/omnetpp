@@ -284,51 +284,51 @@ void cGate::setChannel(cChannel *ch)
 void cGate::setDelay(cPar *p)
 {
     if (!channelp)
-        setChannel(new cSimpleChannel("channel"));
+        setChannel(new cBasicChannel("channel"));
 
-    cSimpleChannel *ch = dynamic_cast<cSimpleChannel *>(channelp);
+    cBasicChannel *ch = dynamic_cast<cBasicChannel *>(channelp);
     if (!ch)
-        throw new cException(this, "setDelay(): channel is not a cSimpleChannel");
+        throw new cException(this, "setDelay(): channel is not a cBasicChannel");
     ch->setDelay(p);
 }
 
 void cGate::setError(cPar *p)
 {
     if (!channelp)
-        setChannel(new cSimpleChannel("channel"));
+        setChannel(new cBasicChannel("channel"));
 
-    cSimpleChannel *ch = dynamic_cast<cSimpleChannel *>(channelp);
+    cBasicChannel *ch = dynamic_cast<cBasicChannel *>(channelp);
     if (!ch)
-        throw new cException(this, "setDataRate(): channel is not a cSimpleChannel");
+        throw new cException(this, "setDataRate(): channel is not a cBasicChannel");
     ch->setError(p);
 }
 
 void cGate::setDataRate(cPar *p)
 {
     if (!channelp)
-        setChannel(new cSimpleChannel("channel"));
+        setChannel(new cBasicChannel("channel"));
 
-    cSimpleChannel *ch = dynamic_cast<cSimpleChannel *>(channelp);
+    cBasicChannel *ch = dynamic_cast<cBasicChannel *>(channelp);
     if (!ch)
-        throw new cException(this, "setDataRate(): channel is not a cSimpleChannel");
+        throw new cException(this, "setDataRate(): channel is not a cBasicChannel");
     ch->setDatarate(p);
 }
 
 cPar *cGate::delay() const
 {
-    cSimpleChannel *ch = dynamic_cast<cSimpleChannel *>(channelp);
+    cBasicChannel *ch = dynamic_cast<cBasicChannel *>(channelp);
     return (ch && ch->findPar("delay")!=-1) ? &(ch->par("delay")) : NULL;
 }
 
 cPar *cGate::error() const
 {
-    cSimpleChannel *ch = dynamic_cast<cSimpleChannel *>(channelp);
+    cBasicChannel *ch = dynamic_cast<cBasicChannel *>(channelp);
     return (ch && ch->findPar("error")!=-1) ? &(ch->par("error")) : NULL;
 }
 
 cPar *cGate::datarate() const
 {
-    cSimpleChannel *ch = dynamic_cast<cSimpleChannel *>(channelp);
+    cBasicChannel *ch = dynamic_cast<cBasicChannel *>(channelp);
     return (ch && ch->findPar("datarate")!=-1) ? &(ch->par("datarate")) : NULL;
 }
 
@@ -364,13 +364,13 @@ bool cGate::deliver(cMessage *msg, simtime_t t)
 
 bool cGate::isBusy() const
 {
-    cSimpleChannel *ch = dynamic_cast<cSimpleChannel *>(channelp);
+    cBasicChannel *ch = dynamic_cast<cBasicChannel *>(channelp);
     return ch ? ch->isBusy() : false;
 }
 
 simtime_t cGate::transmissionFinishes() const
 {
-    cSimpleChannel *ch = dynamic_cast<cSimpleChannel *>(channelp);
+    cBasicChannel *ch = dynamic_cast<cBasicChannel *>(channelp);
     return ch ? ch->transmissionFinishes() : 0.0;
 }
 

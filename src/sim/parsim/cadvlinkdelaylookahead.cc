@@ -113,7 +113,7 @@ void cAdvancedLinkDelayLookahead::startRun()
                     // check we have a delay on this link (it gives us lookahead)
                     cGate *fromg  = pg->fromGate();
                     cChannel *chan = fromg ? fromg->channel() : NULL;
-                    cSimpleChannel *simplechan = dynamic_cast<cSimpleChannel *>(chan);
+                    cBasicChannel *simplechan = dynamic_cast<cBasicChannel *>(chan);
                     cPar *delaypar = simplechan ? simplechan->delay() : NULL;
                     double linkDelay = delaypar ? delaypar->doubleValue() : 0;
                     if (linkDelay<=0.0)

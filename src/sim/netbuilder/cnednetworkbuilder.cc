@@ -104,7 +104,7 @@ void cNEDNetworkBuilder::buildInside(cModule *modp, CompoundModuleNode *moduleno
 
 cChannel *cNEDNetworkBuilder::createChannel(const char *name, ChannelNode *channelnode)
 {
-    cSimpleChannel *chanp = new cSimpleChannel(name);
+    cBasicChannel *chanp = new cBasicChannel(name);
     for (ChannelAttrNode *chattr=channelnode->getFirstChannelAttrChild(); chattr; chattr=chattr->getNextChannelAttrNodeSibling())
     {
         addChannelAttr(chanp, chattr);
@@ -415,7 +415,7 @@ cChannel *cNEDNetworkBuilder::createChannelForConnection(ConnectionNode *conn, c
     }
 
     // connection attributes
-    cSimpleChannel *channel = new cSimpleChannel();
+    cBasicChannel *channel = new cBasicChannel();
     for (ConnAttrNode *child=conn->getFirstConnAttrChild(); child; child = child->getNextConnAttrNodeSibling())
     {
         const char *name = child->getName();

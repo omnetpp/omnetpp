@@ -1,7 +1,10 @@
 2004-11-25  Andras Varga
 
 	* cmodule.h: displayStringAsParent() renamed to backgroundDisplay-
-	String()
+	String() (compatibility #define added)
+
+	* cchannel.h: cSimpleChannel renamed to cBasicChannel (compatibility 
+	#define added)
 
 2004-11-23  ------ omnetpp-3.0b1 released ------
 

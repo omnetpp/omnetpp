@@ -1,7 +1,7 @@
 2004-11-25  Andras Varga
 
 	* several files: displayStringAsParent() renamed to backgroundDisplay-
-	String()
+	String(); cSimpleChannel renamed to cBasicChannel
 
 2004-11-23  ------ omnetpp-3.0b1 released ------
 

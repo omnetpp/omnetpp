@@ -485,7 +485,7 @@ cLinkType::cLinkType(const cLinkType& li) : cChannelType()
 
 cChannel *cLinkType::create(const char *name)
 {
-    cSimpleChannel *channel = new cSimpleChannel(name);
+    cBasicChannel *channel = new cBasicChannel(name);
 
     cPar *p;
     p = delayfunc ? delayfunc() : NULL;

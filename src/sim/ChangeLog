@@ -7,6 +7,8 @@
 	* cmodule.cc: displayStringAsParent() renamed to backgroundDisplay-
 	String()
 
+	* cchannel.cc: cSimpleChannel renamed to cBasicChannel
+
 2004-11-23  ------ omnetpp-3.0b1 released ------
 
 2004-11-08  Andras Varga
