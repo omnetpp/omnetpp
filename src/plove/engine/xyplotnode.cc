@@ -23,14 +23,16 @@
 Port *XYPlotNode::addYPort()
 {
     Port a;
-    ports.push_back(a);
-    return &(ports.back());
+    yin.push_back(a);
+    return &(yin.back());
 }
 
 bool XYPlotNode::isReady() const
 {
     // every input port must have data available (or already have reached EOF)
-    for (PortVector::const_iterator it=ports.begin(); it!=ports.end(); it++)
+    if (xin()->length()==0 && !xin()->closing())
+        return false;
+    for (PortVector::const_iterator it=yin.begin(); it!=yin.end(); it++)
         if ((*it)()->length()==0 && !(*it)()->closing())
             return false;
     return true;
@@ -38,39 +40,43 @@ bool XYPlotNode::isReady() const
 
 void XYPlotNode::process()
 {
-    // must maintain increasing time order in output, so:
-    // always read from the port with smallest time value coming --
-    // if port has reached EOF, skip it
-    Port *minPort = NULL;
-    const Datum *minDatum;
-    for (PortVector::iterator it=ports.begin(); it!=ports.end(); it++)
+    // read one value from "x" port, then read "y" ports until their peek()'s
+    // return ty>tx values (where tx is timestamp of the "x" value). Meanwhile,
+    // if we find ty==tx values, output the (x,y) pair. If a port has reached
+    // EOF, skip it.
+    Datum xd;
+    xin()->read(&xd,1);
+
+    bool allEof = true;
+    for (PortVector::iterator it=yin.begin(); it!=yin.end(); it++)
     {
-        Channel *chan = (*it)();
-        const Datum *dp = chan->peek();
-        if (dp && (!minPort || dp->x < minDatum->x))
+        Channel *ychan = (*it)();
+        const Datum *yp;
+        Datum d;
+        while ((yp=ychan->peek())!=NULL && yp->x < xd.x)
         {
-            minPort = &(*it);
-            minDatum = dp;
+            ychan()->read(&d,1);
+        }
+        while ((yp=ychan->peek())!=NULL && yp->x == xd.x)
+        {
+            ychan()->read(&d,1);
+            d.x = xd.y;
+            out()->write(&d,1);
         }
     }
 
-    // if we couldn't get any data, all input ports must be at EOF (see isReady())
-    if (!minPort)
-    {
+    // FIXME we're finished if "x" is at EOF!!! just throw away everything from y
+    if (finished())
         out()->close();
-    }
-    else
-    {
-        Datum d;
-        (*minPort)()->read(&d,1);
-        out()->write(&d,1);
-    }
 }
 
 bool XYPlotNode::finished() const
 {
-    // only finished if all ports are at EOF
-    for (PortVector::const_iterator it=ports.begin(); it!=ports.end(); it++)
+    // only finished if all ports are at EOF (closing && no values buffered)
+    // FIXME we're finished if "x" is at EOF!!! just throw away everything from y
+    if (!xin()->closing() || xin()->length()>0)
+        return false;
+    for (PortVector::const_iterator it=yin.begin(); it!=yin.end(); it++)
         if (!(*it)()->closing() || (*it)()->length()>0)
             return false;
     return true;
@@ -102,7 +108,7 @@ Port *XYPlotNodeType::getPort(Node *node, const char *portname) const
 {
     XYPlotNode *node1 = dynamic_cast<XYPlotNode *>(node);
     if (!strcmp(portname,"x"))
-        return &(node1->x);
+        return &(node1->xin);
     if (!strcmp(portname,"next-y"))
         return node1->addYPort();
     else if (!strcmp(portname,"out"))
