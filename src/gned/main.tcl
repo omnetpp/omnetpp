@@ -556,20 +556,24 @@ which you can use later as a prototype for creating connections.
 If you want to edit this channel later, you'll find it in the object tree on the left.}
 #----------------
 set hints(insert-simple)  {You are creating a new simple module type,\
-which you can use as building blocks for compund modules.
+which you can use as a building block for compound modules. Simple modules are\
+active components -- to define the run-time behavior, this simple module\
+NED definition will need to be acompanied by a C++ class of the same name.
 
 If you want to edit this simple module later, you'll find it in the object tree on the left.\
 You can also drag it on the canvas to create an instance.}
 #----------------
-set hints(insert-module)  {You are creating a new compound module type.
+set hints(insert-module)  {You are creating a new compound module type, which can
+use existing module types as building blocks.
 
-You can edit it graphically or in NED form in the main area, \
-and you can also find it in the in the object tree on the left.}
+You can edit it graphically or in NED form in the main area,\
+and you can also find it in the in the object tree on the left, where you
+can edit its parameters and gates. You can also drag it into another compound module\
+on the canvas to create an instance.}
 #----------------
 set hints(insert-network)  {You are creating a new "network", which is an instance\
-of a compound (or simple) module type that you can simulate. You'll have\
-to specify which compound module you want to simulate as a network, and\
-you can set parameters.
+of a compound (or simple) module type, which you can simulate in itself. You'll have\
+to specify the module type, and you can set its parameters.
 
 For further editing, you'll find this "network" component in the object tree on the left.}
 #----------------
