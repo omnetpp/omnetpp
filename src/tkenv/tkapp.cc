@@ -25,7 +25,6 @@
 #include "cenvir.h"
 #include "cmodule.h"
 #include "cmessage.h"
-#include "cstk.h"
 #include "ctypes.h"
 #include "cnetmod.h"
 #include "speedmtr.h"

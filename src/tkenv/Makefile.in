@@ -102,7 +102,6 @@ clean:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 arrow.o: arrow.cc \
   arrow.h
-inspect.o: inspect.cc
 inspector.o: inspector.cc \
   ../../include/omnetpp.h \
   tkapp.h \
@@ -110,6 +109,8 @@ inspector.o: inspector.cc \
   inspector.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/random.h \
+  ../../include/distrib.h \
   ../../include/cexception.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
@@ -126,7 +127,6 @@ inspector.o: inspector.cc \
   ../../include/cmessage.h \
   ../../include/cpacket.h \
   ../../include/cmsgheap.h \
-  ../../include/cstk.h \
   ../../include/cmodule.h \
   ../../include/cstat.h \
   ../../include/cdensity.h \
@@ -159,6 +159,8 @@ inspfactory.o: inspfactory.cc \
   inspfactory.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/random.h \
+  ../../include/distrib.h \
   ../../include/cexception.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
@@ -175,7 +177,6 @@ inspfactory.o: inspfactory.cc \
   ../../include/cmessage.h \
   ../../include/cpacket.h \
   ../../include/cmsgheap.h \
-  ../../include/cstk.h \
   ../../include/cmodule.h \
   ../../include/cstat.h \
   ../../include/cdensity.h \
@@ -222,11 +223,11 @@ modinsp.o: modinsp.cc \
   ../../include/cgate.h \
   ../../include/csimul.h \
   ../../include/util.h \
+  ../../include/cexception.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../envir/omnetapp.h \
   ../../include/cenvir.h \
-  ../../include/cexception.h \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
@@ -242,6 +243,8 @@ objinsp.o: objinsp.cc \
   objinsp.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/random.h \
+  ../../include/distrib.h \
   ../../include/cexception.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
@@ -258,7 +261,6 @@ objinsp.o: objinsp.cc \
   ../../include/cmessage.h \
   ../../include/cpacket.h \
   ../../include/cmsgheap.h \
-  ../../include/cstk.h \
   ../../include/cmodule.h \
   ../../include/cstat.h \
   ../../include/cdensity.h \
@@ -306,11 +308,11 @@ statinsp.o: statinsp.cc \
   ../../include/cgate.h \
   ../../include/csimul.h \
   ../../include/util.h \
+  ../../include/cexception.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../envir/omnetapp.h \
   ../../include/cenvir.h \
-  ../../include/cexception.h \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
@@ -327,12 +329,12 @@ structinsp.o: structinsp.cc \
   ../../include/cobject.h \
   ../../include/cenum.h \
   ../../include/util.h \
+  ../../include/cexception.h \
   ../../include/defs.h \
   ../envir/omnetapp.h \
   ../../include/carray.h \
   ../../include/chead.h \
   ../../include/cenvir.h \
-  ../../include/cexception.h \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
@@ -347,7 +349,6 @@ tkapp.o: tkapp.cc \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
-  ../../include/cstk.h \
   ../../include/ctypes.h \
   ../../include/cnetmod.h \
   ../envir/speedmtr.h \
@@ -361,6 +362,7 @@ tkapp.o: tkapp.cc \
   ../../include/onstartup.h \
   ../../include/cobject.h \
   ../../include/util.h \
+  ../../include/cexception.h \
   ../../include/defs.h \
   ../envir/envdefs.h \
   ../../include/cpar.h \
@@ -373,7 +375,6 @@ tkapp.o: tkapp.cc \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
   ../envir/omnetapp.h \
-  ../../include/cexception.h \
   ../envir/args.h \
   ../../include/envirext.h \
   ../../include/macros.h
@@ -382,8 +383,13 @@ tkcmd.o: tkcmd.cc \
   ../../include/carray.h \
   ../../include/csimul.h \
   ../../include/cmodule.h \
+  ../../include/cmessage.h \
+  ../../include/cchannel.h \
+  ../../include/cstat.h \
+  ../../include/cwatch.h \
   ../../include/ctypes.h \
   ../../include/cstruct.h \
+  ../envir/cinifile.h \
   tkapp.h \
   tklib.h \
   inspector.h \
@@ -392,6 +398,7 @@ tkcmd.o: tkcmd.cc \
   ../../include/cpar.h \
   ../../include/cobject.h \
   ../../include/util.h \
+  ../../include/cexception.h \
   ../../include/errmsg.h \
   ../../include/chead.h \
   ../../include/cmsgheap.h \
@@ -400,10 +407,9 @@ tkcmd.o: tkcmd.cc \
   ../../include/cqueue.h \
   ../../include/cgate.h \
   ../../include/cenum.h \
-  ../envir/omnetapp.h \
-  ../../include/cexception.h \
-  ../envir/args.h \
   ../envir/envdefs.h \
+  ../envir/omnetapp.h \
+  ../envir/args.h \
   ../../include/envirext.h \
   ../../include/macros.h \
   ../../include/onstartup.h
@@ -416,6 +422,7 @@ tklib.o: tklib.cc \
   tkapp.h \
   ../envir/patmatch.h \
   ../../include/util.h \
+  ../../include/cexception.h \
   ../../include/defs.h \
   ../../include/ccoroutine.h \
   ../../include/chead.h \
@@ -427,7 +434,6 @@ tklib.o: tklib.cc \
   ../../include/coutvect.h \
   ../envir/omnetapp.h \
   ../../include/cenvir.h \
-  ../../include/cexception.h \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
