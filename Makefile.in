@@ -1,108 +1,211 @@
-#!/bin/sh
+#=====================================================================
 #
-# makeall: compiles all OMNeT++ libraries and sample programs
+# toplevel makefile for OMNeT++ libraries and programs
+#
+#=====================================================================
+
+#
+# Directories
 #
 
-# Variables to be set by 'configure'
-OMNETPP_ROOT=
-OMNETPP_SRC_DIR="/home/andras/omnetpp/src"
-OMNETPP_SAMPLES_DIR="/home/andras/omnetpp/samples"
-OMNETPP_MODELS_DIR="/home/andras/omnetpp/models"
+#:OMNETPP_ROOT = @OMNETPP_ROOT@
+OMNETPP_ROOT =  //d/work/omnetpp
 
-LIB_SUFFIX="a"
+OMNETPP_SRC_DIR = 	$(OMNETPP_ROOT)/src
+OMNETPP_MODELS_DIR =	$(OMNETPP_ROOT)/models
+OMNETPP_SAMPLES_DIR =   $(OMNETPP_ROOT)/samples
+OMNETPP_BITMAP_DIR=     $(OMNETPP_ROOT)/bitmaps
 
+OMNETPP_BIN_DIR =       $(OMNETPP_ROOT)/bin
+OMNETPP_LIB_DIR =       $(OMNETPP_ROOT)/lib
+
+OMNETPP_INCL_PATH= -I$(OMNETPP_OMNETPP_SRC_DIR)/sim
+OMNETPP_LIB_PATH = -L$(OMNETPP_ROOT)/lib
+OMNETPP_INCLUDES=
+
+
+#
+# Programs used during build
+#
+YACC=bison
+LEX=flex
+CCC=gcc $CFLAGS -c
+CC=gcc -I. -c -x c++
+NEDC=nedc
+AS=gcc -g -c
+AR=ar rs
+MAKE_SO=gcc -shared -o
+LD=gcc
+
+
+#
+# Include paths for libraries
+#
 TV_INCL_PATH=""
 TK_INCL_PATH="-I/usr/include -I/usr/include"
 PVM_INCL_PATH="-I/home/andras/pvm3/include"
 
+CFLAGS = -O
+CC_SWITCHES =  ${CFLAGS}
 
-COMPAT_OBJS =		@LIBOBJS@
 
-AC_FLAGS =		@DEFS@
-RANLIB =		@RANLIB@
-SRC_DIR =		@srcdir@
-TOP_DIR =		@srcdir@/..
-GENERIC_DIR = 		$(TOP_DIR)/generic
-COMPAT_DIR =		$(TOP_DIR)/compat
-TOOL_DIR =		$(TOP_DIR)/tools
-DLTEST_DIR =		@srcdir@/dltest
-UNIX_DIR = 		@srcdir@
-CC =			@CC@
-CFLAGS = 		-O
+#
+# a=static, so=shared libraries.
+# Selects whether OMNeT++ libraries should be made static or shared
+#  If you change this setting, remember to delete the other set of libraries
+#  (or at least the soft links from lib/).
+#
+# LIB_SUFFIX=so
+LIB_SUFFIX=a
+
+
+#
+# Enable/disable use of dlopen(), used by OMNeT++'s -l command line option
+# and [General]/load-libs= ini file option
+#
+USE_DLOPEN=1
+
+#
+# Compile options. Use -g for debugging, -O3... for speed.
+#
+# CFLAGS=-g
+CFLAGS=-O3 -DNDEBUG=1
+
+
+# TV_INCL_PATH=-I/usr/include/tvision
+# X_INCL_PATH=-I/usr/include/X11
+# TK_INCL_PATH=-I/usr/include/tcl7.5 -I/usr/include/tk4.1
+# PVM_INCL_PATH=-I$PVM_ROOT/include
+
+# TV_LIB_PATH=-L/usr/lib
+# X_LIB_PATH=-L/usr/X11/lib
+# TK_LIB_PATH=-L/usr/lib
+# PVM_LIB_PATH=-L$PVM_ROOT/lib/$PVM_ARCH
+
+TV_LIBS=-ltv
+X_LIBS=-lX11
+TK_LIBS=-ltk -ltcl -ldl
+PVM_LIBS=-lgpvm3 -lpvm3
+SYS_LIBS=-lm -lstdc++
+
+OMNETPP_INCLUDES=$OMNETPP_OMNETPP_SRC_DIR/sim/*.h
 
 
 #=====================================================================
 #
-# Make OMNeT++ components
+# Main targets
 #
 #=====================================================================
 
-echo 'System components:'
 
-make_component nedc $OMNETPP_SRC_DIR/nedc
+all: components
 
-make_component sim_std $OMNETPP_SRC_DIR/sim libsim_std.$LIB_SUFFIX
+components: all_libs all_progs all_models all_samples
 
-if [ "$PVM_INCL_PATH" != "" ]; then
-        make_component sim_pvm $OMNETPP_SRC_DIR/sim libsim_pvm.$LIB_SUFFIX
-else
-        echo ' skipping sim_pvm  (no PVM installation found by configure)'
-fi
 
-make_component envir $OMNETPP_SRC_DIR/envir
+#=====================================================================
+#
+# OMNeT++ components
+#
+#=====================================================================
 
-make_component cmdenv $OMNETPP_SRC_DIR/envir/cmdenv
 
-if [ "$TK_INCL_PATH" != "" ]; then
-        make_component tkenv $OMNETPP_SRC_DIR/envir/tkenv
-else
-        echo ' skipping tkenv  (no Tcl/Tk installation found by configure)'
-fi
+all_libs: sim_std sim_pvm envir cmdenv tkenv tvenv
 
-if [ "$TV_INCL_PATH" != "" ]; then
-        make_component tvenv $OMNETPP_SRC_DIR/envir/tvenv
-else
-        echo ' skipping tvenv  (no Turbo Vision installation found by configure)'
-fi
+all_progs: nedc gned plove utils
 
-make_component gned $OMNETPP_SRC_DIR/gned
+all_models: support
 
-make_component utils $OMNETPP_SRC_DIR/utils
+all_samples: dyna fddi fifo1 fifo2 hcube hist nim pvmex token
+
 
 #
-# Create a ./lib directory
+# Libraries
 #
-echo "Updating soft links into $OMNETPP_ROOT/lib..."
-if [ ! -d lib ]; then mkdir lib; fi
-cd lib
-rm -f *
-if [ "$LIB_SUFFIX" = "a" ]; then
-  ln -s ../src/sim/libsim_std.a .
-  ln -s ../src/sim/libsim_pvm.a .
-  ln -s ../src/envir/libenvir.a .
-  ln -s ../src/envir/cmdenv/libcmdenv.a .
-  ln -s ../src/envir/tkenv/libtkenv.a .
-  ln -s ../src/envir/tvenv/libtvenv.a .
-else
-  ln -s ../src/sim/libsim_std.so .
-  ln -s ../src/sim/libsim_pvm.so .
-  ln -s ../src/envir/libenvir.so .
-  ln -s ../src/envir/cmdenv/libcmdenv.so .
-  ln -s ../src/envir/tkenv/libtkenv.so .
-  ln -s ../src/envir/tvenv/libtvenv.so .
-fi
-cd ..
 
-# Make models
-echo 'Models:'
-for i in `(cd models; echo *)`
-do
-        make_component $i $OMNETPP_MODELS_DIR/$i
-done
+sim_std:
+	cd $(OMNETPP_SRC_DIR)/sim; $(MAKE)
 
-# Make sample programs
-echo 'Sample simulations:'
-for i in `(cd samples; echo *)`
-do
-        make_component $i $OMNETPP_SAMPLES_DIR/$i
-done
+sim_pvm:
+	cd $(OMNETPP_SRC_DIR)/sim; $(MAKE)
+
+envir:
+	cd $(OMNETPP_SRC_DIR)/envir; $(MAKE)
+
+cmdenv:
+	cd $(OMNETPP_SRC_DIR)/cmdenv; $(MAKE)
+
+tkenv:
+	cd $(OMNETPP_SRC_DIR)/tkenv; $(MAKE)
+
+tvenv:
+	cd $(OMNETPP_SRC_DIR)/tvenv; $(MAKE)
+
+
+#
+# Programs
+#
+
+nedc:
+	cd $(OMNETPP_SRC_DIR)/nedc; $(MAKE)
+
+gned:
+	cd $(OMNETPP_SRC_DIR)/gned; $(MAKE)
+
+plove:
+	cd $(OMNETPP_SRC_DIR)/plove; $(MAKE)
+
+utils:
+	cd $(OMNETPP_SRC_DIR)/utils; $(MAKE)
+
+#
+# Models
+#
+
+support:
+	cd $(OMNETPP_MODELS_DIR)/support; $(MAKE)
+
+#
+# Sample programs
+#
+
+dyna:
+	cd $(OMNETPP_SAMPLES_DIR)/dyna; $(MAKE)
+
+fddi:
+	cd $(OMNETPP_SAMPLES_DIR)/fddi; $(MAKE)
+
+fifo1:
+	cd $(OMNETPP_SAMPLES_DIR)/fifo1; $(MAKE)
+
+fifo2:
+	cd $(OMNETPP_SAMPLES_DIR)/fifo2; $(MAKE)
+
+hcube:
+	cd $(OMNETPP_SAMPLES_DIR)/hcube; $(MAKE)
+
+hist:
+	cd $(OMNETPP_SAMPLES_DIR)/hist; $(MAKE)
+
+nim:
+	cd $(OMNETPP_SAMPLES_DIR)/nim; $(MAKE)
+
+pvmex:
+	cd $(OMNETPP_SAMPLES_DIR)/pvmex; $(MAKE)
+
+token:
+	cd $(OMNETPP_SAMPLES_DIR)/token; $(MAKE)
+
+
+#=====================================================================
+#
+# Utilities
+#
+#=====================================================================
+
+clean:
+	rm -f `find $(OMNETPP_ROOT) -name '*.o'`
+	rm -f `find $(OMNETPP_ROOT) -name '*_n.cc'`
+
+dist:
+	echo 'to be done'
