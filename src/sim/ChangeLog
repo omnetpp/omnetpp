@@ -1,3 +1,12 @@
+2001-06-28 Andras Varga
+
+       	* cstruct.cc added: classes to support self-describing data structures,
+        to be used for implementing message subclassing. UNTESTED. To be added
+        to the makefile.
+
+        * cenum.cc added: classes to support string mapping of enums. UNTESTED.
+        To be added to the makefile.
+
 2001-06-20  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* Makefile.in (depend): added -I../../include
