@@ -1,3 +1,6 @@
+FIXME todo: print event banner when simulation stops (esp with express mode),
+otherwise one doesn't know duration and event number!
+
 2004-02-05  Andras Varga
 
 	* heap.cc made disabled by default (and has to be explicitly enabled 
