@@ -29,14 +29,16 @@ sim_pvm : sim_pvm$(LIB_SUFFIX)
 sim_std.lib : $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
 	$(AR) /nologo /out:sim_std.lib $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
 
+sim_std.ilib : $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
+	- $(SHLIB_LD) /nologo /implib:sim_std.ilib $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
+
 sim_std.dll : $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
-	#FIXME $(SHLIB_LD) -o sim_std.dll $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
+	$(SHLIB_LD) /nologo /out:sim_std.dll /implib:sim_std.ilib $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS) ../envir/envir.imp.lib
 
 sim_pvm.lib : $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
 	$(AR) /nologo /out:sim_pvm.lib $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
 
-sim_pvm.dll : $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
-	#FIXME $(SHLIB_LD) -o sim_pvm.dll $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
+#TBD: sim_pvm.ilib, sim_pvm.dll
 
 ccor.obj : ccor.cc
 	$(CXX) $(COPTS) /c /Tp ccor.cc
@@ -125,12 +127,6 @@ util.obj : util.cc
 errmsg.obj : errmsg.cc
 	$(CXX) $(COPTS) /c /Tp errmsg.cc
 
-stjpower.obj : stjpower.s
-	$(AS) stjpower.s
-
-swpower.obj : swpower.s
-	$(AS) swpower.s
-
 std\netpack.obj : std\netpack.cc
 	$(CXX) /Fo"std\netpack.obj" $(COPTS) /c /Tp std\netpack.cc
 
@@ -147,7 +143,8 @@ depend:
 	@ echo *** make depend not (yet) supported with MSVC
 
 clean:
-	del *.obj sim_std.lib sim_std.dll sim_pvm.lib sim_pvm.dll
+	del *.obj sim_std.lib sim_std.dll sim_std.ilib sim_std.exp
+	del       sim_pvm.lib sim_pvm.dll sim_pvm.ilib sim_pvm.exp
 
 install-local: sim_std$(LIB_SUFFIX) $(SIM_PVM_IF_POSSIBLE)
 	copy sim_std$(LIB_SUFFIX) $(OMNETPP_LIB_DIR:/=\)

@@ -799,3 +799,13 @@ Mar 26, 2000
    method parameter names made mode descriptive
 Mar 28, 2000
  - SIM_API macro added to public classes and functions to export them on Windows
+April 6, 2000
+ - Changes to enable linking a Windows DLL from the library. Note that the
+   sim dll and envir.dll mutually depend on each other, so first we must build
+   an import library from one to be able to link dlls from them. Thus, first
+   we create sim_std.ilib, then we can link envir.dll, and using envir.ilib
+   we can link sim_std.dll...
+   On Unix we don't have this problem: .so files are not linked against other
+   libs (they are treated more like a collection of object files), and the
+   dynamic loader acts practically as a linker and collects the symbols at
+   runtime from the different .so files.

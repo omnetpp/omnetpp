@@ -34,6 +34,14 @@
 #include "tkinsp.h"
 #include "arrow.h"
 
+
+// Module state as text:
+char *modstate[] = {
+  "Ended",    // sENDED
+  "Ready" ,   // sREADY
+  ""
+};
+
 //=======================================================================
 
 TModuleWindow::TModuleWindow(cObject *obj,int typ,void *dat) :

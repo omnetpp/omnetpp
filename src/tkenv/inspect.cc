@@ -23,7 +23,7 @@
 #include "tkinsp.h"
 
 // force the linker to include this file 
-void _dummy_for_env() {}
+void _dummy_for_inspectors() {}
 
 Register_InspectorFactory( cObjectIFC,         createCObjectInspector);
 Register_InspectorFactory( cHeadIFC,           createCHeadInspector);

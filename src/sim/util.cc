@@ -593,13 +593,13 @@ void opp_terminate(const char *msgformat...)
 
 #include "cwatch.h"
 #include "cpacket.h"
-void _dummy_for_env();
-void _dummy_func_()
+//void _dummy_for_env();
+static void _dummy_func()
 {
       cPacket x;
       cPacket y(x);
       x.info(NULL);
       cWatch w(NULL,*(int*)NULL);
       w.pointer(); w.typeChar();
-      _dummy_for_env();
+      //_dummy_for_env();
 }

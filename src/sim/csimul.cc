@@ -39,13 +39,6 @@
 #include "cnetmod.h"
 #include "cstat.h"
 
-//=== Global text tables:
-
-char *modstate[] = {
-  "Ended",    // sENDED, module has ended
-  "Ready" ,   // sREADY, module is ready to run
-  ""
-};
 
 //==========================================================================
 //=== Global object:

@@ -60,7 +60,6 @@ class  cNetMod;
 class  cSimulation;
 class  cNetworkType;
 
-extern char *modstate[];
 
 //=== to connect two gates:
 SIM_API void connect(cModule *frm, int frg,

@@ -36,6 +36,9 @@
 #include "tkinsp.h"
 
 
+//
+// Register the Tkenv user interface
+//
 Register_OmnetApp(TOmnetTkApp,false,20,"Tkenv (Tk-based graphical user interface)");
 
 
@@ -879,3 +882,11 @@ int TOmnetTkApp::askYesNo(const char *question)
     return interp->result[0]=='y';
 }
 
+//======================================================================
+// dummy function to force Unix linkers collect all symbols needed
+
+void _dummy_for_inspectors();
+static void _dummy_func()
+{
+      _dummy_for_inspectors();
+}

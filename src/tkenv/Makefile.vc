@@ -10,6 +10,8 @@ COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "..\envir" $(TK_CFLAGS) /DBUILDING_T
 
 OBJS = tkapp$(TKENV_EMBED_SUFFIX).obj tkcmd.obj tklib.obj objinsp.obj modinsp.obj statinsp.obj inspect.obj arrow.obj
 
+LIBS = $(OMNETPP_SRC_DIR)/sim/sim_std.ilib $(OMNETPP_SRC_DIR)/envir/envir.ilib $(TK_LIB_DIR)/tcl82.lib $(TK_LIB_DIR)/tk82.lib
+
 #
 # Targets
 #
@@ -20,8 +22,8 @@ tkenv : tkenv$(LIB_SUFFIX)
 tkenv.lib : $(OBJS)
 	$(AR) /nologo /out:tkenv.lib $(OBJS)
 
-tkenv.dll : $(OBJS)
-	#FIXME $(SHLIB_LD) -o tkenv.dll $(OBJS)
+tkenv.dll : $(OBJS) $(LIBS)
+	$(SHLIB_LD) /nologo /out:tkenv.dll /implib:tkenv.ilib $(OBJS) $(LIBS)
 
 tkapp.obj : tkapp.cc
 	$(CXX) /DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR)\"" /DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" $(COPTS) /c /Tp tkapp.cc
@@ -60,7 +62,7 @@ depend:
 	@ echo *** make depend not (yet) supported with MSVC
 
 clean:
-	del *.obj tkenv.lib tkenv.dll
+	del *.obj tkenv.lib tkenv.dll tkenv.ilib tkenv.exp
 
 install-local: $(TKENV_IF_POSSIBLE)
 	copy tkenv$(LIB_SUFFIX) $(OMNETPP_LIB_DIR:/=\)
