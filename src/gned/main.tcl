@@ -382,36 +382,22 @@ proc defaultBindings {} {
    # fonts() array elements:
    #  normal:  menus, labels etc
    #  bold:    buttons
-   #  icon:    toolbar 'icons'
-   #  big:     STOP button
-   #  msgname: message name during animation
    #  fixed:   text windows and listboxes
    #
 
    if {$tcl_platform(platform) == "unix"} {
       set fonts(normal)  -Adobe-Helvetica-Medium-R-Normal-*-*-120-*-*-*-*-*-*
       set fonts(bold)    -Adobe-Helvetica-Bold-R-Normal-*-*-120-*-*-*-*-*-*
-      set fonts(icon)    -Adobe-Times-Bold-I-Normal-*-*-120-*-*-*-*-*-*
-      set fonts(big)     -Adobe-Helvetica-Medium-R-Normal-*-*-180-*-*-*-*-*-*
-      set fonts(msgname) -Adobe-Helvetica-Medium-R-Normal-*-*-120-*-*-*-*-*-*
       set fonts(fixed)   fixed
       set fonts(balloon) -Adobe-Helvetica-Medium-R-Normal-*-*-120-*-*-*-*-*-*
    } else {
       # Windows, Mac
-      if {$tk_version<8.2} {
-         set s 140
-      } else {
-         set s 110
-      }
       font create opp_normal -family "MS Sans Serif" -size 8
       font create opp_bold   -family "MS Sans Serif" -size 8 -weight bold
       font create opp_balloon -family "MS Sans Serif" -size 8
 
       set fonts(normal)  opp_normal
       set fonts(bold)    opp_bold
-      set fonts(icon)    -Adobe-Helvetica-Bold-R-Normal-*-*-$s-*-*-*-*-*-*
-      set fonts(big)     -Adobe-Helvetica-Medium-R-Normal-*-*-180-*-*-*-*-*-*
-      set fonts(msgname) -Adobe-Helvetica-Medium-R-Normal-*-*-$s-*-*-*-*-*-*
       set fonts(fixed)   FixedSys
       set fonts(balloon) opp_balloon
    }

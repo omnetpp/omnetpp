@@ -117,8 +117,8 @@ set icons(network) [image create photo -data {
 
 set icons(find) [image create photo -data {
     R0lGODlhFAATALMAAAAAAAAAhAD//4SEhOferf//////////////////////////////////
-    /////////ywAAAAAFAATAAAEQpDISaulIIN7M96cBAxFOQ0gB5SCgIVb4VppFc+2GhL1C/+0
-    nm0wFNpSo4ByJ9IECMonk/KMTqnQ5VVSlW6z3/A2AgA7
+    /////////yH5BAEAAAQALAAAAAAUABMAAARCkMhJq6Ugg3sz3pwEDEU5DSAHlIKAhVvhWmkV
+    z7YaEvUL/7SebTAU2lKjgHIn0gQIyieT8oxOqdDlVVKVbrPf8DYCADs=
 }]
 
 set icons(config) [image create photo -data {
@@ -126,3 +126,4 @@ set icons(config) [image create photo -data {
     /////////yH5BAEAAAEALAAAAAAUABMAAARCMMhJq704a2y6/59lCGRpkoZ4rkJaGUUsz7FL
     wQWg6zFvTzga7SfB7QA9n0goJAaMx2PBGWTWRKBsZ8Pter/gcCUCADs=
 }]
+

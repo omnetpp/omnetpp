@@ -511,7 +511,6 @@ proc font_bindings {} {
    # fonts() array elements:
    #  normal:  menus, labels etc
    #  bold:    buttons
-   #  icon:    toolbar 'icons'
    #  big:     STOP button
    #  msgname: message name during animation
    #  fixed:   text windows and listboxes
@@ -520,7 +519,6 @@ proc font_bindings {} {
    if {$tcl_platform(platform) == "unix"} {
       set fonts(normal)  -Adobe-Helvetica-Medium-R-Normal-*-*-120-*-*-*-*-*-*
       set fonts(bold)    -Adobe-Helvetica-Bold-R-Normal-*-*-120-*-*-*-*-*-*
-      set fonts(icon)    -Adobe-Times-Bold-I-Normal-*-*-120-*-*-*-*-*-*
       set fonts(big)     -Adobe-Helvetica-Medium-R-Normal-*-*-180-*-*-*-*-*-*
       set fonts(msgname) -Adobe-Helvetica-Medium-R-Normal-*-*-120-*-*-*-*-*-*
       set fonts(fixed)   fixed
@@ -538,7 +536,6 @@ proc font_bindings {} {
 
       set fonts(normal)  opp_normal
       set fonts(bold)    opp_bold
-      set fonts(icon)    -Adobe-Helvetica-Bold-R-Normal-*-*-$s-*-*-*-*-*-*
       set fonts(big)     -Adobe-Helvetica-Medium-R-Normal-*-*-180-*-*-*-*-*-*
       set fonts(msgname) -Adobe-Helvetica-Medium-R-Normal-*-*-$s-*-*-*-*-*-*
       set fonts(fixed)   FixedSys
@@ -575,10 +572,14 @@ proc checkVersion {} {
       focus .f.b
       wm protocol . WM_DELETE_WINDOW {exit}
       tkwait variable ok
-   }
-   if {$tk_patchLevel=="8.0"} {
+   } elseif {[string match "8.0.*" $tk_patchLevel]} {
+      if {[string compare $tk_patchLevel "8.0.1"]<0} {
+         tk_messageBox -title {Warning} -type ok -icon warning \
+              -message {Old Tcl/Tk version. At least 8.0p1 is strongly recommended!}
+      }
+   } elseif {$tk_version==8.0 && [string compare $tk_patchLevel "8.0p1"]<0} {
       tk_messageBox -title {Warning} -type ok -icon warning \
-        -message {Old Tcl/Tk version. At least 8.0p1 is strongly recommended!}
+           -message {Old Tcl/Tk version. At least 8.0p1 is strongly recommended!}
    }
 }
 

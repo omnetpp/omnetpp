@@ -32,21 +32,22 @@ set icons(dup) [image create photo -data {
 
 set icons(info) [image create photo -data {
     R0lGODlhFAATALMAALZvAP97Mf+EMf+EOf+tUv+1Vv+1Y/+9Wv/GY/+9a//Ga//Oa//Oc//W
-    e//nhOferSwAAAAAFAATAAAEiPDJSautjaWdWLuTwxhBaRqMc2XDYBTHURitV4luolBKQqcU
-    Rm4CAEx8A8akQUtQipSE6/NgBFAgySigfCSuTyiF5PQGykRj9Cz5GiriCVl77UriVVKXOUA/
-    8FIGVFVDf0VqSHYPOAYJCBQIiSoULAMFBAWXBTWDFCIkJiUokyAZHB2dWaoTEQAAOw==
+    e//nhOferSH5BAEAAA8ALAAAAAAUABMAAASI8MlJq62NpZ1Yu5PDGEFpGoxzZcNgFMdRGK1X
+    iW6iUEpCpxRGbgIATHwDxqRBS1CKlITr82AEUCDJKKB8JK5PKIXk9AbKRGP0LPkaKuIJWXvt
+    SuJVUpc5QD/wUgZUVUN/RWpIdg84BgkIFAiJKhQsAwUEBZcFNYMUIiQmJSiTIBkcHZ1ZqhMR
+    AAA7
 }]
 
 set icons(find) [image create photo -data {
     R0lGODlhFAATALMAAAAAAAAAhAD//4SEhOferf//////////////////////////////////
-    /////////ywAAAAAFAATAAAEQpDISaulIIN7M96cBAxFOQ0gB5SCgIVb4VppFc+2GhL1C/+0
-    nm0wFNpSo4ByJ9IECMonk/KMTqnQ5VVSlW6z3/A2AgA7
+    /////////yH5BAEAAAQALAAAAAAUABMAAARCkMhJq6Ugg3sz3pwEDEU5DSAHlIKAhVvhWmkV
+    z7YaEvUL/7SebTAU2lKjgHIn0gQIyieT8oxOqdDlVVKVbrPf8DYCADs=
 }]
 
 set icons(findrepl) [image create photo -data {
     R0lGODlhFAATALMAAAAAAAAAhAD//4QAhISEhOferf//////////////////////////////
-    /////////ywAAAAAFAATAAAESbDISau9deAth+aZ54HTN5JdigEsUIIAIRHu9UmxYcy1ehcu
-    g2DSO/16EkNNdCLKkrTSjxIrGGgBypTaCnhRFW8WPPmSz+i0JAIAOw==
+    /////////yH5BAEAAAUALAAAAAAUABMAAARJsMhJq7114C2H5pnngdM3kl2KASxQggAhEe71
+    SbFhzLV6Fy6DYNI7/XoSQ010IsqStNKPEisYaAHKlNoKeFEVbxY8+ZLP6LQkAgA7
 }]
 
 set icons(plot) [image create photo -data {

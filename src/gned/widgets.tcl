@@ -39,7 +39,7 @@ proc iconbutton {w args} {
 
     if {$args=="-separator"} {
         # space between two buttons
-        canvas $w -height 1 -width 4
+        frame $w -height 1 -width 4
     } {
         # button
         eval button $w -bd 1 $args

@@ -203,4 +203,15 @@ set icons(scroll_r) [image create photo -data {
     R0lGODlhBAAHAIAAAAAAAP///yH5BAEAAAEALAAAAAAEAAcAAAIIRA4WaeyrVCgAOw==
 }]
 
+set icons(find) [image create photo -data {
+    R0lGODlhFAATALMAAAAAAAAAhAD//4SEhOferf//////////////////////////////////
+    /////////yH5BAEAAAQALAAAAAAUABMAAARCkMhJq6Ugg3sz3pwEDEU5DSAHlIKAhVvhWmkV
+    z7YaEvUL/7SebTAU2lKjgHIn0gQIyieT8oxOqdDlVVKVbrPf8DYCADs=
+}]
+
+set icons(findrepl) [image create photo -data {
+    R0lGODlhFAATALMAAAAAAAAAhAD//4QAhISEhOferf//////////////////////////////
+    /////////yH5BAEAAAUALAAAAAAUABMAAARJsMhJq7114C2H5pnngdM3kl2KASxQggAhEe71
+    SbFhzLV6Fy6DYNI7/XoSQ010IsqStNKPEisYaAHKlNoKeFEVbxY8+ZLP6LQkAgA7
+}]
 

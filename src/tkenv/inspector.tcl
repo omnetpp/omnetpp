@@ -213,13 +213,14 @@ proc ask_inspectortype {ptr} {
     set type ""
     if [execOkCancelDialog $w] {
         set type [$w.f.type.e cget -value]
+
+        if {[lsearch [opp_supported_insp_types $ptr] $type] == -1} {
+            messagebox {Error} "Invalid inspector type. Please choose from the list." error ok
+            set type ""
+        }
     }
     destroy $w
 
-    if {[lsearch [opp_supported_insp_types $ptr] $type] == -1} {
-        messagebox {Error} "Invalid inspector type. Please choose from the list." error ok
-        return ""
-    }
     return $type
 }
 
