@@ -384,6 +384,11 @@ proc selectOrMoveStart {c x y ctrl} {
            set rectcid $ned($key,rect-cid)
            set cc [_getCoords $c $rectcid]
 
+           # enlarge "handles" size by half-width of invisible border
+           if {$ned($key,type)=="module"} {
+               set r [expr $r+6]
+           }
+
            if {[info exist ned($key,icon-cid)] && $ned($key,icon-cid)!=""} {
                set mouse(mode) "move"
            } elseif {abs($x-[lindex $cc 0])<$r && abs($y-[lindex $cc 1])<$r} {

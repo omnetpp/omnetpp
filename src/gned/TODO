@@ -1,7 +1,5 @@
 Bugs:
 - module name mismatch in the submods and conns sections ==> sometimes "assert failed"
-- resizing the parent module is difficult: you must hit the _inner_
-  (invisible) border
 - connection drawing doesn't work sometimes (can't reproduce...)
 - sometimes generates empty lines into the code
 - should eliminate "staircase comment" effect, like:
