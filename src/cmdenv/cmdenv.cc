@@ -101,7 +101,7 @@ void TCmdenvApp::readPerRunOptions( int run_nr )
     opt_messagetrace = ini_file->getAsBool2( section,"Cmdenv", "message-trace", false );
     opt_status_frequency_ev = ini_file->getAsInt2( section,"Cmdenv", "status-frequency", 100000 );
     //opt_status_frequency_sec = ini_file->getAsTime2( section,"Cmdenv", "status-frequency-interval", 5.0 );
-    opt_perfdisplay = ini_file->getAsBool2( section,"Cmdenv", "performance-display", false );
+    opt_perfdisplay = ini_file->getAsBool2( section,"Cmdenv", "performance-display", true);
 
     // warnings on old entries
     if (ini_file->exists2( section,"Cmdenv", "display-update"))
