@@ -481,7 +481,7 @@ retransmit. This is OK because the packet didn't contain much, but
 in real life it's usually more practical to keep a copy of the original
 packet so that we can re-send it without the need to build it again.
 
-What we do here is keep the orignal packet and send only copies of it.
+What we do here is keep the original packet and send only copies of it.
 We delete the original when toc's acknowledgement arrives.
 To make it easier to visually verify the model, we'll include a message
 sequence number the message names.
@@ -674,7 +674,7 @@ various nodes.
 It's true that in this concrete simulation model the numbers will be
 roughly the same, so you can only learn from them that intuniform()
 works properly. But in real-life simulations it can be very useful that
-you can quicky get an overview about the state of various nodes in the
+you can quickly get an overview about the state of various nodes in the
 model.
 
 It can be also arranged that this info appears above the module
