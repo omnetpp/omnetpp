@@ -37,6 +37,10 @@ Distributed simulation support rewritten, currently experimental. (alpha!)
 
 Several new tests in test suite, also for testing opp_neddoc and Tkenv.
 
+The Manual is still to be updated at places. Further TODO items are the 
+introduction of new RNG architecture based on modern RNGs, and testing
+and completion of nedxml/nedtool (which will bring the retirement of nedc).
+
 
 OMNeT++ 2.3 release (June 2003)
 -------------------------------
