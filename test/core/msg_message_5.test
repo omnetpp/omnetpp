@@ -24,12 +24,13 @@ message {MyMessage}
 %activity:
 
 // 0th element we set explicitly, 1st element must stay zero from initialization
-#define PRINTA(X) ev << #X << ":" << X(0) << ":" << X(1) << ":" << X ## ArraySize() << endl;
+#define PRINTA(X)  ev << #X << ":" << X(0) << ":" << X(1) << ":" << X ## ArraySize() << endl;
+#define PRINTA1(X) ev << #X << ":" << X(0) << ":" << (int)X(1) << ":" << X ## ArraySize() << endl;
 
 {MyMessage} x;
 
 x.setBb(0,true); PRINTA(x.getBb);
-x.setCc(0,'a');  PRINTA(x.getCc);
+x.setCc(0,'a');  PRINTA1(x.getCc);
 x.setSs(0,10);   PRINTA(x.getSs);
 x.setUss(0,10);  PRINTA(x.getUss);
 x.setIi(0,-10);  PRINTA(x.getIi);
@@ -41,7 +42,7 @@ x.setStr(0,"test"); PRINTA(x.getStr);
 
 %contains: stdout
 x.getBb:1:0:10
-x.getCc:a::20
+x.getCc:a:0:20
 x.getSs:10:0:30
 x.getUss:10:0:31
 x.getIi:-10:0:40

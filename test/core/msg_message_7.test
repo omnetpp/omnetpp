@@ -23,8 +23,9 @@ class {MyClass}
 
 %activity:
 
-#define PRINT(X) ev << #X << ":" << X << endl
-#define PRINTA(X) ev << #X << ":" << X(0) << ":" << X(1) << ":" << X ## ArraySize() << endl;
+#define PRINT(X)   ev << #X << ":" << X << endl
+#define PRINTA(X)  ev << #X << ":" << X(0) << ":" << X(1) << ":" << X ## ArraySize() << endl;
+#define PRINTA1(X) ev << #X << ":" << X(0) << ":" << (int)X(1) << ":" << X ## ArraySize() << endl;
 
 {MyClass} x;
 
@@ -43,7 +44,7 @@ ev << "--" << endl;
 
 // allocate array, fill in element 0 (element 1 must be zero from initialization)
 x.setBbArraySize(11);  x.setBb(0,true); PRINTA(x.getBb);
-x.setCcArraySize(12);  x.setCc(0,'a');  PRINTA(x.getCc);
+x.setCcArraySize(12);  x.setCc(0,'a');  PRINTA1(x.getCc);
 x.setSsArraySize(13);  x.setSs(0,10);   PRINTA(x.getSs);
 x.setUssArraySize(14); x.setUss(0,10);  PRINTA(x.getUss);
 x.setIiArraySize(15);  x.setIi(0,-10);  PRINTA(x.getIi);
@@ -79,7 +80,7 @@ x.getDdArraySize():0
 x.getStrArraySize():0
 --
 x.getBb:1:0:11
-x.getCc:a::12
+x.getCc:a:0:12
 x.getSs:10:0:13
 x.getUss:10:0:14
 x.getIi:-10:0:15
