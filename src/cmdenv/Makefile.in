@@ -83,6 +83,7 @@ cmdenv.o: cmdenv.cc \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cpar.h \
+  ../../include/onstartup.h \
   ../../include/cqueue.h \
   ../../include/cgate.h
 enumstr.o: enumstr.cc \

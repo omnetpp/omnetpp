@@ -229,6 +229,7 @@ carray.o: carray.cc \
   ../../include/errmsg.h \
   ../../include/carray.h \
   ../../include/cexception.h \
+  ../../include/onstartup.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
   ../../include/chead.h \
@@ -254,6 +255,7 @@ cchannel.o: cchannel.cc \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
+  ../../include/onstartup.h \
   ../../include/ctypes.h
 ccoroutine.o: ccoroutine.cc \
   ../../include/ccoroutine.h \
@@ -263,6 +265,7 @@ cdensity.o: cdensity.cc \
   ../../include/macros.h \
   ../../include/cdensity.h \
   ../../include/cexception.h \
+  ../../include/onstartup.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
   ../../include/chead.h \
@@ -292,6 +295,7 @@ cenum.o: cenum.cc \
   ../../include/csimul.h \
   ../../include/cenum.h \
   ../../include/cexception.h \
+  ../../include/onstartup.h \
   ../../include/defs.h \
   ../../include/chead.h \
   ../../include/cobject.h \
@@ -318,6 +322,7 @@ cexception.o: cexception.cc \
 cfsm.o: cfsm.cc \
   ../../include/macros.h \
   ../../include/cfsm.h \
+  ../../include/onstartup.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
   ../../include/chead.h \
@@ -342,10 +347,12 @@ cgate.o: cgate.cc \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
+  ../../include/onstartup.h \
   ../../include/ctypes.h
 chead.o: chead.cc \
   ../../include/macros.h \
   ../../include/chead.h \
+  ../../include/onstartup.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
   ../../include/cobject.h \
@@ -355,6 +362,7 @@ chist.o: chist.cc \
   ../../include/cdetect.h \
   ../../include/chist.h \
   ../../include/cexception.h \
+  ../../include/onstartup.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
   ../../include/chead.h \
@@ -367,6 +375,7 @@ cksplit.o: cksplit.cc \
   ../../include/cenvir.h \
   ../../include/cksplit.h \
   ../../include/cexception.h \
+  ../../include/onstartup.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
   ../../include/chead.h \
@@ -379,6 +388,7 @@ cllist.o: cllist.cc \
   ../../include/macros.h \
   ../../include/cllist.h \
   ../../include/cexception.h \
+  ../../include/onstartup.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
   ../../include/chead.h \
@@ -389,6 +399,7 @@ cmessage.o: cmessage.cc \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
   ../../include/cexception.h \
+  ../../include/onstartup.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
   ../../include/chead.h \
@@ -427,6 +438,7 @@ cmsgheap.o: cmsgheap.cc \
   ../../include/macros.h \
   ../../include/cmessage.h \
   ../../include/cmsgheap.h \
+  ../../include/onstartup.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
   ../../include/chead.h \
@@ -469,6 +481,7 @@ cobject.o: cobject.cc \
   ../../include/ccoroutine.h \
   ../../include/coutvect.h \
   ../../include/cpar.h \
+  ../../include/onstartup.h \
   ../../include/ctypes.h
 coutvect.o: coutvect.cc \
   ../../include/coutvect.h \
@@ -490,6 +503,7 @@ coutvect.o: coutvect.cc \
 cpacket.o: cpacket.cc \
   ../../include/macros.h \
   ../../include/cpacket.h \
+  ../../include/onstartup.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
   ../../include/chead.h \
@@ -515,6 +529,7 @@ cpar.o: cpar.cc \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/defs.h \
+  ../../include/onstartup.h \
   ../../include/ctypes.h \
   ../../include/chead.h \
   ../../include/ccoroutine.h \
@@ -527,6 +542,7 @@ cpsquare.o: cpsquare.cc \
   ../../include/macros.h \
   ../../include/cpsquare.h \
   ../../include/cexception.h \
+  ../../include/onstartup.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
   ../../include/chead.h \
@@ -538,6 +554,7 @@ cqueue.o: cqueue.cc \
   ../../include/macros.h \
   ../../include/cqueue.h \
   ../../include/cexception.h \
+  ../../include/onstartup.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
   ../../include/chead.h \
@@ -572,6 +589,7 @@ cstat.o: cstat.cc \
   ../../include/defs.h \
   ../../include/cobject.h \
   ../../include/util.h \
+  ../../include/onstartup.h \
   ../../include/ctypes.h \
   ../../include/chead.h
 cstk.o: cstk.cc \
@@ -598,6 +616,7 @@ ctopo.o: ctopo.cc \
   ../../include/cllist.h \
   ../../include/ctopo.h \
   ../../include/cexception.h \
+  ../../include/onstartup.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
   ../../include/chead.h \
@@ -627,11 +646,13 @@ ctypes.o: ctypes.cc \
   ../../include/csimul.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
-  ../../include/coutvect.h
+  ../../include/coutvect.h \
+  ../../include/onstartup.h
 cvarhist.o: cvarhist.cc \
   ../../include/macros.h \
   ../../include/cvarhist.h \
   ../../include/cexception.h \
+  ../../include/onstartup.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
   ../../include/chead.h \
@@ -646,6 +667,11 @@ cwatch.o: cwatch.cc \
   ../../include/util.h \
   ../../include/defs.h
 errmsg.o: errmsg.cc
+onstartup.o: onstartup.cc \
+  ../../include/onstartup.h \
+  ../../include/cexception.h \
+  ../../include/defs.h \
+  ../../include/util.h
 task.o: task.cc \
   task.h
 util.o: util.cc \
@@ -662,6 +688,7 @@ util.o: util.cc \
   ../../include/ccoroutine.h \
   ../../include/coutvect.h \
   ../../include/cobject.h \
+  ../../include/onstartup.h \
   ../../include/ctypes.h \
   ../../include/cmessage.h \
   ../../include/carray.h \
@@ -703,6 +730,7 @@ std/netpack.o: std/netpack.cc \
   ../../include/cenvir.h \
   ../../include/cenum.h \
   ../../include/cstruct.h \
+  ../../include/onstartup.h \
   ../../include/cchannel.h \
   ../../include/cdispstr.h \
   ../../include/envirext.h \
@@ -728,6 +756,7 @@ pvm/pvmmod.o: pvm/pvmmod.cc \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
+  ../../include/onstartup.h \
   ../../include/cnetmod.h \
   pvm/pvmdefs.h
 pvm/pvmpack.o: pvm/pvmpack.cc \
@@ -768,6 +797,7 @@ pvm/pvmpack.o: pvm/pvmpack.cc \
   ../../include/cenvir.h \
   ../../include/cenum.h \
   ../../include/cstruct.h \
+  ../../include/onstartup.h \
   ../../include/cchannel.h \
   ../../include/cdispstr.h \
   ../../include/envirext.h \
@@ -795,6 +825,7 @@ mpi/mpimod.o: mpi/mpimod.cc \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
+  ../../include/onstartup.h \
   ../../include/cnetmod.h \
   mpi/mpidefs.h
 mpi/mpipack.o: mpi/mpipack.cc \
@@ -837,6 +868,7 @@ mpi/mpipack.o: mpi/mpipack.cc \
   ../../include/cenvir.h \
   ../../include/cenum.h \
   ../../include/cstruct.h \
+  ../../include/onstartup.h \
   ../../include/cchannel.h \
   ../../include/cdispstr.h \
   ../../include/envirext.h \

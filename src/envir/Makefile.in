@@ -113,6 +113,7 @@ akoutvectormgr.o: akoutvectormgr.cc \
   ../../include/coutvect.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
+  ../../include/onstartup.h \
   ../../include/ctypes.h \
   filemgrs.h
 args.o: args.cc \
@@ -139,6 +140,7 @@ cenvir.o: cenvir.cc \
   ../../include/chead.h \
   ../../include/cexception.h \
   ../../include/envirext.h \
+  ../../include/onstartup.h \
   ../../include/ccoroutine.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
@@ -180,11 +182,13 @@ filemgrs.o: filemgrs.cc \
   ../../include/coutvect.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
+  ../../include/onstartup.h \
   ../../include/ctypes.h
 main.o: main.cc \
   ../../include/cobject.h \
   ../../include/csimul.h \
   ../../include/cenvir.h \
+  ../../include/onstartup.h \
   ../../include/util.h \
   ../../include/defs.h \
   ../../include/errmsg.h \
@@ -266,7 +270,8 @@ slaveapp.o: slaveapp.cc \
   ../../include/coutvect.h \
   ../../include/cmodule.h \
   ../../include/cqueue.h \
-  ../../include/cgate.h
+  ../../include/cgate.h \
+  ../../include/onstartup.h
 speedmtr.o: speedmtr.cc \
   speedmtr.h \
   ../../include/defs.h \

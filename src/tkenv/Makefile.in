@@ -136,6 +136,7 @@ inspect.o: inspect.cc \
   ../../include/cenvir.h \
   ../../include/cenum.h \
   ../../include/cstruct.h \
+  ../../include/onstartup.h \
   ../../include/cchannel.h \
   ../../include/cdispstr.h \
   ../../include/envirext.h \
@@ -213,6 +214,7 @@ objinsp.o: objinsp.cc \
   ../../include/cenvir.h \
   ../../include/cenum.h \
   ../../include/cstruct.h \
+  ../../include/onstartup.h \
   ../../include/cchannel.h \
   ../../include/cdispstr.h \
   ../../include/envirext.h \
@@ -282,6 +284,7 @@ tkapp.o: tkapp.cc \
   tklib.h \
   tkinsp.h \
   ../../include/chead.h \
+  ../../include/onstartup.h \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/defs.h \

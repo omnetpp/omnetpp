@@ -481,6 +481,7 @@ void NEDCppGenerator::prepareForCodeGeneration(NEDElement *node, NEDCppGenerator
 
 void NEDCppGenerator::generateClass(NEDCppGenerator::ClassDesc& cld, NEDCppGenerator::FieldDesc *&fld, int numfields)
 {
+    // FIXME add "(classname)objectname:" prefix to exception texts everywhere
     int i;
 
     //
@@ -746,12 +747,12 @@ void NEDCppGenerator::generateClass(NEDCppGenerator::ClassDesc& cld, NEDCppGener
                 out << "}\n\n";
                 out << fld[i].argtype << " " << cld.msgclass << "::" << fld[i].getter << "(unsigned int k) const\n";
                 out << "{\n";
-                out << "    if (k>=" << fld[i].farraysize << ") opp_error(\"Array of size " << fld[i].farraysize << " indexed by %d\", k);\n";
+                out << "    if (k>=" << fld[i].farraysize << ") throw new cException(\"Array of size " << fld[i].farraysize << " indexed by %d\", k);\n";
                 out << "    return " << fld[i].var << "[k];\n";
                 out << "}\n\n";
                 out << "void " << cld.msgclass << "::" << fld[i].setter << "(unsigned int k, " << fld[i].argtype << " " << fld[i].var << ")\n";
                 out << "{\n";
-                out << "    if (k>=" << fld[i].farraysize << ") opp_error(\"Array of size " << fld[i].farraysize << " indexed by %d\", k);\n";
+                out << "    if (k>=" << fld[i].farraysize << ") throw new cException(\"Array of size " << fld[i].farraysize << " indexed by %d\", k);\n";
                 out << "    this->" << fld[i].var << "[k] = " << fld[i].var << ";\n";
                 out << "}\n\n";
             }
@@ -775,12 +776,12 @@ void NEDCppGenerator::generateClass(NEDCppGenerator::ClassDesc& cld, NEDCppGener
                 out << "}\n\n";
                 out << fld[i].argtype << " " << cld.msgclass << "::" << fld[i].getter << "(unsigned int k) const\n";
                 out << "{\n";
-                out << "    if (k>=" << fld[i].varsize << ") opp_error(\"Array of size " << fld[i].varsize << " indexed by %d, k\");\n";
+                out << "    if (k>=" << fld[i].varsize << ") throw new cException(\"Array of size " << fld[i].varsize << " indexed by %d, k\");\n";
                 out << "    return " << fld[i].var << "[k];\n";
                 out << "}\n\n";
                 out << "void " << cld.msgclass << "::" << fld[i].setter << "(unsigned int k, " << fld[i].argtype << " " << fld[i].var << ")\n";
                 out << "{\n";
-                out << "    if (k>=" << fld[i].varsize << ") opp_error(\"Array of size " << fld[i].varsize << " indexed by %d, k\");\n";
+                out << "    if (k>=" << fld[i].varsize << ") throw new cException(\"Array of size " << fld[i].varsize << " indexed by %d, k\");\n";
                 out << "    this->" << fld[i].var << "[k]=" << fld[i].var << ";\n";
                 out << "}\n\n";
             }
