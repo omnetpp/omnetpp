@@ -3,7 +3,7 @@ TicToc
 
 NOTE:
    This example simulation is accompanied by the TICTOC TUTORIAL
-   which can be found among the documentation.
+   which can be found in the the documentation.
 
 TicToc contains a series of simulation models numbered 1 through 12. The
 models are of increasing complexity -- they start from the basics and

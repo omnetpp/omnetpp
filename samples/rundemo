@@ -32,8 +32,6 @@ array set colors {
    color6 #80a3a7
 }
 
-#  #9e9fa1
-
 #
 # title line:   {"color" "title"}
 # program line: {"color" "name" "directory" "unix-command" "windows-command"}
