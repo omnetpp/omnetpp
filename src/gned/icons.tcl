@@ -12,6 +12,18 @@
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
+set icons(back) [image create photo -data {
+    R0lGODlhFAATALMAAAAAAISEAMbGxp0XF74yMmgQEP//////////////////////
+    /////////////////yH5BAEAAAIALAAAAAAUABMAAAQzUMhJq704UzKKttzQfVMo
+    eqQ5puJJCmori1U8t2h577m+zxdV7yN8SYpG05C4MjqfUEoEADs=
+}]
+
+set icons(forward) [image create photo -data {
+    R0lGODlhFAATALMAAAAAAISEAMbGxp0XF2gQEL4yMv//////////////////////
+    /////////////////yH5BAEAAAIALAAAAAAUABMAAAQzUMhJq7040zKIttzQfZso
+    eqQUnqlqjtYrv2g5z7V7y7mw86kV7CPsYYqtlVHDWbaeUGgEADs=
+}]
+
 set icons(undo) [image create photo -data {
     R0lGODlhFAATALMAAAAAAAAAhMbGxgAA////////////////////////////////
     /////////////////yH5BAEAAAIALAAAAAAUABMAAAQlUMhJq7046827/1ogBuEk

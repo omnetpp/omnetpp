@@ -15,6 +15,59 @@
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
+
+# goBack --
+#
+# Implements the toolbar "Back" button
+#
+proc goBack {} {
+    global gned canvas
+
+    # find first open canvas starting at end of list
+    set canv_id ""
+    while {[llength $gned(history)]>0 && $canv_id==""} {
+        set canv_id [lindex $gned(history) end]
+        set gned(history) [lreplace $gned(history) end end]
+        if {![info exist canvas($canv_id,tab)]} {set canv_id ""}
+    }
+puts "DBG CHOSEN=$canv_id"
+
+    # switch to that canvas
+    if {$canv_id!=""} {
+        set old_canv_id $gned(canvas_id)
+        if {[lindex $gned(fwd-history) 0]!=$old_canv_id} {
+            set gned(fwd-history) [concat $old_canv_id $gned(fwd-history)]
+        }
+        switchToCanvas $canv_id
+        set gned(history) [lreplace $gned(history) end end]
+    }
+puts "DBG: hist: $gned(history)   fwd-hist: $gned(fwd-history)"
+}
+
+# goForward --
+#
+# Implements the toolbar "Forward" button
+#
+proc goForward {} {
+    global gned canvas
+
+    # find first open canvas starting at beginning of list
+    set canv_id ""
+    while {[llength $gned(fwd-history)]>0 && $canv_id==""} {
+        set canv_id [lindex $gned(fwd-history) 0]
+        set gned(fwd-history) [lreplace $gned(fwd-history) 0 0]
+        if {![info exist canvas($canv_id,tab)]} {set canv_id ""}
+    }
+puts "DBG CHOSEN=$canv_id"
+
+    # switch to that canvas
+    if {$canv_id!=""} {
+        switchToCanvas $canv_id
+    }
+puts "DBG: hist: $gned(history)   fwd-hist: $gned(fwd-history)"
+}
+
+
 # openModuleOnCanvas --
 #
 # Switch to module's canvas or create a new canvas for it.
@@ -158,6 +211,14 @@ proc switchToCanvas {canv_id} {
     # unmap old canvas
     if {$gned(canvas_id)!=""} {
         set old_canv_id $gned(canvas_id)
+
+        # add to history
+        if {$old_canv_id!=$canv_id} {
+            lappend gned(history) $old_canv_id
+        }
+puts "DBG: at unmap: hist: $gned(history)   fwd-hist: $gned(fwd-history)"
+
+        # now unmap old canvas
         $canvas($old_canv_id,tab) config -relief flat
         if {$canvas($old_canv_id,mode)=="textedit"} {
             grid forget $canvas($old_canv_id,textedit)
@@ -344,6 +405,7 @@ proc destroyCanvas {canv_id} {
     destroy $canvas($canv_id,textedit)
     destroy $canvas($canv_id,tab)
     foreach i [array names canvas "$canv_id,*"] {
+puts "DBG: unset canvas($i)"
         unset canvas($i)
     }
 
@@ -375,8 +437,8 @@ proc adjustWindowTitle {} {
 
 # checkNEDFileEdits --
 #
-# Before-save and before-close check: checks if all canvases belonging 
-# to this file are in graphics mode (or NED source hasn't been changed). 
+# Before-save and before-close check: checks if all canvases belonging
+# to this file are in graphics mode (or NED source hasn't been changed).
 # If everything is OK, returns 0, otherwise pops up error
 # dialog and returns 1.
 #

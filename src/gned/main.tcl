@@ -36,6 +36,8 @@ set gned(toolbar) ""
 set gned(horiz-toolbar) ""
 set gned(statusbar) ""
 set gned(manager) ""
+set gned(history) {}
+set gned(fwd-history) {}
 
 # state variables
 set gned(canvas_id) ""
@@ -205,15 +207,18 @@ proc createMainWindow {} {
       {new     -image $icons(new)   -command {fileNewComponent module}}
       {open    -image $icons(open)  -command {fileOpen}}
       {save    -image $icons(save)  -command {fileSave}}
+      {sep2    -separator}
+      {back    -image $icons(back)  -command {goBack}}
+      {forward -image $icons(forward) -command {goForward}}
       {sep1    -separator}
       {cut     -image $icons(cut)   -command {editCut}}
       {copy    -image $icons(copy)  -command {editCopy}}
       {paste   -image $icons(paste) -command {editPaste}}
-      {sep3     -separator}
+      {sep3    -separator}
       {undo    -image $icons(undo)  -command {editUndo}}
       {redo    -image $icons(redo)  -command {editRedo}}
-      {sep2    -separator}
-      {sep6    -separator}
+      {sep4    -separator}
+      {sep5    -separator}
     } {
       set b [eval iconbutton $gned(horiz-toolbar).$i]
       pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2
@@ -232,6 +237,7 @@ proc createMainWindow {} {
     set help_tips($gned(horiz-toolbar).paste) {Paste from clipbard (ctrl-V)}
     set help_tips($gned(horiz-toolbar).undo)  {Undo editing (ctrl-Z)}
     set help_tips($gned(horiz-toolbar).redo)  {Redo editing (ctrl-Y)}
+    set help_tips($gned(horiz-toolbar).back)  {Back to previous module}
     set help_tips($gned(horiz-toolbar).close) {Close current canvas}
 
     # check if undo works

@@ -3,7 +3,11 @@ FIXME!!! when submodule has random placement, strange thing happens
 after OK'ing Props dialog
 GNED not compatible with new Tkenv mode of using "i=" and "b=" together
 
-2003-1024  Andras Varga
+2003-11-24  Andras Varga
+
+	* added Back and Forward toolbar icons
+
+2003-10-24  Andras Varga
 
 	* usability improvements (tooltips wording change, some icons 
 	redesigned, opens Properties dialog when creating new simple module, 
