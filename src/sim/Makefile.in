@@ -95,7 +95,7 @@ depend:
 	$(MAKEDEPEND) -I../../include -fMakefile.in -- *.cc parsim/*.cc
 
 clean:
-	rm -f *.o parsim/*.o
+	rm -f *.o parsim/*.o netbuilder/*.o
 	rm -f libsim_std$(A_LIB_SUFFIX) libsim_std$(SO_LIB_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
