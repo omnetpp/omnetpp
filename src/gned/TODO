@@ -1,3 +1,10 @@
+To be finished (top priority!):
+- addItem
+- deleteItem
+- renameItem
+- reduce number of "array names ned ..." lines -- they're SLOW!
+- "properties" dialogs
+
 Bugs:
 - module name mismatch in the submods and conns sections ==> sometimes "assert failed"
 - connection drawing doesn't work sometimes (can't reproduce...)
@@ -12,7 +19,6 @@ Parse/Generate:
 - display string parsing loses all tags not used by GNED, e.g. submod vector
   'matrix' and 'row' modes!
 - display string parsing -- rewrite!!!
-- error recovery in the grammar: TBD
 
 Data struct change:
 - "source-text" attribute to module?? should be added when one switches to text mode
@@ -26,8 +32,6 @@ Drawing:
   over the menu that popped up, the half-cooked connection arrow will stay
   on the canvas
 - rename on canvas: with module vectors it's a catastrophe now...
-- UNDO feature (at least one step) [from Niko]
-- drag connections from one module to another (disconnect/reconnect) [from Niko]
 
 Load/save:
 - SaveAll feature [from Niko]
@@ -45,9 +49,10 @@ Text editor:
 - "find next" missing ***DONE***
 - ctrl-H doesn't bring up Find/Replace dialog [from Niko]  ***FIXED***
 - <Enter> in the Find/Replace dialog causes error (at least in Windows)
-- pgup, ctrl-pgup doesn't work correctly
+- pgup, ctrl-pgup doesn't work correctly  *** Tk problem!***
 - syntax highlighting not 100% OK: it can be fooled with string constants
   containing `//' or `\"' sequences; `in:' and `out:' are not highlighted
+  *** can't be easily fixed ***
 - syntax highlight: <paste> should update the whole file
 
 General:
@@ -80,4 +85,7 @@ Longer-term plans:
 - default icon for modules (needs NED grammar change)
 - opening simple modules, networks, channels, etc. on canvas
 - autoload a NED library on startup (sets of simple modules etc.)
+- error recovery in the grammar
+- UNDO feature (at least one step) [from Niko]
+- drag connections from one module to another (disconnect/reconnect) [from Niko]
 
