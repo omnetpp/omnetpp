@@ -129,6 +129,11 @@ if ($mode eq '')
 # are we on Windows?
 $isWindows = ($ENV{'OS'} =~ /windows/i) ? 1 : 0;
 
+if ($isWindows && $workingdir ne 'work') {
+    print STDERR "$arg0: error: on Windows, working directory MUST be the `work' subdir\n";
+    exit(1);
+}
+
 # test existence of working directory
 if (! -d $workingdir) {
     print STDERR "$arg0: error: working directory `$workingdir' does not exist\n";
@@ -647,7 +652,8 @@ sub exec_program()
 
     if ($isWindows)
     {
-        my $savedir = cwd;
+        if ($workingdir ne 'work') {die 'on windows, workingdir MUST be ./work!';}
+
         print "  chdir to \"$dir\"\n" if ($debug);
         if (!chdir($dir))
         {
@@ -658,7 +664,11 @@ sub exec_program()
         $status = system ("$cmd >$outfile 2>$errfile");
         print "  returned status = $status\n" if ($debug);
         print "  restoring dir \"$savedir\"\n" if ($debug);
-        chdir($savedir);
+        if (!chdir(".."))
+        {
+            print "  cannot chdir back\n" if ($debug);
+            return -1;
+        }
         if ($status == 0)
         {
             return 0;

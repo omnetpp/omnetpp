@@ -1,3 +1,8 @@
+2002-12-04  Andras Varga
+
+	* opp_test: due to problems with cwd/chdir on windows, working dir
+	must always be the work/ directory
+
 2002-12-02  Andras Varga
 
         * added opp_neddocall: it documents all ned files in the current 
