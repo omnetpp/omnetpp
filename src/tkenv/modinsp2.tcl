@@ -822,24 +822,24 @@ proc graphmodwin_animate_senddirect_delivery {win modptr msgptr} {
     for {set i 0} {$i<3} {incr i} {
        $c itemconfig $msgptr -state hidden
        update
-       anim_flashing_delay $win
+       anim_flashing_delay $win 0.05
        $c itemconfig $msgptr -state normal
        update
-       anim_flashing_delay $win
+       anim_flashing_delay $win 0.05
     }
     wm protocol $win WM_DELETE_WINDOW $old_close_handler
 
     $c delete $msgptr
 }
 
-proc anim_flashing_delay {win} {
+proc anim_flashing_delay {win d} {
     global clicksPerSec
     if {![opp_simulationisstopping] && ![opp_inspmarkedfordeletion $win]} {
         set tbeg [clock clicks]
         set sp [opp_getsimoption animation_speed]
         if {$sp>3} {set $sp 3}
         if {$sp<0} {set $sp 0}
-        set clicks [expr (3-$sp)*$clicksPerSec*0.3]
+        set clicks [expr (3-$sp)*$clicksPerSec*$d]
         while {[expr abs([clock clicks]-$tbeg)] < $clicks} {}
     }
 }
@@ -999,10 +999,10 @@ proc graphmodwin_do_draw_methodcall {win x1 y1 x2 y2 methodlabel} {
     for {set i 0} {$i<2} {incr i} {
        $c itemconfig $arrow -state hidden
        update
-       anim_flashing_delay $win
+       anim_flashing_delay $win 0.3
        $c itemconfig $arrow -state normal
        update
-       anim_flashing_delay $win
+       anim_flashing_delay $win 0.3
     }
     wm protocol $win WM_DELETE_WINDOW $old_close_handler
 }
