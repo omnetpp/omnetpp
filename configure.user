@@ -12,8 +12,8 @@
 # nedc-generated _n.cc files)
 #
 #CFLAGS='-g -Wno-unused'
-CFLAGS='-g -Wall -Wno-unused'
-#CFLAGS='-O3 -DNDEBUG=1 -Wno-unused'
+#CFLAGS='-g -Wall -Wno-unused'
+CFLAGS='-O3 -DNDEBUG=1 -Wno-unused'
 
 #
 # Select here whether you want to build static or shared libraries.
