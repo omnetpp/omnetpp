@@ -45,6 +45,3 @@ module Colors
 
 endmodule
 
-network displayStringTest : DisplayStringTest
-endnetwork
-
