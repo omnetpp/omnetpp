@@ -416,7 +416,7 @@ const char *cModule::displayString(int type)
          return NULL;
     }
 
-    if ((const char *)dispstr[type] == NULL)
+    if ((const char *)dispstr[type] != NULL)
         return dispstr[type];
 
     // no hardcoded display string -- try to get it from Envir
