@@ -975,6 +975,10 @@ proc graphmodwin_qlen_rightclick {c X Y} {
    }
 }
 
+# graphmodwin_bubble --
+#
+# This function is invoked from the module inspector C++ code.
+#
 proc graphmodwin_bubble {c modptr txt} {
     set r  [get_submod_coords $c $modptr]
     set x [expr ([lindex $r 0]+[lindex $r 2])/2]

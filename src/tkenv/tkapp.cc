@@ -940,6 +940,7 @@ void TOmnetTkApp::readOptions()
     opt_animation_msgcolors = ini_file->getAsBool( "Tkenv", "animation-msgcolors", true );
     opt_penguin_mode = ini_file->getAsBool( "Tkenv", "penguin-mode", false );
     opt_showlayouting = ini_file->getAsBool( "Tkenv", "show-layouting", true );
+    opt_bubbles = ini_file->getAsBool( "Tkenv", "show-bubbles", true );
     opt_animation_speed = ini_file->getAsDouble( "Tkenv", "animation-speed", 1);
     if (opt_animation_speed<0) opt_animation_speed=0;
     if (opt_animation_speed>2) opt_animation_speed=3;
@@ -1511,6 +1512,7 @@ void TOmnetTkApp::breakpointHit( const char *label, cSimpleModule *mod )
 
 void TOmnetTkApp::bubble(cModule *mod, const char *text)
 {
+    if (!opt_bubbles) return;
     cModule *parentmod = mod->parentModule();
     TInspector *insp = findInspector(parentmod,INSP_GRAPHICAL);
     if (!insp) return;

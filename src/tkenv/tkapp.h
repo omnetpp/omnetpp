@@ -79,6 +79,7 @@ class TOmnetTkApp : public TOmnetApp
       bool opt_animation_msgcolors;// msg animation: display msg kind as color code or not
       bool opt_penguin_mode;       // msg animation: message appearance
       bool opt_showlayouting;      // show layouting process in graphical module inspectors
+      bool opt_bubbles;            // show result of bubble() calls
       double opt_animation_speed;  // msg animation speed: 0=slow 1=norm 2=fast
       long opt_stepdelay;          // Delay between steps in ms
       int  opt_updatefreq_fast;    // FastRun updates display every N events

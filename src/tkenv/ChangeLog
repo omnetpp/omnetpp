@@ -2,6 +2,8 @@
 
 	* modinsp.cc/h/tcl,tkapp.cc/h: implemented bubble() -- submodules
 	can display a bubble with a short message like "Queue full!".
+	Added [Tkenv]/show-bubbles=true/false omnetpp.ini entry.
+	TBD bubble() drawing could be a bit faster (too much Tcl code)
 
 2004-01-06  Andras Varga
 
@@ -15,7 +17,7 @@
 
 2003-12-30  Andras Varga
 
-	* new omnetpp.h entries:
+	* new omnetpp.ini entries:
 	[Tkenv]/methodcalls-delay: sets delay after method call animation
 	[Tkenv]/show-layouting: show layouting process of network graphics
 

@@ -269,6 +269,9 @@ void BasicSpringEmbedderLayout::execute()
     printf("DBG: layout done in %lg secs, %d iterations (%lg sec/iter)\n",
            (end-beg)/(double)CLOCKS_PER_SEC, i, (end-beg)/(double)CLOCKS_PER_SEC/i);
 
+    // clean up canvas after the drawing
+    if (interp && canvas) Tcl_VarEval(interp, canvas, " delete all", NULL);
+
     // scale back if too big -- BUT only if we don't have any fixed (or anchored) nodes,
     // because we don't want to change explicitly given coordinates (or distances
     // between anchored nodes)

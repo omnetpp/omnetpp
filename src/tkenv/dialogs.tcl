@@ -268,6 +268,7 @@ proc options_dialog {} {
      4=yellow 5=cyan 6=magenta 7=black}
     checkbutton $w.f.f3.penguin -text {Penguin mode} -variable opp(penguin)
     checkbutton $w.f.f3.layouting -text {Show layouting process} -variable opp(layouting)
+    checkbutton $w.f.f3.bubbles -text {Show bubbles (bubble() calls)} -variable opp(bubbles)
     pack $w.f.f3.anim -anchor w
     pack $w.f.f3.speed -anchor w -expand 0 -fill x
     pack $w.f.f3.nextev -anchor w
@@ -279,6 +280,7 @@ proc options_dialog {} {
     pack $w.f.f3.c -anchor w
     pack $w.f.f3.penguin -anchor w
     pack $w.f.f3.layouting -anchor w
+    pack $w.f.f3.bubbles -anchor w
 
     pack $w.f.f2 -anchor center -expand 1 -fill both -ipadx 0 -ipady 0 -padx 10 -pady 10 -side top
     pack $w.f.f3 -anchor center -expand 1 -fill both -ipadx 0 -ipady 0 -padx 10 -pady 10 -side top
@@ -300,6 +302,7 @@ proc options_dialog {} {
     set opp(msgcol)     [opp_getsimoption animation_msgcolors]
     set opp(penguin)    [opp_getsimoption penguin_mode]
     set opp(layouting)  [opp_getsimoption showlayouting]
+    set opp(bubbles)    [opp_getsimoption bubbles]
     set opp(speed)      [opp_getsimoption animation_speed]
     set opp(bkpts)      [opp_getsimoption bkpts_enabled]
 
@@ -321,6 +324,7 @@ proc options_dialog {} {
         opp_setsimoption animation_msgcolors $opp(msgcol)
         opp_setsimoption penguin_mode        $opp(penguin)
         opp_setsimoption showlayouting       $opp(layouting)
+        opp_setsimoption bubbles             $opp(bubbles)
         opp_setsimoption animation_speed     $opp(speed)
         opp_setsimoption bkpts_enabled       $opp(bkpts)
     }

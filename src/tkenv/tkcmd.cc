@@ -692,6 +692,8 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       sprintf(buf,"%d", app->opt_penguin_mode);
    else if (0==strcmp(argv[1], "showlayouting"))
       sprintf(buf,"%d", app->opt_showlayouting);
+   else if (0==strcmp(argv[1], "bubbles"))
+      sprintf(buf,"%d", app->opt_bubbles);
    else if (0==strcmp(argv[1], "animation_speed"))
       sprintf(buf,"%g", app->opt_animation_speed);
    else if (0==strcmp(argv[1], "print_banners"))
@@ -735,6 +737,8 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       app->opt_penguin_mode = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "showlayouting"))
       app->opt_showlayouting = (argv[2][0]!='0');
+   else if (0==strcmp(argv[1], "bubbles"))
+      app->opt_bubbles = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "animation_speed"))
    {
       sscanf(argv[2],"%lg",&app->opt_animation_speed);
