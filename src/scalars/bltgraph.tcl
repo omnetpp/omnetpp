@@ -82,6 +82,8 @@ proc createBltGraph {graphtype {graphtitle ""}} {
     set graph $page.g
 
     # create graph or barchart
+    #FIXME add catch{} -- some broken BLT builds (Mandrake?) may throw "min(0)>=max(0)" error here
+    #FIXME same change in Plove too
     if {$graphtype=="graph"} {
         blt::graph $graph
         $graph pen configure "activeLine" -color navy -linewidth 1 -symbol none
