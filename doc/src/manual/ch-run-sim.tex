@@ -432,7 +432,7 @@ for it has been loaded, network setup will be successful.
 \index{module!parameters}
 
 Simulations get input via module parameters, which can be assigned a
-value in NED files or in omnetpp.ini -- in this order. Since parameters
+value in NED files or in \ttt{omnetpp.ini} -- in this order. Since parameters
 assigned in NED files cannot be overridden in omnetpp.ini, one can
 think about them as being ``hardcoded''. In contrast, it is easier
 and more flexible to maintain module parameter settings in omnetpp.ini.
@@ -443,28 +443,137 @@ the module names (from the top-level module down to the module containg
 the parameter), plus the parameter name
 (see section \ref{sec:sim-lib:fullname-and-fullpath}).
 
+An example \ttt{omnetpp.ini} which sets the \ttt{numHosts} parameter of
+the toplevel module and the \ttt{transactionsPerSecond} parameter of the
+\ttt{server} module:
+
+\begin{verbatim}
+[Parameters]
+net.numHosts = 15
+net.server.transactionsPerSecond = 100
+\end{verbatim}
+
+
 \subsection{Run-specific and general sections}
 
 Values for module parameters can be placed into the \texttt{[Parameters]}
 or the \texttt{[Run 1]}, \texttt{[Run 2]} etc. sections of the ini file.
 The run-specific settings take precedence over the overall settings.
 
-\subsection{Wildcards}
-\label{sec:ch-run-sim:wildcards}
+An example \ttt{omnetpp.ini}:
 
-Wildcards (\ttt{*,?})\index{ini file!wildcards} can be used to supply values
-to several model parameters at a time. Filename (glob) style patterns
-are used. One difference to the usual rules is that character ranges
-should be written with curly braces instead of square brackets (that is,
-\textit{any-letter} is \ttt{\{a-zA-Z\}} not \ttt{[a-zA-Z]}), because
-square brackets are already reserved for the notation of module vector indices.
+\begin{verbatim}
+[Parameters]
+net.numHosts = 15
+net.server.transactionsPerSecond = 100
+
+[Run 1]
+# uses settings from the [Parameters] section
+
+[Run 2]
+net.server.transactionsPerSecond = 150  # overrides the value in [Parameters]
+# net.numHosts comes from the [Parameters] section
+
+[Run 3]
+# override both setting in [Parameters]
+net.numHosts = 20
+net.server.transactionsPerSecond = 150
+\end{verbatim}
+
+
+
+\subsection{Using wildcard patterns}
+\label{sec:ch-run-sim:wildcards}
+\index{ini file!wildcards}
+
+Models can have a large number of parameters to be configured, and it would
+be tedious to set them one-by-one in \ttt{omnetpp.ini}. {\opp} supports
+\textit{wildcards patterns} which allow for setting several model parameters
+at once.
+
+The notation is a variation on the usual glob-style patterns.
+The most apperent differences to the usual rules are the distinction between
+\ttt{*} and \ttt{**}, and that character ranges should be written
+with curly braces instead of square brackets (that is, \textit{any-letter}
+is \ttt{\{a-zA-Z\}} not \ttt{[a-zA-Z]}, because square brackets are
+already reserved for the notation of module vector indices).
+
+Pattern syntax:
+
+\begin{itemize}
+  \item \ttt{?} : matches any character except dot (.)
+  \item \ttt{*} : matches zero or more characters except dot (.)
+  \item \ttt{**} : matches zero or more character (any character)
+  \item \ttt{\{a-f\}} (set): matches a character in the range a-f
+  \item \ttt{\{^a-f\}} (negated set): matches a character NOT in the range a-f
+  \item \ttt{\{38..150\}} (numeric range): any number (i.e. sequence of digits)
+    in the range 38..150  (e.g. \ttt{99})
+  \item \ttt{[38..150]} (index range): any number in square brackets in the
+    range 38..150 (e.g. \ttt{[99]})
+  \item backslash ({\textbackslash}) : takes away the special meaning of the
+    subsequent character
+\end{itemize}
+
+\subsubsection{Asterisk vs double asterisk}
+
+The \ttt{*} wildcard is for matching a single module or parameter name in the
+path name, while \ttt{**} can be used to match several components in the path.
+For example, \ttt{**.queue*.bufSize} matches the \ttt{bufSize} parameter of any module
+whose name begins with \ttt{queue} in the model, while \ttt{*.queue*.bufSize}
+or \ttt{net.queue*.bufSize} selects only queues immediately on network level.
+Also note that \ttt{**.queue**.bufSize} would match \ttt{net.queue1.foo.bar.bufSize}
+as well!
+
+\subsubsection{Sets, negated sets}
+
+Sets and negated sets can contain several character ranges and also
+enumeration of characters. For example, \ttt{\{_a-zA-Z0-9\}} matches any letter
+or digit, plus the underscore; \ttt{\{xyzc-f\}} matches any of the characters
+x, y, z, c, d, e, f.
+To include '-' in the set, put it at a position where it cannot be
+interpreted as character range, for example: \ttt{\{a-z-\}} or \ttt{\{-a-z\}}.
+If you want to include '\}' in the set, it must be the first
+character: \ttt{\{\}a-z\}}, or as a negated set: \ttt{\{^\}a-z\}}. A backslash
+is always taken as literal backslash (and NOT as escape character)
+within set definitions.
+
+
+\subsubsection{Numeric ranges and index ranges}
+
+Only nonnegative integers can be matched.  The start or the end of the range
+(or both) can be omitted: \ttt{\{10..\}}, \ttt{\{..99\}} or \ttt{\{..\}}
+are valid numeric ranges (the last one matches any number).
+The specification must use exactly two dots.
+Caveat: \ttt{*\{17..19\}} will match \ttt{a17}, \ttt{117} and \ttt{963217} as well,
+because the \ttt{*} can also match digits!
+
+\subsubsection{Compatibility}
+
+In {\opp} versions prior to 3.0, the \ttt{**} wildcard did not exist, and \ttt{*}
+matched dot as well. This means that ini files written for earlier {\opp}
+versions may have a different meaning when used in {\opp} 3.0 -- so
+ini files have to be updated. In practice, every line which begins
+with \ttt{*.} should be changed to begin with \ttt{**.} -- that'll do most
+of the time, further tweaking is rarely necessary.
+
+If you still want to run the old \ttt{omnetpp.ini} (for example, to check the new one
+against it), you can add the line
+
+\begin{verbatim}
+#% old-wildcards
+\end{verbatim}
+
+at the top of (each) old ini file. This will switch back to the old
+behaviour. Since \ttt{#\% old-wildcards} is only provided to ease transition
+from {\opp} 2.3 to 3.0, it will be removed in some future version.
+
+
+\subsection{Precedence with wildcards}
 
 If you use wildcards, the order of entries is important: if a parameter
 name matches several wildcards-patterns, the first matching occurrence
 is used. This means that you need to list specific settings first, and
 more general ones later. Catch-all settings should come last.
-
-%FIXME *, **, numbers, numeric ranges!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 An example ini file:
 
@@ -574,7 +683,7 @@ we'll cover the configuration of RNGs in omnetpp.ini.
 \subsection{RNG choice and number of RNGs}
 
 %FIXME TBD -- finish this!!!
-New omnetpp.ini entries:
+New \ttt{omnetpp.ini} entries:
 
 \begin{verbatim}
 [General]
