@@ -75,6 +75,7 @@ void cNEDNetworkBuilder::setupNetwork(NetworkNode *networknode)
 void cNEDNetworkBuilder::buildInside(cModule *modp, CompoundModuleNode *modulenode)
 {
     // loop through submods and add them
+    submodMap.clear();
     SubmodulesNode *submods = modulenode->getFirstSubmodulesChild();
     if (submods)
     {
@@ -150,6 +151,9 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
     if (!vectorsizeexpr)
     {
         cModule *submodp = modtype->create(modname, modp);
+        ModulePtrVector& v = submodMap[modname];
+        v.push_back(submodp);
+
         setDisplayString(submodp, submod);
         assignSubmoduleParams(submodp, submod);
         readInputParams(submodp);
@@ -158,9 +162,11 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
     else
     {
         int vectorsize = (int) evaluate(modp, vectorsizeexpr);
+        ModulePtrVector& v = submodMap[modname];
         for (int i=0; i<vectorsize; i++)
         {
             cModule *submodp = modtype->create(modname, modp, vectorsize, i);
+            v.push_back(submodp);
             setDisplayString(submodp, submod);
             assignSubmoduleParams(submodp, submod);
             readInputParams(submodp);
@@ -170,6 +176,19 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
 
     // Note: buildInside() will be called when connections have been built out
     // on this level too.
+}
+
+cModule *cNEDNetworkBuilder::_submodule(cModule *, const char *submodname, int idx)
+{
+    SubmodMap::iterator i = submodMap.find(std::string(submodname));
+    if (i==submodMap.end())
+        return NULL;
+
+    ModulePtrVector& v = i->second;
+    if (idx<0)
+        return (v.size()!=1 || v[0]->isVector()) ? NULL : v[0];
+    else
+        return (idx>=v.size()) ? NULL : v[idx];
 }
 
 void cNEDNetworkBuilder::setDisplayString(cModule *submodp, SubmoduleNode *submod)
@@ -356,7 +375,7 @@ cGate *cNEDNetworkBuilder::resolveGate(cModule *parentmodp,
     else
     {
         int modindex = !modindexp ? 0 : (int) evaluate(parentmodp, modindexp);
-        modp = parentmodp->submodule(modname,modindex);
+        modp = _submodule(parentmodp, modname,modindex);
         if (!modp)
         {
             if (!modindexp)
@@ -476,7 +495,7 @@ cPar *cNEDNetworkBuilder::resolveParamRef(ParamRefNode *node, cModule *parentmod
             const char *modname = node->getModule();
             ExpressionNode *modindexp = findExpression(node, "module-index");
             int modindex = !modindexp ? 0 : (int) evaluate(parentmodp, modindexp,submodp);
-            modp = parentmodp->submodule(modname,modindex);
+            modp = _submodule(parentmodp, modname,modindex);
             if (!modp)
             {
                 if (!modindexp)
@@ -629,8 +648,8 @@ double cNEDNetworkBuilder::evalFunction(FunctionNode *node, cModule *parentmodp,
         // if not found, find among submodules. If there's no such submodule, it may
         // be that such submodule vector never existed, or can be that it's zero
         // size -- we cannot tell, so we have to return 0.
-        cModule *m = parentmodp->submodule(name,0);
-        if (!m && parentmodp->submodule(name))
+        cModule *m = _submodule(parentmodp, name,0);
+        if (!m && _submodule(parentmodp, name))
             throw new cException("dynamic module builder: evaluate: sizeof(): %s is not a vector submodule", name);
         return m ? m->size() : 0;
     }
@@ -1034,8 +1053,8 @@ void cNEDNetworkBuilder::addXElemsFunction(FunctionNode *node, cPar::ExprElem *x
         // if not found, find among submodules. If there's no such submodule, it may
         // be that such submodule vector never existed, or can be that it's zero
         // size -- we cannot tell, so we have to return 0.
-        cModule *m = parentmodp->submodule(name,0);
-        if (!m && parentmodp->submodule(name))
+        cModule *m = _submodule(parentmodp, name,0);
+        if (!m && _submodule(parentmodp, name))
             throw new cException("dynamic module builder: evaluate: sizeof(): %s is not a vector submodule", name);
         xelems[pos++] = m ? m->size() : 0;
         return;

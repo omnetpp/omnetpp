@@ -16,6 +16,9 @@
 #ifndef __CNETWORKBUILDER_H
 #define __CNETWORKBUILDER_H
 
+#include <string>
+#include <map>
+#include <vector>
 #include "nedelements.h"
 #include "cpar.h"
 
@@ -43,9 +46,17 @@ class cNEDNetworkBuilder
     struct {const char *varname; int value;} loopVarStack[MAX_LOOP_NESTING];
     int loopVarSP;
 
+    // submodule pointers. This is an optimization because cModule::submodule()
+    // is slow if there are very large submodule vectors.
+    typedef std::vector<cModule*> ModulePtrVector;
+    typedef std::map<std::string,ModulePtrVector> SubmodMap;
+    SubmodMap submodMap;
+
+    // buffer for expressions
     cPar::ExprElem *xelemsBuf;
 
   protected:
+    cModule *_submodule(cModule *parentmodp, const char *submodname, int idx=-1);
     void addChannelAttr(cChannel *chanp, ChannelAttrNode *channelattr);
     void addSubmodule(cModule *modp, SubmoduleNode *submod);
     void setDisplayString(cModule *submodp, SubmoduleNode *submod);
