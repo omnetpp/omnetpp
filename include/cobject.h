@@ -61,9 +61,9 @@ typedef bool (*ForeachFunc)(cObject *,bool);
  * cObject is the base class for almost all classes in the OMNeT++ library.
  *
  * Containing 5 pointers and 2 flags as data and several virtual functions,
- * cObject is a relatively heavyweight object for a base class. If you need
- * to create a new class, you may or may not choose starting from cObject
- * as base class.
+ * cObject is a relatively heavyweight class (about 24 bytes on a 32-bit
+ * architecture). For small classes you may consider choosing cPolymorphic
+ * as a base class.
  *
  * The two main areas covered by cObject are:
  *    -# name string via name() and setName()
@@ -502,7 +502,7 @@ class cStaticFlag
  */
 // Note: this function cannot be put into utils.h (circular dependencies)
 template<class T>
-T check_and_cast(cObject *p)
+T check_and_cast(cPolymorphic *p)
 {
     if (!p)
         throw new cException("check_and_cast(): cannot cast NULL pointer to type '%s'",opp_typename(typeid(T)));

@@ -66,6 +66,23 @@ class SIM_API cPolymorphic
      */
     virtual const char *className() const;
 
+    /** @name Empty virtual functions which can be redefined in subclasses */
+    //@{
+
+    /**
+     * Can be redefined (as done in cObject) to return an object name.
+     * This version just returns "".
+     */
+    virtual const char *fullName() const  {return "";}
+
+    /**
+     * Can be redefined (as done in cObject) to return an object full path,
+     * which contains the object name (more precisely, fullName()) together
+     * with the object's location in the object hierarchy.
+     * This version just returns fullName() (which is by default "").
+     */
+    virtual const char *fullPath() const   {return fullName();}
+
     /**
      * Can be redefined to produce a one-line description of object into `buf'.
      * The string appears in the graphical user interface (Tkenv) e.g. when
@@ -90,6 +107,7 @@ class SIM_API cPolymorphic
      * The function should return the same buf object it received.
      */
     virtual opp_string& detailedInfo(opp_string& buf)  {return buf;}
+    //@}
 };
 
 #endif

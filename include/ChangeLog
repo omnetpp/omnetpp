@@ -1,3 +1,10 @@
+2004-03-08   Andras Varga
+
+	* cobject.h, cpolymorphic.h: defined fullName() and fullPath() in
+	cPolymorhpic as empty virtual functions (return "") which cObject 
+	redefines. check_and_cast<> argument type changed from cObject* to 
+	cPolymorphic*.
+
 2004-03-06   Andras Varga
 
 	* cobject.h, cpolymorphic.h: several changes:
