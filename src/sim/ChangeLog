@@ -2,6 +2,13 @@
 
 	* error handling with exceptions has been refined.
 
+	* csimul.cc: incEventCount() removed, incrementing event count
+	was moved into doOneEvent()
+
+	* csimul.h: several methods removed from cSimulation and moved
+	into the Envir library: timeLimit(), simTimeLimit(), startClock(),
+        stopClock(), resetClock(), checkTimes().
+
 2002-09-07 Andras Varga
 
 	* added cchannel.cc, modified carray.cc, cgate.cc, cmessage.cc, 

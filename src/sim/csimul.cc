@@ -102,8 +102,6 @@ cSimulation::cSimulation(const char *name, cHead *h) :
     // err = eOK; -- commented out to enable errors prior to starting main()
     networktype = NULL;
     run_number = 0;
-    tmlimit = 0;
-    simtmlimit = 0;
 
     netif_check_freq = 1000;    // frequency of processing msgs from other segments
     netif_check_cntr = 0;
@@ -194,10 +192,9 @@ bool cSimulation::snapshot(cObject *object, const char *label)
     os << "| Sim. time:     " << simtimeToStr(simTime()) << "\n";
     os << "| Network:      `" << networktype->name() << "'\n";
     os << "| Run no.        " << run_number << '\n';
-    os << "| Started at:    " << *localtime(&simbegtime) << '\n';
-    os << "| Time:          " << *localtime(&simendtime) << '\n';
-    os << "| Elapsed:       " << elapsedtime << " sec\n";
-    //FIXME what here?
+    // os << "| Started at:    " << *localtime(&simbegtime) << '\n';
+    // os << "| Time:          " << *localtime(&simendtime) << '\n';
+    // os << "| Elapsed:       " << elapsedtime << " sec\n";
     //if (err)
     //   os << "| Simulation stopped with error message.\n";
     if (contextModule())
@@ -312,32 +309,6 @@ cModule *cSimulation::moduleByPath(const char *path) const
     return modp;  // NULL if not found
 }
 
-void cSimulation::resetClock()
-{
-    laststarted = simendtime = simbegtime = time(0);
-    elapsedtime = 0LU;
-}
-
-void cSimulation::startClock()
-{
-    laststarted = time(0);
-}
-
-void cSimulation::stopClock()
-{
-    simendtime = time(0);
-    elapsedtime +=  simendtime - laststarted;
-    simulatedtime = simTime();
-}
-
-void cSimulation::checkTimes()
-{
-    if (simtmlimit!=0 && simTime()>=simtmlimit)
-         opp_terminate(eSIMTIME);
-    else if (tmlimit!=0 && elapsedtime+time(0)-laststarted>=tmlimit)
-         opp_terminate(eREALTIME);
-}
-
 // FIXME change according to doc comment...
 void cSimulation::setupNetwork(cNetworkType *network, int run_num)
 {
@@ -400,7 +371,6 @@ void cSimulation::setupNetwork(cNetworkType *network, int run_num)
 void cSimulation::startRun()
 {
     msgQueue.clear();
-    resetClock();
     sim_time = 0;
     event_num = 0;
     backtomod = NULL;
@@ -555,8 +525,9 @@ cSimpleModule *cSimulation::selectNextModule()
 
     // check if dest module exists and still running
     cSimpleModule *modp = (cSimpleModule *)vect[msg->arrivalModuleId()];
-    if (modp==NULL)
+    if (!modp)
         throw new cException("Message's destination module no longer exists");
+
     if (modp->moduleState()==sENDED)
     {
         if (!msg->isSelfMessage())
@@ -570,43 +541,46 @@ cSimpleModule *cSimulation::selectNextModule()
     // advance simulation time
     sim_time = msg->arrivalTime();
 
-    // check time limits
-    checkTimes();
     return modp;
 }
 
-void cSimulation::transferTo(cSimpleModule *sm)
+void cSimulation::transferTo(cSimpleModule *modp)
 {
-    if (sm==contextmodp)
+    if (modp==contextmodp)
         return;
-    if (sm==NULL)
+    if (modp==NULL)
         throw new cException("transferTo(): attempt to transfer to NULL");
 
     // set context variables
-    runningmodp = sm;
-    setContextModule( sm );
+    runningmodp = modp;
+    setContextModule( modp );
     simulation.exception = NULL;
 
     // switch to activity() of the simple module
-    cCoroutine::switchTo(sm->coroutine);
+    cCoroutine::switchTo(modp->coroutine);
 
     // if exception occurred in activity(), take it from cSimpleModule::activate() and pass it up
     if (simulation.exception)
         throw simulation.exception;
+
+    // check stack overflow, but only if this module still exists
+    //   (note: currentmod_was_deleted is set by runningmod_deleter)
+    if (currentmod_was_deleted)
+        currentmod_was_deleted = false;
+    else if (modp->stackOverflow())
+        throw new cException("Stack violation in module `%s' (%s stack too small?)", modp->fullPath(), modp->className());
+
 }
 
 void cSimulation::doOneEvent(cSimpleModule *mod)
 {
     if (mod->usesActivity())
     {
+        // switch to the coroutine of the module's activity(). We'll get back control
+        // when the module executes a receive() or wait() call.
+        // If there was an error during simulation, the call will throw an exception
+        // (which originally occurred inside activity()).
         transferTo( mod );
-
-        // check stack overflow, but only if this module still exists
-        //   (note: currentmod_was_deleted is set by runningmod_deleter)
-        if (currentmod_was_deleted)
-            currentmod_was_deleted = false;
-        else if (mod->stackOverflow())
-            throw new cException("Stack violation in module `%s' (%s stack too small?)", mod->fullPath(), mod->className());
     }
     else
     {
@@ -614,20 +588,26 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
         setContextModule( mod );
         cMessage *msg = msgQueue.getFirst();
 
+        // notify the environment about the message
         ev.messageDelivered( msg );
 
         try
         {
+            // if there was an error during simulation, handleMessage() will come back
+            // with an exception
             mod->handleMessage( msg );
         }
-        catch (cException *e)
+        catch (cException *)
         {
-            // even if there was an exception, we restore global context
+            // temporarily catch the exception to restore global context
             setGlobalContext();
             throw;
         }
         setGlobalContext();
     }
+
+    // increment event count
+    event_num++;
 }
 
 void cSimulation::transferToMain()
