@@ -506,15 +506,48 @@ PREV: @ref part2 UP: @ref contents
 
 @section s9 Step 9
 
-Let's make it more interesting by using several (n) `tic' modules,
-and connecting every module to every other. For now, let's keep it
-simple what they do: module 0 generates a message, and the others
+Let's make it a real networkg: we'll use several (n) tic modules,
+and connect every node to every other. For now, we'll keep it
+simple what they do: one of the nodes generates a message, and the others
 keep tossing it around in random directions until it arrives at
-module 2.
+a predetermined destination node.
 
-NED file is completely different:
+The NED file will need a few changes. First of all, the Txc module will
+need to have multiple input and output gates:
 
-tictoc9.ned: @include tictoc9.ned
+@dontinclude tictoc9.ned
+@skip simple Txc9
+@until endsimple
+
+The [ ] turns the gates into gate vectors. The size of the vector
+(the number of gates) will be determined where we use Txc to build
+the network.
+
+@skip module Tictoc9
+@until endmodule
+
+Here we created n modules as a module vector, and connected them.
+
+The resulting topology looks like this:
+
+<img src="step9.gif">
+
+In this version, tic[0] will generate the message to be sent around.
+This is done in initialize(), with the help of the index() function which
+returns the index of the module in the vector.
+
+The meat of the code is the forwardMessage() function which we invoke
+from handleMessage() whenever a message arrives at the node. It draws
+a random gate number (size() is the size of the gate vector), and
+sends out message on that gate.
+
+@dontinclude txc9.cc
+@skip ::forwardMessage
+@until }
+
+If the message arrives at tic[2], handleMessage() will delete the message.
+
+See the full code in @ref txc9.cc.
 
 Sources: @ref tictoc9.ned, @ref txc9.cc, @ref omnetpp.ini
 
