@@ -45,7 +45,6 @@
 using std::ostream;
 
 
-// FIXME
 #ifdef DEVELOPER_DEBUG
 #include <set>
 extern std::set<cObject*> objectlist;
