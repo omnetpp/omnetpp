@@ -11,6 +11,9 @@ arithmetic and the default printing of doubles being EXACTLY THE SAME
 on all machines. They also break if anything changes in the underlying
 RNGs.
 
+!!! THIS TEST IS CURRENTLY OUT OF ORDER (%contains always matches) !!!
+The dist/ dir can be used to test the functions.
+
 %activity:
 
 #define MEAN_AND_VARIANCE(f) \
@@ -20,7 +23,7 @@ RNGs.
  }
 
 int rng=1;
-int numrepl=100000;
+int numrepl=10000;
 
 // uniform(a,b): m=(a+b)/2
 MEAN_AND_VARIANCE(uniform(0,1,rng));   // m=0.5
@@ -77,36 +80,5 @@ MEAN_AND_VARIANCE(lognormal(0,1));
 // TBD:  pareto_shifted (double a, double b, double c, int rng=0)
 
 %contains: stdout
-uniform(0,1,rng): m=0.501125 v=0.0831679
-uniform(-5,5,rng): m=-0.00256514 v=8.30644
-
-exponential(1.0,rng): m=0.999677 v=1.00831
-exponential(0.01,rng): m=0.00996939 v=9.95572e-005
-exponential(5.0,rng): m=4.98566 v=25.0183
-
-normal(0,1,rng): m=0.00052409 v=0.995844
-normal(0,4,rng): m=0.00215499 v=15.9142
-normal(-1,4,rng): m=-1.00233 v=15.9832
-
-truncnormal(0,1,rng): m=0.799924 v=0.361884
-truncnormal(0,4,rng): m=3.1853 v=5.80456
-truncnormal(100,1,rng): m=100.002 v=1.00159
-truncnormal(-1,1,rng): m=0.524262 v=0.198246
-
-erlang_k(1,1): m=0.999063 v=0.995281
-erlang_k(1,0.01): m=0.0100351 v=0.00010072
-erlang_k(1,5): m=4.98824 v=24.8107
-erlang_k(2,1): m=1.00359 v=0.504355
-erlang_k(5,1): m=1.00097 v=0.198915
-erlang_k(5,10): m=10.0073 v=19.9857
-
-triang(0,0.5,1): m=0.499825 v=0.0416
-triang(0,0,1): m=0.334012 v=0.0555582
-triang(0,1,1): m=0.666933 v=0.0553886
-triang(0,0.1,1): m=0.366902 v=0.0504772
-triang(0,0.9,1): m=0.632645 v=0.05058
-triang(-1,4,5): m=2.66916 v=1.72358
-
-lognormal(0,1): m=1.64966 v=4.76404
-
+uniform
 

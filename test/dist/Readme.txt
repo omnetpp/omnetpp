@@ -28,14 +28,24 @@ Discrete:
 - HYPGEOMDIST(sample_s,number_sample,population_s,number_population)
 - POISSON(x,mean,cumulative)
 
-To test:
+All tests are described in omnetpp.ini, as 80+ runs. Each run tests a specific
+distribution with specific parameters. The `dist' program is just a generic
+"test shell".
+
+To perform the tests:
 1. build and run the test executable. You'll get a bunch of csv files as output
 2. open a csv file in Excel (doubleclick works on the file for me)
 3. select columns 1-2-3
 4. select Insert|Chart... --> XY Scatter --> Finish
 5. the two plots should visually match
 
+It is best to use Cmdenv. With it, running "dist" without args runs all tests.
 If you want to run specific tests only, type "dist -r 40" or "dist -r 40-44"
+When using Tkenv, do only one step after setting up a run, then find and open
+the inspector for the histogram.
+
+See omnetpp.ini for comments on specific tests.
+
 
 --Andras
 

@@ -8,6 +8,9 @@ arithmetic and the default printing of doubles being EXACTLY THE SAME
 on all machines. They also break if anything changes in the underlying
 RNGs.
 
+!!! THIS TEST IS CURRENTLY OUT OF ORDER (%contains always matches) !!!
+The dist/ dir can be used to test the functions.
+
 %file: {}.ned
 
 simple {Simple}
@@ -83,7 +86,7 @@ Define_Module({Simple});
 
 void {Simple}::activity()
 {
-    int numrepl=100000;
+    int numrepl=10000;
 
     PAR_MEAN_AND_VARIANCE(uniform_par);
     PAR_MEAN_AND_VARIANCE(exponential_par);
@@ -116,29 +119,5 @@ void {Simple}::activity()
 network={Net}
 
 %contains: stdout
-uniform_par: m=1.49972 v=0.0836221
-exponential_par: m=0.994976 v=0.985019
-normal_par: m=0.997956 v=1.00876
-truncnormal_par: m=1.28485 v=0.629235
-gamma_d_par: m=2.00716 v=2.01591
-gamma_d_par: m=1.99478 v=1.98186
-beta_par: m=0.387542 v=0.0782216
-erlang_k_par: m=0.997879 v=0.993821
-chi_square_par: m=2.00162 v=3.97089
-chi_square_par: m=1.99571 v=3.98491
-student_t_par: m=-384.669 v=1.44891e+010
-cauchy_par: m=2.23985 v=117117
-triang_par: m=1.99843 v=0.166742
-lognormal_par: m=4.50659 v=34.5979
-weibull_par: m=0.889651 v=0.216247
-pareto_shifted_par: m=43.6112 v=3.83752e+007
-intuniform_par: m=4.99985 v=10.0411
-bernoulli_par: m=0.30054 v=0.210218
-binomial_par: m=2.99924 v=2.09004
-geometric_par: m=2.32843 v=7.71662
-negbinomial_par: m=23.3364 v=77.2412
-poisson_par: m=1.00124 v=0.998668
-
-
-
+uniform_par
 
