@@ -127,11 +127,13 @@ print CC "#endif\n\n";
 print CC "#include \"$hfile\"\n\n";
 
 # pre-register some OMNeT++ classes so that one doesn't need to announce them
-@classes = ('cObject', 'cMessage', 'cPacket');
+@classes = ('cPolymorphic', 'cObject', 'cMessage', 'cPacket');
+$classtype{'cPolymorphic'} = 'noncobject';
+$classtype{'cObject'} = 'cobject';
+$classtype{'cMessage'} = 'cobject';
+$classtype{'cPacket'} = 'cobject';
 foreach $class (@classes) {
-    $classtype{$class} = 'cobject';
     $hasdescriptor{$class} = 0;
-
 }
 
 @enums = ();
@@ -576,7 +578,7 @@ sub prepareForCodeGeneration
         if ($keyword eq 'message') {
             $msgbaseclass = 'cMessage';
         } elsif ($keyword eq 'class') {
-            $msgbaseclass = '';
+            $msgbaseclass = 'cPolymorphic';
         } elsif ($keyword eq 'struct') {
             $msgbaseclass = '';
         } else {
@@ -612,7 +614,11 @@ sub prepareForCodeGeneration
         }
 
         # variable name
-        $var{$fieldname} = $fieldname."_var";
+        if ($classtype eq 'struct') {
+            $var{$fieldname} = $fieldname;
+        } else {
+            $var{$fieldname} = $fieldname."_var";
+        }
         $varsize{$fieldname} = $fieldname."_arraysize";
 
         # method names
@@ -874,6 +880,8 @@ sub generateClass
     }
 
     if ($classtype eq "cobject" && !$gap) {
+        # we only register cObject subclasses. If something is at least cPolymorphic,
+        # it could be registed in theory too, but we'll leave this to the user.
         print CC "Register_Class($msgclass);\n\n";
     }
 
