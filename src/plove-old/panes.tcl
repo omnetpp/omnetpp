@@ -438,7 +438,20 @@ proc vectorInfoDialog {id} {
     # create dialog with OK and Cancel buttons
     createOkCancelDialog .ize "Vector info"
 
-    regsub "^$env(HOME)/" $vec($id,fname) "~/" fname
+    set env_home $env(HOME)
+    regsub -all -- {\\} $env_home {\\\\} env_home
+    regsub -all -- {\.} $env_home {\\.} env_home
+    regsub -all -- {\^} $env_home {\\^} env_home
+    regsub -all -- {\$} $env_home {\\$} env_home
+    regsub -all -- {\[} $env_home {\\[} env_home
+    regsub -all -- {\]} $env_home {\\]} env_home
+    regsub -all -- {\(} $env_home {\\(} env_home
+    regsub -all -- {\)} $env_home {\\)} env_home
+    regsub -all -- {\+} $env_home {\\+} env_home
+    regsub -all -- {\*} $env_home {\\*} env_home
+    regsub -all -- {\?} $env_home {\\?} env_home
+
+    regsub "^$env_home/" $vec($id,fname) "~/" fname
 
     # add entry fields and focus on first one
     label-entry       .ize.f.title "Title:" $vec($id,title)
