@@ -196,14 +196,14 @@ proc run_fast {} {
     }
 }
 
-proc run_notracing {} {
+proc run_express {} {
     # implements Simulate|Express Run
 
     if [check_running] return
 
     if {[network_ready] == 1} {
         display_stopdialog with_update
-        opp_run_notracing
+        opp_run_express
         remove_stopdialog
     }
 }
@@ -235,7 +235,7 @@ proc run_until {} {
     }
     if {$mode=="Express"} {
        display_stopdialog with_update
-       opp_run_notracing $time $event
+       opp_run_express $time $event
        remove_stopdialog
     }
 }

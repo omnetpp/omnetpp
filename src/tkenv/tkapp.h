@@ -59,7 +59,7 @@ class TOmnetTkApp : public TOmnetApp
       double opt_animation_speed;  // msg animation speed: 0=slow 1=norm 2=fast
       long opt_stepdelay;          // Delay between steps in 100th seconds
       int  opt_updatefreq_fast;    // FastRun updates display every N events
-      int  opt_updatefreq_express; // RunNoTracing updates display every N events
+      int  opt_updatefreq_express; // RunExpress updates display every N events
       unsigned opt_extrastack;     // per-module extra stack
 
       Tcl_Interp *interp;      // TCL interpreter
@@ -109,7 +109,7 @@ class TOmnetTkApp : public TOmnetApp
       void runSimulation(simtime_t until_time, long until_event,
                          bool slowexec, bool fast,
                          cSimpleModule *stopinmod=NULL);
-      void runSimulationNoTracing( simtime_t until_time, long until_event );
+      void runSimulationExpress( simtime_t until_time, long until_event );
       void startAll();
       void finishSimulation(); // wrapper around simulation.callFinish() and simulation.endRun()
 
@@ -121,7 +121,7 @@ class TOmnetTkApp : public TOmnetApp
       void stopAtBreakpoint(const char *label, cSimpleModule *mod);
 
       void updateInspectors();
-      TInspector *inspect(cObject *obj, int type, void *dat);
+      TInspector *inspect(cObject *obj, int type, void *dat, const char *geometry=NULL);
       TInspector *findInspector(cObject *obj, int type);
 
       // small functions:

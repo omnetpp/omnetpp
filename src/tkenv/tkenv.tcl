@@ -25,6 +25,7 @@ if [info exist OMNETPP_TKENV_DIR] {
    source [file join $dir balloon.tcl]
    source [file join $dir dialogs.tcl]
    source [file join $dir windows.tcl]
+   source [file join $dir insplist.tcl]
    source [file join $dir objinsp.tcl]
    source [file join $dir modinsp1.tcl]
    source [file join $dir modinsp2.tcl]

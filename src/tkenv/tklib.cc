@@ -1,7 +1,7 @@
 //==========================================================================
 //  TKLIB.CC -
-//	      for the Tcl/Tk windowing environment of
-//			      OMNeT++
+//            for the Tcl/Tk windowing environment of
+//                            OMNeT++
 //==========================================================================
 
 /*--------------------------------------------------------------*
@@ -33,12 +33,12 @@ char *ptrToStr( void *ptr, char *buffer)
 {
     static char staticbuf[20];
     if (buffer==NULL)
-	   buffer = staticbuf;
+           buffer = staticbuf;
 
     if (ptr==0)
-	   strcpy(buffer,"ptr0");  // GNU C++'s sprintf() says "nil"
+           strcpy(buffer,"ptr0");  // GNU C++'s sprintf() says "nil"
     else
-	   sprintf(buffer,"ptr%p", ptr );
+           sprintf(buffer,"ptr%p", ptr );
     return buffer;
 }
 
@@ -82,17 +82,17 @@ static bool do_fill_listbox( cObject *obj, bool beg, Tcl_Interp *intrp, char *ls
     static bool deep;
     static int ctr;
     if (!obj) {       // setup
-	 listbox = lstbox;
-	 interp = intrp;
-	 infofunc = f;
-	 deep = dp;
-	 ctr  = 0;
-	 return false;
+         listbox = lstbox;
+         interp = intrp;
+         infofunc = f;
+         deep = dp;
+         ctr  = 0;
+         return false;
     }
     if( !beg ) return false;
     if( (deep || ctr>0) && !memoryIsLow() ) // if deep=false, exclude owner object
     {
-	 CHK(Tcl_VarEval(interp, listbox," insert end {",infofunc(obj),"}",NULL));
+         CHK(Tcl_VarEval(interp, listbox," insert end {",infofunc(obj),"}",NULL));
     }
     return deep || ctr++ == 0;
 }
@@ -113,12 +113,12 @@ static void _modcollection(cModule *parent, Tcl_Interp *interp, char *listbox, I
       cModule *mod = simulation.module(i);
       if (mod && mod!=simulation.systemModule() && mod->parentModule()==parent)
       {
-	 if (!simpleonly || mod->isSimple())
-	    CHK(Tcl_VarEval(interp, listbox," insert end {",infofunc(mod),"}",NULL));
+         if (!simpleonly || mod->isSimple())
+            CHK(Tcl_VarEval(interp, listbox," insert end {",infofunc(mod),"}",NULL));
 
-	 // handle 'deep' option using recursivity
-	 if (deep)
-	    _modcollection(mod,interp,listbox,infofunc,simpleonly,deep);
+         // handle 'deep' option using recursivity
+         if (deep)
+            _modcollection(mod,interp,listbox,infofunc,simpleonly,deep);
       }
     }
 }
@@ -128,8 +128,8 @@ void modcollection(cModule *parent, Tcl_Interp *interp, char *listbox, InfoFunc 
     // CHK(Tcl_VarEval(interp, listbox, " delete 0 end", NULL ));
     if (deep)
     {
-	 if (!simpleonly || parent->isSimple())
-	    CHK(Tcl_VarEval(interp, listbox," insert end {",infofunc(parent),"}",NULL));
+         if (!simpleonly || parent->isSimple())
+            CHK(Tcl_VarEval(interp, listbox," insert end {",infofunc(parent),"}",NULL));
     }
     _modcollection(parent,interp,listbox,infofunc,simpleonly,deep);
 }
@@ -206,23 +206,23 @@ static bool do_inspect_matching( cObject *obj, bool beg, short *patt, int typ, b
     static int type;
     static int ctr;
     if (!obj) {       // setup
-	 pattern = patt;
-	 type = typ;
-	 deep = true;
-	 countonly=co;
-	 ctr  = 0;
-	 return false;
+         pattern = patt;
+         type = typ;
+         deep = true;
+         countonly=co;
+         ctr  = 0;
+         return false;
     }
     if( !beg ) return false;
     if( (deep || ctr>0) && !memoryIsLow() ) // if deep=false, exclude owner object
     {
-	 const char *fullpath = obj->fullPath();
-	 if (stringmatch(pattern,fullpath))
-	 {
-	   if (!countonly)
-	       ((TOmnetTkApp *)(ev.app))->inspect(obj,type,NULL);
-	   inspmatch_ctr++;
-	 }
+         const char *fullpath = obj->fullPath();
+         if (stringmatch(pattern,fullpath))
+         {
+           if (!countonly)
+               ((TOmnetTkApp *)(ev.app))->inspect(obj,type,NULL);
+           inspmatch_ctr++;
+         }
     }
     return deep || ctr++ == 0;
 }
@@ -237,6 +237,58 @@ int inspect_matching(cObject *object, Tcl_Interp *, char *pattern, int type, boo
     do_inspect_matching(NULL,false, trf_pattern, type, countonly);
     object->forEach( (ForeachFunc)do_inspect_matching );
     return inspmatch_ctr;
+}
+
+//----------------------------------------------------------------------
+
+static bool do_inspect_by_name( cObject *obj, bool beg, const char *_fullpath, const char *_classname,
+                                int _insptype, const char *_geometry)
+{
+    static const char *fullpath;
+    static const char *classname;
+    static int insptype;
+    static const char *geometry;
+
+    static int ctr;
+    if (!obj) {       // setup
+        fullpath = _fullpath;
+        classname = _classname;
+        insptype = _insptype;
+        geometry = _geometry;
+        ctr  = 0;
+        return false;
+    }
+
+    if (!beg)
+        return false;
+
+    // we have to do exhaustive search here... optimization, such as checking
+    // if objpath matches beginning of fullpath to see if we're on the
+    // right track is not usable, because some objects (simulation, modules'
+    // paramv, gatev members) don't appear in object's fullPath()...
+
+    const char *objpath = obj->fullPath();
+    if (!strcmp(fullpath,objpath) && !strcmp(classname,obj->className()))
+    {
+        // found: inspect if inspector is not open
+        TOmnetTkApp *app = (TOmnetTkApp *)(ev.app);
+        if (!app->findInspector(obj, insptype))
+            app->inspect(obj, insptype, NULL, geometry);
+        return false;
+    }
+    else
+    {
+        // search further
+        return true;
+    }
+}
+
+
+void inspect_by_name(const char *fullpath, const char *classname, int insptype, const char *geometry)
+{
+    // open inspectors for object whose is the same as fullpath
+    do_inspect_by_name(NULL,false, fullpath, classname, insptype, geometry);
+    simulation.forEach( (ForeachFunc)do_inspect_by_name);
 }
 
 //=============== TCL/TK STUFF ==============================================
@@ -260,7 +312,7 @@ int exit_omnetpp;
 //  {
 //    {"-display", TK_ARGV_STRING,   (char *)NULL, (char *)&display, "Display to use"},
 //    {"-debug",   TK_ARGV_CONSTANT, (char *)1,    (char *)&debug,   "Set things up for gdb-style debugging"},
-//    {"",	   TK_ARGV_END,},
+//    {"",         TK_ARGV_END,},
 //  };
 
 // Procedure to handle X errors
@@ -268,9 +320,9 @@ static int XErrorProc( ClientData, XErrorEvent *errEventPtr)
 {
     fprintf(stderr, "X protocol error: ");
     fprintf(stderr, "error=%d request=%d minor=%d\n",
-		    errEventPtr->error_code,
-		    errEventPtr->request_code,
-		    errEventPtr->minor_code );
+                    errEventPtr->error_code,
+                    errEventPtr->request_code,
+                    errEventPtr->minor_code );
     return 0;  // claim to have handled the error
 }
 
@@ -286,20 +338,20 @@ Tcl_Interp *initTk(int argc, char **argv)
     // Tcl/Tk args interfere with OMNeT++'s own command-line args
     //if (Tk_ParseArgv(interp, (Tk_Window)NULL, &argc, argv, argTable, 0)!=TCL_OK)
     //{
-    //	  fprintf(stderr, "%s\n", interp->result);
-    //	  return TCL_ERROR;
+    //    fprintf(stderr, "%s\n", interp->result);
+    //    return TCL_ERROR;
     //}
 
     if (Tcl_Init(interp) != TCL_OK)
     {
-	fprintf(stderr, "Tcl_Init failed: %s\n", interp->result);
-	return 0;
+        fprintf(stderr, "Tcl_Init failed: %s\n", interp->result);
+        return 0;
     }
 
     if (Tk_Init(interp) != TCL_OK)
     {
-	fprintf(stderr, "Tk_Init failed: %s\n", interp->result);
-	return 0;
+        fprintf(stderr, "Tk_Init failed: %s\n", interp->result);
+        return 0;
     }
 
     Tcl_StaticPackage(interp, "Tk", Tk_Init, (Tcl_PackageInitProc *) NULL);
@@ -323,8 +375,8 @@ int createTkCommands( Tcl_Interp *interp, OmnetTclCommand *commands)
 {
     for(;commands->namestr!=NULL; commands++)
     {
-	Tcl_CreateCommand( interp, commands->namestr, commands->func,
-			   (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
+        Tcl_CreateCommand( interp, commands->namestr, commands->func,
+                           (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
     }
     return TCL_OK;
 }
@@ -333,7 +385,7 @@ int createTkCommands( Tcl_Interp *interp, OmnetTclCommand *commands)
 int runTk( Tcl_Interp *)
 {
     // Custom event loop
-    //	the C++ variable exit_omnetpp is used for exiting
+    //  the C++ variable exit_omnetpp is used for exiting
     while (!exit_omnetpp)
     {
        Tk_DoOneEvent(TK_ALL_EVENTS);

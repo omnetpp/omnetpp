@@ -259,7 +259,7 @@ void TOmnetTkApp::doOneStep()
 
     if (state==SIM_TERMINATED)
     {
-        // wrapper around simulation.callFinish() and simulation.endRun()
+        // call wrapper around simulation.callFinish() and simulation.endRun()
         finishSimulation();
     }
 }
@@ -290,8 +290,7 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
         {
             // query which module will execute the next event
             cSimpleModule *mod = simulation.selectNextModule();
-            if (!mod)
-                break;
+            ASSERT(mod!=NULL);
 
             // if stepping locally in module, we stop both immediately
             // *before* and *after* executing the event in that module,
@@ -361,7 +360,7 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
 
     if (state==SIM_TERMINATED)
     {
-        // wrapper around simulation.callFinish() and simulation.endRun()
+        // call wrapper around simulation.callFinish() and simulation.endRun()
         finishSimulation();
     }
 
@@ -371,7 +370,7 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
     updateInspectors();
 }
 
-void TOmnetTkApp::runSimulationNoTracing(simtime_t until_time,long until_event)
+void TOmnetTkApp::runSimulationExpress(simtime_t until_time,long until_event)
 {
     // implements 'express run'
     ASSERT(state==SIM_NEW || state==SIM_READY);
@@ -436,7 +435,7 @@ void TOmnetTkApp::runSimulationNoTracing(simtime_t until_time,long until_event)
 
     if (state==SIM_TERMINATED)
     {
-        // wrapper around simulation.callFinish() and simulation.endRun()
+        // call wrapper around simulation.callFinish() and simulation.endRun()
         finishSimulation();
     }
 
@@ -453,12 +452,13 @@ void TOmnetTkApp::startAll()
 
 void TOmnetTkApp::finishSimulation()
 {
-    ASSERT(state==SIM_NEW || state==SIM_READY || state==SIM_TERMINATED);
+    // hmm... after SIM_ERROR, we shouldn't allow callFinish() in theory..
+    ASSERT(state==SIM_NEW || state==SIM_READY || state==SIM_TERMINATED || state==SIM_ERROR);
 
     // print banner into main window
     if (opt_use_mainwindow)
          CHK(Tcl_VarEval(interp,
-              ".main.text insert end {** Calling finish() for modules\n} event\n"
+              ".main.text insert end {** Calling finish() methods of modules\n} event\n"
               ".main.text see end", NULL));
 
     // should print banner into per module windows too!
@@ -622,7 +622,7 @@ void TOmnetTkApp::stopAtBreakpoint(const char *label, cSimpleModule *mod)
     }
 }
 
-TInspector *TOmnetTkApp::inspect(cObject *obj, int type, void *dat)
+TInspector *TOmnetTkApp::inspect(cObject *obj, int type, void *dat, const char *geometry)
 {
     // create inspector object & window or display existing one
     TInspector *existing_insp = findInspector( obj, type );
@@ -632,22 +632,23 @@ TInspector *TOmnetTkApp::inspect(cObject *obj, int type, void *dat)
         return existing_insp;
     }
 
-    if (existing_insp)  // there is an inspector, but without window: error!
+    if (existing_insp)
     {
-           fprintf(stderr, "deleting inspector without window\n");
-           delete existing_insp;
+        // there is an inspector, but without window: error!
+        fprintf(stderr, "deleting inspector without window\n");
+        delete existing_insp;
     }
 
     // create inspector
     TInspector *insp = obj->inspector(type,dat);
     if (!insp)
     {
-            // message: object has no such inspector
-            CHK(Tcl_VarEval(interp,"messagebox {Confirm}"
-                                   " {Class `",obj->className(),"' has no `",
-                                   insptype_name_from_code(type),
-                                   "' inspector.} info ok",NULL));
-            return (TInspector *)0;
+        // message: object has no such inspector
+        CHK(Tcl_VarEval(interp,"messagebox {Confirm}"
+                               " {Class `",obj->className(),"' has no `",
+                               insptype_name_from_code(type),
+                               "' inspector.} info ok",NULL));
+        return NULL;
     }
 
     // An inspector was created. Now, its actual type can be different
@@ -664,9 +665,9 @@ TInspector *TOmnetTkApp::inspect(cObject *obj, int type, void *dat)
         existing_insp = findInspector( actual_obj, actual_type );
         if (existing_insp)
         {
-             delete insp;
-             existing_insp->showWindow();
-             return existing_insp;
+            delete insp;
+            existing_insp->showWindow();
+            return existing_insp;
         }
     }
 
@@ -697,6 +698,9 @@ void TOmnetTkApp::updateInspectors()
         TInspector *insp = (TInspector *) i();
         insp->update();
     }
+
+    // try opening "pending" inspectors
+    CHK(Tcl_VarEval(interp, "inspectorupdate_callback",NULL));
 }
 
 void TOmnetTkApp::createSnapshot( const char *label )

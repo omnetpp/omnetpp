@@ -48,6 +48,7 @@ char *infofunc_typeandfullpath( cObject *object);
 char *infofunc_module( cObject *object);
 
 int inspect_matching(cObject *object, Tcl_Interp *interp, char *pattern, int type, bool countonly);
+void inspect_by_name(const char *fullpath, const char *classname, int insptype, const char *geometry);
 
 //-------
 

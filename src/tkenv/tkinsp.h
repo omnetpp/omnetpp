@@ -61,7 +61,7 @@ class TInspector : public cObject
       virtual void update();
       virtual void writeBack() {}
 
-      virtual int inspectorCommand(Tcl_Interp *, int, char **) {return TCL_ERROR;}
+      virtual int inspectorCommand(Tcl_Interp *interp, int, char **) {return TCL_ERROR;}
 
       // utility functions:
       void setEntry(const char *entry, const char *val);
