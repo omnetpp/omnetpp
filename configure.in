@@ -1,42 +1,29 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(src/nedc/jar.c)
+AC_INIT(src/sim/omnetpp.h)
+
+dnl Defines.
+OMNETPP_ROOT=`pwd`
+AC_SUBST(OMNETPP_ROOT)
 
 dnl Checks for programs.
 AC_PROG_YACC
-AC_PROG_CC
 AC_PROG_LEX
+AC_PROG_CC
+AC_PROG_CXX
+AC_PROG_RANLIB
 
 dnl Checks for libraries.
-dnl Replace `main' with a function in -lX11:
-AC_CHECK_LIB(X11, main)
-dnl Replace `main' with a function in -lcmdenv:
-AC_CHECK_LIB(cmdenv, main)
-dnl Replace `main' with a function in -ldl:
-AC_CHECK_LIB(dl, main)
-dnl Replace `main' with a function in -lenvir:
-AC_CHECK_LIB(envir, main)
-dnl Replace `main' with a function in -lgpvm3:
-AC_CHECK_LIB(gpvm3, main)
-dnl Replace `main' with a function in -lm:
-AC_CHECK_LIB(m, main)
-dnl Replace `main' with a function in -lpvm3:
-AC_CHECK_LIB(pvm3, main)
-dnl Replace `main' with a function in -lsim_pvm:
-AC_CHECK_LIB(sim_pvm, main)
-dnl Replace `main' with a function in -lsim_std:
-AC_CHECK_LIB(sim_std, main)
-dnl Replace `main' with a function in -lstdc:
-AC_CHECK_LIB(stdc, main)
-dnl Replace `main' with a function in -ltcl:
-AC_CHECK_LIB(tcl, main)
-dnl Replace `main' with a function in -ltk:
-AC_CHECK_LIB(tk, main)
-dnl Replace `main' with a function in -ltkenv:
-AC_CHECK_LIB(tkenv, main)
-dnl Replace `main' with a function in -ltv:
-AC_CHECK_LIB(tv, main)
-dnl Replace `main' with a function in -ltvenv:
-AC_CHECK_LIB(tvenv, main)
+AC_CHECK_LIB(m, floor)
+AC_CHECK_LIB(dl, dlsym)
+AC_CHECK_LIB(stdc++, some_func_in_stdCPP)
+AC_CHECK_LIB(pvm3, pvm_recv)
+AC_CHECK_LIB(gpvm3, pvm_joingroup)
+AC_CHECK_LIB(X11, XDrawLine)
+AC_CHECK_LIB(tcl, Tcl_Init)
+AC_CHECK_LIB(tcl8, Tcl_Init)
+AC_CHECK_LIB(tk, Tk_BindEvent,,, -lX11)
+AC_CHECK_LIB(tk8, Tk_BindEvent,,, -lX11)
+AC_CHECK_LIB(tv, some_cpp_func_in_TV)
 
 dnl Checks for header files.
 AC_HEADER_STDC
@@ -49,10 +36,9 @@ AC_TYPE_SIZE_T
 AC_STRUCT_TM
 
 dnl Checks for library functions.
-AC_FUNC_ALLOCA
 AC_FUNC_MEMCMP
 AC_TYPE_SIGNAL
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS(select strdup strspn strstr)
 
-AC_OUTPUT(samples/pvmex/makefile src/gned/makefile samples/fifo1/makefile samples/fifo2/makefile samples/fddi/makefile src/envir/makefile samples/hist/makefile src/envir/tvenv/makefile src/sim/makefile samples/token/makefile src/envir/cmdenv/makefile src/utils/makefile samples/nim/makefile samples/hcube/makefile models/support/makefile samples/dyna/makefile src/nedc/makefile src/envir/tkenv/makefile)
+AC_OUTPUT(src/cmdenv/makefile samples/pvmex/makefile src/gned/makefile samples/fifo1/makefile samples/fifo2/makefile src/envir/makefile samples/fddi/makefile samples/hist/makefile src/tkenv/makefile src/sim/makefile samples/token/makefile src/utils/makefile samples/nim/makefile src/tvenv/makefile samples/hcube/makefile samples/dyna/makefile models/support/makefile Makefile src/nedc/makefile)
