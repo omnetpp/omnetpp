@@ -1,3 +1,5 @@
 libcmdenv.so.2.1
 libenvir.so.2.1
+libsim_pvm.so.2.1
 libsim_std.so.2.1
+libtkenv.so.2.1
