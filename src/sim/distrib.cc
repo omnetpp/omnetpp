@@ -21,12 +21,11 @@
 // Linux - <math.h> supplies a PI, MS does not...
 //
 #ifndef M_PI
-#define M_PI    3.141592654
+#define M_PI    3.1415926535897932384626433832795
 #endif
 
 #ifndef M_E
 #define M_E     2.7182818284590452353602874713527
-            //  2.718281828
 #endif
 
 
@@ -285,6 +284,9 @@ int negbinomial(int n, double p, int rng)
 }
 
 
+/*
+ * FIXME: hypergeometric() doesn't work yet
+ *
 int hypergeometric(int a, int b, int n, int rng)
 {
     if (a<0 || b<0 || n>a+b)
@@ -307,7 +309,7 @@ int hypergeometric(int a, int b, int n, int rng)
 
     return X;
 }
-
+*/
 
 int poisson(double lambda, int rng)
 {
@@ -457,10 +459,12 @@ static double _wrap_negbinomial(double n, double p)
     return (double) negbinomial( (int)n, p);
 }
 
+/* hypergeometric doesn't work yet
 static double _wrap_hypergeometric(double a, double b, double n)
 {
     return (double) hypergeometric( (int)a, (int)b, (int)n);
 }
+*/
 
 static double _wrap_poisson(double lambda)
 {
@@ -488,7 +492,9 @@ Define_Function2(bernoulli, _wrap_bernoulli, 1);
 Define_Function2(binomial, _wrap_binomial, 2);
 Define_Function2(geometric, _wrap_geometric, 1);
 Define_Function2(negbinomial, _wrap_negbinomial, 2);
+/* hypergeometric doesn't work yet
 Define_Function2(hypergeometric, _wrap_hypergeometric, 3);
+*/
 Define_Function2(poisson, _wrap_poisson, 1);
 
 
@@ -591,10 +597,12 @@ static double _wrap_negbinomial_with_rng(double n, double p, double rng)
     return (double) negbinomial( (int)n, p, (int)rng);
 }
 
+/* hypergeometric doesn't work yet
 static double _wrap_hypergeometric_with_rng(double a, double b, double n, double rng)
 {
     return (double) hypergeometric( (int)a, (int)b, (int)n, (int)rng);
 }
+*/
 
 static double _wrap_poisson_with_rng(double lambda, double rng)
 {
@@ -622,7 +630,9 @@ Define_Function2(bernoulli, _wrap_bernoulli_with_rng, 2);
 Define_Function2(binomial, _wrap_binomial_with_rng, 3);
 Define_Function2(geometric, _wrap_geometric_with_rng, 2);
 Define_Function2(negbinomial, _wrap_negbinomial_with_rng, 3);
+/* hypergeometric doesn't work yet
 Define_Function2(hypergeometric, _wrap_hypergeometric_with_rng, 4);
+*/
 Define_Function2(poisson, _wrap_poisson_with_rng, 2);
 
 
