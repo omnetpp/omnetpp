@@ -125,7 +125,7 @@ void end_simple (char *mname);
 void get_expression(const char *expr, FILE *f, char *destbuf ); /* call this to use an expression! */
 
 char *do_op(int args, char op, char *p1,char *p2,char *p3);
-char *do_func(int args,char *fname, char *p1,char *p2,char *p3);
+char *do_func(int args,char *fname, char *p1,char *p2,char *p3,char *p4);
 
 char *do_parname(char *submodname, char *submodindex, char *namestr, int isanc, int isref); /* --VA*/
 char *do_sizeof(char *gname); /* --VA*/

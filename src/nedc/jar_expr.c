@@ -69,7 +69,7 @@ void add_to_exprtab(char *exprtab,char *par)
     }
 }
 
-char *do_func (int args, char *fname, char *p1,char *p2,char *p3)
+char *do_func (int args, char *fname, char *p1,char *p2,char *p3,char *p4)
 {
     char *func;
     int i;
@@ -77,7 +77,7 @@ char *do_func (int args, char *fname, char *p1,char *p2,char *p3)
     char findfunc_code[128];
 
     if (firstpass)
-        {jar_free(fname);jar_free(p1);jar_free(p2);jar_free(p3);return NULL;}
+        {jar_free(fname);jar_free(p1);jar_free(p2);jar_free(p3);jar_free(p4);return NULL;}
 
     /* do we know this function? */
     for (i=0; known_funcs[i].fname!=NULL;i++)
@@ -110,6 +110,7 @@ char *do_func (int args, char *fname, char *p1,char *p2,char *p3)
             case 1: func = "functype->mathFunc1Arg()"; break;
             case 2: func = "functype->mathFunc2Args()"; break;
             case 3: func = "functype->mathFunc3Args()"; break;
+            case 4: func = "functype->mathFunc4Args()"; break;
             default: func = "???";
         }
     }
@@ -235,11 +236,55 @@ char *do_func (int args, char *fname, char *p1,char *p2,char *p3)
                   add_to_exprtab(temp_res,buf);
                }
                break;
+       case 4: if (EXPR_TYPE(p1)==TYPE_STRING ||
+                   EXPR_TYPE(p2)==TYPE_STRING ||
+                   EXPR_TYPE(p3)==TYPE_STRING ||
+                   EXPR_TYPE(p4)==TYPE_STRING)
+               {
+                  sprintf (errstr, "Function \"%s\" expects numeric arguments\n",fname);
+                  adderr;
+               }
+
+               if (EXPR_USE(p1)==USE_LITERAL &&
+                   EXPR_USE(p2)==USE_LITERAL &&
+                   EXPR_USE(p3)==USE_LITERAL &&
+                   EXPR_USE(p4)==USE_LITERAL)
+               {
+                  sprintf( temp_res,
+                           EXPR_PREFIX "%s"
+                           "%svalue.cancelRedirection();\n" /* I-bug */
+                           "%svalue.setDoubleValue(%s,%s,%s,%s,%s);\n",
+                           findfunc_code,
+                           indent,
+                           indent,func,
+                           EXPR_STR(p1),EXPR_STR(p2),EXPR_STR(p3),EXPR_STR(p4));
+                  EXPR_USE(temp_res) = USE_VALUE;
+                  EXPR_TYPE(temp_res) = TYPE_NUMERIC;
+               }
+               else
+               {
+                  strcpy(temp_res, EXPR_PREFIX);
+                  EXPR_USE(temp_res) = USE_TABLE;
+                  EXPR_TYPE(temp_res) = TYPE_NUMERIC;
+
+                  add_to_exprtab(temp_res, p1);
+                  add_to_exprtab(temp_res, p2);
+                  add_to_exprtab(temp_res, p3);
+                  add_to_exprtab(temp_res, p4);
+                  strcat(temp_res,findfunc_code);
+
+                  sprintf(buf, EXPR_PREFIX "%s", func);
+                  EXPR_USE(buf) = USE_LITERAL;
+                  EXPR_TYPE(buf) = TYPE_NUMERIC;
+                  add_to_exprtab(temp_res,buf);
+               }
+               break;
     }
     jar_free(fname);
     jar_free(p1);
     jar_free(p2);
     jar_free(p3);
+    jar_free(p4);
     return jar_strdup(temp_res);
 }
 
