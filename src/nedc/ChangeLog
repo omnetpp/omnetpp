@@ -1,10 +1,11 @@
+2004-05-27  Andras Varga
+
+	* opp_msgc: generates netPack()/netUnpack() for parallel simulation
+
 2004-05-26  Andras Varga
 
 	* opp_msgc: prohibit using cObject fields in structs and non-cObject
 	classes (ownership issues)
-
-	* opp_msgc: partial implementation of netPack()/netUnpack():
-	handles primitive types only, for struct/class it throws exception
 
 2004-05-16  Andras Varga
 
