@@ -115,7 +115,7 @@ etc. paths in Options|External programs.
 Known bug:
 If you plot too many vectors at the same time, some of them may not
 appear in the plot because the length of the 'plot' command exceeds
-the limit hardwired in gnuplot. Not my fault :-(
+the limit hardwired in gnuplot.
 
 Enjoy!
 
