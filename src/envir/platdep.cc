@@ -71,6 +71,20 @@ bool opp_loadlibrary(const char *libname)
 }
 
 
+#ifdef __APPLE__
+#include <sys/time.h>
+int ftime(struct timeb *tp)
+{
+    struct timeval tv;
+
+    gettimeofday(&tv, NULL);
+    tp->time = tv.tv_sec;
+    tp->millitm = tv.tv_usec / 1000;
+    tp->timezone = 0;
+    tp->dstflag = 0;
+}
+#endif
+
 unsigned long opp_difftimebmillis(const struct timeb& t, const struct timeb& t0)
 {
     // with 32-bit longs it only overflows after 49.7 DAYs

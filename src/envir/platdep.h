@@ -26,6 +26,10 @@ ENVIR_API bool opp_loadlibrary(const char *libname);
 #define timeb _timeb
 #endif
 
+#ifdef __APPLE__
+int ftime(struct timeb *tp);
+#endif
+
 // (t-t0) in milliseconds (t>=t0 is assumed; overflows only after 49.7 days).
 unsigned long opp_difftimebmillis(const struct timeb& t, const struct timeb& t0);
 struct timeb operator+(const struct timeb& a, const struct timeb& b);
