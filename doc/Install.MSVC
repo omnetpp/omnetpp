@@ -82,10 +82,12 @@ Some hint how to do it:
     directory. It already contains the Tkenv/Cmdenv configurations, etc.
  2. Rename all .cc files to .cpp (ren *.cc *.cpp) and add them to the project.
  3. Add the .ned files to the project and set custom build option for them:
-       command: nedc -s _n.cpp $(InputName)
-       output file: $(InputName)_n.cpp
+       Description:  NED Compiling $(InputPath)
+       Command:      nedc -s _n.cpp $(InputPath)
+       Outputs:      $(InputPath)_n.cpp
     Hint: you can select all .ned files together, and 'All configurations'
-    from the combo at the left of the Settings dialog...
+    from the combo at the left of the Settings dialog, and then you have to
+    type this settings only once.
  4. For each .ned file, add a corresponding _n.cpp file.
     Hint: if you 'Compile' the .ned files, the _n.cpp files will be created,
     and you can select them all at once in the 'Add files' dialog.
@@ -111,11 +113,6 @@ of the library and type:
 
     nmake -f Makefile.vc clean
     nmake -f Makefile.vc
-    nmake -f Makefile.vc install-local
-
-The last command is what copies the libraries from the src/ tree to lib/.
-(Note: Typing `nmake -f Makefile.vc' in the top-level omnetpp directory
-already includes `nmake install-local' for all libraries and programs.)
 
 
 6. Using Plove
