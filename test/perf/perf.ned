@@ -1,0 +1,48 @@
+
+simple Queue_1
+    parameters:
+        repCount: numeric,
+        qLevel: numeric;
+endsimple
+
+network queue_1 : Queue_1
+endnetwork
+
+
+simple Schedule_1
+    parameters:
+        repCount: numeric;
+endsimple
+
+network schedule_1 : Schedule_1
+endnetwork
+
+
+simple Send_1
+    parameters:
+        repCount: numeric;
+    gates:
+        in: in;
+        out: out;
+endsimple
+
+module SendTest_1
+    submodules:
+        send: Send_1;
+    connections:
+        send.out --> send.in;
+endmodule
+
+module SendTest_2
+    submodules:
+        send: Send_1;
+    connections:
+        send.out --> delay 1.0 --> send.in;
+endmodule
+
+network sendTest_1 : SendTest_1
+endnetwork
+
+network sendTest_2 : SendTest_2
+endnetwork
+
