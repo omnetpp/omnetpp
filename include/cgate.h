@@ -123,6 +123,11 @@ class SIM_API cGate : public cObject
     virtual const char *fullName() const;
 
     /**
+     * Sets object's name. Redefined to update the stored fullName string.
+     */
+    virtual void setName(const char *s);
+
+    /**
      * Redefined. (Reason: a C++ rule that overloaded virtual methods must be redefined together.)
      */
     virtual std::string fullPath() const;
