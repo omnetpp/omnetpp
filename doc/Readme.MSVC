@@ -18,14 +18,16 @@ hard disk to compile OMNeT++ and to install all related packages.
 Win95/98/ME users:
 ------------------
 The Makefile.vc file mentioned at several places in this doc is only meant for
-NT4.0 and Win2000.
+NT4.0, W2K and XP.
 
- *** IF YOU HAVE WIN95/98/ME, YOU SHOULD USE MAKEFILE.98! ***
+*** WINDOWS 95, 98 AND ME ARE NOT SUPPORTED !
 
 The reason is that on the latter systems, the shell lacks the power needed to
-write robust makefiles -- Makefile.98 is a dumb version of Makefile.vc, but at
-least it works everywhere. If you're interested in the details, see Appendix C
-at the end of this file!
+write robust makefiles. If you're interested in the details, see Appendix C
+at the end of this file. The provided Makefile.98 file is a not too successful
+attempt to produce a working makefile for these systems. Anyway it is highly
+recommended to use a stable operating system (ie. NT) for development with
+OMNeT++.
 
 
 2. Packages to download and install
