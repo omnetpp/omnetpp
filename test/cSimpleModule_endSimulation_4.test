@@ -1,0 +1,32 @@
+%description:
+perverse case: endSimulation() from initialize(), and finish() gets called
+
+%module: {Module}
+
+class {Module} : public cSimpleModule
+{
+    Module_Class_Members({Module},cSimpleModule,32768);
+    virtual void activity();
+    virtual void finish();
+};
+
+Define_Module({Module});
+
+void {Module}::activity()
+{
+    wait(1.0);
+}
+
+void {Module}::finish()
+{
+    ev << "finish called\n";
+    endSimulation();
+    ev << "after endSimulation\n";
+}
+
+%contains: stdout
+finish called
+
+%not-contains: stdout
+after endSimulation
+
