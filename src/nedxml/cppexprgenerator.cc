@@ -460,7 +460,10 @@ void CppExpressionGenerator::doFunction(FunctionNode *node, const char *indent, 
     if (!strcmp(funcname,"index"))
     {
         // validation code should ensure this only occurs within a submodule vector
-        out << "submodindex";
+        if (mode==MODE_INLINE_EXPRESSION)
+            out << "submodindex";
+        else
+            out << "index" << node->getId();
         return;
     }
     else if (!strcmp(funcname,"sizeof"))
