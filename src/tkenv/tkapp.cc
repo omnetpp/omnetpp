@@ -88,6 +88,7 @@ TOmnetTkApp::TOmnetTkApp(ArgList *args, cConfiguration *config) :
     interp = 0;  // Tcl/Tk not set up yet
     simstate = SIM_NONET;
     stopsimulation_flag = false;
+    animating = false;
 
     // The opt_* vars will be set by readOptions()
 }
@@ -604,6 +605,7 @@ void TOmnetTkApp::newNetwork(const char *network_name)
     }
 
     // update GUI
+    animating = false; // affects how network graphics is drawn!
     updateNetworkRunDisplay();
     updateNextModuleDisplay();
     updateSimtimeDisplay();
@@ -658,6 +660,7 @@ void TOmnetTkApp::newRun(int run)
     }
 
     // update GUI
+    animating = false; // affects how network graphics is drawn!
     updateNetworkRunDisplay();
     updateNextModuleDisplay();
     updateSimtimeDisplay();
