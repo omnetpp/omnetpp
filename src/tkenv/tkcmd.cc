@@ -643,7 +643,7 @@ int hasDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
    cObject *object; int type;
    splitInspectorName( argv[1], object, type);
 
-   interp->result = cStructDescriptor::hasDescriptor(object->className()) ? "1" : "0";
+   interp->result = const_cast<char *>(cStructDescriptor::hasDescriptor(object->className()) ? "1" : "0");
    return TCL_OK;
 }
 

@@ -1,4 +1,6 @@
 General:
+ - backwards find in text windows
+ - autolayout (like in ns2's nam or the applets/Graphlayout JDK demo)
  - with Tcl-embedding, cannot display README file
  - .tkenvrc to store options
  - reload omnetpp.ini before new run
