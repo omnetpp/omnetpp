@@ -236,6 +236,12 @@ proc create_omnetpp_window {} {
       pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2
     }
 
+    #FIXME refine (and get it working :)
+    scale .toolbar.animspeed -orient horizontal -length 50 -sliderlength 8 -showvalue 0 -bd 1
+    .toolbar.animspeed config -from .5 -to 3 -resolution 0.01 -variable param(animspeed)
+    pack .toolbar.animspeed -anchor c -expand 0 -fill none -side left -padx 5 -pady 0
+
+
     set help_tips(.toolbar.loadned) {Load NED file for compound module definitions}
     set help_tips(.toolbar.newrun)  {Set up a run}
     set help_tips(.toolbar.newnet)  {Set up a network}
@@ -253,6 +259,7 @@ proc create_omnetpp_window {} {
     set help_tips(.toolbar.tree)    {Show/hide object tree}
     set help_tips(.toolbar.options) {Simulation options}
     set help_tips(.toolbar.find)    {Find string in main window (Ctrl-F)}
+    set help_tips(.toolbar.animspeed) {Animation speed -- see Options dialog too}
 
     #################################
     # Create status bars
