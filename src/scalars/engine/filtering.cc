@@ -90,7 +90,8 @@ void getFilteredScalarList2(const ScalarManager& scalarMgr,
             if (lastFileRef!=d.fileRef || lastRunNumber!=d.runNumber)
             {
                 char buf[16];
-                lastFnameAndRun = d.fileRef->second.fileName + " #" + itoa(d.runNumber,buf,10);
+                sprintf(buf,"%d",d.runNumber);
+                lastFnameAndRun = d.fileRef->second.fileName + " #" + buf;
                 lastFileRef = d.fileRef;
                 lastRunNumber = d.runNumber;
             }

@@ -17,6 +17,7 @@
 
 #include <algorithm>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 #include <blt.h>
@@ -109,11 +110,12 @@ int getFileAndRunList_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
         for (ScalarManager::FileRef i = scalarMgr.getFiles().begin(); i!=scalarMgr.getFiles().end(); ++i)
         {
             const ScalarManager::File& file = i->second;
-            for (int j=0; j<file.runNumbers.size(); j++)
+            for (int j=0; j<(int)file.runNumbers.size(); j++)
             {
                 char buf[16];
-                std::string str = file.fileName + " #" + itoa(file.runNumbers[j],buf,10);
-                Tcl_Obj *strobj = Tcl_NewStringObj(TCLCONST(str.c_str()), str.length());
+                sprintf(buf,"%d",file.runNumbers[j]);
+                std::string str = file.fileName + " #" + buf;
+                Tcl_Obj *strobj = Tcl_NewStringObj(TCLCONST(str.c_str()),-1);
                 Tcl_ListObjAppendElement(interp, vectorlist, strobj);
             }
         }
@@ -129,7 +131,7 @@ int getModuleList_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
     Tcl_Obj *vectorlist = Tcl_NewListObj(0, NULL);
     for (ScalarManager::StringRef i = scalarMgr.getModuleNames().begin(); i!=scalarMgr.getModuleNames().end(); ++i)
     {
-        Tcl_Obj *str = Tcl_NewStringObj(TCLCONST(i->c_str()), i->length());
+        Tcl_Obj *str = Tcl_NewStringObj(TCLCONST(i->c_str()),-1);
         Tcl_ListObjAppendElement(interp, vectorlist, str);
     }
     Tcl_SetObjResult(interp, vectorlist);
@@ -144,7 +146,7 @@ int getScalarNameList_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
     Tcl_Obj *vectorlist = Tcl_NewListObj(0, NULL);
     for (ScalarManager::StringRef i = scalarMgr.getScalarNames().begin(); i!=scalarMgr.getScalarNames().end(); ++i)
     {
-        Tcl_Obj *str = Tcl_NewStringObj(TCLCONST(i->c_str()), i->length());
+        Tcl_Obj *str = Tcl_NewStringObj(TCLCONST(i->c_str()),-1);
         Tcl_ListObjAppendElement(interp, vectorlist, str);
     }
     Tcl_SetObjResult(interp, vectorlist);
@@ -177,7 +179,7 @@ int getFilePathOf_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 {
     if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getFilePathOf <id>\"", TCL_STATIC); return TCL_ERROR;}
     int id = atoi(argv[1]);
-    if (id<0 || id>=scalarMgr.getValues().size()) {Tcl_SetResult(interp, "id out of range", TCL_STATIC); return TCL_ERROR;}
+    if (id<0 || id>=(int)scalarMgr.getValues().size()) {Tcl_SetResult(interp, "id out of range", TCL_STATIC); return TCL_ERROR;}
     Tcl_SetResult(interp, TCLCONST(scalarMgr.getValue(id).fileRef->second.filePath.c_str()), TCL_VOLATILE);
     return TCL_OK;
 }
@@ -186,7 +188,7 @@ int getFileNameOf_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 {
     if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getFileNameOf <id>\"", TCL_STATIC); return TCL_ERROR;}
     int id = atoi(argv[1]);
-    if (id<0 || id>=scalarMgr.getValues().size()) {Tcl_SetResult(interp, "id out of range", TCL_STATIC); return TCL_ERROR;}
+    if (id<0 || id>=(int)scalarMgr.getValues().size()) {Tcl_SetResult(interp, "id out of range", TCL_STATIC); return TCL_ERROR;}
     Tcl_SetResult(interp, TCLCONST(scalarMgr.getValue(id).fileRef->second.fileName.c_str()), TCL_VOLATILE);
     return TCL_OK;
 }
@@ -195,7 +197,7 @@ int getDirectoryOf_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
 {
     if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getDirectoryOf <id>\"", TCL_STATIC); return TCL_ERROR;}
     int id = atoi(argv[1]);
-    if (id<0 || id>=scalarMgr.getValues().size()) {Tcl_SetResult(interp, "id out of range", TCL_STATIC); return TCL_ERROR;}
+    if (id<0 || id>=(int)scalarMgr.getValues().size()) {Tcl_SetResult(interp, "id out of range", TCL_STATIC); return TCL_ERROR;}
     Tcl_SetResult(interp, TCLCONST(scalarMgr.getValue(id).fileRef->second.directory.c_str()), TCL_VOLATILE);
     return TCL_OK;
 }
@@ -204,7 +206,7 @@ int getRunNoOf_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getModuleOf <id>\"", TCL_STATIC); return TCL_ERROR;}
     int id = atoi(argv[1]);
-    if (id<0 || id>=scalarMgr.getValues().size()) {Tcl_SetResult(interp, "id out of range", TCL_STATIC); return TCL_ERROR;}
+    if (id<0 || id>=(int)scalarMgr.getValues().size()) {Tcl_SetResult(interp, "id out of range", TCL_STATIC); return TCL_ERROR;}
     Tcl_SetObjResult(interp, Tcl_NewIntObj(scalarMgr.getValue(id).runNumber));
     return TCL_OK;
 }
@@ -213,7 +215,7 @@ int getModuleOf_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getModuleOf <id>\"", TCL_STATIC); return TCL_ERROR;}
     int id = atoi(argv[1]);
-    if (id<0 || id>=scalarMgr.getValues().size()) {Tcl_SetResult(interp, "id out of range", TCL_STATIC); return TCL_ERROR;}
+    if (id<0 || id>=(int)scalarMgr.getValues().size()) {Tcl_SetResult(interp, "id out of range", TCL_STATIC); return TCL_ERROR;}
     Tcl_SetResult(interp, TCLCONST(scalarMgr.getValue(id).moduleNameRef->c_str()), TCL_VOLATILE);
     return TCL_OK;
 }
@@ -222,7 +224,7 @@ int getNameOf_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getNameOf <id>\"", TCL_STATIC); return TCL_ERROR;}
     int id = atoi(argv[1]);
-    if (id<0 || id>=scalarMgr.getValues().size()) {Tcl_SetResult(interp, "id out of range", TCL_STATIC); return TCL_ERROR;}
+    if (id<0 || id>=(int)scalarMgr.getValues().size()) {Tcl_SetResult(interp, "id out of range", TCL_STATIC); return TCL_ERROR;}
     Tcl_SetResult(interp, TCLCONST(scalarMgr.getValue(id).scalarNameRef->c_str()), TCL_VOLATILE);
     return TCL_OK;
 }
@@ -231,7 +233,7 @@ int getValueOf_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getValueOf <id>\"", TCL_STATIC); return TCL_ERROR;}
     int id = atoi(argv[1]);
-    if (id<0 || id>=scalarMgr.getValues().size()) {Tcl_SetResult(interp, "id out of range", TCL_STATIC); return TCL_ERROR;}
+    if (id<0 || id>=(int)scalarMgr.getValues().size()) {Tcl_SetResult(interp, "id out of range", TCL_STATIC); return TCL_ERROR;}
     Tcl_SetObjResult(interp, Tcl_NewDoubleObj(scalarMgr.getValue(id).value));
     return TCL_OK;
 }
@@ -240,7 +242,7 @@ int getListboxLine_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
 {
     if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getValueOf <id>\"", TCL_STATIC); return TCL_ERROR;}
     int id = atoi(argv[1]);
-    if (id<0 || id>=scalarMgr.getValues().size()) {Tcl_SetResult(interp, "id out of range", TCL_STATIC); return TCL_ERROR;}
+    if (id<0 || id>=(int)scalarMgr.getValues().size()) {Tcl_SetResult(interp, "id out of range", TCL_STATIC); return TCL_ERROR;}
 
     const ScalarManager::Datum& d = scalarMgr.getValue(id);
 
@@ -368,7 +370,7 @@ static void sortAndAlign(IntVectorVector& vv, CompareFunc less, CompareFunc equa
         int minId = -1;
         IntVectorVector::iterator i;
         for (i=vv.begin(); i!=vv.end(); ++i)
-            if (i->size()>pos)
+            if ((int)i->size()>pos)
                 minId = (minId==-1) ? (*i)[pos] : less((*i)[pos],minId) ? (*i)[pos] : minId;
 
         // if pos is past the end of all vectors, we're done
@@ -377,7 +379,7 @@ static void sortAndAlign(IntVectorVector& vv, CompareFunc less, CompareFunc equa
 
         // if a vector has something different on this position, add a "null" element here
         for (i=vv.begin(); i!=vv.end(); ++i)
-            if (i->size()<=pos || !equal((*i)[pos],minId))
+            if ((int)i->size()<=pos || !equal((*i)[pos],minId))
                 i->insert(i->begin()+pos,-1);
     }
 }
@@ -486,16 +488,16 @@ int prepareScatterPlot_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 
     // step three: allocate all other vectors in vv2 to be the same length
     // (necessary because we'll fill them in via assignment, NOT push_back() or insert())
-    for (int k=1; k<vv2.size(); k++)
+    for (int k=1; k<(int)vv2.size(); k++)
         vv2[k].resize(vv2[0].size());
 
     // step four: copy over elements
-    for (int pos=0; pos<vv[0].size(); pos++)
+    for (int pos=0; pos<(int)vv[0].size(); pos++)
     {
         int id = vv[0][pos];
         if (id==-1) continue;
         int destpos = std::find(vv2[0].begin(),vv2[0].end(),id) - vv2[0].begin();
-        for (int k=1; k<vv.size(); k++)
+        for (int k=1; k<(int)vv.size(); k++)
             vv2[k][destpos] = vv[k][pos];
     }
 

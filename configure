@@ -2422,6 +2422,7 @@ OMNETPP_LIB_DIR="$OMNETPP_ROOT/lib"
 OMNETPP_TKENV_DIR="$OMNETPP_SRC_DIR/tkenv"
 OMNETPP_GNED_DIR="$OMNETPP_SRC_DIR/gned"
 OMNETPP_NEDC_DIR="$OMNETPP_SRC_DIR/nedc"
+OMNETPP_SCALARS_DIR="$OMNETPP_SRC_DIR/scalars"
 OMNETPP_PLOVE_DIR="$OMNETPP_SRC_DIR/plove"
 
 CFLAGS='-g Wall'
@@ -4552,10 +4553,12 @@ fi
 if test $tcltk_ok = yes; then
     TKENV_IF_POSSIBLE=tkenv
     GNED_IF_POSSIBLE=gned
+    SCALARS_IF_POSSIBLE=scalars
     PLOVE_IF_POSSIBLE=plove
 else
     TKENV_IF_POSSIBLE=missing-library
     GNED_IF_POSSIBLE=missing-library
+    SCALARS_IF_POSSIBLE=missing-library
     PLOVE_IF_POSSIBLE=missing-library
     if test "$no_x" = "yes"; then
         if test "$cygwin" = yes; then
@@ -4977,10 +4980,12 @@ fi
 if test "$EMBED_TCL_CODE" = yes; then
    TKENV_EMBED_SUFFIX=-e
    GNED_EMBED_SUFFIX=-e
+   SCALARS_EMBED_SUFFIX=-e
    PLOVE_VARIANT=plove-exe
 else
    TKENV_EMBED_SUFFIX=
    GNED_EMBED_SUFFIX=
+   SCALARS_EMBED_SUFFIX=
    if test "$cygwin" = yes; then
       PLOVE_VARIANT=plove-cyg
    else
@@ -5001,13 +5006,16 @@ fi
 #----------------------
 # Files to be generated
 #----------------------
-ac_config_files="$ac_config_files Makefile src/cmdenv/Makefile src/envir/Makefile src/gned/Makefile src/nedxml/Makefile src/nedc/Makefile src/plove/Makefile src/sim/Makefile src/tkenv/Makefile src/utils/Makefile src/utils/opp_makemake src/utils/opp_neddoc samples/aloha/Makefile samples/cqn/Makefile samples/dyna/Makefile samples/fddi/Makefile samples/fifo/Makefile samples/hcube/Makefile samples/hist/Makefile samples/neddemo/Makefile samples/p-to-p/Makefile samples/queueing/Makefile samples/routing/Makefile samples/routingdb/Makefile samples/tictoc/Makefile samples/tokenring/Makefile tutorial/queues/Makefile include/Makefile test/Makefile"
+ac_config_files="$ac_config_files Makefile src/cmdenv/Makefile src/envir/Makefile src/gned/Makefile src/nedxml/Makefile src/nedc/Makefile src/scalars/Makefile src/plove/Makefile src/sim/Makefile src/tkenv/Makefile src/utils/Makefile src/utils/opp_makemake src/utils/opp_neddoc samples/aloha/Makefile samples/cqn/Makefile samples/dyna/Makefile samples/fddi/Makefile samples/fifo/Makefile samples/hcube/Makefile samples/hist/Makefile samples/neddemo/Makefile samples/p-to-p/Makefile samples/queueing/Makefile samples/routing/Makefile samples/routingdb/Makefile samples/tictoc/Makefile samples/tokenring/Makefile tutorial/queues/Makefile include/Makefile test/Makefile"
 
 
 
 #----------------------
 # Substitutions.
 #----------------------
+
+
+
 
 
 
@@ -5589,6 +5597,7 @@ do
   "src/gned/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/gned/Makefile" ;;
   "src/nedxml/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/nedxml/Makefile" ;;
   "src/nedc/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/nedc/Makefile" ;;
+  "src/scalars/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/scalars/Makefile" ;;
   "src/plove/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/plove/Makefile" ;;
   "src/sim/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/sim/Makefile" ;;
   "src/tkenv/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/tkenv/Makefile" ;;
@@ -5763,12 +5772,15 @@ s,@AKAROA_CFLAGS@,$AKAROA_CFLAGS,;t t
 s,@AKAROA_LIBS@,$AKAROA_LIBS,;t t
 s,@TKENV_IF_POSSIBLE@,$TKENV_IF_POSSIBLE,;t t
 s,@GNED_IF_POSSIBLE@,$GNED_IF_POSSIBLE,;t t
+s,@SCALARS_IF_POSSIBLE@,$SCALARS_IF_POSSIBLE,;t t
 s,@PLOVE_IF_POSSIBLE@,$PLOVE_IF_POSSIBLE,;t t
 s,@TKENV_EMBED_SUFFIX@,$TKENV_EMBED_SUFFIX,;t t
 s,@GNED_EMBED_SUFFIX@,$GNED_EMBED_SUFFIX,;t t
+s,@SCALARS_EMBED_SUFFIX@,$SCALARS_EMBED_SUFFIX,;t t
 s,@PLOVE_VARIANT@,$PLOVE_VARIANT,;t t
 s,@OMNETPP_TKENV_DIR@,$OMNETPP_TKENV_DIR,;t t
 s,@OMNETPP_GNED_DIR@,$OMNETPP_GNED_DIR,;t t
+s,@OMNETPP_SCALARS_DIR@,$OMNETPP_SCALARS_DIR,;t t
 s,@OMNETPP_PLOVE_DIR@,$OMNETPP_PLOVE_DIR,;t t
 s,@WITH_NETBUILDER@,$WITH_NETBUILDER,;t t
 s,@WITH_PARSIM@,$WITH_PARSIM,;t t
