@@ -201,32 +201,33 @@
 
    <xsl:if test="$have-dot='yes'">
       <xsl:call-template name="write-html-page">
-         <xsl:with-param name="href" select="'module-diagram.html'"/>
+         <xsl:with-param name="href" select="'full-usage-diagram.html'"/>
          <xsl:with-param name="content">
-            <h2 class="comptitle">Module Hierarchy</h2>
-            <p>The following diagram shows what other modules compound modules are composed of.
-            Unresolved module types are missing from the diagram.</p>
-            <img src="module-diagram.gif" ismap="yes" usemap="#module-diagram"/>
-            <map name="module-diagram">@INSERTFILE(module-diagram.map)</map>
+            <h2 class="comptitle">Module Usage Diagram</h2>
+            <p>The following diagram shows usage relationships between modules, networks and channels.
+            Unresolved module (and channel) types are missing from the diagram.</p>
+            <img src="full-usage-diagram.gif" ismap="yes" usemap="#full-usage-diagram"/>
+            <map name="full-usage-diagram">@INSERTFILE(full-usage-diagram.map)</map>
          </xsl:with-param>
       </xsl:call-template>
 
-      <xsl:document href="{$outputdir}/module-diagram.dot" method="text">
-         <xsl:call-template name="create-module-diagram"/>
+      <xsl:document href="{$outputdir}/full-usage-diagram.dot" method="text">
+         <xsl:call-template name="create-full-usage-diagram"/>
       </xsl:document>
 
       <xsl:call-template name="write-html-page">
          <xsl:with-param name="href" select="'class-inheritance-diagram.html'"/>
          <xsl:with-param name="content">
             <h2 class="comptitle">Class Inheritance Diagram</h2>
-            <p>The following diagram shows the class hierarchy.</p>
+            <p>The following diagram shows the inheritance hierarchy of messages, classes and structs.
+            Unresolved types are missing from the diagram.</p>
             <img src="class-inheritance-diagram.gif" ismap="yes" usemap="#class-inheritance-diagram"/>
             <map name="class-inheritance-diagram">@INSERTFILE(class-inheritance-diagram.map)</map>
          </xsl:with-param>
       </xsl:call-template>
 
       <xsl:document href="{$outputdir}/class-inheritance-diagram.dot" method="text">
-         <xsl:call-template name="create-class-inheritance-diagram"/>
+         <xsl:call-template name="create-full-class-inheritance-diagram"/>
       </xsl:document>
 
    </xsl:if>
@@ -250,7 +251,7 @@
    <ul>
       <li><a href="overview.html" target="mainframe">HOME</a></li>
       <xsl:if test="$have-dot='yes'">
-         <li><a href="module-diagram.html" target="mainframe">Module Hierarchy</a></li>
+         <li><a href="full-usage-diagram.html" target="mainframe">Module Usage Diagram</a></li>
          <li><a href="class-inheritance-diagram.html" target="mainframe">Class Inheritance Diagram</a></li>
       </xsl:if>
       <xsl:for-each select="//ned-file/@banner-comment[contains(.,'@page')]">
@@ -446,6 +447,9 @@
          <h2 class="comptitle">Channel <i><xsl:value-of select="@name"/></i></h2>
          <xsl:call-template name="print-file"/>
          <xsl:call-template name="process-comment"/>
+         <xsl:if test="$have-dot='yes'">
+            <xsl:call-template name="print-module-usage-diagram"/>
+         </xsl:if>
          <xsl:call-template name="print-attrs"/>
          <xsl:call-template name="print-channel-used-in"/>
          <xsl:call-template name="print-source"/>
@@ -461,7 +465,7 @@
          <xsl:call-template name="print-file"/>
          <xsl:call-template name="process-comment"/>
          <xsl:if test="$have-dot='yes'">
-            <xsl:call-template name="print-contains-diagram"/>
+            <xsl:call-template name="print-module-usage-diagram"/>
          </xsl:if>
          <xsl:call-template name="print-params"/>
          <xsl:call-template name="print-gates"/>
@@ -480,7 +484,7 @@
          <xsl:call-template name="process-comment"/>
          <xsl:call-template name="print-screenshot"/>
          <xsl:if test="$have-dot='yes'">
-            <xsl:call-template name="print-contains-diagram"/>
+            <xsl:call-template name="print-module-usage-diagram"/>
          </xsl:if>
          <xsl:call-template name="print-params"/>
          <xsl:call-template name="print-gates"/>
@@ -503,8 +507,7 @@
          <xsl:call-template name="process-comment"/>
          <xsl:call-template name="print-type"/>
          <xsl:if test="$have-dot='yes'">
-            <!-- FIXME doesn't work -->
-            <xsl:call-template name="print-contains-diagram"/>
+            <xsl:call-template name="print-module-usage-diagram"/>
          </xsl:if>
          <xsl:call-template name="print-substparams"/>
          <xsl:call-template name="print-source"/>
@@ -519,6 +522,9 @@
          <h2 class="comptitle">Message <i><xsl:value-of select="@name"/></i></h2>
          <xsl:call-template name="print-file"/>
          <xsl:call-template name="process-comment"/>
+         <xsl:if test="$have-dot='yes'">
+            <xsl:call-template name="print-inheritance-diagram"/>
+         </xsl:if>
          <xsl:call-template name="print-extends"/>
          <xsl:call-template name="print-subclasses"/>
          <xsl:call-template name="print-properties"/>
@@ -535,6 +541,9 @@
          <h2 class="comptitle">Class <i><xsl:value-of select="@name"/></i></h2>
          <xsl:call-template name="print-file"/>
          <xsl:call-template name="process-comment"/>
+         <xsl:if test="$have-dot='yes'">
+            <xsl:call-template name="print-inheritance-diagram"/>
+         </xsl:if>
          <xsl:call-template name="print-extends"/>
          <xsl:call-template name="print-subclasses"/>
          <xsl:call-template name="print-properties"/>
@@ -551,6 +560,9 @@
          <h2 class="comptitle">Struct <i><xsl:value-of select="@name"/></i></h2>
          <xsl:call-template name="print-file"/>
          <xsl:call-template name="process-comment"/>
+         <xsl:if test="$have-dot='yes'">
+            <xsl:call-template name="print-inheritance-diagram"/>
+         </xsl:if>
          <xsl:call-template name="print-extends"/>
          <xsl:call-template name="print-subclasses"/>
          <xsl:call-template name="print-properties"/>
@@ -585,9 +597,6 @@
          <ul>
             <xsl:for-each select="simple-module|compound-module|channel|network|message|class|struct|enum">
                <xsl:sort select="@name"/>
-               <!--
-               <xsl:call-template name="print-componentref"/>
-               -->
                <li>
                   <a href="{concat(@name,'-',generate-id(.))}.html"><xsl:value-of select="@name"/></a>
                   <i> (<xsl:value-of select="local-name()"/>)</i>
@@ -1052,43 +1061,124 @@
    </xsl:if>
 </xsl:template>
 
-<xsl:template name="print-contains-diagram">
+<xsl:template name="print-module-usage-diagram">
    <h3 class="subtitle">Usage diagram:</h3>
+   <p>The following diagram shows usage relationships between modules, 
+   networks and channels. Unresolved module (and channel) types are missing from the diagram.
+   Click <a href="full-usage-diagram.html">here</a> to see the full picture.</p>
    <xsl:variable name="diagfilename" select="concat('diag-',generate-id(.))"/>
-   <img src="{$diagfilename}.gif" ismap="yes" usemap="#contains-diagram"/>
-   <map name="contains-diagram">@INSERTFILE(<xsl:value-of select="$diagfilename"/>.map)</map>
+   <img src="{$diagfilename}.gif" ismap="yes" usemap="#usage-diagram"/>
+   <map name="usage-diagram">@INSERTFILE(<xsl:value-of select="$diagfilename"/>.map)</map>
    <xsl:document href="{$outputdir}/{$diagfilename}.dot" method="text">
-      <xsl:call-template name="create-contains-diagram"/>
+      <xsl:call-template name="create-module-usage-diagram"/>
    </xsl:document>
 </xsl:template>
  
-<xsl:template name="create-contains-diagram">
+<xsl:template name="create-module-usage-diagram">
    digraph opp {
-      node [fontsize=10,fontname=helvetica,shape=box,height=.25,style=filled,fillcolor="#fffcaf"];
-      <xsl:value-of select="@name"/> [URL="<xsl:value-of select="concat(@name,'-',generate-id(.),'.html')"/>"];
-      <xsl:variable name="modname" select="@name"/>
-      <xsl:for-each select="key('module',submodules/submodule/@type-name)">
-         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="concat(@name,'-',generate-id(.),'.html')"/>"];
-         <xsl:value-of select="$modname"/> -> <xsl:value-of select="@name"/>; 
+      node [fontsize=10,fontname=helvetica,shape=box,height=.25,style=filled];
+      <xsl:variable name="name" select="@name"/>
+      <xsl:call-template name="do-diagram-node"/>
+      <xsl:choose>
+         <xsl:when test="local-name(.)='compound-module' or local-name(.)='simple-module'">
+            <!-- diagram for modules -->
+            <xsl:for-each select="key('module',submodules/submodule/@type-name)">
+               <xsl:call-template name="do-diagram-node"/>
+               <xsl:value-of select="$name"/> -> <xsl:value-of select="@name"/>; 
+            </xsl:for-each>
+            <xsl:for-each select="//compound-module[.//submodule/@type-name=$name]">
+               <xsl:call-template name="do-diagram-node"/>
+               <xsl:value-of select="@name"/> -> <xsl:value-of select="$name"/>; 
+            </xsl:for-each>
+            <xsl:for-each select="//network[@type-name=$name]">
+               <xsl:call-template name="do-diagram-node"/>
+               <xsl:value-of select="@name"/> -> <xsl:value-of select="$name"/>; 
+            </xsl:for-each>
+            <xsl:for-each select="key('channel',.//conn-attr[@name='channel']/@value)">
+               <xsl:call-template name="do-diagram-node"/>
+               <xsl:value-of select="$name"/> -> <xsl:value-of select="@name"/>; 
+            </xsl:for-each>
+         </xsl:when>
+         <xsl:when test="local-name(.)='network'">
+            <!-- diagram for networks  -->
+            <xsl:for-each select="key('module',@type-name)">
+               <xsl:call-template name="do-diagram-node"/>
+               <xsl:value-of select="$name"/> -> <xsl:value-of select="@name"/>; 
+            </xsl:for-each>
+         </xsl:when>
+         <xsl:when test="local-name(.)='channel'">
+            <!-- diagram for channels -->
+            <xsl:for-each select="//compound-module[.//conn-attr[@name='channel' and @value=$name]]">
+               <xsl:call-template name="do-diagram-node"/>
+               <xsl:value-of select="@name"/> -> <xsl:value-of select="$name"/>; 
+            </xsl:for-each>
+         </xsl:when>
+         <xsl:otherwise>
+         </xsl:otherwise>
+      </xsl:choose>   
+   }
+</xsl:template>
+
+<xsl:template name="print-inheritance-diagram">
+   <h3 class="subtitle">Inheritance diagram:</h3>
+   <p>The following diagram shows part of the inheritance hierarchy. 
+   Unresolved types are missing from the diagram.
+   Click <a href="class-inheritance-diagram.html">here</a> to see the full picture.</p>
+   <xsl:variable name="diagfilename" select="concat('diag-',generate-id(.))"/>
+   <img src="{$diagfilename}.gif" ismap="yes" usemap="#inheritance-diagram"/>
+   <map name="inheritance-diagram">@INSERTFILE(<xsl:value-of select="$diagfilename"/>.map)</map>
+   <xsl:document href="{$outputdir}/{$diagfilename}.dot" method="text">
+      <xsl:call-template name="create-inheritance-diagram"/>
+   </xsl:document>
+</xsl:template>
+ 
+<xsl:template name="create-inheritance-diagram">
+   digraph opp {
+      node [fontsize=10,fontname=helvetica,shape=box,height=.25,style=filled];
+      <xsl:call-template name="do-diagram-node"/>
+      <xsl:variable name="classname" select="@name"/>
+      <xsl:for-each select="key('msg-or-class',@extends-name)">
+         <xsl:call-template name="do-diagram-node"/>
+         <xsl:value-of select="$classname"/> -> <xsl:value-of select="@name"/>; 
       </xsl:for-each>
-      <xsl:for-each select="//compound-module[.//submodule/@type-name=$modname]">
-         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="concat(@name,'-',generate-id(.),'.html')"/>"];
-         <xsl:value-of select="@name"/> -> <xsl:value-of select="$modname"/>; 
-      </xsl:for-each>
-      <xsl:for-each select="//network[@type-name=$modname]">
-         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="concat(@name,'-',generate-id(.),'.html')"/>",fillcolor="#d0d0ff"];
-         <xsl:value-of select="@name"/> -> <xsl:value-of select="$modname"/>; 
-      </xsl:for-each>
-      <xsl:for-each select="key('channel',.//conn-attr[@name='channel']/@value)">
-         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="concat(@name,'-',generate-id(.),'.html')"/>",fillcolor="#d0ffd0"];
-         <xsl:value-of select="$modname"/> -> <xsl:value-of select="@name"/>; 
+      <xsl:for-each select="key('msg-or-class-extends',$classname)">
+         <xsl:call-template name="do-diagram-node"/>
+         <xsl:value-of select="@name"/> -> <xsl:value-of select="$classname"/>; 
       </xsl:for-each>
    }
 </xsl:template>
 
-<xsl:template name="do-create-diagram-node">
-   <!-- FIXME --> 
-   <xsl:value-of select="@name"/> [URL="<xsl:value-of select="concat(@name,'-',generate-id(.),'.html')"/>",fillcolor="#d0ffd0"];
+<xsl:template name="do-diagram-node">
+   <xsl:variable name="url" select="concat(@name,'-',generate-id(.),'.html')"/>
+   <xsl:choose>
+      <xsl:when test="local-name(.)='compound-module'">
+         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="$url"/>",fillcolor="#fffcaf",tooltip="module <xsl:value-of select="@name"/>"];
+      </xsl:when>
+      <xsl:when test="local-name(.)='simple-module'">
+         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="$url"/>",fillcolor="#fffcaf",tooltip="simple <xsl:value-of select="@name"/>"];
+      </xsl:when>
+      <xsl:when test="local-name(.)='network'">
+         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="$url"/>",fillcolor="#d0d0ff",tooltip="network <xsl:value-of select="@name"/>"];
+      </xsl:when>
+      <xsl:when test="local-name(.)='channel'">
+         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="$url"/>",fillcolor="#d0ffd0",tooltip="channel <xsl:value-of select="@name"/>"];
+      </xsl:when>
+      <xsl:when test="local-name(.)='message'">
+         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="$url"/>",fillcolor="#fffcaf",tooltip="message <xsl:value-of select="@name"/>"];
+      </xsl:when>
+      <xsl:when test="local-name(.)='class'">
+         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="$url"/>",fillcolor="#fffcaf",tooltip="class <xsl:value-of select="@name"/>"];
+      </xsl:when>
+      <xsl:when test="local-name(.)='struct'">
+         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="$url"/>",fillcolor="#d0d0ff",tooltip="struct <xsl:value-of select="@name"/>"];
+      </xsl:when>
+      <xsl:when test="local-name(.)='enum'">
+         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="$url"/>",fillcolor="#d0ffd0",tooltip="enum <xsl:value-of select="@name"/>"];
+      </xsl:when>
+      <xsl:otherwise>
+         <xsl:value-of select="@name"/> [fillcolor="#ff0000"];
+      </xsl:otherwise>
+   </xsl:choose>   
 </xsl:template>
 
 <xsl:template name="resolve-moduleurl">
@@ -1270,25 +1360,25 @@
    </xsl:for-each>
 </xsl:template>
 
-<xsl:template name="create-module-diagram">
+<xsl:template name="create-full-usage-diagram">
    digraph opp {
       node [fontsize=10,fontname=helvetica,shape=box,height=.25,style=filled,fillcolor="#fffcaf"];
       <xsl:for-each select="//simple-module|//compound-module">
-         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="concat(@name,'-',generate-id(.),'.html')"/>"];
+         <xsl:call-template name="do-diagram-node"/>
          <xsl:variable name="modname" select="@name"/>
          <xsl:for-each select="key('module',submodules/submodule/@type-name)">
             <xsl:value-of select="$modname"/> -> <xsl:value-of select="@name"/>; 
          </xsl:for-each>
       </xsl:for-each>
       <xsl:for-each select="//network">
-         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="concat(@name,'-',generate-id(.),'.html')"/>",fillcolor="#d0d0ff"];
+         <xsl:call-template name="do-diagram-node"/>
          <xsl:variable name="netname" select="@name"/>
          <xsl:for-each select="key('module',@type-name)">
             <xsl:value-of select="$netname"/> -> <xsl:value-of select="@name"/>; 
          </xsl:for-each>
       </xsl:for-each>
       <xsl:for-each select="//channel">
-         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="concat(@name,'-',generate-id(.),'.html')"/>",fillcolor="#d0ffd0"];
+         <xsl:call-template name="do-diagram-node"/>
          <xsl:variable name="channelname" select="@name"/>
          <xsl:for-each select="//compound-module[.//conn-attr[@name='channel' and @value=$channelname]]">
             <xsl:value-of select="@name"/> -> <xsl:value-of select="$channelname"/>; 
@@ -1297,18 +1387,18 @@
    }
 </xsl:template>
 
-<xsl:template name="create-class-inheritance-diagram">
+<xsl:template name="create-full-class-inheritance-diagram">
    digraph opp {
-      node [fontsize=10,fontname=helvetica,shape=box,height=.25,style=filled,fillcolor="#fffcaf"];
+      node [fontsize=10,fontname=helvetica,shape=box,height=.25,style=filled,fillcolor="#ffffff"];
       edge [arrowhead=none,arrowtail=empty];
       <xsl:for-each select="//class">
-         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="concat(@name,'-',generate-id(.),'.html')"/>"];
+         <xsl:call-template name="do-diagram-node"/>
          <xsl:if test="@extends-name">
              <xsl:value-of select="@extends-name"/> -> <xsl:value-of select="@name"/>;
          </xsl:if>
       </xsl:for-each>
       <xsl:for-each select="//message">
-         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="concat(@name,'-',generate-id(.),'.html')"/>"];
+         <xsl:call-template name="do-diagram-node"/>
          <xsl:choose>
             <xsl:when test="@extends-name">
                 <xsl:value-of select="@extends-name"/> -> <xsl:value-of select="@name"/>;
