@@ -21,6 +21,7 @@
 #ifndef __OMNETAPP_H
 #define __OMNETAPP_H
 
+#include <time.h>     // time_t, clock_t
 #include "carray.h"
 #include "chead.h"
 #include "cenvir.h"
@@ -47,115 +48,177 @@ extern long starting_seeds[NUM_STARTINGSEEDS];  // they are in seeds.cc
 //
 class ENVIR_API TOmnetApp
 {
-   protected:
-     bool initialized;
-     cIniFile *ini_file;
-     ArgList *args;
+  protected:
+    bool initialized;
+    cIniFile *ini_file;
+    ArgList *args;
 
-     // options common for all simulation applications
-     opp_string opt_inifile_name;
+    // options common for all simulation applications
+    opp_string opt_inifile_name;
 
-     int opt_total_stack_kb;
+    int opt_total_stack_kb;
 
-     bool opt_ini_warnings;
-     bool opt_distributed; // NET
-     opp_string opt_parallel_env; // PVM, MPI or something else?
-     opp_string opt_load_libs;
-     opp_string opt_network_name;
-     opp_string opt_outputvectormanager_class;
-     opp_string opt_outputscalarmanager_class;
-     opp_string opt_snapshotmanager_class;
+    bool opt_ini_warnings;
+    bool opt_distributed; // NET
+    opp_string opt_parallel_env; // PVM, MPI or something else?
+    opp_string opt_load_libs;
+    opp_string opt_network_name;
+    opp_string opt_outputvectormanager_class;
+    opp_string opt_outputscalarmanager_class;
+    opp_string opt_snapshotmanager_class;
 
-     bool opt_pause_in_sendmsg;
-     bool opt_warnings;
+    bool opt_pause_in_sendmsg;
+    bool opt_warnings;
 
-     long *opt_genk_randomseed;
+    long *opt_genk_randomseed;
 
-     simtime_t opt_simtimelimit;
-     long opt_cputimelimit;
+    simtime_t opt_simtimelimit;
+    long opt_cputimelimit;
 
-     int opt_netifcheckfreq;
+    int opt_netifcheckfreq;
 
-     int next_startingseed;  // index of next seed to use
+    int next_startingseed;  // index of next seed to use
 
-     cOutputVectorManager *outvectmgr;
-     cOutputScalarManager *outscalarmgr;
-     cSnapshotManager *snapshotmgr;
+    cOutputVectorManager *outvectmgr;
+    cOutputScalarManager *outscalarmgr;
+    cSnapshotManager *snapshotmgr;
 
-   public:
-     TOmnetApp(ArgList *args, cIniFile *inifile);
-     virtual ~TOmnetApp();
+    time_t simbegtime;         // real time when sim. started
+    time_t simendtime;         // real time when sim. ended
+    time_t laststarted;        // real time from where sim. was last cont'd
+    time_t elapsedtime;        // in seconds
+    simtime_t simulatedtime;   // sim.time at after finishing simulation
 
-     // functions called from cEnvir's similar functions
-     virtual void setup();
-     virtual void run() = 0;
-     virtual void shutdown();
+  public:
+    /**
+     * Constructor takes command-line args and ini file instance.
+     */
+    TOmnetApp(ArgList *args, cIniFile *inifile);
 
-     virtual void startRun();
-     virtual void endRun();
+    /**
+     * Destructor.
+     */
+    virtual ~TOmnetApp();
 
-     // called by cPar::read() to get param value from the ini file
-     virtual const char *getParameter(int run_nr, const char *parname);
-     // called from nedc-generated network setup function to get logical machine --> physical machine mapping
-     virtual const char *getPhysicalMachineFor(const char *logical_mach);
-     virtual void getOutVectorConfig(int run_no, const char *modname, /*input*/
-                                     const char *vecname,
-                                     bool& enabled, /*output*/
-                                     double& starttime, double& stoptime);
-     virtual const char *getDisplayString(int run_no,const char *name);
+    /** @name Functions called from cEnvir's similar functions */
+    virtual void setup();
+    virtual void run() = 0;
+    virtual void shutdown();
 
-     virtual cIniFile *getIniFile();
+    virtual void startRun();
+    virtual void endRun();
 
-     // used internally to read opt_xxxxx setting from ini file
-     virtual void readOptions();
-     virtual void readPerRunOptions(int run_nr);
+    // called by cPar::read() to get param value from the ini file
+    virtual const char *getParameter(int run_nr, const char *parname);
+    // called from nedc-generated network setup function to get logical machine --> physical machine mapping
+    virtual const char *getPhysicalMachineFor(const char *logical_mach);
+    virtual void getOutVectorConfig(int run_no, const char *modname, /*input*/
+                                    const char *vecname,
+                                    bool& enabled, /*output*/
+                                    double& starttime, double& stoptime);
+    virtual const char *getDisplayString(int run_no,const char *name);
 
-     // used internally to make options effective in cSimulation and other places
-     virtual void makeOptionsEffective();
+    virtual cIniFile *getIniFile();
 
-     // functions called from the objects of the simulation kernel
-     // to notify application of certain events
-     virtual void objectDeleted(cObject *object) {}
-     virtual void messageSent(cMessage *msg) {}
-     virtual void messageDelivered(cMessage *msg) {}
-     virtual void breakpointHit(const char *lbl, cSimpleModule *mod) {}
+    /** @name Used internally to read opt_xxxxx setting from ini file */
+    virtual void readOptions();
+    virtual void readPerRunOptions(int run_nr);
 
-     // functions called by cEnvir's similar functions
-     // provide I/O for simple module activity functions and the sim. kernel
-     // default versions use standard I/O
-     virtual void putmsg(const char *s);
-     virtual void puts(const char *s);
-     virtual bool gets(const char *promptstr, char *buf, int len=255);  // 0==OK 1==CANCEL
-     virtual int  askYesNo(const char *question); //0==NO 1==YES -1==CANCEL
-     virtual void foreignPuts(const char *hostname, const char *mod, const char *str);
+    /** @name Used internally to make options effective in cSimulation and other places */
+    virtual void makeOptionsEffective();
 
-     // methods for recording data from output vectors; called by cEnvir's similar functions
-     void *registerOutputVector(const char *modulename, const char *vectorname, int tuple);
-     void deregisterOutputVector(void *vechandle);
-     bool recordInOutputVector(void *vechandle, simtime_t t, double value);
-     bool recordInOutputVector(void *vechandle, simtime_t t, double value1, double value2);
+    /** @name Functions called from the objects of the simulation kernel
+     *  to notify the application about certain events.
+     */
+    //@{
+    virtual void objectDeleted(cObject *object) {}
+    virtual void messageSent(cMessage *msg) {}
+    virtual void messageDelivered(cMessage *msg) {}
+    virtual void breakpointHit(const char *lbl, cSimpleModule *mod) {}
+    //@}
 
-     // methods for output scalars; called by cEnvir's similar functions
-     void recordScalar(cModule *module, const char *name, double value);
-     void recordScalar(cModule *module, const char *name, const char *text);
-     void recordScalar(cModule *module, const char *name, cStatistic *stats);
+    /** @name Functions called by cEnvir's similar functions.
+     * They provide I/O for simple module activity functions and the sim. kernel.
+     * Default versions use standard I/O.
+     */
+    //@{
+    virtual void putmsg(const char *s);
+    virtual void puts(const char *s);
+    virtual bool gets(const char *promptstr, char *buf, int len=255);  // 0==OK 1==CANCEL
+    virtual int  askYesNo(const char *question); //0==NO 1==YES -1==CANCEL
+    virtual void foreignPuts(const char *hostname, const char *mod, const char *str);
+    //@}
 
-     // methods for snapshot management; called by cEnvir's similar functions
-     ostream *getStreamForSnapshot();
-     void releaseStreamForSnapshot(ostream *os);
+    /** @name Methods for recording data from output vectors; called by cEnvir's similar functions */
+    //@{
+    void *registerOutputVector(const char *modulename, const char *vectorname, int tuple);
+    void deregisterOutputVector(void *vechandle);
+    bool recordInOutputVector(void *vechandle, simtime_t t, double value);
+    bool recordInOutputVector(void *vechandle, simtime_t t, double value1, double value2);
+    //@}
 
-     // returns how much extra stack space the user interface recommends
-     // for the simple modules; called by cEnvir's similar function
-     virtual unsigned extraStackForEnvir() {return 0;}
+    /** @name Methods for output scalars; called by cEnvir's similar functions */
+    //@{
+    void recordScalar(cModule *module, const char *name, double value);
+    void recordScalar(cModule *module, const char *name, const char *text);
+    void recordScalar(cModule *module, const char *name, cStatistic *stats);
+    //@}
 
-     // interface to memory manager
-     virtual bool memoryIsLow();
+    /* @name Methods for snapshot management; called by cEnvir's similar functions. */
+    //@{
+    ostream *getStreamForSnapshot();
+    void releaseStreamForSnapshot(ostream *os);
+    //@}
 
-     // original command-line args
-     ArgList *argList()  {return args;}
+    /**
+     * Returns how much extra stack space the user interface recommends
+     * for the simple modules; called by cEnvir's similar function.
+     */
+    virtual unsigned extraStackForEnvir() {return 0;}
 
-     // display error message
-     virtual void displayError(cException *e);
+    /** @name Utility functions. */
+    //@{
+
+    /**
+     * Interface to memory manager.
+     */
+    virtual bool memoryIsLow();
+
+    /**
+     * Original command-line args.
+     */
+    ArgList *argList()  {return args;}
+
+    /**
+     * Display error message.
+     */
+    virtual void displayError(cException *e);
+    //@}
+
+    /** @name Measuring elapsed time. */
+    //@{
+    /**
+     * Checks if the current simulation has reached the simulation
+     * or real time limits, and if so, throws an appropriate exception.
+     */
+    void checkTimeLimits();
+
+    /**
+     * Resets the clock measuring the elapsed (real) time spent in this
+     * simulation run.
+     */
+    void resetClock();
+
+    /**
+     * Start measuring elapsed (real) time spent in this simulation run.
+     */
+    void startClock();
+
+    /**
+     * Stop measuring elapsed (real) time spent in this simulation run.
+     */
+    void stopClock();
+    //@}
 };
 
 #endif

@@ -340,8 +340,6 @@ void TOmnetApp::makeOptionsEffective()
 {
      simulation.setWarnings( opt_warnings );
      cModule::pause_in_sendmsg = opt_pause_in_sendmsg;
-     simulation.setSimTimeLimit( opt_simtimelimit );
-     simulation.setTimeLimit( opt_cputimelimit );
      simulation.setNetIfCheckFreq( opt_netifcheckfreq );
 
      for(int i=0;i<NUM_RANDOM_GENERATORS;i++)
@@ -483,4 +481,31 @@ void TOmnetApp::displayError(cException *e)
         ev.printfmsg("Error in module %s: %s.", e->moduleFullPath(), e->message());
 }
 
+//-------------------------------------------------------------
+
+void TOmnetApp::resetClock()
+{
+    laststarted = simendtime = simbegtime = time(0);
+    elapsedtime = 0LU;
+}
+
+void TOmnetApp::startClock()
+{
+    laststarted = time(0);
+}
+
+void TOmnetApp::stopClock()
+{
+    simendtime = time(0);
+    elapsedtime +=  simendtime - laststarted;
+    simulatedtime = simulation.simTime();
+}
+
+void TOmnetApp::checkTimeLimits()
+{
+    if (opt_simtimelimit!=0 && simulation.simTime()>=opt_simtimelimit)
+         throw new cException(eSIMTIME);
+    else if (opt_cputimelimit!=0 && elapsedtime+time(0)-laststarted>=opt_cputimelimit)
+         throw new cException(eREALTIME);
+}
 
