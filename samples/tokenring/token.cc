@@ -136,6 +136,8 @@ void TokenRingMAC::activity()
                 if (ev.isGUI())
                 {
                     parentModule()->displayString().setTagArg("i",1,"gold");
+                    parentModule()->displayString().setTagArg("t",0,"ACTIVE");
+                    parentModule()->displayString().setTagArg("t",2,"#707000");
                     parentModule()->bubble(sendQueue.empty() ? "Nothing to send!" : "Captured token.");
                 }
             }
@@ -229,6 +231,7 @@ void TokenRingMAC::activity()
                 if (ev.isGUI())
                 {
                     parentModule()->displayString().setTagArg("i",1,NULL);
+                    parentModule()->displayString().setTagArg("t",0,NULL);
                 }
             }
             send(token, "phy_out");
