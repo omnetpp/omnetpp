@@ -210,12 +210,6 @@ if test ! -n "$TK_CFLAGS"; then
 fi
 
 if test ! -n "$TK_LIBS"; then
-    # on cygwin, library names include version (e.g. cygtk80.a)
-    if test "$cygwin" = yes; then
-        ver=80
-    else
-        ver=
-    fi
 
     # X Window
     AC_PATH_X
@@ -228,17 +222,19 @@ if test ! -n "$TK_LIBS"; then
       fi
     fi
 
-    # Tcl
-    OPP_CHECK_LIB_WITHPATH(tcl$ver, Tcl_Init, /opt/lib,
-      TK_LIBS="$lib_path_switch -ltcl$ver $TK_LIBS",
-      :,
-      $SYS_LIBS)
-
-    # Tk
+    # try to find Tcl/Tk libraries in different versions (80 is for cygwin)
+    tcltk_found=
+    for ver in '' 80 8.4 8.3 8.2 8.1 8.0; do
+      # here we check for Tk only (and assume Tcl is also there in the same version)
     OPP_CHECK_LIB_WITHPATH(tk$ver, Tk_BindEvent, /opt/lib,
-      TK_LIBS="$lib_path_switch -ltk$ver $TK_LIBS",
-      TK_LIBS=""; AC_MSG_WARN(Cannot link with Tcl/Tk -- Tkenv GNED and Plove will not build/run),
+                        TK_LIBS="$lib_path_switch -ltk$ver -ltcl$ver $TK_LIBS"
+                        tcltk_found=yes,
+                        :,
       $TK_LIBS $SYS_LIBS)
+      if test -n "$tcltk_found"; then
+        break
+      fi
+    done
 fi
 
 #----------------------
