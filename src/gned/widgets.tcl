@@ -246,6 +246,8 @@ proc spreadsheet {w numlines columnlist} {
     canvas $w.c -yscrollcommand "$w.vsb set" -height 150 -bd 0
     scrollbar $w.vsb -command "$w.c yview"
 
+    grid rowconfig $w 1 -weight 1 -minsize 0
+
     grid $w.tb -in $w -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news
     grid $w.c   -in $w -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news
     grid $w.vsb -in $w -row 1 -column 1 -rowspan 1 -columnspan 1 -sticky news
