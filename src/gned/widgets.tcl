@@ -72,6 +72,30 @@ proc label-entry {w label {text {}}} {
     $w.e insert 0 $text
 }
 
+proc label-entry-chooser {w label text chooserproc} {
+    # utility function: create a frame with a label+entry+button
+    # the button is expected to call a dialog where the user can select
+    # a value for the entry
+    frame $w
+    label $w.l -anchor w -width 16 -text $label
+    entry $w.e -highlightthickness 0
+    button $w.c -text " ... " -command [list chooser:choose $w.e $chooserproc]
+    pack $w.l -anchor center -expand 0 -fill none -padx 2 -pady 2 -side left
+    pack $w.c -anchor center -expand 0 -fill none -padx 2 -pady 2 -side right
+    pack $w.e -anchor center -expand 1 -fill x -padx 2 -pady 2 -side left
+    $w.e insert 0 $text
+}
+
+# private proc for label-entry-chooser
+proc chooser:choose {w chooserproc} {
+    set current [$w get]
+    set new [eval $chooserproc $current]
+    if {$new!=""} {
+       $w delete 0 end
+       $w insert end $new
+    }
+}
+
 proc label-sunkenlabel {w label {text {}}} {
     # utility function: create a frame with a label+"readonly entry"
     frame $w
@@ -319,22 +343,27 @@ proc tableEdit {w numlines columnlist} {
 # label .x.p1.e -text "One"
 # pack .x.p1.e
 
-proc center {name} {
+proc center {w} {
     # utility function: centers a dialog on the screen
+
+    global tcl_platform
+
+    # preliminary placement...
+    if {[winfo reqwidth $w]!=0} {
+       set pre_x [expr ([winfo screenwidth $w]-[winfo reqwidth $w])/2-[winfo vrootx [winfo parent $w]]]
+       set pre_y [expr ([winfo screenheight $w]-[winfo reqheight $w])/2-[winfo vrooty [winfo parent $w]]]
+       wm geom $w +$pre_x+$pre_y
+    }
 
     # withdraw the window, then update all the geometry information
     # so we know how big it wants to be, then center the window in the
     # display and de-iconify it.
-
-    global tcl_platform
-
-    set w $name
     if {$tcl_platform(platform) != "windows"} {
         wm withdraw $w
     }
     update idletasks
-    set x [expr [winfo screenwidth $w]/2 - [winfo reqwidth $w]/2  - [winfo vrootx [winfo parent $w]]]
-    set y [expr [winfo screenheight $w]/2 - [winfo reqheight $w]/2  - [winfo vrooty [winfo parent $w]]]
+    set x [expr [winfo screenwidth $w]/2 - [winfo width $w]/2  - [winfo vrootx [winfo parent $w]]]
+    set y [expr [winfo screenheight $w]/2 - [winfo height $w]/2  - [winfo vrooty [winfo parent $w]]]
     wm geom $w +$x+$y
     if {$tcl_platform(platform) != "windows"} {
         wm deiconify $w
@@ -345,11 +374,13 @@ proc center {name} {
 proc createOkCancelDialog {w title} {
     # creates dialog with OK and Cancel buttons
     # user's widgets can go into frame $w.f
+    global tk_version tcl_platform
 
     catch {destroy $w}
-
     toplevel $w -class Toplevel
-    wm transient $w [winfo toplevel [winfo parent $w]]
+    if {$tk_version<8.2 || $tcl_platform(platform)!="windows"} {
+        wm transient $w [winfo toplevel [winfo parent $w]]
+    }
     wm title $w $title
     wm iconname $w Dialog
     wm focusmodel $w passive
@@ -357,6 +388,11 @@ proc createOkCancelDialog {w title} {
     wm resizable $w 1 1
     wm deiconify $w
     wm protocol $w WM_DELETE_WINDOW { }
+
+    # preliminary placement (assumes 350x250 dialog)...
+    set pre_x [expr ([winfo screenwidth $w]-350)/2-[winfo vrootx [winfo parent $w]]]
+    set pre_y [expr ([winfo screenheight $w]-250)/2-[winfo vrooty [winfo parent $w]]]
+    wm geom $w +$pre_x+$pre_y
 
     frame $w.f
     frame $w.buttons
@@ -367,7 +403,6 @@ proc createOkCancelDialog {w title} {
     pack $w.f -expand 1 -fill both -padx 5 -pady 5 -side top
     pack $w.buttons.cancelbutton  -anchor n -side right -padx 2
     pack $w.buttons.okbutton  -anchor n -side right -padx 2
-
 }
 
 proc execOkCancelDialog w {

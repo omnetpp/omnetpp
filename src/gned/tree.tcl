@@ -23,17 +23,6 @@
 #----------------------------------------------------------------#
 
 
-switch $tcl_platform(platform) {
-  unix {
-    set Tree(font) \
-      -Adobe-Helvetica-Medium-R-Normal-*-*-120-*-*-*-*-*-*
-  }
-  windows {
-    set Tree(font) \
-      -adobe-helvetica-medium-r-normal-*-14-100-100-100-p-76-iso8859-1
-  }
-}
-
 #
 # Bitmaps used to show which parts of the tree can be opened.
 #
@@ -164,7 +153,7 @@ proc Tree:build {w} {
 # Build a single layer of the tree on the canvas.  Indent by $in pixels
 #
 proc Tree:buildlayer {w v in} {
-  global Tree
+  global Tree fonts
   if {$v==[getNodeInfo $w root]} {
     set vx {}
   } else {
@@ -185,7 +174,7 @@ proc Tree:buildlayer {w v in} {
       incr x 20
     }
     set tags [list "node-$c" "text-$c"]
-    set j [$w create text $x $y -text $text -font $Tree(font) -anchor w -tags $tags]
+    set j [$w create text $x $y -text $text -font $fonts(normal) -anchor w -tags $tags]
     eval $w itemconfig $j $options
     if [getNodeInfo $w haschildren $c] {
       if {[info exists Tree($w:$c:open)] && $Tree($w:$c:open)} {

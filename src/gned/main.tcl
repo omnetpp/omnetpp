@@ -139,7 +139,7 @@ proc create_omnetpp_window {} {
       {command -command {drawBindings $gned(canvas)} -label {Submodule/connection drawing mode}}
       {command -command {selectOrMoveBindings $gned(canvas)} -label {Select/resize mode}}
       {separator}
-      {command -command {resetModuleBounds}  -label {"Natural" parent module size} -underline 0}
+      {command -command {resetModuleBounds}  -label {"Natural" parent module size} -underline 1}
       {separator}
       {command -command {propertiesSelected $gned(canvas)} -label {Properties of selected item...}}
       {command -command {drawOptionsSelected $gned(canvas)} -label {Appearance of selected item...}}
@@ -334,7 +334,7 @@ proc create_omnetpp_window {} {
 #===================================================================
 
 proc defaultBindings {} {
-   global fonts tcl_platform
+   global fonts tcl_platform tk_version
 
    #
    # fonts() array elements:
@@ -356,14 +356,19 @@ proc defaultBindings {} {
       set fonts(balloon) -Adobe-Helvetica-Medium-R-Normal-*-*-120-*-*-*-*-*-*
    } else {
       # Windows, Mac
-      set fonts(normal)  -Adobe-Helvetica-Medium-R-Normal-*-*-140-*-*-*-*-*-*
-      set fonts(bold)    -Adobe-Helvetica-Bold-R-Normal-*-*-140-*-*-*-*-*-*
-      set fonts(icon)    -Adobe-Helvetica-Bold-R-Normal-*-*-140-*-*-*-*-*-*
+      if {$tk_version<8.2} {
+         set s 140
+      } else {
+         set s 120
+      }
+      set fonts(normal)  -Adobe-Helvetica-Medium-R-Normal-*-*-$s-*-*-*-*-*-*
+      set fonts(bold)    -Adobe-Helvetica-Bold-R-Normal-*-*-$s-*-*-*-*-*-*
+      set fonts(icon)    -Adobe-Helvetica-Bold-R-Normal-*-*-$s-*-*-*-*-*-*
       set fonts(big)     -Adobe-Helvetica-Medium-R-Normal-*-*-180-*-*-*-*-*-*
-      set fonts(msgname) -Adobe-Helvetica-Medium-R-Normal-*-*-140-*-*-*-*-*-*
+      set fonts(msgname) -Adobe-Helvetica-Medium-R-Normal-*-*-$s-*-*-*-*-*-*
       #set fonts(fixed)  -Adobe-Courier-Medium-R-Normal-*-*-160-*-*-*-*-*-*
       set fonts(fixed)   FixedSys
-      set fonts(balloon) -Adobe-Helvetica-Medium-R-Normal-*-*-140-*-*-*-*-*-*
+      set fonts(balloon) -Adobe-Helvetica-Medium-R-Normal-*-*-$s-*-*-*-*-*-*
    }
 
    if {$tcl_platform(platform) == "unix"} {

@@ -43,10 +43,10 @@ proc editSubmoduleProps {key} {
     label-entry $nb.general.name "Name:"
     label-entry $nb.general.vs   "Vector size:"
     radiobutton $nb.general.r1 -text "Type is fixed:" -value 0  -variable tmp(uselike)
-    label-entry $nb.general.type "  Type:"
+    label-entry-chooser $nb.general.type "  Type:" "" puts
     radiobutton $nb.general.r2 -text "Type is passed in a parameter:" -value 1  -variable tmp(uselike)
-    label-entry $nb.general.likepar "  Parameter name:"
-    label-entry $nb.general.likemod "  Prototype module:"
+    label-entry-chooser $nb.general.likepar "  Parameter name:" "" puts
+    label-entry-chooser $nb.general.likemod "  Prototype module:" "" puts
     label-text  $nb.general.comment "Doc. comments:" 4
     label-text  $nb.general.rcomment "End-line comments:" 2
 
