@@ -211,7 +211,7 @@ inline bool equal(double a, double b, double epsilon)
 
 inline char *correct(char *s)
 {
-   return s ? s : (CONST_HACK)"";
+   return s ? s : CONST_CAST("");
 }
 
 inline double dblrand()

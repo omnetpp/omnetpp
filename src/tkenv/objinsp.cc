@@ -320,7 +320,7 @@ void TMessageInspector::update()
    setEntry(".nb.info.kind.e", (long)msg->kind() );
    setEntry(".nb.info.length.e", (long)msg->length() );
    setEntry(".nb.info.prio.e", (long)msg->priority() );
-   setEntry(".nb.info.error.e", (long)msg->isbad() );
+   setEntry(".nb.info.error.e", (long)msg->hasBitError() );
    setEntry(".nb.send.tstamp.e", msg->timestamp() );
    setLabel(".nb.send.created.e", simtimeToStr(msg->creationTime()) );
    setLabel(".nb.send.sent.e", simtimeToStr(msg->sendingTime()) );
@@ -362,7 +362,7 @@ void TMessageInspector::writeBack()
    msg->setKind( atol(getEntry(".nb.info.kind.e")) );
    msg->setLength( atol( getEntry(".nb.info.length.e")) );
    msg->setPriority( atol( getEntry(".nb.info.prio.e")) );
-   msg->setError( atol( getEntry(".nb.info.error.e"))!=0 );
+   msg->setBitError( atol( getEntry(".nb.info.error.e"))!=0 );
    msg->setTimestamp( atof( getEntry(".nb.send.tstamp.e")) );
 
    TInspector::writeBack();    // must be there after all changes

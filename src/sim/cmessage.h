@@ -109,7 +109,7 @@ class cMessage : public cObject
         void setPriority(int p) {prior=p;}      // set priority
         void setLength(long l);                 // set message length
         void addLength(long l);                 // change message length
-        void setError(bool err) {error=err;}    // set error flag
+        void setBitError(bool err) {error=err;} // set error flag
         void setTimestamp() {tstamp=simulation.simTime();} // set time stamp to current time
         void setTimestamp(simtime_t t) {tstamp=t;}  // set time stamp to given value
         void setContextPointer(void *p) {contextptr=p;} // set context pointer
@@ -117,8 +117,7 @@ class cMessage : public cObject
         int  kind()     {return msgkind;}       // get msg kind
         int  priority() {return prior;}         // get priority
         long length()   {return len;}           // get message length
-        bool isbad()    {return error;}         // bit error occured or not
-        bool isgood()   {return !error;}
+        bool hasBitError() {return error;}      // bit error occurred or not
         simtime_t timestamp() {return tstamp;}  // get time stamp
         unsigned long insertOrder() {return insertordr;} // used by cMessageHeap
         void *contextPointer() {return contextptr;} // get context pointer

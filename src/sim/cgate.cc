@@ -367,7 +367,7 @@ char *cGate::displayString()
         sprintf(dispname, "%s.%s",ownerModule()->className(),fullName());
     }
     char *s = ev.getDisplayString(simulation.runNumber(),dispname);
-    return s ? s : (CONST_HACK)"";
+    return s ? s : CONST_CAST("");
 }
 
 void cGate::setDisplayString(char *s)

@@ -196,15 +196,19 @@ void cTDExpandingWindows::detectTransient()
       }
       avg2 = avg2/(ws2-1);
 
-      //Comparison of the two averages. Is the transient period over??
-      double value = (avg2!=0 ? (avg1-avg2)/avg2 : avg1);
-      value = (value < 0 ? -value : value);   //absoluut
+      //Comparison of the two averages.
+      double value = fabs(avg2!=0 ? (avg1-avg2)/avg2 : avg1);
       if (value < accuracy)
           detreps--;
       else
           detreps = repeats;
       transval = (detreps <= 0);
-      if (transval && (pdf!=NULL)) (*pdf)(this,pdfdata);
+
+      // If the transient period over, call registered function
+      if (transval && (pdf!=NULL))
+      {
+         (*pdf)(this,pdfdata);
+      }
   }
 }
 
@@ -280,7 +284,11 @@ void cADByStddev::detectAccuracy()
    if (sdvmean <= accuracy) detreps--;
    else detreps = repeats;
    resaccval = (detreps <= 0);
+
+   // If we have the accuracy, call registered function
    if (resaccval && pdf!=NULL)
-        (*pdf)(this, pdfdata);
+   {
+      (*pdf)(this, pdfdata);
+   }
 }
 

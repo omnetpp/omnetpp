@@ -92,7 +92,7 @@ void cMessage::writeContents(ostream& os)
         os << "  length:    " << length() << '\n';
         os << "  kind:      " << kind() << '\n';
         os << "  priority:  " << priority() << '\n';
-        os << "  error:     " << (isbad() ? "TRUE" : "FALSE") << '\n';
+        os << "  error:     " << (hasBitError() ? "TRUE" : "FALSE") << '\n';
         os << "  time stamp:" << simtimeToStr(timestamp()) << '\n';
         if (parlistp) {
            os << "  parameter list:\n";

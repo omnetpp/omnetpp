@@ -653,7 +653,7 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
         else
            if (mod->stackOverflow())
               opp_error("Stack violation (%s stack too small?) in module `%s'",
-                              mod->className(),mod->fullPath());
+                        mod->className(),mod->fullPath());
      }
      else
      {
@@ -732,7 +732,7 @@ void cSimulation::warning(int errc, char *message)
     else
     {
         if(ev.askYesNo( "Module %s: %s. Continue?",
-                          contextModule()->fullPath(), message) == FALSE)
+                         contextModule()->fullPath(), message) == FALSE)
         {
             err = errc;
 

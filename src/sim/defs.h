@@ -65,7 +65,7 @@ typedef int bool;
 
 //=== this macro is used to cast away the constness of string literals
 //    until (in the near future) the whole source is made const-correct
-#define CONST_HACK    char *
+#define CONST_CAST(x)  (char *)(x)
 
 //=== model time
 typedef double       simtime_t;

@@ -279,7 +279,7 @@ int getNetworkType_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
 {
    if (argc!=1) return TCL_ERROR;
    cNetworkType *n = simulation.networkType();
-   interp->result = (n==NULL) ? "" : n->name();
+   interp->result = (n==NULL) ? CONST_CAST("") : n->name();
    return TCL_OK;
 }
 
@@ -476,7 +476,7 @@ int inspect_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
 
    void *dat = (argc==4) ? (void *)argv[3] : NULL;
    TInspector *insp = app->inspect( object, type, dat );
-   interp->result = insp ? insp->windowname : "";
+   interp->result = insp ? insp->windowname : CONST_CAST("");
    return TCL_OK;
 }
 

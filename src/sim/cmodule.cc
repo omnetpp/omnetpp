@@ -186,7 +186,7 @@ void cModule::setGateSize(char *gname, int size)
       if (pos<0)
       {
          opp_error("setGateSize(): Gate %s.%s[] not found",
-                  fullPath(), gname );
+                   fullPath(), gname );
       }
       else
       {
@@ -200,7 +200,7 @@ void cModule::setGateSize(char *gname, int size)
             cGate *g = (cGate *) &gatev.remove( pos+i );
             if (g->fromGate() || g->toGate())
                opp_error("setGateSize(): Too late, gate %s already connected",
-                  g->fullPath());
+                         g->fullPath());
             delete g;
          }
 
@@ -226,7 +226,7 @@ void cModule::addPar(char *pname)
       int i = findPar(pname);
       if (i!=-1)
          opp_error("addPar(): Parameter %s.%s already present",
-                  fullPath(), pname );
+                   fullPath(), pname );
       else
       {
           i = paramv.add( *new cModulePar(pname) );
@@ -282,7 +282,7 @@ void cModule::setMachinePar(char *pname, char *value)
     int i = machinev.find( pname );
     if (i==-1)
          opp_error("(%s)%s: Machine par `%s' does not exist",
-                       className(), fullPath(), pname );
+                   className(), fullPath(), pname );
     else
          (cPar&)machinev[i] = value;
 }
@@ -329,9 +329,9 @@ cGate *cModule::gate(char *s, int sn)
     int i = findGate(s,sn);
     if (i==-1)
     {
-        opp_warning(sn<0?"(%s)%s: Gate `%s' not found"
-                               :"(%s)%s: Gate `%s[%d]' not found",
-                           className(),fullName(), s, sn );
+        opp_warning(sn<0 ? "(%s)%s: Gate `%s' not found"
+                         : "(%s)%s: Gate `%s[%d]' not found",
+                    className(),fullName(), s, sn );
         return NO(cGate);
     }
     else
@@ -369,7 +369,7 @@ cPar& cModule::ancestorPar(char *namestr)
     else
     {
          opp_warning("Ancestor parameter `%s' not found for module `%s'",
-                          namestr, fullPath() );
+                     namestr, fullPath() );
          return *NO(cPar);
     }
 }
@@ -395,14 +395,14 @@ char *cModule::machinePar(char *pname)
 bool cModule::isOnLocalMachine()                                   //NET
 {
     return simulation.netInterface()==NULL || simulation.netInterface()->isLocalMachineIn( machinev );
-}                                                               //NET
+}
 
 void cModule::setDisplayString(int type,char *s)
 {
     if (type<0 || type>=dispNUMTYPES)
     {
          opp_error("(%s)%s: setDisplayString(): type %d out of range",
-                       className(), fullPath(), type );
+                   className(), fullPath(), type );
          return;
     }
 
@@ -417,7 +417,7 @@ char *cModule::displayString(int type)
     if (type<0 || type>=dispNUMTYPES)
     {
          opp_error("(%s)%s: displayString(): type %d out of range",
-                       className(), fullPath(), type );
+                   className(), fullPath(), type );
          return NULL;
     }
 
@@ -436,7 +436,7 @@ char *cModule::displayString(int type)
         sprintf(dispname, "%s",className());
     }
     char *s = ev.getDisplayString(simulation.runNumber(),dispname);
-    return s ? s : (CONST_HACK)"";
+    return s ? s : CONST_CAST("");
 }
 
 void cModule::setDisplayStringNotify(void (*notify_func)(int,void*), void *data)
@@ -699,8 +699,8 @@ int cSimpleModule::send(cMessage *msg, char *s, int sn)
         int g = findGate(s,sn);
         if (g<0)
         {
-           opp_error(sn<0?"send(): module has no gate `%s'":
-                                 "send(): module has no gate `%s[%d]'",s,sn);
+           opp_error(sn<0 ? "send(): module has no gate `%s'":
+                            "send(): module has no gate `%s[%d]'",s,sn);
            return 0;
         }
         return sendDelayed( msg, 0.0, g );
@@ -711,8 +711,8 @@ int cSimpleModule::sendDelayed(cMessage *msg, double delay, char *s, int sn)
         int g = findGate(s,sn);
         if (g<0)
         {
-           opp_error(sn<0?"sendDelayed(): module has no gate `%s'":
-                                 "sendDelayed(): module has no gate `%s[%d]'",s,sn);
+           opp_error(sn<0 ? "sendDelayed(): module has no gate `%s'":
+                            "sendDelayed(): module has no gate `%s[%d]'",s,sn);
            return 0;
         }
         return sendDelayed( msg, delay, g );
@@ -838,9 +838,9 @@ int cSimpleModule::sendDirect(cMessage *msg, double delay, cModule *mod, char *s
         int g = mod->findGate(s,sn);
         if (g<0)
         {
-           opp_error(sn<0?"sendDirect(): module `%s' has no gate `%s'":
-                                 "sendDirect(): module `%s' has no gate `%s[%d]'",
-                                 mod->fullPath(),s,sn);
+           opp_error(sn<0 ? "sendDirect(): module `%s' has no gate `%s'":
+                            "sendDirect(): module `%s' has no gate `%s[%d]'",
+                            mod->fullPath(),s,sn);
            return 0;
         }
         return sendDirect( msg, delay, mod, g );
@@ -867,8 +867,8 @@ int cSimpleModule::syncpoint(simtime_t t, char *s, int sn)
         int g = findGate(s,sn);
         if (g<0)
         {
-           opp_error(sn<0?"syncpoint(): module has no gate `%s'":
-                                 "syncpoint(): module has no gate `%s[%d]'",s,sn);
+           opp_error(sn<0 ? "syncpoint(): module has no gate `%s'":
+                            "syncpoint(): module has no gate `%s[%d]'",s,sn);
            return 0;
         }
         return syncpoint( t, g );
@@ -895,8 +895,8 @@ int cSimpleModule::cancelSyncpoint(simtime_t t, char *s, int sn)
         int g = findGate(s,sn);
         if (g<0)
         {
-           opp_error(sn<0?"cancelSyncpoint(): module has no gate `%s'":
-                                 "cancelSyncpoint(): module has no gate `%s[%d]'",s,sn);
+           opp_error(sn<0 ? "cancelSyncpoint(): module has no gate `%s'":
+                            "cancelSyncpoint(): module has no gate `%s[%d]'",s,sn);
            return 0;
         }
         return cancelSyncpoint( t, g );
@@ -1065,8 +1065,8 @@ cMessage *cSimpleModule::receiveOn(char *s, int sn, simtime_t t)
     int g = findGate(s,sn);
     if (g<0)
     {
-        opp_error(sn<0?"receiveOn(): module has no gate `%s'":
-                              "receiveOn(): module has no gate `%s[%d]'",s,sn);
+        opp_error(sn<0 ? "receiveOn(): module has no gate `%s'":
+                         "receiveOn(): module has no gate `%s[%d]'",s,sn);
         return NO(cMessage);
     }
     return receiveOn( g, t );
@@ -1337,13 +1337,13 @@ static void _connect(cModule *frm, int frg, cModule *tom, int tog)
        srcgate->setTo( destgate );
     else
        opp_error( "connect(): gate %s already connected",
-                          srcgate->fullPath() );
+                  srcgate->fullPath() );
 
     if( destgate->fromGate()==NULL )
        destgate->setFrom( srcgate );
     else
        opp_error( "connect(): gate %s already connected",
-                         destgate->fullPath() );
+                  destgate->fullPath() );
 
     //VZ: NETWORKING EXTENSION OF CONNECT!!
     bool src_local = frm->isOnLocalMachine();

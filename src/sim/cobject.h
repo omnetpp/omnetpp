@@ -125,7 +125,7 @@ class cObject
         //
 
         void setName(char *s)  {delete namestr; namestr=opp_strdup(s);}
-        char *name()           {return namestr ? namestr : (CONST_HACK)"";}
+        char *name()           {return namestr ? namestr : CONST_CAST("");}
         bool isName(char *s)   {return !opp_strcmp(namestr,s);}
 
         // longer names composed of name()
