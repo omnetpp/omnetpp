@@ -83,7 +83,7 @@ cGate& cGate::operator=(const cGate& gate)
     throw new cException(this, eCANTDUP);
 }
 
-void cModule::setName(const char *s)
+void ccGate::setName(const char *s)
 {
     cObject::setName(s);
 
