@@ -14,11 +14,11 @@ cplusplus {{
 message NetPkt;
 
 //
-// Message class for representing an SSH packet.
+// Message class for representing a Telnet packet (bytes carried in TCP).
 // For purposes of this model, we don't care about TCP connection setup
 // and teardown, about TCP acks, or finite IP packet size.
 //
-message SSHPkt extends NetPkt
+message TelnetPkt extends NetPkt
 {
     fields:
         string payload;
