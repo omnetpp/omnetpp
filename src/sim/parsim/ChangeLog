@@ -5,19 +5,33 @@
 
 	parsim-debug = <true/false>
 	   default: true
-	parsim-idealsimulationprotocol-tablesize = <int>
-	   default: TABLESIZE
 	parsim-mpicommunications-mpibuffer = <bytes>
 	   default: 256K * (numPartitions-1) + 16K;
+	   Size of MPI send buffer to allocate; see MPI_Buffer_attach()
+	   MPI call. If the buffer is too small, a deadlock can occur.
 	parsim-namedpipecommunications-prefix = <string>
-	   Windows: default value is "omnetpp" ();
-	   Unix: default value is "comm/", which means pipes will be created
-	   in the comm/ subdirectory.
+	   Control the naming of named pipes.
+	   Windows: default value is "omnetpp", which means that pipe names
+	   will be of the form "\\.\pipe\omnetpp-xx-yy" (where xx and yy are
+	   numbers).
+	   Unix: default value is "comm/", which means that the named pipes
+	   will be created with the name "comm/pipe-xx-yy". The "comm/"
+	   subdirectory must already exist when the simulation is launched.
 	parsim-nullmessageprotocol-lookahead-class = <class name string>
-	   class must be subclassed from cNMPLookahead
 	   default: "cLinkDelayLookahead"
+	   Selects the lookahead class for the Null Message Algorithm; the
+	   class must be subclassed from cNMPLookahead.
 	parsim-nullmessageprotocol-laziness = <0..1>
 	   default: 0.5
+	   Controls how often the Null Message Algorithm should send out null
+	   messages; the value is understood in proportion to the lookahead,
+	   e.g. 0.5 means every lookahead/2 simsec.
+	parsim-idealsimulationprotocol-tablesize = <int>
+	   default: 100,000
+	   Size of chunks (in table entries) in which the external events
+	   file (recorded by cISPEventLogger) should be loaded.
+	   (one entry is 8 bytes, so 100,000 corresponds to ~800K allocated
+	   memory)
 
 2004-11-23  ------ omnetpp-3.0b1 released ------
 
