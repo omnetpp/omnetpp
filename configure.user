@@ -161,6 +161,6 @@ NEDC="$OMNETPP_BIN_DIR/nedtool"
 #
 # Override the following setting if you have additional icons somewhere else.
 #
-#OMNETPP_BITMAP_PATH=".;./bitmaps;$OMNETPP_ROOT/bitmaps"
+#OMNETPP_BITMAP_PATH="./bitmaps;$OMNETPP_ROOT/bitmaps"
 
 

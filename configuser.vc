@@ -42,8 +42,8 @@ MPI_DIR=
 # If set to 'none', nedtool will compile but won't support XML input,
 # and NED parameters of type xml cannot be used.
 #
-XMLPARSER=libxml
-#XMLPARSER=expat
+#XMLPARSER=libxml
+XMLPARSER=expat
 #XMLPARSER=none
 
 #
@@ -55,7 +55,7 @@ EXPAT_DIR=d:/home/tools/expat-1.95.6
 # Location of LibXML2 and its supporting library ICONV (only used if XMLPARSER=libxml)
 #
 ICONV_DIR=d:/home/tools/iconv-1.9.1.win32
-LIBXML_DIR=d:/home/tools/libxml2-2.6.12.win32
+LIBXML_DIR=d:/home/tools/libxml2-2.6.14.win32
 
 #
 # Directory of various tools
@@ -119,10 +119,10 @@ WITH_PARSIM=yes
 #
 # Choose between debug and release libraries here
 #
-#CFLAGS=$(CFLAGS_DEBUG)
-#LDFLAGS=$(LDFLAGS_DEBUG)
-CFLAGS=$(CFLAGS_RELEASE)
-LDFLAGS=$(LDFLAGS_RELEASE)
+CFLAGS=$(CFLAGS_DEBUG)
+LDFLAGS=$(LDFLAGS_DEBUG)
+#CFLAGS=$(CFLAGS_RELEASE)
+#LDFLAGS=$(LDFLAGS_RELEASE)
 
 
 #==============================================================================
@@ -147,7 +147,7 @@ OMNETPP_TKENV_DIR=$(OMNETPP_ROOT)/src/tkenv
 OMNETPP_GNED_DIR=$(OMNETPP_ROOT)/src/gned
 OMNETPP_SCALARS_DIR=$(OMNETPP_ROOT)/src/scalars
 OMNETPP_PLOVE_DIR=$(OMNETPP_ROOT)/src/plove
-OMNETPP_BITMAP_PATH=.;./bitmaps;$(OMNETPP_ROOT)/bitmaps
+OMNETPP_BITMAP_PATH=./bitmaps;$(OMNETPP_ROOT)/bitmaps
 
 #
 # Libraries
