@@ -4,6 +4,12 @@
 	toolbar button; on module inspectors this works as "Inspect parent 
 	module".
 
+	* fix: Filtered Object List dialog ignored scheduled events list
+
+	* fix: cPacket inspector "Fields" page was always empty
+
+FIXME cGate inspectors have now two "up" buttons!!!
+
 2004-02-23  Andras Varga
 
 	* tkapp.cc/h: added moduleReparented() cEnvir method

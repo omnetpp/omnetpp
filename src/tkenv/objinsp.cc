@@ -500,6 +500,13 @@ void TPacketInspector::createWindow()
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
    Tcl_Interp *interp = getTkApplication()->getInterp();
    CHK(Tcl_VarEval(interp, "create_packetinspector ", windowname, " \"", geometry, "\"", NULL ));
+
+   if (cStructDescriptor::hasDescriptor(object->className()))
+   {
+       char fieldspagewidget[256];
+       sprintf(fieldspagewidget, "%s.nb.fields", windowname);
+       fieldspage = new TStructPanel(fieldspagewidget, object);
+   }
 }
 
 void TPacketInspector::update()

@@ -140,7 +140,7 @@ proc inspectfromlistbox {title text type fillistbox_args} {
     set lb $w.f.main.list
 
     # execute query
-    set objlist [opp_getsubobjectsfilt [opp_object_systemmodule] "" "" "Full name"]
+    set objlist [opp_getsubobjectsfilt [opp_object_simulation] "" "" "Full name"]
     #set num [llength $objlist]
     #$w.f.numobj config -text "Found $num objects"
 
@@ -755,7 +755,7 @@ proc filteredobjectlist_refresh {w} {
 
     # get list
     set maxcount $config(filtobjlist-maxcount)
-    set objlist [opp_getsubobjectsfilt [opp_object_systemmodule] $tmp(category) $class $name $maxcount $order]
+    set objlist [opp_getsubobjectsfilt [opp_object_simulation] $tmp(category) $class $name $maxcount $order]
     set num [llength $objlist]
 
     # ask user if too many...
