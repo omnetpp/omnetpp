@@ -46,7 +46,7 @@ components: libs progs configsamples samples configtutorial thetutorial
 #
 #=====================================================================
 
-LIBS=$(ENVIR_ILIB) sim envir cmdenv tkenv
+LIBS=$(ENVIR_ILIB) sim envir cmdenv tkenv nedxml
 PROGS=utils nedc gned plove
 SAMPLES=dyna fddi fifo1 fifo2 hcube hist nim pvmex token dyna2 demo
 
@@ -81,6 +81,10 @@ cmdenv:
 tkenv:
 	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SRC_DIR:/=\)\tkenv && $(MAKE) $(MOPTS) $(MAKEFILE)
+
+nedxml:
+	@echo ===== Compiling $@ ====
+	cd /d $(OMNETPP_SRC_DIR:/=\)\nedxml && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 #
 # Programs

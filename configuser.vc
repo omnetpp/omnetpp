@@ -16,11 +16,12 @@ OMNETPP_VERSION=omnetpp-2.2
 # Directory names with spaces may also cause problems, it's better to use
 # short file names (e.g. 'C:/PROGRA~1' instead of 'C:/Program files').
 #
-OMNETPP_ROOT=c:/omnetpp-2.2
-TK_DIR=c:/tcl
+OMNETPP_ROOT=d:/home/omnetpp
+TK_DIR=d:/tcl
 TK_VER=8.2
 PVM_DIR=c:/pvm3
 MPI_DIR=c:/mpi
+EXPAT_DIR=d:/home/expat-1.95.2
 
 #
 # other directories & files based on the base dirs
@@ -42,6 +43,10 @@ _TCL_LIBRARY=$(TK_DIR)/lib/tcl$(TK_VER)
 
 PVM_INCL_DIR=$(PVM_DIR)/include
 MPI_INCL_DIR=$(MPI_DIR)/include
+
+EXPAT_INCL_DIR=$(EXPAT_DIR)/source/lib
+EXPAT_LIB_DIR=$(EXPAT_DIR)/libs
+EXPAT_LIB=expat.lib
 
 #
 # tools
@@ -84,10 +89,10 @@ LDFLAGS_DEBUG=/nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /inc
 CFLAGS_RELEASE=/nologo /ML /O2 /D "NDEBUG" /FD /Zm150
 LDFLAGS_RELEASE=/nologo /subsystem:console /machine:I386 /pdbtype:sept /incremental:no
 
-#CFLAGS=$(CFLAGS_DEBUG)
-#LDFLAGS=$(LDFLAGS_DEBUG)
-CFLAGS=$(CFLAGS_RELEASE)
-LDFLAGS=$(LDFLAGS_RELEASE)
+CFLAGS=$(CFLAGS_DEBUG)
+LDFLAGS=$(LDFLAGS_DEBUG)
+#CFLAGS=$(CFLAGS_RELEASE)
+#LDFLAGS=$(LDFLAGS_RELEASE)
 
 # LIB_SUFFIX is either .lib or .dll
 LIB_SUFFIX=.lib
@@ -108,6 +113,8 @@ PVM_CFLAGS=/I "$(PVM_INCL_DIR)"
 PVM_LIBS=
 MPI_CFLAGS=/I "$(MPI_INCL_DIR)"
 MPI_LIBS=
+EXPAT_CFLAGS=/I "$(EXPAT_INCL_DIR)"
+EXPAT_LIBS=$(EXPAT_LIB) /libpath:"$(EXPAT_LIB_DIR)"
 SYS_LIBS=
 
 #
