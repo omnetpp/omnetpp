@@ -64,8 +64,14 @@ proc loadNED {nedfile} {
        set tmp_ned($filekey,$field) $ddict($i)
     }
 
+    if [string compare [pwd] [file dirname $nedfile]] {
+       set fancyname "...[file tail [file dirname $nedfile]]/[file tail $nedfile]"
+    } else {
+       set fancyname [file tail $nedfile]
+    }
+
     set tmp_ned($filekey,type) "nedfile"
-    set tmp_ned($filekey,name) $nedfile
+    set tmp_ned($filekey,name) $fancyname
     set tmp_ned($filekey,filename) $nedfile
     set tmp_ned($filekey,unnamed) 0
     set tmp_ned($filekey,dirty) 0

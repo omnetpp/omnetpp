@@ -95,7 +95,7 @@ typedef struct {int li; int co;} LineColumn;
 extern LineColumn pos,prevpos;
 
 int yylex (void);
-void jar_yyrestart(FILE *);
+void yyrestart(FILE *);
 void yyerror (char *s);
 
 
@@ -1113,10 +1113,28 @@ comma_or_semicolon : ',' | ';' | ;
 //
 
 char yyfailure[250] = "";
-extern int yydebug; /* needed if compiled by yacc --VA */
+extern int yydebug; /* needed if compiled with yacc --VA */
 
 extern char textbuf[];
 extern char lasttextbuf[];
+
+int runparse ()
+{
+#if YYDEBUG != 0      /* #if added --VA */
+        yydebug = YYDEBUGGING_ON;
+#endif
+        pos.co = 0;
+        pos.li = 1;
+        prevpos = pos;
+
+        strcpy (lasttextbuf, "");
+        strcpy (yyfailure, "");
+
+        if (yyin)
+            yyrestart( yyin );
+
+        return yyparse();
+}
 
 #ifdef DOING_NEDC
 
@@ -1163,24 +1181,6 @@ void yyerror (char *s)
 
 #endif
 
-
-int runparse ()
-{
-#if YYDEBUG != 0      /* #if added --VA */
-        yydebug = YYDEBUGGING_ON;
-#endif
-        pos.co = 0;
-        pos.li = 1;
-        prevpos = pos;
-
-        strcpy (lasttextbuf, "");
-        strcpy (yyfailure, "");
-
-        if (yyin)
-            jar_yyrestart( yyin );
-
-        return yyparse();
-}
 
 //----------------------------------------------------------------------
 //

@@ -439,9 +439,9 @@ proc generate_conn {key indent islast} {
     }
 
     # now print it
-    appendTo out "${indent}$src" nonewline
+    appendTo out "${indent}$src $arrow" nonewline
     appendTo out [generateChildrenWithArg $key $indent $arrow] nonewline
-    appendTo out " $arrow $dest" nonewline
+    appendTo out " $dest" nonewline
     if {$ned($key,condition)!=""} {
        appendTo out " if $ned($key,condition)" nonewline
     }
@@ -461,10 +461,11 @@ proc generate_connattr {key indent islast arrow} {
     appendBannerComment out $ned($key,banner-comment) $indent
     if {$ned($key,name)=="channel"} {
         # sorry for the special case :-(
-        appendTo out " $arrow $ned($key,value)" nonewline
+        appendTo out " $ned($key,value)" nonewline
     } else {
-        appendTo out " $arrow $ned($key,name) $ned($key,value)" nonewline
+        appendTo out " $ned($key,name) $ned($key,value)" nonewline
     }
+    if {$islast} {appendTo out " $arrow" nonewline}
     appendInlineRightComment out $ned($key,right-comment) ""
     return $out
 }

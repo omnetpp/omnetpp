@@ -68,7 +68,6 @@ if [info exist OMNETPP_GNED_DIR] {
 proc start_gned {} {
    global OMNETPP_BITMAP_PATH
 
-
    wm withdraw .
    checkVersion
    defaultBindings

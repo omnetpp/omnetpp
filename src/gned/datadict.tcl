@@ -80,8 +80,8 @@ set ddesc(nedfile,plusindent)      {}
 set ddesc(nedfile,parents)         {root}
 set ddesc(nedfile,treeicon)        {file_vs}
 set ddict(nedfile,type)            {nedfile}
-set ddict(nedfile,name)            {untitled.ned}
-set ddict(nedfile,filename)        {untitled.ned}
+set ddict(nedfile,name)            {Untitled}
+set ddict(nedfile,filename)        {untitled}
 set ddict(nedfile,banner-comment)  {}
 set ddict(nedfile,unnamed)         {1}
 set ddict(nedfile,dirty)           {0}

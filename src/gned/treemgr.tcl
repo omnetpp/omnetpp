@@ -152,7 +152,13 @@ proc getNodeInfo {w op {key {}}} {
 #------------------------------
 
 proc treemanagerDoubleClick {key} {
-    openModuleOnCanvas $key
+    global ned gned
+
+    if {$ned($key,type)=="nedfile"} {
+        Tree:toggle $gned(manager).tree $key
+    } else {
+        openModuleOnCanvas $key
+    }
 }
 
 proc treemanagerPopup {key x y} {

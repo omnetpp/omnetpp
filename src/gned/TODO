@@ -1,12 +1,9 @@
 Parse/Generate:
-- generation with multiple channel attributes is wrong: don't need "-->"
-  between "error xxx" and "delay xxx"!
-- comments around display strings are lost
+- comments around display strings, channel attributes are lost
 - display string parsing -- rewrite!!!
-- comments -- choose different approach?
+- comments -- choose different approach? (do not cut of "// ")
 - ebnf.y changed (gate_mod_L --> mod_L etc.) -- update and test NEDC!!!
-- occasional segmentation fault when parsing for second/third/... time
-- error recovery: TBD
+- error recovery in the grammar: TBD
 
 Data struct change:
 - "source-text" attribute to module?? should be added when one switches to text mode
@@ -21,7 +18,13 @@ Drawing:
 - should support ovals
 
 Load/save:
-- save: for canvases switched to text, it should save the text version (not good!)
+- refuse to load the same file twice
+- save: what should it do with canvases switched to text?
+     - save the text version? (maybe try to backparse it before saving,
+       and warn user if there's a parse error and she won't be able to
+       load the saves file back into gned)
+     - silently backparse?
+     - refuse to save: ask user to switch to graphics?
 - load: if there's a parse error, load the whole stuff into a "scratch" text-mode canvas?
 
 Text editor:
@@ -30,6 +33,7 @@ Text editor:
 - make status line: line number etc.
 
 General:
+- introduce ~/.gnedrc
 - switching back from text to graphics should check if text really changed or not
 - display string: numeric parameters must be checked!!!
 - cut,copy,paste should work everywhere (menu,toolbar,keys),
@@ -44,8 +48,8 @@ Manager:
 Dialogs:
 - TBD
 
-Longer plans:
-- bugfixing, general improvement (see all the above)
+Longer-term plans:
+- general improvement (see all the above)
 - opening simple modules, networks, channels, etc. on canvas
 - do Properties dialogs
 - drag&drop simple/compound module types onto a compound module canvas
