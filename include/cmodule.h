@@ -538,7 +538,7 @@ class SIM_API cModule : public cDefaultList
     virtual void deleteModule();
     //@}
 
-    /** @name Display strings. */
+    /** @name Display strings, animation. */
     //@{
 
     /**
@@ -574,6 +574,12 @@ class SIM_API cModule : public cDefaultList
      * methods instead.
      */
     void setDisplayString(int type, const char *dispstr, bool immediate=true);
+
+    /**
+     * When the models is running under Tkenv, it displays the given text
+     * in the network graphics, as a bubble above the module's icon.
+     */
+    void void bubble(const char *text);
     //@}
 };
 

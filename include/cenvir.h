@@ -273,6 +273,11 @@ class ENVIR_API cEnvir
     bool isGUI()  {return isgui;}
 
     /**
+     * In Tkenv it pops up a "bubble" over the module icon.
+     */
+    void bubble(cModule *mod, const char *text);
+
+    /**
      * Displays a message in dialog box. This function should not be
      * used too much by simple modules, if ever.
      */

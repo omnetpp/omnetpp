@@ -1,5 +1,7 @@
 2004-01-09  Andras Varga
 
+	* cenvir.h: added bubble() to cEnvir
+
 	* cenvir.h: added overloaded "<<" operator for printing object pointers
 	and references (cObject*, const cObject*, cObject&, const cObject&).
 	It prints the class name and the full name, like "(cMessage)hello".
