@@ -13,15 +13,15 @@
 #----------------------------------------------------------------#
 
 set icons(apply) [image create photo -data {
-    R0lGODlhFAATALMAAADAAACWAOwlE+8/LupGNtxWSdhkWOVYSudpXO14auWFeeqk
+    R0lGODlhFAATALMAAACMAABuAOwlE+8/LupGNtxWSdhkWOVYSudpXO14auWFeeqk
     meTDu+zUzOni3PHw6iH5BAEAAA8ALAAAAAAUABMAAAQv8MlJq704ZwCCtpz3UeFI
     duZUps/KuhgHSPAlz3V8o2YQ5BmfkPUYEn3EpHI5iQAAOw==
 }]
 
 set icons(revert) [image create photo -data {
     R0lGODlhFAATALMAAJUjHfMZBuwlE+8/LupGNtxWSdhkWOVYSudpXO14auWFeeqk
-    meTDu+zUzOni3PHw6iH5BAEAAA8ALAAAAAAUABMAAAQx8MlJq7Xh6hnyvl3YfVwH
-    nCP5BEDpkS0XqxRLV/Yt5Tp/+zTgRkQ0aU7IJFLHbDqdEQA7
+    meTDu+zUzOni3PHw6iH5BAEAAA8ALAAAAAAUABMAAAQq8MlJq7046w32BeCXgeFU
+    aqR0cmTnmavXunIZf+tNpRWN6b6XcEgsGi8RADs=
 }]
 
 set icons(loadned) [image create photo -data {
@@ -181,10 +181,10 @@ set icons(find) [image create photo -data {
 }]
 
 set icons(config) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAGUpHUBAQG5ubkZJuapPNLlbOsZ0XICAgJiYl8PDw8bG
-    xgAAAAAAAAAAAAAAACH5BAEAAAsALAAAAAAUABMAAARocMm5Sgk062X63eDhfaA0
-    DIvoYeepDQSRrliMZrCsWjVxUwOFcGa4BIS/SVABIPIAiqRJONwFjtLFEtDcXaIv
-    anWlDTO5KVFCUMaJxYvEetOqt+LsEiiByOs1fX8bfH6CE32FhoQLEQAAOw==
+    R0lGODlhFAATALMAAFBQUGUpHUBAQG5ubkZJuaAAAMAAAP9BQYCAgJiYl8PDw+/v
+    0QAAAAAAAEBAQAAAACH5BAEAAAsALAAAAAAUABMAAARhcC1jjrw4S0qt/hznfVgR
+    dsugrqtUmKFFzPQ8XO8p13YJi5+b71fRCCXCHGfBaCIxR2XCCPUhEFNnqspkXK7T
+    y3H7AYu5zbTETH6SFuCwmEW/XbHvD+AKAOQ1fX5/gBcRAAA7
 }]
 
 set icons(newnet) [image create photo -data {
