@@ -52,7 +52,68 @@ above:
 \end{enumerate}
 
 
+\section{Assessing available parallelism in a simulation model}
+
+
+\begin{itemize}
+  \item{$P$ \textit{performance} represents the number of events processed per
+    second (ev/sec).
+       \footnote{Notations: \textit{ev:} events, \textit{sec:} real seconds,
+       \textit{simsec:} simulated seconds}
+    $P$ depends on the performance of the hardware and the computation-intensiveness
+    of processing an event. $P$ is independent of the size of the model.
+    Depending on the nature of the simulation model and the performance of the
+    computer, $P$ is usually in the range of 20,000..500,000 ev/sec.}
+  \item{$E$ \textit{event density} is the number of events that occur per
+    simulated second (ev/simsec). $E$ depends on the model only, and not
+    where the model is executed. $E$ is determined by the size, the detail level
+    and also the nature of the simulated system (e.g. cell-level ATM models
+    produce higher $E$ values than call center simulations.)}
+  \item{$R$ \textit{relative speed} measures the simulation time advancement
+    per second (simsec/sec). $R$ strongly depends on both the model and
+    on the software/hardware environment where the model executes.
+    Note that $R = P/E$.}
+  \item{$L$ \textit{lookahead} is measured in simulated seconds (simsec).
+    When simulating telecommunication networks and using link delays as
+    lookahead, $L$ is typically in the msimsec-$\mu$simsec range.}
+  \item{$\tau$ \textit{latency} (sec) characterizes the parallel simulation hardware.
+    $\tau$ is the latency of sending a message from one LP to another. $\tau$
+    can be determined using simple benchmark programs. The authors' measurements
+    on a Linux cluster interconnected via a 100Mb Ethernet switch using MPI
+    yielded $\tau$=22$\mu$s which rhymes with measurements reported in
+    \cite{ongfarrell2000}; specialized hardware such as
+    Quadrics Interconnect \cite{quadrics} can provide $\tau$=5$\mu$s or better.}
+\end{itemize}
+
+In large simulation models, $P$, $E$ and $R$ usually stay relatively constant
+(that is, display little fluctuations in time). They are also intuitive and
+easy to measure. The {\opp} displays these values on the GUI while the simulation
+is running, see Figure \ref{fig:perfbar-screenshot}. Cmdenv can also be configured
+to display these values.
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics{figures/perfbar-screenshot}
+    \caption{Performance bar in {\opp} showing $P$, $R$ and $E$}
+    \label{fig:perfbar-screenshot}
+  \end{center}
+\end{figure}
+
+After having approximate values of $P$, $E$, $L$ and $\tau$,
+calculate the $\lambda$ \textit{coupling factor} as the ratio of $LE$ and $\tau P$:
+
+$\lambda = \frac{LE}{\tau P}$
+
+Without going into the details: if the resulting $\lambda$ value is at
+minimum larger than one, but rather in the range 10..100, there is
+a good change that the simulation will perform well when run in
+parallel. With $\lambda < 1$, poor performance is guaranteed.
+For details see the paper \cite{}.
+
+
 \section{Parallel distributed simulation support in {\opp}}
+
+\subsection{Overview}
 
 This chapter presents the parallel simulation architecture
 of {\opp}. The design allows simulation models to be run
@@ -145,7 +206,7 @@ configuration.
 
 
 
-\section{Parallel Simulation Example}
+\subsection{Parallel Simulation Example}
 
 Here we use the Parallel CQN example simulation for demonstrating the
 PDES capabilities of {\opp}.
@@ -246,7 +307,7 @@ EITs and EOTs can be inspected, etc.
 
 
 
-\section{Placeholder modules, proxy gates}
+\subsection{Placeholder modules, proxy gates}
 
 When setting up a model partitioned to several LPs,
 {\opp} uses placeholder modules and proxy gates.
@@ -296,7 +357,7 @@ everywhere else (Figure \ref{fig:inst}).
 \end{figure}
 
 
-\section{Design of PDES Support in {\opp}}
+\subsection{Design of PDES Support in {\opp}}
 
 Design of PDES support in {\opp} follows a layered approach,
 with a modular and extensible architecture. The overall
@@ -385,10 +446,10 @@ Note that although we implemented a conservative protocol,
 the provided API itself would allow implementing optimistic
 protocols, too. The parallel simulation algorithm has
 access to the executing simulation model, so it could perform
-saving/restoring model state if model objects support this%
-\footnote{Unfortunately, support for state saving/restoration
-needs to be individually and manually added to each class
-in the simulation, including user-programmed simple modules.}.
+saving/restoring model state if model objects support this
+  \footnote{Unfortunately, support for state saving/restoration
+  needs to be individually and manually added to each class
+  in the simulation, including user-programmed simple modules.}.
 
 We also expect that because of the modularity, extensibility and
 clean internal architecture of the parallel simulation subsystem,
