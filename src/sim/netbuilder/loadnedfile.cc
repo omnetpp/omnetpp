@@ -29,6 +29,8 @@
 #include "ctypes.h"
 #include "cexception.h"
 #include "globals.h"
+#include "opp_string.h"
+#include "cenvir.h"
 #include "cdynamicmodule.h"
 #include "cdynamicnetwork.h"
 #include "cdynamicchannel.h"
@@ -150,7 +152,10 @@ void loadNedFile(const char *fname, bool isXML)
             // and replace existing one
             cModuleInterface *oldmodif = findModuleInterface(name);
             if (oldmodif)
+            {
+                ev.printf("Warning: replacing existing declaration for simple module type `%s'\n",name);
                 delete modinterfaces.instance()->remove(oldmodif);
+            }
             modinterfaces.instance()->add(modif);
         }
         else if (node->getTagCode()==NED_COMPOUND_MODULE)
@@ -164,7 +169,10 @@ void loadNedFile(const char *fname, bool isXML)
             // and replace existing one
             cModuleInterface *oldmodif = findModuleInterface(name);
             if (oldmodif)
+            {
+                ev.printf("Warning: replacing existing declaration for compound module type `%s'\n",name);
                 delete modinterfaces.instance()->remove(oldmodif);
+            }
             modinterfaces.instance()->add(modif);
 
             // replace existing registration object
@@ -185,7 +193,10 @@ void loadNedFile(const char *fname, bool isXML)
             // replace existing registration object
             cNetworkType *oldnetworktype = findNetwork(name);
             if (oldnetworktype)
+            {
+                ev.printf("Warning: replacing existing declaration for network `%s'\n",name);
                 delete networks.instance()->remove(oldnetworktype);
+            }
 
             // create dynamic network type object
             cNetworkType *networktype = new cDynamicNetworkType(name, networknode);
@@ -202,14 +213,18 @@ void loadNedFile(const char *fname, bool isXML)
             // and replace existing one
             cChannelType *oldchantype = findChannelType(name);
             if (oldchantype)
+            {
+                ev.printf("Warning: replacing existing declaration for channel type `%s'\n",name);
                 delete channeltypes.instance()->remove(oldchantype);
+            }
             channeltypes.instance()->add(chantype);
         }
         else
         {
+            opp_string tagname = node->getTagName();
             delete node;
             delete tree;
-            throw new cException("error loading `%s': unsupported element", fname);
+            throw new cException("Error loading `%s': unsupported element", tagname.c_str());
         }
     }
 
