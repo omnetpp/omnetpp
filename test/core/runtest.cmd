@@ -25,7 +25,7 @@ call opp_nmakemake %OPT% -f -e cc -u cmdenv || goto end
 nmake -f makefile.vc || cd .. && goto end
 cd .. || goto end
 
-call opp_test %OPT%-r -v %TESTFILES% || goto end
+call opp_test %OPT% -r -v %TESTFILES% || goto end
 
 echo.
 echo Results can be found in work/
