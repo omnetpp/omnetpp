@@ -94,8 +94,8 @@ proc createMenubar {w} {
       {command -command {selectAll} -label {Select all} -underline 7}
       {command -command {invertSelection} -label {Invert selection  *} -underline 0}
       {separator}
-      {command -command {vectorInfo} -label {Vector info...  F3} -underline 8}
-      {command -command {editVectorFilters} -label {Vector plotting options...  F4} -underline 7}
+      {command -command {vectorInfo} -label {Vector properties...  F3} -underline 8}
+      {command -command {editVectorFilters} -label {Pre-plot filtering...  F4} -underline 7}
       {separator}
       {command -command {replaceInTitles} -label {Find+Replace in titles...} -underline 5}
       {separator}
@@ -110,7 +110,7 @@ proc createMenubar {w} {
     # Options menu
     foreach i {
       {command -command editGeneralOptions -label {General...} -underline 0}
-      {command -command filterListDialog -label {Filter configuration...} -underline 0}
+      {command -command filterListDialog -label {Create/edit custom filters...} -underline 0}
       {separator}
       {command -command loadConfig -label {Load config...} -underline 5}
       {command -command saveConfig -label {Save config...} -underline 0}
@@ -280,8 +280,8 @@ proc createMainArea {w} {
     #
     menu .left_popup -tearoff 0
     foreach i {
-      {command -command {vectorInfo 1} -label {Info...  F3} -underline 0}
-      {command -command {editVectorFilters 1} -label {Plotting options...  F4} -underline 0}
+      {command -command {vectorInfo 1} -label {Properties...  F3} -underline 0}
+      {command -command {editVectorFilters 1} -label {Pre-plot filtering...  F4} -underline 0}
       {separator}
       {command -command {replaceInTitles 1} -label {Find+Replace in titles...} -underline 5}
       {separator}
@@ -297,8 +297,8 @@ proc createMainArea {w} {
     foreach i {
       {command -command {doPlot} -label {Plot selected  ENTER} -underline 0}
       {separator}
-      {command -command {vectorInfo 2} -label {Info...  F3} -underline 0}
-      {command -command {editVectorFilters 2} -label {Plotting options...  F4} -underline 0}
+      {command -command {vectorInfo 2} -label {Properties...  F3} -underline 0}
+      {command -command {editVectorFilters 2} -label {Pre-plot filtering...  F4} -underline 0}
       {separator}
       {command -command {replaceInTitles 2} -label {Find+Replace in titles...} -underline 5}
       {separator}
@@ -402,6 +402,8 @@ proc createMainWindow {{geom ""}} {
       {opt   -image $icons(info)     -command vectorInfo}
       {fil   -image $icons(plotopt)  -command editVectorFilters}
       {sep3  -separator}
+      {config -image $icons(config)  -command filterListDialog}
+      {sep4  -separator}
       {plot  -image $icons(plot)     -command doPlot}
     } {
       set b [eval iconbutton .toolbar.$i]
@@ -416,9 +418,10 @@ proc createMainWindow {{geom ""}} {
     set help_tips(.toolbar.sel)   {Select vectors by title}
     set help_tips(.toolbar.repl)  {Find/replace in vector titles}
     set help_tips(.toolbar.del)   {Remove selected vectors from panel}
-    set help_tips(.toolbar.opt)   {Vector info}
-    set help_tips(.toolbar.fil)   {Filters and plotting options for selected vectors}
+    set help_tips(.toolbar.opt)   {Properties of selected vectors}
+    set help_tips(.toolbar.fil)   {Pre-plot filtering of selected vectors}
     set help_tips(.toolbar.dup)   {Duplicate selected vectors}
+    set help_tips(.toolbar.config) {Create/edit custom filters}
     set help_tips(.toolbar.plot)  {Plot selected vectors in RIGHT panel}
 
 
