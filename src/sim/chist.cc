@@ -246,13 +246,13 @@ double cEqdHistogramBase::cell(int k)
 void cEqdHistogramBase::saveToFile(FILE *f)
 {
     cHistogramBase::saveToFile(f);
-    fprintf(f,"%lg\t #= cellsize\n", cellsize);
+    fprintf(f,"%g\t #= cellsize\n", cellsize);
 }
 
 void cEqdHistogramBase::loadFromFile(FILE *f)
 {
     cHistogramBase::loadFromFile(f);
-    freadvarsf(f,"%lg\t #= cellsize", &cellsize);
+    freadvarsf(f,"%g\t #= cellsize", &cellsize);
 }
 
 //=========================================================================

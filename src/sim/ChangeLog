@@ -823,5 +823,6 @@ Apr 10, 2000
    They are replaced by corresponding functions in cModule:
       int findSubmodule(const char *submodname, int idx=-1); // moduleID (or -1)
       cModule *submodule(const char *submodname, int idx=-1);
+ - in printf() statements, all "%lf","%lg","%le" was replaced by "%f","%g","%e"
 
 

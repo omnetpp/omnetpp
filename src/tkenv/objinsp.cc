@@ -144,7 +144,7 @@ void TInspector::setEntry( const char *entry, double d )
 {
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
    char buf[24];
-   sprintf(buf, "%lg", d );
+   sprintf(buf, "%g", d );
    CHK(Tcl_VarEval(interp, windowname,entry," delete 0 end;",
                            windowname,entry," insert 0 {",buf,"}",NULL));
 }
@@ -167,7 +167,7 @@ void TInspector::setLabel( const char *label, double d )
 {
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
    char buf[16];
-   sprintf(buf, "%lg", d );
+   sprintf(buf, "%g", d );
    CHK(Tcl_VarEval(interp, windowname,label," config -text {",buf,"}",NULL));
 }
 
@@ -407,7 +407,7 @@ void TWatchInspector::update()
                                  *(long *)p, *(long *)p, *(long *)p );
                     type = "long ";
                     break;
-         case 'd':  sprintf(val, "%lf",
+         case 'd':  sprintf(val, "%f",
                                  *(double *)p );
                     type = "double ";
                     break;
@@ -444,7 +444,7 @@ void TWatchInspector::writeBack()
          case 'c':  *(char *)p = s[1]; break;
          case 'i':  sscanf(s,"%d",p); break;
          case 'l':  sscanf(s,"%ld",p); break;
-         case 'd':  sscanf(s,"%lf",p); break;
+         case 'd':  sscanf(s,"%f",p); break;
          default:   CHK(Tcl_Eval(interp,"messagebox {Warning}"
                   " {You can only change char, int, long or double watches} info ok"));
    }

@@ -222,18 +222,18 @@ void cStdDev::saveToFile(FILE *f)
 {
     fprintf(f,"\n#\n# (%s) %s\n#\n", className(), fullPath());
     fprintf(f,"%ld\t #= num_samples\n",num_samples);
-    fprintf(f,"%lg %lg\t #= min, max\n", min_samples, max_samples);
-    fprintf(f,"%lg\t #= sum\n", sum_samples);
-    fprintf(f,"%lg\t #= square sum\n", sqrsum_samples );
+    fprintf(f,"%g %g\t #= min, max\n", min_samples, max_samples);
+    fprintf(f,"%g\t #= sum\n", sum_samples);
+    fprintf(f,"%g\t #= square sum\n", sqrsum_samples );
 }
 
 void cStdDev::loadFromFile(FILE *f)
 {
     freadvarsf(f,"");  freadvarsf(f,""); freadvarsf(f,""); freadvarsf(f,"");
     freadvarsf(f,"%ld\t #= num_samples",&num_samples);
-    freadvarsf(f,"%lg %lg\t #= min, max", &min_samples, &max_samples);
-    freadvarsf(f,"%lg\t #= sum", &sum_samples);
-    freadvarsf(f,"%lg\t #= square sum", &sqrsum_samples);
+    freadvarsf(f,"%g %g\t #= min, max", &min_samples, &max_samples);
+    freadvarsf(f,"%g\t #= sum", &sum_samples);
+    freadvarsf(f,"%g\t #= square sum", &sqrsum_samples);
 }
 
 //==========================================================================
@@ -282,11 +282,11 @@ double cWeightedStdDev::variance()
 void cWeightedStdDev::saveToFile(FILE *f)
 {
     cStdDev::saveToFile(f);
-    fprintf(f,"%lg\t #= sum_weights\n",sum_weights);
+    fprintf(f,"%g\t #= sum_weights\n",sum_weights);
 }
 
 void cWeightedStdDev::loadFromFile(FILE *f)
 {
     cStdDev::loadFromFile(f);
-    freadvarsf(f,"%lg\t #= sum_weights",&sum_weights);
+    freadvarsf(f,"%g\t #= sum_weights",&sum_weights);
 }

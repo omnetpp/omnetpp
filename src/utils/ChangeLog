@@ -97,3 +97,4 @@ Dec 5,1999
 ------ omnetpp-2.0b3 released ------
 Apr 10, 2000
  - TRUE/FALSE (defines) replaced by true/false (C++ keywords)
+

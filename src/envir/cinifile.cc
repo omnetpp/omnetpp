@@ -349,13 +349,13 @@ double cIniFile::getAsDouble(const char *sect, const char *ent, double defaultva
     if (s==0 || *s==0)
     {
        if (warnings)
-          ev.printf("Entry [%s]/%s= not in ini file, %lg used as default\n",
+          ev.printf("Entry [%s]/%s= not in ini file, %g used as default\n",
                      sect,ent,defaultval);
        return defaultval;
     }
 
     double val;
-    sscanf(s,"%lf",&val);
+    sscanf(s,"%f",&val);
     return val;
 }
 
@@ -379,7 +379,7 @@ double cIniFile::getAsTime(const char *sect, const char *ent, double defaultval)
     if (s==0)
     {
        if (warnings)
-          ev.printf("Entry [%s]/%s= not in ini file, %lg used as default\n",
+          ev.printf("Entry [%s]/%s= not in ini file, %g used as default\n",
                      sect,ent,defaultval);
        return defaultval;
     }
@@ -436,7 +436,7 @@ double cIniFile::getAsDouble2(const char *sect1, const char *sect2, const char *
          a = getAsDouble(sect2,key,defaultval);
     warnings = w;
     if (_error && warnings)
-         ev.printf("Ini file entry %s= not in [%s] or [%s], %lg used as default\n",
+         ev.printf("Ini file entry %s= not in [%s] or [%s], %g used as default\n",
                    key,sect1,sect2,defaultval);
     return a;
 }
@@ -462,7 +462,7 @@ double cIniFile::getAsTime2(const char *sect1, const char *sect2, const char *ke
          a = getAsTime(sect2,key,defaultval);
     warnings = w;
     if (_error && warnings)
-         ev.printf("Ini file entry %s= not in [%s] or [%s], %lg used as default\n",
+         ev.printf("Ini file entry %s= not in [%s] or [%s], %g used as default\n",
                    key,sect1,sect2,defaultval);
     return a;
 }

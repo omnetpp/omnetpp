@@ -345,3 +345,5 @@ April 4-10, 2000
    executable. (These functions do absolutely nothing.)
 Apr 10, 2000
  - TRUE/FALSE (defines) replaced by true/false (C++ keywords)
+ - in printf() statements, all "%lf","%lg","%le" was replaced by "%f","%g","%e"
+

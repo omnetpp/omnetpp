@@ -89,7 +89,7 @@ void HCSink::activity()
 
 #ifdef TRACE_MSG
         ev.printf("sink[%d]: Message received: '%s'\n", my_address, msg->name());
-        ev.printf("sink[%d]:   - end-to-end delay=%lg\n", my_address, eed);
+        ev.printf("sink[%d]:   - end-to-end delay=%g\n", my_address, eed);
         ev.printf("sink[%d]:   - distance=%d, actual hops=%d\n", my_address, minhops, acthops);
 #endif
 

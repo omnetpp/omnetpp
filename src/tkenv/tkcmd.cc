@@ -409,7 +409,7 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
    else if (0==strcmp(argv[1], "animation_msgcolors"))
       sprintf(interp->result,"%d", app->opt_animation_msgcolors);
    else if (0==strcmp(argv[1], "animation_speed"))
-      sprintf(interp->result,"%lg", app->opt_animation_speed);
+      sprintf(interp->result,"%g", app->opt_animation_speed);
    else if (0==strcmp(argv[1], "print_banners"))
       sprintf(interp->result,"%d", app->opt_print_banners);
    else if (0==strcmp(argv[1], "use_mainwindow"))
@@ -440,7 +440,7 @@ int setSimOption_cmd(ClientData, Tcl_Interp *, int argc, char **argv)
       app->opt_animation_msgcolors = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "animation_speed"))
    {
-      sscanf(argv[2],"%lg",&app->opt_animation_speed);
+      sscanf(argv[2],"%g",&app->opt_animation_speed);
       if (app->opt_animation_speed<0) app->opt_animation_speed=0;
       if (app->opt_animation_speed>3) app->opt_animation_speed=3;
    }

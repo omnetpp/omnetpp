@@ -159,7 +159,7 @@ void THistogramWindow::generalInfo( char *buf )
    if (!d->transformed())
        sprintf( buf, "(collecting initial values, N=%ld)", d->samples());
    else
-       sprintf( buf, "Histogram: (%lg...%lg)  N=%ld  #cells=%d",
+       sprintf( buf, "Histogram: (%g...%g)  N=%ld  #cells=%d",
                  d->basepoint(0), d->basepoint(d->cells()),
                  d->samples(),
                  d->cells()
@@ -172,7 +172,7 @@ void THistogramWindow::cellInfo( char *buf, int cell )
    double count = d->cell(cell);
    double cell_lower = d->basepoint(cell);
    double cell_upper = d->basepoint(cell+1);
-   sprintf( buf, "Cell #%d:  (%lg...%lg)  n=%lg  PDF=%lg",
+   sprintf( buf, "Cell #%d:  (%g...%g)  n=%g  PDF=%g",
                  cell,
                  cell_lower, cell_upper,
                  count,
@@ -332,7 +332,7 @@ void TOutVectorWindow::update()
 #define X(t)   (int)(canvaswidth-10-(tbase-(t))/tf)
 #define Y(y)   (int)(canvasheight-10-((y)-miny)*((long)canvasheight-20)/rangey)
 
-   //printf("cw=%d  ch=%d  tbase=%lf trange=%lf  miny=%lf  maxy=%lf rangey=%lf\n",
+   //printf("cw=%d  ch=%d  tbase=%f trange=%f  miny=%f  maxy=%f rangey=%f\n",
    //        canvaswidth, canvasheight,tbase,trange, miny, maxy, rangey);
 
    // delete previous drawing
@@ -462,10 +462,10 @@ void TOutVectorWindow::generalInfo( char *buf )
    int tuple = ((cOutVector *)object)->tuple;
    CircBuffer::CBEntry& p = circbuf.buf[ circbuf.head ];
    if (tuple==1)
-     sprintf(buf, "Last: t=%s  value=%lg",
+     sprintf(buf, "Last: t=%s  value=%g",
                    simtimeToStr(p.t), p.value1);
    else
-     sprintf(buf, "Last: t=%s  val1=%lg  val2=%lg",
+     sprintf(buf, "Last: t=%s  val1=%g  val2=%g",
                    simtimeToStr(p.t), p.value1, p.value2);
 }
 
@@ -474,16 +474,16 @@ void TOutVectorWindow::valueInfo( char *buf, int valueindex )
    int tuple = ((cOutVector *)object)->tuple;
    CircBuffer::CBEntry& p = circbuf.buf[ valueindex ];
    if (tuple==1)
-     sprintf(buf, "t=%s  value=%lg",
+     sprintf(buf, "t=%s  value=%g",
                   simtimeToStr(p.t), p.value1);
    else
-     sprintf(buf, "t=%s  val1=%lg  val2=%lg",
+     sprintf(buf, "t=%s  val1=%g  val2=%g",
                   simtimeToStr(p.t), p.value1, p.value2);
 }
 
 void TOutVectorWindow::getConfig( char *buf )
 {
-   sprintf(buf,"%lg %lg %lg %s", time_factor, miny, maxy, drawingmodes[drawing_mode] );
+   sprintf(buf,"%g %g %g %s", time_factor, miny, maxy, drawingmodes[drawing_mode] );
 }
 
 void TOutVectorWindow::setConfig( double timefac, double min_y, double max_y, char *mode )

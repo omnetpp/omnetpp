@@ -195,3 +195,6 @@ Mar 27, 2000
  - bugfix: conditional (?:) operator caused parse error [reported by Niko]
 Apr 10, 2000
  - in the C++ sources, TRUE/FALSE (defines) replaced by true/false (C++ keywords)
+ - in printf() statements, all "%lf","%lg","%le" was replaced by "%f","%g","%e"
+
+

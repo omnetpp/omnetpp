@@ -140,7 +140,7 @@ inline cEnvir& operator<< (cEnvir& ev, long l)
 inline cEnvir& operator<< (cEnvir& ev, unsigned long l)
   {ev.printf("%lu", l); return ev;}
 inline cEnvir& operator<< (cEnvir& ev, double d)
-  {ev.printf("%lg", d); return ev;}
+  {ev.printf("%g", d); return ev;}
 inline cEnvir& operator<< (cEnvir& ev, long double d)
   {ev.printf("%Lg", d); return ev;}
 

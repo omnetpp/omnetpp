@@ -164,7 +164,7 @@ void cOutVector::record(double value)
                   simulation.contextModule()->fullPath(), name()));
           initialised=true;
       }
-      CHECK(fprintf(f,"%ld\t%lg\t%lg\n",ID, t, value));
+      CHECK(fprintf(f,"%ld\t%g\t%g\n",ID, t, value));
    }
 
 }
@@ -192,7 +192,7 @@ void cOutVector::record(double value1, double value2)
          initialised=true;
       }
 
-      CHECK(fprintf(f,"%ld\t%lg\t%lg\t%lg\n",ID, t, value1, value2));
+      CHECK(fprintf(f,"%ld\t%g\t%g\t%g\n",ID, t, value1, value2));
    }
 
 }

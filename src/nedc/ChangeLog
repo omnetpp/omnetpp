@@ -263,3 +263,5 @@ Apr 5, 2000
    (without LF)  [reported by Roland Bless]
 Apr 10, 2000
  - TRUE/FALSE (defines) replaced by true/false (C++ keywords)
+ - in printf() statements, all "%lf","%lg","%le" was replaced by "%f","%g","%e"
+

@@ -45,7 +45,7 @@ static void clip_line_to_rect(
    // we'll clip the line to two edges of the rect: y=cy (horiz) and x=cx (vert)
    double cx,cy;
 
-   if (p1_inside && p2_inside) 
+   if (p1_inside && p2_inside)
    {
       cx = x1<x2 ? rx1 : rx2;
       cy = y1<y2 ? ry1 : ry2;
@@ -145,7 +145,7 @@ int arrowcoords(Tcl_Interp *interp, int argc, char **argv)
 
       // error checks
       if (!strchr("amnews",mode)) {
-          interp->result="mode must be one of (a,m,n,e,w,s)"; 
+          interp->result="mode must be one of (a,m,n,e,w,s)";
           return TCL_ERROR;
       }
 
@@ -363,7 +363,7 @@ int arrowcoords(Tcl_Interp *interp, int argc, char **argv)
          }
       }
 
-      sprintf(interp->result, "%lg %lg %lg %lg",
+      sprintf(interp->result, "%g %g %g %g",
                              src_x, src_y, dest_x, dest_y);
       return TCL_OK;
 }

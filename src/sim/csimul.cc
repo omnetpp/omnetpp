@@ -734,7 +734,7 @@ void cSimulation::recordScalar(const char *name, double value)
         fprintf(f,"run %d \"%s\"\n", run_number, networktype->name());
     }
 
-    fprintf(f,"scalar \"%s\" \t\"%s\" \t%lg\n",
+    fprintf(f,"scalar \"%s\" \t\"%s\" \t%g\n",
               contextSimpleModule()->fullPath(), name, value);
 }
 

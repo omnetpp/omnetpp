@@ -149,7 +149,7 @@ void cPar::info( char *buf )
                     sprintf(b,"\"%.40s...\" [truncated] (S)", s);
                   break;
         case 'L': sprintf(b,"%ld (L)",lng.val); break;
-        case 'D': sprintf(b,"%lg (D)",dbl.val); break;
+        case 'D': sprintf(b,"%g (D)",dbl.val); break;
         case 'X': sprintf(b,"expression"); break;
         case 'T': sprintf(b,"(%s) (T)", dtr.res ? dtr.res->fullPath():"nil"); break;
         case 'P': sprintf(b,"(%p) (P)", ptr.ptr); break;
@@ -158,9 +158,9 @@ void cPar::info( char *buf )
                   if (ff) fn=ff->name(); else fn="unknown";
                   switch(func.argc) {
                   case 0: sprintf(b,"%s() (F)",fn); break;
-                  case 1: sprintf(b,"%s(%lg) (F)",fn,func.p1); break;
-                  case 2: sprintf(b,"%s(%lg,%lg) (F)",fn,func.p1,func.p2); break;
-                  case 3: sprintf(b,"%s(%lg,%lg,%lg) (F)",fn,func.p1,func.p2,func.p3); break;
+                  case 1: sprintf(b,"%s(%g) (F)",fn,func.p1); break;
+                  case 2: sprintf(b,"%s(%g,%g) (F)",fn,func.p1,func.p2); break;
+                  case 3: sprintf(b,"%s(%g,%g,%g) (F)",fn,func.p1,func.p2,func.p3); break;
                   };
                   break;
         case 'B': sprintf(b,"%s (B)", lng.val?"true":"false"); break;
@@ -682,14 +682,14 @@ void cPar::getAsText(char *buf, int maxlen)
                  break;
        case 'B': strcpy(bb,lng.val?"true":"false"); break;
        case 'L': sprintf( bb,"%ld",lng.val); break;
-       case 'D': sprintf( bb,"%lg",dbl.val); break;
+       case 'D': sprintf( bb,"%g",dbl.val); break;
        case 'F': ff = findfunctionbyptr(func.f);
                  if (ff) fn=ff->name(); else fn="unknown";
                  switch(func.argc) {
                  case 0: sprintf(bb,"%s()",fn); break;
-                 case 1: sprintf(bb,"%s(%lg)",fn,func.p1); break;
-                 case 2: sprintf(bb,"%s(%lg,%lg)",fn,func.p1,func.p2); break;
-                 case 3: sprintf(bb,"%s(%lg,%lg,%lg)",fn,func.p1,func.p2,func.p3); break;
+                 case 1: sprintf(bb,"%s(%g)",fn,func.p1); break;
+                 case 2: sprintf(bb,"%s(%g,%g)",fn,func.p1,func.p2); break;
+                 case 3: sprintf(bb,"%s(%g,%g,%g)",fn,func.p1,func.p2,func.p3); break;
                  };
                  break;
        case 'T': sprintf(bb,"distribution %.99s", dtr.res ? dtr.res->fullPath():"nil"); break;
@@ -770,7 +770,7 @@ bool cPar::setFromText(const char *text, char tp)
     {
         double num;
         unsigned len;
-        if (0==sscanf(tmp,"%lf%n",&num,&len)) goto error;
+        if (0==sscanf(tmp,"%f%n",&num,&len)) goto error;
         if (len<strlen(tmp) || !strchr("?D",tp)) goto error;
         setDoubleValue(num);
     }
@@ -1182,7 +1182,7 @@ void cModulePar::valueChanges()
             //   by the destructor.
             char value[128];
             getAsText(value,127);
-            CHECK(fprintf(f,"%ld\t%lg\t%s\n",log_ID, lastchange, value));
+            CHECK(fprintf(f,"%ld\t%g\t%s\n",log_ID, lastchange, value));
         }
         lastchange = simulation.simTime();
     }

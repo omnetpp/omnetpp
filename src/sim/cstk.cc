@@ -76,7 +76,7 @@ int matherr(struct MATH_EXCEPTION *e)
         case TLOSS:     err="Total loss of prec."; break;
         default:        err="Unknown error";
       }
-      opp_error("Math error in %s(%lg [,%lg]): %s",
+      opp_error("Math error in %s(%g [,%g]): %s",
                       e->name, e->arg1, e->arg2, err);
       e->retval = 0.0;
       return 1;

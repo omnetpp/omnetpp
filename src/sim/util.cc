@@ -283,7 +283,7 @@ char *simtimeToStr(simtime_t t, char *buf)
    //       Always has (at least) 8 significant digits
    //   b)  Time expressed in units such as us,ns,ms,s,m,h,d.
    //       The numbers in this field are truncated.
-   // Conversion method (%lf or %le) and lengths were chosen to
+   // Conversion method (%f or %e) and lengths were chosen to
    // minimize fluctuations in total string length.
    // Result is typically 19,20 or 22 chars long.
 
@@ -374,7 +374,7 @@ simtime_t strToSimtime0(const char *&str)
           double num;
           int len;
           while (*str==' ' || *str=='\t') str++;
-          if (0==sscanf(str, "%lf%n", &num, &len)) break; // break if error
+          if (0==sscanf(str, "%f%n", &num, &len)) break; // break if error
           str+=len;
 
           // process time unit: d,h,m,s,ms,us,ns
@@ -462,7 +462,7 @@ char *indexedname(char *dest, const char *name, int index)
 int opp_vsscanf(const char *s, const char *fmt, va_list va)
 {
     // A simplified vsscanf implementation, solely for cStatistic::freadvarsf.
-    // Only recognizes %d, %u, %ld, %lg and whitespace. '#' terminates scanning
+    // Only recognizes %d, %u, %ld, %g and whitespace. '#' terminates scanning
 
     int k=0;
     while (1)
@@ -492,7 +492,7 @@ int opp_vsscanf(const char *s, const char *fmt, va_list va)
             }
             else if (fmt[1]=='l' && fmt[2]=='g')
             {
-                k+=sscanf(s,"%lg%n",va_arg(va,double*),&n);
+                k+=sscanf(s,"%g%n",va_arg(va,double*),&n);
                 s+=n; fmt+=3;
             }
             else

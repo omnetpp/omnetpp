@@ -565,9 +565,9 @@ char *do_timeconstant(char *num, char *unit, char *rest)
         adderr;
     }
     if (rest)
-          sprintf(temp_res, "%lg", atof(num)*mult + atof(rest) );
+          sprintf(temp_res, "%g", atof(num)*mult + atof(rest) );
     else
-          sprintf(temp_res, "%lg", atof(num)*mult );
+          sprintf(temp_res, "%g", atof(num)*mult );
 
     jar_free(num);
     jar_free(unit);

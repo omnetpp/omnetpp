@@ -268,13 +268,13 @@ void cDensityEstBase::saveToFile(FILE *f)
 
    fprintf(f,"%d\t #= transformed\n",transfd);
    fprintf(f,"%d\t #= range_mode\n",range_mode);
-   fprintf(f,"%lg\t #= range_ext_factor\n",range_ext_factor);
-   fprintf(f,"%lg %lg\t #= range\n",rangemin,rangemax);
+   fprintf(f,"%g\t #= range_ext_factor\n",range_ext_factor);
+   fprintf(f,"%g %g\t #= range\n",rangemin,rangemax);
    fprintf(f,"%lu %lu\t #= cell_under, cell_over\n",cell_under,cell_over);
    fprintf(f,"%ld\t #= num_firstvals\n",num_firstvals);
 
    fprintf(f,"%d\t #= firstvals[] exists\n",firstvals!=NULL);
-   if (firstvals) for (int i=0; i<num_firstvals; i++) fprintf(f," %lg\n",firstvals[i]);
+   if (firstvals) for (int i=0; i<num_firstvals; i++) fprintf(f," %g\n",firstvals[i]);
 }
 
 void cDensityEstBase::loadFromFile(FILE *f)
@@ -283,8 +283,8 @@ void cDensityEstBase::loadFromFile(FILE *f)
 
    freadvarsf(f,"%d\t #= transformed",&transfd);
    freadvarsf(f,"%d\t #= range_mode",&range_mode);
-   freadvarsf(f,"%lg\t #= range_ext_factor",&range_ext_factor);
-   freadvarsf(f,"%lg %lg\t #= range",&rangemin,&rangemax);
+   freadvarsf(f,"%g\t #= range_ext_factor",&range_ext_factor);
+   freadvarsf(f,"%g %g\t #= range",&rangemin,&rangemax);
    freadvarsf(f,"%lu %lu\t #= cell_under, cell_over",&cell_under,&cell_over);
    freadvarsf(f,"%ld\t #= num_firstvals",&num_firstvals);
 
@@ -294,6 +294,6 @@ void cDensityEstBase::loadFromFile(FILE *f)
    if (firstvals_exists)
    {
       firstvals = new double[ num_firstvals ];
-      for (int i=0; i<num_firstvals; i++) freadvarsf(f," %lg",firstvals+i);
+      for (int i=0; i<num_firstvals; i++) freadvarsf(f," %g",firstvals+i);
    }
 }

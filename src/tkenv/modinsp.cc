@@ -291,7 +291,7 @@ int TGraphicalModWindow::inspectorCommand(Tcl_Interp *interp, int argc, char **a
       if (par.type()=='S')
         interp->result = CONST_CAST(par.stringValue());
       else
-        sprintf(interp->result, "%lg", par.doubleValue());
+        sprintf(interp->result, "%g", par.doubleValue());
 
       return TCL_OK;
    }

@@ -342,7 +342,7 @@ void cPSquare::saveToFile(FILE *f)
    for (i=0; i<numcells+2; i++)  fprintf(f," %d\n",n[i]);
 
    fprintf(f,"#= q[]\n");
-   for (i=0; i<numcells+2; i++)  fprintf(f," %lg\n",q[i]);
+   for (i=0; i<numcells+2; i++)  fprintf(f," %g\n",q[i]);
 }
 
 void cPSquare::loadFromFile(FILE *f)
@@ -357,6 +357,6 @@ void cPSquare::loadFromFile(FILE *f)
    for (i=0; i<numcells+2; i++)  freadvarsf(f," %d",n+i);
 
    freadvarsf(f,"#= q[]");
-   for (i=0; i<numcells+2; i++)  freadvarsf(f," %lg",q+i);
+   for (i=0; i<numcells+2; i++)  freadvarsf(f," %g",q+i);
 }
 

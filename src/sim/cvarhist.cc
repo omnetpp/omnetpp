@@ -416,7 +416,7 @@ void cVarHistogram::saveToFile(FILE *f) //--LG
    fprintf(f,"%u\t #= max_num_cells\n", max_num_cells);
 
    fprintf(f,"%d\t #= bin_bounds[] exists\n", bin_bounds!=NULL);
-   if (bin_bounds) for (int i=0; i<max_num_cells+1; i++) fprintf(f," %lg\n",bin_bounds[i]);
+   if (bin_bounds) for (int i=0; i<max_num_cells+1; i++) fprintf(f," %g\n",bin_bounds[i]);
 }
 
 void cVarHistogram::loadFromFile(FILE *f)
@@ -440,7 +440,7 @@ void cVarHistogram::loadFromFile(FILE *f)
    if (binbounds_exists)
    {
       bin_bounds = new double[max_num_cells+1];
-      for (int i=0; i<max_num_cells+1; i++) freadvarsf(f," %lg",bin_bounds+i);
+      for (int i=0; i<max_num_cells+1; i++) freadvarsf(f," %g",bin_bounds+i);
    }
 }
 

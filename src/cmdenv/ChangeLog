@@ -119,3 +119,5 @@ April 6-10, 2000
    Envir in order to force the linker to include the Cmdenv library into the
    executable. (These functions do absolutely nothing.)
  - TRUE/FALSE (defines) replaced by true/false (C++ keywords)
+ - in printf() statements, all "%lf","%lg","%le" was replaced by "%f","%g","%e"
+

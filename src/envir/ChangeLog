@@ -244,4 +244,5 @@ April 6-10, 2000
    the constructor and the setup() function of TOmnetApp was reorganized.
 Apr 10, 2000
  - TRUE/FALSE (defines) replaced by true/false (C++ keywords)
+ - in printf() statements, all "%lf","%lg","%le" was replaced by "%f","%g","%e"
 
