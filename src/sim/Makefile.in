@@ -13,7 +13,7 @@ OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
 OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
 OMNETPP_VERSION=@OMNETPP_VERSION@
 
-PVM_INCL_DIR=@PVM_INCL_DIR@
+PVM_CFLAGS=@PVM_CFLAGS@
 
 # LIB_SUFFIX is either A_LIB_SUFFIX or SO_LIB_SUFFIX
 LIB_SUFFIX=@LIB_SUFFIX@
@@ -160,10 +160,10 @@ std/netpack.o : std/netpack.cc
 	$(CXX) -c $(COPTS) std/netpack.cc -o std/netpack.o
 
 pvm/pvmpack.o : pvm/pvmpack.cc
-	$(CXX) -c $(COPTS) -I$(PVM_INCL_DIR) pvm/pvmpack.cc -o pvm/pvmpack.o
+	$(CXX) -c $(COPTS) $(PVM_CFLAGS) pvm/pvmpack.cc -o pvm/pvmpack.o
 
 pvm/pvmmod.o : pvm/pvmmod.cc
-	$(CXX) -c $(COPTS) -I$(PVM_INCL_DIR) pvm/pvmmod.cc -o pvm/pvmmod.o
+	$(CXX) -c $(COPTS) $(PVM_CFLAGS) pvm/pvmmod.cc -o pvm/pvmmod.o
 
 missing-library:
 	@ echo '  *** No PVM installation found -- skipping sim_pvm'

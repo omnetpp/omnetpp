@@ -135,10 +135,10 @@ std\netpack.obj : std\netpack.cc
 	$(CXX) /Fo"std\netpack.obj" $(COPTS) /c /Tp std\netpack.cc
 
 pvm\pvmpack.obj : pvm\pvmpack.cc
-	$(CXX)  /I "$(PVM_INCL_DIR)" /Fo"pvm\pvmpack.obj" $(COPTS) /c /Tp pvm\pvmpack.cc
+	$(CXX) $(PVM_CFLAGS) /Fo"pvm\pvmpack.obj" $(COPTS) /c /Tp pvm\pvmpack.cc
 
 pvm\pvmmod.obj : pvm\pvmmod.cc
-	$(CXX) /I "$(PVM_INCL_DIR)" /Fo"pvm\pvmmod.obj" $(COPTS) /c /Tp pvm\pvmmod.cc
+	$(CXX) $(PVM_CFLAGS) /Fo"pvm\pvmmod.obj" $(COPTS) /c /Tp pvm\pvmmod.cc
 
 missing-library:
 	@ echo *** No PVM installation found -- skipping sim_pvm
