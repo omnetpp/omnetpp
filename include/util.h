@@ -40,131 +40,367 @@
 #define mystrmatch       opp_strmatch
 #define fastconcat       opp_concat
 
-//
-// Conversion between simtime_t (=double) and strings like "1s 34ms"
-//
-// strToSimtime():
-//  Returns -1 if the whole string cannot be interpreted as time.
-//  Empty string (or spaces+tabs) is also an error.
-//  E.g.  "3s 600ms x" --> returns -1.
-//
+/**
+ * @name Converting simulation time to and from string form.
+ */
+//@{
+
+/**
+ * Convert a string to simtime_t. The string should have a format
+ * similar to the one output by simtimeToStr() (like "1s 34ms").
+ *
+ * Returns -1 if the whole string cannot be interpreted as time.
+ * Empty string (or only spaces+tabs) is also an error.
+ * E.g. strtoSimtime("3s 600ms x") will return -1.
+ */
 SIM_API simtime_t strToSimtime(const char *str);
 
-//
-// strToSimtime0():
-//  Returns time and sets string ptr to terminating zero or to the first
-//  character which cannot be interpreted as part of the time string.
-//  Empty string is accepted as 0.0.
-//  E.g.  "3s 600ms x" --> returns 3.6 and str will point to 'x'.
-//
+/**
+ * Convert the beginning of a string to simtime_t. Similar to
+ * strToSimtime(), only it processes the string as far as it
+ * can be interpreted as simulation time. It sets the pointer
+ * passed to the first character which cannot be interpreted
+ * as part of the time string, or to the terminating zero.
+ * Empty string is accepted as 0.0.
+ * E.g. strToSimtime0("3s 600ms x") will return 3.6 and the
+ * pointerstr will point to the character 'x'.
+ */
 SIM_API simtime_t strToSimtime0(const char *&str);
 
-//
-// simtimeToStr():
-//  Converts sim. time into a string like "0.0120000 (12ms)"
-//  If no dest ptr is given, uses a static buffer.
-//
+/**
+ * Converts simulation time (passed as simtime_t) into a
+ * string like "0.0120000 (12ms)". If no destination pointer
+ * is given, uses a static buffer.
+ */
 SIM_API char *simtimeToStr(simtime_t t, char *dest=NULL);
+//@}
 
-// equal():
-//  Tests equality of two doubles, with the given precision.
-//
-inline bool equal(double a, double b, double epsilon);
 
-//
-// random number generation (they use generator 0)
-//
-SIM_API void opp_randomize();         // init random number gen. with a random value
-SIM_API long randseed();              // returns current seed
-SIM_API long randseed(long seed);     // sets rndseed and returns old one
-SIM_API int testrand();               // returns 1 if OK; keeps seed intact
-SIM_API long intrand();               // in range 1..INTRAND_MAX
-SIM_API long intrand(long r);         // in range 0..r-1  (OK if r<<INTRAND_MAX)
-inline  double dblrand();             // in range 0.0..1.0
+/**
+ * @name Random number generation.
+ *
+ * OMNeT++ has a built-in pseudorandom number generator that gives long int
+ * (32-bit) values in the range 1...2^31-2, with a period length of 2^31-2.
+ *
+ * The generator is a linear congruential generator (LCG), and uses the method
+ * x=(x * 75) mod (2^31-1). The testrand() method can be used
+ * to check if the generator works correctly. Required hardware is exactly
+ * 32-bit integer arithmetics.
+ *
+ * OMNeT++ provides several independent random number generators
+ * (by default 32; this number is #defined as NUM_RANDOM_GENERATORS in
+ * utils.h), identified by numbers. The generator number is usually the gen_nr
+ * argument to functions beginning with genk_.
+ *
+ * Source: Raj Jain: The Art of Computer Systems Performance Analysis
+ * (John Wiley & Sons, 1991), pages 441-444, 455.
+ */
+//@{
 
-//
-// another set of random number functions (using generator gen_nr)
-//
+/**
+ * Returns 1 if the random generator works OK. Keeps seed intact.
+ * It works by checking the following: starting with x[0]=1,
+ * x[10000]=1,043,618,065 must hold.
+ */
+SIM_API int testrand();
+
+/**
+ * Initialize random number generator 0 with a random value.
+ */
+
+SIM_API void opp_randomize();
+
+/**
+ * Returns current seed of generator 0.
+ */
+SIM_API long randseed();
+
+/**
+ * Sets seed of generator 0 and returns old seed value. Zero is not allowed as a seed.
+ */
+SIM_API long randseed(long seed);
+
+/**
+ * Produces random integer in the range 1...INTRAND_MAX using generator 0.
+ */
+SIM_API long intrand();
+
+/**
+ * Produces random integer in range 0...r-1 using generator 0.  (Assumes r &lt;&lt; INTRAND_MAX.)
+ */
+SIM_API long intrand(long r);
+
+/**
+ * Produces random double in range 0.0...1.0 using generator 0.
+ */
+inline  double dblrand();
+
+/**
+ * Initialize random number generator gen_nr with a random value.
+ */
 SIM_API void genk_opp_randomize(int gen_nr);
-SIM_API long genk_randseed(int gen_nr);
-SIM_API long genk_randseed(int gen_nr, long seed);
-SIM_API long genk_intrand(int gen_nr);
-SIM_API long genk_intrand(int gen_nr,long r);
-inline  double genk_dblrand(int gen_nr);
 
-//
-// distributions
-//
-// Argument types and return value must be `double' so that they can be used
-// in NED files, and cPar 'F' and 'X' types.
-//
+/**
+ * Returns current seed of generator gen_nr.
+ */
+SIM_API long genk_randseed(int gen_nr);
+
+/**
+ * Sets seed of generator gen_nr and returns old seed value. Zero is not allowed as a seed.
+ */
+SIM_API long genk_randseed(int gen_nr, long seed);
+
+/**
+ * Produces random integer in the range 1...INTRAND_MAX using generator gen_nr.
+ */
+SIM_API long genk_intrand(int gen_nr);
+
+/**
+ * Produces random integer in range 0...r-1 using generator gen_nr. (Assumes r &lt;&lt; INTRAND_MAX.)
+ */
+SIM_API long genk_intrand(int gen_nr,long r);
+
+/**
+ * Produces random double in range 0.0...1.0 using generator gen_nr.
+ */
+inline  double genk_dblrand(int gen_nr);
+//@}
+
+
+/**
+ * @name Distributions.
+ *
+ * Argument types and return value must be `double' so that they can be used
+ * in NED files, and cPar 'F' and 'X' types.
+ */
+//@{
+
+/**
+ *
+ */
 SIM_API double uniform(double a, double b);
+
+/**
+ *
+ */
 SIM_API double intuniform(double a, double b);
+
+/**
+ *
+ */
 SIM_API double exponential(double p);
+
+/**
+ *
+ */
 SIM_API double normal(double m, double d);
+
+/**
+ *
+ */
 SIM_API double truncnormal(double m, double d);
 
+
+/**
+ * Same as the function without the genk_ prefix, only uses random generator
+ * gen_nr instead of generator 0.
+ */
 SIM_API double genk_uniform(double gen_nr, double a, double b);
+
+/**
+ * Same as the function without the genk_ prefix, only uses random generator
+ * gen_nr instead of generator 0.
+ */
 SIM_API double genk_intuniform(double gen_nr, double a, double b);
+
+/**
+ * Same as the function without the genk_ prefix, only uses random generator
+ * gen_nr instead of generator 0.
+ */
 SIM_API double genk_exponential(double gen_nr, double p);
+
+/**
+ * Same as the function without the genk_ prefix, only uses random generator
+ * gen_nr instead of generator 0.
+ */
 SIM_API double genk_normal(double gen_nr, double m, double d);
+
+/**
+ * Same as the function without the genk_ prefix, only uses random generator
+ * gen_nr instead of generator 0.
+ */
 SIM_API double genk_truncnormal(double gen_nr, double m, double d);
+//@}
 
-//
-// utility functions to support nedc-compiled expressions
-//
+
+/**
+ * Utility functions to support nedc-compiled expressions.
+ */
+//@{
+
+/**
+ *
+ */
 SIM_API double min(double a, double b);
+
+/**
+ *
+ */
 SIM_API double max(double a, double b);
+
+/**
+ *
+ */
 SIM_API double bool_and(double a, double b);
+
+/**
+ *
+ */
 SIM_API double bool_or(double a, double b);
+
+/**
+ *
+ */
 SIM_API double bool_xor(double a, double b);
+
+/**
+ *
+ */
 SIM_API double bool_not(double a);
+
+/**
+ *
+ */
 SIM_API double bin_and(double a, double b);
+
+/**
+ *
+ */
 SIM_API double bin_or(double a, double b);
+
+/**
+ *
+ */
 SIM_API double bin_xor(double a, double b);
+
+/**
+ *
+ */
 SIM_API double bin_compl(double a);
+
+/**
+ *
+ */
 SIM_API double shift_left(double a, double b);
+
+/**
+ *
+ */
 SIM_API double shift_right(double a, double b);
+//@}
 
 
-//
-// Value-added string functions.
-//
-//  They also accept NULL pointers (treat them as ptr to "") and use
-//  operator new instead of malloc().
-//
+/**
+ * Value-added string functions.
+ *
+ *  They also accept NULL pointers (treat them as ptr to "") and use
+ *  operator new instead of malloc().
+ */
+//@{
+
+/**
+ *
+ */
 SIM_API char *opp_strdup(const char *);
-SIM_API char *opp_strcpy(char *,const char *);
-SIM_API int  opp_strcmp(const char *, const char *);
-SIM_API bool opp_strmatch(const char *, const char *);
 
-// Fast string manipulation functions.
-// fastconcat() returns a pointer to a static buffer of length 256
+/**
+ *
+ */
+SIM_API char *opp_strcpy(char *,const char *);
+
+/**
+ *
+ */
+SIM_API int  opp_strcmp(const char *, const char *);
+
+/**
+ *
+ */
+SIM_API bool opp_strmatch(const char *, const char *);
+//@}
+
+/**
+ * @name Miscellaneous functions.
+ */
+//@{
+
+/**
+ * Concatentates up to four strings. Returns a pointer to a static buffer of length 256.
+ */
 SIM_API char *opp_concat(const char *s1, const char *s2, const char *s3=NULL, const char *s4=NULL);
 
-// indexedname() creates a string like "component[35]" into buf, the first argument.
+/**
+ * Creates a string like "component[35]" into buf, the first argument.
+ */
 SIM_API char *indexedname(char *buf, const char *name, int index);
 
-// correct(): correct NULL pointer to "" (ptr to a null string)
+/**
+ * Correct NULL pointer to "" (ptr to a null string).
+ */
 inline const char *correct(const char *);
 
-// opp_vsscanf(): a restricted vsscanf implementation used by cStatistic::freadvarsf()
+/**
+ * Tests equality of two doubles, with the given precision.
+ */
+inline bool equal(double a, double b, double epsilon);
+//@}
+
+//
+// INTERNAL: a restricted vsscanf implementation used by cStatistic::freadvarsf()
+//
 SIM_API int opp_vsscanf(const char *s, const char *fmt, va_list va);
 
-//
-// Error handling
-//
-// The functions call simulation.error()/warning(). These functions were
-// introduced so that not every class that wants to issue an error message
-// needs to include "csimul.h" and half the simulation kernel with it.
-//
-SIM_API void opp_error(int errcode,...);         // general error handler
-SIM_API void opp_error(const char *msg,...);     // same w/ custom message
-SIM_API void opp_warning(int errcode,...);       // message + question:continue/abort?
-SIM_API void opp_warning(const char *msg,...);   // same w/ custom message
-SIM_API void opp_terminate(int errcode,...);     // print message and set error number
-SIM_API void opp_terminate(const char *msg,...); // same w/ custom message
+/**
+ * Error handling to be used in new classes. The functions call
+ * simulation.error()/warning(). These functions were introduced so
+ * that not every class that wants to issue an error message
+ * needs to include "csimul.h" and half the simulation kernel with it.
+ */
+//@{
 
+/**
+ * Terminates the simulation with an error message.
+ */
+SIM_API void opp_error(int errcode,...);
+
+/**
+ * Same as function with the same name, but using custom message string.
+ * To be called like printf().
+ */
+SIM_API void opp_error(const char *msg,...);
+
+/**
+ * Message + question: continue or abort?
+ */
+SIM_API void opp_warning(int errcode,...);
+
+/**
+ * Same as function with the same name, but using custom message string.
+ * To be called like printf().
+ */
+SIM_API void opp_warning(const char *msg,...);
+
+/**
+ * Print message and set error number.
+ */
+SIM_API void opp_terminate(int errcode,...);
+
+/**
+ * Same as function with the same name, but using custom message string.
+ * To be called like printf().
+ */
+SIM_API void opp_terminate(const char *msg,...);
+//@}
 
 /**
  * Very simple string class. opp_string has only one data member,
@@ -225,7 +461,7 @@ class SIM_API opp_string
 };
 
 //==========================================================================
-//=== utility functions:
+//=== Implementation of utility functions:
 
 inline bool equal(double a, double b, double epsilon)
 {
@@ -249,3 +485,5 @@ inline double genk_dblrand(int gen_nr)
 }
 
 #endif
+
+

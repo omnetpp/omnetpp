@@ -1,3 +1,14 @@
+2001-06-28  Andras Varga
+        
+	* utils.h: added DOC++ comments (not yet complete!).
+
+	* cstruct.h added: classes to support self-describing data structures,
+        to be used for implementing message subclassing. UNTESTED. To be added
+        to the makefile.
+
+        * cenum.h added: classes to support string mapping of enums. UNTESTED.
+        To be added to the makefile.
+
 2001-06-23  Andras Varga
 
        	* cobject.h: cleaned up DOC++ comments
