@@ -128,8 +128,35 @@ print CC "#include <iostream>\n";
 print CC "#include <sstream>\n";
 print CC "#include \"$hfile\"\n\n";
 
+print CC "#ifndef MSGC_TEMPLATES_DECLARED\n";
+print CC "#define MSGC_TEMPLATES_DECLARED\n";
+print CC "\n";
 print CC "// Template rule which fires if a struct or class doesn't have operator<<\n";
-print CC "template<typename T> std::ostream& operator<<(std::ostream& out,const T&) {return out;}\n\n";
+print CC "template<typename T>\n";
+print CC "std::ostream& operator<<(std::ostream& out,const T&) {return out;}\n";
+print CC "\n";
+print CC "// Another default rule (prevents compiler from choosing base class' doPacking())\n";
+print CC "template<typename T>\n";
+print CC "void doPacking(cCommBuffer *, T& t) {\n";
+print CC "    throw new cException(\"parallel simulation error: no doPacking() function for type %s\",opp_typename(typeid(t)));\n";
+print CC "}\n";
+print CC "template<typename T>\n";
+print CC "void doUnpacking(cCommBuffer *, T& t) {\n";
+print CC "    throw new cException(\"parallel simulation error: no doUnpacking() function for type %s\",opp_typename(typeid(t)));\n";
+print CC "}\n";
+print CC "\n";
+print CC "// Automatically supply array (un)packing functions\n";
+print CC "template<typename T>\n";
+print CC "void doPacking(cCommBuffer *b, T *t, int n) {\n";
+print CC "    for (int i=0; i<n; i++)\n";
+print CC "        doPacking(b,t[i]);\n";
+print CC "}\n";
+print CC "template<typename T>\n";
+print CC "void doUnpacking(cCommBuffer *b, T *t, int n) {\n";
+print CC "    for (int i=0; i<n; i++)\n";
+print CC "        doUnpacking(b,t[i]);\n";
+print CC "}\n";
+print CC "#endif\n\n";
 
 # pre-register some OMNeT++ classes so that one doesn't need to announce them
 @classes = ('cPolymorphic', 'cObject', 'cMessage', 'cPacket');
@@ -904,6 +931,16 @@ sub generateClass
     }
 
     if ($classtype eq "cobject") {
+        if (!$gap) {
+            print H "inline void doPacking(cCommBuffer *b, $realmsgclass& obj) {obj.netPack(b);}\n";
+            print H "inline void doUnpacking(cCommBuffer *b, $realmsgclass& obj) {obj.netUnpack(b);}\n\n";
+        }
+    } else {
+        print H "void doPacking(cCommBuffer *b, $realmsgclass& obj);\n";
+        print H "void doUnpacking(cCommBuffer *b, $realmsgclass& obj);\n\n";
+    }
+
+    if ($classtype eq "cobject") {
         if ($keyword eq "message") {
             # CAREFUL when assigning values to existing members gets implemented!
             # The msg kind passed to the ctor should take priority!!!
@@ -1046,6 +1083,8 @@ sub generateClass
     if ($classtype eq "cobject") {
         print CC "void $msgclass\:\:netPack(cCommBuffer *b)\n";
         print CC "{\n";
+        #FIXME todo: pack base class
+        #FIXME todo: doPacking() for structs/noncobjects
         foreach $fieldname (@fieldlist)
         {
             if (!$fisabstract{$fieldname}) {
@@ -1060,14 +1099,22 @@ sub generateClass
                     }
                 } else {
                     # $fkind='struct', $classtype='struct'/'noncobject'/'cobject'
-                    #FIXME todo
-                    print CC "    throw new cException(this, \"Serialization for class/struct field `$fieldname' not yet supported by opp_msgc\");\n";
+                    if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
+                        print CC "    doPacking(b,this->$var{$fieldname},$farraysize{$fieldname});\n";
+                    } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
+                        print CC "    b->pack($varsize{$fieldname});\n";
+                        print CC "    doPacking(b,this->$var{$fieldname},$varsize{$fieldname});\n";
+                    } else {
+                        print CC "    doPacking(b,this->$var{$fieldname});\n";
+                    }
                 }
             }
         }
         print CC "}\n\n";
         print CC "void $msgclass\:\:netUnpack(cCommBuffer *b)\n";
         print CC "{\n";
+        #FIXME todo: unpack base class
+        #FIXME todo: doUnpacking() for structs/noncobjects
         foreach $fieldname (@fieldlist)
         {
             if (!$fisabstract{$fieldname}) {
@@ -1077,15 +1124,31 @@ sub generateClass
                     } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
                         print CC "    delete [] this->$var{$fieldname};\n";
                         print CC "    b->unpack($varsize{$fieldname});\n";
-                        print CC "    this->$var{$fieldname} = new $datatype{$fieldname}\[$varsize{$fieldname}\];\n";
-                        print CC "    b->unpack(this->$var{$fieldname},$varsize{$fieldname});\n";
+                        print CC "    if ($varsize{$fieldname}==0) {\n";
+                        print CC "        this->$var{$fieldname} = 0;\n";
+                        print CC "    } else {\n";
+                        print CC "        this->$var{$fieldname} = new $datatype{$fieldname}\[$varsize{$fieldname}\];\n";
+                        print CC "        b->unpack(this->$var{$fieldname},$varsize{$fieldname});\n";
+                        print CC "    }\n";
                     } else {
                         print CC "    b->unpack(this->$var{$fieldname});\n";
                     }
                 } else {
                     # $fkind='struct', $classtype='struct'/'noncobject'/'cobject'
-                    #FIXME todo
-                    print CC "    throw new cException(this, \"Deserialization for class/struct field `$fieldname' not yet supported by opp_msgc\");\n";
+                    if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
+                        print CC "    doUnpacking(b,this->$var{$fieldname},$farraysize{$fieldname});\n";
+                    } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
+                        print CC "    delete [] this->$var{$fieldname};\n";
+                        print CC "    b->unpack($varsize{$fieldname});\n";
+                        print CC "    if ($varsize{$fieldname}==0) {\n";
+                        print CC "        this->$var{$fieldname} = 0;\n";
+                        print CC "    } else {\n";
+                        print CC "        this->$var{$fieldname} = new $datatype{$fieldname}\[$varsize{$fieldname}\];\n";
+                        print CC "        doUnpacking(b,this->$var{$fieldname},$varsize{$fieldname});\n";
+                        print CC "    }\n";
+                    } else {
+                        print CC "    doUnpacking(b,this->$var{$fieldname});\n";
+                    }
                 }
             }
         }
@@ -1118,6 +1181,7 @@ sub generateClass
             } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
                 print CC "void $msgclass\:\:$alloc{$fieldname}(unsigned int size)\n";
                 print CC "{\n";
+                #FIXME set null pointer if size==0 (it's not done automatically by C++!); check other places for same bug!
                 print CC "    $datatype{$fieldname} *$var{$fieldname}2 = new $datatype{$fieldname}\[size\];\n";
                 print CC "    unsigned int sz = $varsize{$fieldname} < size ? $varsize{$fieldname} : size;\n";
                 print CC "    unsigned int i;\n";
