@@ -121,3 +121,4 @@ May 27, 2001
  - Makefile change: now it copies makemake, splitvec and seedtool to bin/
    (instead of making soft links).
  - makemake renamed to opp_makemake
+ - replace utility renamed to opp_replace

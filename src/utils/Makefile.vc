@@ -6,7 +6,7 @@
 #
 # Targets
 #
-all: seedtool.exe tcl2c.exe replace.exe
+all: seedtool.exe tcl2c.exe opp_replace.exe
 
 seedtool.exe : seedtool.cc
 	$(CXX) /Tp seedtool.cc
@@ -15,13 +15,13 @@ seedtool.exe : seedtool.cc
 tcl2c.exe: tcl2c.c
 	$(CC) tcl2c.c
 
-replace.exe: replace.c
-	$(CC) $(CFLAGS) replace.c
+opp_replace.exe: opp_replace.c
+	$(CC) $(CFLAGS) opp_replace.c
 
 depend:
 	@ echo *** make depend not (yet) supported with MSVC
 clean:
-	del *.obj seedtool.exe tcl2c.exe replace.exe 2> nul
+	del *.obj seedtool.exe tcl2c.exe opp_replace.exe 2> nul
 	del *.ilk *.idb *.pdb 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
