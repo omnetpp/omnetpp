@@ -1,3 +1,8 @@
+2002-03-03  Andras Varga
+
+	* opp_makemake: added -L option; removed Makefile.in from the depend
+        target. [patch by Johnny Lai]
+
 2002-01-23  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* opp_makemake.in (clean): remove also *_n.h files.

@@ -19,6 +19,7 @@ userif=TKENV
 outfile=`pwd | sed "s/\/$//;s/.*\///"`
 type="exe"
 includes=""
+libpath=""
 libs=""
 dirs=""
 xobjs=""
@@ -33,7 +34,7 @@ while [ ! $# = 0 ] ; do
 opp_makemake: write OMNeT++ Makefile based on source files in current directory
 
 opp_makemake [-h] [-f] [-m] [-o make-target] [-n] [-s] [-u user-interface]
-         [-p] [-Idir] [-llibrary] [-i makefile-fragment-file]
+         [-p] [-Idir] [-Llibrary-path] [-llibrary] [-i makefile-fragment-file]
          [directories, library and object files]...
     -h, --help            This help text
     -f, --force           Force overwriting existing Makefile
@@ -47,6 +48,7 @@ opp_makemake [-h] [-f] [-m] [-o make-target] [-n] [-s] [-u user-interface]
     -M, --mpi             Link executable with MPI
     -p, --pvm             Link executable with PVM
     -Idir                 Additional NED and C++ include directory
+    -Llibrary-path        Additional library path
     -llibrary             Additional library to link against
     -i, --includefragment Append file to near end of Makefile. The file makefrag
                           is appended implicitly if no -i options are given.
@@ -113,6 +115,10 @@ EOT
 
         -I*)
         includes="$includes $1"
+        ;;
+
+      -L*)
+        libpath="$libpath $1"
         ;;
 
         -l*)
@@ -233,8 +239,8 @@ EXRA_OBJS=$xobjs
 # object files in subdirectories
 SUBDIR_OBJS=$sobjs
 
-# Additional libraries (-l option)
-LIBS=$libs
+# Additional libraries (-L option -l option)
+LIBS=$libpath$libs
 
 #------------------------------------------------------------------------------
 EOT
@@ -399,7 +405,7 @@ clean:
 
 depend:
 	\$(MAKEDEPEND) \$(INCLUDE_PATH) -- *.cc
-	\$(MAKEDEPEND) \$(INCLUDE_PATH) -fMakefile.in -- *.cc
+	# \$(MAKEDEPEND) \$(INCLUDE_PATH) -fMakefile.in -- *.cc
 
 re-makemake:
 	opp_makemake -f $args1  #recreate Makefile
