@@ -118,7 +118,7 @@ module TokenRing
                 THT = THT,
                 dataRate = dataRate,
                 numStations = numStations;
-            display: "i=pc";
+            display: "i=pc;q=sendQueue";
     connections:
         comp[numStations - 1].out --> delay cableDelay --> comp[0].in;
 
