@@ -1,8 +1,6 @@
-DEMO
+Demo
 ====
 
-A tour of all samples.
+A tour of all samples. To try, run 'rundemo' or 'rundemo.bat', NOT THE 'demo' 
+EXECUTABLE!
 
-TO TRY, RUN 'rundemo' or 'rundemo.bat' INSTEAD OF THE 'demo' EXECUTABLE!
-
-Not supported with MSVC at the moment.
