@@ -11,15 +11,13 @@ on how to design and code simple\index{module!simple} modules.
 
 
 
-
 \section{Simulation concepts}
 
 This section contains a very brief introduction into how Discrete
 Event Simulation (DES) works, in order to introduce terms we'll use
 when explaining {\opp} concepts\index{simulation!concepts} and
-implementation. If you're familiar with DES\index{DES}, you can skip this
-section.
-
+implementation. If you're familiar with DES\index{DES}, you can skip
+the next few sections.
 
 
 
@@ -39,44 +37,43 @@ suchlike.)
 
 For example, computer networks are usually viewed as discrete
 event systems. Some of the events are:
+
 \begin{itemize}
-\item{start of a packet transmission}
-\item{end of a packet transmission}
-\item{expiry of a retransmission timeout}
+  \item{start of a packet transmission}
+  \item{end of a packet transmission}
+  \item{expiry of a retransmission timeout}
 \end{itemize}
 
 
-This implies that between two events such as ``start of a packet
-transmission'' and ``end of a packet transmission'', nothing
-interesting happens. That is, the packet's state remains ``being
-transmitted''. Note that the definition of events and states always
+This implies that between two events such as \textit{start of a packet
+transmission} and \textit{end of a packet transmission}, nothing
+interesting happens. That is, the packet's state remains \textit{being
+transmitted}. Note that the definition of ``interesting'' events and states always
 depends on the intent and purposes of the person doing the modeling.
 If we were interested in the transmission of individual bits, we would
-have included something like ``start of bit transmission'' and ``end
-of bit transmission'' among our events.
+have included something like \textit{start of bit transmission} and
+\textit{end of bit transmission} among our events.
 
 
-The time when events occur is often called \textit{event
-  timestamp}\index{event timestamp}; with {\opp} we'll say
+The time when events occur is often called \textit{event timestamp}
+\index{event timestamp}; with {\opp} we'll say
 \textit{arrival time}\index{arrival time} (because in the class
 library, the word ``timestamp'' is reserved for a user-settable
 attribute in the event class). Time within the model is often called
-\textit{simulation time}\index{simulation time}, \textit{model
-  time}\index{model!time} or \textit{virtual time}\index{virtual time}
+\textit{simulation time}\index{simulation time}, \textit{model time}
+\index{model!time} or \textit{virtual time}\index{virtual time}
 as opposed to real time\index{real time} or CPU time\index{CPU time}
 or which refers to how long the simulation program has been running or
 how much CPU time it has consumed.
 
 
 
-
-
 \subsection{The event loop}
 
-Discrete event simulations maintain a set of future
-events\index{future events}, in a data structure often called
-FES\index{FES} (Future Event Set). Such simulators usually work
-according to the following pseudocode:
+Discrete event simulations maintain the set of future
+events\index{future events} in a data structure often called
+FES\index{FES} (Future Event Set) or FEL\index{FEL} (Future Event List).
+Such simulators usually work according to the following pseudocode:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \textit{initialize -- this includes building the model and}
@@ -122,20 +119,20 @@ files.
 
 
 
-
-
 \subsection{Simple modules in {\opp}}
 
-The user creates simple\index{module!simple} module types by
-subclassing\index{module!subclassing} the \cclass{cSimpleModule}
+In {\opp}, events occur inside simple modules\index{module!simple}.
+Simple modules encapsulate C++ code that generate and react to events,
+in other words, implement the behaviour of the model.
+
+The user creates simple module types by subclassing the \cclass{cSimpleModule}
 class, which is part of the {\opp} class library.
 \cclass{cSimpleModule}, just as \cclass{cCompoundModule}, is derived
 from a common base class, \cclass{cModule}.
 
 \cclass{cSimpleModule}, although stuffed with simulation-related
-functionality, doesn't do anything useful by itself. The simulation
-programmer has to redefine some virtual member functions to make it do
-useful work.
+functionality, doesn't do anything useful by itself -- you have
+to redefine some virtual member functions to make it do useful work.
 
 
 These member functions are the following:
@@ -173,8 +170,6 @@ All these functions will be discussed later in detail.
 
 
 
-
-
 \subsection{Events in {\opp}}
 
 {\opp} uses messages\index{message} to represent
@@ -207,14 +202,17 @@ attribute of messages.
 Storing simulation time in doubles may sometimes cause inconveniences.
 Due to finite machine precision, two doubles calculated in two
 different ways do not always compare equal even if they mathematically
-should be. This means that if you want to explicitly rely on the
+should be. For example, addition is not an associative operation
+when it comes to floating point calculations: $(x+y)+z != x+(y+z)$!
+  \footnote{see also \textit{``What Every Computer Scientist Should
+  Know About Floating-Point Arithmetic''} by David Goldberg, 1991}
+This means that if you want to explicitly rely on the
 arrival times of two events being the same, you should take care that
-simulation times which should be equal are calculated in exactly the
-same way. Another possible approach is to avoid equal arrival times,
+they are calculated in exactly the same way.
+Another possible approach is to avoid equal arrival times,
 for example by adding/subtracting small values to schedule times to
 ensure specific execution order
 (\textit{inorder\_epsilon}\index{inorder\_epsilon}).
-
 
 One may suggest introducing a small \textit{simtime\_precision} parameter in
 the simulation kernel that would force $t_{1}$ and $t_{2}$ to be regarded
@@ -272,7 +270,7 @@ Define_Module( SlidingWindow );
 // implementation of the module class:
 void SlidingWindow::activity()
 {
-  int window_size = par("window_size");
+  int windowSize = par("windowSize");
 ...
 }
 \end{verbatim}
@@ -286,14 +284,12 @@ look like this:
 // file: swp.ned
 \textbf{simple} SlidingWindow
     \textbf{parameters}:
-        window_size: \textbf{numeric const};
+        windowSize: \textbf{numeric const};
     \textbf{gates}:
-        \textbf{in:} from\_net, from\_user;
-        \textbf{out:} to\_net, to\_user;
+        \textbf{in:} fromNet, fromUser;
+        \textbf{out:} toNet, toUser;
 \textbf{endsimple}
 \end{Verbatim}
-
-
 
 
 
@@ -396,50 +392,44 @@ in the associated interface description.
 
 
 
-
-
 \subsection{Several modules, single NED interface}
 
-Suppose you have three different C++ module classes (TokenRing\_MAC,
-Ethernet\_MAC, FDDI\_MAC) which have identical gates and parameters.
-Then you can create a single NED declaration, General\_MAC for them
+To support submodule types defined as parameters in
+NED files (see section \ref{sec:ch-ned-lang:like}),
+you can reuse an existing NED simple module definition
+for several simple module types.
+
+Suppose you have three different C++ module classes (\ttt{TokenRingMAC},
+\ttt{EthernetMAC}, \ttt{FDDIMAC}) which have identical gates and parameters.
+Then you can create a single NED declaration, \ttt{GenericMAC} for them
 and write the following module declarations in the C++ code:
 
 \begin{verbatim}
-Define_Module_Like(TokenRing_MAC, General_MAC);
-Define_Module_Like(Ethernet_MAC, General_MAC);
-Define_Module_Like(FDDI_MAC, General_MAC);
+Define_Module_Like(TokenRingMAC, GenericMAC);
+Define_Module_Like(EthernetMAC, GenericMAC);
+Define_Module_Like(FDDIMAC, GenericMAC);
 \end{verbatim}
 
-In this case, you won't be able to directly refer to the
-TokenRing\_MAC, Ethernet\_MAC, FDDI\_MAC module types in your NED
-files. For example, you cannot write
+You won't be able to directly refer to the \ttt{TokenRingMAC},
+\ttt{EthernetMAC}, \ttt{FDDIMAC} module types in your NED files,
+because NED doesn't know about them (their names don't appear
+in any NED file you could import), but you can use them wherever
+a submodule type was defined as a parameter to the compound module:
 
 \begin{verbatim}
-module PC
-    submodules:
-        mac: Ethernet_MAC; // error: Ethernet_MAC not defined
-...
-endmodule
-\end{verbatim}
-
-
-However, you can pass the module type in a string-valued parameter to
-the compound module:
-
-\begin{verbatim}
-module PC
+module Host
     parameters:
-        mac_type: string;
+        macType: string;
     submodules:
-        mac: mac_type like General_MAC; // OK!
-    ...
+        mac: macType like GenericMAC;
+                // if macType=="EthernetMAC" --> OK!
+     ...
 endmodule
 \end{verbatim}
 
 \begin{sloppypar}
-The mac\_type parameter should take the value \texttt{"TokenRing\_MAC"},
-\texttt{"Ethernet\_MAC"} or \texttt{"FDDI\_MAC"}, and a submodule of the appropriate
+The \ttt{macType} parameter should take the value \texttt{"TokenRingMAC"},
+\texttt{"EthernetMAC"} or \texttt{"FDDIMAC"}, and a submodule of the appropriate
 type will be created. The value for the parameter can even be given in
 the ini file. This gives you a powerful tool to customize simulation
 models (see also \textit{Topology templates}, Section
@@ -471,7 +461,7 @@ If you choose the first solution, you use the
 \fmac{Module\_Class\_Members()} macro:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-Module_Class_Members( \textit{classname}, \textit{baseclass}, \textit{stacksize});
+Module_Class_Members(\textit{classname}, \textit{baseclass}, \textit{stacksize});
 \end{Verbatim}
 
 The first two arguments are obvious (\textit{baseclass} is usually \cclass{cSimpleModule}),
@@ -485,11 +475,10 @@ As an example, the class declaration
 \begin{verbatim}
 class SlidingWindow : public cSimpleModule
 {
-    Module_Class_Members( SlidingWindow,cSimpleModule,8192)
+    Module_Class_Members(SlidingWindow,cSimpleModule,8192)
     ...
 };
 \end{verbatim}
-
 
 expands to something like this:
 
@@ -500,40 +489,42 @@ class SlidingWindow : public cSimpleModule
     SlidingWindow(const char *name, cModule *parentmodule,
         unsigned stacksize = 8192) :
         cSimpleModule(name, parentmodule, stacksize) {}
-...
+    ...
 };
 \end{verbatim}
 
 \textbf{Expanded form of the constructor}
 
+If you have data members in the class that you want to initialize in the
+constructor, you cannot use the \ttt{Module_Class_Members()} macro.
+Then you have to write the constructor yourself.
 
-You will implement:
+The constructor\index{module!constructor} should take the following
+arguments (which you also have to pass further to the base class):
+
 \begin{itemize}
-\item{a constructor\index{module!constructor} with the argument list: (const
-    char *name, cModule *parentmodule, unsigned stacksize =
-    \textit{stacksize})}
+  \item{\ttt{const char *name}, which is the name of the module}
+  \item{\ttt{cModule *parentmodule}, pointer to the parent module}
+  \item{\ttt{unsigned stacksize=\textit{stacksize}}, the coroutine stack size}
 \end{itemize}
 
-The advantage is that you get full control over the constructor,
-so you can initialize data members of the class (if you have
-any). You should not change the number or types of the arguments
-taken by the constructor, because it is called by {\opp}-generated
+You should not change the number or types of the arguments taken
+by the constructor, because it will be called by {\opp}-generated
 code.
-
 
 An example:
 
 \begin{verbatim}
-class TokenRing_MAC : public cSimpleModule
+class TokenRingMAC : public cSimpleModule
 {
   public:
     cQueue queue; // a data member
-    TokenRing_MAC(const char *name, cModule *parentmodule,
+    TokenRingMAC(const char *name, cModule *parentmodule,
                  unsigned stacksize = 8192);
     ...
 };
 
-TokenRing_MAC(const char *name, cModule *parentmodule,
+TokenRingMAC(const char *name, cModule *parentmodule,
     unsigned stacksize) :
     cSimpleModule(name, parentmodule, stacksize), queue("queue")
 {
@@ -585,7 +576,7 @@ class TransportProtocol : public cSimpleModule
 {
   public:
     Module_Class_Members(TransportProtocol, cSimpleModule, 8192)
-    int window_size;
+    int windowSize;
     int n_s; // N(s)
     int n_r; // N(r)
     cOutVector eedVector;
@@ -603,7 +594,7 @@ Define_Module( TransportProtocol );
 
 void TransportProtocol::activity()
 {
-    window_size = par("window_size");
+    windowSize = par("windowSize");
     n_s = n_r = 0;
     eedVector.setName("End-to-End Delay");
     eedStats.setName("eedStats");
@@ -864,8 +855,7 @@ choose the processor stack size\index{coroutine!stack size} for them.
 This cannot be automated (Eerrr... at least not without hardware
 support, some trick with virtual memory handling).
 
-
-8 or 16 kbytes is usually a good choice, but you may need more if the
+16 kbytes is usually a good choice, but you may need more if the
 module uses recursive functions or has local variables which occupy a
 lot of stack space. {\opp} has a built-mechanism that will usually
 detect if the module stack is too small and
@@ -923,7 +913,7 @@ MySimpleModule::finish()
 
 
 
-\textbf{Advantages and drawbacks}
+\textbf{Advantages and drawbacks of \fname{activity()} vs \fname{handleMessage()}}
 
 Advantages:
 \begin{itemize}
@@ -984,10 +974,8 @@ and return immediately after that. The simulation time is potentially
 different in each call. No simulation time elapses within a call
 to \fname{handleMessage()}.
 
-
 The pseudocode of the event loop which is able to handle both \fname{activity()}
 and \fname{handleMessage()} simple modules:
-
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \textit{while (FES not empty and simulation not yet complete)}
@@ -998,16 +986,15 @@ and \fname{handleMessage()} simple modules:
     if (m works with handleMessage())
         \textbf{m->handleMessage( event )}
     else // m works with activity()
-    transferTo( m )
+        transferTo( m )
 \}
 \end{Verbatim}
-
 
 Modules with \fname{handleMessage()} are NOT started automatically:
 the simulation kernel creates starter messages\index{starter messages}
 only for modules with \fname{activity()}. This means that you have to
 schedule self-messages\index{self-message} from the
-\fname{initialize()} function if you want the \fname{handleMessage()}
+\fname{initialize()} function if you want a \fname{handleMessage()}
 simple module to start working ``by itself'', without first receiving
 a message from other modules.
 
@@ -1022,19 +1009,17 @@ important, because this tells {\opp} that you want to use
 \fname{handleMessage()} and not \fname{activity()}.
 
 Message/event related functions you can use in \fname{handleMessage()}:
+
 \begin{itemize}
-\item{\fname{send()} family of functions -- to send messages to other modules}
-\item{\fname{scheduleAt()} -- to schedule an event (the module ``sends
-a message to itself'')}
-\item{\fname{cancelEvent()} -- to delete an event scheduled with \fname{scheduleAt()}}
+  \item{\fname{send()} family of functions -- to send messages to other modules}
+  \item{\fname{scheduleAt()} -- to schedule an event (the module ``sends a message to itself'')}
+  \item{\fname{cancelEvent()} -- to delete an event scheduled with \fname{scheduleAt()}}
 \end{itemize}
 
 You cannot use the \fname[receive()]{receive...()} family and
 \fname{wait()} functions in \fname{handleMessage()}, because they are
 coroutine-based by nature, as explained in the section about
-\fname{activity()}. You also cannot use \fname{end()} because its job
-is to terminate the coroutine\index{coroutine}.
-
+\fname{activity()}.
 
 You have to add data members to the module class for every piece
 of information you want to preserve. This information cannot
@@ -1046,23 +1031,23 @@ they would be shared between all instances of the class.
 
 Data members to be added to the module class will typically include
 things like:
+
 \begin{itemize}
-\item{state (e.g. IDLE/BUSY, CONN\_DOWN/CONN\_ALIVE/...)}
-\item{other variables which belong to the state of the module: retry
+  \item{state (e.g. IDLE/BUSY, CONN\_DOWN/CONN\_ALIVE/...)}
+  \item{other variables which belong to the state of the module: retry
     counts, packet queues, etc.}
-\item{values retrieved/computed once and then stored: values of module
+  \item{values retrieved/computed once and then stored: values of module
     parameters, gate indices, routing information, etc.}
-\item{pointers of message objects created once and then reused for
+  \item{pointers of message objects created once and then reused for
     timers, timeouts, etc.}
-\item{variables/objects for statistics collection}
+  \item{variables/objects for statistics collection}
 \end{itemize}
 
 You can initialize these variables from the \fname{initialize()}
 function.  The constructor\index{module!constructor} is not a very good place
-for this purpose because it is called in the network setup phase when
+for this purpose, because it is called in the network setup phase when
 the model is still under construction, so a lot of information you may
 want to use is not yet available then.
-
 
 Another task you have to do in \fname{initialize()} is to schedule
 initial event(s)\index{events!initial} which trigger the first call(s)
@@ -1072,7 +1057,6 @@ itself so that the ``chain'' is not broken. Scheduling events is not
 necessary if your module only has to react to messages coming from
 other modules.
 
-
 \fname{finish()} is used in the normal way: to record statistics information
 accumulated in data members of the class at the end of the simulation.
 
@@ -1080,21 +1064,32 @@ accumulated in data members of the class at the end of the simulation.
 \textbf{Application area}
 
 
-There are two areas where \fname{handleMessage()} is definitely a better
-choice than \fname{activity()}:
+\fname{handleMessage()} is definately a better choice than \fname{activity()}
+in many cases:
+
 \begin{enumerate}
-\item{For modules which have to maintain little or no state information,
-    such as packet sinks.}
-\item{Other good candidates are modules with a large state space and
-    many arbitrary state transition possibilities (i.e. where there
-    are many possible subsequent states for any state). Such algorithms
-    are difficult to program with \fname{activity()}, or the result is code
-    which is better suited for \fname{handleMessage()} (see rule of thumb
-    below). Most communication protocols are like this.}
+  \item{When you expect the module to be used in large simulations,
+      involving several thousand modules. In such cases, the module stacks
+      required by \fname{activity()} would simply consume too much memory.}
+  \item{For modules which maintain little or no state information,
+      such as packet sinks, \fname{handleMessage()} is more convenient to program.}
+  \item{Other good candidates are modules with a large state space and
+      many arbitrary state transition possibilities (i.e. where there
+      are many possible subsequent states for any state). Such algorithms
+      are difficult to program with \fname{activity()}, or the result is code
+      which is better suited for \fname{handleMessage()} (see rule of thumb
+      below). Most communication protocols are like this.}
 \end{enumerate}
 
-There's also a good rule of thumb. If your module, programmed
-with \fname{activity()}, looks like this:
+In general, if your \fname{activity()} function contains no
+\fname{wait()} and it has only one \fname{receive()} call
+at the top of an infinite loop (\ttt{while(true)} or \ttt{for(;;)}),
+you can trivially convert it to \fname{handleMessage()}.
+The body of the infinite loop becomes the body to \fname{handleMessage()},
+state variables inside \fname{activity()} become data members in
+the module class, and you initialize them in \fname{initialize()}.
+
+That is, the following code:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \textit{activity()}
@@ -1103,13 +1098,13 @@ with \fname{activity()}, looks like this:
     while(true)
     \{
         msg = receive();
-        // arbitrary code which doesn't contain any receive()
-        // or wait() calls
+        // code which doesn't contain
+        // receive() or wait() calls
     \}
 \}
 \end{Verbatim}
 
-Then it can be trivially converted to \fname{handleMessage()}:
+becomes like this:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \textit{initialize()}
@@ -1119,8 +1114,8 @@ Then it can be trivially converted to \fname{handleMessage()}:
 
 handleMessage( msg )
 \{
-    // arbitrary code which doesn't contain any receive()
-    // or wait() calls
+    // code which doesn't contain
+    // receive() or wait() calls
 \}
 \end{Verbatim}
 
@@ -1188,27 +1183,26 @@ void Generator::handleMessage(cMessage *msg)
 
 
 A bit more realistic example is to rewrite our Generator to create
-packet bursts, each consisting of burst\_length packets.
+packet bursts, each consisting of \ttt{burstLength} packets.
 
 
 We add some data members to the class:
 \begin{itemize}
-\item{burst\_length will store the parameter that specifies how many
+\item{\ttt{burstLength} will store the parameter that specifies how many
     packets a burst must contain,}
-\item{burst\_ctr will count in how many packets are left to be sent
+\item{\ttt{burstCounter} will count in how many packets are left to be sent
     in the current burst.}
 \end{itemize}
 
 The code:
-
 
 \begin{Verbatim}[commandchars=\\\{\}]
 class BurstyGenerator : public cSimpleModule
 \{
     Module_Class_Members(Generator,cSimpleModule,0)
     // note the zero stack size!
-    int burst_length;
-    int burst\_ctr;
+    int burstLength;
+    int burstCounter;
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 \};
@@ -1217,8 +1211,8 @@ Define_Module( BurstyGenerator );
 void BurstyGenerator::initialize()
 \{
     // init parameters and state variables
-    burst_length = par("burst_length");
-    burst_ctr = burst_length;
+    burstLength = par("burstLength");
+    burstCounter = burstLength;
     // schedule first packet of first burst
     scheduleAt(simTime(), new cMessage);
 \}
@@ -1229,10 +1223,10 @@ void BurstyGenerator::handleMessage(cMessage *msg)
     cMessage *pkt = new cMessage;
     send(pkt, "out");
     // if this was the last packet of the burst
-    if (--burst_ctr == 0)
+    if (--burstCounter == 0)
     \{
         // schedule next burst
-        burst_ctr = burst_length;
+        burstCounter = burstLength;
         scheduleAt(simTime()+exponential(5.0), msg);
     \}
     else
@@ -1243,9 +1237,10 @@ void BurstyGenerator::handleMessage(cMessage *msg)
 \}
 \end{Verbatim}
 
+%%FIXME: in html rendering of the above, "--" becomes "-"
 
 
-\textbf{Advantages and drawbacks}
+\textbf{Advantages and drawbacks of \fname{handleMessage()} vs \fname{activity()}}
 
 
 Advantages:
@@ -1331,10 +1326,10 @@ kernel sources):
     insert starter messages for all submodules using activity()
     do callInitialize() on system module
         \textit{enter event loop // (described earlier)}
-    if (event loop terminated normally) // i.e. not with a runtime
-error
+    if (event loop terminated normally) // i.e. no errors
         do callFinish() on system module
     clean up
+
 callInitialize()
 \{
     call to user-defined initialize() function
@@ -1342,6 +1337,7 @@ callInitialize()
         for (each submodule)
             do callInitialize() on submodule
 \}
+
 callFinish()
 \{
     if (module is compound)
@@ -1378,8 +1374,10 @@ Cleanup code should go into the destructor\index{module!destructor}. But in
 fact, you almost never need to write a destructor because {\opp}
 keeps track of objects you create and disposes of them automatically
 (sort of automatic garbage collection). However it cannot track
-objects not derived from \cclass{cObject} (see later), so they may
-need to be deleted manually from the destructor.
+objects not derived from \cclass{cObject}, so they may
+need to be deleted manually from the destructor. Garbage collection
+is discussed in more detail in section \ref{sec:ch-sim-lib:garbage-collection}.
+
 
 
 \textbf{Multi-stage initialization}
@@ -1398,12 +1396,13 @@ int numInitStages() const;
 \end{verbatim}
 
 At the beginning of the simulation, \fname[initialize]{initialize(0)}
-is called for all modules, then \fname[initialize()]{initialize(1)},
-\fname[initialize()]{initialize(2)}, etc. For each module,
+is called for \textit{all} modules, then \fname[initialize()]{initialize(1)},
+\fname[initialize()]{initialize(2)}, etc. You can think of it like
+initialization takes place in several ``waves''. For each module,
 \fname{numInitStages()} must be redefined to return the number of init
 stages required, e.g. for a two-stage init, \fname{numInitStages()}
-should return 2, and initialize(int stage) must be implemented to
-handle the stage=0 and stage=1 cases.
+should return 2, and \fname{initialize(int stage)} must be implemented to
+handle the \textit{stage=0} and \textit{stage=1} cases.
 
 
 The \fname{callInitialize()} function performs the full multi-stage initialization
@@ -1537,26 +1536,41 @@ is conventionally named INIT.
 
 \textbf{Debugging FSMs}
 
+FSMs can log their state transitions \ttt{ev}\index{ev},
+with the output looking like this:
 
-If you \ttt{\#define FSM\_DEBUG}\index{FSM\_DEBUG} before including
-omnetpp.h, each state transition will be logged to ev\index{ev}:
+\begin{verbatim}
+...
+FSM GenState: leaving state SLEEP
+FSM GenState: entering state ACTIVE
+...
+FSM GenState: leaving state ACTIVE
+FSM GenState: entering state SEND
+FSM GenState: leaving state SEND
+FSM GenState: entering state ACTIVE
+...
+FSM GenState: leaving state ACTIVE
+FSM GenState: entering state SLEEP
+...
+\end{verbatim}
 
+To enable the above output, you have to \ttt{\#define FSM\_DEBUG}\index{FSM\_DEBUG}
+before including \ttt{omnetpp.h}.
 
 \begin{Verbatim}[commandchars=\\\{\}]
-#define FSM_DEBUG
+#define FSM_DEBUG    // enables debug output from FSMs
 #include <omnetpp.h>
 \end{Verbatim}
 
-
-
-The actual printing is done through the \fmac{FSM\_Print()} macro. You
-might redefine it if you don't like what it currently does:
-
+The actual logging is done via the \fmac{FSM\_Print()} macro.
+It is currently defined as follows, but you can change the
+output format by undefining \ttt{FSM_Print()} after including
+\ttt{omnetpp.ini} and providing a new definition instead.
 
 \begin{verbatim}
 #define FSM_Print(fsm,exiting)
   (ev << "FSM " << (fsm).name()
-      << ((exiting) ? ": exiting " : ": entering ")
+      << ((exiting) ? ": leaving state " : ": entering state ")
       << (fsm).stateName() << endl)
 \end{verbatim}
 
@@ -1580,7 +1594,7 @@ state, the simulation will terminate with an error message.
 Let us write another flavour of a bursty generator. It has two
 states, SLEEP and ACTIVE. In the SLEEP state, the module does
 nothing. In the ACTIVE state, it sends messages with a given
-inter-arrival time. The code was taken from the fifo2 sample
+inter-arrival time. The code was taken from the Fifo2 sample
 simulation.
 
 
@@ -1836,12 +1850,10 @@ Conventions for writing simple\index{module!simple} modules:
     of all that is that the structure of your code be obvious at the
     first glance!}
 \item{Identifiers: Begin module type names with a capital letter, and
-    capitalize the beginning of each word, like in TokenRingMAC.  Do
-    not use underscore `\_` in module names. Use the C++-style naming
+    capitalize the beginning of each word, like in \ttt{TokenRingMAC}.  Do
+    not use underscore `\_' in module names. Use the C++-style naming
     on member functions: beginning of each word is capitalized (except
-    for the first one) and no underscores: sendUnnumberedFrame().  On
-    parameter names, you may use C-style (window\_size) or C++-style
-    (windowSize) naming, whichever you prefer.}
+    for the first one) and no underscores: sendUnnumberedFrame().}
 \item{Make the functions virtual. Maybe someone who reuses your code
     will need a different behavior than what you thought of.}
 \item{Use inheritance\index{inheritance} if you're writing a very complex
@@ -1881,213 +1893,6 @@ Conventions for writing simple\index{module!simple} modules:
 
 
 
-
-\section{Component libraries}
-
-Because of the structure of the simulation system, one can create
-libraries of reusable elements in several ways. The three basic
-types are:
-\begin{itemize}
-\item{simple\index{module!simple} module libraries}
-\item{NED source libraries}
-\item{precompiled compound module libraries}
-\end{itemize}
-
-The elegant thing is that the user of the library does not need
-to know which kind of library he/she is using; the three types
-of libraries are equivalent in terms of usage.
-
-
-
-
-
-\subsection{Simple module libraries}
-
-Simple modules that can be used in more than one simulations can form an
-object library\index{object library}. Good candidates for module
-libraries\index{module!libraries} are simple\index{module!simple}
-modules that implement:
-\begin{itemize}
-\item{Physical/Data-link protocols: Ethernet, Token Ring, FDDI, LAPB
-    etc.}
-\item{Higher layer protocols: IP, TCP, X.25 L2/L3, etc.}
-\item{Network application types: E-mail, NFS, X, audio etc.}
-\item{Basic elements: message generator, sink, concentrator/simple
-    hub, queue etc.}
-\item{Modules that implement routing algorithms in a multiprocessor or
-    network}
-\item{...}
-\end{itemize}
-
-To create a library, you compile the simple module C++ sources
-and collect the object files in one directory. You'll also need
-to the provide the NED descriptions:
-
-
-\begin{Verbatim}[commandchars=\\\{\}]
-library/generator.ned
-generator.o
-sink.ned
-sink.o
-ethernet.ned
-ethernet.o
-\end{Verbatim}
-
-
-
-The NED files\index{ned!files} contain the interfaces of the
-simple modules. For example:
-
-
-\begin{Verbatim}[commandchars=\\\{\}]
-// generator.ned
-\textbf{simple} Generator
-    \textbf{parameters}:
-        interarrival time, message_length, message_kind;
-    \textbf{gates}:
-        \textbf{out}: output;
-\textbf{endsimple}
-\end{Verbatim}
-
-
-The user of the library would include generator.ned in his/her
-NED files, and link the executable with generator.o. This is
-more or less the same concept as conventional C/C++ header files
-and libraries. The basic advantage is the same as with C/C++:
-you save compilation time and hide concrete implementation. The
-latter also means that you can give the module library to others
-without having to share the C++ source.
-
-
-It could also be meaningful to provide the C++ header files with the
-module class declarations. This would enable the user to directly call
-the member functions of the module object from the simulation program
-and derive new module classes by redefining the virtual functions.
-
-You do not need to have a separate NED file for each module: you could
-merge all of them into a single library.ned that contains the NED
-declarations of all modules without all side effects.  However, it is
-not recommended to put all object files into one library (.a or .lib),
-because then every simple module would be present
-in simulation programs linked with the library, regardless whether the
-simulation uses them or not.
-
-
-
-\subsection{Compound module NED source libraries}
-
-\index{ned!libraries}
-
-The NED sources of reusable compound\index{module!compound} modules
-can also be placed in a library. Candidates are:
-\begin{itemize}
-\item{network nodes such as hubs, bridges, routers}
-\item{different workstation/computer types: file server, X terminal
-    etc.}
-\item{node of a massively parallel multiprocessor (used in testing
-    different topologies)}
-\item{topology templates: parameterized ring, mesh, hypercube, torus
-    etc. topologies, with the sizes (shapes etc) and the actual node
-    types to be left as parameters}
-\item{...}
-\end{itemize}
-
-
-The NED sources are used through the import\index{import files}
-mechanism; the corresponding simple module object
-files still to be linked in the executable.
-
-The user does not necessarily notice that he/she is using a
-compound module library and not a
-simple module library. In NED files, the user
-imports and uses the compound module sources in exactly the same way
-as he/she used the simple module interface
-declarations.  Linking also goes in the same way; if the
-simple modules objects necessary for a certain
-compound module are aggregated into a library (.a or .lib), the user
-does not even notice the difference from the number of files he/she
-has to link in.
-
-
-
-
-
-\subsection{Precompiled compound module libraries}
-
-\index{ned!libraries}
-
-If you share a compound module with others, you do not necessarily
-have to share the NED source and reveal the internals of the compound
-module. You can turn the compound module into something that very much
-looks like a simple module.
-
-
-Suppose you have the following compound\index{module!compound} module:
-
-
-\begin{Verbatim}[commandchars=\\\{\}]
-// router-compound.ned
-\textbf{module} Router:
-    \textbf{parameters}:
-        processing_delay, buffersize;
-    \textbf{gates}:
-        \textbf{in}: input_ports[];
-        \textbf{out}: output_ports[];
-    \textbf{submodules}:
-        routing: RoutingModule
-            \textbf{parameters}:
-                //...
-            \textbf{gatesizes}:
-                //...
-        datalink: DataLink[num_of_ports]
-            \textbf{parameters}:
-                retry_count = 5,
-                window_size = 2;
-                //...
-    \textbf{connections}:
-    //...
-\textbf{endmodule}
-\end{Verbatim}
-
-
-First, you would compile this NED file with the NEDC compiler
-and the resulting C++ code with the C++ compiler. Then you would
-aggregate this object file with the simple module object files
-into a single library (.a or .lib). Also, you would write a separate
-NED file that declares the interface of the new ``simple''
-module:
-
-
-\begin{Verbatim}[commandchars=\\\{\}]
-// router-simple.ned
-\textbf{simple} Router:
-    \textbf{parameters}:
-        processing_delay, buffersize;
-    \textbf{gates}:
-        \textbf{in}: input_ports[];
-        \textbf{out}: output_ports[];
-\textbf{endsimple}
-\end{Verbatim}
-
-
-
-The method produced a \textit{precompiled compound
-  module}\index{module!compound!precompiled}. The resulting two files
-can be placed into a simple module library and
-can be used identically to ordinary simple
-modules.
-
-Using precompiled compound\index{module!compound!precompiled} modules
-you can hide the internal complexity of your model from direct
-inspection. However, nothing can prevent a user from building a
-simulation executable with it and exploring the structure of your
-compound module using {\opp} simulation kernel
-functions. Consequently, using precompiled
-compound\index{module!compound!precompiled} modules is more useful as a
-structuring tool.
-
-
-
 \section{Some simulation techniques}
 
 \subsection{Modeling computer networks}
@@ -2097,17 +1902,17 @@ the model around different levels:
 
 Physical topology:
 \begin{enumerate}
-\item{Top-level network}
-\item{Subnetwork (site)}
-\item{LAN}
-\item{node}
+  \item{Top-level network}
+  \item{Subnetwork (site)}
+  \item{LAN}
+  \item{node}
 \end{enumerate}
 
 Within a node:
 \begin{enumerate}
-\item{OSI layers. The Data-Link, Network, Transport, Application layers
-are of greater importance.}
-\item{Applications/protocols within a layer.}
+  \item{OSI layers. The Data-Link, Network, Transport, Application layers
+        are of greater importance.}
+  \item{Applications/protocols within a layer.}
 \end{enumerate}
 
 The advantage of {\opp} over many existing simulators is that the
