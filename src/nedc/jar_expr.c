@@ -105,10 +105,12 @@ char *do_func (int args, char *fname, char *p1,char *p2,char *p3)
     else /* unknown */
     {
         sprintf(findfunc_code,
-                "%sfunc = findFunction(\"%s\")->f;\n"
-                "%scheck_function%s( func, \"%s\");\n",
+                "%sfunctype = findFunction(\"%s\");\n"
+                "%scheck_function%s( functype, \"%s\");\n"
+                "%sfunc = functype->f;\n",
                 indent, fname,
-                indent, (inside_nonvoid_function ? "_retnull" : ""), fname);
+                indent, (inside_nonvoid_function ? "_retnull" : ""), fname,
+                indent);
 
         func = "func";
     }
