@@ -80,24 +80,24 @@ PLOVE_EMBED_TCL=no
 #  TK_LIBS="-lcygtk83 -lcygtcl83"
 # If left empty, the configure script will try to autodetect it
 #
-TK_CFLAGS=
-TK_LIBS=
+#TK_CFLAGS=
+#TK_LIBS=
 
 #
 # Compiler and linker options for PVM (optional component)
 #
 # If left empty, the configure script will try to autodetect it
 #
-PVM_CFLAGS=
-PVM_LIBS=
+#PVM_CFLAGS=
+#PVM_LIBS=
 
 #
 # Compiler and linker options for MPI (optional component)
 #
 # If left empty, the configure script will try to autodetect it
 #
-MPI_CFLAGS=
-MPI_LIBS=
+#MPI_CFLAGS=
+#MPI_LIBS=
 
 #
 # Compiler and linker options for Expat (optional component)
@@ -107,8 +107,8 @@ MPI_LIBS=
 #   EXPAT_LIBS="-L/d/home/tools/expat-1.95.2/libs -lexpat"
 # If left empty, the configure script will try to autodetect it
 #
-EXPAT_CFLAGS=
-EXPAT_LIBS=
+#EXPAT_CFLAGS=
+#EXPAT_LIBS=
 
 #
 # Compiler and linker options for LIBXML (optional component)
@@ -118,8 +118,8 @@ EXPAT_LIBS=
 #  LIBXML_LIBS="-L/d/home/tools/libxml2-2.4.26.win32/lib -lxml2 -L/d/home/tools/iconv-1.8.win32/lib -liconv"
 # If left empty, the configure script will try to autodetect it
 #
-LIBXML_CFLAGS=
-LIBXML_LIBS=
+#LIBXML_CFLAGS=
+#LIBXML_LIBS=
 
 #
 # Compiler and linker options for Akaroa (optional component)
@@ -129,23 +129,24 @@ LIBXML_LIBS=
 #  AKAROA_LIBS="-L/d/home/tools/akaroa-2.7.2/lib/include -lakaroa"
 # If left empty, the configure script will try to autodetect it
 #
-AKAROA_CFLAGS=
-AKAROA_LIBS=
+#AKAROA_CFLAGS=
+#AKAROA_LIBS=
 
 #
-# You may override the settings below. This is only useful if you have moved
-# (or want to move) parts of the OMNeT++ distribution to other places
-# in the file system (e.g. libraries to /usr/lib, sim headers to
-# /usr/include/omnetpp and so on).
+# The following OMNETPP_* variables don't need to be touched unless
+# you want to relocate parts of the package (e.g. put libraries to
+# /usr/lib, include files to /usr/include/omnetpp, and so on).
 #
-# At this point, $OMNETPP_ROOT is already set to something like ${HOME}/omnetpp.
-#
-OMNETPP_SRC_DIR="$OMNETPP_ROOT/src"
-OMNETPP_SAMPLES_DIR="$OMNETPP_ROOT/samples"
-OMNETPP_TUTORIAL_DIR="$OMNETPP_ROOT/tutorial"
-OMNETPP_BITMAP_PATH=".;./bitmaps;$OMNETPP_ROOT/bitmaps"
+#OMNETPP_SRC_DIR="$OMNETPP_ROOT/src"
+#OMNETPP_SAMPLES_DIR="$OMNETPP_ROOT/samples"
+#OMNETPP_TUTORIAL_DIR="$OMNETPP_ROOT/tutorial"
+#OMNETPP_BIN_DIR="$OMNETPP_ROOT/bin"
+#OMNETPP_INCL_DIR="$OMNETPP_ROOT/include"
+#OMNETPP_LIB_DIR="$OMNETPP_ROOT/lib"
 
-OMNETPP_BIN_DIR="$OMNETPP_ROOT/bin"
-OMNETPP_INCL_DIR="$OMNETPP_ROOT/include"
-OMNETPP_LIB_DIR="$OMNETPP_ROOT/lib"
+#
+# Override the following setting if you have additional icons somewhere else.
+#
+#OMNETPP_BITMAP_PATH=".;./bitmaps;$OMNETPP_ROOT/bitmaps"
+
 
