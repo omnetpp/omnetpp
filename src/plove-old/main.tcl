@@ -96,8 +96,7 @@ proc createMenubar {w} {
     # Create menus
     foreach i {
        {filemenu     -$label_opt File -underline 0}
-       {leftmenu     -$label_opt Left -underline 0}
-       {rightmenu    -$label_opt Right -underline 0}
+       {editmenu     -$label_opt Edit -underline 0}
        {optionsmenu  -$label_opt Options -underline 0}
        {helpmenu     -$label_opt Help -underline 0}
     } {
@@ -128,42 +127,23 @@ proc createMenubar {w} {
        eval $w.filemenu$m add $i
     }
 
-    # Left menu
+    # Edit menu
     foreach i {
-      {command -command {selectVectors 1} -label {Select...  +} -underline 0}
-      {command -command {selectAll 1} -label {Select all} -underline 7}
-      {command -command {invertSelection 1} -label {Invert selection  *} -underline 0}
+      {command -command {selectVectors} -label {Select...  +} -underline 0}
+      {command -command {selectAll} -label {Select all} -underline 7}
+      {command -command {invertSelection} -label {Invert selection  *} -underline 0}
       {separator}
-      {command -command {vectorInfo 1} -label {Vector info...  F3} -underline 8}
-      {command -command {editVectorFilters 1} -label {Vector plotting options...  F4} -underline 7}
+      {command -command {vectorInfo} -label {Vector info...  F3} -underline 8}
+      {command -command {editVectorFilters} -label {Vector plotting options...  F4} -underline 7}
       {separator}
-      {command -command {replaceInTitles 1} -label {Find+Replace in titles...} -underline 5}
+      {command -command {replaceInTitles} -label {Find+Replace in titles...} -underline 5}
       {separator}
-      {command -command {moveVectors 1 2} -label {Move  F5} -underline 0}
-      {command -command {copyVectors 1 2} -label {Copy  F6} -underline 0}
-      {command -command {dupVectors 1} -label {Duplicate} -underline 1}
-      {command -command {delVectors 1} -label {Delete  Del,F8} -underline 0}
+      {command -command {moveVectors} -label {Move  F5} -underline 0}
+      {command -command {copyVectors} -label {Copy  F6} -underline 0}
+      {command -command {dupVectors} -label {Duplicate} -underline 1}
+      {command -command {delVectors} -label {Delete  Del,F8} -underline 0}
     } {
-      eval $w.leftmenu$m add $i
-    }
-
-    # Right menu
-    foreach i {
-      {command -command {selectVectors 2} -label {Select...} -underline 0}
-      {command -command {selectAll 2} -label {Select all} -underline 7}
-      {command -command {invertSelection 2} -label {Invert selection} -underline 0}
-      {separator}
-      {command -command {vectorInfo 2} -label {Vector info...  F3} -underline 8}
-      {command -command {editVectorFilters 2} -label {Vector plotting options...  F4} -underline 7}
-      {separator}
-      {command -command {replaceInTitles 2} -label {Find+Replace in titles...} -underline 5}
-      {separator}
-      {command -command {moveVectors 2 1} -label {Move  F5} -underline 0}
-      {command -command {copyVectors 2 1} -label {Copy  F6} -underline 0}
-      {command -command {dupVectors 2} -label {Duplicate} -underline 1}
-      {command -command {delVectors 2} -label {Delete  Del,F8} -underline 0}
-    } {
-      eval $w.rightmenu$m add $i
+      eval $w.editmenu$m add $i
     }
 
     # Options menu
@@ -189,7 +169,7 @@ proc createMenubar {w} {
     # Pack menu buttons on menubar
     if {$tcl_version < 8.0} {
         foreach i {
-          filemenu leftmenu rightmenu optionsmenu helpmenu
+          filemenu editmenu optionsmenu helpmenu
         } {
           pack $w.$i -anchor n -expand 0 -fill none -side left
         }
@@ -198,7 +178,7 @@ proc createMenubar {w} {
 
 proc createMainArea {w} {
 
-    global g fonts
+    global g fonts help_tips
 
     frame $w.f1 -relief flat -border 2 ;# all vectors
     frame $w.f2 -relief flat -border 2 ;# add/remove buttons
@@ -216,16 +196,22 @@ proc createMainArea {w} {
     label $w.f1.tit -font $fonts(bold) -bg #e0e080 -text {Vector Store}
     pack $w.f1.tit -anchor center -expand 0 -fill x -side top -pady 3
 
-    frame $w.f1.but
-    button $w.f1.but.load -text {Load...} -command fileOpen
-    button $w.f1.but.sel  -text {Sel...}  -command {selectVectors 1}
-    button $w.f1.but.repl -text {Repl...} -command {replaceInTitles 1}
-    button $w.f1.but.del  -text {Delete}  -command {delVectors 1}
-    pack $w.f1.but -expand 0 -fill x -side bottom
-    pack $w.f1.but.load -side left -expand 1 -fill x
-    pack $w.f1.but.sel  -side left -expand 1 -fill x
-    pack $w.f1.but.repl -side left -expand 1 -fill x
-    pack $w.f1.but.del  -side left -expand 1 -fill x
+    #frame $w.f1.but
+    #button $w.f1.but.load -text {Load...} -command fileOpen
+    #button $w.f1.but.sel  -text {Sel...}  -command {selectVectors 1}
+    #button $w.f1.but.repl -text {Repl...} -command {replaceInTitles 1}
+    #button $w.f1.but.del  -text {Delete}  -command {delVectors 1}
+
+    #pack $w.f1.but -expand 0 -fill x -side bottom
+    #pack $w.f1.but.load -side left -expand 1 -fill x
+    #pack $w.f1.but.sel  -side left -expand 1 -fill x
+    #pack $w.f1.but.repl -side left -expand 1 -fill x
+    #pack $w.f1.but.del  -side left -expand 1 -fill x
+
+    #set help_tips($w.f1.but.load) {Load vectors and add them to left panel}
+    #set help_tips($w.f1.but.sel)  {Select vectors by title}
+    #set help_tips($w.f1.but.repl) {Find/replace in vector titles}
+    #set help_tips($w.f1.but.del)  {Delete selected vectors from panel}
 
     label $w.f1.status -relief groove
     pack $w.f1.status -expand 0 -fill x -side bottom
@@ -272,23 +258,31 @@ proc createMainArea {w} {
     pack $w.f2.back -anchor center -fill x -expand 0
     pack $w.f2.dum2 -anchor center -fill x -expand 1
 
+    set help_tips($w.f2.add)    {Add/move selected vectors to right panel}
+    set help_tips($w.f2.back)   {Remove selected vectors from right panel}
+
     #
     # Pane 3
     #
     label $w.f3.tit -font $fonts(bold) -bg #e0e080 -text {Ready-to-Plot Vectors}
     pack $w.f3.tit -anchor center -expand 0 -fill x -side top -pady 3
 
-    frame $w.f3.but
-    button $w.f3.but.opt -text {Info...} -command {vectorInfo 2}
-    button $w.f3.but.fil -text {Options...} -command {editVectorFilters 2}
-    button $w.f3.but.del -text {Delete} -command {delVectors 2}
-    button $w.f3.but.dup -text {Dup} -command {dupVectors 2}
+    #frame $w.f3.but
+    #button $w.f3.but.opt -text {Info...} -command {vectorInfo 2}
+    #button $w.f3.but.fil -text {Options...} -command {editVectorFilters 2}
+    #button $w.f3.but.del -text {Delete} -command {delVectors 2}
+    #button $w.f3.but.dup -text {Dup} -command {dupVectors 2}
 
-    pack $w.f3.but -expand 0 -fill x -side bottom
-    pack $w.f3.but.opt -side left -expand 1 -fill x
-    pack $w.f3.but.fil -side left -expand 1 -fill x
-    pack $w.f3.but.del -side left -expand 1 -fill x
-    pack $w.f3.but.dup -side left -expand 1 -fill x
+    #pack $w.f3.but -expand 0 -fill x -side bottom
+    #pack $w.f3.but.opt -side left -expand 1 -fill x
+    #pack $w.f3.but.fil -side left -expand 1 -fill x
+    #pack $w.f3.but.del -side left -expand 1 -fill x
+    #pack $w.f3.but.dup -side left -expand 1 -fill x
+
+    #set help_tips($w.f3.but.opt)  {Vector info}
+    #set help_tips($w.f3.but.fil)  {Set filters and plotting options}
+    #set help_tips($w.f3.but.del)  {Delete selected vectors from panel}
+    #set help_tips($w.f3.but.dup)  {Duplicate selected vectors}
 
     label $w.f3.status -relief groove
     pack $w.f3.status -expand 0 -fill x -side bottom
@@ -309,7 +303,7 @@ proc createMainArea {w} {
     # Pane 4
     #
     frame $w.f4.dum1
-    button $w.f4.opt  -text {Options...} -command editGnuplotOptions
+    #button $w.f4.opt  -text {Options...} -command editGnuplotOptions
     button $w.f4.plot -text {PLOT!} -command doPlot -height 2
     button $w.f4.pic -text {Save picture...} -command savePicture
     button $w.f4.script -text {Save script...} -command saveScript
@@ -317,12 +311,18 @@ proc createMainArea {w} {
     frame $w.f4.dum2
 
     pack $w.f4.dum1 -anchor center -fill x -expand 1
-    pack $w.f4.opt -anchor center -fill x -expand 0
+    #pack $w.f4.opt -anchor center -fill x -expand 0
     pack $w.f4.plot -anchor center -fill x -expand 0 -pady 8
     pack $w.f4.pic -anchor center  -fill x -expand 0
     pack $w.f4.script -anchor center -fill x -expand 0
     pack $w.f4.conf -anchor center  -fill x -expand 0 -pady 8
     pack $w.f4.dum2 -anchor center -fill x -expand 1
+
+    #set help_tips($w.f4.opt)     {Global GnuPlot options}
+    set help_tips($w.f4.plot)    {Plot selected vectors}
+    set help_tips($w.f4.pic)     {Save picture}
+    set help_tips($w.f4.script)  {Save shell script that can reproduce plot}
+    set help_tips($w.f4.conf)    {Save vector selection, their options and filter settings}
 
     #
     # Popup menus
@@ -407,8 +407,7 @@ proc createMainArea {w} {
 
 proc createMainWindow {{geom ""}} {
 
-    global g tcl_version
-
+    global g tcl_version icons help_tips
 
     set w .
     wm focusmodel $w passive
@@ -436,22 +435,59 @@ proc createMainWindow {{geom ""}} {
         . config -menu .menubar
     }
 
+    #################################
+    # toolbar
+    #################################
+    frame .toolbar -relief raised -borderwidth 1
+    foreach i {
+      {sep0  -separator}
+      {load  -image $icons(open)     -command fileOpen}
+      {sep1  -separator}
+      {dup   -image $icons(dup)      -command dupVectors}
+      {del   -image $icons(del)      -command delVectors}
+      {sep2  -separator}
+      {sel   -image $icons(find)     -command selectVectors}
+      {repl  -image $icons(findrepl) -command replaceInTitles}
+      {opt   -image $icons(info)     -command vectorInfo}
+      {fil   -image $icons(plotopt)  -command editVectorFilters}
+      {sep3  -separator}
+      {conf  -image $icons(config)   -command editGnuplotOptions}
+      {sep4  -separator}
+
+      {plot  -image $icons(plot)     -command doPlot}
+    } {
+      set b [eval iconbutton .toolbar.$i]
+      pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2
+    }
+
+    set help_tips(.toolbar.load) {Open - add vectors in file to LEFT panel}
+    set help_tips(.toolbar.sel)  {Select vectors by title}
+    set help_tips(.toolbar.repl) {Find/replace in vector titles}
+    set help_tips(.toolbar.del)  {Delete selected vectors from panel}
+    set help_tips(.toolbar.opt)  {Vector info}
+    set help_tips(.toolbar.fil)  {Filters and plotting options for selected vectors}
+    set help_tips(.toolbar.dup)  {Duplicate selected vectors}
+    set help_tips(.toolbar.plot) {Plot selected vectors in RIGHT panel}
+    set help_tips(.toolbar.conf) {Global Gnuplot options}
+
     ##########################################
     # status bar
     ##########################################
     frame .statusbar
-    label .statusbar.label -relief flat -text {Ready}
-    pack .statusbar.label -anchor w -expand 0 -fill none -side top
-    pack .statusbar -expand 0 -fill x -side bottom
+    label .statusbar.label -anchor w -relief sunken -bd 1 -text {Ready} -justify left
+    pack .statusbar.label -anchor w -expand 1 -fill x -padx 2 -pady 2 -side left
 
     set g(status) .statusbar.label
 
     ##########################################
     # main window
     ##########################################
-    frame .main -borderwidth 1 -height 30 -relief sunken -width 30
+    frame .main -borderwidth 1 -height 30 -relief flat -width 30
     createMainArea .main
+
+    pack .toolbar -anchor center -expand 0 -fill x -side top
     pack .main -expand 1 -fill both
+    pack .statusbar -expand 0 -fill x -side bottom
 }
 
 #===================================================================
@@ -463,8 +499,28 @@ proc defaultBindings {} {
 
    set fonts(normal) -Adobe-Helvetica-Medium-R-Normal-*-*-120-*-*-*-*-*-*
    set fonts(bold)   -Adobe-Helvetica-Bold-R-Normal-*-*-120-*-*-*-*-*-*
-   #set fonts(normal) -Adobe-Helvetica-Medium-R-Normal-*-*-140-*-*-*-*-*-*
-   #set fonts(bold)   -Adobe-Helvetica-Bold-R-Normal-*-*-140-*-*-*-*-*-*
+
+   global fonts tcl_platform tk_version
+
+   if {$tcl_platform(platform) == "unix"} {
+      set fonts(normal)  -Adobe-Helvetica-Medium-R-Normal-*-*-120-*-*-*-*-*-*
+      set fonts(bold)    -Adobe-Helvetica-Bold-R-Normal-*-*-120-*-*-*-*-*-*
+   } else {
+      # Windows, Mac
+      if {$tk_version<8.2} {
+         set s 140
+      } else {
+         set s 110
+      }
+      font create opp_normal -family "MS Sans Serif" -size 8
+      font create opp_bold   -family "MS Sans Serif" -size 8 -weight bold
+      font create opp_balloon -family "MS Sans Serif" -size 8
+
+      set fonts(normal)  opp_normal
+      set fonts(bold)    opp_bold
+      set fonts(fixed)   FixedSys
+      set fonts(balloon) opp_balloon
+   }
 
    if {$tcl_platform(platform) == "unix"} {
        option add *Scrollbar.width  12
@@ -472,13 +528,10 @@ proc defaultBindings {} {
        option add *Menu.font        $fonts(normal)
        option add *Label.font       $fonts(normal)
        option add *Entry.font       $fonts(normal)
-       option add *Listbox.font     $fonts(normal)
-       option add *Text.font        $fonts(normal)
+       option add *Listbox.font     $fonts(fixed)
+       option add *Text.font        $fonts(fixed)
        option add *Button.font      $fonts(bold)
    }
-
-   bind Button <Return> {tkButtonInvoke %W}
-
 }
 
 proc checkVersion {} {
@@ -513,6 +566,7 @@ proc startPlove {argv} {
 
    checkVersion
    defaultBindings
+   init_balloons
    initFilters
    createMainWindow
 

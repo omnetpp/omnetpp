@@ -22,6 +22,7 @@ if [info exist OMNETPP_PLOVE_DIR] {
 
    set dir $OMNETPP_PLOVE_DIR
 
+   source [file join $dir icons.tcl]
    source [file join $dir combobox.tcl]
    source [file join $dir panes.tcl]
    source [file join $dir filter.tcl]
@@ -31,9 +32,11 @@ if [info exist OMNETPP_PLOVE_DIR] {
    source [file join $dir widgets.tcl]
    source [file join $dir help.tcl]
    source [file join $dir main.tcl]
+   source [file join $dir balloon.tcl]
    set OMNETPP_PLOVE_README [file join $OMNETPP_PLOVE_DIR README]
 } else {
    set OMNETPP_PLOVE_DIR [file dirname $argv0]
    set OMNETPP_PLOVE_README [file join $OMNETPP_PLOVE_DIR .. doc Readme-Plove.txt]
 }
+
 

@@ -44,6 +44,19 @@ proc regexp_to_stringmatch {expr} {
     return $expr
 }
 
+proc getfocusedpane {} {
+    global g
+
+    set focus [focus]
+    if {$focus == $g(listbox1)} {
+        return 1
+    } elseif {$focus == $g(listbox2)} {
+        return 2
+    } else {
+        error {Dunno which pane!}
+    }
+}
+
 proc busy {{msg {}}} {
     global g
 
@@ -68,7 +81,6 @@ proc status {lb} {
 }
 
 proc fileOpen {} {
-
     global g config
 
     set fname $config(vectorfile)
@@ -107,7 +119,6 @@ proc makeTitle {id} {
 }
 
 proc loadVectorFile {fname} {
-
     global g vec config vec
 
     if {![file readable $fname] || [file type $fname]=="directory"} {
@@ -203,7 +214,6 @@ proc moveVectors {fr to} {
 }
 
 proc copyVectors {fr to} {
-
     global g vec
 
     set sel [$g(listbox$fr) curselection]
@@ -220,9 +230,9 @@ proc copyVectors {fr to} {
     status 2
 }
 
-proc delVectors {lb} {
-
+proc delVectors {{lb {}}} {
     global g vec
+    if {$lb==""} {set lb [getfocusedpane]}
 
     set sel [$g(listbox$lb) curselection]
     if {$sel == ""} {
@@ -245,7 +255,6 @@ proc delVectors {lb} {
 }
 
 proc dupVector {id to} {
-
     global g vec
 
     if {[array names vec "$id,*"]==""} {return}
@@ -261,9 +270,9 @@ proc dupVector {id to} {
     $g(listbox$to) selection set end
 }
 
-proc dupVectors {lb} {
-
+proc dupVectors {{lb {}}} {
     global g
+    if {$lb==""} {set lb [getfocusedpane]}
 
     set sel [$g(listbox$lb) curselection]
     if {$sel == ""} {
@@ -279,15 +288,17 @@ proc dupVectors {lb} {
     status $lb
 }
 
-proc selectAll {lb} {
+proc selectAll {{lb {}}} {
     global g
+    if {$lb==""} {set lb [getfocusedpane]}
+
     $g(listbox$lb) selection set 0 end
     status $lb
 }
 
-proc invertSelection {lb} {
-
+proc invertSelection {{lb {}}} {
     global g
+    if {$lb==""} {set lb [getfocusedpane]}
 
     set n [$g(listbox$lb) index end]
     for {set i 0} {$i<$n} {incr i} {
@@ -300,9 +311,9 @@ proc invertSelection {lb} {
     status $lb
 }
 
-proc selectVectors {lb} {
-
+proc selectVectors {{lb {}}} {
     global g vec
+    if {$lb==""} {set lb [getfocusedpane]}
 
     createOkCancelDialog .ize "Select vectors"
 
@@ -355,9 +366,9 @@ proc selectVectors {lb} {
 
 }
 
-proc replaceInTitles {lb} {
-
+proc replaceInTitles {{lb {}}} {
     global g vec
+    if {$lb==""} {set lb [getfocusedpane]}
 
     createOkCancelDialog .ize "Replace in titles"
 
@@ -435,9 +446,10 @@ proc vectorInfoDialog {id} {
     destroy .ize
 }
 
-proc vectorInfo {lb {y {}}} {
+proc vectorInfo {{lb {}} {y {}}} {
 
     global vec g
+    if {$lb==""} {set lb [getfocusedpane]}
 
     set sel [$g(listbox$lb) curselection]
     if {[llength $sel] < 2} {
@@ -476,9 +488,9 @@ proc vectorInfo {lb {y {}}} {
     }
 }
 
-proc editVectorFilters {lb} {
-
+proc editVectorFilters {{lb {}}} {
     global vec g filt
+    if {$lb==""} {set lb [getfocusedpane]}
 
     set sel [$g(listbox$lb) curselection]
     if {$sel == ""} {
