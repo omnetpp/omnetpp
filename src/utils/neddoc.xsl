@@ -55,6 +55,10 @@
       .comptitle  { font-size=14pt; }
       .subtitle   { font-size=12pt; margin-bottom: 3px}
       FIXME.paramtable { border=2px ridge; border-collapse=collapse;}
+      .src-keyword { font-weight=bold }
+      .src-comment { font-style=italic; color=#404040 }
+      .src-string { color=#006000 }
+      .src-number { color=#0000c0 }
    </xsl:document>
 
    <xsl:document href="{$outputdir}/simplemodules.html" method="html">
