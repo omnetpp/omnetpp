@@ -273,6 +273,7 @@ proc checkVersion {} {
 }
 
 set tk_strictMotif 1
+cd [file dirname [info script]]
 checkVersion
 generic_bindings
 font_bindings
