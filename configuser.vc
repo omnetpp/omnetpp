@@ -26,6 +26,7 @@ TK_VER=8.4
 PVM_DIR=d:/home/tools/pvm3
 MPI_DIR=d:/home/tools/mpi
 EXPAT_DIR=d:/home/tools/expat-1.95.2
+DOXYGEN_DIR=d:/home/tools/doxygen
 
 #
 # Choice of XML parser. Possible choices: expat or none (perhaps libxml in the
@@ -41,6 +42,7 @@ OMNETPP_SRC_DIR=$(OMNETPP_ROOT)/src
 OMNETPP_SAMPLES_DIR=$(OMNETPP_ROOT)/samples
 OMNETPP_TUTORIAL_DIR=$(OMNETPP_ROOT)/tutorial
 OMNETPP_TEST_DIR=$(OMNETPP_ROOT)/test
+OMNETPP_DOC_DIR=$(OMNETPP_ROOT)/doc
 
 OMNETPP_BIN_DIR=$(OMNETPP_ROOT)/bin
 OMNETPP_INCL_DIR=$(OMNETPP_ROOT)/include
@@ -88,6 +90,9 @@ WISH=$(TK_DIR)/bin/wish$(TK_VER:.=).exe
 # flex/bison: only needed it you want to modify NEDC or GNED
 YACC=bison.exe
 LEX=flex.exe
+
+# for documentation generation
+DOXYGEN=$(DOXYGEN_DIR)/bin/doxygen
 
 #
 # configuration
