@@ -147,6 +147,7 @@ class ENVIR_API TOmnetApp
     virtual void messageSent(cMessage *msg, cGate *directToGate) {}
     virtual void messageDelivered(cMessage *msg) {}
     virtual void breakpointHit(const char *lbl, cSimpleModule *mod) {}
+    virtual void moduleMethodCalled(cModule *from, cModule *to, const char *method) {}
     //@}
 
     /** @name Functions called by cEnvir's similar functions.

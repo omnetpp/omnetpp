@@ -271,6 +271,12 @@ void cEnvir::messageDelivered( cMessage *msg )
     app->messageDelivered( msg );
 }
 
+void cEnvir::moduleMethodCalled(cModule *from, cModule *to, const char *method)
+{
+    if (disable_tracing) return;
+    app->moduleMethodCalled(from, to, method);
+}
+
 void cEnvir::objectDeleted( cObject *obj )
 {
     if (app) app->objectDeleted( obj );
