@@ -71,7 +71,7 @@ void App::handleMessage(cMessage *msg)
         int destAddress = destAddresses[intuniform(0, destAddresses.size()-1)];
 
         char pkname[40];
-        sprintf(pkname,"pk-%d-to-%d-#%d", myAddress, destAddress, pkCounter++);
+        sprintf(pkname,"pk-%d-to-%d-#%ld", myAddress, destAddress, pkCounter++);
         ev << "generating packet " << pkname << endl;
 
         Packet *pk = new Packet(pkname);
