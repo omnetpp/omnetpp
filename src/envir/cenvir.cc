@@ -31,6 +31,7 @@
 #include "cmodule.h"
 #include "cnetmod.h"
 
+
 //=== Global objects:
 cEnvir ev;
 
@@ -39,6 +40,19 @@ cHead omnetapps( "user-interfaces", &superhead );
 
 // output buffer
 static char buffer[1024];
+
+
+//=== The DUMMY SECTION -- a tribute to smart linkers
+
+// force the linker to include the user interface library into the executable.
+// dummyDummy() can't be static or very smart linkers will leave it out...
+void envirDummy();
+void dummyDummy() {envirDummy();}
+
+// another dummy variant in case you want to have both Cmdenv and Tkenv in
+//void cmdenvDummy();
+//void tkenvDummy();
+//void dummyDummy() {cmdenvDummy();tkenvDummy();}
 
 // A dummy function to force UNIX linkers collect TSlaveApp's constructor
 // as a linker symbol. Otherwise we get "undefined symbol" for it.
