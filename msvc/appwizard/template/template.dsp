@@ -154,7 +154,7 @@ InputPath=.\$$root$$.ned
 InputName=$$root$$
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	$$OPPDIR$$\bin\nedc.exe -s _n.cpp $(InputName).ned
+	$$OPPDIR$$\bin\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -165,7 +165,7 @@ InputPath=.\$$root$$.ned
 InputName=$$root$$
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	$$OPPDIR$$\bin\nedc.exe -s _n.cpp $(InputName).ned
+	$$OPPDIR$$\bin\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -176,7 +176,7 @@ InputPath=.\$$root$$.ned
 InputName=$$root$$
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	$$OPPDIR$$\bin\nedc.exe -s _n.cpp $(InputName).ned
+	$$OPPDIR$$\bin\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -187,7 +187,7 @@ InputPath=.\$$root$$.ned
 InputName=$$root$$
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	$$OPPDIR$$\bin\nedc.exe -s _n.cpp $(InputName).ned
+	$$OPPDIR$$\bin\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -212,7 +212,7 @@ InputPath=.\$$MODULE_NAME$$.ned
 InputName=$$MODULE_NAME$$
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	$$OPPDIR$$\bin\nedc.exe -s _n.cpp $(InputName).ned
+	$$OPPDIR$$\bin\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -223,7 +223,7 @@ InputPath=.\$$MODULE_NAME$$.ned
 InputName=$$MODULE_NAME$$
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	$$OPPDIR$$\bin\nedc.exe -s _n.cpp $(InputName).ned
+	$$OPPDIR$$\bin\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -234,7 +234,7 @@ InputPath=.\$$MODULE_NAME$$.ned
 InputName=$$MODULE_NAME$$
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	$$OPPDIR$$\bin\nedc.exe -s _n.cpp $(InputName).ned
+	$$OPPDIR$$\bin\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -245,7 +245,7 @@ InputPath=.\$$MODULE_NAME$$.ned
 InputName=$$MODULE_NAME$$
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	$$OPPDIR$$\bin\nedc.exe -s _n.cpp $(InputName).ned
+	$$OPPDIR$$\bin\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 

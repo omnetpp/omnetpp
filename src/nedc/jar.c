@@ -583,6 +583,8 @@ int main (int argc, char *argv [])
                 printf( "NEDC " NEDC_VERSION " - part of OMNeT++. (C) 1992-2003 Andras Varga\n"
                         "See the license for distribution terms and warranty disclaimer.\n"
                         "\n"
+                        "IMPORTANT: nedc HAS BEEN OBSOLETED BY nedtool. PLEASE USE nedtool INSTEAD!\n"
+                        "\n"
                         "Network Description Compiler.\n"
                         "Usage: nedc [-v] [-I <dir> -I ...] [-s <suffix>] <nedfile1> <nedfile2> ...\n"
                         "  -v          verbose\n"
