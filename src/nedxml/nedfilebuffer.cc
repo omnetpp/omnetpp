@@ -15,6 +15,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
+#include <time.h>
 #include <sys/stat.h>
 #include <assert.h>
 #include "nedfilebuffer.h"

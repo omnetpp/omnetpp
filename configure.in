@@ -274,7 +274,10 @@ if test $stdcpp_ok = no; then
    OPP_CHECK_LIB(standard C++ lib, iostream, /**/, , -lcxx, stdcpp_ok, SYS_LIBS="-lcxx $SYS_LIBS")
 fi
 if test $stdcpp_ok = no; then
-   AC_MSG_ERROR([standard C++ library -lstdc++ or -lcxx not found])
+   OPP_CHECK_LIB(standard C++ lib, iostream, /**/, , -lcxa, stdcpp_ok, SYS_LIBS="-lcxa $SYS_LIBS")
+fi
+if test $stdcpp_ok = no; then
+   AC_MSG_ERROR([standard C++ library -lstdc++ or -lcxx or -lcxa not found])
 fi
 
 # dlopen()
