@@ -1,6 +1,6 @@
 //==========================================================================
-//   FSUTILS.H - header for
-//                             OMNeT++
+//  FSUTILS.H - part of
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //

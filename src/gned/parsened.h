@@ -1,7 +1,8 @@
 //==========================================================================
-//   PARSENED.H -
-//            part of GNED, the graphical network editor of
-//                             OMNeT++
+//  PARSENED.H - part of
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
 //==========================================================================
 

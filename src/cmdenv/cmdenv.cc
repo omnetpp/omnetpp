@@ -1,6 +1,6 @@
 //==========================================================================
-//   CMDENV.CC - part of
-//                             OMNeT++
+//  CMDENV.CC - part of
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //

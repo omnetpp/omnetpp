@@ -1,5 +1,8 @@
 //==========================================================================
-// nederror.cc  - part of the OMNeT++ Discrete System Simulation System
+// nederror.cc -
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
 // Contents:
 //   NEDError, NEDInternalError functions

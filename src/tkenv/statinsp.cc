@@ -1,7 +1,8 @@
 //==========================================================================
-//   STATINSP.CC -
-//            part of the Tcl/Tk environment of
-//                             OMNeT++
+//  STATINSP.CC - part of
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
 //==========================================================================
 

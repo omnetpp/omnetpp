@@ -1,6 +1,6 @@
 //==========================================================================
-//   APPREG.H - header for
-//                             OMNeT++
+//  APPREG.H - part of
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //

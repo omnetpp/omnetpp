@@ -1,6 +1,6 @@
 //==========================================================================
 //  CLCG32.CC - part of
-//                         OMNeT++
+//                 OMNeT++/OMNEST
 //              Discrete System Simulation in C++
 //
 // Contents:

@@ -1,7 +1,8 @@
 //==========================================================================
-//   INSPECT.CC -
-//            part of the Tcl/Tk environment of
-//                             OMNeT++
+//  INSPECT.CC - part of
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
 //  Implementation of inspector() functions
 //

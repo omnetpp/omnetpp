@@ -1,5 +1,8 @@
 //==========================================================================
-// nedelement.h  - part of the OMNeT++ Discrete System Simulation System
+// nedelement.h  -
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
 // Contents:
 //   class NEDElement

@@ -1,3 +1,10 @@
+//==========================================================================
+// EBNFCFG.H
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
+//
+//==========================================================================
 
 /*
 * The NEDC grammar files, ebnf.y and ebnf.lex are shared between

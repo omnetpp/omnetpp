@@ -1,7 +1,7 @@
 //=========================================================================
+//  CPARSIMSEGMENT.H - part of
 //
-// CPARSIMSEGMENT.H - part of
-//                          OMNeT++
+//                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
 //   Written by:  Andras Varga, 2003

@@ -1,6 +1,6 @@
 //==========================================================================
-//   CINIFILE.H - header for
-//                             OMNeT++
+//  CINIFILE.H - part of
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //

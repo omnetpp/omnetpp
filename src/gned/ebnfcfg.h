@@ -1,3 +1,10 @@
+//==========================================================================
+// EBNFCFG.H
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
+//
+//==========================================================================
 
 /*
 * The NEDC grammar files, ebnf.y and ebnf.lex are shared between
@@ -13,6 +20,6 @@
 
 /* This is the GNED version: */
 #define DOING_GNED
-       
+
 #define GNED(code) code
 #define NEDC(code) /**/

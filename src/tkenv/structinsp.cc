@@ -1,7 +1,8 @@
 //==========================================================================
-//   STRUCTINSP.CC -
-//            part of the Tcl/Tk environment of
-//                             OMNeT++
+//  STRUCTINSP.CC - part of
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
 //  Implementation of
 //    cStructDescriptor-based inspector

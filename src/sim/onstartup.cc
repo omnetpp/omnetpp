@@ -1,6 +1,6 @@
 //==========================================================================
-//   STARTUP.CC - part of
-//                             OMNeT++
+//  STARTUP.CC - part of
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //

@@ -1,5 +1,5 @@
 /***************************************************/
-/*                OMNeT++ JAR source               */
+/*       OMNeT++/OMNEST NEDC (JAR) source          */
 /*                                                 */
 /*  File: jar_func.h                               */
 /*                                                 */

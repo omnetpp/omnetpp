@@ -1,6 +1,8 @@
 //==========================================================================
-//   CNEDNETWORKBUILDER.H -
-//            part of OMNeT++
+//  CNEDNETWORKBUILDER.H - part of
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
 //==========================================================================
 

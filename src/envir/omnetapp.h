@@ -1,6 +1,6 @@
 //==========================================================================
-//   OMNETAPP.H - header for
-//                             OMNeT++
+//  OMNETAPP.H - part of
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //

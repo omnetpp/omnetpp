@@ -1,6 +1,6 @@
 //==========================================================================
-//   PARSIMINDEX.H - header for
-//                             OMNeT++
+//  PARSIMINDEX.H - part of
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //  Defines modules for documentation generation. Nothing useful for the
@@ -16,7 +16,7 @@
 *--------------------------------------------------------------*/
 
 /**
- * @mainpage OMNeT++ Parallel simulation support
+ * @mainpage OMNeT++/OMNEST Parallel simulation support
  *
  * This documentation describes the architecture of the distributed
  * parallel simulation implementation in OMNeT++.

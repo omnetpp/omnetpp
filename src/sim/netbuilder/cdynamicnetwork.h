@@ -1,6 +1,8 @@
 //==========================================================================
-//   CDYNAMICNETWORK.H -
-//            part of OMNeT++
+//  CDYNAMICNETWORK.H - part of
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
 //==========================================================================
 

@@ -1,5 +1,8 @@
 //==========================================================================
-// nedutil.cc - part of the OMNeT++ Discrete System Simulation System
+// nedutil.cc - part of
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
 // Contents:
 //   misc util functions

@@ -1,7 +1,7 @@
 //=========================================================================
-//
 //  CSIMUL.CC - part of
-//                          OMNeT++
+//
+//                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
 //   Definition of global object:

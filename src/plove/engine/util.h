@@ -1,12 +1,12 @@
 //=========================================================================
 //  UTIL.H - part of
-//                          OMNeT++
+//                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2003 Andras Varga
+  Copyright (C) 1992-2004 Andras Varga
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -28,7 +28,7 @@
 #  define ASSERT(expr)  ((void) ((expr) ? 0 : (throw new Exception("ASSERT: condition %s false, %s line %d", \
                         #expr, __FILE__, __LINE__), 0)))
 //#  define DBG(x)  printf x
-#  define DBG(x)  
+#  define DBG(x)
 #endif
 
 #endif

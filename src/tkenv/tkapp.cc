@@ -1,7 +1,8 @@
 //==========================================================================
-//  TKAPP.CC -
-//            for the Tcl/Tk environment of
-//                            OMNeT++
+//  TKAPP.CC - part of
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
 //  contains:  OmnetTkApp member functions
 //

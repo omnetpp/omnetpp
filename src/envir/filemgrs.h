@@ -1,6 +1,6 @@
 //==========================================================================
-//   FILEMGRS.H - header for
-//                             OMNeT++
+//  FILEMGRS.H - part of
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //

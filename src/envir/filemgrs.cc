@@ -1,6 +1,6 @@
 //==========================================================================
-//   FILEMGRS.CC - header for
-//                             OMNeT++
+//  FILEMGRS.CC - part of
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //  Members of the following classes:

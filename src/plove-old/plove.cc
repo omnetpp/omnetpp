@@ -1,10 +1,8 @@
 //==========================================================================
-//  PLOVE.CC -
-//                output vector plotter tool for
-//                            OMNeT++
+//  PLOVE.CC - part of
 //
-//  This is an executable wrapper around the otherwise 100% pure Tcl/Tk
-//  plove code.
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
 //==========================================================================
 

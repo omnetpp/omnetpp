@@ -1,7 +1,7 @@
 //=========================================================================
-//
 //  CTYPES.CC - part of
-//                            OMNeT++
+//
+//                    OMNeT++/OMNEST
 //             Discrete System Simulation in C++
 //
 //   Define_Function macros for common <math.h> functions

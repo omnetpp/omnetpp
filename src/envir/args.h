@@ -1,6 +1,6 @@
 //==========================================================================
 //  ARGS.H - part of
-//                             OMNeT++
+//                     OMNeT++/OMNEST
 //             Discrete System Simulation in C++
 //
 //    Command line argument handling

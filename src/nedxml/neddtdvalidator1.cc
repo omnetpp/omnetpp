@@ -1,5 +1,8 @@
 //==========================================================================
-// neddtdvalidator1.cc - part of the OMNeT++ Discrete System Simulation System
+// neddtdvalidator1.cc -
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
 //==========================================================================
 

@@ -1,6 +1,6 @@
 //==========================================================================
-//   AKOUTVECTORMGR.H - header for
-//                             OMNeT++
+//  AKOUTVECTORMGR.H - part of
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //

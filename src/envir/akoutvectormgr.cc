@@ -1,6 +1,6 @@
 //==========================================================================
-//   AKOUTVECTORMGR.CC - header for
-//                             OMNeT++
+//  AKOUTVECTORMGR.CC - part of
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //  Members of the following classes:

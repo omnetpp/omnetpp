@@ -1,7 +1,7 @@
 //==NL=============================================================NL======
-//
 //  CDETECT.CC - part of
-//                          OMNeT++
+//
+//                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
 //         File designed and written by the Hollandiaba Team

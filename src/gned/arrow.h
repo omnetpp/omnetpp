@@ -1,7 +1,8 @@
 //==========================================================================
-//   ARROW.H -
-//	      part of GNED, the graphical network editor of
-//			       OMNeT++
+//   ARROW.H
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
 //  Contents:
 //   connection arrow positioning in module drawing

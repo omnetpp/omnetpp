@@ -1,5 +1,8 @@
 //==========================================================================
-// nedsemanticvalidator.cc - part of the OMNeT++ Discrete System Simulation System
+// nedsemanticvalidator.cc - part of
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
 // Contents:
 //   class NEDSemanticValidator

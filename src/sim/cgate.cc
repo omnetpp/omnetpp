@@ -1,7 +1,7 @@
 //========================================================================
-//
 //  CGATE.CC - part of
-//                         OMNeT++
+//
+//                 OMNeT++/OMNEST
 //              Discrete System Simulation in C++
 //
 //   Member functions of

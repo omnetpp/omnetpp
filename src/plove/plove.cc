@@ -1,14 +1,15 @@
 //==========================================================================
-//  PLOVE.CC -
-//                Part of
-//                            OMNeT++
+//  PLOVE.CC - part of
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
 //  contains: startup code
 //
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2003 Andras Varga
+  Copyright (C) 1992-2004 Andras Varga
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `terms' for details on this and other legal matters.

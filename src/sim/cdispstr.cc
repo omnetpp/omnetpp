@@ -1,6 +1,6 @@
 //==========================================================================
-//   CDISPSTR.CC   - header for
-//                             OMNeT++
+//   CDISPSTR.CC  - part of
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //

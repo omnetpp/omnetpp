@@ -1,5 +1,9 @@
 //==========================================================================
-// Part of the OMNeT++ Discrete System Simulation System
+// neddtdvalidator.cc
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
+//
 //
 // Generated from ned.dtd by dtdclassgen.pl
 //

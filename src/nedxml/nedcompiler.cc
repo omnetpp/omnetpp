@@ -1,5 +1,8 @@
 //==========================================================================
-// nedcompiler.cc - part of the OMNeT++ Discrete System Simulation System
+// nedcompiler.cc -
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
 // Contents:
 //   class NEDCompiler

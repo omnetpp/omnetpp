@@ -1,7 +1,7 @@
 //=========================================================================
-//
 //  CSTAT.CC - part of
-//                          OMNeT++
+//
+//                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
 //        Based on the MISS simulator's result collection

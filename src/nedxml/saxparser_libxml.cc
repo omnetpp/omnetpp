@@ -1,6 +1,8 @@
 //==========================================================================
-//   SAXPARSERLIBXML.CC -
-//            part of OMNeT++
+//  SAXPARSERLIBXML.CC - part of
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
 //==========================================================================
 

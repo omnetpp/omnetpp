@@ -1,6 +1,8 @@
 //==========================================================================
-//   NEDFILEBUFFER.CC -
-//            part of OMNeT++
+//  NEDFILEBUFFER.CC - part of
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
 //==========================================================================
 

@@ -1,7 +1,8 @@
 //==========================================================================
-//   OBJINSP.CC -
-//            part of the Tcl/Tk environment of
-//                             OMNeT++
+//  OBJINSP.CC - part of
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
 //  Implementation of
 //    inspectors

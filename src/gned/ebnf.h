@@ -1,5 +1,5 @@
 /***************************************************/
-/*            OMNeT++ NEDC (JAR) source            */
+/*            OMNeT++/OMNEST nedc source           */
 /*                                                 */
 /*  File: ebnf.h                                   */
 /*                                                 */

@@ -4,7 +4,7 @@ E                       [Ee][+-]?{D}+
 
 %{
 /***************************************************/
-/*            OMNeT++ NEDC (JAR) source            */
+/*       OMNeT++/OMNEST NEDC (JAR) source          */
 /*                                                 */
 /*  File: ebnf.lex                                 */
 /*                                                 */

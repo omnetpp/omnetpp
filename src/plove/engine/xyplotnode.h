@@ -1,12 +1,12 @@
 //=========================================================================
 //  XYPLOTNODE.H - part of
-//                          OMNeT++
+//                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2003 Andras Varga
+  Copyright (C) 1992-2004 Andras Varga
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.

@@ -1,5 +1,8 @@
 //==========================================================================
-// nederror.h  - part of the OMNeT++ Discrete System Simulation System
+// nederror.h  -
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
 // Contents:
 //   error handling functions

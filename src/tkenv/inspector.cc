@@ -1,7 +1,8 @@
 //==========================================================================
-//   INSPECTOR.CC -
-//            part of the Tcl/Tk environment of
-//                             OMNeT++
+//  INSPECTOR.CC - part of
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
 //  Implementation of
 //    inspectors
@@ -241,8 +242,8 @@ void TInspector::setInspectButton(const char *button, cObject *object, bool disp
           sprintf(idtext, " (id=%d)", static_cast<cModule *>(object)->id());
       }
       CHK(Tcl_VarEval(interp, windowname, button,".e config -state normal ",
-                              "-text {(", object->className(), ") ", 
-                              (displayfullpath ? object->fullPath().c_str() : object->fullName()), 
+                              "-text {(", object->className(), ") ",
+                              (displayfullpath ? object->fullPath().c_str() : object->fullName()),
                               idtext, "} ",
                               "-command {opp_inspect ",ptrToStr(object)," ",buf,"}",
                               NULL));

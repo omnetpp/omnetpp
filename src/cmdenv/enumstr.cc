@@ -1,6 +1,6 @@
 //==========================================================================
-//   ENUMSTR.CC - part of
-//                             OMNeT++
+//  ENUMSTR.CC - part of
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //

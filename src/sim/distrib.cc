@@ -1,5 +1,8 @@
 //==========================================================================
-// file distrib.cc
+// DISTRIB.CC
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
 // Random variate generation
 //

@@ -1,7 +1,8 @@
 //==========================================================================
-//   MODINSP.CC -
-//            part of the Tcl/Tk environment of
-//                             OMNeT++
+//  MODINSP.CC - part of
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
 //  Implementation of
 //    inspectors

@@ -1,7 +1,7 @@
 //==========================================================================
-//   ARROW.H -
-//            part of the Tcl/Tk environment of
-//                             OMNeT++
+//  ARROW.H - part of
+//
+//                     OMNeT++/OMNEST
 //
 //  Contents:
 //   connection arrow positioning in module drawing

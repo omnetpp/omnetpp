@@ -1,6 +1,6 @@
 //==========================================================================
 //  ENVDEFS.H - part of
-//                             OMNeT++
+//                     OMNeT++/OMNEST
 //             Discrete System Simulation in C++
 //
 //  General defines for the Envir library

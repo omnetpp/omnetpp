@@ -1,7 +1,7 @@
 //=========================================================================
+//  CRECEIVEDEXCEPTION.H - part of
 //
-// CRECEIVEDEXCEPTION.H - part of
-//                          OMNeT++
+//                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
 //   Written by:  Andras Varga, 2003
@@ -9,7 +9,7 @@
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2004 Andras Varga
+  Copyright (C) 2003-2004 Andras Varga
   Monash University, Dept. of Electrical and Computer Systems Eng.
   Melbourne, Australia
 
@@ -37,7 +37,7 @@ class cReceivedException : public cException
 };
 
 /**
- * Represents a termination exception that has been received from other 
+ * Represents a termination exception that has been received from other
  * partitions.
  *
  * @ingroup Parsim

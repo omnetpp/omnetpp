@@ -1,5 +1,8 @@
 //==========================================================================
-// nedbasicvalidator.h - part of the OMNeT++ Discrete System Simulation System
+// nedbasicvalidator.h -
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
 // Contents:
 //   class NEDBasicValidator

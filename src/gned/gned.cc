@@ -1,7 +1,8 @@
 //==========================================================================
-//  GNED.CC -
-//                graphical network editor for
-//                            OMNeT++
+//  GNED.CC - part of
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
 //  contains: startup code
 //

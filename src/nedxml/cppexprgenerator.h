@@ -1,6 +1,8 @@
 //==========================================================================
-//   CPPEXPRGENERATOR.H -
-//            part of OMNeT++
+//  CPPEXPRGENERATOR.H - part of
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
 //==========================================================================
 

@@ -1,7 +1,8 @@
 //==========================================================================
-//   PARSENED.CC -
-//            part of GNED, the graphical network editor of
-//                             OMNeT++
+//  PARSENED.CC - part of
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
 //==========================================================================
 

@@ -1,7 +1,7 @@
 //=========================================================================
-//
 //  SEEDTOOL.CC - part of
-//                          OMNeT++
+//
+//                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
 //   seedtool utility
@@ -152,7 +152,7 @@ int main(int argc, char *argv[])
     if (argc==1)
     {
          fprintf(stderr,
-               "seedtool - part of OMNeT++, (C) 1992-2004 Andras Varga\n"
+               "seedtool - part of OMNeT++/OMNEST, (C) 1992-2004 Andras Varga\n"
                "See the license for distribution terms and warranty disclaimer.\n"
                "\n"
                "Generates seeds for the LCG32 random number generator. This RNG has a\n"

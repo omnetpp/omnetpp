@@ -1,6 +1,6 @@
 //==========================================================================
-//  AKAROARNG.CC - part of
-//                         OMNeT++
+//  AKAROARNG.H - part of
+//                 OMNeT++/OMNEST
 //              Discrete System Simulation in C++
 //
 // Contents:

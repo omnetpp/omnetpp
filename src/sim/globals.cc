@@ -1,7 +1,7 @@
 //=========================================================================
-//
 //  GLOBALS.CC - part of
-//                          OMNeT++
+//
+//                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
 //  Author: Andras Varga

@@ -1,7 +1,8 @@
 //==========================================================================
-//   NEDFILE.CC -
-//            part of GNED, the graphical network editor of
-//                             OMNeT++
+//  NEDFILE.CC - part of
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
 //
 //==========================================================================
 

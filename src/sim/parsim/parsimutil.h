@@ -1,7 +1,6 @@
 //=========================================================================
-//
-// PARSIMUTIL.H - part of
-//                          OMNeT++
+//  PARSIMUTIL.H - part of
+//                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
 //   Written by:  Andras Varga
@@ -9,7 +8,7 @@
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2004 Andras Varga
+  Copyright (C) 2003-2004 Andras Varga
   Monash University, Dept. of Electrical and Computer Systems Eng.
   Melbourne, Australia
 
@@ -25,7 +24,7 @@
  * Expects a -p<procId>,<numPartitions> command line argument, and parses it
  * into the variables passed. Throws exception on error.
  */
-void getProcIdFromCommandLineArgs(int& myProcId, int& numPartitions, 
+void getProcIdFromCommandLineArgs(int& myProcId, int& numPartitions,
                                   const char *caller);
 
 #endif

@@ -1,7 +1,7 @@
 /***************************************************/
 /*  File: nedgrammar.h                             */
 /*                                                 */
-/*  Part of OMNeT++                                */
+/*  Part of OMNeT++/OMNEST                         */
 /*                                                 */
 /*  Contents:                                      */
 /*    declarations shared by ned.lex and ned.y     */
