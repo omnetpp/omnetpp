@@ -38,7 +38,7 @@ Define_Module({Sender});
 void {Sender}::activity()
 {
    // create and set channel
-   cChannel *ch = new cSimpleChannel("channel");
+   cSimpleChannel *ch = new cSimpleChannel("channel");
    cPar *d = new cPar();
    *d = 0.1;
    ch->setDelay( d );
