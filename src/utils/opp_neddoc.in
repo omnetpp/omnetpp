@@ -134,7 +134,7 @@ echo 'applying xslt stylesheet...'
 xsltproc --stringparam outputdir "$outdir" \
          --stringparam imagesxml "$imagesxml" \
          --stringparam document-unassigned-params "$unassignedpars" \
-         --stringparam have_dot "$have-dot" \
+         --stringparam have_dot "$have_dot" \
          --stringparam doxytagfile "$doxytagfile" \
          --stringparam doxyhtmldir "$doxyhtmldir" \
          $NEDDOC_XSL $TMPFILE >/dev/null || exit 1
