@@ -374,13 +374,13 @@ clean:
 
 depend:
 	makedepend -Y \$(INCLUDE_PATH) -- *.cc
-	makedepend -Y \$(INCLUDE_PATH) -fmakefile.in -- *.cc
+	makedepend -Y \$(INCLUDE_PATH) -fMakefile.in -- *.cc
 
 re-makemake:
-	makemake -f $args1  #recreate makefile
+	makemake -f $args1  #recreate Makefile
 
 re-makemake-m:
-	makemake -f -m $args1  #recreate makefile.in
+	makemake -f -m $args1  #recreate Makefile.in
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
