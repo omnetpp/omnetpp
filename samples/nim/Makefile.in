@@ -39,6 +39,7 @@ SHLIB_LD=@SHLIB_LD@
 
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
+EXE_SUFFIX=@EXE_SUFFIX@
 
 OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
 OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
@@ -83,7 +84,7 @@ players.o: players.cc
 	$(CXX) -c $(COPTS) players.cc
 
 clean:
-	rm -f *.o *_n.cc $(TARGET)
+	rm -f *.o *_n.cc $(TARGET)$(EXE_SUFFIX)
 	rm -f *.vec *.sca
 
 depend:
@@ -98,4 +99,3 @@ re-makemake-m:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-players.o: players.h

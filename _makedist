@@ -31,7 +31,7 @@ rm bin/makemake
 
 # cleanup
 rm _setperm
-rm _tag.bat
+rm _tag
 rm _makedist
 rm -rf _icons
 rm config.*

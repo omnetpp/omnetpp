@@ -39,6 +39,7 @@ SHLIB_LD=@SHLIB_LD@
 
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
+EXE_SUFFIX=@EXE_SUFFIX@
 
 OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
 OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
@@ -89,7 +90,7 @@ switch.o: switch.cc
 	$(CXX) -c $(COPTS) switch.cc
 
 clean:
-	rm -f *.o *_n.cc $(TARGET)
+	rm -f *.o *_n.cc $(TARGET)$(EXE_SUFFIX)
 	rm -f *.vec *.sca
 
 depend:
@@ -104,7 +105,3 @@ re-makemake-m:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-client.o: dyna.h
-server.o: dyna.h
-servproc.o: dyna.h
-switch.o: dyna.h

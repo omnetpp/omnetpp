@@ -39,6 +39,7 @@ SHLIB_LD=@SHLIB_LD@
 
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
+EXE_SUFFIX=@EXE_SUFFIX@
 
 OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
 OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
@@ -80,7 +81,7 @@ hist.o: hist.cc
 	$(CXX) -c $(COPTS) hist.cc
 
 clean:
-	rm -f *.o *_n.cc $(TARGET)
+	rm -f *.o *_n.cc $(TARGET)$(EXE_SUFFIX)
 	rm -f *.vec *.sca
 
 depend:
@@ -94,3 +95,4 @@ re-makemake-m:
 	makemake -f -m    #recreate Makefile.in
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+

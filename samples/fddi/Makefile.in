@@ -39,6 +39,7 @@ SHLIB_LD=@SHLIB_LD@
 
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
+EXE_SUFFIX=@EXE_SUFFIX@
 
 OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
 OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
@@ -104,7 +105,7 @@ ssm_ifs.o: ssm_ifs.cc
 	$(CXX) -c $(COPTS) ssm_ifs.cc
 
 clean:
-	rm -f *.o *_n.cc $(TARGET)
+	rm -f *.o *_n.cc $(TARGET)$(EXE_SUFFIX)
 	rm -f *.vec *.sca
 
 depend:
@@ -119,6 +120,3 @@ re-makemake-m:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-fddi_mac.o: fddi_def.h fddi_mac.h
-othermod.o: otherdef.h fddi_def.h othermod.h
-ssm_ifs.o: ssmifdef.h fddi_def.h ssm_ifs.h

@@ -39,6 +39,7 @@ SHLIB_LD=@SHLIB_LD@
 
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
+EXE_SUFFIX=@EXE_SUFFIX@
 
 OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
 OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
@@ -101,7 +102,7 @@ hc_rte.o: hc_rte.cc
 	$(CXX) -c $(COPTS) hc_rte.cc
 
 clean:
-	rm -f *.o *_n.cc $(TARGET)
+	rm -f *.o *_n.cc $(TARGET)$(EXE_SUFFIX)
 	rm -f *.vec *.sca
 
 depend:
@@ -116,5 +117,3 @@ re-makemake-m:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-gensink.o: gensink.h
-hc_rte.o: hc_rte.h
