@@ -94,7 +94,7 @@ proc createBltGraph {graphtype {graphname ""}} {
     $graph legend configure -anchor ne
     $graph legend configure -relief solid
     $graph legend configure -borderwidth 1
-    $graph legend configure -font {"Small Fonts" 7}
+    $graph legend configure -font [$graph axis cget x -tickfont]
 
     pack $graph -expand 1 -fill both
 
@@ -236,6 +236,7 @@ proc bltGraph_PropertiesDialog {graph {what "lines"}} {
         set tabs($tab) [$nb insert end -text $title -window $nb.$tab  -fill both]
     }
     $nb select $tabs($what)
+    #FIXME preserve last open tab
 
     # Titles page
     set f $nb.titles
@@ -247,13 +248,23 @@ proc bltGraph_PropertiesDialog {graph {what "lines"}} {
 
     # Axes page
     set f $nb.axes
-    label-entry $f.xlabel "X axis label"
-    label-entry $f.ylabel "Y axis label"
-    label-combo $f.xrotate "Rotate X axis labels by" {0 30 45 60 90}
-    $f.xlabel.e configure -textvariable tmp(xlabel)
-    $f.ylabel.e configure -textvariable tmp(ylabel)
-    $f.xrotate.e configure -textvariable tmp(xrotate)
-    pack $f.xlabel $f.ylabel $f.xrotate -side top -anchor w -expand 0 -fill x
+    label-entry $f.xlabel "X axis title"
+    label-entry $f.ylabel "Y axis title"
+    label-entry $f.titlefont "Title font"
+    label-entry $f.tickfont "Label font"
+    label-combo $f.xrotate "Rotate X labels by" {0 30 45 60 90}
+    label-combo $f.xdiv "X axis subdivisions" {1 2 4 5 10}
+    label-combo $f.ydiv "Y axis subdivisions" {1 2 4 5 10}
+    $f.xlabel.e configure -textvariable tmp(axisxlabel)
+    $f.ylabel.e configure -textvariable tmp(axisylabel)
+    $f.titlefont.e configure -textvariable tmp(axistitlefont)
+    $f.tickfont.e configure -textvariable tmp(axistickfont)
+    $f.xrotate.e configure -textvariable tmp(axisxrotate)
+    $f.xdiv.e configure -textvariable tmp(xdiv)
+    $f.ydiv.e configure -textvariable tmp(ydiv)
+    pack $f.xlabel $f.ylabel $f.titlefont $f.tickfont $f.xrotate -side top -anchor w -expand 0 -fill x
+    #FIXME "axis -subdivisions" doesn't seem to work in BLT
+    #pack $f.xdiv $f.ydiv -side top -anchor w -expand 0 -fill x
 
     # Gridlines page
     set f $nb.gridlines
@@ -278,14 +289,19 @@ proc bltGraph_PropertiesDialog {graph {what "lines"}} {
     pack $f.pos $f.anchor $f.relief $f.font -side top -anchor w -fill x
 
     # fill dialog with data
+    # FIXME bring this *before* widget creations, because combo doesn't obey settings!
     set graph [.bltwin.nb tab cget select -window].g
 
     set tmp(graphtitle) [$graph cget -title]
     set tmp(titlefont) [$graph cget -font]
 
-    set tmp(xlabel) [$graph axis cget x -title]
-    set tmp(ylabel) [$graph axis cget y -title]
-    set tmp(xrotate) [$graph axis cget x -rotate]
+    set tmp(axisxlabel) [$graph axis cget x -title]
+    set tmp(axisylabel) [$graph axis cget y -title]
+    set tmp(axistitlefont) [$graph axis cget x -titlefont]
+    set tmp(axistickfont) [$graph axis cget x -tickfont]
+    set tmp(axisxrotate) [$graph axis cget x -rotate]
+    set tmp(axisxdiv) [$graph axis cget x -subdivisions]
+    set tmp(axisydiv) [$graph axis cget y -subdivisions]
 
     set tmp(legendshow) [expr [$graph legend cget -hide]==0]
     set tmp(legendpos) [$graph legend cget -position]
@@ -298,16 +314,21 @@ proc bltGraph_PropertiesDialog {graph {what "lines"}} {
         $graph config -title $tmp(graphtitle)
         $graph config -font $tmp(titlefont)
 
-        $graph axis config x -title $tmp(xlabel)
-        $graph axis config y -title $tmp(ylabel)
-        $graph axis config x -rotate $tmp(xrotate)
+        $graph axis config x -title $tmp(axisxlabel)
+        $graph axis config y -title $tmp(axisylabel)
+        $graph axis config x -titlefont $tmp(axistitlefont)
+        $graph axis config y -titlefont $tmp(axistitlefont)
+        $graph axis config x -tickfont $tmp(axistickfont)
+        $graph axis config y -tickfont $tmp(axistickfont)
+        $graph axis config x -rotate $tmp(axisxrotate)
+        $graph axis config x -subdivisions $tmp(axisxdiv)
+        $graph axis config y -subdivisions $tmp(axisydiv)
 
         $graph legend config -hide [expr !$tmp(legendshow)]
         $graph legend config -position $tmp(legendpos)
         $graph legend config -anchor $tmp(legendanchor)
         $graph legend config -relief $tmp(legendrelief)
         $graph legend config -font $tmp(legendfont)
-        puts "OK!"
     }
     destroy $w
 }
