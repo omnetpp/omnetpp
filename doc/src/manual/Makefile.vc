@@ -8,11 +8,11 @@ HTM_FILES = history.htm \
             ch-simple-modules.htm \
             ch-messages.htm \
             ch-sim-lib.htm \
-            ch-graphics.htm \
             ch-build-sim-progs.htm \
-            ch-neddoc.htm \
             ch-run-sim.htm \
+            ch-graphics.htm \
             ch-ana-sim.htm \
+            ch-neddoc.htm \
             ch-parallel-exec.htm \
             ch-opp-design.htm \
             ch-ned-grammar.htm \

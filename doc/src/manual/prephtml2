@@ -4,17 +4,21 @@
 #            Add page heading, table of contents etc.
 #
 
+
+$product = "OMNEST";
+#$product = "OMNeT++";
+$opp_version = "3.0";
+#$templatefile = "omnetpp.thtml";
+$templatefile = "omnest.thtml";
+
+
 $fname = $ARGV[0];
 $quiet = 0;
 $singlePage = 1;
 $ext = "html";
-$opp_version = "3.0";
+$apidir = "../api";
 $tagfile = "../../api/opptags.xml";
 
-$apidir = "../api";
-#$apidir = "../../api";
-#$templatefile = "omnetpp.thtml";
-$templatefile = "omnest.thtml";
 
 #
 # read template file
@@ -169,7 +173,7 @@ if ($singlePage) {
       $chapters = "<H1>Chapters</H1>\n<p>\n";
 } else {
       $navbar="<p><b><hr><A HREF=\"toc.$ext\">[Table of Contents]</a><hr></b></p>";
-      $chapters = $navbar . "<H1>OMNeT++ User Manual -- Chapters</H1>\n<p>\n";
+      $chapters = $navbar . "<H1>$product User Manual -- Chapters</H1>\n<p>\n";
 }
 for ($i=0; $i<$nheadings; $i++)
 {
@@ -235,7 +239,7 @@ if ($singlePage)
 {
       print "writing page\n" unless $quiet;
       $new_html = $template;
-      $body = "<H1><B>User Manual</B></H1><H3>OMNeT++ version $opp_version</H3>$chapters<HR>$toc$html";
+      $body = "<H1><B>User Manual</B></H1><H3>$product version $opp_version</H3>$chapters<HR>$toc$html";
       $new_html =~ s/__BODY__/$body/;
       open(FILE,">usman.$ext");
       print FILE $new_html;
@@ -286,7 +290,7 @@ else
       #
       print "writing chapters file\n" unless $quiet;
       $new_html = $template;
-      $body = "<H1><B>User Manual</B></H1><H3>OMNeT++ version $opp_version</H3>$chapters";
+      $body = "<H1><B>User Manual</B></H1><H3>$product version $opp_version</H3>$chapters";
       $new_html =~ s/__BODY__/$body/;
       open(FILE,">usman.$ext");
       print FILE $new_html;

@@ -796,10 +796,11 @@ entry printed on each update, containing ev/sec, simsec/sec, ev/simsec,
 number of messages created/still present/currently scheduled in FES.
 \\\hline
 %%
-\fpar{extra-stack} = 16384 & Specifies the extra amount of stack
-(bytes) that is reserved for each \fname{activity()}
-simple module when the simulation is linked with Cmdenv. \\\hline
+\fpar{extra-stack-kb} = 8 & Specifies the extra amount of stack
+(in kilobytes) that is reserved for each \fname{activity()}
+simple module when the simulation is run under Cmdenv.\\\hline
 \end{longtable}
+
 
 \subsection{Interpreting Cmdenv output}
 \label{sec:ch-run-sim:interpreting-cmdenv-output}
@@ -1004,10 +1005,11 @@ for each message kind during message flow animation. \\\hline
 %%
 \fpar{animation-speed} = 1.0 & Specifies the speed of message flow animation. \\\hline
 %%
-\fpar{extra-stack} = 32768 & Specifies the extra amount of stack
-(bytes) that is reserved for each \textit{\fname{activity()}}
-simple module when the simulation is linked with
-Tkenv. \\\hline
+\fpar{extra-stack-kb} = 48 & Specifies the extra amount of stack
+(in kilobytes) that is reserved for each \textit{\fname{activity()}}
+simple module when the simulation is run under Tkenv. This value is
+significantly higher than the similar one for Cmdenv -- handling
+GUI events requires a large amount of stack space.\\\hline
 \end{longtable}
 
 
@@ -1527,9 +1529,9 @@ real Weibull(real alpha, real beta);
 \index{stack!too small}
 
 {\opp} detected that the module has used more stack space than it has
-allocated. You should increase the stack for that module type. You can call
-the \fname{stackUsage()} from \fname{finish()} to find out actually
-how much stack the module used.
+allocated. The solution is to increase the stack for that module type.
+You can call the \fname{stackUsage()} from \fname{finish()} to find out
+actually how much stack the module used.
 
 
 \subsubsection{``Error: Cannot allocate \textit{nn} bytes stack for module \textit{foo.bar''}}
@@ -1575,7 +1577,8 @@ which is way too few. (In practice, you won't even be able to create
 this many fibers, because physical memory is also a limiting factor).
 Therefore, the 1MB reserved stack size (RSS) must be set to a smaller
 value: the coroutine stack size requested for the module, plus
-extra-stack-for-envir, the sum of the two typically around 32K.
+the \ttt{extra-stack-kb} amount for Cmdenv/Tkenv -- which makes
+about 16K with Cmdenv, and about 48K when using Tkenv.
 Unfortunately, the CreateFiber() Win32 API doesn't allow the RSS to be
 specified. The more advanced CreateFiberEx() API which accepts RSS as
 parameter is unfortunately only available from Windows XP.
