@@ -171,6 +171,8 @@ if ($do_help)
 # print platform
 print (($isWindows ? "windows" : "unix"), " environment detected\n") if $debug;
 
+$nul = ($isWindows ? "nul" : "/dev/null");
+
 # we need backslashes in file names
 $NEDTOOL = tobackslash($NEDTOOL);
 $XSLTPROC = tobackslash($XSLTPROC);
@@ -274,7 +276,7 @@ if ($screenshots)
     {
         print "exporting screenshots in Postscript using GNED...\n" if $verbose;
         if ($GNED eq "") {error("gned not configured");}
-        runprog("$GNED -- -c $outdir -e jpg \@$outdir/filelist.txt >nul")==0 || error("error invoking GNED");
+        runprog("$GNED -- -c $outdir -e jpg \@$outdir/filelist.txt >$nul")==0 || error("error invoking GNED");
         print "converting Postscript to JPG with Ghostscript...\n" if $verbose;
         foreach $i (glob("$outdir/*.eps"))
         {
@@ -316,8 +318,8 @@ $xsltcommand = "$XSLTPROC".
                " --stringparam have_dot \"".($have_dot?"y":"n")."\"".
                " --stringparam doxytagfile \"".toslash($doxytagfile)."\"".
                " --stringparam doxyhtmldir \"".toslash($doxyhtmldir)."\"".
-               " --output nul".
-               " $NEDDOC_XSL $outdir/inputfiles.xml";
+               " --output -".
+               " $NEDDOC_XSL $outdir/inputfiles.xml >$nul";
 runprog($xsltcommand)==0 || error("error invoking xsltproc");
 
 if ($have_dot)
@@ -421,7 +423,7 @@ sub delete_recursive
     my $dir = tobackslash(shift);
     if ($isWindows) {
         # COMSPEC is necessary to prevent getting other "del" programs in the path
-        runprog("$ENV{COMSPEC} /c del /s /q $dir\\* >nul");
+        runprog("$ENV{COMSPEC} /c del /s /q $dir\\* >$nul");
     } else {
         runprog("rm -rf $dir/*");
     }
