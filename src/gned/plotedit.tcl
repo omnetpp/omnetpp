@@ -238,9 +238,11 @@ proc openSubmodule c {
 
    if {$ned($key,type)=="submod"} {
       set typename $ned($key,type-name)
-      if {$typename==""} {
-         tk_messageBox -title "Error" -icon warning -type ok \
-              -message "Module type for this submodule is not filled in."
+      if {$typename=="" || $typename=="Unknown"} {
+         tk_messageBox -title "Info" -icon info -type ok \
+              -message "Module type for this submodule is not yet filled in.\
+                       Please set the module type in the following dialog."
+         editSubmoduleProps $key
       } elseif {[itemKeyFromName $typename module]!=""} {
          set modkey [itemKeyFromName $typename module]
          openModuleOnCanvas $modkey
@@ -253,7 +255,11 @@ proc openSubmodule c {
          }
       } else {
          tk_messageBox -title "Error" -icon warning -type ok \
-              -message "Module type \"$typename\" unknown to GNED -- none of the open NED files contain its definition."
+              -message "Module type \"$typename\" is unknown. If \"$typename\" is an\
+                       existing simple module or compound module type, please open the NED file\
+                       which contain its definition. If this is a new simulation model\
+                       you're working on, you can create this module type with the\
+                       New Simple Module or New Compound Module function."
       }
    }
 }
@@ -719,8 +725,9 @@ proc selectOrMoveEnd {c x y} {
           }
        }
 
-       # refresh parent module as well
+       # refresh parent module, and adjust scrollbars
        refreshModuleBounds
+       adjustCanvasScrolling $c
 
     } elseif {$mouse(mode) == "reanchor" || $mouse(mode) == "endp-reanchor"} {
 
@@ -875,8 +882,9 @@ proc drawEnd {c x y} {
           markCanvasDirty
           updateTreeManager
 
-          # refresh parent module as well
+          # refresh parent module, and adjust scrollbars
           refreshModuleBounds
+          adjustCanvasScrolling $c
 
           if {$ned($modkey,disp-xsize)=="" && $ned($modkey,disp-ysize)==""} {
               showTextOnceDialog "compoundAutoResized"

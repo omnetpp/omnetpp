@@ -248,7 +248,7 @@ set ned_desc(submod,parents)          {submods}
 set ned_attr(submod,name)             {submod}
 set ned_attr(submod,banner-comment)   {}
 set ned_attr(submod,right-comment)    {}
-set ned_attr(submod,type-name)        {Module}
+set ned_attr(submod,type-name)        {Unknown}
 set ned_attr(submod,vectorsize)       {}
 set ned_attr(submod,like-name)        {}
 set ned_attr(submod,displaystring)    {}

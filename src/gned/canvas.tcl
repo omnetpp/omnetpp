@@ -313,9 +313,21 @@ proc adjustCanvasScrolling {c} {
         $c config -scrollregion "0 0 0 0"
         return
     }
-    set cwidth  [expr 2*[lindex $bbox 2]]
-    set cheight [expr 2*[lindex $bbox 3]]
-    $c config -scrollregion "0 0 $cwidth $cheight"
+
+    set x1  [lindex $bbox 0]
+    set y1  [lindex $bbox 1]
+    set x2  [lindex $bbox 2]
+    set y2  [lindex $bbox 3]
+    set w   [expr $x2 - $x1]
+    set h   [expr $y2 - $y1]
+
+    set x1new  [expr $x1<0 ? $x1 : 0]
+    set y1new  [expr $y1<0 ? $y1 : 0]
+
+    set x2new  [expr $x2 + $w]
+    set y2new  [expr $y2 + $h]
+
+    $c config -scrollregion [list $x1new $y1new $x2new $y2new]
 }
 
 
