@@ -16,6 +16,9 @@ TK_CFLAGS=@TK_CFLAGS@
 TK_LIBS=@TK_LIBS@
 SYS_LIBS=@SYS_LIBS@
 
+# The following is either '-e' (embedded Tcl code) or '' (no embedding)
+GNED_EMBED_SUFFIX=@GNED_EMBED_SUFFIX@
+
 #
 # Local definitions
 #
@@ -23,7 +26,7 @@ COPTS=$(CFLAGS) $(TK_CFLAGS)
 
 OMNETPP_GNED_DIR=`pwd`
 
-OBJS = gned.o tklib.o arrow.o ebnf.tab.o lex.yy.o parsened.o disp.o nedfile.o
+OBJS = gned$(GNED_EMBED_SUFFIX).o tklib.o arrow.o ebnf.tab.o lex.yy.o parsened.o disp.o nedfile.o
 
 #
 # Targets
@@ -35,6 +38,9 @@ gned : $(OBJS)
 
 gned.o : gned.cc
 	$(CXX) -c $(COPTS) -DOMNETPP_GNED_DIR=\"$(OMNETPP_GNED_DIR)\" -DOMNETPP_BITMAP_PATH=\"$(OMNETPP_BITMAP_PATH)\" gned.cc
+
+gned-e.o : gned.cc tclcode.cc
+	$(CXX) -c $(COPTS) -DOMNETPP_BITMAP_PATH=\"$(OMNETPP_BITMAP_PATH)\" gned.cc -o gned-e.o
 
 tklib.o : tklib.cc
 	$(CXX) -c $(COPTS) tklib.cc
@@ -65,6 +71,9 @@ ebnf.tab.c: ebnf.y
 
 lex.yy.c: ebnf.lex
 	$(LEX) ebnf.lex
+
+tclcode.cc: *.tcl
+	../utils/tcl2c tclcode.cc *.tcl
 
 missing-library:
 	@ echo '  *** No Tk installation found -- skipping GNED'

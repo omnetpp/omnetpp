@@ -6,22 +6,33 @@
 # have reasonable default values in the configure script.
 #
 
-
 #
 # Compiler optimization switches. Choose -O3 for speed, -g for debugging
 # the libraries.
 #
-
-CFLAGS='-g'
+#CFLAGS='-g'
 #CFLAGS='-g -Wall'
-#CFLAGS='-O3 -DNDEBUG=1'
+CFLAGS='-O3 -DNDEBUG=1'
 
 #
 # Select here whether you want to build static or shared libraries.
 #
-
 build_shared_libs=yes
 #build_shared_libs=no
+
+#
+# It is possible to have the Tcl files embedded into the compiled OMNeT++
+# libraries and executables. This can be useful if you want to ship 
+# standalone executables without having to worry about how to handle
+# the Tcl script parts.
+#
+# This option is available at present for Tkenv and GNED.
+#
+TKENV_EMBED_TCL=no
+#TKENV_EMBED_TCL=yes
+
+GNED_EMBED_TCL=no
+#GNED_EMBED_TCL=yes
 
 #
 # Here you may help configure to determine which compile switches (e.g. -Ixxx) 
@@ -34,7 +45,6 @@ build_shared_libs=yes
 # If you set TK_CFLAGS here, remember to include -fwritable-strings (or the
 # equivalent switch for your compiler).
 #
-
 PVM_CFLAGS=
 PVM_LIBS=
 
@@ -52,7 +62,6 @@ TV_LIBS=
 #
 # At this point, $OMNETPP_ROOT is already set to something like ${HOME}/omnetpp.
 #
-
 OMNETPP_SRC_DIR="$OMNETPP_ROOT/src"
 OMNETPP_SAMPLES_DIR="$OMNETPP_ROOT/samples"
 OMNETPP_MODELS_DIR="$OMNETPP_ROOT/models"

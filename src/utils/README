@@ -6,6 +6,7 @@ All kinds of scripts:
  dos2unix    - convert text files to Unix
  seedtool.cc - generates seeds for random number generators
  readme      - this file
+ tcl2.c      - utility for embedding Tcl source into an executable
  prephtml    - used during development
 
 --VA

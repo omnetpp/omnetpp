@@ -11,11 +11,13 @@ COPTS=$(CFLAGS)
 
 OMNETPP_BIN_DIR=@OMNETPP_BIN_DIR@
 
-seedtool : seedtool.o
-	$(CC) $(LDFLAGS) seedtool.o -o seedtool
+all: seedtool tcl2c
 
-seedtool.o : seedtool.cc
-	$(CXX) -c $(COPTS) seedtool.cc
+seedtool : seedtool.cc
+	$(CXX) seedtool.cc -o seedtool
+
+tcl2c: tcl2c.c
+	$(CC) tcl2c.c -o tcl2c
 
 depend:
 	makedepend -Y -I. -- *.cc
@@ -30,3 +32,4 @@ install-local: seedtool
 	(dir=`pwd`;cd $(OMNETPP_BIN_DIR);rm -f splitvec;ln -s $$dir/splitvec .)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+

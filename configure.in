@@ -256,6 +256,22 @@ else
 fi
 
 #----------------------
+# Tcl code embedding.
+#----------------------
+
+if test "$TKENV_EMBED_TCL" = yes; then
+   TKENV_EMBED_SUFFIX=-e
+else
+   TKENV_EMBED_SUFFIX=
+fi
+
+if test "$GNED_EMBED_TCL" = yes; then
+   GNED_EMBED_SUFFIX=-e
+else
+   GNED_EMBED_SUFFIX=
+fi
+
+#----------------------
 # Subtitutions.
 #----------------------
 
@@ -297,6 +313,9 @@ AC_SUBST(TKENV_IF_POSSIBLE)
 AC_SUBST(TVENV_IF_POSSIBLE)
 AC_SUBST(SIM_PVM_IF_POSSIBLE)
 AC_SUBST(GNED_IF_POSSIBLE)
+
+AC_SUBST(TKENV_EMBED_SUFFIX)
+AC_SUBST(GNED_EMBED_SUFFIX)
 
 #----------------------
 # Generate files.
