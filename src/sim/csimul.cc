@@ -458,19 +458,18 @@ cSimpleModule *cSimulation::selectNextModule()
     if (!msg)
         return NULL; // scheduler got interrupted while waiting
 
-    // check if dest module exists and still running
+    // check if destination module exists and is still running
     cSimpleModule *modp = (cSimpleModule *)vect[msg->arrivalModuleId()];
-    if (!modp)
-        throw new cException("Destination module of message `%s' (module id=%d) "
-                             "no longer exists",msg->name(), msg->arrivalModuleId());
-
-    if (modp->moduleState()==sENDED)
+    if (!modp || modp->moduleState()==sENDED)
     {
-        if (!msg->isSelfMessage())
-            throw new cException("Destination module of message `%s' (module `%s', id=%d) "
-                                 "already terminated", msg->name(), modp->fullPath().c_str(), modp->id());
-
-        // self-messages are OK, ignore them
+        // Deleted/ended modules may have self-messages and sent messages
+        // pending for them. Here we choose just to ignore them (delete them without
+        // any error or warning). Rationale: if we thew an error here, it would
+        // be very difficult to delete compound modules in which simple modules
+        // send messages to one another -- each and every simple module
+        // would have to be notified in advance that they're "shutting down",
+        // and even then, deletion could progress only after waiting the maximum
+        // propagation delay to elapse.
         delete msgQueue.getFirst();
         return selectNextModule();
     }

@@ -1,3 +1,12 @@
+2005-01-12  Andras Varga
+
+	csimplemodule.cc, csimul.cc: changed the way scheduled events or sent
+	messages for deleted or finished (see cSimpleModule::end()) modules
+	are handled. Before, these messages were deleted by the cSimpleModule
+	destructor, but this made it very long to clean up large models.
+	Now, messages are not deleted in the dtor, but left in the FES -- they
+	will be discarded in cSimulation::selectNextModule() when they're met.
+
 2005-01-10  Andras Varga
 
 	* cscheduler.cc: added cRealTimeScheduler implementation
@@ -16,12 +25,12 @@
 
 2004-12-27  Andras Varga
 
-	* csimplemodule.cc: fix: in Windows, creation of activity() simple 
+	* csimplemodule.cc: fix: in Windows, creation of activity() simple
 	modules crashed if coroutine (win32 Fiber) could not be created.
 
 2004-12-22  Andras Varga
 
-	* chist.cc: cLongHistogram changes to enable num_cells set up 
+	* chist.cc: cLongHistogram changes to enable num_cells set up
 	adaptively. See class doc for more info.
 
 2004-12-22  Andras Varga

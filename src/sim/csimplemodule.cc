@@ -168,8 +168,6 @@ cSimpleModule::~cSimpleModule()
     if (simulation.contextModule()==this)
         throw new cException(this, "cannot delete itself, only via deleteModule()");
 
-    // timeoutmsg is deleted from cDefaultList destructor (or by the message queue)
-
     if (usesActivity())
     {
         // clean up user's objects on coroutine stack by forcing an exception inside the coroutine
@@ -181,17 +179,25 @@ cSimpleModule::~cSimpleModule()
             simulation.transferTo(this);
             stack_cleanup_requested = false;
         }
+
+        // delete timeoutmsg if not currently scheduled (then it'll be deleted by message queue)
+        if (!timeoutmsg->isScheduled())
+            delete timeoutmsg;
+
+        // deallocate coroutine
         delete coroutine;
     }
 
-    // delete pending messages for this module
-    for (cMessageHeap::Iterator iter(simulation.msgQueue); !iter.end(); iter++)
-    {
-        cMessage *msg = iter();
-        if (msg->arrivalModuleId() == id())
-            delete simulation.msgQueue.get( msg );
-    }
+    // deletion of pending messages for this module: not done since 3.1 because it
+    // made it very long to clean up large models. Instead, such messages are
+    // discarded in cSimulation::selectNextModule() when they're met.
 
+    //for (cMessageHeap::Iterator iter(simulation.msgQueue); !iter.end(); iter++)
+    //{
+    //    cMessage *msg = iter();
+    //    if (msg->arrivalModuleId() == id())
+    //        delete simulation.msgQueue.get( msg );
+    //}
 }
 
 cSimpleModule& cSimpleModule::operator=(const cSimpleModule& other)
