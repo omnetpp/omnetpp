@@ -454,6 +454,19 @@ bool cEnvir::askYesNo(const char *msgfmt,...)
     return ret!=0;
 }
 
+
+//---------------------------------------------------------
+
+int cEnvir::numRNGs()
+{
+    return app->numRNGs();
+}
+
+cRNG *cEnvir::rng(int k)
+{
+    return app->rng(k);
+}
+
 //---------------------------------------------------------
 
 void *cEnvir::registerOutputVector(const char *modulename, const char *vectorname, int tuple)

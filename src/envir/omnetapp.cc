@@ -35,6 +35,7 @@
 #include "cscheduler.h"
 #include "cpar.h"
 #include "random.h"
+#include "crng.h"
 #include "cmodule.h"
 #include "cxmlelement.h"
 #include "cxmldoccache.h"
@@ -88,6 +89,9 @@ TOmnetApp::TOmnetApp(ArgList *arglist, cConfiguration *conf)
     outvectmgr = NULL;
     outscalarmgr = NULL;
     snapshotmgr = NULL;
+
+    num_rngs = 0;
+    rngs = NULL;
 
     scheduler = NULL;
 #ifdef WITH_PARSIM
@@ -422,11 +426,14 @@ void TOmnetApp::readOptions()
         throw new cException("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
 #endif
     }
-    opt_load_libs = cfg->getAsString( "General", "load-libs", "" );
+    opt_load_libs = cfg->getAsString("General", "load-libs", "");
 
-    opt_outputvectormanager_class = cfg->getAsString( "General", "outputvectormanager-class", "cFileOutputVectorManager" );
-    opt_outputscalarmanager_class = cfg->getAsString( "General", "outputscalarmanager-class", "cFileOutputScalarManager" );
-    opt_snapshotmanager_class = cfg->getAsString( "General", "snapshotmanager-class", "cFileSnapshotManager" );
+    opt_num_rngs = cfg->getAsInt("General", "num-rngs", 1);
+    opt_rng_class = cfg->getAsString("General", "rng-class", "cMersenneTwister");
+
+    opt_outputvectormanager_class = cfg->getAsString("General", "outputvectormanager-class", "cFileOutputVectorManager");
+    opt_outputscalarmanager_class = cfg->getAsString("General", "outputscalarmanager-class", "cFileOutputScalarManager");
+    opt_snapshotmanager_class = cfg->getAsString("General", "snapshotmanager-class", "cFileSnapshotManager");
 
     opt_fname_append_host = cfg->getAsBool("General","fname-append-host",false);
 
@@ -448,52 +455,22 @@ void TOmnetApp::readPerRunOptions(int run_nr)
     opt_cputimelimit = (long)cfg->getAsTime2( section, "General", "cpu-time-limit", 0.0 );
     opt_netifcheckfreq = cfg->getAsInt2( section, "General", "netif-check-freq", 1);
 
-    // temporarily disable warnings
-    //bool w = cfg->warnings; cfg->warnings = false;
-    int fromtable = 0;
-    // seeds for random number generators
-    opt_genk_randomseed[0] = cfg->getAsInt2( section, "General", "random-seed",
-                                          starting_seeds[next_startingseed] );
-    if (cfg->notFound())
+    // set up RNGs
+    delete [] rngs;
+    num_rngs = opt_num_rngs;
+    rngs = new cRNG *[num_rngs];
+    for (int i=0; i<num_rngs; i++)
     {
-        opt_genk_randomseed[0] = cfg->getAsInt2( section, "General", "gen0-seed",
-                                          starting_seeds[next_startingseed] );
-        // if default value was used, increment next_startingseed
-        if (cfg->notFound())
-        {
-             next_startingseed = (next_startingseed+1)%NUM_STARTINGSEEDS;
-             fromtable++;
-        }
+        cRNG *rng;
+        CREATE_BY_CLASSNAME(rng, opt_rng_class.c_str(), cRNG, "random number generator");
+        rngs[i] = rng;
+        rngs[i]->initialize(run_nr, i, num_rngs, cfg);
     }
-
-    for (int i=1;i<NUM_RANDOM_GENERATORS;i++)
-    {
-         char entry[16];
-         sprintf(entry,"gen%d-seed",i);
-         opt_genk_randomseed[i] = cfg->getAsInt2( section, "General", entry, starting_seeds[next_startingseed]);
-         // if default value was used (=from table), increment next_startingseed
-         if (cfg->notFound())
-         {
-             next_startingseed = (next_startingseed+1)%NUM_STARTINGSEEDS;
-             fromtable++;
-         }
-    }
-    // restore warning state
-    //cfg->warnings = w;
-
-    // report
-    if (opt_ini_warnings)
-         ev.printf("Note: %d random num generators initialized"
-                   " from ini file, %d from internal table\n",
-                   NUM_RANDOM_GENERATORS-fromtable, fromtable);
 }
 
 void TOmnetApp::makeOptionsEffective()
 {
-     cModule::pause_in_sendmsg = opt_pause_in_sendmsg;
-
-     for(int i=0;i<NUM_RANDOM_GENERATORS;i++)
-         genk_randseed( i, opt_genk_randomseed[i] );
+    cModule::pause_in_sendmsg = opt_pause_in_sendmsg;
 }
 
 void TOmnetApp::globAndLoadNedFile(const char *fnamepattern)
@@ -551,6 +528,21 @@ void TOmnetApp::processListFile(const char *listfilename)
     if (in.bad())
         throw new cException("Error reading list file '%s'",listfilename);
     in.close();
+}
+
+//-------------------------------------------------------------
+
+int TOmnetApp::numRNGs()
+{
+    return num_rngs;
+}
+
+cRNG *TOmnetApp::rng(int k)
+{
+    if (k<0 || k>=num_rngs)
+        throw new cException("RNG index %d out of range 0..%d (check num-rngs= "
+                             "ini file setting, default is 1)", k, num_rngs-1);
+    return rngs[k];
 }
 
 //-------------------------------------------------------------

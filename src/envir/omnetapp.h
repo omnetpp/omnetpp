@@ -67,6 +67,10 @@ class ENVIR_API TOmnetApp
 // end
     opp_string opt_load_libs;
     opp_string opt_network_name;
+
+    int opt_num_rngs;
+    opp_string opt_rng_class;
+
     opp_string opt_outputvectormanager_class;
     opp_string opt_outputscalarmanager_class;
     opp_string opt_snapshotmanager_class;
@@ -91,6 +95,9 @@ class ENVIR_API TOmnetApp
 // end
 
     cScheduler *scheduler;
+
+    int num_rngs;
+    cRNG **rngs;
 
     cOutputVectorManager *outvectmgr;
     cOutputScalarManager *outscalarmgr;
@@ -215,6 +222,12 @@ class ENVIR_API TOmnetApp
     virtual void flush() = 0;
     virtual bool gets(const char *promptstr, char *buf, int len=255) = 0;  // 0==OK 1==CANCEL
     virtual int  askYesNo(const char *question) = 0; //0==NO 1==YES -1==CANCEL
+    //@}
+
+    /** @name Methods for accessing RNGs; called by cEnvir's similar functions */
+    //@{
+    int numRNGs();
+    cRNG *rng(int k);
     //@}
 
     /** @name Methods for recording data from output vectors; called by cEnvir's similar functions */
