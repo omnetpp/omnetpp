@@ -1,9 +1,9 @@
 API-Changes
 ===========
 
-This file summarizes the changes in OMNeT++ across releases that affect
+This file summarizes the changes in OMNeT++/OMNEST across releases that affect
 backwards compatibility, to help you port models to more recent versions
-of OMNeT++.
+of the simulation framework.
 
 This file only describes changes that affect compiling and running models;
 for other changes or new features see WhatsNew.
