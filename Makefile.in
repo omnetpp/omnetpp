@@ -135,5 +135,16 @@ clean:
 	    (cd $$i; $(MAKE) clean); \
 	done
 
+depend:
+	for i in sim envir tkenv tvenv cmdenv nedc gned plove utils; do \
+	    (cd $(OMNETPP_SRC_DIR)/$$i; $(MAKE) depend); \
+	done
+	for i in `echo $(OMNETPP_MODELS_DIR)/*`; do \
+	    (cd $$i; $(MAKE) depend); \
+	done
+	for i in `echo $(OMNETPP_SAMLES_DIR)/*`; do \
+	    (cd $$i; $(MAKE) depend); \
+	done
+
 dist:
 	echo 'to be done'
