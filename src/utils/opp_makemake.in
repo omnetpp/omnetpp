@@ -43,61 +43,61 @@ tstampdirs=""
 abs2rel=/tmp/abs2rel.$$.$RANDOM
 (umask 077 && cat >$abs2rel <<EOT
 
-$abs = shift @ARGV;
-$base = shift @ARGV;
-$cur = shift @ARGV;
-print abs2rel($abs, $base, $cur);
+use Cwd;
 
-sub abs2rel($;$;$;)
+\$abs = shift @ARGV;
+\$base = shift @ARGV;
+\$cur = shift @ARGV;
+print abs2rel(\$abs, \$base, \$cur);
+
+sub abs2rel(\$;\$;\$;)
 {
-    my($abs, $base, $cur) = @_;
+    my(\$abs, \$base, \$cur) = @_;
 
-    if ($base eq '') {
-        return $abs;
+    if (\$base eq '') {
+        return \$abs;
     }
-    if ($cur eq '') {
-        $cur = cwd;
+    if (\$cur eq '') {
+        \$cur = cwd;
     }
 
     # some normalization
-    $abs  =~ s|/./|/|g;
-    $cur  =~ s|/./|/|g;
-    $base =~ s|/./|/|g;
+    \$abs  =~ s|/./|/|g;
+    \$cur  =~ s|/./|/|g;
+    \$base =~ s|/./|/|g;
 
-    $cur  =~ s|/*$|/|;
-    $base =~ s|/*$|/|;
+    \$cur  =~ s|/*\$|/|;
+    \$base =~ s|/*\$|/|;
 
-    if (!($abs =~ /^$base/ && $cur =~ /^$base/)) {
-        return $abs;
+    if (!(\$abs =~ /^\$base/ && \$cur =~ /^\$base/)) {
+        return \$abs;
     }
 
     while (1)
     {
        # keep cutting off common prefixes until we can
-       $abs =~ m|^(.*?/)|;
-       my $prefix = $1;
-       last if ($prefix eq '');
-       if ($cur =~ /^$prefix/) {
-           $abs =~ s/^$prefix//;
-           $cur =~ s/^$prefix//;
+       \$abs =~ m|^(.*?/)|;
+       my \$prefix = \$1;
+       last if (\$prefix eq '');
+       if (\$cur =~ /^\$prefix/) {
+           \$abs =~ s/^\$prefix//;
+           \$cur =~ s/^\$prefix//;
        } else {
            last;
        }
     }
 
 
-    # assemble relative path: change every directory name in $cur to "..",
-    # then add $abs to it.
-    $cur =~ s|[^/]+|..|g;
-    my $rel = $cur.$abs;
+    # assemble relative path: change every directory name in \$cur to "..",
+    # then add \$abs to it.
+    \$cur =~ s|[^/]+|..|g;
+    my \$rel = \$cur.\$abs;
 
-    return $rel;
+    return \$rel;
 }
 
 EOT
 )
-
-END)
 
 while [ ! $# = 0 ] ; do
     case "$1" in
@@ -238,7 +238,7 @@ EOT
         ;;
 
         -I*)
-        dir=`echo $1 | sed 's/^-I//'`"
+        dir=`echo $1 | sed 's/^-I//'`
         dir=`perl $abs2rel $dir $basedir`
         includes="$includes -I$dir"
         if [ $tstamp = "y" ]; then
@@ -247,7 +247,7 @@ EOT
         ;;
 
         -L*)
-        dir=`echo $1 | sed 's/^-L//'`"
+        dir=`echo $1 | sed 's/^-L//'`
         dir=`perl $abs2rel $dir $basedir`
         libpath="$libpath $dir"
         ;;
