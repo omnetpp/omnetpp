@@ -38,7 +38,7 @@ class sFieldWrapper;
  * @ingroup Internals
  * @see sFieldWrapper
  */
-class cStructDescriptor : public cObject
+class SIM_API cStructDescriptor : public cObject
 {
     /// Field types.
     enum {
@@ -234,7 +234,7 @@ class cStructDescriptor : public cObject
  * Additional getter/setter members will be necessary to make sFieldWrappers
  * useful.
  */
-class sFieldWrapper
+class SIM_API sFieldWrapper
 {
   public:
     /**

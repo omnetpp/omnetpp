@@ -144,17 +144,53 @@
 /**
  * @defgroup Internals  Internal classes
  *
- * Internal classes, but have a published API!
+ * The classes described here are used internally by the simulation kernel.
+ * They are normally of very little interest to the simulation programmer.
+ * Note that although these internal classes do have a documented API,
+ * they may change more often than other classes, simply because
+ * they aren't used in simulation models and thus backwards compatibility
+ * is less important.
  *
- * cSimulation.
+ * Classes associated with simulation execution:
+ *   - cSimulation has a single instance. It stores the network and
+ *     manages simulation runs.
+ *   - cMessageHeap is used internally by cSimulation as FES (Future Event Set)
+ *   - cOutVectorMgr is used internally by cSimulation to manage opening and
+ *     closing of result files
+ *   - cCoroutine is the engine behind activity()-based simple modules
+ *   - cNetMod is used with parallel execution, it provides communication
+ *     to other segments
+ *   - cWatch is the class behind the WATCH() and LWATCH() macros
  *
- * Registration classes.
+ * Registration classes are listed below. They play the role of a central
+ * registry in OMNeT++ -- each instance holds some specific piece of (static)
+ * information or serves as a factory object for other objects. Instances
+ * are placed on lists available via global variables of type cHead,
+ * and usually looked up by name.
+ *
+ * Registration objects play an important role at network build time (they
+ * store information about available module, channel, etc. types and can
+ * instantiate them), and for inspectors in graphical user interfaces like
+ * Tkenv.
+ *
+ *   - cHead instances are heads of global registration lists
+ *   - cModuleInterface stores the list of gates and parameters
+ *     declared for a module type
+ *   - cModuleType can instantiate a module type
+ *   - cLinkType can instantiate a channel type
+ *   - cNetworkType can instantiate a network type (build up a network)
+ *   - cFunctionType stores a pointer to a math function accessible from NED
+ *   - cClassRegister can instantiate an object type (it is the class behind
+ *     the createOne() function)
+ *   - cInspectorFactory can create an inspector object for a class
+ *     (See inspector concept in graphical user interfaces.)
+ *   - cStructDescriptor provides a generic way to access data in a struct
+ *     or class (somewhat analogous to Java reflection)
+ *   - cEnum maps enum values to their string representations and vica versa
  *
  * Some other classes, closely related to the above ones are not listed
  * here explicitly, but you can find them via 'See also' links from their
  * main classes.
- *
- * FIXME: must be completed.
  */
 
 /**
@@ -163,15 +199,9 @@
 
 /**
  * @defgroup Functions  Functions
- *
- * All sorts of functions.
- *
- * FIXME: must be completed.
  */
 
 /**
  * @defgroup Macros  Macros
- *
- * FIXME: must be completed.
  */
 

@@ -1,3 +1,9 @@
+2001-08-23 Andras Varga
+
+	* index.h: wrote doc comment about internal classes
+        * generated API doc for earlier 2.1 release (undoing API changes
+        introduced since 2.1 release on a local copy of the headers)
+
 2001-08-12 Andras Varga
 
 	* documented all typedefs

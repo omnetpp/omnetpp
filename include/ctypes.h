@@ -107,6 +107,8 @@ struct sDescrItem {
  *     is looked up from the list, and the module's gates and parameters
  *     are created according to the description in the cModuleInterface
  *     object.
+ *
+ * @ingroup Internals
  */
 class SIM_API cModuleInterface : public cObject
 {
@@ -217,6 +219,8 @@ class SIM_API cModuleInterface : public cObject
  *
  * nedc automatically generates Define_Module for compound modules, but the
  * user is responsible for writing it for each simple module type.
+ *
+ * @ingroup Internals
  */
 class SIM_API cModuleType : public cObject
 {
@@ -311,6 +315,8 @@ class SIM_API cModuleType : public cObject
  * objects (cPars) for a given channel.
  *
  * Objects of this class are usually created via the Define_Channel() macro.
+ *
+ * @ingroup Internals
  */
 class SIM_API cLinkType : public cObject
 {
@@ -390,6 +396,8 @@ class SIM_API cLinkType : public cObject
  * Registration class. An instance knows how to build a network of specific type.
  *
  * Objects of this class are usually created via the Define_Network() macro.
+ *
+ * @ingroup Internals
  */
 class SIM_API cNetworkType : public cObject
 {
@@ -430,6 +438,8 @@ class SIM_API cNetworkType : public cObject
  * Registration class. Stores a function pointer (returning a double).
  *
  * Objects of this class are usually created via the Define_Function() macro.
+ *
+ * @ingroup Internals
  */
 class SIM_API cFunctionType : public cObject
 {
@@ -469,18 +479,18 @@ cFunctionType *findfunctionbyptr(MathFunc f);
 //==========================================================================
 
 /**
- * Reflection support class. There is a cClassRegister object for most
- * OMNeT++ classes. The cClassRegister objects know how to create an object
- * of that type.
+ * The class behind the createOne() function and the Register_Class() macro.
+ * Each instance is a factory for a particular class: it knows how to create
+ * an object of that class.
  *
- * Objects of this type are usually created via the Register_Class() macro.
+ * @ingroup Internals
  */
 class SIM_API cClassRegister : public cObject
 {
     cObject *(*creatorfunc)();
 
   public:
-    /** @name Constructors, destructor, assignment */
+    /** @name Constructors, destructor, assignment. */
     //@{
 
     /**
@@ -510,7 +520,8 @@ class SIM_API cClassRegister : public cObject
     //@{
 
     /**
-     * FIXME: new functions
+     * Creates an instance of a particular class by calling the creator
+     * function.
      */
     cObject *createOne() _CONST  {return creatorfunc();}
     //@}
@@ -523,13 +534,15 @@ SIM_API cObject *createOne(const char *type);
 /**
  * Internal class. Serves as a base class for inspector factories of
  * specific classes.
+ *
+ * @ingroup Internals
  */
 class SIM_API cInspectorFactory : public cObject
 {
     TInspector *(*inspFactoryFunc)(cObject *,int,void *);
 
   public:
-    /** @name Constructors, destructor, assignment */
+    /** @name Constructors, destructor, assignment. */
     //@{
 
     /**

@@ -35,7 +35,7 @@
  * @ingroup Internals
  * @see sEnumBuilder
  */
-class cEnum : public cObject
+class SIM_API cEnum : public cObject
 {
   private:
      struct sEnum {
@@ -132,7 +132,7 @@ class cEnum : public cObject
  *       0, NULL);
  *  </TT></PRE>
  */
-class sEnumBuilder  //FIXME: make inner class to cEnum?
+class SIM_API sEnumBuilder  //FIXME: make inner class to cEnum?
 {
   public:
     /**
