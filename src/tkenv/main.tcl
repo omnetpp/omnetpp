@@ -379,6 +379,8 @@ proc font_bindings {} {
       set fonts(big)    -Adobe-Helvetica-Medium-R-Normal-*-*-180-*-*-*-*-*-*
       set fonts(msgname) -Adobe-Helvetica-Medium-R-Normal-*-*-140-*-*-*-*-*-*
       set fonts(fixed)  fixed
+       option add *Button.padX     0
+       option add *Button.padY     0
    }
 
    if {$tcl_platform(platform) == "unix"} {
@@ -397,20 +399,24 @@ proc checkVersion {} {
 
    global tk_version tk_patchLevel
 
-   catch {package require Tk}     ; #for dynamic loading tk
-   if {$tk_version<8.0 || ($tk_version==8.0 && [string compare $tk_patchLevel "8.0p1"]<0)} {
+   catch {package require Tk}
+   if {$tk_version<8.0} {
       wm deiconify .
       wm title . "Bad news..."
       frame .f
       pack .f -expand 1 -fill both -padx 2 -pady 2
       label .f.l1 -text "Your version of Tcl/Tk is too old!"
-      label .f.l2 -text "Tcl/Tk 8.0 patchlevel 1 or later required."
+      label .f.l2 -text "Tcl/Tk 8.0 or later required."
       button .f.b -text "OK" -command {exit}
       pack .f.l1 .f.l2 -side top -padx 5
       pack .f.b -side top -pady 5
       focus .f.b
       wm protocol . WM_DELETE_WINDOW {exit}
       tkwait variable ok
+   }
+   if {[string compare $tk_patchLevel "8.0p1"]<0} {
+      tk_messageBox -title {Warning} -type ok -icon warning \
+        -message {Old Tcl/Tk version. At least 8.0p1 is strongly recommended!} 
    }
 }
 
