@@ -605,7 +605,8 @@ proc getClassNames {} {
     foreach classptr $classes {
         lappend classnames [opp_getobjectfullname $classptr]
     }
-    lappend classnames {cWatch}  ;# FIXME cWatch is not registered!
+    lappend classnames {cWatch}  ;# FIXME some types are not registered
+    lappend classnames {cOutVector}  ;# FIXME some types are not registered
 
     return [lsort -dictionary $classnames]
 }
