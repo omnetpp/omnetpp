@@ -1,0 +1,214 @@
+#
+# Global definitions
+#
+!include ..\..\configuser.vc
+
+#
+# Local definitions
+#
+COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "std" /I "pvm"
+
+CPPOBJS= ccor.obj ctypes.obj carray.obj cgate.obj cmodule.obj csimul.obj cobject.obj cpar.obj \
+	 cstat.obj chist.obj cdensity.obj cvarhist.obj cpsquare.obj cksplit.obj \
+         cmessage.obj cdetect.obj cstk.obj util.obj cllist.obj ctopo.obj errmsg.obj \
+	 cmsgheap.obj cnetmod.obj coutvect.obj cqueue.obj chead.obj cwatch.obj \
+         cpacket.obj cfsm.obj
+CPPOBJS_STD= std\netpack.obj
+CPPOBJS_PVM= pvm\pvmmod.obj pvm/pvmpack.obj
+ASMOBJS=
+
+#
+# Targets
+#
+default : sim_std $(SIM_PVM_IF_POSSIBLE)
+
+sim_std : sim_std$(LIB_SUFFIX)
+
+sim_pvm : sim_pvm$(LIB_SUFFIX)
+
+sim_std.lib : $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
+	$(AR) /nologo /out:sim_std.lib $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
+
+sim_std.dll : $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
+	$(SHLIB_LD) -o sim_std.dll $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
+
+sim_pvm.lib : $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
+	$(AR) /nologo /out:sim_pvm.lib $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
+
+sim_pvm.dll : $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
+	$(SHLIB_LD) -o sim_pvm.dll $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
+
+ccor.obj : ccor.cc
+	$(CXX) $(COPTS) /c /Tp ccor.cc
+
+ctypes.obj : ctypes.cc
+	$(CXX) $(COPTS) /c /Tp ctypes.cc
+
+carray.obj : carray.cc
+	$(CXX) $(COPTS) /c /Tp carray.cc
+
+cqueue.obj : cqueue.cc
+	$(CXX) $(COPTS) /c /Tp cqueue.cc
+
+chead.obj : chead.cc
+	$(CXX) $(COPTS) /c /Tp chead.cc
+
+cwatch.obj : cwatch.cc
+	$(CXX) $(COPTS) /c /Tp cwatch.cc
+
+cmodule.obj : cmodule.cc
+	$(CXX) $(COPTS) /c /Tp cmodule.cc
+
+csimul.obj : csimul.cc
+	$(CXX) $(COPTS) /c /Tp csimul.cc
+
+cgate.obj : cgate.cc
+	$(CXX) $(COPTS) /c /Tp cgate.cc
+
+cmessage.obj : cmessage.cc
+	$(CXX) $(COPTS) /c /Tp cmessage.cc
+
+cpacket.obj : cpacket.cc
+	$(CXX) $(COPTS) /c /Tp cpacket.cc
+
+cfsm.obj : cfsm.cc
+	$(CXX) $(COPTS) /c /Tp cfsm.cc
+
+cobject.obj : cobject.cc
+	$(CXX) $(COPTS) /c /Tp cobject.cc
+
+cpar.obj : cpar.cc
+	$(CXX) $(COPTS) /c /Tp cpar.cc
+
+cstat.obj : cstat.cc
+	$(CXX) $(COPTS) /c /Tp cstat.cc
+
+cdensity.obj : cdensity.cc
+	$(CXX) $(COPTS) /c /Tp cdensity.cc
+
+chist.obj : chist.cc
+	$(CXX) $(COPTS) /c /Tp chist.cc
+
+cvarhist.obj : cvarhist.cc
+	$(CXX) $(COPTS) /c /Tp cvarhist.cc
+
+cdetect.obj : cdetect.cc
+	$(CXX) $(COPTS) /c /Tp cdetect.cc
+
+cpsquare.obj : cpsquare.cc
+	$(CXX) $(COPTS) /c /Tp cpsquare.cc
+
+cksplit.obj : cksplit.cc
+	$(CXX) $(COPTS) /c /Tp cksplit.cc
+
+cmsgheap.obj : cmsgheap.cc
+	$(CXX) $(COPTS) /c /Tp cmsgheap.cc
+
+cnetmod.obj : cnetmod.cc
+	$(CXX) $(COPTS) /c /Tp cnetmod.cc
+
+cllist.obj : cllist.cc
+	$(CXX) $(COPTS) /c /Tp cllist.cc
+
+ctopo.obj : ctopo.cc
+	$(CXX) $(COPTS) /c /Tp ctopo.cc
+
+coutvect.obj : coutvect.cc
+	$(CXX) $(COPTS) /c /Tp coutvect.cc
+
+cstk.obj : cstk.cc ccor.h cstk.h
+	$(CXX) $(COPTS) /c /Tp cstk.cc
+
+util.obj : util.cc
+	$(CXX) $(COPTS) /c /Tp util.cc
+
+errmsg.obj : errmsg.cc
+	$(CXX) $(COPTS) /c /Tp errmsg.cc
+
+stjpower.obj : stjpower.s
+	$(AS) stjpower.s
+
+swpower.obj : swpower.s
+	$(AS) swpower.s
+
+std\netpack.obj : std\netpack.cc
+	$(CXX) /Fo"std\netpack.obj" $(COPTS) /c /Tp std\netpack.cc
+
+pvm\pvmpack.obj : pvm\pvmpack.cc
+	$(CXX)  /I "$(PVM_INCL_DIR)" /Fo"pvm\pvmpack.obj" $(COPTS) /c /Tp pvm\pvmpack.cc
+
+pvm\pvmmod.obj : pvm\pvmmod.cc
+	$(CXX) /I "$(PVM_INCL_DIR)" /Fo"pvm\pvmmod.obj" $(COPTS) /c /Tp pvm\pvmmod.cc
+
+missing-library:
+	@ echo *** No PVM installation found -- skipping sim_pvm
+
+depend:
+	@ echo *** make depend not (yet) supported with MSVC
+
+clean:
+	del *.obj sim_std.lib sim_std.dll sim_pvm.lib sim_pvm.dll
+
+install-local: sim_std$(LIB_SUFFIX) $(SIM_PVM_IF_POSSIBLE)
+	copy sim_std$(LIB_SUFFIX) $(OMNETPP_LIB_DIR)
+	copy sim_pvm$(LIB_SUFFIX) $(OMNETPP_LIB_DIR)
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+carray.obj: macros.h ctypes.h chead.h cobject.h defs.h util.h errmsg.h carray.h
+ccor.obj: ccor.h cobject.h defs.h util.h
+cdensity.obj: macros.h ctypes.h chead.h cobject.h defs.h util.h cdensity.h
+cdensity.obj: cstat.h
+cdetect.obj: csimul.h defs.h util.h errmsg.h chead.h cobject.h cmsgheap.h
+cdetect.obj: coutvect.h ccor.h cdetect.h cstat.h
+cfsm.obj: macros.h ctypes.h chead.h cobject.h defs.h util.h cfsm.h
+cgate.obj: cmessage.h cobject.h defs.h util.h carray.h cpar.h csimul.h errmsg.h
+cgate.obj: chead.h cmsgheap.h coutvect.h ccor.h cmodule.h cqueue.h cgate.h
+cgate.obj: cenvir.h macros.h ctypes.h
+chead.obj: macros.h ctypes.h chead.h cobject.h defs.h util.h
+chist.obj: macros.h ctypes.h chead.h cobject.h defs.h util.h cdetect.h cstat.h
+chist.obj: chist.h cdensity.h
+cksplit.obj: macros.h ctypes.h chead.h cobject.h defs.h util.h cenvir.h
+cksplit.obj: cksplit.h cdensity.h cstat.h
+cllist.obj: macros.h ctypes.h chead.h cobject.h defs.h util.h cllist.h
+cmessage.obj: macros.h ctypes.h chead.h cobject.h defs.h util.h cmodule.h
+cmessage.obj: ccor.h carray.h cqueue.h cgate.h csimul.h errmsg.h cmsgheap.h
+cmessage.obj: coutvect.h cmessage.h cpar.h
+cmodule.obj: cmodule.h cobject.h defs.h util.h ccor.h chead.h carray.h cqueue.h
+cmodule.obj: cgate.h csimul.h errmsg.h cmsgheap.h coutvect.h cmessage.h cpar.h
+cmodule.obj: ctypes.h cnetmod.h cenvir.h
+cmsgheap.obj: macros.h ctypes.h chead.h cobject.h defs.h util.h cmessage.h
+cmsgheap.obj: carray.h cpar.h csimul.h errmsg.h cmsgheap.h coutvect.h ccor.h
+cnetmod.obj: cpar.h cobject.h defs.h util.h carray.h cenvir.h cnetmod.h
+cnetmod.obj: cmodule.h ccor.h chead.h cqueue.h cgate.h csimul.h errmsg.h
+cnetmod.obj: cmsgheap.h coutvect.h
+cobject.obj: csimul.h defs.h util.h errmsg.h chead.h cobject.h cmsgheap.h
+cobject.obj: coutvect.h ccor.h cenvir.h macros.h ctypes.h
+coutvect.obj: coutvect.h cobject.h defs.h util.h cmodule.h ccor.h chead.h
+coutvect.obj: carray.h cqueue.h cgate.h csimul.h errmsg.h cmsgheap.h cenvir.h
+cpacket.obj: macros.h ctypes.h chead.h cobject.h defs.h util.h cpacket.h
+cpacket.obj: cmessage.h carray.h cpar.h csimul.h errmsg.h cmsgheap.h coutvect.h
+cpacket.obj: ccor.h
+cpar.obj: cpar.h cobject.h defs.h util.h carray.h cstat.h macros.h ctypes.h
+cpar.obj: chead.h errmsg.h cmodule.h ccor.h cqueue.h cgate.h csimul.h
+cpar.obj: cmsgheap.h coutvect.h cenvir.h
+cpsquare.obj: macros.h ctypes.h chead.h cobject.h defs.h util.h cpsquare.h
+cpsquare.obj: cdensity.h cstat.h
+cqueue.obj: macros.h ctypes.h chead.h cobject.h defs.h util.h cqueue.h
+csimul.obj: cmodule.h cobject.h defs.h util.h ccor.h chead.h carray.h cqueue.h
+csimul.obj: cgate.h csimul.h errmsg.h cmsgheap.h coutvect.h cmessage.h cpar.h
+csimul.obj: cenvir.h ctypes.h cnetmod.h cstat.h
+cstat.obj: cstat.h cobject.h defs.h util.h macros.h ctypes.h chead.h cdetect.h
+cstk.obj: cstk.h ccor.h cobject.h defs.h util.h errmsg.h
+ctopo.obj: macros.h ctypes.h chead.h cobject.h defs.h util.h cmodule.h ccor.h
+ctopo.obj: carray.h cqueue.h cgate.h csimul.h errmsg.h cmsgheap.h coutvect.h
+ctopo.obj: cpar.h cllist.h ctopo.h
+ctypes.obj: cpar.h cobject.h defs.h util.h carray.h cmodule.h ccor.h chead.h
+ctypes.obj: cqueue.h cgate.h csimul.h errmsg.h cmsgheap.h coutvect.h macros.h
+ctypes.obj: ctypes.h
+cvarhist.obj: macros.h ctypes.h chead.h cobject.h defs.h util.h cvarhist.h
+cvarhist.obj: chist.h cdensity.h cstat.h
+cwatch.obj: cwatch.h cobject.h defs.h util.h
+util.obj: util.h defs.h csimul.h errmsg.h chead.h cobject.h cmsgheap.h
+util.obj: coutvect.h ccor.h macros.h ctypes.h cwatch.h cpacket.h cmessage.h
+util.obj: carray.h cpar.h
