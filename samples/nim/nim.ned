@@ -19,7 +19,7 @@
 simple Game
     parameters: 
         num_sticks : numeric, // starting number of sticks
-        first_move : numeric, // 1=Player1, 2=Player2
+        first_move : numeric; // 1=Player1, 2=Player2
     gates: 
         in: from_player1; // input and output gates
         in: from_player2; // for connecting to Player1/Player2
@@ -57,9 +57,7 @@ module Nim
         // for players, define module type as parameter to
         // the parent module, Nim
         player1: player1_type like Player; 
-            display: "p=67,100;b=40,24,rect";
         player2: player2_type like Player; 
-            display: "p=152,100;b=40,24,rect";
     connections: 
         player1.out --> game.from_player1; 
         player1.in <-- game.to_player1; 
