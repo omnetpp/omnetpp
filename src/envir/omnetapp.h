@@ -76,11 +76,6 @@ class TOmnetApp
      int next_startingseed;  // index of next seed to use
 
    public:
-     // defined together with concrete application types, they create
-     // an application object of the appropriate type
-     static TOmnetApp *create(int argc, char *argv[]);
-     static TOmnetApp *createSlave(int argc, char *argv[]);
-
      TOmnetApp(int argc, char *argv[]);
      virtual ~TOmnetApp();
 

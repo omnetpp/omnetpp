@@ -25,7 +25,7 @@
 //
 // The main() function
 //
-int main(int argc, char *argv[])
+ENVIR_API int main(int argc, char *argv[])
 {
     cStaticFlag dummy;
 

@@ -3,7 +3,9 @@
 #
 !include ..\..\configuser.vc
 
-all: plove.bat
+#all: plove.bat -- not good, doesn't overwrite stock plove.bat
+all:
+	@ echo @$(WISH:/=\) -f $(OMNETPP_SRC_DIR)/plove/plove > plove.bat
 
 plove.bat:
 	@ echo @$(WISH:/=\) -f $(OMNETPP_SRC_DIR)/plove/plove > plove.bat

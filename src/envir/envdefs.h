@@ -21,14 +21,11 @@
 
 #include "defs.h"  // for OPP_DLLIMPORT, OPP_DLLEXPORT
 
-#ifdef _WIN32
-#  ifdef BUILDING_ENVIR
-#    define ENVIR_API  OPP_DLLEXPORT
-#  else
-#    define ENVIR_API  OPP_DLLIMPORT
-#  endif
+// OPP_DLLIMPORT/EXPORT are empty if non-Windows, non-dll, etc.
+#ifdef BUILDING_ENVIR
+#  define ENVIR_API  OPP_DLLEXPORT
 #else
-#  define ENVIR_API
+#  define ENVIR_API  OPP_DLLIMPORT
 #endif
 
 

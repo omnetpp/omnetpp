@@ -50,6 +50,7 @@ cOmnetAppRegistration *chooseBestOmnetApp(bool slave)
 {
     cOmnetAppRegistration *best_appreg = NULL;
 
+    // choose the one with appropriate slave flag and highest score.
     for (cIterator i(omnetapps); !i.end(); i++)
     {
        cOmnetAppRegistration *appreg = (cOmnetAppRegistration*) i();
@@ -90,7 +91,7 @@ void cEnvir::setup(int ac, char *av[])
      if (!appreg)
          {opp_error("No appropriate user interface (Cmdenv,Tkenv,etc.) found");return;}
 
-     ::printf("Setting up %s\n", appreg->description());
+     ::printf("Setting up %s...\n", appreg->description());
 
      app = appreg->createOne(ac,av);
      app->setup(ac,av);

@@ -25,24 +25,40 @@
 
 
 //=== Windows DLL IMPORT/EXPORT stuff
-#define OPP_DLLIMPORT  __declspec( dllimport )
-#define OPP_DLLEXPORT  __declspec( dllexport )
-
-#ifdef _WIN32
-#  ifdef BUILDING_SIM
-#    define SIM_API  OPP_DLLEXPORT
-#  else
-#    define SIM_API  OPP_DLLIMPORT
+#ifndef __WIN32__
+#  if defined(_WIN32) || defined(WIN32)
+#    define __WIN32__
 #  endif
-#  ifdef BUILDING_ENVIR
-#    define ENVIR_API  OPP_DLLEXPORT
+#endif
+
+#ifdef __WIN32__
+#  if !defined(STATIC_LIBRARY) && !defined(__GNUC__)  /*Cygwin b20.1 doesn't like dllexport stuff*/
+#    define OPP_DLLIMPORT  __declspec(dllimport)
+#    define OPP_DLLEXPORT  __declspec(dllexport)
 #  else
-#    define ENVIR_API  OPP_DLLIMPORT
+#    define OPP_DLLIMPORT
+#    define OPP_DLLEXPORT
 #  endif
 #else
-#  define SIM_API
-#  define ENVIR_API
+#  define OPP_DLLIMPORT
+#  define OPP_DLLEXPORT
 #endif
+
+
+// OPP_DLLIMPORT/EXPORT are empty if non-Windows, non-dll, etc.
+#ifdef BUILDING_SIM
+#  define SIM_API  OPP_DLLEXPORT
+#else
+#  define SIM_API  OPP_DLLIMPORT
+#endif
+
+// we need this because cenvir.h is in our directory
+#ifdef BUILDING_ENVIR
+#  define ENVIR_API  OPP_DLLEXPORT
+#else
+#  define ENVIR_API  OPP_DLLIMPORT
+#endif
+
 
 //=== NULL
 #ifndef NULL
