@@ -278,6 +278,8 @@ proc create_omnetpp_window {} {
         update
     }
 
+    focus .main.text
+
     ###############################
     # Hotkeys
     ###############################
