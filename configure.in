@@ -245,6 +245,17 @@ AC_CHECK_LIB(mpi, MPI_Init,
    AC_MSG_WARN(MPI library not installed!)
    )
 
+dnl FIXME
+if test ! -n "$MPI_CFLAGS"; then
+    AC_MSG_WARN(FIXME: check for presence of MPI headers not implemented!)
+fi
+
+dnl FIXME
+if test ! -n "$MPI_LIBS"; then
+    AC_MSG_WARN(FIXME: check for presence of MPI libs not implemented!)
+fi
+
+
 #----------------------
 # Check for PVM.
 #----------------------
@@ -267,18 +278,6 @@ if test ! -n "$PVM_LIBS"; then
        AC_MSG_WARN(...and re-run configure!)],
        -lpvm3
     )
-fi
-
-#----------------------
-# Check for MPI.
-#----------------------
-
-if test ! -n "$MPI_CFLAGS"; then
-    AC_MSG_WARN(FIXME: check for presence of MPI headers not implemented!)
-fi
-
-if test ! -n "$MPI_LIBS"; then
-    AC_MSG_WARN(FIXME: check for presence of MPI libs not implemented!)
 fi
 
 #----------------------
@@ -347,14 +346,15 @@ fi
 opp_save_CFLAGS=$CFLAGS
 CFLAGS="$EXPAT_CFLAGS $CFLAGS"
 AC_CHECK_HEADER(expat.h, ,
-   NO_EXPAT=1; AC_MSG_WARN(Expat header not found. (nedxml needs Expat or LIBXML.)
-   If you *do* have Expat installed then add the include path to CPPFLAGS.
-   You can get Expat from http://expat.sourceforge.net/), )
+   NO_EXPAT=1
+   AC_MSG_WARN(Expat header not found. If you *do* have Expat, set EXPAT_CFLAGS!)
+   , )
 CFLAGS=$opp_save_CFLAGS
 
 # FIXME this ignores the EXPAT_LIBS variable
 AC_CHECK_LIB(expat, XML_ParserCreate, ,
-   NO_EXPAT=1; AC_MSG_WARN(Expat library not found. (nedxml needs Expat or LIBXML.)), )
+   NO_EXPAT=1
+   AC_MSG_WARN(Expat library not found.), )
 
 #----------------------
 # Check for LIBXML header and lib
@@ -367,14 +367,15 @@ fi
 opp_save_CFLAGS=$CFLAGS
 CFLAGS="$LIBXML_CFLAGS $CFLAGS"
 AC_CHECK_HEADER(libxml/parser.h, ,
-   NO_LIBXML=1; AC_MSG_WARN(LIBXML headers not found. (nedxml needs Expat or LIBXML.)
-   If you *do* have LIBXML installed (e.g. as part of GNOME) then add the include path to CPPFLAGS.
-   You can get expat from http://www.xmlsoft.org), )
+   NO_LIBXML=1
+   AC_MSG_WARN(LIBXML header not found. If you *do* have LIBXML, set LIBXML_CFLAGS!)
+   , )
 CFLAGS=$opp_save_CFLAGS
 
 # FIXME this ignores the LIBXML_LIBS variable
 AC_CHECK_LIB(xml2, xmlParseChunk, ,
-   NO_LIBXML=1; AC_MSG_WARN(LIBXML library not found. (nedxml needs Expat or LIBXML.)), )
+   NO_LIBXML=1
+   AC_MSG_WARN(LIBXML library not found.), )
 
 #----------------------
 # Choose between Expat and LIBXML.
@@ -391,7 +392,8 @@ elif test "x$NO_LIBXML" != "x1"; then
    XML_CFLAGS=$LIBXML_CFLAGS
    XML_LIBS=$LIBXML_LIBS
 else
-   AC_MSG_WARN(No suitable XML parser -- NEDXML cannot be built.)
+   XMLPARSER=none
+   AC_MSG_WARN(No suitable XML parser -- NEDXML and NEDTOOL won't support XML input.)
 fi
 
 #----------------------
