@@ -115,7 +115,7 @@ long cStructDescriptor::string2enum(const char *s, const char *enumname)
         return 0;
     }
 
-    // FIXME: should strip possible spaces, parens etc.
+    // TBD should strip possible spaces, parens etc.
     return enump->lookup(s,0);
 }
 
