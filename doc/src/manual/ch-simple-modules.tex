@@ -2823,7 +2823,7 @@ into the FES\index{FES}, and these messages should be processed
 The first step, finding the factory object:
 
 \begin{verbatim}
-cModuleType *moduleType = findModuleType("TCPConnectionHandler");
+cModuleType *moduleType = findModuleType("WirelessNode");
 \end{verbatim}
 
 
@@ -2835,7 +2835,7 @@ cModuleType *moduleType = findModuleType("TCPConnectionHandler");
 running in one step.
 
 \begin{verbatim}
-mod = modtype->createScheduleInit("name",this);
+mod = modtype->createScheduleInit("node",this);
 \end{verbatim}
 
 It does \fname{create()} + \fname{buildInside()} +
@@ -2877,10 +2877,10 @@ See the following example, where Step 3 is omitted:
 
 \begin{verbatim}
 // find factory object
-cModuleType *moduleType = findModuleType("TCPConnectionHandler");
+cModuleType *moduleType = findModuleType("WirelessNode");
 
 // create (possibly compound) module and build its submodules (if any)
-cModule *module = moduleType->create( "TCPconn", this );
+cModule *module = moduleType->create("node", this);
 module->buildInside();
 
 // create activation message
@@ -2892,13 +2892,18 @@ the code goes between the \fname{create()} and
 \fname{buildInside()} calls:
 
 \begin{verbatim}
-cModuleType *moduleType = findModuleType("TCP-conn-handler");
-cModule *module = moduleType->create( "TCPconn", this );
+// create
+cModuleType *moduleType = findModuleType("WirelessNode");
+cModule *module = moduleType->create("node", this);
+
 // set up parameters and gate sizes before we set up its submodules
-module->par("window-size") = 4096;
-module->setGateSize("to-apps", 3);
+module->par("address") = ++lastAddress;
+module->setGateSize("in", 3);
+module->setGateSize("out", 3);
+
+// create internals, and schedule it
 module->buildInside();
-module->scheduleStart( simTime() );
+module->scheduleStart(simTime());
 \end{verbatim}
 
 
