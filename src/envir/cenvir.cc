@@ -467,6 +467,11 @@ cRNG *cEnvir::rng(int k)
     return app->rng(k);
 }
 
+void cEnvir::getRNGMappingFor(cModule *mod)
+{
+    app->getRNGMappingFor(mod);
+}
+
 //---------------------------------------------------------
 
 void *cEnvir::registerOutputVector(const char *modulename, const char *vectorname, int tuple)

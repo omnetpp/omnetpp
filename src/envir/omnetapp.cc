@@ -114,6 +114,8 @@ TOmnetApp::~TOmnetApp()
     delete outscalarmgr;
     delete snapshotmgr;
 
+    delete [] rngs;
+
     delete scheduler;
 #ifdef WITH_PARSIM
     delete parsimcomm;
@@ -458,8 +460,6 @@ void TOmnetApp::readPerRunOptions(int run_nr)
 
 void TOmnetApp::makeOptionsEffective()
 {
-int run_nr=1; // FIXME get run_nr from somewhere!!!!!!!!!!!!!!!!!!!
-
     cModule::pause_in_sendmsg = opt_pause_in_sendmsg;
 
     // set up RNGs
@@ -471,7 +471,7 @@ int run_nr=1; // FIXME get run_nr from somewhere!!!!!!!!!!!!!!!!!!!
         cRNG *rng;
         CREATE_BY_CLASSNAME(rng, opt_rng_class.c_str(), cRNG, "random number generator");
         rngs[i] = rng;
-        rngs[i]->initialize(run_nr, i, num_rngs, getConfig());
+        rngs[i]->initialize(simulation.runNumber(), i, num_rngs, getConfig());
     }
 }
 
@@ -545,6 +545,12 @@ cRNG *TOmnetApp::rng(int k)
         throw new cException("RNG index %d out of range 0..%d (check num-rngs= "
                              "ini file setting, default is 1)", k, num_rngs-1);
     return rngs[k];
+}
+
+void TOmnetApp::getRNGMappingFor(cModule *mod)
+{
+    // FIXME TBD
+    mod->setRNGMap(0, NULL);
 }
 
 //-------------------------------------------------------------
