@@ -76,7 +76,7 @@ static bool _do_list(cObject *obj, bool beg, ostream& s);
 
 
 // static class members
-char cObject::fullpathbuf[FULLPATHBUF_SIZE];
+char cObject::fullpathbuf[MAX_OBJECTFULLPATH];
 cDefaultList *cObject::defaultowner = &defaultList;
 long cObject::total_objs = 0;
 long cObject::live_objs = 0;
@@ -250,11 +250,6 @@ void cObject::copyNotSupported() const
     throw new cException(this,eCANTCOPY);
 }
 
-void cObject::info(char *buf)
-{
-    buf[0] = '\0';
-}
-
 void cObject::netPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
@@ -277,7 +272,7 @@ void cObject::netUnpack(cCommBuffer *buffer)
 
 const char *cObject::fullPath() const
 {
-    return fullPath(fullpathbuf,FULLPATHBUF_SIZE);
+    return fullPath(fullpathbuf,MAX_OBJECTFULLPATH);
 }
 
 const char *cObject::fullPath(char *buffer, int bufsize) const
@@ -350,7 +345,9 @@ void cObject::writeTo(ostream& os)
 void cObject::writeContents(ostream& os)
 {
     //os << "  objects:\n";
-    _do_list( NULL, false, os );                    // prepare do_list
+    opp_string details;
+    os << detailedInfo(details) << endl;
+    _do_list( NULL, false, os );   // prepare do_list
     forEach( (ForeachFunc)_do_list );
 }
 
