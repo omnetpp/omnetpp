@@ -18,12 +18,13 @@ CPPOBJS= ccor.obj ctypes.obj carray.obj cgate.obj cmodule.obj csimul.obj cobject
          cpacket.obj cfsm.obj cstruct.obj cenum.obj
 CPPOBJS_STD= std\netpack.obj
 CPPOBJS_PVM= pvm\pvmmod.obj pvm/pvmpack.obj
+CPPOBJS_MPI= mpi\mpimod.obj mpi/mpipack.obj
 LIBS= $(OMNETPP_SRC_DIR)/envir/envir.ilib
 
 #
 # Targets
 #
-default : sim_std $(SIM_PVM_IF_POSSIBLE)
+default : sim_std $(SIM_PVM_IF_POSSIBLE) $(SIM_MPI_IF_POSSIBLE)
 
 sim_std : sim_std$(LIB_SUFFIX)
 
@@ -35,14 +36,18 @@ sim_std.lib : $(CPPOBJS) $(CPPOBJS_STD)
 
 sim_std.dll : $(CPPOBJS) $(CPPOBJS_STD) $(LIBS)
 	$(SHLIB_LD) /nologo /out:sim_std.dll /implib:sim_std.ilib /subsystem:console /def:sim_std.def $(CPPOBJS) $(CPPOBJS_STD) $(LIBS)
-        copy sim_std.dll $(OMNETPP_LIB_DIR:/=\)
-        copy sim_std.ilib $(OMNETPP_LIB_DIR:/=\)
+	copy sim_std.dll $(OMNETPP_LIB_DIR:/=\)
+	copy sim_std.ilib $(OMNETPP_LIB_DIR:/=\)
 
 sim_pvm.lib : $(CPPOBJS) $(CPPOBJS_PVM)
 	$(AR) /nologo /out:sim_pvm.lib $(CPPOBJS) $(CPPOBJS_PVM)
-        copy sim_pvm.lib $(OMNETPP_LIB_DIR:/=\)
+	copy sim_pvm.lib $(OMNETPP_LIB_DIR:/=\)
 
-#TBD: sim_pvm.dll
+sim_mpi.lib : $(CPPOBJS) $(CPPOBJS_MPI)
+	$(AR) /nologo /out:sim_mpi.lib $(CPPOBJS) $(CPPOBJS_MPI)
+	copy sim_mpi.lib $(OMNETPP_LIB_DIR:/=\)
+
+#TBD: sim_pvm.dll sim_mpi.dll
 
 ccor.obj : ccor.cc
 	$(CXX) $(COPTS) /c /Tp ccor.cc
@@ -140,6 +145,12 @@ errmsg.obj : errmsg.cc
 std\netpack.obj : std\netpack.cc
 	$(CXX) /Fo"std\netpack.obj" $(COPTS) /c /Tp std\netpack.cc
 
+mpi\mpipack.obj : mpi\mpipack.cc
+	$(CXX) $(MPI_CFLAGS) /Fo"mpi\mpipack.obj" $(COPTS) /c /Tp mpi\mpipack.cc
+
+mpi\mpimod.obj : mpi\mpimod.cc
+	$(CXX) $(MPI_CFLAGS) /Fo"mpi\mpimod.obj" $(COPTS) /c /Tp mpi\mpimod.cc
+
 pvm\pvmpack.obj : pvm\pvmpack.cc
 	$(CXX) $(PVM_CFLAGS) /Fo"pvm\pvmpack.obj" $(COPTS) /c /Tp pvm\pvmpack.cc
 
@@ -150,7 +161,7 @@ missing-library:
 	@ echo *** No PVM installation found -- skipping sim_pvm
 
 depend:
-	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc
+	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc std/*.cc pvm/*.cc mpi/*.cc
 
 clean:
 	-del *.obj
@@ -540,3 +551,148 @@ util.obj: util.cc \
   ../../include/cmessage.h \
   ../../include/carray.h \
   ../../include/cpar.h
+netpack.obj: std/netpack.cc \
+  ../../include/omnetpp.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/csimul.h \
+  ../../include/macros.h \
+  ../../include/ctypes.h \
+  ../../include/carray.h \
+  ../../include/cqueue.h \
+  ../../include/cllist.h \
+  ../../include/chead.h \
+  ../../include/cwatch.h \
+  ../../include/cpar.h \
+  ../../include/cgate.h \
+  ../../include/cmessage.h \
+  ../../include/cpacket.h \
+  ../../include/cmsgheap.h \
+  ../../include/cstk.h \
+  ../../include/ccor.h \
+  ../../include/cmodule.h \
+  ../../include/cstat.h \
+  ../../include/cdensity.h \
+  ../../include/chist.h \
+  ../../include/cvarhist.h \
+  ../../include/cpsquare.h \
+  ../../include/cksplit.h \
+  ../../include/coutvect.h \
+  ../../include/cdetect.h \
+  ../../include/ctopo.h \
+  ../../include/cnetmod.h \
+  ../../include/cfsm.h \
+  ../../include/protocol.h \
+  ../../include/cenvir.h
+pvmmod.obj: pvm/pvmmod.cc \
+  ../../include/cmessage.h \
+  ../../include/cmodule.h \
+  ../../include/csimul.h \
+  ../../include/cstk.h \
+  ../../include/macros.h \
+  ../../include/ctypes.h \
+  ../../include/cenvir.h \
+  ../../include/cpar.h \
+  ../../include/cobject.h \
+  ../../include/carray.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/ccor.h \
+  ../../include/chead.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h \
+  ../../include/errmsg.h \
+  ../../include/cmsgheap.h \
+  ../../include/coutvect.h
+pvmpack.obj: pvm/pvmpack.cc \
+  ../../include/omnetpp.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/csimul.h \
+  ../../include/macros.h \
+  ../../include/ctypes.h \
+  ../../include/carray.h \
+  ../../include/cqueue.h \
+  ../../include/cllist.h \
+  ../../include/chead.h \
+  ../../include/cwatch.h \
+  ../../include/cpar.h \
+  ../../include/cgate.h \
+  ../../include/cmessage.h \
+  ../../include/cpacket.h \
+  ../../include/cmsgheap.h \
+  ../../include/cstk.h \
+  ../../include/ccor.h \
+  ../../include/cmodule.h \
+  ../../include/cstat.h \
+  ../../include/cdensity.h \
+  ../../include/chist.h \
+  ../../include/cvarhist.h \
+  ../../include/cpsquare.h \
+  ../../include/cksplit.h \
+  ../../include/coutvect.h \
+  ../../include/cdetect.h \
+  ../../include/ctopo.h \
+  ../../include/cnetmod.h \
+  ../../include/cfsm.h \
+  ../../include/protocol.h \
+  ../../include/cenvir.h
+mpimod.obj: mpi/mpimod.cc \
+  ../../include/cmessage.h \
+  ../../include/cmodule.h \
+  ../../include/csimul.h \
+  ../../include/cstk.h \
+  ../../include/macros.h \
+  ../../include/ctypes.h \
+  ../../include/cenvir.h \
+  ../../include/cpar.h \
+  ../../include/cobject.h \
+  ../../include/carray.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/ccor.h \
+  ../../include/chead.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h \
+  ../../include/errmsg.h \
+  ../../include/cmsgheap.h \
+  ../../include/coutvect.h
+mpipack.obj: mpi/mpipack.cc \
+  ../../include/omnetpp.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/csimul.h \
+  ../../include/macros.h \
+  ../../include/ctypes.h \
+  ../../include/carray.h \
+  ../../include/cqueue.h \
+  ../../include/cllist.h \
+  ../../include/chead.h \
+  ../../include/cwatch.h \
+  ../../include/cpar.h \
+  ../../include/cgate.h \
+  ../../include/cmessage.h \
+  ../../include/cpacket.h \
+  ../../include/cmsgheap.h \
+  ../../include/cstk.h \
+  ../../include/ccor.h \
+  ../../include/cmodule.h \
+  ../../include/cstat.h \
+  ../../include/cdensity.h \
+  ../../include/chist.h \
+  ../../include/cvarhist.h \
+  ../../include/cpsquare.h \
+  ../../include/cksplit.h \
+  ../../include/coutvect.h \
+  ../../include/cdetect.h \
+  ../../include/ctopo.h \
+  ../../include/cnetmod.h \
+  ../../include/cfsm.h \
+  ../../include/protocol.h \
+  ../../include/cenvir.h

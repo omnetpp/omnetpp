@@ -1,3 +1,7 @@
+2001-08-30 Andras Varga
+
+	* MPI targets added to Makefile.vc too
+
 2001-08-11 Andras Varga
 
 	* added _CONSTs to all copy constructors, operator=()'s and dup()'s
@@ -24,7 +28,7 @@
         * cenum.cc,cstruct.cc: fixed, added to makefile.in and makefile.vc. 
         Dependencies to be updated in both makefiles! Code still untested.
 
-2001-06-28 Andras Varga
+2001-06-28  Andras Varga
 
        	* cstruct.cc added: classes to support self-describing data structures,
         to be used for implementing message subclassing. UNTESTED. To be added

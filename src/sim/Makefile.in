@@ -198,8 +198,8 @@ missing-pvm-library:
 	@ echo '  *** No PVM installation found -- skipping sim_pvm'
 
 depend:
-	$(MAKEDEPEND) -I../../include -- *.cc
-	$(MAKEDEPEND) -I../../include -fMakefile.in -- *.cc
+	$(MAKEDEPEND) -I../../include -- *.cc std/*.cc pvm/*.cc mpi/*.cc
+	$(MAKEDEPEND) -I../../include -fMakefile.in -- *.cc std/*.cc pvm/*.cc mpi/*.cc
 
 clean:
 	rm -f *.o std/*.o pvm/*.o
