@@ -32,7 +32,7 @@ ENVIR_ILIB=
 
 all: check-env components reminder
 
-components: libs progs configsamples samples
+components: libs progs configsamples samples configtutorial tutorial
 
 
 #=====================================================================
@@ -143,6 +143,10 @@ demo:
 	echo @$(WISH:/=\) -f $(OMNETPP_SAMPLES_DIR)/demo/rundemo > $(OMNETPP_SAMPLES_DIR:/=\)\demo\rundemo.bat
 	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\demo && $(MAKE) $(MOPTS) $(MAKEFILE)
 
+tutorial:
+	@echo ===== Compiling $@ ====
+	cd /d $(OMNETPP_TUTORIAL_DIR:/=\)\queues && $(MAKE) $(MOPTS) -f queues.mak
+
 #=====================================================================
 #
 # Utilities
@@ -152,19 +156,19 @@ demo:
 
 check-env:
 	@echo ===== Checking environment =====
-        @if not .%OS%.==.Windows_NT. echo ERROR: This makefile can ONLY be used on NT4.0 or Windows 2000! For Win95/98/ME, use Makefile.98!
+	@if not .%OS%.==.Windows_NT. echo ERROR: This makefile can ONLY be used on NT4.0 or Windows 2000! For Win95/98/ME, use Makefile.98!
 	@echo  Checking if $(CXX) works...
 	@$(CXX) /? /nologo <nul > nul || echo ERROR: Could not run $(CXX). Probably PATH does not contain its BIN or DLL directory. && exit 1
-        @echo Checking if OMNETPP_ROOT is correctly set...
-       	@cd /d $(OMNETPP_ROOT:/=\) || echo ERROR: The directory defined in configuser.vc as OMNETPP_ROOT does not exist. && exit 1
-        @echo Checking if TCL_LIB/TCL_VER is correctly set...
+	@echo Checking if OMNETPP_ROOT is correctly set...
+	@cd /d $(OMNETPP_ROOT:/=\) || echo ERROR: The directory defined in configuser.vc as OMNETPP_ROOT does not exist. && exit 1
+	@echo Checking if TCL_LIB/TCL_VER is correctly set...
 	@cd /d $(_TCL_LIBRARY:/=\) || echo ERROR: The directory $(_TCL_LIBRARY) does not exist. TK_DIR or TK_VER defined in configuser.vc might be wrong. && exit 1
 
 configsamples:
 	@echo ===== Configuring .dsp and .mak files for samples =====
-        cd $(OMNETPP_SAMPLES_DIR:/=\) && cc2cpp.bat
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\) && cc2cpp.bat
 	for %%i in ( $(SAMPLES) ) do \
-	    cd $(OMNETPP_SAMPLES_DIR:/=\)\%%i && \
+	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && \
 	    $(REPLACE:/=\) %%i.dsp.in - "@OMNETPP_INCL_DIR@" "$(OMNETPP_INCL_DIR)" | \
 	    $(REPLACE:/=\) -          - "@OMNETPP_LIB_DIR@"  "$(OMNETPP_LIB_DIR)"  | \
 	    $(REPLACE:/=\) -          - "@OMNETPP_BIN_DIR@"  "$(OMNETPP_BIN_DIR:/=\)"  | \
@@ -172,7 +176,7 @@ configsamples:
 	    $(REPLACE:/=\) -          - "@TCL_LIB@"     "$(TCL_LIB)"    | \
 	    $(REPLACE:/=\) -    %%i.dsp "@TK_LIB@"      "$(TK_LIB)"
 	for %%i in ( $(SAMPLES) ) do \
-	    cd $(OMNETPP_SAMPLES_DIR:/=\)\%%i && \
+	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && \
 	    $(REPLACE:/=\) %%i.mak.in - "@OMNETPP_INCL_DIR@" "$(OMNETPP_INCL_DIR)" | \
 	    $(REPLACE:/=\) -          - "@OMNETPP_LIB_DIR@"  "$(OMNETPP_LIB_DIR)"  | \
 	    $(REPLACE:/=\) -          - "@OMNETPP_BIN_DIR@"  "$(OMNETPP_BIN_DIR:/=\)"  | \
@@ -180,26 +184,46 @@ configsamples:
 	    $(REPLACE:/=\) -          - "@TCL_LIB@"     "$(TCL_LIB)"    | \
 	    $(REPLACE:/=\) -    %%i.mak "@TK_LIB@"      "$(TK_LIB)"
 
+configtutorial:
+	@echo ===== Configuring .dsp and .mak files for tutorial/queues =====
+	cd /d $(OMNETPP_TUTORIAL_DIR:/=\)\queues
+	ren *.cc *.cpp
+	$(REPLACE:/=\) queues.dsp.in - "@OMNETPP_INCL_DIR@" "$(OMNETPP_INCL_DIR)" | \
+	$(REPLACE:/=\) -             - "@OMNETPP_LIB_DIR@"  "$(OMNETPP_LIB_DIR)"  | \
+	$(REPLACE:/=\) -             - "@OMNETPP_BIN_DIR@"  "$(OMNETPP_BIN_DIR:/=\)"  | \
+	$(REPLACE:/=\) -             - "@TK_LIB_PATH@" "$(TK_LIB_DIR)" | \
+	$(REPLACE:/=\) -             - "@TCL_LIB@"     "$(TCL_LIB)"    | \
+	$(REPLACE:/=\) -    queues.dsp "@TK_LIB@"      "$(TK_LIB)"
+	$(REPLACE:/=\) queues.mak.in - "@OMNETPP_INCL_DIR@" "$(OMNETPP_INCL_DIR)" | \
+	$(REPLACE:/=\) -             - "@OMNETPP_LIB_DIR@"  "$(OMNETPP_LIB_DIR)"  | \
+	$(REPLACE:/=\) -             - "@OMNETPP_BIN_DIR@"  "$(OMNETPP_BIN_DIR:/=\)"  | \
+	$(REPLACE:/=\) -             - "@TK_LIB_PATH@" "$(TK_LIB_DIR)" | \
+	$(REPLACE:/=\) -             - "@TCL_LIB@"     "$(TCL_LIB)"    | \
+	$(REPLACE:/=\) -    queues.mak "@TK_LIB@"      "$(TK_LIB)"
+
+
 clean:
 	-for %%i in ( $(LIBS) $(PROGS) ) do \
-	    cd $(OMNETPP_SRC_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) clean
+	    cd /d $(OMNETPP_SRC_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) clean
 	-del /q $(OMNETPP_BIN_DIR:/=\)\*.exe
 	-del /q $(OMNETPP_BIN_DIR:/=\)\*.bat
 	-del /q $(OMNETPP_LIB_DIR:/=\)\*.lib
 	-del /q $(OMNETPP_LIB_DIR:/=\)\*.dll
 	-del /q $(OMNETPP_LIB_DIR:/=\)\*.ilib
 	-for %%i in ( $(SAMPLES) ) do \
-	    cd $(OMNETPP_SAMPLES_DIR:/=\)\%%i && del *.obj *.exe
+	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && del *.obj *.exe
+	-cd /d $(OMNETPP_TUTORIAL_DIR:/=\)\queues && del *.obj *.exe
 
 depend:
 	for %%i in ( $(LIBS) $(PROGS) ) do \
-	    cd $(OMNETPP_SRC_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) depend
+	    cd /d $(OMNETPP_SRC_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) depend
 	@echo *** dependencies for samples must be done by exporting makefiles from the IDE!
 
 reminder:
 !IF "$(TCL_LIBRARY)" == ""
 	@echo ***
 	@echo *** Don't forget to set the TCL_LIBRARY environment variable!
-        @echo *** TCL_LIBRARY=$(_TCL_LIBRARY)
+	@echo *** TCL_LIBRARY=$(_TCL_LIBRARY)
 	@echo ***
 !ENDIF
+
