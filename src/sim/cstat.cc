@@ -110,15 +110,21 @@ void cStdDev::info(char *buf)
 cStdDev& cStdDev::operator=(cStdDev& res)
 {
     cStatistic::operator=(res);
-    num_samples = res.num_samples; min_samples = res.min_samples; max_samples = res.max_samples;
-    sum = res.sum; sqrsum = res.sqrsum;
+    num_samples = res.num_samples;
+    min_samples = res.min_samples;
+    max_samples = res.max_samples;
+    sum = res.sum;
+    sqrsum = res.sqrsum;
+
     return *this;
 }
 
 // collect one value
 void cStdDev::collect(double val)
 {
-    num_samples++;  sum+=val;  sqrsum+=val*val;
+    num_samples++;
+    sum+=val;
+    sqrsum+=val*val;
 
     if (num_samples>1)
     {
@@ -213,10 +219,9 @@ cWeightedStdDev& cWeightedStdDev::operator=(cWeightedStdDev& res)
     return *this;
 }
 
-
 void cWeightedStdDev::collect2(double val, double weight)
 {
-    cStdDev::collect(val);
+    cStdDev::collect(weight*val);
     sum_weights += weight;
 }
 

@@ -660,5 +660,9 @@ Sept 7, 1999
     in compound modules to recursively call themselves for submodules.
     callInitialize() for the compound module is called _before_, callFinish()
     is called _after_ the call on submodules.
+------ omnetpp-2.0b released ------
+Sept 20, 1999
+  - a bug fixed in cWeightedStdDev::collect2(): cStdDev::collect() was called
+    with val instead of weight*val.
 
 Remaining -Wall warnings: "%lf", "%lg", "%le" in printf format strings.
