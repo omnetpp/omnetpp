@@ -43,6 +43,10 @@ AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_RANLIB
 
+MAKE_SO="gcc -shared -o"
+LD=gcc
+AR="ar rs"
+
 #----------------------
 # Checks for libraries.
 #----------------------
@@ -136,8 +140,8 @@ LIB_SUFFIX='a'
 #
 # Compile options. Use -g for debugging, -O3... for speed.
 #
-# CFLAGS='-g -Wall'
-CFLAGS='-O3 -DNDEBUG=1'
+CFLAGS='-g -Wall'
+# CFLAGS='-O3 -DNDEBUG=1'
 
 #----------------------
 # Subtitutions.
@@ -158,7 +162,8 @@ AC_SUBST(TV_INCL_PATH)
 AC_SUBST(TV_LIBS)
 AC_SUBST(TK_INCL_PATH)
 AC_SUBST(TK_LIBS)
-AC_SUBST(PVM_INCL_PATH PVM_LIBS)
+AC_SUBST(PVM_INCL_PATH)
+AC_SUBST(PVM_LIBS)
 AC_SUBST(SYS_LIBS)
 
 AC_SUBST(OMNETPP_ROOT)
