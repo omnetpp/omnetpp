@@ -215,7 +215,6 @@ int TCmdenvApp::run()
             ::fflush(fout);
 
             readPerRunOptions(run_nr());
-            makeOptionsEffective();
 
             // find network
             cNetworkType *network = findNetwork(opt_network_name.c_str());
@@ -297,12 +296,6 @@ int TCmdenvApp::run()
         return 2;
     else
         return 0;
-}
-
-void TCmdenvApp::makeOptionsEffective()
-{
-    TOmnetApp::makeOptionsEffective();
-    // further stuff may come here
 }
 
 void TCmdenvApp::simulate()

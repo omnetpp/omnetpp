@@ -591,7 +591,6 @@ void TOmnetTkApp::newNetwork(const char *network_name)
 
         // set up new network
         readPerRunOptions(0);
-        makeOptionsEffective();
         opt_network_name = network->name();
         // pass run number 0 to setupNetwork(): this means that only the [All runs]
         // section of the ini file will be searched for parameter values
@@ -629,8 +628,7 @@ void TOmnetTkApp::newRun(int run)
 
         // set up new network
         run_nr = run;
-        readPerRunOptions( run_nr );
-        makeOptionsEffective();
+        readPerRunOptions(run_nr);
 
         cNetworkType *network = findNetwork(opt_network_name.c_str());
         if (!network)

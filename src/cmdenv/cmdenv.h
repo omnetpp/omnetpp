@@ -70,7 +70,6 @@ class TCmdenvApp : public TOmnetApp
 
      virtual void readOptions();
      virtual void readPerRunOptions( int run_nr );
-     virtual void makeOptionsEffective();
 
      // new functions:
      void help();

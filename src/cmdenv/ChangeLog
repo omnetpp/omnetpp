@@ -1,3 +1,7 @@
+2005-03-02  Andras Varga
+
+	* cmdenv.h/cc: makeOptionsEffective() merged into readPerRunOptions()
+
 2005-01-10  Andras Varga
 
 	* cmdenv.cc: factored out platform dependencies to include/platdep

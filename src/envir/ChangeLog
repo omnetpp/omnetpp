@@ -1,3 +1,10 @@
+2005-03-02  Andras Varga
+
+	* omnetapp.cc: fix: RNGs were initialized with run number of the
+	previous run
+
+	* omnetapp.h/cc: makeOptionsEffective() merged into readPerRunOptions()
+
 2005-02-24  Andras Varga
 
 	* cenvir.cc: fix: simple modules etc in dynamically loaded dlls/so's

@@ -477,10 +477,7 @@ void TOmnetApp::readPerRunOptions(int run_no)
     opt_simtimelimit = cfg->getAsTime2(section, "General", "sim-time-limit", 0.0);
     opt_cputimelimit = (long)cfg->getAsTime2(section, "General", "cpu-time-limit", 0.0);
     opt_netifcheckfreq = cfg->getAsInt2(section, "General", "netif-check-freq", 1);
-}
 
-void TOmnetApp::makeOptionsEffective()
-{
     cModule::pause_in_sendmsg = opt_pause_in_sendmsg;
 
     // run RNG self-test
@@ -498,7 +495,7 @@ void TOmnetApp::makeOptionsEffective()
         cRNG *rng;
         CREATE_BY_CLASSNAME(rng, opt_rng_class.c_str(), cRNG, "random number generator");
         rngs[i] = rng;
-        rngs[i]->initialize(simulation.runNumber(), i, num_rngs, getConfig());
+        rngs[i]->initialize(run_no, i, num_rngs, getConfig());
     }
 }
 
