@@ -31,6 +31,9 @@
 #include "tkutil.h"
 
 
+#define INSPECTORLISTBOX_MAX_ITEMS   100000
+
+
 
 TclQuotedString::TclQuotedString(const char *s)
 {
@@ -118,7 +121,18 @@ void feedCollectionIntoInspectorListbox(cCollectObjectsVisitor *visitor, Tcl_Int
     cObject **objs = visitor->getArray();
 
     for (int i=0; i<n; i++)
+    {
+        // a small hack: leave out "gates" and "params" arrays of modules
+        if (dynamic_cast<cArray *>(objs[i]) &&
+            dynamic_cast<cModule *>(objs[i]->owner()) &&
+            (objs[i]==&(dynamic_cast<cModule *>(objs[i]->owner())->gatev) ||
+             objs[i]==&(dynamic_cast<cModule *>(objs[i]->owner())->paramv))
+           )
+           continue;
+
+        // insert into listbox
         insertIntoInspectorListbox(interp, listbox, objs[i], fullpath);
+    }
 }
 
 int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char *listbox, bool deep)
@@ -127,7 +141,7 @@ int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char 
     if (deep)
     {
         cCollectObjectsVisitor visitor;
-        visitor.setSizeLimit(100000); // FIXME hardwired constant!
+        visitor.setSizeLimit(INSPECTORLISTBOX_MAX_ITEMS);
         visitor.process(object);
         n = visitor.getArraySize();
         feedCollectionIntoInspectorListbox(&visitor, interp, listbox, true);
@@ -135,7 +149,7 @@ int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char 
     else
     {
         cCollectChildrenVisitor visitor(object);
-        visitor.setSizeLimit(100000); // FIXME hardwired constant!
+        visitor.setSizeLimit(INSPECTORLISTBOX_MAX_ITEMS);
         visitor.process(object);
         n = visitor.getArraySize();
         feedCollectionIntoInspectorListbox(&visitor, interp, listbox, false);

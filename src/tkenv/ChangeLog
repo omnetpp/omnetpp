@@ -1,7 +1,10 @@
 2004-11-29  Andras Varga
 
-  	* on Mac OS/X, implement ftime() with gettimeofday() [patch from 
-  	Michael Tuexen]
+  	* tkapp.cc: on Mac OS/X, implement ftime() with gettimeofday() [patch 
+  	from Michael Tuexen]
+
+  	* tkutil.cc: hide gatev and paramv in "Contents" page of a simple 
+  	module inspector
 
 2004-11-25  Andras Varga
 
