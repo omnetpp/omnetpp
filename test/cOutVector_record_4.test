@@ -1,5 +1,6 @@
 %description:
-check that unnamed cOutVector doesn't core dump
+check that unnamed cOutVector doesn't core dump.
+This only happens under SUN Solaris
 
 %activity:
 
