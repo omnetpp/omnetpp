@@ -30,7 +30,6 @@ proc goBack {} {
         set gned(history) [lreplace $gned(history) end end]
         if {![info exist canvas($canv_id,tab)]} {set canv_id ""}
     }
-puts "DBG CHOSEN=$canv_id"
 
     # switch to that canvas
     if {$canv_id!=""} {
@@ -41,7 +40,6 @@ puts "DBG CHOSEN=$canv_id"
         switchToCanvas $canv_id
         set gned(history) [lreplace $gned(history) end end]
     }
-puts "DBG: hist: $gned(history)   fwd-hist: $gned(fwd-history)"
 }
 
 # goForward --
@@ -58,13 +56,11 @@ proc goForward {} {
         set gned(fwd-history) [lreplace $gned(fwd-history) 0 0]
         if {![info exist canvas($canv_id,tab)]} {set canv_id ""}
     }
-puts "DBG CHOSEN=$canv_id"
 
     # switch to that canvas
     if {$canv_id!=""} {
         switchToCanvas $canv_id
     }
-puts "DBG: hist: $gned(history)   fwd-hist: $gned(fwd-history)"
 }
 
 
@@ -216,7 +212,6 @@ proc switchToCanvas {canv_id} {
         if {$old_canv_id!=$canv_id} {
             lappend gned(history) $old_canv_id
         }
-puts "DBG: at unmap: hist: $gned(history)   fwd-hist: $gned(fwd-history)"
 
         # now unmap old canvas
         $canvas($old_canv_id,tab) config -relief flat
@@ -405,7 +400,6 @@ proc destroyCanvas {canv_id} {
     destroy $canvas($canv_id,textedit)
     destroy $canvas($canv_id,tab)
     foreach i [array names canvas "$canv_id,*"] {
-puts "DBG: unset canvas($i)"
         unset canvas($i)
     }
 

@@ -238,6 +238,7 @@ proc createMainWindow {} {
     set help_tips($gned(horiz-toolbar).undo)  {Undo editing (ctrl-Z)}
     set help_tips($gned(horiz-toolbar).redo)  {Redo editing (ctrl-Y)}
     set help_tips($gned(horiz-toolbar).back)  {Back to previous module}
+    set help_tips($gned(horiz-toolbar).forward)  {Forward}
     set help_tips($gned(horiz-toolbar).close) {Close current canvas}
 
     # check if undo works
