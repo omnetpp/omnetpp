@@ -5,8 +5,8 @@ rem without args, runs all *.test files in the current directory
 rem
 
 rem Use -N to test with dynamic NED loading
-:set FLAG=
-set FLAG=-N
+:set OPT=
+set OPT=-N
 
 
 rem --- nothing to change below this line ---
@@ -25,7 +25,6 @@ call opp_nmakemake %OPT% -f -e cc -u cmdenv || goto end
 nmake -f makefile.vc || cd .. && goto end
 cd .. || goto end
 
-:#call opp_test -r -v %TESTFILES% || goto end
 call opp_test %OPT%-r -v %TESTFILES% || goto end
 
 echo.
