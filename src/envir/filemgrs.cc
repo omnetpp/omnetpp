@@ -44,7 +44,7 @@ using std::ios;
 
 Register_Class(cFileOutputVectorManager);
 
-#define CHECK(fprintf)    if (fprintf<0) opp_error(eOUTVECT)
+#define CHECK(fprintf)    if (fprintf<0) throw new cException(eOUTVECT)
 
 // helper function
 static void createFileName(opp_string& fname, cIniFile *inifile, int run_no, const char *configentry, const char *defaultval)
@@ -63,9 +63,7 @@ static void createFileName(opp_string& fname, cIniFile *inifile, int run_no, con
     {
         const char *hostname=getenv("HOST");
         if (!hostname)
-        {
-            opp_error("Cannot append hostname to file name `%s': no HOST environment variable", basefname);
-        }
+            throw new cException("Cannot append hostname to file name `%s': no HOST environment variable", basefname);
 
         // add ".<hostname>" to fname
         fname.allocate(strlen(basefname)+1+strlen(hostname)+1);
@@ -90,7 +88,7 @@ void cFileOutputVectorManager::openFile()
 {
     f = fopen(fname,"a");
     if (f==NULL)
-        opp_error("Cannot open output file `%s'",(const char *)fname);
+        throw new cException("Cannot open output file `%s'",(const char *)fname);
 }
 
 void cFileOutputVectorManager::closeFile()
@@ -199,7 +197,7 @@ const char *cFileOutputVectorManager::fileName() const
 
 Register_Class(cFileOutputScalarManager);
 
-#define CHECK(fprintf)    if (fprintf<0) opp_error(eOUTVECT)
+#define CHECK(fprintf)    if (fprintf<0) throw new cException(eOUTVECT)
 
 cFileOutputScalarManager::cFileOutputScalarManager()
 {
@@ -215,7 +213,7 @@ void cFileOutputScalarManager::openFile()
 {
     f = fopen(fname,"a");
     if (f==NULL)
-        opp_error("Cannot open output file `%s'",(const char *)fname);
+        throw new cException("Cannot open output file `%s'",(const char *)fname);
 }
 
 void cFileOutputScalarManager::closeFile()

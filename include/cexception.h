@@ -30,8 +30,9 @@ class SIM_API cException
 {
   protected:
     int errorcode;
-    opp_string errormsg;
-    cModule *module;
+    opp_string msg;
+    opp_string modulefullpath;
+    int moduleid;
 
   public:
     /**
@@ -54,12 +55,27 @@ class SIM_API cException
     /**
      * Returns the text of the error.
      */
-    const char *errorMessage() {return errormsg;}
+    const char *message() {return msg;}
 
     /**
-     * Returns the module where the exception occurred.
+     * Returns the full path of the module where the exception
+     * occurred.
      */
-    cModule *errorModule() {return module;}
+    const char *moduleFullPath() {return modulefullpath;}
+
+    /**
+     * Returns the ID of the module where the exception occurred,
+     * or -1 if it was not inside a module. The module may not exist 
+     * any more when the exception is caught (ie. if the exception occurs
+     * during network setup, the network is cleaned up immediately).
+     */
+    int moduleID() {return moduleid;}
+
+    /**
+     * Tell if this exception signalled an error or a normal termination.
+     */
+    bool isNormalTermination() const;
+
 };
 
 #endif

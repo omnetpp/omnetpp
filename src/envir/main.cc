@@ -32,11 +32,12 @@ ENVIR_API int main(int argc, char *argv[])
     printf("OMNeT++ Discrete Event Simulation  (c) 1992-2001 Andras Varga, TU Budapest\n");
     printf("See the license for distribution terms and warranty disclaimer\n");
 
-    if (!simulation.ok())
-    {
-          printf("\nThere was an error during system setup, exiting.\n\n");
-          return simulation.errorCode();
-    }
+    // FIXME this won't work now with exceptions...
+    //if (!simulation.ok())
+    //{
+    //      printf("\nThere was an error during system setup, exiting.\n\n");
+    //      return simulation.errorCode();
+    //}
 
     if (testrand()==0)
     {
@@ -45,9 +46,11 @@ ENVIR_API int main(int argc, char *argv[])
     }
 
     ev.setup(argc,argv);
-    if (simulation.ok()) ev.run();
+    ev.run();
     ev.shutdown();
 
     printf("\nEnd run of OMNeT++\n");
-    return simulation.normalTermination() ? 0 : 1;
+    return 0; // FIXME
+    //return simulation.normalTermination() ? 0 : 1;
 }
+

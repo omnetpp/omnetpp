@@ -45,7 +45,7 @@ class TCmdenvApp : public TOmnetApp
      simtime_t opt_displayinterval;
 
      // set to true on SIGINT/SIGTERM signals
-     static bool sigint_recv;
+     static bool sigint_received;
 
    public:
      TCmdenvApp(ArgList *args, cIniFile *inifile);

@@ -426,7 +426,7 @@ int cPar::netPack()
     case 'F':
       ff = findfunctionbyptr(func.f);
       if (ff==NULL)
-	{opp_error("cPar::netPack(): cannot transmit unregistered function");return 1;}
+	throw new cException("cPar::netPack(): cannot transmit unregistered function");
 
       err|=pack->pack_data(const_cast<char*> (ff->name()), MPI_CHAR);
       err|=pack->pack_data(&(func.argc), MPI_INT);
@@ -436,22 +436,20 @@ int cPar::netPack()
       break;
     case 'T':
       if (dtr.res && dtr.res->owner()!=this)
-	{opp_error("cPar::netPack(): cannot transmit pointer to \"external\" object");return 1;}
+	throw new cException("cPar::netPack(): cannot transmit pointer to \"external\" object");
       if (notnull(dtr.res,err))
 	err|=dtr.res->netPack();
       break;
     case 'I':
-      opp_error("cPar::netPack(): transmitting indirect values (type 'I') not supported");
-      return 1;
+      throw new cException("cPar::netPack(): transmitting indirect values (type 'I') not supported");
     case 'X':
-      opp_error("cPar::netPack(): transmitting expressions (type 'X') not supported");
-      return 1; // not implemented, because there are functions and pointers in it.
+      // not implemented, because there are functions and pointers in it.
+      throw new cException("cPar::netPack(): transmitting expressions (type 'X') not supported");
     case 'P':
-      opp_error("cPar::netPack(): cannot transmit pointer to unknown data structure (type 'P')");
-      return 1;
+      throw new cException("cPar::netPack(): cannot transmit pointer to unknown data structure (type 'P')");
     case 'O':
       if (obj.obj && obj.obj->owner()!=this)
-	{opp_error("cPar::netPack(): cannot transmit pointer to \"external\" object");return 1;}
+	throw new cException("cPar::netPack(): cannot transmit pointer to \"external\" object");
       if (notnull(obj.obj,err))
 	err|=obj.obj->netPack();
       break;
@@ -503,9 +501,8 @@ int cPar::netUnpack()
       ff = findFunction(funcname);
       if (ff==NULL)
       {
-	  opp_error("cPar::netUnpack(): transmitted function `%s' not registered here",funcname);
 	  delete funcname;
-	  return 1;
+	  throw new cException("cPar::netUnpack(): transmitted function `%s' not registered here",funcname);
       }
       func.f = ff->f;
 
@@ -523,8 +520,8 @@ int cPar::netUnpack()
     case 'I':
     case 'X':
     case 'P':
-      opp_error("cPar::netUnpack(): WHAT???");
-      return -1;  // sending of 'X' not implemented
+      // sending of 'X' not implemented
+      throw new cException("cPar::netUnpack(): WHAT???");
     case 'O':
       if (!chkflag(err))
 	obj.obj=NULL;
@@ -580,10 +577,8 @@ int cQueue::netPack()
       if (notnull(pt->obj,err))
       {
 	if (pt->obj->owner()!=this)
-	{
-	  opp_error("cQueue::netPack(): cannot transmit pointer"
-		    " to \"external\" object");return 1;
-	}
+	  throw new cException("cQueue::netPack(): cannot transmit pointer to \"external\" object");
+
 	err|=pt->obj->netPack();
       }
   }
@@ -638,10 +633,7 @@ int cArray::netPack()
     if (notnull(vect[i],err))
     {
       if (vect[i]->owner()!=this)
-      {
-	  opp_error("cArray::netPack(): cannot transmit pointer"
-		   " to \"external\" object");return 1;
-      }
+	  throw new cException("cArray::netPack(): cannot transmit pointer to \"external\" object");
       err|=vect[i]->netPack();
     }
   }
@@ -674,14 +666,12 @@ int cArray::netUnpack()
 
 int cLinkedList::netPack()
 {
-        opp_error("(%s)%s: netPack() not possible -- don't know how to pack an item",className(),fullName());
-        return 0;
+        throw new cException("(%s)%s: netPack() not possible -- don't know how to pack an item",className(),fullName());
 }
 
 int cLinkedList::netUnpack()
 {
-        opp_error("(%s)%s: netUnpack() not possible",className(),fullName());
-        return 0;
+        throw new cException("(%s)%s: netUnpack() not possible",className(),fullName());
 }
 
 int cMessage::netPack()
@@ -1075,8 +1065,7 @@ int cKSplit::netPack()
   int err=0;
   err|=cDensityEstBase::netPack();
 
-  opp_error("(%s)%s: netPack() not implemented",className(), fullName());
-  return err;
+  throw new cException("(%s)%s: netPack() not implemented",className(), fullName());
 }
 
 int cKSplit::netUnpack()
@@ -1084,56 +1073,47 @@ int cKSplit::netUnpack()
   int err=0;
   err=cDensityEstBase::netUnpack();
 
-  opp_error("(%s)%s: netUnpack() not implemented",className(),fullName());
-  return err;
+  throw new cException("(%s)%s: netUnpack() not implemented",className(),fullName());
 }
 
 
 int cTopology::netPack()
 {
-  opp_error("(%s)%s: netPack() not implemented",className(), fullName());
-  return 0;
+  throw new cException("(%s)%s: netPack() not implemented",className(), fullName());
 }
 
 int cTopology::netUnpack()
 {
-  opp_error("(%s)%s: netUnpack() not implemented",className(),fullName());
-  return 0;
+  throw new cException("(%s)%s: netUnpack() not implemented",className(),fullName());
 }
 
 int cFSM::netPack()
 {
-  opp_error("(%s)%s: netPack() not implemented",className(), fullName());
-  return 0;
+  throw new cException("(%s)%s: netPack() not implemented",className(), fullName());
 }
 
 int cFSM::netUnpack()
 {
-  opp_error("(%s)%s: netUnpack() not implemented",className(),fullName());
-  return 0;
+  throw new cException("(%s)%s: netUnpack() not implemented",className(),fullName());
 }
 
 int cChannel::netPack()
 {
-        opp_error("(%s)%s: netPack() not implemented",className(), fullName());
-        return 0;
+        throw new cException("(%s)%s: netPack() not implemented",className(), fullName());
 }
 
 int cChannel::netUnpack()
 {
-        opp_error("(%s)%s: netUnpack() not implemented",className(),fullName());
-        return 0;
+        throw new cException("(%s)%s: netUnpack() not implemented",className(),fullName());
 }
 
 int cSimpleChannel::netPack()
 {
-        opp_error("(%s)%s: netPack() not implemented",className(), fullName());
-        return 0;
+        throw new cException("(%s)%s: netPack() not implemented",className(), fullName());
 }
 
 int cSimpleChannel::netUnpack()
 {
-        opp_error("(%s)%s: netUnpack() not implemented",className(),fullName());
-        return 0;
+        throw new cException("(%s)%s: netUnpack() not implemented",className(),fullName());
 }
 

@@ -61,6 +61,8 @@ TOmnetApp::TOmnetApp(ArgList *arglist, cIniFile *inifile)
      outvectmgr = NULL;
      outscalarmgr = NULL;
      snapshotmgr = NULL;
+
+     initialized = false;
 }
 
 TOmnetApp::~TOmnetApp()
@@ -76,93 +78,93 @@ TOmnetApp::~TOmnetApp()
 
 void TOmnetApp::setup()
 {
-     opt_inifile_name = ini_file->filename();
-
-     // DEBUG code: print out ini file contents
-     // for (cIniFileIterator i(ini_file); !i.end(); i++)
-     //     printf("[%s] %s= %s\n", i.section(), i.entry(), i.value());
-
-     // set opt_* variables from ini file(s)
-     readOptions();
-
-     // initialize coroutine library
-     if (opt_total_stack_kb<=MAIN_STACK_KB)
+     try
      {
-        ev.printf("Total stack size %dK increased to %dK\n", opt_total_stack_kb, MAIN_STACK_KB+4);
-        opt_total_stack_kb = MAIN_STACK_KB+4;
-     }
-     cCoroutine::init( 1024*opt_total_stack_kb, 1024*MAIN_STACK_KB );
-     simulation.init();
+         opt_inifile_name = ini_file->filename();
 
-     // install output vector manager
-     cOutputVectorManager *ovm = (cOutputVectorManager *)createOne(opt_outputvectormanager_class);
-     if (!ovm)
-     {
-         opp_error("Could not create output vector manager class \"%s\"", (const char *)opt_outputvectormanager_class);
-         return;
-     }
-     outvectmgr = ovm;
+         // DEBUG code: print out ini file contents
+         // for (cIniFileIterator i(ini_file); !i.end(); i++)
+         //     printf("[%s] %s= %s\n", i.section(), i.entry(), i.value());
 
-     // install output scalar manager
-     cOutputScalarManager *osm = (cOutputScalarManager *)createOne(opt_outputscalarmanager_class);
-     if (!osm)
-     {
-         opp_error("Could not create output scalar manager class \"%s\"", (const char *)opt_outputscalarmanager_class);
-         return;
-     }
-     outscalarmgr = osm;
+         // set opt_* variables from ini file(s)
+         readOptions();
 
-     // install snapshot manager
-     cSnapshotManager *snsm = (cSnapshotManager *)createOne(opt_snapshotmanager_class);
-     if (!snsm)
-     {
-         opp_error("Could not create snapshot manager class \"%s\"", (const char *)opt_snapshotmanager_class);
-         return;
-     }
-     snapshotmgr = snsm;
-
-     // set up for distributed execution
-     if (opt_distributed)
-     {
-         if (ev.runningMode()==NONPARALLEL_MODE)
+         // initialize coroutine library
+         if (opt_total_stack_kb<=MAIN_STACK_KB)
          {
-             opp_error("Support for parallel execution not linked");
-             return;
+            ev.printf("Total stack size %dK increased to %dK\n", opt_total_stack_kb, MAIN_STACK_KB+4);
+            opt_total_stack_kb = MAIN_STACK_KB+4;
          }
-         if (ev.runningMode()==STARTUPERROR_MODE)
-         {
-             opp_error("There was an error at startup, unable to run in parallel");
-             return;
-         }
-         if (strcmp(opt_parallel_env.buffer(), "PVM")==0)
-         {
-             cNetMod *pvmmod = (cNetMod *)createOne( "cPvmMod");
+         cCoroutine::init( 1024*opt_total_stack_kb, 1024*MAIN_STACK_KB );
+         simulation.init();
 
-             if (!simulation.ok())
+         // install output vector manager
+         cOutputVectorManager *ovm = (cOutputVectorManager *)createOne(opt_outputvectormanager_class);
+         if (!ovm)
+             throw new cException("Could not create output vector manager class \"%s\"", (const char *)opt_outputvectormanager_class);
+         outvectmgr = ovm;
+
+         // install output scalar manager
+         cOutputScalarManager *osm = (cOutputScalarManager *)createOne(opt_outputscalarmanager_class);
+         if (!osm)
+             throw new cException("Could not create output scalar manager class \"%s\"", (const char *)opt_outputscalarmanager_class);
+         outscalarmgr = osm;
+
+         // install snapshot manager
+         cSnapshotManager *snsm = (cSnapshotManager *)createOne(opt_snapshotmanager_class);
+         if (!snsm)
+             throw new cException("Could not create snapshot manager class \"%s\"", (const char *)opt_snapshotmanager_class);
+         snapshotmgr = snsm;
+
+         // set up for distributed execution
+         if (opt_distributed)
+         {
+             if (ev.runningMode()==NONPARALLEL_MODE)
+                 throw new cException("Support for parallel execution not linked");
+             if (ev.runningMode()==STARTUPERROR_MODE)
+                 throw new cException("There was an error at startup, unable to run in parallel");
+
+             const char *libname = NULL;
+             if (strcmp(opt_parallel_env, "PVM")==0)
+                 libname = "cPvmMod";
+             else if (strcmp(opt_parallel_env, "MPI")==0)
+                 libname = "cMpiMod";
+             else
+                 throw new cException("Unknown parallel simulation library '%s', should be 'PVM' or 'MPI'", (const char *)opt_parallel_env);
+
+             cNetMod *netmod = (cNetMod *)createOne(libname);
+             if (!netmod)
+                 throw new cException("Could not create parallel simulation library \"%s\"", (const char *)opt_parallel_env);
+             try
              {
-                 opp_error("Network interface did not initialize properly");
-                 delete pvmmod;
-                 return;
+                 netmod->init();
              }
-             simulation.setNetInterface( pvmmod );
-         }
-         else if (strcmp(opt_parallel_env.buffer(), "MPI")==0)
-         {
-             cNetMod *mpimod = (cNetMod *)createOne( "cMpiMod");
-             if (!simulation.ok())
+             catch (cException *e)
              {
-                 opp_error("Network interface did not initialize properly");
-                 delete mpimod;
-                 return;
+                 throw new cException("Network interface did not initialize properly: %s", e->message());
              }
-             simulation.setNetInterface( mpimod );
+             simulation.setNetInterface( netmod );
          }
      }
+     catch (cException *e)
+     {
+         displayError(e);
+         delete e;
+     }
+     initialized = true;
 }
 
 void TOmnetApp::shutdown()
 {
-     simulation.deleteNetwork();
+    try
+    {
+        simulation.deleteNetwork();
+    }
+    catch (cException *e)
+    {
+        displayError(e);
+        delete e;
+    }
 }
 
 void TOmnetApp::startRun()
@@ -201,7 +203,8 @@ const char *TOmnetApp::getPhysicalMachineFor(const char *logical_mach)
     else
     {
        const char *mach = ini_file->getAsString("Machines", logical_mach, NULL);
-       if (mach==NULL) opp_error("No mapping for logical machine `%s'",logical_mach);
+       if (mach==NULL)
+           throw new cException("No mapping for logical machine `%s'",logical_mach);
        return mach;
     }
 }
@@ -233,25 +236,15 @@ void TOmnetApp::getOutVectorConfig(int run_no, const char *modname,const char *v
     // parse interval string
     char *ellipsis = strstr(s,"..");
     if (!ellipsis)
-    {
-        opp_error("Error in output vector interval %s=%s"
-                         " -- contains no `..'",buffer,s);
-        return;
-    }
+        throw new cException("Error in output vector interval %s=%s -- contains no `..'",buffer,s);
 
     const char *startstr = s;
     const char *stopstr = ellipsis+2;
     starttime = strToSimtime0(startstr);
     stoptime = strToSimtime0(stopstr);
 
-    //DEBUG: printf(" /%s/ /%s/\n",startstr,stopstr);
     if (startstr<ellipsis || *stopstr!='\0')
-    {
-        opp_error("Error in output vector interval %s=%s",
-                         buffer,s);
-        return;
-    }
-
+        throw new cException("Error in output vector interval %s=%s",buffer,s);
 }
 
 const char *TOmnetApp::getDisplayString(int run_no, const char *name)
@@ -480,4 +473,14 @@ bool TOmnetApp::memoryIsLow()
     // it should override this function
     return false;
 }
+
+void TOmnetApp::displayError(cException *e)
+{
+    // Print error msg and set error code.
+    if (e->moduleID()==-1)
+        ev.printfmsg("Error: %s.", e->message());
+    else
+        ev.printfmsg("Error in module %s: %s.", e->moduleFullPath(), e->message());
+}
+
 

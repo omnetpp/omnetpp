@@ -552,7 +552,7 @@ void opp_error(int errc...)
     vsprintf(message,emsg[errc],va);
     va_end(va);
 
-    simulation.error(errc,message);
+    throw new cException(errc, message);
 }
 
 void opp_error(const char *msgformat...)
@@ -563,7 +563,7 @@ void opp_error(const char *msgformat...)
     vsprintf(message,msgformat,va);
     va_end(va);
 
-    simulation.error(eCUSTOM,message);
+    throw new cException(eCUSTOM,message);
 }
 
 void opp_warning(int errc...)
@@ -585,7 +585,7 @@ void opp_warning(const char *msgformat...)
     vsprintf(message,msgformat,va);
     va_end(va);
 
-    simulation.error(eCUSTOM,message);
+    simulation.warning(eCUSTOM,message);
 }
 
 void opp_terminate(int errc...)
@@ -596,7 +596,7 @@ void opp_terminate(int errc...)
     vsprintf(message,emsg[errc],va);
     va_end(va);
 
-    simulation.terminate(errc,message);
+    throw new cException(errc,message); // FIXME this became same as opp_error()
 }
 
 void opp_terminate(const char *msgformat...)
@@ -607,7 +607,7 @@ void opp_terminate(const char *msgformat...)
     vsprintf(message,msgformat,va);
     va_end(va);
 
-    simulation.terminate(eCUSTOM,message);
+    throw new cException(eCUSTOM,message); // FIXME this became same as opp_error()
 }
 
 

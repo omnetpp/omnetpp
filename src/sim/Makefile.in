@@ -299,6 +299,7 @@ cenum.o: cenum.cc \
 cexception.o: cexception.cc \
   ../../include/cexception.h \
   ../../include/csimul.h \
+  ../../include/cmodule.h \
   ../../include/errmsg.h \
   ../../include/defs.h \
   ../../include/util.h \
@@ -306,7 +307,10 @@ cexception.o: cexception.cc \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/coutvect.h \
-  ../../include/cobject.h
+  ../../include/cobject.h \
+  ../../include/carray.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h
 cfsm.o: cfsm.cc \
   ../../include/macros.h \
   ../../include/cfsm.h \
@@ -662,6 +666,7 @@ std/netpack.o: std/netpack.cc \
   ../../include/omnetpp.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cexception.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/csimul.h \
@@ -726,6 +731,7 @@ pvm/pvmpack.o: pvm/pvmpack.cc \
   pvm/pvmmod.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cexception.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/csimul.h \
@@ -794,6 +800,7 @@ mpi/mpipack.o: mpi/mpipack.cc \
   mpi/mpidefs.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cexception.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/csimul.h \

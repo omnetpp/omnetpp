@@ -24,6 +24,7 @@
 #include "carray.h"
 #include "chead.h"
 #include "cenvir.h"
+#include "cexception.h"
 #include "args.h"
 #include "envdefs.h"
 #include "envirext.h"
@@ -47,6 +48,7 @@ extern long starting_seeds[NUM_STARTINGSEEDS];  // they are in seeds.cc
 class ENVIR_API TOmnetApp
 {
    protected:
+     bool initialized;
      cIniFile *ini_file;
      ArgList *args;
 
@@ -151,6 +153,9 @@ class ENVIR_API TOmnetApp
 
      // original command-line args
      ArgList *argList()  {return args;}
+
+     // display error message
+     virtual void displayError(cException *e);
 };
 
 #endif

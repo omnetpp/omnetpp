@@ -213,10 +213,7 @@ void cMpiMod::callFinish()
 short cMpiMod::start_segments(cArray& host_list,int argc,char * argv[])
 {
     if (ev.runningMode()!=MASTER_MODE)
-    {
-      opp_error("start_segments() can only be called on Master process");
-      return false;
-    }
+      throw new cException("start_segments() can only be called on Master process");
 
     int broadcast = MPIMSG_OK;
     // multicast the message to ensure all processors are running
@@ -232,10 +229,7 @@ short cMpiMod::start_segments(cArray& host_list,int argc,char * argv[])
       if(ack == MPIMSG_OK)
 	ev.printf("Slave process ID %d is running... \n", i+1);
       else
-      {
-	opp_error("MPI: process ID %d is failed to start \n", i+1);
-	return false;
-      }
+	throw new cException("MPI: process ID %d is failed to start \n", i+1);
     }
     return true;
 }
@@ -267,7 +261,7 @@ for (int i=0;i<mNum_Outgates;i++)
 
     multicast(MPIMSG_SETUP_LINK);
     if (err)
-      opp_error("setup_connections()/sending");
+      throw new cException("setup_connections()/sending");
 
 
     // receiving information from others
@@ -279,7 +273,7 @@ for (int i=0;i<mNum_Outgates;i++)
 	pack->recv_pack(i, MPIMSG_SETUP_LINK);
         err|=pack->unpack_data((void*)&segm_numgates[i], MPI_INT);
         if (err)
-	  opp_error("setup_connections()/recv header");
+	  throw new cException("setup_connections()/recv header");
         if(segm_numgates[i]!=0)
 	{
 	  temp_link_table[i] = new char *[segm_numgates[i]];
@@ -290,7 +284,7 @@ for (int i=0;i<mNum_Outgates;i++)
 	    temp_link_table[i][j]=str ; // --LG
 printf("In rank: %d, receives from Rank %d , Gates[%d] is %s \n", mMy_Rank, i, j, temp_link_table[i][j]);
 	    if (err)
-	      opp_error("setup_connections()/recv gatename");
+	      throw new cException("setup_connections()/recv gatename");
 	  }
 	}
       }
@@ -400,7 +394,7 @@ void cMpiMod::net_sendmsg(cMessage *msg,int ongate)
 printf("File %s, Line %d from Rank %d \n", __FILE__, __LINE__, mMy_Rank);
     err|=pack->send_pack(mpi_dest, MPIMSG_SIMULATION_CMSG);
     if (err)
-      opp_error("net_sendmsg()");
+      throw new cException("net_sendmsg()");
     delete msg;
 }
 
@@ -417,7 +411,7 @@ void cMpiMod::putmsg_onconsole(const char *strmsg)
 printf("File %s, Line %d from Rank %d \n", __FILE__, __LINE__, mMy_Rank);
     err=err||pack->send_pack(MPIMASTER, MPIMSG_PUTMSG_ONCONSOLE);
     if (err)
-      opp_error("putmsg_onconsole()");
+      throw new cException("putmsg_onconsole()");
 }
 
 //-------------------------------------------------------------------------
@@ -435,7 +429,7 @@ void cMpiMod::puts_onconsole(const char *strmsg)
 printf("File %s, Line %d from Rank %d \n", __FILE__, __LINE__, mMy_Rank);
     err=err||pack->send_pack(MPIMASTER, MPIMSG_PUTS_ONCONSOLE);
     if (err)
-      opp_error("puts_onconsole()");
+      throw new cException("puts_onconsole()");
 }
 
 
@@ -459,10 +453,7 @@ printf("File %s, Line %d from Rank %d \n", __FILE__, __LINE__, mMy_Rank);
     err=err||pack->send_pack(MPIMASTER, MPIMSG_GETS_ONCONSOLE);
 
     if (err)
-    {
-	opp_error("gets_onconsole()/send");
-	return false;
-    }
+	throw new cException("gets_onconsole()/send");
 
     // receive from Master(console)
     pack = cMpiPack::instance();
@@ -479,10 +470,7 @@ printf("File %s, Line %d from Rank %d \n", __FILE__, __LINE__, mMy_Rank);
     err=err||pack->unpack_data((void*)&a, MPI_BYTE);
 
     if (err)
-    {
-      opp_error("gets_onconsole()/recv");
-      return false;
-    }
+      throw new cException("gets_onconsole()/recv");
 
     return a!=0;
 }
@@ -501,10 +489,7 @@ printf("File %s, Line %d from Rank %d \n", __FILE__, __LINE__, mMy_Rank);
   err=err||pack->send_pack(MPIMASTER, MPIMSG_ASKYESNO_ONCONSOLE);
 
   if (err)
-  {
-    opp_error("askyesno_onconsole()/send");
-    return false;
-  }
+    throw new cException("askyesno_onconsole()/send");
 
   MPI_Status status;
   err=0;
@@ -515,10 +500,7 @@ printf("File %s, Line %d from Rank %d \n", __FILE__, __LINE__, mMy_Rank);
   err|=pack->unpack_data((void*)&a, MPI_CHAR);
 
   if (err)
-  {
-    opp_error("askyesno_onconsole()/recv");
-    return false;
-  }
+    throw new cException("askyesno_onconsole()/recv");
   return a!=0;
 }
 
@@ -569,7 +551,7 @@ printf("File %s, Line %d from Rank %d \n", __FILE__, __LINE__, mMy_Rank);
     err=err||pack->pack_data(&mMy_Rank, MPI_INT);
     err=err||pack->send_pack(MPIMASTER, MPIMSG_REQUEST_STOPSIM);
     if (err)
-      opp_error("request_stopsimulation()");
+      throw new cException("request_stopsimulation()");
   }
   MPI_Finalize();
 }
@@ -630,25 +612,16 @@ void cMpiMod::do_process_netmsg(int tag)
 	    err|=pack->unpack_data((void*)&gate_num, MPI_INT);
             msg = (cMessage *)upack_object(err);
             if (err)
-            {
-	      opp_error("do_process_netmsg()/unpacking the message");
-	      break;
-	    }
+	      throw new cException("do_process_netmsg()/unpacking the message");
 
             del_syncpoint(msg->arrivalTime(),gate_num);
 
             netg = (cNetGate *)mOutgates[gate_num];
             if (netg->toGate()==NULL)
-            {
-	      opp_error(eNODEL);
-	      break;
-	    }
+	      throw new cException(eNODEL);
 
             if (msg->arrivalTime() < simulation.simTime())
-            {
-	      opp_error("Arrival time of cMessage from another segment already passed");
-	      break;
-	    }
+	      throw new cException("Arrival time of cMessage from another segment already passed");
 
             netg->deliver(msg);
             break;
@@ -677,7 +650,7 @@ void cMpiMod::do_process_netmsg(int tag)
             if (!err)
                 ev.printfmsg("Process ID %d: %s", incomingRank, str);
             else
-                opp_error("MPI: Bad console message");
+                throw new cException("MPI: Bad console message");
             break;
 
         // Module or info message to display on the console host.
@@ -691,7 +664,7 @@ void cMpiMod::do_process_netmsg(int tag)
             if (!err)
                 ev.foreignPuts(hostname, mod, str);
             else
-                opp_error("MPI: Bad console message");
+                throw new cException("MPI: Bad console message");
             break;
 
         // A message which prompts for user input on the console
@@ -703,7 +676,7 @@ void cMpiMod::do_process_netmsg(int tag)
 	    err|=pack->unpack_data((void*)&length, MPI_INT);
 
             if (err)
-	      opp_error("do_process_netmsg()/remote gets() req");
+	      throw new cException("do_process_netmsg()/remote gets() req");
 
             res=ev.gets(promptstr,buff,length); // hostname?
 
@@ -713,7 +686,7 @@ void cMpiMod::do_process_netmsg(int tag)
 	    err=err||pack->send_pack(incomingRank, MPIMSG_GETS_ONCONSOLE);
 
             if (err)
-	      opp_error("do_process_netmsg()/answering remote gets()");
+	      throw new cException("do_process_netmsg()/answering remote gets()");
             break;
 
         case MPIMSG_ASKYESNO_ONCONSOLE:
@@ -722,7 +695,7 @@ void cMpiMod::do_process_netmsg(int tag)
 	    err|=pack->unpack_data((void**)&promptstr, MPI_CHAR);
 
             if (err)
-	      opp_error(ePVM, "do_process_netmsg()/remote askyesno() request");
+	      throw new cException(ePVM, "do_process_netmsg()/remote askyesno() request");
 
             res=ev.askYesNo(promptstr);
 
@@ -732,7 +705,7 @@ void cMpiMod::do_process_netmsg(int tag)
             err=err||pack->send_pack(incomingRank, MPIMSG_ASKYESNO_ONCONSOLE);
 
             if (err)
-	      opp_error("do_process_netmsg()/answering remote askyesno()");
+	      throw new cException("do_process_netmsg()/answering remote askyesno()");
             break;
 
         // A message to halt the simulation.
@@ -755,7 +728,7 @@ void cMpiMod::do_process_netmsg(int tag)
             }
             break;
 	default:
-            opp_error("do_process_netmsg(): bad MPI message tag %i",tag); // --LG
+            throw new cException("do_process_netmsg(): bad MPI message tag %i",tag); // --LG
     }
 }
 
@@ -778,7 +751,7 @@ void cMpiMod::send_syncpoint( simtime_t t, int ongate)
   err|=pack->send_pack(mpi_dest, MPIMSG_SYNCPOINT);
 
   if (err)
-    opp_error("send_syncpoint()");
+    throw new cException("send_syncpoint()");
 }
 
 //==========================================================================
@@ -799,7 +772,7 @@ void cMpiMod::send_cancelsyncpoint( simtime_t t, int ongate)
   err|=pack->send_pack(mpi_dest, MPIMSG_CANCELSYNCPOINT);
 
   if (err)
-    opp_error("send_cancelsyncpoint()");
+    throw new cException("send_cancelsyncpoint()");
 }
 
 //==========================================================================
@@ -822,10 +795,8 @@ bool cMpiMod::block_on_syncpoint( simtime_t nextlocalevent)
 	 status = pack->recv_pack(MPI_ANY_SOURCE, MPI_ANY_TAG);
 
 	 if (status.MPI_ERROR)
-	 {
-	   opp_error("block_on_syncpoint()");
-	   break;
-	 }
+	   throw new cException("block_on_syncpoint()");
+
 	 do_process_netmsg(status.MPI_TAG);
        }
        return true;
@@ -912,7 +883,7 @@ simtime_t cMpiMod::next_syncpoint()
 void cMpiMod::synchronize()
 {
   if (MPI_Barrier(MPI_COMM_WORLD)!=MPI_SUCCESS)
-    opp_error("synchronize()");
+    throw new cException("synchronize()");
 }
 
 //==========================================================================
@@ -974,10 +945,7 @@ printf("FILE: %s, LINE: %d \n", __FILE__, __LINE__);
   printf("Rank %d, Run number: %d \n", mMy_Rank, run_nr);
 
   if (err)
-  {
-    opp_error("receive_runnumber()");
-    return -1;
-  }
+    throw new cException("receive_runnumber()");
 
   ev.printf("Got run number: %d\n",run_nr);
   return run_nr;
@@ -992,7 +960,7 @@ printf("File %s, Line %d from Rank %d \n", __FILE__, __LINE__, mMy_Rank);
   multicast(MPIMSG_RUNNUMBER);
 
   if (err)
-    opp_error("send_runnumber()");
+    throw new cException("send_runnumber()");
 }
 
 const char* cMpiMod::localhost()

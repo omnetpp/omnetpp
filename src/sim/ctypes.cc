@@ -213,9 +213,8 @@ void cModuleInterface::checkParametersOf( cModule *mod )
         if (!strchr(paramv[i].types, '*') &&
             !strchr(paramv[i].types, par->type()))
         {
-           throw new cException("Module declaration doesn't allow type `%c'"
-                            " for parameter `%s'",
-                            par->type(), par->fullPath());
+           throw new cException("Module declaration doesn't allow type `%c' for parameter `%s'",
+                                par->type(), par->fullPath());
         }
 
         if (strchr(paramv[i].types,'#'))
@@ -401,7 +400,6 @@ void cModuleType::buildInside(cModule *mod)
         throw new cException(eNOMODIF, interface_name, name());
 
     iface->checkParametersOf( mod );
-    if (!simulation.ok()) return;
 
     mod->buildInside();
 

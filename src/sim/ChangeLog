@@ -1,3 +1,7 @@
+2002-10-04  Andras Varga
+
+	* error handling with exceptions has been refined.
+
 2002-09-07 Andras Varga
 
 	* added cchannel.cc, modified carray.cc, cgate.cc, cmessage.cc, 

@@ -55,51 +55,95 @@ TSlaveApp::~TSlaveApp()
 
 void TSlaveApp::run()
 {
-     if (!simulation.ok()) return;
+     if (!initialized)
+         return;
 
-     /* execute a simulation run, then exit */
+     // FIXME setupSignals();
+
+     // execute a simulation run, then exit
      int run_nr = simulation.netInterface()->receive_runnumber();
 
-     readPerRunOptions( run_nr );
-
-     cNetworkType *network = findNetwork( opt_network_name );
-     if (!network)
+     bool setupnetwork_done = false;
+     bool startrun_done = false;
+     try
      {
-         opp_error("Network `%s' not found", (const char *)opt_network_name);
-         return;
+         //ev.printf("\nPreparing for Run #%d...\n", run_nr());
+
+         readPerRunOptions(run_nr);
+
+         // find network
+         cNetworkType *network = findNetwork(opt_network_name);
+         if (!network)
+             throw new cException("Network `%s' not found, check .ini and .ned files", (const char *)opt_network_name);
+
+         // set up network
+         ev.printf("Setting up network `%s'...\n", (const char *)opt_network_name);
+         simulation.setupNetwork(network, run_nr);
+         setupnetwork_done = true;
+
+         makeOptionsEffective();
+
+         // start execution on other segments too
+         startRun();
+         startrun_done = true;
+
+         // run the simulation
+         //ev.printf("Running simulation...\n");
+
+         // simulate() should only throw exception if error occurred and
+         // finish() should not be called. sigint_received is treated differently
+         simulate();
+
+         simulation.callFinish();
+     }
+     catch (cException *e)
+     {
+         displayError(e);
+         delete e;
      }
 
-     ev.printf("Setting up network `%s'...\n", (const char *)opt_network_name);
-     simulation.setupNetwork( network, run_nr );
-     if (simulation.ok())
+     // stop run on other segments
+     if (startrun_done)
      {
-        makeOptionsEffective();
-
-        if (simulation.ok())
-        {
-            simulation.startRun();
-
-            if (simulation.ok())
-            {
-               simulate();
-            }
-            simulation.endRun();
-        }
+         try
+         {
+             simulation.endRun();
+         }
+         catch (cException *e)
+         {
+             displayError(e);
+             delete e;
+         }
      }
-     simulation.deleteNetwork();
+
+     // delete network (this also forces slaves to exit)
+     if (setupnetwork_done)
+     {
+         try
+         {
+             simulation.deleteNetwork();
+         }
+         catch (cException *e)
+         {
+             displayError(e);
+             delete e;
+         }
+     }
 }
 
 void TSlaveApp::simulate()
 {
+/* FIXME to be revised!
      simulation.startClock();
      while(1)
      {
-            cSimpleModule *mod = simulation.selectNextModule();
-            if (mod==NULL || !simulation.ok()) break;
-            simulation.transferTo( mod );
-            if (!simulation.ok()) break;
+         cSimpleModule *mod = simulation.selectNextModule();
+         if (mod==NULL || !simulation.ok()) break;
+         simulation.transferTo( mod ); //FIXME!!!!
+         if (!simulation.ok()) break;
      }
      simulation.stopClock();
+*/
 }
 
 void TSlaveApp::shutdown()

@@ -21,6 +21,7 @@
 
 #include "defs.h"
 #include "util.h"
+#include "cexception.h"
 #include "errmsg.h"
 #include "cobject.h"
 #include "csimul.h"

@@ -69,6 +69,14 @@ ostream& operator<<(ostream& os, struct tm d)
 //==========================================================================
 //=== cSimulation - member functions
 
+cSimulation::cSimulation(const cSimulation& r) :
+ cObject(r)
+{
+    setName(r.name());
+    vect=NULL;
+    operator=(r);
+}
+
 cSimulation::cSimulation(const char *name, cHead *h) :
  cObject(name, h),
  locals("simulation-locals"),
@@ -189,8 +197,9 @@ bool cSimulation::snapshot(cObject *object, const char *label)
     os << "| Started at:    " << *localtime(&simbegtime) << '\n';
     os << "| Time:          " << *localtime(&simendtime) << '\n';
     os << "| Elapsed:       " << elapsedtime << " sec\n";
-    if (err)
-       os << "| Simulation stopped with error message.\n";
+    //FIXME what here?
+    //if (err)
+    //   os << "| Simulation stopped with error message.\n";
     if (contextModule())
         os << "| Initiated from: `" << contextModule()->fullPath() << "'\n";
     else
@@ -205,7 +214,8 @@ bool cSimulation::snapshot(cObject *object, const char *label)
     bool success = !os.fail();
     ev.releaseStreamForSnapshot(&os);
 
-    if (!success) throw new cException("Could not write snapshot");
+    if (!success)
+        throw new cException("Could not write snapshot");
     return success;
 }
 
@@ -328,12 +338,10 @@ void cSimulation::checkTimes()
          opp_terminate(eREALTIME);
 }
 
-bool cSimulation::setupNetwork(cNetworkType *network, int run_num)
+// FIXME change according to doc comment...
+void cSimulation::setupNetwork(cNetworkType *network, int run_num)
 {
     // FIXME handle exceptions during the setup process!
-
-    // checks
-    err = eOK;
 
     if (!network || !network->setupfunc)
         throw new cException(eSETUP);
@@ -344,58 +352,53 @@ bool cSimulation::setupNetwork(cNetworkType *network, int run_num)
     // set cNetworkType pointer
     networktype = network;
 
-    // call NEDC-generated network setup function (with warnings turned off)
-    bool w=warnings();setWarnings(false);// temporarily turn off warnings
-    networktype->setupfunc();
-    setWarnings( w );
-    if (!ok()) goto error;
-
-    // handle distributed execution
-    if (netInterface()!=NULL)
+    try
     {
-       // master: starts OMNeT++ on other hosts
-       if (ev.runningMode()==MASTER_MODE)
-       {
-          // the hosts we need are the system module's machines
-          cArray& machines = systemModule()->machinev;
-          netInterface()->start_segments( machines, ev.argCount(), ev.argVector());
-          if (!ok()) goto error;
+        // call NEDC-generated network setup function (with warnings turned off)
+        bool w=warnings();setWarnings(false); // temporarily turn off warnings
+        networktype->setupfunc();
+        setWarnings( w );
 
-          // signal the slaves which run to set up
-          //   this causes slaves to start building up the network
-          netInterface()->send_runnumber( run_number );
-          if (!ok()) goto error;
+        // handle distributed execution
+        if (netInterface()!=NULL)
+        {
+           // master: starts OMNeT++ on other hosts
+           if (ev.runningMode()==MASTER_MODE)
+           {
+              // the hosts we need are the system module's machines
+              cArray& machines = systemModule()->machinev;
+              netInterface()->start_segments( machines, ev.argCount(), ev.argVector());
 
-          // process messages from other segments:
-          //   display info/error messages, answer questions about param. values etc.
-          netInterface()->process_netmsgs();
-          if (!ok()) goto error;
-       }
+              // signal the slaves which run to set up
+              //   this causes slaves to start building up the network
+              netInterface()->send_runnumber( run_number );
 
-       // all segments: match gate pairs
-       netInterface()->setup_connections();
-       if (!ok()) goto error;
+              // process messages from other segments:
+              //   display info/error messages, answer questions about param. values etc.
+              netInterface()->process_netmsgs();
+           }
 
-       // again: display possible info/error messages
-       if (ev.runningMode()==MASTER_MODE)
-       {
-          netInterface()->process_netmsgs();
-          if (!ok()) goto error;
-       }
+           // all segments: match gate pairs
+           netInterface()->setup_connections();
+
+           // again: display possible info/error messages
+           if (ev.runningMode()==MASTER_MODE)
+           {
+              netInterface()->process_netmsgs();
+           }
+        }
     }
-
-    // network set up correctly
-    return true;
-
-    // if failed, clean up the whole stuff
-    error:
-    deleteNetwork();
-    return false;
+    catch (cException *)
+    {
+        // if failed, clean up the whole stuff before passing exception back
+        deleteNetwork();
+        throw;
+    }
 }
 
+// FIXME change according to doc comment...
 void cSimulation::startRun()
 {
-    err = eOK;
     msgQueue.clear();
     resetClock();
     sim_time = 0;
@@ -439,10 +442,14 @@ void cSimulation::callFinish()
     }
 }
 
+// FIXME change according to doc comment...
 void cSimulation::endRun()
 {
+    if (netInterface()) // FIXME and we're slave
+        netInterface()->stop_all_segments(); //????
 }
 
+// FIXME change according to doc comment...
 void cSimulation::deleteNetwork()
 {
     if (networktype==NULL)
@@ -505,11 +512,9 @@ cSimpleModule *cSimulation::selectNextModule()
         // coming from the network, from other processes
         if (netInterface()!=NULL)
         {
-             while (ok() && msgQueue.empty())
+             while (msgQueue.empty())
                  netInterface()->process_netmsg_blocking();
-             if (ok())
-                 return selectNextModule();
-             return NULL;
+             return selectNextModule();
         }
 
         // seems like really end of the simulation run
@@ -554,15 +559,12 @@ cSimpleModule *cSimulation::selectNextModule()
         throw new cException("Message's destination module no longer exists");
     if (modp->moduleState()==sENDED)
     {
-        if (msg->arrivalGateId()==-1)  // self-message is OK, ignore it
-        {
-            delete msgQueue.getFirst();
-            return selectNextModule();
-        }
-        else
-        {
+        if (!msg->isSelfMessage())
             throw new cException("Message's destination module `%s' already terminated", modp->fullPath());
-        }
+
+        // self-messages are OK, ignore them
+        delete msgQueue.getFirst();
+        return selectNextModule();
     }
 
     // advance simulation time
@@ -573,16 +575,24 @@ cSimpleModule *cSimulation::selectNextModule()
     return modp;
 }
 
-int cSimulation::transferTo(cSimpleModule *sm)
+void cSimulation::transferTo(cSimpleModule *sm)
 {
     if (sm==contextmodp)
-        return 0;
+        return;
     if (sm==NULL)
         throw new cException("transferTo(): attempt to transfer to NULL");
+
+    // set context variables
     runningmodp = sm;
     setContextModule( sm );
-    cCoroutine::switchTo(sm->coroutine);     // stack switch
-    return 0;
+    simulation.exception = NULL;
+
+    // switch to activity() of the simple module
+    cCoroutine::switchTo(sm->coroutine);
+
+    // if exception occurred in activity(), take it from cSimpleModule::activate() and pass it up
+    if (simulation.exception)
+        throw simulation.exception;
 }
 
 void cSimulation::doOneEvent(cSimpleModule *mod)
@@ -595,10 +605,8 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
         //   (note: currentmod_was_deleted is set by runningmod_deleter)
         if (currentmod_was_deleted)
             currentmod_was_deleted = false;
-        else
-            if (mod->stackOverflow())
-                throw new cException("Stack violation in module `%s' (%s stack too small?)",
-                          mod->fullPath(), mod->className());
+        else if (mod->stackOverflow())
+            throw new cException("Stack violation in module `%s' (%s stack too small?)", mod->fullPath(), mod->className());
     }
     else
     {
@@ -608,18 +616,21 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
 
         ev.messageDelivered( msg );
 
-        try {
+        try
+        {
             mod->handleMessage( msg );
         }
-        catch (cException *e) {
-            opp_error(e->errorMessage()); // FIXME set error code! needs new throw new cException()
-            delete e;
+        catch (cException *e)
+        {
+            // even if there was an exception, we restore global context
+            setGlobalContext();
+            throw;
         }
         setGlobalContext();
     }
 }
 
-int cSimulation::transferToMain()
+void cSimulation::transferToMain()
 {
     setGlobalContext();
     if (runningmodp!=NULL)
@@ -627,7 +638,6 @@ int cSimulation::transferToMain()
         runningmodp = NULL;
         cCoroutine::switchToMain();     // stack switch
     }
-    return 0;
 }
 
 void cSimulation::setContextModule(cModule *p)
@@ -642,38 +652,7 @@ cSimpleModule *cSimulation::contextSimpleModule() const
     return (cSimpleModule *)contextmodp;
 }
 
-void cSimulation::terminate(int errc, const char *message)
-{
-    // If we run distributed, stop the other segments unless we were stopped
-    // by one of them.
-    if (netInterface() && errc!=eSTOPSIMRCVD)
-        netInterface()->stop_all_segments();
-
-    if (contextModule()==NULL)
-        ev.printfmsg("%s.\n", message);
-    else
-        ev.printfmsg("Module %s: %s.\n", contextModule()->fullPath(), message);
-    err = errc;
-    transferToMain();
-}
-
-void cSimulation::error(int errc, const char *message)
-{
-    // If we run distributed, stop the other segments unless we were stopped
-    // by one of them.
-    if (netInterface() && errc!=eSTOPSIMRCVD)
-        netInterface()->stop_all_segments();
-
-    // Print error msg and set error code.
-    if (contextModule()==NULL)
-        ev.printfmsg("Error: %s.", message);
-    else
-        ev.printfmsg("Error in module %s: %s.",
-                       contextModule()->fullPath(), message);
-    err = errc;
-    transferToMain();
-}
-
+// FIXME rewrite this totally....
 void cSimulation::warning(int errc, const char *message)
 {
     // return if warnings are disabled (either globally or in the current module)
@@ -697,9 +676,6 @@ void cSimulation::warning(int errc, const char *message)
         if(ev.askYesNo( "Module %s: %s. Continue?",
                          contextModule()->fullPath(), message) == false)
         {
-            // set error flag
-            err = errc;
-
             // if we run distributed, stop the other segments.
             if (netInterface())
                 netInterface()->stop_all_segments();
@@ -707,15 +683,5 @@ void cSimulation::warning(int errc, const char *message)
             transferToMain();
         }
     }
-}
-
-bool cSimulation::normalTermination() const
-{
-    return err==eSTOPSIMRCVD // stopped by another PVM segment
-        || err==eENDEDOK     // no more events
-        || err==eFINISH      // 'finish simulation' was requested interactively
-        || err==eENDSIM      // endSimulation() called
-        || err==eREALTIME    // execution time limit
-        || err==eSIMTIME;    // sim. time limit
 }
 

@@ -43,6 +43,7 @@ class  cSimulation;
 class  cNetworkType;
 class  TModInspector;
 class  cStatistic;
+class  cException;
 
 /**
  * Global simulation instance.
@@ -86,7 +87,6 @@ class SIM_API cSimulation : public cObject
     cNetMod *netmodp;         // if runs distributed; communications
                               //      (network interface) module
 
-    int err;                  // error code, 0 (== eOK) if no error
     bool warn;                // if true, overrides individual warn flags
 
     simtime_t sim_time;       // simulation time (time of current event)
@@ -106,9 +106,11 @@ class SIM_API cSimulation : public cObject
     simtime_t simtmlimit;      // simulation time limit
     cSimpleModule *backtomod;  // used in cSimpleModule::wait/sendmsg
     cCoroutine runningmod_deleter; // used when a simple module deletes itself
+    cException *exception;     // helper variable to get exceptions back from activity()
 
   public:
     cMessageHeap msgQueue;     // future messages (FES)
+
   public:
     /** @name Constructor, destructor. */
     //@{
@@ -117,8 +119,7 @@ class SIM_API cSimulation : public cObject
      * Copy constructor is not supported:  This function
      * gives an error via operator= when called.
      */
-    cSimulation(const cSimulation& r) : cObject(r)
-            {setName(r.name());vect=NULL;operator=(r);}
+    cSimulation(const cSimulation& r);
 
     /**
      * Constructor.
@@ -209,26 +210,22 @@ class SIM_API cSimulation : public cObject
     /**
      * Looks up a module by ID.
      */
-    cModule *module(int id) const
-         {return id>=0 && id<size ? vect[id] : NO(cModule);}
+    cModule *module(int id) const  {return id>=0 && id<size ? vect[id] : NO(cModule);}
 
     /**
-     * Same as module(int), only this returns reference instead of pointer.
+     * Same as module(int), only this returns reference instead of pointer. FIXME may return null reference!
      */
-    cModule& operator[](int id) const
-         {return id>=0 && id<size ? *vect[id] : *NO(cModule);}
+    cModule& operator[](int id) const {return id>=0 && id<size ? *vect[id] : *NO(cModule);}
 
     /**
      * Sets the system module.
      */
-    void setSystemModule(cModule *p)
-         {systemmodp = p;}
+    void setSystemModule(cModule *p)  {systemmodp = p;}
 
     /**
      * Returns pointer to the system module.
      */
-    cModule *systemModule() const
-         {return systemmodp;}
+    cModule *systemModule() const  {return systemmodp;}
     //@}
 
     /** @name Setting up and finishing a simulation run. */
@@ -242,7 +239,7 @@ class SIM_API cSimulation : public cObject
     /**
      * Returns network interface module.
      */
-    cNetMod *netInterface() const     {return netmodp;}
+    cNetMod *netInterface() const  {return netmodp;}
 
     /**
      * Resets the clock measuring the elapsed (real) time spent in this
@@ -261,12 +258,16 @@ class SIM_API cSimulation : public cObject
     void stopClock();
 
     /**
-     * Builds a new network.
+     * Builds a new network and initializes it. With distributed simulation,
+     * also sets up network on other segments.
      */
-    bool setupNetwork(cNetworkType *net,int run_num);
+    void setupNetwork(cNetworkType *net,int run_num);
 
     /**
-     * Initializes network.
+     * Should be called after setupNetwork(), just before the first doOneEvent() call.
+     * The initialize() methods of modules are called here.
+     * With distributed simulation, also tells other segments that to begin
+     * executing the simulation.
      */
     void startRun();
 
@@ -277,12 +278,15 @@ class SIM_API cSimulation : public cObject
     void callFinish();
 
     /**
-     * Should be called at the end of a simulation run. Closes open files, etc.
+     * Should be called at the end of a simulation run.
+     * With distributed simulation, this signals other segments that they should stop
+     * execution.
      */
     void endRun();
 
     /**
-     * Cleans up the simulation network currently set up. Deletes modules, message queue etc.
+     * Cleans up the network currently set up. With distributed simulation,
+     * also notifies other segments that they should clean up their networks.
      */
     void deleteNetwork();
 
@@ -378,12 +382,12 @@ class SIM_API cSimulation : public cObject
      * Switches to simple module's coroutine. This method is invoked
      * from doOneEvent() for activity()-based modules.
      */
-    int transferTo(cSimpleModule *p);
+    void transferTo(cSimpleModule *p);
 
     /**
      * Switches to main coroutine.
      */
-    int transferToMain();
+    void transferToMain();
 
     /**
      * Sets the module in context. Used internally.
@@ -453,44 +457,10 @@ class SIM_API cSimulation : public cObject
     void setWarnings(bool w) {warn=w;}
 
     /**
-     * Prints a termination message and sets the error number.
-     */
-    void terminate(int errcode,const char *message);
-
-    /**
-     * Issue error message.
-     */
-    void error(int errcode,const char *message);
-
-    /**
      * Issues simulation warning. message + question:continue/abort?
      */
     void warning(int errcode,const char *message);
 
-    /**
-     * Returns true if no errors happened (i.e. error code is zero, eOK).
-     */
-    bool ok() const        {return err==eOK;}
-
-    /**
-     * Returns current error code.
-     */
-    int errorCode() const  {return err;}
-
-    /**
-     * Sets error code without giving error message.
-     */
-    void setErrorCode(int e) {err=e;}
-
-    /**
-     * Examines error code and returns true if simulation terminated normally.
-     */
-    bool normalTermination() const;
-
-    /**
-     * Reset error code.
-     */
-    void resetError() {err=eOK;}
     //@}
 };
 

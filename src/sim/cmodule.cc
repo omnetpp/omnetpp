@@ -92,7 +92,6 @@ cModule::~cModule()
 cModule& cModule::operator=(const cModule&)
 {
     throw new cException(eCANTDUP);
-    return *NO(cModule);
 }
 
 void cModule::forEach(ForeachFunc do_fn )
@@ -173,54 +172,46 @@ const char *cModule::fullPath(char *buffer, int bufsize) const
 void cModule::addGate(const char *gname, char tp)
 {
     if (findGate(gname)>=0)
-    {
        throw new cException("addGate(): Gate %s.%s already present", fullPath(), gname);
-    }
-    else
-    {
-       cGate *newg = new cGate( gname, tp );
-       newg->setOwnerModule( this, gatev.add( newg ));
-    }
+
+     cGate *newg = new cGate( gname, tp );
+     newg->setOwnerModule( this, gatev.add( newg ));
 }
 
 void cModule::setGateSize(const char *gname, int size)
 {
     int pos = findGate(gname,-1);
-    if (pos<0) pos = findGate(gname,0);
     if (pos<0)
-    {
+       pos = findGate(gname,0);
+    if (pos<0)
        throw new cException("setGateSize(): Gate %s.%s[] not found", fullPath(), gname);
-    }
-    else
+
+    char tp = gate(pos)->type();
+    int oldsize = gate(pos)->size();
+
+    // remove old vector
+    int i;
+    for (i=0; i<oldsize; i++)
     {
-       char tp = gate(pos)->type();
-       int oldsize = gate(pos)->size();
+       cGate *g = (cGate *) gatev.remove( pos+i );
+       if (g->fromGate() || g->toGate())
+          throw new cException("setGateSize(): Too late, gate %s already connected", g->fullPath());
+       delete g;
+    }
 
-       // remove old vector
-       int i;
-       for (i=0; i<oldsize; i++)
-       {
-          cGate *g = (cGate *) gatev.remove( pos+i );
-          if (g->fromGate() || g->toGate())
-             throw new cException("setGateSize(): Too late, gate %s already connected",
-                       g->fullPath());
-          delete g;
-       }
+    // find `size' empty adjacent slots in the array
+    pos = 0;
+    for (i=0; i<size; i++)
+       if (gatev.exist(pos+i))
+          {pos+=i+1; i=-1;}
 
-       // find `size' empty adjacent slots in the array
-       pos = 0;
-       for (i=0; i<size; i++)
-          if (gatev.exist(pos+i))
-             {pos+=i+1; i=-1;}
-
-       // add new vector starting from pos
-       for (i=0; i<size; i++)
-       {
-           cGate *gate = new cGate( gname, tp );
-           gate->setIndex( i, size );
-           gatev.addAt( pos+i, gate );
-           gate->setOwnerModule( this, pos+i );
-       }
+    // add new vector starting from pos
+    for (i=0; i<size; i++)
+    {
+        cGate *gate = new cGate( gname, tp );
+        gate->setIndex( i, size );
+        gatev.addAt( pos+i, gate );
+        gate->setOwnerModule( this, pos+i );
     }
 }
 
@@ -228,15 +219,12 @@ void cModule::addPar(const char *pname)
 {
     int i = findPar(pname);
     if (i!=-1)
-       throw new cException("addPar(): Parameter %s.%s already present",
-                 fullPath(), pname );
-    else
-    {
-        i = paramv.add( new cModulePar(pname) );
-        cModulePar *p = (cModulePar *) &par(i);
-        p->setOwnerModule( this );
-        p->setInput( true );
-    }
+       throw new cException("addPar(): Parameter %s.%s already present",fullPath(), pname);
+
+    i = paramv.add( new cModulePar(pname) );
+    cModulePar *p = (cModulePar *) &par(i);
+    p->setOwnerModule( this );
+    p->setInput( true );
 }
 
 bool cModule::checkInternalConnections() const
@@ -245,20 +233,17 @@ bool cModule::checkInternalConnections() const
     // Note: This routine only checks if all gates are connected or not.
     //       Does not NOT check where and how they are connected!
 
-    /* check this module compound module if its inside is connected ok */
+    // check this module compound module if its inside is connected ok
     for(j=0; j<gates(); j++)
     {
        const cGate *g = gate(j);
-       if (g && ((g->type()=='I' && g->toGate()==NULL) ||
-                 (g->type()=='O' && g->fromGate()==NULL))
-          )
-       {
+       bool isconnected = g && ((g->type()=='I' && g->toGate()==NULL) ||
+                                (g->type()=='O' && g->fromGate()==NULL));
+       if (!isconnected)
             throw new cException("Gate `%s' is not connected", g->fullPath());
-            return false;
-       }
     }
 
-    /* check submodules */
+    // check submodules
     for (cSubModIterator submod(*this); !submod.end(); submod++)
     {
        cModule *m = submod();
@@ -266,10 +251,7 @@ bool cModule::checkInternalConnections() const
        {
           cGate *g = m->gate(j);
           if (g && !g->isConnected())
-          {
              throw new cException("Gate `%s' is not connected", g->fullPath());
-             return false;
-          }
        }
     }
     return true;
@@ -286,10 +268,9 @@ void cModule::setMachinePar(const char *pname, const char *value)
 {
     int i = machinev.find( pname );
     if (i==-1)
-         throw new cException("(%s)%s: Machine par `%s' does not exist",
-                   className(), fullPath(), pname );
-    else
-         ((cPar *)machinev[i])->setStringValue(value);
+         throw new cException("(%s)%s: Machine par `%s' does not exist", className(), fullPath(), pname);
+
+    ((cPar *)machinev[i])->setStringValue(value);
 }
 
 int cModule::findSubmodule(const char *submodname, int idx)
@@ -328,10 +309,8 @@ cModule *cModule::moduleByRelativePath(const char *path)
             modp = modp->submodule(s);  // no index given
         else
         {
-            if (s[strlen(s)-1]!=']') {
+            if (s[strlen(s)-1]!=']')
                 throw new cException("moduleByRelativePath(): syntax error in path `%s'", path);
-                return NULL;
-            }
             *b='\0';
             modp = modp->submodule(s,atoi(b+1));
         }
@@ -519,11 +498,7 @@ void cModule::setDisplayStringAsParent(const char *s, bool immediate)
 void cModule::setDisplayString(int type, const char *s, bool immediate)
 {
     if (type<0 || type>=dispNUMTYPES)
-    {
-         throw new cException("(%s)%s: setDisplayString(): type %d out of range",
-                   className(), fullPath(), type );
-         return;
-    }
+         throw new cException("(%s)%s: setDisplayString(): type %d out of range", className(), fullPath(), type );
 
     if (type==dispENCLOSINGMOD)
     {
@@ -542,11 +517,7 @@ void cModule::setDisplayString(int type, const char *s, bool immediate)
 const char *cModule::displayString(int type)
 {
     if (type<0 || type>=dispNUMTYPES)
-    {
-         throw new cException("(%s)%s: displayString(): type %d out of range",
-                   className(), fullPath(), type );
-         return NULL;
-    }
+         throw new cException("(%s)%s: displayString(): type %d out of range", className(), fullPath(), type );
 
     if (type==dispSUBMOD && (const char *)dispstr != NULL)
         return dispstr;
@@ -587,7 +558,8 @@ void cSimpleModule::activate(void *p)
     cMessage *starter = simulation.msgQueue.getFirst();
     if (starter!=smod->timeoutmsg)
     {
-        opp_error("scheduleStart() should have been called for dynamically created module `%s'", smod->fullPath());
+        // hand exception to cSimulation::transferTo() and switch back
+        simulation.exception = new cException("scheduleStart() should have been called for dynamically created module `%s'", smod->fullPath());
         simulation.transferToMain();
     }
 
@@ -598,17 +570,19 @@ void cSimpleModule::activate(void *p)
     // call activity(). At this point, initialize() has already been called
     // from cSimulation::startRun(), or manually in the case of dynamically
     // created modules.
-    try {
+    try
+    {
         smod->activity();
     }
-    catch (cException *e) {
-//FIXME add error back -- but it should not call transferToMain() not throw exception...
-//        opp_error(e->errorMessage()); // FIXME set error code! needs new opp_error()
-        delete e;
+    catch (cException *e)
+    {
+        // hand exception to cSimulation::transferTo() and switch back
+        simulation.exception = e;
+        simulation.transferToMain();
     }
 
     // set module state to 'ended', and exit this coroutine
-    smod->end();
+    smod->state = sENDED;
     simulation.transferToMain();
 }
 
@@ -650,7 +624,7 @@ cSimpleModule::cSimpleModule(const char *name, cModule *parentmod, unsigned stks
        // setup coroutine, allocate stack for it
        coroutine = new cCoroutine;
        if (!coroutine->setup(cSimpleModule::activate, this, stksize+ev.extraStackForEnvir()))
-           opp_error("Cannot allocate %d+%d bytes of stack for module `%s' (increase total stack size!)",
+           throw new cException("Cannot allocate %d+%d bytes of stack for module `%s' (increase total stack size!)",
                              stksize,ev.extraStackForEnvir(),fullPath());
     }
 }
@@ -680,7 +654,8 @@ cSimpleModule& cSimpleModule::operator=(const cSimpleModule& other)
 }
 
 void cSimpleModule::info(char *buf)
-{               // no cObject::info() !
+{
+    // no call to cObject::info()!
     sprintf(buf,"%-20.20s (%s,#%d)", fullName(), className(), id() );
 }
 
@@ -709,7 +684,8 @@ void cSimpleModule::setId(int n)
 
 void cSimpleModule::end()
 {
-    state = sENDED;   // leave cleanup to reset() or ~cModule()
+    // FIXME this is not handleMessage()-compliant!
+    state = sENDED;
     simulation.transferToMain();
 }
 
@@ -721,24 +697,21 @@ void cSimpleModule::error(const char *fmt...) const
     vsprintf(buf,fmt,va);
     va_end(va);
 
-    opp_error(eUSER,buf);
+    throw new cException(eUSER,buf);
 }
 
 void *cSimpleModule::memAlloc(size_t m)
 {
-#ifdef __MSDOS__
-    if (m > 0xFFF0-sizeof(sBlock)) return NULL;        // too large
-#endif
     sBlock *p = (sBlock *)new char[m+sizeof(sBlock)];  // allocate
-    if (p) {                                           // if OK,
-       p->mod  = this;
-       p->prev = NULL;                                 //  insert into
-       p->next = heap;                                 //  the list
-       heap = p;                                       //  as the first
-       if (p->next) p->next->prev = p;                 //  item
-       return (void *)(p+1);                  // list structure same as
-    } else                                    // in a cObject-cHead list
-       return NULL;                                    // alloc failed
+    if (!p)
+        throw new cException("memAlloc(): could not allocate %u bytes", m);
+
+    p->mod  = this;
+    p->prev = NULL;                                 //  insert into
+    p->next = heap;                                 //  the list
+    heap = p;                                       //  as the first
+    if (p->next) p->next->prev = p;                 //  item
+    return (void *)(p+1);                  // list structure same as in a cObject-cHead list
 }
 
 void cSimpleModule::memFree(void *&p)
@@ -757,7 +730,8 @@ void cSimpleModule::memFree(void *&p)
 }
 
 void cSimpleModule::clearHeap()
-{                   // free all allocated blocks
+{
+    // free all allocated blocks
     while (heap)
     {
         sBlock *p = heap->next;
@@ -852,11 +826,8 @@ int cSimpleModule::sendDelayed(cMessage *msg, double delay, const char *gatename
 {
     cGate *outgate = gate(gatename,sn);
     if (outgate==NULL)
-    {
        throw new cException(sn<0 ? "send()/sendDelayed(): module has no gate `%s'":
                         "send()/sendDelayed(): module has no gate `%s[%d]'",gatename,sn);
-       return -1;
-    }
     return sendDelayed(msg, delay, outgate);
 }
 
@@ -911,15 +882,13 @@ int cSimpleModule::sendDirect(cMessage *msg, double propdelay, cModule *mod, int
 int cSimpleModule::sendDirect(cMessage *msg, double propdelay,
                               cModule *mod, const char *gatename, int sn)
 {
-    if (!mod) throw new cException("sendDirect(): module ptr is NULL");
+    if (!mod)
+        throw new cException("sendDirect(): module ptr is NULL");
     cGate *togate = mod->gate(gatename,sn);
     if (togate==NULL)
-    {
         throw new cException(sn<0 ? "sendDirect(): module `%s' has no gate `%s'":
                          "sendDirect(): module `%s' has no gate `%s[%d]'",
                          mod->fullPath(),gatename,sn);
-        return 0;
-    }
     return sendDirect(msg, propdelay, togate);
 }
 
@@ -1014,11 +983,8 @@ int cSimpleModule::syncpoint(simtime_t t, const char *gatename, int sn)
 {
     int g = findGate(gatename,sn);
     if (g<0)
-    {
         throw new cException(sn<0 ? "syncpoint(): module has no gate `%s'":
                          "syncpoint(): module has no gate `%s[%d]'",gatename,sn);
-        return 0;
-    }
     return syncpoint( t, g );
 }
 
@@ -1042,25 +1008,25 @@ int cSimpleModule::cancelSyncpoint(simtime_t t, const char *gatename, int sn)
 {
     int g = findGate(gatename,sn);
     if (g<0)
-    {
         throw new cException(sn<0 ? "cancelSyncpoint(): module has no gate `%s'":
                          "cancelSyncpoint(): module has no gate `%s[%d]'",gatename,sn);
-        return 0;
-    }
     return cancelSyncpoint( t, g );
 }
 
 void cSimpleModule::arrived( cMessage *msg, int ongate, simtime_t t)
 {
-    if (state==sENDED) throw new cException(eMODFIN,fullPath());
+    if (state==sENDED)
+        throw new cException(eMODFIN,fullPath());
     msg->setArrival(this, ongate, t);
     simulation.msgQueue.insert( msg );
 }
 
 void cSimpleModule::wait(simtime_t t)
 {
-    if (!usesactivity) throw new cException(eNORECV);
-    if (t<0) throw new cException(eNEGTIME);
+    if (!usesactivity)
+        throw new cException(eNORECV);
+    if (t<0)
+        throw new cException(eNEGTIME);
 
     timeoutmsg->setArrivalTime(simTime()+t);
     simulation.msgQueue.insert( timeoutmsg );
@@ -1093,7 +1059,8 @@ bool cSimpleModule::isThereMessage() const
 
 cMessage *cSimpleModule::receiveNew()
 {
-    if (!usesactivity) throw new cException(eNORECV);
+    if (!usesactivity)
+        throw new cException(eNORECV);
 
     simulation.transferToMain();
     cMessage *newmsg = simulation.msgQueue.getFirst();
@@ -1105,8 +1072,10 @@ cMessage *cSimpleModule::receiveNew()
 
 cMessage *cSimpleModule::receiveNew(simtime_t t)
 {
-    if (!usesactivity)  throw new cException(eNORECV);
-    if (t<0)  throw new cException(eNEGTOUT);
+    if (!usesactivity)
+        throw new cException(eNORECV);
+    if (t<0)
+        throw new cException(eNEGTOUT);
 
     timeoutmsg->setArrivalTime(simTime()+t);
     simulation.msgQueue.insert( timeoutmsg );
@@ -1129,11 +1098,15 @@ cMessage *cSimpleModule::receiveNew(simtime_t t)
 
 cMessage *cSimpleModule::receiveNewOn(int g, simtime_t t)
 {
-    if (!usesactivity)  throw new cException(eNORECV);
-    if (t<0)  throw new cException(eNEGTOUT);
+    if (!usesactivity)
+        throw new cException(eNORECV);
+    if (t<0)
+        throw new cException(eNEGTOUT);
     cGate *a = gate(g);
-    if (a==NULL)  throw new cException(eNOGATE,g);
-    if (a->type()=='O')  throw new cException(eOUTGATE,g);
+    if (a==NULL)
+        throw new cException(eNOGATE,g);
+    if (a->type()=='O')
+        throw new cException(eOUTGATE,g);
 
     if (t!=MAXTIME)
     {
@@ -1210,11 +1183,8 @@ cMessage *cSimpleModule::receiveOn(const char *gatename, int sn, simtime_t t)
 {
     int g = findGate(gatename,sn);
     if (g<0)
-    {
         throw new cException(sn<0 ? "receiveOn(): module has no gate `%s'":
                          "receiveOn(): module has no gate `%s[%d]'",gatename,sn);
-        return NO(cMessage);
-    }
     return receiveOn( g, t );
 }
 
@@ -1278,7 +1248,8 @@ void cSimpleModule::callFinish()
 
 void cSimpleModule::pause(const char *phase)
 {
-    if (!usesactivity) throw new cException("pause() is not supported for modules using handleMessage()");
+    if (!usesactivity)
+        throw new cException("pause() is not supported for modules using handleMessage()");
 
     if (phase)
         phasestr = phase;
@@ -1472,7 +1443,6 @@ void cCompoundModule::deleteModule()
             // and delete it only when everything else is deleted.
             // However, this would be clumsy and ugly to implement so
             // I'd rather wait until the real need for it emerges... --VA
-            return;
         }
         submod()->deleteModule();
     }
@@ -1521,17 +1491,14 @@ static void _connect(cModule *frm, int frg, cModule *tom, int tog)
     // cLinkType is stored with the source gate of a connection:
     //srcgate.setLink( li );
 
-    if( srcgate->toGate()==NULL )
-       srcgate->setTo( destgate );
-    else
-       throw new cException( "connect(): gate %s already connected",
-                  srcgate->fullPath() );
+    if (srcgate->toGate()!=NULL)
+       throw new cException( "connect(): gate %s already connected", srcgate->fullPath() );
 
-    if( destgate->fromGate()==NULL )
-       destgate->setFrom( srcgate );
-    else
-       throw new cException( "connect(): gate %s already connected",
-                  destgate->fullPath() );
+    if (destgate->fromGate()!=NULL)
+       throw new cException( "connect(): gate %s already connected", destgate->fullPath() );
+
+    srcgate->setTo( destgate );
+    destgate->setFrom( srcgate );
 
     //VZ: NETWORKING EXTENSION OF CONNECT!!
     bool src_local = frm->isOnLocalMachine();

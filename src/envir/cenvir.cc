@@ -109,10 +109,7 @@ void cEnvir::setup(int argc, char *argv[])
 
     cIniFile *ini_file = new cIniFile( fname );
     if (ini_file->error())
-    {
-        opp_error("Ini file processing failed");
-        return;
-    }
+        throw new cException("Processing of ini file '%s' failed", fname);
 
     // process additional '-f filename' options if there are any
     int k;
@@ -120,10 +117,7 @@ void cEnvir::setup(int argc, char *argv[])
     {
         ini_file->readFile( fname );
         if (ini_file->error())
-        {
-            opp_error("Processing of additional ini file failed");
-            return;
-        }
+            throw new cException("Processing of additional ini file '%s' failed", fname);
     }
 
     //
@@ -133,7 +127,7 @@ void cEnvir::setup(int argc, char *argv[])
 
     // load shared libraries given with '-l' option(s)
     const char *libname;
-    for (k=0; simulation.ok() && (libname=args->argValue('l',k))!=NULL; k++)
+    for (k=0; (libname=args->argValue('l',k))!=NULL; k++)
        opp_loadlibrary(libname);
 
     // load shared libs given in [General]/load-libs=
@@ -188,10 +182,7 @@ void cEnvir::setup(int argc, char *argv[])
             }
         }
         if (!appreg)
-        {
-            opp_error("Could not start user interface '%s'",appname);
-            return;
-        }
+            throw new cException("Could not start user interface '%s'",appname);
     }
     else
     {
@@ -199,10 +190,7 @@ void cEnvir::setup(int argc, char *argv[])
         bool slave = (running_mode==SLAVE_MODE); // slave or normal app?
         appreg = chooseBestOmnetApp(slave);
         if (!appreg)
-        {
-            opp_error("No appropriate user interface (Cmdenv,Tkenv,etc.) found");
-            return;
-        }
+            throw new cException("No appropriate user interface (Cmdenv,Tkenv,etc.) found");
     }
 
     //
@@ -316,7 +304,8 @@ void cEnvir::puts(const char *str)
 bool cEnvir::gets(const char *promptstr, char *buf, int len)
 {
     bool esc = app->gets( promptstr, buf, len );
-    if (esc) opp_error(eCANCEL);
+    if (esc)
+        throw new cException(eCANCEL);
     return (bool)esc;
 }
 
@@ -328,7 +317,8 @@ bool cEnvir::askf(char *buf, int len, const char *promptfmt,...)
     va_end(va);
 
     bool esc = app->gets( buffer, buf, len );
-    if (esc) opp_error(eCANCEL);
+    if (esc)
+        throw new cException(eCANCEL);
     return (bool)esc;
  }
 
@@ -340,7 +330,8 @@ bool cEnvir::askYesNo(const char *msgfmt,...)
     va_end(va);
 
     int ret = app->askYesNo( buffer );
-    if (ret<0) opp_error(eCANCEL);
+    if (ret<0)
+        throw new cException(eCANCEL);
     return ret!=0;
 }
 

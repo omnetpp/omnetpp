@@ -1,3 +1,7 @@
+2002-10-04  Andras Varga
+
+	* error handling changed from simulation.ok() to exceptions.
+
 2002-05-04  ------ omnetpp-2.2 released ------
 
 2002-01-13  Andras Varga

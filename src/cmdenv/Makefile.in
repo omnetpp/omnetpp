@@ -79,6 +79,7 @@ cmdenv.o: cmdenv.cc \
   ../../include/coutvect.h \
   ../../include/carray.h \
   ../../include/cenvir.h \
+  ../../include/cexception.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cpar.h \

@@ -113,13 +113,12 @@ cPvmMod::cPvmMod()
     my_tid=pvm_mytid();
 
 #ifdef SINGLE_HOST
-    ev.printf("SINGLE_HOST #defined in sim/pvm/pvmmod.cc:"
-              " all segments placed on local host.\n");
+    ev.printf("SINGLE_HOST #defined in sim/pvm/pvmmod.cc: all segments placed on local host.\n");
 #endif
 
     // join our PVM group
     if (pvm_joingroup("omnetpp_group")<0)
-        {opp_error("PVM: Cannot join `omnetpp_group' (pvmgs not running?)");return;}
+        throw new cException("PVM: Cannot join `omnetpp_group' (pvmgs not running?)");
 
     // get local daemon's id and VM configuration
     int my_daemon=pvm_tidtohost(my_tid);
@@ -213,10 +212,7 @@ short cPvmMod::start_segments(cArray& host_list,int argc,char * argv[])
     const char *act_host;
 
     if (ev.runningMode()!=MASTER_MODE)
-    {
-       opp_error("start_segments() can only be called on the console");
-       return false;
-    }
+       throw new cException("start_segments() can only be called on the console");
 
 #ifndef SINGLE_HOST
     // Check if PVM daemon is running on all hosts we need.
@@ -232,10 +228,7 @@ short cPvmMod::start_segments(cArray& host_list,int argc,char * argv[])
            if (opp_strcmp(act_host,hosts[j].hi_name)==0)
               break;
         if (j==host_cnt)
-        {
-           opp_error("PVM: Host `%s' not in virtual machine",act_host);
-           return false;
-        }
+           throw new cException("PVM: Host `%s' not in virtual machine",act_host);
     }
 #endif /*SINGLE_HOST*/
 
@@ -309,16 +302,13 @@ short cPvmMod::start_segments(cArray& host_list,int argc,char * argv[])
            {
                // error, kill segments started up so far
                ev.printf(": ERROR, code=%i\n",(all_tids+segments)[0]);
-               opp_error("PVM: Could not start segment");
                for (j=0; j<segments; j++)
                    pvm_kill(all_tids[j]);
-               return false;
+               throw new cException("PVM: Could not start segment");
            }
-           else
-           {
-               ev.printf(": TID=0x%x\n", all_tids[segments]);
-               segments++;
-           }
+
+           ev.printf(": TID=0x%x\n", all_tids[segments]);
+           segments++;
        }
     }
     ev.printf("Total %d segments counted.\n",segments);
@@ -369,7 +359,8 @@ void cPvmMod::setup_connections()
     }
     // (note: though our TID is in all_tids, PVM will NOT send to ourselves)
     pvm_mcast(all_tids,segments,MSG_SETUP_LINKS);
-    if (err) opp_error(ePVM,"setup_connections()/sending");
+    if (err)
+        throw new cException(ePVM,"setup_connections()/sending");
 
     // Collect from the others:
 #ifdef PVM_DEBUG
@@ -384,12 +375,15 @@ void cPvmMod::setup_connections()
 #ifdef PVM_DEBUG
         ev.printf("  segm_tids[%i]=0x%x  segm_numgates[%i]=%d\n",i,segm_tids[i],i,segm_numgates[i]);
 #endif
-        if (err) opp_error(ePVM,"setup_connections()/recv header");
+        if (err)
+            throw new cException(ePVM,"setup_connections()/recv header");
         temp_link_table[i] = new char *[segm_numgates[i]];
-        for (int j=0;j<segm_numgates[i];j++) {
+        for (int j=0;j<segm_numgates[i];j++)
+        {
             err=0;
             temp_link_table[i][j]=upack_str(err); // --LG
-            if (err) opp_error(ePVM,"setup_connections()/recv gatename");
+            if (err)
+                throw new cException(ePVM,"setup_connections()/recv gatename");
 #ifdef PVM_DEBUG
             ev.printf("    %s\n",temp_link_table[i][j]);
 #endif
@@ -494,7 +488,8 @@ void cPvmMod::net_sendmsg(cMessage *msg,int ongate)
     err|=pvm_pkint(&gate_num,1,1);
     err|=msg->netPack();
     err|=pvm_send(pvm_dest,MSG_SIMULATION_CMSG);
-    if (err) opp_error(ePVM,"net_sendmsg()");
+    if (err)
+        throw new cException(ePVM,"net_sendmsg()");
     delete msg;
 }
 
@@ -509,7 +504,8 @@ void cPvmMod::putmsg_onconsole(const char *strmsg)
     err=err||pack_str(my_host);
     err=err||pack_str(strmsg);
     err=err||pvm_send(parent_tid, MSG_PUTMSG_ONCONSOLE);
-    if (err) opp_error(ePVM, "putmsg_onconsole()");
+    if (err)
+        throw new cException(ePVM, "putmsg_onconsole()");
 }
 
 //-------------------------------------------------------------------------
@@ -525,7 +521,8 @@ void cPvmMod::puts_onconsole(const char *strmsg)
     cModule *mod = simulation.contextModule();
     err=err||pack_str(mod ? mod->fullPath() : "");
     err=err||pvm_send(parent_tid, MSG_PUTS_ONCONSOLE);
-    if (err) opp_error(ePVM, "puts_onconsole()");
+    if (err)
+        throw new cException(ePVM, "puts_onconsole()");
 }
 
 
@@ -545,14 +542,16 @@ bool cPvmMod::gets_onconsole(const char *promptstr, char *buffer,int len)
     err=err||pvm_pkint(&len,1,1);
     err=err||pvm_pkint(&my_tid,1,1);
     err=err||pvm_send(parent_tid,MSG_GETS_ONCONSOLE);
-    if (err) {opp_error(ePVM, "gets_onconsole()/send");return false;}
+    if (err)
+        throw new cException(ePVM, "gets_onconsole()/send");
 
     pvm_recv(parent_tid,MSG_GETS_ONCONSOLE);
     err=0;
     buff=upack_str(err);
     if (buff) strcpy(buffer,buff);
     err=err||pvm_upkbyte(&a,1,1);
-    if (err) {opp_error(ePVM, "gets_onconsole()/recv");return false;};
+    if (err)
+        throw new cException(ePVM, "gets_onconsole()/recv");
     return a!=0;
 }
 
@@ -568,13 +567,15 @@ bool cPvmMod::askyesno_onconsole(const char *question)
     err=err||pack_str(question);
     err=err||pvm_pkint(&my_tid,1,1);
     err=err||pvm_send(parent_tid,MSG_ASKYESNO_ONCONSOLE);
-    if (err) {opp_error(ePVM, "askyesno_onconsole()/send");return false;}
+    if (err)
+        throw new cException(ePVM, "askyesno_onconsole()/send");
 
     err=0;
     pvm_recv(parent_tid,MSG_ASKYESNO_ONCONSOLE);
     char a;
     err=err||pvm_upkbyte(&a,1,1);
-    if (err) {opp_error(ePVM, "askyesno_onconsole()/recv");return false;}
+    if (err)
+        throw new cException(ePVM, "askyesno_onconsole()/recv");
     return a!=0;
 }
 
@@ -625,7 +626,8 @@ void cPvmMod::request_stopsimulation()
         pvm_initsend(PvmDataDefault);
         err|=pack_str(my_host);
         err|=pvm_send(parent_tid,MSG_REQUEST_STOPSIM);
-        if (err) opp_error(ePVM, "request_stopsimulation()");
+        if (err)
+            throw new cException(ePVM, "request_stopsimulation()");
     }
 }
 
@@ -636,8 +638,9 @@ void cPvmMod::process_netmsgs()
 {
     int rbuff;
     while ((rbuff=pvm_nrecv(-1,-1))>0)
-            do_process_netmsg(rbuff);
-    if (rbuff<0) opp_error(ePVM,"process_netmsgs()");
+        do_process_netmsg(rbuff);
+    if (rbuff<0)
+        throw new cException(ePVM,"process_netmsgs()");
 }
 
 //==========================================================================
@@ -649,7 +652,7 @@ void cPvmMod::process_netmsg_blocking()
     if (rbuff>0)
         do_process_netmsg(rbuff);
     else
-        opp_error(ePVM,"process_netmsg_blocking()");
+        throw new cException(ePVM,"process_netmsg_blocking()");
 }
 
 //==========================================================================
@@ -680,16 +683,16 @@ void cPvmMod::do_process_netmsg(int rbuff)
             err|=pvm_upkint(&gate_num,1,1);
             msg = (cMessage *)upack_object(err);
             if (err)
-                {opp_error(ePVM, "do_process_netmsg()/unpacking the message");break;}
+                throw new cException(ePVM, "do_process_netmsg()/unpacking the message");
 
             del_syncpoint(msg->arrivalTime(),gate_num);
 
             netg = (cNetGate *)out_gatev[gate_num];
             if (netg->toGate()==NULL)
-                {opp_error(eNODEL);break;}
+                throw new cException(eNODEL);
 
             if (msg->arrivalTime() < simulation.simTime())
-                {opp_error("Arrival time of cMessage from another segment already passed");break;}
+                throw new cException("Arrival time of message from another segment already passed");
 
             netg->deliver(msg);
             break;
@@ -713,10 +716,9 @@ void cPvmMod::do_process_netmsg(int rbuff)
             err=0;
             hostname=upack_str(err);
             str=upack_str(err);
-            if (!err)
-                ev.printfmsg("Host `%s': %s", hostname, str);
-            else
-                opp_error("PVM: Bad console message");
+            if (err)
+                throw new cException("PVM: Bad console message");
+            ev.printfmsg("Host `%s': %s", hostname, str);
             break;
 
         // Module or info message to display on the console host.
@@ -725,10 +727,9 @@ void cPvmMod::do_process_netmsg(int rbuff)
             hostname=upack_str(err);
             str=upack_str(err);
             mod=upack_str(err);
-            if (!err)
-                ev.foreignPuts(hostname, mod, str);
-            else
-                opp_error("PVM: Bad console message");
+            if (err)
+                throw new cException("PVM: Bad console message");
+            ev.foreignPuts(hostname, mod, str);
             break;
 
         // A message which prompts for user input on the console
@@ -740,7 +741,8 @@ void cPvmMod::do_process_netmsg(int rbuff)
             if (!buff) {buff=new char[80];buff[0]=0;};
             err=err||pvm_upkint(&length,1,1);
             err=err||pvm_upkint(&srctid,1,1);
-            if (err) opp_error(ePVM, "do_process_netmsg()/remote gets() req");
+            if (err)
+                throw new cException(ePVM, "do_process_netmsg()/remote gets() req");
 
             res=ev.gets(promptstr,buff,length); // hostname?
             pvm_initsend(PvmDataDefault);
@@ -748,7 +750,8 @@ void cPvmMod::do_process_netmsg(int rbuff)
             err=err||pack_str(buff);
             err=err||pvm_pkbyte(&res,1,1);
             err=err||pvm_send(srctid,MSG_GETS_ONCONSOLE);
-            if (err) opp_error(ePVM,"do_process_netmsg()/answering remote gets()");
+            if (err)
+                throw new cException(ePVM,"do_process_netmsg()/answering remote gets()");
             break;
 
         case MSG_ASKYESNO_ONCONSOLE:
@@ -756,14 +759,16 @@ void cPvmMod::do_process_netmsg(int rbuff)
             hostname=upack_str(err);
             promptstr=upack_str(err);
             err=err||pvm_upkint(&srctid,1,1);
-            if (err) opp_error(ePVM, "do_process_netmsg()/remote askyesno() request");
+            if (err)
+                throw new cException(ePVM, "do_process_netmsg()/remote askyesno() request");
 
             res=ev.askYesNo(promptstr);
             pvm_initsend(PvmDataDefault);
             err=0;
             err=err||pvm_pkbyte(&res,1,1);
             err=err||pvm_send(srctid,MSG_ASKYESNO_ONCONSOLE);
-            if (err) opp_error(ePVM,"do_process_netmsg()/answering remote askyesno()");
+            if (err)
+                throw new cException(ePVM,"do_process_netmsg()/answering remote askyesno()");
             break;
 
         // A message to halt the simulation.
@@ -789,7 +794,7 @@ void cPvmMod::do_process_netmsg(int rbuff)
             }
             break;
         default:
-            opp_error("do_process_netmsg(): bad PVM message tag %i",type); // --LG
+            throw new cException("do_process_netmsg(): bad PVM message tag %i",type); // --LG
     }
 }
 
@@ -812,7 +817,8 @@ void cPvmMod::send_syncpoint( simtime_t t, int ongate)
     err|=pvm_pkdouble(&t,1,1);
     err|=pvm_pkint(&gate_num,1,1);
     err|=pvm_send(pvm_dest,MSG_SYNCPOINT);
-    if (err)  opp_error(ePVM, "send_syncpoint()");
+    if (err)
+        throw new cException(ePVM, "send_syncpoint()");
 }
 
 //==========================================================================
@@ -834,7 +840,8 @@ void cPvmMod::send_cancelsyncpoint( simtime_t t, int ongate)
     err|=pvm_pkdouble(&t,1,1);
     err|=pvm_pkint(&gate_num,1,1);
     err|=pvm_send(pvm_dest,MSG_CANCELSYNCPOINT);
-    if (err)  opp_error(ePVM, "send_cancelsyncpoint()");
+    if (err)
+        throw new cException(ePVM, "send_cancelsyncpoint()");
 }
 
 //==========================================================================
@@ -856,7 +863,7 @@ bool cPvmMod::block_on_syncpoint( simtime_t nextlocalevent)
        while (nextlocalevent>next_syncpoint())
        {
             int rbuff=pvm_recv(-1,-1);
-            if (rbuff<0) {opp_error(ePVM,"block_on_syncpoint()");break;}
+            if (rbuff<0) {throw new cException(ePVM,"block_on_syncpoint()");break;}
             do_process_netmsg(rbuff);
        }
 #ifdef PVM_DEBUG
@@ -887,7 +894,7 @@ void cPvmMod::add_syncpoint( simtime_t t, int ongate)
     while (p) {
        ev.printf("  gate=%d  t=%lf\n",p->gate,p->t);
        p=p->next;
-   }
+    }
 #endif
 }
 
@@ -967,7 +974,7 @@ void cPvmMod::synchronize()
     ev.printf("synchronize() called...\n");
 #endif
     if (pvm_barrier("omnetpp_group",segments)<0)
-        opp_error(ePVM,"synchronize()");
+        throw new cException(ePVM,"synchronize()");
 #ifdef PVM_DEBUG
     ev.printf("end synchronize().\n");
 #endif
@@ -1028,7 +1035,8 @@ int cPvmMod::receive_runnumber()
     pvm_recv(parent_tid,MSG_RUNNUMBER);
     int run_nr;
     int err=pvm_upkint(&run_nr,1,1);
-    if (err) {opp_error(ePVM,"receive_runnumber()");return -1;}
+    if (err)
+        throw new cException(ePVM,"receive_runnumber()");
 
     ev.printf("Got run number: %d\n",run_nr);
     return run_nr;
@@ -1043,6 +1051,7 @@ void cPvmMod::send_runnumber(int run_nr)
     pvm_initsend(PvmDataDefault);
     err|=pvm_pkint(&run_nr,1,1);
     err|=pvm_mcast(all_tids,segments,MSG_RUNNUMBER);
-    if (err) opp_error(ePVM,"send_runnumber()");
+    if (err)
+        throw new cException(ePVM,"send_runnumber()");
 }
 

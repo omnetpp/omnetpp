@@ -21,7 +21,8 @@
 
 #include <stdio.h>
 #include "cexception.h"
-#include "csimul.h"  // cSimulation
+#include "csimul.h" 
+#include "cmodule.h" 
 #include "errmsg.h"
 
 cException::cException(int errc...)
@@ -33,8 +34,17 @@ cException::cException(int errc...)
     va_end(va);
 
     errorcode = errc;
-    errormsg = message;
-    module = simulation.contextModule();
+    msg = message;
+
+    if (!simulation.contextModule())
+    {
+        moduleid = -1;
+    }
+    else
+    {
+        moduleid = simulation.contextModule()->id();
+        modulefullpath = simulation.contextModule()->fullPath();
+    }
 }
 
 cException::cException(const char *msgformat...)
@@ -46,6 +56,26 @@ cException::cException(const char *msgformat...)
     va_end(va);
 
     errorcode = eCUSTOM;
-    errormsg = message;
-    module = simulation.contextModule();
+    msg = message;
+
+    if (!simulation.contextModule())
+    {
+        moduleid = -1;
+    }
+    else
+    {
+        moduleid = simulation.contextModule()->id();
+        modulefullpath = simulation.contextModule()->fullPath();
+    }
 }
+
+bool cException::isNormalTermination() const
+{
+    return errorcode==eSTOPSIMRCVD // stopped by another PVM segment
+        || errorcode==eENDEDOK     // no more events
+        || errorcode==eFINISH      // 'finish simulation' was requested interactively
+        || errorcode==eENDSIM      // endSimulation() called
+        || errorcode==eREALTIME    // execution time limit
+        || errorcode==eSIMTIME;    // sim. time limit
+}
+

@@ -142,6 +142,15 @@ class SIM_API cNetMod : public cModule
     virtual void callFinish();
     //@}
 
+    /** @name Miscellaneous. */
+    //@{
+
+    /**
+     * Does initialization task that can't be done in the constructor.
+     */
+    virtual void init()=0;
+    //@}
+
     /** @name Information about the local segment. */
     //@{
 
