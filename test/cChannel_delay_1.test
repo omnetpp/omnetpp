@@ -1,0 +1,72 @@
+%description:
+Basic test for cSimpleChannel
+
+%file: {}.ned
+simple {Sender}
+    gates:
+        out: out;
+endsimple
+
+simple {Receiver}
+    gates:
+        in: in;
+endsimple
+
+module {Net}
+    submodules:
+        sender : {Sender};
+        receiver : {Receiver};
+    connections:
+        sender.out --> receiver.in;
+endmodule
+
+network {network} : {Net}
+endnetwork
+
+%file: {}.cc
+
+#include <omnetpp.h>
+
+class {Sender} : public cSimpleModule
+{
+    Module_Class_Members({Sender},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Sender});
+
+void {Sender}::activity()
+{
+   // create and set channel
+   cChannel *ch = new cSimpleChannel("channel");
+   cPar *d = new cPar();
+   *d = 0.1;
+   ch->setDelay( d );
+   gate("out")->setChannel( ch );
+
+   // send message
+   cMessage *msg = new cMessage();
+   send(msg, "out");
+}
+
+class {Receiver} : public cSimpleModule
+{
+    Module_Class_Members({Receiver},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Receiver});
+
+void {Receiver}::activity()
+{
+   cMessage *msg = receive();
+   simtime_t diff = simTime() - msg->timestamp();
+   ev << "diff: " << diff << endl;
+}
+
+%contains: stdout
+diff: 0.1
+
+%not-contains: stderr
+Error
+
