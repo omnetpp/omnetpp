@@ -451,12 +451,16 @@ class SIM_API cModule : public cDefaultList
     int gates() const {return gatev.items();}
 
     /**
-     * Returns a gate by its ID. Returns NULL if the gate does not exist.
+     * Returns a gate by its ID. Note that the gate array may contain "holes",
+     * that is, this function can return NULL for some IDs in the 0..gates()-1
+     * range. NULL is returned for IDs out of range as well.
      */
     cGate *gate(int g) {return (cGate*)gatev[g];}
 
     /**
-     * Returns a gate by its ID. Returns NULL if the gate does not exist.
+     * Returns a gate by its ID. Note that the gate array may contain "holes",
+     * that is, this function can return NULL for some IDs in the 0..gates()-1
+     * range. NULL is returned for IDs out of range as well.
      */
     const cGate *gate(int g) const {return (const cGate*)gatev[g];}
 

@@ -1,0 +1,120 @@
+%description:
+Test NED sizeof() operators (for zero/nonzero module/gate sizes) in:
+submodule non-const parameters and module vector sizes
+
+%file: {}.ned
+
+module {Foo}
+endmodule
+
+simple {Simple}
+   parameters:
+      p1, p2, p3, p4, p5, p6, p7, p8;
+   gates:
+      in: g1[], g2[], g3[], g4[], g5[], g6[], g7[], g8[];
+endsimple
+
+module {Compound}
+    parameters:
+        a: numeric;
+    gates:
+        in: in0[];
+        in: in1[];
+    submodules:
+        foo0 : {Foo}[0];
+        foo1 : {Foo}[5];
+
+        dum1 : {Foo}[sizeof(foo0)];
+        dum2 : {Foo}[sizeof(foo1)];
+        dum3 : {Foo}[sizeof(in0)];
+        dum4 : {Foo}[sizeof(in1)];
+        dum5 : {Foo}[a+sizeof(foo0)];
+        dum6 : {Foo}[a+sizeof(foo1)];
+        dum7 : {Foo}[a+sizeof(in0)];
+        dum8 : {Foo}[a+sizeof(in1)];
+
+        sub : {Simple};
+            parameters:
+                p1 = sizeof(foo0),
+                p2 = sizeof(foo1),
+                p3 = sizeof(in0),
+                p4 = sizeof(in1),
+                p5 = a+sizeof(foo0),
+                p6 = a+sizeof(foo1),
+                p7 = a+sizeof(in0),
+                p8 = a+sizeof(in1);
+            gatesizes:
+                g1[sizeof(foo0)],
+                g2[sizeof(foo1)],
+                g3[sizeof(in0)],
+                g4[sizeof(in1)],
+                g5[a+sizeof(foo0)],
+                g6[a+sizeof(foo1)],
+                g7[a+sizeof(in0)],
+                g8[a+sizeof(in1)];
+    connections nocheck:
+endmodule
+
+// we need this only because the top-level module cannot
+// have gates, and we want to test sizeof(gatevector) as well
+module {Wrapper}
+    submodules:
+        c: {Compound};
+            parameters: a=100;
+            gatesizes: in0[0], in1[8];
+    connections nocheck:
+endmodule
+
+network {network}: {Wrapper}
+endnetwork
+
+%file: {}.cc
+
+#include <omnetpp.h>
+
+class {Simple} : public cSimpleModule
+{
+    Module_Class_Members({Simple},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Simple});
+
+void {Simple}::activity()
+{
+    for (int i=0; i<params(); i++)
+        ev << fullName() << "." << par(i).name() << "=" << (double)par(i) << endl;
+    for (int k=0; k<gates(); k++)
+        if (gate(k) && gate(k)->index()==0)
+            ev << gate(k)->name() << " size=" << gate(k)->size() << endl;
+    for (cSubModIterator j(*parentModule()); !j.end(); j++)
+        if (j()->index()==0)
+            ev << j()->name() << " size=" << j()->size() << endl;
+}
+
+%contains: stdout
+sub.p1=0
+sub.p2=5
+sub.p3=0
+sub.p4=8
+sub.p5=100
+sub.p6=105
+sub.p7=100
+sub.p8=108
+g1 size=0
+g3 size=0
+g2 size=5
+g4 size=8
+g5 size=100
+g6 size=105
+g7 size=100
+g8 size=108
+foo1 size=5
+dum2 size=5
+dum4 size=8
+dum5 size=100
+dum6 size=105
+dum7 size=100
+dum8 size=108
+sub size=1
+
