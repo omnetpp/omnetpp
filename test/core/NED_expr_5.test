@@ -1,0 +1,107 @@
+%description:
+Test NED index and sizeof() operators in submodule const parameters
+
+%file: {}.ned
+
+module {Foo}
+endmodule
+
+simple {Simple}
+   parameters:
+      p00:const, p01:const, p02:const, p03:const, p04:const, p05:const;
+endsimple
+
+module {Compound}
+    gates:
+        in: in[];
+    submodules:
+        foo : {Foo}[5];
+        sub1 : {Simple}[3];
+            parameters:
+                p00 = index,
+                p01 = sizeof(foo),
+                p02 = sizeof(in),
+                p03 = 1+index,
+                p04 = 1+sizeof(foo),
+                p05 = 1+sizeof(in);
+endmodule
+
+// we need this only because the top-level module cannot
+// have gates, and we want to test sizeof(gatevector) as well
+module {Wrapper}
+    submodules:
+        c: {Compound};
+            gatesizes: in[8];
+    connections nocheck:
+endmodule
+
+network {network}: {Wrapper}
+endnetwork
+
+%file: {}.cc
+
+#include <omnetpp.h>
+
+class {Simple} : public cSimpleModule
+{
+    Module_Class_Members({Simple},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Simple});
+
+void {Simple}::activity()
+{
+    for (int i=0; i<params(); i++)
+        ev << par(i).name() << "=" << (double)par(i) << endl;
+}
+
+%contains-regex: stdout
+p00=-3
+p01=-5
+p02=0
+p03=1
+p04=1
+p05=0
+p06=[0-9eE+.]+
+p07=1728
+p08=36
+p09=4
+p10=2
+p11=15
+p12=9
+p13=40
+p14=2
+p15=2
+p16=11
+p17=9
+p18=0
+p19=1
+p20=1
+p21=0
+p22=1
+p23=0
+p24=0
+p25=1
+p26=0
+p27=1
+p28=0
+p29=1
+p30=0
+p31=0
+p32=1
+p33=1
+p34=1
+p35=0
+p36=0
+p37=0
+p38=1
+p39=1
+p40=1
+p41=0
+p42=0
+p43=1
+p44=1
+p45=0
+p46=5
+p47=2
