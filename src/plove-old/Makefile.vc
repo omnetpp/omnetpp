@@ -3,7 +3,11 @@
 #
 !include ..\..\configuser.vc
 
-#all: plove.bat -- not good, doesn't overwrite stock plove.bat
+#
+# NOTE: an 'all: plove.bat' rule wouldn't be good, wouldn't overwrite
+#       stock plove.bat right after installation
+#
+
 all:
 	echo @$(WISH:/=\) -f $(OMNETPP_SRC_DIR)/plove/plove > plove.bat
         copy plove.bat $(OMNETPP_BIN_DIR:/=\)
