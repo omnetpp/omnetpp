@@ -310,7 +310,7 @@ is optional.
 
 Parameters\index{module!compound!parameters} are declared in the same
 way as with simple modules.  Please refer to
-Section \ref{sec:ch-ned-lang:simple-module-param}, ''Simple module
+Section \ref{sec:ch-ned-lang:simple-module-param}, ``Simple module
 parameters''.
 
 
@@ -348,7 +348,7 @@ construct a router module with the number of ports as a parameter.
 
 Gates\index{gate} have the same role and are declared in the same way
 as with simple modules. Please refer to Section
-\ref{sec:ch-ned-lang:simple-module-gates}, ''Simple module gates''.
+\ref{sec:ch-ned-lang:simple-module-gates}, ``Simple module gates''.
 
 
 Example:
@@ -453,7 +453,7 @@ Example:
 The above example means that the type of the submodule theNode is not
 known in advance; it will be taken from the \texttt{node\_type}
 parameter of \texttt{CompoundModule} which must be a string (for
-example, ''SwitchingNode''). The module type called
+example, ``SwitchingNode''). The module type called
 \texttt{GeneralNode} must have appeared earlier in the NED files; its
 declaration will be used to check whether \texttt{theNode}'s
 parameters and gates exist and are used correctly. The
@@ -1092,7 +1092,7 @@ described below.
 
 
 This pattern takes a subset of the connections of a full graph.  A
-condition is used to ''carve out'' the necessary interconnection from
+condition is used to ``carve out'' the necessary interconnection from
 the full graph:
 
 
@@ -1265,8 +1265,8 @@ If you put the nodetype parameter to the ini file, you can use the
 same simulation model to test e.g. several routing algorithms in a
 hypercube, each algorithm implemented with a different
 simple module type -- you just have to supply
-different values to nodetype, such as ''WormholeRoutingNode'',
-''DeflectionRoutingNode'', etc.
+different values to nodetype, such as ``WormholeRoutingNode'',
+``DeflectionRoutingNode'', etc.
 
 
 
@@ -1311,8 +1311,8 @@ the desired one can be specified in the config file (see later).
 
 \opp simulations can be executed in parallel\index{parallel
   simulation}. This means that different parts of the model execute on
-different hosts or processors.  (We'll use the term ''host'' or
-''machine'' in this sense.) The unit of granularity is the
+different hosts or processors.  (We'll use the term ``host'' or
+``machine'' in this sense.) The unit of granularity is the
 simple module: one simple
 module always executes on a single processor.
 
@@ -2015,7 +2015,7 @@ display strings.
 
 GNED works by parsing your NED file into an internal data structure,
 and regenerating the NED text when you save the file. One consequence
-of this is that indentation will be ''canonized''
+of this is that indentation will be ``canonized''
 -- hopefully you consider this fact as a plus and not as a minus.
 Comments in the original NED are preserved -- the parser associates
 them with the NED elements they belong to, so comments won't
@@ -2065,7 +2065,7 @@ module Module1
     submodules: // and this is right-comment
         // This is another banner comment, for the submodule
         submod1: Module;
-            display: ''p=120,108;b=96,72,rect'';
+            display: "p=120,108;b=96,72,rect";
             connections:
                 out --> submod1.in; // Right-comments can also be
                                     // multi-line.

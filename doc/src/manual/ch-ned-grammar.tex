@@ -192,12 +192,12 @@ numconstvalue ::=
 
 otherconstvalue ::=
       '\textit{characterconstant'}
-    | ''\textit{stringconstant}''
+    | "\textit{stringconstant}"
     | \textbf{TRUE}
     | \textbf{FALSE}
 
 inputvalue ::=
-    \textbf{INPUT} '(' default , ''\textit{prompt-string''} ')'
+    \textbf{INPUT} '(' default , "\textit{prompt-string}" ')'
 
 default ::=
     expression | otherconstvalue

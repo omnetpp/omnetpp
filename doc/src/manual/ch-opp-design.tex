@@ -17,9 +17,10 @@ simple\index{module!simple} and compound\index{module!compound}
 modules etc.), SIM, ENVIR and exactly one of CMDENV and TKENV. SIM
 contains the simulation class library\index{simulation!class library}
 and the simulation kernel. The model only interacts with
-SIM\footnote{the only exception is textual module output: it is sent
-  directly to ENVIR: ev\texttt{<}\texttt{<}''hello''; ev.printf(''
-  world'');}. ENVIR contains code that is common for all user
+SIM.
+  \footnote{the only exception is textual module output: it is sent
+  directly to ENVIR: \texttt{ev<<"hello"; ev.printf("world");}}
+ENVIR contains code that is common for all user
 interfaces, and provides infrastructure like ini file handling for
 them. \fname{main()} is also in ENVIR. Specific user interface code is
 contained in CMDENV and TKENV. The above components are also

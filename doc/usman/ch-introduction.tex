@@ -109,10 +109,10 @@ is no exception.
 
 \textbf{Defining Network Topology}. \textit{How does the simulation
   tool support defining the network topology?} Is it possible to
-create some form of hierarchy (nesting) or only ''flat'' topologies
+create some form of hierarchy (nesting) or only ``flat'' topologies
 are supported? Network simulation tools naturally share the property
-that a model (network) consists of ''nodes'' (blocks, entities,
-modules, etc.) connected by ''links'' (channels, connections, etc.).
+that a model (network) consists of ``nodes'' (blocks, entities,
+modules, etc.) connected by ``links'' (channels, connections, etc.).
 Many commercial simulators have graphical editors to define the
 network; however, this is only a good solution if there is an
 alternative form of topology description (e.g. text file) which allows
@@ -121,7 +121,7 @@ the network topology is stored in a proprietary binary file format
 which can be generated (and read) by the graphical editor and C
 programs linked against a special library. On the other hand, most
 non-commercial simulation tools do not provide explicit support for
-topology description: one must program a ''driver entity'' which will
+topology description: one must program a ``driver entity'' which will
 boot the model by creating the necessary nodes and interconnecting
 them (PARSEC, SMURPH, NS). Finally, a large part of the tools that do
 support explicit topology description supports only flat topologies
@@ -129,7 +129,7 @@ support explicit topology description supports only flat topologies
 human-readable textual topology description format (the NED language)
 which is easy to create with any text-processing tool (\fprog{perl},
 \fprog{awk}, etc.), and the same format is used by the graphical
-editor. It is also possible to create a ''driver entity'' to build a
+editor. It is also possible to create a ``driver entity'' to build a
 network at run-time by program. {\opp} also supports submodule
 nesting.
 
@@ -151,8 +151,8 @@ tools rarely offer much more than \fname{printf()}-style debugging; often
 the simulation kernel is also capable of dumping selected debug
 information on the standard output. Animation is also often supported,
 either off-line (record\&playback) or in some client-server architecture,
-where the simulation program is the ''server'' and
-it can be viewed using the ''client''. Off-line animation
+where the simulation program is the ``server'' and
+it can be viewed using the ``client''. Off-line animation
 naturally lacks interactivity and is therefore little use in
 debugging. The client-server solution typically has limited power
 because the simulation and the viewer run as independent operating

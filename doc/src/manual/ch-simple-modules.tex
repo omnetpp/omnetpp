@@ -46,20 +46,20 @@ event systems. Some of the events are:
 \end{itemize}
 
 
-This implies that between two events such as ''start of a packet
-transmission'' and ''end of a packet transmission'', nothing
-interesting happens. That is, the packet's state remains ''being
+This implies that between two events such as ``start of a packet
+transmission'' and ``end of a packet transmission'', nothing
+interesting happens. That is, the packet's state remains ``being
 transmitted''. Note that the definition of events and states always
 depends on the intent and purposes of the person doing the modeling.
 If we were interested in the transmission of individual bits, we would
-have included something like ''start of bit transmission'' and ''end
+have included something like ``start of bit transmission'' and ``end
 of bit transmission'' among our events.
 
 
 The time when events occur is often called \textit{event
   timestamp}\index{event timestamp}; with {\opp} we'll say
 \textit{arrival time}\index{arrival time} (because in the class
-library, the word ''timestamp'' is reserved for a user-settable
+library, the word ``timestamp'' is reserved for a user-settable
 attribute in the event class). Time within the model is often called
 \textit{simulation time}\index{simulation time}, \textit{model
   time}\index{model!time} or \textit{virtual time}\index{virtual time}
@@ -106,9 +106,9 @@ to maintain causality, that is, to ensure that no event may have
 an effect on earlier events.
 
 Processing an event involves calls to user-supplied code. For example,
-using the computer network simulation example, processing a ''timeout
+using the computer network simulation example, processing a ``timeout
 expired'' event may consist of re-sending a copy of the network
-packet, updating the retry count, scheduling another ''timeout''
+packet, updating the retry count, scheduling another ``timeout''
 event, and so on. The user code may also remove events from the FES\index{FES},
 for example when cancelling timeouts.
 
@@ -181,10 +181,10 @@ All these functions will be discussed later in detail.
 events\index{events}. Each event is represented by an instance of the
 \cclass{cMessage} class or one its subclasses; there is no separate
 event class. Messages are sent from one module to another -- this
-means that the place where the ''event will occur'' is the
+means that the place where the ``event will occur'' is the
 \textit{message's destination module}, and the model time when the
 event occurs is the \textit{arrival time}\index{arrival time} of the
-message. Events like ''timeout expired'' are implemented with the
+message. Events like ``timeout expired'' are implemented with the
 module sending a message to itself.
 
 Simulation time in {\opp} is stored in the C++ type
@@ -218,7 +218,7 @@ ensure specific execution order
 
 One may suggest introducing a small \textit{simtime\_precision} parameter in
 the simulation kernel that would force $t_{1}$ and $t_{2}$ to be regarded
-equal if they are ''very close'' (if they differ
+equal if they are ``very close'' (if they differ
 less than \textit{simtime\_precision}). However, in addition to the problem
 determining the correct value for \textit{simtime\_precision},
 this approach is likely to cause confusion in many cases.
@@ -438,8 +438,8 @@ endmodule
 \end{verbatim}
 
 \begin{sloppypar}
-The mac\_type parameter should take the value ''TokenRing\_MAC'',
-''Ethernet\_MAC'' or ''FDDI\_MAC'', and a submodule of the appropriate
+The mac\_type parameter should take the value \texttt{"TokenRing\_MAC"},
+\texttt{"Ethernet\_MAC"} or \texttt{"FDDI\_MAC"}, and a submodule of the appropriate
 type will be created. The value for the parameter can even be given in
 the ini file. This gives you a powerful tool to customize simulation
 models (see also \textit{Topology templates}, Section
@@ -460,7 +460,7 @@ have to write a constructor\index{module!constructor} and some more
 functions. Some of this task can be automated, so when writing the C++
 class declaration, you have two choices:
 \begin{enumerate}
-\item{either use a macro which expands to the ''stock'' version of the
+\item{either use a macro which expands to the ``stock'' version of the
     functions}
 \item{or write them yourself.}
 \end{enumerate}
@@ -561,7 +561,7 @@ functions issue error messages telling you what is the problem.
 \subsection{Decomposing activity()/handleMessage() and inheritance}
 
 It is usually a good idea to decompose a \fname{activity()} or
-\fname{handleMessage()} function when it grows too large. ''Too
+\fname{handleMessage()} function when it grows too large. ``Too
 large'' is a matter of taste of course, but you should definitely
 consider splitting up the function if it is more that a few screens
 (say 50-100 lines) long. This will have a couple of advantages:
@@ -674,7 +674,7 @@ The most important functions you can use in \fname{activity()} are
     for some time (model time)}
 \item{\fname{send()} family of functions -- to send messages to other
     modules}
-\item{\fname{scheduleAt()} -- to schedule an event (the module ''sends
+\item{\fname{scheduleAt()} -- to schedule an event (the module ``sends
     a message to itself'')}
 \item{\fname{cancelEvent()} -- to delete an event scheduled with
     scheduleAt()}
@@ -790,16 +790,16 @@ this (simplified):
 
 That is, when the module has an event\index{event}, the simulation
 kernel transfers the control to the module's coroutine. It is expected
-that when the module ''decides it has finished the processing of the
+that when the module ``decides it has finished the processing of the
 event'', it will transfer the control back to the simulation kernel by
 a \fname[transferTo()]{transferTo(main)} call. Initially,
 simple\index{module!simple} modules using \fname{activity()} are
-''booted'' by events (\textit{''starter messages''}\index{starter messages})
+``booted'' by events (\textit{''starter messages''}\index{starter messages})
 inserted into the FES by the simulation kernel before the
 start of the simulation.
 
 
-How does the coroutine know it has ''finished processing the event''?
+How does the coroutine know it has ``finished processing the event''?
 The answer: \textit{when it requests another event}.  The functions
 which request events from the simulation kernel are the
 \fname[receive()]{receive..()} family and \fname{wait()}, so their
@@ -850,7 +850,7 @@ where:
 
 
 Modules written with \fname{activity()} need starter
-messages\index{starter messages} to ''boot''.  These starter messages
+messages\index{starter messages} to ``boot''.  These starter messages
 are inserted into the FES\index{FES} automatically by {\opp} at the
 beginning of the simulation, even before the \fname{initialize()}
 functions are called.
@@ -953,8 +953,8 @@ Coroutines are used by a number of other simulation packages:
     model is quite different.}
 \item{The simulation/parallel programming language Maisie and its successor
     PARSEC (from UCLA) also use coroutines (although implemented
-    on with ''normal'' preemptive threads). The philosophy
-    is quite similar to {\opp}. PARSEC, being ''just''
+    on with ``normal'' preemptive threads). The philosophy
+    is quite similar to {\opp}. PARSEC, being ``just''
     a programming language, has a more elegant syntax but much less
     features than {\opp}.}
 \item{Many Java-based simulation libraries are based on Java
@@ -970,7 +970,7 @@ Coroutines are used by a number of other simulation packages:
 
 The idea is that at each event\index{event} we simply call a
 user-defined function instead of switching to a coroutine that has
-\fname{activity()} running in it. The ''user-defined function'' is the
+\fname{activity()} running in it. The ``user-defined function'' is the
 \fname[handleMessage()]{handleMessage(cMessage *msg)} virtual member
 function of \cclass{cSimpleModule}; the user has to redefine the
 function to make it do useful work.  Calls to \fname{handleMessage()}
@@ -1008,7 +1008,7 @@ the simulation kernel creates starter messages\index{starter messages}
 only for modules with \fname{activity()}. This means that you have to
 schedule self-messages\index{self-message} from the
 \fname{initialize()} function if you want the \fname{handleMessage()}
-simple module to start working ''by itself'', without first receiving
+simple module to start working ``by itself'', without first receiving
 a message from other modules.
 
 
@@ -1024,7 +1024,7 @@ important, because this tells {\opp} that you want to use
 Message/event related functions you can use in \fname{handleMessage()}:
 \begin{itemize}
 \item{\fname{send()} family of functions -- to send messages to other modules}
-\item{\fname{scheduleAt()} -- to schedule an event (the module ''sends
+\item{\fname{scheduleAt()} -- to schedule an event (the module ``sends
 a message to itself'')}
 \item{\fname{cancelEvent()} -- to delete an event scheduled with \fname{scheduleAt()}}
 \end{itemize}
@@ -1068,7 +1068,7 @@ Another task you have to do in \fname{initialize()} is to schedule
 initial event(s)\index{events!initial} which trigger the first call(s)
 to \fname{handleMessage()}.  After the first call,
 \fname{handleMessage()} must take care to schedule further events for
-itself so that the ''chain'' is not broken. Scheduling events is not
+itself so that the ``chain'' is not broken. Scheduling events is not
 necessary if your module only has to react to messages coming from
 other modules.
 
@@ -1176,7 +1176,7 @@ void Generator::handleMessage(cMessage *msg)
 \{
     // generate & send packet
     cMessage *pkt = new cMessage;
-    send(pkt, ''out'');
+    send(pkt, "out");
     // schedule next call
     scheduleAt(simTime()+exponential(1.0), msg);
 \}
@@ -1227,7 +1227,7 @@ void BurstyGenerator::handleMessage(cMessage *msg)
 \{
     // generate & send packet
     cMessage *pkt = new cMessage;
-    send(pkt, ''out'');
+    send(pkt, "out");
     // if this was the last packet of the burst
     if (--burst_ctr == 0)
     \{
@@ -1313,14 +1313,14 @@ loop\index{event loop} has terminated, and only if it terminated
 normally (i.e. not with a runtime error).  The calling order is the
 reverse as with \fname{initialize()}: first submodules, then the
 containing compound module. (The bottom line is that in the moment
-there's no ''official'' possibility to redefine \fname{initialize()}
+there's no ``official'' possibility to redefine \fname{initialize()}
 and \fname{finish()} for compound modules; the unofficial way is to
 write into the nedc-generated C++ code. Future versions of {\opp} will
 support adding these functions to compound
 modules.)
 
 This is summarized in the following pseudocode (although you
-won't find this code ''as is'' in the simulation
+won't find this code ``as is'' in the simulation
 kernel sources):
 
 
@@ -1703,7 +1703,7 @@ void BurstyGenerator::handleMessage(cMessage *msg)
 If data rate\index{data rate} is specified for a connection, a message
 will have a certain nonzero transmission time\index{transmission
   time}, depending on its length.  This means that when a message is
-sent out through an output gate, the message ''reserves'' the gate for
+sent out through an output gate, the message ``reserves'' the gate for
 a given period (''it is being transmitted'').
 
 \begin{figure}[htbp]
@@ -1763,9 +1763,9 @@ arrival time and it is retrieved by its destination module.
 
 The implementation has the following consequence. If you change the
 delay (or the bit error rate, or the data rate) of a link\index{link
-  delay} during simulation, the modeling of messages sent ''just
+  delay} during simulation, the modeling of messages sent ``just
 before'' the parameter change will not be accurate. Namely, if link
-parameters change while a message is ''under way'' in the model, that
+parameters change while a message is ``under way'' in the model, that
 message will not be affected by the parameter change, although it
 should. However, all subsequent messages will be modelled correctly.
 Similar for data rate: if a data rate changes during the simulation,
@@ -2054,7 +2054,7 @@ First, you would compile this NED file with the NEDC compiler
 and the resulting C++ code with the C++ compiler. Then you would
 aggregate this object file with the simple module object files
 into a single library (.a or .lib). Also, you would write a separate
-NED file that declares the interface of the new ''simple''
+NED file that declares the interface of the new ``simple''
 module:
 
 
@@ -2224,7 +2224,7 @@ support this concept.
 \subsection{Dynamic topology optimization}
 
 Dynamic topology optimization\index{topology!dynamic optimization} is
-the generalization of the ''parameter tuning'' and ''multiple
+the generalization of the ``parameter tuning'' and ``multiple
 experiments within one simulation run'' concepts. If one wants to
 simulate large systems, it is possible that one part of the model
 needs its topology to be optimized (optimal number of servers, optimal

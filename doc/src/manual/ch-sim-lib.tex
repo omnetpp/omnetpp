@@ -70,7 +70,7 @@ ones.
 
 Member functions that set and query object attributes follow
 consistent naming. The setter member function has the form setSomething(...)
-and its getter counterpart is named something(), i.e. the ''get''
+and its getter counterpart is named something(), i.e. the ``get''
 verb found in Java and some other libraries is omitted for brevity.
 For example, the \textit{length} attribute of the \cclass{cMessage} class can
 be set and read like this:
@@ -120,13 +120,13 @@ const char *name = mymsg->name(); // --> returns ptr to internal copy
 \end{verbatim}
 
 
-For convenience and efficiency reasons, the empty string ''''
-and NULL are treated as equivalent by library objects: ''''
+For convenience and efficiency reasons, the empty string ``''
+and NULL are treated as equivalent by library objects: ``''
 is stored as NULL (so that it does not consume heap), but it
-is returned as '''' (so that it is easier to print
+is returned as ``'' (so that it is easier to print
 out etc). Thus, if you create a message object with either NULL
-or '''' as name, it will be stored as NULL and \fname{name()}
-will return a pointer to '''', a static string:
+or ``'' as name, it will be stored as NULL and \fname{name()}
+will return a pointer to ``'', a static string:
 
 \begin{verbatim}
 cMessage *msg = new cMessage(NULL, <additional args>);
@@ -277,7 +277,7 @@ ev.printf("packet received, sequence number is %d\n", seq_num);
 
 There are utility functions which convert simulation
 time\index{simulation time} (\cclass{simtime\_t}) to a printable string
-(like ''3s 130ms 230us'') and vica versa.
+(like ``3s 130ms 230us'') and vica versa.
 
 
 The \fname{simtimeToStr()} function converts a \cclass{simtime\_t}
@@ -309,7 +309,7 @@ never returns -1; if nothing at the beginning of the string looked
 like simulation time, it returns 0.
 
 \begin{verbatim}
-const char *s = ''30s 152ms and some rubbish'';
+const char *s = "30s 152ms and some rubbish";
 
 simtime_t t = strToSimtime0(s); // now s points to "and some rubbish"
 \end{verbatim}
@@ -580,7 +580,7 @@ Intended purpose: a module which schedules several self-messages
 the module, ie. the module will have to determine which timer went off
 and what to do then. The context pointer\index{context pointer} can be
 made to point at a data structure kept by the module which can carry
-enough ''context'' information about the event.
+enough ``context'' information about the event.
 
 
 
@@ -823,7 +823,7 @@ sendDirect( new cMessage, delay, destinationmodule, "in" );
 \end{verbatim}
 
 The destination module receives the message as if it was sent
-''normally''.
+``normally''.
 
 
 
@@ -1084,7 +1084,7 @@ if (gate("TxGate")->isBusy()) // if gate is busy, wait until it
 {                             // becomes free
   wait( gate("TxGate")->transmissionFinishes() - simTime());
 }
-send( packet, ''TxGate'');
+send( packet, "TxGate");
 \end{verbatim}
 
 
@@ -1921,8 +1921,8 @@ function returns the other end of the connection, and
 \fname{remoteGateId()} return the gate pointers and ids of the gates
 involved. (Actually, the implementation is a bit tricky here: the same
 graph edge object \cclass{sTopoLink} is returned either as
-\cclass{sTopoLinkIn} or as \cclass{sTopoLinkOut} so that ''remote''
-and ''local'' can be correctly interpreted for edges of both
+\cclass{sTopoLinkIn} or as \cclass{sTopoLinkOut} so that ``remote''
+and ``local'' can be correctly interpreted for edges of both
 directions.)
 
 
@@ -2678,7 +2678,7 @@ example:
 
 \begin{verbatim}
 sXElem *expression = new sXElem[5];
-expression[0] = &par( ''count'' ); // pointer to
+expression[0] = &par("count"); // pointer to
 module parameter
 expression[1] = 1;
 expression[2] = '+';
@@ -4100,8 +4100,9 @@ void FooModule::finish()
 The value includes the extra stack added by the user interface library
 (see \textit{extraStackforEnvir}\index{extraStackforEnvir} in
 envir/omnetapp.h), which is currently 8K for Cmdenv and at least 16K
-for Tkenv \footnote{the actual value is dependent on the operating
-  system, e.g.  SUN Solaris needs more space}.
+for Tkenv.
+  \footnote{the actual value is dependent on the operating
+  system, e.g. SUN Solaris needs more space}
 
 \fname{stackUsage()}also works by checking the existence of predefined
 byte patterns in the stack area, so it is also subject to the above
@@ -4341,13 +4342,11 @@ exclusive right and duty to delete the object it owns}.
 In practice, this means if you delete a message, its encapsulated
 message (see \fname{encapsulate()} method) and attached
 \fname{cPar} objects are also deleted. If you delete a queue,
-all messages it contains and owns will also be deleted.*
-
-  [*] note that it's not necessary for a container object like
+all messages it contains and owns will also be deleted.
+  \footnote{note that it's not necessary for a container object like
   a queue to actually own all inserted objects. This behavior
   can be controlled via the \textit{takeownership} flag as
-  explained later.
-
+  explained later.}
 
 The ownership principle is enforced in \cclass{cObject}:
 \textbf{\cclass{cObject}'s destructor deletes all owned objects}.
@@ -4390,11 +4389,10 @@ cMessage *msg = new cMessage("HELLO");
 \end{verbatim}
 
 actually creates the message object and automatically adds it
-to the module's local objects list.*
-
-  [*] more precisely: to the \textit{currently executing} module's
+to the module's local objects list.
+  \footnote{more precisely: to the \textit{currently executing} module's
   local object list, because that's the best guess a \fname{cMessage}
-  constructor can do.
+  constructor can do.}
 
 The \fname{send()} and \fname{scheduleAt()} functions make use of this fact
 to make some sanity check: the message being sent/scheduled
@@ -4624,10 +4622,9 @@ simple module's local object list.
 
 
 As an example, the \fname{remove()} method of \cclass{cQueue} is
-implemented like this:*
-
-   [*] actual code in \texttt{src/sim} is structured somewhat differently,
-   but the meaning is the same.
+implemented like this:
+  \footnote{actual code in \texttt{src/sim} is structured somewhat
+  differently, but the meaning is the same.}
 
 \begin{verbatim}
 cObject *cQueue::remove(cObject *obj)
