@@ -54,10 +54,6 @@
 #  define ENVIR_API  OPP_DLLIMPORT
 #endif
 
-// G++ 3.0 and later support standard headers and namespaces
-#if __GNUG__ >= 3
-#  define USE_STD_NAMESPACE
-#endif
 
 //=== NULL
 #ifndef NULL

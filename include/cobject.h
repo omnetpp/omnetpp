@@ -18,17 +18,12 @@
 #ifndef __COBJECT_H
 #define __COBJECT_H
 
+#include <typeinfo>
+#include <iostream>
 #include "util.h"
 #include "cexception.h"
 
-#include <typeinfo>
-
-#ifdef USE_STD_NAMESPACE
-#include <iostream>
 using std::ostream;
-#else
-#include <iostream.h>
-#endif
 
 
 #define FULLPATHBUF_SIZE  1024
@@ -391,7 +386,7 @@ class SIM_API cObject
 
     /**
      * Returns a pointer to the class name string. Since OMNeT++ 2.3, this method
-     * is implemented once here in cObject, using typeid (C+ RTTI), and 
+     * is implemented once here in cObject, using typeid (C+ RTTI), and
      * it no longer needs to be redefined in each class.
      */
     virtual const char *className() const;
@@ -539,11 +534,11 @@ class cStaticFlag
  * The method calls dynamic_cast&lt;T&gt;(p) where T is a type you supplied;
  * if the result is NULL (which indicates incompatible types), an exception
  * is thrown.
- * 
+ *
  * Example:
  * <verbatim>
  *   cMessage *msg = receive();
- *   // MyPacket is a subclass of cMessage. The next line makes sure 
+ *   // MyPacket is a subclass of cMessage. The next line makes sure
  *   // it is actually a MyPacket that we received -- if not, the simulation
  *   // stops with an error message as the result of the exception
  *   MyPacket *pkt = check_and_cast&lt;MyPacket *&gt;(msg);

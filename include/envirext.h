@@ -19,14 +19,10 @@
 #ifndef __ENVIREXT_H
 #define __ENVIREXT_H
 
+#include <iostream>
 #include "defs.h"
 
-#ifdef USE_STD_NAMESPACE
-#include <iostream>
 using std::ostream;
-#else
-#include <iostream.h>
-#endif
 
 class cModule;
 class cStatistic;
