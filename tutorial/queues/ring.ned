@@ -1,15 +1,15 @@
-// -------------------------------------------------------------
+//
 // file: closednet.ned
-//        (part of Queues - an OMNeT++ demo simulation)
-// -------------------------------------------------------------
+//
+// part of Queues - an OMNeT++ demo simulation
+//
 
 
 import
     "fifo";
 
-// This is a closed ring network --
 //
-// generator + FIFO + sink
+// This is a closed ring network.
 //
 module Ring
     parameters:

@@ -215,13 +215,13 @@ check-env:
 configsamples:
 	@echo ===== Configuring .dsp files for samples =====
 	cd /d $(OMNETPP_SAMPLES_DIR:/=\) && cc2cpp.bat
-
-FIXME-put-this-back:
 	for %%i in ( $(SAMPLES) ) do \
 	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && \
 	    $(REPLACE:/=\) %%i.dsp.in - "@OMNETPP_INCL_DIR@" "$(OMNETPP_INCL_DIR)" | \
 	    $(REPLACE:/=\) -          - "@OMNETPP_LIB_DIR@"  "$(OMNETPP_LIB_DIR)"  | \
 	    $(REPLACE:/=\) -          - "@OMNETPP_BIN_DIR@"  "$(OMNETPP_BIN_DIR:/=\)"  | \
+	    $(REPLACE:/=\) -          - "@EXPAT_LIB@" "$(EXPAT_LIB)" | \
+	    $(REPLACE:/=\) -          - "@EXPAT_LIB_PATH@" "$(EXPAT_LIB_DIR)" | \
 	    $(REPLACE:/=\) -          - "@TK_LIB_PATH@" "$(TK_LIB_DIR)" | \
 	    $(REPLACE:/=\) -          - "@TCL_LIB@"     "$(TCL_LIB)"    | \
 	    $(REPLACE:/=\) -    %%i.dsp "@TK_LIB@"      "$(TK_LIB)"
@@ -233,6 +233,8 @@ configtutorial:
 	$(REPLACE:/=\) queues.dsp.in - "@OMNETPP_INCL_DIR@" "$(OMNETPP_INCL_DIR)" | \
 	$(REPLACE:/=\) -             - "@OMNETPP_LIB_DIR@"  "$(OMNETPP_LIB_DIR)"  | \
 	$(REPLACE:/=\) -             - "@OMNETPP_BIN_DIR@"  "$(OMNETPP_BIN_DIR:/=\)"  | \
+	$(REPLACE:/=\) -          - "@EXPAT_LIB@" "$(EXPAT_LIB)" | \
+	$(REPLACE:/=\) -          - "@EXPAT_LIB_PATH@" "$(EXPAT_LIB_DIR)" | \
 	$(REPLACE:/=\) -             - "@TK_LIB_PATH@" "$(TK_LIB_DIR)" | \
 	$(REPLACE:/=\) -             - "@TCL_LIB@"     "$(TCL_LIB)"    | \
 	$(REPLACE:/=\) -    queues.dsp "@TK_LIB@"      "$(TK_LIB)"
