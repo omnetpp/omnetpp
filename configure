@@ -627,7 +627,7 @@ done
 test -n "$YACC" || YACC="yacc"
 
 if test "$YACC" = "yacc"; then
-   echo "configure: warning: Neither bison nor byacc is found..." 1>&2
+   echo "configure: warning: neither bison nor byacc is found..." 1>&2
 fi
 
 # Extract the first word of "flex", so it can be a program name with args.
@@ -1108,8 +1108,8 @@ fi
 AS="as"
 AR="ar cr"
 SHLIB_LD="$CXX -shared"
-NEDC=nedc
-MAKEDEPEND=makedepend -Y
+NEDC="nedc"
+MAKEDEPEND="makedepend -Y"
 
 if test "$cygwin" = yes; then
     MYPWD="$OMNETPP_SRC_DIR/utils/cygpwd"
@@ -1132,7 +1132,7 @@ else
     WISH=`which wish`
 fi
 if test "x$WISH" = "x"; then
-    echo "configure: warning: Cannot find wish -- you'll need to manually adjust the Plove script" 1>&2
+    echo "configure: warning: cannot find wish -- you'll need to manually adjust the Plove script" 1>&2
 fi
 
 #----------------------
@@ -1395,8 +1395,8 @@ fi
 
 if test ! -n "$PVM_CFLAGS"; then
     if test ! -n "$PVM_ROOT"; then
-        echo "configure: warning: No PVM_CFLAGS set in configure.user" 1>&2
-        echo "configure: warning: May run into problems building SIM_PVM!" 1>&2
+        echo "configure: warning: no PVM_CFLAGS set in configure.user" 1>&2
+        echo "configure: warning: may run into problems building SIM_PVM!" 1>&2
     else
         PVM_CFLAGS="-I$PVM_ROOT/include"
     fi
@@ -1444,8 +1444,8 @@ if test $succ = yes; then
   :; PVM_LIBS="$lib_path_switch -lgpvm3 -lpvm3"
 else
   :; PVM_LIBS=""
-       echo "configure: warning: if you do have PVM3 then set PVM_ROOT and PVM_ARCH..." 1>&2
-       echo "configure: warning: ...to their correct values and re-run configure" 1>&2
+       echo "configure: warning: if you *do* have PVM3 then set PVM_ROOT and PVM_ARCH..." 1>&2
+       echo "configure: warning: ...and re-run configure!" 1>&2
 fi
 
 fi
@@ -1710,28 +1710,28 @@ fi
 
     # try to find Tcl/Tk libraries in different versions (80 is for cygwin)
     tcltk_found=
-    for ver in '' 80 8.4 8.3 8.2 8.1 8.0; do
-      # here we check for Tk only (and assume Tcl is also there in the same version)
-    
+    for ver in '' 8.4 8.3 8.2 8.1 8.0 80; do
+      # here we check for Tcl only, Tk we'll see later
+      
 save_LDFLAGS=$LDFLAGS
 save_LIBS=$LIBS
-LIBS="-ltk$ver $TK_LIBS $SYS_LIBS"
+LIBS="-ltcl$ver $TK_LIBS $SYS_LIBS"
 for lib_path_switch in "" /opt/lib; do
   if test -n "$lib_path_switch"; then
-    echo $ac_n "checking whether -ltk$ver is in $lib_path_switch""... $ac_c" 1>&6
-echo "configure:1723: checking whether -ltk$ver is in $lib_path_switch" >&5
+    echo $ac_n "checking whether -ltcl$ver is in $lib_path_switch""... $ac_c" 1>&6
+echo "configure:1723: checking whether -ltcl$ver is in $lib_path_switch" >&5
     lib_path_switch="-L$lib_path_switch"
   else
-    echo $ac_n "checking whether -ltk$ver is in linker path""... $ac_c" 1>&6
-echo "configure:1727: checking whether -ltk$ver is in linker path" >&5
+    echo $ac_n "checking whether -ltcl$ver is in linker path""... $ac_c" 1>&6
+echo "configure:1727: checking whether -ltcl$ver is in linker path" >&5
   fi
   LDFLAGS="$save_LDFLAGS $lib_path_switch"
   cat > conftest.$ac_ext <<EOF
 #line 1731 "configure"
 #include "confdefs.h"
-char Tk_BindEvent();
+char Tcl_Main();
 int main() {
-Tk_BindEvent()
+Tcl_Main()
 ; return 0; }
 EOF
 if { (eval echo configure:1738: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
@@ -1758,6 +1758,58 @@ fi
         break
       fi
     done
+
+    # now we'll verify if we have matching Tk
+    if test "$tcltk_found" = "yes"; then
+      
+save_LDFLAGS=$LDFLAGS
+save_LIBS=$LIBS
+LIBS="-ltk$ver $TK_LIBS $SYS_LIBS"
+for lib_path_switch in "" ; do
+  if test -n "$lib_path_switch"; then
+    echo $ac_n "checking whether -ltk$ver is in $lib_path_switch""... $ac_c" 1>&6
+echo "configure:1772: checking whether -ltk$ver is in $lib_path_switch" >&5
+    lib_path_switch="-L$lib_path_switch"
+  else
+    echo $ac_n "checking whether -ltk$ver is in linker path""... $ac_c" 1>&6
+echo "configure:1776: checking whether -ltk$ver is in linker path" >&5
+  fi
+  LDFLAGS="$save_LDFLAGS $lib_path_switch"
+  cat > conftest.$ac_ext <<EOF
+#line 1780 "configure"
+#include "confdefs.h"
+char Tk_BindEvent();
+int main() {
+Tk_BindEvent()
+; return 0; }
+EOF
+if { (eval echo configure:1787: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+  rm -rf conftest*
+  echo "$ac_t""yes" 1>&6;succ=yes;break
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -rf conftest*
+  echo "$ac_t""no" 1>&6;succ=no
+fi
+rm -f conftest*
+done
+LDFLAGS=$save_LDFLAGS
+LIBS=$save_LIBS
+if test $succ = yes; then
+  :; :
+else
+  :; tcltk_found=
+fi
+
+    fi
+
+    if test "$tcltk_found" != "yes"; then
+       echo "configure: warning: no Tcl/Tk libraries found, needed for GNED, Tkenv and Plove!" 1>&2
+       echo "configure: warning: if you *do* have Tcl/Tk then edit TK_CFLAGS and TK_LIBS..." 1>&2
+       echo "configure: warning: ...in configure.user and re-run configure!" 1>&2
+       TK_LIBS="-ltk -ltcl $TK_LIBS"
+    fi
 fi
 
 #----------------------
@@ -1780,7 +1832,7 @@ fi
 #----------------------
 
 echo $ac_n "checking for 8-bit clean memcmp""... $ac_c" 1>&6
-echo "configure:1784: checking for 8-bit clean memcmp" >&5
+echo "configure:1836: checking for 8-bit clean memcmp" >&5
 if eval "test \"`echo '$''{'ac_cv_func_memcmp_clean'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1788,7 +1840,7 @@ else
   ac_cv_func_memcmp_clean=no
 else
   cat > conftest.$ac_ext <<EOF
-#line 1792 "configure"
+#line 1844 "configure"
 #include "confdefs.h"
 
 main()
@@ -1798,7 +1850,7 @@ main()
 }
 
 EOF
-if { (eval echo configure:1802: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+if { (eval echo configure:1854: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
 then
   ac_cv_func_memcmp_clean=yes
 else
@@ -1816,12 +1868,12 @@ echo "$ac_t""$ac_cv_func_memcmp_clean" 1>&6
 test $ac_cv_func_memcmp_clean = no && LIBOBJS="$LIBOBJS memcmp.${ac_objext}"
 
 echo $ac_n "checking return type of signal handlers""... $ac_c" 1>&6
-echo "configure:1820: checking return type of signal handlers" >&5
+echo "configure:1872: checking return type of signal handlers" >&5
 if eval "test \"`echo '$''{'ac_cv_type_signal'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 1825 "configure"
+#line 1877 "configure"
 #include "confdefs.h"
 #include <sys/types.h>
 #include <signal.h>
@@ -1838,7 +1890,7 @@ int main() {
 int i;
 ; return 0; }
 EOF
-if { (eval echo configure:1842: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+if { (eval echo configure:1894: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
   rm -rf conftest*
   ac_cv_type_signal=void
 else
@@ -1857,12 +1909,12 @@ EOF
 
 
 echo $ac_n "checking for vprintf""... $ac_c" 1>&6
-echo "configure:1861: checking for vprintf" >&5
+echo "configure:1913: checking for vprintf" >&5
 if eval "test \"`echo '$''{'ac_cv_func_vprintf'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 1866 "configure"
+#line 1918 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char vprintf(); below.  */
@@ -1885,7 +1937,7 @@ vprintf();
 
 ; return 0; }
 EOF
-if { (eval echo configure:1889: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:1941: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_vprintf=yes"
 else
@@ -1909,12 +1961,12 @@ fi
 
 if test "$ac_cv_func_vprintf" != yes; then
 echo $ac_n "checking for _doprnt""... $ac_c" 1>&6
-echo "configure:1913: checking for _doprnt" >&5
+echo "configure:1965: checking for _doprnt" >&5
 if eval "test \"`echo '$''{'ac_cv_func__doprnt'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 1918 "configure"
+#line 1970 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char _doprnt(); below.  */
@@ -1937,7 +1989,7 @@ _doprnt();
 
 ; return 0; }
 EOF
-if { (eval echo configure:1941: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:1993: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func__doprnt=yes"
 else
@@ -1964,12 +2016,12 @@ fi
 for ac_func in select strdup strspn strstr
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
-echo "configure:1968: checking for $ac_func" >&5
+echo "configure:2020: checking for $ac_func" >&5
 if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 1973 "configure"
+#line 2025 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char $ac_func(); below.  */
@@ -1992,7 +2044,7 @@ $ac_func();
 
 ; return 0; }
 EOF
-if { (eval echo configure:1996: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:2048: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_$ac_func=yes"
 else
