@@ -1,3 +1,5 @@
+2003-03-15  ------ omnetpp-2.3b2 released ------
+
 2003-03-13  Andras Varga
 
 	* modinsp2.tcl: fixed occasional "conn_id: no such variable" error

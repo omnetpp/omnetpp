@@ -1,3 +1,5 @@
+2003-03-15  ------ omnetpp-2.3b2 released ------
+
 2003-03-15  Andras Varga
 
 	* opp_nmakemake: fixed -l and -L options; clarified help text
