@@ -57,5 +57,6 @@
 #include "cchannel.h"
 #include "cdispstr.h"
 #include "envirext.h"
+#include "cscheduler.h"
 
 #endif

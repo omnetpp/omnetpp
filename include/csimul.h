@@ -299,7 +299,7 @@ class SIM_API cSimulation : public cObject
     /**
      * This is the lite version of selectNextModule(). It is currently only
      * used from within Tkenv to display the name of the module where the
-     * next event will occur, and it should only be used for simular
+     * next event will occur, and it should only be used for similar
      * purposes, and you should definately NOT call doOneEvent() with its
      * return value.
      *
