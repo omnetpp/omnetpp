@@ -184,4 +184,5 @@ FDDI80.arj (--VA)
   - makefile.in modified for use with GNU Autoconf; also renamed to Makefile.in
   - version.log renamed to ChangeLog; some cosmetics on it (indents etc)
   - removed support for DOS with BC3.1
-
+Jul 11, 1999
+  - bug in mystrlwr() [othermod.cc] fixed
