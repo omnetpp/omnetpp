@@ -4,19 +4,18 @@ Using OMNeT++ with Microsoft Visual C++
 This is an installation HOWTO for OMNeT++ for Microsoft Visual C++.
 This specification is written for Visual C++ 6.0 and OMNeT++ 2.0b4.
 
-A good part of this documentation comes from a document written by
-Balazs KELEMEN (kelemen@sch.bme.hu) in March 2000.
+Part of this documentation comes from a readme written by Balazs
+KELEMEN (kelemen@sch.bme.hu) in March 2000.
 
-             ===THIS DOCUMENT IS CURRENTLY IN WORK===
 
 1. Requirements
 ~~~~~~~~~~~~~~~
 
 You need to have Microsoft Visual Studio, Microsoft Visual C++ 6.0 installed
 your Windows NT 4.0 (or higher).
-  The minimal install requires 30 Mbytes free space on your hard disk to compile
-OMNeT++ and to install all related packages. (And about +20MB temporary space
-for the downloaded packages and documentations.)
+  The minimal install requires about 30 Mbytes free space on your hard disk 
+to compile OMNeT++ and to install all related packages. (And about +20MB 
+temporary space for the downloaded packages and documentations.)
 
 
 2. Packages to download and install
@@ -32,6 +31,12 @@ this file (Appendix B).
 
 To unpack .tgz or .tar.gz (gzipped, tar packed) files you can use gzip and tar,
 or WinZip.
+
+After installation, check if you have the necessary environment variables set.
+(See Appendix A!) These variables should be set by the install program of 
+the related package. Unfortunately this is not always done, so you may have to
+set these manually (My Computer-->Properties-->Environment tab).
+
 
 3. Compilation
 ~~~~~~~~~~~~~~
@@ -56,61 +61,26 @@ It is also recommended that you put the c:\omnetpp-2.0\bin directory
 into the path.
 
 Check the configuser.vc file to make sure it contains the proper settings.
-You'll probably have to correct the settings in the following lines:
-  OMNETPP_ROOT=c:\omnetpp-2.0
-  TK_DIR=e:/tcl
-  TK_VER=8.2
+You'll probably have to correct the following settings in it:
+    OMNETPP_ROOT=c:\omnetpp-2.0
+    TK_DIR=e:/tcl
+    TK_VER=8.2
 
 Then type
     nmake -f Makefile.vc
 This should build the executables and the libraries and copy them to the bin
 and lib subdirectories within the top-level omnetpp directory.
 
-- - - - -
+Note: As the Visual Studio IDE (and makefiles exported from the IDE) 
+accept only .cpp as an extension of a C++ file, the .cc files in the 
+samples/ directory will be renamed.
 
-  1. Install the tcl/tk package.
+If you only want to create the executables or the libraries, type
+    nmake -f Makefile.vc progs
+    nmake -f Makefile.vc libs
 
-  2. Set the environment variables. (See Appendix A!)
-     These variables should be set by the install program of the related package,
-     unfortunately this is not done. You have to set these manually on the User
-     Variables in the Environment settings in the preferences of the system.
-     You can find a list of these variables in the Appendix A of this howto.
-
-     - Visual C environments (*): As we use command line compilation, the BIN
-       directory of the Visual C and the DLL directory of the Visual Studio
-       should appear in the PATH environment variable.
-       Lib and include directories should be appear in the LIB and INCLUDE
-       environment variable.
-
-     - TCL environments (**): To run tcl based programs the DLL directory of Tcl
-       should appear on the PATH environment variable. To run TCL applications
-       the script directory of Tcl should be set on the TCL_LIBRARY.
-
-     *  required for compilation
-     ** required for execution
-
-
-  3. Get and extract the OMNeT++ source.
-
-  4. Edit the configuser.vc file in the source root.
-       Use '/' directory separators, because these variables will be compiled
-       into executables.
-       Usually only the first set of variables should be changed
-
-  5. MAKE
-       To compile the executables the libraries and the sample files and other
-       utilities type
-         nmake -f Makefile.vc
-       If you only want to create the executables or the libraries type
-         nmake -f Makefile.vc progs
-         nmake -f Makefile.vc libs
-
-       'nmake -f Makefile.vc clean' will delete all built files.
-
-       Note: While you compile the sample files you will see lots of warning
-         messages about unreferenced variables.
-       Note2: As the Visual Studio accepts only .cpp as an extension of a C++
-         file, the filenames of the generic sample files will be renamed.
+To delete all built files, type
+    nmake -f Makefile.vc clean .
 
 
 4. Using
@@ -123,7 +93,7 @@ In the BIN directory:
 In the LIB directory:
     tkenv.lib sim_std.lib envir.lib cmdenv.lib
 
-To run tkenv based programs (like gned.exe) the TCL_LIBRARY environment
+To run Tcl/Tk-based programs (like GNED), the TCL_LIBRARY environment
 variable should be set to the script directory of the Tcl. It is usually the
 C:/PROGRA~1/TCL/LIB/TCLx.x directory.
 
@@ -131,19 +101,13 @@ C:/PROGRA~1/TCL/LIB/TCLx.x directory.
 5. Building the samples from the MSVC IDE
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Unfortunately MSVC doesn't like the .cc extension, so first you have to rename
-the .cc files to .cpp. You can do that with samples/cc2cpp.bat.
-
-To link executables with Tkenv, the MSVC project files need the location of
-the Tcl/Tk dlls & libs. Instead of having the path hardwired, the project files
-expect to find it in the TK_LIB_PATH environment variable, so you have to
-set it before starting MSVC.
-
-The names of the Tcl/Tk libs is assumed to be tcl82.lib and tk82.lib -- if you
-use a different version, you'll have to manually change the project files.
-
-To build a sample simulation, start MSVC and open the project (.dsp) file.
+To build a sample simulation, start MSVC and open the workspace (.dsw) file.
 The simulation should build without any project file adjustment.
+
+The top-level makefile automatically renames the .cc files to .cpp; 
+but if you want to do it manually, you can run samples/cc2cpp.bat.
+The top-level makefile also automatically configures the project (.dsp)
+files by substituting the correct Tcl/Tk version and library location.
 
 To change from Tkenv to Cmdenv or vica versa, choose Build|Set active
 configuration from the menu and select one of 'Debug-Tkenv', 'Release-Tkenv',
@@ -157,11 +121,6 @@ don't specify anything here, MSVC defaults to 1MB -- way too small.
 If you need to modify the names of the Tcl/Tk libs (because you installed
 a Tcl/Tk version other than 8.2), see Project|Settings --> 'Link' tab -->
 choose 'Input' from combo --> Libraries.
-
-The Tcl/Tk install program normally sets the TCL_LIBRARY environment variable
-needed by Tcl applications. However, if you see the "can't find a usable
-init.tcl..." error message when you start a simulation program (or Gned or
-Plove), then that didn't happen and you have to set the variable yourself.
 
 
 6. Creating project files for your simulations
@@ -231,12 +190,26 @@ Have fun!
 
 Appendix A
 ~~~~~~~~~~
-Check the existence of these variables (<Variable>=<Default value>):
+Check the existence of these environment variables (<variable>=<example value>):
 
-INCLUDE=%INCLUDE%;C:\PROGRA~1\MICROS~1\VC98\INCLUDE
-LIB=%LIB%;C:\PROGRA~1\MICROS~1\VC98\LIB
-Path=%PATH%;C:\PROGRA~1\Tcl\bin;C:\PROGRA~1\MICROS~1\Common\msdev98\BIN;C:\PROGRA~1\MICROS~1\VC98\BIN
-TCL_LIBRARY=C:\PROGRA~1\TCL\LIB\TCL8.3
+MSVC variables:
+ INCLUDE=%INCLUDE%;C:\PROGRA~1\MICROS~1\VC98\INCLUDE
+ LIB=%LIB%;C:\PROGRA~1\MICROS~1\VC98\LIB
+ Path=%PATH%;C:\PROGRA~1\Tcl\bin;C:\PROGRA~1\MICROS~1\Common\msdev98\BIN;C:\PROGRA~1\MICROS~1\VC98\BIN
+
+Tcl/Tk variables:
+ TCL_LIBRARY=C:\PROGRA~1\TCL\LIB\TCL8.3
+
+Note:
+- Visual C++: As we use command line compilation, the BIN
+  directory of the Visual C++ and the DLL directory of the Visual Studio
+  should appear in the PATH environment variable.
+  The lib and include directories should appear in the LIB and INCLUDE
+  environment variables.
+
+- Tcl/Tk: To run Tcl-based programs, the DLL directory of Tcl should appear
+  in the PATH environment variable. To run Tcl applications, the script 
+  directory of Tcl should be set in the TCL_LIBRARY.
 
 
 Appendix B
