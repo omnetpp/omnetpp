@@ -3,6 +3,15 @@
 #
 !include ..\..\configuser.vc
 
+#
+# Local setup
+#
+!if "$(TKENV_EMBED_TCL)"=="yes"
+TKENV_EMBED_SUFFIX=-e
+!else
+TKENV_EMBED_SUFFIX=
+!endif
+
 !if "$(LIB_SUFFIX)"==".dll"
 CFLAGS=$(CFLAGS) /DWIN32_DLL
 !endif

@@ -4,10 +4,18 @@
 !include ..\..\configuser.vc
 
 #
+# Local setup
+#
+!if "$(GNED_EMBED_TCL)"=="yes"
+GNED_EMBED_SUFFIX=-e
+!else
+GNED_EMBED_SUFFIX=
+!endif
+
+#
 # Local definitions
 #
 COPTS=$(CFLAGS) $(TK_CFLAGS)
-
 OBJS = gned$(GNED_EMBED_SUFFIX).obj tklib.obj arrow.obj ebnf.tab.obj lex.yy.obj parsened.obj nedfile.obj
 
 #

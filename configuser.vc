@@ -111,10 +111,9 @@ GNED_IF_POSSIBLE=gned
 # self-contained standalone executables which do not rely on external
 # Tcl scripts.
 #
-# This option is available at present for Tkenv and GNED.
-#   xxx_EMBED_SUFFIX=    --> don't embed
-#   xxx_EMBED_SUFFIX=-e  --> embed
+# This option is available at present for Tkenv, GNED and Plove.
+# Set the following variables to "yes" to enable embedding Tcl files.
 #
-TKENV_EMBED_SUFFIX=
-GNED_EMBED_SUFFIX=
-
+TKENV_EMBED_TCL=no
+GNED_EMBED_TCL=no
+PLOVE_EMBED_TCL=no
