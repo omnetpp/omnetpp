@@ -1,0 +1,58 @@
+%description:
+Check cXMLElement::getChildrenByTagName()
+
+%file: {}.xml
+
+<foo id="1">
+    <foo id="2" color="red">one</foo>
+    <bar id="3" color="red">
+        <foo id="4">two</foo>
+        <bar id="5">three</bar>
+    </bar>
+    <foo id="6">
+        <bar id="7" color="red">four</bar>
+        <bar id="8">five</bar>
+        <bar id="9" color="yellow">
+            <baz id="10" color="green" weight="heavy">six</baz>
+        </bar>
+    </foo>
+    <bar id="11" color="green">
+        <foo id="12">seven</foo>
+        <bar id="13">eight</bar>
+        <bar id="14">nine</bar>
+    </bar>
+    <bar id="15">ten</bar>
+</foo>
+
+%global:
+
+static void getElements(const char *tagname)
+{
+    cXMLElement *rootelement = ev.getXMLDocument("{}.xml", NULL);
+    cXMLElementList list = rootelement->getChildrenByTagName(tagname);
+
+    ev << tagname << ":";
+    for (cXMLElementList::iterator i=list.begin(); i!=list.end(); i++)
+        ev << " " << (*i)->getAttribute("id");
+    ev << ".\n";
+}
+
+%activity:
+
+getElements("foo");
+getElements("bar");
+getElements("baz");
+getElements("nothing");
+getElements("Foo");
+getElements("BAR");
+getElements("bAz");
+
+%contains: stdout
+foo: 2 6.
+bar: 3 11 15.
+baz:.
+nothing:.
+Foo: 2 6.
+BAR: 3 11 15.
+bAz:.
+
