@@ -132,20 +132,20 @@ void printUsage()
        "Syntax: nedtool [options] <file1> <file2> ...\n"
        "    or: nedtool [options] @<filelist-file>\n"
        "  -c: generate C++ (default)\n"
-       "  -x: generate XML\n"
-       "  -n: generate NED\n"
+       "  -x: generate XML (you may need -y, -e and -p as well)\n"
+       "  -n: generate NED (you may need -y and -e as well)\n"
        "  -v: no output (only validate input)\n"
        "  -m: output is a single file (out_n.* by default)\n"
        "  -o <filename>: with -m: output file name\n"
        "  -h  place output file into current directory\n"
        "  -I <dir>: add directory to NED include path\n"
        "  -X xml/ned/off: following files are XML/NED up to '-X off'\n"
-       "  -N: with -n: use new NED syntax (e.g. module Foo {...})\n"
+       "  -N: with -n: use new NED syntax (experimental)\n"
        "  -s <suffix>: suffix for generated files\n"
        "  -S <suffix>: when generating C++, suffix for generated header files\n"
        "  -e: do not parse expressions in NED input; expect unparsed expressions in XML\n"
        "  -t: with NED parsing: include source code of components in XML\n"
-       "  -y: skip semantic validation (also skip processing imports)\n"
+       "  -y: skip semantic validation (implies -z, skip processing imports)\n"
        "  -z: skip processing imports\n"
        "  -p: with -x: add source location info (src-loc attributes) to XML output\n"
        "  -V: verbose\n"
@@ -154,9 +154,8 @@ void printUsage()
     );
 }
 
-// TBD: negate -e, -y for XML and NED output; --; - as filename
-// TBD: todo: remove output files on error
-
+// TBD: support --; support - as filename
+// TBD: remove output files on error
 // TBD: use fsutils.cc/h and list file processing from Envir
 
 void createFileNameWithSuffix(char *outfname, const char *infname, const char *suffix)
