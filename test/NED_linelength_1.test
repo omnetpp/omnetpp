@@ -1,0 +1,25 @@
+%description:
+check that nedc accepts arbitrarily long lines
+
+%file: {}.ned
+
+module {Net}
+  parameters:
+    param0, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16, param17, param18, param19, param20, param21, param22, param23, param24, param25, param26, param27, param28, param29, param30, param31, param32, param33, param34, param35, param36, param37, param38, param39, param40, param41, param42, param43, param44, param45, param46, param47, param48, param49, param50, param51, param52, param53, param54, param55, param56, param57, param58, param59, param60, param61, param62, param63, param64, param65, param66, param67, param68, param69, param70, param71, param72, param73, param74, param75, param76, param77, param78, param79, param80, param81, param82, param83, param84, param85, param86, param87, param88, param89, param90, param91, param92, param93, param94, param95, param96, param97, param98, param99, param100, param101, param102, param103, param104, param105, param106, param107, param108, param109, param110, param111, param112, param113, param114, param115, param116, param117, param118, param119, param120, param121, param122, param123, param124, param125, param126, param127, param128, param129, param130, param131, param132, param133, param134, param135, param136, param137, param138, param139, param140, param141, param142, param143, param144, param145, param146, param147, param148, param149, param150, param151, param152, param153, param154, param155, param156, param157, param158, param159, param160, param161, param162, param163, param164, param165, param166, param167, param168, param169, param170, param171, param172, param173, param174, param175, param176, param177, param178, param179, param180, param181, param182, param183, param184, param185, param186, param187, param188, param189, param190, param191, param192, param193, param194, param195, param196, param197, param198, param199, param200, param201, param202, param203, param204, param205, param206, param207, param208, param209, param210,
+    param211, param212, param213, param214, param215, param216, param217, param218, param219, param220, param221, param222, param223, param224, param225, param226, param227, param228, param229, param230, param231, param232, param233, param234, param235, param236, param237, param238, param239, param240, param241, param242, param243, param244, param245, param246, param247, param248, param249, param250, param251, param252, param253, param254, param255, param256, param257, param258, param259, param260, param261, param262, param263, param264, param265, param266, param267, param268, param269, param270, param271, param272, param273, param274, param275, param276, param277, param278, param279, param280, param281, param282, param283, param284, param285, param286, param287, param288, param289, param290, param291, param292, param293, param294, param295, param296, param297, param298, param299, param300, param301, param302, param303, param304, param305, param306, param307, param308, param309, param310, param311, param312, param313, param314, param315, param316, param317, param318, param319, param320, param321, param322, param323, param324, param325, param326, param327, param328, param329, param330, param331, param332, param333, param334, param335, param336, param337, param338, param339, param340, param341, param342, param343, param344, param345, param346, param347, param348, param349, param350, param351, param352, param353, param354, param355, param356, param357, param358, param359, param360, param361, param362, param363, param364, param365, param366, param367, param368, param369, param370, param371, param372, param373, param374, param375, param376, param377, param378, param379, param380, param381, param382, param383, param384, param385, param386, param387, param388, param389, param390, param391, param392, param393, param394, param395, param396, param397, param398, param399, param400, param401, param402, param403, param404, param405, param406, param407, param408, param409, param410,
+    param411, param412, param413, param414, param415, param416, param417, param418, param419, param420, param421, param422, param423, param424, param425, param426, param427, param428, param429, param430, param431, param432, param433, param434, param435, param436, param437, param438, param439, param440, param441, param442, param443, param444, param445, param446, param447, param448, param449, param450, param451, param452, param453, param454, param455, param456, param457, param458, param459, param460, param461, param462, param463, param464, param465, param466, param467, param468, param469, param470, param471, param472, param473, param474, param475, param476, param477, param478, param479, param480, param481, param482, param483, param484, param485, param486, param487, param488, param489, param490, param491, param492, param493, param494, param495, param496, param497, param498, param499, param500;
+endmodule
+
+network {net} : {Net}
+endnetwork
+
+%inifile: {}.ini
+[General]
+network={net}
+warnings=yes
+
+[Parameters]
+*.param*=42
+
+%exitcode: 0
+
