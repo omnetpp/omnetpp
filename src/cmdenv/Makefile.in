@@ -25,7 +25,7 @@ OBJS = cmdenv.o enumstr.o heap.o
 #
 # Targets
 #
-all : libcmdenv.$(LIB_SUFFIX)
+cmdenv : libcmdenv.$(LIB_SUFFIX)
 
 libcmdenv.a : $(OBJS)
 	$(AR) libcmdenv.a $(OBJS)

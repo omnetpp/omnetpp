@@ -25,7 +25,7 @@ OBJS=args.o cenvir.o cinifile.o main.o omnetapp.o slaveapp.o seeds.o patmatch.o
 #
 # Targets
 #
-all : libenvir.$(LIB_SUFFIX)
+envir : libenvir.$(LIB_SUFFIX)
 
 libenvir.a : $(OBJS)
 	$(AR) libenvir.a $(OBJS)

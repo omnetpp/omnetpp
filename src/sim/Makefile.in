@@ -36,7 +36,7 @@ ASMOBJS=
 #
 # Targets
 #
-all : sim_std sim_pvm
+default : sim_std @SIM_PVM_IF_POSSIBLE@
 
 sim_std : libsim_std.$(LIB_SUFFIX)
 
@@ -155,6 +155,9 @@ pvm/pvmpack.o : pvm/pvmpack.cc
 
 pvm/pvmmod.o : pvm/pvmmod.cc
 	$(CXX) -c $(COPTS) $(PVM_INCL_PATH) pvm/pvmmod.cc -o pvm/pvmmod.o
+
+missing-library:
+	echo '*** No PVM installation found -- skipping sim_pvm'
 
 depend:
 	makedepend -Y -I. -- *.cc

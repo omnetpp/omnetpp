@@ -28,6 +28,8 @@ OBJS = gned.o tklib.o arrow.o ebnf.tab.o lex.yy.o parsened.o disp.o nedfile.o
 #
 # Targets
 #
+default: @GNED_IF_POSSIBLE@
+
 gned : $(OBJS)
 	$(LD) $(OBJS) $(TK_LIBS) $(SYS_LIBS) -o gned
 
@@ -63,6 +65,9 @@ ebnf.tab.c: ebnf.y
 
 lex.yy.c: ebnf.lex
 	$(LEX) ebnf.lex
+
+missing-library:
+	echo '*** No Tk installation found -- skipping GNED'
 
 depend:
 	makedepend -Y -I. -- *.c *.cc
