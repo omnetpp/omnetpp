@@ -198,6 +198,7 @@ int addLoopVar(int forloop_key, YYLTYPE varnamepos, YYLTYPE frompos, YYLTYPE top
 int addNetwork(int nedfile_key, YYLTYPE namepos, YYLTYPE typepos, YYLTYPE likepos);
 int findSubmoduleKey(YYLTYPE modulenamepos);
 YYLTYPE trimBrackets(YYLTYPE vectorpos);
+YYLTYPE trimQuotes(YYLTYPE vectorpos);
 void swapConnection(int conn_key);
 void setModuleDispStr(int key, YYLTYPE dispstrpos);
 void setSubmoduleDispStr(int key, YYLTYPE dispstrpos);
@@ -243,9 +244,9 @@ filenames
 
 filename
         : STRING
-                {NEDC( do_include ($1); ) 
+                {NEDC( do_include ($1); )
                  GNED( IMPORT_KEY = np->create("import",IMPORTS_KEY);
-                       np->set(IMPORT_KEY,"name",@1);
+                       np->set(IMPORT_KEY,"name",trimQuotes(@1));
                        setComments(IMPORT_KEY,@1); )}
         ;
 
@@ -290,7 +291,7 @@ channeldefinition
 
 channelheader
         : CHANNEL NAME
-                {NEDC( $$ = $2; ) 
+                {NEDC( $$ = $2; )
                  GNED( CHANNEL_KEY = np->create("channel",NEDFILE_KEY);
                        np->set(CHANNEL_KEY,"name",@2);
                        setComments(CHANNEL_KEY,@1,@2); )}
@@ -307,21 +308,21 @@ endchannel
 
 cherror
         : ERROR expression opt_semicolon
-                {NEDC( $$ = $2; ) 
+                {NEDC( $$ = $2; )
                  GNED( CHANATTR_KEY = addChanAttr(CHANNEL_KEY,"error",@2);
                        setComments(CHANATTR_KEY,@1,@3); )}
         ;
 
 chdelay
         : DELAY expression opt_semicolon
-                {NEDC( $$ = $2; ) 
+                {NEDC( $$ = $2; )
                  GNED( CHANATTR_KEY = addChanAttr(CHANNEL_KEY,"delay",@2);
                        setComments(CHANATTR_KEY,@1,@3); )}
         ;
 
 chdatarate
         : DATARATE expression opt_semicolon
-                {NEDC( $$ = $2; ) 
+                {NEDC( $$ = $2; )
                  GNED( CHANATTR_KEY = addChanAttr(CHANNEL_KEY,"datarate",@2);
                        setComments(CHANATTR_KEY,@1,@3); )}
         ;
@@ -336,7 +337,7 @@ simpledefinition  /* --LG */
 
 simpleheader
         : SIMPLE NAME opt_semicolon
-                {NEDC( do_simple ($2); ) 
+                {NEDC( do_simple ($2); )
                  GNED( MODULE_KEY = np->create("simple",NEDFILE_KEY);
                        np->set(MODULE_KEY,"name", @2);
                        setComments(MODULE_KEY,@1,@3); )}
@@ -345,10 +346,10 @@ simpleheader
 
 endsimple
         : ENDSIMPLE NAME opt_semicolon
-                {NEDC( end_simple ($2); ) 
+                {NEDC( end_simple ($2); )
                  GNED( setTrailingComment(MODULE_KEY,@2); )}
         | ENDSIMPLE opt_semicolon
-                {NEDC( end_simple (NULL); ) 
+                {NEDC( end_simple (NULL); )
                  GNED( setTrailingComment(MODULE_KEY,@1); )}
         ;
 
@@ -365,7 +366,7 @@ moduledefinition
 
 moduleheader
         : MODULE NAME opt_semicolon
-                {NEDC( do_module ($2); ) 
+                {NEDC( do_module ($2); )
                  GNED( MODULE_KEY = np->create("module",NEDFILE_KEY);
                        np->set(MODULE_KEY,"name", @2);
                        setComments(MODULE_KEY,@1,@3); )}
@@ -373,10 +374,10 @@ moduleheader
 
 endmodule
         : ENDMODULE NAME opt_semicolon
-                {NEDC( end_module ($2); ) 
+                {NEDC( end_module ($2); )
                  GNED( setTrailingComment(MODULE_KEY,@2); )}
         | ENDMODULE opt_semicolon
-                {NEDC( end_module (NULL); ) 
+                {NEDC( end_module (NULL); )
                  GNED( setTrailingComment(MODULE_KEY,@1); )}
         ;
 
@@ -409,7 +410,7 @@ machinelist
 
 machine
         : NAME
-                {NEDC( do_machine ($1); ) 
+                {NEDC( do_machine ($1); )
                  GNED( MACHINE_KEY = np->create("machine",MACHINES_KEY);
                        np->set(MACHINE_KEY,"name", @1);
                        setComments(MACHINE_KEY,@1,@1); )}
@@ -417,13 +418,13 @@ machine
 
 displayblock
         : DISPLAY ':' STRING ';'
-                {NEDC( do_displaystr_enclosing ($3); ) 
+                {NEDC( do_displaystr_enclosing ($3); )
                  GNED( setModuleDispStr(MODULE_KEY,@3); )}
         ;
 
 paramblock
         : PARAMETERS ':'
-                {NEDC( do_parameters (); ) 
+                {NEDC( do_parameters (); )
                  GNED( PARAMS_KEY = np->create("params",MODULE_KEY);
                        setComments(PARAMS_KEY,@1,@2); )}
           opt_parameters
@@ -444,37 +445,37 @@ parameters
 
 parameter
         : NAME
-                {NEDC( do_parameter ($1, TYPE_NUMERIC); ) 
+                {NEDC( do_parameter ($1, TYPE_NUMERIC); )
                  GNED( PARAM_KEY=addParameter(PARAMS_KEY,@1,TYPE_NUMERIC); )}
         | NAME ':' NUMERICTYPE
-                {NEDC( do_parameter ($1, TYPE_NUMERIC); ) 
+                {NEDC( do_parameter ($1, TYPE_NUMERIC); )
                  GNED( PARAM_KEY=addParameter(PARAMS_KEY,@1,TYPE_NUMERIC); )}
         | NED_CONST NAME /* for compatibility */
-                {NEDC( do_parameter ($2, TYPE_CONST_NUM); ) 
+                {NEDC( do_parameter ($2, TYPE_CONST_NUM); )
                  GNED( PARAM_KEY=addParameter(PARAMS_KEY,@2,TYPE_CONST_NUM); )}
         | NAME ':' NED_CONST
-                {NEDC( do_parameter ($1, TYPE_CONST_NUM); ) 
+                {NEDC( do_parameter ($1, TYPE_CONST_NUM); )
                  GNED( PARAM_KEY=addParameter(PARAMS_KEY,@1,TYPE_CONST_NUM); )}
         | NAME ':' NED_CONST NUMERICTYPE
-                {NEDC( do_parameter ($1, TYPE_CONST_NUM); ) 
+                {NEDC( do_parameter ($1, TYPE_CONST_NUM); )
                  GNED( PARAM_KEY=addParameter(PARAMS_KEY,@1,TYPE_CONST_NUM); )}
         | NAME ':' NUMERICTYPE NED_CONST
-                {NEDC( do_parameter ($1, TYPE_CONST_NUM); ) 
+                {NEDC( do_parameter ($1, TYPE_CONST_NUM); )
                  GNED( PARAM_KEY=addParameter(PARAMS_KEY,@1,TYPE_CONST_NUM); )}
         | NAME ':' STRINGTYPE
-                {NEDC( do_parameter ($1, TYPE_STRING); ) 
+                {NEDC( do_parameter ($1, TYPE_STRING); )
                  GNED( PARAM_KEY=addParameter(PARAMS_KEY,@1,TYPE_STRING); )}
         | NAME ':' BOOLTYPE
-                {NEDC( do_parameter ($1, TYPE_BOOL); ) 
+                {NEDC( do_parameter ($1, TYPE_BOOL); )
                  GNED( PARAM_KEY=addParameter(PARAMS_KEY,@1,TYPE_BOOL); )}
         | NAME ':' ANYTYPE
-                {NEDC( do_parameter ($1, TYPE_ANYTYPE); ) 
+                {NEDC( do_parameter ($1, TYPE_ANYTYPE); )
                  GNED( PARAM_KEY=addParameter(PARAMS_KEY,@1,TYPE_ANYTYPE); )}
         ;
 
 gateblock
         : GATES ':'
-                {NEDC( do_gates (); ) 
+                {NEDC( do_gates (); )
                  GNED( GATES_KEY = np->create("gates",MODULE_KEY);
                        setComments(GATES_KEY,@1,@2); )}
           opt_gates
@@ -499,11 +500,11 @@ gatesI
 
 gateI
         : NAME '[' ']'
-                {NEDC( do_gatedecl( $1, 1, 1 ); ) 
+                {NEDC( do_gatedecl( $1, 1, 1 ); )
                  GNED( GATE_KEY=addGate(GATES_KEY,  @1, 1, 1 );
                        setComments(GATE_KEY,@1,@3); )}
         | NAME
-                {NEDC( do_gatedecl( $1, 1, 0 ); ) 
+                {NEDC( do_gatedecl( $1, 1, 0 ); )
                  GNED( GATE_KEY=addGate(GATES_KEY,  @1, 1, 0 );
                        setComments(GATE_KEY,@1); )}
         ;
@@ -515,18 +516,18 @@ gatesO
 
 gateO
         : NAME '[' ']'
-                {NEDC( do_gatedecl( $1, 0, 1 ); ) 
+                {NEDC( do_gatedecl( $1, 0, 1 ); )
                  GNED( GATE_KEY=addGate(GATES_KEY,  @1, 0, 1 );
                        setComments(GATE_KEY,@1,@3); )}
         | NAME
-                {NEDC( do_gatedecl( $1, 0, 0 ); ) 
+                {NEDC( do_gatedecl( $1, 0, 0 ); )
                  GNED( GATE_KEY=addGate(GATES_KEY,  @1, 0, 0 );
                        setComments(GATE_KEY,@1); )}
         ;
 
 submodblock
         : SUBMODULES ':'
-                {NEDC( do_submodules (); ) 
+                {NEDC( do_submodules (); )
                  GNED( SUBMODS_KEY = np->create("submods",MODULE_KEY);
                        setComments(SUBMODS_KEY,@1,@2); )}
           opt_submodules
@@ -544,28 +545,28 @@ submodules
 
 submodule
         : NAME ':' NAME opt_semicolon
-                {NEDC( do_submodule1 ($1, NULL, $3, NULL); ) 
+                {NEDC( do_submodule1 ($1, NULL, $3, NULL); )
                  GNED( SUBMOD_KEY=addSubmodule(SUBMODS_KEY, @1, NULLPOS, @3, NULLPOS);
                        setComments(SUBMOD_KEY,@1,@4);  )}
           opt_on_blocks
                 {NEDC( do_submodule2 ($1, NULL, $3, NULL); )}
           submodule_body
         | NAME ':' NAME vector opt_semicolon
-                {NEDC( do_submodule1 ($1, $4, $3, NULL); ) 
+                {NEDC( do_submodule1 ($1, $4, $3, NULL); )
                  GNED( SUBMOD_KEY=addSubmodule(SUBMODS_KEY, @1, @4, @3, NULLPOS);
                        setComments(SUBMOD_KEY,@1,@5);  )}
           opt_on_blocks
                 {NEDC( do_submodule2 ($1, $4, $3, NULL); )}
           submodule_body
         | NAME ':' NAME LIKE NAME opt_semicolon
-                {NEDC( do_submodule1 ($1, NULL, $3, $5); ) 
+                {NEDC( do_submodule1 ($1, NULL, $3, $5); )
                  GNED( SUBMOD_KEY=addSubmodule(SUBMODS_KEY, @1, NULLPOS, @3, @5);
                        setComments(SUBMOD_KEY,@1,@6);  )}
           opt_on_blocks
                 {NEDC( do_submodule2 ($1, NULL, $3, $5); )}
           submodule_body
         | NAME ':' NAME vector LIKE NAME opt_semicolon
-                {NEDC( do_submodule1 ($1, $4, $3, $6); ) 
+                {NEDC( do_submodule1 ($1, $4, $3, $6); )
                  GNED( SUBMOD_KEY=addSubmodule(SUBMODS_KEY, @1, @4, @3, @6);
                        setComments(SUBMOD_KEY,@1,@7);  )}
           opt_on_blocks
@@ -594,12 +595,12 @@ on_blocks
 
 on_block                            /* --LG */
         : ON ':'
-                {NEDC( do_onlist(); ) 
+                {NEDC( do_onlist(); )
                  GNED( SUBSTMACHINES_KEY = np->create("substmachines",in_network?NETWORK_KEY:SUBMOD_KEY);
                        setComments(SUBSTMACHINES_KEY,@1,@2); )}
           opt_on_list
         | ON IF expression ':'
-                {NEDC( open_if($3); do_onlist(); ) 
+                {NEDC( open_if($3); do_onlist(); )
                  GNED( SUBSTMACHINES_KEY = np->create("substmachines",in_network?NETWORK_KEY:SUBMOD_KEY);
                        np->set(SUBSTMACHINES_KEY,"condition",@3);
                        setComments(SUBSTMACHINES_KEY,@1,@4); )}
@@ -620,7 +621,7 @@ on_list
 
 on_mach
         : NAME
-                {NEDC( do_on_mach($1); ) 
+                {NEDC( do_on_mach($1); )
                  GNED( SUBSTMACHINE_KEY = addSubstmachine(SUBSTMACHINES_KEY,@1);
                        setComments(SUBSTMACHINE_KEY,@1); )}
         ;
@@ -637,12 +638,12 @@ substparamblocks
 
 substparamblock
         : PARAMETERS ':'
-                {NEDC( do_substparams (); ) 
+                {NEDC( do_substparams (); )
                  GNED( SUBSTPARAMS_KEY = np->create("substparams",in_network?NETWORK_KEY:SUBMOD_KEY);
                        setComments(SUBSTPARAMS_KEY,@1,@2); )}
           opt_substparameters
         | PARAMETERS IF expression ':'
-                {NEDC( open_if($3); do_substparams(); ) 
+                {NEDC( open_if($3); do_substparams(); )
                  GNED( SUBSTPARAMS_KEY = np->create("substparams",in_network?NETWORK_KEY:SUBMOD_KEY);
                        np->set(SUBSTPARAMS_KEY,"condition",@3);
                        setComments(SUBSTPARAMS_KEY,@1,@4); )}
@@ -661,7 +662,7 @@ substparameters
 
 substparameter
         : NAME '=' inputvalue_or_expression
-                {NEDC( do_substparameter ($1, $3);) 
+                {NEDC( do_substparameter ($1, $3);)
                  GNED( SUBSTPARAM_KEY = addSubstparam(SUBSTPARAMS_KEY,@1,@3);
                        setComments(SUBSTPARAM_KEY,@1,@3); )}
         ;
@@ -673,12 +674,12 @@ opt_gatesizeblocks
 
 gatesizeblock
         : GATESIZES ':'
-                {NEDC( do_gatesizes (); ) 
+                {NEDC( do_gatesizes (); )
                  GNED( GATESIZES_KEY = np->create("gatesizes",SUBMOD_KEY);
                        setComments(GATESIZES_KEY,@1,@2); )}
           opt_gatesizes
         | GATESIZES IF expression ':'
-                {NEDC( open_if($3); do_gatesizes (); ) 
+                {NEDC( open_if($3); do_gatesizes (); )
                  GNED( GATESIZES_KEY = np->create("gatesizes",SUBMOD_KEY);
                        np->set(GATESIZES_KEY,"condition",@3);
                        setComments(GATESIZES_KEY,@1,@4); )}
@@ -697,31 +698,31 @@ gatesizes
 
 gatesize
         : NAME vector
-                {NEDC( do_gatesize ($1, $2); ) 
+                {NEDC( do_gatesize ($1, $2); )
                  GNED( GATESIZE_KEY = addGateSize(GATESIZES_KEY,@1,@2);
                        setComments(GATESIZE_KEY,@1,@2); )}
         | NAME
-                {NEDC( do_gatesize ($1, NULL); ) 
+                {NEDC( do_gatesize ($1, NULL); )
                  GNED( GATESIZE_KEY = addGateSize(GATESIZES_KEY,@1,NULLPOS);
                        setComments(GATESIZE_KEY,@1); )}
         ;
 
 opt_submod_displayblock
         : DISPLAY ':' STRING ';'
-                {NEDC( do_displaystr_submod ($3); ) 
+                {NEDC( do_displaystr_submod ($3); )
                  GNED( setSubmoduleDispStr(SUBMOD_KEY,@3); )}
         |
         ;
 
 connblock
         : CONNECTIONS NOCHECK ':'
-                {NEDC( set_checkconns(0); do_connections(); ) 
+                {NEDC( set_checkconns(0); do_connections(); )
                  GNED( CONNS_KEY = np->create("conns",MODULE_KEY);
                        np->set(CONNS_KEY,"nocheck","1");
                        setComments(CONNS_KEY,@1,@3); )}
           opt_connections
         | CONNECTIONS ':'
-                {NEDC( set_checkconns(1); do_connections(); ) 
+                {NEDC( set_checkconns(1); do_connections(); )
                  GNED( CONNS_KEY = np->create("conns",MODULE_KEY);
                        np->set(CONNS_KEY,"nocheck","0");
                        setComments(CONNS_KEY,@1,@2); )}
@@ -745,11 +746,11 @@ connection
 
 loopconnection
         : FOR
-                {NEDC( do_for (); ) 
+                {NEDC( do_for (); )
                  GNED( FORLOOP_KEY = np->create("forloop",CONNS_KEY);
                        in_loop=1; setComments(FORLOOP_KEY,@1); )}
           loopvarlist DO notloopconnections ENDFOR /* --LG*/
-                {NEDC( end_for (); ) 
+                {NEDC( end_for (); )
                  GNED( in_loop=0; setTrailingComment(FORLOOP_KEY,@6); )}
         ;
 
@@ -760,14 +761,14 @@ loopvarlist
 
 loopvar
         : NAME '=' expression TO expression
-                {NEDC( do_index ($1, $3, $5); ) 
+                {NEDC( do_index ($1, $3, $5); )
                  GNED( LOOPVAR_KEY=addLoopVar(FORLOOP_KEY,@1,@3,@5);
                        setComments(LOOPVAR_KEY,@1,@5); )}
         ;
 
 opt_conn_condition
         : IF expression
-                {NEDC( do_condition($2); ) 
+                {NEDC( do_condition($2); )
                  GNED( np->set(CONN_KEY,"condition",@2); )}
         |
                 {NEDC( do_condition(NULL); )}
@@ -775,7 +776,7 @@ opt_conn_condition
 
 opt_conn_displaystr
         : DISPLAY STRING
-                {NEDC( $$ = $2; ) 
+                {NEDC( $$ = $2; )
                  GNED( setConnectionDispStr(CONN_KEY,@2); )}
         |
                 {NEDC( $$ = NULL; )}
@@ -788,17 +789,17 @@ notloopconnections /* it was "normalconnections" --LG*/
 
 notloopconnection
         : gate_spec_L RIGHT_ARROW gate_spec_R opt_conn_condition opt_conn_displaystr
-                {NEDC( end_connection (NULL, 'R', $5); ) 
+                {NEDC( end_connection (NULL, 'R', $5); )
                  GNED( np->set(CONN_KEY,"arrowdir-l2r",1L); setComments(CONN_KEY,@1,@5); )}
         | gate_spec_L RIGHT_ARROW channeldescr RIGHT_ARROW gate_spec_R opt_conn_condition opt_conn_displaystr
-                {NEDC( end_connection ($3, 'R', $7); ) 
+                {NEDC( end_connection ($3, 'R', $7); )
                  GNED( np->set(CONN_KEY,"arrowdir-l2r",1L); setComments(CONN_KEY,@1,@7); )}
         | gate_spec_L LEFT_ARROW gate_spec_R opt_conn_condition opt_conn_displaystr
-                {NEDC( end_connection (NULL, 'L', $5); ) 
+                {NEDC( end_connection (NULL, 'L', $5); )
                  GNED( swapConnection(CONN_KEY);
                        np->set(CONN_KEY,"arrowdir-l2r",0L); setComments(CONN_KEY,@1,@5); )}
         | gate_spec_L LEFT_ARROW channeldescr LEFT_ARROW gate_spec_R opt_conn_condition opt_conn_displaystr
-                {NEDC( end_connection ($3, 'L', $7); ) 
+                {NEDC( end_connection ($3, 'L', $7); )
                  GNED( swapConnection(CONN_KEY);
                  np->set(CONN_KEY,"arrowdir-l2r",0L); setComments(CONN_KEY,@1,@7); )}
         ;
@@ -810,35 +811,35 @@ gate_spec_L
 
 mod_L
         : NAME vector
-                {NEDC( do_mod_L ($1, $2); ) 
+                {NEDC( do_mod_L ($1, $2); )
                  GNED( CONN_KEY = np->create("conn",in_loop?FORLOOP_KEY:CONNS_KEY);
                        np->set(CONN_KEY, "src-ownerkey", findSubmoduleKey(@1));
                        np->set(CONN_KEY, "src_index", trimBrackets(@2)); )}
         | NAME
-                {NEDC( do_mod_L ($1, NULL); ) 
+                {NEDC( do_mod_L ($1, NULL); )
                  GNED( CONN_KEY = np->create("conn",in_loop?FORLOOP_KEY:CONNS_KEY);
                        np->set(CONN_KEY, "src-ownerkey", findSubmoduleKey(@1)); )}
         ;
 
 gate_L
         : NAME vector
-                {NEDC( do_gate_L ($1, $2); ) 
+                {NEDC( do_gate_L ($1, $2); )
                  GNED( np->set(CONN_KEY, "srcgate", @1);
                        np->set(CONN_KEY, "src_gate_index", trimBrackets(@2)); )}
         | NAME
-                {NEDC( do_gate_L ($1, NULL); ) 
+                {NEDC( do_gate_L ($1, NULL); )
                  GNED( np->set(CONN_KEY, "srcgate", @1); )}
         ;
 
 parentgate_L
         : NAME vector
-                {NEDC( do_mod_L (NULL, NULL); do_gate_L ($1, $2); ) 
+                {NEDC( do_mod_L (NULL, NULL); do_gate_L ($1, $2); )
                  GNED( CONN_KEY = np->create("conn",in_loop?FORLOOP_KEY:CONNS_KEY);
                        np->set(CONN_KEY, "src-ownerkey", MODULE_KEY);
                        np->set(CONN_KEY, "srcgate", @1);
                        np->set(CONN_KEY, "src_gate_index", trimBrackets(@2)); )}
         | NAME
-                {NEDC( do_mod_L (NULL, NULL); do_gate_L ($1, NULL); ) 
+                {NEDC( do_mod_L (NULL, NULL); do_gate_L ($1, NULL); )
                  GNED( CONN_KEY = np->create("conn",in_loop?FORLOOP_KEY:CONNS_KEY);
                        np->set(CONN_KEY, "src-ownerkey", MODULE_KEY);
                        np->set(CONN_KEY, "srcgate", @1); )}
@@ -851,32 +852,32 @@ gate_spec_R
 
 mod_R
         : NAME vector
-                {NEDC( do_mod_R ($1, $2); ) 
+                {NEDC( do_mod_R ($1, $2); )
                  GNED( np->set(CONN_KEY, "dest-ownerkey", findSubmoduleKey(@1));
                        np->set(CONN_KEY, "dest_index", trimBrackets(@2)); )}
         | NAME
-                {NEDC( do_mod_R ($1, NULL); ) 
+                {NEDC( do_mod_R ($1, NULL); )
                  GNED( np->set(CONN_KEY, "dest-ownerkey", findSubmoduleKey(@1)); )}
         ;
 
 gate_R
         : NAME vector
-                {NEDC( do_gate_R ($1, $2); ) 
+                {NEDC( do_gate_R ($1, $2); )
                  GNED( np->set(CONN_KEY, "destgate", @1);
                        np->set(CONN_KEY, "dest_gate_index", trimBrackets(@2)); )}
         | NAME
-                {NEDC( do_gate_R ($1, NULL); ) 
+                {NEDC( do_gate_R ($1, NULL); )
                  GNED( np->set(CONN_KEY, "destgate", @1); )}
         ;
 
 parentgate_R
         : NAME vector
-                {NEDC( do_mod_R (NULL, NULL); do_gate_R ($1, $2); ) 
+                {NEDC( do_mod_R (NULL, NULL); do_gate_R ($1, $2); )
                  GNED( np->set(CONN_KEY, "dest-ownerkey", MODULE_KEY);
                        np->set(CONN_KEY, "destgate", @1);
                        np->set(CONN_KEY, "dest_gate_index", trimBrackets(@2)); )}
         | NAME
-                {NEDC( do_mod_R (NULL, NULL); do_gate_R ($1, NULL); ) 
+                {NEDC( do_mod_R (NULL, NULL); do_gate_R ($1, NULL); )
                  GNED( np->set(CONN_KEY, "dest-ownerkey", MODULE_KEY);
                        np->set(CONN_KEY, "destgate", @1); )}
         ;
@@ -923,31 +924,31 @@ channeldescr
 
 cdname
         : NAME
-                {NEDC( $$ = $1; ) 
+                {NEDC( $$ = $1; )
                  GNED( CONNATTR_KEY=addConnAttr(CONN_KEY,"channel",@1); )}
         ;
 
 cddelay
         : DELAY expression
-                {NEDC( $$ = $2; ) 
+                {NEDC( $$ = $2; )
                  GNED( CONNATTR_KEY=addConnAttr(CONN_KEY,"delay",@2); )}
         ;
 
 cderror
         : ERROR expression
-                {NEDC( $$ = $2; ) 
+                {NEDC( $$ = $2; )
                  GNED( CONNATTR_KEY=addConnAttr(CONN_KEY,"error",@2); )}
         ;
 
 cddatarate
         : DATARATE expression
-                {NEDC( $$ = $2; ) 
+                {NEDC( $$ = $2; )
                  GNED( CONNATTR_KEY=addConnAttr(CONN_KEY,"datarate",@2); )}
         ;
 
 network /* opt_on_blocks NOT GOOD!!! appends stuff to last _submodule_ */
         : NETWORK NAME ':' NAME opt_semicolon
-                {NEDC( do_system ($2); ) 
+                {NEDC( do_system ($2); )
                  GNED( NETWORK_KEY = addNetwork(NEDFILE_KEY,@2,@4,NULLPOS);
                        setComments(NETWORK_KEY,@1,@5); in_network=1;)}
           opt_on_blocks
@@ -959,7 +960,7 @@ network /* opt_on_blocks NOT GOOD!!! appends stuff to last _submodule_ */
         | NETWORK NAME ':' NAME LIKE NAME opt_semicolon
                 {NEDC( do_system ($2); )}
           opt_on_blocks
-                {NEDC( do_systemmodule ($2, $4, $6); ) 
+                {NEDC( do_systemmodule ($2, $4, $6); )
                  GNED( NETWORK_KEY = addNetwork(NEDFILE_KEY,@2,@4,@6);
                        setComments(NETWORK_KEY,@1,@7); )}
           opt_substparamblocks
@@ -1377,6 +1378,14 @@ int findSubmoduleKey(YYLTYPE modulenamepos)
 YYLTYPE trimBrackets(YYLTYPE vectorpos)
 {
    // should check it's really brackets that get chopped off
+   vectorpos.first_column++;
+   vectorpos.last_column--;
+   return vectorpos;
+}
+
+YYLTYPE trimQuotes(YYLTYPE vectorpos)
+{
+   // should check it's really quotes that get chopped off
    vectorpos.first_column++;
    vectorpos.last_column--;
    return vectorpos;
