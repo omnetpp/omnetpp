@@ -1,3 +1,9 @@
+2004-03-01  Andras Varga
+
+	* inspector.tcl/cc, etc: all inspector windows got an "Inspect owner"
+	toolbar button; on module inspectors this works as "Inspect parent 
+	module".
+
 2004-02-23  Andras Varga
 
 	* tkapp.cc/h: added moduleReparented() cEnvir method

@@ -94,8 +94,8 @@ void TModuleWindow::update()
 {
    TInspector::update();
 
-   cModule *mod = static_cast<cModule *>(object);
-   setToolbarInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
+   //cModule *mod = static_cast<cModule *>(object);
+   //setToolbarInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
 }
 
 //=======================================================================
@@ -547,7 +547,7 @@ void TGraphicalModWindow::redrawMessages()
    cModule *mod = static_cast<cModule *>(object);
 
    // refresh & cleanup from prev. events
-   setToolbarInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
+   //setToolbarInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
    CHK(Tcl_VarEval(interp, canvas, " delete msg msgname", NULL));
 
    // this thingy is only needed if animation is going on
@@ -821,7 +821,7 @@ void TCompoundModInspector::update()
 
    cCompoundModule *mod = static_cast<cCompoundModule *>(object);
 
-   setToolbarInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
+   //setToolbarInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
 
    setEntry(".nb.info.name.e", mod->name());
    char id[16]; sprintf(id,"%ld", (long)mod->id());
@@ -888,7 +888,7 @@ void TSimpleModInspector::update()
 
    cSimpleModule *mod = static_cast<cSimpleModule *>(object);
 
-   setToolbarInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
+   //setToolbarInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
 
    char buf[40];
    setEntry(".nb.info.name.e", mod->name());

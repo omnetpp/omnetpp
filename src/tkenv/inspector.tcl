@@ -46,7 +46,13 @@ proc create_inspector_toplevel {w geom} {
     pack $w.toolbar -anchor w -side top -fill x -expand 0
 
     iconbutton $w.toolbar.sep0 -separator
+    iconbutton $w.toolbar.owner -image $icons(parent) ;#command assigned from C++
+    iconbutton $w.toolbar.sep01 -separator
     pack $w.toolbar.sep0 -anchor n -side left -padx 0 -pady 2
+    pack $w.toolbar.owner -anchor n -side left -padx 0 -pady 2
+    pack $w.toolbar.sep01 -anchor n -side left -padx 0 -pady 2
+
+    set help_tips($w.toolbar.owner) {Inspect owner object}
 
     # add object type-and-name bar with color codes
     regexp {\.(ptr.*)-[0-9]+} $w match ptr

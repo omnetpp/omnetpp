@@ -162,6 +162,9 @@ void TInspector::update()
        sprintf(newname, "(%s) %s  (%s)",object->className(),
                         object->fullPath(), ptrToStr(object,buf));
    CHK(Tcl_VarEval(interp, windowname,".infobar.name config -text {",newname,"}",NULL));
+
+   // owner button on toolbar
+   setToolbarInspectButton(".toolbar.owner",mod ? mod->parentModule() : object->owner(), INSP_DEFAULT);
 }
 
 void TInspector::setEntry(const char *entry, const char *val)

@@ -513,14 +513,14 @@ proc create_graphicalmodwindow {name geom} {
     iconbutton $w.toolbar.ascont -image $icons(asobject) -command "inspect_this $w {As Object}"
     iconbutton $w.toolbar.win    -image $icons(asoutput) -command "inspect_this $w {Module output}"
     iconbutton $w.toolbar.sep1   -separator
-    iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
-    iconbutton $w.toolbar.sep2   -separator
+    #iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
+    #iconbutton $w.toolbar.sep2   -separator
     iconbutton $w.toolbar.mrun   -image $icons(mrun) -command "runsimulation_local $w normal"
     iconbutton $w.toolbar.mfast  -image $icons(mfast) -command "runsimulation_local $w fast"
     iconbutton $w.toolbar.stop   -image $icons(stop) -command "stop_simulation"
     iconbutton $w.toolbar.sep3   -separator
     iconbutton $w.toolbar.redraw -image $icons(redraw) -command "opp_inspectorcommand $w relayout"
-    foreach i {ascont win sep1 parent sep2 mrun mfast stop sep3 redraw} {
+    foreach i {ascont win sep1 mrun mfast stop sep3 redraw} {
        pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
     }
 
@@ -529,9 +529,9 @@ proc create_graphicalmodwindow {name geom} {
 
     bind $w <Control-F4> "runsimulation_local $w fast"
 
+    set help_tips($w.toolbar.owner)   {Inspect parent module}
     set help_tips($w.toolbar.ascont)  {Inspect as object}
     set help_tips($w.toolbar.win)     {See module output}
-    set help_tips($w.toolbar.parent)  {Inspect parent module}
     set help_tips($w.toolbar.mrun)    {Run until next event in this module}
     set help_tips($w.toolbar.mfast)   {Fast run until next event in this module (Ctrl-F4)}
     set help_tips($w.toolbar.stop)    {Stop running simulation (F8)}
