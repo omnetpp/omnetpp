@@ -787,10 +787,24 @@ or other programs.
 $ scalars omnetpp.sca
 \endcode
 
-By default
-
+The program displays the data in a table with columns showing the file name,
+run number, module name where it was recorded, and the value. There're
+usually too many rows to get an overview, so you can filter by choosing
+from (or editing) the three combo boxes at the top. (The filters also
+accept the *, ** wildcards.)
 
 <img src="sca1.gif">
+
+You could actually load further scalar files into the window, and thus
+analyse them together.
+
+You can copy the selected rows to the clipboard by Edit|Copy or the corresponding
+toolbar button, and paste them e.g. into OpenOffice Calc, MS Excel or Gnumeric.
+
+The bar chart toolbar button creates -- well -- a bar chart in a new window.
+You can customize the chart by right-clicking on it and choosing from the
+context menu. It can also be exported to EPS, GIF, or as metafile via the
+Windows clipbard (the latter is not available on Unix of course).
 
 <img src="sca2.gif">
 
@@ -803,7 +817,15 @@ Output vector files can be visualized with Plove. Try the following:
 $ plove omnetpp.vec
 \endcode
 
+The left pane displays vectors that are present in the omnetpp.vec file.
+(You can load further vector files as well.)
+
+To plot, you have to copy some vectors to the right pane, select one or
+more of them (shift+click and ctrl+click works), and click the Plot icon
+on the toolbar.
+
 <img src="plove1.gif">
+
 
 <img src="plove2.gif">
 
