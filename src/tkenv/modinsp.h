@@ -89,7 +89,7 @@ class TGraphicalModWindow : public TInspector
       virtual void connectionCreated(cGate *srcgate);
       virtual void connectionRemoved(cGate *srcgate);
       virtual void displayStringChanged(cModule *submodule);
-      virtual void displayStringAsParentChanged();
+      virtual void backgroundDisplayStringChanged();
       virtual void displayStringChanged(cGate *gate);
       virtual void bubble(cModule *mod, const char *text);
 };

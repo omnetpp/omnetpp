@@ -360,10 +360,10 @@ void TGraphicalModWindow::refreshLayout()
     if (submodPosMap.empty() && getTkApplication()->opt_showlayouting)
         layouter.setCanvas(getTkApplication()->getInterp(), canvas);
 
-    // Note trick avoid calling displayStringAsParent() directly because it'd cause
-    // the display string object inside cModule spring into existence
+    // Note trick avoid calling backgroundDisplayString() directly because it'd cause
+    // the display string object inside cModule to spring into existence
     const cDisplayString blank;
-    const cDisplayString& ds = parentmodule->hasDisplayStringAsParent() ? parentmodule->displayStringAsParent() : blank;
+    const cDisplayString& ds = parentmodule->hasBackgroundDisplayString() ? parentmodule->backgroundDisplayString() : blank;
     int sx = resolveNumericDispStrArg(ds.getTagArg("b",0), parentmodule, 740);
     int sy = resolveNumericDispStrArg(ds.getTagArg("b",1), parentmodule, 500);
     layouter.setScaleToArea(sx,sy,50); // FIXME enclosing module's p= is ignored here...
@@ -499,7 +499,7 @@ void TGraphicalModWindow::redrawModules()
     }
 
     // draw enclosing module
-    const char *dispstr = parentmodule->hasDisplayStringAsParent() ? parentmodule->displayStringAsParent().getString() : "";
+    const char *dispstr = parentmodule->hasBackgroundDisplayString() ? parentmodule->backgroundDisplayString().getString() : "";
     CHK(Tcl_VarEval(interp, "draw_enclosingmod ",
                        canvas, " ",
                        ptrToStr(parentmodule), " ",
@@ -657,7 +657,7 @@ void TGraphicalModWindow::displayStringChanged(cModule *)
    needs_redraw = true;
 }
 
-void TGraphicalModWindow::displayStringAsParentChanged()
+void TGraphicalModWindow::backgroundDisplayStringChanged()
 {
    needs_redraw = true;
 }
@@ -824,7 +824,7 @@ void TCompoundModInspector::update()
    char id[16]; sprintf(id,"%ld", (long)mod->id());
    setLabel(".nb.info.id.e", id);
    setEntry(".nb.info.dispstr.e", mod->displayString());
-   setEntry(".nb.info.dispstrpt.e", mod->displayStringAsParent());
+   setEntry(".nb.info.dispstrpt.e", mod->backgroundDisplayString());
 
    deleteInspectorListbox( ".nb.submods" );
    fillListboxWithSubmodules(".nb.submods", mod);
@@ -841,7 +841,7 @@ void TCompoundModInspector::writeBack()
    cCompoundModule *mod = static_cast<cCompoundModule *>(object);
    mod->setName(getEntry(".nb.info.name.e"));
    mod->displayString().parse(getEntry(".nb.info.dispstr.e"));
-   mod->displayStringAsParent().parse(getEntry(".nb.info.dispstrpt.e"));
+   mod->backgroundDisplayString().parse(getEntry(".nb.info.dispstrpt.e"));
 
    TInspector::writeBack();    // must be there after all changes
 }
@@ -893,7 +893,7 @@ void TSimpleModInspector::update()
    setLabel(".nb.info.id.e", buf);
    //setLabel(".nb.info.phase.e", mod->phase() );
    setEntry(".nb.info.dispstr.e", mod->displayString() );
-   setEntry(".nb.info.dispstrpt.e", mod->displayStringAsParent() );
+   setEntry(".nb.info.dispstrpt.e", mod->backgroundDisplayString() );
    setLabel(".nb.info.state.e",  modstate[ mod->moduleState() ]  );
    if (mod->usesActivity())
    {
@@ -929,7 +929,7 @@ void TSimpleModInspector::writeBack()
    cSimpleModule *mod = static_cast<cSimpleModule *>(object);
    mod->setName(getEntry(".nb.info.name.e"));
    mod->displayString().parse(getEntry(".nb.info.dispstr.e"));
-   mod->displayStringAsParent().parse(getEntry(".nb.info.dispstrpt.e"));
+   mod->backgroundDisplayString().parse(getEntry(".nb.info.dispstrpt.e"));
 
    TInspector::writeBack();    // must be there after all changes
 }

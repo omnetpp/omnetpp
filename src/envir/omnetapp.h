@@ -200,7 +200,7 @@ class ENVIR_API TOmnetApp
     virtual void connectionRemoved(cGate *srcgate) {}
     virtual void displayStringChanged(cGate *gate) {}
     virtual void displayStringChanged(cModule *submodule) {}
-    virtual void displayStringAsParentChanged(cModule *parentmodule) {}
+    virtual void backgroundDisplayStringChanged(cModule *parentmodule) {}
     //@}
 
     /** @name Functions called by cEnvir's similar functions.

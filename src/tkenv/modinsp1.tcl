@@ -63,7 +63,7 @@ proc create_compoundmodinspector {name geom} {
     label-entry $nb.info.name {Module name:}
     label-sunkenlabel $nb.info.id {Module ID:}
     label-entry $nb.info.dispstr {Display string:}
-    label-entry $nb.info.dispstrpt {Disp.str. as parent:}
+    label-entry $nb.info.dispstrpt {Background disp.str:}
     pack $nb.info.name -anchor center -fill x -side top
     pack $nb.info.id -anchor center -fill x -side top
     pack $nb.info.dispstr -anchor center -fill x -side top
@@ -122,7 +122,7 @@ proc create_simplemodinspector {name geom} {
     label-sunkenlabel $nb.info.id {Module ID:}
     #label-sunkenlabel $nb.info.phase {Phase:}
     label-entry $nb.info.dispstr {Display string:}
-    label-entry $nb.info.dispstrpt {Disp.str. as parent:}
+    label-entry $nb.info.dispstrpt {Background disp.str:}
     label-sunkenlabel $nb.info.state {State:}
     label-sunkenlabel $nb.info.stacksize {Stack size:}
     label-sunkenlabel $nb.info.stackused {Stack used:}

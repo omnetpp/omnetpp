@@ -561,7 +561,7 @@ void NEDCppGenerator::doNetwork(NetworkNode *node, const char *indent, int mode,
     DisplayStringNode *dispstr = (DisplayStringNode *)node->getFirstChildWithTag(NED_DISPLAY_STRING);
     if (dispstr)
     {
-        out << indent << submodule_var.c_str() << "->setDisplayStringAsParent(\""
+        out << indent << submodule_var.c_str() << "->setBackgroundDisplayString(\""
             << dispstr->getValue() << "\");\n\n";
     }
 
@@ -642,7 +642,7 @@ void NEDCppGenerator::doModule(CompoundModuleNode *node, const char *indent, int
     DisplayStringNode *dispstr = (DisplayStringNode *)node->getFirstChildWithTag(NED_DISPLAY_STRING);
     if (dispstr)
     {
-        out << indent << "mod->setDisplayStringAsParent(\"" << dispstr->getValue() << "\");\n\n";
+        out << indent << "mod->setBackgroundDisplayString(\"" << dispstr->getValue() << "\");\n\n";
     }
 
     // generate submodules

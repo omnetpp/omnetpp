@@ -497,9 +497,9 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
        } else {
            Tcl_SetResult(interp, "no such field in this object", TCL_STATIC); return TCL_ERROR;
        }
-   } else if (!strcmp(field,"displayStringAsParent")) {
+   } else if (!strcmp(field,"backgroundDisplayString")) {
        if (dynamic_cast<cModule *>(object)) {
-           Tcl_SetResult(interp, TCLCONST(dynamic_cast<cModule *>(object)->displayStringAsParent().getString()), TCL_VOLATILE);
+           Tcl_SetResult(interp, TCLCONST(dynamic_cast<cModule *>(object)->backgroundDisplayString().getString()), TCL_VOLATILE);
        } else {
            Tcl_SetResult(interp, "no such field in this object", TCL_STATIC); return TCL_ERROR;
        }

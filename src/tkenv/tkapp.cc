@@ -1291,13 +1291,13 @@ void TOmnetTkApp::displayStringChanged(cModule *submodule)
     modinsp->displayStringChanged(submodule);
 }
 
-void TOmnetTkApp::displayStringAsParentChanged(cModule *parentmodule)
+void TOmnetTkApp::backgroundDisplayStringChanged(cModule *parentmodule)
 {
     TInspector *insp = findInspector(parentmodule,INSP_GRAPHICAL);
     if (!insp) return;
     TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
     assert(modinsp);
-    modinsp->displayStringAsParentChanged();
+    modinsp->backgroundDisplayStringChanged();
 }
 
 void TOmnetTkApp::animateSend(cMessage *msg, cGate *fromgate, cGate *togate)

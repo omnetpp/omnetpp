@@ -320,9 +320,9 @@ void cEnvir::displayStringChanged(cModule *submodule)
     app->displayStringChanged(submodule);
 }
 
-void cEnvir::displayStringAsParentChanged(cModule *parentmodule)
+void cEnvir::backgroundDisplayStringChanged(cModule *parentmodule)
 {
-    app->displayStringAsParentChanged(parentmodule);
+    app->backgroundDisplayStringChanged(parentmodule);
 }
 
 
