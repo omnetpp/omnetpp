@@ -15,10 +15,8 @@ refine support for message subclassing
 
 improve the simulation core
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-on win32, use the fibers api
 more cleanup
 realtime scheduler (for hw-in-the-loop simulation)
-proper connection objects
 more flexible connections
 multi-thread simple modules
 --
