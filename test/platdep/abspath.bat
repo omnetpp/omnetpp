@@ -64,3 +64,12 @@ abspath c:/base /dir
 abspath c:base \dir
 abspath c:base /dir
 echo.
+
+:: path has no drive and relative dir
+abspath base dir
+abspath \base dir
+abspath /base dir
+abspath c:\base dir
+abspath c:/base dir
+abspath c:base dir
+echo.
