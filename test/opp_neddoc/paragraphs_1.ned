@@ -2,6 +2,8 @@
 // Well, not everything seems to pass in this test...
 //
 
+
+
 //
 // This NED files tests if paragraph boundaries are recognised properly
 // by opp_nedc.
@@ -37,6 +39,8 @@
 //
 simple Paragraphs_1a
 endsimple
+
+
 
 //
 // Here we test enumerated lists: 
@@ -172,5 +176,31 @@ endsimple
 simple Paragraphs_1c
 endsimple
 
+
+
+//
+// Well, nested list don't really work...
+//
+// - one
+// - two
+//    -# first 
+//    -# second
+//    -# third
+// - three
+// -four
+//
+// Another try:
+// -# one
+// -# two
+//    - first 
+//    - second
+//    - third
+// -# three
+// -# four
+//
+// That was it...
+//
+simple Paragraphs_1d
+endsimple
 
 
