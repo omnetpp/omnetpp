@@ -74,6 +74,13 @@ bool ArrayBuilderNode::finished() const
     return in()->eof();
 }
 
+
+void ArrayBuilderNode::sort()
+{
+    // FIXME sort both arrays by "x"
+    //std::sort();
+}
+
 void ArrayBuilderNode::extractVector(double *&x, double *&y, size_t& len)
 {
     // transfer ownership to caller
