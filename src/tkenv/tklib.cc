@@ -246,19 +246,28 @@ static bool do_inspect_by_name( cObject *obj, bool beg, const char *_fullpath, c
     // paramv, gatev members) don't appear in object's fullPath()...
 
     const char *objpath = obj->fullPath();
+
+    // however, a module's name cannot be hidden, so if this obj is a module
+    // and its name doesn't match the beginning of fullpath, we're at a wrong place.
+    if (dynamic_cast<cModule *>(obj) && strncmp(objpath, fullpath, strlen(objpath))!=0)
+    {
+        // skip (do not search) this subtree
+        return false;
+    }
+
+    // found it?
     if (!strcmp(fullpath,objpath) && !strcmp(classname,obj->className()))
     {
         // found: inspect if inspector is not open
         TOmnetTkApp *app = (TOmnetTkApp *)(ev.app);
         if (!app->findInspector(obj, insptype))
             app->inspect(obj, insptype, geometry, NULL);
+        // makes no sense to go further down
         return false;
     }
-    else
-    {
-        // search further
-        return true;
-    }
+
+    // just search further...
+    return true;
 }
 
 

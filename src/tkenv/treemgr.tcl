@@ -43,9 +43,7 @@ proc initTreeManager {} {
     #
     bind $widgets(manager).tree <Button-1> {
         catch {destroy .popup}
-        # $key is the object pointer -- updateTreeManager is necessary to
-        # absolutely rule out segfault by accessing an invalid pointer!
-        updateTreeManager
+        #updateTreeManager
         set key [Tree:nodeat %W %x %y]
         if {$key!=""} {
             Tree:setselection %W $key
@@ -53,9 +51,7 @@ proc initTreeManager {} {
     }
 
     bind $widgets(manager).tree <Double-1> {
-        # $key is the object pointer -- updateTreeManager is necessary to
-        # absolutely rule out segfault by accessing an invalid pointer!
-        updateTreeManager
+        #updateTreeManager
         set key [Tree:nodeat %W %x %y]
         if {$key!=""} {
             # Tree:toggle %W $key
@@ -64,9 +60,7 @@ proc initTreeManager {} {
     }
 
     bind $widgets(manager).tree <Button-3> {
-        # $key is the object pointer -- updateTreeManager is necessary to
-        # absolutely rule out segfault by accessing an invalid pointer!
-        updateTreeManager
+        #updateTreeManager
         set key [Tree:nodeat %W %x %y]
         if {$key!=""} {
             Tree:setselection %W $key
@@ -96,16 +90,12 @@ proc updateTreeManager {} {
 # tree nodes. The widget itself only stores the state (open/closed) of the
 # nodes, everything else comes from this function.
 #
-proc getNodeInfo {w op {key {}}} {
+# We use the object pointer as tree element key.
+#
+proc getNodeInfo {w op {ptr {}}} {
     global icons treeicons
 
-    # $key is the object pointer
-    set ptr $key
-
     switch $op {
-      root {
-        return [opp_object_simulation]
-      }
 
       text {
         set id [opp_getobjectid $ptr]
@@ -126,12 +116,16 @@ proc getNodeInfo {w op {key {}}} {
         }
       }
 
+      haschildren {
+        return [expr [opp_getnumchildobjects $ptr]!=0]
+      }
+
       children {
         return [opp_getchildobjects $ptr]
       }
 
-      haschildren {
-        return [expr [llength [opp_getchildobjects $ptr]]!=0]
+      root {
+        return [opp_object_simulation]
       }
     }
 }

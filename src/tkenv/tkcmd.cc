@@ -156,7 +156,27 @@ void cCollectChildrenVisitor::visit(cObject *obj)
         traverseChildrenOf(obj);
     else
         addPointer(obj);
+}
 
+//----------------------------------------------------------------
+
+class cCountChildrenVisitor : public cVisitor
+{
+  private:
+    cObject *parent;
+    int count;
+  public:
+    cCountChildrenVisitor(cObject *_parent) {parent = _parent; count=0;}
+    virtual void visit(cObject *obj);
+    int getCount() {return count;}
+};
+
+void cCountChildrenVisitor::visit(cObject *obj)
+{
+    if (obj==parent)
+        traverseChildrenOf(obj);
+    else
+        count++;
 }
 
 //----------------------------------------------------------------
@@ -187,6 +207,7 @@ int getObjectInfoString_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectBaseClass_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectId_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getChildObjects_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getNumChildObjects_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getSubObjects_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getSimulationState_cmd(ClientData, Tcl_Interp *, int, const char **);
 int fillListbox_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -246,6 +267,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getobjectid",      getObjectId_cmd}, // args: <pointer>  ret: object ID (if object has one) or ""
    { "opp_getobjectinfostring",getObjectInfoString_cmd}, // args: <pointer>  ret: info()
    { "opp_getchildobjects",  getChildObjects_cmd    }, // args: <pointer> ret: list with its child object ptrs
+   { "opp_getnumchildobjects",getNumChildObjects_cmd}, // args: <pointer> ret: length of child objects list
    { "opp_getsubobjects",    getSubObjects_cmd    }, // args: <pointer> ret: list with all object ptrs in subtree
    { "opp_getsimulationstate", getSimulationState_cmd }, // args: -  ret: NONET,READY,RUNNING,ERROR,TERMINATED,etc.
    { "opp_fill_listbox",     fillListbox_cmd    }, // args: <listbox> <ptr> <options>
@@ -614,6 +636,23 @@ int getChildObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    Tcl_SetResult(interp, buf, TCL_DYNAMIC);
    return TCL_OK;
 }
+
+int getNumChildObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   cObject *object = (cObject *)strToPtr( argv[1] );
+   if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+
+   cCountChildrenVisitor visitor(object);
+   visitor.visit(object);
+   int count = visitor.getCount();
+
+   char buf[20];
+   sprintf(buf, "%d", count);
+   Tcl_SetResult(interp, buf, TCL_VOLATILE);
+   return TCL_OK;
+}
+
 
 int getSubObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
