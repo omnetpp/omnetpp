@@ -1,11 +1,16 @@
-2004-02-04  ------ omnetpp-3.0pre1 released ------
-
 Remaining issue: gate directions not observed in Conn Props dialog.
 FIXME!!! when submodule has random placement, strange thing happens after OK'ing Props dialog
 GNED not compatible with new Tkenv mode of using "i=" and "b=" together
 new Tkenv display string tags not supported yet
 internally, images must be named with "img:" prefix! (otherwise exit.gif, 
 proc.gif etc will overwrite the exit, proc Tcl commands!)
+
+2004-02-11  Andras Varga
+
+	* fixed bug that caused Tk error when a display string contains
+	a paremeter reference, e.g. "o=$color"
+
+2004-02-04  ------ omnetpp-3.0pre1 released ------
 
 2004-02-03  Andras Varga
 

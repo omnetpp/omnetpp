@@ -198,11 +198,11 @@ proc deselectItem {key} {
     set c $canvas($canv_id,canvas)
 
     if {$ned($key,type)=="module"} {
-        set outline   [_getPar {} "$key,disp-outlinecolor" #000000]
+        set outline   [resolveDispStrColor $ned($key,disp-outlinecolor) #000000]
         $c itemconfig $ned($key,rect2-cid) -outline $outline
         $c itemconfig $ned($key,label-cid) -fill #000000
     } elseif {$ned($key,type)=="submod"} {
-        set outline   [_getPar {} "$key,disp-outlinecolor" #000000]
+        set outline   [resolveDispStrColor $ned($key,disp-outlinecolor) #000000]
         if {$ned($key,icon-cid)!=""} {
            $c itemconfig $ned($key,rect-cid) -outline ""
         } else {
@@ -210,7 +210,7 @@ proc deselectItem {key} {
         }
         $c itemconfig $ned($key,label-cid) -fill #000000
     } elseif {$ned($key,type)=="conn"} {
-        set fill      [_getPar {} "$key,disp-fillcolor" #000000]
+        set fill      [resolveDispStrColor $ned($key,disp-fillcolor) #000000]
         $c itemconfig $ned($key,arrow-cid) -fill $fill
     } else {
         error "item $key is neither module, submod or conn"
@@ -255,14 +255,38 @@ proc selectedItems {} {
 #
 #-------------------------------------------------
 
-# _getPar: internal to draw_XXX
-proc _getPar {arg ned_index default} {
+#
+# resolveDispStrColor --
+#
+# If argument is a valid color displayable in gned (not "" and doesn't
+# contain param ref) return it, otherwise return default value
+#
+proc resolveDispStrColor {arg default} {
     global ned
 
-    if {$arg!=""} {
+    # if it's a valid color name (e.g. not a param ref), return it, otherwise get gefault
+    if {![catch {winfo rgb . $arg}]} {
         return $arg
-    } elseif {[info exist ned($ned_index)] && $ned($ned_index)!=""} {
-        return $ned($ned_index)
+    } elseif {[string index $arg 0]== "@"} {
+        #FIXME insert this: return [opp_hsb_to_rgb $arg]
+        return $default
+    } else {
+        return $default
+    }
+}
+
+#
+# resolveDispStrArg --
+#
+# If argument is a valid value (not "" and doesn't contain param ref), return it
+# otherwise return default value
+#
+proc resolveDispStrArg {arg default} {
+    global ned
+
+    # if not empty and doesn't contain param refs, return it, otherwise get gefault
+    if {$arg!="" && [string first {$} $arg]==-1} {
+        return $arg
     } else {
         return $default
     }
@@ -303,9 +327,9 @@ proc draw_module {c key} {
     set y2 [expr $y1+$sy]
 
     # now: draw it!
-    set fill    [_getPar {} "$key,disp-fillcolor" #c0c0c0]
-    set outline [_getPar {} "$key,disp-outlinecolor" #000000]
-    set thickness [_getPar {} "$key,disp-linethickness" 2]
+    set fill    [resolveDispStrColor $ned($key,disp-fillcolor) #c0c0c0]
+    set outline [resolveDispStrColor $ned($key,disp-outlinecolor) #000000]
+    set thickness [resolveDispStrArg $ned($key,disp-linethickness) 2]
 
     set bg  [$c create rect $x1 $y1 $x2 $y2 -outline ""  -fill $fill]
     set r1  [$c create rect [expr $x1+6] [expr $y1+6] [expr $x2-6] [expr $y2-6] -width 12 -outline $fill -fill ""]
@@ -342,10 +366,10 @@ proc draw_submod {c key} {
     global hack_y
 
     # determine $icon, $sx and $sy
-    set icon  [_getPar {} "$key,disp-icon" ""]
+    set icon  [resolveDispStrArg $ned($key,disp-icon) ""]
     if {$icon==""} {
-        set sx [_getPar {} "$key,disp-xsize" 40]
-        set sy [_getPar {} "$key,disp-ysize" 24]
+        set sx [resolveDispStrArg $ned($key,disp-xsize) 40]
+        set sy [resolveDispStrArg $ned($key,disp-ysize) 24]
     } else {
         # check if icon exists
         if [catch {image type $icon}] {
@@ -356,8 +380,8 @@ proc draw_submod {c key} {
     }
 
     # determine position
-    set x  [_getPar {} "$key,disp-xpos" ""]
-    set y  [_getPar {} "$key,disp-ypos" ""]
+    set x  [resolveDispStrArg $ned($key,disp-xpos) ""]
+    set y  [resolveDispStrArg $ned($key,disp-ypos) ""]
 
     if {$x=="" || $y==""} {
         set hack_y [expr $hack_y + 2*$sy]
@@ -373,9 +397,9 @@ proc draw_submod {c key} {
         set x2 [expr $x+$sx/2]
         set y2 [expr $y+$sy/2]
 
-        set fill      [_getPar {} "$key,disp-fillcolor" #8080ff]
-        set outline   [_getPar {} "$key,disp-outlinecolor" #000000]
-        set thickness [_getPar {} "$key,disp-linethickness" 2]
+        set fill      [resolveDispStrColor $ned($key,disp-fillcolor) #8080ff]
+        set outline   [resolveDispStrColor $ned($key,disp-outlinecolor) #000000]
+        set thickness [resolveDispStrArg $ned($key,disp-linethickness) 2]
 
         set r   [$c create rect $x1 $y1 $x2 $y2 -width $thickness -outline $outline -fill $fill]
         set lbl [$c create text $x $y2 -anchor n]
@@ -418,15 +442,15 @@ proc draw_submod {c key} {
 proc draw_connection {c key} {
     global ned
 
-    set mode  [_getPar {} "$key,disp-drawmode" "a"]
+    set mode  [resolveDispStrArg $ned($key,disp-drawmode) "a"]
 
-    set src_x [_getPar {} "$key,disp-src-anchor-x" 50]
-    set src_y [_getPar {} "$key,disp-src-anchor-y" 50]
-    set dest_x [_getPar {} "$key,disp-dest-anchor-x" 50]
-    set dest_y [_getPar {} "$key,disp-dest-anchor-y" 50]
+    set src_x [resolveDispStrArg $ned($key,disp-src-anchor-x) 50]
+    set src_y [resolveDispStrArg $ned($key,disp-src-anchor-y) 50]
+    set dest_x [resolveDispStrArg $ned($key,disp-dest-anchor-x) 50]
+    set dest_y [resolveDispStrArg $ned($key,disp-dest-anchor-y) 50]
 
-    set fill      [_getPar {} "$key,disp-fillcolor" #000000]
-    set thickness [_getPar {} "$key,disp-linethickness" 1]
+    set fill      [resolveDispStrColor $ned($key,disp-fillcolor) #000000]
+    set thickness [resolveDispStrArg $ned($key,disp-linethickness) 1]
 
     set s_coords [_getCoords $c $ned($ned($key,src-ownerkey),rect-cid)]
     set d_coords [_getCoords $c $ned($ned($key,dest-ownerkey),rect-cid)]

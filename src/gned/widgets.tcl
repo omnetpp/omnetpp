@@ -335,6 +335,44 @@ proc label-check {w label first var} {
     pack $w.f.r1 -anchor w -expand 0 -side left
 }
 
+# label-colorchooser --
+#
+# utility function: create a frame with a label and a color chooser button
+#
+proc label-colorchooser {w label {color ""}} {
+    global gned
+
+    frame $w
+    label $w.l -anchor w -width 16 -text $label
+    frame $w.f
+    pack $w.l -anchor nw -expand 0 -fill none -side left -padx 2 -pady 2
+    pack $w.f -anchor n -expand 1 -fill x -side left
+
+    entry $w.f.e
+    pack $w.f.e -anchor center -expand 1 -fill x -side left -padx 2 -pady 2
+
+    button $w.f.b -relief groove -command [list colorchooser:setColor $w.f.b $w.f.e [winfo toplevel $w]] -width 6
+    pack $w.f.b -anchor c -expand 0 -fill none -side left -padx 2 -pady 2
+
+    $w.f.e insert 0 $color
+    set dispcolor [resolveDispStrColor $color ""]
+    if {$dispcolor!=""} {
+       $w.f.b config -background $dispcolor -activebackground $dispcolor
+    }
+}
+
+proc colorchooser:setColor {b e pwin} {
+    global gned
+
+    set color [tk_chooseColor -parent $pwin]
+    if {$color!=""} {
+        $b config -background $color -activebackground $color
+        $e delete 0 end
+        $e insert 0 $color
+        $e selection range 0 end
+    }
+}
+
 proc commentlabel {w text} {
     # utility function: create a frame with a message widget
     frame $w

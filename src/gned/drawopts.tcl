@@ -38,8 +38,8 @@ proc editModuleDrawOptions {key} {
     createOkCancelDialog .modopts "Module Appearance"
 
     label-combo .modopts.f.thick "Line thickness:" {default 1 2 3 4}
-    label-colorchooser .modopts.f.fill "Fill Color:" fill $ned($key,disp-fillcolor)
-    label-colorchooser .modopts.f.outl "Outline color:" outl $ned($key,disp-outlinecolor)
+    label-colorchooser .modopts.f.fill "Fill Color:" $ned($key,disp-fillcolor)
+    label-colorchooser .modopts.f.outl "Outline color:" $ned($key,disp-outlinecolor)
     pack .modopts.f.thick -expand 1 -fill both  -side top
     pack .modopts.f.fill -expand 1 -fill both  -side top
     pack .modopts.f.outl -expand 1 -fill both  -side top
@@ -60,18 +60,10 @@ proc editModuleDrawOptions {key} {
         set ned($key,disp-linethickness) $thickness
 
         # fill color
-        if {$gned(fill)=="default"} {
-           set ned($key,disp-fillcolor) ""
-        } else {
-           set ned($key,disp-fillcolor) [.modopts.f.fill.f.radio.r2f.b cget -bg]
-        }
+        set ned($key,disp-fillcolor) [.modopts.f.fill.f.e get]
 
         # outline color
-        if {$gned(outl)=="default"} {
-           set ned($key,disp-outlinecolor) ""
-        } else {
-           set ned($key,disp-outlinecolor) [.modopts.f.outl.f.radio.r2f.b cget -bg]
-        }
+        set ned($key,disp-outlinecolor) [.modopts.f.outl.f.e get]
 
         # redraw
         redrawItemOnAnyCanvas $key
@@ -102,8 +94,8 @@ proc editSubmoduleDrawOptions {key} {
     label .submopts.f.sep2 -text "_____________________________"
     radiobutton .submopts.f.r2 -text "Rectangle" -value rect -variable gned(radio)
     label-combo .submopts.f.thick "Line thickness:" {default 1 2 3 4}
-    label-colorchooser .submopts.f.fill "Fill Color:" fill $ned($key,disp-fillcolor)
-    label-colorchooser .submopts.f.outl "Outline color:" outl $ned($key,disp-outlinecolor)
+    label-colorchooser .submopts.f.fill "Fill Color:" $ned($key,disp-fillcolor)
+    label-colorchooser .submopts.f.outl "Outline color:" $ned($key,disp-outlinecolor)
 
     pack .submopts.f.head -expand 0 -fill y  -side top -anchor w
     pack .submopts.f.sep1 -expand 1 -fill x
@@ -145,18 +137,10 @@ proc editSubmoduleDrawOptions {key} {
         set ned($key,disp-ysize) [expr int([lindex $centsiz 3])]
 
         # fill color
-        if {$gned(fill)=="default"} {
-           set ned($key,disp-fillcolor) ""
-        } else {
-           set ned($key,disp-fillcolor) [.submopts.f.fill.f.radio.r2f.b cget -bg]
-        }
+        set ned($key,disp-fillcolor) [.submopts.f.fill.f.e get]
 
         # outline color
-        if {$gned(outl)=="default"} {
-           set ned($key,disp-outlinecolor) ""
-        } else {
-           set ned($key,disp-outlinecolor) [.submopts.f.outl.f.radio.r2f.b cget -bg]
-        }
+        set ned($key,disp-outlinecolor) [.submopts.f.outl.f.e get]
 
         # redraw item and connections to/from it
         redrawItemOnAnyCanvas $key
@@ -190,7 +174,7 @@ proc editConnectionDrawOptions {key} {
 
     # add entry fields and focus on first one
     label-combo .connopts.f.thick "Line thickness:" {default 1 2 3 4}
-    label-colorchooser .connopts.f.fill "Line color:" fill $ned($key,disp-fillcolor)
+    label-colorchooser .connopts.f.fill "Line color:" $ned($key,disp-fillcolor)
     label-combo .connopts.f.drawmode "Drawing mode:" {auto manual north east south west}
     label-sunkenlabel .connopts.f.src_an "Source anchoring:" "x=$ned($key,disp-src-anchor-x)%   y=$ned($key,disp-src-anchor-y)%"
     label-sunkenlabel .connopts.f.dest_an "Dest. anchoring:" "x=$ned($key,disp-dest-anchor-x)%   y=$ned($key,disp-dest-anchor-y)%"
@@ -225,11 +209,7 @@ proc editConnectionDrawOptions {key} {
         }
 
         # fill color
-        if {$gned(fill)=="default"} {
-           set ned($key,disp-fillcolor) ""
-        } else {
-           set ned($key,disp-fillcolor) [.connopts.f.fill.f.radio.r2f.b cget -bg]
-        }
+        set ned($key,disp-fillcolor) [.connopts.f.fill.f.e get]
 
         redrawItemOnAnyCanvas $key
         markNedFileOfItemDirty $key
@@ -239,64 +219,6 @@ proc editConnectionDrawOptions {key} {
 }
 
 #-------------------------------------------------------------
-
-# label-colorchooser --
-#
-# utility function: create a frame with a label and a color chooser button
-#
-proc label-colorchooser {w label var {color ""}} {
-    global gned
-
-    frame $w
-    label $w.l -anchor w -width 16 -text $label
-    frame $w.f
-    pack $w.l -anchor nw -expand 0 -fill none -side left -padx 2 -pady 2
-    pack $w.f -anchor n -expand 1 -fill x -side left
-
-    frame $w.f.radio
-    pack $w.f.radio -anchor n -expand 1 -fill x -side left
-
-    radiobutton $w.f.radio.r1 -text "default" -value default -variable gned($var)
-    frame $w.f.radio.r2f
-    pack $w.f.radio.r1 -anchor w -expand 0 -side top
-    pack $w.f.radio.r2f -anchor w -expand 0 -side top
-
-    radiobutton $w.f.radio.r2f.r2 -text "color:"   -value color   -variable gned($var)
-    button $w.f.radio.r2f.b -relief groove -command [list _setColor $w.f.radio.r2f.b $var [winfo toplevel $w]] -width 6
-    pack $w.f.radio.r2f.r2 -anchor n -expand 0 -side left
-    pack $w.f.radio.r2f.b -anchor c -expand 0 -fill none -side left
-
-    if {$color!=""} {
-       $w.f.radio.r2f.b config -background $color -activebackground $color
-       set gned($var) color
-    } else {
-       set gned($var) default
-    }
-}
-
-proc label-colorchooser-old {w label var {color ""}} {
-    global gned
-
-    frame $w
-    label $w.l -anchor w -width 16 -text $label
-    frame $w.f
-    radiobutton $w.f.r1 -text "default" -value default -variable gned($var)
-    radiobutton $w.f.r2 -text "color:"   -value color   -variable gned($var)
-    button $w.f.b -command [list _setColor $w.f.b $var [winfo toplevel $w]] -width 4
-
-    pack $w.l -anchor nw -expand 0 -fill none -side left
-    pack $w.f -anchor n -expand 1 -fill y -side left
-    pack $w.f.r1 -anchor n -expand 0 -side left
-    pack $w.f.r2 -anchor n -expand 0 -side left
-    pack $w.f.b -anchor c -expand 0 -fill none -side left
-
-    if {$color!=""} {
-       $w.f.b config -background $color -activebackground $color
-       set gned($var) color
-    } else {
-       set gned($var) default
-    }
-}
 
 # label-iconchooser --
 #
@@ -309,12 +231,12 @@ proc label-iconchooser {w label  {image ""}} {
     frame $w
     label $w.l -anchor w -width 16 -text $label
     combo $w.e $gned(icons) [list _setButtonImg $w.e $w.b]
-    button $w.b -relief groove -command [list _chooseIcon $image $w.e [winfo toplevel $w]]
+    button $w.b -relief raised -bd 1 -command [list _chooseIcon $image $w.e [winfo toplevel $w]]
 
     # next line sets button image as well
     $w.e configure -value $image
-    grid $w.l $w.e -sticky ew
-    grid x    $w.b -sticky nw
+    grid $w.l $w.e -sticky ew -padx 2 -pady 2
+    grid x    $w.b -sticky nw -padx 2 -pady 2
     grid columnconfigure $w 1 -weight 1
 }
 
@@ -331,19 +253,6 @@ proc _setButtonImg {combo button} {
         }] {
             $button config -image $icons(unknown)
         }
-    }
-}
-
-proc _setColor {butt var pwin} {
-
-    # side effect: set gned(radio) "icon"
-
-    global gned
-    set color [tk_chooseColor -parent $pwin]
-    if {$color!=""} {
-        $butt config -background $color -activebackground $color
-        set gned($var) color
-        set gned(radio) "rect"
     }
 }
 
