@@ -83,7 +83,7 @@ if ($here eq "true")
 {
     $hfile =~ s/^.*[\\\/]//;
 }
-$hdef =  $hfile;
+$hdef = '_'.$hfile;
 $hdef =~ s/\.[^.]*$/_H_/;
 $hdef =~ tr/[a-z]/[A-Z]/;
 $hdef =~ tr/[\/]/\_/;
