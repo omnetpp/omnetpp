@@ -362,16 +362,21 @@ void TCmdenvApp::simulate()
         {
            ev.disable_tracing = true;
            Speedometer speedometer;
+           speedometer.start(simulation.simTime());
            while (true)
            {
                cSimpleModule *mod = simulation.selectNextModule();
                if (!mod)
                    throw new cTerminationException("scheduler interrupted while waiting");
 
+               speedometer.addEvent(simulation.simTime());
+
                // print event banner from time to time
                // ... if (simulation.eventNumber() >= last_update_ev + opt_status_frequency_ev && ...
                if (simulation.eventNumber()%opt_status_frequency_ev==0)
                {
+                   speedometer.beginNewInterval();
+
                    if (opt_perfdisplay)
                    {
                        ::fprintf(fout, "** Event #%ld   T=%s    Elapsed: %s\n",
@@ -396,7 +401,6 @@ void TCmdenvApp::simulate()
                                timeToStr(totalElapsed()),
                                speedometer.eventsPerSec());
                    }
-                   speedometer.beginNewInterval();
 
                    if (opt_autoflush)
                        ::fflush(fout);
@@ -405,7 +409,6 @@ void TCmdenvApp::simulate()
                // execute event
                simulation.doOneEvent( mod );
 
-               speedometer.addEvent(simulation.simTime());
                checkTimeLimits();
                if (sigint_received)
                    throw new cTerminationException("SIGINT or SIGTERM received, exiting");
