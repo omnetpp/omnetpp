@@ -22,6 +22,7 @@ TK_VER=8.2
 PVM_DIR=c:/pvm3
 MPI_DIR=c:/mpi
 EXPAT_DIR=d:/home/expat-1.95.2
+XMLPARSER=expat
 
 #
 # other directories & files based on the base dirs
