@@ -124,12 +124,9 @@
   EXECUTE_ON_STARTUP(CLASSNAME##__mod, (new cModuleType(#CLASSNAME,#INTERFACENAME,(ModuleCreateFunc)CLASSNAME##__create))->setOwner(&modtypes);)
 
 /**
- * This macro facilitates the declaration of a simple module class.
- * The macro expands to the definition of member functions which the user does
- * not need to worry about: constructors, destructor, className() function etc.
- * The user can derive the new class from an existing simple module class
- * (not only cSimpleModule), add new data members and add/redefine member functions
- * as needed.
+ * This macro facilitates the declaration of a simple module class, and
+ * it expands to the definition of mandatory member functions. 
+ * (Currently only a constructor.)
  *
  * The macro is used like this:
  *
