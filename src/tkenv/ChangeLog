@@ -1,3 +1,58 @@
+2004-01-01  Andras Varga
+	* tkapp.cc/h: handle new cEnvir notifications: moduleCreated(),
+	moduleDeleted(), connectionCreated(), connectionRemoved(),
+	displayStringChanged(cGate*), displayStringChanged(cModule*),
+	displayStringAsParentChanged()
+
+2003-12-30  Andras Varga
+
+	* new omnetpp.h entries:
+	[Tkenv]/methodcalls-delay: sets delay after method call animation
+	[Tkenv]/show-layouting: show layouting process of network graphics
+
+2003-12-21  Andras Varga
+
+	* graphlayout.cc/h, modinsp.cc: implemented automatic layouting, using
+	the SpringEmbedder algorithm. Modules which have no explicit positions
+	assigned (first two args of the "p=" tag are missing) will be
+	autolayouted. Predefined row, matrix, ring, etc arrangements (defined
+	via 3rd and further args of the "p=" tag) will be moved as one unit
+	(the full row/matrix/ring will be moved	to an optimal place.)
+	- One tricky thing: if the full graph is too big after layouting,
+	it is scaled back so that it fits on the screen, UNLESS IT CONTAINS
+	ANY FIXED-POSITION MODULE. (For obvious reasons: if there's a module
+	with manually specified position, we don't want to move that one).
+	- Size is ignored by the present layouter, so longish modules (such as
+	an Ethernet segment) may produce funny results.
+	- Parameters to the layouter algoritm (repulsive/attractive forces,
+	number of iterations,random number seed) can be specified in the "l="
+	tag to the parent module, but this is experimental and may change.
+	Currently parameters (with their default values):
+	"l=<repulsion=10>,<attraction=0.3>,<edgelen=40>,<maxiter=200>,<seed>"
+	- Tip: to present rescaling, specify a bounding box for the parent
+	module module that is large enough, e.g. "b=2000,3000"
+
+2003-12-18  Andras Varga
+
+        * modinsp2.tcl: enhanced "i=" (icon) display string tag -- icon can
+        be colorized now. Syntax: i=<icon>,<target-color>,<percentage>.
+        Target-color can be any accepted color specification: English name
+        (blue,lightgray,wheat), RGB (#ff0000) or HSB (@40ff80; hue-saturation-
+        brightness), and percentage is the degree of colorization, 20% being
+        the default. Brightness of icon is also affected -- to keep original
+        brightness, specify a color with about 50% brightness (e.g. #808080
+        mid-grey, #008000 mid-green). Examples: "i=server1,gold" creates
+        a gold server icon; "i=earth2,#808080,100" makes icon grayscale;
+        "i=queue,white,100" gives "over-exposed" b&w queue. Colorization
+        works with both submodule and message icons.
+
+	* tkcmd.cc: added opp_colorizeimage command
+
+2003-12-11  Andras Varga
+
+	* all files: follow changes in sim/; C-style casts replaced with
+	static_cast<>
+
 2003-12-06  Andras Varga
 
 	* inspectors are no longer cObjects
@@ -9,7 +64,7 @@
 
 2003-11-29  Andras Varga
 
-	* insplist.tcl: added <pluginname>:inspectorUpdate Tkenv plugin 
+	* insplist.tcl: added <pluginname>:inspectorUpdate Tkenv plugin
 	callback
 
 	* widgets.tcl: added BLT support
@@ -21,7 +76,7 @@
 
 2003-11-13  Andras Varga
 
-	* statinsp.cc: added typecast for MSVC 7.0 compiler [reported by Bob 
+	* statinsp.cc: added typecast for MSVC 7.0 compiler [reported by Bob
 	Scheffler]
 
 2003-11-13  Andras Varga

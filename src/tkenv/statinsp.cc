@@ -62,7 +62,7 @@ void TStatisticInspector::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
+   Tcl_Interp *interp = getTkApplication()->getInterp();
    CHK(Tcl_VarEval(interp, "create_statisticinspector ", windowname, " \"", geometry, "\"", NULL ));
 }
 
@@ -70,7 +70,7 @@ void TStatisticInspector::update()
 {
    TInspector::update();
 
-   cStatistic *stat = (cStatistic *)object;
+   cStatistic *stat = static_cast<cStatistic *>(object);
 
    setLabel(".main.count.e", (double) stat->samples() );
    setLabel(".main.mean.e", stat->mean() );
@@ -110,7 +110,7 @@ void THistogramWindow::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
+   Tcl_Interp *interp = getTkApplication()->getInterp();
    CHK(Tcl_VarEval(interp, "create_histogramwindow ", windowname, " \"", geometry, "\"", NULL ));
 }
 
@@ -118,8 +118,8 @@ void THistogramWindow::update()
 {
    TInspector::update();
 
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
-   cDensityEstBase *distr = (cDensityEstBase *)object;
+   Tcl_Interp *interp = getTkApplication()->getInterp();
+   cDensityEstBase *distr = static_cast<cDensityEstBase *>(object);
 
    char buf[80];
    generalInfo( buf );
@@ -188,7 +188,7 @@ void THistogramWindow::update()
 
 void THistogramWindow::generalInfo( char *buf )
 {
-   cDensityEstBase *d = (cDensityEstBase *)object;
+   cDensityEstBase *d = static_cast<cDensityEstBase *>(object);
    if (!d->transformed())
        sprintf( buf, "(collecting initial values, N=%ld)", d->samples());
    else
@@ -201,7 +201,7 @@ void THistogramWindow::generalInfo( char *buf )
 
 void THistogramWindow::cellInfo( char *buf, int cell )
 {
-   cDensityEstBase *d = (cDensityEstBase *)object;
+   cDensityEstBase *d = static_cast<cDensityEstBase *>(object);
    double count = d->cell(cell);
    double cell_lower = d->basepoint(cell);
    double cell_upper = d->basepoint(cell+1);
@@ -283,9 +283,8 @@ TOutVectorWindow::TOutVectorWindow(cObject *obj,int typ,const char *geom,void *d
     TInspector(obj,typ,geom,dat), circbuf(size)
 {
    // make inspected outvector to call us back when it gets data to write out
-   cOutVector *ov = (cOutVector *)object;
-   ov->record_in_inspector = record_in_insp;
-   ov->data_for_inspector = (void *)this;
+   cOutVector *ov = static_cast<cOutVector *>(object);
+   ov->setCallback(record_in_insp, (void *)this);
 
    autoscale = true;
    drawing_mode = DRAW_LINES;
@@ -297,8 +296,8 @@ TOutVectorWindow::TOutVectorWindow(cObject *obj,int typ,const char *geom,void *d
 TOutVectorWindow::~TOutVectorWindow()
 {
    // cancel installed callback in inspected outvector
-   cOutVector *ov = (cOutVector *)object;
-   ov->record_in_inspector = NULL;
+   cOutVector *ov = static_cast<cOutVector *>(object);
+   ov->setCallback(NULL, NULL);
 }
 
 void TOutVectorWindow::createWindow()
@@ -308,7 +307,7 @@ void TOutVectorWindow::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
+   Tcl_Interp *interp = getTkApplication()->getInterp();
    CHK(Tcl_VarEval(interp, "create_outvectorwindow ", windowname, " \"", geometry, "\"", NULL ));
 }
 
@@ -316,7 +315,7 @@ void TOutVectorWindow::update()
 {
    TInspector::update();
 
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
+   Tcl_Interp *interp = getTkApplication()->getInterp();
 
    char buf[80];
    generalInfo( buf );
@@ -324,7 +323,7 @@ void TOutVectorWindow::update()
 
    if (circbuf.items()==0) return;
 
-   int tuple = ((cOutVector *)object)->tuple;
+   int tuple = static_cast<cOutVector *>(object)->tuple();
 
    // get canvas size
    CHK(Tcl_VarEval(interp, "winfo width ",canvas, NULL));
@@ -571,7 +570,7 @@ void TOutVectorWindow::generalInfo( char *buf )
    sprintf(buf, "t=%s .. %s  value=%g .. %g", simtimeToStr(firstt,buf1),
                 simtimeToStr(tbase,buf2), miny, maxy);
 */
-   int tuple = ((cOutVector *)object)->tuple;
+   int tuple = static_cast<cOutVector *>(object)->tuple();
    CircBuffer::CBEntry& p = circbuf.entry(circbuf.headPos());
    if (tuple==1)
      sprintf(buf, "Last value: t=%s  value=%g",
@@ -583,7 +582,7 @@ void TOutVectorWindow::generalInfo( char *buf )
 
 void TOutVectorWindow::valueInfo( char *buf, int valueindex )
 {
-   int tuple = ((cOutVector *)object)->tuple;
+   int tuple = static_cast<cOutVector *>(object)->tuple();
    CircBuffer::CBEntry& p = circbuf.entry(valueindex);
    if (tuple==1)
      sprintf(buf, "t=%s  value=%g",

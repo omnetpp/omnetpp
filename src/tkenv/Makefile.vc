@@ -22,7 +22,7 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "../envir" $(TK_CFLAGS) /DBUILDING_TKENV
 OBJS = tkapp$(TKENV_EMBED_SUFFIX).obj tkcmd.obj tklib.obj inspector.obj \
        inspfactory.obj objinsp.obj modinsp.obj statinsp.obj structinsp.obj \
-       arrow.obj visitor.obj tkutil.obj
+       arrow.obj visitor.obj tkutil.obj graphlayout.obj
 LIBS = $(OMNETPP_SRC_DIR)/sim/sim_std.ilib $(OMNETPP_SRC_DIR)/envir/envir.ilib $(TK_LIB_DIR)/tcl82.lib $(TK_LIB_DIR)/tk82.lib
 
 #
@@ -71,6 +71,9 @@ clean:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 arrow.obj: arrow.cc \
   arrow.h
+graphlayout.obj: graphlayout.cc \
+  graphlayout.h \
+  tkapp.h
 inspector.obj: inspector.cc \
   ../../include/omnetpp.h \
   tkapp.h \
@@ -83,13 +86,14 @@ inspector.obj: inspector.cc \
   ../../include/cexception.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
+  ../../include/cdefaultlist.h \
   ../../include/csimul.h \
   ../../include/macros.h \
   ../../include/ctypes.h \
   ../../include/carray.h \
   ../../include/cqueue.h \
   ../../include/cllist.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/cwatch.h \
   ../../include/cpar.h \
   ../../include/cgate.h \
@@ -116,6 +120,8 @@ inspector.obj: inspector.cc \
   ../../include/cchannel.h \
   ../../include/cdispstr.h \
   ../../include/envirext.h \
+  ../../include/cscheduler.h \
+  ../../include/compat.h \
   ../../include/ccoroutine.h \
   tkutil.h
 inspfactory.obj: inspfactory.cc \
@@ -131,13 +137,14 @@ inspfactory.obj: inspfactory.cc \
   ../../include/cexception.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
+  ../../include/cdefaultlist.h \
   ../../include/csimul.h \
   ../../include/macros.h \
   ../../include/ctypes.h \
   ../../include/carray.h \
   ../../include/cqueue.h \
   ../../include/cllist.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/cwatch.h \
   ../../include/cpar.h \
   ../../include/cgate.h \
@@ -164,6 +171,8 @@ inspfactory.obj: inspfactory.cc \
   ../../include/cchannel.h \
   ../../include/cdispstr.h \
   ../../include/envirext.h \
+  ../../include/cscheduler.h \
+  ../../include/compat.h \
   ../../include/ccoroutine.h \
   tkutil.h
 modinsp.obj: modinsp.cc \
@@ -174,26 +183,29 @@ modinsp.obj: modinsp.cc \
   ../../include/coutvect.h \
   ../../include/cstat.h \
   ../../include/cdensity.h \
+  ../../include/cdispstr.h \
   tkapp.h \
   tklib.h \
   inspfactory.h \
   modinsp.h \
   arrow.h \
+  graphlayout.h \
   ../../include/cmodule.h \
   ../../include/defs.h \
   ../../include/cobject.h \
   ../../include/ccoroutine.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
   ../../include/csimul.h \
+  ../../include/cdefaultlist.h \
   ../../include/util.h \
   ../../include/cexception.h \
+  ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/macros.h \
   inspector.h \
-  ../../include/onstartup.h \
   ../../include/ctypes.h \
   tkutil.h
 objinsp.obj: objinsp.cc \
@@ -209,13 +221,14 @@ objinsp.obj: objinsp.cc \
   ../../include/cexception.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
+  ../../include/cdefaultlist.h \
   ../../include/csimul.h \
   ../../include/macros.h \
   ../../include/ctypes.h \
   ../../include/carray.h \
   ../../include/cqueue.h \
   ../../include/cllist.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/cwatch.h \
   ../../include/cpar.h \
   ../../include/cgate.h \
@@ -242,6 +255,8 @@ objinsp.obj: objinsp.cc \
   ../../include/cchannel.h \
   ../../include/cdispstr.h \
   ../../include/envirext.h \
+  ../../include/cscheduler.h \
+  ../../include/compat.h \
   ../../include/ccoroutine.h \
   inspector.h \
   tkutil.h \
@@ -261,17 +276,18 @@ statinsp.obj: statinsp.cc \
   ../../include/defs.h \
   ../../include/cobject.h \
   ../../include/ccoroutine.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
   ../../include/csimul.h \
+  ../../include/cdefaultlist.h \
   ../../include/util.h \
   ../../include/cexception.h \
+  ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/macros.h \
   inspector.h \
-  ../../include/onstartup.h \
   ../../include/ctypes.h \
   tkutil.h
 structinsp.obj: structinsp.cc \
@@ -282,14 +298,15 @@ structinsp.obj: structinsp.cc \
   structinsp.h \
   ../../include/cobject.h \
   ../../include/cenum.h \
+  ../../include/defs.h \
   ../../include/util.h \
   ../../include/cexception.h \
-  ../../include/defs.h \
   ../../include/macros.h \
   inspector.h \
   ../../include/onstartup.h \
+  ../../include/carray.h \
   ../../include/ctypes.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   tkutil.h
 tkapp.obj: tkapp.cc \
   ../../include/cenvir.h \
@@ -309,17 +326,18 @@ tkapp.obj: tkapp.cc \
   ../../include/cexception.h \
   ../../include/cmodule.h \
   ../../include/ccoroutine.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/carray.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
   ../../include/csimul.h \
+  ../../include/cdefaultlist.h \
+  ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
   tkutil.h \
-  ../../include/macros.h \
-  ../../include/onstartup.h
+  ../../include/macros.h
 tkcmd.obj: tkcmd.cc \
   ../../include/cenvir.h \
   ../../include/carray.h \
@@ -343,17 +361,18 @@ tkcmd.obj: tkcmd.cc \
   ../../include/util.h \
   ../../include/cexception.h \
   ../../include/errmsg.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/coutvect.h \
+  ../../include/onstartup.h \
   ../../include/cmodule.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
+  ../../include/cdefaultlist.h \
   ../../include/cenum.h \
   tkutil.h \
-  ../../include/macros.h \
-  ../../include/onstartup.h
+  ../../include/macros.h
 tklib.obj: tklib.cc \
   tklib.h \
   tkapp.h
@@ -364,14 +383,16 @@ tkutil.obj: tkutil.cc \
   tkapp.h \
   visitor.h \
   tkutil.h \
+  ../../include/defs.h \
   ../../include/util.h \
   ../../include/cexception.h \
-  ../../include/defs.h \
   ../../include/ccoroutine.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/carray.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
+  ../../include/cdefaultlist.h \
+  ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
@@ -380,9 +401,26 @@ tkutil.obj: tkutil.cc \
 visitor.obj: visitor.cc \
   ../../include/cenvir.h \
   ../../include/cobject.h \
+  ../../include/cmodule.h \
+  ../../include/cmessage.h \
+  ../../include/cqueue.h \
+  ../../include/cstat.h \
+  ../../include/coutvect.h \
+  ../../include/cwatch.h \
+  ../../include/cfsm.h \
+  ../../include/cpar.h \
+  ../../include/cchannel.h \
+  ../../include/cgate.h \
   visitor.h \
   ../../include/defs.h \
-  ../../include/cpar.h \
   ../../include/util.h \
   ../../include/cexception.h \
+  ../../include/ccoroutine.h \
+  ../../include/globals.h \
+  ../../include/carray.h \
+  ../../include/csimul.h \
+  ../../include/cdefaultlist.h \
+  ../../include/onstartup.h \
+  ../../include/errmsg.h \
+  ../../include/cmsgheap.h \
   tkapp.h

@@ -58,7 +58,7 @@ void TObjInspector::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
+   Tcl_Interp *interp = getTkApplication()->getInterp();
    CHK(Tcl_VarEval(interp, "create_objinspector ", windowname, " \"", geometry, "\"", NULL ));
 
    if (cStructDescriptor::hasDescriptor(object->className()))
@@ -117,7 +117,7 @@ class TContainerInspectorFactory : public cInspectorFactory
 
     double qualityAsDefault(cObject *object) {
         if (dynamic_cast<cArray *>(object) || dynamic_cast<cQueue *>(object) ||
-            dynamic_cast<cMessageHeap *>(object) || dynamic_cast<cHead *>(object) ||
+            dynamic_cast<cMessageHeap *>(object) || dynamic_cast<cDefaultList *>(object) ||
             dynamic_cast<cSimulation *>(object)
            )
             return 2.0;
@@ -147,7 +147,7 @@ void TContainerInspector::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
+   Tcl_Interp *interp = getTkApplication()->getInterp();
    char *typelist = " (default) object container graphical";
    CHK(Tcl_VarEval(interp, "create_containerinspector ", windowname, " \"", geometry, "\"", typelist, NULL));
 }
@@ -191,7 +191,7 @@ void TMessageInspector::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
+   Tcl_Interp *interp = getTkApplication()->getInterp();
    CHK(Tcl_VarEval(interp, "create_messageinspector ", windowname, " \"", geometry, "\"", NULL ));
 
    if (cStructDescriptor::hasDescriptor(object->className()))
@@ -206,7 +206,7 @@ void TMessageInspector::update()
 {
    TInspector::update();
 
-   cMessage *msg = (cMessage *)object;
+   cMessage *msg = static_cast<cMessage *>(object);
 
    setEntry(".nb.info.name.e", msg->name() );
    setEntry(".nb.info.kind.e", (long)msg->kind() );
@@ -232,7 +232,7 @@ void TMessageInspector::update()
 
 void TMessageInspector::writeBack()
 {
-   cMessage *msg = (cMessage *)object;
+   cMessage *msg = static_cast<cMessage *>(object);
 
    msg->setName( getEntry(".nb.info.name.e") );
    msg->setKind( atol(getEntry(".nb.info.kind.e")) );
@@ -288,7 +288,7 @@ void TWatchInspector::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
+   Tcl_Interp *interp = getTkApplication()->getInterp();
    CHK(Tcl_VarEval(interp, "create_watchinspector ", windowname, " \"", geometry, "\"", NULL ));
 }
 
@@ -296,7 +296,7 @@ void TWatchInspector::update()
 {
    TInspector::update();
 
-   cWatch *watch = (cWatch *)object;
+   cWatch *watch = static_cast<cWatch *>(object);
 
    char *type,val[128];
    void *p = watch->pointer();
@@ -344,8 +344,8 @@ void TWatchInspector::update()
 
 void TWatchInspector::writeBack()
 {
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
-   cWatch *watch = (cWatch *)object;
+   Tcl_Interp *interp = getTkApplication()->getInterp();
+   cWatch *watch = static_cast<cWatch *>(object);
 
    const char *s = getEntry(".main.name.e");
    void *p = watch->pointer();
@@ -392,7 +392,7 @@ void TParInspector::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
+   Tcl_Interp *interp = getTkApplication()->getInterp();
    CHK(Tcl_VarEval(interp, "create_parinspector ", windowname, " \"", geometry, "\"", NULL ));
 }
 
@@ -401,7 +401,7 @@ void TParInspector::update()
    TInspector::update();
 
    char buf[129];
-   cPar *p = (cPar *)object;
+   cPar *p = static_cast<cPar *>(object);
 
    p->getAsText(buf,128);
    setEntry(".main.value.e", buf );
@@ -430,8 +430,8 @@ void TParInspector::update()
 
 void TParInspector::writeBack()
 {
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
-   cPar *p = (cPar *)object;
+   Tcl_Interp *interp = getTkApplication()->getInterp();
+   cPar *p = static_cast<cPar *>(object);
 
    char newtype = getEntry(".main.newtype.e")[0];
    if (!newtype) newtype = '?';
@@ -498,7 +498,7 @@ void TPacketInspector::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
+   Tcl_Interp *interp = getTkApplication()->getInterp();
    CHK(Tcl_VarEval(interp, "create_packetinspector ", windowname, " \"", geometry, "\"", NULL ));
 }
 
@@ -506,7 +506,7 @@ void TPacketInspector::update()
 {
    TMessageInspector::update();
 
-   cPacket *pkt = (cPacket *)object;
+   cPacket *pkt = static_cast<cPacket *>(object);
 
    setEntry(".nb.info.protocol.e", (long)pkt->protocol() );
    setEntry(".nb.info.pdu.e",      (long)pkt->pdu() );
@@ -514,7 +514,7 @@ void TPacketInspector::update()
 
 void TPacketInspector::writeBack()
 {
-   cPacket *pkt = (cPacket *)object;
+   cPacket *pkt = static_cast<cPacket *>(object);
 
    pkt->setProtocol( (short)atol( getEntry(".nb.info.protocol.e")) );
    pkt->setPdu( (short)atol( getEntry(".nb.info.pdu.e")) );

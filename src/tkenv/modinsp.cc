@@ -16,7 +16,9 @@
 *--------------------------------------------------------------*/
 
 #include <string.h>
+#include <stdlib.h>
 #include <math.h>
+#include <assert.h>
 
 #include "csimplemodule.h"
 #include "cmessage.h"
@@ -25,12 +27,18 @@
 #include "coutvect.h"
 #include "cstat.h"
 #include "cdensity.h"
+#include "cdispstr.h"
 
 #include "tkapp.h"
 #include "tklib.h"
 #include "inspfactory.h"
 #include "modinsp.h"
 #include "arrow.h"
+#include "graphlayout.h"
+
+
+#define UNKNOWNICON_WIDTH  32
+#define UNKNOWNICON_HEIGHT 32
 
 
 // Module state as text:
@@ -75,8 +83,8 @@ void TModuleWindow::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
-   cModule *mod = (cModule *)object;
+   Tcl_Interp *interp = getTkApplication()->getInterp();
+   cModule *mod = static_cast<cModule *>(object);
    const char *createcommand = mod->isSimple() ?
             "create_simplemodulewindow " : "create_compoundmodulewindow ";
    CHK(Tcl_VarEval(interp, createcommand, windowname, " \"", geometry, "\"", NULL ));
@@ -86,7 +94,7 @@ void TModuleWindow::update()
 {
    TInspector::update();
 
-   cModule *mod = (cModule *)object;
+   cModule *mod = static_cast<cModule *>(object);
    setToolbarInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
 }
 
@@ -109,29 +117,16 @@ class TGraphicalModWindowFactory : public cInspectorFactory
 Register_InspectorFactory(TGraphicalModWindowFactory);
 
 
-// helper function
-static void dispStringCallback(cModule *mod, bool immediate, void *data)
-{
-   ((TGraphicalModWindow *)data)->displayStringChange(mod,immediate);
-}
-
 TGraphicalModWindow::TGraphicalModWindow(cObject *obj,int typ,const char *geom,void *dat) :
     TInspector(obj,typ,geom,dat)
 {
    needs_redraw = false;
+   not_drawn = false;
    random_seed = 1;
-
-   // register a callback in the module object which will set needs_redraw
-   // if setDisplayString() is called
-   cModule *mod = (cModule *)object;
-   mod->setDisplayStringNotify(dispStringCallback, this);
 }
 
 TGraphicalModWindow::~TGraphicalModWindow()
 {
-   // deregister a callback
-   cModule *mod = (cModule *)object;
-   mod->setDisplayStringNotify(NULL, NULL);
 }
 
 void TGraphicalModWindow::createWindow()
@@ -141,7 +136,7 @@ void TGraphicalModWindow::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
+   Tcl_Interp *interp = getTkApplication()->getInterp();
    CHK(Tcl_VarEval(interp, "create_graphicalmodwindow ", windowname, " \"", geometry, "\"", NULL ));
 }
 
@@ -149,13 +144,15 @@ void TGraphicalModWindow::update()
 {
    TInspector::update();
 
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
+   Tcl_Interp *interp = getTkApplication()->getInterp();
 
-   // redraw modules only on explicit request
+   if (not_drawn) return;
+
+   // redraw modules only if really needed
    if (needs_redraw)
    {
-       CHK(Tcl_VarEval(interp, "graphmodwin_redraw ", windowname, NULL));
        needs_redraw = false;
+       redrawAll();
    }
    else
    {
@@ -165,149 +162,377 @@ void TGraphicalModWindow::update()
    }
 }
 
-int TGraphicalModWindow::redrawModules(Tcl_Interp *interp, int ac, const char **av)
+static int resolveNumericDispStrArg(const char *s, cModule *mod, int defaultval)
 {
-   // go to next seed if called with "1" (so that each redraw rearranges randomly placed submodules)
-   if (ac>=2 && av[1][0]=='1')
-      random_seed++;
+   if (!s || !*s)
+       return defaultval;
+   if (*s=='$')
+       return mod->par(s+1);
+   return (int) atol(s);
+}
 
-   // reset seed for tcl/tk ("random arrangement" depends on seed!)
-   char buf[16];
-   sprintf(buf,"%d",random_seed);
-   CHK(Tcl_VarEval(interp, "expr srand(",buf,")",NULL));
-   CHK(Tcl_VarEval(interp, "expr rand()",NULL)); // consume 1st value (it was linear to seed)
+void TGraphicalModWindow::relayoutAndRedrawAll()
+{
+   int submodcount = 0;
+   for (cSubModIterator submod(*static_cast<cModule *>(object)); !submod.end(); submod++)
+       submodcount++;
 
-   // loop through all submodules and draw them
-   for (cSubModIterator submod(*(cModule *)object); !submod.end(); submod++)
+   not_drawn = false;
+   if (submodcount>1000)
    {
-      // If there's no explicit position given for a submodule vector, we'll
-      // auto assing either row or ring auto layout.
-      // We select row if only adjacent modules of the vector are connected;
-      // otherwise, we select ring.
-
-      // first, see if there's an explicit position ("p=" tag) given
-      int p_tag_present;
-      const char *dstr = submod()->displayString();
-      if (dstr[0]==0)
-         p_tag_present = 0;
-      else if (dstr[0]=='p' && dstr[1]=='=')
-         p_tag_present = 1;
-      else
-         p_tag_present = strstr(dstr,";p=")!=NULL;
-
-      // decide about ring or row:
-      int ringlayout = 0;
-
-      if (!p_tag_present && submod()->size()>1)
-      {
-         const char *name = submod()->name();
-         for (cSubModIterator m(*(cModule *)object); !m.end(); m++)
-         {
-            if (strcmp(m()->name(),name)==0)
-            {
-               int n = m()->gates();
-               for (int i=0; i<n; i++)
-               {
-                  cGate *gate = m()->gate(i);
-                  if (!gate) continue;
-
-                  cGate *dest_gate = gate->toGate();
-                  if (gate->type()=='O' && dest_gate!=NULL)
-                  {
-                     cModule *dest_mod = dest_gate->ownerModule();
-                     if (strcmp(dest_mod->name(),name)==0)
-                     {
-                        int diff = m()->index() - dest_mod->index();
-                        if (diff>1 || diff<-1)
-                        {
-                            ringlayout = 1;
-                        }
-                     }
-                  }
-               }
-            }
-         }
-      }
-
-      // call Tcl procedure to draw the submodule
-      char index[8];
-      sprintf(index,"%d %d ", submod()->index(), submod()->size());
-      CHK(Tcl_VarEval(interp, "draw_submod ",
-                      canvas, " ",
-                      ptrToStr( submod() ), " ",
-                      "{", submod()->fullName(), "} ",
-                      "{", submod()->displayString(), "} ",
-                      index, ringlayout?"ring":"row",
-                      NULL ));
+       Tcl_Interp *interp = getTkApplication()->getInterp();
+       char buf[20];
+       sprintf(buf,"%d",submodcount);
+       CHK(Tcl_VarEval(interp,"tk_messageBox -parent ",windowname," -type yesno -title Warning -icon question "
+                              "-message {Module '", object->fullName(), "' contains more than "
+                              "1000 submodules (",buf,"), it may take a long time to display "
+                              "the graphics. Do you want to proceed with drawing?}", NULL));
+       bool answer = (Tcl_GetStringResult(interp)[0]=='y');
+       if (answer==false)
+       {
+           not_drawn = true;
+           CHK(Tcl_VarEval(interp, canvas, " delete all",NULL)); // this must be done, still
+           return;
+       }
    }
 
-   // draw enclosing module
-   CHK(Tcl_VarEval(interp, "draw_enclosingmod ",
-                      canvas, " ",
-                      ptrToStr( object ), " ",
-                      "{", object->fullPath(), "} ",
-                      "{", ((cModule *)object)->displayStringAsParent(), "}",
-                      NULL ));
-
-   // loop through all submodules and enclosing module & draw their connections
-   int parent=0;
-   for (cSubModIterator submod2(*(cModule *)object); !parent; submod2++)
-   {
-      cModule *mod = !submod2.end() ? submod2() : (parent=1,(cModule *)object);
-
-      int n = mod->gates();
-      for (int i=0; i<n; i++)
-      {
-         cGate *gate = mod->gate(i);
-         if (!gate) continue;
-
-         cGate *dest_gate = gate->toGate();
-         if (gate->type()==(parent?'I':'O') && dest_gate!=NULL)
-         {
-
-            char gateptr[32], srcptr[32], destptr[32], indices[32];
-            ptrToStr( gate, gateptr );
-            ptrToStr( mod, srcptr );
-            ptrToStr( dest_gate->ownerModule(), destptr );
-            sprintf(indices,"%d %d %d %d",
-                  gate->index(), gate->size(),
-                  dest_gate->index(), dest_gate->size());
-
-            CHK(Tcl_VarEval(interp, "draw_connection ",
-                      canvas, " ",
-                      gateptr, " ",
-                      "{", gate->displayString(), "} ",
-                      srcptr, " ",
-                      destptr, " ",
-                      indices,
-                      NULL ));
-         }
-      }
-   }
-
-   // display messages, next event marker (red frame), etc.
+   // go to next seed
+   random_seed++;
+   recalculateLayout();
+   redrawModules();
    redrawNextEventMarker();
    redrawMessages();
    updateSubmodules();
+}
 
-   return TCL_OK;
+void TGraphicalModWindow::redrawAll()
+{
+   refreshLayout();
+   redrawModules();
+   redrawNextEventMarker();
+   redrawMessages();
+   updateSubmodules();
+}
+
+void TGraphicalModWindow::getSubmoduleCoords(cModule *submod, bool& explicitcoords, bool& obeyslayout,
+                                                              int& x, int& y, int& sx, int& sy)
+{
+    const cDisplayString blank;
+    const cDisplayString& ds = submod->hasDisplayString() ? submod->displayString() : blank;
+
+    // get size -- we'll need to return that too, and may be needed for matrix, ring etc. layout
+    int boxsx=0, boxsy=0, iconsx=0, iconsy=0;
+    if (ds.existsTag("b") || !ds.existsTag("i"))
+    {
+        boxsx = resolveNumericDispStrArg(ds.getTagArg("b",0), submod, 40);
+        boxsy = resolveNumericDispStrArg(ds.getTagArg("b",1), submod, 24);
+    }
+    if (ds.existsTag("i"))
+    {
+        const char *imgname = ds.getTagArg("i",0);
+        if (!imgname)
+        {
+            iconsx = UNKNOWNICON_WIDTH;
+            iconsy = UNKNOWNICON_HEIGHT;
+        }
+        else
+        {
+            Tcl_Interp *interp = getTkApplication()->getInterp();
+            Tk_Image img = Tk_GetImage(interp, Tk_MainWindow(interp), imgname, NULL, NULL);
+            if (!img)
+            {
+                iconsx = UNKNOWNICON_WIDTH;
+                iconsy = UNKNOWNICON_HEIGHT;
+            }
+            else
+            {
+                Tk_SizeOfImage(img, &iconsx, &iconsy);
+                Tk_FreeImage(img);
+            }
+        }
+    }
+    sx = (boxsx>iconsx) ? boxsx : iconsx;
+    sy = (boxsy>iconsy) ? boxsy : iconsy;
+
+    // first, see if there's an explicit position ("p=" tag) given
+    x = resolveNumericDispStrArg(ds.getTagArg("p",0), submod, -1);
+    y = resolveNumericDispStrArg(ds.getTagArg("p",1), submod, -1);
+    explicitcoords = x!=-1 && y!=-1;
+
+    // set missing coordinates to zero
+    if (x==-1) x = 0;
+    if (y==-1) y = 0;
+
+    const char *layout = ds.getTagArg("p",2); // matrix, row, column, ring, exact etc.
+    obeyslayout = (layout!=NULL);
+
+    // modify x,y using predefined layouts
+    if (!layout)
+    {
+        // we're happy
+    }
+    else if (!strcmp(layout,"e") || !strcmp(layout,"x") || !strcmp(layout,"exact"))
+    {
+        int dx = resolveNumericDispStrArg(ds.getTagArg("p",3), submod, 0);
+        int dy = resolveNumericDispStrArg(ds.getTagArg("p",4), submod, 0);
+        x += dx;
+        y += dy;
+    }
+    else if (!strcmp(layout,"r") || !strcmp(layout,"row"))
+    {
+        // perhaps we should use the size of the 1st element in the vector?
+        int dx = resolveNumericDispStrArg(ds.getTagArg("p",3), submod, 2*sx);
+        x += submod->index()*dx;
+    }
+    else if (!strcmp(layout,"c") || !strcmp(layout,"col") || !strcmp(layout,"column"))
+    {
+        int dy = resolveNumericDispStrArg(ds.getTagArg("p",3), submod, 2*sy);
+        y += submod->index()*dy;
+    }
+    else if (!strcmp(layout,"m") || !strcmp(layout,"matrix"))
+    {
+        // perhaps we should use the size of the 1st element in the vector?
+        int columns = resolveNumericDispStrArg(ds.getTagArg("p",3), submod, 5);
+        int dx = resolveNumericDispStrArg(ds.getTagArg("p",4), submod, 2*sx);
+        int dy = resolveNumericDispStrArg(ds.getTagArg("p",5), submod, 2*sy);
+        x += (submod->index() % columns)*dx;
+        y += (submod->index() / columns)*dy;
+    }
+    else if (!strcmp(layout,"i") || !strcmp(layout,"ri") || !strcmp(layout,"ring"))
+    {
+        // perhaps we should use the size of the 1st element in the vector?
+        int rx = resolveNumericDispStrArg(ds.getTagArg("p",3), submod, (sx+sy)*submod->size()/4);
+        int ry = resolveNumericDispStrArg(ds.getTagArg("p",3), submod, rx);
+        x += rx - rx*sin(submod->index()*2*PI/submod->size());
+        y += ry - ry*cos(submod->index()*2*PI/submod->size());
+    }
+    else
+    {
+        // FIXME error: "invalid layout specified in display string `p=' tag"
+    }
+}
+
+void TGraphicalModWindow::recalculateLayout()
+{
+    // refresh layout with empty submodPosMap -- everything layouted
+    submodPosMap.clear();
+    refreshLayout();
+}
+
+void TGraphicalModWindow::refreshLayout()
+{
+    // recalculate layout, using coordinates in submodPosMap as "fixed" nodes --
+    // only new nodes are re-layouted
+
+    cModule *parentmodule = static_cast<cModule *>(object);
+
+    // create and configure layouter object
+    BasicSpringEmbedderLayout layouter;
+    layouter.setSeed(random_seed);
+
+    // enable graphics only if full re-layouting (no cached coordinates in submodPosMap)
+    if (submodPosMap.empty() && getTkApplication()->opt_showlayouting)
+        layouter.setCanvas(getTkApplication()->getInterp(), canvas);
+
+    // Note trick avoid calling displayStringAsParent() directly because it'd cause
+    // the display string object inside cModule spring into existence
+    const cDisplayString blank;
+    const cDisplayString& ds = parentmodule->hasDisplayStringAsParent() ? parentmodule->displayStringAsParent() : blank;
+    int sx = resolveNumericDispStrArg(ds.getTagArg("b",0), parentmodule, 740);
+    int sy = resolveNumericDispStrArg(ds.getTagArg("b",1), parentmodule, 500);
+    layouter.setScaleToArea(sx,sy,50); // FIXME enclosing module's p= is ignored here...
+
+    int repf = resolveNumericDispStrArg(ds.getTagArg("l",0), parentmodule, -1);
+    if (repf>0) layouter.setRepulsiveForce(repf);
+
+    int attf = resolveNumericDispStrArg(ds.getTagArg("l",1), parentmodule, -1);
+    if (attf>0) layouter.setAttractionForce(attf);
+
+    int edgelen = resolveNumericDispStrArg(ds.getTagArg("l",2), parentmodule, -1);
+    if (edgelen>0) layouter.setDefaultEdgeLength(edgelen); // this should come before adding edges
+
+    int maxiter = resolveNumericDispStrArg(ds.getTagArg("l",3), parentmodule, -1);
+    if (maxiter>0) layouter.setMaxIterations(maxiter);
+
+    int seed = resolveNumericDispStrArg(ds.getTagArg("l",4), parentmodule, -1);
+    if (seed>0) layouter.setSeed(seed);
+
+    // FIXME next 3 lines are experimental
+    layouter.boxContractionForce = resolveNumericDispStrArg(ds.getTagArg("bpars",0), parentmodule, 100);
+    layouter.boxRepulsiveForce = resolveNumericDispStrArg(ds.getTagArg("bpars",1), parentmodule, 100);
+    layouter.boxRepForceRatio = resolveNumericDispStrArg(ds.getTagArg("bpars",2), parentmodule, 1);
+
+    cSubModIterator it(*parentmodule);
+    bool parent;
+
+    // loop through all submodules, get their sizes and positions and feed them into layouting engine
+    for (it.init(*parentmodule); !it.end(); it++)
+    {
+        cModule *submod = it();
+
+        bool explicitcoords, obeyslayout;
+        int x, y, sx, sy;
+        getSubmoduleCoords(submod, explicitcoords, obeyslayout, x, y, sx, sy);
+
+        // add node into layouter:
+        if (explicitcoords)
+        {
+            // e.g. "p=120,70" or "p=140,30,ring"
+            layouter.addFixedNode(submod, x, y, sx, sy);
+        }
+        else if (submodPosMap.find(submod)!=submodPosMap.end())
+        {
+            // reuse coordinates from previous layout
+            Point pos = submodPosMap[submod];
+            layouter.addFixedNode(submod, pos.x, pos.y, sx, sy);
+        }
+        else if (obeyslayout)
+        {
+            // all modules are anchored to the anchor point with the vector's name
+            // e.g. "p=,,ring"
+            layouter.addAnchoredNode(submod, submod->name(), x, y, sx, sy);
+        }
+        else
+        {
+            layouter.addMovableNode(submod, sx, sy);
+        }
+    }
+
+    // add connections into the layouter, too
+    parent=false;
+    for (it.init(*parentmodule); !parent; it++)
+    {
+        cModule *mod = !it.end() ? it() : (parent=true,parentmodule);
+
+        int n = mod->gates();
+        for (int i=0; i<n; i++)
+        {
+            cGate *gate = mod->gate(i);
+            if (!gate) continue;
+
+            cGate *destgate = gate->toGate();
+            if (gate->type()==(parent?'I':'O') && destgate)
+            {
+                cModule *destmod = destgate->ownerModule();
+                if (mod==parentmodule && destmod==parentmodule) {
+                    // nop
+                } else if (mod==parentmodule) {
+                    layouter.addEdgeToBorder(destmod);
+                } else if (destmod==parentmodule) {
+                    layouter.addEdgeToBorder(mod);
+                } else {
+                    layouter.addEdge(mod,destmod);
+                }
+            }
+        }
+    }
+
+    // layout the graph -- should be VERY fast if most nodes are fixed!
+    layouter.execute();
+
+    // fill the map with the results
+    submodPosMap.clear();
+    for (it.init(*parentmodule); !it.end(); it++)
+    {
+        cModule *submod = it();
+
+        Point pos;
+        layouter.getNodePosition(submod, pos.x, pos.y);
+        submodPosMap[submod] = pos;
+    }
+}
+
+// requires either recalculateLayout() or refreshLayout() called before!
+void TGraphicalModWindow::redrawModules()
+{
+    cModule *parentmodule = static_cast<cModule *>(object);
+    Tcl_Interp *interp = getTkApplication()->getInterp();
+
+    // then display all submodules
+    CHK(Tcl_VarEval(interp, canvas, " delete all",NULL));
+    const cDisplayString blank;
+    cSubModIterator it(*parentmodule);
+    for (it.init(*parentmodule); !it.end(); it++)
+    {
+        cModule *submod = it();
+        const cDisplayString& ds = submod->hasDisplayString() ? submod->displayString() : blank;
+
+        // call Tcl procedure to draw the submodule
+        int x, y;
+        assert(submodPosMap.find(submod)!=submodPosMap.end());
+        Point pos = submodPosMap[submod];
+        char coords[32];
+        sprintf(coords,"%d %d ", pos.x, pos.y);
+        CHK(Tcl_VarEval(interp, "draw_submod ",
+                        canvas, " ",
+                        ptrToStr(submod), " ",
+                        coords,
+                        "{", submod->fullName(), "} ",
+                        "{", ds.getString(), "} ",
+                        NULL ));
+    }
+
+    // draw enclosing module
+    const char *dispstr = parentmodule->hasDisplayStringAsParent() ? parentmodule->displayStringAsParent().getString() : "";
+    CHK(Tcl_VarEval(interp, "draw_enclosingmod ",
+                       canvas, " ",
+                       ptrToStr(parentmodule), " ",
+                       "{", parentmodule->fullPath(), "} ",
+                       "{", dispstr, "}",
+                       NULL ));
+
+    // loop through all submodules and enclosing module & draw their connections
+    bool parent=false;
+    for (it.init(*parentmodule); !parent; it++)
+    {
+        cModule *mod = !it.end() ? it() : (parent=true,parentmodule);
+
+        int n = mod->gates();
+        for (int i=0; i<n; i++)
+        {
+            cGate *gate = mod->gate(i);
+            if (!gate) continue;
+
+            cGate *dest_gate = gate->toGate();
+            if (gate->type()==(parent?'I':'O') && dest_gate!=NULL)
+            {
+                char gateptr[32], srcptr[32], destptr[32], indices[32];
+                ptrToStr(gate, gateptr);
+                ptrToStr(mod, srcptr);
+                ptrToStr(dest_gate->ownerModule(), destptr);
+                sprintf(indices,"%d %d %d %d",
+                        gate->index(), gate->size(),
+                        dest_gate->index(), dest_gate->size());
+                const char *dispstr = gate->hasDisplayString() ? gate->displayString().getString() : "";
+
+                CHK(Tcl_VarEval(interp, "draw_connection ",
+                        canvas, " ",
+                        gateptr, " ",
+                        "{", dispstr, "} ",
+                        srcptr, " ",
+                        destptr, " ",
+                        indices,
+                        NULL ));
+           }
+        }
+    }
 }
 
 void TGraphicalModWindow::redrawMessages()
 {
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
-   cModule *mod = (cModule *)object;
+   Tcl_Interp *interp = getTkApplication()->getInterp();
+   cModule *mod = static_cast<cModule *>(object);
 
    // refresh & cleanup from prev. events
    setToolbarInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
    CHK(Tcl_VarEval(interp, canvas, " delete msg msgname", NULL));
 
    // this thingy is only needed if animation is going on
-   if (!((TOmnetTkApp *)ev.app)->animating)
+   if (!getTkApplication()->animating)
        return;
 
    // loop through all messages in the event queue and display them
-   for (cMessageHeapIterator msg(simulation.msgQueue); !msg.end(); msg++)
+   for (cMessageHeap::Iterator msg(simulation.msgQueue); !msg.end(); msg++)
    {
       char msgptr[32], msgkind[16];
       ptrToStr(msg(),msgptr);
@@ -315,7 +540,7 @@ void TGraphicalModWindow::redrawMessages()
 
       cModule *arrivalmod = simulation.module( msg()->arrivalModuleId() );
       if (arrivalmod &&
-          arrivalmod->parentModule()==(cModule *)object &&
+          arrivalmod->parentModule()==static_cast<cModule *>(object) &&
           msg()->arrivalGateId()>=0)
       {
          cGate *arrivalGate = msg()->arrivalGate();
@@ -348,14 +573,14 @@ void TGraphicalModWindow::redrawMessages()
 
 void TGraphicalModWindow::redrawNextEventMarker()
 {
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
-   cModule *mod = (cModule *)object;
+   Tcl_Interp *interp = getTkApplication()->getInterp();
+   cModule *mod = static_cast<cModule *>(object);
 
    // removing marker from previous event
    CHK(Tcl_VarEval(interp, canvas, " delete nexteventmarker", NULL));
 
    // this thingy is only needed if animation is going on
-   if (!((TOmnetTkApp *)ev.app)->animating || !((TOmnetTkApp *)ev.app)->opt_nexteventmarkers)
+   if (!getTkApplication()->animating || !getTkApplication()->opt_nexteventmarkers)
        return;
 
    // if any parent of the module containing the next event is on this canvas, draw marker
@@ -375,8 +600,8 @@ void TGraphicalModWindow::redrawNextEventMarker()
 
 void TGraphicalModWindow::updateSubmodules()
 {
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
-   for (cSubModIterator submod(*(cModule *)object); !submod.end(); submod++)
+   Tcl_Interp *interp = getTkApplication()->getInterp();
+   for (cSubModIterator submod(*static_cast<cModule *>(object)); !submod.end(); submod++)
    {
        CHK(Tcl_VarEval(interp, "graphmodwin_update_submod ",
                        canvas, " ",
@@ -386,18 +611,39 @@ void TGraphicalModWindow::updateSubmodules()
 }
 
 
-
-void TGraphicalModWindow::displayStringChange(cModule *, bool immediate)
+void TGraphicalModWindow::submoduleCreated(cModule *newmodule)
 {
-   if (immediate)
-   {
-      Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
-      CHK(Tcl_VarEval(interp, "graphmodwin_redraw ", windowname, NULL));
-   }
-   else
-   {
-      needs_redraw = true;
-   }
+   needs_redraw = true;
+}
+
+void TGraphicalModWindow::submoduleDeleted(cModule *module)
+{
+   needs_redraw = true;
+}
+
+void TGraphicalModWindow::connectionCreated(cGate *srcgate)
+{
+   needs_redraw = true;
+}
+
+void TGraphicalModWindow::connectionRemoved(cGate *srcgate)
+{
+   needs_redraw = true;
+}
+
+void TGraphicalModWindow::displayStringChanged(cModule *)
+{
+   needs_redraw = true;
+}
+
+void TGraphicalModWindow::displayStringAsParentChanged()
+{
+   needs_redraw = true;
+}
+
+void TGraphicalModWindow::displayStringChanged(cGate *)
+{
+   needs_redraw = true;
 }
 
 int TGraphicalModWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
@@ -405,15 +651,16 @@ int TGraphicalModWindow::inspectorCommand(Tcl_Interp *interp, int argc, const ch
    if (argc<1) {Tcl_SetResult(interp, "wrong number of args", TCL_STATIC); return TCL_ERROR;}
 
    // supported commands:
-   //   arrowcoords, redraw, modpar
+   //   arrowcoords, relayout, etc...
 
    if (strcmp(argv[0],"arrowcoords")==0)
    {
       return ::arrowcoords(interp,argc,argv);
    }
-   else if (strcmp(argv[0],"redraw")==0)
+   else if (strcmp(argv[0],"relayout")==0)
    {
-      return redrawModules(interp,argc,argv);
+      relayoutAndRedrawAll();
+      return TCL_OK;
    }
    else if (strcmp(argv[0],"dispstrpar")==0)
    {
@@ -484,7 +731,7 @@ int TGraphicalModWindow::getDisplayStringPar(Tcl_Interp *interp, int argc, const
 int TGraphicalModWindow::getSubmoduleCount(Tcl_Interp *interp, int argc, const char **argv)
 {
    int count = 0;
-   for (cSubModIterator submod(*(cModule *)object); !submod.end(); submod++)
+   for (cSubModIterator submod(*static_cast<cModule *>(object)); !submod.end(); submod++)
        count++;
    char buf[20];
    sprintf(buf, "%d", count);
@@ -554,7 +801,7 @@ void TCompoundModInspector::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
+   Tcl_Interp *interp = getTkApplication()->getInterp();
    CHK(Tcl_VarEval(interp, "create_compoundmodinspector ", windowname, " \"", geometry, "\"", NULL ));
 }
 
@@ -562,7 +809,7 @@ void TCompoundModInspector::update()
 {
    TInspector::update();
 
-   cCompoundModule *mod = (cCompoundModule *)object;
+   cCompoundModule *mod = static_cast<cCompoundModule *>(object);
 
    setToolbarInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
 
@@ -584,10 +831,10 @@ void TCompoundModInspector::update()
 
 void TCompoundModInspector::writeBack()
 {
-   cCompoundModule *mod = (cCompoundModule *)object;
+   cCompoundModule *mod = static_cast<cCompoundModule *>(object);
    mod->setName(getEntry(".nb.info.name.e"));
-   mod->setDisplayString(getEntry(".nb.info.dispstr.e"));
-   mod->setDisplayStringAsParent(getEntry(".nb.info.dispstrpt.e"));
+   mod->displayString().parse(getEntry(".nb.info.dispstr.e"));
+   mod->displayStringAsParent().parse(getEntry(".nb.info.dispstrpt.e"));
 
    TInspector::writeBack();    // must be there after all changes
 }
@@ -621,7 +868,7 @@ void TSimpleModInspector::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
+   Tcl_Interp *interp = getTkApplication()->getInterp();
    CHK(Tcl_VarEval(interp, "create_simplemodinspector ", windowname, " \"", geometry, "\"", NULL ));
 }
 
@@ -629,7 +876,7 @@ void TSimpleModInspector::update()
 {
    TInspector::update();
 
-   cSimpleModule *mod = (cSimpleModule *)object;
+   cSimpleModule *mod = static_cast<cSimpleModule *>(object);
 
    setToolbarInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
 
@@ -664,8 +911,7 @@ void TSimpleModInspector::update()
    fillInspectorListbox(".nb.gates", &mod->gatev, false);
 
    deleteInspectorListbox( ".nb.vars" );
-   fillInspectorListbox(".nb.vars", &mod->members, false);
-   fillInspectorListbox(".nb.vars", &mod->locals, false);
+   fillInspectorListbox(".nb.vars", mod, false);
 
    deleteInspectorListbox( ".nb.submods" );
    fillModuleListbox(".nb.submods", mod, false, false);
@@ -673,10 +919,10 @@ void TSimpleModInspector::update()
 
 void TSimpleModInspector::writeBack()
 {
-   cSimpleModule *mod = (cSimpleModule *)object;
+   cSimpleModule *mod = static_cast<cSimpleModule *>(object);
    mod->setName(getEntry(".nb.info.name.e"));
-   mod->setDisplayString(getEntry(".nb.info.dispstr.e"));
-   mod->setDisplayStringAsParent(getEntry(".nb.info.dispstrpt.e"));
+   mod->displayString().parse(getEntry(".nb.info.dispstr.e"));
+   mod->displayStringAsParent().parse(getEntry(".nb.info.dispstrpt.e"));
 
    TInspector::writeBack();    // must be there after all changes
 }
@@ -709,7 +955,7 @@ void TGateInspector::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
+   Tcl_Interp *interp = getTkApplication()->getInterp();
    CHK(Tcl_VarEval(interp, "create_gateinspector ", windowname, " \"", geometry, "\"", NULL ));
 }
 
@@ -717,7 +963,7 @@ void TGateInspector::update()
 {
    TInspector::update();
 
-   cGate *g= (cGate *)object;
+   cGate *g = static_cast<cGate *>(object);
 
    char buf[64];
    sprintf(buf,"#%d  %s", g->id(), g->fullName());
@@ -770,13 +1016,15 @@ void TGraphicalGateWindow::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
+   Tcl_Interp *interp = getTkApplication()->getInterp();
    CHK(Tcl_VarEval(interp, "create_graphicalgatewindow ", windowname, " \"", geometry, "\"", NULL ));
 }
 
 int TGraphicalGateWindow::redraw(Tcl_Interp *interp, int, const char **)
 {
    cGate *gate = (cGate *)object;
+
+   CHK(Tcl_VarEval(interp, canvas, " delete all",NULL));
 
    // draw modules
    int k = 0;
@@ -834,12 +1082,13 @@ int TGraphicalGateWindow::redraw(Tcl_Interp *interp, int, const char **)
         char srcgateptr[32], destgateptr[32];
         ptrToStr(g,srcgateptr);
         ptrToStr(g->toGate(),destgateptr);
+        const char *dispstr = g->hasDisplayString() ? g->displayString().getString() : "";
         CHK(Tcl_VarEval(interp, "draw_conn ",
                       canvas, " ",
                       srcgateptr, " ",
                       destgateptr, " ",
                       "{",chan,"} ",
-                      "{", g->displayString(),"} ",
+                      "{", dispstr,"} ",
                       NULL ));
    }
 
@@ -853,8 +1102,8 @@ void TGraphicalGateWindow::update()
 {
    TInspector::update();
 
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
-   cGate *gate = (cGate *)object;
+   Tcl_Interp *interp = getTkApplication()->getInterp();
+   cGate *gate = static_cast<cGate *>(object);
 
    setToolbarInspectButton(".toolbar.module", gate->ownerModule(),INSP_DEFAULT);
 
@@ -863,7 +1112,7 @@ void TGraphicalGateWindow::update()
    // loop through all messages in the event queue
    CHK(Tcl_VarEval(interp, canvas, " delete msg msgname", NULL));
    cGate *destgate = gate->destinationGate();
-   for (cMessageHeapIterator msg(simulation.msgQueue); !msg.end(); msg++)
+   for (cMessageHeap::Iterator msg(simulation.msgQueue); !msg.end(); msg++)
    {
       char gateptr[32], msgptr[32], msgkind[16];
       ptrToStr(msg(),msgptr);
@@ -902,4 +1151,11 @@ int TGraphicalGateWindow::inspectorCommand(Tcl_Interp *interp, int argc, const c
    Tcl_SetResult(interp, "invalid arg: must be 'redraw'", TCL_STATIC);
    return TCL_ERROR;
 }
+
+void TGraphicalGateWindow::displayStringChanged(cGate *gate)
+{
+   // FIXME should defer redraw (via redraw_needed) to avoid "flickering"
+   // FIXME do something here!!!
+}
+
 

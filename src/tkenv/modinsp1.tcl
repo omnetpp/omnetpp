@@ -99,8 +99,8 @@ proc create_simplemodinspector {name geom} {
     notebook_addpage $nb info    {Info}
     notebook_addpage $nb params  {Params}
     notebook_addpage $nb gates   {Gates}
-    notebook_addpage $nb vars    {Objects/Watches}
-    notebook_addpage $nb submods {Submods}
+    notebook_addpage $nb vars    {Contents}
+    notebook_addpage $nb submods {Submodules}
 
     # page 1: info
     label-entry $nb.info.name {Module name:}

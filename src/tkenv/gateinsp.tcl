@@ -69,7 +69,7 @@ proc create_graphicalgatewindow {name geom} {
     iconbutton $w.toolbar.sep1   -separator
     iconbutton $w.toolbar.module -image $icons(parent) ;#command assigned from C++
     iconbutton $w.toolbar.sep2   -separator
-    iconbutton $w.toolbar.redraw -image $icons(redraw) -command "graphgatewin_redraw $w"
+    iconbutton $w.toolbar.redraw -image $icons(redraw) -command "opp_inspectorcommand $w redraw"
     foreach i {ascont sep1 module sep2 redraw} {
        pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
     }
@@ -108,7 +108,7 @@ proc create_graphicalgatewindow {name geom} {
     $c bind msg <3> "graphgatewin_rightclick $c %X %Y"
     $c bind msgname <3> "graphgatewin_rightclick $c %X %Y"
 
-    graphgatewin_redraw $w
+    opp_inspectorcommand $w redraw
 }
 
 
@@ -190,16 +190,6 @@ proc draw_conn {c srcgateptr destgateptr chanstr dispstr} {
        tk_messageBox -type ok -title Error -icon error \
                      -message "Error in display string of a connection: $errmsg"
    }
-}
-
-proc graphgatewin_redraw w {
-
-    $w.c delete all
-
-    global hack_y
-    set hack_y 0
-
-    opp_inspectorcommand $w redraw
 }
 
 proc graphgatewin_dblclick {c {type (default)}} {

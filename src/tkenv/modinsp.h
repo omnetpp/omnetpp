@@ -14,6 +14,9 @@
 #ifndef __MODINSP_H
 #define __MODINSP_H
 
+#pragma warning(disable:4786)
+#include <map>
+
 #include <tk.h>
 #include "inspector.h"
 #include "omnetapp.h"
@@ -37,6 +40,12 @@ class TGraphicalModWindow : public TInspector
       char canvas[128];
       bool needs_redraw;
       int random_seed;
+      bool not_drawn;
+
+      struct Point {int x,y;};
+      typedef std::map<cModule*,Point> PositionMap;
+      PositionMap submodPosMap;  // recalculateLayout() fills this map
+
    public:
       TGraphicalModWindow(cObject *obj,int typ,const char *geom,void *dat=NULL);
       ~TGraphicalModWindow();
@@ -44,18 +53,41 @@ class TGraphicalModWindow : public TInspector
       virtual void update();
       virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);
 
+      bool needsRedraw() {return needs_redraw;}
+
       // implementations of inspector commands:
-      virtual int redrawModules(Tcl_Interp *interp, int argc, const char **argv);
       virtual int getDisplayStringPar(Tcl_Interp *interp, int argc, const char **argv);
       virtual int getSubmoduleCount(Tcl_Interp *interp, int argc, const char **argv);
       virtual int getSubmodQ(Tcl_Interp *interp, int argc, const char **argv);
       virtual int getSubmodQLen(Tcl_Interp *interp, int argc, const char **argv);
 
-      // helper methods:
+      // helper for layouting code
+      void getSubmoduleCoords(cModule *submod, bool& explicitcoords, bool& obeyslayout,
+                                               int& x, int& y, int& sx, int& sy);
+
+      // does full layouting, stores results in submodPosMap
+      virtual void recalculateLayout();
+
+      // updates submodPosMap (new modules, changed display strings, etc.)
+      virtual void refreshLayout();
+
+      // drawing methods:
+      virtual void relayoutAndRedrawAll();
+      virtual void redrawAll();
+
+      virtual void redrawModules();
       virtual void redrawMessages();
       virtual void redrawNextEventMarker();
       virtual void updateSubmodules();
-      virtual void displayStringChange(cModule *, bool immediate);
+
+      // notifications from envir:
+      virtual void submoduleCreated(cModule *newmodule);
+      virtual void submoduleDeleted(cModule *module);
+      virtual void connectionCreated(cGate *srcgate);
+      virtual void connectionRemoved(cGate *srcgate);
+      virtual void displayStringChanged(cModule *submodule);
+      virtual void displayStringAsParentChanged();
+      virtual void displayStringChanged(cGate *gate);
 };
 
 
@@ -102,6 +134,9 @@ class TGraphicalGateWindow : public TInspector
       virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);
 
       virtual int redraw(Tcl_Interp *interp, int argc, const char **argv);
+
+      // notifications from envir:
+      virtual void displayStringChanged(cGate *gate);
 };
 
 #endif

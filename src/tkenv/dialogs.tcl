@@ -252,33 +252,40 @@ proc options_dialog {} {
 
     frame $w.f.f3 -relief groove -borderwidth 2
     checkbutton $w.f.f3.anim -text {Animate messages} -variable opp(anim)
+    label-scale $w.f.f3.speed {Animation speed:}
+    $w.f.f3.speed.e config -length 200 -from 0 -to 3 -resolution 0.01 -variable opp(speed)
     checkbutton $w.f.f3.nextev -text {Show next event markers} -variable opp(nextev)
-    checkbutton $w.f.f3.sdarrows -text {Show arrows for sendDirect()} -variable opp(sdarrows)
+    checkbutton $w.f.f3.sdarrows -text {Show arrows for sendDirect() animation} -variable opp(sdarrows)
     checkbutton $w.f.f3.animmeth -text {Animate method calls} -variable opp(animmeth)
-    checkbutton $w.f.f3.msgnam -text {Message names during animation} -variable opp(msgnam)
-    checkbutton $w.f.f3.msgcol -text {Coloring by message kind} -variable opp(msgcol)
-    checkbutton $w.f.f3.penguin -text {Penguin mode} -variable opp(penguin)
+    #label-entry $w.f.f3.methdelay  {Method call delay (ms)}
+    #$w.f.f3.methdelay.l config -width 0
+    label-scale $w.f.f3.methdelay {Method call delay (ms):}
+    $w.f.f3.methdelay.e config -length 200 -from 0 -to 3000 -resolution 1 -variable opp(methdelay)
+    checkbutton $w.f.f3.msgnam -text {Display Message names during animation} -variable opp(msgnam)
+    checkbutton $w.f.f3.msgcol -text {Color coding by message kind} -variable opp(msgcol)
     commentlabel $w.f.f3.c {Color code (message->kind() mod 7):
      0=red 1=green 2=blue 3=white
      4=yellow 5=cyan 6=magenta 7=black}
-    label-scale $w.f.f3.speed {Animation speed:}
-    $w.f.f3.speed.e config -length 200 -from 0 -to 3 \
-                           -resolution 0.01 -variable opp(speed)
+    checkbutton $w.f.f3.penguin -text {Penguin mode} -variable opp(penguin)
+    checkbutton $w.f.f3.layouting -text {Show layouting process} -variable opp(layouting)
     pack $w.f.f3.anim -anchor w
+    pack $w.f.f3.speed -anchor w -expand 0 -fill x
     pack $w.f.f3.nextev -anchor w
     pack $w.f.f3.sdarrows -anchor w
     pack $w.f.f3.animmeth -anchor w
+    pack $w.f.f3.methdelay -anchor w -expand 0 -fill x
     pack $w.f.f3.msgnam -anchor w
     pack $w.f.f3.msgcol -anchor w
-    pack $w.f.f3.penguin -anchor w
     pack $w.f.f3.c -anchor w
-    pack $w.f.f3.speed -anchor c
+    pack $w.f.f3.penguin -anchor w
+    pack $w.f.f3.layouting -anchor w
 
     pack $w.f.f2 -anchor center -expand 1 -fill both -ipadx 0 -ipady 0 -padx 10 -pady 10 -side top
     pack $w.f.f3 -anchor center -expand 1 -fill both -ipadx 0 -ipady 0 -padx 10 -pady 10 -side top
     pack $w.f.f1 -anchor center -expand 1 -fill both -ipadx 0 -ipady 0 -padx 10 -pady 10 -side top
 
     # Configure dialog
+    #$w.f.f3.methdelay.e insert 0 [opp_getsimoption methodcalls_delay]
     $w.f.f1.updfreq_fast.e insert 0 [opp_getsimoption updatefreq_fast]
     $w.f.f1.updfreq_express.e insert 0 [opp_getsimoption updatefreq_express]
     $w.f.f1.stepdelay.e insert 0 [opp_getsimoption stepdelay]
@@ -288,15 +295,18 @@ proc options_dialog {} {
     set opp(nextev)     [opp_getsimoption nexteventmarkers]
     set opp(sdarrows)   [opp_getsimoption senddirect_arrows]
     set opp(animmeth)   [opp_getsimoption anim_methodcalls]
+    set opp(methdelay)  [opp_getsimoption methodcalls_delay]
     set opp(msgnam)     [opp_getsimoption animation_msgnames]
     set opp(msgcol)     [opp_getsimoption animation_msgcolors]
     set opp(penguin)    [opp_getsimoption penguin_mode]
+    set opp(layouting)  [opp_getsimoption showlayouting]
     set opp(speed)      [opp_getsimoption animation_speed]
     set opp(bkpts)      [opp_getsimoption bkpts_enabled]
 
     focus $w.f.f2.usemainwin
 
     if [execOkCancelDialog $w] {
+        #opp_setsimoption methodcalls_delay [$w.f.f3.methdelay.e get]
         opp_setsimoption stepdelay [$w.f.f1.stepdelay.e get]
         opp_setsimoption updatefreq_fast [$w.f.f1.updfreq_fast.e get]
         opp_setsimoption updatefreq_express [$w.f.f1.updfreq_express.e get]
@@ -306,9 +316,11 @@ proc options_dialog {} {
         opp_setsimoption nexteventmarkers    $opp(nextev)
         opp_setsimoption senddirect_arrows   $opp(sdarrows)
         opp_setsimoption anim_methodcalls    $opp(animmeth)
+        opp_setsimoption methodcalls_delay   $opp(methdelay)
         opp_setsimoption animation_msgnames  $opp(msgnam)
         opp_setsimoption animation_msgcolors $opp(msgcol)
         opp_setsimoption penguin_mode        $opp(penguin)
+        opp_setsimoption showlayouting       $opp(layouting)
         opp_setsimoption animation_speed     $opp(speed)
         opp_setsimoption bkpts_enabled       $opp(bkpts)
     }

@@ -18,7 +18,7 @@
 #
 proc save_tkenvrc {{fname ".tkenvrc"}} {
     global config
-    
+
     if [catch {
         set fout [open $fname w]
         puts $fout "# Tkenv configuration"
@@ -32,9 +32,11 @@ proc save_tkenvrc {{fname ".tkenvrc"}} {
             nexteventmarkers
             senddirect_arrows
             anim_methodcalls
+            methodcalls_delay
             animation_msgnames
             animation_msgcolors
             penguin_mode
+            showlayouting
             animation_speed
             bkpts_enabled
         } {
@@ -63,7 +65,7 @@ proc save_tkenvrc {{fname ".tkenvrc"}} {
 #
 proc load_tkenvrc {{fname ".tkenvrc"}} {
     global config
-    
+
     if [catch {open $fname r} fin] {
         return
     }

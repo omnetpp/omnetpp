@@ -29,7 +29,7 @@
 class cVisitor
 {
   private:
-     // ugly hack to wrap old cObject::foreach()
+     // wraps old cObject::foreach()
      static bool do_foreach_child_call_visitor(cObject *obj, bool beg, cObject *_parent, cVisitor *_visitor);
 
   protected:

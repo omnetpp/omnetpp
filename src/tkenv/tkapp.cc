@@ -14,6 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <assert.h>
 #include <string.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -745,6 +746,18 @@ void TOmnetTkApp::createSnapshot( const char *label )
     simulation.snapshot(&simulation, label );
 }
 
+void TOmnetTkApp::updateGraphicalInspectorsBeforeAnimation()
+{
+    for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+    {
+        TInspector *insp = *it;
+        if (dynamic_cast<TGraphicalModWindow *>(insp) && static_cast<TGraphicalModWindow *>(insp)->needsRedraw())
+        {
+            insp->update();
+        }
+    }
+}
+
 void TOmnetTkApp::updateNetworkRunDisplay()
 {
     char runnr[10];
@@ -893,7 +906,7 @@ void TOmnetTkApp::printEventBanner(cSimpleModule *module)
     cModule *mod = module;
     while (mod)
     {
-        TModuleWindow *insp = (TModuleWindow *)findInspector(mod,INSP_MODULEOUTPUT);
+        TModuleWindow *insp = static_cast<TModuleWindow *>(findInspector(mod,INSP_MODULEOUTPUT));
         if (insp)
         {
            CHK(Tcl_VarEval(interp,
@@ -913,7 +926,7 @@ void TOmnetTkApp::readOptions()
     opt_extrastack = ini_file->getAsInt("Tkenv", "extra-stack", TKENV_EXTRASTACK);
     opt_default_run = ini_file->getAsInt( "Tkenv", "default-run", 0);
 
-    // FIXME: most entries below should be obsoleted (with .tkenvrc taking over)
+    // Note: most entries below should be obsoleted (with .tkenvrc taking over)
     opt_stepdelay = long(1000*ini_file->getAsTime( "Tkenv", "slowexec-delay", 0.3 )+.5);
     opt_updatefreq_fast = ini_file->getAsInt( "Tkenv", "update-freq-fast", 50);
     opt_updatefreq_express = ini_file->getAsInt( "Tkenv", "update-freq-express", 10000 );
@@ -922,9 +935,11 @@ void TOmnetTkApp::readOptions()
     opt_nexteventmarkers = ini_file->getAsBool( "Tkenv", "next-event-markers", true );
     opt_senddirect_arrows = ini_file->getAsBool( "Tkenv", "senddirect-arrows", true );
     opt_anim_methodcalls = ini_file->getAsBool( "Tkenv", "anim-methodcalls", true );
+    opt_methodcalls_delay = long(1000*ini_file->getAsTime( "Tkenv", "methodcalls-delay", 0.5)+.5);
     opt_animation_msgnames = ini_file->getAsBool( "Tkenv", "animation-msgnames", true );
     opt_animation_msgcolors = ini_file->getAsBool( "Tkenv", "animation-msgcolors", true );
     opt_penguin_mode = ini_file->getAsBool( "Tkenv", "penguin-mode", false );
+    opt_showlayouting = ini_file->getAsBool( "Tkenv", "show-layouting", true );
     opt_animation_speed = ini_file->getAsDouble( "Tkenv", "animation-speed", 1);
     if (opt_animation_speed<0) opt_animation_speed=0;
     if (opt_animation_speed>2) opt_animation_speed=3;
@@ -986,6 +1001,7 @@ void TOmnetTkApp::messageSent( cMessage *msg, cGate *directToGate)
     if (animating && opt_animation_enabled)
     {
         // find suitable inspectors and do animate the message...
+        updateGraphicalInspectorsBeforeAnimation();
         if (!directToGate)
         {
             // message was sent via a gate (send())
@@ -1019,6 +1035,7 @@ void TOmnetTkApp::messageDelivered( cMessage *msg )
             return;
 
         // if arrivalgate is connected, msg arrived on a connection, otherwise via sendDirect()
+        updateGraphicalInspectorsBeforeAnimation();
         if (arrivalGate->fromGate())
         {
             animateDelivery(msg);
@@ -1034,6 +1051,8 @@ void TOmnetTkApp::moduleMethodCalled(cModule *from, cModule *to, const char *met
 {
     if (!animating || !opt_anim_methodcalls)
         return;
+
+    updateGraphicalInspectorsBeforeAnimation();
 
     // find modules along the way
     PathVec pathvec;
@@ -1127,6 +1146,107 @@ void TOmnetTkApp::moduleMethodCalled(cModule *from, cModule *to, const char *met
             }
         }
     }
+}
+
+void TOmnetTkApp::moduleCreated(cModule *newmodule)
+{
+    cModule *mod = newmodule->parentModule();
+    TInspector *insp = findInspector(mod,INSP_GRAPHICAL);
+    if (!insp) return;
+    TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
+    assert(modinsp);
+    modinsp->submoduleCreated(newmodule);
+}
+
+void TOmnetTkApp::moduleDeleted(cModule *module)
+{
+    cModule *mod = module->parentModule();
+    TInspector *insp = findInspector(mod,INSP_GRAPHICAL);
+    if (!insp) return;
+    TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
+    assert(modinsp);
+    modinsp->submoduleDeleted(module);
+}
+
+void TOmnetTkApp::connectionCreated(cGate *srcgate)
+{
+    // notify compound module where the connection (whose source is this gate) is displayed
+    cModule *notifymodule = NULL;
+    if (srcgate->type()=='O')
+        notifymodule = srcgate->ownerModule()->parentModule();
+    else
+        notifymodule = srcgate->ownerModule();
+    TInspector *insp = findInspector(notifymodule,INSP_GRAPHICAL);
+    if (!insp) return;
+    TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
+    assert(modinsp);
+    modinsp->connectionCreated(srcgate);
+}
+
+void TOmnetTkApp::connectionRemoved(cGate *srcgate)
+{
+    // notify compound module where the connection (whose source is this gate) is displayed
+    // note: almost the same code as above
+    cModule *notifymodule;
+    if (srcgate->type()=='O')
+        notifymodule = srcgate->ownerModule()->parentModule();
+    else
+        notifymodule = srcgate->ownerModule();
+    TInspector *insp = findInspector(notifymodule,INSP_GRAPHICAL);
+    if (!insp) return;
+    TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
+    assert(modinsp);
+    modinsp->connectionRemoved(srcgate);
+}
+
+void TOmnetTkApp::displayStringChanged(cGate *gate)
+{
+    // if gate is not connected, nothing is displayed, so nothing to do
+    if (!gate->toGate())  return;
+
+    // notify module inspector which displays connection
+    cModule *notifymodule;
+    if (gate->type()=='O')
+        notifymodule = gate->ownerModule()->parentModule();
+    else
+        notifymodule = gate->ownerModule();
+
+    TInspector *insp = findInspector(notifymodule,INSP_GRAPHICAL);
+    if (insp)
+    {
+        TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
+        assert(modinsp);
+        modinsp->displayStringChanged(gate);
+    }
+
+    // graphical gate inspector windows: normally a user doesn't have many such windows open
+    // (typically, none at all), so we can afford simply refreshing all of them
+    for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+    {
+        TInspector *insp = *it;
+        TGraphicalGateWindow *gateinsp = dynamic_cast<TGraphicalGateWindow *>(insp);
+        if (gateinsp)
+            gateinsp->displayStringChanged(gate);
+    }
+}
+
+void TOmnetTkApp::displayStringChanged(cModule *submodule)
+{
+    cModule *mod = submodule->parentModule();
+    TInspector *insp = findInspector(mod,INSP_GRAPHICAL);
+    if (!insp) return;
+    TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
+    assert(modinsp);
+    modinsp->displayStringChanged(submodule);
+}
+
+void TOmnetTkApp::displayStringAsParentChanged(cModule *parentmodule)
+{
+    TInspector *insp = findInspector(parentmodule,INSP_GRAPHICAL);
+    if (!insp) return;
+    TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
+    assert(modinsp);
+    modinsp->displayStringAsParentChanged();
 }
 
 void TOmnetTkApp::animateSend(cMessage *msg, cGate *fromgate, cGate *togate)

@@ -60,6 +60,45 @@ proc split_dispstr {str array w modptr parent} {
 #
 # helper function
 #
+proc dispstr_getimage {tags_i} {
+    global icons imagecache
+
+    set img [lindex $tags_i 0]
+    if {$img=="" || [catch {image type $img}]} {
+        set img $icons(unknown)
+    }
+
+    if {[llength $tags_i]>1} {
+        # check destcolor, weight for icon colorizing
+        set destc [lindex $tags_i 1]
+        set cweight [lindex $tags_i 2]
+        if {$destc==""} {
+            if {$cweight==""} {return $img}
+            set destc black
+        } elseif {[string index $destc 0]== "@"} {
+            set destc [opp_hsb_to_rgb $destc]
+        }
+        if {$cweight==""} {
+            set cweight 30
+        }
+
+        # look up or create a new image with the given parameters
+        if [info exist imagecache($img,$destc,$cweight)] {
+            set img $imagecache($img,$destc,$cweight)
+        } else {
+            set img2 [image create photo]
+            $img2 copy $img
+            opp_colorizeimage $img2 $destc $cweight
+            set imagecache($img,$destc,$cweight) $img2
+            set img $img2
+        }
+    }
+    return $img
+}
+
+#
+# helper function
+#
 proc get_submod_coords {c tag} {
 
    set id [$c find withtag $tag]
@@ -87,26 +126,20 @@ proc get_submod_coords {c tag} {
 #
 # This function is invoked from the module inspector C++ code.
 #
-proc draw_submod {c submodptr name dispstr i n default_layout} {
-   global icons
-
-   #puts "DEBUG: draw_submod $c $submodptr $name $dispstr $i $n $default_layout"
+proc draw_submod {c submodptr x y name dispstr} {
+   #puts "DEBUG: draw_submod $c $submodptr $x $y $name $dispstr"
 
    if [catch {
 
        split_dispstr $dispstr tags [winfo toplevel $c] $submodptr 1
 
-       # set sx and sy
+       # set sx and sy (and look up image)
        set isx 0
        set isy 0
        set bsx 0
        set bsy 0
        if [info exists tags(i)] {
-           set img [lindex $tags(i) 0]
-           if {$img=="" || [catch {image type $img}]} {
-               # using default."
-               set img $icons(unknown)
-           }
+           set img [dispstr_getimage $tags(i)]
            set isx [image width $img]
            set isy [image height $img]
        }
@@ -122,90 +155,6 @@ proc draw_submod {c submodptr name dispstr i n default_layout} {
        }
        set sx [expr {$isx<$bsx ? $bsx : $isx}]
        set sy [expr {$isy<$bsy ? $bsy : $isy}]
-
-       # determine position
-       if {![info exists tags(p)]} {set tags(p) {}}
-
-       set x [lindex $tags(p) 0]
-       set y [lindex $tags(p) 1]
-
-       # choose layout. rules:
-       #  - $default_layout ("row" or "ring") is only used if there's no "p" tag at all.
-       #  - if there is a "p" tag, it must specify explicitly the layout, otherwise
-       #    "exact" is assumed.
-
-       set layout "exact"
-       if {$tags(p)!=""} {
-           if {[lindex $tags(p) 2]!=""} {set layout [lindex $tags(p) 2]}
-       } else {
-           if {$n>1} {set layout $default_layout}
-       }
-
-       if {$x=="" || $y==""} {
-           global hack_y
-
-           if {$i==0} {set hack_y [expr $hack_y + 2*$sy]}
-           if {$n==1} {
-              if {$x==""} {set x [expr $sx+150*rand()]}
-              if {$y==""} {set y $hack_y}
-           } else {
-              if {$x==""} {set x $sx}
-              if {$y==""} {set y $hack_y}
-           }
-           if {$hack_y<$y} {set hack_y $y}
-       }
-
-       # handle auto layouts for submod vectors
-       switch $layout {
-           r -
-           row {
-               set spc [lindex $tags(p) 3]
-               if {$spc==""} {set spc [expr 2*$sx]}
-               set x [expr $x + $i*$spc]
-           }
-           c -
-           col -
-           column {
-               set spc [lindex $tags(p) 3]
-               if {$spc==""} {set spc [expr 2*$sy]}
-               set y [expr $y + $i*$spc]
-           }
-           m -
-           matrix {
-               # perrow: how many submodules we want in a row
-               set perrow [lindex $tags(p) 3]
-               if {$perrow=="" || $perrow==0} {set perrow 5}
-               set dx [lindex $tags(p) 4]
-               if {$dx==""} {set dx [expr 2*$sx]}
-               set dy [lindex $tags(p) 5]
-               if {$dy==""} {set dy [expr 2*$sy]}
-               set x [expr $x + ($i % $perrow) * $dx]
-               set y [expr $y + int($i / $perrow) * $dy]
-           }
-           i -
-           ri -
-           ring {
-               set rx [lindex $tags(p) 3]
-               if {$rx==""} {set rx [expr ($sx+$sy)*$n/4]}
-               set ry [lindex $tags(p) 4]
-               if {$ry==""} {set ry $rx}
-               set x [expr $x + $rx - $rx*sin($i*6.2832/$n)]
-               set y [expr $y + $ry - $ry*cos($i*6.2832/$n)]
-           }
-           e -
-           x -
-           exact {
-               set dx [lindex $tags(p) 3]
-               if {$dx==""} {set dx 0}
-               set dy [lindex $tags(p) 4]
-               if {$dy==""} {set dy 0}
-               set x [expr $x + $dx]
-               set y [expr $y + $dy]
-           }
-           default {
-               error "'p' tag: invalid 3rd argument '$layout'"
-           }
-       }
 
        if [info exists tags(b)] {
 
@@ -276,7 +225,7 @@ proc draw_submod {c submodptr name dispstr i n default_layout} {
 
            set circle [$c create oval $x1 $y1 $x2 $y2 \
                -fill $rfill -width $rwidth -outline $routline]
-           $c lower $circle    
+           $c lower $circle
        }
 
    } errmsg] {
@@ -312,6 +261,8 @@ proc draw_enclosingmod {c ptr name dispstr} {
        if {$sx=="" || $sy==""} {
            set bb [$c bbox submod]
            if {$bb==""} {set bb "$bx $by 300 200"}
+           if {[lindex $bb 0]<$bx} {set bx [expr [lindex $bb 0]-10]}
+           if {[lindex $bb 1]<$by} {set by [expr [lindex $bb 1]-10]}
            if {$sx==""} {set sx [expr [lindex $bb 2]+[lindex $bb 0]-2*$bx]}
            if {$sy==""} {set sy [expr [lindex $bb 3]+[lindex $bb 1]-2*$by]}
        }
@@ -337,11 +288,9 @@ proc draw_enclosingmod {c ptr name dispstr} {
        $c create text [expr $bx+3] [expr $by+3] -text $name -anchor nw -tags "tooltip modname"
        $c lower mod
 
-       set cwidth [expr $bx+$sx+$bx]
-       set cheight [expr $by+$sy+$by]
-       $c config -width [expr $cwidth<500 ? $cwidth : 500]
-       $c config -height [expr $cheight<400 ? $cheight : 400]
-       $c config -scrollregion "0 0 $cwidth $cheight"
+       set bb [$c bbox all]
+       $c config -scrollregion [list [expr [lindex $bb 0]-10] [expr [lindex $bb 1]-10] \
+                                     [expr [lindex $bb 2]+10] [expr [lindex $bb 3]+10]]
 
 
    } errmsg] {
@@ -397,7 +346,7 @@ proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n
 
        eval $c create line $arrow_coords -arrow last \
            -fill $fill -width $width -tags "\"tooltip conn $gateptr\""
-       
+
     } errmsg] {
        tk_messageBox -type ok -title Error -icon error \
                      -message "Error in display string of a connection: $errmsg"
@@ -423,9 +372,9 @@ proc draw_message {c msgptr x y msgname msgkind} {
         set dispstr "i=penguin"
     }
 
-    if {$dispstr==""} { 
+    if {$dispstr==""} {
 
-        # default presentation: red or msgkind%8-colored ball  
+        # default presentation: red or msgkind%8-colored ball
         if [opp_getsimoption animation_msgcolors] {
             set color [lindex {red green blue white yellow cyan magenta black} [expr $msgkind % 8]]
         } else {
@@ -448,11 +397,7 @@ proc draw_message {c msgptr x y msgname msgkind} {
 
         # set sx and sy
         if [info exists tags(i)] {
-            set img [lindex $tags(i) 0]
-            if {$img=="" || [catch {image type $img}]} {
-                # using default."
-                set img $icons(unknown)
-            }
+            set img [dispstr_getimage $tags(i)]
             set sx [image width $img]
             set sy [image height $img]
         } elseif [info exists tags(b)] {
@@ -521,7 +466,7 @@ proc create_graphicalmodwindow {name geom} {
     iconbutton $w.toolbar.mfast  -image $icons(mfast) -command "module_run_fast $w"
     iconbutton $w.toolbar.stop   -image $icons(stop) -command "stop_simulation"
     iconbutton $w.toolbar.sep3   -separator
-    iconbutton $w.toolbar.redraw -image $icons(redraw) -command "graphmodwin_redraw $w 1"
+    iconbutton $w.toolbar.redraw -image $icons(redraw) -command "opp_inspectorcommand $w relayout"
     foreach i {ascont win sep1 parent sep2 mrun mfast stop sep3 redraw} {
        pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
     }
@@ -567,32 +512,9 @@ proc create_graphicalmodwindow {name geom} {
     $c bind modname <3> "graphmodwin_rightclick $c %X %Y"
     $c bind qlen <3> "graphmodwin_qlen_rightclick $c %X %Y"
 
-    graphmodwin_redraw $w
-}
-
-proc graphmodwin_redraw {w {nextseed 0}} {
-
-    $w.c delete all
-
-    # check if it's not too big to draw it.
-    set submodcount [opp_inspectorcommand $w submodulecount]
-    if {$submodcount>1000} {
-        if {![regexp {\.(ptr.*)-([0-9]+)} $w match object type]} {
-            error "window name $w doesn't look like an inspector window"
-        }
-        set name [opp_getobjectfullpath $object]
-        set ans [messagebox {Warning} "Module '$name' contains more than 1000 submodules ($submodcount), \
-                                      it may take a long time to display the graphics. Do you want to \
-                                      proceed with drawing?" question yesno]
-        if {$ans == "no"} {
-            return 0
-        }
-    }
-
-    global hack_y
-    set hack_y 0
-
-    opp_inspectorcommand $w redraw $nextseed
+    #update idletasks
+    update
+    opp_inspectorcommand $w relayout
 }
 
 proc graphmodwin_dblclick c {
@@ -634,7 +556,7 @@ proc graphmodwin_rightclick {c X Y} {
 proc graphmodwin_draw_message_on_gate {c gateptr msgptr msgname msgkind} {
 
     #puts "DBG: graphmodwin_draw_message_on_gate $msgptr"
-    
+
     global fonts
 
     # gate pointer + conn are the tags of the connection arrow
@@ -690,7 +612,7 @@ proc graphmodwin_draw_message_on_module {c modptr msgptr msgname msgkind} {
 
 
 #
-# Called from C++ code. $mode="beg"/"thru"/"end". 
+# Called from C++ code. $mode="beg"/"thru"/"end".
 #
 proc graphmodwin_animate_on_conn {win gateptr msgptr msgname msgkind mode} {
 
@@ -721,12 +643,12 @@ proc graphmodwin_animate_on_conn {win gateptr msgptr msgname msgkind mode} {
 
 
 #
-# Called from C++ code. $mode="beg"/"thru"/"end". 
+# Called from C++ code. $mode="beg"/"thru"/"end".
 #
 proc graphmodwin_animate_senddirect_horiz {win mod1ptr mod2ptr msgptr msgname msgkind mode} {
 
     #puts "DBG: senddirect horiz $mode $msgptr"
-     
+
     set c $win.c
     set src  [get_submod_coords $c $mod1ptr]
     set dest [get_submod_coords $c $mod2ptr]
@@ -741,7 +663,7 @@ proc graphmodwin_animate_senddirect_horiz {win mod1ptr mod2ptr msgptr msgname ms
 
 
 #
-# Called from C++ code. $mode="beg"/"thru"/"end". 
+# Called from C++ code. $mode="beg"/"thru"/"end".
 #
 proc graphmodwin_animate_senddirect_ascent {win parentmodptr modptr msgptr msgname msgkind mode} {
 
@@ -760,7 +682,7 @@ proc graphmodwin_animate_senddirect_ascent {win parentmodptr modptr msgptr msgna
 
 
 #
-# Called from C++ code. $mode="beg"/"thru"/"end". 
+# Called from C++ code. $mode="beg"/"thru"/"end".
 #
 proc graphmodwin_animate_senddirect_descent {win parentmodptr modptr msgptr msgname msgkind mode} {
 
@@ -779,7 +701,7 @@ proc graphmodwin_animate_senddirect_descent {win parentmodptr modptr msgptr msgn
 
 
 #
-# Called from C++ code. $mode="beg"/"thru"/"end". 
+# Called from C++ code. $mode="beg"/"thru"/"end".
 #
 proc graphmodwin_animate_senddirect_delivery {win modptr msgptr msgname msgkind} {
 
@@ -811,15 +733,15 @@ proc graphmodwin_animate_senddirect_delivery {win modptr msgptr msgname msgkind}
 #
 proc graphmodwin_do_animate_senddirect {win x1 y1 x2 y2 msgptr msgname msgkind mode} {
     set c $win.c
-    
+
     if [opp_getsimoption senddirect_arrows] {
         #$c create line $x1 $y1 $x2 $y2 -tags {senddirect} -arrow last -fill gray
         $c create line $x1 $y1 $x2 $y2 -tags {senddirect} -arrow last -fill blue -dash {.}
         graphmodwin_do_animate $win $x1 $y1 $x2 $y2 $msgptr $msgname $msgkind "thru"
         #$c delete $arrow -- this will come in _cleanup
-    } else {    
+    } else {
         graphmodwin_do_animate $win $x1 $y1 $x2 $y2 $msgptr $msgname $msgkind "thru"
-    }   
+    }
     if {$mode!="beg"} {
        $c delete $msgptr
     }
@@ -849,7 +771,7 @@ proc graphmodwin_do_animate {win x1 y1 x2 y2 msgptr msgname msgkind {mode thru}}
     set dy [expr ($y2-$y1)/$steps]
 
     switch $mode {
-       beg - 
+       beg -
        thru {
           draw_message $c $msgptr $x1 $y1 $msgname $msgkind
        }
@@ -939,7 +861,7 @@ proc graphmodwin_do_draw_methodcall {win x1 y1 x2 y2 methodlabel} {
     set x [expr ($x1+$x2)/2]
     set y [expr ($y1+$y2)/2]
     $c create text $x $y -tags {methodcall} -text $methodlabel -anchor c
-    
+
     # flash arrow a bit
     set sp [opp_getsimoption animation_speed]
     set ad [expr $animdelay / (0.1+$sp*$sp)]
@@ -960,11 +882,11 @@ proc graphmodwin_do_draw_methodcall {win x1 y1 x2 y2 methodlabel} {
 proc graphmodwin_animate_methodcall_wait {} {
     global animdelay
 
-    update idletasks; 
-    set sp [opp_getsimoption animation_speed]
-    set ad [expr int($animdelay / (0.1+$sp*$sp)/30)]
-    after $ad
-}    
+    update idletasks
+    set sp [opp_getsimoption methodcalls_delay]
+    #set ad [expr int($animdelay / (0.1+$sp*$sp)/30)]
+    after $sp
+}
 
 # graphmodwin_animate_methodcall_cleanup --
 #
@@ -990,9 +912,9 @@ proc graphmodwin_draw_nexteventmarker {c modptr type} {
         #$c create rect $x1 $y1 $x2 $y2 -tags {nexteventmarker} -outline red -dash {.}
         $c create rect $x1 $y1 $x2 $y2 -tags {nexteventmarker} -outline red -width 1
     } else {
-        #$c create rect $x1 $y1 $x2 $y2 -tags {nexteventmarker} -outline red 
+        #$c create rect $x1 $y1 $x2 $y2 -tags {nexteventmarker} -outline red
         $c create rect $x1 $y1 $x2 $y2 -tags {nexteventmarker} -outline red -width 2
-    }    
+    }
 }
 
 # graphmodwin_update_submod --
@@ -1000,17 +922,18 @@ proc graphmodwin_draw_nexteventmarker {c modptr type} {
 # This function is invoked from the module inspector C++ code.
 #
 proc graphmodwin_update_submod {c modptr} {
-    # currently the only thing to be updated if the number of elements in queue
+    # currently the only thing to be updated is the number of elements in queue
     set win [winfo toplevel $c]
-    set dispstr [opp_getobjectfield $modptr displayString] 
+    set dispstr [opp_getobjectfield $modptr displayString]
     set qname [opp_displaystring $dispstr getTagArg "q" 0]
     if {$qname!=""} {
         #set qptr [opp_inspectorcommand $win getsubmodq $modptr $qname]
         #set qlen [opp_getobjectfield $qptr length]
+        # TBD optimize -- maybe store and remember q pointer?
         set qlen [opp_inspectorcommand $win getsubmodqlen $modptr $qname]
         $c itemconfig "qlen-$modptr" -text $qlen
-    }    
-}           
+    }
+}
 
 #
 # Helper proc.
@@ -1026,7 +949,7 @@ proc graphmodwin_qlen_getqptr c {
    if {$modptr==""} {return}
 
    set win [winfo toplevel $c]
-   set dispstr [opp_getobjectfield $modptr displayString] 
+   set dispstr [opp_getobjectfield $modptr displayString]
    set qname [opp_displaystring $dispstr getTagArg "q" 0]
    if {$qname!=""} {
        set qptr [opp_inspectorcommand $win getsubmodq $modptr $qname]
@@ -1039,14 +962,38 @@ proc graphmodwin_qlen_dblclick c {
    set qptr [graphmodwin_qlen_getqptr $c]
    if {$qptr!="" && $qptr!=[opp_object_nullpointer]} {
        opp_inspect $qptr "(default)"
-   }    
+   }
 }
 
 proc graphmodwin_qlen_rightclick {c X Y} {
    set qptr [graphmodwin_qlen_getqptr $c]
    if {$qptr!="" && $qptr!=[opp_object_nullpointer]} {
        popup_insp_menu $qptr $X $Y
-   }    
+   }
+}
+
+
+#
+# Called from Layouter::debugDraw()
+#
+proc layouter_debugDraw_finish {c msg} {
+    # create label
+    set bb [$c bbox all]
+    $c create text [expr ([lindex $bb 0]+[lindex $bb 2])/2] [lindex $bb 1] -anchor n -text $msg
+
+    # rescale to fit canvas
+    set w [expr [lindex $bb 2]-[lindex $bb 0]]
+    set h [expr [lindex $bb 3]-[lindex $bb 1]]
+    set cw [winfo width $c]
+    set ch [winfo height $c]
+    set fx [expr $cw/double($w)]
+    set fy [expr $ch/double($h)]
+    if {$fx>1} {set fx 1}
+    if {$fy>1} {set fy 1}
+    $c scale all 0 0 $fx $fy
+
+    $c config -scrollregion [$c bbox all]
+    update idletasks
 }
 
 proc calibrate_animdelay {} {
@@ -1133,4 +1080,5 @@ proc animate2:move {c ball dx dy i} {
        set done$c$ball 1
     }
 }
+
 

@@ -43,7 +43,7 @@ void TStructPanel::flushIfNeeded(int limit)
     // flush if there are more than limit chars in the buffer
     if (writeptr-buf>=limit)
     {
-        Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
+        Tcl_Interp *interp = getTkApplication()->getInterp();
         CHK(Tcl_VarEval(interp, widgetname, ".txt insert insert {", buf, "}", NULL));
         writeptr = buf; // reset buffer
     }
@@ -166,7 +166,7 @@ void TStructPanel::displayStruct(cStructDescriptor *sd, int level)
 
 void TStructPanel::update()
 {
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
+   Tcl_Interp *interp = getTkApplication()->getInterp();
 
    // delete display
    CHK(Tcl_VarEval(interp, widgetname, ".txt delete 1.0 end", NULL));

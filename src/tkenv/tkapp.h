@@ -74,11 +74,13 @@ class TOmnetTkApp : public TOmnetApp
       bool opt_nexteventmarkers;   // display next event marker (red frame around modules)
       bool opt_senddirect_arrows;  // flash arrows when doing sendDirect() animation
       bool opt_anim_methodcalls;   // animate method calls
+      int  opt_methodcalls_delay;  // hold animation of method calls for this many ms
       bool opt_animation_msgnames; // msg animation: display message name or not
       bool opt_animation_msgcolors;// msg animation: display msg kind as color code or not
       bool opt_penguin_mode;       // msg animation: message appearance
+      bool opt_showlayouting;      // show layouting process in graphical module inspectors
       double opt_animation_speed;  // msg animation speed: 0=slow 1=norm 2=fast
-      long opt_stepdelay;          // Delay between steps in 100th seconds
+      long opt_stepdelay;          // Delay between steps in ms
       int  opt_updatefreq_fast;    // FastRun updates display every N events
       int  opt_updatefreq_express; // RunExpress updates display every N events
       unsigned opt_extrastack;     // per-module extra stack
@@ -114,6 +116,13 @@ class TOmnetTkApp : public TOmnetApp
       virtual void messageDelivered(cMessage *msg);
       virtual void breakpointHit(const char *lbl, cSimpleModule *mod);
       virtual void moduleMethodCalled(cModule *from, cModule *to, const char *method);
+      virtual void moduleCreated(cModule *newmodule);
+      virtual void moduleDeleted(cModule *module);
+      virtual void connectionCreated(cGate *srcgate);
+      virtual void connectionRemoved(cGate *srcgate);
+      virtual void displayStringChanged(cGate *gate);
+      virtual void displayStringChanged(cModule *submodule);
+      virtual void displayStringAsParentChanged(cModule *parentmodule);
 
       virtual void putmsg(const char *s);
       virtual void puts(const char *s);
@@ -157,6 +166,8 @@ class TOmnetTkApp : public TOmnetApp
       void setStopSimulationFlag() {stop_simulation = true;}
       Tcl_Interp *getInterp() {return interp;}
 
+      void updateGraphicalInspectorsBeforeAnimation();
+
       // small functions:
       void updateNetworkRunDisplay();
       void updateSimtimeDisplay();
@@ -178,5 +189,14 @@ class TOmnetTkApp : public TOmnetApp
       const char *getOutScalarFileName() {return outscalarmgr->fileName();}
       const char *getSnapshotFileName()  {return snapshotmgr->fileName();}
 };
+
+
+/**
+ * Utility function
+ */
+inline TOmnetTkApp *getTkApplication()
+{
+    return (TOmnetTkApp *)(ev.app);
+}
 
 #endif

@@ -25,6 +25,7 @@
 #include "cwatch.h"
 #include "ctypes.h"
 #include "cstruct.h"
+#include "cdispstr.h"
 #include "cinifile.h"
 #include "cdispstr.h"
 #include "tkapp.h"
@@ -102,6 +103,8 @@ int objectClasses_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 int loadNEDFile_cmd(ClientData, Tcl_Interp *, int, const char **);
 
+int colorizeImage_cmd(ClientData, Tcl_Interp *, int, const char **);
+
 // command table
 OmnetTclCommand tcl_commands[] = {
    // Commands invoked from the menu
@@ -169,6 +172,8 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_object_classes",      objectClasses_cmd      },
    // NEDXML
    { "opp_loadnedfile",         loadNEDFile_cmd        },   // args: <ptr> ret: <xml>
+   // experimental
+   { "opp_colorizeimage",       colorizeImage_cmd      },   // args: <image> ... ret: -
    // end of list
    { NULL, },
 };
@@ -186,7 +191,7 @@ int exitOmnetpp_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 int newNetwork_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
+   TOmnetTkApp *app = getTkApplication();
    app->newNetwork( argv[1] );
    return TCL_OK;
 }
@@ -194,7 +199,7 @@ int newNetwork_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 int newRun_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
+   TOmnetTkApp *app = getTkApplication();
 
    int runnr = atoi( argv[1] );
 
@@ -205,7 +210,7 @@ int newRun_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 int getIniSectionNames_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
+   TOmnetTkApp *app = getTkApplication();
 
    cIniFile *inifile = app->getIniFile();
    int n = inifile->getNumSections();
@@ -221,7 +226,7 @@ int getIniSectionNames_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 int createSnapshot_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
+   TOmnetTkApp *app = getTkApplication();
    try
    {
        app->createSnapshot( argv[1] );
@@ -238,7 +243,7 @@ int createSnapshot_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
 int oneStep_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
+   TOmnetTkApp *app = getTkApplication();
    app->doOneStep();
    return TCL_OK;
 }
@@ -246,7 +251,7 @@ int oneStep_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 int slowExec_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
+   TOmnetTkApp *app = getTkApplication();
    app->runSimulation(0, 0, true, false);
    return TCL_OK;
 }
@@ -254,7 +259,7 @@ int slowExec_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 int run_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2 && argc!=4) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
+   TOmnetTkApp *app = getTkApplication();
 
    bool fast = (strcmp(argv[1],"fast")==0);
    simtime_t until_time=0;
@@ -271,7 +276,7 @@ int run_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 int runExpress_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc>3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
+   TOmnetTkApp *app = getTkApplication();
 
    simtime_t until_time=0;
    long until_event=0;
@@ -287,7 +292,7 @@ int runExpress_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 int oneStepInModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2 && argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
+   TOmnetTkApp *app = getTkApplication();
 
    cObject *object; int type;
    splitInspectorName( argv[1], object, type);
@@ -296,7 +301,7 @@ int oneStepInModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    bool fast = (argc==3 && strcmp(argv[2],"fast")==0);
 
    // fast run until we get to that module
-   app->runSimulation( 0, 0, false, fast, (cSimpleModule *)object );
+   app->runSimulation( 0, 0, false, fast, static_cast<cSimpleModule *>(object));
 
    return TCL_OK;
 }
@@ -304,7 +309,7 @@ int oneStepInModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
 int rebuild_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
+   TOmnetTkApp *app = getTkApplication();
    app->rebuildSim();
    return TCL_OK;
 }
@@ -312,7 +317,7 @@ int rebuild_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 int startAll_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
+   TOmnetTkApp *app = getTkApplication();
    app->startAll();
    return TCL_OK;
 }
@@ -320,7 +325,7 @@ int startAll_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 int finishSimulation_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
+   TOmnetTkApp *app = getTkApplication();
    app->finishSimulation();
    return TCL_OK;
 }
@@ -353,7 +358,7 @@ int getNetworkType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 int getFileName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
+   TOmnetTkApp *app = getTkApplication();
 
    const char *s = NULL;
    if (0==strcmp(argv[1],"ini"))
@@ -427,16 +432,19 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
        object->info(buf);
        Tcl_SetResult(interp, buf, TCL_VOLATILE);
    } else if (!strcmp(field,"displayString")) {
+       // FIXME use hasDisplayString here!!!!
        if (dynamic_cast<cModule *>(object)) {
-           Tcl_SetResult(interp, const_cast<char*>(dynamic_cast<cModule *>(object)->displayString()), TCL_VOLATILE);
+           Tcl_SetResult(interp, const_cast<char*>(dynamic_cast<cModule *>(object)->displayString().getString()), TCL_VOLATILE);
        } else if (dynamic_cast<cMessage *>(object)) {
            Tcl_SetResult(interp, const_cast<char*>(dynamic_cast<cMessage *>(object)->displayString()), TCL_VOLATILE);
+       } else if (dynamic_cast<cGate *>(object)) {
+           Tcl_SetResult(interp, const_cast<char*>(dynamic_cast<cGate *>(object)->displayString().getString()), TCL_VOLATILE);
        } else {
            Tcl_SetResult(interp, "no such field in this object", TCL_STATIC); return TCL_ERROR;
        }
    } else if (!strcmp(field,"displayStringAsParent")) {
        if (dynamic_cast<cModule *>(object)) {
-           Tcl_SetResult(interp, const_cast<char*>(dynamic_cast<cModule *>(object)->displayStringAsParent()), TCL_VOLATILE);
+           Tcl_SetResult(interp, const_cast<char*>(dynamic_cast<cModule *>(object)->displayStringAsParent().getString()), TCL_VOLATILE);
        } else {
            Tcl_SetResult(interp, "no such field in this object", TCL_STATIC); return TCL_ERROR;
        }
@@ -627,7 +635,7 @@ int getSubObjectsFilt_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
 int getSimulationState_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
+   TOmnetTkApp *app = getTkApplication();
 
    char *statename;
    switch (app->getSimulationState())
@@ -649,7 +657,7 @@ int getSimulationState_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 int stopSimulation_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
+   TOmnetTkApp *app = getTkApplication();
    app->setStopSimulationFlag();
    return TCL_OK;
 }
@@ -657,7 +665,7 @@ int stopSimulation_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
+   TOmnetTkApp *app = getTkApplication();
 
    char buf[32];
    if (0==strcmp(argv[1], "stepdelay"))
@@ -674,12 +682,16 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       sprintf(buf,"%d", app->opt_senddirect_arrows);
    else if (0==strcmp(argv[1], "anim_methodcalls"))
       sprintf(buf,"%d", app->opt_anim_methodcalls);
+   else if (0==strcmp(argv[1], "methodcalls_delay"))
+      sprintf(buf,"%d", app->opt_methodcalls_delay);
    else if (0==strcmp(argv[1], "animation_msgnames"))
       sprintf(buf,"%d", app->opt_animation_msgnames);
    else if (0==strcmp(argv[1], "animation_msgcolors"))
       sprintf(buf,"%d", app->opt_animation_msgcolors);
    else if (0==strcmp(argv[1], "penguin_mode"))
       sprintf(buf,"%d", app->opt_penguin_mode);
+   else if (0==strcmp(argv[1], "showlayouting"))
+      sprintf(buf,"%d", app->opt_showlayouting);
    else if (0==strcmp(argv[1], "animation_speed"))
       sprintf(buf,"%g", app->opt_animation_speed);
    else if (0==strcmp(argv[1], "print_banners"))
@@ -699,7 +711,7 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
 int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
+   TOmnetTkApp *app = getTkApplication();
 
    if (0==strcmp(argv[1], "stepdelay"))
       app->opt_stepdelay = long(1000*strToSimtime(argv[2])+.5);
@@ -713,12 +725,16 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       app->opt_senddirect_arrows = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "anim_methodcalls"))
       app->opt_anim_methodcalls = (argv[2][0]!='0');
+   else if (0==strcmp(argv[1], "methodcalls_delay"))
+      app->opt_methodcalls_delay = atoi(argv[2]);
    else if (0==strcmp(argv[1], "animation_msgnames"))
       app->opt_animation_msgnames = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "animation_msgcolors"))
       app->opt_animation_msgcolors = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "penguin_mode"))
       app->opt_penguin_mode = (argv[2][0]!='0');
+   else if (0==strcmp(argv[1], "showlayouting"))
+      app->opt_showlayouting = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "animation_speed"))
    {
       sscanf(argv[2],"%lg",&app->opt_animation_speed);
@@ -758,6 +774,7 @@ int displayString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 {
    if (argc<3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
 
+   // FIXME this method should be eliminated....
    const char *dispstr = argv[1];
    if (0==strcmp(argv[2], "getTagArg"))
    {
@@ -765,7 +782,7 @@ int displayString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
        if (argc!=5) {Tcl_SetResult(interp, "wrong argcount for getTagArg", TCL_STATIC); return TCL_ERROR;}
        const char *tag = argv[3];
        int k = atoi(argv[4]);
-       cDisplayStringParser dp(dispstr);
+       cDisplayString dp(dispstr);
        const char *val = dp.getTagArg(tag,k);
        Tcl_SetResult(interp, const_cast<char *>(val), TCL_VOLATILE);
    }
@@ -936,7 +953,7 @@ int moduleByPath_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
 int inspect_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=3 && argc!=4) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
+   TOmnetTkApp *app = getTkApplication();
 
    cObject *object = (cObject *)strToPtr( argv[1] );
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
@@ -963,9 +980,9 @@ int supportedInspTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    // collect supported inspector types
    int insp_types[20];
    int n=0;
-   for (cIterator i(inspectorfactories); !i.end(); i++)
+   for (cArray::Iterator it(*inspectorfactories.instance()); !it.end(); it++)
    {
-      cInspectorFactory *ifc = (cInspectorFactory *) i();
+      cInspectorFactory *ifc = static_cast<cInspectorFactory *>(it());
       if (ifc->supportsObject(object))
       {
           int k;
@@ -1015,7 +1032,7 @@ int inspectByName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 int updateInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
+   TOmnetTkApp *app = getTkApplication();
 
    cObject *object; int type;
    splitInspectorName( argv[1], object, type);
@@ -1032,7 +1049,7 @@ int updateInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
 int writeBackInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
+   TOmnetTkApp *app = getTkApplication();
 
    cObject *object; int type;
    splitInspectorName( argv[1], object, type);
@@ -1050,7 +1067,7 @@ int writeBackInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 int deleteInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
+   TOmnetTkApp *app = getTkApplication();
 
    cObject *object; int type;
    splitInspectorName( argv[1], object, type);
@@ -1066,7 +1083,7 @@ int deleteInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
 int updateInspectors_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
+   TOmnetTkApp *app = getTkApplication();
    app->updateInspectors();
    return TCL_OK;
 }
@@ -1110,7 +1127,7 @@ int inspectorType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 int inspectorCommand_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc<2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
+   TOmnetTkApp *app = getTkApplication();
 
    cObject *object; int type;
    splitInspectorName( argv[1], object, type);
@@ -1169,8 +1186,8 @@ int objectModuleLocals_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    cModule *mod = (cModule *)strToPtr( argv[1] );
    if (!mod) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
    if (!mod || !mod->isSimple()) return TCL_ERROR;
-   cSimpleModule *simplemod = (cSimpleModule *)mod;
-   Tcl_SetResult(interp, ptrToStr( &(simplemod->locals) ), TCL_VOLATILE);
+   cSimpleModule *simplemod = static_cast<cSimpleModule *>(mod);
+   // FIXME Tcl_SetResult(interp, ptrToStr( &(simplemod->locals) ), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -1180,43 +1197,43 @@ int objectModuleMembers_cmd(ClientData, Tcl_Interp *interp, int argc, const char
    cModule *mod = (cModule *)strToPtr( argv[1] );
    if (!mod) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
    if (!mod || !mod->isSimple()) return TCL_ERROR;
-   cSimpleModule *simplemod = (cSimpleModule *)mod;
-   Tcl_SetResult(interp, ptrToStr( &(simplemod->members) ), TCL_VOLATILE);
+   cSimpleModule *simplemod = static_cast<cSimpleModule *>(mod);
+   // FIXME Tcl_SetResult(interp, ptrToStr( &(simplemod->members) ), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int objectNetworks_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, ptrToStr( &networks ), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr( networks.instance() ), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int objectModuleTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, ptrToStr( &modtypes ), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr( modtypes.instance() ), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int objectChannelTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, ptrToStr( &linktypes ), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr( linktypes.instance() ), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int objectFunctions_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, ptrToStr( &functions ), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr( functions.instance() ), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int objectClasses_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, ptrToStr( &classes ), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr( classes.instance() ), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -1224,8 +1241,82 @@ int loadNEDFile_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "1 arg expected", TCL_STATIC); return TCL_ERROR;}
    const char *fname = argv[1];
-   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
+   TOmnetTkApp *app = getTkApplication();
    app->loadNedFile(fname);
+   return TCL_OK;
+}
+
+int colorizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=4) {Tcl_SetResult(interp, "3 args expected", TCL_STATIC); return TCL_ERROR;}
+   const char *imgname = argv[1];
+   const char *targetcolorname = argv[2];
+   const char *weightstr = argv[3]; // 0-100
+
+   Tk_PhotoHandle imghandle = Tk_FindPhoto(interp, imgname);
+   if (!imghandle)
+   {
+       Tcl_SetResult(interp, "image doesn't exist or is not a photo image", TCL_STATIC);
+       return TCL_ERROR;
+   }
+   Tk_PhotoImageBlock imgblock;
+   Tk_PhotoGetImage(imghandle, &imgblock);
+
+   if (imgblock.pixelSize!=4)
+   {
+       Tcl_SetResult(interp, "unsupported pixelsize in photo image", TCL_STATIC);
+       return TCL_ERROR;
+   }
+
+   XColor *targetcolor = Tk_GetColor(interp, Tk_MainWindow(interp), targetcolorname);
+   if (!targetcolor)
+   {
+       Tcl_SetResult(interp, "invalid color", TCL_STATIC);
+       return TCL_ERROR;
+   }
+   int rdest = targetcolor->red / 256;  // scale down to 8 bits
+   int gdest = targetcolor->green / 256;
+   int bdest = targetcolor->blue / 256;
+   Tk_FreeColor(targetcolor);
+
+   double weight = atol(weightstr)/100.0;
+   if (weight<0 || weight>1.0)
+   {
+       Tcl_SetResult(interp, "colorizing weight is out of range, should be between 0 and 100", TCL_STATIC);
+       return TCL_ERROR;
+   }
+
+   int redoffset = imgblock.offset[0];
+   int greenoffset = imgblock.offset[1];
+   int blueoffset = imgblock.offset[2];
+   int alphaoffset = imgblock.offset[3];
+   for (int y=0; y<imgblock.height; y++)
+   {
+       unsigned char *pixel = imgblock.pixelPtr + y*imgblock.pitch;
+       for (int x=0; x<imgblock.width; x++, pixel+=imgblock.pixelSize)
+       {
+           // extract
+           int r = pixel[redoffset];
+           int g = pixel[greenoffset];
+           int b = pixel[blueoffset];
+
+           // transform
+           int lum = (int)(0.2126*r + 0.7152*g + 0.0722*b);
+           r = (int)((1-weight)*r + weight*lum*rdest/128.0);
+           g = (int)((1-weight)*g + weight*lum*gdest/128.0);
+           b = (int)((1-weight)*b + weight*lum*bdest/128.0);
+
+           // fix range
+           r = r<0 ? 0 : r>255 ? 255 : r;
+           g = g<0 ? 0 : g>255 ? 255 : g;
+           b = b<0 ? 0 : b>255 ? 255 : b;
+
+           // and put back
+           pixel[redoffset] = r;
+           pixel[greenoffset] = g;
+           pixel[blueoffset] = b;
+       }
+   }
    return TCL_OK;
 }
 

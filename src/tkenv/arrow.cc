@@ -123,7 +123,7 @@ int arrowcoords(Tcl_Interp *interp, int argc, const char **argv)
               printf(" <%s>", argv[i]);
           }
           printf("\n");
-          Tcl_SetResult(interp, "17 args expected", TCL_STATIC); 
+          Tcl_SetResult(interp, "17 args expected", TCL_STATIC);
           return TCL_ERROR;
       }
 
@@ -305,7 +305,7 @@ int arrowcoords(Tcl_Interp *interp, int argc, const char **argv)
              break;
          }
       }
-      else // non-overlapping rectangles
+      else // disjoint (or partially overlapping) rectangles
       {
          //  a - E,W if one module's y range is within y range of other module
          //      N,S if one module's x range is within x range of other module

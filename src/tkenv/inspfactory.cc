@@ -22,16 +22,16 @@
 #include "inspfactory.h"
 
 
-cHead inspectorfactories("inspectorfactories");
+cSingleton<cArray> inspectorfactories("inspectorfactories");
 
 
 cInspectorFactory *findInspectorFactoryFor(cObject *obj, int type)
 {
     cInspectorFactory *best=NULL;
     double bestweight=0;
-    for (cIterator i(inspectorfactories); !i.end(); i++)
+    for (cArray::Iterator it(*inspectorfactories.instance()); !it.end(); it++)
     {
-        cInspectorFactory *ifc = (cInspectorFactory *) i();
+        cInspectorFactory *ifc = static_cast<cInspectorFactory *>(it());
         if (ifc->supportsObject(obj) &&
             (type==INSP_DEFAULT || ifc->inspectorType()==type) &&
             ifc->qualityAsDefault(obj)>bestweight

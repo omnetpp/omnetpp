@@ -537,7 +537,11 @@ proc startup_commands {} {
             notifyPlugins newNetwork
         }
     } else {
-        new_run
+        if {[lsearch -regexp [opp_getinisectionnames] {^Run [0-9]+$}]!=-1} {
+            new_run
+        } else {
+            new_network
+        }
     }
 }
 

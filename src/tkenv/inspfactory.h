@@ -20,7 +20,7 @@
 #include "omnetapp.h"
 
 #define Register_InspectorFactory(FACTORYNAME) \
-  EXECUTE_ON_STARTUP(FACTORYNAME##__ifc, (new FACTORYNAME(#FACTORYNAME))->setOwner(&inspectorfactories);)
+  EXECUTE_ON_STARTUP(FACTORYNAME##__ifc, inspectorfactories.instance()->add(new FACTORYNAME(#FACTORYNAME));)
 
 
 /**
@@ -91,7 +91,7 @@ class cInspectorFactory : public cObject
 };
 
 ///< List of cInspectorFactory objects.
-extern cHead inspectorfactories;
+extern cSingleton<cArray> inspectorfactories;
 
 /**
  * Find a cInspectorFactory.

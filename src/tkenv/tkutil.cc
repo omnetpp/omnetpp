@@ -196,7 +196,7 @@ static bool do_inspect_by_name( cObject *obj, bool beg, const char *_fullpath, c
     if (!strcmp(fullpath,objpath) && !strcmp(classname,obj->className()))
     {
         // found: inspect if inspector is not open
-        TOmnetTkApp *app = (TOmnetTkApp *)(ev.app);
+        TOmnetTkApp *app = getTkApplication();
         if (!app->findInspector(obj, insptype))
             app->inspect(obj, insptype, geometry, NULL);
         // makes no sense to go further down
