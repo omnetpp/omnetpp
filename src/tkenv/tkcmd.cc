@@ -321,15 +321,16 @@ int simulationOk_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
 {
    if (argc!=1) return TCL_ERROR;
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
-   interp->result = const_cast<char*>(app->sim_error ? "0" : "1");
+   bool ok = app->state==TOmnetTkApp::S_NEW || app->state==TOmnetTkApp::S_RUNNING || app->state==TOmnetTkApp::S_READY;
+   interp->result = const_cast<char*>(ok ? "1" : "0");
    return TCL_OK;
 }
 
-int isRunning_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
+int isRunning_cmd(ClientData, Tcl_Interp *interp, int argc, char **) // change method to 'getState'?
 {
    if (argc!=1) return TCL_ERROR;
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
-   interp->result = const_cast<char*>(app->is_running ? "1" : "0");
+   interp->result = const_cast<char*>(app->state == TOmnetTkApp::S_RUNNING ? "1" : "0");
    return TCL_OK;
 }
 
@@ -530,7 +531,7 @@ int inspectMatching_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
       else
          return TCL_ERROR;
    }
-   int count = inspect_matching( &superhead, interp, pattern, type, countonly);
+   int count = inspect_matching(&simulation, interp, pattern, type, countonly); // FIXME was 'superhead'!
    sprintf(interp->result,"%d", count);
    return TCL_OK;
 }
@@ -661,7 +662,7 @@ int objectNullPointer_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
 int objectRoot_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
 {
    if (argc!=1) return TCL_ERROR;
-   interp->result = ptrToStr( &superhead );
+   interp->result = ptrToStr( &simulation); // FIXME was: superhead
    return TCL_OK;
 }
 

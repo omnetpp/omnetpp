@@ -34,6 +34,21 @@ class Speedometer;
 class TOmnetTkApp : public TOmnetApp
 {
    public:
+      enum eState {
+          S_NONET = 0,
+          S_NEW = 1,
+          S_RUNNING = 2,
+          S_READY = 3,
+          S_TERMINATED = 4,
+          S_ERROR = 5,
+          S_FINISHCALLED = 6
+      };
+
+      //
+      // state transitions:
+      //    S_NONET -> S_NEW -> (S_RUNNING <-> S_READY) -> S_TERMINATED -> S_FINISHCALLED -> S_NONET
+      //                                               `-> S_ERROR
+   public:
       int  opt_default_run;        // automatically set up this run at startup
       bool opt_bkpts_enabled;      // stop at breakpoints (can be improved...)
       bool opt_print_banners;      // print event banners
@@ -51,12 +66,11 @@ class TOmnetTkApp : public TOmnetApp
       opp_string tkenv_dir;    // directory of Tkenv's *.tcl files
       opp_string bitmap_dir;   // directory of icon files
 
+      eState state;            // state of the simulation run
       int   run_nr;            // number of current simulation run
-      bool  sim_error;         // true if current simulation was stopped with error and can't be continued
       bool  animation_ok;      // while execution, do message animation or not
-      bool  bkpt_hit;          // true when must stop sim. due to breakpoint
-      bool  stop_simulation;   // true when must stop simulation
-      bool  is_running;        // true while simulation is running
+      bool  bkpt_hit;          // flag to signal that a breakpoint was hit and sim. must be stopped
+      bool  stop_simulation;   // flag to signal that simulation must be stopped (STOP button pressed in the UI)
 
       cHead inspectors;        // list of inspector objects
 

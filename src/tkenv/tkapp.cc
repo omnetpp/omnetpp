@@ -92,10 +92,10 @@ static bool moduleContains(cModule *potentialparent, cModule *mod)
 
 TOmnetTkApp::TOmnetTkApp(ArgList *args, cIniFile *inifile) :
   TOmnetApp(args, inifile),
-  inspectors("inspectors", NULL)
+  inspectors("inspectors")
 {
     interp = 0;  // Tcl/Tk not set up yet
-    is_running = false;
+    state = S_NONET;
 
     // The opt_* vars will be set by readOptions()
 }
@@ -200,10 +200,6 @@ void TOmnetTkApp::shutdown()
 
 void TOmnetTkApp::rebuildSim()
 {
-    // finish previous run if we haven't done so yet
-    if (!sim_error)
-         simulation.endRun();
-
     if (simulation.runNumber()>0)
          newRun( simulation.runNumber() );
     else if (simulation.networkType()!=NULL)
@@ -218,6 +214,8 @@ void TOmnetTkApp::rebuildSim()
 
 void TOmnetTkApp::doOneStep()
 {
+    ASSERT(state==S_NEW || state==S_READY);
+
     clearNextModuleDisplay();
     clearPerformanceDisplay();
     updateSimtimeDisplay();
@@ -225,45 +223,42 @@ void TOmnetTkApp::doOneStep()
     bkpt_hit = false;
     animation_ok = true;
 
-    is_running = true;
+    state = S_RUNNING;
     startClock();
-    cSimpleModule *mod = simulation.selectNextModule();
-    if (mod!=NULL)
+    try
     {
-       if (opt_print_banners)
-          printEventBanner(mod);
+        cSimpleModule *mod = simulation.selectNextModule();
+        if (mod!=NULL)
+        {
+           if (opt_print_banners)
+              printEventBanner(mod);
 
-       try
-       {
            simulation.doOneEvent( mod );
-       }
-       catch (cException *e)   // FIXME this + all sim_error occurrences!
-       {
-           sim_error = true;
-           displayError(e);
-           delete e;
-       }
 
-       updateSimtimeDisplay();
-       updateNextModuleDisplay();
-       updateInspectors();
+           updateSimtimeDisplay();
+           updateNextModuleDisplay();
+           updateInspectors();
+        }
+        state = S_READY;
+    }
+    catch (cException *e)
+    {
+        state = e->isNormalTermination() ? S_TERMINATED : S_ERROR;
+        displayError(e);
+        delete e;
     }
     stopClock();
-    is_running = false;
 
-    if (sim_error)
-    {
-       if (simulation.normalTermination())
-          callFinish();  // includes endRun()
-       else
-          simulation.endRun();
-    }
+    if (state==S_TERMINATED)
+        callFinish();  // includes endRun()
 }
 
 void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
                                  bool slowexec, bool fastexec,
                                  cSimpleModule *stepwithinmodule)
 {
+    ASSERT(state==S_NEW || state==S_READY);
+
     bkpt_hit = false;
     stop_simulation = false;
     animation_ok = !fastexec && !stepwithinmodule;
@@ -273,85 +268,82 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
     updateSimtimeDisplay();
     Tcl_Eval(interp, "update");
 
-    is_running = true;
+    state = S_RUNNING;
     startClock();
     Speedometer speedometer;
 
-    bool firstevent = true;
-    while(1)
+    try
     {
-        // query which module will execute the next event
-        cSimpleModule *mod = simulation.selectNextModule();
-        if (!mod)
-            break;
-
-        // if stepping locally in module, we stop both immediately
-        // *before* and *after* executing the event in that module,
-        // but we always execute at least one event
-        bool stepwithinmodule_reached = stepwithinmodule && moduleContains(stepwithinmodule,mod);
-        if (stepwithinmodule_reached)
+        bool firstevent = true;
+        while(1)
         {
-            if (!firstevent) break;
-            animation_ok = true;
-        }
-        firstevent = false;
+            // query which module will execute the next event
+            cSimpleModule *mod = simulation.selectNextModule();
+            if (!mod)
+                break;
 
-        // do a simulation step
-        if (opt_print_banners)
-            printEventBanner(mod);
-
-        try
-        {
-            simulation.doOneEvent( mod );
-        }
-        catch (cException *e)
-        {
-            // FIXME handle exception
-        }
-
-        speedometer.addEvent(simulation.simTime());
-
-        // exit conditions
-        if (stepwithinmodule_reached) break;
-        if (sim_error || bkpt_hit || stop_simulation) break;
-        if (until_time>0 && simulation.simTime()>=until_time) break;
-        if (until_event>0 && simulation.eventNumber()>=until_event) break;
-
-        // display update
-        bool frequent_updates = !fastexec && !stepwithinmodule;
-        if (frequent_updates || simulation.eventNumber()%opt_updatefreq_fast==0)
-        {
-            updateSimtimeDisplay();
-            if (speedometer.secondsInThisInterval() > SPEEDOMETER_UPDATESECS)
+            // if stepping locally in module, we stop both immediately
+            // *before* and *after* executing the event in that module,
+            // but we always execute at least one event
+            bool stepwithinmodule_reached = stepwithinmodule && moduleContains(stepwithinmodule,mod);
+            if (stepwithinmodule_reached)
             {
-                speedometer.beginNewInterval();
-                updatePerformanceDisplay(speedometer);
+                if (!firstevent) break;
+                animation_ok = true;
             }
-            if (!stepwithinmodule) updateInspectors();
-            Tcl_Eval(interp, "update");
-        }
+            firstevent = false;
 
-        // delay loop for slow simulation
-        if (slowexec)
-        {
-            clock_t start = clock();
-            double dclk = opt_stepdelay / 1000.0 * CLOCKS_PER_SEC;
-            while (clock()-start<dclk && !stop_simulation)
+            // do a simulation step
+            if (opt_print_banners)
+                printEventBanner(mod);
+
+            simulation.doOneEvent( mod );
+
+            speedometer.addEvent(simulation.simTime());
+
+            // exit conditions
+            if (stepwithinmodule_reached) break;
+            if (bkpt_hit || stop_simulation) break;
+            if (until_time>0 && simulation.simTime()>=until_time) break;
+            if (until_event>0 && simulation.eventNumber()>=until_event) break;
+
+            // display update
+            bool frequent_updates = !fastexec && !stepwithinmodule;
+            if (frequent_updates || simulation.eventNumber()%opt_updatefreq_fast==0)
+            {
+                updateSimtimeDisplay();
+                if (speedometer.secondsInThisInterval() > SPEEDOMETER_UPDATESECS)
+                {
+                    speedometer.beginNewInterval();
+                    updatePerformanceDisplay(speedometer);
+                }
+                if (!stepwithinmodule) updateInspectors();
                 Tcl_Eval(interp, "update");
-        }
+            }
 
-        checkTimeLimits();
+            // delay loop for slow simulation
+            if (slowexec)
+            {
+                clock_t start = clock();
+                double dclk = opt_stepdelay / 1000.0 * CLOCKS_PER_SEC;
+                while (clock()-start<dclk && !stop_simulation)
+                    Tcl_Eval(interp, "update");
+            }
+
+            checkTimeLimits();
+        }
+        state = S_READY;
+    }
+    catch (cException *e)
+    {
+        state = e->isNormalTermination() ? S_TERMINATED : S_ERROR;
+        displayError(e);
+        delete e;
     }
     stopClock();
-    is_running = false;
 
-    if (sim_error)
-    {
-        if (simulation.normalTermination())
-            callFinish();  // includes endRun()
-        else
-            simulation.endRun();
-    }
+    if (state==S_TERMINATED)
+        callFinish();  // includes endRun()
 
     updateNextModuleDisplay();
     clearPerformanceDisplay();
@@ -362,6 +354,7 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
 void TOmnetTkApp::runSimulationNoTracing(simtime_t until_time,long until_event)
 {
     // implements 'express run'
+    ASSERT(state==S_NEW || state==S_READY);
 
     ev.disable_tracing = true;
     bkpt_hit = false;
@@ -373,52 +366,51 @@ void TOmnetTkApp::runSimulationNoTracing(simtime_t until_time,long until_event)
     updateSimtimeDisplay();
     Tcl_Eval(interp, "update");
 
-    is_running = true;
+    state = S_RUNNING;
     startClock();
     Speedometer speedometer;
-    do
+
+    try
     {
-        cSimpleModule *mod = simulation.selectNextModule();
-        if (!mod)
-            break;
-
-        try
+        do
         {
+            cSimpleModule *mod = simulation.selectNextModule();
+            if (!mod)
+                break;
+
             simulation.doOneEvent( mod );
-        }
-        catch (cException *e)
-        {
-            // FIXME handle exception
-        }
-        speedometer.addEvent(simulation.simTime());
 
-        if (simulation.eventNumber()%opt_updatefreq_express==0)
-        {
-            updateSimtimeDisplay();
-            if (speedometer.secondsInThisInterval() > SPEEDOMETER_UPDATESECS)
+            speedometer.addEvent(simulation.simTime());
+
+            if (simulation.eventNumber()%opt_updatefreq_express==0)
             {
-                speedometer.beginNewInterval();
-                updatePerformanceDisplay(speedometer);
+                updateSimtimeDisplay();
+                if (speedometer.secondsInThisInterval() > SPEEDOMETER_UPDATESECS)
+                {
+                    speedometer.beginNewInterval();
+                    updatePerformanceDisplay(speedometer);
+                }
+                Tcl_Eval(interp, "update");
             }
-            Tcl_Eval(interp, "update");
+            checkTimeLimits();
         }
-        checkTimeLimits();
+        while(  !bkpt_hit && !stop_simulation &&
+                (until_time<=0 || simulation.simTime()<until_time) &&
+                (until_event<=0 || simulation.eventNumber()<until_event)
+             );
+        state = S_READY;
     }
-    while(  !sim_error && !bkpt_hit && !stop_simulation &&
-            (until_time<=0 || simulation.simTime()<until_time) &&
-            (until_event<=0 || simulation.eventNumber()<until_event)
-         );
+    catch (cException *e)
+    {
+        state = e->isNormalTermination() ? S_TERMINATED : S_ERROR;
+        displayError(e);
+        delete e;
+    }
     stopClock();
-    is_running = false;
     ev.disable_tracing = false;
 
-    if (sim_error)
-    {
-        if (simulation.normalTermination())
-            callFinish();  // includes endRun()
-        else
-            simulation.endRun();
-    }
+    if (state==S_TERMINATED)
+        callFinish();  // includes endRun()
 
     updateSimtimeDisplay();
     updateNextModuleDisplay();
@@ -428,11 +420,13 @@ void TOmnetTkApp::runSimulationNoTracing(simtime_t until_time,long until_event)
 
 void TOmnetTkApp::startAll()
 {
-    throw new cException("Not implemented");
+    CHK(Tcl_VarEval(interp,"messagebox {Confirm} {Not implemented} info ok",NULL));
 }
 
 void TOmnetTkApp::callFinish()
 {
+    ASSERT(state==S_TERMINATED);
+
     // print banner into main window
     if (opt_use_mainwindow)
          CHK(Tcl_VarEval(interp,
@@ -443,9 +437,27 @@ void TOmnetTkApp::callFinish()
     // TO BE IMPLEMENTED
 
     // now really call finish()
-    simulation.callFinish();
-    simulation.endRun();
-    opp_terminate(eFINISH);
+    try
+    {
+        simulation.callFinish();
+    }
+    catch (cException *e)
+    {
+        displayError(e);
+        delete e;
+    }
+
+    // then endrun
+    try
+    {
+        simulation.endRun();
+    }
+    catch (cException *e)
+    {
+        displayError(e);
+        delete e;
+    }
+    state = S_FINISHCALLED;
 
     updateSimtimeDisplay();
     updateNextModuleDisplay();
@@ -457,38 +469,44 @@ void TOmnetTkApp::newNetwork(const char *network_name)
     cNetworkType *network = findNetwork( network_name );
     if (!network)
     {
-        // FIXME error: network not found
+        CHK(Tcl_VarEval(interp,"messagebox {Confirm} {Network '", network_name, "' not found.} info ok",NULL));
         return;
     }
 
     try
     {
         // finish & cleanup previous run if we haven't done so yet
-        if (!sim_error)
+        if (state!=S_NONET)
+        {
             simulation.endRun();
-        simulation.deleteNetwork();
+            simulation.deleteNetwork();
+            state = S_NONET;
+        }
 
         // set up new network
-        sim_error = false;
         readPerRunOptions(0);
         makeOptionsEffective();
         opt_network_name = network->name();
+
         // pass run number 0 to setupNetwork(): this means that only the [All runs]
         // section of the ini file will be searched for parameter values
         simulation.setupNetwork(network, 0);
         startRun();
 
-        updateNetworkRunDisplay();
-        updateNextModuleDisplay();
-        updateSimtimeDisplay();
-        updateInspectors();
+        state = S_NEW;
     }
     catch (cException *e)
     {
         displayError(e);
         delete e;
-        sim_error = true;
+        state = S_ERROR;
     }
+
+    // update GUI
+    updateNetworkRunDisplay();
+    updateNextModuleDisplay();
+    updateSimtimeDisplay();
+    updateInspectors();
 }
 
 void TOmnetTkApp::newRun(int run)
@@ -498,36 +516,40 @@ void TOmnetTkApp::newRun(int run)
     cNetworkType *network = findNetwork( opt_network_name );
     if (!network)
     {
-        // FIXME error: network not found
+        CHK(Tcl_VarEval(interp,"messagebox {Confirm} {Network '", (const char *)opt_network_name, "' not found.} info ok",NULL));
         return;
     }
 
     try
     {
         // finish & cleanup previous run if we haven't done so yet
-        if (!sim_error)
+        if (state!=S_NONET)
+        {
             simulation.endRun();
-        simulation.deleteNetwork();
+            simulation.deleteNetwork();
+            state = S_NONET;
+        }
 
         // set up new network
-        sim_error = false;
         readPerRunOptions( run_nr );
         makeOptionsEffective();
         simulation.setupNetwork(network, run_nr);
         startRun();
 
-        // update GUI
-        updateNetworkRunDisplay();
-        updateNextModuleDisplay();
-        updateSimtimeDisplay();
-        updateInspectors();
+        state = S_NEW;
     }
     catch (cException *e)
     {
         displayError(e);
         delete e;
-        sim_error = true;
+        state = S_ERROR;
     }
+
+    // update GUI
+    updateNetworkRunDisplay();
+    updateNextModuleDisplay();
+    updateSimtimeDisplay();
+    updateInspectors();
 }
 
 bool TOmnetTkApp::isBreakpointActive(const char *, cSimpleModule *)
@@ -700,20 +722,20 @@ void TOmnetTkApp::updateNextModuleDisplay()
     const char *modulename;
     cSimpleModule *mod;
 
-    if (sim_error)
+    if (state!=S_NEW && state!=S_READY && state!=S_RUNNING)
     {
-      modulename = "n/a";
-      subsc[0]=0;
+        modulename = "n/a";
+        subsc[0]=0;
     }
     else if ((mod=simulation.selectNextModule())==NULL)
     {
-      modulename = "n/a";
-      subsc[0]=0;
+        modulename = "n/a";
+        subsc[0]=0;
     }
     else
     {
-      modulename = mod->fullPath();
-      sprintf(subsc,"#%u ", mod->id());
+        modulename = mod->fullPath();
+        sprintf(subsc,"#%u ", mod->id());
     }
     CHK(Tcl_VarEval(interp, NEXT_LABEL " config -text {"
                         "Next: ", subsc, modulename,
@@ -782,7 +804,7 @@ void TOmnetTkApp::printEventBanner(cSimpleModule *module)
 
     // insert into main window
     if (opt_use_mainwindow)
-         CHK(Tcl_VarEval(interp,
+        CHK(Tcl_VarEval(interp,
               ".main.text insert end {",banner,"} event\n"
               ".main.text see end", NULL));
 
@@ -840,17 +862,17 @@ void TOmnetTkApp::objectDeleted( cObject *object )
     cIterator i(inspectors);
     while (!i.end())
     {
-         TInspector *insp = (TInspector *) i();
-         if (insp->object == object)
-         {
-              delete insp;
-              // i is no longer valid, must restart it...
-              i.init(inspectors);
-         }
-         else
-         {
-              i++;
-         }
+        TInspector *insp = (TInspector *) i();
+        if (insp->object == object)
+        {
+            delete insp;
+            // i is no longer valid, must restart it...
+            i.init(inspectors);
+        }
+        else
+        {
+            i++;
+        }
     }
 }
 
