@@ -1,3 +1,10 @@
+2004-02-11  Andras Varga 
+
+	* csimul.h, cscheduler.h: semantic change in getNextEvent()'s and
+	selectNextModule()'s return value: NULL now means that the scheduler
+	got interrupted by the user while it was waiting (typically with parsim
+	or real-time sim).
+
 2004-02-09  Andras Varga 
 
 	* cexception.h: added storage of module class name (NED type name)

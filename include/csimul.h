@@ -290,7 +290,13 @@ class SIM_API cSimulation : public cObject
     /**
      * The scheduler function. Returns the module to which the
      * next event (lowest timestamp event in the FES) belongs.
-     * If the FES is empty, returns NULL.
+     *
+     * If there's no more event (FES is empty), it throws cTerminationException.
+     *
+     * A NULL return value means that there's no error but execution
+     * was stopped by the user (e.g. with STOP button on the GUI) 
+     * while selectNextModule() --or rather, the installed cScheduler object--
+     * was waiting for external synchronization.
      */
     cSimpleModule *selectNextModule();
 

@@ -58,6 +58,12 @@ class cScheduler
      * returns msgQueue.peekFirst(). With parallel and/or real-time
      * simulation, it is also the scheduler's task to synchronize
      * with real time and/or with other partitions.
+     * 
+     * If there's no more event, it throws cTerminationException.
+     *
+     * A NULL return value means that there's no error but execution
+     * was stopped by the user (e.g. with STOP button on the GUI) 
+     * while getNextEvent() was waiting for external synchronization.
      */
     virtual cMessage *getNextEvent() = 0;
 };
