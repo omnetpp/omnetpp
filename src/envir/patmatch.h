@@ -95,6 +95,8 @@ class ENVIR_API cPatternMatcher
     std::vector<Elem> pattern;
     bool iscasesensitive;
 
+    std::string rest; // used to pass return value from doMatch() to patternPrefixMatches()
+
   private:
     void parseSet(const char *&s, Elem& e);
     void parseNumRange(const char *&s, Elem& e);
@@ -102,7 +104,8 @@ class ENVIR_API cPatternMatcher
     bool parseNumRange(const char *&str, char closingchar, long& lo, long& up);
     void dump(int from);
     bool isInSet(char c, const char *set);
-    bool match(const char *line, int patternpos);
+    // match line from pattern[patternpos]; with last string literal, ignore last suffixlen of pattern
+    bool doMatch(const char *line, int patternpos, int suffixlen);
 
   public:
     /**
@@ -127,6 +130,28 @@ class ENVIR_API cPatternMatcher
      * See setPattern().
      */
     bool matches(const char *line);
+
+    /**
+     * Similar to matches(): it returns non-NULL iif (1) the pattern ends in
+     * a string literal (and not, say, '*' or '**') which contains the line suffix
+     * (which begins at suffixoffset characters of line) and (2) pattern matches
+     * the whole line, except that (3) in matching the pattern's last string literal,
+     * it is also accepted if line is shorter than the pattern. If the above
+     * conditions hold, it returns the rest of the pattern. The returned
+     * pointer is valid until the next call to this method.
+     *
+     * This method is used by cIniFile's <tt>getEntriesWithPrefix()</tt>, used
+     * e.g. to find RNG mapping entries for a module. For that, we have to find
+     * all ini file entries (keys) like <tt>"net.host1.gen.rng-NN"</tt>
+     * where NN=0,1,2,... In cIniFile, every entry  is a pattern
+     * (<tt>"**.host*.gen.rng-1"</tt>, <tt>"**.*.gen.rng-0"</tt>, etc.).
+     * So we'd invoke <tt>patternPrefixMatches("net.host1.gen.rng-", 13)</tt>
+     * (i.e. suffix=".rng-") to find those entries (patterns) which can expand to
+     * <tt>"net.host1.gen.rng-0"</tt>, <tt>"net.host1.gen.rng-1"</tt>, etc.
+     *
+     * See matches().
+     */
+    const char *patternPrefixMatches(const char *line, int suffixoffset);
 
     /**
      * Prints the internal representation of the pattern on the standard output.

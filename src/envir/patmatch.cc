@@ -205,21 +205,27 @@ bool cPatternMatcher::isInSet(char c, const char *set)
     return false;
 }
 
-bool cPatternMatcher::match(const char *s, int k)
+bool cPatternMatcher::doMatch(const char *s, int k, int suffixlen)
 {
     while (true)
     {
         Elem& e = pattern[k];
-        long num;
+        long num; // case NUMRANGE
+        int len;  // case LITERALSTRING
         switch (e.type)
         {
             case LITERALSTRING:
+                len = e.literalstring.length();
+                // special case: last string literal with prefix match: allow s to be shorter
+                if (suffixlen>0 && k==pattern.size()-2)
+                    len -= suffixlen;
+                // compare
                 if (iscasesensitive ?
-                    strncmp(s, e.literalstring.c_str(), e.literalstring.length()) :
-                    strncasecmp(s, e.literalstring.c_str(), e.literalstring.length())
+                    strncmp(s, e.literalstring.c_str(), len) :
+                    strncasecmp(s, e.literalstring.c_str(), len)
                    )
                     return false;
-                s += e.literalstring.length();
+                s += len;
                 break;
             case ANYCHAR:
                 if (!*s)
@@ -256,14 +262,14 @@ bool cPatternMatcher::match(const char *s, int k)
             case ANYSEQ:
                 // FIXME shortcut if pattern ends in ANYSEQ or ANYSEQ LITERALSTRING
                 do {
-                    if (match(s,k+1))
+                    if (doMatch(s,k+1,suffixlen))
                         return true;
                     s++;
                 } while (*s);
                 break; // at EOS
             case COMMONSEQ:
                 do {
-                    if (match(s,k+1))
+                    if (doMatch(s,k+1,suffixlen))
                         return true;
                     if (!*s || *s=='.')
                         break;
@@ -280,13 +286,53 @@ bool cPatternMatcher::match(const char *s, int k)
     }
 }
 
-bool cPatternMatcher::matches(const char *s)
+bool cPatternMatcher::matches(const char *line)
 {
-    // FIXME todo shortcut: omnetpp.ini keys often begin with "*" or "**"
+    assert(pattern[pattern.size()-1].type==END);
+
+    // shortcut: omnetpp.ini keys often begin with "*" or "**"
     // but end in a string literal. So it's usually a performance win to
-    // to first check that the last string literal of the pattern matches 
-    // the end of the string (unless doing substring search of course)
-    
-    return match(s,0);
+    // to first check that the last string literal of the pattern matches
+    // the end of the string.
+
+    if (pattern.size()>=2)
+    {
+        Elem& e = pattern[pattern.size()-2];
+        if (e.type==LITERALSTRING)
+        {
+            // return if last 2 chars don't match
+            int pattlen = e.literalstring.size();
+            int linelen = strlen(line);
+            if (pattlen>=2 && linelen>=2 && (line[linelen-1]!=e.literalstring.at(pattlen-1) ||
+                line[linelen-2]!=e.literalstring.at(pattlen-2)))
+                return false;
+        }
+    }
+
+    // perform full-blown pattern matching
+    return doMatch(line, 0, 0);
+}
+
+const char *cPatternMatcher::patternPrefixMatches(const char *line, int suffixoffset)
+{
+    // pattern must end in a literal string...
+    assert(pattern[pattern.size()-1].type==END);
+    if (pattern.size()<2)
+        return NULL;
+    Elem& e = pattern[pattern.size()-2];
+    if (e.type!=LITERALSTRING)
+        return NULL;
+
+    // ...with the suffixlen characters at the end of 'line'
+    const char *pattstring  = e.literalstring.c_str();
+    const char *p = strstr(pattstring, line+suffixoffset);
+    if (!p)
+        return NULL;
+    p += strlen(line+suffixoffset);
+    rest = p;
+    int pattsuffixlen = e.literalstring.size() - (p-pattstring);
+
+    // pattern, if we cut off the 'rest', must exactly match 'line'
+    return doMatch(line, 0, pattsuffixlen) ? rest.c_str() : NULL;
 }
 
