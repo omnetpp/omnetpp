@@ -1,56 +1,92 @@
 dnl Process this file with autoconf to produce a configure script.
+
 AC_INIT(src/sim/omnetpp.h)
 
 dnl -------------------------------------------------------------
-dnl OPP_CHECK_LIB_WITHPATH(LIBNAME, FUNC, DIR,
-dnl    ACTION-IF-FOUND, ACTION-IF-NOT-FOUND, ADDITIONAL-LIBS)
+dnl  Test macro to find a lib in one of the passed directories
 dnl -------------------------------------------------------------
-AC_DEFUN(OPP_CHECK_LIB_WITHPATH,[\
+dnl
+dnl OPP_CHECK_LIB_WITHPATH(LIBNAME, FUNCTION, LOCATION-LIST,
+dnl    ACTION-IF-FOUND, ACTION-IF-NOT-FOUND, ADDITIONAL-LIBS)
+dnl
+AC_DEFUN(OPP_CHECK_LIB_WITHPATH,[
 save_LDFLAGS=$LDFLAGS
-LDFLAGS="$3 $LDFLAGS"
-AC_CHECK_LIB($1,$2,succ=yes,succ=no,$6)
+save_LIBS=$LIBS
+LIBS="-l$1 $6"
+for MINUS_L in "" $3; do
+  if test -n "$MINUS_L"; then
+    AC_MSG_CHECKING(if -l$1 is in $MINUS_L)
+    MINUS_L="-L$MINUS_L"
+  else
+    AC_MSG_CHECKING(if -l$1 is in linker path)
+  fi
+  LDFLAGS="$save_LDFLAGS $MINUS_L"
+  AC_TRY_LINK([char $2();],$2(),
+              [AC_MSG_RESULT(yes);succ=yes;break],
+              [AC_MSG_RESULT(no);succ=no])
+done
 LDFLAGS=$save_LDFLAGS
-if test $succ=yes; then
-  :
-  $4
+LIBS=$save_LIBS
+if test $succ = yes; then
+  :; $4
 else
-  :
-  $5
+  :; $5
 fi
 ])
 
-dnl ----------------------
-dnl Checks for programs.
-dnl ----------------------
+#----------------------
+# Checks for programs.
+#----------------------
 AC_PROG_YACC
 AC_PROG_LEX
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_RANLIB
 
-dnl ----------------------
-dnl Checks for libraries.
-dnl ----------------------
+#----------------------
+# Checks for libraries.
+#----------------------
 AC_CHECK_LIB(m, floor)
-AC_CHECK_LIB(dl, dlsym)
 AC_CHECK_LIB(stdc++, some_func_in_stdCPP)
-AC_CHECK_LIB(pvm3, pvm_recv)
-AC_CHECK_LIB(gpvm3, pvm_joingroup)
 
+dnl HACK:
+SYS_LIBS="-lstdc++ -lm"
 
-dnl  AC_CHECK_LIB(X11,XDrawLine)
-OPP_CHECK_LIB_WITHPATH(X11,XDrawLine,-L/usr/X11/lib)
-AC_CHECK_LIB(tcl, Tcl_Init)
-AC_CHECK_LIB(tcl8, Tcl_Init)
+# Enable/disable use of dlopen(), used by OMNeT++'s -l command line option
+# and [General]/load-libs= ini file option
+AC_CHECK_LIB(dl, dlopen,
+   USE_DLOPEN=1 SYS_LIBS="$SYS_LIBS -ldl",
+   USE_DLOPEN=0)
 
-AC_CHECK_LIB(tk, Tk_BindEvent,,, -lX11)
-AC_CHECK_LIB(tk8, Tk_BindEvent,,, -lX11)
+#---PVM_LIBS---
+# PVM_INCL_PATH='-I$PVM_ROOT/include'
+# PVM_LIB_PATH='-L$PVM_ROOT/lib/$PVM_ARCH'
+AC_CHECK_LIB(pvm3, pvm_recv,
+  PVM_LIBS="$MINUS_L -lpvm3",
+  PVM_LIBS="")
+AC_CHECK_LIB(gpvm3, pvm_joingroup,
+  PVM_LIBS="$MINUS_L -lpvm3 $PVM_LIBS",
+  PVM_LIBS="",
+  $PVM_LIBS)
 
-AC_CHECK_LIB(tv, some_cpp_func_in_TV)
+#---TK_LIBS---
+OPP_CHECK_LIB_WITHPATH(X11, XDrawLine, /usr/X11/lib,
+  X_LIBS="$MINUS_L -lX11",
+  X_LIBS="")
+AC_CHECK_LIB(tcl, Tcl_Init, TCL_LIBS="-ltcl")
+AC_CHECK_LIB(tk, Tk_BindEvent,
+   TK_LIBS="$MINUS_L -ltk $TCL_LIBS $X_LIBS",
+   TK_LIBS="",
+   $TCL_LIBS $X_LIBS)
 
-dnl ----------------------
-dnl Checks for header files.
-dnl ----------------------
+#---TV_LIBS---
+AC_CHECK_LIB(tv, some_cpp_func_in_TV,
+   TV_LIBS="$MINUS_L -ltv",
+   TV_LIBS="")
+
+#----------------------
+# Checks for header files.
+#----------------------
 AC_HEADER_STDC
 AC_CHECK_HEADERS(malloc.h unistd.h)
 AC_CHECK_HEADERS(pvm3.h)
@@ -58,46 +94,34 @@ AC_CHECK_HEADERS(tcl.h)
 AC_CHECK_HEADERS(tv.h)
 
 
-dnl Checks for typedefs, structures, and compiler characteristics.
+# Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_C_INLINE
 AC_TYPE_SIZE_T
 AC_STRUCT_TM
 
-dnl ----------------------
-dnl Checks for library functions.
-dnl ----------------------
+#----------------------
+# Checks for library functions.
+#----------------------
 AC_FUNC_MEMCMP
 AC_TYPE_SIGNAL
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS(select strdup strspn strstr)
 
-
-dnl OLD STUFF:
-
-
-dnl ----------------------
-dnl Defines.
-dnl ----------------------
-
-# Directories where 'configur' will look to find library and include files.
-# Ordering is important if you have multiple files (e.g. multiple versions).
-#
-SEARCH_DIRS="/usr* /opt /local $HOME"
-
-# The variables below will be substituted into makefiles, the makemake script etc.
-#
+#----------------------
+# OMNETPP components.
+#----------------------
 OMNETPP_ROOT=`pwd`
-OMNETPP_BIN_DIR=$OMNETPP_ROOT/bin
-OMNETPP_SRC_LIB=$OMNETPP_ROOT/lib
 
-OMNETPP_SRC_DIR=$OMNETPP_ROOT/src
-OMNETPP_SAMPLES_DIR=$OMNETPP_ROOT/samples
-OMNETPP_MODELS_DIR=$OMNETPP_ROOT/models
-OMNETPP_BITMAP_PATH=$OMNETPP_ROOT/bitmaps
+OMNETPP_BIN_DIR='$(OMNETPP_ROOT)/bin'
+OMNETPP_SRC_LIB='$(OMNETPP_ROOT)/lib'
+OMNETPP_SRC_DIR='$(OMNETPP_ROOT)/src'
+OMNETPP_SAMPLES_DIR='$(OMNETPP_ROOT)/samples'
+OMNETPP_MODELS_DIR='$(OMNETPP_ROOT)/models'
+OMNETPP_BITMAP_PATH='$(OMNETPP_ROOT)/bitmaps'
 
-OMNETPP_INCL_PATH=-I$OMNETPP_SRC_DIR/sim
-OMNETPP_LIB_PATH=-L$OMNETPP_ROOT/lib
+OMNETPP_INCL_PATH='-I$(OMNETPP_SRC_DIR)/sim'
+OMNETPP_LIB_PATH='-L$(OMNETPP_ROOT)/lib'
 OMNETPP_INCLUDES=
 
 #
@@ -109,55 +133,78 @@ OMNETPP_INCLUDES=
 LIB_SUFFIX='a'
 
 #
-# Enable/disable use of dlopen(), used by OMNeT++'s -l command line option
-# and [General]/load-libs= ini file option
-#
-USE_DLOPEN=1
-
-#
 # Compile options. Use -g for debugging, -O3... for speed.
 #
 # CFLAGS='-g'
 CFLAGS='-O3 -DNDEBUG=1'
 
-#
-# normally you do not need to touch the things below:
-#
-NEDC=$OMNETPP_BIN/nedc
-MAKE_SO='gcc -shared -o'
-LD='gcc'
+OMNETPP_INCLUDES='(wildcard $(OMNETPP_SRC_DIR)/sim/*.h $(OMNETPP_SRC_DIR)/envir/*.h)'
 
+#----------------------
+# Subtitutions.
+#----------------------
+AC_SUBST( YACC)
+AC_SUBST( LEX)
+AC_SUBST( CC)
+AC_SUBST( CXX)
+AC_SUBST( NEDC)
+AC_SUBST( AS)
+AC_SUBST( AR)
+AC_SUBST( MAKE_SO)
+AC_SUBST( LD)
 
-# TV_INCL_PATH='-I/usr/include/tvision'
-# X_INCL_PATH='-I/usr/include/X11'
-# TK_INCL_PATH='-I/usr/include/tcl7.5 -I/usr/include/tk4.1'
-# PVM_INCL_PATH='-I$PVM_ROOT/include'
+AC_SUBST( LIB_SUFFIX)
+AC_SUBST( USE_DLOPEN)
+AC_SUBST( TV_INCL_PATH)
+AC_SUBST( TV_LIBS)
+AC_SUBST( TK_INCL_PATH)
+AC_SUBST( TK_LIBS)
+AC_SUBST( PVM_INCL_PATH PVM_LIBS)
+AC_SUBST( SYS_LIBS)
 
-# TV_LIB_PATH='-L/usr/lib'
-# X_LIB_PATH='-L/usr/X11/lib'
-# TK_LIB_PATH='-L/usr/lib'
-# PVM_LIB_PATH='-L$PVM_ROOT/lib/$PVM_ARCH'
+AC_SUBST( OMNETPP_ROOT)
+AC_SUBST( OMNETPP_SRC_DIR)
+AC_SUBST( OMNETPP_SAMPLES_DIR)
+AC_SUBST( OMNETPP_MODELS_DIR)
+AC_SUBST( OMNETPP_INCLUDES)
+AC_SUBST( OMNETPP_INCL_PATH)
+AC_SUBST( OMNETPP_LIB_PATH)
+AC_SUBST( OMNETPP_BITMAP_PATH)
 
-TV_LIBS='-ltv'
-X_LIBS='-lX11'
-TK_LIBS='-ltk -ltcl -ldl'
-PVM_LIBS='-lgpvm3 -lpvm3'
-SYS_LIBS='-lm -lstdc++'
+#----------------------
+# Subtitutions.
+#----------------------
+AC_OUTPUT(
+  src/cmdenv/makefile
+  src/envir/makefile
+  src/gned/makefile
+  src/nedc/makefile
+  src/sim/makefile
+  src/tkenv/makefile
+  src/tvenv/makefile
+  src/utils/makefile
+  src/utils/makemake
+  samples/dyna/makefile
+  samples/fddi/makefile
+  samples/fifo1/makefile
+  samples/fifo2/makefile
+  samples/hcube/makefile
+  samples/hist/makefile
+  samples/nim/makefile
+  samples/pvmex/makefile
+  samples/token/makefile
+)
 
-OMNETPP_INCLUDES='$OMNETPP_SRC_DIR/sim/*.h'
-
-#--- customizable part ends here -------------------------------------------
-
-if [ "$USE_DLOPEN" = "1" ]; then
-  SYS_LIBS="-ldl $SYS_LIBS"
-fi
-
+#----------------------
+# Env. vars
+#----------------------
 if echo $PATH | grep -q $OMNETPP_ROOT/bin; then
   echo "Your PATH contains $OMNETPP_ROOT/bin. Good."
 else
   cat << EOT
-You should put $OMNETPP_ROOT/bin into your path. Add the following line to
-your startup file:
+
+You should put $OMNETPP_ROOT/bin into your path.
+Add the following line to your startup file:
   export PATH=\$PATH:\$HOME/omnetpp/bin  # .(bash_)profile if you use sh/bash
   setenv PATH \$PATH:\$HOME/omnetpp/bin  # .cshrc if you use csh,tcsh etc.
 
@@ -165,11 +212,12 @@ EOT
    export PATH=$PATH:$HOME/omnetpp/bin
 fi
 
-if [ "$LIB_SUFFIX" = "so" ]; then
+if test "$LIB_SUFFIX" = "so"; then
   if echo $LD_LIBRARY_PATH | grep -q $OMNETPP_ROOT/lib; then
     echo "Your LD_LIBRARY_PATH is set. Good."
   else
     cat << EOT
+
 Note: Dynamic libraries are selected in configure (LIB_SUFFIX=so).
 You'll either have to create symbolic links from /usr/lib to the
 OMNeT++ shared libraries (as root) or set the LD_LIBRARY_PATH environment
@@ -185,179 +233,3 @@ EOT
   fi
 fi
 
-#
-# some checks for gcc, yacc, flex
-#
-if [ "$CCC" = "gcc -g -c" ]; then
-    if gcc --version >/dev/null 2>&1; then : ; else
-        echo 'Warning: gcc not found, you have to manually edit CXX=, CC=, MAKE_SO and LD= lines in configure'
-    fi
-fi
-
-if [ "$YACC" = "bison" ]; then
-    if bison --version >/dev/null 2>&1; then : ; else
-        echo 'Warning: bison not found, using yacc (not supported)'
-        YACC='yacc'
-    fi
-fi
-
-if [ "$LEX" = "flex" ]; then
-    if flex --version >/dev/null 2>&1; then : ; else
-        echo 'Warning: flex not found, using lex (not supported)'
-        LEX='lex'
-    fi
-fi
-
-#
-# code that sets missing variables
-#
-echo
-echo "Searching (`echo $SEARCH_DIRS`) for Tcl/Tk, X, PVM etc. include and lib files"
-echo
-TMPFILE=/tmp/files.$USER.$RANDOM
-find $SEARCH_DIRS \
-        -name tv.h -or -name tk.h -or -name tcl.h -or \
-        -name Xlib.h -or -name pvm3.h -or \
-        -name 'libtv.a*' -or -name 'libtcl*.a*' -or -name 'libtk*.a*' -or \
-        -name 'libX11.a*' -or -name 'libpvm3.a*' -or \
-        -name 'libtv.so*' -or -name 'libtcl*.so*' -or -name 'libtk*.so*' -or \
-        -name 'libX11.so*' -or -name 'libpvm3.so*' \
-        >$TMPFILE 2>/dev/null
-
-libname () {
-    echo $1 | sed 's/.*\/lib\([^\/]*\)\..*/\1/'
-}
-
-if [ "$TV_INCL_PATH" = "" ]; then
-    count=`grep tv.h $TMPFILE | wc -l | awk '{print $1}'`
-    files=`grep tv.h $TMPFILE`
-    file=`grep tv.h $TMPFILE | sed '2,$d'`
-    case $count in
-        0)  echo 'Turbo Vision include files not found'; ;;
-        1)  TV_INCL_PATH="-I`dirname $file`"; ;;
-        *)  echo $count' copies of tv.h found ('$files'), using '$file
-            TV_INCL_PATH="-I`dirname $file`"; ;;
-    esac
-fi
-if [ "$TV_LIB_PATH" = "" ]; then
-    count=`grep libtv.a $TMPFILE | wc -l | awk '{print $1}'`
-    files=`grep libtv.a $TMPFILE`
-    file=`grep libtv.a $TMPFILE | sed '2,$d'`
-    case $count in
-        0)  echo 'Turbo Vision library not found'; ;;
-        1)  TV_LIB_PATH="-L`dirname $file`"; ;;
-        *)  echo $count' copies of libtv.a found ('$files'), using '$file
-            TV_LIB_PATH="-L`dirname $file`"; ;;
-    esac
-fi
-if [ "$TK_INCL_PATH" = "" ]; then
-    count=`grep tk.h $TMPFILE | wc -l | awk '{print $1}'`
-    files=`grep tk.h $TMPFILE`
-    file=`grep tk.h $TMPFILE | sed '2,$d'`
-    case $count in
-        0)  echo 'Tk include files not found'; ;;
-        1)  TK_INCL_PATH="-I`dirname $file`"; ;;
-        *)  echo $count' copies of tk.h found ('$files'), using '$file
-            TK_INCL_PATH="-I`dirname $file`"; ;;
-    esac
-    count=`grep tcl.h $TMPFILE | wc -l | awk '{print $1}'`
-    files=`grep tcl.h $TMPFILE`
-    file=`grep tcl.h $TMPFILE | sed '2,$d'`
-    case $count in
-        0)  echo 'Tcl include files not found'; ;;
-        1)  TK_INCL_PATH="$TK_INCL_PATH -I`dirname $file`"; ;;
-        *)  echo $count' copies of tcl.h found ('$files'), using '$file
-            TK_INCL_PATH="$TK_INCL_PATH -I`dirname $file`"; ;;
-    esac
-fi
-if [ "$TK_LIB_PATH" = "" ]; then
-    TK_LIBS=""
-    count=`grep 'libtk[.0-9]*\.[aso]*' $TMPFILE | wc -l | awk '{print $1}'`
-    files=`grep 'libtk[.0-9]*\.[aso]*' $TMPFILE`
-    file=`grep 'libtk[.0-9]*\.[aso]*' $TMPFILE | sed '2,$d'`
-    case $count in
-        0)  echo 'Tk library not found'; ;;
-        1)  TK_LIB_PATH="-L`dirname $file`"
-            TK_LIBS="-l`libname $file`"; ;;
-        *)  echo $count' copies of libtk*.* found ('$files'), using '$file
-            TK_LIB_PATH="-L`dirname $file`"
-            TK_LIBS="-l`libname $file`"; ;;
-    esac
-    count=`grep 'libtcl[.0-9]*\.[aso]*' $TMPFILE | wc -l | awk '{print $1}'`
-    files=`grep 'libtcl[.0-9]*\.[aso]*' $TMPFILE`
-    file=`grep 'libtcl[.0-9]*\.[aso]*' $TMPFILE | sed '2,$d'`
-    case $count in
-        0)  echo 'Tcl library not found'; ;;
-        1)  TK_LIB_PATH="$TK_LIB_PATH -L`dirname $file`"
-            TK_LIBS="$TK_LIBS -l`libname $file`"; ;;
-        *)  echo $count' copies of libtcl*.* found ('$files'), using '$file
-            TK_LIB_PATH="$TK_LIB_PATH -L`dirname $file`"
-            TK_LIBS="$TK_LIBS -l`libname $file`"; ;;
-    esac
-    TK_LIBS="$TK_LIBS -ldl"
-fi
-if [ "$X_INCL_PATH" = "" ]; then
-    count=`grep Xlib.h $TMPFILE | wc -l | awk '{print $1}'`
-    files=`grep Xlib.h $TMPFILE`
-    file=`grep Xlib.h $TMPFILE | sed '2,$d'`
-    case $count in
-        0)  echo 'X11 include files not found'; ;;
-        1)  X_INCL_PATH="-I`dirname $file`"; ;;
-        *)  echo $count' copies of Xlib.h found ('$files'), using '$file
-            X_INCL_PATH="-I`dirname $file`"; ;;
-    esac
-fi
-if [ "$X_LIB_PATH" = "" ]; then
-    count=`grep libX11.a $TMPFILE | wc -l | awk '{print $1}'`
-    files=`grep libX11.a $TMPFILE`
-    file=`grep libX11.a $TMPFILE | sed '2,$d'`
-    case $count in
-        0)  echo 'X11 library not found'; ;;
-        1)  X_LIB_PATH="-L`dirname $file`"; ;;
-        *)  echo $count' copies of libX11.a found ('$files'), using '$file
-            X_LIB_PATH="-L`dirname $file`"; ;;
-    esac
-fi
-if [ "$PVM_INCL_PATH" = "" ]; then
-    count=`grep pvm3.h $TMPFILE | wc -l | awk '{print $1}'`
-    files=`grep pvm3.h $TMPFILE`
-    file=`grep pvm3.h $TMPFILE | sed '2,$d'`
-    case $count in
-        0)  echo 'Pvm3 include files not found'; ;;
-        1)  PVM_INCL_PATH="-I`dirname $file`"; ;;
-        *)  echo $count' copies of pvm3.h, using '$file
-            PVM_INCL_PATH="-I`dirname $file`"; ;;
-    esac
-fi
-if [ "$PVM_LIB_PATH" = "" ]; then
-    count=`grep libpvm3.a $TMPFILE | wc -l | awk '{print $1}'`
-    files=`grep libpvm3.a $TMPFILE`
-    file=`grep libpvm3.a $TMPFILE | sed '2,$d'`
-    case $count in
-        0)  echo 'Pvm3 library not found'; ;;
-        1)  PVM_LIB_PATH="-L`dirname $file`"; ;;
-        *)  echo $count' copies of libpvm3.a found ('$files'), using '$file
-            PVM_LIB_PATH="-L`dirname $file`"; ;;
-    esac
-fi
-
-rm -f $TMPFILE
-
-dnl END OLD STUFF
-
-dnl ----------------------
-dnl Subtitutions.
-dnl ----------------------
-
-AC_SUBST(OMNETPP_ROOT OMNETPP_SRC_DIR OMNETPP_SAMPLES_DIR OMNETPP_MODELS_DIR \
-  YACC LEX CC CXX NEDC AS AR MAKE_SO LD \
-  LIB_SUFFIX USE_DLOPEN \
-  TV_INCL_PATH  TV_LIB_PATH  TV_LIBS \
-  TK_INCL_PATH  TK_LIB_PATH  TK_LIBS \
-  X_INCL_PATH   X_LIB_PATH   X_LIBS \
-  PVM_INCL_PATH PVM_LIB_PATH PVM_LIBS \
-  SYS_LIBS \
-  OMNETPP_INCLUDES OMNETPP_INCL_PATH OMNETPP_LIB_PATH OMNETPP_BITMAP_PATH)
-
-
-AC_OUTPUT(src/cmdenv/makefile samples/pvmex/makefile src/gned/makefile samples/fifo1/makefile samples/fifo2/makefile src/envir/makefile samples/fddi/makefile samples/hist/makefile src/tkenv/makefile src/sim/makefile samples/token/makefile src/utils/makefile samples/nim/makefile src/tvenv/makefile samples/hcube/makefile samples/dyna/makefile models/support/makefile Makefile src/nedc/makefile)
