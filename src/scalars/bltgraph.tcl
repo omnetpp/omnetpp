@@ -170,7 +170,7 @@ proc bltGraph_Copy {} {
     set graph [$w.nb tab cget select -window].g
 
     if [catch {$graph snap -format emf CLIPBOARD}] {
-        tk_messageBox -icon error -type ok -title Error
+        tk_messageBox -parent $w -icon error -type ok -title Error \
              -message "Sorry, copying the graph to the clipboard only works on Windows."
     }
 }
@@ -207,7 +207,7 @@ proc bltGraph_Properties {{what "lines"}} {
 }
 
 proc bltGraph_PropertiesDialog {graph {what "lines"}} {
-    set w .graphprops
+    set w .bltwin.graphprops
     createOkCancelDialog $w "Graph Properties"
     wm geometry $w 360x300
 
