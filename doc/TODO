@@ -2,7 +2,13 @@ TO DO:
 
 (things that just came to my mind, in no particular order)
 
-Aug 25, 1998
+Aug 25, 1998, somewhat updated June 5, 1999
+
+
+add more simulation models
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+most important: TCP and IP models
+
 
 in usman.doc
 ~~~~~~~~~~~~
@@ -10,22 +16,8 @@ message subclassing
 cPacket
 
 
-rewrite makefiles and configure
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-makefiles are pretty lousy (very rough dependencies,
-non-standard usage of CC, CFLAGS etc).
-
-the configure script could also be replaced by something
-more standard, like GNU autoconf or Cygnus configure.
-
-
 develop GNED
 ~~~~~~~~~~~~
-Another great place for hacking if you like it. Ideas:
-
-load/save NED files directly, without any intervening graphical 
-format.
-
 load available module declarations and if someone creates a 
 submodule, check its gates and parameters against the loaded
 declarations. Make checks and suggestions for module parameter
