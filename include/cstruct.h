@@ -110,6 +110,11 @@ class SIM_API cStructDescriptor : public cObject
     //@{
 
     /**
+     * Returns true if the class 'classname' has an associated cStructDescriptor object.
+     */
+    static bool hasDescriptor(const char *classname);
+
+    /**
      * Creates and returns a descriptor object for the object passed as argument.
      * The type of the descriptor object will be determined from the className()
      * of 'obj'. 'obj' will be the client object for the descriptor object.
@@ -171,7 +176,7 @@ class SIM_API cStructDescriptor : public cObject
 
     /**
      * Returns the enum name associated with the field. This makes only
-     * sense with integer-type fields (short, int, long, etc.). 
+     * sense with integer-type fields (short, int, long, etc.).
      * Returns NULL if there's no associated enum.
      *
      * @see cEnum

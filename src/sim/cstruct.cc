@@ -40,7 +40,7 @@ void cStructDescriptor::ulong2string(unsigned long l, char *buf, int bufsize)
 {
     assert(bufsize>=10);
     sprintf(buf, "%lu", l);
-}           
+}
 
 
 long cStructDescriptor::string2long(const char *s)
@@ -137,6 +137,15 @@ void cStructDescriptor::string2oppstring(const char *s, opp_string& str)
 
 cStructDescriptor::~cStructDescriptor()
 {
+}
+
+bool cStructDescriptor::hasDescriptor(const char *classname)
+{
+    // check if there's a classnameDescriptor class registered (on the classes list)
+    char sdclass[80];
+    strcpy(sdclass,classname);
+    strcat(sdclass,"Descriptor");
+    return classes.find(sdclass)!=NULL;
 }
 
 cStructDescriptor *cStructDescriptor::createDescriptorFor(cObject *obj)
