@@ -30,7 +30,7 @@ default: $(GNED_IF_POSSIBLE)
 
 gned : gned.exe
 
-gned.exe : $(OBJS)
+gned.exe : $(OBJS) gned.res
 	$(LINK) /out:"gned.exe" gned.res $(OBJS) $(LDFLAGS) $(TK_LIBS) $(SYS_LIBS)
 	copy gned.exe $(OMNETPP_BIN_DIR:/=\)
 
