@@ -136,7 +136,7 @@ class ENVIR_API cIniFileIterator
 {
    private:
       cIniFile *ini;
-      int idx;
+      unsigned int idx;
    public:
       cIniFileIterator(cIniFile *i)  {ini=i; idx=0;}
       void reset()            {idx=0;}

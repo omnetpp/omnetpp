@@ -59,24 +59,23 @@ void cIniFile::readFile(const char *filename)
 
 void cIniFile::_readFile(const char *fname, int section_id)
 {
+    // add this file to the 'files' vector
     files.push_back(sFile());
     int file_id = files.size()-1;
     files[file_id].fname = opp_strdup(tidyFilename(absolutePath(fname).c_str()).c_str());
     files[file_id].directory = opp_strdup(directoryOf(files[file_id].fname).c_str());
 
-    const int bufsize = MAX_LINE+2; // +2 for CR (or LF) + EOS
-    char buf[bufsize];
-
-    FILE *file;
-    int lineno=0;
-    int i;
-
-    buf[bufsize-1] = '\0'; // 'line too long' guard
-
-    file = fopen(fname,"r");
+    // then open and read this file
+    FILE *file = fopen(fname,"r");
     if (file==NULL)
         throw new cRuntimeError("Cannot open ini file `%s'", fname);
+    
+    int lineno = 0;
 
+    const int bufsize = MAX_LINE+2; // +2 for CR (or LF) + EOS
+    char buf[bufsize];
+    buf[bufsize-1] = '\0'; // 'line too long' guard
+    
     bool oldwildcardsmode = false; // if true, '*' matches anything (also a ".")
     while (!feof(file))
     {
@@ -147,6 +146,7 @@ void cIniFile::_readFile(const char *fname, int section_id)
            if (!*s) SYNTAX_ERROR("section name should not be empty");
 
            // maybe already exists
+           unsigned int i;
            for (i=0; i<sections.size(); i++)
                if (strcmp(sections[i],s)==0)
                    break;
@@ -239,9 +239,12 @@ void cIniFile::_readFile(const char *fname, int section_id)
 
 void cIniFile::clearContents()
 {
-    int i;
+    unsigned int i;
     for (i=0; i<sections.size(); i++)
+    {
        delete [] sections[i];
+    }
+    
     for (i=0; i<entries.size(); i++)
     {
        delete [] entries[i].key;
@@ -249,6 +252,7 @@ void cIniFile::clearContents()
        delete [] entries[i].value;
        delete [] entries[i].rawvalue;
     }
+    
     for (i=0; i<files.size(); i++)
     {
        delete [] files[i].fname;
@@ -262,17 +266,17 @@ void cIniFile::clearContents()
 cIniFile::sEntry *cIniFile::_findEntry(const char *sect, const char *key)
 {
     notfound=false;  // clear error flag
-    int i;
+    unsigned int i;
 
     // search for section
     int section_id = -1;
     if (sect)
-       for(i=0; i<sections.size() && section_id<0; i++)
+       for (i=0; i<sections.size() && section_id<0; i++)
           if (strcmp(sect,sections[i])==0)
               section_id = i;
 
     // search for entry
-    for(i=0; i<entries.size(); i++)
+    for (i=0; i<entries.size(); i++)
     {
        if (!sect || entries[i].section_id==section_id)
        {
@@ -289,6 +293,7 @@ cIniFile::sEntry *cIniFile::_findEntry(const char *sect, const char *key)
           }
        }
     }
+    
     // not found
     notfound=true;
     return NULL;
@@ -309,7 +314,7 @@ int cIniFile::getNumSections()
 
 const char *cIniFile::getSectionName(int k)
 {
-    if (k<0 || k>=sections.size())
+    if (k<0 || k>=(int)sections.size())
         return NULL;
     return sections[k];
 }
@@ -619,12 +624,12 @@ std::vector<opp_string> cIniFile::getEntriesWithPrefix(const char *section, cons
     //    *.rngCalc[*].rng-0 = 2
     //    *.rngCalc[*].rng-1 = 3
 
-    int i;
+    unsigned int i;
 
     // search for section
     int section_id = -1;
     if (section)
-       for(i=0; i<sections.size() && section_id<0; i++)
+       for (i=0; i<sections.size() && section_id<0; i++)
           if (strcmp(section,sections[i])==0)
               section_id = i;
 
@@ -675,11 +680,11 @@ std::vector<opp_string> cIniFile::getEntriesWithPrefix(const char *section1, con
     std::vector<opp_string> res2 = getEntriesWithPrefix(section2, keypart1, keypart2);
 
     // merge them: add those from res2 into res1 which are not already present
-    for (int i=0; i<(int)res2.size(); i+=2)
+    for (unsigned int i=0; i<res2.size(); i+=2)
     {
         opp_string& key = res2[i];
         bool found = false;
-        for (int j=0; j<(int)res1.size(); j+=2)
+        for (unsigned int j=0; j<res1.size(); j+=2)
         {
             if (!strcmp(key.c_str(), res1[j].c_str()))
             {
