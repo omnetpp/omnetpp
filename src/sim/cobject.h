@@ -209,10 +209,11 @@ class cObject
         static int cmpbyname(cObject *one,cObject *other);
 };
 
-struct cStaticFlag
+class cStaticFlag
 {
-   cStaticFlag()  {cObject::staticflag = 1;}
-   ~cStaticFlag() {cObject::staticflag = 0;}
+     public:
+        cStaticFlag()  {cObject::staticflag = 1;}
+        ~cStaticFlag() {cObject::staticflag = 0;}
 };
 
 #endif

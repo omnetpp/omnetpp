@@ -131,8 +131,6 @@ inline cEnvir& operator<< (cEnvir& ev, long l)
   {ev.printf("%ld", l); return ev;}
 inline cEnvir& operator<< (cEnvir& ev, unsigned long l)
   {ev.printf("%lu", l); return ev;}
-inline cEnvir& operator<< (cEnvir& ev, float f)
-  {ev.printf("%g", (double)f); return ev;}
 inline cEnvir& operator<< (cEnvir& ev, double d)
   {ev.printf("%lg", d); return ev;}
 inline cEnvir& operator<< (cEnvir& ev, long double d)
@@ -177,8 +175,6 @@ inline cEnvir& operator>> (cEnvir& ev, unsigned int& i)
  {char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); i=(unsigned int)atol(buf); return ev;}
 inline cEnvir& operator>> (cEnvir& ev, unsigned long& l)
  {char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); l=(unsigned long)atol(buf); return ev;}
-inline cEnvir& operator>> (cEnvir& ev, float& f)
- {char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); f=atof(buf); return ev;}
 inline cEnvir& operator>> (cEnvir& ev, double& d)
  {char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); d=atof(buf); return ev;}
 inline cEnvir& operator>> (cEnvir& ev, long double& d)

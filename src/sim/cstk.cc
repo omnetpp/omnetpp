@@ -55,9 +55,11 @@ JMP_BUF Stk::_jbuf;
 
 #ifdef USE_MATHERR
 
-#if defined(_ULTRIX)   /* or __ULTRIX__ or something like this */
+#if defined(_ULTRIX)   /*Ultrix (__ULTRIX__?)*/
 #define MATH_EXCEPTION libm_exception
-#else
+#elif defined(_MSC_VER) /*MSVC*/
+#define MATH_EXCEPTION _exception
+#else /*gcc,Borland C++,...*/
 #define MATH_EXCEPTION exception
 #endif
 

@@ -691,3 +691,8 @@ Nov 9,1999
   - iso c++ compatibility hack: in expressions like return s?s:"" the "" needs
     a cast to char* (to cast away constness). Added a (CONST_HACK) macro until
     the source is made fully const-correct, hopefully in the near future.
+Dec 4,1999
+  - compiled with MSVC. Minor changes: changed int to bool, struct to class
+    in some places. sim_std.dsw added. NOTE: one has to rename all .cc files
+    to .cpp for compiling (ren *.cc *.cpp)!
+

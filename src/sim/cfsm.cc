@@ -20,7 +20,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>           // sprintf
+#include <stdio.h>       // sprintf
+#include <string.h>      // strlen
 #include "macros.h"
 #include "cfsm.h"
 

@@ -427,7 +427,7 @@ bool cSimulation::setupNetwork(cNetworkType *network, int run_num)
 void cSimulation::startRun()
 {
      // temporarily disable warnings
-     int w = warnings(); setWarnings(FALSE);
+     bool w = warnings(); setWarnings(FALSE);
 
      err = eOK;
      msgQueue.clear();

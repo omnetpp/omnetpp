@@ -144,7 +144,7 @@ cPar::cPar(char *namestr, char tp, sXElem *x, int n) : cObject(namestr)
         CONSTRUCT_CPAR(( tp, x, n ))
 }
 
-#undef CONSTRUCT_CPAR(args)
+#undef CONSTRUCT_CPAR
 
 cPar::~cPar()
 {
@@ -596,9 +596,9 @@ bool cPar::boolValue()
 
         if (isInput()) read();
         if (typechar=='B')
-             return lng.val;
+             return lng.val!=0;
         else
-             {opp_error(eBADCAST,isA(),name(),typechar,'B');return 0.0;}
+             {opp_error(eBADCAST,isA(),name(),typechar,'B');return FALSE;}
 }
 
 double cPar::doubleValue()

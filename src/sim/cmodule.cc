@@ -663,7 +663,7 @@ void cSimpleModule::deleteModule()
         }
 
         // adjust gates that were directed here
-        int w=simulation.warnings(); simulation.setWarnings(FALSE);
+        bool w=simulation.warnings(); simulation.setWarnings(FALSE);
         for (int i=0; i<gates(); i++)
         {
             cGate *g = gate(i);
@@ -1290,7 +1290,7 @@ void cCompoundModule::deleteModule()
     }
 
     // adjust gates that were directed here
-    int w=simulation.warnings(); simulation.setWarnings(FALSE);
+    bool w=simulation.warnings(); simulation.setWarnings(FALSE);
     for (int i=0; i<gates(); i++)
     {
             cGate *g = gate(i);

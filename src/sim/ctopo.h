@@ -28,13 +28,14 @@ class cPar;
 
 #define INFINITY  HUGE_VAL
 
-struct sTopoLink;
-struct sTopoLinkIn;
-struct sTopoLinkOut;
+class sTopoLink;
+class sTopoLinkIn;
+class sTopoLinkOut;
 
 
-struct sTopoNode {
-    friend struct cTopology;
+class sTopoNode
+{
+    friend class cTopology;
   private:
     int module_id;
     double wgt;
@@ -71,15 +72,16 @@ struct sTopoNode {
     sTopoLinkOut *path(int)     {return (sTopoLinkOut *)out_path;}
 };
 
-struct sTopoLink {
-    friend struct cTopology;
+class sTopoLink
+{
+    friend class cTopology;
   protected:
     sTopoNode *src_node;
     int src_gate;
     sTopoNode *dest_node;
     int dest_gate;
     double wgt;
-    int enabl;
+    bool enabl;
   public:
     double weight()             {return wgt;}
     void setWeight(double d)    {wgt=d;}
@@ -90,7 +92,8 @@ struct sTopoLink {
 
 // sTopoLinkIn, sTopoLinkOut: two different 'user interfaces' for sTopoLink
 
-struct sTopoLinkIn : public sTopoLink {
+class sTopoLinkIn : public sTopoLink
+{
   public:
     sTopoNode *remoteNode()  {return src_node;}
     int remoteGateId()       {return src_gate;}
@@ -99,7 +102,8 @@ struct sTopoLinkIn : public sTopoLink {
     cGate *localGate()       {return dest_node->module()->gate(dest_gate);}
 };
 
-struct sTopoLinkOut : public sTopoLink {
+class sTopoLinkOut : public sTopoLink
+{
   public:
     sTopoNode *remoteNode()  {return dest_node;}
     int remoteGateId()       {return dest_gate;}
