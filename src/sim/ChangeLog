@@ -1,3 +1,8 @@
+2002-04-07  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
+
+	* pvm/pvmpack.cc (upack_object): compile fix: cast from (void*) to
+	(cObject*) in call to createOne()
+
 2002-03-05  Andras Varga
 
 	* cgate.cc (setDisplayString): connection display string changes now

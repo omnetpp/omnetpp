@@ -80,7 +80,7 @@ cObject *upack_object(int& err)
 {
         char *clname = upack_str(err);
         if (err) {delete clname; return NO(cObject);}
-        cObject *obj = createOne(clname);
+        cObject *obj = (cObject*) createOne(clname);
         obj->netUnpack();
         delete clname;
         return obj;
