@@ -34,7 +34,7 @@ Simulation library:
 
 (x)	removed cGate::link()
 
-(+)	added cChannelType class and finChannelType() function
+(+)	added cChannelType class and findChannelType() function
 
 (+) 	added cGate::disconnect()
 
