@@ -359,16 +359,19 @@ proc defaultBindings {} {
       if {$tk_version<8.2} {
          set s 140
       } else {
-         set s 120
+         set s 110
       }
-      set fonts(normal)  -Adobe-Helvetica-Medium-R-Normal-*-*-$s-*-*-*-*-*-*
-      set fonts(bold)    -Adobe-Helvetica-Bold-R-Normal-*-*-$s-*-*-*-*-*-*
+      font create opp_normal -family "MS Sans Serif" -size 8
+      font create opp_bold   -family "MS Sans Serif" -size 8 -weight bold
+      font create opp_balloon -family "MS Sans Serif" -size 8
+
+      set fonts(normal)  opp_normal
+      set fonts(bold)    opp_bold
       set fonts(icon)    -Adobe-Helvetica-Bold-R-Normal-*-*-$s-*-*-*-*-*-*
       set fonts(big)     -Adobe-Helvetica-Medium-R-Normal-*-*-180-*-*-*-*-*-*
       set fonts(msgname) -Adobe-Helvetica-Medium-R-Normal-*-*-$s-*-*-*-*-*-*
-      #set fonts(fixed)  -Adobe-Courier-Medium-R-Normal-*-*-160-*-*-*-*-*-*
       set fonts(fixed)   FixedSys
-      set fonts(balloon) -Adobe-Helvetica-Medium-R-Normal-*-*-$s-*-*-*-*-*-*
+      set fonts(balloon) opp_balloon
    }
 
    if {$tcl_platform(platform) == "unix"} {

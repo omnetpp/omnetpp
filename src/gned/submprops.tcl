@@ -192,7 +192,7 @@ proc createSectionsComboAndTables {frame submodkey sectiontype keyword columnlis
     frame $w
     label $w.l -anchor w -text "Section:"
 
-    menubutton $w.e -menu $w.e.m -relief raised -width 30 -indicatoron 1
+    menubutton $w.e -menu $w.e.m -relief raised -width 30 -indicatoron 1 -font $fonts(normal)
     menu $w.e.m -tearoff 0
     foreach key $keylist {
         if {$cond($key)==""} {
@@ -203,7 +203,7 @@ proc createSectionsComboAndTables {frame submodkey sectiontype keyword columnlis
         $w.e.m add command -label $lbl -command "$w.e configure -text \{$lbl\}; $unmapTablesCmd; pack $frame.tbl$key -after $frame.combo -expand 1 -fill both"
     }
     pack $w.l -anchor center  -padx 2 -pady 2 -side left
-    pack $w.e -anchor center  -padx 2 -pady 2 -side left
+    pack [wsize $w.e 200 20] -anchor center  -padx 2 -pady 2 -side left
 
     pack $w -expand 0 -fill x -side top
 

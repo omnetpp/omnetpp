@@ -17,6 +17,22 @@
 # Parts of this file were created using Stewart Allen's Visual Tcl (vtcl)
 #------
 
+# wsize --
+#
+# Utility to set a widget's size to exactly width x height pixels.
+# Usage example:
+#    button .b1 -text "OK"
+#    pack [wsize .b1 40 40] -side top -expand 1 -fill both
+#
+proc wsize {w width height} {
+  set f ${w}_f
+  frame $f -width $width -height $height
+  place $w -in $f -x 0 -y 0 -width $width -height $height
+  raise $w
+  return $f
+}
+
+
 #===================================================================
 #    PROCEDURES FOR CREATING NEW 'WIDGET TYPES'
 #===================================================================
@@ -40,7 +56,7 @@ proc combo {w list {cmd {}}} {
 
     global fonts
 
-    menubutton $w -menu $w.m -font $fonts(bold) -relief raised -width 14 -indicatoron 1
+    menubutton $w -menu $w.m -font $fonts(normal) -relief raised -width 14 -indicatoron 1
     menu $w.m -tearoff 0
     foreach i $list {
         $w.m add command -label $i -command "$w configure -text \{$i\}; $cmd"
@@ -81,7 +97,7 @@ proc label-entry-chooser {w label text chooserproc} {
     entry $w.e -highlightthickness 0
     button $w.c -text " ... " -command [list chooser:choose $w.e $chooserproc]
     pack $w.l -anchor center -expand 0 -fill none -padx 2 -pady 2 -side left
-    pack $w.c -anchor center -expand 0 -fill none -padx 2 -pady 2 -side right
+    pack [wsize $w.c 20 20] -anchor center -expand 0 -fill none -padx 2 -pady 2 -side right
     pack $w.e -anchor center -expand 1 -fill x -padx 2 -pady 2 -side left
     $w.e insert 0 $text
 }

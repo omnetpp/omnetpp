@@ -213,7 +213,7 @@ proc ConnProps:gateSpec {w} {
     label $w.gate.rb -text  "\]   "
     pack $w.gate.l1 -expand 0 -side left -padx 2 -pady 2
     pack $w.gate.name  -expand 1 -fill x -side left -padx 2 -pady 2
-    pack $w.gate.c -expand 0 -side left -padx 0 -pady 2
+    pack [wsize $w.gate.c 20 20] -expand 0 -side left -padx 0 -pady 2
     pack $w.gate.lb -expand 0 -side left -padx 2 -pady 2
     pack $w.gate.index -expand 1 -fill x -side left -padx 2 -pady 2
     pack $w.gate.rb -expand 0 -side left -padx 2 -pady 2
