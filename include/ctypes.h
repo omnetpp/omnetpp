@@ -66,6 +66,7 @@ typedef cPar *(*ParCreateFunc)();
 //
 // Used internally by cModuleInterface
 //
+// FIXME: why not inner class?
 struct sDescrItem {
     char what;
     char *name;
@@ -210,12 +211,11 @@ class SIM_API cModuleInterface : public cObject
  * thus a module can be created without having to include the .h file
  * with the C++ declaration of the module class ("class FddiMAC...").
  * A cModuleType object is created through a Define_Module macro. Thus,
- * each module type must have a Define_Module() macro like this:
+ * each module type must have a Define_Module() line, e.g:
  *
- * Define_Module( Generator, "Generator");
+ * Define_Module( MySimpleModule );
  *
- * (The second argument defines the module interface, see cModuleInterface.)
- * Nedc automatically generates Define_Module for compound modules, but the
+ * nedc automatically generates Define_Module for compound modules, but the
  * user is responsible for writing it for each simple module type.
  */
 class SIM_API cModuleType : public cObject
@@ -307,6 +307,10 @@ class SIM_API cModuleType : public cObject
 
 /**
  * Represents a connection type: name, delay, bit error rate, data rate.
+ * An instance knows how to create delay, bit error rate and data rate
+ * objects (cPars) for a given channel.
+ *
+ * Objects of this class are usually created via the Define_Channel() macro.
  */
 class SIM_API cLinkType : public cObject
 {
@@ -320,7 +324,9 @@ class SIM_API cLinkType : public cObject
     //@{
 
     /**
-     * Constructor.
+     * Constructor. It takes three function pointers; the corresponding
+     * functions should be 'factory' functions that create the delay,
+     * bit error rate and data rate objects (cPars) for this channel type.
      */
     cLinkType(const char *name, cPar *(*d)(), cPar *(*e)(), cPar *(*dr)() );
 
@@ -381,7 +387,9 @@ class SIM_API cLinkType : public cObject
 //==========================================================================
 
 /**
- * Contains information to setup a network. Data stored: name, setup function.
+ * Registration class. An instance knows how to build a network of specific type.
+ *
+ * Objects of this class are usually created via the Define_Network() macro.
  */
 class SIM_API cNetworkType : public cObject
 {
@@ -393,7 +401,7 @@ class SIM_API cNetworkType : public cObject
     //@{
 
     /**
-     * Constructor.
+     * Constructor. It takes pointer to a function that can build up a network.
      */
     cNetworkType(const char *name, void (*f)()) :
       cObject(name,(cObject *)&networks), setupfunc(f) {}
@@ -419,7 +427,9 @@ class SIM_API cNetworkType : public cObject
 //==========================================================================
 
 /**
- * Stores a function pointer (returning a double).
+ * Registration class. Stores a function pointer (returning a double).
+ *
+ * Objects of this class are usually created via the Define_Function() macro.
  */
 class SIM_API cFunctionType : public cObject
 {
@@ -462,6 +472,8 @@ cFunctionType *findfunctionbyptr(MathFunc f);
  * Reflection support class. There is a cClassRegister object for most
  * OMNeT++ classes. The cClassRegister objects know how to create an object
  * of that type.
+ *
+ * Objects of this type are usually created via the Register_Class() macro.
  */
 class SIM_API cClassRegister : public cObject
 {

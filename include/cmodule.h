@@ -100,11 +100,11 @@ typedef void (*DisplayStringNotifyFunc)(cModule*,bool,void*);
 //==========================================================================
 
 /**
- * Common base for <tt>cSimpleModule</tt> and <tt>cCompoundModule</tt>.
+ * Common base for cSimpleModule and cCompoundModule.
  * Provides gates, parameters, error handling, etc.
  *
- * NOTE: <tt>dup()</tt> cannot be use with modules. Use <tt>mod->moduleType()->create()</tt>/<tt>buildInside()</tt>
- * instead.
+ * NOTE: dup() cannot be use with modules.
+ * Use <tt>mod->moduleType()->create()</tt>/<tt>buildInside()</tt> instead.
  *
  * @ingroup SimCore
  */
@@ -150,27 +150,27 @@ class SIM_API cModule : public cObject
      * Initialize and finish functions should (may) be provided by the user,
      * to perform special tasks at the beginning and the end of the simulation.
      * The functions are made protected because they are supposed
-     * to be called only via <tt>callInitialize()</tt> and <tt>callFinish()</tt>.
+     * to be called only via callInitialize() and callFinish().
      *
      * The initialization process was designed to support multi-stage
      * initialization of compound modules (i.e. initialization in several
-     * 'waves'). (Calling the <tt>initialize()</tt> function of a simple module is
+     * 'waves'). (Calling the initialize() function of a simple module is
      * hence a special case). The initialization process is performed
      * on a module like this. First, the number of necessary initialization
-     * stages is determined by calling <tt>numInitStages()</tt>, then <tt>initialize(stage)</tt>
+     * stages is determined by calling numInitStages(), then initialize(stage)
      * is called with <tt>0,1,...numstages-1</tt> as argument. The default
-     * implementation of <tt>numInitStages()</tt> and <tt>initialize(stage)</tt> provided here
-     * defaults to single-stage initialization, that is, <tt>numInitStages()</tt>
-     * returns 1 and <tt>initialize(stage)</tt> simply calls <tt>initialize()</tt> in stage 0.
+     * implementation of numInitStages() and initialize(stage) provided here
+     * defaults to single-stage initialization, that is, numInitStages()
+     * returns 1 and initialize(stage) simply calls initialize() if stage is 0.
      *
-     * All initialization and finish functions are redefined in <tt>cCompoundModule</tt>
+     * All initialization and finish functions are redefined in cCompoundModule
      * to recursively traverse all submodules.
      */
     //@{
 
     /**
      * Multi-stage initialization hook. This default implementation does
-     * single-stage init, that is, calls <tt>initialize()</tt> in stage 0.
+     * single-stage init, that is, calls initialize() if stage is 0.
      */
     virtual void initialize(int stage) {if(stage==0) initialize();}
 
@@ -188,7 +188,7 @@ class SIM_API cModule : public cObject
     virtual void initialize();
 
     /**
-     * Finish hook. <tt>finish()</tt> is called after end of simulation, if it
+     * Finish hook. finish() is called after end of simulation, if it
      * terminated without error. This default implementation does nothing.
      */
     virtual void finish();
@@ -214,7 +214,8 @@ class SIM_API cModule : public cObject
     virtual ~cModule() {}
 
     /**
-     * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
+     * Assignment operator. The name member doesn't get copied;
+     * see cObject's operator=() for more details.
      */
     cModule& operator=(_CONST cModule& mod);
     //@}
@@ -744,7 +745,7 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     virtual bool callInitialize(int stage);
 
     /**
-     * Calls <tt>finish()</tt> in the context of this module.
+     * Calls finish() in the context of this module.
      */
     virtual void callFinish();
 

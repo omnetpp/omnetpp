@@ -258,7 +258,12 @@ class SIM_API cKSplit : public cDensityEstBase
     void setDivFunc(KSplitDivFunc _divfunc, double *_divdata);
 
     /**
-     * MISSINGDOC: cKSplit:void rangeExtension(bool)
+     * Enables/disables range extension. If range extension is enabled,
+     * a new observation that falls outside the k-split range (ie. outside
+     * the root grid) will cause the range to be expanded (i.e. new
+     * root grid(s) to be placed above the current root grid).
+     * If range extension is disabled, such observations will simply be
+     * counted as underflows or overflows.
      */
     void rangeExtension( bool enabled );
     //@}

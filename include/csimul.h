@@ -166,7 +166,7 @@ class SIM_API cSimulation : public cObject
 
     // Internal: things that cannot be done from the constructor
     // (because it is called before main()).
-    void setup();  // FIXME: why not private?
+    void setup();
 
     /** @name Accessing modules. */
     //@{
@@ -198,7 +198,7 @@ class SIM_API cSimulation : public cObject
          {return id>=0 && id<size ? vect[id] : NO(cModule);}
 
     /**
-     * Same as module(int).
+     * Same as module(int), only this returns reference instead of pointer.
      */
     cModule& operator[](int id) _CONST
          {return id>=0 && id<size ? *vect[id] : *NO(cModule);}
