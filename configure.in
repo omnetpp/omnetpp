@@ -73,14 +73,14 @@ AC_DEFUN(OPP_CHECK_LIB_WITHPATH,[
 save_LDFLAGS=$LDFLAGS
 save_LIBS=$LIBS
 LIBS="-l$1 $6"
-for lib_path_swith in "" $3; do
-  if test -n "$lib_path_swith"; then
-    AC_MSG_CHECKING(whether -l$1 is in $lib_path_swith)
-    lib_path_swith="-L$lib_path_swith"
+for lib_path_switch in "" $3; do
+  if test -n "$lib_path_switch"; then
+    AC_MSG_CHECKING(whether -l$1 is in $lib_path_switch)
+    lib_path_switch="-L$lib_path_switch"
   else
     AC_MSG_CHECKING(whether -l$1 is in linker path)
   fi
-  LDFLAGS="$save_LDFLAGS $lib_path_swith"
+  LDFLAGS="$save_LDFLAGS $lib_path_switch"
   AC_TRY_LINK([char $2();],$2(),
               [AC_MSG_RESULT(yes);succ=yes;break],
               [AC_MSG_RESULT(no);succ=no])
@@ -99,6 +99,10 @@ fi
 #----------------------
 
 AC_PROG_YACC
+if test "$YACC" = "yacc"; then
+   AC_MSG_WARN(Neither bison nor byacc is found...)
+fi
+
 AC_PROG_LEX
 AC_PROG_CC
 AC_PROG_CXX
@@ -107,7 +111,7 @@ AC_PROG_RANLIB
 # FIXME: the following lines will need some check
 AS="as"
 AR="ar cr"
-SHLIB_LD="gcc -shared"
+SHLIB_LD="$CXX -shared"
 NEDC=nedc
 if test "$cygwin" = yes; then
     MYPWD="$OMNETPP_SRC_DIR/utils/cygpwd"
@@ -136,7 +140,7 @@ fi
 #----------------------
 # Read in user settings (and allow override the above settings)
 #----------------------
-. configure.user
+. ./configure.user
 
 
 #----------------------
@@ -181,7 +185,7 @@ fi
 if test ! -n "$PVM_LIBS"; then
     # test for -lpvm3 and -lgpvm3 at the same time
     OPP_CHECK_LIB_WITHPATH(gpvm3, pvm_joingroup, $PVM_ROOT/lib/$PVM_ARCH,
-      PVM_LIBS="$lib_path_swith -lgpvm3 -lpvm3",
+      PVM_LIBS="$lib_path_switch -lgpvm3 -lpvm3",
       [PVM_LIBS=""
        AC_MSG_WARN(if you do have PVM3 then set PVM_ROOT and PVM_ARCH...)
        AC_MSG_WARN(...to their correct values and re-run configure)],
@@ -195,7 +199,10 @@ fi
 
 if test ! -n "$TK_CFLAGS"; then
    # FIXME: non-gcc compilers probably need different flag
-   TK_CFLAGS="-fwritable-strings"
+   case "$CXX" in
+      "c++") TK_CFLAGS="-fwritable-strings";;
+      *)     TK_CFLAGS= ;;
+   esac
 fi
 
 if test ! -n "$TK_LIBS"; then

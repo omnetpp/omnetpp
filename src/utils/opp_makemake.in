@@ -322,7 +322,7 @@ o)
 esac
 echo
 echo 'purify: $(OBJS) $(EXRA_OBJS) ' $subdirsphony ' Makefile'
-echo '	purify gcc $(LDFLAGS) $(OBJS) $(EXRA_OBJS) $(SUBDIR_OBJS) $(LIBS) -L$(OMNETPP_LIB_DIR) $(KERNEL_LIBS) $(USERIF_LIBS) $(SYS_LIBS_PURE) -o $(TARGET).pure'
+echo '	purify $(CC) $(LDFLAGS) $(OBJS) $(EXRA_OBJS) $(SUBDIR_OBJS) $(LIBS) -L$(OMNETPP_LIB_DIR) $(KERNEL_LIBS) $(USERIF_LIBS) $(SYS_LIBS_PURE) -o $(TARGET).pure'
 echo
 
 if [ "$type" != "o" ]; then
