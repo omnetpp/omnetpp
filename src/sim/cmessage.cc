@@ -83,56 +83,40 @@ cMessage::~cMessage()
     live_msgs--;
 }
 
-void cMessage::info(char *buf)
+std::string cMessage::info() const
 {
-    char *b = buf;
-    *b='\0';
-
-    const char *deletedstr = "<deleted module>";
-
-    // append useful info
     if (tomod<0)
-    {
-        sprintf(b,"(new msg)");
-    }
-    else if (kind()==MK_STARTER)
+        return std::string("(new msg)");
+
+    std::stringstream out;
+    const char *deletedstr = "<deleted module>";
+    out << "T=" << simtimeToStr(delivd);
+
+#define MODNAME(modp) ((modp) ? (modp)->fullPath() : deletedstr)
+    if (kind()==MK_STARTER)
     {
         cModule *tomodp = simulation.module(tomod);
-        sprintf(b,"T=%s starter for %s (id=%d) ",
-                simtimeToStr(delivd),
-                tomodp ? tomodp->fullPath() : deletedstr,
-                tomod);
+        out << " starter for " << MODNAME(tomodp) << " (id=" << tomod << ") ";
     }
     else if (kind()==MK_TIMEOUT)
     {
         cModule *tomodp = simulation.module(tomod);
-        sprintf(b,"T=%s timeout for %s (id=%d) ",
-                simtimeToStr(delivd),
-                tomodp ? tomodp->fullPath() : deletedstr,
-                tomod);
+        out << " timeout for " << MODNAME(tomodp) << " (id=" << tomod << ") ";
     }
     else if (frommod==tomod)
     {
         cModule *tomodp = simulation.module(tomod);
-        sprintf(b,"T=%s selfmsg for %s (id=%d) ",
-                simtimeToStr(delivd),
-                tomodp ? tomodp->fullPath() : deletedstr,
-                tomod);
+        out << " selfmsg for " << MODNAME(tomodp) << " (id=" << tomod << ") ";
     }
     else
     {
-        // 2 sprintfs cannot be merged because of static buffer in fullPath()
         cModule *frommodp = simulation.module(frommod);
         cModule *tomodp = simulation.module(tomod);
-        sprintf(b,"T=%s src=%s (id=%d), ",
-                simtimeToStr(delivd),
-                frommodp ? frommodp->fullPath() : deletedstr,
-                frommod);
-        while(*b) b++;
-        sprintf(b,"dest=%s (id=%d) ",
-                tomodp ? tomodp->fullPath() : deletedstr,
-                tomod);
+        out << " src=" << MODNAME(frommodp) << " (id=" << frommod << ") ";
+        out << " dest=" << MODNAME(tomodp) << " (id=" << tomod << ") ";
     }
+#undef MODNAME
+    return out.str();
 }
 
 void cMessage::forEach( ForeachFunc do_fn )

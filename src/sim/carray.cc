@@ -56,12 +56,13 @@ cObject( name ), vect(NULL)
     setup(esiz, siz, delt);
 }
 
-void cBag::info(char *buf)
+std::string cBag::info() const
 {
     if (lastused==-1)
-        sprintf(buf, "(empty)");
-    else
-        sprintf(buf, "(size=%d)", lastused+1);
+        return std::string("empty");
+    std::stringstream out;
+    out << "size=" << lastused+1;
+    return out.str();
 }
 
 cBag& cBag::operator=(const cBag& bag)
@@ -346,12 +347,13 @@ cArray& cArray::operator=(const cArray& list)
     return *this;
 }
 
-void cArray::info(char *buf)
+std::string cArray::info() const
 {
     if (last==-1)
-        sprintf(buf, "(empty)");
-    else
-        sprintf(buf, "(size=%d)", last+1);
+        return std::string("empty");
+    std::stringstream out;
+    out << "size=" << last+1;
+    return out.str();
 }
 
 void cArray::forEach( ForeachFunc do_fn )

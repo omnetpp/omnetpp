@@ -66,28 +66,20 @@ cChannel::~cChannel()
     dropAndDelete(parlistp);
 }
 
-void cChannel::info(char *buf)
+std::string cChannel::info() const
 {
     if (!parlistp)
-    {
-        buf[0] = '\0';
-        return;
-    }
+        return std::string();
 
     // print all attributes
-    char *b = buf;
+    std::stringstream out;
     for (int i=0; i<parlistp->items(); i++)
     {
         cObject *p = parlistp->get(i);
         if (!p) continue;
-        strcpy(b,p->fullName());
-        while (*b) b++;
-        *b++ = '=';
-        p->info(b);
-        while (*b) b++;
-        *b++ = ' ';
+        out << p->fullName() << "=" << p->info() << " ";
     }
-    *b = '\0';
+    return out.str();
 }
 
 void cChannel::forEach( ForeachFunc do_fn )
@@ -197,9 +189,9 @@ cSimpleChannel::~cSimpleChannel()
 {
 }
 
-void cSimpleChannel::info(char *buf)
+std::string cSimpleChannel::info() const
 {
-    cChannel::info(buf);
+    return cChannel::info();
     // append other info
     //TBD
 }

@@ -74,9 +74,11 @@ cTopology::~cTopology()
     clear();
 }
 
-void cTopology::info(char *buf)
+std::string cTopology::info() const
 {
-    sprintf(buf,"(%d nodes)", num_nodes);
+    std::stringstream out;
+    out << "n=" << num_nodes;
+    return out.str();
 }
 
 void cTopology::netPack(cCommBuffer *buffer)

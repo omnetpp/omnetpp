@@ -54,14 +54,12 @@ cProxyGate& cProxyGate::operator=(const cProxyGate& gate)
     return *this;
 }
 
-void cProxyGate::info(char *buf)
+std::string cProxyGate::info() const
 {
-    char *b = buf;
-    sprintf(b, "remote:(procId=%d,modId=%d,gateId=%d) ",
-               remoteProcId, remoteModuleId, remoteGateId);
-    while(*b) b++;
-
-    cGate::info(b);
+    std::stringstream out;
+    out << "remote:(procId=" << remoteProcId << ",modId=" << remoteModuleId << ",gateId=" << remoteGateId << ") ",
+    out << cGate::info();
+    return out.str();
 }
 
 bool cProxyGate::deliver(cMessage *msg, simtime_t t)

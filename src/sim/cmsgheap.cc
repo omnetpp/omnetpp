@@ -84,13 +84,13 @@ cMessageHeap::~cMessageHeap()
     delete [] h;
 }
 
-void cMessageHeap::info(char *buf)
+std::string cMessageHeap::info() const
 {
     if (n==0)
-        sprintf(buf, "(empty)");
-    else
-        sprintf(buf, "(length=%d first=%s)",
-                 n, simtimeToStr(h[1]->arrivalTime()));
+        return std::string("empty");
+    std::stringstream out;
+    out << "length=" << n << " Tmin=" << simtimeToStr(h[1]->arrivalTime());
+    return out.str();
 }
 
 void cMessageHeap::forEach( ForeachFunc do_fn )

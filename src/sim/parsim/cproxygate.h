@@ -89,7 +89,7 @@ class cProxyGate : public cGate
     /**
      * Redefined here to display remoteProcId, remoteModId and remoteGateId.
      */
-    virtual void info(char *buf);
+    virtual std::string info() const;
     //@}
 
     /** @name Redefined cGate member functions */

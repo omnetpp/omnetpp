@@ -477,7 +477,7 @@ void _sim_dummy_func()
 {
       cPacket x;
       cPacket y(x);
-      x.info(NULL);
+      x.info();
       cWatch w(NULL,*(int*)&x);
       w.pointer(); w.typeChar();
       exponential(1.0);

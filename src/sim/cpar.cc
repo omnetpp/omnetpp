@@ -170,17 +170,15 @@ void cPar::deleteold()
 //----------------------------------------------------------------------
 // redefine virtual cObject funcs
 
-void cPar::info(char *buf)
+std::string cPar::info() const
 {
-    char *b = buf;
-    *b='\0';
+    std::stringstream out;
 
     // redirection?
     if (isRedirected())
     {
-        strcpy(b,"--> ");
-        strcpy(b+4, ind.par->fullPath() );
-        return;
+        out << "--> " << ind.par->fullPath();
+        return out.str();
     }
 
     // append useful info
@@ -190,37 +188,36 @@ void cPar::info(char *buf)
     switch (typechar) {
         case 'S': s = ls.sht ? ss.str:ls.str;
                   if (!s) s = "";
-                  if (strlen(s)<=40)
-                    sprintf(b,"\"%s\" (S)", s);
-                  else
-                    sprintf(b,"\"%.40s...\" [truncated] (S)", s);
+                  out << "\"" << s << "\" (S)";
                   break;
-        case 'L': sprintf(b,"%ld (L)",lng.val); break;
-        case 'D': sprintf(b,"%g (D)",dbl.val); break;
-        case 'C': sprintf(b,"compiled expression"); break;
-        case 'X': sprintf(b,"reverse Polish expression"); break;
-        case 'T': sprintf(b,"(%s) (T)", dtr.res ? dtr.res->fullPath():"nil"); break;
-        case 'P': sprintf(b,"(%p) (P)", ptr.ptr); break;
-        case 'O': sprintf(b,"(%s) (O)", obj.obj ? obj.obj->fullPath():"nil"); break;
+        case 'L': out << lng.val << " (L)"; break;
+        case 'D': out << dbl.val << " (D)"; break;
+        case 'C': out << "compiled expression"; break;
+        case 'X': out << "reverse Polish expression"; break;
+        case 'T': out << (dtr.res ? dtr.res->fullPath():"null") << " (T)"; break;
+        case 'P': out << ptr.ptr << " (P)"; break;
+        case 'O': out << (obj.obj ? obj.obj->fullPath():"null") << " (O)"; break;
         case 'F': ff = findfunctionbyptr(func.f);
-                  if (ff) fn=ff->name(); else fn="unknown";
+                  out << (ff ? ff->name() : "unknown") << "(";
                   switch(func.argc) {
-                  case 0: sprintf(b,"%s() (F)",fn); break;
-                  case 1: sprintf(b,"%s(%g) (F)",fn,func.p1); break;
-                  case 2: sprintf(b,"%s(%g,%g) (F)",fn,func.p1,func.p2); break;
-                  case 3: sprintf(b,"%s(%g,%g,%g) (F)",fn,func.p1,func.p2,func.p3); break;
-                  case 4: sprintf(b,"%s(%g,%g,%g,%g) (F)",fn,func.p1,func.p2,func.p3,func.p4); break;
-                  default: sprintf(b,"%s() with %d args (F)",fn,func.argc); break;
+                    case 0: out << ")"; break;
+                    case 1: out << func.p1; break;
+                    case 2: out << func.p1 << "," << func.p2; break;
+                    case 3: out << func.p1 << "," << func.p2 << "," << func.p3; break;
+                    case 4: out << func.p1 << "," << func.p2 << "," << func.p3 << "," << func.p4; break;
+                    default:out << ") with " << func.argc << " args"; break;
                   };
+                  out << " (F)";
                   break;
-        case 'B': sprintf(b,"%s (B)", lng.val?"true":"false"); break;
+        case 'B': out << (lng.val?"true":"false") << " (B)"; break;
         case 'M': if (xmlp.node)
-                      sprintf(b,"<%s> from %s (M)", xmlp.node->getTagName(), xmlp.node->getSourceLocation());
+                      out << "<" << xmlp.node->getTagName() << "> from " << xmlp.node->getSourceLocation() << " (M)";
                   else
-                      sprintf(b,"nil (M)");
+                      out << "null (M)";
                   break;
-        default : strcat(b, "? (unknown type)"); break;
+        default : out << "? (unknown type)"; break;
     }
+    return out.str();
 }
 
 void cPar::writeContents(ostream& os)

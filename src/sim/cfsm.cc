@@ -47,12 +47,14 @@ cFSM& cFSM::operator=(const cFSM& vs)
     return *this;
 }
 
-void cFSM::info(char *buf)
+std::string cFSM::info() const
 {
-     if (!_statename)
-        sprintf(buf, "state: %d", _state);
-     else
-        sprintf(buf, "state: %s (%d)", _statename, _state);
+    std::stringstream out;
+    if (!_statename)
+        out << "state: " << _state;
+    else
+        out << "state: " << _statename << " (" << _state << ")";
+    return out.str();
 }
 
 void cFSM::writeContents(ostream& os)

@@ -1,3 +1,7 @@
+2004-10-25  Andras Varga
+	
+	* all files: info() signature change (see include/ChangeLog)
+
 2004-10-10  Andras Varga
 
 	* csimul.cc: fix: added preliminary setting of simtime to end of 

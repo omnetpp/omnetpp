@@ -189,9 +189,11 @@ cStdDev::cStdDev(const char *s) : cStatistic(s)
     min_samples = max_samples= 0;
 }
 
-void cStdDev::info(char *buf)
+std::string cStdDev::info() const
 {
-    sprintf(buf, "(n=%ld)", num_samples);
+    std::stringstream out;
+    out << "n=" << num_samples;
+    return out.str();
 }
 
 void cStdDev::netPack(cCommBuffer *buffer)

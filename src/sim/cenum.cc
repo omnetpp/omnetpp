@@ -77,12 +77,13 @@ cEnum& cEnum::operator=(const cEnum& list)
     return *this;
 }
 
-void cEnum::info(char *buf)
+std::string cEnum::info() const
 {
     if (items==0)
-        sprintf(buf, "(empty)");
-    else
-        sprintf(buf, "(%d constants)", items);
+        return std::string("empty");
+    std::stringstream out;
+    out << items << " values";
+    return out.str();
 }
 
 void cEnum::insert(int key, const char *str)

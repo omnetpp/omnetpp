@@ -68,12 +68,13 @@ void cOutVector::setName(const char *nam)
         handle = ev.registerOutputVector(simulation.contextModule()->fullPath(), name(), tupl);
 }
 
-void cOutVector::info(char *buf)
+std::string cOutVector::info() const
 {
-    if (handle)
-        sprintf(buf, "(received %ld values, stored %ld)", num_received, num_stored);
-    else
-        sprintf(buf, "(no values recorded yet)");
+    if (!handle)
+        return std::string("(no values recorded yet)");
+    std::stringstream out;
+    out << "received " << num_received << " values, stored " << num_stored;
+    return out.str();
 }
 
 void cOutVector::netPack(cCommBuffer *buffer)

@@ -37,19 +37,21 @@ cWatch::cWatch(const cWatch& vs) : cObject()
       operator=(vs);
 }
 
-void cWatch::info(char *buf)
+std::string cWatch::info() const
 {
+      char buf[128];
       printTo(buf);
+      return std::string(buf);
 }
 
 void cWatch::writeContents(ostream& os)
 {
       char buf[128];
-      printTo( buf );
+      printTo(buf);
       os << "  " << buf << "\n";
 }
 
-void cWatch::printTo(char *buf)
+void cWatch::printTo(char *buf) const
 {
       switch (type)
       {

@@ -205,9 +205,11 @@ cSimpleModule& cSimpleModule::operator=(const cSimpleModule& other)
     return *this;
 }
 
-void cSimpleModule::info(char *buf)
+std::string cSimpleModule::info() const
 {
-    sprintf(buf, "id=%d", id());
+    std::stringstream out;
+    out << "id=" << id();
+    return out.str();
 }
 
 void cSimpleModule::forEach(ForeachFunc do_fn)

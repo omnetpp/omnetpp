@@ -141,11 +141,11 @@ void cGate::writeContents(ostream& os)
     os << "  outside connection: " << (outside?outside->fullPath():"(not connected)") << '\n';
 }
 
-void cGate::info(char *buf)
+std::string cGate::info() const
 {
-    char *b = buf;
-    char *arrow;
-    cGate *g, *conng;
+    const char *arrow;
+    cGate const * g;
+    cGate const * conng;
 
     if (typ=='O')
         {arrow = "--> "; g = togatep; conng = this;}
@@ -154,17 +154,14 @@ void cGate::info(char *buf)
 
     // append useful info to buf
     if (vectsize==0)
-    {
-        strcpy(b,"(placeholder for zero-size vector)");
-    }
-    else if (!g)
-    {
-        strcpy(b,"(not connected)");
-    }
-    else
-    {
-        strcpy(b,arrow);
-        b+=4;
+        return std::string("(placeholder for zero-size vector)");
+    if (!g)
+        return std::string("not connected");
+
+    std::stringstream out;
+    out << arrow;
+// FIXME TBD
+/*
         if (channelp)
         {
             channelp->info(b);
@@ -173,12 +170,10 @@ void cGate::info(char *buf)
             strcpy(b,arrow);
             b+=4;
         }
-        strcpy(b, g->ownerModule()==ownerModule()->parentModule() ?
-                  "<parent>" : g->ownerModule()->fullName() );
-        while(*b) b++;
-        *b++ = '.';
-        strcpy(b, g->fullName() );
-    }
+*/
+    out << (g->ownerModule()==ownerModule()->parentModule() ? "<parent>" : g->ownerModule()->fullName());
+    out << "." << g->fullName();
+    return out.str();
 }
 
 void cGate::initDisplayString()

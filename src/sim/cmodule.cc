@@ -771,9 +771,11 @@ cCompoundModule::~cCompoundModule()
 {
 }
 
-void cCompoundModule::info(char *buf)
+std::string cCompoundModule::info() const
 {
-    sprintf(buf, "id=%d", id());
+    std::stringstream out;
+    out << "id=" << id();
+    return out.str();
 }
 
 cCompoundModule& cCompoundModule::operator=(const cCompoundModule& mod)

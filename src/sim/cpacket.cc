@@ -47,9 +47,9 @@ cPacket& cPacket::operator=(const cPacket& m)
     return *this;
 }
 
-void cPacket::info(char *buf)
+std::string cPacket::info() const
 {
-    cMessage::info(buf);
+    return cMessage::info();
 }
 
 void cPacket::netPack(cCommBuffer *buffer)

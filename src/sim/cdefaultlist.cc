@@ -136,10 +136,11 @@ cDefaultList& cDefaultList::operator=(const cDefaultList& list)
     return *this;
 }
 
-void cDefaultList::info(char *buf)
+std::string cDefaultList::info() const
 {
-    cObject::info(buf);
-    sprintf(buf+strlen(buf), " (n=%d)", count);
+    std::stringstream out;
+    out << "n=" << count;
+    return out.str();
 }
 
 void cDefaultList::forEach(ForeachFunc do_fn)

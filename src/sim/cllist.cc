@@ -55,12 +55,13 @@ cLinkedList::~cLinkedList()
     clear();
 }
 
-void cLinkedList::info(char *buf)
+std::string cLinkedList::info() const
 {
     if (n==0)
-       sprintf(buf, "(empty)");
-    else
-       sprintf(buf, "(length=%d)", n);
+        return std::string("empty");
+    std::stringstream out;
+    out << "length=" << n;
+    return out.str();
 }
 
 void cLinkedList::netPack(cCommBuffer *buffer)
