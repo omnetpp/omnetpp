@@ -119,17 +119,23 @@ void cObject::copyNotSupported() const
     throw new cException(this,eCANTCOPY);
 }
 
+const char *cObject::className() const 
+{
+    const char *s = typeid(*this).name();
+    // correct gcc 2.9x bug: it prepends the type name with its length
+    while (*s>='0' && *s<='9') s++;
+    return s;
+}
+
 void cObject::info(char *buf)
 {
-    /* prepare one-line textual info about the object */
-    sprintf( buf, "%-12s (%s)",
-             fullName() ? fullName():"<noname>", className()
-           );
+    sprintf( buf, "%-12s (%s)", fullName()?fullName():"<noname>", className());
 }
 
 void cObject::setOwner(cObject *newowner)
 {
-    if (ownerp!=NULL)   /* remove from owner's child list */
+    // remove from owner's child list
+    if (ownerp!=NULL)   
     {
          if (nextp!=NULL)
               nextp->prevp = prevp;
@@ -139,7 +145,9 @@ void cObject::setOwner(cObject *newowner)
               ownerp->firstchildp = nextp;
          ownerp = NULL;
     }
-    if (newowner!=NULL) /* insert into owner's child list as first elem. */
+
+    // insert into owner's child list as first elem
+    if (newowner!=NULL) 
     {
          ownerp = newowner;
          prevp = NULL;
@@ -241,15 +249,6 @@ cObject *cObject::findObject(const char *objname, bool deep)
     forEach( (ForeachFunc)_do_find );          // perform search
     _do_find( NULL, false, objname, p, deep ); // get result into p
     return p;
-}
-
-TInspector *cObject::inspector(int type, void *data)
-{
-    cInspectorFactory *p = findInspectorFactory(inspectorFactoryName());
-    if (!p)
-        throw new cException("Inspector factory object '%s' for class '%s' not found",
-                         inspectorFactoryName(), className());
-    return p->createInspectorFor(this,type,data);
 }
 
 int cObject::cmpbyname(cObject *one, cObject *other)

@@ -37,7 +37,6 @@ cHead modtypes("module-types");
 cHead linktypes("link-types");
 cHead functions("functions");
 cHead classes("classes");
-cHead inspectorfactories("inspector-factories");
 cHead enums("enums");
 
 //=== Registration

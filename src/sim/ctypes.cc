@@ -12,7 +12,6 @@
 //    cLinkType       : channel type (propagation delay, error rate, data rate)
 //    cNetworkType    : network initializer object
 //    cClassRegister  : class registration (supports createOne() factory)
-//    cInspectorFactory: inspector creation
 //
 //  Author: Andras Varga
 //
@@ -502,17 +501,3 @@ void *createOne(const char *classname)
 }
 
 //=========================================================================
-//=== cInspectorFactory - all functions inline
-
-cInspectorFactory::cInspectorFactory(const char *name, TInspector *(*f)(cObject *,int,void *)) : cObject(name)
-{
-    inspFactoryFunc = f;
-}
-
-TInspector *cInspectorFactory::createInspectorFor(cObject *object,int type,void *data)
-{
-    if (!inspFactoryFunc)
-        throw new cException(this,"factory function not set");
-
-    return (*inspFactoryFunc)(object,type,data);
-}
