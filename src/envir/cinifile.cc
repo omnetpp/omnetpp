@@ -564,9 +564,21 @@ std::vector<opp_string> cIniFile::getEntriesWithPrefix(const char *section, cons
               rest = entries[i].keypattern->patternPrefixMatches(keyprefix.c_str(), keypart1len);
           if (rest)
           {
-              // add to result
-              result.push_back(opp_string(rest));
-              result.push_back(opp_string(entries[i].value));
+              // add to result if not already there
+              bool found = false;
+              for (int j=0; j<(int)result.size(); j+=2)
+              {
+                  if (!strcmp(rest, result[j].c_str()))
+                  {
+                      found = true;
+                      break;
+                  }
+              }
+              if (!found)
+              {
+                  result.push_back(opp_string(rest));
+                  result.push_back(opp_string(entries[i].value));
+              }
           }
 
        }

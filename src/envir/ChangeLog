@@ -1,3 +1,11 @@
+2005-02-07  Andras Varga
+
+	* cakaroarng.cc: fix: added missing #include
+
+	* cinifile.cc: fix in cInifile::getEntriesWithPrefix(): first check
+	for double (overlapping) entries, and make the first one win. This 
+	fixes wrong priorities of rng mapping entries. [reported by Georg Lutz]
+
 2005-01-10  Andras Varga
 
 	* factored out platform dependencies to include/platdep

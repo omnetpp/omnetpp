@@ -18,6 +18,7 @@
 #ifdef WITH_AKAROA
 
 #include <akaroa.H>
+#include <akaroa/distributions.H>  // for UniformInt()
 #include "cenvir.h"
 #include "util.h"
 #include "cexception.h"
