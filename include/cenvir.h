@@ -185,6 +185,54 @@ class ENVIR_API cEnvir
      * interface animate the method call in the network diagram.
      */
     void moduleMethodCalled(cModule *from, cModule *to, const char *method);
+
+    /**
+     * Notifies the environment that a module was created. This method is called
+     * from cModuleType::create(), when the module has already been created
+     * but buildInside() has not been invoked yet.
+     */
+    void moduleCreated(cModule *newmodule);
+
+    /**
+     * Notifies the environment that a module was (more precisely: is being)
+     * deleted. This method is called from cModule destructor, so the
+     * "real" type (className() and everything from the actual subclass)
+     * is already lost at this point, however name(), fullName(), fullPath(),
+     * gates, parameters (everything that comes from cModule) are still valid.
+     *
+     * If a compound module (or a module with dynamically created submodules)
+     * is deleted, one should not assume anything about the relative order
+     * moduleDeleted() is called for the module and its submodules.
+     */
+    void moduleDeleted(cModule *module);
+
+    /**
+     * FIXME finalize semantics and document it
+     */
+    void connectionCreated(cGate *srcgate);
+
+    /**
+     * FIXME finalize semantics and document it; what if conn parameters change?
+     */
+    void connectionRemoved(cGate *srcgate);
+
+    /**
+     * Notifies the environment that a connection display string (stored in
+     * the source gate) has been changed.
+     */
+    void displayStringChanged(cGate *gate);
+
+    /**
+     * Notifies the environment that a module display string has been changed.
+     */
+    // TBD: how does module name change propagate to gui?
+    void displayStringChanged(cModule *submodule);
+
+    /**
+     * Notifies the environment that a module display string has been changed.
+     */
+    //FIXME "AsParent" is not really a good name...
+    void displayStringAsParentChanged(cModule *parentmodule);
     //@}
 
     /** @name Methods called by the simulation kernel to access configuration settings. */
@@ -350,12 +398,12 @@ class ENVIR_API cEnvir
     /**
      * Returns a stream where a snapshot can be written. Called from cSimulation::snapshot().
      */
-    ostream *getStreamForSnapshot();
+    std::ostream *getStreamForSnapshot();
 
     /**
      * Releases a stream after a snapshot was written.
      */
-    void releaseStreamForSnapshot(ostream *os);
+    void releaseStreamForSnapshot(std::ostream *os);
     //@}
 
     /** @name Miscellaneous functions. */

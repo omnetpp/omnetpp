@@ -25,11 +25,12 @@
 #include <time.h>     // time_t, clock_t in cSimulation
 #include "cobject.h"
 #include "ccoroutine.h"
-#include "chead.h"
+#include "globals.h"
 #include "carray.h"
 #include "cqueue.h"
 #include "cgate.h"
 #include "csimul.h"
+#include "cdefaultlist.h"
 
 //=== module state codes
 enum {
@@ -52,6 +53,7 @@ class  cModule;
 class  cCompoundModule;
 class  cSimulation;
 class  cModuleType;
+
 
 /**
  * @name Connecting gates.
@@ -78,12 +80,6 @@ SIM_API void connect(cModule *frm, int frg,
                      cModule *tom, int tog);
 //@}
 
-
-//=== operator new used by the NEW() macro:
-class ___nosuchclass;
-void *operator new(size_t m,___nosuchclass *);
-
-
 /**
  * Prototype for callback functions that are used to notify graphical user
  * interfaces about display string changes.
@@ -105,11 +101,12 @@ typedef void (*DisplayStringNotifyFunc)(cModule*,bool,void*);
  *
  * @ingroup SimCore
  */
-class SIM_API cModule : public cObject
+class SIM_API cModule : public cDefaultList
 {
     friend class cGate;
     friend class cSimulation;
     friend class cModuleType;
+    friend class cSubModIterator;
 
   public:
     static bool pause_in_sendmsg; // if true, split send() with transferToMain()
@@ -118,24 +115,31 @@ class SIM_API cModule : public cObject
     mutable char *fullname; // buffer to store full name of object
     cModuleType *mod_type;  // type of this module
     int mod_id;             // id (subscript into cSimulation)
-    cModule *parentmodp;    // pointer to parent module
+
+    // Note: parent module is stored in ownerp -- a module is always owned by its parent
+    // module. If ownerp cannot be cast to a cModule, the module has no parent module
+    // (e.g. the system module which is owned by the global object 'simulation').
+    cModule *prevp, *nextp; // pointers to sibling submodules
+    cModule *firstsubmodp;  // pointer to first submodule
 
   public:
     // The following members are only made public for use by the inspector
     // classes. Do not use them directly from simple modules.
     cArray gatev;           // vector of gates
     cArray paramv;          // vector of parameters
-    cHead members;          // list of data members of derived classes
 
   protected:
     int  idx;               // index if module vector, 0 otherwise
     int  vectsize;          // vector size, -1 if not a vector
 
-    opp_string dispstr;     // display string as submodule
-    opp_string parentdispstr; // display string as parent (enclosing) module
+    cDisplayString *dispstr;       // display string as submodule
+    cDisplayString *parentdispstr; // display string as parent (enclosing) module
 
-    DisplayStringNotifyFunc notify_inspector;
-    void *data_for_inspector;
+  public:
+    // internal: used from Tkenv: find out if cGate has a display string.
+    // displayString() would create the object immediately which we want to avoid.
+    bool hasDisplayString() {return dispstr!=NULL;}
+    bool hasDisplayStringAsParent() {return parentdispstr!=NULL;}
 
   protected:
     // internal: called when a message arrives at a gate which is no further
@@ -145,13 +149,26 @@ class SIM_API cModule : public cObject
     // internal: sets the module ID. Called as part of the module creation process.
     virtual void setId(int n);
 
+    // internal: sets module index within vector (if module is part of
+    // a module vector). Called as part of the module creation process.
+    virtual void setIndex(int i, int n);
+
     // internal: sets associated cModuleType for the module. Called as part of
     // the module creation process.
     virtual void setModuleType(cModuleType *mtype);
 
+    // internal: inserts a submodule. Called as part of the module creation process.
+    void insertSubmodule(cModule *mod);
+
+    // internal: removes a submodule
+    void removeSubmodule(cModule *mod);
+
     // internal: "virtual ctor" for cGate, because in cPlaceHolderModule
     // we'll need different gate objects
     virtual cGate *createGateObject(const char *gname, char tp);
+
+    // internal: get initial display strings from Envir
+    void initDisplayStrings();
 
   protected:
     /** @name Initialization and finish hooks.
@@ -291,12 +308,6 @@ class SIM_API cModule : public cObject
     void setGateSize(const char *s, int size);
 
     /**
-     * Called for modules that are in a module vector, sets the module's index 
-     * within the vector. Called as part of the module creation process.
-     */
-    virtual void setIndex(int i, int n);
-
-    /**
      * Adds a parameter to the module.
      */
     cPar *addPar(const char *s);
@@ -329,7 +340,8 @@ class SIM_API cModule : public cObject
     //@{
 
     /**
-     * Tells whether this is a simple or a compound module.
+     * Convenience function. Returns true this is a simple module
+     * (i.e. subclassed from cSimpleModule), false otherwise.
      */
     virtual bool isSimple() const;
 
@@ -351,7 +363,7 @@ class SIM_API cModule : public cObject
      * Returns the module's parent module. For the system module, it returns
      * <tt>NULL</tt>.
      */
-    cModule *parentModule() const     {return parentmodp;}
+    cModule *parentModule() const  {return dynamic_cast<cModule *>(owner());}
 
     /**
      * Returns true if this module is in a module vector.
@@ -483,8 +495,6 @@ class SIM_API cModule : public cObject
     bool hasPar(const char *s) const {return findPar(s)>=0;}
     //@}
 
-// FIXME remove machine pars from nedc!!!
-
     /** @name Interface for calling initialize()/finish().
      * Those functions may not be called directly, only via
      * callInitialize() and callFinish() provided here.
@@ -501,12 +511,12 @@ class SIM_API cModule : public cObject
      * Interface for calling initialize() from outside. It does a single stage
      * of initialization, and returns <tt>true</tt> if more stages are required.
      */
-    virtual bool callInitialize(int stage) = 0;
+    virtual bool callInitialize(int stage);
 
     /**
      * Interface for calling finish() from outside.
      */
-    virtual void callFinish() = 0;
+    virtual void callFinish();
     //@}
 
     /** @name Dynamic module creation. */
@@ -521,83 +531,49 @@ class SIM_API cModule : public cObject
     virtual void scheduleStart(simtime_t t) = 0;
 
     /**
-     * Deletes a dynamically created module and recursively all its submodules.
-     * This is a pure virtual function; it is redefined in both cCompoundModule
-     * and cSimpleModule.
+     * Deletes the module and recursively all its submodules. This method
+     * has to be used if a simple module wants to delete itself
+     * (<tt>delete this</tt> is not allowed.)
      */
-    virtual void deleteModule() = 0;
+    virtual void deleteModule();
     //@}
 
     /** @name Display strings. */
     //@{
 
     /**
-     * Returns the first display string.  This display string
-     * defines presentation when the module is displayed as a submodule
-     * in a compound module graphics.
+     * Returns the display string which defines presentation when the module
+     * is displayed as a submodule in a compound module graphics.
      */
-    const char *displayString();
+    cDisplayString& displayString();
 
     /**
-     * Sets the first display string for this module. This display string
-     * defines presentation when the module is displayed as a submodule
-     * in a compound module graphics.
-     *
-     * The immediate flag selects whether the change should become effective
-     * right now or later (after finishing the current event).
-     *
-     * If several display string changes are going to be done within one event,
-     * then immediate=false is useful because it reduces the number of necessary
-     * redraws. Immediate=false also uses less stack. But its drawback is that
-     * a setDisplayString() followed by a send() would actually be displayed
-     * in reverse order (message animation first), because message animations
-     * are performed immediately (actually within the send() call).
+     * Returns the display string which is used when this module is a compound module
+     * whose internals are being displayed in a window.
+     */
+    cDisplayString& displayStringAsParent();
+
+    /**
+     * DEPRECATED. Use displayString() and cDisplayString methods instead.
      */
     void setDisplayString(const char *dispstr, bool immediate=true);
 
     /**
-     * Returns the second display string. This display string
-     * is used when this module is a compound module whose internals are
-     * being displayed in a window.
-     */
-    const char *displayStringAsParent();
-
-    /**
-     * Sets the second display string for this module. This display string
-     * is used when this module is a compound module whose internals are
-     * being displayed in a window.
-     *
-     * The immediate flag selects whether the change should become effective
-     * right now or later (after finishing the current event).
-     *
-     * If several display string changes are going to be done within one event,
-     * then immediate=false is useful because it reduces the number of necessary
-     * redraws. Immediate=false also uses less stack. But its drawback is that
-     * a setDisplayString() followed by a send() would actually be displayed
-     * in reverse order (message animation first), because message animations
-     * are performed immediately (actually within the send() call).
+     * DEPRECATED. Use displayStringAsParent() and cDisplayString methods instead.
      */
     void setDisplayStringAsParent(const char *dispstr, bool immediate=true);
 
     /**
-     * DEPRECATED. Use displayString() (without argument) or
-     * displayStringAsLocal() instead.
+     * DEPRECATED. Use displayString()/displayStringAsParent() and cDisplayString
+     * methods instead.
      */
     const char *displayString(int type);
 
     /**
-     * DEPRECATED. Use setDisplayString(dispstr,immediate) (without the type
-     * argument) or displayStringAsLocal(dispstr,immediate) instead.
+     * DEPRECATED. Use displayString()/displayStringAsParent() and cDisplayString
+     * methods instead.
      */
     void setDisplayString(int type, const char *dispstr, bool immediate=true);
-
-    /**
-     * Registers a notification function to be called when the display string
-     * changes. This function is used by graphical user interfaces (e.g. Tkenv)
-     * to get notified when the network graphics needs redraw due to a display
-     * string change.
-     */
-    void setDisplayStringNotify(DisplayStringNotifyFunc notify_func, void *data);
     //@}
 };
 
@@ -664,29 +640,10 @@ class SIM_API cCompoundModule : public cModule
     //@{
 
     /**
-     * Redefined cModule method.
-     * Calls initialize() first for this module first, then recursively
-     * for all its submodules.
-     */
-    virtual bool callInitialize(int stage);
-
-    /**
-     * Redefined cModule method. Calls finish() first for submodules
-     * recursively, then for this module.
-     */
-    virtual void callFinish();
-
-    /**
      * Calls scheduleStart() recursively for all its (immediate)
      * submodules. This is used with dynamically created modules.
      */
     virtual void scheduleStart(simtime_t t);
-
-    /**
-     * Calls deleteModule() for all its submodules and then
-     * deletes itself.
-     */
-    virtual void deleteModule();
     //@}
 };
 
@@ -698,44 +655,40 @@ class SIM_API cCompoundModule : public cModule
 class SIM_API cSubModIterator
 {
   private:
-    const cModule *parent;
-    int id;
+    cModule *p;
 
   public:
     /**
      * Constructor. It takes the parent module.
      */
-    cSubModIterator(const cModule& p)  {parent=&p;id=0;operator++(0);}
+    cSubModIterator(const cModule& h)  {p = &h ? h.firstsubmodp : NULL;}
 
     /**
      * Reinitializes the iterator.
      */
-    void init(const cModule& p)  {parent=&p;id=0;operator++(0);}
-
-    /**
-     * DEPRECATED because it might return null reference; use operator() instead.
-     */
-    cModule& operator[](int)  {return id==-1 ? *(cModule*)NULL : *(simulation.module(id));}
+    void init(const cModule& h)  {p = &h ? h.firstsubmodp : NULL;}
 
     /**
      * Returns pointer to the current module. The pointer then
      * may be cast to the appropriate cModule subclass.
      * Returns NULL of the iterator has reached the end of the list.
      */
-    cModule *operator()()  {return id==-1 ? NULL : simulation.module(id);}
+    cModule *operator()() const {return p;}
 
     /**
-     * Returns true of the iterator has reached the end of the list.
+     * Returns true if the iterator reached the end of the list.
      */
-    bool end() const  {return (id==-1);}
+    bool end() const  {return (bool)(p==NULL);}
 
     /**
      * Returns the current module, then moves the iterator to the
      * next module. Returns NULL if the iterator has already reached
      * the end of the list.
      */
-    cModule *operator++(int);    // sets id to -1 if end was reached
+    cModule *operator++(int)  {if (!p) return NULL; cModule *t=p; p=p->nextp; return t;}
 };
+
+
 
 #endif
 

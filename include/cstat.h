@@ -67,9 +67,9 @@ class SIM_API cStatistic : public cObject
     explicit cStatistic(const char *name=NULL);
 
     /**
-     * The destructor does nothing.
+     * Destructor.
      */
-    virtual ~cStatistic()  {}
+    virtual ~cStatistic();
 
     /**
      * Assignment operator. It is present since descendants may refer to it.
@@ -303,7 +303,7 @@ class SIM_API cStdDev : public cStatistic
      * Writes textual information about this object to the stream.
      * See cObject for more details.
      */
-    virtual void writeContents(ostream& os);
+    virtual void writeContents(std::ostream& os);
 
 #ifdef WITH_PARSIM
     /**

@@ -28,10 +28,20 @@ class sFieldWrapper;
  * Abstract base class for structure description classes, used mainly
  * with message subclassing.
  *
- * FIXME: explain client object, fieldwrapper, etc.
+ * Subclasses of cStructDescriptor encapsulate the kind of reflection
+ * information (in the Java sense) which is needed by Tkenv to display
+ * fields in a message, struct or object created with the .msg syntax.
+ * The cStructDescriptor subclass is generated along with the message class,
+ * (struct, object, etc.).
  *
- * The copy constructor, dup() and the assignment operator are redefined
- * to raise an error (throw cException), since they would be of no use in subclasses.
+ * When Tkenv encounters a message object, it creates an appropriate
+ * cStructDescriptor object and uses that to find out what fields the
+ * message object has, what are their values etc. The message object
+ * is said to be the `client object' of the cStructDescriptor object.
+ *
+ * In this class, the copy constructor, dup() and the assignment operator
+ * are redefined to raise an error (throw cException), since they would
+ * be of no use in subclasses.
  *
  * @ingroup Internals
  * @see sFieldWrapper
@@ -156,7 +166,9 @@ class SIM_API cStructDescriptor : public cObject
      * Must be redefined in subclasses to return the type of a field
      * in the client object.
      * The argument must be in the 0..getFieldCount()-1 range, inclusive.
-     * FIXME: type constants!
+     * The returned field type is one of the FT_BASIC, FT_SPECIAL,
+     * FT_STRUCT, FT_BASIC_ARRAY, FT_SPECIAL_ARRAY, FT_STRUCT_ARRAY constants,
+     * or FT_INVALID if there's no such field.
      */
     virtual int getFieldType(int field) = 0;
 
@@ -185,16 +197,16 @@ class SIM_API cStructDescriptor : public cObject
     /**
      * Must be redefined in subclasses to return the value of a basic field
      * (of type FT_BASIC(_ARRAY)) in the client object as a string.
+     * It is an error if this method is invoked for non-basic fields.
      * Returns true if no error occurred, false otherwise.
-     * FIXME: what if called for non-basic fields?
      */
     virtual bool getFieldAsString(int field, int i, char *buf, int bufsize) = 0;
 
     /**
      * Must be redefined in subclasses to set the value of a basic field
      * (of type FT_BASIC(_ARRAY)) in the client object as a string.
+     * It is an error if this method is invoked for non-basic fields.
      * Returns true if no error occurred, false otherwise.
-     * FIXME: what if called for non-basic fields?
      */
     virtual bool setFieldAsString(int field, int i, const char *value) = 0;
 
@@ -202,7 +214,7 @@ class SIM_API cStructDescriptor : public cObject
      * Must be redefined in subclasses to return a wrapper for an
      * FT_SPECIAL(_ARRAY) field in the client object. There's no corresponding
      * setFieldWrapper() method -- setting the field value should can take
-     * place via the wrapper object returned here.                              *
+     * place via the wrapper object returned here.
      * Returns NULL if no associated wrapper is defined for this field.
      */
     virtual sFieldWrapper *getFieldWrapper(int field, int i) = 0;

@@ -45,7 +45,7 @@ static void exitIfStartupError(cException *e)
 {
     if (!cStaticFlag::isSet())
     {
-        ev.printfmsg("Error during startup: %s. Exiting.", e->message());
+        ev.printfmsg("Error during startup/shutdown: %s. Exiting.", e->message());
         exit(1);
     }
 }
@@ -130,7 +130,11 @@ void cException::init(const cObject *where, int errc, const char *fmt, va_list v
 
     // store context
     storeCtx();
+
+    //*(int*)0 = 0; // debugging aid
 }
+
+//---
 
 cTerminationException::cTerminationException(int errc...)
 {
@@ -148,4 +152,9 @@ cTerminationException::cTerminationException(const char *msgformat...)
     va_end(va);
 }
 
+//---
+
+cStackCleanupException::cStackCleanupException()
+{
+}
 

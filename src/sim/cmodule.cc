@@ -32,6 +32,7 @@
 #include "cpar.h"
 #include "cenvir.h"
 #include "cexception.h"
+#include "cdispstr.h"
 
 
 //=== static members:
@@ -43,43 +44,95 @@ bool cModule::pause_in_sendmsg;
 //=========================================================================
 //=== cModule - member functions
 
-cModule::cModule(const cModule& mod) : cObject(),
+cModule::cModule(const cModule& mod) :
+ cDefaultList(),
  gatev(NULL, 0,2),
- paramv(NULL, 0,2),
- members(NULL)
+ paramv(NULL, 0,2)
 {
-    take( &members );
+    //take(&gatev);
+    //take(&paramv);
 
+    prevp = nextp = firstsubmodp = NULL;
     idx=0; vectsize=-1;
     fullname = NULL;
+
+    dispstr = NULL;
+    parentdispstr = NULL;
 
     setName(mod.name());
     operator=(mod);
 }
 
 cModule::cModule(const char *name, cModule *parentmod) :
- cObject(name),
+ cDefaultList(name),
  gatev("gates",0,2),
- paramv("parameters",0,2),
- members("class-members")
+ paramv("parameters",0,2)
 {
-    take( &gatev );
-    take( &paramv );
-    take( &members );
+    //take(&gatev);
+    //take(&paramv);
 
-    parentmodp = parentmod;
     idx=0; vectsize=-1;
     fullname = NULL;
 
-    notify_inspector = NULL;
-    data_for_inspector = NULL;
+    dispstr = NULL;
+    parentdispstr = NULL;
 
-    /* cModuleType::create() call will create gates and params */
+    prevp = nextp = firstsubmodp = NULL;
+    if (parentmod)
+        parentmod->insertSubmodule(this);
+
+    initDisplayStrings();
+
+    // cModuleType::create() call will create gates, params
 }
 
 cModule::~cModule()
 {
+    // notify envir while module object still exists (more or less)
+    ev.moduleDeleted(this);
+
+    // delete submodules
+    for (cSubModIterator submod(*this); !submod.end(); )
+    {
+        if (submod() == (cModule *)simulation.runningModule())
+        {
+            throw new cException("Cannot delete a compound module from one of its submodules!");
+            // The reason is that deleteModule() of the currently executing
+            // module does not return -- for obvious reasons (we would
+            // execute with an already deallocated stack etc).
+            // Thus the deletion of the current module would remain unfinished.
+            // A solution could be to skip deletion of that very module at first,
+            // and delete it only when everything else is deleted.
+            // However, this would be clumsy and ugly to implement so
+            // I'd rather wait until the real need for it emerges... --VA
+        }
+
+        cModule *mod = submod++;
+        delete mod;
+    }
+
+    // adjust gates that were directed here
+    for (int i=0; i<gates(); i++)
+    {
+            cGate *g = gate(i);
+            if (g && g->toGate() && g->toGate()->fromGate()==g)
+               g->toGate()->setFrom( NULL );
+            if (g && g->fromGate() && g->fromGate()->toGate()==g)
+               g->fromGate()->setTo( NULL );
+    }
+
+    // deregister ourselves
+    simulation.deregisterModule(this);
+    if (parentModule())
+        parentModule()->removeSubmodule(this);
+
+    //drop(&gatev); FIXME
+    //drop(&paramv);
+
     delete [] fullname;
+    delete dispstr;
+    delete parentdispstr;
+
 }
 
 cModule& cModule::operator=(const cModule&)
@@ -91,16 +144,14 @@ void cModule::forEach(ForeachFunc do_fn )
 {
     if (do_fn(this,true))
     {
-       paramv.forEach( do_fn );
-       gatev.forEach( do_fn );
-       members.forEach( do_fn );
-       for (cSubModIterator submod(*this); !submod.end(); submod++)
-          submod()->forEach( do_fn );
+       // Note: everything including paramv, gatev and submodules are on the cDefaultList
+       for (int i=0; i<defaultListItems(); i++)
+            defaultListGet(i)->forEach(do_fn);
     }
     do_fn(this,false);
 }
 
-void cModule::setId( int n )
+void cModule::setId(int n)
 {
     mod_id = n;
 }
@@ -109,6 +160,62 @@ void cModule::setIndex(int i, int n)
 {
     idx = i;
     vectsize = n;
+    initDisplayStrings(); // display strings may depend on module index
+}
+
+void cModule::initDisplayStrings()
+{
+    char dispname[128];   // FIXME buffer overflow danger
+    if (parentModule())
+    {
+        sprintf(dispname, "%s.%s",parentModule()->className(),fullName());
+        const char *ds = ev.getDisplayString(simulation.runNumber(),dispname);
+        if (!ds)
+            {delete dispstr; dispstr = NULL;}
+        else
+            displayString().parse(ds);
+    }
+
+    const char *pds = ev.getDisplayString(simulation.runNumber(),className());
+    if (!pds)
+        {delete parentdispstr; parentdispstr = NULL;}
+    else
+        displayStringAsParent().parse(pds);
+}
+
+void cModule::insertSubmodule(cModule *mod)
+{
+    // take ownership
+    take(mod);
+
+    // find end of submodule list; TBD maybe introduce a lastsubmodp member?
+    cModule *lastsubmodp = firstsubmodp;
+    if (lastsubmodp)
+        while (lastsubmodp->nextp)
+            lastsubmodp = lastsubmodp->nextp;
+
+    // append at end of submodule list
+    mod->nextp = NULL;
+    mod->prevp = lastsubmodp;
+    if (mod->prevp)
+        mod->prevp->nextp = mod;
+    if (!firstsubmodp)
+        firstsubmodp = mod;
+}
+
+void cModule::removeSubmodule(cModule *mod)
+{
+    // NOTE: no drop(mod): anyone can take ownership anyway (because we're soft owners)
+    // and otherwise it'd cause trouble if mod itself is in context (it'd get inserted
+    // on its own DefaultList)
+
+    // remove from submodule list
+    if (mod->nextp)
+         mod->nextp->prevp = mod->prevp;
+    if (mod->prevp)
+         mod->prevp->nextp = mod->nextp;
+    if (firstsubmodp==mod)
+         firstsubmodp = mod->nextp;
 }
 
 void cModule::setModuleType(cModuleType *mtype)
@@ -144,12 +251,11 @@ const char *cModule::fullPath(char *buffer, int bufsize) const
         return "(fullPath(): no or too small buffer)";
     }
 
-    // follows module hierarchy instead of ownership hierarchy
     // append parent path + "."
     char *buf = buffer;
-    if (parentmodp!=NULL)
+    if (parentModule())
     {
-       parentmodp->fullPath(buf,bufsize);
+       parentModule()->fullPath(buf,bufsize);
        int len = strlen(buf);
        buf+=len;
        bufsize-=len;
@@ -187,11 +293,10 @@ void cModule::setGateSize(const char *gname, int size)
     int pos = findGate(gname,-1);
     if (pos<0)
        pos = findGate(gname,0);
-    // FIXME in all these throw's, printing fullPath() is probably redundant
     if (pos<0)
-       throw new cException(this,"setGateSize(): Gate %s.%s[] not found", fullPath(), gname);
+       throw new cException(this,"setGateSize(): Gate %s[] not found", gname);
     if (size<0)
-       throw new cException(this,"setGateSize(): negative vector size (%d) requested for gate %s.%s[]", size, fullPath(), gname);
+       throw new cException(this,"setGateSize(): negative vector size (%d) requested for gate %s[]", size, gname);
 
     char tp = gate(pos)->type();
     int oldsize = gate(pos)->size();
@@ -216,9 +321,9 @@ void cModule::setGateSize(const char *gname, int size)
     for (i=0; i<size; i++)
     {
         cGate *gate = createGateObject(gname, tp);
+        gate->setOwnerModule( this, pos+i );
         gate->setIndex( i, size );
         gatev.addAt( pos+i, gate );
-        gate->setOwnerModule( this, pos+i );
     }
 }
 
@@ -380,7 +485,7 @@ cPar& cModule::ancestorPar(const char *name)
     cModule *pmod = this;
     int k;
     while (pmod && (k=pmod->findPar(name))<0)
-        pmod = pmod->parentmodp;
+        pmod = pmod->parentModule();
     if (!pmod)
         throw new cException(this,"has no ancestor parameter called `%s'",name);
     return pmod->par(k);
@@ -389,8 +494,7 @@ cPar& cModule::ancestorPar(const char *name)
 int cModule::buildInside()
 {
     // temporarily switch context
-    cModule *oldcontext = simulation.contextModule();
-    simulation.setContextModule(this);
+    cContextSwitcher tmp(this);
 
     // check parameters and gates  FIXME only if module interface exists?
     cModuleInterface *iface = moduleType()->moduleInterface();
@@ -400,12 +504,18 @@ int cModule::buildInside()
     // call doBuildInside() in this context
     doBuildInside();
 
-    if (oldcontext)
-        simulation.setContextModule( oldcontext );
-    else
-        simulation.setGlobalContext();
-
     return 0;
+}
+
+void cModule::deleteModule()
+{
+    // check this module doesn't contain the executing module somehow
+    for (cModule *mod = simulation.contextModule(); mod; mod = mod->parentModule())
+        if (mod==this)
+            throw new cException(this, "it is not supported to delete module which contains "
+                                 "the currently executing simple module");
+
+    delete this;
 }
 
 void cModule::initialize()
@@ -427,63 +537,87 @@ void cModule::callInitialize()
         ++stage;
 }
 
-const char *cModule::displayString()
+bool cModule::callInitialize(int stage)
 {
-    if ((const char *)dispstr != NULL)
-        return dispstr;
+    // This is the interface for calling initialize().
 
-    // no display string stored -- try to get it from Envir
-    char dispname[128];
-    if (!parentModule()) return "";
-    sprintf(dispname, "%s.%s",parentModule()->className(),fullName());
-    const char *s = ev.getDisplayString(simulation.runNumber(),dispname);
-    return s ? s : "";
+    // first call it for this module...
+    int numStages = numInitStages();
+    if (stage < numStages)
+    {
+        // temporarily switch context for the duration of the call
+        cContextSwitcher tmp(this);
+        initialize(stage);
+    }
+
+    // ...then for submods (meanwhile determine if more stages are needed)
+    bool moreStages = stage < numStages-1;
+    for (cSubModIterator submod(*this); !submod.end(); submod++)
+    {
+        if (submod()->callInitialize(stage))
+            moreStages = true;
+    }
+
+    return moreStages; // return true if there's more stages to do
 }
 
-void cModule::setDisplayString(const char *s, bool immediate)
+void cModule::callFinish()
 {
-    dispstr = s;
+    // This is the interface for calling finish().
 
-    // notify the parent module's inspector
-    cModule *p = parentModule();
-    if (p && p->notify_inspector) p->notify_inspector(p,immediate,p->data_for_inspector);
+    // first call it for submods...
+    for (cSubModIterator submod(*this); !submod.end(); submod++)
+    {
+        submod()->callFinish();
+    }
+
+    // ...then for this module, in our context
+    cContextSwitcher tmp(this);
+    finish();
 }
 
-const char *cModule::displayStringAsParent()
+cDisplayString& cModule::displayString()
 {
-    if ((const char *)parentdispstr != NULL)
-        return parentdispstr;
-
-    // no display string stored -- try to get it from Envir
-    const char *s = ev.getDisplayString(simulation.runNumber(),className());
-    return s ? s : "";
+    if (!dispstr)
+    {
+        dispstr = new cDisplayString();
+        dispstr->setRoleToModule(this);
+    }
+    return *dispstr;
 }
 
-void cModule::setDisplayStringAsParent(const char *s, bool immediate)
+cDisplayString& cModule::displayStringAsParent()
 {
-    parentdispstr = s;
-
-    // notify inspector
-    if (notify_inspector) notify_inspector(this,immediate,data_for_inspector);
+    if (!parentdispstr)
+    {
+        parentdispstr = new cDisplayString();
+        parentdispstr->setRoleToModuleAsParent(this);
+    }
+    return *parentdispstr;
 }
 
 // DEPRECATED
-void cModule::setDisplayString(int type, const char *s, bool immediate)
+void cModule::setDisplayString(const char *s, bool)
+{
+    displayString().parse(s);
+}
+
+// DEPRECATED
+void cModule::setDisplayStringAsParent(const char *s, bool)
+{
+    displayStringAsParent().parse(s);
+}
+
+// DEPRECATED
+void cModule::setDisplayString(int type, const char *s, bool)
 {
     if (type<0 || type>=dispNUMTYPES)
          throw new cException(this,"setDisplayString(): type %d out of range", type );
 
     if (type==dispENCLOSINGMOD)
-    {
-         parentdispstr = s;
-         if (notify_inspector) notify_inspector(this,immediate,data_for_inspector);
-    }
-    else if (type==dispSUBMOD)
-    {
-         dispstr = s;
-         cModule *p = parentModule();
-         if (p && p->notify_inspector) p->notify_inspector(this,immediate,p->data_for_inspector);
-    }
+         setDisplayStringAsParent(s);
+    else // type==dispSUBMOD
+         setDisplayString(s);
 }
 
 // DEPRECATED
@@ -492,31 +626,10 @@ const char *cModule::displayString(int type)
     if (type<0 || type>=dispNUMTYPES)
          throw new cException(this,"displayString(): type %d out of range", type );
 
-    if (type==dispSUBMOD && (const char *)dispstr != NULL)
-        return dispstr;
-    if (type==dispENCLOSINGMOD && (const char *)parentdispstr != NULL)
-        return parentdispstr;
-
-    // no hardcoded display string -- try to get it from Envir
-    char dispname[128];
-
-    if (type==dispSUBMOD)
-    {
-        if (!parentModule()) return "";
-        sprintf(dispname, "%s.%s",parentModule()->className(),fullName());
-    }
-    else // type==dispENCLOSINGMOD
-    {
-        sprintf(dispname, "%s",className());
-    }
-    const char *s = ev.getDisplayString(simulation.runNumber(),dispname);
-    return s ? s : "";
-}
-
-void cModule::setDisplayStringNotify(DisplayStringNotifyFunc notify_func, void *data)
-{
-    notify_inspector = notify_func;
-    data_for_inspector = data;
+    if (type==dispENCLOSINGMOD)
+         return displayStringAsParent().getString();
+    else // type==dispSUBMOD
+         return displayString().getString();
 }
 
 //==========================================================================
@@ -562,122 +675,6 @@ void cCompoundModule::scheduleStart(simtime_t t)
     {
         submod()->scheduleStart( t );
     }
-}
-
-//void cCompoundModule::callInitialize()
-//{
-//    cModule::callInitialize();
-//}
-
-bool cCompoundModule::callInitialize(int stage)
-{
-    // This is the interface for calling initialize().
-
-    // first call it for this module...
-    int numStages = numInitStages();
-    if (stage < numStages)
-    {
-        cModule *oldcontext = simulation.contextModule();
-        simulation.setContextModule( this );
-
-        initialize(stage);
-
-        if (oldcontext)
-            simulation.setContextModule( oldcontext );
-        else
-            simulation.setGlobalContext();
-    }
-
-    // ...then for submods (meanwhile determine if more stages are needed)
-    bool moreStages = stage < numStages-1;
-    for (cSubModIterator submod(*this); !submod.end(); submod++)
-    {
-        if (submod()->callInitialize(stage))
-            moreStages = true;
-    }
-
-    return moreStages; // return true if there's more stages to do
-}
-
-
-void cCompoundModule::callFinish()
-{
-    // This is the interface for calling finish().
-
-    // first call it for submods...
-    for (cSubModIterator submod(*this); !submod.end(); submod++)
-    {
-        submod()->callFinish();
-    }
-
-    // ...then for this module.
-    cModule *oldcontext = simulation.contextModule();
-    simulation.setContextModule( this );
-
-    finish();
-
-    if (oldcontext)
-        simulation.setContextModule( oldcontext );
-    else
-        simulation.setGlobalContext();
-}
-
-void cCompoundModule::deleteModule()
-{
-    // delete submodules
-    for (cSubModIterator submod(*this); !submod.end(); submod++)
-    {
-        if (submod() == (cModule *)simulation.runningModule())
-        {
-            throw new cException("Cannot delete a compound module from one of its submodules!");
-            // The reason is that deleteModule() of the currently executing
-            // module does not return -- for obvious reasons (we would
-            // execute with an already deallocated stack etc).
-            // Thus the deletion of the current module would remain unfinished.
-            // A solution could be to skip deletion of that very module at first,
-            // and delete it only when everything else is deleted.
-            // However, this would be clumsy and ugly to implement so
-            // I'd rather wait until the real need for it emerges... --VA
-        }
-        submod()->deleteModule();
-    }
-
-    // adjust gates that were directed here
-    for (int i=0; i<gates(); i++)
-    {
-            cGate *g = gate(i);
-            if (g && g->toGate() && g->toGate()->fromGate()==g)
-               g->toGate()->setFrom( NULL );
-            if (g && g->fromGate() && g->fromGate()->toGate()==g)
-               g->fromGate()->setTo( NULL );
-    }
-
-    // delete module
-    simulation.deleteModule( id() );
-}
-
-//==========================================================================
-//=== cSubModIterator member functions:
-
-cModule *cSubModIterator::operator++(int)
-{
-    if (end())
-        return NULL;
-
-    // linear search among all modules -- should be replaced with something faster
-    int lastId = simulation.lastModuleId();
-    do
-    {
-        id++;
-        cModule *mod = simulation.module(id);
-        if (mod!=NULL && parent==mod->parentModule())
-            return mod;
-    }
-    while (id<=lastId);
-
-    // not found
-    id = -1;
-    return NULL;
 }
 
 //==========================================================================

@@ -20,12 +20,13 @@
 
 #include <typeinfo>
 #include <iostream>
+#include "defs.h"
 #include "util.h"
 #include "cexception.h"
 
-using std::ostream;
 
 
+#define MAX_INTERNAL_NAME 11  /* should be 4n+3 */
 #define FULLPATHBUF_SIZE  1024
 
 //=== classes declared here
@@ -34,17 +35,8 @@ class  cStaticFlag;
 
 //=== classes mentioned
 class  cCommBuffer;
-class  cIterator;
-class  cHead;
-
-//=== Global objects:
-SIM_API extern cHead networks;            ///< List of available networks.
-SIM_API extern cHead modinterfaces;       ///< List of all module interfaces.
-SIM_API extern cHead modtypes;            ///< List of all module types.
-SIM_API extern cHead linktypes;           ///< List of link types.
-SIM_API extern cHead functions;           ///< List of function types.
-SIM_API extern cHead classes;             ///< List of cClassRegister objects.
-SIM_API extern cHead enums;               ///< List of cEnum objects.
+class  cArray;
+class  cDefaultList;
 
 
 /**
@@ -84,18 +76,17 @@ typedef bool (*ForeachFunc)(cObject *,bool);
  * Using cPolymorphic will allow the safe downcasts using <tt>dynamic_cast</tt>,
  * and also some reflection using className().
  *
- * FIXME move more virtual functions from cObject to cPolymorphic...?
- * TODO revise every cObject*, maybe change it to cPolymorphic
- *
  * @ingroup SimCore
  */
+// TBD use cPolimorphic
+// TBD move more virtual functions from cObject to cPolymorphic...?
+// TBD revise every cObject*, maybe change it to cPolymorphic
 class SIM_API cPolymorphic
 {
   public:
     /**
      * Constructor. It has an empty body. (The class doesn't have data members
      * and there's nothing special to do at construction time.)
-     *
      */
     cPolymorphic() {}
 
@@ -138,9 +129,10 @@ class SIM_API cPolymorphic
  * mechanism. It usually works well without you paying attention, but it
  * generally helps to understand how it works.
  *
- * Rule 1: <b>Ownership means exclusive right and duty to delete owned objects.</b>
+ *FIXME change description!!!
+ * <b>Ownership means exclusive right and duty to delete owned objects.</b>
  * The owner of any 'o' object is returned by o->owner(), and can be changed
- * with o->setOwner(). The destructor of cObject deletes (via discard()) all owned
+ * with o->setOwner(). The destructor of cObject deletes (via delete ) all owned
  * objects, and so do all classes derived from cObject.
  *
  * Ownership internally works via 4 pointers as cObject data members:
@@ -165,39 +157,55 @@ class SIM_API cPolymorphic
       - an object created thru the copy constructor:
           - will have the same owner as original;
           - does not dup() or take objects owned by the original.
-      - destructor calls discard() for owned objects (see later).
+      - destructor calls delete for owned objects (see later)
    Objects contained as data members:
       the enclosing object should own them.
    What container objects derived from cObject should do:
-      - they use the functions: take(obj), drop(obj), discard(obj)
-      - when an object is inserted, if takeOwnership() is true, should
-        take ownership of object by calling take(obj).
-        TAKEOWNERSHIP() DEFAULTS TO true.
+      - they use the functions: take(obj), drop(obj), delete obj
       - when an object is removed, they should call drop(obj) for it if
         they were the owner.
       - copy constructor copies should dup() and take ownership of objects
         that were owned by the original.
-      - destructor doesn't need not call discard() for objects: this will be
-        done in cObject's destructor.
 */
 class SIM_API cObject : public cPolymorphic
 {
-    friend class cHead;
-    friend class cIterator;
-    friend class const_cIterator;
-    friend class cStaticFlag;
+  private:
+    friend class cDefaultList;
+
+    union
+    {
+        char *p;
+        char chars[MAX_INTERNAL_NAME+1];
+        // last char: !=0 if p is used; =0 if chars[] is used (then also serves as EOS for 10-long strings)
+    } nameunion;
+
+    cObject *ownerp;       // owner pointer
+    int pos;               // used if owner is a cDefaultList
+
+    // list in which objects are accumulated if there's no simple module in context
+    // (see also setDefaultOwner() and cSimulation::setContextModule())
+    static cDefaultList *defaultowner;
+
+    // global variables for statistics
+    static long total_objs;
+    static long live_objs;
 
   protected:
-    opp_string namestr;               // name string
-    char stor;                        // storage: Static/Auto/Dynamic ('S'/'A'/'D')
-
-    bool tkownership;                 // for derived containers: take ownership of objects?
-    cObject *ownerp, *prevp, *nextp;  // ptr to owner; linked list ptrs
-    cObject *firstchildp;             // list of owned objects
-
-    static int staticflag;            // to determine 'storage' (1 while in main())
-    static int heapflag;              // to determine 'storage' (1 immediately after 'new')
     static char fullpathbuf[FULLPATHBUF_SIZE]; // buffer for fullPath()
+
+  private:
+    // internal
+    virtual void ownedObjectDeleted(cObject *obj);
+
+    // internal
+    virtual void yieldOwnership(cObject *obj, cObject *to);
+
+  public:
+    // internal
+    virtual void removeFromOwnershipTree();
+
+    // internal
+    static void setDefaultOwner(cDefaultList *list);
 
   protected:
     /** @name Ownership control.
@@ -213,47 +221,35 @@ class SIM_API cObject : public cPolymorphic
      * The function called by the container object when it takes ownership
      * of the obj object that is inserted into it.
      *
-     * Implementation:
-     * <pre>
-     *     obj->setOwner( this );
-     * </pre>
+     * The obj pointer should not be NULL.
      */
-    void take(cObject *object)
-        {object->setOwner( this );}
+    virtual void take(cObject *obj);
 
     /**
      * Releases ownership of `object'. Actually it gives ownership of `object'
      * back to its default owner.
-     * The function called by the container object when obj
-     * is removed from the container -- releases the ownership of the
-     * object and hands it over to its default owner.
+     * The function called by the container object when obj is removed
+     * from the container -- releases the ownership of the object and
+     * hands it over to its default owner.
      *
-     * Implementation:
-     * <pre>
-     *     obj->setOwner( obj->defaultOwner() );
-     * </pre>
+     * The obj pointer should not be NULL.
      */
-    void drop(cObject *object)
-        {object->setOwner( object->defaultOwner() );}
+    virtual void drop(cObject *obj);
 
     /**
-     * Disposes of `object'; it MUST be owned by this object.
-     * The function is called when the container object has to delete
-     * the contained object obj. It the object was dynamically
-     * allocated (by operator new), it is deleted, otherwise (e.g., if
-     * it is a global or a local variable) it is just removed from the
-     * ownership hierarchy.
-     *
-     * Implementation:
+     * This is a shortcut for the sequence
      * <pre>
-     *     if(obj->storage()=='D')
-     *         delete obj;
-     *     else
-     *         obj->setOwner(NULL);
+     *   drop(obj);
+     *   delete obj;
      * </pre>
+     *
+     * It is especially useful when writing destructors and assignment operators.
+     *
+     * Passing NULL is allowed.
+     *
+     * @see drop()
      */
-    void discard(cObject *object)
-        {if(object->storage()=='D') delete object; else object->setOwner(NULL);}
+    void dropAndDelete(cObject *obj);
     //@}
 
     /** @name Helper functions. */
@@ -281,18 +277,9 @@ class SIM_API cObject : public cPolymorphic
     /**
      * Create object without a name.
      *
-     * Ownership: By default, the object is assumed to have been created by the
-     * currently active simple module, so the owner will be the "local objects" list
-     * of that module. (More precisely, the owner will be set using
-     * <code>setOwner(defaultOwner())</code>, and cObject::defaultOwner() returns
-     * simulation.localList(), an alias to the currently active simple module's local
-     * objects list. Note: Overriding defaultOwner() won't change this because
-     * virtual functions are only effective after constructor has completed.
-     * If you want to change the initial owner in a derived class, you have to
-     * call setOwner() directly in the derived class' constructor.)
-     *
-     * If there is no active simple module (we're not in a simulation),
-     * the owner will be NULL.
+     * The initial owner of the object will be defaultOwer(); during the simulation,
+     * this the 'locals' member of the currently active simple module;
+     * otherwise it is the 'defaultList' global variable.
      */
     cObject();
 
@@ -308,7 +295,7 @@ class SIM_API cObject : public cPolymorphic
      *       the object was deleted. This enables any open inspector windows
      *       to be closed.
      *    -# removes the object from the owner object's list (setOwner(NULL))
-     *    -# <b>deletes all owned objects</b> by calling their discard() method
+     *    -# <b>deletes all owned objects</b> by calling delete
      *    -# deallocates object name
      */
     virtual ~cObject();
@@ -320,13 +307,6 @@ class SIM_API cObject : public cPolymorphic
      * <tt>return new cObject(*this)</tt>.
      */
     virtual cObject *dup() const    {return new cObject(*this);}
-
-    /**
-     * Direct call to the virtual destructor. This function is used
-     * internally at cleanup (e.g. at the end of the simulation)
-     * for disposing of objects left on module stacks of activity() modules.
-     */
-    void destruct() {this->~cObject();}
 
     /**
      * The assignment operator. Derived classes should contain similar
@@ -352,27 +332,26 @@ class SIM_API cObject : public cPolymorphic
      * Sets object's name. The object creates its own copy of the string.
      * NULL pointer may also be passed.
      */
-    void setName(const char *s)  {namestr = s;}
+    void setName(const char *s);
 
     /**
      * Returns pointer to the object's name. The function never returns
      * NULL; rather, it returns ptr to "".
      */
-    const char *name() const     {return (const char *)namestr ? (const char *)namestr : "";}
+    const char *name() const  {return nameunion.chars[MAX_INTERNAL_NAME] ? nameunion.p : nameunion.chars;}
 
     /**
      * Returns true if the object's name is identical to the
      * string passed.
      */
-    bool isName(const char *s) const {return !opp_strcmp((const char *)namestr,s);}
+    bool isName(const char *s) const {return !opp_strcmp(name(),s);}
 
     /**
      * Returns a name that includes the object 'index' (e.g. in a module vector),
      * like "modem[5]".
      * To be redefined in descendants. E.g., see cModule::fullName().
      */
-    virtual const char *fullName() const
-        {return name();}
+    virtual const char *fullName() const  {return name();}
 
     /**
      * Returns the full path of the object in the object hierarchy,
@@ -397,48 +376,27 @@ class SIM_API cObject : public cPolymorphic
     cObject *owner() const {return ownerp;}
 
     /**
-     * Sets the owner of the object. NULL is legal a legal value and means
-     * that no object will own this one (ownerp=NULL).
-     *
-     * @see defaultOwner()
+     * Returns false, which means if this A object is the owner of some other object B,
+     * then B cannot be taken by any other object (see take()) -- an error will
+     * be raised saying the object is owned by A. This method only returns true
+     * in cDefaultList.
      */
-    void setOwner(cObject *newowner);
+    virtual bool isSoftOwner()  {return false;}
 
     /**
-     * Returns pointer to the default owner of the object.
-     * This function is used by the drop() member function.
+     * The object that will be the owner of new or dropped (see drop()) objects.
+     * The default owner is set internally, it is usually the simple module processing
+     * the current event.
      */
-    virtual cObject *defaultOwner() const;
-    //@}
+    static cDefaultList *defaultOwner();
 
-    /** @name Ownership control flag.
-     *
-     * The ownership control flag is to be used by derived container classes.
-     * If the flag is set, the container should take() any object that is
-     * inserted into it.
-     */
-    //@{
-
-    /**
-     * Sets the flag which determines whether the container object
-     * should automatically take ownership of the objects that are inserted
-     * into it.
-     */
-    void takeOwnership(bool tk) {tkownership=tk;}
-
-    /**
-     * Returns the flag which determines whether the container object
-     * should automatically take ownership of the objects that are inserted
-     * into it.
-     */
-    bool takeOwnership() const   {return tkownership;}
     //@}
 
     /** @name Reflection, support for debugging and snapshots. */
     //@{
     /**
      * Produces a one-line description of object into `buf'.
-     * This function is used by the graphical user interface (TkEnv). See
+     * This function is used by the graphical user interface (Tkenv). See
      * also <I>Functions supporting snapshots</I>.
      */
     virtual void info(char *buf);
@@ -449,7 +407,7 @@ class SIM_API cObject : public cPolymorphic
      * writeContents(). writeTo() does not need to
      * be redefined.
      */
-    virtual void writeTo(ostream& os);
+    virtual void writeTo(std::ostream& os);
 
     /**
      * This function is called internally by writeTo(). It is
@@ -458,7 +416,7 @@ class SIM_API cObject : public cPolymorphic
      * uses forEach() to call info() for contained objects. Redefine
      * as needed.
      */
-    virtual void writeContents(ostream& os);
+    virtual void writeContents(std::ostream& os);
     //@}
 
     /** @name Support for parallel execution.
@@ -524,23 +482,6 @@ class SIM_API cObject : public cPolymorphic
     virtual void forEach(ForeachFunc f);
 
     /**
-     * Returns the storage class of the object. The return value is one
-     * of the characters S/A/D which stand for static, auto and dynamic,
-     * respectively. (The storage class is determined by the constructor,
-     * with some help from cObject's operator new().)
-     */
-    char storage() const         {return stor;}
-
-    /**
-     * cObject's operator new does more than the global new().
-     * It cooperates with cObject's constructor to determine the storage
-     * class of the object (static, auto or dynamic).
-     *
-     * @see storage()
-     */
-    void *operator new(size_t m);
-
-    /**
      * Finds the object with the given name. This function is useful when called
      * on cObject subclasses that are containers. This method
      * finds the object with the given name in a container object and
@@ -557,6 +498,32 @@ class SIM_API cObject : public cPolymorphic
      */
     static int cmpbyname(cObject *one, cObject *other);
     //@}
+
+    /** @name Statistics. */
+    //@{
+    /**
+     * Returns the total number of objects created since the start of the program
+     * (or since the last reset). The counter is incremented by cObject constructor.
+     * Counter is <tt>signed</tt> to make it easier to detect if it overflows
+     * during very long simulation runs.
+     * May be useful for profiling or debugging memory leaks.
+     */
+    static long totalObjectCount() {return total_objs;}
+
+    /**
+     * Returns the number of objects that currently exist in the program.
+     * The counter is incremented by cObject constructor and decremented by
+     * the destructor.
+     * May be useful for profiling or debugging memory leaks.
+     */
+    static long liveObjectCount() {return live_objs;}
+
+    /**
+     * Reset counters used by totalObjectCount() and liveObjectCount().
+     * (Note that liveObjectCount() may go negative after a reset call.)
+     */
+    static void resetMessageCounters()  {total_objs=live_objs=0L;}
+    //@}
 };
 
 
@@ -565,10 +532,12 @@ class SIM_API cObject : public cPolymorphic
 //
 class cStaticFlag
 {
+  private:
+    static bool staticflag;  // set to true while in main()
   public:
-    cStaticFlag()  {cObject::staticflag = 1;}
-    ~cStaticFlag() {cObject::staticflag = 0;}
-    static bool isSet() {return cObject::staticflag;}
+    cStaticFlag()  {staticflag = true;}
+    ~cStaticFlag() {staticflag = false;}
+    static bool isSet() {return staticflag;}
 };
 
 
@@ -589,6 +558,7 @@ class cStaticFlag
  *
  * @ingroup Functions
  */
+// Note: this function cannot be put into utils.h (circular dependencies)
 template<class T>
 T check_and_cast(cObject *p)
 {

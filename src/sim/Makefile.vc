@@ -16,9 +16,9 @@ CPPOBJS_STD= task.obj ccoroutine.obj ctypes.obj carray.obj cgate.obj \
          cmodule.obj csimplemodule.obj csimul.obj cobject.obj cpar.obj \
          cstat.obj chist.obj cdensity.obj cvarhist.obj cpsquare.obj cksplit.obj \
          cmessage.obj cdetect.obj util.obj cllist.obj ctopo.obj errmsg.obj \
-         cmsgheap.obj coutvect.obj cqueue.obj chead.obj cwatch.obj \
+         cmsgheap.obj coutvect.obj cqueue.obj globals.obj cwatch.obj \
          cpacket.obj cfsm.obj cstruct.obj cchannel.obj cenum.obj cexception.obj cdispstr.obj \
-         cscheduler.obj onstartup.obj random.obj distrib.obj
+         cdefaultlist.obj cscheduler.obj onstartup.obj random.obj distrib.obj
 CPPOBJS_NETBUILDER= netbuilder\cdynamicmodule.obj netbuilder\cdynamicnetwork.obj \
                     netbuilder\cnednetworkbuilder.obj netbuilder\loadnedfile.obj
 CPPOBJS_PARSIM= parsim\ccommbuffer.obj parsim\cmemcommbuffer.obj \
@@ -92,7 +92,7 @@ carray.obj: carray.cc \
   ../../include/onstartup.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/cobject.h \
   ../../include/util.h
 cchannel.obj: cchannel.cc \
@@ -110,31 +110,46 @@ cchannel.obj: cchannel.cc \
   ../../include/cexception.h \
   parsim/ccommbuffer.h \
   ../../include/cobject.h \
-  ../../include/util.h \
   ../../include/defs.h \
+  ../../include/util.h \
   ../../include/ccoroutine.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/cqueue.h \
+  ../../include/cdefaultlist.h \
+  ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
-  ../../include/onstartup.h \
   ../../include/ctypes.h
 ccoroutine.obj: ccoroutine.cc \
   ../../include/ccoroutine.h \
   task.h \
   ../../include/defs.h
+cdefaultlist.obj: cdefaultlist.cc \
+  ../../include/macros.h \
+  ../../include/errmsg.h \
+  ../../include/carray.h \
+  ../../include/cexception.h \
+  parsim/ccommbuffer.h \
+  ../../include/cdefaultlist.h \
+  ../../include/onstartup.h \
+  ../../include/ctypes.h \
+  ../../include/defs.h \
+  ../../include/globals.h \
+  ../../include/cobject.h \
+  ../../include/util.h
 cdensity.obj: cdensity.cc \
   ../../include/macros.h \
   ../../include/cdensity.h \
   ../../include/cexception.h \
   parsim/ccommbuffer.h \
   ../../include/onstartup.h \
+  ../../include/carray.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
-  ../../include/chead.h \
   ../../include/cobject.h \
   ../../include/util.h \
+  ../../include/globals.h \
   ../../include/cstat.h
 cdetect.obj: cdetect.cc \
   ../../include/csimul.h \
@@ -142,19 +157,20 @@ cdetect.obj: cdetect.cc \
   ../../include/defs.h \
   ../../include/util.h \
   ../../include/errmsg.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/coutvect.h \
   ../../include/cobject.h \
+  ../../include/onstartup.h \
   ../../include/cexception.h \
   ../../include/cstat.h
 cdispstr.obj: cdispstr.cc \
   ../../include/cdispstr.h \
   ../../include/cobject.h \
+  ../../include/defs.h \
   ../../include/util.h \
-  ../../include/cexception.h \
-  ../../include/defs.h
+  ../../include/cexception.h
 cenum.obj: cenum.cc \
   ../../include/macros.h \
   ../../include/ctypes.h \
@@ -162,10 +178,11 @@ cenum.obj: cenum.cc \
   ../../include/cenum.h \
   ../../include/cexception.h \
   ../../include/onstartup.h \
+  ../../include/carray.h \
   ../../include/defs.h \
-  ../../include/chead.h \
   ../../include/cobject.h \
   ../../include/util.h \
+  ../../include/globals.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
@@ -178,25 +195,28 @@ cexception.obj: cexception.cc \
   ../../include/cenvir.h \
   ../../include/defs.h \
   ../../include/util.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/coutvect.h \
   ../../include/cobject.h \
+  ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
+  ../../include/cdefaultlist.h \
   ../../include/cpar.h
 cfsm.obj: cfsm.cc \
   ../../include/macros.h \
   ../../include/cfsm.h \
   ../../include/onstartup.h \
+  ../../include/carray.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
-  ../../include/chead.h \
   ../../include/cobject.h \
   ../../include/util.h \
-  ../../include/cexception.h
+  ../../include/cexception.h \
+  ../../include/globals.h
 cgate.obj: cgate.cc \
   ../../include/cmessage.h \
   ../../include/cmodule.h \
@@ -208,26 +228,18 @@ cgate.obj: cgate.cc \
   ../../include/cgate.h \
   ../../include/cchannel.h \
   ../../include/cobject.h \
+  ../../include/defs.h \
   ../../include/util.h \
   ../../include/cexception.h \
-  ../../include/defs.h \
   ../../include/ccoroutine.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/cqueue.h \
+  ../../include/cdefaultlist.h \
+  ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
-  ../../include/onstartup.h \
   ../../include/ctypes.h
-chead.obj: chead.cc \
-  ../../include/macros.h \
-  ../../include/chead.h \
-  ../../include/onstartup.h \
-  ../../include/ctypes.h \
-  ../../include/defs.h \
-  ../../include/cobject.h \
-  ../../include/util.h \
-  ../../include/cexception.h
 chist.obj: chist.cc \
   ../../include/random.h \
   ../../include/distrib.h \
@@ -238,10 +250,11 @@ chist.obj: chist.cc \
   parsim/ccommbuffer.h \
   ../../include/defs.h \
   ../../include/onstartup.h \
+  ../../include/carray.h \
   ../../include/ctypes.h \
-  ../../include/chead.h \
   ../../include/cobject.h \
   ../../include/util.h \
+  ../../include/globals.h \
   ../../include/cstat.h \
   ../../include/cdensity.h
 cksplit.obj: cksplit.cc \
@@ -253,11 +266,12 @@ cksplit.obj: cksplit.cc \
   ../../include/cexception.h \
   parsim/ccommbuffer.h \
   ../../include/onstartup.h \
+  ../../include/carray.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
-  ../../include/chead.h \
   ../../include/cobject.h \
   ../../include/util.h \
+  ../../include/globals.h \
   ../../include/cpar.h \
   ../../include/cdensity.h \
   ../../include/cstat.h
@@ -267,11 +281,12 @@ cllist.obj: cllist.cc \
   ../../include/cexception.h \
   parsim/ccommbuffer.h \
   ../../include/onstartup.h \
+  ../../include/carray.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
-  ../../include/chead.h \
   ../../include/cobject.h \
-  ../../include/util.h
+  ../../include/util.h \
+  ../../include/globals.h
 cmessage.obj: cmessage.cc \
   ../../include/macros.h \
   ../../include/cmodule.h \
@@ -280,16 +295,17 @@ cmessage.obj: cmessage.cc \
   ../../include/cexception.h \
   parsim/ccommbuffer.h \
   ../../include/onstartup.h \
+  ../../include/carray.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
-  ../../include/chead.h \
   ../../include/cobject.h \
   ../../include/util.h \
+  ../../include/globals.h \
   ../../include/ccoroutine.h \
-  ../../include/carray.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
   ../../include/csimul.h \
+  ../../include/cdefaultlist.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
@@ -308,9 +324,11 @@ cmodule.obj: cmodule.cc \
   ../../include/defs.h \
   ../../include/cobject.h \
   ../../include/ccoroutine.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/cqueue.h \
+  ../../include/cdefaultlist.h \
   ../../include/util.h \
+  ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h
@@ -319,25 +337,18 @@ cmsgheap.obj: cmsgheap.cc \
   ../../include/cmessage.h \
   ../../include/cmsgheap.h \
   ../../include/onstartup.h \
+  ../../include/carray.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
-  ../../include/chead.h \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/cexception.h \
-  ../../include/carray.h \
+  ../../include/globals.h \
   ../../include/cpar.h \
   ../../include/csimul.h \
   ../../include/errmsg.h \
   ../../include/ccoroutine.h \
   ../../include/coutvect.h
-cnetmod.obj: cnetmod.cc \
-  ../../include/cpar.h \
-  ../../include/cenvir.h \
-  ../../include/cobject.h \
-  ../../include/util.h \
-  ../../include/cexception.h \
-  ../../include/defs.h
 cobject.obj: cobject.cc \
   ../../include/csimul.h \
   ../../include/cenvir.h \
@@ -345,15 +356,17 @@ cobject.obj: cobject.cc \
   ../../include/cobject.h \
   ../../include/cexception.h \
   ../../include/util.h \
+  ../../include/cdefaultlist.h \
   parsim/ccommbuffer.h \
   ../../include/defs.h \
   ../../include/errmsg.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/coutvect.h \
-  ../../include/cpar.h \
   ../../include/onstartup.h \
+  ../../include/cpar.h \
+  ../../include/carray.h \
   ../../include/ctypes.h
 coutvect.obj: coutvect.cc \
   ../../include/coutvect.h \
@@ -363,13 +376,15 @@ coutvect.obj: coutvect.cc \
   ../../include/cexception.h \
   parsim/ccommbuffer.h \
   ../../include/cobject.h \
-  ../../include/util.h \
   ../../include/defs.h \
+  ../../include/util.h \
   ../../include/ccoroutine.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/carray.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
+  ../../include/cdefaultlist.h \
+  ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/cpar.h
@@ -378,14 +393,14 @@ cpacket.obj: cpacket.cc \
   ../../include/cpacket.h \
   parsim/ccommbuffer.h \
   ../../include/onstartup.h \
+  ../../include/carray.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
-  ../../include/chead.h \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/cexception.h \
+  ../../include/globals.h \
   ../../include/cmessage.h \
-  ../../include/carray.h \
   ../../include/cpar.h \
   ../../include/csimul.h \
   ../../include/errmsg.h \
@@ -403,15 +418,16 @@ cpar.obj: cpar.cc \
   ../../include/cexception.h \
   parsim/ccommbuffer.h \
   ../../include/cobject.h \
-  ../../include/util.h \
   ../../include/defs.h \
+  ../../include/util.h \
   ../../include/onstartup.h \
-  ../../include/ctypes.h \
-  ../../include/chead.h \
-  ../../include/ccoroutine.h \
   ../../include/carray.h \
+  ../../include/ctypes.h \
+  ../../include/globals.h \
+  ../../include/ccoroutine.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
+  ../../include/cdefaultlist.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h
 cpsquare.obj: cpsquare.cc \
@@ -422,11 +438,12 @@ cpsquare.obj: cpsquare.cc \
   ../../include/distrib.h \
   parsim/ccommbuffer.h \
   ../../include/onstartup.h \
+  ../../include/carray.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
-  ../../include/chead.h \
   ../../include/cobject.h \
   ../../include/util.h \
+  ../../include/globals.h \
   ../../include/cdensity.h \
   ../../include/cstat.h
 cqueue.obj: cqueue.cc \
@@ -435,11 +452,12 @@ cqueue.obj: cqueue.cc \
   ../../include/cexception.h \
   parsim/ccommbuffer.h \
   ../../include/onstartup.h \
+  ../../include/carray.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
-  ../../include/chead.h \
   ../../include/cobject.h \
-  ../../include/util.h
+  ../../include/util.h \
+  ../../include/globals.h
 cscheduler.obj: cscheduler.cc \
   ../../include/cscheduler.h \
   ../../include/cmessage.h \
@@ -449,11 +467,11 @@ cscheduler.obj: cscheduler.cc \
   ../../include/cobject.h \
   ../../include/carray.h \
   ../../include/cpar.h \
+  ../../include/defs.h \
   ../../include/util.h \
   ../../include/cexception.h \
-  ../../include/defs.h \
   ../../include/errmsg.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/ccoroutine.h \
   ../../include/coutvect.h \
   ../../include/onstartup.h \
@@ -472,9 +490,11 @@ csimplemodule.obj: csimplemodule.cc \
   ../../include/defs.h \
   ../../include/cobject.h \
   ../../include/ccoroutine.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/cqueue.h \
+  ../../include/cdefaultlist.h \
   ../../include/util.h \
+  ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h
@@ -494,11 +514,13 @@ csimul.obj: csimul.cc \
   ../../include/defs.h \
   ../../include/cobject.h \
   ../../include/ccoroutine.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/carray.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
+  ../../include/cdefaultlist.h \
   ../../include/util.h \
+  ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h
@@ -515,19 +537,22 @@ cstat.obj: cstat.cc \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/onstartup.h \
+  ../../include/carray.h \
   ../../include/ctypes.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/cpar.h
 cstruct.obj: cstruct.cc \
   ../../include/cstruct.h \
+  ../../include/carray.h \
   ../../include/cenum.h \
   ../../include/util.h \
   ../../include/errmsg.h \
   ../../include/ctypes.h \
   ../../include/cobject.h \
-  ../../include/cexception.h \
   ../../include/defs.h \
-  ../../include/chead.h
+  ../../include/cexception.h \
+  ../../include/globals.h \
+  ../../include/onstartup.h
 ctopo.obj: ctopo.cc \
   ../../include/macros.h \
   ../../include/cmodule.h \
@@ -538,15 +563,16 @@ ctopo.obj: ctopo.cc \
   ../../include/cexception.h \
   parsim/ccommbuffer.h \
   ../../include/onstartup.h \
+  ../../include/carray.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
-  ../../include/chead.h \
   ../../include/cobject.h \
   ../../include/util.h \
+  ../../include/globals.h \
   ../../include/ccoroutine.h \
-  ../../include/carray.h \
   ../../include/cqueue.h \
   ../../include/csimul.h \
+  ../../include/cdefaultlist.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h
@@ -560,18 +586,19 @@ ctypes.obj: ctypes.cc \
   parsim/cplaceholdermod.h \
   parsim/ccommbuffer.h \
   ../../include/cobject.h \
-  ../../include/util.h \
   ../../include/defs.h \
+  ../../include/util.h \
   ../../include/ccoroutine.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/carray.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
   ../../include/csimul.h \
+  ../../include/cdefaultlist.h \
+  ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
-  ../../include/coutvect.h \
-  ../../include/onstartup.h
+  ../../include/coutvect.h
 cvarhist.obj: cvarhist.cc \
   ../../include/macros.h \
   ../../include/random.h \
@@ -580,20 +607,21 @@ cvarhist.obj: cvarhist.cc \
   ../../include/cexception.h \
   parsim/ccommbuffer.h \
   ../../include/onstartup.h \
+  ../../include/carray.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
-  ../../include/chead.h \
   ../../include/cobject.h \
   ../../include/util.h \
+  ../../include/globals.h \
   ../../include/chist.h \
   ../../include/cdensity.h \
   ../../include/cstat.h
 cwatch.obj: cwatch.cc \
   ../../include/cwatch.h \
   ../../include/cobject.h \
+  ../../include/defs.h \
   ../../include/util.h \
-  ../../include/cexception.h \
-  ../../include/defs.h
+  ../../include/cexception.h
 distrib.obj: distrib.cc \
   ../../include/distrib.h \
   ../../include/macros.h \
@@ -601,11 +629,22 @@ distrib.obj: distrib.cc \
   ../../include/defs.h \
   ../../include/random.h \
   ../../include/onstartup.h \
+  ../../include/carray.h \
   ../../include/ctypes.h \
-  ../../include/chead.h \
   ../../include/cobject.h \
-  ../../include/util.h
+  ../../include/util.h \
+  ../../include/globals.h
 errmsg.obj: errmsg.cc
+globals.obj: globals.cc \
+  ../../include/macros.h \
+  ../../include/globals.h \
+  ../../include/carray.h \
+  ../../include/onstartup.h \
+  ../../include/ctypes.h \
+  ../../include/defs.h \
+  ../../include/cobject.h \
+  ../../include/util.h \
+  ../../include/cexception.h
 onstartup.obj: onstartup.cc \
   ../../include/onstartup.h \
   ../../include/cexception.h \
@@ -617,10 +656,11 @@ random.obj: random.cc \
   ../../include/cexception.h \
   ../../include/defs.h \
   ../../include/onstartup.h \
+  ../../include/carray.h \
   ../../include/ctypes.h \
-  ../../include/chead.h \
   ../../include/cobject.h \
-  ../../include/util.h
+  ../../include/util.h \
+  ../../include/globals.h
 task.obj: task.cc \
   task.h
 util.obj: util.cc \
@@ -638,15 +678,16 @@ util.obj: util.cc \
   ../../include/cpar.h \
   ../../include/cobject.h \
   ../../include/ccoroutine.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/carray.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
   ../../include/csimul.h \
+  ../../include/cdefaultlist.h \
+  ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
-  ../../include/onstartup.h \
   ../../include/ctypes.h \
   ../../include/cmessage.h
 netbuilder/cdynamicmodule.obj: netbuilder/cdynamicmodule.cc \
@@ -657,13 +698,15 @@ netbuilder/cdynamicmodule.obj: netbuilder/cdynamicmodule.cc \
   ../../include/defs.h \
   ../../include/cobject.h \
   ../../include/ccoroutine.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/carray.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
   ../../include/csimul.h \
+  ../../include/cdefaultlist.h \
   ../../include/util.h \
   ../../include/cexception.h \
+  ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
@@ -676,13 +719,15 @@ netbuilder/cdynamicnetwork.obj: netbuilder/cdynamicnetwork.cc \
   ../../include/defs.h \
   ../../include/cobject.h \
   ../../include/ccoroutine.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/carray.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
   ../../include/csimul.h \
+  ../../include/cdefaultlist.h \
   ../../include/util.h \
   ../../include/cexception.h \
+  ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
@@ -696,12 +741,14 @@ netbuilder/cnednetworkbuilder.obj: netbuilder/cnednetworkbuilder.cc \
   ../../include/defs.h \
   ../../include/cobject.h \
   ../../include/ccoroutine.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/carray.h \
   ../../include/cqueue.h \
   ../../include/csimul.h \
+  ../../include/cdefaultlist.h \
   ../../include/util.h \
   ../../include/cexception.h \
+  ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
@@ -709,12 +756,13 @@ netbuilder/cnednetworkbuilder.obj: netbuilder/cnednetworkbuilder.cc \
 netbuilder/loadnedfile.obj: netbuilder/loadnedfile.cc \
   ../../include/ctypes.h \
   ../../include/cexception.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   netbuilder/cdynamicmodule.h \
   netbuilder/cdynamicnetwork.h \
   ../../include/defs.h \
   ../../include/cobject.h \
   ../../include/util.h \
+  ../../include/onstartup.h \
   ../../include/cmodule.h \
   netbuilder/cnednetworkbuilder.h \
   ../../include/ccoroutine.h \
@@ -722,6 +770,7 @@ netbuilder/loadnedfile.obj: netbuilder/loadnedfile.cc \
   ../../include/cqueue.h \
   ../../include/cgate.h \
   ../../include/csimul.h \
+  ../../include/cdefaultlist.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
@@ -742,11 +791,12 @@ parsim/cadvlinkdelaylookahead.obj: parsim/cadvlinkdelaylookahead.cc \
   ../../include/defs.h \
   ../../include/util.h \
   ../../include/errmsg.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/coutvect.h \
   ../../include/cobject.h \
+  ../../include/onstartup.h \
   ../../include/cexception.h \
   ../../include/carray.h \
   ../../include/cpar.h \
@@ -756,7 +806,7 @@ parsim/cadvlinkdelaylookahead.obj: parsim/cadvlinkdelaylookahead.cc \
   ../../include/cmodule.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
-  ../../include/onstartup.h \
+  ../../include/cdefaultlist.h \
   ../../include/ctypes.h
 parsim/ccommbuffer.obj: parsim/ccommbuffer.cc \
   parsim/ccommbuffer.h \
@@ -765,7 +815,8 @@ parsim/ccommbuffer.obj: parsim/ccommbuffer.cc \
   ../../include/ctypes.h \
   ../../include/defs.h \
   ../../include/cexception.h \
-  ../../include/chead.h
+  ../../include/globals.h \
+  ../../include/onstartup.h
 parsim/ccommbufferbase.obj: parsim/ccommbufferbase.cc \
   parsim/ccommbufferbase.h \
   ../../include/cexception.h \
@@ -783,9 +834,10 @@ parsim/cfilecomm.obj: parsim/cfilecomm.cc \
   parsim/ccommbufferbase.h \
   parsim/ccommbuffer.h \
   ../../include/onstartup.h \
+  ../../include/carray.h \
   ../../include/ctypes.h \
-  ../../include/chead.h \
   ../../include/cobject.h \
+  ../../include/globals.h \
   ../../include/cpar.h
 parsim/cfilecommbuffer.obj: parsim/cfilecommbuffer.cc \
   parsim/cfilecommbuffer.h \
@@ -797,8 +849,9 @@ parsim/cfilecommbuffer.obj: parsim/cfilecommbuffer.cc \
   ../../include/defs.h \
   ../../include/cexception.h \
   ../../include/onstartup.h \
+  ../../include/carray.h \
   ../../include/ctypes.h \
-  ../../include/chead.h
+  ../../include/globals.h
 parsim/cidealsimulationprot.obj: parsim/cidealsimulationprot.cc \
   ../../include/cmessage.h \
   ../../include/cmodule.h \
@@ -815,19 +868,20 @@ parsim/cidealsimulationprot.obj: parsim/cidealsimulationprot.cc \
   ../../include/carray.h \
   ../../include/cpar.h \
   ../../include/csimul.h \
+  ../../include/defs.h \
   ../../include/util.h \
   ../../include/cexception.h \
-  ../../include/defs.h \
   ../../include/errmsg.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/coutvect.h \
+  ../../include/onstartup.h \
   ../../include/cqueue.h \
+  ../../include/cdefaultlist.h \
   parsim/cparsimprotocolbase.h \
   parsim/cparsimsynchr.h \
   ../../include/cscheduler.h \
-  ../../include/onstartup.h \
   ../../include/ctypes.h
 parsim/cispeventlogger.obj: parsim/cispeventlogger.cc \
   parsim/cispeventlogger.h \
@@ -844,17 +898,18 @@ parsim/cispeventlogger.obj: parsim/cispeventlogger.cc \
   ../../include/carray.h \
   ../../include/cpar.h \
   ../../include/csimul.h \
+  ../../include/defs.h \
   ../../include/util.h \
   ../../include/cexception.h \
-  ../../include/defs.h \
   ../../include/errmsg.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/coutvect.h \
+  ../../include/onstartup.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
-  ../../include/onstartup.h \
+  ../../include/cdefaultlist.h \
   ../../include/ctypes.h
 parsim/clinkdelaylookahead.obj: parsim/clinkdelaylookahead.cc \
   parsim/clinkdelaylookahead.h \
@@ -872,11 +927,12 @@ parsim/clinkdelaylookahead.obj: parsim/clinkdelaylookahead.cc \
   ../../include/defs.h \
   ../../include/util.h \
   ../../include/errmsg.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/coutvect.h \
   ../../include/cobject.h \
+  ../../include/onstartup.h \
   ../../include/cexception.h \
   ../../include/carray.h \
   ../../include/cpar.h \
@@ -886,7 +942,7 @@ parsim/clinkdelaylookahead.obj: parsim/clinkdelaylookahead.cc \
   ../../include/cmodule.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
-  ../../include/onstartup.h \
+  ../../include/cdefaultlist.h \
   ../../include/ctypes.h
 parsim/cmemcommbuffer.obj: parsim/cmemcommbuffer.cc \
   parsim/cmemcommbuffer.h \
@@ -898,8 +954,9 @@ parsim/cmemcommbuffer.obj: parsim/cmemcommbuffer.cc \
   ../../include/defs.h \
   ../../include/cexception.h \
   ../../include/onstartup.h \
+  ../../include/carray.h \
   ../../include/ctypes.h \
-  ../../include/chead.h
+  ../../include/globals.h
 parsim/cmpicomm.obj: parsim/cmpicomm.cc \
   parsim/cmpicomm.h \
   parsim/cmpicommbuffer.h \
@@ -908,12 +965,13 @@ parsim/cmpicomm.obj: parsim/cmpicomm.cc \
   parsim/ccommbufferbase.h \
   parsim/ccommbuffer.h \
   ../../include/onstartup.h \
+  ../../include/carray.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
-  ../../include/chead.h \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/cexception.h \
+  ../../include/globals.h \
   ../../include/cpar.h
 parsim/cmpicommbuffer.obj: parsim/cmpicommbuffer.cc \
   parsim/cmpicommbuffer.h \
@@ -921,12 +979,13 @@ parsim/cmpicommbuffer.obj: parsim/cmpicommbuffer.cc \
   parsim/ccommbufferbase.h \
   parsim/ccommbuffer.h \
   ../../include/onstartup.h \
+  ../../include/carray.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
-  ../../include/chead.h \
   ../../include/cobject.h \
   ../../include/util.h \
-  ../../include/cexception.h
+  ../../include/cexception.h \
+  ../../include/globals.h
 parsim/cnamedpipecomm-win.obj: parsim/cnamedpipecomm-win.cc \
   ../../include/cexception.h \
   parsim/cnamedpipecomm.h \
@@ -938,9 +997,10 @@ parsim/cnamedpipecomm-win.obj: parsim/cnamedpipecomm-win.cc \
   parsim/ccommbufferbase.h \
   parsim/ccommbuffer.h \
   ../../include/onstartup.h \
+  ../../include/carray.h \
   ../../include/ctypes.h \
-  ../../include/chead.h \
   ../../include/cobject.h \
+  ../../include/globals.h \
   ../../include/cpar.h
 parsim/cnamedpipecomm.obj: parsim/cnamedpipecomm.cc \
   ../../include/cexception.h \
@@ -953,9 +1013,10 @@ parsim/cnamedpipecomm.obj: parsim/cnamedpipecomm.cc \
   parsim/ccommbufferbase.h \
   parsim/ccommbuffer.h \
   ../../include/onstartup.h \
+  ../../include/carray.h \
   ../../include/ctypes.h \
-  ../../include/chead.h \
   ../../include/cobject.h \
+  ../../include/globals.h \
   ../../include/cpar.h
 parsim/cnosynchronization.obj: parsim/cnosynchronization.cc \
   ../../include/cmessage.h \
@@ -972,19 +1033,20 @@ parsim/cnosynchronization.obj: parsim/cnosynchronization.cc \
   ../../include/carray.h \
   ../../include/cpar.h \
   ../../include/csimul.h \
+  ../../include/defs.h \
   ../../include/util.h \
   ../../include/cexception.h \
-  ../../include/defs.h \
   ../../include/errmsg.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/coutvect.h \
+  ../../include/onstartup.h \
   ../../include/cqueue.h \
+  ../../include/cdefaultlist.h \
   parsim/cparsimprotocolbase.h \
   parsim/cparsimsynchr.h \
   ../../include/cscheduler.h \
-  ../../include/onstartup.h \
   ../../include/ctypes.h
 parsim/cnullmessageprot.obj: parsim/cnullmessageprot.cc \
   ../../include/cmessage.h \
@@ -1005,20 +1067,21 @@ parsim/cnullmessageprot.obj: parsim/cnullmessageprot.cc \
   ../../include/carray.h \
   ../../include/cpar.h \
   ../../include/csimul.h \
+  ../../include/defs.h \
   ../../include/util.h \
   ../../include/cexception.h \
-  ../../include/defs.h \
   ../../include/errmsg.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/coutvect.h \
+  ../../include/onstartup.h \
   ../../include/cqueue.h \
+  ../../include/cdefaultlist.h \
   parsim/cparsimprotocolbase.h \
   parsim/cparsimsynchr.h \
   ../../include/cscheduler.h \
   parsim/cnmplookahead.h \
-  ../../include/onstartup.h \
   ../../include/ctypes.h
 parsim/cparsimcomm.obj: parsim/cparsimcomm.cc \
   ../../include/errmsg.h \
@@ -1047,18 +1110,19 @@ parsim/cparsimpartition.obj: parsim/cparsimpartition.cc \
   ../../include/carray.h \
   ../../include/cpar.h \
   ../../include/csimul.h \
+  ../../include/defs.h \
   ../../include/util.h \
   ../../include/cexception.h \
-  ../../include/defs.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/coutvect.h \
+  ../../include/onstartup.h \
   ../../include/cmodule.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
+  ../../include/cdefaultlist.h \
   ../../include/cscheduler.h \
-  ../../include/onstartup.h \
   ../../include/ctypes.h
 parsim/cparsimprotocolbase.obj: parsim/cparsimprotocolbase.cc \
   ../../include/cmessage.h \
@@ -1074,15 +1138,17 @@ parsim/cparsimprotocolbase.obj: parsim/cparsimprotocolbase.cc \
   ../../include/carray.h \
   ../../include/cpar.h \
   ../../include/csimul.h \
+  ../../include/defs.h \
   ../../include/util.h \
   ../../include/cexception.h \
-  ../../include/defs.h \
   ../../include/errmsg.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/coutvect.h \
+  ../../include/onstartup.h \
   ../../include/cqueue.h \
+  ../../include/cdefaultlist.h \
   parsim/cparsimsynchr.h \
   ../../include/cscheduler.h
 parsim/cplaceholdermod.obj: parsim/cplaceholdermod.cc \
@@ -1098,12 +1164,14 @@ parsim/cplaceholdermod.obj: parsim/cplaceholdermod.cc \
   ../../include/defs.h \
   ../../include/cobject.h \
   ../../include/ccoroutine.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/carray.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
+  ../../include/cdefaultlist.h \
   ../../include/util.h \
   ../../include/cexception.h \
+  ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
@@ -1119,14 +1187,16 @@ parsim/cproxygate.obj: parsim/cproxygate.cc \
   ../../include/cmessage.h \
   ../../include/cgate.h \
   ../../include/cobject.h \
+  ../../include/defs.h \
   ../../include/util.h \
   ../../include/cexception.h \
-  ../../include/defs.h \
   ../../include/ccoroutine.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/carray.h \
   ../../include/cqueue.h \
   ../../include/csimul.h \
+  ../../include/cdefaultlist.h \
+  ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \

@@ -92,7 +92,7 @@ class SIM_API cMessage : public cObject
     int prior;                 // priority -- used for scheduling msgs with equal times
     long len;                  // length of message -- used for bit errors and transm.delay
     bool error : 1;            // bit error occurred during transmission
-    unsigned refcount : 7;     // reference count for encapsulated message (0: not encapsulated, max 127) FIXME is it used already?
+    unsigned refcount : 7;     // reference count for encapsulated message (0: not encapsulated, max 127)
     unsigned char srcprocid;   // reserved for use by parallel execution: id of source partition
     cArray *parlistp;          // ptr to list of parameters
     cMessage *encapmsg;        // ptr to encapsulated msg
@@ -111,8 +111,8 @@ class SIM_API cMessage : public cObject
     void _createparlist();
 
     // global variables for statistics
-    static unsigned long total_msgs;
-    static unsigned long live_msgs;
+    static long total_msgs;
+    static long live_msgs;
 
   public:
     /** @name Constructors, destructor, assignment */
@@ -165,7 +165,7 @@ class SIM_API cMessage : public cObject
      * Writes textual information about this object to the stream.
      * See cObject for more details.
      */
-    virtual void writeContents(ostream& os);
+    virtual void writeContents(std::ostream& os);
 
 #ifdef WITH_PARSIM
     /**
@@ -563,13 +563,11 @@ class SIM_API cMessage : public cObject
 
     /**
      * Used internally by the parallel simulation kernel.
-     * FIXME:use it, really!!!
      */
     void setSrcProcId(unsigned char procId) {srcprocid=procId;}
 
     /**
      * Used internally by the parallel simulation kernel.
-     * FIXME:use it, really!!!
      */
     unsigned char srcProcId() {return srcprocid;}
     //@}
@@ -598,23 +596,31 @@ class SIM_API cMessage : public cObject
      */
     static int cmpbypriority(cObject *one, cObject *other);
 
+    /** @name Statistics. */
+    //@{
     /**
-     * Returns the total number of messages created so far during the
-     * current simulation run. May be useful for debugging, profiling, etc.
+     * Returns the total number of messages created since the last
+     * reset (reset is usually called my user interfaces at the beginning
+     * of each simulation run). The counter is incremented by cMessage constructor.
+     * Counter is <tt>signed</tt> to make it easier to detect if it overflows
+     * during very long simulation runs.
+     * May be useful for profiling or debugging memory leaks.
      */
-    static unsigned long totalMessageCount() {return total_msgs;}
+    static long totalMessageCount() {return total_msgs;}
 
     /**
-     * Returns the total number of messages that currently exist in the
-     * simulation. May be useful for detecting memory leaks caused
-     * by forgetting to delete messages.
+     * Returns the number of message objects that currently exist in the
+     * program. The counter is incremented by cMessage constructor
+     * and decremented by the destructor.
+     * May be useful for profiling or debugging memory leaks caused by forgetting
+     * to delete messages.
      */
-    static unsigned long liveMessageCount() {return live_msgs;}
+    static long liveMessageCount() {return live_msgs;}
 
     /**
      * Reset counters used by totalMessageCount() and liveMessageCount().
      */
-    static void resetMessageCounters()  {total_msgs=live_msgs=0L;}
+    static void resetMessageCounters()  {total_msgs=live_msgs=0;}
     //@}
 };
 

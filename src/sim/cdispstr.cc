@@ -15,73 +15,110 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <assert.h>
+#include "cenvir.h"
+#include "cmodule.h"
+#include "cgate.h"
 #include "cdispstr.h"
 
 
-cDisplayStringParser::cDisplayStringParser()
+cDisplayString::cDisplayString()
 {
     dispstr = NULL;
     buffer = NULL;
     bufferend = NULL;
     tags = NULL;
     numtags = 0;
+
+    object = NULL;
+    role = NONE;
 }
 
 
-cDisplayStringParser::cDisplayStringParser(const char *displaystr)
+cDisplayString::cDisplayString(const char *displaystr)
 {
     dispstr = opp_strdup(displaystr);
     buffer = NULL;
     bufferend = NULL;
     tags = NULL;
     numtags = 0;
+
+    object = NULL;
+    role = NONE;
     parse();
 }
 
+cDisplayString::cDisplayString(const cDisplayString& ds)
+{
+    dispstr = NULL;
+    buffer = NULL;
+    bufferend = NULL;
+    tags = NULL;
+    numtags = 0;
 
-cDisplayStringParser::~cDisplayStringParser()
+    object = NULL;
+    role = NONE;
+
+    operator=(ds);
+}
+
+cDisplayString::~cDisplayString()
 {
     delete [] dispstr;
     cleartags();
 }
 
+void cDisplayString::notify()
+{
+    switch (role)
+    {
+        case NONE: break;
+        case CONNECTION: ev.displayStringChanged((cGate *)object); break;
+        case MODULE: ev.displayStringChanged((cModule *)object); break;
+        case MODULE_AS_PARENT: ev.displayStringAsParentChanged((cModule *)object); break;
+        default: assert(0); // internal error: bad role
+    }
+}
 
-const char *cDisplayStringParser::getString()
+const char *cDisplayString::getString() const
 {
     assemble();
     return dispstr;
 }
 
 
-bool cDisplayStringParser::parse(const char *displaystr)
+bool cDisplayString::parse(const char *displaystr)
 {
     delete [] dispstr;
     dispstr = opp_strdup(displaystr);
-    return parse();
+    bool fullyOK = parse();
+    notify();
+    return fullyOK;
 }
 
 
-bool cDisplayStringParser::existsTag(const char *tagname)
+bool cDisplayString::existsTag(const char *tagname) const
 {
     int t = gettagindex(tagname);
     return t!=-1;
 }
 
 
-int cDisplayStringParser::getNumArgs(const char *tagname)
+int cDisplayString::getNumArgs(const char *tagname) const
 {
     return getNumArgs(gettagindex(tagname));
 }
 
 
-const char *cDisplayStringParser::getTagArg(const char *tagname, int index)
+const char *cDisplayString::getTagArg(const char *tagname, int index) const
 {
     return getTagArg(gettagindex(tagname), index);
 }
 
 
-bool cDisplayStringParser::setTagArg(const char *tagname, int index, const char *value)
+bool cDisplayString::setTagArg(const char *tagname, int index, const char *value)
 {
+    // may notify() twice (for insert.. and set..), but it's OK
     int t = gettagindex(tagname);
     if (t==-1)
         t = insertTag(tagname);
@@ -89,33 +126,33 @@ bool cDisplayStringParser::setTagArg(const char *tagname, int index, const char 
 }
 
 
-bool cDisplayStringParser::removeTag(const char *tagname)
+bool cDisplayString::removeTag(const char *tagname)
 {
     return removeTag(gettagindex(tagname));
 }
 
 
-int cDisplayStringParser::getNumTags()
+int cDisplayString::getNumTags() const
 {
     return numtags;
 }
 
 
-const char *cDisplayStringParser::getTagName(int tagindex)
+const char *cDisplayString::getTagName(int tagindex) const
 {
     if (tagindex<0 || tagindex>=numtags) return NULL;
     return tags[tagindex].name;
 }
 
 
-int cDisplayStringParser::getNumArgs(int tagindex)
+int cDisplayString::getNumArgs(int tagindex) const
 {
     if (tagindex<0 || tagindex>=numtags) return -1;
     return tags[tagindex].numargs;
 }
 
 
-const char *cDisplayStringParser::getTagArg(int tagindex, int index)
+const char *cDisplayString::getTagArg(int tagindex, int index) const
 {
     if (tagindex<0 || tagindex>=numtags) return NULL;
     if (index<0 || index>=tags[tagindex].numargs) return NULL;
@@ -123,7 +160,7 @@ const char *cDisplayStringParser::getTagArg(int tagindex, int index)
 }
 
 
-bool cDisplayStringParser::setTagArg(int tagindex, int index, const char *value)
+bool cDisplayString::setTagArg(int tagindex, int index, const char *value)
 {
     // check indices
     if (tagindex<0 || tagindex>=numtags) return false;
@@ -139,11 +176,12 @@ bool cDisplayStringParser::setTagArg(int tagindex, int index, const char *value)
     tags[tagindex].args[index] = opp_strdup(value);
 
     // success
+    notify();
     return true;
 }
 
 
-int cDisplayStringParser::insertTag(const char *tagname, int atindex)
+int cDisplayString::insertTag(const char *tagname, int atindex)
 {
     // check uniqueness
     int t = gettagindex(tagname);
@@ -171,11 +209,12 @@ int cDisplayStringParser::insertTag(const char *tagname, int atindex)
     for (int i=0; i<MAXARGS; i++) tags[atindex].args[i] = NULL;
 
     // success
+    notify();
     return atindex;
 }
 
 
-bool cDisplayStringParser::removeTag(int tagindex)
+bool cDisplayString::removeTag(int tagindex)
 {
     if (tagindex<0 || tagindex>=numtags) return false;
 
@@ -192,11 +231,12 @@ bool cDisplayStringParser::removeTag(int tagindex)
     numtags--;
 
     // success
+    notify();
     return true;
 }
 
 
-int cDisplayStringParser::gettagindex(const char *tagname)
+int cDisplayString::gettagindex(const char *tagname) const
 {
     for (int t=0; t<numtags; t++)
         if (!strcmp(tagname,tags[t].name))
@@ -204,7 +244,7 @@ int cDisplayStringParser::gettagindex(const char *tagname)
     return -1;
 }
 
-void cDisplayStringParser::cleartags()
+void cDisplayString::cleartags()
 {
     // delete tags array. string pointers that do not point inside the
     // buffer were allocated individually via new char[] and have to be
@@ -226,10 +266,30 @@ void cDisplayStringParser::cleartags()
     buffer = bufferend = NULL;
 }
 
-bool cDisplayStringParser::parse()
+inline int h2d(char c)
+{
+    if (c>='0' && c<='9') return c-'0';
+    if (c>='A' && c<='F') return c-'A'+10;
+    if (c>='a' && c<='f') return c-'a'+10;
+    return -1;
+}
+
+inline int h2d(char *&s)
+{
+    int a = h2d(*s);
+    if (a<0) return 0;
+    s++;
+    int b = h2d(*s);
+    if (b<0) return a;
+    s++;
+    return a*16+b;
+}
+
+bool cDisplayString::parse()
 {
     cleartags();
-    if (dispstr==NULL) return true;
+    if (dispstr==NULL)
+        return true;
 
     bool fully_ok = true;
 
@@ -254,11 +314,20 @@ bool cDisplayStringParser::parse()
     char *s, *d;
     for (s=dispstr,d=buffer; *s; s++,d++)
     {
-        if (*s=='\\')   //FIXME: backslash parsing BAD!!!!!!!
+        if (*s=='\\')
         {
-            // allow backslash as quote character
+            // allow backslash as quote character, also interpret backslash sequences
             s++;
-            *d = *s;
+            switch(*s)
+            {
+                case 'b': *d = '\b'; break;
+                case 'f': *d = '\f'; break;
+                case 'n': *d = '\n'; break;
+                case 'r': *d = '\r'; break;
+                case 't': *d = '\t'; break;
+                case 'x': s++; *d = h2d(s); s--; break;
+                default: *d = *s;
+            }
         }
         else if (*s==';')
         {
@@ -300,7 +369,7 @@ bool cDisplayStringParser::parse()
     return fully_ok;
 }
 
-void cDisplayStringParser::assemble()
+void cDisplayString::assemble() const
 {
     // calculate length of display string
     int size = 0;
@@ -333,15 +402,21 @@ void cDisplayStringParser::assemble()
     }
 }
 
-void cDisplayStringParser::strcatescaped(char *d, const char *s)
+void cDisplayString::strcatescaped(char *d, const char *s)
 {
     if (!s) return;
 
     d += strlen(d);
     while (*s)
     {
-        if (*s==';' || *s==',' || *s=='=' || *s=='\\') *d++ = '\\';
-        *d++ = *s++;
+        if (*s=='\b')      {*d++='\\'; *d++='b'; s++;}
+        else if (*s=='\f') {*d++='\\'; *d++='f'; s++;}
+        else if (*s=='\n') {*d++='\\'; *d++='n'; s++;}
+        else if (*s=='\r') {*d++='\\'; *d++='r'; s++;}
+        else if (*s=='\t') {*d++='\\'; *d++='t'; s++;}
+        else if (*s<32)    {*d++='\\'; *d++='x'; sprintf(d,"%2.2X",*s++); d+=2;}
+        else if (*s==';' || *s==',' || *s=='=' || *s=='\\') {*d++ = '\\'; *d++=*s++;}
+        else *d++ = *s++;
     }
     *d = '\0';
 }

@@ -28,6 +28,7 @@
 #include "distrib.h"
 #include "parsim/ccommbuffer.h"
 
+using std::ostream;
 using std::endl;
 
 //=========================================================================

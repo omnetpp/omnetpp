@@ -25,6 +25,9 @@
 #include "cexception.h"
 #include "parsim/ccommbuffer.h"
 
+using std::ostream;
+
+
 //=== Registration
 Register_Class(cQueue);
 
@@ -41,6 +44,7 @@ cQueue::cQueue(const cQueue& queue) : cObject()
 cQueue::cQueue(const char *name, CompareFunc cmp, bool a) :
 cObject( name )
 {
+    tkownership = true;
     headp=tailp=NULL;
     n=0;
     setup( cmp, a );
@@ -48,15 +52,7 @@ cObject( name )
 
 cQueue::~cQueue()
 {
-    while (headp)
-    {
-        // delete only the holder structs; owned objects will be
-        // deleted by cObject's destructor
-        //
-        QElem *tmp = headp->next;
-        delete headp;
-        headp=tmp;
-    }
+    clear();
 }
 
 void cQueue::info(char *buf)
@@ -87,7 +83,7 @@ void cQueue::netPack(cCommBuffer *buffer)
     if (compare)
         throw new cException(this,"netPack(): cannot transmit compare function");
 
-    for (cQueueIterator iter(*this, 0); !iter.end(); iter--)
+    for (cQueue::Iterator iter(*this, 0); !iter.end(); iter--)
     {
         if (iter()->owner() != this)
             throw new cException(this,"netPack(): cannot transmit pointer to \"external\" object");
@@ -112,12 +108,11 @@ void cQueue::netUnpack(cCommBuffer *buffer)
 
 void cQueue::clear()
 {
-    QElem *tmp;
     while (headp)
     {
-        tmp = headp->next;
+        QElem *tmp = headp->next;
         if (headp->obj->owner()==this)
-            discard( headp->obj );
+            dropAndDelete(headp->obj);
         delete headp;
         headp=tmp;
     }
@@ -134,9 +129,10 @@ cQueue& cQueue::operator=(const cQueue& queue)
     cObject::operator=(queue);
     compare = queue.compare;
     asc = queue.asc;
+    tkownership = queue.tkownership;
 
     bool old_tk = takeOwnership();
-    for( cQueueIterator iter(queue, 0); !iter.end(); iter--)
+    for (cQueue::Iterator iter(queue, 0); !iter.end(); iter--)
     {
         if (iter()->owner()==const_cast<cQueue*>(&queue))
             {takeOwnership(true); insert( iter()->dup() );}

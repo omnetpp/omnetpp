@@ -27,8 +27,7 @@
 
 #include "ctypes.h"
 #include "cexception.h"
-#include "chead.h"
-
+#include "globals.h"
 #include "cdynamicmodule.h"
 #include "cdynamicnetwork.h"
 

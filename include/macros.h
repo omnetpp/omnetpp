@@ -24,6 +24,7 @@
 #define __MACROS_H
 
 #include "onstartup.h"
+#include "carray.h"
 #include "ctypes.h"
 
 //=========================================================================
@@ -44,7 +45,7 @@
  * @hideinitializer
  */
 #define Define_Network(NAME) \
-  EXECUTE_ON_STARTUP(NAME##__net, (new NAME(#NAME))->setOwner(&networks);)
+  EXECUTE_ON_STARTUP(NAME##__net, networks.instance()->add(new NAME(#NAME));)
 
 /**
  * Link type definition. The macro expands to the definition of a cLinkType object;
@@ -54,7 +55,7 @@
  * @hideinitializer
  */
 #define Define_Link(NAME,DELAY,ERROR,DATARATE) \
-  EXECUTE_ON_STARTUP(NAME##__linkt, (new cLinkType(#NAME, DELAY, ERROR, DATARATE))->setOwner(&linktypes);)
+  EXECUTE_ON_STARTUP(NAME##__linkt, linktypes.instance()->add(new cLinkType(#NAME, DELAY, ERROR, DATARATE));)
 
 /**
  * Registers a mathematical function that takes 0, 1, 2 or 3 double arguments
@@ -67,7 +68,7 @@
  * @hideinitializer
  */
 #define Define_Function(NAME,ARGCOUNT) \
-  EXECUTE_ON_STARTUP(NAME##__##ARGCOUNT##__func, (new cFunctionType(#NAME,NAME,ARGCOUNT))->setOwner(&functions);)
+  EXECUTE_ON_STARTUP(NAME##__##ARGCOUNT##__func, functions.instance()->add(new cFunctionType(#NAME,NAME,ARGCOUNT));)
 
 /**
  * Like Define_Function(), but takes three arguments, the second one being the
@@ -77,7 +78,7 @@
  * @hideinitializer
  */
 #define Define_Function2(NAME,FUNCTION,ARGCOUNT) \
-  EXECUTE_ON_STARTUP(NAME##__##ARGCOUNT##__func, (new cFunctionType(#NAME,FUNCTION,ARGCOUNT))->setOwner(&functions);)
+  EXECUTE_ON_STARTUP(NAME##__##ARGCOUNT##__func, functions.instance()->add(new cFunctionType(#NAME,FUNCTION,ARGCOUNT));)
 
 /**
  * Register class. This defines a factory object which makes it possible
@@ -87,7 +88,7 @@
  */
 #define Register_Class(CLASSNAME) \
   void *CLASSNAME##__create() {return new CLASSNAME;} \
-  EXECUTE_ON_STARTUP(CLASSNAME##__class, (new cClassRegister(#CLASSNAME,CLASSNAME##__create))->setOwner(&classes);)
+  EXECUTE_ON_STARTUP(CLASSNAME##__class, classes.instance()->add(new cClassRegister(#CLASSNAME,CLASSNAME##__create));)
 
 //@}
 
@@ -115,7 +116,7 @@
   { \
      return (cModule *) new CLASSNAME(name, parentmod); \
   } \
-  EXECUTE_ON_STARTUP(CLASSNAME##__mod, (new cModuleType(#CLASSNAME,#CLASSNAME,(ModuleCreateFunc)CLASSNAME##__create))->setOwner(&modtypes);)
+  EXECUTE_ON_STARTUP(CLASSNAME##__mod, modtypes.instance()->add(new cModuleType(#CLASSNAME,#CLASSNAME,(ModuleCreateFunc)CLASSNAME##__create));)
 
 /**
  * Similar to Define_Module(), except that it couples the class with the
@@ -129,7 +130,7 @@
   { \
      return (cModule *) new CLASSNAME(name, parentmod); \
   } \
-  EXECUTE_ON_STARTUP(CLASSNAME##__mod, (new cModuleType(#CLASSNAME,#INTERFACENAME,(ModuleCreateFunc)CLASSNAME##__create))->setOwner(&modtypes);)
+  EXECUTE_ON_STARTUP(CLASSNAME##__mod, modtypes.instance()->add(new cModuleType(#CLASSNAME,#INTERFACENAME,(ModuleCreateFunc)CLASSNAME##__create));)
 
 /**
  * This macro facilitates the declaration of a simple module class, and
@@ -170,7 +171,7 @@
 
 // internal: registers a module interface specified with the Interface..EndInterface macros
 #define Register_ModuleInterface(CLASSNAME) \
-  EXECUTE_ON_STARTUP(CLASSNAME##__if, (new cModuleInterface(#CLASSNAME, CLASSNAME##__descr))->setOwner(&modinterfaces);)
+  EXECUTE_ON_STARTUP(CLASSNAME##__if, modinterfaces.instance()->add(new cModuleInterface(#CLASSNAME, CLASSNAME##__descr));)
 
 // internal: gate types. To be used with module interface declarations.
 #define GateDir_Input      'I'

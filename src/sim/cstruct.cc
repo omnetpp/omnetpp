@@ -21,6 +21,7 @@
 #include <string.h>
 #include <assert.h>
 #include "cstruct.h"
+#include "carray.h"
 #include "cenum.h"
 #include "util.h"
 #include "errmsg.h"
@@ -92,10 +93,10 @@ void cStructDescriptor::enum2string(long e, const char *enumname, char *buf, int
     const char *s = enump->stringFor(e);
     if (!s) {
         // no string for this numeric value
-        sprintf(buf, "(unknown)");
+        sprintf(buf+strlen(buf), " (unknown)");
         return;
     }
-    sprintf(buf, "(%s)",s);
+    sprintf(buf+strlen(buf), " (%s)",s);
 }
 
 
@@ -143,7 +144,7 @@ bool cStructDescriptor::hasDescriptor(const char *classname)
     char sdclass[80];
     strcpy(sdclass,classname);
     strcat(sdclass,"Descriptor");
-    return classes.find(sdclass)!=NULL;
+    return classes.instance()->find(sdclass)!=-1;
 }
 
 cStructDescriptor *cStructDescriptor::createDescriptorFor(cObject *obj)

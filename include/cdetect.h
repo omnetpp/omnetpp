@@ -59,8 +59,10 @@ typedef void (*PostADFunc)(cAccuracyDetection *, void *);
  */
 class SIM_API cTransientDetection : public cObject
 {
-  private:
+  protected:
     cStatistic *back;    // ptr to cStatistic that uses this object
+    PostTDFunc pdf;      // function to call after detection
+    void *pdfdata;       // data for PostDetectFunct
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -93,7 +95,7 @@ class SIM_API cTransientDetection : public cObject
     /* No dup() because this is an abstract class. */
     //@}
 
-    /** @name Pure virtual functions to define the interface. */
+    /** @name New methods. */
     //@{
 
     /**
@@ -122,6 +124,12 @@ class SIM_API cTransientDetection : public cObject
      * should update the detection algorithm.)
      */
     virtual void start() = 0;
+
+    /**
+     * Adds a function that will be called when accuracy has reached the
+     * configured limit.
+     */
+    void setPostDetectFunction(PostTDFunc f, void *p) {pdf = f; pdfdata = p;}
     //@}
 
     /** @name Host object. */
@@ -149,8 +157,10 @@ class SIM_API cTransientDetection : public cObject
  */
 class SIM_API cAccuracyDetection : public cObject
 {
-  private:
-    cStatistic *back;              // ptr to cStatistic that uses this object
+  protected:
+    cStatistic *back;           // ptr to cStatistic that uses this object
+    PostADFunc pdf;             // function to call after detection
+    void *pdfdata;              // data for PostDetectFunc
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -183,7 +193,7 @@ class SIM_API cAccuracyDetection : public cObject
     /* No dup() because this is an abstract class. */
     //@}
 
-    /** @name Pure virtual functions to define the interface. */
+    /** @name New methods. */
     //@{
 
     /**
@@ -212,6 +222,12 @@ class SIM_API cAccuracyDetection : public cObject
      * will update the detection algorithm).
      */
     virtual void start() = 0;
+
+    /**
+     * Adds a function that will be called when accuracy has reached the
+     * configured limit.
+     */
+    void setPostDetectFunction(PostADFunc f, void *p) {pdf=f; pdfdata=p;}
     //@}
 
     /** @name Host object. */
@@ -252,8 +268,6 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
     int size;                 // number of collected values
     struct xy {double x; double y; xy *next;};
     xy *func;                 // structure of collected values
-    PostTDFunc pdf;           // function to call after detection
-    void *pdfdata;            // data for PostDetectFunct
 
   private:
     // internal: computes new value of transval
@@ -329,14 +343,6 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
 
     /** @name Setting up the detection object. */
     //@{
-
-    /**
-     * Adds a function that will be called when accuracy has reached the
-     * configured limit.
-     */
-    // FIXME: why not in base class?
-    void setPostDetectFunction(PostTDFunc f, void *p) {pdf = f; pdfdata = p;}
-
     /**
      * Sets the parameters of the detection algorithm.
      */
@@ -364,8 +370,6 @@ class SIM_API cADByStddev : public cAccuracyDetection
     long int sctr;              // counter
     double ssum,sqrsum;         // sum, square sum;
     int repeats, detreps;       // repetitions necessary for detection
-    PostADFunc pdf;             // function to call after detection
-    void *pdfdata;              // data for PostDetectFunc
 
   private:
     // internal: compute new value of transval
@@ -444,13 +448,6 @@ class SIM_API cADByStddev : public cAccuracyDetection
 
     /** @name Setting up the detection object. */
     //@{
-
-    /**
-     * Adds a function that will be called when accuracy has reached the
-     * configured limit.
-     */
-    // FIXME: why not in base class?
-    void setPostDetectFunction(PostADFunc f, void *p) {pdf=f; pdfdata=p;}
 
     /**
      * Sets the parameters of the detection algorithm.

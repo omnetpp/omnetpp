@@ -31,8 +31,8 @@
  * Order (ascending or descending) can be specified.
  *
  * Ownership of contained objects (responsibility of deletion) can
- * be specified per-object basis (see cObject::takeOwnership()).
- * Default is that cQueue takes the ownership of each object
+ * be specified per-object basis (see takeOwnership()); default is
+ * that cQueue takes the ownership of each object
  * inserted (that is, takeOwnership(true)).
  *
  * The sorting function should look like:
@@ -64,8 +64,8 @@ class SIM_API cQueue : public cObject
 
       public:
         /**
-         * Constructor. cQueueIterator will walk on the queue passed
-         * as argument. The current object will be the first (if athead==true) or
+         * Constructor. Iterator will walk on the queue passed as argument. 
+         * The current object will be the first (if athead==true) or
          * the last (athead==false) object in the queue.
          */
         Iterator(const cQueue& q, bool athead=true)
@@ -110,6 +110,7 @@ class SIM_API cQueue : public cObject
     friend class Iterator;
 
   private:
+    bool tkownership;
     QElem *headp, *tailp;           // inserting at head, removal at tail
     int n;                          // number of items in queue
     CompareFunc compare;            // compare function
@@ -270,6 +271,24 @@ class SIM_API cQueue : public cObject
      * Returns true if the queue contains the passed object.
      */
     virtual bool contains(cObject *obj) const;
+    //@}
+
+    /** @name Ownership control flag. */
+    //@{
+
+    /**
+     * Sets the flag which determines whether the container object
+     * should automatically take ownership of the objects that are inserted
+     * into it.
+     */
+    void takeOwnership(bool tk) {tkownership=tk;}
+
+    /**
+     * Returns the flag which determines whether the container object
+     * should automatically take ownership of the objects that are inserted
+     * into it.
+     */
+    bool takeOwnership() const   {return tkownership;}
     //@}
 };
 

@@ -28,12 +28,14 @@
 #include "cexception.h"
 #include "parsim/ccommbuffer.h"
 
+using std::ostream;
+
 //=== registration
 Register_Class(cMessage);
 
 // static members of cMessage
-unsigned long cMessage::total_msgs;
-unsigned long cMessage::live_msgs;
+long cMessage::total_msgs = 0;
+long cMessage::live_msgs = 0;
 
 //=========================================================================
 //=== cMessage - member functions
@@ -55,8 +57,8 @@ cMessage::cMessage(const char *name, int k, long ln, int pri, bool err) : cObjec
     parlistp = NULL;
     encapmsg = NULL;
     contextptr = NULL;
-    refcount=0;
-    srcprocid=0;
+    refcount = 0;
+    srcprocid = 0;
 
     frommod=fromgate=-1;
     tomod=togate=-1;
@@ -70,7 +72,8 @@ cMessage::cMessage(const char *name, int k, long ln, int pri, bool err) : cObjec
 
 cMessage::~cMessage()
 {
-    // parlistp is deleted by ~cObject()
+    dropAndDelete(parlistp);
+    dropAndDelete(encapmsg);
     live_msgs--;
 }
 
@@ -155,6 +158,10 @@ void cMessage::writeContents(ostream& os)
     } else {
         os << "  no parameter list\n";
     }
+    if (encapmsg) {
+        os << "  encapsulated message:\n";
+        encapmsg->writeContents( os );
+    }
 }
 
 #ifdef WITH_PARSIM
@@ -229,23 +236,21 @@ cMessage& cMessage::operator=(const cMessage& msg)
     error = msg.error;
     tstamp = msg.tstamp;
     srcprocid = msg.srcprocid; // probably redundant
-    // refcount should be left alone
+    // TBD refcount!!! should be left alone
 
     created = msg.created;  // hmm...
 
-    if (parlistp)
-        delete parlistp;
-    if (msg.parlistp && msg.parlistp->owner()==const_cast<cMessage*>(&msg))
+    dropAndDelete(parlistp);
+    if (msg.parlistp)
         take( parlistp = (cArray *)msg.parlistp->dup() );
     else
-        parlistp = msg.parlistp;
+        parlistp = NULL;
 
-    if (encapmsg && encapmsg->owner()==this)
-        discard( encapmsg );
-    if (msg.encapmsg && msg.encapmsg->owner()==const_cast<cMessage*>(&msg))
+    dropAndDelete(encapmsg);
+    if (msg.encapmsg)
         take( encapmsg = (cMessage *)msg.encapmsg->dup() );
     else
-        encapmsg = msg.encapmsg;
+        encapmsg = NULL;
 
     contextptr = msg.contextptr;
 
@@ -277,7 +282,7 @@ void cMessage::addLength(long l)
 {
     len+=l;
     if (len<0)
-        throw new cException(this,"addLength(): length became negative (%ld)",len);
+        throw new cException(this,"addLength(): length became negative (%ld) after adding %ld",len,l);
 }
 
 void cMessage::encapsulate(cMessage *msg)
@@ -287,8 +292,10 @@ void cMessage::encapsulate(cMessage *msg)
 
     if (msg)
     {
-        if (msg->owner()!=&(simulation.contextSimpleModule()->locals))
-            throw new cException(this,"encapsulate(): not owner of message");
+        if (msg->owner()!=simulation.contextSimpleModule())
+            throw new cException(this,"encapsulate(): not owner of message (%s)%s, owner is (%s)%s",
+                                 msg->className(), msg->fullName(),
+                                 msg->owner()->className(), msg->owner()->fullPath());
         take( encapmsg = msg );
         len += encapmsg->len;
     }

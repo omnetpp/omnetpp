@@ -50,7 +50,7 @@ class SIM_API cMessageHeap : public cObject
         /**
          * Constructor.
          */
-        Iterator(const cMessageHeap& mh)  {q=const_cast<cMessageHeap*>(&mh);pos=1;} //FIXME: not correct?
+        Iterator(const cMessageHeap& mh)  {q=const_cast<cMessageHeap*>(&mh);pos=1;}
 
         /**
          * Reinitializes the iterator object.

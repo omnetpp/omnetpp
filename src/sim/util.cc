@@ -435,22 +435,24 @@ cContextSwitcher::cContextSwitcher(cModule *thisptr)
 {
     // save current context and switch to new
     callerContext = simulation.contextModule();
-    if (thisptr!=callerContext)
-        simulation.setContextModule(thisptr);
+    simulation.setContextModule(thisptr);
 }
 
 cContextSwitcher::~cContextSwitcher()
 {
     // restore old context
-    simulation.setContextModule(callerContext);
+    if (!callerContext)
+        simulation.setGlobalContext();
+    else
+        simulation.setContextModule(callerContext);
 }
 
 void cContextSwitcher::methodCall(const char *fmt,...)
 {
     cModule *methodContext = simulation.contextModule();
-    if (methodContext==callerContext) 
+    if (methodContext==callerContext)
         return;
-    
+
     static char buf[MAX_METHODCALL];
     va_list va;
     va_start(va, fmt);

@@ -60,9 +60,6 @@
 #define NULL ((void*)0)
 #endif
 
-// obsolete:
-// #define NO(cXX)   ((cXX *)NULL)
-
 //=== other common defines
 
 #ifndef PI
@@ -92,31 +89,6 @@
 typedef double       simtime_t;
 
 #define MAXTIME      HUGE_VAL
-
-
-//
-// backwards compatibility defines
-//
-#define isA()          className()
-// cQueue:
-#define insertHead(a)  insert(a)
-#define peekTail()     tail()
-#define peekHead()     head()
-#define getTail()      pop()
-// cSimulation
-#define lastModuleIndex() lastModuleId()
-
-// following ones became inner classes:
-#define cKSplitIterator       cKSplit::Iterator
-#define sGrid                 cKSplit::Grid
-#define cQueueIterator        cQueue::Iterator
-#define cLinkedListIterator   cLinkedList::Iterator
-#define sXElem                cPar::ExprElem
-#define cMessageHeapIterator  cMessageHeap::Iterator
-#define sTopoLink             cTopology::Link
-#define sTopoLinkIn           cTopology::LinkIn
-#define sTopoLinkOut          cTopology::LinkOut
-#define sTopoNode             cTopology::Node
 
 //
 // memory mgmt functions for void* pointers  (used by cLinkedList and cPar)

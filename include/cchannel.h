@@ -44,7 +44,7 @@ class SIM_API cChannel : public cObject
     cLinkType *linkp;   // link prototype or NULL
     cArray *parlistp;   // ptr to list of all parameters
     cGate *fromgatep;   // gate the channel is attached to
-    // FIXME: add on/off modelling? or to cGate?
+    // TBD: add on/off modelling? or to cGate?
 
   protected:
     // helper functions
@@ -103,7 +103,7 @@ class SIM_API cChannel : public cObject
      * Writes textual information about this object to the stream.
      * See cObject for more details.
      */
-    virtual void writeContents(ostream& os);
+    virtual void writeContents(std::ostream& os);
 
 #ifdef WITH_PARSIM
     /**
@@ -136,7 +136,7 @@ class SIM_API cChannel : public cObject
     cLinkType *link() const {return linkp;}
     //@}
 
-    /** @name Parameter list. FIXME needs remove, etc. operators too! */
+    /** @name Parameter list. TBD needs remove, etc. operators too! */
     //@{
 
     /**
@@ -201,7 +201,7 @@ class SIM_API cChannel : public cObject
 class SIM_API cSimpleChannel : public cChannel
 {
   private:
-    cPar *disabledp;    // FIXME implement! if not NULL and value is nonzero, channel is down (will delete all packets). Points to an object in the parlist.
+    cPar *disabledp;    // TBD implement! if not NULL and value is nonzero, channel is down (will delete all packets). Points to an object in the parlist.
     cPar *delayp;       // propagation delay or NULL. Points to an object in the parlist.
     cPar *errorp;       // bit error rate or NULL. Points to an object in the parlist.
     cPar *dataratep;    // data rate or NULL. Points to an object in the parlist.
@@ -258,7 +258,7 @@ class SIM_API cSimpleChannel : public cChannel
      * Writes textual information about this object to the stream.
      * See cObject for more details.
      */
-    virtual void writeContents(ostream& os);
+    virtual void writeContents(std::ostream& os);
 
 #ifdef WITH_PARSIM
     /**
@@ -282,9 +282,6 @@ class SIM_API cSimpleChannel : public cChannel
 
     /**
      * Sets the delay parameter of the channel.
-     *
-     * Ownership of the cPar object is handled according to the
-     * takeOwnership flag.
      */
     virtual void setDelay(cPar *p);
 
@@ -292,9 +289,6 @@ class SIM_API cSimpleChannel : public cChannel
      * Sets the bit error rate parameter of the channel.
      * When a message sent through the channel suffers at least
      * one bit error, its bit error flag will be set.
-     *
-     * Ownership of the cPar object is handled according to the
-     * takeOwnership flag.
      *
      * @see cMessage::hasBitError()
      */
@@ -304,9 +298,6 @@ class SIM_API cSimpleChannel : public cChannel
      * Sets the data rate parameter of the channel.
      * This affects the transmission time of messages sent
      * through the channel.
-     *
-     * Ownership of the cPar object is handled according to the
-     * takeOwnership flag.
      *
      * @see isBusy(), transmissionFinishes()
      */

@@ -90,11 +90,6 @@ class SIM_API cPlaceHolderModule : public cModule
      * Does nothing.
      */
     virtual void scheduleStart(simtime_t t);
-
-    /**
-     * Deletes itself.
-     */
-    virtual void deleteModule();
     //@}
 };
 

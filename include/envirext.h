@@ -22,7 +22,6 @@
 #include <iostream>
 #include "defs.h"
 
-using std::ostream;
 
 class cModule;
 class cStatistic;
@@ -235,12 +234,12 @@ class cSnapshotManager
     /**
      * Returns a stream where a snapshot can be written.
      */
-    virtual ostream *getStreamForSnapshot() = 0;
+    virtual std::ostream *getStreamForSnapshot() = 0;
 
     /**
      * Releases a stream after a snapshot was written.
      */
-    virtual void releaseStreamForSnapshot(ostream *os) = 0;
+    virtual void releaseStreamForSnapshot(std::ostream *os) = 0;
 
     /**
      * Returns the snapshot file name. Returns NULL if this object is not

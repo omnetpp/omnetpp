@@ -303,7 +303,8 @@ class SIM_API cLongHistogram : public cEqdHistogramBase
     //@{
 
     /**
-     * Collects one value. FIXME: truncates + collects
+     * Collects one value. Internally, the double is converted to long using floor()
+     * before everything else.
      */
     virtual void collect(double val);
 

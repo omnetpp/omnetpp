@@ -32,6 +32,8 @@
 #include "cexception.h"
 #include "parsim/ccommbuffer.h"
 
+using std::ostream;
+
 //=== registration
 Register_Class(cChannel);
 Register_Class(cSimpleChannel);
@@ -58,7 +60,7 @@ cChannel::cChannel(const char *name, cLinkType *link) : cObject( name )
 
 cChannel::~cChannel()
 {
-    // owned objects are deleted by ~cObject()
+    dropAndDelete(parlistp);
 }
 
 void cChannel::info(char *buf)
@@ -107,12 +109,8 @@ cChannel& cChannel::operator=(const cChannel& ch)
 
     fromgatep = NULL;
 
-    if (parlistp && parlistp->owner()==this)
-        discard(parlistp);
-    parlistp = ch.parlistp;
-    if (parlistp->owner()==const_cast<cChannel*>(&ch))
-        take(parlistp = (cArray *)parlistp->dup());
-
+    dropAndDelete(parlistp);
+    take(parlistp = (cArray *)ch.parlistp->dup());
     return *this;
 }
 
@@ -195,7 +193,6 @@ cSimpleChannel::cSimpleChannel(const char *name, cLinkType *linkp) : cChannel(na
 
 cSimpleChannel::~cSimpleChannel()
 {
-    // owned objects are deleted by ~cObject()
 }
 
 void cSimpleChannel::info(char *buf)

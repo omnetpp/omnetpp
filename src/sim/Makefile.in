@@ -35,9 +35,9 @@ CPPOBJS_STD = task.o ccoroutine.o ctypes.o carray.o cgate.o \
          cmodule.o csimplemodule.o csimul.o cobject.o cpar.o \
          cstat.o chist.o cdensity.o cvarhist.o cpsquare.o cksplit.o \
          cmessage.o cdetect.o util.o cllist.o ctopo.o errmsg.o \
-         cmsgheap.o coutvect.o cqueue.o chead.o cwatch.o \
+         cmsgheap.o coutvect.o cqueue.o globals.o cwatch.o \
          cpacket.o cfsm.o cstruct.o cchannel.o cenum.o cexception.o cdispstr.o \
-         cscheduler.o onstartup.o random.o distrib.o
+         cdefaultlist.o cscheduler.o onstartup.o random.o distrib.o
 CPPOBJS_NETBUILDER= netbuilder/cdynamicmodule.o netbuilder/cdynamicnetwork.o \
                     netbuilder/cnednetworkbuilder.o netbuilder/loadnedfile.o
 CPPOBJS_PARSIM = parsim/ccommbuffer.o parsim/cmemcommbuffer.o \

@@ -5,7 +5,7 @@
 //
 //
 //  Declaration of the following classes:
-//    cDisplayStringParser : utility class for display string manipulation
+//    cDisplayString : utility class for display string manipulation
 //
 //==========================================================================
 
@@ -45,7 +45,7 @@
  *
  * An example:
  * <pre>
- *   cDisplayStringParser dispstr("a=1,2;p=alpha,,3");
+ *   cDisplayString dispstr("a=1,2;p=alpha,,3");
  *   dispstr.insertTag("x");
  *   dispstr.setTagArg("x",0,"joe");
  *   dispstr.setTagArg("x",2,"jim");
@@ -57,7 +57,7 @@
  *
  * @ingroup SimSupport
  */
-class cDisplayStringParser
+class cDisplayString
 {
   private:
     struct Tag {
@@ -65,19 +65,34 @@ class cDisplayStringParser
        int numargs;
        char *args[MAXARGS];
     };
-    char *dispstr;      // copy of display string
+    mutable char *dispstr; // copy of display string (assemble() changes it)
     char *buffer;       // holds pieces of display string (sliced with zeroes)
     char *bufferend;    // points to last byte of buffer allocated
     Tag *tags;          // table of tags
     int numtags;        // number of tags
+
+    // needed to notify Envir
+    cObject *object;     // a cModule or cGate pointer
+    enum {NONE, CONNECTION, MODULE, MODULE_AS_PARENT} role; // what
+
   private:
     // helper functions
     bool parse();
-    void assemble();
-    int gettagindex(const char *tagname);
+    void assemble() const;
+    int gettagindex(const char *tagname) const;
     void cleartags();
     bool isinbuffer(char *s) {return s>=buffer && s<=bufferend;}
-    void strcatescaped(char *d, const char *s);
+    static void strcatescaped(char *d, const char *s);
+
+  private:
+    // internal: called when the stored display string changes, and notifies Envir in turn.
+    void notify();
+
+  public:
+    // internal:
+    void setRoleToConnection(cGate *gate) {object=gate; role=CONNECTION;}
+    void setRoleToModule(cModule *submodule) {object=submodule; role=MODULE;}
+    void setRoleToModuleAsParent(cModule *module) {object=module; role=MODULE_AS_PARENT;}
 
   public:
     /** Constructors, destructor. */
@@ -86,17 +101,40 @@ class cDisplayStringParser
     /**
      * Constructor.
      */
-    cDisplayStringParser();
+    cDisplayString();
 
     /**
      * Constructor.
      */
-    cDisplayStringParser(const char *dispstr);
+    cDisplayString(const char *dispstr);
+
+    /**
+     * Copy constructor.
+     */
+    cDisplayString(const cDisplayString& ds);
 
     /**
      * Destructor.
      */
-    ~cDisplayStringParser();
+    ~cDisplayString();
+    //@}
+
+    /** Assignment, conversions. */
+    //@{
+    /**
+     * Assignment operator.
+     */
+    cDisplayString& operator=(const cDisplayString& ds) {parse(ds.getString()); return *this;}
+
+    /**
+     * Conversion from string.
+     */
+    cDisplayString& operator=(const char *s)  {parse(s); return *this;}
+
+    /**
+     * Conversion to string.
+     */
+    operator const char *() const  {return getString();}
     //@}
 
     /** Getting and setting the stored display string. */
@@ -105,10 +143,11 @@ class cDisplayStringParser
     /**
      * Returns the display string.
      */
-    const char *getString();
+    const char *getString() const;
 
     /**
-     * Sets the stored display string.
+     * Sets the display string to the given value. The return value is false
+     * if there was an error parsing the string.
      */
     bool parse(const char *displaystr);
     //@}
@@ -119,7 +158,7 @@ class cDisplayStringParser
     /**
      * Returns true if the stored display string contains the given tag.
      */
-    bool existsTag(const char *tagname);
+    bool existsTag(const char *tagname) const;
 
     /**
      * Returns the number of arguments a tag actually has in the display
@@ -128,14 +167,14 @@ class cDisplayStringParser
      * and getNumArgs("y") returns 1. If the display string doesn't
      * contain the given tag, 0 is returned.
      */
-    int getNumArgs(const char *tagname);
+    int getNumArgs(const char *tagname) const;
 
     /**
      * Returns pointer to the indexth argument of the given tag.
      * If the tag doesn't exist or the index is out of range,
      * NULL is returned.
      */
-    const char *getTagArg(const char *tagname, int index);
+    const char *getTagArg(const char *tagname, int index) const;
 
     /**
      * Sets an argument for the given tag. The value may be NULL pointer.
@@ -163,13 +202,13 @@ class cDisplayStringParser
      * Returns the number of tags in the display string. Tags are indexed
      * starting from 0.
      */
-    int getNumTags();
+    int getNumTags() const;
 
     /**
      * Returns the name of the tag given with its index.
      * If the tag index is out of range, NULL is returned.
      */
-    const char *getTagName(int tagindex);
+    const char *getTagName(int tagindex) const;
 
     /**
      * Returns the number of arguments a tag actually has in the display
@@ -178,14 +217,14 @@ class cDisplayStringParser
      * and getNumArgs("y") returns 1. If the display string doesn't
      * contain the given tag, 0 is returned.
      */
-    int getNumArgs(int tagindex);
+    int getNumArgs(int tagindex) const;
 
     /**
      * Returns pointer to the indexth argument of the given tag.
      * If the tag doesn't exist or the index is out of range,
      * NULL is returned.
      */
-    const char *getTagArg(int tagindex, int index);
+    const char *getTagArg(int tagindex, int index) const;
 
     /**
      * Sets an argument for the given tag. The value may be NULL pointer.
@@ -202,8 +241,8 @@ class cDisplayStringParser
      * Inserts a tag into the display string, optionally at the given
      * index. If no index is given, the tag is inserted at the beginning
      * of the string. Return value is the index of the tag.
-     * If the display string already contains a tag with the given tagname, 
-     * nothing is changed and the index of the existing tag is returned. 
+     * If the display string already contains a tag with the given tagname,
+     * nothing is changed and the index of the existing tag is returned.
      */
     int insertTag(const char *tagname, int atindex=0);
 
@@ -215,6 +254,7 @@ class cDisplayStringParser
     bool removeTag(int tagindex);
     //@}
 };
+
 
 #endif
 

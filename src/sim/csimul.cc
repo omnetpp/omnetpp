@@ -39,6 +39,16 @@
 #include "netbuilder/loadnedfile.h"
 #endif
 
+using std::ostream;
+
+
+// FIXME
+#ifdef DEVELOPER_DEBUG
+#include <set>
+extern std::set<cObject*> objectlist;
+void printAllObjects();
+#endif
+
 
 //==========================================================================
 //=== Global object:
@@ -78,16 +88,19 @@ cSimulation::cSimulation(const cSimulation& r) :
 
 cSimulation::cSimulation(const char *name) :
  cObject(name),
- locals("simulation-locals"),
  msgQueue( "scheduled-events" )
 {
-    take( &locals );
-    take( &msgQueue );
+    // remove ourselves from ownership tree because global variables
+    // shouldn't be destroyed via operator delete
+    // FIXME is this OK?
+    if (!cStaticFlag::isSet())
+        removeFromOwnershipTree();
+
+    take(&msgQueue);
 
     runningmodp = NULL;
     contextmodp = NULL;
     systemmodp = NULL;
-    locallistp = &locals;
     schedulerp = NULL;
 
     backtomod = NULL;
@@ -105,6 +118,7 @@ cSimulation::cSimulation(const char *name) :
 cSimulation::~cSimulation()
 {
     deleteNetwork();
+    drop(&msgQueue);
 }
 
 void cSimulation::init()
@@ -233,7 +247,7 @@ void cSimulation::loadNedFile(const char *nedfile)
 #endif
 }
 
-int cSimulation::addModule(cModule *mod)
+int cSimulation::registerModule(cModule *mod)
 {
     // Insert module into the vector.
     // The module will get (last_id+1) as ID. We do not reuse "holes"
@@ -252,21 +266,26 @@ int cSimulation::addModule(cModule *mod)
         vect = v;
         size += delta;
     }
-
     vect[last_id] = mod;
-    mod->setId(last_id);
     return last_id;
 }
 
-void cSimulation::deleteModule(int id)
+void cSimulation::deregisterModule(cModule *mod)
 {
-    if (id<0 || id>last_id || !vect[id])
-        return;
-
-    if (vect[id]==systemmodp)
-        systemmodp = NULL;
-    delete vect[id];
+    int id = mod->id();
     vect[id] = NULL;
+
+    if (mod==systemmodp)
+    {
+        drop(systemmodp);
+        systemmodp = NULL;
+    }
+}
+
+void cSimulation::setSystemModule(cModule *p)
+{
+    systemmodp = p;
+    take(p);
 }
 
 cModule *cSimulation::moduleByPath(const char *path) const
@@ -307,6 +326,10 @@ cModule *cSimulation::moduleByPath(const char *path) const
 // FIXME change according to doc comment...
 void cSimulation::setupNetwork(cNetworkType *network, int run_num)
 {
+#ifdef DEVELOPER_DEBUG
+    printf("DEBUG: before setupNetwork: %d objects\n", cObject::liveObjectCount());
+    objectlist.clear();
+#endif
     if (!network)
         throw new cException(eNONET);
 
@@ -327,6 +350,8 @@ void cSimulation::setupNetwork(cNetworkType *network, int run_num)
     catch (cException *)
     {
         // if failed, clean up the whole stuff before passing exception back
+        // FIXME don't do it here -- it's unsafe. Might crash if any simple module
+        // destructors is written badly.
         deleteNetwork();
         throw;
     }
@@ -376,7 +401,7 @@ void cSimulation::endRun()
 // FIXME change according to doc comment...
 void cSimulation::deleteNetwork()
 {
-    if (networktype==NULL)
+    if (!systemmodp)
         return;  // network already deleted
 
     if (runningmodp!=NULL)
@@ -385,23 +410,26 @@ void cSimulation::deleteNetwork()
     // clear remaining messages
     msgQueue.clear();
 
-    // for (int i=1; i<size; i++) delete vect[i]; -- incorrect!!!
-    //   (we own only the system module)
+    // delete all modules recursively
+    systemmodp->deleteModule();
 
-    if (systemmodp)  // delete whole network through ownership hierarchy
-    {
-        delete systemmodp;
-        systemmodp = NULL;
-    }
+    // make sure it was successful
+    for (int i=1; i<size; i++)
+        ASSERT(vect[i]==NULL);
 
+    // and clean up
     delete [] vect;
     vect = NULL;
     size = 0;
     last_id = 0;
 
-    setGlobalContext();
-
     networktype = NULL;
+
+#ifdef DEVELOPER_DEBUG
+    printf("DEBUG: after deleteNetwork: %d objects\n", cObject::liveObjectCount());
+    printAllObjects();
+#endif
+
 }
 
 cSimpleModule *cSimulation::selectNextModule()
@@ -488,12 +516,15 @@ void cSimulation::transferTo(cSimpleModule *modp)
     if (simulation.exception)
     {
         // alas, type info was lost, so we have to recover manually...
+        // FIXME use dynamic_cast
         if (simulation.exception_type==0)
             throw (cException *)simulation.exception;
         else if (simulation.exception_type==1)
             throw (cTerminationException *)simulation.exception;
         else if (simulation.exception_type==2)
             throw (cEndModuleException *)simulation.exception;
+        else
+            throw new cException("some exception occurred"); //FIXME
     }
 
     if (modp->stackOverflow())
@@ -531,8 +562,10 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
     catch (cEndModuleException *e)
     {
         // handle locally
+        // FIXME make separate cDeleteModuleException!
+        setGlobalContext();
         if (e->moduleToBeDeleted())
-            deleteModule(mod->id());
+            delete mod;
         delete e;
     }
     catch (cException *)
@@ -560,7 +593,7 @@ void cSimulation::transferToMain()
 void cSimulation::setContextModule(cModule *p)
 {
     contextmodp = p;
-    locallistp = p->isSimple() ? &(((cSimpleModule *)p)->locals) :  &locals;
+    cObject::setDefaultOwner(p);
 }
 
 cSimpleModule *cSimulation::contextSimpleModule() const

@@ -28,24 +28,24 @@
 #include "parsim/ccommbuffer.h"
 
 
-cOutVector::cOutVector(const char *nam, int tupl) : cObject(nam)
+cOutVector::cOutVector(const char *nam, int tuple) : cObject(nam)
 {
     enabled = true;
     handle = NULL;
     num_received = 0;
     num_stored = 0;
     record_in_inspector = NULL;
-    tuple = tupl;
+    tupl = tuple;
 
-    if (tuple!=1 && tuple!=2)
+    if (tupl!=1 && tupl!=2)
     {
-        tuple = 0;
+        tupl = 0;
         throw new cException(this,"constructor: invalid value (%d) for tuple; supported values are 1 and 2", tupl);
     }
 
     // register early if possible (only needed for Akaroa...)
     if (nam)
-        handle = ev.registerOutputVector(simulation.contextModule()->fullPath(), name(), tuple);
+        handle = ev.registerOutputVector(simulation.contextModule()->fullPath(), name(), tupl);
 }
 
 cOutVector::~cOutVector()
@@ -62,7 +62,7 @@ void cOutVector::setName(const char *nam)
 
     // register early (only needed for Akaroa...)
     if (nam)
-        handle = ev.registerOutputVector(simulation.contextModule()->fullPath(), name(), tuple);
+        handle = ev.registerOutputVector(simulation.contextModule()->fullPath(), name(), tupl);
 }
 
 void cOutVector::info(char *buf)
@@ -73,10 +73,22 @@ void cOutVector::info(char *buf)
         sprintf(buf, "(no values recorded yet)");
 }
 
+#ifdef WITH_PARSIM
+void cOutVector::netPack(cCommBuffer *buffer)
+{
+    throw new cException(this, "netPack() not supported");
+}
+
+void cOutVector::netUnpack(cCommBuffer *buffer)
+{
+    throw new cException(this, "netUnpack(): not supported");
+}
+#endif
+
 bool cOutVector::record(double value)
 {
     // check tuple
-    if (tuple!=1)
+    if (tupl!=1)
         throw new cException(this,eNUMARGS,1);
 
     num_received++;
@@ -90,7 +102,7 @@ bool cOutVector::record(double value)
 
     // initialize if not yet done
     if (!handle)
-        handle = ev.registerOutputVector(simulation.contextModule()->fullPath(), name(), tuple);
+        handle = ev.registerOutputVector(simulation.contextModule()->fullPath(), name(), tupl);
 
     // pass data to envir for storage
     bool stored = ev.recordInOutputVector(handle, simulation.simTime(), value);
@@ -101,7 +113,7 @@ bool cOutVector::record(double value)
 bool cOutVector::record(double value1, double value2)
 {
     // check tuple
-    if (tuple!=2)
+    if (tupl!=2)
         throw new cException(this,eNUMARGS,2);
 
     num_received++;
@@ -115,7 +127,7 @@ bool cOutVector::record(double value1, double value2)
 
     // initialize if not yet done
     if (!handle)
-        handle = ev.registerOutputVector(simulation.contextModule()->fullPath(), name(), tuple);
+        handle = ev.registerOutputVector(simulation.contextModule()->fullPath(), name(), tupl);
 
     // pass data to envir for storage
     bool stored = ev.recordInOutputVector(handle, simulation.simTime(), value1, value2);
@@ -123,6 +135,6 @@ bool cOutVector::record(double value1, double value2)
     return stored;
 }
 
-// FIXME pack/unpack?????????/
+
 
 

@@ -46,16 +46,18 @@ class SIM_API cOutVector : public cObject
 {
   protected:
     bool enabled;        // if false, record() method will do nothing
-    int tuple;           // values: 1 or 2
+    int tupl;            // values: 1 or 2
     void *handle;        // identifies output vector for the output vector manager
     long num_received;   // total number of values passed to the output vector object
     long num_stored;     // number of values actually stored
 
     // the following members will be used directly by inspectors
-    friend class TOutVectorInspector;
-    friend class TOutVectorWindow;
     RecordFunc record_in_inspector; // to notify inspector about file writes
-    void *data_for_inspector;       // FIXME: why not via a setCallback() function??
+    void *data_for_inspector;
+
+  public:
+    // internal: called from behind cEnvir
+    void setCallback(RecordFunc f, void *d) {record_in_inspector=f; data_for_inspector=d;}
 
   public:
     /** @name Constructors, destructor, assignment */
@@ -102,6 +104,20 @@ class SIM_API cOutVector : public cObject
      * See cObject for more details.
      */
     virtual void info(char *buf);
+
+#ifdef WITH_PARSIM
+    /**
+     * Packing and unpacking cannot be supported with this class.
+     * This methods raises an error.
+     */
+    virtual void netPack(cCommBuffer *buffer);
+
+    /**
+     * Packing and unpacking cannot be supported with this class.
+     * This methods raises an error.
+     */
+    virtual void netUnpack(cCommBuffer *buffer);
+#endif
     //@}
 
     /** @name Configuring and writing to output vectors. */
@@ -156,6 +172,11 @@ class SIM_API cOutVector : public cObject
      * environment configuration, filtering, etc.) do not count.
      */
     long valuesStored()  {return num_stored;}
+
+    /**
+     * Returns the tuple parameter passed to the constructor.
+     */
+    int tuple() {return tupl;}
     //@}
 };
 

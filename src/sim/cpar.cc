@@ -34,6 +34,9 @@
 #include "cexception.h"
 #include "parsim/ccommbuffer.h"
 
+using std::ostream;
+
+
 //==============================================
 //=== Registration
 Register_Class(cPar);
@@ -59,14 +62,14 @@ char *cPar::possibletypes = "SBLDFIXCTP";
 // constructors
 cPar::cPar(const char *name) : cObject( name )
 {
-    takeOwnership( false );         // doesn't take the objects!
+    tkownership = false;
     changedflag = inputflag = false;
     typechar = 'L'; lng.val = 0L;
 }
 
 cPar::cPar(const cPar& par) : cObject()
 {
-    takeOwnership( false );         // doesn't take the objects!
+    tkownership = false;
     changedflag = inputflag = false;
     typechar = 'L'; lng.val = 0L;
 
@@ -76,7 +79,7 @@ cPar::cPar(const cPar& par) : cObject()
 
 cPar::cPar(const char *name, cPar& other) : cObject(name)
 {
-    takeOwnership( false );         // doesn't take the objects!
+    tkownership = false;
     changedflag = inputflag = false;
     typechar = 'L'; lng.val = 0L;
 
@@ -101,7 +104,7 @@ void cPar::deleteold()
     else if (typechar=='T')
     {
         if (dtr.res->owner()==this)
-            discard( dtr.res );
+            dropAndDelete(dtr.res);
     }
     else if (typechar=='C')
     {
@@ -120,13 +123,13 @@ void cPar::deleteold()
     else if (typechar=='O')
     {
         if (obj.obj->owner()==this)
-            discard( obj.obj );
+            dropAndDelete(obj.obj);
     }
     else if (typechar=='X')
     {
-        for(int i=0; i<expr.n; i++)
+        for (int i=0; i<expr.n; i++)
             if (expr.xelem[i].type=='R')  // should be ours
-                discard( expr.xelem[i].p );
+                dropAndDelete(expr.xelem[i].p);
         delete [] expr.xelem;
     }
     typechar = 'L';
@@ -599,7 +602,7 @@ cPar& cPar::setDoubleValue(ExprElem *x, int n)
            }
            else // otherwise, we'll become the owner
            {
-               take( p );
+               take(p);
            }
        }
     }

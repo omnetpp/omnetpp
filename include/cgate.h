@@ -28,6 +28,7 @@ class  cPar;
 class  cMessage;
 class  cLinkType;
 class  cChannel;
+class  cDisplayString;
 
 //==========================================================================
 
@@ -56,10 +57,16 @@ class SIM_API cGate : public cObject
     cGate *fromgatep;   // previous and next gate
     cGate *togatep;     //   in the route
 
-    opp_string dispstr; // the display string
+    cDisplayString *dispstr; // the display string (created on demand)
 
-    void (*notify_inspector)(cGate*,bool,void*); // to notify inspector about display string changes
-    void *data_for_inspector;
+  protected:
+    // internal: get initial display string from Envir
+    void initDisplayString();
+
+  public:
+    // internal: used from Tkenv: find out if cGate has a display string.
+    // displayString() would create the object immediately which we want to avoid.
+    bool hasDisplayString() {return dispstr!=NULL;}
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -130,14 +137,13 @@ class SIM_API cGate : public cObject
      * Writes textual information about this object to the stream.
      * See cObject for more details.
      */
-    virtual void writeContents(ostream& os);
+    virtual void writeContents(std::ostream& os);
     //@}
 
     /**
-     * This function is called internally by the send() functions
-     * to deliver the message to its destination.
+     * This function is called internally by the send() functions and
+     * channel classes' deliver() to deliver the message to its destination.
      */
-    // FIXME: why public?
     virtual void deliver(cMessage *msg, simtime_t at);
 
     /** @name Setting up the gate. */
@@ -398,34 +404,16 @@ class SIM_API cGate : public cObject
 
     /** @name Display string. */
     //@{
-
-    /**
-     * Sets the display string for the gate, which in practice affects the
-     * appearance of the connection for which this gate is the source.
-     *
-     * The immediate flag selects whether the change should become effective
-     * right now or later (after finishing the current event).
-     *
-     * If several display string changes are going to be done within one event,
-     * then immediate=false is useful because it reduces the number of necessary
-     * redraws. Immediate=false also uses less stack. But its drawback is that
-     * a setDisplayString() followed by a send() would actually be displayed
-     * in reverse order (message animation first), because message animations
-     * are always performed immediately (actually within the send() call).
-     */
-    void setDisplayString(const char *dispstr, bool immediate=true);
-
     /**
      * Returns the display string for the gate, which in practice affects the
      * apprearance of the connection for which this gate is the source.
      */
-    const char *displayString() const;
+    cDisplayString& displayString();
 
     /**
-     * Sets up a notification function which is called every time the display
-     * string changes.
+     * DEPRECATED. Use displayString() and cDisplayString methods instead.
      */
-    void setDisplayStringNotify(void (*notify_func)(cGate*,bool,void*), void *data);
+    void setDisplayString(const char *dispstr, bool immediate=true);
     //@}
 };
 

@@ -108,31 +108,5 @@ class SIM_API cEnum : public cObject
     //@}
 };
 
-//==========================================================================
-
-/**
- * Supporting class for cEnum. Helps with creating and filling globally
- * available cEnums. Enums of the same name will be merged.
- *
- * Usage:
- *  <PRE><TT>
- *   enum PDUType {CONNECT_REQ, CONNECT_CONFIRM, ... };
- *
- *   static sEnumBuilder _enum1( "PDUType",
- *       CONNECT_REQ,     "CONNECT_REQ",
- *       CONNECT_CONFIRM, "CONNECT_CONFIRM",
- *       ...
- *       0, NULL);
- *  </TT></PRE>
- */
-class SIM_API sEnumBuilder  //FIXME: make inner class to cEnum?
-{
-  public:
-    /**
-     * Constructor. See class description for more info.
-     */
-    sEnumBuilder(const char *name, ...);
-};
-
 #endif
 

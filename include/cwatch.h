@@ -183,7 +183,7 @@ class SIM_API cWatch : public cObject
      * Writes the value of the variable to the output stream.
      * The output looks like this: "int samples = 12 (12U, 0xC)".
      */
-    virtual void writeContents(ostream& os);
+    virtual void writeContents(std::ostream& os);
     //@}
 
     /** @name Accessing the stored variable reference. */
@@ -193,7 +193,7 @@ class SIM_API cWatch : public cObject
      * Does actual work for info() and writeContents().
      * The output looks like this: "int samples = 12 (12U, 0xC)".
      */
-    virtual void printTo(char *s);  //FIXME: why public?
+    virtual void printTo(char *s);
 
     /**
      * Returns the type of the referenced variable.

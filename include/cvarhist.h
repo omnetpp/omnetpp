@@ -88,7 +88,9 @@ class SIM_API cVarHistogram : public cHistogramBase //--LG
 
   protected:
     /**
-     * FIXME:
+     * Used internally to create equiprobable cells from the precollected
+     * observations. This cannot be mixed with manually adding cell boundaries
+     * -- if there are already some, an error is raised.
      */
     void createEquiProbableCells();
 
@@ -104,7 +106,9 @@ class SIM_API cVarHistogram : public cHistogramBase //--LG
 
     /**
      * Constructor. The third argument can be one of HIST_TR_NO_TRANSFORM,
-     * HIST_TR_AUTO_EPC_DBL, HIST_TR_AUTO_EPC_INT.
+     * HIST_TR_AUTO_EPC_DBL, HIST_TR_AUTO_EPC_INT. With HIST_TR_NO_TRANSFORM,
+     * you can set up cells manually (see addBinBound()), in the other two
+     * cases it tries to create equiprobably cells.
      */
     explicit cVarHistogram(const char *name=NULL,
                            int numcells=11,
@@ -207,10 +211,10 @@ class SIM_API cVarHistogram : public cHistogramBase //--LG
     //@{
 
     /**
-     * FIXME: Adds a new bin boundary (keeping the right order).
-     * If HIST_TR_NO_TRANSFORM was passed in the constructor
-     * call, you may specify cell (bin) bounds manually before collection
-     * starts.
+     * Adds a new bin (cell) boundary. This method can only be called
+     * if HIST_TR_NO_TRANSFORM was specified in the constructor call,
+     * and only when the object is still in the initial data collection phase
+     * (that is, transform() has been invoked yet).
      */
     virtual void addBinBound(double x);
     //@}

@@ -76,14 +76,8 @@ cModuleInterface::cModuleInterface(const char *name, sDescrItem *descr_tab ) :
 
     setup( descr_tab );
 
-    // if no interface has been registered with this name, register ourselves
-    if (modinterfaces.find(name)!=NULL)  // FIXME!!!!!!!!
-    {
-        setOwner( &modinterfaces );
-    }
-
     // do consistency check anyway
-    check_consistency();
+    checkConsistency();
 }
 
 void cModuleInterface::setup( sDescrItem *descr_tab )
@@ -95,7 +89,7 @@ void cModuleInterface::setup( sDescrItem *descr_tab )
     //      Parameter( parname, types )
     //      Gate( gatename, type )
     //    End
-    // This function copies the info into three separate vectors:
+    // This function copies the info into two separate vectors:
     //    gatev, paramv
     // The create() member function will use it.
 
@@ -207,46 +201,57 @@ void cModuleInterface::checkParametersOf( cModule *mod )
     }
 }
 
-void cModuleInterface::check_consistency()
+void cModuleInterface::checkConsistency()
 {
-    cObject *list = owner(); setOwner(NULL);
-    cModuleInterface *m = findModuleInterface( name() );
-    if (!m)
+    // check if there's somebody else registered with the same name
+    cModuleInterface *other = findModuleInterface(name());
+    if (other==this)
     {
-         setOwner(list);
-         return;
+        // if found ourselves, temporarily remove ourselves from the list and try again
+        modinterfaces.instance()->remove(this);
+        other = findModuleInterface(name());
+        modinterfaces.instance()->add(this);
     }
 
-    char *what,*which;
+    // if we're alone (or the 1st one), nothing to do
+    if (!other)
+        return;
+
+    char *what, *which;
     int id;
 
-    if (ngate!=m->ngate)
+    // now check if everything's consistent
+    if (ngate!=other->ngate)
           {what="number of gates";goto error1;}
-    if (nparam!=m->nparam)
+    if (nparam!=other->nparam)
           {what="number of parameters";goto error1;}
 
     int i;
     for (i=0;i<nparam;i++)
     {
-       if (opp_strcmp(paramv[i].name,m->paramv[i].name)!=0)
+       if (opp_strcmp(paramv[i].name,other->paramv[i].name)!=0)
           {what="names for parameter";id=i;which=paramv[i].name;goto error2;}
-       if (paramv[i].types!=NULL || m->paramv[i].types!=NULL)
-          if ((paramv[i].types==NULL && m->paramv[i].types!=NULL) ||
-              (paramv[i].types!=NULL && m->paramv[i].types==NULL) ||
-              strspn(paramv[i].types,m->paramv[i].types)!=strlen(paramv[i].types)||
-              strspn(m->paramv[i].types,paramv[i].types)!=strlen(m->paramv[i].types)
+       if (paramv[i].types!=NULL || other->paramv[i].types!=NULL)
+          if ((paramv[i].types==NULL && other->paramv[i].types!=NULL) ||
+              (paramv[i].types!=NULL && other->paramv[i].types==NULL) ||
+              strspn(paramv[i].types,other->paramv[i].types)!=strlen(paramv[i].types)||
+              strspn(other->paramv[i].types,paramv[i].types)!=strlen(other->paramv[i].types)
              )
               {what="allowed types for parameter";id=i;which=paramv[i].name;goto error2;}
     }
     for (i=0;i<ngate;i++)
     {
-       if (opp_strcmp(gatev[i].name,m->gatev[i].name)!=0)
+       if (opp_strcmp(gatev[i].name,other->gatev[i].name)!=0)
           {what="names for gate #";id=i;which=gatev[i].name;goto error2;}
-       if (gatev[i].type!=m->gatev[i].type)
+       if (gatev[i].type!=other->gatev[i].type)
           {what="direction (in/out) for gate";id=i;which=gatev[i].name;goto error2;}
-       if (gatev[i].vect!=m->gatev[i].vect)
+       if (gatev[i].vect!=other->gatev[i].vect)
           {what="vector/scalar type for gate";id=i;which=gatev[i].name;goto error2;}
     }
+
+    // and then remove and throw out the other one
+    modinterfaces.instance()->remove(other);
+    delete other;
     return;
 
     error1:
@@ -324,11 +329,10 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     //  and adds parameter and gate objects specified in the interface
     //  description.
 
-    // Object members of the new module class are collected to
-    // the temporary list classmembers.
-    cHead classmembers;
-    cHead *oldl = simulation.localList();
-    simulation.setLocalList( &classmembers );
+    // Object members of the new module class are collected to tmplist.
+    cDefaultList tmplist;
+    cDefaultList *oldlist = cObject::defaultOwner();
+    cObject::setDefaultOwner(&tmplist);
 
     // create the new module object
     cModule *mod;
@@ -340,36 +344,35 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
 #else
     mod = create_func(modname, parentmod);
 #endif
+
+    // set vector size, module type
     if (vectorsize>=0)
         mod->setIndex(index, vectorsize);
     mod->setModuleType(this);
 
-    // put the object members of the new module to their place, mod->members
-    cObject *p;
-    cIterator i(classmembers);
-    while ((p=i())!=NULL)
-    {
-        i++;
-        p->setOwner( &(mod->members) );
-    }
-    simulation.setLocalList( oldl );
-
-    // insert to module hierarchy
-    simulation.addModule(mod);
-
-    if (parentmod!=NULL)
-    {
-        mod->setOwner( parentmod );
-    }
-    else
-    {
-         mod->setOwner( &simulation );
+    // set system module (must be done before takeAllObjectsFrom(tmplist) because
+    // if parentmod==NULL, mod itself is on tmplist)
+    if (!parentmod)
          simulation.setSystemModule( mod );
-    }
+
+    // put the object members of the new module to their place
+    mod->takeAllObjectsFrom(tmplist);
+
+    // restore defaultowner
+    cObject::setDefaultOwner(oldlist);
+
+    // register with cSimulation
+    int id = simulation.registerModule(mod);
+    mod->setId(id);
 
     // add parameters and gates to the new module, using module interface object
     cModuleInterface *iface = moduleInterface();
     iface->addParametersGatesTo( mod );
+
+    // notify envir
+    ev.moduleCreated(mod);
+
+    // done -- if it's a compound module, buildInside() will do the rest
     return mod;
 }
 
@@ -542,10 +545,10 @@ MathFunc4Args cFunctionType::mathFunc4Args()
 
 cFunctionType *findfunctionbyptr(MathFunc f)
 {
-    cIterator i(functions);
-    while( !i.end() )
+    cArray *a = functions.instance();
+    for (int i=0; i<a->items(); i++)
     {
-        cFunctionType *ff = (cFunctionType *) i++;
+        cFunctionType *ff = (cFunctionType *) a->get(i);
         if (ff->mathFunc() == f)
             return ff;
     }
@@ -554,6 +557,7 @@ cFunctionType *findfunctionbyptr(MathFunc f)
 
 //=========================================================================
 
+// FIXME should create cPolymorphic...
 cClassRegister::cClassRegister(const char *name, void *(*f)()) : cObject(name)
 {
     creatorfunc = f;
@@ -561,7 +565,7 @@ cClassRegister::cClassRegister(const char *name, void *(*f)()) : cObject(name)
 
 void *createOne(const char *classname)
 {
-    cClassRegister *p = (cClassRegister *)classes.find( classname );
+    cClassRegister *p = (cClassRegister *)classes.instance()->get(classname);
     if (!p)
         throw new cException("Class \"%s\" not found -- perhaps its code was not linked in, or the class wasn't registered via Register_Class()", classname);
 

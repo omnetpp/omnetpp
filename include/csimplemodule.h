@@ -25,11 +25,6 @@
 class cStatistic;
 
 
-//=== dynamic allocation in module functions
-#define opp_new             new((___nosuchclass *)NULL)
-#define opp_delete          memFree((void *&)x)
-
-
 /**
  * cSimpleModule is the base class for all simple module classes.
  * cSimpleModule, although stuffed with simulation-related functionality,
@@ -65,26 +60,19 @@ class SIM_API cSimpleModule : public cModule
     friend class cSimulation;
     friend class TSimpleModInspector;
 
-    // internal struct: block on module function's heap
-    struct sBlock
-    {
-        sBlock *next;
-        sBlock *prev;
-        cSimpleModule *mod;
-    };
-
   private:
     bool usesactivity;      // uses activity() or handleMessage()
     int state;              // ended/ready/waiting for msg
     opp_string phasestr;    // a 'phase' string
-    sBlock *heap;           // head of modfunc's heap list
     cMessage *timeoutmsg;   // msg used in wait() and receive() with timeout
     cCoroutine *coroutine;
+
+    static bool stack_cleanup_requested; // 'true' value asks activity() to throw a cStackCleanupException
+    static cSimpleModule *after_cleanup_transfer_to; // transfer back to this module (or to main)
 
   private:
     // internal use
     static void activate(void *p);
-    void discardLocals();
 
   protected:
     // internal use
@@ -92,29 +80,6 @@ class SIM_API cSimpleModule : public cModule
 
     // internal: sets the module id.
     virtual void setId(int n);
-
-  public:
-    cHead locals;           // list of local variables of module function
-
-    /**
-     * DEPRECATED. putAsideQueue will be removed at some point in the
-     * future, and this will affect the message receiving functions.
-     * Details below.
-     *
-     * putAsideQueue is used implicitly by the methods wait(), receiveOn()
-     * and receiveNewOn() to insert messages that arrive during the wait
-     * period or not on the specified gate. The receive() functions
-     * looked first on the putAsideQueue and only then at the future events.
-     *
-     * As practice has shown, the purpose of the putAsideQueue was very
-     * often misunderstood, and its implicit use by wait() and the message
-     * receiving functions was highly error-prone. It will be removed
-     * at some point in the future. Be prepared: use wait() and receiveOn()
-     * if you do not expect other messages to arrive at the module;
-     * use waitAndEnqueue() where you mean it; do not use the receiveNew..()
-     * functions as they will be made redundant when putAsideQueue goes away.
-     */
-    cQueue putAsideQueue;   // put-aside queue
 
   protected:
     /** @name Hooks for defining module behavior.
@@ -193,25 +158,13 @@ class SIM_API cSimpleModule : public cModule
     //@{
 
     /**
-     * Calls initialize(int stage) in the context of this module.
-     * It does a single stage of initialization, and returns <tt>true</tt>
-     * if more stages are required.
-     */
-    virtual bool callInitialize(int stage);
-
-    /**
-     * Calls finish() in the context of this module.
-     */
-    virtual void callFinish();
-
-    /**
      * Creates a starting message for the module.
      */
     virtual void scheduleStart(simtime_t t);
 
     /**
-     * Deletes a dynamically created module. A running module can also
-     * delete itself.
+     * Deletes the module and all its (dynamically created) submodules.
+     * A running module can also delete itself.
      */
     virtual void deleteModule();
     //@}
@@ -329,39 +282,39 @@ class SIM_API cSimpleModule : public cModule
     int sendDelayed(cMessage *msg, double delay, cGate *outputgate);
 
     /**
-     * Sends a message directly to another module. 
-     * See sendDirect(cMessage *, double, cModule *, const char *, in) for a  
+     * Sends a message directly to another module.
+     * See sendDirect(cMessage *, double, cModule *, const char *, in) for a
      * more detailed description.
      */
     int sendDirect(cMessage *msg, double delay, cModule *mod, int inputgateid);
 
     /**
-     * Send a message directly to another module. 
+     * Send a message directly to another module.
      *
-     * If the gate is further connected (i.e. toGate()!=NULL), the 
+     * If the gate is further connected (i.e. toGate()!=NULL), the
      * message will follow the connections that start at that gate.
      * For example, when sending to an input gate of a compound module,
      * the message will follow the connections to the inside of the compound module.
      *
      * It is permitted to send to an output gate, which will also cause the
      * message to follow the connections starting at that gate.
-     * This can be useful, for example, when several submodules are sending 
+     * This can be useful, for example, when several submodules are sending
      * to a single output gate of their parent module.
-     * 
+     *
      * It is not permitted to send to a gate of a compound module which is not
      * further connected (i.e. toGate()==NULL), as this would cause the message
      * to arrive at a compound module.
-     * 
+     *
      * Also, it is not permitted to send to a gate which is otherwise connected
-     * i.e. where fromGate()!=NULL. This means that modules MUST have 
-     * dedicated gates for receiving via sendDirect(). You cannot have a gate 
+     * i.e. where fromGate()!=NULL. This means that modules MUST have
+     * dedicated gates for receiving via sendDirect(). You cannot have a gate
      * which receives messages via both connections and sendDirect().
      */
     int sendDirect(cMessage *msg, double delay, cModule *mod, const char *inputgatename, int sn=-1);
 
     /**
      * Sends a message directly to another module.
-     * See sendDirect(cMessage *, double, cModule *, const char *, in) for a  
+     * See sendDirect(cMessage *, double, cModule *, const char *, in) for a
      * more detailed description.
      */
     int sendDirect(cMessage *msg, double delay, cGate *inputgate);
@@ -392,131 +345,19 @@ class SIM_API cSimpleModule : public cModule
     //@{
 
     /**
-     * DEPRECATED.
-     *
-     * Tells if the next message in the event queue is for the same module
-     * and has the same arrival time. (Returns true only if
-     * two or more messages arrived to the module at the same time.)
-     */
-    bool isThereMessage() const;
-
-    /**
-     * Receives a message from the put-aside queue or the FES.
+     * Remove the next message from the event queue and return a pointer
+     * to it.
      */
     cMessage *receive();
 
     /**
-     * Returns the first message from the put-aside queue or, if it is
-     * empty, calls receiveNew() to return a message from the
-     * event queue with the given timeout. Note that the arrival time
-     * of the message returned by receive() can be earlier than
-     * the current simulation time.
-     */
-    cMessage *receive(simtime_t timeout);
-
-    /**
-     * Scans the put-aside queue for the first message that has arrived
-     * on the gate specified with its name and index. If there is no
-     * such message in the put-aside queue, calls receiveNew()
-     * to return a message from the event queue with the given timeout.
-     * Note that the arrival time of the message returned by receive()
-     * can be earlier than the current simulation time.
-     *
-     * <b>IMPORTANT</b>: The put-aside queue has been deprecated,
-     * and the semantics of this function will be changed in the future.
-     * It will be intended for use only if you do not expect other messages
-     * to arrive at the module on other gates than the specified one.
-     * To assert this, it will throw an exception if an inappropriate message
-     * arrives, as it will probably signal a logic error in the model.
-     * On the other hand, if you <i>do</i> expect to receive other messages
-     * during the call, you should not use receiveOn() but implement
-     * similar functionality using a loop (for() or while()) and receive(),
-     * which will make your intent more conspicuous to the reader of your
-     * source code.
-     * See the API-doc on putAsideQueue for more explanation.
-     */
-    cMessage *receiveOn(const char *gatename, int sn=-1, simtime_t timeout=MAXTIME);
-
-    /**
-     * Same as the previous function except that the gate must be specified
-     * with its index in the gate array. Using this function instead
-     * the previous one may speed up the simulation if the function is
-     * called frequently.
-     *
-     * <b>IMPORTANT</b>: The put-aside queue has been deprecated,
-     * and the semantics of this function will be changed in the future.
-     * It will be intended for use only if you do not expect other messages
-     * to arrive at the module on other gates than the specified one.
-     * To assert this, it will throw an exception if an inappropriate message
-     * arrives, as it will probably signal a logic error in the model.
-     * On the other hand, if you <i>do</i> expect to receive other messages
-     * during the call, you should not use receiveOn() but implement
-     * similar functionality using a loop (for() or while()) and receive(),
-     * which will make your intent more conspicuous to the reader of your
-     * source code.
-     * See the API-doc on putAsideQueue for more explanation.
-     */
-    cMessage *receiveOn(int gateid, simtime_t timeout=MAXTIME);
-
-    /**
-     * Remove the next message from the event queue and return a pointer
-     * to it. Ignores put-aside queue.
-     *
-     * <b>IMPORTANT</b>: This function should not be used. As putAsideQueue is
-     * deprecated, it will be removed at some point in the future.
-     * This means that then the receive() method will act exactly as this one,
-     * and this method will no longer be needed.
-     * See the API-doc on putAsideQueue, wait() and waitAndEnqueue() for more explanation.
-     */
-    cMessage *receiveNew();
-
-    /**
      * Removes the next message from the event queue and returns a pointer
-     * to it. Ignores put-aside queue. If there is no message in the event
+     * to it. If there is no message in the event
      * queue, the function waits with t timeout until a message will be
      * available. If the timeout expires and there is still no message
      * in the queue, the function returns NULL.
-     *
-     * <b>IMPORTANT</b>: This function should not be used. As putAsideQueue is
-     * deprecated, it will be removed at some point in the future.
-     * This means that then the receive() method will act exactly as this one,
-     * and this method will no longer be needed.
-     * See the API-doc on putAsideQueue, wait() and waitAndEnqueue() for more explanation.
      */
-    cMessage *receiveNew(simtime_t timeout);
-
-    /**
-     * The same as receiveNew(), except that it returns the
-     * next message that arrives on the gate specified with its name
-     * and index. All messages received meanwhile are inserted into the
-     * put-aside queue. If the timeout expires and there is still no
-     * such message in the queue, the function returns NULL.
-     *
-     * In order to process messages that may have been put in the put-aside
-     * queue, the user is expected to call receive() or receiveOn(),
-     * or to examine the put-aside queue directly sometime.
-     *
-     * <b>IMPORTANT</b>: This function should not be used. As putAsideQueue is
-     * deprecated, it will be removed at some point in the future.
-     * This means that then the receiveOn() method will act exactly as this one,
-     * and this method will no longer be needed.
-     * See the API-doc on putAsideQueue, wait() and waitAndEnqueue() for more explanation.
-     */
-    cMessage *receiveNewOn(const char *gatename, int sn=-1, simtime_t timeout=MAXTIME);
-
-    /**
-     * Same as the previous function except that the gate must be specified
-     * with its index in the gate array. Using this function instead
-     * the previous one may speed up the simulation if the function is
-     * called frequently.
-     *
-     * <b>IMPORTANT</b>: This function should not be used. As putAsideQueue is
-     * deprecated, it will be removed at some point in the future.
-     * This means that then the receiveOn() method will act exactly as this one,
-     * and this method will no longer be needed.
-     * See the API-doc on putAsideQueue, wait() and waitAndEnqueue() for more explanation.
-     */
-    cMessage *receiveNewOn(int gateid, simtime_t timeout=MAXTIME);
+    cMessage *receive(simtime_t timeout);
     //@}
 
     /** @name Waiting. */
@@ -524,25 +365,16 @@ class SIM_API cSimpleModule : public cModule
 
     /**
      * Waits for the given interval. (Some other simulators call this
-     * functionality hold()). The messages received meanwhile are inserted
-     * into the put-aside queue, but if you expect to receive messages
-     * during the call, you should use the waitAndEnqueue() method
-     * instead (see the following note).
+     * functionality hold()).
+     * It is intended for use only if you do not expect other messages
+     * to arrive at the module during the wait period. To assert this,
+     * it throws an exception if a message arrives during the wait.
+     *
+     * If you expect to receive messages during the call, you should use
+     * waitAndEnqueue() instead.
      *
      * This function can only be used with activity(), but not with
      * handleMessage().
-     *
-     * <b>IMPORTANT</b>: The put-aside queue has been deprecated,
-     * and the semantics of this function will be changed in the future.
-     * It will be intended for use only if you do not expect other messages
-     * to arrive at the module during the wait period. To assert this,
-     * it will throw an exception if a message arrives during the wait,
-     * as it will probably signal a logic error in the model.
-     * On the other hand, if you <i>do</i> expect to receive messages
-     * during the call, you should use waitAndEnqueue(), which makes
-     * this assumption much more conspicuous to the reader of your source
-     * code than the old wait() method with its implicit putAsideQueue
-     * would. See the API-doc on putAsideQueue for more explanation.
      */
     void wait(simtime_t time);
 
@@ -636,29 +468,6 @@ class SIM_API cSimpleModule : public cModule
 
     /** @name Miscellaneous. */
     //@{
-
-    /**
-     * Dynamic memory allocation. This function should be used instead
-     * of the global ::malloc() from inside the module function
-     * (activity()), if deallocation by the simple module constructor
-     * is not provided.
-     *
-     * Dynamic allocations are discouraged in general unless you put
-     * the pointer into the class declaration of the simple module class
-     * and provide a proper destructor. Or, you can use container classes
-     * (cArray, cQueue)!
-     */
-    void *memAlloc(size_t m);
-
-    /**
-     * Frees a memory block reserved with the malloc() described
-     * above and NULLs the pointer.
-     */
-    void memFree(void *&p);
-
-    // INTERNAL: free module's local allocations
-    void clearHeap();
-
     /**
      * Returns module state.
      */

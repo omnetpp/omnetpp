@@ -23,6 +23,9 @@
 #include <string.h>          // memcmp, memcpy, memset
 #include "cwatch.h"
 
+using std::ostream;
+
+
 // no Register_Class( cWatch ) -- makes no sense
 
 //==========================================================================

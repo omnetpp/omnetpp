@@ -1,3 +1,57 @@
+	* display string manipulation made a lot easier: displayString() now
+	returns a cDisplayString which can be changed with its own member
+	functions: insertTag(), setTagArg(), removeTag(), etc.
+	Example: coloring the icon: displayString().setTagArg("i",1,"cyan").
+	setDisplayString() got deprecated -- there's really no need for it 
+	any more.
+
+	* cGate became 8 bytes (2 pointers) smaller: notify_inspector and 
+	data_for_inspector members got eliminated (notification is now
+	in the cDisplayString class). Same for cModule.
+
+	cenvir.h: new notification methods: moduleCreated(), 
+	moduleDeleted(), connectionCreated(), connectionRemoved(),
+	displayStringChanged(cGate*), displayStringChanged(cModule*),
+	displayStringAsParentChanged()
+
+	backwards compatibility stuff collected in compat.h
+
+cDisplayStringParser renamed to cDisplayString (compatibility typedef added)
+added globals.h for global registration lists
+
+TBD break up ctypes.cc?
+
+
+removed ancient cSimpleModule memAlloc(), memFree() stuff
+killed cModule's locals, members -- owner is now the module itself!!!
+cenum.h: sEnumBuilder removed
+
+putasideQueue removed
+receiveNew(), receiveNewOn(), etc removed
+setOwner() removed
+ownership handling simplified: heapflag, storage, operator new all gone
+removed firstchildp,nextp,prevp; ownerp remained, pos added
+cHead, cIterator killed
+cModule -- submodules are kept via firstchildp, etc pointers
+cSubmodIterator rewritten to use firstchildp, prevp, nextp (much more efficient)
+cModule -- machine pars removed
+cModuleInterface -- machine pars removed
+global registration lists transformed to cArrays accessed via cSingleton
+cSingleton in onstartup.h -- find better place!! also, chead.* almost empty now
+in merge *.cc, done until message.cc
+defaultowner made a static in cObject
+change: modules are now owned by cSimulation (not parent mod)
+check cModule::deleteModule(...)
+takeownership removed from cObject, and put into cQueue, cArray and cPar
+name string optimized; up to 10 chars it's stored inside the object
+(might be extended to 14 chars if measurements show long names are popular)
+
+object counter added
+stack cleanup by exceptions (stack unwinding)
+
+
+cArray::Iterator added
+
 2003-12-09  Andras Varga
 
 	* distrib.h: fixed description of lognormal distribution -- the m,s

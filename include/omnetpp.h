@@ -24,13 +24,14 @@
 #include "cexception.h"
 #include "errmsg.h"
 #include "cobject.h"
+#include "cdefaultlist.h"
 #include "csimul.h"
 #include "macros.h"
 #include "ctypes.h"
 #include "carray.h"
 #include "cqueue.h"
 #include "cllist.h"
-#include "chead.h"
+#include "globals.h"
 #include "cwatch.h"
 #include "cpar.h"
 #include "cgate.h"
@@ -58,5 +59,6 @@
 #include "cdispstr.h"
 #include "envirext.h"
 #include "cscheduler.h"
+#include "compat.h"
 
 #endif

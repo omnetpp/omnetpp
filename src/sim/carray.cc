@@ -242,6 +242,52 @@ void *cBag::remove(int m)
 //==========================================================================
 //=== cArray - member functions
 
+void cArray::Iterator::init(const cArray& a, bool athead)
+{
+    array = const_cast<cArray *>(&a); // Khmm... I don't want a separate Const_Iterator as well...
+
+    if (athead)
+    {
+        // fast-forward to first non-empty slot
+        k = 0;
+        while (!array->get(k) && k<array->items())
+            k++;
+
+    }
+    else
+    {
+        // rewind to first non-empty slot
+        k = array->items()-1;
+        while (!array->get(k) && k>=0)
+            k--;
+    }
+}
+
+cObject *cArray::Iterator::operator++(int)
+{
+    if (k<0 || k>=array->items())
+        return NULL;
+    cObject *obj = array->get(k);
+
+    k++;
+    while (!array->get(k) && k<array->items())
+        k++;
+    return obj;
+}
+
+cObject *cArray::Iterator::operator--(int)
+{
+    if (k<0 || k>=array->items())
+        return NULL;
+    cObject *obj = array->get(k);
+    k--;
+    while (!array->get(k) && k>=0)
+        k--;
+    return obj;
+}
+
+//----
+
 cArray::cArray(const cArray& list) : cObject()
 {
     vect=NULL;
@@ -253,6 +299,7 @@ cArray::cArray(const cArray& list) : cObject()
 cArray::cArray(const char *name, int siz, int dt) :
 cObject( name )
 {
+    tkownership = true;
     delta = Max(1,dt);
     size = Max(siz,0);
     firstfree = 0;
@@ -263,7 +310,7 @@ cObject( name )
 
 cArray::~cArray()
 {
-    // no clear()!
+    clear();
     delete [] vect;
 }
 
@@ -275,6 +322,7 @@ cArray& cArray::operator=(const cArray& list)
 
     cObject::operator=( list );
 
+    tkownership = list.tkownership;
     size = list.size;
     delta = list.delta;
     firstfree = list.firstfree;
@@ -358,7 +406,7 @@ void cArray::clear()
     for (int i=0; i<=last; i++)
     {
         if (vect[i] && vect[i]->owner()==this)
-           discard( vect[i] );
+            dropAndDelete(vect[i]);
         vect[i] = NULL;  // this is not strictly necessary
     }
     firstfree = 0;
@@ -444,9 +492,11 @@ int cArray::set(cObject *obj)
     }
     else
     {
-        if (vect[i]->owner()==this) discard(vect[i]);
+        if (vect[i]->owner()==this)
+            dropAndDelete(vect[i]);
         vect[i] = obj;
-        if (takeOwnership()) take(obj);
+        if (takeOwnership())
+            take(obj);
         return i;
     }
 }

@@ -172,7 +172,7 @@ void cTopology::extractFromNetwork(int (*selfunc)(cModule *,void *), void *data)
 
             // create in_links[] arrays (big enough...)
             temp_nodev[k].num_in_links = 0;
-            temp_nodev[k].in_links = new sTopoLink *[mod->gates()];
+            temp_nodev[k].in_links = new cTopology::Link *[mod->gates()];
 
             k++;
         }
@@ -190,7 +190,7 @@ void cTopology::extractFromNetwork(int (*selfunc)(cModule *,void *), void *data)
         // from or go to modules included in the topology.
 
         cModule *mod = simulation.module(nodev[k].module_id);
-        sTopoLink *temp_out_links = new sTopoLink[mod->gates()];
+        cTopology::Link *temp_out_links = new cTopology::Link[mod->gates()];
 
         int n_out=0;
         for (gate_id=0; gate_id<mod->gates(); gate_id++)
@@ -218,8 +218,8 @@ void cTopology::extractFromNetwork(int (*selfunc)(cModule *,void *), void *data)
         }
         nodev[k].num_out_links = n_out;
 
-        nodev[k].out_links = new sTopoLink[n_out];
-        memcpy(nodev[k].out_links,temp_out_links,n_out*sizeof(sTopoLink));
+        nodev[k].out_links = new cTopology::Link[n_out];
+        memcpy(nodev[k].out_links,temp_out_links,n_out*sizeof(cTopology::Link));
         delete [] temp_out_links;
     }
 
@@ -228,7 +228,7 @@ void cTopology::extractFromNetwork(int (*selfunc)(cModule *,void *), void *data)
     {
         for (int l=0; l<nodev[k].num_out_links; l++)
         {
-            sTopoLink *link = &nodev[k].out_links[l];
+            cTopology::Link *link = &nodev[k].out_links[l];
             link->dest_node->in_links[link->dest_node->num_in_links++] = link;
         }
     }

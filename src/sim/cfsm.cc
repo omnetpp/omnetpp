@@ -23,6 +23,8 @@
 #include "macros.h"
 #include "cfsm.h"
 
+using std::ostream;
+
 //=== registration
 Register_Class(cFSM);
 

@@ -108,7 +108,7 @@ cLinkedList& cLinkedList::operator=(const cLinkedList& llist)
 
     cObject::operator=(llist);
 
-    for (cLinkedListIterator iter(llist, 0); !iter.end(); iter--)
+    for (cLinkedList::Iterator iter(llist, 0); !iter.end(); iter--)
     {
        void *item;
        if (dupfunc)

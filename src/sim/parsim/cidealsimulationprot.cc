@@ -30,6 +30,8 @@
 #include "messagetags.h"
 #include "macros.h"
 
+// FIXME needs to use cMessage::srcProcId()!!!
+
 Register_Class(cIdealSimulationProtocol);
 
 // load 100,000 values from eventlog at once (~800K allocated memory)

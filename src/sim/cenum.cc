@@ -46,13 +46,13 @@ cEnum::cEnum(const char *name, int siz) : cObject(name)
     items = 0;
     vect = new sEnum[size];
     for (int i=0; i<size; i++)
-	vect[i].string=NULL;
+        vect[i].string=NULL;
 }
 
 cEnum::~cEnum()
 {
     for (int i=0; i<size; i++)
-	delete [] vect[i].string;
+        delete [] vect[i].string;
     delete [] vect;
 }
 
@@ -60,7 +60,7 @@ cEnum& cEnum::operator=(const cEnum& list)
 {
     int i;
     for (i=0; i<size; i++)
-	delete [] vect[i].string;
+        delete [] vect[i].string;
     delete [] vect;
 
     cObject::operator=( list );
@@ -71,8 +71,8 @@ cEnum& cEnum::operator=(const cEnum& list)
     if (vect) memcpy( vect, list.vect, size * sizeof(sEnum *) );
 
     for (i=0; i<size; i++)
-	 if (vect[i].string)
-	     vect[i].string = opp_strdup(vect[i].string);
+         if (vect[i].string)
+             vect[i].string = opp_strdup(vect[i].string);
     return *this;
 }
 
@@ -95,13 +95,13 @@ void cEnum::insert(int key, const char *str)
 
         // choose new size and allocate table
         static int sizes[] = {8,16,32,64,128,256,512,2048, 4096,8192,16384,32768,65536,0};
-	int i;
-	for (i=0; size >= sizes[i] && sizes[i]; i++);
+        int i;
+        for (i=0; size >= sizes[i] && sizes[i]; i++);
         size=sizes[i];
 
-	vect = new sEnum[size];
-	for (i=0; i<size; i++)
-	    vect[i].string=NULL;
+        vect = new sEnum[size];
+        for (i=0; i<size; i++)
+            vect[i].string=NULL;
 
         // copy over table contents
         for (i=0; i<oldsize; i++)
@@ -109,20 +109,20 @@ void cEnum::insert(int key, const char *str)
             // find a slot...
             int key = oldvect[i].key;
             int k = (key<0 ? -key : key) % size;
-	    while (vect[k].string)
-		k = (k+1)%size;
+            while (vect[k].string)
+                k = (k+1)%size;
 
-	    // ...and insert there
-	    vect[k].key = key;
-	    vect[k].string = oldvect[i].string;
-	}
-	delete [] oldvect;
+            // ...and insert there
+            vect[k].key = key;
+            vect[k].string = oldvect[i].string;
+        }
+        delete [] oldvect;
     }
 
     // find a slot...
     int k = (key<0 ? -key : key) % size;
     while (vect[k].string && vect[k].key!=key)
-	k = (k+1)%size;
+        k = (k+1)%size;
 
     // consistency check
     if (vect[k].key == key && vect[k].string && strcmp(vect[k].string, str))
@@ -144,40 +144,16 @@ const char *cEnum::stringFor(int key)
 {
     int k = (key<0 ? -key : key) % size;
     while (vect[k].key!=key && vect[k].string)
-	k = (k+1)%size;
+        k = (k+1)%size;
     return vect[k].string;
 }
 
 int cEnum::lookup(const char *str, int fallback)
 {
     for (int i=0; i<size; i++)
-	if (vect[i].string && 0==strcmp(vect[i].string,str))
-	    return vect[i].key;
+        if (vect[i].string && 0==strcmp(vect[i].string,str))
+            return vect[i].key;
     return fallback;
-}
-
-//==========================================================================
-//=== sEnumBuilder - member functions
-
-sEnumBuilder::sEnumBuilder(const char *name, ...)
-{
-    cEnum *e = findEnum(name);
-    if (!e)
-    {
-	e = new cEnum(name);
-        e->setOwner(&enums);
-    }
-
-    va_list va;
-    va_start(va,name);
-    for(;;)
-    {
-	int key = va_arg(va,int);
-	const char *str = va_arg(va,const char *);
-	if (!str)
-	    break;
-	e->insert(key,str);
-    }
 }
 
 

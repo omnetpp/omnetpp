@@ -80,17 +80,14 @@ cMessageHeap::cMessageHeap(const cMessageHeap& heap) : cObject()
 
 cMessageHeap::~cMessageHeap()
 {
-    // delete only the h[] array, NOT the objects (owned objects are
-    //   deleted by cObject's destructor)
+    clear();
     delete [] h;
-    h=NULL;
-    n=0;
 }
 
 void cMessageHeap::info(char *buf)
 {
     if (n==0)
-        sprintf(buf, "(empty)" );
+        sprintf(buf, "(empty)");
     else
         sprintf(buf, "(length=%d first=%s)",
                  n, simtimeToStr(h[1]->arrivalTime()));
@@ -109,8 +106,7 @@ void cMessageHeap::forEach( ForeachFunc do_fn )
 void cMessageHeap::clear()
 {
     for (int i=1; i<=n; i++)
-        if (h[i] && h[i]->owner()==this)
-            {h[i]->heapindex=-1; discard(h[i]);}
+        dropAndDelete(h[i]);
     n=0;
 }
 
@@ -128,12 +124,7 @@ cMessageHeap& cMessageHeap::operator=(const cMessageHeap& heap)
     h = new cMessage *[size+1];
 
     for (int i=1; i<=n; i++)
-    {
-        if (heap.h[i]->owner()==const_cast<cMessageHeap*>(&heap))
-            take( h[i]=(cMessage *)heap.h[i]->dup() );
-        else
-            h[i]=heap.h[i];
-    }
+        take( h[i]=(cMessage *)heap.h[i]->dup() );
     return *this;
 }
 
@@ -159,7 +150,7 @@ void cMessageHeap::insert(cMessage *event)
         h = hnew;
     }
 
-    if (takeOwnership())  take(event);
+    take(event);
 
     for (j=n; j>1; j=i)
     {
@@ -208,7 +199,7 @@ cMessage *cMessageHeap::getFirst()
         cMessage *event = h[1];
         (h[1]=h[n--])->heapindex=1;
         shiftup();
-        if (event->owner()==this) drop(event);
+        drop(event);
         event->heapindex=-1;
         return event;
     }
@@ -234,7 +225,7 @@ cMessage *cMessageHeap::get(cMessage *event)
     }
     (h[out]=fill)->heapindex=out;
     shiftup(out);
-    if (event->owner()==this) drop(event);
+    drop(event);
     event->heapindex=-1;
     return event;
 }

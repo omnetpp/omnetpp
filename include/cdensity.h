@@ -93,7 +93,7 @@ class SIM_API cDensityEstBase : public cStdDev
     double *firstvals;         // pointer to array of "pre-collected" samples
 
   protected:
-    static void plotline (ostream& os, char* pref, double xval,
+    static void plotline (std::ostream& os, char* pref, double xval,
                           double count, double a);
 
   public:
@@ -131,7 +131,7 @@ class SIM_API cDensityEstBase : public cStdDev
      * Writes textual information about this object to the stream.
      * See cObject for more details.
      */
-    virtual void writeContents(ostream& os);
+    virtual void writeContents(std::ostream& os);
 
 #ifdef WITH_PARSIM
     /**
@@ -166,14 +166,6 @@ class SIM_API cDensityEstBase : public cStdDev
      * Clears the results collected so far.
      */
     virtual void clearResult();
-
-    /**
-     * Generates a random number based on the collected data. Uses the random number
-     * generator set by setGenK().
-     *
-     * This is a pure virtual function; it must be redefined in subclasses.
-     */
-    virtual double random() const = 0;  // FIXME: redundant!!!
 
     /**
      * Writes the contents of the object into a text file.
@@ -212,7 +204,8 @@ class SIM_API cDensityEstBase : public cStdDev
      * Selects a histogram range setup method where the upper bound of the range
      * is fixed and the lower bound is determined from a set of pre-collected values.
      *
-     * FIXME: details!
+     * The lower bound is calculated by extending the range (minimum of observations, upper)
+     * range_ext_fact times.
      */
     virtual void setRangeAutoLower(double upper, int num_firstvals, double range_ext_fact);
 
@@ -220,7 +213,8 @@ class SIM_API cDensityEstBase : public cStdDev
      * Selects a histogram range setup method where the lower bound of the range
      * is fixed and the upper bound is determined from a set of pre-collected values.
      *
-     * FIXME: details!
+     * The upper bound is calculated by extending the range (lower, maximum of observations)
+     * range_ext_fact times.
      */
     virtual void setRangeAutoUpper(double lower, int num_firstvals, double range_ext_fact);
 

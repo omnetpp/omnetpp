@@ -23,10 +23,10 @@
 
 #include "util.h"
 #include "errmsg.h"
-#include "chead.h"
+#include "globals.h"
 #include "cmsgheap.h"
 #include "ccoroutine.h"
-#include "coutvect.h" //FIXME
+#include "coutvect.h"
 
 //=== classes mentioned:
 class  cMessage;
@@ -38,8 +38,8 @@ class  cCompoundModule;
 class  cSimulation;
 class  cNetworkType;
 class  cException;
-class cScheduler;
-class cParsimPartition;
+class  cScheduler;
+class  cParsimPartition;
 
 
 /**
@@ -78,8 +78,6 @@ class SIM_API cSimulation : public cObject
     cModule *systemmodp;      // pointer to system module
     cSimpleModule *runningmodp; // the currently executing module (NULL if in main)
     cModule *contextmodp;     // module in context (or NULL)
-    cHead *locallistp;        // owner of newly created objects
-    cHead locals;             // "global" local objects list
     cNetworkType *networktype; // network type
     cScheduler *schedulerp;   // event scheduler
 
@@ -88,7 +86,6 @@ class SIM_API cSimulation : public cObject
 
     int run_number;            // which simulation run
     cSimpleModule *backtomod;  // used in cSimpleModule::wait/sendmsg
-    cCoroutine runningmod_deleter; // used when a simple module deletes itself
     cException *exception;     // helper variable to get exceptions back from activity()
     int exception_type;        // helper variable, also for getting exceptions back from activity()
 
@@ -135,7 +132,7 @@ class SIM_API cSimulation : public cObject
      * Writes textual information about this object to the stream.
      * See cObject for more details.
      */
-    virtual void writeContents(ostream& os);
+    virtual void writeContents(std::ostream& os);
 
     /**
      * Redefined. (Reason: a C++ rule that overloaded virtual methods must be redefined together.)
@@ -161,17 +158,18 @@ class SIM_API cSimulation : public cObject
     //@{
 
     /**
-     * Adds a new module and return its ID.
+     * Registers the module in cSimulation and assigns a module Id. It is called
+     * internally during module creation. The Id of a deleted module is not
+     * issued again to another module, because we want module Ids to be
+     * unique during the whole simulation.
      */
-    int addModule(cModule *mod);
+    int registerModule(cModule *mod);
 
     /**
-     * Deletes a module identified by its ID. This is an internal method
-     * invoked as part of cModule::deleteModule(), and it should not be called
-     * directly.
-     * If the module doesn't exist, the method does nothing.
+     * Deregisters the module from cSimulation. It is called internally from cModule
+     * destructor.
      */
-    void deleteModule(int id);
+    void deregisterModule(cModule *mod);
 
     /**
      * Returns highest used module ID.
@@ -199,7 +197,7 @@ class SIM_API cSimulation : public cObject
     /**
      * Designates the system module, the top-level module in the model.
      */
-    void setSystemModule(cModule *p)  {systemmodp = p;}
+    void setSystemModule(cModule *p);
 
     /**
      * Returns pointer to the system module, the top-level module in the model.
@@ -272,7 +270,7 @@ class SIM_API cSimulation : public cObject
      * model with a given set of parameter settings. Runs can be defined
      * in omnetpp.ini.
      */
-    // FIXME: does run number really belong to the simulation kernel??? why not in Envir?
+    // FIXME: does run number really belong to the simulation kernel? why not in Envir?
     int  runNumber() const           {return run_number;}
 
     /**
@@ -342,12 +340,7 @@ class SIM_API cSimulation : public cObject
     /**
      * Sets global context. Used internally.
      */
-    void setGlobalContext()  {contextmodp=NULL;locallistp=&locals;}
-
-    /**
-     * Sets the 'locals' object for the current context.
-     */
-    void setLocalList(cHead *p)  {locallistp=p;}
+    void setGlobalContext()  {contextmodp=NULL; cObject::setDefaultOwner(&defaultList);}
 
     /**
      * Returns the currently executing simple module.
@@ -365,15 +358,6 @@ class SIM_API cSimulation : public cObject
      * This is a convenience function which simply calls contextModule().
      */
     cSimpleModule *contextSimpleModule() const;
-
-    /**
-     * Returns the currently active 'locals' object. This object is usually the
-     * <tt>locals</tt> data member of the module in context, or the global
-     * <tt>locals</tt> object if we are in global context. This facility
-     * is used internally to manage ownership of user objects created within
-     * simple modules.
-     */
-    cHead *localList() {return locallistp==NULL?(&locals):locallistp;}
     //@}
 
     /** @name Snapshots. */
@@ -387,11 +371,6 @@ class SIM_API cSimulation : public cObject
     bool snapshot(cObject *obj, const char *label);
     //@}
 };
-
-//==========================================================================
-//=== operator new used by the NEW() macro:
-class ___nosuchclass;
-void *operator new(size_t m,___nosuchclass *);
 
 #endif
 

@@ -29,7 +29,7 @@
 #include "defs.h"
 
 #include <stdarg.h>
-#include "chead.h"
+#include "globals.h"
 #include "cobject.h"
 
 //=========================================================================
@@ -134,7 +134,7 @@ class SIM_API cModuleInterface : public cObject
     void allocate(int ngte, int npram);
 
     // internal
-    void check_consistency();
+    void checkConsistency();
 
     // internal
     void setup(sDescrItem *descr_table);

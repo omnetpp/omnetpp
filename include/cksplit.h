@@ -213,7 +213,7 @@ class SIM_API cKSplit : public cDensityEstBase
      * Writes textual information about this object to the stream.
      * See cObject for more details.
      */
-    virtual void writeContents(ostream& os);
+    virtual void writeContents(std::ostream& os);
 
 #ifdef WITH_PARSIM
     /**

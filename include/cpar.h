@@ -267,6 +267,7 @@ class SIM_API cPar : public cObject
     char typechar;     // S/B/L/D/F/T/X/C/P/O/I
     bool inputflag;
     bool changedflag;
+    bool tkownership;
     opp_string promptstr; // prompt text used when the value is being input
 
     union {    // Take care of 'operator=()' when changing this!!!
@@ -378,7 +379,7 @@ class SIM_API cPar : public cObject
      * Writes textual information about this object to the stream.
      * See cObject for more details.
      */
-    virtual void writeContents(ostream& os);
+    virtual void writeContents(std::ostream& os);
 
     /**
      * Calls the given function for contained object, if there's any.
@@ -494,8 +495,7 @@ class SIM_API cPar : public cObject
 
     /**
      * Sets the value to the given object. Whether cPar will take the
-     * ownership of the object depends on the takeOwnership() flag
-     * (see cObject).
+     * ownership of the object depends on the takeOwnership() flag.
      */
     cPar& setObjectValue(cObject *obj);
 
@@ -519,6 +519,18 @@ class SIM_API cPar : public cObject
      * </TABLE>
      */
     void configPointer( VoidDelFunc delfunc, VoidDupFunc dupfunc, size_t itemsize=0);
+
+    /**
+     * Sets the flag that determines whether setObjectValue(cOBject *) and
+     * setDoubleValue(cStatistic *) should automatically take ownership of
+     * the objects.
+     */
+    void takeOwnership(bool tk) {tkownership=tk;}
+
+    /**
+     * Returns the takeOwnership flag, see takeOwnership().
+     */
+    bool takeOwnership() const   {return tkownership;}
     //@}
 
     /** @name Getter functions. Note that overloaded conversion operators also exist. */

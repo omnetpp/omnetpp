@@ -37,7 +37,7 @@
 
 //
 // Example:
-// EXECUTE_ON_STARTUP(EthernetModule, (new EthernetModuleType()->setOwner(&modules)))
+// EXECUTE_ON_STARTUP(EthernetModule, modules.add(new EthernetModuleType());)
 //
 
 /**
@@ -57,6 +57,24 @@ class ExecuteOnStartup
          void execute();
          static void executeAll();
 };
+
+
+/**
+ * Singleton class, used for global registration lists.
+ *
+ * @group Internals
+ */
+template<class T> class cSingleton
+{
+  private:
+    T *inst;
+	const char *tmpname;
+  public:
+    cSingleton(const char *name) {tmpname = name;}
+    ~cSingleton() {delete inst;}
+    T *instance() {if (!inst) {inst=new T(tmpname); inst->removeFromOwnershipTree();} return inst;}
+};
+
 
 #endif
 

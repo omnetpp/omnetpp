@@ -30,6 +30,9 @@
 #include "macros.h"
 #include "cgate.h"
 #include "cchannel.h"
+#include "cdispstr.h"
+
+using std::ostream;
 
 //=========================================================================
 //=== cGate -- member functions
@@ -40,8 +43,7 @@ cGate::cGate(const cGate& gate) : cObject()
 
     channelp = NULL;
 
-    notify_inspector = NULL;
-    data_for_inspector = NULL;
+    dispstr = NULL;
 
     setName(gate.name());
     operator=(gate);
@@ -58,17 +60,15 @@ cGate::cGate(const char *s, char tp) : cObject(s)
     vectsize = -1;  // not a vector
 
     omodp = NULL; gateid = -1; // to be set later
-
     channelp = NULL;
 
-    notify_inspector = NULL;
-    data_for_inspector = NULL;
-
-    takeOwnership( false );
+    dispstr = NULL;
 }
 
 cGate::~cGate()
 {
+    dropAndDelete(channelp);
+    delete dispstr;
     delete [] fullname;
 }
 
@@ -83,28 +83,7 @@ void cGate::forEach(ForeachFunc do_fn)
 
 cGate& cGate::operator=(const cGate& gate)
 {
-    if (this==&gate) return *this;
-
-    cObject::operator=(gate);
-
-    omodp = NULL; gateid = -1;        // to be set later
-
-    fromgatep = gate.fromgatep;
-    togatep = gate.togatep;
-
-    typ = gate.typ;
-    serno = gate.serno;
-    vectsize = gate.vectsize;
-
-    if (channelp && channelp->owner()==const_cast<cGate*>(&gate))
-        discard(channelp);
-    channelp = gate.channelp;
-    if (channelp->owner()==const_cast<cGate*>(&gate))
-        channelp = (cChannel *)channelp->dup();
-
-    setDisplayString( gate.displayString() );
-
-    return *this;
+    throw new cException(this, eCANTDUP);
 }
 
 const char *cGate::fullName() const
@@ -202,15 +181,53 @@ void cGate::info(char *buf)
     }
 }
 
+void cGate::initDisplayString()
+{
+    char dispname[128]; // FIXME buffer overflow danger
+    const char *ds = NULL;
+    if (type()=='O')
+    {
+        cModule *parent = ownerModule()->parentModule();
+        if (parent)
+        {
+            sprintf(dispname, "%s.%s.%s",parent->className(),ownerModule()->fullName(), fullName());
+            ds = ev.getDisplayString(simulation.runNumber(),dispname);
+        }
+    }
+    else
+    {
+        sprintf(dispname, "%s.%s",ownerModule()->className(),fullName());
+        ds = ev.getDisplayString(simulation.runNumber(),dispname);
+    }
+    if (!ds)
+        {delete dispstr; dispstr = NULL;}
+    else
+        displayString().parse(ds);
+
+}
+
+void cGate::setOwnerModule(cModule *m, int gid)
+{
+    omodp = m;
+    gateid = gid;
+    initDisplayString();
+}
+
 void cGate::setIndex(int sn, int vs)
 {
     serno = sn;
     vectsize = vs;
+    initDisplayString(); // display string may depend on gate index
 }
 
 void cGate::connectTo(cGate *g, cChannel *chan)
 {
+    // if it was connected before, notify envir that old conn gets removed
+    if (togatep) ev.connectionRemoved(this);   // FIXME combine ev.Removed() and Created() into one???
+
     // break old connection
+    // FIXME not good (what about g->fromgatep->togatep???) should raise error
+    // if g is already connected!!! RETHINK full connection business!
     g->fromgatep = NULL;
 
     // build new connection
@@ -219,22 +236,21 @@ void cGate::connectTo(cGate *g, cChannel *chan)
 
     // replace old channel (or delete it if chan==NULL)
     setChannel(chan);
+
+    // TBD introduce disconnect?
+    if (g) ev.connectionCreated(this);
 }
 
 void cGate::setFrom(cGate *g)
 {
+    // note: this is deprecated -- don't care about notifying envir...
     fromgatep = g;
 }
 
 void cGate::setTo(cGate *g)
 {
+    // note: this is deprecated -- don't care about notifying envir...
     togatep = g;
-}
-
-void cGate::setOwnerModule(cModule *m, int gid)
-{
-    omodp = m;
-    gateid = gid;
 }
 
 void cGate::setLink(cLinkType *lnk)
@@ -247,15 +263,12 @@ void cGate::setChannel(cChannel *ch)
     if (ch == channelp)
         return;
 
-    if (channelp && channelp->owner()==this)
-        discard(channelp);
-
+    dropAndDelete(channelp);
     channelp = ch;
     if (channelp)
     {
         channelp->setFromGate(this);
-        if (takeOwnership())
-            take(channelp);
+        take(channelp);
     }
 }
 
@@ -401,51 +414,20 @@ bool cGate::isRouteOK() const
            destinationGate()->ownerModule()->isSimple();
 }
 
-const char *cGate::displayString() const
+cDisplayString& cGate::displayString()
 {
-    if ((const char *)dispstr != NULL)
-        return dispstr;
-
-    // no hardcoded display string -- try to get it from Envir
-    // Note: connection display strings are stored in the connection's source gate
-    char dispname[128];
-    if (type()=='O')
+    if (!dispstr)
     {
-        cModule *parent = ownerModule()->parentModule();
-        if (!parent) return "";
-        sprintf(dispname, "%s.%s.%s",parent->className(),ownerModule()->fullName(), fullName());
+        dispstr = new cDisplayString();
+        dispstr->setRoleToConnection(this);
     }
-    else
-    {
-        sprintf(dispname, "%s.%s",ownerModule()->className(),fullName());
-    }
-    const char *s = ev.getDisplayString(simulation.runNumber(),dispname);
-    return s ? s : "";
+    return *dispstr;
 }
 
+// DEPRECATED
 void cGate::setDisplayString(const char *s, bool immediate)
 {
-    dispstr = s;
-
-    // notify this gate's inspector
-    if (notify_inspector)
-        notify_inspector(this,immediate,data_for_inspector);
-
-    // notify compound module where the connection (whose source is this gate) is displayed
-    if (!toGate())  return; // if not connected, nothing to worry
-
-    cModule *notifymodule = NULL;
-    if (type()=='O')
-        notifymodule = ownerModule()->parentModule();
-    else
-        notifymodule = ownerModule();
-
-    if (notifymodule && notifymodule->notify_inspector)
-        notifymodule->notify_inspector(notifymodule,immediate,notifymodule->data_for_inspector);
+    displayString().parse(s);
 }
 
-void cGate::setDisplayStringNotify(void (*notify_func)(cGate*,bool,void*), void *data)
-{
-    notify_inspector = notify_func;
-    data_for_inspector = data;
-}
+

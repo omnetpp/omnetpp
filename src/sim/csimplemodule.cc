@@ -32,26 +32,44 @@
 #include "cexception.h"
 
 
+bool cSimpleModule::stack_cleanup_requested;
+cSimpleModule *cSimpleModule::after_cleanup_transfer_to;
+
+
 void cSimpleModule::activate(void *p)
 {
-    cSimpleModule *smod = (cSimpleModule *)p;
+    if (stack_cleanup_requested)
+    {
+        if (after_cleanup_transfer_to)
+            simulation.transferTo(after_cleanup_transfer_to);
+        else
+            simulation.transferToMain();
+        assert(("invoking transferTo() on an already deleted module?",0));
+    }
+
+    cSimpleModule *mod = (cSimpleModule *)p;
 
     // The starter message should be the same as the timeoutmsg member of
     // cSimpleModule. If not, then something is wrong...
     cMessage *starter = simulation.msgQueue.getFirst();
-    if (starter!=smod->timeoutmsg)
+    if (starter!=mod->timeoutmsg)
     {
         // hand exception to cSimulation::transferTo() and switch back
-        simulation.exception = new cException("scheduleStart() should have been called for dynamically created module `%s'", smod->fullPath());
+        simulation.exception = new cException("scheduleStart() should have been called for dynamically created module `%s'", mod->fullPath());
         simulation.exception_type = 0;
-        simulation.transferToMain();
+        mod->state = sENDED;
+
+        // The End
+        simulation.transferToMain(); // send back exception
+        assert(!after_cleanup_transfer_to);
+        simulation.transferToMain(); // for stack_cleanup_requested
+        assert(("invoking transferTo() on an already deleted module?",0));
     }
 
-    // give back the message to the module
-    starter->setOwner(smod);
+    // rename message
     starter->setKind(MK_TIMEOUT);
     char buf[24];
-    sprintf(buf,"timeout-%d", smod->id());
+    sprintf(buf,"timeout-%d", mod->id());
     starter->setName(buf);
 
     // call activity(). At this point, initialize() has already been called
@@ -59,8 +77,18 @@ void cSimpleModule::activate(void *p)
     // created modules.
     try
     {
-        smod->activity();
-        smod->state = sENDED;
+        mod->activity();
+        mod->state = sENDED;
+    }
+    catch (cStackCleanupException *e)
+    {
+        // job done -- transfer back where we came from
+        delete e;
+        if (after_cleanup_transfer_to)
+            simulation.transferTo(after_cleanup_transfer_to);
+        else
+            simulation.transferToMain();
+        assert(("invoking transferTo() on an already deleted module?",0));
     }
     catch (cEndModuleException *e)
     {
@@ -80,19 +108,20 @@ void cSimpleModule::activate(void *p)
         simulation.exception = e;
         simulation.exception_type = 0;
     }
-    simulation.transferToMain();
+    // FIXME handle other exception too: std::exception, unsigned int, any (...) etc
+
+    // The End
+    simulation.transferToMain(); // send back exception -- will come back sometime for stack cleanup
+    if (after_cleanup_transfer_to)
+        simulation.transferTo(after_cleanup_transfer_to);
+    else
+        simulation.transferToMain();
+    assert(("invoking transferTo() on an already deleted module?",0));
 }
 
 cSimpleModule::cSimpleModule(const cSimpleModule& mod) :
-  cModule( mod.name(), mod.parentmodp ),
-  locals(NULL),
-  putAsideQueue( NULL, NULL, false )
+  cModule(mod.name(), mod.parentModule())
 {
-    take( &locals );
-    //take( &putAsideQueue );
-    putAsideQueue.setOwner(NULL); // hide deprecated putAsideQueue from object tree
-
-    heap = NULL;
     timeoutmsg = NULL;
     coroutine = NULL;
     setName(mod.name());
@@ -100,19 +129,12 @@ cSimpleModule::cSimpleModule(const cSimpleModule& mod) :
 }
 
 cSimpleModule::cSimpleModule(const char *name, cModule *parentmod, unsigned stksize) :
-  cModule( name, parentmod ),
-  locals( "local-objects"),
-  putAsideQueue( "putaside-queue", cMessage::cmpbydelivtime, false )
+  cModule(name, parentmod)
 {
     state = sREADY;
-    heap = NULL;
     coroutine = NULL;
 
     usesactivity = (stksize!=0);
-
-    take( &locals );
-    //take( &putAsideQueue );
-    putAsideQueue.setOwner(NULL); // hide deprecated putAsideQueue from object tree
 
     // for an activity() module, timeoutmsg will be created in scheduleStart()
     // which must always be called
@@ -130,17 +152,33 @@ cSimpleModule::cSimpleModule(const char *name, cModule *parentmod, unsigned stks
 
 cSimpleModule::~cSimpleModule()
 {
-    // the `members' list should be empty by the time we get here
-    // timeoutmsg is deleted from cObject destructor (or by the message queue)
+    if (simulation.contextModule()==this)
+        throw new cException(this, "cannot delete itself, only via deleteModule()");
 
-    // delete putaside queue
-    putAsideQueue.clear();
+    // timeoutmsg is deleted from cDefaultList destructor (or by the message queue)
 
-    // clean up user's objects: dispose of all objects in 'locals' list.
-    discardLocals();
+    if (usesActivity())
+    {
+        // clean up user's objects on coroutine stack by forcing an exception inside the coroutine
+        if (state!=sENDED)   // FIXME khmm -- the not yet started ones are also here
+        {                    // FIXME is this a good place?
+            stack_cleanup_requested = true;
+            after_cleanup_transfer_to = simulation.runningModule();
+            assert(!after_cleanup_transfer_to || after_cleanup_transfer_to->usesActivity());
+            simulation.transferTo(this);
+            stack_cleanup_requested = false;
+        }
+        delete coroutine;
+    }
 
-    clearHeap();
-    delete coroutine;
+    // delete pending messages for this module
+    for (cMessageHeap::Iterator iter(simulation.msgQueue); !iter.end(); iter++)
+    {
+        cMessage *msg = iter();
+        if (msg->arrivalModuleId() == id())
+            delete simulation.msgQueue.get( msg );
+    }
+
 }
 
 cSimpleModule& cSimpleModule::operator=(const cSimpleModule& other)
@@ -163,17 +201,7 @@ void cSimpleModule::info(char *buf)
 
 void cSimpleModule::forEach(ForeachFunc do_fn)
 {
-   if (do_fn(this,true))
-   {
-      paramv.forEach( do_fn );
-      gatev.forEach( do_fn );
-      locals.forEach( do_fn );
-      members.forEach( do_fn );
-      //putAsideQueue.forEach( do_fn );
-      for (cSubModIterator submod(*this); !submod.end(); submod++)
-         submod()->forEach( do_fn );
-   }
-   do_fn(this,false);
+    cModule::forEach(do_fn);  // nothing new here
 }
 
 void cSimpleModule::setId(int n)
@@ -201,72 +229,6 @@ void cSimpleModule::error(const char *fmt...) const
     throw new cException(eUSER,buf);
 }
 
-void cSimpleModule::discardLocals()
-{
-    // Called when cleaning up a simple module after simulation. Its job is
-    // to delete objects (now garbage) owned by the simple module, and destruct
-    // (via calling dtor) objects left on the coroutine stack.
-    //
-    // Actual method of "disposing of" an object depends on the storage class of the object:
-    // - dynamic (allocated on the heap): operator delete
-    // - auto (allocated on the stack, i.e. it is a local variable of activity()): direct destructor call
-    // - static (global variable): setOwner(NULL) which makes the object join its default owner
-    //
-    while (cIterator(locals)())
-    {
-       cObject *obj = cIterator(locals)();
-       stor = obj->storage();
-       if (stor == 'D')
-          delete obj;
-       else if (stor == 'A')
-          obj->destruct();
-       else  /* stor == 'S' */
-          obj->setOwner( NULL );
-    }
-}
-
-void *cSimpleModule::memAlloc(size_t m)
-{
-    sBlock *p = (sBlock *)new char[m+sizeof(sBlock)];  // allocate
-    if (!p)
-        throw new cException("memAlloc(): could not allocate %u bytes", m);
-
-    // insert into the list as first item (list structure is the same as
-    // in a cObject-cHead list)
-    p->mod  = this;
-    p->prev = NULL;
-    p->next = heap;
-    heap = p;
-    if (p->next) p->next->prev = p;
-    return (void *)(p+1);
-}
-
-void cSimpleModule::memFree(void *&p)
-{
-    if (!p) return;                    // if existing block,
-    sBlock *q = (sBlock *)p - 1;
-    if (q->next)                       // remove it from list
-           q->next->prev = q->prev;
-    if (q->prev)
-           q->prev->next = q->next;
-    else
-           q->mod->heap = q->next;
-
-    delete q;                          // delete pointer and
-    p = NULL;                          //  NULL it as an extra service
-}
-
-void cSimpleModule::clearHeap()
-{
-    // free all allocated blocks
-    while (heap)
-    {
-        sBlock *p = heap->next;
-        delete heap;
-        heap = p;
-    }
-}
-
 //---------
 
 void cSimpleModule::scheduleStart(simtime_t t)
@@ -289,7 +251,6 @@ void cSimpleModule::scheduleStart(simtime_t t)
     char buf[24];
     sprintf(buf,"starter-%d", id());
     timeoutmsg = new cMessage(buf,MK_STARTER);
-    take( timeoutmsg );
 
     // initialize message fields
     timeoutmsg->setSentFrom(NULL,-1, 0);
@@ -301,38 +262,15 @@ void cSimpleModule::scheduleStart(simtime_t t)
 
 void cSimpleModule::deleteModule()
 {
-    // we have to be explicitly prepared that we might be called from a different
-    // simple module (ie. that this!=contextModule())!
-
-    // delete pending messages for this module
-    for (cMessageHeapIterator iter(simulation.msgQueue); !iter.end(); iter++)
-    {
-        cMessage *msg = iter();
-        if (msg->arrivalModuleId() == id())
-            delete simulation.msgQueue.get( msg );
-    }
-
-    // adjust gates that were directed here
-    for (int i=0; i<gates(); i++)
-    {
-        cGate *g = gate(i);
-        if (g && g->toGate() && g->toGate()->fromGate()==g)
-            g->toGate()->setFrom( NULL );
-        if (g && g->fromGate() && g->fromGate()->toGate()==g)
-            g->fromGate()->setTo( NULL );
-    }
-
-    if (simulation.contextModule()!=this)
-    {
-        // we're being deleted from another module: just finish job and return
-        simulation.deleteModule( id() );
-    }
-    else
+    if (simulation.contextModule()==this)
     {
         // we're inside the currently executing module: get outta here quickly,
         // and leave simulation.deleteModule(id()) to whoever catches the exception
         throw new cEndModuleException(true);
     }
+
+    // simple case: we're being deleted from main or from another module
+    delete this;
 }
 
 int cSimpleModule::send(cMessage *msg, int g)
@@ -376,7 +314,7 @@ int cSimpleModule::sendDelayed(cMessage *msg, double delay, cGate *outgate)
        throw new cException("send()/sendDelayed(): cannot send via an input gate (`%s')",outgate->name());
     if (msg==NULL)
         throw new cException("send()/sendDelayed(): message pointer is NULL");
-    if (msg->owner() && msg->owner()!=&(this->locals))
+    if (msg->owner()!=this)
         throw new cException("send()/sendDelayed(): not owner of message `%s'; owner is `%s'",
                              msg->name(),msg->owner()->fullPath());
     if (delay<0.0)
@@ -388,6 +326,8 @@ int cSimpleModule::sendDelayed(cMessage *msg, double delay, cGate *outgate)
         simulation.backtomod = this;  // Ensure that scheduler will select us
         simulation.transferToMain();  // before all other modules
         simulation.backtomod = NULL;
+        if (stack_cleanup_requested)
+            throw new cStackCleanupException();
     }
 
     // set message parameters and send it
@@ -432,7 +372,7 @@ int cSimpleModule::sendDirect(cMessage *msg, double propdelay, cGate *togate)
 
     if (msg==NULL)
         throw new cException("sendDirect(): message pointer is NULL");
-    if (msg->owner() && msg->owner()!=&(this->locals))
+    if (msg->owner()!=this)
         throw new cException("sendDirect(): not owner of message `%s'; owner is `%s'", msg->name(),msg->owner()->fullPath());
 
     // to help debugging, switch back to main for a moment
@@ -441,6 +381,8 @@ int cSimpleModule::sendDirect(cMessage *msg, double propdelay, cGate *togate)
         simulation.backtomod = this;  // Ensure that scheduler will select us
         simulation.transferToMain();  // before all other modules
         simulation.backtomod = NULL;
+        if (stack_cleanup_requested)
+            throw new cStackCleanupException();
     }
 
     // set message parameters and send it
@@ -456,7 +398,7 @@ int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
         throw new cException(eBACKSCHED);
     if (msg==NULL)
         throw new cException("scheduleAt(): message pointer is NULL");
-    if (msg->owner() && msg->owner()!=&(this->locals) && msg->owner()!=this)
+    if (msg->owner()!=this)
         throw new cException("scheduleAt(): not owner of message `%s'; owner is `%s'",msg->name(),msg->owner()->fullPath());
 
     // to help debugging, switch back to main for a moment
@@ -465,6 +407,8 @@ int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
         simulation.backtomod = this;  // Ensure that scheduler will
         simulation.transferToMain();  //   select us before all other modules
         simulation.backtomod = NULL;
+        if (stack_cleanup_requested)
+            throw new cStackCleanupException();
     }
 
     // set message parameters and schedule it
@@ -481,13 +425,7 @@ cMessage *cSimpleModule::cancelEvent(cMessage *msg)
     if (msg==NULL)
         throw new cException("cancelEvent(): message pointer is NULL");
     if (!msg->isScheduled())
-    {
-        if (putAsideQueue.contains(msg))
-            throw new cException("cancelEvent(): message `%s' is in the put-aside queue",msg->name());
-        else
-            throw new cException("cancelEvent(): message `%s' is currently not scheduled",msg->name());
-        return NULL;
-    }
+        throw new cException("cancelEvent(): message `%s' is currently not scheduled",msg->name());
 
     // now remove it from future events and return pointer
     simulation.msgQueue.get( msg );
@@ -516,20 +454,15 @@ void cSimpleModule::wait(simtime_t t)
     timeoutmsg->setArrivalTime(simTime()+t);
     simulation.msgQueue.insert( timeoutmsg );
 
-    for(;;)
-    {
-        simulation.transferToMain();
-        cMessage *newmsg = simulation.msgQueue.getFirst();
+    simulation.transferToMain();
+    if (stack_cleanup_requested)
+        throw new cStackCleanupException();
 
-        if (newmsg==timeoutmsg)
-            break;
-        else
-        {
-            ev.messageDelivered( newmsg );
-            putAsideQueue.insert( newmsg );
-        }
-    }
-    take(timeoutmsg);
+    cMessage *newmsg = simulation.msgQueue.getFirst();
+
+    if (newmsg!=timeoutmsg)
+        throw new cException("wait(): message arrived during wait: (%s)%s",
+                             newmsg->className(), newmsg->fullName());
 }
 
 void cSimpleModule::waitAndEnqueue(simtime_t t, cQueue *queue)
@@ -547,6 +480,9 @@ void cSimpleModule::waitAndEnqueue(simtime_t t, cQueue *queue)
     for(;;)
     {
         simulation.transferToMain();
+        if (stack_cleanup_requested)
+            throw new cStackCleanupException();
+
         cMessage *newmsg = simulation.msgQueue.getFirst();
 
         if (newmsg==timeoutmsg)
@@ -557,25 +493,19 @@ void cSimpleModule::waitAndEnqueue(simtime_t t, cQueue *queue)
             queue->insert( newmsg );
         }
     }
-    take(timeoutmsg);
 }
 
 //-------------
 
-bool cSimpleModule::isThereMessage() const
-{
-    cMessage *msg = simulation.msgQueue.peekFirst();
-    return msg!=NULL &&
-           msg->arrivalModuleId()==id() &&
-           msg->arrivalTime()==simTime();
-}
-
-cMessage *cSimpleModule::receiveNew()
+cMessage *cSimpleModule::receive()
 {
     if (!usesactivity)
         throw new cException(eNORECV);
 
     simulation.transferToMain();
+    if (stack_cleanup_requested)
+        throw new cStackCleanupException();
+
     cMessage *newmsg = simulation.msgQueue.getFirst();
 
     ev.messageDelivered( newmsg );
@@ -583,7 +513,7 @@ cMessage *cSimpleModule::receiveNew()
     return newmsg;
 }
 
-cMessage *cSimpleModule::receiveNew(simtime_t t)
+cMessage *cSimpleModule::receive(simtime_t t)
 {
     if (!usesactivity)
         throw new cException(eNORECV);
@@ -594,6 +524,9 @@ cMessage *cSimpleModule::receiveNew(simtime_t t)
     simulation.msgQueue.insert( timeoutmsg );
 
     simulation.transferToMain();
+    if (stack_cleanup_requested)
+        throw new cStackCleanupException();
+
     cMessage *newmsg = simulation.msgQueue.getFirst();
 
     if (newmsg==timeoutmsg)  // timeout expired
@@ -607,98 +540,6 @@ cMessage *cSimpleModule::receiveNew(simtime_t t)
         ev.messageDelivered( newmsg );
         return newmsg;
     }
-}
-
-cMessage *cSimpleModule::receiveNewOn(int g, simtime_t t)
-{
-    if (!usesactivity)
-        throw new cException(eNORECV);
-    if (t<0)
-        throw new cException(eNEGTOUT);
-    cGate *a = gate(g);
-    if (a==NULL)
-        throw new cException(eNOGATE,g);
-    if (a->type()=='O')
-        throw new cException(eOUTGATE,g);
-
-    if (t!=MAXTIME)
-    {
-        timeoutmsg->setArrivalTime(simTime()+t);
-        simulation.msgQueue.insert( timeoutmsg );
-        for(;;)
-        {
-            simulation.transferToMain();
-            cMessage *newmsg = simulation.msgQueue.getFirst();
-            if (newmsg==timeoutmsg)  // timeout expired
-               {take(timeoutmsg); return NULL;}
-            else
-            {
-               ev.messageDelivered( newmsg );
-               if (newmsg->arrivedOn(g))  // OK!
-                   {take(cancelEvent(timeoutmsg)); return newmsg;}
-               else   // not good --> put-aside queue
-                   putAsideQueue.insert( newmsg );
-            }
-        }
-    }
-    else
-    {
-        for(;;)
-        {
-            simulation.transferToMain();
-            cMessage *newmsg = simulation.msgQueue.getFirst();
-            ev.messageDelivered( newmsg );
-            if (newmsg->arrivedOn(g))
-                return newmsg;
-            else
-                putAsideQueue.insert( newmsg );
-        }
-    }
-}
-
-cMessage *cSimpleModule::receiveNewOn(const char *gatename, int sn, simtime_t t)
-{
-    return receiveNewOn( findGate(gatename,sn), t );
-}
-
-//-------------
-
-cMessage *cSimpleModule::receive()
-{
-    if (!putAsideQueue.empty())
-        return (cMessage *)putAsideQueue.pop();
-    else
-        return receiveNew();
-}
-
-cMessage *cSimpleModule::receive(simtime_t t)
-{
-    if (!putAsideQueue.empty())
-        return (cMessage *)putAsideQueue.pop();
-    else
-        return receiveNew( t );
-}
-
-cMessage *cSimpleModule::receiveOn(int g, simtime_t t)
-{
-    // first try to get it from the put-aside queue
-    for( cQueueIterator qiter( putAsideQueue, 0 ); !qiter.end(); qiter--)
-    {
-        cMessage *msg = (cMessage *)qiter();
-        if (msg->arrivedOn(g))
-            return (cMessage *)putAsideQueue.remove( msg );
-    }
-    // ok, get it from the message queue
-    return receiveNewOn( g, t );
-}
-
-cMessage *cSimpleModule::receiveOn(const char *gatename, int sn, simtime_t t)
-{
-    int g = findGate(gatename,sn);
-    if (g<0)
-        throw new cException(sn<0 ? "receiveOn(): module has no gate `%s'":
-                         "receiveOn(): module has no gate `%s[%d]'",gatename,sn);
-    return receiveOn( g, t );
 }
 
 //-------------
@@ -719,46 +560,6 @@ void cSimpleModule::handleMessage(cMessage *)
 
 //-------------
 
-//void cSimpleModule::callInitialize()
-//{
-//    cModule::callInitialize();
-//}
-
-bool cSimpleModule::callInitialize(int stage)
-{
-    int numStages = numInitStages();
-    if (stage < numStages)
-    {
-        // switch to the module's context for the duration of the initialize() call.
-        cModule *oldcontext = simulation.contextModule();
-        simulation.setContextModule( this );
-
-        initialize( stage );
-
-        if (oldcontext)
-            simulation.setContextModule( oldcontext );
-        else
-            simulation.setGlobalContext();
-    }
-    return stage < numStages-1;  // return true if there's more stages to do
-}
-
-void cSimpleModule::callFinish()
-{
-    // This is the interface for calling finish().
-    // We switch to the module's context for the duration of the call.
-
-    cModule *oldcontext = simulation.contextModule();
-    simulation.setContextModule( this );
-
-    finish();
-
-    if (oldcontext)
-        simulation.setContextModule( oldcontext );
-    else
-        simulation.setGlobalContext();
-}
-
 void cSimpleModule::pause(const char *phase)
 {
     if (!usesactivity)
@@ -769,23 +570,9 @@ void cSimpleModule::pause(const char *phase)
     simulation.backtomod = this;
     simulation.transferToMain();
     simulation.backtomod = NULL;
+    if (stack_cleanup_requested)
+        throw new cStackCleanupException();
 }
-
-//void cSimpleModule::realtimewait(double secs)
-//{
-//    if (simulation.rtwait_modp!=NULL)
-//       opp_error("realtimewait(): one realtimewait() already pending in %s",
-//                   simulation.rtwait_modp->fullPath());
-//    else
-//    {
-//       simulation.rtwait_modp = this;
-//       simulation.rtwait_from = clock();
-//       simulation.rtwait_ticks = (clock_t)(secs*CLK_TCK);
-//       simulation.transferToMain();
-//       if (simulation.rtwait_modp!=NULL)
-//          opp_error("received a message during a realtimewait() call");
-//    }
-//}
 
 simtime_t cSimpleModule::simTime() const
 {
@@ -837,10 +624,4 @@ unsigned cSimpleModule::stackUsage() const
     return coroutine ? coroutine->stackUsage() : 0;
 }
 
-//--------------------------------------------------------------
-
-void *operator new(size_t m,___nosuchclass *)
-{
-    return simulation.contextSimpleModule()->memAlloc( m );
-}
 

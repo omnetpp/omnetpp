@@ -40,7 +40,7 @@ class SIM_API cException
 
     /**
      * Helper function for constructors: assembles and stores the message text.
-     * If obj is non-NULL, the message text will be prepended (if needed) 
+     * If obj is non-NULL, the message text will be prepended (if needed)
      * with the object type and name, like this: "(cArray)array: ..."
      */
     void init(const cObject *obj, int errc, const char *fmt, va_list va);
@@ -151,7 +151,7 @@ class SIM_API cTerminationException : public cException
 /**
  * This exception is only thrown from cModule::end(), and from deleteModule()
  * if the current module is to be deleted, in order to exit that module
- * immediately. 
+ * immediately.
  *
  * @ingroup Internals
  */
@@ -170,6 +170,22 @@ class SIM_API cEndModuleException : public cException
      * If true, the module should be deleted.
      */
     bool moduleToBeDeleted() {return del;}
+};
+
+/**
+ * Used internally: when deleting an activity() simple module, it is "asked"
+ * to throw a cStackCleanupException for the side effect of exceptions --
+ * to properly clean up variables on the module's coroutine stack.
+ *
+ * @ingroup Internals
+ */
+class SIM_API cStackCleanupException : public cException
+{
+  public:
+    /**
+     * Constructor.
+     */
+    cStackCleanupException();
 };
 
 #endif

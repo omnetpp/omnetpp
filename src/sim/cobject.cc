@@ -23,22 +23,37 @@
 
 #include <stdio.h>           // sprintf
 #include <string.h>          // strcpy, strlen etc.
+#include <assert.h>
 #include "csimul.h"
 #include "cenvir.h"
 #include "macros.h"
 #include "cobject.h"
 #include "cexception.h"
 #include "util.h"
+#include "cdefaultlist.h"
 #include "parsim/ccommbuffer.h"
 
-//==========================================================================
-//=== GLOBAL VARIABLES
+using std::ostream;
 
-int   cObject::staticflag;
-int   cObject::heapflag;
+
+bool cStaticFlag::staticflag;
 
 //=== Registration
 Register_Class(cObject);
+
+
+#ifdef DEVELOPER_DEBUG
+#include <set>
+std::set<cObject*> objectlist;
+void printAllObjects()
+{
+    for (std::set<cObject*>::iterator it = objectlist.begin(); it != objectlist.end(); ++it)
+    {
+        printf(" %p (%s)%s\n", (*it), (*it)->className(), (*it)->name());
+    }
+}
+#endif
+
 
 //==========================================================================
 //=== cPolymorphic - member functions
@@ -48,74 +63,183 @@ const char *cPolymorphic::className() const
     return opp_typename(typeid(*this));
 }
 
+
 //==========================================================================
 //=== cObject - member functions
 
+// utility functions
 static bool _do_find(cObject *obj, bool beg, const char *objname, cObject *&p, bool deep);
 static bool _do_list(cObject *obj, bool beg, ostream& s);
 
-char cObject::fullpathbuf[FULLPATHBUF_SIZE];
 
-#define DETERMINE_STORAGE()  stor = heapflag   ? (heapflag=0, 'D') : \
-                                    staticflag ? 'A' : 'S' ;
+// static class members
+char cObject::fullpathbuf[FULLPATHBUF_SIZE];
+cDefaultList *cObject::defaultowner = &defaultList;
+long cObject::total_objs = 0;
+long cObject::live_objs = 0;
+
+
+cDefaultList defaultList;
+
 
 cObject::cObject(const cObject& obj)
 {
-    DETERMINE_STORAGE();
-    tkownership = true;
-    namestr = obj.namestr;
-    firstchildp = NULL;
-
-    ownerp = NULL;
-    setOwner(obj.owner());
-
+    nameunion = obj.nameunion;
+    defaultowner->doInsert(this);
     operator=( obj );
+
+    // statistics
+    total_objs++;
+    live_objs++;
+#ifdef DEVELOPER_DEBUG
+    objectlist.insert(this);
+#endif
 }
 
 cObject::cObject()
 {
-    DETERMINE_STORAGE();
-    tkownership = true;
-    firstchildp = NULL;
+    nameunion.chars[MAX_INTERNAL_NAME] = nameunion.chars[0] = '\0';
+    defaultowner->doInsert(this);
 
-    ownerp = NULL;
-    setOwner( defaultOwner() );
+    // statistics
+    total_objs++;
+    live_objs++;
+#ifdef DEVELOPER_DEBUG
+    objectlist.insert(this);
+#endif
 }
 
 cObject::cObject(const char *name)
 {
-    DETERMINE_STORAGE();
-    tkownership = true;
-    namestr = name;
-    firstchildp = NULL;
+    nameunion.chars[MAX_INTERNAL_NAME] = nameunion.chars[0] = '\0';
+    setName(name);
+    defaultowner->doInsert(this);
 
-    ownerp = NULL;
-    setOwner(defaultOwner());
+    // statistics
+    total_objs++;
+    live_objs++;
+#ifdef DEVELOPER_DEBUG
+    objectlist.insert(this);
+#endif
 }
 
 cObject::~cObject()
 {
-    // notify environment
-    ev.objectDeleted( this );
+#ifdef DEVELOPER_DEBUG
+    objectlist.erase(this);
+#endif
 
-    // remove ourselves from owner's list, and delete owned objects
-    setOwner(NULL);
-    while (firstchildp!=NULL)
-        discard( firstchildp );
+    if (ownerp)
+        ownerp->ownedObjectDeleted(this);
+
+    // notify environment
+    ev.objectDeleted(this);
+
+    if (nameunion.chars[MAX_INTERNAL_NAME])
+        delete [] nameunion.p;
+
+    // statistics
+    live_objs--;
 }
 
-void *cObject::operator new(size_t m)
+void cObject::ownedObjectDeleted(cObject *obj)
 {
-    void *p = ::new char[m];
-    if (p) heapflag = 1;
-    return p;
+    // Note: too late to call obj->className(), at this point it'll aways return "cObject"
+    throw new cException("Object %s is currently in (%s)%s, it cannot be deleted. "
+                         "If this error occurs inside %s, it needs to be changed "
+                         "to call drop() before it can delete that object. "
+                         "If this error occurs inside %s's destructor and %s is a class member, "
+                         "%s needs to call drop() in the destructor",
+                         obj->fullName(), className(), fullPath(),
+                         className(),
+                         className(), obj->fullName(),
+                         className());
+}
+
+void cObject::yieldOwnership(cObject *obj, cObject *newowner)
+{
+    char buf[120];
+    throw new cException("(%s)%s is currently in (%s)%s, it cannot be inserted into (%s)%s",
+                         obj->className(), obj->fullName(),
+                         className(), fullPath(),
+                         newowner->className(), newowner->fullPath(buf,120));
+}
+
+void cObject::removeFromOwnershipTree()
+{
+    // set ownership of this object to null
+    if (ownerp)
+        ownerp->yieldOwnership(this, NULL);
+}
+
+void cObject::take(cObject *obj)
+{
+    // ask current owner to release it -- if it's a cDefaultList, it will.
+    obj->ownerp->yieldOwnership(obj, this);
+}
+
+void cObject::drop(cObject *obj)
+{
+    if (obj->ownerp!=this)
+        throw new cException(this,"drop(): not owner of object (%s)%s",
+                             obj->className(), obj->fullPath());
+    defaultowner->doInsert(obj);
+}
+
+void cObject::dropAndDelete(cObject *obj)
+{
+    if (!obj)
+        return;
+    if (obj->ownerp!=this)
+        throw new cException(this,"dropAndDelete(): not owner of object (%s)%s",
+                             obj->className(), obj->fullPath());
+    obj->ownerp = NULL;
+    delete obj;
+}
+
+
+void cObject::setDefaultOwner(cDefaultList *list)
+{
+    assert(list!=NULL);
+    defaultowner = list;
+}
+
+cDefaultList *cObject::defaultOwner()
+{
+    return defaultowner;
 }
 
 cObject& cObject::operator=(const cObject&)
-{
+    {
     // ownership not affected
-    // name string is NOT copied from other object! (24.02.97 --VA)
+    // name string is NOT copied from other object
     return *this;
+    }
+
+void cObject::setName(const char *s)
+    {
+    // if name is "external" (p used), then deallocate it
+    if (nameunion.chars[MAX_INTERNAL_NAME])
+        delete [] nameunion.p;
+
+    if (!s)
+    {
+        // set beginning of name and discriminator to 0
+        nameunion.chars[MAX_INTERNAL_NAME] = nameunion.chars[0] = '\0';
+    }
+    else if (strlen(s)<=MAX_INTERNAL_NAME)
+    {
+        // copy string to internal buffer, and set discriminator to 0
+        // (discriminator also serves as terminating zero for long strings)
+        strcpy(nameunion.chars, s);
+        nameunion.chars[MAX_INTERNAL_NAME] = '\0';
+    }
+    else
+    {
+        // create a copy, then set discriminator to 1 to signal p is used
+        nameunion.p  = opp_strdup(s);
+        nameunion.chars[MAX_INTERNAL_NAME] = '\1';
+    }
 }
 
 void cObject::copyNotSupported() const
@@ -128,57 +252,19 @@ void cObject::info(char *buf)
     buf[0] = '\0';
 }
 
+#ifdef WITH_PARSIM
 void cObject::netPack(cCommBuffer *buffer)
 {
-#ifdef WITH_PARSIM
-    buffer->pack(namestr);
-    // no need to pack 'stor'
-    buffer->pack(tkownership);
-#else
-    throw new cException("netPack(): simulation kernel was compiled without support for parallel simulation");
-#endif
+    buffer->pack(name());
 }
 
 void cObject::netUnpack(cCommBuffer *buffer)
 {
-#ifdef WITH_PARSIM
-    buffer->unpack(namestr);
-    buffer->unpack(tkownership);
-#else
-    throw new cException("netPack(): simulation kernel was compiled without support for parallel simulation");
+    opp_string tmp;
+    buffer->unpack(tmp);
+    setName(tmp.buffer());
+}
 #endif
-}
-
-void cObject::setOwner(cObject *newowner)
-{
-    // remove from owner's child list
-    if (ownerp!=NULL)
-    {
-         if (nextp!=NULL)
-              nextp->prevp = prevp;
-         if (prevp!=NULL)
-              prevp->nextp = nextp;
-         if (ownerp->firstchildp==this)
-              ownerp->firstchildp = nextp;
-         ownerp = NULL;
-    }
-
-    // insert into owner's child list as first elem
-    if (newowner!=NULL)
-    {
-         ownerp = newowner;
-         prevp = NULL;
-         nextp = ownerp->firstchildp;
-         if (nextp!=NULL)
-              nextp->prevp = this;
-         ownerp->firstchildp = this;
-    }
-}
-
-cObject *cObject::defaultOwner() const
-{
-    return simulation.localList();
-}
 
 const char *cObject::fullPath() const
 {
@@ -213,7 +299,7 @@ const char *cObject::fullPath(char *buffer, int bufsize) const
 
 
 /*------------------------------------------------------------------------*
-
+FIXME
  The forEach() mechanism
  ~~~~~~~~~~~~~~~~~~~~~~~
   o  The forEach() mechanism implemented in OMNeT++ is very special and
@@ -270,7 +356,7 @@ cObject *cObject::findObject(const char *objname, bool deep)
 
 int cObject::cmpbyname(cObject *one, cObject *other)
 {
-    return opp_strcmp((const char *)(one->namestr), (const char *)(other->namestr));
+    return opp_strcmp(one->name(), other->name());
 }
 
 static bool _do_find(cObject *obj, bool beg, const char *objname, cObject *&p, bool deep)

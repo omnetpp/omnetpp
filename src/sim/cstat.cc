@@ -34,6 +34,9 @@
 #include "parsim/ccommbuffer.h"
 #include "cenvir.h"
 
+using std::ostream;
+
+
 //=========================================================================
 //=== Registration
 Register_Class(cStdDev);
@@ -50,12 +53,17 @@ cStatistic::cStatistic(const cStatistic& r) : cObject()
     operator=(r);
 }
 
-cStatistic::cStatistic(const char *name) :
-  cObject(name)
+cStatistic::cStatistic(const char *name) : cObject(name)
 {
     td=NULL;
     ra=NULL;
     genk=0;
+}
+
+cStatistic::~cStatistic()
+{
+    dropAndDelete(td);
+    dropAndDelete(ra);
 }
 
 #ifdef WITH_PARSIM
@@ -90,29 +98,33 @@ cStatistic& cStatistic::operator=(const cStatistic& res)   //--VA
 
     cObject::operator=( res );
     genk = res.genk;
-    if (td && td->owner()==this)  discard(td);
-    if (ra && ra->owner()==this)  discard(ra);
+    dropAndDelete(td);
+    dropAndDelete(ra);
     td = res.td;
-    if (td && td->owner()==const_cast<cStatistic*>(&res))
+    if (td)
         take( td = (cTransientDetection *)td->dup() );
     ra = res.ra;
-    if (ra && ra->owner()==const_cast<cStatistic*>(&res))
+    if (ra)
         take( ra = (cAccuracyDetection *)ra->dup() );
     return *this;
 }
 
 void cStatistic::addTransientDetection(cTransientDetection *obj)  //NL
 {
+    if (td)
+        throw new cException(this,"addTransientDetection(): object already has a transient detection algorithm");
     td = obj;                       // create pointer to td object
     td->setHostObject( this );      // and create one back
-    if (takeOwnership()) take(td);  //--VA
+    take(td);
 }
 
 void cStatistic::addAccuracyDetection(cAccuracyDetection *obj)  //NL
 {
+    if (ra)
+        throw new cException(this,"addAccuracyDetection(): object already has an accuracy detection algorithm");
     ra = obj;                       // create pointer to ra object
     ra->setHostObject( this );      // and create one back
-    if (takeOwnership()) take(ra);  //--VA
+    take(ra);
 }
 
 void cStatistic::collect2(double, double)

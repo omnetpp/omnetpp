@@ -61,22 +61,6 @@ void cPlaceHolderModule::scheduleStart(simtime_t t)
     // do nothing
 }
 
-void cPlaceHolderModule::deleteModule()
-{
-    // adjust gates that were directed here
-    for (int i=0; i<gates(); i++)
-    {
-            cGate *g = gate(i);
-            if (g && g->toGate() && g->toGate()->fromGate()==g)
-               g->toGate()->setFrom( NULL );
-            if (g && g->fromGate() && g->fromGate()->toGate()==g)
-               g->fromGate()->setTo( NULL );
-    }
-
-    // delete module
-    simulation.deleteModule( id() );
-}
-
 cGate *cPlaceHolderModule::createGateObject(const char *gname, char tp)
 {
     if (tp=='I')

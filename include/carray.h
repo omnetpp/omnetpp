@@ -179,7 +179,9 @@ class SIM_API cBag : public cObject
     bool isUsed(int m) const;
 
     /**
-     * FIXME: Remove item at position m and return its pointer. (???)
+     * Marks the mth position as free and returns pointer to corresponding
+     * item. Should be used with care as subsequent add() calls
+     * may overwrite the data at that position.
      */
     void *remove(int m);
     //@}
@@ -192,15 +194,70 @@ class SIM_API cBag : public cObject
  * cArray stores the pointers of the objects inserted instead of making copies.
  * cArray works as an array, but if it gets full, it grows automatically by
  * a specified delta. Ownership of contained objects (responsibility of deletion)
- * can be specified per-object basis (see cObject::takeOwnership()).
- * Default is that cArray takes the ownership of each object inserted
- * (that is, takeOwnership() is set to true).
+ * can be specified per-object basis (see takeOwnership()); default is that
+ * cArray takes the ownership of each object inserted (takeOwnership(true)).
  *
  * @ingroup Containers
  */
 class SIM_API cArray : public cObject
 {
+  public:
+    /**
+     * Walks along a cArray.
+     */
+    class Iterator
+    {
+      private:
+        cArray *array;
+        int k;
+
+      public:
+        /**
+         * Constructor. Iterator will walk on the array passed as argument.
+         * The starting object will be the first (if athead==true) or
+         * the last (athead==false) object in the array, not counting empty slots.
+         */
+        Iterator(const cArray& a, bool athead=true)  {init(a, athead);}
+
+        /**
+         * Reinitializes the iterator object.
+         */
+        void init(const cArray& a, bool athead=true);
+
+        /**
+         * Returns the current object, or NULL if the iterator is not
+         * at a valid position.
+         */
+        cObject *operator()()  {return array->get(k);}
+
+        /**
+         * Returns true if the iterator has reached either end of the array.
+         */
+        bool end() const   {return k<0 || k>=array->items();}
+
+        /**
+         * Returns the current object, then moves the iterator to the next item.
+         * Empty slots in the array are skipped.
+         * If the iterator has reached either end of the array, nothing happens;
+         * you have to call init() again to restart iterating.
+         * If elements are added or removed during interation, the behaviour
+         * is undefined.
+         */
+        cObject *operator++(int);
+
+        /**
+         * Returns the current object, then moves the iterator to the previous item.
+         * Empty slots in the array are skipped.
+         * If the iterator has reached either end of the array, nothing happens;
+         * you have to call init() again to restart iterating.
+         * If elements are added or removed during interation, the behaviour
+         * is undefined.
+         */
+        cObject *operator--(int);
+    };
+
   private:
+    bool tkownership;
     cObject **vect;   // vector of objects
     int size;         // size of vector
     int delta;        // if needed, grows by delta
@@ -418,6 +475,29 @@ class SIM_API cArray : public cObject
      * is called.)
      */
     cObject *remove(cObject *obj);
+    //@}
+
+    /** @name Ownership control flag.
+     *
+     * The ownership control flag is to be used by derived container classes.
+     * If the flag is set, the container should take() any object that is
+     * inserted into it.
+     */
+    //@{
+
+    /**
+     * Sets the flag which determines whether the container object
+     * should automatically take ownership of the objects that are inserted
+     * into it.
+     */
+    void takeOwnership(bool tk) {tkownership=tk;}
+
+    /**
+     * Returns the flag which determines whether the container object
+     * should automatically take ownership of the objects that are inserted
+     * into it.
+     */
+    bool takeOwnership() const   {return tkownership;}
     //@}
 };
 

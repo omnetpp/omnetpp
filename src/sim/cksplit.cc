@@ -29,6 +29,7 @@
 #include "cexception.h"
 #include "parsim/ccommbuffer.h"
 
+using std::ostream;
 using std::endl;
 
 //=========================================================================
