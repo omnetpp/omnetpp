@@ -112,6 +112,8 @@ class SIM_API cModule : public cDefaultList
 
   public:
     static bool pause_in_sendmsg; // if true, split send() with transferToMain()
+    static std::string lastmodulefullpath; // cached result of last fullPath() call
+    static const cModule *lastmodulefullpathmod; // module of lastmodulefullpath
 
   protected:
     mutable char *fullname; // buffer to store full name of object
