@@ -11,9 +11,9 @@ a result plotting tool, good documentation, many sample simulations and
 much more...
 And it is OPEN SOURCE!
 
-Please look into the doc/ subdirectory where you'll find: README files,
-installation instructions, license, the manual in PDF, etc. The manual
-in HTML is in the html/ subdirectory.
+Please look into the doc/ subdirectory where you'll find README files,
+installation instructions, license, the manual in PDF, etc. The HTML version
+of the manual is in the (won't guess!) html/ subdirectory.
 
 Enjoy!
 
