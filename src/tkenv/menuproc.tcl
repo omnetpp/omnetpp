@@ -496,8 +496,9 @@ proc message_windows {} {
 proc clear_windows {} {
     # implements Trace|Clear windows...
     # also called back from C++ code
-    # FIXME: should delete the contents of all text windows!!!
+    # TBD: should delete the contents of module windows as well
     .main.text delete 1.0 end
+    catch {.messagewindow.main.text delete 1.0 end}
 }
 
 proc inspect_filteredobjectlist {} {

@@ -622,7 +622,7 @@ proc filteredobjectlist_dialog {} {
 # helper proc for filteredobjectlist_dialog
 #
 proc getClassNames {} {
-    # FIXME modules and channels are not registered as classes!
+    # modules and channels are not registered as classes, add them manually
     set classes [concat [opp_getchildobjects [opp_object_classes]] \
                         [opp_getchildobjects [opp_object_channeltypes]] \
                         [opp_getchildobjects [opp_object_moduletypes]] ]
@@ -631,8 +631,8 @@ proc getClassNames {} {
     foreach classptr $classes {
         lappend classnames [opp_getobjectfullname $classptr]
     }
-    lappend classnames {cWatch}  ;# FIXME some types are not registered
-    lappend classnames {cOutVector}  ;# FIXME some types are not registered
+    # still there're classes which are not registered
+    lappend classnames {cWatch}
 
     return [lsort -dictionary $classnames]
 }
@@ -692,7 +692,7 @@ proc filteredobjectlist_refresh {w} {
         foreach ptr $objlist {
             multicolumnlistbox_insert $lb $ptr [list ptr $ptr class [opp_getobjectclassname $ptr] name [opp_getobjectfullpath $ptr] info [opp_getobjectinfostring $ptr]]
         }
-        #$lb selection set 0 FIXME what's this?
+        #$lb selection set 0
     }
 }
 

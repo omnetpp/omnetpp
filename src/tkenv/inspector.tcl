@@ -367,7 +367,7 @@ proc get_help_tip {w x y item} {
 #===================================================================
 
 proc create_structpanel {w} {
-    # FIXME: a text is a temporary solution... should be sth like a property sheet
+    # TBD textarea is a temporary solution -- should be sth like a property sheet.
     scrollbar $w.sb -borderwidth 1 -command "$w.txt yview"
     text $w.txt  -height 12 -width 40 -yscrollcommand "$w.sb set"
 
