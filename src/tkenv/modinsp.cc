@@ -667,9 +667,6 @@ void TSimpleModInspector::update()
    fillInspectorListbox(".nb.vars", &mod->members, false);
    fillInspectorListbox(".nb.vars", &mod->locals, false);
 
-   deleteInspectorListbox( ".nb.paq" );
-   fillInspectorListbox(".nb.paq", &mod->putAsideQueue, false);
-
    deleteInspectorListbox( ".nb.submods" );
    fillModuleListbox(".nb.submods", mod, false, false);
 }

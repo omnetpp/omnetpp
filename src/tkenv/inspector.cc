@@ -77,10 +77,8 @@ void splitInspectorName(const char *namestr, cObject *&object, int& type)
 // TInspector: base class for all inspector types
 //             member functions
 
-TInspector::TInspector(cObject *obj, int typ, const char *geom, void *dat) : cObject()
+TInspector::TInspector(cObject *obj, int typ, const char *geom, void *dat)
 {
-   setOwner(NULL);
-
    object = obj;
    type = typ;
    data = dat;
@@ -103,8 +101,8 @@ TInspector::~TInspector()
 void TInspector::createWindow()
 {
    windowname[0] = '.';
-   ptrToStr( object, windowname+1 );
-   sprintf( windowname+strlen(windowname), "-%d",type);
+   ptrToStr(object, windowname+1 );
+   sprintf(windowname+strlen(windowname), "-%d",type);
 
    // derived classes will also call Tcl_Eval() to actually create the
    // Tk window by invoking a procedure in inspect.tcl

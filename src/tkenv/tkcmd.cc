@@ -568,26 +568,49 @@ int getSubObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 
 int getSubObjectsFilt_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   // args: <ptr> <class> <fullpath> <maxcount> <orderby>, where <class> and <fullpath> may contain wildcards
-   if (argc!=6) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   // args: <ptr> <category> <class> <fullpath> <maxcount> <orderby>, where
+   //    <category> consists of letters m,q,s,g,v,o;
+   //    <class> and <fullpath> may contain wildcards
+   //    <order> is one of "Name", "Full Name", "Class" or empty string
+   if (argc!=7) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    cObject *object = (cObject *)strToPtr( argv[1] );
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
-   const char *classnamepattern = argv[2];
-   const char *objfullpathpattern = argv[3];
-   int maxcount = atoi(argv[4]);
+
+   const char *catstr = argv[2];
+   unsigned int category = 0;
+   if (strchr(catstr,'a'))
+   {
+       category = ~0U;  // 'a' = all
+   }
+   else
+   {
+       if (strchr(catstr,'m')) category |= CATEGORY_MODULES;
+       if (strchr(catstr,'q')) category |= CATEGORY_QUEUES;
+       if (strchr(catstr,'s')) category |= CATEGORY_STATISTICS;
+       if (strchr(catstr,'g')) category |= CATEGORY_MESSAGES;
+       if (strchr(catstr,'v')) category |= CATEGORY_VARIABLES;
+       if (strchr(catstr,'p')) category |= CATEGORY_MODPARAMS;
+       if (strchr(catstr,'c')) category |= CATEGORY_CHANSGATES;
+       if (strchr(catstr,'o')) category |= CATEGORY_OTHERS;
+   }
+   const char *classnamepattern = argv[3];
+   const char *objfullpathpattern = argv[4];
+   int maxcount = atoi(argv[5]);
    if (!maxcount) {Tcl_SetResult(interp, "maxcount must be a nonzero integer", TCL_STATIC); return TCL_ERROR;}
-   const char *orderby = argv[5];
+   const char *orderby = argv[6];
 
    // get filtered list
    cFilteredCollectObjectsVisitor visitor;
    visitor.setSizeLimit(maxcount);
-   if (!visitor.setFilterPars(classnamepattern, objfullpathpattern))
+   if (!visitor.setFilterPars(category, classnamepattern, objfullpathpattern))
        {Tcl_SetResult(interp, "invalid syntax in pattern", TCL_STATIC); return TCL_ERROR;}
 
    visitor.process(object);
 
    // order it
-   if (!strcmp(orderby,"Name"))
+   if (!strcmp(orderby,""))
+       ; // nothing
+   else if (!strcmp(orderby,"Name"))
        sortObjectsByName(visitor.getArray(), visitor.getArraySize());
    else if (!strcmp(orderby,"Full name"))
        sortObjectsByFullPath(visitor.getArray(), visitor.getArraySize());
@@ -1036,8 +1059,7 @@ int deleteInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    TInspector *insp = app->findInspector( object, type );
    assert(insp!=NULL);
 
-   insp->setOwner(NULL); // to avoid trouble, cause insp's dtor calls objectDeleted() too!
-   delete insp; // this will also delete the window
+   app->deleteInspector(insp);
    return TCL_OK;
 }
 

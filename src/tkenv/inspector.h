@@ -37,7 +37,7 @@ void splitInspectorName(const char *namestr, cObject *&object, int& type);
 /**
  * Virtual base class for all inspectors.
  */
-class TInspector : public cObject
+class TInspector
 {
    protected:
       cObject *object;        // the inspected object

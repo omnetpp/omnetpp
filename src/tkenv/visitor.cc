@@ -17,6 +17,17 @@
 
 #include "cenvir.h"
 #include "cobject.h"
+#include "cmodule.h"
+#include "cmessage.h"
+#include "cqueue.h"
+#include "cstat.h"
+#include "coutvect.h"
+#include "cwatch.h"
+#include "cfsm.h"
+#include "cpar.h"
+#include "cchannel.h"
+#include "cgate.h"
+
 #include "patmatch.h"
 #include "visitor.h"
 
@@ -110,6 +121,7 @@ void cCollectObjectsVisitor::visit(cObject *obj)
 
 cFilteredCollectObjectsVisitor::cFilteredCollectObjectsVisitor()
 {
+    category = ~0U;
     classnamepatterntf = NULL;
     objfullpathpatterntf = NULL;
 }
@@ -120,9 +132,11 @@ cFilteredCollectObjectsVisitor::~cFilteredCollectObjectsVisitor()
     delete objfullpathpatterntf;
 }
 
-bool cFilteredCollectObjectsVisitor::setFilterPars(const char *classnamepattern,
+bool cFilteredCollectObjectsVisitor::setFilterPars(unsigned int cat,
+                                                   const char *classnamepattern,
                                                    const char *objfullpathpattern)
 {
+    category = cat;
     if (classnamepattern && classnamepattern[0])
     {
         classnamepatterntf = new short[512]; // FIXME!
@@ -140,11 +154,31 @@ bool cFilteredCollectObjectsVisitor::setFilterPars(const char *classnamepattern,
 
 void cFilteredCollectObjectsVisitor::visit(cObject *obj)
 {
-    const char *fullpath = obj->fullPath();
-    const char *classname = obj->className();
-    bool nameok = !objfullpathpatterntf || stringmatch(objfullpathpatterntf,fullpath);
-    bool classok = !classnamepatterntf || stringmatch(classnamepatterntf,classname);
-    if (nameok && classok)
+    bool ok = (category==~0U) ||
+        ((category&CATEGORY_MODULES) && dynamic_cast<cModule *>(obj)) ||
+        ((category&CATEGORY_MESSAGES) && dynamic_cast<cMessage *>(obj)) ||
+        ((category&CATEGORY_QUEUES) && dynamic_cast<cQueue *>(obj)) ||
+        ((category&CATEGORY_VARIABLES) && (dynamic_cast<cWatch *>(obj) ||
+                                           dynamic_cast<cFSM *>(obj))) ||
+        ((category&CATEGORY_STATISTICS) &&(dynamic_cast<cOutVector *>(obj) ||
+                                           dynamic_cast<cStatistic *>(obj))) ||
+        ((category&CATEGORY_MODPARAMS) &&(dynamic_cast<cModulePar *>(obj))) ||
+        ((category&CATEGORY_CHANSGATES) &&(dynamic_cast<cChannel *>(obj) ||
+                                           dynamic_cast<cGate *>(obj))) ||
+        ((category&CATEGORY_OTHERS) && (!dynamic_cast<cModule *>(obj) &&
+                                        !dynamic_cast<cMessage *>(obj) &&
+                                        !dynamic_cast<cQueue *>(obj) &&
+                                        !dynamic_cast<cWatch *>(obj) &&
+                                        !dynamic_cast<cFSM *>(obj) &&
+                                        !dynamic_cast<cOutVector *>(obj) &&
+                                        !dynamic_cast<cStatistic *>(obj) &&
+                                        !dynamic_cast<cModulePar *>(obj) &&
+                                        !dynamic_cast<cChannel *>(obj) &&
+                                        !dynamic_cast<cGate *>(obj)));
+    ok = ok && (!objfullpathpatterntf || stringmatch(objfullpathpatterntf,obj->fullPath()));
+    ok = ok && (!classnamepatterntf || stringmatch(classnamepatterntf,obj->className()));
+
+    if (ok)
     {
         addPointer(obj);
     }

@@ -62,7 +62,6 @@ class cVisitor
     virtual bool process(cObject *obj);
 };
 
-
 /**
  * Sample code:
  *   cCollectObjectsVisitor v;
@@ -91,12 +90,23 @@ class cCollectObjectsVisitor : public cVisitor
 };
 
 
+/* Category constants for cFilteredCollectObjectsVisitor::setFilterPars() */
+#define CATEGORY_MODULES     0x01
+#define CATEGORY_QUEUES      0x02
+#define CATEGORY_STATISTICS  0x04
+#define CATEGORY_MESSAGES    0x08
+#define CATEGORY_VARIABLES   0x10
+#define CATEGORY_MODPARAMS   0x20
+#define CATEGORY_CHANSGATES  0x40
+#define CATEGORY_OTHERS      0x80
+
 /**
  *
  */
 class cFilteredCollectObjectsVisitor : public cCollectObjectsVisitor
 {
   private:
+    unsigned int category;
     short *classnamepatterntf;
     short *objfullpathpatterntf;
   protected:
@@ -104,7 +114,13 @@ class cFilteredCollectObjectsVisitor : public cCollectObjectsVisitor
   public:
     cFilteredCollectObjectsVisitor();
     ~cFilteredCollectObjectsVisitor();
-    bool setFilterPars(const char *classnamepattern, const char *objfullpathpattern);
+    /**
+     * Category is the binary OR'ed value of CATEGORY_... constants.
+     * The other two are glob-style patterns.
+     */
+    bool setFilterPars(unsigned int category,
+                       const char *classnamepattern,
+                       const char *objfullpathpattern);
 };
 
 /**

@@ -16,6 +16,7 @@
 
 #include <tk.h>
 #include <vector>
+#include <list>
 
 #include "omnetapp.h"
 
@@ -61,7 +62,7 @@ class TOmnetTkApp : public TOmnetApp
          cModule *to;   // NULL if ascent
          sPathEntry(cModule *f, cModule *t) {from=f; to=t;}
       };
-      typedef std::vector<sPathEntry> PathVec; 
+      typedef std::vector<sPathEntry> PathVec;
 
    public:
       // options
@@ -96,7 +97,8 @@ class TOmnetTkApp : public TOmnetApp
       bool  bkpt_hit;          // flag to signal that a breakpoint was hit and sim. must be stopped
       bool  stop_simulation;   // flag to signal that simulation must be stopped (STOP button pressed in the UI)
 
-      cHead inspectors;        // list of inspector objects
+      typedef std::list<TInspector*> TInspectorList;
+      TInspectorList inspectors;   // list of inspector objects
 
    public:
       TOmnetTkApp(ArgList *args, cIniFile *inifile);
@@ -149,6 +151,7 @@ class TOmnetTkApp : public TOmnetApp
       void updateInspectors();
       TInspector *inspect(cObject *obj, int type, const char *geometry, void *dat);
       TInspector *findInspector(cObject *obj, int type);
+      void deleteInspector(TInspector *insp);
 
       int getSimulationState() {return simstate;}
       void setStopSimulationFlag() {stop_simulation = true;}

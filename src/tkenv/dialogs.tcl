@@ -528,13 +528,15 @@ proc _doFind {w findstring case words regexp backwards} {
 #
 proc filteredobjectlist_dialog {} {
     global config tmp
+    global HAVE_BLT
 
     set w .objdlg
     createCloseDialog $w "Find/inspect objects"
 
-    set tmp(class)  $config(filtobjlist-class)
-    set tmp(name)   $config(filtobjlist-name)
-    set tmp(order)  $config(filtobjlist-order)
+    set tmp(class)    $config(filtobjlist-class)
+    set tmp(name)     $config(filtobjlist-name)
+    set tmp(order)    $config(filtobjlist-order)
+    set tmp(category) $config(filtobjlist-category)
 
     # two panels: $w.f.filter is the upper panel for filters, and
     # $w.f.main is the lower one with the listbox.
@@ -543,48 +545,67 @@ proc filteredobjectlist_dialog {} {
     frame $w.f.filter
     pack $w.f.filter -anchor center -expand 0 -fill x -side top
 
-    label $w.f.filter.title -text "Filter list of all objects in the simulation:" -justify left -anchor w
-    pack $w.f.filter.title -anchor w -expand 1 -fill x -side top
+    #label $w.f.filter.title -text "Filter list of all objects in the simulation:" -justify left -anchor w
+    #pack $w.f.filter.title -anchor w -expand 1 -fill x -side top
 
-    frame $w.f.filter.pars -relief groove -bd 2
-    pack $w.f.filter.pars -anchor center -expand 1 -fill x -side top
-    set wfiltpars $w.f.filter.pars
-    frame $wfiltpars.class
-    frame $wfiltpars.name
-    frame $wfiltpars.order
-    pack $wfiltpars.class -anchor center -expand 0 -fill both -side left
-    pack $wfiltpars.name $wfiltpars.order -anchor center -expand 1 -fill both -side left
-    pack $wfiltpars.order -anchor center -expand 0 -fill both -side left
+    labelframe $w.f.filter.pars -text "Search by class and object name:"
+    pack $w.f.filter.pars -anchor center -expand 0 -fill x -side top
+    set fp $w.f.filter.pars
 
-    label $wfiltpars.class.label -text "Class:" -justify left
-    pack $wfiltpars.class.label -anchor w -expand 0 -fill none -side top
-    label $wfiltpars.name.label -text "Object name (full path):" -justify left
-    pack $wfiltpars.name.label -anchor w -expand 0 -fill none -side top
-    label $wfiltpars.order.label -text "Ordered by:" -justify left
-    pack $wfiltpars.order.label -anchor w -expand 0 -fill none -side top
+    label $fp.classlabel -text "Class:" -justify left
+    label $fp.namelabel -text "Object full path (e.g. '*foo*'):" -justify left
 
-    combo $wfiltpars.class.entry [concat {{}} [getClassNames]]
-    $wfiltpars.class.entry.entry config -textvariable tmp(class)
-    pack $wfiltpars.class.entry -anchor w -expand 0 -fill x -side top
-    entry $wfiltpars.name.entry -textvariable tmp(name)
-    pack $wfiltpars.name.entry -anchor w -expand 0 -fill both -side top
-    combo $wfiltpars.order.entry {{Class} {Full name} {Name}}
-    $wfiltpars.order.entry.entry config -textvariable tmp(order)
-    pack $wfiltpars.order.entry -anchor w -expand 0 -fill x -side top
+    combo $fp.classentry [concat {{}} [getClassNames]]
+    $fp.classentry.entry config -textvariable tmp(class)
+    entry $fp.nameentry -textvariable tmp(name)
 
-    set helptext "Class and object name accepts wildcards:\n\
-                  *=any string, ?=any char, {a-z}=any char from set, {^a-z}=any char NOT from the set.\n\
-                  Example: *.node\[{5-8}].*.histogram\n\
-                  To match parts of the string, use * before and after the string. Example: *Packet*\n\
-                  Match is case sensitive -- 'a' and 'A' count as different."
+    set classhelptext "Wildcards accepted (*,?), try '*Packet'"
+    set namehelptext "Use wildcards (*,?): '*.foo' for any object named foo; '*foo*' for any\n\
+                     object whose full path contains foo; use '{a-z}' for character range"
+    label $fp.classhelp -text $classhelptext -justify left -anchor w
+    label $fp.namehelp -text $namehelptext -justify left -anchor w
 
-    label $w.f.filter.help -text $helptext -justify left -anchor w
-    pack $w.f.filter.help -anchor w -expand 1 -fill x -side top
+    grid $fp.classlabel $fp.namelabel -sticky nw  -padx 5
+    grid $fp.classentry $fp.nameentry -sticky news -padx 5
+    grid $fp.classhelp $fp.namehelp   -sticky nw  -padx 5
+    grid columnconfig $fp 0 -weight 1
+    grid columnconfig $fp 1 -weight 3
 
+    # category filters
+    labelframe $w.f.filter.cat -text "Object categories:"
+    set cf $w.f.filter.cat
+    checkbutton $cf.modules -text "modules" -variable tmp(cat-m)
+    checkbutton $cf.queues -text "queues" -variable tmp(cat-q)
+    checkbutton $cf.modpars -text "module parameters" -variable tmp(cat-p)
+    checkbutton $cf.chansgates -text "gates, channels" -variable tmp(cat-c)
+    checkbutton $cf.statistics -text "outvectors, statistics, variables" -variable tmp(cat-s)
+    checkbutton $cf.messages -text "messages"  -variable tmp(cat-g)
+    checkbutton $cf.variables -text "FSM states, variables"  -variable tmp(cat-v)
+    checkbutton $cf.other -text "other" -variable tmp(cat-o)
+    grid $cf.modules   $cf.modpars     $cf.queues     $cf.statistics  -sticky nw
+    grid $cf.messages  $cf.chansgates  $cf.variables  $cf.other       -sticky nw
+    grid columnconfigure $cf 3 -weight 1
+    pack $cf -anchor center -expand 0 -fill x -side top
+
+    foreach {c} {m q p c s g v o} {
+        set tmp(cat-$c) [string match "*$c*" $tmp(category)]
+    }
+
+    # Sorting
+    if {!$HAVE_BLT} {
+        labelframe $w.f.filter.order -text "Sorting:"
+        label-combo $w.f.filter.order.entry "Sort by:" {{Class} {Full name} {Name}}
+        $w.f.filter.order.entry.e configure -textvariable tmp(order)
+        pack $w.f.filter.order.entry -expand 0 -fill none -side top -anchor w
+        pack $w.f.filter.order -expand 0 -fill x -side top
+    }
+
+
+    # "Refresh" button
     frame $w.f.filter.buttons
     pack $w.f.filter.buttons -anchor center -expand 1 -fill x -side top
     button $w.f.filter.buttons.refresh -text "Refresh" -width 10 -command "filteredobjectlist_refresh $w"
-    pack $w.f.filter.buttons.refresh -anchor e -expand 0 -fill none -side top
+    pack $w.f.filter.buttons.refresh -anchor e -expand 0 -fill none -side top -padx 5 -pady 5
 
     # number of objects
     label $w.f.numobj -text "Found 0 objects" -justify left -anchor w
@@ -617,21 +638,20 @@ proc filteredobjectlist_dialog {} {
     # leave listbox empty -- filling it with all objects might take too long
 
     # Configure dialog
-    bind $wfiltpars.class.entry.entry <Return> "$w.f.filter.buttons.refresh invoke"
-    bind $wfiltpars.name.entry <Return> "$w.f.filter.buttons.refresh invoke"
-    bind $wfiltpars.order.entry.entry <Return> "$w.f.filter.buttons.refresh invoke"
-
+    bind $fp.classentry.entry <Return> "$w.f.filter.buttons.refresh invoke"
+    bind $fp.nameentry <Return> "$w.f.filter.buttons.refresh invoke"
     bind $lb <Double-Button-1> "inspect_item_in $lb; after 500 \{raise $w; focus $lb\}"
     bind $lb <Key-Return> "inspect_item_in $lb; after 500 \{raise $w; focus $lb\}"
     bind $lb <Button-3> "filteredobjectlist_popup \[lindex \[multicolumnlistbox_curselection $lb\] 0\] %X %Y"
 
-    focus $wfiltpars.name.entry
+    focus $fp.nameentry
 
     execCloseDialog $w
 
-    set config(filtobjlist-class)  $tmp(class)
-    set config(filtobjlist-name)   $tmp(name)
-    set config(filtobjlist-order)  $tmp(order)
+    set config(filtobjlist-class)    $tmp(class)
+    set config(filtobjlist-name)     $tmp(name)
+    set config(filtobjlist-order)    $tmp(order)
+    set config(filtobjlist-category) $tmp(category)
 
     destroy $w
 }
@@ -661,15 +681,28 @@ proc getClassNames {} {
 # helper proc for filteredobjectlist_dialog
 #
 proc filteredobjectlist_refresh {w} {
-    global config
+    global config tmp HAVE_BLT
 
-    set class [$w.f.filter.pars.class.entry get]
-    set name [$w.f.filter.pars.name.entry get]
-    set orderby [$w.f.filter.pars.order.entry get]
+    set tmp(category) ""
+    set categories {m q p c s g v o}
+    foreach {c} $categories {
+        if {$tmp(cat-$c)} {set tmp(category) "$tmp(category)$c"}
+    }
+    if {[string length $tmp(category)]==[llength $categories]} {
+        set tmp(category) "a$tmp(category)"
+    }
+
+    set class $tmp(class)
+    set name $tmp(name)
+    if {!$HAVE_BLT} {
+        set order $tmp(order)
+    } else {
+        set order ""
+    }
 
     # get list
     set maxcount $config(filtobjlist-maxcount)
-    set objlist [opp_getsubobjectsfilt [opp_object_systemmodule] $class $name $maxcount $orderby]
+    set objlist [opp_getsubobjectsfilt [opp_object_systemmodule] $tmp(category) $class $name $maxcount $order]
     set num [llength $objlist]
 
     # ask user if too many...

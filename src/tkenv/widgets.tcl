@@ -615,10 +615,12 @@ proc multicolumnlistbox {w columnlist args} {
             set name [lindex $i 0]
             set label [lindex $i 1]
             set width [lindex $i 2]
-            $w column insert end $name -text $label -justify left -edit no -pad 8
+            $w column insert end $name -text $label -justify left -edit no -pad 8 \
+                -command [list multicolumnlistbox_blt_sortcolumn $w $name]
             if {$width!=""} {
-                 $w column config $name -width $width
+                $w column config $name -width $width
             }
+            
         }
         # eliminate "last column quirk" by adding a very wide dummy column:
         $w column insert end "dummy" -text "" -edit no -width 1000
@@ -629,6 +631,23 @@ proc multicolumnlistbox {w columnlist args} {
     }
 }
 
+#
+# private procedure for multicolumnlistbox
+#
+proc multicolumnlistbox_blt_sortcolumn {w column} {
+    set old [$w sort cget -column] 
+    set decreasing 0
+    if {$old==$column} {
+        set decreasing [$w sort cget -decreasing]
+        set decreasing [expr !$decreasing]
+    }
+    $w sort configure -decreasing $decreasing -column $column 
+    $w configure -flat yes
+    $w sort auto yes
+    blt::busy hold $w
+    update
+    blt::busy release $w
+}
 
 #
 # Inserts a line into a multicolumn-listbox. The $rowname can be used later

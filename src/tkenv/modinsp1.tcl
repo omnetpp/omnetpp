@@ -100,7 +100,6 @@ proc create_simplemodinspector {name geom} {
     notebook_addpage $nb params  {Params}
     notebook_addpage $nb gates   {Gates}
     notebook_addpage $nb vars    {Objects/Watches}
-    notebook_addpage $nb paq     {Putaside Queue}
     notebook_addpage $nb submods {Submods}
 
     # page 1: info
@@ -125,7 +124,6 @@ proc create_simplemodinspector {name geom} {
     create_inspector_listbox $nb.params
     create_inspector_listbox $nb.gates
     create_inspector_listbox $nb.vars
-    create_inspector_listbox $nb.paq
     create_inspector_listbox $nb.submods
 }
 

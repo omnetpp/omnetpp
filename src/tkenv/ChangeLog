@@ -1,7 +1,11 @@
-TBD: add object categories to filter:
- [] modules  [] queues    [] statistics
- [] messages [] variables [] others
-plus "Box them!" button -- opens containerinspector with these objects
+2003-12-06  Andras Varga
+
+	* inspectors are no longer cObjects
+
+	* "putaside queue" tab removed from simple module inspector (putaside-
+	queue is being removed, see doc/API-changes.txt)
+
+	* filtered object dialog enhanced (categories, etc)
 
 2003-11-29  Andras Varga
 

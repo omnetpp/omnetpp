@@ -90,8 +90,7 @@ static bool moduleContains(cModule *potentialparent, cModule *mod)
 //=========================================================================
 
 TOmnetTkApp::TOmnetTkApp(ArgList *args, cIniFile *inifile) :
-  TOmnetApp(args, inifile),
-  inspectors("inspectors")
+  TOmnetApp(args, inifile)
 {
     interp = 0;  // Tcl/Tk not set up yet
     simstate = SIM_NONET;
@@ -198,10 +197,11 @@ void TOmnetTkApp::shutdown()
     // close all inspectors before exiting
     for(;;)
     {
-        cIterator i(inspectors);
-        if (i.end())
+        TInspectorList::iterator it = inspectors.begin();
+        if (it==inspectors.end())
             break;
-        TInspector *insp = (TInspector *) i();
+        TInspector *insp = *it;
+        inspectors.erase(it);
         delete insp;
     }
 
@@ -700,7 +700,7 @@ TInspector *TOmnetTkApp::inspect(cObject *obj, int type, const char *geometry, v
     }
 
     // everything ok, finish inspector
-    insp->setOwner(&inspectors); // insert into inspector list
+    inspectors.insert(inspectors.end(), insp);
     insp->createWindow();
     insp->update();
 
@@ -709,13 +709,19 @@ TInspector *TOmnetTkApp::inspect(cObject *obj, int type, const char *geometry, v
 
 TInspector *TOmnetTkApp::findInspector(cObject *obj, int type)
 {
-    for (cIterator i(inspectors); !i.end(); i++)
+    for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
     {
-        TInspector *insp = (TInspector *) i();
+        TInspector *insp = *it;
         if (insp->getObject()==obj && insp->getType()==type)
             return insp;
     }
     return NULL;
+}
+
+void TOmnetTkApp::deleteInspector(TInspector *insp)
+{
+    inspectors.remove(insp);
+    delete insp;
 }
 
 void TOmnetTkApp::updateInspectors()
@@ -724,9 +730,9 @@ void TOmnetTkApp::updateInspectors()
     CHK(Tcl_VarEval(interp, "updateTreeManager",NULL));
 
     // update inspectors
-    for (cIterator i(inspectors); !i.end(); i++)
+    for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
     {
-        TInspector *insp = (TInspector *) i();
+        TInspector *insp = *it;
         insp->update();
     }
 
@@ -945,28 +951,23 @@ bool TOmnetTkApp::idle()
 
 void TOmnetTkApp::objectDeleted(cObject *object)
 {
-    cIterator i(inspectors);
-    while (!i.end())
+    for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); )
     {
-        // beware because inspectors are also cObjects...
-        if (i()==object) {i++; continue;}
-
-        TInspector *insp = (TInspector *) i();
+        TInspectorList::iterator next = it;
+        ++next;
+        TInspector *insp = *it;
         if (insp->getObject()==object)
         {
+            inspectors.erase(it); // with std::list, "next" remains valid
             insp->hostObjectDeleted();
             delete insp;
-            // i is no longer valid, must restart it...
-            i.init(inspectors);
         }
         else
         {
             // notify the inspector, maybe it's interested in learning that
             insp->objectDeleted(object);
-
-            // go to next one...
-            i++;
         }
+        it = next;
     }
 }
 
