@@ -471,7 +471,7 @@ cObject *cArray::remove(int m)
     if (m==last)
         do {
             last--;
-        } while (vect[last]==NULL && last>=0);
+        } while (last>=0 && vect[last]==NULL);
     if (obj->owner()==this)  drop( obj );
     return obj;
 }
