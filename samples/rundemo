@@ -1,6 +1,6 @@
 #!/bin/sh
 # the next line restarts using wish (on cygwin, use wish84 or the like) \
-exec wish "$0" "$@"
+WISH="wish"; if [ -f ~/.wishname ]; then WISH=`cat ~/.wishname`; fi; exec $WISH "$0" "$@"
 
 #==========================================================================
 #  DEMO
