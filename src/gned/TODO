@@ -32,6 +32,7 @@ Drawing:
 - drag&drop doesn't obey "snap to grid" setting
 
 Load/save:
+- command-line args: 'glob' doesn't handle filenames with "\" on Windows
 - SaveAll feature [from Niko]
 - should refuse to load the same file twice
 - save: what should it do with canvases switched to text?
