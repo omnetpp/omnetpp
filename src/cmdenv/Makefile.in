@@ -64,8 +64,10 @@ cmdenv.o: cmdenv.cc \
   ../envir/appreg.h \
   ../envir/cinifile.h \
   ../../include/cmodule.h \
+  ../../include/cmessage.h \
   ../../include/cnetmod.h \
   ../envir/args.h \
+  ../envir/speedmtr.h \
   ../../include/defs.h \
   ../../include/ctypes.h \
   ../../include/csimul.h \
@@ -73,13 +75,13 @@ cmdenv.o: cmdenv.cc \
   ../../include/chead.h \
   ../../include/cobject.h \
   ../../include/util.h \
+  ../../include/cexception.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/coutvect.h \
   ../../include/carray.h \
   ../../include/cenvir.h \
-  ../../include/cexception.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cpar.h \

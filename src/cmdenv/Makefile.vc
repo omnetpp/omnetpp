@@ -50,6 +50,7 @@ cmdenv.obj: cmdenv.cc \
   cmdenv.h \
   enumstr.h \
   ../../include/cmodule.h \
+  ../../include/cmessage.h \
   ../../include/cnetmod.h \
   ../../include/defs.h \
   ../../include/ctypes.h \
@@ -57,13 +58,15 @@ cmdenv.obj: cmdenv.cc \
   ../../include/chead.h \
   ../../include/cobject.h \
   ../../include/util.h \
+  ../../include/cexception.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/coutvect.h \
   ../../include/carray.h \
   ../../include/cqueue.h \
-  ../../include/cgate.h
+  ../../include/cgate.h \
+  ../../include/cpar.h
 enumstr.obj: enumstr.cc \
   enumstr.h
 heap.obj: heap.cc
