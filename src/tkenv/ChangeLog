@@ -43,11 +43,12 @@
         Target-color can be any accepted color specification: English name
         (blue,lightgray,wheat), RGB (#ff0000) or HSB (@40ff80; hue-saturation-
         brightness), and percentage is the degree of colorization, 20% being
-        the default. Brightness of icon is also affected -- to keep original
-        brightness, specify a color with about 50% brightness (e.g. #808080
-        mid-grey, #008000 mid-green). Examples: "i=server1,gold" creates
+        the default. Percentage has no effect if the target color is missing.
+        Brightness of icon is also affected -- to keep original brightness, 
+        specify a color with about 50% brightness (e.g. #808080 mid-grey, 
+        #008000 mid-green). Examples: "i=server1,gold" creates 
         a gold server icon; "i=earth2,#808080,100" makes icon grayscale;
-        "i=queue,white,100" gives "over-exposed" b&w queue. Colorization
+        "i=queue,white,100" gives "over-exposed" b&w icon. Colorization
         works with both submodule and message icons.
 
 	* tkcmd.cc: added opp_colorizeimage command

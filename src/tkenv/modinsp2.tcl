@@ -73,8 +73,8 @@ proc dispstr_getimage {tags_i} {
         set destc [lindex $tags_i 1]
         set cweight [lindex $tags_i 2]
         if {$destc==""} {
-            if {$cweight==""} {return $img}
-            set destc black
+            # without destcolor, weight is ignored
+            return $img
         } elseif {[string index $destc 0]== "@"} {
             set destc [opp_hsb_to_rgb $destc]
         }
