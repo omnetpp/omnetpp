@@ -1,0 +1,21 @@
+%description:
+empty string, or empty delimiters
+
+%activity:
+
+const char *token;
+
+cStringTokenizer tok1("");
+while ((token = tok1.nextToken())!=NULL)
+    ev << ":" << token;
+ev << ".\n";
+
+cStringTokenizer tok2("bla bla", "");
+tok2.setDelimiter("- ");
+while ((token = tok2.nextToken())!=NULL)
+    ev << ":" << token;
+ev << ".\n";
+
+%contains: stdout
+.
+:bla:bla.
