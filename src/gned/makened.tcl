@@ -24,6 +24,8 @@
 #
 proc generateNed {key} {
     update_displaystrings $key
+
+    puts "dbg: generating NED code..."
     return [generateNedItem $key {} 0]
 }
 

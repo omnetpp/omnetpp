@@ -274,3 +274,5 @@ May 22, 2000
 ------ omnetpp-2.0b5 released ------
 Sep 30, 2000
  - improvement just for Cygwin: lexer now explicitly ignores '\r' (=CR) chars
+Nov 19, 2000
+ - ebnf.y updated from GNED (no effect on nedc)

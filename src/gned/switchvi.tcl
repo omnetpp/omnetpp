@@ -166,6 +166,9 @@ puts "dbg: pasting into ned..."
     set ned(nextkey) $tmp_ned(nextkey)
     unset tmp_ned
 
+    # parse display strings
+    parse_displaystrings $modkey
+
 puts "dbg: drawing..."
 
     # update canvas

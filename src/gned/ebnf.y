@@ -202,10 +202,7 @@ int findSubmoduleKey(YYLTYPE modulenamepos);
 YYLTYPE trimBrackets(YYLTYPE vectorpos);
 YYLTYPE trimQuotes(YYLTYPE vectorpos);
 void swapConnection(int conn_key);
-void setModuleDispStr(int key, YYLTYPE dispstrpos);
-void setSubmoduleDispStr(int key, YYLTYPE dispstrpos);
-void setConnectionDispStr(int key, YYLTYPE dispstrpos);
-
+void setDisplayString(int key, YYLTYPE dispstrpos);
 #endif
 
 %}
@@ -421,7 +418,7 @@ machine
 displayblock
         : DISPLAY ':' STRING ';'
                 {NEDC( do_displaystr_enclosing ($3); )
-                 GNED( setModuleDispStr(MODULE_KEY,@3); )}
+                 GNED( setDisplayString(MODULE_KEY,@3); )}
         ;
 
 paramblock
@@ -712,7 +709,7 @@ gatesize
 opt_submod_displayblock
         : DISPLAY ':' STRING ';'
                 {NEDC( do_displaystr_submod ($3); )
-                 GNED( setSubmoduleDispStr(SUBMOD_KEY,@3); )}
+                 GNED( setDisplayString(SUBMOD_KEY,@3); )}
         |
         ;
 
@@ -779,7 +776,7 @@ opt_conn_condition
 opt_conn_displaystr
         : DISPLAY STRING
                 {NEDC( $$ = $2; )
-                 GNED( setConnectionDispStr(CONN_KEY,@2); )}
+                 GNED( setDisplayString(CONN_KEY,@2); )}
         |
                 {NEDC( $$ = NULL; )}
         ;
@@ -1404,87 +1401,13 @@ void swapConnection(int conn_key)
    np->swap(conn_key, "an_src_y", "an_dest_y");
 }
 
-void setModuleDispStr(int key, YYLTYPE dispstrpos)
+void setDisplayString(int key, YYLTYPE dispstrpos)
 {
   // cut off quotes
   dispstrpos.first_column++;
   dispstrpos.last_column--;
 
-  int a;
-  DisplayString dp( np->nedsource->get(dispstrpos) );
-
-  if ((a=dp.get_x_pos())!=-1)
-      np->set(key,"x-pos", a);
-  if ((a=dp.get_y_pos())!=-1)
-      np->set(key,"y-pos", a);
-
-  if ((a=dp.get_x_size())!=-1)
-      np->set(key,"x-size", a);
-  if ((a=dp.get_y_size())!=-1)
-      np->set(key,"y-size", a);
-
-  np->set(key,"outline-color", dp.get_outline_color());
-  np->set(key,"fill-color", dp.get_fill_color());
-
-  if ((a=dp.get_linethickness())!=-1)
-      np->set(key,"linethickness", a);
-}
-
-void setSubmoduleDispStr(int key, YYLTYPE dispstrpos)
-{
-  dispstrpos.first_column++;
-  dispstrpos.last_column--;
-  int a;
-
-  DisplayString dp( np->nedsource->get(dispstrpos) );
-
-  np->set(key, "icon", dp.get_icon());
-
-  if ((a=dp.get_x_pos())!=-1)
-      np->set(key, "x-pos", a);
-  if ((a=dp.get_y_pos())!=-1)
-      np->set(key, "y-pos", a);
-
-  if ((a=dp.get_x_size())!=-1)
-      np->set(key, "x-size", a);
-
-  if ((a=dp.get_y_size())!=-1)
-      np->set(key, "y-size", a);
-
-  np->set(key, "outline-color", dp.get_outline_color());
-  np->set(key, "fill-color", dp.get_fill_color());
-
-  if ((a=dp.get_linethickness())!=-1)
-      np->set(key, "linethickness", a);
-}
-
-void setConnectionDispStr(int key, YYLTYPE dispstrpos)
-{
-  dispstrpos.first_column++;
-  dispstrpos.last_column--;
-  int a;
-
-  DisplayString dp( np->nedsource->get(dispstrpos) );
-
-  if ((a=dp.get_con_src_x())!=-1)
-      np->set(key, "an_src_x", a);
-  if ((a=dp.get_con_src_y())!=-1)
-      np->set(key, "an_src_y", a);
-
-  if ((a=dp.get_con_dest_x())!=-1)
-      np->set(key, "an_dest_x", a);
-
-  if ((a=dp.get_con_dest_y())!=-1)
-      np->set(key, "an_dest_y", a);
-
-  np->set(key, "fill-color", dp.get_fill_color());
-
-  char *b = dp.get_drawMode();
-  if (b[0])
-      np->set(key, "drawmode", dp.get_drawMode());
-
-  if ((a=dp.get_linethickness())!=-1)
-      np->set(key, "linethickness", a);
+  np->set(key,"displaystring", np->nedsource->get(dispstrpos) );
 }
 
 

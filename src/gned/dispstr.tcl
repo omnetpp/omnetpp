@@ -20,60 +20,68 @@
 # split_dispstr --
 #
 # Split up display string into an array.
-#    dispstr: display string
-#    array:   dest array name
-#    returns: original order of tags (as a list)
+#    dispstr:         display string
+#    tagsarrayname:   dest array name
+#    returns:         original order of tags (as a list)
 #
 # Example:
 #   if "p=50,99;i=cloud" is parsed into array 'a', the result is:
 #      $a(p) = {50 99}
 #      $a(i) = {cloud}
 #
-proc split_dispstr {dispstr array} {
-   upvar $array arr
+proc split_dispstr {dispstr tagsarrayname} {
+   upvar $tagsarrayname tags
 
-   set tags {}
+   set tagorder {}
    foreach tag [split $dispstr {;}] {
       set tag [split $tag {=}]
       set key [lindex $tag 0]
       set val [split [lindex $tag 1] {,}]
 
-      lappend tags $key
+      lappend tagorder $key
       if {$key != ""} {
-         set arr($key) $val
+         set tags($key) $val
       }
    }
-   return $tags
+puts "order: $tagorder"
+   return $tagorder
 }
 
 
 # assemble_dispstr --
 #
 # Assemble and return a display string from a form produced by split_dispstr
-#    array:   src array name
-#    order:   preferred order of tags (as a list)
-#    returns: display string
+#    tagsarrayname: src array name
+#    tagorder:      preferred order of tags (as a list)
+#    returns:       display string
 #
-proc assemble_dispstr {array order} {
-   upvar $array arr
+proc assemble_dispstr {tagsarrayname tagorder} {
+   upvar $tagsarrayname tags
 
    set dispstr ""
    # loop through all tags in their preferred order
-   foreach tag [lsort -command {_dispstr_ordertags $order} [array names array]] {
-       set vals $array($tag)
+   foreach tag [lsort -command [list _dispstr_ordertags $tagorder] [array names tags]] {
+       set vals $tags($tag)
        # discard empty elements at end of list
-       while {[lindex $vals end]==""} {
+       while {$vals!="" && [lindex $vals end]==""} {
            set vals [lreplace $vals end end]
        }
-       append dispstr "$tag="
-       append dispstr [join $vals ","]
+       if {$vals!=""} {
+           append dispstr "$tag="
+           append dispstr [join $vals ","]
+           append dispstr ";"
+       }
    }
+puts "dispstr: $dispstr"
    return $dispstr
 }
 
 # private proc for assemble_dispstr
 proc _dispstr_ordertags {order t1 t2} {
-   return [lsearch -exact $order $t1] - [lsearch -exact $order $t2]
+   puts "    cmp order: $order"
+   set x [expr [lsearch -exact $order $t1] - [lsearch -exact $order $t2]]
+   puts "    cmp $t1 <--> $t2  : $x"
+   return $x
 }
 
 
@@ -184,11 +192,11 @@ proc update_module_dispstr {key} {
    _setlistitem tags(p) 0 $ned($key,x-pos)
    _setlistitem tags(p) 1 $ned($key,y-pos)
 
-   if ![info exist tags(b)] {set tags(p) {}}
+   if ![info exist tags(b)] {set tags(b) {}}
    _setlistitem tags(b) 0 $ned($key,x-size)
    _setlistitem tags(b) 1 $ned($key,y-size)
 
-   if ![info exist tags(o)] {set tags(p) {}}
+   if ![info exist tags(o)] {set tags(o) {}}
    _setlistitem tags(o) 0 $ned($key,fill-color)
    _setlistitem tags(o) 1 $ned($key,outline-color)
    _setlistitem tags(o) 2 $ned($key,linethickness)
@@ -225,14 +233,43 @@ proc update_submod_dispstr {key} {
 }
 
 
+# update_conn_dispstr --
+#
+# update display string of a 'conn' ned element
+#
+proc update_conn_dispstr {key} {
+   global ned
+
+   set order [split_dispstr $ned($key,displaystring) tags]
+
+   if ![info exist tags(m)] {set tags(m) {}}
+   _setlistitem tags(m) 0 $ned($key,drawmode)
+   _setlistitem tags(m) 1 $ned($key,an_src_x)
+   _setlistitem tags(m) 2 $ned($key,an_src_y)
+   _setlistitem tags(m) 3 $ned($key,an_dest_x)
+   _setlistitem tags(m) 4 $ned($key,an_dest_y)
+
+   if ![info exist tags(o)] {set tags(o) {}}
+   _setlistitem tags(o) 0 $ned($key,fill-color)
+   _setlistitem tags(o) 1 $ned($key,linethickness)
+
+   set ned($key,displaystring) [assemble_dispstr tags $order]
+}
+
+
 # parse_displaystrings --
 #
 # parse display strings in a whole NED tree
 #
 proc parse_displaystrings {key} {
+   puts "dbg: parsing display strings..."
+   parse_displaystrings_rec $key
+}
+
+proc parse_displaystrings_rec {key} {
    global ned
 
-   # update displaystrings
+   # parse displaystrings
    set type $ned($key,type)
    if {$type=="module"} {
        parse_module_dispstr $key
@@ -244,7 +281,7 @@ proc parse_displaystrings {key} {
 
    # process children
    foreach childkey $ned($key,childrenkeys) {
-       parse_displaystrings $childkey
+       parse_displaystrings_rec $childkey
    }
 }
 
@@ -254,6 +291,11 @@ proc parse_displaystrings {key} {
 # update display strings in a whole NED tree
 #
 proc update_displaystrings {key} {
+   puts "dbg: updating display strings..."
+   update_displaystrings_rec $key
+}
+
+proc update_displaystrings_rec {key} {
    global ned
 
    # update displaystrings
@@ -268,7 +310,7 @@ proc update_displaystrings {key} {
 
    # process children
    foreach childkey $ned($key,childrenkeys) {
-       update_displaystrings $childkey
+       update_displaystrings_rec $childkey
    }
 }
 
