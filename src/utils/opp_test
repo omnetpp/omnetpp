@@ -530,7 +530,7 @@ sub print_tail()
     my $fname = shift;
 
     if (!open(IN,"$fname")) {
-        unresolved($testfilename, "cannot read file `$fname'");
+        print "cannot open `$fname'\n";
         return;
     }
     seek(IN,-500,2);

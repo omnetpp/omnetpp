@@ -1,0 +1,28 @@
+%description:
+Subclassing cObject: *must* take ownership of members subclassed from cObject.
+
+Note take(&y) call in the code below. If it wasn't there, crash would occur
+at end of simulation because double destruction of 'y': both the simple module
+(which is by default the owner of all objects) and X destructor will call
+y's destructor.
+
+%global:
+
+class X : public cObject
+{
+  public:
+    cPar y;
+
+    X() : cObject() {
+        take(&y);
+    }
+
+    ~X() { }
+};
+
+%activity:
+
+X *x = new X();
+x->y.setName("yname");
+
+%exitcode: 0
