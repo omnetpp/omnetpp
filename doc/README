@@ -11,7 +11,6 @@ an alternative license.
 
 What is OMNeT++?
 ~~~~~~~~~~~~~~~~
-(last updated: Aug 7, 1999)
 
 OMNeT++ is an object-oriented modular discrete event simulator.
 An OMNeT++ model consists of hierarchically nested modules which
@@ -26,13 +25,13 @@ scheduling; they are implemented as coroutines).
 
 OMNeT++ is written in C++ and it is portable: it runs on any platform
 where there's a C++ compiler. It has a Tcl/Tk user interface which is
-supported on under Unix/X and NT/Win95/Win98. There's also a platform-
-independent command-line user interface for batch execution.
-There is also a text-mode windowing user interface (Turbo Vision).
+supported on under Unix/X and Win32 platforms. There's also a platform-
+independent command-line user interface for batch execution, and a text-mode
+windowing user interface (Turbo Vision).
 
 OMNeT++ has a graphical topology editor called GNED and also a tool
 called Plove for analyzing and plotting simulation output. Both tools
-are written with Tcl/Tk.
+are written using Tcl/Tk.
 
 We have extended OMNeT++ to execute in parallel using the popular
 PVM library (Parallel Virtual Machine), for studying different
@@ -89,23 +88,11 @@ The example programs
 Try them in the following order:
       nim -- fifo1 -- token -- hist -- hcube - dyna -- fifo2 -- fddi -- pvmex
 
+
 Installation
 ~~~~~~~~~~~~
 
 For installation instructions, read install.txt!
-
-Legal notes
-~~~~~~~~~~~
-Please read the license file in the doc directory. For those who
-hate reading stuff like that, here's the meat of it:
-
-OMNeT++ can be freely used, copied, distributed and modified in educational
-institutions, for educational and research purposes. For commercial usage,
-please contact the authors.
-
-If you use OMNeT++ in any work, please mention OMNeT++ in the resulting
-document(s) (report, paper, article, book etc.), and let the authors know
-about your work.
 
 
 Authors and contributors
@@ -139,15 +126,22 @@ JAR support for distributed execution; also current user:
 Initial revision of PVM support (as final project), spring 1996:
         Zoltan Vass             BME-HIT
 
-The author acknowledges the help of several people:
-Richard Lyon, Joel Sherill,...
+I'd like to acknowledge the help and support of several people who contributed
+to making OMNeT++ better and more useful for the Internet community:
+Richard Lyon, Joel Sherrill, Nimrod Mesika, Ulrich Kaage, Dan Talayco, Y. Ahmet
+Sekercioglu, Brent Weech, Alan Kennington, Kontogiannis Theophanis, Dario
+Mariani.
 
 
 Feedback requested
 ~~~~~~~~~~~~~~~~~~
 
 Remarks, opinions, suggestions, bug reports/fixes and contributions are
-the most WELCOME!
+WELCOME! They drive OMNeT++ towards new and better releases...
 
-The authors can be contacted via e-mail: vandras@sch.bme.hu, vargaa@hit.bme.hu
+
+Author contact:
+ Andras Varga
+ andras@whale.hit.bme.hu, [andras@metechnology.com]
+
 
