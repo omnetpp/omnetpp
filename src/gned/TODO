@@ -55,12 +55,15 @@ General:
 - speed up data structure, get rid of "foreach i [array names ned ...]" statements...
 
 Dialogs:
-- TBD
+- do remaining dialogs
+- check data entered in dialogs (nonempty, legal chars, unique etc.)
+- reorganize 'general' page of submod dialog
+- process comments
+- put 'compare with module type definition' button in submod dialog pages
 
 Longer-term plans:
-- general improvement (see all the above)
-- opening simple modules, networks, channels, etc. on canvas
-- do Properties dialogs
-- autoload a NED library on startup (sets of simple module,s etc.)
 - consistency checks (params, gates etc.)
+- default icon for modules (needs NED grammar change)
+- opening simple modules, networks, channels, etc. on canvas
+- autoload a NED library on startup (sets of simple modules etc.)
 
