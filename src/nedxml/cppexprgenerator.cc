@@ -13,7 +13,7 @@
   `terms' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
+#include <stdio.h>
 #include "cppexprgenerator.h"
 #include "nederror.h"
 
