@@ -10,6 +10,9 @@
 \usepackage{fancyvrb}   %% source code listings
 \usepackage{fancyhdr}   %% custom headers and footers
 
+\usepackage{tocbibind}  %% makes Bibliography and Index show up in TOC
+\settocbibname{References} 
+
 %% try to cure overfull hboxes
 %% \tolerance=500
 
@@ -133,6 +136,8 @@
   \index{#1}%
   \texttt{\hyphenchar\font=`\-\relax#2}}
 
+%% \setcounter{tocdepth}{1}
+
 %%
 %% Start of document
 %%
@@ -213,8 +218,9 @@
 %% \bibliographystyle{ieeetr}
 \bibliography{usman-bibl}
 
-\phantomsection
-\addcontentsline{toc}{chapter}{\indexname}
+%% no need for the following since 'tocbibind' package
+%% \phantomsection
+%% \addcontentsline{toc}{chapter}{\indexname}
 \printindex
 
 \end{document}
