@@ -109,7 +109,6 @@ bool CppExpressionGenerator::needsExpressionClass(ExpressionNode *expr)
     }
 
     // FIXME: some paramrefs and functions may also qualify
-
     return true;
 }
 
