@@ -689,7 +689,7 @@ and \fname{finish()}.
 
 The idea is that at each event\index{event} (message arrival) we
 simply call a user-defined function. This function,
-\fname[handleMessage()]{handleMessage(cMessage *msg)} is a
+\ttt{handleMessage(cMessage *msg)} is a
 virtual member function of \cclass{cSimpleModule} which does
 nothing by default -- the user has to redefine it in subclasses
 and add the message processing code.
@@ -1133,17 +1133,17 @@ void Sink::handleMessage(cMessage *msg)
 \subsubsection{Activity() is run as a coroutine}
 
 
-\fname[activity()]{Activity()} is run in a coroutine\index{coroutine}.
+\fname{activity()} is run in a coroutine\index{coroutine}.
 Coroutines are a sort of threads which are scheduled
 non-preemptively (this is also called cooperative
 multitasking\index{multitasking!cooperative}). From one coroutine you
 can switch to another coroutine by a
-\fname[transferTo()]{transferTo(otherCoroutine)} call. Then this
+\ttt{transferTo(otherCoroutine)} call. Then this
 coroutine is suspended and \textit{otherCoroutine} will run. Later,
 when \textit{otherCoroutine} does a
-\fname[transferTo()]{transferTo(firstCoroutine)} call, execution of
+\ttt{transferTo(firstCoroutine)} call, execution of
 the first coroutine will resume from the point of the
-\fname[transferTo()]{transferTo(otherCoroutine)} call.  The full state
+\ttt{transferTo(otherCoroutine)} call.  The full state
 of the coroutine, including local variables are preserved while the
 thread of execution is in other coroutines.  This implies that each
 coroutine must have its own processor stack\index{stack}, and
@@ -1178,7 +1178,7 @@ That is, when the module has an event\index{event}, the simulation
 kernel transfers the control to the module's coroutine. It is expected
 that when the module ``decides it has finished the processing of the
 event'', it will transfer the control back to the simulation kernel by
-a \fname[transferTo()]{transferTo(main)} call. Initially,
+a \ttt{transferTo(main)} call. Initially,
 simple\index{module!simple} modules using \fname{activity()} are
 ``booted'' by events (\textit{''starter messages''}\index{starter messages})
 inserted into the FES by the simulation kernel before the
@@ -1189,7 +1189,7 @@ How does the coroutine know it has ``finished processing the event''?
 The answer: \textit{when it requests another event}.  The functions
 which request events from the simulation kernel are the
 \fname{receive()} and \fname{wait()}, so their
-implementations contain a \fname[transferTo()]{transferTo(main)} call
+implementations contain a \ttt{transferTo(main)} call
 somewhere.
 
 
@@ -1461,9 +1461,9 @@ void initialize(int stage);
 int numInitStages() const;
 \end{verbatim}
 
-At the beginning of the simulation, \fname[initialize]{initialize(0)}
-is called for \textit{all} modules, then \fname[initialize()]{initialize(1)},
-\fname[initialize()]{initialize(2)}, etc. You can think of it like
+At the beginning of the simulation, \ttt{initialize(0)}
+is called for \textit{all} modules, then \ttt{initialize(1)},
+\ttt{initialize(2)}, etc. You can think of it like
 initialization takes place in several ``waves''. For each module,
 \fname{numInitStages()} must be redefined to return the number of init
 stages required, e.g. for a two-stage init, \fname{numInitStages()}
@@ -1479,8 +1479,8 @@ for that module and all its submodules.
 
 If you do not redefine the multi-stage initialization functions, the
 default behavior is single-stage initialization: the default
-\fname{numInitStages()} returns 1, and the default \fname[initialize]{initialize(int
-stage)} simply calls \fname{initialize()}.
+\fname{numInitStages()} returns 1, and the default \ttt{initialize(int stage)}
+simply calls \fname{initialize()}.
 
 
 \subsubsection{``End-of-Simulation'' event}
@@ -2834,10 +2834,9 @@ cModuleType *moduleType = findModuleType("WirelessNode");
 
 \subsubsection{Simplified form}
 
-\cclass{cModuleType} has
-\fname[createScheduleInit()]{createScheduleInit(const char *name,
-  cModule *parentmod)} convenience function to get a module up and
-running in one step.
+\cclass{cModuleType} has a
+\ttt{createScheduleInit(const char *name, cModule *parentmod)}
+convenience function to get a module up and running in one step.
 
 \begin{verbatim}
 mod = modtype->createScheduleInit("node",this);
