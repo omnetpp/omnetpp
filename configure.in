@@ -159,15 +159,6 @@ TK_LIBS=
 MPI_CFLAGS=
 MPI_LIBS=
 
-# for PVM
-if test -n "$PVM_ROOT"; then
-   PVM_CFLAGS="-I$PVM_ROOT/include"
-   PVM_LIBS="-L$PVM_ROOT/$PVM_ARCH/lib -lgpvm3 -lpvm3"
-else
-   PVM_CFLAGS=
-   PVM_LIBS="-lgpvm3 -lpvm3"
-fi
-
 # for Expat
 EXPAT_CFLAGS=
 EXPAT_LIBS=-lexpat
@@ -377,19 +368,9 @@ fi
 #----------------------
 OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $MPI_CFLAGS, $MPI_LIBS, mpi_ok)
 if test $mpi_ok = yes; then
-   SIM_MPI_IF_POSSIBLE=sim_mpi
+   HAVE_MPI=yes
 else
-   SIM_MPI_IF_POSSIBLE=missing-mpi-library
-fi
-
-#----------------------
-# Check for PVM.
-#----------------------
-OPP_CHECK_LIB(PVM, pvm3.h, pvm_joingroup(""), $PVM_CFLAGS, $PVM_LIBS, pvm_ok)
-if test $pvm_ok = yes; then
-   SIM_PVM_IF_POSSIBLE=sim_pvm
-else
-   SIM_PVM_IF_POSSIBLE=missing-pvm-library
+   HAVE_MPI=no
 fi
 
 #----------------------
@@ -569,10 +550,9 @@ AC_SUBST(EXE_SUFFIX)
 AC_SUBST(HAVE_DLOPEN)
 AC_SUBST(TK_CFLAGS)
 AC_SUBST(TK_LIBS)
+AC_SUBST(HAVE_MPI)
 AC_SUBST(MPI_CFLAGS)
 AC_SUBST(MPI_LIBS)
-AC_SUBST(PVM_CFLAGS)
-AC_SUBST(PVM_LIBS)
 AC_SUBST(SYS_LIBS)
 
 AC_SUBST(XMLPARSER)
@@ -585,8 +565,6 @@ AC_SUBST(AKAROA_LIBS)
 AC_SUBST(TKENV_IF_POSSIBLE)
 AC_SUBST(GNED_IF_POSSIBLE)
 AC_SUBST(PLOVE_IF_POSSIBLE)
-AC_SUBST(SIM_PVM_IF_POSSIBLE)
-AC_SUBST(SIM_MPI_IF_POSSIBLE)
 
 AC_SUBST(TKENV_EMBED_SUFFIX)
 AC_SUBST(GNED_EMBED_SUFFIX)
@@ -595,6 +573,9 @@ AC_SUBST(PLOVE_VARIANT)
 AC_SUBST(OMNETPP_TKENV_DIR)
 AC_SUBST(OMNETPP_GNED_DIR)
 AC_SUBST(OMNETPP_PLOVE_DIR)
+
+AC_SUBST(WITH_NETBUILDER)
+AC_SUBST(WITH_PARSIM)
 
 
 

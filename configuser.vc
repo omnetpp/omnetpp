@@ -109,10 +109,10 @@ LDFLAGS_DEBUG=/nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /inc
 CFLAGS_RELEASE=/nologo /GX /GR /FD /Zm180 /ML /O2 /D "NDEBUG"
 LDFLAGS_RELEASE=/nologo /subsystem:console /machine:I386 /pdbtype:sept /incremental:no
 
-#CFLAGS=$(CFLAGS_DEBUG)
-#LDFLAGS=$(LDFLAGS_DEBUG)
-CFLAGS=$(CFLAGS_RELEASE)
-LDFLAGS=$(LDFLAGS_RELEASE)
+CFLAGS=$(CFLAGS_DEBUG)
+LDFLAGS=$(LDFLAGS_DEBUG)
+#CFLAGS=$(CFLAGS_RELEASE)
+#LDFLAGS=$(LDFLAGS_RELEASE)
 
 # LIB_SUFFIX is either .lib or .dll
 LIB_SUFFIX=.lib
@@ -137,11 +137,9 @@ SYS_LIBS=
 
 #
 # If you don't want to build some of the components below, substitute
-# missing-library (or missing-pvm-library, missing-mpi-library) below
+# missing-library below
 #
 TKENV_IF_POSSIBLE=tkenv
-SIM_PVM_IF_POSSIBLE=missing-pvm-library
-SIM_MPI_IF_POSSIBLE=missing-mpi-library
 GNED_IF_POSSIBLE=gned
 
 #
@@ -174,4 +172,9 @@ WITH_NETBUILDER=no
 #
 WITH_PARSIM=yes
 
+
+# not user serviceable
+!if "$(WITH_PARSIM)"=="yes"
+CFLAGS= $(CFLAGS) /DWITH_PARSIM
+!endif
 

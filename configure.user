@@ -51,6 +51,16 @@ PLOVE_EMBED_TCL=no
 #PLOVE_EMBED_TCL=yes
 
 #
+# Set to "yes" to enable simulation executables load NED files dynamically.
+#
+WITH_NETBUILDER=no
+
+#
+# Set to "yes" to enable the parallel distributed simulation feature.
+#
+WITH_PARSIM=yes
+
+#
 # Compiler and linker options for Tcl/Tk
 #
 # You can explicitly tell 'configure' what compile switches (TK_CFLAGS)
@@ -87,20 +97,13 @@ PLOVE_EMBED_TCL=no
 #TK_LIBS=
 
 #
-# Compiler and linker options for PVM (optional component)
-#
-# If commented out, the configure script will try to autodetect it
-#
-#PVM_CFLAGS=
-#PVM_LIBS=
-
-#
-# Compiler and linker options for MPI (optional component)
+# Compiler and linker options for MPI (optional component).
+# Typing `mpicc -showme' can give you a hint about MPI_LIBS
 #
 # If commented out, the configure script will try to autodetect it
 #
 #MPI_CFLAGS="-I /usr/include/mpi2c++"
-#MPI_LIBS=
+#MPI_LIBS="-llamf77mpi -lmpi -llam -lutil"
 
 #
 # Compiler and linker options for Expat (optional component)
