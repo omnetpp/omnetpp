@@ -1,5 +1,7 @@
 //-------------------------------------------------------------
-// file: dist.cc
+// File: dist.cc
+// Purpose: testing the distribution functions in OMNeT++
+// Author: Andras Varga
 //-------------------------------------------------------------
 
 #include <omnetpp.h>
