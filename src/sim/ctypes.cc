@@ -159,9 +159,6 @@ void cModuleInterface::allocate( int ngte, int npram)
 
     nparam = npram;
     paramv = new sParamInfo[nparam];
-
-    if ((ngate&&!gatev) || (nparam&&!paramv))
-        throw new cException(eNOMEM);
 }
 
 void cModuleInterface::addParametersGatesTo( cModule *module)
