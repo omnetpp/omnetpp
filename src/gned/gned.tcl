@@ -93,8 +93,11 @@ proc start_gned {} {
    }
    reflectConfigInGUI
 
-   foreach fname $argv {
-       loadNED $fname
+   foreach arg $argv {
+       # on Windows, we have to expand wildcards manually
+       foreach fname [glob -nocomplain $arg] {
+           loadNED $fname
+       }
    }
 }
 

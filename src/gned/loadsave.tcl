@@ -89,9 +89,16 @@ proc loadNED {nedfile} {
     set tmp_ned($filekey,dirty) 0
 
     # parsing...
-    set num_errs [opp_parsened -file $nedfile \
-                               -nedarray tmp_ned -errorsarray tmp_errors \
-                               -nedfilekey $filekey]
+    if [catch {set num_errs [opp_parsened -file $nedfile \
+                               -nedarray tmp_ned \
+                               -errorsarray tmp_errors \
+                               -nedfilekey $filekey]} errmsg] {
+        tk_messageBox -icon error -title "Error" -type ok -message "Error loading $nedfile:\n$errmsg"
+        catch {unset tmp_ned}
+        catch {unset tmp_errors}
+        busy
+        return
+    }
 
     # handle parse errors
     if {$num_errs!="0"} {

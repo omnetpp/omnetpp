@@ -222,4 +222,5 @@ Aug 27, 2000
    renameItem procs)
  - deleteItem proc improved
  - renaming improved; "rename..." added to canvas popup menu
-
+Aug 29, 2000
+ - command-line arg handling improved
