@@ -33,7 +33,6 @@ NEDFileBuffer::NEDFileBuffer()
 
     commentBufLen = 1024;
     commentBuf = new char[commentBufLen];
-    if (!commentBuf) commentBufLen=0;
 }
 
 NEDFileBuffer::~NEDFileBuffer()
@@ -59,7 +58,6 @@ bool NEDFileBuffer::readFile(const char *filename)
     fstat(fileno(intmp), &statbuf);
     int size = statbuf.st_size;
     wholeFile = new char [size+2];  // +1 because last line may need an extra '\n'
-    if (!wholeFile) return false;
 
     fread(wholeFile,size,1,intmp);
     fclose(intmp);
@@ -73,7 +71,6 @@ bool NEDFileBuffer::setData(const char *data)
     if (wholeFile) return false;  // reinit not supported
 
     wholeFile = new char [strlen(data)+2]; // +1 because last line may need an extra '\n'
-    if (!wholeFile) return false;
     strcpy(wholeFile,data);
     return indexLines();
 }
@@ -322,7 +319,6 @@ char *NEDFileBuffer::stripComment(const char *comment)
         commentBufLen = strlen(comment)+1;
         delete commentBuf;
         commentBuf = new char[commentBufLen];
-        if (!commentBuf) {commentBufLen=0;return NULL;}
     }
 
     const char *s = comment;
