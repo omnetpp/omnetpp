@@ -262,8 +262,10 @@ proc makeGnuplotScript {pipebasefname idlist platform {pic {}}} {
     append gnuplotcmd "plot"
     set comma ""
     foreach id $idlist {
+        set vecstyle $vec($id,style)
+        if {$vecstyle == "default"} {set vecstyle $gp(defaultstyle)}
         append gnuplotcmd "$comma \"$pipebasefname-$id\" using 2:3 \
-                   title \"$vec($id,title)\" with $vec($id,style)"
+                   title \"$vec($id,title)\" with $vecstyle"
         set comma ","
     }
     append gnuplotcmd "\n"

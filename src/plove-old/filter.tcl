@@ -242,22 +242,25 @@ proc filterParDialog {ids} {
         set vecfiltpars $vec($ids,filtpars)
     }
 
-    set plotstyles {lines points linespoints impulses dots steps boxes errorbars boxerrorbars}
+    set plotstyles {default lines points linespoints impulses dots steps boxes}
 
     global tmp  ; #for use by filterSelected
     set tmp(pars)   $vecfiltpars
     set tmp(prefix) $vecprefix
 
     # create dialog with OK and Cancel buttons
-    createOkCancelDialog .ize "Plotting options"
+    createOkCancelDialog .ize "Vector plotting options"
+
+    label .ize.f.lbl -text "\nSee also Options|Gnuplot options for global settings.\n" -anchor w
 
     # add entry fields and focus on first one
-    label-entry       .ize.f.title "Title:" $vectitle
+    label-entry       .ize.f.title "Vector title:" $vectitle
     label-combo       .ize.f.style "Style:" $plotstyles $vecstyle
     label-combo       .ize.f.filt  "Filter:" $filt(names) $vecfilt
     label-sunkenlabel .ize.f.descr "Filter descr:"
     frame .ize.f.ff
 
+    pack .ize.f.lbl -anchor center -expand 0 -fill x -side top
     pack .ize.f.title -anchor center -expand 0 -fill x -side top
     pack .ize.f.style -anchor center -expand 0 -fill x -side top
     pack .ize.f.filt -anchor center -expand 0 -fill x -side top

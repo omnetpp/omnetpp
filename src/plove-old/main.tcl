@@ -66,6 +66,7 @@ set config(vectorconfigfile) "plove.cfg"
 
 # gnuplot options
 set gp(title)   ""
+set gp(defaultstyle)  "lines"
 set gp(xlabel)  ""
 set gp(ylabel)  ""
 set gp(xrange)  ""

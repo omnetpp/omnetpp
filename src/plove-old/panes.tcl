@@ -178,7 +178,7 @@ proc loadVectorFile {fname} {
         set vec($id,module) [string trim [lindex $line 2] {"}]
         set vec($id,name)   [string trim [lindex $line 3] {"}]
         set vec($id,mult)   [lindex $line 4]
-        set vec($id,style)  "lines"
+        set vec($id,style)  "default"
         set vec($id,title)  [makeTitle $id]
         set vec($id,zipped) $zipped
         set vec($id,filter) "none"

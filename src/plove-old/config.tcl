@@ -60,11 +60,16 @@ proc editGnuplotOptions {} {
     # create dialog with OK and Cancel buttons
     createOkCancelDialog .ize "Gnuplot configuration"
 
+    label .ize.f.f0 -text "\nSee also Edit|Vector plotting options for additional, per-vector settings.\n" -anchor w
+
     # add entry fields and focus on first one
     frame .ize.f.f1 -relief groove -border 2
     label-entry .ize.f.f1.title "Title:" $gp(title)
 
+    set plotstyles {lines points linespoints impulses dots steps boxes}
+
     frame .ize.f.f2 -relief groove -border 2
+    label-combo .ize.f.f2.style "Default style:" $plotstyles $gp(defaultstyle)
     label-entry .ize.f.f2.xlabel "X label:" $gp(xlabel)
     label-entry .ize.f.f2.ylabel "Y label:" $gp(ylabel)
 
@@ -81,9 +86,10 @@ proc editGnuplotOptions {} {
     label-text  .ize.f.f5.bef "Before 'plot...':" 4 $gp(before)
     label-text  .ize.f.f5.aft "After 'plot...':" 2 $gp(after)
 
-    pack .ize.f.f1 .ize.f.f2 .ize.f.f3 .ize.f.f4 -expand 0 -fill x -side top
+    pack .ize.f.f0 .ize.f.f1 .ize.f.f2 .ize.f.f3 .ize.f.f4 -expand 0 -fill x -side top
     pack .ize.f.f5 -expand 1 -fill both -side top
     pack .ize.f.f1.title  -anchor center -expand 0 -fill x -side top
+    pack .ize.f.f2.style  -anchor center -expand 0 -fill x -side top
     pack .ize.f.f2.xlabel -anchor center -expand 0 -fill x -side top
     pack .ize.f.f2.ylabel -anchor center -expand 0 -fill x -side top
     pack .ize.f.f3.xrange -anchor center -expand 0 -fill x -side top
@@ -98,6 +104,7 @@ proc editGnuplotOptions {} {
     # exec the dialog, extract its contents if OK was pressed, then delete dialog
     if {[execOkCancelDialog .ize] == 1} {
         set gp(title)   [.ize.f.f1.title.e get]
+        set gp(defaultstyle) [.ize.f.f2.style.e cget -value]
         set gp(xlabel)  [.ize.f.f2.xlabel.e get]
         set gp(ylabel)  [.ize.f.f2.ylabel.e get]
         set gp(xrange)  [.ize.f.f3.xrange.e get]
