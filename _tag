@@ -1,0 +1,8 @@
+@echo off
+rem 
+rem Tag format: omnetpp-2.0beta1
+rem
+echo %1 > Version
+cvs commit -m "by _tag.bat" Version
+cvs tag -RF %1 ../omnetpp
+
