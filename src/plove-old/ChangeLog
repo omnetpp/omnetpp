@@ -40,15 +40,18 @@
 #21 Jan 1, 1999
  - small fixes
 #22 June 21, 1999
-  - all sources checked in under CVS
-  - added a small, almost dummy Makefile.in
-  - version.log renamed to ChangeLog
+ - all sources checked in under CVS
+ - added a small, almost dummy Makefile.in
+ - version.log renamed to ChangeLog
 July 17, 1999
-  - added slash/backslash option for gnuplot on Windows
+ - added slash/backslash option for gnuplot on Windows
 ------ omnetpp-2.0b2 released ------
 Jan 18, 2000
-  - bugfix: Plove hung on selecting filters
+ - bugfix: Plove hung on selecting filters
 ------ omnetpp-2.0b3 released ------
 Apr 5, 2000
-  - Makefile.vc now creates plove.bat (requires correct WISH= setting in
-    configuser.vc)
+ - Makefile.vc now creates plove.bat (requires correct WISH= setting in
+   configuser.vc)
+May 7, 2000
+ - plove now starts using the classic trick to avoid a hardcoded 'wish' path
+   (check top of the 'plove' file).

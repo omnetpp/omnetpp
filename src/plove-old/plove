@@ -1,4 +1,6 @@
-#!/usr/bin/wish
+#!/bin/sh
+# the next line restarts using wish \
+exec wish "$0" "$@"
 
 puts {Plove - Output vector plotting tool (Gnuplot front-end), part of OMNeT++.
 (c) 1992,99 Andras Varga, TU Budapest
