@@ -345,8 +345,8 @@ INCLUDE_PATH=$includes
 # misc additional object and library files to link
 EXTRA_OBJS=$xobjs
 
-# object files from other directories to link with
-EXT_DIR_OBJS=$extdirobjs
+# object files from other directories to link with (wildcard needed to prevent "no such file *.o" errors)
+EXT_DIR_OBJS=\$(wildcard $extdirobjs)
 
 # time stamps of other directories (used as dependency)
 EXT_DIR_TSTAMPS=$extdirtstamps
@@ -462,9 +462,8 @@ echo
 echo '# subdirectories to recurse into'
 echo "SUBDIRS= $subdirs"
 echo
-# note: without ($wildcard..), gcc will complain it can't find foo/*.o if foo/ is empty 
 echo '# object files in this directory'
-echo "OBJS= $(wildcard $objs)"
+echo "OBJS= $objs"
 echo
 
 echo '# header files generated (from msg files)'
