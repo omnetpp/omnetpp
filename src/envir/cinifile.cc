@@ -569,6 +569,7 @@ std::vector<opp_string> cIniFile::getEntriesWithPrefix(const char *section, cons
 std::vector<opp_string> cIniFile::getEntriesWithPrefix(const char *section1, const char *section2, const char *keypart1, const char *keypart2)
 {
     // FIXME finish!!!!!!!!!!!!!!!!
-    return NULL;
+    std::vector<opp_string> result;
+    return result;
 }
 

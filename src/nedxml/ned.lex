@@ -201,7 +201,7 @@ char textbuf[TEXTBUF_LEN];
 *    not used with flex (only with lex) --VA
 ***************************************************/
 //#ifndef yywrap
-static int yywrap(void)
+int yywrap(void)
 {
          return 1;
 }
