@@ -142,6 +142,36 @@ puts "dbg: deleteItem $key entered"
 }
 
 
+# renameItem --
+#
+# Rename the item if possible and return the new name.
+#
+proc renameItem {key name} {
+    global ned
+
+    # check
+    if ![info exist ned($key,name)] {
+       error "item $key has no name attribute"
+    }
+
+    # adjust name string if needed
+    regsub -all -- {[^a-zA-Z0-9_]} $name {} name
+    regsub -- {^[0-9]} $name {_\0} name
+    if {$name==""} {
+       return $ned($key,name)
+    }
+
+    # rename
+    set ned($key,name) $name
+
+    # FIXME: mark file dirty
+    # FIXME: update drawing, tree manager, tabs...
+    puts "DBG: renameItem: key='$key' name='$name'"
+    puts "DBG: FIXME: update drawing, mark dirty etc!"
+    return $name
+}
+
+
 # getChildren --
 #
 # Find a child element within the given parent

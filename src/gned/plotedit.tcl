@@ -138,6 +138,8 @@ proc popupMenu {c x y} {
     if {$key==""} return
 
     catch {destroy .popup}
+    _cancelLabelEdit $c
+
     menu .popup -tearoff 0
     foreach i {
       {command -command "editProps $key" -label {Properties...} -underline 0}
@@ -272,7 +274,9 @@ proc selectOrMoveStart {c x y ctrl} {
     set x [expr int([$c canvasx $x])]
     set y [expr int([$c canvasy $y])]
 
+    # cancel popup menu and label editing
     catch {destroy .popup}
+    _cancelLabelEdit $c
 
     if {$gned(snaptogrid)} {
        set gridsize 8
@@ -631,8 +635,19 @@ proc selectOrMoveEnd {c x y} {
     } else {
        puts "dbg: unknown mouse mode '$mouse(mode)'"
     }
-}
 
+    # label editing:
+    # only if a module or submodule label was clicked
+    if {$mouse(startingX)==$x && $mouse(startingY)==$y && [llength $mouse(tweaked-items)]==1} {
+       set key $mouse(tweaked-items)
+       if {$ned($key,type)=="module" || $ned($key,type)=="submod"} {
+          set cid [$c find withtag current]
+          if {$cid==$ned($key,label-cid)} {
+             editCanvasLabel $c $cid "renameItem $key"
+          }
+       }
+    }
+}
 
 
 # drawStart --
@@ -646,7 +661,9 @@ proc drawStart {c x y} {
     set x [expr int([$c canvasx $x])]
     set y [expr int([$c canvasy $y])]
 
+    # cancel popup menu and label editing
     catch {destroy .popup}
+    _cancelLabelEdit $c
 
     if {$gned(snaptogrid)} {
        set gridsize 8
@@ -834,6 +851,12 @@ proc drawEnd {c x y} {
        $c delete $mouse(arrow)
        set mouse(arrow) ""
     }
+}
+
+proc _cancelLabelEdit {c} {
+    # taking away the focus will cancel editing if it was active
+    focus $c
+    $c focus {}
 }
 
 proc _getCoords {c cid} {

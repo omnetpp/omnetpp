@@ -43,6 +43,7 @@ if [info exist OMNETPP_GNED_DIR] {
      source [file join $dir canvas.tcl]
      source [file join $dir drawitem.tcl]
      source [file join $dir plotedit.tcl]
+     source [file join $dir canvlbl.tcl]
      source [file join $dir textedit.tcl]
      source [file join $dir drawopts.tcl]
      source [file join $dir fileview.tcl]
