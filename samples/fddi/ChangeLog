@@ -182,3 +182,7 @@ FDDI80.arj (--VA)
 Jul 11, 1999
   - bug in mystrlwr() [othermod.cc] fixed
 ------ omnetpp-2.0b2 released ------
+Oct 10, 1999
+  - standardized indentation in ned files
+  - fddi_net.ned split to fddi_nodes.ned, fddi_rings.ned, fddi_nets.ned
+  - proper README written
