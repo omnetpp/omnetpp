@@ -27,6 +27,8 @@ htmlfile_spec := $BASE.html
 #     b/e = begin/end delimited command \begin{xxx} ... \end{xxx}
 #
 
+# FIXME we have some \fname[..]{..} macros too, they don't get substituted!
+
 :{}     :\textbf:<STRONG>:</>:
 :{}	:\textsl:<EM>:</>:
 :{}	:\textem:<EM>:</>:
