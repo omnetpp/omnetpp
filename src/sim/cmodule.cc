@@ -514,6 +514,14 @@ const cGate *cModule::gate(const char *s, int sn) const
     return gate(i);
 }
 
+int cModule::gateSize(const char *gatename) const
+{
+    int i = findGate(s,sn);
+    if (i==-1)
+        return 0;
+    return gate(i)->size();
+}
+
 int cModule::findPar(const char *s) const
 {
     return paramv.find(s);

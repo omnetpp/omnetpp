@@ -449,6 +449,15 @@ class SIM_API cModule : public cDefaultList
     const cGate *gate(const char *gatename,int sn=-1) const;
 
     /**
+     * Returns the size of the gate vector with the given name. It returns 1 for
+     * non-vector gates, and 0 if the gate doesn't exist or the vector has size 0.
+     *
+     * The gate vector size can also be obtained by calling the cGate::size() method
+     * of any gate object in the vector.
+     */
+    int gateSize(const char *gatename) const;
+
+    /**
      * Returns the ID of the gate specified by name and index.
      * Returns -1 if the gate doesn't exist.
      */

@@ -1,3 +1,7 @@
+2004-02-22  Andras Varga
+
+	* cmodule.cc: added gateSize() to cModule.
+
 2004-02-21  Andras Varga
 
 	* cmodule.cc: setGateSize() made more tolerant; this is needed for

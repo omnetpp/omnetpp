@@ -1,5 +1,9 @@
 2004-02-20  Andras Varga
 
+	* cmodule.h: added gateSize() to cModule.
+
+2004-02-20  Andras Varga
+
 	* ctype.h, cchannel.h, cgate.h: introduced cChannelType which replaces
 	cLinkType. cChannelType is a lot more flexible since its factory
 	method create() allows creating channels of any class, not just 

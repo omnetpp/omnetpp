@@ -257,7 +257,9 @@ class SIM_API cGate : public cObject
 
     /**
      * If the gate is part of a gate vector, returns the size of the vector.
-     * Otherwise, it returns 1.
+     * For non-vector gates it returns 1.
+     *
+     * The gate vector size can also be obtained by calling the cModule::gateSize().
      */
     int size()  const      {return vectsize<0?1:vectsize;}
     //@}
