@@ -251,6 +251,7 @@ SHLIB_LD=@SHLIB_LD@
 MAKEDEPEND=@MAKEDEPEND@
 
 CFLAGS=@CFLAGS@
+NEDCFLAGS=@NEDCFLAGS@
 LDFLAGS=@LDFLAGS@
 EXE_SUFFIX=@EXE_SUFFIX@
 
@@ -278,6 +279,7 @@ SHLIB_LD=@${null}SHLIB_LD@
 MAKEDEPEND=@${null}MAKEDEPEND@
 
 CFLAGS=@${null}CFLAGS@
+NEDCFLAGS=@${null}NEDCFLAGS@
 LDFLAGS=@${null}LDFLAGS@
 EXE_SUFFIX=@${null}EXE_SUFFIX@
 
@@ -308,6 +310,7 @@ PVM_KERNEL_LIBS=-lsim_pvm \$(PVM_LIBS)
 OMNETPP_LIBS=-L\$(OMNETPP_LIB_DIR) \$(USERIF_LIBS) \$(KERNEL_LIBS) \$(SYS_LIBS)
 
 COPTS=\$(CFLAGS) \$(INCLUDE_PATH) -I\$(OMNETPP_INCL_DIR)
+NEDCOPTS=\$(CFLAGS) \$(NEDCFLAGS) \$(INCLUDE_PATH) -I\$(OMNETPP_INCL_DIR)
 
 #------------------------------------------------------------------------------
 
@@ -361,7 +364,7 @@ do
 	c=`echo $i | sed 's/\.ned/_n.cc/g'`
 
 	echo "$obj: $c"
-	echo '	$(CXX) -c $(COPTS) '$c
+	echo '	$(CXX) -c $(NEDCOPTS) '$c
 	echo
 
 	echo "$c: $i"
