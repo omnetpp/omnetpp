@@ -3,46 +3,46 @@ import
 
 module ConnTextAndTooltip
     submodules:
-        conn_plus_txt_1_src: Dummy;
+        src1: Dummy;
             display: "i=place/circle2_s;p=93,72";
-        conn_plus_txt_1_dest: Dummy;
+        dest1: Dummy;
             display: "i=place/circle2_s;p=241,72";
-        conn_plus_txt_2_src: Dummy;
+        src2: Dummy;
             display: "i=place/circle2_s;p=241,138";
-        conn_plus_txt_2_dest: Dummy;
+        dest2: Dummy;
             display: "i=place/circle2_s;p=93,138";
-        conn_plus_txt_3_src: Dummy;
+        src3: Dummy;
             display: "i=place/circle2_s;p=364,74";
-        conn_plus_txt_3_dest: Dummy;
+        dest3: Dummy;
             display: "i=place/circle2_s;p=364,184";
-        conn_plus_txt_4_src: Dummy;
+        src4: Dummy;
             display: "i=place/circle2_s;p=486,183";
-        conn_plus_txt_4_dest: Dummy;
+        dest4: Dummy;
             display: "i=place/circle2_s;p=486,72";
-        conn_plus_txt_5_src: Dummy;
+        src5: Dummy;
             display: "i=place/circle2_s;p=72,347";
-        conn_plus_txt_5_dest: Dummy;
+        dest5: Dummy;
             display: "i=place/circle2_s;p=191,259";
-        conn_plus_txt_6_src: Dummy;
+        src6: Dummy;
             display: "i=place/circle2_s;p=300,258";
-        conn_plus_txt_6_dest: Dummy;
+        dest6: Dummy;
             display: "i=place/circle2_s;p=182,348";
-        conn_plus_txt_7_src: Dummy;
+        src7: Dummy;
             display: "i=place/circle2_s;p=558,329";
-        conn_plus_txt_7_dest: Dummy;
+        dest7: Dummy;
             display: "i=place/circle2_s;p=409,258";
-        conn_plus_txt_8_src: Dummy;
+        src8: Dummy;
             display: "i=place/circle2_s;p=525,255";
-        conn_plus_txt_8_dest: Dummy;
+        dest8: Dummy;
             display: "i=place/circle2_s;p=673,327";
     connections nocheck:
-        conn_plus_txt_1_src.out++ --> conn_plus_txt_1_dest.in++ display "t=some text;tt=some tooltip";
-        conn_plus_txt_2_src.out++ --> conn_plus_txt_2_dest.in++ display "t=some text;tt=some tooltip";
-        conn_plus_txt_3_src.out++ --> conn_plus_txt_3_dest.in++ display "t=some text;tt=some tooltip";
-        conn_plus_txt_4_src.out++ --> conn_plus_txt_4_dest.in++ display "t=some text;tt=some tooltip";
-        conn_plus_txt_5_src.out++ --> conn_plus_txt_5_dest.in++ display "t=some text;tt=some tooltip";
-        conn_plus_txt_6_src.out++ --> conn_plus_txt_6_dest.in++ display "t=some text;tt=some tooltip";
-        conn_plus_txt_7_src.out++ --> conn_plus_txt_7_dest.in++ display "t=some text;tt=some tooltip";
-        conn_plus_txt_8_src.out++ --> conn_plus_txt_8_dest.in++ display "t=some text;tt=some tooltip";
+        src1.out++ --> dest1.in++ display "t=some text;tt=some tooltip";
+        src2.out++ --> dest2.in++ display "t=some text;tt=some tooltip";
+        src3.out++ --> dest3.in++ display "t=some text;tt=some tooltip";
+        src4.out++ --> dest4.in++ display "t=some text;tt=some tooltip";
+        src5.out++ --> dest5.in++ display "t=some text;tt=some tooltip";
+        src6.out++ --> dest6.in++ display "t=some text;tt=some tooltip";
+        src7.out++ --> dest7.in++ display "t=some text;tt=some tooltip";
+        src8.out++ --> dest8.in++ display "t=some text;tt=some tooltip";
 endmodule
 
