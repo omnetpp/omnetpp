@@ -44,6 +44,7 @@ class TGraphicalModWindow : public TInspector
       virtual void update();
       virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);
 
+      // implementations of inspector commands:
       virtual int redrawModules(Tcl_Interp *interp, int argc, const char **argv);
       virtual int redrawMessages(Tcl_Interp *interp, int argc, const char **argv);
       virtual int getDisplayStringPar(Tcl_Interp *interp, int argc, const char **argv);

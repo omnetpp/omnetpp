@@ -59,6 +59,7 @@ class TOmnetTkApp : public TOmnetApp
       bool opt_print_banners;      // print event banners
       bool opt_use_mainwindow;     // dump modules' ev << ... stuff into main window
       bool opt_animation_enabled;  // msg animation
+      bool opt_senddirect_arrows;  // flash arrows when doing sendDirect() animation
       bool opt_animation_msgnames; // msg animation: display message name or not
       bool opt_animation_msgcolors;// msg animation: display msg kind as color code or not
       double opt_animation_speed;  // msg animation speed: 0=slow 1=norm 2=fast
@@ -91,7 +92,7 @@ class TOmnetTkApp : public TOmnetApp
       virtual void shutdown();
 
       virtual void objectDeleted(cObject *object); // notify environment
-      virtual void messageSent(cMessage *msg);
+      virtual void messageSent(cMessage *msg, cGate *directToGate);
       virtual void messageDelivered(cMessage *msg);
       virtual void breakpointHit(const char *lbl, cSimpleModule *mod);
 
@@ -145,6 +146,10 @@ class TOmnetTkApp : public TOmnetApp
       void clearPerformanceDisplay();
 
       void printEventBanner(cSimpleModule *mod);
+      void animateSend(cMessage *msg, cGate *fromgate, cGate *togate);
+      void animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate);
+      void animateDelivery(cMessage *msg);
+      void animateDeliveryDirect(cMessage *msg);
 
       const char *getIniFileName()       {return opt_inifile_name;}
       const char *getOutVectorFileName() {return outvectmgr->fileName();}

@@ -311,13 +311,25 @@ int TGraphicalModWindow::redrawMessages(Tcl_Interp *interp, int, const char **)
           arrivalmod->parentModule()==(cModule *)object &&
           msg()->arrivalGateId()>=0)
       {
-         cGate *gate = msg()->arrivalGate();
-         if (gate) gate = gate->fromGate();
-         if (gate)
+         cGate *arrivalGate = msg()->arrivalGate();
+
+         // if arrivalgate is connected, msg arrived on a connection, otherwise via sendDirect()
+         if (arrivalGate->fromGate())
          {
-             CHK(Tcl_VarEval(interp, "draw_message ",
+             cGate *gate = arrivalGate->fromGate();
+             CHK(Tcl_VarEval(interp, "graphmodwin_draw_message_on_gate ",
                              canvas, " ",
-                             ptrToStr(gate,gateptr), " ",
+                             ptrToStr(gate), " ",
+                             msgptr,
+                             " {",msg()->fullName(),"} ",
+                             msgkind,
+                             NULL));
+         }
+         else
+         {
+             CHK(Tcl_VarEval(interp, "graphmodwin_draw_message_on_module ",
+                             canvas, " ",
+                             ptrToStr(arrivalmod), " ",
                              msgptr,
                              " {",msg()->fullName(),"} ",
                              msgkind,
@@ -779,7 +791,7 @@ void TGraphicalGateWindow::update()
          if (gate) gate = gate->fromGate();
          if (gate)
          {
-             CHK(Tcl_VarEval(interp, "draw_message ",
+             CHK(Tcl_VarEval(interp, "graphmodwin_draw_message_on_gate ",
                              canvas, " ",
                              ptrToStr(gate,gateptr), " ",
                              msgptr,

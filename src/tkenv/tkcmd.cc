@@ -912,6 +912,8 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       sprintf(buf,"%d", app->opt_bkpts_enabled);
    else if (0==strcmp(argv[1], "animation_enabled"))
       sprintf(buf,"%d", app->opt_animation_enabled);
+   else if (0==strcmp(argv[1], "senddirect_arrows"))
+      sprintf(buf,"%d", app->opt_senddirect_arrows);
    else if (0==strcmp(argv[1], "animation_msgnames"))
       sprintf(buf,"%d", app->opt_animation_msgnames);
    else if (0==strcmp(argv[1], "animation_msgcolors"))
@@ -943,6 +945,8 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       app->opt_bkpts_enabled = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "animation_enabled"))
       app->opt_animation_enabled = (argv[2][0]!='0');
+   else if (0==strcmp(argv[1], "senddirect_arrows"))
+      app->opt_senddirect_arrows = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "animation_msgnames"))
       app->opt_animation_msgnames = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "animation_msgcolors"))
@@ -1299,3 +1303,4 @@ int objectClasses_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
    Tcl_SetResult(interp, ptrToStr( &classes ), TCL_VOLATILE);
    return TCL_OK;
 }
+

@@ -1,3 +1,7 @@
+2003-09-22  Andras Varga
+	* tkapp.cc, modinsp.cc, modinsp2.tcl: implemented animation of
+	sendDirect().
+
 2003-09-01  Andras Varga
 
 	* tkapp.cc: default values for update-freq-fast and update-freq-express

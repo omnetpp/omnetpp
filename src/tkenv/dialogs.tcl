@@ -243,6 +243,7 @@ proc options_dialog {} {
 
     frame $w.f.f3 -relief groove -borderwidth 2
     checkbutton $w.f.f3.anim -text {Animate messages} -variable opp(anim)
+    checkbutton $w.f.f3.sdarrows -text {Show arrows for sendDirect()} -variable opp(sdarrows)
     checkbutton $w.f.f3.msgnam -text {Message names during animation} -variable opp(msgnam)
     checkbutton $w.f.f3.msgcol -text {Coloring by message kind} -variable opp(msgcol)
     commentlabel $w.f.f3.c {Color code (message->kind() mod 7):
@@ -252,6 +253,7 @@ proc options_dialog {} {
     $w.f.f3.speed.e config -length 200 -from 0 -to 3 \
                            -resolution 0.01 -variable opp(speed)
     pack $w.f.f3.anim -anchor w
+    pack $w.f.f3.sdarrows -anchor w
     pack $w.f.f3.msgnam -anchor w
     pack $w.f.f3.msgcol -anchor w
     pack $w.f.f3.c -anchor w
@@ -268,6 +270,7 @@ proc options_dialog {} {
     set opp(usemainwin) [opp_getsimoption use_mainwindow]
     set opp(banners)    [opp_getsimoption print_banners]
     set opp(anim)       [opp_getsimoption animation_enabled]
+    set opp(sdarrows)   [opp_getsimoption senddirect_arrows]
     set opp(msgnam)     [opp_getsimoption animation_msgnames]
     set opp(msgcol)     [opp_getsimoption animation_msgcolors]
     set opp(speed)      [opp_getsimoption animation_speed]
@@ -282,6 +285,7 @@ proc options_dialog {} {
         opp_setsimoption use_mainwindow      $opp(usemainwin)
         opp_setsimoption print_banners       $opp(banners)
         opp_setsimoption animation_enabled   $opp(anim)
+        opp_setsimoption senddirect_arrows   $opp(sdarrows)
         opp_setsimoption animation_msgnames  $opp(msgnam)
         opp_setsimoption animation_msgcolors $opp(msgcol)
         opp_setsimoption animation_speed     $opp(speed)
