@@ -200,19 +200,26 @@ static long resolveNumericDispStrArg(const char *s, cModule *mod, int defaultval
 void TGraphicalModWindow::relayoutAndRedrawAll()
 {
    int submodcount = 0;
+   int gatecountestimate = static_cast<cModule *>(object)->gates();
    for (cSubModIterator submod(*static_cast<cModule *>(object)); !submod.end(); submod++)
+   {
        submodcount++;
+       gatecountestimate += submod()->gates();
+   }
 
    not_drawn = false;
-   if (submodcount>1000)
+   if (submodcount>1000 || gatecountestimate>4000)
    {
        Tcl_Interp *interp = getTkApplication()->getInterp();
-       char buf[20];
-       sprintf(buf,"%d",submodcount);
+       char problem[200];
+       if (submodcount>1000)
+           sprintf(problem,"contains more than 1000 submodules (exactly %d)", submodcount);
+       else
+           sprintf(problem,"may contain a lot of connections (modules have total ~%d gates)", gatecountestimate);
        CHK(Tcl_VarEval(interp,"tk_messageBox -parent ",windowname," -type yesno -title Warning -icon question "
-                              "-message {Module '", object->fullName(), "' contains more than "
-                              "1000 submodules (",buf,"), it may take a long time to display "
-                              "the graphics. Do you want to proceed with drawing?}", NULL));
+                              "-message {Module '", object->fullName(), "' ", problem,
+                              ", it may take a long time to display the graphics. "
+                              "Do you want to proceed with drawing?}", NULL));
        bool answer = (Tcl_GetStringResult(interp)[0]=='y');
        if (answer==false)
        {
