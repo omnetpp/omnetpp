@@ -21,7 +21,7 @@
 #include "util.h"
 
 
-inline skipSpace(char *&s)
+inline void skipSpace(char *&s)
 {
     while (*s==' ' || *s=='\t') s++;
 }
