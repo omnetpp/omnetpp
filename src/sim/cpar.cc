@@ -72,84 +72,10 @@ cPar::cPar(char *namestr, cPar& other) : cObject(namestr)
         operator=(other);
 }
 
-#define CONSTRUCT_CPAR(args)  \
-                 takeOwnership( FALSE ); \
-                 changedflag = inputflag = FALSE; \
-                 typechar = 'L'; lng.val = 0L; \
-                 cPar::setValue args ; \
-                 changedflag = FALSE;
-
-cPar::cPar(char *namestr, char tp, char *s) : cObject(namestr)
-{
-        CONSTRUCT_CPAR(( tp, s ))
-}
-
-cPar::cPar(char *namestr, char tp, int l) :  cObject(namestr)
-{
-        CONSTRUCT_CPAR(( tp, (long)l ))
-}
-
-cPar::cPar(char *namestr, char tp, long l) :  cObject(namestr)
-{
-        CONSTRUCT_CPAR(( tp, l ))
-}
-
-cPar::cPar(char *namestr, char tp, double d) : cObject(namestr)
-{
-        CONSTRUCT_CPAR(( tp, d ))
-}
-
-cPar::cPar(char *namestr, char tp, MathFuncNoArg f): cObject(namestr)
-{
-        CONSTRUCT_CPAR(( tp, f ))
-}
-
-cPar::cPar(char *namestr, char tp, MathFunc1Arg f, double p1) : cObject(namestr)
-{
-        CONSTRUCT_CPAR(( tp, f, p1 ))
-}
-
-cPar::cPar(char *namestr, char tp, MathFunc2Args f, double p1, double p2) : cObject(namestr)
-{
-        CONSTRUCT_CPAR(( tp, f, p1,p2 ))
-}
-
-cPar::cPar(char *namestr, char tp, MathFunc3Args f, double p1, double p2, double p3) : cObject(namestr)
-{
-        CONSTRUCT_CPAR(( tp, f, p1,p2,p3 ))
-}
-
-cPar::cPar(char *namestr, char tp, void *ptr) : cObject(namestr)
-{
-        CONSTRUCT_CPAR(( tp, ptr ))
-}
-
-cPar::cPar(char *namestr, char tp, cObject *obj) : cObject(namestr)
-{
-        CONSTRUCT_CPAR(( tp, obj ))
-}
-
-cPar::cPar(char *namestr, char tp, cPar *par) : cObject(namestr)
-{
-        CONSTRUCT_CPAR(( tp, par ))
-}
-
-cPar::cPar(char *namestr, char tp, cStatistic *res) : cObject(namestr)
-{
-        CONSTRUCT_CPAR(( tp, res ))
-}
-
-cPar::cPar(char *namestr, char tp, sXElem *x, int n) : cObject(namestr)
-{
-        CONSTRUCT_CPAR(( tp, x, n ))
-}
-
-#undef CONSTRUCT_CPAR
-
 cPar::~cPar()
 {
         valueChanges();
-        if (typechar=='I') cancelIndirection();
+        if (isRedirected()) cancelRedirection();
         deleteold();
 }
 
@@ -196,8 +122,8 @@ void cPar::info( char *buf )
         while(*b) b++;
         *b++ = ' '; *b='\0';
 
-        // indirection?
-        if (typechar=='I')
+        // redirection?
+        if (isRedirected())
         {
             strcpy(b,"--> ");
             strcpy(b+4, ind.par->fullPath() );
@@ -238,9 +164,9 @@ void cPar::info( char *buf )
 void cPar::writeContents(ostream& os)
 {
         char buf[256];
-        if (typechar=='I')
+        if (isRedirected())
         {
-           os << "  Type:   indirection ('I')\n";
+           os << "  Type:   redirection ('I')\n";
            os << "  Target: " << ind.par->fullPath() << '\n';
         }
         else
@@ -255,25 +181,25 @@ void cPar::writeContents(ostream& os)
 
 char cPar::type()
 {
-         if (typechar=='I') {return ind.par->type();}
+         if (isRedirected()) {return ind.par->type();}
          return typechar;
 }
 
 char *cPar::prompt()
 {
-         if (typechar=='I') {return ind.par->prompt();}
+         if (isRedirected()) {return ind.par->prompt();}
          return promptstr;
 }
 
 bool cPar::isInput()
 {
-         if (typechar=='I') {return ind.par->isInput();}
+         if (isRedirected()) {return ind.par->isInput();}
          return inputflag;
 }
 
 bool cPar::changed()
 {
-         if (typechar=='I') {return ind.par->changed();}
+         if (isRedirected()) {return ind.par->changed();}
          bool ch = changedflag;
          changedflag=FALSE;
          return ch;
@@ -281,14 +207,14 @@ bool cPar::changed()
 
 void cPar::setPrompt(char *s)
 {
-         if (typechar=='I') {ind.par->setPrompt(s);return;}
+         if (isRedirected()) {ind.par->setPrompt(s);return;}
          valueChanges();
          promptstr = s;     // string's operator=() does delete+opp_strdup()
 }
 
 void cPar::setInput(bool ip)
 {
-         if (typechar=='I') {ind.par->setInput(ip);return;}
+         if (isRedirected()) {ind.par->setInput(ip);return;}
          if (inputflag!=ip)
          {
             valueChanges();
@@ -297,257 +223,239 @@ void cPar::setInput(bool ip)
 }
 
 //-----------------------------------------------------------------------
-// setValue() funcs
+// setXxxValue() funcs
 
-cPar& cPar::setValue(char tp, char *s)
+cPar& cPar::setStringValue(char *s)
 {
-        if (typechar=='I') {return ind.par->setValue(tp,s);}
+         if (isRedirected())
+            return ind.par->setStringValue(s);
+         valueChanges();
+         deleteold();
+         typechar = 'S';
+         inputflag=FALSE;
+         if ((ls.sht=(strlen(s)<=SHORTSTR))!=0)
+             opp_strcpy(ss.str, s);
+         else
+             ls.str = opp_strdup(s);
+         return *this;
+}
+
+cPar& cPar::setBoolValue(bool b)
+{
+        if (isRedirected())
+           return ind.par->setBoolValue(b);
 
         valueChanges();
-        tp = (char) toupper(tp);
-        if (tp=='S')
+        deleteold();
+        lng.val = b;
+        typechar = 'B';
+        inputflag=FALSE;
+        return *this;
+}
+
+cPar& cPar::setLongValue(long l)
+{
+        if (isRedirected())
+           return ind.par->setLongValue(l);
+
+        valueChanges();
+        deleteold();
+        lng.val = l;
+        typechar = 'L';
+        inputflag=FALSE;
+        return *this;
+}
+
+cPar& cPar::setDoubleValue(double d)
+{
+        if (isRedirected())
+           return ind.par->setDoubleValue(d);
+
+        valueChanges();
+        deleteold();
+        dbl.val = d;
+        typechar = 'D';
+        inputflag=FALSE;
+        return *this;
+}
+
+cPar& cPar::setDoubleValue(MathFuncNoArg f)
+{
+        if (isRedirected())
+           return ind.par->setDoubleValue(f);
+
+        valueChanges();
+        deleteold();
+        func.f = (MathFunc)f;
+        func.argc=0;
+        typechar = 'F';
+        inputflag=FALSE;
+        return *this;
+}
+
+cPar& cPar::setDoubleValue(MathFunc1Arg f, double p1)
+{
+        if (isRedirected())
+           return ind.par->setDoubleValue(f,p1);
+
+        valueChanges();
+        deleteold();
+        func.f = (MathFunc)f;
+        func.argc=1;
+        func.p1 = p1;
+        typechar = 'F';
+        inputflag=FALSE;
+        return *this;
+}
+
+cPar& cPar::setDoubleValue(MathFunc2Args f, double p1, double p2)
+{
+        if (isRedirected())
+           return ind.par->setDoubleValue(f,p1,p2);
+
+        valueChanges();
+        deleteold();
+        func.f = (MathFunc)f;
+        func.argc=2;
+        func.p1 = p1;
+        func.p2 = p2;
+        typechar = 'F';
+        inputflag=FALSE;
+        return *this;
+}
+
+cPar& cPar::setDoubleValue(MathFunc3Args f, double p1, double p2, double p3)
+{
+        if (isRedirected())
+           return ind.par->setDoubleValue(f,p1,p2,p3);
+
+        valueChanges();
+        deleteold();
+        func.f = (MathFunc)f;
+        func.argc=3;
+        func.p1 = p1;
+        func.p2 = p2;
+        func.p3 = p3;
+        typechar = 'F';
+        inputflag=FALSE;
+        return *this;
+}
+
+cPar& cPar::setDoubleValue(sXElem *x, int n)
+{
+        if (isRedirected())
+           return ind.par->setDoubleValue(x,n);
+
+        if (!x)
+           {opp_error(eBADINIT,className(),name(), 'X');return *this;}
+
+        valueChanges();
+        deleteold();
+        expr.n = n;
+        expr.xelem = x;
+        typechar = 'X';
+        inputflag=FALSE;
+
+        // ownership game: take objects given to us in the x[] array
+        for(int i=0; i<expr.n; i++)
         {
-            deleteold();
-            typechar = tp; inputflag=FALSE;
-            if ((ls.sht=(strlen(s)<=SHORTSTR))!=0)
-                opp_strcpy(ss.str, s);
-            else
-                ls.str = opp_strdup(s);
-        } else
-            opp_error(eBADINIT,className(),name(),tp);
-        return *this;
-}
+           if (expr.xelem[i].type=='R')
+           {
+               //  sXElem::op= has already dupped the pointed cPar for us
+               cPar *p = expr.xelem[i].p;
 
-cPar& cPar::setValue(char tp, int i )
-{
-        return setValue(tp, (long)i );
-}
-
-cPar& cPar::setValue(char tp, long l)
-{
-        if (typechar=='I') {return ind.par->setValue(tp,l);}
-
-        valueChanges();
-        tp = (char) toupper(tp);
-
-        switch(tp) {
-          case 'B':
-          case 'L':  deleteold();
-                     lng.val = l;
-                     typechar = tp;  inputflag=FALSE;
-                     break;
-          default:   opp_error(eBADINIT,className(),name(),tp);
-        }
-        return *this;
-}
-
-cPar& cPar::setValue(char tp, double d)
-{
-        if (typechar=='I') {return ind.par->setValue(tp,d);}
-
-        valueChanges();
-        tp = (char) toupper(tp);
-        switch(tp) {
-            case 'L': deleteold();
-                      lng.val = (long)d;
-                      typechar = tp;  inputflag=FALSE;
-                      break;
-            case 'D': deleteold();
-                      dbl.val = d;
-                      typechar = tp; inputflag=FALSE;
-                      break;
-            default:  opp_error(eBADINIT,className(),name(),tp);
-        }
-        return *this;
-}
-
-cPar& cPar::setValue(char tp, MathFuncNoArg f)
-{
-        if (typechar=='I') {return ind.par->setValue(tp,f);}
-
-        valueChanges();
-        tp = (char) toupper(tp);
-        switch(tp) {
-            case 'F': deleteold();
-                      func.f = (MathFunc)f; func.argc=0;
-                      typechar = 'F'; inputflag=FALSE;
-            default:  opp_error(eBADINIT,className(),name(),tp);
-        }
-        return *this;
-}
-
-cPar& cPar::setValue(char tp, MathFunc1Arg f, double p1)
-{
-        if (typechar=='I') {return ind.par->setValue(tp,f,p1);}
-
-        valueChanges();
-        tp = (char) toupper(tp);
-        switch(tp) {
-            case 'F': deleteold();
-                      func.f = (MathFunc)f; func.argc=1;
-                      func.p1 = p1;
-                      typechar = 'F'; inputflag=FALSE; break;
-            default:  opp_error(eBADINIT,className(),name(),tp);
-        }
-        return *this;
-}
-
-cPar& cPar::setValue(char tp, MathFunc2Args f, double p1, double p2)
-{
-        if (typechar=='I') {return ind.par->setValue(tp,f,p1,p2);}
-
-        valueChanges();
-        tp = (char) toupper(tp);
-        switch(tp) {
-            case 'F': deleteold();
-                      func.f = (MathFunc)f; func.argc=2;
-                      func.p1 = p1; func.p2 = p2;
-                      typechar = 'F'; inputflag=FALSE; break;
-            default:  opp_error(eBADINIT,className(),name(),tp);
-        }
-        return *this;
-}
-
-cPar& cPar::setValue(char tp, MathFunc3Args f, double p1, double p2, double p3)
-{
-        if (typechar=='I') {return ind.par->setValue(tp,f,p1,p2,p3);}
-
-        valueChanges();
-        tp = (char) toupper(tp);
-        switch(tp) {
-            case 'F': deleteold();
-                      func.f = (MathFunc)f; func.argc=3;
-                      func.p1 = p1; func.p2 = p2; func.p3 = p3;
-                      typechar = 'F'; inputflag=FALSE; break;
-            default:  opp_error(eBADINIT,className(),name(),tp);
-        }
-        return *this;
-}
-
-cPar& cPar::setValue(char tp, sXElem *x, int n)
-{
-        if (typechar=='I') {return ind.par->setValue(tp,x,n);}
-
-        valueChanges();
-        tp = (char) toupper(tp);
-        if (tp!='X')
-            opp_error(eBADINIT,className(),name(),tp);
-        else
-        {
-            if (x==NULL) {opp_error(eBADINIT,className(),name(),tp);return *this;}
-            deleteold();
-            expr.n = n; expr.xelem = x;
-            typechar = tp; inputflag=FALSE;
-            for(int i=0; i<expr.n; i++)
-            {
-               if (expr.xelem[i].type=='R')
+               // if the pointed cPar is not indirect and it is a constant,
+               // there's really no need to keep the object
+               if (!p->isRedirected() && (p->type()=='D' || p->type()=='L'))
                {
-                   //  sXElem::op= has already dupped the pointed cPar for us
-                   cPar *p = expr.xelem[i].p;
-
-                   // if the pointed cPar is not indirect and it is a constant,
-                   // there's really no need to keep the object
-                   if (p->indirection()==NULL && (p->type()=='D' || p->type()=='L'))
-                   {
-                       expr.xelem[i] = (double)(*p);
-                       delete p;
-                   }
-                   else // otherwise, we'll become the owner
-                   {
-                       take( p );
-                   }
+                   expr.xelem[i] = (double)(*p);
+                   delete p;
                }
-            }
+               else // otherwise, we'll become the owner
+               {
+                   take( p );
+               }
+           }
         }
         return *this;
 }
 
-cPar& cPar::setValue(char tp, cPar *par)
+cPar& cPar::setDoubleValue(cStatistic *res)
 {
-        if (typechar=='I') {return ind.par->setValue(tp,par);}
+        if (isRedirected())
+           return ind.par->setDoubleValue(res);
+
+        if (!res)
+           {opp_error(eBADINIT,className(),name(), 'T');return *this;}
 
         valueChanges();
-        tp = (char) toupper(tp);
-        if (tp=='O')
-        {
-              return setValue(tp,(cObject *)par);
-        }
-        else if (tp=='I' && par)
-        {
-              // check for circular references
-              cPar *p = par;
-              while (p)
-              {
-                 if (p==this) {opp_error(eCIRCREF,className(),name());return *this;}
-                 p = (p->typechar=='I') ? p->ind.par : NO(cPar);
-              }
-
-              // set indirection
-              deleteold();
-              ind.par = par;
-              // don't take ownership of passed cPar object
-              typechar = tp; inputflag=FALSE;
-        } else
-              opp_error(eBADINIT,className(),name(),tp);
+        deleteold();
+        dtr.res = res;
+        if (takeOwnership())
+           take(res);
+        typechar = 'T';
+        inputflag=FALSE;
         return *this;
 }
 
-cPar& cPar::setValue(char tp, cStatistic *res)
+cPar& cPar::setPointerValue(void *_ptr)
 {
-        if (typechar=='I') {return ind.par->setValue(tp,res);}
+        if (isRedirected())
+           return ind.par->setPointerValue(_ptr);
 
         valueChanges();
-        tp = (char) toupper(tp);
-        if (tp=='T' && res) {
-              deleteold();
-              dtr.res = res;
-              if (takeOwnership()) take( res );
-              typechar = tp; inputflag=FALSE;
-        } else
-              opp_error(eBADINIT,className(),name(),tp);
+        // if it was a 'P' before, keep previous configuration
+        if (typechar!='P')
+        {
+           deleteold();
+           ptr.delfunc=NULL;
+           ptr.dupfunc=NULL;
+           ptr.itemsize=0;
+           typechar = 'P';
+        }
+        ptr.ptr = _ptr;
+        inputflag=FALSE;
         return *this;
 }
 
-cPar& cPar::setValue(char tp, void *_ptr)
+cPar& cPar::setObjectValue(cObject *_obj)
 {
-        if (typechar=='I') {return ind.par->setValue(tp,_ptr);}
+        if (isRedirected())
+           return ind.par->setObjectValue(_obj);
 
         valueChanges();
-        tp = (char) toupper(tp);
-        if (tp!='P')
-              opp_error(eBADINIT,className(),name(),tp);
-        else
-        {
-              // if it was a 'P' before, keep previous configuration
-              if (typechar!='P')
-              {
-                   deleteold();
-                   ptr.delfunc=NULL;
-                   ptr.dupfunc=NULL;
-                   ptr.itemsize=0;
-                   typechar = tp;
-              }
-              ptr.ptr = _ptr;
-              inputflag=FALSE;
-        }
+        deleteold();
+        obj.obj = _obj;
+        if (takeOwnership())
+           take( _obj );
+        typechar = 'O';
+        inputflag=FALSE;
         return *this;
 }
 
-cPar& cPar::setValue(char tp, cObject *_obj)
+cPar& cPar::setRedirection(cPar *par)
 {
-        if (typechar=='I') {return ind.par->setValue(tp,_obj);}
+        if (isRedirected())
+           return ind.par->setRedirection(par);
 
-        valueChanges();
-        tp = (char) toupper(tp);
-        if (tp!='O')
-              opp_error(eBADINIT,className(),name(),tp);
-        else
+        if (!par)
+           {opp_error(eBADINIT,className(),name(), 'I');return *this;}
+
+        // check for circular references
+        cPar *p = par;
+        while (p)
         {
-              deleteold();
-              obj.obj = _obj;
-              if (takeOwnership()) take( _obj );
-              typechar = tp; inputflag=FALSE;
+           if (p==this)
+              {opp_error(eCIRCREF,className(),name());return *this;}
+           p = p->isRedirected() ? p->ind.par : NO(cPar);
         }
+
+        // set redirection
+        valueChanges();
+        deleteold();
+        ind.par = par; // do NOT take ownership of passed cPar object
+        typechar = 'I';
+        inputflag=FALSE;
         return *this;
 }
 
@@ -570,7 +478,7 @@ void cPar::configPointer( VoidDelFunc delfunc, VoidDupFunc dupfunc,
 
 char *cPar::stringValue()
 {
-        if (typechar=='I') {return ind.par->stringValue();}
+        if (isRedirected()) {return ind.par->stringValue();}
 
         if (isInput()) read();
         if (typechar=='S')
@@ -581,7 +489,7 @@ char *cPar::stringValue()
 
 long cPar::longValue()
 {
-        if (typechar=='I') {return ind.par->longValue();}
+        if (isRedirected()) {return ind.par->longValue();}
 
         if (isInput()) read();
         if (typechar=='L' || typechar=='B')
@@ -592,7 +500,7 @@ long cPar::longValue()
 
 bool cPar::boolValue()
 {
-        if (typechar=='I') {return ind.par->boolValue();}
+        if (isRedirected()) {return ind.par->boolValue();}
 
         if (isInput()) read();
         if (typechar=='B')
@@ -603,7 +511,7 @@ bool cPar::boolValue()
 
 double cPar::doubleValue()
 {
-        if (typechar=='I') {return ind.par->doubleValue();}
+        if (isRedirected()) {return ind.par->doubleValue();}
 
         if (isInput()) read();
         if (typechar=='L')
@@ -625,7 +533,7 @@ double cPar::doubleValue()
 
 void *cPar::pointerValue()
 {
-        if (typechar=='I') {return ind.par->pointerValue();}
+        if (isRedirected()) {return ind.par->pointerValue();}
 
         if (isInput()) read();
         if (typechar=='P')
@@ -636,7 +544,7 @@ void *cPar::pointerValue()
 
 cObject *cPar::objectValue()
 {
-        if (typechar=='I') {return ind.par->objectValue();}
+        if (isRedirected()) {return ind.par->objectValue();}
 
         if (isInput()) read();
         if (typechar=='O')
@@ -677,17 +585,17 @@ void cPar::valueChanges()
         changedflag=TRUE;
 }
 
-cPar *cPar::indirection()
+cPar *cPar::redirection()
 {
-        if (typechar=='I')
+        if (isRedirected())
               return ind.par;
         else
               return NULL;
 }
 
-void cPar::cancelIndirection()
+void cPar::cancelRedirection()
 {
-        if (typechar=='I')
+        if (isRedirected())
         {
               // operator=( *ind.par ); -- the user may do this by hand
               typechar = 'L'; lng.val = 0L;
@@ -696,7 +604,7 @@ void cPar::cancelIndirection()
 
 void cPar::getAsText(char *buf, int maxlen)
 {
-        if (typechar=='I') {
+        if (isRedirected()) {
             ind.par->getAsText(buf, maxlen );
             return;
         }
@@ -761,25 +669,25 @@ bool cPar::setFromText( char *text, char tp)
        if (strcmp(tmp,"TRUE")==0 || strcmp(tmp,"true")==0 || strcmp(tmp,"True")==0) // bool?
        {
            if (!strchr("?B",tp)) goto error;
-           setValue('B',(int)TRUE);
+           setBoolValue(TRUE);
        }
        else if (strcmp(tmp,"FALSE")==0 || strcmp(tmp,"false")==0 || strcmp(tmp,"False")==0) // bool?
        {
            if (!strchr("?B",tp)) goto error;
-           setValue('B',(int)FALSE);
+           setBoolValue(FALSE);
        }
        else if (strcmp(tmp,"1")==0 && tp=='B') // bool?
        {
-           setValue('B',(int)TRUE);
+           setBoolValue(TRUE);
        }
        else if (strcmp(tmp,"0")==0 && tp=='B') // bool?
        {
-           setValue('B',(int)FALSE);
+           setBoolValue(FALSE);
        }
        else if (tmp[0]=='\'' && tmp[1] && tmp[2]=='\''&& !tmp[3]) // char? (->long)
        {
            if (!strchr("?L",tp)) goto error;
-           setValue('L', (long)tmp[1]);
+           setLongValue((long)tmp[1]);
        }
        else if (text[0]=='\"') // string?
        {
@@ -789,7 +697,7 @@ bool cPar::setFromText( char *text, char tp)
            if (!tmp[1] || tmp[strlen(tmp)-1]!='\"') goto error;
 
            tmp[strlen(tmp)-1] = '\0'; // cut off closing quote
-           setValue('S', tmp+1);
+           setStringValue(tmp+1);
        }
        else if (strspn(tmp,"+-0123456789")==strlen(tmp)) // long?
        {
@@ -797,7 +705,10 @@ bool cPar::setFromText( char *text, char tp)
            unsigned len;
            if (0==sscanf(tmp,"%ld%n",&num,&len)) goto error;
            if (len<strlen(tmp) || !strchr("?LD",tp)) goto error;
-           setValue((tp=='?'?'L':tp), num);
+           if (tp=='?' || tp=='L')
+              setLongValue(num);
+           else
+              setDoubleValue(num);
        }
        else if (strspn(tmp,"+-.eE0123456789")==strlen(tmp)) // double?
        {
@@ -805,12 +716,12 @@ bool cPar::setFromText( char *text, char tp)
            unsigned len;
            if (0==sscanf(tmp,"%lf%n",&num,&len)) goto error;
            if (len<strlen(tmp) || !strchr("?D",tp)) goto error;
-           setValue('D', num);
+           setDoubleValue(num);
        }
        else if ((d=strToSimtime(tmp))>=0.0) // double given as time?
        {
            if (!strchr("?D",tp)) goto error;
-           setValue('D',d);
+           setDoubleValue(d);
        }
        else // maybe function; try to parse it
        {
@@ -850,19 +761,19 @@ bool cPar::setfunction(char *text)
        switch(ff->argcount)
        {
           case 0: if (strcmp(s,"()")!=0) return FALSE;
-                  setValue('F',(MathFuncNoArg)ff->f);
+                  setDoubleValue((MathFuncNoArg)ff->f);
                   return TRUE;
           case 1: if (*s++!='(') return FALSE;
                   p1 = strToSimtime0(s);
                   if (*s++!=')') return FALSE;
-                  setValue('F',(MathFunc1Arg)ff->f, p1);
+                  setDoubleValue((MathFunc1Arg)ff->f, p1);
                   return TRUE;
           case 2: if (*s++!='(') return FALSE;
                   p1 = strToSimtime0(s);
                   if (*s++!=',') return FALSE;
                   p2 = strToSimtime0(s);
                   if (*s++!=')') return FALSE;
-                  setValue('F',(MathFunc2Args)ff->f, p1,p2);
+                  setDoubleValue((MathFunc2Args)ff->f, p1,p2);
                   return TRUE;
           case 3: if (*s++!='(') return FALSE;
                   p1 = strToSimtime0(s);
@@ -871,7 +782,7 @@ bool cPar::setfunction(char *text)
                   if (*s++!=',') return FALSE;
                   p3 = strToSimtime0(s);
                   if (*s++!=')') return FALSE;
-                  setValue('F',(MathFunc3Args)ff->f, p1,p2,p3);
+                  setDoubleValue((MathFunc3Args)ff->f, p1,p2,p3);
                   return TRUE;
        }
        return FALSE; // to make compiler happy
@@ -1052,9 +963,9 @@ cPar& cPar::operator=(cPar& val)
         //   into this object or the object this object refers to.
         // If this cPar is of type 'I', and you want to overwrite
         // this very object and not what it points to,
-        // use cancelIndirection() first!
+        // use cancelRedirection() first!
 
-        if (typechar=='I') {return ind.par->operator=(val);}
+        if (isRedirected()) {return ind.par->operator=(val);}
 
         valueChanges();
         deleteold();
@@ -1122,43 +1033,41 @@ int cPar::cmpbyvalue(cObject *one, cObject *other)
 
 void cPar::convertToConst ()
 {
-        if (typechar=='I') cancelIndirection();
+        if (isRedirected())
+           cancelRedirection();
 
         if (strchr("FXTI", typechar)) // if type is any or F,X,T,I,...
         {
-                double d = doubleValue ();
-                setValue ('D', d);
+           double d = doubleValue();
+           setDoubleValue(d);
         }
 }
 
 //=========================================================================
-//=== cModulePar - constructors
-// strange style of defining constructors, but simply there is too many of them
+//=== cModulePar
 
 void cModulePar::_construct()
 {
-     omodp=NULL;
-     log_initialised=FALSE;
-     log_ID=0;
-     lastchange=simulation.simTime();
+   omodp=NULL;
+   log_initialised=FALSE;
+   log_ID=0;
+   lastchange=simulation.simTime();
 }
 
-cModulePar::cModulePar(cPar& other) : cPar(other) {_construct();}
-cModulePar::cModulePar(char *namestr) : cPar(namestr) {_construct();}
-cModulePar::cModulePar(char *namestr, cPar& other) : cPar(namestr, other) {_construct();}
-cModulePar::cModulePar(char *namestr, char tp, char *s) : cPar(namestr, tp, s) {_construct();}
-cModulePar::cModulePar(char *namestr, char tp, int i) : cPar(namestr, tp, i) {_construct();}
-cModulePar::cModulePar(char *namestr, char tp, long l) : cPar(namestr, tp, l) {_construct();}
-cModulePar::cModulePar(char *namestr, char tp, double d) : cPar(namestr, tp, d) {_construct();}
-cModulePar::cModulePar(char *namestr, char tp, MathFuncNoArg f) : cPar(namestr, tp, f) {_construct();}
-cModulePar::cModulePar(char *namestr, char tp, MathFunc1Arg  f, double p1) : cPar(namestr, tp, f, p1) {_construct();}
-cModulePar::cModulePar(char *namestr, char tp, MathFunc2Args f, double p1, double p2) : cPar(namestr, tp, f, p1, p2) {_construct();}
-cModulePar::cModulePar(char *namestr, char tp, MathFunc3Args f, double p1, double p2, double p3) : cPar(namestr, tp, f, p1, p2, p3) {_construct();}
-cModulePar::cModulePar(char *namestr, char tp, void *ptr) :  cPar(namestr, tp, ptr) {_construct();}
-cModulePar::cModulePar(char *namestr, char tp, cObject *obj) :  cPar(namestr, tp, obj) {_construct();}
-cModulePar::cModulePar(char *namestr, char tp, cPar *par) :  cPar(namestr, tp, par) {_construct();}
-cModulePar::cModulePar(char *namestr, char tp, cStatistic *res) : cPar(namestr, tp, res) {_construct();}
-cModulePar::cModulePar(char *namestr, char tp, sXElem *x, int n) : cPar(namestr, tp, x, n) {_construct();}
+cModulePar::cModulePar(cPar& other) : cPar(other)
+{
+   _construct();
+}
+
+cModulePar::cModulePar(char *namestr) : cPar(namestr)
+{
+   _construct();
+}
+
+cModulePar::cModulePar(char *namestr, cPar& other) : cPar(namestr, other)
+{
+   _construct();
+}
 
 cModulePar::~cModulePar()
 {

@@ -512,8 +512,7 @@ void do_on_mach(char * maname)  /* --LG */
         }
         if (!is_system)
         {
-            fprintf (tmp,  "%smachines.add( *new cPar(NULL, 'S',"
-                           " mod->machinePar(\"%s\")) );\n",
+            fprintf (tmp,  "%smachines.add( *new cPar = mod->machinePar(\"%s\") );\n",
                            indent, maname );
         }
         else
@@ -526,8 +525,7 @@ void do_on_mach(char * maname)  /* --LG */
             else
                phys_mach = nl_retr_ith( &machine_list, idx )->parstr;
 
-            fprintf (tmp,  "%smachines.add( *new cPar(NULL, 'S',"
-                            " \"%s\") );\n",
+            fprintf (tmp,  "%smachines.add( *new cPar = \"%s\" );\n",
                             indent, phys_mach );
         }
         fprintf (tmp, "%scheck_error(); check_memory();\n\n",
@@ -935,7 +933,7 @@ void end_connection (char *channel, char dir, char *dispstr)
 {
         if (firstpass) {jar_free (channel); jar_free(dispstr); return;}
 
-        fprintf (tmp, "%sif( do_this_block ) // if clause \n"
+        fprintf (tmp, "%sif (do_this_block) // \"if\" in NED\n"
                       "%s{\n", indent, indent);
 
         do_con_gate_L( dir );
@@ -999,14 +997,14 @@ void do_condition(char *cond_expr)
 
         if (cond_expr==NULL)
         {
-            fprintf(tmp, "\n%sdo_this_block = 1; // no if condition\n", indent);
+            fprintf(tmp, "\n%sdo_this_block = true; // no \"if\" condition\n", indent);
         }
         else
         {
             expr_type cond;
             fprintf(tmp, "\n%s// if condition for next block:\n", indent);
             get_expression(cond_expr,tmp,cond);
-            fprintf(tmp, "%sdo_this_block = (long) %s;\n", indent,cond);
+            fprintf(tmp, "%sdo_this_block = (bool) %s;\n", indent,cond);
         }
         jar_free(cond_expr);
 }

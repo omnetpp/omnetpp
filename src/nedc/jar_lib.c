@@ -800,7 +800,8 @@ void print_temp_vars (FILE *f)
         fprintf (f, "\tMathFunc func;\n");
         fprintf (f, "\tchar *type_name, b1[64], b2[64];\n");
         fprintf (f, "\tcArray machines;\n"); /* --LG */
-        fprintf (f, "\tint islocal, do_this_block, n;\n");
+        fprintf (f, "\tbool islocal, do_this_block;\n");
+        fprintf (f, "\tint n;\n");
         fprintf (f, "\n");
 }
 

@@ -126,8 +126,8 @@ void SSM_OIF_by_time::activity()
         m = new cMessage("Send",SSM_OIF_SEND);
         syncpoint(every,"out");
         }
-      m->addPar( *new cPar("repeat", 'D', every) );
-      m->addPar( *new cPar("finish", 'D', -1.0) ); // never finish
+      m->addPar("repeat") = every;
+      m->addPar("finish") = -1.0; // never finish
       scheduleAt(every,m);
       }
     else if ( (kind=strstr(line,"at")) != NULL )
@@ -142,7 +142,7 @@ void SSM_OIF_by_time::activity()
         m = new cMessage("Send",SSM_OIF_SEND);
         syncpoint(at,"out");
         }
-      m->addPar( *new cPar("repeat", 'D', 0.0) );
+      m->addPar("repeat") = 0.0;
       scheduleAt(at,m);
       }
     else if ( (kind=strstr(line, "from")) != NULL )
@@ -161,8 +161,8 @@ void SSM_OIF_by_time::activity()
         m = new cMessage("Send",SSM_OIF_SEND);
         syncpoint(from,"out");
         }
-      m->addPar( *new cPar("repeat", 'D', step) );
-      m->addPar( *new cPar("finish", 'D', to) );
+      m->addPar("repeat") = step;
+      m->addPar("finish") = to;
       scheduleAt(from,m);
       }
     }
@@ -293,7 +293,7 @@ void SSM_IIF::activity()
         char msgname[64];
         strcpy(msgname,"FDDI_FRAME from IIF");
         cMessage *m = new cMessage(msgname, FDDI_FRAME);
-        m->addPar( *new cPar("gentime", 'D', simTime() ) );
+        m->addPar("gentime") = simTime();
         int pkt_len = (int) length->random();
         m->setLength(pkt_len/*+idle_bytes*/);
         // DO NOT add the (no of idle symbols)/2

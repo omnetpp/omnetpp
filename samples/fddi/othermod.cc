@@ -76,9 +76,9 @@ void FDDI_Generator4Ring::activity ()
     strcpy(msgname,"FDDI_FRAME ");
     sprintf(msgname+strlen(msgname),"%d->%d",my_station_id,dest);
     cMessage *msg = new cMessage(msgname, FDDI_FRAME);
-    msg->addPar( *new cPar("dest", 'L', (long) dest) );
-    msg->addPar( *new cPar("source", 'L', (long) my_station_id) );
-    msg->addPar( *new cPar("gentime", 'D', (double) simTime()) );
+    msg->addPar("dest") = (long) dest;
+    msg->addPar("source") = (long) my_station_id;
+    msg->addPar("gentime") = (double) simTime();
     msg->setLength(50+intrand(4451-8)+idle_bytes); /* min_samples 50, max_samples 4500 */
     /* +idle_bytes: add the (no of idle symbols)/2   (16/2=8) */
     send(msg, "out"); // pass down the message for Token Ring MAC
@@ -123,9 +123,9 @@ void FDDI_Generator::activity ()
     strcpy(msgname,"FDDI_FRAME ");
     sprintf(msgname+strlen(msgname),"%d->%d",my_station_id, dest);
     cMessage *msg = new cMessage(msgname, FDDI_FRAME);
-    msg->addPar( *new cPar("dest", 'L', (long) dest) );
-    msg->addPar( *new cPar("source", 'L', (long) my_station_id) );
-    msg->addPar( *new cPar("gentime", 'D', simTime() ) );
+    msg->addPar("dest") = (long) dest;
+    msg->addPar("source") = (long) my_station_id;
+    msg->addPar("gentime") = simTime();
     msg->setLength(pkt_len+idle_bytes); /* add the (no of idle symbols)/2 */
     send(msg, "out"); // pass down the message for Token Ring MAC
     }
@@ -180,13 +180,13 @@ void FDDI_GeneratorHistogram2x1D::InitStatistics()
       break; // !! This is a hack: EOF is detected too late...
     sscanf(line,"%i,",&dest);
     cMessage *m = new cMessage("GenPack"); // a self message, it will contain all info
-    m->addPar(*new cPar("dest",'L',(long)dest)); // ID of destination station
+    m->addPar("dest") = (long)dest; // ID of destination station
     cDoubleHistogram *delay = new cDoubleHistogram("inter-arrivial time");
-    delay->loadFromFile(f); // read the distribution of the inter-arrivial time
-    m->addPar(*new cPar("delay",'T',delay));
+    delay->loadFromFile(f); // read the distribution of the inter-arrival time
+    m->addPar("delay").setDoubleValue(delay);
     cLongHistogram *length = new cLongHistogram("packet length");
     length->loadFromFile(f); // read the distribution of the packet length
-    m->addPar(*new cPar("length",'T',length));
+    m->addPar("length").setDoubleValue(length);
     LoadMultiplier = (double) parentModule()->parentModule()->par("LoadMultiplier");
     scheduleAt(simTime()+delay->random()/LoadMultiplier,m); // the 1st packet to 'dest'
     // Remark:
@@ -222,13 +222,13 @@ void FDDI_GeneratorPiSquare2x1D::InitStatistics()
       break; // !! This is a hack: EOF is detected too late...
     sscanf(line,"%i,",&dest);
     cMessage *m = new cMessage("GenPack"); // a self message, it will contain all info
-    m->addPar(*new cPar("dest",'L',(long)dest)); // ID of destination station
+    m->addPar("dest") = (long)dest; // ID of destination station
     cPSquare *delay = new cPSquare;
     delay->loadFromFile(f); // read the distribution of the inter-arrivial time
-    m->addPar(*new cPar("delay",'T',delay));
+    m->addPar("delay").setDoubleValue(delay);
     cPSquare *length = new cPSquare;
     length->loadFromFile(f); // read the distribution of the packet length
-    m->addPar(*new cPar("length",'T',length));
+    m->addPar("length").setDoubleValue(length);
     LoadMultiplier = (double) parentModule()->parentModule()->par("LoadMultiplier");
     scheduleAt(simTime()+delay->random()/LoadMultiplier,m); // the 1st packet to 'dest'
     // Remark:
@@ -286,9 +286,9 @@ void FDDI_Address_Generator::activity ()
     strcpy(msgname,"FDDI_FRAME ");
     sprintf(msgname+strlen(msgname),"%d->%d",my_station_id, dest);
     cMessage *msg = new cMessage(msgname, FDDI_FRAME);
-    msg->addPar( *new cPar("dest", 'L', (long) dest) );
-    msg->addPar( *new cPar("source", 'L', (long) my_station_id) );
-    msg->addPar( *new cPar("gentime", 'D', simTime() ) );
+    msg->addPar("dest") = (long) dest;
+    msg->addPar("source") = (long) my_station_id;
+    msg->addPar("gentime") = simTime();
     msg->setLength(pkt_len+idle_bytes); /* add the (no of idle symbols)/2 */
     send(msg, "out"); // pass down the message for Token Ring MAC
     delete m;
@@ -357,9 +357,9 @@ void FDDI_Generator4Sniffer::activity()
   //   strcpy(msgname,"FDDI_FRAME from Sniffer to self");
   //   //sprintf(msgname+strlen(msgname),"%d->%d",my_station_id,dest);
   //   cMessage *msg = new cMessage(msgname, FDDI_FRAME);
-  //   msg->addPar( *new cPar("dest", 'L', (long) my_station_id) );
-  //   msg->addPar( *new cPar("source", 'L', (long) my_station_id) );
-  //   msg->addPar( *new cPar("gentime", 'D', simTime() ) );
+  //   msg->addPar("dest") = (long) my_station_id;
+  //   msg->addPar("source") = (long) my_station_id;
+  //   msg->addPar("gentime") = simTime();
   //   msg->setLength(12); // just to be a short frame not to make much load
   //   // this length is inpossible in a real FDDI network!
   //   send(msg, "out");

@@ -126,19 +126,6 @@ class cPar : public cObject
      cPar(cPar& other);
      cPar(char *namestr=NULL);
      cPar(char *namestr, cPar& other);       // tp=type char: one of CSBLDFPITX
-     cPar(char *namestr, char tp, char *s);              // string
-     cPar(char *namestr, char tp, int i);                // long, double
-     cPar(char *namestr, char tp, long l);               // long, double
-     cPar(char *namestr, char tp, double d);             // double
-     cPar(char *namestr, char tp, MathFuncNoArg f);      // math func:0,1,2,3 args
-     cPar(char *namestr, char tp, MathFunc1Arg  f, double p1);
-     cPar(char *namestr, char tp, MathFunc2Args f, double p1, double p2);
-     cPar(char *namestr, char tp, MathFunc3Args f, double p1, double p2, double p3);
-     cPar(char *namestr, char tp, void *ptr);            // void* pointer
-     cPar(char *namestr, char tp, cObject *obj);         // cObject* pointer
-     cPar(char *namestr, char tp, cPar *par);            // indirection, pointer
-     cPar(char *namestr, char tp, cStatistic *res);      // distribution
-     cPar(char *namestr, char tp, sXElem *x, int n);     // expression
 
      virtual ~cPar();
 
@@ -152,34 +139,32 @@ class cPar : public cObject
      virtual int netPack();
      virtual int netUnpack();
 
-     // new functions
+     // new functions:
 
-     // functions to set value
-     //   assignment operators also exist; see later
-     cPar& setValue(char tp, char *s);           // string
-     cPar& setValue(char tp, int l);             // long
-     cPar& setValue(char tp, long l);            // long
-     cPar& setValue(char tp, double d);          // double
-     cPar& setValue(char tp, MathFuncNoArg f);   // math func: 0,1,2,3 args
-     cPar& setValue(char tp, MathFunc1Arg  f, double p1);
-     cPar& setValue(char tp, MathFunc2Args f, double p1, double p2);
-     cPar& setValue(char tp, MathFunc3Args f, double p1, double p2, double p3);
-     cPar& setValue(char tp, void *ptr);         // void* pointer
-     cPar& setValue(char tp, cObject *obj);      // cObject* pointer
-     cPar& setValue(char tp, cPar *par);         // indirection, pointer
-     cPar& setValue(char tp, cStatistic *res);   // distribution
-     cPar& setValue(char tp, sXElem *x, int n);  // expression
+     // functions to set value (assignment operators also exist, see later)
+     cPar& setBoolValue(bool b);              // bool
+     cPar& setLongValue(long l);              // long
+     cPar& setStringValue(char *s);           // string
+     cPar& setDoubleValue(double d);          // double
+     cPar& setDoubleValue(cStatistic *res);   // distribution
+     cPar& setDoubleValue(sXElem *x, int n);  // expression
+     cPar& setDoubleValue(MathFuncNoArg f);   // math func: 0,1,2,3 args
+     cPar& setDoubleValue(MathFunc1Arg  f, double p1);
+     cPar& setDoubleValue(MathFunc2Args f, double p1, double p2);
+     cPar& setDoubleValue(MathFunc3Args f, double p1, double p2, double p3);
+     cPar& setPointerValue(void *ptr);        // void* pointer
+     cPar& setObjectValue(cObject *obj);      // cObject* pointer
 
      // memory management to void* pointer type
      void configPointer( VoidDelFunc delfunc, VoidDupFunc dupfunc, size_t itemsize=0);
 
      // functions to return value
      //   conversion operators also exist; see later
-     char *stringValue();
-     bool boolValue();
-     long longValue();
+     bool   boolValue();
+     long   longValue();
+     char * stringValue();
      double doubleValue();
-     void *pointerValue();
+     void * pointerValue();
      cObject *objectValue();
 
      // compares stored value
@@ -189,9 +174,11 @@ class cPar : public cObject
      virtual void getAsText(char *buf, int maxlen);
      virtual bool setFromText(char *text, char tp);
 
-     // indirection
-     cPar *indirection();
-     void cancelIndirection();
+     // redirection
+     cPar& setRedirection(cPar *par);
+     bool isRedirected() {return typechar=='I';}
+     cPar *redirection();
+     void cancelRedirection();
 
      cPar& read();
      void convertToConst();
@@ -208,17 +195,17 @@ class cPar : public cObject
      bool changed();                // has changed? (clears `changed' flag)
 
      // redefined operators to set/get value
-     cPar& operator=(char *s)         {return setValue('S',s);}
-     cPar& operator=(char c)          {return setValue('L',(long)c);}
-     cPar& operator=(unsigned char c) {return setValue('L',(long)c);}
-     cPar& operator=(int i)           {return setValue('L',(long)i);}
-     cPar& operator=(unsigned int i)  {return setValue('L',(long)i);}
-     cPar& operator=(long l)          {return setValue('L',l);}
-     cPar& operator=(unsigned long l) {return setValue('L',(long)l);}
-     cPar& operator=(double d)        {return setValue('D',d);}
-     cPar& operator=(long double d)   {return setValue('D',(double)d);}
-     cPar& operator=(void *ptr)       {return setValue('P',ptr);}
-     cPar& operator=(cObject *obj)    {return setValue('O',obj);}
+     cPar& operator=(char *s)         {return setStringValue(s);}
+     cPar& operator=(char c)          {return setLongValue((long)c);}
+     cPar& operator=(unsigned char c) {return setLongValue((long)c);}
+     cPar& operator=(int i)           {return setLongValue((long)i);}
+     cPar& operator=(unsigned int i)  {return setLongValue((long)i);}
+     cPar& operator=(long l)          {return setLongValue(l);}
+     cPar& operator=(unsigned long l) {return setLongValue((long)l);}
+     cPar& operator=(double d)        {return setDoubleValue(d);}
+     cPar& operator=(long double d)   {return setDoubleValue((double)d);}
+     cPar& operator=(void *ptr)       {return setPointerValue(ptr);}
+     cPar& operator=(cObject *obj)    {return setObjectValue(obj);}
 
      operator char*()         {return stringValue();}
      operator char()          {return (char)longValue();}
@@ -260,19 +247,7 @@ class cModulePar : public cPar
      cModulePar(cPar& other);
      cModulePar(char *namestr=NULL);
      cModulePar(char *namestr, cPar& other);
-     cModulePar(char *namestr, char tp, char *s);              // string
-     cModulePar(char *namestr, char tp, int l);                // char, long, double
-     cModulePar(char *namestr, char tp, long l);               // char, long, double
-     cModulePar(char *namestr, char tp, double d);             // double
-     cModulePar(char *namestr, char tp, MathFuncNoArg f);      // math func:0,1,2,3 args
-     cModulePar(char *namestr, char tp, MathFunc1Arg  f, double p1);
-     cModulePar(char *namestr, char tp, MathFunc2Args f, double p1, double p2);
-     cModulePar(char *namestr, char tp, MathFunc3Args f, double p1, double p2, double p3);
-     cModulePar(char *namestr, char tp, void *ptr);            // void* pointer
-     cModulePar(char *namestr, char tp, cObject *obj);         // cObject* pointer
-     cModulePar(char *namestr, char tp, cPar *par);            // indirection, pointer
-     cModulePar(char *namestr, char tp, cStatistic *res);      // distribution
-     cModulePar(char *namestr, char tp, sXElem *x, int n);     // expression
+
      virtual ~cModulePar();
 
      // redefined functions

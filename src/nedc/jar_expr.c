@@ -115,8 +115,8 @@ char *do_func (int args, char *fname, char *p1,char *p2,char *p3)
     {
        case 0: sprintf( temp_res,
                         EXPR_PREFIX "%s"
-                        "%svalue.cancelIndirection();\n" /* I-bug */
-                        "%svalue.setValue('F',(MathFuncNoArg)%s);\n",
+                        "%svalue.cancelRedirection();\n" /* I-bug */
+                        "%svalue.setDoubleValue((MathFuncNoArg)%s);\n",
                         findfunc_code,
                         indent,
                         indent,func);
@@ -133,8 +133,8 @@ char *do_func (int args, char *fname, char *p1,char *p2,char *p3)
                {
                   sprintf( temp_res,
                            EXPR_PREFIX "%s"
-                           "%svalue.cancelIndirection();\n" /* I-bug */
-                           "%svalue.setValue('F',(MathFunc1Arg)%s,%s);\n",
+                           "%svalue.cancelRedirection();\n" /* I-bug */
+                           "%svalue.setDoubleValue((MathFunc1Arg)%s,%s);\n",
                            findfunc_code,
                            indent,
                            indent,func,
@@ -168,8 +168,8 @@ char *do_func (int args, char *fname, char *p1,char *p2,char *p3)
                {
                   sprintf( temp_res,
                            EXPR_PREFIX "%s"
-                           "%svalue.cancelIndirection();\n" /* I-bug */
-                           "%svalue.setValue('F',(MathFunc2Args)%s,%s,%s);\n",
+                           "%svalue.cancelRedirection();\n" /* I-bug */
+                           "%svalue.setDoubleValue((MathFunc2Args)%s,%s,%s);\n",
                            findfunc_code,
                            indent,
                            indent,func,
@@ -207,8 +207,8 @@ char *do_func (int args, char *fname, char *p1,char *p2,char *p3)
                {
                   sprintf( temp_res,
                            EXPR_PREFIX "%s"
-                           "%svalue.cancelIndirection();\n" /* I-bug */
-                           "%svalue.setValue('F',(MathFunc3Args)%s,%s,%s,%s);\n",
+                           "%svalue.cancelRedirection();\n" /* I-bug */
+                           "%svalue.setDoubleValue((MathFunc3Args)%s,%s,%s,%s);\n",
                            findfunc_code,
                            indent,
                            indent,func,
@@ -367,8 +367,8 @@ char *do_parname (char *namestr, int isanc, int byvalue)
              if (partype==TYPE_CONST_NUM) partype=TYPE_NUMERIC;
 
              sprintf(temp_res, EXPR_PREFIX
-                               "%svalue.cancelIndirection();\n" /* I-bug */
-                               "%svalue.setValue('I', &mod->par( \"%s\" ));\n",
+                               "%svalue.cancelRedirection();\n" /* I-bug */
+                               "%svalue.setRedirection(&mod->par( \"%s\"));\n",
                                indent,
                                indent, namestr);
              EXPR_USE(temp_res) = USE_VALUE;
@@ -382,7 +382,7 @@ char *do_parname (char *namestr, int isanc, int byvalue)
              sprintf(temp_res,EXPR_PREFIX
                               "%spar = &mod->ancestorPar( \"%s\" );\n"
                               "%scheck_anc_param(par,\"%s\",\"%s\");\n"
-                              "%svalue.cancelIndirection();\n" /* I-bug */
+                              "%svalue.cancelRedirection();\n" /* I-bug */
                               "%svalue = *par;\n",
                               indent,namestr,
                               indent,namestr,module_name,
@@ -396,8 +396,8 @@ char *do_parname (char *namestr, int isanc, int byvalue)
              sprintf(temp_res,EXPR_PREFIX
                               "%spar = &mod->ancestorPar( \"%s\" );\n"
                               "%scheck_anc_param(par,\"%s\",\"%s\");\n"
-                              "%svalue.cancelIndirection();\n" /* I-bug */
-                              "%svalue.setValue('I', par );\n",
+                              "%svalue.cancelRedirection();\n" /* I-bug */
+                              "%svalue.setRedirection( par );\n",
                               indent,namestr,
                               indent,namestr,module_name,
                               indent,
@@ -434,8 +434,8 @@ char *end_expr (char *expr)
         sprintf(temp_res,EXPR_PREFIX
                          "%sexpr_tab = new sXElem[%d]; k=0;\n"
                          "%s"
-                         "%svalue.cancelIndirection();\n" /* I-bug */
-                         "%svalue.setValue('X',expr_tab,k);\n",
+                         "%svalue.cancelRedirection();\n" /* I-bug */
+                         "%svalue.setDoubleValue(expr_tab,k);\n",
                          indent,k,
                          EXPR_STR(expr),
                          indent,
@@ -500,7 +500,7 @@ char *do_inputvalue (char *val_expr, char *promptstr)
     else
     {
         sprintf( temp_res, EXPR_PREFIX
-                           "%svalue.cancelIndirection();\n" /* I-bug */
+                           "%svalue.cancelRedirection();\n" /* I-bug */
                            "%svalue = %s;\n",
                            indent,
                            indent, EXPR_STR(val_expr));

@@ -39,8 +39,8 @@ void Client::activity()
         // connection setup
         ev << "sending CONN_REQ\n";
         conn_req = new cMessage( "CONN_REQ", CONN_REQ );
-        conn_req->addPar( *new cPar("src")  = own_addr );
-        conn_req->addPar( *new cPar("dest") = server_addr );
+        conn_req->addPar("src") = own_addr;
+        conn_req->addPar("dest") = server_addr;
         send( conn_req, "out" );
 
         ev << "waiting for CONN_ACK\n";

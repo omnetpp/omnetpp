@@ -698,9 +698,34 @@ Dec 4,1999
 Dec 5,1999
   - Makefile.vc added
 Dec 18,1999
-  - renamed isA() to className() in cObject and derived classes. Compatibility
-    #define added to defs.h
+  - renamed isA() to className() in cObject and derived classes.
+    A compatibility #define was temporarily added to defs.h to ease migration.
   - in cMessage, isbad() renamed to hasBitError(), isgood() removed, and
     setError() renamed to setBitError()
   - macro names in module interface declarations (Interface...End) changed to
-    reduce chance of name clashes
+    reduce chance of name clashes. This is internal to OMNeT++ and does not
+    affect user code.
+Dec 19,1999
+ -  cPar interface cleaned up:
+    o  overloaded setValue(..) functions were renamed to setStringValue(..),
+       setLongValue(..), setBoolValue(..), etc., and the type character was
+       deleted from their arg list. This was done to be consistent with the
+       getter functions which already had the names stringValue(), longValue()
+       etc., and to make client code more readable by eliminating
+       "magic constants" (the type characters).
+    o  redirection handling functions were changed to: setRedirection(cPar*),
+       isRedirected(), cPar* redirection(), cancelRedirection(). This results
+       in more readable client code.
+    o  the number of constructors was reduced to 3 by deleting the ones which
+       set an initial long,string,etc. value. Prior to this cPar had
+       16 constructors which made subclassing very cumbersome. Functionality
+       is not lost because the user can write code like
+          cPar par("par") = 5L;
+       Existing client code like
+          msg->addPar( *new cPar("dest", 'L', dest );
+       can be rewritten like
+          msg->addPar( *new cPar("dest") = dest );
+       or better like
+           msg->addPar("dest") = dest;
+       Note that the two new and better forms have been available for a long
+       time, so the change should not affect much existing code.

@@ -36,9 +36,9 @@ void HCGenerator::activity()
         char msgname[30];
         sprintf(msgname, "%d-->%d", my_address,dest);
         cMessage *msg = new cMessage(msgname);
-        msg->addPar( *new cPar("src", 'L', my_address) );
-        msg->addPar( *new cPar("dest", 'L', dest) );
-        msg->addPar( *new cPar("hops", 'L', 0L) );
+        msg->addPar("src") = my_address;
+        msg->addPar("dest") = dest;
+        msg->addPar("hops") = 0L;
         msg->setTimestamp();
 
         // send out the message

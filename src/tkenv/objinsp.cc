@@ -499,7 +499,7 @@ void TParInspector::update()
    setEntry(".main.input.e", p->isInput() ? "1" : "0" );
 
    cObject *obj;
-   setInspectButton(".bot.indirection",obj=p->indirection(),INSP_DEFAULT);
+   setInspectButton(".bot.indirection",obj=p->redirection(),INSP_DEFAULT);
    if (obj) sprintf(buf,"Value taken from: %.30s",obj->fullPath());
    setButtonText(".bot.indirection", obj ? buf : "-not redirected-");
 }

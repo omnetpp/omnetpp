@@ -274,7 +274,7 @@ bool cModule::checkInternalConnections()
 
 void cModule::addMachinePar(char *pname)
 {
-    machinev.add( *new cPar(pname, 'S', "") );
+    machinev.add( *new cPar(pname) = "" );
 }
 
 void cModule::setMachinePar(char *pname, char *value)
