@@ -4,6 +4,8 @@
 CXX=@CXX@
 CC=@CC@
 MAKEDEPEND=@MAKEDEPEND@
+WISH=@WISH@
+WISH_NAMED_DIFFERENTLY=@WISH_NAMED_DIFFERENTLY@
 
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
@@ -23,6 +25,11 @@ all: seedtool tcl2c
 	cp neddoc.xsl $(OMNETPP_BIN_DIR)
 	cp neddocproc.pl $(OMNETPP_BIN_DIR)
 	../utils/install-prog seedtool $(OMNETPP_BIN_DIR)
+	if test "$(WISH_NAMED_DIFFERENTLY)" = "yes"; then \
+	    echo $(WISH) >wish \
+	    chmod +x wish \
+	    cp wish $(OMNETPP_BIN_DIR) \
+	fi
 
 seedtool : seedtool.cc
 	$(CXX) seedtool.cc -o seedtool
