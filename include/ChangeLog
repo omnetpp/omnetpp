@@ -1,3 +1,28 @@
+2003-09-22 Andras Varga
+
+	* cenvir.h: messageSent() signature modified, in order to be able to 
+	animate	sendDirect().
+
+        * cmodule.h: refined the rules for sendDirect(), and documented it.
+	Namely, fromGate()==NULL must hold for the destination gate, that
+	is, modules MUST have dedicated gates for receiving via sendDirect(). 
+	You cannot have a gate which receives messages via both connections 
+	and sendDirect().
+
+    	This restriction makes models cleaner (you must have dedicated gates
+    	for receiving messages via sendDirect()), and it is also necessary
+    	for proper animation in Tkenv.
+
+        Soundly written existing models will not be affected.
+
+	* cmessage.h: new fields added: 
+	    unsigned refcount : 7;     // reference count for encapsulated message (max 63)
+	    unsigned char srcprocid;   // reserved for use by parallel exec.
+    	Also made existing `bool error' a 1-bit bitfield (1 length).
+    	The total size of cMessage didn't grow as probably earlier the compiler
+    	used some padding to align fields after the "error" field to a 2-byte 
+    	boundary (at least), and we just filled up this space with useful data.
+
 2003-06-16  ------ omnetpp-2.3 released ------
 
 2003-06-16  Andras Varga
