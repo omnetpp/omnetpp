@@ -38,12 +38,12 @@ NEXT: @ref part1
 
 UP: @ref contents
 
-The purpose of this tutorial is to introduce you to the simulation
-of telecommunications networks with OMNeT++. For a start, let us begin
-with a "network" that consists of two nodes. The nodes will do something
-simple: one the nodes will create a packet, and the two nodes
-will keep passing the same packet back and forth. We'll call the nodes
-"tic" and "toc".
+Since the most common application area of OMNeT++ is the simulation of
+telecommunications networks, we'll borrow our topic from there.
+For a start, let us begin with a "network" that consists of two nodes.
+The nodes will do something simple: one the nodes will create a packet,
+and the two nodes will keep passing the same packet back and forth.
+We'll call the nodes "tic" and "toc".
 
 Here are the steps you take to implement your first simulation from scratch:
 
@@ -377,7 +377,6 @@ The result of running the simulation can be seen below.
 
 <img src="step5.gif">
 
-
 Sources: @ref tictoc5.ned, @ref txc5.cc, @ref omnetpp.ini
 
 
@@ -402,7 +401,8 @@ In addition, we'll "lose" (delete) the packet with a small (hardcoded) probabili
 We'll assign the parameters in omnetpp.ini:
 
 @dontinclude omnetpp.ini
-@skipline tictoc6.toc
+@skipline tictoc6.
+@skipline tictoc6.
 
 You can try that no matter how many times you re-run the simulation (or
 restart it, Simulate|Rebuild network menu item), you'll get exactly the
@@ -416,9 +416,9 @@ seeds if you add the following lines to omnetpp.ini:
 seed-0-mt=532569  # or any other 32-bit value
 @endcode
 
-(From the syntax you have probably guessed that OMNeT++ supports
+From the syntax you have probably guessed that OMNeT++ supports
 more than one RNGs. That's right, however, all models in this tutorial
-use RNG 0.)
+use RNG 0.
 
 Sources: @ref tictoc6.ned, @ref txc6.cc, @ref omnetpp.ini
 
