@@ -48,7 +48,7 @@ static void flush_if_needed(char *buf, char *&s, int limit, Tcl_Interp *interp, 
 
 void TStructPanel::update()
 {
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
 
    // delete display
    CHK(Tcl_VarEval(interp, widgetname, ".txt delete 1.0 end", NULL));
@@ -166,7 +166,7 @@ void TStructPanel::writeBack()
    // TBD
 }
 
-int TStructPanel::inspectorCommand(Tcl_Interp *interp, int argc, char **argv)
+int TStructPanel::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
 {
    // a Tcl-based struct inspector might use this...
 

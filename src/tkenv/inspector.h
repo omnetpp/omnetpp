@@ -29,12 +29,14 @@ enum { INSP_DEFAULT,
        NUM_INSPECTORTYPES   // this must be the last one
 };
 
-char *insptype_name_from_code( int code );
-int insptype_code_from_name( char *namestr );
+const char *insptype_name_from_code( int code );
+int insptype_code_from_name(const char *namestr);
 
 //=========================================================================
-// virtual base class for all inspectors
 
+/**
+ * Virtual base class for all inspectors.
+ */
 class TInspector : public cObject
 {
    protected:
@@ -62,7 +64,7 @@ class TInspector : public cObject
       virtual void update();
       virtual void writeBack() {}
 
-      virtual int inspectorCommand(Tcl_Interp *interp, int, char **) {return TCL_ERROR;}
+      virtual int inspectorCommand(Tcl_Interp *interp, int, const char **) {return TCL_ERROR;}
 
       // utility functions:
       void setEntry(const char *entry, const char *val);
@@ -92,7 +94,7 @@ class TInspectorPanel
       TInspectorPanel(const char *widgetname, cObject *obj);
       virtual void update() = 0;
       virtual void writeBack() = 0;
-      virtual int inspectorCommand(Tcl_Interp *, int, char **) = 0;
+      virtual int inspectorCommand(Tcl_Interp *, int, const char **) = 0;
 };
 
 #endif

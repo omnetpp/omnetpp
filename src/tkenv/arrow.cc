@@ -110,7 +110,7 @@ static void clip_line_to_rect(
 }
 
 
-int arrowcoords(Tcl_Interp *interp, int argc, char **argv)
+int arrowcoords(Tcl_Interp *interp, int argc, const char **argv)
 {
       if (argc!=18) {interp->result="17 args expected"; return TCL_ERROR;}
 

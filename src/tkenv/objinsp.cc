@@ -60,7 +60,7 @@ void TObjInspector::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    CHK(Tcl_VarEval(interp, "create_objinspector ", windowname, " \"", geometry, "\"", NULL ));
 
    if (cStructDescriptor::hasDescriptor(object->className()))
@@ -95,7 +95,7 @@ void TObjInspector::writeBack()
    TInspector::writeBack();    // must be there after all changes
 }
 
-int TObjInspector::inspectorCommand(Tcl_Interp *interp, int argc, char **argv)
+int TObjInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
 {
    if (fieldspage)
        return fieldspage->inspectorCommand(interp, argc, argv);
@@ -152,7 +152,7 @@ void TContainerInspector::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    char *typelist = " (default) object container graphical";
    CHK(Tcl_VarEval(interp, "create_containerinspector ", windowname, " \"", geometry, "\"", typelist, NULL));
 }
@@ -196,7 +196,7 @@ void TMessageInspector::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    CHK(Tcl_VarEval(interp, "create_messageinspector ", windowname, " \"", geometry, "\"", NULL ));
 
    if (cStructDescriptor::hasDescriptor(object->className()))
@@ -272,7 +272,7 @@ void TMessageInspector::writeBack()
    TInspector::writeBack();    // must be there after all changes
 }
 
-int TMessageInspector::inspectorCommand(Tcl_Interp *interp, int argc, char **argv)
+int TMessageInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
 {
    if (fieldspage)
        return fieldspage->inspectorCommand(interp, argc, argv);
@@ -313,7 +313,7 @@ void TWatchInspector::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    CHK(Tcl_VarEval(interp, "create_watchinspector ", windowname, " \"", geometry, "\"", NULL ));
 }
 
@@ -366,7 +366,7 @@ void TWatchInspector::update()
 
 void TWatchInspector::writeBack()
 {
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    cWatch *watch = (cWatch *)object;
 
    const char *s = getEntry(".main.name.e");
@@ -413,7 +413,7 @@ void TParInspector::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    CHK(Tcl_VarEval(interp, "create_parinspector ", windowname, " \"", geometry, "\"", NULL ));
 }
 
@@ -455,7 +455,7 @@ void TParInspector::update()
 
 void TParInspector::writeBack()
 {
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    cPar *p = (cPar *)object;
 
    char newtype = getEntry(".main.newtype.e")[0];
@@ -523,7 +523,7 @@ void TPacketInspector::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    CHK(Tcl_VarEval(interp, "create_packetinspector ", windowname, " \"", geometry, "\"", NULL ));
 }
 

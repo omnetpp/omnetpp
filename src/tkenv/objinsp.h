@@ -32,7 +32,7 @@ class TObjInspector : public TInspector
       virtual void createWindow();
       virtual void update();
       virtual void writeBack();
-      virtual int inspectorCommand(Tcl_Interp *interp, int argc, char **argv);
+      virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);
 };
 
 class TContainerInspector : public TInspector
@@ -57,7 +57,7 @@ class TMessageInspector: public TInspector
       virtual void createWindow();
       virtual void update();
       virtual void writeBack();
-      virtual int inspectorCommand(Tcl_Interp *interp, int argc, char **argv);
+      virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);
 };
 
 class TWatchInspector: public TInspector

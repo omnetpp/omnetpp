@@ -1,3 +1,9 @@
+2002-11-12 Andras Varga
+
+	* ported to Tk8.4 (several 'char *' to 'const char *' changes)
+
+	* renamed several internal methods in tklib.cc for clarity
+
 2002-11-03  Andras Varga
 
 	* tkapp.cc: clear main window when simulation is restarted
@@ -6,6 +12,8 @@
 
 	* inspect.cc, tkapp.cc,..: inspectorfactory registration moved here 
 	from sim/
+
+	* reorganized source files (split large .cc and .h files)
 
 	* reorganized the way inspectors are found and created
 

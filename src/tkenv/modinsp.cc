@@ -78,7 +78,7 @@ void TModuleWindow::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    cModule *mod = (cModule *)object;
    const char *createcommand = mod->isSimple() ?
             "create_simplemodulewindow " : "create_compoundmodulewindow ";
@@ -89,7 +89,7 @@ void TModuleWindow::update()
 {
    TInspector::update();
 
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    cModule *mod = (cModule *)object;
 
    setInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
@@ -156,7 +156,7 @@ void TGraphicalModWindow::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    CHK(Tcl_VarEval(interp, "create_graphicalmodwindow ", windowname, " \"", geometry, "\"", NULL ));
 }
 
@@ -164,7 +164,7 @@ void TGraphicalModWindow::update()
 {
    TInspector::update();
 
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
 
    // redraw modules only on explicit request
    if (needs_redraw)
@@ -178,7 +178,7 @@ void TGraphicalModWindow::update()
    }
 }
 
-int TGraphicalModWindow::redrawModules(Tcl_Interp *interp, int ac, char **av)
+int TGraphicalModWindow::redrawModules(Tcl_Interp *interp, int ac, const char **av)
 {
    // go to next seed if called with "1" (so that each redraw rearranges randomly placed submodules)
    if (ac>=2 && av[1][0]=='1')
@@ -304,7 +304,7 @@ int TGraphicalModWindow::redrawModules(Tcl_Interp *interp, int ac, char **av)
    return TCL_OK;
 }
 
-int TGraphicalModWindow::redrawMessages(Tcl_Interp *interp, int, char **)
+int TGraphicalModWindow::redrawMessages(Tcl_Interp *interp, int, const char **)
 {
    cSimpleModule *mod = (cSimpleModule *)object;
 
@@ -346,7 +346,7 @@ void TGraphicalModWindow::displayStringChange(cModule *, bool immediate)
 {
    if (immediate)
    {
-      Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+      Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
       CHK(Tcl_VarEval(interp, "graphmodwin_redraw ", windowname, NULL));
    }
    else
@@ -355,7 +355,7 @@ void TGraphicalModWindow::displayStringChange(cModule *, bool immediate)
    }
 }
 
-int TGraphicalModWindow::inspectorCommand(Tcl_Interp *interp, int argc, char **argv)
+int TGraphicalModWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc<1) {interp->result="wrong number of args"; return TCL_ERROR;}
 
@@ -377,7 +377,7 @@ int TGraphicalModWindow::inspectorCommand(Tcl_Interp *interp, int argc, char **a
    return TCL_ERROR;
 }
 
-int TGraphicalModWindow::getDisplayStringPar(Tcl_Interp *interp, int argc, char **argv)
+int TGraphicalModWindow::getDisplayStringPar(Tcl_Interp *interp, int argc, const char **argv)
 {
    // args: <module ptr> <parname> <searchparent>
    if (argc!=4) {interp->result="wrong number of args"; return TCL_ERROR;}
@@ -445,7 +445,7 @@ void TCompoundModInspector::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    CHK(Tcl_VarEval(interp, "create_compoundmodinspector ", windowname, " \"", geometry, "\"", NULL ));
 }
 
@@ -501,7 +501,7 @@ void TSimpleModInspector::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    CHK(Tcl_VarEval(interp, "create_simplemodinspector ", windowname, " \"", geometry, "\"", NULL ));
 }
 
@@ -580,7 +580,7 @@ void TGateInspector::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    CHK(Tcl_VarEval(interp, "create_gateinspector ", windowname, " \"", geometry, "\"", NULL ));
 }
 
@@ -648,11 +648,11 @@ void TGraphicalGateWindow::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    CHK(Tcl_VarEval(interp, "create_graphicalgatewindow ", windowname, " \"", geometry, "\"", NULL ));
 }
 
-int TGraphicalGateWindow::redraw(Tcl_Interp *interp, int, char **)
+int TGraphicalGateWindow::redraw(Tcl_Interp *interp, int, const char **)
 {
    cGate *gate = (cGate *)object;
 
@@ -731,7 +731,7 @@ void TGraphicalGateWindow::update()
 {
    TInspector::update();
 
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    cGate *gate = (cGate *)object;
 
    setInspectButton(".toolbar.module", gate->ownerModule(),INSP_DEFAULT);
@@ -765,7 +765,7 @@ void TGraphicalGateWindow::update()
    }
 }
 
-int TGraphicalGateWindow::inspectorCommand(Tcl_Interp *interp, int argc, char **argv)
+int TGraphicalGateWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc<1) {interp->result="wrong number of args"; return TCL_ERROR;}
 

@@ -1114,13 +1114,12 @@ bool TOmnetTkApp::gets(const char *promptstr, char *buf, int len)
 
     if (interp->result[0]=='0')   // cancel
         return true;
-    else    // ok
-    {
-        char *result = Tcl_GetVar2(interp, "opp", "result", TCL_GLOBAL_ONLY);
-        strncpy(buf, result, len-1);
-        buf[len-1]='\0';
-        return false;
-    }
+
+    // ok
+    const char *result = Tcl_GetVar2(interp, "opp", "result", TCL_GLOBAL_ONLY);
+    strncpy(buf, result, len-1);
+    buf[len-1]='\0';
+    return false;
 }
 
 int TOmnetTkApp::askYesNo(const char *question)

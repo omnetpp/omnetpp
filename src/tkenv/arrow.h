@@ -22,7 +22,7 @@
 
 #include <tk.h>
 
-int arrowcoords(Tcl_Interp *interp, int argc, char **argv);
+int arrowcoords(Tcl_Interp *interp, int argc, const char **argv);
 
 #endif
 

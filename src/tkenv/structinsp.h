@@ -27,7 +27,7 @@ class TStructPanel : public TInspectorPanel
       TStructPanel(const char *widgetname, cObject *obj);
       virtual void update();
       virtual void writeBack();
-      virtual int inspectorCommand(Tcl_Interp *, int, char **);
+      virtual int inspectorCommand(Tcl_Interp *, int, const char **);
 };
 
 #endif

@@ -49,6 +49,7 @@ class TOmnetTkApp : public TOmnetApp
       // state transitions:
       //    SIM_NONET -> SIM_NEW -> (SIM_RUNNING <-> SIM_READY) -> SIM_TERMINATED -> SIM_FINISHCALLED -> SIM_NONET
       //                                               `-> SIM_ERROR
+
    public:
       int  opt_default_run;        // automatically set up this run at startup
       bool opt_bkpts_enabled;      // stop at breakpoints (can be improved...)
@@ -63,9 +64,9 @@ class TOmnetTkApp : public TOmnetApp
       int  opt_updatefreq_express; // RunExpress updates display every N events
       unsigned opt_extrastack;     // per-module extra stack
 
+   protected:
       Tcl_Interp *interp;      // TCL interpreter
 
-   protected:
       opp_string tkenv_dir;    // directory of Tkenv's *.tcl files
       opp_string bitmap_dir;   // directory of icon files
 
@@ -129,6 +130,7 @@ class TOmnetTkApp : public TOmnetApp
 
       int getSimulationState() {return simstate;}
       void setStopSimulationFlag() {stop_simulation = true;}
+      Tcl_Interp *getInterp() {return interp;}
 
       // small functions:
       void updateNetworkRunDisplay();

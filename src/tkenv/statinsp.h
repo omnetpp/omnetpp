@@ -30,7 +30,7 @@ class THistogramWindow : public TInspector
       virtual void createWindow();
       virtual void update();
       virtual void writeBack() {}
-      virtual int inspectorCommand(Tcl_Interp *interp, int argc, char **argv);
+      virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);
 
       // return textual information in general or about a value/value pair
       void generalInfo( char *buf );
@@ -78,7 +78,7 @@ class TOutVectorWindow : public TInspector
       ~TOutVectorWindow();
       virtual void createWindow();
       virtual void update();
-      virtual int inspectorCommand(Tcl_Interp *interp, int argc, char **argv);
+      virtual int inspectorCommand(Tcl_Interp *interp, int argc, const char **argv);
 
       // return textual information in general or about a value/value pair
       void generalInfo( char *buf );
@@ -86,7 +86,7 @@ class TOutVectorWindow : public TInspector
 
       // configuration get (text form) / set
       void getConfig( char *buf );
-      void setConfig( double timef, double miny, double maxy, char *mode );
+      void setConfig( double timef, double miny, double maxy, const char *mode);
 };
 
 class TStatisticInspector: public TInspector

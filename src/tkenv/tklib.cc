@@ -29,7 +29,7 @@
 
 //=======================================================================
 
-char *ptrToStr( void *ptr, char *buffer)
+char *ptrToStr(void *ptr, char *buffer)
 {
     static char staticbuf[20];
     if (buffer==NULL)
@@ -42,7 +42,7 @@ char *ptrToStr( void *ptr, char *buffer)
     return buffer;
 }
 
-void *strToPtr( char *s )
+void *strToPtr(const char *s)
 {
     void *ptr;
     sscanf(s+3,"%p",&ptr);
@@ -51,32 +51,9 @@ void *strToPtr( char *s )
 
 //-----------------------------------------------------------------------
 
-//
-// setTypes():
-//   Called by inspector() funcs of classes, if they get -1 as type.
-//   The func. places the inspector types supported by the class
-//   into the array passed, terminated by -1.
-//   The default inspector should be the first item.
-//
-
-void setTypes(void *data, ...)
+static bool do_fill_listbox( cObject *obj, bool beg, Tcl_Interp *intrp, const char *lstbox, InfoFunc f, bool dp)
 {
-   int *p = (int *)data;
-
-   int t;
-   va_list va;
-   va_start(va,data);
-   do {
-      t = va_arg(va,int);
-      *p++ = t;
-   } while (t>=0);
-}
-
-//-----------------------------------------------------------------------
-
-static bool do_fill_listbox( cObject *obj, bool beg, Tcl_Interp *intrp, char *lstbox, InfoFunc f, bool dp)
-{
-    static char *listbox;
+    static const char *listbox;
     static Tcl_Interp *interp;
     static InfoFunc infofunc;
     static bool deep;
@@ -97,7 +74,7 @@ static bool do_fill_listbox( cObject *obj, bool beg, Tcl_Interp *intrp, char *ls
     return deep || ctr++ == 0;
 }
 
-void collection( cObject *object, Tcl_Interp *interp, char *listbox, InfoFunc infofunc, bool deep)
+void fillListboxWithChildObjects( cObject *object, Tcl_Interp *interp, const char *listbox, InfoFunc infofunc, bool deep)
 {
     // feeds all children of 'object' into the listbox
     // CHK(Tcl_VarEval(interp, listbox, " delete 0 end", NULL ));
@@ -105,25 +82,25 @@ void collection( cObject *object, Tcl_Interp *interp, char *listbox, InfoFunc in
     object->forEach( (ForeachFunc)do_fill_listbox );
 }
 
-static void _modcollection(cModule *parent, Tcl_Interp *interp, char *listbox, InfoFunc infofunc, bool simpleonly, bool deep )
+static void do_fill_module_listbox(cModule *parent, Tcl_Interp *interp, const char *listbox, InfoFunc infofunc, bool simpleonly, bool deep )
 {
     // loop through module vector
     for (int i=0; i<=simulation.lastModuleId() && !memoryIsLow(); i++ )
     {
-      cModule *mod = simulation.module(i);
-      if (mod && mod!=simulation.systemModule() && mod->parentModule()==parent)
-      {
-         if (!simpleonly || mod->isSimple())
-            CHK(Tcl_VarEval(interp, listbox," insert end {",infofunc(mod),"}",NULL));
+        cModule *mod = simulation.module(i);
+        if (mod && mod!=simulation.systemModule() && mod->parentModule()==parent)
+        {
+           if (!simpleonly || mod->isSimple())
+              CHK(Tcl_VarEval(interp, listbox," insert end {",infofunc(mod),"}",NULL));
 
-         // handle 'deep' option using recursivity
-         if (deep)
-            _modcollection(mod,interp,listbox,infofunc,simpleonly,deep);
-      }
+           // handle 'deep' option using recursivity
+           if (deep)
+              do_fill_module_listbox(mod,interp,listbox,infofunc,simpleonly,deep);
+        }
     }
 }
 
-void modcollection(cModule *parent, Tcl_Interp *interp, char *listbox, InfoFunc infofunc, bool simpleonly, bool deep )
+void fillListboxWithChildModules(cModule *parent, Tcl_Interp *interp, const char *listbox, InfoFunc infofunc, bool simpleonly, bool deep )
 {
     // CHK(Tcl_VarEval(interp, listbox, " delete 0 end", NULL ));
     if (deep)
@@ -131,7 +108,7 @@ void modcollection(cModule *parent, Tcl_Interp *interp, char *listbox, InfoFunc 
          if (!simpleonly || parent->isSimple())
             CHK(Tcl_VarEval(interp, listbox," insert end {",infofunc(parent),"}",NULL));
     }
-    _modcollection(parent,interp,listbox,infofunc,simpleonly,deep);
+    do_fill_module_listbox(parent,interp,listbox,infofunc,simpleonly,deep);
 }
 
 //-----------------------------------------------------------------------
@@ -227,7 +204,7 @@ static bool do_inspect_matching( cObject *obj, bool beg, short *patt, int typ, b
     return deep || ctr++ == 0;
 }
 
-int inspect_matching(cObject *object, Tcl_Interp *, char *pattern, int type, bool countonly)
+int inspectMatchingObjects(cObject *object, Tcl_Interp *, char *pattern, int type, bool countonly)
 {
     // open inspectors for children of 'object' whose fullpath matches pattern
     short trf_pattern[512];
@@ -284,7 +261,7 @@ static bool do_inspect_by_name( cObject *obj, bool beg, const char *_fullpath, c
 }
 
 
-void inspect_by_name(const char *fullpath, const char *classname, int insptype, const char *geometry)
+void inspectObjectByName(const char *fullpath, const char *classname, int insptype, const char *geometry)
 {
     // open inspectors for object whose is the same as fullpath
     do_inspect_by_name(NULL,false, fullpath, classname, insptype, geometry);

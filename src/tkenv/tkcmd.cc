@@ -30,52 +30,52 @@
 
 
 // Command functions:
-int newNetwork_cmd(ClientData, Tcl_Interp *, int, char **);
-int newRun_cmd(ClientData, Tcl_Interp *, int, char **);
-int createSnapshot_cmd(ClientData, Tcl_Interp *, int, char **);
-int exitOmnetpp_cmd(ClientData, Tcl_Interp *, int, char **);
-int oneStep_cmd(ClientData, Tcl_Interp *, int, char **);
-int slowExec_cmd(ClientData, Tcl_Interp *, int, char **);
-int run_cmd(ClientData, Tcl_Interp *, int, char **);
-int runExpress_cmd(ClientData, Tcl_Interp *, int, char **);
-int oneStepInModule_cmd(ClientData, Tcl_Interp *, int, char **);
-int rebuild_cmd(ClientData, Tcl_Interp *, int, char **);
-int startAll_cmd(ClientData, Tcl_Interp *, int, char **);
-int finishSimulation_cmd(ClientData, Tcl_Interp *, int, char **);
-int loadLib_cmd(ClientData, Tcl_Interp *, int, char **);
+int newNetwork_cmd(ClientData, Tcl_Interp *, int, const char **);
+int newRun_cmd(ClientData, Tcl_Interp *, int, const char **);
+int createSnapshot_cmd(ClientData, Tcl_Interp *, int, const char **);
+int exitOmnetpp_cmd(ClientData, Tcl_Interp *, int, const char **);
+int oneStep_cmd(ClientData, Tcl_Interp *, int, const char **);
+int slowExec_cmd(ClientData, Tcl_Interp *, int, const char **);
+int run_cmd(ClientData, Tcl_Interp *, int, const char **);
+int runExpress_cmd(ClientData, Tcl_Interp *, int, const char **);
+int oneStepInModule_cmd(ClientData, Tcl_Interp *, int, const char **);
+int rebuild_cmd(ClientData, Tcl_Interp *, int, const char **);
+int startAll_cmd(ClientData, Tcl_Interp *, int, const char **);
+int finishSimulation_cmd(ClientData, Tcl_Interp *, int, const char **);
+int loadLib_cmd(ClientData, Tcl_Interp *, int, const char **);
 
-int getNetworkType_cmd(ClientData, Tcl_Interp *, int, char **);
-int getFileName_cmd(ClientData, Tcl_Interp *, int, char **);
-int getObjectFullpath_cmd(ClientData, Tcl_Interp *, int, char **);
-int getObjectClassName_cmd(ClientData, Tcl_Interp *, int, char **);
-int getSimulationState_cmd(ClientData, Tcl_Interp *, int, char **);
-int fillListbox_cmd(ClientData, Tcl_Interp *, int, char **);
-int stopSimulation_cmd(ClientData, Tcl_Interp *, int, char **);
-int getSimOption_cmd(ClientData, Tcl_Interp *, int, char **);
-int setSimOption_cmd(ClientData, Tcl_Interp *, int, char **);
+int getNetworkType_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getFileName_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getObjectFullpath_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getObjectClassName_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getSimulationState_cmd(ClientData, Tcl_Interp *, int, const char **);
+int fillListbox_cmd(ClientData, Tcl_Interp *, int, const char **);
+int stopSimulation_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getSimOption_cmd(ClientData, Tcl_Interp *, int, const char **);
+int setSimOption_cmd(ClientData, Tcl_Interp *, int, const char **);
 
-int inspect_cmd(ClientData, Tcl_Interp *, int, char **);
-int supportedInspTypes_cmd(ClientData, Tcl_Interp *, int, char **);
-int inspectMatching_cmd(ClientData, Tcl_Interp *, int, char **);
-int inspectByName_cmd(ClientData, Tcl_Interp *, int, char **);
-int updateInspector_cmd(ClientData, Tcl_Interp *, int, char **);
-int writeBackInspector_cmd(ClientData, Tcl_Interp *, int, char **);
-int deleteInspector_cmd(ClientData, Tcl_Interp *, int, char **);
-int updateInspectors_cmd(ClientData, Tcl_Interp *, int, char **);
-int inspectorType_cmd(ClientData, Tcl_Interp *, int, char **);
-int inspectorCommand_cmd(ClientData, Tcl_Interp *, int, char **);
-int hasDescriptor_cmd(ClientData, Tcl_Interp *, int, char **);
+int inspect_cmd(ClientData, Tcl_Interp *, int, const char **);
+int supportedInspTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
+int inspectMatching_cmd(ClientData, Tcl_Interp *, int, const char **);
+int inspectByName_cmd(ClientData, Tcl_Interp *, int, const char **);
+int updateInspector_cmd(ClientData, Tcl_Interp *, int, const char **);
+int writeBackInspector_cmd(ClientData, Tcl_Interp *, int, const char **);
+int deleteInspector_cmd(ClientData, Tcl_Interp *, int, const char **);
+int updateInspectors_cmd(ClientData, Tcl_Interp *, int, const char **);
+int inspectorType_cmd(ClientData, Tcl_Interp *, int, const char **);
+int inspectorCommand_cmd(ClientData, Tcl_Interp *, int, const char **);
+int hasDescriptor_cmd(ClientData, Tcl_Interp *, int, const char **);
 
-int objectNullPointer_cmd(ClientData, Tcl_Interp *, int, char **);
-int objectSimulation_cmd(ClientData, Tcl_Interp *, int, char **);
-int objectSystemModule_cmd(ClientData, Tcl_Interp *, int, char **);
-int objectMessageQueue_cmd(ClientData, Tcl_Interp *, int, char **);
-int objectModuleLocals_cmd(ClientData, Tcl_Interp *, int, char **);
-int objectModuleMembers_cmd(ClientData, Tcl_Interp *, int, char **);
-int objectNetworks_cmd(ClientData, Tcl_Interp *, int, char **);
-int objectModuleTypes_cmd(ClientData, Tcl_Interp *, int, char **);
-int objectChannelTypes_cmd(ClientData, Tcl_Interp *, int, char **);
-int objectFunctions_cmd(ClientData, Tcl_Interp *, int, char **);
+int objectNullPointer_cmd(ClientData, Tcl_Interp *, int, const char **);
+int objectSimulation_cmd(ClientData, Tcl_Interp *, int, const char **);
+int objectSystemModule_cmd(ClientData, Tcl_Interp *, int, const char **);
+int objectMessageQueue_cmd(ClientData, Tcl_Interp *, int, const char **);
+int objectModuleLocals_cmd(ClientData, Tcl_Interp *, int, const char **);
+int objectModuleMembers_cmd(ClientData, Tcl_Interp *, int, const char **);
+int objectNetworks_cmd(ClientData, Tcl_Interp *, int, const char **);
+int objectModuleTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
+int objectChannelTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
+int objectFunctions_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 // command table
 OmnetTclCommand tcl_commands[] = {
@@ -132,35 +132,35 @@ OmnetTclCommand tcl_commands[] = {
 //=================================================================
 // a utility function:
 
-void splitInspectorName(char *namestr, cObject *&object,int& type)
+void splitInspectorName(const char *namestr, cObject *&object, int& type)
 {
    // namestr is the window path name, sth like ".ptr80005a31-2"
    // split it into pointer string ("ptr80005a31") and inspector type ("2")
    assert(namestr!=0); // must exist
    assert(namestr[0]=='.');  // must begin with a '.'
 
-   // find '-' and replace it with EOS
+   // find '-' and temporarily replace it with EOS
    char *s;
-   for (s=namestr; *s!='-' && *s!='\0'; s++);
+   for (s=const_cast<char *>(namestr); *s!='-' && *s!='\0'; s++);
    assert(*s=='-');  // there must be a '-' in the string
    *s = '\0';
 
-   object = (cObject *)strToPtr( namestr+1 );
-   type = atoi( s+1 );
+   object = (cObject *)strToPtr(namestr+1);
+   type = atoi(s+1);
    *s = '-';  // restore '-'
    assert(object!=0);
 }
 
 //=================================================================
 
-int exitOmnetpp_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
+int exitOmnetpp_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {interp->result="wrong argcount"; return TCL_ERROR;}
    exit_omnetpp = 1;
    return TCL_OK;
 }
 
-int newNetwork_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
+int newNetwork_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {interp->result="wrong argcount"; return TCL_ERROR;}
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
@@ -168,7 +168,7 @@ int newNetwork_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
    return TCL_OK;
 }
 
-int newRun_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
+int newRun_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {interp->result="wrong argcount"; return TCL_ERROR;}
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
@@ -179,7 +179,7 @@ int newRun_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
    return TCL_OK;
 }
 
-int createSnapshot_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
+int createSnapshot_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {interp->result="wrong argcount"; return TCL_ERROR;}
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
@@ -187,7 +187,7 @@ int createSnapshot_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
    return TCL_OK;
 }
 
-int oneStep_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
+int oneStep_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {interp->result="wrong argcount"; return TCL_ERROR;}
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
@@ -195,7 +195,7 @@ int oneStep_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
    return TCL_OK;
 }
 
-int slowExec_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
+int slowExec_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {interp->result="wrong argcount"; return TCL_ERROR;}
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
@@ -203,7 +203,7 @@ int slowExec_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
    return TCL_OK;
 }
 
-int run_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
+int run_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2 && argc!=4) {interp->result="wrong argcount"; return TCL_ERROR;}
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
@@ -220,7 +220,7 @@ int run_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
    return TCL_OK;
 }
 
-int runExpress_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
+int runExpress_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc>3) {interp->result="wrong argcount"; return TCL_ERROR;}
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
@@ -236,7 +236,7 @@ int runExpress_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
    return TCL_OK;
 }
 
-int oneStepInModule_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
+int oneStepInModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {interp->result="wrong argcount"; return TCL_ERROR;}
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
@@ -250,7 +250,7 @@ int oneStepInModule_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
    return TCL_OK;
 }
 
-int rebuild_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
+int rebuild_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {interp->result="wrong argcount"; return TCL_ERROR;}
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
@@ -258,7 +258,7 @@ int rebuild_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
    return TCL_OK;
 }
 
-int startAll_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
+int startAll_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {interp->result="wrong argcount"; return TCL_ERROR;}
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
@@ -266,7 +266,7 @@ int startAll_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
    return TCL_OK;
 }
 
-int finishSimulation_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
+int finishSimulation_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {interp->result="wrong argcount"; return TCL_ERROR;}
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
@@ -274,7 +274,7 @@ int finishSimulation_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
    return TCL_OK;
 }
 
-int loadLib_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
+int loadLib_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {interp->result="wrong argcount"; return TCL_ERROR;}
    return opp_loadlibrary(argv[1]) ? TCL_OK : TCL_ERROR;
@@ -282,7 +282,7 @@ int loadLib_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
 
 //--------------
 
-int getNetworkType_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
+int getNetworkType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {interp->result="wrong argcount"; return TCL_ERROR;}
    cNetworkType *n = simulation.networkType();
@@ -290,7 +290,7 @@ int getNetworkType_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
    return TCL_OK;
 }
 
-int getFileName_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
+int getFileName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {interp->result="wrong argcount"; return TCL_ERROR;}
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
@@ -310,7 +310,7 @@ int getFileName_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
    return TCL_OK;
 }
 
-int getObjectFullpath_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
+int getObjectFullpath_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {interp->result="wrong argcount"; return TCL_ERROR;}
    cObject *object = (cObject *)strToPtr( argv[1] );
@@ -318,7 +318,7 @@ int getObjectFullpath_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
    return TCL_OK;
 }
 
-int getObjectClassName_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
+int getObjectClassName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {interp->result="wrong argcount"; return TCL_ERROR;}
    cObject *object = (cObject *)strToPtr( argv[1] );
@@ -326,7 +326,7 @@ int getObjectClassName_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv
    return TCL_OK;
 }
 
-int getSimulationState_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
+int getSimulationState_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {interp->result="wrong argcount"; return TCL_ERROR;}
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
@@ -344,7 +344,7 @@ int getSimulationState_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
    return TCL_OK;
 }
 
-int fillListbox_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
+int fillListbox_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    // Example:
    //   opp_fill_listbox .dialog.frame.listbox objects ptr80004a72 fullpath
@@ -356,7 +356,7 @@ int fillListbox_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
    if (argc<3) {interp->result="wrong argcount"; return TCL_ERROR;}
 
    // listbox
-   char *listbox = argv[1];
+   const char *listbox = argv[1];
 
    // argv[2]: "objects" or "modules"
    bool modulelist;
@@ -398,13 +398,13 @@ int fillListbox_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
 
    // do the job
    if (modulelist)
-        modcollection( (cModule *)object, interp, listbox, f, simpleonly, deep );
+        fillListboxWithChildModules( (cModule *)object, interp, listbox, f, simpleonly, deep );
    else
-        collection( object, interp, listbox, f, deep);
+        fillListboxWithChildObjects( object, interp, listbox, f, deep);
    return TCL_OK;
 }
 
-int stopSimulation_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
+int stopSimulation_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {interp->result="wrong argcount"; return TCL_ERROR;}
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
@@ -412,7 +412,7 @@ int stopSimulation_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
    return TCL_OK;
 }
 
-int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
+int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {interp->result="wrong argcount"; return TCL_ERROR;}
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
@@ -444,7 +444,7 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
    return TCL_OK;
 }
 
-int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
+int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=3) {interp->result="wrong argcount"; return TCL_ERROR;}
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
@@ -480,7 +480,7 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
 
 //--------------
 
-int inspect_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
+int inspect_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=3 && argc!=4) {interp->result="wrong argcount"; return TCL_ERROR;}
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
@@ -500,7 +500,7 @@ int inspect_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
    return TCL_OK;
 }
 
-int supportedInspTypes_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
+int supportedInspTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    // expected arg: pointer
    if (argc!=2) {interp->result="wrong argcount"; return TCL_ERROR;}
@@ -534,7 +534,7 @@ int supportedInspTypes_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv
    return TCL_OK;
 }
 
-int inspectMatching_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
+int inspectMatching_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    // expected args: pattern type [countonly]
    if (argc!=3 && argc!=4) {interp->result="wrong argcount"; return TCL_ERROR;}
@@ -556,13 +556,13 @@ int inspectMatching_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
       else
          return TCL_ERROR;
    }
-   int count = inspect_matching(&simulation, interp, pattern, type, countonly); // FIXME was 'superhead'!
+   int count = inspectMatchingObjects(&simulation, interp, pattern, type, countonly); // FIXME was 'superhead'!
    sprintf(interp->result,"%d", count);
    return TCL_OK;
 }
 
 
-int inspectByName_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
+int inspectByName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    // args: <objfullpath> <classname> <insptype> ?geom?
    if (argc!=4 && argc!=5) {interp->result="wrong argcount"; return TCL_ERROR;}
@@ -578,12 +578,12 @@ int inspectByName_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
 
    const char *geometry = (argc==5) ? argv[4] : NULL;
 
-   inspect_by_name(fullpath, classname, insptype, geometry);
+   inspectObjectByName(fullpath, classname, insptype, geometry);
    return TCL_OK;
 }
 
 
-int updateInspector_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
+int updateInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {interp->result="wrong argcount"; return TCL_ERROR;}
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
@@ -599,7 +599,7 @@ int updateInspector_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
    return TCL_OK;
 }
 
-int writeBackInspector_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
+int writeBackInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {interp->result="wrong argcount"; return TCL_ERROR;}
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
@@ -616,7 +616,7 @@ int writeBackInspector_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv
    return TCL_OK;
 }
 
-int deleteInspector_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
+int deleteInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {interp->result="wrong argcount"; return TCL_ERROR;}
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
@@ -632,7 +632,7 @@ int deleteInspector_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
    return TCL_OK;
 }
 
-int updateInspectors_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
+int updateInspectors_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {interp->result="wrong argcount"; return TCL_ERROR;}
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
@@ -640,7 +640,7 @@ int updateInspectors_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
    return TCL_OK;
 }
 
-int inspectorType_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
+int inspectorType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {interp->result="wrong argcount"; return TCL_ERROR;}
 
@@ -657,10 +657,10 @@ int inspectorType_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
    else if (argv[1][0]>='0' && argv[1][0]<='9')
    {
         int type = atoi( argv[1] );
-        char *namestr = insptype_name_from_code( type );
+        const char *namestr = insptype_name_from_code( type );
         if (namestr==NULL)
            {interp->result="unrecognized inspector type";return TCL_ERROR;}
-        interp->result = namestr;
+        interp->result = const_cast<char *>(namestr);
    }
    else
    {
@@ -672,7 +672,7 @@ int inspectorType_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
    return TCL_OK;
 }
 
-int inspectorCommand_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
+int inspectorCommand_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc<2) {interp->result="wrong argcount"; return TCL_ERROR;}
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
@@ -686,7 +686,7 @@ int inspectorCommand_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
    return insp->inspectorCommand(interp, argc-2, argv+2);
 }
 
-int hasDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
+int hasDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {interp->result="wrong argcount"; return TCL_ERROR;}
    //TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
@@ -699,35 +699,35 @@ int hasDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
 }
 
 //--------------
-int objectNullPointer_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
+int objectNullPointer_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {interp->result="wrong argcount"; return TCL_ERROR;}
    interp->result = ptrToStr( NULL );
    return TCL_OK;
 }
 
-int objectSimulation_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
+int objectSimulation_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {interp->result="wrong argcount"; return TCL_ERROR;}
    interp->result = ptrToStr( &simulation );
    return TCL_OK;
 }
 
-int objectSystemModule_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
+int objectSystemModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {interp->result="wrong argcount"; return TCL_ERROR;}
    interp->result = ptrToStr( simulation.systemModule() );
    return TCL_OK;
 }
 
-int objectMessageQueue_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
+int objectMessageQueue_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {interp->result="wrong argcount"; return TCL_ERROR;}
    interp->result = ptrToStr( &simulation.msgQueue );
    return TCL_OK;
 }
 
-int objectModuleLocals_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
+int objectModuleLocals_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {interp->result="wrong argcount"; return TCL_ERROR;}
    cModule *mod = (cModule *)strToPtr( argv[1] );
@@ -737,7 +737,7 @@ int objectModuleLocals_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv
    return TCL_OK;
 }
 
-int objectModuleMembers_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
+int objectModuleMembers_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {interp->result="wrong argcount"; return TCL_ERROR;}
    cModule *mod = (cModule *)strToPtr( argv[1] );
@@ -747,28 +747,28 @@ int objectModuleMembers_cmd(ClientData, Tcl_Interp *interp, int argc, char **arg
    return TCL_OK;
 }
 
-int objectNetworks_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
+int objectNetworks_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {interp->result="wrong argcount"; return TCL_ERROR;}
    interp->result = ptrToStr( &networks );
    return TCL_OK;
 }
 
-int objectModuleTypes_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
+int objectModuleTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {interp->result="wrong argcount"; return TCL_ERROR;}
    interp->result = ptrToStr( &modtypes );
    return TCL_OK;
 }
 
-int objectChannelTypes_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
+int objectChannelTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {interp->result="wrong argcount"; return TCL_ERROR;}
    interp->result = ptrToStr( &linktypes );
    return TCL_OK;
 }
 
-int objectFunctions_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
+int objectFunctions_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {interp->result="wrong argcount"; return TCL_ERROR;}
    interp->result = ptrToStr( &functions );

@@ -68,7 +68,7 @@ void TStatisticInspector::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    CHK(Tcl_VarEval(interp, "create_statisticinspector ", windowname, " \"", geometry, "\"", NULL ));
 }
 
@@ -116,7 +116,7 @@ void THistogramWindow::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    CHK(Tcl_VarEval(interp, "create_histogramwindow ", windowname, " \"", geometry, "\"", NULL ));
 }
 
@@ -124,7 +124,7 @@ void THistogramWindow::update()
 {
    TInspector::update();
 
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    cDensityEstBase *distr = (cDensityEstBase *)object;
 
    char buf[80];
@@ -219,7 +219,7 @@ void THistogramWindow::cellInfo( char *buf, int cell )
           );
 }
 
-int THistogramWindow::inspectorCommand(Tcl_Interp *interp, int argc, char **argv)
+int THistogramWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc<1) {interp->result="wrong argcount"; return TCL_ERROR;}
 
@@ -312,7 +312,7 @@ void TOutVectorWindow::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    CHK(Tcl_VarEval(interp, "create_outvectorwindow ", windowname, " \"", geometry, "\"", NULL ));
 }
 
@@ -320,7 +320,7 @@ void TOutVectorWindow::update()
 {
    TInspector::update();
 
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
 
    char buf[80];
    generalInfo( buf );
@@ -604,7 +604,7 @@ void TOutVectorWindow::getConfig( char *buf )
    sprintf(buf,"%g %g %g %s", time_factor, miny, maxy, drawingmodes[drawing_mode] );
 }
 
-void TOutVectorWindow::setConfig( double timefac, double min_y, double max_y, char *mode )
+void TOutVectorWindow::setConfig( double timefac, double min_y, double max_y, const char *mode)
 {
    // store new parameters
    autoscale = false;
@@ -628,7 +628,7 @@ void TOutVectorWindow::setConfig( double timefac, double min_y, double max_y, ch
    drawing_mode = i;
 }
 
-int TOutVectorWindow::inspectorCommand(Tcl_Interp *interp, int argc, char **argv)
+int TOutVectorWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc<1) {interp->result="wrong argcount"; return TCL_ERROR;}
 

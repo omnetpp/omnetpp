@@ -38,7 +38,7 @@ struct InspTypeName {int code; char *namestr;} insp_typenames[] =
      { -1,                     NULL           }
 };
 
-char *insptype_name_from_code( int code )
+const char *insptype_name_from_code(int code)
 {
    for (int i=0; insp_typenames[i].namestr!=NULL; i++)
       if (insp_typenames[i].code == code)
@@ -46,7 +46,7 @@ char *insptype_name_from_code( int code )
    return NULL;
 }
 
-int insptype_code_from_name( char *namestr )
+int insptype_code_from_name(const char *namestr)
 {
    for (int i=0; insp_typenames[i].namestr!=NULL; i++)
       if (strcmp(insp_typenames[i].namestr, namestr)==0)
@@ -76,7 +76,7 @@ TInspector::~TInspector()
 {
    if (windowname[0])
    {
-      Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+      Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
       CHK(Tcl_VarEval(interp, "destroy_inspector_toplevel ", windowname, NULL ));
    }
 }
@@ -93,14 +93,14 @@ void TInspector::createWindow()
 
 bool TInspector::windowExists()
 {
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    CHK(Tcl_VarEval(interp, "winfo exists ", windowname, NULL ));
    return interp->result[0]=='1';
 }
 
 void TInspector::showWindow()
 {
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    CHK(Tcl_VarEval(interp, "wm deiconify ", windowname, NULL ));
    CHK(Tcl_VarEval(interp, "raise ", windowname, NULL ));
    CHK(Tcl_VarEval(interp, "focus ", windowname, NULL ));
@@ -108,13 +108,13 @@ void TInspector::showWindow()
 
 void TInspector::hostObjectDeleted()
 {
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    CHK(Tcl_VarEval(interp, "inspector_hostobjectdeleted ", windowname, NULL ));
 }
 
 void TInspector::update()
 {
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
 
    // update window title (only if changed)
    //  (always updating the title produced many unnecessary redraws under fvwm2-95)
@@ -129,14 +129,14 @@ void TInspector::update()
 
 void TInspector::setEntry(const char *entry, const char *val)
 {
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    CHK(Tcl_VarEval(interp, windowname,entry," delete 0 end;",
                            windowname,entry," insert 0 {",val,"}",NULL));
 }
 
 void TInspector::setEntry( const char *entry, long l )
 {
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    char buf[16];
    sprintf(buf, "%ld", l );
    CHK(Tcl_VarEval(interp, windowname,entry," delete 0 end;",
@@ -145,7 +145,7 @@ void TInspector::setEntry( const char *entry, long l )
 
 void TInspector::setEntry( const char *entry, double d )
 {
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    char buf[24];
    sprintf(buf, "%g", d );
    CHK(Tcl_VarEval(interp, windowname,entry," delete 0 end;",
@@ -154,13 +154,13 @@ void TInspector::setEntry( const char *entry, double d )
 
 void TInspector::setLabel( const char *label, const char *val )
 {
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    CHK(Tcl_VarEval(interp, windowname,label," config -text {",val,"}",NULL));
 }
 
 void TInspector::setLabel( const char *label, long l )
 {
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    char buf[16];
    sprintf(buf, "%ld", l );
    CHK(Tcl_VarEval(interp, windowname,label," config -text {",buf,"}",NULL));
@@ -168,7 +168,7 @@ void TInspector::setLabel( const char *label, long l )
 
 void TInspector::setLabel( const char *label, double d )
 {
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    char buf[16];
    sprintf(buf, "%g", d );
    CHK(Tcl_VarEval(interp, windowname,label," config -text {",buf,"}",NULL));
@@ -176,14 +176,14 @@ void TInspector::setLabel( const char *label, double d )
 
 const char *TInspector::getEntry( const char *entry )
 {
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    CHK(Tcl_VarEval(interp, windowname,entry," get",NULL));
    return interp->result;
 }
 
 void TInspector::setInspectButton( const char *button, cObject *object, int type )
 {
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    if (object)
    {
       char buf[16];
@@ -199,23 +199,23 @@ void TInspector::setInspectButton( const char *button, cObject *object, int type
 
 void TInspector::setButtonText( const char *button, const char *text)
 {
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    CHK(Tcl_VarEval(interp, windowname,button," config -text {",text,"}",NULL));
 }
 
 void TInspector::deleteInspectorListbox( const char *listbox)
 {
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    CHK(Tcl_VarEval(interp,windowname,listbox,".main.list delete 0 end",NULL));
 }
 
 void TInspector::fillInspectorListbox(const char *listbox, cObject *object,
                              InfoFunc infofunc,bool deep)
 {
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    char w[256], buf[256];
    sprintf(w, "%s%s.main.list", windowname,listbox);
-   collection( object, interp, w, infofunc, deep);
+   fillListboxWithChildObjects( object, interp, w, infofunc, deep);
 
    // set "number of items" display
    CHK(Tcl_VarEval(interp,w," index end",NULL));
@@ -227,10 +227,10 @@ void TInspector::fillInspectorListbox(const char *listbox, cObject *object,
 void TInspector::fillModuleListbox(const char *listbox, cModule *parent,
                                 InfoFunc infofunc,bool simpleonly,bool deep )
 {
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    char w[256], buf[256];
    sprintf(w, "%s%s.main.list", windowname,listbox);
-   modcollection( parent, interp, w, infofunc, simpleonly, deep);
+   fillListboxWithChildModules( parent, interp, w, infofunc, simpleonly, deep);
 
    // set "number of items" display
    CHK(Tcl_VarEval(interp,w," index end",NULL));
