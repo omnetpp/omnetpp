@@ -1,1 +1,1 @@
-@d:\home\tools\Tcl-8.4.1\bin\wish84.exe -f d:/home/omnetpp-work/bitmaps/showpics 
+@c:\home\tools\Tcl-8.4.2\bin\wish84.exe -f c:/home/omnetpp/bitmaps/showpics 

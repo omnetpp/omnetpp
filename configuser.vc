@@ -16,7 +16,7 @@
 OMNETPP_ROOT=c:/home/omnetpp
 
 # Version. Should ideally come from the 'Version' file...
-OMNETPP_VERSION=omnetpp-2.3b2
+OMNETPP_VERSION=omnetpp-2.3
 
 #
 # Location of Tcl/Tk, PVM, MPI, Expat
