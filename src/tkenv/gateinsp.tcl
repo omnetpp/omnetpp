@@ -67,15 +67,12 @@ proc create_graphicalgatewindow {name geom} {
     # create toolbar
     iconbutton $w.toolbar.ascont -image $icons(asobject) -command "inspect_this $w {As Object}"
     iconbutton $w.toolbar.sep1   -separator
-    #iconbutton $w.toolbar.module -image $icons(parent) ;#command assigned from C++
-    #iconbutton $w.toolbar.sep2   -separator
     iconbutton $w.toolbar.redraw -image $icons(redraw) -command "opp_inspectorcommand $w redraw"
-    foreach i {ascont sep1 module sep2 redraw} {
+    foreach i {ascont sep1 redraw} {
        pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
     }
 
     set help_tips($w.toolbar.ascont) {Inspect as object}
-    set help_tips($w.toolbar.module) {Inspect owner module}
     set help_tips($w.toolbar.redraw) {Redraw}
 
     # create canvas

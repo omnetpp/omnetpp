@@ -1124,8 +1124,6 @@ void TGraphicalGateWindow::update()
    Tcl_Interp *interp = getTkApplication()->getInterp();
    cGate *gate = static_cast<cGate *>(object);
 
-   setToolbarInspectButton(".toolbar.module", gate->ownerModule(),INSP_DEFAULT);
-
    // redraw modules only on explicit request
 
    // loop through all messages in the event queue
