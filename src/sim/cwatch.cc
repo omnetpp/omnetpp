@@ -68,18 +68,16 @@ void cWatch::printTo(char *buf)
          case 's':  if (*(char **)ptr==NULL)
                        sprintf(buf, "char *%s = NULL", name());
                     else
-                       sprintf(buf, "char *%s = \"%.40s\"", name(), *(char **)ptr);
+                       // FIXME following is dangerous, but usually doesn't crash if the pointer has once been initialized...
+                       // it would be better to have a checkbox in the inspector to allow/disallow pointer dereferencing!
+                       sprintf(buf, "char *%s = \"%.40s\" (%p)", name(), *(char **)ptr, *(char **)ptr);
                     break;
          case 'o':  if (*(cObject **)ptr==NULL)
                        sprintf(buf, "cObject *%s = NULL", name());
                     else
-                       sprintf(buf, "cObject *%s = (not NULL, but maybe not a valid object)",
-                               name() );
-                       // // cannot call info(): recursivity!!!
-                       // // even this is dangerous:
-                       // sprintf(buf, "cObject *%s --> (%s) `%s'", name(),
-                       //                   (*(cObject **)ptr)->className(),
-                       //                   (*(cObject **)ptr)->name() );
+                       // cannot call name(), className() or info() -- may crash if this is not a valid object!
+                       sprintf(buf, "cObject *%s = %p (may or may not be a valid object pointer)",
+                               name(), *(cObject **)ptr );
                     break;
       }
 }

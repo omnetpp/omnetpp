@@ -314,7 +314,16 @@ int createSnapshot_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
-   app->createSnapshot( argv[1] );
+   try 
+   {
+       app->createSnapshot( argv[1] );
+   } 
+   catch (cException *e)
+   {
+       Tcl_SetResult(interp, const_cast<char *>(e->message()), TCL_VOLATILE);
+       delete e;
+       return TCL_ERROR;
+   }
    return TCL_OK;
 }
 

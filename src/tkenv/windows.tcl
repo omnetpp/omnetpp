@@ -145,7 +145,7 @@ proc savefile {win filename} {
        return
     }
     if [catch {puts -nonewline $f [$win.main.text get 1.0 end]} err] {
-       messagebox {Error} "Error: $err" info ok
+       messagebox {Error} "Error: $err" error ok
        return
     }
     close $f

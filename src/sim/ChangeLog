@@ -1,3 +1,8 @@
+2002-12-21  Andras Varga
+
+	* cwatch.cc: for 'char *' and 'cObject *' types, cWatch::info() 
+	displays pointer value
+
 2002-12-19  Andras Varga
 
 	* always use <iostream> instead of <iostream.h>

@@ -42,8 +42,7 @@ proc network_ready {} {
     if {[is_simulation_ok] == 1} {
         return 1
     } else {
-        set ans [ messagebox {Warning} {Cannot continue this simulation. Rebuild network?} \
-                  question yesno ]
+        set ans [messagebox {Warning} {Cannot continue this simulation. Rebuild network?} question yesno]
         if {$ans == "yes"} {
             rebuild
             return [is_simulation_ok]
@@ -103,14 +102,20 @@ proc create_snapshot {} {
     set label ""
     set ok [inputbox {Snapshot} {Give a label to current simulation snapshot:} label]
     if {$ok == 1} {
-        opp_createsnapshot $label
-        set ans [messagebox {Snapshot created} "Current state of simulation \
-has been saved into \"[opp_getfilename snapshot]\". Do you want to open it now \
-in a file viewer window?" question yesno]
-        if {$ans == "yes"} {
-            view_snapshotfile
+        if [catch {opp_createsnapshot $label} err] {
+          messagebox {Error} "Error: $err" error ok
+          return
         }
-
+        set snapshotfile [opp_getfilename snapshot]
+        if {$snapshotfile==""} {
+            messagebox {Snapshot created} "Current state of simulation has been saved." info ok
+        } else {
+            set ans [messagebox {Snapshot created} "Current state of simulation has been \
+saved into \"$snapshotfile\". Do you want to open it now in a file viewer window?" question yesno]
+            if {$ans == "yes"} {
+                view_snapshotfile
+            }
+        }
     }
 }
 
@@ -570,7 +575,7 @@ proc load_tkenvrc {} {
           close $f
       }
   } err] {
-      messagebox {Error} "Error: $err" info ok
+      messagebox {Error} "Error: $err" error ok
       return
   }
 }
@@ -581,7 +586,7 @@ proc save_tkenvrc {} {
       inspectorlist_save $f
       close $f
   } err] {
-      messagebox {Error} "Error: $err" info ok
+      messagebox {Error} "Error: $err" error ok
       return
   }
 }
