@@ -88,17 +88,18 @@ class cDoubleExpression : public cExpression
 /**
  * Parameter class are designed to hold a value.
  *
- * Types and type characters:
+ * cPar supports several data types. Data types are identified by type
+ * characters. The current data type is returned by type().
  *
  * <UL>
- *   <LI> basic types: S string, B bool, L long, D double
- *   <LI> F math function (MathFuncNoArgs,MathFunc1Args,etc),
- *   <LI> X expression (table of ExprElems),
- *   <LI> C compiled expression (subclassed from cDoubleExpression),
- *   <LI> T distribution from a cStatistic,
- *   <LI> P pointer to cObject,
- *   <LI> I indirection (refers to another cPar)
- *   <LI> M XML element (pointer to a cXMLElement)
+ *   <LI> basic types: <b>S</b> string, <b>B</b> bool, <b>L</b> long, <b>D</b> double
+ *   <LI> <b>F</b> math function (MathFuncNoArgs,MathFunc1Args,etc),
+ *   <LI> <b>X</b> reverse Polish expression (array of ExprElem objects),
+ *   <LI> <b>C</b> compiled expression (subclassed from cDoubleExpression),
+ *   <LI> <b>T</b> distribution from a cStatistic,
+ *   <LI> <b>P</b> pointer to cObject,
+ *   <LI> <b>I</b> indirection (refers to another cPar)
+ *   <LI> <b>M</b> XML element (pointer to a cXMLElement)
  * </UL>
  *
  * For all types, an input flag can be set. In this case,
@@ -107,8 +108,8 @@ class cDoubleExpression : public cExpression
  * for cPar. If no prompt string is given, the object's
  * name will be displayed as prompt text.
  *
- * NOTE: forEach() ignores objects stored here such as cPars in eXpressions,
- * cObject pointed to in 'P' type, cStatistic in disTribution type
+ * NOTE: forEachChild() ignores objects stored here such as cPars in ExprElem
+ * structs (type X), cObject pointed to (type P), cStatistic (type T)
  *
  * @ingroup SimCore
  * @see ExprElem
@@ -117,11 +118,8 @@ class SIM_API cPar : public cObject
 {
   public:
     /**
-     * One component in a (reversed Polish) expression in a cPar.
-     *
-     * If the value of the cPar is of expression type, the expression
-     * must be converted to reversed Polish form. The reversed Polish
-     * form expression is stored in a vector of ExprElem structures.
+     * One component in a (reversed Polish) expression in a cPar;
+     * see cPar::setDoubleValue(ExprElem *,int).
      */
     struct ExprElem
     {
@@ -438,14 +436,30 @@ class SIM_API cPar : public cObject
     cPar& setDoubleValue(cStatistic *res);
 
     /**
-     * Sets the value to the given expression.
+     * Sets the value to the given Reverse Polish expression, specified as
+     * an array of ExprElem structs.
      * Every time the cPar's value is asked the expression will be
-     * evaluated.
+     * evaluated using a stack machine. The stack machine calculates
+     * in doubles.
+     *
+     * Example: the NED expression <i>(count+1)/2</i> would be represented
+     * in the following way:
+     *
+     * \code
+     * cPar::ExprElem *expression = new cPar::ExprElem[5];
+     * expression[0] = &(mod->par("count")); // ptr to module parameter
+     * expression[1] = 1;
+     * expression[2] = '+';
+     * expression[3] = 2;
+     * expression[4] = '/';
+     * param.setDoubleValue(expression,5);
+     * \endcode
      */
     cPar& setDoubleValue(ExprElem *x, int n);
 
     /**
-     * Sets the value to the given compiled expression.
+     * Sets the value to the given compiled expression, subclassed from
+     * cDoubleExpression.
      * Every time the cPar's value is asked, the evaluate() function of
      * cDoubleExpression will be called. The passed object will be
      * deallocated (using operator delete) from the cPar destructor, and
@@ -508,17 +522,17 @@ class SIM_API cPar : public cObject
 
     /**
      * Configures memory management for the void* pointer ('P') type.
-     * Similar to cLinkedList's configPointer() function.
+     * Similar to cLinkedList::configPointer().
      *
      * <TABLE BORDER=1>
      *   <TR>
-     *     <TD><b>delete func.</b></TD><TD><b>dupl.func.</b></TD><TD><b>itemsize</b></TD><TD><b>behavior</b></TD>
+     *     <TD><b>delfunc</b></TD><TD><b>dupfunc.</b></TD><TD><b>itemsize</b></TD><TD><b>behavior</b></TD>
      *   </TR>
      *   <TR>
      *     <TD>NULL</TD><TD>NULL</TD><TD>0</TD><TD>Pointer is treated as mere pointer - no memory management. Duplication copies the pointer, and deletion does nothing.</TD>
      *   </TR>
      *   <TR>
-     *     <TD>NULL</TD><TD>NULL</TD><TD>0 size</TD><TD>Plain memory management. Duplication is done with new char[size]+memcpy(), and deletion is done via delete.</TD>
+     *     <TD>NULL</TD><TD>NULL</TD><TD>!=0</TD><TD>Plain memory management. Duplication is done with new char[size]+memcpy(), and deletion is done via delete.</TD>
      *   </TR>
      *   <TR>
      *     <TD>NULL or user's delete func.</TD><TD>user's dupfunc.</TD><TD>indifferent</TD><TD WIDTH=317>Sophisticated memory management. Duplication is done by calling the user-supplied duplication function, which should do the allocation and the appropriate copying. Deletion is done by calling the user-supplied delete function, or the delete operator if it is not supplied.</TD>
@@ -528,7 +542,7 @@ class SIM_API cPar : public cObject
     void configPointer( VoidDelFunc delfunc, VoidDupFunc dupfunc, size_t itemsize=0);
 
     /**
-     * Sets the flag that determines whether setObjectValue(cOBject *) and
+     * Sets the flag that determines whether setObjectValue(cObject *) and
      * setDoubleValue(cStatistic *) should automatically take ownership of
      * the objects.
      */
