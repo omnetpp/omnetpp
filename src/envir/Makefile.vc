@@ -73,25 +73,25 @@ clean:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 args.obj: envdefs.h args.h
-cenvir.obj: envdefs.h args.h $(OMNETPP_INCL_DIR)/cenvir.h $(OMNETPP_INCL_DIR)/defs.h omnetapp.h $(OMNETPP_INCL_DIR)/carray.h
-cenvir.obj: $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/util.h slaveapp.h $(OMNETPP_INCL_DIR)/cmodule.h
-cenvir.obj: $(OMNETPP_INCL_DIR)/ccor.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/cqueue.h $(OMNETPP_INCL_DIR)/cgate.h
-cenvir.obj: $(OMNETPP_INCL_DIR)/csimul.h $(OMNETPP_INCL_DIR)/errmsg.h $(OMNETPP_INCL_DIR)/cmsgheap.h $(OMNETPP_INCL_DIR)/coutvect.h
-cenvir.obj: $(OMNETPP_INCL_DIR)/cnetmod.h
-cinifile.obj: envdefs.h $(OMNETPP_INCL_DIR)/cenvir.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h cinifile.h patmatch.h
-main.obj: envdefs.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/csimul.h
-main.obj: $(OMNETPP_INCL_DIR)/errmsg.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/cmsgheap.h $(OMNETPP_INCL_DIR)/coutvect.h
-main.obj: $(OMNETPP_INCL_DIR)/ccor.h $(OMNETPP_INCL_DIR)/cenvir.h
-omnetapp.obj: envdefs.h args.h omnetapp.h $(OMNETPP_INCL_DIR)/carray.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h
-omnetapp.obj: $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/cenvir.h cinifile.h patmatch.h
-omnetapp.obj: $(OMNETPP_INCL_DIR)/ctypes.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/ccor.h $(OMNETPP_INCL_DIR)/csimul.h
-omnetapp.obj: $(OMNETPP_INCL_DIR)/errmsg.h $(OMNETPP_INCL_DIR)/cmsgheap.h $(OMNETPP_INCL_DIR)/coutvect.h $(OMNETPP_INCL_DIR)/cpar.h
-omnetapp.obj: $(OMNETPP_INCL_DIR)/cnetmod.h $(OMNETPP_INCL_DIR)/cmodule.h $(OMNETPP_INCL_DIR)/cqueue.h $(OMNETPP_INCL_DIR)/cgate.h
-patmatch.obj: envdefs.h patmatch.h $(OMNETPP_INCL_DIR)/defs.h
-seeds.obj: envdefs.h omnetapp.h $(OMNETPP_INCL_DIR)/carray.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h
-seeds.obj: $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/cenvir.h
-slaveapp.obj: envdefs.h slaveapp.h omnetapp.h $(OMNETPP_INCL_DIR)/carray.h $(OMNETPP_INCL_DIR)/cobject.h
-slaveapp.obj: $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/cenvir.h cinifile.h
-slaveapp.obj: $(OMNETPP_INCL_DIR)/csimul.h $(OMNETPP_INCL_DIR)/errmsg.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/cmsgheap.h
-slaveapp.obj: $(OMNETPP_INCL_DIR)/coutvect.h $(OMNETPP_INCL_DIR)/ccor.h $(OMNETPP_INCL_DIR)/cnetmod.h $(OMNETPP_INCL_DIR)/cmodule.h
-slaveapp.obj: $(OMNETPP_INCL_DIR)/cqueue.h $(OMNETPP_INCL_DIR)/cgate.h
+cenvir.obj: envdefs.h args.h ../../include/cenvir.h ../../include/defs.h omnetapp.h ../../include/carray.h
+cenvir.obj: ../../include/cobject.h ../../include/util.h slaveapp.h ../../include/cmodule.h
+cenvir.obj: ../../include/ccor.h ../../include/chead.h ../../include/cqueue.h ../../include/cgate.h
+cenvir.obj: ../../include/csimul.h ../../include/errmsg.h ../../include/cmsgheap.h ../../include/coutvect.h
+cenvir.obj: ../../include/cnetmod.h
+cinifile.obj: envdefs.h ../../include/cenvir.h ../../include/defs.h ../../include/util.h cinifile.h patmatch.h
+main.obj: envdefs.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/csimul.h
+main.obj: ../../include/errmsg.h ../../include/chead.h ../../include/cmsgheap.h ../../include/coutvect.h
+main.obj: ../../include/ccor.h ../../include/cenvir.h
+omnetapp.obj: envdefs.h args.h omnetapp.h ../../include/carray.h ../../include/cobject.h ../../include/defs.h
+omnetapp.obj: ../../include/util.h ../../include/cenvir.h cinifile.h patmatch.h
+omnetapp.obj: ../../include/ctypes.h ../../include/chead.h ../../include/ccor.h ../../include/csimul.h
+omnetapp.obj: ../../include/errmsg.h ../../include/cmsgheap.h ../../include/coutvect.h ../../include/cpar.h
+omnetapp.obj: ../../include/cnetmod.h ../../include/cmodule.h ../../include/cqueue.h ../../include/cgate.h
+patmatch.obj: envdefs.h patmatch.h ../../include/defs.h
+seeds.obj: envdefs.h omnetapp.h ../../include/carray.h ../../include/cobject.h ../../include/defs.h
+seeds.obj: ../../include/util.h ../../include/cenvir.h
+slaveapp.obj: envdefs.h slaveapp.h omnetapp.h ../../include/carray.h ../../include/cobject.h
+slaveapp.obj: ../../include/defs.h ../../include/util.h ../../include/cenvir.h cinifile.h
+slaveapp.obj: ../../include/csimul.h ../../include/errmsg.h ../../include/chead.h ../../include/cmsgheap.h
+slaveapp.obj: ../../include/coutvect.h ../../include/ccor.h ../../include/cnetmod.h ../../include/cmodule.h
+slaveapp.obj: ../../include/cqueue.h ../../include/cgate.h

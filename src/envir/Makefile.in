@@ -72,37 +72,37 @@ speedmtr.o : speedmtr.cc
 	$(CXX) -c $(COPTS) speedmtr.cc
 
 depend:
-	makedepend -Y -I. -I../sim -- *.cc
-	makedepend -Y -I. -I../sim -fMakefile.in -- *.cc
+	makedepend -Y -I. -I../../include -- *.cc
+	makedepend -Y -I. -I../../include -fMakefile.in -- *.cc
 
 clean:
 	rm -f *.o libenvir$(A_LIB_SUFFIX) libenvir$(SO_LIB_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-args.o: args.h envdefs.h ../sim/defs.h
-cenvir.o: args.h envdefs.h ../sim/defs.h cinifile.h ../sim/cenvir.h
-cenvir.o: omnetapp.h ../sim/carray.h ../sim/cobject.h ../sim/util.h
-cenvir.o: ../sim/chead.h slaveapp.h appreg.h ../sim/cmodule.h ../sim/ccor.h
-cenvir.o: ../sim/cqueue.h ../sim/cgate.h ../sim/csimul.h ../sim/errmsg.h
-cenvir.o: ../sim/cmsgheap.h ../sim/coutvect.h ../sim/cnetmod.h
-cinifile.o: ../sim/cenvir.h ../sim/defs.h ../sim/util.h cinifile.h envdefs.h
+args.o: args.h envdefs.h ../../include/defs.h
+cenvir.o: args.h envdefs.h ../../include/defs.h cinifile.h ../../include/cenvir.h
+cenvir.o: omnetapp.h ../../include/carray.h ../../include/cobject.h ../../include/util.h
+cenvir.o: ../../include/chead.h slaveapp.h appreg.h ../../include/cmodule.h ../../include/ccor.h
+cenvir.o: ../../include/cqueue.h ../../include/cgate.h ../../include/csimul.h ../../include/errmsg.h
+cenvir.o: ../../include/cmsgheap.h ../../include/coutvect.h ../../include/cnetmod.h
+cinifile.o: ../../include/cenvir.h ../../include/defs.h ../../include/util.h cinifile.h envdefs.h
 cinifile.o: patmatch.h
-main.o: ../sim/cobject.h ../sim/defs.h ../sim/util.h ../sim/csimul.h
-main.o: ../sim/errmsg.h ../sim/chead.h ../sim/cmsgheap.h ../sim/coutvect.h
-main.o: ../sim/ccor.h ../sim/cenvir.h
-omnetapp.o: args.h envdefs.h ../sim/defs.h omnetapp.h ../sim/carray.h
-omnetapp.o: ../sim/cobject.h ../sim/util.h ../sim/chead.h ../sim/cenvir.h
-omnetapp.o: cinifile.h patmatch.h ../sim/ctypes.h ../sim/ccor.h
-omnetapp.o: ../sim/csimul.h ../sim/errmsg.h ../sim/cmsgheap.h
-omnetapp.o: ../sim/coutvect.h ../sim/cpar.h ../sim/cnetmod.h ../sim/cmodule.h
-omnetapp.o: ../sim/cqueue.h ../sim/cgate.h
-patmatch.o: patmatch.h ../sim/defs.h envdefs.h
-seeds.o: omnetapp.h ../sim/carray.h ../sim/cobject.h ../sim/defs.h
-seeds.o: ../sim/util.h ../sim/chead.h ../sim/cenvir.h args.h envdefs.h
-slaveapp.o: slaveapp.h envdefs.h ../sim/defs.h omnetapp.h ../sim/carray.h
-slaveapp.o: ../sim/cobject.h ../sim/util.h ../sim/chead.h ../sim/cenvir.h
-slaveapp.o: args.h cinifile.h ../sim/csimul.h ../sim/errmsg.h
-slaveapp.o: ../sim/cmsgheap.h ../sim/coutvect.h ../sim/ccor.h
-slaveapp.o: ../sim/cnetmod.h ../sim/cmodule.h ../sim/cqueue.h ../sim/cgate.h
+main.o: ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/csimul.h
+main.o: ../../include/errmsg.h ../../include/chead.h ../../include/cmsgheap.h ../../include/coutvect.h
+main.o: ../../include/ccor.h ../../include/cenvir.h
+omnetapp.o: args.h envdefs.h ../../include/defs.h omnetapp.h ../../include/carray.h
+omnetapp.o: ../../include/cobject.h ../../include/util.h ../../include/chead.h ../../include/cenvir.h
+omnetapp.o: cinifile.h patmatch.h ../../include/ctypes.h ../../include/ccor.h
+omnetapp.o: ../../include/csimul.h ../../include/errmsg.h ../../include/cmsgheap.h
+omnetapp.o: ../../include/coutvect.h ../../include/cpar.h ../../include/cnetmod.h ../../include/cmodule.h
+omnetapp.o: ../../include/cqueue.h ../../include/cgate.h
+patmatch.o: patmatch.h ../../include/defs.h envdefs.h
+seeds.o: omnetapp.h ../../include/carray.h ../../include/cobject.h ../../include/defs.h
+seeds.o: ../../include/util.h ../../include/chead.h ../../include/cenvir.h args.h envdefs.h
+slaveapp.o: slaveapp.h envdefs.h ../../include/defs.h omnetapp.h ../../include/carray.h
+slaveapp.o: ../../include/cobject.h ../../include/util.h ../../include/chead.h ../../include/cenvir.h
+slaveapp.o: args.h cinifile.h ../../include/csimul.h ../../include/errmsg.h
+slaveapp.o: ../../include/cmsgheap.h ../../include/coutvect.h ../../include/ccor.h
+slaveapp.o: ../../include/cnetmod.h ../../include/cmodule.h ../../include/cqueue.h ../../include/cgate.h
 slaveapp.o: appreg.h

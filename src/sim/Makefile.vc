@@ -155,60 +155,60 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-carray.obj: $(OMNETPP_INCL_DIR)/macros.h $(OMNETPP_INCL_DIR)/ctypes.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/errmsg.h $(OMNETPP_INCL_DIR)/carray.h
-ccor.obj: $(OMNETPP_INCL_DIR)/ccor.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h
-cdensity.obj: $(OMNETPP_INCL_DIR)/macros.h $(OMNETPP_INCL_DIR)/ctypes.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/cdensity.h
-cdensity.obj: $(OMNETPP_INCL_DIR)/cstat.h
-cdetect.obj: $(OMNETPP_INCL_DIR)/csimul.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/errmsg.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/cmsgheap.h
-cdetect.obj: $(OMNETPP_INCL_DIR)/coutvect.h $(OMNETPP_INCL_DIR)/ccor.h $(OMNETPP_INCL_DIR)/cdetect.h $(OMNETPP_INCL_DIR)/cstat.h
-cfsm.obj: $(OMNETPP_INCL_DIR)/macros.h $(OMNETPP_INCL_DIR)/ctypes.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/cfsm.h
-cgate.obj: $(OMNETPP_INCL_DIR)/cmessage.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/carray.h $(OMNETPP_INCL_DIR)/cpar.h $(OMNETPP_INCL_DIR)/csimul.h $(OMNETPP_INCL_DIR)/errmsg.h
-cgate.obj: $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/cmsgheap.h $(OMNETPP_INCL_DIR)/coutvect.h $(OMNETPP_INCL_DIR)/ccor.h $(OMNETPP_INCL_DIR)/cmodule.h $(OMNETPP_INCL_DIR)/cqueue.h $(OMNETPP_INCL_DIR)/cgate.h
-cgate.obj: $(OMNETPP_INCL_DIR)/cenvir.h $(OMNETPP_INCL_DIR)/macros.h $(OMNETPP_INCL_DIR)/ctypes.h
-chead.obj: $(OMNETPP_INCL_DIR)/macros.h $(OMNETPP_INCL_DIR)/ctypes.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h
-chist.obj: $(OMNETPP_INCL_DIR)/macros.h $(OMNETPP_INCL_DIR)/ctypes.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/cdetect.h $(OMNETPP_INCL_DIR)/cstat.h
-chist.obj: $(OMNETPP_INCL_DIR)/chist.h $(OMNETPP_INCL_DIR)/cdensity.h
-cksplit.obj: $(OMNETPP_INCL_DIR)/macros.h $(OMNETPP_INCL_DIR)/ctypes.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/cenvir.h
-cksplit.obj: $(OMNETPP_INCL_DIR)/cksplit.h $(OMNETPP_INCL_DIR)/cdensity.h $(OMNETPP_INCL_DIR)/cstat.h
-cllist.obj: $(OMNETPP_INCL_DIR)/macros.h $(OMNETPP_INCL_DIR)/ctypes.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/cllist.h
-cmessage.obj: $(OMNETPP_INCL_DIR)/macros.h $(OMNETPP_INCL_DIR)/ctypes.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/cmodule.h
-cmessage.obj: $(OMNETPP_INCL_DIR)/ccor.h $(OMNETPP_INCL_DIR)/carray.h $(OMNETPP_INCL_DIR)/cqueue.h $(OMNETPP_INCL_DIR)/cgate.h $(OMNETPP_INCL_DIR)/csimul.h $(OMNETPP_INCL_DIR)/errmsg.h $(OMNETPP_INCL_DIR)/cmsgheap.h
-cmessage.obj: $(OMNETPP_INCL_DIR)/coutvect.h $(OMNETPP_INCL_DIR)/cmessage.h $(OMNETPP_INCL_DIR)/cpar.h
-cmodule.obj: $(OMNETPP_INCL_DIR)/cmodule.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/ccor.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/carray.h $(OMNETPP_INCL_DIR)/cqueue.h
-cmodule.obj: $(OMNETPP_INCL_DIR)/cgate.h $(OMNETPP_INCL_DIR)/csimul.h $(OMNETPP_INCL_DIR)/errmsg.h $(OMNETPP_INCL_DIR)/cmsgheap.h $(OMNETPP_INCL_DIR)/coutvect.h $(OMNETPP_INCL_DIR)/cmessage.h $(OMNETPP_INCL_DIR)/cpar.h
-cmodule.obj: $(OMNETPP_INCL_DIR)/ctypes.h $(OMNETPP_INCL_DIR)/cnetmod.h $(OMNETPP_INCL_DIR)/cenvir.h
-cmsgheap.obj: $(OMNETPP_INCL_DIR)/macros.h $(OMNETPP_INCL_DIR)/ctypes.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/cmessage.h
-cmsgheap.obj: $(OMNETPP_INCL_DIR)/carray.h $(OMNETPP_INCL_DIR)/cpar.h $(OMNETPP_INCL_DIR)/csimul.h $(OMNETPP_INCL_DIR)/errmsg.h $(OMNETPP_INCL_DIR)/cmsgheap.h $(OMNETPP_INCL_DIR)/coutvect.h $(OMNETPP_INCL_DIR)/ccor.h
-cnetmod.obj: $(OMNETPP_INCL_DIR)/cpar.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/carray.h $(OMNETPP_INCL_DIR)/cenvir.h $(OMNETPP_INCL_DIR)/cnetmod.h
-cnetmod.obj: $(OMNETPP_INCL_DIR)/cmodule.h $(OMNETPP_INCL_DIR)/ccor.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/cqueue.h $(OMNETPP_INCL_DIR)/cgate.h $(OMNETPP_INCL_DIR)/csimul.h $(OMNETPP_INCL_DIR)/errmsg.h
-cnetmod.obj: $(OMNETPP_INCL_DIR)/cmsgheap.h $(OMNETPP_INCL_DIR)/coutvect.h
-cobject.obj: $(OMNETPP_INCL_DIR)/csimul.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/errmsg.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/cmsgheap.h
-cobject.obj: $(OMNETPP_INCL_DIR)/coutvect.h $(OMNETPP_INCL_DIR)/ccor.h $(OMNETPP_INCL_DIR)/cenvir.h $(OMNETPP_INCL_DIR)/macros.h $(OMNETPP_INCL_DIR)/ctypes.h
-coutvect.obj: $(OMNETPP_INCL_DIR)/coutvect.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/cmodule.h $(OMNETPP_INCL_DIR)/ccor.h $(OMNETPP_INCL_DIR)/chead.h
-coutvect.obj: $(OMNETPP_INCL_DIR)/carray.h $(OMNETPP_INCL_DIR)/cqueue.h $(OMNETPP_INCL_DIR)/cgate.h $(OMNETPP_INCL_DIR)/csimul.h $(OMNETPP_INCL_DIR)/errmsg.h $(OMNETPP_INCL_DIR)/cmsgheap.h $(OMNETPP_INCL_DIR)/cenvir.h
-cpacket.obj: $(OMNETPP_INCL_DIR)/macros.h $(OMNETPP_INCL_DIR)/ctypes.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/cpacket.h
-cpacket.obj: $(OMNETPP_INCL_DIR)/cmessage.h $(OMNETPP_INCL_DIR)/carray.h $(OMNETPP_INCL_DIR)/cpar.h $(OMNETPP_INCL_DIR)/csimul.h $(OMNETPP_INCL_DIR)/errmsg.h $(OMNETPP_INCL_DIR)/cmsgheap.h $(OMNETPP_INCL_DIR)/coutvect.h
-cpacket.obj: $(OMNETPP_INCL_DIR)/ccor.h
-cpar.obj: $(OMNETPP_INCL_DIR)/cpar.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/carray.h $(OMNETPP_INCL_DIR)/cstat.h $(OMNETPP_INCL_DIR)/macros.h $(OMNETPP_INCL_DIR)/ctypes.h
-cpar.obj: $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/errmsg.h $(OMNETPP_INCL_DIR)/cmodule.h $(OMNETPP_INCL_DIR)/ccor.h $(OMNETPP_INCL_DIR)/cqueue.h $(OMNETPP_INCL_DIR)/cgate.h $(OMNETPP_INCL_DIR)/csimul.h
-cpar.obj: $(OMNETPP_INCL_DIR)/cmsgheap.h $(OMNETPP_INCL_DIR)/coutvect.h $(OMNETPP_INCL_DIR)/cenvir.h
-cpsquare.obj: $(OMNETPP_INCL_DIR)/macros.h $(OMNETPP_INCL_DIR)/ctypes.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/cpsquare.h
-cpsquare.obj: $(OMNETPP_INCL_DIR)/cdensity.h $(OMNETPP_INCL_DIR)/cstat.h
-cqueue.obj: $(OMNETPP_INCL_DIR)/macros.h $(OMNETPP_INCL_DIR)/ctypes.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/cqueue.h
-csimul.obj: $(OMNETPP_INCL_DIR)/cmodule.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/ccor.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/carray.h $(OMNETPP_INCL_DIR)/cqueue.h
-csimul.obj: $(OMNETPP_INCL_DIR)/cgate.h $(OMNETPP_INCL_DIR)/csimul.h $(OMNETPP_INCL_DIR)/errmsg.h $(OMNETPP_INCL_DIR)/cmsgheap.h $(OMNETPP_INCL_DIR)/coutvect.h $(OMNETPP_INCL_DIR)/cmessage.h $(OMNETPP_INCL_DIR)/cpar.h
-csimul.obj: $(OMNETPP_INCL_DIR)/cenvir.h $(OMNETPP_INCL_DIR)/ctypes.h $(OMNETPP_INCL_DIR)/cnetmod.h $(OMNETPP_INCL_DIR)/cstat.h
-cstat.obj: $(OMNETPP_INCL_DIR)/cstat.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/macros.h $(OMNETPP_INCL_DIR)/ctypes.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/cdetect.h
-cstk.obj: $(OMNETPP_INCL_DIR)/cstk.h $(OMNETPP_INCL_DIR)/ccor.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/errmsg.h
-ctopo.obj: $(OMNETPP_INCL_DIR)/macros.h $(OMNETPP_INCL_DIR)/ctypes.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/cmodule.h $(OMNETPP_INCL_DIR)/ccor.h
-ctopo.obj: $(OMNETPP_INCL_DIR)/carray.h $(OMNETPP_INCL_DIR)/cqueue.h $(OMNETPP_INCL_DIR)/cgate.h $(OMNETPP_INCL_DIR)/csimul.h $(OMNETPP_INCL_DIR)/errmsg.h $(OMNETPP_INCL_DIR)/cmsgheap.h $(OMNETPP_INCL_DIR)/coutvect.h
-ctopo.obj: $(OMNETPP_INCL_DIR)/cpar.h $(OMNETPP_INCL_DIR)/cllist.h $(OMNETPP_INCL_DIR)/ctopo.h
-ctypes.obj: $(OMNETPP_INCL_DIR)/cpar.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/carray.h $(OMNETPP_INCL_DIR)/cmodule.h $(OMNETPP_INCL_DIR)/ccor.h $(OMNETPP_INCL_DIR)/chead.h
-ctypes.obj: $(OMNETPP_INCL_DIR)/cqueue.h $(OMNETPP_INCL_DIR)/cgate.h $(OMNETPP_INCL_DIR)/csimul.h $(OMNETPP_INCL_DIR)/errmsg.h $(OMNETPP_INCL_DIR)/cmsgheap.h $(OMNETPP_INCL_DIR)/coutvect.h $(OMNETPP_INCL_DIR)/macros.h
-ctypes.obj: $(OMNETPP_INCL_DIR)/ctypes.h
-cvarhist.obj: $(OMNETPP_INCL_DIR)/macros.h $(OMNETPP_INCL_DIR)/ctypes.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/cvarhist.h
-cvarhist.obj: $(OMNETPP_INCL_DIR)/chist.h $(OMNETPP_INCL_DIR)/cdensity.h $(OMNETPP_INCL_DIR)/cstat.h
-cwatch.obj: $(OMNETPP_INCL_DIR)/cwatch.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/util.h
-util.obj: $(OMNETPP_INCL_DIR)/util.h $(OMNETPP_INCL_DIR)/defs.h $(OMNETPP_INCL_DIR)/csimul.h $(OMNETPP_INCL_DIR)/errmsg.h $(OMNETPP_INCL_DIR)/chead.h $(OMNETPP_INCL_DIR)/cobject.h $(OMNETPP_INCL_DIR)/cmsgheap.h
-util.obj: $(OMNETPP_INCL_DIR)/coutvect.h $(OMNETPP_INCL_DIR)/ccor.h $(OMNETPP_INCL_DIR)/macros.h $(OMNETPP_INCL_DIR)/ctypes.h $(OMNETPP_INCL_DIR)/cwatch.h $(OMNETPP_INCL_DIR)/cpacket.h $(OMNETPP_INCL_DIR)/cmessage.h
-util.obj: $(OMNETPP_INCL_DIR)/carray.h $(OMNETPP_INCL_DIR)/cpar.h
+carray.obj: ../../include/macros.h ../../include/ctypes.h ../../include/chead.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/errmsg.h ../../include/carray.h
+ccor.obj: ../../include/ccor.h ../../include/cobject.h ../../include/defs.h ../../include/util.h
+cdensity.obj: ../../include/macros.h ../../include/ctypes.h ../../include/chead.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cdensity.h
+cdensity.obj: ../../include/cstat.h
+cdetect.obj: ../../include/csimul.h ../../include/defs.h ../../include/util.h ../../include/errmsg.h ../../include/chead.h ../../include/cobject.h ../../include/cmsgheap.h
+cdetect.obj: ../../include/coutvect.h ../../include/ccor.h ../../include/cdetect.h ../../include/cstat.h
+cfsm.obj: ../../include/macros.h ../../include/ctypes.h ../../include/chead.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cfsm.h
+cgate.obj: ../../include/cmessage.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/carray.h ../../include/cpar.h ../../include/csimul.h ../../include/errmsg.h
+cgate.obj: ../../include/chead.h ../../include/cmsgheap.h ../../include/coutvect.h ../../include/ccor.h ../../include/cmodule.h ../../include/cqueue.h ../../include/cgate.h
+cgate.obj: ../../include/cenvir.h ../../include/macros.h ../../include/ctypes.h
+chead.obj: ../../include/macros.h ../../include/ctypes.h ../../include/chead.h ../../include/cobject.h ../../include/defs.h ../../include/util.h
+chist.obj: ../../include/macros.h ../../include/ctypes.h ../../include/chead.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cdetect.h ../../include/cstat.h
+chist.obj: ../../include/chist.h ../../include/cdensity.h
+cksplit.obj: ../../include/macros.h ../../include/ctypes.h ../../include/chead.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cenvir.h
+cksplit.obj: ../../include/cksplit.h ../../include/cdensity.h ../../include/cstat.h
+cllist.obj: ../../include/macros.h ../../include/ctypes.h ../../include/chead.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cllist.h
+cmessage.obj: ../../include/macros.h ../../include/ctypes.h ../../include/chead.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cmodule.h
+cmessage.obj: ../../include/ccor.h ../../include/carray.h ../../include/cqueue.h ../../include/cgate.h ../../include/csimul.h ../../include/errmsg.h ../../include/cmsgheap.h
+cmessage.obj: ../../include/coutvect.h ../../include/cmessage.h ../../include/cpar.h
+cmodule.obj: ../../include/cmodule.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/ccor.h ../../include/chead.h ../../include/carray.h ../../include/cqueue.h
+cmodule.obj: ../../include/cgate.h ../../include/csimul.h ../../include/errmsg.h ../../include/cmsgheap.h ../../include/coutvect.h ../../include/cmessage.h ../../include/cpar.h
+cmodule.obj: ../../include/ctypes.h ../../include/cnetmod.h ../../include/cenvir.h
+cmsgheap.obj: ../../include/macros.h ../../include/ctypes.h ../../include/chead.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cmessage.h
+cmsgheap.obj: ../../include/carray.h ../../include/cpar.h ../../include/csimul.h ../../include/errmsg.h ../../include/cmsgheap.h ../../include/coutvect.h ../../include/ccor.h
+cnetmod.obj: ../../include/cpar.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/carray.h ../../include/cenvir.h ../../include/cnetmod.h
+cnetmod.obj: ../../include/cmodule.h ../../include/ccor.h ../../include/chead.h ../../include/cqueue.h ../../include/cgate.h ../../include/csimul.h ../../include/errmsg.h
+cnetmod.obj: ../../include/cmsgheap.h ../../include/coutvect.h
+cobject.obj: ../../include/csimul.h ../../include/defs.h ../../include/util.h ../../include/errmsg.h ../../include/chead.h ../../include/cobject.h ../../include/cmsgheap.h
+cobject.obj: ../../include/coutvect.h ../../include/ccor.h ../../include/cenvir.h ../../include/macros.h ../../include/ctypes.h
+coutvect.obj: ../../include/coutvect.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cmodule.h ../../include/ccor.h ../../include/chead.h
+coutvect.obj: ../../include/carray.h ../../include/cqueue.h ../../include/cgate.h ../../include/csimul.h ../../include/errmsg.h ../../include/cmsgheap.h ../../include/cenvir.h
+cpacket.obj: ../../include/macros.h ../../include/ctypes.h ../../include/chead.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cpacket.h
+cpacket.obj: ../../include/cmessage.h ../../include/carray.h ../../include/cpar.h ../../include/csimul.h ../../include/errmsg.h ../../include/cmsgheap.h ../../include/coutvect.h
+cpacket.obj: ../../include/ccor.h
+cpar.obj: ../../include/cpar.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/carray.h ../../include/cstat.h ../../include/macros.h ../../include/ctypes.h
+cpar.obj: ../../include/chead.h ../../include/errmsg.h ../../include/cmodule.h ../../include/ccor.h ../../include/cqueue.h ../../include/cgate.h ../../include/csimul.h
+cpar.obj: ../../include/cmsgheap.h ../../include/coutvect.h ../../include/cenvir.h
+cpsquare.obj: ../../include/macros.h ../../include/ctypes.h ../../include/chead.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cpsquare.h
+cpsquare.obj: ../../include/cdensity.h ../../include/cstat.h
+cqueue.obj: ../../include/macros.h ../../include/ctypes.h ../../include/chead.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cqueue.h
+csimul.obj: ../../include/cmodule.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/ccor.h ../../include/chead.h ../../include/carray.h ../../include/cqueue.h
+csimul.obj: ../../include/cgate.h ../../include/csimul.h ../../include/errmsg.h ../../include/cmsgheap.h ../../include/coutvect.h ../../include/cmessage.h ../../include/cpar.h
+csimul.obj: ../../include/cenvir.h ../../include/ctypes.h ../../include/cnetmod.h ../../include/cstat.h
+cstat.obj: ../../include/cstat.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/macros.h ../../include/ctypes.h ../../include/chead.h ../../include/cdetect.h
+cstk.obj: ../../include/cstk.h ../../include/ccor.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/errmsg.h
+ctopo.obj: ../../include/macros.h ../../include/ctypes.h ../../include/chead.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cmodule.h ../../include/ccor.h
+ctopo.obj: ../../include/carray.h ../../include/cqueue.h ../../include/cgate.h ../../include/csimul.h ../../include/errmsg.h ../../include/cmsgheap.h ../../include/coutvect.h
+ctopo.obj: ../../include/cpar.h ../../include/cllist.h ../../include/ctopo.h
+ctypes.obj: ../../include/cpar.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/carray.h ../../include/cmodule.h ../../include/ccor.h ../../include/chead.h
+ctypes.obj: ../../include/cqueue.h ../../include/cgate.h ../../include/csimul.h ../../include/errmsg.h ../../include/cmsgheap.h ../../include/coutvect.h ../../include/macros.h
+ctypes.obj: ../../include/ctypes.h
+cvarhist.obj: ../../include/macros.h ../../include/ctypes.h ../../include/chead.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cvarhist.h
+cvarhist.obj: ../../include/chist.h ../../include/cdensity.h ../../include/cstat.h
+cwatch.obj: ../../include/cwatch.h ../../include/cobject.h ../../include/defs.h ../../include/util.h
+util.obj: ../../include/util.h ../../include/defs.h ../../include/csimul.h ../../include/errmsg.h ../../include/chead.h ../../include/cobject.h ../../include/cmsgheap.h
+util.obj: ../../include/coutvect.h ../../include/ccor.h ../../include/macros.h ../../include/ctypes.h ../../include/cwatch.h ../../include/cpacket.h ../../include/cmessage.h
+util.obj: ../../include/carray.h ../../include/cpar.h
