@@ -1,5 +1,5 @@
 #
-# The registerPlugin function below arranges certain plugin functions to be 
+# The registerPlugin function below arranges certain plugin functions to be
 # called on different Tkenv events. As of now, the only such function is
 # $pluginname:newNetwork, called after a network got set up.
 #
@@ -10,10 +10,10 @@ proc cpanel:newNetwork {} {
 }
 
 proc cpanel:inspectorUpdate {} {
-    global counter
-    if {![info exist counter]} {set counter 0}
-    incr counter
-    puts $counter
+    #global counter
+    #if {![info exist counter]} {set counter 0}
+    #incr counter
+    #puts $counter
 }
 
 #
@@ -65,7 +65,7 @@ proc cpanel_createControls {} {
     set img_stop [image create photo -file "plugins/stop.gif"]
     frame $w.f
     pack $w.f -expand 1 -fill both
-    button $w.f.run -image $img_play -command "run"
+    button $w.f.run -image $img_play -command "run_normal"
     button $w.f.stop -image $img_stop -command "stop_simulation"
     pack $w.f.run $w.f.stop -side left -expand 1 -fill both
 
