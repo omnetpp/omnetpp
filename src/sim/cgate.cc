@@ -287,17 +287,12 @@ cGate *cGate::destinationGate()
 void cGate::deliver(cMessage *msg)
 {
     if (togatep==NULL)
+    {
         ownerModule()->arrived( msg, id() );
+    }
     else
     {
-        // Propagation delay modelling
-        if (delayp)
-            msg->delivd += (simtime_t) (*delayp);
-
-        // Bit error rate modelling
-        if (errorp)
-            if( dblrand() < 1.0 - pow(1.0-(double)(*errorp), msg->length()) )
-                msg->error=true;
+        // NOTE: prop. delay calculation should be _after_ transm. delay modeling
 
         // Transmission delay modelling
         double datarate;
@@ -308,6 +303,15 @@ void cGate::deliver(cMessage *msg)
             msg->delivd += (simtime_t) (msg->length() / datarate);
             transm_finishes = msg->delivd;
         }
+
+        // Propagation delay modelling
+        if (delayp)
+            msg->delivd += (simtime_t) (*delayp);
+
+        // Bit error rate modelling
+        if (errorp)
+            if( dblrand() < 1.0 - pow(1.0-(double)(*errorp), msg->length()) )
+                msg->error=true;
 
         togatep->deliver( msg );
     }

@@ -811,7 +811,7 @@ April 6-10, 2000
    runtime from the different .so files.
 Apr 10, 2000
  - TRUE/FALSE (defines) replaced by true/false (C++ keywords)
- - operator=(cXXX& other) functions now include the
+ - operator=(cXXX& other) functions now include this line:
       if (this==&other) return *this;
  - indentation canonized (4 spaces) in most files (where I had the patience)
  - remove(cObject *) added to cArray
@@ -835,4 +835,11 @@ Apr 10, 2000
  - in cmodule.h, the old NEW and DELETE macros (for raw memory allocation) were
    renamed to opp_new and opp_free. (Beware when using opp_free: it does NOT
    call the destructor of the passed object!)
+Apr 19, 2000
+ - bugfix: when using datarate and propagation delay at the same output gate,
+   the gate's transmissionFinishes() function returned incorrect value:
+   one had to substract the propagation delay to get the correct number.
+   Fixed in cGate::deliver(cMessage *msg): transmission delay calculation
+   should be done _before_ propagation delay.
+
 
