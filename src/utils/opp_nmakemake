@@ -228,40 +228,43 @@ else
 
 $makecommand = 'nmake /nologo /f Makefile.vc';
 
-$curdir = cwd;
-foreach $i (@dirs)
+if ($type ne 'o')
 {
-    print "*** Running make in $i to see object and ned file names\n";
-    if (chdir($i) && system($makecommand)==0)
+    $curdir = cwd;
+    foreach $i (@dirs)
     {
-        chdir($curdir);
-        if (cwd ne $curdir) {
-            print STDERR "opp_nmakemake: cannot cd back from $i to $curdir, exiting\n";
-            exit(1);
-        }
-
-        @o = glob("$i/*.obj");
-        if (@o == ())
+        print "*** Running make in $i to see object and ned file names\n";
+        if (chdir($i) && system($makecommand)==0)
         {
-            print STDERR "opp_nmakemake: warning: no object files in $i\n";
+            chdir($curdir);
+            if (cwd ne $curdir) {
+                print STDERR "opp_nmakemake: cannot cd back from $i to $curdir, exiting\n";
+                exit(1);
+            }
+
+            @o = glob("$i/*.obj");
+            if (@o == ())
+            {
+                print STDERR "opp_nmakemake: warning: no object files in $i\n";
+            }
+            else
+            {
+                push(@sobj_list, @o);
+            }
+
+            # collect ned files of subdirectory for target neddoc.html.
+            @nedf = glob("$i/*.ned");
+            push(@nedfiles, @nedf);
+
+            ## collect ned files of subdirectory for target neddoc.html.
+            #@msgf = glob("$i/*.msg");
+            #push(@msgfiles, @msgf);
         }
         else
         {
-            push(@sobj_list, @o);
+            print STDERR "opp_nmakemake: make in $i failed, exiting\n";
+            exit(1);
         }
-
-        # collect ned files of subdirectory for target neddoc.html.
-        @nedf = glob("$i/*.ned");
-        push(@nedfiles, @nedf);
-
-        ## collect ned files of subdirectory for target neddoc.html.
-        #@msgf = glob("$i/*.msg");
-        #push(@msgfiles, @msgf);
-    }
-    else
-    {
-        print STDERR "opp_nmakemake: make in $i failed, exiting\n";
-        exit(1);
     }
 }
 

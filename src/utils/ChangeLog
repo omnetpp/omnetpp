@@ -1,3 +1,10 @@
+2003-09-17  Andras Varga
+
+	* opp_nmakemake: fix: with -n, it's not necessary to compile all
+	all other directories. 
+
+FIXME probably opp_makemake.in needs the same fix!
+
 2003-08-20  Andras Varga
 
 	* opp_makemake.in, opp_nmakemake: added missing dependency of _m.h 
