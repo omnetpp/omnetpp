@@ -116,7 +116,7 @@ bool opt_srcloc = false;           // -p
 bool opt_mergeoutput = false;      // -m
 bool opt_verbose = false;          // -V
 const char *opt_outputfile = NULL; // -o
-
+bool opt_here = false;             // -h
 
 // global variables
 NEDFileCache filecache;
@@ -137,6 +137,7 @@ void printUsage()
        "  -v: no output (only validate input)\n"
        "  -m: output is a single file (out_n.* by default)\n"
        "  -o <filename>: with -m: output file name\n"
+       "  -h  place output file into current directory\n"
        "  -I <dir>: add directory to NED include path\n"
        "  -X xml/ned/off: following files are XML/NED up to '-X off'\n"
        "  -N: with -n: use new NED syntax (e.g. module Foo {...})\n"
@@ -160,7 +161,20 @@ void printUsage()
 
 void createFileNameWithSuffix(char *outfname, const char *infname, const char *suffix)
 {
-    strcpy(outfname, infname);
+    if (opt_here)
+    {
+        // remove directory part
+        const char *s = infname+strlen(infname);
+        while (s>infname && *s!='/' && *s!='\\') s--;
+        if (*s=='/' || *s=='\\') s++;
+        strcpy(outfname, s);
+    }
+    else
+    {
+        strcpy(outfname, infname);
+    }
+
+    // replace extension with suffix.
     char *s = outfname+strlen(outfname);
     while (s>outfname && *s!='/' && *s!='\\' && *s!='.') s--;
     if (*s!='.') s=outfname+strlen(outfname);
@@ -473,6 +487,10 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i],"-V"))
         {
             opt_verbose = true;
+        }
+        else if (!strcmp(argv[i], "-h"))
+        {
+            opt_here = true;
         }
         else if (argv[i][0]=='-')
         {

@@ -1,3 +1,7 @@
+2004-11-19  Andras Varga
+
+        * main.cc: implemented -h option [thanks Johnny]
+
 2004-11-03  ------ omnetpp-3.0a9 released ------
 
 2004-10-04  ------ omnetpp-3.0a8 released ------
