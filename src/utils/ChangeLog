@@ -114,3 +114,5 @@ Sep 30, 2000
 Feb 6, 2001
  - tcl2c now compiles with MSVC.
 ------ omnetpp-2.0 released ------
+Feb 27, 2001
+ - fixed bug in tcl2c which prevented it from compiling with Cygwin

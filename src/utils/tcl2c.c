@@ -21,12 +21,12 @@
 
 #include <stdio.h>
 
-#if defined(_WIN32)
-#define MUST_EXPAND_WILDCARDS 1
+#if defined(_WIN32) && !defined(__CYGWIN32__)
 
 /*
  * On Windows, wildcards must be expanded by hand :-(((
  */
+#define MUST_EXPAND_WILDCARDS 1
 const char *findFirstFile(const char *mask);
 const char *findNextFile();
 
@@ -71,7 +71,7 @@ const char *findNextFile()
 
 #endif
 
-#endif /* _Windows */
+#endif /* _WIN32 */
 
 int main(int argc, char **argv)
 {
