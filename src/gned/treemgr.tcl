@@ -280,6 +280,27 @@ proc moveDownItem {key} {
     }
 }
 
+proc moveItemToTop {key} {
+    global ned
+
+    set parentkey $ned($key,parentkey)
+    set l $ned($parentkey,childrenkeys)
+
+    set pos [lsearch -exact $l $key]
+    if {$pos>0} {
+        # delete, and insert as first
+        set l [lreplace $l $pos $pos]
+        set l [concat [list $key] $l]
+        set ned($parentkey,childrenkeys) $l
+
+        # nedfile changed
+        if {$parentkey!=0} {
+            markNedFileOfItemDirty $parentkey
+            updateTreeManager
+        }
+    }
+}
+
 proc displayCodeForItem {key {parentwin {}}} {
     global ned fonts
 

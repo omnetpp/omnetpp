@@ -42,6 +42,10 @@ proc fileNewComponent {type {nedfilekey ""}} {
    }
 
    set key [addItemWithUniqueName $type $nedfilekey]
+   if {$type=="imports"} {
+       # move to the top
+       moveItemToTop $key
+   }
    markNedFileOfItemDirty $key
 
    updateTreeManager
