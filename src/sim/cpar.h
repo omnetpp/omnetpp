@@ -267,73 +267,75 @@ class cModulePar : public cPar
      cModule *ownerModule()             {return omodp;}
 };
 
-//=== operators dealing with cPars
-// Two different sets of overloaded operators are provided, working
-// through converting to double / long. Default is the double version,
-// you can choose the other set by defining LONG_CPAR_OPERATIONS.
-// If you don't want either, define NO_CPAR_OPERATIONS!
+//=== operators dealing with cPars - OBSOLETE
+//!
+//! These operators were commented out because the new ANSI C++ overload
+//! resolution rules made them useless. For example, a cPar+int is ambiguous
+//! simply because cPar has operator int(), double(), etc., and inline functions
+//! like the ones below only make them even more ambiguous.
+//!
 
-#ifndef NO_CPAR_OPERATIONS
-#ifdef  LONG_CPAR_OPERATIONS
-inline int operator<(cPar& p, cPar& q)  {return (long)p<(long)q;}
-inline int operator<(long d, cPar& p)   {return d<(long)p;}
-inline int operator<(cPar& p, long d)   {return (long)p<d;}
-inline int operator>(cPar& p, cPar& q)  {return (long)p>(long)q;}
-inline int operator>(long d, cPar& p)   {return d>(long)p;}
-inline int operator>(cPar& p, long d)   {return (long)p>d;}
-
-inline int operator<=(cPar& p, cPar& q) {return (long)p<=(long)q;}
-inline int operator<=(long d, cPar& p)  {return d<=(long)p;}
-inline int operator<=(cPar& p, long d)  {return (long)p<=d;}
-inline int operator>=(cPar& p, cPar& q) {return (long)p>=(long)q;}
-inline int operator>=(long d, cPar& p)  {return d>=(long)p;}
-inline int operator>=(cPar& p, long d)  {return (long)p>=d;}
-
-inline long operator+(cPar& p, cPar& q) {return (long)p+(long)q;}
-inline long operator+(long d, cPar& p)  {return d+(long)p;}
-inline long operator+(cPar& p, long d)  {return (long)p+d;}
-inline long operator-(cPar& p, cPar& q) {return (long)p-(long)q;}
-inline long operator-(long d, cPar& p)  {return d-(long)p;}
-inline long operator-(cPar& p, long d)  {return (long)p-d;}
-
-inline long operator*(cPar& p, cPar& q)  {return (long)p*(long)q;}
-inline long operator*(long d, cPar& p)   {return d*(long)p;}
-inline long operator*(cPar& p, long d)   {return (long)p*d;}
-inline long operator/(cPar& p, cPar& q)  {return (long)p/(long)q;}
-inline long operator/(long d, cPar& p)   {return d/(long)p;}
-inline long operator/(cPar& p, long d)   {return (long)p/d;}
-
-#else
-
-inline int operator<(cPar& p, cPar& q)  {return (double)p<(double)q;}
-inline int operator<(double d, cPar& p) {return d<(double)p;}
-inline int operator<(cPar& p, double d) {return (double)p<d;}
-inline int operator>(cPar& p, cPar& q)  {return (double)p>(double)q;}
-inline int operator>(double d, cPar& p) {return d>(double)p;}
-inline int operator>(cPar& p, double d) {return (double)p>d;}
-
-inline int operator<=(cPar& p, cPar& q)  {return (double)p<=(double)q;}
-inline int operator<=(double d, cPar& p) {return d<=(double)p;}
-inline int operator<=(cPar& p, double d) {return (double)p<=d;}
-inline int operator>=(cPar& p, cPar& q)  {return (double)p>=(double)q;}
-inline int operator>=(double d, cPar& p) {return d>=(double)p;}
-inline int operator>=(cPar& p, double d) {return (double)p>=d;}
-
-inline double operator+(cPar& p, cPar& q)  {return (double)p+(double)q;}
-inline double operator+(double d, cPar& p) {return d+(double)p;}
-inline double operator+(cPar& p, double d) {return (double)p+d;}
-inline double operator-(cPar& p, cPar& q)  {return (double)p-(double)q;}
-inline double operator-(double d, cPar& p) {return d-(double)p;}
-inline double operator-(cPar& p, double d) {return (double)p-d;}
-
-inline double operator*(cPar& p, cPar& q)  {return (double)p*(double)q;}
-inline double operator*(double d, cPar& p) {return d*(double)p;}
-inline double operator*(cPar& p, double d) {return (double)p*d;}
-inline double operator/(cPar& p, cPar& q)  {return (double)p/(double)q;}
-inline double operator/(double d, cPar& p) {return d/(double)p;}
-inline double operator/(cPar& p, double d) {return (double)p/d;}
-#endif
-#endif
+//#ifndef NO_CPAR_OPERATIONS
+//#ifdef  LONG_CPAR_OPERATIONS
+// inline int operator<(cPar& p, cPar& q)  {return (long)p<(long)q;}
+// inline int operator<(long d, cPar& p)   {return d<(long)p;}
+// inline int operator<(cPar& p, long d)   {return (long)p<d;}
+// inline int operator>(cPar& p, cPar& q)  {return (long)p>(long)q;}
+// inline int operator>(long d, cPar& p)   {return d>(long)p;}
+// inline int operator>(cPar& p, long d)   {return (long)p>d;}
+//
+// inline int operator<=(cPar& p, cPar& q) {return (long)p<=(long)q;}
+// inline int operator<=(long d, cPar& p)  {return d<=(long)p;}
+// inline int operator<=(cPar& p, long d)  {return (long)p<=d;}
+// inline int operator>=(cPar& p, cPar& q) {return (long)p>=(long)q;}
+// inline int operator>=(long d, cPar& p)  {return d>=(long)p;}
+// inline int operator>=(cPar& p, long d)  {return (long)p>=d;}
+//
+// inline long operator+(cPar& p, cPar& q) {return (long)p+(long)q;}
+// inline long operator+(long d, cPar& p)  {return d+(long)p;}
+// inline long operator+(cPar& p, long d)  {return (long)p+d;}
+// inline long operator-(cPar& p, cPar& q) {return (long)p-(long)q;}
+// inline long operator-(long d, cPar& p)  {return d-(long)p;}
+// inline long operator-(cPar& p, long d)  {return (long)p-d;}
+//
+// inline long operator*(cPar& p, cPar& q)  {return (long)p*(long)q;}
+// inline long operator*(long d, cPar& p)   {return d*(long)p;}
+// inline long operator*(cPar& p, long d)   {return (long)p*d;}
+// inline long operator/(cPar& p, cPar& q)  {return (long)p/(long)q;}
+// inline long operator/(long d, cPar& p)   {return d/(long)p;}
+// inline long operator/(cPar& p, long d)   {return (long)p/d;}
+//
+//#else
+//
+// inline int operator<(cPar& p, cPar& q)  {return (double)p<(double)q;}
+// inline int operator<(double d, cPar& p) {return d<(double)p;}
+// inline int operator<(cPar& p, double d) {return (double)p<d;}
+// inline int operator>(cPar& p, cPar& q)  {return (double)p>(double)q;}
+// inline int operator>(double d, cPar& p) {return d>(double)p;}
+// inline int operator>(cPar& p, double d) {return (double)p>d;}
+//
+// inline int operator<=(cPar& p, cPar& q)  {return (double)p<=(double)q;}
+// inline int operator<=(double d, cPar& p) {return d<=(double)p;}
+// inline int operator<=(cPar& p, double d) {return (double)p<=d;}
+// inline int operator>=(cPar& p, cPar& q)  {return (double)p>=(double)q;}
+// inline int operator>=(double d, cPar& p) {return d>=(double)p;}
+// inline int operator>=(cPar& p, double d) {return (double)p>=d;}
+//
+// inline double operator+(cPar& p, cPar& q)  {return (double)p+(double)q;}
+// inline double operator+(double d, cPar& p) {return d+(double)p;}
+// inline double operator+(cPar& p, double d) {return (double)p+d;}
+// inline double operator-(cPar& p, cPar& q)  {return (double)p-(double)q;}
+// inline double operator-(double d, cPar& p) {return d-(double)p;}
+// inline double operator-(cPar& p, double d) {return (double)p-d;}
+//
+// inline double operator*(cPar& p, cPar& q)  {return (double)p*(double)q;}
+// inline double operator*(double d, cPar& p) {return d*(double)p;}
+// inline double operator*(cPar& p, double d) {return (double)p*d;}
+// inline double operator/(cPar& p, cPar& q)  {return (double)p/(double)q;}
+// inline double operator/(double d, cPar& p) {return d/(double)p;}
+// inline double operator/(cPar& p, double d) {return (double)p/d;}
+//#endif
+//#endif
 
 #endif
 
