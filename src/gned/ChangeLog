@@ -224,3 +224,5 @@ Aug 27, 2000
  - renaming improved; "rename..." added to canvas popup menu
 Aug 29, 2000
  - command-line arg handling improved
+Sep 30, 2000
+ - improvement just for Cygwin: lexer now explicitly ignores '\r' (=CR) chars

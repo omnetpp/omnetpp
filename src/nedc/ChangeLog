@@ -272,3 +272,5 @@ May 22, 2000
  - const-correctness fix on get_expression() arg list [reported by Frank Paehlke]
 ------ omnetpp-2.0b4 released ------
 ------ omnetpp-2.0b5 released ------
+Sep 30, 2000
+ - improvement just for Cygwin: lexer now explicitly ignores '\r' (=CR) chars

@@ -196,7 +196,7 @@ char textbuf[256], lasttextbuf[256] = "";
 ">"                     { count(); return (GT); }  /* --VA */
 ">="                    { count(); return (GE); }  /* --VA */
 
-[ \t\v\n\f]             { count(); }
+[ \t\v\n\r\f]           { count(); }
 .                       { count(); return (INVALID_CHAR); }
 
 %%
