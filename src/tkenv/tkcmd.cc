@@ -788,7 +788,7 @@ int getSubObjectsFilt_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
 
    // get filtered list
    cFilteredCollectObjectsVisitor visitor;
-   visitor.setFilterPars(classnamepattern, objfullpathpattern);
+   visitor.setFilterPars(classnamepattern, objfullpathpattern);  // FIXME check return value!
    visitor.visit(object);
 
    // order it

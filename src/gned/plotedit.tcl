@@ -66,7 +66,7 @@ proc selectOrMoveBindings c {
     bind $c <Control-Button-1> "selectOrMoveStart $c %x %y 1"
     bind $c <Shift-Button-1>   "selectOrMoveStart $c %x %y 1"
     bind $c <B1-Motion>        "selectOrMoveDrag $c %x %y"
-    bind $c <ButtonRelease-1>  "selectOrMoveEnd $c %x %y"
+    bind $c <ButtonRelease-1>  "catch {selectOrMoveEnd $c %x %y}"
     #bind $c <Insert>           "printNed $c"
     #bind $c <Button-2>         "drawBindings $c"
     #bind $c <Button-2>         "printNed $c"
