@@ -1,0 +1,3 @@
+"fifonet2" "FifoNet2" "2" "350x210+8+6"
+"fifonet2.sink.class-members.queueing time vector" "cOutVector" "2" "359x197+9+440"
+"fifonet2.fifo.class-members.queue" "cQueue" "1" "351x164+9+245"

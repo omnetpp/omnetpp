@@ -24,8 +24,8 @@ endsimple
 //
 network Histograms : HistogramDemo 
     parameters: 
-        num_obs = input( 200, "Number of observations: "), 
-        num_cells = input( 20, "Number of cells: "), 
+        num_obs = input(10000, "Number of observations: "), 
+        num_cells = input( 20, "Number of histogram cells: "), 
         fixed_range = input( 0, "Auto (0) or fixed (1) histogram range? "), 
         num_first = input( 50, "Number of observations used for range estimation: "), 
         range_ext = input( 1.3, "Range extension factor (usually 1.0 .. 2): "); 
