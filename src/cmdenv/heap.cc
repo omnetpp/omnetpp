@@ -101,7 +101,7 @@ class MemManager {
       static void *safetypool;
       static int maxpoolsize;
    public:
-      static int lowmem;
+      static bool lowmem;
    public:
       MemManager(int mps=16384)
          {lowmem=FALSE; maxpoolsize=mps; safetypool=malloc(maxpoolsize);}
@@ -117,7 +117,7 @@ class MemManager {
 
 void *MemManager::safetypool;
 int MemManager::maxpoolsize;
-int MemManager::lowmem;
+bool MemManager::lowmem;
 
 static MemManager memmanager;
 

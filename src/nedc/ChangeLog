@@ -249,3 +249,6 @@ Mar 7, 2000
   - bugfix for distributed execution: corrected handling of machine parameters
     at network level
   - changed test12.ned and test13.ned
+Mar 12, 2000
+  - added lines to generated code to disable compiler warnings about unused
+    vars under MSVC and Borland C++. I have no solution for gcc.

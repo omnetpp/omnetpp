@@ -117,14 +117,24 @@ void print_header (FILE *f)
         fprintf (f, "#define check_param(ptr,parname) \\\n"
                     "    {if ((ptr)==NULL) {opp_error(\"Unknown parameter named %%s\", \\\n"
                     "                                parname);return;}}\n");
-        fprintf (f, "#if !defined(__cplusplus)\n"
+        fprintf (f, "#ifndef __cplusplus\n"
                     "#  error Compile as C++!\n"
                     "#endif\n"
-                    "#if defined(__BORLANDC__)\n"
+                    "#ifdef __BORLANDC__\n"
                     "#  if !defined(__FLAT__) && !defined(__LARGE__)\n"
                     "#    error Compile as 16-bit LARGE model or 32-bit DPMI!\n"
-                    "# endif\n"
-                    "#endif\n" );
+                    "#  endif\n"
+                    "#endif\n\n");
+        fprintf (f, "// Disable warnings about unused variables:\n"
+                    "#ifdef _MSC_VER\n"
+                    "#  pragma warning(disable:4101)\n"
+                    "#endif\n"
+                    "#ifdef __BORLANDC__\n"
+                    "#  pragma warn -waus\n"
+                    "#  pragma warn -wuse\n"
+                    "#endif\n"
+                    "// for GCC, seemingly there's no way to emulate the -Wunused command-line\n"
+                    "// flag from a source file...\n");
         fprintf (f, "\n");
 }
 
