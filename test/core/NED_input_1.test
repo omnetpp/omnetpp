@@ -46,14 +46,6 @@ endmodule
 network {network}: {Wrapper}
 endnetwork
 
-%inifile: {}.ini
-[General]
-preload-ned-files=*.ned
-network={network}
-
-[Parameters]
-**.use-default=yes
-
 %file: {}.cc
 
 #include <omnetpp.h>
@@ -71,6 +63,15 @@ void {Simple}::activity()
     for (int i=0; i<params(); i++)
         ev << fullName() << "." << par(i).name() << "=" << (double)par(i) << endl;
 }
+
+%inifile: {}.ini
+[General]
+preload-ned-files=*.ned
+network={network}
+
+[Parameters]
+**.use-default=yes  # NOTE THIS LINE
+
 
 %contains: stdout
 sub[0].p0=0
