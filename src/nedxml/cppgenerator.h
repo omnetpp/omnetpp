@@ -54,7 +54,7 @@ class NEDCppGenerator
 
     enum {
       MODE_NORMAL,
-      MODE_CLEANUP,
+      MODE_FINALLY,
     };
 
     CppExpressionGenerator exprgen;
@@ -122,7 +122,7 @@ class NEDCppGenerator
     void doMachine(MachineNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doSubmodules(SubmodulesNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doSubmodule(SubmoduleNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doSubmoduleCleanup(SubmoduleNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doSubmoduleFinally(SubmoduleNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doSubstparams(SubstparamsNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doSubstparam(SubstparamNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doGatesizes(GatesizesNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);

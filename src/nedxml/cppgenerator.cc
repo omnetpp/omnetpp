@@ -177,11 +177,11 @@ void NEDCppGenerator::generateItem(NEDElement *node, const char *indent, int mod
                     INTERNAL_ERROR1(node,"generateItem(): unrecognized tag: %s", node->getTagName());
             }
             break;
-        case MODE_CLEANUP:
+        case MODE_FINALLY:
             switch (tagcode)
             {
                 case NED_SUBMODULE:
-                    doSubmoduleCleanup((SubmoduleNode *)node, newindent, mode, arg); break;
+                    doSubmoduleFinally((SubmoduleNode *)node, newindent, mode, arg); break;
                 default:
                     generateChildren(node, newindent, mode, arg);
             }
@@ -266,7 +266,7 @@ void NEDCppGenerator::printTemporaryVariables(const char *indent)
 {
         out << indent << "// temporary variables:\n";
         out << indent << "cPar tmpval;\n";  // for compiled expressions
-        out << indent << "const char *type_name;\n";   // for submodule creation
+        out << indent << "const char *typename;\n";   // for submodule creation
         out << "\n";
 }
 
@@ -649,8 +649,12 @@ void NEDCppGenerator::doModule(CompoundModuleNode *node, const char *indent, int
     // generate connections
     generateChildrenWithTags(node, "connections", indent);
 
-    // generate code to free array of module pointers
-    generateChildren(node, indent, MODE_CLEANUP);
+    // generate buildInside() calls for submodules and to free up arrays of module pointers
+    out << "\n";
+    out << indent << "//\n";
+    out << indent << "// this level is done -- recursively build submodules too\n";
+    out << indent << "//\n";
+    generateChildren(node, indent, MODE_FINALLY);
     indent = decreaseIndent(indent);
     out << indent << "}\n\n";
 }
@@ -709,7 +713,7 @@ void NEDCppGenerator::doSubmodules(SubmodulesNode *node, const char *indent, int
     // prolog
     out << indent << "// submodules:\n";
     out << indent << "cModuleType *modtype = NULL;\n";
-    out << indent << "int submod_index;\n\n";
+    out << indent << "int submodindex;\n\n";
 
     // generate children
     generateChildren(node, indent, mode);
@@ -728,8 +732,8 @@ void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int m
     }
     else
     {
-        out << indent << "type_name = mod->par(\"" << node->getLikeParam() << "\");\n";
-        out << indent << "modtype = _getModuleType(type_name);\n";
+        out << indent << "typename = mod->par(\"" << node->getLikeParam() << "\");\n";
+        out << indent << "modtype = _getModuleType(typename);\n";
     }
 
     // create module
@@ -756,11 +760,11 @@ void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int m
 
         out << indent << "_checkModuleVectorSize(" << submodulesize_var.c_str() << ",\"" << submodule_name.c_str() << "\");\n";
         out << indent << "cModule **" << submodule_var.c_str() << " = new cModule *[" << submodulesize_var.c_str() << "];\n\n";
-        out << indent << "for (submod_index=0; submod_index<" << submodulesize_var.c_str() << "; submod_index++)\n";
+        out << indent << "for (submodindex=0; submodindex<" << submodulesize_var.c_str() << "; submodindex++)\n";
         out << indent << "{\n";
-        submodule_var += "[submod_index]";
+        submodule_var += "[submodindex]";
         indent = increaseIndent(indent);
-        out << indent << submodule_var.c_str() << " = modtype->create(\"" << submodule_name.c_str() << "\", mod, " << submodulesize_var.c_str() << ", submod_index);\n";
+        out << indent << submodule_var.c_str() << " = modtype->create(\"" << submodule_name.c_str() << "\", mod, " << submodulesize_var.c_str() << ", submodindex);\n";
     }
     out << "\n";
 
@@ -774,9 +778,7 @@ void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int m
         out << indent << submodule_var.c_str() << "->setDisplayString(\"" <<  dispstr->getValue() << "\");\n\n";
     }
 
-    // build function call
-    out << indent << "// build submodules recursively (if it has any):\n";
-    out << indent << submodule_var.c_str() << "->buildInside();\n";
+    // note: we'll call buildinside only if all connections on this level have been built as well
 
     if (vectorsize)
     {
@@ -786,10 +788,20 @@ void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int m
     out << "\n";
 }
 
-void NEDCppGenerator::doSubmoduleCleanup(SubmoduleNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doSubmoduleFinally(SubmoduleNode *node, const char *indent, int mode, const char *)
 {
-    if (findExpression(node, "vector-size")!=NULL)
-        out << indent << "delete [] " << node->getName() << "_p;\n";
+    // generate buildInside() call, and if necessary, free up array of cModule pointers
+    const char *submodname = node->getName();
+    if (!findExpression(node, "vector-size"))
+    {
+        out << indent << submodname << "_p->buildInside();\n";
+    }
+    else
+    {
+        out << indent << "for (submodindex=0; submodindex<" << submodname << "_size; submodindex++)\n";
+        out << indent << "    " << submodname << "_p[submodindex]->buildInside();\n";
+        out << indent << "delete [] " << submodname << "_p;\n";
+    }
 }
 
 void NEDCppGenerator::doSubstparams(SubstparamsNode *node, const char *indent, int mode, const char *arg)
