@@ -24,7 +24,7 @@
 
 class cXMLElement;
 
-typedef std::vector<const cXMLElement*> cXMLElementList;
+typedef std::vector<cXMLElement*> cXMLElementList;
 typedef std::map<std::string,std::string> cXMLAttributeMap;
 
 
@@ -209,7 +209,7 @@ class cXMLElement
      * tagname might be NULL -- then any element with the given attribute
      * will be accepted. Returns NULL if not found.
      */
-    cXMLElement *getFirstChildWithAttribute(const char *tagname, const char *attr, const char *attrvalue=NULL);
+    cXMLElement *getFirstChildWithAttribute(const char *tagname, const char *attr, const char *attrvalue=NULL) const;
 
     /**
      * Returns the first element which has an "id" attribute with the given

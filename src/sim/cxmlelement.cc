@@ -218,7 +218,7 @@ void cXMLElement::doGetElementsByTagName(const char *tagname, cXMLElementList& l
     }
 }
 
-cXMLElement *cXMLElement::getFirstChildWithAttribute(const char *tagname, const char *attr, const char *attrvalue)
+cXMLElement *cXMLElement::getFirstChildWithAttribute(const char *tagname, const char *attr, const char *attrvalue) const
 {
     for (cXMLElement *child=getFirstChild(); child; child=child->getNextSibling())
     {
