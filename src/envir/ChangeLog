@@ -1,3 +1,8 @@
+2002-02-24  Andras Varga
+
+	* exit with status 0 if simulation terminated normally (as determined
+        by simulation.normalTermination), otherwise with status 1.
+
 2002-02-14  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* omnetapp.cc (putmsg): Bugfix: if OMNeT++ dies shortly after a

@@ -49,5 +49,5 @@ ENVIR_API int main(int argc, char *argv[])
     ev.shutdown();
 
     printf("\nEnd run of OMNeT++\n");
-    return simulation.errorCode();
+    return simulation.normalTermination() ? 0 : 1;
 }
