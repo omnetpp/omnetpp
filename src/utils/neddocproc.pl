@@ -70,26 +70,40 @@ foreach $fname (glob($fnamepatt))
               # lines outside <pre> containing whitespace only count as blank
               $comment =~ s|\n[ \t]+\n|\n\n|gs;
 
-              # insert blank line (for later processing) in front of lines beginning with '-'
-              $comment =~ s|\n( *-)|\n\n\1|gs;
+              # insert blank line (for later processing) in front of lines beginning with '- ' or '-# '
+              $comment =~ s|\n( *-#? )|\n\n\1|gs;
 
               # if briefcomment, keep only the 1st paragraph
               if ($class eq "briefcomment") {
-                 $comment =~ s|(.*?[^\s].*?)\n\n.*|\1\n\n|gs;
+                 $comment =~ s|(.*?[^ \t\n].*?)\n\n.*|\1\n\n|gs;
               }
 
-              # wrap paragraphs not beginning with '-' into <p></p>.
+              # wrap paragraphs NOT beginning with '-' into <p></p>.
+              # well, we should write "paragraphs not beginning with '- ' or '-# '", but
+              # how do you say that in a Perl regex?
               # (note: (?=...) and (?<=...) constructs are lookahead and lookbehind assertions,
               # see e.g. http://tlc.perlarchive.com/articles/perl/pm0001_perlretut.shtml).
-              $comment =~ s|(?<=\n\n)\s*([^- \t].*?)(?=\n\n)|<p>\1</p>|gs;
+              $comment =~ s|(?<=\n\n)[ \t]*([^- \t\n].*?)(?=\n\n)|<p>\1</p>|gs;
 
               # wrap paragraphs beginning with '-' into <li></li> and <ul></ul>
-              $comment =~ s|(?<=\n\n)\s*-\s+(.*?)(?=\n\n)|  <ul><li>\1</li></ul>|gs;
-              $comment =~ s|\</li\>\</ul\>\s*\<ul\>\<li\>|</li>\n\n  <li>|gs;
+              # every 3 spaces increase indent level by one.
+              $comment =~ s|(?<=\n\n)          *-[ \t]+(.*?)(?=\n\n)|  <ul><ul><ul><ul><li>\1</li></ul></ul></ul></ul>|gs;
+              $comment =~ s|(?<=\n\n)       *-[ \t]+(.*?)(?=\n\n)|  <ul><ul><ul><li>\1</li></ul></ul></ul>|gs;
+              $comment =~ s|(?<=\n\n)    *-[ \t]+(.*?)(?=\n\n)|  <ul><ul><li>\1</li></ul></ul>|gs;
+              $comment =~ s|(?<=\n\n) *-[ \t]+(.*?)(?=\n\n)|  <ul><li>\1</li></ul>|gs;
+              for ($i=0; $i<4; $i++) {
+                   $comment =~ s|\</ul\>[ \t\n]*\<ul\>|\n\n  |gs;
+              }
 
-              # wrap paragraphs beginning with '-#' into <li></li> and <ol></ol>
-              $comment =~ s|(?<=\n\n)\s*-#\s+(.*?)(?=\n\n)|  <ol><li>\1</li></ol>|gs;
-              $comment =~ s|\</li\>\</ol\>\s*\<ol\>\<li\>|</li>\n\n  <li>|gs;
+              # wrap paragraphs beginning with '-#' into <li></li> and <ol></ol>.
+              # every 3 spaces increase indent level by one.
+              $comment =~ s|(?<=\n\n)          *-#[ \t]+(.*?)(?=\n\n)|  <ol><ol><ol><ol><li>\1</li></ol></ol></ol></ol>|gs;
+              $comment =~ s|(?<=\n\n)       *-#[ \t]+(.*?)(?=\n\n)|  <ol><ol><ol><li>\1</li></ol></ol></ol>|gs;
+              $comment =~ s|(?<=\n\n)    *-#[ \t]+(.*?)(?=\n\n)|  <ol><ol><li>\1</li></ol></ol>|gs;
+              $comment =~ s|(?<=\n\n) *-#[ \t]+(.*?)(?=\n\n)|  <ol><li>\1</li></ol>|gs;
+              for ($i=0; $i<4; $i++) {
+                   $comment =~ s|\</ol\>[ \t\n]*\<ol\>|\n\n  |gs;
+              }
 
               # now we can put back <pre> regions
               $comment =~ s|\<pre(\d+)\>|'<pre>'.$pre{$1}.'</pre>'|gse;
