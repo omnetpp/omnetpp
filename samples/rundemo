@@ -59,7 +59,7 @@ foreach line {
    {color5  "Routing"          "routing"          "./routing"   "routing.exe"}
    {color5  "Routing/Networks" "routing/networks" "../routing"  "..\\routing.exe"}
    {color6  "Parallel CQN"     "cqn/parsim"       "./runparsim" "runparsim.bat"}
-   {color6  "Dyna in real-time" "dyna/realtime"   "../dyna"     "..\\dyna.exe"}
+   {color6  "Dyna/RealTime"    "dyna/realtime"   "../dyna"     "..\\dyna.exe"}
    {color6  "Sockets/HTTP"     "sockets"          "./sockets -r 1"  "sockets.exe -r 1"}
    {color6  "Sockets/Telnet"   "sockets"          "./sockets -r 2"  "sockets.exe -r 2"}
 } {
