@@ -22,7 +22,7 @@
 #include "tklib.h"
 #include "tkinsp.h"
 
-// force the linker to include this file 
+// force the linker to include this file
 void _dummy_for_inspectors() {}
 
 Register_InspectorFactory( cObjectIFC,         createCObjectInspector);
@@ -234,12 +234,13 @@ TInspector *createCCompoundModuleInspector(cObject *object, int type, void *data
 {
    cCompoundModule *mod = (cCompoundModule *)object;
    switch (type) {
-     case INSP_GETTYPES:  setTypes(data, INSP_GRAPHICAL,INSP_OBJECT,
+     case INSP_GETTYPES:  setTypes(data, INSP_GRAPHICAL,INSP_OBJECT,INSP_MODULEOUTPUT,
                                          INSP_PARAMETERS,INSP_GATES,-1);
                           return NO(TInspector);
      case INSP_DEFAULT:
      case INSP_GRAPHICAL: return new TGraphicalModWindow( object, INSP_GRAPHICAL, data );
      case INSP_OBJECT:    return new TCompoundModInspector( object, INSP_OBJECT, data );
+     case INSP_MODULEOUTPUT: return new TModuleWindow( object, INSP_MODULEOUTPUT, data);
      case INSP_GATES:     return mod->gatev.inspector(INSP_DEFAULT, NULL);
      case INSP_PARAMETERS:return mod->paramv.inspector(INSP_DEFAULT, NULL);
      default:             return NO(TInspector);

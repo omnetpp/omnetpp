@@ -40,7 +40,6 @@ proc create_inspector_toplevel {w {geom ""}} {
     wm protocol $w WM_DELETE_WINDOW "opp_deleteinspector $w"
 
     # add the "Inspect As.." icon at the top
-
     frame $w.toolbar -relief raised -borderwidth 1
     pack $w.toolbar -anchor w -side top -fill x -expand 0
 

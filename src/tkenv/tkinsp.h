@@ -108,9 +108,6 @@ class TContainerInspector : public TInspector
 class TModuleWindow : public TInspector
 {
    public:
-      char modulename[64];
-      char phase[64];
-   public:
       TModuleWindow(cObject *obj,int typ,void *dat=NULL);
       virtual void createWindow();
       virtual void update();

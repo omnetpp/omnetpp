@@ -395,3 +395,12 @@ Jan 3, 2000
    number of messages created, number of currently existing message objects)
 Jan 13, 2000
  - added performance status bar (simsec/sec, events/sec, events/simsec gauges)
+Jan 15, 2000
+ - new feature: debug output window (for ev<< messages) can now be opened
+   for compound modules too: it accumulates messages from all submodules.
+   [suggested by Ulrich Kaage]
+ - single-stepping within a module is now possible for compound modules too
+ - revised single-stepping within a module: now execution stops both
+   *before* and *after* events in that module, and events in that module are
+   done with "normal execution" (animation, etc), while intervening events are
+   done with "fast execution" (rare inspector updates, animation disabled)

@@ -63,6 +63,9 @@ TKENV_API void envirDummy() {}
 #define EVENTSPERSIMSEC_LABEL ".statusbar3.eventspersimsec"
 
 
+#define SPEEDOMETER_UPDATESECS 1.0
+
+
 //
 // Speedometer: utility class to measure simulation speed
 //
@@ -148,6 +151,20 @@ double Speedometer::eventsPerSimSec()
 double Speedometer::simSecPerSec()
 {
     return last_simsecpersec;
+}
+
+//=========================================================================
+
+// utility function
+static bool moduleContains(cModule *potentialparent, cModule *mod)
+{
+   while (mod)
+   {
+       if (mod==potentialparent)
+           return true;
+       mod = mod->parentModule();
+   }
+   return false;
 }
 
 //=========================================================================
@@ -326,12 +343,12 @@ void TOmnetTkApp::doOneStep()
 }
 
 void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
-                                 bool slowexec, bool fast,
-                                 cSimpleModule *stopinmod )
+                                 bool slowexec, bool fastexec,
+                                 cSimpleModule *stepwithinmodule)
 {
     bkpt_hit = false;
     stop_simulation = false;
-    animation_ok = !fast;
+    animation_ok = !fastexec && !stepwithinmodule;
 
     clearNextModuleDisplay();
     clearPerformanceDisplay();
@@ -342,11 +359,23 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
     simulation.startClock();
     Speedometer speedometer;
 
+    bool firstevent = true;
     while(1)
     {
         // query which module will execute the next event
         cSimpleModule *mod = simulation.selectNextModule();
         if (mod==NULL) break;
+
+        // if stepping locally in module, we stop both immediately
+        // *before* and *after* executing the event in that module,
+        // but we always execute at least one event
+        bool stepwithinmodule_reached = stepwithinmodule && moduleContains(stepwithinmodule,mod);
+        if (stepwithinmodule_reached)
+        {
+            if (!firstevent) break;
+            animation_ok = true;
+        }
+        firstevent = false;
 
         // do a simulation step
         if (opt_print_banners)  printEventBanner(mod);
@@ -354,48 +383,33 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
         simulation.incEventNumber();
         speedometer.addEvent(simulation.simTime());
 
-        // exit conditions:
-        if (stopinmod && mod==stopinmod) break;
+        // exit conditions
+        if (stepwithinmodule_reached) break;
         if (!simulation.ok() || bkpt_hit || stop_simulation) break;
         if (until_time>0 && simulation.simTime()>=until_time) break;
         if (until_event>0 && simulation.eventNumber()>=until_event) break;
 
-        // if we single-step inside a module, we want rare display updates
-        if (stopinmod)
+        // display update
+        bool frequent_updates = !fastexec && !stepwithinmodule;
+        if (frequent_updates || simulation.eventNumber()%opt_updatefreq_fast==0)
         {
-            if (simulation.eventNumber()%opt_updatefreq_fast==0)
+            updateSimtimeDisplay();
+            if (speedometer.secondsInThisInterval() > SPEEDOMETER_UPDATESECS)
             {
-                updateSimtimeDisplay();
-                if (speedometer.secondsInThisInterval() > 1.0)
-                {
-                    speedometer.beginNewInterval();
-                    updatePerformanceDisplay(speedometer);
-                }
-                updateInspectors();
-                Tcl_Eval(interp, "update");
+                speedometer.beginNewInterval();
+                updatePerformanceDisplay(speedometer);
             }
+            if (!stepwithinmodule) updateInspectors();
+            Tcl_Eval(interp, "update");
         }
-        else
-        {
-            if (!fast || simulation.eventNumber()%opt_updatefreq_fast==0)
-            {
-                updateSimtimeDisplay();
-                if (speedometer.secondsInThisInterval() > 1.0)
-                {
-                    speedometer.beginNewInterval();
-                    updatePerformanceDisplay(speedometer);
-                }
-                if (!stopinmod) updateInspectors();
-                Tcl_Eval(interp, "update");
-            }
 
-            if (slowexec)
-            {
-                clock_t start = clock();
-                double dclk = opt_stepdelay / 1000.0 * CLOCKS_PER_SEC;
-                while (clock()-start<dclk && !stop_simulation)
-                    Tcl_Eval(interp, "update");
-            }
+        // delay loop for slow simulation
+        if (slowexec)
+        {
+            clock_t start = clock();
+            double dclk = opt_stepdelay / 1000.0 * CLOCKS_PER_SEC;
+            while (clock()-start<dclk && !stop_simulation)
+                Tcl_Eval(interp, "update");
         }
     }
     simulation.stopClock();
@@ -411,8 +425,8 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
 
     updateNextModuleDisplay();
     clearPerformanceDisplay();
-    if (fast || stopinmod) updateSimtimeDisplay();
-    if (fast || stopinmod) updateInspectors();
+    updateSimtimeDisplay();
+    updateInspectors();
 }
 
 void TOmnetTkApp::runSimulationNoTracing(simtime_t until_time,long until_event)
@@ -442,7 +456,7 @@ void TOmnetTkApp::runSimulationNoTracing(simtime_t until_time,long until_event)
         if (simulation.eventNumber()%opt_updatefreq_express==0)
         {
             updateSimtimeDisplay();
-            if (speedometer.secondsInThisInterval() > 1.0)
+            if (speedometer.secondsInThisInterval() > SPEEDOMETER_UPDATESECS)
             {
                 speedometer.beginNewInterval();
                 updatePerformanceDisplay(speedometer);
@@ -790,26 +804,26 @@ void TOmnetTkApp::clearPerformanceDisplay()
                         "}", NULL ));
 }
 
-void TOmnetTkApp::printEventBanner(cSimpleModule *mod)
+void TOmnetTkApp::printEventBanner(cSimpleModule *module)
 {
     char banner[256];
-    if (mod->phase()[0]==0)
+    if (module->phase()[0]==0)
     {
         sprintf(banner,"** Event #%ld.  T=%s.  Module #%u `%s'\n",
                 simulation.eventNumber(),
                 simtimeToStr( simulation.simTime() ),
-                mod->id(),
-                mod->fullPath()
+                module->id(),
+                module->fullPath()
               );
     }
     else
     {
-        sprintf(banner,"** Event #%ld.  T=%s.  Module #%u `%s' phase `%s'.\n",
+        sprintf(banner,"** Event #%ld.  T=%s.  Module #%u `%s'. Phase `%s'.\n",
                 simulation.eventNumber(),
                 simtimeToStr( simulation.simTime() ),
-                mod->id(),
-                mod->fullPath(),
-                mod->phase()
+                module->id(),
+                module->fullPath(),
+                module->phase()
               );
     }
 
@@ -826,24 +840,19 @@ void TOmnetTkApp::printEventBanner(cSimpleModule *mod)
             " .messagewindow.main.text see end\n"
             "}\n", NULL));
 
-    // print banner into module window if one exists
-    TModuleWindow *insp = (TModuleWindow *)findInspector(mod,INSP_MODULEOUTPUT);
-    if (insp)
+    // print banner into module window and all parent module windows if they exist
+    cModule *mod = module;
+    while (mod)
     {
-       if (mod->phase()[0]==0)
-           sprintf(banner,"** Event #%ld.  T=%s\n",
-                          simulation.eventNumber(),
-                          simtimeToStr(simulation.simTime()));
-       else
-           sprintf(banner,"** Event #%ld.  T=%s.  Phase `%s'\n",
-                          simulation.eventNumber(),
-                          simtimeToStr(simulation.simTime()),
-                          mod->phase());
-       // insert into window
-       CHK(Tcl_VarEval(interp,
-           insp->windowname,".main.text insert end {",banner,"} event\n",
-           insp->windowname,".main.text see end",
-           NULL));
+        TModuleWindow *insp = (TModuleWindow *)findInspector(mod,INSP_MODULEOUTPUT);
+        if (insp)
+        {
+           CHK(Tcl_VarEval(interp,
+               insp->windowname,".main.text insert end {",banner,"} event\n",
+               insp->windowname,".main.text see end",
+               NULL));
+        }
+        mod = mod->parentModule();
     }
 }
 
@@ -1014,25 +1023,27 @@ void TOmnetTkApp::puts(const char *str)
     char *quotedstr = isshort ? buf : Tcl_Alloc(quotedlen+1);
     Tcl_ConvertElement(str, quotedstr, flags);
 
-    // output the string to window(s)
+    // output string into main window
     cModule *module = simulation.contextModule();
-    if (module)
+    if (!module || opt_use_mainwindow)
     {
-        // print into module window if one exists
-        TInspector *insp = findInspector(module,INSP_MODULEOUTPUT);
+        CHK(Tcl_VarEval(interp,
+            ".main.text insert end ",quotedstr,"\n"
+            ".main.text see end", NULL));
+    }
+
+    // print into module window and all parent compound module windows if they exist
+    cModule *mod = module;
+    while (mod)
+    {
+        TInspector *insp = findInspector(mod,INSP_MODULEOUTPUT);
         if (insp)
         {
             CHK(Tcl_VarEval(interp,
               insp->windowname,".main.text insert end ",quotedstr,"\n",
               insp->windowname,".main.text see end", NULL));
         }
-    }
-
-    if (!module || opt_use_mainwindow)
-    {
-        CHK(Tcl_VarEval(interp,
-            ".main.text insert end ",quotedstr,"\n"
-            ".main.text see end", NULL));
+        mod = mod->parentModule();
     }
 
     // dealloc buffer if necessary

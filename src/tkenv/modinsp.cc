@@ -52,8 +52,6 @@ TModuleWindow::TModuleWindow(cObject *obj,int typ,void *dat) :
 void TModuleWindow::createWindow()
 {
    TInspector::createWindow(); // create window name etc.
-   strcpy(modulename,windowname); strcat(modulename,".statusbar.name");
-   strcpy(phase,windowname); strcat(phase,".statusbar.phase");
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
@@ -66,15 +64,9 @@ void TModuleWindow::update()
    TInspector::update();
 
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-   cSimpleModule *mod = (cSimpleModule *)object;
+   cModule *mod = (cSimpleModule *)object;
 
    setInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
-
-   char subsc[32];
-   sprintf(subsc,"#%d ",mod->id());
-   CHK(Tcl_VarEval(interp, modulename, " config -text {Module ",
-                           subsc,mod->fullPath(),"}", NULL));
-   CHK(Tcl_VarEval(interp, phase, " config -text {Phase: ",mod->phase(),"}", NULL));
 }
 
 //=======================================================================

@@ -132,6 +132,7 @@ proc create_modulewindow {name} {
     iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
     iconbutton $w.toolbar.sep2 -separator
     iconbutton $w.toolbar.step   -image $icons(step) -command "one_step_in_module $w"
+
     foreach i {obj sep1 parent sep2 step} {
        pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
     }
@@ -140,19 +141,11 @@ proc create_modulewindow {name} {
     set help_tips($w.toolbar.parent) {Inspect parent module}
     set help_tips($w.toolbar.step)   {Execute until next event in this module}
 
-    frame $w.statusbar
-    label $w.statusbar.name -relief groove -text {(unknown module)}
-    label $w.statusbar.phase -justify left -relief groove -text {Phase: -}
     frame $w.main
     text $w.main.text -yscrollcommand "$w.main.sb set" -width 80 -height 15
     scrollbar $w.main.sb -command "$w.main.text yview"
     $w.main.text tag configure event -foreground blue
-    ###################
-    # SETTING GEOMETRY
-    ###################
-    pack $w.statusbar -anchor center -expand 0 -fill x -side top
-    pack $w.statusbar.name -anchor n -expand 1 -fill x -side left
-    pack $w.statusbar.phase   -anchor n -expand 1 -fill x -side right
+
     pack $w.main -anchor center -expand 1 -fill both -side top
     pack $w.main.sb -anchor center -expand 0 -fill y -side right
     pack $w.main.text -anchor center -expand 1 -fill both -side left

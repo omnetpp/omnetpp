@@ -365,17 +365,20 @@ proc create_graphicalmodwindow {name} {
 
     # create toolbar
     iconbutton $w.toolbar.ascont -image $icons(asobject) -command "inspect_this $w {As Object}"
+    iconbutton $w.toolbar.win    -image $icons(asoutput) -command "inspect_this $w {Module output}"
     iconbutton $w.toolbar.sep1   -separator
     iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
+    iconbutton $w.toolbar.sep2   -separator
     iconbutton $w.toolbar.params -image $icons(params) ;#command assigned from C++
     iconbutton $w.toolbar.gates  -image $icons(gates)  ;#command assigned from C++
-    iconbutton $w.toolbar.sep2   -separator
+    iconbutton $w.toolbar.sep3   -separator
     iconbutton $w.toolbar.redraw -image $icons(redraw) -command "graphmodwin_redraw $w"
-    foreach i {ascont sep1 parent params gates sep2 redraw} {
+    foreach i {ascont win sep1 parent sep2 params gates sep3 redraw} {
        pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
     }
 
     set help_tips($w.toolbar.ascont)  {Inspect as object}
+    set help_tips($w.toolbar.win)     {See module output}
     set help_tips($w.toolbar.parent)  {Inspect parent module}
     set help_tips($w.toolbar.params)  {Inspect parameters}
     set help_tips($w.toolbar.gates)   {Inspect gates}
