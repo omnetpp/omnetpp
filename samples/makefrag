@@ -1,0 +1,4 @@
+all: $(TARGET)
+
+makefiles:
+	for i in $(SUBDIRS); do (cd $i && opp_makemake -f)

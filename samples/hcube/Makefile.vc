@@ -15,19 +15,14 @@ TARGET = hcube.exe
 # USERIF_LIBS=$(CMDENV_LIBS)
 USERIF_LIBS=$(TKENV_LIBS)
 
-# uncomment 1 of the 3 lines to support either serial or parallel operation
-KERNEL_LIBS=$(STD_KERNEL_LIBS)
-# KERNEL_LIBS=$(PVM_KERNEL_LIBS)
-# KERNEL_LIBS=$(MPI_KERNEL_LIBS)
-
 # .ned or .h include paths with -I
 INCLUDE_PATH=
 
 # misc additional object and library files to link
-EXRA_OBJS=
+EXTRA_OBJS=
 
-# object files in subdirectories
-SUBDIR_OBJS=
+# object files from other directories to link with
+EXT_DIR_OBJS=
 
 # Additional libraries (-L option -l option)
 LIBS=
@@ -42,9 +37,15 @@ CMDENV_LIBS=envir.lib cmdenv.lib
 TKENV_LIBS=envir.lib tkenv.lib $(TK_LIBS)
 
 # Simulation kernel
-STD_KERNEL_LIBS=sim_std.lib
-MPI_KERNEL_LIBS=sim_mpi.lib $(MPI_LIBS)
-PVM_KERNEL_LIBS=sim_pvm.lib $(PVM_LIBS)
+KERNEL_LIBS=sim_std.lib
+
+!if "$(WITH_NETBUILDER)"=="yes"
+KERNEL_LIBS= $(KERNEL_LIBS) nedxml.lib $(XML_LIBS)
+!endif
+
+!if "$(WITH_PARSIM)"=="yes"
+KERNEL_LIBS= $(KERNEL_LIBS) $(MPI_LIBS)
+!endif
 
 # Simulation kernel and user interface libraries
 OMNETPP_LIBS=/libpath:$(OMNETPP_LIB_DIR) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
@@ -53,14 +54,20 @@ COPTS=$(CFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 NEDCOPTS=$(CFLAGS) $(NEDCFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 
 #------------------------------------------------------------------------------
-# Object files from this directory to link
+# object files in this directory
 OBJS= gensink_n.obj hc_net_n.obj hc_rte_n.obj hcube_n.obj hcpacket_m.obj gensink.obj hc_rte.obj
 
-$(TARGET): $(OBJS) $(EXRA_OBJS) Makefile.vc 
-	$(LINK) $(LDFLAGS) $(OBJS) $(EXRA_OBJS) $(SUBDIR_OBJS) $(LIBS) $(OMNETPP_LIBS) /out:$(TARGET)
+# subdirectories to recurse into
+SUBDIRS= 
+SUBDIR_TARGETS= 
 
-# purify: $(OBJS) $(EXRA_OBJS)  Makefile.vc
-# 	purify $(CXX) $(LDFLAGS) $(OBJS) $(EXRA_OBJS) $(SUBDIR_OBJS) $(LIBS) -L$(OMNETPP_LIB_DIR) $(KERNEL_LIBS) $(USERIF_LIBS) $(SYS_LIBS_PURE) -o $(TARGET).pure
+$(TARGET): $(OBJS) $(EXTRA_OBJS)  Makefile.vc
+	$(LINK) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) $(OMNETPP_LIBS) /out:$(TARGET)
+
+# purify: $(OBJS) $(EXTRA_OBJS)  Makefile.vc
+# 	purify $(CXX) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) -L$(OMNETPP_LIB_DIR) $(KERNEL_LIBS) $(USERIF_LIBS) $(SYS_LIBS_PURE) -o $(TARGET).pure
+
+subdirs: $(SUBDIR_TARGETS)
 
 gensink_n.obj: gensink_n.cc
 	$(CXX) -c $(NEDCOPTS) /Tp gensink_n.cc
@@ -89,7 +96,7 @@ hcube_n.cc: hcube.ned
 hcpacket_m.obj: hcpacket_m.cc
 	$(CXX) -c $(NEDCOPTS) /Tp hcpacket_m.cc
 
-hcpacket_m.cc: hcpacket.msg
+hcpacket_m.cc hcpacket_m.h: hcpacket.msg
 	$(MSGC:/=\) -s _m.cc $(INCLUDE_PATH) hcpacket.msg
 
 gensink.obj: gensink.cc
@@ -99,33 +106,18 @@ hc_rte.obj: hc_rte.cc
 	$(CXX) -c $(COPTS) /Tp hc_rte.cc
 
 
-doc: neddoc.html htmldocs
+#doc: neddoc doxy
 
-neddoc.html: 
-	@opp_neddoc  > neddoc.html
-	@echo File neddoc.html generated.
+#neddoc:
+#	@opp_neddoc -a
 
-htmldocs:
-	@doxygen -g- | sed "s/^PROJECT_NAME.*/PROJECT_NAME = hcube/;\
-	s|^INPUT *=.*|INPUT = . |;\
-	s/^EXTRACT_ALL *=.*/EXTRACT_ALL = yes/;\
-	s/^EXTRACT_PRIVATE *=.*/EXTRACT_PRIVATE = yes/;\
-	s/^EXCLUDE_PATTERNS *=.*/EXCLUDE_PATTERNS = *_n.cc *_n.h/;\
-	s/^ALPHABETICAL_INDEX *=.*/ALPHABETICAL_INDEX = yes/;\
-	s/^HTML_OUTPUT *=.*/HTML_OUTPUT = htmldoc/;\
-	s/^GENERATE_LATEX *=.*/GENERATE_LATEX = no/;\
-	s/^GENERATE_TREEVIEW *=.*/GENERATE_TREEVIEW = yes/;\
-	s/^HIDE_UNDOC_RELATIONS *=.*/HIDE_UNDOC_RELATIONS = no/;\
-	s|^TAGFILES *=.*|TAGFILES = $(OMNETPP_ROOT)/doc/api/opptags.xml=$(OMNETPP_ROOT)/doc/api|;\
-	s|^GENERATE_TAGFILE *=.*|GENERATE_TAGFILE = htmldoc/tags.xml|;\
-	s/^QUIET *=.*/QUIET = yes/" > doxy.cfg
-	@doxygen doxy.cfg
-	@echo Code documentation generated. Now, point your web browser to ./htmldoc/index.html.
+#doxy: doxy.cfg
+#	@doxygen doxy.cfg
 
 clean:
 	-del *.obj *_n.cc *_n.h *_m.cc *_m.h $(TARGET)$(EXE_SUFFIX) 2>NUL
 	-del *.vec *.sca 2>NUL
-	-del /S neddoc.html htmldoc 2>NUL
+	-for %%i in ( $(SUBDIRS) ) do cd %%i && nmake /nologo /f Makefile.vc clean && cd ..
 
 depend:
 	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cc

@@ -547,22 +547,12 @@ clean:
 \t-for %%i in ( \$(SUBDIRS) ) do cd %%i && $makecommand clean && cd ..
 ";
 
-# makedepend, re-makemake
-@args1 = @ARGV;
-foreach $i (@args1)
-{
-    $i =~ s/ / /g;
-    $i =~ s/ -f / /g;
-    $i =~ s/ -m / /g;
-}
-$args1 = join(" ",@args1);
-
 print OUT "
 depend:
 \t\$(MAKEDEPEND) \$(INCLUDE_PATH) -f $makefile -- *.$ccext
 
 re-makemake:
-\topp_nmakemake_vc -f $args1  #recreate Makefile
+\topp_nmakemake -f $args  #recreate Makefile
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

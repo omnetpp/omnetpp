@@ -1,0 +1,8 @@
+all: rundemo.bat $(TARGET)
+
+rundemo.bat:
+	echo @$(WISH:/=\) -f ^%~dpn0 ^%* > rundemo.bat
+
+makefiles:
+	for %%i in ( $(SUBDIRS) ) do cd %%i && call opp_nmakemake -f && cd ..
+	

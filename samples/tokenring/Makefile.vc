@@ -15,11 +15,6 @@ TARGET = tokenring.exe
 # USERIF_LIBS=$(CMDENV_LIBS)
 USERIF_LIBS=$(TKENV_LIBS)
 
-# uncomment 1 of the 3 lines to support either serial or parallel operation
-KERNEL_LIBS=$(STD_KERNEL_LIBS)
-# KERNEL_LIBS=$(PVM_KERNEL_LIBS)
-# KERNEL_LIBS=$(MPI_KERNEL_LIBS)
-
 # .ned or .h include paths with -I
 INCLUDE_PATH=
 
@@ -35,16 +30,22 @@ LIBS=
 #------------------------------------------------------------------------------
 
 
-!include "d:/home/omnetpp/configuser.vc"
+!include "../../configuser.vc"
 
 # User interface libs
 CMDENV_LIBS=envir.lib cmdenv.lib
 TKENV_LIBS=envir.lib tkenv.lib $(TK_LIBS)
 
 # Simulation kernel
-STD_KERNEL_LIBS=sim_std.lib
-MPI_KERNEL_LIBS=sim_mpi.lib $(MPI_LIBS)
-PVM_KERNEL_LIBS=sim_pvm.lib $(PVM_LIBS)
+KERNEL_LIBS=sim_std.lib
+
+!if "$(WITH_NETBUILDER)"=="yes"
+KERNEL_LIBS= $(KERNEL_LIBS) nedxml.lib $(XML_LIBS)
+!endif
+
+!if "$(WITH_PARSIM)"=="yes"
+KERNEL_LIBS= $(KERNEL_LIBS) $(MPI_LIBS)
+!endif
 
 # Simulation kernel and user interface libraries
 OMNETPP_LIBS=/libpath:$(OMNETPP_LIB_DIR) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
@@ -54,10 +55,11 @@ NEDCOPTS=$(CFLAGS) $(NEDCFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 
 #------------------------------------------------------------------------------
 # object files in this directory
-OBJS= token_n.obj token_m.obj token.obj  
+OBJS= token_n.obj token_m.obj token.obj
 
 # subdirectories to recurse into
 SUBDIRS= 
+SUBDIR_TARGETS= 
 
 $(TARGET): $(OBJS) $(EXTRA_OBJS)  Makefile.vc
 	$(LINK) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) $(OMNETPP_LIBS) /out:$(TARGET)
@@ -65,7 +67,7 @@ $(TARGET): $(OBJS) $(EXTRA_OBJS)  Makefile.vc
 # purify: $(OBJS) $(EXTRA_OBJS)  Makefile.vc
 # 	purify $(CXX) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) -L$(OMNETPP_LIB_DIR) $(KERNEL_LIBS) $(USERIF_LIBS) $(SYS_LIBS_PURE) -o $(TARGET).pure
 
-subdirs: $(SUBDIRS)
+subdirs: $(SUBDIR_TARGETS)
 
 token_n.obj: token_n.cc
 	$(CXX) -c $(NEDCOPTS) /Tp token_n.cc
@@ -94,7 +96,7 @@ token.obj: token.cc
 clean:
 	-del *.obj *_n.cc *_n.h *_m.cc *_m.h $(TARGET)$(EXE_SUFFIX) 2>NUL
 	-del *.vec *.sca 2>NUL
-	-for %%i in (  ) do cd %%i && nmake /nologo /f Makefile.vc clean && cd ..
+	-for %%i in ( $(SUBDIRS) ) do cd %%i && nmake /nologo /f Makefile.vc clean && cd ..
 
 depend:
 	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cc

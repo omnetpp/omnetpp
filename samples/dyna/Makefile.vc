@@ -15,11 +15,6 @@ TARGET = dyna.exe
 # USERIF_LIBS=$(CMDENV_LIBS)
 USERIF_LIBS=$(TKENV_LIBS)
 
-# uncomment 1 of the 3 lines to support either serial or parallel operation
-KERNEL_LIBS=$(STD_KERNEL_LIBS)
-# KERNEL_LIBS=$(PVM_KERNEL_LIBS)
-# KERNEL_LIBS=$(MPI_KERNEL_LIBS)
-
 # .ned or .h include paths with -I
 INCLUDE_PATH=
 
@@ -35,16 +30,22 @@ LIBS=
 #------------------------------------------------------------------------------
 
 
-!include "d:/home/omnetpp/configuser.vc"
+!include "../../configuser.vc"
 
 # User interface libs
 CMDENV_LIBS=envir.lib cmdenv.lib
 TKENV_LIBS=envir.lib tkenv.lib $(TK_LIBS)
 
 # Simulation kernel
-STD_KERNEL_LIBS=sim_std.lib
-MPI_KERNEL_LIBS=sim_mpi.lib $(MPI_LIBS)
-PVM_KERNEL_LIBS=sim_pvm.lib $(PVM_LIBS)
+KERNEL_LIBS=sim_std.lib
+
+!if "$(WITH_NETBUILDER)"=="yes"
+KERNEL_LIBS= $(KERNEL_LIBS) nedxml.lib $(XML_LIBS)
+!endif
+
+!if "$(WITH_PARSIM)"=="yes"
+KERNEL_LIBS= $(KERNEL_LIBS) $(MPI_LIBS)
+!endif
 
 # Simulation kernel and user interface libraries
 OMNETPP_LIBS=/libpath:$(OMNETPP_LIB_DIR) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
@@ -54,10 +55,11 @@ NEDCOPTS=$(CFLAGS) $(NEDCFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 
 #------------------------------------------------------------------------------
 # object files in this directory
-OBJS= dyna_n.obj dynapacket_m.obj client.obj   server.obj servproc.obj switch.obj
+OBJS= dyna_n.obj dynapacket_m.obj client.obj server.obj servproc.obj switch.obj
 
 # subdirectories to recurse into
-SUBDIRS=  release_dir
+SUBDIRS= 
+SUBDIR_TARGETS= 
 
 $(TARGET): $(OBJS) $(EXTRA_OBJS)  Makefile.vc
 	$(LINK) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) $(OMNETPP_LIBS) /out:$(TARGET)
@@ -65,34 +67,31 @@ $(TARGET): $(OBJS) $(EXTRA_OBJS)  Makefile.vc
 # purify: $(OBJS) $(EXTRA_OBJS)  Makefile.vc
 # 	purify $(CXX) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) -L$(OMNETPP_LIB_DIR) $(KERNEL_LIBS) $(USERIF_LIBS) $(SYS_LIBS_PURE) -o $(TARGET).pure
 
-subdirs: $(SUBDIRS)
+subdirs: $(SUBDIR_TARGETS)
 
-release_dir:
-	cd release && cd && nmake /nologo /f Makefile.vc
+dyna_n.obj: dyna_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp dyna_n.cpp
 
-dyna_n.obj: dyna_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp dyna_n.cc
+dyna_n.cpp: dyna.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) dyna.ned
 
-dyna_n.cc: dyna.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) dyna.ned
+dynapacket_m.obj: dynapacket_m.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp dynapacket_m.cpp
 
-dynapacket_m.obj: dynapacket_m.cc
-	$(CXX) -c $(NEDCOPTS) /Tp dynapacket_m.cc
+dynapacket_m.cpp dynapacket_m.h: dynapacket.msg
+	$(MSGC:/=\) -s _m.cpp $(INCLUDE_PATH) dynapacket.msg
 
-dynapacket_m.cc dynapacket_m.h: dynapacket.msg
-	$(MSGC:/=\) -s _m.cc $(INCLUDE_PATH) dynapacket.msg
+client.obj: client.cpp
+	$(CXX) -c $(COPTS) /Tp client.cpp
 
-client.obj: client.cc
-	$(CXX) -c $(COPTS) /Tp client.cc
+server.obj: server.cpp
+	$(CXX) -c $(COPTS) /Tp server.cpp
 
-server.obj: server.cc
-	$(CXX) -c $(COPTS) /Tp server.cc
+servproc.obj: servproc.cpp
+	$(CXX) -c $(COPTS) /Tp servproc.cpp
 
-servproc.obj: servproc.cc
-	$(CXX) -c $(COPTS) /Tp servproc.cc
-
-switch.obj: switch.cc
-	$(CXX) -c $(COPTS) /Tp switch.cc
+switch.obj: switch.cpp
+	$(CXX) -c $(COPTS) /Tp switch.cpp
 
 
 #doc: neddoc doxy
@@ -104,12 +103,12 @@ switch.obj: switch.cc
 #	@doxygen doxy.cfg
 
 clean:
-	-del *.obj *_n.cc *_n.h *_m.cc *_m.h $(TARGET)$(EXE_SUFFIX) 2>NUL
+	-del *.obj *_n.cpp *_n.h *_m.cpp *_m.h $(TARGET)$(EXE_SUFFIX) 2>NUL
 	-del *.vec *.sca 2>NUL
-	-for %%i in ( release ) do cd %%i && nmake /nologo /f Makefile.vc clean && cd ..
+	-for %%i in ( $(SUBDIRS) ) do cd %%i && nmake /nologo /f Makefile.vc clean && cd ..
 
 depend:
-	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cc
+	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cpp
 
 re-makemake:
 	opp_nmakemake_vc -f   #recreate Makefile
