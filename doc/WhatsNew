@@ -10,20 +10,19 @@ Unix utilities (grep, awk) bundled, and in addition to the OMNeT++ programs
 and libraries compiled with MSVC, it also contains prebuilt executables
 of the sample simulations. To shorten the learning curve, the package
 contains Nick van Foreest's Queueing Tutorial. Some MSVC integration stuff
-(AppWizard, macro to add a NED file to the project) was also added to
-the package.
+(AppWizard, macro to add a NED file to the project) was also added.
 
 Changes in the source distribution: it now includes the Tutorial and
 the sources of the MSVC integration components. To facilitate creating
-binary distributions, omnetpp.h and the other header files needed to build
-simulations have been moved out of src/sim/, to a new include/ directory.
-There was no change on the simulation kernel.
+binary distributions, omnetpp.h and the other simulation kernel headers
+have been moved out of src/sim/, to a new include/ directory. There was no
+change on the simulation kernel itself.
 
 Further enhancements: Plove can now be built as a single executable with
 compiled-in Tcl code; on Windows, Plove and GNED can now be compiled as GUI
 apps (using WinMain() instead of main()). I added makefiles for Win95/98/ME
-(although I couldn't test them). The Borland C++ is no longer supported:
-I removed the old project files (*.ide), and added back (unsupported)
+(although I couldn't test them). Borland C++ is no longer supported:
+I removed the old project files (*.ide), but added back (unsupported)
 Makefile.bc's.
 
 
