@@ -20,6 +20,7 @@
 #include <string.h>
 #include <stdlib.h>  // for exit()
 #include <stdarg.h>  // for va_list
+#include <signal.h>  // raise()
 #include "cexception.h"
 #include "csimul.h"
 #include "cmodule.h"
@@ -200,9 +201,11 @@ void cRuntimeError::breakIntoDebuggerIfRequested()
                "RUNTIME ERROR. A cRuntimeError exception is about to be thrown,\n"
                "and you requested (by setting debug-on-errors=true in the ini file)\n"
                "that errors abort execution and break into the debugger.\n"
-               " - on Linux or Unix-like systems: you should now be running the simulation\n"
-               "   under gdb or another debugger. The simulation kernel will now cause a\n"
-               "   deliberate segfault which will get you into the debugger.\n"
+               " - on Linux or Unix-like systems: you should now probably be running the\n"
+               "   simulation under gdb or another debugger. The simulation kernel will now\n"
+               "   raise a SIGABRT signal which will get you into the debugger. If you're not\n"
+               "   running under a debugger, you can still use the core dump for post-mortem\n"
+               "   debugging.\n"
                " - on Windows: your should have a just-in-time debugger (such as\n"
                "   the Visual C++ IDE) enabled. The simulation kernel will now\n"
                "   cause a debugger interrupt to get you into the debugger -- press\n"
@@ -221,7 +224,7 @@ void cRuntimeError::breakIntoDebuggerIfRequested()
 #ifdef _MSC_VER
         __asm int 3; // debugger interrupt
 #else
-        *(int *)0 = 1; // deliberate segfault which breaks into the debugger
+        raise(6); // raise SIGABRT signal
 #endif
     }
 }

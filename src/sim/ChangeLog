@@ -10,10 +10,10 @@
 	  debug-on-errors = true/false  (default: false)
 	If turned on, errors will cause the program to break into the C++ 
 	debugger. More previsely, cRuntimeError's constructor will do
-	__asm int 3 (debugger interrupt) on Windows, and *(int *)0 = 1 
-	(deliberate segfault) on other platforms (Linux, etc). This makes
-	it possible to investigate the context (stack frames, variables etc)
-	of a runtime error.
+	__asm int 3 (debugger interrupt) on Windows, and raise(SIGABRT)
+	on other platforms (Linux, etc). This makes it possible to 
+	investigate the context (stack frames, variables etc) of a runtime 
+	error.
 
 2005-03-07  Andras Varga
 
