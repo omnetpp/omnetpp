@@ -877,6 +877,10 @@ proc drawEnd {c x y} {
 
           # refresh parent module as well
           refreshModuleBounds
+
+          if {$ned($modkey,disp-xsize)=="" && $ned($modkey,disp-ysize)==""} {
+              showTextOnceDialog "compoundAutoResized"
+          }
        }
        $c delete $mouse(rect)
        set mouse(rect) ""

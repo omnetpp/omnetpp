@@ -574,9 +574,15 @@ you can set parameters.
 For further editing, you'll find this "network" component in the object tree on the left.}
 #----------------
 set hints(resetModuleBounds)  {This will make the compound module's area \
-(that is, the background rectange) always auto-adjust to the submodules in it. \
+(that is, the background rectangle) always auto-adjust to the submodules in it. \
 To turn off this behavior, drag the right or bottom edge of the background rectangle\
 to the desired size.}
+#----------------
+set hints(compoundAutoResized)  {The compound module's area (that is,\
+the background rectangle) is now always auto-adjusting to the bounding box\
+of the submodules you're drawing in it. To turn off this behavior, drag the right\
+or bottom edge of the background rectangle to the desired size.\
+There is a toolbar button for turning it on again.}
 
 
 
