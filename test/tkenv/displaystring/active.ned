@@ -2,9 +2,6 @@ import "dummy";
 
 module Active
     submodules:
-        colors: Colors;
-        icons: Icons;
-
         hue: Gen;
             parameters:
                 what = "hue",
