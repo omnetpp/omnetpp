@@ -113,8 +113,8 @@ proc editGnuplotOptions {} {
 }
 
 proc editExtProgs {} {
-
-    global config
+catch {
+    global config tcl_platform tmp
 
     # create dialog with OK and Cancel buttons
     createOkCancelDialog .ize "Configuration"
@@ -124,6 +124,12 @@ proc editExtProgs {} {
     label-entry .ize.f.f1.grep    "grep:" $config(grep)
     label-entry .ize.f.f1.zcat    "zcat:" $config(zcat)
     label-entry .ize.f.f1.gnuplot "gnuplot:" $config(gnuplot)
+    if {$tcl_platform(platform) == "windows"} {
+        catch {unset tmp}
+        set tmp(gp-slash) $config(gp-slash)
+        checkbutton .ize.f.f1.slash -variable tmp(gp-slash) \
+            -text "my gnuplot prefers filenames with fwd slashes" 
+    }
     label-entry .ize.f.f1.awk     "awk:" $config(awk)
     label-entry .ize.f.f1.mknod   "mknod:" $config(mknod)
     label-entry .ize.f.f1.sh      "sh:" $config(sh)
@@ -133,6 +139,9 @@ proc editExtProgs {} {
     pack .ize.f.f1.grep    -expand 0 -fill x -side top
     pack .ize.f.f1.zcat    -expand 0 -fill x -side top
     pack .ize.f.f1.gnuplot -expand 0 -fill x -side top
+    if {$tcl_platform(platform) == "windows"} {
+        pack .ize.f.f1.slash   -expand 0 -fill x -side top
+    }
     pack .ize.f.f1.awk     -expand 0 -fill x -side top
     pack .ize.f.f1.mknod   -expand 0 -fill x -side top
     pack .ize.f.f1.sh      -expand 0 -fill x -side top
@@ -145,12 +154,17 @@ proc editExtProgs {} {
         set config(grep)    [.ize.f.f1.grep.e get]
         set config(zcat)    [.ize.f.f1.zcat.e get]
         set config(gnuplot) [.ize.f.f1.gnuplot.e get]
+        if {$tcl_platform(platform) == "windows"} {
+            set config(gp-slash) $tmp(gp-slash)
+        }
         set config(awk)     [.ize.f.f1.awk.e get]
         set config(mknod)   [.ize.f.f1.mknod.e get]
         set config(sh)      [.ize.f.f1.sh.e get]
         set config(tmp)     [.ize.f.f1.tmp.e get]
     }
     destroy .ize
+} err
+puts $err
 }
 
 proc saveConfig {{fname {}}} {

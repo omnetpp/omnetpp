@@ -12,4 +12,4 @@ rem  You should also manually correct the location of the "plove" file below
 rem  according to your OMNeT++ installation directory.
 rem
 
-wish -f d:\omnetpp\src\plove\plove
+c:\tk80\win\wish80.exe -f d:\work\omnetpp\src\plove\plove

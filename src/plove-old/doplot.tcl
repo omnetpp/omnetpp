@@ -13,15 +13,12 @@
 #----------------------------------------------------------------#
 
 proc file_join {args} {
-
-    # bug in tcl8.0p2: on windows, path components are concatenated
-    #  with / not backslash
-
-    global tcl_platform
+    global tcl_platform config
 
     set f [eval file join $args]
 
-    if {$tcl_platform(platform) == "windows"} {
+    # Windows: transform "/" to "\" if needed
+    if {$tcl_platform(platform) == "windows" && !$config(gp-slash)} {
         regsub -all -- "/" $f "\\" f
     }
     return $f

@@ -43,6 +43,8 @@
   - all sources checked in under CVS
   - added a small, almost dummy Makefile.in
   - version.log renamed to ChangeLog
+July 17, 1999
+  - added slash/backslash option for gnuplot on Windows
 
 
 

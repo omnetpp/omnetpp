@@ -49,6 +49,7 @@ set config(gnuplot)    "gnuplot"
 set config(awk)        "awk"
 set config(mknod)      "mknod"
 set config(sh)         "sh"
+set config(gp-slash)   "1"   ;# use slash (not backslash) in filenames in gnuplot scripts (WIN32)
 
 if [catch {set config(tmp) $env(TMP)}] {
     if [catch {set config(tmp) $env(TEMP)}] {

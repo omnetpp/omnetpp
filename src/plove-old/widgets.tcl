@@ -24,9 +24,8 @@
 proc iconbutton {w args} {
     global fonts
 
-    eval button $w -fg red3 -activeforeground red3 \
-                   -relief raised -font $fonts(icon) \
-                   $args
+    eval button $w -bd 1 $args
+    # old code: -fg red3 -activeforeground red3 -font $fonts(icon) $args
     return $w
 }
 
@@ -156,7 +155,20 @@ proc notebook_showpage {w name} {
        $w.tabs.$nb($w) config -relief flat
     }
     set nb($w) $name
+}
 
+proc label-check {w label first var } {
+    # utility function: create a frame with a label+radiobutton for choose
+    global gned
+
+    frame $w
+    label $w.l -anchor w -width 16 -text $label
+    frame $w.f
+    checkbutton $w.f.r1 -text $first -variable ned($var)
+
+    pack $w.l -anchor w -expand 0 -fill none -side left
+    pack $w.f -anchor w -expand 0 -side left -fill x
+    pack $w.f.r1 -anchor w -expand 0 -side left
 }
 
 # notebook .x bottom
@@ -213,8 +225,8 @@ proc createOkCancelDialog {w title} {
 
     pack $w.buttons -expand 0 -fill x -padx 5 -pady 5 -side bottom
     pack $w.f -expand 1 -fill both -padx 5 -pady 5 -side top
-    pack $w.buttons.cancelbutton  -anchor n -side right
-    pack $w.buttons.okbutton  -anchor n -side right
+    pack $w.buttons.cancelbutton  -anchor n -side right -padx 2
+    pack $w.buttons.okbutton  -anchor n -side right -padx 2
 
 }
 
