@@ -244,6 +244,8 @@ proc update_submod_dispstr {key} {
    if ![info exist tags(i)] {set tags(i) {}}
    _setlistitem tags(i) 0 $ned($key,disp-icon)
 
+   if {$ned($key,disp-icon)!=""} {set tags(b) {}}
+
    set ned($key,displaystring) [assemble_dispstr tags $order]
 }
 
