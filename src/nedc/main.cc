@@ -148,8 +148,8 @@ void printUsage()
        "  -z: skip processing imports\n"
        "  -p: with -x: add source location info (src-loc attributes) to XML output\n"
        "  -V: verbose\n"
-       "NOTE: nedtool/nedxml is still in ALPHA state: C++ code generation, message\n"
-       "descriptions, and the new NED-2 syntax is still experimental and/or incomplete.\n"
+       "NOTE: C++ code generation from .msg files and the new NED-2 syntax are still\n"
+       "experimental and should not be used in production environment.\n"
     );
 }
 
