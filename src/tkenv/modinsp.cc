@@ -259,7 +259,7 @@ void TGraphicalModWindow::getSubmoduleCoords(cModule *submod, bool& explicitcoor
         else
         {
             Tcl_Interp *interp = getTkApplication()->getInterp();
-            Tk_Image img = Tk_GetImage(interp, Tk_MainWindow(interp), imgname, NULL, NULL);
+            Tk_Image img = Tk_GetImage(interp, Tk_MainWindow(interp), TCLCONST(imgname), NULL, NULL);
             if (!img)
             {
                 iconsx = UNKNOWNICON_WIDTH;
@@ -727,7 +727,7 @@ int TGraphicalModWindow::getDisplayStringPar(Tcl_Interp *interp, int argc, const
 
    if (par->type()=='S')
    {
-      Tcl_SetResult(interp, const_cast<char*>(par->stringValue()), TCL_VOLATILE);
+      Tcl_SetResult(interp, TCLCONST(par->stringValue()), TCL_VOLATILE);
    }
    else
    {

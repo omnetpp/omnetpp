@@ -343,7 +343,7 @@ int getNetworkType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    cNetworkType *n = simulation.networkType();
-   Tcl_SetResult(interp, const_cast<char*>(!n ? "" : n->name()), TCL_VOLATILE);
+   Tcl_SetResult(interp, TCLCONST(!n ? "" : n->name()), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -363,7 +363,7 @@ int getFileName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
         s = app->getSnapshotFileName();
    else
         return TCL_ERROR;
-   Tcl_SetResult(interp, const_cast<char*>(!s ? "" : s), TCL_VOLATILE);
+   Tcl_SetResult(interp, TCLCONST(!s ? "" : s), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -372,7 +372,7 @@ int getObjectFullName_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    cObject *object = (cObject *)strToPtr( argv[1] );
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, const_cast<char*>(object->fullName()), TCL_VOLATILE);
+   Tcl_SetResult(interp, TCLCONST(object->fullName()), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -381,7 +381,7 @@ int getObjectFullPath_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    cObject *object = (cObject *)strToPtr( argv[1] );
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, const_cast<char*>(object->fullPath()), TCL_VOLATILE);
+   Tcl_SetResult(interp, TCLCONST(object->fullPath()), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -390,7 +390,7 @@ int getObjectClassName_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    cObject *object = (cObject *)strToPtr( argv[1] );
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, const_cast<char*>(object->className()), TCL_VOLATILE);
+   Tcl_SetResult(interp, TCLCONST(object->className()), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -415,28 +415,28 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
 
    static char buf[MAX_OBJECTINFO];
    if (!strcmp(field,"fullName")) {
-       Tcl_SetResult(interp, const_cast<char*>(object->fullName()), TCL_VOLATILE);
+       Tcl_SetResult(interp, TCLCONST(object->fullName()), TCL_VOLATILE);
    } else if (!strcmp(field,"fullPath")) {
-       Tcl_SetResult(interp, const_cast<char*>(object->fullPath()), TCL_VOLATILE);
+       Tcl_SetResult(interp, TCLCONST(object->fullPath()), TCL_VOLATILE);
    } else if (!strcmp(field,"className")) {
-       Tcl_SetResult(interp, const_cast<char*>(object->className()), TCL_VOLATILE);
+       Tcl_SetResult(interp, TCLCONST(object->className()), TCL_VOLATILE);
    } else if (!strcmp(field,"info")) {
        object->info(buf);
        Tcl_SetResult(interp, buf, TCL_VOLATILE);
    } else if (!strcmp(field,"displayString")) {
        // FIXME use hasDisplayString here!!!!
        if (dynamic_cast<cModule *>(object)) {
-           Tcl_SetResult(interp, const_cast<char*>(dynamic_cast<cModule *>(object)->displayString().getString()), TCL_VOLATILE);
+           Tcl_SetResult(interp, TCLCONST(dynamic_cast<cModule *>(object)->displayString().getString()), TCL_VOLATILE);
        } else if (dynamic_cast<cMessage *>(object)) {
-           Tcl_SetResult(interp, const_cast<char*>(dynamic_cast<cMessage *>(object)->displayString()), TCL_VOLATILE);
+           Tcl_SetResult(interp, TCLCONST(dynamic_cast<cMessage *>(object)->displayString()), TCL_VOLATILE);
        } else if (dynamic_cast<cGate *>(object)) {
-           Tcl_SetResult(interp, const_cast<char*>(dynamic_cast<cGate *>(object)->displayString().getString()), TCL_VOLATILE);
+           Tcl_SetResult(interp, TCLCONST(dynamic_cast<cGate *>(object)->displayString().getString()), TCL_VOLATILE);
        } else {
            Tcl_SetResult(interp, "no such field in this object", TCL_STATIC); return TCL_ERROR;
        }
    } else if (!strcmp(field,"displayStringAsParent")) {
        if (dynamic_cast<cModule *>(object)) {
-           Tcl_SetResult(interp, const_cast<char*>(dynamic_cast<cModule *>(object)->displayStringAsParent().getString()), TCL_VOLATILE);
+           Tcl_SetResult(interp, TCLCONST(dynamic_cast<cModule *>(object)->displayStringAsParent().getString()), TCL_VOLATILE);
        } else {
            Tcl_SetResult(interp, "no such field in this object", TCL_STATIC); return TCL_ERROR;
        }
@@ -497,7 +497,7 @@ int getObjectBaseClass_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    else if (dynamic_cast<cWatch *>(object))
        Tcl_SetResult(interp, "cWatch", TCL_STATIC);
    else
-       Tcl_SetResult(interp, const_cast<char *>(object->className()), TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST(object->className()), TCL_STATIC);
    return TCL_OK;
 }
 
@@ -780,7 +780,7 @@ int displayString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
        int k = atoi(argv[4]);
        cDisplayString dp(dispstr);
        const char *val = dp.getTagArg(tag,k);
-       Tcl_SetResult(interp, const_cast<char *>(val), TCL_VOLATILE);
+       Tcl_SetResult(interp, TCLCONST(val), TCL_VOLATILE);
    }
    else
    {
@@ -948,7 +948,7 @@ int inspect_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 
    void *dat = (argc==4) ? (void *)argv[3] : NULL;
    TInspector *insp = app->inspect(object, type, "", dat);
-   Tcl_SetResult(interp, const_cast<char*>(insp ? insp->windowName() : ""), TCL_VOLATILE);
+   Tcl_SetResult(interp, TCLCONST(insp ? insp->windowName() : ""), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -1092,7 +1092,7 @@ int inspectorType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
         const char *namestr = insptypeNameFromCode( type );
         if (namestr==NULL)
            {Tcl_SetResult(interp, "unrecognized inspector type", TCL_STATIC);return TCL_ERROR;}
-        Tcl_SetResult(interp, const_cast<char *>(namestr), TCL_STATIC);
+        Tcl_SetResult(interp, TCLCONST(namestr), TCL_STATIC);
    }
    else
    {
@@ -1129,7 +1129,7 @@ int hasDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    splitInspectorName( argv[1], object, type);
    if (!object) {Tcl_SetResult(interp, "wrong inspectorname string", TCL_STATIC); return TCL_ERROR;}
 
-   Tcl_SetResult(interp, const_cast<char *>(cStructDescriptor::hasDescriptor(object->className()) ? "1" : "0"), TCL_VOLATILE);
+   Tcl_SetResult(interp, TCLCONST(cStructDescriptor::hasDescriptor(object->className()) ? "1" : "0"), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -1237,7 +1237,7 @@ int colorizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    const char *targetcolorname = argv[2];
    const char *weightstr = argv[3]; // 0-100
 
-   Tk_PhotoHandle imghandle = Tk_FindPhoto(interp, imgname);
+   Tk_PhotoHandle imghandle = Tk_FindPhoto(interp, TCLCONST(imgname));
    if (!imghandle)
    {
        Tcl_SetResult(interp, "image doesn't exist or is not a photo image", TCL_STATIC);
@@ -1252,7 +1252,7 @@ int colorizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
        return TCL_ERROR;
    }
 
-   XColor *targetcolor = Tk_GetColor(interp, Tk_MainWindow(interp), targetcolorname);
+   XColor *targetcolor = Tk_GetColor(interp, Tk_MainWindow(interp), TCLCONST(targetcolorname));
    if (!targetcolor)
    {
        Tcl_SetResult(interp, "invalid color", TCL_STATIC);

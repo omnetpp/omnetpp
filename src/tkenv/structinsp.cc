@@ -239,7 +239,7 @@ int TStructPanel::inspectorCommand(Tcl_Interp *interp, int argc, const char **ar
    {
       if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[1]);
-      Tcl_SetResult(interp, const_cast<char *>(sd->getFieldName(fld)), TCL_VOLATILE);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldName(fld)), TCL_VOLATILE);
       return TCL_OK;
    }
 
@@ -247,7 +247,7 @@ int TStructPanel::inspectorCommand(Tcl_Interp *interp, int argc, const char **ar
    {
       if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[1]);
-      Tcl_SetResult(interp, const_cast<char *>(sd->getFieldTypeString(fld)), TCL_VOLATILE);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldTypeString(fld)), TCL_VOLATILE);
       return TCL_OK;
    }
 
@@ -282,7 +282,7 @@ int TStructPanel::inspectorCommand(Tcl_Interp *interp, int argc, const char **ar
    {
       if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[1]);
-      Tcl_SetResult(interp, const_cast<char *>(sd->getFieldEnumName(fld)), TCL_VOLATILE);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldEnumName(fld)), TCL_VOLATILE);
       return TCL_OK;
    }
 
@@ -290,7 +290,7 @@ int TStructPanel::inspectorCommand(Tcl_Interp *interp, int argc, const char **ar
    {
       if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[1]);
-      Tcl_SetResult(interp, const_cast<char *>(sd->getFieldStructName(fld)), TCL_VOLATILE);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldStructName(fld)), TCL_VOLATILE);
       return TCL_OK;
    }
 

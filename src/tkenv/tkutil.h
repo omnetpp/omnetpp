@@ -17,6 +17,15 @@
 
 #include <tk.h>
 
+//
+// In some installations Tcl headers files have 'char*' without 'const char*'
+// in arg lists -- we have to cast away 'const char*' from args in our Tcl calls.
+//
+#define TCLCONST(x)   const_cast<char*>(x)
+
+//
+// Print error message on console if Tcl code returns error
+//
 #ifdef _NDEBUG
 #define CHK(tcl_eval_statement)   tcl_eval_statement
 #else
@@ -26,12 +35,20 @@
   } while(0)
 #endif
 
+//
+// Turns exceptions into Tcl errors
+//
 #define TRY(code) \
   try {code;} catch (cException *e) { \
-      Tcl_SetResult(interp, const_cast<char *>(e->message()), TCL_VOLATILE); \
+      Tcl_SetResult(interp, TCLCONST(e->message()), TCL_VOLATILE); \
       delete e; \
       return TCL_ERROR; \
   }
+
+
+//
+// Utility functions:
+//
 
 class cObject;
 class cCollectObjectsVisitor;

@@ -134,7 +134,7 @@ void TOmnetTkApp::setup()
     // add OMNeT++'s commands to Tcl
     createTkCommands( interp, tcl_commands );
 
-    Tcl_SetVar(interp, "OMNETPP_BITMAP_PATH", const_cast<char*>((const char *)bitmap_dir), TCL_GLOBAL_ONLY);
+    Tcl_SetVar(interp, "OMNETPP_BITMAP_PATH", TCLCONST((const char *)bitmap_dir), TCL_GLOBAL_ONLY);
 
     // eval Tcl sources: either from .tcl files or from compiler-in string
     // literal (tclcode.cc)...
@@ -143,7 +143,7 @@ void TOmnetTkApp::setup()
     //
     // Case A: TCL code in separate .tcl files
     //
-    Tcl_SetVar(interp, "OMNETPP_TKENV_DIR",  const_cast<char*>((const char *)tkenv_dir), TCL_GLOBAL_ONLY);
+    Tcl_SetVar(interp, "OMNETPP_TKENV_DIR",  TCLCONST((const char *)tkenv_dir), TCL_GLOBAL_ONLY);
     if (Tcl_EvalFile(interp,fastconcat(tkenv_dir,"/tkenv.tcl"))==TCL_ERROR)
     {
         fprintf(stderr, "\n<!> Error starting Tkenv: %s. "
@@ -1543,10 +1543,10 @@ void TOmnetTkApp::puts(const char *str)
     // minimize heap usage: use local buffer whenever possible.
     int flags;
     char buf[128];
-    int quotedlen = Tcl_ScanElement(const_cast<char *>(str), &flags);
+    int quotedlen = Tcl_ScanElement(TCLCONST(str), &flags);
     bool isshort = quotedlen<128;
     char *quotedstr = isshort ? buf : Tcl_Alloc(quotedlen+1);
-    Tcl_ConvertElement(const_cast<char *>(str), quotedstr, flags);
+    Tcl_ConvertElement(TCLCONST(str), quotedstr, flags);
 
     // output string into main window
     cModule *module = simulation.contextModule();
