@@ -6,11 +6,12 @@ TMPFILE=/tmp/opp_neddoc.tmp.$$
 
 # process command-line options
 outdir=html
+screenshots=yes
 while [ $# -gt 0 ]; do
     case "$1" in
     -o)       shift ; outdir=$1 ;;
-    -n)       no_screenshots=y ;;
-    --nofig)  no_screenshots=y ;;
+    -n)       screenshots=no ;;
+    --nofig)  screenshots=no ;;
     -a)       all_files=y ;;
     --all)    all_files=y ;;
     -h)       do_help=y ;;
@@ -65,27 +66,29 @@ fi
 echo 'transforming to xml...'
 nedtool -x -e -t -y -m -o $TMPFILE $files || exit 1
 
-if [ -n "$PS2GIF" ]; then
-    echo 'exporting screenshots (Postscript) using GNED...'
-    nedfilesonly=`echo $files | sed 's/[^ ]*\.msg//g'`
-    gned -- -c $outdir $nedfilesonly || exit 1
-    echo 'converting Postscript to GIF using '$PS2GIF'...'
-    for i in $outdir/*.eps; do
-       gif=`echo $i | sed 's/eps$/gif/'`
-       $PS2GIF $i $gif || exit 1
-       echo -n '#'
-    done
-    echo
-    # hack: must convert $outdir to absolute path, otherwise xslt will take it
-    # as relative to the sylesheet (@#$#@$!!)
-    imagesxml=$outdir/images.xml
-    case $imagesxml in
-      /*) : ;;
-      *) imagesxml=`pwd`/$imagesxml ;;
-    esac
-else
-    echo 'skipping diagram exporting (no Postscript-to-GIF converter configured)'
-    imagesxml=
+if [ "$screenshots" = "yes" ]; then 
+    if [ -n "$PS2GIF" ]; then
+        echo 'exporting screenshots (Postscript) using GNED...'
+        nedfilesonly=`echo $files | sed 's/[^ ]*\.msg//g'`
+        gned -- -c $outdir $nedfilesonly || exit 1
+        echo 'converting Postscript to GIF using '$PS2GIF'...'
+        for i in $outdir/*.eps; do
+           gif=`echo $i | sed 's/eps$/gif/'`
+           $PS2GIF $i $gif || exit 1
+           echo -n '#'
+        done
+        echo
+        # hack: must convert $outdir to absolute path, otherwise xslt will take it
+        # as relative to the sylesheet (@#$#@$!!)
+        imagesxml=$outdir/images.xml
+        case $imagesxml in
+          /*) : ;;
+          *) imagesxml=`pwd`/$imagesxml ;;
+        esac
+    else
+        echo 'skipping diagram exporting (no Postscript-to-GIF converter configured)'
+        imagesxml=
+    fi
 fi
 
 echo 'applying xslt stylesheet...'
