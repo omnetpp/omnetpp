@@ -296,21 +296,29 @@ proc createMainWindow {} {
     frame .main.f.tabs
     pack .main.f.tabs -expand 0 -fill x -side bottom -ipadx 0 -ipady 0 -padx 0 -pady 0
 
-    # create scrollbar to scroll buttons if there are too mch open
     set tabs .main.f.tabs
-    scrollbar $tabs.s -command "$tabs.c xview" -orient horiz
-    pack $tabs.s -anchor center -expand 0 -fill none -side right
-
-    canvas $tabs.c -xscrollcommand "$tabs.s set" -height 15
-    pack $tabs.c -side left -expand yes -fill both
+    canvas $tabs.c -height 15
     frame $tabs.c.f
     $tabs.c create window 0 0 -anchor nw -window $tabs.c.f
 
-    ## maybe use buttons instead of scrollbar?
-    # button $tabs.right -highlightthickness 0 -height 1 -text ">"
-    # button $tabs.left -highlightthickness 0 -height 1 -text "<"
-    # pack $tabs.right -anchor n -expand 0 -fill none -side right
-    # pack $tabs.left -anchor n -expand 0 -fill none -side right
+    # create scrollbar to scroll buttons if there are too many windows open
+    if {0} {
+        # scrollbar version
+        $tabs.c config -xscrollcommand "$tabs.s set"
+        scrollbar $tabs.s -command "$tabs.c xview" -orient horiz
+        pack $tabs.s -anchor center -expand 0 -fill none -side right
+    } else {
+        # use "<" ">" buttons instead of scrollbar
+        button $tabs.right -highlightthickness 0 -height 10 -width 10 \
+            -image $icons(scroll_r) -command "$tabs.c xview scroll 1 units"
+        button $tabs.left -highlightthickness 0 -height 10 -width 10 \
+            -image $icons(scroll_l) -command "$tabs.c xview scroll -1 units"
+        pack $tabs.right -anchor c -expand 0 -fill none -side right
+        pack $tabs.left -anchor c -expand 0 -fill none -side right
+    }
+
+    # the canvas has to be packed last, to make it shrink sooner than the buttons/scrollbar
+    pack $tabs.c -side left -expand yes -fill both
 
 
     #################################

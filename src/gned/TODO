@@ -39,7 +39,9 @@ General:
 - ctrl-mousemove should copy the items on canvas
 - different vertical toolbar when changing from graphics to NED view;
   on that toolbar: Find, Replace
-- improve tab strip scrolling
+- improve tab strip scrolling (1. why the last button is not fully visible?,
+  2. scrolling to the right is possible when only few tabs are there)
+
 - reduce number of "array names ned ..." lines -- they're SLOW!
   --> introduce "ownedkeys" attr and rewrite deleteItem, connKeysOfItem, etc.
 

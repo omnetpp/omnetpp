@@ -117,12 +117,13 @@ proc openModuleOnNewCanvas {modkey} {
     # create tab
     button $tab -command "switchToCanvas $canv_id" -relief ridge \
                 -bg wheat2 -highlightthickness 0 -height 1
-    pack $tab -anchor n -expand 0 -fill none -side left
+    pack $tab -expand 0 -fill none -side left
 
     # very dirty code to update scrollbar to scroll the 'tabs' strip
     update idletasks
     .main.f.tabs.c config -height [winfo height .main.f.tabs.c.f]
     .main.f.tabs.c config -scrollregion "0 0 [winfo width .main.f.tabs.c.f] 0"
+    .main.f.tabs.c xview moveto 1.0
 
     # bindings for the canvas
     selectOrMoveBindings $canv
@@ -317,6 +318,10 @@ proc destroyCanvas {canv_id} {
     foreach i [array names canvas "$canv_id,*"] {
         unset canvas($i)
     }
+
+    # adjust scrolling of tabs area
+    .main.f.tabs.c config -scrollregion "0 0 [winfo width .main.f.tabs.c.f] 0"
+    .main.f.tabs.c xview moveto 1.0
 }
 
 

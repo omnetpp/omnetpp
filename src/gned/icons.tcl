@@ -197,3 +197,12 @@ set icons(simple_vs) [image create photo -data {
     p/WNA67O8jJfjTQyEUMbSgQAOw==
 }]
 
+set icons(scroll_l) [image create photo -data {
+    R0lGODlhBAAHAIAAAAAAAP///yH5BAEAAAEALAAAAAAEAAcAAAIIjHEIy7ppAigAOw==
+}]
+
+set icons(scroll_r) [image create photo -data {
+    R0lGODlhBAAHAIAAAAAAAP///yH5BAEAAAEALAAAAAAEAAcAAAIIRA4WaeyrVCgAOw==
+}]
+
+
