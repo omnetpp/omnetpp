@@ -17,11 +17,11 @@ OMNETPP_VERSION=omnetpp-2.2
 # short file names (e.g. 'C:/PROGRA~1' instead of 'C:/Program files').
 #
 OMNETPP_ROOT=d:/home/omnetpp
-TK_DIR=d:/tcl
-TK_VER=8.2
-PVM_DIR=c:/pvm3
-MPI_DIR=c:/mpi
-EXPAT_DIR=d:/home/expat-1.95.2
+TK_DIR=d:/home/tools/Tcl-8.4.1
+TK_VER=8.4
+PVM_DIR=d:/home/tools/pvm3
+MPI_DIR=d:/home/tools/mpi
+EXPAT_DIR=d:/home/tools/expat-1.95.2
 
 #
 # Choice of XML parser. Possible choices: expat or none (perhaps libxml in the
@@ -90,10 +90,10 @@ LEX=flex.exe
 
 # Compiler switches
 
-CFLAGS_DEBUG=/nologo /GX /GR /FD /Zm150 /MLd /Od /Gm /GZ /ZI
+CFLAGS_DEBUG=/nologo /GX /GR /FD /Zm180 /MLd /Od /Gm /GZ /ZI
 LDFLAGS_DEBUG=/nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /incremental:no
 
-CFLAGS_RELEASE=/nologo /GX /GR /FD /Zm150 /ML /O2 /D "NDEBUG"
+CFLAGS_RELEASE=/nologo /GX /GR /FD /Zm180 /ML /O2 /D "NDEBUG"
 LDFLAGS_RELEASE=/nologo /subsystem:console /machine:I386 /pdbtype:sept /incremental:no
 
 CFLAGS=$(CFLAGS_DEBUG)
