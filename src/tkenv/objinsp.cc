@@ -65,7 +65,7 @@ int insptype_code_from_name( char *namestr )
 // TInspector: base class for all inspector types
 //             member functions
 
-TInspector::TInspector(cObject *obj, int typ, void *dat) : cObject()
+TInspector::TInspector(cObject *obj, int typ, void *dat) : cObject("",NULL)
 {
    object = obj;
    type = typ;
