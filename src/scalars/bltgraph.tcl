@@ -71,7 +71,7 @@ proc createBltGraph {graphtype {graphname ""}} {
         bind $w.nb <3>   {%W select active; .popup post %X %Y}
     }
 
-    # create graph on a page
+    # create page for graph
     incr graphnumber
     if {$graphname==""} {set graphname "Chart $graphnumber"}
     set tabId [$w.nb insert end -text $graphname]
@@ -82,6 +82,7 @@ proc createBltGraph {graphtype {graphname ""}} {
 
     set graph $page.g
 
+    # create graph or barchart
     if {$graphtype=="graph"} {
         blt::graph $graph
         $graph pen configure "activeLine" -color navy -linewidth 1 -symbol none
@@ -89,6 +90,11 @@ proc createBltGraph {graphtype {graphname ""}} {
         blt::barchart $graph
         $graph configure -barmode aligned
     }
+    # optimize default settings for pasting graph into documents
+    $graph configure -plotborderwidth 1
+    $graph configure -plotrelief solid
+    $graph configure -plotpadx 8
+    $graph configure -plotpady 8
     $graph crosshairs configure -dashes {1 1}
     $graph legend configure -position right
     $graph legend configure -anchor ne
@@ -159,14 +165,33 @@ proc bltGraph_CloseWindow {} {
     }
 }
 
+
+proc bltGraph_SetWhiteBg {graph} {
+    global tmp
+
+    set tmp(graph-orig-bgcolor) [$graph cget -background]
+    set tmp(graph-orig-plotbgcolor) [$graph cget -plotbackground]
+    $graph config -background white
+    $graph config -plotbackground white
+}
+
+proc bltGraph_RestoreBg {graph} {
+    global tmp
+
+    $graph config -background $tmp(graph-orig-bgcolor)
+    $graph config -plotbackground $tmp(graph-orig-plotbgcolor)
+}
+
 proc bltGraph_Copy {} {
     set w .bltwin
     set graph [$w.nb tab cget select -window].g
 
+    bltGraph_SetWhiteBg $graph
     if [catch {$graph snap -format emf CLIPBOARD}] {
         tk_messageBox -parent $w -icon error -type ok -title Error \
              -message "Sorry, copying the graph to the clipboard only works on Windows."
     }
+    bltGraph_RestoreBg $graph
 }
 
 proc bltGraph_ZoomOut {} {
@@ -183,6 +208,8 @@ proc bltGraph_SavePicture {} {
                -initialdir [pwd] -initialfile "graph.gif" \
                -filetypes {{{GIF files} {*.gif}} {{All files} {*}}}]
 
+
+    bltGraph_SetWhiteBg $graph
     if {$fname!=""} {
        if [catch {
            set img [image create photo]
@@ -190,10 +217,11 @@ proc bltGraph_SavePicture {} {
            # or this: blt::winop snap $graph $img
            $img write "graph.gif" -format "GIF"
        } err] {
+           bltGraph_RestoreBg $graph
            tk_messageBox -icon error -type ok  -parent .bltwin -message "Error: $err"
-           return
        }
     }
+    bltGraph_RestoreBg $graph
 }
 
 proc bltGraph_SavePostscript {} {
@@ -204,6 +232,7 @@ proc bltGraph_SavePostscript {} {
                -initialdir [pwd] -initialfile "graph.ps" \
                -filetypes {{{Postscript files} {*.ps}} {{All files} {*}}}]
 
+    bltGraph_SetWhiteBg $graph
     if {$fname!=""} {
         if [catch {
             $graph postscript output $fname
@@ -212,6 +241,7 @@ proc bltGraph_SavePostscript {} {
             return
         }
     }
+    bltGraph_RestoreBg $graph
 }
 
 proc bltGraph_Properties {{what ""}} {
@@ -261,7 +291,7 @@ proc bltGraph_PropertiesDialog {graph {what ""}} {
     label-combo $f.xrotate "Rotate X labels by" {0 30 45 60 90}
     label-combo $f.xdiv "X axis subdivisions" {1 2 4 5 10}
     label-combo $f.ydiv "Y axis subdivisions" {1 2 4 5 10}
-    # FIXME axis min, max, logarithmic; x labels off (for bar charts)
+    # FIXME axis min, max, logarithmic; x labels off (for bar charts); -invertxy
     $f.xlabel.e configure -textvariable tmp(axisxlabel)
     $f.ylabel.e configure -textvariable tmp(axisylabel)
     $f.titlefont.e configure -textvariable tmp(axistitlefont)
@@ -279,8 +309,15 @@ proc bltGraph_PropertiesDialog {graph {what ""}} {
     pack $f.display -side top -anchor w -expand 0 -fill x
     #FIXME todo
 
-    # Lines page
+    # Lines page -- all elements together?
     set f $nb.lines
+    # FIXME this for
+    label-combo $f.elem "Configure line:" [$graph element names]
+    # [$graph element type] would say "bar" or "line"
+    label-combo $f.smooth "Lines between points" {linear step natural quadratic}
+    label-combo $f.symbols "Show symbols" {no yes}
+    pack $f.elem $f.smooth $f.symbols -side top -anchor w -expand 0 -fill x
+    $f.smooth.e configure -textvariable tmp(linesmooth)
     #FIXME todo
 
     # Legend page
