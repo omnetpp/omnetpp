@@ -30,6 +30,7 @@ class cConfiguration;
  * See also cModule::rng().
  *
  * @ingroup RandomNumbers
+ * @ingroup EnvirExtensions
  */
 class SIM_API cRNG : public cPolymorphic
 {

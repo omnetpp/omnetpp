@@ -69,6 +69,7 @@
  * @defgroup SimSupport  Simulation supporting classes
  *
  * Classes that make it easier to write simulation models:
+ *    - cXMLElement makes XML configuration available for simple modules
  *    - cTopology supports routing in telecommunication or multiprocessor networks.
  *    - cFSM is used to build Final State Machines
  *    - cWatch makes variables visible (inspectable) in Tkenv
@@ -83,15 +84,14 @@
  *
  * Container classes:
  *    - cQueue: a (priority) queue for objects derived from cObject
- *    - cLinkedList: queue for structs and objects not derived from cObject
- *    - cArray: a dynamic array for storing objects
- *    - cBag: dynamic array for structs and objects not derived from cObject
+ *    - cArray: a dynamic array for storing objects derived from cObject
  *
- * Naturally, you can also use your own container classes (e.g. STL).
- * The disadvantage of doing so is that those container objects will
- * not appear and will not be inspectable under graphical user interfaces
- * like Tkenv. To make them inspectable, you have to wrap them into a class
- * derived from cObject.
+ * You can also use other container classes (such as STL's vector or map),
+ * especially for structs or classes not derived from cObject.
+ * For cMessage (and other cObject-rooted classes) the disadvantage of 
+ * STL is that those container objects will not appear and will not be 
+ * inspectable under graphical user interfaces like Tkenv. To make them 
+ * inspectable, you have to wrap them into a class derived from cObject.
  *
  * Some other classes, closely related to the above ones (for example their
  * iterators) are not listed here explicitly, but you can find them via

@@ -24,13 +24,23 @@
 
 class cXMLElement;
 
+/**
+ * A list of XML elements. Used with cXMLElement.
+ */
 typedef std::vector<cXMLElement*> cXMLElementList;
+
+/**
+ * Attributes of an XML element. Used with cXMLElement.
+ */
 typedef std::map<std::string,std::string> cXMLAttributeMap;
 
 
 /**
- * Represents an XML element in an XML configuration file.
- * Provides read only access to the XML, with functionality that
+ * Represents an XML element in an XML configuration file. XML-typed
+ * NED parameters are accessible as cXMLElement via the cPar::xmlValue()
+ * method.
+ *
+ * cXMLElement provides read only access to the XML, with functionality that
  * resembles DOM. (A full-featured DOM implementation would have
  * been too bloated for the purpose of accessing readonly
  * configuration files).
@@ -51,6 +61,8 @@ typedef std::map<std::string,std::string> cXMLAttributeMap;
  * An element <xi:include href="doc.xml"/> gets replaced with
  * the content of the corresponding document. The "href" and "parse"
  * attributes from the XInclude spec are supported.
+ *
+ * @ingroup SimSupport
  */
 // TBD if namespaces are supported by Expat & libxml in an easy way, maybe do it here
 class cXMLElement
