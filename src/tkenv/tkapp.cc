@@ -62,8 +62,10 @@ TOmnetTkApp::TOmnetTkApp(int argc, char *argv[]) :
   TOmnetApp( argc, argv),
   inspectors("inspectors", NULL)
 {
+    interp = 0;  // Tcl/Tk not set up yet
     is_running = FALSE;
-    // opt_* vars will be set by readOptions()
+
+    // The opt_* vars will be set by readOptions()
 }
 
 TOmnetTkApp::~TOmnetTkApp()
@@ -72,36 +74,32 @@ TOmnetTkApp::~TOmnetTkApp()
 
 void TOmnetTkApp::setup(int argc, char *argv[])
 {
-
-    int ok=TRUE;
+    // initialize base class
+    TOmnetApp::setup(argc, argv);  // includes readOptions()
+    if (!simulation.ok())
+    {
+        return;
+    }
 
     // path for the Tcl user interface files
 #ifdef OMNETPP_TKENV_DIR
     tkenv_dir = getenv("OMNETPP_TKENV_DIR");
     if (!tkenv_dir)
-    {
-       tkenv_dir = OMNETPP_TKENV_DIR;
-#ifdef _WIN32
-       for (char *s=tkenv_dir; *s; s++) if (*s=='/') *s='\\';
-#endif
-    }
+        tkenv_dir = OMNETPP_TKENV_DIR;
 #endif
 
     // path for icon directory
     bitmap_dir = getenv("OMNETPP_BITMAP_PATH");
     if (!bitmap_dir)
-    {
-       bitmap_dir = OMNETPP_BITMAP_PATH;
-#ifdef _WIN32
-       for (char *s=bitmap_dir; *s; s++) if (*s=='/') *s='\\';
-#endif
-    }
+        bitmap_dir = OMNETPP_BITMAP_PATH;
 
     // set up Tcl/Tk
-    if (initTk( argc, argv, interp )==TCL_ERROR)
+    interp = initTk( argc, argv );
+    if (!interp)
     {
-       opp_error("Cannot start Tkenv");
-       return;
+        interp = 0;
+        simulation.setErrorCode(eUISTARTUP);
+        return;
     }
 
     // add OMNeT++'s commands to Tcl
@@ -110,22 +108,22 @@ void TOmnetTkApp::setup(int argc, char *argv[])
     Tcl_SetVar(interp, "OMNETPP_BITMAP_PATH", bitmap_dir, TCL_GLOBAL_ONLY);
 
     // load sources
-
 #ifdef OMNETPP_TKENV_DIR
     // Case A: TCL code in separate .tcl files
     //
     Tcl_SetVar(interp, "OMNETPP_TKENV_DIR",  tkenv_dir, TCL_GLOBAL_ONLY);
     if (Tcl_EvalFile(interp,fastconcat(tkenv_dir,"/tkenv.tcl"))==TCL_ERROR)
     {
-         fprintf(stderr, "**** Error: %s\n", interp->result);
-         fprintf(stderr, "Is OMNETPP_TKENV_DIR set correctly?"
+        fprintf(stderr, "**** Error starting Tkenv: %s\n", interp->result);
+        fprintf(stderr, "Is OMNETPP_TKENV_DIR set correctly?"
 #ifdef _WIN32
-                         " (e.g. C:\\omnetpp\\src\\envir\\tkenv)\n"
+                         " (e.g. C:\\omnetpp\\src\\envir\\tkenv)\n");
 #else
-                         " (e.g. /home/demimoore/omnetpp/src/envir/tkenv)\n"
+                         " (e.g. /home/demimoore/omnetpp/src/envir/tkenv)\n");
 #endif
-                );
-         ok = FALSE;
+        interp = 0;
+        simulation.setErrorCode(eUISTARTUP);
+        return;
     }
 #else
     // Case B: compiled-in TCL code
@@ -135,31 +133,25 @@ void TOmnetTkApp::setup(int argc, char *argv[])
     // The Unix makefile automatically does so; on Win95/NT, you have
     // to do it by hand: bcc tcl2c.c; tcl2c tclcode.cc *.tcl
     //
-#include "tclcode.cc"
+#   include "tclcode.cc"
     if (Tcl_Eval(interp,(char *)tcl_code)==TCL_ERROR)
     {
-         fprintf(stderr, "**** Error: %s\n", interp->result);
-         ok = FALSE;
+        fprintf(stderr, "**** Error starting Tkenv: %s\n", interp->result);
+        interp = 0;
+        simulation.setErrorCode(eUISTARTUP);
+        return;
     }
 #endif
 
     // evaluate main script and build user interface
     if (Tcl_Eval(interp,"start_tkenv")==TCL_ERROR)
     {
-         fprintf(stderr, "**** Error: %s\n", interp->result);
-         ok = FALSE;
+        fprintf(stderr, "**** Error starting Tkenv: %s\n", interp->result);
+        interp = 0;
+        simulation.setErrorCode(eUISTARTUP);
+        return;
     }
 
-    // initialize base class
-    TOmnetApp::setup(argc, argv);
-
-    // This code is a hack to force Tcl/Tk display possible error messages
-    // generated at startup
-    if (!ok || !simulation.ok())
-    {
-       Tcl_Eval(interp,"opp_exitomnetpp");
-       runTk( interp );
-    }
 }
 
 void TOmnetTkApp::run()
@@ -209,7 +201,9 @@ void TOmnetTkApp::doOneStep()
     cSimpleModule *mod = simulation.selectNextModule();
     if (mod != NULL)
     {
-       if (opt_print_banners)   printEventBanner(mod);
+       if (opt_print_banners)
+          printEventBanner(mod);
+
        simulation.doOneEvent( mod );
        simulation.incEventNumber();
 
@@ -808,16 +802,27 @@ void TOmnetTkApp::messageDelivered( cMessage *msg )
 void TOmnetTkApp::breakpointHit( char *label, cSimpleModule *mod )
 {
     if (isBreakpointActive(label,mod))
-         stopAtBreakpoint(label,mod);
+        stopAtBreakpoint(label,mod);
 }
 
 void TOmnetTkApp::putmsg(char *str)
 {
+    if (!interp)
+    {
+        TOmnetApp::putmsg(str); // fallback in case Tkenv didn't fire up correctly
+        return;
+    }
     CHK(Tcl_VarEval(interp,"messagebox {Confirm} {",str,"} info ok",NULL));
 }
 
 void TOmnetTkApp::puts(char *str)
 {
+    if (!interp)
+    {
+        TOmnetApp::puts(str); // fallback in case Tkenv didn't fire up correctly
+        return;
+    }
+
     cModule *module = simulation.contextModule();
     if (module)
     {

@@ -34,7 +34,7 @@ char *emsg[] = {
   "(%s)%s: Indirection would create circular reference", // eCIRCREF
   "(%s)%s: Bad number of arguments, %d expected",        // eNUMARGS
   "Cannot find module interface `%s' needed to create module of type `%s'", // eNOMODIF
-  "",                                                    // eBANNEDTYPE
+  "Error during starting up user interface",             // eUISTARTUP
   "Simulation stopped by segment on host `%s'",          // eSTOPSIMRCVD
   "No such module or module finished already",           // eNOMOD
   "Module has no gate %d",                               // eNOGATE

@@ -322,3 +322,5 @@ Dec 5,1999
     TBD: should print it into per-module windows too
 Jan 9,2000
   - small modification to TOmnetTkApp's constructor
+Jan 15,2000
+  - OmnetTkApp::setup() reorganized

@@ -103,8 +103,8 @@ void TOmnetApp::setup(int, char *[])
      // initialize coroutine library
      if (opt_total_stack_kb<=MAIN_STACK_KB)
      {
-        ev.printf("Total stack size %dK increased to %dK\n", opt_total_stack_kb, MAIN_STACK_KB+1);
-        opt_total_stack_kb = MAIN_STACK_KB+1;
+        ev.printf("Total stack size %dK increased to %dK\n", opt_total_stack_kb, MAIN_STACK_KB+4);
+        opt_total_stack_kb = MAIN_STACK_KB+4;
      }
      cCoroutine::init( 1024*opt_total_stack_kb, 1024*MAIN_STACK_KB );
      simulation.setup();

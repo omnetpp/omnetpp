@@ -33,11 +33,6 @@ bool memoryIsLow()
     return 0;
 }
 
-bool lowMemory()
-{
-    return 0;
-}
-
 char *ptrToStr( void *ptr, char *buffer)
 {
     static char staticbuf[20];
@@ -99,7 +94,7 @@ static bool do_fill_listbox( cObject *obj, bool beg, Tcl_Interp *intrp, char *ls
 	 return FALSE;
     }
     if( !beg ) return FALSE;
-    if( (deep || ctr>0) && !lowMemory() ) // if deep=FALSE, exclude owner object
+    if( (deep || ctr>0) && !memoryIsLow() ) // if deep=FALSE, exclude owner object
     {
 	 CHK(Tcl_VarEval(interp, listbox," insert end {",infofunc(obj),"}",NULL));
     }
@@ -117,7 +112,7 @@ void collection( cObject *object, Tcl_Interp *interp, char *listbox, InfoFunc in
 static void _modcollection(cModule *parent, Tcl_Interp *interp, char *listbox, InfoFunc infofunc, bool simpleonly, bool deep )
 {
     // loop through module vector
-    for( int i=1; i<=simulation.lastModuleIndex() && !lowMemory(); i++ )
+    for( int i=1; i<=simulation.lastModuleIndex() && !memoryIsLow(); i++ )
     {
       cModule *mod = simulation.module(i);
       if (mod && mod!=simulation.systemModule() && mod->parentModule()==parent)
@@ -335,7 +330,7 @@ static bool do_inspect_matching( cObject *obj, bool beg, short *patt, int typ, b
 	 return FALSE;
     }
     if( !beg ) return FALSE;
-    if( (deep || ctr>0) && !lowMemory() ) // if deep=FALSE, exclude owner object
+    if( (deep || ctr>0) && !memoryIsLow() ) // if deep=FALSE, exclude owner object
     {
 	 char *fullpath = obj->fullPath();
 	 //if (Tcl_StringMatch(fullpath,pattern)) // did hang the whole X
@@ -397,12 +392,12 @@ static int XErrorProc( ClientData, XErrorEvent *errEventPtr)
 }
 
 // initialize Tcl/Tk and return a pointer to the interpreter
-int initTk(int, char **, Tcl_Interp *&interp )
+Tcl_Interp *initTk(int, char **)
 {
     // 1st two args: argc, argv
 
     // Create interpreter
-    interp = Tcl_CreateInterp();
+    Tcl_Interp *interp = Tcl_CreateInterp();
 
     // Tcl/Tk args interfere with OMNeT++'s own command-line args
     //if (Tk_ParseArgv(interp, (Tk_Window)NULL, &argc, argv, argTable, 0)!=TCL_OK)
@@ -414,13 +409,13 @@ int initTk(int, char **, Tcl_Interp *&interp )
     if (Tcl_Init(interp) != TCL_OK)
     {
 	fprintf(stderr, "Tcl_Init failed: %s\n", interp->result);
-	return TCL_ERROR;
+	return 0;
     }
 
     if (Tk_Init(interp) != TCL_OK)
     {
 	fprintf(stderr, "Tk_Init failed: %s\n", interp->result);
-	return TCL_ERROR;
+	return 0;
     }
 
     Tcl_StaticPackage(interp, "Tk", Tk_Init, (Tcl_PackageInitProc *) NULL);
@@ -436,7 +431,7 @@ int initTk(int, char **, Tcl_Interp *&interp )
     // Grab initial size and background
     Tk_GeometryRequest(mainWindow,200,200);
 
-    return TCL_OK;
+    return interp;
 }
 
 // create custom commands (implemented in tkcmd.cc) in Tcl

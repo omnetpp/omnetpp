@@ -30,7 +30,7 @@ enum {
         eCIRCREF     =  2,
         eNUMARGS     =  3,
         eNOMODIF     =  4,
-        eBANNEDTYPE  =  5,
+        eUISTARTUP   =  5,
         eSTOPSIMRCVD =  6,
         eNOMOD       =  7,
         eNOGATE      =  8,
