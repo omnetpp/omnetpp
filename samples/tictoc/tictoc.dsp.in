@@ -145,9 +145,36 @@ SOURCE=.\tictoc1.ned
 
 !IF  "$(CFG)" == "tictoc - Win32 Debug Tkenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc1.ned
+InputName=tictoc1
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Debug Cmdenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc1.ned
+InputName=tictoc1
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Release Tkenv"
+
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc1.ned
+InputName=tictoc1
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
 
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Release Cmdenv"
 
@@ -173,9 +200,14 @@ SOURCE=.\tictoc10.msg
 InputPath=.\tictoc10.msg
 InputName=tictoc10
 
-"$(InputName)_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+BuildCmds= \
 	@OMNETPP_BIN_DIR@\opp_msgc -s _m.cpp $(InputName).msg
 
+"$(InputName)_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+
+"$(InputName)_m.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
 # End Custom Build
 
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Debug Cmdenv"
@@ -184,9 +216,14 @@ InputName=tictoc10
 InputPath=.\tictoc10.msg
 InputName=tictoc10
 
-"$(InputName)_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+BuildCmds= \
 	@OMNETPP_BIN_DIR@\opp_msgc -s _m.cpp $(InputName).msg
 
+"$(InputName)_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+
+"$(InputName)_m.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
 # End Custom Build
 
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Release Tkenv"
@@ -195,9 +232,14 @@ InputName=tictoc10
 InputPath=.\tictoc10.msg
 InputName=tictoc10
 
-"$(InputName)_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+BuildCmds= \
 	@OMNETPP_BIN_DIR@\opp_msgc -s _m.cpp $(InputName).msg
 
+"$(InputName)_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+
+"$(InputName)_m.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
 # End Custom Build
 
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Release Cmdenv"
@@ -206,9 +248,14 @@ InputName=tictoc10
 InputPath=.\tictoc10.msg
 InputName=tictoc10
 
-"$(InputName)_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+BuildCmds= \
 	@OMNETPP_BIN_DIR@\opp_msgc -s _m.cpp $(InputName).msg
 
+"$(InputName)_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+
+"$(InputName)_m.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
 # End Custom Build
 
 !ENDIF 
@@ -220,9 +267,36 @@ SOURCE=.\tictoc10.ned
 
 !IF  "$(CFG)" == "tictoc - Win32 Debug Tkenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc10.ned
+InputName=tictoc10
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Debug Cmdenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc10.ned
+InputName=tictoc10
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Release Tkenv"
+
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc10.ned
+InputName=tictoc10
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
 
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Release Cmdenv"
 
@@ -303,9 +377,36 @@ SOURCE=.\tictoc11.ned
 
 !IF  "$(CFG)" == "tictoc - Win32 Debug Tkenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc11.ned
+InputName=tictoc11
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Debug Cmdenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc11.ned
+InputName=tictoc11
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Release Tkenv"
+
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc11.ned
+InputName=tictoc11
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
 
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Release Cmdenv"
 
@@ -339,9 +440,36 @@ SOURCE=.\tictoc2.ned
 
 !IF  "$(CFG)" == "tictoc - Win32 Debug Tkenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc2.ned
+InputName=tictoc2
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Debug Cmdenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc2.ned
+InputName=tictoc2
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Release Tkenv"
+
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc2.ned
+InputName=tictoc2
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
 
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Release Cmdenv"
 
@@ -367,9 +495,36 @@ SOURCE=.\tictoc3.ned
 
 !IF  "$(CFG)" == "tictoc - Win32 Debug Tkenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc3.ned
+InputName=tictoc3
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Debug Cmdenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc3.ned
+InputName=tictoc3
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Release Tkenv"
+
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc3.ned
+InputName=tictoc3
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
 
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Release Cmdenv"
 
@@ -395,9 +550,36 @@ SOURCE=.\tictoc4.ned
 
 !IF  "$(CFG)" == "tictoc - Win32 Debug Tkenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc4.ned
+InputName=tictoc4
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Debug Cmdenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc4.ned
+InputName=tictoc4
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Release Tkenv"
+
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc4.ned
+InputName=tictoc4
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
 
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Release Cmdenv"
 
@@ -423,9 +605,36 @@ SOURCE=.\tictoc5.ned
 
 !IF  "$(CFG)" == "tictoc - Win32 Debug Tkenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc5.ned
+InputName=tictoc5
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Debug Cmdenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc5.ned
+InputName=tictoc5
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Release Tkenv"
+
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc5.ned
+InputName=tictoc5
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
 
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Release Cmdenv"
 
@@ -451,9 +660,36 @@ SOURCE=.\tictoc6.ned
 
 !IF  "$(CFG)" == "tictoc - Win32 Debug Tkenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc6.ned
+InputName=tictoc6
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Debug Cmdenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc6.ned
+InputName=tictoc6
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Release Tkenv"
+
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc6.ned
+InputName=tictoc6
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
 
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Release Cmdenv"
 
@@ -479,9 +715,36 @@ SOURCE=.\tictoc7.ned
 
 !IF  "$(CFG)" == "tictoc - Win32 Debug Tkenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc7.ned
+InputName=tictoc7
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Debug Cmdenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc7.ned
+InputName=tictoc7
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Release Tkenv"
+
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc7.ned
+InputName=tictoc7
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
 
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Release Cmdenv"
 
@@ -507,9 +770,36 @@ SOURCE=.\tictoc8.ned
 
 !IF  "$(CFG)" == "tictoc - Win32 Debug Tkenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc8.ned
+InputName=tictoc8
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Debug Cmdenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc8.ned
+InputName=tictoc8
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Release Tkenv"
+
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc8.ned
+InputName=tictoc8
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
 
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Release Cmdenv"
 
@@ -535,9 +825,36 @@ SOURCE=.\tictoc9.ned
 
 !IF  "$(CFG)" == "tictoc - Win32 Debug Tkenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc9.ned
+InputName=tictoc9
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Debug Cmdenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc9.ned
+InputName=tictoc9
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Release Tkenv"
+
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\tictoc9.ned
+InputName=tictoc9
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
 
 !ELSEIF  "$(CFG)" == "tictoc - Win32 Release Cmdenv"
 
