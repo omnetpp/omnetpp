@@ -1,3 +1,9 @@
+2004-07-19  Andras Varga
+
+	* opp_nmakemake,opp_makemake: added -x (--notstamp) option: the 
+	makefile won't require a .tstamp file to be present in directories
+	that appear after the -x option on the command line.
+
 2004-07-16  Andras Varga
 
 	* opp_test: added preload-ned-files=*.ned to default omnetpp.ini

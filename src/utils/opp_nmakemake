@@ -39,6 +39,8 @@ $cfgfile="";
 $linkwithobjects="n";
 $ignorened="n";
 $force="n";
+$tstamp="y";
+@tstampdirs = ();
 
 $makecommand = 'nmake /nologo /f Makefile.vc';
 
@@ -55,21 +57,21 @@ opp_nmakemake: create MSVC makefile for an OMNeT++ model, based on source
 files in current directory
 
 opp_nmakemake [-h] [-f] [-e ext] [-o make-target] [-n] [-u user-interface]
-              [-w] [-p] [-M] [-Idir] [-Ldir] [-llibrary] [-c configdir]
+              [-w] [-x] [-p] [-M] [-Idir] [-Ldir] [-llibrary] [-c configdir]
               [-i makefile-fragment-file]
               [directories, library and object files]...
     -h, --help            This help text
     -f, --force           Force overwriting existing Makefile
     -e, --ext             C++ source file extension, usually "cc" or "cpp".
-                          By default, this is decided by looking at existing
-                          files in the directory.
+                          By default, this is determined by looking at
+                          existing files in the directory.
     -N, --ignore-ned      Leave out .ned files from the makefile. Useful when
                           you want to load all .ned files dynamically (see
                           preload-ned-files omnetpp.ini option).
     -o, --outputfile      Name of simulation executable/library
     -r, --recurse         Call make recursively in all subdirectories. If you
                           need to maintain a specific order, declare dependen-
-                          cies in the makefrag file.
+                          cies in the makefrag.vc file.
     -n, --nolink          Produce object files but do not create executable or
                           library. Useful for models with parts in several
                           directories. With this option, -u, -p and -l have
@@ -79,6 +81,9 @@ opp_nmakemake [-h] [-f] [-e ext] [-o make-target] [-n] [-u user-interface]
                           -n option is present. Dependencies between directo-
                           ries have be handled in high Makefiles (see -r
                           option).
+    -x, --notstamp        Do not require a .tstamp file to be present in the
+                          link directories and (if -w option is present)
+                          -I directories after this option.
     -u, --userinterface   Use Cmdenv or Tkenv. Defaults to Tkenv
     -Idir                 Additional NED and C++ include directory
     -Ldir                 Add a directory to the library path
@@ -138,7 +143,11 @@ could not figure out.
     # }
     elsif ($arg eq '-w' || $arg eq '--withobjects')
     {
-        $linkwithobjects="y";
+        $linkwithobjects = "y";
+    }
+    elsif ($arg eq '-x' || $arg eq '--notstamp')
+    {
+        $tstamp = "n";
     }
     elsif ($arg eq '-u' || $arg eq '--userinterface')
     {
@@ -157,6 +166,11 @@ could not figure out.
     elsif ($arg =~ /^-I/)
     {
         $includes .= " ".$arg;
+        if ($tstamp eq "y")
+        {
+            $arg =~ s/^-I//;
+            push(@tstampdirs, $arg);
+        }
     }
     elsif ($arg =~ /^-L/)
     {
@@ -174,6 +188,10 @@ could not figure out.
         if (-d $arg)
         {
             push(@linkdirs, $arg);
+            if ($tstamp eq "y")
+            {
+                push(@tstampdirs, $arg);
+            }
         }
         elsif (-f $arg)
         {
@@ -273,7 +291,6 @@ if ($recursive eq 'y')
 }
 
 @extdirobjs = ();
-@extdirtstamps = ();
 if ($linkwithobjects eq 'y')
 {
     foreach $i (split(' ',$includes))
@@ -281,7 +298,6 @@ if ($linkwithobjects eq 'y')
         $i =~ s/^-I//;
         if ($i ne ".") {
             push(@extdirobjs, "$i/*.obj");
-            push(@extdirtstamps, "$i/.tstamp");
         }
     }
 }
@@ -289,6 +305,11 @@ if ($linkwithobjects eq 'y')
 foreach $i (@linkdirs)
 {
     push(@extdirobjs, "$i/*.obj");
+}
+
+@extdirtstamps = ();
+foreach $i (@tstampdirs)
+{
     push(@extdirtstamps, "$i/.tstamp");
 }
 
