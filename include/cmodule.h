@@ -306,7 +306,7 @@ class SIM_API cModule : public cDefaultList
      * Adds a gate. The type character tp can be <tt>'I'</tt> or <tt>'O'</tt> for input
      * and output, respectively.
      */
-    cGate *addGate(const char *s, char tp);
+    cGate *addGate(const char *s, char tp, bool isvector=false);
 
     /**
      * Sets gate vector size. If the vector size is increased, Ids of existing
@@ -394,7 +394,8 @@ class SIM_API cModule : public cDefaultList
     int index() const           {return idx;}
 
     /**
-     * Returns the size of the module vector the module is in, or 1.
+     * Returns the size of the module vector the module is in. For non-vector
+     * gates it returns 1.
      */
     int size() const            {return vectsize<0?1:vectsize;}
     //@}
@@ -458,6 +459,7 @@ class SIM_API cModule : public cDefaultList
     /**
      * Returns the size of the gate vector with the given name. It returns 1 for
      * non-vector gates, and 0 if the gate doesn't exist or the vector has size 0.
+     * (Zero-size vectors are represented by a single gate whose size() returns 0.)
      *
      * The gate vector size can also be obtained by calling the cGate::size() method
      * of any gate object in the vector.

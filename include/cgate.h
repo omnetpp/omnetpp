@@ -46,7 +46,7 @@ class SIM_API cGate : public cObject
   protected:
     mutable char *fullname; // buffer to store full name of object
     int  serno;         // index if gate vector, 0 otherwise
-    int  vectsize;      // gate vector size (-1 if not vector)
+    int  vectsize;      // gate vector size (-1 if not vector, 0 if zero-sized gate vector)
     char typ;           // type of gate: 'I' or 'O'
 
     cChannel *channelp; // channel object (if exists)
@@ -258,7 +258,8 @@ class SIM_API cGate : public cObject
 
     /**
      * If the gate is part of a gate vector, returns the size of the vector.
-     * For non-vector gates it returns 1.
+     * For non-vector gates it returns 1. Zero-size vectors are represented
+     * by a single gate whose size() returns 0.
      *
      * The gate vector size can also be obtained by calling the cModule::gateSize().
      */
