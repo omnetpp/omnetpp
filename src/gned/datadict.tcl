@@ -34,6 +34,7 @@
 #      channel
 #        chanattr
 #      network
+#      simple
 #      module
 #        machines
 #          machine

@@ -120,10 +120,15 @@ proc switchToGraphics {} {
         set type $tmp_ned($i)
 
         if {$type=="module"} {
-            set modkey $key
+            if {$modkey==""} {
+               set modkey $key
+            }
             set count [expr $count+1]
             set extras "$extras   $type $tmp_ned($key,name)\n"
         } elseif {$type=="import"} {
+            set count [expr $count+1]
+            set extras "$extras   $type $tmp_ned($key,name)\n"
+        } elseif {$type=="simple"} {
             set count [expr $count+1]
             set extras "$extras   $type $tmp_ned($key,name)\n"
         } elseif {$type=="network"} {
@@ -135,9 +140,9 @@ proc switchToGraphics {} {
         }
     }
     if {$count>=2 || ($modkey=="" && $count>=1)} {
-        tk_messageBox -icon info -title "Too much stuff" -type ok \
-            -message "NED contains more elements than expected:\n$extras\
-                     Remove extra stuff and leave only one module definition there."
+        tk_messageBox -icon info -title "Too many NED items" -type ok \
+            -message "NED contains more that just a compound module:\n$extras\
+                     Please leave only one compound module."
         catch {unset tmp_ned}
         return
     }
