@@ -282,13 +282,13 @@ void cArray::clear()
      last = -1;
 }
 
-int cArray::add(cObject& obj)
+int cArray::add(cObject *obj)
 {
      int retval;
-     if (takeOwnership())  take( &obj );
+     if (takeOwnership())  take( obj );
      if (firstfree < size)
      {
-        vect[firstfree] = &obj;
+        vect[firstfree] = obj;
         retval = firstfree;
         last = Max(last,firstfree);
         do {
@@ -302,7 +302,7 @@ int cArray::add(cObject& obj)
         memset(v+size, 0, sizeof(cObject*)*delta);
         delete vect;
         vect = v;
-        vect[size] = &obj;
+        vect[size] = obj;
         retval = last = size;
         firstfree = size+1;
         size += delta;
@@ -310,7 +310,7 @@ int cArray::add(cObject& obj)
      return retval;
 }
 
-int cArray::addAt(int m, cObject& obj)
+int cArray::addAt(int m, cObject *obj)
 {
      if (m<size)  // fits in current vector
      {
@@ -326,10 +326,13 @@ int cArray::addAt(int m, cObject& obj)
                             className(),fullPath(),m);
            return -1;
         }
-        vect[m] = &obj; if (takeOwnership()) take( &obj );
+        vect[m] = obj;
+        if (takeOwnership()) take(obj);
         last = Max(m,last);
         if (firstfree==m)
-           do {firstfree++;} while (firstfree<size && vect[firstfree]!=NULL);
+           do {
+              firstfree++;
+           } while (firstfree<size && vect[firstfree]!=NULL);
      }
      else // must allocate bigger vector
      {
@@ -338,7 +341,8 @@ int cArray::addAt(int m, cObject& obj)
         memset(v+size, 0, sizeof(cObject*)*(m+delta-size));
         delete vect;
         vect = v;
-        vect[m] = &obj; if (takeOwnership()) take( &obj );
+        vect[m] = obj;
+        if (takeOwnership()) take(obj);
         size = m+delta;
         last = m;
         if (firstfree==m)
@@ -347,11 +351,11 @@ int cArray::addAt(int m, cObject& obj)
      return m;
 }
 
-int cArray::find(cObject& obj)
+int cArray::find(cObject *obj)
 {
      int i;
      for (i=0; i<=last; i++)
-         if (vect[i]==&obj)
+         if (vect[i]==obj)
             break;
      if (i<=last)
          return i;
@@ -371,15 +375,15 @@ int cArray::find(char *s)
          return -1;
 }
 
-cObject& cArray::get(int m)
+cObject *cArray::get(int m)
 {
      if (m>=0 && m<=last && vect[m])
-          return *vect[m];
+          return vect[m];
      else
-          {opp_warning(eNULLREF,className(),fullName(),m);return *NO(cObject);}
+          {opp_warning(eNULLPTR,className(),fullName(),m);return NO(cObject);}
 }
 
-cObject& cArray::get(char *s)
+cObject *cArray::get(char *s)
 {
     int m = find( s );
     if (m!=-1)
@@ -387,11 +391,11 @@ cObject& cArray::get(char *s)
     else
     {
         opp_warning("(%s)%s: get(): no object called `%s'",className(),fullName(),s);
-        return *NO(cObject);
+        return NO(cObject);
     }
 }
 
-cObject& cArray::remove(char *s)
+cObject *cArray::remove(char *s)
 {
     int m = find( s );
     if (m!=-1)
@@ -399,14 +403,14 @@ cObject& cArray::remove(char *s)
     else
     {
         opp_warning("(%s)%s: remove(): no object called `%s'",className(),fullName(),s);
-        return *NO(cObject);
+        return NO(cObject);
     }
 }
 
-cObject& cArray::remove(int m)
+cObject *cArray::remove(int m)
 {
      if (m<0 || m>last || vect[m]==NULL)
-          {opp_warning(eNULLREF,className(),fullName(),m);return *NO(cObject);}
+          {opp_warning(eNULLPTR,className(),fullName(),m);return NO(cObject);}
      else
      {
           cObject *obj = vect[m]; vect[m] = NULL;
@@ -416,7 +420,7 @@ cObject& cArray::remove(int m)
                  last--;
               } while (vect[last]==NULL && last>=0);
           if (obj->owner()==this)  drop( obj );
-          return *obj;
+          return obj;
      }
 }
 

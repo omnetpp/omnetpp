@@ -175,7 +175,7 @@ void cModule::addGate(char *gname, char tp)
       else
       {
          cGate *newg = new cGate( gname, tp );
-         newg->setOwnerModule( this, gatev.add( *newg ));
+         newg->setOwnerModule( this, gatev.add( newg ));
       }
 }
 
@@ -197,7 +197,7 @@ void cModule::setGateSize(char *gname, int size)
          int i;
          for (i=0; i<oldsize; i++)
          {
-            cGate *g = (cGate *) &gatev.remove( pos+i );
+            cGate *g = (cGate *) gatev.remove( pos+i );
             if (g->fromGate() || g->toGate())
                opp_error("setGateSize(): Too late, gate %s already connected",
                          g->fullPath());
@@ -215,7 +215,7 @@ void cModule::setGateSize(char *gname, int size)
          {
              cGate *gate = new cGate( gname, tp );
              gate->setIndex( i, size );
-             gatev.addAt( pos+i, *gate );
+             gatev.addAt( pos+i, gate );
              gate->setOwnerModule( this, pos+i );
          }
       }
@@ -229,7 +229,7 @@ void cModule::addPar(char *pname)
                    fullPath(), pname );
       else
       {
-          i = paramv.add( *new cModulePar(pname) );
+          i = paramv.add( new cModulePar(pname) );
           cModulePar *p = (cModulePar *) &par(i);
           p->setOwnerModule( this );
           p->setInput( TRUE );
@@ -274,7 +274,9 @@ bool cModule::checkInternalConnections()
 
 void cModule::addMachinePar(char *pname)
 {
-    machinev.add( *new cPar(pname) = "" );
+    cPar *par = new cPar(pname);
+    *par = "";
+    machinev.add( par );
 }
 
 void cModule::setMachinePar(char *pname, char *value)
@@ -284,7 +286,7 @@ void cModule::setMachinePar(char *pname, char *value)
          opp_error("(%s)%s: Machine par `%s' does not exist",
                    className(), fullPath(), pname );
     else
-         (cPar&)machinev[i] = value;
+         *(cPar *)machinev[i] = value;
 }
 
 cModule *cModule::parentModule()
@@ -345,7 +347,7 @@ int cModule::findPar(char *s)
 
 cPar& cModule::par(int pn)
 {
-    return (cPar&)paramv[pn];
+    return *(cPar *)paramv[pn];
 }
 
 cPar& cModule::par(char *s)
@@ -376,11 +378,8 @@ cPar& cModule::ancestorPar(char *namestr)
 
 char *cModule::machinePar(int pn)
 {
-    cPar& mp = (cPar&)machinev[pn];
-    if (&mp==NULL)
-         return NULL;
-    else
-         return mp.stringValue();
+    cPar *mp = (cPar *)machinev[pn];
+    return (!mp) ? NULL : mp->stringValue();
 }
 
 char *cModule::machinePar(char *pname)
@@ -389,7 +388,7 @@ char *cModule::machinePar(char *pname)
     if (i==-1)
          return NULL;
     else
-         return ((cPar&)machinev[i]).stringValue();
+         return ((cPar *)machinev[i])->stringValue();
 }
 
 bool cModule::isOnLocalMachine()                                   //NET

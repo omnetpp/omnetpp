@@ -321,9 +321,9 @@ void cPvmMod::setup_connections()
         for (i=0;i<num_outgates;i++)
         {
 #ifdef PVM_DEBUG
-          ev.printf("  out_gatev[%i]=%s\n",i,out_gatev[i].name());
+          ev.printf("  out_gatev[%i]=%s\n",i,out_gatev[i]->name());
 #endif
-          err|=pack_str(out_gatev[i].name()); // --LG
+          err|=pack_str(out_gatev[i]->name()); // --LG
         }
         // (note: though our TID is in all_tids, PVM will NOT send to ourselves)
         pvm_mcast(all_tids,segments,MSG_SETUP_LINKS);
@@ -429,7 +429,7 @@ int cPvmMod::net_addgate(cModule * mod,int gate, char tp)
         }
         else           // 'O': output gate
         {
-           retval=out_gatev.add(*newg);
+           retval=out_gatev.add(newg);
            num_outgates++;
         }
         newg->setOwnerModule(this, retval);
@@ -642,8 +642,8 @@ void cPvmMod::do_process_netmsg(int rbuff)
 
                 del_syncpoint(msg->arrivalTime(),gate_num);
 
-                netg=&(cNetGate&)out_gatev[gate_num];
-                if(netg->toGate()==NULL)
+                netg = (cNetGate *)out_gatev[gate_num];
+                if (netg->toGate()==NULL)
                     {opp_error(eNODEL);break;}
 
                 if (msg->arrivalTime() < simulation.simTime())
@@ -973,7 +973,7 @@ cGate *cPvmMod::outgate(char *s)
         if (i==-1)
            {opp_warning(eNULLREF,className(),fullPath()); return NO(cNetGate);}
         else
-           return (cNetGate *)&out_gatev.get(i);
+           return (cNetGate *)out_gatev[i];
 }
 
 //==========================================================================

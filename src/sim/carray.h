@@ -75,6 +75,8 @@ class cBag : public cObject {
 //    By default, cArray stores the pointers of the objects.
 //    If you want it to make an own copy, set takeOwnership().
 
+#define TMPRETT cObject *
+
 class cArray : public cObject {
    private:
         cObject **vect;   // vector of objects
@@ -102,17 +104,17 @@ class cArray : public cObject {
         // new functions
         int items() {return last+1;}    // number of objects contained (at most)
         void clear();                   // delete whole contents
-        int add(cObject& obj);          // add object at first free position
-        int addAt(int m,cObject& obj);  // add object at given position
+        int add(cObject *obj);          // add object at first free position
+        int addAt(int m,cObject *obj);  // add object at given position
 
-        int find(cObject& obj);         // index of an item (-1 if not found)
+        int find(cObject *obj);         // index of an item (-1 if not found)
         int find(char *s);              // index of an item (-1 if not found)
-        cObject& get(int m);            // get item by index
-        cObject& get(char *s);          // get item by name
+        TMPRETT get(int m);             // get item by index
+        TMPRETT get(char *s);           // get item by name
 
-        cObject& operator[](int m)      // act as a vector
+        TMPRETT operator[](int m)      // act as a vector
            {return get(m);}
-        cObject& operator[](char *s)    // indexable with name, too
+        TMPRETT operator[](char *s)    // indexable with name, too
            {return get(s);}
 
         bool exist(int m)               // see if slot m used or not
@@ -120,8 +122,8 @@ class cArray : public cObject {
         bool exist(char *s)             // see if item s exists or not
           {return find(s)!=-1;}
 
-        cObject& remove(int m);         // remove item from list
-        cObject& remove(char *s);
+        TMPRETT remove(int m);         // remove item from list
+        TMPRETT remove(char *s);
 
 };
 

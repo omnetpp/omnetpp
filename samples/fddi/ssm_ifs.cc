@@ -64,8 +64,8 @@ void SSM_OIF_by_frequency::activity()
 // fclose(debug);
       counter = 0;
       cMessage *m = new cMessage("SSM Statistics",SSM_STATISTICS);
-      m->parList().add( *length );
-      m->parList().add( *delay );
+      m->parList().add( length );
+      m->parList().add( delay );
       // snapshot("OIF", m); // DEBUG
       send(m,"out");
       length = new cLongHistogram("length",numcells);
@@ -201,8 +201,8 @@ void SSM_OIF_by_time::activity()
 // delay->saveToFile(debug);
 // fclose(debug);
         cMessage *m = new cMessage("SSM Statistics",SSM_STATISTICS);
-        m->parList().add( *length->dup() );
-        m->parList().add( *delay->dup() );
+        m->parList().add( length->dup() );
+        m->parList().add( delay->dup() );
         // snapshot("OIF", m); // DEBUG
         // before sending the statistics, decide if further syncpoint()
         // is needed
@@ -272,8 +272,8 @@ void SSM_IIF::activity()
           delete length;
           delete delay;
           }
-        length = (cLongHistogram *) &msg->parList().remove("length");
-        delay = (cDoubleHistogram *) &msg->parList().remove("inter-arrival time");
+        length = (cLongHistogram *) msg->parList().remove("length");
+        delay = (cDoubleHistogram *) msg->parList().remove("inter-arrival time");
 // FILE *debug=fopen(fullPath(),"a");
 // length->saveToFile(debug);
 // delay->saveToFile(debug);

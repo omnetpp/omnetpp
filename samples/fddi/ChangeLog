@@ -197,3 +197,5 @@ Dec 23, 1999
   - rewritten msg->addPar( *new cPar(...)) lines (see change to cPar interface
     in the sim library)
   - minor cosmetics changes
+Jan 25, 2000
+  - ssm_ifs.cc updated because of cArray interface change

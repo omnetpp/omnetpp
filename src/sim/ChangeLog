@@ -776,3 +776,7 @@ Jan 17,2000
    (results in cleaner code) to use explicit type casts in expressions with
    cPar.
    This issue came up while porting to MSVC 6.0, see MSVC error C2666.
+Jan 25, 2000
+ - cArray functions changed to take and return cArray* instead of cArray&.
+   This affects add(), addAt(), remove(), get() and op[].
+

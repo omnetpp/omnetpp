@@ -456,7 +456,7 @@ void do_sub_or_sys2 (char *smname, char *smcount, int issys, char *smtype, char 
                   nl_retr_ith(machs,i+1)->namestr );
               else
                 fprintf(tmp,
-                  "%s%s->setMachinePar( \"%s\", (char *)(cPar&)machines[%i] );\n",
+                  "%s%s->setMachinePar( \"%s\", ((cPar *)machines[%i])->stringValue() );\n",
                   indent, submodule_var, nl_retr_ith(machs,i+1)->namestr, i );
             }
             fprintf (tmp, "%scheck_error(); check_memory();\n\n", indent);
@@ -512,8 +512,10 @@ void do_on_mach(char * maname)  /* --LG */
         }
         if (!is_system)
         {
-            fprintf (tmp,  "%smachines.add( *new cPar() = mod->machinePar(\"%s\") );\n",
-                           indent, maname );
+            fprintf (tmp,  "%spar = new cPar();\n"
+                           "%s*par = mod->machinePar(\"%s\");\n"
+                           "%smachines.add( par );\n",
+                           indent, indent, maname, indent );
         }
         else
         {
@@ -525,8 +527,10 @@ void do_on_mach(char * maname)  /* --LG */
             else
                phys_mach = nl_retr_ith( &machine_list, idx )->parstr;
 
-            fprintf (tmp,  "%smachines.add( *new cPar() = \"%s\" );\n",
-                            indent, phys_mach );
+            fprintf (tmp,  "%spar = new cPar();\n"
+                           "%s*par = \"%s\";\n"
+                           "%smachines.add( par );\n",
+                           indent, indent, phys_mach, indent );
         }
         fprintf (tmp, "%scheck_error(); check_memory();\n\n",
                       indent);

@@ -23,7 +23,6 @@
 #define __CPAR_H
 
 #include "cobject.h"
-#include "carray.h"   //NL
 
 #define SHORTSTR  27
 
@@ -35,7 +34,6 @@ class  cModulePar;
 
 //=== class mentioned
 class  cStatistic;
-class  cArray;
 
 //==========================================================================
 // sXElem: one component in a (reversed Polish) expression in a cPar

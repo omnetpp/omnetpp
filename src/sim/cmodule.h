@@ -172,12 +172,12 @@ class cModule : public cObject
 
         // module gates
         int gates() {return gatev.items();}            // total num of gates
-        cGate *gate(int g) {return (cGate*)&gatev[g];} // gate by id
+        cGate *gate(int g) {return (cGate*)gatev[g];}  // gate by id
         cGate *gate(char *s,int sn=-1);                // gate by name & index
         int findGate(char *s, int sn=-1);              // id of a gate
         bool hasGate(char *s, int sn=-1) {return findGate(s,sn)>=0;} // check if gate exists
 
-        bool cModule::checkInternalConnections();  // OK=TRUE; called from NEDC code
+        bool checkInternalConnections();      // TRUE means OK; called from NEDC code
 
         // module parameters
         int params() {return paramv.items();} // no. of pars

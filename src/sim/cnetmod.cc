@@ -43,9 +43,7 @@ cNetMod::cNetMod() : cModule("network-interface",NULL)
 int cNetMod::isLocalMachineIn(cArray& list)
 {
         for (int i=0; i<list.items(); i++)
-           if ( &list[i]!=NULL &&
-                opp_strcmp( localhost(), (char *)(cPar&)list[i] )==0
-              )
+           if (list[i]!=NULL && !opp_strcmp( localhost(), ((cPar *)list[i])->stringValue()))
               return TRUE;
         return FALSE;
 }

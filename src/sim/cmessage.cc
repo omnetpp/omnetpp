@@ -1,6 +1,6 @@
 //========================================================================
 //
-//  CMSG.CC - part of
+//  CMESSAGE.CC - part of
 //                         OMNeT++
 //              Discrete System Simulation in C++
 //
@@ -196,7 +196,7 @@ cMessage *cMessage::decapsulate()
 cPar& cMessage::par(int n)
 {
     cArray& parlist = parList();
-    cPar *p = (cPar *)&parlist[n];
+    cPar *p = (cPar *)parlist[n];
     if (p)
         return *p;
     else
@@ -211,7 +211,7 @@ cPar& cMessage::par(char *s)
     cArray& parlist = parList();
     int pn = parlist.find( s );
     if (pn!=-1)
-        return (cPar&)parlist[pn];
+        return *(cPar *)parlist[pn];
     else
     {
         opp_warning("(%s)%s: par(): no parameter called `%s'",className(),fullName(),s);

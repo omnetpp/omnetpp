@@ -50,7 +50,7 @@ char *emsg[] = {
   "",                                                    // eSTKLOW
   "No more events -- simulation ended",                  // eENDEDOK
   "Module initialization error",                         // eMODINI
-  "",                                                    // eNULLPTR
+  "(%s)%s: Object #%d not found",                        // eNULLPTR
   "(%s)%s: Object #%d not found",                        // eNULLREF
   "Cannot write output vector file",                     // eOUTVECT
   "Cannot write parameter change file",                  // ePARCHF

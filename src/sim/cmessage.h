@@ -90,7 +90,7 @@ class cMessage : public cObject
       public:
         cMessage(cMessage& msg);
         explicit cMessage(char *name=NULL, int k=0, long len=1, int pri=0, bool err=FALSE);
-        virtual ~cMessage() {}     /*parlistp is deleted in ~cObject()*/
+        virtual ~cMessage() {}     // parlistp is deleted by ~cObject()
 
         // redefined functions
         virtual char *className()  {return "cMessage";}
@@ -127,10 +127,10 @@ class cMessage : public cObject
 
         // parameter list
         cArray& parList()
-            {if(parlistp==NULL) _createparlist(); return *parlistp;}
-        cPar& addPar(char *s) {cPar *p=new cPar(s);parList().add(*p);return *p;}
-        cPar& addPar(cPar *p) {parList().add(*p); return *p;}
-        cPar& addPar(cPar& p) {parList().add(p); return p;} // DEPRECATED
+            {if (!parlistp) _createparlist(); return *parlistp;}
+        cPar& addPar(char *s) {cPar *p=new cPar(s);parList().add(p);return *p;}
+        cPar& addPar(cPar *p) {parList().add(p); return *p;}
+        cPar& addPar(cPar& p) {parList().add(&p); return p;} // DEPRECATED
         cPar& par(int n);                             // get parameter by index
         cPar& par(char *s);                           // get parameter by name
         int findPar(char *s);                         // get index of parameter, -1 if doesn't exist
