@@ -29,9 +29,13 @@ o  Windows XP, Windows 2000, NT4.0 or other NT-derivative.
    prohibitive factors, it is anyway advisable to use a more stable operating
    system.
 
-o  Microsoft Visual Studio 6.0, with at least Service Pack 1 installed.
-   I recommend Service Pack 5 which can be downloaded from Microsoft's site
-   under the name vs6sp5.exe.
+o  Visual C++ 7.0 (which is part of Visual Studio .NET) or Microsoft Visual
+   Studio 6.0 with Service Pack 6 installed (the SP can be downloaded from
+   Microsoft's site under the name vs6sp6.exe)
+
+Since you're going to work a lot on the command-line, you'll probably want
+to use some software which makes this easier. My suggestion is FAR Manager --
+it is an excellent program, and will save you lots of typing.
 
 
 2. Packages to download and install
@@ -49,16 +53,15 @@ First download the following packages:
  - recommended: LibXML, LibXSLT (for nedtool and opp_neddoc). For nedtool
    you can also use Expat.
 
-Appendix B (at the end of this file) and 3rdparty.txt contains some sites
+Appendix C (at the end of this file) and 3rdparty.txt contains some sites
 where all this stuff can be found.
 
 To unpack .tgz or .tar.gz (gzipped, tar packed) files you can use gzip and tar,
 or WinZip.
 
 After installation, check if you have the necessary environment variables set.
-(See Appendix A!) These variables should be set by the install program of
-the related package. Unfortunately this is not always done, so you may have to
-set these manually (My Computer-->Properties-->Environment tab).
+These variables should be set by the install program of the related package.
+(See Appendix A, and section "Checking and modifying environment variables")
 
 
 3. Compiling OMNeT++
@@ -88,7 +91,8 @@ They are C:\PROGRA~1\MICROS~1\VC98\BIN and C:\PROGRA~1\MICROS~1\MSDEV98\BIN
 by default.
 
 It is also recommended that you put the c:\omnetpp-2.3\bin directory
-into the path.
+into the path. (See section "Checking and modifying environment variables",
+appendix B)
 
 Check the configuser.vc file to make sure it contains the proper settings.
 You'll probably have to correct the following settings in it:
@@ -362,7 +366,39 @@ Note:
     directory.
 
 
-Appendix B
+Appendix B:
+~~~~~~~~~~
+Checking and modifying environment variables
+
+To see the list of environment variables, type "set" at the command prompt.
+(To open a command prompt, select START-->Run...--> type "cmd"). If
+the listing scrolls away, you may type "set | more" to page it, or
+"set P" to list only the variables starting with "P".
+
+Environment variables in Windows work in a similar way to Unix. Every process
+has its own set of environment variables, inherited from the parent process
+(This means that if you change the environment variable settings, you may
+need to exit and restart programs for them to pick up changes; sometimes
+you may even need to log out and log in again.)
+
+To locally and temporarily change environment variables in a command prompt
+window, you can use the "set VARIABLE=value" command. Remember, however,
+that this change will only affect programs that you'll run from that
+command line window.
+
+In Windows there is a GUI to permanently change environment variables.
+Bring up My Computer-->Properties. On Windows 2000 there'll be an
+"Environment" tab; on XP choose the "Advanced" tab and click the
+"Environment variables" button to bring up much the same dialog. The dialog
+lets you view, add and modify environment variables. After you've done
+the settings, log out and log in again.
+
+Managing environment variables is also discussed in several Microsoft Knowledge
+Base articles, e.g. 310519. Go to support.microsoft.com and type "environment
+variables" in the Search box.
+
+
+Appendix C
 ~~~~~~~~~~
 
 * OMNeT++: The official site of OMNeT++ is
@@ -389,54 +425,4 @@ Appendix B
 * flex / bison: They are included in the Cygwin package (http://www.cygnus.com)
       another option is http://www.monmouth.com/~wstreett/lex-yacc/lex-yacc.html
 
-
-Appendix C
-~~~~~~~~~~
-Patching the makefiles for Win95/98, a posting from the mailing list:
-
-Subject: Re: Questions of installation with OMNet++ on MSVC
-From: Andras Varga <avarga@freemail.hu>
-Date: Mon, 19 Jun 2000 20:20:57 +0200
-
-> I've encountered some problems while installing OMNet++ on my system
-> (VC6.0 + Windows 98).
-> After executing nmake, the prompted message are as following:
->
-> C:\omnetpp>nmake -f makefile.vc
->
-[output from failed build]
-
-Win98 doesn't seem to support '&&' and '||' as command separators,
-and its cd command doesn't have the /D option (=change drive too).
-I didn't test the MSVC makefiles on Win98 as I have only NT4...
-When will all win32 platforms finally be equal???
-
-I just received a nice trick (dirty hack?) from a guy at my
-university to get omnetpp compiled on Win98. First, create a cdm.bat
-with the following contents in the toplevel omnetpp dir:
-
--------
-@echo off
-if "%1" == "/d" shift
-set DIR="%1%"
-shift
-shift
-cd %DIR%
-echo Executing %1 in %DIR% with arguments %2 %3 %4 %5 %6 %7 %8 %9
-%1 %2 %3 %4 %5 %6 %7 %8 %9
--------
-
-Then replace each 'cd' in the toplevel Makefile.vc with 'cdm'.
-You may also need (I'm not sure) to remove the 'check-env' dependency
-from the 'all' target in Makefile.vc line 30 if it causes problems.
-
-With this modification you should be able to build everything but the
-samples. I haven't verified though if it really works, and I won't
-be able to support it... Hope it helps though.
-
-Oops, and it doesn't hurt to enlarge the environment space for
-the command prompt where you compile.
-
-If you try this and you can refine it, you're most welcome to post an
-update here...
 
