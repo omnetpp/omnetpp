@@ -57,7 +57,12 @@ proc getCommentFromText {w} {
 }
 
 
-proc fillSpreadsheetFromNed {w parentkey} {
+# fillTableEditFromNed --
+#
+# w: table widget
+# parentkey: key of the params,gates,substparams,gatesizes etc. item
+#
+proc fillTableEditFromNed {w parentkey} {
     global ned ddfields tablePriv
 
     set li 0
@@ -70,22 +75,38 @@ proc fillSpreadsheetFromNed {w parentkey} {
 }
 
 
-proc updateNedFromSpreadsheet {w parentkey itemtype keyattr} {
+# updateNedFromTableEdit --
+#
+# w: table widget
+# parentkey: key of the params,gates,substparams,gatesizes etc. item
+# itemtype: param, substparam, gatesize etc.
+# keyattr:
+#
+proc updateNedFromTableEdit {w parentkey itemtype keyattr} {
     global ned ddfields tablePriv
 
+puts "DBG: updateNedFromTableEdit: TBD more efficiently! overwrite existing instead of delete/reinsert!"
     # delete old stuff in ned()
     foreach key [getChildren $parentkey] {
         deleteItem $key
     }
 
     # add items from tablePriv() to ned()
+    set isempty 1
     for {set li 0} {[info exist tablePriv($w,$li,$keyattr)]} {incr li} {
         if {$tablePriv($w,$li,$keyattr)!=""} {
+            set isempty 0
             set key [addItem $itemtype $parentkey]
             foreach attr $ddfields($itemtype) {
-                set ned($key,$attr) $tablePriv($w,$li,$attr)
+                # catch is because maybe only the attrs actually in the table are in the array
+                catch {set ned($key,$attr) $tablePriv($w,$li,$attr)}
             }
         }
     }
+
+    # return if section was empty
+    return $isempty
 }
+
+
 

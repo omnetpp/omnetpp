@@ -158,7 +158,8 @@ Oct 12, 1999
 Nov 11, 1999
   - begun writing Properties dialogs
 Nov 12, 1999
-  - spreadsheet widget added
+  - tableEdit widget added
 Nov 13, 1999
-  - file props.tcl split to submprops.tcl, modprops.tcl, connprops.tcl,...
-    (6 files)
+  - file props.tcl split to submprops.tcl, connprops.tcl,... (6 files)
+Nov 14, 1999
+  - submprops.tcl works; tbd comment handling; other dialogs; efficiency

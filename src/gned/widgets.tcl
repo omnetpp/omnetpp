@@ -220,9 +220,9 @@ proc vertResizeBar:buttonRelease {x wToBeResized} {
     catch {destroy .resizeBar}
 }
 
-# spreadsheet --
+# tableEdit --
 #
-# Create a "spreadsheet" widget
+# Create a "tableEdit" widget
 #
 # one $columnlist entry:
 #   {title column-name command-to-create-widget-in-cell}
@@ -232,15 +232,22 @@ proc vertResizeBar:buttonRelease {x wToBeResized} {
 #    $v - widget must be bound to variable whose name is in $v
 #
 # Example:
-# spreadsheet .t 20 {
+# tableEdit .t 20 {
 #   {Name    name    {entry $e -textvariable $v -width 8 -bd 1 -relief sunken}}
 #   {Value   value   {entry $e -textvariable $v -width 12 -bd 1 -relief sunken}}
 #   {Comment comment {entry $e -textvariable $v -width 20 -bd 1 -relief sunken}}
 # }
 # pack .t -expand 1 -fill both
 #
-proc spreadsheet {w numlines columnlist} {
+proc tableEdit {w numlines columnlist} {
 
+    # clean up variables from earlier table instances with same name $w
+    global tablePriv
+    foreach i [array names tablePriv "$w,*"] {
+        unset tablePriv($i)
+    }
+
+    # create widgets
     frame $w; # -bg green
     frame $w.tb -height 16
     canvas $w.c -yscrollcommand "$w.vsb set" -height 150 -bd 0
@@ -267,10 +274,11 @@ proc spreadsheet {w numlines columnlist} {
            set wcmd    [lindex $entry 2]
 
            # add table entry
-               set e $f.li$li-$attr
-               set v tablePriv($w,$li,$attr)
-               eval $wcmd
-               grid $e -in $f -row $li -column $col -rowspan 1 -columnspan 1 -sticky news
+           set e $f.li$li-$attr
+           set v tablePriv($w,$li,$attr)
+           eval $wcmd
+           grid $e -in $f -row $li -column $col -rowspan 1 -columnspan 1 -sticky news
+
            # next column
            incr col
        }
@@ -299,6 +307,7 @@ proc spreadsheet {w numlines columnlist} {
     $w.c config -scrollregion "0 0 0 [winfo height $f]"
 
     #focus $w.l0c0
+
 }
 
 

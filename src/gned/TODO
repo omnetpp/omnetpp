@@ -35,7 +35,6 @@ Load/save:
 - load: if there's a parse error, load the whole stuff into a "scratch" text-mode canvas?
 
 Text editor:
-- "gatesizes" is not colored
 - "find next" missing
 - pgup, ctrl-pgup doesn't work correctly
 - syntax highlighting not 100% OK: it can be fooled with string constants

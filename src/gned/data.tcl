@@ -27,7 +27,7 @@
 
 # addItem --
 #
-# add an item to ned()
+# create an item with the given type and add it to ned()
 #
 proc addItem {type parentkey} {
    global ned ddict

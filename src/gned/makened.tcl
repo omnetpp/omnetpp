@@ -23,6 +23,7 @@
 # Entry point of NED code generation: return the code as a single big string
 #
 proc generateNed {key} {
+puts "DBG: replace appendTo with append in makened.tcl!"
     return [generateNedItem $key {} 0]
 }
 
@@ -560,9 +561,9 @@ proc makeConnectionDispStr {key} {
 proc appendTo {varname str {nl {}}} {
     upvar $varname var
     if {$nl=="nonewline"} {
-        set var "$var$str"
+        append var $str
     } else {
-        set var "$var$str\n"
+        append var $str "\n"
     }
 }
 
