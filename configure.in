@@ -245,6 +245,14 @@ if test "$DOT" = ""; then
    AC_MSG_WARN(The dot program from Graphviz is needed by opp_neddoc to generate diagrams.)
 fi
 
+# giftrans
+AC_ARG_VAR(GIFTRANS, Utility to make GIFs transparent)
+AC_CHECK_PROG(GIFTRANS, giftrans, giftrans,)
+
+if test "$GIFTRANS" = ""; then
+   AC_MSG_WARN(giftrans is used by opp_neddoc, to make the background of dot-generated diagrams transparent.)
+fi
+
 #----------------------
 # Checks for standard libraries.
 #----------------------
@@ -545,6 +553,7 @@ AC_SUBST(SHLIB_LD)
 AC_SUBST(WISH)
 AC_SUBST(MAKEDEPEND)
 AC_SUBST(PS2GIF)
+AC_SUBST(GIFTRANS)
 AC_SUBST(DOT)
 
 AC_SUBST(DOXYGEN)
