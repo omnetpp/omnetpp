@@ -1,6 +1,24 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(src/sim/omnetpp.h)
 
+dnl -------------------------------------------------------------
+dnl OPP_CHECK_LIB_WITHPATH(LIBNAME, FUNC, DIR,
+dnl    ACTION-IF-FOUND, ACTION-IF-NOT-FOUND, ADDITIONAL-LIBS)
+dnl -------------------------------------------------------------
+AC_DEFUN(OPP_CHECK_LIB_WITHPATH,[\
+save_LDFLAGS=$LDFLAGS
+LDFLAGS="$3 $LDFLAGS"
+AC_CHECK_LIB($1,$2,succ=yes,succ=no,$6)
+LDFLAGS=$save_LDFLAGS
+if test $succ=yes; then
+  :
+  $4
+else
+  :
+  $5
+fi
+])
+
 dnl ----------------------
 dnl Checks for programs.
 dnl ----------------------
@@ -19,8 +37,9 @@ AC_CHECK_LIB(stdc++, some_func_in_stdCPP)
 AC_CHECK_LIB(pvm3, pvm_recv)
 AC_CHECK_LIB(gpvm3, pvm_joingroup)
 
-AC_CHECK_LIB(X11, XDrawLine)
 
+dnl  AC_CHECK_LIB(X11,XDrawLine)
+OPP_CHECK_LIB_WITHPATH(X11,XDrawLine,-L/usr/X11/lib)
 AC_CHECK_LIB(tcl, Tcl_Init)
 AC_CHECK_LIB(tcl8, Tcl_Init)
 
@@ -34,6 +53,10 @@ dnl Checks for header files.
 dnl ----------------------
 AC_HEADER_STDC
 AC_CHECK_HEADERS(malloc.h unistd.h)
+AC_CHECK_HEADERS(pvm3.h)
+AC_CHECK_HEADERS(tcl.h)
+AC_CHECK_HEADERS(tv.h)
+
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
