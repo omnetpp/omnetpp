@@ -140,12 +140,15 @@ void BasicSpringEmbedderLayout::addAnchoredNode(cModule *mod, const char *anchor
     {
         anchors.push_back(anchor = new Anchor());
         anchor->name = std::string(anchorname);
+        anchor->refcount = 0;
     }
     else
     {
         anchor = (*a);
     }
+
     n->anchor = anchor;
+    anchor->refcount++;
 
     n->fixed = false;
     n->offx = offx;
@@ -364,6 +367,7 @@ double BasicSpringEmbedderLayout::relax()
 
     NodeList::iterator i,j;
     EdgeList::iterator k;
+    AnchorList::iterator l;
 
     // edge attraction: calculate if edges are longer or shorter than requested (tension),
     // and modify their (dx,dy) movement vector accordingly
@@ -508,32 +512,21 @@ double BasicSpringEmbedderLayout::relax()
     for (i=nodes.begin(); i!=nodes.end(); ++i)
     {
         Node& n = *(*i);
-        if (n.fixed)
+        if (n.fixed || n.anchor)
         {
-            // nop
-        }
-        else if (n.anchor)
-        {
-            // move anchor point
-            double& anchorx = n.anchor->x;
-            double& anchory = n.anchor->y;
-
-            anchorx += MAX(-50, MIN(10, n.dx)); // speed limit
-            anchory += MAX(-50, MIN(10, n.dy));
-
-            anchorx = MAX(minx, MIN(maxx, anchorx)); // ignore if (n.x,n.y) goes outside the range
-            anchory = MAX(miny, MIN(maxy, anchory));
+            // fixed nodes don't need to be moved, and anchored nodes are
+            // handled separately (see below)
         }
         else // movable
         {
-            n.x += MAX(-50, MIN(10, n.dx)); // speed limit
-            n.y += MAX(-50, MIN(10, n.dy));
+            n.x += MAX(-50, MIN(50, n.dx)); // speed limit
+            n.y += MAX(-50, MIN(50, n.dy));
 
             n.x = MAX(minx, MIN(maxx, n.x));
             n.y = MAX(miny, MIN(maxy, n.y));
-
         }
 
+        // this is used for stopping condition
         if (maxd<n.dx) maxd=n.dx;
         if (maxd<n.dy) maxd=n.dy;
 
@@ -542,8 +535,42 @@ double BasicSpringEmbedderLayout::relax()
         n.dy /= 2;
     }
 
-    // refresh positions of anchored nodes now (can't be merged into above loop
-    // because anchors keep moving then)
+    // sum up movements of anchor nodes
+    for (l = anchors.begin(); l!=anchors.end(); ++l)
+    {
+        Anchor& a = *(*l);
+        a.dx = 0;
+        a.dy = 0;
+    }
+    for (i=nodes.begin(); i!=nodes.end(); ++i)
+    {
+        Node& n = *(*i);
+        if (n.anchor)
+        {
+            n.anchor->dx += n.dx;
+            n.anchor->dy += n.dy;
+        }
+    }
+    // move anchor points
+    for (l = anchors.begin(); l!=anchors.end(); ++l)
+    {
+        Anchor& a = *(*l);
+        // double c = sqrt(n.anchor->refcount);
+        a.x += MAX(-50, MIN(50, a.dx)); // speed limit
+        a.y += MAX(-50, MIN(50, a.dy));
+
+        a.x = MAX(minx, MIN(maxx, a.y));
+        a.y = MAX(miny, MIN(maxy, a.x));
+
+        // this is used for stopping condition
+        if (maxd<a.dx) maxd=a.dx;
+        if (maxd<a.dy) maxd=a.dy;
+
+        // "friction" -- nodes stop eventually if not driven by a force
+        a.dx /= 2;
+        a.dy /= 2;
+    }
+    // refresh positions of anchored nodes (and distribute anchor's dx,dy among its nodes)
     for (i=nodes.begin(); i!=nodes.end(); ++i)
     {
         Node& n = *(*i);
@@ -551,6 +578,9 @@ double BasicSpringEmbedderLayout::relax()
         {
             n.x = n.anchor->x + n.offx;
             n.y = n.anchor->y + n.offy;
+
+            n.dx = n.anchor->dx / n.anchor->refcount;
+            n.dy = n.anchor->dy / n.anchor->refcount;
         }
     }
 

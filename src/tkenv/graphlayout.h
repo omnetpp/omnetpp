@@ -126,7 +126,8 @@ class BasicSpringEmbedderLayout : public GraphLayouter
     {
         std::string name; // anchor name
         double x, y;      // position
-        double dx, dy;    // internal: movement at each step
+        int refcount;     // how many nodes are anchored to it
+        double dx, dy;    // internal: movement at each step (NOT preserved across iterations!)
     };
 
     struct Node
@@ -138,7 +139,7 @@ class BasicSpringEmbedderLayout : public GraphLayouter
         int offx, offy;    // anchored nodes: offset to anchor point (and x,y are calculated)
         int sx, sy;        // half width/height
 
-        double dx, dy;     // internal: movement at each step (unused with anchored nodes)
+        double dx, dy;     // internal: movement at each step
         int color;         // internal: connected nodes share the same color
     };
 
@@ -183,10 +184,12 @@ class BasicSpringEmbedderLayout : public GraphLayouter
     double repulsiveForce;
     double attractionForce;
 
-  public:  //FIXME experimental
+#ifdef USE_CONTRACTING_BOX
+  public:
     double boxContractionForce;
     double boxRepulsiveForce;
     double boxRepForceRatio;
+#endif
 
   protected:
     // utility

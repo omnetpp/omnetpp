@@ -165,6 +165,7 @@ void TInspector::update()
 void TInspector::setEntry(const char *entry, const char *val)
 {
    Tcl_Interp *interp = getTkApplication()->getInterp();
+   if (!val) val="";
    CHK(Tcl_VarEval(interp, windowname,entry," delete 0 end;",
                            windowname,entry," insert 0 {",val,"}",NULL));
 }
@@ -190,6 +191,7 @@ void TInspector::setEntry( const char *entry, double d )
 void TInspector::setLabel( const char *label, const char *val )
 {
    Tcl_Interp *interp = getTkApplication()->getInterp();
+   if (!val) val="";
    CHK(Tcl_VarEval(interp, windowname,label," config -text {",val,"}",NULL));
 }
 

@@ -357,10 +357,11 @@ void TGraphicalModWindow::refreshLayout()
     int seed = resolveNumericDispStrArg(ds.getTagArg("l",4), parentmodule, -1);
     if (seed>0) layouter.setSeed(seed);
 
-    // FIXME next 3 lines are experimental
+#ifdef USE_CONTRACTING_BOX
     layouter.boxContractionForce = resolveNumericDispStrArg(ds.getTagArg("bpars",0), parentmodule, 100);
     layouter.boxRepulsiveForce = resolveNumericDispStrArg(ds.getTagArg("bpars",1), parentmodule, 100);
     layouter.boxRepForceRatio = resolveNumericDispStrArg(ds.getTagArg("bpars",2), parentmodule, 1);
+#endif
 
     cSubModIterator it(*parentmodule);
     bool parent;

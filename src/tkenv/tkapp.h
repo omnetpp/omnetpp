@@ -124,6 +124,7 @@ class TOmnetTkApp : public TOmnetApp
       virtual void displayStringChanged(cModule *submodule);
       virtual void displayStringAsParentChanged(cModule *parentmodule);
 
+      virtual bool isGUI() {return true;}
       virtual void putmsg(const char *s);
       virtual void puts(const char *s);
       virtual void flush();

@@ -935,7 +935,7 @@ void TOmnetTkApp::readOptions()
     opt_nexteventmarkers = ini_file->getAsBool( "Tkenv", "next-event-markers", true );
     opt_senddirect_arrows = ini_file->getAsBool( "Tkenv", "senddirect-arrows", true );
     opt_anim_methodcalls = ini_file->getAsBool( "Tkenv", "anim-methodcalls", true );
-    opt_methodcalls_delay = long(1000*ini_file->getAsTime( "Tkenv", "methodcalls-delay", 0.5)+.5);
+    opt_methodcalls_delay = long(1000*ini_file->getAsTime( "Tkenv", "methodcalls-delay", 0.2)+.5);
     opt_animation_msgnames = ini_file->getAsBool( "Tkenv", "animation-msgnames", true );
     opt_animation_msgcolors = ini_file->getAsBool( "Tkenv", "animation-msgcolors", true );
     opt_penguin_mode = ini_file->getAsBool( "Tkenv", "penguin-mode", false );
@@ -1001,7 +1001,8 @@ void TOmnetTkApp::messageSent( cMessage *msg, cGate *directToGate)
     if (animating && opt_animation_enabled)
     {
         // find suitable inspectors and do animate the message...
-        updateGraphicalInspectorsBeforeAnimation();
+        updateGraphicalInspectorsBeforeAnimation(); // actually this will draw `msg' too (which would cause "phantom message"),
+                                                    // but we'll manually remove it before animation
         if (!directToGate)
         {
             // message was sent via a gate (send())

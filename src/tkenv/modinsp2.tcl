@@ -478,7 +478,7 @@ proc create_graphicalmodwindow {name geom} {
     set help_tips($w.toolbar.mrun)    {Run until next local event}
     set help_tips($w.toolbar.mfast)   {Fast run until next local event (Ctrl-F4)}
     set help_tips($w.toolbar.stop)    {Stop running simulation (F8)}
-    set help_tips($w.toolbar.redraw)  {Rearrange randomly placed submodules}
+    set help_tips($w.toolbar.redraw)  {Re-layout}
 
     # create canvas
     set c $w.c
@@ -756,19 +756,19 @@ proc graphmodwin_do_animate {win x1 y1 x2 y2 msgptr msgname msgkind {mode thru}}
     global animdelay fonts
     set c $win.c
 
+    # remove "phantom messages" if any
+    $c delete $msgptr
+
     # msg will travel at constant speed: $steps proportional to length
     set len [expr sqrt(($x2-$x1)*($x2-$x1)+($y2-$y1)*($y2-$y1))]
     set steps [expr int($len/2)]
-
-    # alternative approach: fix number of steps. Would this be better?
-    #set steps 20
 
     # max 100 steps (otherwise animation takes forever!)
     if {$steps>100} {set steps 100}
     if {$steps==0} {set steps 1}
 
-    set dx [expr ($x2-$x1)/$steps]
-    set dy [expr ($y2-$y1)/$steps]
+    set dx [expr ($x2-$x1)/double($steps)]
+    set dy [expr ($y2-$y1)/double($steps)]
 
     switch $mode {
        beg -
