@@ -149,7 +149,7 @@ bool cSocketRTScheduler::receiveWithTimeout(long usec)
                 gettimeofday(&curTime, NULL);
                 curTime = timeval_substract(curTime, baseTime);
                 simtime_t t = curTime.tv_sec + curTime.tv_usec*1e-6;
-                                // FIXME assure it's not smaller than previous event's time
+                // TBD assert that it's somehow not smaller than previous event's time
                 notificationMsg->setArrival(module,-1,t);
                 simulation.msgQueue.insert(notificationMsg);
                 return true;
@@ -243,6 +243,6 @@ void cSocketRTScheduler::sendBytes(const char *buf, size_t numBytes)
         throw new cRuntimeError("cSocketRTScheduler: sendBytes(): no connection");
 
     send(connSocket, buf, numBytes, 0);
-    // FIXME check for errors
+    // TBD check for errors
 }
 
