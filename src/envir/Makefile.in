@@ -16,7 +16,7 @@ LIB_SUFFIX=@LIB_SUFFIX@
 A_LIB_SUFFIX=@A_LIB_SUFFIX@
 SO_LIB_SUFFIX=@SO_LIB_SUFFIX@
 
-USE_DLOPEN=@USE_DLOPEN@
+HAVE_DLOPEN=@HAVE_DLOPEN@
 
 #
 # Local definitions
@@ -50,7 +50,7 @@ main.o : main.cc
 	$(CXX) -c $(COPTS) main.cc
 
 omnetapp.o : omnetapp.cc
-	$(CXX) -c $(COPTS) -DUSE_DLOPEN=$(USE_DLOPEN) omnetapp.cc
+	$(CXX) -c $(COPTS) -DHAVE_DLOPEN=$(HAVE_DLOPEN) omnetapp.cc
 
 slaveapp.o : slaveapp.cc
 	$(CXX) -c $(COPTS) slaveapp.cc

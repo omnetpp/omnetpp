@@ -20,7 +20,7 @@
 #include <ctype.h>
 #include <stdio.h>
 
-#if USE_DLOPEN
+#if HAVE_DLOPEN
 #include <dlfcn.h>
 #endif
 
@@ -344,11 +344,11 @@ void TOmnetApp::makeOptionsEffective()
 
 void TOmnetApp::loadLibrary(char *libname)
 {
-#if USE_DLOPEN
+#if HAVE_DLOPEN
      if (!dlopen(libname,RTLD_NOW))
          opp_error("Cannot load library: %s",dlerror());
 #else
-     opp_error("Cannot load '%s': USE_DLOPEN disabled",libname);
+     opp_error("Cannot load '%s': dlopen() syscall not available",libname);
 #endif
 }
 
