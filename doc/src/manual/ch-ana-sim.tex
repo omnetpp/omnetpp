@@ -22,9 +22,9 @@ The following sections describe the format of the file, and
 how to process it.
 
 
-\section{Plotting output vectors with Plove}
+\subsection{Plotting output vectors with Plove}
 
-\subsection{Plove features}
+\subsubsection{Plove features}
 
 Typically, you'll get output vector files as a result of a simulation.
 Data written to \cclass{cOutVector} objects from
@@ -57,7 +57,7 @@ including the custom filters you created.
 
 
 
-\subsection{Usage}
+\subsubsection{Usage}
 
 First, you load an output vector file (\texttt{.vec}) into the left
 pane. You can copy vectors from the left
@@ -85,7 +85,7 @@ back into the left pane for storage.
 
 
 
-\section{Format of output vector files}
+\subsection{Format of output vector files}
 
 An output vector file\index{output!vector file} contains several
 series of data produced during simulation. The file is textual, and it
@@ -114,9 +114,9 @@ Further columns on data lines are the simulation time and the recorded value.
 
 
 
-\section{Working without Plove}
+\subsection{Working without Plove}
 
-\subsection{Extracting vectors from the file}
+\subsubsection{Extracting vectors from the file}
 
 You can use the Unix \fprog{grep} tool to extract a particular vector
 from the file. As the first step, you must find out the Id of the
@@ -157,7 +157,7 @@ eliminated by the {\opp} \fprog{splitvec} utility (written in
 
 
 
-\subsection{Using splitvec}
+\subsubsection{Using splitvec}
 
 The \fprog{splitvec} script (part of {\opp}) automates the process described
 in the previous section: it breaks the vector file into several files which
@@ -189,7 +189,7 @@ As you can see, the vector Id column has been stripped from the files.
 
 
 
-\section{Analysis and visualization tools}
+\subsection{Analysis and visualization tools}
 
 Due to their straightforward file format, vector files or files
 produced by \fprog{splitvec} can be analysed and/or plotted by
@@ -210,7 +210,7 @@ still being the most commonly used one. Other, potentially more powerful ones
 include \textit{Grace}, \textit{ROOT} and \textit{PlotMTV}.
 
 
-\subsection{Grace}
+\subsubsection{Grace}
 
 \textit{Grace} (also known as \textit{xmgrace}, a successor of \textit{ACE/gr} or
 \textit{Xmgr}) is a GPL-ed powerful data visualization program
@@ -226,7 +226,7 @@ and analysis functions (e.g. correlation, histogram), fitting, splines, etc.,
 and it also sports its own built-in programming language.
 
 
-\subsection{ROOT}
+\subsubsection{ROOT}
 
 \textit{ROOT} is a powerful object-oriented data analysis framework,
 with strong support for plotting and graphics in general.
@@ -242,7 +242,8 @@ Curt Brune's page at Stanford (http://www.slac.stanford.edu/~curt/omnet++/)
 shows examples what you can achieve using ROOT with {\opp}.
 
 
-\subsection{Gnuplot}
+\subsubsection{Gnuplot}
+\index{Gnuplot}
 
 Gnuplot has an interactive command interface. To get the vectors in
 \texttt{mysim1.vec} and \texttt{mysim4.vec} plotted in the same graph,
@@ -260,11 +261,50 @@ replot
 \end{verbatim}
 
 Several commands are available to adjust ranges, plotting style, labels,
-scaling etc. Gnuplot\index{Gnuplot} can also plot 3D graphs. Gnuplot
+scaling etc. Gnuplot can also plot 3D graphs. Gnuplot
 is available for Windows and other platforms.
 On Windows, you can copy the resulting graph to the clipboard from
 the Gnuplot window's system menu, then insert it into the application you
 are working with.
+
+
+\section{Scalar statistics}
+
+Output vectors capture the transient behaviour of the simulation run.
+However, to compare model behaviour under various parameter settings,
+output scalars are more useful.
+
+Output scalar results are recorded with recordScalar() calls,
+usually from the \ttt{finish()} methods of modules.
+
+The \fprog{Scalars} tool can be used to visualize the contents of the
+\fname{omnetpp.sca} file. It can draw bar charts, x-y plots
+(e.g. throughput vs offered load), or export data via the clipboard
+for more detailed analysis into spreadsheets or other programs.
+
+You can open a scalar file either from the Scalars program's menu
+or by specifying it as a command-line argument to Scalars.
+
+The program displays the data in a table with columns showing the
+file name, run number, module name where it was recorded, and the value.
+There're usually too many rows to get an overview, so you can filter
+by choosing from (or editing) the three combo boxes at the top.
+(The filters also accept the *, ** wildcards.)
+
+You could actually load further scalar files into the window,
+and thus analyse them together.
+
+You can copy the selected rows to the clipboard by Edit|Copy or
+the corresponding toolbar button, and paste them e.g. into
+OpenOffice Calc, MS Excel or Gnumeric.
+
+The bar chart toolbar button creates -- well -- a bar chart
+in a new window. You can customize the chart by right-clicking
+on it and choosing from the context menu. It can also be exported
+to EPS, GIF, or as metafile via the Windows clipbard (the latter
+is not available on Unix of course).
+
+
 
 
 %%% Local Variables:
