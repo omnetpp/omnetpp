@@ -95,7 +95,7 @@ xsltproc  --stringparam outputdir "$outdir" --stringparam imagesxml "$imagesxml"
 echo 'formatting comments...'
 perl $NEDDOC_PL $outdir/*.html || exit 1
 
-echo 'documentation created in $outdir/ -- start page is index.html'
+echo 'documentation created in '$outdir'/ -- start page is index.html'
 cleanup
 
 
