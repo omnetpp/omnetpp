@@ -441,7 +441,8 @@ htmldocs:
 	s/^GENERATE_LATEX *=.*/GENERATE_LATEX = no/;\\
 	s/^GENERATE_TREEVIEW *=.*/GENERATE_TREEVIEW = yes/;\\
 	s/^HIDE_UNDOC_RELATIONS *=.*/HIDE_UNDOC_RELATIONS = no/;\\
-	s|^TAGFILES *=.*|TAGFILES = @OMNETPP_DOC_DIR@/api/tags|;\\
+	s|^TAGFILES *=.*|TAGFILES = @OMNETPP_DOC_DIR@/api/opptags.xml=@OMNETPP_DOC_DIR@/api|;\\
+	s|^GENERATE_TAGFILE *=.*|GENERATE_TAGFILE = htmldoc/tags.xml|;\\
 	s/^QUIET *=.*/QUIET = yes/" > $doxyconf
 	@doxygen $doxyconf
 	@echo Code documentation generated. Now, point your web browser to ./htmldoc/index.html.
