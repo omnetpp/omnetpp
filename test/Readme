@@ -1,0 +1,14 @@
+Testing before release
+~~~~~~~~~~~~~~~~~~~~~~
+
+Compilation and running the test suite (TBD) and the samples on at least
+the following platforms:
+
+   - NT, Visual C++ 6.0 without PVM
+   - NT, Visual C++ 6.0 with PVM (compile only)
+   - NT, Cygwin 1.1
+
+   - Linux, gcc, static libs
+   - Linux, gcc, dynamic libs
+   - Linux, gcc, static libs, with PVM (compile only)
+
