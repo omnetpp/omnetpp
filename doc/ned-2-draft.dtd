@@ -1,0 +1,374 @@
+<!--
+**
+** OMNeT++ Network Description (NED)
+**
+**  Characteristics:
+**  - describes NED I.
+**  - values (expressions) may be either unparsed (in attributes) or parsed
+**    (in expression elements).
+**  - display strings stored unparsed
+**  - plusindent missing
+**  - contains limitations of NED grammar:
+**      - for loops cannot contain for loops AND connections;
+**      - connections cannot share condition
+**
+** See also src/nedxml/ned.dtd -- that's what nedtool actually supports.
+**
+-->
+
+<!ELEMENT ned-files ((ned-files|ned-file)*)>
+
+<!ELEMENT ned-file ((import|channel|simple-module|compound-module|network|
+                     cppinclude|cpp-struct|cpp-cobject|cpp-noncobject|
+                     enum|message|class|struct)*)>
+<!ATTLIST ned-file
+     filename            CDATA     #IMPLIED
+     preferred-indent    CDATA     "4"
+     banner-comment      CDATA     #IMPLIED >
+
+<!--
+  **  NED-I.
+  -->
+
+<!ELEMENT import (imported-file*)>
+<!ATTLIST import
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;"
+     trailing-comment    CDATA     "&#10;" >
+
+<!ELEMENT imported-file EMPTY>
+<!ATTLIST imported-file
+     filename            CDATA     #REQUIRED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!ELEMENT channel (channel-attr*, display-string?)>
+<!ATTLIST channel
+     name                NMTOKEN   #REQUIRED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;"
+     trailing-comment    CDATA     "&#10;" >
+
+<!ELEMENT channel-attr (expression?)>
+<!ATTLIST channel-attr
+     name                NMTOKEN   #REQUIRED
+     value               CDATA     #IMPLIED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!ELEMENT network (substmachines?,substparams?)>
+<!ATTLIST network
+     name                NMTOKEN   #REQUIRED
+     type-name           NMTOKEN   #REQUIRED
+     like-name           NMTOKEN   #IMPLIED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;"
+     trailing-comment    CDATA     "&#10;" >
+
+<!ELEMENT simple-module (machines?, params?, gates?, display-string?)>
+<!ATTLIST simple-module
+     name                NMTOKEN   #REQUIRED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;"
+     trailing-comment    CDATA     "&#10;" >
+
+<!ELEMENT compound-module (machines?, params?, gates?,
+                  submodules?, connections?, display-string?)>
+<!ATTLIST compound-module
+     name                NMTOKEN   #REQUIRED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;"
+     trailing-comment    CDATA     "&#10;" >
+
+<!ELEMENT params (param*)>
+<!ATTLIST params
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!ELEMENT param EMPTY>
+<!ATTLIST param
+     name                NMTOKEN   #REQUIRED
+     data-type           CDATA     "numeric"
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!ELEMENT gates (gate*)>
+<!ATTLIST gates
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!ELEMENT gate EMPTY>
+<!ATTLIST gate
+     name                NMTOKEN   #REQUIRED
+     direction      (input|output) #REQUIRED
+     is-vector       (true|false)  "false"
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!ELEMENT machines (machine*)>
+<!ATTLIST machines
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!ELEMENT machine EMPTY>
+<!ATTLIST machine
+     name                NMTOKEN   #REQUIRED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!ELEMENT submodules (submodule*)>
+<!ATTLIST submodules
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!ELEMENT submodule (expression?, substmachines*, substparams*,
+                     gatesizes*, display-string?)>
+<!ATTLIST submodule
+     name                NMTOKEN   #REQUIRED
+     type-name           NMTOKEN   #REQUIRED
+     like-name           NMTOKEN   #IMPLIED
+     vector-size         CDATA     #IMPLIED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!ELEMENT substparams (expression?, substparam*)>
+<!ATTLIST substparams
+     condition           CDATA     #IMPLIED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!ELEMENT substparam (expression?)>
+<!ATTLIST substparam
+     name                NMTOKEN   #REQUIRED
+     value               CDATA     #IMPLIED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!ELEMENT gatesizes (expression?, gatesize*)>
+<!ATTLIST gatesizes
+     condition           CDATA     #IMPLIED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!ELEMENT gatesize (expression?)>
+<!ATTLIST gatesize
+     name                NMTOKEN   #REQUIRED
+     vector-size         CDATA     #IMPLIED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!ELEMENT substmachines (expression?, substmachine*)>
+<!ATTLIST substmachines
+     condition           CDATA     #IMPLIED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!ELEMENT substmachine EMPTY>
+<!ATTLIST substmachine
+     name                NMTOKEN   #REQUIRED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!ELEMENT connections ((connection|for-loop)*)>
+<!ATTLIST connections
+     check-unconnected (true|false) "true"
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!ELEMENT connection ((expression|conn-attr|display-string)*)>
+<!ATTLIST connection
+     condition           CDATA     #IMPLIED
+     src-module          NMTOKEN   #IMPLIED
+     src-module-index    CDATA     #IMPLIED
+     src-gate            NMTOKEN   #REQUIRED
+     src-gate-index      CDATA     #IMPLIED
+     dest-module         NMTOKEN   #IMPLIED
+     dest-module-index   CDATA     #IMPLIED
+     dest-gate           NMTOKEN   #REQUIRED
+     dest-gate-index     CDATA     #IMPLIED
+     arrow-direction  (left|right) "right"
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!ELEMENT conn-attr (expression*)>
+<!ATTLIST conn-attr
+     name                NMTOKEN   #REQUIRED
+     value               CDATA     #IMPLIED
+     right-comment       CDATA     "" >
+
+<!ELEMENT for-loop (loop-var+,connection*)>
+<!ATTLIST for-loop
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;"
+     trailing-comment    CDATA     "&#10;" >
+
+<!ELEMENT loop-var (expression*)>
+<!ATTLIST loop-var
+     param-name          NMTOKEN   #REQUIRED
+     from-value          CDATA     #IMPLIED
+     to-value            CDATA     #IMPLIED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!-- FIXME: should become a property -->
+<!ELEMENT display-string EMPTY>
+<!ATTLIST display-string
+     value               CDATA     #REQUIRED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+
+<!--
+  **  Expressions
+  -->
+
+<!ELEMENT expression ((operator|function|param-ref|ident|const))>
+<!ATTLIST expression
+     target              NMTOKEN   #IMPLIED >
+
+<!ELEMENT operator ((operator|function|param-ref|ident|const)+)>
+<!ATTLIST operator
+     name                NMTOKEN   #REQUIRED >
+
+<!ELEMENT function ((operator|function|param-ref|ident|const)*)>
+<!ATTLIST function
+     name                NMTOKEN   #REQUIRED >
+
+<!ELEMENT param-ref (expression*)>
+<!ATTLIST param-ref
+     module              CDATA     #IMPLIED
+     module-index        CDATA     #IMPLIED
+     param-name          NMTOKEN   #REQUIRED
+     param-index         CDATA     #IMPLIED
+     is-ref           (true|false) "false"
+     is-ancestor      (true|false) "false" >
+
+<!-- for loop variables, etc. -->
+<!ELEMENT ident EMPTY>
+<!ATTLIST ident
+     name                NMTOKEN   #REQUIRED >
+
+<!ELEMENT const EMPTY>
+<!ATTLIST const
+     type  (bool|int|real|string|time)  #REQUIRED
+     text                CDATA     #IMPLIED
+     value               CDATA     #REQUIRED >
+
+<!--
+  **  NED-II: message subclassing part
+  -->
+<!ELEMENT cppinclude EMPTY>
+<!ATTLIST cppinclude
+     filename            CDATA     #REQUIRED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;"
+     trailing-comment    CDATA     "&#10;" >
+
+<!-- C++ type announcements -->
+
+<!ELEMENT cpp-struct EMPTY>
+<!ATTLIST cpp-struct
+     name                NMTOKEN   #REQUIRED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;"
+     trailing-comment    CDATA     "&#10;" >
+
+<!ELEMENT cpp-cobject EMPTY>
+<!ATTLIST cpp-cobject
+     name                NMTOKEN   #REQUIRED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;"
+     trailing-comment    CDATA     "&#10;" >
+
+<!ELEMENT cpp-noncobject EMPTY>
+<!ATTLIST cpp-noncobject
+     name                NMTOKEN   #REQUIRED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;"
+     trailing-comment    CDATA     "&#10;" >
+
+<!-- Enums -->
+
+<!ELEMENT enum (enum-fields?)>
+<!ATTLIST enum
+     name                NMTOKEN   #REQUIRED
+     extends-name        NMTOKEN   #IMPLIED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;"
+     trailing-comment    CDATA     "&#10;" >
+
+<!ELEMENT enum-fields (enum-field*)>
+<!ATTLIST enum-fields
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!ELEMENT enum-field EMPTY>
+<!ATTLIST enum-field
+     name                NMTOKEN   #REQUIRED
+     value               CDATA     #IMPLIED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!-- Message, class, struct -->
+
+<!ELEMENT message (properties?,fields?)>
+<!ATTLIST message
+     name                NMTOKEN   #REQUIRED
+     extends-name        NMTOKEN   #IMPLIED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;"
+     trailing-comment    CDATA     "&#10;" >
+
+<!ELEMENT class (properties?,fields?)>
+<!ATTLIST class
+     name                NMTOKEN   #REQUIRED
+     extends-name        NMTOKEN   #IMPLIED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;"
+     trailing-comment    CDATA     "&#10;" >
+
+<!ELEMENT struct (properties?,fields?)>
+<!ATTLIST struct
+     name                NMTOKEN   #REQUIRED
+     extends-name        NMTOKEN   #IMPLIED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;"
+     trailing-comment    CDATA     "&#10;" >
+
+<!ELEMENT fields (field*)>
+<!ATTLIST fields
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!ELEMENT field EMPTY>
+<!ATTLIST field
+     name                NMTOKEN   #REQUIRED
+     data-type           CDATA     #REQUIRED
+     is-virtual      (true|false)  "false"
+     is-vector       (true|false)  "false"
+     vector-size         CDATA     #IMPLIED
+     enum-name           NMTOKEN   #IMPLIED
+     default-value       CDATA     #IMPLIED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!ELEMENT properties (property*)>
+<!ATTLIST properties
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!ELEMENT property EMPTY>
+<!ATTLIST property
+     name                NMTOKEN   #REQUIRED
+     value               CDATA     #REQUIRED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!--
+  **  'unknown' is used internally to represent elements not in this NED DTD
+  -->
+<!ELEMENT unknown        ANY>
+<!ATTLIST unknown
+     element             NMTOKEN   #REQUIRED>
+
+
