@@ -84,7 +84,6 @@ class SIM_API cPolymorphic
      * Can be redefined (as done in cObject) to return an object name.
      * This version just returns "".
      */
-    //FIXME change to std::string?
     virtual const char *fullName() const  {return "";}
 
     /**

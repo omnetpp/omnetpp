@@ -704,7 +704,7 @@ class SIM_API cClassRegister : public cObject
  * @see Register_Class() macro
  * @see cClassRegister class
  */
-// FIXME into some class, as static member!!!
+// TBD could go into some class, as static member
 SIM_API cPolymorphic *createOne(const char *classname);
 
 /**
@@ -714,7 +714,7 @@ SIM_API cPolymorphic *createOne(const char *classname);
  *
  * @see createOne()
  */
-// FIXME into some class, as static member!!!
+// TBD could go into some class, as static member
 SIM_API cPolymorphic *createOneIfClassIsKnown(const char *classname);
 //@}
 

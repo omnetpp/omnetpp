@@ -23,12 +23,12 @@
 #include "util.h"
 
 /**
- * Lightweight string class, used internally in some parts of OMNeT++. 
+ * Lightweight string class, used internally in some parts of OMNeT++.
  * In simulation models it is better to use std::string or const char *
  * instead.
  *
  * opp_string has only one data member, a char* pointer. Allocation and
- * deallocation of the contents takes place via opp_strdup() and operator 
+ * deallocation of the contents takes place via opp_strdup() and operator
  * delete.
  *
  * @ingroup Internals
@@ -79,7 +79,6 @@ class SIM_API opp_string
     /**
      * Allocates a buffer of the given size.
      */
-    // FIXME make it preserve contents
     char *reserve(unsigned size)
                                {delete[] str;str=new char[size];return str;}
 

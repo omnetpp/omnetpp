@@ -207,8 +207,8 @@ class SIM_API cMessage : public cObject
     void setLength(long l);
 
     /**
-     * Changes message length by the given value (bits). This is useful for 
-     * modeling encapsulation/decapsulation. (See also encapsulate() and 
+     * Changes message length by the given value (bits). This is useful for
+     * modeling encapsulation/decapsulation. (See also encapsulate() and
      * decapsulate().)
      *
      * The value may be negative (message length may be decreased too).
@@ -248,7 +248,7 @@ class SIM_API cMessage : public cObject
      *
      * When the message is duplicated or copied, copies will have their
      * control info set to NULL because the cPolymorphic interface
-     * doesn't define dup/copy operations. (FIXME hmmm...)
+     * doesn't define dup/copy operations.
      * The assignment operator doesn't change control info.
      */
     void setControlInfo(cPolymorphic *p);

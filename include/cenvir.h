@@ -149,6 +149,12 @@ class ENVIR_API cEnvir : public std::ostream
     bool isgui;
 
   public:
+    // internal: writes the first n characters of string s.
+    // evbuf (the streambuf underlying cEnvir's ostream base class)
+    // writes via this function.
+    void sputn(const char *s, int n);
+
+  public:
     /** @name Constructor, destructor.
      *
      * Note that only one instance of cEnvir exists, the ev object.
@@ -390,20 +396,10 @@ class ENVIR_API cEnvir : public std::ostream
     void printf(const char *fmt="\n",...);
 
     /**
-     * Similar to ev.printf(), but just writes out its argument string with
-     * no formatting.
-     * It is recommended to use C++-style I/O instead of this function.
+     * DEPRECATED. Similar to ev.printf(), but just writes out its argument
+     * string with no formatting. Use ev<< instead.
      */
-    // FIXME why is it still here?
     void puts(const char *s);
-
-    /**
-     * Similar to ev.puts(), but only n characters of string s are written.
-     * Used internally: the streambuf underlying cEnvir's ostream base class
-     * writes via this function.
-     */
-    // FIXME why public?
-    void sputn(const char *s, int n);
 
     /**
      * Flushes the output buffer of ev.printf() and ev<< operations.

@@ -52,7 +52,7 @@ typedef std::map<std::string,std::string> cXMLAttributeMap;
  * the content of the corresponding document. The "href" and "parse"
  * attributes from the XInclude spec are supported.
  */
-// FIXME if namespaces are supported by Expat & libxml in an easy way, maybe do it here
+// TBD if namespaces are supported by Expat & libxml in an easy way, maybe do it here
 class cXMLElement
 {
   private:

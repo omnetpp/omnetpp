@@ -69,35 +69,18 @@ class ENVIR_API cConfiguration : public cPolymorphic
     virtual const char *getSectionName(int k) = 0;
     //@}
 
-    /** @name Getter methods */
+    /** @name Checking for presence of config entries */
     //@{
     /**
-     * FIXME comments...
+     * Returns true if the configuration contains an entry in the given section
+     * that matches the given key.
      */
     virtual bool exists(const char *section, const char *key) = 0;
-    /**
-     * FIXME comments...
-     */
-    virtual bool getAsBool(const char *section, const char *key, bool defaultvalue=false) = 0;
-    virtual long getAsInt(const char *section, const char *key, long defaultvalue=0) = 0;
-    virtual double getAsDouble(const char *section, const char *key, double defaultvalue=0.0) = 0;
-    virtual double getAsTime(const char *sect, const char *key, double defaultvalue=0.0) = 0;
-    virtual const char *getAsString(const char *section, const char *key, const char *defaultvalue="") = 0; // quotes stripped (if any)
-    virtual const char *getAsCustom(const char *section, const char *key, const char *defaultvalue=NULL) = 0; // with quotes (if any)
 
     /**
-     * Returns a collection of entries together with their values. Entry names
-     * must match keypart1 + keypart2 + some suffix. Pairs of "some suffix" and
-     * their matching values are returned.
-     *
-     * Example: The config contains "net.host1.gen.rng-0 = value1",
-     * "net.host1.gen.rng-2 = value2" and "net.host1.gen.rng-5 = value3".
-     * getEntriesWithPrefix() with keypart1="net.host1.gen" and keypart2=".rng-"
-     * is invoked. The call returns this: ("0" --> value1, "2" --> value2, "5" --> value3).
-     * Returned array contains "0", "2", "5" at odd indices, and
-     * value1, value2, value3 at even indices.
+     * Like exists(), with fallback to another section.
      */
-    virtual std::vector<opp_string> getEntriesWithPrefix(const char *section, const char *keypart1, const char *keypart2) = 0;
+    virtual bool exists2(const char *section1, const char *section2, const char *key) = 0;
 
     /**
      * Returns true if the last "get" call didn't find the configuration entry
@@ -106,17 +89,66 @@ class ENVIR_API cConfiguration : public cPolymorphic
     virtual bool notFound() = 0;
     //@}
 
+    /** @name Getter methods */
+    //@{
+    /** Return a config value as bool */
+    virtual bool getAsBool(const char *section, const char *key, bool defaultvalue=false) = 0;
+    /** Return a config value as long */
+    virtual long getAsInt(const char *section, const char *key, long defaultvalue=0) = 0;
+    /** Return a config value as double */
+    virtual double getAsDouble(const char *section, const char *key, double defaultvalue=0.0) = 0;
+    /** Return a config value as time */
+    virtual double getAsTime(const char *sect, const char *key, double defaultvalue=0.0) = 0;
+    /** Return a config value as string */
+    virtual const char *getAsString(const char *section, const char *key, const char *defaultvalue="") = 0; // quotes stripped (if any)
+    /** Return a config entry's "raw" (unparsed) value */
+    virtual const char *getAsCustom(const char *section, const char *key, const char *defaultvalue=NULL) = 0; // with quotes (if any)
+    //@}
+
     /** @name Getter methods, with fallback to another section */
     //@{
-    // get an entry from [section1] or if it isn't there, from [section2]
-    virtual bool exists2(const char *section1, const char *section2, const char *key) = 0;
+    /** Return a config value as bool */
     virtual bool getAsBool2(const char *section1, const char *section2, const char *key, bool defaultvalue=false) = 0;
+    /** Return a config value as long */
     virtual long getAsInt2(const char *section1, const char *section2, const char *key, long defaultvalue=0) = 0;
+    /** Return a config value as double */
     virtual double getAsDouble2(const char *section1, const char *section2, const char *key, double defaultvalue=0.0) = 0;
+    /** Return a config value as time */
     virtual double getAsTime2(const char *section1, const char *section2, const char *key, double defaultvalue=0.0) = 0;
+    /** Return a config value as string */
     virtual const char *getAsString2(const char *section1, const char *section2, const char *key, const char *defaultvalue="") = 0;
+    /** Return a config entry's "raw" (unparsed) value */
     virtual const char *getAsCustom2(const char *section1, const char *section2, const char *key, const char *defaultvalue="") = 0;
+    //@}
 
+    /** @name Special */
+    //@{
+    /**
+     * Returns a collection of entries together with their values. Entry names
+     * must match keypart1 + keypart2 + some suffix. Pairs of "some suffix" and
+     * their matching values are returned.
+     *
+     * Example: The config contains:
+     * <pre>
+     *   [General]
+     *   net.host1.gen.rng-0 = value1
+     *   net.host1.gen.rng-2 = value2
+     *   net.host1.gen.rng-5 = value3
+     * </pre>
+     *
+     * getEntriesWithPrefix("General", "net.host1.gen", ".rng-") returns this:
+     *    - "0" --> value1
+     *    - "2" --> value2
+     *    - "5" --> value3
+     *
+     * Returned array contains "0", "2", "5" at odd indices, and
+     * value1, value2, value3 at even indices.
+     */
+    virtual std::vector<opp_string> getEntriesWithPrefix(const char *section, const char *keypart1, const char *keypart2) = 0;
+
+    /**
+     * getEntriesWithPrefix(), with fallback to another section.
+     */
     virtual std::vector<opp_string> getEntriesWithPrefix(const char *section1, const char *section2, const char *keypart1, const char *keypart2) = 0;
     //@}
 
