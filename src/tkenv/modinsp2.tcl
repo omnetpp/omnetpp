@@ -1118,6 +1118,8 @@ proc layouter_debugDraw_finish {c msg} {
     $c scale all 0 0 $fx $fy
 
     $c config -scrollregion [$c bbox all]
+    $c xview moveto 0
+    $c yview moveto 0
     update idletasks
 }
 
