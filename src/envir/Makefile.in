@@ -122,6 +122,7 @@ args.o: args.cc \
   ../../include/defs.h
 cenvir.o: cenvir.cc \
   args.h \
+  ../../include/distrib.h \
   cinifile.h \
   ../../include/cenvir.h \
   omnetapp.h \
@@ -133,6 +134,7 @@ cenvir.o: cenvir.cc \
   filemgrs.h \
   envdefs.h \
   ../../include/defs.h \
+  ../../include/random.h \
   ../../include/cpar.h \
   ../../include/cobject.h \
   ../../include/util.h \

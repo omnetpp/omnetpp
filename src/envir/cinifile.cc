@@ -63,13 +63,15 @@ void cIniFile::readFile(const char *fname)
 
 void cIniFile::_readFile(const char *fname, int section_id)
 {
+    const int bufsize = MAX_LINE+2; // +2 for CR (or LF) + EOS
+    char buf[bufsize];
+
     FILE *file;
-    char buf[MAX_LINE];
     int line=0;
     int i;
 
     _error = false;
-    buf[MAX_LINE-2] = '\0'; // 'line too long' guard
+    buf[bufsize-1] = '\0'; // 'line too long' guard
 
     file = fopen(fname,"r");
     if (file==NULL)
@@ -81,20 +83,24 @@ void cIniFile::_readFile(const char *fname, int section_id)
 
     while (!feof(file))
     {
-        // join lines that end with backslash
+        // start read a line
         int len=0;
         buf[0]=0; // fgets doesn't do this on eof!
+
+        // join lines that end with backslash
         for(;;)
         {
             line++;
-            fgets(buf+len,MAX_LINE-len,file);
-            if (buf[MAX_LINE-2]) SYNTAX_ERROR("line too long, sorry");
+            fgets(buf+len,bufsize-len,file);
             len+=strlen(buf+len);
 
-            if (len>0 && buf[len-1]=='\n')
-                buf[--len]='\0'; // chop LF
-            if (len>0 && buf[len-1]=='\r')
-                buf[--len]='\0'; // chop CR
+            // if CR/LF is missing from line end, it was too long
+            if (len>0 && buf[len-1]!='\n' && buf[len-1]!='\r')
+                SYNTAX_ERROR("line too long, sorry");
+
+            // chop CR/LF
+            while (len>0 && (buf[len-1]=='\n' || buf[len-1]=='\r'))
+                buf[--len]='\0';
 
             if (len>0 && buf[len-1]=='\\')
                 buf[--len]='\0'; // chop trailing backslash
@@ -144,7 +150,7 @@ void cIniFile::_readFile(const char *fname, int section_id)
         // process 'key = value' line
         else
         {
-           if (section_id<0) SYNTAX_ERROR("no section header (like [Foo]) seen yet");
+           if (section_id<0) SYNTAX_ERROR("no section header (e.g. [General]) seen yet");
 
            // s --> key, e --> value, e1 --> last char of value
 

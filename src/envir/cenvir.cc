@@ -40,7 +40,8 @@ cEnvir ev;
 cHead omnetapps("user-interfaces");
 
 // output buffer
-static char buffer[1024];
+#define ENVIR_TEXTBUF_LEN 1024
+static char buffer[ENVIR_TEXTBUF_LEN];
 
 
 //=== The DUMMY SECTION -- a tribute to smart linkers
@@ -61,7 +62,13 @@ void dummyDummy() {envirDummy();}
 // A dummy function to force UNIX linkers collect TSlaveApp, Speedometer
 // and cFileOutputVectorManager as linker symbols. Otherwise we'd get
 // "undefined symbol" messages...
-void tslave_dummy_function() {exponential(1.0);TSlaveApp x(0,NULL);Speedometer a;cFileOutputVectorManager o;}
+void tslave_dummy_function() {
+    exponential(1.0);
+    TSlaveApp x(0,NULL);
+    Speedometer a;
+    cFileOutputVectorManager o;
+    printf("%p%p%p",&x,&a,&o); // eliminate 'unused var' warning
+}
 
 //========================================================================
 
@@ -434,5 +441,92 @@ char **cEnvir::argVector()
 bool memoryIsLow()
 {
     return ev.app->memoryIsLow();
+}
+
+//---------------------------------------------------------
+
+//
+// overloaded operators
+//
+
+cEnvir& operator<< (cEnvir& ev, cPar& p)
+{
+    p.getAsText(buffer,ENVIR_TEXTBUF_LEN);
+    ev.puts(buffer);
+    return ev;
+}
+
+cEnvir& operator* (cEnvir& ev, char *s)
+{
+    return ev.setPrompt((char *)s);
+}
+cEnvir& operator* (cEnvir& ev, const signed char *s)
+{
+    return ev.setPrompt((const char *)s);
+}
+cEnvir& operator* (cEnvir& ev, const unsigned char *s)
+{
+    return ev.setPrompt((const char *)s);
+}
+
+cEnvir& operator>> (cEnvir& ev, cPar& p)
+{
+    char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); p.setFromText(buf,'?'); return ev;
+}
+cEnvir& operator>> (cEnvir& ev, char *s)
+{
+    ev.gets(ev.prompt(),(char *)s, 80); return ev;
+}
+cEnvir& operator>> (cEnvir& ev, signed char *s)
+{
+    ev.gets(ev.prompt(),(char *)s, 80); return ev;
+}
+cEnvir& operator>> (cEnvir& ev, unsigned char *s)
+{
+    ev.gets(ev.prompt(),(char *)s, 80); return ev;
+}
+cEnvir& operator>> (cEnvir& ev, char& c)
+{
+    char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); c=buf[0]; return ev;
+}
+cEnvir& operator>> (cEnvir& ev, signed char& c)
+{
+    char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); c=buf[0]; return ev;
+}
+cEnvir& operator>> (cEnvir& ev, unsigned char& c)
+{
+    char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); c=buf[0]; return ev;
+}
+cEnvir& operator>> (cEnvir& ev, short& i)
+{
+    char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); i=(short)atol(buf); return ev;
+}
+cEnvir& operator>> (cEnvir& ev, int& i)
+{
+    char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); i=(int)atol(buf); return ev;
+}
+cEnvir& operator>> (cEnvir& ev, long& l)
+{
+    char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); l=atol(buf); return ev;
+}
+cEnvir& operator>> (cEnvir& ev, unsigned short& i)
+{
+    char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); i=(unsigned short)atol(buf); return ev;
+}
+cEnvir& operator>> (cEnvir& ev, unsigned int& i)
+{
+    char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); i=(unsigned int)atol(buf); return ev;
+}
+cEnvir& operator>> (cEnvir& ev, unsigned long& l)
+{
+    char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); l=(unsigned long)atol(buf); return ev;
+}
+cEnvir& operator>> (cEnvir& ev, double& d)
+{
+    char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); d=atof(buf); return ev;
+}
+cEnvir& operator>> (cEnvir& ev, long double& d)
+{
+    char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); d=atof(buf); return ev;
 }
 
