@@ -1031,7 +1031,7 @@ proc _doRenameItem {key name} {
            set ned($key,vectorsize) $size
         } else {
            tk_messageBox -type ok -title GNED -icon warning \
-               -message "'$name' is not a legal or unique name."
+               -message "'$name' is not a legal name (contains invalid characters, is a reserved word, or not unique)"
         }
 
     } elseif {[info exist ned($key,name)]} {
@@ -1039,7 +1039,7 @@ proc _doRenameItem {key name} {
            set ned($key,name) $name
         } else {
            tk_messageBox -type ok -title GNED -icon warning \
-               -message "'$name' is not a legal or unique name."
+               -message "'$name' is not a legal name (contains invalid characters, is a reserved word, or not unique)"
         }
     } else {
         error "item doesn't have a name attribute"

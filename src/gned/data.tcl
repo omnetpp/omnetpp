@@ -184,6 +184,18 @@ proc isNameLegal {key name} {
         return 0
     }
 
+    # check if it's a reserved word
+    set keywords {include import network module simple channel delay error datarate
+                  for do true false ref ancestor input const sizeof endsimple endmodule
+                  endchannel endnetwork endfor parameters gatesizes gates
+                  submodules connections display on like machines to if index nocheck
+                  numeric string bool anytype cplusplus class message struct enum
+                  fields properties extends int long char unsigned}
+    if {[lsearch $keywords $name]!=-1} {
+        # reserved word
+        return 0
+    }
+
     # check if name is unique among all siblings
     foreach siblingkey [getChildren $ned($key,parentkey)] {
         if {$siblingkey!=$key && [info exist ned($siblingkey,name)]} {
@@ -222,8 +234,19 @@ proc makeUniqueName {key name} {
         return $ned($key,name)
     }
 
-    # make name unique among all siblings by appending numbers
+    # if it's a reserved word, append "1"
+    set keywords {include import network module simple channel delay error datarate
+                  for do true false ref ancestor input const sizeof endsimple endmodule
+                  endchannel endnetwork endfor parameters gatesizes gates
+                  submodules connections display on like machines to if index nocheck
+                  numeric string bool anytype cplusplus class message struct enum
+                  fields properties extends int long char unsigned}
     set suffixneeded ""
+    if {[lsearch $keywords $name]!=-1} {
+        set suffixneeded "1"
+    }
+
+    # make name unique among all siblings by appending numbers
     foreach siblingkey [getChildren $ned($key,parentkey)] {
         if {$siblingkey!=$key && [info exist ned($siblingkey,name)]} {
             if [regexp -- "^${name}(\[0-9\]*)$" $ned($siblingkey,name) match suffix] {

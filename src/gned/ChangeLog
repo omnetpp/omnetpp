@@ -1,10 +1,12 @@
-2003-08-03  Andras Varga
+2003-08-04  Andras Varga
 
 	* bugfix: if a simple module was typed in the NED text, it was lost 
 	when switching back to graphics
 
 	* bugfix: when a loop connection was deleted in graphics mode, 
 	empty for loop was left behind which is syntactically invalid in NED
+
+	* bugfix: disallow reserved words as name
 
 2003-08-01  Andras Varga
 
