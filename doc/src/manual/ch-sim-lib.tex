@@ -2338,7 +2338,7 @@ The following methods \textbf{must} be implemented:
         the copy constructor is to initialize the base class with the
         name (\fname{name()}) of the other object it receives, then call the
         assignment operator (see below).}
-  \item{\textit{Destructor}. Any good-tempered class has a destructor.}
+  \item{\textit{Destructor}.}
   \item{\textit{Duplication function,} \fname{cObject *dup() const}.
         It should create and return an exact duplicate of the object.
         It is usually a one-line function, implemented with the help
@@ -2355,41 +2355,60 @@ via pointers or as data member) other object subclassed from \cclass{cObject}.
 \begin{itemize}
   \item{\textit{Iteration function,} \ttt{void forEachChild(cVisitor * v)}.
         The implementation should call the function passed
-        for each object it contains via pointer or
-        as data member; see the API Reference on \cclass{cObject} on how to
-        implement \ttt{forEachChild()}. \fname{forEachChild()} is used by Tkenv and
-        \fname{snapshot()} to navigate, search or display the object tree.}
+        for each object it contains via pointer or as data member;
+        see the API Reference on \cclass{cObject} on how to implement
+        \ttt{forEachChild()}. \fname{forEachChild()} makes it possible
+        for Tkenv to display the object tree to you, to perform searches on it, etc.
+        It is also used by \fname{snapshot()} and some other library functions.}
 \end{itemize}
 
 The following methods are \textbf{recommended} to implement:
 
 \begin{itemize}
-  \item{\textit{Object info,} \fname{void info(char *)}. The \ttt{info()} function
-        should print a one-line info about object contents into the given
-        buffer -- usually the class name, the object name, important state variables, etc.
-        This is used when Tkenv displays list of objects (in the object tree
-        or in listboxes). The length of the info should not exceed 500 chars.}
-  \item{\textit{Detailed object info,} \fname{void writeContents(ostream\&)}.
-        It should write a detailed multi-line report about the object contents
-        into the stream provided. This is currently only used by \fname{snapshot()}.}
+  \item{\textit{Object info,} \fname{std::string info()}. The \ttt{info()} function
+        should return a one-line string describing the object's contents or state.
+        \ttt{info()} is displayed at several places in Tkenv.}
+  \item{\textit{Detailed object info,} \fname{std::string detailedInfo()}.
+        This method may potentially be implemented in addition to \ttt{info()};
+        it can return a multi-line description. \ttt{detailedInfo()} is also
+        displayed by Tkenv in the object's inspector.}
+  \item{\textit{Serialization}, \fname{netPack()} and \fname{netUnpack()} methods.
+        These methods are needed for parallel simulation, if you want
+        objects of this type to be transmitted across partitions.}
 \end{itemize}
-
-%% FIXME todo
-%%
-%% Necessary for parallel execution:
-%%
-%% \begin{itemize}
-%%  \item{\fname{netPack()}, \fname{netUnpack()}: they are needed only if
-%%        objects of this type will be transmitted over LPs.}
-%% \end{itemize}
-
 
 
 \subsection{Class registration}
 
 You should also use the \fmac{Register\_Class()} macro to register the
-new class. It is used by the \fname{createOne()} function.
+new class. It is used by the \fname{createOne()} factory function, which can
+create any object given the class name as a string. \fname{createOne()}
+is used by the Envir library to implement \ttt{omnetpp.ini} options
+such as \ttt{rng-class="..."} or \ttt{scheduler-class="..."}.
+(see Chapter \ref{cha:opp-design})
 
+For example, an omnetpp.ini entry such as
+
+\begin{verbatim}
+rng-class="cMersenneTwister"
+\end{verbatim}
+
+would result in something like the following code to be executed
+for creating the RNG objects:
+
+\begin{verbatim}
+cRNG *rng = check_and_cast<cRNG*>(createOne("cMersenneTwister"));
+\end{verbatim}
+
+But for that to work, we needed to have the following line somewhere in the code:
+
+\begin{verbatim}
+Register_Class(cMersenneTwister);
+\end{verbatim}
+
+\fname{createOne()} is also needed by the parallel distributed simulation feature
+(Chapter \ref{cha:parallel-execution}) to create blank objects to unmarshal into
+on the receiving side.
 
 
 \subsection{Details}
