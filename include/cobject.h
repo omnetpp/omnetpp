@@ -21,6 +21,9 @@
 #define __COBJECT_H
 
 #include "util.h"
+#include "cexception.h"
+
+#include <typeinfo>
 
 #ifdef USE_STD_NAMESPACE
 #include <iostream>
@@ -29,7 +32,6 @@ using std::ostream;
 #include <iostream.h>
 #endif
 
-#include <typeinfo>
 
 #define FULLPATHBUF_SIZE  1024
 
@@ -532,6 +534,35 @@ class cStaticFlag
     cStaticFlag()  {cObject::staticflag = 1;}
     ~cStaticFlag() {cObject::staticflag = 0;}
 };
+
+
+/**
+ * Cast an object pointer to the given C++ type and throw exception if fails.
+ * The method calls dynamic_cast&lt;T&gt;(p) where T is a type you supplied;
+ * if the result is NULL (which indicates incompatible types), an exception
+ * is thrown.
+ * 
+ * Example:
+ * <verbatim>
+ *   cMessage *msg = receive();
+ *   // MyPacket is a subclass of cMessage. The next line makes sure 
+ *   // it is actually a MyPacket that we received -- if not, the simulation
+ *   // stops with an error message as the result of the exception
+ *   MyPacket *pkt = check_and_cast&lt;MyPacket *&gt;(msg);
+ * </verbatim>
+ *
+ * @ingroup Functions
+ */
+template<class T>
+T check_and_cast(cObject *p)
+{
+    if (!p)
+        throw new cException("check_and_cast(): cannot cast NULL pointer to type '%s'",opp_typename(typeid(T)));
+    T ret = dynamic_cast<T>(p);
+    if (!ret)
+        throw new cException("check_and_cast(): cannot cast (%s *)%s to type '%s'",p->className(),p->fullPath(),opp_typename(typeid(T)));
+    return ret;
+}
 
 #endif
 

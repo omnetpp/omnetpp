@@ -21,6 +21,7 @@
 #define __UTIL_H
 
 #include <stdarg.h>  // for va_list
+#include <typeinfo>  // for type_info
 #include "defs.h"
 
 
@@ -44,6 +45,7 @@
 #define mystrmatch       opp_strmatch
 #define fastconcat       opp_concat
 #define indexedname      opp_mkindexedname
+
 
 /**
  * @name Converting simulation time to and from string form.
@@ -482,6 +484,12 @@ SIM_API void opp_terminate(int errcode,...);
  */
 SIM_API void opp_terminate(const char *msg,...);
 //@}
+
+//
+// INTERNAL: return name of a C++ type -- correcting quirks of various compilers...
+//
+const char *opp_typename(const std::type_info& t);
+
 
 /**
  * Very simple string class. opp_string has only one data member,
