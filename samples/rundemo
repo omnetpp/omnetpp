@@ -44,13 +44,13 @@ foreach line {
    {"P-to-P"           "p-to-p"           "./p-to-p"    "p-to-p.exe"}
    {"Aloha"            "aloha"            "./aloha"     "aloha.exe"}
    {"Dyna"             "dyna"             "./dyna"      "dyna.exe"}
-   {"Dyna in real-time" "dyna/realtime"   "../dyna"     "..\\dyna.exe"}
    {"FDDI"             "fddi"             "./fddi"      "fddi.exe"}
    {"HCube"            "hcube"            "./hcube"     "hcube.exe"}
    {"Routing"          "routing"          "./routing"   "routing.exe"}
    {"Routing/Networks" "routing/networks" "../routing"  "..\\routing.exe"}
    {"TokenRing"        "tokenring"        "./tokenring" "tokenring.exe"}
    {"NEDDemo"          "neddemo"          "./neddemo"   "neddemo.exe"}
+   {"Dyna in real-time" "dyna/realtime"   "../dyna"     "..\\dyna.exe"}
    {"Sockets/HTTP"     "sockets"          "./sockets -r 1"  "sockets.exe -r 1"}
    {"Sockets/Telnet"   "sockets"          "./sockets -r 2"  "sockets.exe -r 2"}
 } {
@@ -96,7 +96,7 @@ proc createWindow {} {
     wm deiconify .
     wm title . "OMNeT++ Demo Simulations"
     wm protocol . WM_DELETE_WINDOW {exit}
-    wm geometry . "650x440"
+    wm geometry . "650x510"
 
     #################################
     # Menu bar
