@@ -1,4 +1,5 @@
-This directory MUST NOT contain a file named 'proc.gif' or 'proc.xbm'!
+Under Windows, you'll probably have to adjust the wish.exe path in showpics.bat.
 
+This directory MUST NOT contain a file named 'proc.gif' or 'proc.xbm'.
 The existence of an image named 'proc' apparently screws up the 
 tk_messageBox function somehow (Tk8.0p2).
