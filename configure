@@ -1314,21 +1314,10 @@ case $host in
 esac
 
 #
-# replaced by scanning $host
-#
-#if uname | grep "CYGWIN" >/dev/null; then
-#    cygwin=yes
-#fi
-
-#
 # Location of various components. Can be overridden in configure.user.
 #
 OMNETPP_ROOT=`pwd`
-if test -n "$HOME"; then
-    if pwd | grep "^$HOME" >/dev/null; then
-        OMNETPP_ROOT=`pwd|sed "s|^$HOME|\\\${HOME}|"`
-    fi
-fi
+
 if test "$cygwin" = yes; then
     OMNETPP_ROOT=`cygpath -w $OMNETPP_ROOT | sed 's|\\\\|/|g'`
 fi
@@ -5313,6 +5302,9 @@ Warning: You have enabled nedc subclassing which is experimental.
          that there is no support possible if you encounter problems.
          At least you should read the message subclassing documentation
          ${OMNETPP_NEDC_DIR}/msgdoc.txt
+
+	 Have a look at ${OMNETPP_SAMPLES_DIR}/dyna2 as a sample
+	 simulation using nedc subclassing
 
 EOT
 

@@ -28,21 +28,10 @@ case $host in
 esac
 
 #
-# replaced by scanning $host
-#
-#if uname | grep "CYGWIN" >/dev/null; then
-#    cygwin=yes
-#fi
-
-#
 # Location of various components. Can be overridden in configure.user.
 #
 OMNETPP_ROOT=`pwd`
-if test -n "$HOME"; then
-    if pwd | grep "^$HOME" >/dev/null; then
-        OMNETPP_ROOT=`pwd|sed "s|^$HOME|\\\${HOME}|"`
-    fi
-fi
+
 if test "$cygwin" = yes; then
     OMNETPP_ROOT=`cygpath -w $OMNETPP_ROOT | sed 's|\\\\|/|g'`
 fi
