@@ -261,6 +261,7 @@ proc fileExit {} {
    global ned
 
    # close all ned files
+   busy "Closing canvases..."
    foreach key $ned(0,childrenkeys) {
 #       if $ned($key,aux-isdirty) {
            fileCloseNedfile $key

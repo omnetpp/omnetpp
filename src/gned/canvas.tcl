@@ -359,7 +359,11 @@ proc exportCanvasesToPostscript {dir} {
         set modname $ned($loop_modkey,name)
         set nedfilename $ned($loop_nedfilekey,filename)
 
-        puts "saving $modname from $nedfilename..."
+        regsub -all -- {[./\\]} $nedfilename "_" tmp
+        set psfile [file join $dir "${modname}__${tmp}.eps"]
+
+        busy "Generating postscript to $psfile..."
+
         switchToCanvas $loop_canvid
         set canv $canvas($i)
         set bbox [$canv bbox all]
@@ -371,8 +375,6 @@ proc exportCanvasesToPostscript {dir} {
         #$canv config -height [expr $y2-$y1]
         update idletasks
 
-        regsub -- {[.:/\\]} $nedfilename "_" tmp
-        set psfile [file join $dir "${modname}__${tmp}.eps"]
         $canv postscript -file $psfile -x $x1 -y $y1 -width [expr $x2-$x1] -height [expr $y2-$y1]
     }
 }
