@@ -39,6 +39,7 @@
 #include "cmodule.h"
 #include "cxmlelement.h"
 #include "cxmldoccache.h"
+#include "cstrtokenizer.h"
 
 #ifdef WITH_PARSIM
 #include "cparsimcomm.h"
@@ -182,22 +183,21 @@ void TOmnetApp::setup()
          }
 
          // preload NED files
-         const char *nedfiles = getConfig()->getAsString("General", "preload-ned-files", NULL);
-         if (nedfiles)
+         std::string nedfiles = getConfig()->getAsFilenames("General", "preload-ned-files", NULL);
+         if (!nedfiles.empty())
          {
              // iterate through file names
              ev.printf("\n");
-             char *buf = opp_strdup(nedfiles);
-             char *fname = strtok(buf, " ");
-             while (fname!=NULL)
+
+             cStringTokenizer tokenizer(nedfiles.c_str());
+             const char *fname;
+             while ((fname = tokenizer.nextToken())!=NULL)
              {
                  if (fname[0]=='@')
                      globAndLoadListFile(fname+1);
                  else if (fname[0])
                      globAndLoadNedFile(fname);
-                 fname = strtok(NULL, " ");
              }
-             delete [] buf;
          }
      }
      catch (cException *e)
@@ -439,7 +439,7 @@ void TOmnetApp::readOptions()
         throw new cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
 #endif
     }
-    opt_load_libs = cfg->getAsString("General", "load-libs", "");
+    opt_load_libs = cfg->getAsFilenames("General", "load-libs", "").c_str();
 
     opt_num_rngs = cfg->getAsInt("General", "num-rngs", 1);
     opt_rng_class = cfg->getAsString("General", "rng-class", "cMersenneTwister");

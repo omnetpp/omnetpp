@@ -88,7 +88,7 @@ void TCmdenvApp::readOptions()
 
     opt_runstoexec = cfg->getAsString("Cmdenv", "runs-to-execute", "");
     opt_extrastack_kb = cfg->getAsInt("Cmdenv", "extra-stack-kb", CMDENV_EXTRASTACK_KB);
-    opt_outputfile = cfg->getAsString("Cmdenv", "output-file", "");
+    opt_outputfile = cfg->getAsFilenames("Cmdenv", "output-file", "").c_str();
 
     if (!opt_outputfile.empty())
     {

@@ -49,13 +49,10 @@ void App::initialize()
     WATCH(pkReceived);
 
     const char *destAddressesPar = par("destAddresses");
-    char *s = strtok(const_cast<char *>(destAddressesPar)," ");
-    while (s)
-    {
-        int addr = (int) atol(s);
-        destAddresses.push_back(addr);
-        s = strtok(NULL," ");
-    }
+    cStringTokenizer tokenizer(destAddressesPar);
+    const char *token;
+    while ((token = tokenizer.nextToken())!=NULL)
+        destAddresses.push_back(atoi(token));
 
     hopCounts.setName("hopCounts");
     hopCounts.setRangeAutoUpper(0,20,1.5);

@@ -996,7 +996,7 @@ void TOmnetTkApp::readOptions()
     opt_print_banners = cfg->getAsBool( "Tkenv", "print-banners", true );
     opt_use_mainwindow = cfg->getAsBool( "Tkenv", "use-mainwindow", true );
     opt_expressmode_autoupdate = cfg->getAsBool( "Tkenv", "expressmode-autoupdate", true );
-    opt_bitmap_path = cfg->getAsString( "Tkenv", "bitmap-path", "");
+    opt_bitmap_path = cfg->getAsFilenames( "Tkenv", "bitmap-path", "").c_str();
 }
 
 void TOmnetTkApp::readPerRunOptions(int run_nr)

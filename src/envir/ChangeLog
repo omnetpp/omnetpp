@@ -1,8 +1,20 @@
 2005-03-18  Andras Varga
 
-	* cinifile.h/cc: implemented getBaseDirectoryFor() and getLocation() 
-	functions in cInifile: the class now remembers from which ini file 
-	every entry was read from. Also, class was upgraded to use std::vector.
+	* cinifile.h/cc: implemented getAsFilenames(), getBaseDirectoryFor(),
+	getLocation() functions in cInifile: the class now remembers from which
+	ini file every entry was read from. Also, class was upgraded to use
+	std::vector.
+
+	* the following configuration settings (due to the use of cfg->getAs-
+	FileNames() instead of cfg->getAsString()) now became relative to the
+	location of the ini file which contains them:
+	  [General], load-libs=
+	  [Cmdenv], output-file=
+	  [Tkenv], bitmap-path=
+	  [General], preload-ned-files=
+	  [General] or [Run X], output-vector-file=
+	  [General] or [Run X], output-scalar-file=
+	  [General] or [Run X], snapshot-file=
 
 2005-03-02  Andras Varga
 
@@ -12,11 +24,11 @@
 	* omnetapp.h/cc: makeOptionsEffective() merged into readPerRunOptions()
 
 	* omnetapp.cc: fixed ini file imports: included ini file names are now
-	understood as relative to the location of the ini file containing the 
+	understood as relative to the location of the ini file containing the
 	"include" directive, rather than to the current working directory.
 	E.g. if your omnetpp.ini contains "include ../../settings.ini", then
-	settings.ini may now contain "include defaults.ini" (instead of 
-	"include ../../defaults.ini") to load defaults.ini from the same 
+	settings.ini may now contain "include defaults.ini" (instead of
+	"include ../../defaults.ini") to load defaults.ini from the same
 	directory.
 
 2005-02-24  Andras Varga
@@ -26,7 +38,7 @@
 
 2005-02-18  Andras Varga
 
-	* cenvir.cc: ev.printf() fixed: it printed the buffer pointer value 
+	* cenvir.cc: ev.printf() fixed: it printed the buffer pointer value
 	instead of the string itself. (char buf[20]; strcpy(buf,"hello");
 	cout << buf; prints buf's address not "hello"!!!)
 
@@ -38,7 +50,7 @@
 	* cakaroarng.cc: fix: added missing #include
 
 	* cinifile.cc: fix in cInifile::getEntriesWithPrefix(): first check
-	for double (overlapping) entries, and make the first one win. This 
+	for double (overlapping) entries, and make the first one win. This
 	fixes wrong priorities of rng mapping entries. [reported by Georg Lutz]
 
 2005-01-10  Andras Varga
@@ -73,7 +85,7 @@
 
 2004-11-29  Andras Varga
 
-  	* on Mac OS/X, implement ftime() with gettimeofday() [patch from 
+  	* on Mac OS/X, implement ftime() with gettimeofday() [patch from
   	Michael Tuexen]
 
   	* platdep.cc: load-libs= omnetpp.ini option now adds plaform-specific
@@ -90,7 +102,7 @@
 	  <modulepath>.rng-N=M  (where N,M are numeric, M<num-rngs)
 	This maps module-local RNG N to physical RNG M. The following
 	example maps all "gen" module's default (N=0) RNG to physical RNG 1,
-	and all "noisychannel" module's default (N=0) RNG to physical RNG 2. 
+	and all "noisychannel" module's default (N=0) RNG to physical RNG 2.
 	  [General]
 	  num-rngs=3
 	  **.gen[*].rng-0=1
@@ -108,7 +120,7 @@
 
 2004-10-27  Andras Varga
 
-	* omnetapp.h/cc, cenvir.cc: added numRNGs(), rng(k) functions (see 
+	* omnetapp.h/cc, cenvir.cc: added numRNGs(), rng(k) functions (see
 	include/ChangeLog)
 
 	* omnetapp.cc: new omnetpp.ini entries:
@@ -124,7 +136,7 @@
 	exact auto-seeding procedure
 
 2004-10-25  Andras Varga
-	
+
 	* updated for fullPath() signature change (see include/ChangeLog)
 
 2004-10-04  ------ omnetpp-3.0a8 released ------
@@ -135,9 +147,9 @@
 
 2004-07-06   Andras Varga
 
-	* speedmtr.cc/h: fix: use wall clock time (ftime() call) instead of 
-	time consumed by the process (clock()) for the ev/sec, simsec/sec 
-	calculations. 
+	* speedmtr.cc/h: fix: use wall clock time (ftime() call) instead of
+	time consumed by the process (clock()) for the ev/sec, simsec/sec
+	calculations.
 
 2004-07-05   Andras Varga
 
@@ -153,25 +165,25 @@
 2004-06-21   Andras Varga
 
 	* patmatch.cc/h: replaced old transform_pattern() and stringmatch()
-	methods with shiny new pattern matching class. cPatternMatcher can do 
+	methods with shiny new pattern matching class. cPatternMatcher can do
 	case sensitive/insensitive, full string/substring match, and supports
 	more pattern features, namely: numeric ranges and distinction between
 	"*" and "**". See class documentation for more info
 
-	* inifile.cc/h: cPatternMatcher used as the engine for wildcard 
+	* inifile.cc/h: cPatternMatcher used as the engine for wildcard
 	resolution in ini files. The default mode is "dottedpath on",
-	where "*" does NOT match dot ".", so oddities like "foo[*].param" 
-	matching "foo[1].bar[5].param" will not occur any more. The new 
-	wildcard "**" will match anything. 
-	   This change is (of course) NOT backward compatible, so existing 
-	omnetpp.ini's have to be updated. In practice, every line which begins 
+	where "*" does NOT match dot ".", so oddities like "foo[*].param"
+	matching "foo[1].bar[5].param" will not occur any more. The new
+	wildcard "**" will match anything.
+	   This change is (of course) NOT backward compatible, so existing
+	omnetpp.ini's have to be updated. In practice, every line which begins
 	with "*." should be changed to begin with "**." -- that'll do most
 	of the time, further tweaking is rarely necessary.
 	   In any case: if you still want to run the old omnetpp.ini (e.g. to
-	check the new one against it), you can add the line 
+	check the new one against it), you can add the line
 	         #% old-wildcards
 	at the top of (each) old ini file. This will switch back to the old
-	behaviour. "#% old-wildcards" is provided to make it easier to migrate 
+	behaviour. "#% old-wildcards" is provided to make it easier to migrate
 	from OMNeT++ 2.3 to 3.0, and will be removed in some future version.
 
 2004-06-17   Andras Varga

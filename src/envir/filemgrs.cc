@@ -46,7 +46,7 @@ static void createFileName(opp_string& fname, int run_no, const char *configentr
     char section[16];
     sprintf(section,"Run %d",run_no);
 
-    fname = ev.config()->getAsString2(section,"General",configentry,defaultval);
+    fname = ev.config()->getAsFilenames2(section,"General",configentry,defaultval).c_str();
     ev.app->processFileName(fname);
 }
 

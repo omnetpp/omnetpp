@@ -416,9 +416,11 @@ std::string cIniFile::getAsFilenames(const char *sect, const char *key, const ch
     sEntry *entry = _findEntry(sect, key);
     if (!entry)
     {
+       if (!defaultval) 
+          defaultval = "";
        if (warnings)
           ev.printf("Entry [%s]/%s= not in ini file, \"%s\" used as default\n",
-                     sect,key,defaultval?defaultval:"");
+                     sect,key,defaultval);
        return defaultval;
     }
 
@@ -429,7 +431,7 @@ std::string cIniFile::getAsFilenames(const char *sect, const char *key, const ch
     cStringTokenizer tokenizer(entry->value);
     const char *token;
     while ((token = tokenizer.nextToken())!=NULL)
-        result += concatDirAndFile(baseDir, token);
+        result += concatDirAndFile(baseDir, token) + " ";
     return result;
 }
 

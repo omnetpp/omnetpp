@@ -148,8 +148,8 @@ void cEnvir::setup(int argc, char *argv[])
             loadExtensionLibrary(libname);
 
         // load shared libs given in [General]/load-libs=
-        const char *libs = inifile->getAsString( "General", "load-libs", NULL);
-        loadLibs(libs);
+        std::string libs = inifile->getAsFilenames( "General", "load-libs", NULL);
+        loadLibs(libs.c_str());
 
         //
         // Create custom configuration object, if needed.
@@ -168,8 +168,8 @@ void cEnvir::setup(int argc, char *argv[])
             delete inifile;
 
             // load libs from this config as well
-            const char *libs = configobject->getAsString( "General", "load-libs", NULL);
-            loadLibs(libs);
+            std::string libs = configobject->getAsFilenames( "General", "load-libs", NULL);
+            loadLibs(libs.c_str());
         }
 
 
