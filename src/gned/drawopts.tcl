@@ -241,7 +241,7 @@ proc label-iconchooser {w label  {image ""}} {
 }
 
 proc _setButtonImg {combo button} {
-    global icons gned
+    global icons gned bitmaps
     set img [$combo get]
     if {$img == ""} {
         set gned(radio) "rect"
@@ -249,7 +249,7 @@ proc _setButtonImg {combo button} {
     } else {
         set gned(radio) "icon"
         if [catch {
-            $button config -image $img
+            $button config -image $bitmaps($img)
         }] {
             $button config -image $icons(unknown)
         }
@@ -257,7 +257,7 @@ proc _setButtonImg {combo button} {
 }
 
 proc _chooseIcon {oldicon win {pwin {}}} {
-     global gned
+     global gned bitmaps
 
      # side effect: set gned(radio) "icon"
      set dlg $pwin.iconbox
@@ -295,7 +295,7 @@ proc _chooseIcon {oldicon win {pwin {}}} {
 
          frame $e -relief flat -borderwidth 2
 
-         button $e.b -image $imgName -command "_iconSelected $dlg.f.select.name $imgName $f"
+         button $e.b -image $bitmaps($imgName) -command "_iconSelected $dlg.f.select.name $imgName $f"
          bind $e.b <Double-1> "$dlg.buttons.okbutton invoke"
          label $e.l -text $imgName
          pack $e.l -side bottom -anchor s -padx 2

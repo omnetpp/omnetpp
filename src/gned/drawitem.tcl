@@ -292,6 +292,48 @@ proc resolveDispStrArg {arg default} {
     }
 }
 
+#
+# helper function
+#
+proc resolveDispStrIcon {imgname destc cweight} {
+    global icons bitmaps imagecache
+
+    if {$imgname==""} {
+        set img $icons(unknown)
+    } elseif {[catch {set img $bitmaps($imgname)}] && [catch {set img $bitmaps(old/$imgname)}]} {
+        set img $icons(unknown)
+    }
+
+    if {[catch {image type $img}]} {
+        error "internal error: image referred to in bitmaps() doesn't exist"
+    }
+
+    if {$destc!="" && $cweight!=""} {
+        # check destcolor, weight for icon colorizing
+        if {$destc==""} {
+            # without destcolor, weight is ignored
+            return $img
+        } elseif {[string index $destc 0]== "@"} {
+            set destc [opp_hsb_to_rgb $destc]
+        }
+        if {$cweight==""} {
+            set cweight 30
+        }
+
+        # look up or create a new image with the given parameters
+        if [info exist imagecache($img,$destc,$cweight)] {
+            set img $imagecache($img,$destc,$cweight)
+        } else {
+            set img2 [image create photo]
+            $img2 copy $img
+            opp_colorizeimage $img2 $destc $cweight
+            set imagecache($img,$destc,$cweight) $img2
+            set img $img2
+        }
+    }
+    return $img
+}
+
 # draw_module: internal to drawItem
 proc draw_module {c key} {
     global ned
@@ -370,11 +412,10 @@ proc draw_submod {c key} {
         set sy [resolveDispStrArg $ned($key,disp-ysize) 24]
     } else {
         # check if icon exists
-        if [catch {image type $icon}] {
-            set icon $icons(unknown)
-        }
-        set sx [expr [image width $icon]+4]
-        set sy [expr [image height $icon]+4]
+        #FIXME TBD colorization
+        set img [resolveDispStrIcon $icon "" ""]
+        set sx [expr [image width $img]+4]
+        set sy [expr [image height $img]+4]
     }
 
     # determine position
@@ -410,7 +451,7 @@ proc draw_submod {c key} {
 
         set r   [$c create rect $x1 $y1 $x2 $y2 -outline "" -fill ""]
         set lbl [$c create text $x $y2 -anchor n]
-        set ic  [$c create image $x $y -image $icon]
+        set ic  [$c create image $x $y -image $img]
     }
 
     # store canvas item ids and add tags

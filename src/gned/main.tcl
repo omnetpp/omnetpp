@@ -431,8 +431,10 @@ proc createMainWindow {} {
 }
 
 
+set bitmap_ctr 0
+
 proc loadBitmaps {path} {
-   global gned tcl_platform
+   global tcl_platform gned bitmaps bitmap_ctr
 
    puts "Loading bitmaps from $path:"
 
@@ -447,42 +449,49 @@ proc loadBitmaps {path} {
        set sep {;}
    }
 
-   set files {}
    foreach dir [split $path $sep] {
-       set files [concat $files \
-                     [glob -nocomplain -- [file join $dir {*.gif}]] \
-                     [glob -nocomplain -- [file join $dir {*.xpm}]] \
-                     [glob -nocomplain -- [file join $dir {*.xbm}]]]
+       if {$dir!=""} {
+           do_load_bitmaps $dir
+           puts -nonewline "; "
+       }
    }
-   if {[llength $files] == 0} {puts "none found!"; return}
+   set gned(icons) [lsort [array names bitmaps]]
 
-   foreach f $files {
-
-      set type ""
-      case [string tolower [file extension $f]] {
-        {.xbm} {set type bitmap}
-        {.xbm} {set type photo}
-        {.gif} {set type photo}
-      }
-      if {$type==""} {error "loadBitmaps: internal error"}
-      set name [string tolower [file tail [file rootname $f]]]
-      if {$name=="proc"} {
-         puts -nonewline "(*** $name -- Tk dislikes this name, skipping ***) "
-      } elseif [catch {image type $name}] {
-         if [catch {
-            image create $type $name -file $f
-            puts -nonewline "$name "
-            lappend gned(icons) $name
-         } err] {
-            puts -nonewline "(*** $name is bad: $err ***) "
-         }
-      } else {
-         puts -nonewline "($name is duplicate) "
-      }
+   if {$bitmap_ctr==0} {
+       puts "*** no bitmaps (gif) in $path"
    }
+
    puts ""
+   puts ""
+}
 
-   set gned(icons) [lsort $gned(icons)]
+proc do_load_bitmaps {dir {prefix ""}} {
+   global bitmaps bitmap_ctr
+
+   #puts "DBG: entering $dir"
+   set files [concat [glob -nocomplain -- [file join $dir {*.gif}]] \
+                     [glob -nocomplain -- [file join $dir {*.png}]]]
+
+   # load bitmaps from this directory
+   foreach f $files {
+      set name [string tolower [file tail [file rootname $f]]]
+      set imgname "$prefix$name"
+      set img "i[incr bitmap_ctr]$name"
+      if [catch {
+         image create photo $img -file $f
+         puts -nonewline "$imgname "
+         set bitmaps($imgname) $img
+      } err] {
+         puts -nonewline "(*** $f is bad: $err ***) "
+      }
+   }
+
+   # recurse into subdirs
+   foreach f [glob -nocomplain -- [file join $dir {*}]] {
+      if [file isdirectory $f] {
+         do_load_bitmaps "$f" "$prefix[file tail $f]/"
+      }
+   }
 }
 
 

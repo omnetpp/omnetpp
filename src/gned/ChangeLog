@@ -1,3 +1,7 @@
+2004-10-20  Andras Varga
+
+	* support for categorized icons (see Tkenv ChangeLog from same date)
+
 2004-10-15  Andras Varga
 
 	* fileview.tcl: fix: "View/Edit file" option didn't like some file names
