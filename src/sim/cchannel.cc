@@ -68,8 +68,26 @@ cChannel::~cChannel()
 
 void cChannel::info(char *buf)
 {
-    //TBD
-    buf[0] = '\0';
+    if (!parlistp)
+    {
+        buf[0] = '\0';
+        return;
+    }
+
+    // print all attributes
+    char *b = buf;
+    for (int i=0; i<parlistp->items(); i++)
+    {
+        cObject *p = parlistp->get(i);
+        if (!p) continue;
+        strcpy(b,p->fullName());
+        while (*b) b++;
+        *b++ = '=';
+        p->info(b);
+        while (*b) b++;
+        *b++ = ' ';
+    }
+    *b = '\0';
 }
 
 void cChannel::forEach( ForeachFunc do_fn )

@@ -143,11 +143,8 @@ void cGate::writeContents(ostream& os)
 
 void cGate::info(char *buf)
 {
-    // info() string will be like:
-    //    "(cGate) outgate  --> <parent>.outgate  DE" (DER:DelayErrorDatarate)
     char *b = buf;
-
-    char channel[5], *arrow, *s;
+    char *arrow;
     cGate *g, *conng;
 
     if (typ=='O')
@@ -155,28 +152,27 @@ void cGate::info(char *buf)
     else
         {arrow = "<-- "; g = fromgatep; conng = fromgatep;}
 
-    s = channel;
-    if (conng && conng->delay()) *s++='D';
-    if (conng && conng->error()) *s++='E';
-    if (conng && conng->datarate()) *s++='R';
-    *s++ = ' ';
-    *s = '\0';
-
     // append useful info to buf
-    if (!g) {
-        strcpy(b,"  "); b+=2;
-        strcpy(b,arrow); b+=4;
-        strcpy(b," (not connected)");
+    if (!g)
+    {
+        strcpy(b,"(not connected)");
     }
     else
     {
-        strcpy(b,"  "); b+=2;
-        strcpy(b,arrow); b+=4;
-        if (channel[0]!=' ')
-           {strcpy(b,channel);strcat(b,arrow);while(*b) b++;}
+        strcpy(b,arrow);
+        b+=4;
+        if (channelp)
+        {
+            channelp->info(b);
+            while(*b) b++;
+            *b++ = ' ';
+            strcpy(b,arrow);
+            b+=4;
+        }
         strcpy(b, g->ownerModule()==ownerModule()->parentModule() ?
                   "<parent>" : g->ownerModule()->fullName() );
-        while(*b) b++; *b++ = '.';
+        while(*b) b++;
+        *b++ = '.';
         strcpy(b, g->fullName() );
     }
 }
@@ -268,7 +264,8 @@ void cGate::setTo(cGate *g)
 
 void cGate::setLink(cLinkType *lnk)
 {
-    setChannel(new cSimpleChannel("channel",lnk));
+    if (lnk)
+        setChannel(new cSimpleChannel("channel",lnk));
 }
 
 void cGate::setChannel(cChannel *ch)
@@ -326,19 +323,19 @@ cLinkType *cGate::link() const
 cPar *cGate::delay() const
 {
     cSimpleChannel *ch = dynamic_cast<cSimpleChannel *>(channelp);
-    return ch ? &(ch->par("delay")) : NULL;
+    return (ch && ch->findPar("delay")!=-1) ? &(ch->par("delay")) : NULL;
 }
 
 cPar *cGate::error() const
 {
     cSimpleChannel *ch = dynamic_cast<cSimpleChannel *>(channelp);
-    return ch ? &(ch->par("error")) : NULL;
+    return (ch && ch->findPar("error")!=-1) ? &(ch->par("error")) : NULL;
 }
 
 cPar *cGate::datarate() const
 {
     cSimpleChannel *ch = dynamic_cast<cSimpleChannel *>(channelp);
-    return ch ? &(ch->par("datarate")) : NULL;
+    return (ch && ch->findPar("datarate")!=-1) ? &(ch->par("datarate")) : NULL;
 }
 
 cGate *cGate::sourceGate() const
