@@ -256,6 +256,9 @@ When enabled, {\opp} lists the names of ini file entries which
 were searched for but not found.
 \\\hline
 %%
+\fpar{preload-ned-files} = & List of NED files to be loaded dynamically
+(see \ref{cha:run-sim:dynamic-ned}). \\\hline
+%%
 \fpar{network} = & The name of the network to be simulated. \\\hline
 %%
 \fpar{snapshot-file} = omnetpp.sna & Name of the snapshot file. The result of
@@ -323,6 +326,77 @@ in \ttt{envirext.h}.\\\hline
 \end{longtable}
 
 
+\section{Dynamic NED loading}
+\label{cha:run-sim:dynamic-ned}
+
+Prior to {\opp} 3.0, NED files had to be translated into C++ by the
+NED compiler, compiled and linked into the simulation program.
+From {\opp} 3.0 up, one can use dynamic NED loading, which means
+that a simulation program can load NED files at runtime when it starts
+-- compiling NED files into the simulation program is no longer necessary.
+This gives one more flexibility, and can also save model development time.
+
+The key is the \ttt{preload-ned-files=} configuration option in the
+\ttt{[General]} section of \fname{omnetpp.ini}. This option should
+list the names of the NED files to be loaded when the simulation program
+starts.
+
+Example:
+
+\begin{verbatim}
+[General]
+preload-ned-files = host.ned router.ned networks/testnetwork1.ned
+\end{verbatim}
+
+Wildcards can also be used:
+
+\begin{verbatim}
+[General]
+preload-ned-files = *.ned networks/*.ned
+\end{verbatim}
+
+It is also possible to use list files, with the \ttt{@} notation:
+
+\begin{verbatim}
+[General]
+preload-ned-files = *.ned @../nedfiles.lst
+\end{verbatim}
+
+where the \ttt{nedfiles.lst} file contains the list of NED files,
+one per line, like this:
+
+\begin{verbatim}
+transport/tcp/tcp.ned
+transport/udp/udp.ned
+network/ip/ip.ned
+\end{verbatim}
+
+The Unix \fprog{find} command is often a very convenient way
+to create list files (try \ttt{find . -name '*.ned' > listfile.lst}).
+
+Moreover, the list file can also contain wildcards, and references
+to other list files:
+
+\begin{verbatim}
+transport/tcp/*.ned
+transport/udp/*.ned
+@moreprotocols.lst
+\end{verbatim}
+
+Files given with relative paths are relative to the location of the
+list file (and not to the current working directory). That is,
+the \ttt{transport} directory and \ttt{moreprotocols.lst} in the example
+above are expected to be in the same directory as \ttt{nedfiles.lst},
+whatever the current working directory is.
+
+It is important to note, that the loaded NED files may contain
+any number of modules, channel and \textit{any number of networks} as well.
+It does not matter whether you use all or just some of them
+in the simulations. You will be able to select \ttt{any} of the
+networks that occur in the loaded NED files using the \ttt{network=}
+\ttt{omnetpp.ini} entry, and as long as every module, channel etc
+for it has been loaded, network setup will be successful.
+
 
 \section{Setting module parameters in omnetpp.ini}
 \label{sec:ch-run-sim:parameter-settings}
@@ -361,7 +435,7 @@ name matches several wildcards-patterns, the first matching occurrence
 is used. This means that you need to list specific settings first, and
 more general ones later. Catch-all settings should come last.
 
-%FIXME numbers, numeric ranges!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+%FIXME *, **, numbers, numeric ranges!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 An example ini file:
 
