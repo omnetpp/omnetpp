@@ -37,7 +37,7 @@ all: plove
 plove: $(PLOVE_VARIANT)
 
 plove-sh:
-	echo "@$(WISH) -f $(OMNETPP_PLOVE_DIR)/plove.sh \$*" > plove
+	echo "@$(WISH) -f $(OMNETPP_PLOVE_DIR)/plove.sh $$*" > plove
 	chmod +x plove
 
 plove-bat:
