@@ -45,7 +45,7 @@ Define_Module({Node1});
 void {Node1}::activity()
 {
     // set channel to disabled
-    cSimpleChannel *chan = check_and_cast<cSimpleChannel *>(gate("out")->channel());
+    cBasicChannel *chan = check_and_cast<cBasicChannel *>(gate("out")->channel());
     chan->setDisabled(true);
 
     // send packets

@@ -51,7 +51,7 @@ void PointToPointIF::initialize()
     gateToWatch = gate("lineOut");
 
     // check that we're really connected to a gate with data rate
-    cSimpleChannel *chan = check_and_cast<cSimpleChannel*>(gate("lineOut")->channel());
+    cBasicChannel *chan = check_and_cast<cBasicChannel*>(gate("lineOut")->channel());
     if (!chan->datarate())
         error("must be connected to a link with data rate");
 }

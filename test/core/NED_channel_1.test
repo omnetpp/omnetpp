@@ -91,7 +91,7 @@ void {Gen}::activity()
         cChannel *ch = g->channel();
         if (ch)
         {
-            cSimpleChannel *sch = check_and_cast<cSimpleChannel *>(ch);
+            cBasicChannel *sch = check_and_cast<cBasicChannel *>(ch);
             if (sch->delay())  ev << "delay=" << sch->delay() << ":";
             if (sch->error())  ev << "error=" << sch->error() << ":";
             if (sch->datarate())  ev << "datarate=" << sch->datarate() << ":";

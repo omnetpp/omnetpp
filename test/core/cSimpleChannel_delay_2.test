@@ -1,5 +1,5 @@
 %description:
-Basic test for cSimpleChannel
+Basic test for cBasicChannel
 
 %file: {}.ned
 simple {Sender}
@@ -38,7 +38,7 @@ Define_Module({Sender});
 void {Sender}::activity()
 {
    // create and set channel
-   cSimpleChannel *ch = new cSimpleChannel("channel");
+   cBasicChannel *ch = new cBasicChannel("channel");
    cPar *d = new cPar();
    *d = 0.1;
    ch->setDelay( d );

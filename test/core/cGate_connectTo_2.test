@@ -16,7 +16,7 @@ Define_Module({Sender});
 
 cChannel *{Sender}::createChannel(double delay)
 {
-    cSimpleChannel *ch = new cSimpleChannel("chan");
+    cBasicChannel *ch = new cBasicChannel("chan");
     ch->setDelay(delay);
     return ch;
 }
