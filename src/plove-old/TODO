@@ -1,4 +1,5 @@
 Misc:
 - with Tcl-embedding, cannot display README file
+- with WinMain, command-line arg handling is broken
 - nice icons: load, sel, repl, delete, info, options, dup, <==, ==>
 

@@ -1,3 +1,5 @@
+- with WinMain, command-line arg handling is broken
+
 To be finished (top priority!):
 - improve comment handling in all dialogs!!!
 
