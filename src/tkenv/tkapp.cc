@@ -644,17 +644,10 @@ TInspector *TOmnetTkApp::inspect(cObject *obj, int type, const char *geometry, v
 {
     // create inspector object & window or display existing one
     TInspector *existing_insp = findInspector(obj, type);
-    if (existing_insp && existing_insp->windowExists())
+    if (existing_insp)
     {
         existing_insp->showWindow();
         return existing_insp;
-    }
-
-    if (existing_insp)
-    {
-        // there is an inspector, but without window: error!
-        fprintf(stderr, "deleting inspector without window\n");
-        delete existing_insp;
     }
 
     // create inspector
@@ -666,6 +659,26 @@ TInspector *TOmnetTkApp::inspect(cObject *obj, int type, const char *geometry, v
         return NULL;
     }
 
+    int actualtype = p->inspectorType();
+    existing_insp = findInspector(obj, actualtype);
+    if (existing_insp)
+    {
+        existing_insp->showWindow();
+        return existing_insp;
+    }
+
+    TInspector *insp = p->createInspectorFor(obj, actualtype, geometry, dat);
+    if (!insp)
+    {
+        // message: object has no such inspector
+        CHK(Tcl_VarEval(interp,"messagebox {Confirm}"
+                               " {Class `",obj->className(),"' has no `",
+                               insptype_name_from_code(type),
+                               "' inspector.} info ok",NULL));
+        return NULL;
+    }
+
+/*
     TInspector *insp = p->createInspectorFor(obj,p->inspectorType(),geometry,dat);
     if (!insp)
     {
@@ -694,6 +707,7 @@ TInspector *TOmnetTkApp::inspect(cObject *obj, int type, const char *geometry, v
             return existing_insp;
         }
     }
+*/
 
     // everything ok, finish inspector
     insp->setOwner(&inspectors); // insert into inspector list
