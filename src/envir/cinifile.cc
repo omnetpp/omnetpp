@@ -63,6 +63,7 @@ void cIniFile::_readFile(char *fname, char *sect)
     int i;
 
     _error = FALSE;
+    buf[MAX_LINE-2] = '\0'; // 'line too long' guard
 
     file = fopen(fname,"r");
     if (file==NULL)
@@ -81,7 +82,7 @@ void cIniFile::_readFile(char *fname, char *sect)
         {
             line++;
             fgets(buf+len,MAX_LINE-len,file);
-            buf[MAX_LINE-1]=0;
+            if (buf[MAX_LINE-2]) SYNTAX_ERROR("line too long, sorry");
             len+=strlen(buf+len);
 
             if (len>0 && buf[len-1]=='\n')
@@ -119,6 +120,7 @@ void cIniFile::_readFile(char *fname, char *sect)
            while (*e!=']' && *e!=0) e++;      // find closing brace
            if (*e!=']') SYNTAX_ERROR("missing ']'");
            *e=0;
+           if (!*s) SYNTAX_ERROR("section name should not be empty");
 
            // maybe already exists
            for (i=0; i<num_sections; i++)
