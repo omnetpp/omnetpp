@@ -4,22 +4,22 @@ rem usage: runtest [<testfile>...]
 rem without args, runs all *.test files in the current directory   
 rem
 
-rem TBD error handling -- if possible with this crap cmd.exe @!$#@!
-
 set TESTFILES=%*
 if "x%TESTFILES%" == "x" set TESTFILES=*.test
 
-path ..\bin;..\..\bin;%PATH%
-call vcvars32.bat
-
+path %~dp0\..\bin;%PATH%
 mkdir work 2>nul
-cmd /c opp_test -g -v %TESTFILES%
+del work\work.exe 2>nul
 
-cd work
-cmd /c opp_nmakemake -f -e cc -u cmdenv
-nmake -f makefile.vc
-cd ..
+call opp_test -g -v %TESTFILES% || goto end
 
-cmd /c opp_test -r -v %TESTFILES%
+cd work || goto end
+call opp_nmakemake -f -e cc -u cmdenv || goto end
+nmake -f makefile.vc || goto end
+cd .. || goto end
+
+call opp_test -r -v %TESTFILES% || goto end
 echo.
 echo Results can be found in work/
+
+:end
