@@ -651,7 +651,7 @@ sub generateClass
                 print H "    $datatype{$fieldname} $var{$fieldname}\[$farraysize{$fieldname}\];\n";
             } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
                 print H "    $datatype{$fieldname} *$var{$fieldname}; // array ptr\n";
-                print H "    unsigned $varsize{$fieldname};\n";
+                print H "    unsigned int $varsize{$fieldname};\n";
             } else {
                 print H "    $datatype{$fieldname} $var{$fieldname};\n";
             }
@@ -689,14 +689,14 @@ sub generateClass
             $pure = '';
         }
         if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
-            print H "    virtual unsigned $getsize{$fieldname}() const$pure;\n";
-            print H "    virtual $argtype{$fieldname} $getter{$fieldname}(unsigned k) const$pure;\n";
-            print H "    virtual void $setter{$fieldname}(unsigned k, $argtype{$fieldname} $var{$fieldname})$pure;\n";
+            print H "    virtual unsigned int $getsize{$fieldname}() const$pure;\n";
+            print H "    virtual $argtype{$fieldname} $getter{$fieldname}(unsigned int k) const$pure;\n";
+            print H "    virtual void $setter{$fieldname}(unsigned int k, $argtype{$fieldname} $var{$fieldname})$pure;\n";
         } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
-            print H "    virtual void $alloc{$fieldname}(unsigned size)$pure;\n";
-            print H "    virtual unsigned $getsize{$fieldname}() const$pure;\n";
-            print H "    virtual $argtype{$fieldname} $getter{$fieldname}(unsigned k) const$pure;\n";
-            print H "    virtual void $setter{$fieldname}(unsigned k, $argtype{$fieldname} $var{$fieldname})$pure;\n";
+            print H "    virtual void $alloc{$fieldname}(unsigned int size)$pure;\n";
+            print H "    virtual unsigned int $getsize{$fieldname}() const$pure;\n";
+            print H "    virtual $argtype{$fieldname} $getter{$fieldname}(unsigned int k) const$pure;\n";
+            print H "    virtual void $setter{$fieldname}(unsigned int k, $argtype{$fieldname} $var{$fieldname})$pure;\n";
         } else {
             print H "    virtual $argtype{$fieldname} $getter{$fieldname}() const$pure;\n";
             print H "    virtual void $setter{$fieldname}($argtype{$fieldname} $var{$fieldname})$pure;\n";
@@ -828,7 +828,7 @@ sub generateClass
                 print CC "    delete [] $var{$fieldname};\n";
                 print CC "    $var{$fieldname} = new $datatype{$fieldname}\[other.$varsize{$fieldname}\];\n";
                 print CC "    $varsize{$fieldname} = other.$varsize{$fieldname};\n";
-                print CC "    for (int i=0; i<$varsize{$fieldname}; i++)\n";
+                print CC "    for (unsigned int i=0; i<$varsize{$fieldname}; i++)\n";
                 print CC "        $var{$fieldname}\[i\] = other.$var{$fieldname}\[i\];\n";
             } else {
                 print CC "    $var{$fieldname} = other.$var{$fieldname};\n";
@@ -842,43 +842,43 @@ sub generateClass
     {
         if (!$fisvirtual{$fieldname}) {
             if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
-                print CC "unsigned $msgclass\:\:$getsize{$fieldname}() const\n";
+                print CC "unsigned int $msgclass\:\:$getsize{$fieldname}() const\n";
                 print CC "{\n";
                 print CC "    return $farraysize{$fieldname};\n";
                 print CC "}\n\n";
-                print CC "$argtype{$fieldname} $msgclass\:\:$getter{$fieldname}(unsigned k) const\n";
+                print CC "$argtype{$fieldname} $msgclass\:\:$getter{$fieldname}(unsigned int k) const\n";
                 print CC "{\n";
                 print CC "    if (k>=$farraysize{$fieldname}) opp_error(\"Array of size $farraysize{$fieldname} indexed by \%d\", k);\n";
                 print CC "    return $var{$fieldname}\[k\];\n";
                 print CC "}\n\n";
-                print CC "void $msgclass\:\:$setter{$fieldname}(unsigned k, $argtype{$fieldname} $var{$fieldname})\n";
+                print CC "void $msgclass\:\:$setter{$fieldname}(unsigned int k, $argtype{$fieldname} $var{$fieldname})\n";
                 print CC "{\n";
                 print CC "    if (k>=$farraysize{$fieldname}) opp_error(\"Array of size $farraysize{$fieldname} indexed by \%d\", k);\n";
                 print CC "    this->$var{$fieldname}\[k\] = $var{$fieldname};\n";
                 print CC "}\n\n";
             } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
-                print CC "void $msgclass\:\:$alloc{$fieldname}(unsigned size)\n";
+                print CC "void $msgclass\:\:$alloc{$fieldname}(unsigned int size)\n";
                 print CC "{\n";
                 print CC "    $datatype{$fieldname} *$var{$fieldname}2 = new $datatype{$fieldname}\[size\];\n";
-                print CC "    unsigned sz = $varsize{$fieldname} > size ? $varsize{$fieldname} : size;\n";
-                print CC "    for (int i=0; i<sz; i++)\n";
+                print CC "    unsigned int sz = $varsize{$fieldname} > size ? $varsize{$fieldname} : size;\n";
+                print CC "    for (unsigned int i=0; i<sz; i++)\n";
                 print CC "        $var{$fieldname}2\[i\] = $var{$fieldname}\[i\];\n";
-                print CC "    for (int i=sz; i<size; i++)\n";
+                print CC "    for (unsigned int i=sz; i<size; i++)\n";
                 print CC "        $var{$fieldname}2\[i\] = 0;\n";
                 print CC "    $varsize{$fieldname} = size;\n";
                 print CC "    delete [] $var{$fieldname};\n";
                 print CC "    $var{$fieldname} = $var{$fieldname}2;\n";
                 print CC "}\n\n";
-                print CC "unsigned $msgclass\:\:$getsize{$fieldname}() const\n";
+                print CC "unsigned int $msgclass\:\:$getsize{$fieldname}() const\n";
                 print CC "{\n";
                 print CC "    return $varsize{$fieldname};\n";
                 print CC "}\n\n";
-                print CC "$argtype{$fieldname} $msgclass\:\:$getter{$fieldname}(unsigned k) const\n";
+                print CC "$argtype{$fieldname} $msgclass\:\:$getter{$fieldname}(unsigned int k) const\n";
                 print CC "{\n";
                 print CC "    if (k>=$varsize{$fieldname}) opp_error(\"Array of size $varsize{$fieldname} indexed by \%d, k\");\n";
                 print CC "    return $var{$fieldname}\[k\];\n";
                 print CC "}\n\n";
-                print CC "void $msgclass\:\:$setter{$fieldname}(unsigned k, $argtype{$fieldname} $var{$fieldname})\n";
+                print CC "void $msgclass\:\:$setter{$fieldname}(unsigned int k, $argtype{$fieldname} $var{$fieldname})\n";
                 print CC "{\n";
                 print CC "    if (k>=$varsize{$fieldname}) opp_error(\"Array of size $varsize{$fieldname} indexed by \%d, k\");\n";
                 print CC "    this->$var{$fieldname}\[k\]=$var{$fieldname};\n";
@@ -916,7 +916,7 @@ sub generateStruct
                 print H "    $datatype{$fieldname} $var{$fieldname}\[$farraysize{$fieldname}\];\n";
             } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
                 print H "    $datatype{$fieldname} *$var{$fieldname}; // array ptr\n";
-                print H "    unsigned $varsize{$fieldname};\n";
+                print H "    unsigned int $varsize{$fieldname};\n";
             } else {
                 print H "    $datatype{$fieldname} $var{$fieldname};\n";
             }
