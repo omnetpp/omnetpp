@@ -45,7 +45,7 @@ cNullMessageProtocol::cNullMessageProtocol() : cParsimProtocolBase()
     const char *lookhClass = ev.config()->getAsString("General", "parsim-nullmessageprotocol-lookahead-class", "cLinkDelayLookahead");
     lookaheadcalc = dynamic_cast<cNMPLookahead *>(createOne(lookhClass));
     if (!lookaheadcalc) \
-         throw new cException("Class \"%s\" is not subclassed from cNMPLookahead", lookhClass);
+         throw new cRuntimeError("Class \"%s\" is not subclassed from cNMPLookahead", lookhClass);
     debug = ev.config()->getAsBool("General", "parsim-debug", true);
     laziness = ev.config()->getAsDouble("General", "parsim-nullmessageprotocol-laziness", 0.5);
 }
@@ -134,7 +134,7 @@ void cNullMessageProtocol::processOutgoingMessage(cMessage *msg, int destProcId,
     simtime_t lookahead = lookaheadcalc->getCurrentLookahead(msg, destProcId, data);
     simtime_t eot = sim->simTime() + lookahead;
     if (eot < segInfo[destProcId].lastEotSent)
-        throw new cException("cNullMessageProtocol error: attempt to decrease EOT");
+        throw new cRuntimeError("cNullMessageProtocol error: attempt to decrease EOT");
 
     // send a null message only if EOT is better than last time
     bool sendNull = (eot > segInfo[destProcId].lastEotSent);
@@ -273,7 +273,7 @@ void cNullMessageProtocol::sendNullMessage(int procId, simtime_t now)
     if (eot == segInfo[procId].lastEotSent)
         return;
     if (eot < segInfo[procId].lastEotSent)
-        throw new cException("cNullMessageProtocol error: attempt to decrease EOT");
+        throw new cRuntimeError("cNullMessageProtocol error: attempt to decrease EOT");
     segInfo[procId].lastEotSent = eot;
 
     // calculate time of next null message sending, and schedule "resend-EOT" event

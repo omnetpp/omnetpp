@@ -45,7 +45,7 @@ cOutVector::cOutVector(const char *nam, int tuple) : cObject(nam)
     if (tupl!=1 && tupl!=2)
     {
         tupl = 0;
-        throw new cException(this,"constructor: invalid value (%d) for tuple; supported values are 1 and 2", tupl);
+        throw new cRuntimeError(this,"constructor: invalid value (%d) for tuple; supported values are 1 and 2", tupl);
     }
 
     // register early if possible (only needed for Akaroa...)
@@ -62,7 +62,7 @@ cOutVector::~cOutVector()
 void cOutVector::setName(const char *nam)
 {
     if (handle)
-        throw new cException(this,"setName(): changing name of an output vector after record() calls is not allowed");
+        throw new cRuntimeError(this,"setName(): changing name of an output vector after record() calls is not allowed");
     cObject::setName(nam);
 
     // register early (only needed for Akaroa...)
@@ -81,19 +81,19 @@ std::string cOutVector::info() const
 
 void cOutVector::netPack(cCommBuffer *buffer)
 {
-    throw new cException(this, "netPack() not supported");
+    throw new cRuntimeError(this, "netPack() not supported");
 }
 
 void cOutVector::netUnpack(cCommBuffer *buffer)
 {
-    throw new cException(this, "netUnpack(): not supported");
+    throw new cRuntimeError(this, "netUnpack(): not supported");
 }
 
 bool cOutVector::record(double value)
 {
     // check tuple
     if (tupl!=1)
-        throw new cException(this,eNUMARGS,1);
+        throw new cRuntimeError(this,eNUMARGS,1);
 
     num_received++;
 
@@ -118,7 +118,7 @@ bool cOutVector::record(double value1, double value2)
 {
     // check tuple
     if (tupl!=2)
-        throw new cException(this,eNUMARGS,2);
+        throw new cRuntimeError(this,eNUMARGS,2);
 
     num_received++;
 

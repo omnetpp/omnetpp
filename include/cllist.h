@@ -215,13 +215,13 @@ class SIM_API cLinkedList : public cObject
 
     /**
      * Inserts exactly before the given item. If the item to be inserted before
-     * is not in the list, cException is thrown.
+     * is not in the list, cRuntimeError is thrown.
      */
     void insertBefore(void *where, void *item);
 
     /**
      * Inserts exactly after the given item. If the item to be inserted after
-     * is not in the list, cException is thrown.
+     * is not in the list, cRuntimeError is thrown.
      */
     void insertAfter(void *where, void *item);
 
@@ -239,13 +239,13 @@ class SIM_API cLinkedList : public cObject
 
     /**
      * Unlinks and returns the given item. If the item is not in the list,
-     * cException is thrown.
+     * cRuntimeError is thrown.
      */
     void *remove(void *item);
 
     /**
      * Unlinks and returns the last item in the list. If the list is empty,
-     * cException is thrown.
+     * cRuntimeError is thrown.
      */
     void *pop();
 

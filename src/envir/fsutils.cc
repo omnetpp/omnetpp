@@ -27,15 +27,15 @@ PushDir::PushDir(const char *changetodir)
 {
     olddir.reserve(1024);
     if (!getcwd(olddir.buffer(),1024))
-        throw new cException("Cannot get the name of current directory");
+        throw new cRuntimeError("Cannot get the name of current directory");
     if (chdir(changetodir))
-        throw new cException("Cannot temporarily change to directory `%s' (does it exist?)", changetodir);
+        throw new cRuntimeError("Cannot temporarily change to directory `%s' (does it exist?)", changetodir);
 }
 
 PushDir::~PushDir()
 {
     if (chdir(olddir.c_str()))
-        throw new cException("Cannot change back to directory `%s'", olddir.c_str());
+        throw new cRuntimeError("Cannot change back to directory `%s'", olddir.c_str());
 }
 
 //------------
@@ -46,7 +46,7 @@ void loadExtensionLibrary(const char *lib)
         opp_loadlibrary(lib);
         ExecuteOnStartup::executeAll();
     } catch (std::runtime_error e) {
-        throw new cException(e.what());
+        throw new cRuntimeError(e.what());
     }
 }
 

@@ -75,7 +75,7 @@ cPSquare::~cPSquare()
 void cPSquare::netPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cException(this,eNOPARSIM);
+    throw new cRuntimeError(this,eNOPARSIM);
 #else
     cDensityEstBase::netPack(buffer);
 
@@ -92,7 +92,7 @@ void cPSquare::netPack(cCommBuffer *buffer)
 void cPSquare::netUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cException(this,eNOPARSIM);
+    throw new cRuntimeError(this,eNOPARSIM);
 #else
     cDensityEstBase::netUnpack(buffer);
 
@@ -135,7 +135,7 @@ cPSquare& cPSquare::operator=(const cPSquare& res)
 
 void cPSquare::giveError()
 {
-    throw new cException(this, "setRange..() and setNumFirstVals() makes no sense with cPSquare");
+    throw new cRuntimeError(this, "setRange..() and setNumFirstVals() makes no sense with cPSquare");
 }
 
 #ifdef NEW_CODE_FROM_PUPPIS_WITH_FLOATING_POINT_EXCEPTION
@@ -298,7 +298,7 @@ double cPSquare::random() const
 
     //if (num_obs==0)   // newer, from PUPPIS
     if (numobs<numcells+1)
-        throw new cException(this,"must collect at least num_cells values before random() can be used");
+        throw new cRuntimeError(this,"must collect at least num_cells values before random() can be used");
 
     s = numobs * genk_dblrand(genk);
 

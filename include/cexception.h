@@ -151,6 +151,50 @@ class SIM_API cTerminationException : public cException
 };
 
 /**
+ * Thrown when the simulation kernel or other components detect a runtime
+ * error. For example, cSimpleModule::scheduleAt() throws this exception when
+ * the specified simulation time is in the past, or the message pointer
+ * is NULL.
+ *
+ * @ingroup Internals
+ */
+class SIM_API cRuntimeError : public cException
+{
+  protected:
+    // internal
+    void breakIntoDebuggerIfRequested();
+
+  public:
+    /**
+     * Error is identified by an error code, and the message comes from a
+     * string table. The error string may expect printf-like arguments
+     * (%s, %d) which also have to be passed to the constructor.
+     */
+    cRuntimeError(int errcode,...);
+
+    /**
+     * To be called like printf(). The error code is set to eCUSTOM.
+     */
+    cRuntimeError(const char *msg,...);
+
+    /**
+     * Error is identified by an error code, and the message comes from a
+     * string table. The error string may expect printf-like arguments
+     * (%s, %d) which also have to be passed to the constructor.
+     * The 1st arg is the object where the error occurred: its class and
+     * object name will be prepended to the message like this: "(cArray)arr".
+     */
+    cRuntimeError(const cObject *where, int errcode,...);
+
+    /**
+     * To be called like printf(). The error code is set to eCUSTOM.
+     * The 1st arg is the object where the error occurred: its class and
+     * object name will be prepended to the message like this: "(cArray)arr".
+     */
+    cRuntimeError(const cObject *where, const char *msg,...);
+};
+
+/**
  * This exception is only thrown from cModule::end(), and from deleteModule()
  * if the current module is to be deleted, in order to exit that module
  * immediately.
@@ -160,7 +204,7 @@ class SIM_API cTerminationException : public cException
 class SIM_API cEndModuleException : public cException
 {
   private:
-    bool del; // if true, this module should be deleted
+    bool del; // if true, currently running module should be deleted
 
   public:
     /**

@@ -1,3 +1,7 @@
+2005-03-15  Andras Varga
+
+	* cexception.h: added cRuntimeError
+
 2005-02-24  Andras Varga
 
 	* added missing SIM_API declarations to several classes and functions

@@ -538,7 +538,7 @@ class SIM_API cModule : public cDefaultList
 
     /**
      * Searches for the parameter in the parent modules, up to the system
-     * module. It the parameter is not found, throws cException.
+     * module. It the parameter is not found, throws cRuntimeError.
      */
     cPar& ancestorPar(const char *parname);
 

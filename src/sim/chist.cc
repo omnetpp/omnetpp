@@ -65,7 +65,7 @@ cHistogramBase::~cHistogramBase()
 void cHistogramBase::netPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cException(this,eNOPARSIM);
+    throw new cRuntimeError(this,eNOPARSIM);
 #else
     cDensityEstBase::netPack(buffer);
     buffer->pack(num_cells);
@@ -78,7 +78,7 @@ void cHistogramBase::netPack(cCommBuffer *buffer)
 void cHistogramBase::netUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cException(this,eNOPARSIM);
+    throw new cRuntimeError(this,eNOPARSIM);
 #else
     cDensityEstBase::netUnpack(buffer);
     buffer->pack(num_cells);
@@ -162,7 +162,7 @@ void cHistogramBase::loadFromFile(FILE *f)
 void cHistogramBase::setNumCells(int numcells)
 {
     if (cellv)
-        throw new cException(this,"setNumCells(): too late, cells already set up");
+        throw new cRuntimeError(this,"setNumCells(): too late, cells already set up");
     num_cells = numcells;
 }
 
@@ -179,7 +179,7 @@ cHistogramBase(name,numcells)
 void cEqdHistogramBase::netPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cException(this,eNOPARSIM);
+    throw new cRuntimeError(this,eNOPARSIM);
 #else
     cHistogramBase::netPack(buffer);
     buffer->pack(cellsize);
@@ -189,7 +189,7 @@ void cEqdHistogramBase::netPack(cCommBuffer *buffer)
 void cEqdHistogramBase::netUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cException(this,eNOPARSIM);
+    throw new cRuntimeError(this,eNOPARSIM);
 #else
     cHistogramBase::netUnpack(buffer);
     buffer->unpack(cellsize);
@@ -230,7 +230,7 @@ void cEqdHistogramBase::collectTransformed (double val)
 double cEqdHistogramBase::pdf(double x) const
 {
     if (!transformed())
-        throw new cException(this,"pdf(x) cannot be called before histogram is transformed");
+        throw new cRuntimeError(this,"pdf(x) cannot be called before histogram is transformed");
 
     int k = (int)floor((x-rangemin)/cellsize);
     if (k<0 || x<rangemin || k>=num_cells || x>=rangemax)
@@ -241,7 +241,7 @@ double cEqdHistogramBase::pdf(double x) const
 
 double cEqdHistogramBase::cdf(double) const
 {
-    throw new cException(this,"cdf() not implemented");
+    throw new cRuntimeError(this,"cdf() not implemented");
 }
 
 // return kth basepoint
@@ -252,7 +252,7 @@ double cEqdHistogramBase::basepoint(int k) const
     //   k=num_cells   : rangemax
 
     if (k<0 || k>num_cells)
-        throw new cException(this,"invalid basepoint index %u",k);
+        throw new cRuntimeError(this,"invalid basepoint index %u",k);
 
     if (k==num_cells)
         return rangemax;
@@ -263,7 +263,7 @@ double cEqdHistogramBase::basepoint(int k) const
 double cEqdHistogramBase::cell(int k) const
 {
     if (k<0 || k>num_cells)
-        throw new cException(this,"invalid cell index %u",k);
+        throw new cRuntimeError(this,"invalid cell index %u",k);
     return cellv[k];
 }
 

@@ -47,7 +47,7 @@ void cMersenneTwister::selfTest()
     for (int i=0; i<10000; i++)
         intRand();
     if (intRand()!=2915232614UL)
-        throw new cException("cMersenneTwister: selfTest() failed, please report this problem!");
+        throw new cRuntimeError("cMersenneTwister: selfTest() failed, please report this problem!");
 }
 
 unsigned long cMersenneTwister::intRand()

@@ -44,11 +44,11 @@ static void matchtype(char *buffer, int& pos, const char *&fmt)
     while (*buf && *fmt!=' ')
     {
         if (*fmt != *buf)
-            throw new cException("cFileCommBuffer: unpack(): format prefix '%s' doesn't match input", origfmt);
+            throw new cRuntimeError("cFileCommBuffer: unpack(): format prefix '%s' doesn't match input", origfmt);
         fmt++; buf++;
     }
     if (!*buf)
-        throw new cException("cFileCommBuffer: unpack(): premature end of input (format prefix '%s' missing)", origfmt);
+        throw new cRuntimeError("cFileCommBuffer: unpack(): premature end of input (format prefix '%s' missing)", origfmt);
     fmt++; buf++;
     pos = buf-buffer;
 }
@@ -58,7 +58,7 @@ static void sread(char *buffer, int& pos, const char *fmt, void *d)
     matchtype(buffer, pos, fmt);
     char *buf = buffer+pos;
     if (sscanf(buf,fmt,d)!=1)
-        throw new cException("cFileCommBuffer: unpack(): could not convert data");
+        throw new cRuntimeError("cFileCommBuffer: unpack(): could not convert data");
     // skip data + delimiter whitespace
     while (*buf && *buf!=' ' && *buf!='\n') buf++;
     while (*buf==' ' || *buf=='\n') buf++;
@@ -373,7 +373,7 @@ void cFileCommBuffer::unpack(const char *&d)
     int len = atoi(buf);
     while (*buf && *buf!='|') buf++;
     if (!*buf)
-        throw new cException("cFileCommBuffer: unpack(): missing '|' with in string format");
+        throw new cRuntimeError("cFileCommBuffer: unpack(): missing '|' with in string format");
     buf++;
     char *tmp = new char[len+1];
     memcpy(tmp,buf,len);

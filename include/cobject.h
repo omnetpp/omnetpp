@@ -224,7 +224,7 @@ class SIM_API cObject : public cPolymorphic
     //@{
 
     /**
-     * Convenience function: throws a cException ("copying not supported")
+     * Convenience function: throws a cRuntimeError ("copying not supported")
      * stating that assignment, copy constructor and dup() won't work
      * for this object. You can call this from operator=() if you don't want to
      * implement object copying.
@@ -504,10 +504,10 @@ template<class T>
 T check_and_cast(cPolymorphic *p)
 {
     if (!p)
-        throw new cException("check_and_cast(): cannot cast NULL pointer to type '%s'",opp_typename(typeid(T)));
+        throw new cRuntimeError("check_and_cast(): cannot cast NULL pointer to type '%s'",opp_typename(typeid(T)));
     T ret = dynamic_cast<T>(p);
     if (!ret)
-        throw new cException("check_and_cast(): cannot cast (%s *)%s to type '%s'",p->className(),p->fullPath().c_str(),opp_typename(typeid(T)));
+        throw new cRuntimeError("check_and_cast(): cannot cast (%s *)%s to type '%s'",p->className(),p->fullPath().c_str(),opp_typename(typeid(T)));
     return ret;
 }
 

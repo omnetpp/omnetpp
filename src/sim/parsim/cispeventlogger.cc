@@ -53,7 +53,7 @@ void cISPEventLogger::startRun()
     sprintf(fname, "ispeventlog-%d.dat", comm->getProcId());
     fout = fopen(fname,"w");
     if (!fout)
-        throw new cException("cISPEventLogger error: cannot open file `%s' for write", fname);
+        throw new cRuntimeError("cISPEventLogger error: cannot open file `%s' for write", fname);
 }
 
 void cISPEventLogger::endRun()
@@ -74,7 +74,7 @@ cMessage *cISPEventLogger::getNextEvent()
         ev.srcProcId = 0; // FIXME
 
         if (fwrite(&ev, sizeof(ev), 1, fout)<1)
-            throw new cException("cISPEventLogger error: file write failed (disk full?)");
+            throw new cRuntimeError("cISPEventLogger error: file write failed (disk full?)");
     }
 
     return msg;

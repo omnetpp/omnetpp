@@ -65,7 +65,7 @@ cModuleInterface *createModuleInterfaceFrom(NEDElement *modulenode)
             else if (!strcmp(datatype,"any"))
                typecode = ParType_Any;
             else
-               throw new cException("createModuleInterface(): unknown parameter type `%s'", datatype);
+               throw new cRuntimeError("createModuleInterface(): unknown parameter type `%s'", datatype);
             modif->addParamDecl(parname, typecode);
         }
     }
@@ -107,7 +107,7 @@ void loadNedFile(const char *fname, bool isXML)
     if (errorsOccurred())
     {
         delete tree;
-        throw new cException("errors while loading or parsing file `%s'", fname);
+        throw new cRuntimeError("errors while loading or parsing file `%s'", fname);
     }
 
     // DTD validation and additional basic validation
@@ -116,7 +116,7 @@ void loadNedFile(const char *fname, bool isXML)
     if (errorsOccurred())
     {
         delete tree;
-        throw new cException("errors during DTD validation of file `%s'", fname);
+        throw new cRuntimeError("errors during DTD validation of file `%s'", fname);
     }
 
     NEDBasicValidator basicvalidator(true);
@@ -124,7 +124,7 @@ void loadNedFile(const char *fname, bool isXML)
     if (errorsOccurred())
     {
         delete tree;
-        throw new cException("errors during validation of file `%s'", fname);
+        throw new cRuntimeError("errors during validation of file `%s'", fname);
     }
 
     // pick interesting parts
@@ -146,7 +146,7 @@ void loadNedFile(const char *fname, bool isXML)
             // throw exception if the code for the simple module is not present?
             // it's enough if error occurs when module is actually needed
             //cModuleType *modtype = findModuleType(name);
-            //if (!modtype) throw new cException("");
+            //if (!modtype) throw new cRuntimeError("");
 
             // create module interface object
             cModuleInterface *modif = createModuleInterfaceFrom(node);
@@ -226,7 +226,7 @@ void loadNedFile(const char *fname, bool isXML)
             opp_string tagname(node->getTagName());
             delete node;
             delete tree;
-            throw new cException("Error loading `%s': unsupported element", tagname.c_str());
+            throw new cRuntimeError("Error loading `%s': unsupported element", tagname.c_str());
         }
     }
 

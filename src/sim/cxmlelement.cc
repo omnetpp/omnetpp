@@ -425,7 +425,7 @@ static cXMLElement *matchPathExpression(cXMLElement *node, const char *pathexpr)
     }
     else
     {
-        throw new cException("cXMLElement::getElementByPath(): invalid path expression `%s'", pathexpr);
+        throw new cRuntimeError("cXMLElement::getElementByPath(): invalid path expression `%s'", pathexpr);
     }
 }
 
@@ -435,16 +435,16 @@ cXMLElement *cXMLElement::getDocumentElementByPath(cXMLElement *documentnode, co
     while (pathexpr1[0]=='/')
         pathexpr1++;
     if (pathexpr1[0]=='.')
-        throw new cException("cXMLElement::getDocumentElementByPath(): paths with `.' at the front "
-                             "are only supported by getElementByPath() (path expression: `%s')", pathexpr);
+        throw new cRuntimeError("cXMLElement::getDocumentElementByPath(): paths with `.' at the front "
+                                "are only supported by getElementByPath() (path expression: `%s')", pathexpr);
     return matchPathExpression(documentnode, pathexpr1);
 }
 
 cXMLElement *cXMLElement::getElementByPath(const char *pathexpr)
 {
     if (pathexpr[0]=='/')
-        throw new cException("cXMLElement::getElementByPath(): paths beginning with `/' "
-                             "not supported by getElementByPath() (path expression: `%s')", pathexpr);
+        throw new cRuntimeError("cXMLElement::getElementByPath(): paths beginning with `/' "
+                                "not supported by getElementByPath() (path expression: `%s')", pathexpr);
     return matchPathExpression(this, pathexpr);
 }
 

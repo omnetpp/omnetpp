@@ -63,10 +63,10 @@ void *cAkOutputVectorManager::registerVector(const char *modulename, const char 
     {
         // register vector with Akaroa
         if (ak_declared)
-            throw new cException("cAkOutputVectorManager: With Akaroa, cannot create new vector after first data have been recorded");
+            throw new cRuntimeError("cAkOutputVectorManager: With Akaroa, cannot create new vector after first data have been recorded");
 
         if (tuple > 1)
-            throw new cException("cAkOutputVectorManager: Akaroa can handle only one parameter per cOutVector");
+            throw new cRuntimeError("cAkOutputVectorManager: Akaroa can handle only one parameter per cOutVector");
 
         // Akaroa starts parameter numbering with one
         vp->ak_id = ++ak_count;
@@ -103,7 +103,7 @@ bool cAkOutputVectorManager::record(void *vectorhandle, simtime_t t, double valu
 
 bool cAkOutputVectorManager::record(void *vectorhandle, simtime_t t, double value1, double value2)
 {
-    throw new cException("cAkOutputVectorManager: Akaroa can handle only one parameter per cOutVector");
+    throw new cRuntimeError("cAkOutputVectorManager: Akaroa can handle only one parameter per cOutVector");
 }
 
 #endif

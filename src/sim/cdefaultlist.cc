@@ -152,23 +152,23 @@ void cDefaultList::forEachChild(cVisitor *v)
 void cDefaultList::netPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cException(this,eNOPARSIM);
+    throw new cRuntimeError(this,eNOPARSIM);
 #else
     cObject::netPack(buffer);
 
     if (count>0)
-        throw new cException(this, "netPack() not supported (makes no sense)");
+        throw new cRuntimeError(this, "netPack() not supported (makes no sense)");
 #endif
 }
 
 void cDefaultList::netUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cException(this,eNOPARSIM);
+    throw new cRuntimeError(this,eNOPARSIM);
 #else
     cObject::netUnpack(buffer);
     if (count>0)
-        throw new cException(this, "netUnpack(): can only unpack into empty object");
+        throw new cRuntimeError(this, "netUnpack(): can only unpack into empty object");
 #endif
 }
 
@@ -182,8 +182,8 @@ void cDefaultList::take(cObject *obj)
 void cDefaultList::drop(cObject *obj)
 {
     if (obj->ownerp!=this)
-        throw new cException(this,"drop(): not owner of object (%s)%s",
-                             obj->className(), obj->fullPath().c_str());
+        throw new cRuntimeError(this,"drop(): not owner of object (%s)%s",
+                                obj->className(), obj->fullPath().c_str());
     // the following 2 lines are actually the same as defaultOwner->take(obj);
     yieldOwnership(obj, defaultowner);
     defaultowner->doInsert(obj);

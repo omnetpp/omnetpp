@@ -96,7 +96,7 @@ void TCmdenvApp::readOptions()
         ::printf("Cmdenv: redirecting output to file `%s'...\n",opt_outputfile.c_str());
         FILE *out = fopen(opt_outputfile.c_str(), "w");
         if (!out)
-            throw new cException("Cannot open output file `%s'",opt_outputfile.c_str());
+            throw new cRuntimeError("Cannot open output file `%s'",opt_outputfile.c_str());
         fout = out;
     }
 }
@@ -219,7 +219,7 @@ int TCmdenvApp::run()
             // find network
             cNetworkType *network = findNetwork(opt_network_name.c_str());
             if (!network)
-                throw new cException("Network `%s' not found, check .ini and .ned files", opt_network_name.c_str());
+                throw new cRuntimeError("Network `%s' not found, check .ini and .ned files", opt_network_name.c_str());
 
             // set up network
             ::fprintf(fout, "Setting up network `%s'...\n", opt_network_name.c_str());

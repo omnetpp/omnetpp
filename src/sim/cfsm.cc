@@ -69,11 +69,11 @@ void cFSM::writeContents(ostream& os)
 
 void cFSM::netPack(cCommBuffer *buffer)
 {
-    throw new cException(this,"netPack() not implemented");
+    throw new cRuntimeError(this,"netPack() not implemented");
 }
 
 void cFSM::netUnpack(cCommBuffer *buffer)
 {
-    throw new cException(this,"netUnpack() not implemented");
+    throw new cRuntimeError(this,"netUnpack() not implemented");
 }
 

@@ -365,7 +365,7 @@ class SIM_API cArray : public cObject
 
     /**
      * Inserts the object into the array at the given position. If
-     * the position is occupied, the function throws cException.
+     * the position is occupied, the function throws a cRuntimeError.
      * The return value is the object's index in the array.
      */
     int addAt(int m,cObject *obj);

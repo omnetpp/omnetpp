@@ -55,7 +55,7 @@ std::string cPacket::info() const
 void cPacket::netPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cException(this,eNOPARSIM);
+    throw new cRuntimeError(this,eNOPARSIM);
 #else
     cMessage::netPack(buffer);
 
@@ -67,7 +67,7 @@ void cPacket::netPack(cCommBuffer *buffer)
 void cPacket::netUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cException(this,eNOPARSIM);
+    throw new cRuntimeError(this,eNOPARSIM);
 #else
     cMessage::netUnpack(buffer);
 

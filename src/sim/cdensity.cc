@@ -59,7 +59,7 @@ cDensityEstBase::~cDensityEstBase()
 void cDensityEstBase::netPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cException(this,eNOPARSIM);
+    throw new cRuntimeError(this,eNOPARSIM);
 #else
     cStdDev::netPack(buffer);
 
@@ -80,7 +80,7 @@ void cDensityEstBase::netPack(cCommBuffer *buffer)
 void cDensityEstBase::netUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cException(this,eNOPARSIM);
+    throw new cRuntimeError(this,eNOPARSIM);
 #else
     cStdDev::netUnpack(buffer);
 
@@ -144,7 +144,7 @@ void cDensityEstBase::clearResult ()
 void cDensityEstBase::setRange(double lower, double upper)
 {
     if (num_samples>0 || transformed())
-        throw new cException(this,"setRange() can only be called before collecting any values");
+        throw new cRuntimeError(this,"setRange() can only be called before collecting any values");
 
     range_mode = RANGE_FIXED;
     rangemin = lower;
@@ -154,7 +154,7 @@ void cDensityEstBase::setRange(double lower, double upper)
 void cDensityEstBase::setRangeAuto(int num_fstvals, double range_ext_fct)
 {
     if (num_samples>0 || transformed())
-        throw new cException(this,"setRange...() can only be called before collecting any values");
+        throw new cRuntimeError(this,"setRange...() can only be called before collecting any values");
 
     range_mode = RANGE_AUTO;
     num_firstvals = num_fstvals;
@@ -165,7 +165,7 @@ void cDensityEstBase::setRangeAuto(int num_fstvals, double range_ext_fct)
 void cDensityEstBase::setRangeAutoLower(double upper, int num_fstvals, double range_ext_fct)
 {
     if (num_samples>0 || transformed())
-        throw new cException(this,"setRange...() can only be called before collecting any values");
+        throw new cRuntimeError(this,"setRange...() can only be called before collecting any values");
 
     range_mode = RANGE_AUTOLOWER;
     num_firstvals = num_fstvals;
@@ -177,7 +177,7 @@ void cDensityEstBase::setRangeAutoLower(double upper, int num_fstvals, double ra
 void cDensityEstBase::setRangeAutoUpper(double lower, int num_fstvals, double range_ext_fct)
 {
     if (num_samples>0 || transformed())
-        throw new cException(this,"setRange...() can only be called before collecting any values");
+        throw new cRuntimeError(this,"setRange...() can only be called before collecting any values");
 
     range_mode = RANGE_AUTOUPPER;
     num_firstvals = num_fstvals;
@@ -189,7 +189,7 @@ void cDensityEstBase::setRangeAutoUpper(double lower, int num_fstvals, double ra
 void cDensityEstBase::setNumFirstVals(int num_fstvals)
 {
     if (num_samples>0 || transformed())
-        throw new cException(this,"setNumFirstVals() can only be called before collecting any values");
+        throw new cRuntimeError(this,"setNumFirstVals() can only be called before collecting any values");
 
     num_firstvals = num_fstvals;
     delete [] firstvals;

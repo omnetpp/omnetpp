@@ -152,9 +152,9 @@ cXMLDocCache::~cXMLDocCache()
 cXMLElement *cXMLDocCache::parseDocument(const char *filename)
 {
 #ifndef WITH_NETBUILDER
-    throw new cException("Cannot load `%s': XML config file support currently requires "
-                         "WITH_NETBUILDER option (check configure.user or configuser.vc, then "
-                         "rebuild OMNeT++)", filename);
+    throw new cRuntimeError("Cannot load `%s': XML config file support currently requires "
+                            "WITH_NETBUILDER option (check configure.user or configuser.vc, then "
+                            "rebuild OMNeT++)", filename);
 #else
     cXMLSAXHandler sh(filename);
     SAXParser parser;
@@ -162,7 +162,7 @@ cXMLElement *cXMLDocCache::parseDocument(const char *filename)
     parser.setHandler(&sh);
     bool ok = parser.parse(filename);
     if (!ok)
-        throw new cException("Error reading `%s': %s", filename, parser.getErrorMessage());
+        throw new cRuntimeError("Error reading `%s': %s", filename, parser.getErrorMessage());
 
     return sh.getTree();
 #endif

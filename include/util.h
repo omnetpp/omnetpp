@@ -248,14 +248,14 @@ SIM_API int opp_vsscanf(const char *s, const char *fmt, va_list va);
 //@{
 
 /**
- * DEPRECATED: use <tt>throw new cException(...)</tt> instead!
+ * DEPRECATED: use <tt>throw new cRuntimeError(...)</tt> instead!
  *
  * Terminates the simulation with an error message.
  */
 SIM_API void opp_error(int errcode,...);
 
 /**
- * DEPRECATED: use <tt>throw new cException(...)</tt> instead!
+ * DEPRECATED: use <tt>throw new cRuntimeError(...)</tt> instead!
  *
  * Same as function with the same name, but using custom message string.
  * To be called like printf().

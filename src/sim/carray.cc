@@ -84,7 +84,7 @@ cBag& cBag::operator=(const cBag& bag)
 void cBag::netPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cException(this,eNOPARSIM);
+    throw new cRuntimeError(this,eNOPARSIM);
 #else
     cObject::netPack(buffer);
 
@@ -100,7 +100,7 @@ void cBag::netPack(cCommBuffer *buffer)
 void cBag::netUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cException(this,eNOPARSIM);
+    throw new cRuntimeError(this,eNOPARSIM);
 #else
     cObject::netPack(buffer);
 
@@ -366,7 +366,7 @@ void cArray::forEachChild(cVisitor *v)
 void cArray::netPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cException(this,eNOPARSIM);
+    throw new cRuntimeError(this,eNOPARSIM);
 #else
     cObject::netPack(buffer);
 
@@ -380,7 +380,7 @@ void cArray::netPack(cCommBuffer *buffer)
         if (notNull(vect[i], buffer))
         {
             if (vect[i]->owner() != this)
-                throw new cException(this,"netPack(): cannot transmit pointer to \"external\" object");
+                throw new cRuntimeError(this,"netPack(): cannot transmit pointer to \"external\" object");
             packObject(vect[i], buffer);
         }
     }
@@ -390,7 +390,7 @@ void cArray::netPack(cCommBuffer *buffer)
 void cArray::netUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cException(this,eNOPARSIM);
+    throw new cRuntimeError(this,eNOPARSIM);
 #else
     cObject::netUnpack(buffer);
 
@@ -427,7 +427,7 @@ void cArray::clear()
 int cArray::add(cObject *obj)
 {
     if (!obj)
-        throw new cException(this,"cannot insert NULL pointer");
+        throw new cRuntimeError(this,"cannot insert NULL pointer");
 
     int retval;
     if (takeOwnership()) take( obj );
@@ -458,14 +458,14 @@ int cArray::add(cObject *obj)
 int cArray::addAt(int m, cObject *obj)
 {
     if (!obj)
-        throw new cException(this,"cannot insert NULL pointer");
+        throw new cRuntimeError(this,"cannot insert NULL pointer");
 
     if (m<size)  // fits in current vector
     {
         if (m<0)
-            throw new cException(this,"addAt(): negative position %d",m);
+            throw new cRuntimeError(this,"addAt(): negative position %d",m);
         if (vect[m]!=NULL)
-            throw new cException(this,"addAt(): position %d already used",m);
+            throw new cRuntimeError(this,"addAt(): position %d already used",m);
         vect[m] = obj;
         if (takeOwnership()) take(obj);
         last = Max(m,last);
@@ -494,7 +494,7 @@ int cArray::addAt(int m, cObject *obj)
 int cArray::set(cObject *obj)
 {
     if (!obj)
-        throw new cException(this,"cannot insert NULL pointer");
+        throw new cRuntimeError(this,"cannot insert NULL pointer");
 
     int i = find(obj->name());
     if (i<0)

@@ -431,8 +431,7 @@ class ENVIR_API cEnvir : public std::ostream
     std::string gets(const char *prompt, const char *defaultreply=NULL);
 
     /**
-     * The old-style equivalent of the other gets() method which uses std::string.
-     * Retained for compatibility only.
+     * DEPRECATED. Retained for compatibility only.
      */
     bool gets(const char *prompt, char *buf, int len=255);
 
@@ -558,12 +557,12 @@ class ENVIR_API cEnvir : public std::ostream
     /**
      * May be called from the simulation while actively waiting
      * for some external condition to occur -- for example from
-     * blocking receive in parallel simulation, or during waiting
+     * blocking receive in parallel simulation, or during wait
      * in real-time simulation.
      *
      * In a graphical user interface, this method may take care
-     * of display redraw and handling user interaction (including Stop
-     * button).
+     * of display redraw and handling user interaction (including
+     * handling of the Stop button).
      *
      * Normally returns false. A true value means the user wants to
      * abort waiting (e.g. pushed the Stop button).
@@ -574,9 +573,9 @@ class ENVIR_API cEnvir : public std::ostream
 
 template <class E, class T>
 int basic_evbuf<E,T>::sync() {
-        _ev->sputn(this->pbase(), this->pptr()-this->pbase());
-        setp(this->pbase(),this->epptr());
-        return 0;
-    }
+    _ev->sputn(this->pbase(), this->pptr()-this->pbase());
+    setp(this->pbase(),this->epptr());
+    return 0;
+}
 
 #endif

@@ -203,24 +203,24 @@ cObject::~cObject()
 void cObject::ownedObjectDeleted(cObject *obj)
 {
     // Note: too late to call obj->className(), at this point it'll aways return "cObject"
-    throw new cException("Object %s is currently in (%s)%s, it cannot be deleted. "
-                         "If this error occurs inside %s, it needs to be changed "
-                         "to call drop() before it can delete that object. "
-                         "If this error occurs inside %s's destructor and %s is a class member, "
-                         "%s needs to call drop() in the destructor",
-                         obj->fullName(), className(), fullPath().c_str(),
-                         className(),
-                         className(), obj->fullName(),
-                         className());
+    throw new cRuntimeError("Object %s is currently in (%s)%s, it cannot be deleted. "
+                            "If this error occurs inside %s, it needs to be changed "
+                            "to call drop() before it can delete that object. "
+                            "If this error occurs inside %s's destructor and %s is a class member, "
+                            "%s needs to call drop() in the destructor",
+                            obj->fullName(), className(), fullPath().c_str(),
+                            className(),
+                            className(), obj->fullName(),
+                            className());
 }
 
 void cObject::yieldOwnership(cObject *obj, cObject *newowner)
 {
     char buf[120];
-    throw new cException("(%s)%s is currently in (%s)%s, it cannot be inserted into (%s)%s",
-                         obj->className(), obj->fullName(),
-                         className(), fullPath().c_str(),
-                         newowner->className(), newowner->fullPath(buf,120));
+    throw new cRuntimeError("(%s)%s is currently in (%s)%s, it cannot be inserted into (%s)%s",
+                            obj->className(), obj->fullName(),
+                            className(), fullPath().c_str(),
+                            newowner->className(), newowner->fullPath(buf,120));
 }
 
 void cObject::removeFromOwnershipTree()
@@ -239,8 +239,8 @@ void cObject::take(cObject *obj)
 void cObject::drop(cObject *obj)
 {
     if (obj->ownerp!=this)
-        throw new cException(this,"drop(): not owner of object (%s)%s",
-                             obj->className(), obj->fullPath().c_str());
+        throw new cRuntimeError(this,"drop(): not owner of object (%s)%s",
+                                obj->className(), obj->fullPath().c_str());
     defaultowner->doInsert(obj);
 }
 
@@ -249,8 +249,8 @@ void cObject::dropAndDelete(cObject *obj)
     if (!obj)
         return;
     if (obj->ownerp!=this)
-        throw new cException(this,"dropAndDelete(): not owner of object (%s)%s",
-                             obj->className(), obj->fullPath().c_str());
+        throw new cRuntimeError(this,"dropAndDelete(): not owner of object (%s)%s",
+                                obj->className(), obj->fullPath().c_str());
     obj->ownerp = NULL;
     delete obj;
 }
@@ -302,13 +302,13 @@ void cObject::setName(const char *s)
 
 void cObject::copyNotSupported() const
 {
-    throw new cException(this,eCANTCOPY);
+    throw new cRuntimeError(this,eCANTCOPY);
 }
 
 void cObject::netPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cException(this,eNOPARSIM);
+    throw new cRuntimeError(this,eNOPARSIM);
 #else
     buffer->pack(name());
 #endif
@@ -317,7 +317,7 @@ void cObject::netPack(cCommBuffer *buffer)
 void cObject::netUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cException(this,eNOPARSIM);
+    throw new cRuntimeError(this,eNOPARSIM);
 #else
     opp_string tmp;
     buffer->unpack(tmp);

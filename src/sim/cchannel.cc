@@ -101,12 +101,12 @@ void cChannel::writeContents(ostream& os)
 
 void cChannel::netPack(cCommBuffer *buffer)
 {
-    throw new cException(this,"netPack() not implemented");
+    throw new cRuntimeError(this,"netPack() not implemented");
 }
 
 void cChannel::netUnpack(cCommBuffer *buffer)
 {
-    throw new cException(this,"netUnpack() not implemented");
+    throw new cRuntimeError(this,"netUnpack() not implemented");
 }
 
 cChannel& cChannel::operator=(const cChannel& ch)
@@ -133,7 +133,7 @@ cPar& cChannel::par(int n)
     cArray& parlist = parList();
     cPar *p = (cPar *)parlist[n];
     if (!p)
-        throw new cException(this,"has no parameter #%d",n);
+        throw new cRuntimeError(this,"has no parameter #%d",n);
     return *p;
 }
 
@@ -142,7 +142,7 @@ cPar& cChannel::par(const char *s)
     cArray& parlist = parList();
     cPar *p = (cPar *)parlist.get(s);
     if (!p)
-        throw new cException(this,"has no parameter called `%s'",s);
+        throw new cRuntimeError(this,"has no parameter called `%s'",s);
     return *p;
 }
 
@@ -211,12 +211,12 @@ void cBasicChannel::writeContents(ostream& os)
 
 void cBasicChannel::netPack(cCommBuffer *buffer)
 {
-    throw new cException(this,"netPack() not implemented");
+    throw new cRuntimeError(this,"netPack() not implemented");
 }
 
 void cBasicChannel::netUnpack(cCommBuffer *buffer)
 {
-    throw new cException(this,"netUnpack() not implemented");
+    throw new cRuntimeError(this,"netUnpack() not implemented");
 }
 
 cBasicChannel& cBasicChannel::operator=(const cBasicChannel& ch)
@@ -372,7 +372,7 @@ bool cBasicChannel::deliver(cMessage *msg, simtime_t t)
     {
         simtime_t delay = (*delayp);
         if (delay<0)
-            throw new cException(this,"negative delay %g",delay);
+            throw new cRuntimeError(this,"negative delay %g",delay);
         t += delay;
     }
 

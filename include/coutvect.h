@@ -79,7 +79,7 @@ class SIM_API cOutVector : public cObject
     virtual ~cOutVector();
 
     /**
-     * Assignment is not supported by this class: this method throws a cException when called.
+     * Assignment is not supported by this class: this method throws a cRuntimeError when called.
      */
     cOutVector& operator=(const cOutVector&)  {copyNotSupported();return *this;}
     //@}
@@ -95,7 +95,7 @@ class SIM_API cOutVector : public cObject
 
     /**
      * Dupping is not implemented for cOutVector. This function
-     * gives an error (throws cException) when called.
+     * gives an error (throws cRuntimeError) when called.
      */
     virtual cObject *dup() const    {return new cOutVector(*this);}
 
@@ -124,7 +124,7 @@ class SIM_API cOutVector : public cObject
     /**
      * Records the value with the current simulation time as timestamp.
      * It can be used only in the case if the instance of cOutVector was created with tuple=1,
-     * otherwise it throws cException.
+     * otherwise it throws cRuntimeError.
      *
      * The return value is true if the data was actually recorded, and false if it
      * was not recorded (because of filtering, etc.)
@@ -134,7 +134,7 @@ class SIM_API cOutVector : public cObject
     /**
      * Records two values with the current simulation time as timestamp.
      * It can be used only in the case if the instance of cOutVector was created with tuple=2,
-     * otherwise it throws cException.
+     * otherwise it throws cRuntimeError.
      *
      * The return value is true if the data was actually recorded, and false if it
      * was not recorded (because of filtering, etc.)

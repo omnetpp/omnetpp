@@ -66,8 +66,8 @@ double truncnormal(double m, double d, int rng)
 double gamma_d(double alpha, double beta, int rng)
 {
     if (alpha<=0 || beta<=0)
-        throw new cException("gamma(): alpha and beta params must be positive "
-                             "(alpha=%lg, beta=%lg)", alpha, beta);
+        throw new cRuntimeError("gamma(): alpha and beta params must be positive "
+                                "(alpha=%lg, beta=%lg)", alpha, beta);
 
     if (fabs(alpha - 1.0) <= DBL_EPSILON)
     {
@@ -143,8 +143,8 @@ double gamma_d(double alpha, double beta, int rng)
 double beta(double alpha1, double alpha2, int rng)
 {
     if (alpha1<=0 || alpha2<=0)
-        throw new cException("beta(): alpha1 and alpha2 parameters must be positive "
-                             "(alpha1=%lg, alpha2=%lg)", alpha1, alpha2);
+        throw new cRuntimeError("beta(): alpha1 and alpha2 parameters must be positive "
+                                "(alpha1=%lg, alpha2=%lg)", alpha1, alpha2);
 
     double Y1 = gamma_d(alpha1, 1.0, rng);
     double Y2 = gamma_d(alpha2, 1.0, rng);
@@ -183,7 +183,7 @@ double student_t(unsigned int i, int rng)
 double cauchy(double a, double b, int rng)
 {
     if (b<=0)
-        throw new cException("cauchy(): parameters must be b>0 (a=%lg, b=%lg)", a, b);
+        throw new cRuntimeError("cauchy(): parameters must be b>0 (a=%lg, b=%lg)", a, b);
 
     return a + b * tan(M_PI * genk_dblrand(rng));
 }
@@ -192,7 +192,7 @@ double cauchy(double a, double b, int rng)
 double triang(double a, double b, double c, int rng)
 {
     if (b<a || c<b || a==c)
-        throw new cException("triang(): parameters must be a<=b<=c, a<c (a=%lg, b=%lg, c=%lg)", a, b, c);
+        throw new cRuntimeError("triang(): parameters must be a<=b<=c, a<c (a=%lg, b=%lg, c=%lg)", a, b, c);
 
     double U, beta, T;
 
@@ -214,7 +214,7 @@ double triang(double a, double b, double c, int rng)
 double weibull(double a, double b, int rng)
 {
     if (a<=0 || b<=0)
-        throw new cException("weibull(): a,b parameters must be positive (a=%lg, b=%lg)", a, b);
+        throw new cRuntimeError("weibull(): a,b parameters must be positive (a=%lg, b=%lg)", a, b);
 
     return a * pow(-log(1.0 - genk_dblrand(rng)), 1.0 / b);
 }
@@ -223,7 +223,7 @@ double weibull(double a, double b, int rng)
 double pareto_shifted(double a, double b, double c, int rng)
 {
     if (a==0)
-        throw new cException("pareto_shifted(): parameter a cannot be zero)");
+        throw new cRuntimeError("pareto_shifted(): parameter a cannot be zero)");
 
     double u_pow = pow(1.0 - genk_dblrand(rng), 1.0 / a);
     return (b - c * u_pow) / u_pow;
@@ -240,7 +240,7 @@ double pareto_shifted(double a, double b, double c, int rng)
 static double _factorial(int n)
 {
     if (n<0)
-        throw new cException("internal error: _factorial() called with n=%d",n);
+        throw new cRuntimeError("internal error: _factorial() called with n=%d",n);
 
     double fact = 1.0;
     while (n>1)
@@ -297,7 +297,7 @@ int negbinomial(int n, double p, int rng)
 int hypergeometric(int a, int b, int n, int rng)
 {
     if (a<0 || b<0 || n>a+b)
-        throw new cException("hypergeometric(): params must be a>=0, b>=0, n=<a+b "
+        throw new cRuntimeError("hypergeometric(): params must be a>=0, b>=0, n=<a+b "
                              "(a=%d, b=%d, n=%d)", a,b,n);
 
     double U = genk_dblrand(rng);

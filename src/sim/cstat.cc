@@ -76,7 +76,7 @@ cStatistic::~cStatistic()
 void cStatistic::netPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cException(this,eNOPARSIM);
+    throw new cRuntimeError(this,eNOPARSIM);
 #else
     cObject::netPack(buffer);
 
@@ -92,7 +92,7 @@ void cStatistic::netPack(cCommBuffer *buffer)
 void cStatistic::netUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cException(this,eNOPARSIM);
+    throw new cRuntimeError(this,eNOPARSIM);
 #else
     cObject::netUnpack(buffer);
 
@@ -125,7 +125,7 @@ cStatistic& cStatistic::operator=(const cStatistic& res)   //--VA
 void cStatistic::addTransientDetection(cTransientDetection *obj)  //NL
 {
     if (td)
-        throw new cException(this,"addTransientDetection(): object already has a transient detection algorithm");
+        throw new cRuntimeError(this,"addTransientDetection(): object already has a transient detection algorithm");
     td = obj;                       // create pointer to td object
     td->setHostObject( this );      // and create one back
     take(td);
@@ -134,7 +134,7 @@ void cStatistic::addTransientDetection(cTransientDetection *obj)  //NL
 void cStatistic::addAccuracyDetection(cAccuracyDetection *obj)  //NL
 {
     if (ra)
-        throw new cException(this,"addAccuracyDetection(): object already has an accuracy detection algorithm");
+        throw new cRuntimeError(this,"addAccuracyDetection(): object already has an accuracy detection algorithm");
     ra = obj;                       // create pointer to ra object
     ra->setHostObject( this );      // and create one back
     take(ra);
@@ -142,14 +142,14 @@ void cStatistic::addAccuracyDetection(cAccuracyDetection *obj)  //NL
 
 void cStatistic::collect2(double, double)
 {
-    throw new cException(this, "collect2() not implemented");
+    throw new cRuntimeError(this, "collect2() not implemented");
 }
 
 void cStatistic::recordScalar(const char *scalarname)
 {
     cSimpleModule *mod = dynamic_cast<cSimpleModule *>(simulation.contextModule());
     if (!mod)
-        throw new cException(this,"recordScalar() may only be invoked from within a simple module");
+        throw new cRuntimeError(this,"recordScalar() may only be invoked from within a simple module");
     std::string n = scalarname ? scalarname : fullName();
     mod->recordScalar((n+".samples").c_str(), samples());
     mod->recordScalar((n+".mean").c_str(), mean());
@@ -171,7 +171,7 @@ void cStatistic::freadvarsf (FILE *f,  const char *fmt, ...)
     const char *fmt_comment = strstr(fmt,"#=");
     const char *line_comment = strstr(line,"#=");
     if (fmt_comment && line_comment && strcmp(fmt_comment,line_comment)!=0)
-        throw new cException(this, "bad file format in loadFromFile(): expected `%s' and got `%s'",fmt,line);
+        throw new cRuntimeError(this, "bad file format in loadFromFile(): expected `%s' and got `%s'",fmt,line);
 
     // actual read
     va_list args;
@@ -199,7 +199,7 @@ std::string cStdDev::info() const
 void cStdDev::netPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cException(this,eNOPARSIM);
+    throw new cRuntimeError(this,eNOPARSIM);
 #else
     cStatistic::netPack(buffer);
     buffer->pack(num_samples);
@@ -213,7 +213,7 @@ void cStdDev::netPack(cCommBuffer *buffer)
 void cStdDev::netUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cException(this,eNOPARSIM);
+    throw new cRuntimeError(this,eNOPARSIM);
 #else
     cStatistic::netUnpack(buffer);
     buffer->unpack(num_samples);
@@ -338,7 +338,7 @@ void cStdDev::loadFromFile(FILE *f)
 void cWeightedStdDev::netPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cException(this,eNOPARSIM);
+    throw new cRuntimeError(this,eNOPARSIM);
 #else
     cStdDev::netPack(buffer);
     buffer->pack(sum_weights);
@@ -348,7 +348,7 @@ void cWeightedStdDev::netPack(cCommBuffer *buffer)
 void cWeightedStdDev::netUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cException(this,eNOPARSIM);
+    throw new cRuntimeError(this,eNOPARSIM);
 #else
     cStdDev::netUnpack(buffer);
     buffer->unpack(sum_weights);
@@ -378,7 +378,7 @@ void cWeightedStdDev::clearResult()
 
 double cWeightedStdDev::variance() const
 {
-    throw new cException(this, "variance()/stddev() not implemented");
+    throw new cRuntimeError(this, "variance()/stddev() not implemented");
 
     // if (sum_weights==0)
     //   return 0.0;

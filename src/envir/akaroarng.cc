@@ -32,7 +32,7 @@ void cAkaroaRNG::initialize(int runNumber, int id, int numRngs, cConfiguration *
 {
     // no manual seeding, and only one RNG stream
     if (numRngs!=1 || id!=0)
-        throw new cException("cAkaroaRNG: Akaroa supports only one RNG stream, use num-rngs=1 setting");
+        throw new cRuntimeError("cAkaroaRNG: Akaroa supports only one RNG stream, use num-rngs=1 setting");
 }
 
 void cAkaroaRNG::selfTest()

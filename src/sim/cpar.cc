@@ -65,7 +65,7 @@ string cDoubleExpression::getAsText()
 
 bool cDoubleExpression::parseText(const char *text)
 {
-    throw new cException("cDoubleExpression: parseText() does not work with compiled expressions");
+    throw new cRuntimeError("cDoubleExpression: parseText() does not work with compiled expressions");
 }
 
 //==========================================================================
@@ -250,7 +250,7 @@ void cPar::forEachChild(cVisitor *v)
 void cPar::netPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cException(this,eNOPARSIM);
+    throw new cRuntimeError(this,eNOPARSIM);
 #else
     cObject::netPack(buffer);
 
@@ -259,7 +259,7 @@ void cPar::netPack(cCommBuffer *buffer)
         && typechar != 'F' && typechar != 'T' && typechar != 'I' && typechar != 'X'
         && typechar != 'P' && typechar != 'O' && typechar != 'M')
     {
-        throw new cException(this,"netPack: unsupported type '%c'",typechar);
+        throw new cRuntimeError(this,"netPack: unsupported type '%c'",typechar);
     }
 
     buffer->pack(typechar);
@@ -289,7 +289,7 @@ void cPar::netPack(cCommBuffer *buffer)
     case 'F':
         ff = findfunctionbyptr(func.f);
         if (ff == NULL)
-            throw new cException(this,"netPack(): cannot transmit unregistered function");
+            throw new cRuntimeError(this,"netPack(): cannot transmit unregistered function");
 
         buffer->pack(ff->name());
         buffer->pack(func.argc);
@@ -301,30 +301,30 @@ void cPar::netPack(cCommBuffer *buffer)
 
     case 'T':
         if (dtr.res && dtr.res->owner() != this)
-            throw new cException(this,"netPack(): cannot transmit pointer to \"external\" object");
+            throw new cRuntimeError(this,"netPack(): cannot transmit pointer to \"external\" object");
         if (notNull(dtr.res, buffer))
             packObject(dtr.res,buffer);
         break;
 
     case 'I':
-        throw new cException(this,"netPack(): transmitting indirect values (type 'I') not supported");
+        throw new cRuntimeError(this,"netPack(): transmitting indirect values (type 'I') not supported");
 
     case 'X':
         // not implemented, because there are functions and pointers in it.
-        throw new cException(this,"netPack(): transmitting expressions (type 'X') not supported");
+        throw new cRuntimeError(this,"netPack(): transmitting expressions (type 'X') not supported");
 
     case 'P':
-        throw new cException(this,"netPack(): cannot transmit pointer to unknown data structure (type 'P')");
+        throw new cRuntimeError(this,"netPack(): cannot transmit pointer to unknown data structure (type 'P')");
 
     case 'O':
         if (obj.obj && obj.obj->owner() != this)
-            throw new cException(this,"netPack(): cannot transmit pointer to \"external\" object");
+            throw new cRuntimeError(this,"netPack(): cannot transmit pointer to \"external\" object");
         if (notNull(obj.obj, buffer))
             packObject(obj.obj,buffer);
         break;
 
     case 'M':
-        throw new cException(this,"netPack(): cannot transmit pointer to XML element (type 'M')");
+        throw new cRuntimeError(this,"netPack(): cannot transmit pointer to XML element (type 'M')");
     }
 #endif
 }
@@ -332,7 +332,7 @@ void cPar::netPack(cCommBuffer *buffer)
 void cPar::netUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cException(this,eNOPARSIM);
+    throw new cRuntimeError(this,eNOPARSIM);
 #else
     char *funcname;
     int argc;
@@ -371,8 +371,8 @@ void cPar::netUnpack(cCommBuffer *buffer)
         if (ff == NULL)
         {
             delete [] funcname;
-            throw new cException(this,"netUnpack(): transmitted function `%s' with %d args not registered here",
-                                 funcname, argc);
+            throw new cRuntimeError(this,"netUnpack(): transmitted function `%s' with %d args not registered here",
+                                    funcname, argc);
         }
         func.f = ff->mathFunc();
         func.argc = argc;
@@ -394,7 +394,7 @@ void cPar::netUnpack(cCommBuffer *buffer)
     case 'X':
     case 'P':
     case 'M':
-        throw new cException(this,"netUnpack(): unpacking types I, P, X, M not implemented");
+        throw new cRuntimeError(this,"netUnpack(): unpacking types I, P, X, M not implemented");
 
     case 'O':
         if (!checkFlag(buffer))
@@ -615,7 +615,7 @@ cPar& cPar::setDoubleValue(ExprElem *x, int n)
         return ind.par->setDoubleValue(x,n);
 
     if (!x)
-        throw new cException(this,eBADINIT,typeName('X'));
+        throw new cRuntimeError(this,eBADINIT,typeName('X'));
 
     beforeChange();
     deleteold();
@@ -655,7 +655,7 @@ cPar& cPar::setDoubleValue(cDoubleExpression *p)
         return ind.par->setDoubleValue(p);
 
     if (!p)
-        throw new cException(this,eBADINIT,typeName('P'));
+        throw new cRuntimeError(this,eBADINIT,typeName('P'));
 
     beforeChange();
     deleteold();
@@ -672,7 +672,7 @@ cPar& cPar::setDoubleValue(cStatistic *res)
         return ind.par->setDoubleValue(res);
 
     if (!res)
-        throw new cException(this,eBADINIT,typeName('T'));
+        throw new cRuntimeError(this,eBADINIT,typeName('T'));
 
     beforeChange();
     deleteold();
@@ -742,14 +742,14 @@ cPar& cPar::setRedirection(cPar *par)
         return ind.par->setRedirection(par);
 
     if (!par)
-        throw new cException(this,eBADINIT,typeName('I'));
+        throw new cRuntimeError(this,eBADINIT,typeName('I'));
 
     // check for circular references
     cPar *p = par;
     while (p)
     {
         if (p==this)
-            throw new cException(this,eCIRCREF);
+            throw new cRuntimeError(this,eCIRCREF);
         p = p->isRedirected() ? p->ind.par : NULL;
     }
 
@@ -767,7 +767,7 @@ void cPar::configPointer( VoidDelFunc delfunc, VoidDupFunc dupfunc,
                       size_t itemsize)
 {
     if (typechar!='P')
-        throw new cException(this,"configPointer(): type is '%c'; should be 'P'",typechar);
+        throw new cRuntimeError(this,"configPointer(): type is '%c'; should be 'P'",typechar);
     ptr.delfunc = delfunc;
     ptr.dupfunc = dupfunc;
     ptr.itemsize = itemsize;
@@ -784,7 +784,7 @@ const char *cPar::stringValue()
     if (isInput())
         read();
     if (typechar!='S')
-        throw new cException(this,eBADCAST,typeName(typechar),typeName('S'));
+        throw new cRuntimeError(this,eBADCAST,typeName(typechar),typeName('S'));
     return ss.sht ? ss.str : ls.str;
 }
 
@@ -812,7 +812,7 @@ bool cPar::boolValue()
     else if (isNumeric())
         return doubleValue()!=0;
     else
-        throw new cException(this,eBADCAST,typeName(typechar),typeName('B'));
+        throw new cRuntimeError(this,eBADCAST,typeName(typechar),typeName('B'));
 }
 
 inline long _double_to_long(double d)
@@ -836,7 +836,7 @@ long cPar::longValue()
     else if (isNumeric())
         return _double_to_long(doubleValue());
     else
-        throw new cException(this,eBADCAST,typeName(typechar),typeName('L'));
+        throw new cRuntimeError(this,eBADCAST,typeName(typechar),typeName('L'));
 }
 
 double cPar::doubleValue()
@@ -862,7 +862,7 @@ double cPar::doubleValue()
                func.argc==3 ? ((MathFunc3Args)func.f)(func.p1,func.p2,func.p3) :
                               ((MathFunc4Args)func.f)(func.p1,func.p2,func.p3,func.p4);
     else
-        throw new cException(this,eBADCAST,typeName(typechar),typeName('D'));
+        throw new cRuntimeError(this,eBADCAST,typeName(typechar),typeName('D'));
 }
 
 void *cPar::pointerValue()
@@ -874,7 +874,7 @@ void *cPar::pointerValue()
     if (typechar=='P')
         return ptr.ptr;
     else
-        throw new cException(this,eBADCAST,typeName(typechar),typeName('P'));
+        throw new cRuntimeError(this,eBADCAST,typeName(typechar),typeName('P'));
 }
 
 cObject *cPar::objectValue()
@@ -886,7 +886,7 @@ cObject *cPar::objectValue()
     if (typechar=='O')
         return obj.obj;
     else
-        throw new cException(this,eBADCAST,typeName(typechar),typeName('O'));
+        throw new cRuntimeError(this,eBADCAST,typeName(typechar),typeName('O'));
 }
 
 cXMLElement *cPar::xmlValue()
@@ -898,7 +898,7 @@ cXMLElement *cPar::xmlValue()
     if (typechar=='M')
         return xmlp.node;
     else
-        throw new cException(this,eBADCAST,typeName(typechar),typeName('M'));
+        throw new cRuntimeError(this,eBADCAST,typeName(typechar),typeName('M'));
 }
 
 bool cPar::isNumeric() const
@@ -939,8 +939,8 @@ bool cPar::equalsTo(cPar *par)
         case 'P': return ptr.ptr == par->ptr.ptr;
         case 'O': return obj.obj == par->obj.obj;
         case 'M': return xmlp.node == par->xmlp.node;
-        case 'X': throw new cException(this, "equalsTo() with X type not implemented");
-        case 'C': throw new cException(this, "equalsTo() with C type not implemented");
+        case 'X': throw new cRuntimeError(this, "equalsTo() with X type not implemented");
+        case 'C': throw new cRuntimeError(this, "equalsTo() with C type not implemented");
         default: return 0;
     }
 }
@@ -1138,7 +1138,7 @@ bool cPar::setFromText(const char *text, char tp)
 
         cXMLElement *node = ev.getXMLDocument(fname.c_str(), pathexpr.empty() ? NULL : pathexpr.c_str());
         if (!node)
-            throw new cException(this,"%s: element not found", tmp);
+            throw new cRuntimeError(this,"%s: element not found", tmp);
         setXMLValue(node);
     }
     else // maybe function; try to parse it
@@ -1244,7 +1244,7 @@ cPar& cPar::read()
     {
         bool success = setFromText(s,'?');
         if (!success)
-            throw new cException("Wrong value `%s' for parameter `%s'", s, fullPath().c_str());
+            throw new cRuntimeError("Wrong value `%s' for parameter `%s'", s, fullPath().c_str());
         return *this;
     }
 
@@ -1269,7 +1269,7 @@ cPar& cPar::read()
            success = false;
            success = setFromText(reply.c_str(),'?');
            if (!success)
-              throw new cException("Syntax error, please try again.");
+              throw new cRuntimeError("Syntax error, please try again.");
         } catch (cException *e) {
             ev.printfmsg("%s", e->message());
             delete e;
@@ -1299,39 +1299,39 @@ double cPar::evaluate()
        ExprElem& e = expr.xelem[i];
        switch( toupper(e.type) ) {
            case 'D':
-             if(tos>=stksize - 1) throw new cException(this,eBADEXP);
+             if(tos>=stksize - 1) throw new cRuntimeError(this,eBADEXP);
              stk[++tos] = e.d;
              break;
            case 'P':
            case 'R':
-             if(!e.p || tos>=stksize - 1) throw new cException(this,eBADEXP);
+             if(!e.p || tos>=stksize - 1) throw new cRuntimeError(this,eBADEXP);
              stk[++tos] = (double)(*e.p);
              break;
            case '0':
-             if(!e.f0) throw new cException(this,eBADEXP);
+             if(!e.f0) throw new cRuntimeError(this,eBADEXP);
              stk[++tos] = e.f0();
              break;
            case '1':
-             if(!e.f1 || tos<0) throw new cException(this,eBADEXP);
+             if(!e.f1 || tos<0) throw new cRuntimeError(this,eBADEXP);
              stk[tos] = e.f1( stk[tos] );
              break;
            case '2':
-             if(!e.f2 || tos<1) throw new cException(this,eBADEXP);
+             if(!e.f2 || tos<1) throw new cRuntimeError(this,eBADEXP);
              stk[tos-1] = e.f2( stk[tos-1], stk[tos] );
              tos--;
              break;
            case '3':
-             if(!e.f3 || tos<2) throw new cException(this,eBADEXP);
+             if(!e.f3 || tos<2) throw new cRuntimeError(this,eBADEXP);
              stk[tos-2] = e.f3( stk[tos-2], stk[tos-1], stk[tos] );
              tos-=2;
              break;
            case '4':
-             if(!e.f4 || tos<3) throw new cException(this,eBADEXP);
+             if(!e.f4 || tos<3) throw new cRuntimeError(this,eBADEXP);
              stk[tos-3] = e.f4( stk[tos-3], stk[tos-2], stk[tos-1], stk[tos] );
              tos-=3;
              break;
            case '@':
-             if(tos<1) throw new cException(this,eBADEXP);
+             if(tos<1) throw new cRuntimeError(this,eBADEXP);
              switch(e.op) {
                 case '+':
                    stk[tos-1] = stk[tos-1] + stk[tos];
@@ -1386,23 +1386,23 @@ double cPar::evaluate()
                    tos-=2;
                    break;
                 default:
-                   throw new cException(this,eBADEXP);
+                   throw new cRuntimeError(this,eBADEXP);
                    return 0.0;
              }
              break;
            default:
-             throw new cException(this,eBADEXP);
+             throw new cRuntimeError(this,eBADEXP);
        }
     }
     if (tos!=0)
-        throw new cException(this,eBADEXP);
+        throw new cRuntimeError(this,eBADEXP);
     return stk[tos];
 }
 
 double cPar::fromstat()
 {
     if (typechar!='T')
-        throw new cException(this,eBADCAST,typeName(typechar),typeName('T'));
+        throw new cRuntimeError(this,eBADCAST,typeName(typechar),typeName('T'));
     return  dtr.res->random();
 }
 

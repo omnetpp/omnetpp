@@ -37,7 +37,7 @@ using std::ios;
 
 Register_Class(cFileOutputVectorManager);
 
-#define CHECK(fprintf)    if (fprintf<0) throw new cException(eOUTVECT)
+#define CHECK(fprintf)    if (fprintf<0) throw new cRuntimeError(eOUTVECT)
 
 // helper function
 static void createFileName(opp_string& fname, int run_no, const char *configentry, const char *defaultval)
@@ -66,7 +66,7 @@ void cFileOutputVectorManager::openFile()
 {
     f = fopen(fname.c_str(),"a");
     if (f==NULL)
-        throw new cException("Cannot open output file `%s'",fname.c_str());
+        throw new cRuntimeError("Cannot open output file `%s'",fname.c_str());
 }
 
 void cFileOutputVectorManager::closeFile()
@@ -175,7 +175,7 @@ const char *cFileOutputVectorManager::fileName() const
 
 Register_Class(cFileOutputScalarManager);
 
-#define CHECK(fprintf)    if (fprintf<0) throw new cException(eOUTVECT)
+#define CHECK(fprintf)    if (fprintf<0) throw new cRuntimeError(eOUTVECT)
 
 cFileOutputScalarManager::cFileOutputScalarManager()
 {
@@ -191,7 +191,7 @@ void cFileOutputScalarManager::openFile()
 {
     f = fopen(fname.c_str(),"a");
     if (f==NULL)
-        throw new cException("Cannot open output file `%s'",fname.c_str());
+        throw new cRuntimeError("Cannot open output file `%s'",fname.c_str());
 }
 
 void cFileOutputScalarManager::closeFile()

@@ -84,7 +84,7 @@ class SIM_API cTransientDetection : public cObject
     virtual ~cTransientDetection()  {}
 
     /**
-     * Assignment is not supported by this class: this method throws a cException when called.
+     * Assignment is not supported by this class: this method throws a cRuntimeError when called.
      */
     cTransientDetection& operator=(const cTransientDetection&)  {copyNotSupported();return *this;}
     //@}
@@ -182,7 +182,7 @@ class SIM_API cAccuracyDetection : public cObject
     virtual ~cAccuracyDetection()  {}
 
     /**
-     * Assignment is not supported by this class: this method throws a cException when called.
+     * Assignment is not supported by this class: this method throws a cRuntimeError when called.
      */
     cAccuracyDetection& operator=(const cAccuracyDetection&)  {copyNotSupported();return *this;}
     //@}
@@ -306,7 +306,7 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
 
     /**
      * Dupping is not implemented for this class. This function
-     * gives an error (throws cException) when called.
+     * gives an error (throws cRuntimeError) when called.
      */
     virtual cObject *dup() const  {return new cTDExpandingWindows(*this);}
     //@}
@@ -411,7 +411,7 @@ class SIM_API cADByStddev : public cAccuracyDetection
 
     /**
      * Dupping is not implemented for this class. This function
-     * gives an error (throws cException) when called.
+     * gives an error (throws cRuntimeError) when called.
      */
     virtual cObject *dup() const  {return new cADByStddev(*this);}
     //@}

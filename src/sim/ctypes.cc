@@ -163,13 +163,13 @@ cModuleInterface::~cModuleInterface()
 
 cModuleInterface& cModuleInterface::operator=(const cModuleInterface&)
 {
-    throw new cException("cModuleInterface cannot copy itself!");
+    throw new cRuntimeError("cModuleInterface cannot copy itself!");
 }
 
 void cModuleInterface::allocateGateDecls(int maxngates)
 {
     if (numgates>0)
-        throw new cException(this, "allocateGateDecls(): too late, some gates already added");
+        throw new cRuntimeError(this, "allocateGateDecls(): too late, some gates already added");
     maxnumgates = maxngates;
     gatev = new GateDecl[maxnumgates];
 }
@@ -177,7 +177,7 @@ void cModuleInterface::allocateGateDecls(int maxngates)
 void cModuleInterface::allocateParamDecls(int maxnparams)
 {
     if (numparams>0)
-        throw new cException(this, "allocateParamDecls(): too late, some parameters already added");
+        throw new cRuntimeError(this, "allocateParamDecls(): too late, some parameters already added");
     maxnumparams = maxnparams;
     paramv = new ParamDecl[maxnumparams];
 }
@@ -185,7 +185,7 @@ void cModuleInterface::allocateParamDecls(int maxnparams)
 void cModuleInterface::addGateDecl(const char *name, const char type, bool isvector)
 {
     if (numgates==maxnumgates)
-        throw new cException(this, "addGateDecl(): vector full or not yet allocated");
+        throw new cRuntimeError(this, "addGateDecl(): vector full or not yet allocated");
     int k = numgates++;
     gatev[k].name = opp_strdup(name);
     gatev[k].type = type;
@@ -195,7 +195,7 @@ void cModuleInterface::addGateDecl(const char *name, const char type, bool isvec
 void cModuleInterface::addParamDecl(const char *name, const char *types)
 {
     if (numparams==maxnumparams)
-        throw new cException(this, "addParamDecl(): vector full or not yet allocated");
+        throw new cRuntimeError(this, "addParamDecl(): vector full or not yet allocated");
     int k = numparams++;
     paramv[k].name = opp_strdup(name);
     paramv[k].types = opp_strdup(types);
@@ -289,8 +289,8 @@ void cModuleInterface::checkParametersOf( cModule *mod )
 
         if (!strchr(paramv[i].types, '*') && !strchr(paramv[i].types, par->type()))
         {
-           throw new cException("Module declaration doesn't allow type `%c' for parameter `%s'",
-                                par->type(), par->fullPath().c_str());
+           throw new cRuntimeError("Module declaration doesn't allow type `%c' for parameter `%s'",
+                                   par->type(), par->fullPath().c_str());
         }
 
         if (strchr(paramv[i].types,'#'))
@@ -354,14 +354,14 @@ void cModuleInterface::checkConsistency()
     return;
 
     error1:
-    throw new cException("Inconsistent module interfaces (Interface..End) for `%s':"
-                     " %s does not match",
-                     name(), what);
+    throw new cRuntimeError("Inconsistent module interfaces (Interface..End) for `%s':"
+                            " %s does not match",
+                            name(), what);
 
     error2:
-    throw new cException("Inconsistent module interfaces (Interface..End) for `%s':"
-                     " %s `%s' (id=%d) do not match",
-                     name(), what, which, id);
+    throw new cRuntimeError("Inconsistent module interfaces (Interface..End) for `%s':"
+                            " %s `%s' (id=%d) do not match",
+                            name(), what, which, id);
 }
 
 //=========================================================================
@@ -516,7 +516,7 @@ cModuleInterface *cModuleType::moduleInterface()
     if (!iface)
         iface = findModuleInterface( interface_name );
     if (!iface)
-        throw new cException(eNOMODIF, interface_name, name());
+        throw new cRuntimeError(eNOMODIF, interface_name, name());
     return iface;
 }
 
@@ -582,9 +582,9 @@ cFunctionType::cFunctionType(const char *name, MathFuncNoArg f, int ac) : cObjec
     this->f = (MathFunc)f;
     argc = 0;
     if (ac!=-1 && ac!=0)
-        throw new cException("Register_Function() or cFunctionType: "
-                             "attempt to register function \"%s\" with wrong "
-                             "number of arguments %d, should be 0", name, ac);
+        throw new cRuntimeError("Register_Function() or cFunctionType: "
+                                "attempt to register function \"%s\" with wrong "
+                                "number of arguments %d, should be 0", name, ac);
 }
 
 cFunctionType::cFunctionType(const char *name, MathFunc1Arg f, int ac) : cObject(name)
@@ -592,9 +592,9 @@ cFunctionType::cFunctionType(const char *name, MathFunc1Arg f, int ac) : cObject
     this->f = (MathFunc)f;
     argc = 1;
     if (ac!=-1 && ac!=1)
-        throw new cException("Register_Function() or cFunctionType: "
-                             "attempt to register function \"%s\" with wrong "
-                             "number of arguments %d, should be 1", name, ac);
+        throw new cRuntimeError("Register_Function() or cFunctionType: "
+                                "attempt to register function \"%s\" with wrong "
+                                "number of arguments %d, should be 1", name, ac);
 }
 
 cFunctionType::cFunctionType(const char *name, MathFunc2Args f, int ac) : cObject(name)
@@ -602,9 +602,9 @@ cFunctionType::cFunctionType(const char *name, MathFunc2Args f, int ac) : cObjec
     this->f = (MathFunc)f;
     argc = 2;
     if (ac!=-1 && ac!=2)
-        throw new cException("Register_Function() or cFunctionType: "
-                             "attempt to register function \"%s\" with wrong "
-                             "number of arguments %d, should be 2", name, ac);
+        throw new cRuntimeError("Register_Function() or cFunctionType: "
+                                "attempt to register function \"%s\" with wrong "
+                                "number of arguments %d, should be 2", name, ac);
 }
 
 cFunctionType::cFunctionType(const char *name, MathFunc3Args f, int ac) : cObject(name)
@@ -612,9 +612,9 @@ cFunctionType::cFunctionType(const char *name, MathFunc3Args f, int ac) : cObjec
     this->f = (MathFunc)f;
     argc = 3;
     if (ac!=-1 && ac!=3)
-        throw new cException("Register_Function() or cFunctionType: "
-                             "attempt to register function \"%s\" with wrong "
-                             "number of arguments %d, should be 3", name, ac);
+        throw new cRuntimeError("Register_Function() or cFunctionType: "
+                                "attempt to register function \"%s\" with wrong "
+                                "number of arguments %d, should be 3", name, ac);
 }
 
 cFunctionType::cFunctionType(const char *name, MathFunc4Args f, int ac) : cObject(name)
@@ -622,43 +622,43 @@ cFunctionType::cFunctionType(const char *name, MathFunc4Args f, int ac) : cObjec
     this->f = (MathFunc)f;
     argc = 4;
     if (ac!=-1 && ac!=4)
-        throw new cException("Register_Function() or cFunctionType: "
-                             "attempt to register function \"%s\" with wrong "
-                             "number of arguments %d, should be 4", name, ac);
+        throw new cRuntimeError("Register_Function() or cFunctionType: "
+                                "attempt to register function \"%s\" with wrong "
+                                "number of arguments %d, should be 4", name, ac);
 }
 
 MathFuncNoArg cFunctionType::mathFuncNoArg()
 {
     if (argc!=0)
-        throw new cException(this,"mathFuncNoArg(): arg count mismatch (argc=%d)",argc);
+        throw new cRuntimeError(this,"mathFuncNoArg(): arg count mismatch (argc=%d)",argc);
     return (MathFuncNoArg)f;
 }
 
 MathFunc1Arg cFunctionType::mathFunc1Arg()
 {
     if (argc!=1)
-        throw new cException(this,"mathFunc1Arg(): arg count mismatch (argc=%d)",argc);
+        throw new cRuntimeError(this,"mathFunc1Arg(): arg count mismatch (argc=%d)",argc);
     return (MathFunc1Arg)f;
 }
 
 MathFunc2Args cFunctionType::mathFunc2Args()
 {
     if (argc!=2)
-        throw new cException(this,"mathFunc2Args(): arg count mismatch (argc=%d)",argc);
+        throw new cRuntimeError(this,"mathFunc2Args(): arg count mismatch (argc=%d)",argc);
     return (MathFunc2Args)f;
 }
 
 MathFunc3Args cFunctionType::mathFunc3Args()
 {
     if (argc!=3)
-        throw new cException(this,"mathFunc3Args(): arg count mismatch (argc=%d)",argc);
+        throw new cRuntimeError(this,"mathFunc3Args(): arg count mismatch (argc=%d)",argc);
     return (MathFunc3Args)f;
 }
 
 MathFunc4Args cFunctionType::mathFunc4Args()
 {
     if (argc!=4)
-        throw new cException(this,"mathFunc4Args(): arg count mismatch (argc=%d)",argc);
+        throw new cRuntimeError(this,"mathFunc4Args(): arg count mismatch (argc=%d)",argc);
     return (MathFunc4Args)f;
 }
 
@@ -685,7 +685,7 @@ cPolymorphic *createOne(const char *classname)
 {
     cClassRegister *p = (cClassRegister *)classes.instance()->get(classname);
     if (!p)
-        throw new cException("Class \"%s\" not found -- perhaps its code was not linked in, or the class wasn't registered via Register_Class()", classname);
+        throw new cRuntimeError("Class \"%s\" not found -- perhaps its code was not linked in, or the class wasn't registered via Register_Class()", classname);
     return p->createOne();
 }
 

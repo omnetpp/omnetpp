@@ -50,7 +50,7 @@ class cInspectorFactory : public cObject
     virtual ~cInspectorFactory() {}
 
     /**
-     * Assignment is not supported by this class: this method throws a cException when called.
+     * Assignment is not supported by this class: this method throws a cRuntimeError when called.
      */
     cInspectorFactory& operator=(const cInspectorFactory&)  {copyNotSupported();return *this;}
 

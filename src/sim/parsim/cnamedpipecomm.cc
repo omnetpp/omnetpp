@@ -101,10 +101,10 @@ void cNamedPipeCommunications::init()
         ev.printf("cNamedPipeCommunications: creating and opening pipe '%s' for read...\n", fname);
         unlink(fname);
         if (mknod(fname, S_IFIFO|0600, 0)==-1)
-            throw new cException("cNamedPipeCommunications: cannot create pipe '%s': %s", fname, strerror(errno));
+            throw new cRuntimeError("cNamedPipeCommunications: cannot create pipe '%s': %s", fname, strerror(errno));
         rpipes[i] = open(fname,O_RDONLY|O_NONBLOCK);
         if (rpipes[i]==-1)
-            throw new cException("cNamedPipeCommunications: cannot open pipe '%s' for read: %s", fname, strerror(errno));
+            throw new cRuntimeError("cNamedPipeCommunications: cannot open pipe '%s' for read: %s", fname, strerror(errno));
 
         if (rpipes[i] > maxFdPlus1)
             maxFdPlus1 = rpipes[i];
@@ -131,7 +131,7 @@ void cNamedPipeCommunications::init()
             wpipes[i] = open(fname,O_WRONLY);
         }
         if (wpipes[i]==-1)
-            throw new cException("cNamedPipeCommunications: cannot open pipe '%s' for write: %s", fname, strerror(errno));
+            throw new cRuntimeError("cNamedPipeCommunications: cannot open pipe '%s' for write: %s", fname, strerror(errno));
     }
 }
 
@@ -173,9 +173,9 @@ void cNamedPipeCommunications::send(cCommBuffer *buffer, int tag, int destinatio
     ph.tag = tag;
     ph.contentLength = b->getMessageSize();
     if (write(fd, &ph, sizeof(ph))==-1)
-        throw new cException("cNamedPipeCommunications: cannot write pipe to procId=%d: %s", destination, strerror(errno));
+        throw new cRuntimeError("cNamedPipeCommunications: cannot write pipe to procId=%d: %s", destination, strerror(errno));
     if (write(fd, b->getBuffer(), ph.contentLength)==-1)
-        throw new cException("cNamedPipeCommunications: cannot write pipe to procId=%d: %s", destination, strerror(errno));
+        throw new cRuntimeError("cNamedPipeCommunications: cannot write pipe to procId=%d: %s", destination, strerror(errno));
 }
 
 bool cNamedPipeCommunications::receive(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking)
@@ -183,7 +183,7 @@ bool cNamedPipeCommunications::receive(int filtTag, cCommBuffer *buffer, int& re
     bool recv = doReceive(buffer, receivedTag, sourceProcId, blocking);
     // TBD implement tag filtering
     if (recv && filtTag!=PARSIM_ANY_TAG && filtTag!=receivedTag)
-        throw new cException("cNamedPipeCommunications: tag filtering not implemented");
+        throw new cRuntimeError("cNamedPipeCommunications: tag filtering not implemented");
     return recv;
 }
 
@@ -215,8 +215,8 @@ bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, 
             {
                 struct PipeHeader ph;
                 if (readBytes(rpipes[i], &ph, sizeof(ph))==-1)
-                    throw new cException("cNamedPipeCommunications: cannot read from pipe "
-                                         "to procId=%d: %s", sourceProcId, strerror(errno));
+                    throw new cRuntimeError("cNamedPipeCommunications: cannot read from pipe "
+                                            "to procId=%d: %s", sourceProcId, strerror(errno));
 
                 sourceProcId = i;
                 receivedTag = ph.tag;
@@ -224,8 +224,8 @@ bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, 
                 b->setMessageSize(ph.contentLength);
 
                 if (readBytes(rpipes[i], b->getBuffer(), ph.contentLength)==-1)
-                    throw new cException("cNamedPipeCommunications: cannot read from pipe "
-                                         "to procId=%d: %s", sourceProcId, strerror(errno));
+                    throw new cRuntimeError("cNamedPipeCommunications: cannot read from pipe "
+                                            "to procId=%d: %s", sourceProcId, strerror(errno));
                 return true;
             }
         }

@@ -41,7 +41,7 @@ class sFieldWrapper;
  * is said to be the `client object' of the cStructDescriptor object.
  *
  * In this class, the copy constructor, dup() and the assignment operator
- * are redefined to raise an error (throw cException), since they would
+ * are redefined to raise an error (throw cRuntimeError), since they would
  * be of no use in subclasses.
  *
  * @ingroup Internals
@@ -101,7 +101,7 @@ class SIM_API cStructDescriptor : public cObject
     virtual ~cStructDescriptor();
 
     /**
-     * Assignment is not supported by this class: this method throws a cException when called.
+     * Assignment is not supported by this class: this method throws a cRuntimeError when called.
      */
     cStructDescriptor& operator=(const cStructDescriptor&)  {copyNotSupported();return *this;}
     //@}

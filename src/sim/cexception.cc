@@ -25,6 +25,7 @@
 #include "cmodule.h"
 #include "errmsg.h"
 #include "cenvir.h"
+#include "cconfig.h"
 
 
 #define BUFLEN 1024
@@ -151,6 +152,78 @@ cTerminationException::cTerminationException(const char *msgformat...)
     va_start(va, msgformat);
     init(NULL, eCUSTOM, msgformat, va);
     va_end(va);
+}
+
+//---
+
+cRuntimeError::cRuntimeError(int errc...)
+{
+    va_list va;
+    va_start(va, errc);
+    init(NULL, errc, emsg[errc], va);
+    va_end(va);
+    breakIntoDebuggerIfRequested();
+}
+
+cRuntimeError::cRuntimeError(const char *msgformat...)
+{
+    va_list va;
+    va_start(va, msgformat);
+    init(NULL, eCUSTOM, msgformat, va);
+    va_end(va);
+    breakIntoDebuggerIfRequested();
+}
+
+cRuntimeError::cRuntimeError(const cObject *where, int errc...)
+{
+    va_list va;
+    va_start(va, errc);
+    init(where, errc, emsg[errc], va);
+    va_end(va);
+    breakIntoDebuggerIfRequested();
+}
+
+cRuntimeError::cRuntimeError(const cObject *where, const char *msgformat...)
+{
+    va_list va;
+    va_start(va, msgformat);
+    init(where, eCUSTOM, msgformat, va);
+    va_end(va);
+    breakIntoDebuggerIfRequested();
+}
+
+void cRuntimeError::breakIntoDebuggerIfRequested()
+{
+    if (ev.config()->getAsBool("General", "debug-on-errors", false))
+    {
+        printf("\n"
+               "RUNTIME ERROR. A cRuntimeError exception is about to be thrown,\n"
+               "and you requested (by setting debug-on-errors=true in the ini file)\n"
+               "that errors abort execution and break into the debugger.\n"
+               " - on Linux or Unix-like systems: you should now be running the simulation\n"
+               "   under gdb or another debugger. The simulation kernel will now cause a\n"
+               "   deliberate segfault which will get you into the debugger.\n"
+               " - on Windows: your should have a just-in-time debugger (such as\n"
+               "   the Visual C++ IDE) enabled. The simulation kernel will now\n"
+               "   cause a debugger interrupt to get you into the debugger -- press\n"
+               "   the [Debug] button in the dialog that comes up.\n"
+               "Once in the debugger, use its \"view stack trace\" command (in gdb: \"bt\")\n"
+               "to see the context of the runtime error. See error text below.\n"
+               "\n"
+               );
+        if (moduleID()==-1)
+            printf("<!> Error: %s.\n", message());
+        else
+            printf("<!> Error in module (%s) %s: %s.\n", moduleClassName(), moduleFullPath(),
+                   message());
+        fflush(stdout);
+
+#ifdef _MSC_VER
+        __asm int 3; // debugger interrupt
+#else
+        *(int *)0 = 1; // deliberate segfault which breaks into the debugger
+#endif
+    }
 }
 
 //---

@@ -424,7 +424,7 @@ class SIM_API cChannelType : public cObject
     virtual ~cChannelType() {}
 
     /**
-     * Assignment is not supported by this class: this method throws a cException when called.
+     * Assignment is not supported by this class: this method throws a cRuntimeError when called.
      */
     cChannelType& operator=(const cChannelType&)  {copyNotSupported();return *this;}
     //@}
@@ -477,7 +477,7 @@ class SIM_API cLinkType : public cChannelType
     virtual ~cLinkType() {}
 
     /**
-     * Assignment is not supported by this class: this method throws a cException when called.
+     * Assignment is not supported by this class: this method throws a cRuntimeError when called.
      */
     cLinkType& operator=(const cLinkType&)  {copyNotSupported();return *this;}
     //@}
@@ -537,7 +537,7 @@ class SIM_API cNetworkType : public cObject
     virtual ~cNetworkType() {}
 
     /**
-     * Assignment is not supported by this class: this method throws a cException when called.
+     * Assignment is not supported by this class: this method throws a cRuntimeError when called.
      */
     cNetworkType& operator=(const cNetworkType&)  {copyNotSupported();return *this;}
     //@}
@@ -605,7 +605,7 @@ class SIM_API cFunctionType : public cObject
     virtual ~cFunctionType() {}
 
     /**
-     * Assignment is not supported by this class: this method throws a cException when called.
+     * Assignment is not supported by this class: this method throws a cRuntimeError when called.
      */
     cFunctionType& operator=(const cFunctionType&)  {copyNotSupported();return *this;}
     //@}
@@ -703,7 +703,7 @@ class SIM_API cClassRegister : public cObject
     virtual ~cClassRegister() {}
 
     /**
-     * Assignment is not supported by this class: this method throws a cException when called.
+     * Assignment is not supported by this class: this method throws a cRuntimeError when called.
      */
     cClassRegister& operator=(const cClassRegister&)  {copyNotSupported();return *this;}
     //@}

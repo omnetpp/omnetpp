@@ -24,6 +24,7 @@ config filtobjlist-category	{mqsgvo}
 config filtobjlist-maxcount	{100000}
 config editor-findstring	{}
 config rununtil-time	{}
+config dontshow	{}
 config editor-regexp	{0}
 config filtobjlist-class	{}
 config rununtil-mode	{Express (tracing off)}

@@ -132,8 +132,8 @@ void cEnum::insert(int key, const char *str)
         // found a slot with this key, check consistency (strings must be the same)
         assert(vect[k].key==key);
         if (strcmp(vect[k].string, str))
-            throw new cException("Key mismatch for enum %s: %s and %s have the same value (%d)",
-                                 name(), vect[k].string, str, key);
+            throw new cRuntimeError("Key mismatch for enum %s: %s and %s have the same value (%d)",
+                                    name(), vect[k].string, str, key);
     }
     else
     {

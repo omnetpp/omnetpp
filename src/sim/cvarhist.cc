@@ -56,7 +56,7 @@ cHistogramBase(name,-1) //--LG
 
     if ( (transform_type==HIST_TR_AUTO_EPC_DBL ||
          transform_type==HIST_TR_AUTO_EPC_INT) && max_num_cells<2 )
-        throw new cException(this,"constructor: the maximal number of cells/bin should be >=2");
+        throw new cRuntimeError(this,"constructor: the maximal number of cells/bin should be >=2");
 }
 
 cVarHistogram::~cVarHistogram()
@@ -67,7 +67,7 @@ cVarHistogram::~cVarHistogram()
 void cVarHistogram::netPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cException(this,eNOPARSIM);
+    throw new cRuntimeError(this,eNOPARSIM);
 #else
     cHistogramBase::netPack(buffer);
 
@@ -80,7 +80,7 @@ void cVarHistogram::netPack(cCommBuffer *buffer)
 void cVarHistogram::netUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cException(this,eNOPARSIM);
+    throw new cRuntimeError(this,eNOPARSIM);
 #else
     cHistogramBase::netUnpack(buffer);
 
@@ -96,7 +96,7 @@ void cVarHistogram::netUnpack(cCommBuffer *buffer)
 void cVarHistogram::addBinBound(double x) //--LG
 {
     if (transformed())
-        throw new cException(this,"cannot add bin bound after transform()");
+        throw new cRuntimeError(this,"cannot add bin bound after transform()");
 
     // create bin_bounds if not exists
     if ( bin_bounds == NULL )
@@ -164,11 +164,11 @@ static int double_compare_function( const void *p1, const void *p2 ) //--LG
 void cVarHistogram::createEquiProbableCells()
 {
     if (num_cells>0)
-        throw new cException(this,"some bin bounds already present when making equi-probable cells");
+        throw new cRuntimeError(this,"some bin bounds already present when making equi-probable cells");
 
     if (range_mode != RANGE_NOTSET)
     {
-        throw new cException(this,"setRange..() only supported with HIST_TR_NO_TRANSFORM mode");
+        throw new cRuntimeError(this,"setRange..() only supported with HIST_TR_NO_TRANSFORM mode");
 
         // // put away samples that are out of range
         // int num_inrange = num_samples;
@@ -290,7 +290,7 @@ void cVarHistogram::transform() //--LG
         if (range_mode != RANGE_NOTSET)
         {
             if (rangemin>bin_bounds[0] || rangemax<bin_bounds[num_cells])
-                throw new cException(this,"some bin bounds out of preset range");
+                throw new cRuntimeError(this,"some bin bounds out of preset range");
 
             if (rangemin<bin_bounds[0]) addBinBound(rangemin);
             if (rangemax>bin_bounds[num_cells]) addBinBound(rangemax);
@@ -356,7 +356,7 @@ double cVarHistogram::basepoint(int k) const
     if (k<num_cells+1)
         return bin_bounds[k];
     else
-        throw new cException(this,"invalid basepoint index %u",k);
+        throw new cRuntimeError(this,"invalid basepoint index %u",k);
 }
 
 double cVarHistogram::cell(int k) const
@@ -364,7 +364,7 @@ double cVarHistogram::cell(int k) const
     if (k<num_cells)
         return cellv[k];
     else
-        throw new cException(this,"invalid cell index %u",k);
+        throw new cRuntimeError(this,"invalid cell index %u",k);
 }
 
 double cVarHistogram::random() const //--LG
@@ -402,7 +402,7 @@ double cVarHistogram::pdf(double x) const // --LG
         return 0.0;
 
     if (!transformed())
-        throw new cException(this,"pdf(x) cannot be called before histogram is transformed");
+        throw new cRuntimeError(this,"pdf(x) cannot be called before histogram is transformed");
 
     if (x<rangemin || x>=rangemax)
         return 0.0;
@@ -430,7 +430,7 @@ double cVarHistogram::pdf(double x) const // --LG
 
 double cVarHistogram::cdf(double) const
 {
-    throw new cException(this,"cdf(x) not implemented");
+    throw new cRuntimeError(this,"cdf(x) not implemented");
 }
 
 void cVarHistogram::saveToFile(FILE *f) const //--LG

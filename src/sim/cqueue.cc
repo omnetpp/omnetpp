@@ -78,7 +78,7 @@ void cQueue::forEachChild(cVisitor *v)
 void cQueue::netPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cException(this,eNOPARSIM);
+    throw new cRuntimeError(this,eNOPARSIM);
 #else
     cObject::netPack(buffer);
 
@@ -86,12 +86,12 @@ void cQueue::netPack(cCommBuffer *buffer)
     buffer->pack(asc);
 
     if (compare)
-        throw new cException(this,"netPack(): cannot transmit compare function");
+        throw new cRuntimeError(this,"netPack(): cannot transmit compare function");
 
     for (cQueue::Iterator iter(*this, 0); !iter.end(); iter--)
     {
         if (iter()->owner() != this)
-            throw new cException(this,"netPack(): cannot transmit pointer to \"external\" object");
+            throw new cRuntimeError(this,"netPack(): cannot transmit pointer to \"external\" object");
         packObject(iter(),buffer);
     }
 #endif
@@ -100,7 +100,7 @@ void cQueue::netPack(cCommBuffer *buffer)
 void cQueue::netUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
-    throw new cException(this,eNOPARSIM);
+    throw new cRuntimeError(this,eNOPARSIM);
 #else
     cObject::netUnpack(buffer);
 
@@ -155,7 +155,7 @@ cQueue& cQueue::operator=(const cQueue& queue)
 void cQueue::setup(CompareFunc cmp, bool a)
 {
     if (!empty())
-        throw new cException(this, "setup() can only be called when queue is empty");
+        throw new cRuntimeError(this, "setup() can only be called when queue is empty");
 
     compare=cmp; asc=a;
 }
@@ -225,7 +225,7 @@ cObject *cQueue::remove_qelem(QElem *p)
 void cQueue::insert(cObject *obj)
 {
     if (!obj)
-        throw new cException(this,"cannot insert NULL pointer in queue");
+        throw new cRuntimeError(this,"cannot insert NULL pointer in queue");
 
     if (takeOwnership())
         take(obj);
@@ -259,11 +259,11 @@ void cQueue::insert(cObject *obj)
 void cQueue::insertBefore(cObject *where, cObject *obj)
 {
     if (!obj)
-        throw new cException(this,"cannot insert NULL pointer in queue");
+        throw new cRuntimeError(this,"cannot insert NULL pointer in queue");
 
     QElem *p = find_qelem(where);
     if (!p)
-        throw new cException(this, "insertBefore(w,o): object w=`%s' not in queue", where->name());
+        throw new cRuntimeError(this, "insertBefore(w,o): object w=`%s' not in queue", where->name());
 
     if (takeOwnership())
         take(obj);
@@ -273,11 +273,11 @@ void cQueue::insertBefore(cObject *where, cObject *obj)
 void cQueue::insertAfter(cObject *where, cObject *obj)
 {
     if (!obj)
-        throw new cException(this,"cannot insert NULL pointer in queue");
+        throw new cRuntimeError(this,"cannot insert NULL pointer in queue");
 
     QElem *p = find_qelem(where);
     if (!p)
-        throw new cException(this, "insertAfter(w,o): object w=`%s' not in queue",where->name());
+        throw new cRuntimeError(this, "insertAfter(w,o): object w=`%s' not in queue",where->name());
 
     if (takeOwnership())
         take(obj);
@@ -307,7 +307,7 @@ cObject *cQueue::remove(cObject *obj)
 cObject *cQueue::pop()
 {
     if(!tailp)
-        throw new cException(this,"pop(): queue empty");
+        throw new cRuntimeError(this,"pop(): queue empty");
 
     return remove_qelem( tailp );
 }

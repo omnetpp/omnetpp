@@ -181,9 +181,9 @@ static cPar *displayStringPar(const char *parname, cModule *mod, bool searchpare
    if (!par)
    {
       if (!searchparent)
-          throw new cException("module `%s' has no parameter `%s'", mod->fullPath().c_str(), parname);
+          throw new cRuntimeError("module `%s' has no parameter `%s'", mod->fullPath().c_str(), parname);
       else
-          throw new cException("module `%s' and its parent have no parameter `%s'", mod->fullPath().c_str(), parname);
+          throw new cRuntimeError("module `%s' and its parent have no parameter `%s'", mod->fullPath().c_str(), parname);
    }
    return par;
 }

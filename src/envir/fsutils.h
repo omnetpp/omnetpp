@@ -42,7 +42,7 @@ class PushDir
  * networks etc. in it. The file name should be given without extension;
  * ".dll" or ".so" will be appended, depending on the platform.
  *
- * On failure, cException will be thrown.
+ * On failure, cRuntimeError will be thrown.
  */
 void loadExtensionLibrary(const char *lib);
 

@@ -66,12 +66,12 @@ std::string cLinkedList::info() const
 
 void cLinkedList::netPack(cCommBuffer *buffer)
 {
-    throw new cException(this,"netPack() not supported -- don't know how to pack an item");
+    throw new cRuntimeError(this,"netPack() not supported -- don't know how to pack an item");
 }
 
 void cLinkedList::netUnpack(cCommBuffer *buffer)
 {
-    throw new cException(this,"netUnpack() not supported");
+    throw new cRuntimeError(this,"netUnpack() not supported");
 }
 
 void cLinkedList::config( VoidDelFunc _delfunc, VoidDupFunc _dupfunc,
@@ -207,7 +207,7 @@ void cLinkedList::insertBefore(void *where, void *item)
 {
     Elem *p = find_llelem(where);
     if (!p)
-        throw new cException(this,"insertBefore(w,o): item w not in list");
+        throw new cRuntimeError(this,"insertBefore(w,o): item w not in list");
     insbefore_llelem(p,item);
 }
 
@@ -215,7 +215,7 @@ void cLinkedList::insertAfter(void *where, void *item)
 {
     Elem *p = find_llelem(where);
     if (!p)
-        throw new cException(this,"insertAfter(w,o): item w not in list");
+        throw new cRuntimeError(this,"insertAfter(w,o): item w not in list");
     insafter_llelem(p,item);
 }
 
@@ -232,7 +232,7 @@ void *cLinkedList::remove(void *item)
 void *cLinkedList::pop()
 {
     if (!tailp)
-        throw new cException(this,"pop(): list empty");
+        throw new cRuntimeError(this,"pop(): list empty");
     return remove_llelem( tailp );
 }
 

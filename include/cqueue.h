@@ -30,11 +30,11 @@
  * If no such function is given, cQueue implements a FIFO.
  * Order (ascending or descending) can be specified.
  *
- * By default, cQueue's destructor deletes all contained objects. This behaviour 
+ * By default, cQueue's destructor deletes all contained objects. This behaviour
  * can be changed by calling takeOwnership(false) before inserting objects.
- * More precisely, the behaviour can be controlled per-object: the 
- * insertion-time state of the <i>takeOwnership</i> flag will determine 
- * whether the inserted object will be deleted by the cQueue destructor or not.  
+ * More precisely, the behaviour can be controlled per-object: the
+ * insertion-time state of the <i>takeOwnership</i> flag will determine
+ * whether the inserted object will be deleted by the cQueue destructor or not.
  *
  * The sorting function should look like:
  * int CompareFunc(cObject* a, cObject* b);
@@ -204,21 +204,21 @@ class SIM_API cQueue : public cObject
 
     /**
      * Inserts the given object into the queue, maintaining the sorting
-     * order. Trying to insert a NULL pointer is an error (throws cException).
+     * order. Trying to insert a NULL pointer is an error (throws cRuntimeError).
      */
     virtual void insert(cObject *obj);
 
     /**
      * Inserts exactly before the given object. If the given position
      * does not exist or if you try to insert a NULL pointer,
-     * cException is thrown.
+     * cRuntimeError is thrown.
      */
     virtual void insertBefore(cObject *where, cObject *obj);
 
     /**
      * Inserts exactly after the given object. If the given position
      * does not exist or if you try to insert a NULL pointer,
-     * cException is thrown.
+     * cRuntimeError is thrown.
      */
     virtual void insertAfter(cObject *where, cObject *obj);
 
@@ -230,7 +230,7 @@ class SIM_API cQueue : public cObject
 
     /**
      * Unlinks and returns the last (tail) object in the queue. If the queue
-     * was empty, cException is thrown.
+     * was empty, cRuntimeError is thrown.
      */
     virtual cObject *pop();
 

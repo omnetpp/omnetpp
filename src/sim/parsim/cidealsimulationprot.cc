@@ -67,7 +67,7 @@ void cIdealSimulationProtocol::startRun()
     sprintf(fname, "ispeventlog-%d.dat", comm->getProcId());
     fin = fopen(fname,"r");
     if (!fin)
-        throw new cException("cIdealSimulationProtocol error: cannot open file `%s' for read", fname);
+        throw new cRuntimeError("cIdealSimulationProtocol error: cannot open file `%s' for read", fname);
 
     readNextRecordedEvent();
 }
@@ -130,9 +130,9 @@ cMessage *cIdealSimulationProtocol::getNextEvent()
 
     if (msg->arrivalTime()!=nextExternalEvent.t)
     {
-        throw new cException("cIdealSimulationProtocol: event trace does not match actual events: "
-                             "expected event with timestamp %.18g, and got one with timestamp %.18g",
-                             nextExternalEvent.t, msg->arrivalTime());
+        throw new cRuntimeError("cIdealSimulationProtocol: event trace does not match actual events: "
+                                "expected event with timestamp %.18g, and got one with timestamp %.18g",
+                                nextExternalEvent.t, msg->arrivalTime());
     }
     readNextRecordedEvent();
     return msg;

@@ -462,9 +462,9 @@ void TParInspector::writeBack()
       if (!ok)
          throw new cException(newtype=='?' ? "Syntax error, value not changed." : "Syntax error or wrong type, value not changed.");
    } catch (cException *e) {
-         TclQuotedString msg(e->message());
-         delete e;
-         CHK(Tcl_VarEval(interp,"messagebox {Error} ", msg.get(), " error ok", NULL));
+      TclQuotedString msg(e->message());
+      delete e;
+      CHK(Tcl_VarEval(interp,"messagebox {Error} ", msg.get(), " error ok", NULL));
    }
    if (ok)
       setEntry(".main.newtype.e", "");

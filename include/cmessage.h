@@ -221,7 +221,7 @@ class SIM_API cMessage : public cObject
      * decapsulate().)
      *
      * The value may be negative (message length may be decreased too).
-     * If the resulting length would be negative, the method throws a cException.
+     * If the resulting length would be negative, the method throws a cRuntimeError.
      */
     void addLength(long delta);
 
@@ -365,7 +365,7 @@ class SIM_API cMessage : public cObject
     /**
      * Returns the nth object in the message's object list, converting it to a cPar.
      * If the object doesn't exist or it cannot be cast to cPar (using dynamic_cast<>),
-     * the method throws a cException.
+     * the method throws a cRuntimeError.
      *
      * <i>NOTE: This is a convenience function: one may use parList() and
      * cArray::get() instead. See also class description for discussion about
@@ -379,7 +379,7 @@ class SIM_API cMessage : public cObject
      * Returns the object with the given name in the message's object list,
      * converting it to a cPar.
      * If the object doesn't exist or it cannot be cast to cPar (using dynamic_cast<>),
-     * the method throws a cException.
+     * the method throws a cRuntimeError.
      *
      * <i>NOTE: This is a convenience function: one may use parList() and
      * cArray::get() instead. See also class description for discussion about
@@ -484,7 +484,7 @@ class SIM_API cMessage : public cObject
     /**
      * Decapsulates a message from the message object. The length of
      * the message will be decreased accordingly, except if it was zero.
-     * If the length would become negative, cException is thrown.
+     * If the length would become negative, cRuntimeError is thrown.
      */
     cMessage *decapsulate();
 

@@ -55,7 +55,7 @@ void cIniFile::initializeFrom(cConfiguration *)
 {
 }
 
-#define SYNTAX_ERROR(txt) throw new cException("Error reading `%s' line %d: %s",fname,line,txt);
+#define SYNTAX_ERROR(txt) throw new cRuntimeError("Error reading `%s' line %d: %s",fname,line,txt);
 
 void cIniFile::readFile(const char *filename)
 {
@@ -77,7 +77,7 @@ void cIniFile::_readFile(const char *fname, int section_id)
 
     file = fopen(fname,"r");
     if (file==NULL)
-        throw new cException("Cannot open ini file `%s'", fname);
+        throw new cRuntimeError("Cannot open ini file `%s'", fname);
 
     bool oldwildcardsmode = false; // if true, '*' matches anything (also a ".")
     while (!feof(file))

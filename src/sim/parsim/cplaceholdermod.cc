@@ -42,7 +42,7 @@ cPlaceHolderModule& cPlaceHolderModule::operator=(const cPlaceHolderModule& mod)
 
 void cPlaceHolderModule::arrived(cMessage *msg,int n,simtime_t t)
 {
-    throw new cException(this, "internal error: arrived() called");
+    throw new cRuntimeError(this, "internal error: arrived() called");
 }
 
 bool cPlaceHolderModule::callInitialize(int stage)

@@ -321,14 +321,14 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "{\n";
     out << "    cModuleType *modtype = findModuleType(modname);\n";
     out << "    if (!modtype)\n";
-    out << "        throw new cException(\"Module type definition %s not found (Define_Module() missing from C++ code?)\", modname);\n";
+    out << "        throw new cRuntimeError(\"Module type definition %s not found (Define_Module() missing from C++ code?)\", modname);\n";
     out << "    return modtype;\n";
     out << "}\n\n";
 
     out << "static void _checkModuleVectorSize(int vectorsize, const char *mod)\n";
     out << "{\n";
     out << "    if (vectorsize<0)\n";
-    out << "        throw new cException(\"Negative module vector size %s[%d]\", mod, vectorsize);\n";
+    out << "        throw new cRuntimeError(\"Negative module vector size %s[%d]\", mod, vectorsize);\n";
     out << "}\n";
     out << "\n";
 
@@ -344,7 +344,7 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "static int _checkModuleIndex(int index, int vectorsize, const char *modname)\n";
     out << "{\n";
     out << "    if (index<0 || index>=vectorsize)\n";
-    out << "        throw new cException(\"Submodule index %s[%d] out of range, sizeof(%s) is %d\", modname, index, modname, vectorsize);\n";
+    out << "        throw new cRuntimeError(\"Submodule index %s[%d] out of range, sizeof(%s) is %d\", modname, index, modname, vectorsize);\n";
     out << "    return index;\n";
     out << "}\n";
     out << "\n";
@@ -353,7 +353,7 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "{\n";
     out << "    cGate *g = mod->gate(gatename);\n";
     out << "    if (!g)\n";
-    out << "        throw new cException(\"%s has no gate named %s\",mod->fullPath().c_str(), gatename);\n";
+    out << "        throw new cRuntimeError(\"%s has no gate named %s\",mod->fullPath().c_str(), gatename);\n";
     out << "    return g;\n";
     out << "}\n";
     out << "\n";
@@ -362,7 +362,7 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "{\n";
     out << "    cGate *g = mod->gate(gatename, gateindex);\n";
     out << "    if (!g)\n";
-    out << "        throw new cException(\"%s has no gate %s[%d]\",mod->fullPath().c_str(), gatename, gateindex);\n";
+    out << "        throw new cRuntimeError(\"%s has no gate %s[%d]\",mod->fullPath().c_str(), gatename, gateindex);\n";
     out << "    return g;\n";
     out << "}\n";
     out << "\n";
@@ -371,12 +371,12 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "{\n";
     out << "    int baseId = mod->findGate(gatename);\n";
     out << "    if (baseId<0)\n";
-    out << "        throw new cException(\"%s has no %s[] gate\",mod->fullPath().c_str(), gatename);\n";
+    out << "        throw new cRuntimeError(\"%s has no %s[] gate\",mod->fullPath().c_str(), gatename);\n";
     out << "    int n = mod->gate(baseId)->size();\n";
     out << "    for (int i=0; i<n; i++)\n";
     out << "        if (!mod->gate(baseId+i)->isConnectedInside())\n";
     out << "            return mod->gate(baseId+i);\n";
-    out << "    throw new cException(\"%s[] gates are all connected, no gate left for `++' operator\",mod->fullPath().c_str(), gatename);\n";
+    out << "    throw new cRuntimeError(\"%s[] gates are all connected, no gate left for `++' operator\",mod->fullPath().c_str(), gatename);\n";
     out << "}\n";
     out << "\n";
 
@@ -384,7 +384,7 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "{\n";
     out << "    int baseId = mod->findGate(gatename);\n";
     out << "    if (baseId<0)\n";
-    out << "        throw new cException(\"%s has no %s[] gate\",mod->fullPath().c_str(), gatename);\n";
+    out << "        throw new cRuntimeError(\"%s has no %s[] gate\",mod->fullPath().c_str(), gatename);\n";
     out << "    int n = mod->gate(baseId)->size();\n";
     out << "    for (int i=0; i<n; i++)\n";
     out << "        if (!mod->gate(baseId+i)->isConnectedOutside())\n";
@@ -398,7 +398,7 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "{\n";
     out << "    cFunctionType *functype = findFunction(funcname,argcount);\n";
     out << "    if (!functype)\n";
-    out << "        throw new cException(\"Function %s with %d args not found\", funcname, argcount);\n";
+    out << "        throw new cRuntimeError(\"Function %s with %d args not found\", funcname, argcount);\n";
     out << "    return functype;\n";
     out << "}\n";
     out << "\n";
@@ -407,7 +407,7 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "{\n";
     out << "    cChannelType *channeltype = findChannelType(channeltypename);\n";
     out << "    if (!channeltype)\n";
-    out << "        throw new cException(\"Channel type %s not found\", channeltypename);\n";
+    out << "        throw new cRuntimeError(\"Channel type %s not found\", channeltypename);\n";
     out << "    cChannel *channel = channeltype->create(\"channel\");\n";
     out << "    return channel;\n";
     out << "}\n";
@@ -427,7 +427,7 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "{\n";
     out << "    cXMLElement *node = ev.getXMLDocument(fname, pathexpr);\n";
     out << "    if (!node)\n";
-    out << "        throw new cException(!pathexpr ? \"xmldoc(\\\"%s\\\"): element not found\" : \"xmldoc(\\\"%s\\\", \\\"%s\\\"): element not found\",fname,pathexpr);\n";
+    out << "        throw new cRuntimeError(!pathexpr ? \"xmldoc(\\\"%s\\\"): element not found\" : \"xmldoc(\\\"%s\\\", \\\"%s\\\"): element not found\",fname,pathexpr);\n";
     out << "    return node;\n";
     out << "}\n";
     out << "\n";

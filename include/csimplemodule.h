@@ -97,13 +97,13 @@ class SIM_API cSimpleModule : public cModule
     /**
      * Should be redefined to contain the module activity function.
      * For several good reasons, you should prefer handleMessage() to activity().
-     * This default implementation issues an error message (throws cException).
+     * This default implementation issues an error message (throws cRuntimeError).
      */
     virtual void activity();
 
     /**
      * Should be redefined to contain the module's message handling function.
-     * This default implementation issues an error message (throws cException).
+     * This default implementation issues an error message (throws cRuntimeError).
      */
     virtual void handleMessage(cMessage *msg);
     //@}
@@ -436,7 +436,7 @@ class SIM_API cSimpleModule : public cModule
     void endSimulation();
 
     /**
-     * DEPRECATED. Equivalent to <tt>throw new cException(
+     * DEPRECATED. Equivalent to <tt>throw new cRuntimeError(
      * ...<i>same argument list</i>...)</tt>.
      */
     void error(const char *fmt,...) const;

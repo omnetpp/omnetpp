@@ -112,13 +112,13 @@ cKSplit::~cKSplit()
 void cKSplit::netPack(cCommBuffer *buffer)
 {
     // cDensityEstBase::netPack(buffer);
-    throw new cException(this,"netPack() not implemented");
+    throw new cRuntimeError(this,"netPack() not implemented");
 }
 
 void cKSplit::netUnpack(cCommBuffer *buffer)
 {
     // cDensityEstBase::netUnpack(buffer);
-    throw new cException(this,"netUnpack() not implemented");
+    throw new cRuntimeError(this,"netUnpack() not implemented");
 }
 
 cKSplit& cKSplit::operator=(const cKSplit& res)
@@ -681,7 +681,7 @@ double cKSplit::pdf (double x) const
 
 double cKSplit::cdf (double) const
 {
-   throw new cException(this,"cdf() not implemented");
+   throw new cRuntimeError(this,"cdf() not implemented");
 }
 
 void cKSplit::saveToFile(FILE *f) const

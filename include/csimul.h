@@ -101,7 +101,7 @@ class SIM_API cSimulation : public cObject
 
     /**
      * Copy constructor is not supported:  This function
-     * gives an error (throws cException) via operator= when called.
+     * gives an error (throws cRuntimeError) via operator= when called.
      */
     cSimulation(const cSimulation& r);
 
@@ -121,7 +121,7 @@ class SIM_API cSimulation : public cObject
 
     /**
      * Dupping is not implemented for this class. This function
-     * gives an error (throws cException) via operator= when called.
+     * gives an error (throws cRuntimeError) via operator= when called.
      */
     virtual cObject *dup() const  {return new cSimulation(*this);}
 
@@ -148,7 +148,7 @@ class SIM_API cSimulation : public cObject
     virtual const char *fullPath(char *buffer, int bufsize) const;
 
     /**
-     * Assignment is not supported by this class: this method throws a cException when called.
+     * Assignment is not supported by this class: this method throws a cRuntimeError when called.
      */
     cSimulation& operator=(const cSimulation&)  {copyNotSupported();return *this;}
     //@}

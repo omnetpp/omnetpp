@@ -318,7 +318,7 @@ class SIM_API cLongHistogram : public cEqdHistogramBase
     virtual ~cLongHistogram();
 
     /**
-     * Assignment is not supported by this class: this method throws a cException when called.
+     * Assignment is not supported by this class: this method throws a cRuntimeError when called.
      */
     cLongHistogram& operator=(const cLongHistogram&)  {copyNotSupported();return *this;}
     //@}
@@ -443,7 +443,7 @@ class SIM_API cDoubleHistogram : public cEqdHistogramBase
     virtual ~cDoubleHistogram();
 
     /**
-     * Assignment is not supported by this class: this method throws a cException when called.
+     * Assignment is not supported by this class: this method throws a cRuntimeError when called.
      */
     cDoubleHistogram& operator=(const cDoubleHistogram&)  {copyNotSupported();return *this;}
     //@}

@@ -314,7 +314,7 @@ int opp_vsscanf(const char *s, const char *fmt, va_list va)
             }
             else
             {
-                throw new cException("opp_vsscanf: unsupported format '%s'",fmt);
+                throw new cRuntimeError("opp_vsscanf: unsupported format '%s'",fmt);
             }
         }
         else if (isspace(*fmt))
@@ -328,7 +328,7 @@ int opp_vsscanf(const char *s, const char *fmt, va_list va)
         }
         else
         {
-            throw new cException("opp_vsscanf: unexpected char in format: '%s'",fmt);
+            throw new cRuntimeError("opp_vsscanf: unexpected char in format: '%s'",fmt);
         }
     }
 }
@@ -343,7 +343,7 @@ void opp_error(int errc...)
     vsprintf(message,emsg[errc],va);
     va_end(va);
 
-    throw new cException(errc, message);
+    throw new cRuntimeError(errc, message);
 }
 
 void opp_error(const char *msgformat...)
@@ -354,7 +354,7 @@ void opp_error(const char *msgformat...)
     vsprintf(message,msgformat,va);
     va_end(va);
 
-    throw new cException(eUSER,message);
+    throw new cRuntimeError(eUSER,message);
 }
 
 void opp_warning(int errc...)

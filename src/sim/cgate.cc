@@ -81,7 +81,7 @@ void cGate::forEachChild(cVisitor *v)
 
 cGate& cGate::operator=(const cGate& gate)
 {
-    throw new cException(this, eCANTDUP);
+    throw new cRuntimeError(this, eCANTDUP);
 }
 
 void cGate::setName(const char *s)
@@ -199,15 +199,15 @@ void cGate::setIndex(int sn, int vs)
 void cGate::connectTo(cGate *g, cChannel *chan)
 {
     if (vectsize==0)
-        throw new cException(this, "connectTo(): gate vector size is zero");
+        throw new cRuntimeError(this, "connectTo(): gate vector size is zero");
     if (togatep)
-        throw new cException(this, "connectTo(): gate already connected");
+        throw new cRuntimeError(this, "connectTo(): gate already connected");
     if (!g)
-        throw new cException(this, "connectTo(): destination gate cannot be NULL pointer");
+        throw new cRuntimeError(this, "connectTo(): destination gate cannot be NULL pointer");
     if (g->vectsize==0)
-        throw new cException(this, "connectTo(): destination gate vector size is zero");
+        throw new cRuntimeError(this, "connectTo(): destination gate vector size is zero");
     if (g->fromgatep)
-        throw new cException(this, "connectTo(): destination gate already connected");
+        throw new cRuntimeError(this, "connectTo(): destination gate already connected");
 
     // build new connection
     togatep = g;
@@ -276,7 +276,7 @@ void cGate::setDelay(cPar *p)
 
     cBasicChannel *ch = dynamic_cast<cBasicChannel *>(channelp);
     if (!ch)
-        throw new cException(this, "setDelay(): channel is not a cBasicChannel");
+        throw new cRuntimeError(this, "setDelay(): channel is not a cBasicChannel");
     ch->setDelay(p);
 }
 
@@ -287,7 +287,7 @@ void cGate::setError(cPar *p)
 
     cBasicChannel *ch = dynamic_cast<cBasicChannel *>(channelp);
     if (!ch)
-        throw new cException(this, "setDataRate(): channel is not a cBasicChannel");
+        throw new cRuntimeError(this, "setDataRate(): channel is not a cBasicChannel");
     ch->setError(p);
 }
 
@@ -298,7 +298,7 @@ void cGate::setDataRate(cPar *p)
 
     cBasicChannel *ch = dynamic_cast<cBasicChannel *>(channelp);
     if (!ch)
-        throw new cException(this, "setDataRate(): channel is not a cBasicChannel");
+        throw new cRuntimeError(this, "setDataRate(): channel is not a cBasicChannel");
     ch->setDatarate(p);
 }
 

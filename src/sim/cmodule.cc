@@ -105,7 +105,7 @@ cModule::~cModule()
     {
         if (submod() == (cModule *)simulation.runningModule())
         {
-            throw new cException("Cannot delete a compound module from one of its submodules!");
+            throw new cRuntimeError("Cannot delete a compound module from one of its submodules!");
             // The reason is that deleteModule() of the currently executing
             // module does not return -- for obvious reasons (we would
             // execute with an already deallocated stack etc).
@@ -148,7 +148,7 @@ cModule::~cModule()
 
 cModule& cModule::operator=(const cModule&)
 {
-    throw new cException(this, eCANTDUP);
+    throw new cRuntimeError(this, eCANTDUP);
 }
 
 void cModule::forEachChild(cVisitor *v)
@@ -294,7 +294,7 @@ cGate *cModule::createGateObject(const char *gname, char tp)
 cGate *cModule::addGate(const char *gname, char tp, bool isvector)
 {
     if (findGate(gname)>=0)
-       throw new cException(this, "addGate(): Gate %s.%s already present", fullPath().c_str(), gname);
+       throw new cRuntimeError(this, "addGate(): Gate %s.%s already present", fullPath().c_str(), gname);
 
      cGate *newg = createGateObject(gname, tp);
      newg->setOwnerModule(this, gatev.add(newg));
@@ -309,9 +309,9 @@ int cModule::setGateSize(const char *gname, int newsize)
     if (pos<0)
        pos = findGate(gname,0);
     if (pos<0)
-        throw new cException(this,"setGateSize(): Gate %s[] not found", gname);
+        throw new cRuntimeError(this,"setGateSize(): Gate %s[] not found", gname);
     if (newsize<0)
-        throw new cException(this,"setGateSize(): negative vector size (%d) requested for gate %s[]", newsize, gname);
+        throw new cRuntimeError(this,"setGateSize(): negative vector size (%d) requested for gate %s[]", newsize, gname);
 
     char tp = gate(pos)->type();
     int oldsize = gate(pos)->size();
@@ -337,7 +337,7 @@ int cModule::setGateSize(const char *gname, int newsize)
         {
             cGate *gate = (cGate *) gatev.remove(pos+i);
             if (gate->fromGate() || gate->toGate())
-                throw new cException(this,"setGateSize(): Cannot shrink gate vector, gate %s already connected", gate->fullPath().c_str());
+                throw new cRuntimeError(this,"setGateSize(): Cannot shrink gate vector, gate %s already connected", gate->fullPath().c_str());
             delete gate;
         }
         // and tell remaining gates the new vector size
@@ -422,7 +422,7 @@ cPar *cModule::addPar(const char *pname)
 {
     int i = findPar(pname);
     if (i!=-1)
-       throw new cException(this,"addPar(): Parameter %s.%s already present",fullPath().c_str(), pname);
+       throw new cRuntimeError(this,"addPar(): Parameter %s.%s already present",fullPath().c_str(), pname);
 
     i = paramv.add( new cModulePar(pname) );
     cModulePar *p = (cModulePar *) &par(i);
@@ -442,7 +442,7 @@ bool cModule::checkInternalConnections() const
     {
        const cGate *g = gate(j);
        if (g && g->size()!=0 && !g->isConnectedInside())
-            throw new cException(this,"Gate `%s' is not connected to submodule (or output gate of same module)", g->fullPath().c_str());
+            throw new cRuntimeError(this,"Gate `%s' is not connected to submodule (or output gate of same module)", g->fullPath().c_str());
     }
 
     // check submodules
@@ -453,7 +453,7 @@ bool cModule::checkInternalConnections() const
        {
           cGate *g = m->gate(j);
           if (g && g->size()!=0 && !g->isConnectedOutside())
-             throw new cException(this,"Gate `%s' is not connected to sibling or parent module", g->fullPath().c_str());
+             throw new cRuntimeError(this,"Gate `%s' is not connected to sibling or parent module", g->fullPath().c_str());
        }
     }
     return true;
@@ -496,7 +496,7 @@ cModule *cModule::moduleByRelativePath(const char *path)
         else
         {
             if (s[strlen(s)-1]!=']')
-                throw new cException(this,"moduleByRelativePath(): syntax error in path `%s'", path);
+                throw new cRuntimeError(this,"moduleByRelativePath(): syntax error in path `%s'", path);
             *b='\0';
             modp = modp->submodule(s,atoi(b+1));
         }
@@ -566,7 +566,7 @@ cPar& cModule::par(int pn)
 {
     cPar *p = (cPar *)paramv[pn];
     if (!p)
-        throw new cException(this,"has no parameter #%d",pn);
+        throw new cRuntimeError(this,"has no parameter #%d",pn);
     return *p;
 }
 
@@ -574,7 +574,7 @@ cPar& cModule::par(const char *s)
 {
     cPar *p = (cPar *)paramv.get(s);
     if (!p)
-        throw new cException(this,"has no parameter called `%s'",s);
+        throw new cRuntimeError(this,"has no parameter called `%s'",s);
     return *p;
 }
 
@@ -586,7 +586,7 @@ cPar& cModule::ancestorPar(const char *name)
     while (pmod && (k=pmod->findPar(name))<0)
         pmod = pmod->parentModule();
     if (!pmod)
-        throw new cException(this,"has no ancestor parameter called `%s'",name);
+        throw new cRuntimeError(this,"has no ancestor parameter called `%s'",name);
     return pmod->par(k);
 }
 
@@ -611,8 +611,8 @@ void cModule::deleteModule()
     // check this module doesn't contain the executing module somehow
     for (cModule *mod = simulation.contextModule(); mod; mod = mod->parentModule())
         if (mod==this)
-            throw new cException(this, "it is not supported to delete module which contains "
-                                 "the currently executing simple module");
+            throw new cRuntimeError(this, "it is not supported to delete module which contains "
+                                    "the currently executing simple module");
 
     delete this;
 }
@@ -620,20 +620,20 @@ void cModule::deleteModule()
 void cModule::changeParentTo(cModule *mod)
 {
     if (!mod)
-        throw new cException(this, "changeParentTo(): got NULL pointer");
+        throw new cRuntimeError(this, "changeParentTo(): got NULL pointer");
 
     // gates must be unconnected to avoid connections break module hierarchy rules
     int numgates = gates();
     cGate *g;
     for (int i=0; i<numgates; i++)
         if (g=gate(i), g && g->isConnectedOutside())
-            throw new cException(this, "changeParentTo(): gates of the module must not be "
-                                       "connected (%s is connected now)", g->fullName());
+            throw new cRuntimeError(this, "changeParentTo(): gates of the module must not be "
+                                    "connected (%s is connected now)", g->fullName());
 
     // cannot insert module under one of its own submodules
     for (cModule *m = mod; m; m = m->parentModule())
         if (m==this)
-            throw new cException(this, "changeParentTo(): cannot move module under one of its own submodules");
+            throw new cRuntimeError(this, "changeParentTo(): cannot move module under one of its own submodules");
 
     // do it
     cModule *oldparent = parentModule();
@@ -738,7 +738,7 @@ void cModule::setBackgroundDisplayString(const char *s, bool)
 void cModule::setDisplayString(int type, const char *s, bool)
 {
     if (type<0 || type>=dispNUMTYPES)
-         throw new cException(this,"setDisplayString(): type %d out of range", type );
+         throw new cRuntimeError(this,"setDisplayString(): type %d out of range", type );
 
     if (type==dispENCLOSINGMOD)
          setBackgroundDisplayString(s);
@@ -750,7 +750,7 @@ void cModule::setDisplayString(int type, const char *s, bool)
 const char *cModule::displayString(int type)
 {
     if (type<0 || type>=dispNUMTYPES)
-         throw new cException(this,"displayString(): type %d out of range", type );
+         throw new cRuntimeError(this,"displayString(): type %d out of range", type );
 
     if (type==dispENCLOSINGMOD)
          return backgroundDisplayString().getString();
@@ -799,9 +799,9 @@ cCompoundModule& cCompoundModule::operator=(const cCompoundModule& mod)
 
 void cCompoundModule::arrived(cMessage *msg, int g, simtime_t)
 {
-    throw new cException("Message (%s)`%s' arrived at COMPOUND module gate `%s' "
-                         "(which is not further connected)",
-                         msg->className(), msg->name(), gate(g)->fullPath().c_str());
+    throw new cRuntimeError("Message (%s)`%s' arrived at COMPOUND module gate `%s' "
+                            "(which is not further connected)",
+                            msg->className(), msg->name(), gate(g)->fullPath().c_str());
 }
 
 void cCompoundModule::scheduleStart(simtime_t t)
@@ -821,10 +821,10 @@ static void _connect(cModule *frm, int frg, cModule *tom, int tog)
     cGate *destgate = tom->gate(tog);
 
     if (srcgate->toGate()!=NULL)
-       throw new cException( "connect(): gate %s already connected", srcgate->fullPath().c_str() );
+       throw new cRuntimeError( "connect(): gate %s already connected", srcgate->fullPath().c_str() );
 
     if (destgate->fromGate()!=NULL)
-       throw new cException( "connect(): gate %s already connected", destgate->fullPath().c_str() );
+       throw new cRuntimeError( "connect(): gate %s already connected", destgate->fullPath().c_str() );
 
     srcgate->connectTo( destgate );
 }

@@ -79,7 +79,7 @@ static char buffer[1024];
      baseclass *var ## _tmp = (baseclass *) createOne(classname); \
      var = dynamic_cast<baseclass *>(var ## _tmp); \
      if (!var) \
-         throw new cException("Class \"%s\" is not subclassed from " #baseclass, (const char *)classname);
+         throw new cRuntimeError("Class \"%s\" is not subclassed from " #baseclass, (const char *)classname);
 
 
 //-------------------------------------------------------------
@@ -177,7 +177,7 @@ void TOmnetApp::setup()
              // initialize them
              parsimcomm->init();
 #else
-             throw new cException("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
+             throw new cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
 #endif
          }
 
@@ -325,10 +325,10 @@ bool TOmnetApp::isModuleLocal(cModule *parentmod, const char *modname, int index
         sprintf(parname,"%s.%s[%d].partition-id", parentmod->fullPath().c_str(), modname, index);
     int procId = getConfig()->getAsInt2(getRunSectionName(simulation.runNumber()),"Partitioning",parname,-1);
     if (procId<0)
-        throw new cException("incomplete or wrong partitioning: missing or invalid value for '%s'",parname);
+        throw new cRuntimeError("incomplete or wrong partitioning: missing or invalid value for '%s'",parname);
     if (procId>=parsimcomm->getNumPartitions())
-        throw new cException("wrong partitioning: value %d too large for '%s' (total partitions=%d)",
-                             procId,parname,parsimcomm->getNumPartitions());
+        throw new cRuntimeError("wrong partitioning: value %d too large for '%s' (total partitions=%d)",
+                                procId,parname,parsimcomm->getNumPartitions());
     // FIXME This solution is not entirely correct. Rather, we'd have to check if
     // myProcId is CONTAINED in the set of procIds defined for the children of this
     // module.
@@ -363,7 +363,7 @@ void TOmnetApp::getOutVectorConfig(int run_no, const char *modname,const char *v
     // parse interval string
     char *ellipsis = strstr(s,"..");
     if (!ellipsis)
-        throw new cException("Error in output vector interval %s=%s -- contains no `..'",buffer,s);
+        throw new cRuntimeError("Error in output vector interval %s=%s -- contains no `..'",buffer,s);
 
     const char *startstr = s;
     const char *stopstr = ellipsis+2;
@@ -371,7 +371,7 @@ void TOmnetApp::getOutVectorConfig(int run_no, const char *modname,const char *v
     stoptime = strToSimtime0(stopstr);
 
     if (startstr<ellipsis || *stopstr!='\0')
-        throw new cException("Error in output vector interval %s=%s",buffer,s);
+        throw new cRuntimeError("Error in output vector interval %s=%s",buffer,s);
 }
 
 cXMLElement *TOmnetApp::getXMLDocument(const char *filename, const char *path)
@@ -401,9 +401,9 @@ void TOmnetApp::processFileName(opp_string& fname)
         if (!hostname)
             hostname=getenv("COMPUTERNAME");
         if (!hostname)
-            throw new cException("Cannot append hostname to file name `%s': no HOST, HOSTNAME "
-                                 "or COMPUTERNAME (Windows) environment variable",
-                                 fname.c_str());
+            throw new cRuntimeError("Cannot append hostname to file name `%s': no HOST, HOSTNAME "
+                                    "or COMPUTERNAME (Windows) environment variable",
+                                    fname.c_str());
         int pid = getpid();
 
         // add ".<hostname>.<pid>" to fname
@@ -435,7 +435,7 @@ void TOmnetApp::readOptions()
         opt_parsimcomm_class = cfg->getAsString("General", "parsim-communications-class", "cFileCommunications");
         opt_parsimsynch_class = cfg->getAsString("General", "parsim-synchronization-class", "cNullMessageProtocol");
 #else
-        throw new cException("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
+        throw new cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
 #endif
     }
     opt_load_libs = cfg->getAsString("General", "load-libs", "");
@@ -511,7 +511,7 @@ void TOmnetApp::globAndLoadNedFile(const char *fnamepattern)
             simulation.loadNedFile(fname);
         }
     } catch (std::runtime_error e) {
-        throw new cException(e.what());
+        throw new cRuntimeError(e.what());
     }
 }
 
@@ -525,7 +525,7 @@ void TOmnetApp::globAndLoadListFile(const char *fnamepattern)
             processListFile(fname);
         }
     } catch (std::runtime_error e) {
-        throw new cException(e.what());
+        throw new cRuntimeError(e.what());
     }
 }
 
@@ -538,7 +538,7 @@ void TOmnetApp::processListFile(const char *listfilename)
 
     std::ifstream in(fnameonly.c_str(), std::ios::in);
     if (in.fail())
-        throw new cException("Cannot open list file '%s'",listfilename);
+        throw new cRuntimeError("Cannot open list file '%s'",listfilename);
 
     ev.printf("Processing listfile: %s\n", listfilename);
 
@@ -558,7 +558,7 @@ void TOmnetApp::processListFile(const char *listfilename)
     }
 
     if (in.bad())
-        throw new cException("Error reading list file '%s'",listfilename);
+        throw new cRuntimeError("Error reading list file '%s'",listfilename);
     in.close();
 }
 
@@ -572,8 +572,8 @@ int TOmnetApp::numRNGs()
 cRNG *TOmnetApp::rng(int k)
 {
     if (k<0 || k>=num_rngs)
-        throw new cException("RNG index %d is out of range (num-rngs=%d, "
-                             "check the configuration)", k, num_rngs);
+        throw new cRuntimeError("RNG index %d is out of range (num-rngs=%d, "
+                                "check the configuration)", k, num_rngs);
     return rngs[k];
 }
 
@@ -593,20 +593,20 @@ void TOmnetApp::getRNGMappingFor(cModule *mod)
         int modRng = strtol(entries[i].c_str(), &s1, 10);
         int physRng = strtol(entries[i+1].c_str(), &s2, 10);
         if (*s1!='\0' || *s2!='\0')
-            throw new cException("Configuration error: rng-%s=%s of module %s: "
-                                 "numeric RNG indices expected",
-                                 entries[i].c_str(), entries[i+1].c_str(), mod->fullPath().c_str());
+            throw new cRuntimeError("Configuration error: rng-%s=%s of module %s: "
+                                    "numeric RNG indices expected",
+                                    entries[i].c_str(), entries[i+1].c_str(), mod->fullPath().c_str());
 
         if (physRng>numRNGs())
-            throw new cException("Configuration error: rng-%d=%d of module %s: "
-                                 "RNG index out of range (num-rngs=%d)",
-                                 modRng, physRng, mod->fullPath().c_str(), numRNGs());
+            throw new cRuntimeError("Configuration error: rng-%d=%d of module %s: "
+                                    "RNG index out of range (num-rngs=%d)",
+                                    modRng, physRng, mod->fullPath().c_str(), numRNGs());
         if (modRng>=mapsize)
         {
             if (modRng>=100)
-                throw new cException("Configuration error: rng-%d=... of module %s: "
-                                     "local RNG index out of supported range 0..99",
-                                     modRng, mod->fullPath().c_str());
+                throw new cRuntimeError("Configuration error: rng-%d=... of module %s: "
+                                        "local RNG index out of supported range 0..99",
+                                        modRng, mod->fullPath().c_str());
             while (mapsize<=modRng)
             {
                 tmpmap[mapsize] = mapsize;

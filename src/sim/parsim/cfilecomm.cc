@@ -94,17 +94,17 @@ void cFileCommunications::send(cCommBuffer *buffer, int tag, int destination)
     // create
     FILE *f = fopen(fname,"wb");
     if (!f)
-        throw new cException("cFileCommunications: cannot open %s for write: %s", fname, strerror(errno));
+        throw new cRuntimeError("cFileCommunications: cannot open %s for write: %s", fname, strerror(errno));
     if (fwrite(b->getBuffer(), b->getMessageSize(), 1, f)<1)
-        throw new cException("cFileCommunications: cannot write %s: %s", fname, strerror(errno));
+        throw new cRuntimeError("cFileCommunications: cannot write %s: %s", fname, strerror(errno));
     if (fclose(f)!=0)
-        throw new cException("cFileCommunications: cannot close %s after writing: %s", fname, strerror(errno));
+        throw new cRuntimeError("cFileCommunications: cannot close %s after writing: %s", fname, strerror(errno));
 
     // rename
     strcpy(fname2,fname);
     strcpy(fname2+strlen(fname2)-4, ".msg");
     if (rename(fname, fname2)!=0)
-        throw new cException("cFileCommunications: cannot rename %s to %s: %s", fname, fname2, strerror(errno));
+        throw new cRuntimeError("cFileCommunications: cannot rename %s to %s: %s", fname, fname2, strerror(errno));
 }
 
 bool cFileCommunications::receiveBlocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId)
@@ -149,7 +149,7 @@ bool cFileCommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, i
         // read data
         struct stat statbuf;
         if (stat(fname, &statbuf)!=0)
-            throw new cException("cFileCommunications: cannot stat() file %s: ", fname, strerror(errno));
+            throw new cRuntimeError("cFileCommunications: cannot stat() file %s: ", fname, strerror(errno));
         int len = statbuf.st_size;
         b->allocateAtLeast(len);
         FILE *f = fopen(fname,"rb");
@@ -166,10 +166,10 @@ bool cFileCommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, i
             }
         }
         if (!f)
-            throw new cException("cFileCommunications: cannot open existing file %s for read: %s", fname, strerror(errno));
+            throw new cRuntimeError("cFileCommunications: cannot open existing file %s for read: %s", fname, strerror(errno));
         if (fread(b->getBuffer(), len, 1, f)==0)
             // FIXME condition always fires. why?
-            //throw new cException("cFileCommunications: cannot read existing file %s: %s", fname, strerror(errno));
+            //throw new cRuntimeError("cFileCommunications: cannot read existing file %s: %s", fname, strerror(errno));
             ;
         fclose(f);
         b->setMessageSize(len);
@@ -187,13 +187,13 @@ bool cFileCommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, i
             strcpy(fname2, readDirPrefix.buffer());
             strcat(fname2, fname + strlen(commDirPrefix.buffer()));
             if (rename(fname, fname2)!=0)
-                throw new cException("cFileCommunications: cannot rename %s to %s: %s", fname, fname2, strerror(errno));
+                throw new cRuntimeError("cFileCommunications: cannot rename %s to %s: %s", fname, fname2, strerror(errno));
         }
         else
         {
             // delete file
             if (unlink(fname)!=0)
-                throw new cException("cFileCommunications: cannot delete file %s: %s", fname, strerror(errno));
+                throw new cRuntimeError("cFileCommunications: cannot delete file %s: %s", fname, strerror(errno));
         }
     }
     findCleanup();
