@@ -361,6 +361,99 @@ everywhere else (Figure \ref{fig:inst}).
 \end{figure}
 
 
+
+\subsection{Configuration}
+
+
+
+[General] section:
+
+\begin{longtable}{|p{6.5cm}|p{7.5cm}|}
+\hline
+\tabheadcol
+\tbf{Entry and default value} & \tbf{Description}\\\hline
+\multicolumn{2}{|l|}{\tbf{[Cmdenv]}}\\\hline
+
+parsim-debug = <true/false>\linebreak
+default: true
+&
+\\\hline
+
+parsim-mpicommunications-mpibuffer = <bytes>\linebreak
+default: 256K * (numPartitions-1) + 16K
+&
+Size of MPI send buffer to allocate; see MPI_Buffer_attach()
+MPI call. If the buffer is too small, a deadlock can occur.
+\\\hline
+
+parsim-namedpipecommunications-prefix = <string>\linebreak
+default: "omnetpp" or "comm/"
+&
+Controls the naming of named pipes.
+Windows: default value is "omnetpp", which means that pipe names
+will be of the form "{\backslash}{\backslash}.{\backslash}pipe{\backslash}omnetpp-xx-yy"
+(where xx and yy are numbers).
+Unix: default value is "comm/", which means that the named pipes
+will be created with the name "comm/pipe-xx-yy". The "comm/"
+subdirectory must already exist when the simulation is launched.
+\\\hline
+
+parsim-filecommunications-prefix = <string>\linebreak
+default: "comm/"
+&
+\\\hline
+
+parsim-filecommunications-preserve-read = <true/false>\linebreak
+default: false
+\\\hline
+
+parsim-filecommunications-read-prefix = <string>\linebreak
+default: "comm/read/"
+&
+The above 3 options control the \cclass{cFileCommunications} class.
+By default, it deletes files that were read. By enabling the
+"preserve-read" setting, you can make it move read files to
+another directory instead ("comm/read/" by default).
+BEWARE: for mysterious reasons, it appears that there cannot be more
+than about 19800 files in a directory. When that point is reached,
+an exception is thrown somewhere inside the standard C library, which
+materializes itself in OMNeT++ as an "Error: (null)" message...
+Strangely, this can be reproduced in both Linux and Windows.
+\\\hline
+
+parsim-nullmessageprotocol-lookahead-class = <class name string>\linebreak
+default: "cLinkDelayLookahead"
+&
+Selects the lookahead class for the Null Message Algorithm; the
+class must be subclassed from cNMPLookahead.
+\\\hline
+
+parsim-nullmessageprotocol-laziness = <0..1>\linebreak
+default: 0.5
+&
+Controls how often the Null Message Algorithm should send out null
+messages; the value is understood in proportion to the lookahead,
+e.g. 0.5 means every lookahead/2 simsec.
+\\\hline
+
+parsim-idealsimulationprotocol-tablesize = <int>\linebreak
+default: 100,000
+&
+Size of chunks (in table entries) in which the external events
+file (recorded by cISPEventLogger) should be loaded.
+(one entry is 8 bytes, so 100,000 corresponds to ~800K allocated
+memory)
+
+\end{longtable}
+
+
+
+
+
+
+
+
+
 \subsection{Design of PDES Support in {\opp}}
 
 Design of PDES support in {\opp} follows a layered approach,
