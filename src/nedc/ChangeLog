@@ -1,3 +1,8 @@
+2002-12-03  Andras Varga
+
+	* msgc.pl renamed to msgc; msgc.bat added; msgc now get copied to the
+	bin/ directory
+
 2002-11-23  Andras Varga
 
 	* jar_expr.c: fixed bug which caused generated code to crash if

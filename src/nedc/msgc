@@ -1,5 +1,10 @@
+eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}' && eval 'exec perl -S $0 $argv:q'
+  if 0;
+
+#!perl -w
+#line 6
 #
-# msgc.pl: supports message subclassing: compiles NED files with message
+# msgc: supports message subclassing: compiles NED files with message
 # declarations into C++ code.
 #
 # This perl script is a temporary solution until new nedc is ready.
@@ -8,8 +13,10 @@
 #
 # If no args, print usage
 #
-$Usage = 'OMNeT++ message subclassing compiler (prototype)
-usage: msgc.pl [-s <cc-file-suffix>] [-t <h-file-suffix>] <nedfile>
+$Usage = 'msgc - part of OMNeT++. (c) 1992-2002 Andras Varga
+Message subclassing compiler (experimental prototype)
+
+usage: msgc [-s <cc-file-suffix>] [-t <h-file-suffix>] <nedfile>
 ';
 
 if ($#ARGV == -1)
@@ -22,8 +29,8 @@ if ($#ARGV == -1)
 #  Parse the command line for options and files.
 #
 $filename = '';
-$ccsuffix = '_n.cc';
-$hsuffix = '_n.h';
+$ccsuffix = '_m.cc';
+$hsuffix = '_m.h';
 while (@ARGV)
 {
     $arg = shift @ARGV;
