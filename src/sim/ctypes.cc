@@ -611,13 +611,12 @@ cFunctionType *findfunctionbyptr(MathFunc f)
 
 //=========================================================================
 
-// FIXME should create cPolymorphic...
-cClassRegister::cClassRegister(const char *name, void *(*f)()) : cObject(name)
+cClassRegister::cClassRegister(const char *name, cPolymorphic *(*f)()) : cObject(name)
 {
     creatorfunc = f;
 }
 
-void *createOne(const char *classname)
+cPolymorphic *createOne(const char *classname)
 {
     cClassRegister *p = (cClassRegister *)classes.instance()->get(classname);
     if (!p)
@@ -625,7 +624,7 @@ void *createOne(const char *classname)
     return p->createOne();
 }
 
-void *createOneIfClassIsKnown(const char *classname)
+cPolymorphic *createOneIfClassIsKnown(const char *classname)
 {
     cClassRegister *p = (cClassRegister *)classes.instance()->get(classname);
     if (!p)

@@ -21,9 +21,10 @@
 #ifndef __CPARSIMCOMM_H__
 #define __CPARSIMCOMM_H__
 
+#include "cpolymorphic.h"
+
 // forward declaration:
 class cCommBuffer;
-
 
 #define PARSIM_ANY_TAG  -1
 
@@ -37,7 +38,7 @@ class cCommBuffer;
  *
  * @ingroup Parsim
  */
-class cParsimCommunications
+class cParsimCommunications : public cPolymorphic
 {
   public:
     /**

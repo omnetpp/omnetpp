@@ -20,6 +20,8 @@
 #ifndef __CNMPLOOKAHEAD_H__
 #define __CNMPLOOKAHEAD_H__
 
+#include "cpolymorphic.h"
+
 // forward declarations
 class cMessage;
 class cSimulation;
@@ -33,7 +35,7 @@ class cParsimPartition;
  *
  * @ingroup Parsim
  */
-class cNMPLookahead
+class cNMPLookahead : public cPolymorphic
 {
   protected:
     cSimulation *sim;

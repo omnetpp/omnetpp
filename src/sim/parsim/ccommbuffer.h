@@ -20,6 +20,7 @@
 #ifndef __CCOMMBUFFER_H__
 #define __CCOMMBUFFER_H__
 
+#include "cpolymorphic.h"
 
 // forward declaration:
 class cCommBuffer;
@@ -59,7 +60,7 @@ cObject *unpackObject(cCommBuffer *buffer);
  *
  * @ingroup Parsim
  */
-class cCommBuffer
+class cCommBuffer : public cPolymorphic
 {
   public:
     /**

@@ -22,6 +22,7 @@
 #define __CPARSIMSEGMENT_H__
 
 #include "defs.h"
+#include "cpolymorphic.h"
 
 // forward declarations:
 class cSimulation;
@@ -53,7 +54,7 @@ class cCommBuffer;
  *
  * @ingroup Parsim
  */
-class cParsimPartition
+class cParsimPartition : public cPolymorphic
 {
   protected:
     cSimulation *sim;

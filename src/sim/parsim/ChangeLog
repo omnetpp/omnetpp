@@ -1,3 +1,10 @@
+2004-03-01  Andras Varga
+
+	* classes cParsimCommunications, cCommBuffer, cParsimPartition, 
+	cNMPLookahead became subclassed from cPolymorphic so that they work
+	with updated Register_Class()/createOne(). (cParsimSynchronization
+	was already a cPolymorhpic, via the cScheduler base class.)
+
 2004-02-12  Andras Varga
 
 	* cproxygate.cc/.h: fix: local copy of messages sent out from the 
