@@ -110,10 +110,8 @@ void cMPICommunications::send(cCommBuffer *buffer, int tag, int destination)
 
 void cMPICommunications::broadcast(cCommBuffer *buffer, int tag)
 {
-    // FIXME could make use of MPI call
-    for (int i=0; i<numPartitions; i++)
-        if (myRank != i)
-            send(buffer, tag, i);
+    // FIXME this is lazy solution -- could make use of MPI call instead
+    cParsimCommunications::broadcast(buffer, tag);
 }
 
 bool cMPICommunications::receiveBlocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId)

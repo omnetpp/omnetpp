@@ -93,9 +93,10 @@ class cParsimCommunications
     virtual void send(cCommBuffer *buffer, int tag, int destination) = 0;
 
     /**
-     * Sends packed data with given tag to all partitions.
+     * Broadcasts packed data with given tag to all partitions. This default
+     * implementation just simply sends the data to every other partition.
      */
-    virtual void broadcast(cCommBuffer *buffer, int tag) = 0;
+    virtual void broadcast(cCommBuffer *buffer, int tag);
 
     /**
      * Receives packed data with given tag from given destination.

@@ -3,6 +3,10 @@
 	* cproxygate.cc/.h: fix: local copy of messages sent out from the 
 	partition was not deleted
 
+	* communications classes: provided default impl. for broadcast() 
+	in base class; broadcastException() to "eat" exceptions during
+	broadcasting exception (not interested in stacked exceptions...)
+
 2004-02-11  Andras Varga
 
 	* receiveNonblocking() changed to return false if it was interrupted;

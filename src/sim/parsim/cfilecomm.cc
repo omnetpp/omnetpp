@@ -184,13 +184,6 @@ void cFileCommunications::send(cCommBuffer *buffer, int tag, int destination)
         throw new cException("cFileCommunications: cannot rename %s to %s: %s", fname, fname2, strerror(errno));
 }
 
-void cFileCommunications::broadcast(cCommBuffer *buffer, int tag)
-{
-    for (int i=0; i<numPartitions; i++)
-        if (myProcId != i)
-            send(buffer, tag, i);
-}
-
 bool cFileCommunications::receiveBlocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId)
 {
     while (!receiveNonblocking(filtTag, buffer, receivedTag, sourceProcId))

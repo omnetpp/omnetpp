@@ -124,11 +124,6 @@ class cNamedPipeCommunications : public cParsimCommunications
     virtual void send(cCommBuffer *buffer, int tag, int destination);
 
     /**
-     * Sends packed data with given tag to all partitions.
-     */
-    virtual void broadcast(cCommBuffer *buffer, int tag);
-
-    /**
      * Receives packed data, and also returns tag and source procId.
      * Normally returns true; false is returned if blocking was interrupted by the user.
      */

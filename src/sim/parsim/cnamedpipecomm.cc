@@ -189,13 +189,6 @@ void cNamedPipeCommunications::send(cCommBuffer *buffer, int tag, int destinatio
         throw new cException("cNamedPipeCommunications: cannot write pipe to procId=%d: %s", destination, strerror(errno));
 }
 
-void cNamedPipeCommunications::broadcast(cCommBuffer *buffer, int tag)
-{
-    for (int i=0; i<numPartitions; i++)
-        if (myProcId != i)
-            send(buffer, tag, i);
-}
-
 bool cNamedPipeCommunications::receive(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking)
 {
     return doReceive(buffer, receivedTag, sourceProcId, blocking);
