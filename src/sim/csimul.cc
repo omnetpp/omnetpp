@@ -353,7 +353,8 @@ void cSimulation::setupNetwork(cNetworkType *network, int run_num)
     {
         // we could clean up the whole stuff before passing the exception back,
         // but it is dangerous. Module destructors may try to delete 
-        /  uninitialized pointers and crash.
+        // uninitialized pointers and crash. (Often ptrs get initialized in
+        // initialize() not in the constructor.)
         //deleteNetwork();
         throw;
     }
