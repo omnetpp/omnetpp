@@ -28,6 +28,7 @@ set config(editor-replacestring)  ""
 set config(editor-case-sensitive) 0
 set config(editor-whole-words)    0
 set config(editor-regexp)         0
+set config(editor-backwards)      0
 set config(default-dir)           "."
 
 # widgets (these variables will be filled in later)

@@ -1,3 +1,7 @@
+2002-02-29  Andras Varga
+
+	* findrepl.tcl: implemented backwards search/replace
+
 2002-02-24  Andras Varga
 
 	* gned.cc: bugfix: gned.exe with WinMain() didn't accept command-line
