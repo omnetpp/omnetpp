@@ -43,6 +43,7 @@ class TCmdenvApp : public TOmnetApp
      bool opt_autoflush; // all modes
      bool opt_modulemsgs;  // if normal mode
      bool opt_eventbanners; // if normal mode
+     bool opt_eventbanner_details; // if normal mode
      bool opt_messagetrace; // if normal mode
      int opt_status_frequency_ev; // if express mode
      // double opt_status_frequency_sec; -- not yet implemented

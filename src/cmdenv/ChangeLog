@@ -1,5 +1,15 @@
 FIXME todo: print event banner when simulation stops (esp with express mode),
-otherwise one doesn't know duration and event number!
+otherwise one doesn't know total duration and number of processed events!
+
+2004-02-23  Andras Varga 
+
+	* cmdenv.cc: new omnetpp.ini option:
+	    event-banner-details= true/false (default: false).
+	It is in effect with normal mode (express-run=false), and causes
+        elapsed time and number of messages (created,present, in FES) to be 
+        printed in a second line below the event banner.
+        Also changed the format of elapsed time display in express mode:
+        prints it in seconds as well.
 
 2004-02-11  Andras Varga 
 

@@ -57,11 +57,11 @@ char *timeToStr(time_t t, char *buf=NULL)
    char *b = buf ? buf : buf2;
 
    if (t<3600)
-       sprintf(b,"%dm %2ds", int(t/60L), int(t%60L));
+       sprintf(b,"%lds (%dm %2ds)", (long)(t), int(t/60L), int(t%60L));
    else if (t<86400)
-       sprintf(b,"%dh %2dm", int(t/3600L), int((t%3600L)/60L));
+       sprintf(b,"%lds (%dh %2dm)", (long)(t), int(t/3600L), int((t%3600L)/60L));
    else
-       sprintf(b,"%dd %2dh)", int(t/86400L), int((t%86400L)/3600L));
+       sprintf(b,"%lds (%dd %2dh)", (long)(t), int(t/86400L), int((t%86400L)/3600L));
 
    return b;
 }
@@ -111,6 +111,7 @@ void TCmdenvApp::readPerRunOptions( int run_nr )
     opt_autoflush = ini_file->getAsBool2( section,"Cmdenv", "autoflush", false);
     opt_modulemsgs = ini_file->getAsBool2( section,"Cmdenv", "module-messages", true );
     opt_eventbanners = ini_file->getAsBool2( section,"Cmdenv", "event-banners", true );
+    opt_eventbanner_details = ini_file->getAsBool2( section,"Cmdenv", "event-banner-details", false);
     opt_messagetrace = ini_file->getAsBool2( section,"Cmdenv", "message-trace", false );
     opt_status_frequency_ev = ini_file->getAsInt2( section,"Cmdenv", "status-frequency", 100000 );
     //opt_status_frequency_sec = ini_file->getAsTime2( section,"Cmdenv", "status-frequency-interval", 5.0 );
@@ -329,6 +330,14 @@ void TCmdenvApp::simulate()
                            mod->fullPath(),
                            mod->id()
                          );
+                   if (opt_eventbanner_details)
+                   {
+                       ::fprintf(fout, "   Elapsed: %s   Messages: created: %ld  present: %ld  in FES: %d\n",
+                               timeToStr(totalElapsed()),
+                               cMessage::totalMessageCount(),
+                               cMessage::liveMessageCount(),
+                               simulation.msgQueue.length());
+                   }
                }
 
                // flush *between* printing event banner and event processing, so that
