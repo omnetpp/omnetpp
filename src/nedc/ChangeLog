@@ -1,3 +1,11 @@
+2003-06-18  Andras Varga
+
+	* TODO: should not generate set...ArraySize() methods for abstract 
+	arrays. Tkenv doesn't really need them and seems like
+	they're in the way.
+
+	* TODO: should *not* generate impl of copy ctor in .._Base class
+
 2003-06-16  ------ omnetpp-2.3 released ------
 
 2003-06-16  Andras Varga

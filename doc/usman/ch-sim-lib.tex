@@ -2876,12 +2876,11 @@ NewClass::NewClass(const char *name, int d) : cObject(name)
 
 The constructor (above) calls the base class constructor with
 the name of the object, then initializes its own data members.
-\cclass{cObject}-based data members should have their
-owners explicitly set to NULL.
+You need to call \fname{take()} for \cclass{cObject}-based data members.
 
 
 \begin{verbatim}
-NewClass::NewClass(const NewClass& other) : cObject(name())
+NewClass::NewClass(const NewClass& other) : cObject(other.name())
 {
     array = new double[10];
     msg = NULL;
@@ -2900,8 +2899,7 @@ Note that pointer members have to be initialized (to \ttt{NULL} or to an
 allocated object/memory) before calling the assignment operator,
 to avoid crashes.
 
-\cclass{cObject}-based data members should have their
-owners explicitly set to NULL.
+You need to call \fname{take()} for \cclass{cObject}-based data members.
 
 \begin{verbatim}
 NewClass::~NewClass()

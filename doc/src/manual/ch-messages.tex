@@ -1196,6 +1196,112 @@ redefine the abstract (pure virtual) methods and
 supply your implementation.
 
 
+
+\subsection{Using STL in message classes}
+
+You may want to use STL \ttt{vector} or \ttt{stack} classes in your message classes.
+This is possible using abstract fields. After all, \ttt{vector} and \ttt{stack}
+are representations of a \textit{sequence} -- same abstraction as dynamic-size vectors.
+That is, you can declare the field as \ttt{abstract T fld[]}, and provide
+an underlying implementation using \ttt{vector<T>}. You can also add methods
+to the message class that invoke \ttt{push_back()}, \ttt{push()}, \ttt{pop()}, etc.
+on the underlying STL object.
+
+See the following message declaration:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{struct} Item
+\{
+    \tbf{fields}:
+        \tbf{int} a;
+        \tbf{double} b;
+\}
+
+\tbf{message} STLMessage
+\{
+   \tbf{properties}:
+       customize=true;
+   \tbf{fields}:
+       \tbf{abstract} Item foo[]; // will use vector<Item>
+       \tbf{abstract} Item bar[]; // will use stack<Item>
+\}
+\end{Verbatim}
+
+If you compile the above, in the generated code you'll only find a couple of
+abstract methods for \ttt{foo} and \ttt{bar}, no data members or anything concrete.
+You can implement everything as you like. You can write the following C++ file
+then to implement \ttt{foo} and \ttt{bar} with \ttt{std::vector} and \ttt{std::stack}:
+
+\begin{verbatim}
+#include <vector>
+#include <stack>
+#include "stlmessage_m.h"
+
+
+class STLMessage : public STLMessage_Base
+{
+  protected:
+    std::vector<Item> foo;
+    std::stack<Item> bar;
+
+  public:
+    STLMessage(const char *name=NULL, int kind=0) : STLMessage_Base(name,kind) {}
+    STLMessage(const STLMessage& other) : STLMessage_Base(other.name()) {operator=(other);}
+    STLMessage& operator=(const STLMessage& other) {
+        if (&other==this) return *this;
+        STLMessage_Base::operator=(other);
+        foo = other.foo;
+        bar = other.bar;
+        return *this;
+    }
+    virtual cObject *dup() {return new STLMessage(*this);}
+
+    // foo methods
+    virtual void setFooArraySize(unsigned int size) {}
+    virtual unsigned int getFooArraySize() const {return foo.size();}
+    virtual Item& getFoo(unsigned int k) {return foo[k];}
+    virtual void setFoo(unsigned int k, const Item& afoo) {foo[k]=afoo;}
+    virtual void addToFoo(const Item& afoo) {foo.push_back(afoo);}
+
+    // bar methods
+    virtual void setBarArraySize(unsigned int size) {}
+    virtual unsigned int getBarArraySize() const {return bar.size();}
+    virtual Item& getBar(unsigned int k) {throw new cException("sorry");}
+    virtual void setBar(unsigned int k, const Item& bar) {throw new cException("sorry");}
+    virtual void barPush(const Item& abar) {bar.push(abar);}
+    virtual void barPop() {bar.pop();}
+    virtual Item& barTop() {return bar.top();}
+};
+
+Register_Class(STLMessage);
+\end{verbatim}
+
+Some additional notes:
+
+\begin{enumerate}
+  \item{\ttt{setFooArraySize()}, \ttt{setBarArraySize()} are redundant.
+     \footnote{FIXME Wonder if I shouldn't generate \ttt{set...ArraySize()} methods
+     for abstract arrays? Tkenv doesn't really need them and seems like
+     they're in the way.}}
+  \item{\ttt{getBar(int k)} cannot be implemented in a straightforward way
+     (\ttt{std::stack} does not support accessing elements by index).
+     It could still be implemented in a less efficient way using STL iterators,
+     and efficiency does not seem to be major problem because only Tkenv
+     is going to invoke this function.}
+  \item{\ttt{setBar(int k, const Item&)} could not be implemented, but this
+     is not particularly a problem. The exception will materialize in a
+     Tkenv error dialog when you try to change the field value.}
+\end{enumerate}
+
+You may regret that the STL \ttt{vector}/\ttt{stack} are not directly exposed.
+Well you could expose them (by adding a \ttt{vector<Item>& getFoo() \{return foo;\}}
+method to the class) but this is probably not a good idea.
+STL itself was purposefully designed with a low-level approach, to provide
+``nuts and bolts'' for C++ programming, and STL is better used in other classes
+for internal representation of data.
+
+
+
 \subsection{Summary}
 
 This section attempts to summarize the possibilities.

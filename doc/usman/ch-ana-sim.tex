@@ -279,27 +279,62 @@ As you can see, the vector ID is gone.
 The files can be further processed with math packages, or read
 by analysis or spreadsheet programs which provide numerous ways
 to display data as diagrams, do calculations on them etc. One
-could use for example Gnuplot, Matlab, Excel, etc.
+could use for example Matlab/Octave, Excel, or one of the programs
+described in the next section.
 
 
 
 
+\section{Visualization tools}
 
-\subsection{Visualization under Unix}
+There are a couple of open-source programs you can use for plotting
+the results. \textit{Gnuplot} is the most commonly used one
+(also supported by {\opp} Plove); other, more powerful ones
+include \textit{Grace} and \textit{ROOT}.
 
-Two programs are in common use: Gnuplot and Xmgr. Both are free
-and both have their good and bad sides; we'll briefly discuss
-them. There are innumerable tutorials and documentation about
-them on the Web; some of them you will find among the References.
+These programs can eat files produced by \fprog{splitvec}, and
+can produce output in various forms (on the screen, as PostScript,
+in various image formats, etc.)
+
+On Windows, the easiest way to include a picture in a document
+is to copy the picture to the clipboard from the Gnuplot
+window's system menu.
 
 
-Both programs can eat files produced by \fprog{splitvec}. Both
-programs can produce output in various forms: on screen, in Postscript
-format, printer files, Latex output etc. For DTP purposes, Postscript
-seems to be the most appropriate. On Windows, the easiest way is to
-copy the picture to the clipboard from the Gnuplot window's system
-menu.
+\subsection{Grace}
 
+\textit{Grace} (also known as \textit{xmgrace}, a successor of \textit{ACE/gr} or
+\textit{Xmgr}) is a GPL-ed powerful data visualization program
+with a WYSIWIG point-and-click graphical user interface. It has been
+written for Unix, but has a Windows version, too.
+
+You load the appropriate file by selecting from a dialog box.
+The icon bar and menu commands can be used to customize
+the graph.
+
+As of June 2003, Grace 1.5.12 can export graphics to (E)PS, PDF, MIF, SVG,
+PNM, JPEG and PNG formats. It has many useful features like built-in statistics
+and analysis functions (e.g. correlation, histogram), fitting, splines, etc.,
+and it also sports a built-in programming language.
+
+
+\subsection{ROOT}
+
+\textit{ROOT} is a powerful object-oriented data analysis framework,
+with strong support for plotting and graphics in general.
+ROOT has been developed at CERN, and it is distributed under a BSD-like license.
+
+An interesting thing is ROOT is based on \textit{CINT}, a ``C/C++ interpreter''
+aimed at processing C/C++ scripts. It is probably harder to get started
+using ROOT than with either Gnuplot or Grace, but if you are serious
+about analysing simulation results, you will find that ROOT gives you
+as much power and flexibility that is unthinkable in the other two programs.
+
+Curt Brune's page at Stanford (http://www.slac.stanford.edu/~curt/omnet++/)
+shows examples what you can achieve using using ROOT with OMNeT++.
+
+
+\subsection{Using Gnuplot}
 
 Gnuplot has an interactive command interface. To get the vectors in
 \texttt{mysim1.vec} and \texttt{mysim4.vec} plotted in the same graph,
@@ -324,14 +359,6 @@ has a simple graphical interactive user interface called PlotMTV.
 However, we recommend that you use {\opp}'s Plove tool, described in
 an earlier section.
 
-
-Xmgr\index{Xmgr} is an X/Motif based program, with a menu-driven
-graphical interface. You load the appropriate file by selecting in a
-dialog box. The icon bar and menu commands can be used to customize
-the graph. Some say that Xmgr can produce nicer output that Gnuplot
-and it is easier to use. Xmgr cannot do 3D and only runs on Unixes
-with X and Motif installed. Xmgr also has a batch interface so you can
-use it from scripts too.
 
 
 
