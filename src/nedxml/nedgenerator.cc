@@ -477,7 +477,8 @@ void NEDGenerator::doConnections(ConnectionsNode *node, const char *indent, bool
 }
 
 void NEDGenerator::printGate(NEDElement *conn, const char *modname, const char *modindexattr,
-                             const char *gatename, const char *gateindexattr, const char *indent)
+                             const char *gatename, const char *gateindexattr, bool isplusplus,
+                             const char *indent)
 {
     if (strnotnull(modname)) {
         out << modname;
@@ -486,7 +487,10 @@ void NEDGenerator::printGate(NEDElement *conn, const char *modname, const char *
     }
 
     out << gatename;
-    printVector(conn, gateindexattr,indent);
+    if (isplusplus)
+        out << "++";
+    else
+        printVector(conn, gateindexattr,indent);
 }
 
 void NEDGenerator::doConnection(ConnectionNode *node, const char *indent, bool islast, const char *)
@@ -507,9 +511,9 @@ void NEDGenerator::doConnection(ConnectionNode *node, const char *indent, bool i
     // print src
     out << indent;
     if (srcfirst) {
-        printGate(node, node->getSrcModule(), "src-module-index", node->getSrcGate(), "src-gate-index", indent);
+        printGate(node, node->getSrcModule(), "src-module-index", node->getSrcGate(), "src-gate-index", node->getSrcGatePlusplus(), indent);
     } else {
-        printGate(node, node->getDestModule(), "dest-module-index", node->getDestGate(), "dest-gate-index", indent);
+        printGate(node, node->getDestModule(), "dest-module-index", node->getDestGate(), "dest-gate-index", node->getDestGatePlusplus(), indent);
     }
 
     // arrow
@@ -521,9 +525,9 @@ void NEDGenerator::doConnection(ConnectionNode *node, const char *indent, bool i
     // print dest
     out << " ";
     if (srcfirst) {
-        printGate(node, node->getDestModule(), "dest-module-index", node->getDestGate(), "dest-gate-index", indent);
+        printGate(node, node->getDestModule(), "dest-module-index", node->getDestGate(), "dest-gate-index", node->getDestGatePlusplus(), indent);
     } else {
-        printGate(node, node->getSrcModule(), "src-module-index", node->getSrcGate(), "src-gate-index", indent);
+        printGate(node, node->getSrcModule(), "src-module-index", node->getSrcGate(), "src-gate-index", node->getSrcGatePlusplus(), indent);
     }
 
     // print 'if' clause
@@ -689,7 +693,7 @@ void NEDGenerator::doOperator(OperatorNode *node, const char *indent, bool islas
         //bool leftassoc = isOperatorLeftAssoc(node->getName());
 
         bool needsParen = false;
-        bool spacious = false; // FIXME something better here!!!
+        bool spacious = (prio<=2);  // we want spaces around &&, ||, ##
 
         NEDElement *parent = node->getParent();
         if (parent && parent->getTagCode()==NED_OPERATOR) {

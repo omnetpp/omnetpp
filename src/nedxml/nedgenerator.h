@@ -106,7 +106,8 @@ class NEDGenerator
     void doSubstmachine(SubstmachineNode *node, const char *indent, bool islast, const char *);
     void doConnections(ConnectionsNode *node, const char *indent, bool islast, const char *);
     void printGate(NEDElement *conn, const char *modname, const char *modindexattr,
-                   const char *gatename, const char *gateindexattr, const char *indent);
+                   const char *gatename, const char *gateindexattr, bool isplusplus,
+                   const char *indent);
     void doConnection(ConnectionNode *node, const char *indent, bool islast, const char *);
     void doConnattr(ConnAttrNode *node, const char *indent, bool islast, const char *arrow);
     void doForloop(ForLoopNode *node, const char *indent, bool islast, const char *);
