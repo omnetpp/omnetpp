@@ -11,6 +11,8 @@
 #
 # Compiler optimization switches. Choose -O3 for speed, -g for debugging the libs.
 # (Note: For maximum debugging info use switch -ggdb or -gstabs+3 when using gcc and gdb)
+# With gcc, do NOT use --omit-frame-pointer (it crashes when coroutines and
+# C++ exceptions (throw/catch) are used together)!
 #
 #CFLAGS='-g -Wno-unused'
 #CFLAGS='-g -Wall'
