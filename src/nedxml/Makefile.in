@@ -132,15 +132,18 @@ saxparser_expat.o : saxparser_expat.cc
 saxparser_libxml.o : saxparser_libxml.cc
 	$(CXX) -c $(COPTS) saxparser_libxml.cc
 
+saxparser_none.o : saxparser_none.cc
+	$(CXX) -c $(COPTS) saxparser_none.cc
+
 nedutil.o : nedutil.cc
 	$(CXX) -c $(COPTS) nedutil.cc
 
 depend:
-	$(MAKEDEPEND) -I../../include -- *.cc 
-	$(MAKEDEPEND) -I../../include -fMakefile.in -- *.cc 
+	$(MAKEDEPEND) -I../../include -- *.cc
+	$(MAKEDEPEND) -I../../include -fMakefile.in -- *.cc
 
 clean:
-	rm -f *.o 
+	rm -f *.o
 	rm -f libnedxml$(A_LIB_SUFFIX) libnedxml$(SO_LIB_SUFFIX)
 #	rm -f nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h
 
@@ -248,6 +251,8 @@ nedxmlparser.o: nedxmlparser.cc \
 saxparser_expat.o: saxparser_expat.cc \
   saxparser.h
 saxparser_libxml.o: saxparser_libxml.cc \
+  saxparser.h
+saxparser_none.o: saxparser_none.cc \
   saxparser.h
 xmlgenerator.o: xmlgenerator.cc \
   nedelements.h \

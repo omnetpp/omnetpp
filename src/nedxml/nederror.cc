@@ -78,6 +78,6 @@ NEDException::NEDException(const char *msgformat...)
 
     errormsg = message;
 
-    *(char *)0 = 0;
+    //*(char *)0 = 0;
 }
 

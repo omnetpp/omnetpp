@@ -53,9 +53,9 @@ typedef struct yyltype
 # define	NAME	289
 # define	STRINGCONSTANT	290
 # define	CHARCONSTANT	291
-# define	_TRUE	292
-# define	_FALSE	293
-# define	INPUT	294
+# define	TRUE_	292
+# define	FALSE_	293
+# define	INPUT_	294
 # define	REF	295
 # define	ANCESTOR	296
 # define	CONSTDECL	297

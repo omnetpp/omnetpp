@@ -437,10 +437,19 @@ void NEDCppGenerator::doNetwork(NetworkNode *node, const char *indent, int mode,
 
     // prolog
     const char *networkname = node->getName();
-    out << "Define_Network( " << networkname << ", " << networkname << "_setup);\n\n";
 
-    out << "void " << networkname << "_setup()\n";
-    out << "{\n\n";
+    out << "class " << networkname <<  " : public cNetworkType\n";
+    out << "{\n";
+    out << "  public:\n";
+    out << "    " << networkname << "(const char *name) : cNetworkType(name) {}\n";
+    out << "    " << networkname << "(const " << networkname << "& n)  {setName(n.name());operator=(n);}\n";
+    out << "    virtual void setupNetwork();\n";
+    out << "};\n\n";
+
+    out << "Define_Network( " << networkname << " );\n\n";
+
+    out << "void " << networkname << "::setupNetwork()\n";
+    out << "{\n";
     indent = increaseIndent(indent);
 
     printTemporaryVariables(indent);
@@ -450,7 +459,7 @@ void NEDCppGenerator::doNetwork(NetworkNode *node, const char *indent, int mode,
     //    Simplificatons: no 'like' keyword, network cannot be a vector of modules
 
     // find module descriptor
-    if (!strnotnull(node->getLikeName()))
+    if (!strnotnull(node->getLikeName())) //FIXME!!!!!!!!!
     out << indent << "modtype = findModuleType( \"" << node->getTypeName() << "\" );\n";
     out << indent << "check_modtype( modtype, \"" << node->getTypeName() << "\" );\n";
 
@@ -495,7 +504,7 @@ void NEDCppGenerator::doNetwork(NetworkNode *node, const char *indent, int mode,
 
     // build function call
     out << indent << "// build submodules recursively (if it has any):\n";
-    out << indent << "modtype->buildInside( " << submodule_var.c_str() << " );\n";
+    out << indent << submodule_var.c_str() << "->buildInside();\n";
 
     out << indent << "machines.clear();\n\n";
 
@@ -550,10 +559,9 @@ void NEDCppGenerator::doModule(CompoundModuleNode *node, const char *indent, int
     out << "  public:\n";
     out << "    " << module_name.c_str() << "(const char *name, cModule *parent) :\n";
     out << "      cCompoundModule(name, parent) {}\n";
-    out << "    virtual const char *className()  {return \"" << module_name.c_str() << "\";}\n";
     out << "\n";
-    out << "    // function to build submodules\n";
-    out << "    virtual void buildInside();\n";
+    out << "  protected:\n";
+    out << "    virtual void doBuildInside();\n";
     out << "};\n\n";
 
     out << "Define_Module( " << module_name.c_str() << " );\n\n";
@@ -563,7 +571,7 @@ void NEDCppGenerator::doModule(CompoundModuleNode *node, const char *indent, int
     exprgen.generateExpressionClasses();
 
     // prolog
-    out << "void " << module_name.c_str() << "::buildInside()\n";
+    out << "void " << module_name.c_str() << "::doBuildInside()\n";
     out << "{\n";
 
     indent = increaseIndent(indent);
@@ -725,7 +733,7 @@ void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int m
 
     // build function call
     out << indent << "// build submodules recursively (if it has any):\n";
-    out << indent << "modtype->buildInside( " << submodule_var.c_str() << " );\n";
+    out << indent << submodule_var.c_str() << "->buildInside();\n";
 
     if (vectorsize)
     {

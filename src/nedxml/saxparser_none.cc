@@ -1,5 +1,5 @@
 //==========================================================================
-//  NEDXMLPARSER.H -
+//   SAXPARSER_NONE.CC -
 //            part of OMNeT++
 //
 //==========================================================================
@@ -14,17 +14,35 @@
 *--------------------------------------------------------------*/
 
 
-#ifndef __NEDXMLPARSER_H
-#define __NEDXMLPARSER_H
+#include <string.h>
+#include <stdio.h>
+#include <assert.h>
+#include <stdio.h>
+#include "nederror.h"
+#include "saxparser.h"
 
-#include "nedelement.h"
 
-/**
- * Simple front-end to NED XML parsing: invokes SAXParser with NEDSAXHandler.
- *
- * @ingroup XMLParser
- */
-NEDElement *parseXML(const char *filename);
+SAXParser::SAXParser()
+{
+    saxhandler = NULL;
+}
 
-#endif
+void SAXParser::setHandler(SAXHandler *sh)
+{
+    saxhandler = sh;
+    sh->setParser(this);
+}
+
+int SAXParser::parse(FILE *f)
+{
+    NEDError(NULL, "XML input is not supported: this copy of NEDXML was "
+                   "compiled without an XML parser (libXML or Expat)");
+    return 0;
+}
+
+int SAXParser::getCurrentLineNumber()
+{
+    return 0;
+}
+
 

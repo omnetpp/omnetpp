@@ -3,23 +3,19 @@ L                       [a-zA-Z_]
 E                       [Ee][+-]?{D}+
 
 %{
-/***************************************************/
-/*            OMNeT++ NEDC (JAR) source            */
-/*                                                 */
-/*  File: ebnf.lex                                 */
-/*                                                 */
-/*  Contents:                                      */
-/*    lexical analyzer source                      */
-/*                                                 */
-/*  By: Jan Heijmans                               */
-/*      Alex Paalvast                              */
-/*      Robert van der Leij                        */
-/*  Edited: Andras Varga 1996-98                   */
-/*                                                 */
-/***************************************************/
+/*==================================================
+ * File: ned.lex
+ *
+ *  Lexical analyser for OMNeT++ NED.
+ *
+ *  Author: Andras Varga
+ *
+ *  Based on code from nedc.
+ *
+ ==================================================*/
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992,2001 Andras Varga
+  Copyright (C) 1992,2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -36,7 +32,7 @@ E                       [Ee][+-]?{D}+
 #elseif defined(_MSC_VER)
 # include <io.h>
 # define isatty _isatty
-#else 
+#else
 extern "C" { int isatty(int); }
 #endif
 
@@ -72,11 +68,11 @@ char textbuf[256], lasttextbuf[256] = "";
 "channel"               { count(); return CHANNEL; }
 "for"                   { count(); return FOR; }
 "do"                    { count(); return DO; }
-"true"                  { count(); return _TRUE; }
-"false"                 { count(); return _FALSE; }
+"true"                  { count(); return TRUE_; }
+"false"                 { count(); return FALSE_; }
 "ref"                   { count(); return REF; }
 "ancestor"              { count(); return ANCESTOR; }
-"input"                 { count(); return INPUT; }
+"input"                 { count(); return INPUT_; }
 "const"                 { count(); return CONSTDECL; }
 "sizeof"                { count(); return SIZEOF; }
 "endsimple"             { count(); return ENDSIMPLE; }

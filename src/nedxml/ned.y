@@ -1,9 +1,9 @@
 /*===============================================================
- * File: ebnf.y
+ * File: ned.y
  *
- *  Grammar for OMNeT++ NED
+ *  Grammar for OMNeT++ NED.
  *
- *  By Andras Varga
+ *  Author: Andras Varga
  *
  *  Based on code from nedc.
  *
@@ -19,7 +19,7 @@
  *=============================================================*/
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992,2001 Andras Varga
+  Copyright (C) 1992,2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -42,8 +42,8 @@
 %token IFPAIR                   /* --LG */
 
 %token INTCONSTANT REALCONSTANT NAME STRINGCONSTANT CHARCONSTANT
-%token _TRUE _FALSE
-%token INPUT
+%token TRUE_ FALSE_
+%token INPUT_
 %token REF ANCESTOR
 %token CONSTDECL NUMERICTYPE STRINGTYPE BOOLTYPE ANYTYPE
 
@@ -1120,13 +1120,13 @@ expression
  */
 
 inputvalue
-        : INPUT '(' expr ',' expr ')'  /* input(defaultvalue, promptstring) */
+        : INPUT_ '(' expr ',' expr ')'  /* input(defaultvalue, promptstring) */
                 { if (ps.parseExpressions) $$ = createFunction("input", $3, $5); }
-        | INPUT '(' expr ')'
+        | INPUT_ '(' expr ')'
                 { if (ps.parseExpressions) $$ = createFunction("input", $3); }
-        | INPUT '(' ')'
+        | INPUT_ '(' ')'
                 { if (ps.parseExpressions) $$ = createFunction("input"); }
-        | INPUT
+        | INPUT_
                 { if (ps.parseExpressions) $$ = createFunction("input"); }
         ;
 
@@ -1247,9 +1247,9 @@ string_expr
         ;
 
 boolconst_expr
-        : _TRUE
+        : TRUE_
                 { $$ = createConst(NED_CONST_BOOL, "true"); }
-        | _FALSE
+        | FALSE_
                 { $$ = createConst(NED_CONST_BOOL, "false"); }
         ;
 
@@ -1485,8 +1485,8 @@ propertyvalue
         | INTCONSTANT
         | REALCONSTANT
         | timeconstant
-        | _TRUE
-        | _FALSE
+        | TRUE_
+        | FALSE_
         ;
 
 opt_fieldsblock
@@ -1580,8 +1580,8 @@ fieldvalue
         | INTCONSTANT
         | REALCONSTANT
         | timeconstant
-        | _TRUE
-        | _FALSE
+        | TRUE_
+        | FALSE_
         ;
 
 opt_semicolon : ';' | ;

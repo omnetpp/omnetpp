@@ -109,6 +109,9 @@ saxparser_expat.obj : saxparser_expat.cc
 saxparser_libxml.obj : saxparser_libxml.cc
         $(CXX) $(COPTS) /I $(LIBXML_INCL_DIR) /c /Tp saxparser_libxml.cc
 
+saxparser_none.obj : saxparser_none.cc
+        $(CXX) $(COPTS) /c /Tp saxparser_none.cc
+
 depend:
         $(MAKEDEPEND) -I. -fMakefile.vc -- *.cc
 
@@ -214,6 +217,8 @@ nedxmlparser.obj: nedxmlparser.cc \
 saxparser_expat.obj: saxparser_expat.cc \
   saxparser.h
 saxparser_libxml.obj: saxparser_libxml.cc \
+  saxparser.h
+saxparser_none.obj: saxparser_none.cc \
   saxparser.h
 xmlgenerator.obj: xmlgenerator.cc \
   nedelements.h \
