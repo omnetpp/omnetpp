@@ -401,7 +401,12 @@ proc draw_submod {c key} {
     $c addtag "key-$key" withtag $lbl
     $c addtag "key-$key" withtag $ic
 
-    $c itemconfigure $lbl -text $ned($key,name)
+    if {$ned($key,vectorsize)!=""} {
+        set txt "$ned($key,name)\[$ned($key,vectorsize)\]"
+    } else {
+        set txt $ned($key,name)
+    }
+    $c itemconfigure $lbl -text $txt
 }
 
 # draw_connection: internal to drawItem

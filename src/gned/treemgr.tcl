@@ -96,7 +96,17 @@ proc getNodeInfo {w op {key {}}} {
       }
 
       text {
-        if [info exist ned($key,name)] {
+        # FIXME: this should turn into a call to some itemDescription proc
+        if {[info exist ned($key,name)] && [info exist ned($key,vectorsize)] && $ned($key,vectorsize)!=""} {
+          # return "$key:$ned($key,type) $ned($key,name)\[$ned($key,vectorsize)\]"
+          return "$ned($key,type) $ned($key,name)\[$ned($key,vectorsize)\]"
+        } elseif {[info exist ned($key,name)] && [info exist ned($key,size)] && $ned($key,size)!=""} {
+          # return "$key:$ned($key,type) $ned($key,name)\[$ned($key,size)\]"
+          return "$ned($key,type) $ned($key,name)\[$ned($key,size)\]"
+        } elseif {[info exist ned($key,name)] && [info exist ned($key,isvector)] && $ned($key,isvector)} {
+          # return "$key:$ned($key,type) $ned($key,name)\[\]"
+          return "$ned($key,type) $ned($key,name)\[\]"
+        } elseif [info exist ned($key,name)] {
           # return "$key:$ned($key,type) $ned($key,name)"
           return "$ned($key,type) $ned($key,name)"
         } else {

@@ -455,7 +455,7 @@ proc generate_conn {key indent islast} {
     return $out
 }
 
-proc generate_connattr {key indent islast arrow} {
+proc generate_connattr {key indent islast {arrow {}}} {
     global ned
     set out ""
     appendBannerComment out $ned($key,banner-comment) $indent

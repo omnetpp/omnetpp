@@ -12,9 +12,9 @@ Data struct change:
 - turn display strings into independent objects?
 
 Drawing:
+- random placement of submods should avoid overlaps if possible
 - arrow.cc was modified!!! update in Tkenv!!!
 - if canvas is scrolled, mouse selection works with wrong positions
-- paste does not work between canvases
 - should support ovals too (not only rects)
 
 Load/save:
