@@ -166,6 +166,7 @@ proc _doFind {w findstring case words regexp} {
     return $length
 }
 
+
 # askReplaceYesNo --
 #
 #
@@ -226,6 +227,33 @@ proc askReplaceYesNo {w} {
     return $result
 }
 
+
+# _doReplace --
+#
+# Internal proc for doReplace.
+#
+# Replaces the string: in text widget w, the from length chars before to the cursor
+# to the cursor, with replstring, using regexp replace if regexp is nonzero, and case-sensitive
+# is case is nonzero.
+#
+proc _doReplace {w length findstring replstring case regexp} {
+
+    if {!$regexp} {
+        $w delete "insert - $length char" "insert"
+        $w insert insert $replstring
+    } elseif {$regexp} {
+        set foundtext [$w get "insert - $length char" "insert"]
+        if {$case} {
+            regsub -- $findstring $foundtext $replstring replacetext
+        } else {
+            regsub -nocase -- $findstring $foundtext $replstring replacetext
+        }
+        $w delete "insert - $length char" "insert"
+        $w insert insert $replacetext
+    }
+}
+
+
 # doReplace --
 #
 #
@@ -244,15 +272,13 @@ proc doReplace {w findstring replstring case words regexp} {
 
         case $action in {
             yes {
-                $w delete "insert - $length char" "insert"
-                $w insert insert $replstring
+                _doReplace $w $length $findstring $replstring $case $regexp
                 syntaxHighlight $w "insert linestart" "insert lineend"
             }
             all {
                 set count 0
                 while {$length != ""} {
-                    $w delete "insert - $length char" "insert"
-                    $w insert insert $replstring
+                    _doReplace $w $length $findstring $replstring $case $regexp
                     incr count
                     set length [_doFind $w $findstring $case $words $regexp]
                 }
