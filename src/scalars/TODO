@@ -18,6 +18,22 @@ Draw histogram?
 
 Filter: values between [...] and [...]
 
-Chart properties dialog: save/load&apply chart properties (can be implemented 
+Chart properties dialog: create/apply "Preset" chart styles (can be implemented 
 with a Tcl array)
 
+<all> - change to "*"
+
+close scalar file
+
+charts: also show them as table with numbers
+
+merge with Plove -- "vector" pages, "scalar" pages; "convert vector to 
+scalar" (would create scalars with mean, stddev, min, max, etc...)
+
+Chart properties dialog: only one of the "Lines", "Bars" page should appear.
+
+BLT graph: eliminate interference of crosshair zoom and active legend!
+
+Better handling of errors during file load
+
+Check compatibility with different BLT versions
