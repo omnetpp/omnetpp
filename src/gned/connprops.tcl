@@ -43,26 +43,24 @@ puts "DBG: editConnectionProps: dialog doesn't work yet!"
     pack $nb.general.rcomment -expand 0 -fill x -side top
 
     # create "Gates" page
-    label-entry $nb.gates.srcgate "From gate:"
-    label-entry $nb.gates.destgate "To gate:"
+    label $nb.gates.lfrom -text  "From:"
+    ConnProps:gateSpec $nb.gates.from
+    label $nb.gates.lto -text  "To:"
+    ConnProps:gateSpec $nb.gates.to
+    label $nb.gates.ldir -text  "Arrow direction in NED:"
+    radiobutton $nb.gates.r1 -text "src --> dest" -value 0 -variable tmp(l2r)
+    radiobutton $nb.gates.r2 -text "dest <-- src" -value 1 -variable tmp(l2r)
+
     label-entry $nb.gates.condition "Condition:"
 
-    label-entry $nb.gates.src_index "Source Index:"
-    label-entry $nb.gates.dest_index "Destination Index:"
-    label-entry $nb.gates.src_gate_index "Source Gate Index:"
-    label-entry $nb.gates.dest_gate_index "Destinaton Gate Index:"
-    label-entry $nb.gates.for "For Expression:"
-
-    pack $nb.gates.srcgate  -expand 0 -fill x -side top
-    pack $nb.gates.destgate  -expand 0 -fill x -side top
+    pack $nb.gates.lfrom  -expand 0 -fill none -side top -anchor w
+    pack $nb.gates.from  -expand 0 -fill x -side top
+    pack $nb.gates.lto  -expand 0 -fill none -side top -anchor w
+    pack $nb.gates.to -expand 0 -fill x -side top
+    pack $nb.gates.ldir  -expand 0 -fill none -side top -anchor w
+    pack $nb.gates.r1  -expand 0 -fill none -side top -anchor w
+    pack $nb.gates.r2  -expand 0 -fill none -side top -anchor w
     pack $nb.gates.condition  -expand 0 -fill x -side top
-
-    pack $nb.gates.src_index  -expand 0 -fill x -side top
-    pack $nb.gates.dest_index  -expand 0 -fill x -side top
-    pack $nb.gates.src_gate_index  -expand 0 -fill x -side top
-    pack $nb.gates.dest_gate_index  -expand 0 -fill x -side top
-    pack $nb.gates.for  -expand 0 -fill x -side top
-
 
     # create "Attributes" page
     radiobutton $nb.attrs.r1 -text "Predefined channel:" -value 1 -variable tmp(usechannel)
@@ -91,6 +89,7 @@ puts "DBG: editConnectionProps: dialog doesn't work yet!"
     pack $nb.attrs.tbl -side top -pady 4
 
     # fill "Gates" page
+if 0 {
     $nb.gates.srcgate.e insert 0 $ned($key,srcgate)
     $nb.gates.destgate.e insert 0 $ned($key,destgate)
     $nb.gates.condition.e  insert 0 $ned($key,condition)
@@ -98,7 +97,7 @@ puts "DBG: editConnectionProps: dialog doesn't work yet!"
     $nb.gates.dest_index.e  insert 0 $ned($key,dest_index)
     $nb.gates.src_gate_index.e  insert 0 $ned($key,src_gate_index)
     $nb.gates.dest_gate_index.e insert 0 $ned($key,dest_gate_index)
-#    $nb.gates.for.e insert 0 $ned($key,for_expression)
+}
 
     # fill "Attributes" page
 if 0 {
@@ -118,7 +117,7 @@ if 0 {
 }
 
     # focus on first one
-    focus $nb.gates.srcgate.e
+#    focus $nb.gates.srcgate.e
 
     # exec the dialog, extract its contents if OK was pressed, then delete dialog
     if {[execOkCancelDialog .connprops] == 1} {
@@ -178,3 +177,27 @@ if 0 {
     destroy .connprops
 }
 
+proc ConnProps:gateSpec {w} {
+    frame $w
+    frame $w.m
+    frame $w.g
+    pack $w.m -expand 0 -fill x -side top
+    pack $w.g -expand 0 -fill x -side top
+
+    # add "Module ... index [...]" line
+    label $w.m.l1 -text  "   Module "
+    entry $w.m.name -width 20
+    label $w.m.lb -text  " index \["
+    entry $w.m.index -width 8
+    label $w.m.rb -text  "\]"
+    pack $w.m.l1 $w.m.name $w.m.lb $w.m.index $w.m.rb -expand 0 -side left
+
+    # add "Gate ... index [...]" line
+    label $w.g.l1 -text  "   Gate "
+    entry $w.g.name -width 20
+    button $w.g.gates -text "..."
+    label $w.g.lb -text  " index \["
+    entry $w.g.index -width 8
+    label $w.g.rb -text  "\]"
+    pack $w.g.l1 $w.g.name $w.g.gates $w.g.lb $w.g.index $w.g.rb -expand 0 -side left
+}
