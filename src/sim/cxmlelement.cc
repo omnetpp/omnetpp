@@ -173,7 +173,7 @@ bool cXMLElement::hasChildren() const
 
 bool cXMLElement::hasAttributes() const
 {
-    return attrs.empty();
+    return !attrs.empty();
 }
 
 const cXMLAttributeMap& cXMLElement::getAttributes() const
