@@ -1,12 +1,12 @@
 # Definitions to be customized by 'configure'
-CC=gcc -g -I. -c -x c++
-AS=gcc -g -c
-AR=ar rs
-MAKE_SO=gcc -shared -o
-OMNETPP_ROOT=/home/andras/omnetpp
-OMNETPP_SRC_DIR=/home/andras/omnetpp/src
-OMNETPP_INCL_PATH=-I$(OMNETPP_SRC_DIR)/sim -I$(OMNETPP_SRC_DIR)/envir
-OMNETPP_INCLUDES=$(OMNETPP_SRC_DIR)/sim/*.h $(OMNETPP_SRC_DIR)/envir/cenvir.h
+CXX=@CXX@
+AS=@AS@
+AR=@AR@
+MAKE_SO=@MAKE_SO@
+OMNETPP_ROOT=@OMNETPP_ROOT@
+OMNETPP_SRC_DIR=@OMNETPP_SRC_DIR@
+OMNETPP_INCL_PATH=@OMNETPP_INCL_PATH@
+OMNETPP_INCLUDES=@OMNETPP_INCLUDES@
 PVM_INCL_PATH=-I/home/andras/pvm3/include
 LIB_SUFFIX=so
 
@@ -37,91 +37,91 @@ libsim_pvm.so : $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
 	$(MAKE_SO) libsim_pvm.so $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
 
 ccor.o : ccor.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) ccor.cc
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) ccor.cc
 
 ctypes.o : ctypes.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) ctypes.cc
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) ctypes.cc
 
 carray.o : carray.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) carray.cc
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) carray.cc
 
 cqueue.o : cqueue.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) cqueue.cc
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) cqueue.cc
 
 chead.o : chead.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) chead.cc
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) chead.cc
 
 cwatch.o : cwatch.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) cwatch.cc
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) cwatch.cc
 
 cmodule.o : cmodule.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) cmodule.cc
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) cmodule.cc
 
 csimul.o : csimul.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) csimul.cc
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) csimul.cc
 
 cgate.o : cgate.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) cgate.cc
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) cgate.cc
 
 cmessage.o : cmessage.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) cmessage.cc
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) cmessage.cc
 
 cpacket.o : cpacket.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) cpacket.cc
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) cpacket.cc
 
 cfsm.o : cfsm.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) cfsm.cc
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) cfsm.cc
 
 cobject.o : cobject.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) cobject.cc
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) cobject.cc
 
 cpar.o : cpar.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) cpar.cc
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) cpar.cc
 
 cstat.o : cstat.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) cstat.cc
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) cstat.cc
 
 cdensity.o : cdensity.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) cdensity.cc
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) cdensity.cc
 
 chist.o : chist.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) chist.cc
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) chist.cc
 
 cvarhist.o : cvarhist.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) cvarhist.cc
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) cvarhist.cc
 
 cdetect.o : cdetect.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) cdetect.cc
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) cdetect.cc
 
 cpsquare.o : cpsquare.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) cpsquare.cc
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) cpsquare.cc
 
 cksplit.o : cksplit.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) cksplit.cc
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) cksplit.cc
 
 cmsgheap.o : cmsgheap.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) cmsgheap.cc
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) cmsgheap.cc
 
 cnetmod.o : cnetmod.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) cnetmod.cc
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) cnetmod.cc
 
 cllist.o : cllist.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) cllist.cc
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) cllist.cc
 
 ctopo.o : ctopo.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) ctopo.cc
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) ctopo.cc
 
 coutvect.o : coutvect.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) coutvect.cc
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) coutvect.cc
 
 cstk.o : cstk.cc ccor.h cstk.h
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) cstk.cc
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) cstk.cc
 
 util.o : util.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) util.cc
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) util.cc
 
 errmsg.o : errmsg.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) errmsg.cc
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) errmsg.cc
 
 stjpower.o : stjpower.s
 	$(AS) stjpower.s
@@ -130,10 +130,10 @@ swpower.o : swpower.s
 	$(AS) swpower.s
 
 std/netpack.o : std/netpack.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) std/netpack.cc -o std/netpack.o
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) std/netpack.cc -o std/netpack.o
 
 pvm/pvmpack.o : pvm/pvmpack.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) $(PVM_INCL_PATH) pvm/pvmpack.cc -o pvm/pvmpack.o
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) $(PVM_INCL_PATH) pvm/pvmpack.cc -o pvm/pvmpack.o
 
 pvm/pvmmod.o : pvm/pvmmod.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCL_PATH) $(OMNETPP_INCL_PATH) $(PVM_INCL_PATH) pvm/pvmmod.cc -o pvm/pvmmod.o
+	$(CXX) $(INCL_PATH) $(OMNETPP_INCL_PATH) $(PVM_INCL_PATH) pvm/pvmmod.cc -o pvm/pvmmod.o

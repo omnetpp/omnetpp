@@ -1,12 +1,13 @@
 # Definitions to be customized by 'configure'
-CC=gcc -g -I. -c -x c++
+CXX=@CXX@
 AS=gcc -g -c
-AR=ar rs
-MAKE_SO=gcc -shared -o
-OMNETPP_ROOT=/home/andras/omnetpp
-OMNETPP_SRC_DIR=/home/andras/omnetpp/src
-OMNETPP_INCL_PATH=-I$(OMNETPP_SRC_DIR)/sim
-OMNETPP_INCLUDES=$(OMNETPP_SRC_DIR)/sim/*.h
+AR=@AR@
+MAKE_SO=@MAKE_SO@
+
+OMNETPP_ROOT=@OMNETPP_ROOT@
+OMNETPP_SRC_DIR=@OMNETPP_SRC_DIR@
+OMNETPP_INCL_PATH=@OMNETPP_INCL_PATH@
+OMNETPP_INCLUDES=@OMNETPP_INCLUDES@
 USE_DLOPEN=1
 LIB_SUFFIX=so
 
@@ -23,27 +24,27 @@ libenvir.so : $(OBJS)
 	$(MAKE_SO) libenvir.so $(OBJS)
 
 args.o : args.cc args.h
-	$(CC) $(OMNETPP_INCL_PATH) args.cc
+	$(CXX) $(OMNETPP_INCL_PATH) args.cc
 
 
 cenvir.o : cenvir.cc $(OMNETPP_INCLUDES) $(ENVIR_INCLUDES)
-	$(CC) $(OMNETPP_INCL_PATH) cenvir.cc
+	$(CXX) $(OMNETPP_INCL_PATH) cenvir.cc
 
 cinifile.o : cinifile.cc  $(OMNETPP_INCLUDES) $(ENVIR_INCLUDES)
-	$(CC) $(OMNETPP_INCL_PATH) cinifile.cc
+	$(CXX) $(OMNETPP_INCL_PATH) cinifile.cc
 
 main.o : main.cc  $(OMNETPP_INCLUDES) $(ENVIR_INCLUDES)
-	$(CC) $(OMNETPP_INCL_PATH) main.cc
+	$(CXX) $(OMNETPP_INCL_PATH) main.cc
 
 omnetapp.o : omnetapp.cc  $(OMNETPP_INCLUDES) $(ENVIR_INCLUDES)
-	$(CC) $(OMNETPP_INCL_PATH) -DDYNAMIC_LINKAGE=$(DYNAMIC_LINKAGE) omnetapp.cc
+	$(CXX) $(OMNETPP_INCL_PATH) -DDYNAMIC_LINKAGE=$(DYNAMIC_LINKAGE) omnetapp.cc
 
 slaveapp.o : slaveapp.cc  $(OMNETPP_INCLUDES) $(ENVIR_INCLUDES)
-	$(CC) $(OMNETPP_INCL_PATH) slaveapp.cc
+	$(CXX) $(OMNETPP_INCL_PATH) slaveapp.cc
 
 seeds.o : seeds.cc  $(OMNETPP_INCLUDES) $(ENVIR_INCLUDES)
-	$(CC) $(OMNETPP_INCL_PATH) seeds.cc
+	$(CXX) $(OMNETPP_INCL_PATH) seeds.cc
 
 patmatch.o : patmatch.cc  $(OMNETPP_INCLUDES) $(ENVIR_INCLUDES)
-	$(CC) $(OMNETPP_INCL_PATH) patmatch.cc
+	$(CXX) $(OMNETPP_INCL_PATH) patmatch.cc
 

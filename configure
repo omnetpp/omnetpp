@@ -18,12 +18,12 @@
 #Programs
 # YACC    - yacc or bison
 # LEX     - lex or flex
-# CCC     - plain C compiler
-# CC      - C++ compiler
+# CC     - plain C compiler
+# CXX      - C++ compiler
 # NEDC    - NED compiler
 # AS      - assembler
 # AR      - librarian
-# MAKE_SO - librarian to create shared objects 
+# MAKE_SO - librarian to create shared objects
 # LD      - linker
 #
 #Dynamic linking and run-time loaded libraries
@@ -55,15 +55,15 @@ SEARCH_DIRS="/usr* /opt /local $HOME"
 OMNETPP_ROOT="$HOME/omnetpp"
 
 #
-# a=static, so=shared libraries. 
+# a=static, so=shared libraries.
 #  If you change this setting, remember to delete the other set of libraries
 #  (or at least the soft links from lib/).
 #
 # LIB_SUFFIX='so'
-LIB_SUFFIX='a'  
+LIB_SUFFIX='a'
 
 #
-# Enable/disable use of dlopen(), used by OMNeT++'s -l command line option 
+# Enable/disable use of dlopen(), used by OMNeT++'s -l command line option
 # and [General]/load-libs= ini file option
 #
 USE_DLOPEN=1
@@ -79,8 +79,8 @@ CFLAGS='-O3 -DNDEBUG=1'
 #
 YACC='bison'
 LEX='flex'
-CCC='gcc '$CFLAGS' -c'
-CC='gcc '$CFLAGS' -I. -c -x c++'
+CC='gcc '$CFLAGS' -c'
+CXX='gcc '$CFLAGS' -I. -c -x c++'
 NEDC='nedc'
 AS='gcc -g -c'
 AR='ar rs'
@@ -126,9 +126,9 @@ fi
 
 if echo $PATH | grep -q $OMNETPP_ROOT/bin; then
   echo "Your PATH contains $OMNETPP_ROOT/bin. Good."
-else 
+else
   cat << EOT
-You should put $OMNETPP_ROOT/bin into your path. Add the following line to 
+You should put $OMNETPP_ROOT/bin into your path. Add the following line to
 your startup file:
   export PATH=\$PATH:\$HOME/omnetpp/bin  # .(bash_)profile if you use sh/bash
   setenv PATH \$PATH:\$HOME/omnetpp/bin  # .cshrc if you use csh,tcsh etc.
@@ -137,14 +137,14 @@ EOT
    export PATH=$PATH:$HOME/omnetpp/bin
 fi
 
-if [ "$LIB_SUFFIX" = "so" ]; then  
+if [ "$LIB_SUFFIX" = "so" ]; then
   if echo $LD_LIBRARY_PATH | grep -q $OMNETPP_ROOT/lib; then
     echo "Your LD_LIBRARY_PATH is set. Good."
   else
     cat << EOT
-Note: Dynamic libraries are selected in configure (LIB_SUFFIX=so). 
-You'll either have to create symbolic links from /usr/lib to the 
-OMNeT++ shared libraries (as root) or set the LD_LIBRARY_PATH environment 
+Note: Dynamic libraries are selected in configure (LIB_SUFFIX=so).
+You'll either have to create symbolic links from /usr/lib to the
+OMNeT++ shared libraries (as root) or set the LD_LIBRARY_PATH environment
 variable. Add the corresponding line to your startup file:
   export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:\$HOME/omnetpp/lib
          # into .(bash_)profile if you use bash or other sh-like shell
@@ -162,7 +162,7 @@ fi
 #
 if [ "$CCC" = "gcc -g -c" ]; then
     if gcc --version >/dev/null 2>&1; then : ; else
-        echo 'Warning: gcc not found, you have to manually edit CC=, CCC=, MAKE_SO and LD= lines in configure'
+        echo 'Warning: gcc not found, you have to manually edit CXX=, CC=, MAKE_SO and LD= lines in configure'
     fi
 fi
 
@@ -324,7 +324,7 @@ sedcmd=""
 sedcmd2=""
 for var in \
   OMNETPP_ROOT OMNETPP_SRC_DIR OMNETPP_SAMPLES_DIR OMNETPP_MODELS_DIR \
-  YACC LEX CCC CC NEDC AS AR MAKE_SO LD \
+  YACC LEX CC CXX NEDC AS AR MAKE_SO LD \
   LIB_SUFFIX USE_DLOPEN \
   TV_INCL_PATH  TV_LIB_PATH  TV_LIBS \
   TK_INCL_PATH  TK_LIB_PATH  TK_LIBS \
@@ -336,17 +336,12 @@ do
     # sedcmd: sed command for makefiles. $FOO in values modified to $(FOO)
     # sedcmd2: sed command for scripts. Values are placed between quotes
     val=`eval echo \\$$var`
-    #echo '  '$var' = '$val
-    val=`echo $val | sed 's/\\//\\\\\\//g'`
-    valp=`echo $val | sed 's/\$\([_A-Z0-9].[_A-Z0-9]*\)/$(\1)/g'`
-    c="s/^$var[ ]*=.*$/$var=$valp/"
-    cq="s/^$var[ ]*=.*$/$var=\"$val\"/"
+    val=`echo $val | sed 's/\//\\\//g'`
+    echo '  '$var' = '$val
     if [ "$sedcmd" = "" ]; then
-        sedcmd="$c"
-        sedcmd2="$cq"
+        sedcmd="s/@$var@/$val/g"
     else
-        sedcmd="$sedcmd;$c"
-        sedcmd2="$sedcmd2;$cq"
+        sedcmd="$sedcmd;s/@$var@/$val/g"
     fi
 done
 
@@ -356,31 +351,13 @@ done
 echo
 echo Configuring all makefiles plus scripts in src/utils/
 makefile_ins=`find $OMNETPP_ROOT -name makefile.in`
-for infile in $makefile_ins
+for infile in "$makefile_ins $OMNETPP_ROOT/src/utils/makemake.in"
 do
     file=`echo $infile | sed 's/\.in$//'`
     if sed "$sedcmd" < $infile > $file; then
-       : #echo "  $infile --> $file OK"    
+       : #echo "  $infile --> $file OK"
     else
-       echo "Cannot create makefile from $infile"
-    fi
-done
-scripts=`find $OMNETPP_ROOT/src/utils -name makemake -or -name makeall \
-                                 -or -name all2unix -or -name makedist`
-for file in $scripts
-do
-    if [ -f "$file" ]; then
-       if (cp $file $file.new && \
-           sed "$sedcmd2" < $file > $file.new && \
-           mv $file.new $file)
-       then
-           : #echo "  $file OK"
-       else
-           echo "Cannot update $file"
-           rm -f $file.new
-       fi
-    else
-       echo "Cannot open $file"
+       echo "Cannot create $file from $infile"
     fi
 done
 echo

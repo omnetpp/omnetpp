@@ -32,27 +32,27 @@ LIBS =
 # NOTE: The following variables (paths etc.) are set by the configure script.
 #       Any changes you make here will be lost with the next configure.
 
-OMNETPP_ROOT = /home/andras/omnetpp
-OMNETPP_SRC_DIR = /home/andras/omnetpp/src
+OMNETPP_ROOT=@OMNETPP_ROOT@
+OMNETPP_SRC_DIR=@OMNETPP_SRC_DIR@
 
-CC = gcc -g -I. -c -x c++
-NEDC = nedc
-LD = gcc
-AR = ar rs
+CXX=@CXX@
+NEDC=@NEDC@
+LD=@LD@
+AR=@AR@
 
-OMNETPP_INCL_PATH=-I/home/andras/omnetpp/src/sim -I/home/andras/omnetpp/src/envir
-OMNETPP_LIB_PATH=-L/home/andras/omnetpp/lib
+OMNETPP_INCL_PATH=@OMNETPP_INCL_PATH@
+OMNETPP_LIB_PATH=@OMNETPP_LIB_PATH@
 
-TV_LIBS=-ltv
-X_LIBS=-lX11
-TK_LIBS=-ltk -ltcl -ldl
-PVM_LIBS=-lgpvm3 -lpvm3
-SYS_LIBS=-ldl -lm -lstdc++
+TV_LIBS=@TV_LIBS@
+X_LIBS=@X_LIBS@
+TK_LIBS=@TK_LIBS@
+PVM_LIBS=@PVM_LIBS@
+SYS_LIBS=@SYS_LIBS@
 
-TV_LIB_PATH=
-TK_LIB_PATH=-L/usr/lib -L/usr/lib
-X_LIB_PATH=-L/usr/X11R6/lib
-PVM_LIB_PATH=
+TV_LIB_PATH=@TV_LIB_PATH@
+TK_LIB_PATH=@TK_LIB_PATH@
+X_LIB_PATH=@X_LIB_PATH@
+PVM_LIB_PATH=@PVM_LIB_PATH@
 
 # User interface libs
 CMDENV_LIBS = -lenvir -lcmdenv
@@ -66,7 +66,7 @@ PVM_KERNEL_LIBS = -lsim_pvm $(PVM_LIB_PATH) $(PVM_LIBS)
 # Simulation kernel and user interface libraries
 OMNETPP_LIBS = $(OMNETPP_LIB_PATH) $(KERNEL_LIBS) $(USERIF_LIBS) $(SYS_LIBS)
 
-OMNETPP_INCLUDES = /home/andras/omnetpp/src/sim/*.h /home/andras/omnetpp/src/envir/cenvir.h
+OMNETPP_INCLUDES=@OMNETPP_INCLUDES@
 
 #------------------------------------------------------------------------------
 
@@ -77,22 +77,22 @@ $(TARGET): $(OBJS) $(EXRA_OBJS) makefile
 	$(LD) $(OBJS) $(EXRA_OBJS) $(LIBS) $(OMNETPP_LIBS) -o $(TARGET)
 
 dyna_n.o: dyna.h dyna_n.cc $(OMNETPP_INCLUDES)
-	$(CC) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) dyna_n.cc
+	$(CXX) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) dyna_n.cc
 
 dyna_n.cc: dyna.ned
 	$(NEDC) $(INCLUDE_PATH) dyna.ned
 
 client.o: client.cc dyna.h $(OMNETPP_INCLUDES)
-	$(CC) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) client.cc
+	$(CXX) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) client.cc
 
 server.o: server.cc dyna.h $(OMNETPP_INCLUDES)
-	$(CC) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) server.cc
+	$(CXX) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) server.cc
 
 servproc.o: servproc.cc dyna.h $(OMNETPP_INCLUDES)
-	$(CC) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) servproc.cc
+	$(CXX) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) servproc.cc
 
 switch.o: switch.cc dyna.h $(OMNETPP_INCLUDES)
-	$(CC) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) switch.cc
+	$(CXX) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) switch.cc
 
 clean:
 	rm -f *.o *_n.cc $(TARGET)

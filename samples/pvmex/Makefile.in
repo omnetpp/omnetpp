@@ -32,23 +32,23 @@ KERNEL_LIBS = $(STD_KERNEL_LIBS)
 
 OMNETPP_ROOT = /home/andras/omnetpp
 
-CC = gcc -g -I. -c -x c++
-NEDC = /home/andras/omnetpp/nedc/nedc
-LD = gcc
+CXX=@CXX@
+NEDC=@NEDC@
+LD=@LD@
 
-OMNETPP_INCL_PATH=-I/home/andras/omnetpp/sim -I/home/andras/omnetpp/envir
-OMNETPP_LIB_PATH=-L/home/andras/omnetpp/sim -L/home/andras/omnetpp/envir -L/home/andras/omnetpp/envir/cmdenv -L/home/andras/omnetpp/envir/tvenv -L/home/andras/omnetpp/envir/tkenv
+OMNETPP_INCL_PATH=@OMNETPP_INCL_PATH@
+OMNETPP_LIB_PATH=@OMNETPP_LIB_PATH@
 
-TV_LIBS=-ltv
-X_LIBS=-lX11
-TK_LIBS=-ltk -ltcl -ldl
-PVM_LIBS=-lgpvm3 -lpvm3
-SYS_LIBS=-ldl -lm -lstdc++
+TV_LIBS=@TV_LIBS@
+X_LIBS=@X_LIBS@
+TK_LIBS=@TK_LIBS@
+PVM_LIBS=@PVM_LIBS@
+SYS_LIBS=@SYS_LIBS@
 
-TV_LIB_PATH=
-TK_LIB_PATH=-L/usr/lib -L/usr/lib
-X_LIB_PATH=-L/usr/X11R6/lib
-PVM_LIB_PATH=-L/home/andras/pvm3/src/LINUX
+TV_LIB_PATH=@TV_LIB_PATH@
+TK_LIB_PATH=@TK_LIB_PATH@
+X_LIB_PATH=@X_LIB_PATH@
+PVM_LIB_PATH=@PVM_LIB_PATH@
 
 # User interface libs
 CMDENV_LIBS = -lenvir -lcmdenv
@@ -62,7 +62,7 @@ PVM_KERNEL_LIBS = -lsim_pvm $(PVM_LIB_PATH) $(PVM_LIBS)
 # Simulation kernel and user interface libraries
 OMNETPP_LIBS = $(OMNETPP_LIB_PATH) $(KERNEL_LIBS) $(USERIF_LIBS) $(SYS_LIBS)
 
-OMNETPP_INCLUDES = /home/andras/omnetpp/sim/*.h /home/andras/omnetpp/envir/cenvir.h
+OMNETPP_INCLUDES=@OMNETPP_INCLUDES@
 
 # Object files from this directory to link
 OBJS = pvmex_n.o simples.o
@@ -73,13 +73,13 @@ $(PROGRAM): $(OBJS) $(OTHERSIMPLES) makefile
 	$(LD) $(OBJS) $(OTHERSIMPLES) $(OMNETPP_LIBS) -o $(PROGRAM)
 
 pvmex_n.o: pvmex_n.cc $(OMNETPP_INCLUDES)
-	$(CC) $(OMNETPP_INCL_PATH) pvmex_n.cc
+	$(CXX) $(OMNETPP_INCL_PATH) pvmex_n.cc
 
 pvmex_n.cc: pvmex.ned
 	$(NEDC) $(NED_INCL_PATH) pvmex.ned
 
 simples.o: simples.cc $(OMNETPP_INCLUDES)
-	$(CC) $(OMNETPP_INCL_PATH) simples.cc
+	$(CXX) $(OMNETPP_INCL_PATH) simples.cc
 
 clean:
 	rm -f *.o *_n.cc $(PROGRAM)

@@ -7,16 +7,16 @@ TKAPP=tkapp
 # TKAPP=tkapp-rt
 
 # Definitions to be customized by 'configure'
-CC=gcc -g -I. -c -x c++
-AS=gcc -g -c
-AR=ar rs
-MAKE_SO=gcc -shared -o
-OMNETPP_ROOT=/home/andras/omnetpp
-OMNETPP_SRC_DIR=/home/andras/omnetpp/src
-OMNETPP_INCL_PATH=-I$(OMNETPP_SRC_DIR)/sim
-OMNETPP_INCLUDES=$(OMNETPP_SRC_DIR)/sim/*.h
-OMNETPP_BITMAP_PATH=/home/andras/omnetpp/bitmaps
-TK_INCL_PATH=-I/usr/include -I/usr/include
+CXX=@CXX@
+AS=@AS@
+AR=@AR@
+MAKE_SO=@MAKE_SO@
+OMNETPP_ROOT=@OMNETPP_ROOT@
+OMNETPP_SRC_DIR=@OMNETPP_SRC_DIR@
+OMNETPP_INCL_PATH=@OMNETPP_INCL_PATH@
+OMNETPP_INCLUDES=@OMNETPP_INCLUDES@
+OMNETPP_BITMAP_PATH=@OMNETPP_BITMAP_PATH@
+TK_INCL_PATH=@TK_INCL_PATH@
 X_INCL_PATH=-I/usr/X11R6/include/X11
 LIB_SUFFIX=a
 
@@ -41,34 +41,34 @@ libtkenv.so : $(OBJS)
 	$(MAKE_SO) libtkenv.so $(OBJS)
 
 tkapp.o : tkapp.cc $(INCLUDES)
-	$(CC) $(CC_OPTS) -DOMNETPP_TKENV_DIR=\"$(OMNETPP_TKENV_DIR)\" -DOMNETPP_BITMAP_PATH=\"$(OMNETPP_BITMAP_PATH)\" tkapp.cc
+	$(CXX) $(CC_OPTS) -DOMNETPP_TKENV_DIR=\"$(OMNETPP_TKENV_DIR)\" -DOMNETPP_BITMAP_PATH=\"$(OMNETPP_BITMAP_PATH)\" tkapp.cc
 
 tkapp-rt.o : tkapp.cc $(INCLUDES) tclcode.cc
-	$(CC) $(CC_OPTS) -DOMNETPP_BITMAP_PATH=\"$(OMNETPP_BITMAP_PATH)\" tkapp.cc -o tkapp-rt.o
+	$(CXX) $(CC_OPTS) -DOMNETPP_BITMAP_PATH=\"$(OMNETPP_BITMAP_PATH)\" tkapp.cc -o tkapp-rt.o
 
 tkcmd.o : tkcmd.cc $(INCLUDES)
-	$(CC) $(CC_OPTS) tkcmd.cc
+	$(CXX) $(CC_OPTS) tkcmd.cc
 
 tklib.o : tklib.cc $(INCLUDES)
-	$(CC) $(CC_OPTS) tklib.cc
+	$(CXX) $(CC_OPTS) tklib.cc
 
 objinsp.o: objinsp.cc $(INCLUDES)
-	$(CC) $(CC_OPTS) objinsp.cc
+	$(CXX) $(CC_OPTS) objinsp.cc
 
 modinsp.o: modinsp.cc $(INCLUDES)
-	$(CC) $(CC_OPTS) modinsp.cc
+	$(CXX) $(CC_OPTS) modinsp.cc
 
 statinsp.o: statinsp.cc $(INCLUDES)
-	$(CC) $(CC_OPTS) statinsp.cc
+	$(CXX) $(CC_OPTS) statinsp.cc
 
 inspect.o: inspect.cc $(INCLUDES)
-	$(CC) $(CC_OPTS) inspect.cc
+	$(CXX) $(CC_OPTS) inspect.cc
 
 arrow.o: arrow.cc arrow.h
-	$(CC) $(CC_OPTS) arrow.cc
+	$(CXX) $(CC_OPTS) arrow.cc
 
 tclcode.cc: *.tcl tcl2c
 	./tcl2c tclcode.cc *.tcl
 
 tcl2c: tcl2c.c
-	cc tcl2c.c -o tcl2c
+	$(CC) tcl2c.c -o tcl2c

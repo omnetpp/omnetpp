@@ -1,28 +1,28 @@
 # Definitions to be customized by 'configure'
-CC=gcc -g -I. -c -x c++
-CCC=gcc -g -c
-LD=gcc
-YACC=bison
-LEX=flex
+CC=@CC@
+CC=@CC@
+LD=@LD@
+YACC=@YACC@
+LEX=@LEX@
 
-OMNETPP_ROOT=/home/deity/omnetpp
-OMNETPP_SRC_DIR=$(OMNETPP_ROOT)/src
-OMNETPP_BITMAP_PATH=$(OMNETPP_ROOT)/bitmaps
+OMNETPP_ROOT=@OMNETPP_ROOT@
+OMNETPP_SRC_DIR=@OMNETPP_SRC_DIR@
+OMNETPP_BITMAP_PATH=@OMNETPP_BITMAP_PATH@
 
-TK_INCL_PATH=-I/usr/include -I/usr/include
-X_INCL_PATH=-I/usr/X11R6/include/X11
+TK_INCL_PATH=@TK_INCL_PATH@
+X_INCL_PATH=@X_INCL_PATH@
 
-X_LIBS=-lX11
-TK_LIBS=-ltk8.0 -ltcl8.0 -ldl
-SYS_LIBS=-ldl -lm -lstdc++
+X_LIBS=@X_LIBS@
+TK_LIBS=@TK_LIBS@
+SYS_LIBS=@SYS_LIBS@
 
-TK_LIB_PATH=-L/usr/lib -L/usr/lib
-X_LIB_PATH=-L/usr/X11R6/lib
+TK_LIB_PATH=@TK_LIB_PATH@
+X_LIB_PATH=@X_LIB_PATH@
 
 # Local definitions
 # ebnf_tab=ebnf_tab
 # lexyy=lexyy
-ebnf_tab=ebnf.tab
+ebnf_tab=@ebnf_tab@
 lexyy=lex.yy
 
 GNED_INCLUDES=arrow.h parsened.h tklib.h
@@ -40,28 +40,28 @@ gned : $(OBJS)
 
 
 gned.o : gned.cc $(INCLUDES)
-	$(CC) $(CC_OPTS) -DOMNETPP_GNED_DIR=\"$(OMNETPP_GNED_DIR)\" -DOMNETPP_BITMAP_PATH=\"$(OMNETPP_BITMAP_PATH)\" gned.cc
+	$(CXX) $(CC_OPTS) -DOMNETPP_GNED_DIR=\"$(OMNETPP_GNED_DIR)\" -DOMNETPP_BITMAP_PATH=\"$(OMNETPP_BITMAP_PATH)\" gned.cc
 
 tklib.o : tklib.cc $(INCLUDES)
-	$(CC) $(CC_OPTS) tklib.cc
+	$(CXX) $(CC_OPTS) tklib.cc
 
 arrow.o: arrow.cc arrow.h
-	$(CC) $(CC_OPTS) arrow.cc
+	$(CXX) $(CC_OPTS) arrow.cc
 
 parsened.o: parsened.cc parsened.h disp.h
-	$(CC) $(CC_OPTS) parsened.cc
+	$(CXX) $(CC_OPTS) parsened.cc
 
 nedfile.o: nedfile.cc nedfile.h
-	$(CC) $(CC_OPTS) nedfile.cc
+	$(CXX) $(CC_OPTS) nedfile.cc
 
 disp.o: disp.h disp.cc
-	$(CC) $(CC_OPTS) disp.cc
+	$(CXX) $(CC_OPTS) disp.cc
 
 $(lexyy).o: parsened.h $(lexyy).c
-	$(CC) $(lexyy).c
+	$(CXX) $(lexyy).c
 
 $(ebnf_tab).o: parsened.h $(ebnf_tab).h $(ebnf_tab).c
-	$(CC) $(ebnf_tab).c
+	$(CXX) $(ebnf_tab).c
 
 $(ebnf_tab).h: ebnf.y
 	$(YACC) -b ebnf -d ebnf.y

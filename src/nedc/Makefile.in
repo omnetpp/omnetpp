@@ -10,10 +10,10 @@
 #*************************************************#
 
 # Definitions to be customized by configure
-CCC=gcc -c -g
-LD=gcc
-YACC=bison
-LEX=flex
+CC=@CC@
+LD=@LD@
+YACC=@YACC@
+LEX=@LEX@
 
 # Local definitions
 
@@ -23,17 +23,17 @@ LEX=flex
 
 # ebnf_tab=ebnf_tab
 # lexyy=lexyy
-ebnf_tab=ebnf.tab
-lexyy=lex.yy
+ebnf_tab=@ebnf_tab@
+lexyy=@lexyy@
 
 nedc: $(ebnf_tab).o $(lexyy).o jar.o jar_lib.o jar_mod.o jar_expr.o jar_mem.o
 	$(LD) $(lexyy).o $(ebnf_tab).o jar.o jar_lib.o jar_mod.o jar_expr.o jar_mem.o -o nedc
 
 $(lexyy).o: jar_func.h $(lexyy).c
-	$(CCC) $(lexyy).c
+	$(CC) $(lexyy).c
 
 $(ebnf_tab).o: jar_func.h $(ebnf_tab).h $(ebnf_tab).c
-	$(CCC) $(ebnf_tab).c
+	$(CC) $(ebnf_tab).c
 
 $(ebnf_tab).h: ebnf.y
 	$(YACC) -b ebnf -d ebnf.y
@@ -45,17 +45,17 @@ $(lexyy).c: ebnf.lex
 	$(LEX) ebnf.lex
 
 jar.o: jar_lib.h jar_func.h jar.c
-	$(CCC) jar.c
+	$(CC) jar.c
 
 jar_lib.o: jar_lib.h jar_func.h jar_lib.c
-	$(CCC) jar_lib.c
+	$(CC) jar_lib.c
 
 jar_mod.o: jar_lib.h jar_func.h jar_mod.c
-	$(CCC) jar_mod.c
+	$(CC) jar_mod.c
 
 jar_expr.o: jar_lib.h jar_func.h jar_expr.c
-	$(CCC) jar_expr.c
+	$(CC) jar_expr.c
 
 jar_mem.o: jar_func.h jar_mem.c
-	$(CCC) jar_mem.c
+	$(CC) jar_mem.c
 

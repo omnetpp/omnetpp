@@ -1,12 +1,12 @@
 # variables set by `configure':
-CC=gcc -g -I. -c -x c++
-LD=gcc
+CXX=gcc -g -I. -c -x c++
+LD=@LD@
 
 seedtool : seedtool.o
 	$(LD) seedtool.o -o seedtool
 
 seedtool.o : seedtool.cc
-	$(CC) seedtool.cc
+	$(CXX) seedtool.cc
 
 clean:
 	rm -f *.o seedtool
