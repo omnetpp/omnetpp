@@ -5,6 +5,10 @@
 	stacks cannot exceed; also the upper bound of the total-stack-kb
 	ini file setting.
 
+	* seedtool.cc: incorporated fix from N. Reijers. If too many seeds, 
+	too far apart are requested, there were zeroes in the generated
+	sequence. (See src for more info.)
+
 2002-12-08  Andras Varga
 
 	* opp_makemake, opp_nmakemake: handling of .ned files that use the 
