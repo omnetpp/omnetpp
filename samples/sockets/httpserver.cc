@@ -42,7 +42,7 @@ std::string HTTPServer::processHTTPCommand(const char *httpReqHeader)
 {
     // parse header. first line should be: GET uri HTTP/1.1
     std::string header(httpReqHeader);
-    int pos = header.find("\r\n");
+    std::string::size_type pos = header.find("\r\n");
     if (pos==std::string::npos)
     {
         ev << "Bad HTTP request\n";
