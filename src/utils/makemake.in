@@ -42,7 +42,7 @@ makemake [-h] [-f] [-m] [-o make-target] [-t exe|so|o] [-u user-interface] [-p]
                           library. Useful for models with parts in several dirs.
     -s, --make-so         Make shared library. Useful if you want to load the
                           model dynamically (Cmdenv/Tkenv -l so-file switch).
-    -u, --userinterface   Use Cmdenv, Tkenv or Tvenv. Defaults to Tkenv
+    -u, --userinterface   Use Cmdenv or Tkenv. Defaults to Tkenv
     -p, --pvm             Link executable with parallel execution support
     -Idir                 Additional NED and C++ include directory
     -llibrary             Additional library to link against
@@ -88,10 +88,10 @@ EOT
         shift
         userif=`echo $1 | tr a-z A-Z`
         case "$userif" in
-            CMDENV | TKENV | TVENV)
+            CMDENV | TKENV)
             ;;
             *)
-            echo "makemake: -u: valid user interface names are Cmdenv, Tkenv or Tvenv" 1>&2
+            echo "makemake: -u: valid user interface names are Cmdenv or Tkenv" 1>&2
             exit
             ;;
         esac
@@ -190,11 +190,9 @@ fi
 
 case "$userif" in
     CMDENV)
-    c_cmd=''; c_tk='# '; c_tv='# '; ;;
+    c_cmd=''; c_tk='# '; ;;
     TKENV)
-    c_cmd='# '; c_tk=''; c_tv='# '; ;;
-    TVENV)
-    c_cmd='# '; c_tk='# '; c_tv='' ;;
+    c_cmd='# '; c_tk=''; ;;
 esac
 c_std=''; c_pvm='# '
 if [ "$pvm" = "y" ]; then
@@ -209,7 +207,6 @@ TARGET = $outfile$suffix
 # User interface (uncomment one) (-u option)
 ${c_cmd}USERIF_LIBS=\$(CMDENV_LIBS)
 ${c_tk}USERIF_LIBS=\$(TKENV_LIBS)
-${c_tv}USERIF_LIBS=\$(TVENV_LIBS)
 
 # Uncomment the second line for parallel execution (PVM3) support (-p option):
 ${c_std}KERNEL_LIBS=\$(STD_KERNEL_LIBS)
@@ -247,7 +244,6 @@ EXE_SUFFIX=@EXE_SUFFIX@
 OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
 OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
 
-TV_LIBS=@TV_LIBS@
 TK_LIBS=@TK_LIBS@
 PVM_LIBS=@PVM_LIBS@
 SYS_LIBS=@SYS_LIBS@
@@ -273,7 +269,6 @@ EXE_SUFFIX=@${null}EXE_SUFFIX@
 OMNETPP_INCL_DIR=@${null}OMNETPP_INCL_DIR@
 OMNETPP_LIB_DIR=@${null}OMNETPP_LIB_DIR@
 
-TV_LIBS=@${null}TV_LIBS@
 TK_LIBS=@${null}TK_LIBS@
 PVM_LIBS=@${null}PVM_LIBS@
 SYS_LIBS=@${null}SYS_LIBS@
@@ -286,7 +281,6 @@ cat <<EOT
 
 # User interface libs
 CMDENV_LIBS=-lenvir -lcmdenv
-TVENV_LIBS=-lenvir -ltvenv \$(TV_LIBS)
 TKENV_LIBS=-lenvir -ltkenv \$(TK_LIBS)
 
 # Simulation kernel
