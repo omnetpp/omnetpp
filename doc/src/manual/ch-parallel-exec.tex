@@ -13,13 +13,13 @@ discrete event simulation (PDES\index{PDES}). Interested readers are
 strongly encouraged to look into the literature.
 
 For parallel execution, the model is to be partitioned into several
-LPs (logical processes) that will be simulated independently on 
-different hosts or processors. Each LP will have its own local 
-Future Event Set, thus they will maintain their own local simulation 
-times. The main issue with parallel simulations is keeping LPs 
+LPs (logical processes) that will be simulated independently on
+different hosts or processors. Each LP will have its own local
+Future Event Set, thus they will maintain their own local simulation
+times. The main issue with parallel simulations is keeping LPs
 synchronized in order to avoid violating the causality of events.
-Without synchronization, a message sent by one LP could arrive in 
-another LP when the simulation time in the receiving LP has already 
+Without synchronization, a message sent by one LP could arrive in
+another LP when the simulation time in the receiving LP has already
 passed the timestamp (arrival time) of the message. This would break
 causality\index{event!causality} of events in the receiving LP.
 
@@ -57,6 +57,11 @@ above:
 
 \section{Assessing available parallelism in a simulation model}
 
+{\opp} currently supports conservative synchronization
+via the classic Chandy-Misra-Bryant (or null message) algorithm
+\cite{chandymisra79}.
+To assess how efficiently a simulation can be parallelized
+with this algorithm, we'll need the following variables:
 
 \begin{itemize}
   \item{$P$ \textit{performance} represents the number of events processed per
@@ -83,8 +88,8 @@ above:
     $\tau$ is the latency of sending a message from one LP to another. $\tau$
     can be determined using simple benchmark programs. The authors' measurements
     on a Linux cluster interconnected via a 100Mb Ethernet switch using MPI
-    yielded $\tau$=22$\mu$s which rhymes with measurements reported
-    in \cite{ongfarrell2000}; specialized hardware such as
+    yielded $\tau$=22$\mu$s which is consistent with measurements reported
+    in \cite{ongfarrell2000}. Specialized hardware such as
     Quadrics Interconnect \cite{quadrics} can provide $\tau$=5$\mu$s or better.}
 \end{itemize}
 
@@ -111,7 +116,7 @@ Without going into the details: if the resulting $\lambda$ value is at
 minimum larger than one, but rather in the range 10..100, there is
 a good change that the simulation will perform well when run in
 parallel. With $\lambda < 1$, poor performance is guaranteed.
-For details see the paper \cite{}.
+For details see the paper \cite{FIXME}.
 
 
 \section{Parallel distributed simulation support in {\opp}}
@@ -127,10 +132,6 @@ the placeholder approach allows simulation techniques such as
 topology discovery and direct message sending to work unmodified with
 PDES. The architecture is modular and extensible, so it can
 serve as a framework for research on parallel simulation.
-
-{\opp} currently supports conservative synchronization
-via the classic Chandy-Misra-Bryant (or null message) algorithm
-\cite{chandymisra79}.
 
 The {\opp} design places a big emphasis on
 \textit{separation of models from experiments}. The main rationale
