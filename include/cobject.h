@@ -73,18 +73,67 @@ typedef bool (*ForeachFunc)(cObject *,bool);
 /**
  * cObject is the base class for almost all classes in the OMNeT++ library.
  *
- * cObject provides a name member (a dynamically allocated string) and
- * a number of virtual functions. These functions either provide a default
- * behavior (mostly good for all derived classes), or they are expected
- * to be redefined in all derived classes.
+ * Containing 5 pointers and 2 flags as data and several virtual functions,
+ * cObject is a relatively heavyweight object for a base class. If you need
+ * to create a new class, you may or may not choose starting from cObject
+ * as base class.
  *
- * Some of the features provided by cObject:
- *  - name string
- *  - ownership control
- *  - virtual functions for derived classes
+ * The two main areas covered by cObject are:
+ *    -# basic reflection (name string via name() and setName(); className())
+ *    -# ownership management
+ *
+ * cObject provides a <b>name</b> member (a dynamically allocated string).
+ *
+ * When subclassing cObject, some virtual member functions are expected to be
+ * redefined: className() and dup() are mandatory to be redefined, and often
+ * you'll want to redefine info() and writeContents(), too.
+ *
+ * OMNeT++ provides a fairly complex memory management via the object ownership
+ * mechanism. It usually works well without you paying attention, but it
+ * generally helps to understand how it works.
+ *
+ * Rule 1: <b>Ownership means exclusive right and duty to delete owned objects.</b>
+ * The owner of any 'o' object is returned by o->owner(), and can be changed
+ * with o->setOwner(). The destructor of cObject deletes (via discard()) all owned
+ * objects, and so do all classes derived from cObject.
+ *
+ * Ownership internally works via 4 pointers as cObject data members:
+ * ownerp points to owner object; prevp/nextp points to previous/next object
+ * in owner's owned objects list; firstchildp points to first owned object.
+ * The setOwner() method works on the ownerp, prevp and nextp pointers.
+ *
+ * The object ownership mechanism is competely independent of the way
+ * containers (cArray, cQueue) hold contained objects. For example, a cQueue may
+ * actually own all, some, or none of the object in the queue. (Container
+ * classes use mechanisms independent of firstchildp to store contained objects;
+ * e.g., cArray uses an array, while cQueue uses a separate list).
+ * Exception is cHead, which displays owned objects as contents.
  *
  * @ingroup SimCore
  */
+
+/* comment to integrate:
+   What cObject does:
+      - owner of a new object can be explicitly given, if omitted,
+        defaultOwner() will will be used.
+      - an object created thru the copy constructor:
+          - will have the same owner as original;
+          - does not dup() or take objects owned by the original.
+      - destructor calls discard() for owned objects (see later).
+   Objects contained as data members:
+      the enclosing object should own them.
+   What container objects derived from cObject should do:
+      - they use the functions: take(obj), drop(obj), discard(obj)
+      - when an object is inserted, if takeOwnership() is true, should
+        take ownership of object by calling take(obj).
+        TAKEOWNERSHIP() DEFAULTS TO true.
+      - when an object is removed, they should call drop(obj) for it if
+        they were the owner.
+      - copy constructor copies should dup() and take ownership of objects
+        that were owned by the original.
+      - destructor doesn't need not call discard() for objects: this will be
+        done in cObject's destructor.
+*/
 class SIM_API cObject
 {
     friend class cHead;
@@ -109,6 +158,7 @@ class SIM_API cObject
      *
      * The following functions are intended to be used by derived container
      * classes to manage ownership of their contained objects.
+     * See object description for more info on ownership management.
      */
     //@{
 
@@ -183,18 +233,37 @@ class SIM_API cObject
     cObject(const cObject& obj);
 
     /**
-     * Create object with no name and default owner.
+     * Create object without a name.
+     *
+     * Ownership: By default, the object is assumed to have been created by the
+     * currently active simple module, so the owner will be the "local objects" list
+     * of that module. (More precisely, the owner will be set using
+     * <code>setOwner(defaultOwner())</code>, and cObject::defaultOwner() returns
+     * simulation.localList(), an alias to the currently active simple module's local
+     * objects list. Note: Overriding defaultOwner() won't change this because
+     * virtual functions are only effective after constructor has completed.
+     * If you want to change the initial owner in a derived class, you have to
+     * call setOwner() directly in the derived class' constructor.)
+     *
+     * If there is no active simple module (we're not in a simulation),
+     * the owner will be NULL.
      */
     cObject();
 
     /**
-     * Create object with given name and default owner.
+     * Create object with given name. See cObject() constructor about initial
+     * ownership of the object.
      */
     explicit cObject(const char *name);
 
     /**
-     * Virtual destructor. Deletes the name and notifies the user interface
-     * that the object has been destructed.
+     * Destructor. It does the following:
+     *    -# notifies the environment by calling ev.objectDeleted(this) that
+     *       the object was deleted. This enables any open inspector windows
+     *       to be closed.
+     *    -# removes the object from the owner object's list (setOwner(NULL))
+     *    -# <b>deletes all owned objects</b> by calling their discard() method
+     *    -# deallocates object name
      */
     virtual ~cObject();
 
@@ -271,7 +340,7 @@ class SIM_API cObject
     virtual const char *fullPath(char *buffer, int buffersize) const;
     //@}
 
-    /** @name Object ownership. */
+    /** @name Object ownership. See object description for more info on ownership management. */
     //@{
 
     /**
@@ -280,8 +349,8 @@ class SIM_API cObject
     cObject *owner() const {return ownerp;}
 
     /**
-     * Sets the owner of the object. If NULL is passed, the default owner of
-     * the object will be used.
+     * Sets the owner of the object. NULL is legal a legal value and means
+     * that no object will own this one (ownerp=NULL).
      *
      * @see defaultOwner()
      */
@@ -289,8 +358,7 @@ class SIM_API cObject
 
     /**
      * Returns pointer to the default owner of the object.
-     * This function is used by the setOwner() and drop() member functions.
-     * drop() is used in container classes derived from cObject.
+     * This function is used by the drop() member function.
      */
     virtual cObject *defaultOwner() const;
     //@}
@@ -362,7 +430,7 @@ class SIM_API cObject
      * This function is called internally by writeTo(). It is
      * expected to write textual information about the object and other
      * objects it contains to the stream. The default version (cObject::writeContents())
-     * uses forEach to call info() for contained objects. Redefine
+     * uses forEach() to call info() for contained objects. Redefine
      * as needed.
      */
     virtual void writeContents(ostream& os);

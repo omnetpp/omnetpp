@@ -1,3 +1,7 @@
+2002-10-09  Andras Varga
+
+	* cobject.h: clarified and extended documentation of cObject.
+
 2002-10-08  Andras Varga
 
 	* chead.h: removed deleteChildren() from cHead destructor call.
@@ -31,8 +35,9 @@
 
 	* several methods moved from cSimulation into the Envir library: 
 	timeLimit(), simTimeLimit(), startClock(), stopClock(), resetClock(), 
-	checkTimes(). It is no longer the scheduler function's responsibility
-	to stop the simulation if sim/real time limits have been reached
+	checkTimes(). Also, it is no longer the scheduler function's 
+	responsibility to stop the simulation if sim/real time limits have 
+	been reached
 
 	* cexception.h changed
 
