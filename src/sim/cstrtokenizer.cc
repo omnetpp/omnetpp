@@ -1,5 +1,5 @@
 //==========================================================================
-//  CSTRTOKENIZER.H - part of
+//  CSTRTOKENIZER.CC - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -27,6 +27,10 @@
 
 cStringTokenizer::cStringTokenizer(const char *s, const char *delim)
 {
+    if (!s) 
+        s = "";
+    if (!delim || !*delim) 
+        delim = " ";
     delimiter = delim;
     str = new char[strlen(s)+1];
     strcpy(str,s);
@@ -41,6 +45,8 @@ cStringTokenizer::~cStringTokenizer()
 
 void cStringTokenizer::setDelimiter(const char *delim)
 {
+    if (!delim || !*delim) 
+        delim = " ";
     delimiter = delim;
 }
 

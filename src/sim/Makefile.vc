@@ -738,7 +738,8 @@ cstat.obj: cstat.cc \
   ../../include/ctypes.h \
   ../../include/opp_string.h
 cstrtokenizer.obj: cstrtokenizer.cc \
-  ../../include/cstrtokenizer.h
+  ../../include/cstrtokenizer.h \
+  ../../include/defs.h
 cstruct.obj: cstruct.cc \
   ../../include/cstruct.h \
   ../../include/carray.h \
@@ -929,6 +930,7 @@ util.obj: util.cc \
   cmersennetwister.h \
   ../../include/cksplit.h \
   ../../include/cpsquare.h \
+  ../../include/cstrtokenizer.h \
   ../../include/defs.h \
   ../../include/random.h \
   ../../include/csimul.h \
