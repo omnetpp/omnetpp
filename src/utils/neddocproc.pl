@@ -128,7 +128,7 @@ foreach $fname (glob($fnamepatt))
 
               # put hyperlinks on module names, etc.
               $names = join('|',@components);
-              $comment =~ s!\b($names)\b!'<a href="'.$htmlfile{$1}.'">'.$1.'</a>'!gse;
+              $comment =~ s!\b($names)\b!'<a href="'.$htmlfile{$1}.'">'.$1.'</a>'!gse unless($names eq '');
 
               # put back <nohtml> sections
               $comment =~ s|\<nohtml(\d+)\>|$nohtml{$1}|gse;

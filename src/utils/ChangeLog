@@ -25,7 +25,6 @@
 	(It is not good to add this to every makefile, because it'll
 	run too many times, cascading...)
 
-
 2004-03-03  ------ omnetpp-3.0a2 released ------
 
 2004-03-03  Andras Varga
