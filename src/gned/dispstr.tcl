@@ -149,7 +149,7 @@ proc parse_conn_dispstr {key} {
    # GNED currently only handles only few values from a dispstr...
    if [info exist tags(m)] {
       set mode [lindex $tags(m) 0]
-      if {$mode=""} {
+      if {$mode==""} {
          set ned($key,disp-drawmode) "a"
       } else {
          set ned($key,disp-drawmode) $mode

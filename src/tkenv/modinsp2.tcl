@@ -477,6 +477,12 @@ proc draw_message {c gateptr msgptr msgname {msgkind {}}} {
 
     set coords [$c coords $conn_id]
 
+    if {$coords == ""} {
+        # connection arrow not (no longer?) on canvas: forget animation
+        $c delete $msgptr;  # this also works if msg is not (yet) on canvas
+        return;
+    }
+
     set x1 [lindex $coords 0]
     set y1 [lindex $coords 1]
     set x2 [lindex $coords 2]
@@ -484,6 +490,7 @@ proc draw_message {c gateptr msgptr msgname {msgkind {}}} {
     set len [expr sqrt(($x2-$x1)*($x2-$x1)+($y2-$y1)*($y2-$y1))]
 
     set steps [expr int($len/2)]
+    if {$steps>100} {set steps 100}
     if {$steps==0} {set steps 1}
 
     set dx [expr ($x2-$x1)/$steps]
@@ -513,6 +520,12 @@ proc graphmodwin_animate {win gateptr msgptr msgname msgkind {mode {}}} {
     # gate pointer string is the tag of the connection arrow
     set coords [$c coords $gateptr]
 
+    if {$coords == ""} {
+        # connection arrow not (no longer?) on canvas: forget animation
+        $c delete $msgptr;  # this also works if msg is not (yet) on canvas
+        return;
+    }
+
     set x1 [lindex $coords 0]
     set y1 [lindex $coords 1]
     set x2 [lindex $coords 2]
@@ -525,6 +538,7 @@ proc graphmodwin_animate {win gateptr msgptr msgname msgkind {mode {}}} {
     # alternative approach: fix number of steps. Would this be better?
     #set steps 20
 
+    # max 100 steps (otherwise animation takes forever!)
     if {$steps>100} {set steps 100}
     if {$steps==0} {set steps 1}
 

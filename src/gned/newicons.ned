@@ -35,11 +35,11 @@ module Module
         submod18: Module; 
             display: "p=333,214;i=cogwheel2;b=30,20";
         submod19: Module; 
-            display: "p=382,47;i=pctower1;b=18,31";
+            display: "p=374,47;i=pctower1;b=18,31";
         submod20: Module; 
             display: "p=301,49;i=pctower2;b=22,31";
         submod21: Module; 
-            display: "p=414,119;i=switch2;b=17,18";
+            display: "p=374,119;i=switch2;b=75,19";
         submod22: Module; 
             display: "p=419,243;i=dialphone;b=32,19";
         submod23: Module; 
@@ -51,19 +51,35 @@ module Module
         submod26: Module; 
             display: "p=257,374;i=gen;b=32,30";
         submod28: Module; 
-            display: "p=491,181;i=switch1_s;b=32,32";
+            display: "p=507,165;i=switch1_s;b=31,10";
         submod29: Module; 
-            display: "p=504,113;i=router3;b=32,32";
+            display: "p=496,89;i=router3;b=38,50";
         submod30: Module; 
-            display: "p=486,54;i=penguin;b=30,35";
+            display: "p=446,38;i=penguin;b=30,35";
         submod33: Module; 
-            display: "p=499,266;i=telnet;b=32,32";
+            display: "p=507,298;i=telnet;b=32,26";
         submod34: Module; 
             display: "p=437,341;i=browser;b=40,37";
         submod35: Module; 
             display: "p=326,343;i=ball2_vs;b=12,6";
         submod36: Module; 
             display: "p=342,391;i=ball;b=30,30";
+        submod37: Module; 
+            display: "p=396,420;i=pda1;b=25,36";
+        submod38: Module; 
+            display: "p=456,420;i=pda2;b=21,32";
+        submod39: Module; 
+            display: "p=512,416;i=pda3;b=23,39";
+        submod40: Module; 
+            display: "p=104,288;i=handset1;b=14,37";
+        submod41: Module; 
+            display: "p=144,308;i=handset2_s;b=19,30";
+        submod42: Module; 
+            display: "p=48,436;i=laptop;b=16,24";
+        submod43: Module; 
+            display: "p=104,428;i=laptop2;b=31,29";
+        submod44: Module; 
+            display: "p=516,220;i=server1;b=30,35";
     connections: 
         submod.out --> submod1.in; 
         submod1.out --> submod3.in; 
@@ -87,7 +103,7 @@ module Module
         submod3.out --> submod20.in; 
         submod20.out --> submod19.in; 
         submod19.out --> submod21.in; 
-        submod21.out --> submod22.in display "m=,60,0,60,0"; 
+        submod21.out --> submod22.in; 
         submod22.out --> submod23.in; 
         submod17.out --> submod23.in; 
         submod21.out --> submod30.in; 
@@ -101,6 +117,10 @@ module Module
         submod24.out --> submod25.in; 
         submod17.out --> submod35.in; 
         submod35.out --> submod36.in; 
+        submod39.out --> submod34.in; 
+        submod34.out --> submod38.in; 
+        submod34.out --> submod37.in; 
+        submod21.out --> submod44.in; 
 endmodule 
 
 

@@ -1,3 +1,7 @@
+2003-02-05  Andras Varga
+
+	* modinsp2.tcl: fixed bug: 
+
 2003-01-29  Andras Varga
 
 	* added "Finish" to main toolbar

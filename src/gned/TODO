@@ -11,7 +11,7 @@ Parse/Generate:
                     // param2: string;
 
 Drawing:
-- connection drawing doesn't work sometimes (can't reproduce...)
+- reserved words should not be allowed in names (drag&drop, rename on canvas, dialogs, etc.)
 - random placement of submods should be the same as in Tkenv
 - should support ovals too (not only rects)
 - it's possible to fool the connection drawing: if, while dragging out
