@@ -4,7 +4,6 @@ PERL=d:\perl\bin\perl.exe
 HTM_FILES = history.htm \
             ch-introduction.htm \
             ch-overview.htm \
-            ch-example.htm \
             ch-ned-lang.htm \
             ch-simple-modules.htm \
             ch-messages.htm \
