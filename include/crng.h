@@ -58,7 +58,7 @@ class SIM_API cRNG : public cPolymorphic
     virtual unsigned long intRandMax() = 0;
 
     /**
-     * Random integer in [0,n], n < intRandMax()
+     * Random integer in [0,n), n < intRandMax()
      */
     virtual unsigned long intRand(unsigned long n) = 0;
 

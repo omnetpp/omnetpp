@@ -83,8 +83,6 @@ TOmnetApp::TOmnetApp(ArgList *arglist, cConfiguration *conf)
     args = arglist;
     config = conf;
     xmlcache = NULL;
-    opt_genk_randomseed = new long[NUM_RANDOM_GENERATORS];
-    next_startingseed = 0;
 
     outvectmgr = NULL;
     outscalarmgr = NULL;
@@ -105,7 +103,6 @@ TOmnetApp::TOmnetApp(ArgList *arglist, cConfiguration *conf)
 
 TOmnetApp::~TOmnetApp()
 {
-    delete [] opt_genk_randomseed;
     delete args;
     delete config;
     delete xmlcache;
@@ -461,6 +458,12 @@ void TOmnetApp::readPerRunOptions(int run_nr)
 void TOmnetApp::makeOptionsEffective()
 {
     cModule::pause_in_sendmsg = opt_pause_in_sendmsg;
+
+    // run RNG self-test
+    cRNG *rng;
+    CREATE_BY_CLASSNAME(rng, opt_rng_class.c_str(), cRNG, "random number generator");
+    rng->selfTest();
+    delete rng;
 
     // set up RNGs
     delete [] rngs;

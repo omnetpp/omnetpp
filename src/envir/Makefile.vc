@@ -16,7 +16,7 @@ CFLAGS=$(CFLAGS) /DWITH_NETBUILDER
 #
 COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "../sim" /DBUILDING_ENVIR /DHAVE_DLOPEN=$(HAVE_DLOPEN)
 OBJS=args.obj cenvir.obj cinifile.obj main.obj omnetapp.obj fsutils.obj \
-     seeds.obj patmatch.obj platdep.obj speedmtr.obj filemgrs.obj akoutvectormgr.obj \
+     patmatch.obj platdep.obj speedmtr.obj filemgrs.obj akoutvectormgr.obj \
      cxmldoccache.obj
 LIBS=$(OMNETPP_SRC_DIR)/sim/sim_std.ilib
 
@@ -111,19 +111,20 @@ cenvir.obj: cenvir.cc \
   ../../include/opp_string.h \
   envdefs.h \
   ../../include/random.h \
+  ../../include/csimul.h \
+  ../../include/crng.h \
+  ../../include/errmsg.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
+  ../../include/coutvect.h \
   ../../include/cconfig.h \
   patmatch.h \
   ../../include/carray.h \
   ../../include/envirext.h \
   platdep.h \
-  ../../include/ccoroutine.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
-  ../../include/csimul.h \
-  ../../include/cdefaultlist.h \
-  ../../include/errmsg.h \
-  ../../include/cmsgheap.h \
-  ../../include/coutvect.h
+  ../../include/cdefaultlist.h
 cinifile.obj: cinifile.cc \
   ../../include/cenvir.h \
   ../../include/util.h \
@@ -183,20 +184,12 @@ fsutils.obj: fsutils.cc \
   ../../include/util.h
 main.obj: main.cc \
   ../../include/cobject.h \
-  ../../include/csimul.h \
-  ../../include/random.h \
   ../../include/cenvir.h \
-  ../../include/onstartup.h \
   ../../include/defs.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
-  ../../include/opp_string.h \
-  ../../include/errmsg.h \
-  ../../include/globals.h \
-  ../../include/cmsgheap.h \
-  ../../include/ccoroutine.h \
-  ../../include/coutvect.h
+  ../../include/opp_string.h
 omnetapp.obj: omnetapp.cc \
   args.h \
   omnetapp.h \
@@ -247,23 +240,6 @@ platdep.obj: platdep.cc \
   ../../include/cenvir.h \
   ../../include/opp_string.h \
   ../../include/util.h
-seeds.obj: seeds.cc \
-  omnetapp.h \
-  ../../include/carray.h \
-  ../../include/globals.h \
-  ../../include/cenvir.h \
-  ../../include/cexception.h \
-  args.h \
-  envdefs.h \
-  ../../include/envirext.h \
-  ../../include/cconfig.h \
-  platdep.h \
-  ../../include/cobject.h \
-  ../../include/defs.h \
-  ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/onstartup.h \
-  ../../include/opp_string.h
 speedmtr.obj: speedmtr.cc \
   speedmtr.h \
   ../../include/defs.h \

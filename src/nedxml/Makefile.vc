@@ -85,7 +85,6 @@ cppmsggenerator.obj: cppmsggenerator.cc \
   cppexprgenerator.h \
   nedcompiler.h
 lex.yy.obj: lex.yy.cc \
-  ./unistd.h \
   nedgrammar.h \
   ned.tab.h
 ned.tab.obj: ned.tab.cc \

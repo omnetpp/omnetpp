@@ -39,8 +39,6 @@ class cParsimPartition;
 class cParsimSynchronizer;
 // endif
 
-#define NUM_STARTINGSEEDS  256
-extern long starting_seeds[NUM_STARTINGSEEDS];  // they are in seeds.cc
 
 /**
  * Abstract base class for the user interface.
@@ -79,14 +77,10 @@ class ENVIR_API TOmnetApp
     bool opt_pause_in_sendmsg;
     bool opt_warnings;
 
-    long *opt_genk_randomseed;
-
     simtime_t opt_simtimelimit;
     long opt_cputimelimit;
 
     int opt_netifcheckfreq;
-
-    int next_startingseed;  // index of next seed to use
 
 // WITH_PARSIM (note: no #ifdef to preserve class layout!)
     cParsimCommunications *parsimcomm;

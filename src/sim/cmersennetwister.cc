@@ -62,7 +62,7 @@ unsigned long cMersenneTwister::intRandMax()
 
 unsigned long cMersenneTwister::intRand(unsigned long n)
 {
-    return rng.randInt(n);
+    return rng.randInt(n-1);
 }
 
 double cMersenneTwister::doubleRand()

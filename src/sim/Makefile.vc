@@ -18,7 +18,7 @@ CPPOBJS_STD= task.obj ccoroutine.obj ctypes.obj carray.obj cgate.obj \
          cmessage.obj cdetect.obj util.obj cllist.obj ctopo.obj errmsg.obj \
          cmsgheap.obj coutvect.obj cqueue.obj globals.obj cwatch.obj \
          cpacket.obj cfsm.obj cstruct.obj cchannel.obj cenum.obj cexception.obj cdispstr.obj \
-         cdefaultlist.obj cscheduler.obj onstartup.obj random.obj distrib.obj \
+         cdefaultlist.obj cscheduler.obj onstartup.obj distrib.obj \
          cxmlelement.obj cmersennetwister.obj clcg32.obj
 CPPOBJS_NETBUILDER= netbuilder\cdynamicmodule.obj netbuilder\cdynamicnetwork.obj \
                     netbuilder\cdynamicchannel.obj \
@@ -124,6 +124,7 @@ cchannel.obj: cchannel.cc \
   ../../include/cqueue.h \
   ../../include/cdefaultlist.h \
   ../../include/onstartup.h \
+  ../../include/crng.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
@@ -293,14 +294,23 @@ chist.obj: chist.cc \
   ../../include/errmsg.h \
   ../../include/ccommbuffer.h \
   ../../include/defs.h \
-  ../../include/onstartup.h \
-  ../../include/carray.h \
-  ../../include/ctypes.h \
-  ../../include/cobject.h \
-  ../../include/cenvir.h \
+  ../../include/csimul.h \
+  ../../include/cmodule.h \
+  ../../include/crng.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
   ../../include/globals.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
+  ../../include/coutvect.h \
+  ../../include/cobject.h \
+  ../../include/onstartup.h \
+  ../../include/cenvir.h \
+  ../../include/cpolymorphic.h \
+  ../../include/carray.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h \
+  ../../include/cdefaultlist.h \
+  ../../include/ctypes.h \
   ../../include/cstat.h \
   ../../include/cdensity.h \
   ../../include/opp_string.h
@@ -322,6 +332,16 @@ cksplit.obj: cksplit.cc \
   ../../include/globals.h \
   ../../include/cdensity.h \
   ../../include/cstat.h \
+  ../../include/csimul.h \
+  ../../include/cmodule.h \
+  ../../include/crng.h \
+  ../../include/errmsg.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
+  ../../include/coutvect.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h \
+  ../../include/cdefaultlist.h \
   ../../include/opp_string.h
 clcg32.obj: clcg32.cc \
   clcg32.h \
@@ -329,9 +349,15 @@ clcg32.obj: clcg32.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/defs.h \
+  ../../include/macros.h \
   ../../include/crng.h \
   ../../include/cconfig.h \
+  ../../include/onstartup.h \
+  ../../include/carray.h \
+  ../../include/ctypes.h \
+  ../../include/cobject.h \
   ../../include/cpolymorphic.h \
+  ../../include/globals.h \
   ../../include/opp_string.h
 cllist.obj: cllist.cc \
   ../../include/macros.h \
@@ -355,10 +381,16 @@ cmersennetwister.obj: cmersennetwister.cc \
   cmersennetwister.h \
   ../../include/defs.h \
   ../../include/opp_string.h \
+  ../../include/macros.h \
   ../../include/crng.h \
   ../../include/cconfig.h \
   mersennetwister.h \
-  ../../include/cpolymorphic.h
+  ../../include/onstartup.h \
+  ../../include/carray.h \
+  ../../include/ctypes.h \
+  ../../include/cobject.h \
+  ../../include/cpolymorphic.h \
+  ../../include/globals.h
 cmessage.obj: cmessage.cc \
   ../../include/macros.h \
   ../../include/cmodule.h \
@@ -540,7 +572,16 @@ cpsquare.obj: cpsquare.cc \
   ../../include/globals.h \
   ../../include/cdensity.h \
   ../../include/cstat.h \
-  ../../include/opp_string.h
+  ../../include/opp_string.h \
+  ../../include/csimul.h \
+  ../../include/cmodule.h \
+  ../../include/crng.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
+  ../../include/coutvect.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h \
+  ../../include/cdefaultlist.h
 cqueue.obj: cqueue.cc \
   ../../include/macros.h \
   ../../include/cqueue.h \
@@ -645,18 +686,19 @@ cstat.obj: cstat.cc \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
+  ../../include/csimul.h \
+  ../../include/cmodule.h \
+  ../../include/crng.h \
+  ../../include/globals.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
+  ../../include/coutvect.h \
   ../../include/onstartup.h \
   ../../include/carray.h \
-  ../../include/ctypes.h \
-  ../../include/globals.h \
-  ../../include/cmodule.h \
-  ../../include/ccoroutine.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
-  ../../include/csimul.h \
   ../../include/cdefaultlist.h \
-  ../../include/cmsgheap.h \
-  ../../include/coutvect.h \
+  ../../include/ctypes.h \
   ../../include/opp_string.h
 cstruct.obj: cstruct.cc \
   ../../include/cstruct.h \
@@ -742,6 +784,15 @@ cvarhist.obj: cvarhist.cc \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/globals.h \
+  ../../include/csimul.h \
+  ../../include/cmodule.h \
+  ../../include/crng.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
+  ../../include/coutvect.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h \
+  ../../include/cdefaultlist.h \
   ../../include/chist.h \
   ../../include/cdensity.h \
   ../../include/cstat.h \
@@ -768,14 +819,24 @@ distrib.obj: distrib.cc \
   ../../include/cexception.h \
   ../../include/defs.h \
   ../../include/random.h \
-  ../../include/onstartup.h \
-  ../../include/carray.h \
-  ../../include/ctypes.h \
-  ../../include/cobject.h \
-  ../../include/cenvir.h \
+  ../../include/csimul.h \
+  ../../include/cmodule.h \
+  ../../include/crng.h \
   ../../include/util.h \
-  ../../include/cpolymorphic.h \
+  ../../include/errmsg.h \
   ../../include/globals.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
+  ../../include/coutvect.h \
+  ../../include/cobject.h \
+  ../../include/onstartup.h \
+  ../../include/cenvir.h \
+  ../../include/cpolymorphic.h \
+  ../../include/carray.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h \
+  ../../include/cdefaultlist.h \
+  ../../include/ctypes.h \
   ../../include/opp_string.h
 errmsg.obj: errmsg.cc
 globals.obj: globals.cc \
@@ -797,20 +858,6 @@ onstartup.obj: onstartup.cc \
   ../../include/defs.h \
   ../../include/opp_string.h \
   ../../include/util.h
-random.obj: random.cc \
-  ../../include/random.h \
-  ../../include/macros.h \
-  ../../include/cexception.h \
-  ../../include/defs.h \
-  ../../include/onstartup.h \
-  ../../include/carray.h \
-  ../../include/ctypes.h \
-  ../../include/cobject.h \
-  ../../include/cenvir.h \
-  ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/globals.h \
-  ../../include/opp_string.h
 task.obj: task.cc \
   task.h
 util.obj: util.cc \
@@ -827,24 +874,24 @@ util.obj: util.cc \
   cmersennetwister.h \
   ../../include/defs.h \
   ../../include/random.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cobject.h \
-  ../../include/ccoroutine.h \
+  ../../include/csimul.h \
+  ../../include/crng.h \
+  ../../include/errmsg.h \
   ../../include/globals.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
+  ../../include/coutvect.h \
+  ../../include/cobject.h \
+  ../../include/onstartup.h \
+  ../../include/cpolymorphic.h \
   ../../include/carray.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
-  ../../include/csimul.h \
   ../../include/cdefaultlist.h \
-  ../../include/onstartup.h \
-  ../../include/errmsg.h \
-  ../../include/cmsgheap.h \
-  ../../include/coutvect.h \
   ../../include/ctypes.h \
   ../../include/opp_string.h \
   ../../include/cmessage.h \
   ../../include/cpar.h \
-  ../../include/crng.h \
   ../../include/cconfig.h \
   mersennetwister.h
 netbuilder/cdynamicchannel.obj: netbuilder/cdynamicchannel.cc \

@@ -58,7 +58,7 @@ class SIM_API cMersenneTwister : public cRNG
     /** Maximum value that can be returned by intRand() */
     virtual unsigned long intRandMax();
 
-    /** Random integer in [0,n], n < intRandMax() */
+    /** Random integer in [0,n), n < intRandMax() */
     virtual unsigned long intRand(unsigned long n);
 
     /** Random double on the [0,1) interval */

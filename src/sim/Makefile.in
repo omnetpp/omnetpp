@@ -37,8 +37,8 @@ CPPOBJS_STD = task.o ccoroutine.o ctypes.o carray.o cgate.o \
          cmessage.o cdetect.o util.o cllist.o ctopo.o errmsg.o \
          cmsgheap.o coutvect.o cqueue.o globals.o cwatch.o \
          cpacket.o cfsm.o cstruct.o cchannel.o cenum.o cexception.o cdispstr.o \
-         cdefaultlist.o cscheduler.o onstartup.o random.o distrib.o \
-         cxmlelement.o
+         cdefaultlist.o cscheduler.o onstartup.o distrib.o \
+         cxmlelement.o cmersennetwister.o clcg32.o
 CPPOBJS_NETBUILDER= netbuilder/cdynamicmodule.o netbuilder/cdynamicnetwork.o \
                     netbuilder/cdynamicchannel.o \
                     netbuilder/cnednetworkbuilder.o netbuilder/loadnedfile.o

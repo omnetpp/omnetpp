@@ -73,7 +73,7 @@ unsigned long cLCG32::intRand(unsigned long n)
 
     // Find which bits are used in n
     // Optimized by Magnus Jonsson (magnus@smartelectronix.com)
-    unsigned long used = n;
+    unsigned long used = n-1;
     used |= used >> 1;
     used |= used >> 2;
     used |= used >> 4;
@@ -84,7 +84,7 @@ unsigned long cLCG32::intRand(unsigned long n)
     unsigned long i;
     do
         i = intRand() & used;  // toss unused bits to shorten search
-    while( i > n );
+    while( i >= n );
     return i;
 }
 
