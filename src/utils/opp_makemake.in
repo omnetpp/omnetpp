@@ -37,6 +37,7 @@ ignorened=n
 force=n
 tstamp=y
 tstampdirs=""
+exceptdirs=""
 
 
 # save a temporary Perl script, for conversion of absolute paths to relative
@@ -132,6 +133,8 @@ opp_makemake [-h] [-f] [-m] [-o make-target] [-r] [-n] [-s] [-u userinterface]
     -r, --recurse         Call make recursively in all subdirectories. If you
                           need to maintain a specific order, declare dependen-
                           cies in the makefrag file.
+    -X directory, --except directory
+                          With -r (recurse) option: ignore the given directory
     -b directory, --basedir directory
                           Project base (root) directory; all absolute paths
                           (-I, -L, object file names, etc.) which point into
@@ -195,6 +198,11 @@ EOT
 
         -r | --recurse)
         recursive=y
+        ;;
+
+        -X | --except)
+        shift
+        exceptdirs="$exceptdirs $1"
         ;;
 
         -b | --basedir)
@@ -374,7 +382,9 @@ subdirs=
 if [ $recursive = "y" ]; then
     for i in *; do
         if [ -d "$i" -a "$i" != "CVS" -a "$i" != "backups" -a "$i" != "." -a "$i" != ".." ]; then
-            subdirs="$subdirs $i"
+            if grep "$i" "$exceptdirs" >/dev/null; then :; else
+                subdirs="$subdirs $i"
+            fi
         fi
     done
 fi
