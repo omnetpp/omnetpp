@@ -258,3 +258,6 @@ Mar 26, 2000
  - 'char *' --> 'const char *' changes in generated code
 Mar 27, 2000
  - bugfix: conditional (?:) operator caused parse error [reported by Niko]
+Apr 5, 2000
+ - bugfix: nedc hung if last line was a comment and it was incomplete
+   (without LF)  [reported by Roland Bless]
