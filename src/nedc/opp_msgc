@@ -81,11 +81,18 @@ close(IN);
 open(H,">$hfile") || die "*** cannot open output file $hfile";
 open(CC,">$ccfile") || die "*** cannot open output file $ccfile";
 
-print H "//\n// TBD: add copyright stuff, includes here\n//\n\n";
+print H "//\n// Generated file, do not edit! Created by opp_msgc.\n//\n\n";
 print H "#ifndef $hdef\n";
 print H "#define $hdef\n\n";
 print H "#include <omnetpp.h>\n";
-print CC "//\n// TBD: add copyright stuff, includes here\n//\n\n";
+print CC "//\n// Generated file, do not edit! Created by opp_msgc.\n//\n\n";
+
+print CC "// Disable warnings about unused variables, empty switch stmts, etc:\n";
+print CC "#ifdef _MSC_VER\n";
+print CC "#  pragma warning(disable:4101)\n";
+print CC "#  pragma warning(disable:4065)\n";
+print CC "#endif\n\n";
+
 print CC "#include \"$hfile\"\n\n";
 
 # pre-register some OMNeT++ classes so that one doesn't need to announce them
@@ -679,9 +686,6 @@ sub generateClass
         print H "  public:\n";
     }
     print H "    virtual ~$msgclass();\n";
-    if ($classtype eq "cobject") {
-        print H "    virtual const char *className() const {return \"$realmsgclass\";}\n";
-    }
     print H "    $msgclass& operator=(const $msgclass& other);\n";
     if ($classtype eq "cobject" && !$gap) {
         print H "    virtual cObject *dup() const {return new $msgclass(*this);}\n";
@@ -955,7 +959,6 @@ sub generateDescriptorClass
     print CC "  public:\n";
     print CC "    $msgdescclass(void *p=NULL);\n";
     print CC "    virtual ~$msgdescclass();\n";
-    print CC "    virtual const char *className() const {return \"$msgdescclass\";}\n";
     print CC "    $msgdescclass& operator=(const $msgdescclass& other);\n";
     print CC "    virtual cObject *dup() const {return new $msgdescclass(*this);}\n";
 
