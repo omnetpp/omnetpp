@@ -296,7 +296,7 @@ void cGate::deliver(cMessage *msg)
 
         // Bit error rate modelling
         if (errorp)
-            if( dblrand() < 1.0 - pow(1.0-(*errorp), msg->length()) )
+            if( dblrand() < 1.0 - pow(1.0-(double)(*errorp), msg->length()) )
                 msg->error=TRUE;
 
         // Transmission delay modelling

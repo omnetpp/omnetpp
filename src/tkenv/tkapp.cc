@@ -702,11 +702,20 @@ void TOmnetTkApp::readPerRunOptions(int run_nr)
 
 void TOmnetTkApp::objectDeleted( cObject *object )
 {
-    for (cIterator i(inspectors); !i.end(); i++)
+    cIterator i(inspectors);
+    while (!i.end())
     {
          TInspector *insp = (TInspector *) i();
          if (insp->object == object)
+         {
               delete insp;
+              // i is no longer valid, must restart it...
+              i.init(inspectors);
+         }
+         else
+         {
+              i++;
+         }
     }
 }
 

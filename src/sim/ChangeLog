@@ -758,3 +758,17 @@ Jan 15,2000
    The explicit keyword is supported to prevent this from happening.
  - minor change: cSimulation::setErrorCode() added (was needed in Tkenv's
    startup code)
+Jan 17,2000
+ - the +,-,*,/,... operators taking cPar plus a numeric type (long/double)
+   were removed from cpar.h.  These operators were rendered useless by the
+   new ANSI C++ overload resolution rules. For example, a cPar+long is now
+   ambiguous simply because cPar has operator long(), double(), etc., and an
+   operator+(cPar&,long) function only makes it even more ambiguous.
+   This issue turned up with the MSVC 6.0 port of OMNeT++ (see MSVC error
+   C2666).
+   Existing code is also affected: expressions like msg->par("count")+1
+   which previously compiled now cause error and must be disabiguated by
+   adding explicit cast like this: (int)msg->par("count")+1. Blame the ANSI
+   committee.
+   Assigments still work fine (like: cPar p = 1; int i=p;).
+
