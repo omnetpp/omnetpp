@@ -18,7 +18,7 @@ proc helpAbout {} {
     tk_messageBox -title {About Plove} \
                   -icon info -type ok \
                   -message {
-Plove 2.1p1
+Plove 2.2
 Part of the OMNeT++ Discrete Event Simulator
 
 (C) 1997-2001 Andras Varga

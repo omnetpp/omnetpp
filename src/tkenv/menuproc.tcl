@@ -63,7 +63,7 @@ proc about {} {
     # implements Help|About
 
     messagebox {About OMNeT++}  {\
-Tkenv 2.1
+Tkenv 2.2
 OMNeT++ Discrete Event Simulation System
 
 (c) Andras Varga, 1992-2001
