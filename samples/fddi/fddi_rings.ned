@@ -25,8 +25,8 @@ import
 
 // FDDIRing --
 //
-// A simple FDDI ring of identical nodes. The computers are connected
-// in the form of a ring, plus every computer is connected to the
+// A simple FDDI ring of identical FDDIStation nodes. The stations are 
+// connected in the form of a ring, plus each of them is connected to the
 // stat module.
 //
 module FDDIRing
@@ -37,7 +37,7 @@ module FDDIRing
         RingID : numeric const,
         TTRT : numeric const;
     submodules:
-        comp: Computer[no_comps];
+        comp: FDDIStation[no_comps];
 
         stat: Stat;
             parameters:

@@ -155,24 +155,25 @@ FDDI69.arj
   - upgraded for JAR100/SIM158: parameter type declarations (string, numeric)
     added to NED files;
   - adopted to cancelEvent()'s changed behaviour
-FDDI70.arj (--VA)
+------maintenance completely taken over by Andras Varga-------
+FDDI70.arj
   - corrected a missing ':string' type declaration in a NED file
-FDDI73.arj (--VA)
+FDDI73.arj
   - `display:' phrases added to NED
   - bug fixed in othermods.h: FDDI_Address_Generator's constructor didn't initialize f
   - fddi_mac.cc: FDDI_MAC: setOwner calls for sync_buf/async_buf removed;
   - added a name string to sync_buf/async_buf
-FDDI74.arj (--VA)
+FDDI74.arj
   - improved "display:" stuff in fddi_net.ned
 FDDI76.arj
   - updated to the new histograms in sim161
-FDDI77.arj (--VA)
+FDDI77.arj
   - added fddi.ide; doesn't run correctly under NT though (causes exception)
-FDDI78.arj (--VA)
+FDDI78.arj
   - makefile renamed to makefile.in
-FDDI79.arj (--VA)
+FDDI79.arj
   - simulation.error() calls corrected to error()
-FDDI80.arj (--VA)
+FDDI80.arj
   - ?
 #81 June 21, 1999
   - all sources checked in under CVS
@@ -181,8 +182,11 @@ FDDI80.arj (--VA)
   - removed support for DOS with BC3.1
 Jul 11, 1999
   - bug in mystrlwr() [othermod.cc] fixed
+------ omnetpp-2.0b1 released ------
 ------ omnetpp-2.0b2 released ------
 Oct 10, 1999
   - standardized indentation in ned files
   - fddi_net.ned split to fddi_nodes.ned, fddi_rings.ned, fddi_nets.ned
   - proper README written
+Oct 17, 1999
+  - Computer renamed to FDDIStation (clashed with Token's Computer)

@@ -66,11 +66,11 @@ module FDDI_SAC
 endmodule
 
 
-// Computer --
+// FDDIStation --
 //
 // a node in a ring of identical nodes
 //
-module Computer
+module FDDIStation
     gates:
         in: in;
         out: out;

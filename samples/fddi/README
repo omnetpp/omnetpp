@@ -5,16 +5,16 @@ A precise FDDI simulation.
 Demonstrates:
   - using statistics classes
   - parallel execution
-  - ...and many other features
+  - and many other features
 
 The FDDI_MAC simple module contains a precise FDDI MAC simulation.
 Based on FDDI_MAC, a number of network nodes are put together:
-computers, routers, a network analyzer (Sniffer), etc.
+FDDI station, router, network analyzer (Sniffer), cable concentrator, etc.
 
 There is a general FDDI network model:
-- FDDIRing is a simple FDDI ring of identical nodes (Computers). The computers
-  are connected in the form of a ring, plus every computer is connected to
-  a 'stat' module.
+- FDDIRing is a simple FDDI ring of identical nodes (FDDIStations). 
+  The stations are connected in the form of a ring, plus each of them is 
+  connected to a 'stat' module.
 - FDDIRing can be simulated using the FDDI1 network.
 
 Other ring models are models of the FDDI backbone of the Technical University
