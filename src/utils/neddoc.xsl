@@ -644,7 +644,7 @@
          <xsl:for-each select="gates/gate">
             <!-- <xsl:sort select="@name"/> -->
             <tr>
-               <td width="150"><xsl:value-of select="@name"/><xsl:if test="@is-vector='yes'"> [ ]</xsl:if></td>
+               <td width="150"><xsl:value-of select="@name"/><xsl:if test="@is-vector='true'"> [ ]</xsl:if></td>
                <td width="100"><i><xsl:value-of select="@direction"/></i></td>
                <td><xsl:call-template name="process-tablecomment"/></td>
             </tr>
