@@ -21,11 +21,11 @@
 
 /**
  * Responsible for handling the output file for cOutVectors.
- * Users don't need to use cOutFileMgr directly, only through
- * cOutVector.
+ * This is an internal class: users don't need to use cOutFileMgr
+ * directly, only through cOutVector.
  *
  * cOutFileMgr is also used to handle snapshot and parameter change files.
-*/
+ */
 class SIM_API cOutFileMgr : public cObject
 {
     long nextID;       // holds next free ID for output vectors
@@ -33,6 +33,8 @@ class SIM_API cOutFileMgr : public cObject
     FILE *handle;      // file ptr of output file
 
   public:
+    /** @name Constructors, destructor, assignment */
+    //@{
 
     /**
      * Constructor.
@@ -44,51 +46,64 @@ class SIM_API cOutFileMgr : public cObject
      */
     virtual ~cOutFileMgr();
 
-    // redefined functions
+    // FIXME: op= missing!
+
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
 
     /**
      * Returns a pointer to the class name "cOutFileMgr".
      */
     virtual const char *className() const {return "cOutFileMgr";}
+    //@}
 
-    // new functions
+    /** @name File handling. */
+    //@{
 
     /**
-     * Sets the name of the statistical output file. This name will be
-     * set at the time of the next call of openFile().
+     * Sets the name of the output file. This name will be set at the time
+     * of the next call of openFile().
      */
     void setFileName(const char *s);
 
     /**
-     * MISSINGDOC: cOutFileMgr:char*fileName()
+     * Returns the file name.
      */
     const char *fileName();
 
     /**
-     * Opens the statistical output file with the currently set fileName.
+     * Opens the output file with the currently set fileName.
      */
     void openFile();
 
     /**
-     * Closes the statistical output file
+     * Closes the output file.
      */
     void closeFile();
 
     /**
-     * MISSINGDOC: cOutFileMgr:void deleteFile()
+     * Deletes the output file.
      */
     void deleteFile();
 
     /**
-     * MISSINGDOC: cOutFileMgr:FILE*filePointer()
+     * Returns the file pointer to the file. This method calls openFile() if necessary.
      */
-    FILE *filePointer(); // calls openFile() if necessary
+    FILE *filePointer();
+    //@}
+
+    /** @name Handling output vectors. */
+    //@{
 
     /**
      * Returns a unique ID for constructing a new cOutVector
      * object. The user should not explicitly call this function.
      */
     long getNewID();
+    //@}
+
 };
 
 //==========================================================================
@@ -129,6 +144,8 @@ class SIM_API cOutVector : public cObject
     void *data_for_inspector;
 
   public:
+    /** @name Constructors, destructor, assignment */
+    //@{
 
     /**
      * Copy constructor.
@@ -147,7 +164,12 @@ class SIM_API cOutVector : public cObject
      */
     virtual ~cOutVector();
 
-    // redefined functions
+    // FIXME: op= missing!
+
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
 
     /**
      * FIXME: redefined functions
@@ -173,9 +195,10 @@ class SIM_API cOutVector : public cObject
      * MISSINGDOC: cOutVector:char*inspectorFactoryName()
      */
     virtual const char *inspectorFactoryName() const {return "cOutVectorIFC";}
-    // no operator=()
+    //@}
 
-    // new functions
+    /** @name Configuring and writing to output vectors. */
+    //@{
 
     /**
      * Records one data to the file. It can be used only in the case
@@ -213,7 +236,7 @@ class SIM_API cOutVector : public cObject
      * no Stoptime.
      */
     void setStopTime(simtime_t t);
-
+    //@}
 };
 
 #endif

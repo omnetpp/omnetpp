@@ -34,7 +34,10 @@ class SIM_API cPacket : public cMessage
   protected:
     short _protocol;
     short _pdu;
+
   public:
+    /** @name Constructors, destructor, assignment */
+    //@{
 
     /**
      * Constructor.
@@ -48,6 +51,15 @@ class SIM_API cPacket : public cMessage
     cPacket (cPacket& m);
 
     /**
+     * MISSINGDOC: cPacket:cPacket&operator=(cPacket&)
+     */
+    cPacket& operator=(cPacket& m);
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
+
+    /**
      * MISSINGDOC: cPacket:cObject*dup()
      */
     virtual cObject *dup() {return new cPacket(*this);}
@@ -56,11 +68,6 @@ class SIM_API cPacket : public cMessage
      * MISSINGDOC: cPacket:char*className()
      */
     const char *className() const {return "cPacket";}
-
-    /**
-     * MISSINGDOC: cPacket:cPacket&operator=(cPacket&)
-     */
-    cPacket& operator=(cPacket& m);
 
     /**
      * MISSINGDOC: cPacket:char*inspectorFactoryName()
@@ -81,28 +88,31 @@ class SIM_API cPacket : public cMessage
      * MISSINGDOC: cPacket:int netUnpack()
      */
     virtual int netUnpack();
+    //@}
 
-    // new functions
+    /** @name New attributes. */
+    //@{
 
     /**
-     * FIXME: new functions
+     * Returns the protocol ID.
      */
     short protocol()          {return _protocol;}
 
     /**
-     * MISSINGDOC: cPacket:short pdu()
+     * Returns the PDU type.
      */
     short pdu()               {return _pdu;}
 
     /**
-     * MISSINGDOC: cPacket:void setProtocol(short)
+     * Sets the protocol ID.
      */
     void setProtocol(short p) {_protocol=p;}
 
     /**
-     * MISSINGDOC: cPacket:void setPdu(short)
+     * Sets the PDU type.
      */
     void setPdu(short p)      {_pdu=p;}
+    //@}
 };
 
 #endif

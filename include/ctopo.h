@@ -34,7 +34,7 @@ class sTopoLinkOut;
 
 
 /**
- * Supporting class for cTopology.
+ * Supporting class for cTopology, represents a node in the graph.
  */
 class SIM_API sTopoNode
 {
@@ -56,84 +56,100 @@ class SIM_API sTopoNode
     sTopoLink *out_path;
 
   public:
+    /** @name Node attributes: weight, enabled state, correspondence to modules. */
+    //@{
+
     /**
-     * FIXME: variables used by the shortest-path algorithms
+     * Returns the ID of the network module to which this node corresponds.
      */
     int moduleId()              {return module_id;}
 
     /**
-     * MISSINGDOC: sTopoNode:cModule*module()
+     * Returns the pointer to the network module to which this node corresponds.
      */
     cModule *module()           {return &simulation[module_id];}
 
-
     /**
-     * MISSINGDOC: sTopoNode:double weight()
+     * Returns the weight of this node. Weight is used with the
+     * weighted shortest path finder methods of cTopology.
      */
     double weight()             {return wgt;}
 
     /**
-     * MISSINGDOC: sTopoNode:void setWeight(double)
+     * Sets the weight of this node. Weight is used with the
+     * weighted shortest path finder methods of cTopology.
      */
     void setWeight(double d)    {wgt=d;}
 
     /**
-     * MISSINGDOC: sTopoNode:bool enabled()
+     * Returns true of this node is enabled. This has significance
+     * with the shortest path finder methods of cTopology.
      */
     bool enabled()              {return enabl;}
 
     /**
-     * MISSINGDOC: sTopoNode:void enable()
+     * Enable this node. This has significance with the shortest path
+     * finder methods of cTopology.
      */
     void enable()               {enabl=true;}
 
     /**
-     * MISSINGDOC: sTopoNode:void disable()
+     * Disable this node. This has significance with the shortest path
+     * finder methods of cTopology.
      */
     void disable()              {enabl=false;}
+    //@}
 
+    /** @name Node connectivity. */
+    //@{
 
     /**
-     * MISSINGDOC: sTopoNode:int inLinks()
+     * Returns the number of incoming links to this graph node.
      */
     int inLinks()               {return num_in_links;}
 
     /**
-     * MISSINGDOC: sTopoNode:sTopoLinkIn*in(int)
+     * Returns ith incoming link of graph node.
      */
     sTopoLinkIn *in(int i);
 
     /**
-     * MISSINGDOC: sTopoNode:int outLinks()
+     * Returns the number of outgoing links from this graph node.
      */
     int outLinks()              {return num_out_links;}
 
     /**
-     * MISSINGDOC: sTopoNode:sTopoLinkOut*out(int)
+     * Returns ith outgoing link of graph node.
      */
     sTopoLinkOut *out(int i);
+    //@}
 
-    // shortest path extraction (prepared for multiple paths...):
+    /** @name Result of shortest path extraction. */
+    //@{
 
     /**
-     * FIXME: shortest path extraction (prepared for multiple paths...):
+     * Returns the distance of this node to the target node.
      */
     double distanceToTarget()   {return dist;}
 
     /**
-     * MISSINGDOC: sTopoNode:int paths()
+     * Returns the number of shortest paths towards the target node.
+     * (There might be several paths with the same lengths.)
      */
     int paths()                 {return out_path?1:0;}
 
     /**
-     * MISSINGDOC: sTopoNode:sTopoLinkOut*path()
+     * Returns the next link in the ith shortest paths towards the
+     * target node. (There might be several paths with the same
+     * lengths.)
      */
     sTopoLinkOut *path(int)     {return (sTopoLinkOut *)out_path;}
+    //@}
 };
 
 
 /**
- * Supporting class for cTopology.
+ * Supporting class for cTopology, represents a link in the graph.
  */
 class SIM_API sTopoLink
 {
@@ -149,27 +165,32 @@ class SIM_API sTopoLink
 
   public:
     /**
-     * MISSINGDOC: sTopoLink:double weight()
+     * Returns the weight of this link. Weight is used with the
+     * weighted shortest path finder methods of cTopology.
      */
     double weight()             {return wgt;}
 
     /**
-     * MISSINGDOC: sTopoLink:void setWeight(double)
+     * Sets the weight of this link. Weight is used with the
+     * weighted shortest path finder methods of cTopology.
      */
     void setWeight(double d)    {wgt=d;}
 
     /**
-     * MISSINGDOC: sTopoLink:bool enabled()
+     * Returns true of this link is enabled. This has significance
+     * with the shortest path finder methods of cTopology.
      */
     bool enabled()              {return enabl;}
 
     /**
-     * MISSINGDOC: sTopoLink:void enable()
+     * Enables this link. This has significance with the shortest path
+     * finder methods of cTopology.
      */
     void enable()               {enabl=true;}
 
     /**
-     * MISSINGDOC: sTopoLink:void disable()
+     * Disables this link. This has significance with the shortest path
+     * finder methods of cTopology.
      */
     void disable()              {enabl=false;}
 };
@@ -269,6 +290,8 @@ class SIM_API cTopology : public cObject
     sTopoNode *target;
 
   public:
+    /** @name Constructors, destructor, assignment */
+    //@{
 
     /**
      * Constructor.
@@ -285,124 +308,127 @@ class SIM_API cTopology : public cObject
      */
     virtual ~cTopology();
 
-     // redefined functions
+    /**
+     * MISSINGDOC: cTopology:cTopology&operator=(cTopology&)
+     */
+    cTopology& operator=(cTopology& topo);
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
 
     /**
      * FIXME: redefined functions
      */
-     virtual const char *className() const {return "cTopology";}
+    virtual const char *className() const {return "cTopology";}
 
     /**
      * MISSINGDOC: cTopology:cObject*dup()
      */
-     virtual cObject *dup()     {return new cTopology(*this);}
+    virtual cObject *dup()     {return new cTopology(*this);}
 
     /**
      * MISSINGDOC: cTopology:void info(char*)
      */
-     virtual void info(char *buf);
+    virtual void info(char *buf);
 
     /**
      * MISSINGDOC: cTopology:char*inspectorFactoryName()
      */
-     virtual const char *inspectorFactoryName() const {return "cTopologyIFC";}
-
+    virtual const char *inspectorFactoryName() const {return "cTopologyIFC";}
 
     /**
      * MISSINGDOC: cTopology:int netPack()
      */
-     virtual int netPack();
+    virtual int netPack();
 
     /**
      * MISSINGDOC: cTopology:int netUnpack()
      */
-     virtual int netUnpack();
+    virtual int netUnpack();
+    //@}
 
-
-    /**
-     * MISSINGDOC: cTopology:cTopology&operator=(cTopology&)
-     */
-     cTopology& operator=(cTopology& topo);
-
-     // delete data structure
-
-    /**
-     * FIXME: delete data structure
-     */
-     void clear();
-
-     // extract...() functions build topology from the model.
-     // User can select which modules to include. All connections
-     // between those modules will be in the topology. Connections can
-     // cross compound module boundaries.
-
-     // Include modules for which the passed selfunc() returns nonzero.
-
-    /**
-     * FIXME: extract...() functions build topology from the model.
+    /** @name Extracting the topology from a network.
+     * extract...() functions build topology from the model.
      * User can select which modules to include. All connections
      * between those modules will be in the topology. Connections can
      * cross compound module boundaries.
-     * Include modules for which the passed selfunc() returns nonzero.
      */
-     void extractFromNetwork(int (*selfunc)(cModule *,void *), void *data=NULL);
-
-     // Include modules with given types (classnames). List of types must be
-     // terminated by NULL.
+    //@{
 
     /**
-     * FIXME: Include modules with given types (classnames). List of types must be
-     * terminated by NULL.
+     * Extracts model topology by a user-defined criteria. Includes into the graph
+     * modules for which the passed selfunc() returns nonzero.
      */
-     void extractByModuleType(const char *type1,...);
-
-     // Include modules with given parameter and (optionally) given value.
+    void extractFromNetwork(int (*selfunc)(cModule *,void *), void *data=NULL);
 
     /**
-     * FIXME: Include modules with given parameter and (optionally) given value.
+     * Extracts model topology by module type (classnames). Includes into
+     * the graph all modules whose className() is one of the strings
+     * listed as arguments. The argument list must be terminated by NULL.
      */
-     void extractByParameter(const char *parname, cPar *value=NULL);
-
-     // Functions to examine topology by hand. Users also need to rely on
-     // sTopoNode and sTopoLink member functions.
+    void extractByModuleType(const char *type1,...);
 
     /**
-     * FIXME: Functions to examine topology by hand. Users also need to rely on
+     * Extracts model topology by parameter value. Includes into the graph
+     * modules which have a parameter with the given name and (optionally)
+     * the given value.
+     */
+    void extractByParameter(const char *parname, cPar *value=NULL);
+
+    /**
+     * Deletes the topology stored in the object.
+     */
+    void clear();
+    //@}
+
+    /** @name Functions to examine topology by hand. Users also need to rely on
      * sTopoNode and sTopoLink member functions.
      */
-     int nodes()  {return num_nodes;}
+    //@{
 
     /**
-     * MISSINGDOC: cTopology:sTopoNode*node(int)
+     * Returns the number of nodes in the graph.
      */
-     sTopoNode *node(int i);
+    int nodes()  {return num_nodes;}
 
     /**
-     * MISSINGDOC: cTopology:sTopoNode*nodeFor(cModule*)
+     * Returns pointer to the ith node in the graph. sTopoNode's methods
+     * can be used to further examine the node's connectivity, etc.
      */
-     sTopoNode *nodeFor(cModule *mod);
-
-     // Algorithms to find shortest paths:
+    sTopoNode *node(int i);
 
     /**
-     * FIXME: Algorithms to find shortest paths:
+     * Returns the graph node which corresponds to the given module in the
+     * network. If no graph node corresponds to the module, the method returns
+     * NULL. This method assumes that the topology corresponds to the
+     * network, that is, it was probably created with one of the
+     * extract...() functions.
      */
-     void unweightedSingleShortestPathsTo(sTopoNode *target);
+    sTopoNode *nodeFor(cModule *mod);
+    //@}
 
-     // to be implemented:
-     //void unweightedMultiShortestPathsTo(sTopoNode *target);
-     //void weightedSingleShortestPathsTo(sTopoNode *target);
-     //void weightedMultiShortestPathsTo(sTopoNode *target);
-
+    /** @name Algorithms to find shortest paths.
+     *
+     * To be implemented:
+     *   void unweightedMultiShortestPathsTo(sTopoNode *target); <br>
+     *   void weightedSingleShortestPathsTo(sTopoNode *target);  <br>
+     *   void weightedMultiShortestPathsTo(sTopoNode *target);   <br>
+     */
+    //@{
 
     /**
-     * FIXME: to be implemented:
-     *      //void unweightedMultiShortestPathsTo(sTopoNode *target);
-     *      //void weightedSingleShortestPathsTo(sTopoNode *target);
-     *      //void weightedMultiShortestPathsTo(sTopoNode *target);
+     * Apply the Dijkstra algorithm to find all shortest paths to the given
+     * graph node. The paths found can be extracted via sTopoNode's methods.
      */
-     sTopoNode *targetNode() {return target;}
+    void unweightedSingleShortestPathsTo(sTopoNode *target);
 
+    /**
+     * Returns the node that was passed to the most recently called
+     * shortest path finding function.
+     */
+    sTopoNode *targetNode() {return target;}
+    //@}
 };
 
 #endif

@@ -40,16 +40,15 @@ class SIM_API cMessageHeap : public cObject
     int size;                 // size of allocated h array
     unsigned long insertcntr; // counts insertions
 
-
-    /**
-     * MISSINGDOC: cMessageHeap:void shiftup(int)
-     */
+    // internal
     void shiftup(int from=1);
 
   public:
+    /** @name Constructors, destructor, assignment */
+    //@{
 
     /**
-     * Constructor.
+     * Copy constructor.
      */
     cMessageHeap(cMessageHeap& msgq);
 
@@ -63,7 +62,14 @@ class SIM_API cMessageHeap : public cObject
      */
     virtual ~cMessageHeap();
 
-    // redefined functions
+    /**
+     * MISSINGDOC: cMessageHeap:cMessageHeap&operator=(cMessageHeap&)
+     */
+    cMessageHeap& operator=(cMessageHeap& msgqueue);
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
 
     /**
      * FIXME: redefined functions
@@ -90,54 +96,54 @@ class SIM_API cMessageHeap : public cObject
      */
     virtual void forEach(ForeachFunc f);
 
-    /**
-     * MISSINGDOC: cMessageHeap:cMessageHeap&operator=(cMessageHeap&)
-     */
-    cMessageHeap& operator=(cMessageHeap& msgqueue);
     // no netPack() and netUnpack()
+    //@}
 
-    // new functions
+    /** @name Container functions. */
+    //@{
 
     /**
-     * FIXME: no netPack() and netUnpack()
-     * new functions
+     * Insert a new message into the heap.
      */
     void insert(cMessage *event);
 
     /**
-     * MISSINGDOC: cMessageHeap:cMessage*peekFirst()
+     * Peek the first message in the heap (the one with the smallest timestamp.)
      */
     cMessage *peekFirst();
 
     /**
-     * MISSINGDOC: cMessageHeap:cMessage*getFirst()
+     * Remove and return the first message in the heap (the one
+     * with the smallest timestamp.)
      */
     cMessage *getFirst();
 
     /**
-     * MISSINGDOC: cMessageHeap:cMessage*get(cMessage*)
+     * Remove and return the given message in the heap.
      */
     cMessage *get(cMessage *event);
 
     /**
-     * MISSINGDOC: cMessageHeap:void sort()
+     * Sort the contents of the heap. This is only necessary if one wants
+     * to iterate through in the FES in strict timestamp order.
      */
     void sort();
 
     /**
-     * MISSINGDOC: cMessageHeap:void clear()
+     * Deletes all messages in the heap.
      */
     void clear();
 
     /**
-     * MISSINGDOC: cMessageHeap:int length()
+     * Returns the number of messages in the heap.
      */
     int length() {return n;}
 
     /**
-     * MISSINGDOC: cMessageHeap:bool empty()
+     * Returns true if the heap is empty.
      */
     bool empty() {return n==0;}
+    //@}
 };
 
 //==========================================================================
