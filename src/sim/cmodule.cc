@@ -433,7 +433,7 @@ void cModule::setDisplayStringNotify(void (*notify_func)(int,void*), void *data)
 //==========================================================================
 //=== cSimpleModule - member functions
 
-static void activate( void *p )
+void cSimpleModule::activate(void *p)
 {
         cSimpleModule *smod = (cSimpleModule *)p;
 
@@ -441,9 +441,8 @@ static void activate( void *p )
         // cSimpleModule. If not, then something is wrong...
         cMessage *starter = simulation.msgQueue.getFirst();
         if (starter!=smod->timeoutmsg)
-            // the following opp_error() won't return
-            opp_error("scheduleStart() not called for dynamically allocated simple module `%s'",
-                      smod->fullPath());
+            opp_error("scheduleStart() should have been called for dynamically created"
+                      " module `%s'", smod->fullPath());  // this call won't return
 
         // give back the message to the module
         starter->setOwner(smod);
@@ -503,8 +502,8 @@ cSimpleModule::cSimpleModule(char *name, cModule *parentmod, unsigned stksize) :
            timeoutmsg->sent = 0.0;
            // timeoutmsg->delivd set in scheduleStart()
 
-           // allocate stack
-           if (!cCoroutine::setup(activate, this, stksize+ev.extraStackForEnvir()))
+           // setup coroutine, allocate stack for it
+           if (!cCoroutine::setup(cSimpleModule::activate, this, stksize+ev.extraStackForEnvir()))
                opp_error("Cannot allocate %d+%d bytes of stack for module `%s'",
                                  stksize,ev.extraStackForEnvir(),fullPath());
         }
@@ -1058,6 +1057,11 @@ cMessage *cSimpleModule::receiveOn(char *s, int sn, simtime_t t)
 
 //-------------
 
+void cSimpleModule::initialize()
+{
+    // called before simulation starts
+}
+
 void cSimpleModule::activity()
 {
     // default thread function
@@ -1072,7 +1076,28 @@ void cSimpleModule::handleMessage(cMessage *)
     opp_error("You should redefine handleMessage() if you specify zero stack size");
 }
 
+void cSimpleModule::finish()
+{
+    // called after end of simulation
+}
+
 //-------------
+
+void cSimpleModule::callInitialize()
+{
+    // This is the interface for calling initialize().
+    // We switch to the module's context for the duration of the call.
+
+    cModule *oldcontext = simulation.contextModule();
+    simulation.setContextModule( this );
+
+    initialize();
+
+    if (oldcontext)
+        simulation.setContextModule( oldcontext );
+    else
+        simulation.setGlobalContext();
+}
 
 void cSimpleModule::pause(char *s)
 {
@@ -1173,6 +1198,14 @@ void cCompoundModule::scheduleStart(simtime_t t)
     for (cSubModIterator submod(*this); !submod.end(); submod++)
     {
         submod()->scheduleStart( t );
+    }
+}
+
+void cCompoundModule::callInitialize()
+{
+    for (cSubModIterator submod(*this); !submod.end(); submod++)
+    {
+        submod()->callInitialize();
     }
 }
 

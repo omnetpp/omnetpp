@@ -413,6 +413,15 @@ void cModuleType::buildInside(cModule *mod)
         simulation.setGlobalContext();
 }
 
+cModule *cModuleType::createAndInit(char *namestr, cModule *parentmod)
+{
+    // this is a convenience function...
+    cModule *mod = create(namestr, parentmod);
+    mod->buildInside();
+    mod->callInitialize();
+    return mod;
+}
+
 //=========================================================================
 //=== cLinkType - member functions
 

@@ -603,17 +603,21 @@ Aug 2, 1999
     [r+1,0]
   - INTRAND_MAX corrected to 2**31-2
 Aug 30, 1999
-  - bool isScheduled() member added to cMessage: checks if message is in the
-    Future Event Set
+  - bool isScheduled() member added to cMessage: can be used to examine whether
+    the message is in the Future Event Set
   - cancelEvent() behaviour changed: now it causes an error if the message
     is not in the Future Event Set. One should write code like this:
          if (msg->isScheduled())
              delete cancelEvent(msg);
+         else
+             // ???
     Or rather:
          if (msg->isScheduled())
              delete cancelEvent(msg);
          else if (putAsideQueue.contains(msg))
              delete putAsideQueue.get(msg);
+         else
+             // ???
   - cQueue::isEnqueued(cObject *) renamed to cQueue::contains(cObject *)
   - cLinkedList::isInList(void *) renamed to cLinkedList::contains(void *)
 Sept 1, 1999
@@ -630,6 +634,15 @@ Sept 1, 1999
     handleMessage().
   - cModuleType now caches the cModuleInterface pointer. (Before it looked
     up the interface each time, based on the interface name.)
+Sept 5, 1999
+  - cSimpleModule's initialize(), activity(), handleEvent(), finish() made
+    protected members so that they cannot be called directly by user code.
+  - callInitialize() was added to cSimpleModule to enable calling initialize()
+    from user code; callInitialize() was also added for cModule and
+    cCompoundModule so that it can be used polimorphically.
+  - added cModuleType::createAndInit(char *name, cModule *parent) convenience
+    function (includes create(), buildInside(), and callInitialize()).
+    Now a simple module can be created on the fly by simply saying:
+       mod = modtype->createAndInit("name",this);
+       mod->scheduleStart( simTime() );
 
-  KNOWN BUGS:
-     cModule::initialize() doesn't get called with dynamic modules

@@ -163,6 +163,8 @@ class cModuleType : public cObject
 
         cModule *create(char *namestr, cModule *parentmod, bool local=TRUE);
         void buildInside(cModule *mod);
+
+        cModule *createAndInit(char *namestr, cModule *parentmod);
 };
 
 

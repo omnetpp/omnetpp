@@ -183,6 +183,7 @@ class cModule : public cObject
         char *machinePar(char *pname);   // NET
 
         // dynamic module creation
+        virtual void callInitialize() = 0;           // calls initialize()
         virtual void scheduleStart(simtime_t t) = 0; // creates starting msg
         virtual void deleteModule() = 0;             // deletes module
 
@@ -214,14 +215,18 @@ struct sBlock
 class cSimpleModule : public cCoroutine, public cModule
 {
         friend class cModule;
+        friend class cSimulation;
         friend class TSimpleModInspector;
-        friend void activate( void *p );
       private:
         bool usesactivity;      // uses activity() or handleMessage()
         int state;              // ended/ready/waiting for msg
         opp_string phse;        // a 'phase' string
         sBlock *heap;           // head of modfunc's heap list
         cMessage *timeoutmsg;   // msg used in wait() and receive() with timeout
+
+      private:
+        static void activate(void *p); // interal use
+
       protected:
         virtual void arrived(cMessage *msg,int n); // internal use
 
@@ -246,15 +251,21 @@ class cSimpleModule : public cCoroutine, public cModule
         virtual void setId(int n);
         virtual bool isSimple() {return TRUE;}
 
+      protected:
+        // The following functions are expected to be redefined in concrete
+        // simple module types. They are made protected because they shouldn't
+        // be called directly by user code.
+        virtual void initialize();     // called before simulation starts
+        virtual void activity();       // coroutine function
+        virtual void handleMessage(cMessage *msg); // alternative to activity()
+        virtual void finish();         // called after end of simulation
+
+      public:
         // return event handling scheme
         bool usesActivity()  {return usesactivity;}
 
-        // The following two functions are expected to be redefined in
-        // concrete applications:
-        virtual void initialize() {}   // called before simulation starts
-        virtual void activity();       // module function
-        virtual void handleMessage(cMessage *msg); // alternative to activity()
-        virtual void finish() {}       // called after end of simulation
+        // interface for calling initialize() from "outside" (does context switch)
+        virtual void callInitialize();
 
         // module time
         simtime_t simTime(); // (cannot make inline because of declaration order)
@@ -282,7 +293,7 @@ class cSimpleModule : public cCoroutine, public cModule
 
         // self-messages
         int scheduleAt(simtime_t t, cMessage *msg); // receive() will return msg at t
-        cMessage *cancelEvent(cMessage *msg);        // remove cMessage sent by scheduleAt() from FES
+        cMessage *cancelEvent(cMessage *msg);       // remove cMessage sent by scheduleAt() from FES
 
         // parallel execution
         //   sync with receiver segment (blocks receiver at t until msg arrives)
@@ -354,6 +365,7 @@ class cCompoundModule : public cModule
 
         // redefined cModule functions
         virtual bool isSimple() {return FALSE;}
+        virtual void callInitialize();           // calls callInitialize() for submodules
         virtual void scheduleStart(simtime_t t); // starting msg for submodules
         virtual void deleteModule();             // deletes module & submodules
 };
