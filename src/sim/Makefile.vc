@@ -13,7 +13,7 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I. /DBUILDING_SIM
 
 CPPOBJS_STD= task.obj ccoroutine.obj ctypes.obj carray.obj cgate.obj \
-         cmodule.obj csimplemodule.obj csimul.obj cobject.obj cpar.obj \
+         cmodule.obj csimplemodule.obj csimul.obj cobject.obj cvisitor.obj cpar.obj \
          cstat.obj chist.obj cdensity.obj cvarhist.obj cpsquare.obj cksplit.obj \
          cmessage.obj cdetect.obj util.obj cllist.obj ctopo.obj errmsg.obj \
          cmsgheap.obj coutvect.obj cqueue.obj globals.obj cwatch.obj \
@@ -796,6 +796,15 @@ cvarhist.obj: cvarhist.cc \
   ../../include/chist.h \
   ../../include/cdensity.h \
   ../../include/cstat.h \
+  ../../include/opp_string.h
+cvisitor.obj: cvisitor.cc \
+  ../../include/cvisitor.h \
+  ../../include/cobject.h \
+  ../../include/cenvir.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/cpolymorphic.h \
+  ../../include/cexception.h \
   ../../include/opp_string.h
 cwatch.obj: cwatch.cc \
   ../../include/cwatch.h \
