@@ -1,3 +1,7 @@
+2002-12-07  Andras Varga
+
+	* UI redesign -- uses iconic toolbar, tooltips, all bells and whistles
+
 2002-10-29  Andras Varga
 
 	* use combobox.tcl by Bryan Oakley
