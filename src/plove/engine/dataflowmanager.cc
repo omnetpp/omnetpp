@@ -123,7 +123,7 @@ bool DataflowManager::nodeFinished(Node *node)
     if (!node->finished())
         return false;
 
-    printf("DBG: %s finished\n", node->nodeType()->name());
+    //printf("DBG: %s finished\n", node->nodeType()->name());
     node->setAlreadyFinished();
     int nc = channels.size();
     for (int i=0; i!=nc; i++)
@@ -131,12 +131,12 @@ bool DataflowManager::nodeFinished(Node *node)
         Channel *ch = channels[i];
         if (ch->consumerNode()==node)
         {
-            printf("DBG:   one input closed\n");
+            //printf("DBG:   one input closed\n");
             ch->consumerClose();
         }
         if (ch->producerNode()==node)
         {
-            printf("DBG:   one output closed\n");
+            //printf("DBG:   one output closed\n");
             ch->close();
         }
     }
