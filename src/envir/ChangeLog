@@ -1,3 +1,8 @@
+2005-01-03  Andras Varga
+
+	* omnetapp.cc: scheduler's startRun() and endRun() methods didn't
+	get called
+
 2004-12-29  ------ omnetpp-3.0 released ------
 
 2004-12-16  Andras Varga

@@ -262,11 +262,11 @@ void TOmnetApp::startRun()
     {
 #ifdef WITH_PARSIM
         parsimpartition->startRun();
-        parsimsynchronizer->startRun();
         nextuniquenumber = (unsigned)parsimcomm->getProcId() *
                            ((~0UL) / (unsigned)parsimcomm->getNumPartitions());
 #endif
     }
+    simulation.scheduler()->startRun();
     simulation.startRun();
 }
 
@@ -274,10 +274,10 @@ void TOmnetApp::endRun()
 {
     // reverse order as startRun()
     simulation.endRun();
+    simulation.scheduler()->endRun();
     if (opt_parsim)
     {
 #ifdef WITH_PARSIM
-        parsimsynchronizer->endRun();
         parsimpartition->endRun();
 #endif
     }

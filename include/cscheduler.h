@@ -67,6 +67,16 @@ class cScheduler : public cPolymorphic
     virtual void setSimulation(cSimulation *_sim);
 
     /**
+     * Called at the beginning of a simulation run.
+     */
+    virtual void startRun() = 0;
+
+    /**
+     * Called at the end of a simulation run.
+     */
+    virtual void endRun() = 0;
+
+    /**
      * The scheduler function -- it should return the next event
      * to be processed. Normally (with sequential execution) it just
      * returns msgQueue.peekFirst(). With parallel and/or real-time
