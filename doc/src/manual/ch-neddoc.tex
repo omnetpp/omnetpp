@@ -232,13 +232,14 @@ will be rendered approximately as:
 3 & three \\\hline
 \end{longtable}
 
+%TBD document @date, @author etc.
 
-\subsection{Turning off HTML}
+\subsection{Escaping HTML tags}
 
-You may temporarily turn off interpreting \ttt{<i>}, \ttt{<b>}, etc.
-as HTML formatting commands. This is useful if you have to put literal
-\ttt{<i>}, \ttt{<b>} text in the documentation. To turn off interpreting
-HTML, surround the text with \ttt{<nohtml>}...\ttt{</nohtml>} tags.
+Sometimes may need to off interpreting HTML tags (\ttt{<i>}, \ttt{<b>}, etc.)
+as formatting instructions, and rather you want them to appear as literal
+\ttt{<i>}, \ttt{<b>} texts in the documentation. You can achieve this via
+surrounding the text with the \ttt{<nohtml>}...\ttt{</nohtml>} tag.
 For example,
 
 \begin{verbatim}
@@ -248,6 +249,22 @@ For example,
 
 will be rendered as ``Use the <i> tag (like \texttt{<i>this</i>}) to write
 in \textit{italic}.''
+
+\ttt{<nohtml>}...\ttt{</nohtml>} will also prevent \fprog{opp\_neddoc}
+from hyperlinking words that are accidentally the same as an existing
+module or message name. Prefixing the word with a backslash will achieve
+the same. That is, either of the following will do:
+
+\begin{verbatim}
+// In <nohtml>IP</nohtml> networks, routing is...
+\end{verbatim}
+
+\begin{verbatim}
+// In \IP networks, routing is...
+\end{verbatim}
+
+Both will prevent hyperlinking the word \textit{IP} if you happen to have
+an \ttt{IP} module in the NED files.
 
 
 
