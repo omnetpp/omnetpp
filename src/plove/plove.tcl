@@ -7,14 +7,14 @@
 #=================================================================
 
 #----------------------------------------------------------------#
-#  Copyright (C) 1992-2003 Andras Varga
+#  Copyright (C) 1992-2005 Andras Varga
 #
 #  This file is distributed WITHOUT ANY WARRANTY. See the file
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
 puts {Plove 3.1 - Output vector plotting tool, part of OMNeT++/OMNEST.
-(c) 1992-2003 Andras Varga
+(c) 1992-2005 Andras Varga
 See the license for distribution terms and warranty disclaimer.
 }
 

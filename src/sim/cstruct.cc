@@ -10,7 +10,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2004 Andras Varga
+  Copyright (C) 1992-2005 Andras Varga
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -136,7 +136,7 @@ void cStructDescriptor::string2oppstring(const char *s, opp_string& str)
 cStructDescriptor::cStructDescriptor(const char *_baseclassname)
 {
     p = NULL;
-    baseclassname = _baseclassname ? _baseclassname : ""; 
+    baseclassname = _baseclassname ? _baseclassname : "";
     baseclassdesc = _baseclassname ? createDescriptorFor(_baseclassname, NULL) : NULL;
 }
 

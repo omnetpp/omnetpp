@@ -9,7 +9,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2004 Andras Varga
+  Copyright (C) 1992-2005 Andras Varga
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -69,13 +69,13 @@ void cIniFile::_readFile(const char *fname, int section_id)
     FILE *file = fopen(fname,"r");
     if (file==NULL)
         throw new cRuntimeError("Cannot open ini file `%s'", fname);
-    
+
     int lineno = 0;
 
     const int bufsize = MAX_LINE+2; // +2 for CR (or LF) + EOS
     char buf[bufsize];
     buf[bufsize-1] = '\0'; // 'line too long' guard
-    
+
     bool oldwildcardsmode = false; // if true, '*' matches anything (also a ".")
     while (!feof(file))
     {
@@ -244,7 +244,7 @@ void cIniFile::clearContents()
     {
        delete [] sections[i];
     }
-    
+
     for (i=0; i<entries.size(); i++)
     {
        delete [] entries[i].key;
@@ -252,7 +252,7 @@ void cIniFile::clearContents()
        delete [] entries[i].value;
        delete [] entries[i].rawvalue;
     }
-    
+
     for (i=0; i<files.size(); i++)
     {
        delete [] files[i].fname;
@@ -293,7 +293,7 @@ cIniFile::sEntry *cIniFile::_findEntry(const char *sect, const char *key)
           }
        }
     }
-    
+
     // not found
     notfound=true;
     return NULL;

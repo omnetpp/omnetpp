@@ -9,7 +9,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2002-2004 Andras Varga
+  Copyright (C) 2002-2005 Andras Varga
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -73,7 +73,7 @@ NedFilesNode *outputtree;
 void printUsage()
 {
     fprintf(stderr,
-       "nedtool -- part of OMNeT++/OMNEST, (C) 2002-2004 Andras Varga\n"
+       "nedtool -- part of OMNeT++/OMNEST, (C) 2002-2005 Andras Varga\n"
        "Syntax: nedtool [options] <file1> <file2> ...\n"
        "    or: nedtool [options] @<filelist-file>\n"
        "  -c: generate C++ (default)\n"

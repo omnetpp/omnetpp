@@ -7,7 +7,7 @@
 #=================================================================
 
 #----------------------------------------------------------------#
-#  Copyright (C) 1992-2004 Andras Varga
+#  Copyright (C) 1992-2005 Andras Varga
 #
 #  This file is distributed WITHOUT ANY WARRANTY. See the file
 #  `license' for details on this and other legal matters.
@@ -15,7 +15,7 @@
 
 puts {Plove 2.3 - Output vector plotting tool (Gnuplot front-end) of OMNeT++ 2.3.
 This program is obsolete - Plove 3.0 or later is recommended instead.
-(c) 1992-2004 Andras Varga
+(c) 1992-2005 Andras Varga
 See the license for distribution terms and warranty disclaimer.
 }
 

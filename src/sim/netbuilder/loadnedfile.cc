@@ -5,7 +5,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2002-2004 Andras Varga
+  Copyright (C) 2002-2005 Andras Varga
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `terms' for details on this and other legal matters.
@@ -151,7 +151,7 @@ void loadNedFile(const char *fname, bool isXML)
             // create module interface object
             cModuleInterface *modif = createModuleInterfaceFrom(node);
             delete node; // no longer needed
-            
+
             // and replace existing one
             cModuleInterface *oldmodif = findModuleInterface(name);
             if (oldmodif)

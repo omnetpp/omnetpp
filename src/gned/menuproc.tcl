@@ -7,7 +7,7 @@
 #=================================================================
 
 #----------------------------------------------------------------#
-#  Copyright (C) 1992-2004 Andras Varga
+#  Copyright (C) 1992-2005 Andras Varga
 #
 #  This file is distributed WITHOUT ANY WARRANTY. See the file
 #  `license' for details on this and other legal matters.
@@ -492,7 +492,7 @@ proc helpAbout {} {
 GNED 3.1
 Part of OMNeT++/OMNEST
 
-(C) 1997-2004 Andras Varga
+(C) 1997-2005 Andras Varga
 
 NO WARRANTY -- see license for details.}
 }

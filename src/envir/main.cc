@@ -8,7 +8,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2004 Andras Varga
+  Copyright (C) 1992-2005 Andras Varga
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -26,7 +26,7 @@ ENVIR_API int main(int argc, char *argv[])
 {
     cStaticFlag dummy;
 
-    printf("OMNeT++/OMNEST Discrete Event Simulation  (C) 1992-2004 Andras Varga\n");
+    printf("OMNeT++/OMNEST Discrete Event Simulation  (C) 1992-2005 Andras Varga\n");
     printf("See the license for distribution terms and warranty disclaimer\n");
 
     ev.setup(argc,argv);

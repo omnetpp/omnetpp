@@ -1,5 +1,5 @@
 //=========================================================================
-//  CPARSIMSEGMENT.H - part of
+//  CPARSIMPARTITION.H - part of
 //
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
@@ -9,7 +9,7 @@
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2001 Eric Wu
+  Copyright (C) 2003-2005 Andras Varga
   Monash University, Dept. of Electrical and Computer Systems Eng.
   Melbourne, Australia
 
@@ -18,8 +18,8 @@
 *--------------------------------------------------------------*/
 
 
-#ifndef __CPARSIMSEGMENT_H__
-#define __CPARSIMSEGMENT_H__
+#ifndef __CPARSIMPARTITION_H__
+#define __CPARSIMPARTITION_H__
 
 #include "defs.h"
 #include "cpolymorphic.h"

@@ -9,7 +9,7 @@
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2003-2004 Andras Varga & David Wu
+  Copyright (C) 2003-2005 Andras Varga & David Wu
   Monash University, Dept. of Electrical and Computer Systems Eng.
   Melbourne, Australia
 

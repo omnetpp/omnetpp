@@ -7,7 +7,7 @@
 #=================================================================
 
 #----------------------------------------------------------------#
-#  Copyright (C) 1992-2004 Andras Varga
+#  Copyright (C) 1992-2005 Andras Varga
 #
 #  This file is distributed WITHOUT ANY WARRANTY. See the file
 #  `license' for details on this and other legal matters.
@@ -17,7 +17,7 @@
 # intro text
 #
 puts {GNED 3.1 - Graphical Network Editor, part of OMNeT++/OMNEST.
-(c) 1992-2004 Andras Varga
+(c) 1992-2005 Andras Varga
 See the license for distribution terms and warranty disclaimer.
 
 GNED uses human-readable NED as the ONLY file format. It is a fully
