@@ -372,52 +372,25 @@ with RNG awareness.
 
 \subsection{Accessing the RNGs}
 
-Integers can be generated via the \fname{intrand()} function:
-
-\begin{verbatim}
-long rnd = intrand();   // in the range 1..INTRAND_MAX-1
-\end{verbatim}
-
-The random number seed can be specified in the ini file
-(\fpar[random-seed]{random-seed=}) or set directly from within
-simple modules with the \fname{randseed()}
-function:
-
-\begin{verbatim}
-randseed( 10 );         // set seed to 10
-long seed = randseed(); // current seed value
-\end{verbatim}
-
-Zero is not allowed as a seed.
-
-The \fname{intrand()} and \fname{randseed()} functions use generator 0. They have
-another variant which uses a specified generator:
-
-\begin{verbatim}
-long rnd = genk_intrand(6); // like intrand(), using generator 6
-genk_randseed( k, 167 );    // set seed of generator k to 167
-\end{verbatim}
-
-
-The \fname[intrand()]{intrand(n)} and \fname{dblrand()} functions are based on \fname{intrand()}:
+The \fname{intrand()} function generates random integers in the range $[0, n-1]$.
+\fname{dblrand()} generates a random double on $[0,1)$. Examples:
 
 \begin{verbatim}
 int dice = 1 + intrand(6); // result of intrand(6) is in the range 0..5
-                           // (it is calculated as intrand()%6)
-
-double prob = dblrand();   // dblrand() produces numbers in [0,1)
-                           // calculated as
-                           // intrand()/(double)INTRAND_MAX
+double p = dblrand();      // dblrand() produces numbers in [0,1)
 \end{verbatim}
 
-
-They also have their counterparts that use generator \textit{k}:
+They also have a counterparts that use generator \textit{k}:
 
 \begin{verbatim}
 int dice = 1 + genk_intrand(k,6); // uses generator k
 double prob = genk_dblrand(k);    // ""
 \end{verbatim}
 
+The underlying RNGs can be accessed via \cclass{cModule}'s \fname{rng()} method.
+\begin{verbatim}
+cRNG *rng1 = rng(1);
+\end{verbatim}
 
 
 
