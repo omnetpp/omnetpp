@@ -63,7 +63,7 @@
 	extension that supports multiple independent replicated simulation runs.
 	Akaroa can be activated by specifying
 	  [General]
-	  outputvectormanager-class=AkOutputVectorManager
+	  outputvectormanager-class=cAkOutputVectorManager
 	in the ini file. By default, all output vectors are under Akaroa 
 	control; the <modulename>.<vectorname>.akaroa=false setting can be used
 	to make Akaroa ignore specific vectors.
