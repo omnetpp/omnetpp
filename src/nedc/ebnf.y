@@ -63,15 +63,44 @@
 
 %start networkdescription
 
+
+%{
+
 /*
+ * Note:
+ * This file (ebnf.y) and ebnf.lex are shared between NEDC and GNED.
+ * (Exactly the same files are present in both packages;
+ * this is to eliminate the burden of keeping 2 sets of files in sync.)
+ *
+ * Naturally, NEDC and GNED want to do different things while parsing.
+ * Both code is present in this file, using the GNED(), NEC(), DOING_GNED,
+ * DOING_NEDC macros. These macros come from ebnfcfg.h which is different
+ * in gned and nedc.
+ *
+ * IMPORTANT:
+ * If a grammar rule contains code for both nedc and gned, DO _NOT_ PUT THE
+ * NEDC() AND GNED() MACROS IN SEPARATE BRACE PAIRS!
+ * So this is WRONG:
+ *               {NEDC(...)}
+ *               {GNED(...)}
+ * This is right:
+ *               {NEDC(...)
+ *                GNED(...)}
+ * The reason is that Bison doesn't handle multiple subsequent actions
+ * very well; what's worse, it doesn't even warn about them.
+ */
+
+
+/*
+ * Note 2:
  * This file contains 2 shift-reduce conflicts around 'timeconstant'.
  * 4 more at opt_semicolon's after module/submodule types.
+ * Plus 3 more to track down.
  *
  * bison's "%expect nn" option cannot be used to suppress the
  * warning message because %expect is not recognized by yacc
  */
 
-%{
 
 #include <stdio.h>
 #include <malloc.h>         /* for alloca() */
@@ -190,14 +219,14 @@ somedefinitions
         ;
 
 definition
-        : include
+        : import
         | channeldefinition
         | simpledefinition
         | moduledefinition
         | network
         ;
 
-include
+import
         : INCLUDE
                 {GNED( IMPORTS_KEY = np->create("imports",NEDFILE_KEY);
                        setComments(IMPORTS_KEY,@1); )}

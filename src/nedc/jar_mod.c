@@ -38,14 +38,14 @@ name_type submodule_var = "";
 name_type submodule_type = "";
 expr_type submodule_nr = "";
 
-name_type gate_mod_L = "";
+name_type mod_L = "";
 name_type gate_L = "";
-name_type gate_mod_R = "";
+name_type mod_R = "";
 name_type gate_R = "";
 
-expr_type gate_mod_nr_L = "";
+expr_type mod_nr_L = "";
 expr_type gate_nr_L = "";
-expr_type gate_mod_nr_R = "";
+expr_type mod_nr_R = "";
 expr_type gate_nr_R = "";
 
 int hassimple = 0;
@@ -716,8 +716,8 @@ void do_mod_L (char *gname, char *gi)
                 return;
         }
 
-        jar_strcpy (gate_mod_L,    gname ? gname : "");
-        jar_strcpy (gate_mod_nr_L, gi    ? gi    : "");
+        jar_strcpy (mod_L,    gname ? gname : "");
+        jar_strcpy (mod_nr_L, gi    ? gi    : "");
 
         jar_free (gname);
         jar_free (gi);
@@ -748,8 +748,8 @@ void do_mod_R (char *gname, char *gi)
                 return;
         }
 
-        jar_strcpy (gate_mod_R,    gname ? gname : "");
-        jar_strcpy (gate_mod_nr_R, gi    ? gi    : "");
+        jar_strcpy (mod_R,    gname ? gname : "");
+        jar_strcpy (mod_nr_R, gi    ? gi    : "");
 
         jar_free (gname);
         jar_free (gi);
@@ -778,18 +778,18 @@ void do_con_gate_L (char arrowdir)
 {
         expr_type value;
 
-        if (jar_strlen (gate_mod_L) == 0)
+        if (jar_strlen (mod_L) == 0)
                 jar_strcpy (modL, "mod");
-        else if (jar_strlen (gate_mod_nr_L) == 0)
-                sprintf (modL, "%s_mod", gate_mod_L);
+        else if (jar_strlen (mod_nr_L) == 0)
+                sprintf (modL, "%s_mod", mod_L);
         else
         {
-                get_expression(gate_mod_nr_L,tmp,value);
+                get_expression(mod_nr_L,tmp,value);
                 fprintf (tmp, "%smod_nr_L = %s;\n",indent,value);
                 fprintf (tmp, "%scheck_module_index(mod_nr_L,%s_mod,\"%s\", \"%s\");\n",
-                        indent, gate_mod_L, gate_mod_L, cmd.namestr );
+                        indent, mod_L, mod_L, cmd.namestr );
                 sprintf (modL, "%s_mod[mod_nr_L]",
-                        gate_mod_L);
+                        mod_L);
         }
 
         if (jar_strlen (gate_nr_L) == 0)
@@ -797,7 +797,7 @@ void do_con_gate_L (char arrowdir)
            fprintf (tmp, "%sgateL = %s->findGate( \"%s\" );\n",
                       indent, modL, gate_L );
            fprintf (tmp, "%scheck_gate( gateL, \"%s\", \"%s\" );\n\n",
-                         indent, gate_mod_L, gate_L );
+                         indent, mod_L, gate_L );
         }
         else
         {
@@ -807,9 +807,9 @@ void do_con_gate_L (char arrowdir)
                          indent, modL, gate_L );
            fprintf (tmp, "%scheck_gate( gateL, \"%s\", "
                          "indexedname(b1,\"%s\",gate_nr_L) );\n\n",
-                         indent, gate_mod_L, gate_L );
+                         indent, mod_L, gate_L );
         }
-        cmd_add_gate (gate_mod_L, jar_strlen (gate_mod_nr_L) != 0,
+        cmd_add_gate (mod_L, jar_strlen (mod_nr_L) != 0,
                       gate_L, arrowdir=='L', jar_strlen (gate_nr_L) != 0);
 }
 
@@ -817,18 +817,18 @@ void do_con_gate_R (char arrowdir)
 {
         expr_type value;
 
-        if (jar_strlen (gate_mod_R) == 0)
+        if (jar_strlen (mod_R) == 0)
                 jar_strcpy (modR, "mod");
-        else if (jar_strlen (gate_mod_nr_R) == 0)
-                sprintf (modR, "%s_mod", gate_mod_R);
+        else if (jar_strlen (mod_nr_R) == 0)
+                sprintf (modR, "%s_mod", mod_R);
         else
         {
-                get_expression(gate_mod_nr_R,tmp,value);
+                get_expression(mod_nr_R,tmp,value);
                 fprintf (tmp, "%smod_nr_R = %s;\n",indent,value);
                 fprintf (tmp, "%scheck_module_index(mod_nr_R,%s_mod,\"%s\", \"%s\");\n",
-                        indent, gate_mod_R, gate_mod_R, cmd.namestr );
+                        indent, mod_R, mod_R, cmd.namestr );
                 sprintf (modR, "%s_mod[mod_nr_R]",
-                        gate_mod_R);
+                        mod_R);
         }
 
         if (jar_strlen (gate_nr_R) == 0)
@@ -836,7 +836,7 @@ void do_con_gate_R (char arrowdir)
            fprintf (tmp, "%sgateR = %s->findGate( \"%s\" );\n",
                       indent, modR, gate_R );
            fprintf (tmp, "%scheck_gate( gateR, \"%s\", \"%s\" );\n\n",
-                         indent, gate_mod_R, gate_R );
+                         indent, mod_R, gate_R );
         }
         else
         {
@@ -846,9 +846,9 @@ void do_con_gate_R (char arrowdir)
                          indent, modR, gate_R );
            fprintf (tmp, "%scheck_gate( gateR, \"%s\", "
                          "indexedname(b1,\"%s\",gate_nr_R) );\n\n",
-                         indent, gate_mod_R, gate_R );
+                         indent, mod_R, gate_R );
         }
-        cmd_add_gate (gate_mod_R, jar_strlen (gate_mod_nr_R) != 0,
+        cmd_add_gate (mod_R, jar_strlen (mod_nr_R) != 0,
                       gate_R, arrowdir=='R', jar_strlen (gate_nr_R) != 0);
 }
 
@@ -868,7 +868,7 @@ char *do_channeldescr(char *link_name, char *delay_expr, char *error_expr, char 
         }
 
         /*
-         * printf("do_channeldescr: namestr[%s] delay[%s] error[%s] datarate[%s]\n",
+         * printf("do_channeldescr: name[%s] delay[%s] error[%s] datarate[%s]\n",
          *       link_name, delay_expr, error_expr, datarate_expr);
          */
 

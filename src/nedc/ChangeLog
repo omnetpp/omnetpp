@@ -216,8 +216,8 @@ Robert van der Leij, during summer 1995.
   - removed support for DOS with BC3.1
   - portability change: ebnf.y now includes malloc.h
 June 30, 1999
-  - ebnf.y ported back from GNED -- has been modified since: most be copied back!
+  - ebnf.y ported back from GNED
   - added nedc.ide and b.bat
-  - DOES NOT WORK YET! TEST9.NED FAILS TO COMPILE!
-  - in jar_mod.c, replace "gate_mod_" with "mod_"!
-KAKA VAN BENNE!!!!!
+  - doesn't work yet!
+July 10, 1999
+  - ebnf.y fixed, nedc works fine again.
