@@ -5,10 +5,6 @@ OMNeT++ is Copyright (C) 1992-99 Andras Varga, Technical University
 of Budapest, Dept. of Telecommunications, Stoczek u.2, H-1111 Budapest,
 Hungary.
 
-This License contains the terms governing the use of OMNeT++.
-You may as a special exception elect to use the GNU General Public License
-(see the "GPLElect" file).
-
 OMNeT++ (the "Software") is distributed in the hope that it will be
 useful. You may copy and distribute verbatim copies of the Software
 as you receive it, in any medium, provided that you conspicuously and
@@ -21,26 +17,36 @@ you may at your option offer warranty protection in exchange for a fee.
 The Software can be freely used for non-profit use, including personal,
 educational and research non-profit use. If you want to use the Software
 in commercial projects or you want to include it in commercial products
-in any form, you must contact the authors for permission before doing so.
+in any form, you must obtain a license from the author before doing so.
 
-You may modify your copy of the Software or any portion of it, but you
-may not redistribute the modified version. If you want your modifications
-to be incorporated into the Software or distribute a modified version of
-the Software, you must contact the authors.
+You may modify your copy of the Software or any portion of it. You may
+also redistribute the modified version, provided that you
+1) clearly distiguish the modified version from the original one,
+2) keep the original copyright statements and discplaimer of warranty, and
+3) include a reference to where the original version can be obtained from.
 
-Simulation models and simulation results produced using the Software and
-extensions to the Software are not covered by this License; instead, they
-fall under the license provided by their copyright holders.
+The sources of simulation models and simulation results produced using
+the Software and extensions to the Software are not covered by this License;
+they fall under the license provided by their copyright holders.
+  ---> binary form of simulations!
 
 If you use OMNeT++ in any work, the resulting document(s) (report, paper,
 article, book, etc.) should contain a reference to the Software and its
-authors.
+author.
+
+You may elect to use the GNU General Public License for certain components
+of OMNeT++. This applies to the following components: nedc, sim, envir,
+cmdenv, utils, samples and the auxiliary files that are necessary to build
+them. (The component names above refer to the contents of the corresponding
+subdirectories in the distribution.) The "GPLElect" file describes how to
+technically perform the election.
 
 OMNeT++ is distributed "AS IS", WITHOUT ANY WARRANTY, even WITHOUT THE
 IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
 PURPOSE.
+  ---> better disclaimer!
 
 ---
-The authors can be contacted at the address above or via e-mail:
+The author can be contacted at the address above or via e-mail:
 andras@whale.hit.bme.hu
 

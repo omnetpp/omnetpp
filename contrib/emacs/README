@@ -9,18 +9,19 @@ NED Syntax Highlight in GNU Emacs
     but it works OK. Maybe, someone finds this useful (my students like it :-)"
 
 
-The file ned-mode.el is a simple hack to allow syntax highlighting when
-editing OMNeT++ .ned files with Emacs. It has been tested with Emacs 20.3.
+The file ned-mode.el allows syntax highlighting when editing OMNeT++ .ned files
+with GNU Emacs. It has been tested with Emacs 20.3.
  
 To make Emacs recognize .ned files put this in your .emacs:
 
-(autoload 'ned-mode "ned-mode" "Major Mode for editing Ned files" t)
-(setq auto-mode-alist (cons '("\\.ned\\'" . ned-mode) auto-mode-alist))
+  (autoload 'ned-mode "ned-mode" "Major Mode for editing Ned files" t)
+  (setq auto-mode-alist (cons '("\\.ned\\'" . ned-mode) auto-mode-alist))
 
 If you put your ned-mode.el somewhere emacs doesn't find it, add this
 to your .emacs before the two statements above:
 
-(setq load-path (cons "path_to_directory" load-path))
+  (setq load-path (cons "path_to_directory" load-path))
 
+Enjoy.
 
 Aug 24, 1999

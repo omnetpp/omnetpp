@@ -5,7 +5,7 @@ In the OMNeT++ 2.0 version (Sep 1999)
 -------------------------------------
 
 License conditions have been alleviated: from this release on, one can elect
-to use GPL for a particular copy of OMNeT++.
+to use GPL for a particular copy of the base components of OMNeT++.
 
 The configure script has been replaced by GNU Autoconf. The makefiles have been 
 brushed up (more standard symbol names, autodepend, version number in lib names,
@@ -22,8 +22,8 @@ highlight. GNED is still in beta and there's some missing functionality.
 Tkenv's user interface has also undergone some beautifying: toolbar icons,
 tooltips, etc.
 
-OMNETPP_BITMAP_PATH may now contain a list of directories; it includes . and
-./bitmaps by default, so individual simulation models can have their own icon
+OMNETPP_BITMAP_PATH may now contain a list of directories; it includes "." and
+"./bitmaps" by default, so individual simulation models can have their own icon
 sets.
 
 Several bugfixes and smaller enhancements have been made; see the ChangeLog in
