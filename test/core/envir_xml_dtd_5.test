@@ -1,0 +1,32 @@
+%description:
+If document has DTD, parser must use it for validation and attribute completion.
+Document doesn't conform to DTD: extra element -- should be an error.
+
+%file: {}.dtd
+<!ELEMENT foo ( bar )>
+<!ATTLIST foo
+            one      CDATA "F1"
+>
+
+<!ELEMENT bar EMPTY>
+<!ATTLIST bar
+            one      CDATA "B1"
+            two      CDATA "B2"
+>
+
+%file: {}.xml
+<?xml version="1.0" ?>
+<!DOCTYPE foo SYSTEM "./{}.dtd">
+<foo>
+    <bar one="X"/>
+    <extraElem/>
+</foo>
+
+%activity:
+cXMLElement *node = ev.getXMLDocument("{}.xml");
+node->debugDump();
+
+%exitcode: 1
+
+%contains-regex: stdout
+Validation error:.*extraElem

@@ -1,6 +1,6 @@
 %description:
 If document has DTD, parser must use it for validation and attribute completion.
-DOCTYPE refers to nonexisting DTD.
+Missing DTD -- should produce an error.
 
 %file: {}.xml
 <?xml version="1.0" ?>
