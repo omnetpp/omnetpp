@@ -1,4 +1,9 @@
-2001-10-06 Andras Varga
+2002-02-24  Andras Varga
+
+	* gned.cc: bugfix: gned.exe with WinMain() didn't accept command-line
+        file arguments that contained backslashes
+
+2001-10-06  Andras Varga
 
 	* findrepl.tcl: regexp replace improved (\1,\2 in replace string now work
         as expected)

@@ -116,7 +116,7 @@ int initGNED(Tcl_Interp *interp)
 #ifdef USE_WINMAIN
 /* setargv --
  *
- *	Parse the Windows command line string into argc/argv.
+ *      Parse the Windows command line string into argc/argv.
  *      Copied here from Tk source (win/winMain.c), appending the code
  *      to set argv[0].
  */
@@ -135,15 +135,15 @@ static void setargv(int *argcPtr, char ***argvPtr)
      */
     size = 2;
     for (p = cmdLine; *p != '\0'; p++) {
-	if (isspace(*p)) {
-	    size++;
-	    while (isspace(*p)) {
-		p++;
-	    }
-	    if (*p == '\0') {
-		break;
-	    }
-	}
+        if (isspace(*p)) {
+            size++;
+            while (isspace(*p)) {
+                p++;
+            }
+            if (*p == '\0') {
+                break;
+            }
+        }
     }
 
     /*
@@ -154,7 +154,7 @@ static void setargv(int *argcPtr, char ***argvPtr)
     size++;
 
     argSpace = (char *) ckalloc((unsigned) (size * sizeof(char *)
-	    + strlen(cmdLine) + 1));
+            + strlen(cmdLine) + 1));
     argv = (char **) argSpace;
     argSpace += size * sizeof(char *);
     size--;
@@ -167,66 +167,71 @@ static void setargv(int *argcPtr, char ***argvPtr)
 
     p = cmdLine;
     for (argc = 0; argc < size; argc++) {
-	argv[argc] = arg = argSpace;
-	while (isspace(*p)) {
-	    p++;
-	}
-	if (*p == '\0') {
-	    break;
-	}
+        argv[argc] = arg = argSpace;
+        while (isspace(*p)) {
+            p++;
+        }
+        if (*p == '\0') {
+            break;
+        }
 
-	inquote = 0;
-	slashes = 0;
-	while (1) {
-	    copy = 1;
-	    while (*p == '\\') {
-		slashes++;
-		p++;
-	    }
-	    if (*p == '"') {
-		if ((slashes & 1) == 0) {
-		    copy = 0;
-		    if ((inquote) && (p[1] == '"')) {
-			p++;
-			copy = 1;
-		    } else {
-			inquote = !inquote;
-		    }
+        inquote = 0;
+        slashes = 0;
+        while (1) {
+            copy = 1;
+            while (*p == '\\') {
+                slashes++;
+                p++;
+            }
+            if (*p == '"') {
+                if ((slashes & 1) == 0) {
+                    copy = 0;
+                    if ((inquote) && (p[1] == '"')) {
+                        p++;
+                        copy = 1;
+                    } else {
+                        inquote = !inquote;
+                    }
                 }
                 slashes >>= 1;
             }
 
             while (slashes) {
-		*arg = '\\';
-		arg++;
-		slashes--;
-	    }
+                *arg = '\\';
+                arg++;
+                slashes--;
+            }
 
-	    if ((*p == '\0') || (!inquote && isspace(*p))) {
-		break;
-	    }
-	    if (copy != 0) {
-		*arg = *p;
-		arg++;
-	    }
-	    p++;
+            if ((*p == '\0') || (!inquote && isspace(*p))) {
+                break;
+            }
+            if (copy != 0) {
+                *arg = *p;
+                arg++;
+            }
+            p++;
         }
-	*arg = '\0';
-	argSpace = arg + 1;
+        *arg = '\0';
+        argSpace = arg + 1;
     }
     argv[argc] = NULL;
 
     /*
-     * Replace argv[0] with full pathname of executable, and forward
-     * slashes substituted for backslashes.
+     * Replace argv[0] with full pathname of executable.
      * --Andras
      */
     GetModuleFileName(NULL, buffer, sizeof(buffer));
     argv[0] = buffer;
-    for (p = buffer; *p != '\0'; p++) {
-	if (*p == '\\') {
-	    *p = '/';
-	}
+
+    /* Replace all backslashes with forward slashes.
+     * --Andras
+     */
+    for (int i=0; i<argc; i++) {
+        for (p = argv[i]; *p != '\0'; p++) {
+            if (*p == '\\') {
+                *p = '/';
+            }
+        }
     }
 
     /*
