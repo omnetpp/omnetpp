@@ -30,13 +30,13 @@ module FDDIRing
         TTRT : numeric const;
     submodules:
         comp: FDDIStation[no_comps];
-            display: "p=83,73;i=device/pc2";
+            display: "i=device/pc2";
         stat: Stat;
             parameters:
                 no_comps = no_comps;
             gatesizes:
                 in[no_comps];
-            display: "p=269,48;i=block/cogwheel";
+            display: "i=block/cogwheel";
     connections:
         comp[no_comps - 1].out --> FDDICable --> comp[0].in;
         for i=0..no_comps - 2 do
