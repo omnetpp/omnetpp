@@ -36,6 +36,18 @@ Sub addNEDfileToProject()
     end if
     on error goto 0
 
+    ' ask if really sure
+    question = "Since OMNeT++ 3.0, NED files can be loaded dynamically, " & _
+               "and you no longer need to translate them to C++ or add " & _
+               "them to the project. To use dynamic loading (recommended), " & _
+               "choose Cancel in this dialog, then simply add the " & _
+               "preload-ned-files=*.ned line under [General] in omnetpp.ini." & _
+               vbLf & vbLf & _
+               "Are you sure you want compiled NED files and not dynamic loading?"
+    if msgbox(question, 1, "Add NED file to project?") = vbCancel then
+        exit sub
+    end if
+
     ' ask NED file name
     nedfname = inputbox("Name of NED file to add: (new or existing file in project directory) ", _
                         "Add NED file to project","untitled.ned")
