@@ -1,0 +1,589 @@
+#93  Dec 6, 1996:
+  - bug fixed which caused double delay on links
+  - deliver() moved from cMod to cGate
+#94  Dec 6, 1996:
+  - changed: cGate, cLinkType, connect()
+#95  Dec 8, 1996:
+  - `members' added to cSimpleMod
+  - modified cLinkType
+  - error fixed in cGate::setlink()
+#101 Feb 12, 1997:
+  - data rate support added
+  - sendmsgdelayed() added
+#102 Feb 13, 1997:
+  - cPar cleaned up:
+      o  types U,N,E,B,I removed
+      o  truncate flag removed
+      o  list of allowed type removed
+      o  last value preserving removed
+      o  parchanges removed
+      o  modpar flag removed
+      o  in constructor, type string changed to type char
+      o  constructor no longer takes prompt as arg
+      o  valuechanged() ---renamed to---> valuechanges()
+      o  less default conversions (they caused confusion)
+      o  settext() simplified
+  - features added to cPar:
+      o  MathFunc w/ 0,1,2,3 constant args added (new: F type)
+      o  indirection type (I)
+      o  sXElem changed (for example, referto() was removed)
+  - cModPar:
+      o  made to be a cPar descendant
+      o  "new" feature: module parameter logging (works thru valuechanges())
+  - cVal, valuelist, findval() etc. removed
+  - cMod:
+      o  iscompound(), cpd flag removed
+      o  issimple() now works through being virtual
+      o  precomp flag, isprecomp() removed (no one used it)
+      o  added: ancestorpar( char *s );
+  - cCompMod renamed to cCompoundMod
+  - cMsg function names changed
+      o  setprior() --> setpriority()
+      o  setlen() --> setlength()
+      o  seterr() --> seterror()
+    New field: timestamp
+         void settimestamp( [simtime_t t] );
+         simtime_t timestamp();
+  - cSimulation:
+      o new fields cOutFileMgr parchangefilemgr, bool logparchanges
+      o outfilemgr --renamed--> outvectfilemgr
+  - cOutFileMgr:
+      o  interface changed
+      o  new: '##'-to-run-number substitution in file names
+      o  deletefile() added
+  - oObj::restore(), cHead::restore() functions deleted (were only used by cVal)
+  - cObj constructor more optimized, cobj.h commented
+  - IMPORTANT: operator=() no longer copies object name!!!! It should be
+    done separately if needed. Copy constructor DOES copy the name.
+#103 Feb 20, 1997:
+  - bugfixes on #102
+#104 Feb 27, 1997:
+  - bugfixes on #103
+  - intuniform() distribution added
+#105 Feb 28, 1997:
+  - cSimulation: cleaned up network setup/delete stuff
+     newnetwork() --renamed--> setupnetwork(cNetworkType n, int run_number)
+     clear() --renamed--> deletenetwork()
+     restart() --renamed--> startrun()
+     endrun(): new function
+     setsize(n), setrun(n): removed
+     getrun() --renamed--> getrunnumber()
+     getnetwork() --renamed--> getnetworktype()
+  - cOutFileMgr: bugfixes
+#106 Feb 28, 1997:
+  - minor changes
+#107 Feb 28, 1997:
+  - info() member functions fixed
+#108 Mar 3, 1997:
+  - multiple random number generators (genk_xxx functions) added
+  - added check for seed=0
+#109 Mar 3, 1997:
+  - cVarShell renamed to cWatch
+#109b Mar 4, 1997:
+  - cResult renamed to sStatBase
+  - cDoubleDistrResult renamed to cDoubleHistogram
+  - cLintDistrResult renamed to cLongHistogram
+  - cLintResult, cDoubleResult were commented out
+  - cDoubleStatResult renamed to cDoubleStat
+  - cLintResult renamed to cLongStat
+  - cDoubleHistogram::fwrite(FILE *f) added
+  - cDoubleHistogram::fread(FILE *f) added
+#109c Mar 5, 1997:
+  - cPiSquare sources added
+  - makelib corrected
+#109d Mar 5, 1997:
+  - cDoubleStat::fwrite(FILE *f) added
+  - cDoubleStat::fread(FILE *f) added
+  - cDoubleHistogram::fwrite/fread functions use the functions above
+  - cDoubleHistogram may read two different formats: cDoubleStat included
+    or not included. But it still does NOT calculate the statistical values!
+  - some functions of cStatBase were made to be pure virtual
+#109e Mar 5, 1997:
+  - cPiSquare::fwrite(FILE *f) added
+  - cPiSquare::fread(FILE *f) added
+#110 Mar 6, 1997
+#111 Mar 7, 1997
+  - minor improvements
+  - PVM stuff updated; cPiSquare::pvm_pack()/upack() added
+#112 Mar 8, 1997
+  - cModType adds missing "default" machine parameter
+  - put cGate into separate header and cc files
+  - added: cGate::transm_finishes, busy(), restart() etc.
+#113 Mar 9, 1997
+  - Bug fixes
+#114 Mar 10, 1997
+  - cLongStat::fwrite/fwrite added
+  - cLongHistogram::fwrite/fread added
+  - some bugfixes in cDoubleHistogram::fwrite/fread done
+#115 Mar 10, 1997
+  - Define_Simple_Module_Like() macro added
+#116,#117 Mar 11, 1997
+  - improvement on statistics classes
+#118 Mar 13, 1997
+  improvements on histograms:
+  - both histograms have a range_ext_factor
+  - all range calculation and extension (if a sample falls out) are rewritten
+  - histogram calculates the c...Stat values if they are missing. (see #109d)
+#119 Mar 13, 1997
+  improvements on histograms:
+  - precollect_sample_num introduced
+  - cellwidth -> cellsize
+  - 1/rangecoeff -> cellsize
+#120 Mar 14, 1997
+  The hierarchy of the statistics collecting classes is completely rewritten
+  - cStatistic : abstract class
+  - cSimpleStatistic replaces both cLongStat and cDoubleStat and is like
+      cDoubleStat was
+  - cHistogramBase : abstract class, contains all the common parts of
+      cLongHistogram and cDoubleHistogram
+#120a Mar 14, 1997
+  The range of the Histogram will be NOT recalculated
+  - steps were taken towards this solution....
+  - cell_under/cell_over is saved/loaded,
+  - cDoubleHistogram::collectTransformed() is rewritten and may be moved to
+    cHistogramBase if everything seems to be OK. (only transform() should be
+    different)
+#120b Mar 15, 1997
+  Module parameter logging bug fixed.
+  Histogram classes:
+  - pvmpack.cc updated
+  - changed names: categorynr --> num_cells
+                   precoll_samples_num --> num_firstvals
+  - basepts(), basepoint(k) finished
+  PiSquare also updated (because cStatistic interface has changed in #120)
+  - PiSquare's basepoint(), counter() are not correct!!!
+#120c Mar 15, 1997
+  - cPvmSimpleMod and cSimulation.setupnetwork() modified
+#120d Mar 16, 1997
+  - bugfixes
+#120e Mar 17, 1997
+  - separate cstat.h/cc and chist.h/cc files
+#120f Mar 17, 1997
+  - cLongHistogram::transform() rewritten
+#120g Mar 17, 1997
+  - bugfixes in histogram
+#120h Mar 18, 1997
+  - random() written in histograms
+  - class string bug fixed
+#120i Mar 18, 1997
+  - cLongHistogram::transform() improved
+#121 Mar 21, 1997
+  - cGate::writecontents() added
+  - cGate::isconnected() corrected (now checks if module is local or not)
+  - histogram basepoints() bug fixed
+  - bool isslaveprocess() added to cnetmod.h/.cc, pvmmod.cc
+#122 Mar 21,1997
+  - is_started_as_master() function added
+  - pvmmod.cc improved
+  - compatible with envir86
+#123 Mar 24,1997
+  - eliminated some warnings (implicit double->int conversions etc)
+  - pvmmod.cc improved: added further informative messages to slave mode
+  - chist.cc added to makefile
+#124 Mar 24, 1997
+  - range_ext_direction added to cHistogramBase
+    -1: extend downwards
+    +1: extend upwards
+     0: symmetric extension (as it was before)
+     (also updated in pvm/pvmpack.cc)
+  - cHistogramBase::fwrite()/fread bug fixes
+#125 Mar 24, 1997
+  Bugfixes
+  - (histogram interval  upper limit...)
+  - cSimulation::deletenetwork() should do nothing if no network exists
+#125a Mar 25, 1997
+  - cPiSquare: basepoints(),counter() fixed; pdfx(), cdfx() corrected
+  - cpvmmod.cc changed
+  - (histogram interval  upper limit...)
+  - cSimulation::deletenetwork() should do nothing if no network exists
+#125b Mar 25, 1997
+  - bugfixes in cstat, chist and cpsquare
+  - exit() call after floating point exception was removed
+#126 Apr 1, 1997
+  - added args to cObj::inspector(): inspector(int type, void *data)
+    change affects Tvenv & Tkenv
+  - fixed a bug in cPvmSimpleMod's start_segments()
+#127 Apr 6, 1997
+  - iterators (cIter, cQIter, cSubmodIter):
+    added XXX *op() to be used instead of XXX& op[0]. Old one kept for
+    compatibility
+  - cOutVect: inspector support added (as a callback function)
+  - ev.messagedelivered( msg ) added to getnewmsg()
+  - STARTUPERROR_MODE return value added to is_started_as_master()
+  - compatible with: envir88, tkenv21, tvenv77
+#128 Apr 12, 1997
+  - more TInspector friend classes added to cMod
+  - meaningful cGate::info() implemented
+  - DUMMY_INSPECTOR macro corrected
+#129 Apr 17, 1997
+  - friend class TOutVectorWindow added to cOutVector
+  - histograms: underflowcell_rmin and overflowcell_rmax introduced
+    (sizes of underflow/overflow cells are now multiples of cellsize)
+#129a Apr 18, 1997
+  - histograms: underflowcell_rmin and overflowcell_rmax added to pvmpack.cc
+    too
+#130 Apr 22, 1997
+  - event_num, geteventnumber(), incr_eventnumber() added to cSimulation
+  - realtimewait() removed (commented out)
+  - nextmodule() changed so that it does not have any side effects
+    (except for generating error messages)
+  - name of cMod::stepmode changed to cMod::pause_in_sendmsg which is
+    closer to what it does
+  - compatibility: at least envir90, tkenv30, tvenv79
+#131 May 9, 1997 // --LG
+  - double cHistogramBase::pdf(double x) probability density function
+#132 May 13, 1997 // --LG
+  - unsigned long cHistogramBase::getcell{under|over}() added
+#133 May 22, 1997 // --LG
+  - carray.cc/h: cBag::addat(int, void*)
+                 cBag::cBag(..., int esiz=4, ...)
+  - chist.cc/h: virtual cHistogramBase::deletefirstvals() and other things ...
+                virtual cHistogramBase::recreatefirstvals()
+                virtual cHistogramBase::putinFirstVal(int, double)
+#134 Jun 20, 1997
+  - a bug in the coroutine package fixed
+  - cSimpleStatistic::getstddev() changed
+  - cMsg::info changed
+#135 Jun 23, 1997
+  - cleaned up things in chist.cc
+#136 Jun 26, 1997
+  - cMsg::info() changed
+#137 Jun 30, 1997
+  - cPar::gettext() bug fixed (didn't work with 'I' (indirection) type)
+  - loop in cQueue::foreach() changed direction (now: tail --> head)
+  - simtimeToStr() function rewritten
+#138 Jul 1, 1997
+  - simtimeToStr() function modified
+#139 Jul 6, 1997
+  - ctype.h/cc changed: consistency check of different module interfaces
+  - handling of CONST module parameters placed in cModType
+#140 Jul 10, 1997
+  - makefile modified to work with Cygnus gcc on Win95/NT
+#141 Jul 20, 1997
+  Changes in PVM stuff:
+  - debugged by Gabor Lencse: fixes in csimul.cc and pvm/pvmmod.cc
+  - SINGLE_HOST #define added to pvmmod.cc: if turned on, OMNeT++ runs
+    all segments of a distributed simulation on the local host, to facilitate
+    debugging. (Needs PVM running though!)
+  - stopping a distributed simulation doesn't work yet
+#142 Aug 4, 1997
+  PVM stuff: all segments of a distributed simulation stops correctly now.
+  Affected files:
+    pvmmod.cc: cPVMSimpleMod's stopallsegments(), request_stopsimulation(),
+               process_pvm_msg()
+    csimul.cc: cSimulation's error(), printmsg(), warnings() functions
+               eSTOPSIMRCVD error message added
+#143 Aug 5, 1997
+  - new function upack_object added to pvmpack.cc;
+  - net_pack()/net_upack() functions improved
+#144 Aug 6, 1997
+  In defs.h, MAXTIME changed from 1eXXX to HUGE_VAL
+  Changed cNetSimpleMod's base class from cSimpleMod to cMod
+  Renamed: cNetSimpleMod --> cNetMod,  cPvmSimpleMod --> cPvmMod
+  Synchronization mechanism added to PVM stuff.
+  - new user function: cSimpleMod::syncpoint(t,gate) -- blocks destination
+    segment until a cMsg sent at t (or later) through specified gate arrives.
+  - several new functions and changes to cNetMod and cPvmMod to implement
+    the above
+  - cSimulation::nextmodule() rewritten
+  NOT finished, NOT tested!!!
+#144a Aug 7, 1997
+  - cleaned-up version of #144; must be tested still
+#144b Aug 7, 1997
+  - DEBUG_PVM #define added to pvmmod.cc
+  - active wait removed from block_on_syncpoint
+  - several small improvements on PVM stuff
+#144c Aug 8, 1997
+  - remaining active waits removed
+  - added process_netmsgs() calls to cSimulation::setupnetwork()
+  - small improvements on PVM stuff
+  - renamed functions:
+      signal_startofrun() --> send_runnumber()
+      wait_startofrun()   --> receive_runnumber()
+  - compatible with: envir100
+#144d Aug 9, 1997
+  - bug removed from process_netmsg_blocking()
+#144e Aug 13, 1997
+  - two bugs fixed in cHistogramBase::operator=()
+  - cancelsyncpoint() function added
+#145a Aug 15, 1997
+  - cMsgHeap class added and installed as FES
+    (new files cmsgheap.h/cc, changes in cmod.cc, csimul.h/cc)
+  - a bug introduced in #143 into cArray::foreach() fixed
+#145b Aug 17, 1997
+  - insertordr added to cMsg and cMsgHeap. This way messages with the same
+    times and priorities can be retreived from the message queue in their
+    insertion order.
+  - netif_check_freq added to cSimulation and nextmodule()
+  - cObj::lastchildp removed
+#146 Aug 17, 1997
+  cQueue interface changed:
+    bool isenqueued(cObj *obj)
+    void inserthead(cObj *obj)
+    void insertbefore(cObj *p, cObj *obj), void insertafter(cObj *p, cObj *obj);
+    cObj *peektail(), cObj *peekhead()
+    cObj *get(cObj *obj), cObj *gettail(), gethead()
+#146a Aug 17, 1997
+  - carray.cc/h split to: carray.cc/h, cqueue.cc/h, chead.cc/h, cwatch.cc/h
+  - ev.extrastack() support
+  - compatibility: envir101 or later
+#146b Aug 17, 1997
+  - cMsg::info() changed; now it prints "(starter msg)" for msgs that start
+    simple modules at the beg. of simulation
+#147 Oct 2, 1997
+  - cleaned up & renamed several member functions and classes
+    Changed class names:
+         cObj             --> cObject
+         cMod             --> cModule
+         cSimpleMod       --> cSimpleModule
+         cCompoundMod     --> cCompoundModule
+         cMsg             --> cMessage
+         cMsgHeap         --> cMessageHeap
+         cPiSquare        --> cPSquare
+         cModPar          --> cModulePar
+         cSimpleStatistic --> cStdDev
+         cIter            --> cIterator
+         cSubmodIter      --> cSubModIterator
+         cQueueIter       --> cQueueIterator
+         cMsgHeapIter     --> cMessageHeapIterator
+         cTDResult        --> cTransientDetection
+         cRAResult        --> cAccuracyDetection
+         cTDAlg1          --> cTDExpandingWindows
+         cRAAlg1          --> cADByStddev
+#148 Oct 6, 1997
+  - cKSplit added
+  - contains a new version of cPSquare
+  - cleaned up & renamed several member functions and classes
+  - arg.list to snapshot() changed
+  - arg.list of constructor of histogram classes (cDoubleHistogram, cLongHistogram,
+    cHistogramBase) changed. OLD USER CODE WILL STILL COMPILE BUT WONT'T WORK!
+#148a-c Oct 6, 1997
+  - small fixes
+  - To Do: cKSplit: netPack,netUnpack,saveToFile,loadFromFile; clean up the rest
+#148d-e Oct 12, 1997
+  - cKSplit::isa() corrected to isA(); fixed point shift increased to 10000
+  - stat. classes: cell()'s return value changed from 'unsigned int' to
+    'double'
+  - cKSplit::transform() added
+  - corrected cells() in all classes to return 0 if not transformed yet
+#149 Nov 23, 1997
+  - bugs in cKSplit's copy constructor and ksplitInsert() fixed
+  - LG's "Bad msg kind" bug fixed in selectNextModule()
+  - selectNextModule() rewritten
+  - table of error messages modified
+  - "not owner of message" error msg improved
+  - error message for inconsistent module declarations made more informative
+  - cosmetics on pvmmod.cc
+#150 Dec 13, 1997
+  - cModuleType split into cModuleInterface and cModuleType;
+  - Module..End declaration no longer needed for simple module.
+  - joined Define_Simple_Module and Define_Compound_Module macros
+    to Define_Module macro.
+  - Compatible with jar98 and up
+#151 Dec 13, 1997
+  - renamings for clarity:
+     cModule:
+       subscript() --> id()
+       setSubscript() --> setId()
+     cGate:
+       ownerGate --> id()
+       setlink --> setLink()
+     cMessage:
+       sentFromModule() --> senderModuleId()
+       sentFromGate() --> senderGateId()
+       arrivedInModule() --> arrivalModuleId()
+       arrivedOnGate() --> arrivalGateId()
+       new functions:
+       cGate *senderGate(), cGate *arrivalGate()
+#152 Dec 29, 1997
+  - strToSimtime0() function added
+  - cPar::setFromText() rewritten:
+     better & more consistent error handling, more informative error messages
+     supports writing time units in ini files:
+       Net.Gen.stop_at = 1h 30m
+       Net.Gen.ia_time = uniform(10s,15s)
+  - comments added to ctypes.cc
+#153 Dec 29, 1997
+  - 'cHead members' moved from cSimpleModule to cModule
+  - cModuleType::create() modified so that it automatically puts
+    member objects of module classes to the members list, so there's
+    no need to do setOwner(&members) calls from the constructor.
+    (However, they do no harm if they are there.)
+  - module IDs made unique during whole simulation: old IDs are no longer
+    reused.
+#154 Feb 8, 1998
+  - some Define_Functions()'s added to support jar102-compiled expressions
+  - char type, &|! sXElem operators removed from cPar, # sXElem op.
+    renamed to !.
+#155 Feb 15, 1998
+  - cSimpleModule::finish() function added -- user can redefine it and
+    it will be called at the end of the simulation run
+  - makefile made compatible with new configure script
+  - 'lib' prepended to library names under Unix - now they can le linked with
+    -lsim_std or -lsim_pvm option
+  - pvm3.h deleted from package
+#156 April 14, 1998
+  - cModule: setDisplayString(type,str) and displayString(type) added.
+    type: dispSUBMOD or dispENCLOSINGMOD
+    cGate: setDisplayString(str) and displayString() correspond to the
+    display string of the connection starting from that gate.
+
+    The values of these strings will come from GNED through NED's
+    "display:" phrases, and they will hold information about how the module
+    should be displayed in Tkenv or other GUI animation/interactive
+    simulation tool.
+    The exact format of the strings are documented in GNED's version.log.
+ -  cModule: gatev, paramv made public (because of the inspectors...)
+#157 April 24, 1998
+ -  2 bugs fixed
+#158 April 26, 1998
+ - makefile can now create shared objects (libsim_std.so, libsim_pvm.so)
+#159 May 11, 1998
+ - small improvement on the ksplit files
+#160 June 1, 1998
+ - cDensityEstBase added; it greatly simplifies all density estimation classes!
+ - all density estimation classes rewritten with cDensityEstBase
+ - cVarHistogram added
+ - underflow/overflow cells removed (but underflow/overflow counts still maintained)
+ - cKSplit cleaned up a little
+ - saveToFile()/loadFromFile() file formats cleaned up and loading made
+   safer. Occasional runtime errors may occur due to fprintf'ing uninitialised
+   double vars.
+#161 June 4, 1998
+ - bugfixes on histogram classes
+ - cKSplit::rangeExtension() member function added
+ - cMessage::encapsulate(msg), decapsulate(), encapsulatedMsg() member
+   functions added
+#161a June 9, 1998
+ - return type of cModule::gate(...) changed from cGate& to cGate*
+ - return type of cModule::moduleType(...) changed from cModuleType& to cModuleType*
+ - cSimulation::find(cModule&) changed to cSimulation::find(cModule*)
+ - cMessage::addPar(char *parname) and cMessage::addPar(cPar *par) added
+ - class cWeightedStdDev added
+#161b June 9, 1998
+ - cModule::recordScalar(name,value) and recordStats(name,statistic) added
+ - cSimpleModule::finish() bug fixed
+ - cPar::equalsTo(cPar *par) added
+#161c June 9, 1998
+ - class cLinkedList added
+#161k June 11, 1998
+ - class cTopology added
+ - now gate vectors are guaranteed to be contiguous in the gatev array;
+   gate lookup made a lot faster. Note that there can be holes
+   in the gate vector.
+ - cMessage::addLen(long l) added
+#161n June 17, 1998
+ - bugfixes on 161k
+ - cMessage::addPar(..) functions' return value changed to cPar&
+ - setDisplayStringNotify() functions added to cGate and cModule
+#161o June 19, 1998
+ - Now deleteModule() can also delete the currently executing module.
+   The only remaining restriction is that a compound module cannot
+   be deleted from one of its submodules.
+#161p June 19, 1998
+ - cMessage::creationTime() added
+ - mystr...() functions renamed to opp_str...()
+   (for compatibility, mystr... names are #defined to opp_str...)
+ - ASSERT() added (similar to the assert() macro, also disappears with NDEBUG)
+ - scalar file behavior corrected (only writes file if there's something to write)
+ - cPar: new type void* added ('P'), old 'P' type (cObject *) was renamed
+   to 'O'. Funcs: cObject *objectValue(), void *pointerValue()
+   Memory management of void*: configPointer(...) func, similar to
+   cLinkedList's method.
+#161r June 23, 1998
+ - new: cSimpleModule::error(): generates `user error'
+ - cSimulation::callFinish() added
+ - cSimulation's cModule& get() deleted, cModule *module(..) can be used
+   instead
+ - cSimulation's findModuleByPath()-->moduleByPath()
+ - small fixes
+#161s June 23, 1998
+ - added bool cSimulation::normalTermination() which examines error code
+#161t June 26, 1998
+ - small fixes, adjustments
+#162 July 2, 1998
+ - improved error messages of send() variants; other small fixes
+#162a-b July 10, 1998
+ - cGate::info() corrected
+ - cPar::info() corrected (now doesn't silently truncate string value)
+ - cMessage::findPar() added
+ - check for gate connectedness added to cModule::setGateSize()
+ - modules and gates: vectors of size 1 and scalars made distinct
+#163 July 15, 1998
+ - eFINISH error code added; other small fixes
+ - WATCH() made dynamic (new cWatch(...)) instead of auto to increase
+   applicability. Old-style watch is retained as LWATCH().
+#164 July 21, 1998
+ - cOutVector support for 'probes'
+ - bug fixed in pvm/pvmmod.cc
+#165 July 24, 1998
+ - ASSERT() bug fixed
+ - display strings can be taken from ini file -- compatible with envir120 up
+#166 August 12, 1998
+ - project file for Borland C++ 5.0 added (sim_std.ide)
+ - some code beautifying
+ - cenvir.h moved here from the envir package
+#167 August 14, 1998
+ - linker bug with cWatch fixed
+#167a August 17, 1998
+ - too many 'simulation cancelled' error msg fixed
+#167b August 19, 1998
+ - some error messages improved
+#168 August 21, 1998
+ - cStat::collect(double,double) renamed to collect2()
+   (conflicted with collect(double))
+#169 August 22, 1998
+ - cOutvector::collect() improved
+#170a Dec 27, 1998
+ Fixes:
+ - ltoa() eliminated
+ - vsscanf() replaced by opp_vsscanf()
+ - defs.h and funcs.cc split to defs.h, util.h+cc, errmsg.h+cc
+ - serious bug with stddev() corrected
+ - writes to output vector file and parameter change file are now checked
+ - string class renamed to opp_string to prevent name clashes with other
+   class libs (e.g. STL)
+ - cSimulation::doOneEvent() function introduced
+ - runningmod_deleter's stack increased from 8K to 16K
+ - now cancelEvent won't hang if the message was not actually scheduled
+ Improvements:
+ - coroutine library now detects stack overflows and able to tell actually
+   used stack size (stackUsage())
+ - new alternative message handling mechanism: handleMessage()
+ - new file fsm.h: finite state machine for handleMessage()
+ - reserved negative message kind values
+ - cPacket class added
+ - MK_INFO and MK_PACKET message kind values defined for cPackets
+ - wait() and receive() with timeout made faster (now reuses timeout message)
+#170b Dec 27, 1998
+ - fixes on 170a
+ - missing bc3make.bat added back (although omnetpp is probably _way_ too big
+   for BC 3.1 and DOS real mode to handle...)
+#170c Dec 30, 1998
+ - makefile renamed to makefile.in
+#170d-k Jan 1-3, 1999
+ - refinements on the coroutine library; stackSize() added to cCoroutine
+ - refinements on cPacket
+ - restart() of c[Simple]Module removed (was not used)
+ - optimizations around timeoutmsg and receive()
+ - module state codes reduced to sREADY and sENDED
+ - protocol.h added
+ - misc bugfixes
+#171 Jan 3, 1999
+ - stable version
+#172a Jan 25, 1999
+ - inspector factories added
+#172b Jan 26, 1999
+ - recordScalar() for recording strings added
+#172c-d Jan 26, 1999
+ - calls to simulation.error() replaced by opp_error() to avoid having to
+   #include csimul.cc (and half the sim. kernel with it) in each file;
+   similar for opp_warning() and opp_terminate(). opp_terminate() is similar
+   to opp_error(), only it does not include the word "error" in the message.
+ - requires updated Envir and user interface libraries
+#173 Jan 26, 1999
+ - some cleanup
+#174 Feb 7, 1999
+ - stable version
+
+--- CVS begin ---

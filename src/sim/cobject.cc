@@ -1,0 +1,390 @@
+//=========================================================================
+//
+//  COBJECT.CC - part of
+//                          OMNeT++
+//           Discrete System Simulation in C++
+//
+//   Static members of
+//    cObject
+//
+//   Member functions of
+//    cObject   : ultimate base class for most objects
+//
+//  Author: Andras Varga
+//
+//=========================================================================
+
+/*--------------------------------------------------------------*
+  Copyright (C) 1992,99 Andras Varga
+  Technical University of Budapest, Dept. of Telecommunications,
+  Stoczek u.2, H-1111 Budapest, Hungary.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  `license' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
+#include <stdio.h>           // sprintf
+#include <string.h>          // strcpy, strlen etc.
+#include <iostream.h>
+#include "csimul.h"
+#include "cenvir.h"
+#include "macros.h"
+#include "cobject.h"
+
+//==========================================================================
+//=== GLOBAL VARIABLES
+
+int   cObject::staticflag;
+int   cObject::heapflag;
+
+//=== Registration
+Register_Class( cObject )
+
+//==========================================================================
+//=== cObject - member functions
+
+static bool _do_find(cObject *obj, bool beg, char *s, cObject *&p, bool deep);
+static bool _do_list(cObject *obj, bool beg, ostream& s);
+
+/*--------------------------------------------------------------*\
+
+   Object ownership/contains relationships:
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   Ownership:
+      Exclusive right and duty to delete the child objects.
+      Ownership works thru ownerp/prevp/nextp and firstchildp pointers.
+   'contains' relationship:
+      Only for container classes, e.g. cArray or cQueue. Keeping track
+      of contained objects works with another mechanism, NOT the previously
+      mentioned ptrs. (E.g., cArray uses a vector, cQueue uses a separate
+      list).
+   The two mechanisms are INDEPENDENT.
+   What cObject does:
+      - owner of a new object can be explicitly given, if omitted,
+        defaultOwner() will will be used.
+      - an object created thru the copy constructor:
+          - will have the same owner as original;
+          - does not dup() or take objects owned by the original.
+      - destructor calls free() for owned objects (see later).
+   Objects contained as data members:
+      the enclosing object should own them.
+   What container objects derived from cObject should do:
+      - they use the functions: take(obj), drop(obj), free(obj)
+      - when an object is inserted, if takeOwnership() is TRUE, should
+        take ownership of object by calling take(obj).
+        TAKEOWNERSHIP() DEFAULTS TO TRUE.
+      - when an object is removed, they should call drop(obj) for it if
+        they were the owner.
+      - copy constructor copies should dup() and take ownership of objects
+        that were owned by the original.
+      - destructor doesn't need not call free() for objects: this will be
+        done in cObject's destructor.
+   cHead:
+      special case: behaves as a container, displaying objects it owns as
+      contents.
+   --VA
+\*-------------------------------------------------------------------*/
+
+#define DETERMINE_STORAGE()  stor = heapflag   ? (heapflag=0, 'D') : \
+                                    staticflag ? 'A' : 'S' ;
+
+cObject::cObject(cObject& obj)
+{
+    DETERMINE_STORAGE();
+    tkownership = TRUE;
+    namestr = opp_strdup( obj.namestr );
+
+    ownerp = NULL;
+    setOwner( obj.owner() );
+    firstchildp = NULL;
+
+    operator=( obj );
+}
+
+cObject::cObject()
+{
+    DETERMINE_STORAGE();
+    tkownership = TRUE;
+    namestr = NULL;
+
+    ownerp = NULL;
+    setOwner( defaultOwner() );
+    if (storage()!='S')    /* to enable building global cHead lists */
+          firstchildp = NULL;
+}
+
+cObject::cObject(char *name_str)
+{
+    DETERMINE_STORAGE();
+    tkownership = TRUE;
+    namestr = opp_strdup( name_str );
+
+    ownerp = NULL;
+    setOwner( defaultOwner() );
+    if (storage()!='S')    /* to enable building global cHead lists */
+          firstchildp = NULL;
+}
+
+cObject::cObject(char *name_str, cObject *ownerobj)
+{
+    DETERMINE_STORAGE();
+    namestr = opp_strdup( name_str );
+    tkownership = TRUE;
+
+    ownerp = NULL;
+    setOwner( ownerobj );
+    if (storage()!='S')    /* to enable building global cHead lists */
+          firstchildp = NULL;
+}
+
+cObject::~cObject()
+{
+    delete namestr;
+    setOwner( NULL );
+
+    /* delete owned objects */
+    while (firstchildp!=NULL)
+        free( firstchildp );
+    ev.objectDeleted( this );
+}
+
+void *cObject::operator new(size_t m)
+{
+    void *p = ::new char[m];
+    if (p) heapflag = 1;
+    return p;
+}
+
+cObject& cObject::operator=(cObject&)
+{
+    // ownership not affected
+    // namestr is not set! (24.02.97 --VA)
+    return *this;
+}
+
+void cObject::info(char *buf)
+{
+    /* prepare one-line textual info about the object */
+    sprintf( buf, "%-12s (%s)",
+             fullName() ? fullName():"<noname>", isA()
+           );
+}
+
+void cObject::setOwner(cObject *newowner)
+{
+     if (ownerp!=NULL)   /* remove from owner's child list */
+     {
+          if (nextp!=NULL)
+               nextp->prevp = prevp;
+          if (prevp!=NULL)
+               prevp->nextp = nextp;
+          if (ownerp->firstchildp==this)
+               ownerp->firstchildp = nextp;
+          ownerp = NULL;
+     }
+     if (newowner!=NULL) /* insert into owner's child list as first elem. */
+     {
+          ownerp = newowner;
+          prevp = NULL;
+          nextp = ownerp->firstchildp;
+          if (nextp!=NULL)
+               nextp->prevp = this;
+          ownerp->firstchildp = this;
+     }
+}
+
+cObject *cObject::defaultOwner()
+{
+     return simulation.localList();
+}
+
+void cObject::deleteChildren()
+{
+     bool nothing;                           // a bit difficult, because
+     do {                                    // deleting a container object
+          nothing = TRUE;                    // may add new items
+          cObject *t, *p = firstchildp;
+          while (p)
+          {
+              t=p; p=p->nextp;
+              if (t->storage()=='D')
+                 {delete t; nothing = FALSE;}
+          }
+     } while (!nothing);
+}
+
+void cObject::destructChildren()
+{
+     while (firstchildp)
+     {
+        stor = firstchildp->storage();
+        if (stor == 'D')
+           delete firstchildp;
+        else if (stor == 'A')
+           firstchildp->destruct();
+        else  /* stor == 'S' */
+           firstchildp->setOwner( NULL );
+     }
+
+}
+
+char *cObject::fullPath()
+{
+     static char buf[512]; // should be enough because there's no check!!!
+     if (owner()==NULL)
+        strcpy( buf, fullName() );
+     else
+     {
+        char *p = owner()->fullPath();
+        if (p!=buf) strcpy(buf,p);
+        strcat( buf, "." );
+        strcat( buf, fullName() );
+     }
+     return buf;
+}
+
+//unsigned cObject::storesize()
+//{
+//       return storetype() ? 1+strlen(namestr)+1+2*sizeof(bool) : 0;
+//}
+
+//void cObject::store(char*& area)
+//{
+//       if (storetype())
+//       {
+//          *area++ = storetype();
+//          strcpy(area, namestr);
+//          area += strlen(namestr)+1;
+//        STORE(area,resflag,1);
+//       }
+//}
+
+//int  cObject::load(char*& area)
+//{
+//       bool rf;
+//
+//       if (storetype())
+//       {
+//          if (*area != storetype()) return *area;
+//          area++;
+//          setName(area); area += strlen(namestr)+1;
+//        LOAD(area,rf,1); result(rf);
+//       }
+//       return 0;
+//}
+
+/*------------------------------------------------------------------------*
+
+ The forEach() mechanism
+ ~~~~~~~~~~~~~~~~~~~~~~~
+  o  The forEach() mechanism implemented in OMNeT++ is very special and
+     slightly odd. The passed function is called for each object twice:
+     once on entering and once on leaving the object. In addition, after
+     the first ('entering') call to the function, it signals with its return
+     value whether it wants to go deeper in the contained objects or not.
+     Functions passed to forEach() will use static variables to store other
+     necessary information. (Yes, this limits their recursive use :-( ).
+  o  forEach() takes a function do_fn (of DoItFunc type) with 2 arguments:
+     a (cObject *) and a (bool). First, forEach() should call do_fn with
+     (this,TRUE) to inform it about entering the object. Then, if this call
+     returned TRUE, it must call forEach(do_fn) for every contained object.
+     Finally, it must call do_fn with (this,FALSE) to let do_fn know that
+     there's no more contained object.
+  o  Functions using forEach() work in the following way: they call do_fn
+     with (NULL,FALSE,<additional args>) to initialize the static variables
+     inside the function. Then they call forEach( (DoItFunc)do_fn ) for the
+     given object. Finally, read the results by calling do_fn(NULL, FALSE,
+     <additional args>). DoItFuncs mustn't call themselves recursively!
+  --VA
+     ( yeah, I know this all is kind of weird, but changing it would take
+       quite some work --VA )
+ *------------------------------------------------------------------------*/
+
+void cObject::forEach( ForeachFunc do_fn )
+{
+        do_fn(this,TRUE);
+        do_fn(this,FALSE);
+}
+
+void cObject::writeTo(ostream& os)
+{
+        os << "(" << isA() << ") `" << fullPath() << "' begin\n";
+        writeContents( os );
+        os << "end\n\n";
+}
+
+void cObject::writeContents(ostream& os)
+{
+      //os << "  objects:\n";
+      _do_list( NULL, FALSE, os );                    // prepare do_list
+      forEach( (ForeachFunc)_do_list );
+}
+
+cObject *cObject::findObject( char *objname, bool deep )
+{
+      cObject *p;
+      _do_find( NULL, FALSE, objname, p, deep ); // give 'objname' and 'deep' to do_find
+      forEach( (ForeachFunc)_do_find );          // perform search
+      _do_find( NULL, FALSE, objname, p, deep ); // get result into p
+      return p;
+}
+
+TInspector *cObject::inspector(int type, void *data)
+{
+    cInspectorFactory *p = findInspectorFactory(inspectorFactoryName());
+    if (!p)
+    {
+        opp_error("Inspector factory object '%s' for class '%s' not found",
+                         inspectorFactoryName(), isA());
+        return NO(TInspector);
+    }
+    return p->createInspectorFor(this,type,data);
+}
+
+int cObject::cmpbyname(cObject *one, cObject *other)
+{
+        return opp_strcmp(one->namestr, other->namestr);
+}
+
+static bool _do_find(cObject *obj, bool beg, char *s, cObject *&p, bool deep)
+{
+      static char *name_str;
+      static cObject *r;
+      static int ctr;
+      static bool deepf;
+      if (!obj) {
+          name_str = s;
+          p = r;
+          r = NULL;
+          deepf = deep;
+          ctr = 0;
+          return TRUE;
+      }
+      if (beg && obj->isName(name_str)) r=obj;
+      return deepf || ctr==0;
+}
+
+static bool _do_list(cObject *obj, bool beg, ostream& s)
+{
+      static char buf[256];
+      static int ctr;       // static is very important here!!!
+      static ostream *os;
+      if (!obj) {        // setup call
+           ctr = 0;
+           os = &s;
+           return TRUE;
+      }
+
+      if (beg) {
+           if (ctr)
+           {
+               //*os << "  (" << obj->isA() << ") `" << obj->name() << "'\n";
+               obj->info(buf);
+               *os << "   " << buf << "\n";
+           }
+           return ctr++ == 0;       // only one level!
+      }
+      else
+           return TRUE;
+}
+

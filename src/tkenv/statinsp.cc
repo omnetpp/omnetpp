@@ -1,0 +1,542 @@
+//==========================================================================
+//   STATINSP.CC -
+//            part of the Tcl/Tk environment of
+//                             OMNeT++
+//
+//  Implementation of
+//    inspectors
+//
+//==========================================================================
+
+/*--------------------------------------------------------------*
+  Copyright (C) 1992,99 Andras Varga
+  Technical University of Budapest, Dept. of Telecommunications,
+  Stoczek u.2, H-1111 Budapest, Hungary.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  `license' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
+#include <string.h>
+#include <math.h>
+
+#include "cmodule.h"
+#include "cmessage.h"
+#include "cpar.h"
+#include "carray.h"
+#include "cnetmod.h"
+#include "coutvect.h"
+#include "cstat.h"
+#include "cdensity.h"
+
+#include "tkapp.h"
+#include "tklib.h"
+#include "tkinsp.h"
+#include "arrow.h"
+
+//=======================================================================
+TStatisticInspector::TStatisticInspector(cObject *obj,int typ,void *dat) :
+    TInspector(obj,typ,dat)
+{
+}
+
+void TStatisticInspector::createWindow()
+{
+   TInspector::createWindow(); // create window name etc.
+
+   // create inspector window by calling the specified proc with
+   // the object's pointer. Window name will be like ".ptr80003a9d-1"
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   CHK(Tcl_VarEval(interp, "create_statisticinspector ", windowname, NULL ));
+}
+
+void TStatisticInspector::update()
+{
+   TInspector::update();
+
+   cStatistic *stat = (cStatistic *)object;
+
+   setLabel(".main.count.e", stat->samples() );
+   setLabel(".main.mean.e", stat->mean() );
+   setLabel(".main.stddev.e", stat->stddev() );
+   setLabel(".main.min.e", stat->min() );
+   setLabel(".main.max.e", stat->max() );
+}
+
+
+//=======================================================================
+THistogramWindow::THistogramWindow(cObject *obj,int typ,void *dat) :
+    TInspector(obj,typ,dat)
+{
+}
+
+void THistogramWindow::createWindow()
+{
+   TInspector::createWindow(); // create window name etc.
+   strcpy(canvas,windowname); strcat(canvas,".main.canvas");
+
+   // create inspector window by calling the specified proc with
+   // the object's pointer. Window name will be like ".ptr80003a9d-1"
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   CHK(Tcl_VarEval(interp, "create_histogramwindow ", windowname, NULL ));
+}
+
+void THistogramWindow::update()
+{
+   TInspector::update();
+
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   cDensityEstBase *distr = (cDensityEstBase *)object;
+
+   char buf[80];
+   generalInfo( buf );
+   CHK(Tcl_VarEval(interp, windowname,".bot.info config -text {",buf,"}",NULL));
+
+   // can we draw anything at all?
+   if (!distr->transformed() || distr->cells()==0) return;
+
+   long num_samples = distr->samples();
+   unsigned basepts = distr->cells()+1;
+   int cell;
+   double cell_lower, cell_upper;
+
+   double xmin = distr->basepoint(0);
+   double xrange = distr->basepoint(basepts-1) - xmin;
+
+   // determine maximum height (will be used for y scaling)
+   double ymax = -1.0; // a good start because all y values are >=0
+   cell_upper = distr->basepoint(0);
+   for (cell=0; cell<basepts-1; cell++)
+   {
+       // get cell
+       cell_lower = cell_upper;
+       cell_upper = distr->basepoint(cell+1);
+       // calculate height
+       double y = distr->cell(cell) / (double)(num_samples) / (cell_upper-cell_lower);
+       if (y>ymax) ymax=y;
+   }
+
+   // get canvas size
+   CHK(Tcl_VarEval(interp, "winfo width ",canvas, NULL));
+   int canvaswidth = atoi( interp->result );
+   CHK(Tcl_VarEval(interp, "winfo height ", canvas, NULL));
+   int canvasheight = atoi( interp->result );
+
+   // temporarily define X() and Y() coordinate translation macros
+#define X(x)   (int)(10+((x)-xmin)*((long)canvaswidth-20)/xrange)
+#define Y(y)   (int)(canvasheight-10-(y)*((long)canvasheight-20)/ymax)
+
+   // delete previous drawing
+   CHK(Tcl_VarEval(interp, canvas," delete all", NULL));
+
+   // draw the histogram
+   cell_upper = distr->basepoint(0);
+   for (cell=0; cell<basepts-1; cell++)
+   {
+       char tag[16];
+       sprintf(tag,"cell%d",cell);
+
+       // get cell
+       cell_lower = cell_upper;
+       cell_upper = distr->basepoint(cell+1);
+       // calculate height
+       double y = distr->cell(cell) / (double)(num_samples) / (cell_upper-cell_lower);
+       // prepare rectangle coordinates
+       char coords[64];
+       sprintf(coords,"%d %d %d %d", X(cell_lower), Y(0), X(cell_upper), Y(y));
+       // draw rectangle
+       CHK(Tcl_VarEval(interp, canvas,
+                               " create rect ", coords," -tag ",tag,
+                               " -fill black -outline black", NULL));
+   }
+#undef X
+#undef Y
+}
+
+void THistogramWindow::generalInfo( char *buf )
+{
+   cDensityEstBase *d = (cDensityEstBase *)object;
+   if (!d->transformed())
+       sprintf( buf, "(collecting initial values, N=%ld)", d->samples());
+   else
+       sprintf( buf, "Histogram: (%lg...%lg)  N=%ld  #cells=%d",
+                 d->basepoint(0), d->basepoint(d->cells()),
+                 d->samples(),
+                 d->cells()
+              );
+}
+
+void THistogramWindow::cellInfo( char *buf, int cell )
+{
+   cDensityEstBase *d = (cDensityEstBase *)object;
+   double count = d->cell(cell);
+   double cell_lower = d->basepoint(cell);
+   double cell_upper = d->basepoint(cell+1);
+   sprintf( buf, "Cell #%d:  (%lg...%lg)  n=%lg  PDF=%lg",
+                 cell,
+                 cell_lower, cell_upper,
+                 count,
+                 count / (double)(d->samples()) / (cell_upper-cell_lower)
+          );
+}
+
+int THistogramWindow::inspectorCommand(Tcl_Interp *interp, int argc, char **argv)
+{
+   if (argc<1) return TCL_ERROR;
+
+   if (strcmp(argv[0],"cell")==0)   // 'opp_inspectorcommand <inspector> cell ...'
+   {
+      if (argc>2) return TCL_ERROR;
+
+      if (argc==1)
+         generalInfo( interp->result );
+      else
+         cellInfo( interp->result, atoi(argv[1]) );
+      return TCL_OK;
+   }
+   return TCL_ERROR;
+}
+
+//=======================================================================
+
+CircBuffer::CircBuffer(int siz)
+{
+   size = siz;
+   buf = new CBEntry[size];
+   n = 0;
+   head = 0;
+}
+
+CircBuffer::~CircBuffer()
+{
+   delete [] buf;
+}
+
+void CircBuffer::add(simtime_t t, double value1, double value2)
+{
+   head = (head+1)%size;
+   CBEntry& p = buf[head];
+   p.t = t;
+   p.value1 = value1;
+   p.value2 = value2;
+   if (n<size) n++;
+}
+
+static void record_in_insp(void *data, double val1, double val2)
+{
+   TOutVectorWindow *insp = (TOutVectorWindow *) data;
+   insp->circbuf.add(simulation.simTime(),val1,val2);
+}
+
+TOutVectorWindow::TOutVectorWindow(cObject *obj,int typ,void *dat,int size) :
+    TInspector(obj,typ,dat), circbuf(size)
+{
+   // make inspected outvector to call us back when it gets data to write out
+   cOutVector *ov = (cOutVector *)object;
+   ov->record_in_inspector = record_in_insp;
+   ov->data_for_inspector = (void *)this;
+
+   autoscale = TRUE;
+   drawing_mode = DRAW_LINES;
+   miny = 0; maxy = 10;
+   time_factor = 1;   // x scaling
+}
+
+TOutVectorWindow::~TOutVectorWindow()
+{
+   // cancel installed callback in inspected outvector
+   cOutVector *ov = (cOutVector *)object;
+   ov->record_in_inspector = NULL;
+}
+
+void TOutVectorWindow::createWindow()
+{
+   TInspector::createWindow(); // create window name etc.
+   strcpy(canvas,windowname); strcat(canvas,".main.canvas");
+
+   // create inspector window by calling the specified proc with
+   // the object's pointer. Window name will be like ".ptr80003a9d-1"
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   CHK(Tcl_VarEval(interp, "create_outvectorwindow ", windowname, NULL ));
+}
+
+void TOutVectorWindow::update()
+{
+   TInspector::update();
+
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+
+   char buf[80];
+   generalInfo( buf );
+   setLabel(".bot.info",buf);
+
+   if (circbuf.n==0) return;
+
+   int tuple = ((cOutVector *)object)->tuple;
+
+   // get canvas size
+   CHK(Tcl_VarEval(interp, "winfo width ",canvas, NULL));
+   int canvaswidth = atoi( interp->result );
+   if (!canvaswidth)  canvaswidth=1;
+   CHK(Tcl_VarEval(interp, "winfo height ", canvas, NULL));
+   int canvasheight = atoi( interp->result );
+   if (!canvasheight) canvasheight=1;
+
+   simtime_t tbase = simulation.simTime();
+   // simtime_t tbase = circbuf.buf[circbuf.head].t;
+
+   if (autoscale)
+   {
+       // adjust time_factor if it's too far from the optimal value
+       simtime_t firstt = circbuf.buf[circbuf.tail()].t;
+       double dt = tbase - firstt;
+       if (dt>0)
+       {
+          double opt_tf = dt/canvaswidth;
+
+          // some rounding: keep 2 significant digits
+          double order = pow(10,floor(log10(opt_tf)));
+          opt_tf = floor(opt_tf/order+.5)*order;
+
+          // adjust only if it differs >=20% from its optimal value
+          if (fabs(time_factor-opt_tf) > opt_tf*0.20)
+              time_factor = opt_tf;
+       }
+
+       // determine miny and maxy
+       int pos = circbuf.head;
+       miny = maxy = circbuf.buf[circbuf.head].value1;
+       for(int i=0;i<circbuf.n;i++)
+       {
+           CircBuffer::CBEntry& p = circbuf.buf[pos];
+           if (p.value1<miny) miny = p.value1;
+           if (p.value1>maxy) maxy = p.value1;
+           if (tuple==2)
+           {
+               if (p.value2<miny) miny = p.value2;
+               if (p.value2>maxy) maxy = p.value2;
+           }
+           pos=(pos-1+circbuf.size)%circbuf.size;
+       }
+       if (miny==maxy)
+       {
+           if (miny!=0) {miny-=fabs(miny/3); maxy+=fabs(maxy/3);}
+           else  {miny=-0.5; maxy=0.5;}
+       }
+   }
+   double rangey=maxy-miny;
+
+   simtime_t tf = time_factor;
+
+   // temporarily define X() and Y() coordinate translation macros
+#define X(t)   (int)(canvaswidth-10-(tbase-(t))/tf)
+#define Y(y)   (int)(canvasheight-10-((y)-miny)*((long)canvasheight-20)/rangey)
+
+   //printf("cw=%d  ch=%d  tbase=%lf trange=%lf  miny=%lf  maxy=%lf rangey=%lf\n",
+   //        canvaswidth, canvasheight,tbase,trange, miny, maxy, rangey);
+
+   // delete previous drawing
+   CHK(Tcl_VarEval(interp, canvas," delete all", NULL));
+
+   // now scan through the whole buffer in time-increasing order
+   // and draw in the meanwhile
+
+   int y_zero = Y(0);   // so that we don't have to calculate it each time
+   int next_x=-1;
+   int next_y1=0, next_y2=0; // values won't be used (they're there just to prevent warning)
+   int x, y1, y2;
+   int pos;
+   int next_pos = (circbuf.head-circbuf.n+circbuf.size)%circbuf.size;
+   for(int i=0;i<=circbuf.n;i++)
+   {
+       x  = next_x;
+       y1 = next_y1;
+       y2 = next_y2;
+       pos = next_pos;
+
+       if (i==circbuf.n)
+       {
+           next_x = X(simulation.simTime());
+       }
+       else
+       {
+           next_pos=(next_pos+1)%circbuf.size;
+           CircBuffer::CBEntry& p = circbuf.buf[next_pos];
+           next_x =  X(p.t);
+           next_y1 = Y(p.value1);
+           next_y2 = Y(p.value2);
+       }
+
+       if (x>=0)
+       {
+           char tag[16];
+           sprintf(tag,"value%d",pos);
+
+           const int d = 2;
+           char coords[64];
+           switch (drawing_mode)
+           {
+             case DRAW_DOTS:
+                // draw rectangle 1
+                sprintf(coords,"%d %d %d %d", x-d, y1-d, x+d, y1+d);
+                CHK(Tcl_VarEval(interp, canvas," create rect ",coords,
+                                    " -tag ",tag," -outline red -fill red", NULL));
+                if (tuple==2)
+                {
+                    // draw rectangle 2
+                    sprintf(coords,"%d %d %d %d", x-d, y2-d, x+d, y2+d);
+                    CHK(Tcl_VarEval(interp, canvas," create rect ",coords,
+                                        " -tag ",tag," -outline blue -fill blue", NULL));
+                }
+                break;
+             case DRAW_PINS:
+                // draw rectangle 1
+                sprintf(coords,"%d %d %d %d", x, y_zero, x, y1);
+                CHK(Tcl_VarEval(interp, canvas," create line ",coords,
+                                    " -tag ",tag," -fill red", NULL));
+                if (tuple==2)
+                {
+                    // draw rectangle 2
+                    sprintf(coords,"%d %d %d %d", x, y_zero, x, y2);
+                    CHK(Tcl_VarEval(interp, canvas," create line ",coords,
+                                        " -tag ",tag," -fill blue", NULL));
+                }
+                break;
+             case DRAW_LINES:
+                // draw rectangle 1
+                sprintf(coords,"%d %d %d %d", x, y1, next_x, next_y1);
+                CHK(Tcl_VarEval(interp, canvas," create line ",coords,
+                                    " -tag ",tag," -fill red", NULL));
+                if (tuple==2)
+                {
+                    // draw rectangle 2
+                    sprintf(coords,"%d %d %d %d", x, y2, next_x, next_y2);
+                    CHK(Tcl_VarEval(interp, canvas," create line ",coords,
+                                        " -tag ",tag," -fill blue", NULL));
+                }
+                break;
+             case DRAW_SAMPLEHOLD:
+                // draw rectangle 1
+                sprintf(coords,"%d %d %d %d", x, y1, next_x, y1);
+                CHK(Tcl_VarEval(interp, canvas," create line ",coords,
+                                    " -tag ",tag," -fill red", NULL));
+                if (tuple==2)
+                {
+                    // draw rectangle 2
+                    sprintf(coords,"%d %d %d %d", x, y2, next_x, y2);
+                    CHK(Tcl_VarEval(interp, canvas," create line ",coords,
+                                        " -tag ",tag," -fill blue", NULL));
+                }
+                break;
+             case DRAW_BARS:
+                // draw rectangle 1
+                sprintf(coords,"%d %d %d %d", x, y_zero, next_x, y1);
+                CHK(Tcl_VarEval(interp, canvas," create rect ",coords,
+                                    " -tag ",tag," -outline red -fill red", NULL));
+                if (tuple==2)
+                {
+                    // draw rectangle 2
+                    sprintf(coords,"%d %d %d %d", x, y_zero, next_x, y2);
+                    CHK(Tcl_VarEval(interp, canvas," create rect ",coords,
+                                        " -tag ",tag," -outline blue -fill blue", NULL));
+                }
+                break;
+           }
+       }
+   }
+#undef X
+#undef Y
+}
+
+static char *drawingmodes[] = {
+      "dots", "bars", "pins", "sample-hold", "lines", NULL
+};
+
+void TOutVectorWindow::generalInfo( char *buf )
+{
+   if (circbuf.n==0)
+   {
+        strcpy(buf,"(no write since opening window)");
+        return;
+   }
+   int tuple = ((cOutVector *)object)->tuple;
+   CircBuffer::CBEntry& p = circbuf.buf[ circbuf.head ];
+   if (tuple==1)
+     sprintf(buf, "Last: t=%s  value=%lg",
+                   simtimeToStr(p.t), p.value1);
+   else
+     sprintf(buf, "Last: t=%s  val1=%lg  val2=%lg",
+                   simtimeToStr(p.t), p.value1, p.value2);
+}
+
+void TOutVectorWindow::valueInfo( char *buf, int valueindex )
+{
+   int tuple = ((cOutVector *)object)->tuple;
+   CircBuffer::CBEntry& p = circbuf.buf[ valueindex ];
+   if (tuple==1)
+     sprintf(buf, "t=%s  value=%lg",
+                  simtimeToStr(p.t), p.value1);
+   else
+     sprintf(buf, "t=%s  val1=%lg  val2=%lg",
+                  simtimeToStr(p.t), p.value1, p.value2);
+}
+
+void TOutVectorWindow::getConfig( char *buf )
+{
+   sprintf(buf,"%lg %lg %lg %s", time_factor, miny, maxy, drawingmodes[drawing_mode] );
+}
+
+void TOutVectorWindow::setConfig( double timefac, double min_y, double max_y, char *mode )
+{
+   // store new parameters
+   autoscale = FALSE;
+   time_factor = timefac;
+   miny = min_y;
+   maxy = max_y;
+
+   // corrections on y range
+   if (miny>maxy) maxy=miny;
+   if (miny==maxy)
+   {
+           if (miny!=0) {miny-=fabs(miny/3); maxy+=fabs(maxy/3);}
+           else  {miny=-0.5; maxy=0.5;}
+   }
+
+   // identify drawing style
+   int i;
+   for (i=0; i<NUM_DRAWINGMODES; i++)
+     if (0==strcmp(mode,drawingmodes[i]))
+        break;
+   drawing_mode = i;
+}
+
+int TOutVectorWindow::inspectorCommand(Tcl_Interp *interp, int argc, char **argv)
+{
+   if (argc<1) return TCL_ERROR;
+
+   if (strcmp(argv[0],"value")==0)   // 'opp_inspectorcommand <inspector> value ...'
+   {
+      if (argc>2) return TCL_ERROR;
+
+      if (argc==1)
+         generalInfo( interp->result );
+      else
+         valueInfo( interp->result, atoi(argv[1]) );
+      return TCL_OK;
+   }
+   else if (strcmp(argv[0],"config")==0)  // 'opp_inspectorcommand <inspector> config ...'
+   {
+      if (argc!=5 && argc!=1) return TCL_ERROR;
+
+      // get/set configuration: "timefactor miny maxy drawingmode"
+      if (argc==1)
+         getConfig( interp->result );
+      else
+         setConfig( atof(argv[1]), atof(argv[2]), atof(argv[3]), argv[4] );
+      return TCL_OK;
+   }
+   return TCL_ERROR;
+}
+
+
+

@@ -1,0 +1,44 @@
+#1  March 4, 1998
+ - project founded
+#10 March 11, 1998
+ - first public release
+#11 March 16, 1998
+ - small corrections: "-indicatoron 1" added to combos,
+   "-exportselection 0" to listboxes
+#12 March 18, 1998
+ - many bugfixes and improvements
+#13 March 29, 1998
+ - option 'move/copy vectors from left or right pane' added
+#14 May 21, 1998
+ - several bugfixes;
+ - OFMT='%.10f' is now added to awk scripts
+ To Do: maybe call a2p and perl for faster filters?
+#15 July 10, 1998
+ - .ploverc is now placed in the home directory (~/)
+ - only the selected vectors (not all) in the right pane are plotted
+ - selection can be inverted
+ - mc-like key bindings
+ - vector options dialogs changed
+#16 July 15, 1998
+ - right-click support
+ - several refinements
+ - readme file extended
+#17 July 15, 1998
+ - bugfixes
+#18 July 21, 1998
+ - bugfixes: [],{} in select/replace dialogs; popup menus extended;
+   minor bug in winavgN filter corrected; selected vectors now remain
+   selected after operations on them.
+#19 July 24, 1998
+ - statusbar added at bottom of panes;
+ - TAB key binding corrected;
+ - 'Vector options' dialog now correctly works for multiple selected
+   vectors
+#20 August 23, 1998
+ - plove.bat added
+ - widgets.tcl updated
+#21 Jan 1, 1999
+ - small fixes
+
+
+   

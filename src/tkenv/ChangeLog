@@ -1,0 +1,279 @@
+#24  Apr 9, 1997
+  The first usable, reasonably bug-free version.
+  To complete:
+     - implement 'Save inspector list'
+     - finish cMsg inspector
+     - histogram/outvector inspector: draw axes, labelling etc.
+  To do in the future:
+     - options dialog (breakpoints enabled/disabled etc)
+     - filtered message window
+     - restart must be done decently
+     - implement concrete inspectors
+     - fast run
+#24a Apr 10, 1997
+  - 'Save inspector list' done
+#25  Apr 10, 1997
+  - omnetpp.tcl split to 5 smaller scripts
+#25c Apr 10, 1997
+  - cMsg inspector quasi finished
+#25d Apr 10, 1997
+  - cStatistic inspector added
+#26 Apr 11, 1997
+  - cMsg inspector writeBack written; "From"/"To" buttons still missing
+  - cPar inspector added
+  - cMod inspector added; not implemented yet
+#26c Apr 12, 1997
+  - opp_histogramwindow_cell, opp_outvectorinspector_value,
+    opp_outvectorinspector_config commands implemented. Not compiled yet.
+    The script part is to be done.
+#28 Apr 17, 1997
+  - Histogram, outvector windows are finished
+  - cSimpleMod inspector done
+  - to do: brush up TCompoundModInspector & TContainerInspector
+           check FDDI bug!!!
+#28a Apr 17, 1997
+  - CHK() macro added to every Tcl_Eval(), Tcl_VarEval(), Tcl_EvalFile()
+#29 Apr 17, 1997
+  - bugs with inspector creation were fixed
+  - new TO DO list:
+     - check FDDI bug!!!
+     - filtered message window
+     - 'Express Run' option
+     - restart must be done decently
+     - options dialog (breakpoints enabled/disabled etc)
+     - implement breakpoints
+     - cCompundMod graphical inspector
+     - add [Tkenv]/tkenv-lib-path= option to ini file
+        (or) possibility to hardwire scripts into lib
+#30 Apr 22, 1997
+  Bugfixes:
+     - THistogramWindow: missing cell #0 bug fixed
+     - TOutvectInspector: unmatched drawing and labelling bug fixed
+     - cSimpleMod's container inspector bug fixed
+  opp_inspectorcommand implemented. This means that any inspector can be
+     implemented in the future without touching existing Tkenv code!
+  New ToDo's:
+     - print event number, time in sec, next module info into main window
+#31 Jun 23, 1997
+  - commented out XSynchronize(...) and Tk_SetWindowBackground(...) lines
+    from tklib.cc which caused problems on Win95/NT
+  - added TKENV_LIBPATH environment var to specify the location of Tkenv
+    script files if they are not in ~/omnetpp/envir/tkenv
+  - added View menu
+  - make histogram and output vector windows respond to resize events
+#32 Jun 25, 1997
+  - menu building code in main.tcl reorganized, making it easier to
+    rearrange menus
+  - menus reorganized
+  - 'inspect differently' bar changed to ordinary button
+  - simple toolbar added
+#33 Jun 25, 1997
+  - added 'event number' and 'next module' displays to status bar
+  - added opt_verbose_sim and opt_module_msgs options
+  - using main window like cmdenv output
+  - NOT COMPLETE:
+      'simulation options' dialog
+      opp_getsimoption/setsimoption commands
+      printing of event banners
+#34 Jun 26, 1997
+  - 'simulation options' dialog, opp_getsimoption/setsimoption commands completed
+  - prints event banners in main window (if turned on)
+#35 Jun 26, 1997
+  - improved on cMsg inspector
+#36 Jun 27, 1997
+  - hardwired font definitions collected to create_font_bindings (main.tcl)
+    and thus they are a lot easier to customise
+#37 Jun 27, 1997
+  - Express run added, Fast Run, Animate changed (compatibity: envir92 or up)
+  - the following ini file options were added (with default values):
+          animation-delay = 100
+          update-freq-fast = 10
+          update-freq-express = 1000
+          breakpoints-enabled = TRUE
+          verbose-simulation = TRUE
+          module-messages = TRUE
+#38 Jun 27, 1997
+  - 'Run until' dialog done; still to do: run until #(event number)
+#39 Jun 27, 1997
+  - idea that modal dialogs should stay on top isn't good: what if there
+    are two modal windows??
+  - cMsg, cPar inspector enhanced
+  - View|Snapshot file etc. won't open window if file doesn't exist
+#40 July 1, 1997
+  - some bugs in #39 fixed
+  - now prints event banners in module windows
+  - "Inspect differently" button changed to "Inspect As.." on inspector
+    toolbar
+  - added single stepping within a module
+#41 July 1, 1997
+  - ini file entries renamed:
+          verbose-simulation --> print-banners
+          module-messages --> use-mainwindow
+  - some inspectors modified to use toolbars
+#42 July 1, 1997
+  - small fixes on #41
+#43 July 1, 1997
+  - bug fixes and improvements on #42
+  - gate inspector changed; "AsObject" and "AsGraph" icons added to many
+    inspectors
+#44 July 6, 1997
+  - small fixes and improvements on #43
+#45 July 10, 1997
+  - makefile hacked to make it work with Cygnus gcc
+  - 'darkblue' changed to 'blue' because Tk on Win95 didn't recognize it
+  - default value of TKENV_LIBPATH changed and different for WinNT and Unices
+  - known bugs on Win95/NT: some scrollbars are missing (??)
+#46 Aug 7, 1997
+  - cNetSimpleMod corrected to cNetMod
+  - compatibility: sim144a or up
+#47 Aug 17, 1997
+  - updated for sim146a
+       cMsgHeap inspector added
+       extrastack() stuff added
+  Still To Do:
+     - "step over initialization messages"
+     - cGate graphical inspector: should show the route
+     - filtered message window
+     - restart must be done decently: destroy+rebuild
+     - implement breakpoints
+     - cCompoundMod graphical inspector
+     - outvector graphical inspector: add possibility to set base time
+     - implement "run until event #243"
+     - objects should know what inspector types can be created for them.
+       This can be done in the  inspector(int type, void *data) function:
+       if type==QUERY_TYPES then it should put list of possible types
+       to memory pointed to by `data' ptr.
+#48 Oct 2, 1997
+  - cleaned up & renamed several member functions; compatible with sim147
+#49 Oct 6, 1997
+  - further renaming; compatible with sim148
+#50 Dec 13, 1997
+  - upgraded to sim151
+  - use file dialogs of Tk4.2 - requires Tcl7.6/Tk4.2 from now on
+  - some Tk beautifying (correct wrong packing parameters etc)
+#51 Feb 15, 1998
+  - makefile changed; tkenv.a-->libtkenv.a
+#52 March 19, 1998
+  - user interface beautifying, updating for Tk8.0
+#53 March 26, 1998
+  - "Inspect As" button only offers really existing inspector types as choice
+  - container inspectors redesigned to make it more intuitive to use
+#54a-j April 15-24, 1998
+  - work versions, not released
+#55 April 24, 1998
+  NEW FEATURE: graphical module inspectors and animation
+    Modules are now displayed graphically. Submodules can be drawn as
+    color rectangles, ovals or icons. (Icons are stored in the new bitmaps/
+    directory.)
+    Placement, arrangement and appearance of submodules is controlled by
+    the modules' display strings, associated with the setDisplayString(),
+    displayString() members of cModule and cGate. If you use the new
+    'display:' phrases of the NED language, the corresponding
+    setDisplayString() calls will be automatically placed into the
+    nedc-compiled code. Read doc/dispstr.txt on how to write display strings.
+    Modules that don't have display strings are placed automatically.
+    Animation of message flow has also been added.
+  New ini file options:
+    [Tkenv]/animation-enabled= 0/1
+  Some of the Tcl code cleaned up.
+  Changes:
+    - TKENV_LIBPATH environment variable renamed to OMNETPP_TKENV_DIR.
+    - A new environment variable OMNETPP_BITMAP_DIR added.
+  Requires sim156.
+  TO DO:
+    - implement reference to module parameters in display strings
+    - graphical cGate inspector, showing whole path
+    - graphical cQueue inspector
+#56 April 24, 1998
+  - makefile can now create shared object (libtkenv.so)
+  - stuff from TOmnetTkApp's constructor move to its setup() function
+#57 April 28, 1998
+  - scrollbars added to graphical module inspector
+  - name field added to message inspector
+  - misc improvements and bugfixes
+#58 May 12, 1998
+  - makefile updated; timer calibration for animation; icon support;
+    small fixes
+#59 May 18, 1998
+  - made compatible with sim160
+#60 June 5, 1998
+  - two small but annoying bugs fixed
+  - made compatible with sim160
+#61 June 9, 1998
+  - made compatible with sim162
+  - removed 'container' inspector type from many classes
+#62 June 11, 1998
+  - made compatible with sim162 (gate vector stuff)
+  - small fix on output vector window tcl code
+#63 June 17, 1998
+  - message names and message kind coloring during animation
+  - new ini file options:
+    [Tkenv]/animation-msgnames= 0/1
+            animation-msgcolors= 0/1
+#64 June 25, 1998
+  - callFinish() incorporated
+  - msg insp fixed
+  - othes fixes
+#65 June 26, 1998
+  - bugfixes; cMessage and cGate inspector improved
+#66 July 1, 1998
+  - Simulate|finish simulation run and |start all modules added
+#67 July 3, 1998
+  - added right click support
+  - outvector time-range autoconfig
+  - browsing can go on while simulation is executing
+  - run until event number
+  - animation speed ([Tkenv]/animation-speed=0..3)
+#68 July 10, 1998
+  - module inspectors rewritten in notebook-style
+  - graphical gate inspector (path inspector) added (cannot do animation yet)
+  - [Tkenv]/default-run= option added
+  - cWatch inspector added
+  - Simulation|Restart changed to Rebuild (restart cannot be done properly)
+  - several smaller improvements
+#69 July 11, 1998
+  - small improvements on gate inspector
+#70 July 15, 1998
+  - small fixes
+  - small improvements on gate inspector
+#71 July 24, 1998
+  - arrow.cc changed; display string for connections changed (see Manual)
+  - small fixes
+#72 August 12, 1998
+  - Borland C++ 5.0 project file added (tkenv.ide)
+  - fixes necessary to run Tkenv on Windows
+#73 August 13, 1998
+  - support for compiled-in TCL code added.
+    See the makefile for more info and to turn it on/off.
+
+    Here's how it works: tcl2c.c generates tclcode.cc from  the .tcl files.
+    tclcode.cc is in turn included into tkapp.cc. tkapp.cc includes tclcode.cc
+    and uses compiled-in TCL code if OMNETPP_TKENV_DIR is undefined at
+    compile-time.
+#74 August 14, 1998
+  - bugfixes
+#74a August 17, 1998
+  - dialog centering and focus problems fixed (or alleviated) on Windows
+  - icon loading improved
+#74b August 23, 1998
+  - small fixes; widgets.tcl updated
+#75 Dec 27, 1998
+  - updated for sim170
+  - cPacket inspector added
+  - setType() moved to tklib.h/.cc for easy reuse
+  - makefile renamed to makefile.in
+  - stack usage statistics added to simple module inspector
+  - runningModule() corrected to contextModule()
+#76a-c Jan 25, 1999
+  - inspector factories added
+  - updated for sim172b
+  - plugin support: automatically loads .tcl and .so files placed in the
+    tkenv/plugins directory. Intended use: inspectors for custom classes.
+#77a Feb 7, 1999
+  - fixed bug in outvector-window (caused div by zero)
+  - cMessage and cPacket inspector redesigned
+  - fixed minor bug with anim speed settings
+#78 Feb 7, 1999
+  - stable version
+
+--- CVS begin ---
