@@ -36,7 +36,9 @@
  * 1. Communications layer, represented by cParsimCommunications.
  *    This encapsulates all details of message passing between parts
  *    of a program that executes in parallel, and hides details of
- *    the communications library (MPI, PVM, ...).
+ *    the communications library (MPI, PVM, ...). Subclasses implemented
+ *    here are cMPICommunications, cNamedPipeCommunications, 
+ *    cFileCommunications.
  *
  * 2. Partition layer, represented by cParsimPartition. This encapsulates
  *    the task of distributing the simulation model over several

@@ -23,7 +23,7 @@
 #include "cexception.h"
 
 /**
- * Represents an exception that has been reveived from other partitions.
+ * Represents an exception that has been received from other partitions.
  *
  * @ingroup Parsim
  */
@@ -37,7 +37,8 @@ class cReceivedException : public cException
 };
 
 /**
- * Represents a terminationexception that has been reveived from other partitions.
+ * Represents a termination exception that has been received from other 
+ * partitions.
  *
  * @ingroup Parsim
  */

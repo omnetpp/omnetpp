@@ -31,6 +31,8 @@
  *
  * It is VERY slow, and only useful for understanding, debugging or
  * demonstrating parallel simulation.
+ *
+ * @ingroup Parsim
  */
 class cFileCommunications : public cParsimCommunications
 {
