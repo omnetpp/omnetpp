@@ -109,7 +109,7 @@ cGate& cGate::operator=(cGate& gate)
    return *this;
 }
 
-const char *cGate::fullName()
+const char *cGate::fullName() const
 {
       static char buf[256];
       if (!isVector())
@@ -120,7 +120,7 @@ const char *cGate::fullName()
       }
 }
 
-const char *cGate::fullPath()
+const char *cGate::fullPath() const
 {
       // use cObject::fullPath()'s static buffer
       // hide gate vector: skip directly to owner module
@@ -335,7 +335,7 @@ int cGate::routeContains( cModule *mod, int gate )
     return 0;
 }
 
-bool cGate::isConnected()
+bool cGate::isConnected() const
 {
     if (!ownerModule()->isSimple() && ownerModule()->isOnLocalMachine())
         return fromgatep!=NULL && togatep!=NULL;
