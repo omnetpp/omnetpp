@@ -408,12 +408,32 @@ set ddict(loopvar,tovalue)          {}
 
 #=====================================================================
 
+# collect types
+set types {}
+foreach i [array names ddict] {
+    regsub -- ",.*" $i "" type
+    if {[lsearch $types $type]==-1} {
+        lappend types $type
+    }
+}
+
+# collect fields for each type
+foreach type $types {
+    foreach i [array names ddict "$type,*"] {
+        regsub -- ".*," $i "" field
+        lappend ddfields($type) $field
+    }
+}
+unset types
+
+#=====================================================================
+
 #
 # Init global vars: add a root item with key 0
 #
 # Note: This must be in the same file as the filling of the ddict() array,
 # because if Tcl embedding is used (e.g. Tcl code is linked into
-# the program as a large C string constant) we cannot control the order 
+# the program as a large C string constant) we cannot control the order
 # the Tcl files.
 #
 

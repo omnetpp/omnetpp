@@ -78,10 +78,10 @@ puts "dbg: addItem: $type $key added to $parentkey (its chilren now: $ned($paren
 # make item the child of another item
 #
 proc insertItem {key parentkey} {
-   global ned
+    global ned
 
-   set ned($key,parentkey) $parentkey
-   lappend ned($parentkey,childrenkeys) $key
+    set ned($key,parentkey) $parentkey
+    lappend ned($parentkey,childrenkeys) $key
 }
 
 
@@ -90,51 +90,55 @@ proc insertItem {key parentkey} {
 # delete an item; also delete it from canvas, with linked items
 #
 proc deleteItem {key} {
-   global ned canvas
+    global ned canvas ddfields
 
 puts "dbg: deleteItem $key entered"
 
-   # prevent race conditions...
-   set ned($key,being-deleted) 1
+    # prevent race conditions...
+    set ned($key,being-deleted) 1
 
-   # delete children recursively
-   foreach childkey $ned($key,childrenkeys) {
-      deleteItem $childkey
-   }
+    # delete children recursively
+    foreach childkey $ned($key,childrenkeys) {
+       deleteItem $childkey
+    }
 
-   # delete non-child linked objects
-   #   (e.g. connections when a submod is deleted)
-   foreach i [array names ned "*,*ownerkey"] {
-      if {[info exist ned($i)] && $ned($i)==$key} {
-         regsub -- ",.*ownerkey" $i "" childkey
-         deleteItem $childkey
-      }
-   }
+    # delete non-child linked objects
+    #   (e.g. connections when a submod is deleted)
+    foreach i [array names ned "*,*ownerkey"] {
+       if {[info exist ned($i)] && $ned($i)==$key} {
+          regsub -- ",.*ownerkey" $i "" childkey
+          deleteItem $childkey
+       }
+    }
 
-   # delete item from canvas (if it's there)
-   # if a canvas displayed exactly this item, close that canvas
-   set canv_id [canvasIdFromItemKey $key]
-   if {$canv_id!=""} {
+    # delete item from canvas (if it's there)
+    # if a canvas displayed exactly this item, close that canvas
+    set canv_id [canvasIdFromItemKey $key]
+    if {$canv_id!=""} {
 
-      if {$canvas($canv_id,module-key)==$key} {
-          destroyCanvas $canv_id
-      } else {
-          set c $canvas($canv_id,canvas)
-          foreach i [array names ned "$key,*-cid"] {
-             $c delete $ned($i)
-          }
-      }
-   }
+       if {$canvas($canv_id,module-key)==$key} {
+           destroyCanvas $canv_id
+       } else {
+           set c $canvas($canv_id,canvas)
+           foreach i [array names ned "$key,*-cid"] {
+              $c delete $ned($i)
+           }
+       }
+    }
 
-   # unlink from parent
-   set parentkey $ned($key,parentkey)
-   set pos [lsearch -exact $ned($parentkey,childrenkeys) $key]
-   set ned($parentkey,childrenkeys) [lreplace $ned($parentkey,childrenkeys) $pos $pos]
+    # unlink from parent
+    set parentkey $ned($key,parentkey)
+    set pos [lsearch -exact $ned($parentkey,childrenkeys) $key]
+    set ned($parentkey,childrenkeys) [lreplace $ned($parentkey,childrenkeys) $pos $pos]
 
-   # delete from array
-   foreach i [array names ned "$key,*"] {
-      unset ned($i)
-   }
+    # delete from array
+    set type $ned($key,type)
+    foreach field $ddfields($type) {
+        unset ned($key,$field)
+    }
+    foreach field $ddfields(common) {
+        catch {unset ned($key,$field)}
+    }
 }
 
 
@@ -143,8 +147,8 @@ puts "dbg: deleteItem $key entered"
 # Find a child element within the given parent
 #
 proc getChildren {parentkey} {
-   global ned
-   return $ned($parentkey,childrenkeys)
+    global ned
+    return $ned($parentkey,childrenkeys)
 }
 
 # getChildrenWithType --
@@ -152,36 +156,35 @@ proc getChildren {parentkey} {
 # Find a child element within the given parent
 #
 proc getChildrenWithType {parentkey type} {
-   global ned
+    global ned
 
-   set keys {}
-   foreach key $ned($parentkey,childrenkeys) {
-      if {$ned($key,type)==$type} {
-          lappend keys $key
-      }
-   }
-   return $keys
+    set keys {}
+    foreach key $ned($parentkey,childrenkeys) {
+       if {$ned($key,type)==$type} {
+           lappend keys $key
+       }
+    }
+    return $keys
 }
 
 
 # canvasIdFromItemKey --
 #
-# returns the number of canvas the item is on
+# returns the id of canvas the item is on
 #
 proc canvasIdFromItemKey {key} {
-   global ned canvas
+    global ned canvas
 
-   while {$key!=""} {
-       # FIXME: very inefficient code
-       foreach i [array names canvas "*,module-key"] {
-           if {$canvas($i)==$key} {
-               regsub -- ",module-key" $i "" canv_id
-               return $canv_id
-           }
-       }
-       set key $ned($key,parentkey)
-   }
-   return ""
+    while {$key!=""} {
+        foreach i [array names canvas "*,module-key"] {
+            if {$canvas($i)==$key} {
+                regsub -- ",module-key" $i "" canv_id
+                return $canv_id
+            }
+        }
+        set key $ned($key,parentkey)
+    }
+    return ""
 }
 
 # isItemPartOfItem --
@@ -189,14 +192,14 @@ proc canvasIdFromItemKey {key} {
 # check if 1st item is under 2nd one in the data structure tree
 #
 proc isItemPartOfItem {key anc_key} {
-   global ned
-   while {$key!=""} {
-       if {$key==$anc_key} {
-           return 1
-       }
-       set key $ned($key,parentkey)
-   }
-   return 0
+    global ned
+    while {$key!=""} {
+        if {$key==$anc_key} {
+            return 1
+        }
+        set key $ned($key,parentkey)
+    }
+    return 0
 }
 
 # itemKeyFromName --
@@ -204,40 +207,38 @@ proc isItemPartOfItem {key anc_key} {
 # get a key from name and type
 #
 proc itemKeyFromName {name type} {
+    global ned
 
-   global ned
-
-   foreach i [array names ned "*,type"] {
-       if {$ned($i)==$type} {
-           regsub -- ",type" $i "" key
-           if {$ned($key,name)==$name} {
-              return $key
-           }
-       }
-   }
-   return ""
+    foreach i [array names ned "*,type"] {
+        if {$ned($i)==$type} {
+            regsub -- ",type" $i "" key
+            if {$ned($key,name)==$name} {
+               return $key
+            }
+        }
+    }
+    return ""
 }
 
 #
 # get a key from canvas item id
 #
 proc itemKeyFromCid {cid {canv_id ""}} {
+    global ned gned canvas
 
-   global ned gned canvas
+    if {$cid==""} {return ""}
+    if {$canv_id==""} {set canv_id $gned(canvas_id)}
 
-   if {$cid==""} {return ""}
-   if {$canv_id==""} {set canv_id $gned(canvas_id)}
-
-   foreach i [array names ned "*-cid"] {
-      if {$ned($i)==$cid} {
-         regsub -- ",.*-cid" $i "" key
-         # make sure item is on this canvas
-         if [isItemPartOfItem $key $canvas($canv_id,module-key)] {
-             return $key
-         }
-      }
-   }
-   return ""
+    foreach i [array names ned "*-cid"] {
+       if {$ned($i)==$cid} {
+          regsub -- ",.*-cid" $i "" key
+          # make sure item is on this canvas
+          if [isItemPartOfItem $key $canvas($canv_id,module-key)] {
+              return $key
+          }
+       }
+    }
+    return ""
 }
 
 #
@@ -479,8 +480,8 @@ proc deleteNedfile {nedfilekey} {
 #
 # used by switchToGraphics and deleteNedfile.
 #
-# $key must be a top-level item (not only a module). This proc is
-# a simplified version of deleteItem:
+# $key must be a top-level item (module,simple,channel etc.).
+# This proc is a simplified version of deleteItem:
 #  o  deleting graphics stuff from the canvas is omitted
 #     (callers are supposed to clear the whole canvas manually)
 #  o  recursive deletion of data is also simplified
@@ -489,7 +490,7 @@ proc deleteNedfile {nedfilekey} {
 #     top-level items)
 #
 proc deleteModuleData {key} {
-    global ned
+    global ned ddfields
 
     # delete children recursively
     foreach childkey $ned($key,childrenkeys) {
@@ -502,8 +503,12 @@ proc deleteModuleData {key} {
     # - unlink from parent omitted
 
     # delete from array
-    foreach i [array names ned "$key,*"] {
-        unset ned($i)
+    set type $ned($key,type)
+    foreach field $ddfields($type) {
+        unset ned($key,$field)
+    }
+    foreach field $ddfields(common) {
+        catch {unset ned($key,$field)}
     }
 }
 

@@ -27,7 +27,7 @@
 # This procedure is called from parsened.cc, NEDParser::create()
 #
 proc NedParser_createNedElement {nedarrayname type parentkey} {
-   global ddict
+   global ddict ddfields
    upvar #0 $nedarrayname nedarray
 
    # choose key
@@ -35,13 +35,11 @@ proc NedParser_createNedElement {nedarrayname type parentkey} {
    incr nedarray(nextkey)
 
    # add ned() fields
-   foreach i [array names ddict "common,*"] {
-      regsub -- "common," $i "" field
-      set nedarray($key,$field) $ddict($i)
+   foreach field $ddfields(common) {
+      set nedarray($key,$field) $ddict(common,$field)
    }
-   foreach i [array names ddict "$type,*"] {
-      regsub -- "$type," $i "" field
-      set nedarray($key,$field) $ddict($i)
+   foreach field $ddfields($type) {
+      set nedarray($key,$field) $ddict($type,$field)
    }
 
    # set parent
@@ -61,17 +59,14 @@ proc NedParser_findChild {nedarrayname parentkey attr value} {
    upvar #0 $nedarrayname nedarray
 
    set key ""
-   foreach i [array names nedarray "*,parentkey"] {
-      if {$nedarray($i)==$parentkey} {
-         regsub -- ",.*" $i "" key1
-         if {[info exist nedarray($key1,$attr)] && $nedarray($key1,$attr)==$value} {
-            if {$key==""} {
-               set key $key1
-            } else {
-               return "not unique"
-            }
-         }
-      }
+   foreach key1 $nedarray($parentkey,childrenkeys) {
+       if {[info exist nedarray($key1,$attr)] && $nedarray($key1,$attr)==$value} {
+          if {$key==""} {
+             set key $key1
+          } else {
+             return "not unique"
+          }
+       }
    }
    return $key
 }

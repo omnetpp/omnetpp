@@ -43,6 +43,7 @@ Text editor:
   containing `//' or `\"' sequences; `in:' and `out:' are not highlighted
 
 General:
+- INCREASE PERFORMANCE! Get rid of "foreach i [array names ned ...]" statements...
 - introduce ~/.gnedrc
 - switching back from text to graphics should check if text really changed or not
 - display string: numeric parameters must be checked!!!
