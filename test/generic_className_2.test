@@ -1,0 +1,9 @@
+%description:
+Test that NED-generated simple modules have the right className() methods.
+
+%activity:
+
+ev << "'" << className() << "'" << endl;
+
+%contains: stdout
+'{}'
