@@ -20,7 +20,8 @@ for i in models/* samples/*; do
 done
 for i in sim/*; do
 	if test -f $i/Makefile.in; then
-	(cd $i; make depend; rm Makefile)
+		(cd $i; make depend; rm Makefile)
+	fi
 done
 rm bin/makemake
 
