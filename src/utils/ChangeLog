@@ -1,3 +1,7 @@
+2004-09-24  Andras Varga
+
+        * opp_makemake.in, opp_nmakemake: don't delete $(TARGET) with "-n"
+
 2004-09-14  Andras Varga
 
         * opp_nmakemake: added -b <basedir> option. <basedir> is supposed

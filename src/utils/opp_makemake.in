@@ -719,7 +719,12 @@ generateheaders: \$(GENERATEDHEADERS)
 	for i in \$(SUBDIRS); do (cd \$\$i && \$(MAKE) generateheaders) || exit 1; done
 
 clean:
-	rm -f *.o *_n.cc *_n.h *_m.cc *_m.h \$(TARGET)\$(EXE_SUFFIX) .tstamp
+EOT
+if [ $type = "exe" ]; then
+    echo "	rm -f \$(TARGET)\$(EXE_SUFFIX)"
+fi
+cat <<EOT
+	rm -f *.o *_n.cc *_n.h *_m.cc *_m.h .tstamp
 	rm -f *.vec *.sca
 	for i in \$(SUBDIRS); do (cd \$\$i && \$(MAKE) clean); done
 
