@@ -15,6 +15,11 @@ include configuser.vc
 MOPTS=/nologo
 MAKEFILE=/F Makefile.vc
 
+# Win9x, ME not supported (shell is crippled)
+!if "$(OS)"!="Windows_NT"
+!error This makefile only works on NT (NT4.0, Win2K, XP)
+!endif
+
 # envir_ilib only needed if dlls are to be built
 !if "$(LIB_SUFFIX)"==".dll"
 ENVIR_ILIB=envir_ilib
@@ -151,6 +156,12 @@ thetutorial:
 	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_TUTORIAL_DIR:/=\)\queues && $(MAKE) $(MOPTS) -f queues.mak
 
+
+test: check-env libs progs 
+	@echo ===== Running tests ====
+	@echo Error: Tests not (yet) supported on NT using MSVC; try Cygwin.
+        @exit 1
+
 #=====================================================================
 #
 # Utilities
@@ -216,8 +227,8 @@ clean:
 	-del /q $(OMNETPP_LIB_DIR:/=\)\*.dll
 	-del /q $(OMNETPP_LIB_DIR:/=\)\*.ilib
 	-for %%i in ( $(SAMPLES) ) do \
-	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && del /q /s *.exe debug release
-	-cd /d $(OMNETPP_TUTORIAL_DIR:/=\)\queues && del /q /s *.exe debug release
+	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && del /q /s *.exe *.ilk *.idb *.pdb *_n.cpp debug release
+	-cd /d $(OMNETPP_TUTORIAL_DIR:/=\)\queues && del /q /s *.exe *.ilk *.idb *.pdb *_n.cpp debug release
 
 depend:
 	for %%i in ( $(LIBS) $(PROGS) ) do \

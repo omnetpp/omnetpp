@@ -28,6 +28,7 @@ MPI_DIR=d:/home/mpi
 OMNETPP_SRC_DIR=$(OMNETPP_ROOT)/src
 OMNETPP_SAMPLES_DIR=$(OMNETPP_ROOT)/samples
 OMNETPP_TUTORIAL_DIR=$(OMNETPP_ROOT)/tutorial
+OMNETPP_TEST_DIR=$(OMNETPP_ROOT)/test
 
 OMNETPP_BIN_DIR=$(OMNETPP_ROOT)/bin
 OMNETPP_INCL_DIR=$(OMNETPP_ROOT)/include
@@ -54,8 +55,11 @@ AR=link.exe /lib
 SHLIB_LD=link.exe /dll
 RC=rc.exe
 
-# dependency generator (needs Perl in the path!)
-MAKEDEPEND=perl $(OMNETPP_ROOT)/src/utils/makedep.pl -Y --objsuffix .obj --objdirtree
+# Perl: needed for makedep, experimental msg subclassing compiler (msgc), test tool (opp_test)
+PERL=perl.exe
+
+# dependency generator (needs Perl!)
+MAKEDEPEND=$(PERL) $(OMNETPP_ROOT)/src/utils/makedep.pl -Y --objsuffix .obj --objdirtree
 
 # OMNeT++ tools
 NEDC=$(OMNETPP_BIN_DIR)/nedc.exe
@@ -126,7 +130,7 @@ GNED_IF_POSSIBLE=gned
 #
 TKENV_EMBED_TCL=no
 GNED_EMBED_TCL=no
-PLOVE_EMBED_TCL=yes
+PLOVE_EMBED_TCL=no
 
 #
 # It is possible to compile GNED and Plove as Windows GUI apps (ie. not
