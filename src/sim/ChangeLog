@@ -1,3 +1,8 @@
+2004-04-04  Andras Varga
+
+	* simplemodule.cc: cancelEvent(): don't throw error if message is not
+	currently scheduled, just return.
+
 2004-03-22  ------ omnetpp-3.0a3 released ------
 
 2004-03-03  ------ omnetpp-3.0a2 released ------
