@@ -102,6 +102,7 @@ bool NEDFileBuffer::indexLines()
     if (!lineBeg) return false;
 
     // fill in array
+    lineBeg[0] = NULL;
     lineBeg[1] = wholeFile;
     int line = 2;
     for (s = wholeFile; *s; s++)
@@ -152,7 +153,10 @@ int NEDFileBuffer::lastColumn(char *s)
 
 char *NEDFileBuffer::getPosition(int line, int column)
 {
-    if (line<0 || line>numLines)
+    // tolerant version: if line is out of range, return beginning or end of file
+    if (line<1)
+        return lineBeg[1];
+    if (line>numLines)
         return lineBeg[numLines]+strlen(lineBeg[numLines]);
 
     char *s = lineBeg[line];
@@ -206,13 +210,16 @@ const char *NEDFileBuffer::getFileComment()
         li2++;
     }
 
+    // if file doesn't contain code line, take the whole file
+    if (li2>numLines) lastblank=numLines;
+
     // return comment block
     YYLTYPE comment;
     comment.first_line = 1;
     comment.first_column = 0;
     comment.last_line = lastblank+1;
     comment.last_column = 0;
-    return stripComment(get(comment),lastblank);
+    return stripComment(get(comment));
 }
 
 // topLineOfBannerComment()
@@ -250,7 +257,7 @@ const char *NEDFileBuffer::getBannerComment(YYLTYPE pos)
     comment.first_column = 0;
     comment.last_line = pos.first_line;
     comment.last_column = 0;
-    return stripComment(get(comment),comment.last_line-comment.first_line);
+    return stripComment(get(comment));
 }
 
 // getTrailingComment()
@@ -291,14 +298,14 @@ const char *NEDFileBuffer::getTrailingComment(YYLTYPE pos)
     comment.first_column = pos.last_column;
     comment.last_line = lineafter;
     comment.last_column = 0;
-    return stripComment(get(comment),comment.last_line-comment.first_line);
+    return stripComment(get(comment));
 }
 
 // stripComment()
 //  return a "stripped" version of a multi-line comment --
 //  all non-comment elements (comma, etc) are deleted
 //
-char *NEDFileBuffer::stripComment(const char *comment, int numlines)
+char *NEDFileBuffer::stripComment(const char *comment)
 {
     // expand buffer if necessary
     if (commentBufLen < (int)strlen(comment)+1)

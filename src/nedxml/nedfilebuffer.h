@@ -49,7 +49,7 @@ class NEDFileBuffer
 
     bool indexLines();
     int topLineOfBannerComment(int li);
-    char *stripComment(const char *s, int numlines);
+    char *stripComment(const char *s);
 
   public:
     /**
