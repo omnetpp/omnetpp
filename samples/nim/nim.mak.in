@@ -100,8 +100,7 @@ LINK32_OBJS= \
 	"$(INTDIR)\players.obj"
 
 "$(OUTDIR)\nim.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
-   lofasz=aaa
-	 $(LINK32) @<<
+	$(LINK32) @<<
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<
 
