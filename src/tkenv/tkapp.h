@@ -15,6 +15,7 @@
 #define __TKAPP_H
 
 #include <tk.h>
+#include <vector>
 
 #include "omnetapp.h"
 
@@ -38,6 +39,10 @@ class TInspector;
 class TOmnetTkApp : public TOmnetApp
 {
    public:
+      //
+      // state transitions:
+      //    SIM_NONET -> SIM_NEW -> (SIM_RUNNING <-> SIM_READY) -> SIM_TERMINATED -> SIM_FINISHCALLED -> SIM_NONET
+      //                                               `-> SIM_ERROR
       enum eState {
           SIM_NONET = 0,
           SIM_NEW = 1,
@@ -48,18 +53,23 @@ class TOmnetTkApp : public TOmnetApp
           SIM_FINISHCALLED = 6
       };
 
-      //
-      // state transitions:
-      //    SIM_NONET -> SIM_NEW -> (SIM_RUNNING <-> SIM_READY) -> SIM_TERMINATED -> SIM_FINISHCALLED -> SIM_NONET
-      //                                               `-> SIM_ERROR
+      struct sPathEntry {
+         cModule *from; // NULL if descent
+         cModule *to;   // NULL if ascent
+         sPathEntry(cModule *f, cModule *t) {from=f; to=t;}
+      };
+      typedef std::vector<sPathEntry> PathVec; 
 
    public:
+      // options
       int  opt_default_run;        // automatically set up this run at startup
       bool opt_bkpts_enabled;      // stop at breakpoints (can be improved...)
       bool opt_print_banners;      // print event banners
       bool opt_use_mainwindow;     // dump modules' ev << ... stuff into main window
       bool opt_animation_enabled;  // msg animation
+      bool opt_nexteventmarkers;   // display next event marker (red frame around modules)
       bool opt_senddirect_arrows;  // flash arrows when doing sendDirect() animation
+      bool opt_anim_methodcalls;   // animate method calls
       bool opt_animation_msgnames; // msg animation: display message name or not
       bool opt_animation_msgcolors;// msg animation: display msg kind as color code or not
       double opt_animation_speed;  // msg animation speed: 0=slow 1=norm 2=fast
@@ -67,6 +77,9 @@ class TOmnetTkApp : public TOmnetApp
       int  opt_updatefreq_fast;    // FastRun updates display every N events
       int  opt_updatefreq_express; // RunExpress updates display every N events
       unsigned opt_extrastack;     // per-module extra stack
+
+      // state variables
+      bool  animating;         // while execution, do message animation or not
 
    protected:
       Tcl_Interp *interp;      // TCL interpreter
@@ -76,7 +89,6 @@ class TOmnetTkApp : public TOmnetApp
 
       eState simstate;         // state of the simulation run
       int   run_nr;            // number of current simulation run
-      bool  animation_ok;      // while execution, do message animation or not
       bool  bkpt_hit;          // flag to signal that a breakpoint was hit and sim. must be stopped
       bool  stop_simulation;   // flag to signal that simulation must be stopped (STOP button pressed in the UI)
 
@@ -95,6 +107,7 @@ class TOmnetTkApp : public TOmnetApp
       virtual void messageSent(cMessage *msg, cGate *directToGate);
       virtual void messageDelivered(cMessage *msg);
       virtual void breakpointHit(const char *lbl, cSimpleModule *mod);
+      virtual void moduleMethodCalled(cModule *from, cModule *to, const char *method);
 
       virtual void putmsg(const char *s);
       virtual void puts(const char *s);
@@ -138,6 +151,7 @@ class TOmnetTkApp : public TOmnetApp
       Tcl_Interp *getInterp() {return interp;}
 
       // small functions:
+      cSimpleModule *guessNextModule();
       void updateNetworkRunDisplay();
       void updateSimtimeDisplay();
       void updateNextModuleDisplay();
@@ -150,6 +164,8 @@ class TOmnetTkApp : public TOmnetApp
       void animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate);
       void animateDelivery(cMessage *msg);
       void animateDeliveryDirect(cMessage *msg);
+
+      void findDirectPath(cModule *frommodule, cModule *tomodule, PathVec& pathvec);
 
       const char *getIniFileName()       {return opt_inifile_name;}
       const char *getOutVectorFileName() {return outvectmgr->fileName();}

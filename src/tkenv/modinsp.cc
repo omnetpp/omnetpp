@@ -160,7 +160,8 @@ void TGraphicalModWindow::update()
    }
    else
    {
-       redrawMessages(interp,0,NULL);
+       redrawNextEventMarker();
+       redrawMessages();
    }
 }
 
@@ -284,22 +285,26 @@ int TGraphicalModWindow::redrawModules(Tcl_Interp *interp, int ac, const char **
       }
    }
 
-   // display messages
-   redrawMessages(interp, 0, NULL);
-
+   // display messages and next event marker (red frame)
+   redrawNextEventMarker();
+   redrawMessages();
    return TCL_OK;
 }
 
-int TGraphicalModWindow::redrawMessages(Tcl_Interp *interp, int, const char **)
+void TGraphicalModWindow::redrawMessages()
 {
-   cSimpleModule *mod = (cSimpleModule *)object;
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
+   cModule *mod = (cModule *)object;
 
+   // refresh & cleanup from prev. events 
    setToolbarInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
-   //setToolbarInspectButton(".toolbar.params", &(mod->paramv),INSP_DEFAULT);
-   //setToolbarInspectButton(".toolbar.gates", &(mod->gatev),INSP_DEFAULT);
+   CHK(Tcl_VarEval(interp, canvas, " delete msg msgname", NULL));
+
+   // this thingy is only needed if animation is going on
+   if (!((TOmnetTkApp *)ev.app)->animating) 
+       return;
 
    // loop through all messages in the event queue and display them
-   CHK(Tcl_VarEval(interp, canvas, " delete msg msgname", NULL));
    for (cMessageHeapIterator msg(simulation.msgQueue); !msg.end(); msg++)
    {
       char gateptr[32], msgptr[32], msgkind[16];
@@ -337,7 +342,33 @@ int TGraphicalModWindow::redrawMessages(Tcl_Interp *interp, int, const char **)
          }
       }
    }
-   return TCL_OK;
+}
+
+void TGraphicalModWindow::redrawNextEventMarker()
+{
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
+   cModule *mod = (cModule *)object;
+
+   // removing marker from previous event
+   CHK(Tcl_VarEval(interp, canvas, " delete nexteventmarker", NULL));
+
+   // this thingy is only needed if animation is going on
+   if (!((TOmnetTkApp *)ev.app)->animating || !((TOmnetTkApp *)ev.app)->opt_nexteventmarkers) 
+       return;
+
+   // if any parent of the module containing the next event is on this canvas, draw marker
+   cModule *nextmod = ((TOmnetTkApp *)ev.app)->guessNextModule();
+   cModule *nextmodparent = nextmod; 
+   while (nextmodparent && nextmodparent->parentModule()!=mod)
+       nextmodparent = nextmodparent->parentModule();
+   if (nextmodparent)
+   {
+       CHK(Tcl_VarEval(interp, "graphmodwin_draw_nexteventmarker ",
+                       canvas, " ",
+                       ptrToStr(nextmodparent), " ",
+                       (nextmod==nextmodparent ? "2" : "1"),
+                       NULL));
+   }    
 }
 
 void TGraphicalModWindow::displayStringChange(cModule *, bool immediate)

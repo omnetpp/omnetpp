@@ -775,9 +775,9 @@ proc graphmodwin_do_animate_senddirect {win x1 y1 x2 y2 msgptr msgname msgkind m
     set c $win.c
     
     if [opp_getsimoption senddirect_arrows] {
-        set arrow [$c create line $x1 $y1 $x2 $y2 -dash {.} -arrow last -fill black -width 1]
+        set arrow [$c create line $x1 $y1 $x2 $y2 -tags {senddirect} -dash {.} -arrow last -fill black -width 1]
         graphmodwin_do_animate $win $x1 $y1 $x2 $y2 $msgptr $msgname $msgkind "thru"
-        $c delete $arrow
+        #$c delete $arrow -- this will come in _cleanup
     } else {    
         graphmodwin_do_animate $win $x1 $y1 $x2 $y2 $msgptr $msgname $msgkind "thru"
     }   
@@ -829,6 +829,94 @@ proc graphmodwin_do_animate {win x1 y1 x2 y2 msgptr msgname msgkind {mode thru}}
        $c move $msgptr $dx $dy
        for {set j 0} {$j<$ad} {incr j} {}
     }
+}
+
+proc graphmodwin_animate_senddirect_cleanup {win} {
+    set c $win.c
+    $c delete senddirect
+}
+
+
+proc graphmodwin_animate_methodcall_ascent {win parentmodptr modptr methodlabel} {
+    set c $win.c
+    set src  [get_submod_coords $c $modptr]
+
+    set x1 [expr ([lindex $src 0]+[lindex $src 2])/2]
+    set y1 [expr ([lindex $src 1]+[lindex $src 3])/2]
+    set x2 [expr $x1 + $y1/4]
+    set y2 0
+    graphmodwin_do_draw_methodcall $win $x1 $y1 $x2 $y2 $methodlabel
+}
+
+proc graphmodwin_animate_methodcall_descent {win parentmodptr modptr methodlabel} {
+    set c $win.c
+    set dest [get_submod_coords $c $modptr]
+
+    set x2 [expr ([lindex $dest 0]+[lindex $dest 2])/2]
+    set y2 [expr ([lindex $dest 1]+[lindex $dest 3])/2]
+    set x1 [expr $x2 - $y2/4]
+    set y1 0
+    graphmodwin_do_draw_methodcall $win $x1 $y1 $x2 $y2 $methodlabel
+}
+
+proc graphmodwin_animate_methodcall_horiz {win fromptr toptr methodlabel} {
+    set c $win.c
+    set src  [get_submod_coords $c $fromptr]
+    set dest [get_submod_coords $c $toptr]
+
+    set x1 [expr ([lindex $src 0]+[lindex $src 2])/2]
+    set y1 [expr ([lindex $src 1]+[lindex $src 3])/2]
+    set x2 [expr ([lindex $dest 0]+[lindex $dest 2])/2]
+    set y2 [expr ([lindex $dest 1]+[lindex $dest 3])/2]
+    graphmodwin_do_draw_methodcall $win $x1 $y1 $x2 $y2 $methodlabel
+}
+
+proc graphmodwin_do_draw_methodcall {win x1 y1 x2 y2 methodlabel} {
+    global animdelay
+
+    set c $win.c
+    #set arrow [$c create line $x1 $y1 $x2 $y2 -tags {methodcall} -width 3 -arrow last -arrowshape {15 20 6} -fill #808080]
+    set arrow [$c create line $x1 $y1 $x2 $y2 -tags {methodcall} -width 2 -arrow last -fill red]
+
+    set x [expr ($x1+$x2)/2]
+    set y [expr ($y1+$y2)/2]
+    $c create text $x $y -tags {methodcall} -text $methodlabel -anchor c
+    
+    # flash arrow a bit
+    set sp [opp_getsimoption animation_speed]
+    set ad [expr $animdelay / (0.1+$sp*$sp)]
+    for {set i 0} {$i<2} {incr i} {
+       $c itemconfig $arrow -state hidden
+       update idletasks
+       for {set j 0} {$j<3*$ad} {incr j} {}
+       $c itemconfig $arrow -state normal
+       update idletasks
+       for {set j 0} {$j<3*$ad} {incr j} {}
+    }
+}
+
+proc graphmodwin_animate_methodcall_wait {} {
+    global animdelay
+
+    update idletasks; 
+    set sp [opp_getsimoption animation_speed]
+    set ad [expr int($animdelay / (0.1+$sp*$sp)/30)]
+    after $ad
+}    
+
+proc graphmodwin_animate_methodcall_cleanup {win} {
+    set c $win.c
+    $c delete methodcall
+}
+
+proc graphmodwin_draw_nexteventmarker {c modptr type} {
+    set src  [get_submod_coords $c $modptr]
+    set x1 [expr [lindex $src 0]-2]
+    set y1 [expr [lindex $src 1]-2]
+    set x2 [expr [lindex $src 2]+2]
+    set y2 [expr [lindex $src 3]+2]
+    # $type==1 compound module, $type==2 simple module
+    $c create rect $x1 $y1 $x2 $y2 -tags {nexteventmarker} -outline red -width $type
 }
 
 proc calibrate_animdelay {} {

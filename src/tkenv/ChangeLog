@@ -1,3 +1,17 @@
+2003-10-02  Andras Varga
+
+	* tkapp.cc/h, modinsp.cc/h, modinsp2.tcl: new features:
+	(1) animation of method calls across modules (for that to work, 
+	    module methods need the Enter_Method() macro to be added manually),
+	    and
+	(2) displaying the location of the next event by putting a red frame 
+	    around the module icon.
+	Both features can be disabled from the Simulation Options dialog,
+	see checkboxes "Show next event markers" and "Animate method calls".
+	New ini file options in the [Tkenv] section:
+	  next-event-markers = true/false, default is true
+	  anim-methodcalls = true/false, default is true
+
 2003-09-25  Andras Varga
 
 	* modinsp2.tcl: added support for "r" submodule display string tag.
@@ -16,6 +30,7 @@
         Try "i=penguin" or "b=15,15,rect;o=white,kind,5"
 
 2003-09-22  Andras Varga
+
 	* tkapp.cc, modinsp.cc, modinsp2.tcl: implemented animation of
 	sendDirect().
 

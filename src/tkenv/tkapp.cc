@@ -236,7 +236,7 @@ void TOmnetTkApp::doOneStep()
     updateSimtimeDisplay();
 
     bkpt_hit = false;
-    animation_ok = true;
+    animating = true;
 
     simstate = SIM_RUNNING;
     startClock();
@@ -285,7 +285,7 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
 
     bkpt_hit = false;
     stop_simulation = false;
-    animation_ok = !fastexec;
+    animating = !fastexec;
 
     clearNextModuleDisplay();
     clearPerformanceDisplay();
@@ -312,7 +312,7 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
             if (stepwithinmodule_reached)
             {
                 if (!firstevent) break;
-                animation_ok = true;
+                animating = true;
             }
             firstevent = false;
 
@@ -377,6 +377,8 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
         finishSimulation();
     }
 
+    animating = true;
+
     updateNextModuleDisplay();
     clearPerformanceDisplay();
     updateSimtimeDisplay();
@@ -391,7 +393,7 @@ void TOmnetTkApp::runSimulationExpress(simtime_t until_time,long until_event)
     ev.disable_tracing = true;
     bkpt_hit = false;
     stop_simulation = false;
-    animation_ok = false;
+    animating = false;
 
     clearNextModuleDisplay();
     clearPerformanceDisplay();
@@ -451,6 +453,8 @@ void TOmnetTkApp::runSimulationExpress(simtime_t until_time,long until_event)
         // call wrapper around simulation.callFinish() and simulation.endRun()
         finishSimulation();
     }
+
+    animating = true;
 
     updateSimtimeDisplay();
     updateNextModuleDisplay();
@@ -766,7 +770,7 @@ void TOmnetTkApp::updateSimtimeDisplay()
 
 }
 
-void TOmnetTkApp::updateNextModuleDisplay()
+cSimpleModule *TOmnetTkApp::guessNextModule()
 {
     cSimpleModule *mod = NULL;
 
@@ -774,7 +778,8 @@ void TOmnetTkApp::updateNextModuleDisplay()
     {
         try
         {
-            mod = simulation.selectNextModule();
+            // FIXME in parsim, this will have to change to simulation.guessNextModule()
+            mod = simulation.selectNextModule(); 
         }
         catch (cException *e)
         {
@@ -783,6 +788,12 @@ void TOmnetTkApp::updateNextModuleDisplay()
             delete e;
         }
     }
+    return mod;
+}
+
+void TOmnetTkApp::updateNextModuleDisplay()
+{
+    cSimpleModule *mod = guessNextModule();
 
     char id[16];
     const char *modname;
@@ -900,7 +911,9 @@ void TOmnetTkApp::readOptions()
     opt_updatefreq_express = ini_file->getAsInt( "Tkenv", "update-freq-express", 10000 );
     opt_bkpts_enabled = ini_file->getAsBool( "Tkenv", "breakpoints-enabled", true );
     opt_animation_enabled = ini_file->getAsBool( "Tkenv", "animation-enabled", true );
+    opt_nexteventmarkers = ini_file->getAsBool( "Tkenv", "next-event-markers", true );
     opt_senddirect_arrows = ini_file->getAsBool( "Tkenv", "senddirect-arrows", true );
+    opt_anim_methodcalls = ini_file->getAsBool( "Tkenv", "anim-methodcalls", true );
     opt_animation_msgnames = ini_file->getAsBool( "Tkenv", "animation-msgnames", true );
     opt_animation_msgcolors = ini_file->getAsBool( "Tkenv", "animation-msgcolors", true );
     opt_animation_speed = ini_file->getAsDouble( "Tkenv", "animation-speed", 1);
@@ -948,7 +961,7 @@ void TOmnetTkApp::messageSent( cMessage *msg, cGate *directToGate)
                             "}\n",
                             NULL));
 
-    if (animation_ok && opt_animation_enabled)
+    if (animating && opt_animation_enabled)
     {
         // find suitable inspectors and do animate the message...
         if (!directToGate)
@@ -977,7 +990,7 @@ void TOmnetTkApp::messageDelivered( cMessage *msg )
                             "}\n",
                             NULL));
 
-    if (animation_ok && opt_animation_enabled)
+    if (animating && opt_animation_enabled)
     {
         cGate *arrivalGate = msg->arrivalGate();
         if (!arrivalGate) 
@@ -993,6 +1006,98 @@ void TOmnetTkApp::messageDelivered( cMessage *msg )
             animateDeliveryDirect(msg);
         }
     }
+}
+
+void TOmnetTkApp::moduleMethodCalled(cModule *from, cModule *to, const char *method)
+{
+    if (!animating || !opt_anim_methodcalls) 
+        return;
+        
+    // find modules along the way
+    PathVec pathvec;
+    findDirectPath(from, to, pathvec);
+
+    PathVec::iterator i;
+    for (i=pathvec.begin(); i!=pathvec.end(); i++)
+    {
+        if (i->to==NULL)
+        {
+            // ascent
+            cModule *mod = i->from;
+            cModule *enclosingmod = mod->parentModule();
+            //ev << "DBG: animate ascent inside " << enclosingmod->fullPath()
+            //   << " from " << mod->fullPath() << endl;
+            TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
+            if (insp)
+            {
+                char parentptr[30], modptr[30];
+                strcpy(parentptr,ptrToStr(enclosingmod));
+                strcpy(modptr,ptrToStr(mod));
+                CHK(Tcl_VarEval(interp, "graphmodwin_animate_methodcall_ascent ",
+                                        insp->windowName(), " ",
+                                        parentptr," ",
+                                        modptr," ",
+                                        " {",method,"} ",
+                                        NULL));
+            }
+        } 
+        else if (i->from==NULL)
+        {
+            // animate descent towards destmod
+            cModule *mod = i->to;
+            cModule *enclosingmod = mod->parentModule();
+            //ev << "DBG: animate descent in " << enclosingmod->fullPath() << 
+            //   " to " << mod->fullPath() << endl; 
+
+            TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
+            if (insp)
+            {
+                char parentptr[30], modptr[30];
+                strcpy(parentptr,ptrToStr(enclosingmod));
+                strcpy(modptr,ptrToStr(mod));
+                CHK(Tcl_VarEval(interp, "graphmodwin_animate_methodcall_descent ",
+                                        insp->windowName(), " ",
+                                        parentptr," ",
+                                        modptr," ",
+                                        " {",method,"} ",
+                                        NULL));
+            }
+        } 
+        else
+        {
+            cModule *enclosingmod = i->from->parentModule();
+            TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
+            if (insp)
+            {
+                char fromptr[30], toptr[30];
+                strcpy(fromptr,ptrToStr(i->from));
+                strcpy(toptr,ptrToStr(i->to));
+                CHK(Tcl_VarEval(interp, "graphmodwin_animate_methodcall_horiz ",
+                                        insp->windowName(), " ",
+                                        fromptr," ",
+                                        toptr," ",
+                                        " {",method,"} ",
+                                        NULL));
+            }
+        }
+    }    
+
+    // leave it there for a while
+    CHK(Tcl_Eval(interp, "graphmodwin_animate_methodcall_wait"));
+
+    // then remove all arrows
+    for (i=pathvec.begin(); i!=pathvec.end(); i++)
+    {
+        cModule *mod= i->from ? i->from : i->to;
+        cModule *enclosingmod = mod->parentModule();
+        TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
+        if (insp)
+        {
+            CHK(Tcl_VarEval(interp, "graphmodwin_animate_methodcall_cleanup ",
+                                    insp->windowName(),
+                                    NULL));
+        }
+    }        
 }
 
 void TOmnetTkApp::animateSend(cMessage *msg, cGate *fromgate, cGate *togate)
@@ -1039,6 +1144,159 @@ static cModule *findSubmoduleTowards(cModule *parentmod, cModule *towardsgrandch
     return m;
 }
 
+
+void TOmnetTkApp::findDirectPath(cModule *srcmod, cModule *destmod, PathVec& pathvec)
+{
+    // for animation purposes, we assume that the message travels up
+    // in the module hierarchy until it finds the first compound module
+    // that also contains the destination module (possibly somewhere deep),
+    // and then it descends to the destination module. We have to find the
+    // list of modules visited during the travel.
+
+    // first, find "lowest common ancestor" module
+    cModule *commonparent = srcmod;
+    while (commonparent)
+    {
+        // try to find commonparent among ancestors of destmod
+        cModule *m = destmod;
+        while (m && commonparent!=m)
+            m = m->parentModule();
+        if (commonparent==m)
+            break;
+        commonparent = commonparent->parentModule();
+    }
+
+    // commonparent should exist, worst case it's the system module,
+    // but let's have the following "if" anyway...
+    if (!commonparent) 
+        return;
+
+    // animate the ascent of the message until commonparent (excluding).
+    // The second condition, destmod==commonparent covers case when we're sending 
+    // to an output gate of the parent (grandparent, etc) gate.
+    cModule *mod = srcmod;
+    while (mod!=commonparent && (mod->parentModule()!=commonparent || destmod==commonparent))
+    {
+        pathvec.push_back(sPathEntry(mod,NULL));
+        mod = mod->parentModule();
+    }
+
+    // animate within commonparent
+    if (commonparent!=srcmod && commonparent!=destmod)
+    {
+        cModule *from = findSubmoduleTowards(commonparent, srcmod);
+        cModule *to = findSubmoduleTowards(commonparent, destmod);
+        pathvec.push_back(sPathEntry(from,to));
+    }
+
+    // descend from commonparent to destmod
+    mod = findSubmoduleTowards(commonparent, destmod);
+    if (mod && srcmod!=commonparent) 
+        mod = findSubmoduleTowards(mod, destmod);
+    while (mod)
+    {
+        // animate descent towards destmod
+        pathvec.push_back(sPathEntry(NULL,mod));
+        // find module 'under' mod, towards destmod (this will return NULL if mod==destmod)
+        mod = findSubmoduleTowards(mod, destmod);
+    }
+}
+
+void TOmnetTkApp::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
+{
+    char msgptr[32], msgkind[16];
+    ptrToStr(msg,msgptr);
+    sprintf(msgkind,"%d",msg->kind());
+
+    PathVec pathvec;
+    findDirectPath(frommodule, togate->ownerModule(), pathvec);
+
+    cModule *arrivalmod = msg->arrivalGate()->ownerModule();
+    
+    for (PathVec::iterator i=pathvec.begin(); i!=pathvec.end(); i++)
+    {
+        if (i->to==NULL)
+        {
+            // ascent
+            cModule *mod = i->from;
+            cModule *enclosingmod = mod->parentModule();
+            TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
+            if (insp)
+            {
+                char parentptr[30], modptr[30];
+                strcpy(parentptr,ptrToStr(enclosingmod));
+                strcpy(modptr,ptrToStr(mod));
+                CHK(Tcl_VarEval(interp, "graphmodwin_animate_senddirect_ascent ",
+                                        insp->windowName(), " ",
+                                        parentptr," ",
+                                        modptr," ",
+                                        msgptr,
+                                        " {",msg->fullName(),"} ",
+                                        msgkind," ",
+                                        "thru", // cannot be "beg" (msg ball cannot stay on encl.module rect)
+                                        NULL));
+            }
+        } 
+        else if (i->from==NULL)
+        {
+            // animate descent towards destmod
+            cModule *mod = i->to;
+            cModule *enclosingmod = mod->parentModule();
+            TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
+            if (insp)
+            {
+                char parentptr[30], modptr[30];
+                strcpy(parentptr,ptrToStr(enclosingmod));
+                strcpy(modptr,ptrToStr(mod));
+                CHK(Tcl_VarEval(interp, "graphmodwin_animate_senddirect_descent ",
+                                        insp->windowName(), " ",
+                                        parentptr," ",
+                                        modptr," ",
+                                        msgptr,
+                                        " {",msg->fullName(),"} ",
+                                        msgkind," ",
+                                        (mod==arrivalmod?"beg":"thru"),
+                                        NULL));
+            }
+        } 
+        else
+        {
+            cModule *enclosingmod = i->from->parentModule();
+            TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
+            if (insp)
+            {
+                char fromptr[30], toptr[30];
+                strcpy(fromptr,ptrToStr(i->from));
+                strcpy(toptr,ptrToStr(i->to));
+                CHK(Tcl_VarEval(interp, "graphmodwin_animate_senddirect_horiz ",
+                                        insp->windowName(), " ",
+                                        fromptr," ",
+                                        toptr," ",
+                                        msgptr,
+                                        " {",msg->fullName(),"} ",
+                                        msgkind," ",
+                                        (i->to==arrivalmod?"beg":"thru"),
+                                        NULL));
+            }
+        }
+    }
+
+    // then remove all arrows
+    for (i=pathvec.begin(); i!=pathvec.end(); i++)
+    {
+        cModule *mod= i->from ? i->from : i->to;
+        cModule *enclosingmod = mod->parentModule();
+        TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
+        if (insp)
+        {
+            CHK(Tcl_VarEval(interp, "graphmodwin_animate_senddirect_cleanup ",
+                                    insp->windowName(),
+                                    NULL));
+        }
+    }        
+}
+
+/*
 void TOmnetTkApp::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
 {
     char msgptr[32], msgkind[16];
@@ -1162,6 +1420,7 @@ void TOmnetTkApp::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *t
         mod = findSubmoduleTowards(mod, destmod);
     }
 }
+*/
 
 void TOmnetTkApp::animateDelivery(cMessage *msg)
 {

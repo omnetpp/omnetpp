@@ -243,7 +243,9 @@ proc options_dialog {} {
 
     frame $w.f.f3 -relief groove -borderwidth 2
     checkbutton $w.f.f3.anim -text {Animate messages} -variable opp(anim)
+    checkbutton $w.f.f3.nextev -text {Show next event markers} -variable opp(nextev)
     checkbutton $w.f.f3.sdarrows -text {Show arrows for sendDirect()} -variable opp(sdarrows)
+    checkbutton $w.f.f3.animmeth -text {Animate method calls} -variable opp(animmeth)
     checkbutton $w.f.f3.msgnam -text {Message names during animation} -variable opp(msgnam)
     checkbutton $w.f.f3.msgcol -text {Coloring by message kind} -variable opp(msgcol)
     commentlabel $w.f.f3.c {Color code (message->kind() mod 7):
@@ -253,7 +255,9 @@ proc options_dialog {} {
     $w.f.f3.speed.e config -length 200 -from 0 -to 3 \
                            -resolution 0.01 -variable opp(speed)
     pack $w.f.f3.anim -anchor w
+    pack $w.f.f3.nextev -anchor w
     pack $w.f.f3.sdarrows -anchor w
+    pack $w.f.f3.animmeth -anchor w
     pack $w.f.f3.msgnam -anchor w
     pack $w.f.f3.msgcol -anchor w
     pack $w.f.f3.c -anchor w
@@ -270,7 +274,9 @@ proc options_dialog {} {
     set opp(usemainwin) [opp_getsimoption use_mainwindow]
     set opp(banners)    [opp_getsimoption print_banners]
     set opp(anim)       [opp_getsimoption animation_enabled]
+    set opp(nextev)     [opp_getsimoption nexteventmarkers]
     set opp(sdarrows)   [opp_getsimoption senddirect_arrows]
+    set opp(animmeth)   [opp_getsimoption anim_methodcalls]
     set opp(msgnam)     [opp_getsimoption animation_msgnames]
     set opp(msgcol)     [opp_getsimoption animation_msgcolors]
     set opp(speed)      [opp_getsimoption animation_speed]
@@ -285,7 +291,9 @@ proc options_dialog {} {
         opp_setsimoption use_mainwindow      $opp(usemainwin)
         opp_setsimoption print_banners       $opp(banners)
         opp_setsimoption animation_enabled   $opp(anim)
+        opp_setsimoption nexteventmarkers    $opp(nextev)
         opp_setsimoption senddirect_arrows   $opp(sdarrows)
+        opp_setsimoption anim_methodcalls    $opp(animmeth)
         opp_setsimoption animation_msgnames  $opp(msgnam)
         opp_setsimoption animation_msgcolors $opp(msgcol)
         opp_setsimoption animation_speed     $opp(speed)
@@ -628,21 +636,48 @@ proc filteredobjectlist_refresh {w} {
 
     # get list
     set objlist [opp_getsubobjectsfilt [opp_object_systemmodule] $class $name $orderby]
+    set num [llength $objlist];
 
-    # number of objects display
-    $w.f.numobj config -text "Found [llength $objlist] objects"
-
-    # insert into listbox
+    # ask user if too many...
+    set viewall "yes"
+    if {$num > 100000} {
+        set viewall [tk_messageBox -message "Your query matched $num objects. \
+                     Do you want to display all of them (it might take a while)? \
+                     Clicking \"No\" will display the first 100,000 only." \
+                       -title "Too many hits" -icon question -type yesno -parent $w]
+    }
+    
+    # clear listbox
     set lb $w.f.main.list
     $lb delete 0 end
-    foreach ptr $objlist {
-        # FIXME doctor the info string -- cut off object name and class if exists...
-        set classname [opp_getobjectclassname $ptr]
-        set fullpath [opp_getobjectfullpath $ptr]
-        set infostr0 [opp_getobjectinfostring $ptr]
-        regsub "^.*\\($classname\\)" $infostr0 "" infostr
 
-        $lb insert end "$ptr ($classname)  $fullpath    $infostr"
+    # insert into listbox
+    # FIXME meanwhile, doctor the info string -- cut off object name and class if exists...
+    if {$viewall == "yes"} {
+        $w.f.numobj config -text "Found $num objects"
+        foreach ptr $objlist {
+            # FIXME doctor the info string -- cut off object name and class if exists...
+            set classname [opp_getobjectclassname $ptr]
+            set fullpath [opp_getobjectfullpath $ptr]
+            set infostr0 [opp_getobjectinfostring $ptr]
+            regsub "^.*\\($classname\\)" $infostr0 "" infostr
+
+            $lb insert end "$ptr ($classname)  $fullpath    $infostr"
+        }
+    } else {    
+        set i 0
+        $w.f.numobj config -text "Found $num objects, first 100,000 displayed"
+        foreach ptr $objlist {
+            set classname [opp_getobjectclassname $ptr]
+            set fullpath [opp_getobjectfullpath $ptr]
+            set infostr0 [opp_getobjectinfostring $ptr]
+            regsub "^.*\\($classname\\)" $infostr0 "" infostr
+
+            $lb insert end "$ptr ($classname)  $fullpath    $infostr"
+
+            incr i
+            if {$i > 100000} {break}
+        }
     }
     $lb selection set 0
 }
