@@ -487,19 +487,24 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
    } else if (!strcmp(field,"detailedInfo")) {
        Tcl_SetResult(interp, TCLCONST(object->detailedInfo().c_str()), TCL_VOLATILE);
    } else if (!strcmp(field,"displayString")) {
-       // FIXME use hasDisplayString here!!!!
        if (dynamic_cast<cModule *>(object)) {
-           Tcl_SetResult(interp, TCLCONST(dynamic_cast<cModule *>(object)->displayString().getString()), TCL_VOLATILE);
+           cModule *mod = dynamic_cast<cModule *>(object);
+           const char *str = mod->hasDisplayString() ? mod->displayString().getString() : "";
+           Tcl_SetResult(interp, TCLCONST(str), TCL_VOLATILE);
        } else if (dynamic_cast<cMessage *>(object)) {
            Tcl_SetResult(interp, TCLCONST(dynamic_cast<cMessage *>(object)->displayString()), TCL_VOLATILE);
        } else if (dynamic_cast<cGate *>(object)) {
-           Tcl_SetResult(interp, TCLCONST(dynamic_cast<cGate *>(object)->displayString().getString()), TCL_VOLATILE);
+           cGate *g = dynamic_cast<cGate *>(object);
+           const char *str = g->hasDisplayString() ? g->displayString().getString() : "";
+           Tcl_SetResult(interp, TCLCONST(str), TCL_VOLATILE);
        } else {
            Tcl_SetResult(interp, "no such field in this object", TCL_STATIC); return TCL_ERROR;
        }
    } else if (!strcmp(field,"backgroundDisplayString")) {
        if (dynamic_cast<cModule *>(object)) {
-           Tcl_SetResult(interp, TCLCONST(dynamic_cast<cModule *>(object)->backgroundDisplayString().getString()), TCL_VOLATILE);
+           cModule *mod = dynamic_cast<cModule *>(object);
+           const char *str = mod->hasBackgroundDisplayString() ? mod->backgroundDisplayString().getString() : "";
+           Tcl_SetResult(interp, TCLCONST(str), TCL_VOLATILE);
        } else {
            Tcl_SetResult(interp, "no such field in this object", TCL_STATIC); return TCL_ERROR;
        }
