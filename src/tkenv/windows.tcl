@@ -55,6 +55,8 @@ proc create_messagewindow {name} {
     pack $w.main.sb -anchor center -expand 0 -fill y -ipadx 0 -ipady 0 -padx 0 -pady 0 -side right
     pack $w.main.text -anchor center -expand 1 -fill both -side left
 
+    $w.main.text tag configure SELECT -back #808080 -fore #ffffff
+
     # keyboard bindings
     bind_runcommands $w
     bind_findcommands_to_textwidget $w.main.text
@@ -149,8 +151,11 @@ proc savefile {win filename} {
     close $f
 }
 
+#
+# Open file viewer window
+#
 proc create_fileviewer {filename} {
-    # Open file viewer/editor window
+    global icons help_tips
 
     # create a widget name from filename
     set w $filename
@@ -165,28 +170,39 @@ proc create_fileviewer {filename} {
     # creating widgets
     toplevel $w -class Toplevel
     wm focusmodel $w passive
-    wm geometry $w 350x275
     #wm maxsize $w 1009 738
     wm minsize $w 1 1
     wm overrideredirect $w 0
     wm resizable $w 1 1
     wm title $w $filename
 
-    frame $w.butt
-    button $w.butt.close -text Close -command "destroy $w"
-    button $w.butt.save -text Save -command "savefile $w $filename"
-    button $w.butt.reload -text Reload -command "loadfile $w $filename"
-    pack $w.butt -expand 0 -fill x -side bottom
-    pack $w.butt.close -expand 0 -side right -padx 5 -pady 5
-    pack $w.butt.save -expand 0 -side right -padx 5 -pady 5
-    pack $w.butt.reload -expand 0 -side right -padx 5 -pady 5
+    frame $w.toolbar
+    iconbutton $w.toolbar.sep1   -separator
+    iconbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
+    foreach i {sep1 find} {
+       pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
+    }
+    set help_tips($w.toolbar.find)   {Find string in window}
+    pack $w.toolbar  -anchor center -expand 0 -fill x -side top
+
+    #frame $w.butt
+    #button $w.butt.close -text Close -command "destroy $w"
+    #button $w.butt.save -text Save -command "savefile $w $filename"
+    #button $w.butt.reload -text Reload -command "loadfile $w $filename"
+    #pack $w.butt -expand 0 -fill x -side bottom
+    #pack $w.butt.close -expand 0 -side right -padx 5 -pady 5
+    #pack $w.butt.save -expand 0 -side right -padx 5 -pady 5
+    #pack $w.butt.reload -expand 0 -side right -padx 5 -pady 5
 
     frame $w.main  -borderwidth 1 -relief sunken
     pack $w.main  -anchor center -expand 1 -fill both -ipadx 0 -ipady 0 -padx 0 -pady 0 -side top
     scrollbar $w.main.sb -command "$w.main.text yview"
     pack $w.main.sb -anchor center -expand 0 -fill y -ipadx 0 -ipady 0 -padx 0 -pady 0 -side right
-    text $w.main.text -yscrollcommand "$w.main.sb set"
+    text $w.main.text -yscrollcommand "$w.main.sb set" -width 88 -height 30
     pack $w.main.text -anchor center -expand 1 -fill both -side left
+
+    $w.main.text tag configure SELECT -back #808080 -fore #ffffff
+    bind_findcommands_to_textwidget $w.main.text
 
     # Read file
     loadfile $w $filename

@@ -115,13 +115,31 @@ void TInspector::update()
 
    // update window title (only if changed)
    //  (always updating the title produced many unnecessary redraws under fvwm2-95)
+   char fullpath[300];
+   object->fullPath(fullpath,300);
+   int l = strlen(fullpath);
    char newtitle[128];
-   sprintf(newtitle, "(%.20s) %.100s",object->className(), object->fullPath());
+   if (l<=37)
+       sprintf(newtitle, "(%.40s) %s",object->className(), fullpath);
+   else
+       sprintf(newtitle, "(%.40s) ...%s",object->className(), fullpath+l-35);
    if (strcmp(newtitle, windowtitle)!=0)
    {
        strcpy( windowtitle, newtitle);
        CHK(Tcl_VarEval(interp, "wm title ",windowname," {",windowtitle,"}",NULL));
    }
+
+   // update object type and name info
+   char newname[300];
+   char buf[30];
+   cModule *mod = dynamic_cast<cModule *>(object);
+   if (mod)
+       sprintf(newname, "(%.40s) %.250s  (id=%d)  (%s)",object->className(),
+                        object->fullPath(), mod->id(), ptrToStr(object,buf));
+   else
+       sprintf(newname, "(%.40s) %.250s  (%s)",object->className(),
+                        object->fullPath(), ptrToStr(object,buf));
+   CHK(Tcl_VarEval(interp, windowname,".infobar.name config -text {",newname,"}",NULL));
 }
 
 void TInspector::setEntry(const char *entry, const char *val)

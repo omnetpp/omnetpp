@@ -227,9 +227,9 @@ proc create_omnetpp_window {} {
       {network  -image $icons(network) -command {inspect_systemmodule}}
       {fes      -image $icons(fes)     -command {inspect_messagequeue}}
       {sep5     -separator}
-      {find     -image $icons(find)    -command {edit_find}}
-      {sep6     -separator}
       {options  -image $icons(config)  -command {simulation_options}}
+      {sep6     -separator}
+      {find     -image $icons(find)    -command {edit_find}}
     } {
       set b [eval iconbutton .toolbar.$i]
       pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2
@@ -243,8 +243,8 @@ proc create_omnetpp_window {} {
     set help_tips(.toolbar.stop)    {Stop simulation if running (F8)}
     set help_tips(.toolbar.network) {Inspect network}
     set help_tips(.toolbar.fes)     {Inspect scheduled events (Future Event Set)}
-    set help_tips(.toolbar.find)    {Find string in main window}
     set help_tips(.toolbar.options) {Simulation options}
+    set help_tips(.toolbar.find)    {Find string in main window}
 
     #################################
     # Create status bars

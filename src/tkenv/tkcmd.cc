@@ -161,6 +161,7 @@ int fillListbox_cmd(ClientData, Tcl_Interp *, int, const char **);
 int stopSimulation_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getSimOption_cmd(ClientData, Tcl_Interp *, int, const char **);
 int setSimOption_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getStringHashCode_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 int inspect_cmd(ClientData, Tcl_Interp *, int, const char **);
 int supportedInspTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -217,6 +218,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_stopsimulation",   stopSimulation_cmd }, // args: -
    { "opp_getsimoption",     getSimOption_cmd   }, // args: <option-namestr>
    { "opp_setsimoption",     setSimOption_cmd   }, // args: <option-namestr> <value>
+   { "opp_getstringhashcode",getStringHashCode_cmd}, // args: <string> ret: numeric hash code
    // Inspector stuff
    { "opp_inspect",           inspect_cmd           }, // args: <ptr> <type> <opt> ret: window
    { "opp_supported_insp_types",supportedInspTypes_cmd}, // args: <ptr>  ret: insp type list
@@ -682,6 +684,21 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
    return TCL_OK;
 }
 
+int getStringHashCode_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+
+   const char *s = argv[1];
+   int i = 0;
+   long hash = 0;
+   while (*s) {
+       hash += (i++) * ((*s++ * 173) & 0xff);
+   }
+   char buf[32];
+   sprintf(buf, "%ld", hash);
+   Tcl_SetResult(interp, buf, TCL_VOLATILE);
+   return TCL_OK;
+}
 //--------------
 
 int inspect_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)

@@ -1,4 +1,12 @@
-2002-12-20  Andras Varga
+2002-12-21  Andras Varga
+
+        * all inspector windows: added a "name bar" which displays object
+        type, fullpath, with modules the module id, and the object pointer;
+        also added color coding so that different inspectors of the same object
+        are easier to match visually.
+
+        * File|Create snapshot now offers to open the snapshot file in a viewer
+        window.
 
 	* added tooltips to graphical inspectors. I.e. if you position the 
 	mouse over a module icon, its name, type and id will appear in a 

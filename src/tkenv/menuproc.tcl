@@ -104,7 +104,13 @@ proc create_snapshot {} {
     set ok [inputbox {Snapshot} {Give a label to current simulation snapshot:} label]
     if {$ok == 1} {
         opp_createsnapshot $label
-        messagebox {Snapshot created} "Current state of simulation has been saved into \"[opp_getfilename snapshot]\". You can now use any text editor to examine its contents." info ok
+        set ans [messagebox {Snapshot created} "Current state of simulation \
+has been saved into \"[opp_getfilename snapshot]\". Do you want to open it now \
+in a file viewer window?" question yesno]
+        if {$ans == "yes"} {
+            view_snapshotfile
+        }
+
     }
 }
 
