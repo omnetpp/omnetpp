@@ -56,6 +56,9 @@ cModule::cModule(const cModule& mod) :
     idx=0; vectsize=-1;
     fullname = NULL;
 
+    rngmap = NULL;
+    rngmapsize = 0;
+
     dispstr = NULL;
     parentdispstr = NULL;
 
@@ -73,6 +76,9 @@ cModule::cModule(const char *name, cModule *parentmod) :
 
     idx=0; vectsize=-1;
     fullname = NULL;
+
+    rngmap = NULL;
+    rngmapsize = 0;
 
     dispstr = NULL;
     parentdispstr = NULL;
@@ -130,6 +136,8 @@ cModule::~cModule()
 
     //drop(&gatev); FIXME
     //drop(&paramv);
+
+    delete [] rngmap;
 
     delete [] fullname;
     delete dispstr;
