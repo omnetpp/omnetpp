@@ -59,27 +59,26 @@ enum eMessageKind
 /**
  * The message class in OMNeT++. cMessage objects may represent events,
  * messages, packets (frames, cells, etc) or other entities in a simulation.
- * cMessage can be assigned a name (a property inherited from cObject)
- * and it has other attributes, including message kind, length, priority,
- * error flag and time stamp.
+ * cMessage can be assigned a name (a property inherited from cObject);
+ * other attributes include message kind, length, priority,
+ * error flag and time stamp. Arrival time and gate is also stored.
+ * cMessage supports encapsulation, and messages may be cloned with the 
+ * dup() function. The control info field facilitates modelling communication 
+ * between protocol layers. The context pointer field makes it easier to 
+ * work with several timers (self-messages) at a time.
  *
- * After being sent through a channel, cMessage also remembers
- * the sending and delivery times and its source module.
- *
- * You can encapsulate another message into a message object, which
- * is useful when modeling protocol stacks.
- *
- * cMessage holds a cArray (see parList()) which means that you can attach
- * any number of objects to a message. These objects
- * can be cPar or other objects (like statistics objects, for example).
- * However, when modeling protocol headers, it is not convenient to add
- * header fields as cPar objects: cPars are fairly complex objects themselves,
- * so they add both execution and memory overhead, and they are also error-prone
- * because cPar objects have to be added dynamically and individually to each
- * message object. It is a better idea to leave out cPar objects, and define
- * new C++ message classes with the necessary parameters as int, char, double, etc.
- * instance variables. The latter technique is called 'message subclassing',
- * and the manual describes it in detail.
+ * Further fields can be added to cMessage via message declarations (.msg files) 
+ * which are translated into C++ classes. An example message declaration:
+ * 
+ * \code
+ * message NetwPkt
+ * {
+ *    fields:
+ *        int destAddr = -1; // destination address
+ *        int srcAddr = -1;  // source address
+ *        int ttl =  32;     // time to live
+ * }
+ * \endcode
  *
  * @ingroup SimCore
  */
@@ -232,7 +231,12 @@ class SIM_API cMessage : public cObject
     void setTimestamp(simtime_t t) {tstamp=t;}
 
     /**
-     * Sets context pointer.
+     * Sets the context pointer. This pointer may store an arbitrary value.
+     * It is useful when managing several timers (self-messages): when
+     * scheduling the message one can set the context pointer to the data
+     * structure the timer corresponds to (e.g. the buffer whose timeout 
+     * the message represents), so that when the self-message arrives it is 
+     * easier to identify where it belongs.
      */
     void setContextPointer(void *p) {contextptr=p;}
 
