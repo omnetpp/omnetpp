@@ -35,14 +35,15 @@
 #include "cdispstr.h"
 
 
-//=== static members:
+// static members:
 bool cModule::pause_in_sendmsg;
+std::string cModule::lastmodulefullpath;
+const cModule *cModule::lastmodulefullpathmod = NULL;
 
+//
 // Note: cModule,cSimpleModule,cCompoundModule are left unregistered.
 //   One should never create modules by createOne(cSimpleModule) or the like.
-
-//=========================================================================
-//=== cModule - member functions
+//
 
 cModule::cModule(const cModule& mod) :
  cDefaultList(),
@@ -187,6 +188,9 @@ void cModule::insertSubmodule(cModule *mod)
     if (!firstsubmodp)
         firstsubmodp = mod;
     lastsubmodp = mod;
+
+    // cached module fullPath() possibly became invalid
+    lastmodulefullpathmod = NULL;
 }
 
 void cModule::removeSubmodule(cModule *mod)
@@ -207,6 +211,9 @@ void cModule::removeSubmodule(cModule *mod)
 
     // this is not strictly needed but makes it cleaner
     mod->prevp = mod->nextp = NULL;
+
+    // cached module fullPath() possibly became invalid
+    lastmodulefullpathmod = NULL;
 }
 
 void cModule::setModuleType(cModuleType *mtype)
@@ -235,7 +242,13 @@ const char *cModule::fullName() const
 
 std::string cModule::fullPath() const
 {
-    return std::string(fullPath(fullpathbuf,MAX_OBJECTFULLPATH));
+    if (lastmodulefullpathmod!=this)
+    {
+        // cache the result
+        lastmodulefullpath = fullPath(fullpathbuf,MAX_OBJECTFULLPATH);
+        lastmodulefullpathmod = this;
+    }
+    return lastmodulefullpath;
 }
 
 const char *cModule::fullPath(char *buffer, int bufsize) const
@@ -251,12 +264,12 @@ const char *cModule::fullPath(char *buffer, int bufsize) const
     char *buf = buffer;
     if (parentModule())
     {
-       parentModule()->fullPath(buf,bufsize);
-       int len = strlen(buf);
-       buf+=len;
-       bufsize-=len;
-       *buf++ = '.';
-       bufsize--;
+        parentModule()->fullPath(buf,bufsize);
+        int len = strlen(buf);
+        buf+=len;
+        bufsize-=len;
+        *buf++ = '.';
+        bufsize--;
     }
 
     // append our own name
@@ -292,9 +305,9 @@ int cModule::setGateSize(const char *gname, int newsize)
     if (pos<0)
        pos = findGate(gname,0);
     if (pos<0)
-       throw new cException(this,"setGateSize(): Gate %s[] not found", gname);
+        throw new cException(this,"setGateSize(): Gate %s[] not found", gname);
     if (newsize<0)
-       throw new cException(this,"setGateSize(): negative vector size (%d) requested for gate %s[]", newsize, gname);
+        throw new cException(this,"setGateSize(): negative vector size (%d) requested for gate %s[]", newsize, gname);
 
     char tp = gate(pos)->type();
     int oldsize = gate(pos)->size();
