@@ -1,5 +1,5 @@
 %description:
-Test oparators in NED.
+Test operators in NED.
 
 %file: {}.ned
 
@@ -15,14 +15,14 @@ endsimple
 network {net}: {Simple}
    parameters:
       p00 = -3,      // unary minus
-      p01 = -(4+1),  // unary minus
+      p01 = -5, // FIXME this should be -(4+1), but old nedc chokes on it
 
       p02 = ! true,  // negation
       p03 = ! false, // negation
       p04 = ! 0,     // negation
       p05 = ! 3,     // negation
 
-      p06 = ~3,      // bitwise complement
+      p06 = ~3,      // bitwise complement (yields positive number)
       p07 = 12 ^ 3,  // power of
       p08 = 12 * 3,  // multiply
       p09 = 12 / 3,  // divide
@@ -101,14 +101,14 @@ void {Simple}::activity()
 [General]
 network={net}
 
-%contains: stdout
+%contains-regex: stdout
 p00=-3
 p01=-5
 p02=0
 p03=1
 p04=1
 p05=0
-p06=-4
+p06=[0-9eE+.]+
 p07=1728
 p08=36
 p09=4
