@@ -140,8 +140,9 @@ LIB_SUFFIX='a'
 #
 # Compile options. Use -g for debugging, -O3... for speed.
 #
-CFLAGS='-g -Wall'
-# CFLAGS='-O3 -DNDEBUG=1'
+CFLAGS='-g'
+#CFLAGS='-g -Wall'
+#CFLAGS='-O3 -DNDEBUG=1'
 
 #----------------------
 # Subtitutions.

@@ -12,7 +12,6 @@ OMNETPP_SRC_DIR =       @OMNETPP_SRC_DIR@
 OMNETPP_MODELS_DIR =    @OMNETPP_MODELS_DIR@
 OMNETPP_SAMPLES_DIR =   @OMNETPP_SAMPLES_DIR@
 
-
 #=====================================================================
 #
 # Main targets
@@ -126,9 +125,15 @@ token:
 #=====================================================================
 
 clean:
-	rm -f `find $(OMNETPP_SRC_DIR) -name '*.o' -o -name '*_n.cc'`
-	rm -f `find $(OMNETPP_MODELS_DIR) -name '*.o' -o -name '*_n.cc'`
-	rm -f `find $(OMNETPP_SAMPLES_DIR) -name '*.o' -o -name '*_n.cc'`
+	for i in sim envir tkenv tvenv cmdenv nedc gned plove utils; do \
+	    (cd $(OMNETPP_SRC_DIR)/$$i; $(MAKE) clean); \
+	done
+	for i in `echo $(OMNETPP_MODELS_DIR)/*`; do \
+	    (cd $$i; $(MAKE) clean); \
+	done
+	for i in `echo $(OMNETPP_SAMLES_DIR)/*`; do \
+	    (cd $$i; $(MAKE) clean); \
+	done
 
 dist:
 	echo 'to be done'
