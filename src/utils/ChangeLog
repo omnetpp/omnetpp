@@ -1,5 +1,8 @@
 2004-07-20  Andras Varga
 
+	* neddoc.xsl: "NED file" pages in generated HTML now contain full
+	NED file listing
+
 2004-07-19  Andras Varga
 
 	* opp_nmakemake,opp_makemake: added -x (--notstamp) option: the 

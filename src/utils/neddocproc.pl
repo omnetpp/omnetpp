@@ -200,8 +200,9 @@ foreach $fname (glob($fnamepatt))
               #$src =~ s|\<span.*?</?span|span|g;
 
               # put comment back
-              $html =~ s|\@bingo\@|\<pre\>$src\</pre\>|s;
+              $html =~ s|\@bingo\@|\<pre class="srcXXX"\>$src\</pre\>|s;
         }
+        $html =~ s|\<pre class="srcXXX"\>|\<pre class="src"\>|gs;
 
         $html =~ s|\@INSERTFILE\((.*?)\)|load_file($1)|gse;
 
