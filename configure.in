@@ -550,6 +550,7 @@ AC_CONFIG_FILES(
   samples/queues/Makefile
   samples/tictoc/Makefile
   samples/tokenring/Makefile
+  samples/sockets/Makefile
   test/Makefile
 )
 
