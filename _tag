@@ -1,22 +1,22 @@
-#
-# Tag format: omnetpp-2_0b1
-#
-
-if [ ! -f configure.in ]; then
+if [ ! -f Version ]; then
     echo 'Must be called in top-level omnetpp dir!'
     exit
 fi
 
 # cvstag and release names...
-relname=$1
+relname=`cat Version`
 cvstag=`echo $relname | sed 's/\./_/g'`
 
 # check tag format
 if echo $relname | grep -q '^omnetpp-[0-9]\+\.[0-9]\+b\?[0-9]*$'; then
-    echo "OK! relname=$relname, cvstag=$cvstag"
+    echo "About to tag with the following data:"
+    echo "  Release: $relname"
+    echo "  CVS tag: $cvstag"
+    echo "Enter to continue..."
+    read
 else
     echo "usage: $0 <relname>.  relname looks like: omnetpp-2.0b1"
-    exit
+    exit 1
 fi
 
 # update ChangeLog files (remove earlier marker line if exists)

@@ -56,3 +56,4 @@ May 7, 2000
  - plove now starts using the classic trick to avoid a hardcoded 'wish' path
    (check top of the 'plove' file).
 ------ omnetpp-2.0b4 released ------
+------ omnetpp-2.0b5 released ------

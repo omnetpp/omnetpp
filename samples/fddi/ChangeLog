@@ -207,3 +207,4 @@ May 7, 2000
 ------ omnetpp-2.0b4 released ------
 Jun 2, 2000
   - fix in MSVC makefile; warning eliminated in othermod.cc
+------ omnetpp-2.0b5 released ------
