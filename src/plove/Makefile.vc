@@ -29,6 +29,7 @@ TK_LIBS=$(TK_LIBS) blt24.lib
 
 PLOVE_OBJS = plove$(PLOVE_EMBED_SUFFIX).obj \
              tklib.obj \
+             tkutil.obj \
              tkcmd.obj
 ENGINE_OBJS =  engine/exception.obj \
                engine/commonnodes.obj \

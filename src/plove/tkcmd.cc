@@ -108,9 +108,9 @@ int getVectorList_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
        Tcl_Obj *vecv[3];
        vecv[0] = Tcl_NewIntObj(it->vectorId);
        const char *s1 = it->moduleName.c_str();
-       vecv[1] = Tcl_NewStringObj(s1, strlen(s1));
+       vecv[1] = Tcl_NewStringObj(TCLCONST(s1), strlen(s1));
        const char *s2 = it->vectorName.c_str();
-       vecv[2] = Tcl_NewStringObj(s2, strlen(s2));
+       vecv[2] = Tcl_NewStringObj(TCLCONST(s2), strlen(s2));
        Tcl_Obj *vec = Tcl_NewListObj(3, vecv);
        Tcl_ListObjAppendElement(interp, vectorlist, vec);
    }
@@ -133,7 +133,7 @@ int getNodeTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
        if (all || !(*it)->isHidden())
        {
            const char *s = (*it)->name();
-           Tcl_Obj *obj = Tcl_NewStringObj(s, strlen(s));
+           Tcl_Obj *obj = Tcl_NewStringObj(TCLCONST(s), strlen(s));
            Tcl_ListObjAppendElement(interp, resultlist, obj);
        }
    }
@@ -182,9 +182,9 @@ int nodeType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
        for (StringMap::iterator i=attrs.begin(); i!=attrs.end(); ++i)
        {
            Tcl_Obj *vecv[3];
-           vecv[0] = Tcl_NewStringObj(i->first.c_str(), -1);
-           vecv[1] = Tcl_NewStringObj(i->second.c_str(), -1);
-           vecv[2] = Tcl_NewStringObj(defaults[i->first].c_str(), -1);
+           vecv[0] = Tcl_NewStringObj(TCLCONST(i->first.c_str()), -1);
+           vecv[1] = Tcl_NewStringObj(TCLCONST(i->second.c_str()), -1);
+           vecv[2] = Tcl_NewStringObj(TCLCONST(defaults[i->first].c_str()), -1);
            Tcl_Obj *vec = Tcl_NewListObj(3, vecv);
            Tcl_ListObjAppendElement(interp, resultlist, vec);
        }
@@ -504,8 +504,8 @@ int compoundFilterType_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
        for (StringMap::iterator i=attrs.begin(); i!=attrs.end(); ++i)
        {
            Tcl_Obj *vecv[2];
-           vecv[0] = Tcl_NewStringObj(i->first.c_str(), -1);
-           vecv[1] = Tcl_NewStringObj(i->second.c_str(), -1);
+           vecv[0] = Tcl_NewStringObj(TCLCONST(i->first.c_str()), -1);
+           vecv[1] = Tcl_NewStringObj(TCLCONST(i->second.c_str()), -1);
            Tcl_Obj *vec = Tcl_NewListObj(2, vecv);
            Tcl_ListObjAppendElement(interp, resultlist, vec);
        }
