@@ -5,13 +5,57 @@
 # This perl script is a temporary solution until new nedc is ready.
 #
 
-$filename = $ARGV[0];
+#
+# If no args, print usage
+#
+$Usage = 'OMNeT++ message subclassing compiler (prototype)
+usage: msgc.pl [-s <cc-file-suffix>] [-t <h-file-suffix>] <nedfile>
+';
+
+if ($#ARGV == -1)
+{
+    print $Usage;
+    exit(1);
+}
+
+#
+#  Parse the command line for options and files.
+#
+$filename = '';
+$ccsuffix = '_n.cc';
+$hsuffix = '_n.h';
+while (@ARGV)
+{
+    $arg = shift @ARGV;
+
+    if ($arg eq "-s")
+    {
+        $ccsuffix = shift @ARGV;
+    }
+    elsif ($arg eq "-t")
+    {
+        $hsuffix = shift @ARGV;
+    }
+    elsif ($filename eq '')
+    {
+        $filename = $arg;
+    }
+    else
+    {
+        print $Usage;
+        exit(1);
+    }
+}
+
+#
+# parse file
+#
 $filename =~ /./ || die "*** no file name given\n";
 $filename =~ /\.[^\/]*$/ || die "*** file name must contain a dot\n";
 $hfile = $filename;
-$hfile =~ s/\.[^.]*$/_n.h/;
+$hfile =~ s/\.[^.]*$/$hsuffix/;
 $ccfile = $filename;
-$ccfile =~ s/\.[^.]*$/_n.cc/;
+$ccfile =~ s/\.[^.]*$/$ccsuffix/;
 
 $ret = 0;
 
