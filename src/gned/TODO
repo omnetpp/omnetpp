@@ -39,7 +39,7 @@ General:
 - different vertical toolbar when changing from graphics to NED view
 
 Manager:
-- add tree view!!! maybe use -tags feaure of Tree?
+- don't allow opening the same module twice
 - local menu on nedfile: Expand/Collapse, Save, Save As, Close; 
 - local menu on components: Open on canvas, Close canvas, Properties
 

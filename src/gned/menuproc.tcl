@@ -215,10 +215,10 @@ proc editDelete {} {
 
 proc editCheck {} {
    tk_messageBox -title "GNED" -icon warning -type ok \
-                 -message "Here we should check that submodule parameters \
-                           and gates are consistent with earlier module \
-                           declarations, and offer to make corrections. \
-                           This part has not been implemented yet."
+                 -message "Not implemented yet. Here we should check that \
+                           submodule parameters and gates are consistent \
+                           with earlier module declarations, and offer
+                           to make automatic corrections."
 }
 
 proc viewManager {} {

@@ -233,42 +233,27 @@ proc create_omnetpp_window {} {
     set help_tips($gned(horiz-toolbar).close) {Close current canvas}
 
 
-
     #################################
     # Create main display area
     #################################
     frame $w.main
+
 
     #################################
     # Create manager (vert. tree view)
     #################################
     frame $w.main.mgr -relief flat -borderwidth 1
 
+    frame $w.main.mgr.resize -width 5 -relief raised -borderwidth 1 -cursor size_we
     canvas $w.main.mgr.tree -width 120 -bg #ffffe0 -relief groove \
                             -yscrollcommand "$w.main.mgr.sb set"
     scrollbar $w.main.mgr.sb -command "$w.main.mgr.tree yview"
+    pack $w.main.mgr.resize -side right -fill y
     pack $w.main.mgr.sb -side right -fill y
     pack $w.main.mgr.tree -side left -fill y -padx 0 -pady 0 -ipadx 0 -ipady 0
 
     set gned(manager) $w.main.mgr
-    Tree:init $gned(manager).tree
-
-    #
-    # manager bindings
-    #
-    # FIXME:
-    bind $gned(manager).tree <1> {
-      set node [Tree:nodeat %W %x %y]
-      if {$node!=""} {
-        Tree:setselection %W $node
-      }
-    }
-
-    # FIXME:
-    bind $gned(manager).tree <Double-1> {
-      set node [Tree:nodeat %W %x %y]
-      if {$node!=""} {Tree:toggle %W $node}
-    }
+    initTreeManager
 
 
     #################################
@@ -310,10 +295,12 @@ proc create_omnetpp_window {} {
     set help_tips($gned(toolbar).props)  {Properties of selected item}
     set help_tips($gned(toolbar).opts)   {Appearance of selected item}
 
+
     #################################
     # Create canvas & scrollbars
     #################################
     frame $w.main.f
+
 
     #################################
     # Create tabs below

@@ -16,6 +16,57 @@
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
+# initTreeManager --
+#
+#
+proc initTreeManager {} {
+    global gned
+
+    Tree:init $gned(manager).tree
+
+    #
+    # bindings for the tree
+    #
+    bind $gned(manager).tree <Button-1> {
+        catch {destroy .popup}
+        set key [Tree:nodeat %W %x %y]
+        if {$key!=""} {
+            Tree:setselection %W $key
+        }
+    }
+
+    bind $gned(manager).tree <Double-1> {
+        set key [Tree:nodeat %W %x %y]
+        if {$key!=""} {
+            # Tree:toggle %W $key
+            treemanagerDoubleClick $key
+        }
+    }
+
+    bind $gned(manager).tree <Button-3> {
+        set key [Tree:nodeat %W %x %y]
+        if {$key!=""} {
+            treemanagerPopup $key %X %Y
+        }
+    }
+
+    #
+    # bindings for the resize bar
+    #
+    bind $gned(manager).resize <Button-1> {
+        global mouse
+        set mouse(x) %x
+    }
+
+    bind $gned(manager).resize <ButtonRelease-1> {
+        global mouse
+        set dx [expr %x-$mouse(x)]
+
+        set width [$gned(manager).tree cget -width]
+        set width [expr $width+$dx]
+        $gned(manager).tree config -width $width
+    }
+}
 
 # updateTreeManager --
 #
@@ -27,49 +78,121 @@ proc updateTreeManager {} {
     Tree:build $gned(manager).tree
 }
 
+proc treemanagerDoubleClick {key} {
+    global ned
+
+    set type $ned($key,type)
+    if {$type=="module"} {
+        openModuleOnNewCanvas $key
+    } else {
+        tk_messageBox -icon warning -type ok \
+            -message "Opening a '$type' on canvas is not implemented yet."
+    }
+}
+
+proc treemanagerPopup {key x y} {
+    global ned
+
+    catch {destroy .popup}
+    menu .popup -tearoff 0
+    switch $ned($key,type) {
+        nedfile {nedfilePopup $key}
+        module  {modulePopup $key}
+        default {defaultPopup $key}
+    }
+    .popup post $x $y
+}
+
+proc nedfilePopup {key} {
+    global ned
+    # FIXME:
+    foreach i {
+      {command -command "editProps $key" -label {Save} -underline 0}
+      {command -command "editProps $key" -label {Close} -underline 0}
+      {separator}
+      {command -command "deleteItem $key; updateTreeManager" -label {Delete} -underline 0}
+    } {
+       eval .popup add $i
+    }
+}
+
+proc modulePopup {key} {
+    global ned
+    # FIXME:
+    foreach i {
+      {command -command "editProps $key" -label {Open on canvas} -underline 1}
+      {command -command "editProps $key" -label {Close its canvas} -underline 1}
+      {separator}
+      {command -command "deleteItem $key; updateTreeManager" -label {Delete} -underline 0}
+    } {
+       eval .popup add $i
+    }
+}
+
+proc defaultPopup {key} {
+    global ned
+    # FIXME:
+    foreach i {
+      {command -command "deleteItem $key; updateTreeManager" -label {Delete} -underline 0}
+    } {
+       eval .popup add $i
+    }
+}
 
 #-------------- temp solution: -----------------
 
+# getNodeInfo --
+#
 # This user-supplied function gets called by the tree widget to get info about
 # tree nodes. The widget itself only stores the state (open/closed) of the
 # nodes, everything else comes from this function.
 #
-proc getNodeInfo {w op {nodeid {}}} {
+proc getNodeInfo {w op {key {}}} {
+    global ned
 
-  global ned
+    switch $op {
 
-  switch $op {
-    root {
-      return 1
-    }
-    text {
-      return "Node-$nodeid"
-    }
-    icon {
-      if {[expr $nodeid<32]} {
-        return "idir"
-      } else {
-        return "ifile"
-      }
-    }
-    parent {
-      if {$nodeid=="1"} {
-        return ""
-      } else {
-        return [expr int($nodeid/2)]
-      }
-    }
-    children {
-      return [list [expr 2*$nodeid] [expr 2*$nodeid+1]]
-    }
-    haschildren {
-      if {[expr $nodeid<32]} {
-        return 1
-      } else {
+      root {
         return 0
       }
+
+      text {
+        #DBG:
+        # return "$key:$ned($key,type):($ned($key,childrenkeys))"
+
+        if [info exist ned($key,name)] {
+          return "$ned($key,type) $ned($key,name)"
+        } else {
+          return "$ned($key,type)"
+        }
+      }
+
+      icon {
+        if {$ned($key,type)=="nedfile"} {
+          return "idir"
+        } else {
+          return "ifile"
+        }
+      }
+
+      parent {
+        return $ned($key,parentkey)
+      }
+
+      children {
+        return $ned($key,childrenkeys)
+      }
+
+      haschildren {
+        # DBG: return [expr [llength $ned($key,childrenkeys)]!=0]
+        set type $ned($key,type)
+        if {$type=="root" || $type=="nedfile"} {
+          return [expr [llength $ned($key,childrenkeys)]!=0]
+        } else {
+          return 0
+        }
+      }
     }
-  }
 }
 
 
