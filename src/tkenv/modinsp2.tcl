@@ -342,8 +342,8 @@ proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n
        set src_anch  [list [lindex $tags(m) 1] [lindex $tags(m) 2]]
        set dest_anch [list [lindex $tags(m) 3] [lindex $tags(m) 4]]
 
-       puts "DEBUG: src_rect=($src_rect) dest_rect=($dest_rect)"
-       puts "DEBUG: src_anch=($src_anch) dest_anch=($dest_anch)"
+       # puts "DEBUG: src_rect=($src_rect) dest_rect=($dest_rect)"
+       # puts "DEBUG: src_anch=($src_anch) dest_anch=($dest_anch)"
 
        regexp -- {^.[^.]*} $c win
 
