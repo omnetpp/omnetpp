@@ -1,0 +1,25 @@
+#!/usr/bin/awk -f
+# this awk program calculates the average of the numbers found in the lines of the input file
+
+BEGIN {
+        num_samples = 0;
+        sum = 0;
+        sqrsum = 0;
+}
+{
+        val = $0;
+        sum += val;
+        sqrsum += val*val;
+        num_samples++;
+}
+END {
+        print "num_samples = " num_samples;
+        print "sum = " sum;
+        print "sqrsum = " sqrsum;
+        print "average = " sum/num_samples;
+        devsqr = (sqrsum - sum*sum/num_samples)/(num_samples-1);
+        if (devsqr<=0)
+          print "devsqr <= 0";
+        else
+          print "std. deviation = " sqrt(devsqr);
+}

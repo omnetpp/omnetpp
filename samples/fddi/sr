@@ -1,0 +1,8 @@
+bmecisco7 	DAS	R	0	DECnet000728
+sniffer		DAS	R	100	This_Monitor
+bmecisco5	DAS 	V2	1	DECnet000228
+wagner		DAS 	V2 	2	Sun___213C25
+mhtbridge	DAS	V2	3	Bridge1A3866
+bmecisco4	DAS	St	4	DECnet000428
+heliosz		DAS 	R	5	Sun___739BF9
+xyplex		SAS    	R	6	Xyplex083690

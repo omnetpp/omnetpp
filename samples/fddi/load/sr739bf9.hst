@@ -1,0 +1,78 @@
+-1, sr739BF9 # traffic from this station to others (2x1D Histograms)
+0 # Destination ID
+
+#
+# (cDoubleHistogram) StCol.local-objects.Inter Arrivial Time
+#
+28798	 #= num_samples
+0 0.31381	 #= min, max
+614.038	 #= sum
+36.7214	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1	 #= range_ext_factor
+0.00014 0.09214	 #= range
+547 1345	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+20	 #= num_cells
+1	 #= cellv[] exists
+ 11184
+ 2663
+ 1559
+ 1926
+ 1058
+ 1825
+ 2572
+ 724
+ 375
+ 329
+ 277
+ 245
+ 264
+ 225
+ 193
+ 202
+ 176
+ 495
+ 256
+ 358
+0.0046	 #= cellsize
+
+#
+# (cLongHistogram) StCol.local-objects.Packet Length
+#
+28798	 #= num_samples
+61 1521	 #= min, max
+4.89388e+06	 #= sum
+3.94855e+09	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1	 #= range_ext_factor
+67.5 1527.5	 #= range
+5499 0	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+20	 #= num_cells
+1	 #= cellv[] exists
+ 20248
+ 408
+ 236
+ 148
+ 98
+ 95
+ 42
+ 91
+ 27
+ 131
+ 34
+ 119
+ 19
+ 18
+ 7
+ 9
+ 287
+ 22
+ 8
+ 1252
+73	 #= cellsize

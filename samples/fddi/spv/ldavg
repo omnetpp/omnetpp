@@ -1,0 +1,33 @@
+#!/usr/bin/awk -f
+# this awk program calculates load average in every winsize wide window
+#   input file format:
+#     time0   bytes0
+#     time1   bytes1
+#     time2   bytes2
+#     ...     ...
+
+BEGIN {
+        winsize = 0.025;
+        nextlimit = winsize;
+        bytes = 0;
+        allbytes = 0;
+}
+{
+        if ( $1 < nextlimit )
+          {
+          last = $1;
+          bytes += $2;
+          }
+        else
+          {
+          print nextlimit "   " bytes*8/winsize/1e8;
+          nextlimit += winsize;
+          allbytes += bytes;
+          bytes = $2;
+          }
+}
+END {
+        allbytes+=bytes;
+        print last "   " bytes*8/(last-(nextlimit-winsize))/1e8;
+        print "# average utilisation was: " allbytes*8/last/1e8;
+}

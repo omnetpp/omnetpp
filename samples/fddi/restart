@@ -1,0 +1,3 @@
+echo "halt" | pvm 
+echo "quit" | pvm 
+pvmgs &

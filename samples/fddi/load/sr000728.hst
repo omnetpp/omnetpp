@@ -1,0 +1,309 @@
+-1, sr000728 # traffic from this station to others (2x1D Histograms)
+1 # Destination ID
+
+#
+# (cDoubleHistogram) StCol.local-objects.Inter Arrivial Time
+#
+51396	 #= num_samples
+2e-05 0.08056	 #= min, max
+247.077	 #= sum
+3.90617	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1	 #= range_ext_factor
+5e-05 0.03615	 #= range
+786 497	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+20	 #= num_cells
+1	 #= cellv[] exists
+ 22742
+ 10653
+ 4745
+ 2644
+ 1926
+ 1462
+ 1171
+ 887
+ 797
+ 606
+ 503
+ 410
+ 306
+ 297
+ 238
+ 195
+ 154
+ 149
+ 126
+ 102
+0.001805	 #= cellsize
+
+#
+# (cLongHistogram) StCol.local-objects.Packet Length
+#
+51396	 #= num_samples
+61 1521	 #= min, max
+1.53601e+07	 #= sum
+1.43797e+10	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1	 #= range_ext_factor
+51.5 1531.5	 #= range
+0 0	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+20	 #= num_cells
+1	 #= cellv[] exists
+ 34700
+ 3138
+ 817
+ 417
+ 311
+ 244
+ 156
+ 5682
+ 125
+ 82
+ 125
+ 122
+ 340
+ 161
+ 73
+ 69
+ 147
+ 57
+ 238
+ 4392
+74	 #= cellsize
+2 # Destination ID
+
+#
+# (cDoubleHistogram) StCol.local-objects.Inter Arrivial Time
+#
+523	 #= num_samples
+2e-05 0.04905	 #= min, max
+3.97346	 #= sum
+0.0724383	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1	 #= range_ext_factor
+0.00016 0.03899	 #= range
+15 11	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+20	 #= num_cells
+1	 #= cellv[] exists
+ 139
+ 104
+ 62
+ 36
+ 30
+ 31
+ 18
+ 18
+ 7
+ 14
+ 6
+ 6
+ 9
+ 3
+ 2
+ 2
+ 2
+ 6
+ 1
+ 1
+0.0019415	 #= cellsize
+
+#
+# (cLongHistogram) StCol.local-objects.Packet Length
+#
+523	 #= num_samples
+61 597	 #= min, max
+279169	 #= sum
+1.60527e+08	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1	 #= range_ext_factor
+401.5 601.5	 #= range
+45 0	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+20	 #= num_cells
+1	 #= cellv[] exists
+ 51
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 15
+ 0
+ 412
+10	 #= cellsize
+4 # Destination ID
+
+#
+# (cDoubleHistogram) StCol.local-objects.Inter Arrivial Time
+#
+81082	 #= num_samples
+0 0.09324	 #= min, max
+220.366	 #= sum
+1.61645	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1	 #= range_ext_factor
+7e-05 0.01997	 #= range
+1314 752	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+20	 #= num_cells
+1	 #= cellv[] exists
+ 12037
+ 21097
+ 31245
+ 6882
+ 2999
+ 1204
+ 836
+ 500
+ 320
+ 290
+ 262
+ 220
+ 192
+ 193
+ 156
+ 153
+ 124
+ 122
+ 99
+ 85
+0.000995	 #= cellsize
+
+#
+# (cLongHistogram) StCol.local-objects.Packet Length
+#
+81082	 #= num_samples
+61 1521	 #= min, max
+1.3994e+07	 #= sum
+1.22378e+10	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1	 #= range_ext_factor
+51.5 1531.5	 #= range
+0 0	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+20	 #= num_cells
+1	 #= cellv[] exists
+ 73113
+ 501
+ 197
+ 252
+ 46
+ 41
+ 19
+ 1008
+ 42
+ 12
+ 14
+ 31
+ 166
+ 1304
+ 16
+ 9
+ 58
+ 8
+ 30
+ 4215
+74	 #= cellsize
+5 # Destination ID
+
+#
+# (cDoubleHistogram) StCol.local-objects.Inter Arrivial Time
+#
+27062	 #= num_samples
+2e-05 0.10478	 #= min, max
+143.166	 #= sum
+2.81152	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1	 #= range_ext_factor
+7e-05 0.03806	 #= range
+475 424	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+20	 #= num_cells
+1	 #= cellv[] exists
+ 13752
+ 3816
+ 2071
+ 1321
+ 970
+ 788
+ 627
+ 540
+ 563
+ 292
+ 291
+ 228
+ 196
+ 155
+ 128
+ 116
+ 89
+ 76
+ 80
+ 64
+0.0018995	 #= cellsize
+
+#
+# (cLongHistogram) StCol.local-objects.Packet Length
+#
+27062	 #= num_samples
+61 1521	 #= min, max
+3.6092e+06	 #= sum
+8.53307e+08	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1	 #= range_ext_factor
+66.5 146.5	 #= range
+1996 1951	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+20	 #= num_cells
+1	 #= cellv[] exists
+ 2935
+ 26
+ 225
+ 24
+ 38
+ 14
+ 4787
+ 34
+ 45
+ 36
+ 31
+ 20
+ 17
+ 9546
+ 538
+ 6
+ 13
+ 4
+ 1
+ 4775
+4	 #= cellsize

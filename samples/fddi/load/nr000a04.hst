@@ -1,0 +1,463 @@
+-1, nr000A04 # traffic from this station to others (2x1D Histograms)
+0 # Destination ID
+
+#
+# (cDoubleHistogram) StCol.local-objects.Inter Arrivial Time
+#
+78985	 #= num_samples
+0 0.05477	 #= min, max
+212.388	 #= sum
+1.41833	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1	 #= range_ext_factor
+7e-05 0.01362	 #= range
+2269 1415	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+20	 #= num_cells
+1	 #= cellv[] exists
+ 18322
+ 12967
+ 11502
+ 9754
+ 6163
+ 4008
+ 2729
+ 1864
+ 1661
+ 1258
+ 1009
+ 796
+ 664
+ 579
+ 493
+ 428
+ 334
+ 288
+ 257
+ 225
+0.0006775	 #= cellsize
+
+#
+# (cLongHistogram) StCol.local-objects.Packet Length
+#
+78985	 #= num_samples
+61 1521	 #= min, max
+2.333e+07	 #= sum
+1.70855e+10	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1	 #= range_ext_factor
+61.5 1521.5	 #= range
+1469 0	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+20	 #= num_cells
+1	 #= cellv[] exists
+ 45460
+ 5240
+ 1515
+ 865
+ 411
+ 844
+ 358
+ 17059
+ 425
+ 64
+ 148
+ 311
+ 130
+ 46
+ 467
+ 32
+ 161
+ 524
+ 36
+ 3420
+73	 #= cellsize
+2 # Destination ID
+
+#
+# (cDoubleHistogram) StCol.local-objects.Inter Arrivial Time
+#
+14526	 #= num_samples
+0 0.05627	 #= min, max
+40.4095	 #= sum
+0.31399	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1	 #= range_ext_factor
+7e-05 0.01397	 #= range
+802 294	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+20	 #= num_cells
+1	 #= cellv[] exists
+ 4354
+ 2113
+ 1495
+ 1161
+ 766
+ 701
+ 614
+ 513
+ 301
+ 260
+ 188
+ 180
+ 153
+ 170
+ 115
+ 96
+ 74
+ 67
+ 59
+ 50
+0.000695	 #= cellsize
+
+#
+# (cLongHistogram) StCol.local-objects.Packet Length
+#
+14526	 #= num_samples
+61 1521	 #= min, max
+6.04771e+06	 #= sum
+5.94672e+09	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1	 #= range_ext_factor
+61.5 1521.5	 #= range
+383 0	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+20	 #= num_cells
+1	 #= cellv[] exists
+ 7120
+ 228
+ 733
+ 224
+ 155
+ 39
+ 218
+ 2860
+ 451
+ 10
+ 56
+ 15
+ 76
+ 4
+ 11
+ 3
+ 42
+ 8
+ 11
+ 1879
+73	 #= cellsize
+3 # Destination ID
+
+#
+# (cDoubleHistogram) StCol.local-objects.Inter Arrivial Time
+#
+42505	 #= num_samples
+0 0.05124	 #= min, max
+111.781	 #= sum
+0.725598	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1	 #= range_ext_factor
+7e-05 0.01739	 #= range
+1459 276	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+20	 #= num_cells
+1	 #= cellv[] exists
+ 13267
+ 7867
+ 5836
+ 3601
+ 2882
+ 1902
+ 1372
+ 963
+ 750
+ 563
+ 386
+ 361
+ 219
+ 194
+ 153
+ 132
+ 87
+ 80
+ 83
+ 72
+0.000866	 #= cellsize
+
+#
+# (cLongHistogram) StCol.local-objects.Packet Length
+#
+42505	 #= num_samples
+61 1521	 #= min, max
+1.32194e+07	 #= sum
+1.39536e+10	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1	 #= range_ext_factor
+61.5 1521.5	 #= range
+1667 0	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+20	 #= num_cells
+1	 #= cellv[] exists
+ 28282
+ 2801
+ 597
+ 272
+ 212
+ 117
+ 105
+ 2256
+ 324
+ 36
+ 82
+ 17
+ 273
+ 30
+ 88
+ 35
+ 116
+ 24
+ 20
+ 5151
+73	 #= cellsize
+8 # Destination ID
+
+#
+# (cDoubleHistogram) StCol.local-objects.Inter Arrivial Time
+#
+296	 #= num_samples
+0 0.02239	 #= min, max
+0.7944	 #= sum
+0.00524058	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1	 #= range_ext_factor
+0 0.02239	 #= range
+0 1	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+20	 #= num_cells
+1	 #= cellv[] exists
+ 115
+ 63
+ 39
+ 30
+ 15
+ 9
+ 4
+ 4
+ 4
+ 2
+ 4
+ 1
+ 0
+ 3
+ 0
+ 2
+ 0
+ 0
+ 0
+ 0
+0.0011195	 #= cellsize
+
+#
+# (cLongHistogram) StCol.local-objects.Packet Length
+#
+296	 #= num_samples
+64 1521	 #= min, max
+87280	 #= sum
+9.20941e+07	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1	 #= range_ext_factor
+59.5 579.5	 #= range
+0 44	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+20	 #= num_cells
+1	 #= cellv[] exists
+ 159
+ 44
+ 11
+ 19
+ 2
+ 3
+ 1
+ 0
+ 0
+ 0
+ 0
+ 0
+ 3
+ 0
+ 1
+ 0
+ 3
+ 0
+ 0
+ 6
+26	 #= cellsize
+12 # Destination ID
+
+#
+# (cDoubleHistogram) StCol.local-objects.Inter Arrivial Time
+#
+1356	 #= num_samples
+1e-05 0.03589	 #= min, max
+4.31887	 #= sum
+0.0341255	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1	 #= range_ext_factor
+7e-05 0.01702	 #= range
+33 18	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+20	 #= num_cells
+1	 #= cellv[] exists
+ 368
+ 270
+ 175
+ 117
+ 70
+ 65
+ 43
+ 30
+ 42
+ 23
+ 17
+ 15
+ 18
+ 12
+ 12
+ 4
+ 14
+ 7
+ 2
+ 1
+0.0008475	 #= cellsize
+
+#
+# (cLongHistogram) StCol.local-objects.Packet Length
+#
+1356	 #= num_samples
+61 1513	 #= min, max
+516124	 #= sum
+4.98543e+08	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1	 #= range_ext_factor
+60.5 1520.5	 #= range
+0 0	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+20	 #= num_cells
+1	 #= cellv[] exists
+ 780
+ 114
+ 43
+ 6
+ 9
+ 24
+ 14
+ 89
+ 14
+ 6
+ 16
+ 17
+ 5
+ 4
+ 28
+ 17
+ 28
+ 35
+ 31
+ 76
+73	 #= cellsize
+13 # Destination ID
+
+#
+# (cDoubleHistogram) StCol.local-objects.Inter Arrivial Time
+#
+24653	 #= num_samples
+0 0.04765	 #= min, max
+73.2997	 #= sum
+0.532955	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1	 #= range_ext_factor
+7e-05 0.01412	 #= range
+778 474	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+20	 #= num_cells
+1	 #= cellv[] exists
+ 5921
+ 3939
+ 3157
+ 2386
+ 1669
+ 1218
+ 1067
+ 1005
+ 602
+ 532
+ 412
+ 314
+ 256
+ 208
+ 155
+ 166
+ 114
+ 111
+ 95
+ 74
+0.0007025	 #= cellsize
+
+#
+# (cLongHistogram) StCol.local-objects.Packet Length
+#
+24653	 #= num_samples
+67 1521	 #= min, max
+2.3651e+06	 #= sum
+5.55799e+08	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1	 #= range_ext_factor
+59.5 359.5	 #= range
+0 388	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+20	 #= num_cells
+1	 #= cellv[] exists
+ 18314
+ 1237
+ 838
+ 477
+ 183
+ 863
+ 1057
+ 868
+ 105
+ 49
+ 56
+ 42
+ 20
+ 17
+ 17
+ 21
+ 49
+ 29
+ 14
+ 9
+15	 #= cellsize

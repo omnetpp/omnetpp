@@ -1,0 +1,19 @@
+FDDI
+~~~~
+A precise FDDI simulation.
+
+Demonstrates:
+  - using statistics classes
+  - ...
+
+Two FDDI rings (Southern Ring and Northern Ring) connected by a router.
+The offered load of the ring is generated from histograms, from files
+in the load/ directory.
+
+The simulation can run in parallel: the two rings execute on separate
+processors, and they are synchronized with the statistical synchronization
+method. This means that not the actual messages but the statistical
+characteristics of the message flow (frame length histograms etc) are
+exchanged between the two segments.
+
+Please read the Examples manual. 

@@ -1,0 +1,5 @@
+#!/bin/bash
+for i in * ; do
+k=`echo $i | tr [A-F] [a-f]`
+mv $i $k
+done

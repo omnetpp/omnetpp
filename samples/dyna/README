@@ -1,0 +1,12 @@
+DYNA
+====
+
+Models a client-server application.
+
+Demonstrates:
+ - dynamic module creation
+ - using WATCH()
+ - star topology with the number of modules as parameters
+
+See the source and the Example Models Manual for more info!
+

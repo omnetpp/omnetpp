@@ -1,0 +1,21 @@
+bmecisco7	DAS	R	0	DECnet000728
+bmecisco1	DAS 	R	1	DECnet000A04
+bmecisco3	DAS 	R	2	cisco_F99030
+bmecisco2 	DAS 	K       3       DECnet000B04
+bmeconc5	DAC-4	K	-1	DEC___26AF0D	1
+  bmebr1	SAS    	CH      4	DEC___28E6AD
+bmeconc4	DAC-4  	Mt      -1	DEC___18DB64    4
+  bmebr2	SAS    	F       5       DEC___28E6AC
+  ethsw1	SAS     MM      6	00C01DF447A6
+  ethsw2	SAS     MM      7	00C01DF44885
+  fizika2 	SAS     F       8	DEC___B48FE4
+bmeconc3	DAC-4 	St      -1	DEC___26B05D	1
+  bmebr3	SAS    	J       9	DEC___286606
+bmeconc2 	DAC-8  	R	-1	DEC___314A73	3
+  Challenge	SAS 	R	10	SGI___0409E8
+  gibr		SAS	D       11	DEC___28691D
+  sniffer	SAS   	R	100	This_Monitor
+bmeconc1	DAC-4  	R	-1	DEC___286C41	3
+  Delfin	SAS 	R	12      IBM___1DE0BA
+  Goliat 	SAS 	R	13	Sun___1BD035
+  bigmac	SAS 	R	14      DEC___B11ECF

@@ -1,0 +1,232 @@
+-1, nr000B04 # traffic from this station to others (2x1D Histograms)
+0 # Destination ID
+
+#
+# (cDoubleHistogram) StCol.local-objects.Inter Arrivial Time
+#
+4999	 #= num_samples
+1e-05 0.18992	 #= min, max
+48.8629	 #= sum
+1.81184	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1	 #= range_ext_factor
+7e-05 0.13063	 #= range
+10 6	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+20	 #= num_cells
+1	 #= cellv[] exists
+ 3317
+ 620
+ 321
+ 185
+ 124
+ 105
+ 111
+ 42
+ 52
+ 15
+ 23
+ 18
+ 16
+ 13
+ 6
+ 5
+ 4
+ 3
+ 1
+ 2
+0.006528	 #= cellsize
+
+#
+# (cLongHistogram) StCol.local-objects.Packet Length
+#
+4999	 #= num_samples
+61 1521	 #= min, max
+2.00586e+06	 #= sum
+2.26932e+09	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1	 #= range_ext_factor
+57.5 577.5	 #= range
+0 1081	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+20	 #= num_cells
+1	 #= cellv[] exists
+ 1572
+ 1126
+ 304
+ 172
+ 216
+ 130
+ 58
+ 35
+ 36
+ 25
+ 17
+ 38
+ 10
+ 3
+ 14
+ 1
+ 6
+ 2
+ 8
+ 145
+26	 #= cellsize
+1 # Destination ID
+
+#
+# (cDoubleHistogram) StCol.local-objects.Inter Arrivial Time
+#
+35071	 #= num_samples
+0 0.35984	 #= min, max
+331.293	 #= sum
+13.5668	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1	 #= range_ext_factor
+7e-05 0.07403	 #= range
+888 543	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+20	 #= num_cells
+1	 #= cellv[] exists
+ 16132
+ 7877
+ 2964
+ 1445
+ 1030
+ 736
+ 666
+ 532
+ 411
+ 347
+ 289
+ 246
+ 178
+ 154
+ 148
+ 126
+ 120
+ 90
+ 76
+ 73
+0.003698	 #= cellsize
+
+#
+# (cLongHistogram) StCol.local-objects.Packet Length
+#
+35071	 #= num_samples
+61 1521	 #= min, max
+4.47779e+06	 #= sum
+2.13972e+09	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1	 #= range_ext_factor
+59.5 579.5	 #= range
+0 1014	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+20	 #= num_cells
+1	 #= cellv[] exists
+ 22140
+ 4547
+ 3486
+ 1703
+ 795
+ 370
+ 168
+ 160
+ 114
+ 107
+ 96
+ 57
+ 38
+ 30
+ 30
+ 16
+ 23
+ 16
+ 38
+ 123
+26	 #= cellsize
+13 # Destination ID
+
+#
+# (cDoubleHistogram) StCol.local-objects.Inter Arrivial Time
+#
+4347	 #= num_samples
+1e-05 0.23819	 #= min, max
+62.1665	 #= sum
+2.72684	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1	 #= range_ext_factor
+0.00011 0.09549	 #= range
+49 56	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+20	 #= num_cells
+1	 #= cellv[] exists
+ 1556
+ 1024
+ 562
+ 258
+ 164
+ 131
+ 102
+ 81
+ 67
+ 60
+ 42
+ 49
+ 32
+ 27
+ 25
+ 13
+ 12
+ 21
+ 12
+ 4
+0.004769	 #= cellsize
+
+#
+# (cLongHistogram) StCol.local-objects.Packet Length
+#
+4347	 #= num_samples
+67 1521	 #= min, max
+386111	 #= sum
+1.31642e+08	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1	 #= range_ext_factor
+64.5 164.5	 #= range
+0 102	 #= cell_under, cell_over
+100	 #= num_firstvals
+0	 #= firstvals[] exists
+20	 #= num_cells
+1	 #= cellv[] exists
+ 3923
+ 0
+ 9
+ 2
+ 2
+ 5
+ 4
+ 8
+ 36
+ 75
+ 34
+ 24
+ 27
+ 16
+ 22
+ 20
+ 13
+ 12
+ 5
+ 8
+5	 #= cellsize
