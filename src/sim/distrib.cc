@@ -145,7 +145,7 @@ double beta(double alpha1, double alpha2, int rng)
                              "(alpha1=%lg, alpha2=%lg)", alpha1, alpha2);
 
     double Y1 = gamma_d(alpha1, 1.0, rng);
-    double Y2 = gamma_d(alpha2, 2.0, rng);
+    double Y2 = gamma_d(alpha2, 1.0, rng);
 
     return Y1 / (Y1 + Y2);
 }

@@ -1,6 +1,6 @@
 //=========================================================================
 //
-//  EXCEPTION.CC - part of
+//  CEXCEPTION.CC - part of
 //                          OMNeT++
 //           Discrete System Simulation in C++
 //
@@ -17,6 +17,8 @@
 *--------------------------------------------------------------*/
 
 #include <stdio.h>
+#include <string.h>
+#include <stdarg.h>  // for va_list
 #include "cexception.h"
 #include "csimul.h"
 #include "cmodule.h"
