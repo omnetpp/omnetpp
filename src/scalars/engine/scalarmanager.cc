@@ -142,7 +142,7 @@ void ScalarManager::processLine(char *&s, FileMap::iterator fileRef, int& runNum
     }
     else if (!strncmp(s,"scalar ",7))
     {
-        if (runNumber==0)
+        if (runNumber==-1)
             throw new TException("invalid scalar file: no `run' line before first `scalar' line");
 
         s+=7;
@@ -182,7 +182,7 @@ ScalarManager::FileRef ScalarManager::loadFile(const char *filename)
     splitFileName(filename, fileRef->second.directory, fileRef->second.fileName);
 
     int lineNum = 0;
-    int runNumber = 0;
+    int runNumber = -1;
 
     // process file, reading it in large chunks
     const int buffersize = 4*1024*1024;  // 4MB

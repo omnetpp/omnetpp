@@ -1,3 +1,8 @@
+2004-11-19  Andras Varga
+
+        * fix: had problem with Run#=0 in the scalar file (such file is 
+        generated when a simulation is run with no [Run X] omnetpp.ini entry)
+
 2004-11-03  ------ omnetpp-3.0a9 released ------
 
 2004-10-04  ------ omnetpp-3.0a8 released ------
