@@ -148,7 +148,7 @@ choose 'Input' from combo --> Libraries.
 
 *** NOTE ***
    While trying to build some of the samples in the MSVC IDE, you might
-   get the following error:
+   get the following error, even if perl *is* in the PATH:
 
    Processing .\token.msg with opp_msgc
    'Perl is not recognized as an internal or external command, operable
