@@ -17,7 +17,7 @@
 # called when the user wants to switch from Graphics view to NED view
 #
 proc switchToNED {} {
-    global gned canvas tcl_wordchars tcl_nonwordchars
+    global gned canvas 
 
     set canv_id $gned(canvas_id)
     if {$canvas($canv_id,mode)=="textedit"} return
@@ -42,11 +42,6 @@ proc switchToNED {} {
     # initial syntax hightlight
     syntaxHighlight $t 1.0 end
     updateTextStatusbar $t
-
-    # we cannot put the following into init code, seems like
-    # tk_messageBox changes it back to "\s"...
-    set tcl_wordchars {\w}
-    set tcl_nonwordchars {\W}
 }
 
 

@@ -58,6 +58,11 @@ proc checkTclTkVersion {} {
 #
 proc setupTkOptions {} {
    global fonts tcl_platform tk_version
+   global tcl_wordchars tcl_nonwordchars
+
+   catch {tcl_wordBreakAfter}; # work around Tcl bug: these vars got reset when words.tcl was autoloaded
+   set tcl_wordchars {\w}
+   set tcl_nonwordchars {\W}
 
    #
    # fonts() array elements:
