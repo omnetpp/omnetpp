@@ -103,9 +103,9 @@ proc outvectorwindow_options {win} {
     label-entry $w.ymax {Ymax:}
     label-combo $w.combo {Draw mode:} {dots pins bars sample-hold lines}
     frame $w.buttons
-    button $w.buttons.okbutton -text {  OK  }
-    button $w.buttons.applybutton -text {Apply}
-    button $w.buttons.cancelbutton -text {Cancel}
+    button $w.buttons.okbutton -width 10 -text {OK}
+    button $w.buttons.applybutton -width 10 -text {Apply}
+    button $w.buttons.cancelbutton -width 10 -text {Cancel}
 
     pack $w.msg  -anchor w -expand 0 -fill none -padx 3m -pady 3m -side top
     pack $w.auto -anchor w -expand 0 -fill none -padx 3m -pady 3m -side top

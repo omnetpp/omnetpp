@@ -32,6 +32,12 @@ proc create_compoundmodinspector {name geom} {
     foreach i {graph win sep1 parent sep2 mrun mfast stop} {
        pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
     }
+
+    iconbutton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
+    iconbutton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
+    pack $w.toolbar.revert -anchor n -side right -padx 0 -pady 2
+    pack $w.toolbar.apply -anchor n -side right -padx 0 -pady 2
+
     bind $w <Control-F4> "module_run_fast $w"
 
     set help_tips($w.toolbar.graph)   {Inspect as network graphics}
@@ -40,6 +46,8 @@ proc create_compoundmodinspector {name geom} {
     set help_tips($w.toolbar.mrun)    {Run until next local event}
     set help_tips($w.toolbar.mfast)   {Fast run until next local event (Ctrl-F4)}
     set help_tips($w.toolbar.stop)    {Stop running simulation (F8)}
+    set help_tips($w.toolbar.apply)   {Apply changes}
+    set help_tips($w.toolbar.revert)  {Revert}
 
     set nb $w.nb
     notebook $nb
@@ -83,13 +91,20 @@ proc create_simplemodinspector {name geom} {
     foreach i {win sep1 parent sep2 mrun mfast stop} {
        pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
     }
-    bind $w <Control-F4> "module_run_fast $w"
+    iconbutton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
+    iconbutton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
+    pack $w.toolbar.revert -anchor n -side right -padx 0 -pady 2
+    pack $w.toolbar.apply -anchor n -side right -padx 0 -pady 2
 
     set help_tips($w.toolbar.win)     {See module output}
     set help_tips($w.toolbar.parent)  {Inspect parent module}
     set help_tips($w.toolbar.mrun)    {Run until next local event}
     set help_tips($w.toolbar.mfast)   {Fast run until next local event (Ctrl-F4)}
     set help_tips($w.toolbar.stop)    {Stop running simulation (F8)}
+    set help_tips($w.toolbar.apply)   {Apply changes}
+    set help_tips($w.toolbar.revert)  {Revert}
+
+    bind $w <Control-F4> "module_run_fast $w"
 
     set nb $w.nb
     notebook $nb

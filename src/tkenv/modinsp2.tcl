@@ -1038,7 +1038,7 @@ proc graphmodwin_bubble {c modptr txt} {
 
     set sp [opp_getsimoption animation_speed]
     set ad [expr int(1000 / (0.1+$sp))]
-    after $ad [list $c delete $txtid $bubbleid]
+    after $ad [list catch [list $c delete $txtid $bubbleid]]
 }
 
 

@@ -261,7 +261,7 @@ proc options_dialog {} {
     #$w.f.f3.methdelay.l config -width 0
     label-scale $w.f.f3.methdelay {Method call delay (ms):}
     $w.f.f3.methdelay.e config -length 200 -from 0 -to 3000 -resolution 1 -variable opp(methdelay)
-    checkbutton $w.f.f3.msgnam -text {Display Message names during animation} -variable opp(msgnam)
+    checkbutton $w.f.f3.msgnam -text {Display message names during animation} -variable opp(msgnam)
     checkbutton $w.f.f3.msgcol -text {Color coding by message kind} -variable opp(msgcol)
     commentlabel $w.f.f3.c {Color code (message->kind() mod 8):
      0=red 1=green 2=blue 3=white

@@ -68,10 +68,18 @@ proc create_containerinspector {name geom args} {
 }
 
 proc create_messageinspector {name geom} {
-    global fonts
+    global fonts icons
 
     set w $name
     create_inspector_toplevel $w $geom
+
+    iconbutton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
+    iconbutton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
+    pack $w.toolbar.revert -anchor n -side right -padx 0 -pady 2
+    pack $w.toolbar.apply -anchor n -side right -padx 0 -pady 2
+
+    set help_tips($w.toolbar.apply)   {Apply changes}
+    set help_tips($w.toolbar.revert)  {Revert}
 
     set nb $w.nb
     notebook $nb
@@ -137,17 +145,25 @@ proc create_watchinspector {name geom} {
     frame $w.main
     pack $w.main -anchor center -expand 0 -fill both -side top
 
-    label-entry $w.main.name xxx
+    label-entry $w.main.name ""
     $w.main.name.l config -width 20
     focus $w.main.name.e
     pack $w.main.name -fill x -side top
 }
 
 proc create_parinspector {name geom} {
-    global fonts
+    global fonts icons
 
     set w $name
     create_inspector_toplevel $w $geom
+
+    iconbutton $w.toolbar.apply  -image $icons(apply) -command "opp_writebackinspector $w; opp_updateinspectors"
+    iconbutton $w.toolbar.revert -image $icons(revert) -command "opp_updateinspectors"
+    pack $w.toolbar.revert -anchor n -side right -padx 0 -pady 2
+    pack $w.toolbar.apply -anchor n -side right -padx 0 -pady 2
+
+    set help_tips($w.toolbar.apply)   {Apply changes}
+    set help_tips($w.toolbar.revert)  {Revert}
 
     frame $w.main
     pack $w.main -anchor center -expand 1 -fill both -side top
