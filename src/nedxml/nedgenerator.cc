@@ -701,7 +701,7 @@ void NEDGenerator::doOperator(OperatorNode *node, const char *indent, bool islas
             if (parentprio>prio) {
                 needsParen = true;
             } else if (parentprio==prio) {
-                // FIXME refine here.... depending on assoc, etc
+                // TBD can be refined (make use of associativity & precedence rules)
                 needsParen = true;
             }
         }
@@ -718,8 +718,8 @@ void NEDGenerator::doOperator(OperatorNode *node, const char *indent, bool islas
     else
     {
         // tertiary
-        bool needsParen = true; // FIXME something better here!!!
-        bool spacious = true; // FIXME something better here!!!
+        bool needsParen = true; // TBD can be refined
+        bool spacious = true; // TBD can be refined
 
         if (needsParen) out << "(";
         generateNedItem(op1,indent,false,NULL);

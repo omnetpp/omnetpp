@@ -225,7 +225,7 @@ void NEDSemanticValidator::checkGate(GateNode *gate, bool hasGateIndex, bool isI
     // check gate direction, check if vector
     const char *q = isSrc ? "wrong source gate for connection" : "wrong destination gate for connection";
     if (hasGateIndex && !gate->getIsVector())
-        NEDError(conn, "%s: extra gate index ('%s' is not a vector gate)", q, gate->getName());
+        NEDError(conn, "%s: extra gate index or '++' ('%s' is not a vector gate)", q, gate->getName());
     else if (!hasGateIndex && gate->getIsVector())
         NEDError(conn, "%s: missing gate index ('%s' is a vector gate)", q, gate->getName());
 
