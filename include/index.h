@@ -88,6 +88,12 @@
  */
 
 /**
+ * @defgroup RandomNumbers  Random number generation
+ *
+ * lots of random numbers!
+ */
+
+/**
  * @defgroup Statistics  Statistical data collection
  *
  * OMNeT++ provides a variety of statistical classes. There are basic classes
@@ -104,7 +110,7 @@
  * the cTransientDetection and cAccuracyDetection abstract base classes.
  *
  * The classes are:
- *    - cOutVector is used to record vector simulation results (an output 
+ *    - cOutVector is used to record vector simulation results (an output
  *      vector, containing <i>(time, value)</i> pairs) to file
  *    - cStdDev keeps number of samples, mean, standard deviation, minimum
  *      and maximum value etc.

@@ -19,6 +19,8 @@
 
 #include "defs.h"
 #include "util.h"
+#include "random.h"
+#include "distrib.h"
 #include "cexception.h"
 #include "errmsg.h"
 #include "cobject.h"
