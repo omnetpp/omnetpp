@@ -175,7 +175,7 @@ double student_t(unsigned int i, int rng)
 double cauchy(double a, double b, int rng)
 {
     if (b<=0)
-        throw new cException("cauchy(): parameters must be b>0 (a=%lg, b=%lg, c=%lg)", a, b);
+        throw new cException("cauchy(): parameters must be b>0 (a=%lg, b=%lg)", a, b);
 
     return a + b * tan(M_PI * genk_dblrand(rng));
 }
