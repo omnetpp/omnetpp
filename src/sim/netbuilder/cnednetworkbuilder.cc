@@ -156,7 +156,7 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
     }
     else
     {
-        int vectorsize = evaluate(modp, vectorsizeexpr);
+        int vectorsize = (int) evaluate(modp, vectorsizeexpr);
         for (int i=0; i<vectorsize; i++)
         {
             cModule *submodp = modtype->create(modname, modp, vectorsize, i);
@@ -203,7 +203,7 @@ void cNEDNetworkBuilder::setupGateVectors(cModule *submodp, GatesizesNode *gates
         for (GatesizeNode *gate=gates->getFirstGatesizeChild(); gate; gate=gate->getNextGatesizeNodeSibling())
         {
             const char *gatename = gate->getName();
-            int vectorsize = evaluate(submodp->parentModule(), getExpr(gate, "vector-size"));
+            int vectorsize = (int) evaluate(submodp->parentModule(), getExpr(gate, "vector-size"));
             submodp->setGateSize(gatename, vectorsize);
         }
     }
@@ -219,8 +219,8 @@ void cNEDNetworkBuilder::doLoopVar(cModule *modp, LoopVarNode *loopvar)
 {
     ForLoopNode *forloop = (ForLoopNode *) loopvar->getParent();
 
-    int start = evaluate(modp, getExpr(loopvar, "from-value"));
-    int end = evaluate(modp, getExpr(loopvar, "to-value"));
+    int start = (int) evaluate(modp, getExpr(loopvar, "from-value"));
+    int end = (int) evaluate(modp, getExpr(loopvar, "to-value"));
     LoopVarNode *nextloopvar = loopvar->getNextLoopVarNodeSibling();
 
     // register loop var
@@ -261,7 +261,7 @@ void cNEDNetworkBuilder::addConnection(cModule *modp, ConnectionNode *conn)
     ExpressionNode *condexpr = getExpr(conn, "condition");
     if (condexpr)
     {
-        bool cond = evaluate(modp, condexpr);
+        bool cond = evaluate(modp, condexpr)!=0;
         if (cond == false)
             return;
     }
@@ -291,7 +291,7 @@ cGate *cNEDNetworkBuilder::resolveGate(cModule *parentmodp,
     }
     else
     {
-        int modindex = !modindexp ? 0 : evaluate(parentmodp, modindexp);
+        int modindex = !modindexp ? 0 : (int) evaluate(parentmodp, modindexp);
         modp = parentmodp->submodule(modname,modindex);
         if (!modp)
         {
@@ -304,7 +304,7 @@ cGate *cNEDNetworkBuilder::resolveGate(cModule *parentmodp,
         }
     }
 
-    int gateindex = !gateindexp ? 0 : evaluate(parentmodp, gateindexp);
+    int gateindex = !gateindexp ? 0 : (int) evaluate(parentmodp, gateindexp);
     cGate *gatep = modp->gate(gatename, gateindex);
     if (!gatep)
     {
@@ -559,7 +559,7 @@ double cNEDNetworkBuilder::evalParamref(ParamRefNode *node, cModule *parentmodp,
         {
             const char *modname = node->getModule();
             ExpressionNode *modindexp = getExpr(node, "module-index");
-            int modindex = !modindexp ? 0 : evaluate(parentmodp, modindexp, submodp);
+            int modindex = !modindexp ? 0 : (int) evaluate(parentmodp, modindexp, submodp);
             modp = parentmodp->submodule(modname,modindex);
             if (!modp)
             {
@@ -935,7 +935,7 @@ void cNEDNetworkBuilder::addXElemsParamref(ParamRefNode *node, cPar::ExprElem *x
         {
             const char *modname = node->getModule();
             ExpressionNode *modindexp = getExpr(node, "module-index");
-            int modindex = !modindexp ? 0 : evaluate(parentmodp, modindexp);
+            int modindex = !modindexp ? 0 : (int) evaluate(parentmodp, modindexp);
             modp = parentmodp->submodule(modname,modindex);
             if (!modp)
             {
