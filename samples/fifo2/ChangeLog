@@ -4,3 +4,6 @@ Oct 10, 1999
 Oct 12, 1999
  - ACPFifo and ACBFifo renamed to FF2PacketFifo and FF2BitFifo
  - display strings moved to NED file
+Oct 17, 1999
+ - the "2" suffix was added to all file names (to make it possible to link
+   all sample simulations into a single executable)

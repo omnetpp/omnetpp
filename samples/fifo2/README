@@ -4,10 +4,10 @@ Another flavour of FIFO, implemented with handleMessage() instead
 of activity(). gen.cc uses FSM.
 
 Demonstrates:
+  - subclassing simple modules
   - using handleMessage()
   - decomposing handleMessage() into several functions
-  - the FSM macros (used to implement BurstyGenerator)
-  - simple module inheritance
+  - the FSM macros (used to implement BurstyGenerator) and FSM_DEBUG
   - using simple statistics and output vectors
   - using finish()
 
