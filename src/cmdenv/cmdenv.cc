@@ -449,7 +449,12 @@ void TCmdenvApp::help()
 void TCmdenvApp::puts(const char *s)
 {
     if (opt_modulemsgs || simulation.contextModule()==NULL)
+    {
         TOmnetApp::puts( s );
+        if (opt_autoflush)
+            fflush(stdout);
+
+    }
 }
 
 unsigned TCmdenvApp::extraStackForEnvir()
