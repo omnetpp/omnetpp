@@ -677,37 +677,6 @@ TInspector *TOmnetTkApp::inspect(cObject *obj, int type, const char *geometry, v
         return NULL;
     }
 
-/*
-    TInspector *insp = p->createInspectorFor(obj,p->inspectorType(),geometry,dat);
-    if (!insp)
-    {
-        // message: object has no such inspector
-        CHK(Tcl_VarEval(interp,"messagebox {Confirm}"
-                               " {Class `",obj->className(),"' has no `",
-                               insptype_name_from_code(type),
-                               "' inspector.} info ok",NULL));
-        return NULL;
-    }
-
-    // An inspector was created. Now, its actual type can be different
-    // from the 'type' parameter we passed. For example,
-    // INSP_DEFAULT becomes INSP_OBJECT, INSP_CONTAINER etc.
-    // So we have to check again if an inspector with the
-    // actual parameters (type & object) already exists.
-    cObject *actual_obj = insp->getObject();
-    int actual_type = insp->getType();
-    if (actual_obj!=obj || actual_type!=type)
-    {
-        existing_insp = findInspector(actual_obj, actual_type);
-        if (existing_insp)
-        {
-            delete insp;
-            existing_insp->showWindow();
-            return existing_insp;
-        }
-    }
-*/
-
     // everything ok, finish inspector
     insp->setOwner(&inspectors); // insert into inspector list
     insp->createWindow();

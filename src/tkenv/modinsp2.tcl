@@ -412,6 +412,21 @@ proc graphmodwin_redraw {w {nextseed 0}} {
 
     $w.c delete all
 
+    # check if it's not too big to draw it.
+    set submodcount [opp_inspectorcommand $w submodulecount]
+    if {$submodcount>100} {
+        if {![regexp {\.(ptr.*)-([0-9]+)} $w match object type]} {
+            error "window name $w doesn't look like an inspector window"
+        }
+        set name [opp_getobjectfullpath $object]
+        set ans [messagebox {Warning} "Module '$name' contains more than 100 submodules ($submodcount), \
+                                      it may take very long to display the graphics. Do you want to \
+                                      proceed with drawing?" question yesno]
+        if {$ans == "no"} {
+            return 0
+        }
+    }
+
     global hack_y
     set hack_y 0
 

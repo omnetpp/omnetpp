@@ -3,6 +3,10 @@
 	* "Step" button in module inspectors replaced with 3 buttons ("Run 
 	until next local event", "Fast run until next local event", "Stop")
 
+	* Graphical module inspector: if there're too many submodules, drawing
+	may take very long, so the user is prompted if he/she really wants
+	to proceed with drawing. Limits is currently 100 submods.
+
 2003-01-19  Andras Varga
 
 	* Cygwin fixes; put checkTckTkVersion and setupTkOptions (was generic_-

@@ -362,6 +362,10 @@ int TGraphicalModWindow::inspectorCommand(Tcl_Interp *interp, int argc, const ch
    {
       return getDisplayStringPar(interp,argc,argv);
    }
+   else if (strcmp(argv[0],"submodulecount")==0)
+   {
+      return getSubmoduleCount(interp,argc,argv);
+   }
    return TCL_ERROR;
 }
 
@@ -409,6 +413,17 @@ int TGraphicalModWindow::getDisplayStringPar(Tcl_Interp *interp, int argc, const
       sprintf(buf, "%g", par->doubleValue());
       Tcl_SetResult(interp, buf, TCL_VOLATILE);
    }
+   return TCL_OK;
+}
+
+int TGraphicalModWindow::getSubmoduleCount(Tcl_Interp *interp, int argc, const char **argv)
+{
+   int count = 0;
+   for (cSubModIterator submod(*(cModule *)object); !submod.end(); submod++)
+       count++;
+   char buf[20];
+   sprintf(buf, "%d", count);
+   Tcl_SetResult(interp, buf, TCL_VOLATILE);
    return TCL_OK;
 }
 
