@@ -24,13 +24,18 @@ the original TicToc tutorial from Ahmet Sekercioglu (Monash University).
 
 @section contents Contents
 
-  - @ref firststeps
-  - @ref twonodes
-  - @ref nnodes
+  - @ref part1
+  - @ref part2
+  - @ref part3
+  - @ref part4
 
+NEXT: @ref part1
+*/
 
-<hr>
-@section firststeps Creating your first simulation model
+/**
+@page part1 1. Getting started
+
+UP: @ref contents
 
 The purpose of this tutorial is to introduce you to the simulation
 of telecommunications networks with OMNeT++. For a start, let us begin
@@ -168,12 +173,15 @@ the propagation delay on the connections.
 
 9. You can exit the simulation program by clicking its Close icon or choosing File|Exit.
 
+NEXT: @ref part2
+*/
 
+/**
+@page part2 2. Enhancing the 2-node TicToc
 
-<hr>
-@section twonodes Enhancing the 2-node TicToc
+PREV: @ref part1 UP: @ref contents
 
-@subsection s2 Step 2: Refining the graphics, and adding debugging output
+@section s2 Step 2: Refining the graphics, and adding debugging output
 
 Here we make the model look a bit prettier in the GUI. We assign
 the "proc1" icon (the file <tt>bitmaps/proc1.gif</tt>), and paint it cyan for tic
@@ -214,7 +222,7 @@ will be useful when you have a large model and you experience the
 Sources: @ref tictoc2.ned, @ref txc2.cc, @ref omnetpp.ini
 
 
-@subsection s3 Step 3: Adding state variables
+@section s3 Step 3: Adding state variables
 
 In this step we add a counter (<tt>int counter</tt>) to the class,
 and delete the message after ten exchanges. We set the variable to
@@ -225,7 +233,7 @@ run out of events and terminate.
 Sources: @ref tictoc3.ned, @ref txc3.cc, @ref omnetpp.ini
 
 
-@subsection s4 Step 4: Adding parameters
+@section s4 Step 4: Adding parameters
 
 In this step you'll learn how to add input parameters to the simulation:
 we'll turn the "magic number" 10 into a parameter.
@@ -251,7 +259,7 @@ initialize(), and assign it to the counter.
 Sources: @ref tictoc4.ned, @ref txc4.cc, @ref omnetpp.ini
 
 
-@subsection s5 Step 5: Modelling processing delay
+@section s5 Step 5: Modelling processing delay
 
 In the previous models, tic and toc immediately sent back the
 received message. Here we'll add some timing: tic and toc will hold the
@@ -288,7 +296,7 @@ We have left out the counter, to keep the source code small.
 Sources: @ref tictoc5.ned, @ref txc5.cc, @ref omnetpp.ini
 
 
-@subsection s6 Step 6: Random numbers; putting parameters in omnetpp.ini
+@section s6 Step 6: Random numbers; putting parameters in omnetpp.ini
 
 In this step we'll introduce random numbers. We change the delay from 1s
 to a random value which can be set from the NED file or from omnetpp.ini.
@@ -353,7 +361,7 @@ a dot and ** will.)
 Sources: @ref tictoc6.ned, @ref txc6.cc, @ref omnetpp.ini
 
 
-@subsection s7 Step 7: Timeout, cancelling timers
+@section s7 Step 7: Timeout, cancelling timers
 
 Let us take a step back, and remove the random processing delay from the code.
 We'll leave in, however, losing the packet with a small probability.
@@ -374,7 +382,7 @@ timeout message over and over.
 Sources: @ref tictoc7.ned, @ref txc7.cc, @ref omnetpp.ini
 
 
-@subsection s8 Step 8
+@section s8 Step 8
 
 In the previous model we just created another packet if we needed to
 retransmit. This is OK because the packet didn't contain much, but
@@ -383,12 +391,15 @@ packet so that we can re-send it without the need to build it again.
 
 Sources: @ref tictoc8.ned, @ref txc8.cc, @ref omnetpp.ini
 
+NEXT: @ref part3
+*/
 
-<hr>
-@section nnodes Turning it into a real network
+/**
+@page part3 3. Turning it into a real network
 
+PREV: @ref part2 UP: @ref contents
 
-@subsection s9 Step 9
+@section s9 Step 9
 
 Let's make it more interesting by using several (n) `tic' modules,
 and connecting every module to every other. For now, let's keep it
@@ -403,7 +414,7 @@ tictoc9.ned: @include tictoc9.ned
 Sources: @ref tictoc9.ned, @ref txc9.cc, @ref omnetpp.ini
 
 
-@subsection s10 Step 10
+@section s10 Step 10
 
 In this step the destination address is no longer node 2 -- we draw a
 random destination, and we'll add the destination address to the message.
@@ -420,8 +431,15 @@ address, and so forth.
 
 Sources: @ref tictoc10.ned, @ref tictoc10.msg, @ref txc10.cc, @ref omnetpp.ini
 
+NEXT: @ref part4
+*/
 
-@subsection s11 Step 11
+/**
+@page part4 4. Collecting and analysing statistics
+
+PREV: @ref part3 UP: @ref contents
+
+@section s11 Step 11
 
 This model is exciting enough so that we can collect some statistics.
 We'll record in output vectors the hop count of every message upon arrival.
