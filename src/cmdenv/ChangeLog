@@ -1,3 +1,6 @@
+FIXME todo: print event banner when simulation stops (esp with express mode),
+otherwise one doesn't know total duration and number of processed events!
+
 2004-11-03  ------ omnetpp-3.0a9 released ------
 
 2004-10-27  Andras Varga
@@ -41,9 +44,6 @@
 2004-03-22  ------ omnetpp-3.0a3 released ------
 
 2004-03-03  ------ omnetpp-3.0a2 released ------
-
-FIXME todo: print event banner when simulation stops (esp with express mode),
-otherwise one doesn't know total duration and number of processed events!
 
 2004-02-23  Andras Varga
 
