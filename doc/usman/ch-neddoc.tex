@@ -12,13 +12,13 @@ Like Javadoc and Doxygen... opp\_neddoc
 \subsection{Documentation comments}
 
 Documentation is embedded in normal comments. All \texttt{//} comments
-that are in the ``right place'' (from the documentation tool's 
+that are in the ``right place'' (from the documentation tool's
 point of view) will be included in the generated documentation.
-  \footnote{In contrast, Javadoc and Doxygen use special comments (those 
-     beginning with \texttt{/**}, \texttt{///}, \texttt{//<} or a similar 
-     marker) to distinguish documentation from ``normal'' comments in the 
-     source code. In {\opp} there's no need for that: NED and the message 
-     syntax so compact that practically all comments one would want to write 
+  \footnote{In contrast, Javadoc and Doxygen use special comments (those
+     beginning with \texttt{/**}, \texttt{///}, \texttt{//<} or a similar
+     marker) to distinguish documentation from ``normal'' comments in the
+     source code. In {\opp} there's no need for that: NED and the message
+     syntax so compact that practically all comments one would want to write
      in them can serve documentation purposes. Still, there is a way to write
      comments that \textit{don't} make it into the documentation -- by starting
      them with \texttt{//\#}.}
@@ -87,8 +87,8 @@ Text formatting works like in Javadoc or Doxygen -- you can break up the
 text into paragraphs and create bulleted/numbered lists without
 special commands, and use HTML for more fancy formatting.
 
-Paragraphs are separated by empty lines, like in LaTeX or Doxygen. 
-Lines beginning with `\ttt{-}' will be turned into bulleted lists, 
+Paragraphs are separated by empty lines, like in LaTeX or Doxygen.
+Lines beginning with `\ttt{-}' will be turned into bulleted lists,
 and lines beginning with `\ttt{-\#}' into numbered lists.
 
 Example:
@@ -259,27 +259,27 @@ will be awkward.
 
 \subsection{Customizing the title page}
 
-The title page is the one that appears in the main frame after 
+The title page is the one that appears in the main frame after
 opening the documentation in the browser. By default it contains
 a boilerplate text with the generic title \textit{``OMNeT++ Model Documentation''}.
 You probably want to customize that, and at least change the title
 to the name of the documented simulation model.
- 
+
 You can supply your own version of the title page adding a \ttt{@titlepage}
 directive to a file-level comment (a comment that appears at the top of
-a NED file, but is separated from the first \ttt{import}, \ttt{channel}, 
+a NED file, but is separated from the first \ttt{import}, \ttt{channel},
 \ttt{module}, etc. definition by at least one blank line).
-In theory you can place your title page definition into 
+In theory you can place your title page definition into
 any NED or MSG file, but it is probably a good idea to create
-a separate \ttt{index.ned} file for it.   
+a separate \ttt{index.ned} file for it.
 
-The lines you write after the \ttt{@titlepage} line up to the next 
-\ttt{@page} line (see later) or the end of the comment will be used 
+The lines you write after the \ttt{@titlepage} line up to the next
+\ttt{@page} line (see later) or the end of the comment will be used
 as the title page.
 You probably want to begin with a title because the documentation
 tool doesn't add one (it lets you have full control over the
-page contents). You can use the \ttt{<h1>..</h1>} HTML tag 
-to define a title. 
+page contents). You can use the \ttt{<h1>..</h1>} HTML tag
+to define a title.
 
 Example:
 
@@ -297,7 +297,7 @@ Example:
 \subsection{Adding extra pages}
 
 You can add new pages to the documentation in a similar way as customizing
-the title page. The directive to be used is \ttt{@page}, and it can 
+the title page. The directive to be used is \ttt{@page}, and it can
 appear in any file-level comment (see above).
 
 The syntax of the \ttt{@page} directive is the following:
@@ -305,9 +305,9 @@ The syntax of the \ttt{@page} directive is the following:
 \begin{verbatim}
 // @page filename.html, Title of the Page
 \end{verbatim}
-  
+
 Please choose a file name that doesn't collide with the files generated
-by the documentation tool (such as \ttt{index.html}). 
+by the documentation tool (such as \ttt{index.html}).
 The page title you supply will appear on the top of the page as well as
 in the page index.
 
@@ -321,7 +321,7 @@ Example:
 //
 // @page structure.html, Directory Structure
 //
-// The model core model files and the examples have been placed 
+// The model core model files and the examples have been placed
 // into different directories. The <tt>examples/</tt> directory...
 //
 //
@@ -331,8 +331,8 @@ Example:
 \end{verbatim}
 
 You can create links to the generated pages in the normal HTML way,
-using the \ttt{<a href="...">...</a>} tag. All HTML files are 
-placed in a single directory, so you don't have to worry about 
+using the \ttt{<a href="...">...</a>} tag. All HTML files are
+placed in a single directory, so you don't have to worry about
 specifying directories.
 
 Example:
@@ -347,24 +347,24 @@ Example:
 
 \subsection{Incorporating externally created pages}
 
-You may want to create pages outside the documentation tool 
-(e.g. using a HTML editor) and include them in the documentation. 
-This is possible, all you have to do is declare such pages with 
-the \ttt{@externalpage} directive in any of the NED files, and 
+You may want to create pages outside the documentation tool
+(e.g. using a HTML editor) and include them in the documentation.
+This is possible, all you have to do is declare such pages with
+the \ttt{@externalpage} directive in any of the NED files, and
 they will be added to the page index. The pages can then be linked to
-from other pages using the HTML \ttt{<a href="...">...</a>} tag. 
+from other pages using the HTML \ttt{<a href="...">...</a>} tag.
 
 The \ttt{@externalpage} directive is similar in syntax
-\ttt{@page}:  
+\ttt{@page}:
 
 \begin{verbatim}
 // @externalpage filename.html, Title of the Page
 \end{verbatim}
 
-The documentation tool does not check if the page exists 
-or not. It is your responsibility to copy them manually into 
+The documentation tool does not check if the page exists
+or not. It is your responsibility to copy them manually into
 the directory of the generated documentation and then to make
-sure the hyperlinks work. 
+sure the hyperlinks work.
 
 
 

@@ -13,7 +13,8 @@ PDFPICS = figures/*.pdf
 # LOGFILTER = | sed '/Underfull/{N;N;d;};/Overfull/{N;N;d;};/Token not allowed/{N;N;d;}'
 LOGFILTER = 
 
-default: usman.dvi usman.pdf
+#default: usman.dvi usman.pdf
+default: usman.pdf
 
 usman.dvi: $(TEXSRC) $(PSPICS)
 	latex usman.tex $(LOGFILTER)

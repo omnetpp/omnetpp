@@ -52,6 +52,11 @@ font-weight: bold;
 -->
 __BODY__
 
+<HR>
+<EM>Document converted from LaTeX by <a href="http://www.best.com/~quong/ltoh.html">ltoh</a>
+from <A href="http://www.best.com/~quong">Russell W. Quong</A>
+(<A href="mailto:quong@best.com">quong@best.com</A>)</EM>
+
 </BODY>
 </HTML>
 ';

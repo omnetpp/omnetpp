@@ -170,7 +170,7 @@
 %%\setcounter{page}{1}
 %\newpage
 %%\pagenumbering{roman}
-\tableofcontents
+%%FIXME: \tableofcontents
 \cleardoublepage
 
 %%\pagestyle{fancy}
@@ -195,6 +195,9 @@
 \cleardoublepage
 
 \include{ch-sim-lib}
+\cleardoublepage
+
+\include{ch-graphics}
 \cleardoublepage
 
 \include{ch-build-sim-progs}
@@ -233,12 +236,12 @@
 \nocite{*}
 \bibliographystyle{alpha}
 %% \bibliographystyle{ieeetr}
-\bibliography{usman-bibl}
+%%FIXME: \bibliography{usman-bibl}
 
 %% no need for the following since 'tocbibind' package
 %% \phantomsection
 %% \addcontentsline{toc}{chapter}{\indexname}
-\printindex
+%%FIXME: \printindex
 
 \end{document}
 

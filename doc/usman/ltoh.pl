@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 
-# Copyright (c) 1996, 1997	Russell Quong.
+# Copyright (c) 1996, 1997      Russell Quong.
 #
 # In the following, the "author" refers to "Russell Quong."
 #
@@ -30,7 +30,7 @@
 # PERFORMANCE OF THIS SOFTWARE.
 
 # ltoh.pl = a LaTeX to HTML converter
-# Russell Quong		1996, 1997
+# Russell Quong         1996, 1997
 # Version 97e.
 
 # enable readable "English names" for variables, like $MATCH or $PERL_VERSION
@@ -44,7 +44,7 @@ $author = "Russell W. Quong";
 $version = "Version 97e.";
 $reldate = "Mar 1997";
 $status = "Experimental";
-$dirsep = "/";			# directory separator character
+$dirsep = "/";                  # directory separator character
 
 $qval{"today"} = strip_hms_and_day( scalar(localtime()) );
 $qval{"title"} = "";
@@ -65,56 +65,58 @@ sub bad_command {
 sub lookup {
     my($idx) = @_;
     if ( ! defined $qval{$idx} ) {
-	return "$idx undefined";
+        return "$idx undefined";
     } else {
-	return $qval{$idx};
+        return $qval{$idx};
     }
 }
 
 sub print_html_header {
-    my($filename) = @_;
-    print '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">', "\n";
-    print "<HTML>\n";
-    if ($qval{"title"} eq "") {
-	$qval{"title"} = "$filename : [LaTeX --> HTML]";
-    }
-    print "<HEAD>\n<TITLE>\n", $qval{title} , "\n</TITLE>\n</HEAD>\n";
-    print "<BODY>\n";
+    # FOLLOWING LINES COMMENTED OUT BY ANDRAS
+    # my($filename) = @_;
+    # print '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">', "\n";
+    # print "<HTML>\n";
+    # if ($qval{"title"} eq "") {
+    #     $qval{"title"} = "$filename : [LaTeX --> HTML]";
+    # }
+    # print "<HEAD>\n<TITLE>\n", $qval{title} , "\n</TITLE>\n</HEAD>\n";
+    # print "<BODY>\n";
 }
 
 sub print_html_trailer {
     my($filename) = @_;
     # need to declare ctime separately from next line, ugh.  (scalar vs. array)
-    print "<HR>\n";
-    print "<font size=+0><EM>[Converted LaTeX --> HTML by";
-    print ' <a href="http://www.best.com/~quong/ltoh.html">ltoh</a>]';
-    print "</EM></font><br>\n";
-
-    print "<ADDRESS>\n";
-    if ($qval{"url"} =~ /Unknown/) {
-	if (! ($qval{"author"} =~ /Unknown/)) {
-	    print "$qval{author}\n" ;
-	}
-    } else {
-	print "<A href=\"$qval{url}\">$qval{author}</A>\n";
-    }
-    if (! ($qval{"email"} =~ /Unknown/)) {
-	print "(<A href=\"mailto:$qval{email}\"><SAMP>$qval{email}";
-	print "</SAMP></A>)\n";
-    }
-
-    my($ctime);
-    $ctime = localtime;
-    $ctime = strip_hms_and_day($ctime);
-    print "Last modified: <font color=maroon><samp>$ctime</samp></font>\n";
-
-    my($mtime) = get_file_mtime($filename);
-    if ($mtime ne $ctime) {
-	print "(LaTeX doc modified: <font color=maroon><samp>";
-	print $mtime;
-	print "</samp></font>)<br>\n";
-    }
-    print "</ADDRESS>\n";
+    # FOLLOWING LINES COMMENTED OUT BY ANDRAS
+    # print "<HR>\n";
+    # print "<font size=+0><EM>[Converted LaTeX --> HTML by";
+    # print ' <a href="http://www.best.com/~quong/ltoh.html">ltoh</a>]';
+    # print "</EM></font><br>\n";
+    #
+    # print "<ADDRESS>\n";
+    # if ($qval{"url"} =~ /Unknown/) {
+    #     if (! ($qval{"author"} =~ /Unknown/)) {
+    #         print "$qval{author}\n" ;
+    #     }
+    # } else {
+    #     print "<A href=\"$qval{url}\">$qval{author}</A>\n";
+    # }
+    # if (! ($qval{"email"} =~ /Unknown/)) {
+    #     print "(<A href=\"mailto:$qval{email}\"><SAMP>$qval{email}";
+    #     print "</SAMP></A>)\n";
+    # }
+    #
+    # my($ctime);
+    # $ctime = localtime;
+    # $ctime = strip_hms_and_day($ctime);
+    # print "Last modified: <font color=maroon><samp>$ctime</samp></font>\n";
+    #
+    # my($mtime) = get_file_mtime($filename);
+    # if ($mtime ne $ctime) {
+    #     print "(LaTeX doc modified: <font color=maroon><samp>";
+    #     print $mtime;
+    #     print "</samp></font>)<br>\n";
+    # }
+    # print "</ADDRESS>\n";
     print "</BODY>\n</HTML>\n";
 }
 
@@ -123,7 +125,7 @@ sub strip_hms_and_day {
 
     # The next two lines strip off
     # the hours:min:secs and the leading day of the week, giving
-    #	Jul 29 1996
+    #   Jul 29 1996
     $str_time =~ s/^[A-Z][a-z][a-z][ \t]*//;
     $str_time =~ s/\d+:\d+:\d+[ \t]*([A-Z][A-Z]T[ \t]*)?//;
     return $str_time;
@@ -136,18 +138,18 @@ sub strip_hms_and_day {
 #
 sub get_file_mtime {
     my($filename) = @_;
-    my($str_time) = '<Unable to determine time>';	# default value
+    my($str_time) = '<Unable to determine time>';       # default value
 
     my($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
-	$atime,$mtime,$ctime,$blksize,$blocks)
-	= stat($filename);
+        $atime,$mtime,$ctime,$blksize,$blocks)
+        = stat($filename);
     if ($dev != null) {
-	$str_time = localtime($mtime);
-	# We now have string like:
-	#	Mon Jul 29 19:53:49 PDT 1996
-	$str_time = strip_hms_and_day($str_time);
+        $str_time = localtime($mtime);
+        # We now have string like:
+        #       Mon Jul 29 19:53:49 PDT 1996
+        $str_time = strip_hms_and_day($str_time);
 
-	warning(9, "File $filename last modified on $str_time");
+        warning(9, "File $filename last modified on $str_time");
     }
     return $str_time;
 }
@@ -156,16 +158,16 @@ sub logmessage {
     my($prefix, @params) = @_;
     my($level) = 0;
     if (@params > 1) {
-	if ($params[0] =~ /\d/) {
-	    $level = shift(@params);
-	} else {
-	    print ("No level given: @_");
-	}
+        if ($params[0] =~ /\d/) {
+            $level = shift(@params);
+        } else {
+            print ("No level given: @_");
+        }
     }
     if ($level <= $warnlevel) {
-	print "$prefix :: @params\n";
+        print "$prefix :: @params\n";
     } else {
-#	print "level $level > warnlevel $warnleve\n";
+#       print "level $level > warnlevel $warnleve\n";
     }
 }
 
@@ -191,22 +193,22 @@ sub fyi {
 
 sub get_scriptdir {
     fyi("PROGRAM_NAME = $PROGRAM_NAME");
-    my($scriptfile) = $PROGRAM_NAME;	# maybe a link.  We trace it down.
+    my($scriptfile) = $PROGRAM_NAME;    # maybe a link.  We trace it down.
     my($scriptdir, $fulldir) = ("." , "");
 
     while (-l $scriptfile) {
         fyi(9, "$scriptfile is link to -->");
-	if ($scriptfile =~ /(.*) $dirsep ( [^$dirsep]+ )/x ) {
-	    $scriptdir = $1;
-#	    if ($scriptdir =~ /^$dirsep/) {
-#		$fulldir = $scriptdir;
-#	    } else {
-#		$fulldir .= $scriptdir;
-#	    }
-#	    fyi(9, "scriptdir = $scriptdir");
-#	    fyi(9, "fulldir = $fulldir");
-	}
-	$scriptfile = readlink $scriptfile;
+        if ($scriptfile =~ /(.*) $dirsep ( [^$dirsep]+ )/x ) {
+            $scriptdir = $1;
+#           if ($scriptdir =~ /^$dirsep/) {
+#               $fulldir = $scriptdir;
+#           } else {
+#               $fulldir .= $scriptdir;
+#           }
+#           fyi(9, "scriptdir = $scriptdir");
+#           fyi(9, "fulldir = $fulldir");
+        }
+        $scriptfile = readlink $scriptfile;
         fyi(9, "   $scriptfile.");
         fyi(7, "scriptdir = $scriptdir");
     }
@@ -222,44 +224,44 @@ sub main {
 
     my($nextline, $f);
     my($nspecfiles) = 0;
-    my($scriptdir) = get_scriptdir();	# attempt to trace down a sym link.
+    my($scriptdir) = get_scriptdir();   # attempt to trace down a sym link.
 
     # list of spec files
     my(@specfiles) = (
         "$scriptdir$dirsep" . "ltoh.specs" ,
-	"~$dirsep.ltoh.specs" ,
-	".$dirsep.ltoh.specs"
+        "~$dirsep.ltoh.specs" ,
+        ".$dirsep.ltoh.specs"
     );
 
     foreach $f (@specfiles) {
-	$nspecfiles += read_specfile($f);
+        $nspecfiles += read_specfile($f);
     }
     if ($nspecfiles == 0) {
-	$nspecfiles += read_specfile("/usr/local/bin/ltoh.specs");
+        $nspecfiles += read_specfile("/usr/local/bin/ltoh.specs");
     }
     if ($nspecfiles == 0) {
-	$nspecfiles += read_specfile("/usr/bin/ltoh.specs");
+        $nspecfiles += read_specfile("/usr/bin/ltoh.specs");
     }
     if ($nspecfiles == 0) {
-	warning("Tried to read spec files: @specfiles");
-	errmsg("No specification files found.  Bye-bye.");
-	exit(1);
+        warning("Tried to read spec files: @specfiles");
+        errmsg("No specification files found.  Bye-bye.");
+        exit(1);
     }
 
     if (@ARGV == 0) {
         handle_file('-');
     }
     foreach $i (@ARGV) {
-	my($texfile) = $i;
-	if ($i =~ /^(.+)\.([ltex]+)$/ ) {
-	    warning(7, "filebase = $1, suffix = $2, $input file = $texfile");
-	} else {
-	    $texfile = $i . ".tex";
-	}
-	if (! -r $texfile) {
-	    print "Cannot read file: $texfile\n";
-	    return -1;
-	}
+        my($texfile) = $i;
+        if ($i =~ /^(.+)\.([ltex]+)$/ ) {
+            warning(7, "filebase = $1, suffix = $2, $input file = $texfile");
+        } else {
+            $texfile = $i . ".tex";
+        }
+        if (! -r $texfile) {
+            print "Cannot read file: $texfile\n";
+            return -1;
+        }
         handle_file($texfile);
     }
 }
@@ -271,32 +273,32 @@ sub handle_file {
     my($texfilename) = @_;
     my($INFILE) = $texfilename;
     if ($texfilename eq '-') {
-	$INFILE = STDIN;
+        $INFILE = STDIN;
     } else {
-	open($INFILE, $texfilename);
+        open($INFILE, $texfilename);
     }
     $qval{"title"} = "Unnamed Web page";
     fyi(5, "+ Reading LaTeX input ... handle_file($texfilename)");
     @orig = <$INFILE>;
-    print_arr('Orig $lineno:', \@orig)		if ($warnlevel >= 8);
+    print_arr('Orig $lineno:', \@orig)          if ($warnlevel >= 8);
     do_comment_verbatim(\@orig);
-    print_arr('Verb $lineno:', \@orig)		if ($warnlevel >= 8);
+    print_arr('Verb $lineno:', \@orig)          if ($warnlevel >= 8);
     do_tables(\@orig);
-    print_arr('Tabl $lineno:', \@orig)		if ($warnlevel >= 8);
+    print_arr('Tabl $lineno:', \@orig)          if ($warnlevel >= 8);
     do_begin_end(\@orig);
-    print_arr('BegE $lineno:', \@orig)		if ($warnlevel >= 8);
+    print_arr('BegE $lineno:', \@orig)          if ($warnlevel >= 8);
     do_tex_comms(\@orig);
-    print_arr('Comm  $lineno:', \@orig)		if ($warnlevel >= 8);
+    print_arr('Comm  $lineno:', \@orig)         if ($warnlevel >= 8);
     mark_delims(\@orig);
-    print_arr('Mark $lineno:\n', \@delim_lines)	if ($warnlevel >= 8);
+    print_arr('Mark $lineno:\n', \@delim_lines) if ($warnlevel >= 8);
     do_simple_latex_defs(\@delim_lines);
-    print_arr('{}  $lineno:\n', \@delim_lines)	if ($warnlevel >= 8);
+    print_arr('{}  $lineno:\n', \@delim_lines)  if ($warnlevel >= 8);
     do_complicated_latex_defs(\@delim_lines);
-    print_arr('{N} $lineno:\n', \@delim_lines)	if ($warnlevel >= 8);
+    print_arr('{N} $lineno:\n', \@delim_lines)  if ($warnlevel >= 8);
     my($i);
     final_cleanup(\@delim_lines);
-    print_arr('[<$lineno>]', \@delim_lines)	if ($warnlevel >= 8);
-    print_arr("", \@delim_lines)		if ($warnlevel >= 8);
+    print_arr('[<$lineno>]', \@delim_lines)     if ($warnlevel >= 8);
+    print_arr("", \@delim_lines)                if ($warnlevel >= 8);
     print_html_file($texfilename);
 }
 
@@ -310,8 +312,8 @@ sub print_html_file {
     fyi(8,"texfile = $texfile, outfile = $outfile");
 
     if ($texfile =~ /^(.+)\.([^.]*)$/ ) {
-	$base = $1;
-	$suffix = $2;
+        $base = $1;
+        $suffix = $2;
     }
     fyi(8, "base = $base, suffix = $suffix, $input file = $texfile");
 
@@ -319,9 +321,9 @@ sub print_html_file {
     $outfile =~ s/\$SUFFIX/$suffix/e;
     fyi(3, "+ texbase = $base  ;  HTML output file => $outfile  .");
     if (-e $outfile) {
-	#
-	# comment out the following warning if desired.
-	#
+        #
+        # comment out the following warning if desired.
+        #
 #       print "Warn, file $outfile already exists\n";
     }
     open(OUTF , ">"."$outfile");
@@ -349,52 +351,52 @@ $re_fields = 4;
 # associative arrays indexed by the LaTeX command
 # containing the corresponding the HTML
 # E.g, we might have something like:
-# 	%html_start{'textbf'} = '<strong>';
-# 	%html_end{'textbf'}   = '</strong>';
+#       %html_start{'textbf'} = '<strong>';
+#       %html_end{'textbf'}   = '</strong>';
 # The values are read in from a specification file.
 #   DO NOT EDIT THEM MANUALLY.
 
 sub do_spec_pseudo_op {
     my($line) = @_;
     if ($line =~ /^=\*\*\*=[ \t]+([^ \t\n]*)/ ) {
-	chomp($line);
-	my($op) = $1;
-	fyi(7, "Psuedo-op $op: ($line)");
-	if ($line =~ /endfile/) {
-	    return $op;
-	}
-	if ($line =~ /=[ \t]*echo./) {
-	    print "$POSTMATCH\n";
-	}
-	if ($line =~ /=[ \t]*exit/) {
-	    fyi(6, "Exit request, line $INPUT_LINE_NUMBER, $spec_fname\n");
-	    exit(1);
-	}
-	if ($line =~ /=[ \t]*warnlevel\s*:=\s*(\d+)/i) {
-	    $warnlevel = $1;
-	}
-	return "pseudo-op";
+        chomp($line);
+        my($op) = $1;
+        fyi(7, "Psuedo-op $op: ($line)");
+        if ($line =~ /endfile/) {
+            return $op;
+        }
+        if ($line =~ /=[ \t]*echo./) {
+            print "$POSTMATCH\n";
+        }
+        if ($line =~ /=[ \t]*exit/) {
+            fyi(6, "Exit request, line $INPUT_LINE_NUMBER, $spec_fname\n");
+            exit(1);
+        }
+        if ($line =~ /=[ \t]*warnlevel\s*:=\s*(\d+)/i) {
+            $warnlevel = $1;
+        }
+        return "pseudo-op";
     } elsif ($line =~ /^([a-zA-Z_][\w]*)\s*:=(.*)$/ ) {
-	my($name, $val, $oldval) = ($1, $2, "");
-	$val =~ s/^[\s]*["]?//;
-	$val =~ s/["]?[\s]*$//;
-	$oldval = $qval{$name};
-	$qval{$name} = $val;
-	fyi(6, "set var: $name := ($val),  oldval = $oldval");
-	return "set-var";
+        my($name, $val, $oldval) = ($1, $2, "");
+        $val =~ s/^[\s]*["]?//;
+        $val =~ s/["]?[\s]*$//;
+        $oldval = $qval{$name};
+        $qval{$name} = $val;
+        fyi(6, "set var: $name := ($val),  oldval = $oldval");
+        return "set-var";
     } else {
-	return "";
+        return "";
     }
 }
 
 # Example
 # For the specification
-# 	':b/e	:\begin{rqitemize}(\{[^\}]*\})*:<ul>:</>:'
+#       ':b/e   :\begin{rqitemize}(\{[^\}]*\})*:<ul>:</>:'
 # We get:
-# 	$html_start{'\begin{rqitemize}'} = '<ul>';
-# 	$html_end{'\begin{rqitemize}'} = '</ul>';
-# 	$comm_regex{'\begin{rqitemize}'} = '\begin{rqitemize}(\{[^\}]*\})*';
-# 	$comm_attr{'\begin{rqitemize}'} = 'b/e';
+#       $html_start{'\begin{rqitemize}'} = '<ul>';
+#       $html_end{'\begin{rqitemize}'} = '</ul>';
+#       $comm_regex{'\begin{rqitemize}'} = '\begin{rqitemize}(\{[^\}]*\})*';
+#       $comm_attr{'\begin{rqitemize}'} = 'b/e';
 #
 sub read_specfile {
     my($globbed_name) = @_;
@@ -403,28 +405,28 @@ sub read_specfile {
     fyi(7, "globbed_name = $globbed_name, spec_fname = $spec_fname");
 
     if (! -r $spec_fname) {
-	warning(7, "Unable to read ltoh spec file $spec_fname.");
-	return 0;
+        warning(7, "Unable to read ltoh spec file $spec_fname.");
+        return 0;
     }
     open(SPECFILE, $spec_fname);
 
     my($line, $status);
     my($lineno) = 0;
     while ($line = <SPECFILE>) {
-	$lineno++;
-	# skip comments
-	if ($line =~ /^[ \t]*[#;]/ || $line =~ /^[ \t]*$/) {
-	    fyi(9, "Skipping comment: $line");
-	    next;
-	}
-	$status = handle_specification($line);
-	if ($status eq "endfile") {
-	    last;
-	}
+        $lineno++;
+        # skip comments
+        if ($line =~ /^[ \t]*[#;]/ || $line =~ /^[ \t]*$/) {
+            fyi(9, "Skipping comment: $line");
+            next;
+        }
+        $status = handle_specification($line);
+        if ($status eq "endfile") {
+            last;
+        }
     }
     fyi(3, "+ Read spec file ($spec_fname).");
     if ($lineno == 0) {
-	warning(3, "+ Empty spec file ($spec_fname).");
+        warning(3, "+ Empty spec file ($spec_fname).");
     }
     return 1;
 }
@@ -435,24 +437,24 @@ sub handle_specification {
     my(@arr);
     my($junk, $from, $to, $rest, $status);
     if ( ($status = do_spec_pseudo_op($line)) ne "") {
-	return $status;
+        return $status;
     }
     $splitter = substr($line, 0, 1);
     if ($splitter eq '[ \t]') {
-	$splitter = "[ \t]+";
+        $splitter = "[ \t]+";
     } else {
-	$splitter = "[" . quotemeta("$splitter") . "]";
+        $splitter = "[" . quotemeta("$splitter") . "]";
     }
     fyi(8, "splitter = $splitter");
     @arr = split($splitter, $line, $re_fields+3);
     if (@arr < $re_fields+2) {
-	warning("Malformed spec, line $lineno, too few fields" . "$line");
-	next;
+        warning("Malformed spec, line $lineno, too few fields" . "$line");
+        next;
     } elsif (@arr > $re_fields+2) {
-	warning("Malformed spec, line $lineno, too many fields" . "$line");
-	next;
+        warning("Malformed spec, line $lineno, too many fields" . "$line");
+        next;
     } else {
-	# everything is OK.  do nothing.
+        # everything is OK.  do nothing.
     }
     ($raw_spec, $from, $to_start, $to_end) = @arr[1 .. $re_fields ];
 
@@ -461,12 +463,12 @@ sub handle_specification {
     # must check if $from looks like "\begin{...}" as must not apply (b)
     # to a \begin{...} construct
     if ($from =~ /\\begin\{.+\}/ ) {
-	if ($from =~ s/(\\begin\{[^\}]+\})(.+)/$1/ ) {
-	    fyi(7, "Stripped begin\{...\} args: $arr[2] --> $from");
-	}
+        if ($from =~ s/(\\begin\{[^\}]+\})(.+)/$1/ ) {
+            fyi(7, "Stripped begin\{...\} args: $arr[2] --> $from");
+        }
     } elsif ($from =~ /(\\[A-Za-z_]+)([^A-Za-z_].*)/ ) {
-	$from =~ s/(\\[A-Za-z_]+)([^A-Za-z_].*)/$1/;
-	fyi(7, "Stripped args: $arr[2] --> $from");
+        $from =~ s/(\\[A-Za-z_]+)([^A-Za-z_].*)/$1/;
+        fyi(7, "Stripped args: $arr[2] --> $from");
     }
 
     # if $to_end is "...</>...",
@@ -475,13 +477,13 @@ sub handle_specification {
     #
     my($scratch) = "";
     if ($to_end =~ '</>') {
-	$junk = $to_start;
-	$scratch = "";
-	while ($junk =~ s:<([^ \t>]+)([^>]*)>:\@$1\@:o ) {
-	    $scratch = "</$1>" . $scratch;
-	}
-	$to_end =~ s:</>:$scratch:;
-	fyi(7, "Gen to_end: to_start = $to_start, to_end = $to_end");
+        $junk = $to_start;
+        $scratch = "";
+        while ($junk =~ s:<([^ \t>]+)([^>]*)>:\@$1\@:o ) {
+            $scratch = "</$1>" . $scratch;
+        }
+        $to_end =~ s:</>:$scratch:;
+        fyi(7, "Gen to_end: to_start = $to_start, to_end = $to_end");
     }
 
     fyi(7, "from = $from, to_start = $to_start, to_end = $to_end");
@@ -493,7 +495,7 @@ sub handle_specification {
     $html_end{$from} = $to_end;
 
     if ($raw_spec =~ /re/i && $to_end ne "") {
-	warning(5, "Unused specification: $to_end");
+        warning(5, "Unused specification: $to_end");
     }
 }
 
@@ -538,22 +540,22 @@ sub escape_line {
   # In prefix_string the string '$lineno' is converted to the array index.
   # If prefix_string ends with a '\n' (newline), append a newline to the line.
   # Ex:
-  #   @lines = <>;			# read all input into an array
-  #   print_arr('$lineno:', \@lines);	# pass in a reference to the array
+  #   @lines = <>;                      # read all input into an array
+  #   print_arr('$lineno:', \@lines);   # pass in a reference to the array
 sub print_arr {
     my($prefix, $arr) = @_;
     my($i);
     my($ndigits) = int( (log($#{$arr}) / exp(1) + .999) ) ;
     my($newline) = "";
     if ($prefix =~ s/(\\n|\n)$//o) {
-	$newline = "\n";
+        $newline = "\n";
     }
     foreach $i (0 .. $#{$arr}) {
-	$s = $prefix;
-	if ($prefix =~ /\$lineno/o) {
-	    $s =~ s/\$lineno/sprintf("%$ndigits" . "d", $i)/ge;
-	}
-	print "$s$arr->[$i]$newline";
+        $s = $prefix;
+        if ($prefix =~ /\$lineno/o) {
+            $s =~ s/\$lineno/sprintf("%$ndigits" . "d", $i)/ge;
+        }
+        print "$s$arr->[$i]$newline";
     }
 }
 
@@ -563,8 +565,8 @@ $orig_inh = "";
   # I've hard-wired the following "early actions"
   #   1) handle \begin{verbatim} for now.
   #   2) You can set HTML/Perl variables via lines that look like:
-  # %-ltoh-	   pseudo-op-line
-  # %-tex2html-	   pseudo-op-line	## backward compatibility for me [RQ]
+  # %-ltoh-        pseudo-op-line
+  # %-tex2html-    pseudo-op-line       ## backward compatibility for me [RQ]
   #
   #   2) I've hard coded a simplistic table hander too.  Needs updating.
   #      It handles \multicolumn{ncols}{.}{contents} quite crudely
@@ -573,45 +575,45 @@ $orig_inh = "";
 sub do_comment_verbatim {
     my($arr) = @_;
     my($arrlen) = scalar(@$arr);
-    vec($orig_inh, $arrlen-1, 1) = 0;		# pre-extend
+    vec($orig_inh, $arrlen-1, 1) = 0;           # pre-extend
     my($inh) = $false;
     for ($i=0; $i < $arrlen; $i++) {
         vec($orig_inh, $i, 1) = $inh;
-	my($line) = $arr->[$i];
+        my($line) = $arr->[$i];
 
         if ($line =~ /^[%]+-tex2html-\s*(.*)/ ) {
-	    warning(3, "Use of -tex2html- is deprecated.  Change to -ltoh-");
-	    handle_specification($1);
-	} elsif ($line =~ /^[%]+-ltoh-\s*(.*)/ ) {
-	    fyi(6, "Processing psuedo-op in LaTeX source ($1)");
-	    handle_specification($1);
-	}
-	# preserve special chars in html, always
-	$line =~ s/\\&/&amp;/xg;
-	$line =~ s/ < /&lt;/xg;
-	$line =~ s/ > /&gt;/xg;
-	if ($line =~ s:\\begin{verbatim}:<pre>: ) {
-	    vec($orig_inh, $i, 1) = $true;	# inhibit further processing
+            warning(3, "Use of -tex2html- is deprecated.  Change to -ltoh-");
+            handle_specification($1);
+        } elsif ($line =~ /^[%]+-ltoh-\s*(.*)/ ) {
+            fyi(6, "Processing psuedo-op in LaTeX source ($1)");
+            handle_specification($1);
+        }
+        # preserve special chars in html, always
+        $line =~ s/\\&/&amp;/xg;
+        $line =~ s/ < /&lt;/xg;
+        $line =~ s/ > /&gt;/xg;
+        if ($line =~ s:\\begin{verbatim}:<pre>: ) {
+            vec($orig_inh, $i, 1) = $true;      # inhibit further processing
             $inh = $true;
-	} elsif ($line =~ s:\\end{verbatim}:</pre>: ) {
-	    vec($orig_inh, $i, 1) = $true;	# inhibit further processing
-            $inh = $false;		# allow processing on next line
-	} elsif ($inh == $false && $line =~ s:^([ \t]*%.*):<!-- $1 -->: ) {
-	    if (! lookup("keep_comments") ) {
-		$line = "";
-	    }
-	    vec($orig_inh, $i, 1) = $true;	# inhibit further processing
-	} elsif ($inh == $false && $line =~ /^\\end{document}/ ) {
-	    $#$arr = $i;
-	    fyi(8, "Truncating down to $i lines");
-	    last;
-	}
-	$arr->[$i] = $line;
+        } elsif ($line =~ s:\\end{verbatim}:</pre>: ) {
+            vec($orig_inh, $i, 1) = $true;      # inhibit further processing
+            $inh = $false;              # allow processing on next line
+        } elsif ($inh == $false && $line =~ s:^([ \t]*%.*):<!-- $1 -->: ) {
+            if (! lookup("keep_comments") ) {
+                $line = "";
+            }
+            vec($orig_inh, $i, 1) = $true;      # inhibit further processing
+        } elsif ($inh == $false && $line =~ /^\\end{document}/ ) {
+            $#$arr = $i;
+            fyi(8, "Truncating down to $i lines");
+            last;
+        }
+        $arr->[$i] = $line;
     }
 }
 
 # handle nested braces/parens/brackets.
-# convert { ==> {:level:		level starts at 0
+# convert { ==> {:level:                level starts at 0
 #
 # E.g. a{b{c}d{e{f}}g} ==> a{:0:b{:1:c:1}d{:1:e{:2:f:2:}:1:}g:0:}
 #
@@ -621,22 +623,22 @@ sub mark_braces_one_line {
     my($lookfor) = ($ldelim eq $rdelim) ? "[$ldelim]" : "[$ldelim$rdelim]";
     while ( $line =~ /(.*[^\\])($lookfor)(.*)/) {
         my($prev, $del, $after) = ($1, $2, $3);
-	my($repl);
-	if ($del eq $ldelim) {
-	    $repl = "$del:$level:";
-	    $level++;
-	} elsif ($del eq $rdelim) {
-	    $repl = ":$level:$del";
-	    $level--;
+        my($repl);
+        if ($del eq $ldelim) {
+            $repl = "$del:$level:";
+            $level++;
+        } elsif ($del eq $rdelim) {
+            $repl = ":$level:$del";
+            $level--;
         }
-	$newline .= "$prev$repl";
-	$line = $after;
+        $newline .= "$prev$repl";
+        $line = $after;
     }
     return $newline;
 }
 
 # handle nested braces/parens/brackets.
-# convert "{" ==> " {:level "	where level starts at 0
+# convert "{" ==> " {:level "   where level starts at 0
 #
 # E.g. a{b{c}d{e{f}}g}h ==> a {:0 b {:1 c 1:} d {:1 e {:2 f 2:}  1:} g 0:} h
 #
@@ -644,7 +646,7 @@ sub mark_braces_one_line {
     my($ldelim, $rdelim, $origline) = @_;
     my($newline, $level, $line) = ("", 0, $origline);
     my($lookfor) = ($ldelim eq $rdelim) ? "[$ldelim]" : "[$ldelim$rdelim]";
-    my($prev, $del, $after);		# need after to survive the loop.
+    my($prev, $del, $after);            # need after to survive the loop.
 
     $line =~ s/\@/ \@AT\@_/g;
     $line =~ s/\\\\/ \@2BS\@_/g;
@@ -656,17 +658,17 @@ sub mark_braces_one_line {
     # need ".../s"  in the following while() to preserve newlines.  Ugh.
     while ( $line =~ /(.*?)($lookfor)(.*)/s) {
         ($prev, $del, $after) = ($1, $2, $3);
-	fyi(9,"mark_braces_one_line:prev=($prev),del=($del),after=($after)\n");
-	my($repl);
-	if ($del eq $ldelim) {
-	    $repl = " $del:$level ";
-	    $level++;
-	} elsif ($del eq $rdelim) {
-	    $level--;
-	    $repl = " $level:$del ";
+        fyi(9,"mark_braces_one_line:prev=($prev),del=($del),after=($after)\n");
+        my($repl);
+        if ($del eq $ldelim) {
+            $repl = " $del:$level ";
+            $level++;
+        } elsif ($del eq $rdelim) {
+            $level--;
+            $repl = " $level:$del ";
         }
-	$newline .= "$prev$repl";
-	$line = $after;
+        $newline .= "$prev$repl";
+        $line = $after;
     }
     $newline .= $after;
 
@@ -689,94 +691,94 @@ sub do_tables {
     my($tlev, $endrow, $colnum) = (0, undef, 0);
     my(@cols) = ();
     for ($i=0; $i < $arrlen; $i++) {
-	my($origline) = $arr->[$i];
-	my($line) = $origline;		#
-	fyi(9, "Tables orig-line $i: $origline");
+        my($origline) = $arr->[$i];
+        my($line) = $origline;          #
+        fyi(9, "Tables orig-line $i: $origline");
         if ($origline =~ /\\begin\{[A-Za-z]*longtable[A-Za-z]*\}/) {
-	    $line =~ s/(\\\\)? \s* \\[ch]line.*//x;
-	    $line = mark_braces_one_line("{", "}", $line);
-	    fyi(9, "Tables delim-line $i: $line");
-	    $line =~ s/ \{:1 .*? 1:\} //g;	# remove nested brace stuff
-	    $line =~ s/ \{:0 /\{/g;
-	    $line =~ s/ 0:\} /\}/g;
-	    fyi(9, "Tables squashed-line $i: $line");
-	    my(@fragments) = split(/[{}]+\s*/,$line);
-	    my($aligns) = $fragments[$#fragments];
-	    my($tabletag);
-	    if ( $aligns =~ /[|]/) {
-		$tabletag = "<table border>";
-	    } else {
-		$tabletag = "<table>";
-	    }
-	    while ( $aligns =~ /([lcrpX])(.*)/s ) {
-	    	my($lcr) = $1;
-		my($rest) = $2;
-		fyi(9, "col-align lcr = $lcr, rest = $rest");
-		$aligns = $rest;
-		push (@cols, $talign{$lcr});
-	    }
-	    $tlev ++;
-	    $endrow = 1;
-	    $colnum = 0;
-	    $line =~ s/\\begin\{longtable[A-Za-z]*\}\{.*\}/$tabletag/;
-	    fyi(9, "line =-> $line");
-	    fyi(7, "Table with $#cols+1 columns.  Aligns = @cols");
-	} elsif ($line =~ s:\\end{longtable[A-Za-z]*}:</table>: ) {
-	    $tlev --;
-	    @cols = ();
-	} elsif ($tlev > 0) {
-	    if ($endrow) {
-		$line = "<TR> <TD> $line";
-		$endrow = 0;
-	    }
-	    $line =~ s:\& (?![ampltg]+;):</TD> <TD>:gx;
+            $line =~ s/(\\\\)? \s* \\[ch]line.*//x;
+            $line = mark_braces_one_line("{", "}", $line);
+            fyi(9, "Tables delim-line $i: $line");
+            $line =~ s/ \{:1 .*? 1:\} //g;      # remove nested brace stuff
+            $line =~ s/ \{:0 /\{/g;
+            $line =~ s/ 0:\} /\}/g;
+            fyi(9, "Tables squashed-line $i: $line");
+            my(@fragments) = split(/[{}]+\s*/,$line);
+            my($aligns) = $fragments[$#fragments];
+            my($tabletag);
+            if ( $aligns =~ /[|]/) {
+                $tabletag = "<table border>";
+            } else {
+                $tabletag = "<table>";
+            }
+            while ( $aligns =~ /([lcrpX])(.*)/s ) {
+                my($lcr) = $1;
+                my($rest) = $2;
+                fyi(9, "col-align lcr = $lcr, rest = $rest");
+                $aligns = $rest;
+                push (@cols, $talign{$lcr});
+            }
+            $tlev ++;
+            $endrow = 1;
+            $colnum = 0;
+            $line =~ s/\\begin\{longtable[A-Za-z]*\}\{.*\}/$tabletag/;
+            fyi(9, "line =-> $line");
+            fyi(7, "Table with $#cols+1 columns.  Aligns = @cols");
+        } elsif ($line =~ s:\\end{longtable[A-Za-z]*}:</table>: ) {
+            $tlev --;
+            @cols = ();
+        } elsif ($tlev > 0) {
+            if ($endrow) {
+                $line = "<TR> <TD> $line";
+                $endrow = 0;
+            }
+            $line =~ s:\& (?![ampltg]+;):</TD> <TD>:gx;
 
-	    # "&" ==> "</TD><TD>", but skip "&gt;" "&lt;" and "&amp;".
-	    $line =~ s:\& (?![ampltg]+;):</TD> <TD>:gx;
+            # "&" ==> "</TD><TD>", but skip "&gt;" "&lt;" and "&amp;".
+            $line =~ s:\& (?![ampltg]+;):</TD> <TD>:gx;
 
-	    # convert \multicolumn --> \mc
-	    if ( $line =~ s:\\multicolumn{:\\mc\{:xg ) {
-		fyi(9, "mc line: $line");
-	    }
+            # convert \multicolumn --> \mc
+            if ( $line =~ s:\\multicolumn{:\\mc\{:xg ) {
+                fyi(9, "mc line: $line");
+            }
 
-	    # add individual column alignments.
-	    while (
-	$line =~ m/(.*?) (<TD>) (\s* \\mc\{\d+\}\{.+?\}\{)? (.*)/sx ) {
-		my($before, $after) = ($1, $4);
-		fyi(9, "cols[colnum=$colnum] = $cols[$colnum]");
-		my($mcspec) = $3;
-		fyi(9, "mc: before=($before),mcspec=$mcspec,after=($after)");
+            # add individual column alignments.
+            while (
+        $line =~ m/(.*?) (<TD>) (\s* \\mc\{\d+\}\{.+?\}\{)? (.*)/sx ) {
+                my($before, $after) = ($1, $4);
+                fyi(9, "cols[colnum=$colnum] = $cols[$colnum]");
+                my($mcspec) = $3;
+                fyi(9, "mc: before=($before),mcspec=$mcspec,after=($after)");
 
-		if ($mcspec eq "") {
-		    if ($colnum > $#cols) {
-			warning("Too many columns in table, line $i:\n + ($origline)");
-			$line = "$before<TD align=left" . ">" . $after;
-		    } else {
-			$line = "$before<TD align=$cols[$colnum]>" . $after;
-		    }
-		    $colnum++;
-		} else {
-		    if ($mcspec =~ m:\\mc \{(\d+)\} \{([^}]+)\}:x ) {
-			my($colspan) = $1;
-			$colnum += $colspan;
-			$2 =~ / ([lcrpX]) /x;
-		$line = "$before<TD align=$talign{$1} colspan=$colspan>{" . $after;
-		    }
-		}
-	    }
-	    # strip off trailing \\ and/or \hline.  Each might be on sep line.
-	    if ( $line =~ s:\\\\:</TD></TR>:xg ) {
-		$endrow = 1;
-		$colnum = 0;
-	    }
-	    $line =~ s/\s* \\hline//g;
-	    $line =~ s/\\cline\{[0-9-]+\}//;
-	}
-	$arr->[$i] = $line;
+                if ($mcspec eq "") {
+                    if ($colnum > $#cols) {
+                        warning("Too many columns in table, line $i:\n + ($origline)");
+                        $line = "$before<TD align=left" . ">" . $after;
+                    } else {
+                        $line = "$before<TD align=$cols[$colnum]>" . $after;
+                    }
+                    $colnum++;
+                } else {
+                    if ($mcspec =~ m:\\mc \{(\d+)\} \{([^}]+)\}:x ) {
+                        my($colspan) = $1;
+                        $colnum += $colspan;
+                        $2 =~ / ([lcrpX]) /x;
+                $line = "$before<TD align=$talign{$1} colspan=$colspan>{" . $after;
+                    }
+                }
+            }
+            # strip off trailing \\ and/or \hline.  Each might be on sep line.
+            if ( $line =~ s:\\\\:</TD></TR>:xg ) {
+                $endrow = 1;
+                $colnum = 0;
+            }
+            $line =~ s/\s* \\hline//g;
+            $line =~ s/\\cline\{[0-9-]+\}//;
+        }
+        $arr->[$i] = $line;
     }
 }
 
-$re_tex_arg_0 = "(\[[^\]*\]|{[^}]*})*";		   # no nesting
+$re_tex_arg_0 = "(\[[^\]*\]|{[^}]*})*";            # no nesting
 $re_tex_arg_1 = "({(([^{}]*{[^{}]*}[^{}]*)*)})*";  # nesting up to level 1.
 
 sub do_begin_end {
@@ -785,108 +787,108 @@ sub do_begin_end {
     my($i, $level, $inh);
     my($comm, $commregex, $fromx, $tox, $latexcomm);
     for ($i=0; $i < $arrlen; $i++) {
-	if ( vec($orig_inh, $i, 1) > 0) {	# skip if processing inhibited
-	    next;
-	}
-	$line = $arr->[$i];
-	$line = escape_line($line);
-	if ( $line =~ m/\\((begin|end)\{[a-zA-Z_]+\})/ ) {
-	    # Example:
-	    # $latexcomm = \begin{rqitemize}[12pt]{article}
-	    #      $comm = \begin{rqitemize}
-	    #     $fromx = \begin{rqitemize}
-	    #       $tox = <ul>
-	    #
-	    $latexcomm = $comm = $MATCH;
-	    $comm =~ s/end/begin/;	# convert \end{comm} to \begin{comm}
-	    if ( defined $html_start{$comm} ) {
-		if ($latexcomm =~ /^\\end/) {
-		    $fromx = $latexcomm;
-		    $tox = $html_end{$comm};
-		    $commregex = $latexcomm;
-		} else {
-		    $fromx = $comm_regex{$comm};
-		    $tox = $html_start{$comm};
-		    $commregex = $comm_regex{$comm};
+        if ( vec($orig_inh, $i, 1) > 0) {       # skip if processing inhibited
+            next;
+        }
+        $line = $arr->[$i];
+        $line = escape_line($line);
+        if ( $line =~ m/\\((begin|end)\{[a-zA-Z_]+\})/ ) {
+            # Example:
+            # $latexcomm = \begin{rqitemize}[12pt]{article}
+            #      $comm = \begin{rqitemize}
+            #     $fromx = \begin{rqitemize}
+            #       $tox = <ul>
+            #
+            $latexcomm = $comm = $MATCH;
+            $comm =~ s/end/begin/;      # convert \end{comm} to \begin{comm}
+            if ( defined $html_start{$comm} ) {
+                if ($latexcomm =~ /^\\end/) {
+                    $fromx = $latexcomm;
+                    $tox = $html_end{$comm};
+                    $commregex = $latexcomm;
+                } else {
+                    $fromx = $comm_regex{$comm};
+                    $tox = $html_start{$comm};
+                    $commregex = $comm_regex{$comm};
 
 # Flag an attempt to allow any \begin{xxx} to take further args, as
 # error, as \begin{center} should not take any further args
 #
-		    if ($commregex eq $comm) {
-		    	$commregex .= $re_tex_arg_0;
-			fyi(7, "  B/E Spruce: $comm --> $commregex");
-		    }
-		}
-		$commregex =~ s/^\\/\\\\/g;
-		fyi(7, "  B/E Apply: $commregex ==> $tox, on: ($line)");
-		$line =~ s/$commregex/$tox/;
-	    } else {
-		warning(6, "UNDEFINED COMMAND: $comm, ignoring.");
-		$html_start{$comm} = "";
-		$html_end{$comm} = "";
-	    }
-	}
-	$arr->[$i] = $line;
+                    if ($commregex eq $comm) {
+                        $commregex .= $re_tex_arg_0;
+                        fyi(7, "  B/E Spruce: $comm --> $commregex");
+                    }
+                }
+                $commregex =~ s/^\\/\\\\/g;
+                fyi(7, "  B/E Apply: $commregex ==> $tox, on: ($line)");
+                $line =~ s/$commregex/$tox/;
+            } else {
+                warning(6, "UNDEFINED COMMAND: $comm, ignoring.");
+                $html_start{$comm} = "";
+                $html_end{$comm} = "";
+            }
+        }
+        $arr->[$i] = $line;
     }
 }
 
 #
 # handle straight-forward substitutions:
-#	\xxx ---> yyy
+#       \xxx ---> yyy
 #
 sub do_tex_comms {
     my($arr) = @_;
     my($arrlen) = scalar(@$arr);
     my($i, $comm, $comm_re, $fromx, $tox);
     for ($i=0; $i < $arrlen; $i++) {
-	if ( vec($orig_inh, $i, 1) > 0) {	# skip if processing inhibited
-	    next;
-	}
-	$line = $arr->[$i];
+        if ( vec($orig_inh, $i, 1) > 0) {       # skip if processing inhibited
+            next;
+        }
+        $line = $arr->[$i];
 
-	# Find the latex command \xxx
-	# We mark each command, incase there are multiple commands on a line.
-	# First convert all \xxx --> @BS@xxx,
-	# Next, one-by-one convert @BS@xxx --> \xxx and process it.
-	# Thus, we are left with the original \xxx (not breaking old code).
-	# 9/16/96.
-	#
-	$line =~ s/\\([A-Za-z]+)/\@BS\@$1/g;
-	while ( $line =~ s/\@BS\@([A-Za-z]+)/\\$1/ ) {
-	    $comm = '\\' . $1;
-	    if (defined $html_start{$comm} && ($comm_attr{$comm} =~ /comm/)) {
-		$tox = $html_start{$comm};
-		  # might have:
-		  #   $comm    = '\documentclass'
-		  #   $comm_re = '\documentclass[^ \t]+'
-		  # apply $comm_re --> $tox
-		  #
-		$comm_re = $comm_regex{$comm};
-		$comm_re =~ s/^\\/\\\\/g;	# escape the darn backslashes
-		warning(7, "  TeXComm Apply: $comm_re ==> $tox on: ($line)");
-		$line =~ s/$comm_re/$tox/g;
-		my($a, $b, $c, $d, $e) = ($1, $2, $3, $4, $5);
-		$line =~ s/\$1/$a/g;
-		$line =~ s/\$2/$b/g;
-		$line =~ s/\$3/$c/g;
-		$line =~ s/\$4/$d/g;
-		$line =~ s/\$5/$e/g;
-	    }
-	    if ( ! defined $html_start{$comm} ) {
-		warning(3, "  Unknown \\comm: $comm, on: ($line)");
-	    }
-	}
+        # Find the latex command \xxx
+        # We mark each command, incase there are multiple commands on a line.
+        # First convert all \xxx --> @BS@xxx,
+        # Next, one-by-one convert @BS@xxx --> \xxx and process it.
+        # Thus, we are left with the original \xxx (not breaking old code).
+        # 9/16/96.
+        #
+        $line =~ s/\\([A-Za-z]+)/\@BS\@$1/g;
+        while ( $line =~ s/\@BS\@([A-Za-z]+)/\\$1/ ) {
+            $comm = '\\' . $1;
+            if (defined $html_start{$comm} && ($comm_attr{$comm} =~ /comm/)) {
+                $tox = $html_start{$comm};
+                  # might have:
+                  #   $comm    = '\documentclass'
+                  #   $comm_re = '\documentclass[^ \t]+'
+                  # apply $comm_re --> $tox
+                  #
+                $comm_re = $comm_regex{$comm};
+                $comm_re =~ s/^\\/\\\\/g;       # escape the darn backslashes
+                warning(7, "  TeXComm Apply: $comm_re ==> $tox on: ($line)");
+                $line =~ s/$comm_re/$tox/g;
+                my($a, $b, $c, $d, $e) = ($1, $2, $3, $4, $5);
+                $line =~ s/\$1/$a/g;
+                $line =~ s/\$2/$b/g;
+                $line =~ s/\$3/$c/g;
+                $line =~ s/\$4/$d/g;
+                $line =~ s/\$5/$e/g;
+            }
+            if ( ! defined $html_start{$comm} ) {
+                warning(3, "  Unknown \\comm: $comm, on: ($line)");
+            }
+        }
 
-	#
-	# Hardwired.  \today --> current date.
-	#
-	my($today) = $qval{"today"};
-	$line =~ s/\\today/$today/g;
+        #
+        # Hardwired.  \today --> current date.
+        #
+        my($today) = $qval{"today"};
+        $line =~ s/\\today/$today/g;
 
-	if ($line ne $arr->[$i]) {
-	    warning(8, "regex: $arr->[$i] ==> $line");
-	}
-	$arr->[$i] = $line;
+        if ($line ne $arr->[$i]) {
+            warning(8, "regex: $arr->[$i] ==> $line");
+        }
+        $arr->[$i] = $line;
     }
 }
 
@@ -894,21 +896,21 @@ sub do_tex_comms {
 # dsp = delimiter stack pointer
 $dstack[40] = ( "" );
 $dsp = 0;
-$dcount = 1;			# we reserve dcount=0 as an error.
-$argspan[100] = undef;		# argspan[i] = range of lines between brace i
-$lstack[40] = ( "" );		# last id at this depth (upto depth 40).
-$llinestack[40] = ( "" );	# last line containing id at this depth
+$dcount = 1;                    # we reserve dcount=0 as an error.
+$argspan[100] = undef;          # argspan[i] = range of lines between brace i
+$lstack[40] = ( "" );           # last id at this depth (upto depth 40).
+$llinestack[40] = ( "" );       # last line containing id at this depth
 
   #
   # the following apply only to complex commands (those processing their arg).
   #
-$commstack[40] = ( "" );	# the command to
-$argsofar[40] = ( "" );		# number of args seen at level i so-far
-$argwant[40] = ( "" );		# number of args wanted at level i
-$arglist[40][20] = ( "" );	# the actual args for the level i command
+$commstack[40] = ( "" );        # the command to
+$argsofar[40] = ( "" );         # number of args seen at level i so-far
+$argwant[40] = ( "" );          # number of args wanted at level i
+$arglist[40][20] = ( "" );      # the actual args for the level i command
 
-$argrem_stack[40] = ( "" );	# num of args remaining at this depth.
-$nextarg[100] = undef;		# nextarg[i] = id of next arg at same level
+$argrem_stack[40] = ( "" );     # num of args remaining at this depth.
+$nextarg[100] = undef;          # nextarg[i] = id of next arg at same level
 
   #
   # label all { and } with id's.
@@ -923,92 +925,92 @@ sub mark_delims {
     my($arr) = @_;
     my($arrlen) = scalar(@$arr);
     my($i, $j, $id, $level, $line, $frag, $inh);
-    $#delim_lines = $arrlen;		# pre extend array delim_lines
+    $#delim_lines = $arrlen;            # pre extend array delim_lines
     $ndelim_lines = 0;
     for ($i=0; $i < $arrlen; $i++) {
-	$inh = vec($orig_inh, $i, 1);
-	$line = $arr->[$i];
-	#
-	# Also, handle $line == "", as subsequent code would mishandle it.
-	# (The split yields zero fragments, and the line is not passed on).
-	if ($inh > 0 || $line eq "") {
-	    warning(8, "AFTER  $ndelim_lines: $line\n");
-	    vec($delim_inh, $ndelim_lines, 1) = $inh;
-	    $delim_lines[$ndelim_lines] = $line;
-	    $ndelim_lines ++;
-	    next;
-	}
-	warning(8, "mark_delims($line)");
+        $inh = vec($orig_inh, $i, 1);
+        $line = $arr->[$i];
+        #
+        # Also, handle $line == "", as subsequent code would mishandle it.
+        # (The split yields zero fragments, and the line is not passed on).
+        if ($inh > 0 || $line eq "") {
+            warning(8, "AFTER  $ndelim_lines: $line\n");
+            vec($delim_inh, $ndelim_lines, 1) = $inh;
+            $delim_lines[$ndelim_lines] = $line;
+            $ndelim_lines ++;
+            next;
+        }
+        warning(8, "mark_delims($line)");
 
-	my($splitstr) = ' @x@ ';
-	$line =~ s/\\[a-zA-Z_]+\{/$splitstr$MATCH/g;
-	$line =~ s/{/\{$splitstr/g;
-	$line =~ s/\}/$splitstr\}/g;
-	my(@fragments) = split(/$splitstr/,$line);
-	for ($j=0; $j < scalar(@fragments); $j++) {
-	    $frag = $fragments[$j];
-	    warning(9, "Frag  $j: $frag");
-	    if ( $frag =~ /^\}/ ) {
-		$dsp --;
-		if ($dsp < 0 || ! defined($dstack[$dsp]) ) {
-		    my($lineno) = "Line: $INPUT_LINE_NUMBER";
-		    warning(
-			"$lineno, IMBALANCED BRACES: Too many closing braces");
-		    $id = -1;
-		}
-		$id = $dstack[$dsp];
-		$dstack[$dsp] = undef;
-		$lstack[$dsp] = $id;
-		$lstack[$dsp+1] = undef;
-		$llinestack[$dsp] = $ndelim_lines;
+        my($splitstr) = ' @x@ ';
+        $line =~ s/\\[a-zA-Z_]+\{/$splitstr$MATCH/g;
+        $line =~ s/{/\{$splitstr/g;
+        $line =~ s/\}/$splitstr\}/g;
+        my(@fragments) = split(/$splitstr/,$line);
+        for ($j=0; $j < scalar(@fragments); $j++) {
+            $frag = $fragments[$j];
+            warning(9, "Frag  $j: $frag");
+            if ( $frag =~ /^\}/ ) {
+                $dsp --;
+                if ($dsp < 0 || ! defined($dstack[$dsp]) ) {
+                    my($lineno) = "Line: $INPUT_LINE_NUMBER";
+                    warning(
+                        "$lineno, IMBALANCED BRACES: Too many closing braces");
+                    $id = -1;
+                }
+                $id = $dstack[$dsp];
+                $dstack[$dsp] = undef;
+                $lstack[$dsp] = $id;
+                $lstack[$dsp+1] = undef;
+                $llinestack[$dsp] = $ndelim_lines;
 
-		my($tmp) = $ndelim_lines - 1;
-		$argspan{$id} .= "$tmp";
-		warning(7, "    mark: argspan{$id} = $argspan{$id}");
+                my($tmp) = $ndelim_lines - 1;
+                $argspan{$id} .= "$tmp";
+                warning(7, "    mark: argspan{$id} = $argspan{$id}");
 
-		$x = ":$id:\]";
-		$frag =~ s/^\}/$x/;
-	    }
-	    if ( $frag =~ /\{$/ ) {
-		$id = $dstack[$dsp] = $dcount;
-		my($lastid) = $lstack[$dsp];
-		  #
-		  # link args only if we find things like:   xxx}{yyy
-		  # Whoops, no, as a line break may split the  }{  pair
-		  # In either case the prev arg must be on the prev line.
-		$nextarg[$lastid] = undef;
-		if ($lastid != undef && $llinestack[$dsp] >= $ndelim_lines-1) {
-		    if ($lastid <= 0 || $lastid > $dcount) {
-			warning("ERROR linking id's.  Contact author.");
-		    }
-		    $nextarg[$lastid] = $id;
-		    warning(7, "  mark: nextarg[$lastid] = $nextarg[$lastid]");
-		    warning(8, "  mark: id2comm{$lastid} = $id2comm{$lastid}");
-		}
-		$lstack[$dsp] = $id;
+                $x = ":$id:\]";
+                $frag =~ s/^\}/$x/;
+            }
+            if ( $frag =~ /\{$/ ) {
+                $id = $dstack[$dsp] = $dcount;
+                my($lastid) = $lstack[$dsp];
+                  #
+                  # link args only if we find things like:   xxx}{yyy
+                  # Whoops, no, as a line break may split the  }{  pair
+                  # In either case the prev arg must be on the prev line.
+                $nextarg[$lastid] = undef;
+                if ($lastid != undef && $llinestack[$dsp] >= $ndelim_lines-1) {
+                    if ($lastid <= 0 || $lastid > $dcount) {
+                        warning("ERROR linking id's.  Contact author.");
+                    }
+                    $nextarg[$lastid] = $id;
+                    warning(7, "  mark: nextarg[$lastid] = $nextarg[$lastid]");
+                    warning(8, "  mark: id2comm{$lastid} = $id2comm{$lastid}");
+                }
+                $lstack[$dsp] = $id;
 
-		$dsp ++;
-		$dcount ++;
+                $dsp ++;
+                $dcount ++;
 
-		if ( $frag =~ /(\\[\w]+)\{$/) {
-		    warning(8, "mark:  id2comm{$id} = $1");
-		    $id2comm{$id} = $1;
-		} else {
-		    $id2comm{$id} = "_:NULL_COMMAND:_";
-		}
-		my($tmp) = $ndelim_lines + 1;
-		$argspan{$id} = "$tmp:";
+                if ( $frag =~ /(\\[\w]+)\{$/) {
+                    warning(8, "mark:  id2comm{$id} = $1");
+                    $id2comm{$id} = $1;
+                } else {
+                    $id2comm{$id} = "_:NULL_COMMAND:_";
+                }
+                my($tmp) = $ndelim_lines + 1;
+                $argspan{$id} = "$tmp:";
 
-		$x = "\[:$id:";
-		$frag =~ s/\{$/$x/;
-	    }
-	    $frag =~ s/\n/\@NL\@/g;
-	    warning(8, "END-MARK  $ndelim_lines: $frag");
+                $x = "\[:$id:";
+                $frag =~ s/\{$/$x/;
+            }
+            $frag =~ s/\n/\@NL\@/g;
+            warning(8, "END-MARK  $ndelim_lines: $frag");
 
-	    $delim_lines[$ndelim_lines] = $frag;
-	    vec($delim_inh, $ndelim_lines, 1) = $inh;
-	    $ndelim_lines ++;
-	}
+            $delim_lines[$ndelim_lines] = $frag;
+            vec($delim_inh, $ndelim_lines, 1) = $inh;
+            $ndelim_lines ++;
+        }
     }
 }
 
@@ -1025,56 +1027,56 @@ sub do_simple_latex_defs {
     my($arrlen) = scalar(@$arr);
     my($comm, $fromx, $tox, $id, $inh, $i, $j, $k, $l, $nargs, $argidx);
     for ($i=0; $i < $arrlen; $i++) {
-	$inh = vec($delim_inh, $i, 1);
-	$line = $arr->[$i];
-	if ($inh > 0) {
-	    next;
-	}
-	warning(8, "do_simple_brace_comms($line)");
+        $inh = vec($delim_inh, $i, 1);
+        $line = $arr->[$i];
+        if ($inh > 0) {
+            next;
+        }
+        warning(8, "do_simple_brace_comms($line)");
 
-	if ($line =~ /\[:([0-9]+):/) {
-	    $id = $1;
-	    $comm = $id2comm{$id};
-	    warning(8, "    id2comm{$id} is $id2comm{$id}");
-	    if ($comm ne "_:NULL_COMMAND:_") {
-		if ($comm_attr{$comm} =~ /\{\d+\}/) {
-		    next;		# next line.  We don't handle args.
-		}
-		$fromx = $comm . $MATCH;
-		$fromx = quotemeta($fromx);
-		if ( defined $html_start{$comm} ) {
-		    $tox = $html_start{$comm};
-		} else {
-		    $tox = bad_command("Unknown LaTeX command", "$comm\{");
-		    if ($nextarg[$id] != undef) {
-			# it's tnot clear what error we should report
-		    }
-		}
-		warning(8, "  {} Apply: $fromx ==> $tox on: $line");
-		if (! ($line =~ s/$fromx/$tox/)) {
-		    warning(3, "  {} FAILED: $fromx ==> $tox on: $line");
-		}
-	    }
-	}
-	if ($line =~ /:([0-9]+):\]/) {
-	    $id = $1;
-	    $comm = $id2comm{$id};
-	    if ($comm ne "_:NULL_COMMAND:_") {
-		if ($comm_attr{$comm} =~ /\{\d+\}/) {
-		    next;		# next line.  We don't handle args.
-		}
-		$fromx = $MATCH;
-		$fromx =~ s/:\]/:\\]/;
-		if ( defined $html_end{$comm} ) {
-		    $tox = $html_end{$comm};
-		} else {
-		    $tox = bad_command("", "\}");
-		}
-		warning(8, "  {} Apply: $fromx ==> $tox on: $line");
-		$line =~ s/$fromx/$tox/;
-	    }
-	}
-	$arr->[$i] = $line;
+        if ($line =~ /\[:([0-9]+):/) {
+            $id = $1;
+            $comm = $id2comm{$id};
+            warning(8, "    id2comm{$id} is $id2comm{$id}");
+            if ($comm ne "_:NULL_COMMAND:_") {
+                if ($comm_attr{$comm} =~ /\{\d+\}/) {
+                    next;               # next line.  We don't handle args.
+                }
+                $fromx = $comm . $MATCH;
+                $fromx = quotemeta($fromx);
+                if ( defined $html_start{$comm} ) {
+                    $tox = $html_start{$comm};
+                } else {
+                    $tox = bad_command("Unknown LaTeX command", "$comm\{");
+                    if ($nextarg[$id] != undef) {
+                        # it's tnot clear what error we should report
+                    }
+                }
+                warning(8, "  {} Apply: $fromx ==> $tox on: $line");
+                if (! ($line =~ s/$fromx/$tox/)) {
+                    warning(3, "  {} FAILED: $fromx ==> $tox on: $line");
+                }
+            }
+        }
+        if ($line =~ /:([0-9]+):\]/) {
+            $id = $1;
+            $comm = $id2comm{$id};
+            if ($comm ne "_:NULL_COMMAND:_") {
+                if ($comm_attr{$comm} =~ /\{\d+\}/) {
+                    next;               # next line.  We don't handle args.
+                }
+                $fromx = $MATCH;
+                $fromx =~ s/:\]/:\\]/;
+                if ( defined $html_end{$comm} ) {
+                    $tox = $html_end{$comm};
+                } else {
+                    $tox = bad_command("", "\}");
+                }
+                warning(8, "  {} Apply: $fromx ==> $tox on: $line");
+                $line =~ s/$fromx/$tox/;
+            }
+        }
+        $arr->[$i] = $line;
     }
 }
 
@@ -1083,7 +1085,7 @@ sub getspan {
     my($start,$end, $z) = split(/:/, $span, 3);
     my($k, $result) = (0, "");
     for ($k = $start; $k <= $end; $k++) {
-	$result .= $arr->[$k];
+        $result .= $arr->[$k];
     }
     return $result;
 }
@@ -1097,70 +1099,70 @@ sub do_complicated_latex_defs {
     my($arrlen) = scalar(@$arr);
     my($comm, $fromx, $tox, $id, $inh, $i, $j, $k, $l, $nwant, $argidx);
     for ($i=0; $i < $arrlen; $i++) {
-	$inh = vec($delim_inh, $i, 1);
-	if ($inh > 0) {
-	    next;
-	}
-	$line = $arr->[$i];
-	warning(8, "do_complicated_brace_comms($line)");
-	if ($line =~ /\[:([0-9]+):/) {
-	    $id = $1;
-	    $from = $comm = $id2comm{$id};
-	    my($multarg) = scalar($comm_attr{$comm} =~ /\{(\d+)\}/);
-	    warning(9, "  multarg = $multarg");
-	    if (! $multarg) {
-		next;
-	    }
-	    $nwant = $1;
-	    $argidx = $id;
-	      #
-	      # start from 2, as the first arg will always exist.
-	      #
-	    $argarr[$id][1] = $id;
-	    for ($j=2; $j <= $nwant; $j++) {
-		$argidx = $nextarg[$argidx];
-		if ($argidx == undef) {
-		    warning("Not enough arguments for $comm\n");
-		    last;
-		}
-    	        $argarr[$id][$j] = $argidx;
-	    }
-	    $comm_trigger{$argidx} = $id;
-	    warning(9, "    comm_trigger{$argidx} is $comm_trigger{$argidx}");
-	}
-	if ($line =~ /:([0-9]+):\]/) {
-	    my($trigger_id) = $1;
-	    if ( defined $comm_trigger{$trigger_id} ) {
-		$id = $comm_trigger{$trigger_id};
-		$comm = $id2comm{$id};
-		if ($comm_attr{$comm} =~ /\{(\d+)\}/) {
-		    my(@arglist);
-		    $nwant = $1;
-		    $tox = $html_start{$comm};
-		    for ($j=1; $j <= $nwant; $j++) {
-			$k = $argarr[$id][$j];
-			my($currarg) = getspan($arr, $argspan{$k});
-			warning(9, "  comp_def: arg[$id][$j] = $currarg");
-			$tox =~ s/#$j/$currarg/g;
-			$arglist[$j] = $currarg;
-		    }
-		    warning(7, "CPX  $comm --> tox = $tox");
-		    my($a, $b) = split(/:/, $argspan{$id}, 2);
-		    $arr->[$a-1] = $tox;
-		    my($c, $d, $e) = split(/:/, $argspan{$argarr[$id][$nwant]}, 3);
-		    warning(9, "CPX  erasing lines $a to $d");
-		    for ($j=$a; $j <= $d; $j++) {
-			my($o) = $arr->[$j];
-			if ($o ne "") {
-			    warning(8, "  Wiping out line[$j] --> nothing");
-			}
-			$arr->[$j] = "";
-		    }
-		}
-		$line =~ s/:$trigger_id:\]/$html_end{$comm}/;
-	    }
-	}
-	$arr->[$i] = $line;
+        $inh = vec($delim_inh, $i, 1);
+        if ($inh > 0) {
+            next;
+        }
+        $line = $arr->[$i];
+        warning(8, "do_complicated_brace_comms($line)");
+        if ($line =~ /\[:([0-9]+):/) {
+            $id = $1;
+            $from = $comm = $id2comm{$id};
+            my($multarg) = scalar($comm_attr{$comm} =~ /\{(\d+)\}/);
+            warning(9, "  multarg = $multarg");
+            if (! $multarg) {
+                next;
+            }
+            $nwant = $1;
+            $argidx = $id;
+              #
+              # start from 2, as the first arg will always exist.
+              #
+            $argarr[$id][1] = $id;
+            for ($j=2; $j <= $nwant; $j++) {
+                $argidx = $nextarg[$argidx];
+                if ($argidx == undef) {
+                    warning("Not enough arguments for $comm\n");
+                    last;
+                }
+                $argarr[$id][$j] = $argidx;
+            }
+            $comm_trigger{$argidx} = $id;
+            warning(9, "    comm_trigger{$argidx} is $comm_trigger{$argidx}");
+        }
+        if ($line =~ /:([0-9]+):\]/) {
+            my($trigger_id) = $1;
+            if ( defined $comm_trigger{$trigger_id} ) {
+                $id = $comm_trigger{$trigger_id};
+                $comm = $id2comm{$id};
+                if ($comm_attr{$comm} =~ /\{(\d+)\}/) {
+                    my(@arglist);
+                    $nwant = $1;
+                    $tox = $html_start{$comm};
+                    for ($j=1; $j <= $nwant; $j++) {
+                        $k = $argarr[$id][$j];
+                        my($currarg) = getspan($arr, $argspan{$k});
+                        warning(9, "  comp_def: arg[$id][$j] = $currarg");
+                        $tox =~ s/#$j/$currarg/g;
+                        $arglist[$j] = $currarg;
+                    }
+                    warning(7, "CPX  $comm --> tox = $tox");
+                    my($a, $b) = split(/:/, $argspan{$id}, 2);
+                    $arr->[$a-1] = $tox;
+                    my($c, $d, $e) = split(/:/, $argspan{$argarr[$id][$nwant]}, 3);
+                    warning(9, "CPX  erasing lines $a to $d");
+                    for ($j=$a; $j <= $d; $j++) {
+                        my($o) = $arr->[$j];
+                        if ($o ne "") {
+                            warning(8, "  Wiping out line[$j] --> nothing");
+                        }
+                        $arr->[$j] = "";
+                    }
+                }
+                $line =~ s/:$trigger_id:\]/$html_end{$comm}/;
+            }
+        }
+        $arr->[$i] = $line;
     }
 }
 
@@ -1170,54 +1172,54 @@ sub final_cleanup {
     my($inh);
     my($lastline);
     for ($i=0; $i < $arrlen; $i++) {
-	$inh = vec($delim_inh, $i, 1);
-	if ($inh > 0) {
-	    next;
-	}
-	$line = $arr->[$i];
+        $inh = vec($delim_inh, $i, 1);
+        if ($inh > 0) {
+            next;
+        }
+        $line = $arr->[$i];
 
-	  # restore newlines
-	$line =~ s/(\@NL\@)+/\n/g;
+          # restore newlines
+        $line =~ s/(\@NL\@)+/\n/g;
 
-	  # restore backslashes
-	$line =~ s/\@BS\@/\\/g;
+          # restore backslashes
+        $line =~ s/\@BS\@/\\/g;
 
-	  # restore newlines
-	$line =~ s/(\@NL\@)+/\n/g;
+          # restore newlines
+        $line =~ s/(\@NL\@)+/\n/g;
 
-	  # convert \\ (force line breaks) to HTML line breaks
-	$line =~ s/\\\\/<br>/;
+          # convert \\ (force line breaks) to HTML line breaks
+        $line =~ s/\\\\/<br>/;
 
-	# restore '@'
-	$line =~ s:\@AT\@:\@:g;
+        # restore '@'
+        $line =~ s:\@AT\@:\@:g;
 
-	  # convert any remaining unprocessed braces back to their orig form
-	$line =~ s/\[:\d+:/\{/;
-	$line =~ s/:\d+:\]/\}/;
+          # convert any remaining unprocessed braces back to their orig form
+        $line =~ s/\[:\d+:/\{/;
+        $line =~ s/:\d+:\]/\}/;
 
-	# restore real '{' and '}', after removing extraneous '{' '}'
-	$line =~ s:\{::g;
-	$line =~ s:\}::g;
-	$line =~ s:\@<<\@:{:g;
-	$line =~ s:\@>>\@:}:g;
-	$line =~ s:\@<<\@:\\\{:g;
-	$line =~ s:\@>>\@:\\\}:g;
+        # restore real '{' and '}', after removing extraneous '{' '}'
+        $line =~ s:\{::g;
+        $line =~ s:\}::g;
+        $line =~ s:\@<<\@:{:g;
+        $line =~ s:\@>>\@:}:g;
+        $line =~ s:\@<<\@:\\\{:g;
+        $line =~ s:\@>>\@:\\\}:g;
 
           # hard-wired.  Conversions.  Ugh.  No, double ugh.
-	  # convert protected latex chars into single chars
-	$line =~ s/\\([\{\}\_\&\$\#\%])/$1/og;
-	  # drop tildes (forced spaces in LaTeX).
-	$line =~ s/\.[~]+/\. /og;
-	  # convert multiple dashes to a single dash.
-	$line =~ s/[-][-]+/-/og;
+          # convert protected latex chars into single chars
+        $line =~ s/\\([\{\}\_\&\$\#\%])/$1/og;
+          # drop tildes (forced spaces in LaTeX).
+        $line =~ s/\.[~]+/\. /og;
+          # convert multiple dashes to a single dash.
+        $line =~ s/[-][-]+/-/og;
 
-#	if (($i > 0) && ($lastline =~ /^\s*\n$/) && ($line =~ /[^\s]+/)) {
-	if (($i>=2) && ($lastline =~ /^\s*\n$/) && ($arr->[$i-2] =~ /\n$/)) {
-	    $line = "<p>$line";
-	}
+#       if (($i > 0) && ($lastline =~ /^\s*\n$/) && ($line =~ /[^\s]+/)) {
+        if (($i>=2) && ($lastline =~ /^\s*\n$/) && ($arr->[$i-2] =~ /\n$/)) {
+            $line = "<p>$line";
+        }
 
-	$lastline = $line;
-	$arr->[$i] = $line;
+        $lastline = $line;
+        $arr->[$i] = $line;
     }
 }
 
