@@ -27,6 +27,9 @@ cobject BasicPacket;
 cobject PayloadPacket;
 noncobject mystringclass;
 
+// imports are not yet supported :-(
+import "othermsgs.ned";
+
 // create an enum
 enum ProtocolTypes
 {
@@ -96,20 +99,23 @@ class MyCObjectClass extends cObject
         mystringclass dunno;
 }
 
-// struct with public members, without getter/setter methods (also without vtable!)
+// plain C struct (public members, no getter/setter methods, etc)
 struct MyStruct
 {
     fields:
-        char type='x';
-        short version=2;
+        char array[10];
+        char vect[];
+        short version;
 }
+
 
 // inheritance with structs
 struct MyDerivedStruct extends MyStruct
 {
     fields:
-        char bla='x';
-        short blabla=2;
+        char code;
+        short prot enum(ProtocolTypes); 
+        MyStruct substruct;  // also as embedded data member
 }
 
 

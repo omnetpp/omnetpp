@@ -13,6 +13,8 @@ $hfile =~ s/\.[^.]*$/_n.h/;
 $ccfile = $filename;
 $ccfile =~ s/\.[^.]*$/_n.cc/;
 
+$ret = 0;
+
 $msg = "";
 open(IN,$filename) || die "*** cannot open input file $filename";
 while (<IN>)
@@ -46,13 +48,26 @@ while ($msg =~ s/cppinclude\s+(["\<].*?["\>])//s)
 }
 print H "\n";
 
+# parse imports
+while ($msg =~ s/import\s+(".*?");//s)
+{
+    print STDERR "*** imports are not supported (yet)\n"; $ret=1;
+}
+
 # parse type announcements in ned text
 while ($msg =~ s/(struct|cobject|noncobject)\s+([^\s]*)\s*;//s)
 {
     $class = $2;
-    $classtype{$class} = $1; # 'struct' or 'cobject' or 'noncobject'
-    $hasdescriptor{$class} = 0;
-    push(@classes, $class);
+    $type = $1; # 'struct' or 'cobject' or 'noncobject'
+    if (grep(/^\Q$class\E$/,@classes)) {
+        if ($classtype{$class} ne $type) {
+            print STDERR "*** different declarations for '$class' are inconsistent\n"; $ret=1;
+        }
+    } else {
+        $classtype{$class} = $type;
+        $hasdescriptor{$class} = 0;
+        push(@classes, $class);
+    }
 }
 
 # parse enums in ned text
@@ -74,7 +89,7 @@ while ($msg =~ s/enum\s+(.+?)\s*{(.*?)};?//s)
     else
     {
         $enumhdr =~ s/\s+/ /sg;
-        print STDERR "*** invalid enum declaration syntax '$enumhdr'\n";
+        print STDERR "*** invalid enum declaration syntax '$enumhdr'\n"; $ret=1;
         $enumname = "???";
         $updateenum = '';
     }
@@ -102,7 +117,7 @@ while ($msg =~ s/enum\s+(.+?)\s*{(.*?)};?//s)
             $fieldname = $1;
         } else {
             $crap .= $field;
-            print STDERR "*** missing identifier name in enum $enumname\n";
+            print STDERR "*** missing identifier name in enum $enumname\n"; $ret=1;
         }
 
         # store field
@@ -115,7 +130,7 @@ while ($msg =~ s/enum\s+(.+?)\s*{(.*?)};?//s)
         $crap =~ s/\n\n+/\n\n/sg;
         $crap =~ s/^\n//s;
         $crap =~ s/\n$//s;
-        print STDERR "*** some parts not understood in enum $enumname:\n";
+        print STDERR "*** some parts not understood in enum $enumname:\n"; $ret=1;
         print STDERR "'$crap'\n";
     }
 
@@ -123,7 +138,7 @@ while ($msg =~ s/enum\s+(.+?)\s*{(.*?)};?//s)
     # generate code
     #
     if (grep(/^\Q$enumname\E$/,@enums)) {
-        print STDERR "*** enum '$enumname' already defined\n";
+        print STDERR "*** enum '$enumname' already defined\n"; $ret=1;
     }
     push(@enums, $enumname);
 
@@ -156,17 +171,17 @@ while ($msg =~ s/enum\s+(.+?)\s*{(.*?)};?//s)
 # parse message/class/struct definitions
 while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
 {
-    # reset
-    @fieldlist = ();
-    @proplist = ();
-    undef %pval;
-
     #
     # parse message { ... } syntax
     #
     $keyword = $1;  # 'message' or 'class' or 'struct'
     $msghdr = $2;   # must be "<name>" or "<name> extends <name>"
     $body = $3;
+
+    # reset
+    @fieldlist = ();
+    @proplist = ();
+    undef %pval;
 
     if ($msghdr =~ /^([^\s]+?)\s*extends\s*([^\s]+?)$/s)
     {
@@ -181,7 +196,7 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
     else
     {
         $msghdr =~ s/\s+/ /sg;
-        print STDERR "*** invalid message declaration syntax '$msghdr'\n";
+        print STDERR "*** invalid declaration syntax for '$msghdr'\n"; $ret=1;
         $msgname = "???";
         $msgbase = '';
     }
@@ -212,7 +227,7 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
             $crap =~ s/\n\n+/\n\n/sg;
             $crap =~ s/^\n//s;
             $crap =~ s/\n$//s;
-            print STDERR "*** some parts not understood in 'properties' section of message $msgname:\n";
+            print STDERR "*** some parts not understood in 'properties' section of '$msgname':\n"; $ret=1;
             print STDERR "'$crap'\n";
         }
     }
@@ -254,7 +269,7 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
                 $isarray = 1;
                 $arraysize = $1;
                 if ($arraysize !~ /^[0-9]*$/) {
-                    print STDERR "*** array size must be numeric (not '$arraysize') message $msgname\n";
+                    print STDERR "*** array size must be numeric (not '$arraysize') in '$msgname'\n"; $ret=1;
                 }
             } else {
                 $isarray = 0;
@@ -285,23 +300,85 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
             $crap =~ s/\n\n+/\n\n/sg;
             $crap =~ s/^\n//s;
             $crap =~ s/\n$//s;
-            print STDERR "*** some parts not understood in 'fields' section of message $msgname:\n";
+            print STDERR "*** some parts not understood in 'fields' section of '$msgname':\n"; $ret=1;
             print STDERR "'$crap'\n";
         }
     }
     else
     {
-        print STDERR "*** no 'fields' section in message $msgname\n";
+        print STDERR "*** no 'fields' section in '$msgname'\n"; $ret=1;
         next;
     }
 
-
-    #
-    # prepare for code generation
-    #
-    if (grep(/^\Q$msgname\E$/,@classes)) {
-        print STDERR "*** class '$msgname' already defined\n";
+    # now generate code
+    prepareForCodeGeneration();
+    if ($classtype eq 'struct') {
+        generateStruct();
+    } else {
+        generateClass();
     }
+    generateDescriptorClass();
+}
+
+$crap = $msg;
+if ($crap =~ /[^\s]/s)
+{
+    $crap =~ s/\n\n+/\n\n/sg;
+    $crap =~ s/^\n//s;
+    $crap =~ s/\n$//s;
+    print STDERR "*** following parts of input file were not understood:\n"; $ret=1;
+    print STDERR "'$crap'\n";
+}
+
+close(H);
+close(CC);
+
+exit $ret;
+
+
+#
+# prepare for code generation
+#
+# in variables:
+#
+#  $keyword
+#  $classtype
+#  $gap
+#  $msgclass
+#  $realmsgclass
+#  $msgbaseclass
+#
+#  $msgdescclass
+#  $msgbasedescclass
+#  $hasbasedescriptor
+#
+#  $fieldcount
+#  @fieldlist
+#
+#  %ftype{fieldname}
+#  %fval{fieldname}
+#  %fisvirtual{fieldname}
+#  %fisarray{fieldname}
+#  %farraysize{fieldname}
+#  %fenumname{fieldname}
+#
+#  %fkind{fieldname}
+#  %datatype{fieldname}
+#  %argtype{fieldname}
+#  %var{fieldname}
+#  %varsize{fieldname}
+#  %getter{fieldname}
+#  %setter{fieldname}
+#  %alloc{fieldname}
+#  %getsize{fieldname}
+#  %tostring{fieldname}
+#  %fromstring{fieldname}
+#
+
+sub prepareForCodeGeneration
+{
+
+    # check base class and determine type of object
     if ($msgbase eq '') {
         if ($keyword eq 'message') {
             $classtype = 'cobject';
@@ -314,15 +391,26 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
         }
     } else {
         if (!grep(/^\Q$msgbase\E$/,@classes)) {
-            print STDERR "*** unknown base class '$msgbase'\n";
+            print STDERR "*** unknown base class '$msgbase'\n"; $ret=1;
         }
         $classtype = $classtype{$msgbase};
     }
 
-    # register this class
-    push(@classes, $msgname);
-    $classtype{$msgname} = $classtype;
-    $hasdescriptor{$msgname} = 1;
+    # check earlier declarations and register this class
+    if (grep(/^\Q$msgname\E$/,@classes)) {
+        if ($hasdescriptor{$msgname}) {
+            print STDERR "*** attempt to redefine '$msgname'\n"; $ret=1;
+        } elsif ($classtype{$msgname} ne $classtype) {
+            print STDERR "*** definition of '$msgname' inconsistent with earlier declaration(s)\n"; $ret=1;
+        } else {
+            # OK
+            $hasdescriptor{$msgname} = 1;
+        }
+    } else {
+        push(@classes, $msgname);
+        $classtype{$msgname} = $classtype;
+        $hasdescriptor{$msgname} = 1;
+    }
 
     #
     # produce all sorts of derived names
@@ -342,7 +430,7 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
         if ($keyword eq 'message') {
             $msgbaseclass = 'cMessage';
         } elsif ($keyword eq 'class') {
-            $msgbaseclass = 'cObject';
+            $msgbaseclass = '';
         } elsif ($keyword eq 'struct') {
             $msgbaseclass = '';
         } else {
@@ -362,32 +450,45 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
     foreach $fieldname (@fieldlist)
     {
         if ($fisvirtual{$fieldname} && !$gap) {
-            print STDERR "*** virtual fields assume 'customize=true' property in message $msgname\n";
+            print STDERR "*** virtual fields assume 'customize=true' property in '$msgname'\n"; $ret=1;
         }
+        if ($fval{$fieldname} ne '' && $classtype eq 'struct') {
+            print STDERR "*** default values not possible with structs (no constructor is generated!) in '$msgname'\n"; $ret=1;
+        }
+        if ($fenumname{$fieldname} ne '' && !grep(/^\Q$fenumname{$fieldname}\E$/,@enums)) {
+            print STDERR "*** undeclared enum '$fenumname{$fieldname}' used in '$msgname'\n"; $ret=1;
+        }
+
+        # variable name
         $var{$fieldname} = $fieldname;
         $varsize{$fieldname} = $var{$fieldname}."_arraysize";
-        $capfieldname = $fieldname;
-        $capfieldname =~ s/(.)(.*)/uc($1).$2/e;
-        $getter{$fieldname} = "get".$capfieldname;
-        $setter{$fieldname} = "set".$capfieldname;
-        $alloc{$fieldname} = "set".$capfieldname."ArraySize";
-        $getsize{$fieldname} = "get".$capfieldname."ArraySize";
 
+        # method names
+        if ($classtype ne 'struct') {
+            $capfieldname = $fieldname;
+            $capfieldname =~ s/(.)(.*)/uc($1).$2/e;
+            $getter{$fieldname} = "get".$capfieldname;
+            $setter{$fieldname} = "set".$capfieldname;
+            $alloc{$fieldname} = "set".$capfieldname."ArraySize";
+            $getsize{$fieldname} = "get".$capfieldname."ArraySize";
+        }
+
+        # pointer
         $ftype = $ftype{$fieldname};
         if ($ftype =~ /^(.*?)\s*\*$/) {
             $ftype = $1;
             $fpointer = 1;
-            print STDERR "*** pointers not supported yet in message $msgname\n";
+            print STDERR "*** pointers not supported yet in '$msgname'\n"; $ret=1;
         } else {
             $fpointer = 0;
         }
 
+        # data type, argument type, conversion to/from string...
         if (grep(/^\Q$ftype\E$/,@classes)) {
             $fkind{$fieldname} = 'struct';
         } else {
             $fkind{$fieldname} = 'basic';
         }
-
         if ($fkind{$fieldname} eq 'struct') {
             $datatype{$fieldname} = $ftype;
             $argtype{$fieldname} = "const $ftype&";
@@ -462,7 +563,7 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
                 $fromstring{$fieldname} = "opp_string";
                 $fval{$fieldname} = '""' unless ($fval{$fieldname} ne '');
             } else {
-                print STDERR "*** unknown data type '$ftype' (is it struct?)\n";
+                print STDERR "*** unknown data type '$ftype' (is it struct?)\n"; $ret=1;
                 $datatype{$fieldname} = $ftype;
                 $argtype{$fieldname} = $ftype;
                 $tostring{$fieldname} = "";
@@ -475,10 +576,14 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
             die 'internal error';
         }
     }
+}
 
-    #
-    # print class
-    #
+
+#
+# print class
+#
+sub generateClass
+{
     if ($msgbaseclass eq "") {
         print H "class $msgclass\n";
     } else {
@@ -723,10 +828,54 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
             }
         }
     }
+}
 
-    #
-    # print descriptor class
-    #
+
+#
+# print struct
+#
+sub generateStruct
+{
+    if ($msgbaseclass eq "") {
+        print H "struct $msgclass\n";
+    } else {
+        print H "struct $msgclass : public $msgbaseclass\n";
+    }
+    print H "{\n";
+    foreach $fieldname (@fieldlist)
+    {
+        if (!$fisvirtual{$fieldname}) {
+            if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
+                print H "    $datatype{$fieldname} $var{$fieldname}\[$farraysize{$fieldname}\];\n";
+            } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
+                print H "    $datatype{$fieldname} *$var{$fieldname}; // array ptr\n";
+                print H "    unsigned $varsize{$fieldname};\n";
+            } else {
+                print H "    $datatype{$fieldname} $var{$fieldname};\n";
+            }
+        }
+    }
+    print H "};\n\n";
+
+    if ($gap)
+    {
+        print H "/*\n";
+        print H "* You need to subclass $msgclass to produce $realmsgclass:\n";
+        print H "*\n";
+        print H "* struct $realmsgclass : public $msgclass\n";
+        print H "* {\n";
+        print H "*     // ...\n";
+        print H "* };\n";
+        print H "*/\n\n";
+    }
+}
+
+
+#
+# print descriptor class
+#
+sub generateDescriptorClass
+{
     print CC "class $msgdescclass : public $msgbasedescclass\n";
     print CC "{\n";
     print CC "  public:\n";
@@ -877,10 +1026,14 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
     print CC "    $msgclass *pp = ($msgclass *)p;\n";
     print CC "    switch (field) {\n";
     for ($i=0; $i<$fieldcount; $i++) {
-        if ($fisarray{$fieldlist[$i]} && $farraysize{$fieldlist[$i]} ne '') {
-            print CC "        case $i: return $farraysize{$fieldlist[$i]};\n";
-        } elsif ($fisarray{$fieldlist[$i]} && $farraysize{$fieldlist[$i]} eq '') {
-            print CC "        case $i: return pp->$getsize{$fieldlist[$i]}();\n";
+        if ($fisarray{$fieldlist[$i]}) {
+            if ($farraysize{$fieldlist[$i]} ne '') {
+                print CC "        case $i: return $farraysize{$fieldlist[$i]};\n";
+            } elsif ($classtype eq 'struct') {
+                print CC "        case $i: return pp->$varsize{$fieldlist[$i]};\n";
+            } else {
+                print CC "        case $i: return pp->$getsize{$fieldlist[$i]}();\n";
+            }
         }
     }
     print CC "        default: return 0;\n";
@@ -901,10 +1054,23 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
     for ($i=0; $i<$fieldcount; $i++)
     {
         if ($fkind{$fieldlist[$i]} eq 'basic') {
-            if ($fisarray{$fieldlist[$i]}) {
-                print CC "        case $i: $tostring{$fieldlist[$i]}(pp->$getter{$fieldlist[$i]}(i),resultbuf,bufsize); return true;\n";
+            if ($classtype eq 'struct') {
+                if ($fisarray{$fieldlist[$i]}) {
+                    if ($farraysize{$fieldlist[$i]} ne '') {
+                        print CC "        case $i: if (i>=$farraysize{$fieldlist[$i]}) return false;\n";
+                    } else {
+                        print CC "        case $i: if (i>=pp->$varsize{$fieldlist[$i]}) return false;\n";
+                    }
+                    print CC "                $tostring{$fieldlist[$i]}(pp->$var{$fieldlist[$i]}\[i\],resultbuf,bufsize); return true;\n";
+                } else {
+                    print CC "        case $i: $tostring{$fieldlist[$i]}(pp->$var{$fieldlist[$i]},resultbuf,bufsize); return true;\n";
+                }
             } else {
-                print CC "        case $i: $tostring{$fieldlist[$i]}(pp->$getter{$fieldlist[$i]}(),resultbuf,bufsize); return true;\n";
+                if ($fisarray{$fieldlist[$i]}) {
+                    print CC "        case $i: $tostring{$fieldlist[$i]}(pp->$getter{$fieldlist[$i]}(i),resultbuf,bufsize); return true;\n";
+                } else {
+                    print CC "        case $i: $tostring{$fieldlist[$i]}(pp->$getter{$fieldlist[$i]}(),resultbuf,bufsize); return true;\n";
+                }
             }
         } elsif ($fkind{$fieldlist[$i]} eq 'struct') {
             print CC "        case $i: return false;\n";
@@ -932,10 +1098,23 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
     for ($i=0; $i<$fieldcount; $i++)
     {
         if ($fkind{$fieldlist[$i]} eq 'basic') {
-            if ($fisarray{$fieldlist[$i]}) {
-                print CC "        case $i: pp->$setter{$fieldlist[$i]}(i,$fromstring{$fieldlist[$i]}(value)); return true;\n";
+            if ($classtype eq 'struct') {
+                if ($fisarray{$fieldlist[$i]}) {
+                    if ($farraysize{$fieldlist[$i]} ne '') {
+                        print CC "        case $i: if (i>=$farraysize{$fieldlist[$i]}) return false;\n";
+                    } else {
+                        print CC "        case $i: if (i>=pp->$varsize{$fieldlist[$i]}) return false;\n";
+                    }
+                    print CC "                pp->$var{$fieldlist[$i]}\[i\] = $fromstring{$fieldlist[$i]}(value); return true;\n";
+                } else {
+                    print CC "        case $i: pp->$var{$fieldlist[$i]} = $fromstring{$fieldlist[$i]}(value); return true;\n";
+                }
             } else {
-                print CC "        case $i: pp->$setter{$fieldlist[$i]}($fromstring{$fieldlist[$i]}(value)); return true;\n";
+                if ($fisarray{$fieldlist[$i]}) {
+                    print CC "        case $i: pp->$setter{$fieldlist[$i]}(i,$fromstring{$fieldlist[$i]}(value)); return true;\n";
+                } else {
+                    print CC "        case $i: pp->$setter{$fieldlist[$i]}($fromstring{$fieldlist[$i]}(value)); return true;\n";
+                }
             }
         } elsif ($fkind{$fieldlist[$i]} eq 'struct') {
             print CC "        case $i: return false;\n";
@@ -982,10 +1161,18 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
     for ($i=0; $i<$fieldcount; $i++)
     {
         if ($fkind{$fieldlist[$i]} eq 'struct') {
-            if ($fisarray{$fieldlist[$i]}) {
-                print CC "        case $i: return (void *)&$getter{$fieldlist[$i]}(i); break;\n";
+            if ($classtype eq 'struct') {
+                if ($fisarray{$fieldlist[$i]}) {
+                    print CC "        case $i: return (void *)&$var{$fieldlist[$i]}\[i\]; break;\n";
+                } else {
+                    print CC "        case $i: return (void *)&$var{$fieldlist[$i]}; break;\n";
+                }
             } else {
-                print CC "        case $i: return (void *)&$getter{$fieldlist[$i]}(); break;\n";
+                if ($fisarray{$fieldlist[$i]}) {
+                    print CC "        case $i: return (void *)&$getter{$fieldlist[$i]}(i); break;\n";
+                } else {
+                    print CC "        case $i: return (void *)&$getter{$fieldlist[$i]}(); break;\n";
+                }
             }
         }
     }
@@ -998,19 +1185,7 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
     print CC "sFieldWrapper *$msgdescclass\:\:getFieldWrapper(int field, int i)\n";
     print CC "{\n";
     print CC "    return NULL;\n";
-    print CC "}\n";
+    print CC "}\n\n";
 }
 
-$crap = $msg;
-if ($crap =~ /[^\s]/s)
-{
-    $crap =~ s/\n\n+/\n\n/sg;
-    $crap =~ s/^\n//s;
-    $crap =~ s/\n$//s;
-    print STDERR "*** following parts of input file were not understood:\n";
-    print STDERR "'$crap'\n";
-}
-
-close(H);
-close(CC);
 
