@@ -1213,7 +1213,8 @@ void TOmnetTkApp::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *t
 
     cModule *arrivalmod = msg->arrivalGate()->ownerModule();
     
-    for (PathVec::iterator i=pathvec.begin(); i!=pathvec.end(); i++)
+    PathVec::iterator i;
+    for (i=pathvec.begin(); i!=pathvec.end(); i++)
     {
         if (i->to==NULL)
         {
@@ -1296,131 +1297,6 @@ void TOmnetTkApp::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *t
     }        
 }
 
-/*
-void TOmnetTkApp::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
-{
-    char msgptr[32], msgkind[16];
-    ptrToStr(msg,msgptr);
-    sprintf(msgkind,"%d",msg->kind());
-
-    // for animation purposes, we assume that the message travels up
-    // in the module hierarchy until it finds the first compound module
-    // that also contains the destination module (possibly somewhere deep),
-    // and then it descends to the destination module. We have to find the
-    // list of modules visited during the travel, and animate the message
-    // in their inspectors.
-
-    // first, find "lowest common ancestor" module
-    cModule *srcmod = frommodule;
-    cModule *destmod = togate->ownerModule();
-    cModule *commonparent = srcmod;
-    cModule *arrivalmod = msg->arrivalGate()->ownerModule();
-    while (commonparent)
-    {
-        // try to find commonparent among ancestors of destmod
-        cModule *m = destmod;
-        while (m && commonparent!=m)
-            m = m->parentModule();
-        if (commonparent==m)
-            break;
-        commonparent = commonparent->parentModule();
-    }
-
-    // commonparent should exist, worst case it's the system module,
-    // but let's have the following "if" anyway...
-    if (!commonparent) 
-        return;
-
-    // animate the ascent of the message until commonparent (excluding).
-    // The second condition, destmod==commonparent covers case when we're sending 
-    // to an output gate of the parent (grandparent, etc) gate.
-    cModule *mod = srcmod;
-    while (mod!=commonparent && (mod->parentModule()!=commonparent || destmod==commonparent))
-    {
-        cModule *enclosingmod = mod->parentModule();
-        //ev << "DBG: animate ascent inside " << enclosingmod->fullPath()
-        //   << " from " << mod->fullPath() << endl;
-        TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
-        if (insp)
-        {
-            char parentptr[30], modptr[30];
-            strcpy(parentptr,ptrToStr(enclosingmod));
-            strcpy(modptr,ptrToStr(mod));
-            CHK(Tcl_VarEval(interp, "graphmodwin_animate_senddirect_ascent ",
-                                    insp->windowName(), " ",
-                                    parentptr," ",
-                                    modptr," ",
-                                    msgptr,
-                                    " {",msg->fullName(),"} ",
-                                    msgkind," ",
-                                    "thru", // cannot be "beg" (msg ball cannot stay on encl.module rect)
-                                    NULL));
-        }
-        mod = mod->parentModule();
-    }
-
-    // animate within commonparent
-    if (commonparent!=srcmod && commonparent!=destmod)
-    {
-        cModule *from = findSubmoduleTowards(commonparent, srcmod);
-        cModule *to = findSubmoduleTowards(commonparent, destmod);
-
-        // animate inside commonparent (msg moves between two modules)
-        //ev << "DBG: animate horiz in " << commonparent->fullPath() << 
-        //      " from " << from->fullPath() << " to " << to->fullPath() << endl;
-
-        TInspector *insp = findInspector(commonparent,INSP_GRAPHICAL);
-        if (insp)
-        {
-            char fromptr[30], toptr[30];
-            strcpy(fromptr,ptrToStr(from));
-            strcpy(toptr,ptrToStr(to));
-            CHK(Tcl_VarEval(interp, "graphmodwin_animate_senddirect_horiz ",
-                                    insp->windowName(), " ",
-                                    fromptr," ",
-                                    toptr," ",
-                                    msgptr,
-                                    " {",msg->fullName(),"} ",
-                                    msgkind," ",
-                                    (to==arrivalmod?"beg":"thru"),
-                                    NULL));
-        }
-
-    }
-
-    // descend from commonparent to destmod
-    mod = findSubmoduleTowards(commonparent, destmod);
-    if (mod && srcmod!=commonparent) 
-        mod = findSubmoduleTowards(mod, destmod);
-    while (mod)
-    {
-        // animate descent towards destmod
-        cModule *enclosingmod = mod->parentModule();
-        //ev << "DBG: animate descent in " << enclosingmod->fullPath() << 
-        //   " to " << mod->fullPath() << endl; 
-
-        TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
-        if (insp)
-        {
-            char parentptr[30], modptr[30];
-            strcpy(parentptr,ptrToStr(enclosingmod));
-            strcpy(modptr,ptrToStr(mod));
-            CHK(Tcl_VarEval(interp, "graphmodwin_animate_senddirect_descent ",
-                                    insp->windowName(), " ",
-                                    parentptr," ",
-                                    modptr," ",
-                                    msgptr,
-                                    " {",msg->fullName(),"} ",
-                                    msgkind," ",
-                                    (mod==arrivalmod?"beg":"thru"),
-                                    NULL));
-        }
-
-        // find module 'under' mod, towards destmod (this will return NULL if mod==destmod)
-        mod = findSubmoduleTowards(mod, destmod);
-    }
-}
-*/
 
 void TOmnetTkApp::animateDelivery(cMessage *msg)
 {
