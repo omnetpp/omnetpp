@@ -22,20 +22,9 @@
 #include "cexception.h"
 
 #ifdef _MSC_VER
-/* MSVC does have strnicmp() */
-#else
-#define strnicmp my_strnicmp
-static int my_strnicmp(const char *a, const char *b, size_t len)
-{
-    while (len-->0 && *a && (tolower(*(const unsigned char *)a)==tolower(*(const unsigned char *)b)))
-    {
-        a++;
-        b++;
-    }
-    return tolower(*(const unsigned char *)a) - tolower(*(const unsigned char *)b);
-    //return strncasecmp(a,b,len); //FIXME this is Linux-specific!
-}
+#define strncasecmp  strnicmp
 #endif
+
 
 cPatternMatcher::cPatternMatcher()
 {
@@ -228,7 +217,7 @@ bool cPatternMatcher::match(const char *s, int k)
             case LITERALSTRING:
                 if (iscasesensitive ?
                     strncmp(s, e.literalstring.c_str(), e.literalstring.length()) :
-                    strnicmp(s, e.literalstring.c_str(), e.literalstring.length())
+                    strncasecmp(s, e.literalstring.c_str(), e.literalstring.length())
                    )
                     return false;
                 s += e.literalstring.length();

@@ -27,17 +27,12 @@
 #include "cxmlelement.h"
 #include "cexception.h"
 
+#ifdef _MSC_VER
+#define strcasecmp  stricmp
+#endif
+
 using std::ostream;
 
-#ifdef _MSC_VER
-/* MSVC does have stricmp() */
-#else
-#define stricmp my_stricmp
-static int my_stricmp(const char *a, const char *b)
-{
-    return strcasecmp(a,b); //FIXME this is Linux-specific!
-}
-#endif
 
 cXMLElement::cXMLElement(const char *tagname, const char *srclocation, cXMLElement *parent)
 {
@@ -199,7 +194,7 @@ cXMLElementList cXMLElement::getChildrenByTagName(const char *tagname) const
 {
     cXMLElementList list;
     for (cXMLElement *child=getFirstChild(); child; child=child->getNextSibling())
-        if (!stricmp(child->getTagName(),tagname))
+        if (!strcasecmp(child->getTagName(),tagname))
             list.push_back(child);
     return list;
 }
@@ -215,7 +210,7 @@ void cXMLElement::doGetElementsByTagName(const char *tagname, cXMLElementList& l
 {
     for (cXMLElement *child=getFirstChild(); child; child=child->getNextSibling())
     {
-        if (!stricmp(child->getTagName(),tagname))
+        if (!strcasecmp(child->getTagName(),tagname))
             list.push_back(child);
         child->doGetElementsByTagName(tagname,list);
     }
@@ -225,7 +220,7 @@ cXMLElement *cXMLElement::getFirstChildWithAttribute(const char *tagname, const 
 {
     for (cXMLElement *child=getFirstChild(); child; child=child->getNextSibling())
     {
-        if (!tagname || !stricmp(child->getTagName(),tagname))
+        if (!tagname || !strcasecmp(child->getTagName(),tagname))
         {
             const char *val = child->getAttribute(attr);
             if (val && (!attrvalue || !strcmp(val,attrvalue)))
@@ -298,7 +293,7 @@ static cXMLElement *getFirstSiblingWithAttribute(cXMLElement *firstsibling, cons
 {
     for (cXMLElement *child=firstsibling; child; child=child->getNextSibling())
     {
-        if (!tagname || !stricmp(child->getTagName(),tagname))
+        if (!tagname || !strcasecmp(child->getTagName(),tagname))
         {
             const char *val = child->getAttribute(attr);
             if (val && (!attrvalue || !strcmp(val,attrvalue)))
@@ -311,7 +306,7 @@ static cXMLElement *getFirstSiblingWithAttribute(cXMLElement *firstsibling, cons
 static cXMLElement *getNthSibling(cXMLElement *firstsibling, const char *tagname, int n)
 {
     for (cXMLElement *child=firstsibling; child; child=child->getNextSibling())
-        if (!tagname || !stricmp(child->getTagName(),tagname))
+        if (!tagname || !strcasecmp(child->getTagName(),tagname))
             if (n--==0)
                 return child;
     return NULL;
