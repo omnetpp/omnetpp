@@ -174,7 +174,7 @@ class cDisplayString
     /**
      * Returns pointer to the indexth argument of the given tag.
      * If the tag doesn't exist or the index is out of range,
-     * NULL is returned.
+     * empty string ("") is returned.
      */
     const char *getTagArg(const char *tagname, int index) const;
 
