@@ -55,12 +55,12 @@ The file is best read from the bottom up. Here's what it says:
      will be implemented in C++). Txc1 has one input gate named in,
      and one output gate named out (<tt>simple..endsimple</tt>).
 
-We now need to implement the functionality of the simple module Txc1. This is
+3. We now need to implement the functionality of the simple module Txc1. This is
 achieved by writing a C++ file txc1.cc:
 
 txc1.cc: @include txc1.cc
 
-We now create the Makefile which will help us to compile and link our program
+4. We now create the Makefile which will help us to compile and link our program
 to create the executable tictoc:
 
 opp_makemake
@@ -68,14 +68,14 @@ opp_makemake
 This command should have now created a Makefile in the working directory
 tictoc.
 
-6. Let's now compile and link our very first simulation by issuing the make command:
+5. Let's now compile and link our very first simulation by issuing the make command:
 
 make
 
 If there are compilation errors, you need to rectify those and repeat the make until
 you get an error-free compilation and linking.
 
-7. If you start the executable now, it will complain that it cannot find
+6. If you start the executable now, it will complain that it cannot find
 the file omnetpp.ini, so you have to create one. omnetpp.ini tells the
 simulation program which network you want to simulate (yes, several networks
 can live in the same simulation program), you can pass parameters
@@ -95,7 +95,7 @@ omnetpp.ini: @include omnetpp.ini
 which even doesn't specify the network (the simulation program ask it
 in a dialog when it starts).
 
-8. Once you complete the above steps, you launch the simulation by issuing this
+7. Once you complete the above steps, you launch the simulation by issuing this
 command:
 
 ./tictoc
@@ -103,14 +103,8 @@ command:
 and, hopefully you should now get the OMNeT++ simulation window similar to
 the one shown in Figure 1.
 
-9. Press the ihrunlr button to start the simulation. What you should see is that tic
-and toc are exchanging messages with each other. This is the result of the send()
-and receive() calls in the C++ code.
-
-The main window behind displays text messages generated via the ev << ...
-lines from these modules. Observe that the messages "Hello World! I'm tic."
-and "Hello World! I'm toc." are only printed once at the beginning of the
-simulation.
+8. Press the Run button on the toolbar to start the simulation. What you should
+see is that tic and toc are exchanging messages with each other.
 
 The main window toolbar displays the simulated time. This is virtual time, it
 has nothing to do with the actual (or wall-clock) time that the program takes to
@@ -120,12 +114,19 @@ complexity of the simulation model itself (Exercise 2 will emphasize this issue)
 Note that the toolbar also contains a simsec/sec gauge which displays you this
 value.
 
+9. You can exit the simulation program by clicking its Close icon or choosing File|Exit.
+
 
 @section steps Adding more functionality
 
 @subsection s2 Step 2: adding icons and debug output
 
 @ref f2
+
+The main window behind displays text messages generated via the ev << ...
+lines from these modules. Observe that the messages "Hello World! I'm tic."
+and "Hello World! I'm toc." are only printed once at the beginning of the
+simulation.
 
 
 @subsection s3 Step 3
