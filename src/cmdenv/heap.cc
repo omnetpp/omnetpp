@@ -345,14 +345,8 @@ void *operator new(size_t m)
                  (long)m, blocksonheap, memManager.lowMemory() ? " LOWMEM!":"" );
 #endif
 #endif
-#if defined(_MSC_VER) && (_MSC_VER<=1200)
-         // no bad_alloc in MSVC 6.0 version yet
-         printf("\n[NEW (%lu) FAILED,calling exit(1)]\n", (long)m );
-         exit(1);
-#else
          printf("\n[NEW (%lu) FAILED,throwing bad::alloc!]\n", (long)m );
          throw std::bad_alloc();
-#endif
       }
 }
 
