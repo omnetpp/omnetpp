@@ -173,14 +173,8 @@ bool CppExpressionGenerator::needsExpressionClass(ExpressionNode *expr, NEDEleme
     if (tag==NED_IDENT || tag==NED_CONST)
         return false;
 
-    // also, non-ref bare parameter references never need expression classes
-    if (tag==NED_PARAM_REF && !((ParamRefNode *)node)->getIsRef())
-        return false;
-
     // a single parameter as expression doesn't need expression class, except "ancestor ref param"
-    if (tag==NED_PARAM_REF && node->getParent()==expr &&
-        (!((ParamRefNode *)node)->getIsRef() || !((ParamRefNode *)node)->getIsAncestor())
-       )
+    if (tag==NED_PARAM_REF && (!((ParamRefNode *)node)->getIsRef() || !((ParamRefNode *)node)->getIsAncestor()))
         return false;
 
     // special functions (INPUT, INDEX, SIZEOF) may also go without expression classes
@@ -236,6 +230,8 @@ void CppExpressionGenerator::doExtractArgs(ExpressionInfo& info, NEDElement *nod
              isctorarg = true;
         else if (tag==NED_FUNCTION)
              iscachedvar = true;
+        else if (tag==NED_PARAM_REF && !((ParamRefNode *)child)->getIsRef())
+             isctorarg = true;
 
         if (isctorarg)
             info.ctorargs.push_back(child);
@@ -313,6 +309,8 @@ const char *CppExpressionGenerator::getTypeForArg(NEDElement *node)
         return "long";
     else if (isSizeofOp(node))
         return "long";
+    else if (node->getTagCode()==NED_PARAM_REF)
+        return "double";
     else if (node->getTagCode()==NED_FUNCTION)
     {
         const char *types[] = {"MathFuncNoArg", "MathFunc1Arg", "MathFunc2Args",
@@ -330,6 +328,8 @@ const char *CppExpressionGenerator::getNameForArg(NEDElement *node)
         return ((IdentNode *)node)->getName();
     else if (node->getTagCode()==NED_FUNCTION)
         return ((FunctionNode *)node)->getName();
+    else if (node->getTagCode()==NED_PARAM_REF)
+        return ((ParamRefNode *)node)->getParamName();
     else
         {INTERNAL_ERROR1(node, "getNameForArg(): unexpected tag '%s'", node->getTagName());return NULL;}
 }
@@ -341,23 +341,9 @@ void CppExpressionGenerator::doValueForArg(NEDElement *node)
     else if (isIndexOp(node))
         out << "submodindex";
     else if (isSizeofOp(node))
-    {
-        //TBD this code is duplicate...
-        // sizeof gate or submodule vector?
-        IdentNode *op1 = ((FunctionNode *)node)->getFirstIdentChild();
-        assert(op1);
-        bool isgate, issubmod;
-        isGateOrSubmodule(op1, isgate, issubmod);
-
-        // generate code
-        const char *name = op1->getName();
-        if (isgate)
-            out << "mod->gateSize(\"" << name << "\")";
-        else if (issubmod)
-            out << name << "_size";
-        else
-            INTERNAL_ERROR2(node, "%s is neither a module gate not a submodule in sizeof(%s)", name, name);
-    }
+        doFunction((FunctionNode *)node, "", MODE_INLINE_EXPRESSION);
+    else if (node->getTagCode()==NED_PARAM_REF)
+        doParamref((ParamRefNode *)node, "", MODE_INLINE_EXPRESSION);
     else
         {INTERNAL_ERROR1(node, "doValueForArg(): unexpected tag '%s'", node->getTagName());}
 }
@@ -553,7 +539,7 @@ void CppExpressionGenerator::doFunction(FunctionNode *node, const char *indent, 
         else if (issubmod)
             out << name << "_size";
         else
-            INTERNAL_ERROR2(node, "%s is neither a module gate not a submodule in sizeof(%s)", name, name);
+            INTERNAL_ERROR2(node, "%s is neither a module gate nor a submodule in sizeof(%s)", name, name);
         return;
     }
     else if (!strcmp(funcname,"input"))
@@ -624,9 +610,13 @@ void CppExpressionGenerator::doParamref(ParamRefNode *node, const char *indent, 
 {
     if (mode==MODE_EXPRESSION_CLASS)
     {
-        if (node->getIsAncestor())
+        if (!node->getIsRef())
         {
-            // TBD distinguish ref and non-ref
+            // if not "ref", we just use class member which stores the parameter value
+            out << node->getParamName() << node->getId();
+        }
+        else if (node->getIsAncestor())
+        {
             out << "mod->ancestorPar(\"" << node->getParamName() << "\")";
         }
         else
@@ -646,7 +636,6 @@ void CppExpressionGenerator::doParamref(ParamRefNode *node, const char *indent, 
                     out << ")," << node->getModule() << "_size,\"" << node->getModule() << "\")]";
                 }
             }
-            // TBD check: this will always be by reference?
             out << "->par(\"" << node->getParamName() << "\")";
         }
     }
