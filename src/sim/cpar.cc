@@ -1386,7 +1386,7 @@ void cPar::convertToConst ()
     if (isRedirected())
        cancelRedirection();
 
-    if (strchr("FXTI", typechar)) // if type is any or F,X,T,I,...
+    if (strchr("FXTIC", typechar)) // if type is any or F,X,T,I,C...
     {
        double d = doubleValue();
        setDoubleValue(d);
