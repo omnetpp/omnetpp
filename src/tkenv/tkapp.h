@@ -35,19 +35,19 @@ class TOmnetTkApp : public TOmnetApp
 {
    public:
       enum eState {
-          S_NONET = 0,
-          S_NEW = 1,
-          S_RUNNING = 2,
-          S_READY = 3,
-          S_TERMINATED = 4,
-          S_ERROR = 5,
-          S_FINISHCALLED = 6
+          SIM_NONET = 0,
+          SIM_NEW = 1,
+          SIM_RUNNING = 2,
+          SIM_READY = 3,
+          SIM_TERMINATED = 4,
+          SIM_ERROR = 5,
+          SIM_FINISHCALLED = 6
       };
 
       //
       // state transitions:
-      //    S_NONET -> S_NEW -> (S_RUNNING <-> S_READY) -> S_TERMINATED -> S_FINISHCALLED -> S_NONET
-      //                                               `-> S_ERROR
+      //    SIM_NONET -> SIM_NEW -> (SIM_RUNNING <-> SIM_READY) -> SIM_TERMINATED -> SIM_FINISHCALLED -> SIM_NONET
+      //                                               `-> SIM_ERROR
    public:
       int  opt_default_run;        // automatically set up this run at startup
       bool opt_bkpts_enabled;      // stop at breakpoints (can be improved...)
@@ -111,7 +111,7 @@ class TOmnetTkApp : public TOmnetApp
                          cSimpleModule *stopinmod=NULL);
       void runSimulationNoTracing( simtime_t until_time, long until_event );
       void startAll();
-      void callFinish();
+      void finishSimulation(); // wrapper around simulation.callFinish() and simulation.endRun()
 
       void inspectorByName();
       void newMsgWindow();

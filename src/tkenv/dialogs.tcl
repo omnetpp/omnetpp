@@ -117,8 +117,10 @@ proc inspectfromlistbox {title text type fillistbox_args} {
     eval opp_fill_listbox $lb $fillistbox_args
     $lb selection set 0
 
-    button $w.buttons.inspect -text "Select" -command "inspectfromlistbox_insp $lb \{$type\}; after 500 \{raise $w; focus $lb\}"
+    button $w.buttons.inspect -text "Open inspector" -command "inspectfromlistbox_insp $lb \{$type\}; after 500 \{raise $w; focus $lb\}"
     pack $w.buttons.inspect -side top -anchor e -padx 2
+
+    $w.buttons.okbutton config -text "Close"
 
     # Configure dialog
     bind $lb <Double-Button-1> "$w.buttons.inspect invoke"

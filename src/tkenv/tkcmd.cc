@@ -40,14 +40,13 @@ int runNoTracing_cmd(ClientData, Tcl_Interp *, int, char **);
 int oneStepInModule_cmd(ClientData, Tcl_Interp *, int, char **);
 int rebuild_cmd(ClientData, Tcl_Interp *, int, char **);
 int startAll_cmd(ClientData, Tcl_Interp *, int, char **);
-int callFinish_cmd(ClientData, Tcl_Interp *, int, char **);
+int finishSimulation_cmd(ClientData, Tcl_Interp *, int, char **);
 int loadLib_cmd(ClientData, Tcl_Interp *, int, char **);
 
 int getNetworkType_cmd(ClientData, Tcl_Interp *, int, char **);
 int getFileName_cmd(ClientData, Tcl_Interp *, int, char **);
 int getObjectFullpath_cmd(ClientData, Tcl_Interp *, int, char **);
-int simulationOk_cmd(ClientData, Tcl_Interp *, int, char **);
-int isRunning_cmd(ClientData, Tcl_Interp *, int, char **);
+int getSimulationState_cmd(ClientData, Tcl_Interp *, int, char **);
 int fillListbox_cmd(ClientData, Tcl_Interp *, int, char **);
 int stopSimulation_cmd(ClientData, Tcl_Interp *, int, char **);
 int getSimOption_cmd(ClientData, Tcl_Interp *, int, char **);
@@ -65,7 +64,6 @@ int inspectorCommand_cmd(ClientData, Tcl_Interp *, int, char **);
 int hasDescriptor_cmd(ClientData, Tcl_Interp *, int, char **);
 
 int objectNullPointer_cmd(ClientData, Tcl_Interp *, int, char **);
-int objectRoot_cmd(ClientData, Tcl_Interp *, int, char **);
 int objectSimulation_cmd(ClientData, Tcl_Interp *, int, char **);
 int objectSystemModule_cmd(ClientData, Tcl_Interp *, int, char **);
 int objectMessageQueue_cmd(ClientData, Tcl_Interp *, int, char **);
@@ -90,14 +88,13 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_onestepinmodule",oneStepInModule_cmd}, // args: <window>
    { "opp_rebuild",        rebuild_cmd        }, // args: -
    { "opp_start_all",      startAll_cmd       }, // args: -
-   { "opp_call_finish",    callFinish_cmd     }, // args: -
+   { "opp_finish_simulation",finishSimulation_cmd}, // args: -
    { "opp_loadlib",        loadLib_cmd        }, // args: <fname>
    // Utility commands
    { "opp_getnetworktype",   getNetworkType_cmd   }, // args: -  ret: type of current network
    { "opp_getfilename",      getFileName_cmd      }, // args: <filetype>  ret: filename
    { "opp_getobjectfullpath",getObjectFullpath_cmd}, // args: <pointer>  ret: fullPath()
-   { "opp_simulation_ok",    simulationOk_cmd   }, // args: -  ret: simulation.ok()
-   { "opp_is_running",       isRunning_cmd      }, // args: -  ret: is_running
+   { "opp_getsimulationstate", getSimulationState_cmd }, // args: -  ret: NONET,READY,RUNNING,ERROR,TERMINATED,etc.
    { "opp_fill_listbox",     fillListbox_cmd    }, // args: <listbox> <ptr> <options>
    { "opp_stopsimulation",   stopSimulation_cmd }, // args: -
    { "opp_getsimoption",     getSimOption_cmd   }, // args: <option-namestr>
@@ -115,7 +112,6 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_hasdescriptor",     hasDescriptor_cmd     }, // args: <window>
    // Functions that return object pointers
    { "opp_object_nullpointer",  objectNullPointer_cmd  },
-   { "opp_object_root",         objectRoot_cmd         },
    { "opp_object_simulation",   objectSimulation_cmd   },
    { "opp_object_systemmodule", objectSystemModule_cmd },
    { "opp_object_messagequeue", objectMessageQueue_cmd },
@@ -265,11 +261,11 @@ int startAll_cmd(ClientData, Tcl_Interp *, int argc, char **)
    return TCL_OK;
 }
 
-int callFinish_cmd(ClientData, Tcl_Interp *, int argc, char **)
+int finishSimulation_cmd(ClientData, Tcl_Interp *, int argc, char **)
 {
    if (argc!=1) return TCL_ERROR;
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
-   app->callFinish();
+   app->finishSimulation();
    return TCL_OK;
 }
 
@@ -317,20 +313,21 @@ int getObjectFullpath_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
    return TCL_OK;
 }
 
-int simulationOk_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
+int getSimulationState_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
 {
    if (argc!=1) return TCL_ERROR;
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
-   bool ok = app->state==TOmnetTkApp::S_NEW || app->state==TOmnetTkApp::S_RUNNING || app->state==TOmnetTkApp::S_READY;
-   interp->result = const_cast<char*>(ok ? "1" : "0");
-   return TCL_OK;
-}
-
-int isRunning_cmd(ClientData, Tcl_Interp *interp, int argc, char **) // change method to 'getState'?
-{
-   if (argc!=1) return TCL_ERROR;
-   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
-   interp->result = const_cast<char*>(app->state == TOmnetTkApp::S_RUNNING ? "1" : "0");
+   switch (app->state)
+   {
+       case TOmnetTkApp::SIM_NONET: interp->result = "SIM_NONET"; break;
+       case TOmnetTkApp::SIM_NEW: interp->result = "SIM_NEW"; break;
+       case TOmnetTkApp::SIM_RUNNING: interp->result = "SIM_RUNNING"; break;
+       case TOmnetTkApp::SIM_READY: interp->result = "SIM_READY"; break;
+       case TOmnetTkApp::SIM_TERMINATED: interp->result = "SIM_TERMINATED"; break;
+       case TOmnetTkApp::SIM_ERROR: interp->result = "SIM_ERROR"; break;
+       case TOmnetTkApp::SIM_FINISHCALLED: interp->result = "SIM_FINISHCALLED"; break;
+       default: interp->result = "invalid simulation state"; return TCL_ERROR;
+   }
    return TCL_OK;
 }
 
@@ -656,13 +653,6 @@ int objectNullPointer_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
 {
    if (argc!=1) return TCL_ERROR;
    interp->result = ptrToStr( NULL );
-   return TCL_OK;
-}
-
-int objectRoot_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
-{
-   if (argc!=1) return TCL_ERROR;
-   interp->result = ptrToStr( &simulation); // FIXME was: superhead
    return TCL_OK;
 }
 

@@ -474,12 +474,20 @@ bool TOmnetApp::memoryIsLow()
 
 void TOmnetApp::displayError(cException *e)
 {
-    // Print error msg and set error code.
     if (e->moduleID()==-1)
         ev.printfmsg("Error: %s.", e->message());
     else
         ev.printfmsg("Error in module %s: %s.", e->moduleFullPath(), e->message());
 }
+
+void TOmnetApp::displayMessage(cException *e)
+{
+    if (e->moduleID()==-1)
+        ev.printfmsg("%s.", e->message());
+    else
+        ev.printfmsg("Module %s: %s.", e->moduleFullPath(), e->message());
+}
+
 
 //-------------------------------------------------------------
 

@@ -193,6 +193,12 @@ class ENVIR_API TOmnetApp
      * Display error message.
      */
     virtual void displayError(cException *e);
+
+    /**
+     * Like displayError(), but for normal termination messages, not errors.
+     */
+    virtual void displayMessage(cException *e);
+
     //@}
 
     /** @name Measuring elapsed time. */

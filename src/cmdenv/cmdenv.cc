@@ -263,7 +263,7 @@ void TCmdenvApp::simulate()
            while(!sigint_received)
            {
                cSimpleModule *mod = simulation.selectNextModule();
-               if (mod==NULL) break;
+               ASSERT(mod!=NULL);
 
                // print event banner if neccessary
                if (opt_verbose)
@@ -301,7 +301,7 @@ void TCmdenvApp::simulate()
            while(!sigint_received)
            {
                cSimpleModule *mod = simulation.selectNextModule();
-               if (mod==NULL) break;
+               ASSERT(mod!=NULL);
 
                // print event banner from time to time
                if (next_update <= simulation.simTime())
@@ -321,7 +321,7 @@ void TCmdenvApp::simulate()
     catch (cTerminationException *e)
     {
         stopClock();
-        displayError(e);
+        displayMessage(e);
         delete e;
         return;
     }

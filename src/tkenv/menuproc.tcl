@@ -22,7 +22,7 @@
 #===================================================================
 
 proc check_running {} {
-    if [opp_is_running] {
+    if {[opp_getsimulationstate] == "SIM_RUNNING"} {
        messagebox {Warning} {Sorry, you cannot do this while the simulation\
                              is running. Please stop it first.} info ok
        return 1
@@ -41,17 +41,27 @@ proc network_present {} {
 proc network_ready {} {
     if {[network_present] == 0} {return 0}
 
-    if {[opp_simulation_ok] == 1} {
+    if {[is_simulation_ok] == 1} {
         return 1
     } else {
         set ans [ messagebox {Warning} {Cannot continue this simulation. Rebuild network?} \
                   question yesno ]
         if {$ans == "yes"} {
             rebuild
-            return [opp_simulation_ok]
+            return [is_simulation_ok]
         } else {
             return 0
         }
+    }
+}
+
+proc is_simulation_ok {} {
+
+    set state [opp_getsimulationstate]
+    if {$state == "SIM_NEW" || $state == "SIM_RUNNING" || $state == "SIM_READY"} {
+        return 1
+    } else {
+        return 0
     }
 }
 
@@ -240,10 +250,29 @@ proc start_all {} {
 
 proc call_finish {} {
 
+    # check state is not SIM_RUNNING
     if [check_running] return
 
+    # check state is not SIM_NONET
     if {[network_present] == 0} return
-    opp_call_finish
+
+    # check state is not SIM_FINISHCALLED
+    if {[opp_getsimulationstate] == "SIM_FINISHCALLED"} {
+       messagebox {Error} {finish() has been run already.} info ok
+       return
+    }
+
+    # check state is not SIM_ERROR
+    if {[opp_getsimulationstate] == "SIM_ERROR"} {
+       set ans [messagebox {Warning} \
+                  {Simulation was stopped with error, calling finish() might produce unexpected results. Call it anyway?} \
+                  question yesno]
+       if {$ans == "no"} {
+           return
+       }
+    }
+
+    opp_finish_simulation
 }
 
 proc rebuild {} {
@@ -259,7 +288,7 @@ proc rebuild {} {
 proc stop_simulation {} {
     # implements Simulate|Stop
 
-    if [opp_is_running] {
+    if {[opp_getsimulationstate] == "SIM_RUNNING"} {
        opp_stopsimulation
     } else {
        messagebox {Error} {Simulation is not running.} info ok
