@@ -1,3 +1,7 @@
+2004-07-06  Andras Varga
+
+	* cmdenv.cc: fixed Speedometer usage
+
 2004-06-21   Andras Varga
 
 	* visitor.cc/h: converted pattern matching to use new cPatternMatcher.

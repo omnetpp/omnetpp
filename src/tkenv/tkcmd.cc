@@ -27,6 +27,7 @@
 #include "cstruct.h"
 #include "cdispstr.h"
 #include "cdispstr.h"
+#include "platdep.h"
 #include "tkapp.h"
 #include "tklib.h"
 #include "inspector.h"

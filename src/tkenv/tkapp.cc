@@ -63,7 +63,7 @@ TKENV_API void envirDummy() {}
 #define EVENTSPERSIMSEC_LABEL ".statusbar3.eventspersimsec"
 
 
-#define SPEEDOMETER_UPDATESECS 1.0
+#define SPEEDOMETER_UPDATEMILLISECS 1000
 
 
 // utility function
@@ -366,6 +366,7 @@ bool TOmnetTkApp::doRunSimulation()
     //  - breakpointhit_flag, stopsimulation_flag
     //
     Speedometer speedometer;
+    speedometer.start(simulation.simTime());
     ev.disable_tracing = false;
     bool firstevent = true;
     while(1)
@@ -387,25 +388,19 @@ bool TOmnetTkApp::doRunSimulation()
             break;
         firstevent = false;
 
+        speedometer.addEvent(simulation.simTime());
+
         // do a simulation step
         if (opt_print_banners)
             printEventBanner(mod);
 
         simulation.doOneEvent( mod );
 
-        speedometer.addEvent(simulation.simTime());
-
-        // exit conditions
-        if (untilmodule_reached) break;
-        if (breakpointhit_flag || stopsimulation_flag) break;
-        if (rununtil_time>0 && simulation.simTime()>=rununtil_time) break;
-        if (rununtil_event>0 && simulation.eventNumber()>=rununtil_event) break;
-
         // display update
         if (frequent_updates || simulation.eventNumber()%opt_updatefreq_fast==0)
         {
             updateSimtimeDisplay();
-            if (speedometer.secondsInThisInterval() > SPEEDOMETER_UPDATESECS)
+            if (speedometer.millisecsInThisInterval() > SPEEDOMETER_UPDATEMILLISECS)
             {
                 speedometer.beginNewInterval();
                 updatePerformanceDisplay(speedometer);
@@ -413,6 +408,12 @@ bool TOmnetTkApp::doRunSimulation()
             updateInspectors();
             Tcl_Eval(interp, "update");
         }
+
+        // exit conditions
+        if (untilmodule_reached) break;
+        if (breakpointhit_flag || stopsimulation_flag) break;
+        if (rununtil_time>0 && simulation.simTime()>=rununtil_time) break;
+        if (rununtil_event>0 && simulation.eventNumber()>=rununtil_event) break;
 
         // delay loop for slow simulation
         if (runmode==RUNMODE_SLOW)
@@ -454,6 +455,7 @@ bool TOmnetTkApp::doRunSimulationExpress()
 
     // OK, let's begin
     Speedometer speedometer;
+    speedometer.start(simulation.simTime());
     ev.disable_tracing = true;
     animating = false;
 
@@ -462,14 +464,14 @@ bool TOmnetTkApp::doRunSimulationExpress()
         cSimpleModule *mod = simulation.selectNextModule();
         if (!mod) break; // selectNextModule() interrupted (parsim)
 
-        simulation.doOneEvent( mod );
-
         speedometer.addEvent(simulation.simTime());
+
+        simulation.doOneEvent( mod );
 
         if (simulation.eventNumber()%opt_updatefreq_express==0)
         {
             updateSimtimeDisplay();
-            if (speedometer.secondsInThisInterval() > SPEEDOMETER_UPDATESECS)
+            if (speedometer.millisecsInThisInterval() > SPEEDOMETER_UPDATEMILLISECS)
             {
                 speedometer.beginNewInterval();
                 updatePerformanceDisplay(speedometer);
@@ -496,7 +498,7 @@ void TOmnetTkApp::startAll()
 
 void TOmnetTkApp::finishSimulation()
 {
-    // hmm... after SIM_ERROR, we shouldn't allow callFinish() in theory..
+    // strictly speaking, we shouldn't allow callFinish() after SIM_ERROR, but it comes handy in practice...
     ASSERT(simstate==SIM_NEW || simstate==SIM_READY || simstate==SIM_TERMINATED || simstate==SIM_ERROR);
 
     // print banner into main window
