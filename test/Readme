@@ -1,27 +1,46 @@
-Testing before release
-~~~~~~~~~~~~~~~~~~~~~~
+OMNeT++ Regression Test Tool
+============================
 
-Source distribution test platforms/configurations:
+Each test case is a single *.test file. All NED, C++ and other
+files are embedded into the test case files as well as PASS
+criteria. The advantages for this design are twofold:
+ - test cases are self-contained (easy to share, etc)
+ - enforces test cases that are compact and to the point
 
-   - NT, Visual C++ 6.0
-   - NT, Visual C++ 6.0 with USE_WINMAIN
-   - NT, Visual C++ 6.0 with Tcl embedding
-   - NT, Visual C++ 6.0 with Tcl embedding and USE_WINMAIN
-   - NT, Visual C++ 6.0 with PVM (compile only)
+Usage in nutshell:
+ 1. create *.test files
+ 2. run opp_test with -g option to generate the source files from *.test
+ 3. create a makefile (opp_makemake) and build the test program
+ 4. run opp_test with -r option to execute the tests
+All files will be created in the working directory.
 
-   - Win95/98, Visual C++ 6.0 (compile only, to test Makefile.98)
+A test file may contain the following entries:
 
-   - NT, Cygwin 1.1, static libs
-   - NT, Cygwin 1.1, static libs, with Tcl embedding
+Generic entries:
+   %name: <test-case-name>
 
-   - Linux, gcc, dynamic libs
+   %description:
+   <test-description-lines>
 
-   - Linux, gcc, static libs
-   - Linux, gcc, static libs, with Tcl embedding
-   - Linux, gcc, static libs, with PVM (compile only)
+Test case components:
+   %source:
+   <C++-source-lines>
 
-One test goes like this:
-   1. compile
-   2. run GNED and Plove
-   3. run all samples
-   4. run the test suite (TBD)
+   %file: <file-name>
+   <file-contents>
+
+   %inifile: [<inifile-name>]
+   <inifile-contents>
+
+Conditions for PASS:
+   %exitcode: <numeric-exit-code>
+
+   %ignore-exitcode
+
+   %contains: <output-file-to-check>
+   <regexp-pattern>
+
+   %not-contains: <output-file-to-check>
+   <regexp-pattern>
+
+See the example test files...

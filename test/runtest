@@ -1,0 +1,6 @@
+#! /bin/sh
+perl opp_test.pl -g -V *.test
+echo
+(cd work; opp_makemake -f -u cmdenv; make) || exit 1
+echo
+perl opp_test.pl -r -V *.test

@@ -1,0 +1,72 @@
+%name: sendDelayed_1
+
+%description:
+Test sendDelayed().
+
+%file: @TESTNAME@.ned
+
+simple @TESTNAME@_Sender
+  gates:
+    out: out;
+endsimple
+
+simple @TESTNAME@_Receiver
+  gates:
+    in: in;
+endsimple
+
+module @TESTNAME@_Net
+  submodules:
+    sender : @TESTNAME@_Sender;
+    receiver : @TESTNAME@_Receiver;
+  connections:
+    sender.out --> receiver.in;
+endmodule
+
+network @TESTNAME@_net : @TESTNAME@_Net
+endnetwork
+
+%file: @TESTNAME@.cc
+
+#include "omnetpp.h"
+
+class @TESTNAME@_Sender : public cSimpleModule
+{
+    Module_Class_Members(@TESTNAME@_Sender,cSimpleModule,16384)
+    virtual void activity();
+};
+
+class @TESTNAME@_Receiver : public cSimpleModule
+{
+    Module_Class_Members(@TESTNAME@_Receiver,cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module(@TESTNAME@_Sender);
+Define_Module(@TESTNAME@_Receiver);
+
+void @TESTNAME@_Sender::activity()
+{
+   cMessage *msg = new cMessage();
+   sendDelayed(msg, 0.3456, "out");
+}
+
+void @TESTNAME@_Receiver::activity()
+{
+   cMessage *msg = receive();
+   simtime_t diff = simTime() - msg->timestamp();
+   ev << "diff: " << diff << endl;
+}
+
+%inifile: @TESTNAME@.ini
+[General]
+network=@TESTNAME@_net
+
+%ignore-exitcode: 1
+
+%contains: stdout
+diff: 0.3456
+
+%not-contains: stderr
+Error
+

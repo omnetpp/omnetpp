@@ -1,0 +1,15 @@
+%name: cArray_exists_1
+
+%description:
+Test the exists() method of cArray.
+
+%source:
+%# following code will be run inside a simple module's activity()
+cArray arr;
+ev << "result:" << arr.exist(1) << endl;
+
+%exitcode: 19
+
+%contains: stdout
+result:0
+
