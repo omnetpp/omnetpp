@@ -66,6 +66,41 @@ static bool isParameterConst(NEDElement *moduletypedecl, const char *paramName)
     return strstr(param->getDataType(), "const")!=NULL;
 }
 
+inline bool isIndexOp(NEDElement *node)
+{
+    return node->getTagCode()==NED_FUNCTION && !strcmp(((FunctionNode *)node)->getName(),"index");
+}
+
+inline bool isSizeofOp(NEDElement *node)
+{
+    return node->getTagCode()==NED_FUNCTION && !strcmp(((FunctionNode *)node)->getName(),"sizeof");
+}
+
+static void isGateOrSubmodule(IdentNode *ident, bool& isgate, bool& issubmod)
+{
+    // decide if "name" is a gate or a submodule
+    isgate = issubmod = false;
+    const char *name = ident->getName();
+
+    NEDElement *mod1 = ident;
+    while (mod1->getTagCode()!=NED_COMPOUND_MODULE && mod1->getParent())
+        mod1 = mod1->getParent();
+    if (!mod1)
+        INTERNAL_ERROR0(ident, "sizeof can only be within a compound module declaration");
+    CompoundModuleNode *mod = (CompoundModuleNode *)mod1;
+    GatesNode *gates = mod->getFirstGatesChild();
+    if (gates && gates->getFirstChildWithAttribute(NED_GATE,"name",name))
+        isgate = true;
+
+    if (!isgate)
+    {
+        SubmodulesNode *submods = mod->getFirstSubmodulesChild();
+        if (submods && submods->getFirstChildWithAttribute(NED_SUBMODULE,"name",name))
+            issubmod = true;
+    }
+}
+
+
 
 int CppExpressionGenerator::count = 0;
 
@@ -181,11 +216,11 @@ void CppExpressionGenerator::doExtractArgs(ExpressionInfo& info, NEDElement *nod
     {
         bool isctorarg = false, iscachedvar = false;
         int tag = child->getTagCode();
-        if (tag==NED_IDENT)
+        if (tag==NED_IDENT && !isSizeofOp(node))
             isctorarg = true;
-        else if (tag==NED_FUNCTION && !strcmp(((FunctionNode *)child)->getName(),"index"))
+        else if (isIndexOp(child))
              isctorarg = true;
-        else if (tag==NED_FUNCTION && !strcmp(((FunctionNode *)child)->getName(),"sizeof"))
+        else if (isSizeofOp(child))
              isctorarg = true;
         else if (tag==NED_FUNCTION)
              iscachedvar = true;
@@ -262,9 +297,9 @@ const char *CppExpressionGenerator::getTypeForArg(NEDElement *node)
 {
     if (node->getTagCode()==NED_IDENT)
         return "long";
-    else if (node->getTagCode()==NED_FUNCTION && !strcmp(((FunctionNode *)node)->getName(),"index"))
+    else if (isIndexOp(node))
         return "long";
-    else if (node->getTagCode()==NED_FUNCTION && !strcmp(((FunctionNode *)node)->getName(),"sizeof"))
+    else if (isSizeofOp(node))
         return "long"; // FIXME cModule* or cGate* ?
     else if (node->getTagCode()==NED_FUNCTION)
     {
@@ -291,10 +326,26 @@ void CppExpressionGenerator::doValueForArg(NEDElement *node)
 {
     if (node->getTagCode()==NED_IDENT)
         out << ((IdentNode *)node)->getName() << "_var";
-    else if (node->getTagCode()==NED_FUNCTION && !strcmp(((FunctionNode *)node)->getName(),"index"))
+    else if (isIndexOp(node))
         out << "submodindex";
-    else if (node->getTagCode()==NED_FUNCTION && !strcmp(((FunctionNode *)node)->getName(),"sizeof"))
-        out << "sizeof(...)"; //FIXME
+    else if (isSizeofOp(node))
+    {
+        //TBD this code is duplicate...
+        // sizeof gate or submodule vector?
+        IdentNode *op1 = ((FunctionNode *)node)->getFirstIdentChild();
+        assert(op1);
+        bool isgate, issubmod;
+        isGateOrSubmodule(op1, isgate, issubmod);
+
+        // generate code
+        const char *name = op1->getName();
+        if (isgate)
+            out << "mod->gateSize(\"" << name << "\")";
+        else if (issubmod)
+            out << name << "_size";
+        else
+            INTERNAL_ERROR2(node, "%s is neither a module gate not a submodule in sizeof(%s)", name, name);
+    }
     else
         {INTERNAL_ERROR1(node, "doValueForArg(): unexpected tag '%s'", node->getTagName());}
 }
@@ -468,43 +519,28 @@ void CppExpressionGenerator::doFunction(FunctionNode *node, const char *indent, 
     }
     else if (!strcmp(funcname,"sizeof"))
     {
+        if (mode!=MODE_INLINE_EXPRESSION)
+        {
+            out << "sizeof" << node->getId();
+            return;
+        }
+
+        // code for MODE_INLINE_EXPRESSION follows
+
+        // sizeof gate or submodule vector?
         IdentNode *op1 = node->getFirstIdentChild();
         assert(op1);
-        const char *name = op1->getName();
-
-        // we must decide if "name" is a gate or a submodule
-        bool isgate = false;
-        bool issubmod = false;
-        NEDElement *mod1 = node;
-        while (mod1->getTagCode()!=NED_COMPOUND_MODULE && mod1->getParent())
-            mod1 = mod1->getParent();
-        if (!mod1)
-            INTERNAL_ERROR0(node, "sizeof can only be within a compound module declaration");
-        CompoundModuleNode *mod = (CompoundModuleNode *)mod1;
-        GatesNode *gates = mod->getFirstGatesChild();
-        if (gates && gates->getFirstChildWithAttribute(NED_GATE,"name",name))
-            isgate = true;
-
-        if (!isgate)
-        {
-            SubmodulesNode *submods = mod->getFirstSubmodulesChild();
-            if (submods && submods->getFirstChildWithAttribute(NED_SUBMODULE,"name",name))
-                issubmod = true;
-        }
+        bool isgate, issubmod;
+        isGateOrSubmodule(op1, isgate, issubmod);
 
         // generate code
+        const char *name = op1->getName();
         if (isgate)
-        {
             out << "mod->gateSize(\"" << name << "\")";
-        }
         else if (issubmod)
-        {
             out << name << "_size";
-        }
         else
-        {
             INTERNAL_ERROR2(node, "%s is neither a module gate not a submodule in sizeof(%s)", name, name);
-        }
         return;
     }
     else if (!strcmp(funcname,"input"))
