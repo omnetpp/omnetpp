@@ -374,8 +374,7 @@ class ENVIR_API cEnvir
 //==========================================================================
 //  Overloaded operators to provide iostream-like I/O for cEnvir
 
-inline cEnvir& operator<< (cEnvir& ev, cPar& p)
-  {char buf[81]; p.getAsText(buf,80); ev.puts(buf); return ev;}
+cEnvir& operator<< (cEnvir& ev, cPar& p);
 inline cEnvir& operator<< (cEnvir& ev, const char *s)
   {ev.puts(s); return ev;}
 inline cEnvir& operator<< (cEnvir& ev, const signed char *s)
@@ -405,48 +404,32 @@ inline cEnvir& operator<< (cEnvir& ev, double d)
 inline cEnvir& operator<< (cEnvir& ev, long double d)
   {ev.printf("%lg", d); return ev;}
 
-// use the '*' operator instead/besides ev.setPrompt()
-// e.g.: ev*"How many?" >> n;
-inline cEnvir& operator* (cEnvir& ev, char *s)
- {return ev.setPrompt((char *)s);}
-inline cEnvir& operator* (cEnvir& ev, const signed char *s)
- {return ev.setPrompt((const char *)s);}
-inline cEnvir& operator* (cEnvir& ev, const unsigned char *s)
- {return ev.setPrompt((const char *)s);}
-
-// NOTE: each >> operator reads a whole line!
-inline cEnvir& operator>> (cEnvir& ev, cPar& p)
- {char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); p.setFromText(buf,'?'); return ev;}
-inline cEnvir& operator>> (cEnvir& ev, char *s)
- {ev.gets(ev.prompt(),(char *)s, 80); return ev;}
-inline cEnvir& operator>> (cEnvir& ev, signed char *s)
- {ev.gets(ev.prompt(),(char *)s, 80); return ev;}
-inline cEnvir& operator>> (cEnvir& ev, unsigned char *s)
- {ev.gets(ev.prompt(),(char *)s, 80); return ev;}
-inline cEnvir& operator>> (cEnvir& ev, char& c)
- {char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); c=buf[0]; return ev;}
-inline cEnvir& operator>> (cEnvir& ev, signed char& c)
- {char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); c=buf[0]; return ev;}
-inline cEnvir& operator>> (cEnvir& ev, unsigned char& c)
- {char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); c=buf[0]; return ev;}
-inline cEnvir& operator>> (cEnvir& ev, short& i)
- {char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); i=(short)atol(buf); return ev;}
-inline cEnvir& operator>> (cEnvir& ev, int& i)
- {char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); i=(int)atol(buf); return ev;}
-inline cEnvir& operator>> (cEnvir& ev, long& l)
- {char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); l=atol(buf); return ev;}
-inline cEnvir& operator>> (cEnvir& ev, unsigned short& i)
- {char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); i=(unsigned short)atol(buf); return ev;}
-inline cEnvir& operator>> (cEnvir& ev, unsigned int& i)
- {char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); i=(unsigned int)atol(buf); return ev;}
-inline cEnvir& operator>> (cEnvir& ev, unsigned long& l)
- {char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); l=(unsigned long)atol(buf); return ev;}
-inline cEnvir& operator>> (cEnvir& ev, double& d)
- {char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); d=atof(buf); return ev;}
-inline cEnvir& operator>> (cEnvir& ev, long double& d)
- {char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); d=atof(buf); return ev;}
-
+// endl
 inline cEnvir& endl(cEnvir& ev) {ev.puts("\n"); return ev;}
 inline cEnvir& operator<<(cEnvir& ev, cEnvir& (*f)(cEnvir&)) {return (*f)(ev);}
+
+// '*' operator is a synonym to ev.setPrompt()
+// e.g.: ev*"How many?" >> n;
+cEnvir& operator* (cEnvir& ev, char *s);
+cEnvir& operator* (cEnvir& ev, const signed char *s);
+cEnvir& operator* (cEnvir& ev, const unsigned char *s);
+
+// NOTE: each >> operator reads a whole line!
+cEnvir& operator>> (cEnvir& ev, cPar& p);
+cEnvir& operator>> (cEnvir& ev, char *s);
+cEnvir& operator>> (cEnvir& ev, signed char *s);
+cEnvir& operator>> (cEnvir& ev, unsigned char *s);
+cEnvir& operator>> (cEnvir& ev, char& c);
+cEnvir& operator>> (cEnvir& ev, signed char& c);
+cEnvir& operator>> (cEnvir& ev, unsigned char& c);
+cEnvir& operator>> (cEnvir& ev, short& i);
+cEnvir& operator>> (cEnvir& ev, int& i);
+cEnvir& operator>> (cEnvir& ev, long& l);
+cEnvir& operator>> (cEnvir& ev, unsigned short& i);
+cEnvir& operator>> (cEnvir& ev, unsigned int& i);
+cEnvir& operator>> (cEnvir& ev, unsigned long& l);
+cEnvir& operator>> (cEnvir& ev, double& d);
+cEnvir& operator>> (cEnvir& ev, long double& d);
+
 
 #endif
