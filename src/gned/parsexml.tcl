@@ -106,15 +106,15 @@ proc loadXML {xmlfile} {
         openModuleOnCanvas $key
     }
 
+    # remove hourglass cursor
     busy
 }
 
 
 proc doParseXML {xmlfile rootkey} {
-    global tmp_ned tmp_errors
+    global tmp_ned tmp_errors tmp_idmap
 
     puts "TBD: should use tmp_errors()..."
-    puts "TBD: mapping of IDs! file ids ---> ned ids"
     puts "TBD: display strings..."
 
     # handling of file errors left to the caller
@@ -130,7 +130,9 @@ proc doParseXML {xmlfile rootkey} {
     global stack
     set stack $rootkey
 
+    catch {unset tmp_idmap}
     $p parse $xml
+    catch {unset tmp_idmap}
 
     # TBD: return number of errors
     return 0
@@ -139,7 +141,7 @@ proc doParseXML {xmlfile rootkey} {
 
 proc sax_elementstart {tag attlist} {
     global ned_desc ned_attr ned_attlist
-    global tmp_ned tmp_errors
+    global tmp_ned tmp_errors tmp_idmap
     global stack
 
     # puts "DBG: elementstart $tag ($attlist)"
@@ -159,13 +161,22 @@ proc sax_elementstart {tag attlist} {
         regsub -all "%0d%0a" $val "\n" val
         regsub -all "%22" $val "\"" val
         if {$att=="id"} {
-            # spec handling
+            # fill XML-id to tmp_ned-key map
+            set tmp_idmap($val) $key
         } elseif {$att=="display"} {
             # spec handling
-        } elseif ![info exist ned_attr($type,$att)] {
-            error "invalid attr name '$att' in entity '$tag'"
-        } else {
+        } elseif {$att=="src-ownerkey" || $att=="dest-ownerkey"} {
+            # these attributes refer to previous submod elements
+            if [info exist tmp_idmap($val)] {
+                set tmp_ned($key,$att) $tmp_idmap($val)
+            } else {
+                error "invalid idref '$val' in entity '$tag'"
+            }
+        } elseif [info exist ned_attr($type,$att)] {
+            # other attributes
             set tmp_ned($key,$att) $val
+        } else {
+            error "invalid attr name '$att' in entity '$tag'"
         }
     }
     lappend stack $key
@@ -181,14 +192,11 @@ proc sax_elementend {tag} {
 }
 
 proc sax_error args {
-    global tmp_errors
-    puts "error: $args"
-    return 0
+    error "parse error: $args"
 }
 
 proc sax_warning args {
-    puts "warning: $args"
-    return 0
+    error "parse warning: $args"
 }
 
 

@@ -1,5 +1,5 @@
 #==========================================================================
-#  PARSENED.TCL -
+#  DISPSTR.TCL -
 #            part of the GNED, the Tcl/Tk graphical topology editor of
 #                            OMNeT++
 #
@@ -15,62 +15,6 @@
 #  This file is distributed WITHOUT ANY WARRANTY. See the file
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
-
-
-#------------------------------------------------
-# Data structure is defined in datadict.tcl
-#------------------------------------------------
-
-
-# NedParser_createNedElement --
-#
-# This procedure is called from parsened.cc, NEDParser::create()
-#
-proc NedParser_createNedElement {nedarrayname type parentkey} {
-   global ned_attr ned_attlist
-   upvar #0 $nedarrayname nedarray
-
-   # choose key
-   set key $nedarray(nextkey)
-   incr nedarray(nextkey)
-
-   # add ned() fields
-   foreach field $ned_attlist(common) {
-      set nedarray($key,$field) $ned_attr(common,$field)
-   }
-   foreach field $ned_attlist($type) {
-      set nedarray($key,$field) $ned_attr($type,$field)
-   }
-   set nedarray($key,type) $type
-
-   # set parent
-   set nedarray($key,parentkey) $parentkey
-   lappend nedarray($parentkey,childrenkeys) $key
-
-   return $key
-}
-
-# NedParser_findChild --
-#
-# Find a child element within the given parent and with a given attribute value.
-# (attr is usually "name".)
-# This procedure is called from parsened.cc, NEDParser::create()
-#
-proc NedParser_findChild {nedarrayname parentkey attr value} {
-   upvar #0 $nedarrayname nedarray
-
-   set key ""
-   foreach key1 $nedarray($parentkey,childrenkeys) {
-       if {[info exist nedarray($key1,$attr)] && $nedarray($key1,$attr)==$value} {
-          if {$key==""} {
-             set key $key1
-          } else {
-             return "not unique"
-          }
-       }
-   }
-   return $key
-}
 
 
 # split_dispstr --
@@ -115,7 +59,7 @@ proc assemble_dispstr {array order} {
 
    set dispstr ""
    # loop through all tags in their preferred order
-   foreach tag [lsort -command {dispstr_ordertags $order} [array names array]] {
+   foreach tag [lsort -command {_dispstr_ordertags $order} [array names array]] {
        set vals $array($tag)
        # discard empty elements at end of list
        while {[lindex $vals end]==""} {
@@ -128,7 +72,7 @@ proc assemble_dispstr {array order} {
 }
 
 # private proc for assemble_dispstr
-proc dispstr_ordertags {order t1 t2} {
+proc _dispstr_ordertags {order t1 t2} {
    return [lsearch -exact $order $t1] - [lsearch -exact $order $t2]
 }
 
@@ -137,10 +81,10 @@ proc dispstr_ordertags {order t1 t2} {
 #
 # update a 'module' ned element with values from its display string
 #
-proc parse_module_dispstr {key dispstr) {
+proc parse_module_dispstr {key) {
    global ned
 
-   split_dispstr $dispstr tags
+   split_dispstr $ned($key,displaystring) tags
 
    # GNED currently only handles only few values from a dispstr...
    if [info exist tags(p)] {
@@ -163,10 +107,10 @@ proc parse_module_dispstr {key dispstr) {
 #
 # update a 'submod' ned element with values from its display string
 #
-proc parse_submod_dispstr {key dispstr) {
+proc parse_submod_dispstr {key) {
    global ned
 
-   split_dispstr $dispstr tags
+   split_dispstr $ned($key,displaystring) tags
 
    # GNED currently only handles only few values from a dispstr...
    if [info exist tags(p)] {
@@ -191,10 +135,10 @@ proc parse_submod_dispstr {key dispstr) {
 #
 # update a 'conn' ned element with values from its display string
 #
-proc parse_conn_dispstr {key dispstr) {
+proc parse_conn_dispstr {key) {
    global ned
 
-   split_dispstr $dispstr tags
+   split_dispstr $ned($key,displaystring) tags
 
    # GNED currently only handles only few values from a dispstr...
    if [info exist tags(m)] {
@@ -211,4 +155,72 @@ proc parse_conn_dispstr {key dispstr) {
    }
 }
 
+
+# _setlistitem --
+#
+# private proc.
+# Replace an element of a list. If the list is not long enough,
+# fill gap with empty items
+#
+proc _setlistitem {listvar index value} {
+   upvar $listvar list
+
+   while {[llength $list]<=$index} {
+      lappend list {}
+   }
+   set list [lreplace $list $index $index $value]
+}
+
+# update_module_dispstr --
+#
+# update display string of a 'module' ned element
+#
+proc update_module_dispstr {key) {
+   global ned
+
+   set order [split_dispstr $ned($key,displaystring) tags]
+
+   if ![info exist tags(p)] {set tags(p) {}}
+   _setlistitem tags(p) 0 $ned($key,x-pos)
+   _setlistitem tags(p) 1 $ned($key,y-pos)
+
+   if ![info exist tags(b)] {set tags(p) {}}
+   _setlistitem tags(b) 0 $ned($key,x-size)
+   _setlistitem tags(b) 1 $ned($key,y-size)
+
+   if ![info exist tags(o)] {set tags(p) {}}
+   _setlistitem tags(o) 0 $ned($key,fill-color)
+   _setlistitem tags(o) 1 $ned($key,outline-color)
+   _setlistitem tags(o) 2 $ned($key,linethickness)
+
+   set ned($key,displaystring) [assemble_dispstr tags $order]
+}
+
+# update_submod_dispstr --
+#
+# update display string of a 'submod' ned element
+#
+proc update_submod_dispstr {key) {
+   global ned
+
+   set order [split_dispstr $ned($key,displaystring) tags]
+
+   if ![info exist tags(p)] {set tags(p) {}}
+   _setlistitem tags(p) 0 $ned($key,x-pos)
+   _setlistitem tags(p) 1 $ned($key,y-pos)
+
+   if ![info exist tags(b)] {set tags(b) {}}
+   _setlistitem tags(b) 0 $ned($key,x-size)
+   _setlistitem tags(b) 1 $ned($key,y-size)
+
+   if ![info exist tags(o)] {set tags(o) {}}
+   _setlistitem tags(o) 0 $ned($key,fill-color)
+   _setlistitem tags(o) 1 $ned($key,outline-color)
+   _setlistitem tags(o) 2 $ned($key,linethickness)
+
+   if ![info exist tags(i)] {set tags(i) {}}
+   _setlistitem tags(i) 0 $ned($key,icon)
+
+   set ned($key,displaystring) [assemble_dispstr tags $order]
+}
 
