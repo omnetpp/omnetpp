@@ -160,17 +160,10 @@ std::string cGate::info() const
 
     std::stringstream out;
     out << arrow;
-// FIXME TBD
-/*
-        if (channelp)
-        {
-            channelp->info(b);
-            while(*b) b++;
-            *b++ = ' ';
-            strcpy(b,arrow);
-            b+=4;
-        }
-*/
+
+    if (channelp)
+        out << channelp->info() << arrow;
+
     out << (g->ownerModule()==ownerModule()->parentModule() ? "<parent>" : g->ownerModule()->fullName());
     out << "." << g->fullName();
     return out.str();

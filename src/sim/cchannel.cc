@@ -273,15 +273,15 @@ void cSimpleChannel::setDatarate(double d)
     dataratep->setDoubleValue(d);
 }
 
-
-/*
-void cSimpleChannel::setDisabled(cPar *p)
+void cSimpleChannel::setDisabled(bool d)
 {
-    p->setName("disabled");
-    _parList().set(p);
-    disabledp = p;
+    if (!disabledp)
+    {
+        disabledp = new cPar("disabled");
+        _parList().set(disabledp);
+    }
+    disabledp->setBoolValue(d);
 }
-*/
 
 void cSimpleChannel::setDelay(cPar *p)
 {
@@ -360,17 +360,9 @@ bool cSimpleChannel::isBusy() const
 
 bool cSimpleChannel::deliver(cMessage *msg, simtime_t t)
 {
-
-/*
-    FIXME: ev.messageSent() would crash if we delete the msg here.
-
-    // if channel is disabled, delete message
+    // if channel is disabled, signal that message should be deleted
     if (disabledp && (long)(*disabledp)!=0)
-    {
-        delete msg;
-        return;
-    }
-*/
+        return false;
 
     // transmission delay modelling
     double datarate;

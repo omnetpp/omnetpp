@@ -60,7 +60,7 @@ cModule::cModule(const cModule& mod) :
     rngmapsize = 0;
 
     dispstr = NULL;
-    parentdispstr = NULL;
+    bgdispstr = NULL;
 
     setName(mod.name());
     operator=(mod);
@@ -81,7 +81,7 @@ cModule::cModule(const char *name, cModule *parentmod) :
     rngmapsize = 0;
 
     dispstr = NULL;
-    parentdispstr = NULL;
+    bgdispstr = NULL;
 
     prevp = nextp = firstsubmodp = NULL;
     if (parentmod)
@@ -141,7 +141,7 @@ cModule::~cModule()
 
     delete [] fullname;
     delete dispstr;
-    delete parentdispstr;
+    delete bgdispstr;
 
 }
 
@@ -186,11 +186,11 @@ void cModule::initDisplayStrings()
             displayString().parse(ds);
     }
 
-    const char *pds = ev.getDisplayString(simulation.runNumber(),className());
-    if (!pds)
-        {delete parentdispstr; parentdispstr = NULL;}
+    const char *bgds = ev.getDisplayString(simulation.runNumber(),className());
+    if (!bgds)
+        {delete bgdispstr; bgdispstr = NULL;}
     else
-        displayStringAsParent().parse(pds);
+        backgroundDisplayString().parse(bgds);
 }
 
 void cModule::insertSubmodule(cModule *mod)
@@ -709,14 +709,14 @@ cDisplayString& cModule::displayString()
     return *dispstr;
 }
 
-cDisplayString& cModule::displayStringAsParent()
+cDisplayString& cModule::backgroundDisplayString()
 {
-    if (!parentdispstr)
+    if (!bgdispstr)
     {
-        parentdispstr = new cDisplayString();
-        parentdispstr->setRoleToModuleAsParent(this);
+        bgdispstr = new cDisplayString();
+        bgdispstr->setRoleToModuleBackground(this);
     }
-    return *parentdispstr;
+    return *bgdispstr;
 }
 
 // DEPRECATED
@@ -726,9 +726,9 @@ void cModule::setDisplayString(const char *s, bool)
 }
 
 // DEPRECATED
-void cModule::setDisplayStringAsParent(const char *s, bool)
+void cModule::setBackgroundDisplayString(const char *s, bool)
 {
-    displayStringAsParent().parse(s);
+    backgroundDisplayString().parse(s);
 }
 
 // DEPRECATED
@@ -738,7 +738,7 @@ void cModule::setDisplayString(int type, const char *s, bool)
          throw new cException(this,"setDisplayString(): type %d out of range", type );
 
     if (type==dispENCLOSINGMOD)
-         setDisplayStringAsParent(s);
+         setBackgroundDisplayString(s);
     else // type==dispSUBMOD
          setDisplayString(s);
 }
@@ -750,7 +750,7 @@ const char *cModule::displayString(int type)
          throw new cException(this,"displayString(): type %d out of range", type );
 
     if (type==dispENCLOSINGMOD)
-         return displayStringAsParent().getString();
+         return backgroundDisplayString().getString();
     else // type==dispSUBMOD
          return displayString().getString();
 }
