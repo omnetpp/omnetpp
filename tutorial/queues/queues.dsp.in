@@ -44,8 +44,8 @@ RSC=rc.exe
 # PROP Intermediate_Dir "debug"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /W3 /Gm /ZI /Od /I "D:\OMNeT++\include" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /W3 /Gm /ZI /Od /I "D:\OMNeT++\include" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
+# ADD BASE CPP /nologo /W3 /Gm /ZI /Od /I "@OMNETPP_INCL_DIR@" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
+# ADD CPP /nologo /W3 /Gm /ZI /Od /I "@OMNETPP_INCL_DIR@" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 sim_std.lib envir.lib tkenv.lib tcl82.lib tk82.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /libpath:"D:\OMNeT++\lib" /stack:0x1000000
+# ADD LINK32 sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /libpath:"@OMNETPP_LIB_DIR@" /libpath:"@TK_LIB_PATH@" /stack:0x1000000
 
 !ELSEIF  "$(CFG)" == "queues - Win32 Debug Cmdenv"
 
@@ -69,8 +69,8 @@ LINK32=link.exe
 # PROP Intermediate_Dir "debug"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /W3 /Gm /ZI /Od /I "D:\OMNeT++\include" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /W3 /Gm /ZI /Od /I "D:\OMNeT++\include" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
+# ADD BASE CPP /nologo /W3 /Gm /ZI /Od /I "@OMNETPP_INCL_DIR@" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
+# ADD CPP /nologo /W3 /Gm /ZI /Od /I "@OMNETPP_INCL_DIR@" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -78,7 +78,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /libpath:"D:\OMNeT++\lib" /stack:0x1000000
+# ADD LINK32 sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /libpath:"@OMNETPP_LIB_DIR@" /stack:0x1000000
 
 !ELSEIF  "$(CFG)" == "queues - Win32 Release Tkenv"
 
@@ -93,8 +93,8 @@ LINK32=link.exe
 # PROP Intermediate_Dir "release"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /W3 /O2 /I "D:\OMNeT++\include" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /W3 /O2 /I "D:\OMNeT++\include" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
+# ADD BASE CPP /nologo /W3 /O2 /I "@OMNETPP_INCL_DIR@" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
+# ADD CPP /nologo /W3 /O2 /I "@OMNETPP_INCL_DIR@" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -102,7 +102,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 sim_std.lib envir.lib tkenv.lib tcl82.lib tk82.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386 /libpath:"D:\OMNeT++\lib" /stack:0x1000000
+# ADD LINK32 sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386 /libpath:"@OMNETPP_LIB_DIR@" /libpath:"@TK_LIB_PATH@" /stack:0x1000000
 
 !ELSEIF  "$(CFG)" == "queues - Win32 Release Cmdenv"
 
@@ -117,8 +117,8 @@ LINK32=link.exe
 # PROP Intermediate_Dir "release"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /W3 /O2 /I "D:\OMNeT++\include" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /W3 /O2 /I "D:\OMNeT++\include" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
+# ADD BASE CPP /nologo /W3 /O2 /I "@OMNETPP_INCL_DIR@" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
+# ADD CPP /nologo /W3 /O2 /I "@OMNETPP_INCL_DIR@" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -126,7 +126,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386 /libpath:"D:\OMNeT++\lib" /stack:0x1000000
+# ADD LINK32 sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386 /libpath:"@OMNETPP_LIB_DIR@" /stack:0x1000000
 
 !ENDIF
 
@@ -196,7 +196,7 @@ InputPath=.\fifo.ned
 InputName=fifo
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	D:\OMNeT++\bin\nedc.exe -s _n.cpp $(InputPath)
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputPath)
 
 # End Custom Build
 
@@ -208,7 +208,7 @@ InputPath=.\fifo.ned
 InputName=fifo
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	D:\OMNeT++\bin\nedc.exe -s _n.cpp $(InputPath)
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputPath)
 
 # End Custom Build
 
@@ -220,7 +220,7 @@ InputPath=.\fifo.ned
 InputName=fifo
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	D:\OMNeT++\bin\nedc.exe -s _n.cpp $(InputPath)
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputPath)
 
 # End Custom Build
 
@@ -232,7 +232,7 @@ InputPath=.\fifo.ned
 InputName=fifo
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	D:\OMNeT++\bin\nedc.exe -s _n.cpp $(InputPath)
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputPath)
 
 # End Custom Build
 
@@ -251,7 +251,7 @@ InputPath=.\fifonet.ned
 InputName=fifonet
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	D:\OMNeT++\bin\nedc.exe -s _n.cpp $(InputPath)
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputPath)
 
 # End Custom Build
 
@@ -263,7 +263,7 @@ InputPath=.\fifonet.ned
 InputName=fifonet
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	D:\OMNeT++\bin\nedc.exe -s _n.cpp $(InputPath)
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputPath)
 
 # End Custom Build
 
@@ -275,7 +275,7 @@ InputPath=.\fifonet.ned
 InputName=fifonet
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	D:\OMNeT++\bin\nedc.exe -s _n.cpp $(InputPath)
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputPath)
 
 # End Custom Build
 
@@ -287,7 +287,7 @@ InputPath=.\fifonet.ned
 InputName=fifonet
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	D:\OMNeT++\bin\nedc.exe -s _n.cpp $(InputPath)
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputPath)
 
 # End Custom Build
 
@@ -306,7 +306,7 @@ InputPath=.\gen.ned
 InputName=gen
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	D:\OMNeT++\bin\nedc.exe -s _n.cpp $(InputPath)
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputPath)
 
 # End Custom Build
 
@@ -318,7 +318,7 @@ InputPath=.\gen.ned
 InputName=gen
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	D:\OMNeT++\bin\nedc.exe -s _n.cpp $(InputPath)
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputPath)
 
 # End Custom Build
 
@@ -330,7 +330,7 @@ InputPath=.\gen.ned
 InputName=gen
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	D:\OMNeT++\bin\nedc.exe -s _n.cpp $(InputPath)
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputPath)
 
 # End Custom Build
 
@@ -342,7 +342,7 @@ InputPath=.\gen.ned
 InputName=gen
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	D:\OMNeT++\bin\nedc.exe -s _n.cpp $(InputPath)
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputPath)
 
 # End Custom Build
 
@@ -361,7 +361,7 @@ InputPath=.\ring.ned
 InputName=ring
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	D:\OMNeT++\bin\nedc.exe -s _n.cpp $(InputPath)
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputPath)
 
 # End Custom Build
 
@@ -373,7 +373,7 @@ InputPath=.\ring.ned
 InputName=ring
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	D:\OMNeT++\bin\nedc.exe -s _n.cpp $(InputPath)
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputPath)
 
 # End Custom Build
 
@@ -385,7 +385,7 @@ InputPath=.\ring.ned
 InputName=ring
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	D:\OMNeT++\bin\nedc.exe -s _n.cpp $(InputPath)
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputPath)
 
 # End Custom Build
 
@@ -397,7 +397,7 @@ InputPath=.\ring.ned
 InputName=ring
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	D:\OMNeT++\bin\nedc.exe -s _n.cpp $(InputPath)
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputPath)
 
 # End Custom Build
 
@@ -416,7 +416,7 @@ InputPath=.\sink.ned
 InputName=sink
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	D:\OMNeT++\bin\nedc.exe -s _n.cpp $(InputPath)
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputPath)
 
 # End Custom Build
 
@@ -428,7 +428,7 @@ InputPath=.\sink.ned
 InputName=sink
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	D:\OMNeT++\bin\nedc.exe -s _n.cpp $(InputPath)
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputPath)
 
 # End Custom Build
 
@@ -440,7 +440,7 @@ InputPath=.\sink.ned
 InputName=sink
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	D:\OMNeT++\bin\nedc.exe -s _n.cpp $(InputPath)
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputPath)
 
 # End Custom Build
 
@@ -452,7 +452,7 @@ InputPath=.\sink.ned
 InputName=sink
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	D:\OMNeT++\bin\nedc.exe -s _n.cpp $(InputPath)
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputPath)
 
 # End Custom Build
 
