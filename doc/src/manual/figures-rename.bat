@@ -32,3 +32,4 @@ rename Slide30.* usmanFig16.*
 rename Slide31.* usmanFig17.*
 rename Slide32.* usmanFig18.*
 
+rename *.GIF *.gif
