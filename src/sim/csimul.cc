@@ -23,6 +23,7 @@
 
 #include <string.h>    // strcpy
 #include <stdio.h>     // vsprintf()
+#include <assert.h>
 #include "cmodule.h"
 #include "csimplemodule.h"
 #include "cmessage.h"
@@ -82,6 +83,8 @@ ostream& operator<<(ostream& os, struct tm d)
 cSimulation::cSimulation(const cSimulation& r) :
  cObject(r)
 {
+    assert(this==&simulation);
+
     setName(r.name());
     vect=NULL;
     schedulerp=NULL;
@@ -92,13 +95,7 @@ cSimulation::cSimulation(const char *name) :
  cObject(name),
  msgQueue( "scheduled-events" )
 {
-    // remove ourselves from ownership tree because global variables
-    // shouldn't be destroyed via operator delete
-    // FIXME is this OK?
-    if (!cStaticFlag::isSet())
-        removeFromOwnershipTree();
-
-    take(&msgQueue);
+    assert(this==&simulation);
 
     runningmodp = NULL;
     contextmodp = NULL;
@@ -125,6 +122,13 @@ cSimulation::~cSimulation()
 
 void cSimulation::init()
 {
+    // remove ourselves from ownership tree because global variables
+    // shouldn't be destroyed via operator delete. This cannot be done
+    // from the ctor, because this method calls virtual functions of 
+    // defaultList, and defaultList might not be initialized yet at that point.
+    // take() cannot be done from the ctor for the same reason.
+    removeFromOwnershipTree();
+    take(&msgQueue);
 }
 
 void cSimulation::forEach( ForeachFunc do_fn )
