@@ -395,19 +395,23 @@ proc findDialog {w} {
 
     # add entry fields
     label-entry $dlg.f.find "Find string:"
-    pack $dlg.f.find  -expand 0 -fill x -side top
+    checkbutton $dlg.f.regexp -text {regular expression} -underline 0 -variable tmp(regexp)
+    checkbutton $dlg.f.case -text {case sensitive} -underline 0 -variable tmp(case-sensitive)
+    checkbutton $dlg.f.words -text {whole words only} -underline 0 -variable tmp(whole-words)
+    checkbutton $dlg.f.backwards -text {search backwards} -underline 7 -variable tmp(backwards)
 
-    checkbutton $dlg.f.regexp -text {regular expression} -variable tmp(regexp)
-    pack $dlg.f.regexp  -anchor w -side top
+    grid $dlg.f.find   -                -sticky nw
+    grid $dlg.f.regexp $dlg.f.case      -sticky nw
+    grid $dlg.f.words  $dlg.f.backwards -sticky nw
 
-    checkbutton $dlg.f.case -text {case sensitive} -variable tmp(case-sensitive)
-    pack $dlg.f.case  -anchor w -side top
-
-    checkbutton $dlg.f.words -text {whole words only} -variable tmp(whole-words)
-    pack $dlg.f.words  -anchor w -side top
-
-    checkbutton $dlg.f.backwards -text {search backwards} -variable tmp(backwards)
-    pack $dlg.f.backwards  -anchor w -side top
+    bind $dlg <Alt-r> [list $dlg.f.regexp invoke]
+    bind $dlg <Alt-R> [list $dlg.f.regexp invoke]
+    bind $dlg <Alt-c> [list $dlg.f.case invoke]
+    bind $dlg <Alt-C> [list $dlg.f.case invoke]
+    bind $dlg <Alt-w> [list $dlg.f.words invoke]
+    bind $dlg <Alt-W> [list $dlg.f.words invoke]
+    bind $dlg <Alt-b> [list $dlg.f.backwards invoke]
+    bind $dlg <Alt-B> [list $dlg.f.backwards invoke]
 
     $dlg.f.find.e insert 0 $config(editor-findstring)
     $dlg.f.find.e select range 0 end
