@@ -524,7 +524,7 @@ proc generic_bindings {} {
    set help_tips(helptip_proc) get_help_tip
    set help_tips(width) 500
 
-   bind Button <Return> {tkButtonInvoke %W}
+   bind Button <Return> {%W invoke}
 }
 
 proc startup_commands {} {
