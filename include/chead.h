@@ -222,8 +222,7 @@ inline cLinkType *findLink(const char *s)
   {return (cLinkType *)linktypes.find(s);}
 
 /** Find a cFunctionType. */
-inline cFunctionType *findFunction(const char *s)
-  {return (cFunctionType *)functions.find(s);}
+cFunctionType *findFunction(const char *s,int argcount);
 
 /** Find a cEnum. */
 inline cEnum *findEnum(const char *s)
