@@ -1,6 +1,19 @@
 What's New
 ==========
 
+OMNeT++ 2.3b2 release (March 2003)
+----------------------------------
+This is a bugfix release. Resolved issues include:
+- wrong handling of channels (bug was introduced in 2.3b1)
+- opp_test failed on Unix if "." was not in the PATH
+- various smaller bugs in GNED, Tkenv, Envir, and opp_nmakemake
+- added several test cases (e.g. for channel testing) in test/
+
+See doc/API-Changes.txt for the list of changes since 2.2, including those
+that affect compatibility. ChangeLogs in respective source directories
+contain even more details.
+
+
 OMNeT++ 2.3b1 release (February 2003)
 -------------------------------------
 Licensing change: The license used in previous versions has been replaced
@@ -20,7 +33,7 @@ Major changes of this release in nutshell:
 - Added the implementation of several distributions: continuous distributions
   gamma, beta, Erlang, chi^2, student-t, Cauchy, triangular, lognormal, Weibull
   and Pareto; discrete distributions Bernoulli, binomial, geometric, negbino-
-  mial and Poisson [contributed by Werner Sandmann and Kay Michael Masslow]. 
+  mial and Poisson [contributed by Werner Sandmann and Kay Michael Masslow].
 
 - Contains an alpha version of the new NED compiler architecture,
   built upon XML foundations. This includes a tool for generating
@@ -120,7 +133,7 @@ Simulation kernel new features:
 - Added convenience functions to cGate, cMessage, and cArray (see
   API-Changes.txt for details).
 
-- A new utility class cDisplayStringParser lets you easily manipulate display 
+- A new utility class cDisplayStringParser lets you easily manipulate display
   strings.
 
 Message subclassing, new NED compiler architecture:
@@ -153,7 +166,7 @@ Build:
   test suite now works smoothly with MSVC; opp_stacktool displays reserved
   stack size for executables.
 
-- MSVC projects now need *different* compiler flags. Every source should be 
+- MSVC projects now need *different* compiler flags. Every source should be
   compiled with exceptions enabled and using /GR, otherwise there will be RTTI
   exceptions. Because of the Fiber API, reserved stack size should be set to
   a low value, 64K.
