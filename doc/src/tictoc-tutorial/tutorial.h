@@ -269,23 +269,65 @@ Sources: @ref tictoc3.ned, @ref txc3.cc, @ref omnetpp.ini
 In this step you'll learn how to add input parameters to the simulation:
 we'll turn the "magic number" 10 into a parameter.
 
-Module parameters have to be declared in the NED file.
+Module parameters have to be declared in the NED file. The data type can
+be numeric, string, bool, or xml (the latter is for easy access to
+XML config files), among others.
 
 @dontinclude tictoc4.ned
 @skip simple
 @until gates
-
-Typically you'll want to assign values to them from omnetpp.ini, although you can also
-hardcode assignments in NED files. Here we do the latter.
-
-@skip module
-@until connections
 
 We also have to modify the C++ code to read the parameter in
 initialize(), and assign it to the counter.
 
 @dontinclude txc4.cc
 @skipline par(
+
+Now, we can assign the parameters in the NED file or from omnetpp.ini.
+Assignments in the NED file take precedence. Typically you'll want
+to leave most parameter assigments to omnetpp.ini because it makes the model
+a lot more flexible.
+
+Here, we assign one parameter in the NED file:
+
+@dontinclude tictoc4.ned
+@skip module
+@until connections
+
+and the other in omnetpp.ini:
+
+@dontinclude omnetpp.ini
+@skipline tictoc4.
+
+Note that because omnetpp.ini supports wildcards, and parameters
+assigned from NED files take precedence over the ones in omnetpp.ini,
+we could have used
+
+@code
+tictoc4.t*c.limit=5
+@endcode
+
+or
+
+@code
+tictoc4.*.limit=5
+@endcode
+
+or even
+
+@code
+**.limit=5
+@endcode
+
+with the same effect. (The difference between * and ** is that * will not match
+a dot and ** will.)
+
+In Tkenv, you can inspect module parameters either in the object tree
+on the left-hand side of the main window, or in the Parameters page of
+the module inspector (opened via double-clicking on the module icon).
+
+The module with the smaller limit will delete the message and thereby
+conclude the simulation.
 
 Sources: @ref tictoc4.ned, @ref txc4.cc, @ref omnetpp.ini
 
@@ -298,18 +340,25 @@ message for 1 simulated second before sending it back. In OMNeT++
 such timing is achieved by the module sending a message to itself.
 Such messages are called self-messages (but only because of the way they
 are used, otherwise they are ordinary message objects).
-Self-messages can be "sent" with the scheduleAt() function, and you can
-specify when they should arrive back at the module.
+
+We added two cMessage * variables, <tt>event</tt> and <tt>tictocMsg</tt>
+to the class, to remember the message we use for timing and message whose
+processing delay we are simulating.
+
+@dontinclude txc5.cc
+@skip class Txc5
+@until public:
+
+We "send" the self-messages with the scheduleAt() function, specifying
+when it should be delivered back to the module.
 
 @dontinclude txc5.cc
 @skip ::handleMessage
 @skipline scheduleAt(
 
-Note that we added two cMessage * variables, <tt>event</tt> and <tt>tictocMsg</tt>
-to the class, to remember the message we use for timing and message whose
-processing delay we are simulating. In handleMessage() now we have to
-differentiate whether a new message has arrived via the input gate
-or the self-message came back (timer expired). Here we are using
+In handleMessage() now we have to differentiate whether a new message
+has arrived via the input gate or the self-message came back
+(timer expired). Here we are using
 
 @dontinclude txc5.cc
 @skipline msg==
@@ -324,10 +373,15 @@ as well.
 
 We have left out the counter, to keep the source code small.
 
+The result of running the simulation can be seen below.
+
+<img src="step5.gif">
+
+
 Sources: @ref tictoc5.ned, @ref txc5.cc, @ref omnetpp.ini
 
 
-@section s6 Step 6: Random numbers; putting parameters in omnetpp.ini
+@section s6 Step 6: Random numbers and parameters
 
 In this step we'll introduce random numbers. We change the delay from 1s
 to a random value which can be set from the NED file or from omnetpp.ini.
@@ -345,13 +399,7 @@ In addition, we'll "lose" (delete) the packet with a small (hardcoded) probabili
 @skip uniform(
 @until }
 
-
-For tic, we hardcode the <tt>delayTime</tt> parameter into the NED file.
-For toc, we leave the <tt>delayTime</tt> parameter unassigned in the NED file,
-and put the value into omnetpp.ini instead, to make it easier to change.
-It is done by the following line in omnetpp.ini (truncnormal returns nonnegative
-values from a normal distribution, the first argument being the mean
-and the second being standard deviation):
+We'll assign the parameters in omnetpp.ini:
 
 @dontinclude omnetpp.ini
 @skipline tictoc6.toc
@@ -371,23 +419,6 @@ seed-0-mt=532569  # or any other 32-bit value
 (From the syntax you have probably guessed that OMNeT++ supports
 more than one RNGs. That's right, however, all models in this tutorial
 use RNG 0.)
-
-Note that because omnetpp.ini supports wildcards, and parameters
-assigned from NED files take precedence over the ones in omnetpp.ini,
-we could have used
-
-@code
-tictoc6.t*c.delayTime=...
-@endcode
-
-or even
-
-@code
-**.delayTime=...
-@endcode
-
-with the same effect. (The difference between * and ** is that * will not match
-a dot and ** will.)
 
 Sources: @ref tictoc6.ned, @ref txc6.cc, @ref omnetpp.ini
 
