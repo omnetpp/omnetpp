@@ -1,6 +1,9 @@
 %description:
 Tests parameter passing in NED.
 
+FIXME should test if "ref" params are really taken by ref
+FIXME also it doesn't test ancestor properly
+
 %file: {}.ned
 
 simple {Simple}
