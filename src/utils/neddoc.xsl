@@ -68,6 +68,7 @@
       th { font-size:10pt; text-align:left; vertical-align:top; background:#E0E0f0 }
       td { font-size:10pt; text-align:left; vertical-align:top }
       tt { font-family:Courier,Courier New,Fixed,Terminal }
+      img          { border:none }
       .navbar     { font-size:8pt; }
       .navbarlink { font-size:8pt; }
       .indextitle { font-size:12pt; }
@@ -75,7 +76,6 @@
       .subtitle   { font-size:12pt; margin-bottom: 3px}
       .footer     { font-size:8pt; margin-top:0px; text-align:center; color:#303030; }
       FIXME.paramtable { border:2px ridge; border-collapse:collapse;}
-      img.screenshot { border:none }
       .src-keyword { font-weight:bold }
       .src-comment { font-style:italic; color:#404040 }
       .src-string  { color:#006000 }
@@ -460,6 +460,9 @@
          <h2 class="comptitle">Simple Module <i><xsl:value-of select="@name"/></i></h2>
          <xsl:call-template name="print-file"/>
          <xsl:call-template name="process-comment"/>
+         <xsl:if test="$have-dot='yes'">
+            <xsl:call-template name="print-contains-diagram"/>
+         </xsl:if>
          <xsl:call-template name="print-params"/>
          <xsl:call-template name="print-gates"/>
          <xsl:call-template name="print-module-used-in"/>
@@ -476,6 +479,9 @@
          <xsl:call-template name="print-file"/>
          <xsl:call-template name="process-comment"/>
          <xsl:call-template name="print-screenshot"/>
+         <xsl:if test="$have-dot='yes'">
+            <xsl:call-template name="print-contains-diagram"/>
+         </xsl:if>
          <xsl:call-template name="print-params"/>
          <xsl:call-template name="print-gates"/>
          <xsl:call-template name="print-uses"/>
@@ -496,6 +502,10 @@
          <xsl:call-template name="print-file"/>
          <xsl:call-template name="process-comment"/>
          <xsl:call-template name="print-type"/>
+         <xsl:if test="$have-dot='yes'">
+            <!-- FIXME doesn't work -->
+            <xsl:call-template name="print-contains-diagram"/>
+         </xsl:if>
          <xsl:call-template name="print-substparams"/>
          <xsl:call-template name="print-source"/>
       </xsl:with-param>
@@ -1033,13 +1043,52 @@
                            <xsl:with-param name="module" select="$submodtypenode"/>
                         </xsl:call-template> 
                      </xsl:variable>
-                     <area shape="rect" coords="{$coords}" href="{$url}" alt="{$alt}"/>
+                     <area shape="rect" coords="{$coords}" href="{$url}" title="{$alt}" alt="{$alt}"/>
                   </xsl:for-each>
                </xsl:for-each>
             </map>
           </xsl:for-each>
       </xsl:for-each>
    </xsl:if>
+</xsl:template>
+
+<xsl:template name="print-contains-diagram">
+   <h3 class="subtitle">Usage diagram:</h3>
+   <xsl:variable name="diagfilename" select="concat('diag-',generate-id(.))"/>
+   <img src="{$diagfilename}.gif" ismap="yes" usemap="#contains-diagram"/>
+   <map name="contains-diagram">@INSERTFILE(<xsl:value-of select="$diagfilename"/>.map)</map>
+   <xsl:document href="{$outputdir}/{$diagfilename}.dot" method="text">
+      <xsl:call-template name="create-contains-diagram"/>
+   </xsl:document>
+</xsl:template>
+ 
+<xsl:template name="create-contains-diagram">
+   digraph opp {
+      node [fontsize=10,fontname=helvetica,shape=box,height=.25,style=filled,fillcolor="#fffcaf"];
+      <xsl:value-of select="@name"/> [URL="<xsl:value-of select="concat(@name,'-',generate-id(.),'.html')"/>"];
+      <xsl:variable name="modname" select="@name"/>
+      <xsl:for-each select="key('module',submodules/submodule/@type-name)">
+         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="concat(@name,'-',generate-id(.),'.html')"/>"];
+         <xsl:value-of select="$modname"/> -> <xsl:value-of select="@name"/>; 
+      </xsl:for-each>
+      <xsl:for-each select="//compound-module[.//submodule/@type-name=$modname]">
+         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="concat(@name,'-',generate-id(.),'.html')"/>"];
+         <xsl:value-of select="@name"/> -> <xsl:value-of select="$modname"/>; 
+      </xsl:for-each>
+      <xsl:for-each select="//network[@type-name=$modname]">
+         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="concat(@name,'-',generate-id(.),'.html')"/>",fillcolor="#d0d0ff"];
+         <xsl:value-of select="@name"/> -> <xsl:value-of select="$modname"/>; 
+      </xsl:for-each>
+      <xsl:for-each select="key('channel',.//conn-attr[@name='channel']/@value)">
+         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="concat(@name,'-',generate-id(.),'.html')"/>",fillcolor="#d0ffd0"];
+         <xsl:value-of select="$modname"/> -> <xsl:value-of select="@name"/>; 
+      </xsl:for-each>
+   }
+</xsl:template>
+
+<xsl:template name="do-create-diagram-node">
+   <!-- FIXME --> 
+   <xsl:value-of select="@name"/> [URL="<xsl:value-of select="concat(@name,'-',generate-id(.),'.html')"/>",fillcolor="#d0ffd0"];
 </xsl:template>
 
 <xsl:template name="resolve-moduleurl">
@@ -1222,15 +1271,27 @@
 </xsl:template>
 
 <xsl:template name="create-module-diagram">
-   <!-- FIXME include channels and networks, too! -->
    digraph opp {
       node [fontsize=10,fontname=helvetica,shape=box,height=.25,style=filled,fillcolor="#fffcaf"];
       <xsl:for-each select="//simple-module|//compound-module">
-         <xsl:sort select="@name"/>
          <xsl:value-of select="@name"/> [URL="<xsl:value-of select="concat(@name,'-',generate-id(.),'.html')"/>"];
          <xsl:variable name="modname" select="@name"/>
          <xsl:for-each select="key('module',submodules/submodule/@type-name)">
             <xsl:value-of select="$modname"/> -> <xsl:value-of select="@name"/>; 
+         </xsl:for-each>
+      </xsl:for-each>
+      <xsl:for-each select="//network">
+         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="concat(@name,'-',generate-id(.),'.html')"/>",fillcolor="#d0d0ff"];
+         <xsl:variable name="netname" select="@name"/>
+         <xsl:for-each select="key('module',@type-name)">
+            <xsl:value-of select="$netname"/> -> <xsl:value-of select="@name"/>; 
+         </xsl:for-each>
+      </xsl:for-each>
+      <xsl:for-each select="//channel">
+         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="concat(@name,'-',generate-id(.),'.html')"/>",fillcolor="#d0ffd0"];
+         <xsl:variable name="channelname" select="@name"/>
+         <xsl:for-each select="//compound-module[.//conn-attr[@name='channel' and @value=$channelname]]">
+            <xsl:value-of select="@name"/> -> <xsl:value-of select="$channelname"/>; 
          </xsl:for-each>
       </xsl:for-each>
    }
