@@ -107,9 +107,6 @@ hist:
 nim:
 	cd $(OMNETPP_SAMPLES_DIR)/nim && $(MAKE)
 
-pvmex:
-	cd $(OMNETPP_SAMPLES_DIR)/pvmex && $(MAKE)
-
 token:
 	cd $(OMNETPP_SAMPLES_DIR)/token && $(MAKE)
 

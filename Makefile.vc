@@ -48,7 +48,7 @@ components: libs progs configsamples samples configtutorial thetutorial
 
 LIBS=$(ENVIR_ILIB) sim envir cmdenv tkenv nedxml
 PROGS=utils nedc gned plove
-SAMPLES=dyna fddi fifo1 fifo2 hcube hist nim pvmex token dyna2 demo
+SAMPLES=dyna fddi fifo1 fifo2 hcube hist nim token dyna2 demo
 
 #
 # Group targets. Note that utils has to be built BEFORE other libs and progs.
@@ -138,10 +138,6 @@ hist:
 nim:
 	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\nim && $(MAKE) $(MOPTS) -f $@.mak
-
-pvmex:
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\pvmex && $(MAKE) $(MOPTS) -f $@.mak
 
 token:
 	@echo ===== Compiling $@ ====

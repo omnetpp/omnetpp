@@ -22,7 +22,13 @@ TK_VER=8.2
 PVM_DIR=c:/pvm3
 MPI_DIR=c:/mpi
 EXPAT_DIR=d:/home/expat-1.95.2
-XMLPARSER=expat
+
+#
+# Choice of XML parser. Possible choices: expat or none (perhaps libxml in the
+# future?). If set to 'none', nedxml will compile but not support XML input.
+#
+#XMLPARSER=expat
+XMLPARSER=none
 
 #
 # other directories & files based on the base dirs
@@ -84,16 +90,16 @@ LEX=flex.exe
 
 # Compiler switches
 
-CFLAGS_DEBUG=/nologo /GX /GR /FD /Zm150 /MLd /Od /Gm /GZ /ZI 
+CFLAGS_DEBUG=/nologo /GX /GR /FD /Zm150 /MLd /Od /Gm /GZ /ZI
 LDFLAGS_DEBUG=/nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /incremental:no
 
 CFLAGS_RELEASE=/nologo /GX /GR /FD /Zm150 /ML /O2 /D "NDEBUG"
 LDFLAGS_RELEASE=/nologo /subsystem:console /machine:I386 /pdbtype:sept /incremental:no
 
-#CFLAGS=$(CFLAGS_DEBUG)
-#LDFLAGS=$(LDFLAGS_DEBUG)
-CFLAGS=$(CFLAGS_RELEASE)
-LDFLAGS=$(LDFLAGS_RELEASE)
+CFLAGS=$(CFLAGS_DEBUG)
+LDFLAGS=$(LDFLAGS_DEBUG)
+#CFLAGS=$(CFLAGS_RELEASE)
+#LDFLAGS=$(LDFLAGS_RELEASE)
 
 # LIB_SUFFIX is either .lib or .dll
 LIB_SUFFIX=.lib

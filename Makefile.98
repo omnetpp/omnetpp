@@ -53,7 +53,7 @@ components: libs progs configsamples samples configtutorial thetutorial
 
 LIBS=$(ENVIR_ILIB) sim envir cmdenv tkenv
 PROGS=utils nedc gned plove
-SAMPLES=dyna fddi fifo1 fifo2 hcube hist nim pvmex token demo
+SAMPLES=dyna fddi fifo1 fifo2 hcube hist nim token demo
 
 #
 # Group targets. Note that utils has to be built BEFORE other libs and progs.

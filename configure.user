@@ -14,8 +14,8 @@
 #
 #CFLAGS='-g -Wno-unused'
 #CFLAGS='-g -Wall'
-#CFLAGS='-gstabs+3 -Wall'
-CFLAGS='-O3 -DNDEBUG=1'
+CFLAGS='-gstabs+3 -Wall'  
+#CFLAGS='-O3 -DNDEBUG=1'
 
 # To suppress the 'unused variable' warnings in ned-generated _n.cc files
 # -Wno-unused is added to NEDCFLAGS
@@ -29,7 +29,7 @@ NEDCFLAGS='-Wno-unused'
 # `if-not-cygwin'.
 #
 #build_shared_libs=yes
-#build_shared_libs=no
+build_shared_libs=no
 
 #
 # It is possible to have the Tcl files embedded into the compiled OMNeT++
@@ -72,8 +72,8 @@ PLOVE_EMBED_TCL=no
 # (Sometimes you need to explicitly link with the X11 libraries too, in that
 # case add -lX11 to TK_LIBS).
 #
-TK_CFLAGS=
-TK_LIBS=
+TK_CFLAGS="-I/d/Tcl831/include -fwritable-strings"
+TK_LIBS="-L/d/Tcl831/lib -ltk83 -ltcl83"
 
 #
 # Similar settings for PVM
