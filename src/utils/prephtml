@@ -5,6 +5,7 @@
 #
 
 $fname = $ARGV[0];
+$quiet = 0;
 
 #
 # general template for our output HTML pages; real contents will go to __BODY__
@@ -29,12 +30,14 @@ __BODY__
 #
 # read file into variable
 #
+print "reading $fname\n" unless $quiet;
 open( htmlf, $fname ) || die "cannot open $fname";
 read( htmlf, $html, 1000000 ) || die "cannot read $fname";
 
 #
 # kill unwanted formatting
 #
+print "removing unnecessary formatting and parts\n" unless $quiet;
 $html =~ s/ SIZE=2//g;
 $html =~ s/ FACE="[^"]*"//g;
 
@@ -44,10 +47,10 @@ $html =~ s/ FACE="[^"]*"//g;
 $html =~ s/^(.*?)\<H1\>/<H1>/s;
 $html =~ s/\<\/BODY\>.*$//s;
 
-#
-# add horiz bar before each H1 heading
-#
-$html =~ s/\<H1\>/<HR><H1>/g;
+##
+## add horiz bar before each H1 heading
+##
+# $html =~ s/\<H1\>/<HR><H1>/g;
 
 #
 # convert filenames in <IMG SRC="IMG00010.GIF"> tags to lowercase
@@ -57,6 +60,7 @@ $html =~ s/\"IMG([0-9]*)\.GIF\"/\"img$1.gif\"/g;
 #
 # collect heading info from document
 #
+print "collecting headings\n" unless $quiet;
 $scrap = $html;
 $i = 0;
 while ($scrap =~ s/\<H([0-9])\>(.*?)\<\/H[0-9]\>//s)
@@ -67,18 +71,15 @@ while ($scrap =~ s/\<H([0-9])\>(.*?)\<\/H[0-9]\>//s)
       $title[$i] = $2;
       $i++;
 }
-$n = $i;
+$nheadings = $i;
+
 
 #
-# add heading numbering
+# calculate heading numbers
 #
-
-# skip 'User Manual', 'Topics' and 'Contents'
-$headingstart=3;
-
-# do numbering
+print "adding heading numbers\n" unless $quiet;
 for ($l=1; $l<10; $l++) {$hnum[$l]=0;}
-for ($i=$headingstart; $i<$n; $i++)
+for ($i=0; $i<$nheadings; $i++)
 {
       # advance numbering
       $hnum[$level[$i]]++;
@@ -91,39 +92,82 @@ for ($i=$headingstart; $i<$n; $i++)
       for ($j=1; $j<=$level[$i]; $j++) {
          $number[$i] .= $hnum[$j].'.';
       }
+
+      # store chapter number
+      $chapnum[$i] = $hnum[1];
 }
 
 #
 # insert numbers into manual body
 #
-for ($i=0; $i<$n; $i++)
+for ($i=0; $i<$nheadings; $i++)
 {
       # search replace phrases like this: <A NAME="_Toc473901724">Expressions</A>
       $html =~ s/(\<A NAME=\"$label[$i]\">)(.*?\<\/A\>)/\1$number[$i] \2/g;
 }
 
+#
+# split up to chapters along H1 headings
+#
+print "splitting up to chapters\n" unless $quiet;
+$nchapters = 0;
+$scrap = $html;
+while ($scrap =~ s/(\<H1\>.*?)\<H1\>/\<H1\>/s)
+{
+      $chapter[++$nchapters] = $1;
+}
+$chapter[++$nchapters] = $scrap;
 
 #
-# create 'topics' table
+# create navigation bars for each chapter
 #
-$topics = "<H1>Topics</H1>\n";
-for ($i=0; $i<$n; $i++)
+for ($i=1; $i<=$nchapters; $i++)
+{
+      $navbar[$i] = "<p><hr><b>";
+      if ($i>1) {$t=$i-1; $navbar[$i] .= "<A HREF=\"chap$t.html\">[Prev]</A>";}
+      if ($i<$nchapters) {$t=$i+1; $navbar[$i] .= "&nbsp;<A HREF=\"chap$t.html\">[Next]</A>";}
+      $navbar[$i] .= "&nbsp;<A HREF=\"toc.html#$i.\">[TOC]</A>";
+      $navbar[$i] .= "&nbsp;<A HREF=\"usman.html\">[Chapters]</A>";
+      $navbar[$i] .= "</b><hr></p>";
+}
+
+#
+# write each chapter into a separate file
+#
+print "writing chapter files\n" unless $quiet;
+for ($i=1; $i<=$nchapters; $i++)
+{
+      $new_html = $template;
+      $new_html =~ s/__BODY__/$navbar[$i]$chapter[$i]$navbar[$i]/;
+      open(FILE,">chap$i.html");
+      printf FILE $new_html;
+      close FILE;
+}
+
+
+#
+# create 'chapters' table
+#
+print "creating Topics and TOC file\n" unless $quiet;
+$navbar="<p><b><hr><A HREF=\"toc.html\">[Table of Contents]</a><hr></b></p>";
+$chapters = $navbar . "<H1>OMNeT++ User Manual -- Chapters</H1>\n";
+for ($i=0; $i<$nheadings; $i++)
 {
       if ($level[$i]==1)
       {
-           # $entry = "<B><A HREF=\"#$label[$i]\">$title[$i]</A></B><BR>";
-           $entry = "<B><A HREF=\"#TOC_$i\">$number[$i] $title[$i]</A></B><BR>";
-           $topics = "$topics$entry\n";
+           $entry = "<B><A HREF=\"chap$chapnum[$i].html\">$number[$i] $title[$i]</A></B><BR>";
+           $chapters = "$chapters$entry\n";
       }
 }
 
 #
 # create table of contents
 #
-$toc = "<H1>Detailed Table of Contents</H1>\n";
-for ($i=0; $i<$n; $i++)
+$navbar="<p><b><hr><A HREF=\"usman.html\">[Chapters]</a><hr></b></p>";
+$toc = $navbar . "<H1>Table of Contents</H1>\n";
+for ($i=0; $i<$nheadings; $i++)
 {
-      $entry = "<A NAME=\"TOC_$i\"></A><A HREF=\"#$label[$i]\">$number[$i] $title[$i]</A>";
+      $entry = "<A NAME=\"$number[$i]\"></A><A HREF=\"chap$chapnum[$i].html#$label[$i]\">$number[$i] $title[$i]</A>";
       for ($j=0; $j<$level[$i]; $j++) {$entry = "&nbsp;&nbsp;$entry";}
       if ($level[$i]==1)    {$entry = "<BR><FONT SIZE=+1><B>$entry</B></FONT>";}
       elsif ($level[$i]==2) {$entry = "<B>$entry</B>";}
@@ -131,10 +175,31 @@ for ($i=0; $i<$n; $i++)
 }
 
 #
-# put together HTML page
+# write chapters file (usman.html)
 #
 $new_html = $template;
-$new_html =~ s/__BODY__/<H1><B>User Manual<\/B><\/H1>$topics<HR>$toc$html/;
+$new_html =~ s/__BODY__/$chapters/;
+open(FILE,">usman.html");
+printf FILE $new_html;
+close FILE;
 
-printf "%s", $new_html;
+#
+# write toc file (toc.html)
+#
+$new_html = $template;
+$new_html =~ s/__BODY__/$toc/;
+open(FILE,">toc.html");
+printf FILE $new_html;
+close FILE;
+
+print "done\n" unless $quiet;
+
+##
+## OLD CODE: print out everything into a single file
+##
+# $new_html = $template;
+# $new_html =~ s/__BODY__/<H1><B>User Manual<\/B><\/H1>$chapters<HR>$toc$html/;
+# open(FILE,">usman.html");
+# printf FILE $new_html;
+# close FILE;
 

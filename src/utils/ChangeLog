@@ -97,4 +97,6 @@ Dec 5,1999
 ------ omnetpp-2.0b3 released ------
 Apr 10, 2000
  - TRUE/FALSE (defines) replaced by true/false (C++ keywords)
-
+Apr 16, 2000
+ - prephtml script enhanced: now it splits up the manual to several HTML files
+   (usman.html, toc.html plus chapN.html files); it also adds heading numbering.
