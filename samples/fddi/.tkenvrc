@@ -15,7 +15,7 @@ option animation_msgcolors	{1}
 option penguin_mode	{0}
 option showlayouting	{1}
 option bubbles	{1}
-option animation_speed	{3}
+option animation_speed	{1.5}
 option bkpts_enabled	{1}
 option expressmode_autoupdate	{1}
 config rununtil-event	{}
@@ -34,5 +34,5 @@ config display-treeview	{1}
 config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
-inspector "TUBw" "TUB_wired" "2" "401x340+176+245"
+inspector "TUBw" "TUB_wired" "2" "341x408+546+248"
 

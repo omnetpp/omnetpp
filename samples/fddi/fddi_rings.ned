@@ -30,12 +30,13 @@ module FDDIRing
         TTRT : numeric const;
     submodules:
         comp: FDDIStation[no_comps];
-
+            display: "p=83,73;i=device/pc2";
         stat: Stat;
             parameters:
                 no_comps = no_comps;
             gatesizes:
                 in[no_comps];
+            display: "p=269,48;i=block/cogwheel";
     connections:
         comp[no_comps - 1].out --> FDDICable --> comp[0].in;
         for i=0..no_comps - 2 do
@@ -69,31 +70,31 @@ module TUBNRing
         loadCtrl: LoadControl;
             parameters:
                 LoadControlFile = LoadControlFile;
-            display: "p=50,50;i=block/control";
+            display: "p=81,72;i=block/control";
         bmecisco7: FDDI_Router_port; // in Building R, EIK
             parameters:
                 //      FDDI_Generator_type=FDDI_Generator_type,
                 StationID = 0,
                 address = "DECnet000728";
-            display: "p=100,125;i=device/router";
+            display: "p=123,176;i=device/router";
         bmecisco1: FDDI_SAS; // in Building R, EIK
             parameters:
                 FDDI_Generator_type = FDDI_Generator_type,
                 StationID = 1,
                 address = "DECnet000A04";
-            display: "p=150,50;i=device/router";
+            display: "p=175,102;i=device/router";
         bmecisco3: FDDI_SAS; // in Building R, EIK
             parameters:
                 FDDI_Generator_type = FDDI_Generator_type,
                 StationID = 2,
                 address = "cisco_F99030";
-            display: "p=250,50;i=device/router";
+            display: "p=280,70;i=device/router";
         bmecisco2: FDDI_SAS; // in Building K
             parameters:
                 FDDI_Generator_type = FDDI_Generator_type,
                 StationID = 3,
                 address = "DECnet000B04";
-            display: "p=350,50;i=device/router";
+            display: "p=377,92;i=device/router";
         bmeconc5: FDDI_SAC; // in Building K
             parameters:
                 StationID = -1,
@@ -101,13 +102,13 @@ module TUBNRing
             gatesizes:
                 M_in[1],
                 M_out[1];
-            display: "p=400,125;i=device/switch";
+            display: "p=437,146;i=device/switch_s";
         bmebr1: FDDI_SAS; // in Building CH
             parameters:
                 FDDI_Generator_type = FDDI_Generator_type,
                 StationID = 4,
                 address = "DEC___28E6AD";
-            display: "p=430,70;i=device/switch";
+            display: "p=507,101;i=device/switch";
         bmeconc4: FDDI_SAC; // in Building Mt
             parameters:
                 StationID = -1,
@@ -115,31 +116,31 @@ module TUBNRing
             gatesizes:
                 M_in[4],
                 M_out[4];
-            display: "p=400,200;i=device/switch";
+            display: "p=434,235;i=device/switch_s";
         bmebr2: FDDI_SAS; // in Building F
             parameters:
                 FDDI_Generator_type = FDDI_Generator_type,
                 StationID = 5,
                 address = "DEC___28E6AC";
-            display: "p=410,260;i=device/switch";
+            display: "p=487,325;i=device/switch";
         ethsw1: FDDI_SAS; // in Building MM
             parameters:
                 FDDI_Generator_type = FDDI_Generator_type,
                 StationID = 6,
                 address = "00C01DF447A6";
-            display: "p=460,260;i=device/switch";
+            display: "p=523,285;i=device/switch";
         ethsw2: FDDI_SAS; // in Building MM
             parameters:
                 FDDI_Generator_type = FDDI_Generator_type,
                 StationID = 7,
                 address = "00C01DF44885";
-            display: "p=460,220;i=device/switch";
+            display: "p=526,241;i=device/switch";
         fizika2: FDDI_SAS; // in Building F
             parameters:
                 FDDI_Generator_type = FDDI_Generator_type,
                 StationID = 8,
                 address = "DEC___B48FE4";
-            display: "p=460,180;i=device/switch";
+            display: "p=504,192;i=device/switch";
         bmeconc3: FDDI_SAC; // in Building St
             parameters:
                 StationID = -1,
@@ -147,13 +148,13 @@ module TUBNRing
             gatesizes:
                 M_in[1],
                 M_out[1];
-            display: "p=360,275;i=device/switch";
+            display: "p=373,295;i=device/switch_s";
         bmebr3: FDDI_SAS; // in Building J
             parameters:
                 FDDI_Generator_type = FDDI_Generator_type,
                 StationID = 9,
                 address = "DEC___286606";
-            display: "p=360,330;i=device/switch";
+            display: "p=396,358;i=device/switch";
         bmeconc2: FDDI_SAC; // in Building R, EIK
             parameters:
                 StationID = -1,
@@ -161,24 +162,24 @@ module TUBNRing
             gatesizes:
                 M_in[3],
                 M_out[3];
-            display: "p=240,275;i=device/switch";
+            display: "p=274,310;i=device/switch_s";
         Challenge: FDDI_SAS; // in Building R, EIK
             parameters:
                 FDDI_Generator_type = FDDI_Generator_type,
                 StationID = 10,
                 address = "SGI___0409E8";
-            display: "p=190,330;i=device/pc2";
+            display: "p=225,382;i=device/pc2";
         gibr: FDDI_SAS; // in Building D
             parameters:
                 FDDI_Generator_type = FDDI_Generator_type,
                 StationID = 11,
                 address = "DEC___28691D";
-            display: "p=240,330;i=device/pc2";
+            display: "p=275,382;i=device/pc2";
         sniffer: FDDI_Sniffer; // in Building R, EIK
             parameters:
                 StationID = 100,
                 address = "This_Monitor";
-            display: "p=290,330;i=device/pc2";
+            display: "p=325,382;i=device/pc2";
         bmeconc1: FDDI_SAC; // in Building R, EIK
             parameters:
                 StationID = -1,
@@ -186,25 +187,25 @@ module TUBNRing
             gatesizes:
                 M_in[3],
                 M_out[3];
-            display: "p=100,200;i=device/switch";
+            display: "p=160,285;i=device/switch_s";
         Delfin: FDDI_SAS; // in Building R, EIK
             parameters:
                 FDDI_Generator_type = FDDI_Generator_type,
                 StationID = 12,
                 address = "IBM___1DE0BA";
-            display: "p=50,240;i=device/pc2";
+            display: "p=70,264;i=device/pc2";
         Goliat: FDDI_SAS; // in Building R, EIK
             parameters:
                 FDDI_Generator_type = FDDI_Generator_type,
                 StationID = 13,
                 address = "Sun___1BD035";
-            display: "p=100,265;i=device/pc2";
+            display: "p=90,323;i=device/pc2";
         bigmac: FDDI_SAS; // in Building R, EIK
             parameters:
                 FDDI_Generator_type = FDDI_Generator_type,
                 StationID = 14,
                 address = "DEC___B11ECF";
-            display: "p=150,270;i=device/pc2";
+            display: "p=134,359;i=device/pc2";
     connections:
         // Propagation delay is calculated from the cable length [in meter].
         // In glass, light travels at approximately 200 m/microseconds.
@@ -271,54 +272,54 @@ module TUBSRing
         loadCtrl: LoadControl;
             parameters:
                 LoadControlFile = LoadControlFile;
-            display: "p=50,50;i=block/control";
+            display: "p=69,77;i=block/control";
         bmecisco7: FDDI_Router_port; // in Building R, EIK
             parameters:
                 //      FDDI_Generator_type=FDDI_Generator_type,
                 StationID = 0,
                 address = "DECnet000728";
-            display: "p=150,50;i=device/router";
+            display: "p=151,102;i=device/router";
         sniffer: FDDI_Sniffer; // in Building R, EIK
             parameters:
                 StationID = 100,
                 address = "this_sniffer";
-            display: "p=250,50;i=device/pc2";
+            display: "p=257,79;i=device/pc2";
         bmecisco5: FDDI_SAS; // in Building V2
             parameters:
                 FDDI_Generator_type = FDDI_Generator_type,
                 StationID = 1,
                 address = "DECnet000228";
-            display: "p=350,50;i=device/router";
+            display: "p=351,102;i=device/router";
         wagner: FDDI_SAS; // in Building V2, EET
             parameters:
                 FDDI_Generator_type = FDDI_Generator_type,
                 StationID = 2,
                 address = "Sun___213C25";
-            display: "p=400,125;i=device/pc2";
+            display: "p=401,177;i=device/pc2";
         mhtbridge: FDDI_SAS; // in Building V2, MHT
             parameters:
                 FDDI_Generator_type = FDDI_Generator_type,
                 StationID = 3,
                 address = "Bridge1A3866";
-            display: "p=350,200;i=device/switch";
+            display: "p=351,252;i=device/switch";
         bmecisco4: FDDI_SAS; // in Building St
             parameters:
                 FDDI_Generator_type = FDDI_Generator_type,
                 StationID = 4,
                 address = "DECnet000428";
-            display: "p=250,200;i=device/router";
+            display: "p=251,270;i=device/router";
         heliosz: FDDI_SAS; // in Building R, VSZK
             parameters:
                 FDDI_Generator_type = FDDI_Generator_type,
                 StationID = 5,
                 address = "Sun___739BF9";
-            display: "p=150,200;i=device/pc2";
+            display: "p=151,252;i=device/pc2";
         xyplex: FDDI_SAS; // in Building R, VSZK
             parameters:
                 FDDI_Generator_type = FDDI_Generator_type,
                 StationID = 6,
                 address = "Xyplex083690";
-            display: "p=100,125;i=device/router";
+            display: "p=101,177;i=device/router";
     connections:
         // Propagation delay is calculated from the cable length [in meter].
         // In glass, light travels at approximately 200 m/microseconds.

@@ -62,7 +62,7 @@ module TUB_wired
                 RingID = 0,
                 TTRT = 5 ms,
                 LoadMultiplier = NRLoadMultiplier;
-            display: "i=device/pcs-ring_l";
+            display: "p=108,105;i=device/pcs-ring_l";
         SRing: TUBSRing;
             parameters:
                 LoadControlFile = SRLoadControlFile,
@@ -70,7 +70,7 @@ module TUB_wired
                 RingID = 1,
                 TTRT = 5.017 ms,
                 LoadMultiplier = SRLoadMultiplier;
-            display: "i=device/pcs-ring_l";
+            display: "p=208,225;i=device/pcs-ring_l";
     connections:
         NRing.out --> delay 0.05 us --> SRing.in;
         SRing.out --> delay 0.05 us --> NRing.in;
@@ -101,7 +101,7 @@ module TUB_SSM
                 RingID = 0,
                 TTRT = 5 ms,
                 LoadMultiplier = ref NRLoadMultiplier;
-            display: "p=150,50;i=device/pcs-ring_l";
+            display: "p=173,70;i=device/pcs-ring_l";
         SRing: TUBSRing;
             parameters:
                 LoadControlFile = SRLoadControlFile,
@@ -109,21 +109,21 @@ module TUB_SSM
                 RingID = 1,
                 TTRT = 5.017 ms,
                 LoadMultiplier = ref SRLoadMultiplier;
-            display: "p=150,250;i=device/pcs-ring_l";
+            display: "p=175,314;i=device/pcs-ring_l";
         NRing_oif: SSM_OIF_type like SSM_OIF;
             parameters:
                 frequency = SSM_OIF_frequency,
                 OIFControlFile = NROIFControlFile;
-            display: "p=50,110";
+            display: "i=block/rx_s;p=122,165";
         NRing_iif: SSM_IIF;
-            display: "p=250,110";
+            display: "i=block/tx_s;p=232,165";
         SRing_oif: SSM_OIF_type like SSM_OIF;
             parameters:
                 frequency = SSM_OIF_frequency,
                 OIFControlFile = SROIFControlFile;
-            display: "p=250,180";
+            display: "i=block/rx_s;p=232,220";
         SRing_iif: SSM_IIF;
-            display: "p=50,180";
+            display: "i=block/tx_s;p=122,220";
     connections:
         NRing.out --> NRing_oif.in;
         NRing_oif.out --> delay 0.05 us --> SRing_iif.in;
