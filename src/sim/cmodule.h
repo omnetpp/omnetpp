@@ -298,17 +298,20 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     void breakpoint(const char *label);     // user breakpoint
     void pause(const char *phase=NULL);     // set phase & temporarily yield control to main
 
-    // sending a message through a gate
-    int send(cMessage *msg, int gateid);        // send a message thru gate id
+    // sending a message through an output gate
+    int send(cMessage *msg, int gateid);   // send a message thru gate id
     int send(cMessage *msg, const char *gatename, int sn=-1); // s:gate name, sn:index
+    int send(cMessage *msg, cGate *outputgate);
 
-    // sending messages directly to another module
-    int sendDirect(cMessage *msg, double delay, cModule *mod, int gateid);
-    int sendDirect(cMessage *msg, double delay, cModule *mod, const char *gatename, int sn=-1);
-
-    // delayed sending
+    // delayed sending through an output gate
     int sendDelayed(cMessage *msg, double delay, int gateid);
     int sendDelayed(cMessage *msg, double delay, const char *gatename, int sn=-1);
+    int sendDelayed(cMessage *msg, double delay, cGate *outputgate);
+
+    // sending messages directly to another module (to an input gate)
+    int sendDirect(cMessage *msg, double delay, cModule *mod, int inputgateid);
+    int sendDirect(cMessage *msg, double delay, cModule *mod, const char *inputgatename, int sn=-1);
+    int sendDirect(cMessage *msg, double delay, cGate *inputgate);
 
     // self-messages
     int scheduleAt(simtime_t t, cMessage *msg); // receive() will return msg at t

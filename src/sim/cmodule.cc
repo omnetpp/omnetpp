@@ -741,49 +741,53 @@ void cSimpleModule::deleteModule()
 
 int cSimpleModule::send(cMessage *msg, int g)
 {
-    return sendDelayed( msg, 0.0, g);
+    return sendDelayed(msg, 0.0, g);
 }
 
 int cSimpleModule::send(cMessage *msg, const char *gatename, int sn)
 {
-    int g = findGate(gatename,sn);
-    if (g<0)
-    {
-       opp_error(sn<0 ? "send(): module has no gate `%s'":
-                        "send(): module has no gate `%s[%d]'",gatename,sn);
-       return 0;
-    }
-    return sendDelayed( msg, 0.0, g );
+    return sendDelayed(msg, 0.0, gatename, sn);
+}
+
+int cSimpleModule::send(cMessage *msg, cGate *outgate)
+{
+    return sendDelayed(msg, 0.0, outgate);
 }
 
 int cSimpleModule::sendDelayed(cMessage *msg, double delay, const char *gatename, int sn)
 {
-    int g = findGate(gatename,sn);
-    if (g<0)
+    cGate *outgate = gate(gatename,sn);
+    if (outgate==NULL)
     {
-       opp_error(sn<0 ? "sendDelayed(): module has no gate `%s'":
-                        "sendDelayed(): module has no gate `%s[%d]'",gatename,sn);
-       return 0;
+       opp_error(sn<0 ? "send()/sendDelayed(): module has no gate `%s'":
+                        "send()/sendDelayed(): module has no gate `%s[%d]'",gatename,sn);
+       return -1;
     }
-    return sendDelayed( msg, delay, g );
+    return sendDelayed(msg, delay, outgate);
 }
 
 int cSimpleModule::sendDelayed(cMessage *msg, double delay, int g)
 {
     cGate *outgate = gate(g);
+    if (outgate==NULL)
+        {opp_error("send()/sendDelayed(): module has no gate #%d",g);return -1;}
+    return sendDelayed(msg, delay, outgate);
+}
 
+int cSimpleModule::sendDelayed(cMessage *msg, double delay, cGate *outgate)
+{
     // error checking:
     if (outgate==NULL)
-       {opp_error(eNOGATE,g);return -1;}
+       {opp_error("send()/sendDelayed(): gate pointer is NULL");return -1;}
     if (outgate->type()=='I')
-       {opp_error(eINGATE,outgate->name());return -1;}
+       {opp_error("send()/sendDelayed(): cannot send via an input gate (`%s')",outgate->name());return -1;}
     if (msg==NULL)
-        {opp_error("send(): message pointer is NULL");return -1;}
+        {opp_error("send()/sendDelayed(): message pointer is NULL");return -1;}
     if (msg->owner()!=&(this->locals))
-        {opp_error("send(): not owner of message `%s'; owner is `%s'",
+        {opp_error("send()/sendDelayed(): not owner of message `%s'; owner is `%s'",
          msg->name(),msg->owner()->fullPath());return -1;}
     if (delay<0.0)
-        {opp_error("sendDelayed(): negative delay");return -1;}
+        {opp_error("send()/sendDelayed(): negative delay %g",delay);return -1;}
 
     // when in debugging mode, switch back to main program for a moment
     if (pause_in_sendmsg && usesactivity)
@@ -795,11 +799,65 @@ int cSimpleModule::sendDelayed(cMessage *msg, double delay, int g)
 
     // set message parameters and send it
     msg->frommod = id();
-    msg->fromgate = g;
+    msg->fromgate = outgate->id();
     msg->sent   = simTime()+delay;
     msg->delivd = simTime()+delay;   // then it will grow
 
     outgate->deliver( msg );
+    ev.messageSent( msg );
+    return 0;
+}
+
+int cSimpleModule::sendDirect(cMessage *msg, double propdelay, cModule *mod, int g)
+{
+    cGate *togate = mod->gate(g);
+    if (togate==NULL)
+        {opp_error("sendDirect(): module `%s' has no gate #%d",mod->fullPath(),g);return -1;}
+
+    return sendDirect( msg, propdelay, togate );
+}
+
+int cSimpleModule::sendDirect(cMessage *msg, double propdelay,
+                              cModule *mod, const char *gatename, int sn)
+{
+    if (!mod) {opp_error("sendDirect(): module ptr is NULL");return 0;}
+    cGate *togate = mod->gate(gatename,sn);
+    if (togate==NULL)
+    {
+        opp_error(sn<0 ? "sendDirect(): module `%s' has no gate `%s'":
+                         "sendDirect(): module `%s' has no gate `%s[%d]'",
+                         mod->fullPath(),gatename,sn);
+        return 0;
+    }
+    return sendDirect( msg, propdelay, togate );
+}
+
+int cSimpleModule::sendDirect(cMessage *msg, double propdelay, cGate *togate)
+{
+    if (togate==NULL)
+        {opp_error("sendDirect(): destination gate pointer is NULL");return -1;}
+    if (togate->type()=='O')
+        {opp_error("sendDirect(): cannot send to an output gate (`%s')",togate->fullPath());return -1;}
+
+    if (msg==NULL)
+        {opp_error("sendDirect(): message pointer is NULL");return -1;}
+    if (msg->owner()!=&(this->locals))
+        {opp_error("sendDirect(): not owner of message `%s'; owner is `%s'",
+         msg->name(),msg->owner()->fullPath());return -1;}
+
+    // to help debugging, switch back to main for a moment
+    if (pause_in_sendmsg && usesactivity)
+    {
+        simulation.backtomod = this;  // Ensure that scheduler will select us
+        simulation.transferToMain();  // before all other modules
+        simulation.backtomod = NULL;
+    }
+    msg->frommod = id();
+    msg->fromgate = -1;
+    msg->sent   = simTime();
+    msg->delivd = simTime() + propdelay;
+
+    togate->deliver( msg );
     ev.messageSent( msg );
     return 0;
 }
@@ -809,7 +867,7 @@ int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
     if (t<simTime())
         {opp_error(eBACKSCHED);return -1;}
     if (msg==NULL)
-        {opp_error("send(): message pointer is NULL");return -1;}
+        {opp_error("scheduleAt(): message pointer is NULL");return -1;}
     if (msg->owner()!=&this->locals && msg->owner()!=this)
         {opp_error("scheduleAt(): not owner of message `%s'; owner is `%s'",
          msg->name(),msg->owner()->fullPath());return -1;}
@@ -851,52 +909,6 @@ cMessage *cSimpleModule::cancelEvent(cMessage *msg)
     return msg;
 }
 
-int cSimpleModule::sendDirect(cMessage *msg, double delay, cModule *mod, int g)
-{
-    cGate *togate = mod->gate(g);
-    if (togate==NULL)
-        {opp_error("sendDirect(): module `%s' has no gate #%d",mod->fullPath(),g);return -1;}
-    if (togate->type()=='O')
-        {opp_error("sendDirect(): cannot send to output gate `%s'",togate->fullPath());return -1;}
-
-    if (msg==NULL)
-        {opp_error("sendDirect(): message pointer is NULL");return -1;}
-    if (msg->owner()!=&(this->locals))
-        {opp_error("sendDirect(): not owner of message `%s'; owner is `%s'",
-         msg->name(),msg->owner()->fullPath());return -1;}
-
-    // to help debugging, switch back to main for a moment
-    if (pause_in_sendmsg && usesactivity)
-    {
-        simulation.backtomod = this;  // Ensure that scheduler will select us
-        simulation.transferToMain();  // before all other modules
-        simulation.backtomod = NULL;
-    }
-    msg->frommod = id();
-    msg->fromgate = -1;
-    msg->sent   = simTime();
-    msg->delivd = simTime() + delay;
-
-    togate->deliver( msg );
-    ev.messageSent( msg );
-    return 0;
-}
-
-int cSimpleModule::sendDirect(cMessage *msg, double delay,
-                          cModule *mod, const char *gatename, int sn)
-{
-    if (!mod) {opp_error("sendDirect(): module ptr is NULL");return 0;}
-    int g = mod->findGate(gatename,sn);
-    if (g<0)
-    {
-       opp_error(sn<0 ? "sendDirect(): module `%s' has no gate `%s'":
-                        "sendDirect(): module `%s' has no gate `%s[%d]'",
-                        mod->fullPath(),gatename,sn);
-       return 0;
-    }
-    return sendDirect( msg, delay, mod, g );
-}
-
 int cSimpleModule::syncpoint(simtime_t t, int g)
 {
     cGate *gatep = gate(g);
@@ -918,9 +930,9 @@ int cSimpleModule::syncpoint(simtime_t t, const char *gatename, int sn)
     int g = findGate(gatename,sn);
     if (g<0)
     {
-       opp_error(sn<0 ? "syncpoint(): module has no gate `%s'":
-                        "syncpoint(): module has no gate `%s[%d]'",gatename,sn);
-       return 0;
+        opp_error(sn<0 ? "syncpoint(): module has no gate `%s'":
+                         "syncpoint(): module has no gate `%s[%d]'",gatename,sn);
+        return 0;
     }
     return syncpoint( t, g );
 }
@@ -946,9 +958,9 @@ int cSimpleModule::cancelSyncpoint(simtime_t t, const char *gatename, int sn)
     int g = findGate(gatename,sn);
     if (g<0)
     {
-       opp_error(sn<0 ? "cancelSyncpoint(): module has no gate `%s'":
-                        "cancelSyncpoint(): module has no gate `%s[%d]'",gatename,sn);
-       return 0;
+        opp_error(sn<0 ? "cancelSyncpoint(): module has no gate `%s'":
+                         "cancelSyncpoint(): module has no gate `%s[%d]'",gatename,sn);
+        return 0;
     }
     return cancelSyncpoint( t, g );
 }

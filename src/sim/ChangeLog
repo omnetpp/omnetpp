@@ -871,9 +871,26 @@ May 6, 2000
    users have to subclass cMessage and redefine displayString() to get
    messages with custom appearance in Tkenv. (Not implemented yet in Tkenv!)
 May 7, 2000
- - Makefile.vc improvements from Balazs Kelemen
+ - Makefile.vc improvements [from Balazs Kelemen]
 May 19, 2000
  - fixed a bug in cSimulation::snapshot() which caused segfault if snapshot()
-   was called with no 'label' parameter (reported by Gy. Pongor)
+   was called with no 'label' parameter [reported by Gy. Pongor]
  - fixed a bug which caused double printing of the distribution data in
    histogram classes when snapshot() was called
+May 21, 2000
+ - added message sending functions which take cGate* pointers [suggested by
+   Mark Rahner]:
+      int send(cMessage *msg, cGate *outputgate);
+      int sendDelayed(cMessage *msg, double delay, cGate *outputgate);
+      int sendDirect(cMessage *msg, double delay, cGate *inputgate);
+   (Mark's original suggestion was to create a single generalized
+   send(cMessage *msg, double delay, cGate *gate) function which would combine
+   the functionality of all other send()/sendDelayed()/sendDirect() variants,
+   and mark other functions as 'deprecated'. The gate passed to send() could be
+   that of another module [~sendDirect()] and either an input or an output gate;
+   the delay argument would be interpreted as propagation delay until the msg
+   reaches that gate. I didn't implement it for now because I felt such a very
+   general function would cause confusion for simulation programmers,
+   but I'd like to hear more opinions about this...)
+
+
