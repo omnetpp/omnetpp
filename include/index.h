@@ -21,8 +21,17 @@
 /**
  * @mainpage OMNeT++ API Reference
  *
- * Recommended starting point: Modules.
+ * This documentation is organized as follows:
  *
+ *   - Modules: recommended starting point
+ *   - Class Hierarchy
+ *   - Compound List
+ *   - File List
+ *   - Compound Members
+ *   - Compounds
+ *
+ * If you are just browsing the documentation to get familiar with
+ * OMNeT++ in general, you should start from \b Modules.
  */
 
 
@@ -32,7 +41,7 @@
  * Simulation core classes:
  *    - cObject is the base class for most OMNeT++ classes
  *    - cModule, cCompoundModule and cSimpleModule represent modules in the simulation
- *    - cMessage and cPacket represent events, messages and packets sent among modules
+ *    - cMessage represents events, and also messages sent among modules
  *    - cGate represents module gates
  *    - cPar represents module and message parameters
  *
@@ -45,17 +54,16 @@
  * @defgroup SimSupport  Simulation supporting classes
  *
  * Classes that make it easier to write simulation models:
- *    - cOutVector:
- *    - cTopology:
- *    - cFSM:
- *    - cWatch:
- *    - opp_string:
+ *    - cPacket is a subclass of cMessage, it is used to represent packets, frames, etc. transmitted in a communication network
+ *    - cOutVector is used to record vector simulation results (an output vector) to file
+ *    - cTopology supports routing in telecommunication or multiprocessor networks.
+ *    - cFSM is used to build Final State Machines
+ *    - cWatch makes variables visible (inspectable) in Tkenv
+ *    - opp_string: basic string class
  *
  * Many other classes closely related to the above ones are not listed
  * here explicitly, but you can find them via 'See also' links from their
  * main classes.
- *
- * FIXME: must be completed.
  */
 
 /**
@@ -66,6 +74,11 @@
  *    - cLinkedList:
  *    - cArray:
  *    - cBag:
+ *
+ * Naturally, you can also use your own container classes (e.g. STL).
+ * The disadvantage of doing so is that those container objects will
+ * not appear and will not be inspectable under graphical user interfaces
+ * like Tkenv (unless you wrap them into a class derived frm cObject).
  *
  * Some other classes, closely related to the above ones (for example their
  * iterators) are not listed here explicitly, but you can find them via
@@ -126,6 +139,8 @@
  */
 
 /**
- * @defgroup Macros  Declaration/registration macros
+ * @defgroup Macros  Macros
+ *
+ * FIXME: must be completed.
  */
 

@@ -60,6 +60,9 @@ class  cEnum;
  * Since cHead is mostly an internal class and is NOT intended
  * for use by the programmer as a container class, the dup() operation
  * was considered unnecessary.
+ *
+ * @ingroup Internals
+ * @see cIterator
  */
 class SIM_API cHead : public cObject
 {
@@ -205,7 +208,8 @@ class SIM_API const_cIterator
 //==========================================================================
 
 /**
- * @name Find global objects by name.
+ * @name Finding global objects by name.
+ * @ingroup Functions
  */
 //@{
 /// Find a cNetworkType.

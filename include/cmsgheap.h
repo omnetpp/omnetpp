@@ -32,6 +32,7 @@ class cMessage;
  * the array used to store the heap expands as needed.
  *
  * @ingroup Internals
+ * @see cMessageHeapIterator
  */
 class SIM_API cMessageHeap : public cObject
 {
@@ -173,22 +174,23 @@ class SIM_API cMessageHeapIterator
     cMessageHeapIterator(cMessageHeap& mh)  {q=&mh;pos=1;}
 
     /**
-     * MISSINGDOC: cMessageHeapIterator:void init(cMessageHeap&)
+     * Reinitializes the iterator object.
      */
     void init(cMessageHeap& mh) {q=&mh;pos=1;}
 
     /**
-     * MISSINGDOC: cMessageHeapIterator:cMessage*operator()()
+     * Returns the current object.
      */
     cMessage *operator()()      {return q->h[pos];}
 
     /**
-     * MISSINGDOC: cMessageHeapIterator:cMessage*operator++()
+     * Returns the current object, then moves the iterator to the next item.
+     * If the iterator has reached the end of the list, NULL is returned.
      */
     cMessage *operator++(int)   {return pos<=q->n ? q->h[++pos] : NO(cMessage);}
 
     /**
-     * MISSINGDOC: cMessageHeapIterator:bool end()
+     * Returns true if the iterator has reached the end of the list.
      */
     bool end()                  {return (bool)(pos>q->n);}
 };

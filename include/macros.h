@@ -29,30 +29,58 @@
 
 //=========================================================================
 
-// network declaration macro
+/**
+ * @name Declaration macros
+ * @ingroup Macros
+ */
+//@{
+
+/**
+ * Network declaration macro.
+ * FIXME: refine doc!
+ * @hideinitializer
+ */
 #define Define_Network(NAME,SETUPFUNC) \
   void SETUPFUNC(); \
   static cNetworkType NAME##__network(#NAME,SETUPFUNC);
 
-// actual link definition
+/**
+ * Actual link definition.
+ * FIXME: refine doc!
+ * @hideinitializer
+ */
 #define Define_Link(NAME,DELAY,ERROR,DATARATE) \
   static cLinkType NAME##__link(#NAME, DELAY, ERROR, DATARATE);
 
-// math function registration (makes it possible to use func in NED files)
+/**
+ * Math function registration (makes it possible to use func in NED files).
+ * FIXME: refine doc!
+ * @hideinitializer
+ */
 #define Define_Function(FUNCTION,ARGCOUNT) \
   cFunctionType FUNCTION##__functype(#FUNCTION,(MathFunc)FUNCTION,ARGCOUNT);
 
-// register class (makes it possible to create an object by passing class name
-// string to createOne() function
+/**
+ * Register class. This defines a factory object which makes it possible
+ * to create an object by the passing class name to the createOne() function.
+ * FIXME: refine doc!
+ * @hideinitializer
+ */
 #define Register_Class(CLASSNAME) \
   cObject *CLASSNAME##__create() {return new CLASSNAME;} \
   cClassRegister CLASSNAME##__reg(#CLASSNAME,CLASSNAME##__create);
 
-// register inspector factory
+/**
+ * Register inspector factory. Used internally by graphical interface
+ * libraries like Tkenv.
+ * FIXME: refine doc!
+ * @hideinitializer
+ */
 #define Register_InspectorFactory(FACTORYNAME,FUNCTION) \
   TInspector *FUNCTION(cObject *, int, void *); \
   cInspectorFactory FACTORYNAME##__inspfct(#FACTORYNAME,FUNCTION);
 
+//@}
 
 //=========================================================================
 
@@ -77,8 +105,17 @@
 #define ParType_Bool       "B"
 #define ParType_String     "S"
 
-// create cModuleType
-// version 1: module interface has the same name as module
+/**
+ * @name Module declaration macros
+ * @ingroup Macros
+ */
+//@{
+
+/**
+ * Create cModuleType. Version 1: module interface has the same name as module.
+ * FIXME: refine doc!
+ * @hideinitializer
+ */
 #define Define_Module(CLASSNAME) \
   static cModule *CLASSNAME##__create(const char *name, cModule *parentmod ) \
   { \
@@ -86,7 +123,12 @@
   } \
   cModuleType CLASSNAME##__type(#CLASSNAME,#CLASSNAME,(ModuleCreateFunc)CLASSNAME##__create);
 
-// version 2: use different module interface (support for 'like' phrase in NED)
+/**
+ * Create cModuleType. Version 2: use different module interface (support for
+ * 'like' phrase in NED).
+ * FIXME: refine doc!
+ * @hideinitializer
+ */
 #define Define_Module_Like(CLASSNAME,INTERFACE) \
   static cModule *CLASSNAME##__create(const char *name, cModule *parentmod ) \
   { \
@@ -94,12 +136,17 @@
   } \
   cModuleType CLASSNAME##__type(#CLASSNAME,#INTERFACE,(ModuleCreateFunc)CLASSNAME##__create);
 
-// declaration of module class members:
+/**
+ * Declaration of module class members.
+ * FIXME: refine doc!
+ * @hideinitializer
+ */
 #define Module_Class_Members(CLASSNAME,BASECLASS,STACK) \
     public: \
       CLASSNAME(const char *name, cModule *parentmod, unsigned stk=STACK) : \
            BASECLASS(name, parentmod, stk) {} \
       virtual const char *className() const {return #CLASSNAME;}
-
+//@}
 
 #endif
+

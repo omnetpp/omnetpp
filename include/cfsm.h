@@ -23,20 +23,24 @@
 
 #include "cobject.h"
 
-//
-// FSM Macros
-//
+/**
+ * @name FSM Macros
+ * @ingroup Macros
+ */
+//@{
 
-//
-// FSM_MAXT:
-//  after this many transitions without reaching a steady state
-//  we assume the FSM is in an infinite loop
-//
+/**
+ * After this many transitions without reaching a steady state
+ * we assume the FSM is in an infinite loop.
+ */
 #define FSM_MAXT  64
 
-//
-// FSM_Switch():
-//   used like switch() in order to execute one state change of an FSM
+/**
+ * Used like switch() in order to execute one state change of an FSM
+ *
+ * FIXME: refine doc!
+ * @hideinitializer
+ */
 //
 // operation:
 // - __i counts up (starting from 1) until the FSM reaches a steady state.
@@ -55,35 +59,57 @@
          __savedstate=(fsm).state(),++__i)  \
      switch (FSM_Print(fsm,__i&1),(((fsm).state()<<1)|(__i&1)))
 
-//
-// FSM_Transient/FSM_Steady:
-//   to be used in enum which declares states
-//
+/**
+ * To be used in enum which declares states
+ *
+ * FIXME: refine doc!
+ * @hideinitializer
+ */
 #define FSM_Transient(state)   (-(state))
+
+/**
+ * To be used in enum which declares states
+ *
+ * FIXME: refine doc!
+ * @hideinitializer
+ */
 #define FSM_Steady(state)      (state)
 
-//
-// FSM_Enter/FSM_Exit:
-//   to be used in "cases" within an FSM_Switch()
-//
+/**
+ * To be used in "cases" within an FSM_Switch()
+ *
+ * FIXME: refine doc!
+ * @hideinitializer
+ */
 #define FSM_Enter(state)  ((state)<<1)
+
+/**
+ * To be used in "cases" within an FSM_Switch()
+ *
+ * FIXME: refine doc!
+ * @hideinitializer
+ */
 #define FSM_Exit(state)   (((state)<<1)|1)
 
-//
-// FSM_Goto:
-//   to be used in state exit code, to transition to another state.
-//
-//   Uses stringize (#state), so it only works correctly if 'state'
-//   is the enum name itself and not some variable that contains the
-//   state code.
-//
+/**
+ * To be used in state exit code, to transition to another state.
+ *
+ * Uses stringize (#state), so it only works correctly if 'state'
+ * is the enum name itself and not some variable that contains the
+ * state code.
+ *
+ * FIXME: refine doc!
+ * @hideinitializer
+ */
 #define FSM_Goto(fsm,state)   (fsm).setState(state,#state)
 
-//
-// FSM_DEBUG:
-//   #define FSM_DEBUG before #including "omnetpp.h" to enable reporting
-//   all state changes to ev
-//
+/**
+ * #define FSM_DEBUG before #including "omnetpp.h" to enable reporting
+ * all state changes to ev.
+ *
+ * FIXME: refine doc! this doc belongs to FSM_Print!
+ * @hideinitializer
+ */
 #ifdef FSM_DEBUG
 #define FSM_Print(fsm,exiting) \
     (ev << "FSM " << (fsm).name() \
@@ -95,6 +121,7 @@
 #define FSM_Print(fsm,entering) ((void)0)
 #endif
 
+//@}
 
 //-----------------------------------------------------
 
@@ -104,6 +131,7 @@
  * FSM_Exit(), FSM_Goto() macros.
  *
  * @ingroup SimSupport
+ * @see FSM_Switch and other FSM_ macros
  */
 class SIM_API cFSM : public cObject
 {

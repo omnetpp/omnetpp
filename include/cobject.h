@@ -313,7 +313,7 @@ class SIM_API cObject
     virtual void writeTo(ostream& os);
 
     /**
-     * This function is called by internally writeTo(). It is
+     * This function is called internally by writeTo(). It is
      * expected to write textual information about the object and other
      * objects it contains to the stream. The default version (cObject::writeContents())
      * uses forEach to call info() for contained objects. Redefine

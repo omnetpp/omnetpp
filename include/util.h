@@ -42,6 +42,7 @@
 
 /**
  * @name Converting simulation time to and from string form.
+ * @ingroup Functions
  */
 //@{
 
@@ -94,6 +95,8 @@ SIM_API char *simtimeToStr(simtime_t t, char *dest=NULL);
  *
  * Source: Raj Jain: The Art of Computer Systems Performance Analysis
  * (John Wiley & Sons, 1991), pages 441-444, 455.
+ *
+ * @ingroup Functions
  */
 //@{
 
@@ -172,31 +175,33 @@ inline  double genk_dblrand(int gen_nr);
  *
  * Argument types and return value must be `double' so that they can be used
  * in NED files, and cPar 'F' and 'X' types.
+ *
+ * @ingroup Functions
  */
 //@{
 
 /**
- *
+ * MISSINGDOC:
  */
 SIM_API double uniform(double a, double b);
 
 /**
- *
+ * MISSINGDOC:
  */
 SIM_API double intuniform(double a, double b);
 
 /**
- *
+ * MISSINGDOC:
  */
 SIM_API double exponential(double p);
 
 /**
- *
+ * MISSINGDOC:
  */
 SIM_API double normal(double m, double d);
 
 /**
- *
+ * MISSINGDOC:
  */
 SIM_API double truncnormal(double m, double d);
 
@@ -235,66 +240,67 @@ SIM_API double genk_truncnormal(double gen_nr, double m, double d);
 
 /**
  * @name Utility functions to support nedc-compiled expressions.
+ * @ingroup Functions
  */
 //@{
 
 /**
- *
+ * MISSINGDOC:
  */
 SIM_API double min(double a, double b);
 
 /**
- *
+ * MISSINGDOC:
  */
 SIM_API double max(double a, double b);
 
 /**
- *
+ * MISSINGDOC:
  */
 SIM_API double bool_and(double a, double b);
 
 /**
- *
+ * MISSINGDOC:
  */
 SIM_API double bool_or(double a, double b);
 
 /**
- *
+ * MISSINGDOC:
  */
 SIM_API double bool_xor(double a, double b);
 
 /**
- *
+ * MISSINGDOC:
  */
 SIM_API double bool_not(double a);
 
 /**
- *
+ * MISSINGDOC:
  */
 SIM_API double bin_and(double a, double b);
 
 /**
- *
+ * MISSINGDOC:
  */
 SIM_API double bin_or(double a, double b);
 
 /**
- *
+ * MISSINGDOC:
  */
 SIM_API double bin_xor(double a, double b);
 
 /**
- *
+ * MISSINGDOC:
  */
 SIM_API double bin_compl(double a);
 
 /**
- *
+ * MISSINGDOC:
  */
 SIM_API double shift_left(double a, double b);
 
 /**
- *
+ * MISSINGDOC:
  */
 SIM_API double shift_right(double a, double b);
 //@}
@@ -305,32 +311,35 @@ SIM_API double shift_right(double a, double b);
  *
  *  They also accept NULL pointers (treat them as ptr to "") and use
  *  operator new instead of malloc().
+ *
+ * @ingroup Functions
  */
 //@{
 
 /**
- *
+ * MISSINGDOC:
  */
 SIM_API char *opp_strdup(const char *);
 
 /**
- *
+ * MISSINGDOC:
  */
 SIM_API char *opp_strcpy(char *,const char *);
 
 /**
- *
+ * MISSINGDOC:
  */
 SIM_API int  opp_strcmp(const char *, const char *);
 
 /**
- *
+ * MISSINGDOC:
  */
 SIM_API bool opp_strmatch(const char *, const char *);
 //@}
 
 /**
  * @name Miscellaneous functions.
+ * @ingroup Functions
  */
 //@{
 

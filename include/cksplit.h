@@ -51,13 +51,13 @@ double divfunc_babak(cKSplit&, sGrid&, double, double *);
  * Supporting struct for cKSplit. Represents one grid in the k-split
  * data structure.
  */
-struct sGrid
+struct sGrid   // FIXME: to be renamed to sKSplitGrid! make internal class to cKSplit?
 {
-  int parent;      // index of parent grid
-  int reldepth;    // depth = (reldepth - rootgrid's reldepth)
-  long total;      // sum of cells & all subgrids (also includes 'mother')
-  int mother;      // observations 'inherited' from mother cell
-  int cells[K];    // cell values
+  int parent;      ///< index of parent grid
+  int reldepth;    ///< depth = (reldepth - rootgrid's reldepth)
+  long total;      ///< sum of cells & all subgrids (also includes 'mother')
+  int mother;      ///< observations 'inherited' from mother cell
+  int cells[K];    ///< cell values
 };
 
 //==========================================================================
@@ -67,6 +67,7 @@ struct sGrid
  * algorithm.
  *
  * @ingroup Statistics
+ * @see cKSplitIterator, sGrid
  */
 class SIM_API cKSplit : public cDensityEstBase
 {

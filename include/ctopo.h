@@ -299,6 +299,7 @@ class SIM_API sTopoLinkOut : public sTopoLink
  * just as module gates are.
  *
  * @ingroup SimSupport
+ * @see sTopoNode, sTopoLink, sTopoLinkIn, sTopoLinkOut
  */
 class SIM_API cTopology : public cObject
 {

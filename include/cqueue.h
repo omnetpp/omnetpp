@@ -60,6 +60,7 @@ struct sQElem
  * if a&gt;b.
  *
  * @ingroup Containers
+ * @see cQueueIterator
  */
 class SIM_API cQueue : public cObject
 {
@@ -275,7 +276,7 @@ class SIM_API cQueueIterator
     cObject *operator()()     {return p->obj;}
 
     /**
-     * Returns true if we have reached either end of the queue.
+     * Returns true if the iterator has reached either end of the queue.
      */
     bool end()                {return (bool)(p==NULL);}
 

@@ -29,7 +29,7 @@
  * Network packet class. It adds protocol and PDU type to cMessage.
  * The message kind must be either MK_PACKET or MK_INFO for cPackets.
  *
- * @ingroup SimCore
+ * @ingroup SimSupport
  */
 class SIM_API cPacket : public cMessage
 {

@@ -1,3 +1,7 @@
+2001-07-24 Andras Varga
+
+	* misc documentation improvements
+
 2001-07-19 Andras Varga
 
         * added index.h which defines groups for the documentation; updated
