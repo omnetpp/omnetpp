@@ -90,7 +90,6 @@ typedef basic_evbuf<char> evbuf;
 ENVIR_API extern cEnvir ev;
 
 ENVIR_API bool memoryIsLow();
-ENVIR_API bool opp_loadlibrary(const char *libname);
 
 
 
