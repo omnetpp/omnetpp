@@ -105,7 +105,6 @@ omnetpp/
        hist/          demo of the histogram classes
        dyna/          dynamic module creation (client-server network)
        dyna2/         variant of Dyna, using the experimental message subclassing
-       pvmex/         demonstrates distributed execution
        fifo1/         single-server queue
        fifo2/         another version of fifo, now with handleMessage() and FSM
 
@@ -132,7 +131,7 @@ The example programs
 The example programs are designed to demonstrate as many of the features of
 OMNeT++ as possible. (See README file in samples/ for more info.)
 I recommend the following order to try them out:
-      nim - fifo1 - token - hist - hcube - dyna - fifo2 - fddi - pvmex
+      nim - fifo1 - token - hist - hcube - dyna - fifo2 - fddi
 It's best to begin by running Demo, which is a tour of the other sample
 simulations.
 

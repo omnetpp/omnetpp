@@ -1,3 +1,9 @@
+!!!!!!!!!!!!!!!!!
+don't use cygwin! crashes!! 
+exception handling not compatible with threads (coroutines)
+might try: compile GCC with: --disable-shared --enable-threads
+!!!!!!!!!!!!!!!!!
+
 Using OMNeT++ on Windows with the Cygwin platform
 =================================================
 
