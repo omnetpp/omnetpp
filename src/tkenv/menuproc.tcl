@@ -291,7 +291,9 @@ proc set_gui_for_runmode {mode {untilmode ""}} {
     } elseif {$mode=="express"} {
         .toolbar.exprrun config -relief sunken
         display_stopdialog with_update
-    } elseif {$mode!="notrunning"} {
+    } elseif {$mode=="notrunning"} {
+        .toolbar.until config -relief raised
+    } else {
         error "wrong mode parameter $mode"
     }
 
@@ -302,7 +304,6 @@ proc set_gui_for_runmode {mode {untilmode ""}} {
     } elseif {$untilmode!=""} {
         error "wrong untilmode parameter $mode"
     }
-
 }
 
 proc one_step {} {
@@ -378,11 +379,6 @@ proc run_express {} {
 proc run_until {} {
     # implements Simulate|Run until...
 
-    if [is_running] {
-        messagebox {Warning} {Please stop the simulation first to set or adjust the "Run until" limit.} info ok
-        return
-    }
-
     if {[network_ready] == 0} {
        return
     }
@@ -394,20 +390,26 @@ proc run_until {} {
     if {$ok==0} return
 
     if {$mode=="Normal"} {
-        set_gui_for_runmode normal until_on
-        opp_run normal $time $event
-        set_gui_for_runmode notrunning until_off
+        set mode "normal"
+    } elseif {$mode=="Fast"} {
+        set mode "fast"
+    } elseif {$mode=="Express"} {
+        set mode "express"
+    } else {
+        set mode "normal"
     }
-    if {$mode=="Fast"} {
-        set_gui_for_runmode fast until_on
-        opp_run fast $time $event
-        set_gui_for_runmode notrunning until_off
+
+    if [is_running] {
+        set_gui_for_runmode $mode until_on
+        opp_set_run_mode $mode
+        opp_set_run_until $time $event
+    } else {
+        if {![network_ready]} {return}
+        set_gui_for_runmode $mode until_on
+        opp_run $mode $time $event
+        set_gui_for_runmode notrunning
     }
-    if {$mode=="Express"} {
-        set_gui_for_runmode express until_on
-        opp_run express $time $event
-        set_gui_for_runmode notrunning until_off
-    }
+
 }
 
 proc start_all {} {

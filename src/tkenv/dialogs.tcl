@@ -342,7 +342,8 @@ proc options_dialog {} {
 
 proc rununtil_dialog {time_var event_var mode_var} {
 
-    global opp
+    global opp config
+
     upvar $time_var time_var0
     upvar $event_var event_var0
     upvar $mode_var mode_var0
@@ -364,12 +365,24 @@ proc rununtil_dialog {time_var event_var mode_var} {
 
     pack $w.f -anchor center -expand 1 -fill both -padx 10 -pady 10 -side top
 
+    $w.f.time.e insert 0 $config(rununtil-time)
+    $w.f.event.e insert 0 $config(rununtil-event)
+    $w.f.mode.e configure -value $config(rununtil-mode)
+
+    $w.f.time.e select range 0 end
+    $w.f.event.e select range 0 end
+
     focus $w.f.time.e
 
     if [execOkCancelDialog $w] {
         set time_var0  [$w.f.time.e get]
         set event_var0 [$w.f.event.e get]
         set mode_var0  [lindex [$w.f.mode.e cget -value] 0]
+
+        set config(rununtil-time)  $time_var0
+        set config(rununtil-event) $event_var0
+        set config(rununtil-mode) [$w.f.mode.e cget -value]
+
         destroy $w
         return 1
     }

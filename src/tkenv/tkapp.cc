@@ -289,6 +289,9 @@ void TOmnetTkApp::runSimulation(simtime_t until_time, long until_event, int mode
     ASSERT(simstate==SIM_NEW || simstate==SIM_READY);
 
     runmode = mode;
+    rununtil_time = until_time;
+    rununtil_event = until_event;
+
     breakpointhit_flag = false;
     stopsimulation_flag = false;
 
@@ -307,9 +310,9 @@ void TOmnetTkApp::runSimulation(simtime_t until_time, long until_event, int mode
         {
             // note: stepwithinmodule not supported with RUNMODE_EXPRESS
             if (runmode==RUNMODE_EXPRESS)
-                cont = doRunSimulationExpress(until_time, until_event);
+                cont = doRunSimulationExpress();
             else
-                cont = doRunSimulation(until_time, until_event, stepwithinmodule);
+                cont = doRunSimulation(stepwithinmodule);
         }
         simstate = SIM_READY;
     }
@@ -347,10 +350,20 @@ void TOmnetTkApp::runSimulation(simtime_t until_time, long until_event, int mode
 
 void TOmnetTkApp::setSimulationRunMode(int mode)
 {
+    // This function (and the next one too) is called while runSimulation() is
+    // underway, from Tcl code that gets a chance to run via the
+    // Tcl_Eval(interp, "update") commands
     runmode = mode;
 }
 
-bool TOmnetTkApp::doRunSimulation(simtime_t until_time, long until_event, cSimpleModule *stepwithinmodule)
+void TOmnetTkApp::setSimulationRunUntil(simtime_t until_time, long until_event)
+{
+    rununtil_time = until_time;
+    rununtil_event = until_event;
+}
+
+
+bool TOmnetTkApp::doRunSimulation(cSimpleModule *stepwithinmodule)
 {
     Speedometer speedometer;
     ev.disable_tracing = false;
@@ -385,8 +398,8 @@ bool TOmnetTkApp::doRunSimulation(simtime_t until_time, long until_event, cSimpl
         // exit conditions
         if (stepwithinmodule_reached) break;
         if (breakpointhit_flag || stopsimulation_flag) break;
-        if (until_time>0 && simulation.simTime()>=until_time) break;
-        if (until_event>0 && simulation.eventNumber()>=until_event) break;
+        if (rununtil_time>0 && simulation.simTime()>=rununtil_time) break;
+        if (rununtil_event>0 && simulation.eventNumber()>=rununtil_event) break;
 
         // display update
         if (frequent_updates || simulation.eventNumber()%opt_updatefreq_fast==0)
@@ -415,7 +428,7 @@ bool TOmnetTkApp::doRunSimulation(simtime_t until_time, long until_event, cSimpl
     return false;
 }
 
-bool TOmnetTkApp::doRunSimulationExpress(simtime_t until_time, long until_event)
+bool TOmnetTkApp::doRunSimulationExpress()
 {
     Speedometer speedometer;
     ev.disable_tracing = true;
@@ -445,8 +458,8 @@ bool TOmnetTkApp::doRunSimulationExpress(simtime_t until_time, long until_event)
         checkTimeLimits();
     }
     while(  !breakpointhit_flag && !stopsimulation_flag &&
-            (until_time<=0 || simulation.simTime()<until_time) &&
-            (until_event<=0 || simulation.eventNumber()<until_event)
+            (rununtil_time<=0 || simulation.simTime()<rununtil_time) &&
+            (rununtil_event<=0 || simulation.eventNumber()<rununtil_event)
          );
     return false;
 }

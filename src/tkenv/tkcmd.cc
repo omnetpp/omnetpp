@@ -46,6 +46,7 @@ int exitOmnetpp_cmd(ClientData, Tcl_Interp *, int, const char **);
 int oneStep_cmd(ClientData, Tcl_Interp *, int, const char **);
 int run_cmd(ClientData, Tcl_Interp *, int, const char **);
 int setRunMode_cmd(ClientData, Tcl_Interp *, int, const char **);
+int setRunUntil_cmd(ClientData, Tcl_Interp *, int, const char **);
 int oneStepInModule_cmd(ClientData, Tcl_Interp *, int, const char **);
 int rebuild_cmd(ClientData, Tcl_Interp *, int, const char **);
 int startAll_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -113,7 +114,8 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_exitomnetpp",      exitOmnetpp_cmd    }, // args: -
    { "opp_onestep",          oneStep_cmd        }, // args: -
    { "opp_run",              run_cmd            }, // args: ?fast? ?timelimit?
-   { "opp_set_run_mode",     setRunMode_cmd     }, // args: fast|normal|slow
+   { "opp_set_run_mode",     setRunMode_cmd     }, // args: fast|normal|slow|express
+   { "opp_set_run_until",    setRunUntil_cmd    }, // args: <timelimit> <eventlimit>
    { "opp_onestepinmodule",  oneStepInModule_cmd}, // args: <window>
    { "opp_rebuild",          rebuild_cmd        }, // args: -
    { "opp_start_all",        startAll_cmd       }, // args: -
@@ -282,6 +284,18 @@ int setRunMode_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    if (mode==-1) {Tcl_SetResult(interp, "wrong mode argument, should be slow, normal, fast or express", TCL_STATIC);return TCL_ERROR;}
 
    app->setSimulationRunMode(mode);
+   return TCL_OK;
+}
+
+int setRunUntil_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   TOmnetTkApp *app = getTkApplication();
+
+   simtime_t until_time = strToSimtime(argv[1]);
+   long until_event = atol(argv[2]);
+
+   app->setSimulationRunUntil(until_time, until_event);
    return TCL_OK;
 }
 

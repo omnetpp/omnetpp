@@ -98,20 +98,22 @@ class TOmnetTkApp : public TOmnetApp
 
    protected:
       Tcl_Interp *interp;          // Tcl interpreter
+      opp_string windowtitleprefix;// contains "procId=.." when using parsim
 
       opp_string tkenv_dir;        // directory of Tkenv's *.tcl files
       opp_string bitmap_dir;       // directory of module icon files
 
+      int run_nr;                  // number of current simulation run
+
       eState simstate;             // state of the simulation run
       int runmode;                 // the current mode the simulation is executing under
-      int run_nr;                  // number of current simulation run
-      bool  breakpointhit_flag;    // flag to signal that a breakpoint was hit and sim. must be stopped
-      bool  stopsimulation_flag;   // flag to signal that simulation must be stopped (STOP button pressed in the UI)
+      simtime_t rununtil_time;     // time limit in current "Run Until" execution, or zero
+      long rununtil_event;         // event number in current "Run Until" execution, or zero
+      bool breakpointhit_flag;     // flag to signal that a breakpoint was hit and execution must break
+      bool stopsimulation_flag;    // flag to signal that simulation must be stopped (STOP button pressed in the UI)
 
       typedef std::list<TInspector*> TInspectorList;
       TInspectorList inspectors;   // list of inspector objects
-
-      opp_string windowtitleprefix;// contains "procId=.." when using parsim
 
    public:
       TOmnetTkApp(ArgList *args, cIniFile *inifile);
@@ -161,8 +163,9 @@ class TOmnetTkApp : public TOmnetApp
       void doOneStep();
       void runSimulation(simtime_t until_time, long until_event, int runmode, cSimpleModule *stepwithinmodule=NULL);
       void setSimulationRunMode(int runmode);
-      bool doRunSimulation(simtime_t until_time, long until_event, cSimpleModule *stepwithinmodule=NULL);
-      bool doRunSimulationExpress(simtime_t until_time, long until_event);
+      void setSimulationRunUntil(simtime_t until_time, long until_event);
+      bool doRunSimulation(cSimpleModule *stepwithinmodule=NULL);
+      bool doRunSimulationExpress();
 
       void startAll();
       void finishSimulation(); // wrapper around simulation.callFinish() and simulation.endRun()

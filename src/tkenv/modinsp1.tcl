@@ -142,12 +142,27 @@ proc create_simplemodinspector {name geom} {
     create_inspector_listbox $nb.submods
 }
 
+proc set_modinsp_gui_for_runmode {w mode} {
+    $w.toolbar.mrun config -relief raised
+    $w.toolbar.mfast config -relief raised
+
+    if {$mode=="normal"} {
+        $w.toolbar.mrun config -relief sunken
+    } elseif {$mode=="fast"} {
+        $w.toolbar.mfast config -relief sunken
+    } elseif {$mode!="notrunning"} {
+        error "wrong mode parameter $mode"
+    }
+}
+
 proc module_run {w} {
     # invoked from toolbar in module inspectors
     if [check_running] return
 
     if {[network_ready] == 1} {
+        set_modinsp_gui_for_runmode $w normal
         opp_onestepinmodule $w
+        set_modinsp_gui_for_runmode $w notrunning
     }
 }
 
@@ -156,7 +171,9 @@ proc module_run_fast {w} {
     if [check_running] return
 
     if {[network_ready] == 1} {
+        set_modinsp_gui_for_runmode $w fast
         opp_onestepinmodule $w fast
+        set_modinsp_gui_for_runmode $w notrunning
     }
 }
 

@@ -33,6 +33,9 @@ set config(filtobjlist-maxcount) 100000
 set config(filtobjlist-category) "mqsgvo"
 set config(last-nedfile) ""
 set config(confirm-exit) 1
+set config(rununtil-mode) "Normal"
+set config(rununtil-time) ""
+set config(rununtil-event) ""
 
 set pluginlist {}
 
