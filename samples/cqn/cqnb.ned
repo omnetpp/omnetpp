@@ -17,6 +17,7 @@ module ClosedQueueingNetB
     submodules:
         tandemQueue: TandemQueue[numTandems];
             parameters:
+                sDelay = sDelay,
                 ownIndex = index;
             gatesizes:
                 in[numTandems],
