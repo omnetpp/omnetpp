@@ -69,38 +69,38 @@ $(TARGET): $(OBJS) $(EXTRA_OBJS)  Makefile.vc
 
 subdirs: $(SUBDIR_TARGETS)
 
-ppif_n.obj: ppif_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp ppif_n.cc
+ppif_n.obj: ppif_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp ppif_n.cpp
 
-ppif_n.cc: ppif.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) ppif.ned
+ppif_n.cpp: ppif.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) ppif.ned
 
-ppnet_n.obj: ppnet_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp ppnet_n.cc
+ppnet_n.obj: ppnet_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp ppnet_n.cpp
 
-ppnet_n.cc: ppnet.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) ppnet.ned
+ppnet_n.cpp: ppnet.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) ppnet.ned
 
-ppsink_n.obj: ppsink_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp ppsink_n.cc
+ppsink_n.obj: ppsink_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp ppsink_n.cpp
 
-ppsink_n.cc: ppsink.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) ppsink.ned
+ppsink_n.cpp: ppsink.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) ppsink.ned
 
-ppsource_n.obj: ppsource_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp ppsource_n.cc
+ppsource_n.obj: ppsource_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp ppsource_n.cpp
 
-ppsource_n.cc: ppsource.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) ppsource.ned
+ppsource_n.cpp: ppsource.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) ppsource.ned
 
-ppif.obj: ppif.cc
-	$(CXX) -c $(COPTS) /Tp ppif.cc
+ppif.obj: ppif.cpp
+	$(CXX) -c $(COPTS) /Tp ppif.cpp
 
-ppsink.obj: ppsink.cc
-	$(CXX) -c $(COPTS) /Tp ppsink.cc
+ppsink.obj: ppsink.cpp
+	$(CXX) -c $(COPTS) /Tp ppsink.cpp
 
-ppsource.obj: ppsource.cc
-	$(CXX) -c $(COPTS) /Tp ppsource.cc
+ppsource.obj: ppsource.cpp
+	$(CXX) -c $(COPTS) /Tp ppsource.cpp
 
 
 #doc: neddoc doxy
@@ -112,12 +112,12 @@ ppsource.obj: ppsource.cc
 #	@doxygen doxy.cfg
 
 clean:
-	-del *.obj *_n.cc *_n.h *_m.cc *_m.h $(TARGET)$(EXE_SUFFIX) 2>NUL
+	-del *.obj *_n.cpp *_n.h *_m.cpp *_m.h $(TARGET)$(EXE_SUFFIX) 2>NUL
 	-del *.vec *.sca 2>NUL
 	-for %%i in ( $(SUBDIRS) ) do cd %%i && nmake /nologo /f Makefile.vc clean && cd ..
 
 depend:
-	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cc
+	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cpp
 
 re-makemake:
 	opp_nmakemake -f -f  #recreate Makefile

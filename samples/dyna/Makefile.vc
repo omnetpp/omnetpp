@@ -69,29 +69,29 @@ $(TARGET): $(OBJS) $(EXTRA_OBJS)  Makefile.vc
 
 subdirs: $(SUBDIR_TARGETS)
 
-dyna_n.obj: dyna_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp dyna_n.cc
+dyna_n.obj: dyna_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp dyna_n.cpp
 
-dyna_n.cc: dyna.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) dyna.ned
+dyna_n.cpp: dyna.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) dyna.ned
 
-dynapacket_m.obj: dynapacket_m.cc
-	$(CXX) -c $(NEDCOPTS) /Tp dynapacket_m.cc
+dynapacket_m.obj: dynapacket_m.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp dynapacket_m.cpp
 
-dynapacket_m.cc dynapacket_m.h: dynapacket.msg
-	$(MSGC:/=\) -s _m.cc $(INCLUDE_PATH) dynapacket.msg
+dynapacket_m.cpp dynapacket_m.h: dynapacket.msg
+	$(MSGC:/=\) -s _m.cpp $(INCLUDE_PATH) dynapacket.msg
 
-client.obj: client.cc
-	$(CXX) -c $(COPTS) /Tp client.cc
+client.obj: client.cpp
+	$(CXX) -c $(COPTS) /Tp client.cpp
 
-server.obj: server.cc
-	$(CXX) -c $(COPTS) /Tp server.cc
+server.obj: server.cpp
+	$(CXX) -c $(COPTS) /Tp server.cpp
 
-servproc.obj: servproc.cc
-	$(CXX) -c $(COPTS) /Tp servproc.cc
+servproc.obj: servproc.cpp
+	$(CXX) -c $(COPTS) /Tp servproc.cpp
 
-switch.obj: switch.cc
-	$(CXX) -c $(COPTS) /Tp switch.cc
+switch.obj: switch.cpp
+	$(CXX) -c $(COPTS) /Tp switch.cpp
 
 
 #doc: neddoc doxy
@@ -103,12 +103,12 @@ switch.obj: switch.cc
 #	@doxygen doxy.cfg
 
 clean:
-	-del *.obj *_n.cc *_n.h *_m.cc *_m.h $(TARGET)$(EXE_SUFFIX) 2>NUL
+	-del *.obj *_n.cpp *_n.h *_m.cpp *_m.h $(TARGET)$(EXE_SUFFIX) 2>NUL
 	-del *.vec *.sca 2>NUL
 	-for %%i in ( $(SUBDIRS) ) do cd %%i && nmake /nologo /f Makefile.vc clean && cd ..
 
 depend:
-	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cc
+	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cpp
 
 re-makemake:
 	opp_nmakemake -f -f  #recreate Makefile

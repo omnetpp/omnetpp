@@ -69,65 +69,65 @@ $(TARGET): $(OBJS) $(EXTRA_OBJS)  Makefile.vc
 
 subdirs: $(SUBDIR_TARGETS)
 
-classifier_n.obj: classifier_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp classifier_n.cc
+classifier_n.obj: classifier_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp classifier_n.cpp
 
-classifier_n.cc: classifier.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) classifier.ned
+classifier_n.cpp: classifier.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) classifier.ned
 
-delay_n.obj: delay_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp delay_n.cc
+delay_n.obj: delay_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp delay_n.cpp
 
-delay_n.cc: delay.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) delay.ned
+delay_n.cpp: delay.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) delay.ned
 
-pqueue_n.obj: pqueue_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp pqueue_n.cc
+pqueue_n.obj: pqueue_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp pqueue_n.cpp
 
-pqueue_n.cc: pqueue.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) pqueue.ned
+pqueue_n.cpp: pqueue.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) pqueue.ned
 
-qnet_n.obj: qnet_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp qnet_n.cc
+qnet_n.obj: qnet_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp qnet_n.cpp
 
-qnet_n.cc: qnet.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) qnet.ned
+qnet_n.cpp: qnet.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) qnet.ned
 
-server_n.obj: server_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp server_n.cc
+server_n.obj: server_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp server_n.cpp
 
-server_n.cc: server.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) server.ned
+server_n.cpp: server.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) server.ned
 
-sink_n.obj: sink_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp sink_n.cc
+sink_n.obj: sink_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp sink_n.cpp
 
-sink_n.cc: sink.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) sink.ned
+sink_n.cpp: sink.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) sink.ned
 
-source_n.obj: source_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp source_n.cc
+source_n.obj: source_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp source_n.cpp
 
-source_n.cc: source.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) source.ned
+source_n.cpp: source.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) source.ned
 
-classifier.obj: classifier.cc
-	$(CXX) -c $(COPTS) /Tp classifier.cc
+classifier.obj: classifier.cpp
+	$(CXX) -c $(COPTS) /Tp classifier.cpp
 
-delay.obj: delay.cc
-	$(CXX) -c $(COPTS) /Tp delay.cc
+delay.obj: delay.cpp
+	$(CXX) -c $(COPTS) /Tp delay.cpp
 
-pqueue.obj: pqueue.cc
-	$(CXX) -c $(COPTS) /Tp pqueue.cc
+pqueue.obj: pqueue.cpp
+	$(CXX) -c $(COPTS) /Tp pqueue.cpp
 
-server.obj: server.cc
-	$(CXX) -c $(COPTS) /Tp server.cc
+server.obj: server.cpp
+	$(CXX) -c $(COPTS) /Tp server.cpp
 
-sink.obj: sink.cc
-	$(CXX) -c $(COPTS) /Tp sink.cc
+sink.obj: sink.cpp
+	$(CXX) -c $(COPTS) /Tp sink.cpp
 
-source.obj: source.cc
-	$(CXX) -c $(COPTS) /Tp source.cc
+source.obj: source.cpp
+	$(CXX) -c $(COPTS) /Tp source.cpp
 
 
 #doc: neddoc doxy
@@ -139,12 +139,12 @@ source.obj: source.cc
 #	@doxygen doxy.cfg
 
 clean:
-	-del *.obj *_n.cc *_n.h *_m.cc *_m.h $(TARGET)$(EXE_SUFFIX) 2>NUL
+	-del *.obj *_n.cpp *_n.h *_m.cpp *_m.h $(TARGET)$(EXE_SUFFIX) 2>NUL
 	-del *.vec *.sca 2>NUL
 	-for %%i in ( $(SUBDIRS) ) do cd %%i && nmake /nologo /f Makefile.vc clean && cd ..
 
 depend:
-	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cc
+	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cpp
 
 re-makemake:
 	opp_nmakemake -f -f  #recreate Makefile

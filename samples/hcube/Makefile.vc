@@ -69,41 +69,41 @@ $(TARGET): $(OBJS) $(EXTRA_OBJS)  Makefile.vc
 
 subdirs: $(SUBDIR_TARGETS)
 
-gensink_n.obj: gensink_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp gensink_n.cc
+gensink_n.obj: gensink_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp gensink_n.cpp
 
-gensink_n.cc: gensink.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) gensink.ned
+gensink_n.cpp: gensink.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) gensink.ned
 
-hc_net_n.obj: hc_net_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp hc_net_n.cc
+hc_net_n.obj: hc_net_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp hc_net_n.cpp
 
-hc_net_n.cc: hc_net.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) hc_net.ned
+hc_net_n.cpp: hc_net.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) hc_net.ned
 
-hc_rte_n.obj: hc_rte_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp hc_rte_n.cc
+hc_rte_n.obj: hc_rte_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp hc_rte_n.cpp
 
-hc_rte_n.cc: hc_rte.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) hc_rte.ned
+hc_rte_n.cpp: hc_rte.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) hc_rte.ned
 
-hcube_n.obj: hcube_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp hcube_n.cc
+hcube_n.obj: hcube_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp hcube_n.cpp
 
-hcube_n.cc: hcube.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) hcube.ned
+hcube_n.cpp: hcube.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) hcube.ned
 
-hcpacket_m.obj: hcpacket_m.cc
-	$(CXX) -c $(NEDCOPTS) /Tp hcpacket_m.cc
+hcpacket_m.obj: hcpacket_m.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp hcpacket_m.cpp
 
-hcpacket_m.cc hcpacket_m.h: hcpacket.msg
-	$(MSGC:/=\) -s _m.cc $(INCLUDE_PATH) hcpacket.msg
+hcpacket_m.cpp hcpacket_m.h: hcpacket.msg
+	$(MSGC:/=\) -s _m.cpp $(INCLUDE_PATH) hcpacket.msg
 
-gensink.obj: gensink.cc
-	$(CXX) -c $(COPTS) /Tp gensink.cc
+gensink.obj: gensink.cpp
+	$(CXX) -c $(COPTS) /Tp gensink.cpp
 
-hc_rte.obj: hc_rte.cc
-	$(CXX) -c $(COPTS) /Tp hc_rte.cc
+hc_rte.obj: hc_rte.cpp
+	$(CXX) -c $(COPTS) /Tp hc_rte.cpp
 
 
 #doc: neddoc doxy
@@ -115,12 +115,12 @@ hc_rte.obj: hc_rte.cc
 #	@doxygen doxy.cfg
 
 clean:
-	-del *.obj *_n.cc *_n.h *_m.cc *_m.h $(TARGET)$(EXE_SUFFIX) 2>NUL
+	-del *.obj *_n.cpp *_n.h *_m.cpp *_m.h $(TARGET)$(EXE_SUFFIX) 2>NUL
 	-del *.vec *.sca 2>NUL
 	-for %%i in ( $(SUBDIRS) ) do cd %%i && nmake /nologo /f Makefile.vc clean && cd ..
 
 depend:
-	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cc
+	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cpp
 
 re-makemake:
 	opp_nmakemake -f -f  #recreate Makefile

@@ -69,23 +69,23 @@ $(TARGET): $(OBJS) $(EXTRA_OBJS)  Makefile.vc
 
 subdirs: $(SUBDIR_TARGETS)
 
-network_n.obj: network_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp network_n.cc
+network_n.obj: network_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp network_n.cpp
 
-network_n.cc: network.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) network.ned
+network_n.cpp: network.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) network.ned
 
-packet_m.obj: packet_m.cc
-	$(CXX) -c $(NEDCOPTS) /Tp packet_m.cc
+packet_m.obj: packet_m.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp packet_m.cpp
 
-packet_m.cc packet_m.h: packet.msg
-	$(MSGC:/=\) -s _m.cc $(INCLUDE_PATH) packet.msg
+packet_m.cpp packet_m.h: packet.msg
+	$(MSGC:/=\) -s _m.cpp $(INCLUDE_PATH) packet.msg
 
-app.obj: app.cc
-	$(CXX) -c $(COPTS) /Tp app.cc
+app.obj: app.cpp
+	$(CXX) -c $(COPTS) /Tp app.cpp
 
-routing.obj: routing.cc
-	$(CXX) -c $(COPTS) /Tp routing.cc
+routing.obj: routing.cpp
+	$(CXX) -c $(COPTS) /Tp routing.cpp
 
 
 #doc: neddoc doxy
@@ -97,12 +97,12 @@ routing.obj: routing.cc
 #	@doxygen doxy.cfg
 
 clean:
-	-del *.obj *_n.cc *_n.h *_m.cc *_m.h $(TARGET)$(EXE_SUFFIX) 2>NUL
+	-del *.obj *_n.cpp *_n.h *_m.cpp *_m.h $(TARGET)$(EXE_SUFFIX) 2>NUL
 	-del *.vec *.sca 2>NUL
 	-for %%i in ( $(SUBDIRS) ) do cd %%i && nmake /nologo /f Makefile.vc clean && cd ..
 
 depend:
-	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cc
+	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cpp
 
 re-makemake:
 	opp_nmakemake -f -f  #recreate Makefile

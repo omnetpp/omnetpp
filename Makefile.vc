@@ -48,14 +48,14 @@ components: libs progs configsamples samples configtutorial thetutorial
 
 LIBS=$(ENVIR_ILIB) nedxml sim envir cmdenv tkenv
 PROGS=utils nedc gned plove
-SAMPLES=dyna fddi fifo1 fifo2 hcube hist nim token dyna2 topo demo
+SAMPLES=aloha cqn dyna fddi fifo hcube hist neddemo p-to-p queueing routing routingdb tictoc tokenring
 
 #
 # Group targets. Note that utils has to be built BEFORE other libs and progs.
 #
 libs: utils $(LIBS)
 progs: $(PROGS)
-samples: $(SAMPLES)
+samples: rundemo $(SAMPLES)
 docs: api nedxml-api manual
 
 
@@ -112,49 +112,64 @@ utils:
 # Sample programs
 #
 
+rundemo:
+	echo @$(WISH:/=\) -f ^%~dpn0 ^%* > $(OMNETPP_SAMPLES_DIR:/=\)\rundemo.bat
+
+aloha:
+	@echo ===== Compiling $@ ====
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
+
+cqn:
+	@echo ===== Compiling $@ ====
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
+
 dyna:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\dyna && $(MAKE) $(MOPTS) $(MAKEFILE)
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 fddi:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\fddi && $(MAKE) $(MOPTS) $(MAKEFILE)
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
 
-fifo1:
+fifo:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\fifo1 && $(MAKE) $(MOPTS) $(MAKEFILE)
-
-fifo2:
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\fifo2 && $(MAKE) $(MOPTS) $(MAKEFILE)
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 hcube:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\hcube && $(MAKE) $(MOPTS) $(MAKEFILE)
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 hist:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\hist && $(MAKE) $(MOPTS) $(MAKEFILE)
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
 
-nim:
+neddemo:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\nim && $(MAKE) $(MOPTS) $(MAKEFILE)
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
 
-token:
+p-to-p:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\token && $(MAKE) $(MOPTS) $(MAKEFILE)
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
 
-dyna2:
+queueing:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\dyna2 && $(MAKE) $(MOPTS) $(MAKEFILE)
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
 
-topo:
+routing:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\topo && $(MAKE) $(MOPTS) $(MAKEFILE)
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
 
-demo:
+routingdb:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\demo && $(MAKE) $(MOPTS) $(MAKEFILE)
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
+
+tictoc:
+	@echo ===== Compiling $@ ====
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
+
+tokenring:
+	@echo ===== Compiling $@ ====
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 thetutorial:
 	@echo ===== Compiling $@ ====
@@ -189,7 +204,7 @@ tests: check-env libs progs
 
 check-env:
 	@echo ===== Checking environment =====
-	@if not .%OS%.==.Windows_NT. echo ERROR: This makefile can ONLY be used on NT4.0 or Windows 2000! For Win95/98/ME, use Makefile.98!
+	@if not .%OS%.==.Windows_NT. echo ERROR: This makefile can ONLY be used on NT4.0, Win2K or XP!
 	@echo  Checking if $(CXX) works...
 	@$(CXX) /? /nologo <nul > nul || echo ERROR: Could not run $(CXX). Probably PATH does not contain its BIN or DLL directory. && exit 1
 	@echo Checking if OMNETPP_ROOT is correctly set...
@@ -198,6 +213,8 @@ check-env:
 	@cd /d $(_TCL_LIBRARY:/=\) || echo ERROR: The directory $(_TCL_LIBRARY) does not exist. TK_DIR or TK_VER defined in configuser.vc might be wrong. && exit 1
 
 configsamples:
+
+FIXME:
 	@echo ===== Configuring .dsp files for samples =====
 	cd /d $(OMNETPP_SAMPLES_DIR:/=\) && cc2cpp.bat
 	for %%i in ( $(SAMPLES) ) do \
@@ -242,6 +259,11 @@ depend:
 	for %%i in ( $(SAMPLES) ) do \
 	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) depend
 	cd /d $(OMNETPP_TUTORIAL_DIR:/=\)\queues && $(MAKE) $(MOPTS) $(MAKEFILE) depend
+
+makefiles:
+	for %%i in ( $(SAMPLES) ) do \
+	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && call opp_nmakemake -f
+	cd /d $(OMNETPP_TUTORIAL_DIR:/=\)\queues && call opp_nmakemake -f
 
 reminder:
 !IF "$(TCL_LIBRARY)" == ""

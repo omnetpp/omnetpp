@@ -69,50 +69,50 @@ $(TARGET): $(OBJS) $(EXTRA_OBJS)  Makefile.vc
 
 subdirs: $(SUBDIR_TARGETS)
 
-binarytree_n.obj: binarytree_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp binarytree_n.cc
+binarytree_n.obj: binarytree_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp binarytree_n.cpp
 
-binarytree_n.cc: binarytree.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) binarytree.ned
+binarytree_n.cpp: binarytree.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) binarytree.ned
 
-chain_n.obj: chain_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp chain_n.cc
+chain_n.obj: chain_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp chain_n.cpp
 
-chain_n.cc: chain.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) chain.ned
+chain_n.cpp: chain.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) chain.ned
 
-fullgraph_n.obj: fullgraph_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp fullgraph_n.cc
+fullgraph_n.obj: fullgraph_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp fullgraph_n.cpp
 
-fullgraph_n.cc: fullgraph.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) fullgraph.ned
+fullgraph_n.cpp: fullgraph.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) fullgraph.ned
 
-hexgrid_n.obj: hexgrid_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp hexgrid_n.cc
+hexgrid_n.obj: hexgrid_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp hexgrid_n.cpp
 
-hexgrid_n.cc: hexgrid.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) hexgrid.ned
+hexgrid_n.cpp: hexgrid.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) hexgrid.ned
 
-mesh_n.obj: mesh_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp mesh_n.cc
+mesh_n.obj: mesh_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp mesh_n.cpp
 
-mesh_n.cc: mesh.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) mesh.ned
+mesh_n.cpp: mesh.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) mesh.ned
 
-randomgraph_n.obj: randomgraph_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp randomgraph_n.cc
+randomgraph_n.obj: randomgraph_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp randomgraph_n.cpp
 
-randomgraph_n.cc: randomgraph.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) randomgraph.ned
+randomgraph_n.cpp: randomgraph.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) randomgraph.ned
 
-star_n.obj: star_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp star_n.cc
+star_n.obj: star_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp star_n.cpp
 
-star_n.cc: star.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) star.ned
+star_n.cpp: star.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) star.ned
 
-node.obj: node.cc
-	$(CXX) -c $(COPTS) /Tp node.cc
+node.obj: node.cpp
+	$(CXX) -c $(COPTS) /Tp node.cpp
 
 
 #doc: neddoc doxy
@@ -124,12 +124,12 @@ node.obj: node.cc
 #	@doxygen doxy.cfg
 
 clean:
-	-del *.obj *_n.cc *_n.h *_m.cc *_m.h $(TARGET)$(EXE_SUFFIX) 2>NUL
+	-del *.obj *_n.cpp *_n.h *_m.cpp *_m.h $(TARGET)$(EXE_SUFFIX) 2>NUL
 	-del *.vec *.sca 2>NUL
 	-for %%i in ( $(SUBDIRS) ) do cd %%i && nmake /nologo /f Makefile.vc clean && cd ..
 
 depend:
-	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cc
+	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cpp
 
 re-makemake:
 	opp_nmakemake -f -f  #recreate Makefile

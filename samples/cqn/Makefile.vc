@@ -69,41 +69,41 @@ $(TARGET): $(OBJS) $(EXTRA_OBJS)  Makefile.vc
 
 subdirs: $(SUBDIR_TARGETS)
 
-cqna_n.obj: cqna_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp cqna_n.cc
+cqna_n.obj: cqna_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp cqna_n.cpp
 
-cqna_n.cc: cqna.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) cqna.ned
+cqna_n.cpp: cqna.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) cqna.ned
 
-cqnb_n.obj: cqnb_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp cqnb_n.cc
+cqnb_n.obj: cqnb_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp cqnb_n.cpp
 
-cqnb_n.cc: cqnb.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) cqnb.ned
+cqnb_n.cpp: cqnb.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) cqnb.ned
 
-queue_n.obj: queue_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp queue_n.cc
+queue_n.obj: queue_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp queue_n.cpp
 
-queue_n.cc: queue.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) queue.ned
+queue_n.cpp: queue.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) queue.ned
 
-switch_n.obj: switch_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp switch_n.cc
+switch_n.obj: switch_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp switch_n.cpp
 
-switch_n.cc: switch.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) switch.ned
+switch_n.cpp: switch.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) switch.ned
 
-tandemqueue_n.obj: tandemqueue_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp tandemqueue_n.cc
+tandemqueue_n.obj: tandemqueue_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp tandemqueue_n.cpp
 
-tandemqueue_n.cc: tandemqueue.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) tandemqueue.ned
+tandemqueue_n.cpp: tandemqueue.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) tandemqueue.ned
 
-queue.obj: queue.cc
-	$(CXX) -c $(COPTS) /Tp queue.cc
+queue.obj: queue.cpp
+	$(CXX) -c $(COPTS) /Tp queue.cpp
 
-switch.obj: switch.cc
-	$(CXX) -c $(COPTS) /Tp switch.cc
+switch.obj: switch.cpp
+	$(CXX) -c $(COPTS) /Tp switch.cpp
 
 
 #doc: neddoc doxy
@@ -115,12 +115,12 @@ switch.obj: switch.cc
 #	@doxygen doxy.cfg
 
 clean:
-	-del *.obj *_n.cc *_n.h *_m.cc *_m.h $(TARGET)$(EXE_SUFFIX) 2>NUL
+	-del *.obj *_n.cpp *_n.h *_m.cpp *_m.h $(TARGET)$(EXE_SUFFIX) 2>NUL
 	-del *.vec *.sca 2>NUL
 	-for %%i in ( $(SUBDIRS) ) do cd %%i && nmake /nologo /f Makefile.vc clean && cd ..
 
 depend:
-	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cc
+	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cpp
 
 re-makemake:
 	opp_nmakemake -f -f  #recreate Makefile

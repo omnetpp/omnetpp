@@ -69,20 +69,20 @@ $(TARGET): $(OBJS) $(EXTRA_OBJS)  Makefile.vc
 
 subdirs: $(SUBDIR_TARGETS)
 
-token_n.obj: token_n.cc
-	$(CXX) -c $(NEDCOPTS) /Tp token_n.cc
+token_n.obj: token_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp token_n.cpp
 
-token_n.cc: token.ned
-	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) token.ned
+token_n.cpp: token.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) token.ned
 
-token_m.obj: token_m.cc
-	$(CXX) -c $(NEDCOPTS) /Tp token_m.cc
+token_m.obj: token_m.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp token_m.cpp
 
-token_m.cc token_m.h: token.msg
-	$(MSGC:/=\) -s _m.cc $(INCLUDE_PATH) token.msg
+token_m.cpp token_m.h: token.msg
+	$(MSGC:/=\) -s _m.cpp $(INCLUDE_PATH) token.msg
 
-token.obj: token.cc
-	$(CXX) -c $(COPTS) /Tp token.cc
+token.obj: token.cpp
+	$(CXX) -c $(COPTS) /Tp token.cpp
 
 
 #doc: neddoc doxy
@@ -94,12 +94,12 @@ token.obj: token.cc
 #	@doxygen doxy.cfg
 
 clean:
-	-del *.obj *_n.cc *_n.h *_m.cc *_m.h $(TARGET)$(EXE_SUFFIX) 2>NUL
+	-del *.obj *_n.cpp *_n.h *_m.cpp *_m.h $(TARGET)$(EXE_SUFFIX) 2>NUL
 	-del *.vec *.sca 2>NUL
 	-for %%i in ( $(SUBDIRS) ) do cd %%i && nmake /nologo /f Makefile.vc clean && cd ..
 
 depend:
-	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cc
+	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cpp
 
 re-makemake:
 	opp_nmakemake -f -f  #recreate Makefile
