@@ -34,7 +34,7 @@ components: libs progs samples tutorials
 #
 #=====================================================================
 
-LIBS=sim envir cmdenv tkenv
+LIBS=sim nedxml envir cmdenv tkenv
 PROGS=utils nedc gned plove
 SAMPLES=@OMNETPP_SAMPLES@
 
@@ -53,6 +53,9 @@ samples: $(SAMPLES)
 
 sim:
 	cd $(OMNETPP_SRC_DIR)/sim && $(MAKE)
+
+nedxml:
+	cd $(OMNETPP_SRC_DIR)/nedxml && $(MAKE)
 
 envir:
 	cd $(OMNETPP_SRC_DIR)/envir && $(MAKE)
