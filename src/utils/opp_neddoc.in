@@ -1,5 +1,7 @@
 #! /bin/sh
 PS2GIF=@PS2GIF@
+#FIXME into configure:
+GIFTRANS=giftrans
 DOT=@DOT@
 NEDDOC_XSL=`dirname $0`/neddoc.xsl
 NEDDOC_PL=`dirname $0`/neddocproc.pl
@@ -114,6 +116,11 @@ if [ "$have_dot" = "yes" ]; then
        map=`echo $i | sed 's/dot$/map/'`
        $DOT -Tgif <$i >$gif || exit 1
        $DOT -Tcmap <$i >$map || exit 1
+       if [ -n "$GIFTRANS" ]; then
+           mv $gif $gif.tmp || exit 1
+	   $GIFTRANS -t white $gif.tmp >$gif || exit 1
+	   rm $gif.tmp || exit 1
+       fi
     done
     echo
 fi
