@@ -138,7 +138,7 @@ proc display_stopdialog {mode} {
     set w .stopdialog
     toplevel $w
     wm title $w {Running...}
-    wm transient $w
+    wm transient $w [winfo toplevel [winfo parent $w]]
     wm protocol $w WM_DELETE_WINDOW {opp_stopsimulation}
     # bind $w <Visibility> "raise $w"  ;# Keep modal window on top -- not good! (obscures error dialogs)
 

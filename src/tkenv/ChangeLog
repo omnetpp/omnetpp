@@ -307,3 +307,6 @@ Aug 13, 1999
     consistent with GNED
 Aug 30, 1999
   - bugfix on the toolbar of graphical gate inspector
+Sept 5, 1999
+  - main window renamed from ".omnetpp" to "."; now modal dialogs cannot go
+    behind the main window (including the big red "STOP!" dialog).

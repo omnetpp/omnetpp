@@ -558,20 +558,20 @@ void TOmnetTkApp::updateNetworkRunDisplay()
     else
          networkname = simulation.networkType()->name();
 
-    CHK(Tcl_VarEval(interp, ".omnetpp.statusbar.networklabel config -text {",
+    CHK(Tcl_VarEval(interp, ".statusbar.networklabel config -text {",
                         "Run #",runnr,": ",networkname,
                         "}", NULL ));
-    CHK(Tcl_VarEval(interp, "wm title .omnetpp {OMNeT++/Tkenv - ",networkname,"}",NULL));
+    CHK(Tcl_VarEval(interp, "wm title . {OMNeT++/Tkenv - ",networkname,"}",NULL));
 }
 
 void TOmnetTkApp::updateSimtimeDisplay()
 {
     char buf[16];
     sprintf(buf, "%lu", simulation.eventNumber());
-    CHK(Tcl_VarEval(interp, ".omnetpp.statusbar.eventlabel config -text {"
+    CHK(Tcl_VarEval(interp, ".statusbar.eventlabel config -text {"
                         "Event #", buf,
                         "}", NULL ));
-    CHK(Tcl_VarEval(interp, ".omnetpp.statusbar.timelabel config -text {"
+    CHK(Tcl_VarEval(interp, ".statusbar.timelabel config -text {"
                         "T=", simtimeToStr( simulation.simTime() ),
                         "}", NULL ));
 }
@@ -594,14 +594,14 @@ void TOmnetTkApp::updateNextModuleDisplay()
       namestr = mod->fullPath();
       sprintf(subsc,"#%lu ",mod->id());
     }
-    CHK(Tcl_VarEval(interp, ".omnetpp.statusbar.nextlabel config -text {"
+    CHK(Tcl_VarEval(interp, ".statusbar.nextlabel config -text {"
                         "Next: ", subsc, namestr,
                         "}", NULL ));
 }
 
 void TOmnetTkApp::clearNextModuleDisplay()
 {
-    CHK(Tcl_VarEval(interp, ".omnetpp.statusbar.nextlabel config -text {"
+    CHK(Tcl_VarEval(interp, ".statusbar.nextlabel config -text {"
                         "Running..."
                         "}", NULL ));
 }
@@ -632,8 +632,8 @@ void TOmnetTkApp::printEventBanner(cSimpleModule *mod)
     // insert into main window
     if (opt_use_mainwindow)
          CHK(Tcl_VarEval(interp,
-              ".omnetpp.main.text insert end {",banner,"} event\n"
-              ".omnetpp.main.text see end", NULL));
+              ".main.text insert end {",banner,"} event\n"
+              ".main.text see end", NULL));
 
     // and into the message window
     CHK(Tcl_VarEval(interp,
@@ -816,8 +816,8 @@ void TOmnetTkApp::puts(char *str)
     if (!module || opt_use_mainwindow)
     {
         CHK(Tcl_VarEval(interp,
-            ".omnetpp.main.text insert end {",str,"}\n"
-            ".omnetpp.main.text see end", NULL));
+            ".main.text insert end {",str,"}\n"
+            ".main.text see end", NULL));
     }
 }
 

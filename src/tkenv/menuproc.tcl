@@ -277,7 +277,7 @@ proc message_windows {} {
 proc clear_windows {} {
     # implements Trace|Clear windows...
     # should delete the contents of all text windows!!!
-    .omnetpp.main.text delete 1.0 end
+    .main.text delete 1.0 end
 }
 
 proc inspect_anyobject {} {
