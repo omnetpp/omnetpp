@@ -1,3 +1,20 @@
+2002-10-20  Andras Varga
+
+	* cmdenv.cc: revised omnetpp.ini entries understood by Cmdenv.
+	A New entry was introduced to select running mode:
+	  express-mode=yes/no (default: yes)
+	When in normal (not express) mode, these entries are in effect:
+	  module-messages=yes/no (default: yes)
+	     - printing module ev<< output on/off (as before)
+	  event-banners=yes/no (default: yes)
+	     - printing event banners on/off; replaces verbose-simulation=
+	When in express mode, these entries are used:
+	  status-frequency=<integer> (default: 50000) -
+	     - print status update every n events
+	  perf-display=yes/no (default: yes)
+	     - print detailed performance status
+	Obsoleted entries: display-update=, verbose-simulation=.
+
 2002-10-08  Andras Varga
 
 	* cmdenv.cc: -h command-line option now lists linked-in modules too

@@ -31,6 +31,7 @@
 #include "cmodule.h"
 #include "cnetmod.h"
 #include "args.h"
+#include "speedmtr.h"
 
 
 static char buffer[1024];
@@ -55,8 +56,6 @@ bool TCmdenvApp::sigint_received;
 
 TCmdenvApp::TCmdenvApp(ArgList *args, cIniFile *inifile) : TOmnetApp(args, inifile)
 {
-    opt_modulemsgs = true;
-    opt_verbose = true;
 }
 
 TCmdenvApp::~TCmdenvApp()
@@ -79,9 +78,19 @@ void TCmdenvApp::readPerRunOptions( int run_nr )
     sprintf(section,"Run %d",run_nr);
     ini_file->error(); // clear error flag
 
+    opt_expressmode = ini_file->getAsBool2( section,"Cmdenv", "express-mode", true );
     opt_modulemsgs = ini_file->getAsBool2( section,"Cmdenv", "module-messages", true );
-    opt_verbose = ini_file->getAsBool2( section,"Cmdenv", "verbose-simulation", true );
-    opt_displayinterval = ini_file->getAsTime2( section,"Cmdenv", "display-update", 10.0 );
+    opt_eventbanners = ini_file->getAsBool2( section,"Cmdenv", "event-banners", true );
+    opt_status_frequency_ev = ini_file->getAsInt2( section,"Cmdenv", "status-frequency", 50000 );
+    //opt_status_frequency_sec = ini_file->getAsTime2( section,"Cmdenv", "status-frequency-interval", 5.0 );
+    opt_perfdisplay = ini_file->getAsBool2( section,"Cmdenv", "performance-display", false );
+
+    // warnings on old entries
+    if (ini_file->exists2( section,"Cmdenv", "display-update"))
+         ev.printfmsg("Warning: ini file entry display-update= is obsolete, "
+                      "use status-frequency= instead!");
+    if (ini_file->exists2( section,"Cmdenv", "verbose-simulation"))
+         ev.printfmsg("Warning: ini file entry verbose-simulation= is obsolete, use event-banners= instead!");
 }
 
 void TCmdenvApp::setup()
@@ -155,7 +164,7 @@ int TCmdenvApp::run()
     }
 
     // we'll return nonzero exitcode if any run was terminated with error
-    bool had_error = false; 
+    bool had_error = false;
 
     for (; run_nr()!=-1; run_nr++)
     {
@@ -187,10 +196,8 @@ int TCmdenvApp::run()
             startrun_done = true;
 
             // simulate() should only throw exception if error occurred and
-            // finish() should not be called. sigint_received is treated differently
+            // finish() should not be called.
             simulate();
-            if (sigint_received)
-                ev.printfmsg("SIGINT or SIGTERM received, simulation stopped.\n");
 
             ev.printf("\nCalling finish() at end of Run #%d...\n", run_nr());
             simulation.callFinish();
@@ -257,64 +264,86 @@ void TCmdenvApp::simulate()
     sigint_received = false;
     try
     {
-        if (opt_verbose || opt_modulemsgs)
+        if (!opt_expressmode)
         {
            ev.disable_tracing = false;
-           while(!sigint_received)
+           while (true)
            {
                cSimpleModule *mod = simulation.selectNextModule();
                ASSERT(mod!=NULL);
 
                // print event banner if neccessary
-               if (opt_verbose)
+               if (opt_eventbanners)
                {
-                  if (mod->phase()[0]==0)
-                  {
-                      printf( "** Event #%ld  T=%s.  Module #%d `%s'.\n",
-                              simulation.eventNumber(),
-                              simtimeToStr( simulation.simTime() ),
-                              mod->id(),
-                              mod->fullPath()
-                            );
-                  }
-                  else
-                  {
-                      printf( "** Event #%ld  T=%s.  Module #%d `%s' in phase `%s'.\n",
-                              simulation.eventNumber(),
-                              simtimeToStr( simulation.simTime() ),
-                              mod->id(),
-                              mod->fullPath(),
-                              mod->phase()
-                            );
-                  }
+                   if (mod->phase()[0]==0)
+                   {
+                       printf( "** Event #%ld  T=%s.  Module #%d `%s'.\n",
+                               simulation.eventNumber(),
+                               simtimeToStr( simulation.simTime() ),
+                               mod->id(),
+                               mod->fullPath()
+                             );
+                   }
+                   else
+                   {
+                       printf( "** Event #%ld  T=%s.  Module #%d `%s' in phase `%s'.\n",
+                               simulation.eventNumber(),
+                               simtimeToStr( simulation.simTime() ),
+                               mod->id(),
+                               mod->fullPath(),
+                               mod->phase()
+                             );
+                   }
                }
 
                // execute event
                simulation.doOneEvent( mod );
+
                checkTimeLimits();
+               if (sigint_received)
+                   throw new cTerminationException("SIGINT or SIGTERM received, exiting");
            }
         }
         else
         {
            ev.disable_tracing = true;
-           simtime_t next_update = 0.0 + opt_displayinterval;
-           while(!sigint_received)
+           Speedometer speedometer;
+           while (true)
            {
                cSimpleModule *mod = simulation.selectNextModule();
                ASSERT(mod!=NULL);
 
                // print event banner from time to time
-               if (next_update <= simulation.simTime())
+               // ... if (simulation.eventNumber() >= last_update_ev + opt_status_frequency_ev && ...
+               if (simulation.eventNumber()%opt_status_frequency_ev==0)
                {
-                   next_update += opt_displayinterval;
-                   printf( "** Event #%ld \tT=%s.\n",
-                           simulation.eventNumber(),
-                           simtimeToStr(simulation.simTime()));
+                   if (opt_perfdisplay)
+                   {
+                       printf( "** Event #%ld \tT=%s.\n",
+                               simulation.eventNumber(),
+                               simtimeToStr(simulation.simTime()));
+                       printf( "      ev/sec=%g   simsec/sec=%g   ev/simsec=%g\n",
+                               speedometer.eventsPerSec(),
+                               speedometer.simSecPerSec(),
+                               speedometer.eventsPerSimSec());
+                   }
+                   else
+                   {
+                       printf( "** Event #%ld \tT=%s \tev/sec=%g.\n",
+                               simulation.eventNumber(),
+                               simtimeToStr(simulation.simTime()),
+                               speedometer.eventsPerSec());
+                   }
+                   speedometer.beginNewInterval();
                }
 
                // execute event
                simulation.doOneEvent( mod );
+
+               speedometer.addEvent(simulation.simTime());
                checkTimeLimits();
+               if (sigint_received)
+                   throw new cTerminationException("SIGINT or SIGTERM received, exiting");
            }
         }
     }

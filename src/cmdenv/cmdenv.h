@@ -40,9 +40,12 @@ class TCmdenvApp : public TOmnetApp
      opp_string opt_runstoexec;
      unsigned opt_extrastack;
 
-     int opt_modulemsgs;
-     int opt_verbose;
-     simtime_t opt_displayinterval;
+     bool opt_expressmode;
+     bool opt_modulemsgs;  // if normal mode
+     bool opt_eventbanners; // if normal mode
+     int opt_status_frequency_ev; // if express mode
+     // double opt_status_frequency_sec; -- not yet implemented
+     bool opt_perfdisplay; // if express mode
 
      // set to true on SIGINT/SIGTERM signals
      static bool sigint_received;
