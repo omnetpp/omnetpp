@@ -214,7 +214,7 @@ filename
         : STRING
                 {NEDC( do_include ($1); )}
                 {GNED( IMPORT_KEY = np->create("import",IMPORTS_KEY);
-                       np->set(IMPORT_KEY,"import",@1);
+                       np->set(IMPORT_KEY,"name",@1);
                        setComments(IMPORT_KEY,@1); )}
         ;
 
@@ -1307,7 +1307,7 @@ int addSubstmachine(int substmachines_key, YYLTYPE namepos)
 int addLoopVar(int forloop_key, YYLTYPE varnamepos, YYLTYPE frompos, YYLTYPE topos)
 {
    int loopvar_key = np->create("loopvar", forloop_key);
-   np->set(loopvar_key, "varname", varnamepos);
+   np->set(loopvar_key, "name", varnamepos);
    np->set(loopvar_key, "fromvalue", frompos);
    np->set(loopvar_key, "tovalue", topos);
    return loopvar_key;

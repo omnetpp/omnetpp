@@ -102,7 +102,7 @@ set ddict(imports,trailing-comment) {}
 set ddesc(import,plusindent)       {    }
 set ddesc(import,parents)          {imports}
 set ddict(import,type)             {import}
-set ddict(import,import)           {}
+set ddict(import,name)             {}
 set ddict(import,banner-comment)   {}
 set ddict(import,right-comment)    {}
 
@@ -403,7 +403,7 @@ set ddesc(loopvar,parents)          {forloop}
 set ddict(loopvar,type)             {loopvar}
 set ddict(loopvar,banner-comment)   {}
 set ddict(loopvar,right-comment)    {}
-set ddict(loopvar,varname)          {}
+set ddict(loopvar,name)          {}
 set ddict(loopvar,fromvalue)        {}
 set ddict(loopvar,tovalue)          {}
 

@@ -20,7 +20,7 @@
 
 # generateNed --
 #
-# main entry point
+# Entry point of NED code generation: return the code as a single big string
 #
 proc generateNed {key} {
     return [generateNedItem $key {} 0]
@@ -145,7 +145,7 @@ proc generate_import {key indent islast} {
     global ned
     set out ""
     appendBannerComment out $ned($key,banner-comment) $indent
-    appendTo out "${indent}$ned($key,import)" nonewline
+    appendTo out "${indent}$ned($key,name)" nonewline
     if {$islast} {appendTo out ";" nonewline} else {appendTo out "," nonewline}
     appendRightComment out $ned($key,right-comment)
     return $out
@@ -483,7 +483,7 @@ proc generate_loopvar {key indent islast} {
     global ned
     set out ""
     appendBannerComment out $ned($key,banner-comment) $indent
-    appendTo out "$ned($key,varname)=$ned($key,fromvalue)..$ned($key,tovalue)" nonewline
+    appendTo out "$ned($key,name)=$ned($key,fromvalue)..$ned($key,tovalue)" nonewline
     if {!$islast} {appendTo out ", " nonewline}
     appendInlineRightComment out $ned($key,right-comment) ""
     return $out

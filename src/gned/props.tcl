@@ -449,13 +449,13 @@ proc editImportProps {key} {
 
     .impprops.f.nb.imports.name.e  insert 0 $ned($key,name)
     .impprops.f.nb.imports.name.e  configure -state disabled
-    .impprops.f.nb.imports.i.e   insert 0 $ned($key,import)
+    .impprops.f.nb.imports.i.e   insert 0 $ned($key,name)
 
     focus .impprops.f.nb.imports.name.e
 
     # exec the dialog, extract its contents if OK was pressed, then delete dialog
     if {[execOkCancelDialog .impprops] == 1} {
-       set ned($key,import)     [.impprops.f.nb.imports.i.e   get]
+       set ned($key,name)     [.impprops.f.nb.imports.i.e   get]
 
     }
     destroy .impprops

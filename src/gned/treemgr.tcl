@@ -133,14 +133,52 @@ proc defaultPopup {key} {
     global ned
     # FIXME:
     foreach i {
+      {command -command "displayCodeForItem $key" -label {Show NED code} -underline 0}
       {command -command "deleteItem $key; updateTreeManager" -label {Delete} -underline 0}
     } {
        eval .popup add $i
     }
 }
 
+#--------------------------------------
+proc displayCodeForItem {key} {
+    global fonts
+
+    # open file viewer/editor window
+    set w .nedcode
+    catch {destroy $w}
+
+    # create widgets
+    toplevel $w -class Toplevel
+    wm focusmodel $w passive
+    wm geometry $w 512x275
+    wm maxsize $w 1009 738
+    wm minsize $w 1 1
+    wm overrideredirect $w 0
+    wm resizable $w 1 1
+    wm title $w "NED code"
+
+    frame $w.main
+    scrollbar $w.main.sb -borderwidth 1 -command "$w.main.text yview"
+    pack $w.main.sb -anchor center -expand 0 -fill y -side right
+    text $w.main.text -width 60 -yscrollcommand "$w.main.sb set" -wrap none -font $fonts(fixed)
+    pack $w.main.text -anchor center -expand 1 -fill both -side left
+
+    frame $w.butt
+    button $w.butt.close -text Close -command "destroy $w"
+    pack $w.butt.close -anchor n -expand 0 -side right
+
+    pack $w.butt -expand 0 -fill x -side bottom
+    pack $w.main -expand 1 -fill both -side top
+
+    # produce ned code and put it into text widget
+    set nedcode [generateNed $key]
+    $w.main.text insert end $nedcode
+}
+
 #-------------- temp solution: -----------------
 
+# FIXME: rather include new icons into icons.tcl
 set files [glob -nocomplain -- {icons/*_vs.gif}]
 foreach f $files {
   set name [string tolower [file tail [file rootname $f]]]
@@ -197,15 +235,15 @@ proc getNodeInfo {w op {key {}}} {
       }
 
       haschildren {
-        # DBG:
         return [expr [llength $ned($key,childrenkeys)]!=0]
 
-        set type $ned($key,type)
-        if {$type=="root" || $type=="nedfile"} {
-          return [expr [llength $ned($key,childrenkeys)]!=0]
-        } else {
-          return 0
-        }
+        ## OLD CODE: only allow top-level components (modules, channels etc.) to be displayed
+        # set type $ned($key,type)
+        # if {$type=="root" || $type=="nedfile"} {
+        #   return [expr [llength $ned($key,childrenkeys)]!=0]
+        # } else {
+        #   return 0
+        #}
       }
     }
 }
