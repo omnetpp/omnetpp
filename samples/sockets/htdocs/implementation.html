@@ -12,7 +12,7 @@ pre { margin-left:8pt; background:#fffff4; padding:5pt; border:1px solid; border
 <p>
 The external interface used in this example simulation is a single TCP socket.
 All interesting functionality is in the <tt>cSocketRTScheduler</tt> class.
-Its source code is in socketrtscheduler.h/cc.
+Its source code is in csocketrtscheduler.h/cc.
 
 <p>
 <tt>cSocketRTScheduler</tt> combines synchronizing to real-time with
@@ -28,7 +28,7 @@ or start a new thread whenever one connection gets established.)
 <p>
 Then normal real-time simulation will begin, except that <tt>cSocketRTScheduler</tt>
 will use <tt>select()</tt> instead of <tt>usleep()</tt> to wait, so that it
-always learns immediately whenever some data arrive on the socket.
+always learns immediately whenever some data arrives on the socket.
 
 <p>
 When data arrives on the socket, it will be received into a buffer
@@ -42,9 +42,9 @@ in exactly the same way as any other event would.
 <p>
 At the beginning of the simulation, the <tt>extClient</tt> simple module
 (which is of class <tt>ExtHTTPClient</tt> or <tt>ExtTelnetClient</tt>)
-had registered itself with <tt>cSocketRTScheduler</tt> at the beginning
-of the simulation as the dedicated "interface module".
-So it's this module that will receive the event, just as a normal self-message.
+had registered itself with <tt>cSocketRTScheduler</tt> as the
+dedicated "interface module". So it's this module that will receive
+the event, just as a normal self-message.
 
 <p>
 From the self-message it knows that it has to look into the buffer
@@ -85,7 +85,7 @@ rtScheduler-&gt;setInterfaceModule(this, rtEvent, recvBuffer, 4000, &amp;numRecv
 
 <p>
 <b>Notice that this registration function and even the notion of a dedicated
-network interface module are specific to this particular
+interface module are specific to this particular
 example simulation. <tt>cSocketRTScheduler</tt> is just an example, and
 it was deliberately made as simple as possible to facilitate understanding.
 In real-life applications, you can (and will probably have to) create

@@ -21,7 +21,7 @@ during simulation, an event with simulation time <i>t</i> gets executed
 at real time <i>T<sub>0</sub>+t</i>. Practically this means that
 just before executing every event, one needs to introduce some amount of waiting,
 using e.g. Unix <tt>usleep()</tt> calls. In OMNeT++/OMNEST, this waiting is embedded
-scheduler class. The Dyna/Real-Time example uses the <tt>cRealtimeScheduler</tt>
+into the scheduler class. The Dyna/Real-Time example uses the <tt>cRealtimeScheduler</tt>
 class, and this one uses <tt>cSocketRealTimeScheduler</tt> which also takes care
 of other tasks necessary in hardware-in-the-loop simulation.
 
