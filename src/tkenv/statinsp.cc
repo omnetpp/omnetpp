@@ -291,7 +291,7 @@ TOutVectorWindow::TOutVectorWindow(cObject *obj,int typ,const char *geom,void *d
    ov->record_in_inspector = record_in_insp;
    ov->data_for_inspector = (void *)this;
 
-   autoscale = TRUE;
+   autoscale = true;
    drawing_mode = DRAW_LINES;
    miny = 0; maxy = 10;
    time_factor = 1;   // x scaling
