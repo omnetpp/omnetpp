@@ -20,12 +20,12 @@ all : nedtool.exe
 #
 nedtool : nedtool.exe
 
-nedtool.exe : main.obj
-	$(LINK) $(LDFLAGS) /nologo /out:nedtool.exe main.obj $(LIBS) ../nedxml/nedxml.lib $(XML_LIBS)
+nedtool.exe : nedtool.obj
+	$(LINK) $(LDFLAGS) /nologo /out:nedtool.exe nedtool.obj $(LIBS) ../nedxml/nedxml.lib $(XML_LIBS)
 	copy nedtool.exe $(OMNETPP_BIN_DIR:/=\)
 
-main.obj : main.cc
-	$(CXX) $(COPTS) /I ../nedxml /c /Tp main.cc
+nedtool.obj : nedtool.cc
+	$(CXX) $(COPTS) /I ../nedxml /c /Tp nedtool.cc
 
 depend:
 	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc
@@ -37,6 +37,6 @@ clean:
 	-del *.ilk *.idb *.pdb *.pch 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-main.obj: main.cc \
+nedtool.obj: nedtool.cc \
   ../../include/platdep/misc.h \
   ../../include/platdep/fileutil.h

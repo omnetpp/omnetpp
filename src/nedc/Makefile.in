@@ -25,12 +25,12 @@ all: nedtool
 	chmod +x opp_msgc
 	cp opp_msgc $(OMNETPP_BIN_DIR)
 
-nedtool: main.o
-	$(CXX) $(LDFLAGS) -o nedtool main.o -L$(OMNETPP_LIB_DIR) -lnedxml $(XML_LIBS)
+nedtool: nedtool.o
+	$(CXX) $(LDFLAGS) -o nedtool nedtool.o -L$(OMNETPP_LIB_DIR) -lnedxml $(XML_LIBS)
 	../utils/install-prog nedtool $(OMNETPP_BIN_DIR)
 
-main.o: main.cc
-	$(CXX) -c $(COPTS) -I../nedxml main.cc
+nedtool.o: nedtool.cc
+	$(CXX) -c $(COPTS) -I../nedxml nedtool.cc
 
 depend:
 	$(MAKEDEPEND) -I. -- *.cc

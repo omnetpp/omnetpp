@@ -1,3 +1,7 @@
+2005-03-23  Andras Varga
+
+	* main.cc renamed to nedtool.cc
+
 2005-03-11  Andras Varga
 
 	* opp_msgc: fix: with customize=true, opp_msgc generates a comment in 
