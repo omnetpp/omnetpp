@@ -7,6 +7,7 @@
 # Local definitions
 #
 COPTS=$(CFLAGS)
+LDOPTS=$(LDFLAGS) /stack:0x1000000
 
 OBJS = \
   ../dyna/debug/client.obj \
@@ -62,7 +63,7 @@ default: demo.exe
 demo : demo.exe
 
 demo.exe : $(OBJS)
-	$(LINK) /out:"demo.exe" $(OBJS) $(LDFLAGS) $(OPP_LIBS) $(TK_LIBS) $(SYS_LIBS)
+	$(LINK) /out:"demo.exe" $(OBJS) $(LDOPTS) $(OPP_LIBS) $(TK_LIBS) $(SYS_LIBS)
 
 depend:
 	@ echo *** make depend not (yet) supported with MSVC
