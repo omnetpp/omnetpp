@@ -21,8 +21,8 @@
 
 #include <assert.h>
 #include <string.h>
-#include <fstream.h>   // ostream
-#include <iostream.h>  // ostream
+#include <akaroa.H>
+#include <akaroa/ak_message.H>
 #include "cenvir.h"
 #include "omnetapp.h"
 #include "cinifile.h"
@@ -31,9 +31,6 @@
 #include "cstat.h"
 #include "macros.h"
 #include "akoutvectormgr.h"
-#include <akaroa.H>
-#include <akaroa/ak_message.H>
-
 
 
 Register_Class(cAkOutputVectorManager);
@@ -55,8 +52,8 @@ void *cAkOutputVectorManager::registerVector(const char *modulename, const char 
 
     // see if this vector needs Akaroa control
     // section stands for RUN[]
-     char section[16];
-     sprintf(section,"Run %d", simulation.runNumber() );
+    char section[16];
+    sprintf(section,"Run %d", simulation.runNumber() );
 
     opp_string inientry;
     inientry.allocate(opp_strlen(modulename)+1+opp_strlen(vectorname)+sizeof(".akaroa")+1);

@@ -21,15 +21,7 @@
 
 #include <assert.h>
 #include <string.h>
-
-#ifdef USE_STD_NAMESPACE
 #include <fstream>
-using std::ofstream;
-using std::ios;
-#else
-#include <fstream.h>   // ofstream
-#endif
-
 #include "cenvir.h"
 #include "cinifile.h"
 #include "omnetapp.h"
@@ -38,6 +30,9 @@ using std::ios;
 #include "cstat.h"
 #include "macros.h"
 #include "filemgrs.h"
+
+using std::ofstream;
+using std::ios;
 
 
 Register_Class(cFileOutputVectorManager);

@@ -324,7 +324,6 @@ void TCmdenvApp::simulate()
         {
            ev.disable_tracing = true;
            Speedometer speedometer;
-           char buf1[32], buf2[32];
            while (true)
            {
                cSimpleModule *mod = simulation.selectNextModule();
@@ -345,7 +344,7 @@ void TCmdenvApp::simulate()
                                speedometer.simSecPerSec(),
                                speedometer.eventsPerSimSec());
 
-                       printf( "     Messages:  created: %ld   present: %ld   in FES: %ld\n",
+                       printf( "     Messages:  created: %ld   present: %ld   in FES: %d\n",
                                cMessage::totalMessageCount(),
                                cMessage::liveMessageCount(),
                                simulation.msgQueue.length());
