@@ -186,15 +186,9 @@ void TOmnetApp::setup()
              while (fname!=NULL)
              {
                  if (fname[0]=='@')
-                 {
-                     ev.printf("Processing list file: %s\n", fname+1);
-                     processListFile(fname+1);
-                 }
-                 else
-                 {
-                     ev.printf("Loading NED file: %s\n", fname);
-                     simulation.loadNedFile(fname);
-                 }
+                     globAndLoadListFile(fname+1);
+                 else if (fname[0])
+                     globAndLoadNedFile(fname);
                  fname = strtok(NULL, " ");
              }
              delete [] buf;
@@ -496,6 +490,28 @@ void TOmnetApp::makeOptionsEffective()
          genk_randseed( i, opt_genk_randomseed[i] );
 }
 
+void TOmnetApp::globAndLoadNedFile(const char *fnamepattern)
+{
+    Globber glob(fnamepattern);
+    const char *fname;
+    while ((fname=glob.getNext())!=NULL)
+    {
+        ev.printf("Loading NED file: %s\n", fname);
+        simulation.loadNedFile(fname);
+    }
+}
+
+void TOmnetApp::globAndLoadListFile(const char *fnamepattern)
+{
+    Globber glob(fnamepattern);
+    const char *fname;
+    while ((fname=glob.getNext())!=NULL)
+    {
+        ev.printf("Processing listfile: %s\n", fname);
+        processListFile(fname);
+    }
+}
+
 void TOmnetApp::processListFile(const char *listfilename)
 {
     // files should be relative to list file, so try cd into list file's directory
@@ -521,16 +537,11 @@ void TOmnetApp::processListFile(const char *listfilename)
         if (line[len-1]=='\n')
             line[len-1] = '\0';
         const char *fname = line;
+
         if (fname[0]=='@')
-        {
-            ev.printf("Processing sub-listfile: %s\n", fname+1);
-            processListFile(fname+1);
-        }
+            globAndLoadListFile(fname+1);
         else if (fname[0] && fname[0]!='#')
-        {
-            ev.printf("Loading NED file: %s\n", fname);
-            simulation.loadNedFile(fname);
-        }
+            globAndLoadNedFile(fname);
     }
 
     if (in.bad())

@@ -45,6 +45,11 @@
 #endif
 
 
+long getProcessId()
+{
+    return getpid();
+}
+
 void splitFileName(const char *pathname, opp_string& dir, opp_string& fnameonly)
 {
     if (!pathname || !*pathname)
@@ -127,11 +132,16 @@ const char *Globber::getNext()
             _findclose(data->handle);
             return NULL;
         }
+
+        // remember directory in data->dir
         strcpy(data->dir,(const char *)fnamepattern);
         char *s = data->dir + strlen(data->dir);
         while (--s>=data->dir)
             if (*s=='/' || *s=='\\')
-                {*(s+1)='\0'; break;}
+                break;
+        *(s+1)='\0';  // points (s+1) points either after last "/" or at beg of string.
+
+        // concat file name on directory
         strcpy(data->tmpfname,data->dir);
         strcat(data->tmpfname,data->fdata.name);
         return data->tmpfname;
@@ -145,6 +155,7 @@ const char *Globber::getNext()
             _findclose(data->handle);
             return NULL;
         }
+        // concat file name on directory
         strcpy(data->tmpfname,data->dir);
         strcat(data->tmpfname,data->fdata.name);
         return data->tmpfname;
@@ -189,8 +200,4 @@ const char *Globber::getNext()
 
 #endif
 
-long getProcessId()
-{
-    return getpid();
-}
 

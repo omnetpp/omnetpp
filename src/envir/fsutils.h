@@ -22,6 +22,11 @@
 #include "util.h"
 
 /**
+ * Wrapper around Unix getpid().
+ */
+long getProcessId();
+
+/**
  * Utility function to split a file path into directory and file name parts.
  */
 void splitFileName(const char *pathname, opp_string& dir, opp_string& fnameonly);
@@ -55,12 +60,6 @@ class Globber
     ~Globber();
     const char *getNext();
 };
-
-
-/**
- * Wrapper around Unix getpid().
- */
-long getProcessId();
 
 #endif
 

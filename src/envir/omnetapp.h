@@ -143,24 +143,28 @@ class ENVIR_API TOmnetApp
     virtual cIniFile *getIniFile();
 
     /**
-     * Used internally to read opt_xxxxx setting from ini file
+     * Used internally to read opt_xxxxx setting from ini file.
+     * Can be overloaded in subclasses, to support new options.
      */
     virtual void readOptions();
     virtual void readPerRunOptions(int run_nr);
 
     /**
-     * Utility function: optionally appends host name to fname
-     */
-    virtual void processFileName(opp_string& fname);
-
-    /**
      * Used internally to make options effective in cSimulation and other places
+     * Can be overloaded in subclasses, to support new options.
      */
     virtual void makeOptionsEffective();
 
-    /**
-     * Utility function: handles list files with dynamic NED loading
-     */
+    // Utility function: optionally appends host name to fname
+    virtual void processFileName(opp_string& fname);
+
+    // Utility function: NED file loading and list file handling
+    virtual void globAndLoadNedFile(const char *fnamepattern);
+
+    // Utility function: NED file loading and list file handling
+    virtual void globAndLoadListFile(const char *fnamepattern);
+
+    // Utility function: NED file loading and list file handling
     virtual void processListFile(const char *listfilename);
 
     /**
