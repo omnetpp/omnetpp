@@ -896,8 +896,8 @@ void TOmnetTkApp::readOptions()
     opt_extrastack = ini_file->getAsInt("Tkenv", "extra-stack", TKENV_EXTRASTACK);
     opt_default_run = ini_file->getAsInt( "Tkenv", "default-run", 0);
     opt_stepdelay = long(1000*ini_file->getAsTime( "Tkenv", "slowexec-delay", 0.3 )+.5);
-    opt_updatefreq_fast = ini_file->getAsInt( "Tkenv", "update-freq-fast", 10 );
-    opt_updatefreq_express = ini_file->getAsInt( "Tkenv", "update-freq-express", 500 );
+    opt_updatefreq_fast = ini_file->getAsInt( "Tkenv", "update-freq-fast", 50);
+    opt_updatefreq_express = ini_file->getAsInt( "Tkenv", "update-freq-express", 10000 );
     opt_bkpts_enabled = ini_file->getAsBool( "Tkenv", "breakpoints-enabled", true );
     opt_animation_enabled = ini_file->getAsBool( "Tkenv", "animation-enabled", true );
     opt_animation_msgnames = ini_file->getAsBool( "Tkenv", "animation-msgnames", true );

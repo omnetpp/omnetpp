@@ -1,3 +1,8 @@
+2003-09-01  Andras Varga
+
+	* tkapp.cc: default values for update-freq-fast and update-freq-express
+	changed to 50 and 10000
+
 2003-07-24  Andras Varga
 
 	* implemented Inspect|Find/Inspect objects dialog, a filtered-ordered 
