@@ -410,6 +410,7 @@ proc createMainWindow {{geom ""}} {
 
     global g tcl_version
 
+
     set w .
     wm focusmodel $w passive
     if {$geom != ""} {wm geometry $w $geom}
@@ -417,6 +418,7 @@ proc createMainWindow {{geom ""}} {
     wm minsize $w 1 1
     wm overrideredirect $w 0
     wm resizable $w 1 1
+    wm deiconify .
     wm protocol $w WM_DELETE_WINDOW "fileExit"
 
     #################################
