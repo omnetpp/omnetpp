@@ -100,8 +100,11 @@ void TStructPanel::displayStruct(cStructDescriptor *sd, int level)
                        sprintf(writeptr,"%*s    (no descriptor for %s)\n", indent, "", sd->getFieldTypeString(fld));
                        flushIfNeeded(FLUSHLIMIT);
                    }
-                   displayStruct(sd1,level+1);
-                   delete sd1;
+                   else 
+                   { 
+                       displayStruct(sd1,level+1);
+                       delete sd1;
+                   }
 
                    sprintf(writeptr,"}\n");
                    flushIfNeeded(FLUSHLIMIT);
@@ -118,7 +121,6 @@ void TStructPanel::displayStruct(cStructDescriptor *sd, int level)
            {
                switch(type)
                {
-                   // FIXME: handle enumnames too!
                    case cStructDescriptor::FT_BASIC_ARRAY:
                        sd->getFieldAsString(fld, i, val, 128); // FIXME: error handling!
                        if (sd->getFieldEnumName(fld))
