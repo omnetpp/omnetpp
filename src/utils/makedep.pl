@@ -1,55 +1,54 @@
 #
 # makedep.pl
 #
-#       This perl script will update dependencies in a makefile, or
-#       print dependencies to the standard output
-#
-# Usage:
-#
-#       % makedep.pl [flags] [--] <file_list>
-#
-# where possible flags are:
-#   -Y
-#   -I<include-dir>
-#   -I <include-dir>
-#   --stdout
-#   --f<makefile-name>
-#   --makefile <makefile-name>
-#   --objsuffix <object-file-suffix>
-#   --objdir <object-file-directory>
-#   --srcdir <source-directory>
-#   --objdirtree
-#
-# <file_list> is the list of C/C++ files for which dependencies must be generated.
-#
-# -- marks the end of the flags (optional).
-#
-# -Y causes makedep to ignore (and also leave out from the dependencies)
-#    the include files that cannot be found.
-#
-# -I adds directories to the include search path
-#
-# -f,--makefile specifies the makefile in which to substitute. Defaults to "Makefile".
-#
-# --stdout causes dependencies to be written to the standard output,
-#    (instead of updating a makefile)
-#
-# --objsuffix sets the suffix of the object filename. It defaults to ".o".
-#
-# --objdir sets the directory of the object filename.  Defaults to current dir.
-#
-# --objdirtree the object files are assumed to be in the same directory structure
-#    as the sources (by default, they're assumed to be all in the same directory)
-#
-# Bugs:
-#  - #include <foo.h> and #include "foo.h" are treated the same
-#  - ignores #ifdefs altogether
+# Update dependencies in a makefile.
 #
 # Based on the script at:
 #  http://faqchest.dynhost.com/prgm/perlu-l/perl-98/perl-9802/perl-980200/perl98020418_25228.html
 #
 # Rewritten by Andras Varga, 2001
 #
+
+$Usage =
+'Generate dependencies for a C/C++ program.
+
+Usage: makedep.pl [options] [--] <file_list>
+
+where possible options are:
+  --help
+  -Y
+  -I<include-dir>
+  -I <include-dir>
+  --stdout
+  -f<makefile-name>
+  --makefile <makefile-name>
+  --objsuffix <object-file-suffix>
+  --objdir <object-file-directory>
+  --srcdir <source-directory>
+  --objdirtree
+
+<file_list> is a list of C/C++ files for which dependencies must be generated.
+
+ -- marks the end of the flags (optional).
+ --help prints this message
+ -Y causes makedep to ignore (and also leave out from the dependencies)
+   the include files that cannot be found.
+ -I adds directories to the include search path
+ -f,--makefile specifies the makefile in which to substitute. Defaults to
+   "Makefile".
+ --stdout causes dependencies to be written to the standard output,
+   (instead of updating a makefile)
+ --objsuffix sets the suffix of the object filename. It defaults to ".o".
+ --objdir sets the directory of the object filename.  Defaults to current dir.
+ --srcdir specifies the directory for the source files.
+ --objdirtree the object files are assumed to be in the same directory
+   structure as the sources (by default, they are assumed to be all in the
+   same directory)
+
+Bugs:
+ - #include <foo.h> and #include "foo.h" are treated the same
+ - ignores #ifdefs altogether
+';
 
 
 # the #include syntax we are looking for
@@ -90,6 +89,15 @@ $Makefile = "Makefile";
 
 
 #
+# If no args, print usage
+#
+if ($#ARGV == -1)
+{
+    print $Usage;
+    exit(1);
+}
+
+#
 #  This first thing this script does is parse the command line
 #  for include path specifications, options, and files.
 #
@@ -106,6 +114,11 @@ while (@ARGV)
     elsif ($arg eq "--")
     {
         $accept_flags = 0;
+    }
+    elsif ($arg eq "--help")
+    {
+        print $Usage;
+        exit(1);
     }
     elsif ($arg eq "-I")
     {
@@ -152,13 +165,22 @@ while (@ARGV)
     }
     elsif ($arg =~ /^-/)
     {
-        print STDERR "makedep: ignoring unknown flag $arg\n";
+        print STDERR "makedep: ignoring unknown option $arg (--help prints valid options)\n";
     }
     else
     {
         # otherwise we have a file name that needs to be added to the file list
         push(@CFileList, $arg);
     }
+}
+
+#
+# If no files given, print warning
+#
+if ($#CFileList == -1)
+{
+    print STDERR "makedep: no input files\n";
+    exit(1);
 }
 
 #
@@ -170,7 +192,7 @@ $Deps = "";
 for (@CFileList)
 {
     @Includes = ();
-    &scan( $_ );
+    &scan( $SourceDirectory.$_ );
     $Deps .= &print_dep( $_, @Includes );
 }
 if ($UseStdout) {
@@ -195,10 +217,6 @@ sub scan {
    local($IncludeDir);
    local($IncludePathName);
 
-   if (!-e $filename)
-   {
-       $filename = $SourceDirectory . $filename;
-   }
    if (!open( INPUT, $filename ))
    {
        # be more tolerant if filename contains wildcard (which means the shell couldn't expand it)
@@ -213,12 +231,21 @@ sub scan {
    while ( <INPUT> ) {
       if ( /${Syntax}/ ) {
          $included = $1;
-         if ( $included !~ /^[.\/]/ ) {
-
+         if ( $included =~ /^\./ )
+         {
+            # relative path from current file
+            $filename =~ /^(.*?)[^\/]*$/;
+            $dir = $1;
+            $included = $dir.$included;
+         }
+         elsif ( $included =~ /^\// )
+         {
+            # absolute path -- no search needed
+         }
+         else
+         {
+            # look for file in the search path
             undef $found;
-            # if the include file name doesn't exist
-            # in the current directory,
-            # then check the include path for the file.
             if (-e $included)
             {
                 $found = $included;

@@ -8,7 +8,6 @@
 
 	* Makefile.in (all): use "ln -sf" instead of "ln -s" to avoid an
 	error when link already exists.
-
 	
 2001-05-24 Andras Varga
 
