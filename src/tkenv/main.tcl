@@ -133,7 +133,6 @@ proc create_omnetpp_window {} {
 
     # Trace menu
     foreach i {
-      {command -command module_windows -label {Module output...} -underline 0}
       {command -command message_windows -label {Message sending...} -underline 8}
       {separator}
       {command -command clear_windows -label {Clear main window} -underline 0}
