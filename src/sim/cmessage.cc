@@ -88,7 +88,7 @@ void cMessage::info(char *buf)
     else if (kind()==MK_STARTER)
     {
         cModule *tomodp = simulation.module(tomod);
-        sprintf(b,"starter T=%s for %s (id=%d) ",
+        sprintf(b,"T=%s starter for %s (id=%d) ",
                 simtimeToStr(delivd),
                 tomodp ? tomodp->fullPath() : deletedstr,
                 tomod);
@@ -96,7 +96,7 @@ void cMessage::info(char *buf)
     else if (kind()==MK_TIMEOUT)
     {
         cModule *tomodp = simulation.module(tomod);
-        sprintf(b,"timeout T=%s for %s (id=%d) ",
+        sprintf(b,"T=%s timeout for %s (id=%d) ",
                 simtimeToStr(delivd),
                 tomodp ? tomodp->fullPath() : deletedstr,
                 tomod);
@@ -104,7 +104,7 @@ void cMessage::info(char *buf)
     else if (frommod==tomod)
     {
         cModule *tomodp = simulation.module(tomod);
-        sprintf(b,"selfmsg T=%s for %s (id=%d) ",
+        sprintf(b,"T=%s selfmsg for %s (id=%d) ",
                 simtimeToStr(delivd),
                 tomodp ? tomodp->fullPath() : deletedstr,
                 tomod);
