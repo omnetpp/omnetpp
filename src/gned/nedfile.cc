@@ -9,11 +9,12 @@
   Copyright (C) 1992-2004 Andras Varga
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
-  `terms' for details on this and other legal matters.
+  `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
 
 #include <string.h>
+#include <ctype.h>
 #include <stdio.h>
 #include <time.h>
 #include <sys/stat.h>
@@ -47,10 +48,12 @@ bool NEDFile::readFile(const char *filename)
 {
     if (wholeFile) return false; // reinit not supported
 
-    // load file into memory
-    FILE *intmp = fopen(filename,"r");
-    if (!intmp)
-      return false;
+    // Note: must use binary mode on the file, otherwise due to CR/LF conversion
+    // the number of characters actually stored will be less than "size"
+    // (which is the same as fread()'s return value), and we'll get garbage
+    // at the end of the buffer.
+    FILE *intmp = fopen(filename,"rb");
+    if (!intmp) return false;
 
     struct stat statbuf;
     fstat(fileno(intmp), &statbuf);
@@ -80,9 +83,9 @@ bool NEDFile::setData(const char *data)
 //   is lineBeg[1]
 bool NEDFile::indexLines()
 {
-    // convert all CR and CR+LF into LF
+    // convert all CR and CR+LF into LF to avoid trouble
     char *s, *d;
-    for (s=d=wholeFile; *d; )
+    for (s=d=wholeFile; d==wholeFile || *(d-1); )
     {
         if (*s=='\r' && *(s+1)=='\n')  s++;
         else if (*s=='\r') {s++; *d++ = '\n';}
@@ -101,14 +104,18 @@ bool NEDFile::indexLines()
 
     // allocate array
     lineBeg = new char * [numLines+2];
-    if (!lineBeg) return false;
 
     // fill in array
+    lineBeg[0] = NULL;
     lineBeg[1] = wholeFile;
     int line = 2;
     for (s = wholeFile; *s; s++)
         if (*s=='\n')
             lineBeg[line++] = s+1;
+
+    // last line plus one points to end of file (terminating zero)
+    lineBeg[numLines+1] = s;
+
     return true;
 }
 
@@ -154,6 +161,9 @@ int NEDFile::lastColumn(char *s)
 
 char *NEDFile::getPosition(int line, int column)
 {
+    // tolerant version: if line is out of range, return beginning or end of file
+    if (line<1)
+        return lineBeg[1];
     if (line>numLines)
         return lineBeg[numLines]+strlen(lineBeg[numLines]);
 
@@ -208,13 +218,16 @@ char *NEDFile::getFileComment()
         li2++;
     }
 
+    // if file doesn't contain code line, take the whole file
+    if (li2>numLines) lastblank=numLines;
+
     // return comment block
     YYLTYPE comment;
     comment.first_line = 1;
     comment.first_column = 0;
     comment.last_line = lastblank+1;
     comment.last_column = 0;
-    return stripComment(get(comment),lastblank);
+    return stripComment(get(comment));
 }
 
 // topLineOfBannerComment()
@@ -225,10 +238,10 @@ char *NEDFile::getFileComment()
 int NEDFile::topLineOfBannerComment(int li)
 {
     // seek beginning of comment block
-    int indent = getIndent(lineBeg[li]);
+    int indent = getIndent(getPosition(li,0));
     while (li>=2 &&
-           lineType(lineBeg[li-1])==COMMENT_LINE  &&
-           getIndent(lineBeg[li-1])<=indent
+           lineType(getPosition(li-1,0))==COMMENT_LINE  &&
+           getIndent(getPosition(li-1,0))<=indent
            )
         li--;
     return li;
@@ -252,7 +265,7 @@ char *NEDFile::getBannerComment(YYLTYPE pos)
     comment.first_column = 0;
     comment.last_line = pos.first_line;
     comment.last_column = 0;
-    return stripComment(get(comment),comment.last_line-comment.first_line);
+    return stripComment(get(comment));
 }
 
 // getTrailingComment()
@@ -272,7 +285,7 @@ char *NEDFile::getTrailingComment(YYLTYPE pos)
     // seek 1st line after comment (lineafter)
     int lineafter;
 
-    if (pos.last_line==numLines) // 'pos' ends on last line of file
+    if (pos.last_line>=numLines) // 'pos' ends on last line of file
     {
         lineafter = numLines+1;
     }
@@ -280,7 +293,7 @@ char *NEDFile::getTrailingComment(YYLTYPE pos)
     {
         // seek fwd to next code line (or end of file)
         lineafter = pos.last_line+1;
-        while (lineafter<numLines && lineType(lineBeg[lineafter])!=CODE_LINE)
+        while (lineafter<numLines && lineType(getPosition(lineafter,0))!=CODE_LINE)
             lineafter++;
 
         // now seek back to beginning of comment block
@@ -293,7 +306,7 @@ char *NEDFile::getTrailingComment(YYLTYPE pos)
     comment.first_column = pos.last_column;
     comment.last_line = lineafter;
     comment.last_column = 0;
-    return stripComment(get(comment),comment.last_line-comment.first_line);
+    return stripComment(get(comment));
 }
 
 // stripComment()
@@ -301,8 +314,10 @@ char *NEDFile::getTrailingComment(YYLTYPE pos)
 //  comment marks "//" and spaces before them removed,
 //  lines without comments are replaced by a pure "-" line
 //
-char *NEDFile::stripComment(char *comment, int numlines)
+char *NEDFile::stripComment(char *comment)
 {
+    int numlines = numLines; // comment is at most as long as whole file
+
     // expand buffer if necessary
     if (commentBufLen <= int(strlen(comment))+numlines)
     {

@@ -42,7 +42,7 @@ class NEDFile
 
     bool indexLines();
     int topLineOfBannerComment(int li);
-    char *stripComment(char *s, int numlines);
+    char *stripComment(char *s);
 
   public:
     NEDFile();
