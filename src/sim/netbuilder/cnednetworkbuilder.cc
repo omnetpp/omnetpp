@@ -102,6 +102,10 @@ void cNEDNetworkBuilder::buildInside(cModule *modp, CompoundModuleNode *moduleno
         }
     }
 
+    // check if there are unconnected gates left
+    if (!conns || conns->getCheckUnconnected())
+        modp->checkInternalConnections();
+
     // recursively build the submodules too (top-down)
     for (cSubModIterator submod(*modp); !submod.end(); submod++)
     {

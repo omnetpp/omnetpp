@@ -181,7 +181,7 @@ cSimpleModule::~cSimpleModule()
         }
 
         // delete timeoutmsg if not currently scheduled (then it'll be deleted by message queue)
-        if (!timeoutmsg->isScheduled())
+        if (timeoutmsg && !timeoutmsg->isScheduled())
             delete timeoutmsg;
 
         // deallocate coroutine
