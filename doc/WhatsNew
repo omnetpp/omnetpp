@@ -126,7 +126,7 @@ Simulation kernel new features:
 Message subclassing, new NED compiler architecture:
 - The Perl-based message compiler opp_msgc is now available in bin/. Message
   subclassing is documented in the manual, and it is demonstrated by several
-  sample simulations. About 30 test cases deal with testing the generated code.
+  sample simulations. 40+ test cases deal with testing the generated code.
 
 - Added nedtool, the new NED and message compiler (alpha). nedtool converts
   NED from/to XML, providing much better integration possibilities (for example
@@ -173,7 +173,7 @@ Build:
 - Improved configure script. Now we support Tk8.4, and also optional packages
   like Akaroa.
 
-- Test suite: the number of test cases has grown from 19 to ~100 since
+- Test suite: the number of test cases has grown from 19 to about 120 since
   omnetpp-2.2; now it covers a bigger part of the core functionality (modules,
   messages, queues, parameter) as well as message subclassing and some aspects
   of NED and Cmdenv. Tests for the distributions are in test/distr.

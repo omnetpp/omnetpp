@@ -887,14 +887,29 @@ sub generateClass
             if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
                 print CC "    for (i=0; i<$farraysize{$fieldname}; i++)\n";
                 print CC "        this->$var{$fieldname}\[i\] = other.$var{$fieldname}\[i\];\n";
+                if ($classtype{$ftype{$fieldname}} eq 'cobject') {
+                    print CC "    for (i=0; i<$farraysize{$fieldname}; i++)\n";
+                    print CC "        this->$var{$fieldname}\[i\].setName(other.$var{$fieldname}\[i\].name());\n";
+                }
             } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
                 print CC "    delete [] this->$var{$fieldname};\n";
                 print CC "    this->$var{$fieldname} = new $datatype{$fieldname}\[other.$varsize{$fieldname}\];\n";
                 print CC "    $varsize{$fieldname} = other.$varsize{$fieldname};\n";
                 print CC "    for (i=0; i<$varsize{$fieldname}; i++)\n";
-                print CC "        this->$var{$fieldname}\[i\] = other.$var{$fieldname}\[i\];\n";
+                if ($classtype{$ftype{$fieldname}} eq 'cobject') {
+                    print CC "    {\n";
+                    print CC "        this->$var{$fieldname}\[i\].setOwner(this);\n";
+                    print CC "        this->$var{$fieldname}\[i\] = other.$var{$fieldname}\[i\];\n";
+                    print CC "        this->$var{$fieldname}\[i\].setName(other.$var{$fieldname}\[i\].name());\n";
+                    print CC "    }\n";
+                } else {
+                    print CC "        this->$var{$fieldname}\[i\] = other.$var{$fieldname}\[i\];\n";
+                }
             } else {
                 print CC "    this->$var{$fieldname} = other.$var{$fieldname};\n";
+                if (!$fisarray{$fieldname} && $classtype{$ftype{$fieldname}} eq 'cobject') {
+                    print CC "    this->$var{$fieldname}.setName(other.$var{$fieldname}.name());\n";
+                }
             }
         }
     }
@@ -933,8 +948,12 @@ sub generateClass
                 print CC "    for (i=0; i<sz; i++)\n";
                 print CC "        $var{$fieldname}2\[i\] = this->$var{$fieldname}\[i\];\n";
                 if ($fkind{$fieldname} eq 'basic') {
-                  print CC "    for (i=sz; i<size; i++)\n";
-                  print CC "        $var{$fieldname}2\[i\] = 0;\n";
+                    print CC "    for (i=sz; i<size; i++)\n";
+                    print CC "        $var{$fieldname}2\[i\] = 0;\n";
+                }
+                if ($classtype{$ftype{$fieldname}} eq 'cobject') {
+                    print CC "    for (i=sz; i<size; i++)\n";
+                    print CC "        $var{$fieldname}2\[i\].setOwner(this);\n";
                 }
                 print CC "    $varsize{$fieldname} = size;\n";
                 print CC "    delete [] this->$var{$fieldname};\n";

@@ -9,7 +9,6 @@ message {MyMessage}
 {
     fields:
         cQueue q[];
-        char c;
 };
 
 %global:
@@ -32,7 +31,6 @@ x.getQ(2).setName("q2"); x.getQ(2).insert(new cMessage());x.getQ(2).insert(new c
 PRINTOBJ(x.getQ(0));
 PRINTOBJ(x.getQ(1));
 PRINTOBJ(x.getQ(2));
-x.setC('x'); PRINT(x.getC());
 ev << "-" << endl;
 
 // assignment (doesn't copy object name, but contents must be transferred)
@@ -45,7 +43,6 @@ PRINTOBJ(x.getQ(2));
 x.getQ(0):cQueue:q0:owned:1
 x.getQ(1):cQueue:q1:owned:0
 x.getQ(2):cQueue:q2:owned:2
-x.getC():x
 -
 x.getQ(0):cQueue:q0:owned:2
 x.getQ(1):cQueue:q1:owned:0

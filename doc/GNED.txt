@@ -1,9 +1,6 @@
 GNED -- the OMNeT++ Graphical Network Editor
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Requirements:
-  at least 8.0p1 version of Tcl and Tk.
-
 Description:
   The GNED editor allows you to design compound modules graphically.
   GNED works with NED files -- no need for any nasty internal file format.
@@ -25,10 +22,6 @@ Description:
   Your changes in the NED source will be immediately backparsed to graphics;
   in fact, the graphics will be totally reconstructed from the NED source and
   the display strings in it.
-
-  GNED is now in BETA state. There are some missing functions and bugs, but 
-  overall it should be fairly reliable. See the TODO in the GNED directory for
-  problems and missing features.
 
 Comment parsing:
   It is useful to know how exactly GNED identifies the comments in the NED file.
@@ -100,7 +93,7 @@ Key/mouse bindings:
      module/connection:             bring up properties dialog
      Double-click on submodule:     go into submodule
 
-Development ideas:
+Further plans:
 
 - consistency checks
     Consistency of drawing: check that connection arrows start/end in their
@@ -110,8 +103,6 @@ Development ideas:
 
 - changing properties for all selected objects together
 
-In the very distant future, maybe...:
-
 - support for simple modules
     Generating C++ class declaration etc. for simple modules. Editing of
     C++ sources from within GNED.
@@ -120,8 +111,5 @@ In the very distant future, maybe...:
     Project file would contain list of module types used for a particular
     simulation, user interface selection etc.
     GNED would generate the makefile, build the executable, run it etc.
-
-- graphical design of simple modules
-    FSM, Petri Graph etc.
 
 Andras

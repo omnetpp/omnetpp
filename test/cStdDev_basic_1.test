@@ -1,0 +1,57 @@
+%description:
+basic use of cStdDev
+
+%global:
+void {print}(cStdDev& s)
+{
+    ev << "n=" << s.samples() << ":w=" << s.weights()
+       << ":S=" << s.sum() << ":SS=" << s.sqrSum()
+       << ":min=" << s.min() << ":max=" << s.max()
+       << ":mean=" << s.mean() << ":stddev=" << s.stddev()
+       << ":var=" << s.variance() << endl;
+}
+
+%activity:
+
+cStdDev sd;
+{print}(sd);
+
+sd.collect(5);  {print}(sd);
+sd.collect(4);  {print}(sd);
+sd.collect(3);  {print}(sd);
+sd.collect(2);  {print}(sd);
+sd.collect(1);  {print}(sd);
+ev << "-" << endl;
+
+sd.clearResult(); {print}(sd);
+sd.collect(5);    {print}(sd);
+sd.collect(5);    {print}(sd);
+sd.collect(5);    {print}(sd);
+ev << "-" << endl;
+
+sd.clearResult();  {print}(sd);
+sd.collect(1.23);  {print}(sd);
+sd.collect(4.52);  {print}(sd);
+sd.collect(-3.64); {print}(sd);
+sd.collect(-12.2); {print}(sd);
+ev << "-" << endl;
+
+%contains-regex: stdout
+n=0:w=0:S=0:SS=0:min=0:max=0:mean=0:stddev=0:var=0
+n=1:w=1:S=5:SS=25:min=5:max=5:mean=5:stddev=0:var=0
+n=2:w=2:S=9:SS=41:min=4:max=5:mean=4\.5:stddev=0\.70.*:var=0\.5
+n=3:w=3:S=12:SS=50:min=3:max=5:mean=4:stddev=1:var=1
+n=4:w=4:S=14:SS=54:min=2:max=5:mean=3\.5:stddev=1\.29.*:var=1\.66.*
+n=5:w=5:S=15:SS=55:min=1:max=5:mean=3:stddev=1\.58.*:var=2\.5
+-
+n=0:w=0:S=0:SS=0:min=0:max=0:mean=0:stddev=0:var=0
+n=1:w=1:S=5:SS=25:min=5:max=5:mean=5:stddev=0:var=0
+n=2:w=2:S=10:SS=50:min=5:max=5:mean=5:stddev=0:var=0
+n=3:w=3:S=15:SS=75:min=5:max=5:mean=5:stddev=0:var=0
+-
+n=0:w=0:S=0:SS=0:min=0:max=0:mean=0:stddev=0:var=0
+n=1:w=1:S=1\.23:SS=1\.5129:min=1\.23:max=1\.23:mean=1\.23:stddev=0:var=0
+n=2:w=2:S=5\.75:SS=21\.9433:min=1\.23:max=4\.52:mean=2\.875:stddev=2\.326.*:var=5\.412.*
+n=3:w=3:S=2\.11:SS=35\.1929:min=-3\.64:max=4\.52:mean=0\.703.*:stddev=4\.105.*:var=16\.854.*
+n=4:w=4:S=-10\.09:SS=184\.033:min=-12\.2:max=4\.52:mean=-2\.5225:stddev=7\.270.*:var=52\.860.*
+-

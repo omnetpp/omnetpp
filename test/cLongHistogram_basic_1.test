@@ -1,0 +1,37 @@
+%description:
+basic use of cLongHistogram
+
+%activity:
+
+cLongHistogram h;
+
+h.setNumCells(10);   // 10 cells
+h.setRangeAuto(2,1); // range set up after 2 observations, no range extension
+
+h.collect(10);
+h.collect(19);
+
+h.collect(9);
+h.collect(10);
+h.collect(12);
+h.collect(12);
+h.collect(20);
+
+ev << "n=" << h.samples() << ":mean=" << h.mean() << ":stddev=" << h.stddev() << endl;
+ev << "under=" << h.underflowCell() << ":over=" << h.overflowCell() << endl;
+for (int k=0; k<h.cells(); k++)
+    ev << h.basepoint(k) << ":" << h.basepoint(k+1) << ":" << h.cell(k) << endl;
+
+%contains-regex: stdout
+n=7:mean=13\.142.*:stddev=4\.488.*
+under=1:over=1
+9\.5:10\.5:2
+10\.5:11\.5:0
+11\.5:12\.5:2
+12\.5:13\.5:0
+13\.5:14\.5:0
+14\.5:15\.5:0
+15\.5:16\.5:0
+16\.5:17\.5:0
+17\.5:18\.5:0
+18\.5:19\.5:1

@@ -1,0 +1,122 @@
+%description:
+Copying and assignment for messages: dynamic arrays of struct and class members
+
+%file: {}.msg
+
+struct {MyStruct}
+{
+    fields:
+        int bb;
+}
+
+class {MyClass}
+{
+    fields:
+        int bb;
+}
+
+class cQueue;
+
+message {Base}
+{
+    fields:
+        {MyStruct} ms[];
+        {MyClass} mc[];
+        cQueue q[];
+}
+
+message {MyMessage} extends {Base}
+{
+    fields:
+        {MyStruct} ms2[];
+        {MyClass} mc2[];
+        cQueue q2[];
+};
+
+%global:
+#include "{}_m.h"
+
+void {print}(const char *what, {MyMessage}& x)
+{
+   ev << what << ":" << endl;
+   ev << "ms[]:" << x.getMsArraySize() << ":"
+                 << x.getMs(0).bb << ":"
+                 << x.getMs(1).bb << endl;
+   ev << "mc[]:" << x.getMcArraySize() << ":"
+                 << x.getMc(0).getBb() << ":"
+                 << x.getMc(1).getBb() << endl;
+   ev << "q[]:"  << x.getQArraySize() << ":"
+                 << x.getQ(0).name() << ":" << x.getQ(0).length() << ":"
+                 << x.getQ(1).name() << ":" << x.getQ(1).length() << endl;
+   ev << "ms2[]:" << x.getMs2ArraySize() << ":"
+                  << x.getMs2(0).bb << ":"
+                  << x.getMs2(1).bb << endl;
+   ev << "mc2[]:" << x.getMc2ArraySize() << ":"
+                  << x.getMc2(0).getBb() << ":"
+                  << x.getMc2(1).getBb() << endl;
+   ev << "q2[]:"  << x.getQ2ArraySize() << ":"
+                  << x.getQ2(0).name() << ":" << x.getQ2(0).length() << ":"
+                  << x.getQ2(1).name() << ":" << x.getQ2(1).length() << endl;
+   ev << "." << endl;
+}
+
+%activity:
+
+// set up tester classes
+{MyMessage} x;
+x.setMsArraySize(2);
+x.setMcArraySize(3);
+x.setQArraySize(4);
+x.setMs2ArraySize(5);
+x.setMc2ArraySize(6);
+x.setQ2ArraySize(7);
+
+x.getMs(0).bb=10;
+x.getMs(1).bb=11;
+x.getMc(0).setBb(20);
+x.getMc(1).setBb(21);
+x.getQ(0).setName("q(0)"); x.getQ(0).insert(new cMessage);
+x.getQ(1).setName("q(1)"); x.getQ(1).insert(new cMessage); x.getQ(1).insert(new cMessage);
+x.getMs2(0).bb=30;
+x.getMs2(1).bb=31;
+x.getMc2(0).setBb(40);
+x.getMc2(1).setBb(41);
+x.getQ2(0).setName("q2(0)"); x.getQ2(0).insert(new cMessage);x.getQ2(0).insert(new cMessage);
+x.getQ2(1).setName("q2(1)"); x.getQ2(1).insert(new cMessage);
+
+{print}("x",x);
+
+// copy constructor
+{MyMessage} x1(x);
+{print}("x1(x)",x1);
+
+// assigment
+{MyMessage} x2;
+x2 = x;
+{print}("x2=x",x2);
+
+%contains: stdout
+x:
+ms[]:2:10:11
+mc[]:3:20:21
+q[]:4:q(0):1:q(1):2
+ms2[]:5:30:31
+mc2[]:6:40:41
+q2[]:7:q2(0):2:q2(1):1
+.
+x1(x):
+ms[]:2:10:11
+mc[]:3:20:21
+q[]:4:q(0):1:q(1):2
+ms2[]:5:30:31
+mc2[]:6:40:41
+q2[]:7:q2(0):2:q2(1):1
+.
+x2=x:
+ms[]:2:10:11
+mc[]:3:20:21
+q[]:4:q(0):1:q(1):2
+ms2[]:5:30:31
+mc2[]:6:40:41
+q2[]:7:q2(0):2:q2(1):1
+.

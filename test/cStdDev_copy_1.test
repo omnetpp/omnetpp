@@ -1,0 +1,38 @@
+%description:
+copying cStdDev
+
+%global:
+void {print}(cStdDev& s)
+{
+    ev << s.name() << ":n=" << s.samples() << ":w=" << s.weights()
+       << ":S=" << s.sum() << ":SS=" << s.sqrSum()
+       << ":min=" << s.min() << ":max=" << s.max()
+       << ":mean=" << s.mean() << ":stddev=" << s.stddev()
+       << ":var=" << s.variance() << endl;
+}
+
+%activity:
+
+#define PRINT(X) ev << #X << ":" << X << endl
+
+cStdDev sd("stddev");
+sd.collect(4);
+sd.collect(8);
+sd.collect(3);
+sd.collect(1);
+{print}(sd);
+
+// copy ctor
+cStdDev sd2(sd);
+{print}(sd2);
+
+// op=()
+cStdDev sd3("other");
+sd3 = sd;
+{print}(sd3);
+
+%contains-regex: stdout
+stddev:n=4:w=4:S=16:SS=90:min=1:max=8:mean=4:stddev=2\.943.*:var=8\.666.*
+stddev:n=4:w=4:S=16:SS=90:min=1:max=8:mean=4:stddev=2\.943.*:var=8\.666.*
+other:n=4:w=4:S=16:SS=90:min=1:max=8:mean=4:stddev=2\.943.*:var=8\.666.*
+
