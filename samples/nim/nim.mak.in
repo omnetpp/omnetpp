@@ -42,7 +42,6 @@ CLEAN :
 	-@erase "$(INTDIR)\game.obj"
 	-@erase "$(INTDIR)\nim_n.obj"
 	-@erase "$(INTDIR)\players.obj"
-	-@erase "$(INTDIR)\qqq.obj"
 	-@erase "$(INTDIR)\vc60.idb"
 	-@erase "$(INTDIR)\vc60.pdb"
 	-@erase "$(OUTDIR)\nim.exe"
@@ -98,8 +97,7 @@ LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib use
 LINK32_OBJS= \
 	"$(INTDIR)\game.obj" \
 	"$(INTDIR)\nim_n.obj" \
-	"$(INTDIR)\players.obj" \
-	"$(INTDIR)\qqq.obj"
+	"$(INTDIR)\players.obj"
 
 "$(OUTDIR)\nim.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
    lofasz=aaa
@@ -124,7 +122,6 @@ CLEAN :
 	-@erase "$(INTDIR)\game.obj"
 	-@erase "$(INTDIR)\nim_n.obj"
 	-@erase "$(INTDIR)\players.obj"
-	-@erase "$(INTDIR)\qqq.obj"
 	-@erase "$(INTDIR)\vc60.idb"
 	-@erase "$(INTDIR)\vc60.pdb"
 	-@erase "$(OUTDIR)\nim.exe"
@@ -180,8 +177,7 @@ LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib 
 LINK32_OBJS= \
 	"$(INTDIR)\game.obj" \
 	"$(INTDIR)\nim_n.obj" \
-	"$(INTDIR)\players.obj" \
-	"$(INTDIR)\qqq.obj"
+	"$(INTDIR)\players.obj"
 
 "$(OUTDIR)\nim.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
@@ -203,7 +199,6 @@ CLEAN :
 	-@erase "$(INTDIR)\game.obj"
 	-@erase "$(INTDIR)\nim_n.obj"
 	-@erase "$(INTDIR)\players.obj"
-	-@erase "$(INTDIR)\qqq.obj"
 	-@erase "$(INTDIR)\vc60.idb"
 	-@erase "$(OUTDIR)\nim.exe"
 
@@ -256,8 +251,7 @@ LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib use
 LINK32_OBJS= \
 	"$(INTDIR)\game.obj" \
 	"$(INTDIR)\nim_n.obj" \
-	"$(INTDIR)\players.obj" \
-	"$(INTDIR)\qqq.obj"
+	"$(INTDIR)\players.obj"
 
 "$(OUTDIR)\nim.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
@@ -279,7 +273,6 @@ CLEAN :
 	-@erase "$(INTDIR)\game.obj"
 	-@erase "$(INTDIR)\nim_n.obj"
 	-@erase "$(INTDIR)\players.obj"
-	-@erase "$(INTDIR)\qqq.obj"
 	-@erase "$(INTDIR)\vc60.idb"
 	-@erase "$(OUTDIR)\nim.exe"
 
@@ -332,8 +325,7 @@ LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib 
 LINK32_OBJS= \
 	"$(INTDIR)\game.obj" \
 	"$(INTDIR)\nim_n.obj" \
-	"$(INTDIR)\players.obj" \
-	"$(INTDIR)\qqq.obj"
+	"$(INTDIR)\players.obj"
 
 "$(OUTDIR)\nim.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
@@ -418,12 +410,6 @@ SOURCE=.\nim_n.cpp
 SOURCE=.\players.cpp
 
 "$(INTDIR)\players.obj" : $(SOURCE) "$(INTDIR)"
-
-
-SOURCE=.\qqq.cpp
-
-"$(INTDIR)\qqq.obj" : $(SOURCE) "$(INTDIR)"
-
 
 
 !ENDIF 

@@ -206,10 +206,6 @@ SOURCE=.\nim_n.cpp
 
 SOURCE=.\players.cpp
 # End Source File
-# Begin Source File
-
-SOURCE=.\qqq.cpp
-# End Source File
 # End Group
 # Begin Group "Header Files"
 
