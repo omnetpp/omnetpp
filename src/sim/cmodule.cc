@@ -669,7 +669,7 @@ cSimpleModule& cSimpleModule::operator=(const cSimpleModule& other)
 void cSimpleModule::info(char *buf)
 {
     // no call to cObject::info()!
-    sprintf(buf,"%-20.20s (%s,#%d)", fullName(), className(), id() );
+    sprintf(buf,"%-20.20s (%s) (id=%d)", fullName(), className(), id() );
 }
 
 void cSimpleModule::forEach(ForeachFunc do_fn)
@@ -1366,7 +1366,7 @@ cCompoundModule::~cCompoundModule()
 
 void cCompoundModule::info( char *buf )
 {
-    sprintf(buf,"%-15.15s (%s,#%d)", fullName(), className(), id() );
+    sprintf(buf,"%-15.15s (%s) (id=%d)", fullName(), className(), id() );
 }
 
 cCompoundModule& cCompoundModule::operator=(const cCompoundModule& mod)

@@ -276,7 +276,7 @@ void cModuleInterface::check_consistency()
 
     error2:
     throw new cException("Inconsistent module interfaces (Interface..End) for `%s':"
-                     " %s `%s' (#%d) do not match",
+                     " %s `%s' (id=%d) do not match",
                      name(), what, which, id);
 }
 

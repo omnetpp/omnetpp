@@ -198,7 +198,7 @@ static void writemodule( ostream& os, cModule& m, int indent )
 {
     static char sp[] = "                                                 ";
     os << (sp+sizeof(sp)-indent) << "`" << m.fullName() << "'";
-    os << " #" << m.id() << " ";
+    os << " id=" << m.id() << " ";
     //os <<  (m.isSimple() ? "simple" : "compound");
     os <<  "(" << m.moduleType()->name() << ")\n";
 }

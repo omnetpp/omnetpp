@@ -85,21 +85,21 @@ void cMessage::info(char *buf)
     }
     else if (kind()==MK_STARTER)
     {
-        sprintf(b,"starter T=%s for %s (#%d) ",
+        sprintf(b,"starter T=%s for %s (id=%d) ",
                 simtimeToStr(delivd),
                 simulation.module(tomod)->fullPath(),
                 tomod);
     }
     else if (kind()==MK_TIMEOUT)
     {
-        sprintf(b,"timeout T=%s for %s (#%d) ",
+        sprintf(b,"timeout T=%s for %s (id=%d) ",
                 simtimeToStr(delivd),
                 simulation.module(tomod)->fullPath(),
                 tomod);
     }
     else if (frommod==tomod)
     {
-        sprintf(b,"selfmsg T=%s for %s (#%d) ",
+        sprintf(b,"selfmsg T=%s for %s (id=%d) ",
                 simtimeToStr(delivd),
                 simulation.module(tomod)->fullPath(),
                 tomod);
@@ -107,12 +107,12 @@ void cMessage::info(char *buf)
     else
     {
         // 2 sprintfs cannot be merged because of static buffer in fullPath()
-        sprintf(b,"T=%s src=%s (#%d), ",
+        sprintf(b,"T=%s src=%s (id=%d), ",
                 simtimeToStr(delivd),
                 simulation.module(frommod)->fullPath(),
                 frommod);
         while(*b) b++;
-        sprintf(b,"dest=%s (#%d) ",
+        sprintf(b,"dest=%s (id=%d) ",
                 simulation.module(tomod)->fullPath(),
                 tomod);
     }
@@ -127,14 +127,15 @@ void cMessage::forEach( ForeachFunc do_fn )
 
 void cMessage::writeContents(ostream& os)
 {
-    os << "  #" << senderModuleId() << " --> #" << arrivalModuleId()  << '\n';
+    os << "  sender:    id=" << senderModuleId() << '\n';
+    os << "  dest.:     id=" << arrivalModuleId() << '\n';
     os << "  sent:      " << simtimeToStr(sendingTime()) << '\n';
     os << "  arrived:   " << simtimeToStr(arrivalTime()) << '\n';
     os << "  length:    " << length() << '\n';
     os << "  kind:      " << kind() << '\n';
     os << "  priority:  " << priority() << '\n';
     os << "  error:     " << (hasBitError() ? "true" : "false") << '\n';
-    os << "  time stamp:" << simtimeToStr(timestamp()) << '\n';
+    os << "  timestamp: " << simtimeToStr(timestamp()) << '\n';
     if (parlistp) {
         os << "  parameter list:\n";
         parlistp->writeContents( os );

@@ -2,6 +2,8 @@
 
 	* always use <iostream> instead of <iostream.h>
 
+	* module id notation in info() strings changed from #nnn to id=nnn
+
 2002-12-07  Andras Varga
 
 	* cmessage.cc: info() now includes names of src/dest modules too;
