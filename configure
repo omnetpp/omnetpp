@@ -4997,6 +4997,7 @@ s,@OMNETPP_SRC_DIR@,$OMNETPP_SRC_DIR,;t t
 s,@OMNETPP_DOC_DIR@,$OMNETPP_DOC_DIR,;t t
 s,@OMNETPP_SAMPLES_DIR@,$OMNETPP_SAMPLES_DIR,;t t
 s,@OMNETPP_TUTORIAL_DIR@,$OMNETPP_TUTORIAL_DIR,;t t
+s,@OMNETPP_TEST_DIR@,$OMNETPP_TEST_DIR,;t t
 s,@MYPWD@,$MYPWD,;t t
 s,@NEDC@,$NEDC,;t t
 s,@NEDCFLAGS@,$NEDCFLAGS,;t t
@@ -5136,7 +5137,7 @@ done; }
   esac
 
   if test x"$ac_file" != x-; then
-    { echo "$as_me:5139: creating $ac_file" >&5
+    { echo "$as_me:5140: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
     rm -f "$ac_file"
   fi
@@ -5154,7 +5155,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:5157: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:5158: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -5167,7 +5168,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:5170: error: cannot find input file: $f" >&5
+           { { echo "$as_me:5171: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;

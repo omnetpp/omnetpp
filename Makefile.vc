@@ -157,7 +157,7 @@ thetutorial:
 	cd /d $(OMNETPP_TUTORIAL_DIR:/=\)\queues && $(MAKE) $(MOPTS) -f queues.mak
 
 
-test: check-env libs progs 
+tests: check-env libs progs 
 	@echo ===== Running tests ====
 	@echo Error: Tests not (yet) supported on NT using MSVC; try Cygwin.
         @exit 1

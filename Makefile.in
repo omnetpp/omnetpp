@@ -125,7 +125,7 @@ docs:
 #
 # Test
 #
-test:
+tests: libs progs
 	cd $(OMNETPP_TEST_DIR) && $(MAKE)
 
 #=====================================================================
