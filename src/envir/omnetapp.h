@@ -102,7 +102,7 @@ class ENVIR_API TOmnetApp
 
     /** @name Functions called from cEnvir's similar functions */
     virtual void setup();
-    virtual void run() = 0;
+    virtual int run() = 0;
     virtual void shutdown();
 
     virtual void startRun();

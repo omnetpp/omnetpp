@@ -212,14 +212,17 @@ void cEnvir::setup(int argc, char *argv[])
     }
 }
 
-void cEnvir::run()
+int cEnvir::run()
 {
-    if (app) app->run();
+    if (app) 
+        return app->run();
+    return 1;
 }
 
 void cEnvir::shutdown()
 {
-    if (app) app->shutdown();
+    if (app)
+        app->shutdown();
     delete app;
     app = NULL;
 }

@@ -53,15 +53,17 @@ TSlaveApp::~TSlaveApp()
 {
 }
 
-void TSlaveApp::run()
+int TSlaveApp::run()
 {
      if (!initialized)
-         return;
+         return 1;
 
      // FIXME setupSignals();
 
      // execute a simulation run, then exit
      int run_nr = simulation.netInterface()->receive_runnumber();
+
+     bool had_error = false;
 
      bool setupnetwork_done = false;
      bool startrun_done = false;
@@ -98,6 +100,7 @@ void TSlaveApp::run()
      }
      catch (cException *e)
      {
+         had_error = true;
          displayError(e);
          delete e;
      }
@@ -111,6 +114,7 @@ void TSlaveApp::run()
          }
          catch (cException *e)
          {
+             had_error = true;
              displayError(e);
              delete e;
          }
@@ -125,10 +129,16 @@ void TSlaveApp::run()
          }
          catch (cException *e)
          {
+             had_error = true;
              displayError(e);
              delete e;
          }
      }
+
+     if (had_error)
+         return 1;
+     else 
+         return 0;
 }
 
 void TSlaveApp::simulate()

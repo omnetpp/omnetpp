@@ -44,7 +44,7 @@ class ENVIR_API TSlaveApp : public TOmnetApp
      ~TSlaveApp();
 
      // redefined functions
-     virtual void run();
+     virtual int run();
      virtual void shutdown();
 
      virtual void readOptions();
