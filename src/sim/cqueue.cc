@@ -226,11 +226,14 @@ void cQueue::insertBefore(cObject *where, cObject *obj)
         return;
     }
     sQElem *p = find_qelem(where);
-    if (p)
-        insbefore_qelem(p,obj);
-    else
+    if (!p) {
         opp_error("(%s)%s: insertBefore(w,o): object w=`%s' not in queue",
                   className(),fullName(),where->name());
+        return;
+    }
+
+    if (takeOwnership()) take(obj);
+    insbefore_qelem(p,obj);
 }
 
 void cQueue::insertAfter(cObject *where, cObject *obj)
@@ -240,11 +243,14 @@ void cQueue::insertAfter(cObject *where, cObject *obj)
         return;
     }
     sQElem *p = find_qelem(where);
-    if (p)
-        insafter_qelem(p,obj);
-    else
+    if (!p) {
         opp_error("(%s)%s: insertAfter(w,o): object w=`%s' not in queue",
                   className(),fullName(),where->name());
+        return;
+    }
+
+    if (takeOwnership()) take(obj);
+    insafter_qelem(p,obj);
 }
 
 cObject *cQueue::head()
