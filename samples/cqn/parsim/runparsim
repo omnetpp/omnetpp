@@ -9,8 +9,8 @@ rm -rf comm
 mkdir comm
 mkdir comm/read
 
-../cqn -p0,3  > cqn-0.log &
-../cqn -p1,3  > cqn-1.log &
-../cqn -p2,3  > cqn-2.log &
+../cqn -p0,3 $* > cqn-0.log &
+../cqn -p1,3 $* > cqn-1.log &
+../cqn -p2,3 $* > cqn-2.log &
 
 
