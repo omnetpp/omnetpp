@@ -1,3 +1,5 @@
+2004-05-15  ------ omnetpp-3.0a4 released ------
+
 2004-03-22  ------ omnetpp-3.0a3 released ------
 
 FIXME make inspectors more consistent:
@@ -18,12 +20,12 @@ TODO: needed new mode: express run for other modules, fast/normal for this modul
 FIXME: container inspector listboxes: always prints "0 objects"
 FIXME: "r=" bug: if I also have "q=queue" or "t=some text" tags, the circle 
 is no longer centered around the icon
+TODO: page should also display className(), info() etc of control info object
 
 
 2004-04-20  Andras Varga
 
 	* added "Control Info" page into cMessage inspector.
-TODO: page should also display className(), info() etc of control info object
 
 2004-03-18  Andras Varga
 
