@@ -99,6 +99,8 @@ cSimulation::cSimulation(const char *name) :
 
     runningmodp = NULL;
     contextmodp = NULL;
+    contexttype = CTX_EVENT;
+
     systemmodp = NULL;
     schedulerp = NULL;
 
@@ -124,7 +126,7 @@ void cSimulation::init()
 {
     // remove ourselves from ownership tree because global variables
     // shouldn't be destroyed via operator delete. This cannot be done
-    // from the ctor, because this method calls virtual functions of 
+    // from the ctor, because this method calls virtual functions of
     // defaultList, and defaultList might not be initialized yet at that point.
     // take() cannot be done from the ctor for the same reason.
     removeFromOwnershipTree();
@@ -609,9 +611,10 @@ void cSimulation::transferToMain()
     }
 }
 
-void cSimulation::setContextModule(cModule *p)
+void cSimulation::setContextModule(cModule *p, int ctxtype)
 {
     contextmodp = p;
+    contexttype = ctxtype;
     cObject::setDefaultOwner(p);
 }
 

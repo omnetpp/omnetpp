@@ -26,9 +26,8 @@
 #ifndef __CTYPES_H
 #define __CTYPES_H
 
-#include "defs.h"
-
 #include <stdarg.h>
+#include "defs.h"
 #include "globals.h"
 #include "cobject.h"
 

@@ -562,7 +562,7 @@ cPar& cModule::ancestorPar(const char *name)
 int cModule::buildInside()
 {
     // temporarily switch context
-    cContextSwitcher tmp(this);
+    cContextSwitcher tmp(this, CTX_BUILDINSIDE);
 
     // check parameters and gates  FIXME only if module interface exists?
     cModuleInterface *iface = moduleType()->moduleInterface();
@@ -641,7 +641,7 @@ bool cModule::callInitialize(int stage)
     if (stage < numStages)
     {
         // temporarily switch context for the duration of the call
-        cContextSwitcher tmp(this);
+        cContextSwitcher tmp(this, CTX_INITIALIZE);
         initialize(stage);
     }
 
@@ -667,7 +667,7 @@ void cModule::callFinish()
     }
 
     // ...then for this module, in our context
-    cContextSwitcher tmp(this);
+    cContextSwitcher tmp(this, CTX_FINISH);
     finish();
 }
 

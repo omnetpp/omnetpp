@@ -1,3 +1,7 @@
+2004-07-10   Andras Varga
+
+	* csimul.cc,cmodule.cc,util.cc: added cSimulation::contextType() stuff
+
 2004-07-05   Andras Varga
 
 	* csimplemodule.cc: recordScalar() functions for text and cStatistic 

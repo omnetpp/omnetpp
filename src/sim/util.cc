@@ -434,11 +434,12 @@ const char *opp_typename(const std::type_info& t)
 
 //==========================================================================
 
-cContextSwitcher::cContextSwitcher(cModule *thisptr)
+cContextSwitcher::cContextSwitcher(cModule *thisptr, int ctxtype)
 {
     // save current context and switch to new
     callerContext = simulation.contextModule();
-    simulation.setContextModule(thisptr);
+    contexttype = simulation.contextType();
+    simulation.setContextModule(thisptr, ctxtype);
 }
 
 cContextSwitcher::~cContextSwitcher()
@@ -447,7 +448,7 @@ cContextSwitcher::~cContextSwitcher()
     if (!callerContext)
         simulation.setGlobalContext();
     else
-        simulation.setContextModule(callerContext);
+        simulation.setContextModule(callerContext, contexttype);
 }
 
 void cContextSwitcher::methodCall(const char *fmt,...)

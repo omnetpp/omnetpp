@@ -49,7 +49,6 @@ class  cParsimPartition;
  */
 SIM_API extern cSimulation simulation;
 
-//==========================================================================
 
 /**
  * Simulation manager class.  cSimulation is the central class in OMNeT++, and
@@ -78,6 +77,7 @@ class SIM_API cSimulation : public cObject
     cModule *systemmodp;      // pointer to system module
     cSimpleModule *runningmodp; // the module currently executing activity() (NULL if handleMessage() or in main)
     cModule *contextmodp;     // module in context (or NULL)
+    int contexttype;          // CTX_BUILDINSIDE, CTX_EVENT, CTX_INITIALIZE or CTX_FINISH
     cNetworkType *networktype; // network type
     cScheduler *schedulerp;   // event scheduler
 
@@ -294,7 +294,7 @@ class SIM_API cSimulation : public cObject
      * If there's no more event (FES is empty), it throws cTerminationException.
      *
      * A NULL return value means that there's no error but execution
-     * was stopped by the user (e.g. with STOP button on the GUI) 
+     * was stopped by the user (e.g. with STOP button on the GUI)
      * while selectNextModule() --or rather, the installed cScheduler object--
      * was waiting for external synchronization.
      */
@@ -341,7 +341,7 @@ class SIM_API cSimulation : public cObject
     /**
      * Sets the module in context. Used internally.
      */
-    void setContextModule(cModule *p);
+    void setContextModule(cModule *p, int ctxtype=CTX_EVENT);
 
     /**
      * Sets global context. Used internally.
@@ -357,6 +357,13 @@ class SIM_API cSimulation : public cObject
      * Returns the module currently in context.
      */
     cModule *contextModule() const {return contextmodp;}
+
+    /**
+     * Return value only valid if contextModule()!=NULL. Returns one of:
+     * CTX_BUILDINSIDE, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH depending on
+     * what the module in context is doing.
+     */
+    int contextType() const {return contexttype;}
 
     /**
      * Returns the module currently in context as a simple module.

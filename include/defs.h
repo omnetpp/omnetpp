@@ -106,6 +106,7 @@ typedef double       simtime_t;
 
 #define MAXTIME      HUGE_VAL
 
+
 //
 // memory mgmt functions for void* pointers  (used by cLinkedList and cPar)
 //

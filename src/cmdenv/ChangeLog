@@ -8,6 +8,7 @@
 	  module-messages=true
 	  **.tcpdump.ev-output=true
 	  **.ev-output=false
+	ev<< in finish() is always fully printed.
 
 2004-07-06  Andras Varga
 

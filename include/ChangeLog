@@ -3,6 +3,10 @@
 	* cmodule.cc: added ev_enabled to cModule -- this makes it possible
 	to select in Cmdenv which modules' output you want to see.
 
+	* csimul.h,util.h: added cSimulation::contextType() to make it
+	available from Envir what a module's doing (CTX_INITALIZE, CTX_EVENT,
+	CTX_FINISH, etc)
+
 2004-07-05   Andras Varga
 
 	* csimplemodule.h, cenvir.h, envirext.h: recordScalar() functions for

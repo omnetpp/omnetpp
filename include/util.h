@@ -22,10 +22,11 @@
 #include <typeinfo>  // for type_info
 #include "defs.h"
 
-
 // forward declarations
 class cModule;
 
+// logically belongs to csimul.h but must be here because of declaration order
+enum {CTX_BUILDINSIDE, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH};
 
 //
 // #defines provided for backwards compatibility.
@@ -355,11 +356,12 @@ class cContextSwitcher
 {
   private:
     cModule *callerContext;
+    int contexttype;
   public:
     /**
      * Switches context to the given module
      */
-    cContextSwitcher(cModule *thisptr);
+    cContextSwitcher(cModule *thisptr, int ctxtype=CTX_EVENT);
 
     /**
      * Restores the original context
