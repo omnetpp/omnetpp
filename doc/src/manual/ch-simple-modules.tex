@@ -1424,8 +1424,8 @@ callFinish()
 
 
 Usually you should not put simulation-related code into the
-simple module constructor\index{module!constructor}. For
-example, modules often need to investigate their surroundings (maybe
+simple module constructor\index{module!constructor}. This is because
+modules often need to investigate their surroundings (maybe
 the whole network) at the beginning of the simulation and save the
 collected info into internal tables.  Code like that cannot be placed
 into the constructor since the network is still being set up when the
@@ -1438,15 +1438,15 @@ constructor is called.
 Keep in mind that \fname{finish()} is not always called, so it isn't a
 good place for cleanup code which should run every time the module is
 deleted. \fname{finish()} is only a good place for writing statistics,
-result post-processing and other stuff which are to run only on
+result post-processing and other operations  which are supposed to run only on
 successful completion.
 
-Cleanup code should go into the destructor\index{module!destructor}. But in
-fact, you almost never need to write a destructor because {\opp}
+Cleanup code should go into the destructor\index{module!destructor}. 
+Actually, you rarely need to write a destructor yourself, because {\opp}
 keeps track of objects you create and disposes of them automatically
-(sort of automatic garbage collection). However it cannot track
-objects not derived from \cclass{cObject}, so they may
-need to be deleted manually from the destructor. Garbage collection
+(a sort of automatic garbage collection). It cannot track
+objects that are not derived from \cclass{cObject}, however, so they may
+need to be deleted manually by the destructor. Garbage collection
 is discussed in more detail in section \ref{sec:ch-sim-lib:garbage-collection}.
 
 
@@ -1490,15 +1490,14 @@ stage)} simply calls \fname{initialize()}.
 \subsubsection{``End-of-Simulation'' event}
 
 
-The task of \fname{finish()} is solved in many simulators (e.g. OPNET)
-by introducing a special
-\textit{end-of-simulation}\index{end-of-simulation} event. This is not
-a very good practice because the simulation programmer has to code the
-models (often represented as FSMs) so that they can \textit{always} properly
-respond to end-of-simulation events, in whichever state they are. This
+The task of \fname{finish()} is solved in several simulators
+by introducing a special \textit{end-of-simulation}\index{end-of-simulation} event. 
+This is not a very good practice because the simulation programmer has to 
+code the models (often represented as FSMs) so that they can \textit{always}
+properly respond to end-of-simulation events, in whichever state they are. This
 often makes program code unnecessarily complicated.
 
-This fact is also evidenced in the design of the PARSEC\index{PARSEC}
+This can also be witnessed in the design of the PARSEC\index{PARSEC}
 simulation language (UCLA). Its predecessor Maisie used
 end-of-simulation events, but -- as documented in the PARSEC manual --
 this has led to awkward programming in many cases, so for PARSEC
@@ -1559,7 +1558,7 @@ The key points are:
     Transient states are therefore not really a must -- they exist
     only to group actions to be taken during a transition in a
     convenient way.}
-\item{You can assign program code to entering and leaving a state
+\item{You can assign program code to handle entering and leaving a state
     (known as entry/exit code)\index{entry code}\index{exit code}.
     Staying in the same state is handled as leaving and re-entering
     the state.}
@@ -1579,10 +1578,10 @@ state space if it would become too large.
 
 
 FSM state is stored in an object of type \cclass{cFSM}. The possible states
-are defined by an enum; the enum is also a place to tell which
+are defined by an enum; the enum is also a place to define, which
 state is transient and which is steady. In the following example, SLEEP
 and ACTIVE are steady states and SEND is transient (the numbers
-in parens must be unique within the state type and they are used
+in parentheses must be unique within the state type and they are used
 for constructing the numeric IDs for the states):
 
 \begin{verbatim}
@@ -1680,7 +1679,7 @@ output format by undefining \ttt{FSM\_Print()} after including
 The \fmac{FSM\_Switch()} is a macro. It expands to a \fname{switch()}
 statement embedded in a \fname{for()} loop which repeats until the
 FSM\index{FSM} reaches a steady state. (The actual code is rather
-ugly, but if you're dying to see it, it's in \texttt{cfsm.h}.)
+scary, but if you're dying to see it, it's in \texttt{cfsm.h}.)
 
 Infinite loops are avoided by counting state transitions: if
 an FSM goes through 64 transitions without reaching a steady
@@ -1690,7 +1689,7 @@ state, the simulation will terminate with an error message.
 \subsubsection{An example}
 
 
-Let us write another flavour of a bursty generator. It has two
+Let us write another bursty generator. It will have two
 states, SLEEP and ACTIVE. In the SLEEP state, the module does
 nothing. In the ACTIVE state, it sends messages with a given
 inter-arrival time. The code was taken from the Fifo2 sample
@@ -1855,7 +1854,7 @@ gate this has to be done; otherwise, the \ttt{index} argument is not
 needed.
 
 The second and third functions use the gate Id and the pointer to the gate
-object. They are faster than the third one because they don't have to
+object. They are faster than the first one because they don't have to
 search through the gate array.
 
 Examples:
