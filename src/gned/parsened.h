@@ -20,21 +20,10 @@
 #include <stdio.h>
 #include <tcl.h>
 
+#include "ebnf.h"
+
 class NEDFile;
 class NEDParser;
-
-//
-// for bison:
-//
-#ifndef YYLTYPE
-struct my_yyltype {
-   int dumy;
-   int first_line, first_column;
-   int last_line, last_column;
-   char *text;
-};
-#define YYLTYPE  struct my_yyltype
-#endif
 
 extern FILE *yyin;
 extern FILE *yyout;

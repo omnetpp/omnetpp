@@ -49,28 +49,18 @@ int main(int argc, char *argv[])
 #ifdef OMNETPP_GNED_DIR
     gned_dir = getenv("OMNETPP_GNED_DIR");
     if (!gned_dir)
-    {
        gned_dir = OMNETPP_GNED_DIR;
-#ifdef _WIN32
-       for (char *s=gned_dir; *s; s++) if (*s=='/') *s='\\';
-#endif
-    }
 #endif
 
     // path for icon directory
     bitmap_dir = getenv("OMNETPP_BITMAP_PATH");
     if (!bitmap_dir)
-    {
         bitmap_dir = OMNETPP_BITMAP_PATH;
-#ifdef _WIN32
-        for (char *s=bitmap_dir; *s; s++) if (*s=='/') *s='\\';
-#endif
-    }
 
     // set up Tcl/Tk
     if (initTk( argc, argv, interp )==TCL_ERROR)
     {
-        fprintf(stderr,"Cannot start GNED\n");
+        fprintf(stderr,"Cannot start GNED.\n");
         return 1;
     }
 
@@ -125,6 +115,7 @@ int main(int argc, char *argv[])
 
     // enter Tk event loop
     runTk( interp );
+    return 0;
 }
 
 int exit_cmd(ClientData, Tcl_Interp *interp, int argc, char **)

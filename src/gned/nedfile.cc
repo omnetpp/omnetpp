@@ -305,7 +305,7 @@ char *NEDFile::getTrailingComment(YYLTYPE pos)
 char *NEDFile::stripComment(char *comment, int numlines)
 {
     // expand buffer if necessary
-    if (commentBufLen <= strlen(comment)+numlines)
+    if (commentBufLen <= int(strlen(comment))+numlines)
     {
         commentBufLen = strlen(comment)+numlines+256;
         delete commentBuf;
