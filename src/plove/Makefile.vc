@@ -3,14 +3,10 @@
 #
 !include ..\..\configuser.vc
 
-#FIXME remove next lines!
-OMNETPP_PLOVE_DIR=.
-HAVE_BLT=yes
-
 #
 # Local setup
 #
-!if "$(PLOVE_EMBED_TCL)"=="yes"
+!if "$(EMBED_TCL_CODE)"=="yes"
 PLOVE_EMBED_SUFFIX=-e
 !else
 PLOVE_EMBED_SUFFIX=
@@ -31,11 +27,10 @@ COPTS=$(COPTS) /DHAVE_BLT
 TK_LIBS=$(TK_LIBS) blt24.lib
 !endif
 
-PLOVE_OBJS = plove.obj
-ENGINE_OBJS =  \
-               tklib.obj \
-               tkcmd.obj \
-               engine/exception.obj \
+PLOVE_OBJS = plove$(PLOVE_EMBED_SUFFIX).obj \
+             tklib.obj \
+             tkcmd.obj
+ENGINE_OBJS =  engine/exception.obj \
                engine/commonnodes.obj \
                engine/nodetype.obj \
                engine/channel.obj \

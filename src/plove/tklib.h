@@ -16,15 +16,6 @@
 
 #include <tk.h>
 
-#ifdef _NDEBUG
-#define CHK(tcl_eval_statement)   tcl_eval_statement
-#else
-#define CHK(tcl_eval_statement)    \
-  do{ if (tcl_eval_statement==TCL_ERROR) \
-        fprintf(stderr,"%s#%d:%s\n",__FILE__,__LINE__,interp->result); \
-  } while(0)
-#endif
-
 char *ptrToStr(void *ptr, char *buffer=NULL);
 void *strToPtr(const char *s );
 

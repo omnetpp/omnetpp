@@ -25,6 +25,7 @@
 
 
 #include "tklib.h"
+#include "tkutil.h"
 
 
 char *ptrToStr(void *ptr, char *buffer)
@@ -216,16 +217,16 @@ int runTkApplication(int argc, const char *argv[], Tcl_AppInitProc initApp)
     Tcl_Interp *interp = Tcl_CreateInterp();
 
     // pass application name to interpreter
-    Tcl_FindExecutable(argv[0]);
+    Tcl_FindExecutable(TCLCONST(argv[0]));
 
     // Make command-line arguments available in Tcl variables "argc" and "argv"
     char buf[16];
-    char *args = Tcl_Merge(argc-1, argv+1);
+    char *args = Tcl_Merge(argc-1, TCLCONST2(argv+1));
     Tcl_SetVar(interp, "argv", args, TCL_GLOBAL_ONLY);
     Tcl_Free(args);
     sprintf(buf, "%d", argc-1);
     Tcl_SetVar(interp, "argc", buf, TCL_GLOBAL_ONLY);
-    Tcl_SetVar(interp, "argv0", argv[0], TCL_GLOBAL_ONLY);
+    Tcl_SetVar(interp, "argv0", TCLCONST(argv[0]), TCL_GLOBAL_ONLY);
 
     // load packages
     if (initApp(interp)!=TCL_OK)
