@@ -85,10 +85,10 @@ you enough (and up-to-date) guidance to go through the installation.
 
 
 
-\subsection{Producing a makefile with the opp\_makemake script}
+\subsection{Producing a Makefile with the opp\_makemake script}
 
 The \fprog{opp\_makemake} script can automatically generate the
-makefile for your simulation program, based on the source files it
+\texttt{Makefile} for your simulation program, based on the source files it
 finds in your directory. \fprog{opp\_makemake} has several options,
 the following command will display a summary:
 
@@ -108,31 +108,36 @@ Then type
 opp_makemake
 \end{Verbatim}
 
-This will create a file named Makefile\index{Makefile}. Thus if you
-simply type make, your simulation program should build. The name of
+This will create a file named \texttt{Makefile}\index{Makefile}. Thus if you
+simply type \fprog{make}, your simulation program should build. The name of
 the executable will be the same as the name of the directory
 containing the files.
 
 
-The freshly generated Makefile doesn't contain
+The freshly generated \texttt{Makefile} doesn't contain
 dependencies\index{Makefile!dependencies}, it is advisable to add them
-by typing \fprog[make]{make depend}. (You'll need a program named makedepend
-for that, it's present on most Unix systems and in also Cygwin. The
-warnings during the dependency generation process can be safely
-ignored.)
+by typing \fprog[make]{make depend}. The warnings during the
+dependency generation process can be safely ignored.
 
-In addition to the simulation executable, the makefile contains other
-targets too. As mentioned, \fprog[make]{make depend} adds (or refreshes)
-dependencies in the Makefile. \fprog[make]{make clean} deletes all files
-that were produced by the make process. \fprog[make]{make re-makemake}
-regenerates the makefile using \fprog[make]{opp\_makemake} (this is useful
-if e.g.  after upgrading {\opp}, if \fprog{opp\_makemake} has
-changed). \fprog[make]{make re-makemake-m} is similar to \fprog[make]{make
-  re-makemake}, but it regenerates the Makefile.in file too (see
-later).
+In addition to the simulation executable, the \texttt{Makefile}
+contains other targets, too. Here is a list of important ones:
 
-If you already had a Makefile in that directory, \fprog{opp\_makemake}
-will refuse overwriting it. You can force overwriting the old makefile
+\begin{longtable}{|l|p{8cm}|}
+\hline
+\tabheadcol
+\tbf{Target} & \tbf{Action}\\\hline
+ & The default target is to build the simulation executable\\\hline
+depend & Adds (or refreshes) dependencies in the \texttt{Makefile}\\\hline
+clean &  Deletes all files that were produced by the make process\\\hline
+neddoc.html & Generates documentation for all NED files. The resulting file is named \texttt{neddoc.html}\\\hline
+htmldoc & Generates code documentation using doxygen. The documentation will be placed into the directory \texttt{htmldoc}\\\hline
+doc & Convenience target that calls neddoc.html and htmldoc\\\hline
+re-makemake & Regenerates the \texttt{Makefile} using \fprog[make]{opp\_makemake} (this is useful if e.g.  after upgrading {\opp}, if \fprog{opp\_makemake} has changed)\\\hline
+re-makemake-m & Similar to \fprog[make]{make re-makemake}, but it regenerates the \texttt{Makefile.in} instead\\\hline
+\end{longtable}
+
+If you already had a \texttt{Makefile} in that directory, \fprog{opp\_makemake}
+will refuse overwriting it. You can force overwriting the old \texttt{Makefile}
 with the -f option:
 
 \begin{Verbatim}
@@ -163,15 +168,15 @@ opp_makemake -o fddi-net
 If some of your source files are generated from other files (for
 example, you use machine-generated NED files), write your make rules
 into a file called makefrag. When you run \fprog{opp\_makemake}, it
-will automatically insert makefrag into the resulting makefile.  With
+will automatically insert makefrag into the resulting \texttt{makefile}.  With
 the -i option, you can also name other files to be included into
-Makefile.
+\texttt{Makefile}.
 
 
 If you want better portability for your models, you can generate
-Makefile.in instead of Makefile with \fprog{opp\_makemake}'s -m
+\texttt{Makefile.in} instead of \texttt{Makefile} with \fprog{opp\_makemake}'s -m
 option. You can then use autoconf-like configure scripts to generate
-the Makefile.
+the \texttt{Makefile}.
 
 
 
