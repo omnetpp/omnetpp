@@ -68,7 +68,7 @@ depend:
 
 clean:
 	del *.obj envir.lib envir.dll envir.ilib envir.exp 2> nul
-	del *.ilk *.pdb 2> nul
+	del *.ilk *.idb *.pdb 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

@@ -53,7 +53,8 @@ depend:
 	@ echo *** make depend not (yet) supported with MSVC
 
 clean:
-	del *.obj nedc.exe *_n.cc *.ilk *.pdb 2> nul
+	del *.obj nedc.exe *_n.cc 2> nul
+	del *.ilk *.idb *.pdb 2> nul
 
 realclean: clean
 	del lex.yy.c ebnf.tab.c ebnf.tab.h 2> nul
