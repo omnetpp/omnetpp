@@ -188,7 +188,7 @@ cModule *cNEDNetworkBuilder::_submodule(cModule *, const char *submodname, int i
     if (idx<0)
         return (v.size()!=1 || v[0]->isVector()) ? NULL : v[0];
     else
-        return (idx>=v.size()) ? NULL : v[idx];
+        return ((unsigned)idx>=v.size()) ? NULL : v[idx];
 }
 
 void cNEDNetworkBuilder::setDisplayString(cModule *submodp, SubmoduleNode *submod)

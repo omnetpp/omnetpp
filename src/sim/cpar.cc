@@ -1528,6 +1528,7 @@ cModulePar::~cModulePar()
 
 std::string cModulePar::fullPath() const
 {
+    // TBD make use of cModule's cached fullPath()
     return std::string(fullPath(fullpathbuf,MAX_OBJECTFULLPATH));
 }
 

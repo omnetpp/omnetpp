@@ -33,7 +33,7 @@
 #include "cenvir.h"
 #include "cexception.h"
 #include "cdispstr.h"
-
+#include "util.h"
 
 // static members:
 bool cModule::pause_in_sendmsg;
@@ -171,7 +171,8 @@ void cModule::setIndex(int i, int n)
     if (isVector())
     {
         fullname = new char[opp_strlen(name())+10];
-        sprintf(fullname, "%s[%d]", name(), index());
+        strcpy(fullname, name());
+        opp_appendindex(fullname, index());
     }
 }
 

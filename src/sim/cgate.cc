@@ -31,6 +31,7 @@
 #include "cgate.h"
 #include "cchannel.h"
 #include "cdispstr.h"
+#include "util.h"
 
 using std::ostream;
 
@@ -92,7 +93,8 @@ void cGate::setName(const char *s)
     {
         if (fullname)  delete [] fullname;
         fullname = new char[opp_strlen(name())+10];
-        sprintf(fullname, "%s[%d]", name(), index());
+        strcpy(fullname, name());
+        opp_appendindex(fullname, index());
     }
 }
 
@@ -104,6 +106,7 @@ const char *cGate::fullName() const
 
 std::string cGate::fullPath() const
 {
+    // TBD make use of cModule's cached fullPath()
     return std::string(fullPath(fullpathbuf,MAX_OBJECTFULLPATH));
 }
 
@@ -188,7 +191,8 @@ void cGate::setIndex(int sn, int vs)
     if (isVector())
     {
         fullname = new char[opp_strlen(name())+10];
-        sprintf(fullname, "%s[%d]", name(), index());
+        strcpy(fullname, name());
+        opp_appendindex(fullname, index());
     }
 }
 
