@@ -81,7 +81,7 @@ void TObjInspector::update()
    TInspector::update();
 
    setLabel(".nb.info.name.e",object->name());
-   setLabel(".nb.info.fullpath.e",object->fullPath());
+   setLabel(".nb.info.fullpath.e",object->fullPath().c_str());
    setLabel(".nb.info.class.e",object->className());
 
    setLabel(".nb.info.info.e",object->info().c_str());

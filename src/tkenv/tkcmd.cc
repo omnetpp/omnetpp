@@ -446,7 +446,7 @@ int getObjectFullPath_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    cObject *object = (cObject *)strToPtr( argv[1] );
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, TCLCONST(object->fullPath()), TCL_VOLATILE);
+   Tcl_SetResult(interp, TCLCONST(object->fullPath().c_str()), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -479,7 +479,7 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
    if (!strcmp(field,"fullName")) {
        Tcl_SetResult(interp, TCLCONST(object->fullName()), TCL_VOLATILE);
    } else if (!strcmp(field,"fullPath")) {
-       Tcl_SetResult(interp, TCLCONST(object->fullPath()), TCL_VOLATILE);
+       Tcl_SetResult(interp, TCLCONST(object->fullPath().c_str()), TCL_VOLATILE);
    } else if (!strcmp(field,"className")) {
        Tcl_SetResult(interp, TCLCONST(object->className()), TCL_VOLATILE);
    } else if (!strcmp(field,"info")) {

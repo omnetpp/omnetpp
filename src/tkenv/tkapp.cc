@@ -690,7 +690,7 @@ void TOmnetTkApp::stopAtBreakpoint(const char *label, cSimpleModule *mod)
                     "Breakpoint \"%s\" hit in module %s (id=%d). "
                     "Break will occur after completing current event, "
                     "ie. after module's handleMessage() returns."),
-            label, mod->fullPath(), mod->id() );
+            label, mod->fullPath().c_str(), mod->id() );
     CHK(Tcl_VarEval(interp,"messagebox {Confirm} {",buf,"} info ok",NULL));
 
     // breakpointhit_flag will cause event loop to exit in runSimulation...()
@@ -860,7 +860,7 @@ void TOmnetTkApp::updateNextModuleDisplay()
         mod = simulation.guessNextModule();
 
     char id[16];
-    const char *modname;
+    std::string modname;
     if (mod)
     {
         modname = mod->fullPath();
@@ -871,7 +871,7 @@ void TOmnetTkApp::updateNextModuleDisplay()
         modname = "n/a";
         id[0]=0;
     }
-    CHK(Tcl_VarEval(interp, NEXT_LABEL " config -text {Next: ",modname,id,"}",NULL));
+    CHK(Tcl_VarEval(interp, NEXT_LABEL " config -text {Next: ",modname.c_str(),id,"}",NULL));
 }
 
 void TOmnetTkApp::clearNextModuleDisplay()
@@ -920,7 +920,7 @@ void TOmnetTkApp::printEventBanner(cSimpleModule *module)
                 simulation.eventNumber(),
                 simtimeToStr( simulation.simTime() ),
                 module->id(),
-                module->fullPath()
+                module->fullPath().c_str()
               );
     }
     else
@@ -928,7 +928,7 @@ void TOmnetTkApp::printEventBanner(cSimpleModule *module)
         sprintf(banner,"** Event #%ld.  T=%s.  Module `%s' (id=%u). Phase `%s'.\n",
                 simulation.eventNumber(),
                 simtimeToStr( simulation.simTime() ),
-                module->fullPath(),
+                module->fullPath().c_str(),
                 module->id(),
                 module->phase()
               );
@@ -1620,7 +1620,7 @@ bool TOmnetTkApp::gets(const char *promptstr, char *buf, int len)
     char title[70];
     cModule *mod = simulation.contextModule();
     if (mod)
-       strncpy(title, mod->fullPath(),69);
+       strncpy(title, mod->fullPath().c_str(),69);
     else
        strncpy(title, simulation.networkType()->name(),69);
     title[69]=0;

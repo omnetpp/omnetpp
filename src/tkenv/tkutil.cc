@@ -106,7 +106,7 @@ void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject
     const char *ptr = ptrToStr(obj);
     CHK(Tcl_VarEval(interp, "multicolumnlistbox_insert ",listbox," ",ptr," {"
                             "ptr {",ptr,"} "
-                            "name {",(fullpath ? obj->fullPath() : obj->fullName()),"} "
+                            "name {",(fullpath ? obj->fullPath().c_str() : obj->fullName()),"} "
                             "class {",obj->className(),"} "
                             "info ",TclQuotedString(obj->info().c_str()).get(),
                             "}",NULL));
@@ -171,20 +171,20 @@ static bool do_inspect_by_name( cObject *obj, bool beg, const char *_fullpath, c
     // right track is not usable, because some objects (simulation, modules'
     // paramv, gatev members) don't appear in object's fullPath()...
 
-    const char *objpath = obj->fullPath();
+    std::string objpath = obj->fullPath();
 
     // however, a module's name and the future event set's name is not hidden,
     // so if this obj is a module (or cMessageHeap) and its name doesn't match
     // the beginning of fullpath, we can cut the search here.
     if ((dynamic_cast<cModule *>(obj) || dynamic_cast<cMessageHeap *>(obj))
-        && strncmp(objpath, fullpath, strlen(objpath))!=0)
+        && strncmp(objpath.c_str(), fullpath, strlen(objpath.c_str()))!=0)
     {
         // skip (do not search) this subtree
         return false;
     }
 
     // found it?
-    if (!strcmp(fullpath,objpath) && !strcmp(classname,obj->className()))
+    if (!strcmp(fullpath,objpath.c_str()) && !strcmp(classname,obj->className()))
     {
         // found: inspect if inspector is not open
         TOmnetTkApp *app = getTkApplication();

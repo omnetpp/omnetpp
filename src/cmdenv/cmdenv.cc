@@ -329,7 +329,7 @@ void TCmdenvApp::simulate()
                            simulation.eventNumber(),
                            simtimeToStr( simulation.simTime() ),
                            mod->className(),
-                           mod->fullPath(),
+                           mod->fullPath().c_str(),
                            mod->id()
                          );
                    if (opt_eventbanner_details)
@@ -497,7 +497,7 @@ bool TCmdenvApp::idle()
 
 void TCmdenvApp::moduleCreated(cModule *mod)
 {
-    std::string entryname = std::string(mod->fullPath()) + ".ev-output";
+    std::string entryname = mod->fullPath() + ".ev-output";
     bool ev_enabled = ev.config()->getAsBool("Cmdenv", entryname.c_str(), true);
     mod->setEvEnabled(ev_enabled);
 }

@@ -174,7 +174,7 @@ void cFilteredCollectObjectsVisitor::visit(cObject *obj)
                                         !dynamic_cast<cModulePar *>(obj) &&
                                         !dynamic_cast<cChannel *>(obj) &&
                                         !dynamic_cast<cGate *>(obj)));
-    ok = ok && (!objfullpathpattern || objfullpathpattern->matches(obj->fullPath()));
+    ok = ok && (!objfullpathpattern || objfullpathpattern->matches(obj->fullPath().c_str()));
     ok = ok && (!classnamepattern || classnamepattern->matches(obj->className()));
 
     if (ok)

@@ -1,7 +1,7 @@
 2004-10-25  Andras Varga
 	
-	* tkapp.cc, tkcmd.cc, etc: updated for info() signature change 
-	(see include/ChangeLog)
+	* tkapp.cc, tkcmd.cc, etc: updated for info() and fullPath()
+	signature changes (see include/ChangeLog)
 
 2004-10-20  Andras Varga
 

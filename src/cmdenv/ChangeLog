@@ -1,6 +1,7 @@
 2004-10-25  Andras Varga
 	
-	* cmdenv.cc: updated for info() signature change (see include/ChangeLog)
+	* cmdenv.cc: updated for info() and fullPath() signature changes 
+	(see include/ChangeLog)
 
 2004-10-04  ------ omnetpp-3.0a8 released ------
 

@@ -162,10 +162,10 @@ void TInspector::update()
    cModule *mod = dynamic_cast<cModule *>(object);
    if (mod)
        sprintf(newname, "(%s) %s  (id=%d)  (%s)",object->className(),
-                        object->fullPath(), mod->id(), ptrToStr(object,buf));
+                        object->fullPath().c_str(), mod->id(), ptrToStr(object,buf));
    else
        sprintf(newname, "(%s) %s  (%s)",object->className(),
-                        object->fullPath(), ptrToStr(object,buf));
+                        object->fullPath().c_str(), ptrToStr(object,buf));
    CHK(Tcl_VarEval(interp, windowname,".infobar.name config -text {",newname,"}",NULL));
 
    // owner button on toolbar
@@ -235,14 +235,15 @@ void TInspector::setInspectButton(const char *button, cObject *object, bool disp
    {
       char buf[16];
       sprintf(buf, "%d", inspectortype);
-      const char *text = displayfullpath ? object->fullPath() : object->fullName();
-      char text2[30] = "";
+      char idtext[30] = "";
       if (dynamic_cast<cModule *>(object))
       {
-          sprintf(text2, " (id=%d)", static_cast<cModule *>(object)->id());
+          sprintf(idtext, " (id=%d)", static_cast<cModule *>(object)->id());
       }
       CHK(Tcl_VarEval(interp, windowname, button,".e config -state normal ",
-                              "-text {(", object->className(), ") ", text, text2, "} ",
+                              "-text {(", object->className(), ") ", 
+                              (displayfullpath ? object->fullPath().c_str() : object->fullName()), 
+                              idtext, "} ",
                               "-command {opp_inspect ",ptrToStr(object)," ",buf,"}",
                               NULL));
    }

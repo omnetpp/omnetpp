@@ -1,3 +1,8 @@
+2004-10-25  Andras Varga
+	
+	* cppgenerator.cc: updated for fullPath() signature change (see 
+	include/ChangeLog)
+
 2004-10-04  ------ omnetpp-3.0a8 released ------
 
 2004-09-24  ------ omnetpp-3.0a7 released ------

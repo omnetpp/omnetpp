@@ -351,7 +351,7 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "{\n";
     out << "    cGate *g = mod->gate(gatename);\n";
     out << "    if (!g)\n";
-    out << "        throw new cException(\"%s has no gate named %s\",mod->fullPath(), gatename);\n";
+    out << "        throw new cException(\"%s has no gate named %s\",mod->fullPath().c_str(), gatename);\n";
     out << "    return g;\n";
     out << "}\n";
     out << "\n";
@@ -360,7 +360,7 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "{\n";
     out << "    cGate *g = mod->gate(gatename, gateindex);\n";
     out << "    if (!g)\n";
-    out << "        throw new cException(\"%s has no gate %s[%d]\",mod->fullPath(), gatename, gateindex);\n";
+    out << "        throw new cException(\"%s has no gate %s[%d]\",mod->fullPath().c_str(), gatename, gateindex);\n";
     out << "    return g;\n";
     out << "}\n";
     out << "\n";
@@ -369,12 +369,12 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "{\n";
     out << "    int baseId = mod->findGate(gatename);\n";
     out << "    if (baseId<0)\n";
-    out << "        throw new cException(\"%s has no %s[] gate\",mod->fullPath(), gatename);\n";
+    out << "        throw new cException(\"%s has no %s[] gate\",mod->fullPath().c_str(), gatename);\n";
     out << "    int n = mod->gate(baseId)->size();\n";
     out << "    for (int i=0; i<n; i++)\n";
     out << "        if (!mod->gate(baseId+i)->isConnectedInside())\n";
     out << "            return mod->gate(baseId+i);\n";
-    out << "    throw new cException(\"%s[] gates are all connected, no gate left for `++' operator\",mod->fullPath(), gatename);\n";
+    out << "    throw new cException(\"%s[] gates are all connected, no gate left for `++' operator\",mod->fullPath().c_str(), gatename);\n";
     out << "}\n";
     out << "\n";
 
@@ -382,7 +382,7 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "{\n";
     out << "    int baseId = mod->findGate(gatename);\n";
     out << "    if (baseId<0)\n";
-    out << "        throw new cException(\"%s has no %s[] gate\",mod->fullPath(), gatename);\n";
+    out << "        throw new cException(\"%s has no %s[] gate\",mod->fullPath().c_str(), gatename);\n";
     out << "    int n = mod->gate(baseId)->size();\n";
     out << "    for (int i=0; i<n; i++)\n";
     out << "        if (!mod->gate(baseId+i)->isConnectedOutside())\n";
