@@ -147,6 +147,7 @@ proc editFilterForVectorDialog {name parentw} {
         {value  Value       100}
         {descr  Description}
     }
+    set tmp(lastfiltercombovalue) ""
     set visibletypes [concat [list ""] [opp_getnodetypes]]
     label-combo $w.f.name "Apply filter:" $visibletypes $sfname "editSubfilter_refreshParamsListbox $w.f.name.e $plb 0"
 

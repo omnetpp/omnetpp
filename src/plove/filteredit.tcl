@@ -321,6 +321,8 @@ proc editFilter_refreshSubfilterListbox {flb} {
 }
 
 proc editSubfilterDialog {parentw k} {
+    global tmp
+
     set w $parentw.editsubfilt
     createOkCancelDialog $w "Subfilter Properties"
     wm geometry $w 400x300
@@ -335,6 +337,7 @@ proc editSubfilterDialog {parentw k} {
         {value  Value     100}
         {descr  Description}
     }
+    set tmp(lastfiltercombovalue) ""
     set visibletypes [opp_getnodetypes]
     label-combo $w.f.name "Type:" $visibletypes $name "editSubfilter_refreshParamsListbox $w.f.name.e $plb $k"
     #FIXME show description here instead
@@ -393,6 +396,13 @@ proc editSubfilter_changePar {plb} {
 }
 
 proc editSubfilter_refreshParamsListbox {combo plb k} {
+    global tmp
+
+    # eliminate a subtle UI bug: when closing the dialog by pressing Enter, filter
+    # parameters got lost because this proc reloaded the $plb listbox content.
+    if {[$combo get]==$tmp(lastfiltercombovalue)} return
+    set tmp(lastfiltercombovalue) [$combo get]
+
     # get all values currently stored into values[]
     foreach attr [opp_compoundfiltertype "%tmp%" subfilterAttrs $k] {
         set name [lindex $attr 0]
