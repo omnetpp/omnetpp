@@ -238,19 +238,20 @@ proc new_run {} {
     }
 
     # determine default run to be offered
-    set run "Run [opp_getrunnumber]"
-    if {$run=="Run 0"} {
+    set runno [opp_getrunnumber]
+    if {$runno==0} {
         if {[llength $runlist]>1} {
             set run [lindex $runlist 1]
         } else {
             set run "General"
         }
-    }
-    set descr [opp_getinientryasstring $run "description"]
-    if {$descr != ""}  {
-        lappend run "Run $runno: $descr"
     } else {
-        lappend run "Run $runno"
+        set descr [opp_getinientryasstring "Run $runno" "description"]
+        if {$descr != ""}  {
+            lappend run "Run $runno: $descr"
+        } else {
+            lappend run "Run $runno"
+        }
     }
 
     # pop up selection dialog

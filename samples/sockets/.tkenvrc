@@ -35,5 +35,6 @@ config display-treeview	{1}
 config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
+inspector "telnetNet" "TelnetNet" "2" "553x435+44+58"
 inspector "httpNet" "HTTPNet" "2" "553x435+22+29"
 

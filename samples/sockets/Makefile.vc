@@ -58,7 +58,7 @@ NEDCOPTS=$(CFLAGS) $(NEDCFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 
 #------------------------------------------------------------------------------
 # object files in this directory
-OBJS= httpmsg_m.obj netpkt_m.obj telnetpkt_m.obj cloud.obj csocketrtscheduler.obj exthttpclient.obj httpclient.obj httpserver.obj queuebase.obj telnetclient.obj telnetserver.obj
+OBJS= httpmsg_m.obj netpkt_m.obj telnetpkt_m.obj cloud.obj csocketrtscheduler.obj exthttpclient.obj exttelnetclient.obj httpclient.obj httpserver.obj queuebase.obj telnetclient.obj telnetserver.obj
 
 # header files generated (from msg files)
 GENERATEDHEADERS= httpmsg_m.h netpkt_m.h telnetpkt_m.h
@@ -104,6 +104,9 @@ csocketrtscheduler.obj: csocketrtscheduler.cc
 
 exthttpclient.obj: exthttpclient.cc
 	$(CXX) -c $(COPTS) /Tp exthttpclient.cc
+
+exttelnetclient.obj: exttelnetclient.cc
+	$(CXX) -c $(COPTS) /Tp exttelnetclient.cc
 
 httpclient.obj: httpclient.cc
 	$(CXX) -c $(COPTS) /Tp httpclient.cc
@@ -158,6 +161,10 @@ exthttpclient.obj: exthttpclient.cc \
   httpmsg_m.h \
   csocketrtscheduler.h \
   netpkt_m.h
+exttelnetclient.obj: exttelnetclient.cc \
+  telnetpkt_m.h \
+  csocketrtscheduler.h \
+  netpkt_m.h
 httpclient.obj: httpclient.cc \
   httpmsg_m.h \
   netpkt_m.h
@@ -173,7 +180,9 @@ netpkt_m.obj: netpkt_m.cc \
   netpkt_m.h
 queuebase.obj: queuebase.cc \
   queuebase.h
-telnetclient.obj: telnetclient.cc
+telnetclient.obj: telnetclient.cc \
+  telnetpkt_m.h \
+  netpkt_m.h
 telnetpkt_m.obj: telnetpkt_m.cc \
   telnetpkt_m.h \
   netpkt_m.h

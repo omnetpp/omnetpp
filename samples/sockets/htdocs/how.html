@@ -1,0 +1,36 @@
+<html>
+<body>
+<h3>How it works</h3>
+
+<p>
+Hardware-in-the-loop simulation has two ingredients:
+
+<ul>
+ <li> the simulation has to be synchronized to real time;
+
+ <li> there has to be a way the simulation can communicate with the real world:
+   it has to be able to receive external events, and possibly also to send
+   events out of the simulation. The implementation of this external
+   communication can be very different from one simulation scenario to another:
+   it can be as simple as TCP sockets (as here) or pipes, it can be raw
+   communication on an Ethernet NIC or an USB port, or communication with a
+   interface card via interrupts and DMA transfer. If you plan to do
+   hardware-in-the-loop simulation, you'll most like have to implement your
+   own external communication interface.
+</ul>
+
+<p>
+The word "real-time" means that the simulation is executed in a way such that
+simulation time is synchronized to real time: simulating one second
+in the model will also take one "real" second. This is in contrast to
+"normal" simulation, when we want the simulation to run as fast as possible.
+Of course, the CPU has to be fast enough so that the simulation can keep up
+with real time.
+
+<p>
+The external interface used in this example simulation is a single TCP socket.
+
+<a href="index.html>Back</a>
+
+</body>
+</html>
