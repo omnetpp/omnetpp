@@ -132,6 +132,7 @@ void splitInspectorName(char *namestr, cObject *&object,int& type)
    // namestr is the window path name, sth like ".ptr80005a31-2"
    // split it into pointer string ("ptr80005a31") and inspector type ("2")
    assert(namestr!=0); // must exist
+   assert(namestr[0]=='.');  // must begin with a '.'
 
    // find '-' and replace it with EOS
    char *s;
@@ -140,8 +141,10 @@ void splitInspectorName(char *namestr, cObject *&object,int& type)
    *s = '\0';
    s++;
 
-   object = (cObject *)strToPtr( namestr );
+   object = (cObject *)strToPtr( namestr+1 );
    type = atoi( s );
+
+   assert(object!=0);
 }
 
 //=================================================================
