@@ -31,6 +31,7 @@
 #include <deque>
 
 #include "util.h"
+#include "opp_string.h"
 #include "parsim/cparsimcomm.h"
 
 

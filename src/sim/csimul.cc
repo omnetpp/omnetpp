@@ -351,19 +351,20 @@ void cSimulation::setupNetwork(cNetworkType *network, int run_num)
     }
     catch (cException *)
     {
-        // if failed, clean up the whole stuff before passing exception back
-        // FIXME don't do it here -- it's unsafe. Might crash if any simple module
-        // destructors is written badly.
-        deleteNetwork();
+        // we could clean up the whole stuff before passing the exception back,
+        // but it is dangerous. Module destructors may try to delete 
+        /  uninitialized pointers and crash.
+        //deleteNetwork();
         throw;
     }
     catch (std::exception e)
     {
-        deleteNetwork();
+        // no deleteNetwork() -- see above note
+        //deleteNetwork();
         throw new cException("standard C++ exception %s: %s",
                              opp_typename(typeid(e)), e.what());
     }
-    //catch (...) -- this is probably not a good idea because makes debugging difficult
+    //catch (...) -- this is probably not a good idea because it makes debugging difficult
     //{
     //    deleteNetwork();
     //    throw new cException("unknown exception occurred");
