@@ -63,6 +63,17 @@ void cParsimPartition::endRun()
 {
 }
 
+void cParsimPartition::shutdown()
+{
+    if (!comm) return; // if initialization failed
+
+    cException e("Process is shutting down");
+    broadcastException(&e);
+
+    comm->shutdown();
+}
+
+
 void cParsimPartition::connectRemoteGates()
 {
     cCommBuffer *buffer = comm->createCommBuffer();

@@ -93,6 +93,11 @@ class cParsimPartition
     void endRun();
 
     /**
+     * Shut down the parallel simulation system.
+     */
+    void shutdown();
+
+    /**
      * A hook called from cProxyGate::deliver() when an outgoing cMessage
      * arrives at partition boundary. We just pass it up to the synchronization
      * layer (see similar method in cParsimSynchronizer).

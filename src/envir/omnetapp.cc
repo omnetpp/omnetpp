@@ -228,8 +228,8 @@ void TOmnetApp::shutdown()
     {
         simulation.deleteNetwork();
 #ifdef WITH_PARSIM
-        if (opt_parsim && parsimcomm)
-            parsimcomm->shutdown();
+        if (opt_parsim && parsimpartition)
+            parsimpartition->shutdown();
 #endif
     }
     catch (cException *e)
