@@ -21,6 +21,7 @@
 #include <stdio.h>           // sprintf
 #include "macros.h"
 #include "cpacket.h"
+#include "parsim/ccommbuffer.h"
 
 //=== registration
 Register_Class(cPacket);
@@ -47,4 +48,23 @@ void cPacket::info(char *buf)
 {
     cMessage::info(buf);
 }
+
+#ifdef WITH_PARSIM
+void cPacket::netPack(cCommBuffer *buffer)
+{
+    cMessage::netPack(buffer);
+
+    buffer->pack(_protocol);
+    buffer->pack(_pdu);
+}
+
+void cPacket::netUnpack(cCommBuffer *buffer)
+{
+    cMessage::netUnpack(buffer);
+
+    buffer->unpack(_protocol);
+    buffer->unpack(_pdu);
+}
+#endif
+
 

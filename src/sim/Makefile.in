@@ -14,8 +14,8 @@ OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
 OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
 OMNETPP_VERSION=@OMNETPP_VERSION@
 
+HAVE_MPI=@HAVE_MPI@
 MPI_CFLAGS=@MPI_CFLAGS@
-PVM_CFLAGS=@PVM_CFLAGS@
 
 # LIB_SUFFIX is either A_LIB_SUFFIX or SO_LIB_SUFFIX
 LIB_SUFFIX=@LIB_SUFFIX@
@@ -26,218 +26,77 @@ SO_LIB_SUFFIX=@SO_LIB_SUFFIX@
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I. -Istd -Ipvm -DBUILDING_SIM
+COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I. -DBUILDING_SIM $(MPI_CFLAGS) $(PVM_CFLAGS)
 
-CPPOBJS= ccoroutine.o ctypes.o carray.o cgate.o cmodule.o csimul.o cobject.o cpar.o \
-         cstat.o chist.o cdensity.o cvarhist.o cpsquare.o cksplit.o task.o \
+CPPOBJS_STD = task.o ccoroutine.o ctypes.o carray.o cgate.o \
+         cmodule.o csimplemodule.o csimul.o cobject.o cpar.o \
+         cstat.o chist.o cdensity.o cvarhist.o cpsquare.o cksplit.o \
          cmessage.o cdetect.o util.o cllist.o ctopo.o errmsg.o \
-         cmsgheap.o cnetmod.o coutvect.o cqueue.o chead.o cwatch.o \
-         cpacket.o cfsm.o cenum.o cstruct.o cchannel.o cexception.o cdispstr.o \
-         onstartup.o random.o distrib.o
-CPPOBJS_STD= std/netpack.o
-CPPOBJS_MPI= mpi/mpimod.o mpi/mpipack.o
-CPPOBJS_PVM= pvm/pvmmod.o pvm/pvmpack.o
-ASMOBJS=
-# ASMOBJS=stjpower.o swpower.o	   # uncomment this on RS/6000
+         cmsgheap.o coutvect.o cqueue.o chead.o cwatch.o \
+         cpacket.o cfsm.o cstruct.o cchannel.o cenum.o cexception.o cdispstr.o \
+         cscheduler.o onstartup.o random.o distrib.o
+CPPOBJS_PARSIM = parsim/ccommbuffer.o parsim/cmemcommbuffer.o \
+         parsim/cparsimsegment.o parsim/cplaceholdermod.o parsim/cproxygate.o \
+         parsim/cparsimprotocolbase.o parsim/cnosynchronization.o \
+         parsim/cnullmessageprot.o parsim/clinkdelaylookahead.o \
+         parsim/cidealsimulationprot.o parsim/cispeventlogger.o \
+         parsim/cparsimcomm.o \
+         parsim/ccommbufferbase.o parsim/cfilecomm.o parsim/cfilecommbuffer.o \
+         parsim/cnamedpipecomm.o parsim/creceivedexception.o
+CPPOBJS_MPI = parsim/cmpicomm.o parsim/cmpicommbuffer.o
+
+CPPOBJS = $(CPPOBJS_STD) $(CPPOBJS_PARSIM)
+
+ifeq ($(HAVE_MPI),yes)
+CPPOBJS += $(CPPOBJS_MPI)
+endif
 
 #
 # Targets
 #
-default : sim_std @SIM_PVM_IF_POSSIBLE@ @SIM_MPI_IF_POSSIBLE@
+default : sim_std
 
 sim_std : libsim_std$(LIB_SUFFIX)
 
-sim_mpi : libsim_mpi$(LIB_SUFFIX)
-
-sim_pvm : libsim_pvm$(LIB_SUFFIX)
-
-libsim_std$(A_LIB_SUFFIX) : $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
-	$(AR) libsim_std$(A_LIB_SUFFIX) $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
+libsim_std$(A_LIB_SUFFIX) : $(CPPOBJS)
+	$(AR) libsim_std$(A_LIB_SUFFIX) $(CPPOBJS)
 	$(RANLIB) libsim_std$(A_LIB_SUFFIX)
 	../utils/install-lib libsim_std$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libsim_std$(A_LIB_SUFFIX)
 
-libsim_std$(SO_LIB_SUFFIX) : $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
-	$(SHLIB_LD) -o libsim_std$(SO_LIB_SUFFIX) $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
+libsim_std$(SO_LIB_SUFFIX) : $(CPPOBJS)
+	$(SHLIB_LD) -o libsim_std$(SO_LIB_SUFFIX) $(CPPOBJS)
 	../utils/install-lib libsim_std$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libsim_std$(SO_LIB_SUFFIX)
 
-libsim_mpi$(A_LIB_SUFFIX) : $(CPPOBJS) $(CPPOBJS_MPI) $(ASMOBJS)
-	$(AR) libsim_mpi$(A_LIB_SUFFIX) $(CPPOBJS) $(CPPOBJS_MPI) $(ASMOBJS)
-	$(RANLIB) libsim_mpi$(A_LIB_SUFFIX)
-	../utils/install-lib libsim_mpi$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libsim_mpi$(A_LIB_SUFFIX)
 
-libsim_mpi$(SO_LIB_SUFFIX) : $(CPPOBJS) $(CPPOBJS_MPI) $(ASMOBJS)
-	$(SHLIB_LD) -o libsim_mpi$(SO_LIB_SUFFIX) $(CPPOBJS) $(CPPOBJS_MPI) $(ASMOBJS)
-	../utils/install-lib libsim_mpi$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libsim_mpi$(SO_LIB_SUFFIX)
+#
+# Automatic rules
+#
+.SUFFIXES : .cc
 
-libsim_pvm$(A_LIB_SUFFIX) : $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
-	$(AR) libsim_pvm$(A_LIB_SUFFIX) $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
-	$(RANLIB) libsim_pvm$(A_LIB_SUFFIX)
-	../utils/install-lib libsim_pvm$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libsim_pvm$(A_LIB_SUFFIX)
-
-libsim_pvm$(SO_LIB_SUFFIX) : $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
-	$(SHLIB_LD) -o libsim_pvm$(SO_LIB_SUFFIX) $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
-	../utils/install-lib libsim_pvm$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libsim_pvm$(SO_LIB_SUFFIX)
-
-ccoroutine.o : ccoroutine.cc
-	$(CXX) -c $(COPTS) ccoroutine.cc
-
-ctypes.o : ctypes.cc
-	$(CXX) -c $(COPTS) ctypes.cc
-
-carray.o : carray.cc
-	$(CXX) -c $(COPTS) carray.cc
-
-cqueue.o : cqueue.cc
-	$(CXX) -c $(COPTS) cqueue.cc
-
-chead.o : chead.cc
-	$(CXX) -c $(COPTS) chead.cc
-
-cwatch.o : cwatch.cc
-	$(CXX) -c $(COPTS) cwatch.cc
-
-cmodule.o : cmodule.cc
-	$(CXX) -c $(COPTS) cmodule.cc
-
-csimul.o : csimul.cc
-	$(CXX) -c $(COPTS) csimul.cc
-
-cgate.o : cgate.cc
-	$(CXX) -c $(COPTS) cgate.cc
-
-cmessage.o : cmessage.cc
-	$(CXX) -c $(COPTS) cmessage.cc
-
-cpacket.o : cpacket.cc
-	$(CXX) -c $(COPTS) cpacket.cc
-
-cfsm.o : cfsm.cc
-	$(CXX) -c $(COPTS) cfsm.cc
-
-cobject.o : cobject.cc
-	$(CXX) -c $(COPTS) cobject.cc
-
-cpar.o : cpar.cc
-	$(CXX) -c $(COPTS) cpar.cc
-
-cstat.o : cstat.cc
-	$(CXX) -c $(COPTS) cstat.cc
-
-cdensity.o : cdensity.cc
-	$(CXX) -c $(COPTS) cdensity.cc
-
-chist.o : chist.cc
-	$(CXX) -c $(COPTS) chist.cc
-
-task.o : task.cc
-	$(CXX) -c $(COPTS) task.cc
-
-cvarhist.o : cvarhist.cc
-	$(CXX) -c $(COPTS) cvarhist.cc
-
-cdetect.o : cdetect.cc
-	$(CXX) -c $(COPTS) cdetect.cc
-
-cpsquare.o : cpsquare.cc
-	$(CXX) -c $(COPTS) cpsquare.cc
-
-cksplit.o : cksplit.cc
-	$(CXX) -c $(COPTS) cksplit.cc
-
-cmsgheap.o : cmsgheap.cc
-	$(CXX) -c $(COPTS) cmsgheap.cc
-
-cnetmod.o : cnetmod.cc
-	$(CXX) -c $(COPTS) cnetmod.cc
-
-cllist.o : cllist.cc
-	$(CXX) -c $(COPTS) cllist.cc
-
-ctopo.o : ctopo.cc
-	$(CXX) -c $(COPTS) ctopo.cc
-
-coutvect.o : coutvect.cc
-	$(CXX) -c $(COPTS) coutvect.cc
-
-cenum.o : cenum.cc
-	$(CXX) -c $(COPTS) cenum.cc
-
-cstruct.o : cstruct.cc
-	$(CXX) -c $(COPTS) cstruct.cc
-
-cchannel.o : cchannel.cc
-	$(CXX) -c $(COPTS) cchannel.cc
-
-cdispstr.o : cdispstr.cc
-	$(CXX) -c $(COPTS) cdispstr.cc
-
-cexception.o : cexception.cc
-	$(CXX) -c $(COPTS) cexception.cc
-
-onstartup.o : onstartup.cc
-	$(CXX) -c $(COPTS) onstartup.cc
-
-random.o : random.cc
-	$(CXX) -c $(COPTS) random.cc
-
-distrib.o : distrib.cc
-	$(CXX) -c $(COPTS) distrib.cc
-
-util.o : util.cc
-	$(CXX) -c $(COPTS) util.cc
-
-errmsg.o : errmsg.cc
-	$(CXX) -c $(COPTS) errmsg.cc
-
-stjpower.o : stjpower.s
-	$(AS) stjpower.s
-
-swpower.o : swpower.s
-	$(AS) swpower.s
-
-std/netpack.o : std/netpack.cc
-	$(CXX) -c $(COPTS) std/netpack.cc -o std/netpack.o
-
-mpi/mpipack.o : mpi/mpipack.cc
-	$(CXX) -c $(COPTS) $(MPI_CFLAGS) mpi/mpipack.cc -o mpi/mpipack.o
-
-mpi/mpimod.o : mpi/mpimod.cc
-	$(CXX) -c $(COPTS) $(MPI_CFLAGS) mpi/mpimod.cc -o mpi/mpimod.o
-
-pvm/pvmpack.o : pvm/pvmpack.cc
-	$(CXX) -c $(COPTS) $(PVM_CFLAGS) pvm/pvmpack.cc -o pvm/pvmpack.o
-
-pvm/pvmmod.o : pvm/pvmmod.cc
-	$(CXX) -c $(COPTS) $(PVM_CFLAGS) pvm/pvmmod.cc -o pvm/pvmmod.o
-
-missing-mpi-library:
-	@ echo '  *** No MPI installation found -- skipping sim_mpi'
-
-missing-pvm-library:
-	@ echo '  *** No PVM installation found -- skipping sim_pvm'
+.cc.o:
+	$(CXX) -c $(COPTS) -o $@ $<
 
 depend:
-	$(MAKEDEPEND) -I../../include -- *.cc std/*.cc pvm/*.cc mpi/*.cc
-	$(MAKEDEPEND) -I../../include -fMakefile.in -- *.cc std/*.cc pvm/*.cc mpi/*.cc
+	$(MAKEDEPEND) -I../../include -- *.cc parsim/*.cc
+	$(MAKEDEPEND) -I../../include -fMakefile.in -- *.cc parsim/*.cc
 
 clean:
-	rm -f *.o std/*.o pvm/*.o
+	rm -f *.o parsim/*.o
 	rm -f libsim_std$(A_LIB_SUFFIX) libsim_std$(SO_LIB_SUFFIX)
-	rm -f libsim_pvm$(A_LIB_SUFFIX) libsim_pvm$(SO_LIB_SUFFIX)
-	rm -f libsim_mpi$(A_LIB_SUFFIX) libsim_mpi$(SO_LIB_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 carray.o: carray.cc \
-  ../../include/macros.h \
-  ../../include/errmsg.h \
-  ../../include/carray.h \
-  ../../include/cexception.h \
-  ../../include/onstartup.h \
-  ../../include/ctypes.h \
-  ../../include/defs.h \
-  ../../include/chead.h \
-  ../../include/cobject.h \
-  ../../include/util.h
+  /home/andras/opp-parsim/omnetpp/include/macros.h \
+  /home/andras/opp-parsim/omnetpp/include/errmsg.h \
+  /home/andras/opp-parsim/omnetpp/include/carray.h \
+  /home/andras/opp-parsim/omnetpp/include/cexception.h \
+  parsim/ccommbuffer.h \
+  /home/andras/opp-parsim/omnetpp/include/onstartup.h \
+  /home/andras/opp-parsim/omnetpp/include/ctypes.h \
+  /home/andras/opp-parsim/omnetpp/include/defs.h \
+  /home/andras/opp-parsim/omnetpp/include/chead.h \
+  /home/andras/opp-parsim/omnetpp/include/cobject.h \
+  /home/andras/opp-parsim/omnetpp/include/util.h
 cchannel.o: cchannel.cc \
   ../../include/cmessage.h \
   ../../include/cmodule.h \

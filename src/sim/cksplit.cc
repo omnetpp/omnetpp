@@ -27,6 +27,7 @@
 #include "random.h"
 #include "distrib.h"
 #include "cexception.h"
+#include "parsim/ccommbuffer.h"
 
 using std::endl;
 
@@ -103,6 +104,20 @@ cKSplit::~cKSplit()
     delete [] gridv;
     delete iter;
 }
+
+#ifdef WITH_PARSIM
+void cKSplit::netPack(cCommBuffer *buffer)
+{
+    cDensityEstBase::netPack(buffer);
+    throw new cException(this,"netPack() not implemented");
+}
+
+void cKSplit::netUnpack(cCommBuffer *buffer)
+{
+    cDensityEstBase::netUnpack(buffer);
+    throw new cException(this,"netUnpack() not implemented");
+}
+#endif
 
 cKSplit& cKSplit::operator=(const cKSplit& res)
 {

@@ -25,6 +25,7 @@
 #include "errmsg.h"
 #include "carray.h"
 #include "cexception.h"
+#include "parsim/ccommbuffer.h"
 
 //=== Registration
 Register_Class(cBag);
@@ -77,6 +78,32 @@ cBag& cBag::operator=(const cBag& bag)
     if( vect )  memcpy( vect, bag.vect, size*BLK );
     return *this;
 }
+
+#ifdef WITH_PARSIM
+void cBag::netPack(cCommBuffer *buffer)
+{
+    cObject::netPack(buffer);
+
+    buffer->pack(elemsize);
+    buffer->pack(size);
+    buffer->pack(delta);
+    buffer->pack(lastused);
+    buffer->pack(firstfree);
+    buffer->pack(vect, size * (sizeof(bool) + elemsize));
+}
+
+void cBag::netUnpack(cCommBuffer *buffer)
+{
+    cObject::netPack(buffer);
+
+    buffer->unpack(elemsize);
+    buffer->unpack(size);
+    buffer->unpack(delta);
+    buffer->unpack(lastused);
+    buffer->unpack(firstfree);
+    buffer->unpack(vect, size * (sizeof(bool) + elemsize));
+}
+#endif
 
 void cBag::setup(int esiz, int siz, int delt)
 {
@@ -286,6 +313,49 @@ void cArray::forEach( ForeachFunc do_fn )
     }
     do_fn(this,false);
 }
+
+#ifdef WITH_PARSIM
+void cArray::netPack(cCommBuffer *buffer)
+{
+    cObject::netPack(buffer);
+
+    buffer->pack(size);
+    buffer->pack(delta);
+    buffer->pack(firstfree);
+    buffer->pack(last);
+
+    for (int i = 0; i <= last; i++)
+    {
+        if (notNull(vect[i], buffer))
+        {
+            if (vect[i]->owner() != this)
+                throw new cException(this,"netPack(): cannot transmit pointer to \"external\" object");
+            packObject(vect[i], buffer);
+        }
+    }
+}
+
+void cArray::netUnpack(cCommBuffer *buffer)
+{
+    cObject::netUnpack(buffer);
+
+    delete [] vect;
+
+    buffer->unpack(size);
+    buffer->unpack(delta);
+    buffer->unpack(firstfree);
+    buffer->unpack(last);
+
+    vect = new cObject *[size];
+    for (int i = 0; i <= last; i++)
+    {
+        if (!checkFlag(buffer))
+            vect[i] = NULL;
+        else
+            take(vect[i] = unpackObject(buffer));
+    }
+}
+#endif
 
 void cArray::clear()
 {

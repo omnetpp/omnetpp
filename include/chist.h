@@ -70,19 +70,21 @@ class SIM_API cHistogramBase : public cDensityEstBase
 
     /* No dup() because this is an abstract class. */
 
+#ifdef WITH_PARSIM
     /**
      * Serializes the object into a PVM or MPI send buffer.
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual int netPack();
+    virtual void netPack(cCommBuffer *buffer);
 
     /**
      * Deserializes the object from a PVM or MPI receive buffer
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual int netUnpack();
+    virtual void netUnpack(cCommBuffer *buffer);
+#endif
     //@}
 
     /** @name Redefined member functions from cStatistic and its subclasses. */
@@ -164,19 +166,21 @@ class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
 
     /* No dup() because this is an abstract class. */
 
+#ifdef WITH_PARSIM
     /**
      * Serializes the object into a PVM or MPI send buffer.
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual int netPack();
+    virtual void netPack(cCommBuffer *buffer);
 
     /**
      * Deserializes the object from a PVM or MPI receive buffer
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual int netUnpack();
+    virtual void netUnpack(cCommBuffer *buffer);
+#endif
     //@}
 
   protected:
@@ -285,20 +289,6 @@ class SIM_API cLongHistogram : public cEqdHistogramBase
      * See cObject for more details.
      */
     virtual cObject *dup() const    {return new cLongHistogram(*this);}
-
-    /**
-     * Serializes the object into a PVM or MPI send buffer.
-     * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
-     */
-    virtual int netPack();
-
-    /**
-     * Deserializes the object from a PVM or MPI receive buffer
-     * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
-     */
-    virtual int netUnpack();
     //@}
 
   protected:
@@ -371,20 +361,6 @@ class SIM_API cDoubleHistogram : public cEqdHistogramBase
      * See cObject for more details.
      */
     virtual cObject *dup() const  {return new cDoubleHistogram(*this);}
-
-    /**
-     * Serializes the object into a PVM or MPI send buffer.
-     * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
-     */
-    virtual int netPack();
-
-    /**
-     * Deserializes the object from a PVM or MPI receive buffer
-     * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
-     */
-    virtual int netUnpack();
     //@}
 
     /** @name Redefined member functions from cStatistic and its subclasses. */

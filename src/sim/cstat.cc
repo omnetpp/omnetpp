@@ -31,6 +31,7 @@
 #include "macros.h"
 #include "cdetect.h"  //NL
 #include "cexception.h"
+#include "parsim/ccommbuffer.h"
 #include "cenvir.h"
 
 //=========================================================================
@@ -56,6 +57,32 @@ cStatistic::cStatistic(const char *name) :
     ra=NULL;
     genk=0;
 }
+
+#ifdef WITH_PARSIM
+void cStatistic::netPack(cCommBuffer *buffer)
+{
+    cObject::netPack(buffer);
+
+    buffer->pack(genk);
+
+    if (notNull(td, buffer))
+        packObject(td, buffer);
+    if (notNull(ra, buffer))
+        packObject(ra, buffer);
+}
+
+void cStatistic::netUnpack(cCommBuffer *buffer)
+{
+    cObject::netUnpack(buffer);
+
+    buffer->unpack(genk);
+
+    if (checkFlag(buffer))
+        take(td = (cTransientDetection *) unpackObject(buffer));
+    if (checkFlag(buffer))
+        take(ra = (cAccuracyDetection *) unpackObject(buffer));
+}
+#endif
 
 cStatistic& cStatistic::operator=(const cStatistic& res)   //--VA
 {
@@ -129,6 +156,28 @@ void cStdDev::info(char *buf)
     cStatistic::info( buf );
     sprintf( buf+strlen(buf), " (n=%ld)", num_samples);
 }
+
+#ifdef WITH_PARSIM
+void cStdDev::netPack(cCommBuffer *buffer)
+{
+    cStatistic::netPack(buffer);
+    buffer->pack(num_samples);
+    buffer->pack(min_samples);
+    buffer->pack(max_samples);
+    buffer->pack(sum_samples);
+    buffer->pack(sqrsum_samples);
+}
+
+void cStdDev::netUnpack(cCommBuffer *buffer)
+{
+    cStatistic::netUnpack(buffer);
+    buffer->unpack(num_samples);
+    buffer->unpack(min_samples);
+    buffer->unpack(max_samples);
+    buffer->unpack(sum_samples);
+    buffer->unpack(sqrsum_samples);
+}
+#endif
 
 cStdDev& cStdDev::operator=(const cStdDev& res)
 {
@@ -240,6 +289,20 @@ void cStdDev::loadFromFile(FILE *f)
 
 //==========================================================================
 // cWeightedStdDev - member functions
+
+#ifdef WITH_PARSIM
+void cWeightedStdDev::netPack(cCommBuffer *buffer)
+{
+    cStdDev::netPack(buffer);
+    buffer->pack(sum_weights);
+}
+
+void cWeightedStdDev::netUnpack(cCommBuffer *buffer)
+{
+    cStdDev::netUnpack(buffer);
+    buffer->unpack(sum_weights);
+}
+#endif
 
 cWeightedStdDev& cWeightedStdDev::operator=(const cWeightedStdDev& res)
 {

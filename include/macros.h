@@ -161,13 +161,11 @@
 //    ModuleInterface(CLASSNAME)
 //        Gate(NAME,TYPE)
 //        Parameter(NAME,TYPES)
-//        Machine(NAME)
 //    EndInterface
 //
 #define ModuleInterface(CLASSNAME)    static cModuleInterface::sDescrItem CLASSNAME##__descr[] = {
 #define Gate(NAME,TYPE)         {'G', #NAME, NULL,  TYPE},
 #define Parameter(NAME,TYPES)   {'P', #NAME, TYPES, 0   },
-#define Machine(NAME)           {'M', #NAME, NULL,  0   },
 #define EndInterface            {'E', NULL,  NULL,  0   }};
 
 // internal: registers a module interface specified with the Interface..EndInterface macros

@@ -25,6 +25,7 @@
 #include "csimul.h"
 #include "cenvir.h"
 #include "cexception.h"
+#include "parsim/ccommbuffer.h"
 
 
 cOutVector::cOutVector(const char *nam, int tupl) : cObject(nam)
@@ -122,4 +123,7 @@ bool cOutVector::record(double value1, double value2)
     if (stored) num_stored++;
     return stored;
 }
+
+// FIXME pack/unpack?????????/
+
 

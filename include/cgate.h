@@ -138,7 +138,7 @@ class SIM_API cGate : public cObject
      * to deliver the message to its destination.
      */
     // FIXME: why public?
-    void deliver(cMessage *msg, simtime_t at);
+    virtual void deliver(cMessage *msg, simtime_t at);
 
     /** @name Setting up the gate. */
     //@{
@@ -348,13 +348,13 @@ class SIM_API cGate : public cObject
     cGate *toGate() const   {return togatep;}
 
     /**
-     * Return the ultimate source and destination of the series of connections
+     * Return the ultimate source of the series of connections
      * (the route) that contains this gate.
      */
     cGate *sourceGate() const;
 
     /**
-     * Return the ultimate source and destination of the series of connections
+     * Return the ultimate destination of the series of connections
      * (the route) that contains this gate.
      */
     cGate *destinationGate() const;

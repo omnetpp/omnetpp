@@ -27,6 +27,8 @@ class cModule;
 
 /**
  * Exception class.
+ *
+ * @ingroup SimSupport
  */
 class SIM_API cException
 {
@@ -47,7 +49,7 @@ class SIM_API cException
     void storeCtx();
 
   public:
-    /** @name Constructors */
+    /** @name Constructors, destructor */
     //@{
     /**
      * Default constructor.
@@ -81,6 +83,11 @@ class SIM_API cException
      * object name will be prepended to the message like this: "(cArray)arr".
      */
     cException(const cObject *where, const char *msg,...);
+
+    /**
+     * Destructor.
+     */
+    virtual ~cException() {}
     //@}
 
     /** @name Getting exception info */

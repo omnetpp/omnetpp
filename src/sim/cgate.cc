@@ -393,7 +393,7 @@ bool cGate::isConnected() const
 {
     // for compound modules, both inside and outside must be non-NULL,
     // for simple modules, only check outside.
-    if (!ownerModule()->isSimple() && ownerModule()->isOnLocalMachine())
+    if (!ownerModule()->isSimple())
         return fromgatep!=NULL && togatep!=NULL;
     else
         return isConnectedOutside();

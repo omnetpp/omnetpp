@@ -83,19 +83,21 @@ class SIM_API cStatistic : public cObject
 
     /* Note: No dup() because this is an abstract class! */
 
+#ifdef WITH_PARSIM
     /**
      * Serializes the object into a PVM or MPI send buffer.
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual int netPack();
+    virtual void netPack(cCommBuffer *buffer);
 
     /**
      * Deserializes the object from a PVM or MPI receive buffer
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual int netUnpack();
+    virtual void netUnpack(cCommBuffer *buffer);
+#endif
     //@}
 
     /** @name Collecting values. */
@@ -303,19 +305,21 @@ class SIM_API cStdDev : public cStatistic
      */
     virtual void writeContents(ostream& os);
 
+#ifdef WITH_PARSIM
     /**
      * Serializes the object into a PVM or MPI send buffer.
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual int netPack();
+    virtual void netPack(cCommBuffer *buffer);
 
     /**
      * Deserializes the object from a PVM or MPI receive buffer
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual int netUnpack();
+    virtual void netUnpack(cCommBuffer *buffer);
+#endif
     //@}
 
     /** @name Redefined cStatistic functions. */
@@ -442,19 +446,21 @@ class SIM_API cWeightedStdDev : public cStdDev
      */
     virtual cObject *dup() const {return new cWeightedStdDev(*this);}
 
+#ifdef WITH_PARSIM
     /**
      * Serializes the object into a PVM or MPI send buffer.
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual int netPack();
+    virtual void netPack(cCommBuffer *buffer);
 
     /**
      * Deserializes the object from a PVM or MPI receive buffer
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual int netUnpack();
+    virtual void netUnpack(cCommBuffer *buffer);
+#endif
     //@}
 
     /** @name Redefined cStatistic functions. */

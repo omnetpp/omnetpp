@@ -23,8 +23,10 @@
 #include <string.h>          // strcpy
 #include "macros.h"
 #include "cmodule.h"
+#include "csimplemodule.h"
 #include "cmessage.h"
 #include "cexception.h"
+#include "parsim/ccommbuffer.h"
 
 //=== registration
 Register_Class(cMessage);
@@ -158,6 +160,66 @@ void cMessage::writeContents(ostream& os)
         os << "  no parameter list\n";
     }
 }
+
+#ifdef WITH_PARSIM
+void cMessage::netPack(cCommBuffer *buffer)
+{
+// FIXME what about refcount?
+    cObject::netPack(buffer);
+
+    buffer->pack(msgkind);
+    buffer->pack(prior);
+    buffer->pack(len);
+    buffer->pack(error);
+    buffer->pack(tstamp);
+
+    buffer->pack(frommod);
+    buffer->pack(fromgate);
+    buffer->pack(tomod);
+    buffer->pack(togate);
+    buffer->pack(created);
+    buffer->pack(sent);
+    buffer->pack(delivd);
+    buffer->pack(heapindex);
+    buffer->pack(insertordr);
+
+    if (notNull(parlistp, buffer))
+        packObject(parlistp,buffer);
+
+    if (notNull(encapmsg, buffer))
+        packObject(encapmsg,buffer);
+}
+
+void cMessage::netUnpack(cCommBuffer *buffer)
+{
+// FIXME what about refcount?
+    cObject::netUnpack(buffer);
+
+    buffer->unpack(msgkind);
+    buffer->unpack(prior);
+    buffer->unpack(len);
+    bool tmp;
+    buffer->unpack(tmp);
+    error = tmp;
+    buffer->unpack(tstamp);
+
+    buffer->unpack(frommod);
+    buffer->unpack(fromgate);
+    buffer->unpack(tomod);
+    buffer->unpack(togate);
+    buffer->unpack(created);
+    buffer->unpack(sent);
+    buffer->unpack(delivd);
+    buffer->unpack(heapindex);
+    buffer->unpack(insertordr);
+
+    if (checkFlag(buffer))
+        take(parlistp = (cArray *) unpackObject(buffer));
+
+    if (checkFlag(buffer))
+        take(encapmsg = (cMessage *) unpackObject(buffer));
+}
+#endif
 
 cMessage& cMessage::operator=(const cMessage& msg)
 {

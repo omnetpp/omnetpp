@@ -24,7 +24,7 @@
 //==========================================================================
 
 /**
- * DEPRECATED CLASS. See User Manual for replacement, and reasons of 
+ * DEPRECATED CLASS. See User Manual for replacement, and reasons of
  * deprecation.
  *
  * Network packet class. It adds protocol and PDU type to cMessage.
@@ -75,19 +75,21 @@ class SIM_API cPacket : public cMessage
      */
     virtual void info(char *buf);
 
+#ifdef WITH_PARSIM
     /**
      * Serializes the object into a PVM or MPI send buffer.
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual int netPack();
+    virtual void netPack(cCommBuffer *buffer);
 
     /**
      * Deserializes the object from a PVM or MPI receive buffer
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual int netUnpack();
+    virtual void netUnpack(cCommBuffer *buffer);
+#endif
     //@}
 
     /** @name New attributes. */

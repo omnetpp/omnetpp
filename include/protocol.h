@@ -4,7 +4,7 @@
 //            Discrete System Simulation in C++
 //
 //
-//  Protocol constants
+//  Protocol and PDU type enums for cPacket
 //
 //  Author: Andras Varga
 //

@@ -29,6 +29,7 @@
 #include "cllist.h"
 #include "ctopo.h"
 #include "cexception.h"
+#include "parsim/ccommbuffer.h"
 
 //=== Registration
 Register_Class(cTopology);
@@ -75,6 +76,18 @@ void cTopology::info(char *buf)
     cObject::info( buf );
     sprintf(buf+strlen(buf)," %d nodes", num_nodes);
 }
+
+#ifdef WITH_PARSIM
+void cTopology::netPack(cCommBuffer *buffer)
+{
+    throw new cException(this,"netPack() not implemented");
+}
+
+void cTopology::netUnpack(cCommBuffer *buffer)
+{
+    throw new cException(this,"netUnpack() not implemented");
+}
+#endif
 
 cTopology& cTopology::operator=(const cTopology&)
 {

@@ -33,6 +33,7 @@ class  cObject;
 class  cStaticFlag;
 
 //=== classes mentioned
+class  cCommBuffer;
 class  cIterator;
 class  cHead;
 
@@ -66,6 +67,54 @@ typedef bool (*ForeachFunc)(cObject *,bool);
 
 
 /**
+ * This is the ultimate base class for cObject, and thus for nearly all
+ * OMNeT++ classes. cPolymorphic is a <b>lightweight common base class</b>:
+ * it only contains virtual member functions but no data members,
+ * hence the memory footprint of a cPolymorphic instance consists of the
+ * <i>vptr</i> (pointer to the virtual member functions table) only.
+ *
+ * This also means that deriving your classes from cPolymorphic
+ * (as opposed to having no base class) comes for free.
+ * (The vptr is present anyway if you have at least one virtual member
+ * function.)
+ *
+ * The purpose of introducing cPolymorphic is to strengthen type safety.
+ * <tt>cPolymorphic *</tt> pointers should replace <tt>void *</tt> in most places
+ * where you need pointers to "any data structure".
+ * Using cPolymorphic will allow the safe downcasts using <tt>dynamic_cast</tt>,
+ * and also some reflection using className().
+ *
+ * FIXME move more virtual functions from cObject to cPolymorphic...?
+ * TODO revise every cObject*, maybe change it to cPolymorphic
+ *
+ * @ingroup SimCore
+ */
+class SIM_API cPolymorphic
+{
+  public:
+    /**
+     * Constructor. It has an empty body. (The class doesn't have data members
+     * and there's nothing special to do at construction time.)
+     *
+     */
+    cPolymorphic() {}
+
+    /**
+     * Destructor. It has an empty body (the class doesn't have data members.)
+     * It is declared here only to make the class polymorphic and make its
+     * destructor virtual.
+     */
+    virtual ~cPolymorphic() {}
+
+    /**
+     * Returns a pointer to the class name string. This method is implemented
+     * using typeid (C++ RTTI), and it does not need to be overridden
+     * in subclasses.
+     */
+    virtual const char *className() const;
+};
+
+/**
  * cObject is the base class for almost all classes in the OMNeT++ library.
  *
  * Containing 5 pointers and 2 flags as data and several virtual functions,
@@ -74,13 +123,15 @@ typedef bool (*ForeachFunc)(cObject *,bool);
  * as base class.
  *
  * The two main areas covered by cObject are:
- *    -# basic reflection (name string via name() and setName(); className())
+ *    -# name string via name() and setName()
  *    -# ownership management
+ *
+ * className() is inherited from cPolymorphic.
  *
  * cObject provides a <b>name</b> member (a dynamically allocated string).
  *
  * When subclassing cObject, some virtual member functions are expected to be
- * redefined: className() and dup() are mandatory to be redefined, and often
+ * redefined: dup() are mandatory to be redefined, and often
  * you'll want to redefine info() and writeContents(), too.
  *
  * OMNeT++ provides a fairly complex memory management via the object ownership
@@ -129,7 +180,7 @@ typedef bool (*ForeachFunc)(cObject *,bool);
       - destructor doesn't need not call discard() for objects: this will be
         done in cObject's destructor.
 */
-class SIM_API cObject
+class SIM_API cObject : public cPolymorphic
 {
     friend class cHead;
     friend class cIterator;
@@ -137,7 +188,7 @@ class SIM_API cObject
     friend class cStaticFlag;
 
   protected:
-    char *namestr;                    // name string
+    opp_string namestr;               // name string
     char stor;                        // storage: Static/Auto/Dynamic ('S'/'A'/'D')
 
     bool tkownership;                 // for derived containers: take ownership of objects?
@@ -301,19 +352,19 @@ class SIM_API cObject
      * Sets object's name. The object creates its own copy of the string.
      * NULL pointer may also be passed.
      */
-    void setName(const char *s)  {delete namestr; namestr=opp_strdup(s);}
+    void setName(const char *s)  {namestr = s;}
 
     /**
      * Returns pointer to the object's name. The function never returns
      * NULL; rather, it returns ptr to "".
      */
-    const char *name() const     {return namestr ? namestr : "";}
+    const char *name() const     {return (const char *)namestr ? (const char *)namestr : "";}
 
     /**
      * Returns true if the object's name is identical to the
      * string passed.
      */
-    bool isName(const char *s) const {return !opp_strcmp(namestr,s);}
+    bool isName(const char *s) const {return !opp_strcmp((const char *)namestr,s);}
 
     /**
      * Returns a name that includes the object 'index' (e.g. in a module vector),
@@ -385,14 +436,6 @@ class SIM_API cObject
 
     /** @name Reflection, support for debugging and snapshots. */
     //@{
-
-    /**
-     * Returns a pointer to the class name string. Since OMNeT++ 2.3, this method
-     * is implemented once here in cObject, using typeid (C+ RTTI), and
-     * it no longer needs to be redefined in each class.
-     */
-    virtual const char *className() const;
-
     /**
      * Produces a one-line description of object into `buf'.
      * This function is used by the graphical user interface (TkEnv). See
@@ -420,24 +463,21 @@ class SIM_API cObject
 
     /** @name Support for parallel execution.
      *
-     * Packs/unpacks object from/to PVM or MPI send buffer.
-     * These functions are used by the simulation kernel for parallel execution.
+     * Packs/unpacks object from/to a buffer. These functions are used by parallel execution.
      * These functions should be redefined in all derived classes whose instances
-     * are expected to travel across segments in a parallel distribution run.
+     * are expected to travel across partitions.
      */
     //@{
 
     /**
-     * Serializes the object into a PVM or MPI send buffer.
-     * In OMNeT++'s PVM interface, this method makes calls pvm_pkint(), etc.
+     * Serializes the object into a buffer.
      */
-    virtual int netPack();
+    virtual void netPack(cCommBuffer *buffer);
 
     /**
-     * Deserializes the object from a PVM or MPI receive buffer.
-     * In OMNeT++'s PVM interface, this method makes calls pvm_upkint(), etc.
+     * Deserializes the object from a buffer.
      */
-    virtual int netUnpack();
+    virtual void netUnpack(cCommBuffer *buffer);
     //@}
 
     /** @name Miscellaneous functions. */

@@ -32,6 +32,7 @@
 #include "csimul.h"   // for cModulePar
 #include "cenvir.h"
 #include "cexception.h"
+#include "parsim/ccommbuffer.h"
 
 //==============================================
 //=== Registration
@@ -154,7 +155,7 @@ void cPar::info( char *buf )
     // append useful info
     cFunctionType *ff;
     const char *fn;
-    char *s;
+    const char *s;
     switch (typechar) {
         case 'S': s = ls.sht ? ss.str:ls.str;
                   if (!s) s = "";
@@ -217,6 +218,155 @@ void cPar::forEach(ForeachFunc do_fn)
     }
     do_fn(this,false);
 }
+
+#ifdef WITH_PARSIM
+void cPar::netPack(cCommBuffer *buffer)
+{
+    cObject::netPack(buffer);
+
+    // For error checking & handling
+    if (typechar != 'S' && typechar != 'C' && typechar != 'L' && typechar != 'D'
+        && typechar != 'F' && typechar != 'T' && typechar != 'I' && typechar != 'X'
+        && typechar != 'P' && typechar != 'O')
+    {
+        throw new cException(this,"netPack: unsupported type '%c'",typechar);
+    }
+
+    buffer->pack(typechar);
+    buffer->pack(inputflag);
+    buffer->pack(changedflag);
+    buffer->pack(promptstr.buffer());
+
+    cFunctionType *ff;
+    switch (typechar)
+    {
+    case 'S':
+        buffer->pack(ls.sht);
+        if (ls.sht)
+            buffer->pack(ls.str, sizeof(ls.str));
+        else
+            buffer->pack(ss.str);
+        break;
+
+    case 'L':
+        buffer->pack(lng.val);
+        break;
+
+    case 'D':
+        buffer->pack(dbl.val);
+        break;
+
+    case 'F':
+        ff = findfunctionbyptr(func.f);
+        if (ff == NULL)
+            throw new cException(this,"netPack(): cannot transmit unregistered function");
+
+        buffer->pack(ff->name());
+        buffer->pack(func.argc);
+        buffer->pack(func.p1);
+        buffer->pack(func.p2);
+        buffer->pack(func.p3);
+        buffer->pack(func.p4);
+        break;
+
+    case 'T':
+        if (dtr.res && dtr.res->owner() != this)
+            throw new cException(this,"netPack(): cannot transmit pointer to \"external\" object");
+        if (notNull(dtr.res, buffer))
+            packObject(dtr.res,buffer);
+        break;
+
+    case 'I':
+        throw new cException(this,"netPack(): transmitting indirect values (type 'I') not supported");
+
+    case 'X':
+        // not implemented, because there are functions and pointers in it.
+        throw new cException(this,"netPack(): transmitting expressions (type 'X') not supported");
+
+    case 'P':
+        throw new cException(this,"netPack(): cannot transmit pointer to unknown data structure (type 'P')");
+
+    case 'O':
+        if (obj.obj && obj.obj->owner() != this)
+            throw new cException(this,"netPack(): cannot transmit pointer to \"external\" object");
+        if (notNull(obj.obj, buffer))
+            packObject(obj.obj,buffer);
+        break;
+    }
+}
+
+void cPar::netUnpack(cCommBuffer *buffer)
+{
+    char *funcname;
+    int argc;
+
+    cObject::netUnpack(buffer);
+
+    buffer->unpack(typechar);
+    buffer->unpack(inputflag);
+    buffer->unpack(changedflag);
+    buffer->unpack(promptstr);
+
+    cFunctionType *ff;
+    switch (typechar)
+    {
+    case 'S':
+        buffer->unpack(ls.sht);
+        ss.sht = ls.sht;
+        if (ls.sht)
+            buffer->unpack(ss.str, sizeof(ls.str));
+        else
+            buffer->unpack(ls.str);
+        break;
+
+    case 'L':
+        buffer->unpack(lng.val);
+        break;
+
+    case 'D':
+        buffer->unpack(dbl.val);
+        break;
+
+    case 'F':
+        buffer->unpack(funcname);
+        buffer->unpack(argc);
+        ff = findFunction(funcname,argc);
+        if (ff == NULL)
+        {
+            delete [] funcname;
+            throw new cException(this,"netUnpack(): transmitted function `%s' with %d args not registered here",
+                                 funcname, argc);
+        }
+        func.f = ff->mathFunc();
+        func.argc = argc;
+        buffer->unpack(func.p1);
+        buffer->unpack(func.p2);
+        buffer->unpack(func.p3);
+        buffer->unpack(func.p4);
+        delete [] funcname;
+        break;
+
+    case 'T':
+        if (!checkFlag(buffer))
+            dtr.res = NULL;
+        else
+            take(dtr.res = (cStatistic *) unpackObject(buffer));
+        break;
+
+    case 'I':
+    case 'X':
+    case 'P':
+        throw new cException(this,"netUnpack(): unpacking I,P and X types not implemented");
+
+    case 'O':
+        if (!checkFlag(buffer))
+            obj.obj = NULL;
+        else
+            take(obj.obj = unpackObject(buffer));
+        break;
+    }
+}
+#endif
 
 //-------------------------------------------------------------------------
 // set/get flags
@@ -763,7 +913,7 @@ void cPar::getAsText(char *buf, int maxlen)
     bb[0] = 0;
     cFunctionType *ff;
     const char *fn;
-    char *s;
+    const char *s;
 
     switch (typechar)
     {

@@ -49,7 +49,9 @@ enum eMessageKind
   MK_STARTER = -1,  /// Starter message. Used by scheduleStart().
   MK_TIMEOUT = -2,  /// Internal timeout message. Used by wait(), etc.
   MK_PACKET  = -3,  /// Network packet. Used by cPacket.
-  MK_INFO    = -4   /// Information packet. Used by cPacket.
+  MK_INFO    = -4,  /// Information packet. Used by cPacket.
+
+  MK_PARSIM_BEGIN = -1000  /// values -1000...-2000 reserved for parallel simulation
 };
 
 //==========================================================================
@@ -90,8 +92,8 @@ class SIM_API cMessage : public cObject
     int prior;                 // priority -- used for scheduling msgs with equal times
     long len;                  // length of message -- used for bit errors and transm.delay
     bool error : 1;            // bit error occurred during transmission
-    unsigned refcount : 7;     // reference count for encapsulated message (0: not encapsulated, max 127)
-    unsigned char srcprocid;   // reserved for use by parallel execution: id of source partition 
+    unsigned refcount : 7;     // reference count for encapsulated message (0: not encapsulated, max 127) FIXME is it used already?
+    unsigned char srcprocid;   // reserved for use by parallel execution: id of source partition
     cArray *parlistp;          // ptr to list of parameters
     cMessage *encapmsg;        // ptr to encapsulated msg
     void *contextptr;          // a stored pointer -- user-defined meaning
@@ -165,19 +167,21 @@ class SIM_API cMessage : public cObject
      */
     virtual void writeContents(ostream& os);
 
+#ifdef WITH_PARSIM
     /**
      * Serializes the object into a PVM or MPI send buffer
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual int netPack();
+    virtual void netPack(cCommBuffer *buffer);
 
     /**
      * Deserializes the object from a PVM or MPI receive buffer
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual int netUnpack();
+    virtual void netUnpack(cCommBuffer *buffer);
+#endif
     //@}
 
     /** @name Message attributes. */
@@ -559,11 +563,13 @@ class SIM_API cMessage : public cObject
 
     /**
      * Used internally by the parallel simulation kernel.
+     * FIXME:use it, really!!!
      */
     void setSrcProcId(unsigned char procId) {srcprocid=procId;}
 
     /**
      * Used internally by the parallel simulation kernel.
+     * FIXME:use it, really!!!
      */
     unsigned char srcProcId() {return srcprocid;}
     //@}

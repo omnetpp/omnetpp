@@ -28,8 +28,9 @@
 #include "csimul.h"
 #include "macros.h"
 #include "cgate.h"
-#include "cexception.h"
 #include "cchannel.h"
+#include "cexception.h"
+#include "parsim/ccommbuffer.h"
 
 //=== registration
 Register_Class(cChannel);
@@ -92,6 +93,18 @@ void cChannel::writeContents(ostream& os)
         os << "  no parameter list\n";
     }
 }
+
+#ifdef WITH_PARSIM
+void cChannel::netPack(cCommBuffer *buffer)
+{
+    throw new cException(this,"netPack() not implemented");
+}
+
+void cChannel::netUnpack(cCommBuffer *buffer)
+{
+    throw new cException(this,"netUnpack() not implemented");
+}
+#endif
 
 cChannel& cChannel::operator=(const cChannel& ch)
 {
@@ -225,6 +238,18 @@ void cSimpleChannel::writeContents(ostream& os)
             os << "  transmission finishes: " << simtimeToStr(transm_finishes) << '\n';
     }
 }
+
+#ifdef WITH_PARSIM
+void cSimpleChannel::netPack(cCommBuffer *buffer)
+{
+    throw new cException(this,"netPack() not implemented");
+}
+
+void cSimpleChannel::netUnpack(cCommBuffer *buffer)
+{
+    throw new cException(this,"netUnpack() not implemented");
+}
+#endif
 
 cSimpleChannel& cSimpleChannel::operator=(const cSimpleChannel& ch)
 {

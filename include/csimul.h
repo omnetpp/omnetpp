@@ -35,12 +35,12 @@ class  cModulePar;
 class  cModule;
 class  cSimpleModule;
 class  cCompoundModule;
-class  cNetMod;
 class  cSimulation;
 class  cNetworkType;
-class  TModInspector;
-class  cStatistic;
 class  cException;
+class cScheduler;
+class cParsimPartition;
+
 
 /**
  * Global simulation instance.
@@ -80,17 +80,12 @@ class SIM_API cSimulation : public cObject
     cModule *contextmodp;     // module in context (or NULL)
     cHead *locallistp;        // owner of newly created objects
     cHead locals;             // "global" local objects list
-
-    cNetMod *netmodp;         // if runs distributed; communications
-                              //      (network interface) module
+    cNetworkType *networktype; // network type
+    cScheduler *schedulerp;   // event scheduler
 
     simtime_t sim_time;       // simulation time (time of current event)
     long event_num;           // sequence number of current event
 
-    int netif_check_freq;     // (distributed execution:) frequency of processing
-    int netif_check_cntr;     // msgs from other segments
-
-    cNetworkType *networktype; // ptr to network creator object
     int run_number;            // which simulation run
     cSimpleModule *backtomod;  // used in cSimpleModule::wait/sendmsg
     cCoroutine runningmod_deleter; // used when a simple module deletes itself
@@ -171,7 +166,10 @@ class SIM_API cSimulation : public cObject
     int addModule(cModule *mod);
 
     /**
-     * Deletes a module identified by its ID.
+     * Deletes a module identified by its ID. This is an internal method
+     * invoked as part of cModule::deleteModule(), and it should not be called
+     * directly.
+     * If the module doesn't exist, the method does nothing.
      */
     void deleteModule(int id);
 
@@ -187,7 +185,7 @@ class SIM_API cSimulation : public cObject
     cModule *moduleByPath(const char *modulepath) const;
 
     /**
-     * Looks up a module by ID.
+     * Looks up a module by ID. If the module doesn't exist, returns NULL.
      */
     cModule *module(int id) const  {return id>=0 && id<size ? vect[id] : NULL;}
 
@@ -213,32 +211,32 @@ class SIM_API cSimulation : public cObject
     //@{
 
     /**
+     * Installs a scheduler object. It doesn't need to be deleted in the
+     * destructor, that will be done externally.
+     */
+    void setScheduler(cScheduler *sched);
+
+    /**
+     * Returns the scheduler object.
+     */
+    cScheduler *scheduler() const  {return schedulerp;}
+
+    /**
      * Load a NED file and create dynamic module types from it.
      * Works only if src/netbuilder sources are linked in.
      */
     void loadNedFile(const char *nedfile);
 
-    /**
-     * Sets network interface module.
-     */
-    void setNetInterface(cNetMod *netif);
-
-    /**
-     * Returns network interface module.
-     */
-    cNetMod *netInterface() const  {return netmodp;}
 
     /**
      * Builds a new network and initializes it. With distributed simulation,
-     * also sets up network on other segments.
+     * also sets up network on other partitions.
      */
     void setupNetwork(cNetworkType *net,int run_num);
 
     /**
      * Should be called after setupNetwork(), just before the first doOneEvent() call.
      * The initialize() methods of modules are called here.
-     * With distributed simulation, also tells other segments that to begin
-     * executing the simulation.
      */
     void startRun();
 
@@ -250,24 +248,14 @@ class SIM_API cSimulation : public cObject
 
     /**
      * Should be called at the end of a simulation run.
-     * With distributed simulation, this signals other segments that they should stop
-     * execution.
      */
     void endRun();
 
     /**
      * Cleans up the network currently set up. With distributed simulation,
-     * also notifies other segments that they should clean up their networks.
+     * also notifies other partitions that they should clean up their networks.
      */
     void deleteNetwork();
-
-    /**
-     * Used with distributed simulation, sets the frequency of checking
-     * messages arriving from other segments. This setting is mostly
-     * useful for performance tuning. The meaning of the value is:
-     * "check the network interface after every f local events."
-     */
-    void setNetIfCheckFreq(int f)     {netif_check_freq=f;}
     //@}
 
     /** @name Information about the current simulation run. */

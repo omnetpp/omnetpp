@@ -1,3 +1,54 @@
+PARSIM Changelog below
+FIXME todo make brief
+
+2003-04-20  Andras Varga
+
+	* cmodule.cc: setGateSize(): added check for negative vector size
+
+2003-04-15  Andras Varga
+
+	* csimplemodule.cc: fixed bug introduced in 2.3b1 in deleteModule() 
+	which caused deleting another module (i.e. mod->deleteModule()) 
+	to crash.
+
+2003-03-30  Andras Varga
+
+	* Makefile.vc uses implicit rules
+
+2003-03-25  Andras Varga
+
+	* cmodule.cc: method isSimple() moved to base class cModule where it 
+	uses dynamic_cast.
+
+	* ctypes.cc: cModuleType::create() methods reorganized (see 
+	include/ChangeLog)
+	
+2003-03-23  Andras Varga
+
+	* split cmodule.cc: cSimpleModule put into new file csimplemodule.cc
+
+	* cobject.cc: type of namestr member changed from char* to opp_string
+
+	* added cscheduler.cc, changed csimul.cc: cSimulation::nextModule()
+	now relies on a scheduler object, subclassed from cScheduler. 
+
+2003-03-20  Andras Varga
+
+	* nearly all files: implementations of netPack()/netUnpack() moved 
+	here from MPI/PVM directories. These functions now use the cCommBuffer 
+	interface, so they're no longer specific to the communications library 
+	(ie.MPI.PVM,..)
+
+	* TODO: for all classes that don't have netPack()/netUnpack() 
+	implemented, add empty implementation that throws "not implemented"
+	exception when called.
+
+	* TODO: implement cPVMCommunications!
+
+-----------------------------------
+END PARSIM changelog
+-----------------------------------
+
 2003-11-09  Andras Varga
 
 	* csimul.cc: added optional support for dynamic loading of NED files.

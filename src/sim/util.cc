@@ -24,6 +24,7 @@
 #include <math.h>
 #include "util.h"
 #include "distrib.h" // dummy()
+#include "cscheduler.h" // dummy()
 #include "cenvir.h"
 #include "cmodule.h"
 #include "macros.h"  // Define_Function()
@@ -474,6 +475,8 @@ void _sim_dummy_func()
       cWatch w(NULL,*(int*)&x);
       w.pointer(); w.typeChar();
       exponential(1.0);
+      cSequentialScheduler sch;
+      sch.setSimulation(NULL);
       //_dummy_for_env();
 }
 

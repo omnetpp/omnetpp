@@ -33,7 +33,7 @@ char *emsg[] = {
   "Bad number of arguments, %d expected",                // eNUMARGS
   "Cannot find module interface `%s' needed to create module of type `%s'", // eNOMODIF
   "Error during starting up user interface",             // eUISTARTUP
-  "Simulation stopped by segment on host `%s'",          // eSTOPSIMRCVD
+  "Simulation stopped by partition %d: %s",                // eSTOPSIMRCVD
   "No such module or module finished already",           // eNOMOD
   "Module has no gate %d",                               // eNOGATE
   "send(): Gate `%s' is an input gate",                  // eINGATE

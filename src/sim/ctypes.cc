@@ -31,7 +31,13 @@
 #include "cmodule.h"
 #include "macros.h"
 #include "ctypes.h"
+#include "cenvir.h"
 #include "cexception.h"
+
+#ifdef WITH_PARSIM
+#include "parsim/cplaceholdermod.h"
+#include "parsim/ccommbuffer.h"
+#endif
 
 //=== Functions  (register them for findFunction())
 Define_Function( acos,  1 )
@@ -67,7 +73,6 @@ cModuleInterface::cModuleInterface(const char *name, sDescrItem *descr_tab ) :
 {
     gatev = NULL;
     paramv = NULL;
-    machinev = NULL;
 
     setup( descr_tab );
 
@@ -89,26 +94,22 @@ void cModuleInterface::setup( sDescrItem *descr_tab )
     //    Interface(...)
     //      Parameter( parname, types )
     //      Gate( gatename, type )
-    //      Machine( machinename )
     //    End
     // This function copies the info into three separate vectors:
-    //    gatev, paramv, machinev
+    //    gatev, paramv
     // The create() member function will use it.
 
     sDescrItem *tab;
 
-    ngate = nparam = nmachine = 0;
+    ngate = nparam = 0;
     for (tab=descr_tab; tab->what!='E'; tab++)
     {
        switch( tab->what ) {
          case 'G': ngate++;    break;
          case 'P': nparam++;   break;
-         case 'M': nmachine++; break;
        }
     }
-    if (nmachine==0) nmachine=1;  // machine parameter "default"
-
-    allocate( ngate, nparam, nmachine ); // allocate vectors of gates and params
+    allocate( ngate, nparam); // allocate vectors of gates and params
 
     int g=0, p=0, m=0;      // fill vector with data
     for (tab=descr_tab; tab->what!='E'; tab++)
@@ -130,21 +131,14 @@ void cModuleInterface::setup( sDescrItem *descr_tab )
               paramv[p].types = opp_strdup( tab->types );
               p++;
               break;
-
-           case 'M':  // MACHINE( name )
-              machinev[m].name = opp_strdup( tab->name );
-              m++;
-              break;
         }
     }
-    if (m==0) machinev[m].name = opp_strdup( "default" ); // add "default"
 }
 
 cModuleInterface::cModuleInterface(const cModuleInterface& mi) :
   cObject(),
   gatev(NULL),
-  paramv(NULL),
-  machinev(NULL)
+  paramv(NULL)
 {
     setName(mi.name());
     operator=( mi );
@@ -155,10 +149,8 @@ cModuleInterface::~cModuleInterface()
     int i;
     for (i=0; i<ngate; i++)    {delete gatev[i].name;}
     for (i=0; i<nparam; i++)   {delete paramv[i].name;delete paramv[i].types;}
-    for (i=0; i<nmachine; i++) {delete machinev[i].name;}
     delete [] gatev;
     delete [] paramv;
-    delete [] machinev;
 }
 
 cModuleInterface& cModuleInterface::operator=(const cModuleInterface&)
@@ -166,7 +158,7 @@ cModuleInterface& cModuleInterface::operator=(const cModuleInterface&)
     throw new cException("cModuleInterface cannot copy itself!");
 }
 
-void cModuleInterface::allocate( int ngte, int npram, int nmach )
+void cModuleInterface::allocate( int ngte, int npram)
 {
     ngate = ngte;
     gatev = new sGateInfo[ngate];
@@ -174,18 +166,13 @@ void cModuleInterface::allocate( int ngte, int npram, int nmach )
     nparam = npram;
     paramv = new sParamInfo[nparam];
 
-    nmachine = nmach;
-    machinev = new sMachineInfo[nmachine];
-
-    if ((ngate&&!gatev) || (nparam&&!paramv) || (nmachine&&!machinev))
+    if ((ngate&&!gatev) || (nparam&&!paramv))
         throw new cException(eNOMEM);
 }
 
 void cModuleInterface::addParametersGatesTo( cModule *module)
 {
     int i;
-    for (i=0;i<nmachine;i++)
-       module->addMachinePar( machinev[i].name );
     for (i=0;i<ngate;i++)
        module->addGate( gatev[i].name, gatev[i].type );
     for (i=0;i<nparam;i++)
@@ -237,15 +224,8 @@ void cModuleInterface::check_consistency()
           {what="number of gates";goto error1;}
     if (nparam!=m->nparam)
           {what="number of parameters";goto error1;}
-    if (nmachine!=m->nmachine)
-          {what="number of machine pars";goto error1;}
 
     int i;
-    for (i=0;i<nmachine;i++)
-    {
-       if (opp_strcmp(machinev[i].name,m->machinev[i].name)!=0)
-          {what="names for machine par";id=i;which=machinev[i].name;goto error2;}
-    }
     for (i=0;i<nparam;i++)
     {
        if (opp_strcmp(paramv[i].name,m->paramv[i].name)!=0)
@@ -330,15 +310,19 @@ cModuleType& cModuleType::operator=(const cModuleType& mt)
     return *this;
 }
 
-cModule *cModuleType::create(const char *modname, cModule *parentmod, bool local)
+
+cModule *cModuleType::create(const char *modname, cModule *parentmod)
+{
+    return create(modname, parentmod, -1, 0);
+}
+
+cModule *cModuleType::create(const char *modname, cModule *parentmod, int vectorsize, int index)
 {
     // Creates a module.
     //  In addition to creating an object of the correct type,
     //  this function inserts it into cSimulation's module vector
     //  and adds parameter and gate objects specified in the interface
     //  description.
-
-    cModule *mod;
 
     // Object members of the new module class are collected to
     // the temporary list classmembers.
@@ -347,10 +331,18 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, bool local
     simulation.setLocalList( &classmembers );
 
     // create the new module object
-    if (local)
+    cModule *mod;
+#ifdef WITH_PARSIM
+    if (ev.isModuleLocal(parentmod,modname,index))
         mod = create_func(modname, parentmod);
     else
-        mod = new cCompoundModule(modname, parentmod);
+        mod = new cPlaceHolderModule(modname, parentmod);
+#else
+    mod = create_func(modname, parentmod);
+#endif
+    if (vectorsize>=0)
+        mod->setIndex(index, vectorsize);
+    mod->setModuleType(this);
 
     // put the object members of the new module to their place, mod->members
     cObject *p;
@@ -362,8 +354,7 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, bool local
     }
     simulation.setLocalList( oldl );
 
-    mod->setModuleType( this );
-
+    // insert to module hierarchy
     simulation.addModule(mod);
 
     if (parentmod!=NULL)
@@ -514,7 +505,7 @@ cFunctionType::cFunctionType(const char *name, MathFunc4Args f, int ac) : cObjec
                              "number of arguments %d, should be 4", name, ac);
 }
 
-MathFuncNoArg cFunctionType::mathFuncNoArg()  
+MathFuncNoArg cFunctionType::mathFuncNoArg()
 {
     if (argc!=0)
         throw new cException(this,"mathFuncNoArg(): arg count mismatch (argc=%d)",argc);
@@ -528,21 +519,21 @@ MathFunc1Arg cFunctionType::mathFunc1Arg()
     return (MathFunc1Arg)f;
 }
 
-MathFunc2Args cFunctionType::mathFunc2Args()  
+MathFunc2Args cFunctionType::mathFunc2Args()
 {
     if (argc!=2)
         throw new cException(this,"mathFunc2Args(): arg count mismatch (argc=%d)",argc);
     return (MathFunc2Args)f;
 }
 
-MathFunc3Args cFunctionType::mathFunc3Args()  
+MathFunc3Args cFunctionType::mathFunc3Args()
 {
     if (argc!=3)
         throw new cException(this,"mathFunc3Args(): arg count mismatch (argc=%d)",argc);
     return (MathFunc3Args)f;
 }
 
-MathFunc4Args cFunctionType::mathFunc4Args()  
+MathFunc4Args cFunctionType::mathFunc4Args()
 {
     if (argc!=4)
         throw new cException(this,"mathFunc4Args(): arg count mismatch (argc=%d)",argc);
@@ -572,7 +563,7 @@ void *createOne(const char *classname)
 {
     cClassRegister *p = (cClassRegister *)classes.find( classname );
     if (!p)
-        throw new cException("Registration object for class \"%s\" not found", classname);
+        throw new cException("Class \"%s\" not found -- perhaps its code was not linked in, or the class wasn't registered via Register_Class()", classname);
 
     return p->createOne();
 }

@@ -123,21 +123,15 @@ class SIM_API cModuleInterface : public cObject
        char *types;
     };
 
-    struct sMachineInfo {
-       char *name;
-    };
-
   protected:
     int ngate;
     sGateInfo *gatev;
     int nparam;
     sParamInfo *paramv;
-    int nmachine;            // NET
-    sMachineInfo *machinev;  // NET
 
   private:
     // internal
-    void allocate(int ngte, int npram, int nmach);
+    void allocate(int ngte, int npram);
 
     // internal
     void check_consistency();
@@ -263,11 +257,21 @@ class SIM_API cModuleType : public cObject
     //@{
 
     /**
-     * Creates a module. In addition to creating an object of the correct type,
+     * Creates a module which is not element of a module vector.
+     * In addition to creating an object of the correct type,
      * this function inserts it into cSimulation's module vector and adds the
      * parameters and gates specified in the interface description.
+FIXME cf with netbuilder stuff!!!!
      */
-    virtual cModule *create(const char *name, cModule *parentmod, bool local=true);
+    virtual cModule *create(const char *name, cModule *parentmod);
+
+    /**
+     * Creates a module to be an element of a module vector.
+     * The last two arguments specify the vector size and the index
+     * of the new module within the vector.
+FIXME cf with netbuilder stuff!!!!
+     */
+    virtual cModule *create(const char *name, cModule *parentmod, int vectorsize, int index);
 
     /**
      * DEPRECATED. Use <code>mod->buildInside()</code> instead; that's what
@@ -625,7 +629,7 @@ class SIM_API cClassRegister : public cObject
  * <code>cObject *param = createOne( "cPar" );</code>
  *
  * createOne() is used e.g. in parallel simulation when an object is received
- * from another segment and it has to be demashalled.
+ * from another partition and it has to be demashalled.
  *
  * @see Register_Class() macro
  * @see cClassRegister class

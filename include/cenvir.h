@@ -157,7 +157,7 @@ class ENVIR_API cEnvir
      *
      * The second argument is non-NULL only when sendDirect() was used, and
      * identifies the target gate that was passed to the sendDirect() call.
-     * (This information is necessary for proper animation: the target gate 
+     * (This information is necessary for proper animation: the target gate
      * might belong to a compound module and be further connected, and then
      * the message will additionally travel through a series of connections
      * before it arrives in a simple module.)
@@ -180,9 +180,9 @@ class ENVIR_API cEnvir
     void breakpointHit(const char *lbl, cSimpleModule *mod);
 
     /**
-     * Notifies the environment that one module called a member function 
-     * of another module object. This hook enables a graphical user 
-     * interface animate the method call in the network diagram.    
+     * Notifies the environment that one module called a member function
+     * of another module object. This hook enables a graphical user
+     * interface animate the method call in the network diagram.
      */
     void moduleMethodCalled(cModule *from, cModule *to, const char *method);
     //@}
@@ -197,10 +197,15 @@ class ENVIR_API cEnvir
     const char *getParameter(int run_no, const char *parname);
 
     /**
-     * User by distributed execution. Returns physical name for a logical
-     * machine name.
+     * Used for parallel distributed simulation. Returns true if a
+     * to-be-created module which is (or has any submodule which is)
+     * in the local partition, and false otherwise.
+     *
+     * Note that for compound modules that contain simple modules in
+     * several partitions, this function will return true on all those
+     * partitions.
      */
-    const char *getPhysicalMachineFor(const char *logical_mach);
+    bool isModuleLocal(cModule *parentmod, const char *modname, int index);
 
     /**
      * Returns display string for an object given with its full name.
@@ -267,12 +272,6 @@ class ENVIR_API cEnvir
      * Returns the prompt string.
      */
     const char *prompt() const  {return prmpt;}
-
-    /**
-     * Used with parallel execution. It is called internally by the simulation
-     * kernel when something was written to ev by another segment.
-     */
-    void foreignPuts(const char *hostname, const char *mod, const char *str);
     //@}
 
     /** @name Methods for recording data from output vectors.
@@ -369,12 +368,6 @@ class ENVIR_API cEnvir
     unsigned extraStackForEnvir();
 
     /**
-     * Returns whether the simulation is distributed, and if yes,
-     * if this process is master or slave.
-     */
-    int runningMode() const     {return running_mode;}
-
-    /**
      * Access to original command-line arguments.
      */
     int argCount();
@@ -383,6 +376,21 @@ class ENVIR_API cEnvir
      * Access to original command-line arguments.
      */
     char **argVector();
+
+    /**
+     * May be called from the simulation while actively waiting
+     * for some external condition to occur -- for example from
+     * blocking receive in parallel simulation, or during waiting
+     * in real-time simulation.
+     *
+     * In a graphical user interface, this method may take care
+     * of display redraw and handling user interaction (including Stop
+     * button).
+     *
+     * Normally returns false. A true value means the user wants to
+     * abort waiting (e.g. pushed the Stop button).
+     */
+    bool idle();
     //@}
 };
 

@@ -91,20 +91,6 @@ class SIM_API cTransientDetection : public cObject
     //@{
 
     /* No dup() because this is an abstract class. */
-
-    /**
-     * Serializes the object into a PVM or MPI send buffer.
-     * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
-     */
-    virtual int netPack();
-
-    /**
-     * Deserializes the object from a PVM or MPI receive buffer
-     * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
-     */
-    virtual int netUnpack();
     //@}
 
     /** @name Pure virtual functions to define the interface. */
@@ -195,20 +181,6 @@ class SIM_API cAccuracyDetection : public cObject
     //@{
 
     /* No dup() because this is an abstract class. */
-
-    /**
-     * Serializes the object into a PVM or MPI send buffer.
-     * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
-     */
-    virtual int netPack();
-
-    /**
-     * Deserializes the object from a PVM or MPI receive buffer
-     * Used by the simulation kernel for parallel execution.
-     * See cObject for more details.
-     */
-    virtual int netUnpack();
     //@}
 
     /** @name Pure virtual functions to define the interface. */

@@ -29,6 +29,7 @@
 #include "cobject.h"
 #include "cexception.h"
 #include "util.h"
+#include "parsim/ccommbuffer.h"
 
 //==========================================================================
 //=== GLOBAL VARIABLES
@@ -38,6 +39,14 @@ int   cObject::heapflag;
 
 //=== Registration
 Register_Class(cObject);
+
+//==========================================================================
+//=== cPolymorphic - member functions
+
+const char *cPolymorphic::className() const
+{
+    return opp_typename(typeid(*this));
+}
 
 //==========================================================================
 //=== cObject - member functions
@@ -54,7 +63,7 @@ cObject::cObject(const cObject& obj)
 {
     DETERMINE_STORAGE();
     tkownership = true;
-    namestr = opp_strdup( obj.namestr );
+    namestr = obj.namestr;
     firstchildp = NULL;
 
     ownerp = NULL;
@@ -67,7 +76,6 @@ cObject::cObject()
 {
     DETERMINE_STORAGE();
     tkownership = true;
-    namestr = NULL;
     firstchildp = NULL;
 
     ownerp = NULL;
@@ -78,7 +86,7 @@ cObject::cObject(const char *name)
 {
     DETERMINE_STORAGE();
     tkownership = true;
-    namestr = opp_strdup( name );
+    namestr = name;
     firstchildp = NULL;
 
     ownerp = NULL;
@@ -94,9 +102,6 @@ cObject::~cObject()
     setOwner(NULL);
     while (firstchildp!=NULL)
         discard( firstchildp );
-
-    // finally, deallocate object name
-    delete [] namestr;
 }
 
 void *cObject::operator new(size_t m)
@@ -118,20 +123,36 @@ void cObject::copyNotSupported() const
     throw new cException(this,eCANTCOPY);
 }
 
-const char *cObject::className() const 
-{
-    return opp_typename(typeid(*this));
-}
-
 void cObject::info(char *buf)
 {
     sprintf( buf, "%-12s (%s)", fullName()?fullName():"<noname>", className());
 }
 
+void cObject::netPack(cCommBuffer *buffer)
+{
+#ifdef WITH_PARSIM
+    buffer->pack(namestr);
+    // no need to pack 'stor'
+    buffer->pack(tkownership);
+#else
+    throw new cException("netPack(): simulation kernel was compiled without support for parallel simulation");
+#endif
+}
+
+void cObject::netUnpack(cCommBuffer *buffer)
+{
+#ifdef WITH_PARSIM
+    buffer->unpack(namestr);
+    buffer->unpack(tkownership);
+#else
+    throw new cException("netPack(): simulation kernel was compiled without support for parallel simulation");
+#endif
+}
+
 void cObject::setOwner(cObject *newowner)
 {
     // remove from owner's child list
-    if (ownerp!=NULL)   
+    if (ownerp!=NULL)
     {
          if (nextp!=NULL)
               nextp->prevp = prevp;
@@ -143,7 +164,7 @@ void cObject::setOwner(cObject *newowner)
     }
 
     // insert into owner's child list as first elem
-    if (newowner!=NULL) 
+    if (newowner!=NULL)
     {
          ownerp = newowner;
          prevp = NULL;
@@ -249,7 +270,7 @@ cObject *cObject::findObject(const char *objname, bool deep)
 
 int cObject::cmpbyname(cObject *one, cObject *other)
 {
-    return opp_strcmp(one->namestr, other->namestr);
+    return opp_strcmp((const char *)(one->namestr), (const char *)(other->namestr));
 }
 
 static bool _do_find(cObject *obj, bool beg, const char *objname, cObject *&p, bool deep)

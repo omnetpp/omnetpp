@@ -27,14 +27,16 @@
 #include <string.h>    // strcpy
 #include <stdio.h>     // vsprintf()
 #include "cmodule.h"
+#include "csimplemodule.h"
 #include "cmessage.h"
 #include "csimul.h"
+#include "cscheduler.h"
 #include "cenvir.h"
 #include "ctypes.h"
 #include "cpar.h"
-#include "cnetmod.h"
 #include "cstat.h"
 #include "cexception.h"
+#include "parsim/ccommbuffer.h"
 
 #ifdef WITH_NETBUILDER
 #include "netbuilder/loadnedfile.h"
@@ -73,6 +75,7 @@ cSimulation::cSimulation(const cSimulation& r) :
 {
     setName(r.name());
     vect=NULL;
+    schedulerp=NULL;
     operator=(r);
 }
 
@@ -88,8 +91,7 @@ cSimulation::cSimulation(const char *name) :
     contextmodp = NULL;
     systemmodp = NULL;
     locallistp = &locals;
-
-    netmodp = NULL;
+    schedulerp = NULL;
 
     backtomod = NULL;
 
@@ -101,15 +103,11 @@ cSimulation::cSimulation(const char *name) :
     // err = eOK; -- commented out to enable errors prior to starting main()
     networktype = NULL;
     run_number = 0;
-
-    netif_check_freq = 1000;    // frequency of processing msgs from other segments
-    netif_check_cntr = 0;
 }
 
 cSimulation::~cSimulation()
 {
     deleteNetwork();
-    delete netmodp;
 }
 
 void cSimulation::init()
@@ -221,6 +219,13 @@ void cSimulation::writeContents( ostream& os )
     writesubmodules(os, systemModule(), 5 );
 }
 
+void cSimulation::setScheduler(cScheduler *sched)
+{
+    if (schedulerp)
+        throw new cException(this, "setScheduler() can only be called once");
+    schedulerp = sched;
+}
+
 void cSimulation::loadNedFile(const char *nedfile)
 {
 #ifdef WITH_NETBUILDER
@@ -229,12 +234,6 @@ void cSimulation::loadNedFile(const char *nedfile)
     throw new cException("cannot load `%s': simulation kernel was compiled without "
                          "support for dynamic loading of NED files", nedfile);
 #endif
-}
-
-void cSimulation::setNetInterface(cNetMod *netif)
-{
-    netmodp = netif;
-    take( netif );
 }
 
 int cSimulation::addModule(cModule *mod)
@@ -264,8 +263,8 @@ int cSimulation::addModule(cModule *mod)
 
 void cSimulation::deleteModule(int id)
 {
-    if (id<0 || id>last_id)
-        throw new cException("cSimulation::deleteModule(): module id %d out of range",id);
+    if (id<0 || id>last_id || !vect[id])
+        return;
 
     if (vect[id]==systemmodp)
         systemmodp = NULL;
@@ -311,8 +310,6 @@ cModule *cSimulation::moduleByPath(const char *path) const
 // FIXME change according to doc comment...
 void cSimulation::setupNetwork(cNetworkType *network, int run_num)
 {
-    // FIXME handle exceptions during the setup process!
-
     if (!network)
         throw new cException(eNONET);
 
@@ -322,39 +319,13 @@ void cSimulation::setupNetwork(cNetworkType *network, int run_num)
     // set cNetworkType pointer
     networktype = network;
 
+    // just to be sure
+    msgQueue.clear();
+
     try
     {
         // call NEDC-generated network setup function
         networktype->setupNetwork();
-
-        // handle distributed execution
-        if (netInterface()!=NULL)
-        {
-           // master: starts OMNeT++ on other hosts
-           if (ev.runningMode()==MASTER_MODE)
-           {
-              // the hosts we need are the system module's machines
-              cArray& machines = systemModule()->machinev;
-              netInterface()->start_segments( machines, ev.argCount(), ev.argVector());
-
-              // signal the slaves which run to set up
-              //   this causes slaves to start building up the network
-              netInterface()->send_runnumber( run_number );
-
-              // process messages from other segments:
-              //   display info/error messages, answer questions about param. values etc.
-              netInterface()->process_netmsgs();
-           }
-
-           // all segments: match gate pairs
-           netInterface()->setup_connections();
-
-           // again: display possible info/error messages
-           if (ev.runningMode()==MASTER_MODE)
-           {
-              netInterface()->process_netmsgs();
-           }
-        }
     }
     catch (cException *)
     {
@@ -367,11 +338,13 @@ void cSimulation::setupNetwork(cNetworkType *network, int run_num)
 // FIXME change according to doc comment...
 void cSimulation::startRun()
 {
-    msgQueue.clear();
     sim_time = 0;
     event_num = 0;
     backtomod = NULL;
-    netif_check_cntr = 0;
+
+    // NOTE: should NOT call msgQueue.clear() here because the parallel
+    // simulation library (cNullMessageProtocol::startRun()) has already
+    // put messages there! It has been called from setupNetwork() anyway.
 
     // reset message counters
     cMessage::resetMessageCounters();
@@ -387,17 +360,6 @@ void cSimulation::startRun()
         systemmodp->scheduleStart(0.0);
         systemmodp->callInitialize();
     }
-
-    // distributed execution:
-    //  create a msg that will notify the network interface that all
-    //  module activity()s have been started
-    if (netInterface()!=NULL)
-    {
-        cMessage *msg = new cMessage;
-        msg->setArrivalTime(0.0);
-        simulation.msgQueue.insert( msg );
-        netInterface()->after_modinit_msg = msg;
-    }
 }
 
 void cSimulation::callFinish()
@@ -412,8 +374,6 @@ void cSimulation::callFinish()
 // FIXME change according to doc comment...
 void cSimulation::endRun()
 {
-    if (netInterface()) // FIXME and we're slave
-        netInterface()->stop_all_segments(); //????
 }
 
 // FIXME change according to doc comment...
@@ -424,18 +384,6 @@ void cSimulation::deleteNetwork()
 
     if (runningmodp!=NULL)
         throw new cException("Attempt to delete network during simulation");
-
-    if (netInterface()!=NULL)
-    {
-        if (ev.runningMode()==MASTER_MODE)
-        {
-            // process final messages (error displays etc) from slaves
-            netInterface()->process_netmsgs();
-        }
-
-        // reset the network interface itself
-        netInterface()->restart();
-    }
 
     // clear remaining messages
     msgQueue.clear();
@@ -468,63 +416,23 @@ cSimpleModule *cSimulation::selectNextModule()
         return p;
     }
 
-    // no more events?
-    if (msgQueue.empty())
-    {
-        // message queue empty.
-        // However, if we run distributed, still there might be something
-        // coming from the network, from other processes
-        if (netInterface()!=NULL)
-        {
-             while (msgQueue.empty())
-                 netInterface()->process_netmsgs();
-             return selectNextModule();
-        }
-
-        // seems like really end of the simulation run
+    // determine next event. Normally (with sequential simulation),
+    // the scheduler just returns msgQueue->peekFirst().
+    cMessage *msg = schedulerp->getNextEvent();
+    if (!msg)
         throw new cTerminationException(eENDEDOK); //FIXME change doc comment!
-    }
-
-    // we're about to return this message's destination module:
-    cMessage *msg = msgQueue.peekFirst();
-
-    // distributed execution stuff:
-    if (netInterface()!=NULL)
-    {
-        // from time to time, process possible messages from other segments
-        if (++netif_check_cntr>=netif_check_freq)
-        {
-            netif_check_cntr = 0;
-            netInterface()->process_netmsgs();
-            msg = msgQueue.peekFirst();
-        }
-
-        // sync_after_modinits() must be called after all local
-        // simple module activity()s have been started
-        if (msg==netInterface()->after_modinit_msg)
-        {
-            netInterface()->sync_after_modinits();
-
-            netInterface()->after_modinit_msg = NULL;
-            delete msgQueue.getFirst();
-            return selectNextModule();
-        }
-
-        // possibly block on next syncpoint.
-        // if blocked, new msgs may have arrived so re-do selectNextModule()
-        if (netInterface()->block_on_syncpoint(msg->arrivalTime()))
-            return selectNextModule();
-    }
 
     // check if dest module exists and still running
     cSimpleModule *modp = (cSimpleModule *)vect[msg->arrivalModuleId()];
     if (!modp)
-        throw new cException("Message's destination module no longer exists");
+        throw new cException("Destination module of message `%s' (module id=%d) "
+                             "no longer exists",msg->name(), msg->arrivalModuleId());
 
     if (modp->moduleState()==sENDED)
     {
         if (!msg->isSelfMessage())
-            throw new cException("Message's destination module `%s' already terminated", modp->fullPath());
+            throw new cException("Destination module of message `%s' (module `%s', id=%d) "
+                                 "already terminated", msg->name(), modp->fullPath(), modp->id());
 
         // self-messages are OK, ignore them
         delete msgQueue.getFirst();

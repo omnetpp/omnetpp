@@ -1,3 +1,84 @@
+MERGED CHANGES FROM PARSIM, see below:
+FIXME make more compact!
+2003-05-21  Andras Varga
+
+	* cobject.h: introduced cPolymorphic base class for cObject,
+	with the purpose of strengthening type safety by using cPolymorphic
+	at places where normally void * pointers would have been used. 
+	className() moved from cObject to cPolymorphic. cPolymorphic has 
+	no data members and ctor/dtor doesn't do anything, so subclassing 
+	from it comes for free.
+
+2003-04-18  Andras Varga
+
+	* cenvir.h: removed foreignPuts() method, no longer used by parallel 
+	simulation.
+
+2003-04-09  Andras Varga
+
+	* csimul.h: added guessNextModule() method, to be used from Tkenv
+	in "next module" gauge.
+
+2003-04-01  Andras Varga
+
+	* cenvir.h: runningMode() removed (because of reorganization of 
+	parallel simulation support)
+
+2003-03-31  Andras Varga
+
+	* omnetpp.h, csimul.h; removed cnetmod.h: cNetMod and all references 
+	to it are removed -- parallel simulation is represented in cSimulation 
+	via cParsimSegment.
+
+	* csimplemodule.h: syncpoint calls removed.
+
+2003-03-25  Andras Varga
+
+	* cmodule.h, csimplemodule.h: method isSimple() moved to base class
+	cModule where it uses dynamic_cast.
+
+	* cenvir.h: getLocalMachineFor() has been replaced by isModuleLocal() 
+
+	* ctypes.h: cModuleType::create(): last arg "bool local" removed
+	(it is now determined inside, by calling new method ev.isModuleLocal());
+	also added overloaded create() method which takes module index and
+	module vector size, and contains cModule::setIndex().
+
+	* cmodule.h: cModule methods setId(), setIndex(), setModuleType()
+	made protected. (They're called internally during the module creation
+	process, from cModuleType::create().)
+
+2003-03-24  Andras Varga
+
+	* csimul.h, cmsgheap.h: improved method documentation
+
+2003-03-23  Andras Varga
+
+	* split cmodule.h: cSimpleModule put into new file csimplemodule.h
+
+	* cobject.h: cObject::namestr private member changed from char* to 
+	opp_string
+
+	* added cscheduler.h, changed csimul.h: cSimulation::nextModule()
+	now relies on a scheduler object, subclassed from cScheduler. 
+	Normally (with sequential execution) the scheduler is 
+	cSequentialScheduler which just returns msgQueue.peekFirst();
+	With parallel and/or real-time simulation, the scheduler is a 
+	specialized class which also does synchronization with real time 
+	and/or with other segments.
+
+2003-03-20  Andras Varga
+
+	* nearly all files: changed signature of netPack()/netUnpack()
+	to use new cCommBuffer interface
+
+	* cgate.h: deliver() made virtual
+
+------------------------------------------------
+END PARSIM
+------------------------------------------------
+
+
 2003-11-09  Andras Varga
 
 	* csimul.h: added cSimulation::loadNedFile() which can be used to

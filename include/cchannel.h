@@ -105,19 +105,21 @@ class SIM_API cChannel : public cObject
      */
     virtual void writeContents(ostream& os);
 
+#ifdef WITH_PARSIM
     /**
      * Serializes the object into a PVM or MPI send buffer
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual int netPack();
+    virtual void netPack(cCommBuffer *buffer);
 
     /**
      * Deserializes the object from a PVM or MPI receive buffer
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual int netUnpack();
+    virtual void netUnpack(cCommBuffer *buffer);
+#endif
     //@}
 
     /** @name Channel information. */
@@ -258,19 +260,21 @@ class SIM_API cSimpleChannel : public cChannel
      */
     virtual void writeContents(ostream& os);
 
+#ifdef WITH_PARSIM
     /**
      * Serializes the object into a PVM or MPI send buffer
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual int netPack();
+    virtual void netPack(cCommBuffer *buffer);
 
     /**
      * Deserializes the object from a PVM or MPI receive buffer
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual int netUnpack();
+    virtual void netUnpack(cCommBuffer *buffer);
+#endif
     //@}
 
     /** @name Setting and getting link attributes. */

@@ -26,6 +26,7 @@
 #include "cexception.h"
 #include "random.h"
 #include "distrib.h"
+#include "parsim/ccommbuffer.h"
 
 using std::endl;
 
@@ -64,6 +65,42 @@ cPSquare::~cPSquare()
     delete [] q;
     delete [] n;
 }
+
+
+#ifdef WITH_PARSIM
+void cPSquare::netPack(cCommBuffer *buffer)
+{
+    cDensityEstBase::netPack(buffer);
+
+    buffer->pack(numcells);
+    buffer->pack(numobs);
+
+    if (notNull(n, buffer))
+        buffer->pack(n, numcells + 2);
+    if (notNull(q, buffer))
+        buffer->pack(q, numcells + 2);
+}
+
+void cPSquare::netUnpack(cCommBuffer *buffer)
+{
+    cDensityEstBase::netUnpack(buffer);
+
+    buffer->unpack(numcells);
+    buffer->unpack(numobs);
+
+    if (checkFlag(buffer))
+    {
+        n = new int[numcells + 2];
+        buffer->unpack(n, numcells + 2);
+    }
+
+    if (checkFlag(buffer))
+    {
+        q = new double[numcells + 2];
+        buffer->unpack(q, numcells + 2);
+    }
+}
+#endif
 
 cPSquare& cPSquare::operator=(const cPSquare& res)
 {

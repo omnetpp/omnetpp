@@ -210,8 +210,6 @@
  *   - cOutVectorMgr is used internally by cSimulation to manage opening and
  *     closing of result files
  *   - cCoroutine is the engine behind activity()-based simple modules
- *   - cNetMod is used with parallel execution, it provides communication
- *     to other segments
  *   - cWatch is the class behind the WATCH() and LWATCH() macros
  *
  * Registration classes are listed below. They play the role of a central

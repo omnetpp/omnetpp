@@ -25,6 +25,7 @@
 #include "macros.h"
 #include "cdensity.h"
 #include "cexception.h"
+#include "parsim/ccommbuffer.h"
 
 //=========================================================================
 //=== Registration
@@ -48,6 +49,45 @@ cDensityEstBase::~cDensityEstBase()
 {
     delete [] firstvals;
 }
+
+#ifdef WITH_PARSIM
+void cDensityEstBase::netPack(cCommBuffer *buffer)
+{
+    cStdDev::netPack(buffer);
+
+    buffer->pack(rangemin);
+    buffer->pack(rangemax);
+    buffer->pack(num_firstvals);
+    buffer->pack(cell_under);
+    buffer->pack(cell_over);
+    buffer->pack(range_ext_factor);
+    buffer->pack(range_mode);
+    buffer->pack(transfd);
+
+    if (notNull(firstvals, buffer))
+        buffer->pack(firstvals, num_firstvals);
+}
+
+void cDensityEstBase::netUnpack(cCommBuffer *buffer)
+{
+    cStdDev::netUnpack(buffer);
+
+    buffer->unpack(rangemin);
+    buffer->unpack(rangemax);
+    buffer->unpack(num_firstvals);
+    buffer->unpack(cell_under);
+    buffer->unpack(cell_over);
+    buffer->unpack(range_ext_factor);
+    buffer->unpack(range_mode);
+    buffer->unpack(transfd);
+
+    if (checkFlag(buffer))
+    {
+        firstvals = new double[num_firstvals];
+        buffer->unpack(firstvals, num_firstvals);
+    }
+}
+#endif
 
 cDensityEstBase& cDensityEstBase::operator=(const cDensityEstBase& res)
 {

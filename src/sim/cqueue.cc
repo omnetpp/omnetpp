@@ -23,6 +23,7 @@
 #include "macros.h"
 #include "cqueue.h"
 #include "cexception.h"
+#include "parsim/ccommbuffer.h"
 
 //=== Registration
 Register_Class(cQueue);
@@ -76,6 +77,40 @@ void cQueue::forEach( ForeachFunc do_fn )
              p->obj->forEach( do_fn );
     do_fn(this,false);
 }
+
+#ifdef WITH_PARSIM
+void cQueue::netPack(cCommBuffer *buffer)
+{
+    cObject::netPack(buffer);
+
+    buffer->pack(n);
+    buffer->pack(asc);
+
+    if (compare)
+        throw new cException(this,"netPack(): cannot transmit compare function");
+
+    for (cQueueIterator iter(*this, 0); !iter.end(); iter--)
+    {
+        if (iter()->owner() != this)
+            throw new cException(this,"netPack(): cannot transmit pointer to \"external\" object");
+        packObject(iter(),buffer);
+    }
+}
+
+void cQueue::netUnpack(cCommBuffer *buffer)
+{
+    cObject::netUnpack(buffer);
+
+    buffer->unpack(n);
+    buffer->unpack(asc);
+
+    for (int i=0; i<n; i++)
+    {
+        cObject *obj = unpackObject(buffer);
+        insert(obj);
+    }
+}
+#endif
 
 void cQueue::clear()
 {
