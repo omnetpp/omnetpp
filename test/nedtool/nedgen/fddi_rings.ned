@@ -9,7 +9,7 @@
 //
 
 
-import 
+import
     "fddi_mac",
     "ssm_ifs",
     "othermod",
@@ -38,11 +38,11 @@ module FDDIRing
                 in[no_comps];
             display: "p=269,48;i=block/cogwheel";
     connections:
-        comp[no_comps-1].out --> FDDICable  --> comp[0].in;
-        for i=0..no_comps-2 do
-            comp[i].out --> FDDICable  --> comp[i+1].in;
+        comp[no_comps - 1].out --> FDDICable --> comp[0].in;
+        for i=0..no_comps - 2 do
+            comp[i].out --> FDDICable --> comp[i + 1].in;
         endfor;
-        for i=0..no_comps-1 do
+        for i=0..no_comps - 1 do
             comp[i].to_stat --> stat.in[i];
         endfor;
 endmodule
@@ -338,3 +338,4 @@ module TUBSRing
         bmecisco7.ring_out --> out;
         bmecisco7.ring_in <-- in;
 endmodule
+
