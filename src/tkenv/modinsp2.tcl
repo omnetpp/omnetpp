@@ -417,7 +417,7 @@ proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n
            set y2 [lindex $arrow_coords 3]
            set x [expr ($x1+$x2+$x2)/3]
            set y [expr ($y1+$y2+$y2)/3]
-           if {$x1<$x2} {
+           if {($x1<$x2) == ($y1<=$y2)} {
               set anch "n"
            } else {
               set anch "s"
@@ -598,7 +598,7 @@ proc create_graphicalmodwindow {name geom} {
     frame $w.grid
     scrollbar $w.hsb -orient horiz -command "$c xview"
     scrollbar $w.vsb -command "$c yview"
-    canvas $c -background #a0e0a0 -relief raised \
+    canvas $c -background "#a0e0a0" -relief raised -closeenough 2 \
         -xscrollcommand "$w.hsb set" \
         -yscrollcommand "$w.vsb set"
     pack $w.grid -expand yes -fill both -padx 1 -pady 1
