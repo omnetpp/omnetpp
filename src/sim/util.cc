@@ -427,6 +427,38 @@ const char *opp_typename(const std::type_info& t)
     return s;
 }
 
+
+//==========================================================================
+
+cContextSwitcher::cContextSwitcher(cModule *thisptr)
+{
+    // save current context and switch to new
+    callerContext = simulation.contextModule();
+    if (thisptr!=callerContext)
+        simulation.setContextModule(thisptr);
+}
+
+cContextSwitcher::~cContextSwitcher()
+{
+    // restore old context
+    simulation.setContextModule(callerContext);
+}
+
+void cContextSwitcher::methodCall(const char *fmt,...)
+{
+    cModule *methodContext = simulation.contextModule();
+    if (methodContext==callerContext) 
+        return;
+    
+    static char buf[MAX_METHODCALL];
+    va_list va;
+    va_start(va, fmt);
+    vsprintf(buf,fmt,va);
+    va_end(va);
+
+    ev.moduleMethodCalled(callerContext, methodContext, buf);
+}
+
 //==========================================================================
 // dummy function to force stupid Unix linkers to include these symbols
 // in the library
