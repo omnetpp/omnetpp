@@ -23,7 +23,7 @@ OMNETPP_VERSION=omnetpp-3.0a3
 # Tcl/Tk 8.4 (minimum 8.4.0) and BLT 2.4 required.
 # Leave BLT_VER empty if you don't have BLT.
 #
-TK_DIR=d:/home/tools/Tcl-8.4.2
+TK_DIR=d:/home/tools/Tcl-8.4.5
 TK_VER=8.4
 BLT_VER=2.4
 
@@ -108,10 +108,10 @@ WITH_PARSIM=yes
 #
 # Choose between debug and release libraries here
 #
-#CFLAGS=$(CFLAGS_DEBUG)
-#LDFLAGS=$(LDFLAGS_DEBUG)
-CFLAGS=$(CFLAGS_RELEASE)
-LDFLAGS=$(LDFLAGS_RELEASE)
+CFLAGS=$(CFLAGS_DEBUG)
+LDFLAGS=$(LDFLAGS_DEBUG)
+#CFLAGS=$(CFLAGS_RELEASE)
+#LDFLAGS=$(LDFLAGS_RELEASE)
 
 
 #==============================================================================
