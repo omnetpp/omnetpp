@@ -516,6 +516,7 @@
          <h2 class="comptitle">Network <i><xsl:value-of select="@name"/></i></h2>
          <xsl:call-template name="print-file"/>
          <xsl:call-template name="process-comment"/>
+         <p><i>Click below to see the network diagram and other details.</i></p>
          <xsl:call-template name="print-type"/>
          <xsl:if test="$have-dot='yes'">
             <xsl:call-template name="print-module-usage-diagram"/>
