@@ -614,7 +614,7 @@
             <th>Description</th>
          </tr>
          <xsl:for-each select="params/param">
-            <xsl:sort select="@name"/>
+            <!-- <xsl:sort select="@name"/> -->
             <tr>
                <td width="150"><xsl:value-of select="@name"/></td>
                <td width="100">
@@ -642,7 +642,7 @@
             <th>Description</th>
          </tr>
          <xsl:for-each select="gates/gate">
-            <xsl:sort select="@name"/>
+            <!-- <xsl:sort select="@name"/> -->
             <tr>
                <td width="150"><xsl:value-of select="@name"/><xsl:if test="@is-vector='yes'"> [ ]</xsl:if></td>
                <td width="100"><i><xsl:value-of select="@direction"/></i></td>
@@ -663,7 +663,7 @@
             <th>Description</th>
          </tr>
          <xsl:for-each select="channel-attr">
-            <xsl:sort select="@name"/>
+            <!-- <xsl:sort select="@name"/> -->
             <tr>
                <td width="150"><xsl:value-of select="@name"/></td>
                <td width="300"><i><xsl:value-of select="@value"/></i></td>
@@ -684,7 +684,7 @@
             <th>Comment</th>
          </tr>
          <xsl:for-each select="substparams/substparam">
-            <xsl:sort select="@name"/>
+            <!-- <xsl:sort select="@name"/> -->
             <tr>
                <td width="150"><xsl:value-of select="@name"/></td>
                <td width="300"><i><xsl:value-of select="@value"/></i></td>
@@ -705,7 +705,7 @@
             <th>Description</th>
          </tr>
          <xsl:for-each select="fields/field">
-            <xsl:sort select="@name"/>
+            <!-- <xsl:sort select="@name"/> -->
             <tr>
                <td width="150"><xsl:value-of select="@name"/></td>
                <td width="100">
@@ -733,7 +733,7 @@
             <th>Description</th>
          </tr>
          <xsl:for-each select="properties/property">
-            <xsl:sort select="@name"/>
+            <!-- <xsl:sort select="@name"/> -->
             <tr>
                <td width="150"><xsl:value-of select="@name"/></td>
                <td width="100"><i><xsl:value-of select="@value"/></i></td>
@@ -754,7 +754,7 @@
             <th>Description</th>
          </tr>
          <xsl:for-each select="enum-fields/enum-field">
-            <xsl:sort select="@name"/>
+            <!-- <xsl:sort select="@name"/> -->
             <tr>
                <td width="150"><xsl:value-of select="@name"/></td>
                <td width="100"><i><xsl:value-of select="@value"/></i></td>
