@@ -221,10 +221,10 @@ DOXYGEN=$(DOXYGEN_DIR)/bin/doxygen
 # Compiler switches
 
 CFLAGS_DEBUG=/nologo /GX /GR /FD /Zm200 /MLd /Od /Gm /GZ /ZI
-LDFLAGS_DEBUG=/nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /incremental:no
+LDFLAGS_DEBUG=/nologo /subsystem:console /debug
 
 CFLAGS_RELEASE=/nologo /GX /GR /FD /Zm200 /ML /O2 /D "NDEBUG"
-LDFLAGS_RELEASE=/nologo /subsystem:console /machine:I386 /pdbtype:sept /incremental:no
+LDFLAGS_RELEASE=/nologo /subsystem:console
 
 # LIB_SUFFIX is either .lib or .dll
 LIB_SUFFIX=.lib
