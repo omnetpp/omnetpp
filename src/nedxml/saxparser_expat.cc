@@ -119,7 +119,7 @@ bool SAXParser::parse(const char *filename)
         done = len < sizeof(buf);
         if (!XML_Parse(parser, buf, len, done))
         {
-            sprintf(errortext, "%s at line %d",
+            sprintf(errortext, "Parse error: %s at line %d",
                     XML_ErrorString(XML_GetErrorCode(parser)),
                     XML_GetCurrentLineNumber(parser));
             err=true;
