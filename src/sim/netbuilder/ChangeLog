@@ -1,3 +1,7 @@
+2005-03-19  Andras Varga
+
+	* cnednetworkbuilder.cc: didn't handle connection display strings
+
 2005-01-06  Andras Varga
 
 	* cnednetworkbuilder.cc/.h: implemented "connections nocheck"

@@ -209,6 +209,16 @@ void cNEDNetworkBuilder::setDisplayString(cModule *submodp, SubmoduleNode *submo
     }
 }
 
+void cNEDNetworkBuilder::setConnDisplayString(cGate *srcgatep, ConnectionNode *conn)
+{
+    DisplayStringNode *dispstrnode = conn->getFirstDisplayStringChild();
+    if (dispstrnode)
+    {
+        const char *dispstr = dispstrnode->getValue();
+        srcgatep->setDisplayString(dispstr);
+    }
+}
+
 void cNEDNetworkBuilder::assignSubmoduleParams(cModule *submodp, NEDElement *submod)
 {
     SubstparamsNode *substparams = (SubstparamsNode *) submod->getFirstChildWithTag(NED_SUBSTPARAMS);
@@ -365,6 +375,9 @@ void cNEDNetworkBuilder::addConnection(cModule *modp, ConnectionNode *conn)
         srcg->connectTo(destg, channel);
     else
         srcg->connectTo(destg);
+
+    // display string
+    setConnDisplayString(srcg, conn);
 }
 
 cGate *cNEDNetworkBuilder::resolveGate(cModule *parentmodp,

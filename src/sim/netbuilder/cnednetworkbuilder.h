@@ -65,6 +65,7 @@ class cNEDNetworkBuilder
     void addChannelAttr(cChannel *chanp, ChannelAttrNode *channelattr);
     void addSubmodule(cModule *modp, SubmoduleNode *submod);
     void setDisplayString(cModule *submodp, SubmoduleNode *submod);
+    void setConnDisplayString(cGate *srcgatep, ConnectionNode *conn);
     void assignSubmoduleParams(cModule *submodp, NEDElement *submod);
     void setupGateVectors(cModule *submodp, NEDElement *submod);
     void readInputParams(cModule *submodp);
