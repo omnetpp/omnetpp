@@ -8,8 +8,10 @@ executables='
 	src/utils/prephtml
 	src/utils/wc-l
 	src/utils/install-lib
-	setperm
-	makedist
+	src/utils/install-prog
+	src/utils/cygpwd
+	_setperm
+	_makedist
 '
 chmod -R g-w .
 chmod -x `find . -type f`

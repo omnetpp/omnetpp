@@ -1,6 +1,8 @@
 #
 # make OMNeT++ distribution
 #
+
+# version must be the same here and in configure.in!
 version=1.2
 
 if test -f configure; then
@@ -10,7 +12,7 @@ fi
 
 rm -rf `find . -name CVS -type d`
 
-./setperm
+./_setperm
 autoconf
 
 # regenerate samples' makefiles and all dependencies
@@ -28,8 +30,9 @@ done
 rm bin/makemake
 
 # cleanup
-rm setperm
-rm makedist
+rm _setperm
+rm _makedist
+rm -rf _icons
 rm config.*
 rm -rf src/gned/icons
 rm -rf `find . -name Makefile`
