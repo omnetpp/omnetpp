@@ -5,6 +5,10 @@ check that cLinkedList::operator=() works correctly and preserves order
 
 %module: {Llist}
 
+int one = 1;
+int two = 2;
+int three = 3;
+
 class {Llist} : public cSimpleModule
 {
 	Module_Class_Members({Llist}, cSimpleModule, 16384);
@@ -17,21 +21,17 @@ Define_Module({Llist});
 
 void {Llist}::fillLlist(cLinkedList& ll)
 {
-  cPar* parm = NULL;
-  parm = new cPar("1");
-  ll.insert(parm);
-  parm = new cPar("3");
-  ll.insert(parm);
-  parm = new cPar("2");
-  ll.insert(parm);
+  ll.insert(&one);
+  ll.insert(&three);
+  ll.insert(&two);
 }
 
 void {Llist}::output(cLinkedList& ll)
 {
   ev << ll.name() << ": "
-     << ((cPar*) ll.pop())->name() << " "
-     << ((cPar*) ll.pop())->name() << " "
-     << ((cPar*) ll.pop())->name() << endl;
+     << *((int*) ll.pop()) << " "
+     << *((int*) ll.pop()) << " "
+     << *((int*) ll.pop()) << endl;
 }
 
 void {Llist}::activity()
@@ -43,7 +43,6 @@ void {Llist}::activity()
   duplicate = initial;
   output(initial);
   output(duplicate);
-  
 }
 
 %ignore-exitcode:1
