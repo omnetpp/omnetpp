@@ -3,13 +3,15 @@
 #
 !include ..\..\configuser.vc
 
+!if "$(LIB_SUFFIX)"==".lib"
+CFLAGS=$(CFLAGS) /DSTATIC_LIBRARY
+!endif
+
 #
 # Local definitions
 #
 COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "..\envir" /DBUILDING_CMDENV
-
 OBJS = cmdenv.obj enumstr.obj heap.obj
-
 LIBS = $(OMNETPP_SRC_DIR)/sim/sim_std.ilib $(OMNETPP_SRC_DIR)/envir/envir.ilib
 
 #

@@ -3,11 +3,14 @@
 #
 !include ..\..\configuser.vc
 
+!if "$(LIB_SUFFIX)"==".lib"
+CFLAGS=$(CFLAGS) /DSTATIC_LIBRARY
+!endif
+
 #
 # Local definitions
 #
 COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "std" /I "pvm" /DBUILDING_SIM
-
 CPPOBJS= ccor.obj ctypes.obj carray.obj cgate.obj cmodule.obj csimul.obj cobject.obj cpar.obj \
 	 cstat.obj chist.obj cdensity.obj cvarhist.obj cpsquare.obj cksplit.obj \
          cmessage.obj cdetect.obj cstk.obj util.obj cllist.obj ctopo.obj errmsg.obj \

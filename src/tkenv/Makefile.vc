@@ -3,13 +3,15 @@
 #
 !include ..\..\configuser.vc
 
+!if "$(LIB_SUFFIX)"==".lib"
+CFLAGS=$(CFLAGS) /DSTATIC_LIBRARY
+!endif
+
 #
 # Local definitions
 #
 COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "..\envir" $(TK_CFLAGS) /DBUILDING_TKENV
-
 OBJS = tkapp$(TKENV_EMBED_SUFFIX).obj tkcmd.obj tklib.obj objinsp.obj modinsp.obj statinsp.obj inspect.obj arrow.obj
-
 LIBS = $(OMNETPP_SRC_DIR)/sim/sim_std.ilib $(OMNETPP_SRC_DIR)/envir/envir.ilib $(TK_LIB_DIR)/tcl82.lib $(TK_LIB_DIR)/tk82.lib
 
 #

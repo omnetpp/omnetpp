@@ -117,8 +117,8 @@ void cEnvir::setup(int argc, char *argv[])
        opp_loadlibrary(libname);
 
     // load shared libs given in [General]/load-libs=
-    const char *libs = ini_file->getAsString( "General", "load-libs", "" );
-    if (libs && *libs)
+    const char *libs = ini_file->getAsString( "General", "load-libs", NULL);
+    if (libs && libs[0])
     {
         // 'libs' contains several file names separated by whitespaces
         char *buf = opp_strdup(libs);
@@ -150,10 +150,10 @@ void cEnvir::setup(int argc, char *argv[])
     // was it specified explicitly which one to use?
     const char *appname = args->argValue('u',0);  // 1st '-u name' option
     if (!appname)
-        appname = ini_file->getAsString( "General", "user-interface", "" );
+        appname = ini_file->getAsString( "General", "user-interface", NULL);
 
     cOmnetAppRegistration *appreg = NULL;
-    if (appname)
+    if (appname && appname[0])
     {
         // try to look up specified user interface; if we don't have it already,
         // try to load dynamically...
@@ -353,49 +353,5 @@ char **cEnvir::argVector()
 bool memoryIsLow()
 {
     return ev.app->memoryIsLow();
-}
-
-//--------------------------------------------------------------
-#if HAVE_DLOPEN
-#include <dlfcn.h>
-#endif
-
-#include "envdefs.h"   // __WIN32__
-#ifdef __WIN32__
-#include <windows.h>   // LoadLibrary() et al.
-#endif
-
-bool opp_loadlibrary(const char *libname)
-{
-#if HAVE_DLOPEN
-     if (!dlopen(libname,RTLD_NOW))
-     {
-         opp_error("Cannot load library '%s': %s",libname,dlerror());
-         return false;
-     }
-     return true;
-#elif defined(__WIN32__)
-     if (!LoadLibrary(libname))
-     {
-         // Some nice microsoftism to produce an error msg :-(
-         LPVOID lpMsgBuf;
-         FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER |
-                        FORMAT_MESSAGE_FROM_SYSTEM |
-                        FORMAT_MESSAGE_IGNORE_INSERTS,
-                        NULL,
-                        GetLastError(),
-                        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                        (LPTSTR) &lpMsgBuf,
-                        0,
-                        NULL );// Process any inserts in lpMsgBuf.
-         opp_error("Cannot load library '%s': %s",libname,lpMsgBuf);
-         LocalFree( lpMsgBuf );
-         return false;
-     }
-     return true;
-#else
-     opp_error("Cannot load '%s': dlopen() syscall not available",libname);
-     return false;
-#endif
 }
 

@@ -40,7 +40,7 @@
 //
 // Register the Tkenv user interface
 //
-Register_OmnetApp(Tkenv,false,20,"Tkenv (Tk-based graphical user interface)");
+Register_OmnetApp("Tkenv",TOmnetTkApp,false,20,"Tkenv (Tk-based graphical user interface)");
 
 // Windows: Export at least one symbol so that an import lib can be created
 TKENV_API void tkenvDummy() {}

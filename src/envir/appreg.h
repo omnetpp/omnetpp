@@ -40,9 +40,9 @@
 
 
 // the macro
-#define Register_OmnetApp(CLASSNAME,ISSLAVE,SCORE,DESCR) \
+#define Register_OmnetApp(UINAME,CLASSNAME,ISSLAVE,SCORE,DESCR) \
   TOmnetApp *CLASSNAME##__create(ArgList *args, cIniFile *inifile) {return new CLASSNAME(args, inifile);} \
-  cOmnetAppRegistration CLASSNAME##__reg(#CLASSNAME,ISSLAVE,SCORE,DESCR,CLASSNAME##__create);
+  cOmnetAppRegistration CLASSNAME##__reg(UINAME,ISSLAVE,SCORE,DESCR,CLASSNAME##__create);
 
 class TOmnetApp;
 class ArgList;

@@ -29,7 +29,7 @@
 #include "appreg.h"
 
 
-Register_OmnetApp(TSlaveApp,true,10,"default slave interface, for distributed execution");
+Register_OmnetApp("SlaveEnv",TSlaveApp,true,10,"default slave interface, for distributed execution");
 
 
 //==========================================================================

@@ -25,7 +25,7 @@ HAVE_DLOPEN=@HAVE_DLOPEN@
 #
 COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -DBUILDING_ENVIR -DHAVE_DLOPEN=$(HAVE_DLOPEN)
 
-OBJS=args.o cenvir.o cinifile.o main.o omnetapp.o slaveapp.o seeds.o patmatch.o
+OBJS=args.o cenvir.o cinifile.o main.o omnetapp.o slaveapp.o seeds.o patmatch.o platdep.o
 
 #
 # Targets
@@ -64,6 +64,9 @@ seeds.o : seeds.cc
 
 patmatch.o : patmatch.cc
 	$(CXX) -c $(COPTS) patmatch.cc
+
+platdep.o : platdep.cc
+	$(CXX) -c $(COPTS) platdep.cc
 
 depend:
 	makedepend -Y -I. -I../sim -- *.cc
