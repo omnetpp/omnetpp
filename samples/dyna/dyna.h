@@ -3,7 +3,7 @@
 //        (part of DYNA - an OMNeT++ demo simulation)
 //-------------------------------------------------------------
 
-#include "omnetpp.h"
+#include <omnetpp.h>
 
 // message kind values (packet types):
 enum {

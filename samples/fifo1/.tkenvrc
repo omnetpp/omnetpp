@@ -1,3 +1,3 @@
-"fifonet1" "FifoNet1" "2" "349x232+8+5"
-"fifonet1.fifo.class-members.queue" "cQueue" "1" "351x164+8+268"
+"fifonet1.fifo.class-members." "cQueue" "1" "351x164+8+268"
+"fifonet1" "FifoNet1" "2" "349x232+8+6"
 "fifonet1.sink.local-objects.queueing time vector" "cOutVector" "2" "353x177+9+467"

@@ -23,12 +23,12 @@ void Switch::activity()
         // receive msg
         cMessage *msg;
         if (!queue.empty())
-            msg = queue.pop();
+            msg = (cMessage *) queue.pop();
         else 
             msg = receive();
 
         // model processing delay; packets that arrive meanwhile are queued
-        waitAndEnqueue( pk_delay, queue );
+        waitAndEnqueue(pk_delay, &queue);
 
         // send msg to destination
         int dest = msg->par("dest");

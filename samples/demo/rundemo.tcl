@@ -1,5 +1,5 @@
 #!/bin/sh
-# the next line restarts using wish \
+# the next line restarts using wish (on cygwin, use wish83 or the like) \
 exec wish "$0" "$@"
 
 #==========================================================================
@@ -7,14 +7,12 @@ exec wish "$0" "$@"
 #  part of OMNeT++
 #==========================================================================
 
-#----------------------------------------------------------------#
-#  Copyright (C) 1992,99 Andras Varga
-#  Technical University of Budapest, Dept. of Telecommunications,
-#  Stoczek u.2, H-1111 Budapest, Hungary.
+#--------------------------------------------------------------
+#  Copyright (C) 1992-2003 Andras Varga
 #
 #  This file is distributed WITHOUT ANY WARRANTY. See the file
 #  `license' for details on this and other legal matters.
-#----------------------------------------------------------------#
+#--------------------------------------------------------------
 
 # use the 'demo' executable from this directory (1), or the individual simulation
 # executables from the other subdirs (0) ?
