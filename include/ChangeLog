@@ -1,4 +1,4 @@
-2004-02-12  Andras Varga
+2004-02-20  Andras Varga
 
 	* ctype.h, cchannel.h, cgate.h: introduced cChannelType which replaces
 	cLinkType. cChannelType is a lot more flexible since its factory
