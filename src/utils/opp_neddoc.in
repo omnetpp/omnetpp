@@ -119,21 +119,17 @@ while (@ARGV)
 if ($do_help)
 {
     print "opp_neddoc - NED and MSG documentation tool, part of OMNeT++\n";
-    print "(c) 2003 Andras Varga\n";
-    print "\n";
+    print "(c) 2003 Andras Varga\n\n";
+    print "Generates HTML model documentation from .ned and .msg files.\n\n";
     if ($GHOSTSCRIPT eq "")
     {
-        print "Note: cannot generate figures because Ghostscript is not installed.\n";
-        print "\n";
+        print "Note: cannot generate figures because Ghostscript is not installed.\n\n";
     }
     if ($DOT eq "")
     {
-        print "Note: cannot generate usage diagrams because Graphviz is not installed.\n";
-        print "\n";
+        print "Note: cannot generate usage diagrams because Graphviz is not installed.\n\n";
     }
     print "Usage: opp_neddoc [-o <dir>] [-n] [-a] files-or-directories ...\n";
-    print " -s, --silent do not print what it is doing\n";
-    print " -g, --debug  print invocations of external programs and other info\n";
     print " -a, --all    process all *.ned and *.msg files recursively\n";
     print "              ('opp_neddoc -a' is equivalent to 'opp_neddoc .')\n";
     print " -o <dir>     output directory, defaults to ./html\n";
@@ -150,6 +146,8 @@ if ($do_help)
     print "              do not document unassigned parameters\n";
     print " -x, --no-diagrams\n";
     print "              do not generate usage and inheritance diagrams\n";
+    print " -s, --silent suppress informational messages\n";
+    print " -g, --debug  print invocations of external programs and other info\n";
     print " -h, --help   displays this help text\n";
     print "Files specified as arguments are parsed and documented. If directories\n";
     print "are specified, all *.ned and *.msg files in them are documented.\n";
