@@ -36,6 +36,8 @@ class SAXHandler
     friend class SAXParser;
   protected:
     SAXParser *parser;
+
+    // internal: called from SAXParser::setHandler()
     virtual void setParser(SAXParser *p) {parser=p;}
 
   public:

@@ -34,7 +34,7 @@ void generateCpp(ostream& out, ostream& outh, NEDElement *node, NEDSymbolTable *
 
 
 /**
- * Nedc functionality: generates C++ code from a NED object tree.
+ * NEDC functionality: generates C++ code from a NED object tree.
  * Assumes object tree has already passed all validation stages (DTD, basic, semantic).
  *
  * Uses CppExpressionGenerator.
@@ -44,8 +44,9 @@ void generateCpp(ostream& out, ostream& outh, NEDElement *node, NEDSymbolTable *
 class NEDCppGenerator
 {
   protected:
-    ostream& out;
-    ostream& outh;
+    ostream& out;  // stream for writing .cc file
+    ostream& outh; // stream for writing .h file
+
     bool in_network;
     std::string submodule_var;
     int indentsize;
@@ -91,9 +92,10 @@ class NEDCppGenerator
     void generateChildren(NEDElement *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void generateChildrenWithTags(NEDElement *node, const char *tags, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void generateChildrenExceptTags(NEDElement *node, const char *tags, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    /// Find given expression node in parent.
+
+    // find given expression node in parent.
     ExpressionNode *findExpression(NEDElement *parent, const char *target);
-    /// If expression consists of a constant, return its pointer, NULL otherwise.
+    // if expression consists of a constant, return its pointer, NULL otherwise.
     ConstNode *getConstantExpression(ExpressionNode *node);
 
     void writeProlog(ostream& out);

@@ -23,7 +23,8 @@
 class NEDSymbolTable;
 
 /**
- * Performs semantic validation in addition to DTD validation. FIXME more...
+ * Performs semantic validation. Should be called after tree passed
+ * DTD validation and basic validation.
  *
  * @ingroup Validation
  */
@@ -39,11 +40,11 @@ class NEDSemanticValidator : public NEDValidatorBase
     NEDElement *findChildWithTagAndAttribute(NEDElement *node, int tag, const char *attr, const char *value);
 
   public:
-    /** @name Constructor, destructor */
-    //@{
+    /** Constructor */
     NEDSemanticValidator(bool parsedExpr, NEDSymbolTable *symbtab);
+
+    /** Destructor */
     virtual ~NEDSemanticValidator();
-    //@}
 
     /** @name Validator methods */
     //@{

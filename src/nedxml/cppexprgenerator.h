@@ -97,7 +97,7 @@ class CppExpressionGenerator
     ~CppExpressionGenerator() {}
 
     /**
-     * Recursively finds all <expression> tags within the passed node, and
+     * Recursively finds all &lt;expression&gt; tags within the passed node, and
      * stores references to them.
      */
     void collectExpressions(NEDElement *node);

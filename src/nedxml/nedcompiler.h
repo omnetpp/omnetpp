@@ -45,8 +45,12 @@ class NEDFileCache
     NEDMap importedfiles;
 
   public:
+    /** Constructor */
     NEDFileCache();
+
+    /** Destructor */
     ~NEDFileCache();
+
     void addFile(const char *name, NEDElement *node);
     NEDElement *getFile(const char *name);
 };
@@ -71,15 +75,27 @@ class NEDSymbolTable
     NEDMap classes;
 
   public:
+    /** Constructor */
     NEDSymbolTable();
+
+    /** Destructor */
     ~NEDSymbolTable();
 
+    /**
+     * Add to the symbol table the given node (channel, simple module,
+     * compound module, network enum, struct, class, message) or
+     * all such nodes in the subtree.
+     */
     void add(NEDElement *node);
+
+    /** @name Look up and return a component identified with its name */
+    //@{
     NEDElement *getChannelDeclaration(const char *name);
     NEDElement *getModuleDeclaration(const char *name);
     NEDElement *getNetworkDeclaration(const char *name);
     NEDElement *getEnumDeclaration(const char *name);
     NEDElement *getClassDeclaration(const char *name);
+    //@}
 };
 
 
@@ -91,8 +107,15 @@ class NEDSymbolTable
 class NEDImportResolver
 {
   public:
+    /** Constructor */
     NEDImportResolver() {}
+
+    /** Destructor */
     virtual ~NEDImportResolver() {}
+
+    /**
+     * Load the given import (e.g. NED file) and return it
+     */
     virtual NEDElement *loadImport(const char *import) = 0;
 };
 
@@ -108,22 +131,39 @@ class NEDClassicImportResolver : public NEDImportResolver
 {
   protected:
     NEDStringVector importpath;
+
   public:
+    /** Constructor */
     NEDClassicImportResolver() {}
+
+    /** Destructor */
     virtual ~NEDClassicImportResolver() {}
+
+    /**
+     * Add an import directory to the import path.
+     */
     void addImportPath(const char *dir);
+
+    /**
+     * Load the given NED file, located in the import path somewhere.
+     */
     virtual NEDElement *loadImport(const char *import);
 };
 
 
 /**
  * Manages the "middle" part of the compilation process for NED.
- * The process actually involves DTD and syntactic validation of the input,
- * loading (and recursively validating) imports, and semantically validating
- * the input (if module types exist, etc.).
+ * Implemented in validate(), the process involves:
+ *   -# DTD and syntactic validation of the input (see NEDDTDValidator
+ *      and NEDBasicValidator),
+ *   -# loading of imports via the import resolver (see NEDImportResolver),
+ *      adding them into the file cached (see NEDFileCache) and recursively
+ *      validating them
+ *   -# semantic validation of the input, e.g. making sure all referenced
+ *      module types exist (see NEDSemanticValidator)
  *
- * NEDCompiler does _not_ do parsing (only for the imports, via the importresolver,
- * but the main file it already receives a NED object tree form).
+ * NEDCompiler does NOT do parsing (only for the imports, via the import
+ * resolver, but the main file it already receives a NED object tree form).
  * Code (i.e. C++) generation is also not covered.
  *
  * @ingroup NEDCompiler
@@ -142,18 +182,15 @@ class NEDCompiler
     void doValidate(NEDElement *tree);
 
   public:
-    /**
-     * Constructor.
-     */
+    /** Constructor */
     NEDCompiler(NEDFileCache *fcache, NEDSymbolTable *symtab, NEDImportResolver *importres);
 
-    /**
-     * Destructor
-     */
+    /** Destructor */
     virtual ~NEDCompiler();
 
     /**
-     * MISSINGDOC
+     * Performs the import resolution and validation process described in the
+     * class documentation.
      */
     void validate(NEDElement *tree);
 };

@@ -32,7 +32,12 @@ class NEDBasicValidator : public NEDValidatorBase
 {
   protected:
     bool parsedExpressions;
+
+    // internal helper: verify that children of node with given tagcode have
+    // all different values of the given attribute (e.g. "name")
     void checkUniqueness(NEDElement *node, int childtype, const char *attr);
+
+    // internal helper: verify attributes
     void checkExpressionAttributes(NEDElement *node, const char *attrs[], bool optional[], int n);
 
   public:

@@ -25,14 +25,17 @@
 #include <string>
 
 /**
- * Subclass from this if you want to attach extra data to NEDElement objects.
+ * Empty. Subclass from this if you want to attach extra data to NEDElement objects.
  *
  * @ingroup Data
  */
 class NEDElementUserData
 {
   public:
+    /** Constructor */
     NEDElementUserData() {}
+
+    /** Destructor */
     virtual ~NEDElementUserData() {}
 };
 
