@@ -19,6 +19,7 @@
 #define __UTIL_H
 
 #include <stdarg.h>  // for va_list
+#include <stdio.h>   // for sprintf
 #include <typeinfo>  // for type_info
 #include "defs.h"
 
@@ -222,7 +223,6 @@ SIM_API char *opp_strprettytrunc(char *dest, const char *src, unsigned maxlen);
  * it returns a pointer to a null string ("").
  */
 inline const char *correct(const char *);
-
 //@}
 
 /**
@@ -388,6 +388,18 @@ inline bool equal(double a, double b, double epsilon)
 inline const char *correct(const char *s)
 {
    return s ? s : "";
+}
+
+// internally used: appends [num] to the given string
+inline void opp_appendindex(char *s, unsigned int i)
+{
+   while (*s) s++;
+   *s = '[';
+   if (i<10)  
+       {*s++ = '0'+i; *s=']'; return;}
+   if (i<100) 
+       {*s++ = '0'+i/10; *s++ = '0'+i%10; *s=']'; return;}
+   sprintf(s,"%d]",i);
 }
 
 #endif
