@@ -61,7 +61,6 @@ HTM_FILES = history.htm \
 
 .tex.htm:
 	$(PERL) ltoh.pl $<
-	mv $@l $@
 
 usman.html : $(HTM_FILES)
 	cat $(HTM_FILES) > usman.tmp

@@ -57,7 +57,6 @@ channeldefinition ::=
 
 simpledefinition ::=
     \textbf{simple} \textit{simplemoduletype}\index{module!simple}
-     [ machineblock ]
      [ paramblock ]
      [ gateblock ]
     \textbf{endsimple} [ \textit{simplemoduletype} ]
@@ -72,9 +71,6 @@ moduledefinition ::=
 
 moduletype ::=
     \textit{simplemoduletype} | \textit{compoundmoduletype}
-
-machineblock ::=
-    \textbf{machines:} \{ \textit{machine} ,,, \} ;
 
 paramblock ::=
     \textbf{parameters:} \{ parameter ,,, \} ;
@@ -146,7 +142,6 @@ gate ::=
 
 networkdefinition ::=
     \textbf{network} \textit{networkname} : \textit{moduletype}
-     [ on\_block ]
      [ substparamblock ]
     \textbf{endnetwork}
 

@@ -415,6 +415,10 @@ enqueue/dequeue overhead and also spares an event creation. The
 drawback is, as mentioned above, that changes to channel parameters do
 not take effect immediately.
 
+In {\opp} one can implement \textit{point-to-point transmitter} modules
+with packet queues if needed. For example, the INET Framework
+follows this approach.
+
 
 
 
@@ -440,20 +444,19 @@ might look like this:
 #include <omnetpp.h>
 
 // module class declaration:
-class SlidingWindow : public cSimpleModule
+class SlidingWindowProtocol : public cSimpleModule
 {
-    Module_Class_Members(SlidingWindow,cSimpleModule,8192)
-    virtual void activity();
+    Module_Class_Members(SlidingWindowProtocol,cSimpleModule,0)
+    virtual void handleMessage(cMessage *msg);
 };
 
 // module type registration:
-Define_Module( SlidingWindow );
+Define_Module( SlidingWindowProtocol );
 
 // implementation of the module class:
-void SlidingWindow::activity()
+void SlidingWindowProtocol::handleMessage(cMessage *msg)
 {
-  int windowSize = par("windowSize");
-...
+   ...
 }
 \end{verbatim}
 
@@ -461,32 +464,27 @@ In order to be able to refer to this simple\index{module!simple} module type in 
 files, we should have an associated NED declaration which might
 look like this:
 
-
 \begin{Verbatim}[commandchars=\\\{\}]
 // file: swp.ned
-\textbf{simple} SlidingWindow
+\textbf{simple} SlidingWindowProtocol
     \textbf{parameters}:
         windowSize: \textbf{numeric const};
     \textbf{gates}:
-        \textbf{in:} fromNet, fromUser;
-        \textbf{out:} toNet, toUser;
+        \textbf{in:} fromNetw, fromHigherLayer;
+        \textbf{out:} toNetw, toHigherLayer;
 \textbf{endsimple}
 \end{Verbatim}
 
 
-
-
-\subsection{The module declaration}
+\subsection{The module type registration}
 \index{module!declaration}
 
-The module declaration
+The module type registration
 \begin{itemize}
 \item{announces that you're going to use the class as a
     simple module type}
 \item{associates the module class with an interface declared in NED}
 \end{itemize}
-
-\subsubsection{Forms of module declaration}
 
 
 Module declarations can take two forms:
@@ -501,14 +499,13 @@ The first form associates the class (subclassed from
 module declaration of the same name. For example, the
 
 \begin{verbatim}
-Define_Module(SlidingWindow);
+Define_Module(SlidingWindowProtocol);
 \end{verbatim}
 
-line would ensure that when you create an instance of SlidingWindow in
+line would ensure that when you create an instance of SlidingWindowProtocol in
 your NED files, the module has the parameters and gates given in the
-simple SlidingWindow NED declaration, and the implementation will be
-an instance of the SlidingWindow C++ class.
-
+\ttt{SlidingWindowProtocol} NED declaration, and the implementation will be
+an instance of the \ttt{SlidingWindowProtocol} C++ class.
 
 The second form associates the class with a NED
 simple module declaration of a different name.
@@ -516,61 +513,8 @@ You can use this form when you have several modules which share the
 same interface. This feature will be discussed in detail in the next
 section.
 
-
-\subsubsection{Header files}
-
-
-Module declarations should not be put into header files\index{header
-  files}, because they are macros expanding to lines for which the
-compiler generates code.
-
-
-\subsubsection{Compound modules}
-
-All module types (including compound\index{module!compound} modules)
-need to have module declarations\index{module!declaration}. For all
-compound modules, the NED compiler generates the
-\fmac[Define\_Module()]{Define\_Module(..)} lines automatically.
-However, it is your responsibility to put Define\_Module(..) lines into
-one of the C++ sources for all your simple module types.
-
-
-\subsubsection{Implementation}
-
-
-Unless you are dying to learn about the dirty internals, you may just
-as well skip this section. But if you're interested, here it is:
-\fmac{Define\_Module()} (and also \fmac{Define\_Module\_Like()}) is a
-macro which expands to a function definition plus the definition of a
-global object, something like this ugly code (luckily, you won't ever
-need to be interested in it):
-
-\begin{Verbatim}[commandchars=\\\{\}]
-static cModule *\textit{MyClass}__create(const char *name, cModule *parentmod)
-\{
-    return (cModule *) new \textit{MyClass}(name, parentmod);
-\}
-
-cModuleType \textit{MyClass}__type("\textit{MyClass}","\textit{MyClass}", (ModuleCreateFunc)\textit{MyClass}__create);
-\end{Verbatim}
-
-
-The \cclass{cModuleType} object can act as a factory: it is able to
-create an instance of the given module type. This, together with the
-fact that all \cclass{cModuleType} objects are available in a single
-linked list, allows {\opp} to instantiate module types given only
-their class names as strings, without having to include the class
-declaration into any other C++ source.
-
-
-The global object also stores the name of the NED
-interface\index{ned!interface} associated with the module class. The
-interface description object\index{interface description object}
-(another object, generated by nedc) is looked up automatically at
-network construction time. Whenever a module of the given type is
-created, it will automatically have the parameters and gates specified
-in the associated interface description.
-
+Module declarations should not be put into header files, because they
+are macros expanding to lines for which the compiler generates code.
 
 
 \subsection{Several modules, single NED interface}
@@ -583,7 +527,7 @@ for several simple module types.
 Suppose you have three different C++ module classes (\ttt{TokenRingMAC},
 \ttt{EthernetMAC}, \ttt{FDDIMAC}) which have identical gates and parameters.
 Then you can create a single NED declaration, \ttt{GenericMAC} for them
-and write the following module declarations in the C++ code:
+and write the following module type registrations in the C++ code:
 
 \begin{verbatim}
 Define_Module_Like(TokenRingMAC, GenericMAC);
@@ -626,7 +570,7 @@ As mentioned before, simple\index{module!simple} module classes have
 to be derived from \cclass{cSimpleModule} (either directly or
 indirectly). In addition to overwriting some of the previously
 mentioned four member functions (\fname{initialize()},
-\fname{activity()}, \fname{handleMessage()},\fname{finish()}), you
+\fname{handleMessage()}, \fname{activity()}, \fname{finish()}), you
 have to write a constructor\index{module!constructor} and some more
 functions. Some of this task can be automated, so when writing the C++
 class declaration, you have two choices:
@@ -654,9 +598,9 @@ stack. (This will be discussed in detail later.)
 As an example, the class declaration
 
 \begin{verbatim}
-class SlidingWindow : public cSimpleModule
+class SlidingWindowProtocol : public cSimpleModule
 {
-    Module_Class_Members(SlidingWindow,cSimpleModule,8192)
+    Module_Class_Members(SlidingWindowProtocol,cSimpleModule,0)
     ...
 };
 \end{verbatim}
@@ -664,11 +608,11 @@ class SlidingWindow : public cSimpleModule
 expands to something like this:
 
 \begin{verbatim}
-class SlidingWindow : public cSimpleModule
+class SlidingWindowProtocol : public cSimpleModule
 {
   public:
-    SlidingWindow(const char *name, cModule *parentmodule,
-        unsigned stacksize = 8192) :
+    SlidingWindowProtocol(const char *name, cModule *parentmodule,
+        unsigned stacksize = 0) :
         cSimpleModule(name, parentmodule, stacksize) {}
     ...
 };
@@ -701,7 +645,7 @@ class TokenRingMAC : public cSimpleModule
   public:
     cQueue queue; // a data member
     TokenRingMAC(const char *name, cModule *parentmodule,
-                 unsigned stacksize = 8192);
+                 unsigned stacksize = 0);
     ...
 };
 
@@ -714,7 +658,7 @@ TokenRingMAC(const char *name, cModule *parentmodule,
 \end{verbatim}
 
 
-\subsubsection{Stack size decides between activity() and handleMessage()}
+\subsubsection{Stack size decides between handleMessage() and activity()}
 
 \begin{itemize}
 \item{if the specified stack size is zero, \fname{handleMessage()} will be used;}
@@ -748,7 +692,7 @@ and bring some structure into it;}
 If you have variables which you want to access from all member
 functions (typically state variables are like that), you'll need to
 add those variables to the class as data members\index{class data
-  members}.
+members}.
 
 Let's see an example:
 
@@ -756,7 +700,7 @@ Let's see an example:
 class TransportProtocol : public cSimpleModule
 {
   public:
-    Module_Class_Members(TransportProtocol, cSimpleModule, 8192)
+    Module_Class_Members(TransportProtocol, cSimpleModule, 0)
     int windowSize;
     int n_s; // N(s)
     int n_r; // N(r)
@@ -764,7 +708,7 @@ class TransportProtocol : public cSimpleModule
     cStdDev eedStats;
     //...
 
-    virtual void activity();
+    virtual void handleMessage(cMessage *msg);
     virtual void recalculateTimeout();
     virtual void insertPacketIntoBuffer(cMessage *packet);
     virtual void resendPacket(cMessage *packet);
@@ -773,13 +717,9 @@ class TransportProtocol : public cSimpleModule
 
 Define_Module( TransportProtocol );
 
-void TransportProtocol::activity()
+void TransportProtocol::handleMessage(cMessage *msg)
 {
-    windowSize = par("windowSize");
-    n_s = n_r = 0;
-    eedVector.setName("End-to-End Delay");
-    eedStats.setName("eedStats");
-    //...
+   ...
 }
 
 //...
@@ -806,17 +746,16 @@ specific simple module types.
 An example:
 
 \begin{verbatim}
-class AdvancedTransportProtocol : public TransportProtocol
+class ModifiedTransportProtocol : public TransportProtocol
 {
   public:
-    Module_Class_Members(AdvancedTransportProtocol, TransportProtocol,
-                      8192)
+    Module_Class_Members(ModifiedTransportProtocol, TransportProtocol,0)
     virtual void recalculateTimeout();
 };
 
-Define_Module( AdvancedTransportProtocol );
+Define_Module( ModifiedTransportProtocol );
 
-void AdvancedTransportProtocol::recalculateTimeout()
+void ModifiedTransportProtocol::recalculateTimeout()
 {
     //...
 }
@@ -846,8 +785,8 @@ global variables. This is usually not what you want.
 
 This section discusses \cclass{cSimpleModule}'s four previously
 mentioned member functions, intended to be redefined by the user:
-\fname{initialize()}, \fname{activity()}, \fname{handleMessage()} and
-\fname{finish()}.
+\fname{initialize()}, \fname{handleMessage()}, \fname{activity()}
+and \fname{finish()}.
 
 
 \subsection{activity()}
