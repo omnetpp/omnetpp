@@ -30,6 +30,7 @@
 
 // Winsock prefixes error codes with "WS"
 #define SOCKETERR(x)  WS#x
+inline int sock_errno()  {return WSAGetLastError();}
 
 // Shutdown mode constants are named differently
 #define SHUT_RD   SD_RECEIVE
@@ -61,6 +62,7 @@ inline int initsocketlibonce() {
 #define SOCKET int
 inline int initsocketlibonce() {return 0;}
 inline void closesocket(int) {}
+inline int sock_errno()  {return errno;}
 #define SOCKETERR(x)  x
 #define INVALID_SOCKET -1
 #define SOCKET_ERROR   -1
