@@ -65,6 +65,5 @@ Aug 29, 2000
 ------ omnetpp-2.0 released ------
 ------ omnetpp-2.0p1 released ------
 March 24, 2001
- - prepared executable wrapper around Plove, with compiled-in Tcl code (optional)
-
-TBD: Makefile.in: cygwin, no embedding, install-prog wants to copy plove.exe...
+ - now you can build a single Plove executable, with all Tcl code compiled in.
+   This made it necessary to reorganize the makefiles too.

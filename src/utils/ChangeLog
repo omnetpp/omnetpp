@@ -117,3 +117,6 @@ Feb 6, 2001
 Feb 27, 2001
  - fixed bug in tcl2c which prevented it from compiling with Cygwin
 ------ omnetpp-2.0p1 released ------
+May 27, 2001
+ - Makefile change: now it copies makemake, splitvec and seedtool to bin/
+   (instead of making soft links).

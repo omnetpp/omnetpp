@@ -1,8 +1,7 @@
 Testing before release
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Compilation and running the test suite (TBD) and the samples on at least
-the following platforms:
+Test one at least the following platforms:
 
    - NT, Visual C++ 6.0
    - NT, Visual C++ 6.0 with Tcl embedding
@@ -17,3 +16,8 @@ the following platforms:
    - Linux, gcc, static libs, with Tcl embedding
    - Linux, gcc, static libs, with PVM (compile only)
 
+One test goes like this:
+   1. compile
+   2. run GNED and Plove
+   3. run all samples
+   4. run the test suite (TBD)

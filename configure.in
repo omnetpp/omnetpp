@@ -129,6 +129,9 @@ if test "$cygwin" = yes; then
 else
     WISH=`which wish`
 fi
+if test "x$WISH" = "x"; then
+    AC_MSG_WARN(Cannot find wish -- you'll need to manually adjust the Plove script)
+fi
 
 #----------------------
 # Read in user settings (and allow override the above settings)
@@ -318,7 +321,7 @@ fi
 if test "$PLOVE_EMBED_TCL" = yes; then
    PLOVE_VARIANT=plove-exe
 elif test "$cygwin" = yes; then
-   PLOVE_VARIANT=plove-bat
+   PLOVE_VARIANT=plove-cyg
 else
    PLOVE_VARIANT=plove-sh
 fi
