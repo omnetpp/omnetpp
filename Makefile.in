@@ -44,7 +44,6 @@ SAMPLES=aloha cqn dyna fddi fifo hcube hist neddemo p-to-p queueing routing queu
 libs: utils $(LIBS)
 progs: libs $(PROGS)
 samples: libs progs $(SAMPLES)
-docs: api nedxml-api manual
 
 #
 # Libraries
