@@ -62,7 +62,7 @@ LEX=flex.exe
 # configuration
 #
 
-# Compiler optimization switches.
+# Compiler switches (currently set up for debugging)
 CFLAGS=/nologo /MLd /Od /GZ /Zi
 LDFLAGS=/nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /incremental:no
 
