@@ -28,3 +28,6 @@ kept at each node, and to reduce the time of topology discovery (only once,
 instead of per node) and setting up the routing tables. The idea is illustrated
 in the RoutingDB example.
 
+The networks/ subdirectory contains further networks that can be tested with
+the "routing" executable -- provided OMNeT++ was compiled with support for 
+dynamic loading of NED files (WITH_NETBUILDER option).
