@@ -160,8 +160,11 @@ proc sax_elementstart {tag attlist} {
 
     # verify & load attributes
     foreach {att val} $attlist {
-        regsub -all "%0d%0a" $val "\n" val
-        regsub -all "%22" $val "\"" val
+        regsub -all -nocase "%0d%0a" $val "\n" val
+        regsub -all -nocase "%22" $val "\"" val
+        regsub -all -nocase "%26" $val "\\&" val
+        regsub -all -nocase "%3c" $val "<" val
+        regsub -all -nocase "%3e" $val ">" val
         if {$att=="id"} {
             # fill XML-id to tmp_ned-key map
             set tmp_idmap($val) $key

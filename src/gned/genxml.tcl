@@ -71,6 +71,9 @@ proc generateXMLElement {key indent} {
             set val $ned($key,$field)
             regsub -all "\n" $val "%0d%0a" val
             regsub -all "\"" $val "%22" val
+            regsub -all "&" $val "%26" val
+            regsub -all "<" $val "%3c" val
+            regsub -all ">" $val "%3e" val
             append out "$indent  $field=\"$val\"\n"
         }
     }
