@@ -91,11 +91,11 @@ print("x1",x1); // should stay the same
 
 %contains: stdout
 x:39:14,23:17,35:one:two,three:four,five.
-xx:7:0,0:11,0,0,0,44:one:(null),(null):six,(null),(null),(null),seven.
+xx:7:0,0:11,0,0,0,44:one:,:six,,,,seven.
 x1(x):39:14,23:17,35:one:two,three:four,five.
 x2=x:39:14,23:17,35:one:two,three:four,five.
-x1=xx:7:0,0:11,0,0,0,44:one:(null),(null):six,(null),(null),(null),seven.
+x1=xx:7:0,0:11,0,0,0,44:one:,:six,,,,seven.
 x1=x:39:14,23:17,35:one:two,three:four,five.
-x:39:14,23:17,35,0:one:aaa,bbb:ccc,ddd,(null).
+x:39:14,23:17,35,0:one:aaa,bbb:ccc,ddd,.
 x1:39:14,23:17,35:one:two,three:four,five.
 
