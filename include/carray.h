@@ -50,7 +50,10 @@ class SIM_API cBag : public cObject
     int delta;
     int lastused;
     int firstfree;
+
   public:
+    /** @name Constructors, destructor, assignment. */
+    //@{
 
     /**
      * Copy constructor.
@@ -58,7 +61,9 @@ class SIM_API cBag : public cObject
     cBag(cBag& bag);
 
     /**
-     * Constructor.
+     * Constructor. Parameters are: name, the size of elements in bytes,
+     * the initial size of the container and the delta (by which the size
+     * will grow if it gets full).
      */
     explicit cBag(const char *name=NULL, int esiz=4,int siz=0,int delt=5);
 
@@ -67,7 +72,14 @@ class SIM_API cBag : public cObject
      */
     virtual ~cBag()  {clear();}
 
-    // redefined functions
+    /**
+     * Duplication and assignment work all right with cBag.
+     */
+    cBag& operator=(cBag& bag);
+    //@}
+
+    /** @name Redefined cObject member functions */
+    //@{
 
     /**
      * Returns a pointer to the class name string, "cBag".
@@ -89,7 +101,6 @@ class SIM_API cBag : public cObject
      */
     virtual const char *inspectorFactoryName() const {return "cBagIFC";}
 
-
     /**
      * MISSINGDOC: cBag:int netPack()
      */
@@ -99,84 +110,85 @@ class SIM_API cBag : public cObject
      * MISSINGDOC: cBag:int netUnpack()
      */
     virtual int netUnpack();
+    //@}
 
-
-    /**
-     * Duplication and assignment work all right with cBag.
-     */
-    cBag& operator=(cBag& bag);
+    /** @name Container functions. */
+    //@{
 
     /**
      * Clears the current contents and changes element size, initial
      * array size and delta parameters.
      */
-    void setup(int esiz, int siz, int delt=5); // clear & change params
-
-    // new functions
+    void setup(int esiz, int siz, int delt=5);
 
     /**
      * Clears the whole contents of the cBag.
      */
-    void clear();                    // delete whole contents
+    void clear();
 
     /**
-     * Returns the index of last used position+1.
+     * Returns the index of last used position+1. This is the same as the
+     * number of contained objects if there are no 'holes' in the array.
+     * (Removals may create holes.)
      */
-    int items() const {return lastused+1;} // number of objects contained
+    int items() const {return lastused+1;}
 
     /**
      * Inserts a new item into the array. A copy will be made of the
      * item pointed to by data. The return value is the item's
      * index in the array.
      */
-    int add(void *obj);              // add a new item
+    int add(void *obj);
 
     /**
      * Inserts a new item into the array at the given position.
      */
-    int addAt(int m, void *obj);     // add a new item at position m
+    int addAt(int m, void *obj);
 
     /**
      * Returns the index of the first item in the array that equals the
      * item pointed to by obj. The comparison is done byte-by-byte.
      * If no such item was found, -1 is returned.
      */
-    int find(void *obj) const;             // index of an item (-1 if not found)
+    int find(void *obj) const;
 
     /**
      * Returns a pointer to the mth item in the array or NULL
      * if the mth position is not used.
      */
-    void *get(int m);                // get item by index
+    void *get(int m);
 
     /**
-     * MISSINGDOC: cBag:void*get(int)
+     * Returns a pointer to the mth item in the array or NULL
+     * if the mth position is not used.
      */
-    const void *get(int m) const;    // get item by index
+    const void *get(int m) const;
 
     /**
      * The same as get(int m). With the indexing operator, cBag
      * can be used as a vector.
      */
-    void *operator[](int m)          // act as a vector
+    void *operator[](int m)
           {return get(m);}
 
     /**
-     * MISSINGDOC: cBag:void*operator[](int)
+     * The same as get(int m). With the indexing operator, cBag
+     * can be used as a vector.
      */
-    const void *operator[](int m) const // act as a vector
+    const void *operator[](int m) const
       {return get(m);}
 
     /**
      * Returns true if the mth position exists and
      * an item was inserted there.
      */
-    bool isUsed(int m);              // see if item m exists or not
+    bool isUsed(int m);
 
     /**
-     * MISSINGDOC: cBag:void*remove(int)
+     * FIXME: Remove item at position m and return its pointer. (???)
      */
-    void *remove(int m);             // get item; returns true if existed
+    void *remove(int m);
+    //@}
 };
 
 //==========================================================================
@@ -200,6 +212,8 @@ class SIM_API cArray : public cObject
     int last;         // last used position
 
   public:
+    /** @name Constructors, destructor, assignment. */
+    //@{
 
     /**
      * Copy constructor. Contained objects that are owned by cArray
@@ -210,7 +224,8 @@ class SIM_API cArray : public cObject
     cArray(cArray& list);
 
     /**
-     * Constructor.
+     * Constructor. The initial size of the container and the delta
+     * (by which the size will grow if it gets full) can be specified.
      */
     explicit cArray(const char *name=NULL, int siz=0, int dt=10);
 
@@ -220,7 +235,16 @@ class SIM_API cArray : public cObject
      */
     virtual ~cArray();
 
-    // redefined functions
+    /**
+     * Duplication and assignment work all right with cArray.
+     * Contained objects that are owned by cArray will be duplicated
+     * so that the new cArray will have its own copy of them.
+     */
+    cArray& operator=(cArray& list);
+    //@}
+
+    /** @name Redefined cObject member functions */
+    //@{
 
     /**
      * Returns pointer to the class name string,"cArray".
@@ -250,14 +274,6 @@ class SIM_API cArray : public cObject
     virtual void forEach(ForeachFunc f);
 
     /**
-     * Duplication and assignment work all right with cArray.
-     * Contained objects that are owned by cArray will be duplicated
-     * so that the new cArray will have its own copy of them.
-     */
-    cArray& operator=(cArray& list);
-
-
-    /**
      * MISSINGDOC: cArray:int netPack()
      */
     virtual int netPack();
@@ -266,120 +282,122 @@ class SIM_API cArray : public cObject
      * MISSINGDOC: cArray:int netUnpack()
      */
     virtual int netUnpack();
+    //@}
 
-    // new functions
+    /** @name Container functions. */
+    //@{
 
     /**
-     * Returns the index of last used position+1.
+     * Returns the index of last used position+1. This is the same as the
+     * number of contained objects if there are no 'holes' in the array.
+     * (Removals may create holes.)
      */
-    int items() const {return last+1;}    // number of objects contained (at most)
+    int items() const {return last+1;}
 
     /**
      * As a result, the container will be empty. Contained objects that
      * were owned by the container will be deleted.
      */
-    void clear();                   // delete whole contents
+    void clear();
 
     /**
      * Inserts a new object into the array. Only the pointer of the object
      * will be stored. The return value is the object's index in the
      * array.
      */
-    int add(cObject *obj);          // add object at first free position
+    int add(cObject *obj);
 
     /**
      * Inserts a new object into the array, at the given position. If
      * the position is occupied, the function generates an error message.
      */
-    int addAt(int m,cObject *obj);  // add object at given position
-
+    int addAt(int m,cObject *obj);
 
     /**
      * Searches the array for the pointer of the object passed and returns
      * the index of the first match. If the object wasn't found, -1 is
      * returned.
      */
-    int find(cObject *obj)const ;       // index of an item (-1 if not found)
+    int find(cObject *obj)const ;
 
     /**
      * Returns the index of the first item in the array that has the
      * name pointed to by s (cObject::isName() is used.)
      * If no such item was found, -1 is returned.
      */
-    int find(const char *objname) const;// index of an item (-1 if not found)
+    int find(const char *objname) const;
 
     /**
-     * Returns reference to the mth object in the array or null
-     * pointer if the mth position is not used.
+     * Returns reference to the mth object in the array. Returns NULL
+     * if the mth position is not used.
      */
-    cObject *get(int m);                // get item by index
+    cObject *get(int m);
 
     /**
-     * Returns reference to the first object in the array with name s
-     * or null reference (*NOOBJ) if no object with the given
-     * name was found.
+     * Returns reference to the first object in the array with name s.
+     * Returns NULL if no object with the given name was found.
      */
-    cObject *get(const char *objname);  // get item by name
+    cObject *get(const char *objname);
 
     /**
-     * MISSINGDOC: cArray:cObject*get(int)
+     * Returns reference to the mth object in the array. Returns NULL
+     * if the mth position is not used.
      */
-    const cObject *get(int m) const;          // get item by index
+    const cObject *get(int m) const;
 
     /**
-     * MISSINGDOC: cArray:cObject*get(char*)
+     * Returns reference to the first object in the array with name s.
+     * Returns NULL if no object with the given name was found.
      */
-    const cObject *get(const char *objname) const;  // get item by name
-
+    const cObject *get(const char *objname) const;
 
     /**
-     * The same as get(int)/get(const char *). With
-     * the indexing operator, cArray can be used as a vector.
+     * The same as get(int). With the indexing operator,
+     * cArray can be used as a vector.
      */
-    cObject *operator[](int m)      // act as a vector
+    cObject *operator[](int m)
       {return get(m);}
 
     /**
-     * The same as get(int)/get(const char *). With
-     * the indexing operator, cArray can be used as a vector.
+     * The same as get(const char *). With the indexing operator,
+     * cArray can be used as a vector.
      */
-    cObject *operator[](const char *objname)  // indexable with name, too
+    cObject *operator[](const char *objname)
       {return get(objname);}
 
     /**
-     * MISSINGDOC: cArray:cObject*operator[](int)
+     * The same as get(int). With the indexing operator,
+     * cArray can be used as a vector.
      */
-    const cObject *operator[](int m) const     // act as a vector
+    const cObject *operator[](int m) const
       {return get(m);}
 
     /**
-     * MISSINGDOC: cArray:cObject*operator[](char*)
+     * The same as get(const char *). With the indexing operator,
+     * cArray can be used as a vector.
      */
-    const cObject *operator[](const char *objname) const  // indexable with name, too
+    const cObject *operator[](const char *objname) const
       {return get(objname);}
 
-
     /**
-     * Returns true if the value returned by get(int)/get(const
-     * char *) would not be null reference (*NOOBJ).
+     * Returns true if position m is used in the array, otherwise false.
      */
-    bool exist(int m)               // see if slot m used or not
+    bool exist(int m)
       {return m>=0 && m<=last && vect[m]!=NULL;}
 
     /**
-     * Returns true if the value returned by get(int)/get(const
-     * char *) would not be null reference (*NOOBJ).
+     * Returns true if the array contains an object with the given name,
+     * otherwise false.
      */
-    bool exist(const char *objname) // see if item objname exists or not
+    bool exist(const char *objname)
       {return find(objname)!=-1;}
-
 
     /**
      * Removes the object given with its index/name/pointer from the
      * container. (If the object was owned by the container, drop()
      * is called.)
      */
-    cObject *remove(int m);         // remove item from list
+    cObject *remove(int m);
 
     /**
      * Removes the object given with its index/name/pointer from the
@@ -394,6 +412,8 @@ class SIM_API cArray : public cObject
      * is called.)
      */
     cObject *remove(cObject *obj);
+    //@}
 };
 
 #endif
+

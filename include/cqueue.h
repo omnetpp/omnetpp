@@ -90,6 +90,8 @@ class SIM_API cQueue : public cObject
     cObject *remove_qelem(sQElem *p);
 
   public:
+    /** @name Constructors, destructor, assignment. */
+    //@{
 
     /**
      * Copy constructor. Contained objects that are owned by the queue
@@ -100,8 +102,7 @@ class SIM_API cQueue : public cObject
 
     /**
      * Constructor. It accepts the object name, the address of the comparing
-     * function, the sorting order (ascending=true, descending=false)
-     * and the list the object will join.
+     * function and the sorting order (ascending=true, descending=false).
      */
     explicit cQueue(const char *name=NULL, CompareFunc cmp=NULL, bool a=false);
 
@@ -110,7 +111,16 @@ class SIM_API cQueue : public cObject
      */
     virtual ~cQueue();
 
-    // redefined functions
+    /**
+     * Duplication and assignment work all right with cQueue.
+     * Contained objects that are owned by the queue will be duplicated
+     * so that the new queue will have its own copy of them.
+     */
+    cQueue& operator=(cQueue& queue);
+    //@}
+
+    /** @name Redefined cObject member functions */
+    //@{
 
     /**
      * Returns pointer to the class name string,"cQueue".
@@ -148,13 +158,7 @@ class SIM_API cQueue : public cObject
      * MISSINGDOC: cQueue:int netUnpack()
      */
     virtual int netUnpack();
-
-    /**
-     * Duplication and assignment work all right with cQueue.
-     * Contained objects that are owned by the queue will be duplicated
-     * so that the new queue will have its own copy of them.
-     */
-    cQueue& operator=(cQueue& queue);
+    //@}
 
     // new functions
 
@@ -237,8 +241,8 @@ class SIM_API cQueueIterator
 {
   private:
     sQElem *p;
-  public:
 
+  public:
     /**
      * Constructor, cIterator will walk on the queue passed
      * as argument. The current object will be the first (if a==1) or
@@ -280,3 +284,4 @@ class SIM_API cQueueIterator
 };
 
 #endif
+

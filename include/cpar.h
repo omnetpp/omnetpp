@@ -5,8 +5,8 @@
 //
 //
 //  Declaration of the following classes:
-//    cPar      : general value
-//    cModulePar   : module parameter
+//    cPar       : general value holding class
+//    cModulePar : specialized cPar that serves as module parameter
 //
 //==========================================================================
 
@@ -36,15 +36,6 @@ class  cModulePar;
 class  cStatistic;
 
 //==========================================================================
-// sXElem: one component in a (reversed Polish) expression in a cPar
-//  NOTE: not a cObject descendant!
-//   Types:
-//      D  double constant
-//      P  pointer to "external" cPar (owned by someone else)
-//      R  "reference": the cPar will be dup()'ped and the copy kept
-//      0/1/2/3  function with 0/1/2/3 arguments
-//      @  math operator (+-*/%^=!<{>}?); see cPar::evaluate()
-//
 
 /**
  * sXElem: one component in a (reversed Polish) expression in a cPar.
@@ -55,10 +46,18 @@ class  cStatistic;
  * sXElem is not a descendant of cObject.
  *
  * NOTE: not a cObject descendant!
+ *
  */
 struct sXElem
 {
-    char type;    // D/P/R/0/1/2/3/@
+    // Type chars:
+    //   D  double constant
+    //   P  pointer to "external" cPar (owned by someone else)
+    //   R  "reference": the cPar will be dup()'ped and the copy kept
+    //   0/1/2/3  function with 0/1/2/3 arguments
+    //   @  math operator (+-*%/^=!<{>}?); see cPar::evaluate()
+    //
+    char type;    // D/P/R/0/1/2/3/@ (see above)
     union {
         double d;           // D
         cPar *p;            // P/R
@@ -232,35 +231,28 @@ class SIM_API cPar : public cObject
     };
 
   private:
+    // helper func: destruct old value
+    void deleteold();
 
-    /**
-     * MISSINGDOC: cPar:void deleteold()
-     */
-    void deleteold();          // helper func: destruct old value
+    // helper func: evaluates expression (X)
+    double evaluate();
 
-    /**
-     * MISSINGDOC: cPar:double evaluate()
-     */
-    double evaluate();         // helper func: evaluates expression (X)
+    // helper func: rand.num with given distr.(T)
+    double fromstat();
 
-    /**
-     * MISSINGDOC: cPar:double fromstat()
-     */
-    double fromstat();         // helper func: rand.num with given distr.(T)
-
-    /**
-     * MISSINGDOC: cPar:bool setfunction(char*)
-     */
-    bool setfunction(char *w); // setFromText() helper func.
+    // setFromText() helper func.
+    bool setfunction(char *w);
 
   protected:
-
     /**
-     * MISSINGDOC: cPar:void valueChanges()
+     * Hook function, called each time just before the value of this object changes.
+     * This default implementation does nothing.
      */
     virtual void valueChanges();
 
   public:
+    /** @name Constructors, destructor, assignment. */
+    //@{
 
     /**
      * Copy constructor, creates an exact copy of the argument.
@@ -284,7 +276,14 @@ class SIM_API cPar : public cObject
      */
     virtual ~cPar();
 
-    // redefined functions
+    /**
+     * The assignment operator works with cPar objects.
+     */
+    cPar& operator=(cPar& otherpar);
+    //@}
+
+    /** @name Redefined cObject member functions */
+    //@{
 
     /**
      * Returns pointer to the class name string, "cPar".
@@ -312,11 +311,6 @@ class SIM_API cPar : public cObject
     virtual void writeContents(ostream& os);
 
     /**
-     * The assignment operator works with cPar objects.
-     */
-    cPar& operator=(cPar& otherpar);
-
-    /**
      * MISSINGDOC: cPar:int netPack()
      */
     virtual int netPack();
@@ -325,14 +319,13 @@ class SIM_API cPar : public cObject
      * MISSINGDOC: cPar:int netUnpack()
      */
     virtual int netUnpack();
+    //@}
 
-    // new functions:
-
-    // functions to set value (assignment operators also exist, see later)
+    /** @name Setter functions. Note that overloaded assignment operators also exist. */
+    //@{
 
     /**
      * FIXME: new functions:
-     * functions to set value (assignment operators also exist, see later)
      */
     cPar& setBoolValue(bool b);              // bool
 
@@ -383,15 +376,15 @@ class SIM_API cPar : public cObject
 
     /**
      * MISSINGDOC: cPar:cPar&setPointerValue(void*)
+     * See also configPointer()!
      */
     cPar& setPointerValue(void *ptr);        // void* pointer
 
     /**
      * MISSINGDOC: cPar:cPar&setObjectValue(cObject*)
+     * See cObject's ownership control: takeOwnership() flag, etc.
      */
     cPar& setObjectValue(cObject *obj);      // cObject* pointer
-
-    // memory management to void* pointer type
 
     /**
      * Configures memory management for the void* pointer ('P') type.
@@ -412,9 +405,10 @@ class SIM_API cPar : public cObject
      * </TABLE>
      */
     void configPointer( VoidDelFunc delfunc, VoidDupFunc dupfunc, size_t itemsize=0);
+    //@}
 
-    // functions to return value
-    //   conversion operators also exist; see later
+    /** @name Getter functions. Note that overloaded conversion operators also exist. */
+    //@{
 
     /**
      * FIXME: functions to return value
@@ -452,39 +446,10 @@ class SIM_API cPar : public cObject
      * (O).
      */
     cObject *objectValue();
+    //@}
 
-    // returns true if it is safe to call doubleValue()/longValue()/boolValue()
-
-    /**
-     * Returns true if the stored value is of a numeric type.
-     */
-    bool isNumeric();
-
-    // compares the stored values; the two objects must have the same typechar, etc. to be equal
-
-    /**
-     * FIXME: compares the stored values; the two objects must have the same typechar, etc. to be equal
-     */
-    bool equalsTo(cPar *par);
-
-    // query/set value as string (e.g. "uniform(10,3)")
-
-    /**
-     * Places the value in text format it into buffer buf which
-     * is maxlen characters long.
-     */
-    virtual void getAsText(char *buf, int maxlen);
-
-    /**
-     * This function tries to interpret the argument text as a type
-     * typed value. type=='?' means that the type is to be auto-selected.
-     * On success, cPar is updated with the new value and true
-     * is returned, otherwise the function returns false. No
-     * error message is generated.
-     */
-    virtual bool setFromText(const char *text, char tp);
-
-    // redirection
+    /** @name Redirection */
+    //@{
 
     /**
      * TBD
@@ -509,20 +474,10 @@ class SIM_API cPar : public cObject
      * Break the redirection. The new type will be long ('L').
      */
     void cancelRedirection();
+    //@}
 
-
-    /**
-     * Reads the object value from the ini file or from the user.
-     */
-    cPar& read();
-
-    /**
-     * Replaces the object value with its evaluation (a double).
-     * Implemented as something like setValue('D', this->doubleValue()).
-     */
-    void convertToConst();
-
-    // functions to get/set different flags
+    /** @name Type, prompt text, input flag, change flag. */
+    //@{
 
     /**
      * Returns type character. If the "real" type is 'I',
@@ -531,6 +486,10 @@ class SIM_API cPar : public cObject
      */
     char type();                   // type char
 
+    /**
+     * Returns true if the stored value is of a numeric type.
+     */
+    bool isNumeric();
 
     /**
      * Returns the prompt text or NULL.
@@ -541,7 +500,6 @@ class SIM_API cPar : public cObject
      * Sets the prompt text.
      */
     void setPrompt(const char *s); // set prompt str
-
 
     /**
      * Sets (ip=true) or clears (ip=false) the input
@@ -555,78 +513,118 @@ class SIM_API cPar : public cObject
      */
     bool isInput();                // is an input value?
 
-
     /**
      * Returns true if the value has changed since the last
-     * changed() call.
+     * changed() call. (It clears the 'changed' flag.)
      */
-    bool changed();                // has changed? (clears `changed' flag)
+    bool changed();
+    //@}
 
-    // redefined operators to set/get value
+    /** @name Utility functions. */
+    //@{
 
     /**
-     * FIXME: redefined operators to set/get value
+     * Reads the object value from the ini file or from the user.
+     */
+    cPar& read();
+
+    /**
+     * Replaces the object value with its evaluation (a double).
+     * Implemented as something like setValue('D', this->doubleValue()).
+     */
+    void convertToConst();
+
+    /**
+     * Compares the stored values. The two objects must have the same type character
+     * and the same value to be equal.
+     */
+    bool equalsTo(cPar *par);
+    //@}
+
+    /** @name Convert to/from text representation.
+    //@{
+
+    /**
+     * Places the value in text format it into buffer buf which
+     * is maxlen characters long.
+     */
+    virtual void getAsText(char *buf, int maxlen);
+
+    /**
+     * This function tries to interpret the argument text as a type
+     * typed value. type=='?' means that the type is to be auto-selected.
+     * On success, cPar is updated with the new value and true
+     * is returned, otherwise the function returns false. No
+     * error message is generated.
+     */
+    virtual bool setFromText(const char *text, char tp);
+    //@}
+
+    /** @name Overloaded assignment and conversion operators. */
+    //@{
+
+    /**
+     * Equivalent to setBoolValue().
      */
     cPar& operator=(bool b)          {return setBoolValue(b);}
 
     /**
-     * Equivalent to setValue('S',s).
+     * Equivalent to setStringValue().
      */
     cPar& operator=(const char *s)   {return setStringValue(s);}
 
     /**
-     * Equivalent to setValue('C',(int)c).
+     * Converts the argument to long, and calls setLongValue().
      */
     cPar& operator=(char c)          {return setLongValue((long)c);}
 
     /**
-     * Equivalent to setValue('C',(int)c).
+     * Converts the argument to long, and calls setLongValue().
      */
     cPar& operator=(unsigned char c) {return setLongValue((long)c);}
 
     /**
-     * Equivalent to setValue('L',(long)i).
+     * Converts the argument to long, and calls setLongValue().
      */
     cPar& operator=(int i)           {return setLongValue((long)i);}
 
     /**
-     * Equivalent to setValue('L',(long)i).
+     * Converts the argument to long, and calls setLongValue().
      */
     cPar& operator=(unsigned int i)  {return setLongValue((long)i);}
 
     /**
-     * Equivalent to setValue('L',l).
+     * Equivalent to setLongValue().
      */
     cPar& operator=(long l)          {return setLongValue(l);}
 
     /**
-     * Equivalent to setValue('L',(long)l).
+     * Converts the argument to long, and calls setLongValue().
      */
     cPar& operator=(unsigned long l) {return setLongValue((long)l);}
 
     /**
-     * Equivalent to setValue('D',d).
+     * Equivalent to setDoubleValue().
      */
     cPar& operator=(double d)        {return setDoubleValue(d);}
 
     /**
-     * Equivalent to setValue('D',(double)d).
+     * Converts the argument to double, and calls setDoubleValue().
      */
     cPar& operator=(long double d)   {return setDoubleValue((double)d);}
 
     /**
-     * MISSINGDOC: cPar:cPar&operator=(void*)
+     * Equivalent to setPointerValue().
      */
     cPar& operator=(void *ptr)       {return setPointerValue(ptr);}
 
     /**
-     * Equivalent to setValue('P',obj).
+     * Equivalent to setObjectValue().
      */
     cPar& operator=(cObject *obj)    {return setObjectValue(obj);}
 
-
     /**
-     * MISSINGDOC: cPar:operator bool()
+     * Equivalent to boolValue().
      */
     operator bool()          {return boolValue();}
 
@@ -636,22 +634,22 @@ class SIM_API cPar : public cObject
     operator const char *()  {return stringValue();}
 
     /**
-     * MISSINGDOC: cPar:operator char()
+     * Calls longValue() and converts the result to char.
      */
     operator char()          {return (char)longValue();}
 
     /**
-     * MISSINGDOC: cPar:operator unsigned char()
+     * Calls longValue() and converts the result to unsigned char.
      */
     operator unsigned char() {return (unsigned char)longValue();}
 
     /**
-     * Equivalent to longValue().
+     * Calls longValue() and converts the result to int.
      */
     operator int()           {return (int)longValue();}
 
     /**
-     * Equivalent to longValue().
+     * Calls longValue() and converts the result to unsigned int.
      */
     operator unsigned int()  {return (unsigned int)longValue();}
 
@@ -661,7 +659,7 @@ class SIM_API cPar : public cObject
     operator long()          {return longValue();}
 
     /**
-     * Equivalent to longValue().
+     * Calls longValue() and converts the result to unsigned long.
      */
     operator unsigned long() {return longValue();}
 
@@ -671,20 +669,23 @@ class SIM_API cPar : public cObject
     operator double()        {return doubleValue();}
 
     /**
-     * Equivalent to doubleValue().
+     * Calls doubleValue() and converts the result to long double.
      */
     operator long double()   {return doubleValue();}
 
     /**
-     * MISSINGDOC: cPar:operator void*()
+     * Equivalent to pointerValue().
      */
     operator void *()        {return pointerValue();}
 
     /**
-     * Equivalent to pointerValue().
+     * Equivalent to objectValue().
      */
     operator cObject *()     {return objectValue();}
+    //@}
 
+    /** @name Compare function */
+    //@{
 
     /**
      * Compares two cPars by their value if they are numeric.
@@ -692,6 +693,7 @@ class SIM_API cPar : public cObject
      * queue.
      */
     static int cmpbyvalue(cObject *one, cObject *other);
+    //@}
 };
 
 // this function cannot be defined within sXElem because of declaration order
@@ -701,7 +703,7 @@ inline void sXElem::operator=(cPar& _r)  {type='R'; p=(cPar *)_r.dup();}
 
 /**
  * Module parameter object. This is specialized version of cPar: it is capable
- * of logging parameter changes to file
+ * of logging parameter changes to file.
  *
  * NOTE: dup() creates only a cPar, NOT a cModulePar!
  */
@@ -713,14 +715,14 @@ class SIM_API cModulePar : public cPar
     bool log_initialised;  // logging: true if the "label" line already written out
     long log_ID;           // logging: ID of the data lines
     simtime_t lastchange;  // logging: time of last value change
-  private:
 
-    /**
-     * MISSINGDOC: cModulePar:void _ruct()
-     */
-    void _construct();     // helper function
+  private:
+    // helper function
+    void _construct();
 
   public:
+    /** @name Constructors, destructor, assignment. */
+    //@{
 
     /**
      * Constructor.
@@ -742,7 +744,14 @@ class SIM_API cModulePar : public cPar
      */
     virtual ~cModulePar();
 
-    // redefined functions
+    /**
+     * MISSINGDOC: cModulePar:cModulePar&operator=(cModulePar&)
+     */
+    cModulePar& operator=(cModulePar& otherpar);
+    //@}
+
+    /** @name Redefined cObject member functions */
+    //@{
 
     /**
      * FIXME: redefined functions
@@ -763,20 +772,19 @@ class SIM_API cModulePar : public cPar
      * MISSINGDOC: cModulePar:char*fullPath()
      */
     virtual const char *fullPath() const;
+    //@}
+
+    /** @name Redefined cPar functions. */
+    //@{
 
     /**
-     * MISSINGDOC: cModulePar:cModulePar&operator=(cModulePar&)
+     * FIXME: Does parameter logging.
      */
-    cModulePar& operator=(cModulePar& otherpar);
+    virtual void valueChanges();
+    //@}
 
-    // redefined cPar function
-
-    /**
-     * FIXME: redefined cPar function
-     */
-    virtual void valueChanges();    // does parameter logging
-
-    // new functions
+    /** @name Set/get owner module. */
+    //@{
 
     /**
      * FIXME: new functions
@@ -787,6 +795,7 @@ class SIM_API cModulePar : public cPar
      * MISSINGDOC: cModulePar:cModule*ownerModule()
      */
     cModule *ownerModule()             {return omodp;}
+    //@}
 };
 
 

@@ -42,7 +42,7 @@ struct sLLElem
 //-------------------------------------------------------------------------
 
 /**
- * A double-linked list of non cObject items. cLinkedList has a cQueue-like
+ * A double-linked list of non-cObject items. cLinkedList has a cQueue-like
  * interface.
  *
  * Memory management of contained items is controlled by the configPointer()
@@ -64,29 +64,24 @@ class SIM_API cLinkedList : public cObject
                               // no memory management (we treat pointers as
                               // mere pointers)
   protected:
-    /**
-     * FIXME: if both dupfunc and itemsize are 0, we do
-     * no memory management (we treat pointers as
-     * mere pointers)
-     */
+    // internal use.
+    // if both dupfunc and itemsize are 0, we do no memory management
+    // (we treat pointers as mere pointers)
     sLLElem *find_llelem(void *item);
 
-    /**
-     * MISSINGDOC: cLinkedList:void insbefore_llelem(sLLElem*,void*)
-     */
+    // internal use
     void insbefore_llelem(sLLElem *p, void *item);
 
-    /**
-     * MISSINGDOC: cLinkedList:void insafter_llelem(sLLElem*,void*)
-     */
+    // internal use
     void insafter_llelem(sLLElem *p, void *item);
 
-    /**
-     * MISSINGDOC: cLinkedList:void*remove_llelem(sLLElem*)
-     */
+    // internal use
     void *remove_llelem(sLLElem *p);
 
   public:
+    /** @name Constructors, destructor, assignment. */
+    //@{
+
     /**
      * Copy constructor. Contained items that are owned by the list will
      * be duplicated using the function passed in configPointer()
@@ -105,7 +100,16 @@ class SIM_API cLinkedList : public cObject
      */
     virtual ~cLinkedList();
 
-    // redefined functions
+    /**
+     * Duplication and assignment work all right with cLinkedList.
+     * Contained items are treated as configured with configPointer().
+     * By default, only pointers are copied.
+     */
+    cLinkedList& operator=(cLinkedList& queue);
+    //@}
+
+    /** @name Redefined cObject member functions */
+    //@{
 
     /**
      * Returns pointer to the class name string,"cLinkedList".
@@ -138,81 +142,93 @@ class SIM_API cLinkedList : public cObject
      * MISSINGDOC: cLinkedList:int netUnpack()
      */
     virtual int netUnpack();
+    //@}
+
+    /** @name Container functions. */
+    //@{
 
     /**
-     * Duplication and assignment work all right with cLinkedList.
-     * Contained items are treated as configured with configPointer().
-     * By default, only pointers are copied.
-     */
-    cLinkedList& operator=(cLinkedList& queue);
-
-    // new functions
-
-    /**
-     * FIXME: new functions
+     * Configures memory management for contained items.
+     *
+     * <TABLE BORDER=1>
+     * <TR><TD WIDTH=96><B>delete func.</B></TD><TD WIDTH=89><B>dupl.func.</B>
+     * </TD><TD WIDTH=92><B>itemsize</B></TD><TD WIDTH=317><B>behaviour</B>
+     * </TD></TR>
+     * <TR><TD WIDTH=96>NULL</TD><TD WIDTH=89>NULL
+     * </TD><TD WIDTH=92>0</TD><TD WIDTH=317>Pointer is treated as mere pointer - no memory management. Duplication copies the pointer, and deletion does nothing.
+     * </TD></TR>
+     * <TR><TD WIDTH=96>NULL</TD><TD WIDTH=89>NULL
+     * </TD><TD WIDTH=92>>0 size</TD><TD WIDTH=317>Plain memory management. Duplication is done with operator new char[size]+memcpy(), and deletion is done via operator delete.
+     * </TD></TR>
+     * <TR><TD WIDTH=96>NULL or user's delete func.</TD><TD WIDTH=89>user's dupfunc.
+     * </TD><TD WIDTH=92>indifferent</TD><TD WIDTH=317>Sophisticated memory management. Duplication is done by calling the user-supplied duplication function, which should do the allocation and the appropriate copying. Deletion is done by calling the user-supplied delete function, or the delete operator if it is not supplied.
+     * </TD></TR>
+     * </TABLE>
      */
     void config( VoidDelFunc _delfunc, VoidDupFunc _dupfunc, size_t _itemsize=0);
 
-
     /**
-     * Inserts the given object into the list, maintaining the sorting
-     * order.
+     * Inserts the given object into the list, maintaining the sorting order.
      */
-    void insert(void *item);                     // insert item at head
+    void insert(void *item);
 
     /**
-     * Inserts exactly before and after the given item.
+     * Inserts exactly before the given item. If the item to be inserted before
+     * is not in the list, an error occurs.
      */
-    void insertBefore(void *where, void *item);  // insert at specific position
+    void insertBefore(void *where, void *item);
 
     /**
-     * Inserts exactly before and after the given item.
+     * Inserts exactly after the given item. If the item to be inserted after
+     * is not in the list, an error occurs.
      */
-    void insertAfter(void *where, void *item);   // insert at specific position
+    void insertAfter(void *where, void *item);
 
     /**
-     * MISSINGDOC: cLinkedList:void*head()
-     */
-    void *head()  {return n!=0 ? headp->item : NULL;}  // peek head item
-
-    /**
-     * Returns the last item in the list or null pointer if the list
+     * Returns the first item in the list or NULL pointer if the list
      * is empty.
      */
-    void *tail()  {return n!=0 ? tailp->item : NULL;}  // peek tail item
+    void *head()  {return n!=0 ? headp->item : NULL;}
 
     /**
-     * Unlinks and returns the given item.
+     * Returns the last item in the list or NULL pointer if the list
+     * is empty.
      */
-    void *remove(void *item);                    // remove item
+    void *tail()  {return n!=0 ? tailp->item : NULL;}
 
     /**
-     * Unlinks and returns the last item in the list.
+     * Unlinks and returns the given item. If the item is not in the list,
+     * an error occurs.
      */
-    void *pop();                                 // remove item at tail
+    void *remove(void *item);
 
+    /**
+     * Unlinks and returns the last item in the list. If the list is empty,
+     * an error occurs.
+     */
+    void *pop();
 
     /**
      * Returns the number of items contained in the list.
      */
-    int length() {return n;}        // number of items;
+    int length() {return n;}
 
     /**
      * Returns true if the list is empty.
      */
-    bool empty() {return n==0;}     // see if queue is empty or not
+    bool empty() {return n==0;}
 
     /**
-     * MISSINGDOC: cLinkedList:bool contains(void*)
+     * Returns true if the list contains the given pointer.
      */
     bool contains(void *item)  {return find_llelem(item)!=NULL;}
-
 
     /**
      * As a result, the container will be empty. Contained items will
      * be deleted as configured by configPointer().
      */
-    void clear();                   // delete whole contents
+    void clear();
+    //@}
 };
 
 //==========================================================================
@@ -234,9 +250,9 @@ class SIM_API cLinkedListIterator
 
   public:
     /**
-     * Constructor, cIterator will walk on the list passed as
-     * argument. The current item will be the first (if a==1) or the
-     * last (a==0) item in the list.
+     * Constructor. Takes the cLinkedList object as argument.
+     * The current item will be the first (if athead==1, default) or the last
+     * (if athead==0) item in the list.
      */
     cLinkedListIterator(cLinkedList& q, int athead=1)
             {p=&q ? (athead ? q.headp : q.tailp) : NO(sLLElem);}
@@ -253,19 +269,21 @@ class SIM_API cLinkedListIterator
     void *operator()()        {return p->item;}
 
     /**
-     * Returns true if we have reached the end of the list.
+     * Returns true if we have reached the end (with operator++) or the beginning
+     * (with operator--) of the list.
      */
     bool end()                {return (bool)(p==NULL);}
 
     /**
-     * Steps to the next/previous object in the list.
+     * Returns the current item and steps to the next one.
      */
     void *operator++(int)  {sLLElem *t=p; if(p) p=p->next; return t->item;}
 
     /**
-     * Steps to the next/previous object in the list.
+     * Returns the current item and steps to the previous one.
      */
     void *operator--(int)  {sLLElem *t=p; if(p) p=p->prev; return t->item;}
 };
 
 #endif
+

@@ -1,3 +1,8 @@
+2001-07-11 Andras Varga
+
+	* carray.h cgate.h cllist.h cpar.h cqueue.h csimul.h: cleaned up DOC++
+        comments 
+
 2001-07-07 Andras Varga
 
         * cmessage.h,cmodule.h,util.h: cleaned up DOC++ comments 

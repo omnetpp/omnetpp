@@ -61,13 +61,12 @@ class SIM_API cGate : public cObject
 
     opp_string dispstr;      // the display string
 
-    /**
-     * MISSINGDOC: cGate:void(*)(void*)
-     */
     void (*notify_inspector)(void*); // to notify inspector about disp str changes
     void *data_for_inspector;
 
   public:
+    /** @name Constructors, destructor, assignment. */
+    //@{
 
     /**
      * Copy constructor.
@@ -84,7 +83,14 @@ class SIM_API cGate : public cObject
      */
     virtual ~cGate() {}
 
-    // redefined functions
+    /**
+     * MISSINGDOC: cGate:cGate&operator=(cGate&)
+     */
+    cGate& operator=(cGate& gate);
+    //@}
+
+    /** @name Redefined cObject member functions */
+    //@{
 
     /**
      * Returns pointer to the class name string, "cGate".
@@ -112,11 +118,6 @@ class SIM_API cGate : public cObject
     virtual void info(char *buf);
 
     /**
-     * MISSINGDOC: cGate:cGate&operator=(cGate&)
-     */
-    cGate& operator=(cGate& gate);
-
-    /**
      * MISSINGDOC: cGate:char*fullName()
      */
     virtual const char *fullName() const;
@@ -130,8 +131,23 @@ class SIM_API cGate : public cObject
      * MISSINGDOC: cGate:void writeContents(ostream&)
      */
     virtual void writeContents(ostream& os);
+    //@}
 
-    // new functions
+    /**
+     * FIXME: This function is called internally by the send() functions
+     * to deliver the message to its destination. Why's this public???
+     */
+    void deliver(cMessage *msg);
+
+    /** @name Setting up the gate. */
+    //@{
+
+    /**
+     * Specifies that the gate is owned by module m, and it
+     * is at index g in the gate vector. This function should
+     * not be directly called by the user.
+     */
+    void setOwnerModule(cModule *m, int gid);
 
     /**
      * Specifies that the gate is at index sn in a gate array
@@ -139,6 +155,26 @@ class SIM_API cGate : public cObject
      * by the user.
      */
     void setIndex(int sn, int vs);
+    //@}
+
+    /** @name Connecting the gate. */
+    //@{
+
+    /**
+     * Redirect gates. This function will rarely be needed; unless maybe
+     * for dynamically created modules.
+     */
+    void setFrom(cGate *g);
+
+    /**
+     * Redirect gates. This function will rarely be needed; unless maybe
+     * for dynamically created modules.
+     */
+    void setTo(cGate *g);
+    //@}
+
+    /** @name Setting and getting link attributes. */
+    //@{
 
     /**
      * Sets the parameters of the link to those specified by the link
@@ -165,60 +201,6 @@ class SIM_API cGate : public cObject
     void setDataRate(cPar *p);
 
     /**
-     * Redirect gates. This function will rarely be needed; unless maybe
-     * for dynamically created modules.
-     */
-    void setFrom(cGate *g);
-
-    /**
-     * Redirect gates. This function will rarely be needed; unless maybe
-     * for dynamically created modules.
-     */
-    void setTo(cGate *g);
-
-    /**
-     * Specifies that the gate is owned by module m, and it
-     * is at index g in the gate vector. This function should
-     * not be directly called by the user.
-     */
-    void setOwnerModule(cModule *m, int gid);
-
-
-    /**
-     * MISSINGDOC: cGate:bool isVector()
-     */
-    bool isVector() const  {return vectsize>=0;}
-
-    /**
-     * If the gate is in a gate array, returns the gate's position in
-     * it; otherwise, it returns 0.
-     */
-    int index() const      {return serno;}
-
-    /**
-     * If the gate is in a gate array, returns the size of the vector;
-     * otherwise, it returns 1.
-     */
-    int size()  const      {return vectsize<0?1:vectsize;}
-
-    /**
-     * Returns the gate's type: 'I' for input and 'O'
-     * for output.
-     */
-    char type() const      {return typ;}
-
-    /**
-     * Returns a pointer to the owner module of the gate.
-     */
-    cModule *ownerModule() const {return omodp;}
-
-    /**
-     * Returns the position of the gate in the vector of all gates of
-     * the module.
-     */
-    int id() const         {return gateid;}
-
-    /**
      * Returns the link type of the gate, if it has one.
      */
     cLinkType *link()      {return linkp;}
@@ -243,24 +225,77 @@ class SIM_API cGate : public cObject
      * stored at their starting side.
      */
     cPar *datarate()       {return dataratep;}
+    //@}
 
+    /** @name Information about the gate. */
+    //@{
 
     /**
-     * For a compound module gate, it returns the previous and the next
-     * gate in the series of connections (the route) that contains this
-     * gate. For simple module gates, only one of the functions will
-     * return non-NULL value.
+     * Returns the gate's type: 'I' for input and 'O' for output.
+     */
+    char type() const      {return typ;}
+
+    /**
+     * Returns a pointer to the owner module of the gate.
+     */
+    cModule *ownerModule() const {return omodp;}
+
+    /**
+     * Returns gate ID, the position of the gate in the array of all gates of
+     * the module.
+     */
+    int id() const         {return gateid;}
+
+    /**
+     * Returns true if the gate is part of a gate vector.
+     */
+    bool isVector() const  {return vectsize>=0;}
+
+    /**
+     * If the gate is part of a gate vector, returns the gate's index in the vector.
+     * Otherwise, it returns 0.
+     */
+    int index() const      {return serno;}
+
+    /**
+     * If the gate is part of a gate vector, returns the size of the vector.
+     * Otherwise, it returns 1.
+     */
+    int size()  const      {return vectsize<0?1:vectsize;}
+    //@}
+
+    /** @name Transmission state. */
+    //@{
+
+    /**
+     * Returns whether the gate is currently transmitting.
+     */
+    bool isBusy();
+
+    /**
+     * Returns the simulation time the gate is expected to finish transmitting.
+     * Note that additonal messages send on the gate may prolong the time the gate
+     * will actually finish.
+     */
+    simtime_t transmissionFinishes() {return transm_finishes;}
+    //@}
+
+    /** @name Gate connectivity. */
+    //@{
+
+    /**
+     * Returns the previous gate in the series of connections (the route) that
+     * contains this gate, or a NULL pointer if this gate is the first one in the route.
+     * (E.g. for a simple module output gate, this function will return NULL.)
      */
     cGate *fromGate() const {return fromgatep;}
 
     /**
-     * For a compound module gate, it returns the previous and the next
-     * gate in the series of connections (the route) that contains this
-     * gate. For simple module gates, only one of the functions will
-     * return non-NULL value.
+     * Returns the next gate in the series of connections (the route) that
+     * contains this gate, or a NULL pointer if this gate is the last one in the route.
+     * (E.g. for a simple module input gate, this function will return NULL.)
      */
     cGate *toGate() const   {return togatep;}
-
 
     /**
      * Return the ultimate source and destination of the series of connections
@@ -274,58 +309,47 @@ class SIM_API cGate : public cObject
      */
     cGate *destinationGate();
 
-
     /**
-     * MISSINGDOC: cGate:bool isBusy()
-     */
-    bool isBusy();
-
-    /**
-     * MISSINGDOC: cGate:simtime_t transmissionFinishes()
-     */
-    simtime_t transmissionFinishes() {return transm_finishes;}
-
-
-    /**
-     * This function is called internally by the send() functions
-     * to deliver the message to its destination.
-     */
-    void deliver(cMessage *msg);   // called by send() functions
-
-
-    /**
-     * Determines if a given module is in the route that this gate is
-     * in.
+     * Determines if a given module is in the route containing this gate.
      */
     int routeContains(cModule *m, int g=-1);
 
     /**
-     * Returns true if the gate is connected.
+     * Returns true if the gate is connected. A simple module output gate is
+     * connected if toGate() is not NULL, and a simple module input gate is
+     * connected if fromGate() is not NULL. For a compound module gate to be
+     * connected, it should be connected both from "inside" and "outside",
+     * that is, both fromGate() and toGate() should be non-NULL.
      */
     bool isConnected() const;
 
     /**
-     * Returns true if the route that this gate is in is complete;
-     * i.e., if it starts and arrives at a simple module.
+     * Returns true if the route that this gate is in is complete, that is,
+     * if it starts and arrives at a simple module.
      */
     bool isRouteOK();
+    //@}
 
-    // visualization/animation support
+    /** @name Display string. */
+    //@{
 
     /**
-     * FIXME: visualization/animation support
+     * Sets the display string for the gate.
      */
     void setDisplayString(const char *dispstr);
 
     /**
-     * MISSINGDOC: cGate:char*displayString()
+     * Returns the display string for the gate.
      */
     const char *displayString();
 
     /**
-     * MISSINGDOC: cGate:void setDisplayStringNotify(void(*)(void*),void*)
+     * Sets up a notification function which is called every time the display
+     * string changes.
      */
     void setDisplayStringNotify(void (*notify_func)(void*), void *data);
+    //@}
 };
 
 #endif
+
