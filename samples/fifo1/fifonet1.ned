@@ -1,13 +1,13 @@
 // -------------------------------------------------------------
-// file: fifonet.ned
+// file: fifonet1.ned
 //        (part of Fifo1 - an OMNeT++ demo simulation)
 // -------------------------------------------------------------
 
 
 import  
-    "gen", 
-    "fifo", 
-    "sink"; 
+    "gen1", 
+    "fifo1", 
+    "sink1"; 
 
 
 // FifoNet1 --

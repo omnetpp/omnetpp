@@ -66,43 +66,43 @@ COPTS=$(CFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 #------------------------------------------------------------------------------
 
 # Object files from this directory to link
-OBJS= fifo_n.o fifonet_n.o gen_n.o sink_n.o fifo.o gen.o sink.o
+OBJS= fifo1_n.o fifonet1_n.o gen1_n.o sink1_n.o fifo1.o gen1.o sink1.o
 
 $(TARGET): $(OBJS) $(EXRA_OBJS) Makefile
 	$(CC) $(LDFLAGS) $(OBJS) $(EXRA_OBJS) $(SUBDIR_OBJS) $(LIBS) $(OMNETPP_LIBS) -o $(TARGET)
 
-fifo_n.o: fifo_n.cc
-	$(CXX) -c $(COPTS) fifo_n.cc
+fifo1_n.o: fifo1_n.cc
+	$(CXX) -c $(COPTS) fifo1_n.cc
 
-fifo_n.cc: fifo.ned
-	$(NEDC) $(INCLUDE_PATH) fifo.ned
+fifo1_n.cc: fifo1.ned
+	$(NEDC) $(INCLUDE_PATH) fifo1.ned
 
-fifonet_n.o: fifonet_n.cc
-	$(CXX) -c $(COPTS) fifonet_n.cc
+fifonet1_n.o: fifonet1_n.cc
+	$(CXX) -c $(COPTS) fifonet1_n.cc
 
-fifonet_n.cc: fifonet.ned
-	$(NEDC) $(INCLUDE_PATH) fifonet.ned
+fifonet1_n.cc: fifonet1.ned
+	$(NEDC) $(INCLUDE_PATH) fifonet1.ned
 
-gen_n.o: gen_n.cc
-	$(CXX) -c $(COPTS) gen_n.cc
+gen1_n.o: gen1_n.cc
+	$(CXX) -c $(COPTS) gen1_n.cc
 
-gen_n.cc: gen.ned
-	$(NEDC) $(INCLUDE_PATH) gen.ned
+gen1_n.cc: gen1.ned
+	$(NEDC) $(INCLUDE_PATH) gen1.ned
 
-sink_n.o: sink_n.cc
-	$(CXX) -c $(COPTS) sink_n.cc
+sink1_n.o: sink1_n.cc
+	$(CXX) -c $(COPTS) sink1_n.cc
 
-sink_n.cc: sink.ned
-	$(NEDC) $(INCLUDE_PATH) sink.ned
+sink1_n.cc: sink1.ned
+	$(NEDC) $(INCLUDE_PATH) sink1.ned
 
-fifo.o: fifo.cc
-	$(CXX) -c $(COPTS) fifo.cc
+fifo1.o: fifo1.cc
+	$(CXX) -c $(COPTS) fifo1.cc
 
-gen.o: gen.cc
-	$(CXX) -c $(COPTS) gen.cc
+gen1.o: gen1.cc
+	$(CXX) -c $(COPTS) gen1.cc
 
-sink.o: sink.cc
-	$(CXX) -c $(COPTS) sink.cc
+sink1.o: sink1.cc
+	$(CXX) -c $(COPTS) sink1.cc
 
 clean:
 	rm -f *.o *_n.cc $(TARGET)$(EXE_SUFFIX)
