@@ -179,6 +179,9 @@ tokenring:
 #
 # Documentation
 #
+apis:
+	cd /d $(OMNETPP_DOC_DIR:/=\) && $(MAKE) $(MOPTS) $(MAKEFILE) apis
+
 docu:
 	cd /d $(OMNETPP_DOC_DIR:/=\) && $(MAKE) $(MOPTS) $(MAKEFILE)
 

@@ -133,14 +133,11 @@ tokenring:
 #
 # Documentation
 #
-api:
-	cd $(OMNETPP_INCL_DIR) && $(MAKE) doc
+apis:
+	cd $(OMNETPP_DOC_DIR) && $(MAKE) apis
 
-nedxml-api:
-	cd $(OMNETPP_SRC_DIR)/nedxml && $(MAKE) doc
-
-manual:
-	cd $(OMNETPP_DOC_DIR)/usman && $(MAKE)
+docu:
+	cd $(OMNETPP_DOC_DIR) && $(MAKE)
 
 #
 # Test
