@@ -815,12 +815,15 @@ void cSimpleModule::scheduleStart(simtime_t t)
 
 void cSimpleModule::deleteModule()
 {
+    // we have to be explicitly prepared that we might be called from a different
+    // simple module (ie. that this!=contextModule())!
+
     // delete pending messages for this module
     for (cMessageHeapIterator iter(simulation.msgQueue); !iter.end(); iter++)
     {
         cMessage *msg = iter();
         if (msg->arrivalModuleId() == id())
-              delete simulation.msgQueue.get( msg );
+            delete simulation.msgQueue.get( msg );
     }
 
     // adjust gates that were directed here
@@ -828,13 +831,22 @@ void cSimpleModule::deleteModule()
     {
         cGate *g = gate(i);
         if (g && g->toGate() && g->toGate()->fromGate()==g)
-           g->toGate()->setFrom( NULL );
+            g->toGate()->setFrom( NULL );
         if (g && g->fromGate() && g->fromGate()->toGate()==g)
-           g->fromGate()->setTo( NULL );
+            g->fromGate()->setTo( NULL );
     }
 
-    // get outta here, and leave simulation.deleteModule(id()) to whoever catches the exception
-    throw new cEndModuleException(true);
+    if (simulation.contextModule()!=this)
+    {
+        // we're being deleted from another module: just finish job and return
+        simulation.deleteModule( id() );
+    }
+    else
+    {
+        // we're inside the currently executing module: get outta here quickly,
+        // and leave simulation.deleteModule(id()) to whoever catches the exception
+        throw new cEndModuleException(true);
+    }
 }
 
 int cSimpleModule::send(cMessage *msg, int g)
