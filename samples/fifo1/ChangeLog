@@ -5,3 +5,6 @@ Oct 12, 1999
  - ACPFifo and ACBFifo renamed to FF1PacketFifo and FF1BitFifo
  - display strings moved to NED file
  - num_messages value changed from 1000 to 50 (better for demonstration)
+Oct 17, 1999
+ - the "1" suffix was added to all file names (to make it possible to link
+   all sample simulations into a single executable)
