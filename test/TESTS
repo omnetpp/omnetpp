@@ -18,6 +18,8 @@ Source distribution test platforms/configurations:
    - Linux, gcc, static libs, with Tcl embedding
    - Linux, gcc, static libs, with MPI
 
+TBD incorporate tests with and without PARSIM, with and without NETBUILDER.
+
 One test goes like this:
    1. compile
    2. run GNED and Plove

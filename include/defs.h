@@ -73,6 +73,9 @@
 
 #define sgn(x)       ((x)==0 ? 0 : ((x)<0 ? -1 : 1))
 
+
+// FIXME verify gcc version >= 3.0
+
 #ifndef NDEBUG
 #define ASSERT(expr)  \
   ((void) ((expr) ? 0 : \
