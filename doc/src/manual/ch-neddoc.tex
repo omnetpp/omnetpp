@@ -254,6 +254,93 @@ Do not try to comment groups of parameters together. The result
 will be awkward.
 
 
+\subsection{Customizing the title page}
+
+The title page is the one that appears in the main frame after 
+opening the documentation in the browser. By default it contains
+a boilerplate text with the generic title \textit{``OMNeT++ Model Documentation''}.
+You probably want to customize that, and at least change the title
+to the name of the documented simulation model.
+ 
+You can supply your own version of the title page adding a \ttt{@titlepage}
+directive to a file-level comment (a comment that appears at the top of
+a NED file, but is separated from the first \ttt{import}, \ttt{channel}, 
+\ttt{module}, etc. definition by at least one blank line).
+In theory you can place your title page definition into 
+any NED or MSG file, but it is probably a good idea to create
+a separate \ttt{index.ned} file for it.   
+
+The lines you write after the \ttt{@titlepage} line up to the next 
+\ttt{@page} line (see later) or the end of the comment will be used 
+as the title page.
+You probably want to begin with a title because the documentation
+tool doesn't add one (it lets you have full control over the
+page contents). You can use the \ttt{<h1>..</h1>} HTML tag 
+to define a title. 
+
+Example:
+
+\begin{verbatim}
+//
+// @indexpage
+// <h1>Ethernet Model Documentation</h1>
+//
+// This documents the Ethernet model created by David Wu and refined by Andras
+// Varga at CTIE, Monash University, Melbourne, Australia.
+//
+\end{verbatim}
+
+
+\subsection{Adding extra pages}
+
+You can add new pages to the documentation in a similar way as customizing
+the title page. The directive to be used is \ttt{@page}, and it can 
+appear in any file-level comment (see above).
+
+The syntax of the \ttt{@page} directive is the following:
+
+\begin{verbatim}
+// @title filename.html, Title of the Page
+\end{verbatim}
+  
+Please choose a file name that doesn't collide with the files generated
+by the documentation tool (such as \ttt{index.html}). 
+The page title you supply will appear on the top of the page as well as
+in the page index.
+
+The lines after the \ttt{@page} line up to the next \ttt{@page} line
+or the end of the comment will be used as the page body.
+You don't need to add a title because the documentation tool
+automatically adds one.
+
+Example:
+\begin{verbatim}
+//
+// @page structure.html, Directory Structure
+//
+// The model core model files and the examples have been placed 
+// into different directories. The <tt>examples/</tt> directory...
+//
+//
+// @page examples.html, Examples
+// ...
+//
+\end{verbatim}
+
+You can create links to the generated pages in the normal HTML way,
+using the \ttt{<a href="...">...</a>} tag. All HTML files are 
+placed in a single directory, so you don't have to worry about 
+specifying directories.
+
+Example:
+\begin{verbatim}
+//
+// @titlepage
+// ...
+// The structure of the model is described <a href="structure.html">here</a>.
+//
+\end{verbatim}
+
 \section{Generating HTML}
 
 \ttt{opp\_neddoc} generates HTML documentation from NED and MSG files.
