@@ -17,8 +17,7 @@
 //
 simple PointToPointIF
     parameters:
-        frameCapacity: numeric const, // max number of frames; 0 means no limit
-        bitCapacity: numeric const; // max number of bits; 0 means no limit
+        frameCapacity: numeric const; // max number of frames; 0 means no limit
     gates:
         in: in, lineIn;
         out: out, lineOut;

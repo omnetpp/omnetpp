@@ -21,11 +21,12 @@ class PointToPointIF : public cSimpleModule
 {
   protected:
     long frameCapacity;
-    long bitCapacity;
     cGate *gateToWatch;
 
     cQueue queue;
     cMessage *endTransmissionEvent;
+
+    long numFramesDropped;
 
   public:
     Module_Class_Members(PointToPointIF, cSimpleModule, 0);
@@ -42,11 +43,13 @@ Define_Module(PointToPointIF);
 
 void PointToPointIF::initialize()
 {
+    numFramesDropped = 0;
+    WATCH(numFramesDropped);
+
     queue.setName("queue");
     endTransmissionEvent = new cMessage("endTxEvent");
 
-    frameCapacity = par("frameCapacity"); // FIXME implement, via cMessageQueue!!
-    bitCapacity = par("bitCapacity");
+    frameCapacity = par("frameCapacity");
 
     gateToWatch = gate("lineOut");
 
@@ -55,7 +58,6 @@ void PointToPointIF::initialize()
     if (!chan->datarate())
         error("must be connected to a link with data rate");
 }
-
 
 void PointToPointIF::startTransmitting(cMessage *msg)
 {
@@ -92,8 +94,17 @@ void PointToPointIF::handleMessage(cMessage *msg)
         if (endTransmissionEvent->isScheduled())
         {
             // We are currently busy, so just queue up the packet.
-            ev << "Received " << msg << " but transmitter busy, queueing.\n";
-            queue.insert(msg);
+            if (frameCapacity && queue.length()>=frameCapacity)
+            {
+                ev << "Received " << msg << " but transmitter busy and queue full: discarding\n";
+                numFramesDropped++;
+                delete msg;
+            }
+            else
+            {
+                ev << "Received " << msg << " but transmitter busy: queueing up\n";
+                queue.insert(msg);
+            }
         }
         else
         {
