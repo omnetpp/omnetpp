@@ -281,9 +281,7 @@ puts "dbg: destroyCanvas $canv_id"
         switchToCanvas $newid
     }
 
-    if {$canv_id==$newid} {
-        return
-    }
+    if {$canv_id==$newid} {error "internal error in destroyCanvas"}
 
     # destroy widgets and variables associated with old canvas
     destroy $canvas($canv_id,canvas)
