@@ -1,6 +1,7 @@
 2004-10-28  Andras Varga
 
-	* added cakaroarng.h/cc
+	* added cakaroarng.h/cc. Akaroa's RNG has some limitations, see class
+	doc for details.
 
 2004-10-27  Andras Varga
 
