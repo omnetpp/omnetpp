@@ -165,15 +165,31 @@ void cModule::setIndex(int i, int n)
 {
     idx = i;
     vectsize = n;
-    initDisplayStrings(); // display strings may depend on module index
+
+    // update fullname
+    if (fullname)  delete [] fullname;
+    fullname = NULL;
+    if (isVector())
+    {
+        fullname = new char[opp_strlen(name())+10];
+        sprintf(fullname, "%s[%d]", name(), index());
+    }
+
+    // display strings may depend on module index
+    initDisplayStrings();
 }
 
 void cModule::initDisplayStrings()
 {
-    char dispname[128];   // FIXME buffer overflow danger
     if (parentModule())
     {
-        sprintf(dispname, "%s.%s",parentModule()->className(),fullName());
+        // create "Classname.name[index]" string
+        char dispname[MAX_OBJECTFULLPATH];
+        strcpy(dispname, parentModule()->className());
+        char *s = dispname+strlen(dispname);
+        *s++ = '.';
+        strcpy(s, fullName());
+
         const char *ds = ev.getDisplayString(simulation.runNumber(),dispname);
         if (!ds)
             {delete dispstr; dispstr = NULL;}
@@ -228,18 +244,23 @@ void cModule::setModuleType(cModuleType *mtype)
     mod_type = mtype;
 }
 
+void cModule::setName(const char *s)
+{
+    cObject::setName(s);
+
+    // update fullname
+    if (isVector())
+    {
+        if (fullname)  delete [] fullname;
+        fullname = new char[opp_strlen(name())+10];
+        sprintf(fullname, "%s[%d]", name(), index());
+    }
+}
+
 const char *cModule::fullName() const
 {
     // if not in a vector, normal name() will do
-    if (!isVector())
-       return name();
-
-    // produce index with name here (lazy solution: produce name in each call,
-    // instead of overriding both setName() and setIndex()...)
-    if (fullname)  delete [] fullname;
-    fullname = new char[opp_strlen(name())+10];
-    sprintf(fullname, "%s[%d]", name(), index() );
-    return fullname;
+    return isVector() ? fullname : name();
 }
 
 std::string cModule::fullPath() const

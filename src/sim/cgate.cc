@@ -83,18 +83,23 @@ cGate& cGate::operator=(const cGate& gate)
     throw new cException(this, eCANTDUP);
 }
 
+void cModule::setName(const char *s)
+{
+    cObject::setName(s);
+
+    // update fullname
+    if (isVector())
+    {
+        if (fullname)  delete [] fullname;
+        fullname = new char[opp_strlen(name())+10];
+        sprintf(fullname, "%s[%d]", name(), index());
+    }
+}
+
 const char *cGate::fullName() const
 {
     // if not in a vector, normal name() will do
-    if (!isVector())
-       return name();
-
-    // produce index with name here (lazy solution: produce name in each call,
-    // instead of overriding both setName() and setIndex()...)
-    if (fullname)  delete [] fullname;
-    fullname = new char[opp_strlen(name())+10];
-    sprintf(fullname, "%s[%d]", name(), index() );
-    return fullname;
+    return isVector() ? fullname : name();
 }
 
 std::string cGate::fullPath() const
@@ -202,7 +207,18 @@ void cGate::setIndex(int sn, int vs)
 {
     serno = sn;
     vectsize = vs;
-    initDisplayString(); // display string may depend on gate index
+
+    // update fullname
+    if (fullname)  delete [] fullname;
+    fullname = NULL;
+    if (isVector())
+    {
+        fullname = new char[opp_strlen(name())+10];
+        sprintf(fullname, "%s[%d]", name(), index());
+    }
+
+    // display string may depend on gate index
+    initDisplayString();
 }
 
 void cGate::connectTo(cGate *g, cChannel *chan)
