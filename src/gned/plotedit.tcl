@@ -745,8 +745,8 @@ proc selectOrMoveEnd {c x y} {
 
     # label editing:
     # only if a module or submodule label was clicked
-    if {$mouse(startingX)==$x && $mouse(startingY)==$y && [llength $mouse(tweaked-items)]==1} {
-       set key $mouse(tweaked-items)
+    if {$mouse(startingX)==$x && $mouse(startingY)==$y && [llength [selectedItems]]==1} {
+       set key [selectedItems]
        if {$ned($key,type)=="module" || $ned($key,type)=="submod"} {
           set cid [$c find withtag current]
           if {$cid==$ned($key,label-cid)} {
