@@ -11,7 +11,7 @@ pre { margin-left:8pt; background:#fffff4; padding:5pt; border:1px solid; border
 Hardware-in-the-loop simulation has two ingredients:
 
 <ol>
- <li> the simulation has to be synchronized to <a href="realtime.html">real time</a>;
+ <li> the simulation has to be synchronized to real time;
 
  <li> there has to be a way the simulation can communicate with the real world:
    it has to be able to receive external events, and possibly also to send
@@ -25,6 +25,22 @@ from one simulation scenario to another. It can be as simple as TCP sockets
 or communication with a interface card via interrupts and DMA transfer.
 If you plan to do hardware-in-the-loop simulation, you'll most like have to
 implement your own external communication interface.
+
+<p>
+The implementation is based on <a href="realtime.html">real-time simulation</a>,
+but there is an important difference: during waiting, the scheduler has to
+stay tuned and watch if something of importance arrives on the external
+communication interface. If it does, it immediately has to be converted into
+a simulation event, and injected into the simulation model with a simulation
+time that corresponds to the real time in that moment. The scheduler of course
+has to have a built-in knowledge of how to convert external events into
+simulation messages, and to which module the event has to be delivered.
+
+<p>
+Outbound communication does not necessarily have to go through the scheduler
+object, but because inbound and outbound communications are often not
+independent (e.g. they may be implemented as send and receive operations
+on the same socket), it is often practical to do both via the scheduler.
 
 <p>
 <a href="index.html>Back</a>
