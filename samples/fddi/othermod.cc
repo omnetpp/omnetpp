@@ -1,11 +1,11 @@
-//==========================================================================
-//  OTHERMOD.CC - Simple module definitions for
-//		  Discrete System Simulation in OMNeT++
 //
-//  Simulated system: TUB Northen&Southen FDDI Rings
+// This file is part of an OMNeT++/OMNEST simulation example.
+//
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
 //
 //  Author: Gabor.Lencse@hit.bme.hu
-//==========================================================================
+//
 
 /*--------------------------------------------------------------*
   Copyright (C) 1996,97 Gabor Lencse,

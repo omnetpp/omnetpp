@@ -1,11 +1,11 @@
-//==========================================================================
-//  SSM_IFS.H  -   Definitions & Declarations for SSM I/O interfaces for
-//                 Discrete System Simulation in OMNeT++
 //
-//  Simulated system: TUB Northern&Southern FDDI Rings
+// This file is part of an OMNeT++/OMNEST simulation example.
+//
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
 //
 //  Author: Gabor.Lencse@hit.bme.hu
-//==========================================================================
+//
 
 //--------------------------------------------------------------*
 //  Copyright (C) 1996,97 Gabor Lencse,
