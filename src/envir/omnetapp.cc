@@ -306,6 +306,7 @@ void TOmnetApp::makeOptionsEffective()
 void TOmnetApp::putmsg(const char *s)
 {
      ::printf( "<!> %s\n", s);
+     ::fflush(stdout);
 }
 
 void TOmnetApp::puts(const char *s)

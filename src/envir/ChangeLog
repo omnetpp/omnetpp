@@ -1,3 +1,10 @@
+2002-02-14  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
+
+	* omnetapp.cc (putmsg): Bugfix: if OMNeT++ dies shortly after a
+	call to putmsg (e.g. SIGSEGV), the output might not be written
+	(especially when redirecting to a file). A call to ::fflush()
+	ensures that the stdout buffer is emptied.
+
 2001-10-04 Andras Varga
 
 	* cinifile.h, cinifile.cc: no more upper limit on size of ini file
