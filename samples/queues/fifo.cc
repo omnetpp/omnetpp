@@ -13,6 +13,9 @@ Define_Module( Fifo );
 
 void Fifo::initialize()
 {
+    // give the queue object a name, so that we can refer to it in the "q=" display string tag
+    queue.setName("queue");
+
     // Set up the initial number of jobs in the queue
     int index = this->index(); // get the index no of this fifo queue
     char msgname[32];
@@ -25,7 +28,6 @@ void Fifo::initialize()
         msg->setTimestamp();
         scheduleAt(simTime(), msg);
     }
-
 
     // Arrange for the statistics gathering
     int numcells = par("num_cells");

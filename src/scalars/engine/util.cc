@@ -16,13 +16,7 @@
 #include <stdlib.h>
 #include "util.h"
 
-/**
- * Dictionary-compare two strings, main difference from strcmp()
- * being that integers embedded in the strings compare in
- * numerical order.  In other words, "x10y" comes after "x9y", not
- * before it as it would when using strcmp(). See also Tcl's
- * lsort -dictionary command.
- */
+
 int strdictcmp(const char *s1, const char *s2)
 {
     int casediff = 0;

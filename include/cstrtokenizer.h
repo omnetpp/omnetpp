@@ -21,6 +21,7 @@
 
 #include <string>
 #include <vector>
+#include "defs.h"
 
 /**
  * String tokenizer class, based on strtok().
@@ -39,7 +40,7 @@
  *
  * @ingroup SimSupport
  */
-class cStringTokenizer
+class SIM_API cStringTokenizer
 {
   private:
     char *str; // copy of full string

@@ -24,8 +24,8 @@
 
 using std::ostream;
 
-#define NEDC_VERSION "3.0"
-#define NEDC_VERSION_HEX "0x0300"
+#define NEDC_VERSION "3.1"
+#define NEDC_VERSION_HEX "0x0301"
 
 
 void generateCpp(ostream& out, ostream& outh, NEDElement *node, NEDSymbolTable *symtab)
@@ -652,7 +652,7 @@ void NEDCppGenerator::doModule(CompoundModuleNode *node, const char *indent, int
 
     // generate connections
     generateChildrenWithTags(node, "connections", indent);
-    
+
     // check if there are unconnected gates left
     ConnectionsNode *conns = (ConnectionsNode *)node->getFirstChildWithTag(NED_CONNECTIONS);
     if (!conns || conns->getCheckUnconnected())

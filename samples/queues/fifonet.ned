@@ -31,7 +31,7 @@ module FifoNet
                 num_cells = num_cells,
                 service_time = input,
                 num_init_jobs = input;
-            display: "p=125,152,m;i=block/queue";
+            display: "p=125,152,m;i=block/queue;q=queue";
         sink: Sink;
             display: "p=;i=block/sink";
     connections:

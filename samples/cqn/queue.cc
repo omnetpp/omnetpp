@@ -99,6 +99,8 @@ void Queue::initialize()
         msgServiced = (cMessage *) queue.getTail();
         simtime_t serviceTime = startService( msgServiced );
         scheduleAt( simTime()+serviceTime, endServiceMsg );
+
+        if (ev.isGUI()) displayString().setTagArg("i",1,"gold3");
     }
 }
 

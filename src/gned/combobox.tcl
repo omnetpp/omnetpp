@@ -2172,10 +2172,10 @@ proc ::combobox::HumanizeList {list} {
 foreach command {TabToWindow CancelRepeat ListboxUpDown} {
     if {[llength [info commands ::combobox::tk$command]] == 1} break;
 
-    set tmp [info commands tk$command]
+    set __combobox_tmp [info commands tk$command]
     set proc ::combobox::tk$command
     if {[llength [info commands tk$command]] == 1} {
-        set command [namespace which [lindex $tmp 0]]
+        set command [namespace which [lindex $__combobox_tmp 0]]
         proc $proc {args} "uplevel $command \$args"
     } else {
         if {[llength [info commands ::tk::$command]] == 1} {
@@ -2183,7 +2183,6 @@ foreach command {TabToWindow CancelRepeat ListboxUpDown} {
         }
     }
 }
-unset tmp  ;# patch by Andras
 
 # end of combobox.tcl
 

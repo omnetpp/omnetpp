@@ -30,6 +30,8 @@ OMNeT++ 3.1 (Mar 2005)
     [General] or [Run X], output-scalar-file=
     [General] or [Run X], snapshot-file=
 
+- bitmaps directory place/ renamed to misc/
+
 - nedc has now been removed from the distribution
 
 - The -h option is now understood by both Cmdenv and Tkenv, and handled

@@ -1,7 +1,7 @@
 #
 # The registerPlugin function below arranges certain plugin functions to be
 # called on different Tkenv events. As of now, the only such functions are
-# $pluginname:newNetwork, called after a network got set up, and 
+# $pluginname:newNetwork, called after a network got set up, and
 # $pluginname:inspectorUpdate, called when inspectors should be updated.
 #
 registerPlugin "cpanel"
@@ -139,7 +139,7 @@ proc cpanel_paramChanged {arr name op} {
     if [catch {
         global param
         set value $param($name)
-        #puts "DBG: $name changed to $value"
+        #debug "$name changed to $value"
 
         if {$name=="arrivalRate1"} {
             set modp [opp_modulebypath "fifonet1.gen1"]

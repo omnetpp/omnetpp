@@ -16,7 +16,7 @@
 OMNETPP_ROOT=d:/home/omnetpp
 
 # Version. Should ideally come from the 'Version' file...
-OMNETPP_VERSION=omnetpp-3.0
+OMNETPP_VERSION=omnetpp-3.1
 
 #
 # Directory and version of Tcl/Tk and BLT, for example "8.4" and "2.4".
@@ -97,7 +97,7 @@ SCALARS_IF_POSSIBLE=scalars
 # This option is available at present for Tkenv, GNED, Scalars and Plove.
 # Set the following variables to "yes" to enable embedding Tcl files.
 #
-EMBED_TCL_CODE=no
+EMBED_TCL_CODE=yes
 
 #
 # It is possible to compile GNED, Scalars and Plove as Windows GUI apps
@@ -119,8 +119,8 @@ WITH_PARSIM=yes
 #
 # Choose between debug and release libraries here
 #
-CFLAGS=$(CFLAGS_DEBUG)
-LDFLAGS=$(LDFLAGS_DEBUG)
+CFLAGS=$(CFLAGS_RELEASE)
+LDFLAGS=$(LDFLAGS_RELEASE)
 #CFLAGS=$(CFLAGS_RELEASE)
 #LDFLAGS=$(LDFLAGS_RELEASE)
 
@@ -190,7 +190,9 @@ XML_LIBS=$(LIBXML_LIBS)
 !elseif "$(XMLPARSER)"!="none"
 !error XMLPARSER must be set to "expat", "libxml" or "none" in configuser.vc
 !endif
-SYS_LIBS=
+
+# winsock is needed by libxml as well as the sockets example, maybe in the future by other libs too
+SYS_LIBS=wsock32.lib 
 
 #
 # Tools
@@ -234,11 +236,11 @@ DOXYGEN=$(DOXYGEN_DIR)/bin/doxygen
 #   /debug: build debug executable
 #   /subsystem:console: build console-mode application (also works for GUI apps)
 #
-CFLAGS_DEBUG=/EHsc /GR /FD /Zm250 /MLd /Od /GZ /Zi
-LDFLAGS_DEBUG=/subsystem:console /debug
+CFLAGS_DEBUG=/nologo /EHsc /GR /FD /Zm250 /MLd /Od /GZ /Zi
+LDFLAGS_DEBUG=/nologo /subsystem:console /debug
 
-CFLAGS_RELEASE=/EHsc /GR /FD /Zm250 /ML /O2 /DNDEBUG
-LDFLAGS_RELEASE=/subsystem:console
+CFLAGS_RELEASE=/nologo /EHsc /GR /FD /Zm250 /ML /O2 /DNDEBUG
+LDFLAGS_RELEASE=/nologo /subsystem:console
 
 # LIB_SUFFIX is either .lib or .dll
 LIB_SUFFIX=.lib

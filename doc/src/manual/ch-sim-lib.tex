@@ -231,9 +231,9 @@ ini file entry lets you do that -- check it in section
 \ref{sec:ch-run-sim:general-section}.
 
 If you detect an error condition in your code, you can stop the
-simulation with an error message using the \fname{opp_error()} function.
-\ttt{opp_error()}'s argument list works like \ttt{printf()}: the
-first argument is a format string which can contain \ttt{"%s"}, \ttt{"%d"} etc,
+simulation with an error message using the \fname{opp\_error()} function.
+\ttt{opp\_error()}'s argument list works like \ttt{printf()}: the
+first argument is a format string which can contain \ttt{"\%s"}, \ttt{"\%d"} etc,
 filled in using subsequent arguments.
 
 An example:
@@ -1606,13 +1606,13 @@ collected by the histogram object:
 
 \begin{verbatim}
 FILE *f = fopen("histogram.dat","w");
-histogram.saveToFile( f ); // save the distribution
-fclose( f );
+histogram.saveToFile(f); // save the distribution
+fclose(f);
 
-FILE *f2 = fopen("histogram.dat","r");}
 cDoubleHistogram hist2("Hist-from-file");
-hist2.loadFromFile( f2 ); // load stored distribution
-fclose( f2 );
+FILE *f2 = fopen("histogram.dat","r");
+hist2.loadFromFile(f2); // load stored distribution
+fclose(f2);
 \end{verbatim}
 
 
