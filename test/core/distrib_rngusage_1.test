@@ -65,7 +65,7 @@ for (int rng=0; rng<=2; rng++)
     CHECKSEEDS(poisson(1.0, rng));
     CHECKSEEDS(poisson(35.0, rng));
 }
-ev << "finished";
+ev << "finished\n";
 
 %contains-regex: stdout
 checking uniform\(1.0, 2.0, rng\)

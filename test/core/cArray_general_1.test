@@ -82,7 +82,7 @@ for (i=0; i<100; i++)
     CHECK(a.remove(msg)==NULL);
 }
 
-ev << "OK!";
+ev << "OK!\n";
 
 %contains: stdout
 OK!
