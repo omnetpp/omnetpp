@@ -1,6 +1,6 @@
 <html>
 <style type="text/css">
-h1,h2,h3,p,table,ul {font-family: Geneva, Arial, Helvetica, sans-serif;}
+h1,h2,h3,p,table,ul,ol {font-family: Geneva, Arial, Helvetica, sans-serif;}
 pre { margin-left:8pt; background:#fffff4; padding:5pt; border:1px solid; border-color:#a0a0a0 }
 </style>
 
@@ -10,19 +10,21 @@ pre { margin-left:8pt; background:#fffff4; padding:5pt; border:1px solid; border
 <p>
 Hardware-in-the-loop simulation has two ingredients:
 
-<ul>
+<ol>
  <li> the simulation has to be synchronized to <a href="realtime.html">real time</a>;
 
  <li> there has to be a way the simulation can communicate with the real world:
    it has to be able to receive external events, and possibly also to send
-   events out of the simulation. The implementation of this external
-   communication can be very different from one simulation scenario to another:
-   it can be as simple as TCP sockets (as here) or pipes, it can be raw
-   communication on an Ethernet NIC or an USB port, or communication with a
-   interface card via interrupts and DMA transfer. If you plan to do
-   hardware-in-the-loop simulation, you'll most like have to implement your
-   own external communication interface.
-</ul>
+   events out of the simulation.
+</ol>
+
+<p>
+The implementation of the external communication in (2) can be very different
+from one simulation scenario to another. It can be as simple as TCP sockets
+(as here) or pipes, it can be raw communication on an Ethernet NIC or an USB port,
+or communication with a interface card via interrupts and DMA transfer.
+If you plan to do hardware-in-the-loop simulation, you'll most like have to
+implement your own external communication interface.
 
 <p>
 <a href="index.html>Back</a>
