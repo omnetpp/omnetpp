@@ -244,3 +244,4 @@ Jan 4, 2000
     operator=(char *).
 Jan 13, 2000
   - "-s" option (output file suffix) was added
+------ omnetpp-2.0b3 released ------

@@ -779,4 +779,4 @@ Jan 17,2000
 Jan 25, 2000
  - cArray functions changed to take and return cArray* instead of cArray&.
    This affects add(), addAt(), remove(), get() and op[].
-
+------ omnetpp-2.0b3 released ------

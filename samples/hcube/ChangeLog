@@ -3,3 +3,4 @@ Oct 10, 1999
  - HC prefix added to Generator and Sink modules
 Jan 18, 2000
  - added explicit cast to math expressions with cPar...
+------ omnetpp-2.0b3 released ------

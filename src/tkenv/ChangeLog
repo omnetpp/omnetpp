@@ -331,3 +331,4 @@ Jan 17-18,2000
   - in dialogs.tcl, added back the grab for the STOP dialog of Express Run mode.
     (Those lines got commented out long ago for some reason...) Under win32,
     the app menu is still accessible despite the grab (Tk bug?).
+------ omnetpp-2.0b3 released ------
