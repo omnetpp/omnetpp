@@ -398,7 +398,6 @@ void TOmnetApp::readPerRunOptions(int run_nr)
 
     // get options from ini file
     opt_network_name = ini_file->getAsString2( section, "General", "network", "default" );
-::printf("FIXME !!!DBG:%s\n", (const char *)opt_network_name);
     opt_pause_in_sendmsg = ini_file->getAsBool2( section, "General", "pause-in-sendmsg", false );
     opt_warnings = ini_file->getAsBool2( section, "General", "warnings", true );
     opt_simtimelimit = ini_file->getAsTime2( section, "General", "sim-time-limit", 0.0 );
