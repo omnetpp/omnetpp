@@ -214,8 +214,7 @@ for (cQueue::Iterator queueIter(queue); !queueIter.end(); queueIter++)
 \section{Logging from modules}
 
 The logging feature will be used extensively in the code examples,
-so it is shortly introduced here. It will be covered in detail
-in a later section.
+we introduce it here.
 
 The \ttt{ev}\index{ev} object represents the user interface of the
 simulation.  You can send debugging output to \ttt{ev} with the C++-style
@@ -223,6 +222,7 @@ output operators:
 
 \begin{verbatim}
 ev << "packet received, sequence number is " << seqNum << endl;
+ev << "queue full, discarding packet\n";
 \end{verbatim}
 
 An alternative solution is \fname{ev.printf()}:
@@ -230,6 +230,17 @@ An alternative solution is \fname{ev.printf()}:
 \begin{verbatim}
 ev.printf("packet received, sequence number is %d\n", seqNum);
 \end{verbatim}
+
+The exact way messages are displayed to the user depends on the user
+interface. In the command-line user interface (Cmdenv\index{Cmdenv}),
+it is simply dumped to the standard output. (This output can also be
+disabled from \ttt{omnetpp.ini} so that it doesn't slow down simulation
+when it is not needed.) In Tkenv, the runtime GUI, you can open
+a text output window for every module.
+It is not recommended that you use \fname{printf()} or \fname{cout}
+to print messages -- \ttt{ev} output can be controlled much better
+from \ttt{omnetpp.ini} and it is more convenient to view, using Tkenv.
+
 
 \section{Simulation time conversion}
 
@@ -1982,48 +1993,12 @@ The format and processing of output vector files is described in section
 
 
 
-\section{Tracing and debugging aids}
+\section{WATCHes and snapshots}
 
-\subsection{Displaying information about module activity}
-
-You can have simple modules print textual output for
-debugging\index{debugging} purposes.
-
-The global object called \ttt{ev} represents the user interface of the
-simulation program. You can send data to \ttt{ev}\index{ev} using the
-C++-style I/O operator (\ttt{<}\ttt{<}).
-
-\begin{verbatim}
-ev << "started\n";
-ev << "about to send message #" <<  i << endl;
-ev << "queue full, discarding packet\n";
-\end{verbatim}
-
-The more traditional-looking but functionally equivalent
-\fname{ev.printf()} form also exists.
-
-\begin{verbatim}
-ev.printf("%d packets dropped out of %d\n", drops, total);
-\end{verbatim}
-
-The exact way messages are displayed to the user depends on the user
-interface. In the command-line user interface (Cmdenv\index{Cmdenv}),
-it is simply dumped to the standard output. (This output can also be
-disabled from the ini file so that it doesn't slow down simulation
-when it is not needed.) In windowing user interfaces
-(Tkenv\index{Tkenv}), each simple module can have
-a separate text output window.
-
-The above means that you should \textit{not} use \fname{printf()},
-\fname{cout} \fname{<<} and the like because with Tkenv, their output
-would appear in the terminal window behind the graphical window of the
-simulation application.
-
-
-\subsection{Watches}
+\subsection{WATCHes}
 
 You may want some of your int, long, double, char, etc. variables to
-be inspect-able in Tkenv and to be output into the snapshot
+be inspectable in Tkenv and to be output into the snapshot
 file\index{snapshot file}. In this case, you can create
 \cclass{cWatch} objects for them with the \fmac{WATCH()} macro:
 
@@ -2113,20 +2088,7 @@ from the menu.
 An example of a snapshot file:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-================================================
-|| SNAPSHOT ||
-================================================
-| Of object:    `simulation'
-| Label:        `three-station token ring'
-| Sim. time:    0.0576872457 ( 57ms)
-| Network:      `token'
-| Run no.       1
-| Started at:   Mar 13, 1997, 14:23:38
-| Time:         Mar 13, 1997, 14:27:10
-| Elapsed:      5 sec
-| Initiated by: operator
-================================================
-
+[...]
 
 (cSimulation) `simulation' begin
   Modules in the network:
@@ -2145,7 +2107,7 @@ An example of a snapshot file:
         `sink' #13 (Sink)
 end
 
-(cCompoundModule) `token' begin
+(TokenRing) `token' begin
   #1 params     (cArray) (n=6)
   #1 gates      (cArray) (empty)
   comp[0]          (cCompoundModule,#2)
@@ -2162,79 +2124,7 @@ end
   cable_delay  (cModulePar) 1e-06 (D)
 end
 
-(cModulePar) `token.num_stations' begin
-  Type: L
-  Value: 3
-end
-
-\textit{[...token.num_messages omitted...]}
-
-(cModulePar) `token.ia_time' begin
-  Type:  F
-  Value: truncnormal(0.005,0.003)
-end
-
-\textit{[...rest of parameters \& gates stuff deleted from here...]}
-
-(cCompoundModule) `token.comp[0]' begin
-  parameters    (cArray) (empty)
-  gates         (cArray) (n=2)
-  mac           (TokenRingMAC,#3)
-  gen           (Generator,#4)
-  sink          (Sink,#5)
-end
-
-(cArray) `token.comp[0].parameters' begin
-end
-
-(cArray) `token.comp[0].gates' begin
-  in            (cGate)  <-- comp[2].out
-  out           (cGate)  --> D --> comp[1].in
-end
-
-(cGate) `token.comp[0].in' begin
-  type:  input
-  inside connection:  token.comp[0].mac.phy_in
-  outside connection: token.comp[2].out
-  delay: -
-  error: -
-  data rate: -
-end
-
-(cGate) `token.comp[0].out' begin
-  type: output
-  inside connection: token.comp[0].mac.phy_out
-  outside connection: token.comp[1].in
-  delay: (cPar) 1e-06 (D)
-  error: -
-  data rate: -
-end
-
-(TokenRingMAC) `token.comp[0].mac' begin
-  parameters    (cArray) (n=2)
-  gates         (cArray) (n=4)
-  local-objects (cHead)
-  class-data-members (cHead)
-end
-
-\textit{[...comp[0].mac parameters stuff deleted from here...]}
-
-(cArray) `token.comp[0].mac.gates' begin
-  phy_in        (cGate)  <-- <parent>.in
-  from_gen      (cGate)  <-- gen.out
-  phy_out       (cGate)  --> <parent>.out
-  to_sink       (cGate)  --> sink.in
-end
-
-\textit{[...detailed gate list deleted from here...]}
-
-(cHead) `token.comp[0].mac.local-objects' begin
-  sendqueue-length (cOutVector) (single)
-  send-queue   (cQueue) (n=11)
-end
-
-(cOutVector) `token.comp[0].mac.local-objects.sendqueue-length' begin
-end
+[...]
 
 (cQueue) `token.comp[0].mac.local-objects.send-queue' begin
   0-->1         (cMessage) Tarr=0.0158105774 ( 15ms) Src=#4 Dest=#3
@@ -2265,33 +2155,11 @@ end
     gentime     (cPar) 0.0158106 (D)
 end
 
-(cArray) `token.comp[0].mac.local-objects.send-queue.0-->1.par-vector' begin
-  dest          (cPar) 1 (L)
-  source        (cPar) 0 (L)
-  gentime       (cPar) 0.0158106 (D)
-end
-
-\textit{[...message parameters and the other messages' stuff deleted...]}
-
-(cHead) `token.comp[0].mac.class-data-members' begin
-end
-
-\textit{[...comp[0].gen and comp[0].sink stuff deleted from here...]}
-\textit{[...whole comp[1] and comp[2] stuff deleted from here...]}
-
-(cMessageHeap) `simulation.message-queue' begin
-  1-->0         (cMessage) Tarr=0.0576872457 ( 57ms) Src=#8 Dest=#7
-                (cMessage) Tarr=0.0577201630 ( 57ms) Mod=#8 (selfmsg)
-                (cMessage) Tarr=0.0585677054 ( 58ms) Mod=#4 (selfmsg)
-                (cMessage) Tarr=0.0594939072 ( 59ms) Mod=#12 (selfmsg)
-                (cMessage) Tarr=0.0601010000 ( 60ms) Mod=#7 (selfmsg)
-  1-->2         (cMessage) Tarr=0.0601020000 ( 60ms) Src=#11 Dest=#13
-end
-
-\textit{[...detailed list of message queue contents deleted from here...]}
+[...]
 \end{Verbatim}
 
-
+It is possible that the format of the snapshot file will change to XML
+in future {\opp} releases.
 
 
 

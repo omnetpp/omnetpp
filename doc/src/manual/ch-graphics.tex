@@ -368,6 +368,91 @@ create a submodule of that type \\\hline
 
 
 
+\section{Changing the network graphics at run-time}
+
+%FIXME update
+\subsection{Setting display strings}
+
+Sometimes it is useful to change the appearance or position of
+some components in the network graphics, such as the color of the
+modules\index{module!color}, color/width of connection arrows,
+position of a submodule, etc.
+
+The appearance of nodes and connections is determined by the display
+strings\index{display strings}. Display strings (e.g. \ttt{"p=100,10;i=pc"})
+are initially taken from the NED description.
+You can change the display string of a module or connection arrow
+at run-time by calling methods named \fname{setDisplayString()}.
+The \cclass{cDisplayString} class (discussed in the following sections)
+might be useful for manipulating the display string.
+
+Setting the module's appearance when it is displayed as a component
+within a compound module:
+
+\begin{verbatim}
+setDisplayString("p=100,100;b=60,30,rect;o=red,black,3", true);
+\end{verbatim}
+
+Setting appearance of a compound module when it's displayed as a
+bounding box for its submodules:
+
+\begin{verbatim}
+parentModule()->setDisplayStringAsParent("p=100.....", true);
+\end{verbatim}
+
+The display string of a connection arrow\index{arrow display string}
+is stored in its source gate, so you'll need to write something
+like this:
+
+\begin{verbatim}
+gate("out")->setDisplayString("o=yellow,3");
+\end{verbatim}
+
+The \fname{setDisplayString()} methods additionally take a bool
+argument called \fvar{immediate}. It specifies whether the display
+string change should take effect immediately, or only after processing
+the current event (the default is \textit{immediate=true}). If several
+display string changes are going to be done within one event, then
+\textit{immediate=false} is useful because it reduces the number of
+necessary redraws. \textit{Immediate=false} also uses less stack.  But
+its drawback is that a \fname{setDisplayString()} followed by a
+\fname{send()} would actually be displayed in reverse order (message
+animation first), because message animations are performed immediately
+(actually within the \fname{send()} call).
+
+
+\subsection{The cDisplayString class}
+
+The \cclass{cDisplayString} utility class lets you parse and
+manipulate display strings.
+
+As far as \cclass{cDisplayString} is concerned, a display string
+(e.g. \ttt{"p=100,125;i=cloud"}) is a string that consist of several
+\textit{tags} separated by semicolons, and each tag has a \textit{name}
+and after an equal sign, zero or more \textit{arguments} separated by commas.
+
+The class facilitates tasks such as finding out what tags a display string
+has, adding new tags, adding arguments to existing tags,
+removing tags or replacing arguments. The internal storage method allows
+very fast operation; it will generally be faster than direct string manipulation.
+The class doesn't try to interpret the display string in any way, nor does
+it know the meaning of the different tags; it merely parses the string
+as data elements separated by semicolons, equal signs and commas.
+
+An example:
+
+\begin{Verbatim}
+cDisplayString dispstr("a=1,2;p=alpha,,3");
+dispstr.insertTag("x");
+dispstr.setTagArg("x",0,"joe");
+dispstr.setTagArg("x",2,"jim");
+dispstr.setTagArg("p",0,"beta");
+ev << dispstr.getString();  // result: "x=joe,,jim;a=1,2;p=beta,,3"
+\end{Verbatim}
+
+
+
+
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "usman"
