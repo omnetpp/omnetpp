@@ -15,6 +15,14 @@ toolkit, written by James Ousterhout and many others. Tcl/Tk currently
 maintained at sourceforge.net; it is available from
 http://tcltk.sourceforge.net, and it is distributed under a BSD-like license.
 
+BLT
+---
+BLT is an extension to the Tk toolkit, adding new widgets and miscellaneous 
+commands. It does not require any patching of the Tcl or Tk source files. 
+OMNeT++ uses BLT mainly for its chart, graph and table (multi-column listbox)
+widgets. BLT is available from http://blt.sourceforge.net, and it is 
+distributed under a BSD-like license.
+
 Expat
 -----
 nedtool is linked with Expat, an open-source XML parser originally written
@@ -34,8 +42,8 @@ LibXML/LibXSLT
 LibXML and LibXSLT are an open-source XML parser and XSLT processor, written
 by Daniel Veillard for the GNOME project. The source is available from
 http://www.xmlsoft.org. OMNeT++ is bundled with Win32 binaries maintained
-by Igor Zlatkovic, and currently available from
-http://www.fh-frankfurt.de/~igor/projects/libxml/index.html.
+by Igor Zlatkovic, and currently available from 
+http://www.zlatkovic.com/libxml.en.html
 LibXML, LibXSLT and LibICONV (also a needed component) are distributed
 under the GNU Lesser General Public License (LGPL).
 
