@@ -42,7 +42,7 @@ Define_Module( LoadControl )
 
 void mystrlwr(char *s)
   {
-  while (*s) *s=(char)tolower(*s++);
+  while (*s) {*s=(char)tolower(*s); s++;}
   }
 
 char * RingID2prefix(int RingID)
