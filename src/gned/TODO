@@ -3,9 +3,9 @@ Parse/Generate:
   between "error xxx" and "delay xxx"!
 - comments around display strings are lost
 - display string parsing -- rewrite!!!
-- default comments for modules
 - comments -- choose different approach?
 - ebnf.y changed (gate_mod_L --> mod_L etc.) -- update and test NEDC!!!
+- occasional segmentation fault when parsing for second/third/... time
 - error recovery: TBD
 
 Data struct change:
@@ -15,6 +15,8 @@ Data struct change:
 
 Drawing:
 - arrow.cc was modified!!! update in Tkenv!!!
+- when editing, order of blocks should be enforced!
+   e.g. parameters:, gates:, submodules:, connections: sohuld come in this order
 - if canvas is scrolled, mouse selection works with wrong positions
 - shift+click leaves a dot on canvas
 - paste does not work between canvases
@@ -36,6 +38,7 @@ General:
   for both text and graphics
 - ctrl-mousemove should copy the items on canvas
 - different vertical toolbar when changing from graphics to NED view
+- add default comments for newly created modules?
 
 Manager:
 - local menu on components: Close canvas, Properties
