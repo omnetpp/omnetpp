@@ -353,9 +353,12 @@ void CppExpressionGenerator::doOperator(OperatorNode *node, const char *indent, 
 
     if (!op2)
     {
-        // unary
-        out << node->getName();
+        // unary.
+        const char *name = node->getName();
+        bool ulongcast = !strcmp(name,"~");
+        out << name << (ulongcast ? "(unsigned long)(" : "(double)(");
         generateItem(op1,indent,mode);
+        out << ")";
     }
     else if (!op3)
     {
