@@ -32,7 +32,7 @@ enum ProtocolTypes
 };
 
 // add new values to ProtocolTypes
-enum MoreProtocolTypes updates ProtocolTypes
+enum MoreProtocolTypes extends ProtocolTypes
 {
     CLNP = 3;
     TP4 = 4;
@@ -63,7 +63,7 @@ message BarPacket extends FooPacket
     fields:
         int hopcount;
         double delay;
-        virtual int myvar;
+        abstract int myvar;
 };
 
 // class without base class (NOT derived from cObject!)
@@ -72,8 +72,8 @@ class MyClass
     properties:
         customize = true;
     fields:
-        virtual char type='x';
-        virtual short version=2;
+        abstract char type='x';
+        abstract short version=2;
 }
 
 // class not derived from cObject

@@ -140,22 +140,22 @@ while ($msg =~ s/enum\s+(.+?)\s*{(.*?)};?//s)
     $enumhdr = $1;
     $fields = $2;
 
-    if ($enumhdr =~ /^([^\s]+?)\s*updates\s*([^\s]+?)$/s)
+    if ($enumhdr =~ /^([^\s]+?)\s*extends\s*([^\s]+?)$/s)
     {
         $enumname = $1;
-        $updateenum = $2;
+        $baseenum = $2;
     }
     elsif ($enumhdr =~ /^([^\s]+?)$/s)
     {
         $enumname = $enumhdr;
-        $updateenum = '';
+        $baseenum = '';
     }
     else
     {
         $enumhdr =~ s/\s+/ /sg;
         print STDERR "*** invalid enum declaration syntax '$enumhdr'\n"; $ret=1;
         $enumname = "???";
-        $updateenum = '';
+        $baseenum = '';
     }
 
     @fieldlist = ();
@@ -220,9 +220,9 @@ while ($msg =~ s/enum\s+(.+?)\s*{(.*?)};?//s)
     print CC "    0, NULL\n";
     print CC ");\n\n";
 
-    if ($updateenum ne '')
+    if ($baseenum ne '')
     {
-        print CC "static sEnumBuilder _${updateenum}_${enumname}( \"$updateenum\",\n";
+        print CC "static sEnumBuilder _${baseenum}_${enumname}( \"$baseenum\",\n";
         foreach $fieldname (@fieldlist)
         {
             print CC "    $fieldname, \"$fieldname\",\n";
@@ -307,11 +307,11 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
         {
             $field = $1;
 
-            # virtual
-            if ($field =~ s/^\s*virtual\s+//s) {
-                $isvirtual = 1;
+            # abstract
+            if ($field =~ s/^\s*abstract\s+//s) {
+                $isabstract = 1;
             } else {
-                $isvirtual = 0;
+                $isabstract = 0;
             }
 
             # enum
@@ -350,7 +350,7 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
                 push(@fieldlist,$fieldname);
                 $ftype{$fieldname} = $fieldtype;
                 $fval{$fieldname} = $fieldvalue;
-                $fisvirtual{$fieldname} = $isvirtual;
+                $fisabstract{$fieldname} = $isabstract;
                 $fisarray{$fieldname} = $isarray;
                 $farraysize{$fieldname} = $arraysize;
                 $fenumname{$fieldname} = $fieldenum;
@@ -424,7 +424,7 @@ exit $ret;
 #
 #  %ftype{fieldname}
 #  %fval{fieldname}
-#  %fisvirtual{fieldname}
+#  %fisabstract{fieldname}
 #  %fisarray{fieldname}
 #  %farraysize{fieldname}
 #  %fenumname{fieldname}
@@ -516,8 +516,8 @@ sub prepareForCodeGeneration
 
     foreach $fieldname (@fieldlist)
     {
-        if ($fisvirtual{$fieldname} && !$gap) {
-            print STDERR "*** virtual fields assume 'customize=true' property in '$msgname'\n"; $ret=1;
+        if ($fisabstract{$fieldname} && !$gap) {
+            print STDERR "*** abstract fields assume 'customize=true' property in '$msgname'\n"; $ret=1;
         }
         if ($fval{$fieldname} ne '' && $classtype eq 'struct') {
             print STDERR "*** default values not possible with structs (no constructor is generated!) in '$msgname'\n"; $ret=1;
@@ -660,7 +660,7 @@ sub generateClass
     print H "  protected:\n";
     foreach $fieldname (@fieldlist)
     {
-        if (!$fisvirtual{$fieldname}) {
+        if (!$fisabstract{$fieldname}) {
             if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
                 print H "    $datatype{$fieldname} $var{$fieldname}\[$farraysize{$fieldname}\];\n";
             } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
@@ -694,7 +694,7 @@ sub generateClass
     print H "    // field getter/setter methods\n";
     foreach $fieldname (@fieldlist)
     {
-        if ($fisvirtual{$fieldname}) {
+        if ($fisabstract{$fieldname}) {
             $pure = ' = 0';
         } else {
             $pure = '';
@@ -761,7 +761,7 @@ sub generateClass
     print CC "{\n";
     foreach $fieldname (@fieldlist)
     {
-        if (!$fisvirtual{$fieldname}) {
+        if (!$fisabstract{$fieldname}) {
             if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
                 if ($fval{$fieldname} ne '') {
                     print CC "    for (int i=0; i<$farraysize{$fieldname}; i++)\n";
@@ -796,7 +796,7 @@ sub generateClass
     }
     foreach $fieldname (@fieldlist)
     {
-      if (!$fisvirtual{$fieldname}) {
+      if (!$fisabstract{$fieldname}) {
 	if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
 	  if ($classtype{$ftype{$fieldname}} eq 'cobject') {
 	    print CC "    for (int i=0; i<$farraysize{$fieldname}; i++)\n";
@@ -816,7 +816,7 @@ sub generateClass
     print CC "{\n";
     foreach $fieldname (@fieldlist)
     {
-        if (!$fisvirtual{$fieldname}) {
+        if (!$fisabstract{$fieldname}) {
             if ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
                 print CC "    delete [] $var{$fieldname};\n";
             }
@@ -831,7 +831,7 @@ sub generateClass
     }
     foreach $fieldname (@fieldlist)
     {
-        if (!$fisvirtual{$fieldname}) {
+        if (!$fisabstract{$fieldname}) {
             if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
                 print CC "    for (int i=0; i<$farraysize{$fieldname}; i++)\n";
                 print CC "        $var{$fieldname}\[i\] = other.$var{$fieldname}\[i\];\n";
@@ -851,7 +851,7 @@ sub generateClass
 
     foreach $fieldname (@fieldlist)
     {
-        if (!$fisvirtual{$fieldname}) {
+        if (!$fisabstract{$fieldname}) {
             if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
                 print CC "unsigned int $msgclass\:\:$getsize{$fieldname}() const\n";
                 print CC "{\n";
@@ -922,7 +922,7 @@ sub generateStruct
     print H "{\n";
     foreach $fieldname (@fieldlist)
     {
-        if (!$fisvirtual{$fieldname}) {
+        if (!$fisabstract{$fieldname}) {
             if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
                 print H "    $datatype{$fieldname} $var{$fieldname}\[$farraysize{$fieldname}\];\n";
             } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
