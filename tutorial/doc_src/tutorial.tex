@@ -41,13 +41,13 @@
 
 \section{Introduction}
 \label{sec:introduction}
-OMNeT++ is a discrete event simulation enviroment based on C++. Andr{\'a}s
-Varga is the principle author and  currently maintains it.
+OMNeT++ is a discrete event simulation environment based on C++. Andr{\'a}s
+Varga is the principal author and currently maintains it.
 
  When I
 started to use it for simulating queueing networks, I was somewhat
 awed by the amount of functionality that OMNeT++ provides and the size
-of user manual. Besides this, I had no experience with C++
+of the user manual. Besides this, I had no experience with C++
 programming, which was an extra hurdle in becoming acquainted with the
 power of the tool. Hence I had to invest some time to find out which
 parts and functionalities of OMNeT++ are specially useful for queueing
@@ -69,13 +69,13 @@ programming, at least with C, and has some basic understanding of
 queueing theory, say the first few sections of the chapter on queueing
 theory of~\cite{Ross93}.  Furthermore, I will not explain the details
 of the code. These are  for the reader to study. This may seem like a
-thread, but the code is not that hard to understand.
+thread, but the code is not hard to understand.
 
 Perhaps I should have started by mentioning the advantages of using
-OMNeT++ here. I refrain from doing this at this point of the document,
-but instead postponed it to the end of it. The reason for this is
+OMNeT++. I refrain from doing this at this point of the document,
+but instead postpone it to the end. The reason for this is
 twofold. In the first place the OMNeT++ user manual and the OMNeT++
-homepage mention plenty of examples. IN the second place, I want to
+home page mention plenty of examples. In the second place, I want to
 focus on my personal experiences, and this is less important than
 having you starting to play with OMNeT++ and this demo.
 
@@ -83,7 +83,7 @@ having you starting to play with OMNeT++ and this demo.
 \label{sec:where-get-software}
 You can find OMNeT++ at
 \url{http://www.hit.bme.hu/phd/vargaa/omnetpp.htm} If you are too lazy
-to type this in, a search with \url{goolge.com} on \texttt{omnetpp}
+to type this in, a search with \url{google.com} on \texttt{omnetpp}
 will give an instant hit.
 
 \noindent
@@ -109,27 +109,30 @@ answers your questions.
 \subsection{Structure of this document}
 \label{sec:struct-this-docum}
 First of all, in chapter~\ref{sec:simulating-mm1-fifo}, I want to
-discuss a working exampe of a queueing simulation in OMNeT++.  The
+discuss a working example of a queueing simulation in OMNeT++.  The
 implemented example is the archetypal M/M/1 FIFO queue. The example
 will be slightly baroque in terms of its output--it will be more than
-you will typically need---but I want to show as many features as
-possibly appropriate with this one example.
+you will typically need---but I want to show as many features of
+OMNeT++ as possibly appropriate with this one example.
 Chapter~\ref{sec:next-steps} will hint upon some ways to change the
-way the simulation works; the simulation parameters, the simulation
+way the simulation works, the simulation parameters, the simulation
 output, and the like.  Chapter~\ref{sec:impl-fifo-simul} will be
 devoted to understanding the implementation of the example.  The last
 section lists a few of the interesting ways in which the current
-example can be extended so as to turn it into a full-flegded library
+example can be extended so as to turn it into a full-fledged library
 of queueing simulation tools.
 
 
-\subsection{Acknowledgements}
+\subsection{Acknowledgments}
 \label{sec:acknowledgements}
 Andr{\'a}s: Thanks a lot for OMNeT++.
 
 
 \subsection{Versions}
-\noindent First version: Jan 2001
+\begin{enumerate}
+\item Jan 2001
+\item May 2001
+\end{enumerate}
 
 \section{Simulating the M/M/1 FIFO queue}
 \label{sec:simulating-mm1-fifo}
@@ -137,28 +140,29 @@ Andr{\'a}s: Thanks a lot for OMNeT++.
 \subsection{Getting the simulation to run}
 \label{sec:getting-it-running}
 The first step is of course to install OMNeT++. Before running the
-M/M/1 example it is a good idea to first check that OMNeT++ and all
-the software it depens on is installed properly. I usually test this
-by running one of the standard samples included in the OMNeT++
+M/M/1 example it is a good idea to check that OMNeT++ and all the
+software it depends on is installed properly. I usually test this by
+running one of the standard samples included in the OMNeT++
 distribution, such as the Nim game.
 
-Once you are convinced that OMNeT++ works, run \texttt{opp_makemake -f} in
-the directory in which you put the FIFO demo to make a
-\texttt{Makefile}. The binary \textbf{opp_makemake} should be provided with OMNeT++.
-In case it cannot be found, try running it directly from the
-\texttt{src/utils/} directory of the OMNeT++ distribution. Once you
-have a \texttt{Makefile}, a simple \texttt{make} should do to get the
-binaries for the FIFO simulation.
+Once you are convinced that OMNeT++ works, run \texttt{opp\_makemake
+  -f} in the directory that contains the source files, supposedly
+\texttt{queues},  to make a
+\texttt{Makefile}. The binary \textbf{opp\_makemake} should be
+provided with OMNeT++.  In case it cannot be found, try running it
+directly from the \texttt{src/utils/} directory of the OMNeT++
+distribution. Once you have a \texttt{Makefile}, a simple
+\texttt{make} should do to get the binaries for the FIFO simulation.
 
 A general remark is of importance here. In case you change something in one
 of the files, you should run \texttt{make} again. When you decide to
 copy all files to another directory, or include other files in this
-directory, run \texttt{opp_makemake -f } again. As an aside, run
+directory, run \texttt{opp\_makemake -f } again. As an aside, run
 \texttt{make clean} to remove all object files and binaries.
 
-The binary to run has the same name as the directory that contains the
-the Makefile that was generated by \texttt{opp_makemake}. In my case this
-is \texttt{queues\_}(and then some version number). Run it. If
+The binary to run has the same name as the directory that contains 
+the Makefile that was generated by \texttt{opp\_makemake}. In my case this
+is \texttt{queues}. Run \texttt{queues}. If
 everything works the way it should, a few windows should pop up.
 
 I consider it a bit too much work to type in \texttt{make} and then
@@ -175,7 +179,7 @@ Once the simulation has started you should see two windows:
   run the simulation.
 \end{itemize}
 
-Double click on the fifo widget on the canvas in the graphics window.
+Double click on the FIFO widget on the canvas in the graphics window.
 A new box should appear, called \texttt{(Fifo) fifonet.fifo[0]}. Click
 on \texttt{Objects/Watches}.  You will see a few lines with text
 appear. The line with the string \texttt{(cQueue)} contains the word
@@ -190,22 +194,22 @@ yellow canvas will come up. This will contain a simple plot of the
 number of jobs in the system, the one in service included.
 
 Now you can start the simulation by pressing the \texttt{RUN}-button
-in the \texttt{OMNeT++/TKenv} window. In the graphics window you should
-see jobs hopping from the generator to the queue, and from the queue
-to the sink.  Press \texttt{STOP} after several seconds. The first
-line of the \texttt{(Fifo) fifonet.fifo[0]} window will now, with probability
-$ > 0$, show that the queue contains some customers. When you double
-click on this line, another window will tell you which jobs are currently
-waiting in the queue.
+in the \texttt{OMNeT++/TKenv} window. In the graphics window you
+should see jobs hopping from the generator to the queue, and from the
+queue to the sink.  Press \texttt{STOP} after several seconds. The
+first line of the \texttt{(Fifo) fifonet.fifo[0]} window will now,
+with probability $ > 0$, show that the queue contains some customers.
+When you double click on this line, another window will tell you which
+jobs are currently waiting in the queue.
 
-This may seems not very interesting from a
-queueing perspective; the M/M/1 queueing model assumes that
-customers do not have real identity---they only differ by their
-service requirements and arrival time. However, when studying more
-complicated models, for instance when jobs have different type, this
-information becomes relevant. It becomes even more important if you
-want to study protocol and queue interactions, such as when multiple
-TCP sources share buffered resources, i.e., routers.
+To be able to distinguish between individual customers may seems not
+very interesting from a queueing perspective; the M/M/1 queueing model
+assumes that customers do not have real identity---they only differ by
+their service requirements and arrival time. However, when studying
+more complicated models, for instance when jobs have different type,
+this information becomes relevant. It becomes even more important if
+you want to study protocol and queue interactions, such as when
+multiple TCP sources share buffered resources, i.e., routers.
 
 The histogram window should now contain a few black bars. When you put
 your mouse on one, it will change color. (Mine becomes gray.) There is
@@ -221,7 +225,7 @@ and a textual one, called \texttt{Object}. I discussed the graphical
 one above. The text information will provide you with aggregate statistics
 such as the mean number of jobs found upon arrival, etc.
 
-The last step will be to press \texttt{EPRESS} in the
+The last step will be to press \texttt{EXPRESS} in the
 \texttt{OMNeT++/TKenv} window; I leave the other
 buttons for you to discover. In fact, my best general advise is to
 press on any buttons you may see, and find out what they do. Do not
@@ -252,21 +256,21 @@ The directory will now contain a few new files as well.
   contained in this file too.
 \item \texttt{fifo.vec} This file contains info about the dynamics of
   the number of jobs in the system. You should process this with the
-  OMNeT++ tool \texttt{plove}. Chapter 9 contains the instructions.
-  Briefly, start up \texttt{plove}. The left most button allows you to
-  \texttt{load} the file. Send it to the right window with the arrow
-  button in the middle. Press \texttt{PLOT!}. Now \texttt{gnuplot}
-  should fire up and show the dynamics of the job distribution. You
-  may have to fiddle around with the \texttt{options} to get a nice
-  graph.
+  OMNeT++ tool \texttt{plove}. Chapter 9 of the user manual contains
+  the instructions.  Briefly, start up \texttt{plove}. The left most
+  button allows you to \texttt{load} the file. Send it to the right
+  window with the arrow button in the middle. Press \texttt{PLOT!}.
+  Now \texttt{gnuplot} should fire up and show the dynamics of the job
+  distribution. You may have to fiddle around with the
+  \texttt{options} to get a nice graph.
 \end{itemize}
 
 In general you can process these files, with \texttt{awk} for instance,
 or another C++ program for that matter, to postprocess it. You might
-instead want to do the postprocessing  in the function
+instead want to do the post-processing  in the function
 \texttt{Fifo::finish}, about which I will talk later. Here comes in
-the some of the power    OMNeT++ using  a programming language:
-you can incorporate your own postprocessing functions in the
+the some of the power of OMNeT++'s use of   a real programming language:
+you can incorporate your own post-processing functions in the
 simulation itself, in case you want to.
 
 \paragraph{}
@@ -306,8 +310,8 @@ inverse of the parameters you specify, e.g.
 expected service duration $ = 1/\mu = 2$.
 
 You cannot only change this via the \texttt{omnetpp.ini} file. Another
-possiblity is to press \texttt{Params} in the \texttt{(Fifo)
-  fifonet.fifo[0]} window. Click for instance on the the line with
+possibility is to press \texttt{Params} in the \texttt{(Fifo)
+  fifonet.fifo[0]} window. Click for instance on the  line with
 \texttt{service\_time}. Now you edit the field in the window that will
 appear, for instance try another distribution, see the next paragraph.
 Do not forget to press the \texttt{Enter} key on your keypad to make
@@ -325,14 +329,14 @@ should define your new distribution in the file
 \texttt{distributions.cc}. I have already provided a few simple
 examples.  Note that you can use the standard distributions of OMNeT++
 in your new functions right away. Once you have implemented your new
-distribution, you can simply use its name in \texttt{omnetpp.ini} as
+distribution, you can simply use its name in \texttt{omnetpp.ini} and
 pass appropriate parameters to it. Explicitely, if you want to use, as
 an example, the distribution \texttt{perturbedExponential}, which you
 can find in the file \texttt{distribution.cc} as
 the service distribution, than you should use the following line in
 \texttt{omnetpp.ini}:
 \texttt{fifonet.fifo[0].service\_time = perturbedExponential(2,1)}
-Take any parametersf you like, for this distribution, but check out
+Take any parameters you like, for this distribution, but check out
 the code first in case you do not want to be surprised during the
 simulation.
 
@@ -344,7 +348,7 @@ current value 1 to say $k$, will put $k$ queues in tandem. You should
 as well change the line
  \texttt{fifonet.fifo[0].service\_time = exponential(2)}  to
 \texttt{fifonet.fifo[*].service\_time = exponential(2)}, that is, the
-\texttt{1} has to  change to \texttt{*} to reference all fifos, instead of
+\texttt{0} has to  change to \texttt{*} to reference all fifos, instead of
 just the first one with id zero. I actually chose a slightly different
 approach here. First I give \texttt{fifo[0]} its value, and then the
 others by means of the \texttt{*}.
@@ -380,7 +384,7 @@ interested in building other ones, go ahead.
 
 \paragraph{Changing the random number generator}
 \label{sec:chang-rand-numb}
-For the more suspicious minds, section 6.9 of the OMNeT++
+For the more suspicious of you, section 6.9 of the OMNeT++
 user manual discusses the random number generator. You can replace
 this with your own if you want this.
 
@@ -411,7 +415,7 @@ USERIF\_LIBS=\$(CMDENV\_LIBS)
 
 Do a \texttt{make clean} and \texttt{make} to remove all window
 related code from the simulation executable. Now it should work. Be
-aware that a new \texttt{opp_makemake -f} reverts the makefile to the old
+aware that a new \texttt{opp\_makemake -f} reverts the makefile to the old
 situation, i.e., the simulation with tk windows.
 
 You will want these options in the following section of
@@ -436,7 +440,7 @@ Before starting the main subject of this chapter, I need to define one
 concept: a \emph{functional entity}. A functional entity is a part of
 a simulation that carries out a specific action on a job, or a
 message. For example, a server or a message generator are functional
-units. They are, so to say the essential functional units that take
+entities. They are, so to say the essential functional units that take
 care of one process step in the lifetime of a job, or message. The
 implementation of such entities will be called \emph{modules}. Now
 back to the simulator.
@@ -460,10 +464,10 @@ simulations. I found the following approach the most useful. First I
 run it, of course, to get an understanding of where the various
 entities reside and how they exchange jobs. Then I work through the
 files belonging to  each
-entity  separately. I start with reading the \texttt{.ned} files to
+entity  separately. I start with reading the \texttt{.ned} file to
 understand what goes in and out of a module, and the parameters it
 will need.  Then I give the header files a brief look to become
-familiar with the module specific internal variables and functions.
+familiar with the module's specific internal variables and functions.
 Finally I study the C++ code belonging to the  module. Once I somewhat
 understand what it  does, I tackle the next module in the
 chain, that is, the module that gets its messages from the one  I
@@ -472,7 +476,7 @@ of what was going on than by first working through all \texttt{.ned}
 files, than all the C++ files, etc.
 
 In this document I will not, however, follow the above suggestion,
-mainly for brievity. Here I only want to illustrate certain key points
+mainly for brevity. Here I only want to illustrate certain key points
 of the simulation, and leave the studying for you.
 
 \subsection{The \texttt{.ned} files}
@@ -481,15 +485,16 @@ Each entity in a simulation needs to communicate via \emph{messages}
 with itself and other entities. Messages can be used for various
 purposes. One is to represent jobs that need service at queues.
 Another is to convey information of the entity's state to itself in
-the future, or to other entities. For instance, the fifo example
-contains three entities: a source module, a fifo module and a sink
-module. The source module generates messages that represent jobs.
-These job-messages are sent to the fifo module. This in turn delays
-the messages according to the present queue, then services them, and
-finally send the messages to the sink module. The sink module
-processes these messages to extract some final statistics. The sink is
-where the messages leave the queueing network.  The sink module
-releases as well the memory allocated to the job messages.
+the future, or to other entities.
+
+Specifically, the fifo example contains three entities: a source module,
+a fifo module and a sink module. The source module generates messages
+that represent jobs.  These job-messages are sent to the fifo module.
+This in turn delays the messages according to the present queue, then
+services them, and finally sends the messages to the sink module. The
+sink module processes these messages to extract some final statistics.
+The sink is where the messages leave the queueing network.  The sink
+module releases as well the memory allocated to the job messages.
 
 Clearly all these modules need in- and output gates to receive and
 send messages. The \texttt{.ned} file specifies these gates. In our
@@ -529,35 +534,39 @@ with certain interarrival times distributed according to some
 specified probability distribution. These jobs are represented by a
 message, so that in fact the generator generates messages. Then it
 sends these messages out of its output gate. If you will have a look
-at \texttt{gen.cc} you will see that it will produce
+at \texttt{gen.cc} you will see that it will produce in total
 \texttt{fifonet.gen.num\_messages } messages, each separated some time
 \texttt{ia\_time} apart. These two parameters are defined in the file
 \texttt{omnetpp.ini}.
 
-\texttt{fifo.cc} contains the heart of the simulation. Here jobs
-arrive, and depending on whether the server is idle or not, have to
-spend time in the queue. Lets first consider the function
-\texttt{Fifo::handleMessage} and see what it does. Suppose the server
-is busy. Then the event stack of the simulator should contain an event
-that indicates when the job's service is supposed to be finished.  If
-you think a bit about how to implement such events, taking into
-account that all events are related to messages, you will understand
-that the server should send itself an \texttt{endService} message at
-the moment a job's service starts, to indicate when this job's service
-should stop.  This \texttt{endService} message will be put on the
-event stack by the event scheduler (not to be confused with the
-queueing scheduler!). At some point in time, the event scheduler will
-remove this message from the stack, and will give it to
-the fifo module.  Once this module receives the \texttt{endService}
-message, it knows that the job's service has ended, and that it should
-send it to the sink. When the queue is empty after the departure, the
-server should just wait. On the other hand, if there are jobs in
-queue, it should take the job in front of the queue, and start another
-service period. Now have a look at \texttt{fifo.cc} and think deeply
-about it until you understand what is exactly going on. Remember well
-that a simulation entity has no other means to communicate with itself
-in the future than via self-messages, and that these messages have to
-be put on the internal event stack.
+\texttt{fifo.cc} contains the heart of the simulation. Once you
+understand this code, you have mastered the most important aspects of
+OMNeT++. It may be somewhat hard, but keep on, other people could
+understand it too.
+
+At the fifo queue jobs arrive, and depending on whether the server is
+idle or not, have to spend time in the queue. Lets first consider the
+function \texttt{Fifo::handleMessage} and see what it does. Suppose
+the server is busy. Then the event stack of the simulator should
+contain an event that indicates when the job's service is supposed to
+be finished.  If you think a bit about how to implement such events,
+taking into account that all events are related to messages, you will
+understand that the server should send itself an \texttt{endService}
+message at the moment a job's service starts, to indicate when this
+job's service should stop.  This \texttt{endService} message will be
+put on the event stack by the event scheduler (not to be confused with
+the queueing scheduler!). At some point in time, the event scheduler
+will remove this message from the stack, and will give it to the fifo
+module.  Once this module receives the \texttt{endService} message, it
+knows that the job's service has ended, and that it should send it to
+the sink. When the queue is empty after the departure, the server
+should just wait. On the other hand, if there are jobs in queue, it
+should take the job in front of the queue, and start another service
+period. Now have a look at \texttt{fifo.cc} and think deeply about it
+until you understand what is exactly going on. Remember well that a
+simulation entity has no other means to communicate with itself in the
+future than via self-messages, and that these messages have to be put
+on the internal event stack.
 
 \texttt{fifo.cc} contains four more functions. The functionality of
 \texttt{Fifo::initialize} should be clear from its implementation. The
@@ -569,7 +578,7 @@ service duration is generated---and when it leaves. This provides
 interesting flexibility with respect to queueing simulation. For
 instance, in multi-class networks, jobs may change class from service
 station to service station, or a fraction may be sent back for another
-processing phase at the server, etc. etc. Do not be tempted too easily
+processing step at the server, etc. etc. Do not be tempted too easily
 to handle this kind of functionality in the \texttt{handleMessage}
 function. It can become quite complex.
 
@@ -580,7 +589,7 @@ possible in \texttt{fifo.cc}. This is of course by no means a generic
 property of OMNeT++, but just a consequence of the current
 implementation of the queueing entity.
 
-\section{Interesting extentions}
+\section{Interesting extensions}
 \label{sec:inter-extent}
 There are a couple of interesting extensions to make to this fifo
 example. Let me number up a few.
@@ -597,7 +606,7 @@ that I can take it up in the distribution.
 
 \section{Why use OMNeT++ for queueing system simulation?}
 \label{sec:why-use-omnet++}
-Up to a few month ago, I worked for a huge telecommunication
+Up to a few month ago, I worked for a large telecommunication
 company. (I only recently started to work for a university. Hence my
 time to write this document, and do some good to the global community)  In
 one of the projects, we tried to reduce the convergence
@@ -609,7 +618,7 @@ the  network and equipment with a  simulator. As the developers wrote the
 protocol  in C++ we wanted to use this  code, as it would be
 implemented in real  equipment, and carry it over with minor modifications
  to the simulation environment. Besides this we needed a graphical
-environment to see whether the protocol messages travelled in the way
+environment to see whether the protocol messages traveled  the way
 we wanted, and ended up in the right queues. OMNeT++ provided this,
 and more.
 
@@ -650,7 +659,7 @@ in my opinion, of running queueing simulations within OMNeT++.
   etc.
 \item It is under GPL license.
 \item OMNeT++ enforces `separation of concerns'. You have to specify
-  the separate functional units, such as queues, schedulers, job
+  the separate functional entities, such as queues, schedulers, job
   generators, separately from routing functionality, that is the
   definition of the network topology.
 \end{itemize}
@@ -678,7 +687,7 @@ change some of the service rates, you can easily do this in the
 Let me stop here, and let you convince yourself about the uses of
 OMNeT++.
 
-\bibliography{biblio_nicky}
+\bibliography{tutorial.bbl}
 \bibliographystyle{alpha}
 
 
