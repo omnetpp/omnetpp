@@ -1119,9 +1119,9 @@ string_expr
 
 boolconst_expr
         : _TRUE
-                {NEDC( $$ = make_literal_expr(TYPE_BOOL,jar_strdup("TRUE")); )}
+                {NEDC( $$ = make_literal_expr(TYPE_BOOL,jar_strdup("true")); )}
         | _FALSE
-                {NEDC( $$ = make_literal_expr(TYPE_BOOL,jar_strdup("FALSE")); )}
+                {NEDC( $$ = make_literal_expr(TYPE_BOOL,jar_strdup("false")); )}
         ;
 
 numconst_expr
