@@ -50,7 +50,7 @@ void cOutFileMgr::setFileName(const char *s)
    if (p)
    {
        char runno[10];
-       sprintf(runno, "%02.2d", simulation.runNumber());
+       sprintf(runno, "%.2d", simulation.runNumber());
        for (int i=0; runno[i]!='\0'; i++)
        {
           if (p[i]=='#')

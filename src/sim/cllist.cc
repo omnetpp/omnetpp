@@ -79,7 +79,10 @@ void cLinkedList::clear()
         tmp = headp->next;
         if (dupfunc || itemsize>0) // we're expected to do memory mgmt
         {
-            if (delfunc) delfunc(headp->item); else delete headp->item;
+            if (delfunc)
+                delfunc(headp->item);
+            else
+                delete (char *)headp->item; // delete void* is no longer legal :-(
         }
         delete headp;
         headp=tmp;
