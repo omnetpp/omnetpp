@@ -1,3 +1,7 @@
+2004-12-19  Andras Varga
+
+	* cstruct.h: added baseclassname, baseclassdesc
+
 2004-12-16  Andras Varga
 
 	* cobject.h: setName() made virtual (needs to be overridden in cModule)

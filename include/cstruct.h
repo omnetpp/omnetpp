@@ -19,6 +19,7 @@
 #ifndef __CSTRUCT_H
 #define __CSTRUCT_H
 
+#include <string>
 #include "cobject.h"
 #include "cenum.h"
 class sFieldWrapper;
@@ -61,6 +62,8 @@ class SIM_API cStructDescriptor : public cObject
     };
 
   protected:
+    std::string baseclassname;
+    cStructDescriptor *baseclassdesc;
     void *p;
 
   protected:
@@ -85,7 +88,7 @@ class SIM_API cStructDescriptor : public cObject
     /**
      * Constructor. The argument is the client object.
      */
-    cStructDescriptor(void *_p=NULL) {p=_p;}
+    cStructDescriptor(const char *_baseclassname=NULL);
 
     /**
      * Copy constructor.
@@ -127,7 +130,7 @@ class SIM_API cStructDescriptor : public cObject
     /**
      * Sets client object.
      */
-    void setStruct(void *_p)  {p=_p;}
+    void setStruct(void *_p);
 
     /**
      * Returns client object.
