@@ -35,7 +35,7 @@ class Channel
         std::deque<Datum> buffer;
         Node *consumernode;
     public:
-        Channel() {nomorewrites=false;}
+        Channel() {nomorewrites=false;consumernode=NULL;}
         ~Channel() {}
 
         Node *consumerNode() const {return consumernode;}

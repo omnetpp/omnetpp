@@ -181,19 +181,25 @@ proc createVectorScatterPlot {{idlist {}}} {
 
         set graph [createBltGraph graph]
 
+        $graph axis configure x -title $vec($xid,title)
+
         set i 0
         foreach id $idlist {
-            set xvecname "vx$elemcounter"
-            set yvecname "vy$elemcounter"
-            incr elemcounter
+            if {$id!=$xid} {
+                set xvecname "vx$elemcounter"
+                set yvecname "vy$elemcounter"
+                incr elemcounter
 
-            opp_makebltvector $arraybuilder($id) $xvecname $yvecname
-            set color [getChartColor $i]
-            set symbol [getChartSymbol $i]
-            $graph element create line$id -x $xvecname -y $yvecname -color $color -label $vec($id,title)
-            $graph element config line$id -symbol $symbol -pixels 5
-            incr i
+                opp_makebltvector $arraybuilder($id) $xvecname $yvecname
+                set color [getChartColor $i]
+                set symbol [getChartSymbol $i]
+                $graph element create line$id -x $xvecname -y $yvecname -color $color -label $vec($id,title)
+                $graph element config line$id -symbol $symbol -pixels 5 -linewidth 0
+                incr i
+            }
         }
+
+        idleCursor
 
     } errmsg] {
         idleCursor

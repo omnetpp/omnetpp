@@ -75,25 +75,22 @@ void XYPlotNode::process()
     for (int i=0; i<yin.size(); i++)
     {
         Channel *ychan = yin[i]();
+        ASSERT(ychan->eof() || ychan->length()>0);
+        const Datum *yp;
+        Datum d;
+        while ((yp=ychan->peek())!=NULL && yp->x < xd.x)
+        {
+            ychan->read(&d,1);  // discard if timestamps not equal
+        }
+        while ((yp=ychan->peek())!=NULL && yp->x == xd.x)
+        {
+            ychan->read(&d,1);
+            d.x = xd.y;
+            out[i]()->write(&d,1);
+        }
         if (ychan->eof())
         {
             out[i]()->close();
-        }
-        else
-        {
-            ASSERT(ychan->length()>0);
-            const Datum *yp;
-            Datum d;
-            while ((yp=ychan->peek())!=NULL && yp->x < xd.x)
-            {
-                ychan->read(&d,1);
-            }
-            while ((yp=ychan->peek())!=NULL && yp->x == xd.x)
-            {
-                ychan->read(&d,1);
-                d.x = xd.y;
-                out[i]()->write(&d,1);
-            }
         }
     }
 }
