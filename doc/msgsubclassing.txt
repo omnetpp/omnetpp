@@ -4,6 +4,12 @@ The message subclassing compiler is src/nedc/msgc.pl; msgtest.ned in the same
 directory is an example NED file that you can try to get an impression what
 the whole thing is about.
 
+To try message subclassing, you have to re-run configure with the
+   --enable-nedc-subcl
+command-line argument.
+
+samples/dyna2 demonstrates the use if message subclassing.
+
 Sorry, there's currently no support for this stuff -- use at your own risk
 if you find it useful!
 

@@ -12,6 +12,21 @@ Ulrich Kaage in Karlsruhe who built up a server infrastructure (CVS,
 bugtracker, Wiki, etc.) and was restless in testing and improving OMNeT++.
 Thanks Uli! This is the first release since the CVS went online last year.
 
+This release contains experimental support for the long-demanded feature known
+as 'message subclassing'. This means that C++ message classes can be generated
+from NED code, replacing the practice of dynamically adding cPar objects to
+messages. Data fields added via the subclassing mechanism are inspectable in
+Tkenv. The new NED syntax is experimental; the compiler extensions have been
+temporarily implemented in Perl. The new Dyna2 sample simulation demonstrates
+this feature. See doc/msgsubclassing.txt for more information.
+
+The simulation kernel now has an indexed and hyperlinked on-line API reference,
+generated from header file comments. (We're using Doxygen.) At the same time,
+the Reference chapter in the manual was deleted.
+
+Distributed simulation can now use the MPI library which is more readily
+available nowadays than PVM. (Code contributed by Eric Wu).
+
 The simulation kernel was made const-correct; because of this, older code
 may need changes (especially where one didn't use the Module_Class_Members()
 macro to define module classes.) There were other changes on the simulation
@@ -21,39 +36,26 @@ cGate::setDisplayString() was fixed: changes are now immediately reflected
 in the Tkenv graphics as they should. cModule's display string methods were
 reorganized: the displayString(int type) method was split into displayString()
 and displayStringAsParent(), eliminating the type parameter. Similar change
-was made to the set...() methods. (Old methods remained but were made
+was made to the set...() methods. (Old methods remained but are now
 deprecated.)  All setDisplayString() methods are now compatible with
 auto-layouted modules (randomly placed modules won't jump around in Tkenv
 after each display update).
 
 New methods: opp_nextrand(long& seed); opp_strlen(..); opp_strprettytrunc(..);
-opp_mkindexedname(..) (was called indexedname()). fullName() no longer uses
-a static buffer and with fullPath(), it is possible to avoid static buffers
-(a fullPath(buffer,buflen) method was added).
+opp_mkindexedname(..) (the latter was formerly called indexedname()).
+fullName() no longer uses a static buffer; with fullPath(), it is possible
+to avoid static buffers by using the new fullPath(buffer,buflen) method.
 
 In NED, an expression may now refer to a submodule parameter with the following
-syntax: submod.par or submod[index].par. A limitation is that index might not
-be an expression itself.
-
-The simulation kernel now has an indexed and hyperlinked on-line API reference,
-generated from header file comments. (We're using Doxygen.) At the same time,
-the Reference chapter in the manual was deleted.
-
-Distributed simulation can now use the MPI library which is more readily
-available nowadays than PVM. (Code contributed by Eric Wu).
+syntax: submod.par or submod[index].par. A limitation is that the index
+might not be an expression itself.
 
 Foundations of a simulation kernel regression test suite have been laid
 down. The test/ subdirectory contains a few initial test cases that rely
 on the new opp_test tool. The test tool can be very well used to build
 model tests, too. Also, as tests tend to be compact and easy to write, the
 test tool is also excellent for experimenting with OMNeT++ library classes.
-
-Implementation of the feature known as 'message subclassing' has begun.
-The feature means C++ message classes can be generated from NED code,
-replacing the practice of dynamically adding cPar objects to messages;
-fields added via the subclassing mechanism are inspectable in Tkenv. The
-new NED syntax is experimental; the compiler extensions have been temporarily
-implemented in Perl. The new Dyna2 sample simulation demonstrates this feature.
+See doc/opp_test.txt for details.
 
 The Envir library has been extended with a plugin mechanism: one can now
 plug in code that actually handles recording output vectors (e.g. one can
@@ -91,8 +93,8 @@ slashes/backslashes on Windows, and also GNED's problems with command-line
 arguments.
 
 The makefiles now use a new Perl-based dependency generator which works on all
-platforms. opp_makemake: added -L option; removed Makefile.in from the depend
-target.
+platforms. opp_makemake: added -L option, and removed Makefile.in from the
+'depend' target.
 
 
 In the OMNeT++ 2.1 release (May 2001)
