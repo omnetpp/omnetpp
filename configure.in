@@ -391,12 +391,12 @@ else
   probefile=__probe__
   echo '' >$omnetpp_bin_dir/$probefile
   chmod +x  $omnetpp_bin_dir/$probefile
-  if $probefile >/dev/null 2>/dev/null; then
+  if ($probefile) >/dev/null 2>/dev/null; then
     echo "Your PATH contains $OMNETPP_BIN_DIR. Good!"
   else
     cat << EOT
 
-PROBLEM: your PATH doesn't contain $OMNETPP_BIN_DIR!
+Warning: your PATH doesn't contain $OMNETPP_BIN_DIR!
 Add the following line to your startup file:
   export PATH=\$PATH:$OMNETPP_BIN_DIR  # .(bash_)profile if you use sh/bash
   setenv PATH \$PATH:$OMNETPP_BIN_DIR  # .cshrc if you use csh,tcsh etc.
@@ -417,7 +417,7 @@ if test "$build_shared_libs" = yes -a "$cygwin" != yes; then
   else
     cat << EOT
 
-PROBLEM: you selected shared libraries in configure.user, but your
+Warning: You selected shared libraries in configure.user, but your
 LD_LIBRARY_PATH doesn't seem to contain $OMNETPP_LIB_DIR!
 
 So that the dynamic linker can find the OMNeT++ shared libs, you either have
