@@ -428,9 +428,6 @@ void cSimulation::deleteNetwork()
     if (runningmodp!=NULL)
         throw new cException("Attempt to delete network during simulation");
 
-    // clear remaining messages
-    msgQueue.clear();
-
     // delete all modules recursively
     systemmodp->deleteModule();
 
@@ -445,6 +442,9 @@ void cSimulation::deleteNetwork()
     last_id = 0;
 
     networktype = NULL;
+
+    // clear remaining messages (module dtors may have cancelled & deleted some of them)
+    msgQueue.clear();
 
 #ifdef DEVELOPER_DEBUG
     printf("DEBUG: after deleteNetwork: %d objects\n", cObject::liveObjectCount());
