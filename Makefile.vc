@@ -114,52 +114,51 @@ utils:
 
 dyna:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\dyna && $(MAKE) $(MOPTS) -f $@.mak
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\dyna && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 fddi:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\fddi && $(MAKE) $(MOPTS) -f $@.mak
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\fddi && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 fifo1:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\fifo1 && $(MAKE) $(MOPTS) -f $@.mak
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\fifo1 && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 fifo2:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\fifo2 && $(MAKE) $(MOPTS) -f $@.mak
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\fifo2 && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 hcube:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\hcube && $(MAKE) $(MOPTS) -f $@.mak
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\hcube && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 hist:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\hist && $(MAKE) $(MOPTS) -f $@.mak
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\hist && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 nim:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\nim && $(MAKE) $(MOPTS) -f $@.mak
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\nim && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 token:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\token && $(MAKE) $(MOPTS) -f $@.mak
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\token && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 dyna2:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\dyna2 && $(MAKE) $(MOPTS) -f $@.mak
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\dyna2 && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 topo:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\topo && $(MAKE) $(MOPTS) -f $@.mak
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\topo && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 demo:
 	@echo ===== Compiling $@ ====
-	echo @$(WISH:/=\) -f $(OMNETPP_SAMPLES_DIR)/demo/rundemo > $(OMNETPP_SAMPLES_DIR:/=\)\demo\rundemo.bat
 	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\demo && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 thetutorial:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_TUTORIAL_DIR:/=\)\queues && $(MAKE) $(MOPTS) -f queues.mak
+	cd /d $(OMNETPP_TUTORIAL_DIR:/=\)\queues && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 
 #
@@ -177,7 +176,7 @@ manual:
 #
 # Tests
 #
-tests: check-env libs progs 
+tests: check-env libs progs
 	@echo ===== Running tests ====
         @cd /d $(OMNETPP_TEST_DIR:/=\) && call runtest.cmd
 
@@ -199,7 +198,7 @@ check-env:
 	@cd /d $(_TCL_LIBRARY:/=\) || echo ERROR: The directory $(_TCL_LIBRARY) does not exist. TK_DIR or TK_VER defined in configuser.vc might be wrong. && exit 1
 
 configsamples:
-	@echo ===== Configuring .dsp and .mak files for samples =====
+	@echo ===== Configuring .dsp files for samples =====
 	cd /d $(OMNETPP_SAMPLES_DIR:/=\) && cc2cpp.bat
 	for %%i in ( $(SAMPLES) ) do \
 	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && \
@@ -209,17 +208,9 @@ configsamples:
 	    $(REPLACE:/=\) -          - "@TK_LIB_PATH@" "$(TK_LIB_DIR)" | \
 	    $(REPLACE:/=\) -          - "@TCL_LIB@"     "$(TCL_LIB)"    | \
 	    $(REPLACE:/=\) -    %%i.dsp "@TK_LIB@"      "$(TK_LIB)"
-	for %%i in ( $(SAMPLES) ) do \
-	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && \
-	    $(REPLACE:/=\) %%i.mak.in - "@OMNETPP_INCL_DIR@" "$(OMNETPP_INCL_DIR)" | \
-	    $(REPLACE:/=\) -          - "@OMNETPP_LIB_DIR@"  "$(OMNETPP_LIB_DIR)"  | \
-	    $(REPLACE:/=\) -          - "@OMNETPP_BIN_DIR@"  "$(OMNETPP_BIN_DIR:/=\)"  | \
-	    $(REPLACE:/=\) -          - "@TK_LIB_PATH@" "$(TK_LIB_DIR)" | \
-	    $(REPLACE:/=\) -          - "@TCL_LIB@"     "$(TCL_LIB)"    | \
-	    $(REPLACE:/=\) -    %%i.mak "@TK_LIB@"      "$(TK_LIB)"
 
 configtutorial:
-	@echo ===== Configuring .dsp and .mak files for tutorial/queues =====
+	@echo ===== Configuring .dsp files for tutorial/queues =====
 	-cd /d $(OMNETPP_TUTORIAL_DIR:/=\)\queues && ren *.cc *.cpp 2>nul
 	cd /d $(OMNETPP_TUTORIAL_DIR:/=\)\queues && \
 	$(REPLACE:/=\) queues.dsp.in - "@OMNETPP_INCL_DIR@" "$(OMNETPP_INCL_DIR)" | \
@@ -228,13 +219,6 @@ configtutorial:
 	$(REPLACE:/=\) -             - "@TK_LIB_PATH@" "$(TK_LIB_DIR)" | \
 	$(REPLACE:/=\) -             - "@TCL_LIB@"     "$(TCL_LIB)"    | \
 	$(REPLACE:/=\) -    queues.dsp "@TK_LIB@"      "$(TK_LIB)"
-	cd /d $(OMNETPP_TUTORIAL_DIR:/=\)\queues && \
-	$(REPLACE:/=\) queues.mak.in - "@OMNETPP_INCL_DIR@" "$(OMNETPP_INCL_DIR)" | \
-	$(REPLACE:/=\) -             - "@OMNETPP_LIB_DIR@"  "$(OMNETPP_LIB_DIR)"  | \
-	$(REPLACE:/=\) -             - "@OMNETPP_BIN_DIR@"  "$(OMNETPP_BIN_DIR:/=\)"  | \
-	$(REPLACE:/=\) -             - "@TK_LIB_PATH@" "$(TK_LIB_DIR)" | \
-	$(REPLACE:/=\) -             - "@TCL_LIB@"     "$(TCL_LIB)"    | \
-	$(REPLACE:/=\) -    queues.mak "@TK_LIB@"      "$(TK_LIB)"
 
 
 clean:
@@ -249,13 +233,15 @@ clean:
 	-del /q $(OMNETPP_LIB_DIR:/=\)\*.dll
 	-del /q $(OMNETPP_LIB_DIR:/=\)\*.ilib
 	-for %%i in ( $(SAMPLES) ) do \
-	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && del /q /s *.exe *.ilk *.idb *.pdb *_n.cpp debug release
-	-cd /d $(OMNETPP_TUTORIAL_DIR:/=\)\queues && del /q /s *.exe *.ilk *.idb *.pdb *_n.cpp debug release
+	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) clean
+	-cd /d $(OMNETPP_TUTORIAL_DIR:/=\)\queues && $(MAKE) $(MOPTS) $(MAKEFILE) clean
 
 depend:
 	for %%i in ( $(LIBS) $(PROGS) ) do \
 	    cd /d $(OMNETPP_SRC_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) depend
-	@echo *** dependencies for samples must be done by exporting makefiles from the IDE!
+	for %%i in ( $(SAMPLES) ) do \
+	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) depend
+	cd /d $(OMNETPP_TUTORIAL_DIR:/=\)\queues && $(MAKE) $(MOPTS) $(MAKEFILE) depend
 
 reminder:
 !IF "$(TCL_LIBRARY)" == ""
