@@ -1078,7 +1078,7 @@
    digraph opp {
       node [fontsize=10,fontname=helvetica,shape=box,height=.25,style=filled];
       <xsl:variable name="name" select="@name"/>
-      <xsl:call-template name="do-diagram-node"/>
+      <xsl:call-template name="do-diagram-node-highlighted"/>
       <xsl:choose>
          <xsl:when test="local-name(.)='compound-module' or local-name(.)='simple-module'">
             <!-- diagram for modules -->
@@ -1135,7 +1135,8 @@
 <xsl:template name="create-inheritance-diagram">
    digraph opp {
       node [fontsize=10,fontname=helvetica,shape=box,height=.25,style=filled];
-      <xsl:call-template name="do-diagram-node"/>
+      edge [arrowhead=none,arrowtail=empty];
+      <xsl:call-template name="do-diagram-node-highlighted"/>
       <xsl:variable name="classname" select="@name"/>
       <xsl:for-each select="key('msg-or-class',@extends-name)">
          <xsl:call-template name="do-diagram-node"/>
@@ -1174,6 +1175,39 @@
       </xsl:when>
       <xsl:when test="local-name(.)='enum'">
          <xsl:value-of select="@name"/> [URL="<xsl:value-of select="$url"/>",fillcolor="#d0ffd0",tooltip="enum <xsl:value-of select="@name"/>"];
+      </xsl:when>
+      <xsl:otherwise>
+         <xsl:value-of select="@name"/> [fillcolor="#ff0000"];
+      </xsl:otherwise>
+   </xsl:choose>   
+</xsl:template>
+
+<xsl:template name="do-diagram-node-highlighted">
+   <xsl:variable name="url" select="concat(@name,'-',generate-id(.),'.html')"/>
+   <xsl:choose>
+      <xsl:when test="local-name(.)='compound-module'">
+         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="$url"/>",fillcolor="#fff700",tooltip="module <xsl:value-of select="@name"/>"];
+      </xsl:when>
+      <xsl:when test="local-name(.)='simple-module'">
+         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="$url"/>",fillcolor="#fff700",tooltip="simple <xsl:value-of select="@name"/>"];
+      </xsl:when>
+      <xsl:when test="local-name(.)='network'">
+         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="$url"/>",fillcolor="#9090ff",tooltip="network <xsl:value-of select="@name"/>"];
+      </xsl:when>
+      <xsl:when test="local-name(.)='channel'">
+         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="$url"/>",fillcolor="#90ff90",tooltip="channel <xsl:value-of select="@name"/>"];
+      </xsl:when>
+      <xsl:when test="local-name(.)='message'">
+         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="$url"/>",fillcolor="#fff700",tooltip="message <xsl:value-of select="@name"/>"];
+      </xsl:when>
+      <xsl:when test="local-name(.)='class'">
+         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="$url"/>",fillcolor="#fff700",tooltip="class <xsl:value-of select="@name"/>"];
+      </xsl:when>
+      <xsl:when test="local-name(.)='struct'">
+         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="$url"/>",fillcolor="#9090ff",tooltip="struct <xsl:value-of select="@name"/>"];
+      </xsl:when>
+      <xsl:when test="local-name(.)='enum'">
+         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="$url"/>",fillcolor="#90ff90",tooltip="enum <xsl:value-of select="@name"/>"];
       </xsl:when>
       <xsl:otherwise>
          <xsl:value-of select="@name"/> [fillcolor="#ff0000"];
