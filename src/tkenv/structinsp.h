@@ -1,11 +1,7 @@
 //==========================================================================
-//   ARROW.H -
-//            part of the Tcl/Tk environment of
-//                             OMNeT++
-//
-//  Contents:
-//   connection arrow positioning in module drawing
-//
+//  STRUCTINSP.H -
+//            for the Tcl/Tk windowing environment of
+//                            OMNeT++
 //==========================================================================
 
 /*--------------------------------------------------------------*
@@ -17,12 +13,21 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __ARROW_H
-#define __ARROW_H
+#ifndef __STRUCTINSP_H
+#define __STRUCTINSP_H
 
 #include <tk.h>
+#include "inspector.h"
+#include "omnetapp.h"
 
-int arrowcoords(Tcl_Interp *interp, int argc, char **argv);
+
+class TStructPanel : public TInspectorPanel
+{
+   public:
+      TStructPanel(const char *widgetname, cObject *obj);
+      virtual void update();
+      virtual void writeBack();
+      virtual int inspectorCommand(Tcl_Interp *, int, char **);
+};
 
 #endif
-

@@ -9,7 +9,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -24,246 +24,32 @@
 
 #include "tkapp.h"
 #include "tklib.h"
-#include "tkinsp.h"
-#include "arrow.h"
+#include "inspfactory.h"
+#include "objinsp.h"
 
-//=======================================================================
-// Inspector type code <--> string conversions
 
-struct InspTypeName {int code; char *namestr;} insp_typenames[] =
+void _dummy_for_objinsp() {}
+
+
+class TObjInspectorFactory : public cInspectorFactory
 {
-     { INSP_DEFAULT,          "(default)"     },
-     { INSP_OBJECT,           "As Object"     },
-     { INSP_GRAPHICAL,        "As Graphics"   },
-     { INSP_CONTAINER,        "As Container"  },
-     { INSP_MODULEOUTPUT,     "Module output" },
-     { INSP_LOCALVARS,        "Local vars"    },
-     { INSP_CLASSMEMBERS,     "Class members" },
-     { INSP_PARAMETERS,       "Parameters"    },
-     { INSP_GATES,            "Gates"         },
-     { INSP_SUBMODS,          "Submodules"    },
-     { -1,                     NULL           }
+  public:
+    TObjInspectorFactory(const char *name) : cInspectorFactory(name) {}
+
+    bool supportsObject(cObject *obj) {return true;}
+    int inspectorType() {return INSP_OBJECT;}
+    double qualityAsDefault(cObject *object) {return 1.0;}
+
+    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
+        return new TObjInspector(object, type, geom, data);
+    }
 };
 
-char *insptype_name_from_code( int code )
-{
-   for (int i=0; insp_typenames[i].namestr!=NULL; i++)
-      if (insp_typenames[i].code == code)
-         return insp_typenames[i].namestr;
-   return NULL;
-}
-
-int insptype_code_from_name( char *namestr )
-{
-   for (int i=0; insp_typenames[i].namestr!=NULL; i++)
-      if (strcmp(insp_typenames[i].namestr, namestr)==0)
-         return insp_typenames[i].code;
-   return -1;
-}
-
-//=======================================================================
-// TInspector: base class for all inspector types
-//             member functions
-
-TInspector::TInspector(cObject *obj, int typ, void *dat) : cObject()
-{
-   setOwner(NULL);
-
-   object = obj;
-   type = typ;
-   data = dat;
-
-   windowname[0] = '\0'; // no window exists
-   windowtitle[0] = '\0';
-   geometry[0] = '\0';
-}
-
-TInspector::~TInspector()
-{
-   if (windowname[0])
-   {
-      Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-      CHK(Tcl_VarEval(interp, "destroy_inspector_toplevel ", windowname, NULL ));
-   }
-}
-
-void TInspector::createWindow()
-{
-   windowname[0] = '.';
-   ptrToStr( object, windowname+1 );
-   sprintf( windowname+strlen(windowname), "-%d",type);
-
-   // interpret the "data" pointer as geometry....
-   if (data)
-   {
-       strncpy(geometry,(const char *)data, 63);
-       geometry[63] = '\0'; // for safety
-   }
-
-   // derived classes will also call Tcl_Eval() to actually create the
-   // Tk window by invoking a procedure in inspect.tcl
-}
-
-bool TInspector::windowExists()
-{
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-   CHK(Tcl_VarEval(interp, "winfo exists ", windowname, NULL ));
-   return interp->result[0]=='1';
-}
-
-void TInspector::showWindow()
-{
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-   CHK(Tcl_VarEval(interp, "wm deiconify ", windowname, NULL ));
-   CHK(Tcl_VarEval(interp, "raise ", windowname, NULL ));
-   CHK(Tcl_VarEval(interp, "focus ", windowname, NULL ));
-}
-
-void TInspector::hostObjectDeleted()
-{
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-   CHK(Tcl_VarEval(interp, "inspector_hostobjectdeleted ", windowname, NULL ));
-}
-
-void TInspector::update()
-{
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-
-   // update window title (only if changed)
-   //  (always updating the title produced many unnecessary redraws under fvwm2-95)
-   char newtitle[128];
-   sprintf(newtitle, "(%.20s) %.100s",object->className(), object->fullPath());
-   if (strcmp(newtitle, windowtitle)!=0)
-   {
-       strcpy( windowtitle, newtitle);
-       CHK(Tcl_VarEval(interp, "wm title ",windowname," {",windowtitle,"}",NULL));
-   }
-}
-
-void TInspector::setEntry(const char *entry, const char *val)
-{
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-   CHK(Tcl_VarEval(interp, windowname,entry," delete 0 end;",
-                           windowname,entry," insert 0 {",val,"}",NULL));
-}
-
-void TInspector::setEntry( const char *entry, long l )
-{
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-   char buf[16];
-   sprintf(buf, "%ld", l );
-   CHK(Tcl_VarEval(interp, windowname,entry," delete 0 end;",
-                           windowname,entry," insert 0 {",buf,"}",NULL));
-}
-
-void TInspector::setEntry( const char *entry, double d )
-{
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-   char buf[24];
-   sprintf(buf, "%g", d );
-   CHK(Tcl_VarEval(interp, windowname,entry," delete 0 end;",
-                           windowname,entry," insert 0 {",buf,"}",NULL));
-}
-
-void TInspector::setLabel( const char *label, const char *val )
-{
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-   CHK(Tcl_VarEval(interp, windowname,label," config -text {",val,"}",NULL));
-}
-
-void TInspector::setLabel( const char *label, long l )
-{
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-   char buf[16];
-   sprintf(buf, "%ld", l );
-   CHK(Tcl_VarEval(interp, windowname,label," config -text {",buf,"}",NULL));
-}
-
-void TInspector::setLabel( const char *label, double d )
-{
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-   char buf[16];
-   sprintf(buf, "%g", d );
-   CHK(Tcl_VarEval(interp, windowname,label," config -text {",buf,"}",NULL));
-}
-
-const char *TInspector::getEntry( const char *entry )
-{
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-   CHK(Tcl_VarEval(interp, windowname,entry," get",NULL));
-   return interp->result;
-}
-
-void TInspector::setInspectButton( const char *button, cObject *object, int type )
-{
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-   if (object)
-   {
-      char buf[16];
-      sprintf(buf, "%d", type );
-      CHK(Tcl_VarEval(interp, windowname,button," config -state normal -command"
-                              " {opp_inspect ",ptrToStr(object)," ",buf,"}",NULL));
-   }
-   else
-   {
-      CHK(Tcl_VarEval(interp, windowname,button," config -state disabled",NULL));
-   }
-}
-
-void TInspector::setButtonText( const char *button, const char *text)
-{
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-   CHK(Tcl_VarEval(interp, windowname,button," config -text {",text,"}",NULL));
-}
-
-void TInspector::deleteInspectorListbox( const char *listbox)
-{
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-   CHK(Tcl_VarEval(interp,windowname,listbox,".main.list delete 0 end",NULL));
-}
-
-void TInspector::fillInspectorListbox(const char *listbox, cObject *object,
-                             InfoFunc infofunc,bool deep)
-{
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-   char w[256], buf[256];
-   sprintf(w, "%s%s.main.list", windowname,listbox);
-   collection( object, interp, w, infofunc, deep);
-
-   // set "number of items" display
-   CHK(Tcl_VarEval(interp,w," index end",NULL));
-   sprintf(w, "%s.label", listbox);
-   sprintf(buf,"%s objects in (%s) %s:", interp->result,object->className(),object->fullPath());
-   setLabel(w, buf);
-}
-
-void TInspector::fillModuleListbox(const char *listbox, cModule *parent,
-                                InfoFunc infofunc,bool simpleonly,bool deep )
-{
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-   char w[256], buf[256];
-   sprintf(w, "%s%s.main.list", windowname,listbox);
-   modcollection( parent, interp, w, infofunc, simpleonly, deep);
-
-   // set "number of items" display
-   CHK(Tcl_VarEval(interp,w," index end",NULL));
-   sprintf(w, "%s.label", listbox);
-   sprintf(buf,"%s modules", interp->result);
-   setLabel(w, buf);
-}
-
-//=======================================================================
-
-TInspectorPanel::TInspectorPanel(const char *widgetname, cObject *obj)
-{
-   strcpy(this->widgetname, widgetname);
-   object = obj;
-}
+Register_InspectorFactory(TObjInspectorFactory);
 
 
-//=======================================================================
-TObjInspector::TObjInspector(cObject *obj,int typ,void *dat) :
-    TInspector(obj,typ,dat)
+TObjInspector::TObjInspector(cObject *obj,int typ,const char *geom,void *dat) :
+    TInspector(obj,typ,geom,dat)
 {
     fieldspage = NULL;
 }
@@ -321,10 +107,35 @@ TObjInspector::~TObjInspector()
    delete fieldspage;
 }
 
-
 //=======================================================================
-TContainerInspector::TContainerInspector(cObject *obj,int typ,void *dat,InfoFunc f) :
-    TInspector(obj,typ,dat)
+
+class TContainerInspectorFactory : public cInspectorFactory
+{
+  public:
+    TContainerInspectorFactory(const char *name) : cInspectorFactory(name) {}
+
+    bool supportsObject(cObject *obj) {return true;}
+    int inspectorType() {return INSP_OBJECT;}
+
+    double qualityAsDefault(cObject *object) {
+        if (dynamic_cast<cArray *>(object) || dynamic_cast<cQueue *>(object) ||
+            dynamic_cast<cMessageHeap *>(object) || dynamic_cast<cHead *>(object)
+           )
+            return 2.0;
+        else
+            return 0.9;
+    }
+
+    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
+        return new TContainerInspector(object, type, geom, data);
+    }
+};
+
+Register_InspectorFactory(TContainerInspectorFactory);
+
+
+TContainerInspector::TContainerInspector(cObject *obj,int typ,const char *geom,void *dat,InfoFunc f) :
+    TInspector(obj,typ,geom,dat)
 {
    char *opt = (char *)dat;
    deep = opt && opt[0]=='d';
@@ -355,8 +166,26 @@ void TContainerInspector::update()
 }
 
 //=======================================================================
-TMessageInspector::TMessageInspector(cObject *obj,int typ,void *dat) :
-    TInspector(obj,typ,dat)
+
+class TMessageInspectorFactory : public cInspectorFactory
+{
+  public:
+    TMessageInspectorFactory(const char *name) : cInspectorFactory(name) {}
+
+    bool supportsObject(cObject *obj) {return dynamic_cast<cMessage *>(obj)!=NULL;}
+    int inspectorType() {return INSP_OBJECT;}
+    double qualityAsDefault(cObject *object) {return 2.0;}
+
+    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
+        return new TMessageInspector(object, type, geom, data);
+    }
+};
+
+Register_InspectorFactory(TMessageInspectorFactory);
+
+
+TMessageInspector::TMessageInspector(cObject *obj,int typ,const char *geom,void *dat) :
+    TInspector(obj,typ,geom,dat)
 {
    fieldspage = NULL;
 }
@@ -457,9 +286,24 @@ TMessageInspector::~TMessageInspector()
 
 
 //=======================================================================
+class TWatchInspectorFactory : public cInspectorFactory
+{
+  public:
+    TWatchInspectorFactory(const char *name) : cInspectorFactory(name) {}
 
-TWatchInspector::TWatchInspector(cObject *obj,int typ,void *dat) :
-    TInspector(obj,typ,dat)
+    bool supportsObject(cObject *obj) {return dynamic_cast<cWatch *>(obj)!=NULL;}
+    int inspectorType() {return INSP_OBJECT;}
+    double qualityAsDefault(cObject *object) {return 2.0;}
+    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
+        return new TWatchInspector(object, type, geom, data);
+    }
+};
+
+Register_InspectorFactory(TWatchInspectorFactory);
+
+
+TWatchInspector::TWatchInspector(cObject *obj,int typ,const char *geom,void *dat) :
+    TInspector(obj,typ,geom,dat)
 {
 }
 
@@ -541,8 +385,25 @@ void TWatchInspector::writeBack()
 
 //=======================================================================
 
-TParInspector::TParInspector(cObject *obj,int typ,void *dat) :
-    TInspector(obj,typ,dat)
+class TParInspectorFactory : public cInspectorFactory
+{
+  public:
+    TParInspectorFactory(const char *name) : cInspectorFactory(name) {}
+
+    bool supportsObject(cObject *obj) {return dynamic_cast<cPar *>(obj)!=NULL;}
+    int inspectorType() {return INSP_OBJECT;}
+    double qualityAsDefault(cObject *object) {return 2.0;}
+
+    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
+        return new TParInspector(object, type, geom, data);
+    }
+};
+
+Register_InspectorFactory(TParInspectorFactory);
+
+
+TParInspector::TParInspector(cObject *obj,int typ,const char *geom,void *dat) :
+    TInspector(obj,typ,geom,dat)
 {
 }
 
@@ -633,8 +494,26 @@ void TParInspector::writeBack()
 
 
 //=======================================================================
-TPacketInspector::TPacketInspector(cObject *obj,int typ,void *dat) :
-    TMessageInspector(obj,typ,dat)
+
+class TPacketInspectorFactory : public cInspectorFactory
+{
+  public:
+    TPacketInspectorFactory(const char *name) : cInspectorFactory(name) {}
+
+    bool supportsObject(cObject *obj) {return dynamic_cast<cPacket *>(obj)!=NULL;}
+    int inspectorType() {return INSP_OBJECT;}
+    double qualityAsDefault(cObject *object) {return 3.0;}
+
+    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
+        return new TPacketInspector(object, type, geom, data);
+    }
+};
+
+Register_InspectorFactory(TPacketInspectorFactory);
+
+
+TPacketInspector::TPacketInspector(cObject *obj,int typ,const char *geom,void *dat) :
+    TMessageInspector(obj,typ,geom,dat)
 {
 }
 
@@ -667,5 +546,7 @@ void TPacketInspector::writeBack()
 
    TMessageInspector::writeBack();    // must be there after all changes
 }
+
+
 
 

@@ -5,7 +5,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -23,7 +23,7 @@
 #include "cmodule.h"
 #include "csimul.h"
 #include "tklib.h"
-#include "tkinsp.h"
+#include "inspector.h"
 #include "tkapp.h"
 #include "patmatch.h"
 
@@ -220,7 +220,7 @@ static bool do_inspect_matching( cObject *obj, bool beg, short *patt, int typ, b
          if (stringmatch(pattern,fullpath))
          {
            if (!countonly)
-               ((TOmnetTkApp *)(ev.app))->inspect(obj,type,NULL);
+               ((TOmnetTkApp *)(ev.app))->inspect(obj,type,"",NULL);
            inspmatch_ctr++;
          }
     }
@@ -273,7 +273,7 @@ static bool do_inspect_by_name( cObject *obj, bool beg, const char *_fullpath, c
         // found: inspect if inspector is not open
         TOmnetTkApp *app = (TOmnetTkApp *)(ev.app);
         if (!app->findInspector(obj, insptype))
-            app->inspect(obj, insptype, NULL, geometry);
+            app->inspect(obj, insptype, geometry, NULL);
         return false;
     }
     else

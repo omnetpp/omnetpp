@@ -8,7 +8,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -35,7 +35,10 @@
 #include "tkdefs.h"
 #include "tkapp.h"
 #include "tklib.h"
-#include "tkinsp.h"
+#include "inspector.h"
+#include "inspfactory.h"
+
+#include "modinsp.h"
 
 
 //
@@ -211,7 +214,7 @@ void TOmnetTkApp::rebuildSim()
                                 "Choose File|New Network or File|New Run.",
                                 "} info ok",NULL));
     if (simulation.systemModule())
-         inspect( simulation.systemModule(),INSP_DEFAULT,NULL);
+         inspect( simulation.systemModule(),INSP_DEFAULT,"",NULL);
 }
 
 void TOmnetTkApp::doOneStep()
@@ -622,10 +625,10 @@ void TOmnetTkApp::stopAtBreakpoint(const char *label, cSimpleModule *mod)
     }
 }
 
-TInspector *TOmnetTkApp::inspect(cObject *obj, int type, void *dat, const char *geometry)
+TInspector *TOmnetTkApp::inspect(cObject *obj, int type, const char *geometry, void *dat)
 {
     // create inspector object & window or display existing one
-    TInspector *existing_insp = findInspector( obj, type );
+    TInspector *existing_insp = findInspector(obj, type);
     if (existing_insp && existing_insp->windowExists())
     {
         existing_insp->showWindow();
@@ -640,7 +643,7 @@ TInspector *TOmnetTkApp::inspect(cObject *obj, int type, void *dat, const char *
     }
 
     // create inspector
-    cInspectorFactory *p = findInspectorFactory(obj->inspectorFactoryName());
+    cInspectorFactory *p = findInspectorFactoryFor(obj,type);
     if (!p)
     {
         CHK(Tcl_VarEval(interp,"messagebox {Confirm}"
@@ -648,8 +651,7 @@ TInspector *TOmnetTkApp::inspect(cObject *obj, int type, void *dat, const char *
         return NULL;
     }
 
-    //FIXME: we discard the "dat" pointer and use geometry instead. This is a hack.
-    TInspector *insp = p->createInspectorFor(obj,type,(void *)geometry);
+    TInspector *insp = p->createInspectorFor(obj,p->inspectorType(),geometry,dat);
     if (!insp)
     {
         // message: object has no such inspector
@@ -662,16 +664,14 @@ TInspector *TOmnetTkApp::inspect(cObject *obj, int type, void *dat, const char *
 
     // An inspector was created. Now, its actual type can be different
     // from the 'type' parameter we passed. For example,
-    // INSP_NATIVE becomes INSP_OBJECT, INSP_CONTAINER etc.
-    // Moreover, its 'object' pointer can be different, too; for example,
-    // with INSP_LOCALVARS or INSP_CLASSMEMBERS.
+    // INSP_DEFAULT becomes INSP_OBJECT, INSP_CONTAINER etc.
     // So we have to check again if an inspector with the
     // actual parameters (type & object) already exists.
-    cObject *actual_obj = insp->object;
-    int actual_type = insp->type;
+    cObject *actual_obj = insp->getObject();
+    int actual_type = insp->getType();
     if (actual_obj!=obj || actual_type!=type)
     {
-        existing_insp = findInspector( actual_obj, actual_type );
+        existing_insp = findInspector(actual_obj, actual_type);
         if (existing_insp)
         {
             delete insp;
@@ -681,7 +681,7 @@ TInspector *TOmnetTkApp::inspect(cObject *obj, int type, void *dat, const char *
     }
 
     // everything ok, finish inspector
-    insp->setOwner( &inspectors ); // insert into inspector list
+    insp->setOwner(&inspectors); // insert into inspector list
     insp->createWindow();
     insp->update();
 
@@ -693,7 +693,7 @@ TInspector *TOmnetTkApp::findInspector(cObject *obj, int type)
     for (cIterator i(inspectors); !i.end(); i++)
     {
         TInspector *insp = (TInspector *) i();
-        if (insp->object==obj && insp->type==type)
+        if (insp->getObject()==obj && insp->getType()==type)
             return insp;
     }
     return NULL;
@@ -873,8 +873,8 @@ void TOmnetTkApp::printEventBanner(cSimpleModule *module)
         if (insp)
         {
            CHK(Tcl_VarEval(interp,
-               insp->windowname,".main.text insert end {",banner,"} event\n",
-               insp->windowname,".main.text see end",
+               insp->windowName(),".main.text insert end {",banner,"} event\n",
+               insp->windowName(),".main.text see end",
                NULL));
         }
         mod = mod->parentModule();
@@ -913,7 +913,7 @@ void TOmnetTkApp::objectDeleted( cObject *object )
     while (!i.end())
     {
         TInspector *insp = (TInspector *) i();
-        if (insp->object == object)
+        if (insp->getObject() == object)
         {
             insp->hostObjectDeleted();
             delete insp;
@@ -958,7 +958,7 @@ void TOmnetTkApp::messageSent( cMessage *msg )
             {
                 int lastgate = (g->toGate()==arrivalgate);
                 CHK(Tcl_VarEval(interp, "graphmodwin_animate ",
-                                        insp->windowname, " ",
+                                        insp->windowName(), " ",
                                         ptrToStr(g)," ",
                                         msgptr,
                                         " {",msg->fullName(),"} ",
@@ -1000,7 +1000,7 @@ void TOmnetTkApp::messageDelivered( cMessage *msg )
             if (insp)
             {
                 CHK(Tcl_VarEval(interp, "graphmodwin_animate ",
-                                        insp->windowname, " ",
+                                        insp->windowName(), " ",
                                         ptrToStr(g)," ",
                                         msgptr,
                                         " {",msg->fullName(),"} ",
@@ -1062,8 +1062,8 @@ void TOmnetTkApp::puts(const char *str)
         if (insp)
         {
             CHK(Tcl_VarEval(interp,
-              insp->windowname,".main.text insert end ",quotedstr,"\n",
-              insp->windowname,".main.text see end", NULL));
+              insp->windowName(),".main.text insert end ",quotedstr,"\n",
+              insp->windowName(),".main.text see end", NULL));
         }
         mod = mod->parentModule();
     }
@@ -1114,5 +1114,16 @@ unsigned TOmnetTkApp::extraStackForEnvir()
 //======================================================================
 // dummy function to force Unix linkers collect all symbols needed
 
-void _dummy_for_inspectors();
-void _dummy_func() {_dummy_for_inspectors();}
+void _dummy_for_objinsp();
+void _dummy_for_modinsp();
+void _dummy_for_statinsp();
+void _dummy_for_structinsp();
+
+void _dummy_func() {
+  _dummy_for_objinsp();
+  _dummy_for_modinsp();
+  _dummy_for_statinsp();
+  _dummy_for_structinsp();
+}
+
+

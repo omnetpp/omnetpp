@@ -128,12 +128,12 @@ proc one_step_in_module {w} {
 }
 
 
-proc create_simplemodulewindow {name} {
-    _create_modulewindow $name 0
+proc create_simplemodulewindow {name geom} {
+    _create_modulewindow $name $geom 0
 }
 
-proc create_compoundmodulewindow {name} {
-    _create_modulewindow $name 1
+proc create_compoundmodulewindow {name geom} {
+    _create_modulewindow $name $geom 1
 }
 
 proc _create_modulewindow {name geom iscompound} {

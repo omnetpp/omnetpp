@@ -5,7 +5,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -25,7 +25,8 @@
 #include "cstruct.h"
 #include "tkapp.h"
 #include "tklib.h"
-#include "tkinsp.h"
+#include "inspector.h"
+#include "inspfactory.h"
 
 
 // Command functions:
@@ -494,8 +495,8 @@ int inspect_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
         {interp->result="unrecognized inspector type";return TCL_ERROR;}
 
    void *dat = (argc==4) ? (void *)argv[3] : NULL;
-   TInspector *insp = app->inspect( object, type, dat );
-   interp->result = insp ? insp->windowname : const_cast<char*>("");
+   TInspector *insp = app->inspect(object, type, "", dat);
+   interp->result = const_cast<char*>(insp ? insp->windowName() : "");
    return TCL_OK;
 }
 
@@ -505,19 +506,29 @@ int supportedInspTypes_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv
    if (argc!=2) {interp->result="wrong argcount"; return TCL_ERROR;}
    cObject *obj = (cObject *)strToPtr( argv[1] );
 
-   int insp_types[32];
-   //obj->inspector(INSP_GETTYPES, insp_types);
+   // collect supported inspector types
+   int insp_types[20];
+   int n=0;
+   for (cIterator i(inspectorfactories); !i.end(); i++)
+   {
+      cInspectorFactory *ifc = (cInspectorFactory *) i();
+      if (ifc->supportsObject(obj))
+      {
+          int k;
+          for (k=0; k<n; k++)
+              if (insp_types[k] == ifc->inspectorType())
+                 break;
+          if (k==n) // not yet in array, insert
+              insp_types[n++] = ifc->inspectorType();
+      }
+   }
 
-   cInspectorFactory *p = findInspectorFactory(obj->inspectorFactoryName());
-   if (!p)  {interp->result="no inspector factory found"; return TCL_ERROR;}
-   // FIXME: sort of weird now...
-   p->createInspectorFor(obj,INSP_GETTYPES,(void *)insp_types);
-
+   // print result into interp->result
    interp->result[0] = 0;
-   for (int i=0; insp_types[i]>=0; i++)
+   for (int j=0; j<n; j++)
    {
       strcat( interp->result, "{" );
-      strcat( interp->result, insptype_name_from_code(insp_types[i]) );
+      strcat( interp->result, insptype_name_from_code(insp_types[j]) );
       strcat( interp->result, "} " );
    }
    return TCL_OK;
@@ -616,8 +627,8 @@ int deleteInspector_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
    TInspector *insp = app->findInspector( object, type );
    assert(insp!=NULL);
 
+   insp->setOwner(NULL); // to avoid trouble, cause insp's dtor calls objectDeleted() too!
    delete insp; // this will also delete the window
-
    return TCL_OK;
 }
 

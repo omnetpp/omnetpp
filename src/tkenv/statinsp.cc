@@ -9,7 +9,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -31,12 +31,34 @@
 
 #include "tkapp.h"
 #include "tklib.h"
-#include "tkinsp.h"
-#include "arrow.h"
+#include "inspfactory.h"
+#include "statinsp.h"
 
-//=======================================================================
-TStatisticInspector::TStatisticInspector(cObject *obj,int typ,void *dat) :
-    TInspector(obj,typ,dat)
+
+
+void _dummy_for_statinsp() {}
+
+//===============================================================
+
+class TStatisticInspectorFactory : public cInspectorFactory
+{
+  public:
+    TStatisticInspectorFactory(const char *name) : cInspectorFactory(name) {}
+
+    bool supportsObject(cObject *obj) {return dynamic_cast<cStatistic *>(obj)!=NULL;}
+    int inspectorType() {return INSP_OBJECT;}
+    double qualityAsDefault(cObject *object) {return 2.0;}
+
+    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
+        return new TStatisticInspector(object, type, geom, data);
+    }
+};
+
+Register_InspectorFactory(TStatisticInspectorFactory);
+
+
+TStatisticInspector::TStatisticInspector(cObject *obj,int typ,const char *geom,void *dat) :
+    TInspector(obj,typ,geom,dat)
 {
 }
 
@@ -65,8 +87,25 @@ void TStatisticInspector::update()
 
 
 //=======================================================================
-THistogramWindow::THistogramWindow(cObject *obj,int typ,void *dat) :
-    TInspector(obj,typ,dat)
+class THistogramWindowFactory : public cInspectorFactory
+{
+  public:
+    THistogramWindowFactory(const char *name) : cInspectorFactory(name) {}
+
+    bool supportsObject(cObject *obj) {return dynamic_cast<cDensityEstBase *>(obj)!=NULL;}
+    int inspectorType() {return INSP_GRAPHICAL;}
+    double qualityAsDefault(cObject *object) {return 3.0;}
+
+    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
+        return new THistogramWindow(object, type, geom, data);
+    }
+};
+
+Register_InspectorFactory(THistogramWindowFactory);
+
+
+THistogramWindow::THistogramWindow(cObject *obj,int typ,const char *geom,void *dat) :
+    TInspector(obj,typ,geom,dat)
 {
 }
 
@@ -198,6 +237,22 @@ int THistogramWindow::inspectorCommand(Tcl_Interp *interp, int argc, char **argv
 }
 
 //=======================================================================
+class TOutVectorWindowFactory : public cInspectorFactory
+{
+  public:
+    TOutVectorWindowFactory(const char *name) : cInspectorFactory(name) {}
+
+    bool supportsObject(cObject *obj) {return dynamic_cast<cOutVector *>(obj)!=NULL;}
+    int inspectorType() {return INSP_GRAPHICAL;}
+    double qualityAsDefault(cObject *object) {return 3.0;}
+
+    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
+        return new TOutVectorWindow(object, type, geom, data);
+    }
+};
+
+Register_InspectorFactory(TOutVectorWindowFactory);
+
 
 CircBuffer::CircBuffer(int siz)
 {
@@ -228,8 +283,8 @@ static void record_in_insp(void *data, double val1, double val2)
    insp->circbuf.add(simulation.simTime(),val1,val2);
 }
 
-TOutVectorWindow::TOutVectorWindow(cObject *obj,int typ,void *dat,int size) :
-    TInspector(obj,typ,dat), circbuf(size)
+TOutVectorWindow::TOutVectorWindow(cObject *obj,int typ,const char *geom,void *dat,int size) :
+    TInspector(obj,typ,geom,dat), circbuf(size)
 {
    // make inspected outvector to call us back when it gets data to write out
    cOutVector *ov = (cOutVector *)object;

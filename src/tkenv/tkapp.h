@@ -5,7 +5,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -122,7 +122,7 @@ class TOmnetTkApp : public TOmnetApp
       void stopAtBreakpoint(const char *label, cSimpleModule *mod);
 
       void updateInspectors();
-      TInspector *inspect(cObject *obj, int type, void *dat, const char *geometry=NULL);
+      TInspector *inspect(cObject *obj, int type, const char *geometry, void *dat);
       TInspector *findInspector(cObject *obj, int type);
 
       // small functions:

@@ -1,5 +1,4 @@
 General:
- - backwards find in text windows
  - autolayout (like in ns2's nam or the applets/Graphlayout JDK demo)
  - with Tcl-embedding, cannot display README file
  - .tkenvrc to store options
@@ -9,9 +8,6 @@ General:
  - arrow drawing not always consistent with GNED (?)
  - outvect inspector options dialog, new checkbox: [ ] automatic settings
  - 1 messagebox is enough when simulation stops
- - inspector list should save window positions
- - automatic loading of inspector lists (use "placeholder" windows for
-   not-yet-existing objects)
  - graphical FES inspector
  - CDF display for histogram classes
  - plugins should be loaded from a path

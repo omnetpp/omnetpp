@@ -20,7 +20,9 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 # Local definitions
 #
 COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "../envir" $(TK_CFLAGS) /DBUILDING_TKENV
-OBJS = tkapp$(TKENV_EMBED_SUFFIX).obj tkcmd.obj tklib.obj objinsp.obj modinsp.obj statinsp.obj inspect.obj arrow.obj structinsp.obj
+OBJS = tkapp$(TKENV_EMBED_SUFFIX).obj tkcmd.obj tklib.obj inspector.obj \
+       inspfactory.obj objinsp.obj modinsp.obj statinsp.obj structinsp.obj \
+       arrow.obj 
 LIBS = $(OMNETPP_SRC_DIR)/sim/sim_std.ilib $(OMNETPP_SRC_DIR)/envir/envir.ilib $(TK_LIB_DIR)/tcl82.lib $(TK_LIB_DIR)/tk82.lib
 
 #
@@ -51,6 +53,12 @@ tkcmd.obj : tkcmd.cc
 tklib.obj : tklib.cc
 	$(CXX) $(COPTS) /c /Tp tklib.cc
 
+inspector.obj: inspector.cc
+	$(CXX) $(COPTS) /c /Tp inspector.cc
+
+inspfactory.obj: inspfactory.cc
+	$(CXX) $(COPTS) /c /Tp inspfactory.cc
+
 objinsp.obj: objinsp.cc
 	$(CXX) $(COPTS) /c /Tp objinsp.cc
 
@@ -62,9 +70,6 @@ statinsp.obj: statinsp.cc
 
 structinsp.obj: structinsp.cc
 	$(CXX) $(COPTS) /c /Tp structinsp.cc
-
-inspect.obj: inspect.cc
-	$(CXX) $(COPTS) /c /Tp inspect.cc
 
 arrow.obj: arrow.cc arrow.h
 	$(CXX) $(COPTS) /c /Tp arrow.cc
@@ -83,15 +88,18 @@ clean:
 	-del *.ilk *.idb *.pdb *.pch 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+
 arrow.obj: arrow.cc \
   arrow.h
-inspect.obj: inspect.cc \
+inspect.obj: inspect.cc
+inspector.obj: inspector.cc \
   ../../include/omnetpp.h \
   tkapp.h \
   tklib.h \
-  tkinsp.h \
+  inspector.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cexception.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/csimul.h \
@@ -124,8 +132,63 @@ inspect.obj: inspect.cc \
   ../../include/cenvir.h \
   ../../include/cenum.h \
   ../../include/cstruct.h \
+  ../../include/onstartup.h \
+  ../../include/cchannel.h \
+  ../../include/cdispstr.h \
   ../../include/envirext.h \
-  ../../include/ccoroutine.h
+  ../../include/ccoroutine.h \
+  ../envir/omnetapp.h \
+  ../envir/args.h \
+  ../envir/envdefs.h
+inspfactory.obj: inspfactory.cc \
+  ../../include/omnetpp.h \
+  tkapp.h \
+  tklib.h \
+  inspector.h \
+  inspfactory.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/cexception.h \
+  ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/csimul.h \
+  ../../include/macros.h \
+  ../../include/ctypes.h \
+  ../../include/carray.h \
+  ../../include/cqueue.h \
+  ../../include/cllist.h \
+  ../../include/chead.h \
+  ../../include/cwatch.h \
+  ../../include/cpar.h \
+  ../../include/cgate.h \
+  ../../include/cmessage.h \
+  ../../include/cpacket.h \
+  ../../include/cmsgheap.h \
+  ../../include/cstk.h \
+  ../../include/cmodule.h \
+  ../../include/cstat.h \
+  ../../include/cdensity.h \
+  ../../include/chist.h \
+  ../../include/cvarhist.h \
+  ../../include/cpsquare.h \
+  ../../include/cksplit.h \
+  ../../include/coutvect.h \
+  ../../include/cdetect.h \
+  ../../include/ctopo.h \
+  ../../include/cnetmod.h \
+  ../../include/cfsm.h \
+  ../../include/protocol.h \
+  ../../include/cenvir.h \
+  ../../include/cenum.h \
+  ../../include/cstruct.h \
+  ../../include/onstartup.h \
+  ../../include/cchannel.h \
+  ../../include/cdispstr.h \
+  ../../include/envirext.h \
+  ../../include/ccoroutine.h \
+  ../envir/omnetapp.h \
+  ../envir/args.h \
+  ../envir/envdefs.h
 modinsp.obj: modinsp.cc \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
@@ -137,7 +200,8 @@ modinsp.obj: modinsp.cc \
   ../../include/cdensity.h \
   tkapp.h \
   tklib.h \
-  tkinsp.h \
+  inspfactory.h \
+  modinsp.h \
   arrow.h \
   ../../include/defs.h \
   ../../include/cobject.h \
@@ -148,15 +212,26 @@ modinsp.obj: modinsp.cc \
   ../../include/csimul.h \
   ../../include/util.h \
   ../../include/errmsg.h \
-  ../../include/cmsgheap.h
+  ../../include/cmsgheap.h \
+  ../envir/omnetapp.h \
+  ../../include/cenvir.h \
+  ../../include/cexception.h \
+  ../envir/args.h \
+  ../envir/envdefs.h \
+  ../../include/envirext.h \
+  ../../include/macros.h \
+  inspector.h \
+  ../../include/onstartup.h \
+  ../../include/ctypes.h
 objinsp.obj: objinsp.cc \
   ../../include/omnetpp.h \
   tkapp.h \
   tklib.h \
-  tkinsp.h \
-  arrow.h \
+  inspfactory.h \
+  objinsp.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cexception.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/csimul.h \
@@ -189,8 +264,16 @@ objinsp.obj: objinsp.cc \
   ../../include/cenvir.h \
   ../../include/cenum.h \
   ../../include/cstruct.h \
+  ../../include/onstartup.h \
+  ../../include/cchannel.h \
+  ../../include/cdispstr.h \
   ../../include/envirext.h \
-  ../../include/ccoroutine.h
+  ../../include/ccoroutine.h \
+  ../envir/omnetapp.h \
+  ../envir/args.h \
+  ../envir/envdefs.h \
+  inspector.h \
+  structinsp.h
 statinsp.obj: statinsp.cc \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
@@ -202,8 +285,8 @@ statinsp.obj: statinsp.cc \
   ../../include/cdensity.h \
   tkapp.h \
   tklib.h \
-  tkinsp.h \
-  arrow.h \
+  inspfactory.h \
+  statinsp.h \
   ../../include/defs.h \
   ../../include/cobject.h \
   ../../include/ccoroutine.h \
@@ -213,40 +296,76 @@ statinsp.obj: statinsp.cc \
   ../../include/csimul.h \
   ../../include/util.h \
   ../../include/errmsg.h \
-  ../../include/cmsgheap.h
+  ../../include/cmsgheap.h \
+  ../envir/omnetapp.h \
+  ../../include/cenvir.h \
+  ../../include/cexception.h \
+  ../envir/args.h \
+  ../envir/envdefs.h \
+  ../../include/envirext.h \
+  ../../include/macros.h \
+  inspector.h \
+  ../../include/onstartup.h \
+  ../../include/ctypes.h
 structinsp.obj: structinsp.cc \
   ../../include/cstruct.h \
   tkapp.h \
   tklib.h \
-  tkinsp.h \
+  inspfactory.h \
+  structinsp.h \
   ../../include/cobject.h \
   ../../include/cenum.h \
   ../../include/util.h \
-  ../../include/defs.h
+  ../../include/defs.h \
+  ../envir/omnetapp.h \
+  ../../include/carray.h \
+  ../../include/chead.h \
+  ../../include/cenvir.h \
+  ../../include/cexception.h \
+  ../envir/args.h \
+  ../envir/envdefs.h \
+  ../../include/envirext.h \
+  ../../include/cpar.h \
+  ../../include/macros.h \
+  inspector.h \
+  ../../include/onstartup.h \
+  ../../include/ctypes.h
 tkapp.obj: tkapp.cc \
+  ../envir/appreg.h \
+  ../envir/cinifile.h \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
   ../../include/cstk.h \
   ../../include/ctypes.h \
   ../../include/cnetmod.h \
+  ../envir/speedmtr.h \
   tkdefs.h \
   tkapp.h \
   tklib.h \
-  tkinsp.h \
-  ../../include/defs.h \
-  ../../include/cpar.h \
+  inspector.h \
+  inspfactory.h \
+  modinsp.h \
+  ../../include/chead.h \
+  ../../include/onstartup.h \
   ../../include/cobject.h \
   ../../include/util.h \
+  ../../include/defs.h \
+  ../envir/envdefs.h \
+  ../../include/cpar.h \
   ../../include/ccoroutine.h \
-  ../../include/chead.h \
   ../../include/carray.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
   ../../include/csimul.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
-  ../../include/coutvect.h
+  ../../include/coutvect.h \
+  ../envir/omnetapp.h \
+  ../../include/cexception.h \
+  ../envir/args.h \
+  ../../include/envirext.h \
+  ../../include/macros.h
 tkcmd.obj: tkcmd.cc \
   ../../include/cenvir.h \
   ../../include/carray.h \
@@ -256,7 +375,8 @@ tkcmd.obj: tkcmd.cc \
   ../../include/cstruct.h \
   tkapp.h \
   tklib.h \
-  tkinsp.h \
+  inspector.h \
+  inspfactory.h \
   ../../include/defs.h \
   ../../include/cpar.h \
   ../../include/cobject.h \
@@ -268,14 +388,22 @@ tkcmd.obj: tkcmd.cc \
   ../../include/coutvect.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
-  ../../include/cenum.h
+  ../../include/cenum.h \
+  ../envir/omnetapp.h \
+  ../../include/cexception.h \
+  ../envir/args.h \
+  ../envir/envdefs.h \
+  ../../include/envirext.h \
+  ../../include/macros.h \
+  ../../include/onstartup.h
 tklib.obj: tklib.cc \
   ../../include/cobject.h \
   ../../include/cmodule.h \
   ../../include/csimul.h \
   tklib.h \
-  tkinsp.h \
+  inspector.h \
   tkapp.h \
+  ../envir/patmatch.h \
   ../../include/util.h \
   ../../include/defs.h \
   ../../include/ccoroutine.h \
@@ -285,4 +413,12 @@ tklib.obj: tklib.cc \
   ../../include/cgate.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
-  ../../include/coutvect.h
+  ../../include/coutvect.h \
+  ../envir/omnetapp.h \
+  ../../include/cenvir.h \
+  ../../include/cexception.h \
+  ../envir/args.h \
+  ../envir/envdefs.h \
+  ../../include/envirext.h \
+  ../../include/cpar.h
+

@@ -9,7 +9,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -31,7 +31,8 @@
 
 #include "tkapp.h"
 #include "tklib.h"
-#include "tkinsp.h"
+#include "inspfactory.h"
+#include "modinsp.h"
 #include "arrow.h"
 
 
@@ -42,10 +43,30 @@ char *modstate[] = {
   ""
 };
 
+
+void _dummy_for_modinsp() {}
+
 //=======================================================================
 
-TModuleWindow::TModuleWindow(cObject *obj,int typ,void *dat) :
-    TInspector(obj,typ,dat)
+class TModuleWindowFactory : public cInspectorFactory
+{
+  public:
+    TModuleWindowFactory(const char *name) : cInspectorFactory(name) {}
+
+    bool supportsObject(cObject *obj) {return dynamic_cast<cModule *>(obj)!=NULL;}
+    int inspectorType() {return INSP_MODULEOUTPUT;}
+    double qualityAsDefault(cObject *object) {return 2.9;}
+
+    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
+        return new TModuleWindow(object, type, geom, data);
+    }
+};
+
+Register_InspectorFactory(TModuleWindowFactory);
+
+
+TModuleWindow::TModuleWindow(cObject *obj,int typ,const char *geom,void *dat) :
+    TInspector(obj,typ,geom,dat)
 {
 }
 
@@ -86,14 +107,31 @@ void TModuleWindow::update()
 
 //=======================================================================
 
+class TGraphicalModWindowFactory : public cInspectorFactory
+{
+  public:
+    TGraphicalModWindowFactory(const char *name) : cInspectorFactory(name) {}
+
+    bool supportsObject(cObject *obj) {return dynamic_cast<cModule *>(obj)!=NULL;}
+    int inspectorType() {return INSP_GRAPHICAL;}
+    double qualityAsDefault(cObject *object) {return 3.0;}
+
+    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
+        return new TGraphicalModWindow(object, type, geom, data);
+    }
+};
+
+Register_InspectorFactory(TGraphicalModWindowFactory);
+
+
 // helper function
 static void dispStringCallback(cModule *mod, bool immediate, void *data)
 {
    ((TGraphicalModWindow *)data)->displayStringChange(mod,immediate);
 }
 
-TGraphicalModWindow::TGraphicalModWindow(cObject *obj,int typ,void *dat) :
-    TInspector(obj,typ,dat)
+TGraphicalModWindow::TGraphicalModWindow(cObject *obj,int typ,const char *geom,void *dat) :
+    TInspector(obj,typ,geom,dat)
 {
    needs_redraw = false;
    random_seed = 1;
@@ -379,8 +417,25 @@ int TGraphicalModWindow::getDisplayStringPar(Tcl_Interp *interp, int argc, char 
 
 //=======================================================================
 
-TCompoundModInspector::TCompoundModInspector(cObject *obj,int typ,void *dat) :
-    TInspector(obj,typ,dat)
+class TCompoundModInspectorFactory : public cInspectorFactory
+{
+  public:
+    TCompoundModInspectorFactory(const char *name) : cInspectorFactory(name) {}
+
+    bool supportsObject(cObject *obj) {return dynamic_cast<cModule *>(obj)!=NULL;}
+    int inspectorType() {return INSP_OBJECT;}
+    double qualityAsDefault(cObject *object) {return 2.9;}
+
+    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
+        return new TCompoundModInspector(object, type, geom, data);
+    }
+};
+
+Register_InspectorFactory(TCompoundModInspectorFactory);
+
+
+TCompoundModInspector::TCompoundModInspector(cObject *obj,int typ,const char *geom,void *dat) :
+    TInspector(obj,typ,geom,dat)
 {
 }
 
@@ -418,8 +473,25 @@ void TCompoundModInspector::update()
 }
 
 //=======================================================================
-TSimpleModInspector::TSimpleModInspector(cObject *obj,int typ,void *dat) :
-    TInspector(obj,typ,dat)
+class TSimpleModInspectorFactory : public cInspectorFactory
+{
+  public:
+    TSimpleModInspectorFactory(const char *name) : cInspectorFactory(name) {}
+
+    bool supportsObject(cObject *obj) {return dynamic_cast<cSimpleModule *>(obj)!=NULL;}
+    int inspectorType() {return INSP_OBJECT;}
+    double qualityAsDefault(cObject *object) {return 4.0;}
+
+    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
+        return new TSimpleModInspector(object, type, geom, data);
+    }
+};
+
+Register_InspectorFactory(TSimpleModInspectorFactory);
+
+
+TSimpleModInspector::TSimpleModInspector(cObject *obj,int typ,const char *geom,void *dat) :
+    TInspector(obj,typ,geom,dat)
 {
 }
 
@@ -481,8 +553,24 @@ void TSimpleModInspector::update()
 }
 
 //=======================================================================
-TGateInspector::TGateInspector(cObject *obj,int typ,void *dat) :
-    TInspector(obj,typ,dat)
+class TGateInspectorFactory : public cInspectorFactory
+{
+  public:
+    TGateInspectorFactory(const char *name) : cInspectorFactory(name) {}
+
+    bool supportsObject(cObject *obj) {return dynamic_cast<cGate *>(obj)!=NULL;}
+    int inspectorType() {return INSP_OBJECT;}
+    double qualityAsDefault(cObject *object) {return 2.9;}
+
+    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
+        return new TGateInspector(object, type, geom, data);
+    }
+};
+
+Register_InspectorFactory(TGateInspectorFactory);
+
+TGateInspector::TGateInspector(cObject *obj,int typ,const char *geom,void *dat) :
+    TInspector(obj,typ,geom,dat)
 {
 }
 
@@ -531,9 +619,25 @@ void TGateInspector::update()
 }
 
 //=======================================================================
+class TGraphicalGateWindowFactory : public cInspectorFactory
+{
+  public:
+    TGraphicalGateWindowFactory(const char *name) : cInspectorFactory(name) {}
 
-TGraphicalGateWindow::TGraphicalGateWindow(cObject *obj,int typ,void *dat) :
-    TInspector(obj,typ,dat)
+    bool supportsObject(cObject *obj) {return dynamic_cast<cGate *>(obj)!=NULL;}
+    int inspectorType() {return INSP_GRAPHICAL;}
+    double qualityAsDefault(cObject *object) {return 3.0;}
+
+    TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
+        return new TGraphicalGateWindow(object, type, geom, data);
+    }
+};
+
+Register_InspectorFactory(TGraphicalGateWindowFactory);
+
+
+TGraphicalGateWindow::TGraphicalGateWindow(cObject *obj,int typ,const char *geom,void *dat) :
+    TInspector(obj,typ,geom,dat)
 {
 }
 

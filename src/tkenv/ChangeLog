@@ -3,6 +3,8 @@
 	* inspect.cc, tkapp.cc,..: inspectorfactory registration moved here 
 	from sim/
 
+	* totally reorganized the way inspectors are found and created
+
 2002-10-26  Andras Varga
 
 	* outvector inspectors: added basic labeling to axes
@@ -24,8 +26,8 @@
 	object search is relatively expensive operation, so Tkenv performance
 	may degrade if there are too many pending inspectors. If the network
 	you're running under Tkenv changes often, it's a good idea to 
-	delete .tkenvrc manually sometimes to clean it from garbage, from 
-	obsolete entries.
+	delete .tkenvrc manually sometimes to clean it from garbage (i.e. from 
+	obsolete entries).
 	 
 2002-10-04  Andras Varga
 
