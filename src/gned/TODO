@@ -2,7 +2,7 @@ Bugs:
 - module name mismatch in the submods and conns sections ==> sometimes "assert failed"
 - resizing the parent module is difficult: you must hit the _inner_
   (invisible) border
-- connection drawing doesn't work sometimes (reproduce!)
+- connection drawing doesn't work sometimes (can't reproduce...)
 
 Parse/Generate:
 - sometimes generates empty lines into the code
@@ -39,7 +39,8 @@ Text editor:
 - add find/replace dialog
 - pgup, ctrl-pgup doesn't work correctly
 - make status line: line number etc.
-- syntax highlighting not 100% OK
+- syntax highlighting not 100% OK: it can be fooled with string constants
+  containing `//' or `\"' sequences
 
 General:
 - introduce ~/.gnedrc
