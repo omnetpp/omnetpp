@@ -707,7 +707,7 @@ void end_for (void)
         nl_empty (&for_list);
 }
 
-void do_mod_gate_L (char *gname, char *gi)
+void do_mod_L (char *gname, char *gi)
 {
         if (firstpass)
         {
@@ -716,36 +716,8 @@ void do_mod_gate_L (char *gname, char *gi)
                 return;
         }
 
-        jar_strcpy (gate_mod_L, "");
-        jar_strcpy (gate_mod_nr_L, "");
-
-        jar_strcpy (gate_L, gname);
-        if (gi)
-                jar_strcpy (gate_nr_L, gi);
-        else
-                jar_strcpy (gate_nr_L, "");
-
-        jar_free (gname);
-        jar_free (gi);
-}
-
-void do_mod_gate_R (char *gname, char *gi)
-{
-        if (firstpass)
-        {
-                jar_free (gname);
-                jar_free (gi);
-                return;
-        }
-
-        jar_strcpy (gate_mod_R, "");
-        jar_strcpy (gate_mod_nr_R, "");
-
-        jar_strcpy (gate_R, gname);
-        if (gi)
-                jar_strcpy (gate_nr_R, gi);
-        else
-                jar_strcpy (gate_nr_R, "");
+        jar_strcpy (gate_mod_L,    gname ? gname : "");
+        jar_strcpy (gate_mod_nr_L, gi    ? gi    : "");
 
         jar_free (gname);
         jar_free (gi);
@@ -760,14 +732,24 @@ void do_gate_L (char *gname, char *gi)
                 return;
         }
 
-        jar_strcpy (gate_mod_L, gate_L);
-        jar_strcpy (gate_mod_nr_L, gate_nr_L);
-
         jar_strcpy (gate_L, gname);
-        if (gi)
-                jar_strcpy (gate_nr_L, gi);
-        else
-                jar_strcpy (gate_nr_L, "");
+        jar_strcpy (gate_nr_L, gi ? gi : "");
+
+        jar_free (gname);
+        jar_free (gi);
+}
+
+void do_mod_R (char *gname, char *gi)
+{
+        if (firstpass)
+        {
+                jar_free (gname);
+                jar_free (gi);
+                return;
+        }
+
+        jar_strcpy (gate_mod_R,    gname ? gname : "");
+        jar_strcpy (gate_mod_nr_R, gi    ? gi    : "");
 
         jar_free (gname);
         jar_free (gi);
@@ -782,14 +764,8 @@ void do_gate_R (char *gname, char *gi)
                 return;
         }
 
-        jar_strcpy (gate_mod_R, gate_R);
-        jar_strcpy (gate_mod_nr_R, gate_nr_R);
-
         jar_strcpy (gate_R, gname);
-        if (gi)
-                jar_strcpy (gate_nr_R, gi);
-        else
-                jar_strcpy (gate_nr_R, "");
+        jar_strcpy (gate_nr_R, gi ? gi : "");
 
         jar_free (gname);
         jar_free (gi);

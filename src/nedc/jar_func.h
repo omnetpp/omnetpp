@@ -105,8 +105,8 @@ void do_for (void);
 void do_index (char *iname, char *ibegin, char *iend);
 void end_for (void);
 
-void do_mod_gate_L (char *gname, char *gi);
-void do_mod_gate_R (char *gname, char *gi);
+void do_mod_L (char *gname, char *gi);
+void do_mod_R (char *gname, char *gi);
 void do_gate_L (char *gname, char *gi);
 void do_gate_R (char *gname, char *gi);
 

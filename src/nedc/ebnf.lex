@@ -94,7 +94,7 @@ char textbuf[256], lasttextbuf[256] = "";
  /*"byvalue"               { count(); return (BYVALUE); }  --VA*/
 "ancestor"              { count(); return (ANCESTOR); }
 "input"                 { count(); return (INPUT); }
-"const"                 { count(); return (CONST); }
+"const"                 { count(); return (NED_CONST); }
 "sizeof"                { count(); return (SIZEOF); }  /* --VA*/
 "endsimple"             { count(); return (ENDSIMPLE); }
 "endmodule"             { count(); return (ENDMODULE); }

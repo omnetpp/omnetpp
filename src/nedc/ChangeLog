@@ -215,3 +215,7 @@ Robert van der Leij, during summer 1995.
   - version.log renamed to ChangeLog
   - removed support for DOS with BC3.1
   - portability change: ebnf.y now includes malloc.h
+June 30, 1999
+  - ebnf.y ported back from GNED -- has been modified since: most be copied back!
+  - added nedc.ide and b.bat
+  - DOES NOT WORK YET! TEST9.NED FAILS TO COMPILE!
