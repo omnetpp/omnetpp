@@ -53,3 +53,14 @@ abspath x:\base c:dir
 abspath x:/base c:dir
 abspath x:base c:dir
 echo.
+
+:: path has no drive but absolute dir
+abspath base \dir
+abspath base /dir
+abspath \base \dir
+abspath /base /dir
+abspath c:\base \dir
+abspath c:/base /dir
+abspath c:base \dir
+abspath c:base /dir
+echo.
