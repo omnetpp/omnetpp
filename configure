@@ -2682,7 +2682,7 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
 
 #
-# OMNeT++ version number
+# OMNeT++/OMNEST version number
 #
 OMNETPP_VERSION=`cat Version | sed 's/omnetpp-//'`
 
@@ -2892,8 +2892,8 @@ done
 test -n "$YACC" || YACC="yacc"
 
 if test "$YACC" = "yacc"; then
-   { { echo "$as_me:$LINENO: error: Bison not found, needed to build OMNeT++ -- please install it!" >&5
-echo "$as_me: error: Bison not found, needed to build OMNeT++ -- please install it!" >&2;}
+   { { echo "$as_me:$LINENO: error: Bison not found, needed to build OMNeT++/OMNEST -- please install it!" >&5
+echo "$as_me: error: Bison not found, needed to build OMNeT++/OMNEST -- please install it!" >&2;}
    { (exit 1); exit 1; }; }
 fi
 
@@ -3295,8 +3295,8 @@ fi
 
 if test "$DOXYGEN" = "not found"; then
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES doxygen"
-   { echo "$as_me:$LINENO: WARNING: doxygen not found -- it is needed to create the OMNeT++ API reference and also useful with opp_neddoc." >&5
-echo "$as_me: WARNING: doxygen not found -- it is needed to create the OMNeT++ API reference and also useful with opp_neddoc." >&2;}
+   { echo "$as_me:$LINENO: WARNING: doxygen not found -- it is needed to create the OMNeT++/OMNEST API reference and also useful with opp_neddoc." >&5
+echo "$as_me: WARNING: doxygen not found -- it is needed to create the OMNeT++/OMNEST API reference and also useful with opp_neddoc." >&2;}
    { echo "$as_me:$LINENO: WARNING: It is available from http://www.doxygen.org/" >&5
 echo "$as_me: WARNING: It is available from http://www.doxygen.org/" >&2;}
 fi
@@ -4975,8 +4975,8 @@ else
     PLOVE_IF_POSSIBLE=missing-library
     if test "$no_x" = "yes"; then
         if test "$cygwin" = yes; then
-            { { echo "$as_me:$LINENO: error: Cannot build Tcl/Tk apps, probably due to missing X11 headers -- try installing the XFree86 packages or get the X headers from the OMNeT++ site" >&5
-echo "$as_me: error: Cannot build Tcl/Tk apps, probably due to missing X11 headers -- try installing the XFree86 packages or get the X headers from the OMNeT++ site" >&2;}
+            { { echo "$as_me:$LINENO: error: Cannot build Tcl/Tk apps, probably due to missing X11 headers -- try installing the XFree86 packages or get the X headers from www.omnetpp.org" >&5
+echo "$as_me: error: Cannot build Tcl/Tk apps, probably due to missing X11 headers -- try installing the XFree86 packages or get the X headers from www.omnetpp.org" >&2;}
    { (exit 1); exit 1; }; }
         else
             { { echo "$as_me:$LINENO: error: Cannot build Tcl/Tk apps, probably due to misconfigured or missing X11 headers or libs. Check config.log for more info!" >&5
@@ -6730,7 +6730,7 @@ WARNING: The configuration script has found problems with the following packages
   $OPP_PROBLEM_PACKAGES
 
 Scroll up to see the warning messages (use shift+PgUp key). While you can
-still use OMNeT++ in the current configuration, be aware that certain
+still use OMNeT++/OMNEST in the current configuration, be aware that certain
 functionality may be degraded or unavailable.
 
 EOT
@@ -6793,10 +6793,10 @@ if test "$build_shared_libs" = yes -a "$cygwin" != yes; then
 WARNING: You selected shared libraries in configure.user, but your
 LD_LIBRARY_PATH doesn't seem to contain $OMNETPP_LIB_DIR!
 
-So that the dynamic linker can find the OMNeT++ shared libs, you either have
-to create symbolic links from /usr/lib to the OMNeT++ shared libraries
-(you can do it as root), or better, set the LD_LIBRARY_PATH environment
-variable.
+So that the dynamic linker can find the OMNeT++/OMNEST shared libs, you either
+have to create symbolic links from /usr/lib to the OMNeT++/OMNEST shared
+libraries (you can do it as root), or better, set the LD_LIBRARY_PATH
+environment variable.
 
 Add the corresponding line to your startup file:
   export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:$OMNETPP_LIB_DIR

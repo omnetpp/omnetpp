@@ -46,7 +46,7 @@ AC_PROG_CXX
 
 
 #
-# OMNeT++ version number
+# OMNeT++/OMNEST version number
 #
 OMNETPP_VERSION=`cat Version | sed 's/omnetpp-//'`
 
@@ -211,7 +211,7 @@ CFLAGS="$CFLAGS $CFLAGS_ARCH"
 
 AC_PROG_YACC
 if test "$YACC" = "yacc"; then
-   AC_MSG_ERROR([Bison not found, needed to build OMNeT++ -- please install it!])
+   AC_MSG_ERROR([Bison not found, needed to build OMNeT++/OMNEST -- please install it!])
 fi
 AC_PROG_LEX
 # AC_PROG_CC -- these are needed at the top
@@ -224,7 +224,7 @@ AC_CHECK_PROG(DOXYGEN, doxygen, doxygen, not found)
 
 if test "$DOXYGEN" = "not found"; then
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES doxygen"
-   AC_MSG_WARN(doxygen not found -- it is needed to create the OMNeT++ API reference and also useful with opp_neddoc.)
+   AC_MSG_WARN(doxygen not found -- it is needed to create the OMNeT++/OMNEST API reference and also useful with opp_neddoc.)
    AC_MSG_WARN(It is available from http://www.doxygen.org/)
 fi
 
@@ -373,7 +373,7 @@ else
     PLOVE_IF_POSSIBLE=missing-library
     if test "$no_x" = "yes"; then
         if test "$cygwin" = yes; then
-            AC_MSG_ERROR([Cannot build Tcl/Tk apps, probably due to missing X11 headers -- try installing the XFree86 packages or get the X headers from the OMNeT++ site])
+            AC_MSG_ERROR([Cannot build Tcl/Tk apps, probably due to missing X11 headers -- try installing the XFree86 packages or get the X headers from www.omnetpp.org])
         else
             AC_MSG_ERROR([Cannot build Tcl/Tk apps, probably due to misconfigured or missing X11 headers or libs. Check config.log for more info!])
         fi
@@ -664,7 +664,7 @@ WARNING: The configuration script has found problems with the following packages
   $OPP_PROBLEM_PACKAGES
 
 Scroll up to see the warning messages (use shift+PgUp key). While you can
-still use OMNeT++ in the current configuration, be aware that certain
+still use OMNeT++/OMNEST in the current configuration, be aware that certain
 functionality may be degraded or unavailable.
 
 EOT
@@ -727,10 +727,10 @@ if test "$build_shared_libs" = yes -a "$cygwin" != yes; then
 WARNING: You selected shared libraries in configure.user, but your
 LD_LIBRARY_PATH doesn't seem to contain $OMNETPP_LIB_DIR!
 
-So that the dynamic linker can find the OMNeT++ shared libs, you either have
-to create symbolic links from /usr/lib to the OMNeT++ shared libraries
-(you can do it as root), or better, set the LD_LIBRARY_PATH environment
-variable.
+So that the dynamic linker can find the OMNeT++/OMNEST shared libs, you either
+have to create symbolic links from /usr/lib to the OMNeT++/OMNEST shared 
+libraries (you can do it as root), or better, set the LD_LIBRARY_PATH 
+environment variable.
 
 Add the corresponding line to your startup file:
   export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:$OMNETPP_LIB_DIR
