@@ -98,6 +98,11 @@ class SIM_API opp_string
 
 };
 
+inline std::ostream& operator<<(std::ostream& out, const opp_string& s)
+{
+    out << s.c_str(); return out;
+}
+
 #endif
 
 
