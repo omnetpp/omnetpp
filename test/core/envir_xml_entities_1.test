@@ -1,0 +1,21 @@
+%description:
+Entities are substituted.
+
+%file: {}.dtd
+<!ENTITY xrul "xml rulez">
+<!ELEMENT foo ANY>
+<!ELEMENT bar ANY>
+
+%file: {}.xml
+<?xml version="1.0" ?>
+<!DOCTYPE foo SYSTEM "./{}.dtd">
+<foo>
+    <bar>Hey, &xrul;!</bar>
+</foo>
+
+%activity:
+cXMLElement *node = ev.getXMLDocument("{}.xml");
+node->debugDump();
+
+%contains: stdout
+<bar>Hey, xml rulez!</bar>
