@@ -431,7 +431,7 @@ neddoc.html: $nedfiles
 	@echo File neddoc.html generated.
 
 htmldocs:
-	@doxygen -g - | sed "s/^PROJECT_NAME.*/PROJECT_NAME = $outfile/;\\
+	@doxygen -g- | sed "s/^PROJECT_NAME.*/PROJECT_NAME = $outfile/;\\
 	s|^INPUT *=.*|INPUT = . $dirs|;\\
 	s/^EXTRACT_ALL *=.*/EXTRACT_ALL = yes/;\\
 	s/^EXTRACT_PRIVATE *=.*/EXTRACT_PRIVATE = yes/;\\
