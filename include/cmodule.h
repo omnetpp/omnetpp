@@ -289,6 +289,11 @@ class SIM_API cModule : public cDefaultList
     virtual void forEachChild(cVisitor *v);
 
     /**
+     * Sets object's name. Redefined to update the stored fullName string.
+     */
+    virtual void setName(const char *s);
+
+    /**
      * Returns the full name of the module, which is name() plus the
      * index in square brackets (e.g. "module[4]"). Redefined to add the
      * index.

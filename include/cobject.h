@@ -303,7 +303,7 @@ class SIM_API cObject : public cPolymorphic
      * Sets object's name. The object creates its own copy of the string.
      * NULL pointer may also be passed.
      */
-    void setName(const char *s);
+    virtual void setName(const char *s);
 
     /**
      * Returns pointer to the object's name. The function never returns
@@ -418,7 +418,7 @@ class SIM_API cObject : public cPolymorphic
      * contained will be searched, otherwise the function searches the
      * whole subtree for the object. It uses the forEachChild() mechanism.
      *
-     * Do not use it for finding submodules!
+     * Do not use it for finding submodules! See cModule::moduleByRelativePath().
      */
     cObject *findObject(const char *name, bool deep=true);
 
