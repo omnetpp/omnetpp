@@ -1,6 +1,41 @@
 What's New
 ==========
 
+In the OMNeT++ 2.0 beta 4 version (May 2000)
+--------------------------------------------
+This is mainly a maintenance and bugfix release, a preparation to the 2.0 final
+release: most of the changes improve on the ISO compliance, cleanliness,
+portability or quality of the code rather than adding new features.
+
+Improvements on the simulation library: sum() and sqrSum() members added to the
+statistics classes (cStdDev & subclasses); isNumeric() member added to cPar;
+remove(cObject *) added to cArray. Also, three functions were added to cModule
+to facilitate navigating the module hierarchy: int findSubmodule(...),
+cModule *submodule(...) and cModule *moduleByRelativePath(...).
+
+Steps toward better ISO compliance: the source was made 'const char *'-correct,
+and the TRUE/FALSE #defines were replaced by the true/false C++ keywords.
+Also, nearly all '-Wall' gcc warnings were eliminated from the source.
+
+Now it is possible to create DLLs from the libraries on Windows. This wasn't
+as easy as I thought, because there are fundamental conceptual differences
+between Windows DLLs and Unix shared objects. (For me it seems like the Unix
+approach is a lot more flexible.)
+
+New feature in Envir: you may link more than one user interfaces into a
+simulation executable, and you can select the appropriate one at runtime
+with the [General]/user-interface=Tkenv (or =Cmdenv) ini file option or the
+-u Tkenv (or -u Cmdenv) command-line argument to the simulation executable.
+
+In NEDC (and GNED), fixed the ?: operator and changed its precedence to bind
+looser than || and &&. Changed nedc-generated code to suppress warnings about
+unused variables (which are normal anyway in machine-generated code).
+
+Several other smaller changes like fixed PVM execution; improved error handling,
+bugfix related to wrong transmissionFinishes() behavior, etc; see the
+sim/ChangeLog file.
+
+
 In the OMNeT++ 2.0 beta 3 version (Jan 2000)
 --------------------------------------------
 License change: you can now elect to use GPL for the whole OMNeT++ package.
@@ -38,7 +73,7 @@ In the OMNeT++ 2.0 beta 1 and 2 versions (Sep,Nov 1999)
 License conditions have been alleviated: from this release on, one can elect
 to use GPL for the base components of OMNeT++.
 
-The configure script has been replaced by GNU Autoconf. The makefiles have been 
+The configure script has been replaced by GNU Autoconf. The makefiles have been
 brushed up (more standard symbol names, autodepend, version number in lib names,
 etc). Cygwin is now fully supported. DOS+BC3.1 support has been removed for
 lack of interest. File names longer than 8+3 are now used within the package.
@@ -67,7 +102,7 @@ cMessage to facilitate writing modules which use a large number of self
 messages concurrently.
 
 See the ChangeLog in the directory of the individual components for details
-on what has been changed/fixed/improved. 
+on what has been changed/fixed/improved.
 
 Contributions have been added. They include NED syntax highlight for Emacs,
 and recipes and sample code to use Octave with OMNeT++.
@@ -113,46 +148,46 @@ A models/support library added with several base/utility classes and modules.
 
 Ported to Windows 95/NT. Borland C++ 5.0 project files are included.
 
-Numerous smaller improvements on Plove and Tkenv. Possibility 
-to make standalone simulation executables with Tkenv's TCL script 
+Numerous smaller improvements on Plove and Tkenv. Possibility
+to make standalone simulation executables with Tkenv's TCL script
 parts compiled into the executable.
 
-To-do list and coding conventions (style guide) has been added to the 
-docs; please stick to it. Tkenv is now better documented; and so is the 
+To-do list and coding conventions (style guide) has been added to the
+docs; please stick to it. Tkenv is now better documented; and so is the
 cKSplit class.
 
-As usually, additions and changes in the User Manual are marked with 
-(new) in the text. It does not necessarily mean the feature documented 
+As usually, additions and changes in the User Manual are marked with
+(new) in the text. It does not necessarily mean the feature documented
 there is new; most probably only the documentation is.
 
-As usually, you're welcome to hack on the code and send in patches! 
+As usually, you're welcome to hack on the code and send in patches!
 GNED is a very good target to start at. If you plan to do development,
-you can sign up on the OMNeT++ mailing list and exchange ideas with 
+you can sign up on the OMNeT++ mailing list and exchange ideas with
 others.
 
 
 In version of July, 1998
 ------------------------
 
-Documentation now includes quickstart reference for OPNET users. 
+Documentation now includes quickstart reference for OPNET users.
 Additions to the User Manual are marked with (new!) in the text.
 
-Tkenv has been improved significantly. Better animation: message names 
-are displayed and message kind is color-coded. New connection inspector 
-shows a connection path graphically. Module inspector has been redesigned 
+Tkenv has been improved significantly. Better animation: message names
+are displayed and message kind is color-coded. New connection inspector
+shows a connection path graphically. Module inspector has been redesigned
 in notepad-style. Right-click popup menus in inspector windows.
-Variables can be changed at run-time by cWatch inspectors. You can now 
-use the menu and play with the inspectors while simulation is running. 
+Variables can be changed at run-time by cWatch inspectors. You can now
+use the menu and play with the inspectors while simulation is running.
 Several smaller improvements.
 
-Routing support through the cTopology class. Other new classes are 
-cWeightedStdDev, cLinkedList. Direct message encapsulation support. 
-cPar can now store void* pointers. Output scalar file added which 
-accumulates results from several simulation runs. Several refinements 
-on the class library, more informative error messages. 
+Routing support through the cTopology class. Other new classes are
+cWeightedStdDev, cLinkedList. Direct message encapsulation support.
+cPar can now store void* pointers. Output scalar file added which
+accumulates results from several simulation runs. Several refinements
+on the class library, more informative error messages.
 
-Improved makemake script supports large models which span across 
-multiple directories. Plove made more intuitive with mc-like key bindings 
+Improved makemake script supports large models which span across
+multiple directories. Plove made more intuitive with mc-like key bindings
 and right-click popup menus.
 
 
@@ -181,7 +216,7 @@ enhanced.
 
 Wildcards (*,?) can be used in omnetpp.ini to supply values to several
 model parameters at a time. Ini file inclusion and multiple ini files
-support (via multiple -f command-line options) added. Total stack size 
+support (via multiple -f command-line options) added. Total stack size
 for the coroutines can now be given in the omnetpp.ini file.
 
 Several bug fixes and minor improvements on Plove, GNED etc.
