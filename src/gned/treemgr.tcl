@@ -37,6 +37,14 @@ proc initTreeManager {} {
         dragAndDropStart $key %X %Y
     }
 
+    bind $gned(manager).tree <B1-Motion> {
+        dragAndDropMotion %X %Y
+    }
+
+    bind $gned(manager).tree <ButtonRelease-1> {
+        dragAndDropFinish %X %Y
+    }
+
     bind $gned(manager).tree <Double-1> {
         set key [Tree:nodeat %W %x %y]
         if {$key!=""} {
@@ -52,15 +60,6 @@ proc initTreeManager {} {
             treemanagerPopup $key %X %Y
         }
     }
-
-    bind $gned(manager).tree <B1-Motion> {
-        dragAndDropMotion %X %Y
-    }
-
-    bind $gned(manager).tree <ButtonRelease-1> {
-        dragAndDropFinish %X %Y
-    }
-
 }
 
 
@@ -215,7 +214,10 @@ proc nedfilePopup {key} {
 
 proc toplevelComponentPopup {key} {
     global ned
-    # FIXME:
+
+    if {$ned($key,type)=="module" || $ned($key,type)=="simple"} {
+       .popup add command -command "createSubmoduleOnCanvas $key" -label {Drop an instance onto canvas} -underline 1
+    }
     foreach i {
       {command -command "editProps $key" -label {Properties...} -underline 0}
       {command -command "openModuleOnCanvas $key" -label {Open on canvas} -underline 0}

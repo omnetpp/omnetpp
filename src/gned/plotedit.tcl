@@ -1002,15 +1002,35 @@ proc _getCenterAndSize {c key} {
 proc _renameOnCanvas {key name} {
     global ned
 
-    # rename item
-    set name [renameItem $key $name]
+    if {$ned($key,type)=="submod"} {
+        # parse name: maybe looks like name[size]
+        set size ""
+        set newname $name
+        regexp -- {(.*)\[(.*)\] *} $newname dummy newname size
+
+        # rename item and set size
+        set newname [renameItem $key $newname]
+        set ned($key,vectorsize) $size
+        if {$size!=""} {
+            set newname "$newname\[$size\]"
+        }
+    } elseif {$ned($key,type)=="module"} {
+        set newname [renameItem $key $name]
+    } else {
+        error "unexpected type $ned($key,type)"
+    }
+
+    if [string compare $name $newname] {
+        tk_messageBox -type ok -title GNED -icon warning \
+            -message "The name you typed was changed from '$name' to '$newname' to make it legal/unique."
+    }
 
     # update all display elements
     if {$ned($key,type)=="module"} {
         adjustWindowTitle
     }
     updateTreeManager
-    return $name
+    return $newname
 }
 
 
@@ -1024,3 +1044,4 @@ proc markCanvasDirty {} {
     set modkey $canvas($gned(canvas_id),module-key)
     markNedfileOfItemDirty $modkey
 }
+

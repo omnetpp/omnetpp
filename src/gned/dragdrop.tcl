@@ -105,8 +105,11 @@ proc dragAndDropFinish {x y} {
 # Called when the user drags a module type on the canvas
 # (dragAndDropFinish).
 #
-proc createSubmoduleOnCanvas {typekey canvx canvy} {
+proc createSubmoduleOnCanvas {typekey {canvx {}} {canvy {}}} {
     global ned defaultparvalue gned canvas
+
+    if {$canvx==""} {set canvx [expr 100+100*rand()]}
+    if {$canvy==""} {set canvy [expr 100+100*rand()]}
 
     # find parent module key
     set modkey $canvas($gned(canvas_id),module-key)

@@ -75,10 +75,11 @@ proc resizeCanvasEntry {w} {
 #
 proc commitCanvasEntry {c id e eid cmd} {
     # let $cmd modify the text from the entry
-    set txt [eval $cmd [list [$e get]]]
-    $c itemconfig $id -text $txt
+    set txt [$e get]
     $c delete $eid
     destroy $e
+    set txt [eval $cmd [list $txt]]
+    $c itemconfig $id -text $txt
 }
 
 
