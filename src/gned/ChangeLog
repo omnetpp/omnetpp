@@ -10,6 +10,8 @@ proc.gif etc will overwrite the exit, proc Tcl commands!)
 	* fixed bug that caused Tk error when a display string contains
 	a paremeter reference, e.g. "o=$color"
 
+	* implemented File|Export EPS... function
+
 2004-02-04  ------ omnetpp-3.0pre1 released ------
 
 2004-02-03  Andras Varga

@@ -487,19 +487,8 @@ proc exportCanvasesToPostscript {dir imgxmlfile imgsuffix} {
         busy "Generating postscript to $psfile..."
 
         switchToCanvas $canvid
-        set canv $canvas($i)
-        set bbox [$canv bbox all]
-        set bbx1 [lindex $bbox 0]
-        set bby1 [lindex $bbox 1]
-        set bbx2 [lindex $bbox 2]
-        set bby2 [lindex $bbox 3]
-        set width [expr $bbx2-$bbx1]
-        set height [expr $bby2-$bby1]
         update idletasks
-
-        # export canvas
-        $canv postscript -file $psfile -x $bbx1 -y $bby1 -width $width -height $height \
-                         -pagex 0 -pagey 0 -pagewidth $width -pageheight $height
+        doExportCanvasToEPS $canvas($i) $psfile
 
         # create imagemap
         set submodskey [getChildrenWithType $modkey submods]
@@ -531,3 +520,20 @@ proc exportCanvasesToPostscript {dir imgxmlfile imgsuffix} {
 }
 
 
+# doExportCanvasToEPS --
+#
+# Actually saves canvas contents to EPS file
+#
+proc doExportCanvasToEPS {c psfile} {
+    set bbox [$c bbox all]
+    set bbx1 [lindex $bbox 0]
+    set bby1 [lindex $bbox 1]
+    set bbx2 [lindex $bbox 2]
+    set bby2 [lindex $bbox 3]
+    set width [expr $bbx2-$bbx1]
+    set height [expr $bby2-$bby1]
+
+    # export canvas
+    $c postscript -file $psfile -x $bbx1 -y $bby1 -width $width -height $height \
+                  -pagex 0 -pagey 0 -pagewidth $width -pageheight $height
+}

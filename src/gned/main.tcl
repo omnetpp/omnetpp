@@ -115,6 +115,8 @@ proc createMainWindow {} {
       {command -command fileCloseNedfile -label {Close NED file} -underline 0}
       {command -command fileCloseCanvas  -label {Close component} -underline 4}
       {separator}
+      {command -command fileExportEPS    -label {Export EPS...} -underline 2}
+      {separator}
       {command -command fileImportXML    -label {Import XML...} -underline 2}
       {command -command fileExportXML    -label {Export XML...} -underline 2}
       {separator}

@@ -203,6 +203,37 @@ proc fileCloseCanvas {} {
    updateTreeManager
 }
 
+proc fileExportEPS {} {
+   global gned canvas ned env config
+
+   set canv_id $gned(canvas_id)
+   set modkey $canvas($canv_id,module-key)
+
+   if [info exist modkey] {
+      set fname "$ned($modkey,name).eps"
+   } else {
+      set fname "unnamed.eps"
+   }
+
+   if {[string compare [file tail $fname] $fname]==0} {
+       set dir $config(default-dir)
+   } else {
+       set dir [file dirname $fname]
+   }
+
+   set fname [file tail $fname]
+   set fname [tk_getSaveFile -defaultextension ".eps" \
+              -initialdir $dir -initialfile $fname \
+              -filetypes {{{EPS files} {*.eps}} {{All files} {*}}}]
+
+   if {$fname!=""} {
+      set config(default-dir) [file dirname $fname]
+      # regsub "^$env(HOME)/" $fname "~/" fname
+      doExportCanvasToEPS $gned(canvas) $fname
+   }
+}
+
+
 proc fileImportXML {{fname ""}} {
    global gned env canvas ned config
 
