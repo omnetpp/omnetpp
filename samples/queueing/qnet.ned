@@ -8,14 +8,14 @@ import "sink.ned";
 
 module QNet
     submodules:
-        src: QSource;
+        enter: QSource;
             parameters:
             display: "p=63,130;i=gen";
         classifier: QClassifier;
             gatesizes:
                 out[3];
             display: "p=160,130;i=fork";
-        d: QDelay[3];
+        delay_: QDelay[3];
             display: "p=263,70,column;i=delay";
         passiveq: QPassiveQueue[3];
             gatesizes:
@@ -25,18 +25,18 @@ module QNet
             gatesizes:
                 in[3];
             display: "p=443,130;i=queue";
-        sink: QSink;
+        leave: QSink;
             display: "p=546,130;i=sink";
         drop: QSink;
             display: "p=160,200;i=sink";
     connections:
-        src.out --> classifier.in;
+        enter.out --> classifier.in;
         for i=0..2 do
-            classifier.out[i] --> d[i].in;
-            d[i].out --> passiveq[i].in;
+            classifier.out[i] --> delay_[i].in;
+            delay_[i].out --> passiveq[i].in;
             passiveq[i].out[0] --> qserver.in[i];
         endfor;
-        qserver.out --> sink.in;
+        qserver.out --> leave.in;
         classifier.other --> drop.in;
 endmodule
 

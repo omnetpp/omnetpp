@@ -1,7 +1,14 @@
 Queuing
 =======
 
-The model demonstrates a queueing network.
+The model demonstrates a queueing network. While the model is an abstract
+one, the following real-life analogy might help making sense of it:
+
+Different potential airplane passengers enter the airport building and
+want to check in at a particular counter. Some of the passengers
+
+
+
 
 The "source" module generates messages (jobs, parts, etc.) with different
 message kind values (0,1,2 and 3 with uniform probability). These messages

@@ -45,12 +45,15 @@ void QServer::handleMessage(cMessage *msg)
     {
         ASSERT(msgServiced!=NULL);
 
+        ev << "job service finished\n";
+
         send(msgServiced, "out");
         msgServiced = NULL;
 
-        if (ev.isGUI()) displayString().setTagArg("i",1,"yellow");
+        if (ev.isGUI()) displayString().setTagArg("i",1,"");
 
         // examine all input queues, in order of priority (0 is highest)
+        ev << "scanning queues in priority order if they contain jobs...\n";
         int k;
         for (k=0; k<numQueues; k++)
             if (!queues[k]->isEmpty())
@@ -58,27 +61,30 @@ void QServer::handleMessage(cMessage *msg)
 
         if (k!=numQueues)
         {
+            ev << "requesting job from queue " << k << endl;
             queues[k]->request(0);
         }
         else
         {
             // if all queues are empty, request from all of them (an accept only 1st one)
+            ev << "all queues empty, requesting them to report if something arrives\n";
             for (int i=0; i<numQueues; i++)
                 queues[i]->storeRequest(0);
             hasAcceptedOffer = false;
         }
-        if (ev.isGUI()) displayString().setTagArg("i",1,"");
     }
     else
     {
         if (msgServiced)
             error("job arrived while already servicing one");
 
+        ev << "job arrived, starting its service\n";
+
         msgServiced = msg;
         simtime_t serviceTime = par("serviceTime");
         scheduleAt(simTime()+serviceTime, endServiceMsg);
 
-        if (ev.isGUI()) displayString().setTagArg("i",1,"red");
+        if (ev.isGUI()) displayString().setTagArg("i",1,"cyan");
     }
 }
 
