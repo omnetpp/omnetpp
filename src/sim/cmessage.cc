@@ -238,13 +238,15 @@ cPar& cMessage::par(const char *s)
     }
 }
 
-int cMessage::findPar(const char *s)
+int cMessage::findPar(const char *s) const
 {
     if (!parlistp) return -1;
-    return parList().find( s );
+    return parlistp->find( s );
+    // alternatively: return parlistp ? parlistp->find( s ) : -1;
+
 }
 
-cGate *cMessage::senderGate()
+cGate *cMessage::senderGate() const
 {
     if (frommod<0 || fromgate<0)  return NULL;
     cModule *mod = simulation.module( frommod );
@@ -252,7 +254,7 @@ cGate *cMessage::senderGate()
     return mod->gate( fromgate );
 }
 
-cGate *cMessage::arrivalGate()
+cGate *cMessage::arrivalGate() const
 {
     if (tomod<0 || togate<0)  return NULL;
     cModule *mod = simulation.module( tomod );
