@@ -719,7 +719,7 @@ sub exec_program()
         }
         print "  running \"$cmd >$outfile 2>$errfile\"\n" if ($debug);
         # The following line mysteriously fails to redirect on some Windows configuration.
-        # When this happens, cvs also reports mysterious "editor session fails" error.
+        # This can be observed together with cvs reporting "editor session fails" -- root cause is common?
         #$status = system ("$cmd >$outfile 2>$errfile");
         $shell=$ENV{'COMSPEC'};
         if ($shell eq "") {
