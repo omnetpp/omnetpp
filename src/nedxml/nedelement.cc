@@ -26,7 +26,6 @@ long NEDElement::lastid = 0;
 
 bool NEDElement::stringToBool(const char *s)
 {
-// FIXME upper layers should catch exception
     if (!strcmp(s,"true"))
         return true;
     else if (!strcmp(s,"false"))
@@ -42,12 +41,12 @@ const char *NEDElement::boolToString(bool b)
 
 int NEDElement::stringToEnum(const char *s, const char *vals[], int nums[], int n)
 {
-// FIXME upper layers should catch exception
     if (!s)
         throw new NEDException("attribute cannot be empty: should be one of the allowed words '%s', etc.",vals[0]);
     for (int i=0; i<n; i++)
         if (!strcmp(s,vals[i]))
             return nums[i];
+    if (n==0) throw new NEDException("call to stringToEnum() with n=0");
     throw new NEDException("invalid attribute value '%s': should be one of the allowed words '%s', etc.",s,vals[0]);
 }
 
@@ -56,7 +55,8 @@ const char *NEDElement::enumToString(int b, const char *vals[], int nums[], int 
     for (int i=0; i<n; i++)
         if (nums[i]==b)
             return vals[i];
-    return ""; // FIXME: validation error if no match?
+    if (n==0) throw new NEDException("call to enumToString() with n=0");
+    throw new NEDException("invalid integer value %d for enum attribute (not one of '%s'=%d etc)",b,vals[0],nums[0]);
 }
 
 NEDElement::NEDElement()
