@@ -927,4 +927,5 @@ Jan 3, 2001
 Jan 15, 2001
  - bugfix: cQueue::insertBefore() and cQueue::insertAfter() didn't take
    the ownership of the inserted object [reported by Ulrich Kaage]
-    
+Jan 16, 2001
+ - added OMNETPP_VERSION to defs.h (0x0200 for OMNeT++ 2.0)
