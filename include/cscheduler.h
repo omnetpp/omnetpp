@@ -21,6 +21,7 @@
 #define __CSCHEDULER_H
 
 #include "cpolymorphic.h"
+#include "platdep/time.h"  // for timeval
 
 // forward declarations
 class cSimulation;
