@@ -115,7 +115,8 @@ while (@ARGV)
         exit(1);
     }
     else {
-        push(@filenames,$arg);
+        # glob() is called for the sake of Windows
+        push(@filenames,glob($arg));
     }
 }
 
