@@ -84,8 +84,20 @@ void cException::init(const cObject *where, int errc, const char *fmt, va_list v
 
     // assemble message text
     char message[256] = "\0";
-    if (where)
-        sprintf(message, "(%s)%s: ", where->className(), where->fullPath());
+
+    // print "(%s)%s:" conditionally:
+    //  - if object is the module itself: skip
+    //  - if object is local in module: use fullName()
+    //  - if object is somewhere else: use fullPath()
+    if (where && where!=simulation.contextModule())
+    {
+        // try: if module's fullpath is same as module fullpath + object fullname, no need to print path
+        char tmp[256];
+        sprintf(tmp,"%s.%s",(simulation.contextModule()?simulation.contextModule()->fullPath():""), where->fullName());
+        bool needpath = strcmp(tmp,where->fullPath())!=0;
+        sprintf(message, "(%s)%s: ", where->className(), needpath ? where->fullPath() : where->fullName());
+    }
+
     vsprintf(message+strlen(message),fmt,va);
     msg = message;
 

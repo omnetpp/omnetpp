@@ -354,14 +354,30 @@ int cGate::routeContains( cModule *mod, int gate )
     return 0;
 }
 
-bool cGate::isConnected() const
+bool cGate::isConnectedOutside() const
 {
-    if (!ownerModule()->isSimple() && ownerModule()->isOnLocalMachine())
-        return fromgatep!=NULL && togatep!=NULL;
-    else if (type()=='I')
+    if (type()=='I')
         return fromgatep!=NULL;
     else
         return togatep!=NULL;
+}
+
+bool cGate::isConnectedInside() const
+{
+    if (type()=='I')
+        return togatep!=NULL;
+    else
+        return fromgatep!=NULL;
+}
+
+bool cGate::isConnected() const
+{
+    // for compound modules, both inside and outside must be non-NULL,
+    // for simple modules, only check outside.
+    if (!ownerModule()->isSimple() && ownerModule()->isOnLocalMachine())
+        return fromgatep!=NULL && togatep!=NULL;
+    else
+        return isConnectedOutside();
 }
 
 bool cGate::isRouteOK() const
