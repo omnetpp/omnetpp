@@ -64,6 +64,25 @@ object), and invokes a <tt>cSocketRTScheduler</tt> method to send it
 on the socket.
 
 <p>
+As you can see, the scheduler object has to work together closely with
+the interface module. At the beginning, the interface module
+has to find the scheduler object, cast it to the appropriate type,
+and register itself. In the registration call
+(<tt>rtScheduler->setInterfaceModule(...)</tt> below) it also passes
+the scheduler the address and length of the buffer (<tt>recvBuffer</tt>,
+<tt>4000</tt>) as well as the message it wants to get back as a
+self-message whenever data arrive from the socket. This is done by the
+following code, found in the <tt>initialize()</tt> functions of
+<tt>ExtHTTPClient</tt> and <tt>ExtTelnetClient</tt>:
+
+<pre>
+rtScheduler = check_and_cast<cSocketRTScheduler *>(simulation.scheduler());
+cMessage *rtEvent = new cMessage("rtEvent");
+rtScheduler->setInterfaceModule(this, rtEvent, recvBuffer, 4000, &numRecvBytes);
+</pre>
+
+
+<p>
 <a href="index.html>Back</a>
 
 </body>
