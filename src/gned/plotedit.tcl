@@ -342,14 +342,14 @@ proc selectOrMoveStart {c x y ctrl} {
        # Click on selected object: deselect it
        # Click on non-selected object: select it
        #
-       if {$ned($key,selected)} {
+       if {$ned($key,aux-isselected)} {
            deselectItem $key
        } else {
            selectItem $key
        }
        set mouse(mode) "nothing"
 
-    } elseif {$ned($key,selected) && [llength [selectedItems]]>=2} {
+    } elseif {$ned($key,aux-isselected) && [llength [selectedItems]]>=2} {
 
        #
        # Click on selected object: move selection
@@ -373,7 +373,7 @@ proc selectOrMoveStart {c x y ctrl} {
        # Click on non-selected object (or a single selected object):
        #       selection only that item then move/resize it
        #
-       if {!$ned($key,selected)} {
+       if {!$ned($key,aux-isselected)} {
           deselectAllItems
           selectItem $key
        }

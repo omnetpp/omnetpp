@@ -53,7 +53,7 @@ proc addItem {type parentkey} {
     }
 
     # mark it "not selected" on canvas
-    set ned($key,selected) 0
+    set ned($key,aux-isselected) 0
 
     #puts "dbg: addItem: $type $key added to $parentkey (its children now: $ned($parentkey,childrenkeys))"
 
@@ -490,8 +490,8 @@ proc markNedfileOfItemDirty {key} {
     }
 
     # mark nedfile dirty
-    if {$ned($key,dirty)==0} {
-        set ned($key,dirty) 1
+    if {$ned($key,aux-isdirty)==0} {
+        set ned($key,aux-isdirty) 1
         updateTreeManager
     }
 }
@@ -502,7 +502,7 @@ proc nedfileIsDirty {key} {
 
     if {$ned($key,type)!="nedfile"} {error "internal error in nedfileIsDirty"}
 
-    return $ned($key,dirty)
+    return $ned($key,aux-isdirty)
 }
 
 
@@ -511,7 +511,7 @@ proc nedfileClearDirty {key} {
 
     if {$ned($key,type)!="nedfile"} {error "internal error in nedfileIsDirty"}
 
-    set ned($key,dirty) 0
+    set ned($key,aux-isdirty) 0
 
     updateTreeManager
 }

@@ -51,7 +51,7 @@ proc openUnnamedCanvas {} {
 
     # find file
     foreach key $ned(0,childrenkeys) {
-        if {![info exist ned($key,being-deleted)] && $ned($key,unnamed) && !$ned($key,dirty)} {
+        if {![info exist ned($key,being-deleted)] && $ned($key,aux-isunnamed) && !$ned($key,aux-isdirty)} {
             set nedfilekey $key
         }
     }

@@ -109,8 +109,8 @@ proc getNodeInfo {w op {key {}}} {
       }
 
       options {
-        if [info exist ned($key,dirty)] {
-          if {$ned($key,dirty)} {
+        if [info exist ned($key,aux-isdirty)] {
+          if {$ned($key,aux-isdirty)} {
              return "-fill #ff0000"
           } else {
              return ""

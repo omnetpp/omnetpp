@@ -140,7 +140,7 @@ proc drawItem {key {canv_id {}}} {
         error "drawItem: item $key is no module, submod or conn"
     }
 
-    if $ned($key,selected) {
+    if $ned($key,aux-isselected) {
         selectItem $key
     }
 }
@@ -172,7 +172,7 @@ proc redrawItem {key {canv_id {}}} {
 proc selectItem {key} {
     global ned canvas
 
-    set ned($key,selected) 1
+    set ned($key,aux-isselected) 1
 
     set canv_id [canvasIdFromItemKey $key]
     set c $canvas($canv_id,canvas)
@@ -197,7 +197,7 @@ proc selectItem {key} {
 proc deselectItem {key} {
     global ned canvas
 
-    set ned($key,selected) 0
+    set ned($key,aux-isselected) 0
 
     set canv_id [canvasIdFromItemKey $key]
     set c $canvas($canv_id,canvas)
@@ -229,9 +229,9 @@ proc deselectItem {key} {
 proc deselectAllItems {} {
     global ned
 
-    foreach i [array names ned "*,selected"] {
+    foreach i [array names ned "*,aux-isselected"] {
        if {$ned($i)} {
-          regsub -- ",selected" $i "" key
+          regsub -- ",aux-isselected" $i "" key
           deselectItem $key
        }
     }
@@ -245,9 +245,9 @@ proc selectedItems {} {
     global ned
     set keys {}
 
-    foreach i [array names ned "*,selected"] {
+    foreach i [array names ned "*,aux-isselected"] {
        if {$ned($i)} {
-          regsub -- ",selected" $i "" key
+          regsub -- ",aux-isselected" $i "" key
           lappend keys $key
        }
     }

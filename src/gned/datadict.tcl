@@ -24,11 +24,13 @@
 #  keys are: knnn
 #  the ned(nextkey) variable stores the next available key number
 #
-#  fieldnames have some conventions
-#    *-cid             object's component on the canvas
-#    *-name            object is linked to the object
+#  fieldnames have some conventions:
+#    *-key    refers to another element
+#    disp-*   holds display string data
+#    aux-*    internally used data
+#    *-cid    =canvas id; identifies drawing item (rectangle, line, etc) on the canvas
 #
-#  type-selection fieldnames (indentation reflects "contains" hierarchy)
+#  type-selection fieldnames (indentation reflects "contains" hierarchy):
 #    nedfile
 #      import
 #      channel
@@ -81,8 +83,8 @@ set ned_desc(nedfile,treeicon)        {file_vs}
 set ned_attr(nedfile,name)            {Untitled}
 set ned_attr(nedfile,filename)        {untitled}
 set ned_attr(nedfile,banner-comment)  {}
-set ned_attr(nedfile,unnamed)         {1}
-set ned_attr(nedfile,dirty)           {0}
+set ned_attr(nedfile,aux-isunnamed)   {1}
+set ned_attr(nedfile,aux-isdirty)     {0}
 
 #
 # imports
@@ -170,7 +172,7 @@ set ned_attr(module,disp-ysize)           {}
 set ned_attr(module,disp-outlinecolor)    {}
 set ned_attr(module,disp-fillcolor)       {}
 set ned_attr(module,disp-linethickness)   {}
-set ned_attr(module,selected)             {0}
+set ned_attr(module,aux-isselected)       {0}
 
 #
 # params
@@ -249,7 +251,7 @@ set ned_attr(submod,displaystring)    {}
 set ned_attr(submod,rect-cid)         {}
 set ned_attr(submod,icon-cid)         {}
 set ned_attr(submod,label-cid)        {}
-set ned_attr(submod,disp-icon)             {}
+set ned_attr(submod,disp-icon)            {}
 set ned_attr(submod,disp-xpos)            {}
 set ned_attr(submod,disp-ypos)            {}
 set ned_attr(submod,disp-xsize)           {}
@@ -257,7 +259,7 @@ set ned_attr(submod,disp-ysize)           {}
 set ned_attr(submod,disp-outlinecolor)    {}
 set ned_attr(submod,disp-fillcolor)       {}
 set ned_attr(submod,disp-linethickness)   {}
-set ned_attr(submod,selected)             {0}
+set ned_attr(submod,aux-isselected)       {0}
 
 #
 # substparams
@@ -350,7 +352,7 @@ set ned_attr(conn,disp-src-anchor-x)  {}
 set ned_attr(conn,disp-src-anchor-y)  {}
 set ned_attr(conn,disp-dest-anchor-x) {}
 set ned_attr(conn,disp-dest-anchor-y) {}
-set ned_attr(conn,selected)           {0}
+set ned_attr(conn,aux-isselected)     {0}
 
 #
 # connattr (connection attribute: channel, delay, error or datarate)

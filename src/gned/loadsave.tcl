@@ -85,8 +85,8 @@ proc loadNED {nedfile} {
     set tmp_ned($filekey,type) "nedfile"
     set tmp_ned($filekey,name) [makeFancyName $nedfile]
     set tmp_ned($filekey,filename) $nedfile
-    set tmp_ned($filekey,unnamed) 0
-    set tmp_ned($filekey,dirty) 0
+    set tmp_ned($filekey,aux-isunnamed) 0
+    set tmp_ned($filekey,aux-isdirty) 0
 
     # parsing...
     if [catch {set num_errs [opp_parsened -file $nedfile \

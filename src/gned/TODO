@@ -15,10 +15,8 @@ Parse/Generate:
 - comments around display strings, channel attributes are lost
 - add default comments for newly created modules!
 
-Data struct change:
-- "source-text" attribute to module?? should be added when one switches to text mode
-
 Drawing:
+- SUBMOD DRAWING DOESN'T GENERATE UNIQUE NAMES!!!
 - random placement of submods should be the same as in Tkenv
 - should support ovals too (not only rects)
 - it's possible to fool the connection drawing: if, while dragging out

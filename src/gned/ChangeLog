@@ -235,9 +235,8 @@ Nov 14-17, 2000
    TclXML-1.2.tgz should be extracted under the tcl/lib/Tcl8.x directory.)
    New files: genxml.tcl, parsexml.tcl.
    BUG in the TclXML-1.2 parser: it silently discards attributes which contain
-   an '&' character!!!!
+   '&' or '<' characters!!!!
 TODO:
-  attr renamings (to dispstr_xxx);
   delete disp str class from source
 
 

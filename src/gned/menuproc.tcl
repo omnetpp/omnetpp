@@ -78,7 +78,7 @@ proc fileSave {{nedfilekey {}}} {
       if {$ned($nedfilekey,type)!="nedfile"} {error "internal error in fileSave"}
    }
 
-   if {!$ned($nedfilekey,unnamed)} {
+   if {!$ned($nedfilekey,aux-isunnamed)} {
       saveNED $nedfilekey
       nedfileClearDirty $nedfilekey
    } else {
@@ -119,7 +119,7 @@ proc fileSaveAs {{nedfilekey {}}} {
       set config(default-dir) [file dirname $fname]
       # regsub "^$env(HOME)/" $fname "~/" fname
 
-      set ned($nedfilekey,unnamed) 0
+      set ned($nedfilekey,aux-isunnamed) 0
       set ned($nedfilekey,name) [makeFancyName $fname]
       set ned($nedfilekey,filename) $fname
 
@@ -143,7 +143,7 @@ proc fileCloseNedfile {{nedfilekey {}}} {
 
    # offer saving it
    if [nedfileIsDirty $nedfilekey] {
-       if {$ned($nedfilekey,unnamed)} {
+       if {$ned($nedfilekey,aux-isunnamed)} {
           set reply [tk_messageBox -title "Last chance" -icon warning -type yesno \
                 -message "Unnamed file not saved yet. Save it now?"]
           if {$reply=="yes"} fileSave
@@ -230,7 +230,7 @@ proc fileExit {} {
 
    # close all ned files
    foreach key $ned(0,childrenkeys) {
-       if $ned($key,dirty) {
+       if $ned($key,aux-isdirty) {
            fileCloseNedfile $key
        }
    }

@@ -181,7 +181,7 @@ puts "dbg: drawing..."
 
     # markNedfileOfItemDirty $modkey wouldn't be good: it doesn't
     # always call updateTreeManager
-    set ned($filekey,dirty) 1
+    set ned($filekey,aux-isdirty) 1
     updateTreeManager
 
     #dbg: this not so good...
