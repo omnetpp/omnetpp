@@ -12,10 +12,14 @@ CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
 EXE_SUFFIX=@EXE_SUFFIX@
 
+HAVE_BLT=@HAVE_BLT@
+
 OMNETPP_BIN_DIR=@OMNETPP_BIN_DIR@
 
 TK_CFLAGS=@TK_CFLAGS@
 TK_LIBS=@TK_LIBS@
+BLT_CFLAGS=@BLT_CFLAGS@
+BLT_LIBS=@BLT_LIBS@
 SYS_LIBS=@SYS_LIBS@
 
 OMNETPP_PLOVE_DIR=@OMNETPP_PLOVE_DIR@
@@ -23,10 +27,15 @@ OMNETPP_PLOVE_DIR=@OMNETPP_PLOVE_DIR@
 # The following is either '-e' (embedded Tcl code) or '' (no embedding)
 PLOVE_EMBED_SUFFIX=@PLOVE_EMBED_SUFFIX@
 
+ifeq ($(HAVE_BLT),no)
+#FIXME error: plove needs BLT
+endif
+
+
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) $(TK_CFLAGS)
+COPTS=$(CFLAGS) $(TK_CFLAGS) $(BLT_CFLAGS) -DHAVE_BLT
 
 PLOVE_OBJS = plove$(PLOVE_EMBED_SUFFIX).o \
                tklib.o \
@@ -64,7 +73,7 @@ OBJS = $(PLOVE_OBJS) $(ENGINE_OBJS)
 default: @PLOVE_IF_POSSIBLE@
 
 plove: $(OBJS)
-	$(CC) $(LDFLAGS) $(OBJS) $(TK_LIBS) $(SYS_LIBS) -o plove
+	$(CC) $(LDFLAGS) $(OBJS) $(BLT_LIBS) $(TK_LIBS) $(SYS_LIBS) -o plove
 	../utils/install-prog plove $(OMNETPP_BIN_DIR)
 
 plove.o : plove.cc
