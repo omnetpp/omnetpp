@@ -602,6 +602,7 @@ message and fill its fields.
 
 Then, handleMessage() begins like this:
 
+@dontinclude txc10.cc
 @skip ::handleMessage(
 @until getDestination
 
@@ -617,6 +618,11 @@ and if it fails it stops the simulation with an error message, similar to the
 following:
 
 <img src="step10e.gif">
+
+In the next line, we check if the destination address is the same as the
+node's address. The <tt>index()</tt> member function returns the index
+of the module in the submodule vector (remember, in the NED file we
+declarared it as <tt>tic: Txc10[6]</tt>, so our nodes have addresses 0..5).
 
 To make the model execute longer, after a message arrives to its destination
 the destination node will generate another message with a random destination
