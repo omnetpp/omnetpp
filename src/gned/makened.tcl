@@ -24,7 +24,9 @@
 #
 proc generateNed {key} {
 puts "DBG: replace appendTo with append in makened.tcl!"
-    return [generateNedItem $key {} 0]
+    puts [time {set res [generateNedItem $key {} 0]}]
+    return $res
+    # return [generateNedItem $key {} 0]
 }
 
 proc generateNedItem {key indent islast} {
@@ -57,9 +59,9 @@ proc generateChildren {key indent} {
 
     foreach i $childkeys {
         if {$i==$lastkey} {
-          set out "$out[generateNedItem $i $indent 1]"
+          append out [generateNedItem $i $indent 1]
         } else {
-          set out "$out[generateNedItem $i $indent 0]"
+          append out [generateNedItem $i $indent 0]
         }
     }
     return $out
@@ -82,9 +84,9 @@ proc generateChildrenWithType {key type indent} {
 
     foreach i $childkeys {
         if {$i==$lastkey} {
-          set out "$out[generateNedItem $i $indent 1]"
+          append out [generateNedItem $i $indent 1]
         } else {
-          set out "$out[generateNedItem $i $indent 0]"
+          append out [generateNedItem $i $indent 0]
         }
     }
     return $out
@@ -102,9 +104,9 @@ proc generateChildrenWithArg {key indent arg} {
 
     foreach i $childkeys {
         if {$i==$lastkey} {
-          set out "$out[generateNedItemWithArg $i $indent 1 $arg]"
+          append out [generateNedItemWithArg $i $indent 1 $arg]
         } else {
-          set out "$out[generateNedItemWithArg $i $indent 0 $arg]"
+          append out [generateNedItemWithArg $i $indent 0 $arg]
         }
     }
     return $out
@@ -116,7 +118,7 @@ proc generate_nedfile {key indent islast} {
     global ned
     set out ""
     appendBannerComment out $ned($key,banner-comment) $indent
-    appendTo out [generateChildren $key $indent] nonewline
+    append out [generateChildren $key $indent]
     return $out
 }
 
@@ -124,9 +126,9 @@ proc generate_imports {key indent islast} {
     global ned
     set out ""
     appendBannerComment out $ned($key,banner-comment) $indent
-    appendTo out "${indent}import " nonewline
+    append out "${indent}import "
     appendRightComment out $ned($key,right-comment)
-    appendTo out [generateChildren $key $indent] nonewline
+    append out [generateChildren $key $indent]
     appendTrailingComment out $ned($key,trailing-comment) ""
     return $out
 }
@@ -135,8 +137,8 @@ proc generate_import {key indent islast} {
     global ned
     set out ""
     appendBannerComment out $ned($key,banner-comment) $indent
-    appendTo out "${indent}$ned($key,name)" nonewline
-    if {$islast} {appendTo out ";" nonewline} else {appendTo out "," nonewline}
+    append out "${indent}$ned($key,name)"
+    if {$islast} {append out ";"} else {append out ","}
     appendRightComment out $ned($key,right-comment)
     return $out
 }
@@ -145,10 +147,10 @@ proc generate_channel {key indent islast} {
     global ned
     set out ""
     appendBannerComment out $ned($key,banner-comment) $indent
-    appendTo out "${indent}channel $ned($key,name)" nonewline
+    append out "${indent}channel $ned($key,name)"
     appendRightComment out $ned($key,right-comment)
-    appendTo out [generateChildren $key $indent] nonewline
-    appendTo out "${indent}endchannel" nonewline
+    append out [generateChildren $key $indent]
+    append out "${indent}endchannel"
     appendTrailingComment out $ned($key,trailing-comment) ""
     return $out
 }
@@ -157,7 +159,7 @@ proc generate_chanattr {key indent islast} {
     global ned
     set out ""
     appendBannerComment out $ned($key,banner-comment) $indent
-    appendTo out "${indent}$ned($key,name) $ned($key,value);" nonewline
+    append out "${indent}$ned($key,name) $ned($key,value);"
     appendRightComment out $ned($key,right-comment)
     return $out
 }
@@ -166,13 +168,13 @@ proc generate_network {key indent islast} {
     global ned
     set out ""
     appendBannerComment out $ned($key,banner-comment) $indent
-    appendTo out "${indent}network $ned($key,name) : $ned($key,type-name)" nonewline
+    append out "${indent}network $ned($key,name) : $ned($key,type-name)"
     appendRightComment out $ned($key,right-comment)
 
-    appendTo out [generateChildrenWithType $key substmachines $indent] nonewline
-    appendTo out [generateChildrenWithType $key substparams $indent] nonewline
+    append out [generateChildrenWithType $key substmachines $indent]
+    append out [generateChildrenWithType $key substparams $indent]
 
-    appendTo out "${indent}endnetwork" nonewline
+    append out "${indent}endnetwork"
     appendTrailingComment out $ned($key,trailing-comment) ""
     return $out
 }
@@ -181,14 +183,14 @@ proc generate_simple {key indent islast} {
     global ned
     set out ""
     appendBannerComment out $ned($key,banner-comment) $indent
-    appendTo out "${indent}simple $ned($key,name)" nonewline
+    append out "${indent}simple $ned($key,name)"
     appendRightComment out $ned($key,right-comment)
 
-    appendTo out [generateChildrenWithType $key machines $indent] nonewline
-    appendTo out [generateChildrenWithType $key params $indent] nonewline
-    appendTo out [generateChildrenWithType $key gates $indent] nonewline
+    append out [generateChildrenWithType $key machines $indent]
+    append out [generateChildrenWithType $key params $indent]
+    append out [generateChildrenWithType $key gates $indent]
 
-    appendTo out "${indent}endsimple" nonewline
+    append out "${indent}endsimple"
     appendTrailingComment out $ned($key,trailing-comment) ""
     return $out
 }
@@ -197,22 +199,22 @@ proc generate_module {key indent islast} {
     global ned
     set out ""
     appendBannerComment out $ned($key,banner-comment) $indent
-    appendTo out "${indent}module $ned($key,name)" nonewline
+    append out "${indent}module $ned($key,name)"
     appendRightComment out $ned($key,right-comment)
 
-    appendTo out [generateChildrenWithType $key machines $indent] nonewline
-    appendTo out [generateChildrenWithType $key params $indent] nonewline
-    appendTo out [generateChildrenWithType $key gates $indent] nonewline
-    appendTo out [generateChildrenWithType $key submods $indent] nonewline
-    appendTo out [generateChildrenWithType $key conns $indent] nonewline
+    append out [generateChildrenWithType $key machines $indent]
+    append out [generateChildrenWithType $key params $indent]
+    append out [generateChildrenWithType $key gates $indent]
+    append out [generateChildrenWithType $key submods $indent]
+    append out [generateChildrenWithType $key conns $indent]
 
     set dispstr [makeModuleDispStr $key]
     if {$dispstr!=""} {
         # HACK: the "display:" line uses indent of "parameters:" line
         global ddesc
-        appendTo out "${indent}$ddesc(params,plusindent)display: \"$dispstr\";"
+        append out "${indent}$ddesc(params,plusindent)display: \"$dispstr\";\n"
     }
-    appendTo out "${indent}endmodule" nonewline
+    append out "${indent}endmodule"
     appendTrailingComment out $ned($key,trailing-comment) ""
     return $out
 }
@@ -221,9 +223,9 @@ proc generate_params {key indent islast} {
     global ned
     set out ""
     appendBannerComment out $ned($key,banner-comment) $indent
-    appendTo out "${indent}parameters:" nonewline
+    append out "${indent}parameters:"
     appendRightComment out $ned($key,right-comment)
-    appendTo out [generateChildren $key $indent] nonewline
+    append out [generateChildren $key $indent]
     return $out
 }
 
@@ -231,8 +233,8 @@ proc generate_param {key indent islast} {
     global ned
     set out ""
     appendBannerComment out $ned($key,banner-comment) $indent
-    appendTo out "${indent}$ned($key,name) : $ned($key,datatype)" nonewline
-    if {$islast} {appendTo out ";" nonewline} else {appendTo out "," nonewline}
+    append out "${indent}$ned($key,name) : $ned($key,datatype)"
+    if {$islast} {append out ";"} else {append out ","}
     appendRightComment out $ned($key,right-comment)
     return $out
 }
@@ -241,9 +243,9 @@ proc generate_gates {key indent islast} {
     global ned
     set out ""
     appendBannerComment out $ned($key,banner-comment) $indent
-    appendTo out "${indent}gates:" nonewline
+    append out "${indent}gates:"
     appendRightComment out $ned($key,right-comment)
-    appendTo out [generateChildren $key $indent] nonewline
+    append out [generateChildren $key $indent]
     return $out
 }
 
@@ -251,9 +253,9 @@ proc generate_gate {key indent islast} {
     global ned
     set out ""
     appendBannerComment out $ned($key,banner-comment) $indent
-    appendTo out "${indent}$ned($key,gatetype): $ned($key,name)" nonewline
-    if {$ned($key,isvector)} {appendTo out "\[\]" nonewline}
-    appendTo out ";" nonewline
+    append out "${indent}$ned($key,gatetype): $ned($key,name)"
+    if {$ned($key,isvector)} {append out {[]}}
+    append out ";"
     appendRightComment out $ned($key,right-comment)
     return $out
 }
@@ -262,9 +264,9 @@ proc generate_machines {key indent islast} {
     global ned
     set out ""
     appendBannerComment out $ned($key,banner-comment) $indent
-    appendTo out "${indent}machines:" nonewline
+    append out "${indent}machines:"
     appendRightComment out $ned($key,right-comment)
-    appendTo out [generateChildren $key $indent] nonewline
+    append out [generateChildren $key $indent]
     return $out
 }
 
@@ -272,8 +274,8 @@ proc generate_machine {key indent islast} {
     global ned
     set out ""
     appendBannerComment out $ned($key,banner-comment) $indent
-    appendTo out "${indent}$ned($key,name)" nonewline
-    if {$islast} {appendTo out ";" nonewline} else {appendTo out "," nonewline}
+    append out "${indent}$ned($key,name)"
+    if {$islast} {append out ";"} else {append out ","}
     appendRightComment out $ned($key,right-comment)
     return $out
 }
@@ -282,9 +284,9 @@ proc generate_submods {key indent islast} {
     global ned
     set out ""
     appendBannerComment out $ned($key,banner-comment) $indent
-    appendTo out "${indent}submodules:" nonewline
+    append out "${indent}submodules:"
     appendRightComment out $ned($key,right-comment)
-    appendTo out [generateChildren $key $indent] nonewline
+    append out [generateChildren $key $indent]
     return $out
 }
 
@@ -292,25 +294,25 @@ proc generate_submod {key indent islast} {
     global ned
     set out ""
     appendBannerComment out $ned($key,banner-comment) $indent
-    appendTo out "${indent}$ned($key,name): $ned($key,type-name)" nonewline
+    append out "${indent}$ned($key,name): $ned($key,type-name)"
     if {$ned($key,vectorsize)!=""} {
-        appendTo out "\[$ned($key,vectorsize)\]" nonewline
+        append out "\[$ned($key,vectorsize)\]"
     }
     if {$ned($key,like-name)!=""} {
-        appendTo out " like $ned($key,like-name)" nonewline
+        append out " like $ned($key,like-name)"
     }
-    appendTo out ";" nonewline
+    append out ";"
     appendRightComment out $ned($key,right-comment)
 
-    appendTo out [generateChildrenWithType $key substmachines $indent] nonewline
-    appendTo out [generateChildrenWithType $key substparams $indent] nonewline
-    appendTo out [generateChildrenWithType $key gatesizes $indent] nonewline
+    append out [generateChildrenWithType $key substmachines $indent]
+    append out [generateChildrenWithType $key substparams $indent]
+    append out [generateChildrenWithType $key gatesizes $indent]
 
     set dispstr [makeSubmoduleDispStr $key]
     if {$dispstr!=""} {
         # HACK: the "display:" line uses indent of "parameters:" line
         global ddesc
-        appendTo out "${indent}$ddesc(substparams,plusindent)display: \"$dispstr\";"
+        append out "${indent}$ddesc(substparams,plusindent)display: \"$dispstr\";\n"
     }
     return $out
 }
@@ -320,12 +322,12 @@ proc generate_substparams {key indent islast} {
     set out ""
     appendBannerComment out $ned($key,banner-comment) $indent
     if {$ned($key,condition)!=""} {
-        appendTo out "${indent}parameters if $ned($key,condition):" nonewline
+        append out "${indent}parameters if $ned($key,condition):"
     } else {
-        appendTo out "${indent}parameters:" nonewline
+        append out "${indent}parameters:"
     }
     appendRightComment out $ned($key,right-comment)
-    appendTo out [generateChildren $key $indent] nonewline
+    append out [generateChildren $key $indent]
     return $out
 }
 
@@ -333,8 +335,8 @@ proc generate_substparam {key indent islast} {
     global ned
     set out ""
     appendBannerComment out $ned($key,banner-comment) $indent
-    appendTo out "${indent}$ned($key,name) = $ned($key,value)" nonewline
-    if {$islast} {appendTo out ";" nonewline} else {appendTo out "," nonewline}
+    append out "${indent}$ned($key,name) = $ned($key,value)"
+    if {$islast} {append out ";"} else {append out ","}
     appendRightComment out $ned($key,right-comment)
     return $out
 }
@@ -344,12 +346,12 @@ proc generate_gatesizes {key indent islast} {
     set out ""
     appendBannerComment out $ned($key,banner-comment) $indent
     if {$ned($key,condition)!=""} {
-        appendTo out "${indent}gatesizes if $ned($key,condition):" nonewline
+        append out "${indent}gatesizes if $ned($key,condition):"
     } else {
-        appendTo out "${indent}gatesizes:" nonewline
+        append out "${indent}gatesizes:"
     }
     appendRightComment out $ned($key,right-comment)
-    appendTo out [generateChildren $key $indent] nonewline
+    append out [generateChildren $key $indent]
     return $out
 }
 
@@ -357,8 +359,8 @@ proc generate_gatesize {key indent islast} {
     global ned
     set out ""
     appendBannerComment out $ned($key,banner-comment) $indent
-    appendTo out "${indent}$ned($key,name)\[$ned($key,size)\]" nonewline
-    if {$islast} {appendTo out ";" nonewline} else {appendTo out "," nonewline}
+    append out "${indent}$ned($key,name)\[$ned($key,size)\]"
+    if {$islast} {append out ";"} else {append out ","}
     appendRightComment out $ned($key,right-comment)
     return $out
 }
@@ -368,12 +370,12 @@ proc generate_substmachines {key indent islast} {
     set out ""
     appendBannerComment out $ned($key,banner-comment) $indent
     if {$ned($key,condition)!=""} {
-        appendTo out "${indent}on if $ned($key,condition):" nonewline
+        append out "${indent}on if $ned($key,condition):"
     } else {
-        appendTo out "${indent}on:" nonewline
+        append out "${indent}on:"
     }
     appendRightComment out $ned($key,right-comment)
-    appendTo out [generateChildren $key $indent] nonewline
+    append out [generateChildren $key $indent]
     return $out
 }
 
@@ -381,8 +383,8 @@ proc generate_substmachine {key indent islast} {
     global ned
     set out ""
     appendBannerComment out $ned($key,banner-comment) $indent
-    appendTo out "${indent}$ned($key,value)" nonewline
-    if {$islast} {appendTo out ";" nonewline} else {appendTo out "," nonewline}
+    append out "${indent}$ned($key,value)"
+    if {$islast} {append out ";"} else {append out ","}
     appendRightComment out $ned($key,right-comment)
     return $out
 }
@@ -392,12 +394,12 @@ proc generate_conns {key indent islast} {
     set out ""
     appendBannerComment out $ned($key,banner-comment) $indent
     if {$ned($key,nocheck)} {
-        appendTo out "${indent}connections nocheck:" nonewline
+        append out "${indent}connections nocheck:"
     } else {
-        appendTo out "${indent}connections:" nonewline
+        append out "${indent}connections:"
     }
     appendRightComment out $ned($key,right-comment)
-    appendTo out [generateChildren $key $indent] nonewline
+    append out [generateChildren $key $indent]
     return $out
 }
 
@@ -440,17 +442,17 @@ proc generate_conn {key indent islast} {
     }
 
     # now print it
-    appendTo out "${indent}$src $arrow" nonewline
-    appendTo out [generateChildrenWithArg $key $indent $arrow] nonewline
-    appendTo out " $dest" nonewline
+    append out "${indent}$src $arrow"
+    append out [generateChildrenWithArg $key $indent $arrow]
+    append out " $dest"
     if {$ned($key,condition)!=""} {
-       appendTo out " if $ned($key,condition)" nonewline
+       append out " if $ned($key,condition)"
     }
     set dispstr [makeConnectionDispStr $key]
     if {$dispstr!=""} {
-        appendTo out " display \"$dispstr\"" nonewline
+        append out " display \"$dispstr\""
     }
-    appendTo out ";" nonewline
+    append out ";"
 
     appendRightComment out $ned($key,right-comment)
     return $out
@@ -462,11 +464,11 @@ proc generate_connattr {key indent islast {arrow {}}} {
     appendBannerComment out $ned($key,banner-comment) $indent
     if {$ned($key,name)=="channel"} {
         # sorry for the special case :-(
-        appendTo out " $ned($key,value)" nonewline
+        append out " $ned($key,value)"
     } else {
-        appendTo out " $ned($key,name) $ned($key,value)" nonewline
+        append out " $ned($key,name) $ned($key,value)"
     }
-    if {$islast} {appendTo out " $arrow" nonewline}
+    if {$islast} {append out " $arrow"}
     appendInlineRightComment out $ned($key,right-comment) ""
     return $out
 }
@@ -475,12 +477,12 @@ proc generate_forloop {key indent islast} {
     global ned
     set out ""
     appendBannerComment out $ned($key,banner-comment) $indent
-    appendTo out "${indent}for " nonewline
-    appendTo out [generateChildrenWithType $key loopvar $indent] nonewline
-    appendTo out " do" nonewline
+    append out "${indent}for "
+    append out [generateChildrenWithType $key loopvar $indent]
+    append out " do"
     appendRightComment out $ned($key,right-comment)
-    appendTo out [generateChildrenWithType $key conn $indent] nonewline
-    appendTo out "${indent}endfor;" nonewline
+    append out [generateChildrenWithType $key conn $indent]
+    append out "${indent}endfor;"
     appendTrailingComment out $ned($key,trailing-comment) ""
     return $out
 }
@@ -489,8 +491,8 @@ proc generate_loopvar {key indent islast} {
     global ned
     set out ""
     appendBannerComment out $ned($key,banner-comment) $indent
-    appendTo out "$ned($key,name)=$ned($key,fromvalue)..$ned($key,tovalue)" nonewline
-    if {!$islast} {appendTo out ", " nonewline}
+    append out "$ned($key,name)=$ned($key,fromvalue)..$ned($key,tovalue)"
+    if {!$islast} {append out ", "}
     appendInlineRightComment out $ned($key,right-comment) ""
     return $out
 }
@@ -558,15 +560,6 @@ proc makeConnectionDispStr {key} {
 
 #-----------------------------------------------------------------
 
-proc appendTo {varname str {nl {}}} {
-    upvar $varname var
-    if {$nl=="nonewline"} {
-        append var $str
-    } else {
-        append var $str "\n"
-    }
-}
-
 proc appendBannerComment {outvar comment indent {default {}}} {
     upvar $outvar out
 
@@ -577,7 +570,7 @@ proc appendBannerComment {outvar comment indent {default {}}} {
     regsub -all "//-\n" $comment "\n" comment
     regsub "$indent//$" $comment "" comment
 
-    appendTo out $comment nonewline
+    append out $comment
 }
 
 proc appendRightComment {outvar comment} {
@@ -597,7 +590,7 @@ proc appendRightComment {outvar comment} {
     regsub -all "$indent //$" $comment "" comment
     #puts "dbg: turned into:  (($comment))"
 
-    appendTo out $comment nonewline
+    append out $comment
 }
 
 proc appendInlineRightComment {outvar comment indent} {
@@ -610,7 +603,7 @@ proc appendInlineRightComment {outvar comment indent} {
     regsub -all "//-\n" $comment "\n" comment
     regsub "$indent//$" $comment "$indent" comment
 
-    appendTo out $comment nonewline
+    append out $comment
 }
 
 proc appendTrailingComment {outvar comment indent} {
@@ -623,7 +616,7 @@ proc appendTrailingComment {outvar comment indent} {
     regsub -all "//-\n" $comment "\n" comment
     regsub "$indent//$" $comment "" comment
 
-    appendTo out $comment nonewline
+    append out $comment
 
 }
 
