@@ -414,13 +414,13 @@ proc graphmodwin_redraw {w {nextseed 0}} {
 
     # check if it's not too big to draw it.
     set submodcount [opp_inspectorcommand $w submodulecount]
-    if {$submodcount>100} {
+    if {$submodcount>1000} {
         if {![regexp {\.(ptr.*)-([0-9]+)} $w match object type]} {
             error "window name $w doesn't look like an inspector window"
         }
         set name [opp_getobjectfullpath $object]
-        set ans [messagebox {Warning} "Module '$name' contains more than 100 submodules ($submodcount), \
-                                      it may take very long to display the graphics. Do you want to \
+        set ans [messagebox {Warning} "Module '$name' contains more than 1000 submodules ($submodcount), \
+                                      it may take a long time to display the graphics. Do you want to \
                                       proceed with drawing?" question yesno]
         if {$ans == "no"} {
             return 0
