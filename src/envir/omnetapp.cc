@@ -171,7 +171,7 @@ void TOmnetApp::setup()
              // initialize them
              parsimcomm->init();
 #else
-             throw new cException("Envir library compiled without parallel simulation support, check WITH_PARSIM option");
+             throw new cException("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
 #endif
          }
 
@@ -415,7 +415,7 @@ void TOmnetApp::readOptions()
         opt_parsimcomm_class = ini_file->getAsString("General", "parsim-communications-class", "cFileCommunications");
         opt_parsimsynch_class = ini_file->getAsString("General", "parsim-synchronization-class", "cNullMessageProtocol");
 #else
-        throw new cException("Envir library compiled without parallel simulation support, check WITH_PARSIM option");
+        throw new cException("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
 #endif
     }
     opt_load_libs = ini_file->getAsString( "General", "load-libs", "" );
