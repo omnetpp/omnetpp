@@ -1,0 +1,132 @@
+%description:
+Test that functions implementing random variates from different
+distributions only use the given RNG.
+
+Some functions are called with several different argument sets:
+this is because the impl. chooses different generation methods
+for different parameter values.
+ 
+%global:
+
+// store seeds in array
+void storeSeeds(long *seeds)
+{
+    for (int rng=0; rng<32; rng++)
+    {
+        seeds[rng] = genk_randseed(rng);
+    }
+}
+
+// check that only the given seed changed, others remained intact
+void checkSeeds(long *oldseeds, int usedrng, const char *label)
+{
+    for (int rng=0; rng<32; rng++)
+    {
+        if (rng!=usedrng && oldseeds[rng]!=genk_randseed(rng))
+            ev.printf("ERROR: %s with rng=%d also changed rng=%d\n", label,usedrng,rng);
+    }
+    if (oldseeds[usedrng]==genk_randseed(usedrng))
+        ev.printf("ERROR: %s with rng=%d did NOT change rng=%d\n", label,usedrng,usedrng);
+}
+
+%activity:
+
+#define CHECKSEEDS(f) ev.printf("checking %s\n",#f); storeSeeds(seeds); f; checkSeeds(seeds,rng,#f);
+
+long seeds[32];
+
+for (int rng=0; rng<=2; rng++)
+{
+    ev.printf("RNG=%d:\n",rng);
+
+    CHECKSEEDS(uniform(1.0, 2.0, rng));
+    CHECKSEEDS(exponential(1.0, rng));
+    CHECKSEEDS(normal(1.0, 1.0, rng));
+    CHECKSEEDS(truncnormal(1.0, 1.0, rng));
+    // CHECKSEEDS(gamma_d(0.5, 2.0, rng));  -- relies on incomplete gamma_d()
+    // CHECKSEEDS(gamma_d(2.0, 2.0, rng));  -- relies on incomplete gamma_d()
+    // CHECKSEEDS(beta(1.0, 1.0, rng));  -- relies on incomplete gamma_d()
+    CHECKSEEDS(erlang_k(1, 1.0, rng));
+    // CHECKSEEDS(chi_square(1, rng));  -- relies on incomplete gamma_d()
+    // CHECKSEEDS(chi_square(2, rng));  -- relies on incomplete gamma_d()
+    // CHECKSEEDS(student_t(1, rng));  -- relies on incomplete gamma_d()
+    CHECKSEEDS(cauchy(1.0, 2.0, rng));
+    CHECKSEEDS(triang(1.0, 2.0, 3.0, rng));
+    CHECKSEEDS(lognormal(1.0, 1.0, rng));
+    CHECKSEEDS(weibull(1.0, 2.0, rng));
+    CHECKSEEDS(pareto_shifted(1.0, 2.0, 3.0, rng));
+
+    CHECKSEEDS(intuniform(0, 10, rng));
+    CHECKSEEDS(bernoulli(0.3, rng));
+    CHECKSEEDS(binomial(10, 0.3, rng));
+    CHECKSEEDS(geometric(0.3, rng));
+    CHECKSEEDS(negbinomial(10, 0.3, rng));
+    CHECKSEEDS(hypergeometric(1, 2, 2, rng));
+    CHECKSEEDS(poisson(1.0, rng));
+    CHECKSEEDS(poisson(35.0, rng));
+}
+ev << "finished";
+
+%contains: stdout
+RNG=0:
+checking uniform\(1.0, 2.0, rng\)
+checking exponential\(1.0, rng\)
+checking normal\(1.0, 1.0, rng\)
+checking truncnormal\(1.0, 1.0, rng\)
+checking erlang_k\(1, 1.0, rng\)
+checking cauchy\(1.0, 2.0, rng\)
+checking triang\(1.0, 2.0, 3.0, rng\)
+checking lognormal\(1.0, 1.0, rng\)
+checking weibull\(1.0, 2.0, rng\)
+checking pareto_shifted\(1.0, 2.0, 3.0, rng\)
+checking intuniform\(0, 10, rng\)
+checking bernoulli\(0.3, rng\)
+checking binomial\(10, 0.3, rng\)
+checking geometric\(0.3, rng\)
+checking negbinomial\(10, 0.3, rng\)
+checking hypergeometric\(1, 2, 2, rng\)
+checking poisson\(1.0, rng\)
+checking poisson\(35.0, rng\)
+RNG=1:
+checking uniform\(1.0, 2.0, rng\)
+checking exponential\(1.0, rng\)
+checking normal\(1.0, 1.0, rng\)
+checking truncnormal\(1.0, 1.0, rng\)
+checking erlang_k\(1, 1.0, rng\)
+checking cauchy\(1.0, 2.0, rng\)
+checking triang\(1.0, 2.0, 3.0, rng\)
+checking lognormal\(1.0, 1.0, rng\)
+checking weibull\(1.0, 2.0, rng\)
+checking pareto_shifted\(1.0, 2.0, 3.0, rng\)
+checking intuniform\(0, 10, rng\)
+checking bernoulli\(0.3, rng\)
+checking binomial\(10, 0.3, rng\)
+checking geometric\(0.3, rng\)
+checking negbinomial\(10, 0.3, rng\)
+checking hypergeometric\(1, 2, 2, rng\)
+checking poisson\(1.0, rng\)
+checking poisson\(35.0, rng\)
+RNG=2:
+checking uniform\(1.0, 2.0, rng\)
+checking exponential\(1.0, rng\)
+checking normal\(1.0, 1.0, rng\)
+checking truncnormal\(1.0, 1.0, rng\)
+checking erlang_k\(1, 1.0, rng\)
+checking cauchy\(1.0, 2.0, rng\)
+checking triang\(1.0, 2.0, 3.0, rng\)
+checking lognormal\(1.0, 1.0, rng\)
+checking weibull\(1.0, 2.0, rng\)
+checking pareto_shifted\(1.0, 2.0, 3.0, rng\)
+checking intuniform\(0, 10, rng\)
+checking bernoulli\(0.3, rng\)
+checking binomial\(10, 0.3, rng\)
+checking geometric\(0.3, rng\)
+checking negbinomial\(10, 0.3, rng\)
+checking hypergeometric\(1, 2, 2, rng\)
+checking poisson\(1.0, rng\)
+checking poisson\(35.0, rng\)
+finished
+
+%not-contains: stdout
+ERROR:
+
