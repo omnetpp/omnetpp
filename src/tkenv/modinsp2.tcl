@@ -303,20 +303,28 @@ proc draw_connection {c ptr dispstr srcptr destptr src_i src_n dest_i dest_n} {
 }
 
 proc create_graphicalmodwindow {name} {
+    global icons help_tips
+
     set w $name
     create_inspector_toplevel $w
 
     # create toolbar
-    iconbutton $w.toolbar.ascont -text "As Object" \
+    iconbutton $w.toolbar.ascont -image $icons(asobject) \
            -command "inspect_this $w {As Object}"
-    iconbutton $w.toolbar.parent -text {Parent}
-    iconbutton $w.toolbar.params -text {Params}
-    iconbutton $w.toolbar.gates  -text {Gates}
-    iconbutton $w.toolbar.redraw -text {Redraw} \
+    iconbutton $w.toolbar.parent -image $icons(parent)
+    iconbutton $w.toolbar.params -image $icons(params)
+    iconbutton $w.toolbar.gates  -image $icons(gates)
+    iconbutton $w.toolbar.redraw -image $icons(redraw) \
            -command "graphmodwin_redraw $w"
     foreach i {ascont parent params gates redraw} {
        pack $w.toolbar.$i -anchor n -side left
     }
+
+    set help_tips($w.toolbar.ascont)  {Inspect as object}
+    set help_tips($w.toolbar.parent)  {Inspect parent module}
+    set help_tips($w.toolbar.params)  {Inspect parameters}
+    set help_tips($w.toolbar.gates)   {Inspect gates}
+    set help_tips($w.toolbar.redraw)  {Redraw or rearrange submodules}
 
     # create canvas
     set c $w.c

@@ -286,3 +286,11 @@ July 10, 1999
   - modinsp2.tcl: removed potential sources of division by zero
   - fixed a problem in printptr() [tklib.cc] which caused a crash on Sun
   - now demands at least Tcl/Tk 8.0 patchlevel 1
+July 11-12, 1999
+  - icons.tcl added; textual toolbar icons replaced with graphics icons
+  NOT FINISHED YET!
+  - note: because the name of each inspector window is unique,
+    the help_tips() array grows monotonously as one opens new and new
+    inspector windows. The array is NOT cleaned up after closing an insp.
+    window. In everyday use this small memory leak cannot be a problem.
+  - the iconbutton definition should be changed! An "iconspace" should be added!

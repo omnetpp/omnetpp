@@ -28,7 +28,7 @@ proc create_inspector_toplevel {w {geom ""}} {
 
     # create toplevel inspector window
 
-    global fonts
+    global fonts icons help_tips
 
     toplevel $w -class Toplevel
     wm focusmodel $w passive
@@ -41,10 +41,12 @@ proc create_inspector_toplevel {w {geom ""}} {
 
     # add the "Inspect As.." icon at the top
 
-    frame $w.toolbar
-    iconbutton $w.toolbar.inspect -text "As..." -command "inspect_this_as $w"
+    frame $w.toolbar -relief raised -borderwidth 1
+    iconbutton $w.toolbar.inspect -image $icons(as) -command "inspect_this_as $w"
     pack $w.toolbar.inspect -anchor n -expand 0 -side left
     pack $w.toolbar -anchor w -side top -fill x -expand 0
+
+    set help_tips($w.toolbar.inspect) {Open another inspector for this object}
 
     bind $w <Escape>     "catch {.popup unpost}"
     bind $w <Button-1>   "catch {.popup unpost}"
@@ -160,6 +162,7 @@ proc create_objinspector {name} {
 
 proc create_containerinspector {name args} {
     # create a list window
+
     set w $name
     set typelist $args
     create_inspector_toplevel $w

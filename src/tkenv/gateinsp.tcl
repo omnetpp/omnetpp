@@ -19,12 +19,14 @@
 #-----------------------------------------------------------------
 
 proc create_gateinspector {name} {
-    global fonts
+    global fonts icons
 
     set w $name
     create_inspector_toplevel $w
 
-    iconbutton $w.toolbar.mod -text {Module}
+    iconbutton $w.toolbar.mod -image $icons(parent)
+    #FIXME -text {Module}
+
     pack $w.toolbar.mod -anchor n -side left
 
     frame $w.main
