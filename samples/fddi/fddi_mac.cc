@@ -40,7 +40,7 @@ char *mysimtimeToStr(simtime_t t, char *dest=0)
       s =  (int)  (ts); 	  ts -= s;
       ms = (int)  (ts*1000);	  ts -= ms/1000.0;
       us =	  (ts*1000000L);  us=( (long) (100L*us))/100.0;
-      sprintf(dest,"%ds %dms %.2lfu", s,ms,us);
+      sprintf(dest,"%ds %dms %.2fu", s,ms,us);
       return dest;
 }
 
