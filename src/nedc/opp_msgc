@@ -188,9 +188,6 @@ $classtype{'cPolymorphic'} = 'noncobject';
 $classtype{'cObject'} = 'cobject';
 $classtype{'cMessage'} = 'cobject';
 $classtype{'cPacket'} = 'cobject';
-foreach $class (@classes) {
-    $hasdescriptor{$class} = 0;
-}
 
 @enums = ();
 
@@ -242,7 +239,6 @@ while ($msg =~ s/(struct|cobject|noncobject|class|class\s+noncobject|message)\s+
         }
     } else {
         $classtype{$class} = $type;
-        $hasdescriptor{$class} = 0;
         push(@classes, $class);
     }
 }
@@ -560,8 +556,6 @@ exit $ret;
 #  $msgbaseclass
 #
 #  $msgdescclass
-#  $msgbasedescclass
-#  $hasbasedescriptor
 #
 #  $fieldcount
 #  @fieldlist
@@ -611,18 +605,14 @@ sub prepareForCodeGeneration
 
     # check earlier declarations and register this class
     if (grep(/^\Q$msgname\E$/,@classes)) {
-        if ($hasdescriptor{$msgname}) {
+        if (0) { #FIXME what is the condition?
             print STDERR "*** Error: attempt to redefine '$msgname'\n"; $ret=1;
         } elsif ($classtype{$msgname} ne $classtype) {
             print STDERR "*** Error: definition of '$msgname' inconsistent with earlier declaration(s)\n"; $ret=1;
-        } else {
-            # OK
-            $hasdescriptor{$msgname} = 1;
         }
     } else {
         push(@classes, $msgname);
         $classtype{$msgname} = $classtype;
-        $hasdescriptor{$msgname} = 1;
     }
 
     #
@@ -651,13 +641,6 @@ sub prepareForCodeGeneration
         }
     } else {
         $msgbaseclass = $msgbase;
-    }
-
-    $hasbasedescriptor = $hasdescriptor{$msgbaseclass};
-    if ($hasbasedescriptor) {
-        $msgbasedescclass = $msgbaseclass."Descriptor";
-    } else {
-        $msgbasedescclass = "cStructDescriptor";
     }
 
     if ($pval{"omitGetVerb"} eq "true") {
@@ -1331,10 +1314,10 @@ sub generateStruct
 #
 sub generateDescriptorClass
 {
-    print CC "class $msgdescclass : public $msgbasedescclass\n";
+    print CC "class $msgdescclass : public cStructDescriptor\n";
     print CC "{\n";
     print CC "  public:\n";
-    print CC "    $msgdescclass(void *p=NULL);\n";
+    print CC "    $msgdescclass();\n";
     print CC "    virtual ~$msgdescclass();\n";
     print CC "    $msgdescclass& operator=(const $msgdescclass& other);\n";
     print CC "    virtual cObject *dup() const {return new $msgdescclass(*this);}\n";
@@ -1361,7 +1344,7 @@ sub generateDescriptorClass
 
     # ctor, dtor
     $fieldcount = $#fieldlist+1;
-    print CC "$msgdescclass\:\:$msgdescclass(void *p) : $msgbasedescclass(p)\n";
+    print CC "$msgdescclass\:\:$msgdescclass() : cStructDescriptor(\"$msgbaseclass\")\n";
     print CC "{\n";
     print CC "}\n";
     print CC "\n";
@@ -1374,22 +1357,18 @@ sub generateDescriptorClass
     # getFieldCount()
     print CC "int $msgdescclass\:\:getFieldCount()\n";
     print CC "{\n";
-    if ($hasbasedescriptor) {
-        print CC "    return $msgbasedescclass\:\:getFieldCount() + $fieldcount;\n";
-    } else {
-        print CC "    return $fieldcount;\n";
-    }
+    print CC "    return baseclassdesc ? $fieldcount+baseclassdesc->getFieldCount() : $fieldcount;\n";
     print CC "}\n";
     print CC "\n";
 
     # getFieldType()
     print CC "int $msgdescclass\:\:getFieldType(int field)\n";
     print CC "{\n";
-    if ($hasbasedescriptor) {
-        print CC "    if (field < $msgbasedescclass\:\:getFieldCount())\n";
-        print CC "        return $msgbasedescclass\:\:getFieldType(field);\n";
-        print CC "    field -= $msgbasedescclass\:\:getFieldCount();\n";
-    }
+    print CC "    if (baseclassdesc) {\n";
+    print CC "        if (field < baseclassdesc->getFieldCount())\n";
+    print CC "            return baseclassdesc->getFieldType(field);\n";
+    print CC "        field -= baseclassdesc->getFieldCount();\n";
+    print CC "    }\n";
     print CC "    switch (field) {\n";
     for ($i=0; $i<$fieldcount; $i++)
     {
@@ -1416,11 +1395,11 @@ sub generateDescriptorClass
     # getFieldName()
     print CC "const char *$msgdescclass\:\:getFieldName(int field)\n";
     print CC "{\n";
-    if ($hasbasedescriptor) {
-        print CC "    if (field < $msgbasedescclass\:\:getFieldCount())\n";
-        print CC "        return $msgbasedescclass\:\:getFieldName(field);\n";
-        print CC "    field -= $msgbasedescclass\:\:getFieldCount();\n";
-    }
+    print CC "    if (baseclassdesc) {\n";
+    print CC "        if (field < baseclassdesc->getFieldCount())\n";
+    print CC "            return baseclassdesc->getFieldName(field);\n";
+    print CC "        field -= baseclassdesc->getFieldCount();\n";
+    print CC "    }\n";
     print CC "    switch (field) {\n";
     for ($i=0; $i<$fieldcount; $i++)
     {
@@ -1434,11 +1413,11 @@ sub generateDescriptorClass
     # getFieldTypeString()
     print CC "const char *$msgdescclass\:\:getFieldTypeString(int field)\n";
     print CC "{\n";
-    if ($hasbasedescriptor) {
-        print CC "    if (field < $msgbasedescclass\:\:getFieldCount())\n";
-        print CC "        return $msgbasedescclass\:\:getFieldTypeString(field);\n";
-        print CC "    field -= $msgbasedescclass\:\:getFieldCount();\n";
-    }
+    print CC "    if (baseclassdesc) {\n";
+    print CC "        if (field < baseclassdesc->getFieldCount())\n";
+    print CC "            return baseclassdesc->getFieldTypeString(field);\n";
+    print CC "        field -= baseclassdesc->getFieldCount();\n";
+    print CC "    }\n";
     print CC "    switch (field) {\n";
     for ($i=0; $i<$fieldcount; $i++)
     {
@@ -1452,11 +1431,11 @@ sub generateDescriptorClass
     # getFieldEnumName()
     print CC "const char *$msgdescclass\:\:getFieldEnumName(int field)\n";
     print CC "{\n";
-    if ($hasbasedescriptor) {
-        print CC "    if (field < $msgbasedescclass\:\:getFieldCount())\n";
-        print CC "        return $msgbasedescclass\:\:getFieldEnumName(field);\n";
-        print CC "    field -= $msgbasedescclass\:\:getFieldCount();\n";
-    }
+    print CC "    if (baseclassdesc) {\n";
+    print CC "        if (field < baseclassdesc->getFieldCount())\n";
+    print CC "            return baseclassdesc->getFieldEnumName(field);\n";
+    print CC "        field -= baseclassdesc->getFieldCount();\n";
+    print CC "    }\n";
     print CC "    switch (field) {\n";
     for ($i=0; $i<$fieldcount; $i++)
     {
@@ -1472,11 +1451,11 @@ sub generateDescriptorClass
     # getArraySize()
     print CC "int $msgdescclass\:\:getArraySize(int field)\n";
     print CC "{\n";
-    if ($hasbasedescriptor) {
-        print CC "    if (field < $msgbasedescclass\:\:getFieldCount())\n";
-        print CC "        return $msgbasedescclass\:\:getArraySize(field);\n";
-        print CC "    field -= $msgbasedescclass\:\:getFieldCount();\n";
-    }
+    print CC "    if (baseclassdesc) {\n";
+    print CC "        if (field < baseclassdesc->getFieldCount())\n";
+    print CC "            return baseclassdesc->getArraySize(field);\n";
+    print CC "        field -= baseclassdesc->getFieldCount();\n";
+    print CC "    }\n";
     print CC "    $msgclass *pp = ($msgclass *)p;\n";
     print CC "    switch (field) {\n";
     for ($i=0; $i<$fieldcount; $i++) {
@@ -1498,11 +1477,11 @@ sub generateDescriptorClass
     # getFieldAsString()
     print CC "bool $msgdescclass\:\:getFieldAsString(int field, int i, char *resultbuf, int bufsize)\n";
     print CC "{\n";
-    if ($hasbasedescriptor) {
-        print CC "    if (field < $msgbasedescclass\:\:getFieldCount())\n";
-        print CC "        return $msgbasedescclass\:\:getFieldAsString(field,i,resultbuf,bufsize);\n";
-        print CC "    field -= $msgbasedescclass\:\:getFieldCount();\n";
-    }
+    print CC "    if (baseclassdesc) {\n";
+    print CC "        if (field < baseclassdesc->getFieldCount())\n";
+    print CC "            return baseclassdesc->getFieldAsString(field,i,resultbuf,bufsize);\n";
+    print CC "        field -= baseclassdesc->getFieldCount();\n";
+    print CC "    }\n";
     print CC "    $msgclass *pp = ($msgclass *)p;\n";
     print CC "    switch (field) {\n";
     for ($i=0; $i<$fieldcount; $i++)
@@ -1554,11 +1533,11 @@ sub generateDescriptorClass
     # setFieldAsString()
     print CC "bool $msgdescclass\:\:setFieldAsString(int field, int i, const char *value)\n";
     print CC "{\n";
-    if ($hasbasedescriptor) {
-        print CC "    if (field < $msgbasedescclass\:\:getFieldCount())\n";
-        print CC "        return $msgbasedescclass\:\:setFieldAsString(field,i,value);\n";
-        print CC "    field -= $msgbasedescclass\:\:getFieldCount();\n";
-    }
+    print CC "    if (baseclassdesc) {\n";
+    print CC "        if (field < baseclassdesc->getFieldCount())\n";
+    print CC "            return baseclassdesc->setFieldAsString(field,i,value);\n";
+    print CC "        field -= baseclassdesc->getFieldCount();\n";
+    print CC "    }\n";
     print CC "    $msgclass *pp = ($msgclass *)p;\n";
     print CC "    switch (field) {\n";
     for ($i=0; $i<$fieldcount; $i++)
@@ -1598,11 +1577,11 @@ sub generateDescriptorClass
     # getFieldStructName()
     print CC "const char *$msgdescclass\:\:getFieldStructName(int field)\n";
     print CC "{\n";
-    if ($hasbasedescriptor) {
-        print CC "    if (field < $msgbasedescclass\:\:getFieldCount())\n";
-        print CC "        return $msgbasedescclass\:\:getFieldStructName(field);\n";
-        print CC "    field -= $msgbasedescclass\:\:getFieldCount();\n";
-    }
+    print CC "    if (baseclassdesc) {\n";
+    print CC "        if (field < baseclassdesc->getFieldCount())\n";
+    print CC "            return baseclassdesc->getFieldStructName(field);\n";
+    print CC "        field -= baseclassdesc->getFieldCount();\n";
+    print CC "    }\n";
     print CC "    switch (field) {\n";
     for ($i=0; $i<$fieldcount; $i++)
     {
@@ -1618,11 +1597,11 @@ sub generateDescriptorClass
     # getFieldStructPointer()
     print CC "void *$msgdescclass\:\:getFieldStructPointer(int field, int i)\n";
     print CC "{\n";
-    if ($hasbasedescriptor) {
-        print CC "    if (field < $msgbasedescclass\:\:getFieldCount())\n";
-        print CC "        return $msgbasedescclass\:\:getFieldStructPointer(field, i);\n";
-        print CC "    field -= $msgbasedescclass\:\:getFieldCount();\n";
-    }
+    print CC "    if (baseclassdesc) {\n";
+    print CC "        if (field < baseclassdesc->getFieldCount())\n";
+    print CC "            return baseclassdesc->getFieldStructPointer(field, i);\n";
+    print CC "        field -= baseclassdesc->getFieldCount();\n";
+    print CC "    }\n";
     print CC "    $msgclass *pp = ($msgclass *)p;\n";
     print CC "    switch (field) {\n";
     for ($i=0; $i<$fieldcount; $i++)

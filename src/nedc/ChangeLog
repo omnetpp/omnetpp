@@ -1,3 +1,8 @@
+2004-12-19  Andras Varga
+
+	* opp_msgc: fix: if a message was subclassed in another .msg file, base
+	class fields were not visible in Tkenv [reported by Julien Cartigny]
+
 2004-11-29  Andras Varga
 
 	* ebnf.y: malloc.h changed to stdlib.h. Change needed for Mac OS/X 
