@@ -36,7 +36,7 @@ components: libs progs samples tutorials
 
 LIBS=sim nedxml envir cmdenv tkenv
 PROGS=utils nedc gned plove
-SAMPLES=dyna dyna2 fddi fifo1 fifo2 hcube hist nim token ned demo
+SAMPLES=dyna dyna2 fddi fifo1 fifo2 hcube hist nim token topo demo
 
 #
 # Group targets. Note that utils has to be built BEFORE other libs and progs
