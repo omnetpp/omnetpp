@@ -116,15 +116,13 @@ ENVIR_API bool memoryIsLow();
  * cEnvir has only one instance, the ev global variable.
  *
  * cEnvir member functions can be rougly divided into two groups:
- * <UL>
- *   <LI> I/O for module activities; actual implementation is different for each
- *        user interface (e.g. stdin/stdout for Cmdenv, windowing in Tkenv)
- *   <LI> functions for exchanging information between the simulation and the
- *        environment.
- * </UL>
+ *  - I/O for module activities; actual implementation is different for each
+ *    user interface (e.g. stdin/stdout for Cmdenv, windowing in Tkenv)
+ *  - functions for exchanging information between the simulation and the
+ *    environment.
  *
  * The implementation of cEnvir is <b>not</b> part of the simulation kernel,
- * it's in a separate library (the Envir library; see src/envir). This means that
+ * it is in a separate library (the Envir library; see src/envir). This means that
  * customizers are free to replace the environment of the simulation as
  * they like, by simply linking the executable with a different library.
  *
