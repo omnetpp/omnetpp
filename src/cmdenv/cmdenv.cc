@@ -324,7 +324,7 @@ void TCmdenvApp::simulate()
                    throw new cTerminationException("scheduler interrupted while waiting");
 
                // print event banner if neccessary
-               if (opt_eventbanners)
+               if (opt_eventbanners && mod->isEvEnabled())
                {
                    ::fprintf(fout, "** Event #%ld  T=%s.  (%s) %s (id=%d)\n",
                            simulation.eventNumber(),
@@ -442,7 +442,8 @@ void TCmdenvApp::putmsg(const char *s)
 
 void TCmdenvApp::sputn(const char *s, int n)
 {
-    if (opt_modulemsgs || simulation.contextModule()==NULL)
+    cModule *ctxmod = simulation.contextModule();
+    if (!ctxmod || (opt_modulemsgs && ctxmod->isEvEnabled()))
     {
         ::fwrite(s,1,n,fout);
         if (opt_autoflush)
@@ -493,6 +494,13 @@ int TCmdenvApp::askYesNo(const char *question )
 bool TCmdenvApp::idle()
 {
     return sigint_received;
+}
+
+void TCmdenvApp::moduleCreated(cModule *mod)
+{
+    std::string entryname = std::string(mod->fullPath()) + ".ev-output";
+    bool ev_enabled = ev.config()->getAsBool("Cmdenv", entryname.c_str(), true);
+    mod->setEvEnabled(ev_enabled);
 }
 
 void TCmdenvApp::messageSent(cMessage *msg, cGate *)
