@@ -32,7 +32,6 @@ cModule *cDynamicModuleType::createModuleObject(const char *modname, cModule *pa
     return new cDynamicCompoundModule(modname, parentmod);
 }
 
-//FIXME this is deprecated or what....
 void cDynamicModuleType::buildInside(cModule *mod)
 {
     cNEDNetworkBuilder builder;
@@ -50,7 +49,6 @@ cDynamicModuleType::~cDynamicModuleType()
 cDynamicCompoundModule::cDynamicCompoundModule(const char *name, cModule *parentmod) :
   cCompoundModule(name, parentmod)
 {
-    // FIXME TBD
 }
 
 cDynamicCompoundModule::cDynamicCompoundModule(const cDynamicCompoundModule& mod) :

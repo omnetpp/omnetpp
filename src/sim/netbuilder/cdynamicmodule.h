@@ -21,19 +21,6 @@
 
 
 /**
- * How does it work?
- *
- * - before network setup, we read some NED files, and register
- *   the modules types and network types in them (by creating cDynamicModuleType
- *   objects and adding them to the 'networktypes' list).
- *
- * - then we can instantiate _any_ network: it may contain module types that were
- *   read in dynamically, it'll work without problem.
-
-  FIXME put this comment somewhere...
- */
-
-/**
  * Special cModuleType: takes all info from cNEDNetworkBuilder
  */
 class cDynamicModuleType : public cModuleType
@@ -48,7 +35,8 @@ class cDynamicModuleType : public cModuleType
     virtual ~cDynamicModuleType();
 
     /**
-     * FIXME comment
+     * Build submodules and connections inside the module passed,
+     * based on info in the stored CompoundModuleNode.
      */
     virtual void buildInside(cModule *module);
 };
@@ -61,9 +49,6 @@ class cDynamicCompoundModule : public cCompoundModule
 {
     friend class cDynamicModuleType;
   protected:
-    /**
-     * FIXME comment
-     */
     void doBuildInside();
 
   public:
@@ -102,7 +87,6 @@ class cDynamicCompoundModule : public cCompoundModule
      */
     virtual cObject *dup() const   {return new cDynamicCompoundModule(*this);}
     //@}
-
 };
 
 

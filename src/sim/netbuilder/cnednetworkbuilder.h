@@ -30,6 +30,8 @@ class cPar;
  * Builds a network from the NED file.
  * Assumes object tree has already passed all validation stages (DTD, basic, semantic).
  *
+ * See also loadNedFile()
+ *
  * @ingroup NetworkBuilder
  */
 class cNEDNetworkBuilder
@@ -38,6 +40,8 @@ class cNEDNetworkBuilder
     // stack of loop variables
     struct {const char *varname; int value;} loopVarStack[MAX_LOOP_NESTING];
     int loopVarSP;
+
+    cPar::ExprElem *xelemsBuf;
 
   protected:
     void addChannelAttr(cChannel *chanp, ChannelAttrNode *channelattr);

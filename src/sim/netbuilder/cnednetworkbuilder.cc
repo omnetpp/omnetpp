@@ -40,14 +40,15 @@ inline bool strnull(const char *s)
     return !s || !s[0];
 }
 
-
 cNEDNetworkBuilder::cNEDNetworkBuilder()
 {
     loopVarSP = 0;
+    xelemsBuf = new cPar::ExprElem[1000]; // we'll use it as buffer
 }
 
 cNEDNetworkBuilder::~cNEDNetworkBuilder()
 {
+    delete [] xelemsBuf;
 }
 
 void cNEDNetworkBuilder::setupNetwork(NetworkNode *networknode)
@@ -604,7 +605,7 @@ double cNEDNetworkBuilder::evalFunction(FunctionNode *node, cModule *parentmodp,
     // operators should be handled specially
     if (!strcmp(funcname,"index"))
     {
-        if (!submodp) // FIXME allow it for nedc compatibility -- should mean index() of parent module
+        if (!submodp)
             throw new cException("dynamic module builder: evaluate: index operator cannot be used outside a submodule");
         return submodp->index();
     }
@@ -621,10 +622,13 @@ double cNEDNetworkBuilder::evalFunction(FunctionNode *node, cModule *parentmodp,
             if (g)
                 return g->size();
 
-            // if not found, find among submodules
-            cModule *m = parentmodp->submodule(name);
-            if (m)
-                return m->size();
+            // if not found, find among submodules. If there's no such submodule, it may
+            // be that such submodule vector never existed, or can be that it's zero
+            // size -- we cannot tell, so we have to return 0.
+            cModule *m = parentmodp->submodule(name,0);
+            if (!m && parentmodp->submodule(name))
+                throw new cException("dynamic module builder: evaluate: sizeof(): %s is not a vector submodule", name);
+            return m ? m->size() : 0;
         }
         throw new cException("dynamic module builder: evaluate: sizeof(%s) failed -- no such gate or module", name);
     }
@@ -689,8 +693,8 @@ double cNEDNetworkBuilder::evalConst(ConstNode *node, cModule *, cModule *)
     {
         case NED_CONST_BOOL:
             return !strcmp(val,"true");
-        case NED_CONST_INT: //FIXME recognize hex numbers too!!!
-            return atoi(node->getValue());
+        case NED_CONST_INT:
+            return strtol(node->getValue(), NULL, 0); // this handles hex as well
         case NED_CONST_REAL:
             return atof(node->getValue());
         case NED_CONST_TIME:
@@ -809,8 +813,8 @@ void cNEDNetworkBuilder::assignParamValue(cPar& p, ExpressionNode *expr, cModule
         return;
     }
 
-    // FIXME if param is const (non-volatile), no need for reverse polish stuff!
-    //  ^^ we need to check moduleinterface for that!
+    // check if p should be constant, according to the module decl.
+    //FIXME p->ownerModule()->moduleType()->moduleInterface()->isParamConst()
 
     // check if we really need an expression (ie. not if expr is simple or param is const)
     if (!needsDynamicExpression(expr))
@@ -821,21 +825,26 @@ void cNEDNetworkBuilder::assignParamValue(cPar& p, ExpressionNode *expr, cModule
     }
     else
     {
-        // create dynamically evaluated expression (reverse Polish)
-        cPar::ExprElem *xelems = new cPar::ExprElem[1000]; // FIXME count needed size
+        // create dynamically evaluated expression (reverse Polish).
+        // we don't know the size in advance, so first collect it in xelemsBuf[1000],
+        // then make a copy
         int n = 0;
-        addXElems(expr->getFirstChild(), xelems, n, submodp);
+        addXElems(expr->getFirstChild(), xelemsBuf, n, submodp);
+        cPar::ExprElem *xelems = new cPar::ExprElem[n];
+        for (int i=0; i<n; ++n)
+            xelems[i] = xelemsBuf[i];
         p.setDoubleValue(xelems, n);
 
-        char buf[1000];
-        printXElems(buf, xelems, n);
+        //debug:
+        //char buf[1000];
+        //printXElems(buf, xelems, n);
         //printf("dbg: compiled expression: %s = %s\n", p.fullPath().c_str(), buf);
     }
 }
 
 bool cNEDNetworkBuilder::needsDynamicExpression(ExpressionNode *expr)
 {
-    // FIXME this has to be revised!
+    // TBD revise
 
     // if simple expr, no reverse Polish expression necessary
     NEDElement *node = expr->getFirstChild();
@@ -845,10 +854,6 @@ bool cNEDNetworkBuilder::needsDynamicExpression(ExpressionNode *expr)
     // only non-const parameter assignments and channel attrs need reverse Polish expression(?)
     int parenttag = expr->getParent()->getTagCode();
     if (parenttag!=NED_SUBSTPARAM && parenttag!=NED_CHANNEL_ATTR && parenttag!=NED_CONN_ATTR)
-        return false;
-
-    // also: if the parameter is non-volatile (that is, const), we don't need reverse Polish expression
-    if (parenttag==NED_SUBSTPARAM && false /*FIXME ...and param is const*/)
         return false;
 
     // identifiers and constants never need reverse Polish expression
@@ -868,15 +873,10 @@ bool cNEDNetworkBuilder::needsDynamicExpression(ExpressionNode *expr)
         if (!strcmp(funcname,"sizeof"))
             return false;
         if (!strcmp(funcname,"input"))
-        {
-            NEDElement *op1 = node->getFirstChild();
-            NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
-            if ((!op1 || op1->getTagCode()==NED_CONST) && (!op2 || op2->getTagCode()==NED_CONST))
-                return false;
-        }
+            return false;
     }
 
-    // FIXME: some paramrefs and functions may also qualify
+    // TBD some paramrefs and functions may also qualify
     return true;
 }
 
@@ -1089,7 +1089,7 @@ void cNEDNetworkBuilder::addXElemsConst(ConstNode *node, cPar::ExprElem *xelems,
     switch (node->getType())
     {
         case NED_CONST_BOOL: xelems[pos++] = !strcmp(val,"true"); break;
-        case NED_CONST_INT:  xelems[pos++] = atoi(node->getValue()); break; // FIXME recognize hex numbers too!
+        case NED_CONST_INT:  xelems[pos++] = strtol(node->getValue(), NULL, 0); break; // this handles hex as well
         case NED_CONST_REAL: xelems[pos++] = atof(node->getValue()); break;
         case NED_CONST_TIME: xelems[pos++] = strToSimtime(node->getValue()); break;
         case NED_CONST_STRING: throw new cException("dynamic module builder: evaluate: string literals not supported here");
