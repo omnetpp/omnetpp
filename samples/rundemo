@@ -23,6 +23,15 @@ set unixbrowser "netscape"
 #set unixbrowser "mozilla"
 #set unixbrowser "konqueror"
 
+array set colors {
+   color1 "#f1f2ec"
+   color2 "#FFECB0"
+   color3 "#CAFFD8"
+   color4 "#F1F1B1"
+   color5 "#d4e6ff"
+   color6 "#ffffaa"
+}
+
 #
 # title line:   {"color" "title"}
 # program line: {"color" "name" "directory" "unix-command" "windows-command"}
@@ -33,50 +42,50 @@ set unixbrowser "netscape"
 set i 0
 set first ""
 foreach line {
-   {"#f1f2ec"  "About..."         "README"}
-   {"#FFECB0"  "Tictoc"           "tictoc"           "./tictoc"    "tictoc.exe"}
-   {"#CAFFD8"  "NEDDemo"          "neddemo"          "./neddemo"   "neddemo.exe"}
-   {"#CAFFD8"  "Hist"             "hist"             "./hist"      "hist.exe"}
-   {"#F1F1B1"  "Fifo"             "fifo"             "./fifo"      "fifo.exe"}
-   {"#F1F1B1"  "Queues"           "queues"           "./queues"    "queues.exe"}
-   {"#F1F1B1"  "CQN"              "cqn"              "./cqn"       "cqn.exe"}
-   {"#F1F1B1"  "Queueing"         "queueing"         "./queueing"  "queueing.exe"}
-   {"#d4e6ff"  "P-to-P"           "p-to-p"           "./p-to-p"    "p-to-p.exe"}
-   {"#d4e6ff"  "Aloha"            "aloha"            "./aloha"     "aloha.exe"}
-   {"#d4e6ff"  "Dyna"             "dyna"             "./dyna"      "dyna.exe"}
-   {"#d4e6ff"  "TokenRing"        "tokenring"        "./tokenring" "tokenring.exe"}
-   {"#d4e6ff"  "FDDI"             "fddi"             "./fddi"      "fddi.exe"}
-   {"#d4e6ff"  "HCube"            "hcube"            "./hcube"     "hcube.exe"}
-   {"#d4e6ff"  "Routing"          "routing"          "./routing"   "routing.exe"}
-   {"#d4e6ff"  "Routing/Networks" "routing/networks" "../routing"  "..\\routing.exe"}
-   {"#ffffaa"  "Parallel CQN"     "cqn/parsim"       "./runparsim" "runparsim.bat"}
-   {"#ffffaa"  "Dyna in real-time" "dyna/realtime"   "../dyna"     "..\\dyna.exe"}
-   {"#ffffaa"  "Sockets/HTTP"     "sockets"          "./sockets -r 1"  "sockets.exe -r 1"}
-   {"#ffffaa"  "Sockets/Telnet"   "sockets"          "./sockets -r 2"  "sockets.exe -r 2"}
+   {color1  "About..."         "README"}
+   {color2  "Tictoc"           "tictoc"           "./tictoc"    "tictoc.exe"}
+   {color3  "NEDDemo"          "neddemo"          "./neddemo"   "neddemo.exe"}
+   {color3  "Hist"             "hist"             "./hist"      "hist.exe"}
+   {color4  "Fifo"             "fifo"             "./fifo"      "fifo.exe"}
+   {color4  "Queues"           "queues"           "./queues"    "queues.exe"}
+   {color4  "CQN"              "cqn"              "./cqn"       "cqn.exe"}
+   {color4  "Queueing"         "queueing"         "./queueing"  "queueing.exe"}
+   {color5  "P-to-P"           "p-to-p"           "./p-to-p"    "p-to-p.exe"}
+   {color5  "Aloha"            "aloha"            "./aloha"     "aloha.exe"}
+   {color5  "Dyna"             "dyna"             "./dyna"      "dyna.exe"}
+   {color5  "TokenRing"        "tokenring"        "./tokenring" "tokenring.exe"}
+   {color5  "FDDI"             "fddi"             "./fddi"      "fddi.exe"}
+   {color5  "HCube"            "hcube"            "./hcube"     "hcube.exe"}
+   {color5  "Routing"          "routing"          "./routing"   "routing.exe"}
+   {color5  "Routing/Networks" "routing/networks" "../routing"  "..\\routing.exe"}
+   {color6  "Parallel CQN"     "cqn/parsim"       "./runparsim" "runparsim.bat"}
+   {color6  "Dyna in real-time" "dyna/realtime"   "../dyna"     "..\\dyna.exe"}
+   {color6  "Sockets/HTTP"     "sockets"          "./sockets -r 1"  "sockets.exe -r 1"}
+   {color6  "Sockets/Telnet"   "sockets"          "./sockets -r 2"  "sockets.exe -r 2"}
 } {
    lappend samples $i
    if {[llength $line]==0} {
        set db($i,type) "spacer"
    } elseif {[llength $line]==2} {
        set db($i,type) "heading"
-       set db($i,color) [lindex $line 0]
+       set db($i,color) $colors([lindex $line 0])
        set db($i,title) [lindex $line 1]
    } elseif {[llength $line]==3} {
        set db($i,type) "readme"
-       set db($i,color) [lindex $line 0]
+       set db($i,color) $colors([lindex $line 0])
        set db($i,title) [lindex $line 1]
        set db($i,readme) [lindex $line 2]
        if {$first==""} {set first $i}
    } elseif {[llength $line]==4} {
        set db($i,type) "docu"
-       set db($i,color) [lindex $line 0]
+       set db($i,color) $colors([lindex $line 0])
        set db($i,title) [lindex $line 1]
        set db($i,readme) [lindex $line 2]
        set db($i,docu) [lindex $line 3]
        if {$first==""} {set first $i}
    } elseif {[llength $line]==5} {
        set db($i,type) "program"
-       set db($i,color) [lindex $line 0]
+       set db($i,color) $colors([lindex $line 0])
        set db($i,title) [lindex $line 1]
        set db($i,dir)   [lindex $line 2]
        set db($i,uprog) [lindex $line 3]
