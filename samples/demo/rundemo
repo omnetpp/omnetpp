@@ -29,6 +29,8 @@ foreach i {
    {hist ../hist Hist}
    {nim ../nim Nim}
    {token ../token Token}
+   {dyna2 ../dyna2 Dyna2}
+   {ned ../ned NED}
 } {
    set sample [lindex $i 0]
    lappend samples $sample
