@@ -30,7 +30,7 @@ components: libs progs install-local samples
 
 LIBS=sim envir cmdenv tkenv tvenv
 PROGS=utils nedc gned plove
-SAMPLES=dyna fddi fifo1 fifo2 hcube hist nim pvmex token all
+SAMPLES=dyna fddi fifo1 fifo2 hcube hist nim pvmex token demo
 
 #
 # Group targets. Note that utils has to be built BEFORE other libs and progs
