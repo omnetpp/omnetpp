@@ -41,13 +41,16 @@
 %token IO_INTERFACES            /* --LG */
 %token IFPAIR                   /* --LG */
 
-%token INTCONSTANT REALCONSTANT NAME STRING
+%token INTCONSTANT REALCONSTANT NAME STRINGCONSTANT CHARCONSTANT
 %token _TRUE _FALSE
 %token INPUT
 %token REF ANCESTOR
 %token CONSTDECL NUMERICTYPE STRINGTYPE BOOLTYPE ANYTYPE
 
-%token PLUS MIN MUL DIV MOD EXP
+%token CPPINCLUDE SYSINCFILENAME STRUCT COBJECT NONCOBJECT
+%token ENUM EXTENDS MESSAGE CLASS FIELDS PROPERTIES VIRTUAL
+%token CHARTYPE SHORTTYPE INTTYPE LONGTYPE DOUBLETYPE
+
 %token SIZEOF SUBMODINDEX
 %token EQ NE GT GE LS LE
 %token AND OR XOR NOT
@@ -62,9 +65,9 @@
 %left EQ NE GT GE LS LE
 %left BIN_AND BIN_OR BIN_XOR
 %left SHIFT_LEFT SHIFT_RIGHT
-%left PLUS MIN
-%left MUL DIV MOD
-%right EXP
+%left '+' '-'
+%left '*' '/' '%'
+%right '^'
 %left UMIN NOT BIN_COMPL
 
 %start networkdescription
@@ -86,6 +89,7 @@
 #include <stdio.h>
 #include <malloc.h>         /* for alloca() */
 #include "nedgrammar.h"
+#include "nederror.h"
 
 #define YYDEBUG 1           /* allow debugging */
 #define YYDEBUGGING_ON 0    /* turn on/off debugging */
@@ -118,6 +122,7 @@ struct ParserState
     bool inLoop;
     bool inNetwork;
 
+    /* NED-I: modules, channels, networks */
     NedFileNode *nedfile;
     ImportNode *imports;
     ImportedFileNode *import;
@@ -144,6 +149,23 @@ struct ParserState
     ConnAttrNode *connattr;
     ForLoopNode *forloop;
     LoopVarNode *loopvar;
+
+    /* NED-II: message subclassing */
+    CppincludeNode *cppinclude;
+    CppStructNode *cppstruct;
+    CppCobjectNode *cppcobject;
+    CppNoncobjectNode *cppnoncobject;
+    EnumNode *enump;
+    MessageNode *messagep;
+    ClassNode *classp;
+    StructNode *structp;
+    NEDElement *msgclassorstruct;
+    EnumFieldsNode *enumfields;
+    EnumFieldNode *enumfield;
+    PropertiesNode *properties;
+    PropertyNode *property;
+    FieldsNode *fields;
+    FieldNode *field;
 } ps;
 
 NEDElement *createNodeWithTag(int tagcode, NEDElement *parent=NULL);
@@ -208,6 +230,15 @@ definition
         | simpledefinition
         | moduledefinition
         | network
+
+        | cppinclude
+        | cppstruct
+        | cppcobject
+        | cppnoncobject
+        | enum
+        | message
+        | class
+        | struct
         ;
 
 import
@@ -228,7 +259,7 @@ filenames
         ;
 
 filename
-        : STRING
+        : STRINGCONSTANT
                 {
                   ps.import = (ImportedFileNode *)createNodeWithTag(NED_IMPORTED_FILE, ps.imports );
                   ps.import->setFilename(toString(trimQuotes(@1)));
@@ -448,7 +479,7 @@ machine
         ;
 
 displayblock
-        : DISPLAY ':' STRING ';'
+        : DISPLAY ':' STRINGCONSTANT ';'
                 {
                   addDisplayString(ps.module,@3);
                 }
@@ -805,7 +836,7 @@ gatesize
         ;
 
 opt_submod_displayblock
-        : DISPLAY ':' STRING ';'
+        : DISPLAY ':' STRINGCONSTANT ';'
                 {
                   addDisplayString(ps.submod,@3);
                 }
@@ -889,7 +920,7 @@ opt_conn_condition
         ;
 
 opt_conn_displaystr
-        : DISPLAY STRING
+        : DISPLAY STRINGCONSTANT
                 {
                   addDisplayString(ps.conn,@2);
                 }
@@ -1124,6 +1155,10 @@ expression
                 }
         ;
 
+/*
+ * Expressions
+ */
+
 inputvalue
         : INPUT '(' expr ',' expr ')'  /* input(defaultvalue, promptstring) */
                 { if (ps.parseExpressions) $$ = createFunction("input", $3, $5); }
@@ -1140,20 +1175,20 @@ expr
         | '(' expr ')'
                 { $$ = $2; }
 
-        | expr PLUS expr
+        | expr '+' expr
                 { if (ps.parseExpressions) $$ = createOperator("+", $1, $3); }
-        | expr MIN expr
+        | expr '-' expr
                 { if (ps.parseExpressions) $$ = createOperator("-", $1, $3); }
-        | expr MUL expr
+        | expr '*' expr
                 { if (ps.parseExpressions) $$ = createOperator("*", $1, $3); }
-        | expr DIV expr
+        | expr '/' expr
                 { if (ps.parseExpressions) $$ = createOperator("/", $1, $3); }
-        | expr MOD expr
+        | expr '%' expr
                 { if (ps.parseExpressions) $$ = createOperator("%", $1, $3); }
-        | expr EXP expr
+        | expr '^' expr
                 { if (ps.parseExpressions) $$ = createOperator("^", $1, $3); }
 
-        | MIN expr
+        | '-' expr
                 %prec UMIN
                 { if (ps.parseExpressions) $$ = createOperator("-", $2); }
 
@@ -1247,7 +1282,7 @@ parameter_expr
         ;
 
 string_expr
-        : STRING
+        : STRINGCONSTANT
                 { $$ = createConst(NED_CONST_STRING, toString(trimQuotes(@1))); }
         ;
 
@@ -1287,6 +1322,308 @@ timeconstant
         | REALCONSTANT NAME
         ;
 
+/*
+ * NED-2: Message subclassing
+ */
+
+cppinclude
+        : CPPINCLUDE STRINGCONSTANT
+                {
+                  ps.cppinclude = (CppincludeNode *)createNodeWithTag(NED_CPPINCLUDE, ps.nedfile );
+                  ps.cppinclude->setFilename(toString(@2));
+                  setComments(ps.cppinclude,@1,@2);
+                }
+        | CPPINCLUDE SYSINCFILENAME
+                {
+                  ps.cppinclude = (CppincludeNode *)createNodeWithTag(NED_CPPINCLUDE, ps.nedfile );
+                  ps.cppinclude->setFilename(toString(@2));
+                  setComments(ps.cppinclude,@1,@2);
+                }
+        ;
+
+cppstruct
+        : STRUCT NAME ';'
+                {
+                  ps.cppstruct = (CppStructNode *)createNodeWithTag(NED_CPP_STRUCT, ps.nedfile );
+                  ps.cppstruct->setName(toString(@2));
+                  setComments(ps.cppstruct,@1,@2);
+                }
+        ;
+
+cppcobject
+        : COBJECT NAME ';'
+                {
+                  ps.cppcobject = (CppCobjectNode *)createNodeWithTag(NED_CPP_COBJECT, ps.nedfile );
+                  ps.cppcobject->setName(toString(@2));
+                  setComments(ps.cppcobject,@1,@2);
+                }
+        ;
+
+cppnoncobject
+        : NONCOBJECT NAME ';'
+                {
+                  ps.cppnoncobject = (CppNoncobjectNode *)createNodeWithTag(NED_CPP_NONCOBJECT, ps.nedfile );
+                  ps.cppnoncobject->setName(toString(@2));
+                  setComments(ps.cppnoncobject,@1,@2);
+                }
+        ;
+
+enum
+        : ENUM NAME '{'
+                {
+                  ps.enump = (EnumNode *)createNodeWithTag(NED_ENUM, ps.nedfile );
+                  ps.enump->setName(toString(@2));
+                  setComments(ps.enump,@1,@2);
+                  ps.enumfields = (EnumFieldsNode *)createNodeWithTag(NED_ENUM_FIELDS, ps.enump);
+                }
+          opt_enumfields '}' ';'
+                {
+                  setTrailingComment(ps.enump,@6);
+                }
+        | ENUM NAME EXTENDS NAME '{'
+                {
+                  ps.enump = (EnumNode *)createNodeWithTag(NED_ENUM, ps.nedfile );
+                  ps.enump->setName(toString(@2));
+                  ps.enump->setExtendsName(toString(@4));
+                  setComments(ps.enump,@1,@4);
+                  ps.enumfields = (EnumFieldsNode *)createNodeWithTag(NED_ENUM_FIELDS, ps.enump);
+                }
+          opt_enumfields '}' ';'
+                {
+                  setTrailingComment(ps.enump,@8);
+                }
+        ;
+
+opt_enumfields
+        : enumfields
+        |
+        ;
+
+enumfields
+        : enumfield enumfields
+        | enumfield
+        ;
+
+enumfield
+        : NAME ';'
+                {
+                  ps.enumfield = (EnumFieldNode *)createNodeWithTag(NED_ENUM_FIELD, ps.enumfields);
+                  ps.enumfield->setName(toString(@1));
+                }
+        | NAME '=' INTCONSTANT ';'
+                {
+                  ps.enumfield = (EnumFieldNode *)createNodeWithTag(NED_ENUM_FIELD, ps.enumfields);
+                  ps.enumfield->setName(toString(@1));
+                  ps.enumfield->setValue(toString(@3));
+                }
+        ;
+
+message
+        : MESSAGE NAME '{'
+                {
+                  ps.msgclassorstruct = ps.messagep = (MessageNode *)createNodeWithTag(NED_MESSAGE, ps.nedfile );
+                  ps.messagep->setName(toString(@2));
+                  setComments(ps.messagep,@1,@2);
+                }
+          opt_propertiesblock opt_fieldsblock '}' ';'
+                {
+                  setTrailingComment(ps.messagep,@7);
+                }
+        | MESSAGE NAME EXTENDS NAME '{'
+                {
+                  ps.msgclassorstruct = ps.messagep = (MessageNode *)createNodeWithTag(NED_MESSAGE, ps.nedfile );
+                  ps.messagep->setName(toString(@2));
+                  ps.messagep->setExtendsName(toString(@4));
+                  setComments(ps.messagep,@1,@4);
+                }
+          opt_propertiesblock opt_fieldsblock '}' ';'
+                {
+                  setTrailingComment(ps.messagep,@9);
+                }
+        ;
+
+class
+        : CLASS NAME '{'
+                {
+                  ps.msgclassorstruct = ps.classp = (ClassNode *)createNodeWithTag(NED_CLASS, ps.nedfile );
+                  ps.classp->setName(toString(@2));
+                  setComments(ps.classp,@1,@2);
+                }
+          opt_propertiesblock opt_fieldsblock '}' ';'
+                {
+                  setTrailingComment(ps.classp,@7);
+                }
+        | CLASS NAME EXTENDS NAME '{'
+                {
+                  ps.msgclassorstruct = ps.classp = (ClassNode *)createNodeWithTag(NED_CLASS, ps.nedfile );
+                  ps.classp->setName(toString(@2));
+                  ps.classp->setExtendsName(toString(@4));
+                  setComments(ps.classp,@1,@4);
+                }
+          opt_propertiesblock opt_fieldsblock '}' ';'
+                {
+                  setTrailingComment(ps.classp,@9);
+                }
+        ;
+
+struct
+        : STRUCT NAME '{'
+                {
+                  ps.msgclassorstruct = ps.structp = (StructNode *)createNodeWithTag(NED_STRUCT, ps.nedfile );
+                  ps.structp->setName(toString(@2));
+                  setComments(ps.structp,@1,@2);
+                }
+          opt_propertiesblock opt_fieldsblock '}' ';'
+                {
+                  setTrailingComment(ps.structp,@7);
+                }
+        | STRUCT NAME EXTENDS NAME '{'
+                {
+                  ps.msgclassorstruct = ps.structp = (StructNode *)createNodeWithTag(NED_STRUCT, ps.nedfile );
+                  ps.structp->setName(toString(@2));
+                  ps.structp->setExtendsName(toString(@4));
+                  setComments(ps.structp,@1,@4);
+                }
+          opt_propertiesblock opt_fieldsblock '}' ';'
+                {
+                  setTrailingComment(ps.structp,@9);
+                }
+        ;
+
+opt_propertiesblock
+        : PROPERTIES ':'
+                {
+                  ps.properties = (PropertiesNode *)createNodeWithTag(NED_PROPERTIES, ps.msgclassorstruct);
+                  setComments(ps.properties,@1);
+                }
+          opt_properties
+        |
+        ;
+
+opt_properties
+        : properties
+        |
+        ;
+
+properties
+        : property properties
+        | property
+        ;
+
+property
+        : NAME '=' propertyvalue ';'
+                {
+                  ps.property = (PropertyNode *)createNodeWithTag(NED_PROPERTY, ps.properties);
+                  ps.property->setName(toString(@1));
+                  ps.property->setValue(toString(@3));
+                  setComments(ps.property,@1,@3);
+                }
+        ;
+
+propertyvalue
+        : STRINGCONSTANT
+        | INTCONSTANT
+        | REALCONSTANT
+        | timeconstant
+        | _TRUE
+        | _FALSE
+        ;
+
+opt_fieldsblock
+        : FIELDS ':'
+                {
+                  ps.fields = (FieldsNode *)createNodeWithTag(NED_FIELDS, ps.msgclassorstruct);
+                  setComments(ps.fields,@1);
+                }
+          opt_fields
+        |
+        ;
+
+opt_fields
+        : fields
+        |
+        ;
+
+fields
+        : field fields
+        | field
+        ;
+
+field
+        : fielddatatype NAME
+                {
+                  ps.field = (FieldNode *)createNodeWithTag(NED_FIELD, ps.fields);
+                  ps.field->setName(toString(@2));
+                  ps.field->setDataType(toString(@1));
+                }
+           opt_fieldvector opt_fieldenum opt_fieldvalue ';'
+                {
+                  setComments(ps.field,@1,@6);
+                }
+        | VIRTUAL fielddatatype NAME
+                {
+                  ps.field = (FieldNode *)createNodeWithTag(NED_FIELD, ps.fields);
+                  ps.field->setName(toString(@3));
+                  ps.field->setDataType(toString(@2));
+                  ps.field->setIsVirtual(true);
+                }
+            opt_fieldvector opt_fieldenum opt_fieldvalue ';'
+                {
+                  setComments(ps.field,@1,@7);
+                }
+        ;
+
+fielddatatype
+        : NAME
+        | NAME '*'
+        | CHARTYPE
+        | SHORTTYPE
+        | INTTYPE
+        | LONGTYPE
+        | DOUBLETYPE
+        | STRINGTYPE
+        | BOOLTYPE
+        ;
+
+opt_fieldvector
+        : '[' INTCONSTANT ']'
+                {
+                  ps.field->setIsVector(true);
+                  ps.field->setVectorSize(toString(@2));
+                }
+        | '[' ']'
+                {
+                  ps.field->setIsVector(true);
+                }
+        |
+        ;
+
+opt_fieldenum
+        : ENUM '(' NAME ')'
+                {
+                  ps.field->setEnumName(toString(@3));
+                }
+        |
+        ;
+
+opt_fieldvalue
+        : '=' fieldvalue
+                {
+                  ps.field->setDefaultValue(toString(@2));
+                }
+        |
+        ;
+
+fieldvalue
+        : STRINGCONSTANT
+        | CHARCONSTANT
+        | INTCONSTANT
+        | REALCONSTANT
+        | timeconstant
+        | _TRUE
+        | _FALSE
+        ;
+
 opt_semicolon : ';' | ;
 comma_or_semicolon : ',' | ';' | ;
 
@@ -1321,7 +1658,14 @@ int runparse (NEDParser *p,NedFileNode *nf,bool parseexpr, const char *sourcefna
     ps.nedfile = nf;
     ps.parseExpressions = parseexpr;
     sourcefilename = sourcefname;
-    return yyparse();
+
+    try {
+        return yyparse();
+    } catch (NEDException *e) {
+        NEDError(NULL, "internal error while parsing: %s", e->errorMessage());
+        delete e;
+        return 0;
+    }
 }
 
 
@@ -1543,9 +1887,9 @@ void swapConnection(NEDElement *conn)
 
 void swapAttributes(NEDElement *node, const char *attr1, const char *attr2)
 {
-   NEDString oldv1(node->getAttribute(attr1));
+   std::string oldv1(node->getAttribute(attr1));
    node->setAttribute(attr1,node->getAttribute(attr2));
-   node->setAttribute(attr2,oldv1);
+   node->setAttribute(attr2,oldv1.c_str());
 }
 
 void swapExpressionChildren(NEDElement *node, const char *attr1, const char *attr2)
@@ -1622,7 +1966,12 @@ ConstNode *createTimeConst(const char *text)
    if (text) c->setText(text);
 
    double t = NEDStrToSimtime(text);
-   if (t<0) np->error("invalid time constant", pos.li);
+   if (t<0)
+   {
+       char msg[130];
+       sprintf(msg,"invalid time constant '%.100s'",text);
+       np->error(msg, pos.li);
+   }
    char buf[32];
    sprintf(buf,"%lg",t);
    c->setValue(buf);

@@ -64,63 +64,82 @@ char textbuf[256], lasttextbuf[256] = "";
 "//"                    { comment(); }
 "--"                    { comment(); }
 
-"include"               { count(); return (INCLUDE); }
-"import"                { count(); return (INCLUDE); }
-"network"               { count(); return (NETWORK); }
-"module"                { count(); return (MODULE); }
-"simple"                { count(); return (SIMPLE); }
-"channel"               { count(); return (CHANNEL); }
-"delay"                 { count(); return (DELAY); }
-"error"                 { count(); return (ERROR); }
-"datarate"              { count(); return (DATARATE); }
-"for"                   { count(); return (FOR); }
-"do"                    { count(); return (DO); }
-"true"                  { count(); return (_TRUE); }
-"false"                 { count(); return (_FALSE); }
-"ref"                   { count(); return (REF); }
-"ancestor"              { count(); return (ANCESTOR); }
-"input"                 { count(); return (INPUT); }
-"const"                 { count(); return (CONSTDECL); }
-"sizeof"                { count(); return (SIZEOF); }  /* --VA*/
-"endsimple"             { count(); return (ENDSIMPLE); }
-"endmodule"             { count(); return (ENDMODULE); }
-"endchannel"            { count(); return (ENDCHANNEL); }
-"endnetwork"            { count(); return (ENDNETWORK); }
-"endfor"                { count(); return (ENDFOR); }
-"parameters"            { count(); return (PARAMETERS); }
-"gates"                 { count(); return (GATES); }
-"gatesizes"             { count(); return (GATESIZES); }  /* --VA*/
-"in:"                   { count(); return (IN); }
-"out:"                  { count(); return (OUT); }
-"submodules"            { count(); return (SUBMODULES); }
-"connections"           { count(); return (CONNECTIONS); }
-"display"               { count(); return (DISPLAY); }
-"on"                    { count(); return (ON); }          /* --LG */
-"like"                  { count(); return (LIKE); }
-"machines"              { count(); return (MACHINES); }         /* --LG */
-"io-interfaces"         { count(); return (IO_INTERFACES); }    /* --LG */
-"ifpair"                { count(); return (IFPAIR); }    /* --LG */
-"-->"                   { count(); return (RIGHT_ARROW); }
-"<--"                   { count(); return (LEFT_ARROW); } /* --VA */
-".."                    { count(); return (TO); }
-"..."                   { count(); return (TO); }
-"to"                    { count(); return (TO); }  /* --VA */
-"if"                    { count(); return (IF); }  /* --VA */
-"index"                 { count(); return (SUBMODINDEX); }  /* --VA */
-"nocheck"               { count(); return (NOCHECK); }  /* --VA */
+"include"               { count(); return INCLUDE; }
+"import"                { count(); return INCLUDE; }
+"network"               { count(); return NETWORK; }
+"module"                { count(); return MODULE; }
+"simple"                { count(); return SIMPLE; }
+"channel"               { count(); return CHANNEL; }
+"delay"                 { count(); return DELAY; }
+"error"                 { count(); return ERROR; }
+"datarate"              { count(); return DATARATE; }
+"for"                   { count(); return FOR; }
+"do"                    { count(); return DO; }
+"true"                  { count(); return _TRUE; }
+"false"                 { count(); return _FALSE; }
+"ref"                   { count(); return REF; }
+"ancestor"              { count(); return ANCESTOR; }
+"input"                 { count(); return INPUT; }
+"const"                 { count(); return CONSTDECL; }
+"sizeof"                { count(); return SIZEOF; }
+"endsimple"             { count(); return ENDSIMPLE; }
+"endmodule"             { count(); return ENDMODULE; }
+"endchannel"            { count(); return ENDCHANNEL; }
+"endnetwork"            { count(); return ENDNETWORK; }
+"endfor"                { count(); return ENDFOR; }
+"parameters"            { count(); return PARAMETERS; }
+"gates"                 { count(); return GATES; }
+"gatesizes"             { count(); return GATESIZES; }
+"in:"                   { count(); return IN; }
+"out:"                  { count(); return OUT; }
+"submodules"            { count(); return SUBMODULES; }
+"connections"           { count(); return CONNECTIONS; }
+"display"               { count(); return DISPLAY; }
+"on"                    { count(); return ON; }          /* --LG */
+"like"                  { count(); return LIKE; }
+"machines"              { count(); return MACHINES; }         /* --LG */
+"io-interfaces"         { count(); return IO_INTERFACES; }    /* --LG */
+"ifpair"                { count(); return IFPAIR; }    /* --LG */
+"-->"                   { count(); return RIGHT_ARROW; }
+"<--"                   { count(); return LEFT_ARROW; }
+".."                    { count(); return TO; }
+"..."                   { count(); return TO; }
+"to"                    { count(); return TO; }
+"if"                    { count(); return IF; }
+"index"                 { count(); return SUBMODINDEX; }
+"nocheck"               { count(); return NOCHECK; }
 
-"numeric"               { count(); return (NUMERICTYPE); } /* --VA */
-"string"                { count(); return (STRINGTYPE); } /* --VA */
-"bool"                  { count(); return (BOOLTYPE); } /* --VA */
-"anytype"               { count(); return (ANYTYPE); } /* --VA */
+"numeric"               { count(); return NUMERICTYPE; }
+"string"                { count(); return STRINGTYPE; }
+"bool"                  { count(); return BOOLTYPE; }
+"anytype"               { count(); return ANYTYPE; }
 
+"cppinclude"            { count(); return CPPINCLUDE; }
+"struct"                { count(); return STRUCT; }
+"cobject"               { count(); return COBJECT; }
+"noncobject"            { count(); return NONCOBJECT; }
+"enum"                  { count(); return ENUM; }
+"extends"               { count(); return EXTENDS; }
+"message"               { count(); return MESSAGE; }
+"class"                 { count(); return CLASS; }
+"fields"                { count(); return FIELDS; }
+"properties"            { count(); return PROPERTIES; }
+"virtual"               { count(); return VIRTUAL; }
 
-{L}({L}|{D})*           { count(); return (NAME); }
-{D}+                    { count(); return (INTCONSTANT); }
-{D}+{E}                 { count(); return (REALCONSTANT); }
-{D}*"."{D}+({E})?       { count(); return (REALCONSTANT); }
+"char"                  { count(); return CHARTYPE; }
+"short"                 { count(); return SHORTTYPE; }
+"int"                   { count(); return INTTYPE; }
+"long"                  { count(); return LONGTYPE; }
+"double"                { count(); return DOUBLETYPE; }
 
-\"[^\"]*\"              { count(); return (STRING); }
+{L}({L}|{D})*           { count(); return NAME; }
+{D}+                    { count(); return INTCONSTANT; }
+{D}+{E}                 { count(); return REALCONSTANT; }
+{D}*"."{D}+({E})?       { count(); return REALCONSTANT; }
+
+\"[^\"]*\"              { count(); return STRINGCONSTANT; }
+\'[^\']\'               { count(); return CHARCONSTANT; }
+"<"[^\>]*">"            { count(); return SYSINCFILENAME; }
 
 ";"                     { count(); return (';'); }
 ","                     { count(); return (','); }
@@ -133,36 +152,36 @@ char textbuf[256], lasttextbuf[256] = "";
 "{"                     { count(); return ('{'); }
 "}"                     { count(); return ('}'); }
 "."                     { count(); return ('.'); }
-"?"                     { count(); return ('?'); } /* --VA */
+"?"                     { count(); return ('?'); }
 
-"||"                    { count(); return (OR); }  /* --VA */
-"&&"                    { count(); return (AND); } /* --VA */
-"##"                    { count(); return (XOR); } /* --VA */
-"!"                     { count(); return (NOT); } /* --VA */
+"||"                    { count(); return OR; }
+"&&"                    { count(); return AND; }
+"##"                    { count(); return XOR; }
+"!"                     { count(); return NOT; }
 
-"|"                     { count(); return (BIN_OR); }  /* --VA */
-"&"                     { count(); return (BIN_AND); } /* --VA */
-"#"                     { count(); return (BIN_XOR); } /* --VA */
-"~"                     { count(); return (BIN_COMPL); } /* --VA */
-"<<"                    { count(); return (SHIFT_LEFT); } /* --VA */
-">>"                    { count(); return (SHIFT_RIGHT); } /* --VA */
+"|"                     { count(); return BIN_OR; }
+"&"                     { count(); return BIN_AND; }
+"#"                     { count(); return BIN_XOR; }
+"~"                     { count(); return BIN_COMPL; }
+"<<"                    { count(); return SHIFT_LEFT; }
+">>"                    { count(); return SHIFT_RIGHT; }
 
-"^"                     { count(); return (EXP); }
-"+"                     { count(); return (PLUS); }
-"-"                     { count(); return (MIN); }
-"*"                     { count(); return (MUL); }
-"/"                     { count(); return (DIV); }
-"%"                     { count(); return (MOD); }
+"^"                     { count(); return '^'; }
+"+"                     { count(); return '+'; }
+"-"                     { count(); return '-'; }
+"*"                     { count(); return '*'; }
+"/"                     { count(); return '/'; }
+"%"                     { count(); return '%'; }
 
-"=="                    { count(); return (EQ); }  /* --VA */
-"!="                    { count(); return (NE); }  /* --VA */
-"<"                     { count(); return (LS); }  /* --VA */
-"<="                    { count(); return (LE); }  /* --VA */
-">"                     { count(); return (GT); }  /* --VA */
-">="                    { count(); return (GE); }  /* --VA */
+"=="                    { count(); return EQ; }
+"!="                    { count(); return NE; }
+"<"                     { count(); return LS; }
+"<="                    { count(); return LE; }
+">"                     { count(); return GT; }
+">="                    { count(); return GE; }
 
 [ \t\v\n\r\f]           { count(); }
-.                       { count(); return (INVALID_CHAR); }
+.                       { count(); return INVALID_CHAR; }
 
 %%
 

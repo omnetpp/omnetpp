@@ -284,7 +284,7 @@ foreach $element (@elements)
     print H "  private:\n";
     for ($i=0; $i<$attcount; $i++)
     {
-        $vartype = ($argtypes[$i] eq "const char *") ? "NEDString" : $argtypes[$i];
+        $vartype = ($argtypes[$i] eq "const char *") ? "std::string" : $argtypes[$i];
         print H "    $vartype $varnames[$i];\n";
     }
     print H "  public:\n";
@@ -307,7 +307,11 @@ foreach $element (@elements)
     print H "    //\@{\n";
     for ($i=0; $i<$attcount; $i++)
     {
-        print H "    $argtypes[$i] get$ucvarnames[$i]() const  {return $varnames[$i];}\n";
+        if ($argtypes[$i] eq "const char *") {
+            print H "    $argtypes[$i] get$ucvarnames[$i]() const  {return $varnames[$i].c_str();}\n";
+        } else {
+            print H "    $argtypes[$i] get$ucvarnames[$i]() const  {return $varnames[$i];}\n";
+        }
         print H "    void set$ucvarnames[$i]($argtypes[$i] val)  {$varnames[$i] = val;}\n";
     }
     print H "\n";
@@ -341,7 +345,7 @@ foreach $element (@elements)
     for ($i=0; $i<$attcount; $i++)
     {
         if ($argtypes[$i] eq "const char *") {
-            print CC "        case $i: return $varnames[$i];\n";
+            print CC "        case $i: return $varnames[$i].c_str();\n";
         }
         elsif ($argtypes[$i] eq "bool") {
             print CC "        case $i: return boolToString($varnames[$i]);\n";

@@ -17,11 +17,17 @@
 <!ELEMENT ned-files ((ned-files|ned-file)*)>
 <!ATTLIST ned-files >
 
-<!ELEMENT ned-file ((import|channel|simple-module|compound-module|network)*)>
+<!ELEMENT ned-file ((import|channel|simple-module|compound-module|network|
+                     cppinclude|cpp-struct|cpp-cobject|cpp-noncobject|
+                     enum|message|class|struct)*)>
 <!ATTLIST ned-file
      filename            CDATA     #IMPLIED
      preferred-indent    CDATA     "4"
      banner-comment      CDATA     #IMPLIED >
+
+<!--
+  --  NED-I.
+  -->
 
 <!ELEMENT import (imported-file*)>
 <!ATTLIST import
@@ -247,7 +253,119 @@
      text                CDATA     #IMPLIED
      value               CDATA     #REQUIRED >
 
-<!-- 'unknown' is used internally to represent elements not in this NED DTD -->
+<!--
+  -- NED-II: message subclassing part
+  -->
+<!ELEMENT cppinclude EMPTY>
+<!ATTLIST cppinclude
+     filename            CDATA     #REQUIRED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;"
+     trailing-comment    CDATA     "&#10;" >
+
+<!-- C++ type announcements -->
+
+<!ELEMENT cpp-struct EMPTY>
+<!ATTLIST cpp-struct
+     name                NMTOKEN   #REQUIRED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;"
+     trailing-comment    CDATA     "&#10;" >
+
+<!ELEMENT cpp-cobject EMPTY>
+<!ATTLIST cpp-cobject
+     name                NMTOKEN   #REQUIRED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;"
+     trailing-comment    CDATA     "&#10;" >
+
+<!ELEMENT cpp-noncobject EMPTY>
+<!ATTLIST cpp-noncobject
+     name                NMTOKEN   #REQUIRED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;"
+     trailing-comment    CDATA     "&#10;" >
+
+<!-- Enums -->
+
+<!ELEMENT enum (enum-fields?)>
+<!ATTLIST enum
+     name                NMTOKEN   #REQUIRED
+     extends-name        NMTOKEN   #IMPLIED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;"
+     trailing-comment    CDATA     "&#10;" >
+
+<!ELEMENT enum-fields (enum-field*)>
+<!ATTLIST enum-fields
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!ELEMENT enum-field EMPTY>
+<!ATTLIST enum-field
+     name                NMTOKEN   #REQUIRED
+     value               CDATA     #IMPLIED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!-- Message, class, struct -->
+
+<!ELEMENT message (properties?,fields?)>
+<!ATTLIST message
+     name                NMTOKEN   #REQUIRED
+     extends-name        NMTOKEN   #IMPLIED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;"
+     trailing-comment    CDATA     "&#10;" >
+
+<!ELEMENT class (properties?,fields?)>
+<!ATTLIST class
+     name                NMTOKEN   #REQUIRED
+     extends-name        NMTOKEN   #IMPLIED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;"
+     trailing-comment    CDATA     "&#10;" >
+
+<!ELEMENT struct (properties?,fields?)>
+<!ATTLIST struct
+     name                NMTOKEN   #REQUIRED
+     extends-name        NMTOKEN   #IMPLIED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;"
+     trailing-comment    CDATA     "&#10;" >
+
+<!ELEMENT fields (field*)>
+<!ATTLIST fields
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!ELEMENT field EMPTY>
+<!ATTLIST field
+     name                NMTOKEN   #REQUIRED
+     data-type           CDATA     #REQUIRED
+     is-virtual      (true|false)  "false"
+     is-vector       (true|false)  "false"
+     vector-size         CDATA     #IMPLIED
+     enum-name           NMTOKEN   #IMPLIED
+     default-value       CDATA     #IMPLIED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!ELEMENT properties (property*)>
+<!ATTLIST properties
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!ELEMENT property EMPTY>
+<!ATTLIST property
+     name                NMTOKEN   #REQUIRED
+     value               CDATA     #REQUIRED
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;" >
+
+<!--
+  -- 'unknown' is used internally to represent elements not in this NED DTD
+  -->
 <!ELEMENT unknown        ANY>
 <!ATTLIST unknown
      element             NMTOKEN   #REQUIRED>
