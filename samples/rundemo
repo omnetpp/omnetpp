@@ -32,14 +32,6 @@ array set colors {
    color6 #80a3a7
 }
 
-#   color1 "#f1f2ec"
-#   color2 "#FFECB0"
-#   color3 "#CAFFD8"
-#   color4 "#F1F1B1"
-#   color5 "#d4e6ff"
-#   color6 "#ffffaa"
-
-
 #
 # title line:   {"color" "title"}
 # program line: {"color" "name" "directory" "unix-command" "windows-command"}
