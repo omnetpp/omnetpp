@@ -4,6 +4,7 @@
 \section{Display strings}
 \label{sec:ch-graphics:display-strings}
 
+\subsection{Display string syntax}
 
 Display strings\index{display strings} specify the arrangement and
 appearance of modules in graphical user interfaces (currently only
@@ -284,7 +285,74 @@ Examples:
 
 %FIXME displayString().setTagArg(), bubble() etc here!
 
-%FIXME bitmap path here
+\section{The icons}
+\label{sec:ch-graphics:icon library}
+
+\subsection{The bitmap path}
+
+In the current {\opp} version, module icons are GIF files. The icons shipped
+with {\opp} are in the \ttt{bitmaps/} subdirectory. Both the GNED editor
+and Tkenv need the exact location of this directory to load the icons.
+
+Icons are loaded from all directories in the \textit{bitmap path},
+a semicolon-separated list of directories.
+The default bitmap path is compiled into GNED and Tkenv with the value
+\ttt{"\textit{omnetpp-dir}/bitmaps;./bitmaps"} -- which will work fine
+as long as you don't move the directory, and you'll also be able to
+load more icons from the \ttt{bitmaps/} subdirectory of the current
+directory. As people usually run simulation models from the model's
+directory, this practically means that custom icons placed in the
+\ttt{bitmaps/} subdirectory of the model's directory are automatically
+loaded.
+
+The compiled-in bitmap path can be overridden with the \ttt{OMNETPP\_BITMAP\_PATH}
+environment variable. The way of setting environment variables is system
+specific: in Unix, if you're using the bash shell, adding a line
+
+\begin{verbatim}
+export OMNETPP_BITMAP_PATH="/home/you/bitmaps;./bitmaps"
+\end{verbatim}
+
+to \ttt{~/.bashrc} or \ttt{~/.bash_profile} will do; on Windows, environment variables
+can be set via the \textit{My Computer --> Properties} dialog.
+
+You can also add to the bitmap path from \ttt{omnetpp.ini}, with
+the \ttt{bitmap-path} setting:
+
+\begin{verbatim}
+[Tkenv]
+bitmap-path = "/home/you/model-framework/bitmaps;/home/you/extra-bitmaps"
+\end{verbatim}
+
+The value should be quoted, otherwise the first semicolon separator will be
+interpreted as comment sign, which will result in the rest of the
+directories being ignored.
+
+
+\subsection{Categorized icons}
+
+Since {\opp} 3.0, icons are organized into several categories, represented
+by folders. These categories include:
+
+\begin{itemize}
+  \item block/ - icons for subcomponents (queues, protocols, etc).
+  \item device/ - network devices: servers, hosts, routers, etc.
+  \item abstract/ - symbolic icons for various devices
+  \item place/ - subnet, building, town, city; map symbols
+  \item msg/ - icons that can be used for messages
+\end{itemize}
+
+Old (pre-3.0) icons are in the \ttt{old/} folder.
+
+Tkenv and GNED now load icons from subdirectories of all directories
+of the bitmap path, and these icons can be referenced from display strings
+by naming the subdirectory (subdirectories) as well:
+\ttt{"subdir/icon"}, \ttt{"subdir/subdir2/icon"}, etc.
+
+For compatibility, if the display string contains a icon without
+a category (i.e. subdirectory) name, {\opp} tries it as "old/icon" as well.
+
+
 
 \section{GNED -- Graphical NED Editor}
 
