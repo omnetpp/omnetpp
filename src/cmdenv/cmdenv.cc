@@ -202,7 +202,7 @@ void TCmdenvApp::run()
         {
             try
             {
-                simulation.endRun();
+                endRun();
             }
             catch (cException *e)
             {
@@ -245,6 +245,7 @@ void TCmdenvApp::simulate()
     {
         if (opt_verbose || opt_modulemsgs)
         {
+           ev.disable_tracing = false;
            while(!sigint_received)
            {
                cSimpleModule *mod = simulation.selectNextModule();
@@ -301,7 +302,6 @@ void TCmdenvApp::simulate()
                simulation.doOneEvent( mod );
                checkTimeLimits();
            }
-           ev.disable_tracing = false;
         }
     }
     catch (cException *e)
