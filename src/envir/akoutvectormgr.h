@@ -5,9 +5,7 @@
 //
 //
 //  Declaration of the following classes:
-//     AkOutputVectorManager
-//     AkOutputScalarManager
-//     AkSnapshotManager
+//     cAkOutputVectorManager
 //
 //==========================================================================
 
@@ -38,7 +36,7 @@
  *
  * @ingroup Envir
  */
-class AkOutputVectorManager : public cFileOutputVectorManager
+class cAkOutputVectorManager : public cFileOutputVectorManager
 {
     struct sAkVectorData : sVectorData {
        bool ak_controlled;  // under Akaroa control or not
@@ -59,12 +57,12 @@ class AkOutputVectorManager : public cFileOutputVectorManager
     /**
      * Constructor.
      */
-    explicit AkOutputVectorManager();
+    explicit cAkOutputVectorManager();
 
     /**
      * Destructor.
      */
-    virtual ~AkOutputVectorManager();
+    virtual ~cAkOutputVectorManager();
     //@}
 
     /** @name Redefined cFileOutputVectorManager member functions. */

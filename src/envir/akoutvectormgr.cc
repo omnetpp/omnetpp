@@ -4,7 +4,7 @@
 //            Discrete System Simulation in C++
 //
 //  Members of the following classes:
-//     AkOutputVectorManager
+//     cAkOutputVectorManager
 //     AkOutputScalarManager
 //     AkSnapshotManager
 //
@@ -38,20 +38,20 @@
 
 
 
-Register_Class(AkOutputVectorManager);
+Register_Class(cAkOutputVectorManager);
 
 
-AkOutputVectorManager::AkOutputVectorManager()
+cAkOutputVectorManager::cAkOutputVectorManager()
 {
     ak_declared = false;
     ak_count = 0;
 }
 
-AkOutputVectorManager::~AkOutputVectorManager()
+cAkOutputVectorManager::~cAkOutputVectorManager()
 {
 }
 
-void *AkOutputVectorManager::registerVector(const char *modulename, const char *vectorname, int tuple)
+void *cAkOutputVectorManager::registerVector(const char *modulename, const char *vectorname, int tuple)
 {
     sAkVectorData *vp = (sAkVectorData *)cFileOutputVectorManager::registerVector(modulename,vectorname, tuple);
 
@@ -65,10 +65,10 @@ void *AkOutputVectorManager::registerVector(const char *modulename, const char *
     {
         // register vector with Akaroa
         if (ak_registered)
-            opp_error("AkOutputVectorManager: With Akaroa, cannot create new vector after first data have been recorded");
+            opp_error("cAkOutputVectorManager: With Akaroa, cannot create new vector after first data have been recorded");
 
         if (tuple > 1)
-            opp_error("AkOutputVectorManager: Akaroa can handle only one parameter per cOutVector");
+            opp_error("cAkOutputVectorManager: Akaroa can handle only one parameter per cOutVector");
 
         // Akaroa starts parameter numbering with one
         vp->ak_id = ++ak_count;
@@ -77,12 +77,12 @@ void *AkOutputVectorManager::registerVector(const char *modulename, const char *
     return vp;
 }
 
-sVectorData *cAkOutputVectorManager::createVectorData()
+cFileOutputVectorManager::sVectorData *cAkOutputVectorManager::createVectorData()
 {
     return new sAkVectorData;
 }
 
-bool AkOutputVectorManager::record(void *vectorhandle, simtime_t t, double value)
+bool cAkOutputVectorManager::record(void *vectorhandle, simtime_t t, double value)
 {
     sAkVectorData *vp = (sAkVectorData *)vectorhandle;
     if (vp->ak_controlled)
@@ -103,9 +103,9 @@ bool AkOutputVectorManager::record(void *vectorhandle, simtime_t t, double value
     return cFileOutputManager::record(vectorhandle, t, value);
 }
 
-bool AkOutputVectorManager::record(void *vectorhandle, simtime_t t, double value1, double value2)
+bool cAkOutputVectorManager::record(void *vectorhandle, simtime_t t, double value1, double value2)
 {
-    opp_error("AkOutputVectorManager: Akaroa can handle only one parameter per cOutVector");
+    opp_error("cAkOutputVectorManager: Akaroa can handle only one parameter per cOutVector");
     return false;
 }
 
