@@ -1,3 +1,9 @@
+2002-10-19  Andras Varga
+
+	* opp_test: added %global option; it can be used with %activity 
+	and its body will be placed into the C++ source at global scope,
+	so it's a good place for helper functions, etc.
+
 2002-06-12  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* opp_makemake.in (htmldocs): Target htmldoc renamed to
