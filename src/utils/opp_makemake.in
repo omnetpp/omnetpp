@@ -423,9 +423,32 @@ fi
 args1=`echo " $args " | sed 's/	/ /g;s/ -f / /g;s/ -m / /g'`
 
 cat <<EOT
+
+doc: neddoc.html htmldocs
+
+neddoc.html: $nedfiles
+	@opp_neddoc $nedfiles > neddoc.html
+	@echo File neddoc.html generated.
+
+htmldocs:
+	@doxygen -g - | sed "s/^PROJECT_NAME.*/PROJECT_NAME = $outfile/;\\
+	s/^INPUT *=.*/INPUT = . $dirs/;\\
+	s/^EXTRACT_ALL *=.*/EXTRACT_ALL = yes/;\\
+	s/^EXTRACT_PRIVATE *=.*/EXTRACT_PRIVATE = yes/;\\
+	s/^EXCLUDE_PATTERNS *=.*/EXCLUDE_PATTERNS = *_n.cc *_n.h/;\\
+	s/^ALPHABETICAL_INDEX *=.*/ALPHABETICAL_INDEX = yes/;\\
+	s/^HTML_OUTPUT *=.*/HTML_OUTPUT = htmldoc/;\\
+	s/^GENERATE_TREEVIEW *=.*/GENERATE_TREEVIEW = yes/;\\
+	s/^HIDE_UNDOC_RELATIONS *=.*/HIDE_UNDOC_RELATIONS = no/;\\
+	s|^TAGFILES *=.*|TAGFILES = @OMNETPP_DOC_DIR@/api/tags|;\\
+	s/^QUIET *=.*/QUIET = yes/" > $doxyconf
+	@doxygen $doxyconf
+	@echo Code documentation generated. Now, point your web browser to ./htmldoc/index.html.
+
 clean:
 	rm -f *.o *_n.cc *_n.h \$(TARGET)\$(EXE_SUFFIX)
 	rm -f *.vec *.sca
+	rm -rf neddoc.html htmldoc
 
 depend:
 	\$(MAKEDEPEND) \$(INCLUDE_PATH) -- *.cc
@@ -437,22 +460,6 @@ re-makemake:
 re-makemake-m:
 	opp_makemake -f -m $args1  #recreate Makefile.in
 
-doc: neddoc.html htmldoc
-
-neddoc.html: $nedfiles
-	opp_neddoc $nedfiles > neddoc.html
-
-htmldoc:
-	doxygen -g - | sed "s/^PROJECT_NAME.*/PROJECT_NAME = $outfile/;\\
-	s/^INPUT *=.*/INPUT = . $dirs/;\\
-	s/^EXTRACT_ALL *=.*/EXTRACT_ALL = yes/;\\
-	s/^EXTRACT_PRIVATE *=.*/EXTRACT_PRIVATE = yes/;\\
-	s/^ALPHABETICAL_INDEX *=.*/ALPHABETICAL_INDEX = yes/;\\
-	s/^GENERATE_TREEVIEW *=.*/GENERATE_TREEVIEW = yes/;\\
-	s/^HIDE_UNDOC_RELATIONS *=.*/HIDE_UNDOC_RELATIONS = no/;\\
-	s|^TAGFILES *=.*|TAGFILES = @OMNETPP_DOC_DIR@/api/tags|;\\
-	s/^QUIET *=.*/QUIET = yes/" > $doxyconf
-	doxygen $doxyconf
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
