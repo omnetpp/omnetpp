@@ -755,7 +755,7 @@ int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
 cMessage *cSimpleModule::cancelEvent(cMessage *msg)
 {
         // make sure we really have the message and it is scheduled
-        if (msg==NULL) return NULL;
+        if (msg==NULL)
             {opp_error("cancelEvent(): message pointer is NULL");return NO(cMessage);}
         if (!msg->isScheduled())
         {
