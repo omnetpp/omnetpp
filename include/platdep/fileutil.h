@@ -62,6 +62,34 @@ inline std::string directoryOf(const char *pathname)
     return dir;
 }
 
+inline std::string tidyFilename(const char *pathname)
+{
+    char *buf = new char[strlen(pathname)+1];
+#ifdef _WIN32
+    const char DELIM='\\';
+#else
+    const char DELIM='/';
+#endif
+    const char *s = pathname;
+    char *d = buf;
+    while (*s)
+    {
+        if (*s=='\\' || *s=='/')
+        {
+            do {s++;} while (*s=='\\' || *s=='/');
+            *d++ = DELIM;
+        }
+        else
+        {
+            *d++ = *s++;
+        }
+    }
+    *d = '\0';
+    std::string ret = buf;
+    delete [] buf;
+    return ret;
+}
+
 inline std::string absolutePath(const char *pathname)
 {
 #ifdef _WIN32
