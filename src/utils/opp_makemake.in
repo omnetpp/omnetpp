@@ -248,14 +248,14 @@ if [ "$linkwithobjects" = "y" ]; then
         dir=`echo $i | sed 's/^-I//'`
         if [ "$dir" != "." ]; then
             extdirobjs="$extdirobjs $dir/*.o"
-            extdirtstamps="$extdirobjs $dir/.tstamp"
+            extdirtstamps="$extdirtstamps $dir/.tstamp"
         fi
     done
 fi
 
 for i in $linkdirs; do
     extdirobjs="$extdirobjs $i/*.o"
-    extdirtstamps="$extdirobjs $i/.tstamp"
+    extdirtstamps="$extdirtstamps $i/.tstamp"
 done
 
 if [ "$ignorened" = "y" ]; then
@@ -265,7 +265,7 @@ else
 fi
 objs=`echo $objs | sed 's/\*[^ ]*//g; s/[^ ]*_n\.cc//g; s/[^ ]*_m\.cc//g; s/\.ned/_n.o/g; s/\.msg/_m.o/g; s/\.cc/.o/g'`
 
-generatedheaders=`echo *.msg | sed 's/\.msg/_m.h/g'`
+generatedheaders=`echo *.msg | sed 's/\*[^ ]*//g; s/\.msg/_m.h/g'`
 
 #
 # now the Makefile creation
