@@ -1,0 +1,39 @@
+Testing the distribution functions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+MS Excel has several functions that calculate the probability distribution
+functions. They can be used for testing the distribution functions.
+
+Continuous:
+- EXPONDIST(x,lambda,cumulative)
+- NORMDIST(x,mean,standard_dev,cumulative)
+- GAMMADIST(x,alpha,beta,cumulative)
+- BETADIST(x,alpha,beta,A,B)
+   A   is an optional lower bound to the interval of x.
+   B   is an optional upper bound to the interval of x.
+   If you omit values for A and B, BETADIST uses the standard cumulative beta distribution, so that A = 0 and B = 1.
+- Erlang: GAMMADIST with integer alpha
+- CHIDIST(x,degrees_freedom)
+- TDIST(x,degrees_freedom,tails)
+   Student-t. Tails specifies the number of distribution tails to return. If tails = 1, TDIST returns the one-tailed distribution. If tails = 2, TDIST returns the two-tailed distribution.
+- [no Cauchy]
+- [no triangular],
+- LOGNORMDIST(x,mean,standard_dev)
+- WEIBULL(x,alpha,beta,cumulative)
+- [no Pareto]
+
+Discrete:
+- BINOMDIST(number_s,trials,probability_s,cumulative
+- [no gometric]
+- NEGBINOMDIST(number_f,number_s,probability_s)
+- HYPGEOMDIST(sample_s,number_sample,population_s,number_population)
+- POISSON(x,mean,cumulative)
+
+To test:
+1. build and run the test executable. You'll get a bunch of csv files as output
+2. open a csv file in Excel (doubleclick works on the file for me)
+3. select columns 1-2-3
+4. select Insert|Chart... --> XY Scatter --> Finish
+5. the two plots should visually match
+
+--Andras
+

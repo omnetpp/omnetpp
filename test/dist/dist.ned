@@ -1,0 +1,19 @@
+//-------------------------------------------------------------
+// file: dist.ned
+//-------------------------------------------------------------
+
+simple Dist
+    parameters:
+        variate : numeric,
+        excel: string,
+        n : numeric,
+        numcells: numeric,
+        firstvals : numeric,
+        file: string;
+endsimple
+
+
+network dist : Dist
+endnetwork
+
+
