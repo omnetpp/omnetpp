@@ -1,4 +1,4 @@
-//ERROR: no compound module parameter or loop variable named 'j'
+//ERROR: compound module has no parameter named 'j'
 simple Node
     gates:
         in: in[];
@@ -10,7 +10,5 @@ module Network
         a: Node;
         b: Node;
     connections nocheck:
-        for i=0..10 do
-            a.out[i] --> b.in[j];
-        endfor;
+        a.out[j] --> b.in[k];
 endmodule

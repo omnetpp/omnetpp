@@ -495,7 +495,21 @@ void NEDBasicValidator::validateElement(ParamRefNode *node)
     checkExpressionAttributes(node, expr, opt, 2);
 
     // make sure parameter exists
-    //FIXME
+    if (strnull(node->getModule()) && !node->getIsAncestor())
+    {
+        const char *paramName = node->getParamName();
+        NEDElement *compound = node->getParentWithTag(NED_COMPOUND_MODULE);
+        if (!compound)
+            INTERNAL_ERROR0(node,"occurs outside a compound-module");
+        NEDElement *params = compound->getFirstChildWithTag(NED_PARAMS);
+        if (!params || params->getFirstChildWithAttribute(NED_PARAM, "name", paramName)==NULL)
+        {
+            if (node->getParentWithTag(NED_FOR_LOOP))
+                NEDError(node, "no compound module parameter or loop variable named '%s'", paramName);
+            else
+                NEDError(node, "compound module has no parameter named '%s'", paramName);
+        }
+    }
 }
 
 void NEDBasicValidator::validateElement(IdentNode *node)
@@ -505,7 +519,7 @@ void NEDBasicValidator::validateElement(IdentNode *node)
     NEDElement *forloop = node->getParentWithTag(NED_FOR_LOOP);
     if (!forloop)
         INTERNAL_ERROR1(node,"loop variable '%s' occurs outside for loop", name);
-    if (forloop->getFirstChildWithAttribute(NED_LOOP_VAR, "name", name)==NULL)
+    if (forloop->getFirstChildWithAttribute(NED_LOOP_VAR, "param-name", name)==NULL)
         NEDError(node, "no loop variable named '%s' in enclosing for loop", name);
 }
 
