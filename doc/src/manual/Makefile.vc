@@ -28,7 +28,7 @@ HTM_FILES = history.htm \
 .tex.htm:
 	$(PERL) ltoh.pl $<
 
-usman.html : $(HTM_FILES)
+usman.html : $(HTM_FILES) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
 	@echo. > usman.tmp
 	for %%i in ($(HTM_FILES)) do type %i >> usman.tmp
 	$(PERL) prephtml2 usman.tmp
