@@ -1,0 +1,4548 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>OMNeT++ - Manual</TITLE>
+   <META NAME="Author" CONTENT="Andras Varga">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFE8" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<P><FONT COLOR="#FF0000"><B><FONT SIZE=+4>OMNeT++ </FONT></B>
+<I><FONT SIZE=+1>Discrete Event Simulation System</FONT></I></FONT></P>
+
+<H1><B>User Manual</B></H1><H1>Topics</H1>
+<B><A HREF="#TOC_0">NED Language Reference</A></B><BR>
+<B><A HREF="#TOC_2">Configuring OMNeT++</A></B><BR>
+<B><A HREF="#TOC_6">Class Library Reference</A></B><BR>
+<HR><H1>Detailed Table of Contents</H1>
+<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="TOC_0"></A><A HREF="#_Toc439963912">NED Language Reference</A></B></FONT><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_1"></A><A HREF="#_Toc439963913">The NED Language Grammar</A></B><BR>
+<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="TOC_2"></A><A HREF="#_Toc439963914">Configuring OMNeT++</A></B></FONT><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_3"></A><A HREF="#_Toc439963915">Command line options</A></B><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_4"></A><A HREF="#_Toc439963916">Ini file sections</A></B><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_5"></A><A HREF="#_Toc439963917">List of all ini file options</A></B><BR>
+<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="TOC_6"></A><A HREF="#_Toc439963918">Class Library Reference</A></B></FONT><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_7"></A><A HREF="#_Toc439963919">What is documented here?</A></B><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_8"></A><A HREF="#_Toc439963920">Constants, types, simple functions</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_9"></A><A HREF="#_Toc439963921">Constants, types</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_10"></A><A HREF="#_Toc439963922">Function typedefs</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_11"></A><A HREF="#_Toc439963923">Simulation time conversion functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_12"></A><A HREF="#_Toc439963924">Value-added string functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_13"></A><A HREF="#_Toc439963925">Basic random number generation</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_14"></A><A HREF="#_Toc439963926">Random numbers from different distributions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_15"></A><A HREF="#_Toc439963927">Miscellaneous</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_16"></A><A HREF="#_Toc439963928">String class</A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_17"></A><A HREF="#_Toc439963929">Declaration/registration macros</A></B><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_18"></A><A HREF="#_Toc439963930">Common properties for all classes:
+<TT><FONT SIZE=5>cObject</FONT></TT></A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_19"></A><A HREF="#_Toc439963931">class <TT><FONT SIZE=4>cObject</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_20"></A><A HREF="#4">Construction, destruction, copying</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_21"></A><A HREF="#4">Name member</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_22"></A><A HREF="#4">User interface information functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_23"></A><A HREF="#4">Ownership control</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_24"></A><A HREF="#4">Operations to be used by container classes derived from <TT>cObject</TT>
+</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_25"></A><A HREF="#4">Load/store operations</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_26"></A><A HREF="#4">Functions supporting snapshots</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_27"></A><A HREF="#4">Other functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_28"></A><A HREF="#4">The <TT>forEach()</TT> mechanism</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_29"></A><A HREF="#4">Member functions based on <TT>forEach()</TT></A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_30"></A><A HREF="#_Toc439963932">Module classes: <TT><FONT SIZE=5>cModule</FONT></TT><FONT SIZE=5>,
+</FONT><TT><FONT SIZE=5>cCompoundModule</FONT></TT><FONT SIZE=5>,
+</FONT><TT><FONT SIZE=5>cSimpleModule</FONT></TT></A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_31"></A><A HREF="#_Toc439963933">class <TT><FONT SIZE=4>cModule</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_32"></A><A HREF="#4">Construction, destruction, copying</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_33"></A><A HREF="#4">Redefined virtual functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_34"></A><A HREF="#4">Member functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_35"></A><A HREF="#4">Module gates</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_36"></A><A HREF="#4">Module parameters</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_37"></A><A HREF="#4">Warning messages</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_38"></A><A HREF="#4">Other functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_39"></A><A HREF="#_Toc439963934">class <TT><FONT SIZE=4>cCompoundModule</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_40"></A><A HREF="#4">Redefined member functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_41"></A><A HREF="#_Toc439963935">class <TT><FONT SIZE=4>cSimpleModule</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_42"></A><A HREF="#4">Construction, destruction, copying</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_43"></A><A HREF="#4">Redefined member functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_44"></A><A HREF="#4">Public data members</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_45"></A><A HREF="#4">The module funcion</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_46"></A><A HREF="#4">Getting the current simulation time</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_47"></A><A HREF="#4">Sending messages</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_48"></A><A HREF="#4">Receiving new messages</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_49"></A><A HREF="#4">Getting messages from the put-aside queue or the event queue
+</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_50"></A><A HREF="#4">Waiting</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_51"></A><A HREF="#4">Stopping the module or the simulation</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_52"></A><A HREF="#4">Help for tracing and debugging</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_53"></A><A HREF="#4">Non-typed heap allocation/deallocation for module functions
+</A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_54"></A><A HREF="#_Toc439963936">Message classes: <TT><FONT SIZE=5>cMessage
+</FONT></TT><FONT SIZE=5>and</FONT><TT><FONT SIZE=5> cPacket</FONT></TT></A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_55"></A><A HREF="#_Toc439963937">Message base class: <TT><FONT SIZE=4>cMessage</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_56"></A><A HREF="#4">Construction, destruction, copying</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_57"></A><A HREF="#4">Redefined virtual functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_58"></A><A HREF="#4">Message properties</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_59"></A><A HREF="#4">Message encapsulation</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_60"></A><A HREF="#4">Info about sending/scheduling</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_61"></A><A HREF="#4">Parameters and attached objects</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_62"></A><A HREF="#4">Miscellaneous functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_63"></A><A HREF="#_Toc439963938">Network packet class: <TT><FONT SIZE=4>cPacket</FONT></TT></A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_64"></A><A HREF="#_Toc439963939">Module gate class: <TT><FONT SIZE=5>cGate</FONT></TT></A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_65"></A><A HREF="#_Toc439963940">class <TT><FONT SIZE=4>cGate</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_66"></A><A HREF="#4">Construction, destruction, copying</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_67"></A><A HREF="#4">Redefined virtual functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_68"></A><A HREF="#4">Gate identity</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_69"></A><A HREF="#4">Link parameters</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_70"></A><A HREF="#4">Topology</A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_71"></A><A HREF="#_Toc439963941">Value holding class: <TT><FONT SIZE=5>cPar</FONT></TT></A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_72"></A><A HREF="#_Toc439963942">class <TT><FONT SIZE=4>cPar</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_73"></A><A HREF="#a">Construction, destruction, copying</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_74"></A><A HREF="#4">Redefined virtual functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_75"></A><A HREF="#4">Member functions handling type, input flag and prompt</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_76"></A><A HREF="#4">Conversion from/to text</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_77"></A><A HREF="#4">Setting the value</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_78"></A><A HREF="#4">Retrieving the value</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_79"></A><A HREF="#4">Other functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_80"></A><A HREF="#4">Handling indirection</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_81"></A><A HREF="#4">Assignment and conversion operators</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_82"></A><A HREF="#_Toc439963943">Overloaded arithmetic operators for
+<TT><FONT SIZE=4>cPar</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_83"></A><A HREF="#_Toc439963944">struct <TT><FONT SIZE=4>sXElem</FONT></TT></A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_84"></A><A HREF="#_Toc439963945">Object container classes: <TT><FONT SIZE=5>cArray</FONT></TT><FONT SIZE=5>,
+</FONT><TT><FONT SIZE=5>cQueue</FONT></TT><FONT SIZE=5>, </FONT><TT><FONT SIZE=5>cHead</FONT></TT></A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_85"></A><A HREF="#_Toc439963946">class <TT><FONT SIZE=4>cArray</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_86"></A><A HREF="#4">Construction, destruction, copying</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_87"></A><A HREF="#4">Redefined virtual functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_88"></A><A HREF="#4">Member functions:</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_89"></A><A HREF="#_Toc439963947">class <TT><FONT SIZE=4>cQueue</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_90"></A><A HREF="#4">The sorting function </A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_91"></A><A HREF="#4">Construction, destruction, copying</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_92"></A><A HREF="#4">Redefined virtual functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_93"></A><A HREF="#4">Member functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_94"></A><A HREF="#_Toc439963948">class <TT><FONT SIZE=4>cQueueIterator</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_95"></A><A HREF="#_Toc439963949">Inline functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_96"></A><A HREF="#_Toc439963950">class <TT><FONT SIZE=4>cHead</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_97"></A><A HREF="#4">Construction, destruction, copying:</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_98"></A><A HREF="#4">Redefined virtual functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_99"></A><A HREF="#4">Member functions:</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_100"></A><A HREF="#_Toc439963951">struct <TT><FONT SIZE=4>cIterator</FONT></TT></A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_101"></A><A HREF="#_Toc439963952">Non-object container classes: <TT><FONT SIZE=5>cLinkedList</FONT></TT><FONT SIZE=5>,
+</FONT><TT><FONT SIZE=5>cBag</FONT></TT></A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_102"></A><A HREF="#_Toc439963953">class <TT><FONT SIZE=4>cLinkedList</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_103"></A><A HREF="#4">Construction, destruction, copying</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_104"></A><A HREF="#4">Redefined virtual functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_105"></A><A HREF="#4">Member functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_106"></A><A HREF="#_Toc439963954">class <TT><FONT SIZE=4>cLinkedListIterator</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_107"></A><A HREF="#_Toc439963955">class <TT><FONT SIZE=4>cBag</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_108"></A><A HREF="#4">Construction, destruction, copying</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_109"></A><A HREF="#4">Redefined virtual functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_110"></A><A HREF="#4">Member functions:</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_111"></A><A HREF="#_Toc439963956">Class <TT><FONT SIZE=4>cWatch</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_112"></A><A HREF="#4">Constructors:</A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_113"></A><A HREF="#_Toc439963957">Output vector class: <TT><FONT SIZE=5>cOutVector</FONT></TT></A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_114"></A><A HREF="#_Toc439963958">class <TT><FONT SIZE=4>cOutVect</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_115"></A><A HREF="#4">Construction, destruction, copying:</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_116"></A><A HREF="#4">Redefined virtual functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_117"></A><A HREF="#4">Member functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_118"></A><A HREF="#_Toc439963959">class <TT><FONT SIZE=4>cOutFileMgr</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_119"></A><A HREF="#4">Constructor, destructor, copying</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_120"></A><A HREF="#4">Redefined virtual functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_121"></A><A HREF="#4">Member functions</A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_122"></A><A HREF="#_Toc439963960">Statistical data collection: <TT><FONT SIZE=5>cStatistic</FONT></TT><FONT SIZE=5>
+and derived classes</FONT></A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_123"></A><A HREF="#_Toc439963961">class <TT><FONT SIZE=4>cStatistic</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_124"></A><A HREF="#4">Construction, destruction, copying</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_125"></A><A HREF="#4">Redefined virtual functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_126"></A><A HREF="#4">New non-virtual member functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_127"></A><A HREF="#4">New virtual member functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_128"></A><A HREF="#_Toc439963962">class <TT><FONT SIZE=4>cStdDev</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_129"></A><A HREF="#4">Construction, destruction, copying</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_130"></A><A HREF="#4">Redefined virtual functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_131"></A><A HREF="#_Toc439963963">class <TT><FONT SIZE=4>cWeightedStdDev</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_132"></A><A HREF="#4">Construction, destruction, copying</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_133"></A><A HREF="#4">Redefined virtual functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_134"></A><A HREF="#_Toc439963964">class <TT><FONT SIZE=4>cDensityEstBase</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_135"></A><A HREF="#4">Construction, destruction, copying</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_136"></A><A HREF="#4">Redefined virtual functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_137"></A><A HREF="#4">New virtual functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_138"></A><A HREF="#_Toc439963965">Class <TT><FONT SIZE=4>cHistogramBase</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_139"></A><A HREF="#_Toc439963966">Class <TT><FONT SIZE=4>cVarHistogram</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_140"></A><A HREF="#4">Constructor</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_141"></A><A HREF="#4">New member function</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_142"></A><A HREF="#_Toc439963967">Class <TT><FONT SIZE=4>cEqdHistogramBase</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_143"></A><A HREF="#_Toc439963968">class <TT><FONT SIZE=4>cLongHistogram</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_144"></A><A HREF="#4">Construction, destruction, copying</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_145"></A><A HREF="#4">Redefined virtual functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_146"></A><A HREF="#_Toc439963969">class <TT><FONT SIZE=4>cDoubleHistogram</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_147"></A><A HREF="#4">Construction, destruction, copying</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_148"></A><A HREF="#4">Redefined virtual functions</A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_149"></A><A HREF="#_Toc439963970">The P<SUP>2</SUP> and k-split algorithms:
+<TT><FONT SIZE=5>cPSquare, cKSplit</FONT></TT></A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_150"></A><A HREF="#_Toc439963971">class <TT><FONT SIZE=4>cPSquare</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_151"></A><A HREF="#_Toc439963972">class <TT><FONT SIZE=4>cKSplit</FONT></TT></A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_152"></A><A HREF="#_Toc439963973">Transient and result accuracy detection</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_153"></A><A HREF="#_Toc439963974">class <TT><FONT SIZE=4>cTransientDetection</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_154"></A><A HREF="#_Toc439963975">class <TT><FONT SIZE=4>cTDExpandingWindows</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_155"></A><A HREF="#_Toc439963976">class <TT><FONT SIZE=4>cAccuracyDetection</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_156"></A><A HREF="#_Toc439963977">class <TT><FONT SIZE=4>cADByStddev</FONT></TT></A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_157"></A><A HREF="#_Toc439963978">Finite State Machine: <TT><FONT SIZE=5>cFSM</FONT></TT></A></B><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_158"></A><A HREF="#_Toc439963979">Routing support: <TT><FONT SIZE=5>cTopology</FONT></TT></A></B><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_159"></A><A HREF="#_Toc439963980">The user interface: <TT><FONT SIZE=5>cEnvir</FONT></TT><FONT SIZE=5>
+and </FONT><TT><FONT SIZE=5>ev</FONT></TT></A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_160"></A><A HREF="#_Toc439963981">class <TT><FONT SIZE=4>cEnvir</FONT></TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_161"></A><A HREF="#4">Construction, destruction</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_162"></A><A HREF="#4">User interface functions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_163"></A><A HREF="#4">Module function I/O</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_164"></A><A HREF="#4">Overloaded operators</A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_165"></A><A HREF="#_Toc439963982">Classes not described in this reference</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_166"></A><A HREF="#4"><TT>cSimulation</TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_167"></A><A HREF="#4"><TT>cModuleType</TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_168"></A><A HREF="#4"><TT>cLinkType</TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_169"></A><A HREF="#4"><TT>cFunctionType</TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_170"></A><A HREF="#4"><TT>cNetworkType</TT></A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="TOC_171"></A><A HREF="#4"><TT>cClassRegister</TT></A><BR>
+<HR><H1><A NAME="_Toc439963912">NED Language Reference</A></H1>
+<H2><A NAME="_Toc439963913">The NED Language Grammar</A></H2>
+<P>
+The NED language, the network topology description language of
+OMNeT++ will be given using the extended BNF notation.
+<P>
+Space, horizontal tab and new line characters samples as delimiters,
+so one or more of them is required between two elements of the
+description which would otherwise be unseparable. '//' (two slashes)
+may be used to write comments that last to the end of the line.
+The language only distinguishes between lower and upper case letters
+in names, but not in keywords.
+<P>
+In this description, the {xxx...} notation stands for one or more
+ xxx's separated with spaces, tabs or new line characters, and
+{xxx,,,} stands for one or more xxx's, separated with a comma
+and (optionally) spaces, tabs or new line characters.
+<P>
+For ease of reading, in some cases we use textual definitions.
+The <I>networkdescription</I> symbol is the sentence symbol of
+the grammar.
+<P>
+<B>notation meaning</B>
+<P>
+[a] 0 or 1 time a
+<P>
+{a} a
+<P>
+{a,,,} 1 or more times a, seperated by commas
+<P>
+{a...} 1 or more times a, seperated by spaces
+<P>
+a|b a or b
+<P>
+'a' the character a
+<P>
+<B>bold</B> keyword
+<P>
+<I>italic</I> identifier
+
+<PRE>
+networkdescription ::=
+	{ definition ... }
+
+
+definition	::=
+	  include
+	| channeldefinition
+	| simpledefinition
+	| moduledefinition
+	| networkdefinition
+
+include ::=
+	<B>INCLUDE</B> { fileName ,,, } ;
+
+channeldefinition ::=
+	<B>CHANNEL</B> <I>channeltype</I> 
+	  [ <B>DELAY</B> numericvalue ] 
+	  [ <B>ERROR</B> numericvalue ] 
+	  [ <B>DATARATE</B> numericvalue ] <SUP>******
+</SUP>	<B>ENDCHANNEL
+
+</B>simpledefinition ::= 
+	<B>SIMPLE</B> <I>simplemoduletype
+</I>	  [ machineblock ] 
+	  [ paramblock ]
+	  [ gateblock ]
+	<B>ENDSIMPLE</B> [ <I>simplemoduletype</I> ]
+
+moduledefinition ::= 
+	<B>MODULE</B> <I>compoundmoduletype
+</I>	  [ machineblock<SUP>*</SUP> ] 
+	  [ paramblock ]
+	  [ gateblock ]
+	  [ submodblock ]
+	  [ connblock ]
+	<B>ENDSIMPLE</B> [ <I>compoundmoduletype</I> ]
+
+moduletype ::=
+	<I>simplemoduletype</I> | <I>compoundmoduletype
+
+</I>machineblock ::= 
+	<B>MACHINES:</B> { <I>machine</I> ,,, } ;
+
+paramblock ::=
+	<B>PARAMETERS: </B>{ parameter ,,, } ;
+
+parameter ::=
+       <I>parametername
+</I>     | <I>parametername</I> : <B>CONST </B>[ <B>NUMERIC </B>]
+     | <I>parametername</I><B> : STRING
+</B>     | <I>parametername</I><B> : BOOL
+</B>     | <I>parametername</I><B> : CHAR
+</B>     | <I>parametername</I><B> : ANYTYPE
+
+</B>gateblock ::=
+	<B>GATES:</B> 
+	  [ <B>IN:</B> { gate ,,, } ; ]
+	  [ <B>OUT:</B> { gate ,,, } ; ]
+
+gate ::=
+	<I>gatename</I> [ '[]' ]
+
+submodblock ::=
+	<B>SUBMODULES:</B> { submodule ... }
+
+submodule ::=
+	{ <I>submodulename</I> : <I>moduletype</I> [ vector ]
+	  [ on_block<SUP>*</SUP> ... ] 
+	  [ substparamblock ... ]
+	  [ gatesizeblock ... ] } 
+     | { <I>submodulename</I> : <I>parametername</I> [ vector ] <B>LIKE</B> <I>moduletype
+</I>	  [ on_block<SUP>*</SUP> ... ] 
+	  [ substparamblock ... ]
+	  [ gatesizeblock ... ] } 
+
+
+on_block<SUP>*</SUP> ::= 
+	<B>ON </B>[ <B>IF</B> expression ]<B>:</B> { <I>on_machine</I> ,,, } ;
+
+substparamblock	::= 
+	<B>PARAMETERS </B>[ <B>IF</B> expression ]<B>:</B> 
+  { <I>substparamname</I> = substparamvalue,,, } ;
+
+substparamvalue ::=
+	( [ <B>ANCESTOR</B> ] [ <B>REF</B> ] <I>name</I> )
+	| parexpression
+
+gatesizeblock ::= 
+	<B>GATESIZES: </B>[ <B>IF</B> expression ]<B>:</B> 
+  { <I>gatename</I> vector ,,, } ;
+
+connblock ::= 
+	<B>CONNECTIONS </B>[ <B>NOCHECK</B> ]<B>:</B> { connection ,,, } ;
+
+connection ::= 
+	  normalconnection | loopconnection
+
+loopconnection ::= 
+	<B>FOR</B> { index ... } <B>DO</B> 
+	 { normalconnection ,,, } ;
+	<B>ENDFOR
+
+</B>index ::= 
+	<I>indexvariable</I> '=' expression &quot;...&quot; expression
+
+normalconnection ::= 
+	  { gate { --&gt; | &lt;-- }  gate [ <B>IF</B> expression ]}
+	| {gate --&gt; channel<I> </I>--&gt; gate [ <B>IF</B> expression ]}
+	| {gate &lt;-- channel &lt;-- gate [ <B>IF</B> expression ]}
+
+channel ::=
+	  <I>channeltype
+	| </I>[<I> </I><B>DELAY</B><I> </I>expression ] [ <B>ERROR</B> expression ] [ <B>DATARATE</B><I> </I>expression ]<SUP> 
+              ******
+
+</SUP>gate ::= 
+	[ <I>modulename</I> [vector] . ] <I>gatename</I> [vector]
+
+networkdefinition ::=
+	<B>NETWORK</B> <I>networkname</I> : <I>moduletype
+</I>	  [ on_block ]
+	  [ substparamblock ]
+	<B>ENDNETWORK
+
+</B>vector ::=	'[' expression ']'
+
+parexpression ::=
+	expression | otherconstvalue
+
+expression	::= 
+	  expression + expression
+	| expression - expression
+	| expression * expression
+	| expression / expression
+	| expression % expression
+	| expression ^ expression
+	| expression == expression
+	| expression != expression
+	| expression &lt; expression
+	| expression &lt;= expression
+	| expression &gt; expression
+	| expression &gt;= expression
+	| expression ? expression : expression
+	| expression <B>AND</B> expression
+	| expression <B>OR</B> expression
+	| <B>NOT</B> expression
+	| '(' expression ')'
+	| <I>functionname</I> '(' [ expression ,,, ] ')' <SUP>***
+</SUP>	| - expression
+	| numconstvalue
+	| inputvalue
+	| [ <B>ANCESTOR</B> ] [ <B>REF</B> ] <I>parametername
+</I>	| <B>SIZEOF</B><SUP>****</SUP> '(' <I>gatename</I> ')'
+	| <B>INDEX</B><SUP>*****
+
+</SUP>numconstvalue ::=
+	<I>integerconstant</I> | <I>realconstant</I> | <I>timeconstant
+
+</I>otherconstvalue ::= 
+	  '<I>characterconstant'
+</I>	| &quot;<I>stringconstant</I>&quot;
+	| <B>TRUE</B> 
+	| <B>FALSE
+
+</B>inputvalue ::= 
+	<B>INPUT</B> '(' default , &quot;<I>prompt-string&quot;</I> ')'
+
+default ::= 
+	expression | otherconstvalue
+</PRE>
+<P>
+<SUP>*</SUP> used with distributed execution
+<P>
+<SUP>**</SUP> used with the statistical synchronisation method
+<P>
+<SUP>***</SUP> max. three arguments. The function name must be
+declared in the C++ sources with the Define_Function macro.
+<P>
+<SUP>**** </SUP>Size of a vector gate.
+<P>
+<SUP>***** </SUP>Index in submodule vector.
+<P>
+<SUP>****** </SUP>Can appear in any order.<BR>
+<HR><H1><A NAME="_Toc439963914">Configuring OMNeT++</A></H1>
+<H2><A NAME="_Toc439963915">Command line options</A></H2>
+<P>
+An OMNeT++ executable accepts the following command line switches:
+<P>
+<TT>-h</TT>
+<P>
+The program prints a short help message and the networks contained
+in the executable and exits.
+<P>
+<TT>-f&lt;</TT><I>file&gt;</I> 
+<P>
+Specifies the name of the ini file. Multiple <TT>-f</TT> options
+can be present. In none is supplied, default ini file is <TT>omnetpp.ini</TT>.
+<P>
+<TT>-l</TT>&lt;<I>so-file&gt;</I> 
+<P>
+Specifies a shared library file to be loaded. Multiple<TT> -l</TT>
+options are accepted.
+<P>
+<TT>-r<I><FONT>&lt;runs&gt;</FONT></I></TT>
+<P>
+Specifies which runs to execute. Runs are described in the <TT>[Run
+1]</TT>, <TT>[Run 2]</TT> etc. sections of the ini file. It is
+possible write something like <TT>1-3,5,9-12</TT>. The <TT>-r</TT>
+option is only supported by Cmdenv.
+<P>
+All other options are read from the ini file. 
+<H2><A NAME="_Toc439963916">Ini file sections</A></H2>
+<P>
+The ini file consists of entries grouped into different sections,
+in the fashion of Windows ini files. The semicolon (<TT>;</TT>)
+can be used to put comments or comment out lines from the file.
+<P>
+The possible sections of the ini file:
+<PRE>
+<B>[General]</B>
+</PRE>
+<P>
+General settings
+<PRE>
+<B>[Cmdenv]
+[Tkenv]
+[Tvenv]</B>
+</PRE>
+<P>
+Settings used by the specific user interfaces.
+<PRE>
+<B>[Machines]</B>
+</PRE>
+<P>
+Mapping of logical machines (machine names that occur in NED files)
+onto physical machines.
+<PRE>
+<B>[Slaves]</B>
+</PRE>
+<P>
+With parallel execution, it configures the OMNeT++ processes running
+on remote hosts.
+<PRE>
+<B>[Parameters]</B>
+</PRE>
+<P>
+Module parameter settings for all simulation runs
+<PRE>
+<B>[OutVectors]</B>
+</PRE>
+<P>
+Output vector configuration (filtering, interval etc)
+<PRE>
+<B>[DisplayStrings]</B>
+</PRE>
+<P>
+Appearance of network graphics in Tkenv
+<PRE>
+<B>[Run 1]
+[Run 2]
+...</B>
+</PRE>
+<P>
+Contain parameter values for the concrete run and also run-specific
+settings from other (<TT>[General]</TT>, <TT>[Cmdenv]</TT>, <TT>[Machines]</TT>
+etc.) sections.<BR>
+<P>
+OMNeT++ can execute several simulation runs automatically one
+after another. This feature is enabled by the <TT>number-of-runs=</TT>
+option in the <TT>[General]</TT> section of the ini file. In this
+case, option settings and parameter values can be given either
+individually for each run, or together for all runs, depending
+in which section of the ini file the option or parameter appears.
+<P>
+This is summarized in the following table:
+<TABLE BORDER=1>
+<TR><TD WIDTH=221>What</TD><TD WIDTH=221>If set for all runs together
+</TD><TD WIDTH=221>If set for individual runs</TD></TR>
+<TR><TD WIDTH=221>general settings</TD><TD WIDTH=221><TT>[General]</TT>
+</TD><TD WIDTH=221><TT>[Run 1]</TT>, <TT>[Run 2]</TT> etc.</TD>
+</TR>
+<TR><TD WIDTH=221>user interface-specific settings</TD><TD WIDTH=221><TT>[Cmdenv]</TT>, <TT>[Tvenv]</TT> etc.
+</TD><TD WIDTH=221><TT>[Run 1]</TT>, <TT>[Run 2]</TT> etc.</TD>
+</TR>
+<TR><TD WIDTH=221>module parameter values</TD><TD WIDTH=221><TT>[Parameters]</TT>
+</TD><TD WIDTH=221><TT>[Run 1]</TT>, <TT>[Run 2]</TT> etc.</TD>
+</TR>
+</TABLE>
+<P>
+<P>
+Per-run settings (if they exist) have priority over values set
+for all runs.
+<P>
+An ini file can include another one. The syntax is:
+<PRE>
+<FONT>include another.ini
+</FONT>
+</PRE>
+<P>
+Module parameter names may contain wildcards (*?), which allows
+multiple parameters to be set at a time. File-name (glob-) style
+expressions are used. Character range is denoted by curly braces
+instead of the usual square brackets to avoid confusion with module
+vector indexing: 
+<PRE>
+<FONT>top.module[{1-3}].cap = 5<BR>
+</FONT>
+</PRE>
+<H2><A NAME="_Toc439963917">List of all ini file options</A></H2>
+<P>
+The exact meaning of the different entries are:<TABLE BORDER=1>
+<TR><TD COLSPAN=2 WIDTH=655>[General]</TD></TR>
+<TR><TD WIDTH=289>ini-warnings = yes</TD><TD WIDTH=366>Helps debugging of the ini file. If turned on, OMNeT++ prints out the name of the entries it that it wanted to read but they were not in the ini file.
+</TD></TR>
+<TR><TD WIDTH=289>network = </TD><TD WIDTH=366>The name of the network to be simulated.
+</TD></TR>
+<TR><TD WIDTH=289>distributed = no</TD><TD WIDTH=366>Parallel execution or not.
+</TD></TR>
+<TR><TD WIDTH=289>number-of-runs = 1</TD><TD WIDTH=366>OMNeT++ will run multiple runs only of you set this value greater then 1; the existence of sections<TT>[Run 1]</TT>, <TT>[Run 2]</TT> etc. alone is not enough.
+</TD></TR>
+<TR><TD WIDTH=289>snapshot-file = omnetpp.sna</TD><TD WIDTH=366>Name of the snapshot file. The result of each <TT>snapshot()</TT> call will be appended to this file.
+</TD></TR>
+<TR><TD WIDTH=289>output-vector-file = omnetpp.vec</TD><TD WIDTH=366>Name of output vector file.
+</TD></TR>
+<TR><TD WIDTH=289>output-scalar-file = omnetpp.sca</TD><TD WIDTH=366>Name of output scalar file.
+</TD></TR>
+<TR><TD WIDTH=289>pause-in=sendmsg = no</TD><TD WIDTH=366>Only makes sense with step-by-step execution. If enabled, OMNeT++ will split <TT>send()</TT> calls to two steps.
+</TD></TR>
+<TR><TD WIDTH=289>warnings = yes</TD><TD WIDTH=366>Globally turns on/off simulation runtime warnings. It is advisable to leave this turned on.
+</TD></TR>
+<TR><TD WIDTH=289>log-parchanges = no</TD><TD WIDTH=366>Specifies whether changes of module parameters should be logged to file.
+</TD></TR>
+<TR><TD WIDTH=289>parchange-file = omnetpp.pch</TD><TD WIDTH=366>File to save parameter changes to.
+</TD></TR>
+<TR><TD WIDTH=289>sim-time-limit = 1000ms</TD><TD WIDTH=366>Duration of the simulation in simulation time.
+</TD></TR>
+<TR><TD WIDTH=289>cpu-time-limit= 180s</TD><TD WIDTH=366>Duration of the simulation in real time.
+</TD></TR>
+<TR><TD WIDTH=289>random-seed = 542</TD><TD WIDTH=366>Random number seed for generator 0. Should not be zero.
+</TD></TR>
+<TR><TD WIDTH=289>total-stack-kb = 8192</TD><TD WIDTH=366>Specifies the total stack size (sum of all coroutine stacks) in kilobytes. You need to increase this value if you get the &quot;Cannot allocate coroutine stack ...&quot; error.
+</TD></TR>
+<TR><TD WIDTH=289>load-libs = </TD><TD WIDTH=366>Name of shared libraries (<TT>.so</TT> files) to load after startup. You can use it to load simple module code etc.
+<P>
+Example:<P>
+<TT><FONT>load-libs=../x25/x25.so ../lapb/lapb.so</FONT></TT>
+</TD></TR>
+<TR><TD WIDTH=289>netif-check-freq=</TD><TD WIDTH=366>used with parallel execution
+</TD></TR>
+<TR><TD WIDTH=289>gen0-seed = 3567<BR>
+gen1-seed = 4535<P>
+...
+</TD><TD WIDTH=366>Seeds for the given random number generator. They should not be zero.
+</TD></TR>
+</TABLE>
+<P>
+
+<TABLE BORDER=1>
+<TR><TD COLSPAN=2 WIDTH=655>[Cmdenv]</TD></TR>
+<TR><TD WIDTH=289>runs-to-execute=1,3-4,6</TD><TD WIDTH=366>Specifies which simulation runs should be executed
+</TD></TR>
+<TR><TD WIDTH=289>module-messages = yes/no</TD><TD WIDTH=366>Globally enables/disables <TT>ev</TT>-style messages in simple modules (e.g. <TT>ev &lt;&lt; &quot;sending\n&quot;;</TT>).
+</TD></TR>
+<TR><TD WIDTH=289>verbose-simulation = yes/no</TD><TD WIDTH=366>Enable/disable banners for each event <BR>
+(&quot;<TT>Event #1234, T=...&quot;</TT> stuff.)
+</TD></TR>
+<TR><TD WIDTH=289>display-update = 100ms</TD><TD WIDTH=366>If there would be no display from the simulation execution (both the above options are disabled), OMNeT++ can print out regular messages of the progress. The interval is understood in simulation time.
+</TD></TR>
+</TABLE>
+<P>
+
+<TABLE BORDER=1>
+<TR><TD COLSPAN=2 WIDTH=655>[Tkenv]</TD></TR>
+<TR><TD WIDTH=289>default-run = 1</TD><TD WIDTH=366>Specifies which run Tkenv should set up automatically after startup. If there's no default-run= entry or the value is 0, Tkenv will ask which run to set up.
+</TD></TR>
+<TR><TD WIDTH=289>use-mainwindow = yes</TD><TD WIDTH=366></TD>
+</TR>
+<TR><TD WIDTH=289>print-banners = yes</TD><TD WIDTH=366></TD>
+</TR>
+<TR><TD WIDTH=289>breakpoints-enabled = yes</TD><TD WIDTH=366>Specifies whether the simulation should be stopped at each <TT>breakpoint()</TT> call in the simple modules.
+</TD></TR>
+<TR><TD WIDTH=289>update-freq-fast = 10</TD><TD WIDTH=366></TD>
+</TR>
+<TR><TD WIDTH=289>update-freq-express = 500</TD><TD WIDTH=366>
+</TD></TR>
+<TR><TD WIDTH=289>animation-delay = 0.3s</TD><TD WIDTH=366>Delay between steps when you slow-execute the simulation.
+</TD></TR>
+<TR><TD WIDTH=289>animation-enabled = yes</TD><TD WIDTH=366></TD>
+</TR>
+<TR><TD WIDTH=289>animation-msgnames = yes</TD><TD WIDTH=366>
+</TD></TR>
+<TR><TD WIDTH=289>animation-msgcolors = yes</TD><TD WIDTH=366>
+</TD></TR>
+<TR><TD WIDTH=289>animation-speed = 1.0</TD><TD WIDTH=366></TD>
+</TR>
+</TABLE>
+<P>
+<BR>
+
+<TABLE BORDER=1>
+<TR><TD COLSPAN=2 WIDTH=655>[Tvenv]</TD></TR>
+<TR><TD WIDTH=289>update-inspectors = yes</TD><TD WIDTH=366>Enable/disable continuous refreshing of inspector windows while the simulation is running.
+</TD></TR>
+<TR><TD WIDTH=289>animation-delay= 1s</TD><TD WIDTH=366>Delay between steps when you animate (slow-execute) the simulation.
+</TD></TR>
+<TR><TD WIDTH=289>breakpoints-enabled= yes/no</TD><TD WIDTH=366>Specifies whether the simulation should be stopped at each <TT>breakpoint()</TT> call in the simple modules.
+</TD></TR>
+</TABLE>
+<P>
+<TABLE BORDER=1>
+<TR><TD COLSPAN=2 WIDTH=655>[Slaves]</TD></TR>
+<TR><TD WIDTH=289>write-slavelog = yes</TD><TD WIDTH=366></TD>
+</TR>
+<TR><TD WIDTH=289>slavelog-file = slave.log</TD><TD WIDTH=366>
+</TD></TR>
+<TR><TD WIDTH=289>module-messages = yes</TD><TD WIDTH=366></TD>
+</TR>
+<TR><TD WIDTH=289>errmsgs-to-console = yes</TD><TD WIDTH=366>
+</TD></TR>
+<TR><TD WIDTH=289>infomsgs-to-console = no</TD><TD WIDTH=366>
+</TD></TR>
+<TR><TD WIDTH=289>modmsgs-to-console = no</TD><TD WIDTH=366></TD>
+</TR>
+</TABLE>
+<P>
+<HR><H1><A NAME="_Toc439963918">Class Library Reference</A></H1>
+<H2><A NAME="_Toc439963919">What is documented here?</A></H2>
+<P>
+This is a fairly complete reference of the object library of OMNeT++.
+The primary goal was to provide the programmer with help in writing
+simple modules.
+<P>
+If you are interested in writing simple module activities, skim
+through the material in the following order:
+<UL>
+<LI> <TT><B><FONT>cSimpleModule</FONT></B></TT><B>:</B>
+functions like <TT>send()</TT>, <TT>receive()</TT> are there;
+also, your code is a member function of a class derived from <TT>cSimpleModule</TT>;
+<LI> <TT><B><FONT>cMessage</FONT></B></TT><B>,
+</B><TT><B><FONT>cPar</FONT></B></TT><B>:</B>
+messages and module parameters are of these types, so they are
+the most frequently used classes;
+<LI> <TT><B><FONT>cQueue</FONT></B></TT><B>,
+</B><TT><B><FONT>cArray</FONT></B></TT><B>:</B>
+containers to store messages and other objects;
+<LI> <TT><B><FONT>cOutVector</FONT></B></TT><B>:</B>
+manages writing statistics to files
+<LI> <TT><B><FONT>cEnvir</FONT></B></TT><B>:</B>
+writing out messages
+</UL>
+<P>
+If you plan to add new classes, study <TT>cObject</TT> <I>very
+carefully</I>! It provides an interface to which all derived classes
+should conform. Also look at the source of <TT>cObject</TT> and
+at the source of other objects derived from <TT>cObject</TT>.
+<P>
+Many details are not covered in this documentation. Only public
+member functions of the classes are documented. Some of the classes
+which are not visible to the user have been omitted, and of the
+classes that are documented, some member functions are very briefly
+or not at all described. However, I think that this material contains
+all information needed to write simple modules and can be used
+as a handy reference.
+<H2><A NAME="_Toc439963920">Constants, types, simple functions</A>
+</H2>
+<P>
+Header file: <TT>defs.h</TT> and <TT>util.h</TT> (<TT>sim</TT>
+directory)
+<H3><A NAME="_Toc439963921">Constants, types</A></H3>
+<PRE>
+NO(cXX)
+NOOBJ
+</PRE>
+<P>
+The <TT>NO(<I><FONT>classname</FONT></I>)</TT>
+macro can be used for <TT>NULL</TT> pointers of a specific type.
+For most classes in the simulation library, there is also a one-word
+shorthand for <TT>NO(<I><FONT>classname</FONT></I>)</TT>:
+<TT>NOOBJ</TT>, <TT>NOPAR</TT>, <TT>NOMSG</TT> etc.
+<PRE>
+bool
+TRUE,FALSE
+</PRE>
+<P>
+Boolean type and values.
+<PRE>
+simtime_t
+MAXTIME
+</PRE>
+<P>
+Type to measure model time (#defined to <TT>double</TT>); its
+maximum value.
+<PRE>
+PI
+</PRE>
+<P>
+The value of , 6.14159&#133; .
+<H3><A NAME="_Toc439963922">Function typedefs</A></H3>
+<PRE>
+typedef int (*CompareFunc)(cObject *, cObject *);
+</PRE>
+<P>
+Type of function used in a <TT>cQueue</TT> object to compare items.
+See documentation on <TT>cQueue</TT> for more information.
+<PRE>
+typedef bool (*ForeachFunc)(cObject *,bool);
+</PRE>
+<P>
+Type of function to be passed to <TT>forEach()</TT>. See <TT>cObject::forEach()</TT>
+for more information.
+<PRE>
+typedef double (*MathFunc)(...);
+typedef double (*MathFuncNoArg)();
+typedef double (*MathFunc1Arg)(double);
+typedef double (*MathFunc2Args)(double,double);
+typedef double (*MathFunc3Args)(double,double,double);
+</PRE>
+<P>
+Used by <TT>cPar</TT> and <TT>sXElem</TT>.
+<PRE>
+typedef void (*VoidDelFunc)(void *);
+typedef void *(*VoidDupFunc)(void *);
+</PRE>
+<P>
+Memory management functions for void* pointers. Used by <TT>cLinkedList</TT>
+and <TT>cPar</TT>.
+<H3><A NAME="_Toc439963923">Simulation time conversion functions</A>
+</H3>
+<PRE>
+char *simtimeToStr(simtime_t t, char *dest=NULL);
+</PRE>
+<P>
+Converts <TT>simtime_t</TT> (a <TT>double</TT>) to textual form
+that contains hours, minutes, second, milliseconds and microseconds
+like this: <TT>&quot;00h 34m 23s 130ms 230us&quot;</TT>.
+<P>
+If you do not provide a destination buffer for <TT>simtimeToStr()</TT>,
+it will place the result into a static buffer that is overwritten
+with each call.
+<PRE>
+simtime_t strToSimtime( char *str );
+</PRE>
+<P>
+Converts a textually given simulation time (e.g. <TT>&quot;30s
+152ms&quot;</TT>) to <TT>simtime_t</TT>. If the string cannot
+be entirely interpreted, <TT>-1</TT> is returned.
+<PRE>
+simtime_t strToSimtime0( char *&amp;str );
+</PRE>
+<P>
+Similar to <TT>strToSimtime()</TT>; it can be used if the time
+string is a substring in a larger string. It only goes as far
+as it can in <TT>str</TT>, then sets the <TT>str</TT> pointer
+to the first character that could not be interpreted as part of
+the time string, and returns the value. It never returns -1; if
+nothing at the beginning of the string looked like simulation
+time, it returns 0.
+<H3><A NAME="_Toc439963924">Value-added string functions</A></H3>
+<P>
+These functions replace some of the <TT>&lt;string.h&gt;</TT>
+functions. The difference is that they also accept <TT>NULL</TT>
+pointers and treat them as pointers to an empty string &quot;&quot;
+and use <TT>operator</TT> <TT>new</TT> instead of <TT>malloc()</TT>.
+Use these functions instead of original <TT>&lt;string.h&gt;</TT>
+versions!
+<PRE>
+char *opp_strdup(char *);
+</PRE>
+<P>
+Duplicates the string. If the pointer passed is <TT>NULL</TT>
+or points to a null string (<TT>&quot;&quot;</TT>), <TT>NULL</TT>
+is returned.
+<PRE>
+char *opp_strcpy(char *,char *);
+</PRE>
+<P>
+Same as the standard <TT>strcpy()</TT> function, except that <TT>NULL</TT>
+pointers in the second argument are treated like pointers to a
+null string (<TT>&quot;&quot;</TT>).
+<PRE>
+int opp_strcmp(char *, char *);
+</PRE>
+<P>
+Same as the standard <TT>strcmp()</TT> function, except that <TT>NULL</TT>
+pointers are treated like pointers to a null string (<TT>&quot;&quot;</TT>).
+<PRE>
+bool opp_strmatch(char *, char *);
+</PRE>
+<P>
+Returns <TT>TRUE</TT> if the two strings are identical up to the
+length of the shorter one. <TT>NULL</TT> pointers are treated
+like pointers to a null string (<TT>&quot;&quot;</TT>).
+<PRE>
+char *correct(char *);
+</PRE>
+<P>
+Returns the pointer passed as argument unchanged, or, if it was
+<TT>NULL</TT>, returns a pointer to a null string (<TT>&quot;&quot;</TT>).
+<PRE>
+char *opp_concat(char *s1, char *s2, char *s3=NULL, char *s4=NULL);
+</PRE>
+<P>
+Concatenates 2, 3, or 4 strings and places the result into a static
+buffer and returns the buffer's pointer. The result's length shouldn't
+exceed 255 characters.
+<PRE>
+char *indexedname(char *buf, char *name, int index);
+</PRE>
+<P>
+Creates a string like <TT>&quot;component[35]&quot;</TT> into
+<TT>buf</TT>, the first argument.
+<H3><A NAME="_Toc439963925">Basic random number generation</A>
+</H3>
+<P>
+OMNeT++ has a built-in pseudorandom number generator that gives
+long int (32-bit) values.
+<P>
+Range:  1 ... 2<SUP>31</SUP>-2
+<P>
+Period length: 2<SUP>31</SUP>-2
+<P>
+Method: x=(x * 7<SUP>5</SUP>) mod (2<SUP>31</SUP>-1)
+<P>
+To check if it works correctly: starting with x[0]=1, then x[10000]=1,043,618,065
+must hold. Required hardware: exactly 32-bit integer aritmetics.
+<P>
+Source: Raj Jain: The Art of Computer Systems Performance Analysis
+(John Wiley &amp; Sons, 1991), pages 441-444, 455.
+<P>
+You can use the generator through the following functions:
+<PRE>
+void opp_randomize();
+</PRE>
+<P>
+Sets the random number generator's seed to a random value.
+<PRE>
+long randseed(long seed=0);
+</PRE>
+<P>
+Sets the random number generator's seed to the given value. Zero
+cannot be used as seed.
+<PRE>
+long intrand();
+</PRE>
+<P>
+Returns an integer random number in the range [0,<TT>INTRAND_MAX</TT>-1].
+<PRE>
+long intrand(long r);
+</PRE>
+<P>
+Returns an integer random number in the range [0, r-1]  (works
+if r &lt;&lt; <TT>INTRAND_MAX</TT>)
+<PRE>
+double dblrand();
+</PRE>
+<P>
+Returns a random number in the range [0.0, 1.0).
+<H3><A NAME="_Toc439963926">Random numbers from different distributions</A>
+</H3>
+<PRE>
+double uniform(double a, double b);
+</PRE>
+<P>
+Uniform distribution in the range <I>[a,b)</I>.
+<PRE>
+double intuniform(double a, double b);
+</PRE>
+<P>
+An integer with uniform distribution in the range <I>[a,b]</I>.
+Note that the function can return also <TT>a</TT> or <TT>b</TT>.
+<PRE>
+double exponential(double mean);
+</PRE>
+<P>
+Exponential distribution (with parameter <I>1/mean</I>).
+<PRE>
+double normal(double mean, double variance);
+</PRE>
+<P>
+Normal distribution with mean and variance given.
+<PRE>
+double truncnormal(double mean, double variance);
+</PRE>
+<P>
+Normal distribution truncated to nonnegative values; this is done
+by discarding negative values until a nonnegative comes.
+<H3><A NAME="_Toc439963927">Miscellaneous</A></H3>
+<PRE>
+Min(a,b);
+Max(a,b);
+</PRE>
+<P>
+Macros returning the minimum/maximum of two values.
+<PRE>
+bool equal(double a, double b, double limit);
+</PRE>
+<P>
+Tests equality of two <TT>double</TT>s, with the given precision.
+Returns <TT>TRUE</TT> if abs(a-b)&lt;limit.
+<PRE>
+bool lowmemory();
+</PRE>
+<P>
+Returns <TT>TRUE</TT> if free space on the heap is getting too
+low.
+<PRE>
+ASSERT(condition);
+</PRE>
+<P>
+Makes sure the condition holds (evaluates to nonzero). Otherwise,
+it stops the simulation with a detailed error message. Use <TT>ASSERT()</TT>
+to verify your program works correctly and what you assume about
+program state is really true.
+<H3><A NAME="_Toc439963928">String class</A></H3>
+<PRE>
+class opp_string;
+</PRE>
+<P>
+A value-added version of <TT>char*</TT>. Has only one data member,
+a <TT>char*</TT> pointer. Added value is automatic allocation/deallocation
+(through <TT>opp_strdup</TT>/<TT>delete</TT>). A string object
+has its own (<TT>opp_strdup()</TT>'ped) copy of the string.
+<P>
+Recommended use: as class member, where otherwise the class members
+would have to call <TT>opp_strdup()</TT> and delete for the <TT>char*</TT>
+member.
+<P>
+It is intentionally kept very simple. Usable wherever <TT>char*</TT>
+is needed. Its only data member is the <TT>char*</TT> pointer
+so <TT>string</TT> is even usable with <TT>printf()</TT> which
+doesn't do conversion to <TT>char*</TT>. To keep this very valuable
+property, <I>don't</I> add any other <I>data</I> members or any
+<I>virtual</I> functions.(Virtual functions would add a virtual
+table pointer to objects.)
+<P>
+Example usage:
+<PRE>
+opp_string a, string b(&quot;foo&quot;);
+a = &quot;bar&quot;;
+a = b;
+char *s = a;
+printf(&quot;string: `%s'\n&quot;, a );
+</PRE>
+<P>
+Member functions:
+<PRE>
+opp_string();
+opp_string(char *s);
+~opp_string();
+</PRE>
+<P>
+String creation, destruction.
+<PRE>
+operator char *();
+</PRE>
+<P>
+Returns pointer to the string.
+<PRE>
+char *operator=(char *s);
+</PRE>
+<P>
+Deletes the old value and <TT>opp_strdup()</TT>'s the new value
+to create the object's own copy.
+<H2><A NAME="_Toc439963929">Declaration/registration macros</A>
+</H2>
+<P>
+Header file: <TT>ctypes.h</TT> (<TT>sim</TT> directory)
+<PRE>
+Network(NAME,SETUPFUNCTION)
+</PRE>
+<P>
+Network declaration macro, it can be found in code generated by
+the NEDC compiler. The use of this macro allows the creation of
+a network when only its name is avaliable as a string. (Typically,
+the name of the network to be simulated is read from the configuration
+file.)
+<P>
+The macro expands to the definition of a <TT>cNetworkType</TT>
+object.
+<PRE>
+Define_Link(NAME,DELAY,ERROR,DATARATE)
+</PRE>
+<P>
+Link type definition. The macro expands to the definition of a
+<TT>cLinkType</TT> object; the last three arguments are pointers
+to functions which dynamically create <TT>cPar</TT> objects an
+return their pointers.
+<PRE>
+Define_Function(FUNCTION,ARGCOUNT)
+</PRE>
+<P>
+Registers a mathematical function that takes 0, 1, 2 or 3 <TT>double</TT>
+arguments and returns a <TT>double</TT>. The use of this macro
+allows the function to be used in expressions inside NED network
+descriptions. 
+<P>
+The commonly used <TT>&lt;math.h&gt;</TT> functions have <TT>Define_Function()</TT>
+lines in the OMNeT++ simulation kernel sources.
+<PRE>
+Register_Class(CLASSNAME)
+</PRE>
+<P>
+Registers a class for use with the createOne() function:
+<PRE>
+cObject *createOne(char *classname);
+</PRE>
+<P>
+This function creates an object of the type given by the string
+argument. createOne() is used by the distributed execution part
+of OMNeT++, for  unpacking objects from a buffer that was sent
+over from another machine/processor.
+<P>
+Each class that should be able to travel between machines/processors
+should be registered with the Register_Class macro in one of the
+C++ source files.
+<P>
+ (The Register_Class macro expands to the definition of a <TT>cClassRegister</TT>
+object.) 
+<PRE>
+Module(CLASSNAME)
+  Gate(NAME,TYPE)
+  Parameter(NAME,TYPES)
+  Machine(NAME)
+End
+</PRE>
+<P>
+Simple module declaration macro. Gate types can be 'Input' or
+'Output', parameter types can be 'Anytype' or 'Numeric'.
+<PRE>
+Pure_Module_Class(CLASSNAME,STACKSIZE)
+</PRE>
+<P>
+Expands to the simplest form of a simple module type's class declaration:
+<PRE>
+class CLASSNAME : public cSimpleModule
+{
+   // constructors, destructor, etc.
+   virtual void activity();
+};
+</PRE>
+<P>
+After using the macro, the user only needs to define the <TT>CLASSNAME::</TT>
+<TT>activity()</TT> member function that contains the operations
+of the simple module.
+<P>
+However, flexibility is lost: the class is always derived from
+<TT>cSimpleModule</TT> and no further members can be added to
+the class. Therefore, the usage of the following macro, <TT>Module_Class_Members()</TT>
+is recommended instead of <TT>Pure_Module_Class()</TT>. 
+<PRE>
+Module_Class_Members(CLASSNAME,BASECLASS,STACKSIZE)
+</PRE>
+<P>
+This macro facilitates the declaration of a simple module type's
+class. The macro is used like this:
+<PRE>
+class CLASSNAME : public cSimpleModule
+{
+   Module_Class_Members(CLASSNAME,cSimpleModule,4096)
+   virtual void activity();
+};
+</PRE>
+<P>
+The macro expands to the definition of member functions which
+the user does not need to worry about: constructors, destructor,
+<TT>isA()</TT> function etc. The user can derive the new class
+from an existing simple module class (not only <TT>cSimpleModule</TT>),
+add new data members and add/redefine member functions as needed.
+<PRE>
+Define_Module(CLASSNAME)
+</PRE>
+<P>
+The use of this macro allows the creation of a module (simple
+or compound) when only its name is avaliable as a string. The
+macro expands to the definition a <TT>cModuleType</TT> object
+(and some functions it needs).
+<P>
+The NEDC compiler generates <TT>Define_Module()</TT> lines for
+all compound modules. However, it is the user's responsibility
+to put <TT>Define_Module()</TT> lines for all simple module types
+into one of the C++ sources.
+<H2><A NAME="_Toc439963930">Common properties for all classes:
+<TT><FONT SIZE=5>cObject</FONT></TT></A></H2>
+<P>
+Header file: <TT>cobject.h</TT> (<TT>sim</TT> directory)
+<P>
+<TT>cObject</TT> is the base class for almost all classes in the
+OMNeT++ library. <TT>cObject</TT> provides a name member (a dynamically
+allocated string) and a number of virtual functions. These functions:
+<UL>
+<LI> either provide a default behaviour (mostly good for all derived
+classes);
+<LI> or they are expected to be redefined in all derived classes.
+</UL>
+<P>
+Read this section carefully if you plan to create new classes.
+<H3><A NAME="_Toc439963931">class <TT><FONT SIZE=4>cObject</FONT></TT></A>
+</H3>
+<H4>Construction, destruction, copying</H4>
+<PRE>
+cObject(cObject&amp; obj);
+</PRE>
+<P>
+Copy constructor. In derived classes, it is usually implemented
+as <TT>{operator=(obj);}</TT>.
+<PRE>
+cObject(char *s, cObject *h);
+</PRE>
+<P>
+Creates a <TT>cObject</TT> with the given name. The owner will
+be the <TT>h</TT> object (if the pointer is not <TT>NULL</TT>),
+that is, the constructor contains a <TT>setOwner( h )</TT> call.
+<PRE>
+virtual ~cObject();
+</PRE>
+<P>
+Virtual destructor. Deletes the name and notifies the user interface
+that the object has been destructed.
+<PRE>
+virtual cObject *dup();
+</PRE>
+<P>
+Duplicates the object and returns a pointer to the new one. In
+derived classes, it is usually implemented as <TT>{return new
+cObject(*this);}</TT>.
+<PRE>
+cObject&amp; operator=(cObject&amp; o);
+</PRE>
+<P>
+The assignment operator. Most derived classes contain a <TT>cSomeClass&amp;</TT><I>
+</I><TT>cSomeClass:: operator=(cSomeClass&amp;)</TT> function.
+The assignment operators do not copy the object name. If you want
+to do so, you can copy it be hand: <TT>setName(o.name());</TT>
+<PRE>
+void *operator new(size_t m);
+</PRE>
+<P>
+<TT>cObject</TT>'s <TT>operator new</TT> does more than the global
+<TT>new()</TT><I>.</I> It cooperates with <TT>cObject</TT>'s constructor
+to determine the storage class of the object (static, auto or
+dynamic).
+<PRE>
+char storage();
+</PRE>
+<P>
+Returns the storage class of the object. The return value is one
+of the characters <TT>S/A/D</TT> which stand for static, auto
+and dynamic, respectively.
+<PRE>
+void destruct();
+</PRE>
+<P>
+Direct call to the virtual destructor.
+<H4>Name member</H4>
+<PRE>
+virtual void setName(char *s);
+</PRE>
+<P>
+Sets object's name. The object creates its own copy of the string.
+<TT>NULL</TT> pointer may also be passed.
+<PRE>
+char *name();
+</PRE>
+<P>
+Returns pointer to the object's name. The function never returns
+<TT>NULL</TT>; rather, it returns ptr to &quot;&quot;.
+<PRE>
+virtual char *fullName();
+</PRE>
+<P>
+To be redefined in descendants. E.g., see <TT>cModule::fullName()</TT>.
+<PRE>
+virtual char *fullPath(int l);
+</PRE>
+<P>
+Returns the name of the object with its place in the object ownership
+hierarchy (<TT>&quot;net.comp.modem[5].baud-rate&quot;</TT>).
+See also <TT>cModule::fullPath()</TT>.
+<PRE>
+bool isName(char *s);
+</PRE>
+<P>
+Returns <TT>TRUE</TT> if the object's name is identical with the
+string passed.
+<H4>User interface information functions</H4>
+<PRE>
+virtual char *isA();
+</PRE>
+<P>
+Returns a pointer to the class name string, <TT>&quot;cObject&quot;</TT>.
+In derived classes, usual implementation is <TT>{return &quot;classname&quot;;}</TT>.
+<PRE>
+virtual void info(char *buf);
+</PRE>
+<P>
+Copies a short description of the object into <TT>buf</TT>. This
+function is used by user interfaces that support interactive execution,
+tracing and debugging (currently only Tvenv, the Turbo Vision
+interface for DOS). (See also <I>Functions supporting snapshots</I>.)
+<PRE>
+virtual TInspector *inspector();
+</PRE>
+<P>
+Usually implemented as part of the user interface code. In windowing
+user interfaces (like Tvenv, the Turbo Vision interface for DOS),
+it should create an inspector window object and return a pointer
+to it.
+<P>
+The inspector window enables the user to see the contents of the
+object while the simulation is running and possibly allow modifications.
+This is a great help when one wants to see what is happening inside
+a running simulation. Especially good for debugging. 
+<P>
+Currently, inspectors are only implemented in Tvenv.
+<H4>Ownership control</H4>
+<PRE>
+virtual cObject *defaultOwner();
+</PRE>
+<P>
+This function should return a pointer to the default owner of
+the object. The function is used by the <TT>drop()</TT><I> </I>member
+function, redefined in <TT>cObject</TT>-descendant container classes.
+<PRE>
+cObject *owner();
+</PRE>
+<P>
+Returns pointer to the owner of the object.
+<PRE>
+void setOwner(cObject *newowner);
+</PRE>
+<P>
+Sets the owner pointer of the object. See documentation of <TT>cHead</TT>
+for more information.
+<H4>Operations to be used by container classes derived from <TT>cObject</TT>
+</H4>
+<PRE>
+void takeOwnership(bool tk);
+bool takeOwnership();
+</PRE>
+<P>
+Sets/returns the flag which determines whether the container object
+should automatically take ownership of the objects that are inserted
+into it.
+<PRE>
+void take(cObject *obj);
+</PRE>
+<P>
+The function called by the container object when it takes ownership
+of the <TT>obj</TT> object that is inserted into it. Implementation:
+<TT>obj-&gt;setOwner( this )</TT>.
+<PRE>
+void drop(cObject *obj);
+</PRE>
+<P>
+The function called by the container object when <TT>obj</TT>
+is removed from the container -- releases the ownership of the
+object and hands it over to its default owner. Implementation:
+<BR>
+<TT>obj-&gt;setOwner( obj-&gt;defaultOwner() );</TT>
+<PRE>
+void free(cObject *obj);
+</PRE>
+<P>
+The function is called when the container object has to delete
+the contained object <TT>obj</TT>. It the object was dynamically
+allocated (by <TT>new</TT>), it is deleted, otherwise (e.g., if
+it is a global or a local variable) it is just removed from the
+ownership hierarchy. Implementation:<BR>
+<TT>{if(obj-&gt;storage()=='D') delete obj; else obj-&gt;setOwner(NULL);}
+<BR>
+</TT>
+<P>
+<U><B>About object ownership/contains relationships</B></U>
+<P>
+<B>Ownership:</B> Exclusive right and duty to delete the child
+objects. Ownership works through cObj's ownerp/prevp/nextp and
+firstchildp/lastchildp pointers.
+<P>
+<B>'Contains' relationship: </B>Only for container classes, e.
+g. <TT>cArray</TT> or <TT>cQueue</TT>. Keeping track of contained
+objects works with another mechanism, <I>not</I> the previously
+mentioned ptrs. (E.g., <TT>cArray</TT> uses a vector, <TT>cQueue</TT>
+uses a separate list).
+<P>
+The two mechanisms are <I>independent</I>!
+<P>
+<B>What </B><TT><B><FONT>cObject</FONT></B></TT><B>
+does:</B>
+<UL>
+<LI>Owner of a new object can be explicitly given, if omitted,
+<TT>defaultOwner()</TT> will will be used.
+<UL>
+<LI>An object created through the copy constructor will have the
+same owner as original and does not <TT>dup()</TT> or take objects
+owned by the original.
+<UL>
+<LI>Destructor calls <TT>free()</TT> for owned objects (see later)
+</UL>
+</UL>
+</UL>
+<P>
+<B>Rules for derived classes:</B>
+<UL>
+<LI>Objects contained as data members: the enclosing object should
+own them.
+</UL>
+<P>
+<B>Rules for container objects derived from </B><TT><B><FONT>cObject</FONT></B></TT><B>:</B>
+<UL>
+<LI>they use the functions: <TT>take(obj)</TT>, <TT>drop(obj)</TT>,
+<TT>free(obj)</TT>
+<LI>when an object is inserted, if <TT>takeOwnership()</TT> is
+<TT>TRUE</TT>, should
+</UL>
+<UL>
+<LI>take ownership of object by calling <TT>take(obj)</TT>. <TT>takeOwnership()</TT>
+defaults to <TT>TRUE</TT>!
+<LI>when an object is removed, they should call <TT>drop(obj)</TT>
+for it if they were the owner.
+<LI>copy constructor copies should <TT>dup()</TT> and take ownership
+of objects that were owned by the original.
+<LI>destructor doesn't need not call <TT>free()</TT> for objects:
+this will be done in <TT>cObject</TT>'s destructor.
+</UL>
+<P>
+The class <TT>cHead</TT> is special case: it behaves as a container,
+displaying objects it owns as contents.
+<H4>Load/store operations</H4>
+<P>
+The load/store operations are used when running OMNeT++ on multiple
+processors. They are used to exchange data between two instances
+of OMNeT++ running in different processes (and possibly different
+processors), using the statistical synchronisation method. Currently,
+this is implemented over PVM (Parallel Virtual Machine version
+3).
+<PRE>
+virtual int netPack(char * type=NULL);
+virtual int netUnpack();
+</PRE>
+<P>
+These functions are expected to be redefined in all derived objects.
+In OMNeT++'s PVM interface, they call <TT>pvm_pkint()</TT>, <TT>pvm_upkint()</TT>
+etc. functions.
+<H4>Functions supporting snapshots</H4>
+<PRE>
+virtual void writeTo(ostream&amp; os);
+</PRE>
+<P>
+This function is called internally by <TT>cSimpleModule::snapshot()</TT>.
+It writes out info about the object into the stream. Relies on
+<TT>writeContents()</TT>. <TT>writeTo()</TT> does not need to
+be redefined.
+<PRE>
+virtual void writeContents(ostream&amp; os);
+</PRE>
+<P>
+This function is called by internally <TT>writeTo()</TT>. It is
+expected to write textual information about the object and other
+objects it contains to the stream. The default version (<TT>cObject::writeContents()</TT>)
+uses forEach to call <TT>info()</TT> for contained objects. Redefine
+as needed.
+<H4>Other functions</H4>
+<PRE>
+static int cmpbyname(cObject *one,cObject *other);
+</PRE>
+<P>
+This function compares to objects by name. It can be used in a
+priority queue (class <TT>cQueue</TT>) as a sorting criterion.
+<H4>The <TT>forEach()</TT> mechanism</H4>
+<PRE>
+virtual void forEach(ForeachFunc f);
+</PRE>
+<P>
+Makes sense with container objects derived from <TT>cObject</TT>.
+Calls the <I>f</I> function recursively for each object contained
+in this object.
+<P>
+<U><B>The </B></U><TT><U><B><FONT>forEach()</FONT></B></U></TT><U><B>
+mechanism</B></U>
+<P>
+The <TT>forEach()</TT> mechanism implemented in OMNeT++ is very
+special and slightly odd. The passed function is called for each
+object twice: once on entering and once on leaving the object.
+In addition, after the first ('entering') call to the function,
+it signals with its return value whether it wants to go deeper
+in the contained objects or not.
+<P>
+Functions passed to <TT>forEach()</TT> will use static variables
+to store other necessary information. (Yes, this limits their
+recursive use :-( ).
+<P>
+<TT>forEach()</TT> takes a function <TT>do_fn</TT> (of <TT>ForeachFunc</TT>
+type) with 2 arguments: a <TT>cObject*</TT> and a <TT>bool</TT>.
+First, <TT>forEach()</TT> should call <TT>do_fn(this,TRUE)</TT>
+to inform the function about entering the object. Then, if this
+call returned <TT>TRUE</TT>, it must call <TT>forEach(do_fn)</TT>
+for every contained object. Finally, it must call <TT>do_fn(this,FALSE)</TT>
+to let <TT>do_fn</TT> know that there's no more contained object.
+<P>
+Functions using <TT>forEach()</TT> work in the following way:
+they call <TT>do_fn(NULL, FALSE, &lt;additional args&gt;)</TT>
+to initialize the static variables inside the function with the
+additional args passed. Then they call <TT>forEach(do_fn)</TT>
+for the given object. Finally, read the results by calling <TT>do_fn(NULL,
+FALSE, &lt;additional args&gt;)</TT>, where additional args can
+be pointers where the result should be stored. <TT>ForeachFuncs</TT>
+mustn't call themselves recursively!
+<P>
+<I>(I know this all is kind of weird, but changing it would take
+quite some work)</I>
+<H4>Member functions based on <TT>forEach()</TT></H4>
+<PRE>
+cObject *findObject(char *s, bool deep=TRUE);
+</PRE>
+<P>
+Finds the object with the given name in a container object and
+returns a pointer to it or <TT>NULL</TT> if the object hasn't
+been found. If <TT>deep</TT> is <TT>FALSE</TT>, only objects directly
+contained will be searched, otherwise the function searches the
+whole subtree for the object.
+<PRE>
+bool ishe_there(cObject *obj);
+</PRE>
+<P>
+Returns <TT>TRUE</TT> if the given object <TT>obj</TT> is contained
+in this object's subtree.
+<H2><A NAME="_Toc439963932">Module classes: <TT><FONT SIZE=5>cModule</FONT></TT><FONT SIZE=5>,
+</FONT><TT><FONT SIZE=5>cCompoundModule</FONT></TT><FONT SIZE=5>,
+</FONT><TT><FONT SIZE=5>cSimpleModule</FONT></TT></A></H2>
+<P>
+Header file: <TT>cmodule.h</TT> (<TT>sim</TT> directory)
+<P>
+There are three module classes. <TT>cModule</TT> is the common
+base class for all module classes. It contains data and functions
+to manage the module hierarchy in a network and handles parameters
+and gates. <TT>cModule</TT> is used only as a base class: no instance
+of <TT>cModule</TT> is ever created. <TT>cCompoundModule</TT>
+is derived from <TT>cModule</TT> and represents compound modules
+in networks. cCompoundmod has no added functionality over <TT>cModule</TT>.
+<TT>cSimpleModule</TT> is also a descendant of <TT>cModule</TT>
+and is a base class for all simple module classes.
+<P>
+<CENTER><IMG SRC="img00020.gif"></CENTER>
+<H3><A NAME="_Toc439963933">class <TT><FONT SIZE=4>cModule</FONT></TT></A>
+</H3>
+<P>
+<TT>cModule</TT> contains data and functions to manage the module
+hierarchy in a network. It also stores and controls module parameters
+and gates.
+<H4>Construction, destruction, copying</H4>
+<P>
+The user normally doesn't create new modules directly, so these
+member functions are not documented here.
+<H4>Redefined virtual functions</H4>
+<PRE>
+virtual char *isA()
+</PRE>
+<P>
+Returns pointer to the class name string, <TT>&quot;cModule&quot;</TT>.
+<PRE>
+virtual char *fullName();
+</PRE>
+<P>
+Returns full name of the module in a static buffer, in the form
+<TT>&quot;name&quot;</TT> or <TT>&quot;name[index]&quot;</TT>.
+<PRE>
+virtual char *fullPath(int l);
+</PRE>
+<P>
+Returns full path from the system module to the module in a static
+buffer, in the form <TT>&quot;system_module.submodule[1].subsubmodule.name[index]&quot;</TT>.
+<PRE>
+virtual void info(char *buf);
+virtual TInspector *inspector();
+</PRE>
+<P>
+Redefined.
+<H4>Member functions</H4>
+<PRE>
+bool isSimple() = 0;
+</PRE>
+<P>
+Pure virtual function. It is redefined in <TT>cSimpleModule</TT>
+to return <TT>TRUE</TT> and in <TT>cCompoundModule</TT> to return
+<TT>FALSE</TT>.
+<PRE>
+bool isOnLocalMachine();
+</PRE>
+<P>
+Used with parallel execution: determines if the module is on the
+local machine. See the user manual for more info.
+<PRE>
+int id();
+</PRE>
+<P>
+Returns the index of the module in the module vector (<TT>cSimulation</TT>
+simulation).
+<PRE>
+cModule* parentModule();
+</PRE>
+<P>
+Returns reference to the module's parent.
+<PRE>
+int index();
+</PRE>
+<P>
+Returns the index of the module if it is multiple, otherwise 0.
+<PRE>
+int size();
+</PRE>
+<P>
+Returns the size of the multiple module, or 1.
+<H4>Module gates</H4>
+<PRE>
+int gates();
+</PRE>
+<P>
+Returns total number of module gates.
+<PRE>
+cGate&amp; gate(int g);
+</PRE>
+<P>
+Returns reference to the gate identified with its index g. Returns
+<TT>*NULL</TT> if the gate doesn't exist.
+<PRE>
+cGate&amp; gate(char *s,int sn=0);
+</PRE>
+<P>
+Returns reference to the gate specified by name and index (if
+multiple gate). Returns <TT>*NULL</TT> if the gate doesn't exist.
+<PRE>
+int findGate(char *s, int sn=0);
+</PRE>
+<P>
+Returns index of the gate specified by name and index (if multiple
+gate). Returns -1 if the gate doesn't exist.
+<H4>Module parameters</H4>
+<PRE>
+int params();
+</PRE>
+<P>
+Returns total number of the module's parameters.
+<PRE>
+cPar&amp; par(int p);
+</PRE>
+<P>
+Returns reference to the module parameter identified with its
+index <TT>p</TT>. Returns <TT>*NULL</TT> if the object doesn't
+exist.
+<PRE>
+cPar&amp; par(char *name);
+</PRE>
+<P>
+Returns reference to the module parameter specified with its name.
+Returns <TT>*NULL</TT> if the object doesn't exist.
+<PRE>
+int findPar(char *s);
+</PRE>
+<P>
+Returns index of the module parameter specified with its name.
+Returns -1 if the object doesn't exist.
+<PRE>
+cPar&amp; ancestorPar(char *name);
+</PRE>
+<P>
+Searches for the parameter in the parent modules, up to the system
+module. It the parameter is not found, an error message is generated.
+<H4>Warning messages</H4>
+<PRE>
+bool warnings();
+</PRE>
+<P>
+Warning messages can be enabled/disabled individually for each
+module. This function returns the warning status for this module:
+<TT>TRUE</TT>=enabled, <TT>FALSE</TT>=disabled.
+<PRE>
+void setWarnings(bool wr);
+</PRE>
+<P>
+Enables or disables warnings for this module: <TT>TRUE</TT>=enable,
+<TT>FALSE</TT>=disable.
+<H4>Other functions</H4>
+<PRE>
+bool checkInternalConnections();
+</PRE>
+<P>
+For compound modules, it checks if all gates are connected inside
+the module (it returns <TT>TRUE</TT> if they are OK); for simple
+modules, it returns <TT>TRUE</TT>.
+<PRE>
+virtual void scheduleStart(simtime_t t) = 0;
+</PRE>
+<P>
+Pure virtual function; it is redefined in both <TT>cCompoundModule</TT>
+and <TT>cSimpleModule</TT>. It creates starting message for dynamically
+created module (or recursively for its submodules). See the user
+manual for explanation how to use dynamically created modules.
+<PRE>
+virtual void deleteModule() = 0;
+</PRE>
+<P>
+Pure virtual function; it is redefined in both <TT>cCompoundModule</TT>
+and <TT>cSimpleModule</TT>. Deletes a dyamically created module
+and recursively all its submodules.
+<H3><A NAME="_Toc439963934">class <TT><FONT SIZE=4>cCompoundModule</FONT></TT></A>
+</H3>
+<H4>Redefined member functions</H4>
+<PRE>
+bool isSimple();
+</PRE>
+<P>
+Returns <TT>FALSE</TT>.
+<PRE>
+virtual void scheduleStart(simtime_t t);
+</PRE>
+<P>
+Calls <TT>scheduleStart()</TT> recursively for all its (immediate)
+submodules. This is used with dynamically created modules.
+<PRE>
+virtual void deleteModule();
+</PRE>
+<P>
+Calls <TT>deleteModule()</TT> for all its submodules and then
+deletes itself.
+<H3><A NAME="_Toc439963935">class <TT><FONT SIZE=4>cSimpleModule</FONT></TT></A>
+</H3>
+<P>
+<TT>cSimpleModule</TT> is derived from <TT>cModule</TT> and is
+a base class for all simple module classes. Most important, <TT>cSimpleModule</TT>
+has a virtual member function called <TT>activity()</TT> that
+is to be redefined in descendants -- this is the module function.
+All basic functions associated with the simulation such as sending
+and receiving messages are implemented as cSimpleMod's member
+functions. The module functions are run as coroutines during simulation.
+Coroutines are brought to <TT>cSimpleModule</TT> from another
+base class called <TT>cCoroutine</TT>.
+<H4>Construction, destruction, copying</H4>
+<P>
+The user normally doesn't create new modules directly, so these
+member functions are not documented here.
+<H4>Redefined member functions</H4>
+<PRE>
+virtual char *isA()
+</PRE>
+<P>
+Returns pointer to the class name string, <TT>&quot;cSimpleModule&quot;</TT>.
+<PRE>
+virtual void info(char *buf);
+virtual TInspector *inspector();
+</PRE>
+<P>
+Redefined.
+<PRE>
+bool isSimple();
+</PRE>
+<P>
+Returns <TT>TRUE</TT>.
+<PRE>
+virtual void scheduleStart(simtime_t t);
+</PRE>
+<P>
+Creates a starting message for the module.
+<PRE>
+virtual void deleteModule();
+</PRE>
+<P>
+Deletes a dynamically created module.
+<H4>Public data members</H4>
+<PRE>
+cQueue putAsideQueue;
+</PRE>
+<P>
+Represents the put-aside queue (where the simulator puts unexpected
+messages that arrive to the module). The putaside-queue is configured
+to sort the messages by arrival time and priority, like the event
+queue does. You can freely use the contents of the putaside-queue;
+the simulator kernel does not do anything with it, it only inserts
+messages. See class <TT>cQueue</TT> and the functions <TT>cSimpleModule::wait()</TT>,
+<TT>cSimpleModule::receiveNewOn()</TT>, <TT>cSimpleModule::receive()</TT>
+for more information.
+<PRE>
+cHead locals;
+</PRE>
+<P>
+List of local variables of module function. You do not normally
+need to care about this object.
+<PRE>
+cHead members;
+</PRE>
+<P>
+Data members of derived classes. If you derive a class from <TT>cSimpleModule</TT>
+and add object members, you should call <TT>object-&gt;setOwner(
+members )</TT> for each <TT>object</TT> you add.
+<H4>The module funcion</H4>
+<PRE>
+virtual void activity();
+</PRE>
+<P>
+Contains the module function. It is empty in <TT>cSimpleModule</TT>
+and should be redefined in descendants.
+<H4>Getting the current simulation time</H4>
+<PRE>
+simtime_t simTime();
+</PRE>
+<P>
+Returns the current simulation time (that is, the arrival time
+of the last message returned by a <TT>receiveNew()</TT> call).
+<H4>Sending messages</H4>
+<PRE>
+int send(cMessage *msg, int g);
+</PRE>
+<P>
+Sends a message through the gate given with its index.
+<PRE>
+int send(cMessage *msg, char *s, int sn=0);
+</PRE>
+<P>
+Sends a message through the gate given with its name and index
+(if multiple gate).
+<PRE>
+int sendDelayed(cMessage *msg, double delay, int g);
+</PRE>
+<P>
+Sends a message through the gate given with its index as if it
+was sent delay seconds later.
+<PRE>
+int sendDelayed(cMessage *msg, double delay, char *s, int sn=0);
+</PRE>
+<P>
+Sends a message through the gate given with its name and index
+(if multiple gate) as if it was sent delay seconds later.
+<PRE>
+int scheduleAt(simtime_t t, cMessage&amp; msg);
+</PRE>
+<P>
+Inserts the given message into the Future Event Set and schedules
+it to be returned at time t. This function can be used to implement
+timers.
+<PRE>
+cMessage *cancelEvent(cMessage *msg);
+</PRE>
+<P>
+Removes the given message from the message queue. The message
+needs to have been sent using the <TT>scheduleAt()</TT> function.
+This function can be used to cancel a timer implemented with <TT>scheduleAt()</TT>.
+<H4>Receiving new messages</H4>
+<PRE>
+cMessage *receiveNew(simtime_t t=MAXTIME);
+</PRE>
+<P>
+Removes the next message from the event queue and returns a pointer
+to it. If there is no message in the event queue, the function
+waits with t timeout until a message will be available. If the
+timeout expires and there is still no message in the queue, the
+function returns <TT>NULL</TT>.
+<PRE>
+cMessage *receiveNewOn(char *s, int sn=0, simtime_t t=MAXTIME);
+</PRE>
+<P>
+The same as <TT>receiveNew()</TT>, except that it returns the
+next message that arrives on the gate specified with its name
+and index. All messages received meanwhile are inserted into the
+put-aside queue. If the timeout expires and there is still no
+such message in the queue, the function returns <TT>NULL</TT>.
+<P>
+In order to process messages that may have been put in the put-aside
+queue, the user is expected to call <TT>receive()</TT> or <TT>receiveOn()</TT>,
+or to examine the put-aside queue directly sometime.
+<PRE>
+cMessage *receiveNewOn(int g, simtime_t t=MAXTIME);
+</PRE>
+<P>
+Same as the previous function except that the gate must be specified
+with its index in the gate array. Using this function instead
+the previous one may speed up the simulation if the function is
+called frequently.
+<PRE>
+bool isThereMessage();
+</PRE>
+<P>
+Tells if the next message in the event queue is for the same module
+and has the same arrival time. (Returns <TT>TRUE</TT> only if
+two or more messages arrived to the module at the same time.)
+<H4>Getting messages from the put-aside queue or the event queue
+</H4>
+<PRE>
+cMessage *receive(simtime_t t=MAXTIME);
+</PRE>
+<P>
+Returns the first message from the put-aside queue or, if it is
+empty, calls <TT>receiveNew()</TT> to return a message from the
+event queue with the given timeout. Note that the arrival time
+of the message returned by <TT>receive()</TT> can be earlier than
+the current simulation time.
+<PRE>
+cMessage *receiveOn(char *s, int sn=0, simtime_t t=MAXTIME);
+</PRE>
+<P>
+Scans the put-aside queue for the first message that has arrived
+on the gate specified with its name and index. If there is no
+such message in the put-aside queue, calls <TT>receiveNew()</TT>
+to return a message from the event queue with the given timeout.
+Note that the arrival time of the message returned by <TT>receive()</TT>
+can be earlier than the current simulation time.
+<PRE>
+cMessage *receiveOn(int g, simtime_t t=MAXTIME);
+</PRE>
+<P>
+Same as the previous function except that the gate must be specified
+with its index in the gate array. Using this function instead
+the previous one may speed up the simulation if the function is
+called frequently.
+<H4>Waiting</H4>
+<PRE>
+void wait(simtime_t time);
+</PRE>
+<P>
+Wait for given interval. The messages received meanwhile are inserted
+into the put-aside queue.
+<H4>Stopping the module or the simulation</H4>
+<PRE>
+void end();
+</PRE>
+<P>
+Ends the run of the simple module. The simulation is not stopped
+(unless this is the last running module.)
+<PRE>
+void endSimulation();
+</PRE>
+<P>
+Causes the whole simulation to stop.
+<H4>Help for tracing and debugging</H4>
+<PRE>
+bool snapshot(cObject *obj = &amp;simulation, char *label = NULL);
+</PRE>
+<P>
+To be called from module functions. Outputs textual information
+about all objects of the simulation (including the objects created
+in module functions by the user!) into the snapshot file. The
+output is detailed enough to be used for debugging the simulation:
+by regularly calling <TT>snapshot()</TT>, one can trace how the
+values of variables, objects changed over the simulation. The
+arguments: <TT>label</TT> is a string that will appear in the
+output file; <TT>obj</TT> is the object whose inside is of interest.
+By default, the whole simulation (all modules etc) will be written
+out.
+<P>
+Tvenv and Tkenv also supports making snapshots manually, from
+menu.
+<P>
+See also class <TT>cWatch</TT> and the <TT>WATCH()</TT> macro.
+<PRE>
+void setPhase(char *s);
+</PRE>
+<P>
+Sets the phase string (the function creates a copy of the string).
+The string can be displayed in user interfaces which support tracing
+/ debugging (currently only Tvenv, the Turbo Vision environment
+for DOS) and the string can contain information that tells the
+user what the module is currently doing.
+<PRE>
+char *phase();
+</PRE>
+<P>
+Returns pointer to the current phase string.
+<PRE>
+void pause(char *s);
+</PRE>
+<P>
+If the user interface supports step-by-step execution (currently
+only Tvenv does so), one can stop execution at each <TT>receive()</TT>
+call of the module function and examine the objects, variables,
+etc. If the state of simulation between <TT>receive()</TT> calls
+is also of interest, one can use <TT>pause()</TT> calls. The string
+argument (if given) sets the phase string, so <TT>pause(&quot;here&quot;)</TT>
+is the same as <TT>setPhase(&quot;here&quot;); pause()</TT>.
+<PRE>
+void breakpoint(char *label);
+</PRE>
+<P>
+Specifies a breakpoint. During simulation, if execution gets to
+a <TT>breakpoint()</TT> call (and breakpoints are active etc.),
+the simulation will be stopped, if the user interface can handle
+breakpoints. Currently, only Tvenv supports the use of breakpoints.
+<H4>Non-typed heap allocation/deallocation for module functions
+</H4>
+<PRE>
+void *memAlloc(size_t m);
+</PRE>
+<P>
+Dynamic memory allocation. This function should be used instead
+of the global <TT>::malloc()</TT> from inside the module function
+(<TT>activity()</TT>), if deallocation by the simple module constructor
+is not provided. 
+<P>
+Dynamic allocations are discouraged in general unless you put
+the pointer into the class declaration of the simple module class
+and provide a proper destructor. Or, you can use container classes
+(<TT>cArray</TT>, <TT>cQueue</TT>)!
+<PRE>
+void memFree(void *&amp;p);
+</PRE>
+<P>
+Frees a memory block reserved with the <TT>malloc()</TT> described
+above and <TT>NULL</TT>s the pointer.
+<H2><A NAME="_Toc439963936">Message classes: <TT><FONT SIZE=5>cMessage
+</FONT></TT><FONT SIZE=5>and</FONT><TT><FONT SIZE=5> cPacket</FONT></TT></A>
+</H2>
+<P>
+Header file: <TT>cmessage.h, cpacket.h</TT> (sim directory)
+<P>
+<TT>cMessage</TT> is the message class in OMNeT++. <TT>cMessage</TT>
+can be assigned a name (a property inherited from <TT>cObject</TT>)
+and it has the following members: message kind, length, priority,
+error flag and time stamp.
+<P>
+After being sent through a channel, <TT>cMessage</TT> also remembers
+the sending and delivery times and its source module. <TT>cMessage</TT>
+holds a <TT>cArray</TT> which means that a <TT>cMessage</TT> can
+be attached any number of objects. These objects will typically
+be of <TT>cPar</TT> type, but other types are also possible.
+<H3><A NAME="_Toc439963937">Message base class: <TT><FONT SIZE=4>cMessage</FONT></TT></A>
+</H3>
+<H4>Construction, destruction, copying</H4>
+<PRE>
+cMessage(cMessage&amp; msg);
+</PRE>
+<P>
+Copy constructor, creates an exact copy of the argument <TT>msg</TT>.
+<PRE>
+cMessage(char *name=NULL, int k=0, int len=1, int pri=0, bool err=FALSE);
+</PRE>
+<P>
+Constructor. It accepts name, message kind, length, priority and
+error flag as arguments.
+<PRE>
+virtual cObject *dup()
+cMessage&amp; operator=(cMessage&amp; msg);
+</PRE>
+<P>
+Duplication and the assignment operator work all right with <TT>cMessage</TT>.
+<H4>Redefined virtual functions</H4>
+<PRE>
+virtual char *isA()
+</PRE>
+<P>
+Returns pointer to the class name string, <TT>&quot;cMessage&quot;</TT>.
+<H4>Message properties</H4>
+<PRE>
+void setKind(int k);
+</PRE>
+<P>
+Sets message kind.  The message kind member is not used by OMNeT++,
+it can be used freely by the user. 
+<PRE>
+void setPriority(int p);
+</PRE>
+<P>
+Sets message priority.  The priority member is used when the simulator
+inserts messages in the message queue (FES) to order messages
+with identical arrival time values.
+<PRE>
+void setLength(long l);
+</PRE>
+<P>
+Sets message length. When the message is transmitted through a
+channel, its error flag will be set with a probability depending
+on the length of the message and the channel's bit error rate.
+<PRE>
+void setError(bool err);
+</PRE>
+<P>
+Directly sets the message's error flag.
+<PRE>
+void setTimestamp();
+</PRE>
+<P>
+Sets the message's time stamp to the current simulation time.
+<PRE>
+void setTimestamp(simtime_t stamp);
+</PRE>
+<P>
+Directly sets the message's time stamp.
+<PRE>
+int kind();
+</PRE>
+<P>
+Returns message kind. The message kind member is not used by OMNeT++,
+it can be used freely by the user.
+<PRE>
+int priority();
+</PRE>
+<P>
+Returns message priority.  The priority member is not used by
+OMNeT++, it can be used freely by the user. 
+<PRE>
+long length();
+</PRE>
+<P>
+Returns message length.
+<PRE>
+bool isbad();
+</PRE>
+<P>
+Returns <TT>TRUE</TT> if error flag is set, <TT>FALSE</TT> otherwise.
+<PRE>
+bool isgood();
+</PRE>
+<P>
+Returns <TT>TRUE</TT> if error flag is NOT set, <TT>FALSE</TT>
+otherwise.
+<PRE>
+simtime_t timestamp();
+</PRE>
+<P>
+Returns the message's time stamp.
+<H4>Message encapsulation</H4>
+<PRE>
+void encapsulate(cMessage *msg);
+</PRE>
+<P>
+Encapsulates <TT>msg</TT> in the message. <TT>msg-&gt;length()</TT>
+will be added to the length of the message.
+<PRE>
+cMessage *decapsulate();
+</PRE>
+<P>
+Decapsulates a message from the message object. The length of
+the message will be decreased accordingly, exept if it was zero.
+If the length would become negative, an error occurs.
+<PRE>
+cMessage *encapsulatedMsg();
+</PRE>
+<P>
+Returns a pointer to the encapsulated message, or <TT>NULL</TT>.
+<H4>Info about sending/scheduling</H4>
+<PRE>
+int senderModuleId();
+</PRE>
+<P>
+Returns sender module's index in the module vector or -1 if the
+message hasn't been sent/scheduled yet.
+<PRE>
+int senderGateId();
+</PRE>
+<P>
+Returns index of gate sent through in the sender module or -1
+if the message hasn't been sent/scheduled yet.
+<PRE>
+int arrivalModuleId();
+</PRE>
+<P>
+Returns receiver module's index in the module vector or -1 if
+the message hasn't been sent/scheduled yet.
+<PRE>
+int arrivalGateId();
+</PRE>
+<P>
+Returns index of gate the message arrived on in the sender module
+or -1 if the message hasn't sent/scheduled yet.
+<PRE>
+cGate *senderGate()
+cGate *arrivalGate()
+</PRE>
+<P>
+Returns pointers to the gate from which the message was sent and
+on which gate it arrived. A <TT>NULL</TT> pointer is returned
+for new (unsent) messages and messages sent via <TT>scheduleAt()</TT>.
+<PRE>
+simtime_t creationTime();
+</PRE>
+<P>
+Returns time when the message was created.
+<PRE>
+simtime_t sendingTime();
+</PRE>
+<P>
+Returns time when the message was sent/scheduled or 0 if the message
+hasn't been sent yet.
+<PRE>
+simtime_t sendingTime();
+</PRE>
+<P>
+Returns time when the message has been sent or 0 if the message
+hasn't been sent/scheduled yet.
+<PRE>
+simtime_t arrivalTime();
+</PRE>
+<P>
+Returns time when the message has arrived or 0 if the message
+hasn't been sent/scheduled yet.
+<PRE>
+bool arrivedOn(int g);
+</PRE>
+<P>
+Return <TT>TRUE</TT> if the message has arrived through gate <TT>g</TT>.
+<PRE>
+bool arrivedOn(char *s, int g=0);
+</PRE>
+<P>
+Return <TT>TRUE</TT> if the message has arrived through the gate
+given with its name and index (if multiple gate).
+<H4>Parameters and attached objects</H4>
+<PRE>
+cArray&amp; parList();
+</PRE>
+<P>
+Returns the <TT>cArray</TT> member of the message which holds
+the parameters and other attached objects. Parameters can be inserted,
+retreived, looked up or deleted through <TT>cArray</TT>'s member
+functions.
+<PRE>
+cPar&amp; addPar(cPar&amp; p);
+cPar&amp; addPar(char *name);
+</PRE>
+<P>
+Convenience functions, add a parameter to the message's parameter
+list.
+<PRE>
+cPar&amp; par(int index);
+</PRE>
+<P>
+Convenience function, returns the <TT>index</TT>th object in the
+message's parameter list, converting it to a <TT>cPar</TT>.
+<PRE>
+cPar&amp; par(char *name);
+</PRE>
+<P>
+Convenience function, returns the object with the given name in
+the message's parameter list, converting it to a <TT>cPar</TT>.
+<PRE>
+int findPar(char *name);
+</PRE>
+<P>
+Convenience function, returns the index of the parameter with
+the given name in the message's parameter list, or -1 if it could
+not be found.
+<H4>Miscellaneous functions</H4>
+<PRE>
+static int cmpbydelivtime(cObject *one, cObject *other);
+</PRE>
+<P>
+Static function that compares two messages by their delivery times,
+then by their priorities.
+<PRE>
+static int cmpbypriority(cObject *one, cObject *other);
+</PRE>
+<P>
+Static function that compares two messages by their priority.
+It can be used to sort messages in a priority queue.
+<H3><A NAME="_Toc439963938">Network packet class: <TT><FONT SIZE=4>cPacket</FONT></TT></A>
+</H3>
+<P>
+<TT>cPacket</TT> is not yet documented here. See the User Manual.
+<H2><A NAME="_Toc439963939">Module gate class: <TT><FONT SIZE=5>cGate</FONT></TT></A>
+</H2>
+<P>
+Header file: <TT>cmodule.h</TT> (<TT>sim</TT> directory)
+<P>
+<TT>cGate</TT> object are created and managed by modules; the
+user typically does not want to directly create or destroy <TT>cGate</TT>
+objects. However, they are important if a simple module algorithm
+needs to know about its surroundings.
+<H3><A NAME="_Toc439963940">class <TT><FONT SIZE=4>cGate</FONT></TT></A>
+</H3>
+<H4>Construction, destruction, copying</H4>
+<P>
+These functions are not documented here since they are considered
+internal to the simulation library.
+<H4>Redefined virtual functions</H4>
+<PRE>
+virtual char *isA()
+</PRE>
+<P>
+Returns pointer to the class name string, <TT>&quot;cGate&quot;</TT>.
+<H4>Gate identity</H4>
+<PRE>
+int size()
+</PRE>
+<P>
+If the gate is in a gate array, returns the size of the vector;
+otherwise, it returns 1.
+<PRE>
+int index()
+</PRE>
+<P>
+If the gate is in a gate array, returns the gate's position in
+it; otherwise, it returns 0.
+<PRE>
+void setIndex(int sn, int vs)
+</PRE>
+<P>
+Specifies that the gate is at index <TT>sn</TT> in a gate array
+of size <TT>vs</TT>. This function should not be directly called
+by the user.
+<PRE>
+char type()
+</PRE>
+<P>
+Returns the gate's type: <TT>'I'</TT> for input and <TT>'O'</TT>
+for output.
+<PRE>
+cModule *ownerModule()
+</PRE>
+<P>
+Returns a pointer to the owner module of the gate.
+<PRE>
+int id()
+</PRE>
+<P>
+Returns the position of the gate in the vector of all gates of
+the module.
+<PRE>
+void setOwnerModule(cModule *m, int g)
+</PRE>
+<P>
+Specifies that the gate is owned by module <TT>m</TT>, and it
+is at index <TT>g</TT> in the gate vector. This function should
+not be directly called by the user.
+<H4>Link parameters</H4>
+<PRE>
+cLinkType *link()
+</PRE>
+<P>
+Returns the link type of the gate, if it has one.
+<PRE>
+cPar *delay()
+cPar *error()
+cPar *datarate()
+</PRE>
+<P>
+Return pointers to the delay, bit error rate and datarate parameters
+of the link. Links are one-directional; these parameters are only
+stored at their starting side.
+<PRE>
+void setLink(cLinkType *l)
+</PRE>
+<P>
+Sets the parameters of the link to those specified by the link
+type.
+<PRE>
+void setDelay(cPar *p)
+void setError(cPar *p)
+void setDataRate(cPar *p)
+</PRE>
+<P>
+Set the parameters of the link. Ownership of <TT>cPar</TT> objects
+are handled according to the ownership flag (that is set by <TT>takeOwnership()</TT>).
+<H4>Topology</H4>
+<PRE>
+bool isConnected()
+</PRE>
+<P>
+Returns <TT>TRUE</TT> if the gate is connected.
+<PRE>
+cGate *fromGate()
+cGate *toGate()
+</PRE>
+<P>
+For a compound module gate, it returns the previous and the next
+gate in the series of connections (the route) that contains this
+gate. For simple module gates, only one of the functions will
+return non-<TT>NULL</TT> value.
+<PRE>
+void setFrom(cGate *g)
+void setTo(cGate *g)
+</PRE>
+<P>
+Redirect gates. This function will rarely be needed; unless maybe
+for dynamically created modules.
+<PRE>
+cGate *sourceGate()
+cGate *destinationGate()
+</PRE>
+<P>
+Return the ultimate source and destination of the series of connections
+(the route) that contains this gate.
+<PRE>
+int routeContains(cModule *m, int g=-1)
+</PRE>
+<P>
+Determines if a given module is in the route that this gate is
+in.
+<PRE>
+bool isRouteOK()
+</PRE>
+<P>
+Returns <TT>TRUE</TT> if the route that this gate is in is complete;
+i.e., if it starts and arrives at a simple module.
+<PRE>
+void deliver(cMessage *msg)
+</PRE>
+<P>
+This function is called internally by the <TT>send()</TT> functions
+to deliver the message to its destination.
+<H2><A NAME="_Toc439963941">Value holding class: <TT><FONT SIZE=5>cPar</FONT></TT></A>
+</H2>
+<P>
+Header file: <TT>cpar.h</TT> (<TT>sim</TT> directory)
+<P>
+Parameter classes are designed to hold a value. Many types are
+available:<TABLE BORDER=1>
+<TR><TD WIDTH=84><CENTER>Type char</CENTER></TD><TD WIDTH=132>Type name
+</TD><TD WIDTH=312>Description</TD></TR>
+<TR><TD WIDTH=84><CENTER>S</CENTER></TD><TD WIDTH=132>string</TD>
+<TD WIDTH=312>string value. Short strings (len&lt;=27) are stored inside <TT>cPar</TT> object, without using heap allocation.
+</TD></TR>
+<TR><TD WIDTH=84><CENTER>B</CENTER></TD><TD WIDTH=132>boolean
+</TD><TD WIDTH=312>boolean value. Can also be retrieved from the object as long (0 or 1).
+</TD></TR>
+<TR><TD WIDTH=84><CENTER>L</CENTER></TD><TD WIDTH=132>long int
+</TD><TD WIDTH=312>signed long integer value. Can also be retrieved from the object as double.
+</TD></TR>
+<TR><TD WIDTH=84><CENTER>D</CENTER></TD><TD WIDTH=132>double</TD>
+<TD WIDTH=312>double-precision floating point value.</TD></TR>
+<TR><TD WIDTH=84><CENTER>F</CENTER></TD><TD WIDTH=132>function
+</TD><TD WIDTH=312>Mathematical function with constant arguments. The function is given by its pointer; it must take 0,1,2 or 3 <TT>double</TT>s and return a <TT>double</TT>. This type is mainly used to generate random numbers: e.g. the function takes mean and standard deviation and returns random variable of a certain distribution.
+</TD></TR>
+<TR><TD WIDTH=84><CENTER>X</CENTER></TD><TD WIDTH=132>expression
+</TD><TD WIDTH=312>Reverse Polish expression. Expression can contain constants, <TT>cPar</TT> objects, refer to other <TT>cPar</TT>s (e.g. module parameters), can use many math operators (<TT>+-*/^%</TT> etc), function calls (function must take 0,1,2 or 3 <TT>double</TT>s and return a <TT>double</TT>). The expression must be given is in an <TT>sXElem</TT> array (see later).
+</TD></TR>
+<TR><TD WIDTH=84><CENTER>T</CENTER></TD><TD WIDTH=132>distribution
+</TD><TD WIDTH=312>random variable generated from a distribution collected by a statistical data collection object (derived from <TT>cStatistic</TT>).
+</TD></TR>
+<TR><TD WIDTH=84><CENTER>P</CENTER></TD><TD WIDTH=132>void* pointer
+</TD><TD WIDTH=312>pointer to a non-<TT>cObject</TT> item (C struct, non-<TT>cObject</TT> object etc.) Memory management can be controlled through the <TT>configPointer()</TT> member function.
+</TD></TR>
+<TR><TD WIDTH=84><CENTER>O</CENTER></TD><TD WIDTH=132>object pointer
+</TD><TD WIDTH=312>pointer to an object derived from <TT>cObject</TT>.
+<P>
+Ownership management is done through <TT>takeOwnership()</TT>.
+</TD></TR>
+<TR><TD WIDTH=84><CENTER>I</CENTER></TD><TD WIDTH=132>indirect value
+</TD><TD WIDTH=312>value is redirected to another <TT>cPar</TT> object. All value setting and reading operates on the other <TT>cPar</TT>; even the <TT>type()</TT> function will return the type in the other <TT>cPar</TT> (so you'll never get <TT>'I'</TT> as the type). This indirection can <I>only</I> be broken with the <TT>cancelIndirection()</TT> member function.
+<P>
+Module parameters taken by REF use this mechanism.
+</TD></TR>
+</TABLE>
+<P>
+<FONT>For all types, an <I>input flag</I> can be
+set. In this case, the user will be asked to enter the value when
+the object's value is first used. </FONT>The <I>prompt string</I>
+can also be specified for <TT>cPar</TT>. If no prompt string is
+given, the object's name will be displayed as prompt text.
+<P>
+Two different sets of <I>overloaded arithmetic operators</I> are
+also provided to help using <TT>cPar</TT> objects in arithmetic
+expressions with the same syntax as internal numeric types.
+<H3><A NAME="_Toc439963942">class <TT><FONT SIZE=4>cPar</FONT></TT></A>
+</H3>
+<H4><A NAME="a">Construction, destruction, copying</A></H4>
+<P>
+In constructor calls where a <TT>type</TT> argument (a character)
+is present, the type must match the argument list, e.g. if the
+argument list contains <TT>char *s</TT>, the type must be <TT>'S'</TT>.
+<PRE>
+cPar(cPar&amp; other);
+</PRE>
+<P>
+Copy constructor, creates an exact copy of the argument.
+<PRE>
+cPar(char *name=NULL);
+</PRE>
+<P>
+Constructor, creates a <TT>cPar</TT> with the given name and long
+(<TT>'L'</TT>) as default type.
+<PRE>
+cPar(char *name, cPar&amp; other);
+</PRE>
+<P>
+Constructor, creates a copy of the second argument with another
+name.
+<PRE>
+cPar(char *name, char type, char *s);
+</PRE>
+<P>
+Constructor, creates a <TT>cPar</TT> with string type (<TT>type</TT>
+must be <TT>'S'</TT>).
+<PRE>
+cPar(char *name, char type, int i);
+</PRE>
+<P>
+Constructor, creates a <TT>cPar</TT> with character, bool, long
+type (<TT>type</TT> must be <TT>'B'</TT> or <TT>'L'</TT>).
+<PRE>
+cPar(char *name, char type, long l);
+</PRE>
+<P>
+Constructor, creates a <TT>cPar</TT> with long type (<TT>type</TT>
+must be <TT>'L'</TT>).
+<PRE>
+cPar(char *name, char type, double d);
+</PRE>
+<P>
+Constructor, creates a <TT>cPar</TT> with <TT>double</TT> type
+(<TT>type</TT> must be <TT>'D')</TT>.
+<PRE>
+cPar(char *name, char tp, MathFuncNoArg f);
+cPar(char *name, char tp, MathFunc1Arg  f, double p1);
+cPar(char *name, char tp, MathFunc2Args f, double p1, double p2);
+cPar(char *name, char tp, MathFunc3Args f, double p1, double p2, double p3);
+</PRE>
+<P>
+Constructor, creates a <TT>cPar</TT> with function type (<TT>type</TT>
+must be <TT>'F')</TT>. When the value is needed, the mathematical
+function be called with <TT>p1</TT>, <TT>p2</TT> and <TT>p3</TT>
+constants as arguments. (The function must return a <TT>double</TT>.)
+This is mainly used for random number generation, where <TT>p1</TT>,
+<TT>p2</TT> are mean and standard deviation.
+<PRE>
+cPar(char *name, char type, cObject *obj);
+</PRE>
+<P>
+Constructor, creates a <TT>cPar</TT> with object pointer type
+(<TT>type</TT> must be <TT>'O'</TT>).
+<PRE>
+cPar(char *name, char type, void *p);
+</PRE>
+<P>
+Constructor, creates a <TT>cPar</TT> with void* pointer type (<TT>type</TT>
+must be <TT>'P'</TT>).
+<PRE>
+cPar(char *name, char type, cStatistic *res);
+</PRE>
+<P>
+Constructor, creates a <TT>cPar</TT> with distribution type (<TT>type</TT>
+must be <TT>'T')</TT>. The <TT>res</TT> object must contain some
+distribution appoximation; its <TT>random()</TT> member function
+will be called when the <TT>cPar</TT> must return a <TT>long</TT>
+or <TT>double</TT> value.
+<PRE>
+cPar(char *name, char type, sXElem *x, int n);
+</PRE>
+<P>
+Constructor, creates a <TT>cPar</TT> with distribution type (<TT>type</TT>
+must be <TT>'X')</TT>. The expression must be given in reversed
+Polish form and stored in the vector of size <TT>n</TT> pointed
+to by <TT>x</TT>. See documentation of <TT>sXElem</TT> at the
+end of this section for how to handle <TT>sXElems</TT>.
+<PRE>
+cPar(char *name, char tp, cPar *par);
+</PRE>
+<P>
+Constructor, creates a <TT>cPar</TT> with indirection type (<TT>type</TT>
+must be <TT>'I')</TT>. OMNeT++ contains protection against circular
+references.
+<PRE>
+virtual cObject *dup()
+</PRE>
+<P>
+Duplicates the object and returns a pointer to the new one.
+<PRE>
+cPar&amp; operator=(cPar&amp; otherpar);
+</PRE>
+<P>
+The assignment operator works with <TT>cPar</TT> objects.
+<H4>Redefined virtual functions</H4>
+<PRE>
+virtual char *isA()
+</PRE>
+<P>
+Returns pointer to the class name string, <TT>&quot;cPar&quot;</TT>.
+<H4>Member functions handling type, input flag and prompt</H4>
+<PRE>
+char type();
+</PRE>
+<P>
+Returns type character. If the &quot;real&quot; type is <TT>'I'</TT>,
+it returns the type of the object it is indirected to (for example,
+<TT>'D'</TT>, <TT>'L'</TT>, etc.)
+<PRE>
+char *prompt();
+</PRE>
+<P>
+Returns the prompt text or <TT>NULL</TT>.
+<PRE>
+void setPrompt(char *s);
+</PRE>
+<P>
+Sets the prompt text.
+<PRE>
+void setInput(bool ip);
+</PRE>
+<P>
+Sets (<TT>ip=TRUE</TT>) or clears (<TT>ip=FALSE</TT>) the input
+flag.
+<PRE>
+bool isInput();
+</PRE>
+<P>
+Returns <TT>TRUE</TT> if the parameter is of input type (the input
+flag is set).
+<PRE>
+bool changed();
+</PRE>
+<P>
+Returns <TT>TRUE</TT> if the value has changed since the last
+<TT>changed()</TT> call.
+<H4>Conversion from/to text</H4>
+<PRE>
+virtual bool setFromText(char *text, char type);
+</PRE>
+<P>
+This function tries to interpret the argument text as a <TT>type</TT>
+typed value. <TT>type=='?'</TT> means that the type is to be auto-selected.
+On success, <TT>cPar</TT> is updated with the new value and <TT>TRUE</TT>
+is returned, otherwise the function returns <TT>FALSE</TT>. No
+error message is generated.
+<PRE>
+virtual void getAsText(char *buf, int maxlen);
+</PRE>
+<P>
+Places the value in text format it into buffer <TT>buf</TT> which
+is <TT>maxlen</TT> characters long.
+<H4>Setting the value</H4>
+<PRE>
+cPar&amp; setValue(char tp, char *s);
+</PRE>
+<P>
+Sets the value stored in the object. The new type specified in
+<TT>tp</TT> must be string (S).
+<PRE>
+cPar&amp; setValue(char tp, long l);
+</PRE>
+<P>
+Sets the value stored in the object. The new type specified in
+<TT>tp</TT> can be boolean (B) or long (L).
+<PRE>
+cPar&amp; setValue(char tp, double d);
+</PRE>
+<P>
+Sets the value stored in the object. The new type specified in
+<TT>tp</TT> can be long (L), or double (D).
+<PRE>
+cPar&amp; setValue(char tp, cObject *obj);
+</PRE>
+<P>
+Sets the value stored in the object. The new type specified in
+<TT>tp</TT> must be object pointer (O).
+<PRE>
+cPar&amp; setValue(char tp, void *p);
+</PRE>
+<P>
+Sets the value stored in the object. The new type specified in
+<TT>tp</TT> must be void* pointer (P).
+<PRE>
+cPar&amp; setValue(char tp, cStatistic *res);
+</PRE>
+<P>
+Sets the value stored in the object. The new type specified in
+<TT>tp</TT> must be distribution (T).
+<PRE>
+cPar&amp; setValue(char tp, sXElem *x, int n);
+</PRE>
+<P>
+Sets the value stored in the object. The new type specified in
+<TT>tp</TT> must be expression (X). The expression must be converted
+to reversed Polish form and stored in the vector of size <TT>n</TT>
+pointed to by <TT>x</TT>. See documentation of <TT>sXElem</TT>
+at the end of this section for more information.
+<H4>Retrieving the value</H4>
+<PRE>
+char *stringValue();
+</PRE>
+<P>
+Returns value as <TT>char*</TT>. Only for string (S) type.
+<PRE>
+bool boolBalue();
+</PRE>
+<P>
+Returns value as <TT>bool</TT>. Converts from types Boolean (B)
+and long (L).
+<PRE>
+long longValue();
+</PRE>
+<P>
+Returns value as <TT>long</TT>. Converts from types long (L),
+double (D), Boolean (B), function (F), distribution (T) and expression
+(X).
+<PRE>
+double doubleValue();
+</PRE>
+<P>
+Returns value as <TT>double</TT>. Converts from types long (L),
+double (D), function (F), Boolean (B), distribution (T) and expression
+(X).
+<PRE>
+cObject *objectValue();
+</PRE>
+<P>
+Returns value as pointer to <TT>cObject</TT>. Type must be pointer
+(O).
+<PRE>
+void *pointerValue();
+</PRE>
+<P>
+Returns value as pointer to <TT>cObject</TT>. Type must be pointer
+(P).
+<H4>Other functions</H4>
+<PRE>
+cPar&amp; read();
+</PRE>
+<P>
+Reads the object value from the ini file or from the user.
+<PRE>
+void convertToConst();
+</PRE>
+<P>
+Replaces the object value with its evaluation (a <TT>double</TT>).
+Implemented as something like <TT>setValue('D', this-&gt;doubleValue())</TT>.
+<PRE>
+void configPointer(VoidDelFunc delfunc, VoidDupFunc dupfunc, size_t size = 0);
+</PRE>
+<P>
+Configures memory management for the void* pointer ('P') type.
+Similar to <TT>cLinkedList</TT>'s <TT>configPointer()</TT> function.
+<TABLE BORDER=1>
+<TR><TD WIDTH=96><B>delete func.</B></TD><TD WIDTH=89><B>dupl.func.</B>
+</TD><TD WIDTH=92><B>itemsize</B></TD><TD WIDTH=317><B>behaviour</B>
+</TD></TR>
+<TR><TD WIDTH=96><TT>NULL</TT></TD><TD WIDTH=89><TT>NULL</TT>
+</TD><TD WIDTH=92><TT>0</TT></TD><TD WIDTH=317>Pointer is treated as mere pointer - no memory management. Duplication copies the pointer, and deletion does nothing.
+</TD></TR>
+<TR><TD WIDTH=96><TT>NULL</TT></TD><TD WIDTH=89><TT>NULL</TT>
+</TD><TD WIDTH=92>&gt;0 size</TD><TD WIDTH=317>Plain memory management. Duplication is done with <TT>new char[size]+memcpy()</TT>, and deletion is done via <TT>delete</TT>.
+</TD></TR>
+<TR><TD WIDTH=96><TT>NULL</TT> or user's delete func.</TD><TD WIDTH=89>user's dupfunc.
+</TD><TD WIDTH=92>indifferent</TD><TD WIDTH=317>Sophisticated memory management. Duplication is done by calling the user-supplied duplication function, which should do the allocation and the appropriate copying. Deletion is done by calling the user-supplied delete function, or the delete operator if it is not supplied.
+</TD></TR>
+</TABLE>
+<P>
+<PRE>
+static int cmpbyvalue(cObject *one, cObject *other);
+</PRE>
+<P>
+Compares two <TT>cPar</TT>s by their value if they are numeric.
+This function can be used to sort <TT>cPar</TT> objects in a priority
+queue. 
+<H4>Handling indirection</H4>
+<PRE>
+cPar *indirection();
+</PRE>
+<P>
+Returns <TT>NULL</TT> if the <TT>cPar</TT>'s value is not indirected
+to another <TT>cPar</TT>; otherwise it returns the pointer of
+that <TT>cPar</TT>. This function is the only way to determine
+if an object is indirected or not (<TT>type()</TT> returns the
+type of the other <TT>cPar</TT>: <TT>'D'</TT>, <TT>'L'</TT> etc).
+<PRE>
+void cancelIndirection();
+</PRE>
+<P>
+Break the indirection. The new type will be <TT>long</TT> (<TT>'L'</TT>).
+<H4>Assignment and conversion operators</H4>
+<P>
+This set of overloaded operators provides assignment and conversion
+for fundamental data types.
+<PRE>
+cPar&amp; operator=(char c);
+</PRE>
+<P>
+Equivalent to <TT>setValue('C',(int)c)</TT>.
+<PRE>
+cPar&amp; operator=(unsigned char c);
+</PRE>
+<P>
+Equivalent to <TT>setValue('C',(int)c)</TT>.
+<PRE>
+cPar&amp; operator=(char *s);
+</PRE>
+<P>
+Equivalent to <TT>setValue('S',s)</TT>.
+<PRE>
+cPar&amp; operator=(int i);
+</PRE>
+<P>
+Equivalent to <TT>setValue('L',(long)i)</TT>.
+<PRE>
+cPar&amp; operator=(unsigned int i);
+</PRE>
+<P>
+Equivalent to <TT>setValue('L',(long)i)</TT>.
+<PRE>
+cPar&amp; operator=(long l);
+</PRE>
+<P>
+Equivalent to <TT>setValue('L',l)</TT>.
+<PRE>
+cPar&amp; operator=(unsigned long l);
+</PRE>
+<P>
+Equivalent to <TT>setValue('L',(long)l)</TT>.
+<PRE>
+cPar&amp; operator=(double d);
+</PRE>
+<P>
+Equivalent to <TT>setValue('D',d)</TT>.
+<PRE>
+cPar&amp; operator=(long double d);
+</PRE>
+<P>
+Equivalent to <TT>setValue('D',(double)d)</TT>.
+<PRE>
+cPar&amp; operator=(cObject *obj);
+</PRE>
+<P>
+Equivalent to <TT>setValue('P',obj)</TT>.
+<PRE>
+operator char*();
+</PRE>
+<P>
+Equivalent to <TT>stringValue()</TT>.
+<PRE>
+operator int();
+</PRE>
+<P>
+Equivalent to <TT>longValue()</TT>.
+<PRE>
+operator unsigned int();
+</PRE>
+<P>
+Equivalent to <TT>longValue()</TT>.
+<PRE>
+operator long();
+</PRE>
+<P>
+Equivalent to <TT>longValue()</TT>.
+<PRE>
+operator unsigned long();
+</PRE>
+<P>
+Equivalent to <TT>longValue()</TT>.
+<PRE>
+operator double();
+</PRE>
+<P>
+Equivalent to <TT>doubleValue()</TT>.
+<PRE>
+operator long double();
+</PRE>
+<P>
+Equivalent to <TT>doubleValue()</TT>.
+<PRE>
+operator cObject *();
+</PRE>
+<P>
+Equivalent to <TT>pointerValue()</TT>.
+<H3><A NAME="_Toc439963943">Overloaded arithmetic operators for
+<TT><FONT SIZE=4>cPar</FONT></TT></A></H3>
+<P>
+The following operators are overloaded: <TT>&lt;, &gt;, &lt;=,
+&gt;=, +, -, *</TT> and <TT>/</TT>. These operators help using
+<TT>cPar</TT> objects in arithmetic expressions with the same
+syntax as internal numeric types. Two different sets of overloaded
+arithmetic operators are provided, mutually excluding the other.
+One works through converting the <TT>cPar</TT> to <TT>double</TT>,
+and the other through converting to <TT>long</TT>. The <TT>double</TT>
+version is the default, but you can choose the other set by defining
+<TT>LONG_CPAR_OPERATIONS</TT> before including <TT>cpar.h</TT>.
+If neither set is needed, define <TT>NO_CPAR_OPERATIONS</TT>!
+<H3><A NAME="_Toc439963944">struct <TT><FONT SIZE=4>sXElem</FONT></TT></A>
+</H3>
+<P>
+If the value of the <TT>cPar</TT> is of expression type, the expression
+must be converted to reversed Polish form. The reversed Polish
+form expression is stored in a vector of <TT>sXElem</TT> structures.
+<TT>sXElem</TT> is not a descendant of <TT>cObject</TT>.
+<PRE>
+void operator=(int _i);
+void operator=(long _l);
+void operator=(double _d);
+</PRE>
+<P>
+Effect during evaluation of the expression: pushes the given number
+(which is converted to <TT>double</TT>) on the evaluation stack.
+<PRE>
+void operator=(cPar *_v);
+</PRE>
+<P>
+Effect during evaluation of the expression: takes the value of
+the <TT>cPar</TT> object  (a <TT>double</TT>) and pushes the value
+on the evaluation stack. The <TT>cPar</TT> is an &quot;external&quot;
+one: its ownership does not change. This is how NED-language REF
+parameters in expressions are handled.
+<PRE>
+void operator=(cPar&amp; _r);
+</PRE>
+<P>
+Effect during evaluation of the expression: takes the value of
+the <TT>cPar</TT> object  (a <TT>double</TT>) and pushes the value
+on the evaluation stack. The <TT>cPar</TT> which evaluates this
+expression will copy the <TT>cPar</TT> for itself.
+<PRE>
+void operator=(char _op);
+</PRE>
+<P>
+The argument can be:
+<TABLE BORDER=1>
+<TR><TD WIDTH=114><CENTER><TT>+ - * /</TT></CENTER></TD><TD WIDTH=330>add, subtract, multiply, divide
+</TD></TR>
+<TR><TD WIDTH=114><CENTER><TT>% ^ </TT></CENTER></TD><TD WIDTH=330>modulo, power of
+</TD></TR>
+<TR><TD WIDTH=114><CENTER><TT>= ! </TT></CENTER></TD><TD WIDTH=330>equal, not equal
+</TD></TR>
+<TR><TD WIDTH=114><CENTER><TT>&gt; }</TT></CENTER></TD><TD WIDTH=330>greater, greater or equal
+</TD></TR>
+<TR><TD WIDTH=114><CENTER><TT>&lt; {</TT></CENTER></TD><TD WIDTH=330>less, less or equal
+</TD></TR>
+<TR><TD WIDTH=114><CENTER><TT>?</TT></CENTER></TD><TD WIDTH=330>inline if (C language's <TT>(cond ? a : b)</TT>
+</TD></TR>
+</TABLE>
+<P>
+Effect during evaluation of the expression: two items (or three,
+with <TT>'?'</TT>) are popped out of the stack, the given operator
+is applied to them and the result is pushed back on the stack.
+<PRE>
+void operator=(MathFuncNoArg f);
+void operator=(MathFunc1Arg f);
+void operator=(MathFunc2Args f);
+void operator=(MathFunc3Args f);
+</PRE>
+<P>
+The argument can be a pointer to a function that takes (0, 1,
+2, or 3) <TT>double</TT> arguments and returns a <TT>double</TT>
+(e.g. <TT>sqrt()</TT>). Effect during evaluation of the expression:
+the given number of <TT>double</TT>s are popped from the stack,
+the given function is called with them as arguments, and the return
+value is pushed back on the stack. See also the <TT>cFunctionType</TT>
+class and the <TT>Define_Function()</TT> macro.
+<P>
+The OMNeT++ functions generating random variables of different
+distributions can also be used in <TT>sXElem</TT> expressions.
+<H2><A NAME="_Toc439963945">Object container classes: <TT><FONT SIZE=5>cArray</FONT></TT><FONT SIZE=5>,
+</FONT><TT><FONT SIZE=5>cQueue</FONT></TT><FONT SIZE=5>, </FONT><TT><FONT SIZE=5>cHead</FONT></TT></A>
+</H2>
+<P>
+Header files: <TT>carray.h, cqueue.h </TT> (<TT>sim</TT> directory)
+<P>
+There are four container classes: <TT>cArray</TT> and <TT>cQueue</TT>,
+<TT>cHead</TT>.
+<H3><A NAME="_Toc439963946">class <TT><FONT SIZE=4>cArray</FONT></TT></A>
+</H3>
+<P>
+<TT>cArray</TT> is a container object that holds objects derived
+from <TT>cObject</TT>. <TT>cArray</TT> stores the pointers of
+the objects inserted instead of making copies. <TT>cArray</TT>
+works as an array, but if it gets full, it grows automatically
+by a specified delta. Ownership of contained objects (responsibility
+of deletion) can be specified per-object basis (see <TT>cObject::takeOwnership()</TT>).
+Default is that <TT>cArray</TT> takes the ownership of each object
+inserted (that is, <TT>takeOwnership(TRUE)</TT>).
+<H4>Construction, destruction, copying</H4>
+<PRE>
+cArray(cArray&amp; list);
+</PRE>
+<P>
+Copy constructor. Contained objects that are owned by <TT>cArray</TT>
+(that is, whose <TT>owner()</TT> is the <TT>cArray</TT>) will
+be duplicated so that the new <TT>cArray</TT> will have its own
+copy of them.
+<PRE>
+cArray(char *name=NULL, int siz=0, int dt=10, cHead *h=&amp;locals);
+</PRE>
+<P>
+Constructor. It takes the object name, the initial vector size,
+delta and the pointer to the list it should join as argument.
+<PRE>
+virtual ~cArray();
+</PRE>
+<P>
+Destructor. The contained objects that were owned by the container
+will be deleted.
+<PRE>
+virtual cObject *dup();
+cArray&amp; operator=(cArray&amp; list);
+</PRE>
+<P>
+Duplication and assignment work all right with <TT>cArray</TT>.
+Contained objects that are owned by <TT>cArray</TT> will be duplicated
+so that the new <TT>cArray</TT> will have its own copy of them.
+<H4>Redefined virtual functions</H4>
+<PRE>
+virtual char *isA();
+</PRE>
+<P>
+Returns pointer to the class name string,<TT>&quot;cArray&quot;</TT>.
+<PRE>
+virtual void info(char *buf);
+virtual TInspector *inspector();
+</PRE>
+<P>
+Redefined.
+<PRE>
+virtual void forEach(ForeachFunc f);
+</PRE>
+<P>
+Calls the given function for each object contained.
+<H4>Member functions:</H4>
+<PRE>
+int items();
+</PRE>
+<P>
+Returns the index of last used position+1.
+<PRE>
+void clear();
+</PRE>
+<P>
+As a result, the container will be empty. Contained objects that
+were owned by the container will be deleted.
+<PRE>
+int add(cObject&amp; obj);
+</PRE>
+<P>
+Inserts a new object into the array. Only the pointer of the object
+will be stored. The return value is the object's index in the
+array.
+<PRE>
+int addAt(int m, cObject&amp; obj);
+</PRE>
+<P>
+Inserts a new object into the array, at the given position. If
+the position is occupied, the function generates an error message.
+<PRE>
+int find(cObject&amp; obj);
+</PRE>
+<P>
+Searches the array for the pointer of the object passed and returns
+the index of the first match. If the object wasn't found, -1 is
+returned.
+<PRE>
+int find(char *s);
+</PRE>
+<P>
+Returns the index of the first item in the array that has the
+name pointed to by <TT>s</TT> (<TT>cObject::isName()</TT> is used.)
+If no such item was found, -1 is returned.
+<PRE>
+cObject&amp; get(int m);
+</PRE>
+<P>
+Returns reference to the <TT>m</TT>th object in the array or null
+reference (<TT>*NOOBJ</TT>) if the <TT>m</TT>th position is not
+used.
+<PRE>
+cObject&amp; get(char *s);
+</PRE>
+<P>
+Returns reference to the first object in the array with name <TT>s</TT>
+or null reference (<TT>*NOOBJ</TT>) if no object with the given
+name was found.
+<PRE>
+cPar&amp; cpar(int m);
+cPar&amp; cpar(char *s);
+</PRE>
+<P>
+Convenience functions; call <TT>get(int)</TT>/<TT>get(char *)</TT>
+and cast the result to <TT>cPar</TT>. No check is made if the
+object is really a <TT>cPar</TT> or not.
+<PRE>
+cObject&amp; operator[](int m);
+cObject&amp; operator[](char *s);
+</PRE>
+<P>
+The same as <TT>get(int)</TT>/<TT>get(char *)</TT>. With the indexing
+operator, <TT>cArray</TT> can be used as a vector.
+<PRE>
+bool exist(int m);
+bool exist(char *s);
+</PRE>
+<P>
+Returns <TT>TRUE</TT> if the value returned by <TT>get(int)</TT>/<TT>get(char
+*)</TT> would not be null reference <TT>(*NOOBJ)</TT>.
+<PRE>
+cObject&amp; remove(int m);
+cObject&amp; remove(char *s);
+</PRE>
+<P>
+Removes the object given with its index/name from the container.
+(If the object was owned by the container, <TT>drop()</TT> is
+called.)
+<H3><A NAME="_Toc439963947">class <TT><FONT SIZE=4>cQueue</FONT></TT></A>
+</H3>
+<P>
+<TT>cQueue</TT> is a container class that can hold objects derived
+from <TT>cObject</TT>. <TT>cQueue</TT> acts as a priority queue.
+The user must provide a function that can compare two objects.
+If no such function is given, <TT>cQueue</TT> implements a FIFO.
+Order (ascending or descending) can be specified and will be interpreted
+as in the figure:
+<P>
+<CENTER><IMG SRC="img00021.gif"></CENTER>
+<P>
+Ownership of contained objects (responsibility of deletion) can
+be specified per-object basis (see <TT>cObject::takeOwnership()</TT>).
+Default is that <TT>cQueue</TT> takes the ownership of each object
+inserted (that is, <TT>takeOwnership(TRUE)</TT>).
+<H4>The sorting function </H4>
+<PRE>
+int CompareFunc(cObject&amp; a, cObject&amp; b);
+</PRE>
+<P>
+User-supplied sorting functions must have a declaration like the
+one shown above and they must return a negative value if a&lt;b,
+0 if a==b and a positive value if a&gt;b.
+<H4>Construction, destruction, copying</H4>
+<PRE>
+cQueue(cQueue&amp; queue);
+</PRE>
+<P>
+Copy constructor. Contained objects that are owned by the queue
+will be duplicated so that the new queue will have its own copy
+of them.
+<PRE>
+cQueue(char *name=NULL, CompareFunc cmp=NULL, bool a=FALSE, cHead *h=&amp;locals);
+</PRE>
+<P>
+Constructor. It accepts the object name, the address of the comparing
+function, the sorting order (ascending=<TT>TRUE</TT>, descending=<TT>FALSE</TT>)
+and the list the object will join.
+<PRE>
+virtual ~cQueue();
+</PRE>
+<P>
+Destructor. Deletes all contained objects that were owned by it.
+<PRE>
+virtual cObject *dup();
+cQueue&amp; operator=(cQueue&amp; queue);
+</PRE>
+<P>
+Duplication and assignment work all right with <TT>cQueue</TT>.
+Contained objects that are owned by the queue will be duplicated
+so that the new queue will have its own copy of them.
+<H4>Redefined virtual functions</H4>
+<PRE>
+virtual char *isA();
+</PRE>
+<P>
+Returns pointer to the class name string,<TT>&quot;cQueue&quot;</TT>.
+<PRE>
+virtual void info(char *buf);
+virtual TInspector *inspector();
+</PRE>
+<P>
+Redefined.
+<PRE>
+virtual void forEach(ForeachFunc f);
+</PRE>
+<P>
+Calls the given function for each object contained.
+<H4>Member functions</H4>
+<PRE>
+void setup(CompareFunc cmp=NULL, bool a=FALSE);
+</PRE>
+<P>
+Changes the sort function and the sorting order. Doesn't re-sort
+the contents of the queue!
+<PRE>
+void clear();
+</PRE>
+<P>
+As a result, the container will be empty. Contained objects that
+were owned by the queue will be deleted.
+<PRE>
+int length();
+</PRE>
+<P>
+Returns the number of objects contained in the queue.
+<PRE>
+bool empty();
+</PRE>
+<P>
+Returns <TT>TRUE</TT> if the queue is empty.
+<PRE>
+void insertHead(cObject *obj);
+</PRE>
+<P>
+Inserts the given object into the queue, maintaining the sorting
+order.
+<PRE>
+void insertBefore(cObject *obj, cObject *where);
+void insertAfter(cObject *obj, cObject *where);
+</PRE>
+<P>
+Inserts exactly before and after the given object.
+<PRE>
+cObject *peekTail();
+</PRE>
+<P>
+Returns pointer to the last object in the queue or <TT>NULL</TT>
+if the queue is empty.
+<PRE>
+cObject *getTail();
+</PRE>
+<P>
+Unlinks and returns the last object in the queue.
+<PRE>
+cObject *get(cObject *obj);
+</PRE>
+<P>
+Unlinks and returns the object given.
+<H3><A NAME="_Toc439963948">class <TT><FONT SIZE=4>cQueueIterator</FONT></TT></A>
+</H3>
+<P>
+To examine each element in the queue, the <TT>cQueueIterator</TT>
+iterator class can be used. Once a <TT>cQueueIterator</TT> object
+is created for the queue (the <TT>cQueue</TT> object), the ++
+and -- operators can be used to step from one element of the list
+to the next/previous one. <TT>cQueueIterator</TT> is not a descendant
+of <TT>cObject</TT> or <TT>cIterator</TT>.
+<PRE>
+cQueueIterator(cQueue&amp; q, int a=1);
+</PRE>
+<P>
+Constructor, <TT>cIterator</TT> will walk on the queue passed
+as argument. The current object will be the first (if a==1) or
+the last (a==0) object in the queue.
+<PRE>
+void init(cQueue&amp; q, int a=1);
+</PRE>
+<P>
+Reinitializes the iterator object.
+<PRE>
+cObject *operator()();
+</PRE>
+<P>
+Returns the current object.
+<PRE>
+bool end();
+</PRE>
+<P>
+Returns <TT>TRUE</TT> if we have reached the end of the queue.
+<PRE>
+cObject&amp; operator++(int);
+cObject&amp; operator--(int);
+</PRE>
+<P>
+Steps to the next/previous object in the queue.
+<H3><A NAME="_Toc439963949">Inline functions</A></H3>
+<P>
+The following inline functions are for finding objects by name.
+<PRE>
+inline cNetworkType *findNetwork(char *s);
+</PRE>
+<P>
+Equals <TT>(cNetworkType *)networks.find(s);</TT>
+<PRE>
+inline cModuleType *findModuleType(char *s)
+</PRE>
+<P>
+Equals <TT>(cModuleType *)modtypes.find(s);</TT>
+<PRE>
+inline cLinkType *findLink(char *s);
+</PRE>
+<P>
+Equals <TT>(cLinkType *)linktypes.find(s);</TT>
+<PRE>
+inline cFunctionType *findFunction(char *s);
+</PRE>
+<P>
+Equals <TT>(cFunctionType *)functions.find(s);</TT>
+<H3><A NAME="_Toc439963950">class <TT><FONT SIZE=4>cHead</FONT></TT></A>
+</H3>
+<P>
+<TT>cHead</TT> is the head of a <TT>cObject</TT> chain. <TT>cObject</TT>
+and its derived classes contain pointers that enable the objects
+to be a node in a double-linked list. <TT>cObject</TT> has member
+functions to link and unlink to and from double-linked lists (See
+documentation on <TT>cObject::setOwner()</TT>) The head of such
+lists is always a <TT>cHead</TT> object. The lists are a means
+that provide that each object in the system is part of an object
+tree and can be accessed through pointers starting from a given
+point. The existence of such hierarchy is necessary for a user
+interface where we want each object to be 'visible' to the user.
+It is also unavoidable when we want the simulation to be restartable
+(we need to destroy objects created by the running simulation
+to start a new one). Last, it enables that all objects can be
+reached through <TT>forEach()</TT> on which many algorithms rely
+(e.g. <TT>saveresults()</TT>).
+<P>
+For <TT>cHead</TT>, the <TT>dup()</TT> and <TT>operator=()</TT>
+functions are NOT implemented. <TT>dup()</TT> would require that
+every object in the list be duplicated. Since <TT>cHead</TT> is
+mostly an internal class and is NOT intended for use by the programmer
+as a container class, the <TT>dup()</TT> operation was considered
+unnecessary.
+<H4>Construction, destruction, copying:</H4>
+<PRE>
+cHead(char *name=NULL, cHead *h=&amp;locals, bool init=TRUE );
+</PRE>
+<P>
+Constructor. Accepts the object name, the head of the list it
+should join and a parameter that tells <TT>cHead</TT> if it should
+initialize the pointers to the list.
+<PRE>
+virtual ~cHead();
+</PRE>
+<P>
+The destructor deletes all objects in the list that were created
+on the heap.
+<H4>Redefined virtual functions</H4>
+<PRE>
+virtual char *isA();
+</PRE>
+<P>
+Returns the pointer to the class name string, <TT>&quot;cHead&quot;</TT>.
+<PRE>
+virtual void forEach(ForeachFunc f);
+</PRE>
+<P>
+Calls the function passed for each object in the list.
+<H4>Member functions:</H4>
+<PRE>
+cObject *find(char *s);
+</PRE>
+<P>
+Searches the list for an object with the given name and returns
+its pointer. If no such object was found, <TT>NULL</TT> is returned.
+<PRE>
+int count();
+</PRE>
+<P>
+Returns the number of objects in the list.
+<H3><A NAME="_Toc439963951">struct <TT><FONT SIZE=4>cIterator</FONT></TT></A>
+</H3>
+<P>
+To examine each element in the list, the <TT>cIterator</TT> iterator
+class can be used. Once a <TT>cIterator</TT> object is created
+for the list (for the <TT>cHead</TT> object), the ++ operator
+can be used to step from one element of the list to the next one.
+<TT>cIterator</TT> is not a descendant of <TT>cObject</TT>.
+<PRE>
+cIterator(cHead&amp; h);
+</PRE>
+<P>
+Constructor, <TT>cIterator</TT> will walk on the list passed as
+argument. The current object will be the first one in the list.
+<PRE>
+void init(cHead&amp; h);
+</PRE>
+<P>
+Reinitializes the iterator object.
+<PRE>
+cObject *operator()();
+</PRE>
+<P>
+Returns a pointer to the current object.
+<PRE>
+bool end();
+</PRE>
+<P>
+Returns <TT>TRUE</TT> if we reach the end of the list.
+<PRE>
+cObject&amp; operator++(int);
+</PRE>
+<P>
+Advances to the next object in the list.
+<H2><A NAME="_Toc439963952">Non-object container classes: <TT><FONT SIZE=5>cLinkedList</FONT></TT><FONT SIZE=5>,
+</FONT><TT><FONT SIZE=5>cBag</FONT></TT></A></H2>
+<P>
+There are two non-object container classes:<TT> cLinkedList</TT>
+and <TT>cBag</TT>. The first one parallels with <TT>cQueue</TT>,
+the second one with <TT>cArray</TT>.
+<H3><A NAME="_Toc439963953">class <TT><FONT SIZE=4>cLinkedList</FONT></TT></A>
+</H3>
+<P>
+<TT>cLinkedList</TT> is a container class that can holds non-object
+items. <TT>cLinkedList</TT> acts very similar to <TT>cQueue</TT>.
+<P>
+Memory management of contained items is controlled by the <TT>configPointer()</TT>
+function. As default, pointers are treated as mere pointers, so
+items are never duplicated or deleted.
+<H4>Construction, destruction, copying</H4>
+<PRE>
+cLinkedList(cLinkedList&amp; llist);
+</PRE>
+<P>
+Copy constructor. Contained items that are owned by the list will
+be duplicated using the function passed in <TT>configPointer()</TT>
+so that the new list will have its own copy of them. By default,
+there's no duplication function so only the pointers are copied.
+<PRE>
+cLinkedList(char *name=NULL);
+</PRE>
+<P>
+Constructor. It accepts the object name.
+<PRE>
+virtual ~cLinkedList();
+</PRE>
+<P>
+Destructor calls <TT>clear()</TT>.
+<PRE>
+virtual cObject *dup();
+cLinkedList&amp; operator=(cLinkedList&amp; llist);
+</PRE>
+<P>
+Duplication and assignment work all right with <TT>cLinkedList</TT>.
+Contained items are treated as configured with <TT>configPointer()</TT>.
+By default, only pointers are copied.
+<H4>Redefined virtual functions</H4>
+<PRE>
+virtual char *isA();
+</PRE>
+<P>
+Returns pointer to the class name string,<TT>&quot;cLinkedList&quot;</TT>.
+<PRE>
+virtual void info(char *buf);
+virtual TInspector *inspector();
+</PRE>
+<P>
+Redefined.
+<H4>Member functions</H4>
+<PRE>
+void configPointer(VoidDelFunc delfunc, VoidDupFunc dupfunc, size_t size = 0);
+</PRE>
+<P>
+Configures memory management for contained items. Similar to <TT>cPar</TT>'s
+<TT>configPointer()</TT> function.
+<TABLE BORDER=1>
+<TR><TD WIDTH=96><B>delete func.</B></TD><TD WIDTH=89><B>dupl.func.</B>
+</TD><TD WIDTH=92><B>itemsize</B></TD><TD WIDTH=317><B>behaviour</B>
+</TD></TR>
+<TR><TD WIDTH=96><TT>NULL</TT></TD><TD WIDTH=89><TT>NULL</TT>
+</TD><TD WIDTH=92><TT>0</TT></TD><TD WIDTH=317>Pointer is treated as mere pointer - no memory management. Duplication copies the pointer, and deletion does nothing.
+</TD></TR>
+<TR><TD WIDTH=96><TT>NULL</TT></TD><TD WIDTH=89><TT>NULL</TT>
+</TD><TD WIDTH=92>&gt;0 size</TD><TD WIDTH=317>Plain memory management. Duplication is done with <TT>new char[size]+memcpy()</TT>, and deletion is done via <TT>delete</TT>.
+</TD></TR>
+<TR><TD WIDTH=96><TT>NULL</TT> or user's delete func.</TD><TD WIDTH=89>user's dupfunc.
+</TD><TD WIDTH=92>indifferent</TD><TD WIDTH=317>Sophisticated memory management. Duplication is done by calling the user-supplied duplication function, which should do the allocation and the appropriate copying. Deletion is done by calling the user-supplied delete function, or the delete operator if it is not supplied.
+</TD></TR>
+</TABLE>
+<P>
+<PRE>
+void clear();
+</PRE>
+<P>
+As a result, the container will be empty. Contained items will
+be deleted as configured by <TT>configPointer()</TT>.
+<PRE>
+int length();
+</PRE>
+<P>
+Returns the number of items contained in the list.
+<PRE>
+bool empty();
+</PRE>
+<P>
+Returns <TT>TRUE</TT> if the list is empty.
+<PRE>
+void insertHead(void *p);
+</PRE>
+<P>
+Inserts the given object into the list, maintaining the sorting
+order.
+<PRE>
+void insertBefore(void *p, void *where);
+void insertAfter(cObject *p, void *where);
+</PRE>
+<P>
+Inserts exactly before and after the given item.
+<PRE>
+void *peekTail();
+</PRE>
+<P>
+Returns the last item in the list or null pointer if the list
+is empty.
+<PRE>
+void *getTail();
+</PRE>
+<P>
+Unlinks and returns the last item in the list.
+<PRE>
+void *get(void *obj);
+</PRE>
+<P>
+Unlinks and returns the given item.
+<H3><A NAME="_Toc439963954">class <TT><FONT SIZE=4>cLinkedListIterator</FONT></TT></A>
+</H3>
+<P>
+To examine each element in the list, the <TT>cLinkedListIterator</TT>
+iterator class can be used. Once a <TT>cLinkedListIterator</TT>
+object is created for the list (the <TT>cLinkedList</TT> object),
+the ++ and -- operators can be used to step from one element of
+the list to the next/previous one. <TT>cLinkedListIterator</TT>
+is not a descendant of <TT>cObject</TT> or <TT>cIterator</TT>.
+<PRE>
+cLinkedListIterator(cLinkedList&amp; ll, int a=1);
+</PRE>
+<P>
+Constructor, <TT>cIterator</TT> will walk on the list passed as
+argument. The current item will be the first (if a==1) or the
+last (a==0) item in the list.
+<PRE>
+void init(cLinkedList&amp; q, int a=1);
+</PRE>
+<P>
+Reinitializes the iterator object.
+<PRE>
+void *operator()();
+</PRE>
+<P>
+Returns the current item.
+<PRE>
+bool end();
+</PRE>
+<P>
+Returns <TT>TRUE</TT> if we have reached the end of the list.
+<PRE>
+void *operator++(int);
+void *operator--(int);
+</PRE>
+<P>
+Steps to the next/previous object in the list.
+<H3><A NAME="_Toc439963955">class <TT><FONT SIZE=4>cBag</FONT></TT></A>
+</H3>
+<P>
+<TT>cBag</TT> is a container class which is designed to hold non-<TT>cObject</TT>
+items without constructors/destructors (ints, <TT>double</TT>s,
+small structs etc.). <TT>cBag</TT> stores full, bit-by-bit copies
+of the items inserted (and not the pointers). <TT>cBag</TT> works
+as an array, but if it gets full, it grows automatically by a
+specified delta.
+<H4>Construction, destruction, copying</H4>
+<PRE>
+cBag(cBag&amp; bag);
+</PRE>
+<P>
+Copy constructor.
+<PRE>
+cBag(char *name=NULL, int esiz=1,int siz=0,int delt=5, cHead *h=&amp;locals);
+</PRE>
+<P>
+Constructor. It takes the object name, the size of an item in
+bytes, the initial vector size, delta and the pointer to the list
+it should join as argument.
+<PRE>
+virtual ~cBag();
+</PRE>
+<P>
+Destructor. The items in the object will be deleted.
+<PRE>
+virtual cObject *dup();
+cBag&amp; operator=(cBag&amp; bag);
+</PRE>
+<P>
+Duplication and assignment work all right with <TT>cBag</TT>.
+<H4>Redefined virtual functions</H4>
+<PRE>
+virtual char *isA();
+</PRE>
+<P>
+Returns a pointer to the class name string, <TT>&quot;cBag&quot;</TT>.
+<PRE>
+virtual void info(char *buf);
+virtual TInspector *inspector();
+</PRE>
+<P>
+Redefined.
+<H4>Member functions:</H4>
+<PRE>
+void setup(int esiz,int siz, int delt=5);
+</PRE>
+<P>
+Clears the current contents and changes element size, initial
+array size and delta parameters.
+<PRE>
+void clear();
+</PRE>
+<P>
+Clears the whole contents of the <TT>cBag</TT>.
+<PRE>
+int items();
+</PRE>
+<P>
+Returns the index of last used position+1.
+<PRE>
+int add(void *data);
+</PRE>
+<P>
+Inserts a new item into the array. A copy will be made of the
+item pointed to by <TT>obj</TT>. The return value is the item's
+index in the array.
+<PRE>
+int addAt(int pos, void *data);
+</PRE>
+<P>
+Inserts a new item into the array at the given position.
+<PRE>
+int find(void *data);
+</PRE>
+<P>
+Returns the index of the first item in the array that equals the
+item pointed to by <TT>obj</TT>. The comparison is done byte-by-byte.
+If no such item was found, -1 is returned.
+<PRE>
+void *get(int m);
+</PRE>
+<P>
+Returns a pointer to the <TT>m</TT>th item in the array or <TT>NULL</TT>
+if the <TT>m</TT>th position is not used.
+<PRE>
+void *operator[](int m);
+</PRE>
+<P>
+The same as <TT>get(int m)</TT>. With the indexing operator, <TT>cBag</TT>
+can be used as a vector.
+<PRE>
+bool isUsed(int m);
+</PRE>
+<P>
+Returns <TT>TRUE</TT> if the <TT>m</TT>th position exists and
+an item was inserted there.
+<PRE>
+bool remove(int m);
+</PRE>
+<P>
+Deletes the <TT>m</TT>th position in the array. Returns <TT>TRUE</TT>
+if the <TT>m</TT>th position was used (i.e. it was actually deleted.)
+<H3><A NAME="_Toc439963956">Class <TT><FONT SIZE=4>cWatch</FONT></TT></A>
+</H3>
+<P>
+Header file: <TT>carray.h</TT> (<TT>sim</TT> directory)
+<P>
+<TT>cWatch</TT> is an object shell for an ordinary <TT>char</TT>,
+<TT>int</TT>, <TT>long</TT>, <TT>double</TT>, <TT>char*</TT> or
+<TT>cObject*</TT> variable in the module functions. It is provided
+for the following reason: the <TT>cSimpleModule::snapshot()</TT>
+call outputs every object of the simulation into a text file,
+which is excellent for debugging. Unfortunately, ordinary variables
+(<TT>int</TT>, <TT>char</TT> types etc) do not appear in the snapshot
+file. <TT>cWatch</TT> helps this. Use it like this:
+<PRE>
+int samples;
+new cWatch( &quot;samples&quot;, samples );
+</PRE>
+<P>
+Now, the <TT>cWatch</TT> object will make the samples variable
+appear in the snapshot file.
+<P>
+The second line can be shortened using the WATCH macro:
+<PRE>
+WATCH( samples );
+</PRE>
+<H4>Constructors:</H4>
+<PRE>
+cWatch(cWatch&amp; vs);
+cWatch(char *name, char&amp; c);
+cWatch(char *name, int&amp;  i);
+cWatch(char *name, long&amp; l);
+cWatch(char *name, double&amp; d);
+cWatch(char *name, char* &amp;s);
+cWatch(char *name, cObject* &amp;o);
+</PRE>
+<P>
+Initialize the shell to hold the given variable.
+<PRE>
+virtual char *isA();
+virtual cObject *dup();
+...
+</PRE>
+<P>
+All usual virtual functions redefined.
+<PRE>
+virtual void info(char *buf);
+virtual void writeContents(ostream&amp; os);
+</PRE>
+<P>
+These functions are redefined to display the value of the variable.
+Output is like this: <TT>&quot;int samples = 12 (12U, 0xC)&quot;</TT>
+<PRE>
+virtual void printTo(char *s);
+</PRE>
+<P>
+Does actual work for <TT>info()</TT> and <TT>writeContents()</TT>.
+<H2><A NAME="_Toc439963957">Output vector class: <TT><FONT SIZE=5>cOutVector</FONT></TT></A>
+</H2>
+<P>
+Header file: <TT>coutvect.h</TT> (<TT>sim</TT> directory)
+<P>
+There are two classes: <TT>cOutVector</TT> and <TT>cOutFileMgr</TT>.
+<TT>cOutFileMgr</TT> and <TT>cOutVector</TT> work together to
+allow the user save several &quot;series&quot; or &quot;output
+vectors&quot; (a series of numbers or number pairs which are produced
+during simulation as results) to a common file called &quot;output
+vector file&quot; or simply &quot;output file&quot;.
+<P>
+Users don't need to use <TT>cOutFileMgr</TT> directly. There is
+only one instance of <TT>cOutFileMgr</TT> (in <TT>cSimulation</TT>),
+it stores the common file pointer and gives out unique identifiers
+to <TT>cOutVector</TT> objects.
+<P>
+There can be several <TT>cOutVector</TT>s, each one handles one
+output vector. Data are written into a common file.
+<P>
+The output file is ASCII and can be read by a spreadsheet etc.
+It should cause no problem to sort out values for one particular
+output vector.
+<H3><A NAME="_Toc439963958">class <TT><FONT SIZE=4>cOutVect</FONT></TT></A>
+</H3>
+<P>
+<TT>cOutVect</TT> is responsible for writing simulation data (an
+output vector) to a file. A <TT>cOutVect</TT> object can write
+<TT>double</TT>s or pair of <TT>double</TT>s to the &quot;statistical
+output file&quot;. The file consists of label lines and data lines.
+<P>
+Here are some sample lines:
+<PRE>
+vector  5  &quot;subnet[4].term[12]&quot;  &quot;response time&quot;  1
+5  12.895  2355.66666666
+5  14.126  4577.66664666
+vector 6  &quot;subnet[4].srvr&quot;  &quot;queuelen+queuingtime&quot;  2
+6  16.960  2.00000000000  .63663666
+5  23.086  2355.66666666
+6  24.026  8.00000000000  .44766536
+</PRE>
+<P>
+There are label lines (beginning with &quot;vector&quot;) and
+data lines.
+<P>
+A label line introduces a new vector. The columns: &quot;vector&quot;,
+vector ID, module of creation, name of <TT>cOutVector</TT> object,
+number of data (single numbers or pairs will be written).
+<P>
+Columns of a data line: vector ID, actual simulation time, one
+or two <TT>double</TT> values.
+<P>
+One can use UNIX tools like sed, awk or perl to extract a particular
+vector etc. from the file, or/and read it in spreadsheets like
+Excel.
+<P>
+The <TT>cOutVector::record()</TT> member is used to output a value
+(or a value pair). This will generate a data line in the file,
+unless the output vector is disabled or the current simulation
+time is outside a specified interval (see member functions).
+<H4>Construction, destruction, copying:</H4>
+<PRE>
+cOutVector(cOutVector&amp; r)
+</PRE>
+<P>
+Copy constructor.
+<PRE>
+cOutVector (char *s=NULL, int tupl=1)
+</PRE>
+<P>
+Constructor. Accepts the object name and the multiplicity of the
+data it should write to the file at a time. Possible values of
+tuple are 1 or 2.
+<PRE>
+virtual ~cOutVector()
+</PRE>
+<P>
+Destructor. 
+<H4>Redefined virtual functions</H4>
+<PRE>
+virtual char *isA()
+</PRE>
+<P>
+Returns a pointer to the class name <TT>&quot;cOutVector&quot;</TT>.
+<PRE>
+virtual cObject *dup()
+</PRE>
+<P>
+Dupping does not make much sense, not implemented.
+<PRE>
+virtual void info(char *buf)
+</PRE>
+<P>
+Redefined.
+<H4>Member functions</H4>
+<PRE>
+void record (double value)
+</PRE>
+<P>
+Records one data to the file. It can be used only in the case
+if the instance of <TT>cOutVect</TT> was created with tupl=1,
+otherwise it gives an error message.
+<PRE>
+void record (double value1, double value2)
+</PRE>
+<P>
+Records two values to the file. It can be used only in the case
+if the instance of <TT>cOutVect</TT> was created with tupl=2,
+otherwise it gives an error message.
+<PRE>
+void enableWrite()
+</PRE>
+<P>
+Makes writing to the file enabled. It is enabled by default.
+<PRE>
+void disableWrite()
+</PRE>
+<P>
+Makes writing to the file disabled. It is enabled by default.
+<PRE>
+void setStartTime(simtime_t t);
+</PRE>
+<P>
+Sets StartTime to t. Data is recorded to the file only if simulation
+time &gt; StartTime. The default value of StartTime is 0.
+<PRE>
+void setStopTime(simtime_t t);
+</PRE>
+<P>
+Sets StopTime to t. Data is recorded to the file only if the simulation
+time &lt; StopTime. The default value of StopTime is 0 which means
+no Stoptime.
+<H3><A NAME="_Toc439963959">class <TT><FONT SIZE=4>cOutFileMgr</FONT></TT></A>
+</H3>
+<P>
+This class is responsible for handling the output file for cOutVectors.
+Users don't need to use <TT>cOutFileMgr</TT> directly, only through
+<TT>cOutVect</TT>.
+<H4>Constructor, destructor, copying</H4>
+<PRE>
+cOutFileMgr(char *s=NULL)
+</PRE>
+<P>
+Constructor.
+<PRE>
+virtual ~cOutFileMgr()
+</PRE>
+<P>
+Destructor. Closes the output file if it is still open.
+<H4>Redefined virtual functions</H4>
+<PRE>
+virtual char *isA()
+</PRE>
+<P>
+Returns a pointer to the class name <TT>&quot;cOutFileMgr&quot;</TT>.
+<H4>Member functions</H4>
+<PRE>
+void setFileName(char *s)
+</PRE>
+<P>
+Sets the name of the statistical output file. This name will be
+set at the time of the next call of openFile().
+<PRE>
+void openFile()
+</PRE>
+<P>
+Opens the statistical output file with the currently set fileName.
+<PRE>
+void closeFile()
+</PRE>
+<P>
+Closes the statistical output file
+<PRE>
+long getNewID()
+</PRE>
+<P>
+Returns a unique ID for constructiong a new <TT>cOutVect</TT>
+object. The user should not explicitly call this function.
+<PRE>
+FILE *getHandle()
+</PRE>
+<P>
+Returns the file pointer of the statistical output file.
+<H2><A NAME="_Toc439963960">Statistical data collection: <TT><FONT SIZE=5>cStatistic</FONT></TT><FONT SIZE=5>
+and derived classes</FONT></A></H2>
+<P>
+Header file: <TT>cstat.h</TT> (<TT>sim</TT> directory)
+<P>
+The statistical data collection classes: <TT>cStatistic</TT>,
+<TT>cStdDev</TT>, <TT>cWeightedStdDev</TT>, <TT>cDensityEstBase</TT>,
+<TT>cHistogramBase</TT>, <TT>cVarHistogram</TT>,<TT> cEqDHistogramBase</TT>,
+ <TT>cLongHistogram</TT>, <TT>cDoubleHistogram, cPSquare</TT>.
+and <TT>cKSplit</TT>. 
+<P>
+Several of those are abstract classes. The ones which are not
+are:<TT> cStdDev</TT>, <TT>cVarHistogram</TT>,  <TT>cLongHistogram</TT>,
+<TT>cDoubleHistogram, cPSquare</TT>. and <TT>cKSplit</TT>.
+<P>
+<CENTER><IMG SRC="img00022.gif"><BR>
+Fig.4.1. Hierarchy of statistics collection classes</CENTER>
+<H3><A NAME="_Toc439963961">class <TT><FONT SIZE=4>cStatistic</FONT></TT></A>
+</H3>
+<P>
+<TT>cStatistic</TT> is the base class for all statistical data
+collection classes. <TT>cStatistic</TT> itself adds no data members
+or algorithms to <TT>cObject</TT>, it only defines virtual functions
+that will be redefined in descendants. No instance of <TT>cStatistic</TT>
+can be created.
+<H4>Construction, destruction, copying</H4>
+<PRE>
+cStatistic(cStatistic&amp; r);
+</PRE>
+<P>
+Copy constructor.
+<PRE>
+cStatistic(char *s=NULL);
+</PRE>
+<P>
+Constructor, creates an object with the given name
+<PRE>
+virtual ~cStatistic();
+</PRE>
+<P>
+The destructor does nothing.
+<PRE>
+cStatistic&amp; operator=(cStatistic&amp; res)
+</PRE>
+<P>
+The assignment operator is present since descendants may refer
+to it.
+<H4>Redefined virtual functions</H4>
+<PRE>
+virtual char *isA();
+</PRE>
+<P>
+Returns a pointer to the class name string, <TT>&quot;cStatistic&quot;</TT>.
+<H4>New non-virtual member functions</H4>
+<PRE>
+void setGenK(int gen_nr);
+</PRE>
+<P>
+Sets the index of the random number generator to use when the
+object has to generate a random number based on the statistics
+stored.
+<PRE>
+void addTransientDetection(cTransientDetection *object);
+void addAccuracyDetection(cAccuracyDetection *object);
+</PRE>
+<P>
+Assigns transient and accuracy detection objects to the statistic
+object.
+<PRE>
+cTransientDetection *transientDetectionObject();
+cAccuracyDetection  *accuracyDetectionObject();
+</PRE>
+<P>
+Returns the assigned transient and accuracy detection objects.
+<H4>New virtual member functions</H4>
+<P>
+These pure virtual functions provide a common interface to all
+<TT>cStatistic</TT> classes. 
+<PRE>
+void collect(double val);
+</PRE>
+<P>
+Collect one value.
+<PRE>
+virtual long samples();
+virtual double min();
+virtual double max();
+virtual double mean();
+virtual double variance();
+virtual double stddev();
+</PRE>
+<P>
+In derived classes, these functions return the number of values
+collected, the smallest/largest value, the mean and the standard
+deviation of the collected data, respectively.
+<PRE>
+virtual double random();
+</PRE>
+<P>
+The function generates a random number based on the collected
+data.
+<PRE>
+virtual void clearResult();
+</PRE>
+<P>
+This function should be redefined in derived classes to clear
+the results collected so far.
+<PRE>
+virtual void saveToFile(FILE *);
+</PRE>
+<P>
+Writes the contents of the object into a text file.
+<PRE>
+virtual void loadFromFile(FILE *);
+</PRE>
+<P>
+Reads the object data from a file written out by <TT>saveToFile()</TT>(or
+written &quot;by hand&quot;)
+<H3><A NAME="_Toc439963962">class <TT><FONT SIZE=4>cStdDev</FONT></TT></A>
+</H3>
+<P>
+<TT>cStdDev</TT> is designed to collect <TT>double</TT>s and calculate
+data such as the minimum/maximum value, the mean and the standard
+deviation for them.
+<H4>Construction, destruction, copying</H4>
+<PRE>
+cStdDev(cStdDev&amp; r);
+cStdDev(char *s=NULL);
+virtual ~cStdDev();
+virtual cObject *dup();
+cStdDev&amp; operator=(cStdDev&amp; res);
+</PRE>
+<P>
+Constructors, destructor, duplication and assignment.
+<H4>Redefined virtual functions</H4>
+<PRE>
+virtual char *isA();
+</PRE>
+<P>
+Returns a pointer to the class name string, <TT>&quot;cStdDev&quot;</TT>.
+<PRE>
+virtual void info(char *buf);
+virtual TInspector *inspector();
+virtual void writeContents(ostream&amp; os);
+</PRE>
+<P>
+Redefined <TT>cObject</TT> functions.
+<PRE>
+void collect(double val);
+virtual void clearResult();
+virtual long samples();
+virtual double min();
+virtual double max();
+virtual double mean();
+virtual double stddev();
+virtual double variance();
+virtual void saveToFile(FILE *);
+virtual void loadFromFile(FILE *);
+</PRE>
+<P>
+Redefined <TT>cStatistic</TT> functions.
+<PRE>
+virtual double random();
+</PRE>
+<P>
+Redefined <TT>cStatistic</TT> function. <TT>cStdDev</TT>'s random
+number generator returns numbers of normal disribution with the
+current mean and standard deviation.
+<H3><A NAME="_Toc439963963">class <TT><FONT SIZE=4>cWeightedStdDev</FONT></TT></A>
+</H3>
+<P>
+<TT>cWeightedStdDev</TT> is designed to collect <TT>double</TT>s
+and calculate weighted statistics of them.
+<H4>Construction, destruction, copying</H4>
+<PRE>
+cWeightedStdDev(cWeightedStdDev&amp; r);
+cWeightedStdDev(char *s=NULL);
+virtual ~cWeightedStdDev();
+virtual cObject *dup();
+cWeightedStdDev&amp; operator=(cWeightedStdDev&amp; res);
+</PRE>
+<P>
+Constructors, destructor, duplication and assignment.
+<H4>Redefined virtual functions</H4>
+<PRE>
+virtual char *isA();
+</PRE>
+<P>
+Returns a pointer to the class name string, <TT>&quot;cWeightedStdDev&quot;</TT>.
+<PRE>
+virtual void info(char *buf);
+virtual TInspector *inspector();
+virtual void writeContents(ostream&amp; os);
+</PRE>
+<P>
+Redefined <TT>cObject</TT> functions.
+<PRE>
+void collect2(double val, double weight);
+</PRE>
+<P>
+New member function.
+<PRE>
+virtual void clearResult();
+virtual long weights();
+virtual double min();
+virtual double max();
+virtual double mean();
+virtual double stddev();
+virtual double variance();
+virtual void saveToFile(FILE *);
+virtual void loadFromFile(FILE *);
+</PRE>
+<P>
+Redefined <TT>cStdDev</TT> functions.
+<PRE>
+virtual double random();
+</PRE>
+<P>
+<TT>cWeightedStdDev</TT>'s random number generator returns numbers
+of normal disribution with the current mean and standard deviation.
+<H3><A NAME="_Toc439963964">class <TT><FONT SIZE=4>cDensityEstBase</FONT></TT></A>
+</H3>
+<P>
+Common base class for density estimation classes. Provides several
+pure virtual functions, so it is an abstract class, no instances
+can be created.
+<P>
+For the histogram classes, you need to specify the number of cells
+and the range. Range can either be set explicitly or you can choose
+automatic range determination. 
+<P>
+Automatic range estimation works in the following way:
+<OL>
+<LI>The first few (<I>num_firstvals</I>) observations are stored.
+<LI>After having collected a given number of samples, the actual
+histogram is set up. The range (<I>min</I>, <I>max</I>) of the
+initial values is expanded <I>range_ext_factor</I> times, and
+the result will become the histogram's range (<I>rangemin</I>,
+<I>rangemax</I>). Based on the range, the cells are layed out.
+Then the initial values that have been stored up to this point
+will be transferred into the new histogram structure and their
+store is deleted -- this is done by the <TT>transform()</TT> function.
+</OL>
+<P>
+You may also explicitly specify the lower or upper limit and have
+the other end of the range extimated automatically. The <TT>setRange...()</TT>
+member functions of <TT>cDensityEstBase</TT> deal with setting
+up the histogram range. It also provides pure virtual functions
+<TT>transform()</TT> etc.
+<P>
+Subsequent observations are placed in the histogram structure.
+If an observation falls out of the histogram range, the <I>underflow</I>
+or the <I>overflow</I> <I>cell</I> is incremented.
+<H4>Construction, destruction, copying</H4>
+<PRE>
+cDensityEstBase(cDensityEstBase&amp; r);
+cDensityEstBase (char *s=NULL);
+virtual ~cDensityEstBase();
+cDensityEstBase&amp; operator=(cDensityEstBase&amp; res);
+</PRE>
+<P>
+Constructors, destructor, assignment.
+<H4>Redefined virtual functions</H4>
+<PRE>
+virtual char *isA()
+virtual void writeContents(ostream&amp; os);
+virtual void collect(double val);
+virtual void clearResult();
+virtual void saveToFile(FILE *);
+virtual void loadFromFile(FILE *);
+</PRE>
+<H4>New virtual functions</H4>
+<PRE>
+virtual bool transformed();
+virtual void transform();
+</PRE>
+<P>
+First one returns whether the object is transformed or not; second
+one forces a transformation.
+<PRE>
+virtual unsigned cells();
+virtual double basepoint(unsigned k);
+virtual unsigned cell(unsigned k);
+virtual double cellPDF(unsigned k);
+</PRE>
+<P>
+Obtaining histogram data out of the object.
+<PRE>
+virtual void setRange(double lower, double upper);
+virtual void setRangeAuto(int num_firstvals, 
+double range_ext_fact);
+virtual void setRangeAutoLower(double upper, 
+int num_firstvals, double range_ext_fact);
+virtual void setRangeAutoUpper(double lower, 
+int num_firstvals, double range_ext_fact);
+virtual void setNumFirstVals(int num_firstvals);
+</PRE>
+<P>
+Range setting.
+<PRE>
+virtual double pdf(double x) = 0;
+virtual double cdf(double x) = 0;
+</PRE>
+<P>
+Density function and cumulated density function at a given <I>x</I>.
+<PRE>
+virtual unsigned long underflowCell()
+virtual unsigned long overflowCell()
+</PRE>
+<P>
+Returns number of observations that fall out of the histogram
+range.
+<H3><A NAME="_Toc439963965">Class <TT><FONT SIZE=4>cHistogramBase</FONT></TT></A>
+</H3>
+<P>
+Base class for histogram classes.
+<H3><A NAME="_Toc439963966">Class <TT><FONT SIZE=4>cVarHistogram</FONT></TT></A>
+</H3>
+<P>
+Variable bin size histogram You may add cell (bin) boundaries
+manually, or .let the object create cells with equal number of
+observations in them (or as close to that as possible).
+<H4>Constructor</H4>
+<PRE>
+cVarHistogram(char *s=NULL, int numcells=11,
+int transformtype=HIST_TR_AUTO_EPC_DBL);
+</PRE>
+<P>
+The third argument can be one of <TT>HIST_TR_NO_TRANSFORM</TT>,
+<TT>HIST_TR_AUTO_EPC_DBL</TT>, <TT>HIST_TR_AUTO_EPC_INT</TT>.
+<H4>New member function</H4>
+<PRE>
+virtual void addBinBound(double x);
+</PRE>
+<P>
+If <TT>HIST_TR_NO_TRANSFORM</TT> was passed in the constructor
+call, you may specify cell (bin) bounds manually before collection
+starts.
+<H3><A NAME="_Toc439963967">Class <TT><FONT SIZE=4>cEqdHistogramBase</FONT></TT></A>
+</H3>
+<P>
+Base class for equal cell size histograms.
+<H3><A NAME="_Toc439963968">class <TT><FONT SIZE=4>cLongHistogram</FONT></TT></A>
+</H3>
+<P>
+<TT>cLongHistogram</TT> is derived from <TT>cEqdHistogramBase</TT>
+which contains most of the functionality. The histogram is set
+up in the following way:
+<UL>
+<LI>the cell size is always integer: 1, 2, 3 etc.
+<LI><I>rangemin</I>, <I>rangemax</I> and the cell boundaries are
+at halfs. For example 1.5, 10.5. This is done so to prevent misunderstandings.
+<LI>the number of cells is exactly <I>num_cells</I>
+<LI>the <I>range_ext_factor</I> is also kept. The actual histogram
+range will be: (<I>min</I>, <I>max</I>) extended <I>range_ext_factor</I>
+times and rounded up to the nearest integer multiple of <I>num_cells</I>.
+</UL>
+<H4>Construction, destruction, copying</H4>
+<PRE>
+cLongHistogram(cLongHistogram&amp; r);
+</PRE>
+<P>
+Copy constructor.
+<PRE>
+cLongHistogram(char *s=NULL, unsigned num_cells=10)
+</PRE>
+<P>
+Constructor that takes the object name and the number of cells.
+<PRE>
+virtual ~cLongHistogram();
+</PRE>
+<P>
+Destructor.
+<PRE>
+virtual cObject *dup();
+cLongHistogram&amp; operator=(cLongHistogram&amp; res);
+</PRE>
+<P>
+Duplication and assignment work all right with <TT>cLongHistogram</TT>.
+<H4>Redefined virtual functions</H4>
+<PRE>
+virtual char *isA();
+</PRE>
+<P>
+Returns a pointer to the class name string, <TT>&quot;cLongHistogram&quot;</TT>.
+<PRE>
+virtual void info(char *buf);
+virtual TInspector *inspector();
+</PRE>
+<P>
+Redefined.
+<PRE>
+virtual void transform();
+</PRE>
+<P>
+If the result collection is in the first phase, transforms the
+values into histogram. If already in the second phase, the function
+does nothing.
+<PRE>
+virtual unsigned cells();
+</PRE>
+<P>
+Returns the number of cells.
+<PRE>
+virtual double basepoint(unsigned k);
+</PRE>
+<P>
+Returns the kth basepoint.
+<PRE>
+virtual unsigned cell(unsigned k);
+</PRE>
+<P>
+Returns the number of samples that fell into the kth subinterval.
+<PRE>
+virtual double cellPDF(unsigned k);
+</PRE>
+<P>
+Returns the calculated PDF in the kth subinterval.
+<PRE>
+virtual double random();
+</PRE>
+<P>
+Returns a random number based on the distribution collected. If
+no values have been collected, it returns 0; when in initial collection
+phase, it returns one of the stored observations; after the histogram
+has been set up, a random integer is returned.
+<PRE>
+virtual void clearResult ();
+</PRE>
+<P>
+Clears all results collected so far.
+<H3><A NAME="_Toc439963969">class <TT><FONT SIZE=4>cDoubleHistogram</FONT></TT></A>
+</H3>
+<P>
+<TT>cDoubleHistogram</TT> is derived from <TT>cEqdHistogramBase</TT>;
+see that for more information.
+<H4>Construction, destruction, copying</H4>
+<PRE>
+cDoubleHistogram(cDoubleHistogram&amp; r);
+</PRE>
+<P>
+Copy constructor
+<PRE>
+cDoubleHistogram (char *s=NULL, unsigned int num_cells=10);
+</PRE>
+<P>
+Constructor that takes the object name, the number of subintervals
+and the range factor as argument.
+<PRE>
+virtual ~cDoubleHistogram();
+</PRE>
+<P>
+Destructor.
+<PRE>
+virtual cObject *dup();
+cDoubleHistogram&amp; operator=(cDoubleHistogram&amp; res);
+</PRE>
+<P>
+Duplication and assignment work all right with <TT>cDoubleHistogram</TT>.
+<H4>Redefined virtual functions</H4>
+<PRE>
+virtual char *isA();
+</PRE>
+<P>
+Returns a pointer to the class name string, <TT>&quot;cDoubleHistogram&quot;</TT>.
+<PRE>
+virtual void info(char *buf);
+virtual TInspector *inspector();
+</PRE>
+<P>
+Redefined.
+<PRE>
+virtual void writeContents(ostream&amp; os);
+</PRE>
+<P>
+Writes the object contents to the stream.
+<PRE>
+virtual void transform();
+</PRE>
+<P>
+If the result collection is in the first phase, transforms the
+values into histogram. If already in the second phase, the function
+does nothing.
+<PRE>
+virtual unsigned cells();
+</PRE>
+<P>
+Returns the number of cells.
+<PRE>
+virtual double basepoint(unsigned k);
+</PRE>
+<P>
+Returns the <I>k</I>th basepoint.
+<PRE>
+virtual unsigned cell(unsigned k);
+</PRE>
+<P>
+Returns the number of samples that fell into the kth subinterval.
+<PRE>
+virtual double cellPDF(unsigned k);
+</PRE>
+<P>
+Returns the calculated PDF in the kth subinterval.
+<PRE>
+virtual double random();
+</PRE>
+<P>
+Returns a random number based on the distribution collected. If
+no values have been collected, it returns 0; when in initial collection
+phase, it returns one of the stored observations; after the histogram
+has been set up, a random integer is returned.
+<PRE>
+virtual void clearResult();
+</PRE>
+<P>
+Clears the distribution collected so far.
+<H2><A NAME="_Toc439963970">The P<SUP>2</SUP> and k-split algorithms:
+<TT><FONT SIZE=5>cPSquare, cKSplit</FONT></TT></A></H2>
+<P>
+Header file: <TT>cpsquare.h, cksplit.h</TT> (<TT>sim</TT> directory)
+<H3><A NAME="_Toc439963971">class <TT><FONT SIZE=4>cPSquare</FONT></TT></A>
+</H3>
+<P>
+Implements the P<SUP>2</SUP> algorithm.
+<H3><A NAME="_Toc439963972">class <TT><FONT SIZE=4>cKSplit</FONT></TT></A>
+</H3>
+<P>
+Implements the k-split algorithm; experimental.
+<H2><A NAME="_Toc439963973">Transient and result accuracy detection</A>
+</H2>
+<P>
+Header file: <TT>cdetect.h</TT> (<TT>sim</TT> directory)
+<P>
+In many simulations, only the steady state performance (i.e. the
+performance after the system has reached a stable state) is of
+interest. The initial part of the simulation is called the transient
+period. After the model has entered steady state, simulation must
+proceed until enough statistical data have been collected to compute
+result with the required accuracy.
+<P>
+Detection of the end of the transient period and a certain result
+accuracy is supported by OMNeT++. The user can attach transient
+detection and result accuracy objects to a result object (<TT>cStatistic</TT>'s
+descendants). The transient detection and result accuracy objects
+will do the specific algorithms on the data fed into the result
+object and tell if the transient period is over or the result
+accuracy has been reached.
+<P>
+This feature (and classes it uses) is documented in depth in the
+&quot;OMNeT++ Extensions and Examples&quot; manual written by
+Maurits Andr<FONT>&eacute;</FONT>, George
+van Montfort and Gerard van de Weerd.
+<H3><A NAME="_Toc439963974">class <TT><FONT SIZE=4>cTransientDetection</FONT></TT></A>
+</H3>
+<P>
+Virtual base class for transient detection.
+<H3><A NAME="_Toc439963975">class <TT><FONT SIZE=4>cTDExpandingWindows</FONT></TT></A>
+</H3>
+<P>
+An algorithm for transient detection. Uses sliding window approach
+with two windows, and checks the difference of the two averages
+to see if the transient period is over.
+<H3><A NAME="_Toc439963976">class <TT><FONT SIZE=4>cAccuracyDetection</FONT></TT></A>
+</H3>
+<P>
+Virtual base class for result accuracy detection.
+<H3><A NAME="_Toc439963977">class <TT><FONT SIZE=4>cADByStddev</FONT></TT></A>
+</H3>
+<P>
+An algorithm for result accuracy detection. The actual algorithm:
+divide the standard deviation by the square of the number of values
+and check if this is small enough.
+<H2><A NAME="_Toc439963978">Finite State Machine: <TT><FONT SIZE=5>cFSM</FONT></TT></A>
+</H2>
+<P>
+<TT>cFSM</TT> is not yet documented here. See the User Manual.
+<H2><A NAME="_Toc439963979">Routing support: <TT><FONT SIZE=5>cTopology</FONT></TT></A>
+</H2>
+<P>
+<TT>cTopology</TT> is not yet documented here. See the User Manual.
+<H2><A NAME="_Toc439963980">The user interface: <TT><FONT SIZE=5>cEnvir</FONT></TT><FONT SIZE=5>
+and </FONT><TT><FONT SIZE=5>ev</FONT></TT></A></H2>
+<P>
+Header file: <TT>cenvir.h</TT> (<TT>envir</TT> directory)
+<P>
+<TT>cEnvir</TT> is the user interface class. <TT>cEnvir</TT> is
+not a descendant of <TT>cObject</TT> and there is only one instance
+of <TT>cEnvir</TT>, <TT>ev</TT>. <TT>ev</TT> is a static object.
+All I/O is done via the member functions of <TT>ev</TT>. 
+<H3><A NAME="_Toc439963981">class <TT><FONT SIZE=4>cEnvir</FONT></TT></A>
+</H3>
+<H4>Construction, destruction</H4>
+<PRE>
+cEnvir();
+~cEnvir();
+</PRE>
+<P>
+The constructor and the destructor in most cases do nothing.
+<H4>User interface functions</H4>
+<PRE>
+void inspect(cObject *object);
+</PRE>
+<P>
+Creates an inspector window for the object.
+<PRE>
+void objectDeleted(cObject *object);
+</PRE>
+<P>
+Notifies the environment that the object no longer exists. The
+user interface should close all inspector windows for the object
+and remove it from object lists currently displayed. <TT>cObject</TT>'s
+destructor automatically calles this function.
+<PRE>
+void messageSent(cMessage&amp; msg);
+</PRE>
+<P>
+Notifies the environment that a message has been sent. The user
+interface then can display the message in a text window, animate
+the message's travel in the network's drawing. activate conditional
+breakpoints and so on. This function is automatically called right
+after <TT>cSimpleModule</TT>'s <TT>send()</TT> placed the message
+into the future events' queue.
+<H4>Module function I/O</H4>
+<PRE>
+void printfmsg(char *fmt,...);
+</PRE>
+<P>
+Displays a message in dialog box. This function should not be
+used too much by simple modules, if ever.
+<PRE>
+void printf(char *fmt=&quot;\n&quot;,...);
+</PRE>
+<P>
+Simple modules can output text into their own window through this
+function. The text  is expected in <TT>printf()</TT> format (format
+string + arguments).
+<PRE>
+void puts(char *s);
+</PRE>
+<P>
+Similar to <TT>cEnvir::printf()</TT>, but just writes out its
+argument string with no formatting.
+<PRE>
+bool askf(char *buf, int len, char *profmt,...);
+</PRE>
+<P>
+Pops up a dialog, displays the message given in 'profmt' and following
+arguments in <TT>printf()</TT> format and reads a line (maximum
+<TT>len</TT> characters) from the user into the buffer 'buf'.
+Returns <TT>TRUE</TT> if the user pressed the Cancel button.
+<PRE>
+bool gets(char *prompt, char *buf, int len=255);
+</PRE>
+<P>
+Similar to <TT>cEnvir::askf()</TT>, but just writes out the prompt
+message string with no formatting.
+<PRE>
+bool askyesno(char *msgfmt,...);
+</PRE>
+<P>
+Puts a yes/no question to the user. The question itself  is expected
+in the <TT>printf()</TT> format (format string + arguments). The
+<TT>TRUE</TT> return value means yes, <TT>FALSE</TT> means no.
+<PRE>
+cEnvir&amp; prompt(char *s);
+</PRE>
+<P>
+Sets the prompt for subsequent <TT>&gt;&gt;</TT> operators. There
+is only one global prompt text that is shared between all simple
+modules, so between setting the prompt string and asking the user,
+no <TT>receive()</TT>, <TT>peekmsg()</TT>, <TT>messages()</TT>
+or <TT>wait()</TT> call is recommended. Or, the user may experience
+funny things. . .
+<PRE>
+char *prompt();
+</PRE>
+<P>
+Returns the prompt string.
+<H4>Overloaded operators</H4>
+<P>
+Overloaded operators provide iostream-like I/O for <TT>cEnvir</TT>.
+<PRE>
+inline cEnvir&amp; operator&lt;&lt; (cEnvir&amp; ev, signed char *s);
+inline cEnvir&amp; operator&lt;&lt; (cEnvir&amp; ev, unsigned char *s);
+inline cEnvir&amp; operator&lt;&lt; (cEnvir&amp; ev, unsigned char c);
+inline cEnvir&amp; operator&lt;&lt; (cEnvir&amp; ev, signed char c);
+inline cEnvir&amp; operator&lt;&lt; (cEnvir&amp; ev, short i);
+inline cEnvir&amp; operator&lt;&lt; (cEnvir&amp; ev, unsigned short i);
+inline cEnvir&amp; operator&lt;&lt; (cEnvir&amp; ev, int i);
+inline cEnvir&amp; operator&lt;&lt; (cEnvir&amp; ev, unsigned int i);
+inline cEnvir&amp; operator&lt;&lt; (cEnvir&amp; ev, long l);
+inline cEnvir&amp; operator&lt;&lt; (cEnvir&amp; ev, unsigned long l);
+inline cEnvir&amp; operator&lt;&lt; (cEnvir&amp; ev, float f);
+inline cEnvir&amp; operator&lt;&lt; (cEnvir&amp; ev, double d);
+inline cEnvir&amp; operator&lt;&lt; (cEnvir&amp; ev, long double d);
+</PRE>
+<P>
+Output operators for all fundamental data types.
+<PRE>
+inline cEnvir&amp; operator* (cEnvir&amp; ev, signed char *s);
+inline cEnvir&amp; operator* (cEnvir&amp; ev, unsigned char *s);
+</PRE>
+<P>
+The <TT>*</TT> operator can be used to replace <TT>ev.prompt()</TT>.
+For example: 
+<PRE>
+			ev * &quot;How many?&quot; &gt;&gt; n;
+inline cEnvir&amp; operator&gt;&gt; (cEnvir&amp; ev, signed char *s);
+inline cEnvir&amp; operator&gt;&gt; (cEnvir&amp; ev, unsigned char *s);
+inline cEnvir&amp; operator&gt;&gt; (cEnvir&amp; ev, char&amp; c);
+inline cEnvir&amp; operator&gt;&gt; (cEnvir&amp; ev, unsigned char&amp; c);
+inline cEnvir&amp; operator&gt;&gt; (cEnvir&amp; ev, short&amp; i);
+inline cEnvir&amp; operator&gt;&gt; (cEnvir&amp; ev, int&amp; i);
+inline cEnvir&amp; operator&gt;&gt; (cEnvir&amp; ev, long&amp; l);
+inline cEnvir&amp; operator&gt;&gt; (cEnvir&amp; ev, unsigned short&amp; i);
+inline cEnvir&amp; operator&gt;&gt; (cEnvir&amp; ev, unsigned int&amp; i);
+inline cEnvir&amp; operator&gt;&gt; (cEnvir&amp; ev, unsigned long&amp; l);
+inline cEnvir&amp; operator&gt;&gt; (cEnvir&amp; ev, float&amp; f);
+inline cEnvir&amp; operator&gt;&gt; (cEnvir&amp; ev, double&amp; d);
+inline cEnvir&amp; operator&gt;&gt; (cEnvir&amp; ev, long double&amp; d);
+</PRE>
+<P>
+Input operators for all fundamental data types. But beware, each
+&gt;&gt; operator reads a whole line!
+<H2><A NAME="_Toc439963982">Classes not described in this reference</A>
+</H2>
+<H4><TT>cSimulation</TT></H4>
+<P>
+A class that holds the module tree of the network being simulated.
+It has only one instance, simulation.
+<H4><TT>cModuleType</TT></H4>
+<P>
+Class for simple module types.
+<H4><TT>cLinkType</TT></H4>
+<P>
+Class for channel types.
+<H4><TT>cFunctionType</TT></H4>
+<P>
+Class for function types. Used by the code generated by NEDC.
+<H4><TT>cNetworkType</TT></H4>
+<P>
+Class for pre-compiled networks.
+<H4><TT>cClassRegister</TT></H4>
+<P>
+Class for registering a class.<BR>
+
+
+</BODY>
+</HTML>

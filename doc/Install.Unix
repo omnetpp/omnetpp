@@ -1,0 +1,62 @@
+OMNeT++ Installation on UNIX
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+(last updated: Aug 15, 1998)
+
+
+UNPACKING
+~~~~~~~~~~
+Uncompress and un-tar the omnetpp.tgz file:
+        1. copy omnetpp.tgz into your home directory
+        2. tar xvfz omnetpp.tgz
+
+This will unpack everything into ~/omnetpp.
+
+
+COMPILING AND INSTALLING
+~~~~~~~~~~~~~~~~~~~~~~~~
+It's recommended you have gcc installed (also flex and bison). If you have
+some other C++ compiler, you'll have to manually set some variables
+in the configure script.
+Type:
+        cd ~/omnetpp
+        ./configure
+        ./makeall
+
+It will build all the libraries and the example programs for you.
+By default, OMNeT++ will build dynamic libraries (this keeps the
+size of the executables smaller). You'll have to set the
+LD_LIBRARY_PATH variable to ensure the dynamic linker will find
+the necessary libraries.
+If you have an sh-like shell (bash etc):
+
+        export LD_LIBRARY_PATH=~/omnetpp/lib
+
+If you have a csh-like shell (tcsh etc):
+
+        setenv LD_LIBRARY_PATH ~/omnetpp/lib
+
+Anyway, you can switch over to static libraries by editing the LIB_SUFFIX 
+variable in the configure script and running configure again.
+
+You should also add ~/omnetpp/bin to your PATH.
+
+
+RUNNING THE EXAMPLE PROGRAMS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+To run one of the example programs (say token):
+
+     cd ~/omnetpp/samples/token
+     ./token
+
+By default, the simulation will run with the graphical Tkenv user interface.
+To change the user interface to Cmdenv, generate a new makefile with
+     
+     makemake -f -u cmdenv
+
+Then type `make' and run the `token' program again.
+
+You can run the executable with the -h option to get some help.
+The executable reads its configuration from omnetpp.ini, you can find
+customizable thing in it (perhaps the most important, model parameters).
+
+--VA

@@ -1,0 +1,223 @@
+What's New
+==========
+
+In version of Feb, 1999
+-----------------------
+
+handleMessage() support added as alternative to activity(). Finite
+State Machines (FSMs) are now also supported. They are demonstrated
+in the fifo2 sample simulation.
+
+The cPacket class and the protocol.h header was added; its aim is
+to standardize on protocol models. Negative message kind values
+are now reserved.
+
+Added contributed howto about using OMNeT++ on NT with CYGWIN. Also
+added contributed report on using message subclassing.
+
+The way of writing custom inspectors has been redesigned to make it
+more flexible. Also, Tkenv now has a plugin interface.
+
+Several bugfixes and smaller improvements: Tkenv message inspector
+redesigned; bugs in the ini file reader and the statistics classes
+were fixed; vsscanf() was eliminated; the makefiles are now created
+from makefile.in files; wait(), receive() and surroundings were
+optimized; bug in GNED bug fixed etc.
+
+
+In version of Aug, 1998
+-----------------------
+
+Data collection by output vectors can be configured in the ini file
+(ie. OPNET 'probes'). Display strings can now be specified in the ini file
+as an alternative to embedding them in ned files.
+
+GNED has been totally rewritten. Now it supports colors, icon selection
+etc. and correctly generates display strings. Cut/copy/paste capability.
+
+A models/support library added with several base/utility classes and modules.
+
+Ported to Windows 95/NT. Borland C++ 5.0 project files are included.
+
+Numerous smaller improvements on Plove and Tkenv. Possibility 
+to make standalone simulation executables with Tkenv's TCL script 
+parts compiled into the executable.
+
+To-do list and coding conventions (style guide) has been added to the 
+docs; please stick to it. Tkenv is now better documented; and so is the 
+cKSplit class.
+
+As usually, additions and changes in the User Manual are marked with 
+(new) in the text. It does not necessarily mean the feature documented 
+there is new; most probably only the documentation is.
+
+As usually, you're welcome to hack on the code and send in patches! 
+GNED is a very good target to start at. If you plan to do development,
+you can sign up on the OMNeT++ mailing list and exchange ideas with 
+others.
+
+
+In version of July, 1998
+------------------------
+
+Documentation now includes quickstart reference for OPNET users. 
+Additions to the User Manual are marked with (new!) in the text.
+
+Tkenv has been improved significantly. Better animation: message names 
+are displayed and message kind is color-coded. New connection inspector 
+shows a connection path graphically. Module inspector has been redesigned 
+in notepad-style. Right-click popup menus in inspector windows.
+Variables can be changed at run-time by cWatch inspectors. You can now 
+use the menu and play with the inspectors while simulation is running. 
+Several smaller improvements.
+
+Routing support through the cTopology class. Other new classes are 
+cWeightedStdDev, cLinkedList. Direct message encapsulation support. 
+cPar can now store void* pointers. Output scalar file added which 
+accumulates results from several simulation runs. Several refinements 
+on the class library, more informative error messages. 
+
+Improved makemake script supports large models which span across 
+multiple directories. Plove made more intuitive with mc-like key bindings 
+and right-click popup menus.
+
+
+In version of June 5, 1998
+--------------------------
+
+Documentation now comes also in HTML. We now have an LSM entry.
+
+Tkenv made the default user interface.
+
+Network graphics (module icons, connection arrows etc) and message
+flow animation has been added to Tkenv. Usefulness of Tkenv dramatically
+improved. Default graphics for models originally written without
+graphics (no modifications needed).
+
+By default, libraries are now dynamically linked which drastically reduces
+executable sizes. You can revert to static linking by editing in `configure'.
+You can load shared objects (e.g simple module code) at run-time
+(-l command-line option).
+
+Source directory tree changed to be more 'unix-like'.
+
+New histogram class with user-defined and equal-frequency cells added
+(thanks to Gabor Lencse), existing ones cleaned up and significantly
+enhanced.
+
+Wildcards (*,?) can be used in omnetpp.ini to supply values to several
+model parameters at a time. Ini file inclusion and multiple ini files
+support (via multiple -f command-line options) added. Total stack size 
+for the coroutines can now be given in the omnetpp.ini file.
+
+Several bug fixes and minor improvements on Plove, GNED etc.
+
+
+Version of May, 1998
+--------------------
+Has not been publicly announced.
+
+
+In version of March, 1998
+-------------------------
+
+An new interactive tool, Plove has been added. Plove is for analyzing
+and plotting output vector files. Plove uses gnuplot to do the actual
+work. In addition to viewing, you can save the gnuplot graphs to files
+(postscript, latex, pbm etc) with a click. Filtering the results
+before plotting (averaging, truncation, smoothing, etc) is possible.
+Some filters are built in, and you can easily create new filters or
+modify the existing ones.
+
+Portability: Unix and (with some limitations) Win95/NT
+
+
+In version of February, 1998
+----------------------------
+
+Type checking has been added to the NED language and the compiler.
+New operators have also been added (like binary and/or/xor, shifting etc).
+
+Now it is not necessary to declare module parameters and gates in .cc files
+(Module..End stuff can be left out).
+
+A new example program, HCube was added. It simulates an arbitrary-size
+hypercube network with a simple deflection routing.
+
+A configur script was added that -- on Unix platforms -- finds the
+installation directories of Tcl/Tk, X, PVM and Turbo Vision, and
+customizes the makefiles accordingly.
+
+The Jar compiler has been renamed to NEDC because the name 'Jar' was
+used by other software (a DOS archiver; Java tar on Solaris etc.)
+
+Some scripts in util/ have also been renamed.
+
+Now it is possible to specify values with time units (s,ms,us,m,h,d etc.)
+in omnetpp.ini.
+
+Misc improvements: some bugs fixed; some error messages in the sim. kernel
+made more informative etc.
+
+
+In version of December, 1997
+----------------------------
+
+A graphical model editor (GNED) is here. It's written entirely in Tcl/Tk.
+Try it. It is the first, simple version; there's more to come.
+
+The way of defining simple modules has been simplified a lot. Check out the
+manual or see the example programs!
+
+A new example program (fifo) was added that models a single-server queue and
+also demonstrates how to derive a simple module from another one.
+
+Important: the [All runs] ini file section has been renamed to [Parameters] to
+reduce misunderstandings.
+
+
+In version of October 15, 1997
+------------------------------
+
+Several member functions (and even classes) have been renamed for the sake
+of a more readable code as well as consistency in naming and style. The utils
+directory contains a Unix script (convert) to upgrade your files.
+
+The cKSplit class was added -- another, experimental on-line distribution
+approximation method.
+
+Several bugfixes and improvements, updated manual.
+
+The arg.list to the constructor of the histogram classes has changed --
+beware, the compiler might not warn you!
+
+
+In version of September 15, 1997
+--------------------------------
+
+Tkenv has been developed upon a lot -- try it with the improved Token Ring
+example!
+
+Parallel execution via PVM has been tested and significantly improved.
+Syncpoints (a tool for synchronization) were added. See the user manual
+for details. Go ahead and do Parallel Discrete Event Simulation (PDES)
+with OMNeT++!
+
+The implementation of the message queue (Future Event Set) has become more
+efficient: the underlying data structure has been changed to heap.
+
+Most important change in the simulation class library: cQueue's interface
+has changed. See the manual or the source code.
+
+Most important change in the ini file: The [General]/number-of-runs option
+has been replaced by the [Cmdenv]/runs-to-execute option and the
+-r command-line switch.
+
+Check the version.log files for the numerous other changes. Many bugfixes
+and code cleanups were made.
+
+Refman.doc is out of date, sorry! I'll try to catch up.
+
+----------
+Andras Varga
+

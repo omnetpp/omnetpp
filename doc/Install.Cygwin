@@ -1,0 +1,253 @@
+Installing omnet++ on windows NT
+================================
+
+From Richard Lyon (rlyon01@ozemail.com.au)
+
+I removed parts from this text which referred to OMNeT++ bugs that
+have been fixed since the writing of this document. --Andras
+
+
+1. Introduction
+
+Currently omnet++ is only supported on Microsoft Windows when used in
+conjunction with Borland C++ 5.0. I do not have this compiler installed
+and have no wish to purchase the product.
+
+CYGNUS Solutions produce a development environment for Microsoft Windows
+based around the GNU compiler and binary utilities. The following packages
+are included:
+
+   Development tools: binutils, bison, byacc, dejagnu, diff, expect,
+   flex, gas, gcc, gdb, itcl, ld, libstdc++, make, patch, tcl, tix, tk
+
+   User tools: ash, bash, bzip2, diff, fileutils, findutils, gawk,
+   grep, gzip, m4, sed, shellutils, tar, textutils, time
+
+The inclusion of bison, flex, tcl and tck make this development environment
+an ideal candidate for running omnet++. CYGNUS has named this product
+CYGWIN and released it under the GPL license. This means CYGWIN is free and
+the source code is available. Further details and downloading instructions
+may be found on the web at 
+
+    http://sourceware.cygnus.com/cygwin/top.html
+
+I have successfully used CYGWIN to install and run omnetpp under Windows
+NT 4.0. The command line and tcl/tk interfaces have been tested and work in
+a satisfactory manner.
+
+Given that CYGWIN is still in beta, there are bugs in the product. This
+document explains how I worked around these problems to complete the
+installation. It is hoped that other people will be motivated to use CYGWIN
+and omnet++ on computers with Microsoft Windows installed.
+
+2. Installing CYGWIN
+
+CYGWIN must be installed before omnet++. The latest full binary distribution
+should be downloaded from:
+
+    ftp://go.cygnus.com/pub/sourceware.cygnus.com/cygwin/latest/
+
+All you require is the single file 'full.exe' which is about 13.9 MB in size.
+In the same directory there is a readme.txt, which explains the installation.
+
+You will need to be logged into the Administrator account before starting the
+installation. Start the installation by running full.exe. First off, the
+installer will prompt you for a location to extract the temporary files it
+needs to install the release on your system.  The default should be fine for
+most people.
+
+Next it will ask you to choose an install location.  The default is
+`<system-drive>:\cygnus\cygwin-b20'.  Feel free to choose another location if
+you would prefer.
+
+Finally, it will ask you for the name of the Program Files folder shortcut to
+add.  By default, the installer will create a `Cygwin B20' entry in a folder
+called `Cygnus Solutions'.  When this step is completed, it will install the
+tools and exit.
+
+At this point, you should be able to look under the start menu and select
+"Cygwin B20".  This will pop up a bash shell with all special environment
+variables set up for you.  If you are running Windows 95 or 98 and are faced
+with the error message "Out of environment space", you need to increase the
+amount of environment space in your config.sys and try again.  Adding the
+line `shell=C:\command.com /e:4096 /p' should do the trick if `C:' is your
+system drive letter.
+
+There are two remaining things you should do from this prompt. First, you need
+to type `mkdir -p /tmp' to ensure that a directory for temporary files exists
+for programs that expect to find one there.
+
+Second, if you are installing the full distribution (`full.exe'), various
+programs will need to be able to find `/bin/sh'.  You should `mkdir -p /bin'
+and put a copy of `sh.exe' there, removing the older version, if present.
+You can use the `mount' utility to select which drive letter is mounted as
+`/'. See the Frequently Asked Questions (FAQ) file for more information on
+`mount'.
+
+If you should ever want to uninstall the tools, you may do so via the
+"Add/Remove Programs" control panel.
+
+It is a good idea to create a .bashrc for each user who will use CYGWIN. This
+should be stored in each users home directory. As an example, my initial
+.bashrc file contained:
+
+    export PS1='# '
+    alias ls='ls -aF'
+    alias ll='ls -l'
+    export BISONLIB=c:/cygnus/cygwin-b20/share/
+    export TCL_LIBRARY=c:/cygnus/cygwin-b20/share/tcl8.0
+    cd c:/usr/rlyon01
+
+The BISONLIB and TCL_LIBRARY are necessary to allow bison and tcl/tk to
+operate correctly. The home directory is c:\usr\rlyon01 and I intend to install
+omnetpp in c:\usr\rlyon01\omnetpp.
+
+An editor will be required during the installation. For unix diehards, it
+possible to compile and install vim or emacs (my favourite). A good NT port
+of emacs is available from:
+
+http://www.cs.washington.edu/homes/voelker/ntemacs.html
+
+3. Installing omnet++
+
+Download the omnetpp source code and documentation from the omnetpp site.
+Make sure you select to download the unix archive omnetpp.tgz.
+
+>From the startup menu open the bash shell. This a character based console,
+which works in a similar manner to the dos console window. The difference is
+that you use unix commands like ls, rm, mkdir, etc ...
+
+Copy the omnetpp archive to the directory where you want to install it
+(usually your home directory). Extract the archive using the command:
+
+    tar zxvf omnetpp.tgz
+
+A sub-directory called omnetpp will be created which will contain the simulator
+files. You should now add the following lines to your startup file .bashrc
+
+    export PATH=$PATH:~/omnetpp/bin
+    export LD_LIBRARY_PATH=~/omnetpp/lib
+
+For these variables to be included in the bash environment you will need to
+restart the bash shell before proceeding. All following commands in this
+section are entered on the bash command line.
+
+The omnetpp configure file now needs to be modified. Assuming you installed
+omnetpp in your home directory, the configure file is found at
+~/omnetpp/src/utils. For my particular installation I found it necessary
+to make the following modifications to the configuration file:
+
+    Line  50: SEARCH_DIRS="/usr* /opt /local $HOME"
+    Line  74: CFLAGS='-g'
+    Line  75: # CFLAGS='-O4 -DNDEBUG=1 -fomit-frame-pointer'
+    Line 114: X_LIBS='-lX11'
+    Line 115: TK_LIBS='-ltk -ltcl -ldl'
+    Line 124: SYS_LIBS="-ldl $SYS_LIBS"
+    Line 269: TK_LIBS="$TK_LIBS -ldl"
+
+are changed to
+
+    Line  50: SEARCH_DIRS="/cygnus"
+    Line  74: #CFLAGS='-g'
+    Line  75: CFLAGS='-O3 -DNDEBUG=1'
+    Line 114: X_LIBS=
+    Line 115: TK_LIBS='-ltk -ltcl'
+    Line 124: SYS_LIBS="$SYS_LIBS"
+    Line 269: TK_LIBS="$TK_LIBS"
+
+Save the new configuration file and switch to the omnetpp directory using
+cd ~/omnetpp. If you list this directory, note that CYGWIN has correctly
+installed the file links, just like in unix.
+
+Start the configuration process by running configure. This requires the
+following command to be entered:
+
+    ./configure
+
+The following text is displayed on the screen during the configuration process:
+
+----------
+Your PATH contains /usr/rlyon01/omnetpp/bin. Good.
+
+Searching (/cygnus) for Tcl/Tk, X, PVM etc. include and lib files
+
+Turbo Vision include files not found
+Turbo Vision library not found
+X11 library not found
+Pvm3 include files not found
+Pvm3 library not found
+
+Configuring all makefiles plus scripts in src/utils/
+----------
+
+This output indicates that turbo vision, X11 and pvm were not found. We
+are restricted to using the command line and tcl/tk omnetpp environments.
+
+The next step is to compile the source code. This process creates the basic
+simulation libraries, simulation tools and sets up a number of symbolic links.
+In addition, a number of samples are also compiled. To start the compilation
+enter the command:
+
+    ./makeall
+
+It takes a few minutes to complete all the compiling and linking (well on
+my machine anyway). The following output is displayed in the bash shell
+window:
+
+----------
+System components:
+ building nedc... OK
+ building sim_std... OK
+ skipping sim_pvm  (no PVM installation found by configure)
+ building envir... OK
+ building cmdenv... OK
+ building tkenv... OK
+ skipping tvenv  (no Turbo Vision installation found by configure)
+ building gned... OK
+ building utils... OK
+Updating soft links into /usr/rlyon01/omnetpp/lib...
+Models:
+ building support... OK
+Sample simulations:
+ building dyna... OK
+ building fddi... OK
+ building fifo... OK
+ building hcube... OK
+ building hist... OK
+ building nim... OK
+ building pvmex... OK
+ building token... OK
+----------
+
+You should now test all samples and check they run correctly. As an
+example, the dyna example is started by entering the following commands:
+
+    cd ~/omnetpp/samples/dyna
+    ./dyna
+
+By default the samples will run using the tcl/tk environment. You should see
+nice gui windows and dialogs. I was suprised at how good everything looked
+and worked.
+
+4. Comments
+
+I have tested a number of my own simulation models using the command line
+environment. These work correctly. Given that CYGWIN is still in beta I am
+sure that there will be other bugs which will only become apparent as more
+people use omnetpp and CYGWIN. I guess the warning here is to double check
+any simulation results you obtain.
+
+I only use Windows NT. Hopefully others will test omnet++ using Windows
+95/98.
+
+Any questions concerning the use of CYGWIN should be directed to the CYGWIN
+mail list at gnu-win32@cygnus.com. Omnetpp specific questions should be
+directed to mail list at omnetpp-l@it.swin.edu.au.
+
+If you find any errors in this document please let me know.
+
+Regards Richard Lyon
+(rlyon01@ozemail.com.au)
+
+
+

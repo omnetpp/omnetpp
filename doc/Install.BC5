@@ -1,0 +1,109 @@
+OMNeT++ Installation on Windows 95/NT
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+(last updated: August 12, 1998)
+
+To install
+~~~~~~~~~~
+1. create a directory, say C:\OMNETPP
+2. copy there the zip file
+3. say pkunzip -d omnetpp.zip
+
+
+Compiling the libraries and nedc
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This README discusses how to use OMNeT++ with Borland C++ 5.0.
+Other versions of BC (4.5, 5.02 etc.) should also work. If you're using
+a different compiler (e.g. MSVC), you have to do it on your own, but
+the experiences with BC5 may still be useful to you.
+
+IDE files are provided for all OMNeT++ libraries (Sim, Envir, Cmdenv, Tkenv;
+Tvenv is not really supported). You should be able to build the .lib files
+from the Borland C++ IDE without problem. You may need to adjust the include
+and lib paths in Options|Project --> Directories. 
+
+The project files assume you installed OMNeT++ into d:\omnetpp.
+
+Tkenv needs special treatment. You need to get the Tcl and Tk sources
+(I tried with 8.0 patchlevel 2: tcl80p2.zip and tk80p2.zip), build
+the libraries and install them properly. Tkenv includes the Tk header files
+so before compiling Tkenv, you may need to adjust the paths in
+Options|Project --> Directories.
+
+The default location of Tkenv's TCL script parts and the bitmaps directory
+is passed to the Tkenv as a compile-time external define. (At run-time,
+they can be overridden be the OMNETPP_TKENV_DIR and OMNETPP_BITMAP_PATH
+environment variables.) You'll probably need to adjust those paths too:
+they are in Options|Project --> Compiler --> Defines.
+
+To compile nedc, you'll need to get a bison/flex pair that works in the
+Win95/NT command box. The ones in the DJGPP V2 package are fine.
+Alternatively, you can build nedc on DOS with Borland C++ 3.1.
+
+
+To try an example program:
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+Pick one of the examples in the samples directory, for example nim.
+Load the project file in its directory and build it.
+
+By default, sample simulations will link with Tkenv. You can
+easily switch from one user interface to another by selecting
+the Exclude From Parent option for exactly of the omnetpp-cmdenv and
+omnetpp-tkenv source pools (right click --> Edit Local Options -->
+Topics/Build Attributes --> Exclude from parent).
+
+Run the simulation from the command prompt.
+
+You can look into omnetpp.ini to customize parameter settings etc.
+
+
+Setting up a project file for your simulations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+It is best starting by copying an example simulation's project file
+to a different name and modify that. What you will need to have in your
+project file:
+
+ o your simple module C++ sources;
+ o your NED files
+ o for each NED file, the C++ file it will compile into (the _n.cc file). 
+ o the OMNeT++ libraries: sim_std.lib, envir.lib, plus cmdenv.lib or
+   tkenv.lib, depending on which user interface you want to link in.
+   You also need the Tcl and Tk libraries if you're using Tkenv.
+
+If you started out from a project file in the distribution, you can
+easily switch from one user interface to another by selecting
+the Exclude From Parent option for exactly of the omnetpp-cmdenv and
+omnetpp-tkenv source pools (right click --> Edit Local Options -->
+Topics/Build Attributes --> Exclude from parent).
+
+
+Starting from scratch
+~~~~~~~~~~~~~~~~~~~~~
+If you want to make your own project files (maybe for porting to another
+compiler?), here are some hints:
+
+ o Compile as a 32-bit flat console application. None of the special
+   libraries (OWL, MFC, Class Library,  OCF etc) are needed.
+ o You have to turn off exception handling, it conflicts with the
+   coroutine library somehow. In the IDE: Options|Project -->
+   C++ Options --> Exception Handling/RTTI --> clear [ ] Enable exceptions.
+   It must be done both when compiling the libraries and when compiling
+   simulation applications.
+ o Borland C++ does not recognize the .cc extension as C++. You have to
+   teach it: Options|Tools --> select CppCompile --> Edit --> Advanced -->
+   add the .cc extension to the Translate From and Default For entries.
+   Do the same with the EditText tool.
+
+ o You also have to teach Borland C++ how to handle .ned files.
+   Select Options|Tools --> New. Fill in the dialog as follows:
+     Name: NEDCompile
+     Path: ..\..\src\nedc\nedc.exe
+     Command Line: $NOSWAP $CAP MSG(BORL2MSG) $EDNAME
+     Menu Text: NED Compile
+     Help Hint: OMNeT++ NED compiler
+   Select Advanced, and fill in the dialog:
+     Type: Translator
+     Translate From: .ned
+     Translate To: .cc
+     Default For: .ned
+
+--VA
