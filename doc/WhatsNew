@@ -3,74 +3,83 @@ What's New
 
 OMNeT++ 3.1 (Mar 2005)
 ----------------------
-- Several bugfixes since 3.0, mainly on new features introduced in version 3.0.
-  Most notably with RNG seeding and mapping, but several others as well.
-  See the ChangeLogs in the various source directories for a detailed list.
-  A big thank you to the user community for efficiently finding and reporting
-  the bugs in such a short time!
-- Examples of real-time and hybrid (hardware-in-the-loop) simulation; also
-  cScheduler interface refined, cRealTimeScheduler added
-- New class cStringTokenizer
-- cRuntimeError + [General] / debug-on-errors= ini option
-- opp_makemake, opp_nmakemake: implemented -X (ignore subdirectory during
-  recursive build) option
-- handling of included ini files, NED files loaded via preload-ned-files
-  ini file option and xml files included via xmldoc(): file is now searched
+This release contains several bugfixes since 3.0, as well as new features
+and new example simulations. To see a detailed list of problems fixed, check
+the ChangeLog files in the various source directories. Thanks all of you who
+have discovered and reported the problems.
+
+A brief list of enhancements since version 3.0:
+
+Real-time/hybrid simulation:
+- Real-time simulation has been implemented, and it is demonstrated by the
+  "Dyna/Real Time" sample simulation.
+
+- An example for hybrid (hardware-in-the-loop) simulation is now provided,
+  which is the "Sockets" sample simulation. It uses TCP sockets to communicate
+  with the outside world -- in real-life applications this will probably need
+  to be replaced with some other means of communication.
+
+- In relation to the above: new methods got added to the cScheduler interface.
+
+Simulation kernel:
+- New utility class: cStringTokenizer. It splits strings to "tokens" along
+  given separator characters (by default spaces).
+
+- Changed the way scheduled events or pending messages for deleted or finished
+  modules are handled. Before, these messages were deleted by the cSimpleModule
+  destructor, but this made it very long to clean up large models.
+  Now, messages are not deleted in the destructor, but left in the FES -- they
+  will be discarded in cSimulation::selectNextModule() when they're met.
+
+- cDisplayString's getTagArg() method was modified to never return NULL; it
+  returns "" instead when the requested tag is not in the display string.
+
+Configuration:
+- Ini file runs can be given descriptions, and they will be displayed in the
+  Tkenv run selection dialog. Just add the description="some text" line
+  under the [Run x] headings.
+
+- New omnetpp.ini entry to help debugging: [General]/debug-on-errors=
+  true/false. If turned on, runtime errors (such as scheduling a message
+  into the past) will cause the program to break into the C++ debugger
+  if one is running, or just-in-time debugging is enabled. This makes it
+  possible to investigate the context of the error (stack frames, variables
+  etc). It works by doing INT 3 (debugger interrupt) on Windows, and
+  raise(SIGABRT) on Linux.
+
+- Slight change in the rules of handling included ini files, NED list files
+  and all filenames mentioned in them. All filenames are now understood as
   relative to the location of the file which contains the reference,
   rather than relative to the current working directory of the simulation.
-  This change is NOT BACKWARDS COMPATIBLE, but only affects the IPv6Suite
-  model which has not been ported to 3.0 yet.
-- the following configuration settings are now relative to the
-  location of the ini file which contains them:
-    [General], load-libs=
-    [Cmdenv], output-file=
-    [Tkenv], bitmap-path=
-    [General], preload-ned-files=
-    [General] or [Run X], output-vector-file=
-    [General] or [Run X], output-scalar-file=
-    [General] or [Run X], snapshot-file=
-
-- bitmaps directory place/ renamed to misc/
-
-- nedc has now been removed from the distribution
-
-- The -h option is now understood by both Cmdenv and Tkenv, and handled
-  in a consistent way
+  This change is not backwards compatible, but only IPv6Suite was found to be
+  affected which has not even been ported to 3.0 yet.
 
 Tkenv:
-- ini file runs can be given descriptions, which appear in run selection dialog
-  in Tkenv. description="some text"
+- Implemented the "t=<string>,<color>" display string tag for connections.
+  It makes the given string to appear near the connection arrow.
 
-- implemented new display string tag:  tt=<tooltip-string>
+- Implemented new display string tag:  tt=<tooltip-string>
   It can be used in module, submodule, connection and msg display
   strings, and will cause the given string to appear in a tooltip.
 
-- implemented the "t=<string>,<color>" display string tag for connections.
+- Added support for -r <run-number> command-line option, which has the same
+  effect as (but takes priority over) the [Tkenv]/default-run ini file entry.
 
-- added support for -r <run-number> command-line option, which has the same
-  effect as (but takes priority over) [Tkenv]/default-run ini file entry.
+Misc:
+- opp_makemake, opp_nmakemake: implemented -X option (ignore subdirectory
+  during recursive build)
 
-General:
-- new omnetpp.ini entry:
-    [General]
-    debug-on-errors = true/false  (default: false)
-  If turned on, errors will cause the program to break into the C++
-  debugger. More previsely, cRuntimeError's constructor will do
-  __asm int 3 (debugger interrupt) on Windows, and raise(SIGABRT)
-  on other platforms (Linux, etc). This makes it possible to
-  investigate the context (stack frames, variables etc) of a runtime
-  error.
+- The -h command-line option is now understood by both Cmdenv and Tkenv,
+  and handled in a consistent way
 
-Sim:
-- csimplemodule.cc, csimul.cc: changed the way scheduled events or sent
-  messages for deleted or finished (see cSimpleModule::end()) modules
-  are handled. Before, these messages were deleted by the cSimpleModule
-  destructor, but this made it very long to clean up large models.
-  Now, messages are not deleted in the dtor, but left in the FES -- they
-  will be discarded in cSimulation::selectNextModule() when they're met.
+- The place/ icon directory was renamed to misc/ (Please update display
+  strings containing "i=place/..")
 
-- cDisplayString's getTagArg() method now never return NULLs (returns ""
-  instead)
+- nedc got removed from the distribution
+
+Known problem: OMNeT++ windows have no Maximize button under recent
+KDE versions. This is a known Tk+kwin problem which was fixed in Tk
+early 2004.
 
 
 
