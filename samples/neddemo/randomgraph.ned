@@ -22,13 +22,10 @@ module RandomGraph
         connectedness : numeric; // 0.0<x<1.0
     submodules:
         node: RndNode[n];
-            gatesizes:
-                in[n],
-                out[n];
             display: "i=ball2_s";
     connections nocheck:
         for i=0..n-1, j=0..n-1 do
-            node[i].out[j] --> node[j].in[i] if i!=j && uniform(0,1) < connectedness;
+            node[i].out++ --> node[j].in++ if i!=j && uniform(0,1) < connectedness;
         endfor;
 endmodule
 
