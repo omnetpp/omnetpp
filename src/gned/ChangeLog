@@ -1,6 +1,13 @@
+2004-12-14  Andras Varga
+
+	* auto-adjust parent module size when submodules are drawn/moved
+
 2004-12-10  Andras Varga
 
 	* default background color changed from #c0c0c0 to #d0d0d0 
+
+	* fixes: strip end-line spaces in generated NED file; extra newline
+	was generated after imports
 
 2004-11-29  Andras Varga
 

@@ -24,7 +24,11 @@ proc generateNed {key} {
     update_displaystrings $key
 
     debug "generating NED code..."
-    return [generateNedItem $key {} 0]
+    set out [generateNedItem $key {} 0]
+
+    # strip end-line spaces
+    regsub -all " +\n" $out "\n" out
+    return $out
 }
 
 proc generateNedItem {key indent islast} {
@@ -127,7 +131,7 @@ proc generate_imports {key indent islast} {
     append out "${indent}import "
     appendRightComment out $ned($key,right-comment)
     append out [generateChildren $key $indent]
-    appendTrailingComment out $ned($key,trailing-comment) ""
+    #appendTrailingComment out $ned($key,trailing-comment) ""
     return $out
 }
 

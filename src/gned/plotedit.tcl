@@ -326,6 +326,25 @@ proc resetModuleBounds {} {
     markCanvasDirty
 }
 
+# refreshModuleBounds --
+#
+# Adjust size and position of enclosing module, according to the
+# submodules in it. Should behave the same way as Tkenv.
+#
+proc refreshModuleBounds {} {
+    global ned gned canvas
+
+    set canv_id $gned(canvas_id)
+    set c $canvas($canv_id,canvas)
+    set modkey $canvas($canv_id,module-key)
+
+    # redraw parent module and connections
+    redrawItem $modkey
+    foreach key [connKeysOfItem $modkey] {
+        _redrawArrow $c $key
+    }
+}
+
 # selectOrMoveStart --
 #
 #   Bound to button-down in "select/move" mode.
@@ -677,6 +696,9 @@ proc selectOrMoveEnd {c x y} {
           set ned($key,disp-ysize) [expr int([lindex $centsiz 3])]
        }
 
+       # refresh parent module as well
+       refreshModuleBounds
+
     } elseif {$mouse(mode) == "reanchor" || $mouse(mode) == "endp-reanchor"} {
 
        # nothing to do
@@ -829,6 +851,9 @@ proc drawEnd {c x y} {
           drawItem $key
           markCanvasDirty
           updateTreeManager
+
+          # refresh parent module as well
+          refreshModuleBounds
        }
        $c delete $mouse(rect)
        set mouse(rect) ""
