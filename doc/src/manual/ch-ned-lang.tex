@@ -1263,7 +1263,9 @@ These interpretations are consistent with the XPath specification.
 
 Examples:
 
-%FIXME!!
+% FIXME verify
+% FIXME list becomes bold in HTML after a while
+
 \begin{itemize}
   \item \ttt{/} -- the root element
   \item \ttt{/foo} -- first <foo> child of the root element
@@ -1273,9 +1275,9 @@ Examples:
   \item \ttt{/foo[0]} -- first <foo> child of the root element
   \item \ttt{/foo[1]} -- second <foo> child of the root element
   \item \ttt{/foo[@color='green']} -- first <foo> child which has attribute "color" with value "green"
-  \item \ttt{//bar[1]} -- a <bar> anywhere under the root element which is the second <bar> among its siblings
-  \item \ttt{//*[@color='yellow']} -- an element under the root element with attribute color="yellow"
-  \item \ttt{//*[@color='yellow']/foo/bar} -- first <bar> child of first <foo> child of a "yellow-colored" node
+  \item \ttt{//bar[1]} -- a <bar> element anywhere which is the second <bar> among its siblings
+  \item \ttt{//*[@color='yellow']} -- any element anywhere which has attribute "color" with value "yellow"
+  \item \ttt{//*[@color='yellow']/foo/bar} -- first <bar> child of first <foo> child of a "yellow-colored" element anywhere
 \end{itemize}
 
 
