@@ -24,6 +24,7 @@
 #include <string.h>          // memcmp, memcpy, memset
 #include "macros.h"
 #include "cllist.h"
+#include "cexception.h"
 
 //=== Registration
 Register_Class( cLinkedList )
@@ -198,7 +199,7 @@ void cLinkedList::insertBefore(void *where, void *item)
     if (p)
        insbefore_llelem(p,item);
     else
-       opp_error("(%s)%s: insertBefore(w,o): item w not in list",
+       throw new cException("(%s)%s: insertBefore(w,o): item w not in list",
                          className(),fullName());
 }
 
@@ -208,7 +209,7 @@ void cLinkedList::insertAfter(void *where, void *item)
     if (p)
        insafter_llelem(p,item);
     else
-       opp_error("(%s)%s: insertAfter(w,o): item w not in list",
+       throw new cException("(%s)%s: insertAfter(w,o): item w not in list",
                          className(),fullName());
 }
 
@@ -227,7 +228,7 @@ void *cLinkedList::remove(void *item)
 void *cLinkedList::pop()
 {
     if (!tailp) {
-         opp_error("(%s)%s: pop(): list empty",className(),fullName());
+         throw new cException("(%s)%s: pop(): list empty",className(),fullName());
          return NULL;
     }
     return remove_llelem( tailp );

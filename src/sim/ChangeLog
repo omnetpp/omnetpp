@@ -1,3 +1,13 @@
+2002-06-27  Andras Varga
+
+	* cexception.cc/h added; most opp_error() calls replaced with 
+	throw new cException(...). Exceptions are caught in 
+	cSimpleModule::activate() (for activity()-based modules) and
+	in cSimulation::doOneEvent() (for handleMessage()-based modules),
+	and converted to 'conventional' opp_error(). 
+
+	* TBD: rethink error handling wrt exceptions!
+
 2002-06-24  Andras Varga
 
 	* ccoroutine.h/cc: use Fiber API on Windows

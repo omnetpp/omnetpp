@@ -30,6 +30,7 @@
 #include "cpar.h"
 #include "cllist.h"
 #include "ctopo.h"
+#include "cexception.h"
 
 //=== Registration
 Register_Class( cTopology )
@@ -39,7 +40,7 @@ Register_Class( cTopology )
 sTopoLinkIn *sTopoNode::in(int i)
 {
     if (i<0 || i>=num_in_links) {
-        opp_error("sTopoNode: invalid in() index %d",i);
+        throw new cException("sTopoNode: invalid in() index %d",i);
         return NO(sTopoLinkIn);
     }
     return (sTopoLinkIn *)in_links[i];
@@ -48,7 +49,7 @@ sTopoLinkIn *sTopoNode::in(int i)
 sTopoLinkOut *sTopoNode::out(int i)
 {
     if (i<0 || i>=num_out_links) {
-        opp_error("sTopoNode: invalid out() index %d",i);
+        throw new cException("sTopoNode: invalid out() index %d",i);
         return NO(sTopoLinkOut);
     }
     return (sTopoLinkOut *)(out_links+i);
@@ -83,7 +84,7 @@ void cTopology::info(char *buf)
 
 cTopology& cTopology::operator=(const cTopology&)
 {
-    opp_error("(%s)%s: operator= not implemented yet",className(),fullName());
+    throw new cException("(%s)%s: operator= not implemented yet",className(),fullName());
     return *this;
 }
 
@@ -233,7 +234,7 @@ void cTopology::extractFromNetwork(int (*selfunc)(cModule *,void *), void *data)
 sTopoNode *cTopology::node(int i)
 {
     if (i<0 || i>=num_nodes) {
-        opp_error("(%s)%s: invalid node index %d",className(),fullName(),i);
+        throw new cException("(%s)%s: invalid node index %d",className(),fullName(),i);
         return NO(sTopoNode);
     }
     return nodev+i;
@@ -263,7 +264,7 @@ void cTopology::unweightedSingleShortestPathsTo(sTopoNode *_target)
 
     if (!_target)
     {
-        opp_error("(%s)%s: ..ShortestPathTo(): target node is NULL",
+        throw new cException("(%s)%s: ..ShortestPathTo(): target node is NULL",
                           className(),name());
         return;
     }
@@ -309,7 +310,7 @@ void cTopology::weightedSingleShortestPathsTo(sTopoNode *_target)
 {
     if (!_target)
     {
-        opp_error("(%s)%s: ..ShortestPathTo(): target node is NULL",
+        throw new cException("(%s)%s: ..ShortestPathTo(): target node is NULL",
                           className(),name());
         return;
     }

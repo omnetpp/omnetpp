@@ -32,7 +32,7 @@ CPPOBJS= ccoroutine.o ctypes.o carray.o cgate.o cmodule.o csimul.o cobject.o cpa
 	 cstat.o chist.o cdensity.o cvarhist.o cpsquare.o cksplit.o task.o \
          cmessage.o cdetect.o cstk.o util.o cllist.o ctopo.o errmsg.o \
 	 cmsgheap.o cnetmod.o coutvect.o cqueue.o chead.o cwatch.o \
-         cpacket.o cfsm.o cenum.o cstruct.o
+         cpacket.o cfsm.o cenum.o cstruct.o cexception.o
 CPPOBJS_STD= std/netpack.o
 CPPOBJS_MPI= mpi/mpimod.o mpi/mpipack.o
 CPPOBJS_PVM= pvm/pvmmod.o pvm/pvmpack.o
@@ -167,6 +167,9 @@ cenum.o : cenum.cc
 cstruct.o : cstruct.cc
 	$(CXX) -c $(COPTS) cstruct.cc
 
+cexception.o : cexception.cc
+	$(CXX) -c $(COPTS) cexception.cc
+
 util.o : util.cc
 	$(CXX) -c $(COPTS) util.cc
 
@@ -215,6 +218,7 @@ carray.o: carray.cc \
   ../../include/macros.h \
   ../../include/errmsg.h \
   ../../include/carray.h \
+  ../../include/cexception.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
   ../../include/chead.h \
@@ -227,6 +231,7 @@ ccoroutine.o: ccoroutine.cc \
 cdensity.o: cdensity.cc \
   ../../include/macros.h \
   ../../include/cdensity.h \
+  ../../include/cexception.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
   ../../include/chead.h \
@@ -250,6 +255,7 @@ cenum.o: cenum.cc \
   ../../include/ctypes.h \
   ../../include/csimul.h \
   ../../include/cenum.h \
+  ../../include/cexception.h \
   ../../include/defs.h \
   ../../include/chead.h \
   ../../include/cobject.h \
@@ -258,6 +264,17 @@ cenum.o: cenum.cc \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/coutvect.h
+cexception.o: cexception.cc \
+  ../../include/cexception.h \
+  ../../include/csimul.h \
+  ../../include/errmsg.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/chead.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
+  ../../include/coutvect.h \
+  ../../include/cobject.h
 cfsm.o: cfsm.cc \
   ../../include/macros.h \
   ../../include/cfsm.h \
@@ -296,6 +313,7 @@ chist.o: chist.cc \
   ../../include/macros.h \
   ../../include/cdetect.h \
   ../../include/chist.h \
+  ../../include/cexception.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
   ../../include/chead.h \
@@ -307,6 +325,7 @@ cksplit.o: cksplit.cc \
   ../../include/macros.h \
   ../../include/cenvir.h \
   ../../include/cksplit.h \
+  ../../include/cexception.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
   ../../include/chead.h \
@@ -318,6 +337,7 @@ cksplit.o: cksplit.cc \
 cllist.o: cllist.cc \
   ../../include/macros.h \
   ../../include/cllist.h \
+  ../../include/cexception.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
   ../../include/chead.h \
@@ -327,6 +347,7 @@ cmessage.o: cmessage.cc \
   ../../include/macros.h \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
+  ../../include/cexception.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
   ../../include/chead.h \
@@ -351,6 +372,7 @@ cmodule.o: cmodule.cc \
   ../../include/cpar.h \
   ../../include/cnetmod.h \
   ../../include/cenvir.h \
+  ../../include/cexception.h \
   ../../include/defs.h \
   ../../include/cobject.h \
   ../../include/ccoroutine.h \
@@ -397,6 +419,7 @@ cobject.o: cobject.cc \
   ../../include/cenvir.h \
   ../../include/macros.h \
   ../../include/cobject.h \
+  ../../include/cexception.h \
   ../../include/defs.h \
   ../../include/util.h \
   ../../include/errmsg.h \
@@ -411,6 +434,7 @@ coutvect.o: coutvect.cc \
   ../../include/cmodule.h \
   ../../include/csimul.h \
   ../../include/cenvir.h \
+  ../../include/cexception.h \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/defs.h \
@@ -446,6 +470,7 @@ cpar.o: cpar.cc \
   ../../include/cmodule.h \
   ../../include/csimul.h \
   ../../include/cenvir.h \
+  ../../include/cexception.h \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/defs.h \
@@ -460,6 +485,7 @@ cpar.o: cpar.cc \
 cpsquare.o: cpsquare.cc \
   ../../include/macros.h \
   ../../include/cpsquare.h \
+  ../../include/cexception.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
   ../../include/chead.h \
@@ -470,6 +496,7 @@ cpsquare.o: cpsquare.cc \
 cqueue.o: cqueue.cc \
   ../../include/macros.h \
   ../../include/cqueue.h \
+  ../../include/cexception.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
   ../../include/chead.h \
@@ -484,6 +511,7 @@ csimul.o: csimul.cc \
   ../../include/cpar.h \
   ../../include/cnetmod.h \
   ../../include/cstat.h \
+  ../../include/cexception.h \
   ../../include/defs.h \
   ../../include/cobject.h \
   ../../include/ccoroutine.h \
@@ -499,6 +527,7 @@ cstat.o: cstat.cc \
   ../../include/cstat.h \
   ../../include/macros.h \
   ../../include/cdetect.h \
+  ../../include/cexception.h \
   ../../include/defs.h \
   ../../include/cobject.h \
   ../../include/util.h \
@@ -508,6 +537,7 @@ cstk.o: cstk.cc \
   ../../include/cstk.h \
   ../../include/util.h \
   ../../include/errmsg.h \
+  ../../include/cexception.h \
   ../../include/ccoroutine.h \
   ../../include/defs.h
 cstruct.o: cstruct.cc \
@@ -526,6 +556,7 @@ ctopo.o: ctopo.cc \
   ../../include/cpar.h \
   ../../include/cllist.h \
   ../../include/ctopo.h \
+  ../../include/cexception.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
   ../../include/chead.h \
@@ -543,6 +574,7 @@ ctypes.o: ctypes.cc \
   ../../include/cmodule.h \
   ../../include/macros.h \
   ../../include/ctypes.h \
+  ../../include/cexception.h \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/defs.h \
@@ -558,6 +590,7 @@ ctypes.o: ctypes.cc \
 cvarhist.o: cvarhist.cc \
   ../../include/macros.h \
   ../../include/cvarhist.h \
+  ../../include/cexception.h \
   ../../include/ctypes.h \
   ../../include/defs.h \
   ../../include/chead.h \
@@ -578,6 +611,7 @@ util.o: util.cc \
   ../../include/util.h \
   ../../include/csimul.h \
   ../../include/macros.h \
+  ../../include/cexception.h \
   ../../include/cwatch.h \
   ../../include/cpacket.h \
   ../../include/defs.h \

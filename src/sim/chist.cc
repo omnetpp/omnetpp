@@ -31,6 +31,7 @@
 #include "macros.h"
 #include "cdetect.h"
 #include "chist.h"
+#include "cexception.h"
 
 #define MIN(a,b) ((a)<(b) ? (a) : (b))
 #define MAX(a,b) ((a)>(b) ? (a) : (b))
@@ -162,7 +163,7 @@ double cEqdHistogramBase::pdf(double x) const
 {
     if (!transformed())
     {
-        opp_error("(%s)%s: pdf(x) cannot be called before histogram is transformed", className(),name());
+        throw new cException("(%s)%s: pdf(x) cannot be called before histogram is transformed", className(),name());
         return 0;
     }
 
@@ -174,7 +175,7 @@ double cEqdHistogramBase::pdf(double x) const
 
 double cEqdHistogramBase::cdf(double) const
 {
-    opp_error("(%s)%s: cdf() not implemented",className(), name());
+    throw new cException("(%s)%s: cdf() not implemented",className(), name());
     return 0.0;
 }
 
@@ -192,7 +193,7 @@ double cEqdHistogramBase::basepoint(int k) const
     else if (k==num_cells)
         return rangemax;
     else
-        {opp_error("(%s)%s: invalid basepoint index %u",className(),name(),k);return 0;}
+        throw new cException("(%s)%s: invalid basepoint index %u",className(),name(),k);
 }
 
 double cEqdHistogramBase::cell(int k) const
@@ -200,7 +201,7 @@ double cEqdHistogramBase::cell(int k) const
     if (k<num_cells)
         return cellv[k];
     else
-        {opp_error("(%s)%s: invalid cell index %u",className(),name(),k);return 0;}
+        throw new cException("(%s)%s: invalid cell index %u",className(),name(),k);
 }
 
 void cEqdHistogramBase::saveToFile(FILE *f) const

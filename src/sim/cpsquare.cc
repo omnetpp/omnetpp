@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include "macros.h"
 #include "cpsquare.h"
+#include "cexception.h"
 
 #ifdef USE_STD_NAMESPACE
 using std::endl;
@@ -88,7 +89,7 @@ cPSquare& cPSquare::operator=(const cPSquare& res)
 
 void cPSquare::giveError()
 {
-    opp_error("(%s)%s: setRange..() and setNumFirstVals() "
+    throw new cException("(%s)%s: setRange..() and setNumFirstVals() "
                      "makes no sense with cPSquare", className(), fullName());
 }
 
@@ -253,7 +254,7 @@ double cPSquare::random() const
     //if (num_obs==0)   // newer, from PUPPIS
     if (numobs<numcells+1)
     {
-        opp_error("(%s)%s: must collect at least num_cells values before random() can be used", className(),fullPath());
+        throw new cException("(%s)%s: must collect at least num_cells values before random() can be used", className(),fullPath());
         return 0.0;
     }
 

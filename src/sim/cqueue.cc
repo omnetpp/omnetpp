@@ -24,6 +24,7 @@
 #include <string.h>          // memcmp, memcpy, memset
 #include "macros.h"
 #include "cqueue.h"
+#include "cexception.h"
 
 //=== Registration
 Register_Class( cQueue )
@@ -118,7 +119,7 @@ cQueue& cQueue::operator=(const cQueue& queue)
 void cQueue::setup(CompareFunc cmp, bool a)
 {
     if (!empty())
-        opp_error("(%s)%s: setup() can only be called when queue is empty",
+        throw new cException("(%s)%s: setup() can only be called when queue is empty",
                   className(),fullName());
 
     compare=cmp; asc=a;
@@ -188,7 +189,7 @@ cObject *cQueue::remove_qelem(sQElem *p)
 void cQueue::insert(cObject *obj)
 {
     if (!obj) {
-        opp_error("(%s)%s: cannot insert NULL pointer in queue",className(),fullName());
+        throw new cException("(%s)%s: cannot insert NULL pointer in queue",className(),fullName());
         return;
     }
 
@@ -223,12 +224,12 @@ void cQueue::insert(cObject *obj)
 void cQueue::insertBefore(cObject *where, cObject *obj)
 {
     if (!obj) {
-        opp_error("(%s)%s: cannot insert NULL pointer in queue", className(),fullName());
+        throw new cException("(%s)%s: cannot insert NULL pointer in queue", className(),fullName());
         return;
     }
     sQElem *p = find_qelem(where);
     if (!p) {
-        opp_error("(%s)%s: insertBefore(w,o): object w=`%s' not in queue",
+        throw new cException("(%s)%s: insertBefore(w,o): object w=`%s' not in queue",
                   className(),fullName(),where->name());
         return;
     }
@@ -240,12 +241,12 @@ void cQueue::insertBefore(cObject *where, cObject *obj)
 void cQueue::insertAfter(cObject *where, cObject *obj)
 {
     if (!obj) {
-        opp_error("(%s)%s: cannot insert NULL pointer in queue", className(),fullName());
+        throw new cException("(%s)%s: cannot insert NULL pointer in queue", className(),fullName());
         return;
     }
     sQElem *p = find_qelem(where);
     if (!p) {
-        opp_error("(%s)%s: insertAfter(w,o): object w=`%s' not in queue",
+        throw new cException("(%s)%s: insertAfter(w,o): object w=`%s' not in queue",
                   className(),fullName(),where->name());
         return;
     }
@@ -280,7 +281,7 @@ cObject *cQueue::remove(cObject *obj)
 cObject *cQueue::pop()
 {
     if(!tailp) {
-        opp_error("(%s)%s: pop(): queue empty",className(),fullName());
+        throw new cException("(%s)%s: pop(): queue empty",className(),fullName());
         return NO(cObject);
     }
     return remove_qelem( tailp );

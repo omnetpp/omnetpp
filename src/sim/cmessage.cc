@@ -26,6 +26,7 @@
 #include "macros.h"
 #include "cmodule.h"
 #include "cmessage.h"
+#include "cexception.h"
 
 //=== registration
 Register_Class( cMessage )
@@ -166,44 +167,38 @@ void cMessage::_createparlist()
 
 void cMessage::setLength(long l)
 {
-    if (l<0) {opp_error("(%s)%s: setLength(): negative length %ld",className(),fullName(),l);}
+    if (l<0)
+        throw new cException("(%s)%s: setLength(): negative length %ld",className(),fullName(),l);
     len=l;
 }
 
 void cMessage::addLength(long l)
 {
     len+=l;
-    if (len<0) {opp_error("(%s)%s: addLength(): length became negative (%ld)",className(),fullName(),len);}
+    if (len<0)
+        throw new cException("(%s)%s: addLength(): length became negative (%ld)",className(),fullName(),len);
 }
 
 void cMessage::encapsulate(cMessage *msg)
 {
     if (encapmsg)
-    {
-        opp_error("(%s)%s: encapsulate(): another message already"
-                         " encapsulated",className(),fullName());
-        return;
-    }
+        throw new cException("(%s)%s: encapsulate(): another message already encapsulated", className(),fullName());
 
     if (msg)
     {
         if (msg->owner()!=&(simulation.contextSimpleModule()->locals))
-        {
-            opp_error("(%s)%s: encapsulate(): not owner of message",
-                             className(),fullName());
-            return;
-        }
+            throw new cException("(%s)%s: encapsulate(): not owner of message", className(),fullName());
         take( encapmsg = msg );
-
         len += encapmsg->len;
     }
 }
 
 cMessage *cMessage::decapsulate()
 {
-    if ((len>0) && encapmsg) len-=encapmsg->len;
-    if (len<0) {opp_error("(%s)%s: decapsulate(): msg length smaller than"
-                                 " encapsulated msg length",className(),fullName());}
+    if ((len>0) && encapmsg)
+        len-=encapmsg->len;
+    if (len<0)
+        throw new cException("(%s)%s: decapsulate(): msg length smaller than encapsulated msg length",className(),fullName());
 
     cMessage *msg = encapmsg;
     encapmsg = NULL;

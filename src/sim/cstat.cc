@@ -30,6 +30,7 @@
 #include "cstat.h"
 #include "macros.h"
 #include "cdetect.h"  //NL
+#include "cexception.h"
 
 //=========================================================================
 //=== Registration
@@ -88,7 +89,7 @@ void cStatistic::addAccuracyDetection(cAccuracyDetection *obj)  //NL
 
 void cStatistic::collect2(double, double)
 {
-    opp_error("(%s)%s: collect2() not implemented in %s",
+    throw new cException("(%s)%s: collect2() not implemented in %s",
                        className(), fullName(),className());
 }
 
@@ -106,7 +107,7 @@ void cStatistic::freadvarsf (FILE *f,  const char *fmt, ...)
     char *line_comment = strstr(line,"#=");
     if (fmt_comment && line_comment && strcmp(fmt_comment,line_comment)!=0)
     {
-        opp_error("(%s)%s: bad file format in loadFromFile(): "
+        throw new cException("(%s)%s: bad file format in loadFromFile(): "
                          "expected `%s' and got `%s'",
                          className(), fullName(),fmt,line);
         return;
@@ -264,7 +265,7 @@ void cWeightedStdDev::clearResult()
 
 double cWeightedStdDev::variance() const
 {
-    opp_error("(%s)%s: variance()/stddev() not implemented",
+    throw new cException("(%s)%s: variance()/stddev() not implemented",
                       className(), fullName());
     return 0.0;
 

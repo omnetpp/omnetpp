@@ -35,6 +35,7 @@
 #include "cstk.h"
 #include "util.h"
 #include "errmsg.h"
+#include "cexception.h"
 
 #ifndef __GNUC__        /* I couldn't find matherr() in Linux GNU C */
 #  define USE_MATHERR
@@ -77,7 +78,7 @@ int matherr(struct MATH_EXCEPTION *e)
         case TLOSS:     err="Total loss of prec."; break;
         default:        err="Unknown error";
       }
-      opp_error("Math error in %s(%g [,%g]): %s",
+      throw new cException("Math error in %s(%g [,%g]): %s",
                       e->name, e->arg1, e->arg2, err);
       e->retval = 0.0;
       return 1;
@@ -101,6 +102,6 @@ void fperr(int)
       _fpreset();
 #endif
       signal( SIGFPE, fperr);  // Because it was re-set to SIGDFL.
-      opp_error(eFPERR);        // Includes transfer(0)
+      throw new cException(eFPERR);        // Includes transfer(0)
       //exit(eFPERR);
 }

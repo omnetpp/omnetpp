@@ -33,6 +33,7 @@ This file is distributed WITHOUT ANY WARRANTY. See the file
 #include "cmodule.h"  // for cModulePar
 #include "csimul.h"   // for cModulePar
 #include "cenvir.h"
+#include "cexception.h"
 
 //==============================================
 //=== Registration
@@ -49,7 +50,7 @@ void cDoubleExpression::getAsText(char *buf, int maxlen)
 
 bool cDoubleExpression::parseText(const char *text)
 {
-    opp_error("cDoubleExpression: parseText() does not work with compiled expressions");
+    throw new cException("cDoubleExpression: parseText() does not work with compiled expressions");
     return false;
 }
 
@@ -392,7 +393,7 @@ cPar& cPar::setDoubleValue(sXElem *x, int n)
         return ind.par->setDoubleValue(x,n);
 
     if (!x)
-        {opp_error(eBADINIT,className(),name(), 'X');return *this;}
+        throw new cException(eBADINIT,className(),name(), 'X');
 
     beforeChange();
     deleteold();
@@ -432,7 +433,7 @@ cPar& cPar::setDoubleValue(cDoubleExpression *p)
         return ind.par->setDoubleValue(p);
 
     if (!p)
-        {opp_error(eBADINIT,className(),name(), 'P');return *this;}
+        throw new cException(eBADINIT,className(),name(), 'P');
 
     beforeChange();
     deleteold();
@@ -449,7 +450,7 @@ cPar& cPar::setDoubleValue(cStatistic *res)
         return ind.par->setDoubleValue(res);
 
     if (!res)
-        {opp_error(eBADINIT,className(),name(), 'T');return *this;}
+        throw new cException(eBADINIT,className(),name(), 'T');
 
     beforeChange();
     deleteold();
@@ -505,14 +506,14 @@ cPar& cPar::setRedirection(cPar *par)
         return ind.par->setRedirection(par);
 
     if (!par)
-        {opp_error(eBADINIT,className(),name(), 'I');return *this;}
+        throw new cException(eBADINIT,className(),name(), 'I');
 
     // check for circular references
     cPar *p = par;
     while (p)
     {
         if (p==this)
-            {opp_error(eCIRCREF,className(),name());return *this;}
+            throw new cException(eCIRCREF,className(),name());
         p = p->isRedirected() ? p->ind.par : NO(cPar);
     }
 
@@ -530,7 +531,7 @@ void cPar::configPointer( VoidDelFunc delfunc, VoidDupFunc dupfunc,
                       size_t itemsize)
 {
     if (typechar!='P')
-        opp_error("(%s)%s: configPointer(): type is '%c';"
+        throw new cException("(%s)%s: configPointer(): type is '%c';"
                   " should be 'P'",className(),name(),typechar);
     else
     {
@@ -552,7 +553,7 @@ const char *cPar::stringValue()
     if (typechar=='S')
          return ss.sht ? ss.str : ls.str;
     else
-         {opp_error(eBADCAST,className(),name(),typechar,'S');return NULL;}
+         throw new cException(eBADCAST,className(),name(),typechar,'S');
 }
 
 //
@@ -579,7 +580,7 @@ bool cPar::boolValue()
     else if (isNumeric())
         return doubleValue()!=0;
     else
-        {opp_error(eBADCAST,className(),name(),typechar,'B');return false;}
+        throw new cException(eBADCAST,className(),name(),typechar,'B');
 }
 
 long cPar::longValue()
@@ -593,7 +594,7 @@ long cPar::longValue()
     else if (isNumeric())
         return (long)doubleValue();
     else
-        {opp_error(eBADCAST,className(),name(),typechar,'L');return 0L;}
+        throw new cException(eBADCAST,className(),name(),typechar,'L');
 }
 
 double cPar::doubleValue()
@@ -618,7 +619,7 @@ double cPar::doubleValue()
                func.argc==2 ? ((MathFunc2Args)func.f)(func.p1,func.p2) :
                               ((MathFunc3Args)func.f)(func.p1,func.p2,func.p3);
     else
-        {opp_error(eBADCAST,className(),name(),typechar,'D');return 0.0;}
+        throw new cException(eBADCAST,className(),name(),typechar,'D');
 }
 
 void *cPar::pointerValue()
@@ -630,7 +631,7 @@ void *cPar::pointerValue()
     if (typechar=='P')
         return ptr.ptr;
     else
-        {opp_error(eBADCAST,className(),name(),typechar,'P'); return NULL;}
+        throw new cException(eBADCAST,className(),name(),typechar,'P');
 }
 
 cObject *cPar::objectValue()
@@ -642,7 +643,7 @@ cObject *cPar::objectValue()
     if (typechar=='O')
         return obj.obj;
     else
-        {opp_error(eBADCAST,className(),name(),typechar,'O'); return NULL;}
+        throw new cException(eBADCAST,className(),name(),typechar,'O');
 }
 
 bool cPar::isNumeric() const
@@ -681,8 +682,8 @@ bool cPar::equalsTo(cPar *par)
         case 'T': return dtr.res == par->dtr.res;
         case 'P': return ptr.ptr == par->ptr.ptr;
         case 'O': return obj.obj == par->obj.obj;
-        case 'X': opp_error("(%s): equalsTo() with X type not implemented",className());
-        case 'C': opp_error("(%s): equalsTo() with C type not implemented",className());
+        case 'X': throw new cException("(%s): equalsTo() with X type not implemented",className());
+        case 'C': throw new cException("(%s): equalsTo() with C type not implemented",className());
         default: return 0;
     }
 }
@@ -922,7 +923,7 @@ cPar& cPar::read()
        strcpy(buf,s);
        bool success = setFromText(buf,'?');
        if (!success)
-             opp_error( "Wrong value `%s' for parameter `%s'",
+             throw new cException( "Wrong value `%s' for parameter `%s'",
                            buf, fullPath() );
        return *this;
     }
@@ -940,7 +941,7 @@ cPar& cPar::read()
             esc = ev.gets("Enter unnamed parameter:",buf);
 
         if (esc) {
-            // opp_error(eCANCEL); -- already issued in cEnvir::gets()
+            // throw new cException(eCANCEL); -- already issued in cEnvir::gets()
             return *this;
         }
 
@@ -972,34 +973,34 @@ double cPar::evaluate()
        sXElem& e = expr.xelem[i];
        switch( toupper(e.type) ) {
            case 'D':
-             if(tos>=stksize - 1) {opp_error(eBADEXP,className(),name());return 0.0;}
+             if(tos>=stksize - 1) throw new cException(eBADEXP,className(),name());
              stk[++tos] = e.d;
              break;
            case 'P':
            case 'R':
-             if(!e.p || tos>=stksize - 1) {opp_error(eBADEXP,className(),name());return 0.0;}
+             if(!e.p || tos>=stksize - 1) throw new cException(eBADEXP,className(),name());
              stk[++tos] = (double)(*e.p);
              break;
            case '0':
-             if(!e.f0) {opp_error(eBADEXP,className(),name());return 0.0;}
+             if(!e.f0) throw new cException(eBADEXP,className(),name());
              stk[++tos] = e.f0();
              break;
            case '1':
-             if(!e.f1 || tos<0) {opp_error(eBADEXP,className(),name());return 0.0;}
+             if(!e.f1 || tos<0) throw new cException(eBADEXP,className(),name());
              stk[tos] = e.f1( stk[tos] );
              break;
            case '2':
-             if(!e.f2 || tos<1) {opp_error(eBADEXP,className(),name());return 0.0;}
+             if(!e.f2 || tos<1) throw new cException(eBADEXP,className(),name());
              stk[tos-1] = e.f2( stk[tos-1], stk[tos] );
              tos--;
              break;
            case '3':
-             if(!e.f3 || tos<2) {opp_error(eBADEXP,className(),name());return 0.0;}
+             if(!e.f3 || tos<2) throw new cException(eBADEXP,className(),name());
              stk[tos-2] = e.f3( stk[tos-2], stk[tos-1], stk[tos] );
              tos-=2;
              break;
            case '@':
-             if(!e.f2 || tos<1) {opp_error(eBADEXP,className(),name());return 0.0;}
+             if(!e.f2 || tos<1) throw new cException(eBADEXP,className(),name());
              switch(e.op) {
                 case '+':
                    stk[tos-1] = stk[tos-1] + stk[tos];
@@ -1054,19 +1055,19 @@ double cPar::evaluate()
                    tos-=2;
                    break;
                 default:
-                 opp_error(eBADEXP,className(),name());
+                   throw new cException(eBADEXP,className(),name());
                    return 0.0;
              }
              break;
            default:
-             opp_error(eBADEXP,className(),name());
+             throw new cException(eBADEXP,className(),name());
              return 0.0;
        }
     }
     if(tos==0)
         return stk[tos];
     else
-        {opp_error(eBADEXP,className(),name());return 0.0;}
+        throw new cException(eBADEXP,className(),name());
 }
 
 double cPar::fromstat()
@@ -1074,7 +1075,7 @@ double cPar::fromstat()
     if (typechar=='T')
         return  dtr.res->random();
     else
-        {opp_error(eBADCAST,className(),name(),typechar,'T');return 0.0;}
+        throw new cException(eBADCAST,className(),name(),typechar,'T');
 }
 
 

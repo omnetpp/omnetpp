@@ -26,6 +26,7 @@
 #include "ctypes.h"
 #include "csimul.h"
 #include "cenum.h"
+#include "cexception.h"
 
 //=== Registration
 Register_Class( cEnum );
@@ -131,7 +132,7 @@ void cEnum::insert(int key, const char *str)
     if (vect[k].key == key && vect[k].string && strcmp(vect[k].string, str))
       {
         // oops! same keys but different strings!
-        opp_error("Key mismatch for enum %s: %s and %s have the same value (%d)\n",
+        throw new cException("Key mismatch for enum %s: %s and %s have the same value (%d)\n",
                 name(), vect[k].string, str, key);
       }
     else if (vect[k].key != key)

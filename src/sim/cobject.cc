@@ -29,6 +29,7 @@
 #include "cenvir.h"
 #include "macros.h"
 #include "cobject.h"
+#include "cexception.h"
 
 //==========================================================================
 //=== GLOBAL VARIABLES
@@ -166,7 +167,7 @@ cObject& cObject::operator=(const cObject&)
 
 void cObject::copyNotSupported() const
 {
-    opp_error(eCANTCOPY,className(),name());
+    throw new cException(eCANTCOPY,className(),name());
 }
 
 void cObject::info(char *buf)
@@ -327,7 +328,7 @@ TInspector *cObject::inspector(int type, void *data)
     cInspectorFactory *p = findInspectorFactory(inspectorFactoryName());
     if (!p)
     {
-        opp_error("Inspector factory object '%s' for class '%s' not found",
+        throw new cException("Inspector factory object '%s' for class '%s' not found",
                          inspectorFactoryName(), className());
         return NO(TInspector);
     }

@@ -55,9 +55,12 @@ cCoroutine::~cCoroutine()
 
 bool cCoroutine::setup(CoroutineFnp fnp, void *arg, unsigned stack_size )
 {
+    // stack_size sets the *committed* stack size; *reserved* (=available) 
+    // stack size is 1MB by default; this allows ~2048 coroutines in a 
+    // 2GB address space
     stacksize = stack_size;
     lpFiber = CreateFiber(stack_size, (LPFIBER_START_ROUTINE)fnp, arg);
-    return true;
+    return lpFiber!=NULL;
 }
 
 bool cCoroutine::stackOverflow() const

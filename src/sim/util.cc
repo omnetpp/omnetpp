@@ -38,6 +38,7 @@
 #include "util.h"
 #include "csimul.h"  // simulation.error()
 #include "macros.h"  // Define_Function()
+#include "cexception.h"
 
 
 // random number seeds:
@@ -70,14 +71,14 @@ long randseed()
 long genk_randseed(int gen_nr)
 {
        if (gen_nr<0 || gen_nr>=NUM_RANDOM_GENERATORS)
-          {opp_error("Invalid random number generator %d",gen_nr);return 0;}
+          throw new cException("Invalid random number generator %d",gen_nr);
        return seeds[gen_nr];
 }
 
 long randseed(long seed)
 {
        if (seed<=0 || seed>INTRAND_MAX)
-          {opp_error("Invalid random number seed %ld",seed);return 0;}
+          throw new cException("Invalid random number seed %ld",seed);
 
        long res = seeds[0];
        seeds[0] = seed;
@@ -87,9 +88,9 @@ long randseed(long seed)
 long genk_randseed(int gen_nr, long seed)
 {
        if (gen_nr<0 || gen_nr>=NUM_RANDOM_GENERATORS)
-          {opp_error("Invalid random number generator %d",gen_nr);return 0;}
+          throw new cException("Invalid random number generator %d",gen_nr);
        if (seed<=0 || seed>INTRAND_MAX)
-          {opp_error("Invalid random number seed %ld",seed);return 0;}
+          throw new cException("Invalid random number seed %ld",seed);
 
        long res = seeds[gen_nr];
        seeds[gen_nr] = seed;
@@ -122,7 +123,7 @@ long intrand()
 long genk_intrand(int gen_nr)
 {
      if (gen_nr<0 || gen_nr>=NUM_RANDOM_GENERATORS)
-        {opp_error("Invalid random number generator %d",gen_nr);return 0;}
+        throw new cException("Invalid random number generator %d",gen_nr);
 
      return opp_nextrand(seeds[gen_nr]);
 }
@@ -139,9 +140,9 @@ long intrand(long r)
      if (r>0)
          return intrand()%r;   // good if r<<MAX_LONG
      else if (r==0)
-         opp_error("intrand(r) called with r=0 (cannot generate 0<=x<0 integer)");
+         throw new cException("intrand(r) called with r=0 (cannot generate 0<=x<0 integer)");
      else
-         opp_error("intrand(r) called with negative r argument");
+         throw new cException("intrand(r) called with negative r argument");
      return 0L;
 }
 
@@ -150,9 +151,9 @@ long genk_intrand(int gen_nr, long r)
      if (r>0)
          return genk_intrand(gen_nr)%r;   // good if r<<MAX_LONG
      else if (r==0)
-         opp_error("genk_intrand(g,r) called with r=0 (cannot generate 0<=x<0 integer)");
+         throw new cException("genk_intrand(g,r) called with r=0 (cannot generate 0<=x<0 integer)");
      else
-         opp_error("genk_intrand(g,r) called with negative r argument");
+         throw new cException("genk_intrand(g,r) called with negative r argument");
      return 0L;
 }
 
@@ -520,7 +521,7 @@ int opp_vsscanf(const char *s, const char *fmt, va_list va)
             }
             else
             {
-                opp_error("opp_vsscanf: unsupported format '%s'",fmt);
+                throw new cException("opp_vsscanf: unsupported format '%s'",fmt);
                 return k;
             }
         }
@@ -535,7 +536,7 @@ int opp_vsscanf(const char *s, const char *fmt, va_list va)
         }
         else
         {
-            opp_error("opp_vsscanf: unexpected char in format: '%s'",fmt);
+            throw new cException("opp_vsscanf: unexpected char in format: '%s'",fmt);
             return k;
         }
     }

@@ -26,6 +26,7 @@
 #include "macros.h"
 #include "errmsg.h"
 #include "carray.h"
+#include "cexception.h"
 
 //=== Registration
 Register_Class( cBag )
@@ -304,7 +305,7 @@ void cArray::clear()
 int cArray::add(cObject *obj)
 {
     if (!obj) {
-        opp_error("(%s)%s: cannot insert NULL pointer",className(),fullName());
+        throw new cException("(%s)%s: cannot insert NULL pointer",className(),fullName());
         return -1;
     }
 
@@ -337,7 +338,7 @@ int cArray::add(cObject *obj)
 int cArray::addAt(int m, cObject *obj)
 {
     if (!obj) {
-        opp_error("(%s)%s: cannot insert NULL pointer",className(),fullName());
+        throw new cException("(%s)%s: cannot insert NULL pointer",className(),fullName());
         return -1;
     }
 
@@ -345,13 +346,13 @@ int cArray::addAt(int m, cObject *obj)
     {
         if (m<0)
         {
-           opp_error("(%s)%s: addAt(): negative position %d",
+           throw new cException("(%s)%s: addAt(): negative position %d",
                             className(),fullPath(),m);
            return -1;
         }
         if (vect[m]!=NULL)
         {
-           opp_error("(%s)%s: addAt(): position %d already used",
+           throw new cException("(%s)%s: addAt(): position %d already used",
                             className(),fullPath(),m);
            return -1;
         }

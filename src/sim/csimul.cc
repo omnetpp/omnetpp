@@ -36,6 +36,7 @@
 #include "cpar.h"
 #include "cnetmod.h"
 #include "cstat.h"
+#include "cexception.h"
 
 
 //==========================================================================
@@ -166,11 +167,11 @@ static bool _do_writesnapshot(cObject *obj, bool beg, ostream& s)
 bool cSimulation::snapshot(cObject *object, const char *label)
 {
     if (!object)
-        {opp_error("snapshot(): object pointer is NULL");return false;}
+        throw new cException("snapshot(): object pointer is NULL");
 
     ostream *osptr = ev.getStreamForSnapshot();
     if (!osptr)
-        {opp_error("Could not create stream for snapshot"); return false;}
+        throw new cException("Could not create stream for snapshot");
 
     ostream& os = *osptr;
 
@@ -204,7 +205,7 @@ bool cSimulation::snapshot(cObject *object, const char *label)
     bool success = !os.fail();
     ev.releaseStreamForSnapshot(&os);
 
-    if (!success) opp_error("Could not write snapshot");
+    if (!success) throw new cException("Could not write snapshot");
     return success;
 }
 
@@ -266,7 +267,7 @@ void cSimulation::del(int id)
 {
     if (id<0 || id>last_id)
     {
-        opp_error("cSimulation::del(): module id %d out of range",id);
+        throw new cException("cSimulation::del(): module id %d out of range",id);
         return;
     }
 
@@ -295,7 +296,7 @@ cModule *cSimulation::moduleByPath(const char *path) const
         else
         {
             if (s[strlen(s)-1]!=']') {
-                opp_error("moduleByPath(): syntax error in path `%s'", path);
+                throw new cException("moduleByPath(): syntax error in path `%s'", path);
                 return NULL;
             }
             *b='\0';
@@ -334,15 +335,13 @@ void cSimulation::checkTimes()
 
 bool cSimulation::setupNetwork(cNetworkType *network, int run_num)
 {
+    // FIXME handle exceptions during the setup process!
+
     // checks
     err = eOK;
 
     if (!network || !network->setupfunc)
-    {
-        // bad network
-        opp_error(eSETUP);
-        return false;
-    }
+        throw new cException(eSETUP);
 
     // set run number
     run_number = run_num;
@@ -458,7 +457,7 @@ void cSimulation::deleteNetwork()
 
     if (runningmodp!=NULL)
     {
-        opp_error("Attempt to delete network during simulation");
+        throw new cException("Attempt to delete network during simulation");
         return;
     }
 
@@ -563,7 +562,7 @@ cSimpleModule *cSimulation::selectNextModule()
     cSimpleModule *modp = (cSimpleModule *)vect[msg->tomod];
     if (modp==NULL)
     {
-        opp_error("Message's destination module no longer exists");
+        throw new cException("Message's destination module no longer exists");
         return NULL;
     }
     if (modp->moduleState()==sENDED)
@@ -575,7 +574,7 @@ cSimpleModule *cSimulation::selectNextModule()
         }
         else
         {
-            opp_error("Message's destination module `%s' already terminated",
+            throw new cException("Message's destination module `%s' already terminated",
                             modp->fullPath());
             return NULL;
         }
@@ -594,7 +593,7 @@ int cSimulation::transferTo(cSimpleModule *sm)
     if (sm==contextmodp)
         return 0;
     if (sm==NULL)
-        {opp_error("transferTo(): attempt to transfer to NULL");return -1;}
+        throw new cException("transferTo(): attempt to transfer to NULL");
     runningmodp = sm;
     setContextModule( sm );
     cCoroutine::switchTo(sm->coroutine);     // stack switch
@@ -605,23 +604,30 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
 {
     if (mod->usesActivity())
     {
-       transferTo( mod );
+        transferTo( mod );
 
-       // check stack overflow, but only if this module still exists
-       //   (note: currentmod_was_deleted is set by runningmod_deleter)
-       if (currentmod_was_deleted)
-          currentmod_was_deleted = false;
-       else
-          if (mod->stackOverflow())
-             opp_error("Stack violation (%s stack too small?) in module `%s'",
-                       mod->className(),mod->fullPath());
+        // check stack overflow, but only if this module still exists
+        //   (note: currentmod_was_deleted is set by runningmod_deleter)
+        if (currentmod_was_deleted)
+            currentmod_was_deleted = false;
+        else
+            if (mod->stackOverflow())
+                throw new cException("Stack violation in module `%s' (%s stack too small?)",
+                          mod->fullPath(), mod->className());
     }
     else
     {
         // call handleMessage() in the module's context
         setContextModule( mod );
         cMessage *msg = msgQueue.getFirst();
-        mod->handleMessage( msg );
+
+        try {
+            mod->handleMessage( msg );
+        }
+        catch (cException *e) {
+            opp_error(e->errorMessage()); // FIXME set error code! needs new throw new cException()
+            delete e;
+        }
         setGlobalContext();
     }
 }

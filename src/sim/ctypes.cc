@@ -34,6 +34,7 @@
 #include "cmodule.h"
 #include "macros.h"
 #include "ctypes.h"
+#include "cexception.h"
 
 //=== Functions  (register them for findFunction())
 Define_Function( acos,  1 )
@@ -165,7 +166,7 @@ cModuleInterface::~cModuleInterface()
 
 cModuleInterface& cModuleInterface::operator=(const cModuleInterface&)
 {
-    opp_error("cModuleInterface cannot copy itself!");
+    throw new cException("cModuleInterface cannot copy itself!");
     return *this;
 }
 
@@ -181,7 +182,7 @@ void cModuleInterface::allocate( int ngte, int npram, int nmach )
     machinev = new sMachineInfo[nmachine];
 
     if ((ngate&&!gatev) || (nparam&&!paramv) || (nmachine&&!machinev))
-        opp_error(eNOMEM);
+        throw new cException(eNOMEM);
 }
 
 void cModuleInterface::addParametersGatesTo( cModule *module)
@@ -212,7 +213,7 @@ void cModuleInterface::checkParametersOf( cModule *mod )
         if (!strchr(paramv[i].types, '*') &&
             !strchr(paramv[i].types, par->type()))
         {
-           opp_error("Module declaration doesn't allow type `%c'"
+           throw new cException("Module declaration doesn't allow type `%c'"
                             " for parameter `%s'",
                             par->type(), par->fullPath());
         }
@@ -274,13 +275,13 @@ void cModuleInterface::check_consistency()
     return;
 
     error1:
-    opp_error("Inconsistent module interfaces (Interface..End) for `%s':"
+    throw new cException("Inconsistent module interfaces (Interface..End) for `%s':"
                      " %s does not match",
                      name(), what);
     return;
 
     error2:
-    opp_error("Inconsistent module interfaces (Interface..End) for `%s':"
+    throw new cException("Inconsistent module interfaces (Interface..End) for `%s':"
                      " %s `%s' (#%d) do not match",
                      name(), what, which, id);
     return;
@@ -382,7 +383,7 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, bool local
     if (!iface)
         iface = findModuleInterface( interface_name );
     if (!iface)
-        {opp_error(eNOMODIF, interface_name, name()); return mod;}
+        throw new cException(eNOMODIF, interface_name, name());
 
     // add parameters and gates to the new module
     iface->addParametersGatesTo( mod );
@@ -397,7 +398,7 @@ void cModuleType::buildInside(cModule *mod)
     if (!iface)
         iface = findModuleInterface( interface_name );
     if (!iface)
-        {opp_error(eNOMODIF, interface_name, name()); return;}
+        throw new cException(eNOMODIF, interface_name, name());
 
     iface->checkParametersOf( mod );
     if (!simulation.ok()) return;
@@ -504,7 +505,7 @@ void *createOne(const char *classname)
     cClassRegister *p = (cClassRegister *)classes.find( classname );
     if (!p)
     {
-        opp_error("Registration object for class \"%s\" not found", classname);
+        throw new cException("Registration object for class \"%s\" not found", classname);
         return NULL;
     }
     return p->createOne();
@@ -523,7 +524,7 @@ TInspector *cInspectorFactory::createInspectorFor(cObject *object,int type,void 
 {
     if (!inspFactoryFunc)
     {
-        opp_error("(%s)%s: factory function not set",className(),fullName());
+        throw new cException("(%s)%s: factory function not set",className(),fullName());
         return 0;
     }
     return (*inspFactoryFunc)(object,type,data);

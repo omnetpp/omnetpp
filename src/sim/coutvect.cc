@@ -26,6 +26,7 @@
 #include "cmodule.h"
 #include "csimul.h"
 #include "cenvir.h"
+#include "cexception.h"
 
 
 cOutVector::cOutVector(const char *name, int tupl) : cObject(name)
@@ -40,7 +41,7 @@ cOutVector::cOutVector(const char *name, int tupl) : cObject(name)
     if (tuple!=1 && tuple!=2)
     {
         tuple = 0;
-        opp_error("(%s)%s: constructor: invalid value (%d) for tuple; supported values are 1 and 2", className(), fullPath(), tupl);
+        throw new cException("(%s)%s: constructor: invalid value (%d) for tuple; supported values are 1 and 2", className(), fullPath(), tupl);
         return;
     }
 }
@@ -54,7 +55,7 @@ cOutVector::~cOutVector()
 void cOutVector::setName(const char *name)
 {
     if (handle)
-        {opp_error("(%s)%s: setName(): changing name of an output vector after record() calls is not allowed", className(), fullPath());return;}
+        throw new cException("(%s)%s: setName(): changing name of an output vector after record() calls is not allowed", className(), fullPath());
     cObject::setName(name);
     return;
 }
@@ -72,7 +73,7 @@ bool cOutVector::record(double value)
 {
     // check tuple
     if (tuple!=1)
-        {opp_error(eNUMARGS,className(),fullPath(),1);return false;}
+        throw new cException(eNUMARGS,className(),fullPath(),1);
 
     num_received++;
 
@@ -97,7 +98,7 @@ bool cOutVector::record(double value1, double value2)
 {
     // check tuple
     if (tuple!=2)
-        {opp_error(eNUMARGS,className(),fullPath(),2);return false;}
+        throw new cException(eNUMARGS,className(),fullPath(),2);
 
     num_received++;
 

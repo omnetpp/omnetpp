@@ -26,6 +26,7 @@
 #include "macros.h"
 #include "cenvir.h"
 #include "cksplit.h"
+#include "cexception.h"
 
 #ifdef USE_STD_NAMESPACE
 using std::endl;
@@ -665,7 +666,7 @@ double cKSplit::pdf (double x) const
 
 double cKSplit::cdf (double) const
 {
-   opp_error("(%s)%s: cdf() not implemented",className(), fullName());
+   throw new cException("(%s)%s: cdf() not implemented",className(), fullName());
    return 0;
 }
 
