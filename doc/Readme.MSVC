@@ -254,6 +254,15 @@ Gnuplot on NT); if you suspect this might be the problem, reverse the
 slash/backslash setting in Options|External programs.
 
 
+10. Misc notes
+~~~~~~~~~~~~~~
+When using MSVC from the command line, you may get the error popup 
+"MSPDB60.DLL not found in the following path: ...". Funny is that the 
+displayed path includes MSDev98\Bin, where the MSPDB60.DLL resides indeed!!!
+Solution is to copy this dll to the VC98\Bin directory. As a quick web search
+showed, I'm not the only one who got this weird error...
+
+
 Have fun!
 
 
