@@ -1,3 +1,12 @@
+2004-10-18  Andras Varga
+
+	* usability improvement: allowed user interactions during message
+	animation (speed can be changed, STOP button can be clicked, inspector
+	can be closed, etc). In Tcl-speak: changed "update idletasks" to
+	"update" within animation code (graphmodwin_do_animate, etc).
+
+	* tkinsp2.tcl: animation changed to use [clock clicks]-based timing
+
 2004-10-15  Andras Varga
 
 	* modinsp2.tcl, tkcmd.cc: fixed display strings: didn't handle "," and 

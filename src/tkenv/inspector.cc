@@ -86,6 +86,7 @@ TInspector::TInspector(cObject *obj, int typ, const char *geom, void *dat)
    object = obj;
    type = typ;
    data = dat;
+   toBeDeleted = false;
 
    windowname[0] = '\0'; // no window exists
    windowtitle[0] = '\0';

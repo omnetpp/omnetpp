@@ -269,6 +269,7 @@ void TOmnetTkApp::doOneStep()
         delete e;
     }
     stopClock();
+    stopsimulation_flag = false;
 
     if (simstate==SIM_TERMINATED)
     {
@@ -766,15 +767,20 @@ void TOmnetTkApp::deleteInspector(TInspector *insp)
 
 void TOmnetTkApp::updateInspectors()
 {
-    // update object tree
-    CHK(Tcl_VarEval(interp, "updateTreeManager",NULL));
-
     // update inspectors
-    for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+    for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end();)
     {
         TInspector *insp = *it;
-        insp->update();
+        TInspectorList::iterator next = ++it;
+        if (insp->isMarkedForDeletion())
+            deleteInspector(insp);
+        else
+            insp->update();
+        it = next;
     }
+
+    // update object tree
+    CHK(Tcl_VarEval(interp, "updateTreeManager",NULL));
 
     // try opening "pending" inspectors
     CHK(Tcl_VarEval(interp, "inspectorupdate_callback",NULL));
@@ -983,9 +989,9 @@ void TOmnetTkApp::readOptions()
     opt_penguin_mode = cfg->getAsBool( "Tkenv", "penguin-mode", false );
     opt_showlayouting = cfg->getAsBool( "Tkenv", "show-layouting", false);
     opt_bubbles = cfg->getAsBool( "Tkenv", "show-bubbles", true );
-    opt_animation_speed = cfg->getAsDouble( "Tkenv", "animation-speed", 1);
+    opt_animation_speed = cfg->getAsDouble( "Tkenv", "animation-speed", 1.5);
     if (opt_animation_speed<0) opt_animation_speed=0;
-    if (opt_animation_speed>2) opt_animation_speed=3;
+    if (opt_animation_speed>3) opt_animation_speed=3;
     opt_print_banners = cfg->getAsBool( "Tkenv", "print-banners", true );
     opt_use_mainwindow = cfg->getAsBool( "Tkenv", "use-mainwindow", true );
     opt_expressmode_autoupdate = cfg->getAsBool( "Tkenv", "expressmode-autoupdate", true );

@@ -150,6 +150,7 @@ proc choosecolorcode {ptr} {
 # gets called by WM
 #
 proc close_inspector_toplevel {w} {
+    # invokes app->deleteInspector(insp)
     opp_deleteinspector $w
 }
 

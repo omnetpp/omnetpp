@@ -46,6 +46,7 @@ class TInspector
       char windowname[24];    // Tk inspector window variable
       char windowtitle[128];  // window title string
       char geometry[64];      // X-window geometry string (window pos + size)
+      bool toBeDeleted;       // "mark for deletion" flag (set if user wants to close inspector during animation)
    public:
       TInspector(cObject *obj, int typ, const char *geom, void *dat=NULL);
       virtual ~TInspector();
@@ -55,6 +56,8 @@ class TInspector
       virtual const char *windowName() {return windowname;}
 
       virtual void hostObjectDeleted();
+      virtual void markForDeletion() {toBeDeleted=true;}
+      virtual bool isMarkedForDeletion() {return toBeDeleted;}
 
       /** @name Virtual functions to be redefined in subclasses */
       //@{

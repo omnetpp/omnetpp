@@ -89,6 +89,8 @@ int inspectByName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int updateInspector_cmd(ClientData, Tcl_Interp *, int, const char **);
 int writeBackInspector_cmd(ClientData, Tcl_Interp *, int, const char **);
 int deleteInspector_cmd(ClientData, Tcl_Interp *, int, const char **);
+int markInspectorForDeletion_cmd(ClientData, Tcl_Interp *, int, const char **);
+int inspMarkedForDeletion_cmd(ClientData, Tcl_Interp *, int, const char **);
 int updateInspectors_cmd(ClientData, Tcl_Interp *, int, const char **);
 int inspectorType_cmd(ClientData, Tcl_Interp *, int, const char **);
 int inspectorCommand_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -161,6 +163,8 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_updateinspector",   updateInspector_cmd   }, // args: <window>
    { "opp_writebackinspector",writeBackInspector_cmd}, // args: <window>
    { "opp_deleteinspector",   deleteInspector_cmd   }, // args: <window>
+   { "opp_markinspectorfordeletion", markInspectorForDeletion_cmd}, // args: <window>
+   { "opp_inspmarkedfordeletion", inspMarkedForDeletion_cmd}, // args: <window>
    { "opp_updateinspectors",  updateInspectors_cmd  }, // args: -
    { "opp_inspectortype",     inspectorType_cmd     }, // translates inspector type code to namestr and v.v.
    { "opp_inspectorcommand",  inspectorCommand_cmd  }, // args: <window> <args-to-be-passed-to-inspectorCommand>
@@ -720,7 +724,7 @@ int simulationIsStopping_cmd(ClientData, Tcl_Interp *interp, int argc, const cha
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    TOmnetTkApp *app = getTkApplication();
    bool stopping = app->getStopSimulationFlag();
-   Tcl_SetResult(interp, (stopping ? "1" : "0"), TCL_STATIC);
+   Tcl_SetResult(interp, TCLCONST(stopping ? "1" : "0"), TCL_STATIC);
    return TCL_OK;
 }
 
@@ -1169,6 +1173,38 @@ int deleteInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    assert(insp!=NULL);
 
    app->deleteInspector(insp);
+   return TCL_OK;
+}
+
+int markInspectorForDeletion_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   TOmnetTkApp *app = getTkApplication();
+
+   cObject *object; int type;
+   splitInspectorName( argv[1], object, type);
+   if (!object) {Tcl_SetResult(interp, "wrong inspectorname string", TCL_STATIC); return TCL_ERROR;}
+
+   TInspector *insp = app->findInspector( object, type );
+   assert(insp!=NULL);
+
+   insp->markForDeletion();
+   return TCL_OK;
+}
+
+int inspMarkedForDeletion_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   TOmnetTkApp *app = getTkApplication();
+
+   cObject *object; int type;
+   splitInspectorName( argv[1], object, type);
+   if (!object) {Tcl_SetResult(interp, "wrong inspectorname string", TCL_STATIC); return TCL_ERROR;}
+
+   TInspector *insp = app->findInspector( object, type );
+   assert(insp!=NULL);
+
+   Tcl_SetResult(interp, TCLCONST(insp->isMarkedForDeletion() ? "1" : "0"), TCL_STATIC);
    return TCL_OK;
 }
 

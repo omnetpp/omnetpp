@@ -794,21 +794,25 @@ proc graphmodwin_animate_senddirect_delivery {win modptr msgptr} {
     set src  [get_submod_coords $c $modptr]
 
     # flash the message a few times before removing it
+    # WM_DELETE_WINDOW stuff: if user wants to close window (during "update"), postpone it until updateInspectors()
+    set old_close_handler [wm protocol $win WM_DELETE_WINDOW]
+    wm protocol $win WM_DELETE_WINDOW [list opp_markinspectorfordeletion $win]
     for {set i 0} {$i<3} {incr i} {
        $c itemconfig $msgptr -state hidden
-       update idletasks
-       anim_flashing_delay
+       update
+       anim_flashing_delay $win
        $c itemconfig $msgptr -state normal
-       update idletasks
-       anim_flashing_delay
+       update
+       anim_flashing_delay $win
     }
+    wm protocol $win WM_DELETE_WINDOW $old_close_handler
 
     $c delete $msgptr
 }
 
-proc anim_flashing_delay {} {
+proc anim_flashing_delay {win} {
     global clicksPerSec
-    if ![opp_simulationisstopping] {
+    if {![opp_simulationisstopping] && ![opp_inspmarkedfordeletion $win]} {
         set tbeg [clock clicks]
         set sp [opp_getsimoption animation_speed]
         if {$sp>3} {set $sp 3}
@@ -872,13 +876,14 @@ proc graphmodwin_do_animate {win x1 y1 x2 y2 msgptr {mode thru}} {
        end {set steps 6}
     }
 
-    #set old_close_handler [wm protocol $win WM_DELETE_WINDOW]
-    #wm protocol $win WM_DELETE_WINDOW { }
+    # WM_DELETE_WINDOW stuff: if user wants to close window (during "update"), postpone it until updateInspectors()
+    set old_close_handler [wm protocol $win WM_DELETE_WINDOW]
+    wm protocol $win WM_DELETE_WINDOW [list opp_markinspectorfordeletion $win]
     for {set i 0} {$i<$steps} {incr i} {
        set tbeg [clock clicks]
-       update idletasks ;# note: window may even get closed during update!
+       update
        $c move $msgptr $dx $dy
-       if ![opp_simulationisstopping] {
+       if {![opp_simulationisstopping] && ![opp_inspmarkedfordeletion $win]} {
            set sp [opp_getsimoption animation_speed]
            if {$sp>3} {set $sp 3}
            if {$sp<0} {set $sp 0}
@@ -888,7 +893,7 @@ proc graphmodwin_do_animate {win x1 y1 x2 y2 msgptr {mode thru}} {
            while {[expr abs([clock clicks]-$tbeg)] < $clicks} {}
        }
     }
-    #wm protocol $win WM_DELETE_WINDOW $old_close_handler
+    wm protocol $win WM_DELETE_WINDOW $old_close_handler
 }
 
 #
@@ -966,14 +971,18 @@ proc graphmodwin_do_draw_methodcall {win x1 y1 x2 y2 methodlabel} {
     $c lower $rectid $txtid
 
     # flash arrow a bit
+    # WM_DELETE_WINDOW stuff: if user wants to close window (during "update"), postpone it until updateInspectors()
+    set old_close_handler [wm protocol $win WM_DELETE_WINDOW]
+    wm protocol $win WM_DELETE_WINDOW [list opp_markinspectorfordeletion $win]
     for {set i 0} {$i<2} {incr i} {
        $c itemconfig $arrow -state hidden
-       update idletasks
-       anim_flashing_delay
+       update
+       anim_flashing_delay $win
        $c itemconfig $arrow -state normal
-       update idletasks
-       anim_flashing_delay
+       update
+       anim_flashing_delay $win
     }
+    wm protocol $win WM_DELETE_WINDOW $old_close_handler
 }
 
 # graphmodwin_animate_methodcall_wait --
