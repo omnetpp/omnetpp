@@ -55,8 +55,9 @@ struct _finddata_t fdata;
 const char *findFirstFile(const char *mask)
 {
     strcpy(_ff_dir,mask);
-    char *s = strrchr(_ff_dir,'/');
-    if (s) *(s+1)='\0'; else _ff_dir[0]='\0';
+    char *s = _ff_dir + strlen(_ff_dir);
+    while (s>=_ff_dir && *s!='\\' && *s!='/') s--;
+    *(s+1)='\0';
     handle = _findfirst(mask, &fdata);
     if (handle<0) {_findclose(handle); return NULL;}
     strcpy(_ff_fname,_ff_dir);
@@ -472,7 +473,7 @@ int main(int argc, char **argv)
 #ifdef MUST_EXPAND_WILDCARDS
             const char *fname = findFirstFile(argv[i]);
             if (!fname) {
-                fprintf(stderr,"nedtool: %s: not found: %s\n",argv[0],argv[i]);
+                fprintf(stderr,"nedtool: not found: %s\n",argv[i]);
                 return 1;
             }
             while (fname)
