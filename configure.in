@@ -135,12 +135,35 @@ OMNETPP_LIB_PATH='-L$(OMNETPP_ROOT)/lib'
 # LIB_SUFFIX='so'
 LIB_SUFFIX='a'
 
-#
+#----------------------
 # Compile options. Use -g for debugging, -O3... for speed.
-#
+#----------------------
 CFLAGS='-g'
 #CFLAGS='-g -Wall'
 #CFLAGS='-O3 -DNDEBUG=1'
+
+#----------------------
+# Conditional build of some components
+#----------------------
+if test "X$PVM_LIBS" = "X"; then
+   SIM_PVM_IF_POSSIBLE=missing-library
+else
+   SIM_PVM_IF_POSSIBLE=sim_pvm
+fi
+
+if test "X$TK_LIBS" = "X"; then
+   TKENV_IF_POSSIBLE=missing-library
+   GNED_IF_POSSIBLE=missing-library
+else
+   TKENV_IF_POSSIBLE=tkenv
+   GNED_IF_POSSIBLE=gned
+fi
+
+if test "X$TV_LIBS" = "X"; then
+   TVENV_IF_POSSIBLE=missing-library
+else
+   TVENV_IF_POSSIBLE=tvenv
+fi
 
 #----------------------
 # Subtitutions.
@@ -172,6 +195,11 @@ AC_SUBST(OMNETPP_MODELS_DIR)
 AC_SUBST(OMNETPP_INCL_PATH)
 AC_SUBST(OMNETPP_LIB_PATH)
 AC_SUBST(OMNETPP_BITMAP_PATH)
+
+AC_SUBST(TKENV_IF_POSSIBLE)
+AC_SUBST(TVENV_IF_POSSIBLE)
+AC_SUBST(SIM_PVM_IF_POSSIBLE)
+AC_SUBST(GNED_IF_POSSIBLE)
 
 #----------------------
 # Generate files.
