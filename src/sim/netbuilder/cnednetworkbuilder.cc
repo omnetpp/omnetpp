@@ -615,22 +615,22 @@ double cNEDNetworkBuilder::evalFunction(FunctionNode *node, cModule *parentmodp,
         ASSERT(op1);
         const char *name = op1->getName();
 
-        if (parentmodp)  // in network params, parentmodp==NULL
-        {
-            // find among gates of parent module
-            cGate *g = parentmodp->gate(name);
-            if (g)
-                return g->size();
+        // TBD this is duplicate code -- same occurs below, in reverse Polish stuff
+        if (!parentmodp)
+            throw new cException("dynamic module builder: evaluate: sizeof() occurs in wrong context", name);
 
-            // if not found, find among submodules. If there's no such submodule, it may
-            // be that such submodule vector never existed, or can be that it's zero
-            // size -- we cannot tell, so we have to return 0.
-            cModule *m = parentmodp->submodule(name,0);
-            if (!m && parentmodp->submodule(name))
-                throw new cException("dynamic module builder: evaluate: sizeof(): %s is not a vector submodule", name);
-            return m ? m->size() : 0;
-        }
-        throw new cException("dynamic module builder: evaluate: sizeof(%s) failed -- no such gate or module", name);
+        // find among gates of parent module
+        cGate *g = parentmodp->gate(name);
+        if (g)
+            return g->size();
+
+        // if not found, find among submodules. If there's no such submodule, it may
+        // be that such submodule vector never existed, or can be that it's zero
+        // size -- we cannot tell, so we have to return 0.
+        cModule *m = parentmodp->submodule(name,0);
+        if (!m && parentmodp->submodule(name))
+            throw new cException("dynamic module builder: evaluate: sizeof(): %s is not a vector submodule", name);
+        return m ? m->size() : 0;
     }
     else if (!strcmp(funcname,"input") || !strcmp(funcname,"xmldoc"))
     {
@@ -1014,6 +1014,7 @@ void cNEDNetworkBuilder::addXElemsFunction(FunctionNode *node, cPar::ExprElem *x
         ASSERT(op1);
         const char *name = op1->getName();
 
+        // TBD this is duplicate code -- same occurs in evaluated expressions as well
         cModule *parentmodp = submodp->parentModule();
         if (!parentmodp)
             throw new cException("dynamic module builder: evaluate: sizeof() occurs in wrong context", name);
@@ -1026,15 +1027,14 @@ void cNEDNetworkBuilder::addXElemsFunction(FunctionNode *node, cPar::ExprElem *x
             return;
         }
 
-        // if not found, find among submodules
-        cModule *m = parentmodp->submodule(name);
-        if (!m) m = parentmodp->submodule(name,0);
-        if (m)
-        {
-            xelems[pos++] = m->size();
-            return;
-        }
-        throw new cException("dynamic module builder: evaluate: sizeof(%s) failed -- no such gate or module", name);
+        // if not found, find among submodules. If there's no such submodule, it may
+        // be that such submodule vector never existed, or can be that it's zero
+        // size -- we cannot tell, so we have to return 0.
+        cModule *m = parentmodp->submodule(name,0);
+        if (!m && parentmodp->submodule(name))
+            throw new cException("dynamic module builder: evaluate: sizeof(): %s is not a vector submodule", name);
+        xelems[pos++] = m ? m->size() : 0;
+        return;
     }
     else if (!strcmp(funcname,"input"))
     {

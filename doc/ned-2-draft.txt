@@ -846,9 +846,6 @@ A.5 References
 Random thoughts.
 
 - all parameters should be "const" unless explicitly declared "volatile"!
-- make gatesizes optional -- vector size can grow as needed
-- with connections, support "use next free gate index" construct, e.g:
-  mod1.out[next] --> mod2.in[next]
 - current gate and parameter declaration syntax is confusing!
   gates: 
      <type>: <gatelist>;
@@ -858,4 +855,5 @@ Random thoughts.
      a,b,c: string; means a:numeric, b:numeric, c:string; !!!
 - submodule syntax: 
     submodule a : A { parameters: ....; }
--
+- simplify: ref parameters should only be supported by themselves, not 
+  as part of expressions
