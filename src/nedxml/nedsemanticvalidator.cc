@@ -139,22 +139,12 @@ void NEDSemanticValidator::validateElement(SubstparamNode *node)
         return;
 
     // make sure parameter exists in module type
-    const char *paramname = node->getName();
-    ParamsNode *paramsdecl = (ParamsNode *)moduletypedecl->getFirstChildWithTag(NED_PARAMS);
-    if (!paramsdecl)
-    {
-        NEDError(node, "module type does not have parameters");
-        return;
-    }
-    ParamNode *paramdecl = (ParamNode *)paramsdecl->getFirstChildWithAttribute(NED_PARAM, "name", paramname);
-    if (!paramdecl)
-    {
-        NEDError(node, "module type does not have a parameter named '%s'",paramname);
-        return;
-    }
+    const char *paramName = node->getName();
+    NEDElement *params = moduletypedecl->getFirstChildWithTag(NED_PARAMS);
+    if (!params || params->getFirstChildWithAttribute(NED_PARAM, "name", paramName)==NULL)
+        {NEDError(node, "module type '%s' has no parameter named '%s'", moduletypedecl->getAttribute("name"), paramName);return;}
 
-    // check type matches
-    //FIXME
+    // TBD check type matches
 }
 
 void NEDSemanticValidator::validateElement(GatesizesNode *node)
@@ -286,18 +276,16 @@ void NEDSemanticValidator::validateElement(ConnectionNode *node)
 {
     // make sure submodule and gate names are valid, gate direction is OK
     // and that gates & modules are really vector (or really not)
-    NEDElement *parent = node;
-    while (parent && parent->getTagCode()!=NED_COMPOUND_MODULE)
-        parent = parent->getParent();
-    if (!parent)
+    NEDElement *compound = node->getParentWithTag(NED_COMPOUND_MODULE);
+    if (!compound)
         INTERNAL_ERROR0(node,"occurs outside a compound-module");
 
     bool srcModIx =   node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "src-module-index")!=NULL;
     bool srcGateIx =  node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "src-gate-index")!=NULL || node->getSrcGatePlusplus();
     bool destModIx =  node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "dest-module-index")!=NULL;
     bool destGateIx = node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "dest-gate-index")!=NULL || node->getDestGatePlusplus();
-    validateConnGate(node->getSrcModule(), srcModIx, node->getSrcGate(), srcGateIx, parent, node, true);
-    validateConnGate(node->getDestModule(), destModIx, node->getDestGate(), destGateIx, parent, node, false);
+    validateConnGate(node->getSrcModule(), srcModIx, node->getSrcGate(), srcGateIx, compound, node, true);
+    validateConnGate(node->getDestModule(), destModIx, node->getDestGate(), destGateIx, compound, node, false);
 }
 
 void NEDSemanticValidator::validateElement(ConnAttrNode *node)

@@ -247,7 +247,17 @@ void NEDBasicValidator::validateElement(SubmoduleNode *node)
     bool opt[] = {true};
     checkExpressionAttributes(node, expr, opt, 1);
 
-    // FIXME if there's a "like", name should be an existing module parameter name
+    // if there's a "like", name should be an existing module parameter name
+    if (strnotnull(node->getLikeParam()))
+    {
+        const char *paramName = node->getLikeParam();
+        NEDElement *compound = node->getParentWithTag(NED_COMPOUND_MODULE);
+        if (!compound)
+            INTERNAL_ERROR0(node,"occurs outside a compound-module");
+        NEDElement *params = compound->getFirstChildWithTag(NED_PARAMS);
+        if (!params || params->getFirstChildWithAttribute(NED_PARAM, "name", paramName)==NULL)
+            {NEDError(node, "compound module has no parameter named '%s'", paramName);return;}
+    }
 }
 
 void NEDBasicValidator::validateElement(SubstparamsNode *node)

@@ -318,6 +318,12 @@ class NEDElement
      * attribute (optionally) having the given value. Returns NULL if not found.
      */
     NEDElement *getFirstChildWithAttribute(int tagcode, const char *attr, const char *attrvalue=NULL);
+
+    /**
+     * Climb up in the element tree until it finds an element with the given tagcode.
+     * Returns NULL if not found.
+     */
+    NEDElement *getParentWithTag(int tagcode);
     //@}
 
     /** @name User data */

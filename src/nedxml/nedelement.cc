@@ -281,6 +281,14 @@ NEDElement *NEDElement::getFirstChildWithAttribute(int tagcode, const char *attr
     return NULL;
 }
 
+NEDElement *NEDElement::getParentWithTag(int tagcode)
+{
+    NEDElement *parent = this->getParent();
+    while (parent && parent->getTagCode()!=tagcode)
+        parent = parent->getParent();
+    return parent;
+}
+
 void NEDElement::setUserData(NEDElementUserData *data)
 {
     delete userdata;
