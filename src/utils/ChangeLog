@@ -1,3 +1,10 @@
+2002-12-18  Andras Varga 
+
+	* opp_stacktool.cmd added: it displays maximum reserved stack size
+	for a program. This is the value which the sum of all coroutine
+	stacks cannot exceed; also the upper bound of the total-stack-kb
+	ini file setting.
+
 2002-12-08  Andras Varga
 
 	* opp_makemake, opp_nmakemake: handling of .ned files that use the 
