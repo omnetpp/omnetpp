@@ -629,6 +629,17 @@ on the Contents page.
 
 <img src="step10b.gif">
 
+Sources: @ref tictoc10.ned, @ref tictoc10.msg, @ref txc10.cc, @ref omnetpp.ini
+
+@section s11 Step 11: Displaying the number of packets sent/received
+
+@dontinclude txc11.cc
+@skip isGUI
+@until updateDisplay
+
+@skip ::updateDisplay
+@until }
+
 <i>Exercise: In this model, there is only one message underway at any
 given moment: nodes only generate a message when another message arrives
 at them. We did it this way to make it easier to follow the simulation.
@@ -637,7 +648,7 @@ The interval between messages should be a module parameter, returning
 exponentially distributed random numbers.
 </i>
 
-Sources: @ref tictoc10.ned, @ref tictoc10.msg, @ref txc10.cc, @ref omnetpp.ini
+Sources: @ref tictoc11.ned, @ref tictoc11.msg, @ref txc11.cc, @ref omnetpp.ini
 
 NEXT: @ref part4
 */
@@ -649,7 +660,7 @@ NEXT: @ref part4
 
 PREV: @ref part3 UP: @ref contents
 
-@section s11 Step 11: Adding statistics collection
+@section s12 Step 12: Adding statistics collection
 
 The previous simulation model is does something interesting enough
 so that we can collect some statistics. For example, you may be interested
@@ -663,8 +674,8 @@ with the Plove program.
 We also collect basic statistics (min, max, mean, std.dev.) and histogram
 about the hop count which we'll print out at the end of the simulation.
 
-@dontinclude txc11.cc
-@skip class Txc11
+@dontinclude txc12.cc
+@skip class Txc12
 @until public:
 
 When a message arrives at the destination node, we update the statistics
@@ -683,11 +694,11 @@ with an error).
 @skip ::finish
 @until }
 
-<img src="step11a.gif">
+<img src="step12a.gif">
 
-<img src="step11b.gif">
+<img src="step12b.gif">
 
-Sources: @ref tictoc11.ned, @ref tictoc11.msg, @ref txc11.cc, @ref omnetpp.ini
+Sources: @ref tictoc12.ned, @ref tictoc12.msg, @ref txc12.cc, @ref omnetpp.ini
 
 
 @section plove Plotting the output vectors
@@ -733,6 +744,9 @@ Sources: @ref tictoc11.ned, @ref tictoc11.msg, @ref txc11.cc, @ref omnetpp.ini
 /// @page tictoc11.ned tictoc11.ned
 /// @include tictoc11.ned
 
+/// @page tictoc12.ned tictoc12.ned
+/// @include tictoc12.ned
+
 /// @page txc1.cc txc1.cc
 /// @include txc1.cc
 
@@ -766,11 +780,17 @@ Sources: @ref tictoc11.ned, @ref tictoc11.msg, @ref txc11.cc, @ref omnetpp.ini
 /// @page txc11.cc txc11.cc
 /// @include txc11.cc
 
+/// @page txc12.cc txc12.cc
+/// @include txc12.cc
+
 /// @page tictoc10.msg tictoc10.msg
 /// @include tictoc10.msg
 
 /// @page tictoc11.msg tictoc11.msg
 /// @include tictoc11.msg
+
+/// @page tictoc12.msg tictoc12.msg
+/// @include tictoc12.msg
 
 /// @page omnetpp.ini omnetpp.ini
 /// @include omnetpp.ini
