@@ -194,7 +194,7 @@ bool cNamedPipeCommunications::receive(int filtTag, cCommBuffer *buffer, int& re
     return doReceive(buffer, receivedTag, sourceProcId, blocking);
 
     // FIXME implement tag filtering...
-#ifdef 0
+#if 0
     if (filtTag==PARSIM_ANY_TAG)
     {
         if (storedBuffers.empty())
