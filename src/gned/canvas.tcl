@@ -347,35 +347,75 @@ proc adjustWindowTitle {} {
 # exportCanvasesToPostscript --
 #
 # Loops through all open canvases and saves the pictures into postscript files
-# in the given directory. Used for a command-line option.
+# in the given directory. Also writes an xml file which can be used to
+# generate clickable image maps. 
 #
-proc exportCanvasesToPostscript {dir} {
+# This proc is used to implement the -c command-line option.
+#
+proc exportCanvasesToPostscript {dir imgxmlfile} {
     global canvas ned
-    foreach i [array names canvas "*,canvas"] {
-        regsub -- ",canvas" $i "" loop_canvid
-        set loop_modkey $canvas($loop_canvid,module-key)
-        set loop_nedfilekey $ned($loop_modkey,parentkey)
 
-        set modname $ned($loop_modkey,name)
-        set nedfilename $ned($loop_nedfilekey,filename)
+    set imgxml ""
+    append imgxml "<?xml version=\"1.0\"?>\n"
+    append imgxml "<images>\n"
+
+    foreach i [array names canvas "*,canvas"] {
+        regsub -- ",canvas" $i "" canvid
+        set modkey $canvas($canvid,module-key)
+        set nedfilekey $ned($modkey,parentkey)
+
+        set modname $ned($modkey,name)
+        set nedfilename $ned($nedfilekey,filename)
 
         regsub -all -- {[./\\]} $nedfilename "_" tmp
         set psfile [file join $dir "${modname}__${tmp}.eps"]
+        set imgfile "${modname}__${tmp}.gif"
 
         busy "Generating postscript to $psfile..."
 
-        switchToCanvas $loop_canvid
+        switchToCanvas $canvid
         set canv $canvas($i)
         set bbox [$canv bbox all]
-        set x1 [lindex $bbox 0]
-        set y1 [lindex $bbox 1]
-        set x2 [lindex $bbox 2]
-        set y2 [lindex $bbox 3]
-        #$canv config -width [expr $x2-$x1]
-        #$canv config -height [expr $y2-$y1]
+        set bbx1 [lindex $bbox 0]
+        set bby1 [lindex $bbox 1]
+        set bbx2 [lindex $bbox 2]
+        set bby2 [lindex $bbox 3]
+        set width [expr $bbx2-$bbx1]
+        set height [expr $bby2-$bby1]
+        #$canv config -width [expr $bbx2-$bbx1]
+        #$canv config -height [expr $bby2-$bby1]
         update idletasks
 
-        $canv postscript -file $psfile -x $x1 -y $y1 -width [expr $x2-$x1] -height [expr $y2-$y1]
+        # export canvas
+        $canv postscript -file $psfile -x $bbx1 -y $bby1 -width [expr $bbx2-$bbx1] -height [expr $bby2-$bby1]
+
+        # create imagemap
+        set submodskey [getChildrenWithType $modkey submods]
+        append imgxml "  <image name=\"$modname\" nedfilename=\"$nedfilename\" imgfilename=\"$imgfile\" height=\"$height\" width=\"$width\">\n"
+        if {$submodskey!=""} {
+            foreach submodkey [getChildren $submodskey] {
+                set bbox [$canv bbox $ned($submodkey,rect-cid)]
+                # set bbox [$canv bbox $ned($submodkey,icon-cid)]  ;# FIXME
+                set submodname $ned($submodkey,name)
+                set x1 [expr [lindex $bbox 0] - $bbx1]
+                set y1 [expr [lindex $bbox 1] - $bby1]
+                set x2 [expr [lindex $bbox 2] - $bbx1]
+                set y2 [expr [lindex $bbox 3] - $bby1]
+                append imgxml "    <area shape=\"rect\" coords=\"$x1,$y1 $x2,$y2\" name=\"$submodname\"/>\n"
+            }
+        }
+        append imgxml "  </image>\n"
+    }
+    append imgxml "</images>\n"
+
+    # write imagemap file
+    if [catch {
+       set f [open $imgxmlfile w]
+       puts $f $imgxml
+       close $f
+    } err] {
+       tk_messageBox -icon warning -type ok -message "Error: $err"
+       return
     }
 }
 

@@ -113,7 +113,7 @@ proc start_gned {} {
    # implement the -c option
    if {$convertandexit} {
        # just save the canvases to file, and exit
-       exportCanvasesToPostscript $psdir
+       exportCanvasesToPostscript $psdir [file join $psdir "images.xml"]
        fileExit
    }
 }
