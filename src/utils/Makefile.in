@@ -13,7 +13,7 @@ COPTS=$(CFLAGS)
 OMNETPP_BIN_DIR=@OMNETPP_BIN_DIR@
 
 all: seedtool tcl2c
-	cp makemake $(OMNETPP_BIN_DIR)
+	cp opp_makemake $(OMNETPP_BIN_DIR)
 	cp splitvec $(OMNETPP_BIN_DIR)
 	../utils/install-prog seedtool $(OMNETPP_BIN_DIR)
 

@@ -391,7 +391,7 @@ AC_OUTPUT(
   src/sim/Makefile
   src/tkenv/Makefile
   src/utils/Makefile
-  src/utils/makemake
+  src/utils/opp_makemake
   samples/dyna/Makefile
   samples/fddi/Makefile
   samples/fifo1/Makefile
@@ -404,7 +404,7 @@ AC_OUTPUT(
   samples/demo/Makefile
 )
 
-chmod +x src/utils/makemake
+chmod +x src/utils/opp_makemake
 
 #----------------------
 # Check if the path contains omnetpp/bin (it should)

@@ -2295,7 +2295,7 @@ trap 'rm -fr `echo "Makefile
   src/sim/Makefile
   src/tkenv/Makefile
   src/utils/Makefile
-  src/utils/makemake
+  src/utils/opp_makemake
   samples/dyna/Makefile
   samples/fddi/Makefile
   samples/fifo1/Makefile
@@ -2428,7 +2428,7 @@ CONFIG_FILES=\${CONFIG_FILES-"Makefile
   src/sim/Makefile
   src/tkenv/Makefile
   src/utils/Makefile
-  src/utils/makemake
+  src/utils/opp_makemake
   samples/dyna/Makefile
   samples/fddi/Makefile
   samples/fifo1/Makefile
@@ -2506,7 +2506,7 @@ rm -fr confdefs* $ac_clean_files
 test "$no_create" = yes || ${CONFIG_SHELL-/bin/sh} $CONFIG_STATUS || exit 1
 
 
-chmod +x src/utils/makemake
+chmod +x src/utils/opp_makemake
 
 #----------------------
 # Check if the path contains omnetpp/bin (it should)

@@ -1,13 +1,13 @@
 All kinds of scripts:
 
- makemake    - create makefile for a simulation
- splitvec    - split an output vector file to separate vectors
- splitvec.bat- splitvec's DOS version
- dos2unix    - convert text files to Unix
- seedtool.cc - generates seeds for random number generators
- readme      - this file
- tcl2.c      - utility for embedding Tcl source into an executable
- prephtml    - used during development
- replace.c   - MSVC: substitute @something@ variables into makefiles, .bat files
+ opp_makemake - create makefile for a simulation
+ splitvec     - split an output vector file to separate vectors
+ splitvec.bat - splitvec's DOS version
+ dos2unix     - convert text files to Unix
+ seedtool.cc  - generates seeds for random number generators
+ readme       - this file
+ tcl2.c       - utility for embedding Tcl source into an executable
+ prephtml     - used during development
+ replace.c    - MSVC: substitute @something@ variables into makefiles, .bat files
 
 --VA
