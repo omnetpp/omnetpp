@@ -50,10 +50,18 @@ So it's this module that will receive the event, just as a normal self-message.
 From the self-message it knows that it has to look into the buffer
 for the bytes that were received, and it will convert them to a simulated
 packet (e.g. a <tt>HTTPMsg</tt> or <tt>TelnetPkt</tt> in this model).
-The packet then gets sent out on the <tt>"out"</tt> gate into the simulated
+The packet then gets sent on the <tt>"out"</tt> gate into the simulated
 network, just as it would on any other OMNeT++/OMNEST simulation.
 
 <h4>Sending</h4>
+
+<p>
+When the <tt>extClient</tt> module receives a packet (e.g. HTTP reply)
+from the server on the simulated network, it has to relay it via the
+socket back to the external process. So it first converts the message
+to a byte array (e.g. gets the HTTP reply from the <tt>HTTPMsg</tt>
+object), and invokes a <tt>cSocketRTScheduler</tt> method to send it
+on the socket.
 
 <p>
 <a href="index.html>Back</a>
