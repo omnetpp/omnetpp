@@ -22,7 +22,7 @@ class {MyClass} extends cObject
 
 %activity:
 
-#define PRINT(X) ev << #X << ":" << X << endl
+#define PRINT(X) ev << #X << ":" << (X) << endl
 
 {MyClass} x("myclass");
 
@@ -33,7 +33,7 @@ ev << x.className() << ":" << x.name() << endl;
 
 // fields must initialize to zero
 PRINT(x.getB());
-PRINT(x.getC());
+PRINT((int)x.getC());
 PRINT(x.getS());
 PRINT(x.getUs());
 PRINT(x.getI());
@@ -70,7 +70,7 @@ x.setD(3.1415); PRINT(x.getD());
 cObject
 {MyClass}:myclass
 x.getB():0
-x.getC():
+(int)x.getC():0
 x.getS():0
 x.getUs():0
 x.getI():0
