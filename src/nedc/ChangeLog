@@ -10,6 +10,12 @@
 	       ...
 	   };
 
+	* opp_msgc fixes: 
+	- added simtime_t to list of accepted types
+	- accept symbolic constant for array size (before it could only be 
+	  numeric constant)
+	- enums can be predeclared (needed if they come from another msg file)
+
 2004-02-24  Andras Varga
 
 	* main.cc: nedtool didn't understand -I without space [reported by 
