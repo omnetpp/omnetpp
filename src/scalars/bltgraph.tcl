@@ -270,12 +270,7 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
 
     if {[winfo class $graph]=="Barchart"} {
         set tmp(barmode) [$graph cget -barmode]
-        if {[$graph element names]=={}} {
-            set tmp(barbaseline) 0
-        } else {
-            set e [lindex [$graph element names] 0]
-            set tmp(barbaseline)  [$graph element cget $e -baseline]
-        }
+        set tmp(barbaseline) [$graph cget -baseline]
     } else {
         if {[$graph element names]=={}} {
             set tmp(showsymbols) "yes"
@@ -404,6 +399,8 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
 
         if {[winfo class $graph]=="Barchart"} {
             $graph configure -barmode $tmp(barmode)
+            $graph configure -baseline $tmp(barbaseline)
+            #$graph axis configure y -min $tmp(barbaseline)
         }
         foreach i [$graph element names] {
             if {[$graph element type $i]=="line"} {
@@ -414,9 +411,6 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
                 if {$tmp(showlines)=="no"} {set linewidth 0}
                 $graph element configure $i -linewidth $linewidth
                 $graph element configure $i -smooth $tmp(linesmooth)
-            } else {
-                # bar
-                $graph element config $i -baseline $tmp(barbaseline)
             }
         }
 
