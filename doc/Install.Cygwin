@@ -14,6 +14,8 @@ NOTE!
       - OMNeT++ must be installed in a binary-mounted directory
         (e.g. mount -b c:/omnetpp /home/omnetpp; see mount --help or man mount
         for more info)
+      - one should ONLY use Unix-style text files (with LF), because sed and
+        make have problems with CR/LF. (Cygwin-b20.1 didn't have this problem.)
       - the Tcl/Tk libs seem to have problems with mounts. For TCL_LIBRARY,
         one must use Win32-style directory name instead of a mounted dir
         (e.g. rather c:/cygwin11/usr/share/tcl8.0 than /usr/share/tcl8.0).
