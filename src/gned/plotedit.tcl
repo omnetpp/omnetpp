@@ -272,7 +272,7 @@ proc resetModuleBounds {} {
 #   Bound to button-down in "select/move" mode.
 #
 proc selectOrMoveStart {c x y ctrl} {
-    global mouse canvas gned ned
+    global mouse canvas gned ned config
 
     # take scrolling into account
     set x [expr int([$c canvasx $x])]
@@ -282,7 +282,7 @@ proc selectOrMoveStart {c x y ctrl} {
     catch {destroy .popup}
     _cancelLabelEdit $c
 
-    if {$gned(snaptogrid)} {
+    if {$config(snaptogrid)} {
        set gridsize 8
        incr x [expr $gridsize/2]
        incr y [expr $gridsize/2]
@@ -472,13 +472,13 @@ proc selectOrMoveStart {c x y ctrl} {
 #   Bound to mouse dragging in "select/move" mode.
 #
 proc selectOrMoveDrag {c x y} {
-    global mouse canvas gned ned
+    global mouse canvas gned ned config
 
     # take scrolling into account
     set x [expr int([$c canvasx $x])]
     set y [expr int([$c canvasy $y])]
 
-    if {$gned(snaptogrid)} {
+    if {$config(snaptogrid)} {
        if {$mouse(mode)!="reanchor" && $mouse(mode)!="endp-reanchor"} {
           set gridsize 8
           incr x [expr $gridsize/2]
@@ -584,13 +584,13 @@ proc selectOrMoveDrag {c x y} {
 #   Bound to mouse button release in "select/move" mode.
 #
 proc selectOrMoveEnd {c x y} {
-    global mouse gned ned
+    global mouse gned ned config
 
     # take scrolling into account
     set x [expr int([$c canvasx $x])]
     set y [expr int([$c canvasy $y])]
 
-    if {$gned(snaptogrid)} {
+    if {$config(snaptogrid)} {
        set gridsize 8
        incr x [expr $gridsize/2]
        incr y [expr $gridsize/2]
@@ -660,7 +660,7 @@ proc selectOrMoveEnd {c x y} {
 #   Bound to mouse button down in "draw" mode.
 #
 proc drawStart {c x y} {
-    global mouse gned ned
+    global mouse gned ned config
 
     # take scrolling into account
     set x [expr int([$c canvasx $x])]
@@ -670,7 +670,7 @@ proc drawStart {c x y} {
     catch {destroy .popup}
     _cancelLabelEdit $c
 
-    if {$gned(snaptogrid)} {
+    if {$config(snaptogrid)} {
        set gridsize 8
        incr x [expr $gridsize/2]
        incr y [expr $gridsize/2]
@@ -709,13 +709,13 @@ proc drawStart {c x y} {
 #   Bound to mouse dragging in "draw" mode.
 #
 proc drawDrag {c x y} {
-    global mouse gned
+    global mouse gned config
 
     # take scrolling into account
     set x [expr int([$c canvasx $x])]
     set y [expr int([$c canvasy $y])]
 
-    if {$gned(snaptogrid)} {
+    if {$config(snaptogrid)} {
        set gridsize 8
        incr x [expr $gridsize/2]
        incr y [expr $gridsize/2]
@@ -735,13 +735,13 @@ proc drawDrag {c x y} {
 #   Bound to mouse button release in "draw" mode.
 #
 proc drawEnd {c x y} {
-    global mouse gned canvas ned
+    global mouse gned canvas ned config
 
     # take scrolling into account
     set x [expr int([$c canvasx $x])]
     set y [expr int([$c canvasy $y])]
 
-    if {$gned(snaptogrid)} {
+    if {$config(snaptogrid)} {
        set gridsize 8
        incr x [expr $gridsize/2]
        incr y [expr $gridsize/2]
@@ -844,7 +844,7 @@ proc drawEnd {c x y} {
                set ned($key,an_src_y) $an_sr_y
                set ned($key,an_dest_x) $an_dt_x
                set ned($key,an_dest_y) $an_dt_y
-               if {$gned(connmodeauto)} {
+               if {$config(connmodeauto)} {
                   set ned($key,drawmode) "a"
                } else {
                   set ned($key,drawmode) "m"

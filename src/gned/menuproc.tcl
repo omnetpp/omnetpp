@@ -163,6 +163,9 @@ proc fileExit {} {
            fileCloseNedfile $key
        }
    }
+
+   saveConfig "~/.gnedrc"
+
    opp_exit
 }
 
@@ -180,6 +183,14 @@ proc editReplace {} {
    set canv_id $gned(canvas_id)
    if {$canvas($canv_id,mode)=="graphics"} return
    findReplaceDialog $canvas($canv_id,textedit) replace
+}
+
+proc editFindNext {} {
+   global gned canvas
+
+   set canv_id $gned(canvas_id)
+   if {$canvas($canv_id,mode)=="graphics"} return
+   findNext $canvas($canv_id,textedit)
 }
 
 proc editCut {} {
@@ -276,17 +287,17 @@ proc editCheck {} {
 #}
 
 proc toggleGrid {setvar} {
-    global gned
+    global gned config
 
     if {$setvar} {
-        if {$gned(snaptogrid)} {
-            set gned(snaptogrid) 0
+        if {$config(snaptogrid)} {
+            set config(snaptogrid) 0
         } else {
-            set gned(snaptogrid) 1
+            set config(snaptogrid) 1
         }
     }
 
-    if {$gned(snaptogrid)} {
+    if {$config(snaptogrid)} {
         $gned(toolbar).grid config -relief sunken
     } else {
         $gned(toolbar).grid config -relief raised

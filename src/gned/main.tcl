@@ -18,6 +18,18 @@
 #    GLOBAL VARIABLES
 #===================================================================
 
+# default config settings
+set config(configfile) "~/.gnedrc"
+set config(snaptogrid) 1
+set config(connmodeauto) 0
+set config(autocheck) 0
+set config(editor-findstring)     ""
+set config(editor-replacestring)  ""
+set config(editor-case-sensitive) 0
+set config(editor-whole-words)    0
+set config(editor-regexp)         0
+
+# widgets (these variables will be filled in later)
 set gned(canvas) ""
 set gned(tab) ""
 set gned(toolbar) ""
@@ -25,11 +37,9 @@ set gned(horiz-toolbar) ""
 set gned(statusbar) ""
 set gned(manager) ""
 
+# state variables
 set gned(canvas_id) ""
 set gned(canvas_lastid) 0
-set gned(snaptogrid) 1
-set gned(connmodeauto) 0
-set gned(autocheck) 0
 set gned(editmode) "draw"
 set gned(icons) {}
 
@@ -42,13 +52,14 @@ set gned(icons) {}
 # For the ned() array, see datadict.tcl
 # ned($key,$field)
 
+
 #===================================================================
-#    MAIN OMNET++ WINDOW
+#    MAIN GNED WINDOW
 #===================================================================
 
-proc create_omnetpp_window {} {
+proc createMainWindow {} {
 
-    global gned fonts icons tcl_version help_tips
+    global gned fonts icons tcl_version help_tips config
 
     # toplevel . -class Toplevel
     wm focusmodel . passive
@@ -117,6 +128,7 @@ proc create_omnetpp_window {} {
       {command -command editPaste  -label {Paste} -accel {Ctrl-V}  -underline 0}
       {separator}
       {command -command editFind    -label {Find...} -accel {Ctrl-F} -underline 0}
+      {command -command editFindNext -label {Find next} -accel {Ctrl-N,F3} -underline 5}
       {command -command editReplace -label {Find/Replace...} -accel {Ctrl-H} -underline 5}
       {separator}
       {command -command editDelete -label {Delete}  -accel {Delete} -underline 0}
@@ -149,9 +161,9 @@ proc create_omnetpp_window {} {
 
     # Options menu
     foreach i {
-      {check -command {toggleGrid 0} -variable gned(snaptogrid) -label {Snap to grid} -underline 0}
-      {check -variable gned(connmodeauto) -label {Default conn. drawing mode is auto} -underline 0}
-      {check -variable gned(autocheck) -label {Auto check module consistency} -underline 0}
+      {check -command {toggleGrid 0} -variable config(snaptogrid) -label {Snap to grid} -underline 0}
+      {check -variable config(connmodeauto) -label {Default conn. drawing mode is auto} -underline 0}
+      {check -variable config(autocheck) -label {Auto check module consistency} -underline 0}
       {separator}
       {command -command optionsViewFile -label {View/edit file...} -underline 0}
     } {
@@ -256,10 +268,6 @@ proc create_omnetpp_window {} {
     } {
       set b [eval iconbutton $gned(toolbar).$i]
       pack $b -anchor w -expand 0 -fill x -side top -padx 2 -pady 0
-    }
-
-    if {$gned(snaptogrid)} {
-        $gned(toolbar).grid config -relief sunken
     }
 
     set help_tips($gned(toolbar).draw)   {Switch to submodule/connection drawing mode}
@@ -418,7 +426,7 @@ proc checkVersion {} {
 }
 
 
-proc load_bitmaps {path} {
+proc loadBitmaps {path} {
    global gned tcl_platform
 
    puts "Loading bitmaps from $path:"
@@ -451,7 +459,7 @@ proc load_bitmaps {path} {
         {.xbm} {set type photo}
         {.gif} {set type photo}
       }
-      if {$type==""} {error "load_bitmaps: internal error"}
+      if {$type==""} {error "loadBitmaps: internal error"}
       set name [string tolower [file tail [file rootname $f]]]
       if {$name=="proc"} {
          puts -nonewline "(*** $name -- Tk dislikes this name, skipping ***) "
@@ -470,5 +478,20 @@ proc load_bitmaps {path} {
    puts ""
 
    set gned(icons) [lsort $gned(icons)]
+}
+
+
+proc busy {{msg {}}} {
+    global gned
+
+    if {$msg != ""} {
+        $gned(statusbar).mode config -text $msg
+        update idletasks
+        . config -cursor watch
+    } else {
+        $gned(statusbar).mode config -text "Ready"
+        update idletasks
+        . config -cursor ""
+    }
 }
 

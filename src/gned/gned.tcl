@@ -17,7 +17,7 @@
 #
 # intro text
 #
-puts {GNED 2.0 Beta 3 - Graphical Network Editor, part of OMNeT++
+puts {GNED 2.0 Beta 5 - Graphical Network Editor, part of OMNeT++
 (c) 1992,99 Andras Varga, TU Budapest
 See the license for distribution terms and warranty disclaimer.
 
@@ -45,6 +45,7 @@ if [info exist OMNETPP_GNED_DIR] {
      source [file join $dir plotedit.tcl]
      source [file join $dir canvlbl.tcl]
      source [file join $dir textedit.tcl]
+     source [file join $dir findrepl.tcl]
      source [file join $dir drawopts.tcl]
      source [file join $dir fileview.tcl]
      source [file join $dir loadsave.tcl]
@@ -57,6 +58,7 @@ if [info exist OMNETPP_GNED_DIR] {
      source [file join $dir treemgr.tcl]
      source [file join $dir dragdrop.tcl]
      source [file join $dir main.tcl]
+     source [file join $dir gnedrc.tcl]
      source [file join $dir balloon.tcl]
      source [file join $dir props.tcl]
      source [file join $dir chanprops.tcl]
@@ -76,15 +78,20 @@ if [info exist OMNETPP_GNED_DIR] {
 # Exec startup code
 #
 proc start_gned {} {
-   global argv OMNETPP_BITMAP_PATH
+   global argv config OMNETPP_BITMAP_PATH
 
    wm withdraw .
    checkVersion
    defaultBindings
    init_balloons
-   create_omnetpp_window
-   load_bitmaps $OMNETPP_BITMAP_PATH
+   createMainWindow
+   loadBitmaps $OMNETPP_BITMAP_PATH
    fileNewNedfile
+
+   if [file readable $config(configfile)] {
+       loadConfig $config(configfile)
+   }
+   reflectConfigInGUI
 
    foreach fname $argv {
        loadNED $fname

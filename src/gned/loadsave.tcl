@@ -41,11 +41,14 @@ puts "DBG: saving nedfilekey $nedfilekey"
 
    if [catch {
        set nedfile $ned($nedfilekey,filename)
+       busy "Saving $nedfile..."
        set fout [open $nedfile w]
        puts $fout [generateNed $nedfilekey]
        close $fout
+       busy
    } errmsg] {
        tk_messageBox -icon warning -type ok -message "Error: $errmsg"
+       busy
        return
    }
 }
@@ -57,6 +60,8 @@ puts "DBG: saving nedfilekey $nedfilekey"
 proc loadNED {nedfile} {
     global ned ned_attr
     global tmp_ned tmp_errors
+
+    busy "Loading $nedfile..."
 
     # parse NED file and fill the tmp_ned() array
     catch {unset tmp_ned}
@@ -98,6 +103,7 @@ proc loadNED {nedfile} {
 
         catch {unset tmp_ned}
         catch {unset tmp_errors}
+        busy
         return
     }
 
@@ -136,6 +142,8 @@ proc loadNED {nedfile} {
     foreach key $modulekeys {
         openModuleOnCanvas $key
     }
+
+    busy
 }
 
 
