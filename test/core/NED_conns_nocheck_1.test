@@ -1,0 +1,42 @@
+%description:
+Test that check for unconnected gates can be turned off
+
+%file: {}.ned
+
+simple {Simple}
+   gates:
+      out: out;
+      in: in;
+endsimple
+
+module {Compound}
+   submodules:
+      a: {Simple};
+      b: {Simple};
+   connections nocheck:
+endmodule
+
+network {network}: {Compound}
+endnetwork
+
+%file: {}.cc
+
+#include <omnetpp.h>
+
+class {Simple} : public cSimpleModule
+{
+    Module_Class_Members({Simple},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Simple});
+
+void {Simple}::activity()
+{
+}
+
+%exitcode: 0
+
+%contains-regex: stdout
+No more events -- simulation ended
+

@@ -1,0 +1,25 @@
+%description:
+Test that check for unconnected gates takes place
+
+%file: {}.ned
+
+module {Test}
+   gates:
+      out: out;
+      in: in;  // these gates not connected internally --> error
+endmodule
+
+module {Compound}
+   submodules:
+      a: {Test};
+   connections nocheck:
+endmodule
+
+network {network}: {Compound}
+endnetwork
+
+%exitcode: 1
+
+%contains-regex: stdout
+Error.* is not connected to submodule \(or output gate of same module\)
+

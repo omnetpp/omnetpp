@@ -1,0 +1,26 @@
+%description:
+Test that check for unconnected gates can be turned off
+
+%file: {}.ned
+
+module {Test}
+   gates:
+      out: out;
+      in: in;  // these gates not connected internally
+   connections nocheck:
+endmodule
+
+module {Compound}
+   submodules:
+      a: {Test};
+   connections nocheck:
+endmodule
+
+network {network}: {Compound}
+endnetwork
+
+%exitcode: 0
+
+%contains-regex: stdout
+No more events -- simulation ended
+

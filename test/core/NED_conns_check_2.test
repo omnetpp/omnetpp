@@ -1,0 +1,42 @@
+%description:
+Test that check for unconnected gates takes place
+
+%file: {}.ned
+
+simple {Simple}
+   gates:
+      out: out;
+      in: in;
+endsimple
+
+module {Compound}
+   submodules:
+      a: {Simple};
+      b: {Simple};
+   connections:
+      a.out --> b.in;
+endmodule
+
+network {network}: {Compound}
+endnetwork
+
+%file: {}.cc
+
+#include <omnetpp.h>
+
+class {Simple} : public cSimpleModule
+{
+    Module_Class_Members({Simple},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Simple});
+
+void {Simple}::activity()
+{
+}
+
+%exitcode: 1
+
+%contains-regex: stdout
+Error.*is not connected to sibling or parent module
