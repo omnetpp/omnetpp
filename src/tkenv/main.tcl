@@ -404,8 +404,10 @@ proc bind_findcommands_to_textwidget {txt} {
 #    LOAD BITMAPS
 #===================================================================
 
+set bitmap_ctr 0
+
 proc load_bitmaps {path} {
-   global tcl_platform
+   global tcl_platform bitmaps bitmap_ctr
 
    puts "Loading bitmaps from $path:"
 
@@ -444,17 +446,13 @@ proc load_bitmaps {path} {
       if {$type==""} {error "load_bitmaps: internal error"}
 
       set name [string tolower [file tail [file rootname $f]]]
-      if {$name=="proc"} {
-         puts -nonewline "(*** $name -- Tk dislikes this name, skipping ***) "
-      } elseif [catch {image type $name}] {
-         if [catch {
-            image create $type $name -file $f
-            puts -nonewline "$name "
-         } err] {
-            puts -nonewline "(*** $name is bad: $err ***) "
-         }
-      } else {
-         puts -nonewline "($name is duplicate) "
+      set img "i[incr bitmap_ctr]$name"
+      if [catch {
+         image create $type $img -file $f
+         puts -nonewline "$name "
+         set bitmaps($name) $img
+      } err] {
+         puts -nonewline "(*** $name is bad: $err ***) "
       }
    }
    puts ""

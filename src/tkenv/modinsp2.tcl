@@ -60,10 +60,10 @@ proc get_parsed_display_string {str array w modptr parent} {
 # helper function
 #
 proc dispstr_getimage {tags_i} {
-    global icons imagecache
+    global icons bitmaps imagecache
 
-    set img [lindex $tags_i 0]
-    if {$img=="" || [catch {image type $img}]} {
+    set imgname [lindex $tags_i 0]
+    if {$imgname=="" || [catch {set img $bitmaps($imgname)}] || [catch {image type $img}]} {
         set img $icons(unknown)
     }
 
