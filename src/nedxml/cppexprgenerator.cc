@@ -87,6 +87,10 @@ bool CppExpressionGenerator::needsExpressionClass(ExpressionNode *expr)
     if (parenttag!=NED_SUBSTPARAM && parenttag!=NED_CHANNEL_ATTR && parenttag!=NED_CONN_ATTR)
         return false;
 
+    // also: if the parameter is non-volatile (that is, const), we don't need expr class
+    if (parenttag==NED_SUBSTPARAM && false /*FIXME ...and param is const*/)
+        return false;
+
     // identifiers and constants never need expression classes
     if (tag==NED_IDENT || tag==NED_CONST)
         return false;
@@ -173,9 +177,9 @@ void CppExpressionGenerator::generateExpressionClass(ExpressionInfo& info)
         out << "    // cChannel *channel;\n";
     // variables to hold arguments (external references) for the expression
     for (i=info.ctorargs.begin(); i!=info.ctorargs.end(); ++i)
-        out << "    " << getTypeForArg(*i) << " " << getNameForArg(*i) << ";\n";
+        out << "    " << getTypeForArg(*i) << " " << getNameForArg(*i) << (*i)->getId() << ";\n";
     for (i=info.cachedvars.begin(); i!=info.cachedvars.end(); ++i)
-        out << "    " << getTypeForArg(*i) << " " << getNameForArg(*i) << ";\n";
+        out << "    " << getTypeForArg(*i) << " " << getNameForArg(*i) << (*i)->getId() << ";\n";
     out << "  public:\n";
 
     // constructor:
@@ -185,15 +189,15 @@ void CppExpressionGenerator::generateExpressionClass(ExpressionInfo& info)
     else
         out << "void *";
     for (i=info.ctorargs.begin(); i!=info.ctorargs.end(); ++i)
-        out << ", " << getTypeForArg(*i) << " " << getNameForArg(*i);
+        out << ", " << getTypeForArg(*i) << " " << getNameForArg(*i) << (*i)->getId();
     out << ")  {\n";
     if (info.ctxtype==NED_SIMPLE_MODULE || info.ctxtype==NED_COMPOUND_MODULE)
         out << "        this->mod=mod;";
     for (i=info.ctorargs.begin(); i!=info.ctorargs.end(); ++i)
-        out << "        this->" << getNameForArg(*i) << "=" << getNameForArg(*i) << ";\n";
+        out << "        this->" << getNameForArg(*i) << (*i)->getId() << "=" << getNameForArg(*i) << (*i)->getId() << ";\n";
     for (i=info.cachedvars.begin(); i!=info.cachedvars.end(); ++i)
     {
-        out << "        this->" << getNameForArg(*i) << "=";
+        out << "        this->" << getNameForArg(*i) << (*i)->getId() << "=";
         doValueForCachedVar(*i);
         out << ";\n";
     }
@@ -206,7 +210,7 @@ void CppExpressionGenerator::generateExpressionClass(ExpressionInfo& info)
     else
         out << "NULL";
     for (i=info.ctorargs.begin(); i!=info.ctorargs.end(); ++i)
-        out << ", " << getNameForArg(*i);
+        out << ", " << getNameForArg(*i) << (*i)->getId();
     out << ");}\n";
 
     // expression method:
@@ -470,7 +474,7 @@ void CppExpressionGenerator::doFunction(FunctionNode *node, const char *indent, 
     // normal function: emit function call code
     if (mode==MODE_EXPRESSION_CLASS)
     {
-        out << getNameForArg(node);
+        out << getNameForArg(node) << node->getId();
     }
     else // MODE_INLINE_EXPRESSION
     {
