@@ -28,7 +28,8 @@ CPPOBJS_PARSIM= parsim\ccommbuffer.obj parsim\cmemcommbuffer.obj \
          parsim\cidealsimulationprot.obj parsim\cispeventlogger.obj \
          parsim\cparsimcomm.obj \
          parsim\ccommbufferbase.obj parsim\cfilecomm.obj parsim\cfilecommbuffer.obj \
-         parsim\cnamedpipecomm-win.obj parsim\creceivedexception.obj
+         parsim\cnamedpipecomm-win.obj \
+         parsim\creceivedexception.obj
 CPPOBJS_MPI= parsim\cmpicomm.obj parsim\cmpicommbuffer.obj
 
 CPPOBJS= $(CPPOBJS_STD)

@@ -25,7 +25,14 @@
 #ifndef __CNAMEDPIPECOMM_H__
 #define __CNAMEDPIPECOMM_H__
 
+
+// decide platform
 #if defined(_WIN32) && !defined(__CYGWIN32__)
+#define USE_WINDOWS_PIPES
+#endif
+
+
+#ifdef USE_WINDOWS_PIPES
 #define MEAN_AND_LEAN
 #include <windows.h>
 typedef HANDLE PIPE;

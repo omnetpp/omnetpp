@@ -31,6 +31,10 @@
 #include "macros.h"
 #include "cenvir.h"
 
+
+#ifndef USE_WINDOWS_PIPES
+
+
 Register_Class(cNamedPipeCommunications);
 
 
@@ -257,5 +261,7 @@ void cNamedPipeCommunications::synchronize()
 {
     // FIXME: not implemented
 }
+
+#endif /* (!USE_WINDOWS_PIPES) */
 
 

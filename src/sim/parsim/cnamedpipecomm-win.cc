@@ -27,14 +27,12 @@
 #include "macros.h"
 #include "cenvir.h"
 
+#ifdef USE_WINDOWS_PIPES
+
 #include <windows.h>
 
 Register_Class(cNamedPipeCommunications);
 
-
-#if !defined(_WIN32) || defined(__CYGWIN32__)
-#error this file is only for Windows
-#endif
 
 #define sleep(x) _sleep((x)*1000)
 
@@ -283,5 +281,9 @@ void cNamedPipeCommunications::synchronize()
 {
     // FIXME: not implemented
 }
+
+#endif  /* USE_WINDOWS_PIPES */
+
+
 
 
