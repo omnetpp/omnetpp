@@ -412,9 +412,7 @@ int mdl_find_mach (char *m_name, char *p_name)
 
 void mdl_print (void)
 {
-        int i;
         mod_def_elem *me;
-
         me = mdl.mods;
         while (me)
         {
@@ -463,8 +461,6 @@ void cmd_new (char *namestr, int is_simple)
 
 void cmd_add_submod (char *namestr, char *typ, int modvec)
 {
-        int n;
-
         if (nl_find (cmd.submods, namestr))
         {
                 sprintf (errstr,
@@ -798,7 +794,8 @@ void print_temp_vars (FILE *f)
         fprintf (f, "\tcPar value, *par;\n");
         fprintf (f, "\tsXElem *expr_tab; int k;\n");
         fprintf (f, "\tMathFunc func;\n");
-        fprintf (f, "\tchar *type_name, b1[64], b2[64];\n");
+        fprintf (f, "\tconst char *type_name;\n");
+        fprintf (f, "\tchar b1[64], b2[64];\n");
         fprintf (f, "\tcArray machines;\n"); /* --LG */
         fprintf (f, "\tbool islocal, do_this_block;\n");
         fprintf (f, "\tint n;\n");

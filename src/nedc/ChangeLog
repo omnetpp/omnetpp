@@ -252,3 +252,5 @@ Mar 7, 2000
 Mar 12, 2000
   - added lines to generated code to disable compiler warnings about unused
     vars under MSVC and Borland C++. I have no solution for gcc.
+Mar 26, 2000
+ - 'char *' --> 'const char *' changes in generated code

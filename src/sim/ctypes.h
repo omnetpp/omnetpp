@@ -74,16 +74,16 @@ typedef cPar *(*ParCreateFunc)();
 //     are created according to the description in the cModuleInterface
 //     object.
 //
+struct sDescrItem {
+    char what;
+    char *name;
+    char *types;
+    char type;
+};
+
 class cModuleInterface : public cObject
 {
     // structures used in a cModuleInterface
-    struct sDescrItem {
-       char what;
-       char *name;
-       char *types;
-       char type;
-    };
-
     struct sGateInfo {
        char *name;
        char type;

@@ -98,11 +98,11 @@ void do_simp_or_comp (char *mname, int is_simple)
                   "class %s : public cCompoundModule\n"
                   "{\n"
                   "  public:\n"
-                  "    %s(char *namestr, cModule *parentmod) :\n"
-                  "      cCompoundModule(namestr, parentmod) {}\n",
+                  "    %s(const char *name, cModule *parentmod) :\n"
+                  "      cCompoundModule(name, parentmod) {}\n",
                   mname,mname);
              fprintf (tmp,
-                  "    virtual char *className()  {return \"%s\";}\n"
+                  "    virtual const char *className()  {return \"%s\";}\n"
                   "\n"
                   "    // function to build submodules\n"
                   "    virtual void buildInside();\n"
@@ -342,7 +342,7 @@ void do_sub_or_sys1 (char *smname, char *smcount, int issys, char *smtype, char 
         }
         else
         {
-                fprintf (tmp, "\ttype_name = (char *)mod->par(\"%s\");\n", smtype);
+                fprintf (tmp, "\ttype_name = mod->par(\"%s\");\n", smtype);
                 fprintf (tmp, "\tmodtype = findModuleType( type_name );\n");
                 fprintf (tmp, "\tcheck_modtype( modtype, type_name );\n");
         }
