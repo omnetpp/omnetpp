@@ -28,7 +28,9 @@ OMNETPP_PLOVE_DIR=@OMNETPP_PLOVE_DIR@
 PLOVE_EMBED_SUFFIX=@PLOVE_EMBED_SUFFIX@
 
 ifeq ($(HAVE_BLT),no)
-#FIXME error: plove needs BLT
+error: 
+	@echo "*** error: Plove needs BLT -- install it and re-run configure"
+	@exit 1
 endif
 
 

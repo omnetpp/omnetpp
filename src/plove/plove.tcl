@@ -48,7 +48,7 @@ if [catch {package require BLT} err] {
 }
 if {$blt_patchLevel!="2.4z"} {
     puts "*** BLT version 2.4z required, yours is $blt_patchLevel. Sorry..."
-    #exit
+    exit
 }
 
 
