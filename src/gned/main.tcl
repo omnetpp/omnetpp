@@ -436,8 +436,6 @@ set bitmap_ctr 0
 proc loadBitmaps {path} {
    global tcl_platform gned bitmaps bitmap_ctr
 
-   puts "Loading bitmaps from $path:"
-
    # On Windows, we use ";" to separate directories in $path. Using ":" (the
    # Unix separator) would cause trouble with dirs containing drive letter
    # (like "c:\bitmaps"). Using a space is also not an option (think of
@@ -451,10 +449,12 @@ proc loadBitmaps {path} {
 
    foreach dir [split $path $sep] {
        if {$dir!=""} {
-           do_load_bitmaps $dir
-           puts -nonewline "; "
+           puts -nonewline "Loading bitmaps from $dir: "
+           do_load_bitmaps $dir ""
+           puts ""
        }
    }
+
    set gned(icons) [lsort [array names bitmaps]]
 
    if {$bitmap_ctr==0} {
@@ -462,10 +462,9 @@ proc loadBitmaps {path} {
    }
 
    puts ""
-   puts ""
 }
 
-proc do_load_bitmaps {dir {prefix ""}} {
+proc do_load_bitmaps {dir prefix} {
    global bitmaps bitmap_ctr
 
    #puts "DBG: entering $dir"
@@ -473,24 +472,42 @@ proc do_load_bitmaps {dir {prefix ""}} {
                      [glob -nocomplain -- [file join $dir {*.png}]]]
 
    # load bitmaps from this directory
+   set n 0
    foreach f $files {
       set name [string tolower [file tail [file rootname $f]]]
-      set imgname "$prefix$name"
       set img "i[incr bitmap_ctr]$name"
       if [catch {
          image create photo $img -file $f
-         puts -nonewline "$imgname "
-         set bitmaps($imgname) $img
+         set size "n" ;#default
+         regexp -- {^(.*)_(vl|xl|l|n|s|vs|xs)$} $name dummy name size
+         do_add_bitmap $img $prefix $name $size
+         incr n
       } err] {
-         puts -nonewline "(*** $f is bad: $err ***) "
+         puts -nonewline "(*** cannot load $f: $err ***) "
       }
    }
+   puts -nonewline "$prefix*: $n  "
 
    # recurse into subdirs
    foreach f [glob -nocomplain -- [file join $dir {*}]] {
-      if [file isdirectory $f] {
+      if {[file isdirectory $f] && [file tail $f]!="CVS"} {
          do_load_bitmaps "$f" "$prefix[file tail $f]/"
       }
+   }
+}
+
+# register loaded image
+proc do_add_bitmap {img prefix name size} {
+   global bitmaps
+
+   # access via the s= display string option
+   set bitmaps($prefix$name,$size) $img
+
+   # access by the legacy way
+   if {$size=="n"} {
+       set bitmaps($prefix$name) $img
+   } else {
+       set bitmaps($prefix${name}_$size) $img
    }
 }
 

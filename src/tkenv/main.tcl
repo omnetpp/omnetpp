@@ -450,7 +450,7 @@ proc do_load_bitmaps {dir prefix} {
       if [catch {
          image create photo $img -file $f
          set size "n" ;#default
-         regexp -- {^(.*)_(l|n|s|vs|xs)$} $name dummy name size
+         regexp -- {^(.*)_(vl|xl|l|n|s|vs|xs)$} $name dummy name size
          do_add_bitmap $img $prefix $name $size
          incr n
       } err] {
