@@ -518,10 +518,10 @@ print "$makefile created, adding dependencies...\n";
 $cmd = "opp_makedep $includes -f$makefile -- *.$ccext";
 $status = system ("$cmd");
 if ($status != 0) {
-    print "Error: command `$cmd' returned nonzero exit code"
+    print "Error: command `$cmd' returned nonzero exit code ".($status/256);
 }
 else {
-    print "done\n";
+    print "Done.\n";
 }
 
 
