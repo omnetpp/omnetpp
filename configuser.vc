@@ -7,12 +7,22 @@
 OMNETPP_VERSION=omnetpp-2.0b4
 
 #
-# directories
+# base directories
+#
+# Edit these variables!
+#
+# Use forward slashes ('/') in the dir names, not backslashes ('\')!
+# Don't use relative directories!
+# Directory names with spaces may also cause problems, it's better to use
+# short file names (e.g. 'C:/PROGRA~1' instead of 'C:/Program files').
 #
 OMNETPP_ROOT=d:/work/omnetpp
-TK_INCL_DIR=e:/tcl/include
-TK_LIB_DIR=e:/tcl/lib
+TK_DIR=e:/tcl
+TK_VER=8.2
 
+#
+# other directories & files based on the base dirs
+#
 OMNETPP_SRC_DIR=$(OMNETPP_ROOT)/src
 OMNETPP_SAMPLES_DIR=$(OMNETPP_ROOT)/samples
 
@@ -20,20 +30,31 @@ OMNETPP_BIN_DIR=$(OMNETPP_ROOT)/bin
 OMNETPP_INCL_DIR=$(OMNETPP_SRC_DIR)/sim
 OMNETPP_LIB_DIR=$(OMNETPP_ROOT)/lib
 
+TK_INCL_DIR=$(TK_DIR)/include
+TK_LIB_DIR=$(TK_DIR)/lib
+TCL_LIB=tcl$(TK_VER:.=).lib
+TK_LIB=tk$(TK_VER:.=).lib
+
 #
 # tools
 #
-YACC=bison.exe
-LEX=flex.exe
+
+# MSVC programs
 CXX=cl.exe
 LINK=link.exe
 AS=cl.exe
 AR=link.exe /lib
 SHLIB_LD=link.exe /dll
+
+# OMNeT++ NED compiler
 NEDC=$(OMNETPP_ROOT)/bin/nedc.exe
 
-# Tk's wish application, used by Plove. You'll almost surely need to change this path!
-WISH=$(TK_LIB_DIR)/../bin/wish82.exe
+# the Tcl/Tk interpreter, used by Plove
+WISH=$(TK_DIR)/bin/wish$(TK_VER:.=).exe
+
+# flex/bison: only needed it you want to modify NEDC or GNED
+YACC=bison.exe
+LEX=flex.exe
 
 #
 # configuration
@@ -57,7 +78,7 @@ OMNETPP_BITMAP_PATH=.;./bitmaps;$(OMNETPP_ROOT)/bitmaps
 # necessary to build an app with PVM or Tcl/Tk.
 #
 TK_CFLAGS=/I "$(TK_INCL_DIR)"
-TK_LIBS=tcl82.lib tk82.lib /libpath:"$(TK_LIB_DIR)"
+TK_LIBS=$(TCL_LIB) $(TK_LIB) /libpath:"$(TK_LIB_DIR)"
 PVM_INCL_DIR=d:/work/pvm3/include
 PVM_LIBS=
 SYS_LIBS=
@@ -77,9 +98,8 @@ GNED_IF_POSSIBLE=gned
 # Tcl scripts.
 #
 # This option is available at present for Tkenv and GNED.
-#
-# empty: don't embed
-# -e:    embed
+#   xxx_EMBED_SUFFIX=    --> don't embed
+#   xxx_EMBED_SUFFIX=-e  --> embed
 #
 TKENV_EMBED_SUFFIX=
 GNED_EMBED_SUFFIX=

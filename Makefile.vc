@@ -93,6 +93,7 @@ plove:
 
 utils:
 	@echo ===== Compiling $@ ====
+	echo @$(WISH:/=\) -f $(OMNETPP_DIR)/bitmaps/showpics > $(OMNETPP_DIR:/=\)\bitmaps\showpics.bat
 	cd /d $(OMNETPP_SRC_DIR:/=\)\utils &&  $(MAKE) $(MOPTS) $(MAKEFILE)
 
 #
@@ -182,5 +183,5 @@ reminder:
 	@echo ###
 	@echo ### Don't forget to set the TCL_LIBRARY environment variable!
         @rem TBD echo ### TCL_LIBRARY=$(TK_LIB_DIR)/TCL$(TK_VER_DOTS)
-	@echo ### 
+	@echo ###
 !ENDIF
