@@ -4,6 +4,9 @@
 	makefile won't require a .tstamp file to be present in directories
 	that appear after the -x option on the command line.
 
+	* opp_neddoc: added support for tags @author, @date, @todo, @bug, 
+	@see, @since, @warning, @version
+
 2004-07-16  Andras Varga
 
 	* opp_test: added preload-ned-files=*.ned to default omnetpp.ini

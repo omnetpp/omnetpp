@@ -78,6 +78,17 @@ foreach $fname (glob($fnamepatt))
                  $comment =~ s|(.*?[^ \t\n].*?)\n\n.*|\1\n\n|gs;
               }
 
+              # format @author, @date, @todo, @bug, @see, @since, @warning, @version
+              #FIXME put them on separate lines...
+              $comment =~ s!\@author\b!<b>Author:</b>!gs;
+              $comment =~ s!\@date\b!<b>Date:</b>!gs;
+              $comment =~ s!\@todo\b!<b>TODO:</b>!gs;
+              $comment =~ s!\@bug\b!<b>BUG:</b>!gs;
+              $comment =~ s!\@see\b!<b>See also:</b>!gs;
+              $comment =~ s!\@since\b!<b>Since:</b>!gs;
+              $comment =~ s!\@warning\b!<b>WARNING:</b>!gs;
+              $comment =~ s!\@version\b!<b>Version:</b>!gs;
+
               # wrap paragraphs NOT beginning with '-' into <p></p>.
               # well, we should write "paragraphs not beginning with '- ' or '-# '", but
               # how do you say that in a Perl regex?
