@@ -2,6 +2,11 @@
 # make OMNeT++ distribution
 #
 
+if [ ! -f configure.in ]; then
+    echo Must be called in top-level omnetpp dir!!!
+    exit
+fi
+
 # version must be the same here and in configure.in!
 version=`cat Version | sed 's/omnetpp-//'`
 
@@ -9,6 +14,14 @@ if test -f Makefile; then
 	echo Start with a clean page by doing 'cvs checkout omnetpp'!!!
         exit 1
 fi
+
+if test ! -f doc/usman.pdf; then
+	echo You forgot to copy 'usman.pdf' to doc/!!!
+        exit 1
+fi
+
+echo You must have run '_tag' already. Press Enter if this was done!
+read
 
 rm -rf `find . -name CVS -type d`
 
