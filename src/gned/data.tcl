@@ -51,8 +51,8 @@ proc addItem {type parentkey} {
        lappend ned($parentkey,childrenkeys) $key
    }
 
-if {0} {
    # generate a unique name if necessary
+puts "dbg: addItem: should generate _locally_ unique name!"
    if [info exist ned($key,name)] {
       set name $ned($key,name)
       set max 0
@@ -65,12 +65,11 @@ if {0} {
       set max [expr int($max+1)]
       set ned($key,name) "$name$max"
    }
-}
 
    # mark it "not selected" on canvas
    set ned($key,selected) 0
 
-   puts "dbg: addItem: $type $key added to $parentkey (its children now: $ned($parentkey,childrenkeys))"
+   #puts "dbg: addItem: $type $key added to $parentkey (its children now: $ned($parentkey,childrenkeys))"
 
    return $key
 }
@@ -95,7 +94,7 @@ proc insertItem {key parentkey} {
 proc deleteItem {key} {
     global ned canvas ned_attlist
 
-    puts "dbg: deleteItem $key entered"
+    #puts "dbg: deleteItem $key entered"
 
     # prevent race conditions...
     set ned($key,being-deleted) 1
@@ -157,7 +156,7 @@ proc deleteItem {key} {
 proc renameItem {key name} {
     global ned
 
-    # check
+    # check if item has a name at all
     if ![info exist ned($key,name)] {
        error "item $key has no name attribute"
     }

@@ -168,3 +168,6 @@ Nov 20-21, 1999
   - implemented drag&drop of modules from the tree to the canvas
   - implemented module properties dialog
   - TBD: comment handling in properties dialogs!!!
+  - changed appendTo to append in makened.tcl
+  - renamed arrays: ddfields()-->ned_attlist(), ddict()-->ned_attr(), ddesc-->ned_desc()
+  - several bugs fixed

@@ -43,15 +43,13 @@ proc editSubmoduleProps {key} {
     label-entry $nb.general.name "Name:"
     label-entry $nb.general.type "Type:"
     label-entry $nb.general.like "Like:"
-    label-check $nb.general.link "Type link:"  "Define type if not exist" def
-    label-entry $nb.general.vs "Vector size:"
+    label-entry $nb.general.vs   "Vector size:"
     label-text  $nb.general.comment "Comments:" 4
 
     pack $nb.general.name  -expand 0 -fill x -side top
     pack $nb.general.type  -expand 0 -fill x -side top
     pack $nb.general.like  -expand 0 -fill x -side top
-    pack $nb.general.link -expand 0 -fill x -side top
-    pack $nb.general.vs  -expand 0 -fill x -side top
+    pack $nb.general.vs    -expand 0 -fill x -side top
     pack $nb.general.comment -expand 0 -fill x -side top
 
     # fill "General" page with values
@@ -99,8 +97,8 @@ proc editSubmoduleProps {key} {
 
         # process "General" page.
         set ned($key,name) [$nb.general.name.e get]
-        set typename [$nb.general.type.e get]
-        set likename [$nb.general.like.e get]
+        set ned($key,type-name) [$nb.general.type.e get]
+        set ned($key,like-name) [$nb.general.like.e get]
         set ned($key,vectorsize) [$nb.general.vs.e get]
         set ned($key,banner-comment) [getCommentFromText $nb.general.comment.t]
 
@@ -113,52 +111,26 @@ proc editSubmoduleProps {key} {
         # process "Machines" page.
         updateNedFromSectionTables $nb.on $key substmachines substmachine value
 
-        # update drawing
-        $gned(canvas) itemconfigure $ned($key,label-cid) -text $ned($key,name)
-
+        # destroy dialog here
+        destroy .submprops
 
         # check if module type specified already exists...
-        set typename $ned($key,type-name)
         if {$ned($key,like-name)!=""} {
-            if {[itemKeyFromName $ned($key,like-name) module]==""} {
-                set ned(def) 0
-            } else {
-                set ned(def) 1
+            set typename $ned($key,like-name)
+        } else {
+            # FIXME: check it's non-empty
+            set typename $ned($key,type-name)
+        }
+        if {[itemKeyFromName $typename module]=="" && [itemKeyFromName $typename simple]==""} {
+            if {"yes"==[tk_messageBox -type yesno -title GNED -icon question \
+                -message "Module type '$typename' is unknown to GNED. Create it in this file?"]
+            } {
+                tk_messageBox -type ok -title GNED -icon error -message "Not implemented yet :-)"
             }
-        } else {
-           if {$typename!="" && [itemKeyFromName $typename module]==""} {
-               set ned(def) 0
-           } else {
-               set ned(def) 1
-           }
         }
-
-        if {$likename!=""} {
-           set ned($key,like-name) $likename
-           set ned($key,type-name) $typename
-           if {[itemKeyFromName $likename module]==""} {
-              if {$ned(def) == 1} {
-                  set modk [addItem module]
-                  set ned($modk,name) $likename
-                  set ned($modk,parentkey) $ned($ned($key,module-ownerkey),parentkey)
-                  openModuleOnNewCanvas $modk
-              }
-           }
-        } else {
-           set ned($key,like-name) $likename
-           set ned($key,type-name) $typename
-           if {$typename!="" && [itemKeyFromName $typename module]==""} {
-               if {$ned(def) == 1} {
-                   set modk [addItem module]
-                   set ned($modk,name) $typename
-                   set ned($modk,parentkey) $ned($ned($key,module-ownerkey),parentkey)
-                   # FIXME: what's this????
-                   openModuleOnNewCanvas $modk
-               }
-           }
-        }
+    } else {
+        destroy .submprops
     }
-    destroy .submprops
 }
 
 

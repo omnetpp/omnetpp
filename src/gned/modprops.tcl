@@ -90,11 +90,11 @@ proc editModuleProps {key} {
 
         set ned($key,name) [$nb.general.name.e get]
         set ned($key,banner-comment) [getCommentFromText $nb.general.comment.t]
-puts [time {
+
         ModProps:updateNedFromTableEdit $nb.pars.tbl  $key params   param   name
         ModProps:updateNedFromTableEdit $nb.gates.tbl $key gates    gate    name
         ModProps:updateNedFromTableEdit $nb.mach.tbl  $key machines machine name
-}]
+
         updateTreeManager
         adjustWindowTitle
     }
