@@ -73,8 +73,8 @@ char *do_func (int args, char *fname, char *p1,char *p2,char *p3,char *p4)
 {
     char *func;
     int i;
-    char buf[32];
-    char findfunc_code[128];
+    char buf[128];
+    char findfunc_code[512];
 
     if (firstpass)
         {jar_free(fname);jar_free(p1);jar_free(p2);jar_free(p3);jar_free(p4);return NULL;}

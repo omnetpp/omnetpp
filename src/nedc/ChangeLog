@@ -1,3 +1,9 @@
+2003-12-06  Andras Varga
+
+	* jar.c: removed check for zero-size module vectors
+
+	* jar_expr.c: fixed buffer overrun introduced last time
+
 2003-11-13  Andras Varga
 
 	* jar_expr.c: added typecast when taking address of <math.h> functions
