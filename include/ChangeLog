@@ -273,8 +273,8 @@ cMessage: change prio() from int to short (2 bytes less)
 
 2003-11-13  Andras Varga
 
-	* Checked in parallel simulation code that was developed March-May 2003,
-	during my stay at Monash University. Changes:
+	* Merged parallel simulation brach that was developed March-May 2003, 
+	during my stay at Monash University. Changes in that branch:
 
 	2003-05-21  Andras Varga
 	* cobject.h: introduced cPolymorphic base class for cObject,
@@ -299,7 +299,7 @@ cMessage: change prio() from int to short (2 bytes less)
 	2003-03-31  Andras Varga
 	* omnetpp.h, csimul.h; removed cnetmod.h: cNetMod and all references
 	to it are removed -- parallel simulation is represented in cSimulation
-	via cParsimSegment.
+	via cParsimPartition.
 	* csimplemodule.h: syncpoint calls removed.
 
 	2003-03-25  Andras Varga
@@ -315,17 +315,13 @@ cMessage: change prio() from int to short (2 bytes less)
 	made protected. (They're called internally during the module creation
 	process, from cModuleType::create().)
 
-2003-03-24  Andras Varga
-
+	2003-03-24  Andras Varga
 	* csimul.h, cmsgheap.h: improved method documentation
 
-2003-03-23  Andras Varga
-
+	2003-03-23  Andras Varga
 	* split cmodule.h: cSimpleModule put into new file csimplemodule.h
-
 	* cobject.h: cObject::namestr private member changed from char* to
 	opp_string
-
 	* added cscheduler.h, changed csimul.h: cSimulation::nextModule()
 	now relies on a scheduler object, subclassed from cScheduler.
 	Normally (with sequential execution) the scheduler is
@@ -334,17 +330,10 @@ cMessage: change prio() from int to short (2 bytes less)
 	specialized class which also does synchronization with real time
 	and/or with other segments.
 
-2003-03-20  Andras Varga
-
+	2003-03-20  Andras Varga
 	* nearly all files: changed signature of netPack()/netUnpack()
 	to use new cCommBuffer interface
-
 	* cgate.h: deliver() made virtual
-
-------------------------------------------------
-END PARSIM
-------------------------------------------------
-
 
 2003-11-09  Andras Varga
 
