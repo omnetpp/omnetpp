@@ -56,6 +56,7 @@ void {Node1}::activity()
         send(msg, "out");
         wait(1);
     }
+    ev << "done\n";
 }
 
 #include <omnetpp.h>
@@ -79,3 +80,5 @@ void {Node2}::handleMessage(cMessage *msg)
 %not-contains: stdout
 received
 
+%contains: stdout
+done

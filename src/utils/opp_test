@@ -728,7 +728,7 @@ sub exec_program()
         }
         # On the next line, cmd.exe may fail to pass back program exit code. 
         # When this happens, use the above (commented out) "system" line.
-        $status = system($shell, split(" ", "/c work >$outfile 2>$errfile"));
+        $status = system($shell, split(" ", "/c $cmd >$outfile 2>$errfile"));
         print "  returned status = $status\n" if ($debug);
         print "  restoring dir \"$savedir\"\n" if ($debug);
         if (!chdir(".."))
