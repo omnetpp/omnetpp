@@ -65,17 +65,19 @@ libnedxml$(SO_LIB_SUFFIX) : $(OBJS)
 nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl ned.dtd
 	perl dtdclassgen.pl ned.dtd
 
-lex.yy.o: lex.yy.c
-	$(CXX) -c $(COPTS) lex.yy.c
+lex.yy.o: lex.yy.cc
+	$(CXX) -c $(COPTS) lex.yy.cc
 
-ned.tab.o: ned.tab.h ned.tab.c
+lex.yy.cc: ned.lex
+	$(LEX) ned.lex
+	mv lex.yy.c lex.yy.cc
+
+ned.tab.o: ned.tab.h ned.tab.cc
 	$(CXX) -c $(COPTS) ned.tab.c
 
-ned.tab.c ned.tab.h: ned.y
+ned.tab.cc ned.tab.h: ned.y
 	$(YACC) -b ned -d ned.y
-
-lex.yy.c: ned.lex
-	$(LEX) ned.lex
+	mv ned.tab.c ned.tab.cc
 
 depend:
 	$(MAKEDEPEND) -I../../include -- *.cc
