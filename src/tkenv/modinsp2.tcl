@@ -291,7 +291,7 @@ proc draw_connection {c ptr dispstr srcptr destptr src_i src_n dest_i dest_n} {
        set fill [lindex $tags(o) 0]
        if {$fill == ""} {set fill black}
        set width [lindex $tags(o) 1]
-       if {$width == ""} {set width 2}
+       if {$width == ""} {set width 1}
 
        eval $c create line $arrow_coords -arrow last \
            -fill $fill -width $width -tags "\"conn $ptr\""
@@ -324,7 +324,7 @@ proc create_graphicalmodwindow {name} {
     set help_tips($w.toolbar.parent)  {Inspect parent module}
     set help_tips($w.toolbar.params)  {Inspect parameters}
     set help_tips($w.toolbar.gates)   {Inspect gates}
-    set help_tips($w.toolbar.redraw)  {Redraw or rearrange submodules}
+    set help_tips($w.toolbar.redraw)  {Rearrange randomly placed submodules}
 
     # create canvas
     set c $w.c

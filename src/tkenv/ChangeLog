@@ -302,3 +302,6 @@ Aug 2, 1999
     separator char is ";" on Windows, and ":" or ";" on Unix.
 Aug 7, 1999
   - "inspect network", "inspect FES" buttons added to main toolbar
+Aug 13, 1999
+  - default width of connection arrows changed from 2 to 1 pixels to be
+    consistent with GNED
