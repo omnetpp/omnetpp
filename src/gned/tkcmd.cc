@@ -14,18 +14,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
-#include <strstream>
+#include <sstream>
+
 #include "tklib.h"
 #include "arrow.h"
 #include "parsened.h"
 
-//----------------------------------------------------------------
-// helper
-static char *my_itol(long l, char *buf)
-{
-    sprintf(buf, "%ld", l);
-    return buf;
-}
 
 
 //----------------------------------------------------------------
