@@ -816,14 +816,22 @@ Apr 10, 2000
  - indentation canonized (4 spaces) in most files (where I had the patience)
  - remove(cObject *) added to cArray
  - cArray error handling improved
- - these functions were removed from cSimulation:
+ - Improved on functions for traversing module hierarchy. [suggestion by Niko]
+   These functions were removed from cSimulation:
       int find(const char *modulename,int index=-1, int parentmod_id=-1);
       cModule *module(const char *modulename,int index=-1,int parentmod_id=-1);
-      bool isUnique(const char *s);
-   They are replaced by corresponding functions in cModule:
+      bool isUnique(const char *s);  // not needed
+      int find(cModule *mod);  // was equivalent to mod->id()
+   The first two have been replaced by functions in cModule:
       int findSubmodule(const char *submodname, int idx=-1); // moduleID (or -1)
       cModule *submodule(const char *submodname, int idx=-1);
- - in printf() statements, all "%lf","%lg","%le" was replaced by "%f","%g","%e"
+   New function in cModule:
+      cModule *moduleByRelativePath(const char *path);
+   moduleByRelativePath() is similar to cSimulation::moduleByPath(), except that
+   it starts the search at that module (e.g. mymod->moduleByRelativePath(
+   "sub.subsub") returns the "subsub" submodule of the "sub" submodule of
+   mymod).
+ - in printf() statements, all "%lf","%lg","%le" were replaced by "%f","%g","%e"
  - in cmodule.h, the old NEW and DELETE macros (for raw memory allocation) were
    renamed to opp_new and opp_free. (Beware when using opp_free: it does NOT
    call the destructor of the passed object!)

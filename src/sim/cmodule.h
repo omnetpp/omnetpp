@@ -170,6 +170,7 @@ class SIM_API cModule : public cObject
     // submodule access:
     int findSubmodule(const char *submodname, int idx=-1);  // returns module id (-1 on error)
     cModule *submodule(const char *submodname, int idx=-1); // returns module ptr
+    cModule *moduleByRelativePath(const char *path);        // find sub-sub-...-modules
 
     // module gates
     int gates() {return gatev.items();}             // total num of gates

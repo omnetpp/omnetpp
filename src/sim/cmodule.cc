@@ -306,6 +306,34 @@ cModule *cModule::submodule(const char *submodname, int idx)
     return NULL;
 }
 
+cModule *cModule::moduleByRelativePath(const char *path)
+{
+    // start tokenizing the path (path format: "SysModule.DemandGen[2].Source")
+    opp_string pathbuf = path;
+    char *s = strtok(pathbuf.buffer(),".");
+
+    // search starts from this module
+    cModule *modp = this;
+
+    // match components of the path
+    do {
+        char *b;
+        if ((b=strchr(s,'['))==NULL)
+            modp = modp->submodule(s);  // no index given
+        else
+        {
+            if (s[strlen(s)-1]!=']') {
+                opp_error("moduleByRelativePath(): syntax error in path `%s'", path);
+                return NULL;
+            }
+            *b='\0';
+            modp = modp->submodule(s,atoi(b+1));
+        }
+    } while ((s=strtok(NULL,"."))!=NULL && modp!=NULL);
+
+    return modp;  // NULL if not found
+}
+
 int cModule::findGate(const char *s, int sn)
 {
     bool w = simulation.warnings();

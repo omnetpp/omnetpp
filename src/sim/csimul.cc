@@ -256,57 +256,37 @@ void cSimulation::del(int id)
     vect[id] = NULL;
 }
 
-int cSimulation::find(cModule *obj)
-{
-    if(obj==NULL) return -1;
-    int i;
-    for (i=1; i<size; i++) if (vect[i]==obj) break;
-    if (i<size)
-        return i;
-    else
-        return -1;
-}
-
 cModule *cSimulation::moduleByPath(const char *path)
 {
-    // Format of path p: "SysModule.DemandGen[2].Source"
-    // Max length of accepted path: 200 chars
-    const int MAXLEN=200;
-    char buf[MAXLEN+1];
-    strncpy(buf,path,MAXLEN);
-    buf[MAXLEN]='\0';
+    // start tokenizing the path (path format: "SysModule.DemandGen[2].Source")
+    opp_string pathbuf = path;
+    char *s = strtok(pathbuf.buffer(),".");
 
-    // start tokenizing
-    char *s, *b;
-    s = strtok(buf,".");
-
-    // system module must match 1st component in the path
+    // search starts from system module
     cModule *modp = systemModule();
-    if (!modp->isName(s))
-        return NO(cModule);
 
-    // match further components
-    while ((s=strtok(NULL,"."))!=NULL && modp!=NULL)
-    {
+    // 1st component in the path may be the system module, skip it then
+    if (modp->isName(s))
+        s = strtok(pathbuf.buffer(),".");
+
+    // match components of the path
+    do {
+        char *b;
         if ((b=strchr(s,'['))==NULL)
-           modp = modp->submodule(s);  // no index given
-        else {
-            if (s[strlen(s)-1]!=']')
-               modp=NULL; // missing ']' -- syntax error
-            else {
-               *b=0;
-               modp = modp->submodule(s,atol(b+1));
+            modp = modp->submodule(s);  // no index given
+        else
+        {
+            if (s[strlen(s)-1]!=']') {
+                opp_error("moduleByPath(): syntax error in path `%s'", path);
+                return NULL;
             }
+            *b='\0';
+            modp = modp->submodule(s,atoi(b+1));
         }
-    }
+    } while ((s=strtok(NULL,"."))!=NULL && modp!=NULL);
+
     return modp;  // NULL if not found
 }
-
-//cModule *cSimulation::module(const char *s,int n,int pt)
-//{
-//    int i=find(s,n,pt);
-//    return i>=0 ? vect[i] : NO(cModule);
-//}
 
 void cSimulation::resetClock()
 {

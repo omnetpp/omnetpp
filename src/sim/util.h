@@ -191,6 +191,7 @@ class SIM_API opp_string
     opp_string(opp_string& s)  {str = opp_strdup(s.str);}
     ~opp_string()              {delete str;}
     operator const char *()    {return str;}
+    char *buffer()             {return str;}
     const char *operator=(const char *s)
                                {delete str;str=opp_strdup(s);return str;}
     opp_string& operator=(opp_string& s)

@@ -123,8 +123,7 @@ class SIM_API cSimulation : public cObject
      int lastModuleIndex()              // last module
          {return last_id;}
 
-     // find modules by pointer and by path
-     int find(cModule *mod);
+     // find modules by path
      cModule *moduleByPath(const char *modulepath);
 
      // look up modules by id
