@@ -127,10 +127,19 @@ value.
 
 
 /**
+@page f1 Tictoc1 files
+
+tictoc1.ned: @include tictoc1.ned
+txc1.cc: @include txc1.cc
+omnetpp.ini: @include omnetpp.ini
+*/
+
+/**
 @page f2 Tictoc2 files
 
 tictoc2.ned: @include tictoc2.ned
 txc2.cc: @include txc2.cc
+omnetpp.ini: @include omnetpp.ini
 */
 
 /**
@@ -138,6 +147,7 @@ txc2.cc: @include txc2.cc
 
 tictoc3.ned: @include tictoc3.ned
 txc3.cc: @include txc3.cc
+omnetpp.ini: @include omnetpp.ini
 */
 
 /**
@@ -145,6 +155,7 @@ txc3.cc: @include txc3.cc
 
 tictoc4.ned: @include tictoc4.ned
 txc4.cc: @include txc4.cc
+omnetpp.ini: @include omnetpp.ini
 */
 
 /**
@@ -152,6 +163,7 @@ txc4.cc: @include txc4.cc
 
 tictoc5.ned: @include tictoc5.ned
 txc5.cc: @include txc5.cc
+omnetpp.ini: @include omnetpp.ini
 */
 
 /**
@@ -159,6 +171,7 @@ txc5.cc: @include txc5.cc
 
 tictoc6.ned: @include tictoc6.ned
 txc6.cc: @include txc6.cc
+omnetpp.ini: @include omnetpp.ini
 */
 
 /**
@@ -166,6 +179,7 @@ txc6.cc: @include txc6.cc
 
 tictoc7.ned: @include tictoc7.ned
 txc7.cc: @include txc7.cc
+omnetpp.ini: @include omnetpp.ini
 */
 
 /**
@@ -173,6 +187,7 @@ txc7.cc: @include txc7.cc
 
 tictoc8.ned: @include tictoc8.ned
 txc8.cc: @include txc8.cc
+omnetpp.ini: @include omnetpp.ini
 */
 
 /**
@@ -180,6 +195,7 @@ txc8.cc: @include txc8.cc
 
 tictoc9.ned: @include tictoc9.ned
 txc9.cc: @include txc9.cc
+omnetpp.ini: @include omnetpp.ini
 */
 
 /**
@@ -188,6 +204,7 @@ txc9.cc: @include txc9.cc
 tictoc10.ned: @include tictoc10.ned
 txc10.cc: @include txc10.cc
 tictoc10.msg: @include tictoc10.msg
+omnetpp.ini: @include omnetpp.ini
 */
 
 /**
@@ -196,5 +213,6 @@ tictoc10.msg: @include tictoc10.msg
 tictoc11.ned: @include tictoc11.ned
 txc11.cc: @include txc11.cc
 tictoc11.msg: @include tictoc11.msg
+omnetpp.ini: @include omnetpp.ini
 */
 
