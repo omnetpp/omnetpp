@@ -81,10 +81,10 @@ NEDCOPTS=$(CFLAGS) $(NEDCFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 SUBDIRS= 
 
 # object files in this directory
-OBJS= cloud_n.o exthttpclient_n.o httpclient_n.o httpnet_n.o httpserver_n.o httpmsg_m.o netpkt_m.o sshpkt_m.o cloud.o csocketrtscheduler.o exthttpclient.o httpclient.o httpserver.o queuebase.o
+OBJS= cloud_n.o exthttpclient_n.o httpclient_n.o httpnet_n.o httpserver_n.o telnetclient_n.o telnetnet_n.o telnetserver_n.o httpmsg_m.o netpkt_m.o telnetpkt_m.o cloud.o  csocketrtscheduler.o exthttpclient.o httpclient.o  httpserver.o  queuebase.o telnetclient.o telnetserver.o
 
 # header files generated (from msg files)
-GENERATEDHEADERS= httpmsg_m.h netpkt_m.h sshpkt_m.h
+GENERATEDHEADERS= httpmsg_m.h netpkt_m.h telnetpkt_m.h
 
 #------------------------------------------------------------------------------
 
@@ -132,6 +132,24 @@ httpserver_n.o: httpserver_n.cc
 httpserver_n.cc: httpserver.ned
 	$(NEDC) $(INCLUDE_PATH) httpserver.ned
 
+telnetclient_n.o: telnetclient_n.cc
+	$(CXX) -c $(NEDCOPTS) telnetclient_n.cc
+
+telnetclient_n.cc: telnetclient.ned
+	$(NEDC) $(INCLUDE_PATH) telnetclient.ned
+
+telnetnet_n.o: telnetnet_n.cc
+	$(CXX) -c $(NEDCOPTS) telnetnet_n.cc
+
+telnetnet_n.cc: telnetnet.ned
+	$(NEDC) $(INCLUDE_PATH) telnetnet.ned
+
+telnetserver_n.o: telnetserver_n.cc
+	$(CXX) -c $(NEDCOPTS) telnetserver_n.cc
+
+telnetserver_n.cc: telnetserver.ned
+	$(NEDC) $(INCLUDE_PATH) telnetserver.ned
+
 httpmsg_m.o: httpmsg_m.cc
 	$(CXX) -c $(NEDCOPTS) httpmsg_m.cc
 
@@ -144,11 +162,11 @@ netpkt_m.o: netpkt_m.cc
 netpkt_m.cc netpkt_m.h: netpkt.msg
 	$(MSGC) $(INCLUDE_PATH) netpkt.msg
 
-sshpkt_m.o: sshpkt_m.cc
-	$(CXX) -c $(NEDCOPTS) sshpkt_m.cc
+telnetpkt_m.o: telnetpkt_m.cc
+	$(CXX) -c $(NEDCOPTS) telnetpkt_m.cc
 
-sshpkt_m.cc sshpkt_m.h: sshpkt.msg
-	$(MSGC) $(INCLUDE_PATH) sshpkt.msg
+telnetpkt_m.cc telnetpkt_m.h: telnetpkt.msg
+	$(MSGC) $(INCLUDE_PATH) telnetpkt.msg
 
 cloud.o: cloud.cc
 	$(CXX) -c $(COPTS) cloud.cc
@@ -167,6 +185,12 @@ httpserver.o: httpserver.cc
 
 queuebase.o: queuebase.cc
 	$(CXX) -c $(COPTS) queuebase.cc
+
+telnetclient.o: telnetclient.cc
+	$(CXX) -c $(COPTS) telnetclient.cc
+
+telnetserver.o: telnetserver.cc
+	$(CXX) -c $(COPTS) telnetserver.cc
 
 
 #doc: neddoc doxy
@@ -207,14 +231,31 @@ re-makemake-m: makefile-ins
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-cloud.o: cloud.cc
+cloud.o: cloud.cc \
+  netpkt_m.h
+cloud_n.o: cloud_n.cc
 csocketrtscheduler.o: csocketrtscheduler.cc \
   csocketrtscheduler.h
 exthttpclient.o: exthttpclient.cc \
-  csocketrtscheduler.h
-httpclient.o: httpclient.cc
+  httpmsg_m.h \
+  csocketrtscheduler.h \
+  netpkt_m.h
+httpclient.o: httpclient.cc \
+  httpmsg_m.h \
+  netpkt_m.h
+httpmsg_m.o: httpmsg_m.cc \
+  httpmsg_m.h \
+  netpkt_m.h
 httpserver.o: httpserver.cc \
   httpserver.h \
-  queuebase.h
+  httpmsg_m.h \
+  queuebase.h \
+  netpkt_m.h
+netpkt_m.o: netpkt_m.cc \
+  netpkt_m.h
 queuebase.o: queuebase.cc \
+  queuebase.h
+telnetclient.o: telnetclient.cc
+telnetserver.o: telnetserver.cc \
+  telnetserver.h \
   queuebase.h
