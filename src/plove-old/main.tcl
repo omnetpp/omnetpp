@@ -509,13 +509,17 @@ proc checkVersion {} {
 #===================================================================
 
 proc startPlove {argv} {
-   global config
+   global config arg0
 
    checkVersion
    defaultBindings
    initFilters
    createMainWindow
 
+   set defaultconfigfile [file join [file directory $arg0] .ploverc]
+   if [file readable $defaultconfigfile] {
+       loadConfig $defaultconfigfile
+   }
    if [file readable $config(configfile)] {
        loadConfig $config(configfile)
    }
