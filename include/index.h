@@ -19,18 +19,23 @@
 /**
  * @mainpage OMNeT++ API Reference
  *
- * This documentation can be browsed in several views (see links
- * at top of this page):
+ * If you are new to OMNeT++, a good starting point for browsing the
+ * documentation is cSimpleModule.
  *
- *   - <B>Modules</B> -- the most important classes, organized by topic
- *   - <B>Class Hierarchy</B> -- inheritance tree of all classes
- *   - <B>Compound List</B> -- alphabetic list of classes
- *   - <B>File List</B> -- header file listings (hyperlinked)
- *   - <B>Compound Members</B> -- methods in alphabetic order
+ * Otherwise, pick one of the following categories, or choose from the
+ * links at the top of this page:
  *
- * If your purpose is to get familiar with OMNeT++ in general,
- * you should start from <b>Modules --> Simulation core classes -->
- * cSimpleModule</b>.
+ * - @ref SimCore
+ * - @ref SimSupport
+ * - @ref Containers
+ * - @ref RandomNumbers
+ * - @ref Statistics
+ * - @ref Envir
+ * - @ref EnumsTypes
+ * - @ref Functions
+ * - @ref Macros
+ * - @ref Internals
+ * - @ref EnvirExtensions
  */
 
 
