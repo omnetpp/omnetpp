@@ -1,3 +1,8 @@
+2002-01-24  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
+
+	* cenum.cc (insert): Bugfix: iterating to the next larger
+	allocation table size failed. New table size was always 0
+
 2002-01-23 Andras Varga
 
 	* cmodule.cc: bugfix: send..() and scheduleAt() crashed if message

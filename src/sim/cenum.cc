@@ -99,7 +99,7 @@ void cEnum::insert(int key, const char *str)
         // choose new size and allocate table
         static int sizes[] = {8,16,32,64,128,256,512,2048, 4096,8192,16384,32768,65536,0};
 	int i;
-	for (i=0; size<=sizes[i] && sizes[i]; i++);
+	for (i=0; size >= sizes[i] && sizes[i]; i++);
         size=sizes[i];
 
 	vect = new sEnum[size];
