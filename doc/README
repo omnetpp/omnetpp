@@ -81,31 +81,44 @@ omnetpp/
        fifo1/         single-server queue
        fifo2/         another version of fifo, now with handleMessage() and FSM
 
+There is also material contributed by people in the OMNeT++ community. Please
+note that contributed material may fall under a license different from OMNeT++'s.
+
+omnetpp/
+   contrib/
+       emacs/         NED syntax highlight for GNU Emacs
+       octave/        using Octave with OMNeT++
+
 
 The example programs
 ~~~~~~~~~~~~~~~~~~~~
 
-Try them in the following order:
-      nim -- fifo1 -- token -- hist -- hcube - dyna -- fifo2 -- fddi -- pvmex
+The example programs are designed to demonstrate as many of the features of
+OMNeT++ as possible. (See README file in samples/ for more info.)
+I recommend the following order to try them out:
+      nim - fifo1 - token - hist - hcube - dyna - fifo2 - fddi - pvmex
 
 
 Installation
 ~~~~~~~~~~~~
 
-For installation instructions, read install.txt!
+For installation instructions, read one of the INSTALL.Unix, INSTALL.Cygwin and
+INSTALL.BC5 files, depending on your environment. For the first two, the process
+is not much different from the normal GNU build and install procedure, except
+that you may need to edit configure.user manually.
 
 
 Authors and contributors
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 OMNeT++ has originally been developed at the Technical University of Budapest
-(BME), Department of Telecommunications (BME-HIT). The primary author and
-maintainer is currently not affiliated with the University.
+(BME), Department of Telecommunications (BME-HIT). The primary author is
+currently not affiliated with the University.
 
 Here's a list of the people who have or had anything to do with OMNeT++:
 
 Primary author and maintainer:
-        Andras Varga            vandras@sch.bme.hu,vargaa@hit.bme.hu
+        Andras Varga            andras@metechnology.com
 
 Advisor:
         Gyorgy Pongor           BME-HIT, pongor@hit.bme.hu
@@ -128,14 +141,15 @@ Initial revision of PVM support (as final project), spring 1996:
         Zoltan Vass             BME-HIT
 
 I'd like to acknowledge the help and support of several people who contributed
-to making OMNeT++ better and more useful for the Internet community:
-Richard Lyon, Joel Sherrill, Nimrod Mesika, Dan Talayco, Y. Ahmet
-Sekercioglu, Brent Weech, Alan Kennington, Kontogiannis Theophanis, Dario
-Mariani.
+(with providing their opinions, sending bug reports/fixes, etc.) to making
+OMNeT++ better and more useful for the Internet community: Richard Lyon,
+Joel Sherrill, Nimrod Mesika, Dan Talayco, Y. Ahmet Sekercioglu, Brent Weech,
+Alan Kennington, Kontogiannis Theophanis and Dario Mariani. Thanks!!!
 
-D. Richard Hipp for tree.tcl that served as a base for the tree widget in GNED.
-Victor Wagner for balloon.tcl.
-John Ousterhout for Tcl and Tk...
+I'd also like to thank John Ousterhout and other developers for Tcl and Tk
+which proved to be an extemely productive environment to build user interfaces;
+and D. Richard Hipp for tree.tcl that served as a base for the tree widget in
+GNED, and Victor Wagner for balloon.tcl.
 
 
 Feedback requested
@@ -147,6 +161,6 @@ WELCOME! They drive OMNeT++ towards new and better releases...
 
 Author contact:
  Andras Varga
- andras@whale.hit.bme.hu, [andras@metechnology.com]
+ andras@metechnology.com [andras@whale.hit.bme.hu,vargaa@hit.bme.hu]
 
 
