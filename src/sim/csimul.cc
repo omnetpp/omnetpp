@@ -46,9 +46,6 @@ cSimulation simulation("simulation");
 
 //==========================================================================
 
-// auxiliary flag, used only locally (a dirty solution...)
-static bool currentmod_was_deleted = false;
-
 // writing date and time on a stream - used in cSimulation::writeresult(..)
 
 ostream& operator<<(ostream& os, struct tm d)
@@ -80,7 +77,6 @@ cSimulation::cSimulation(const cSimulation& r) :
 cSimulation::cSimulation(const char *name) :
  cObject(name),
  locals("simulation-locals"),
- runningmod_deleter(),
  msgQueue( "message-queue" )
 {
     take( &locals );
@@ -88,6 +84,7 @@ cSimulation::cSimulation(const char *name) :
 
     runningmodp = NULL;
     contextmodp = NULL;
+    systemmodp = NULL;
     locallistp = &locals;
 
     netmodp = NULL;
@@ -113,20 +110,8 @@ cSimulation::~cSimulation()
     delete netmodp;
 }
 
-static void runningmod_deleter_func(void *)
-{
-    // function to help dynamically created modules delete themselves
-    for(;;)
-    {
-        simulation.deleteModule( simulation.runningModule()->id() );
-        currentmod_was_deleted = true;  // checked & reset at cSimulation::doOneEvent()
-        simulation.transferToMain();
-    }
-}
-
 void cSimulation::init()
 {
-    runningmod_deleter.setup( runningmod_deleter_func, NULL, 16384 );
 }
 
 void cSimulation::forEach( ForeachFunc do_fn )
@@ -270,6 +255,8 @@ void cSimulation::deleteModule(int id)
     if (id<0 || id>last_id)
         throw new cException("cSimulation::deleteModule(): module id %d out of range",id);
 
+    if (vect[id]==systemmodp)
+        systemmodp = NULL;
     delete vect[id];
     vect[id] = NULL;
 }
@@ -535,17 +522,12 @@ cSimpleModule *cSimulation::selectNextModule()
 
 void cSimulation::transferTo(cSimpleModule *modp)
 {
-    if (modp==contextmodp)
-        return;
     if (modp==NULL)
         throw new cException("transferTo(): attempt to transfer to NULL");
 
-    // set context variables
-    runningmodp = modp;
-    setContextModule( modp );
-    simulation.exception = NULL;
-
     // switch to activity() of the simple module
+    simulation.exception = NULL;
+    runningmodp = modp;
     cCoroutine::switchTo(modp->coroutine);
 
     // if exception occurred in activity(), take it from cSimpleModule::activate() and pass it up
@@ -554,57 +536,59 @@ void cSimulation::transferTo(cSimpleModule *modp)
         // alas, type info was lost, so we have to recover manually...
         if (simulation.exception_type==0)
             throw (cException *)simulation.exception;
-        else
+        else if (simulation.exception_type==1)
             throw (cTerminationException *)simulation.exception;
+        else if (simulation.exception_type==2)
+            throw (cEndModuleException *)simulation.exception;
     }
 
-    // check stack overflow, but only if this module still exists
-    //   (note: currentmod_was_deleted is set by runningmod_deleter)
-    if (currentmod_was_deleted)
-        currentmod_was_deleted = false;
-    else if (modp->stackOverflow())
+    if (modp->stackOverflow())
         throw new cException("Stack violation in module `%s' (%s stack too small?)", modp->fullPath(), modp->className());
-
 }
 
 void cSimulation::doOneEvent(cSimpleModule *mod)
 {
-    if (mod->usesActivity())
-    {
-        // switch to the coroutine of the module's activity(). We'll get back control
-        // when the module executes a receive() or wait() call.
-        // If there was an error during simulation, the call will throw an exception
-        // (which originally occurred inside activity()).
-        transferTo( mod );
-    }
-    else
-    {
-        // call handleMessage() in the module's context
-        setContextModule( mod );
-        cMessage *msg = msgQueue.getFirst();
+    // switch to the module's context
+    setContextModule( mod );
 
-        // notify the environment about the message
-        ev.messageDelivered( msg );
-
-        try
+    try
+    {
+        if (mod->usesActivity())
         {
+            // switch to the coroutine of the module's activity(). We'll get back control
+            // when the module executes a receive() or wait() call.
+            // If there was an error during simulation, the call will throw an exception
+            // (which originally occurred inside activity()).
+            transferTo( mod );
+        }
+        else
+        {
+            // get event to be handled
+            cMessage *msg = msgQueue.getFirst();
+
+            // notify the environment about the message
+            ev.messageDelivered( msg );
+
             // if there was an error during simulation, handleMessage() will come back
             // with an exception
             mod->handleMessage( msg );
         }
-        catch (cEndModuleException *e)
-        {
-            // ignore this exception
-            delete e;
-        }
-        catch (cException *)
-        {
-            // temporarily catch the exception to restore global context
-            setGlobalContext();
-            throw;
-        }
-        setGlobalContext();
     }
+    catch (cEndModuleException *e)
+    {
+        // handle locally
+        if (e->moduleToBeDeleted())
+            deleteModule(mod->id());
+        delete e;
+    }
+    catch (cException *)
+    {
+        // temporarily catch the exception to restore global context
+        setGlobalContext();
+        throw;
+    }
+
+    setGlobalContext();
 
     // increment event count
     event_num++;
@@ -612,7 +596,6 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
 
 void cSimulation::transferToMain()
 {
-    setGlobalContext();
     if (runningmodp!=NULL)
     {
         runningmodp = NULL;

@@ -1,3 +1,13 @@
+2002-11-14  Andras Varga
+
+	* cmodule.cc: cSimpleModule::end() and deleteModule() are now driven
+	by exceptions. This also means that activity() and handleMessage()
+	execution immediately ends after the end() or deleteModule() call.
+	(This fixes the bug that in previous versions, handleMessage() run
+	through even after these calls.)
+
+	* csimul.cc: cSimulation::doOneStep() restructured
+
 2002-10-27  Andras Varga
 
 	* object.cc: className() implemented using typeid (C++ RTTI)
@@ -28,10 +38,13 @@
 	try to reproduce the bug (one step in Tkenv, then exit). Simulation
 	won't work, but no crash. Then move simulation.transferToMain()
 	just inside the try block: simulation will (not) work same way
-	as before, but no crash on exit.
+	as before, but crashes on exit.
 
-	I only saw this on Cygwin, MSVC and gcc on Linux are OK. Ideas,
-	anybody?
+	I only saw this on Cygwin: MSVC and gcc on Linux are OK. Web search
+	told me that exception handling in Cygwin isn't thread-safe, hence
+	the crash. According to some, recompiling *GCC* with --disable-shared 
+	and --enable-threads should cure this. I didn't test, converted to 
+	MinGW instead.
 
 2002-10-20  Andras Varga
 

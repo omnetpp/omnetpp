@@ -568,7 +568,6 @@ void cSimpleModule::activate(void *p)
     starter->setOwner(smod);
     starter->setKind(MK_TIMEOUT);
 
-
     // call activity(). At this point, initialize() has already been called
     // from cSimulation::startRun(), or manually in the case of dynamically
     // created modules.
@@ -579,23 +578,21 @@ void cSimpleModule::activate(void *p)
     }
     catch (cEndModuleException *e)
     {
-        // simply ignore exception and let module finish
-        // smod->state was already set in cSimpleModule::end()
-        delete e;
+        // hand exception to cSimulation::transferTo() and switch back
+        simulation.exception = e;
+        simulation.exception_type = 2;
     }
     catch (cTerminationException *e)
     {
         // hand exception to cSimulation::transferTo() and switch back
         simulation.exception = e;
         simulation.exception_type = 1;
-        simulation.transferToMain();
     }
     catch (cException *e)
     {
         // hand exception to cSimulation::transferTo() and switch back
         simulation.exception = e;
         simulation.exception_type = 0;
-        simulation.transferToMain();
     }
     simulation.transferToMain();
 }
@@ -831,19 +828,8 @@ void cSimpleModule::deleteModule()
            g->fromGate()->setTo( NULL );
     }
 
-    // delete module
-    //   If a module deletes itself (ie. this module is the running one),
-    //   it is somewhat problematic because if we delete it,
-    //   we also delete the stack we're currently using.
-    //   To solve the problem, we transfer to an external coroutine
-    //   called runningmod_deleter which can delete the module without
-    //   problem. After that, it'll do transferToMain() so we never
-    //   get back here again.
-
-    if (simulation.runningModule()==this && usesActivity())
-       cCoroutine::switchTo( &simulation.runningmod_deleter );
-    else
-       simulation.deleteModule(id());
+    // get outta here, and leave simulation.deleteModule(id()) to whoever catches the exception
+    throw new cEndModuleException(true);
 }
 
 int cSimpleModule::send(cMessage *msg, int g)
