@@ -20,6 +20,9 @@ case $host in
   *-*-cygwin*)
     cygwin=yes
     ;;
+  *-*-mingw32*)
+    mingw=yes
+    ;;
   *-hp-hpux*)
     SO_LIB_SUFFIX=".sl"
     ;;
@@ -31,7 +34,9 @@ esac
 # Location of various components. Can be overridden in configure.user.
 #
 OMNETPP_ROOT=`pwd`
-
+if test "$mingw" = yes; then
+    OMNETPP_ROOT=`pwd -W`
+fi
 if test "$cygwin" = yes; then
     OMNETPP_ROOT=`cygpath -w $OMNETPP_ROOT | sed 's|\\\\|/|g'`
 fi
