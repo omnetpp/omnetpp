@@ -181,12 +181,12 @@ class SIM_API cPSquare : public cDensityEstBase
     /**
      * Generates a random number based on the collected data. Uses the random number generator set by setGenK().
      */
-    virtual double random();
+    virtual double random() _CONST;
 
     /**
      * Writes the contents of the object into a text file.
      */
-    virtual void saveToFile(FILE *);
+    virtual void saveToFile(FILE *) _CONST;
 
     /**
      * Reads the object data from a file, in the format written out by saveToFile().

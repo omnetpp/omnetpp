@@ -167,7 +167,7 @@ class SIM_API cVarHistogram : public cHistogramBase //--LG
     /**
      * Generates a random number based on the collected data. Uses the random number generator set by setGenK().
      */
-    virtual double random();
+    virtual double random() _CONST;
 
     /**
      * Returns the value of the Probability Density Function at a given x.
@@ -192,7 +192,7 @@ class SIM_API cVarHistogram : public cHistogramBase //--LG
     /**
      * Writes the contents of the object into a text file.
      */
-    virtual void saveToFile(FILE *); //--LG
+    virtual void saveToFile(FILE *) _CONST; //--LG
 
     /**
      * Reads the object data from a file, in the format written out by saveToFile().

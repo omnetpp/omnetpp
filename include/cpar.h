@@ -512,7 +512,7 @@ class SIM_API cPar : public cObject
      * it returns the type of the object it is redirected to (for example,
      * 'D', 'L', etc.)
      */
-    char type();
+    char type() _CONST;
 
     /**
      * Returns true if the stored value is of a numeric type.
@@ -538,11 +538,12 @@ class SIM_API cPar : public cObject
      * Returns true if the parameter is of input type (the input
      * flag is set).
      */
-    bool isInput();
+    bool isInput() _CONST;
 
     /**
-     * Returns true if the value has changed since the last
-     * changed() call. (It clears the 'changed' flag.)
+     * Returns true if the value has changed since the last changed() call.
+     * Side effect: clears the 'changed' flag, so a next call will return
+     * false.
      */
     bool changed();
     //@}

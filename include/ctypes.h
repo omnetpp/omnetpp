@@ -350,19 +350,19 @@ class SIM_API cLinkType : public cObject
      * Creates a cPar object, representing the delay of this channel.
      * Returns NULL if the channel has no associated delay.
      */
-    cPar *createDelay();
+    cPar *createDelay() _CONST;
 
     /**
      * Creates a cPar object, representing the bit error rate of this channel.
      * Returns NULL if the channel has no associated bit error rate.
      */
-    cPar *createError();
+    cPar *createError() _CONST;
 
     /**
      * Creates a cPar object, representing the data rate of this channel.
      * Returns NULL if the channel has no associated data rate.
      */
-    cPar *createDataRate();
+    cPar *createDataRate() _CONST;
     //@}
 };
 

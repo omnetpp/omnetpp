@@ -105,7 +105,7 @@ class SIM_API cHistogramBase : public cDensityEstBase
     /**
      * Writes the contents of the object into a text file.
      */
-    virtual void saveToFile(FILE *); //--LG
+    virtual void saveToFile(FILE *) _CONST; //--LG
 
     /**
      * Reads the object data from a file, in the format written out by saveToFile().
@@ -210,7 +210,7 @@ class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
     /**
      * Writes the contents of the object into a text file.
      */
-    virtual void saveToFile(FILE *); //--LG
+    virtual void saveToFile(FILE *) _CONST; //--LG
 
     /**
      * Reads the object data from a file, in the format written out by saveToFile().
@@ -316,7 +316,7 @@ class SIM_API cLongHistogram : public cEqdHistogramBase
      * phase, it returns one of the stored observations; after the histogram
      * has been set up, a random integer is returned.
      */
-    virtual double random();
+    virtual double random() _CONST;
     //@}
 };
 
@@ -392,7 +392,7 @@ class SIM_API cDoubleHistogram : public cEqdHistogramBase
      * phase, it returns one of the stored observations; after the histogram
      * has been set up, a random integer is returned.
      */
-    virtual double random();
+    virtual double random() _CONST;
     //@}
 };
 

@@ -287,7 +287,7 @@ class SIM_API cGate : public cObject
     /**
      * Returns whether the gate is currently transmitting.
      */
-    bool isBusy();
+    bool isBusy() _CONST;
 
     /**
      * Returns the simulation time the gate is expected to finish transmitting.
@@ -318,13 +318,13 @@ class SIM_API cGate : public cObject
      * Return the ultimate source and destination of the series of connections
      * (the route) that contains this gate.
      */
-    cGate *sourceGate();
+    cGate *sourceGate() _CONST;
 
     /**
      * Return the ultimate source and destination of the series of connections
      * (the route) that contains this gate.
      */
-    cGate *destinationGate();
+    cGate *destinationGate() _CONST;
 
     /**
      * Determines if a given module is in the route containing this gate.
@@ -344,7 +344,7 @@ class SIM_API cGate : public cObject
      * Returns true if the route that this gate is in is complete, that is,
      * if it starts and arrives at a simple module.
      */
-    bool isRouteOK();
+    bool isRouteOK() _CONST;
     //@}
 
     /** @name Display string. */
@@ -358,7 +358,7 @@ class SIM_API cGate : public cObject
     /**
      * Returns the display string for the gate.
      */
-    const char *displayString();
+    const char *displayString() _CONST;
 
     /**
      * Sets up a notification function which is called every time the display

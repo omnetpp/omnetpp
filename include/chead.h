@@ -121,12 +121,12 @@ class SIM_API cHead : public cObject
      * Searches the list for an object with the given name and returns
      * its pointer. If no such object was found, NULL is returned.
      */
-    cObject *find(const char *objname);
+    cObject *find(const char *objname) _CONST;
 
     /**
      * Returns the number of objects in the list.
      */
-    int count();
+    int count() _CONST;
     //@}
 };
 

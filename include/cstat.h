@@ -224,7 +224,7 @@ class SIM_API cStatistic : public cObject
      * Generates a random number based on the collected data. Uses the random number generator set by setGenK().
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual double random() = 0;
+    virtual double random() _CONST = 0;
     //@}
 
     /** @name Writing to text file, reading from text file. */
@@ -234,7 +234,7 @@ class SIM_API cStatistic : public cObject
      * Writes the contents of the object into a text file.
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual void saveToFile(FILE *) = 0;
+    virtual void saveToFile(FILE *) _CONST = 0;
 
     /**
      * Reads the object data from a file written out by saveToFile().
@@ -381,7 +381,7 @@ class SIM_API cStdDev : public cStatistic
      * Returns numbers from a normal distribution with the current mean and
      * standard deviation.
      */
-    virtual double random();
+    virtual double random() _CONST;
 
     /**
      * Clears the results collected so far.
@@ -391,7 +391,7 @@ class SIM_API cStdDev : public cStatistic
     /**
      * Writes the contents of the object into a text file.
      */
-    virtual void saveToFile(FILE *);
+    virtual void saveToFile(FILE *) _CONST;
 
     /**
      * Reads the object data from a file written out by saveToFile()
@@ -405,7 +405,7 @@ class SIM_API cStdDev : public cStatistic
 
 /**
  * Statistics class to collect doubles and calculate weighted statistics
- * of them. It can be used for example to calculate time average. 
+ * of them. It can be used for example to calculate time average.
  *
  * @ingroup Statistics
  */
@@ -504,7 +504,7 @@ class SIM_API cWeightedStdDev : public cStdDev
     /**
      * Writes the contents of the object into a text file.
      */
-    virtual void saveToFile(FILE *);
+    virtual void saveToFile(FILE *) _CONST;
 
     /**
      * Reads the object data from a file, in the format written out by saveToFile().

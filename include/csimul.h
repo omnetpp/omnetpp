@@ -189,18 +189,18 @@ class SIM_API cSimulation : public cObject
     /**
      * Finds a module by its path.
      */
-    cModule *moduleByPath(const char *modulepath);
+    cModule *moduleByPath(const char *modulepath) _CONST;
 
     /**
      * Looks up a module by ID.
      */
-    cModule *module(int id)
+    cModule *module(int id) _CONST
          {return id>=0 && id<size ? vect[id] : NO(cModule);}
 
     /**
      * Same as module(int).
      */
-    cModule& operator[](int id)
+    cModule& operator[](int id) _CONST
          {return id>=0 && id<size ? *vect[id] : *NO(cModule);}
 
     /**
@@ -212,7 +212,7 @@ class SIM_API cSimulation : public cObject
     /**
      * Returns pointer to the system module.
      */
-    cModule *systemModule()
+    cModule *systemModule() _CONST
          {return systemmodp;}
     //@}
 
@@ -400,7 +400,7 @@ class SIM_API cSimulation : public cObject
      * This is a convenience function which simply calls contextModule().
      */
      // FIXME: implementation should check isSimple() and return NULL if not OK!!!
-    cSimpleModule *contextSimpleModule(); // cannot make inline! would require cmodule.h because of dynamic cast
+    cSimpleModule *contextSimpleModule() _CONST; // cannot make inline! would require cmodule.h because of dynamic cast
 
     /**
      * Returns the currently active 'locals' object. This object is usually the
@@ -409,7 +409,7 @@ class SIM_API cSimulation : public cObject
      * is used internally to manage ownership of user objects created within
      * simple modules.
      */
-    cHead *localList() _CONST  {return locallistp==NULL?(&locals):locallistp;}
+    cHead *localList() {return locallistp==NULL?(&locals):locallistp;}
     //@}
 
     /** @name Statistics, snapshots. */
@@ -484,7 +484,7 @@ class SIM_API cSimulation : public cObject
     /**
      * Examines error code and returns true if simulation terminated normally.
      */
-    bool normalTermination();
+    bool normalTermination() _CONST;
 
     /**
      * Reset error code.

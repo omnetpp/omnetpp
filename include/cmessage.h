@@ -434,7 +434,7 @@ class SIM_API cMessage : public cObject
      * affects message appearance in Tkenv.
      * This default implementation returns "".
      */
-    virtual const char *displayString();
+    virtual const char *displayString() _CONST;
 
     /**
      * Static function that compares two messages by their delivery times,

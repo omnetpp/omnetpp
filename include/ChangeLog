@@ -1,3 +1,7 @@
+2001-08-05 Andras Varga
+
+	* added a few dozen new _CONSTs; affects nearly all files
+
 2001-08-04 Andras Varga
 
 	* index.h: added doc comments

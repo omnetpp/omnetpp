@@ -73,7 +73,7 @@ class SIM_API cOutFileMgr : public cObject
     /**
      * Returns the file name.
      */
-    const char *fileName();
+    const char *fileName() _CONST;
 
     /**
      * Opens the output file with the currently set fileName.
@@ -91,7 +91,8 @@ class SIM_API cOutFileMgr : public cObject
     void deleteFile();
 
     /**
-     * Returns the file pointer to the file. This method calls openFile() if necessary.
+     * Returns the file pointer to the file. Side effect: if the file
+     * hasn't been opened yet, makes a call to openFile().
      */
     FILE *filePointer();
     //@}

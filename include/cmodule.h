@@ -333,7 +333,7 @@ class SIM_API cModule : public cObject
      * Used with parallel execution: determines if the module is on the
      * local machine. See the user manual for more info.
      */
-    bool isOnLocalMachine();
+    bool isOnLocalMachine() _CONST;
 
     /**
      * Returns true if this module is in a module vector.
@@ -424,7 +424,7 @@ class SIM_API cModule : public cObject
      * modules, it returns <tt>true</tt>. This function is usually called from
      * from NEDC-generated code.
      */
-    bool checkInternalConnections();
+    bool checkInternalConnections() _CONST;
     //@}
 
     /** @name Parameters. */
@@ -760,7 +760,7 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
      * Returns the current simulation time (that is, the arrival time
      * of the last message returned by a receiveNew() call).
      */
-    simtime_t simTime();   // cannot make inline because of declaration order!
+    simtime_t simTime() _CONST;   // cannot make inline because of declaration order!
     //@}
 
     /** @name Debugging aids. */
@@ -930,7 +930,7 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
      * and has the same arrival time. (Returns true only if
      * two or more messages arrived to the module at the same time.)
      */
-    bool isThereMessage();
+    bool isThereMessage() _CONST;
 
     /**
      * Receive a message from the put-aside queue or the FES.
@@ -1198,19 +1198,19 @@ class SIM_API cCompoundModule : public cModule
 class SIM_API cSubModIterator
 {
   private:
-    cModule *parent;
+    _CONST cModule *parent;
     int i;
 
   public:
     /**
      * Constructor. It takes the parent module.
      */
-    cSubModIterator(cModule& p)  {parent=&p;i=0;operator++(0);}
+    cSubModIterator(_CONST cModule& p)  {parent=&p;i=0;operator++(0);}
 
     /**
      * Reinitializes the iterator.
      */
-    void init(cModule& p)        {parent=&p;i=0;operator++(0);}
+    void init(_CONST cModule& p)        {parent=&p;i=0;operator++(0);}
 
     /**
      * Obsolete.

@@ -118,7 +118,7 @@ class SIM_API cMessageHeap : public cObject
     /**
      * Peek the first message in the heap (the one with the smallest timestamp.)
      */
-    cMessage *peekFirst();
+    cMessage *peekFirst() _CONST;
 
     /**
      * Remove and return the first message in the heap (the one

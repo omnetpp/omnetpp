@@ -185,12 +185,12 @@ class SIM_API cDensityEstBase : public cStdDev
      *
      * This is a pure virtual function; it must be redefined in subclasses.
      */
-    virtual double random() = 0;  // FIXME: redundant!!!
+    virtual double random() _CONST = 0;  // FIXME: redundant!!!
 
     /**
      * Writes the contents of the object into a text file.
      */
-    virtual void saveToFile(FILE *);
+    virtual void saveToFile(FILE *) _CONST;
 
     /**
      * Reads the object data from a file, in the format written out by saveToFile().

@@ -260,7 +260,7 @@ class SIM_API cObject
      * This function is used by the setOwner() and drop() member functions.
      * drop() is used in container classes derived from cObject.
      */
-    virtual cObject *defaultOwner();
+    virtual cObject *defaultOwner() _CONST;
     //@}
 
     /** @name Ownership control flag.

@@ -219,12 +219,12 @@ class SIM_API cKSplit : public cDensityEstBase
     /**
      * Generates a random number based on the collected data. Uses the random number generator set by setGenK().
      */
-    virtual double random();
+    virtual double random() _CONST;
 
     /**
      * Writes the contents of the object into a text file.
      */
-    virtual void saveToFile(FILE *);
+    virtual void saveToFile(FILE *) _CONST;
 
     /**
      * Reads the object data from a file, in the format written out by saveToFile().
@@ -355,7 +355,7 @@ class SIM_API cKSplitIterator
      * Returns the actual amount of observations in current cell.
      * This is not necessarily an integer value because of previous cell splits.
      */
-    double cellValue();
+    double cellValue() _CONST;
 };
 
 #endif

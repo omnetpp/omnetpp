@@ -138,7 +138,7 @@ class SIM_API cNetMod : public cModule
     /**
      * FIXME: is local host in 'm' list?
      */
-    int isLocalMachineIn(cArray& m);
+    int isLocalMachineIn(_CONST cArray& m);
 
     /**
      * MISSINGDOC: cNetMod:cGate*ingate(int)
