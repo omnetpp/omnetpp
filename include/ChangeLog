@@ -1,3 +1,8 @@
+2002-03-05  Andras Varga
+
+	* cgate.h: cGate::setDisplayString() got an optional second parameter,
+        bool immediate
+
 2002-03-04  Andras Varga
 
 	* cobject.h: cObject::free(cObject *) renamed to dealloc() to avoid

@@ -64,7 +64,7 @@ class SIM_API cGate : public cObject
 
     opp_string dispstr;      // the display string
 
-    void (*notify_inspector)(void*); // to notify inspector about disp str changes
+    void (*notify_inspector)(cGate*,bool,void*); // to notify inspector about display string changes
     void *data_for_inspector;
 
   public:
@@ -355,12 +355,19 @@ class SIM_API cGate : public cObject
 
     /**
      * Sets the display string for the gate, which in practice affects the
-     * apprearance of the connection for which this gate is the source.
+     * appearance of the connection for which this gate is the source.
      *
-     * FIXME: should take a second, <tt>bool immediate</tt> arg. See cModule's
-     * similar methods.
+     * The immediate flag selects whether the change should become effective
+     * right now or later (after finishing the current event).
+     *
+     * If several display string changes are going to be done within one event,
+     * then immediate=false is useful because it reduces the number of necessary
+     * redraws. Immediate=false also uses less stack. But its drawback is that
+     * a setDisplayString() followed by a send() would actually be displayed
+     * in reverse order (message animation first), because message animations
+     * are always performed immediately (actually within the send() call).
      */
-    void setDisplayString(const char *dispstr);
+    void setDisplayString(const char *dispstr, bool immediate=true);
 
     /**
      * Returns the display string for the gate, which in practice affects the
@@ -372,7 +379,7 @@ class SIM_API cGate : public cObject
      * Sets up a notification function which is called every time the display
      * string changes.
      */
-    void setDisplayStringNotify(void (*notify_func)(void*), void *data);
+    void setDisplayStringNotify(void (*notify_func)(cGate*,bool,void*), void *data);
     //@}
 };
 
