@@ -108,10 +108,10 @@ foreach $class (@classes) {
 # parse cppincludes
 while ($msg =~ s/cppinclude\s+(["\<].*?["\>])//s)
 {
-    print STDERR "*** warning: cppinclude is deprecated, use cplusplus { ... }; syntax instead\n";
+    print STDERR "*** warning: cppinclude is deprecated, use cplusplus {{ ... }}; syntax instead\n";
     print H "#include $1\n";
 }
-while ($msg =~ s/cplusplus\s+{(.*?)};//s)
+while ($msg =~ s/cplusplus\s+{{(.*?)}};//s)
 {
     print H "$1\n";
 }

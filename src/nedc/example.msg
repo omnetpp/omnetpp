@@ -12,11 +12,11 @@
 
 
 // includes necessary to compile the generated C++ header file
-cplusplus {
+cplusplus {{
 #include "basicpacket.h"
 #include "payloadpacket.h"
 #include "mystring.h"
-};
+}};
 
 // announce types that come from included C++ code
 struct IPAddress;
