@@ -103,14 +103,14 @@ foreach $fname (glob($fnamepatt))
               $comment =~ s!&lt;(($tags)( [^\n]*?)?)&gt;!<\1>!gsi;
               $comment =~ s!&lt;(/($tags))&gt;!<\1>!gsi;
 
-              # put back <nohtml> sections
-              $comment =~ s|\<nohtml(\d+)\>|$nohtml{$1}|gse;
-
               # put hyperlinks on module names, etc.
               $names = join('|',@components);
               $comment =~ s!\b($names)\b!'<a href="'.$htmlfile{$1}.'">'.$1.'</a>'!gse;
 
-              # put comment back
+              # put back <nohtml> sections
+              $comment =~ s|\<nohtml(\d+)\>|$nohtml{$1}|gse;
+
+              # finished with this comment, put it back into original html file
               $html =~ s/\@bingo\@/$comment/s;
         }
 
