@@ -153,17 +153,13 @@ cXMLElement *cXMLDocCache::parseDocument(const char *filename)
                          "WITH_NETBUILDER option (check configure.user or configuser.vc, then "
                          "rebuild OMNeT++)", filename);
 #else
-    FILE *f = fopen(filename,"r");
-    if (!f)
-        throw new cException("Cannot open file '%s'", filename);
-
     cXMLSAXHandler sh(filename);
     SAXParser parser;
 
     parser.setHandler(&sh);
-    bool ok = parser.parse(f);
+    bool ok = parser.parse(filename);
     if (!ok)
-        throw new cException("Error parsing `%s': %s", filename, parser.getErrorMessage());
+        throw new cException("Error reading `%s': %s", filename, parser.getErrorMessage());
 
     return sh.getTree();
 #endif
