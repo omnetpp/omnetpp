@@ -114,13 +114,13 @@ class SIM_API cDefaultList : public cObject
 
     /**
      * Packing and unpacking cannot be supported with this class.
-     * This methods raises an error.
+     * This method raises an error.
      */
     virtual void netPack(cCommBuffer *buffer);
 
     /**
      * Packing and unpacking cannot be supported with this class.
-     * This methods raises an error.
+     * This method raises an error.
      */
     virtual void netUnpack(cCommBuffer *buffer);
     //@}
