@@ -10,7 +10,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992,99 Andras Varga
+  Copyright (C) 1992,2001 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -23,49 +23,77 @@
 
 #include "cobject.h"
 
-//=== classes declared here
-class  cEnum;
 
 //==========================================================================
 
 /**
- * Defines string representation for enums. The class basically implements
+ * Provides string representation for enums. The class basically implements
  * effective integer-to-string mapping. Primary usage is to support displaying
- * symbolic names for integer values that represent some code
- * (such as an enum or #define). To be used mostly from Tkenv and possibly
- * other user interfaces.
+ * symbolic names for integer values that represent some code (such as an enum
+ * or #define). To be used mostly from Tkenv and possibly other user interfaces.
  */
 class cEnum : public cObject
 {
-   private:
-	struct sEnum {
-	    int key;
-	    const char *string;
-	};
-        sEnum *vect;      // vector of objects
-        int size;         // size of vector; always prime
-        int items;        // number if items in the vector
-   public:
-	cEnum(cEnum& cenum);
-        cEnum(const char *name=NULL, int siz=17);
-        virtual ~cEnum();
+  private:
+     struct sEnum {
+          int key;
+          char *string;
+     };
+     sEnum *vect;      // vector of objects
+     int size;         // size of vector; always prime
+     int items;        // number if items in the vector
+  public:
+    /**
+     * Copy constructor.
+     */
+    cEnum(cEnum& cenum);
 
-        // redefined functions
-        virtual const char *className()  {return "cEnum";}
-        virtual cObject *dup()  {return new cEnum(*this);}
-        virtual void info(char *buf);
-        cEnum& operator=(cEnum& list);
+    /**
+     * Constructor.
+     */
+    cEnum(const char *name=NULL, int siz=17);
 
-        virtual int netPack();
-        virtual int netUnpack();
+    /**
+     * Destructor.
+     */
+    virtual ~cEnum();
 
-        // new functions
-        // add an item; if exist, overwrite
-        void insert(int key, const char *str);
-        // look up key; null ptr if not found
-        const char *stringFor(int key);
-        // look up string; if not found, returns second argument (or -1)
-        int lookup(const char *str, int fallback=-1);
+    /**
+     * Class name string.
+     */
+    virtual const char *className()  {return "cEnum";}
+
+    /**
+     * Duplicate object.
+     */
+    virtual cObject *dup()  {return new cEnum(*this);}
+
+    /**
+     *
+     */
+    virtual void info(char *buf);
+
+    /**
+     * Assignment.
+     */
+    cEnum& operator=(cEnum& list);
+
+    /**
+     * Add an item to the enum. If that numeric code exist, overwrite it.
+     */
+    void insert(int key, const char *str);
+
+    /**
+     * Look up key and return string representation. Return
+     * NULL if not found.
+     */
+    const char *stringFor(int key);
+
+    /**
+     * Look up string and return numeric code. If not found, return
+     * second argument (or -1).
+     */
+    int lookup(const char *str, int fallback=-1);
 };
 
 //==========================================================================
@@ -87,8 +115,11 @@ class cEnum : public cObject
  */
 class sEnumBuilder
 {
-    public:
-        sEnumBuilder(const char *name, ...);
+  public:
+    /**
+     * Constructor. See class description for more info.
+     */
+    sEnumBuilder(const char *name, ...);
 };
 
 #endif

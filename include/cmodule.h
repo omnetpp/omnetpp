@@ -775,17 +775,17 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     // sending messages directly to another module (to an input gate)
 
     /**
-     * FIXME: sending messages directly to another module (to an input gate)
+     * FIXME: send a message directly to another module (to an input gate)
      */
     int sendDirect(cMessage *msg, double delay, cModule *mod, int inputgateid);
 
     /**
-     * MISSINGDOC: cSimpleModule:int sendDirect(cMessage*,double,cModule*,char*,int)
+     * FIXME: send a message directly to another module (to an input gate)
      */
     int sendDirect(cMessage *msg, double delay, cModule *mod, const char *inputgatename, int sn=-1);
 
     /**
-     * TBD (also to include other sendDirect() funcs!)
+     * FIXME: send a message directly to another module (to an input gate)
      */
     int sendDirect(cMessage *msg, double delay, cGate *inputgate);
 
@@ -804,11 +804,10 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     cMessage *cancelEvent(cMessage *msg);       // remove cMessage sent by scheduleAt() from FES
 
     // parallel execution
-    //   sync with receiver segment (blocks receiver at t until msg arrives)
 
     /**
-     * FIXME: parallel execution
-     *   sync with receiver segment (blocks receiver at t until msg arrives)
+     * Used with parallel execution: synchronize with receiver segment.
+     * Blocks receiver at t until a message arrives.
      */
     int syncpoint(simtime_t t, int gateid);
 
@@ -839,7 +838,7 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     // get message from the put-aside queue OR the FES
 
     /**
-     * FIXME: get message from the put-aside queue OR the FES
+     * Receive a message from the put-aside queue or the FES.
      */
     cMessage *receive();
 
@@ -873,16 +872,17 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     // get message from the FES
 
     /**
-     * FIXME: get message from the FES
+     * Remove the next message from the event queue and return a pointer
+     * to it. Ignores put-aside queue.
      */
     cMessage *receiveNew();
 
     /**
      * Removes the next message from the event queue and returns a pointer
-     * to it. If there is no message in the event queue, the function
-     * waits with t timeout until a message will be available. If the
-     * timeout expires and there is still no message in the queue, the
-     * function returns NULL.
+     * to it. Ignores put-aside queue. If there is no message in the event
+     * queue, the function waits with t timeout until a message will be
+     * available. If the timeout expires and there is still no message
+     * in the queue, the function returns NULL.
      */
     cMessage *receiveNew(simtime_t timeout);
 
@@ -910,26 +910,26 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     // simulation control
 
     /**
-     * Wait for given interval. The messages received meanwhile are inserted
+     * Wait for the given interval. The messages received meanwhile are inserted
      * into the put-aside queue.
      */
-    void wait(simtime_t time);        // waits 'time' units
+    void wait(simtime_t time);
 
     /**
      * Ends the run of the simple module. The simulation is not stopped
      * (unless this is the last running module.)
      */
-    void end();                       // ends this module
+    void end();
 
     /**
      * Causes the whole simulation to stop.
      */
-    void endSimulation();             // finish the whole simulation
+    void endSimulation();
 
     /**
-     * MISSINGDOC: cSimpleModule:void error(char*,...)
+     * Issue user error message.
      */
-    void error(const char *fmt,...) const;  // user error message
+    void error(const char *fmt,...) const;
 
     //// access putaside-queue -- soon!
     //virtual cQueue& putAsideQueue();
@@ -937,19 +937,17 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     // record into scalar result file
 
     /**
-     * FIXME:     //access putaside-queue -- soon!
-     *     //virtual cQueue& putAsideQueue();
-     * record into scalar result file
+     * Record a double into the scalar result file.
      */
     void recordScalar(const char *name, double value);
 
     /**
-     * MISSINGDOC: cSimpleModule:void recordScalar(char*,char*)
+     * Record a string into the scalar result file.
      */
     void recordScalar(const char *name, const char *text);
 
     /**
-     * MISSINGDOC: cSimpleModule:void recordStats(char*,cStatistic*)
+     * Record a statistics object into the scalar result file.
      */
     void recordStats(const char *name, cStatistic *stats);
 
@@ -976,15 +974,15 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
 
     // for internal use ONLY:
 
-    /**
-     * FIXME: for internal use ONLY:
-     */
-    void clearHeap();                  // free module's local allocations
+    //
+    // INTERNAL: free module's local allocations
+    //
+    void clearHeap();
 
     /**
-     * MISSINGDOC: cSimpleModule:int moduleState()
+     * FIXME: Return module state.
      */
-    int moduleState() {return state;}  // return module state
+    int moduleState() {return state;}
 };
 
 //==========================================================================
@@ -1058,15 +1056,14 @@ class SIM_API cCompoundModule : public cModule
     //virtual void callInitialize();           // full multi-stage init
 
     /**
-     * FIXME: interface for calling initialize() and finish() from outside
-     *     //virtual void callInitialize();full multi-stage init
+     * FIXME: first for this module, then for submods
      */
-    virtual bool callInitialize(int stage);  // first for this module, then for submods
+    virtual bool callInitialize(int stage);
 
     /**
-     * MISSINGDOC: cCompoundModule:void callFinish()
+     * FIXME: first for submods, then for itself
      */
-    virtual void callFinish();               // first for submods, then for itself
+    virtual void callFinish();
 
     // dynamic module creation
 
@@ -1074,13 +1071,13 @@ class SIM_API cCompoundModule : public cModule
      * Calls scheduleStart() recursively for all its (immediate)
      * submodules. This is used with dynamically created modules.
      */
-    virtual void scheduleStart(simtime_t t); // starting msg for submodules
+    virtual void scheduleStart(simtime_t t);
 
     /**
      * Calls deleteModule() for all its submodules and then
      * deletes itself.
      */
-    virtual void deleteModule();             // deletes module & submodules
+    virtual void deleteModule();
 };
 
 //==========================================================================

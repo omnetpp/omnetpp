@@ -1,3 +1,7 @@
+2001-07-02 Andras Varga
+
+        * cenum.h,cstruct.h: DOC++ comments added (not yet complete)
+
 2001-06-28  Andras Varga
         
 	* utils.h: added DOC++ comments (not yet complete!).

@@ -36,15 +36,15 @@ class sFieldWrapper;
  */
 class cStructDescriptor : public cObject
 {
-    // Field types.
+    /// Field types.
     enum {
-        FT_BASIC,   // int, long, double, bool, char*, char[]
-        FT_SPECIAL, // another data type that requires special presentation (e.g IP address)
-        FT_STRUCT,  // embedded structure, for which there's another cStructDescriptor
-        FT_BASIC_ARRAY,   // array of FT_BASIC
-        FT_SPECIAL_ARRAY, // array of FT_SPECIAL
-        FT_STRUCT_ARRAY,  // array of FT_STRUCT
-        FT_INVALID        // invalid type (signals error condition)
+        FT_BASIC,   /// int, long, double, bool, char*, char[]
+        FT_SPECIAL, /// another data type that requires special presentation (e.g IP address)
+        FT_STRUCT,  /// embedded structure, for which there's another cStructDescriptor
+        FT_BASIC_ARRAY,   /// array of FT_BASIC
+        FT_SPECIAL_ARRAY, /// array of FT_SPECIAL
+        FT_STRUCT_ARRAY,  /// array of FT_STRUCT
+        FT_INVALID        /// invalid type (signals error condition)
     };
   private:
     void *p;
@@ -61,34 +61,114 @@ class cStructDescriptor : public cObject
     static void enum2string(long e, const char *enumname, char *buf, int bufsize);
     static long string2enum(const char *s, const char *enumname);
   public:
+    /**
+     * Constructor.
+     */
     cStructDescriptor() {}
-    cStructDescriptor(void *p) {p=_p;}
+
+    /**
+     * Constructor.
+     */
+    cStructDescriptor(void *_p) {p=_p;}
+
+    /**
+     * Copy constructor.
+     */
     cStructDescriptor(cStructDescriptor& cs);
+
+    /**
+     * Destructor.
+     */
     virtual ~cStructDescriptor();
 
+    /**
+     * MISSINGDOC: xxx
+     */
     virtual const char *className() {return "cStructDescriptor";}
+
+    /**
+     * MISSINGDOC: xxx
+     */
     virtual cObject *dup();
+
+    /**
+     * MISSINGDOC: xxx
+     */
     cStructDescriptor& operator=(cStructDescriptor& cs);
 
-    void setStruct(void *_p)  {p=_p;}
-    void *getStruct()  {return p;}
-
+    /**
+     * Factory method.
+     */
     static cStructDescriptor *createDescriptorFor(cObject *obj);
+
+    /**
+     * Factory method.
+     */
     static cStructDescriptor *createDescriptorFor(const char *classname, void *p);
 
+    /**
+     * MISSINGDOC: xxx
+     */
+    void setStruct(void *_p)  {p=_p;}
+
+    /**
+     * MISSINGDOC: xxx
+     */
+    void *getStruct()  {return p;}
+
+    /**
+     * MISSINGDOC: xxx
+     */
     virtual int getFieldCount() = 0;
+
+    /**
+     * MISSINGDOC: xxx
+     */
     virtual const char *getFieldName(int field) = 0;
+
+    /**
+     * MISSINGDOC: xxx
+     */
     virtual int getFieldType(int field) = 0;
+
+    /**
+     * MISSINGDOC: xxx
+     */
     virtual const char *getFieldTypeString(int field) = 0;
+
+    /**
+     * MISSINGDOC: xxx
+     */
     virtual int getArraySize(int field) = 0;
 
+    /**
+     * MISSINGDOC: xxx
+     */
     virtual void getFieldAsString(int field, int i, char *buf, int bufsize) = 0;
+
+    /**
+     * MISSINGDOC: xxx
+     */
     virtual void setFieldAsString(int field, int i, char *buf) = 0;
 
+    /**
+     * MISSINGDOC: xxx
+     */
     virtual sFieldWrapper *getFieldWrapper(int field, int i) = 0;
+
+    /**
+     * MISSINGDOC: xxx
+     */
     virtual void setFieldWrapper(int field, int i, sFieldWrapper *w) = 0;
 
+    /**
+     * MISSINGDOC: xxx
+     */
     virtual const char *getFieldStructName(int field) = 0;
+
+    /**
+     * MISSINGDOC: xxx
+     */
     virtual void *getFieldStructPointer(int field, int i) = 0;
 };
 
@@ -96,17 +176,37 @@ class cStructDescriptor : public cObject
 /**
  * Supporting class for cStructDescriptor. Abstract base class. Subclasses can
  * be used to represent FT_SPECIAL fields for a cStructDescriptor.
+ *
+ * Additional getter/setter members will be necessary to make sFieldWrappers
+ * useful.
  */
 class sFieldWrapper
 {
   public:
+    /**
+     * MISSINGDOC: xxx
+     */
     sFieldWrapper() {}
+
+    /**
+     * MISSINGDOC: xxx
+     */
     virtual ~sFieldWrapper() {}
 
+    /**
+     * MISSINGDOC: xxx
+     */
     virtual const char *fieldType() = 0;
+
+    /**
+     * MISSINGDOC: xxx
+     */
     virtual void getAsString(char *buf, int bufsize) = 0;
+
+    /**
+     * MISSINGDOC: xxx
+     */
     virtual void setAsString(const char *buf) = 0;
-    // other getter/setter members will be necessary to make Wrappers useful.
 };
 
 #endif

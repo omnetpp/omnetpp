@@ -35,6 +35,7 @@ class  cLinkType;
 class  cFunctionType;
 class  cNetworkType;
 class  cInspectorFactory;
+class  cEnum;
 
 //==========================================================================
 
@@ -190,14 +191,26 @@ class SIM_API const_cIterator
 };
 
 //==========================================================================
-//=== useful functions for finding objects by name:
 
+/**
+ * @name Find global objects by name.
+ */
+//@{
+/// Find a cNetworkType.
 inline cNetworkType *findNetwork(const char *s)    {return (cNetworkType *)networks.find(s);}
+/// Find a cModuleType.
 inline cModuleType *findModuleType(const char *s)  {return (cModuleType *)modtypes.find(s);}
+/// Find a cModuleInterface.
 inline cModuleInterface *findModuleInterface(const char *s) {return (cModuleInterface *)modinterfaces.find(s);}
+/// Find a cLinkType.
 inline cLinkType *findLink(const char *s)          {return (cLinkType *)linktypes.find(s);}
+/// Find a cFunctionType.
 inline cFunctionType *findFunction(const char *s)  {return (cFunctionType *)functions.find(s);}
+/// Find a cInspectorFactory.
 inline cInspectorFactory *findInspectorFactory(const char *s) {return (cInspectorFactory *)inspectorfactories.find(s);}
+/// Find a cEnum.
+inline cEnum *findEnum(const char *s)              {return (cEnum *)enums.find(s);}
+//@}
 
 #endif
 
