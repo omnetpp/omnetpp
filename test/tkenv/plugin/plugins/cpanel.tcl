@@ -86,11 +86,20 @@ proc cpanel_createControls {} {
     pack $w.animspeed -expand 0 -fill x
 
     # arrange the paramChanged function to be called whenever sliders change
-    trace add variable param(arrivalRate1) write cpanel_paramChanged
-    trace add variable param(arrivalRate2) write cpanel_paramChanged
-    trace add variable param(serviceRate1) write cpanel_paramChanged
-    trace add variable param(serviceRate2) write cpanel_paramChanged
-    trace add variable param(animspeed)    write cpanel_paramChanged
+
+    # following lines are only understood by Tcl8.4 -- no good for 8.3
+    #trace add variable param(arrivalRate1) write cpanel_paramChanged
+    #trace add variable param(arrivalRate2) write cpanel_paramChanged
+    #trace add variable param(serviceRate1) write cpanel_paramChanged
+    #trace add variable param(serviceRate2) write cpanel_paramChanged
+    #trace add variable param(animspeed)    write cpanel_paramChanged
+
+    # this is the old syntax, still accepted by Tcl8.4
+    trace variable param(arrivalRate1) w cpanel_paramChanged
+    trace variable param(arrivalRate2) w cpanel_paramChanged
+    trace variable param(serviceRate1) w cpanel_paramChanged
+    trace variable param(serviceRate2) w cpanel_paramChanged
+    trace variable param(animspeed)    w cpanel_paramChanged
 
     # this button brings back main window (if it was withdrawn originally)
     set img_more [image create photo -file "plugins/more.gif"]
