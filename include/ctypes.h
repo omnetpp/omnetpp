@@ -208,6 +208,59 @@ class SIM_API cModuleInterface : public cObject
     void addParamDecl(const char *name, const char *types);
     //@}
 
+    /** @name Query on the module interface */
+    //@{
+    /**
+     * Returns the number of parameters
+     */
+    int numParams();
+
+    /**
+     * Returns index of the given param (0..numParams()), or -1 if not found
+     */
+    int findParam(const char *name);
+
+    /**
+     * Returns the name of the kth parameter
+     */
+    const char *paramName(int k);
+
+    /**
+     * Returns the cPar types allowed for the kth parameter
+     */
+    const char *paramType(int k);
+
+    /**
+     * Returns if the kth parameter is declarared to be <tt>const</tt>
+     */
+    bool isParamConst(int k);
+
+    /**
+     * Returns the number of gates
+     */
+    int numGates();
+
+    /**
+     * Returns index of the given gate (0..numGates()), or -1 if not found
+     */
+    int findGate(const char *name);
+
+    /**
+     * Returns the name of the kth gate
+     */
+    const char *gateName(int k);
+
+    /**
+     * Returns if the kth gate is input or output
+     */
+    char gateType(int k);
+
+    /**
+     * Returns if the kth gate is a gate vector
+     */
+    bool isGateVector(int k);
+    //@}
+
     /** @name Applying the interface to modules. */
     //@{
 
@@ -499,7 +552,7 @@ class SIM_API cNetworkType : public cObject
 //==========================================================================
 
 /**
- * Registration class for extending NED with new functions. Stores a function 
+ * Registration class for extending NED with new functions. Stores a function
  * pointer (returning a double).
  *
  * Objects of this class are usually created via the Define_Function() macro.

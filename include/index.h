@@ -223,18 +223,15 @@
  *
  * Registration classes are listed below. They play the role of a central
  * registry in OMNeT++ -- each instance holds some specific piece of (static)
- * information or serves as a factory object for other objects. Instances
- * are placed on lists available via global variables of type cHead,
- * and usually looked up by name.
+ * information or serves as a factory object for other objects. 
  *
  * Registration objects play an important role at network build time (they
  * store information about available module, channel, etc. types and can
  * instantiate them), and for inspectors in graphical user interfaces like
  * Tkenv.
  *
- *   - cHead instances are heads of global registration lists
- *   - cModuleInterface stores the list of gates and parameters
- *     declared for a module type
+ *   - cModuleInterface stores the list of gates and parameters declared for a 
+ *     module type
  *   - cModuleType can instantiate a module type
  *   - cChannelType can instantiate a channel type
  *   - cNetworkType can instantiate a network type (build up a network)
