@@ -4,18 +4,21 @@ Using OMNeT++ on Windows with the MinGW compiler
 QUICKSTART
 
 For the experienced and impatient, here's a short summary of the installation
-process. But if you're not sure what the following steps mean, you should
+process. If you're not sure what the following steps mean, you should
 probably read the following long instructions.
 
-  1. Install required software: MSYS and MinGW; a Windows port of Bison
+  1. Install required software: MSYS and MinGW; a Windows port of bison
      and some other Unix tools (UnxUtils is fine); Tcl/Tk; Perl.
-     Optional packages: Expat; Akaroa; PVM or MPI.
-  2. Download OMNeT++ sources and unpack it (say into C:\OMNeT++).
-  3. Add C:\OMNeT++\bin your PATH
-  4. Edit C:\OMNeT++\configure.user according to your system (paths to
-     components, etc.)
-  5. Then the usual GNU stuff: ./configure, make. If make goes through,
-     you've made it!
+     Optional packages: Expat; Akaroa; PVM or MPI. Make sure bison, flex,
+     and Tcl/Tk are in the PATH, and the following variables are set 
+     correctly: BISON_SIMPLE, TCL_LIBRARY.
+  2. Download OMNeT++ source package and unpack it (say into c:\omnetpp).
+  3. Add c:\omnetpp\bin your PATH.
+  4. Edit c:\omnetpp\configure.user according to your system. Use Windows-style
+     path names with *forward* slashes (/). If a directory name contains space,
+     use the short name (like C:/PROGRA~1).
+  5. Then fire up the MSYS shell and type the usual GNU stuff: ./configure, 
+     make. If make goes through, you made it!
   6. Try that sample simulations, gned, nedc and opp_makemake work.
 
 If you get stuck at some step, refer to the detailed instructions below.
@@ -59,53 +62,56 @@ detailed installation instructions which I won't replicate here.
 
 The installer will create an `MinGW' / `MSYS' entry in the Start menu
 and also a desktop icon called `MSYS'. In the following description
-I'll assume you installed MinGW into C:\MinGW and MSYS to C:\MinGW\MSYS.
+I'll assume you installed MinGW into c:\MinGW and MSYS to c:\MinGW\MSYS.
 
 If you should ever want to uninstall the tools, you may do so via the
 "Add/Remove Programs" control panel.
 
 Starting MSYS will pop up a bash shell with all special environment
 variables set up for you. Within the bash shell, the MSYS directory
-(C:\MinGW\MSYS) will appear as "/". Your Windows drives will appear
+(c:\MinGW\MSYS) will appear as "/". Your Windows drives will appear
 as /c/, /d/, etc., but MinGW understands the Windows notation too,
-only with slashes instead backslashes (C:/, D:/, etc.). Typing
+only with slashes instead backslashes (c:/, d:/, etc.). Typing
 `pwd -W' always tells you the Windows name of the current directory.
 
+An editor will be required during the installation. For Unix diehards,
+MSYS contains vi, or you can download emacs. A good NT port of emacs
+is available from http://www.cs.washington.edu/homes/voelker/ntemacs.html.
+
 It is a good idea to create a .bash_profile. This should be stored
-in each users home directory (/home/you, or C:/mingw/msys/home/you;
+in each users home directory (/home/you, that is, c:/mingw/msys/home/you;
 typing `cd' takes you there.) For example, my .bash_profile contains:
 
    export PS1='\w$ '
-   export PATH=/c/OMNeT++/bin:$PATH:/c/Unxutils/usr/local/wbin
+   export PATH=/c/omnetpp/bin:$PATH:/c/Unxutils/usr/local/wbin
    export BISON_SIMPLE=c:/Unxutils/usr/local/share/bison.simple
    alias ls='ls -aF'
    alias ll='ls -l'
 
-   cd /c/OMNeT++
+   cd /c/omnetpp
    echo Welcome!
 
-TCL_LIBRARY is necessary to allow tcl/tk to operate correctly.
+Install:
+ UnxUtils
+ Tcl/Tk
+ Perl
+ Expat
+ Akaroa
+ PVM or MPI.
 
-An editor will be required during the installation. For Unix diehards,
-Cygwin contains vi, or you can download emacs. A good NT port of emacs
-is available from http://www.cs.washington.edu/homes/voelker/ntemacs.html.
+---
+IMPORTANT: 
+  The TCL_LIBRARY environment variable is necessary for Tcl/Tk to operate 
+  correctly.
+---
 
--------------
-download and install tcl/tk, expat and other libs
-edit configure.user, put **WINDOWS**-style path names into it
--------------
-
-
-3. Getting Tcl/Tk to work
-
-The Tcl/Tk libs seemingly don't recognize Cygwin paths. For TCL_LIBRARY,
-be sure to use a Windows-style directory name, e.g. use
-   TCL_LIBRARY=c:/cygwin11/usr/share/tcl8.0
+For TCL_LIBRARY, use a Windows-style directory name. Example:
+   TCL_LIBRARY=c:/Tcl/lib
 and not
-   TCL_LIBRARY=/usr/share/tcl8.0     ;# WRONG!
+   TCL_LIBRARY=/c/Tcl/lib  # WRONG!
 
 
-4. Installing OMNeT++
+3. Installing OMNeT++
 
 Download the omnetpp source code and documentation from the omnetpp site.
 Make sure you select to download the unix archive omnetpp.tgz.
@@ -132,8 +138,15 @@ First you should check configure.user to make sure it contains the settings
 you need:
     notepad configure.user
 
+---
+IMPORTANT: 
+  Use Windows-style path names in configure.user! Use forward slashes (/) 
+  instead of backslashes. If a directory name contains space, use the short 
+  name (like C:/PROGRA~1).
+---
+
 Note that currently you cannot build dynamic libraries (DLLs) from OMNeT++
-sources on CygWin.
+sources.
 
 Then the usual GNU-like stuff:
     ./configure
@@ -142,7 +155,7 @@ Then the usual GNU-like stuff:
 You should now test all samples and check they run correctly. As an
 example, the dyna example is started by entering the following commands:
 
-    cd c:/OMNeT++/samples/dyna
+    cd c:/omnetpp/samples/dyna
     ./dyna
 
 By default the samples will run using the Tcl/Tk environment. You should see
