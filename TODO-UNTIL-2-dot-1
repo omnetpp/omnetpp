@@ -1,2 +1,1 @@
-opp_makemake (rename everywhere, including usman.doc)
-delete build parts from usman.doc
+delete build parts from usman.doc, makemake-->opp_makemake

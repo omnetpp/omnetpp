@@ -32,8 +32,8 @@ while [ ! $# = 0 ] ; do
         cat <<EOT
 opp_makemake: write OMNeT++ Makefile based on source files in current directory
 
-opp_makemake [-h] [-f] [-m] [-o make-target] [-t exe|so|o] [-u user-interface] [-p]
-         [-Idir] [-llibrary] [-i makefile-fragment-file]
+opp_makemake [-h] [-f] [-m] [-o make-target] [-t exe|so|o] [-u user-interface]
+         [-p] [-Idir] [-llibrary] [-i makefile-fragment-file]
          [directories, library and object files]...
     -h, --help            This help text
     -f, --force           Force overwriting existing Makefile
