@@ -32,11 +32,12 @@ while [ ! $# = 0 ] ; do
         cat <<EOT
 opp_makemake: write OMNeT++ Makefile based on source files in current directory
 
-opp_makemake [-h] [-f] [-m] [-o make-target] [-t exe|so|o] [-u user-interface]
+opp_makemake [-h] [-f] [-m] [-o make-target] [-n] [-s] [-u user-interface]
          [-p] [-Idir] [-llibrary] [-i makefile-fragment-file]
          [directories, library and object files]...
     -h, --help            This help text
     -f, --force           Force overwriting existing Makefile
+    -m, --makefile-in     Create Makefile.in instead of Makefile
     -o, --outputfile      Name of simulation executable/library
     -n, --nolink          Produce object files but do not create executable or
                           library. Useful for models with parts in several dirs.
@@ -48,7 +49,6 @@ opp_makemake [-h] [-f] [-m] [-o make-target] [-t exe|so|o] [-u user-interface]
     -llibrary             Additional library to link against
     -i, --includefragment Append file to near end of Makefile. The file makefrag
                           is appended implicitly if no -i options are given.
-    -m, --makefile-in     Create Makefile.in instead of Makefile
     directory             Recursive make in that dir. Makemake will need
                           to call make there to see what object files to
                           include in the Makefile.
