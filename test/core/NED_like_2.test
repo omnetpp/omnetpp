@@ -21,10 +21,10 @@ endnetwork
 network={net}
 warnings=yes
 [Parameters]
-*.mod_type = "@$#@!??"
+*.mod_type = "bla-bla-bla"
 
 %exitcode: 1
 
-%contains: stdout
-Simple module type definition @$#@!?? not found
+%contains-regex: stdout
+module type definition .*bla-bla-bla.* not found
 
