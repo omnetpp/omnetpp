@@ -39,10 +39,10 @@ proc editNetworkProps {key} {
     # create "General" page
     label-entry $nb.general.name "Name:"
     radiobutton $nb.general.r1 -text "Type is fixed:" -value 0  -variable tmp(uselike) -command "NetworkProps:notUseLike $w"
-    label-entry-chooser $nb.general.type "  Type:" "" chooseModuleType
+    label-combo2 $nb.general.type "  Type:" [getModuleNameList]
     radiobutton $nb.general.r2 -text "Type is passed in a parameter:" -value 1  -variable tmp(uselike) -command "NetworkProps:useLike $w"
-    label-entry-chooser $nb.general.likepar "  Parameter name:" "" puts
-    label-entry-chooser $nb.general.likemod "  Prototype module:" "" chooseModuleType
+    label-combo2 $nb.general.likepar "  Parameter name:" [getNameList $ned($ned($key,parentkey),parentkey) "params"]; #FIXME BAD!!!! REMOVE THE WHOLE "LIKE" THING FROM NETWORKS!
+    label-combo2 $nb.general.likemod "  Prototype module:" [getModuleNameList]
     label-text  $nb.general.comment "Comments:" 4
 
     pack $nb.general.name  -expand 0 -fill x -side top
@@ -140,17 +140,17 @@ proc editNetworkProps {key} {
 # helper proc
 proc NetworkProps:notUseLike {w} {
     set nb $w.f.nb
-    $nb.general.type.e config  -state normal
-    $nb.general.likepar.e config -state disabled
-    $nb.general.likemod.e config -state disabled
+    $nb.general.type.e configure -state normal
+    $nb.general.likepar.e configure -state disabled
+    $nb.general.likemod.e configure -state disabled
 }
 
 # helper proc
 proc NetworkProps:useLike {w} {
     set nb $w.f.nb
-    $nb.general.type.e config -state disabled
-    $nb.general.likepar.e config -state normal
-    $nb.general.likemod.e config -state normal
+    $nb.general.type.e configure -state disabled
+    $nb.general.likepar.e configure -state normal
+    $nb.general.likemod.e configure -state normal
 }
 
 # NetworkProps:validate --

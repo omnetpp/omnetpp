@@ -228,4 +228,9 @@ proc assertEntryIsValidName {w what} {
 }
 
 
+#
+#
+#
+proc createModuleTypeCombo {w} {
 
+}

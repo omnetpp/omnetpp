@@ -172,19 +172,19 @@ proc editConnectionProps {key} {
 # helper proc
 proc ConnProps:notUseChannel {w} {
     set nb $w.f.nb
-    $nb.attrs.channel.e  config  -state disabled
-    $nb.attrs.delay.e  config  -state normal
-    $nb.attrs.error.e  config  -state normal
-    $nb.attrs.datarate.e  config  -state normal
+    $nb.attrs.channel.e  configure -state disabled
+    $nb.attrs.delay.e  configure -state normal
+    $nb.attrs.error.e  configure -state normal
+    $nb.attrs.datarate.e  configure -state normal
 }
 
 # helper proc
 proc ConnProps:useChannel {w} {
     set nb $w.f.nb
-    $nb.attrs.channel.e  config  -state normal
-    $nb.attrs.delay.e  config  -state disabled
-    $nb.attrs.error.e  config  -state disabled
-    $nb.attrs.datarate.e  config  -state disabled
+    $nb.attrs.channel.e  configure -state normal
+    $nb.attrs.delay.e  configure -state disabled
+    $nb.attrs.error.e  configure -state disabled
+    $nb.attrs.datarate.e  configure -state disabled
 }
 
 # ConnProps:validate --

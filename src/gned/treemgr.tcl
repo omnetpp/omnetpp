@@ -329,7 +329,7 @@ proc displayCodeForItem {key} {
     # widget even from program)
     set numlines [lindex [split [$w.main.text index end] "."] 0]
     set height [expr $numlines>28 ? 30 : $numlines+2]
-    $w.main.text config -state disabled -height $height -width 60
+    $w.main.text configure -state disabled -height $height -width 60
 
     # bindings
     bind $w <Key-Escape> "destroy $w"

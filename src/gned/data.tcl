@@ -656,3 +656,40 @@ proc deleteModuleData {key} {
 }
 
 
+# getModuleNameList --
+#
+# get a list of simple and compound module type names
+#
+proc getModuleNameList {} {
+    global ned
+    set list {}
+    foreach i [array names ned "*,type"] {
+        if {$ned($i)=="module" || $ned($i)=="simple"} {
+            regsub -- ",type" $i "" key
+            lappend list $ned($key,name)
+        }
+    }
+    return $list
+}
+
+
+# getNameList --
+#
+# get a list names within given section (params/substparams/...) of module/submodule/network/...
+#
+proc getNameList {componentkey sectiontype} {
+    global ned
+    set list {}
+    set sectionkeylist [getChildrenWithType $componentkey $sectiontype]
+    foreach sectionkey $sectionkeylist {
+        foreach key [getChildren $sectionkey] {
+            if {[info exist ned($key,name)]} {
+                if {[lsearch -exact $list $ned($key,name)]==-1} {
+                    lappend list $ned($key,name)
+                }
+            }
+        }
+    }
+    return $list
+}
+

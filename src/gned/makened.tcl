@@ -167,6 +167,9 @@ proc generate_network {key indent islast} {
     set out ""
     appendBannerComment out $ned($key,banner-comment) $indent
     append out "${indent}network $ned($key,name) : $ned($key,type-name)"
+    if {$ned($key,like-name)!=""} {
+        append out " like $ned($key,like-name)"
+    }
     appendRightComment out $ned($key,right-comment)
 
     append out [generateChildrenWithType $key substmachines $indent]

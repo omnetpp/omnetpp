@@ -262,6 +262,12 @@ proc label-combo {w label list {text {}} {cmd {}}} {
     }
 }
 
+proc label-combo2 {w label list {text {}} {cmd {}}} {
+    # start with empty combo box
+    label-combo $w $label $list $text $cmd
+    $w.e delete 0 end
+}
+
 proc label-text {w label height {text {}}} {
     # utility function: create a frame with a label+text
     frame $w
