@@ -68,9 +68,9 @@ struct _Task
   unsigned long guardbeef2;     // contains DEADBEEF; should stay last field
 };
 
-_Task main_task;
-_Task *current_task = NULL;
-JMP_BUF tmp_jmpb;
+extern _Task main_task;
+extern _Task *current_task;
+extern JMP_BUF tmp_jmpb;
 
 void task_init( unsigned total_stack, unsigned main_stack );
 _Task *task_create( _Task_fn fnp, void *arg, unsigned stack_size );

@@ -21,6 +21,10 @@
 #include "task.h"
 
 
+_Task main_task;
+_Task *current_task = NULL;
+JMP_BUF tmp_jmpb;
+
 unsigned dist( _Task *from, _Task *to )
 {
     char *c1 = (char *) from,
