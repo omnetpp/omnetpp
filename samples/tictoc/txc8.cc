@@ -36,22 +36,6 @@ class Tic8 : public cSimpleModule
 
 Define_Module(Tic8);
 
-cMessage *Tic8::generateNewMessage()
-{
-    // Generate a message with a different name every time.
-    char msgname[20];
-    sprintf(msgname, "tic-%d", ++seq);
-    cMessage *msg = new cMessage(msgname);
-    return msg;
-}
-
-void Tic8::sendCopyOf(cMessage *msg)
-{
-    // Duplicate message and send the copy.
-    cMessage *copy = (cMessage *) msg->dup();
-    send(copy, "out");
-}
-
 void Tic8::initialize()
 {
     // Initialize variables.
@@ -89,6 +73,22 @@ void Tic8::handleMessage(cMessage *msg)
         sendCopyOf(message);
         scheduleAt(simTime()+timeout, timeoutEvent);
     }
+}
+
+cMessage *Tic8::generateNewMessage()
+{
+    // Generate a message with a different name every time.
+    char msgname[20];
+    sprintf(msgname, "tic-%d", ++seq);
+    cMessage *msg = new cMessage(msgname);
+    return msg;
+}
+
+void Tic8::sendCopyOf(cMessage *msg)
+{
+    // Duplicate message and send the copy.
+    cMessage *copy = (cMessage *) msg->dup();
+    send(copy, "out");
 }
 
 
