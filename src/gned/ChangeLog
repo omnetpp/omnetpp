@@ -3,6 +3,8 @@
 	* canvas.tcl, main.tcl: GUI layout rearranged a bit for usability 
 	reasons
 
+	* plotedit.tcl: cursor changes over canvas items
+
 2003-09-01  Andras Varga
 
 	* canvas.tcl, widgets.tcl: turned on Undo/Redo feature in editor

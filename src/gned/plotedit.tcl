@@ -72,6 +72,13 @@ proc selectOrMoveBindings c {
     #bind $c <Button-2>         "printNed $c"
     bind $c <Button-2>         "$c scan mark %x %y"
     bind $c <B2-Motion>        "$c scan dragto %x %y"
+
+    $c bind submod <Enter>     "$c config -cursor right_ptr"
+    $c bind submod <Leave>     "$c config -cursor arrow"
+    $c bind module <Enter>     "$c config -cursor right_ptr"
+    $c bind module <Leave>     "$c config -cursor arrow"
+    $c bind conn   <Enter>     "$c config -cursor hand2"
+    $c bind conn   <Leave>     "$c config -cursor arrow"
 }
 
 #  drawBindings --
@@ -102,6 +109,13 @@ proc drawBindings c {
     #bind $c <Button-2>         "printNed $c"
     bind $c <Button-2>         "$c scan mark %x %y"
     bind $c <B2-Motion>        "$c scan dragto %x %y"
+    
+    $c bind submod <Enter>     "$c config -cursor draft_small"
+    $c bind submod <Leave>     "$c config -cursor crosshair"
+    $c bind module <Enter>     "$c config -cursor draft_small"
+    $c bind module <Leave>     "$c config -cursor crosshair"
+    $c bind conn   <Enter>     ""
+    $c bind conn   <Leave>     ""
 }
 
 set mouse(mode) ""
