@@ -101,9 +101,10 @@ proc create_snapshot {} {
     if {[network_present] == 0} return
 
     set label ""
-    set ok [inputbox {Snapshot} {Enter label:} label]
+    set ok [inputbox {Snapshot} {Give a label to current simulation snapshot:} label]
     if {$ok == 1} {
         opp_createsnapshot $label
+        messagebox {Snapshot created} "Current state of simulation has been saved into \"[opp_getfilename snapshot]\". You can now use any text editor to examine its contents." info ok
     }
 }
 
@@ -316,7 +317,7 @@ proc stop_simulation {} {
     if {[opp_getsimulationstate] == "SIM_RUNNING"} {
        opp_stopsimulation
     } else {
-       messagebox {Error} {Simulation is not running.} info ok
+       #messagebox {Error} {Simulation is not running.} info ok
     }
 }
 
@@ -504,17 +505,6 @@ proc edit_textfile {} {
 
 proc view_inifile {} {
     view_file [opp_getfilename ini]
-}
-
-proc view_inspectorlistfile {} {
-    set fname "inspect.lst"
-    if {![file exists $fname]} {
-       messagebox {Info} "No inspector list file ($fname) found.
-An inspector list file contains the list of open windows so that they can be reopened
-easily in a subsequent run of the program" info ok
-       return
-    }
-    view_file $fname
 }
 
 proc view_outputvectorfile {} {

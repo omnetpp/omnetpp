@@ -77,13 +77,15 @@ proc create_balloon {text x y} {
     wm overrideredirect .balloon_help true
     wm positionfrom .balloon_help program
     wm geometry .balloon_help "+[expr $x-5]+[expr $y+16]"
-    label .balloon_help.tip -text " $text " -wraplength $help_tips(width) -bg $help_tips(color) -border 1 -relief solid -font $help_tips(font)
+    label .balloon_help.tip -text $text -padx 4 -wraplength $help_tips(width) \
+                            -bg $help_tips(color) -border 1 -relief solid \
+                            -font $help_tips(font) -justify left
     pack .balloon_help.tip
 }
 
 proc init_balloons {args} {
     global help_tips use_balloons fonts
-    set help_tips(width) 300
+    set help_tips(width) 500
     set help_tips(color) #f0f0d0
     set help_tips(delay) 500
     set help_tips(font)  $fonts(balloon)

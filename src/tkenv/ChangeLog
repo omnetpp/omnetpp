@@ -4,6 +4,9 @@
 	mouse over a module icon, its name, type and id will appear in a 
 	tooltip.
 
+	* added 'Simulation options' toolbar button; removed Tcl console from
+	Options menu; other small UI changes
+
 2002-12-07  Andras Varga
 
 	* File|New network and File|New run dialogs now correctly offer choices

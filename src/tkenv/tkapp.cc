@@ -624,8 +624,8 @@ void TOmnetTkApp::stopAtBreakpoint(const char *label, cSimpleModule *mod)
     // pop up a dialog
     char buf[256];
     sprintf(buf, (mod->usesActivity() ?
-                    "Breakpoint \"%s\" hit in module %s (#%d)." :
-                    "Breakpoint \"%s\" hit in module %s (#%d). "
+                    "Breakpoint \"%s\" hit in module %s (id=%d)." :
+                    "Breakpoint \"%s\" hit in module %s (id=%d). "
                     "Break will occur after completing current event, "
                     "ie. after module's handleMessage() returns."),
             label, mod->fullPath(), mod->id() );
@@ -804,14 +804,14 @@ void TOmnetTkApp::updateNextModuleDisplay()
     if (mod)
     {
         modname = mod->fullPath();
-        sprintf(id,"#%u ", mod->id());
+        sprintf(id," (id=%u)", mod->id());
     }
     else
     {
         modname = "n/a";
         id[0]=0;
     }
-    CHK(Tcl_VarEval(interp, NEXT_LABEL " config -text {Next: ", id, modname,"}",NULL));
+    CHK(Tcl_VarEval(interp, NEXT_LABEL " config -text {Next: ",modname,id,"}",NULL));
 }
 
 void TOmnetTkApp::clearNextModuleDisplay()
@@ -865,11 +865,11 @@ void TOmnetTkApp::printEventBanner(cSimpleModule *module)
     }
     else
     {
-        sprintf(banner,"** Event #%ld.  T=%s.  Module #%u `%s'. Phase `%s'.\n",
+        sprintf(banner,"** Event #%ld.  T=%s.  Module `%s' (id=%u). Phase `%s'.\n",
                 simulation.eventNumber(),
                 simtimeToStr( simulation.simTime() ),
-                module->id(),
                 module->fullPath(),
+                module->id(),
                 module->phase()
               );
     }

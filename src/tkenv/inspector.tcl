@@ -32,7 +32,7 @@ proc create_inspector_toplevel {w geom} {
     toplevel $w -class Toplevel
     wm focusmodel $w passive
     if {$geom != ""} {wm geometry $w $geom}
-    wm maxsize $w 1009 738
+    #wm maxsize $w 1009 738
     wm minsize $w 1 1
     wm overrideredirect $w 0
     wm resizable $w 1 1
@@ -134,6 +134,11 @@ proc ask_inspectortype {ptr} {
         set type [$w.f.type.e cget -value]
     }
     destroy $w
+
+    if {[lsearch [opp_supported_insp_types $ptr] $type] == -1} {
+        messagebox {Error} "Invalid inspector type. Please choose from the list." error ok
+        return ""
+    }
     return $type
 }
 
@@ -181,10 +186,10 @@ proc inspect_this {win type} {
 
 
 #
-# Called from balloon.tcl, supposed to return tooltip for a widget (or item 
+# Called from balloon.tcl, supposed to return tooltip for a widget (or item
 # in a widget). Installed via: set help_tips(helptip_proc) get_help_tip
 #
-# Here we produce help text for canvas items that represent simulation 
+# Here we produce help text for canvas items that represent simulation
 # objects.
 #
 proc get_help_tip {w x y item} {
@@ -193,6 +198,10 @@ proc get_help_tip {w x y item} {
        # if this is a simulation object, get its pointer
        set ptr ""
        set tags [$w gettags $item]
+       if {[lsearch $tags "tooltip"] == -1} {
+          return ""
+       }
+
        if {[lsearch $tags "ptr*"] != -1} {
           regexp "ptr.*" $tags ptr
        }
@@ -201,7 +210,7 @@ proc get_help_tip {w x y item} {
        if {$ptr!=""} {
           set tip [opp_getobjectinfostring $ptr]
           regsub {  +} $tip {  } tip
-          return "$tip ($ptr)"
+          return $tip
        }
    }
    return ""

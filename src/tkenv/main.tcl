@@ -37,7 +37,7 @@ proc create_omnetpp_window {} {
 
     wm focusmodel . passive
     wm geometry . 540x275
-    wm maxsize . 1009 738
+    #wm maxsize . 1009 738
     wm minsize . 1 1
     wm overrideredirect . 0
     wm resizable . 1 1
@@ -134,7 +134,7 @@ proc create_omnetpp_window {} {
       {command -command inspect_systemmodule -label {Network} -underline 0}
       {command -command inspect_messagequeue -label {Scheduled events (FES)} -underline 0}
       {separator}
-      {cascade -label {Linked-in components} -underline 10 -menu .menubar.inspectmenu$m.components}
+      {cascade -label {Available components} -underline 10 -menu .menubar.inspectmenu$m.components}
       {separator}
       {command -command inspect_anyobject -label {From list of all objects...} -underline 0}
       {command -command inspect_matching -label {By pattern matching...} -underline 3}
@@ -170,10 +170,9 @@ proc create_omnetpp_window {} {
       {command -label {Ini file} -underline 0 -command view_inifile}
       {command -label {README} -underline 0 -command {view_file README}}
       {separator}
-      {command -label {Output vector file} -underline 0 -command view_outputvectorfile}
-      {command -label {Output scalar file} -underline 0 -command view_outputscalarfile}
+      {command -label {Output vector file} -underline 7 -command view_outputvectorfile}
+      {command -label {Output scalar file} -underline 7 -command view_outputscalarfile}
       {command -label {Snapshot file} -underline 0 -command view_snapshotfile}
-      {command -label {Inspector list file} -underline 1 -command view_inspectorlistfile}
       {separator}
       {command -label {View/Edit file...} -underline 0 -command {edit_textfile}}
     } {
@@ -184,11 +183,10 @@ proc create_omnetpp_window {} {
     foreach i {
       {command -command simulation_options -label {Simulation options...} -underline 0}
       {separator}
-      {command -label {Load inspector list...} -underline 0 -command load_inspectorlist}
-      {command -label {Save open inspectors list...} -underline 0 -command save_inspectorlist}
       {command -label {Update inspectors now} -underline 0 -command opp_updateinspectors}
       {separator}
-      {command -command show_console -label {TCL console} -underline 0}
+      {command -label {Load inspector list...} -underline 0 -command load_inspectorlist}
+      {command -label {Save open inspectors list...} -underline 1 -command save_inspectorlist}
     } {
       eval .menubar.optionsmenu$m add $i
     }
@@ -230,6 +228,8 @@ proc create_omnetpp_window {} {
       {fes      -image $icons(fes)     -command {inspect_messagequeue}}
       {sep5     -separator}
       {find     -image $icons(find)    -command {edit_find}}
+      {sep6     -separator}
+      {options  -image $icons(config)  -command {simulation_options}}
     } {
       set b [eval iconbutton .toolbar.$i]
       pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2
@@ -244,6 +244,7 @@ proc create_omnetpp_window {} {
     set help_tips(.toolbar.network) {Inspect network}
     set help_tips(.toolbar.fes)     {Inspect scheduled events (Future Event Set)}
     set help_tips(.toolbar.find)    {Find string in main window}
+    set help_tips(.toolbar.options) {Simulation options}
 
     #################################
     # Create status bars
@@ -494,6 +495,7 @@ proc load_plugins {path} {
 proc generic_bindings {} {
    global help_tips
    set help_tips(helptip_proc) get_help_tip
+   set help_tips(width) 500
 
    bind Button <Return> {tkButtonInvoke %W}
 }

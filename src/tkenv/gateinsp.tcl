@@ -135,13 +135,13 @@ proc draw_module_gate {c modptr gateptr modname gatename k xsiz dir highlight} {
     set mod1 [$c create polygon -$dx $dy -$dx $dy -$dx 0 $dx 0 $dx $dy $dx $dy \
                      -smooth 0 -width 2 \
                      -fill #c0c0ff \
-                     -tags "mod $modptr"]
+                     -tags "tooltip mod $modptr"]
     set mod2 [$c create line -$dx $dy -$dx $dy -$dx 0 $dx 0 $dx $dy $dx $dy \
                      -smooth 0 -width 2 \
                      -fill black \
-                     -tags "mod $modptr"]
+                     -tags "tooltip mod $modptr"]
     set gate [$c create rect -6 -6 6 6 -fill $color \
-                             -width 2 -tags "gate $gateptr" ]
+                             -width 2 -tags "tooltip gate $gateptr" ]
 
     if {$dir=="O"} {set anch "s"} else {set anch "n"}
     $c create text 72 $y -text $gatename -anchor "$anch\e"
@@ -182,7 +182,7 @@ proc draw_conn {c srcgateptr destgateptr chanstr dispstr} {
        if {$width == ""} {set width 2}
 
        $c create line $x $y0 $x $y1 -arrow last \
-           -fill $fill -width $width -tags "conn $srcgateptr"
+           -fill $fill -width $width -tags "tooltip conn $srcgateptr"
 
        $c create text [expr $x+3] [expr ($y0+$y1)/2] -text $chanstr -anchor w
 

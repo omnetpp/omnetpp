@@ -212,7 +212,7 @@ proc draw_submod {c submodptr name dispstr i n default_layout} {
 
        if [info exists tags(i)] {
 
-           $c create image $x $y -image $img -anchor center -tags "submod $submodptr"
+           $c create image $x $y -image $img -anchor center -tags "tooltip submod $submodptr"
            $c create text $x [expr $y+$sy/2+3] -text $name -anchor n
 
        } elseif [info exists tags(b)] {
@@ -235,7 +235,7 @@ proc draw_submod {c submodptr name dispstr i n default_layout} {
 
            $c create $sh $x1 $y1 $x2 $y2 \
                -fill $fill -width $width -outline $outl \
-               -tags "submod $submodptr"
+               -tags "tooltip submod $submodptr"
            $c create text $x [expr $y2+$width/2+3] -text $name -anchor n
 
        }
@@ -286,7 +286,7 @@ proc draw_enclosingmod {c ptr name dispstr} {
        $c create $sh $bx $by [expr $bx+$sx] [expr $by+$sy] \
            -fill $fill -width $width -outline $outl \
            -tags "mod $ptr"
-       $c create text [expr $bx+3] [expr $by+3] -text $name -anchor nw
+       $c create text [expr $bx+3] [expr $by+3] -text $name -anchor nw -tags "tooltip modname"
        $c lower mod
 
        set cwidth [expr $bx+$sx+$bx]
@@ -347,7 +347,7 @@ proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n
        if {$width == ""} {set width 1}
 
        eval $c create line $arrow_coords -arrow last \
-           -fill $fill -width $width -tags "\"conn $gateptr\""
+           -fill $fill -width $width -tags "\"tooltip conn $gateptr\""
 
     } errmsg] {
        tk_messageBox -type ok -title Error -icon error \
@@ -413,6 +413,8 @@ proc create_graphicalmodwindow {name geom} {
     $c bind conn <3> "graphmodwin_rightclick $c %X %Y"
     $c bind msg <3> "graphmodwin_rightclick $c %X %Y"
     $c bind msgname <3> "graphmodwin_rightclick $c %X %Y"
+    $c bind mod <3> "graphmodwin_rightclick $c %X %Y"
+    $c bind modname <3> "graphmodwin_rightclick $c %X %Y"
 
     graphmodwin_redraw $w
 }
@@ -443,7 +445,6 @@ proc graphmodwin_dblclick c {
 }
 
 proc graphmodwin_rightclick {c X Y} {
-
    set item [$c find withtag current]
    set tags [$c gettags $item]
 
@@ -493,10 +494,10 @@ proc draw_message {c gateptr msgptr msgname {msgkind {}}} {
     set steps [expr $steps<6 ? 0 : $steps-6]
     set xx [expr $x1+$dx*$steps]
     set yy [expr $y1+$dy*$steps]
-    set ball [$c create oval -5 -5 5 5 -fill $color -outline $color -tags "msg $msgptr"]
+    set ball [$c create oval -5 -5 5 5 -fill $color -outline $color -tags "tooltip msg $msgptr"]
     $c move $ball $xx $yy
     if [opp_getsimoption animation_msgnames] {
-        $c create text $xx $yy -text $msgname -anchor n -font $fonts(msgname) -tags "msgname $msgptr"
+        $c create text $xx $yy -text $msgname -anchor n -font $fonts(msgname) -tags "tooltip msgname $msgptr"
     }
 }
 
@@ -534,7 +535,7 @@ proc graphmodwin_animate {win gateptr msgptr msgname msgkind {mode {}}} {
 
     switch $mode {
        beg - {} {
-          set ball [$c create oval -5 -5 5 5 -fill $color -outline $color -tags "msg $msgptr"]
+          set ball [$c create oval -5 -5 5 5 -fill $color -outline $color -tags "tooltip msg $msgptr"]
           $c move $ball $x1 $y1
           if [opp_getsimoption animation_msgnames] {
               $c create text $x1 $y1 -text $msgname -anchor n -font $fonts(msgname) -tags "msgname $msgptr"
