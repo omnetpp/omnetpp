@@ -120,6 +120,24 @@ described above. "Experimental" means that:
  2. The compiler that translates message descriptions into C++ is a perl script
     (this is a temporary solution until nedtool becomes stable and tested)
 
+Let us begin with a simple example. Suppose that you need message objects to
+carry source and destination addresses as well as a hop count. You could write
+a mypacket.msg file with the following contents:
+
+message MyPacket
+{
+    fields:
+       int srcAddress;
+       int destAddress;
+       int hops = 0;
+};
+
+If you process this file with "message subclassing compiler", it will
+create the following files for you: mypacket_m.h and mypacket_m.cc.
+mypacket_m.h is supposed to be included into your C++ sources
+where you want to use ...
+
+
 The task of the "message subclassing compiler" is to generate C++ classes
 you can use from your models as well as "reflection" classes that allow
 Tkenv to inspect these data stuctures. From a file called foo.msg,
@@ -168,12 +186,13 @@ An example:
 It is possible to "extend" an enum with new values.
 
  // add new values to ProtocolTypes
- enum MoreProtocolTypes updates ProtocolTypes
+ enum MoreProtocolTypes extends ProtocolTypes
  {
     CLNP = 3;
     TP4 = 4;
  };
 
+What is generated from this???
 
 3. class, message declarations:
 Different flavours of the same thing -- generated data classes with associated
@@ -212,13 +231,13 @@ Examples:
 Types announced this way are assumed to have NO associated descriptor objects.
 
 
-8. 'virtual' fields:
+8. 'abstract' fields:
 No data member is generated, and generated getter/setter methods are pure
 virtual. Purpose is to allow the programmer to store the value of this field
 in whatever way he/she wants. Assumes that the class has the 'customize'
 property set.
 Example:
-   virtual int a;
+   abstract int a;
 
 
 9. enum declarations for fields:
@@ -242,6 +261,11 @@ Example:
 // Feedback is welcome!
 //
 
+
+// necessary #includes for the
+cppinclude <stdio.h>
+cppinclude "mystuff.h"
+
 // announce types that come from included C++ code
 struct IPAddress;
 cobject BasicPacket;
@@ -251,6 +275,19 @@ noncobject mystringclass;
 // imports are not yet supported :-(
 import "othermsgs.msg";
 
+// create an enum
+enum ProtocolTypes
+{
+    IP = 1;
+    TCP = 2;
+};
+
+// add new values to ProtocolTypes
+enum MoreProtocolTypes extends ProtocolTypes
+{
+    CLNP = 3;
+    TP4 = 4;
+};
 
 // message object
 message FooPacket extends BasicPacket
@@ -277,7 +314,7 @@ message BarPacket extends FooPacket
     fields:
         int hopcount;
         double delay;
-        virtual int myvar;
+        abstract int myvar;
 };
 
 // class without base class (NOT derived from cObject!)
@@ -286,9 +323,9 @@ class MyClass
     properties:
         customize = true;
     fields:
-        virtual char type='x';
-        virtual short version=2;
-}
+        abstract char type='x';
+        abstract short version=2;
+};
 
 // class not derived from cObject
 class MyDerivedClass extends MyClass
@@ -296,7 +333,7 @@ class MyDerivedClass extends MyClass
     fields:
         char bla='x';
         short blabla=2;
-}
+};
 
 // class derived from cObject
 class MyCObjectClass extends cObject
@@ -305,7 +342,7 @@ class MyCObjectClass extends cObject
         char type='x';
         short version=2;
         mystringclass dunno;
-}
+};
 
 // plain C struct (public members, no getter/setter methods, etc)
 struct MyStruct
@@ -314,7 +351,7 @@ struct MyStruct
         char array[10];
         char vect[];
         short version;
-}
+};
 
 
 // inheritance with structs
@@ -322,8 +359,8 @@ struct MyDerivedStruct extends MyStruct
 {
     fields:
         char code;
-        short prot enum(ProtocolTypes);
+        short prot enum(ProtocolTypes); 
         MyStruct substruct;  // also as embedded data member
-}
+};
 
 
