@@ -2,6 +2,10 @@
 
 	* opp_test: changes for Windows
 
+	* opp_makemake_vc.pl: added makefile creator for MSVC. 100% Perl,
+	no other Unix tool needed. The created Makefile.vc includes 
+	configuser.vc for all compiler, linker, etc settings.
+
 2002-10-30  Andras Varga
 
 	* tcl2c.c: commented out old code for Borland C++, it was in the way
