@@ -281,7 +281,7 @@ proc moveDownItem {key} {
     }
 }
 
-proc displayCodeForItem {key} {
+proc displayCodeForItem {key {parentwin {}}} {
     global ned fonts
 
     if [info exist ned($key,name)] {
@@ -292,7 +292,7 @@ proc displayCodeForItem {key} {
 
 
     # open file viewer/editor window
-    set w .nedcode
+    set w $parentwin.nedcode
     catch {destroy $w}
 
     # create widgets

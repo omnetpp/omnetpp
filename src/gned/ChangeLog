@@ -1,3 +1,7 @@
+2003-09-04  Andras Varga
+
+	* implemented "Consult module declaration" button
+
 2003-09-02  Andras Varga
 
 	* canvas.tcl, main.tcl: GUI layout rearranged a bit for usability 

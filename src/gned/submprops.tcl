@@ -83,7 +83,7 @@ proc editSubmoduleProps {key} {
       {{End-line comment} right-comment {entry $e -textvariable $v -width 15 -bd 1}}
       {{Doc. comment} banner-comment {entry $e -textvariable $v -width 15 -bd 1}}
     }
-    button $nb.pars.xcheck -text "Consult module declaration"
+    button $nb.pars.xcheck -text "Consult module declaration" -command "showModuleDecl $nb.general.type.e"
     pack $nb.pars.xcheck -side top -anchor w -padx 4 -pady 4
 
     # create "Gate sizes" page
@@ -93,7 +93,7 @@ proc editSubmoduleProps {key} {
       {{End-line comment} right-comment {entry $e -textvariable $v -width 16 -bd 1}}
       {{Doc. comment} banner-comment {entry $e -textvariable $v -width 18 -bd 1}}
     }
-    button $nb.gates.xcheck -text "Consult module declaration"
+    button $nb.gates.xcheck -text "Consult module declaration" -command "showModuleDecl $nb.general.type.e"
     pack $nb.gates.xcheck -side top -anchor w -padx 4 -pady 4
 
     # create "Machines" page
@@ -258,9 +258,9 @@ proc createSectionsComboAndTables {frame submodkey sectiontype keyword columnlis
     # create tables, fill them and map first one (indirectly via combo)
     foreach key $keylist {
         if {$key=="new"} {
-            tableEdit $frame.tbl$key 10 $columnlist
+            tableEdit $frame.tbl$key 15 $columnlist
         } else {
-            set numlines [expr [llength [getChildren $key]]+10]
+            set numlines [expr [llength [getChildren $key]]+15]
             tableEdit $frame.tbl$key $numlines $columnlist
             fillTableEditFromNed $frame.tbl$key $key
         }

@@ -250,3 +250,28 @@ proc assertSubmodExists {w what modkey} {
     }
 }
 
+
+# showModuleDecl --
+#
+# Called from "Show module declaration" button. $w should be an entry widget (or combo)
+#
+proc showModuleDecl {w} {
+    global ned
+
+    set typename [$w get]
+    set key [itemKeyFromName $typename module]
+    if {$key==""} {
+       set key [itemKeyFromName $typename simple]
+    }   
+    if {$key==""} {
+        tk_messageBox -title "Error" -icon warning -type ok -parent [winfo toplevel $w] \
+              -message "Module type \"$typename\" is unknown to GNED -- none of the open NED files contain its definition."
+        return
+    }
+    displayCodeForItem $key [winfo toplevel $w] 
+    #set nedcode [generateNed $key]
+    #tk_messageBox -title "$typename" -icon info -type ok -parent [winfo toplevel $w] -message $nedcode
+}
+
+
+

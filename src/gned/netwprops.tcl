@@ -75,7 +75,7 @@ proc editNetworkProps {key} {
       {{End-line comment} right-comment {entry $e -textvariable $v -width 15 -bd 1}}
       {{Doc. comment} banner-comment {entry $e -textvariable $v -width 15 -bd 1}}
     }
-    button $nb.pars.xcheck -text "Consult module declaration"
+    button $nb.pars.xcheck -text "Consult module declaration" -command "showModuleDecl $nb.general.type.e"
     pack $nb.pars.xcheck -side top -anchor w -padx 4 -pady 4
 
     # create "Machines" page

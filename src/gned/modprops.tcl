@@ -44,7 +44,7 @@ proc editModuleProps {key} {
 
     # create "Parameters" page
     label $nb.pars.l -text  "Parameters:"
-    tableEdit $nb.pars.tbl 10 {
+    tableEdit $nb.pars.tbl 15 {
       {Name               name           {entry $e -textvariable $v -width 20 -bd 1}}
       {Type               datatype       {entry $e -textvariable $v -width 20 -bd 1}}
       {{End-line comment} right-comment  {entry $e -textvariable $v -width 15 -bd 1}}
@@ -55,7 +55,7 @@ proc editModuleProps {key} {
 
     # create "Gates" page
     label $nb.gates.l -text  "Gates:"
-    tableEdit $nb.gates.tbl 10 {
+    tableEdit $nb.gates.tbl 15 {
       {Name               name           {entry $e -textvariable $v -width 20 -bd 1}}
       {Direction          gatetype       {entry $e -textvariable $v -width 10 -bd 1}}
       {Vector?            isvector       {entry $e -textvariable $v -width 8  -bd 1}}
@@ -67,7 +67,7 @@ proc editModuleProps {key} {
 
     # create "Machines" page
     #label $nb.mach.l -text  "Machines:"
-    #tableEdit $nb.mach.tbl 10 {
+    #tableEdit $nb.mach.tbl 15 {
     #  {Name               name           {entry $e -textvariable $v -width 20 -bd 1}}
     #  {{End-line comment} right-comment  {entry $e -textvariable $v -width 25 -bd 1}}
     #  {{Doc. comment}     banner-comment {entry $e -textvariable $v -width 26 -bd 1}}
