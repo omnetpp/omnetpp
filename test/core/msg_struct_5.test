@@ -1,0 +1,51 @@
+%description:
+Check static arrays in structs are initialized to zero
+
+%file: {}.msg
+
+struct {MyStruct}
+{
+    fields:
+        bool bb[3];
+        char cc[3];
+        short ss[3];
+        unsigned short uss[3];
+        int ii[3];
+        unsigned int uii[3];
+        long ll[3];
+        unsigned long ull[3];
+        double dd[3];
+};
+
+%global:
+#include "{}_m.h"
+
+%activity:
+
+// print everything as number because who knows how '\0' in cc[] is treated by <<
+#define PRINTA(X) ev << #X << ":" << (double)X[0] << ":" << (double)X[1] << ":" << (double)X[2] << endl;
+
+{MyStruct} x;
+
+// arrays
+PRINTA(x.bb);
+PRINTA(x.cc);
+PRINTA(x.ss);
+PRINTA(x.uss);
+PRINTA(x.ii);
+PRINTA(x.uii);
+PRINTA(x.ll);
+PRINTA(x.ull);
+PRINTA(x.dd);
+
+%contains: stdout
+x.bb:0:0:0
+x.cc:0:0:0
+x.ss:0:0:0
+x.uss:0:0:0
+x.ii:0:0:0
+x.uii:0:0:0
+x.ll:0:0:0
+x.ull:0:0:0
+x.dd:0:0:0
+
