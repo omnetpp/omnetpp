@@ -1,0 +1,24 @@
+%description:
+check that scalar file does not get deleted between runs.
+
+%activity:
+
+recordScalar("one", 24.2);
+recordScalar("two", "some text");
+
+%inifile: {}.ini
+[General]
+network={}_network
+output-scalar-file = {}.sca
+
+[Run 1]
+[Run 2]
+
+%contains: {}.sca
+run 1 "{}_network"
+scalar "{}_network" 	"one" 	24.2
+scalar "{}_network" 	"two" 	"some text"
+run 2 "{}_network"
+scalar "{}_network" 	"one" 	24.2
+scalar "{}_network" 	"two" 	"some text"
+
