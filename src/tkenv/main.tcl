@@ -578,11 +578,28 @@ proc startup_commands {} {
     }
 }
 
-#------------------------------------------------------------------
+#===================================================================
+#  Utility functions
+#===================================================================
+proc busy {{msg {}}} {
+    if {$msg != ""} {
+        puts "BUSY: $msg"
+        #$gned(statusbar).mode config -text $msg
+        update idletasks
+        . config -cursor watch
+    } else {
+        puts "IDLE"
+        #$gned(statusbar).mode config -text "Ready"
+        update idletasks
+        . config -cursor ""
+    }
+}
 
+#===================================================================
 #
 # Plugin "API":
 #
+#===================================================================
 proc registerPlugin {pluginname} {
     global pluginlist
     lappend pluginlist $pluginname

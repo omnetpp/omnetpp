@@ -201,13 +201,19 @@ proc new_network {} {
     set netname [opp_getnetworktype]
     set ok [comboSelectionDialog "Set up network" "Set up a network, using parameters described \nin the \[General\] section of omnetpp.ini." "Select network:" netname $netnames]
     if {$ok == 1} {
+       busy "Setting up network..."
        opp_newnetwork $netname
+       busy
 
        if {[opp_object_systemmodule] != [opp_object_nullpointer]} {
+           busy "Opening graphical network inspector..."
            opp_inspect [opp_object_systemmodule] (default)
+           busy
 
            # tell plugins about it
+           busy "Notifying Tcl plugins..."
            notifyPlugins newNetwork
+           busy
        }
     }
 }
@@ -247,13 +253,19 @@ proc new_run {} {
            messagebox "Error" "Which run do you mean by '$run'?" info ok
            return;
        }
+       busy "Setting up network..."
        opp_newrun $runno
+       busy
 
        if {[opp_object_systemmodule] != [opp_object_nullpointer]} {
+           busy "Opening graphical network inspector..."
            opp_inspect [opp_object_systemmodule] (default)
+           busy
 
            # tell plugins about it
+           busy "Notifying Tcl plugins..."
            notifyPlugins newNetwork
+           busy
        }
     }
 }
@@ -467,7 +479,9 @@ proc call_finish {} {
        }
     }
 
+    busy "Invoking finish() on all modules..."
     opp_finish_simulation
+    busy
 }
 
 proc rebuild {} {
@@ -476,7 +490,9 @@ proc rebuild {} {
     if [check_running] return
 
     if {[network_present] == 0} return
+    busy "Rebuilding network..."
     opp_rebuild
+    busy
 }
 
 
