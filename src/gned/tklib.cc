@@ -56,15 +56,15 @@ static int XErrorProc( ClientData, XErrorEvent *errEventPtr)
 }
 
 // initialize Tcl/Tk and return a pointer to the interpreter
-int initTk(int, char **, Tcl_Interp *&interp )
+int initTk(int argc, char **argv, Tcl_Interp *&interp )
 {
     // Create interpreter
     interp = Tcl_CreateInterp();
 
     //if (Tk_ParseArgv(interp,(Tk_Window)NULL, &argc,argv,argTable,0)!=TCL_OK)
     //{
-    //	  fprintf(stderr, "%s\n", interp->result);
-    //	  return TCL_ERROR;
+    //    fprintf(stderr, "%s\n", interp->result);
+    //    return TCL_ERROR;
     //}
 
     if (Tcl_Init(interp) != TCL_OK)
@@ -78,6 +78,16 @@ int initTk(int, char **, Tcl_Interp *&interp )
 	fprintf(stderr, "Tk_Init failed: %s\n", interp->result);
 	return TCL_ERROR;
     }
+
+    // Make command-line arguments available in Tcl variables "argc" and "argv"
+    char buf[16];
+    char *args = Tcl_Merge(argc-1, argv+1);
+    Tcl_SetVar(interp, "argv", args, TCL_GLOBAL_ONLY);
+    Tcl_Free(args);
+    sprintf(buf, "%d", argc-1);
+    Tcl_SetVar(interp, "argc", buf, TCL_GLOBAL_ONLY);
+    Tcl_SetVar(interp, "argv0", argv[0], TCL_GLOBAL_ONLY);
+
 
     Tcl_StaticPackage(interp, "Tk", Tk_Init, (Tcl_PackageInitProc *) NULL);
 

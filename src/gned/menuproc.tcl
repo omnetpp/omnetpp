@@ -56,14 +56,7 @@ proc fileOpen {{fname ""}} {
 
    if {$fname!=""} {
       # regsub "^$env(HOME)/" $fname "~/" fname
-
-      set type [file extension $fname]
-      if {$type==".ned"} {
-         loadNED $fname
-      } else {
-         tk_messageBox -icon warning -type ok \
-                       -message "Don't know how to open $type files."
-      }
+      loadNED $fname
    }
 }
 

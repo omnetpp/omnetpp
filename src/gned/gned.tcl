@@ -76,7 +76,7 @@ if [info exist OMNETPP_GNED_DIR] {
 # Exec startup code
 #
 proc start_gned {} {
-   global OMNETPP_BITMAP_PATH
+   global argv OMNETPP_BITMAP_PATH
 
    wm withdraw .
    checkVersion
@@ -85,6 +85,10 @@ proc start_gned {} {
    create_omnetpp_window
    load_bitmaps $OMNETPP_BITMAP_PATH
    fileNewNedfile
+
+   foreach fname $argv {
+       loadNED $fname
+   }
 }
 
 
