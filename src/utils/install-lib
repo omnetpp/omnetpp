@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/sh
 if test ! -n "$3"; then 
     echo "usage: $0 full_lib_name dest_dir short_lib_name"
     exit 1
