@@ -46,8 +46,6 @@ void ExtTelnetClient::initialize()
 
     addr = par("addr");
     srvAddr = par("srvAddr");
-
-    displayString().setTagArg("t",0,"Run the simulation, then start:\ntelnet localhost 4242\nThen if on Unix: Ctrl+] \"mode character\"");
 }
 
 void ExtTelnetClient::handleMessage(cMessage *msg)
