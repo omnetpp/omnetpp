@@ -431,10 +431,11 @@ echo
 
 if [ "$extdirtstamps" != "" ]; then
     echo '$(EXT_DIR_TSTAMPS):'
+    echo '	@echo'
     echo '	@echo Error: $@ does not exist.'
     echo '	@echo This means that at least the above dependency directory has not been built.'
     echo '	@echo Maybe you need to do a top-level make?'
-    echo '	@echo.'
+    echo '	@echo'
     echo '	@exit 1'
     echo
 fi
