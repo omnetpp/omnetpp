@@ -1,28 +1,15 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
-<HTML>
-<HEAD>
-   <TITLE>OMNeT++ - TicToc Tutorial</TITLE>
-   <META NAME="Author" CONTENT="Andras Varga">
-</HEAD>
-
-<style type="text/css">
-H1 {color: #006f00;}
-H2 {color: #006f00;}
-H3 {color: #006f00;}
-.subheading {color: black;font-weight: bold;}
-</style>
-
-<BODY TEXT="#000000" BGCOLOR="#FFFFE8" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
-
-<P><FONT COLOR="#FF0000"><B><FONT SIZE=+4>OMNeT++ </FONT></B>
-<I><FONT SIZE=+1>Discrete Event Simulation System</FONT></I></FONT></P>
-<H3>OMNeT++ version 3.0</H3>
-
-<H1>TicToc Tutorial</H1>
+/**
+@mainpage OMNeT++ API Reference
 
 <p>This chapter contains a full example program that can give you
 some basic idea of using the simulator. An enhanced version of
 the Nim example can be found among the sample programs.
+
+@include txc1.cc
+
+@include omnetpp.ini
+
+@include omnetpp.ini
 
 <p>Nim is an ancient game with two players and a bunch of sticks.
 The players take turns, removing 1, 2, 3 or 4 sticks from the
@@ -503,5 +490,5 @@ star topology with the number of modules as parameters</TD></TR>
 </table>
 
 <p>
-</BODY>
-</HTML>
+
+*/
