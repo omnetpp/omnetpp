@@ -984,11 +984,12 @@ void TGateInspector::update()
 
    cGate *g = static_cast<cGate *>(object);
 
+   setEntry(".main.name.e", g->name());
    char buf[64];
-   sprintf(buf,"#%d  %s", g->id(), g->fullName());
-   setLabel(".main.name.e", buf);
-
-   setLabel(".main.mod.e", g->ownerModule()->fullPath().c_str());
+   sprintf(buf,"#%d", g->id());
+   setLabel(".main.id.e", buf);
+   //setLabel(".main.mod.e", g->ownerModule()->fullPath().c_str());
+   setEntry(".main.dispstr.e", g->displayString().getString());
 
    if (g->delay()) setLabel(".main.delay.e", (double)(*g->delay()) );
               else setLabel(".main.delay.e", "none" );
@@ -1002,7 +1003,16 @@ void TGateInspector::update()
    cGate *gate;
    setInspectButton(".main.from",gate=g->fromGate(), true, INSP_DEFAULT);
    setInspectButton(".main.to",gate=g->toGate(), true, INSP_DEFAULT);
-   setToolbarInspectButton(".toolbar.mod",g->ownerModule(), INSP_DEFAULT);
+   //setToolbarInspectButton(".toolbar.mod",g->ownerModule(), INSP_DEFAULT);
+}
+
+void TGateInspector::writeBack()
+{
+   cGate *g = static_cast<cGate *>(object);
+   g->setName(getEntry(".main.name.e"));
+   g->displayString().parse(getEntry(".main.dispstr.e"));
+
+   TInspector::writeBack();    // must be there after all changes
 }
 
 //=======================================================================

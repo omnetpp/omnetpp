@@ -126,6 +126,7 @@ class TGateInspector: public TInspector
       TGateInspector(cObject *obj,int typ,const char *geom,void *dat=NULL);
       virtual void createWindow();
       virtual void update();
+      virtual void writeBack();
 };
 
 
