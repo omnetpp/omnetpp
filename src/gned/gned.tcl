@@ -55,6 +55,7 @@ if [info exist OMNETPP_GNED_DIR] {
      source [file join $dir icons.tcl]
      source [file join $dir tree.tcl]
      source [file join $dir treemgr.tcl]
+     source [file join $dir dragdrop.tcl]
      source [file join $dir main.tcl]
      source [file join $dir balloon.tcl]
      source [file join $dir props.tcl]

@@ -23,6 +23,7 @@ Usercmd9= Usercmd9	 	 	 	 	 	 	 	 	 0	 15	 0	 1	 1	 0	 	 1	 	 -1	 0	 0	 0	 0	 0
 fileGroup1=tcl	
 files1=balloon.tcl
 files1=Canvas.tcl
+files1=canvlbl.tcl
 files1=chanprops.tcl
 files1=connprops.tcl
 files1=Data.tcl

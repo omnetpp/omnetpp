@@ -51,7 +51,19 @@ proc initTreeManager {} {
             treemanagerPopup $key %X %Y
         }
     }
+
+    # FIXME!
+    #bind $gned(manager).tree <B1-Motion> {
+    #    # create dragged icon
+    #}
+
+    bind $gned(manager).tree <ButtonRelease-1> {
+        # FIXME!
+        dragAndDropFinish $key %X %Y
+    }
+
 }
+
 
 # updateTreeManager --
 #
