@@ -3,9 +3,9 @@
 #
 
 # version must be the same here and in configure.in!
-version=1.2
+version=2.0beta1
 
-if test -f configure; then
+if test -f Makefile; then
 	echo Start with a clean page by doing 'cvs checkout omnetpp'!!!
         exit 1
 fi
