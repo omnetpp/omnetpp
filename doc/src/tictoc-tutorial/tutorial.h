@@ -698,45 +698,68 @@ so that we can collect some statistics. For example, you may be interested
 in the average hop count a message has to travel before reaching
 its destination.
 
-We'll record in output vectors the hop count of every message upon arrival.
-Output vectors are written into the omnetpp.vec file and can be visualized
-with the Plove program.
+We'll record in the hop count of every message upon arrival into
+an output vector (a sequence of (time,value) pairs, sort of a time series).
+We also calculate mean, standard deviation, minimum, maximum values per node, and
+write them into a file at the end of the simulation. Then we'll use
+off-line tools to analyse the output files.
 
-We also collect basic statistics (min, max, mean, std.dev.) and histogram
-about the hop count which we'll print out at the end of the simulation.
+For that, we add an output vector object (which will record the data into
+omnetpp.vec) and a histogram object (which also calculates mean, etc)
+to the class.
 
 @dontinclude txc12.cc
-@skip class Txc12
+@skipline class Txc12
 @until public:
 
-When a message arrives at the destination node, we update the statistics
-before deleting the message object. The following code has been added to
-handleMessage():
+When a message arrives at the destination node, we update the statistics.
+The following code has been added to handleMessage():
 
-@skip // Message arrived
-@until delete ttmsg
+@skip ::handleMessage
+@skipline hopCountVector.record
+@skipline hopCountStats.collect
 
-Output vectors are written to file automatically during the simulation, but
-other values have to be recorded at the end of the simulation.
-The place for doing this is the finish() function which is invoked on
-<i>successful</i> termination of the simulation (i.e. not when it's stopped
-with an error).
+hopCountVector.record() call writes the data into omnetpp.vec.
+With a large simulation model or long execution time, the omnetpp.vec file
+may grow very large. To handle this situation, you can specifically
+disable/enable vector in omnetpp.ini, and you can also specify
+a simulation time interval in which you're interested
+(data recorded outside this interval will be discarded.)
+
+When you begin a new simulation, the existing omnetpp.vec file gets deleted.
+
+Scalar data (collected by the histogram object in this simulation)
+have to be recorded manually, in the finish() function.
+finish() gets invoked on successful completion of the simulation,
+i.e. not when it's stopped with an error. The recordScalar() calls
+in the code below write into the omnetpp.sca file.
 
 @skip ::finish
 @until }
-
-<img src="step12a.gif">
-
-<img src="step12b.gif">
-
-Select Simulate|Call finish() from the menu (or click the corresponding
-toolbar button) before exiting! This will cause the above finish() functions
-to run, and data to be written into omnetpp.sca.
 
 Unlike omnetpp.vec, omnetpp.sca is <i>not</i> deleted between
 simulation runs. Instead, new data are just appended to it. The idea is
 that you can collect output from several simulation runs (i.e. with
 different input parameters), and analyse them together.
+
+It is possible to use different file names (omnetpp.ini option)
+so that e.g. multiple runs write to different files.
+
+You can also view the data during simulation. In the module inspector's
+Contents page you'll find the hopCountStats and hopCountVector objects,
+and you can open their inspectors (double-click). They will be initially
+empty -- run the simulation in Fast (or even Express) mode to get enough
+data to be displayed. After a while you'll get something like this:
+
+<img src="step12a.gif">
+
+<img src="step12b.gif">
+
+When you think enough data has been collected, you can stop the simulation
+and then we'll analyse the result files (omnetpp.vec and omnetpp.sca) off-line.
+You'll need to choose Simulate|Call finish() from the menu
+(or click the corresponding toolbar button) before exiting -- this will cause
+the finish() functions to run and data to be written into omnetpp.sca.
 
 Sources: @ref tictoc12.ned, @ref tictoc12.msg, @ref txc12.cc, @ref omnetpp.ini
 
