@@ -78,50 +78,50 @@ $(OBJS) : $(GENERATEDHEADERS)
 
 subdirs: $(SUBDIR_TARGETS)
 
-httpmsg_m.obj: httpmsg_m.cc
-	$(CXX) -c $(NEDCOPTS) /Tp httpmsg_m.cc
+httpmsg_m.obj: httpmsg_m.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp httpmsg_m.cpp
 
-httpmsg_m.cc httpmsg_m.h: httpmsg.msg
-	$(MSGC:/=\) -s _m.cc $(INCLUDE_PATH) httpmsg.msg
+httpmsg_m.cpp httpmsg_m.h: httpmsg.msg
+	$(MSGC:/=\) -s _m.cpp $(INCLUDE_PATH) httpmsg.msg
 
-netpkt_m.obj: netpkt_m.cc
-	$(CXX) -c $(NEDCOPTS) /Tp netpkt_m.cc
+netpkt_m.obj: netpkt_m.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp netpkt_m.cpp
 
-netpkt_m.cc netpkt_m.h: netpkt.msg
-	$(MSGC:/=\) -s _m.cc $(INCLUDE_PATH) netpkt.msg
+netpkt_m.cpp netpkt_m.h: netpkt.msg
+	$(MSGC:/=\) -s _m.cpp $(INCLUDE_PATH) netpkt.msg
 
-telnetpkt_m.obj: telnetpkt_m.cc
-	$(CXX) -c $(NEDCOPTS) /Tp telnetpkt_m.cc
+telnetpkt_m.obj: telnetpkt_m.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp telnetpkt_m.cpp
 
-telnetpkt_m.cc telnetpkt_m.h: telnetpkt.msg
-	$(MSGC:/=\) -s _m.cc $(INCLUDE_PATH) telnetpkt.msg
+telnetpkt_m.cpp telnetpkt_m.h: telnetpkt.msg
+	$(MSGC:/=\) -s _m.cpp $(INCLUDE_PATH) telnetpkt.msg
 
-cloud.obj: cloud.cc
-	$(CXX) -c $(COPTS) /Tp cloud.cc
+cloud.obj: cloud.cpp
+	$(CXX) -c $(COPTS) /Tp cloud.cpp
 
-csocketrtscheduler.obj: csocketrtscheduler.cc
-	$(CXX) -c $(COPTS) /Tp csocketrtscheduler.cc
+csocketrtscheduler.obj: csocketrtscheduler.cpp
+	$(CXX) -c $(COPTS) /Tp csocketrtscheduler.cpp
 
-exthttpclient.obj: exthttpclient.cc
-	$(CXX) -c $(COPTS) /Tp exthttpclient.cc
+exthttpclient.obj: exthttpclient.cpp
+	$(CXX) -c $(COPTS) /Tp exthttpclient.cpp
 
-exttelnetclient.obj: exttelnetclient.cc
-	$(CXX) -c $(COPTS) /Tp exttelnetclient.cc
+exttelnetclient.obj: exttelnetclient.cpp
+	$(CXX) -c $(COPTS) /Tp exttelnetclient.cpp
 
-httpclient.obj: httpclient.cc
-	$(CXX) -c $(COPTS) /Tp httpclient.cc
+httpclient.obj: httpclient.cpp
+	$(CXX) -c $(COPTS) /Tp httpclient.cpp
 
-httpserver.obj: httpserver.cc
-	$(CXX) -c $(COPTS) /Tp httpserver.cc
+httpserver.obj: httpserver.cpp
+	$(CXX) -c $(COPTS) /Tp httpserver.cpp
 
-queuebase.obj: queuebase.cc
-	$(CXX) -c $(COPTS) /Tp queuebase.cc
+queuebase.obj: queuebase.cpp
+	$(CXX) -c $(COPTS) /Tp queuebase.cpp
 
-telnetclient.obj: telnetclient.cc
-	$(CXX) -c $(COPTS) /Tp telnetclient.cc
+telnetclient.obj: telnetclient.cpp
+	$(CXX) -c $(COPTS) /Tp telnetclient.cpp
 
-telnetserver.obj: telnetserver.cc
-	$(CXX) -c $(COPTS) /Tp telnetserver.cc
+telnetserver.obj: telnetserver.cpp
+	$(CXX) -c $(COPTS) /Tp telnetserver.cpp
 
 
 #doc: neddoc doxy
@@ -137,12 +137,12 @@ generateheaders: $(GENERATEDHEADERS)
 
 clean:
 	-del $(TARGET)$(EXE_SUFFIX) 2>NUL	-del *.obj *.idb *.pdb .tstamp 2>NUL
-	-del *_n.cc *_n.h *_m.cc *_m.h 2>NUL
+	-del *_n.cpp *_n.h *_m.cpp *_m.h 2>NUL
 	-del *.vec *.sca 2>NUL
 	-for %%i in ( $(SUBDIRS) ) do cd %%i && nmake /nologo /f Makefile.vc clean && cd .. || exit /b 1
 
 depend:
-	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cc
+	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cpp
 	if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && nmake /nologo /f Makefile.vc depend && cd .. || exit /b 1
 
 makefiles:
@@ -153,20 +153,4 @@ makefiles:
 re-makemake: makefiles
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-cloud.obj: cloud.cc
-csocketrtscheduler.obj: csocketrtscheduler.cc \
-  csocketrtscheduler.h
-exthttpclient.obj: exthttpclient.cc \
-  csocketrtscheduler.h
-exttelnetclient.obj: exttelnetclient.cc \
-  csocketrtscheduler.h
-httpclient.obj: httpclient.cc
-httpserver.obj: httpserver.cc \
-  httpserver.h \
-  queuebase.h
-queuebase.obj: queuebase.cc \
-  queuebase.h
-telnetclient.obj: telnetclient.cc
-telnetserver.obj: telnetserver.cc \
-  telnetserver.h \
-  queuebase.h
+
