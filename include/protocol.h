@@ -84,7 +84,7 @@ enum {
    PR_HTTP,
    PR_SMTP,
    PR_POP3,
-   PR_UDP_APP
+   PR_UDP_APP,
    PR_NFS,
    PR_XWINDOW
 
