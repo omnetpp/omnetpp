@@ -508,10 +508,6 @@ echo
 echo 'subdirs: $(SUBDIRS)'
 echo
 
-echo 'generateheaders: $(GENERATEDHEADERS)'
-echo '	for i in $(SUBDIRS); do (cd $$i && $(MAKE) generateheaders); done'
-echo
-
 for i in $subdirs; do
      echo "$i:"
      echo "	cd $i && \$(MAKE)"
@@ -564,9 +560,12 @@ do
         echo
 done
 
+# prevent accumulating of "-f" options during subsequent remakes
+# also kill "-m" options
 args1=`echo " $args " | sed 's/	/ /g;s/ -f / /g;s/ -m / /g'`
 
-# documentation targets
+# rule for clean and other recursive targets
+# also rule hints for documentation targets
 cat <<EOT
 
 #doc: neddoc doxy
@@ -577,6 +576,9 @@ cat <<EOT
 #doxy: $doxyconf
 #	doxygen $doxyconf
 
+generateheaders: \$(GENERATEDHEADERS)
+	for i in \$(SUBDIRS); do (cd \$\$i && \$(MAKE) generateheaders) || exit 1; done
+
 clean:
 	rm -f *.o *_n.cc *_n.h *_m.cc *_m.h \$(TARGET)\$(EXE_SUFFIX) .tstamp
 	rm -f *.vec *.sca
@@ -585,17 +587,17 @@ clean:
 depend:
 	\$(MAKEDEPEND) \$(INCLUDE_PATH) -- *.cc
 	# \$(MAKEDEPEND) \$(INCLUDE_PATH) -fMakefile.in -- *.cc
-	for i in \$(SUBDIRS); do (cd \$\$i && \$(MAKE) depend); done
+	for i in \$(SUBDIRS); do (cd \$\$i && \$(MAKE) depend) || exit 1; done
 
 makefiles:
 	# recreate Makefile
 	opp_makemake -f $args1
-	for i in \$(SUBDIRS); do (cd \$\$i && \$(MAKE) makefiles); done
+	for i in \$(SUBDIRS); do (cd \$\$i && \$(MAKE) makefiles) || exit 1; done
 
 makefile-ins:
 	# recreate Makefile.in
 	opp_makemake -f -m $args1
-	for i in \$(SUBDIRS); do (cd \$\$i && \$(MAKE) makefile-ins); done
+	for i in \$(SUBDIRS); do (cd \$\$i && \$(MAKE) makefile-ins) || exit 1; done
 
 # "re-makemake" and "re-makemake-m" are deprecated, historic names of the above two targets
 re-makemake: makefiles

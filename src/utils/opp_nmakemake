@@ -514,10 +514,6 @@ if (@extdirtstamps != ()) {
 print OUT "subdirs: \$(SUBDIR_TARGETS)\n";
 print OUT "\n";
 
-print OUT "generateheaders: \$(GENERATEDHEADERS)\n";
-print OUT "\t-for %%i in ( \$(SUBDIRS) ) do cd %%i && $makecommand generateheaders && cd .. || exit /b 1\n";
-print OUT "\n";
-
 foreach $i (@subdirs)
 {
    print OUT "${i}_dir:\n";
@@ -589,25 +585,30 @@ print OUT "
 #\t\@doxygen $doxyconf
 ";
 
-# rule for 'clean'
+# prevent accumulating of "-f" options during subsequent remakes
 $args1 = " $args ";
 $args1 =~ s/ -f / /g;
+
+# rule for clean and other recursive targets
+# note funky ``if not "$(SUBDIRS)"=="" for....'' -- it is necessary because
+# cmd.exe thinks that empty "( )" arg for "for" is an error (!?!?)
 print OUT "
+generateheaders: \$(GENERATEDHEADERS)
+\tif not \"\$(SUBDIRS)\"==\"\" for %%i in ( \$(SUBDIRS) ) do cd %%i && $makecommand generateheaders && cd .. || exit /b 1
+
 clean:
 \t-del *.obj *.idb *.pdb \$(TARGET)\$(EXE_SUFFIX) .tstamp 2>NUL
 \t-del *_n.$ccext *_n.h *_m.$ccext *_m.h 2>NUL
 \t-del *.vec *.sca 2>NUL
 \t-for %%i in ( \$(SUBDIRS) ) do cd %%i && $makecommand clean && cd .. || exit /b 1
-";
 
-print OUT "
 depend:
 \t\$(MAKEDEPEND) \$(INCLUDE_PATH) -f $makefile -- *.$ccext
-\t-for %%i in ( \$(SUBDIRS) ) do cd %%i && $makecommand depend && cd .. || exit /b 1
+\tif not \"\$(SUBDIRS)\"==\"\" for %%i in ( \$(SUBDIRS) ) do cd %%i && $makecommand depend && cd .. || exit /b 1
 
 makefiles:
 \topp_nmakemake -f $args1
-\t-for %%i in ( \$(SUBDIRS) ) do cd %%i && $makecommand makefiles && cd .. || exit /b 1
+\tif not \"\$(SUBDIRS)\"==\"\" for %%i in ( \$(SUBDIRS) ) do cd %%i && $makecommand makefiles && cd .. || exit /b 1
 
 # \"re-makemake\" is a deprecated, historic name of the above target
 re-makemake: makefiles
