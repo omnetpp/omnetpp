@@ -201,9 +201,11 @@ class cDisplayStringParser
     /**
      * Inserts a tag into the display string, optionally at the given
      * index. If no index is given, the tag is inserted at the beginning
-     * of the string.
+     * of the string. Return value is the index of the tag.
+     * If the display string already contains a tag with the given tagname, 
+     * nothing is changed and the index of the existing tag is returned. 
      */
-    bool insertTag(const char *tagname, int atindex=0);
+    int insertTag(const char *tagname, int atindex=0);
 
     /**
      * Removes the given tag with all its arguments from the display

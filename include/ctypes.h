@@ -267,13 +267,13 @@ class SIM_API cModuleType : public cObject
      * this function inserts it into cSimulation's module vector and adds the
      * parameters and gates specified in the interface description.
      */
-    cModule *create(const char *name, cModule *parentmod, bool local=true);
+    virtual cModule *create(const char *name, cModule *parentmod, bool local=true);
 
     /**
      * DEPRECATED. Use <code>mod->buildInside()</code> instead; that's what
      * this method does anyway.
      */
-    void buildInside(cModule *mod);
+    virtual void buildInside(cModule *mod);
 
     /**
      * This is a convenience function to get a module up and running in one step.
@@ -291,7 +291,7 @@ class SIM_API cModuleType : public cObject
      *  - gate vector sizes to be set
      *  - gates to be connected before initialize()
      */
-    cModule *createScheduleInit(char *name, cModule *parentmod);
+    virtual cModule *createScheduleInit(char *name, cModule *parentmod);
 
     /**
      * Returns pointer to the module interface object corresponding to this
@@ -299,7 +299,7 @@ class SIM_API cModuleType : public cObject
      *
      * @see cModuleInterface
      */
-    cModuleInterface *moduleInterface();
+    virtual cModuleInterface *moduleInterface();
     //@}
 };
 

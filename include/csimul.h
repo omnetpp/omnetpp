@@ -181,7 +181,8 @@ class SIM_API cSimulation : public cObject
     int lastModuleId() const    {return last_id;}
 
     /**
-     * Finds a module by its path.
+     * Finds a module by its path. Inclusion of the name of the toplevel module
+     * in the path is optional.
      */
     cModule *moduleByPath(const char *modulepath) const;
 
@@ -198,12 +199,12 @@ class SIM_API cSimulation : public cObject
     cModule& operator[](int id) const {return id>=0 && id<size ? *vect[id] : *(cModule *)NULL;}
 
     /**
-     * Sets the system module.
+     * Designates the system module, the top-level module in the model.
      */
     void setSystemModule(cModule *p)  {systemmodp = p;}
 
     /**
-     * Returns pointer to the system module.
+     * Returns pointer to the system module, the top-level module in the model.
      */
     cModule *systemModule() const  {return systemmodp;}
     //@}
@@ -300,6 +301,24 @@ class SIM_API cSimulation : public cObject
      * If the FES is empty, returns NULL.
      */
     cSimpleModule *selectNextModule();
+
+    /**
+     * This is the lite version of selectNextModule(). It is currently only
+     * used from within Tkenv to display the name of the module where the
+     * next event will occur, and it should only be used for simular
+     * purposes, and you should definately NOT call doOneEvent() with its
+     * return value.
+     *
+     * This method is careful not to change anything, anywhere. It never
+     * throws an exception, and especially, it does NOT invoke the scheduler
+     * (see cScheduler) because e.g. its parallel simulation incarnations
+     * might do subtle things to keep events synchronized in various
+     * partitions of the parallel simulation. It just looks at the
+     * currently scheduled messages. As a result, sometimes (with parallel
+     * or real-time simulation), the returned module may not be actually
+     * the one executing the next event.
+     */
+    cSimpleModule *guessNextModule();
 
     /**
      * Executes one event. The argument should be the module

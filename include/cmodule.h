@@ -441,7 +441,8 @@ class SIM_API cModule : public cObject
     const cGate *gate(int g) const {return (const cGate*)gatev[g];}
 
     /**
-     * Looks up a gate by its name and index. Returns NULL if the gate does not exist.
+     * Looks up a gate by its name and index. A scalar gate is treated same
+     * as a vector gate with size=1. Returns NULL if the gate does not exist.
      */
     cGate *gate(const char *gatename,int sn=-1);
 
