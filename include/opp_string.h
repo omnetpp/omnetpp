@@ -52,7 +52,7 @@ class SIM_API opp_string
     /**
      * Copy constructor.
      */
-    opp_string(opp_string& s)  {str = opp_strdup(s.str);}
+    opp_string(const opp_string& s)  {str = opp_strdup(s.str);}
 
     /**
      * Destructor.

@@ -19,7 +19,9 @@
 #ifndef __CCONFIG_H
 #define __CCONFIG_H
 
+#include <vector>
 #include "defs.h"
+#include "opp_string.h"
 #include "cpolymorphic.h"
 
 
@@ -83,7 +85,19 @@ class ENVIR_API cConfiguration : public cPolymorphic
     virtual const char *getAsString(const char *section, const char *key, const char *defaultvalue="") = 0; // quotes stripped (if any)
     virtual const char *getAsCustom(const char *section, const char *key, const char *defaultvalue=NULL) = 0; // with quotes (if any)
 
-    virtual char **getEntriesWithPrefix(const char *section, const char *keyprefix) = 0;
+    /**
+     * Returns a collection of entries together with their values. Entry names
+     * must match keypart1 + keypart2 + some suffix. Pairs of "some suffix" and
+     * their matching values are returned.
+     *
+     * Example: The config contains "net.host1.gen.rng-0 = value1",
+     * "net.host1.gen.rng-2 = value2" and "net.host1.gen.rng-5 = value3".
+     * getEntriesWithPrefix() with keypart1="net.host1.gen" and keypart2=".rng-"
+     * is invoked. The call returns this: ("0" --> value1, "2" --> value2, "5" --> value3).
+     * Returned array contains "0", "2", "5" at odd indices, and
+     * value1, value2, value3 at even indices.
+     */
+    virtual std::vector<opp_string> getEntriesWithPrefix(const char *section, const char *keypart1, const char *keypart2) = 0;
 
     /**
      * Returns true if the last "get" call didn't find the configuration entry
@@ -103,7 +117,7 @@ class ENVIR_API cConfiguration : public cPolymorphic
     virtual const char *getAsString2(const char *section1, const char *section2, const char *key, const char *defaultvalue="") = 0;
     virtual const char *getAsCustom2(const char *section1, const char *section2, const char *key, const char *defaultvalue="") = 0;
 
-    virtual char **getEntriesWithPrefix(const char *section1, const char *section2, const char *keyprefix) = 0;
+    virtual std::vector<opp_string> getEntriesWithPrefix(const char *section1, const char *section2, const char *keypart1, const char *keypart2) = 0;
     //@}
 
     /**
