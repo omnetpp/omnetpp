@@ -1,15 +1,11 @@
-Installing omnet++ on windows NT
+Installing OMNeT++ on Windows NT
 ================================
 
---OUT OF DATE--
 
-From Richard Lyon (rlyon01@ozemail.com.au)
+Based on a description from Richard Lyon (rlyon01@ozemail.com.au)
+
 
 1. Introduction
-
-Currently omnet++ is only supported on Microsoft Windows when used in
-conjunction with Borland C++ 5.0. I do not have this compiler installed
-and have no wish to purchase the product.
 
 CYGNUS Solutions produce a development environment for Microsoft Windows
 based around the GNU compiler and binary utilities. The following packages
@@ -29,18 +25,17 @@ may be found on the web at
 
     http://sourceware.cygnus.com/cygwin/top.html
 
-I have successfully used CYGWIN to install and run omnetpp under Windows
-NT 4.0. The command line and tcl/tk interfaces have been tested and work in
-a satisfactory manner.
+OMNeT++ (from the 2.0 release on) is fully supported under Cygwin.
 
 Given that CYGWIN is still in beta, there are bugs in the product. This
-document explains how I worked around these problems to complete the
+document explains how to work around these problems to complete the
 installation. It is hoped that other people will be motivated to use CYGWIN
-and omnet++ on computers with Microsoft Windows installed.
+and OMNeT++ on computers with Microsoft Windows installed.
+
 
 2. Installing CYGWIN
 
-CYGWIN must be installed before omnet++. The latest full binary distribution
+CYGWIN must be installed before OMNeT++. The latest full binary distribution
 should be downloaded from:
 
     ftp://go.cygnus.com/pub/sourceware.cygnus.com/cygwin/latest/
@@ -106,6 +101,7 @@ of emacs is available from:
 
 http://www.cs.washington.edu/homes/voelker/ntemacs.html
 
+
 3. Installing omnet++
 
 Download the omnetpp source code and documentation from the omnetpp site.
@@ -130,6 +126,10 @@ For these variables to be included in the bash environment you will need to
 restart the bash shell before proceeding. All following commands in this
 section are entered on the bash command line.
 
+First you should check configure.user to make sure it contains the settings
+you need. Note that currently you cannot build dynamic libraries (DLLs)
+out of the OMNeT++ sources.
+
 Then the usual GNU-like stuff:
     ./configure
     make
@@ -141,10 +141,32 @@ example, the dyna example is started by entering the following commands:
     ./dyna
 
 By default the samples will run using the tcl/tk environment. You should see
-nice gui windows and dialogs. I was suprised at how good everything looked
-and worked.
+nice gui windows and dialogs.
 
-4. Comments
+
+4. Reconfiguring the libraries
+
+If you need to recompile the OMNeT++ components with different flags (e.g.
+for debugging or optimized for speed), then cd to the top-level omnetpp
+directory, edit configure.user accordingly, then say:
+
+    ./configure
+    make clean
+    make
+
+If you want to recompile just a single library, then cd to the directory
+of the library and type:
+
+    make clean
+    make 
+    make install-local
+
+The last line is that copies the libraries from the src/ tree to lib/.
+Note that typing `make' in the top-level omnetpp directory includes
+`make install-local' for all libraries and programs.
+
+
+5. Comments
 
 I have tested a number of my own simulation models using the command line
 environment. These work correctly. Given that CYGWIN is still in beta I am
@@ -160,9 +182,6 @@ mail list at gnu-win32@cygnus.com. Omnetpp specific questions should be
 directed to mail list at omnetpp-l@it.swin.edu.au.
 
 If you find any errors in this document please let me know.
-
-Regards Richard Lyon
-(rlyon01@ozemail.com.au)
 
 
 
