@@ -37,11 +37,21 @@ Then type
 This should build the executables and the libraries and copy them to the bin
 and lib subdirectories within the top-level omnetpp directory.
 
-The sample simulations currently have no makefiles :-(
-I'll add makefiles and/or workspace files for them soon...
+
+3. Building the samples from the MSVC IDE
+
+Unfortunately MSVC doesn't like the .cc extension, so you have to rename
+the .cc files to .cpp using samples/cc2cpp.bat.
+
+To build a sample simulation, start MSVC and open the workspace file.
+Change the Tcl/Tk library paths in the project settings. Then the simulations
+should build.
+
+If you want to change from Tkenv to Cmdenv or vica versa, select the right item
+from the 'Configuration' combo in the project settings dialog and re-link.
 
 
-3. Reconfiguring the libraries
+4. Reconfiguring the libraries
 
 If you need to recompile the OMNeT++ components with different flags (e.g.
 for debugging or optimized for speed), then cd to the top-level omnetpp
@@ -57,12 +67,12 @@ of the library and type:
     nmake -f Makefile.vc
     nmake -f Makefile.vc install-local
 
-The last line is that copies the libraries from the src/ tree to lib/.
-(Typing `nmake -f Makefile.vc' in the top-level omnetpp directory includes
-`nmake install-local' for all libraries and programs.
+The last command is what copies the libraries from the src/ tree to lib/.
+(Note: Typing `nmake -f Makefile.vc' in the top-level omnetpp directory
+already includes `nmake install-local' for all libraries and programs.)
 
 
-4. Linking simulations
+5. Linking simulations
 
 Hints for compiling OMNeT++ simulations from the MSVC IDE:
   - rename .cc files to .cpp (ren *.cc *.cpp) and add them to the project
@@ -77,7 +87,7 @@ Hints for compiling OMNeT++ simulations from the MSVC IDE:
   - to use Cmdenv, link with sim_std.lib, envir.lib, and cmdenv.lib
 
 
-5. Using Plove
+6. Using Plove
 
 If you want to use Plove, you should download and install Gnuplot.
 You'll also need a couple of Unix tools like grep and awk, the easiest way
@@ -91,6 +101,7 @@ A usual caveat is that Gnuplot expects forward slashes in filenames and Plove
 supplies backslashes or vica versa (there are multiple incompatible builds of
 Gnuplot on NT); it you suspect this might be the problem, reverse the
 slash/backslash setting in Options|External programs.
+
 
 Have fun!
 

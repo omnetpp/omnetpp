@@ -156,7 +156,7 @@ proc runSample {sample} {
 
    if [catch {exec ./demo -f "$dir($sample)/omnetpp.ini" &}] {
       tk_messageBox -title {OMNeT++ Demo} -type ok -icon error \
-                    -message {Error running demo executable. Is it compiled?}
+                    -message {Error running demo executable. Has it been built?}
    }
 }
 
