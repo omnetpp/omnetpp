@@ -954,17 +954,40 @@ class SIM_API cSimpleModule : public cModule
     int sendDelayed(cMessage *msg, double delay, cGate *outputgate);
 
     /**
-     * Send a message directly to another module (to an input gate).
+     * Sends a message directly to another module. 
+     * See sendDirect(cMessage *, double, cModule *, const char *, in) for a  
+     * more detailed description.
      */
     int sendDirect(cMessage *msg, double delay, cModule *mod, int inputgateid);
 
     /**
-     * Send a message directly to another module (to an input gate).
+     * Send a message directly to another module. 
+     *
+     * If the gate is further connected (i.e. toGate()!=NULL), the 
+     * message will follow the connections that start at that gate.
+     * For example, when sending to an input gate of a compound module,
+     * the message will follow the connections to the inside of the compound module.
+     *
+     * It is permitted to send to an output gate, which will also cause the
+     * message to follow the connections starting at that gate.
+     * This can be useful, for example, when several submodules are sending 
+     * to a single output gate of their parent module.
+     * 
+     * It is not permitted to send to a gate of a compound module which is not
+     * further connected (i.e. toGate()==NULL), as this would cause the message
+     * to arrive at a compound module.
+     * 
+     * Also, it is not permitted to send to a gate which is otherwise connected
+     * i.e. where fromGate()!=NULL. This means that modules MUST have 
+     * dedicated gates for receiving via sendDirect(). You cannot have a gate 
+     * which receives messages via both connections and sendDirect().
      */
     int sendDirect(cMessage *msg, double delay, cModule *mod, const char *inputgatename, int sn=-1);
 
     /**
-     * Sends a message directly to another module (to an input gate).
+     * Sends a message directly to another module.
+     * See sendDirect(cMessage *, double, cModule *, const char *, in) for a  
+     * more detailed description.
      */
     int sendDirect(cMessage *msg, double delay, cGate *inputgate);
     //@}
