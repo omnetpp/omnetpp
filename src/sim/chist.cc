@@ -157,7 +157,7 @@ void cEqdHistogramBase::setupRange()
 
 void cEqdHistogramBase::collectTransformed (double val)
 {
-    int k = (val-rangemin)/cellsize;
+    int k = (int)floor((val-rangemin)/cellsize);
     if (k<0 || val<rangemin)
         cell_under++;
     else if (k>=num_cells || val>=rangemax)
@@ -171,7 +171,7 @@ double cEqdHistogramBase::pdf(double x) const
     if (!transformed())
         throw new cException(this,"pdf(x) cannot be called before histogram is transformed");
 
-    int k = (x-rangemin)/cellsize;
+    int k = (int)floor((x-rangemin)/cellsize);
     if (k<0 || x<rangemin || k>=num_cells || x>=rangemax)
         return 0.0;
 
