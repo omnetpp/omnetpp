@@ -1,3 +1,9 @@
+2001-08-28  Andras Varga 
+
+	* added makedep.pl. The makedepend program in newer XFree versions
+        (4.0 up?) is unusable because it no longer supports the -Y option :(
+        This Perl script I found on the web and enhanced it significantly.
+
 2001-06-19  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* Makefile.in (all): use "ln -sf" instead of "ln -s" to avoid an
