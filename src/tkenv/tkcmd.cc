@@ -294,16 +294,18 @@ int getFileName_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
    if (argc!=2) return TCL_ERROR;
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
 
+   const char *s = NULL;
    if (0==strcmp(argv[1],"ini"))
-        interp->result = const_cast<char*>(app->getIniFileName());
-   else if (0==strcmp(argv[1],"snapshot"))
-        interp->result = const_cast<char*>(app->getSnapshotFileName());
+        s = app->getIniFileName();
    else if (0==strcmp(argv[1],"outvector"))
-        interp->result = const_cast<char*>(app->getOutVectorFileName());
-   else if (0==strcmp(argv[1],"parchanges"))
-        interp->result = const_cast<char*>(app->getParChangeFileName());
+        s = app->getOutVectorFileName();
+   else if (0==strcmp(argv[1],"outscalar"))
+        s = app->getOutScalarFileName();
+   else if (0==strcmp(argv[1],"snapshot"))
+        s = app->getSnapshotFileName();
    else
         return TCL_ERROR;
+   interp->result = const_cast<char*>(!s ? "" : s);
    return TCL_OK;
 }
 

@@ -157,12 +157,11 @@ proc create_fileviewer {filename} {
     if {[winfo exists $w]} {
         wm deiconify $w; return
     }
-    ###################
-    # CREATING WIDGETS
-    ###################
+
+    # creating widgets
     toplevel $w -class Toplevel
     wm focusmodel $w passive
-    wm geometry $w 512x275
+    wm geometry $w 350x275
     wm maxsize $w 1009 738
     wm minsize $w 1 1
     wm overrideredirect $w 0
@@ -170,11 +169,14 @@ proc create_fileviewer {filename} {
     wm title $w $filename
 
     frame $w.butt
-    button $w.butt.reload -text Reload -command "loadfile $w $filename"
+    button $w.butt.close -text Close -command "destroy $w"
     button $w.butt.save -text Save -command "savefile $w $filename"
-    pack $w.butt -anchor center -expand 0 -fill x -side bottom
-    pack $w.butt.reload -expand 1 -fill x -ipadx 0 -ipady 0 -padx 0 -pady 0 -side left
-    pack $w.butt.save -expand 1 -fill x -ipadx 0 -ipady 0 -padx 0 -pady 0 -side left
+    button $w.butt.reload -text Reload -command "loadfile $w $filename"
+    pack $w.butt -expand 0 -fill x -side bottom
+    pack $w.butt.close -expand 0 -side right -padx 5 -pady 5
+    pack $w.butt.save -expand 0 -side right -padx 5 -pady 5
+    pack $w.butt.reload -expand 0 -side right -padx 5 -pady 5
+
     frame $w.main  -borderwidth 1 -relief sunken
     pack $w.main  -anchor center -expand 1 -fill both -ipadx 0 -ipady 0 -padx 0 -pady 0 -side top
     scrollbar $w.main.sb -command "$w.main.text yview"

@@ -63,6 +63,7 @@ class TOmnetTkApp : public TOmnetApp
       // redefined virtual functions from TOmnetApp
       virtual void setup();
       virtual void run();
+      virtual void shutdown();
 
       virtual void objectDeleted(cObject *object); // notify environment
       virtual void messageSent(cMessage *msg);
@@ -116,9 +117,9 @@ class TOmnetTkApp : public TOmnetApp
       void printEventBanner(cSimpleModule *mod);
 
       const char *getIniFileName()       {return opt_inifile_name;}
-      const char *getSnapshotFileName()  {return opt_snapshotfile_name;}
-      const char *getOutVectorFileName() {return opt_outvectfile_name;}
-      const char *getParChangeFileName() {return opt_parchangefile_name;}
+      const char *getOutVectorFileName() {return outvectmgr->fileName();}
+      const char *getOutScalarFileName() {return outscalarmgr->fileName();}
+      const char *getSnapshotFileName()  {return snapshotmgr->fileName();}
 };
 
 #endif

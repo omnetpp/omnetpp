@@ -191,6 +191,11 @@ void TOmnetTkApp::run()
     runTk( interp );
 }
 
+void TOmnetTkApp::shutdown()
+{
+    TOmnetApp::shutdown();
+}
+
 void TOmnetTkApp::rebuildSim()
 {
     // finish previous run if we haven't done so yet
@@ -212,7 +217,7 @@ void TOmnetTkApp::rebuildSim()
     //            simple modules cannot be restarted)
     //
     //makeOptionsEffective();
-    //simulation.startRun();
+    //startRun();
 
     //updateSimtimeDisplay();
     //updateNextModuleDisplay();
@@ -450,7 +455,7 @@ void TOmnetTkApp::newNetwork( const char *network_name )
            makeOptionsEffective();
            if (simulation.ok())
            {
-               simulation.startRun();
+               startRun();
                if (!simulation.ok())
                    simulation.deleteNetwork();
            }
@@ -487,7 +492,7 @@ void TOmnetTkApp::newRun( int run )
         makeOptionsEffective();
         if (simulation.ok())
         {
-           simulation.startRun();
+           startRun();
            if (!simulation.ok())
              simulation.deleteNetwork();
         }

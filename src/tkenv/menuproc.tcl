@@ -467,11 +467,11 @@ proc edit_textfile {} {
          {{Text files}             {*.txt}}
          {{Ini files}              {*.ini}}
          {{NED files}              {*.ned}}
-         {{C++ files}              {*.cc}}
+         {{C++ files}              {*.cc *.cpp}}
          {{C++ headers}            {*.h}}
          {{Output vectors}         {*.vec}}
+         {{Output scalars}         {*.sca}}
          {{Snapshot files}         {*.sna}}
-         {{Parameter change logs}  {*.pch}}
          {{Inspector lists} {*.lst}}
          {{All files}       {*}}
     }
@@ -484,8 +484,61 @@ proc edit_textfile {} {
     }
 }
 
+proc view_inifile {} {
+    view_file [opp_getfilename ini]
+}
+
+proc view_inspectorlistfile {} {
+    set fname "inspect.lst"
+    if {![file exists $fname]} {
+       messagebox {Info} "No inspector list file ($fname) found.
+An inspector list file contains the list of open windows so that they can be reopened
+easily in a subsequent run of the program" info ok
+       return
+    }
+    view_file $fname
+}
+
+proc view_outputvectorfile {} {
+    set fname [opp_getfilename outvector]
+    if {$fname == ""} {
+       messagebox {Info} "The current output vector manager doesn't use file output." info ok
+       return
+    }
+    if {![file exists $fname]} {
+       messagebox {Info} "Output vector file not yet created (no values recorded yet)." info ok
+       return
+    }
+    view_file $fname
+}
+
+proc view_outputscalarfile {} {
+    set fname [opp_getfilename outscalar]
+    if {$fname == ""} {
+       messagebox {Info} "The current output scalar manager doesn't use file output." info ok
+       return
+    }
+    if {![file exists $fname]} {
+       messagebox {Info} "Output scalar file not yet created (no output scalars written)." info ok
+       return
+    }
+    view_file $fname
+}
+
+proc view_snapshotfile {} {
+    set fname [opp_getfilename snapshot]
+    if {$fname == ""} {
+       messagebox {Info} "The current snapshot manager doesn't use file output." info ok
+       return
+    }
+    if {![file exists $fname]} {
+       messagebox {Info} "Snapshot file not yet created (no snapshots done yet)." info ok
+       return
+    }
+    view_file $fname
+}
+
 proc view_file {filename} {
-    # implements Options|Snapshot file etc.
     if [catch {open $filename r} f] {
        messagebox {Error} "Error: $f" info ok
        return
