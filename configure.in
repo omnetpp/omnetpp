@@ -59,11 +59,6 @@ LDFLAGS=
 # total stack size on NT defaults to 128MB (will be added to LDFLAGS later):
 CYGWIN_STACKSIZE=134217728
 
-#----------------------
-# Read in user settings
-#----------------------
-. configure.user
-
 
 dnl -------------------------------------------------------------
 dnl  Test macro to find a lib in one of the passed directories
@@ -120,6 +115,19 @@ fi
 
 A_LIB_SUFFIX=".a"
 SO_LIB_SUFFIX=".so"
+
+if test "$cygwin" = yes; then
+    EXE_SUFFIX=".exe"
+else
+    EXE_SUFFIX=""
+fi
+
+
+#----------------------
+# Read in user settings (and allow override the above settings)
+#----------------------
+. configure.user
+
 
 #----------------------
 # Checks for standard libraries.
@@ -344,6 +352,7 @@ AC_SUBST(SHLIB_LD)
 AC_SUBST(A_LIB_SUFFIX)
 AC_SUBST(SO_LIB_SUFFIX)
 AC_SUBST(LIB_SUFFIX)
+AC_SUBST(EXE_SUFFIX)
 
 AC_SUBST(HAVE_DLOPEN)
 AC_SUBST(TV_CFLAGS)

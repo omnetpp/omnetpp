@@ -143,7 +143,7 @@ if [ -f $outputfile ]; then
         exit
     fi
     if [ ! "$force" = "y" ]; then
-        echo "makemake: use -f to force overwrite existing $outputfile" 1>&2
+        echo "makemake: use -f to force overwriting existing $outputfile" 1>&2
         exit
     fi
 fi
@@ -242,6 +242,7 @@ SHLIB_LD=@SHLIB_LD@
 
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
+EXE_SUFFIX=@EXE_SUFFIX@
 
 OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
 OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
@@ -266,6 +267,7 @@ SHLIB_LD=@${null}SHLIB_LD@
 
 CFLAGS=@${null}CFLAGS@
 LDFLAGS=@${null}LDFLAGS@
+EXE_SUFFIX=@${null}EXE_SUFFIX@
 
 OMNETPP_INCL_DIR=@${null}OMNETPP_INCL_DIR@
 OMNETPP_LIB_DIR=@${null}OMNETPP_LIB_DIR@
@@ -373,7 +375,7 @@ args1=`echo " $args " | sed 's/	/ /g;s/ -f / /g;s/ -m / /g'`
 
 cat <<EOT
 clean:
-	rm -f *.o *_n.cc \$(TARGET)
+	rm -f *.o *_n.cc \$(TARGET)\$(EXE_SUFFIX)
 	rm -f *.vec *.sca
 
 depend:

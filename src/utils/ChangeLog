@@ -88,4 +88,4 @@ July 17, 1999
   - seedtool help text changed
 ------ omnetpp-2.0b released ------
 Oct 10, 1999
-  - makemake: better error handling with recursive makefiles
+  - makemake: better error handling with recursive makefiles; EXE_SUFFIX added
