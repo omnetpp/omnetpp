@@ -57,7 +57,7 @@ proc updateGraphicsModeBindings {canv_id} {
         selectOrMoveBindings $c
     } else {
         drawBindings $c
-    } 
+    }
 }
 
 
@@ -68,7 +68,7 @@ proc updateGraphicsModeBindings {canv_id} {
 proc selectOrMoveBindings c {
     global gned
     set gned(editmode) "select/move"
-    $gned(statusbar).mode config -text "Select/move/resize objects"
+    $gned(statusbar).mode config -text "Select, move or resize"
     $gned(graphics-toolbar).select config -relief sunken
     $gned(graphics-toolbar).draw config -relief raised
 
@@ -105,7 +105,7 @@ proc selectOrMoveBindings c {
 proc drawBindings c {
     global gned
     set gned(editmode) "draw"
-    $gned(statusbar).mode config -text "Create submodule/connection"
+    $gned(statusbar).mode config -text "Draw submodules and connections"
     $gned(graphics-toolbar).select config -relief raised
     $gned(graphics-toolbar).draw config -relief sunken
 
@@ -126,7 +126,7 @@ proc drawBindings c {
     #bind $c <Button-2>         "printNed $c"
     bind $c <Button-2>         "$c scan mark %x %y"
     bind $c <B2-Motion>        "$c scan dragto %x %y"
-    
+
     $c bind submod <Enter>     "$c config -cursor draft_small"
     $c bind submod <Leave>     "$c config -cursor crosshair"
     $c bind module <Enter>     "$c config -cursor draft_small"

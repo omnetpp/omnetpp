@@ -17,7 +17,7 @@
 # called when the user wants to switch from Graphics view to NED view
 #
 proc switchToNED {} {
-    global gned canvas
+    global gned canvas ned
 
     set canv_id $gned(canvas_id)
     if {$canvas($canv_id,mode)=="textedit"} return
@@ -36,8 +36,9 @@ proc switchToNED {} {
     catch {$t mark set insert $curpos}
     $t see insert
 
-    # remember ned code
+    # remember ned code and original name
     set canvas($canv_id,nedsource) $nedcode
+    set canvas($canv_id,orig-name) $ned($key,name)
 
     # initial syntax hightlight
     syntaxHighlight $t 1.0 end
@@ -56,6 +57,8 @@ proc switchToGraphics {} {
     set canv_id $gned(canvas_id)
     if {$canvas($canv_id,mode)=="graphics"} return
 
+    set origmodkey $canvas($canv_id,module-key)
+
     # get source from textedit
     set nedcode [$canvas($canv_id,textedit) get 1.0 end]
 
@@ -64,6 +67,11 @@ proc switchToGraphics {} {
     set originalnedcode $canvas($canv_id,nedsource)
     if {[string compare $nedcode "$originalnedcode\n"]==0} {
         # no change, so simply switch back to original graphics
+        if {$canvas($canv_id,orig-name)!=$ned($origmodkey,name)} {
+            tk_messageBox -icon info -title "Name change" -type ok \
+                -message "Since you have changed the module name to `$ned($origmodkey,name)', ignoring original name `$canvas($canv_id,orig-name)' still in the text editor."
+        }
+
         debug "source unchanged, switching back without parsing..."
         setCanvasMode "graphics"
         return
@@ -154,6 +162,14 @@ proc switchToGraphics {} {
         catch {unset tmp_ned}
         return
     }
+    if {$tmp_ned($modkey,name)!=$ned($origmodkey,name)} {
+        set ans [tk_messageBox -icon question -title "Module name" -type yesno \
+            -message "Do you want to change the name of the module from `$ned($origmodkey,name)' to `$tmp_ned($modkey,name)'?"]
+        if {$ans=="no"} {
+            catch {unset tmp_ned}
+            return
+        }
+    }
 
     #
     # OK! In the next lines we'll transfer the new stuff into ned()
@@ -162,7 +178,6 @@ proc switchToGraphics {} {
     debug "deleting old stuff..."
 
     # delete old stuff from ned() and add new stuff
-    set origmodkey $canvas($canv_id,module-key)
     deleteModuleData $origmodkey
 
     debug "pasting into ned..."

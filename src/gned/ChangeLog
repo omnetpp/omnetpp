@@ -1,3 +1,13 @@
+Remaining issue: gate directions not observed in Conn Props dialog.
+FIXME!!! when submodule has random placement, strange thing happens 
+after OK'ing Props dialog
+
+2003-1024  Andras Varga
+
+	* usability improvements (tooltips wording change, some icons 
+	redesigned, opens Properties dialog when creating new simple module, 
+	import, network, etc.)
+
 2003-09-08  Andras Varga
 
 	* bugfix: textedits were not saved until you switched back to graphics
@@ -32,10 +42,7 @@
 	
 	* enhancement: in Connection Properties dialogs, module and gate 
 	can be selected from combo, and channel also. Input is also fully 
-	validated. Remaining issue: gate directions not observed.
-
-FIXME!!! when submodule has random placement, strange thing happens 
-after OK'ing Props dialog
+	validated. 
 
 2003-08-11  Andras Varga
 

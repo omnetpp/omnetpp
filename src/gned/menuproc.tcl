@@ -24,23 +24,26 @@ proc fileNewNedfile {} {
    updateTreeManager
 }
 
-proc fileNewComponent {type} {
+proc fileNewComponent {type {nedfilekey ""}} {
    global gned ned canvas
 
-   # get nedfile of module on current canvas,
-   # and create a new module in that file
-   set canv_id $gned(canvas_id)
-   set curmodkey $canvas($canv_id,module-key)
-   set nedfilekey $ned($curmodkey,parentkey)
+   if {$nedfilekey==""} {
+       # get nedfile of module on current canvas,
+       # and create a new module in that file
+       set canv_id $gned(canvas_id)
+       set curmodkey $canvas($canv_id,module-key)
+       set nedfilekey $ned($curmodkey,parentkey)
+   }
 
    set key [addItemWithUniqueName $type $nedfilekey]
    markNedFileOfItemDirty $key
 
+   updateTreeManager
+
    if {$type=="module"} {
        openModuleOnNewCanvas $key
    }
-
-   updateTreeManager
+   editProps $key
 }
 
 proc fileOpen {{fname ""}} {
@@ -80,7 +83,7 @@ proc fileSave {{nedfilekey {}}} {
    if [nedfileContainsTextEdits $nedfilekey] {
       return
    }
-   
+
    # actually save
    if {!$ned($nedfilekey,aux-isunnamed)} {
       saveNED $nedfilekey
@@ -334,7 +337,7 @@ proc editCut {} {
    if {$canvas($canv_id,mode)=="graphics"} {
        nedClipboard:cut
    } else {
-       tk_textCut $canvas($canv_id,textedit) 
+       tk_textCut $canvas($canv_id,textedit)
        syntaxHighlight $canvas($canv_id,textedit)
    }
 }
@@ -346,8 +349,8 @@ proc editCopy {} {
    if {$canvas($canv_id,mode)=="graphics"} {
        nedClipboard:copy
    } else {
-       tk_textCopy $canvas($canv_id,textedit) 
-   }    
+       tk_textCopy $canvas($canv_id,textedit)
+   }
 }
 
 proc editPaste {} {
@@ -357,9 +360,9 @@ proc editPaste {} {
    if {$canvas($canv_id,mode)=="graphics"} {
        nedClipboard:paste
    } else {
-       tk_textPaste $canvas($canv_id,textedit) 
+       tk_textPaste $canvas($canv_id,textedit)
        syntaxHighlight $canvas($canv_id,textedit)
-   }    
+   }
 }
 
 proc editDelete {} {

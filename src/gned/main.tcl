@@ -124,11 +124,11 @@ proc createMainWindow {} {
     # File menu, New component... submenu
     menu .menubar.filemenu.newmenu -tearoff 0
     foreach i {
-      {command -command {fileNewComponent imports} -label {imports} -underline 0}
-      {command -command {fileNewComponent channel} -label {channel} -underline 0}
-      {command -command {fileNewComponent simple}  -label {simple module}  -underline 0}
-      {command -command {fileNewComponent module}  -label {compound module}  -underline 0}
-      {command -command {fileNewComponent network} -label {network} -underline 0}
+      {command -command {fileNewComponent imports} -label {Import} -underline 0}
+      {command -command {fileNewComponent channel} -label {Channel} -underline 0}
+      {command -command {fileNewComponent simple}  -label {Simple module}  -underline 0}
+      {command -command {fileNewComponent module}  -label {Compound module}  -underline 0}
+      {command -command {fileNewComponent network} -label {Network} -underline 0}
     } {
        eval .menubar.filemenu.newmenu add $i
     }
@@ -281,11 +281,11 @@ proc createMainWindow {} {
       {select   -image $icons(select)   -command {selectOrMoveBindings $gned(canvas)}}
       {delete   -image $icons(del)      -command {deleteSelected}}
       {sep1     -separator}
+      {opts     -image $icons(drawopts) -command {drawOptionsSelected $gned(canvas)}}
+      {props    -image $icons(props)    -command {propertiesSelected $gned(canvas)}}
+      {sep2     -separator}
       {grid     -image $icons(grid)     -command {toggleGrid 1}}
       {bounds   -image $icons(bounds)   -command {resetModuleBounds}}
-      {sep2     -separator}
-      {props    -image $icons(props)    -command {propertiesSelected $gned(canvas)}}
-      {opts     -image $icons(drawopts) -command {drawOptionsSelected $gned(canvas)}}
     } {
       set b [eval iconbutton $gned(graphics-toolbar).$i]
       #pack $b -anchor w -expand 0 -fill x -side top -padx 2 -pady 0
@@ -293,7 +293,7 @@ proc createMainWindow {} {
     }
 
     set help_tips($gned(graphics-toolbar).draw)   {Draw submodules and connections}
-    set help_tips($gned(graphics-toolbar).select) {Select/Resize items}
+    set help_tips($gned(graphics-toolbar).select) {Select, move or resize items}
     set help_tips($gned(graphics-toolbar).delete) {Delete selected items}
     set help_tips($gned(graphics-toolbar).grid)   {Snap to grid on/off}
     set help_tips($gned(graphics-toolbar).bounds) {Fit parent module size}
@@ -331,11 +331,11 @@ proc createMainWindow {} {
     #################################
     # Create tabs and switching buttons
     #################################
-    frame .main.f.tabs 
+    frame .main.f.tabs
     pack .main.f.tabs -expand 0 -fill x -side bottom -ipadx 0 -ipady 0 -padx 0 -pady 0
 
     set tabs .main.f.tabs
-    canvas $tabs.c -height 15 
+    canvas $tabs.c -height 15
     frame $tabs.c.f
     $tabs.c create window 0 0 -anchor nw -window $tabs.c.f
 
@@ -347,7 +347,7 @@ proc createMainWindow {} {
            -relief flat -highlightthickness 0 -pady 1
     button $gned(switchtotextedit-button) -text {NED source} -command {switchToNED} \
            -relief flat -highlightthickness 0 -pady 1
-    pack $gned(switchtographics-button) $gned(switchtotextedit-button) -expand 0 -fill none -side left  
+    pack $gned(switchtographics-button) $gned(switchtotextedit-button) -expand 0 -fill none -side left
 
     set help_tips($gned(switchtographics-button)) {Edit in graphics view}
     set help_tips($gned(switchtotextedit-button)) {Edit in NED source view}

@@ -189,11 +189,11 @@ proc nedfilePopup {key} {
 
     menu .popup.newmenu -tearoff 0
     foreach i {
-      {command -command "markNedFileOfItemDirty $key; addItem imports $key; updateTreeManager" -label {imports} -underline 0}
-      {command -command "markNedFileOfItemDirty $key; addItemWithUniqueName channel $key; updateTreeManager" -label {channel} -underline 0}
-      {command -command "markNedFileOfItemDirty $key; addItemWithUniqueName simple $key;  updateTreeManager" -label {simple module}  -underline 0}
-      {command -command "markNedFileOfItemDirty $key; addItemWithUniqueName module $key;  updateTreeManager" -label {compound module}  -underline 0}
-      {command -command "markNedFileOfItemDirty $key; addItemWithUniqueName network $key; updateTreeManager" -label {network} -underline 0}
+      {command -command "fileNewComponent imports $key" -label {Import} -underline 0}
+      {command -command "fileNewComponent channel $key" -label {Channel} -underline 0}
+      {command -command "fileNewComponent simple $key"  -label {Simple module}  -underline 0}
+      {command -command "fileNewComponent module $key"  -label {Compound module}  -underline 0}
+      {command -command "fileNewComponent network $key" -label {Network} -underline 0}
     } {
        eval .popup.newmenu add $i
     }
