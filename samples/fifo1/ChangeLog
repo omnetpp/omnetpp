@@ -17,3 +17,4 @@ Jul 1, 2000
  - calls to obsolete cQueue functions upgraded to new functions (insert(),pop())
 ------ omnetpp-2.0 released ------
 ------ omnetpp-2.0p1 released ------
+ - Borland C++ project file (*.ide) removed, Makefile.bc added (unsupported!)

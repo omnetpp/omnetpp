@@ -1,0 +1,197 @@
+#
+# Borland C++ IDE generated makefile
+# Generated 3/11/01 at 11:15:10 AM 
+#
+.AUTODEPEND
+
+
+#
+# Borland C++ tools
+#
+IMPLIB  = Implib
+BCC32   = Bcc32 +BccW32.cfg 
+TLINK32 = TLink32
+TLIB    = TLib
+BRC32   = Brc32
+TASM32  = Tasm32
+#
+# IDE macros
+#
+#
+# External tools
+#
+NEDCompile = ..\..\src\nedc\nedc.exe  # IDE Command Line: $NOSWAP $CAP MSG(BORL2MSG) $EDNAME
+
+
+#
+# Options
+#
+IDE_LinkFLAGS32 =  -LC:\BC5\LIB
+LinkerLocalOptsAtC32_fifo2dexe =  -Tpe -ap -c -S:4000000 -Sc:100000 -H:4000000 -Hc:100000
+ResLocalOptsAtC32_fifo2dexe = 
+BLocalOptsAtC32_fifo2dexe =  /P32
+CompInheritOptsAt_fifo2dexe = -IC:\BC5\INCLUDE;..\..\SRC\SIM;..\..\SRC\ENVIR -D_RTLDLL;
+LinkerInheritOptsAt_fifo2dexe = -x
+LinkerOptsAt_fifo2dexe = $(LinkerLocalOptsAtC32_fifo2dexe)
+ResOptsAt_fifo2dexe = $(ResLocalOptsAtC32_fifo2dexe)
+BOptsAt_fifo2dexe = $(BLocalOptsAtC32_fifo2dexe)
+CompLocalOptsAtC32_fifo2dned = 
+LinkerLocalOptsAtC32_fifo2dned = 
+ResLocalOptsAtC32_fifo2dned = 
+BLocalOptsAtC32_fifo2dned = 
+CompOptsAt_fifo2dned = $(CompOptsAt_fifo2dexe) $(CompLocalOptsAtC32_fifo2dned)
+CompInheritOptsAt_fifo2dned = -IC:\BC5\INCLUDE;..\..\SRC\SIM;..\..\SRC\ENVIR -D_RTLDLL;
+LinkerInheritOptsAt_fifo2dned = -x
+LinkerOptsAt_fifo2dned = $(LinkerOptsAt_fifo2dexe) $(LinkerLocalOptsAtC32_fifo2dned)
+ResOptsAt_fifo2dned = $(ResOptsAt_fifo2dexe) $(ResLocalOptsAtC32_fifo2dned)
+BOptsAt_fifo2dned = $(BOptsAt_fifo2dexe) $(BLocalOptsAtC32_fifo2dned)
+CompLocalOptsAtC32_gen2dned = 
+LinkerLocalOptsAtC32_gen2dned = 
+ResLocalOptsAtC32_gen2dned = 
+BLocalOptsAtC32_gen2dned = 
+CompOptsAt_gen2dned = $(CompOptsAt_fifo2dexe) $(CompLocalOptsAtC32_gen2dned)
+CompInheritOptsAt_gen2dned = -IC:\BC5\INCLUDE;..\..\SRC\SIM;..\..\SRC\ENVIR -D_RTLDLL;
+LinkerInheritOptsAt_gen2dned = -x
+LinkerOptsAt_gen2dned = $(LinkerOptsAt_fifo2dexe) $(LinkerLocalOptsAtC32_gen2dned)
+ResOptsAt_gen2dned = $(ResOptsAt_fifo2dexe) $(ResLocalOptsAtC32_gen2dned)
+BOptsAt_gen2dned = $(BOptsAt_fifo2dexe) $(BLocalOptsAtC32_gen2dned)
+CompLocalOptsAtC32_fifonet2dned = 
+LinkerLocalOptsAtC32_fifonet2dned = 
+ResLocalOptsAtC32_fifonet2dned = 
+BLocalOptsAtC32_fifonet2dned = 
+CompOptsAt_fifonet2dned = $(CompOptsAt_fifo2dexe) $(CompLocalOptsAtC32_fifonet2dned)
+CompInheritOptsAt_fifonet2dned = -IC:\BC5\INCLUDE;..\..\SRC\SIM;..\..\SRC\ENVIR -D_RTLDLL;
+LinkerInheritOptsAt_fifonet2dned = -x
+LinkerOptsAt_fifonet2dned = $(LinkerOptsAt_fifo2dexe) $(LinkerLocalOptsAtC32_fifonet2dned)
+ResOptsAt_fifonet2dned = $(ResOptsAt_fifo2dexe) $(ResLocalOptsAtC32_fifonet2dned)
+BOptsAt_fifonet2dned = $(BOptsAt_fifo2dexe) $(BLocalOptsAtC32_fifonet2dned)
+CompLocalOptsAtC32_sink2dned = 
+LinkerLocalOptsAtC32_sink2dned = 
+ResLocalOptsAtC32_sink2dned = 
+BLocalOptsAtC32_sink2dned = 
+CompOptsAt_sink2dned = $(CompOptsAt_fifo2dexe) $(CompLocalOptsAtC32_sink2dned)
+CompInheritOptsAt_sink2dned = -IC:\BC5\INCLUDE;..\..\SRC\SIM;..\..\SRC\ENVIR -D_RTLDLL;
+LinkerInheritOptsAt_sink2dned = -x
+LinkerOptsAt_sink2dned = $(LinkerOptsAt_fifo2dexe) $(LinkerLocalOptsAtC32_sink2dned)
+ResOptsAt_sink2dned = $(ResOptsAt_fifo2dexe) $(ResLocalOptsAtC32_sink2dned)
+BOptsAt_sink2dned = $(BOptsAt_fifo2dexe) $(BLocalOptsAtC32_sink2dned)
+
+#
+# Dependency List
+#
+Dep_fifo2 = \
+   fifo2.exe
+
+fifo2 : BccW32.cfg $(Dep_fifo2)
+  echo MakeNode
+
+Dep_fifo2dexe = \
+   fifo2.obj\
+   gen2.obj\
+   sink2.obj\
+   fifo2.cc\
+   gen2.cc\
+   fifonet2.cc\
+   sink2.cc\
+   fifo2_n.obj\
+   gen2_n.obj\
+   fifonet2_n.obj\
+   sink2_n.obj\
+   ..\..\src\envir\tkenv\tkenv.lib\
+   ..\..\src\envir\envir.lib\
+   ..\..\src\sim\sim_std.lib\
+   c:\tcl80\win\tcl80.lib\
+   c:\tk80\win\tk80.lib\
+   ..\..\src\envir\cmdenv\cmdenv.lib\
+   ..\..\src\sim\sim_std.lib\
+   ..\..\src\envir\envir.lib
+
+fifo2.exe : $(Dep_fifo2dexe)
+  $(TLINK32) @&&|
+ /v $(IDE_LinkFLAGS32) $(LinkerOptsAt_fifo2dexe) $(LinkerInheritOptsAt_fifo2dexe) +
+c0x32.obj+
+fifo2.obj+
+gen2.obj+
+sink2.obj+
+fifo2_n.obj+
+gen2_n.obj+
+fifonet2_n.obj+
+sink2_n.obj
+$<,$*
+..\..\src\envir\tkenv\tkenv.lib+
+..\..\src\envir\envir.lib+
+..\..\src\sim\sim_std.lib+
+c:\tcl80\win\tcl80.lib+
+c:\tk80\win\tk80.lib+
+..\..\src\envir\cmdenv\cmdenv.lib+
+..\..\src\sim\sim_std.lib+
+..\..\src\envir\envir.lib+
+import32.lib+
+cw32i.lib
+
+|
+
+fifo2.obj :  fifo2.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_fifo2dexe) $(CompInheritOptsAt_fifo2dexe) -o$@ fifo2.cc
+|
+
+gen2.obj :  gen2.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_fifo2dexe) $(CompInheritOptsAt_fifo2dexe) -o$@ gen2.cc
+|
+
+sink2.obj :  sink2.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_fifo2dexe) $(CompInheritOptsAt_fifo2dexe) -o$@ sink2.cc
+|
+
+fifo2.cc :  fifo2.ned
+  $(NEDCompile)   E:\home\omnetpp\samples\fifo2\fifo2.ned
+
+gen2.cc :  gen2.ned
+  $(NEDCompile)   E:\home\omnetpp\samples\fifo2\gen2.ned
+
+fifonet2.cc :  fifonet2.ned
+  $(NEDCompile)   E:\home\omnetpp\samples\fifo2\fifonet2.ned
+
+sink2.cc :  sink2.ned
+  $(NEDCompile)   E:\home\omnetpp\samples\fifo2\sink2.ned
+
+fifo2_n.obj :  fifo2_n.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_fifo2dexe) $(CompInheritOptsAt_fifo2dexe) -o$@ fifo2_n.cc
+|
+
+gen2_n.obj :  gen2_n.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_fifo2dexe) $(CompInheritOptsAt_fifo2dexe) -o$@ gen2_n.cc
+|
+
+fifonet2_n.obj :  fifonet2_n.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_fifo2dexe) $(CompInheritOptsAt_fifo2dexe) -o$@ fifonet2_n.cc
+|
+
+sink2_n.obj :  sink2_n.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_fifo2dexe) $(CompInheritOptsAt_fifo2dexe) -o$@ sink2_n.cc
+|
+
+# Compiler configuration file
+BccW32.cfg : 
+   Copy &&|
+-w
+-R
+-v
+-vi
+-H
+-H=sim_std.csm
+-H-
+-H=
+-x-
+-xd-
+-WC
+| $@
+
+

@@ -1,0 +1,141 @@
+#
+# Borland C++ IDE generated makefile
+# Generated 3/11/01 at 11:16:21 AM 
+#
+.AUTODEPEND
+
+
+#
+# Borland C++ tools
+#
+IMPLIB  = Implib
+BCC32   = Bcc32 +BccW32.cfg 
+TLINK32 = TLink32
+TLIB    = TLib
+BRC32   = Brc32
+TASM32  = Tasm32
+#
+# IDE macros
+#
+#
+# External tools
+#
+NEDCompile = ..\..\src\nedc\nedc.exe  # IDE Command Line: $NOSWAP $CAP MSG(BORL2MSG) $EDNAME
+
+
+#
+# Options
+#
+IDE_LinkFLAGS32 =  -LC:\BC5\LIB
+LinkerLocalOptsAtC32_tokendexe =  -Tpe -ap -c -S:4000000 -Sc:100000 -H:4000000 -Hc:100000
+ResLocalOptsAtC32_tokendexe = 
+BLocalOptsAtC32_tokendexe =  /P32
+CompInheritOptsAt_tokendexe = -IC:\BC5\INCLUDE;..\..\SRC\SIM;..\..\SRC\ENVIR -D_RTLDLL;
+LinkerInheritOptsAt_tokendexe = -x
+LinkerOptsAt_tokendexe = $(LinkerLocalOptsAtC32_tokendexe)
+ResOptsAt_tokendexe = $(ResLocalOptsAtC32_tokendexe)
+BOptsAt_tokendexe = $(BLocalOptsAtC32_tokendexe)
+CompLocalOptsAtC32_tknmodsdned = 
+LinkerLocalOptsAtC32_tknmodsdned = 
+ResLocalOptsAtC32_tknmodsdned = 
+BLocalOptsAtC32_tknmodsdned = 
+CompOptsAt_tknmodsdned = $(CompOptsAt_tokendexe) $(CompLocalOptsAtC32_tknmodsdned)
+CompInheritOptsAt_tknmodsdned = -IC:\BC5\INCLUDE;..\..\SRC\SIM;..\..\SRC\ENVIR -D_RTLDLL;
+LinkerInheritOptsAt_tknmodsdned = -x
+LinkerOptsAt_tknmodsdned = $(LinkerOptsAt_tokendexe) $(LinkerLocalOptsAtC32_tknmodsdned)
+ResOptsAt_tknmodsdned = $(ResOptsAt_tokendexe) $(ResLocalOptsAtC32_tknmodsdned)
+BOptsAt_tknmodsdned = $(BOptsAt_tokendexe) $(BLocalOptsAtC32_tknmodsdned)
+CompLocalOptsAtC32_tknringdned = 
+LinkerLocalOptsAtC32_tknringdned = 
+ResLocalOptsAtC32_tknringdned = 
+BLocalOptsAtC32_tknringdned = 
+CompOptsAt_tknringdned = $(CompOptsAt_tokendexe) $(CompLocalOptsAtC32_tknringdned)
+CompInheritOptsAt_tknringdned = -IC:\BC5\INCLUDE;..\..\SRC\SIM;..\..\SRC\ENVIR -D_RTLDLL;
+LinkerInheritOptsAt_tknringdned = -x
+LinkerOptsAt_tknringdned = $(LinkerOptsAt_tokendexe) $(LinkerLocalOptsAtC32_tknringdned)
+ResOptsAt_tknringdned = $(ResOptsAt_tokendexe) $(ResLocalOptsAtC32_tknringdned)
+BOptsAt_tknringdned = $(BOptsAt_tokendexe) $(BLocalOptsAtC32_tknringdned)
+
+#
+# Dependency List
+#
+Dep_token = \
+   token.exe
+
+token : BccW32.cfg $(Dep_token)
+  echo MakeNode
+
+Dep_tokendexe = \
+   token.obj\
+   tknmods.cc\
+   tknring.cc\
+   tknmods_n.obj\
+   tknring_n.obj\
+   ..\..\src\envir\tkenv\tkenv.lib\
+   ..\..\src\envir\envir.lib\
+   ..\..\src\sim\sim_std.lib\
+   c:\tcl80\win\tcl80.lib\
+   c:\tk80\win\tk80.lib\
+   ..\..\src\envir\cmdenv\cmdenv.lib\
+   ..\..\src\sim\sim_std.lib\
+   ..\..\src\envir\envir.lib
+
+token.exe : $(Dep_tokendexe)
+  $(TLINK32) @&&|
+ /v $(IDE_LinkFLAGS32) $(LinkerOptsAt_tokendexe) $(LinkerInheritOptsAt_tokendexe) +
+c0x32.obj+
+token.obj+
+tknmods_n.obj+
+tknring_n.obj
+$<,$*
+..\..\src\envir\tkenv\tkenv.lib+
+..\..\src\envir\envir.lib+
+..\..\src\sim\sim_std.lib+
+c:\tcl80\win\tcl80.lib+
+c:\tk80\win\tk80.lib+
+..\..\src\envir\cmdenv\cmdenv.lib+
+..\..\src\sim\sim_std.lib+
+..\..\src\envir\envir.lib+
+import32.lib+
+cw32i.lib
+
+|
+
+token.obj :  token.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_tokendexe) $(CompInheritOptsAt_tokendexe) -o$@ token.cc
+|
+
+tknmods.cc :  tknmods.ned
+  $(NEDCompile)   E:\home\omnetpp\samples\token\tknmods.ned
+
+tknring.cc :  tknring.ned
+  $(NEDCompile)   E:\home\omnetpp\samples\token\tknring.ned
+
+tknmods_n.obj :  tknmods_n.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_tokendexe) $(CompInheritOptsAt_tokendexe) -o$@ tknmods_n.cc
+|
+
+tknring_n.obj :  tknring_n.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_tokendexe) $(CompInheritOptsAt_tokendexe) -o$@ tknring_n.cc
+|
+
+# Compiler configuration file
+BccW32.cfg : 
+   Copy &&|
+-w
+-R
+-v
+-vi
+-H
+-H=sim_std.csm
+-H-
+-H=
+-x-
+-xd-
+-WC
+| $@
+
+

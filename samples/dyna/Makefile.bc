@@ -1,0 +1,141 @@
+#
+# Borland C++ IDE generated makefile
+# Generated 3/11/01 at 11:13:59 AM 
+#
+.AUTODEPEND
+
+
+#
+# Borland C++ tools
+#
+IMPLIB  = Implib
+BCC32   = Bcc32 +BccW32.cfg 
+TLINK32 = TLink32
+TLIB    = TLib
+BRC32   = Brc32
+TASM32  = Tasm32
+#
+# IDE macros
+#
+#
+# External tools
+#
+NEDCompile = ..\..\src\nedc\nedc.exe  # IDE Command Line: $NOSWAP $CAP MSG(BORL2MSG) $EDNAME
+
+
+#
+# Options
+#
+IDE_LinkFLAGS32 =  -LC:\BC5\LIB
+LinkerLocalOptsAtC32_dynadexe =  -Tpe -ap -c -S:4000000 -Sc:100000 -H:4000000 -Hc:100000
+ResLocalOptsAtC32_dynadexe = 
+BLocalOptsAtC32_dynadexe =  /P32
+CompInheritOptsAt_dynadexe = -IC:\BC5\INCLUDE;..\..\SRC\SIM;..\..\SRC\ENVIR -D_RTLDLL;
+LinkerInheritOptsAt_dynadexe = -x
+LinkerOptsAt_dynadexe = $(LinkerLocalOptsAtC32_dynadexe)
+ResOptsAt_dynadexe = $(ResLocalOptsAtC32_dynadexe)
+BOptsAt_dynadexe = $(BLocalOptsAtC32_dynadexe)
+CompLocalOptsAtC32_dynadned = 
+LinkerLocalOptsAtC32_dynadned = 
+ResLocalOptsAtC32_dynadned = 
+BLocalOptsAtC32_dynadned = 
+CompOptsAt_dynadned = $(CompOptsAt_dynadexe) $(CompLocalOptsAtC32_dynadned)
+CompInheritOptsAt_dynadned = -IC:\BC5\INCLUDE;..\..\SRC\SIM;..\..\SRC\ENVIR -D_RTLDLL;
+LinkerInheritOptsAt_dynadned = -x
+LinkerOptsAt_dynadned = $(LinkerOptsAt_dynadexe) $(LinkerLocalOptsAtC32_dynadned)
+ResOptsAt_dynadned = $(ResOptsAt_dynadexe) $(ResLocalOptsAtC32_dynadned)
+BOptsAt_dynadned = $(BOptsAt_dynadexe) $(BLocalOptsAtC32_dynadned)
+
+#
+# Dependency List
+#
+Dep_dyna = \
+   dyna.exe
+
+dyna : BccW32.cfg $(Dep_dyna)
+  echo MakeNode
+
+Dep_dynadexe = \
+   client.obj\
+   servproc.obj\
+   server.obj\
+   switch.obj\
+   dyna.cc\
+   dyna_n.obj\
+   ..\..\src\envir\tkenv\tkenv.lib\
+   ..\..\src\envir\envir.lib\
+   ..\..\src\sim\sim_std.lib\
+   c:\tcl80\win\tcl80.lib\
+   c:\tk80\win\tk80.lib\
+   ..\..\src\envir\cmdenv\cmdenv.lib\
+   ..\..\src\sim\sim_std.lib\
+   ..\..\src\envir\envir.lib
+
+dyna.exe : $(Dep_dynadexe)
+  $(TLINK32) @&&|
+ /v $(IDE_LinkFLAGS32) $(LinkerOptsAt_dynadexe) $(LinkerInheritOptsAt_dynadexe) +
+c0x32.obj+
+client.obj+
+servproc.obj+
+server.obj+
+switch.obj+
+dyna_n.obj
+$<,$*
+..\..\src\envir\tkenv\tkenv.lib+
+..\..\src\envir\envir.lib+
+..\..\src\sim\sim_std.lib+
+c:\tcl80\win\tcl80.lib+
+c:\tk80\win\tk80.lib+
+..\..\src\envir\cmdenv\cmdenv.lib+
+..\..\src\sim\sim_std.lib+
+..\..\src\envir\envir.lib+
+import32.lib+
+cw32i.lib
+
+|
+
+client.obj :  client.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_dynadexe) $(CompInheritOptsAt_dynadexe) -o$@ client.cc
+|
+
+servproc.obj :  servproc.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_dynadexe) $(CompInheritOptsAt_dynadexe) -o$@ servproc.cc
+|
+
+server.obj :  server.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_dynadexe) $(CompInheritOptsAt_dynadexe) -o$@ server.cc
+|
+
+switch.obj :  switch.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_dynadexe) $(CompInheritOptsAt_dynadexe) -o$@ switch.cc
+|
+
+dyna.cc :  dyna.ned
+  $(NEDCompile)   E:\home\omnetpp\samples\dyna\dyna.ned
+
+dyna_n.obj :  dyna_n.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_dynadexe) $(CompInheritOptsAt_dynadexe) -o$@ dyna_n.cc
+|
+
+# Compiler configuration file
+BccW32.cfg : 
+   Copy &&|
+-w
+-R
+-v
+-vi
+-H
+-H=sim_std.csm
+-H-
+-H=
+-x-
+-xd-
+-WC
+| $@
+
+

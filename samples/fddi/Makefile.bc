@@ -1,0 +1,240 @@
+#
+# Borland C++ IDE generated makefile
+# Generated 3/11/01 at 11:14:42 AM 
+#
+.AUTODEPEND
+
+
+#
+# Borland C++ tools
+#
+IMPLIB  = Implib
+BCC32   = Bcc32 +BccW32.cfg 
+TLINK32 = TLink32
+TLIB    = TLib
+BRC32   = Brc32
+TASM32  = Tasm32
+#
+# IDE macros
+#
+#
+# External tools
+#
+NEDCompile = ..\..\src\nedc\nedc.exe  # IDE Command Line: $NOSWAP $CAP MSG(BORL2MSG) $EDNAME
+
+
+#
+# Options
+#
+IDE_LinkFLAGS32 =  -LC:\BC5\LIB
+LinkerLocalOptsAtC32_fddidexe =  -Tpe -ap -c -S:4000000 -Sc:100000 -H:4000000 -Hc:100000
+ResLocalOptsAtC32_fddidexe = 
+BLocalOptsAtC32_fddidexe =  /P32
+CompInheritOptsAt_fddidexe = -IC:\BC5\INCLUDE;..\..\SRC\SIM;..\..\SRC\ENVIR -D_RTLDLL;
+LinkerInheritOptsAt_fddidexe = -x
+LinkerOptsAt_fddidexe = $(LinkerLocalOptsAtC32_fddidexe)
+ResOptsAt_fddidexe = $(ResLocalOptsAtC32_fddidexe)
+BOptsAt_fddidexe = $(BLocalOptsAtC32_fddidexe)
+CompLocalOptsAtC32_fddi_macdned = 
+LinkerLocalOptsAtC32_fddi_macdned = 
+ResLocalOptsAtC32_fddi_macdned = 
+BLocalOptsAtC32_fddi_macdned = 
+CompOptsAt_fddi_macdned = $(CompOptsAt_fddidexe) $(CompLocalOptsAtC32_fddi_macdned)
+CompInheritOptsAt_fddi_macdned = -IC:\BC5\INCLUDE;..\..\SRC\SIM;..\..\SRC\ENVIR -D_RTLDLL;
+LinkerInheritOptsAt_fddi_macdned = -x
+LinkerOptsAt_fddi_macdned = $(LinkerOptsAt_fddidexe) $(LinkerLocalOptsAtC32_fddi_macdned)
+ResOptsAt_fddi_macdned = $(ResOptsAt_fddidexe) $(ResLocalOptsAtC32_fddi_macdned)
+BOptsAt_fddi_macdned = $(BOptsAt_fddidexe) $(BLocalOptsAtC32_fddi_macdned)
+CompLocalOptsAtC32_ssm_ifsdned = 
+LinkerLocalOptsAtC32_ssm_ifsdned = 
+ResLocalOptsAtC32_ssm_ifsdned = 
+BLocalOptsAtC32_ssm_ifsdned = 
+CompOptsAt_ssm_ifsdned = $(CompOptsAt_fddidexe) $(CompLocalOptsAtC32_ssm_ifsdned)
+CompInheritOptsAt_ssm_ifsdned = -IC:\BC5\INCLUDE;..\..\SRC\SIM;..\..\SRC\ENVIR -D_RTLDLL;
+LinkerInheritOptsAt_ssm_ifsdned = -x
+LinkerOptsAt_ssm_ifsdned = $(LinkerOptsAt_fddidexe) $(LinkerLocalOptsAtC32_ssm_ifsdned)
+ResOptsAt_ssm_ifsdned = $(ResOptsAt_fddidexe) $(ResLocalOptsAtC32_ssm_ifsdned)
+BOptsAt_ssm_ifsdned = $(BOptsAt_fddidexe) $(BLocalOptsAtC32_ssm_ifsdned)
+CompLocalOptsAtC32_othermoddned = 
+LinkerLocalOptsAtC32_othermoddned = 
+ResLocalOptsAtC32_othermoddned = 
+BLocalOptsAtC32_othermoddned = 
+CompOptsAt_othermoddned = $(CompOptsAt_fddidexe) $(CompLocalOptsAtC32_othermoddned)
+CompInheritOptsAt_othermoddned = -IC:\BC5\INCLUDE;..\..\SRC\SIM;..\..\SRC\ENVIR -D_RTLDLL;
+LinkerInheritOptsAt_othermoddned = -x
+LinkerOptsAt_othermoddned = $(LinkerOptsAt_fddidexe) $(LinkerLocalOptsAtC32_othermoddned)
+ResOptsAt_othermoddned = $(ResOptsAt_fddidexe) $(ResLocalOptsAtC32_othermoddned)
+BOptsAt_othermoddned = $(BOptsAt_fddidexe) $(BLocalOptsAtC32_othermoddned)
+CompLocalOptsAtC32_fddi_netsdned = 
+LinkerLocalOptsAtC32_fddi_netsdned = 
+ResLocalOptsAtC32_fddi_netsdned = 
+BLocalOptsAtC32_fddi_netsdned = 
+CompOptsAt_fddi_netsdned = $(CompOptsAt_fddidexe) $(CompLocalOptsAtC32_fddi_netsdned)
+CompInheritOptsAt_fddi_netsdned = -IC:\BC5\INCLUDE;..\..\SRC\SIM;..\..\SRC\ENVIR -D_RTLDLL;
+LinkerInheritOptsAt_fddi_netsdned = -x
+LinkerOptsAt_fddi_netsdned = $(LinkerOptsAt_fddidexe) $(LinkerLocalOptsAtC32_fddi_netsdned)
+ResOptsAt_fddi_netsdned = $(ResOptsAt_fddidexe) $(ResLocalOptsAtC32_fddi_netsdned)
+BOptsAt_fddi_netsdned = $(BOptsAt_fddidexe) $(BLocalOptsAtC32_fddi_netsdned)
+CompLocalOptsAtC32_fddi_nodesdned = 
+LinkerLocalOptsAtC32_fddi_nodesdned = 
+ResLocalOptsAtC32_fddi_nodesdned = 
+BLocalOptsAtC32_fddi_nodesdned = 
+CompOptsAt_fddi_nodesdned = $(CompOptsAt_fddidexe) $(CompLocalOptsAtC32_fddi_nodesdned)
+CompInheritOptsAt_fddi_nodesdned = -IC:\BC5\INCLUDE;..\..\SRC\SIM;..\..\SRC\ENVIR -D_RTLDLL;
+LinkerInheritOptsAt_fddi_nodesdned = -x
+LinkerOptsAt_fddi_nodesdned = $(LinkerOptsAt_fddidexe) $(LinkerLocalOptsAtC32_fddi_nodesdned)
+ResOptsAt_fddi_nodesdned = $(ResOptsAt_fddidexe) $(ResLocalOptsAtC32_fddi_nodesdned)
+BOptsAt_fddi_nodesdned = $(BOptsAt_fddidexe) $(BLocalOptsAtC32_fddi_nodesdned)
+CompLocalOptsAtC32_fddi_ringsdned = 
+LinkerLocalOptsAtC32_fddi_ringsdned = 
+ResLocalOptsAtC32_fddi_ringsdned = 
+BLocalOptsAtC32_fddi_ringsdned = 
+CompOptsAt_fddi_ringsdned = $(CompOptsAt_fddidexe) $(CompLocalOptsAtC32_fddi_ringsdned)
+CompInheritOptsAt_fddi_ringsdned = -IC:\BC5\INCLUDE;..\..\SRC\SIM;..\..\SRC\ENVIR -D_RTLDLL;
+LinkerInheritOptsAt_fddi_ringsdned = -x
+LinkerOptsAt_fddi_ringsdned = $(LinkerOptsAt_fddidexe) $(LinkerLocalOptsAtC32_fddi_ringsdned)
+ResOptsAt_fddi_ringsdned = $(ResOptsAt_fddidexe) $(ResLocalOptsAtC32_fddi_ringsdned)
+BOptsAt_fddi_ringsdned = $(BOptsAt_fddidexe) $(BLocalOptsAtC32_fddi_ringsdned)
+
+#
+# Dependency List
+#
+Dep_fddi = \
+   fddi.exe
+
+fddi : BccW32.cfg $(Dep_fddi)
+  echo MakeNode
+
+Dep_fddidexe = \
+   fddi_mac.cc\
+   ssm_ifs.cc\
+   othermod.cc\
+   fddi_nets.cc\
+   fddi_nodes.cc\
+   fddi_rings.cc\
+   fddi_mac_n.obj\
+   othermod_n.obj\
+   fddi_nets_n.obj\
+   ssm_ifs_n.obj\
+   fddi_nodes_n.obj\
+   fddi_rings_n.obj\
+   fddi_mac.obj\
+   othermod.obj\
+   ssm_ifs.obj\
+   ..\..\src\envir\tkenv\tkenv.lib\
+   ..\..\src\envir\envir.lib\
+   ..\..\src\sim\sim_std.lib\
+   c:\tcl80\win\tcl80.lib\
+   c:\tk80\win\tk80.lib\
+   ..\..\src\envir\cmdenv\cmdenv.lib\
+   ..\..\src\sim\sim_std.lib\
+   ..\..\src\envir\envir.lib
+
+fddi.exe : $(Dep_fddidexe)
+  $(TLINK32) @&&|
+ /v $(IDE_LinkFLAGS32) $(LinkerOptsAt_fddidexe) $(LinkerInheritOptsAt_fddidexe) +
+c0x32.obj+
+fddi_mac_n.obj+
+othermod_n.obj+
+fddi_nets_n.obj+
+ssm_ifs_n.obj+
+fddi_nodes_n.obj+
+fddi_rings_n.obj+
+fddi_mac.obj+
+othermod.obj+
+ssm_ifs.obj
+$<,$*
+..\..\src\envir\tkenv\tkenv.lib+
+..\..\src\envir\envir.lib+
+..\..\src\sim\sim_std.lib+
+c:\tcl80\win\tcl80.lib+
+c:\tk80\win\tk80.lib+
+..\..\src\envir\cmdenv\cmdenv.lib+
+..\..\src\sim\sim_std.lib+
+..\..\src\envir\envir.lib+
+import32.lib+
+cw32i.lib
+
+|
+
+fddi_mac.cc :  fddi_mac.ned
+  $(NEDCompile)   E:\home\omnetpp\samples\fddi\fddi_mac.ned
+
+ssm_ifs.cc :  ssm_ifs.ned
+  $(NEDCompile)   E:\home\omnetpp\samples\fddi\ssm_ifs.ned
+
+othermod.cc :  othermod.ned
+  $(NEDCompile)   E:\home\omnetpp\samples\fddi\othermod.ned
+
+fddi_nets.cc :  fddi_nets.ned
+  $(NEDCompile)   E:\home\omnetpp\samples\fddi\fddi_nets.ned
+
+fddi_nodes.cc :  fddi_nodes.ned
+  $(NEDCompile)   E:\home\omnetpp\samples\fddi\fddi_nodes.ned
+
+fddi_rings.cc :  fddi_rings.ned
+  $(NEDCompile)   E:\home\omnetpp\samples\fddi\fddi_rings.ned
+
+fddi_mac_n.obj :  fddi_mac_n.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_fddidexe) $(CompInheritOptsAt_fddidexe) -o$@ fddi_mac_n.cc
+|
+
+othermod_n.obj :  othermod_n.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_fddidexe) $(CompInheritOptsAt_fddidexe) -o$@ othermod_n.cc
+|
+
+fddi_nets_n.obj :  fddi_nets_n.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_fddidexe) $(CompInheritOptsAt_fddidexe) -o$@ fddi_nets_n.cc
+|
+
+ssm_ifs_n.obj :  ssm_ifs_n.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_fddidexe) $(CompInheritOptsAt_fddidexe) -o$@ ssm_ifs_n.cc
+|
+
+fddi_nodes_n.obj :  fddi_nodes_n.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_fddidexe) $(CompInheritOptsAt_fddidexe) -o$@ fddi_nodes_n.cc
+|
+
+fddi_rings_n.obj :  fddi_rings_n.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_fddidexe) $(CompInheritOptsAt_fddidexe) -o$@ fddi_rings_n.cc
+|
+
+fddi_mac.obj :  fddi_mac.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_fddidexe) $(CompInheritOptsAt_fddidexe) -o$@ fddi_mac.cc
+|
+
+othermod.obj :  othermod.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_fddidexe) $(CompInheritOptsAt_fddidexe) -o$@ othermod.cc
+|
+
+ssm_ifs.obj :  ssm_ifs.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_fddidexe) $(CompInheritOptsAt_fddidexe) -o$@ ssm_ifs.cc
+|
+
+# Compiler configuration file
+BccW32.cfg : 
+   Copy &&|
+-w
+-R
+-v
+-vi
+-H
+-H=sim_std.csm
+-H-
+-H=
+-x-
+-xd-
+-WC
+-g255
+| $@
+
+

@@ -1,0 +1,190 @@
+#
+# Borland C++ IDE generated makefile
+# Generated 3/11/01 at 11:15:24 AM 
+#
+.AUTODEPEND
+
+
+#
+# Borland C++ tools
+#
+IMPLIB  = Implib
+BCC32   = Bcc32 +BccW32.cfg 
+TLINK32 = TLink32
+TLIB    = TLib
+BRC32   = Brc32
+TASM32  = Tasm32
+#
+# IDE macros
+#
+#
+# External tools
+#
+NEDCompile = ..\..\src\nedc\nedc.exe  # IDE Command Line: $NOSWAP $CAP MSG(BORL2MSG) $EDNAME
+
+
+#
+# Options
+#
+IDE_LinkFLAGS32 =  -LC:\BC5\LIB
+LinkerLocalOptsAtC32_hcubedexe =  -Tpe -ap -c -S:4000000 -Sc:100000 -H:4000000 -Hc:100000
+ResLocalOptsAtC32_hcubedexe = 
+BLocalOptsAtC32_hcubedexe =  /P32
+CompInheritOptsAt_hcubedexe = -IC:\BC5\INCLUDE;..\..\SRC\SIM;..\..\SRC\ENVIR -D_RTLDLL;
+LinkerInheritOptsAt_hcubedexe = -x
+LinkerOptsAt_hcubedexe = $(LinkerLocalOptsAtC32_hcubedexe)
+ResOptsAt_hcubedexe = $(ResLocalOptsAtC32_hcubedexe)
+BOptsAt_hcubedexe = $(BLocalOptsAtC32_hcubedexe)
+CompLocalOptsAtC32_gensinkdned = 
+LinkerLocalOptsAtC32_gensinkdned = 
+ResLocalOptsAtC32_gensinkdned = 
+BLocalOptsAtC32_gensinkdned = 
+CompOptsAt_gensinkdned = $(CompOptsAt_hcubedexe) $(CompLocalOptsAtC32_gensinkdned)
+CompInheritOptsAt_gensinkdned = -IC:\BC5\INCLUDE;..\..\SRC\SIM;..\..\SRC\ENVIR -D_RTLDLL;
+LinkerInheritOptsAt_gensinkdned = -x
+LinkerOptsAt_gensinkdned = $(LinkerOptsAt_hcubedexe) $(LinkerLocalOptsAtC32_gensinkdned)
+ResOptsAt_gensinkdned = $(ResOptsAt_hcubedexe) $(ResLocalOptsAtC32_gensinkdned)
+BOptsAt_gensinkdned = $(BOptsAt_hcubedexe) $(BLocalOptsAtC32_gensinkdned)
+CompLocalOptsAtC32_hc_rtedned = 
+LinkerLocalOptsAtC32_hc_rtedned = 
+ResLocalOptsAtC32_hc_rtedned = 
+BLocalOptsAtC32_hc_rtedned = 
+CompOptsAt_hc_rtedned = $(CompOptsAt_hcubedexe) $(CompLocalOptsAtC32_hc_rtedned)
+CompInheritOptsAt_hc_rtedned = -IC:\BC5\INCLUDE;..\..\SRC\SIM;..\..\SRC\ENVIR -D_RTLDLL;
+LinkerInheritOptsAt_hc_rtedned = -x
+LinkerOptsAt_hc_rtedned = $(LinkerOptsAt_hcubedexe) $(LinkerLocalOptsAtC32_hc_rtedned)
+ResOptsAt_hc_rtedned = $(ResOptsAt_hcubedexe) $(ResLocalOptsAtC32_hc_rtedned)
+BOptsAt_hc_rtedned = $(BOptsAt_hcubedexe) $(BLocalOptsAtC32_hc_rtedned)
+CompLocalOptsAtC32_hc_netdned = 
+LinkerLocalOptsAtC32_hc_netdned = 
+ResLocalOptsAtC32_hc_netdned = 
+BLocalOptsAtC32_hc_netdned = 
+CompOptsAt_hc_netdned = $(CompOptsAt_hcubedexe) $(CompLocalOptsAtC32_hc_netdned)
+CompInheritOptsAt_hc_netdned = -IC:\BC5\INCLUDE;..\..\SRC\SIM;..\..\SRC\ENVIR -D_RTLDLL;
+LinkerInheritOptsAt_hc_netdned = -x
+LinkerOptsAt_hc_netdned = $(LinkerOptsAt_hcubedexe) $(LinkerLocalOptsAtC32_hc_netdned)
+ResOptsAt_hc_netdned = $(ResOptsAt_hcubedexe) $(ResLocalOptsAtC32_hc_netdned)
+BOptsAt_hc_netdned = $(BOptsAt_hcubedexe) $(BLocalOptsAtC32_hc_netdned)
+CompLocalOptsAtC32_hcubedned = 
+LinkerLocalOptsAtC32_hcubedned = 
+ResLocalOptsAtC32_hcubedned = 
+BLocalOptsAtC32_hcubedned = 
+CompOptsAt_hcubedned = $(CompOptsAt_hcubedexe) $(CompLocalOptsAtC32_hcubedned)
+CompInheritOptsAt_hcubedned = -IC:\BC5\INCLUDE;..\..\SRC\SIM;..\..\SRC\ENVIR -D_RTLDLL;
+LinkerInheritOptsAt_hcubedned = -x
+LinkerOptsAt_hcubedned = $(LinkerOptsAt_hcubedexe) $(LinkerLocalOptsAtC32_hcubedned)
+ResOptsAt_hcubedned = $(ResOptsAt_hcubedexe) $(ResLocalOptsAtC32_hcubedned)
+BOptsAt_hcubedned = $(BOptsAt_hcubedexe) $(BLocalOptsAtC32_hcubedned)
+
+#
+# Dependency List
+#
+Dep_hcube = \
+   hcube.exe
+
+hcube : BccW32.cfg $(Dep_hcube)
+  echo MakeNode
+
+Dep_hcubedexe = \
+   gensink.obj\
+   hc_rte.obj\
+   gensink.cc\
+   hc_rte.cc\
+   hc_net.cc\
+   hcube.cc\
+   gensin_n.obj\
+   hc_rte_n.obj\
+   hc_net_n.obj\
+   hcube_n.obj\
+   ..\..\src\envir\tkenv\tkenv.lib\
+   ..\..\src\envir\envir.lib\
+   ..\..\src\sim\sim_std.lib\
+   c:\tcl80\win\tcl80.lib\
+   c:\tk80\win\tk80.lib\
+   ..\..\src\envir\cmdenv\cmdenv.lib\
+   ..\..\src\sim\sim_std.lib\
+   ..\..\src\envir\envir.lib
+
+hcube.exe : $(Dep_hcubedexe)
+  $(TLINK32) @&&|
+ /v $(IDE_LinkFLAGS32) $(LinkerOptsAt_hcubedexe) $(LinkerInheritOptsAt_hcubedexe) +
+c0x32.obj+
+gensink.obj+
+hc_rte.obj+
+gensin_n.obj+
+hc_rte_n.obj+
+hc_net_n.obj+
+hcube_n.obj
+$<,$*
+..\..\src\envir\tkenv\tkenv.lib+
+..\..\src\envir\envir.lib+
+..\..\src\sim\sim_std.lib+
+c:\tcl80\win\tcl80.lib+
+c:\tk80\win\tk80.lib+
+..\..\src\envir\cmdenv\cmdenv.lib+
+..\..\src\sim\sim_std.lib+
+..\..\src\envir\envir.lib+
+import32.lib+
+cw32i.lib
+
+|
+
+gensink.obj :  gensink.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_hcubedexe) $(CompInheritOptsAt_hcubedexe) -o$@ gensink.cc
+|
+
+hc_rte.obj :  hc_rte.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_hcubedexe) $(CompInheritOptsAt_hcubedexe) -o$@ hc_rte.cc
+|
+
+gensink.cc :  gensink.ned
+  $(NEDCompile)   E:\home\omnetpp\samples\hcube\gensink.ned
+
+hc_rte.cc :  hc_rte.ned
+  $(NEDCompile)   E:\home\omnetpp\samples\hcube\hc_rte.ned
+
+hc_net.cc :  hc_net.ned
+  $(NEDCompile)   E:\home\omnetpp\samples\hcube\hc_net.ned
+
+hcube.cc :  hcube.ned
+  $(NEDCompile)   E:\home\omnetpp\samples\hcube\hcube.ned
+
+gensin_n.obj :  gensin_n.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_hcubedexe) $(CompInheritOptsAt_hcubedexe) -o$@ gensin_n.cc
+|
+
+hc_rte_n.obj :  hc_rte_n.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_hcubedexe) $(CompInheritOptsAt_hcubedexe) -o$@ hc_rte_n.cc
+|
+
+hc_net_n.obj :  hc_net_n.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_hcubedexe) $(CompInheritOptsAt_hcubedexe) -o$@ hc_net_n.cc
+|
+
+hcube_n.obj :  hcube_n.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_hcubedexe) $(CompInheritOptsAt_hcubedexe) -o$@ hcube_n.cc
+|
+
+# Compiler configuration file
+BccW32.cfg : 
+   Copy &&|
+-w
+-R
+-v
+-vi
+-H
+-H=sim_std.csm
+-H-
+-H=
+-x-
+-xd-
+-WC
+| $@
+
+

@@ -8,3 +8,4 @@ May 21, 2000
 ------ omnetpp-2.0b5 released ------
 ------ omnetpp-2.0 released ------
 ------ omnetpp-2.0p1 released ------
+ - Borland C++ project file (*.ide) removed, Makefile.bc added (unsupported!)

@@ -1,0 +1,120 @@
+#
+# Borland C++ IDE generated makefile
+# Generated 3/11/01 at 11:15:36 AM 
+#
+.AUTODEPEND
+
+
+#
+# Borland C++ tools
+#
+IMPLIB  = Implib
+BCC32   = Bcc32 +BccW32.cfg 
+TLINK32 = TLink32
+TLIB    = TLib
+BRC32   = Brc32
+TASM32  = Tasm32
+#
+# IDE macros
+#
+#
+# External tools
+#
+NEDCompile = ..\..\src\nedc\nedc.exe  # IDE Command Line: $NOSWAP $CAP MSG(BORL2MSG) $EDNAME
+
+
+#
+# Options
+#
+IDE_LinkFLAGS32 =  -LC:\BC5\LIB
+LinkerLocalOptsAtC32_histdexe =  -Tpe -ap -c -S:4000000 -Sc:100000 -H:4000000 -Hc:100000
+ResLocalOptsAtC32_histdexe = 
+BLocalOptsAtC32_histdexe =  /P32
+CompInheritOptsAt_histdexe = -IC:\BC5\INCLUDE;..\..\SRC\SIM;..\..\SRC\ENVIR -D_RTLDLL;
+LinkerInheritOptsAt_histdexe = -x
+LinkerOptsAt_histdexe = $(LinkerLocalOptsAtC32_histdexe)
+ResOptsAt_histdexe = $(ResLocalOptsAtC32_histdexe)
+BOptsAt_histdexe = $(BLocalOptsAtC32_histdexe)
+CompLocalOptsAtC32_histdned = 
+LinkerLocalOptsAtC32_histdned = 
+ResLocalOptsAtC32_histdned = 
+BLocalOptsAtC32_histdned = 
+CompOptsAt_histdned = $(CompOptsAt_histdexe) $(CompLocalOptsAtC32_histdned)
+CompInheritOptsAt_histdned = -IC:\BC5\INCLUDE;..\..\SRC\SIM;..\..\SRC\ENVIR -D_RTLDLL;
+LinkerInheritOptsAt_histdned = -x
+LinkerOptsAt_histdned = $(LinkerOptsAt_histdexe) $(LinkerLocalOptsAtC32_histdned)
+ResOptsAt_histdned = $(ResOptsAt_histdexe) $(ResLocalOptsAtC32_histdned)
+BOptsAt_histdned = $(BOptsAt_histdexe) $(BLocalOptsAtC32_histdned)
+
+#
+# Dependency List
+#
+Dep_hist = \
+   hist.exe
+
+hist : BccW32.cfg $(Dep_hist)
+  echo MakeNode
+
+Dep_histdexe = \
+   hist.obj\
+   hist.cc\
+   hist_n.obj\
+   ..\..\src\envir\tkenv\tkenv.lib\
+   ..\..\src\envir\envir.lib\
+   ..\..\src\sim\sim_std.lib\
+   c:\tcl80\win\tcl80.lib\
+   c:\tk80\win\tk80.lib\
+   ..\..\src\envir\cmdenv\cmdenv.lib\
+   ..\..\src\sim\sim_std.lib\
+   ..\..\src\envir\envir.lib
+
+hist.exe : $(Dep_histdexe)
+  $(TLINK32) @&&|
+ /v $(IDE_LinkFLAGS32) $(LinkerOptsAt_histdexe) $(LinkerInheritOptsAt_histdexe) +
+c0x32.obj+
+hist.obj+
+hist_n.obj
+$<,$*
+..\..\src\envir\tkenv\tkenv.lib+
+..\..\src\envir\envir.lib+
+..\..\src\sim\sim_std.lib+
+c:\tcl80\win\tcl80.lib+
+c:\tk80\win\tk80.lib+
+..\..\src\envir\cmdenv\cmdenv.lib+
+..\..\src\sim\sim_std.lib+
+..\..\src\envir\envir.lib+
+import32.lib+
+cw32i.lib
+
+|
+
+hist.obj :  hist.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_histdexe) $(CompInheritOptsAt_histdexe) -o$@ hist.cc
+|
+
+hist.cc :  hist.ned
+  $(NEDCompile)   E:\home\omnetpp\samples\hist\hist.ned
+
+hist_n.obj :  hist_n.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_histdexe) $(CompInheritOptsAt_histdexe) -o$@ hist_n.cc
+|
+
+# Compiler configuration file
+BccW32.cfg : 
+   Copy &&|
+-w
+-R
+-v
+-vi
+-H
+-H=sim_std.csm
+-H-
+-H=
+-x-
+-xd-
+-WC
+| $@
+
+
