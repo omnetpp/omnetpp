@@ -469,19 +469,20 @@ proc draw_message {c gateptr msgptr msgname {msgkind {}}} {
     global fonts
 
     # gate pointer + conn are the tags of the connection arrow
+    set conn_id ""
     foreach id [$c find withtag $gateptr] {
        if {[lsearch -exact [$c gettags $id] "conn"] != -1} {
           set conn_id $id
        }
     }
 
-    set coords [$c coords $conn_id]
-
-    if {$coords == ""} {
+    if {$conn_id == ""} {
         # connection arrow not (no longer?) on canvas: forget animation
         $c delete $msgptr;  # this also works if msg is not (yet) on canvas
         return;
     }
+
+    set coords [$c coords $conn_id]
 
     set x1 [lindex $coords 0]
     set y1 [lindex $coords 1]
