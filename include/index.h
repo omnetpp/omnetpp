@@ -129,7 +129,8 @@
  * RNGs can be configured in omnetpp.ini.
  *
  * RNGs are made available via the cRNG interface, and the cModule::rng()
- * method.
+ * method. All functions returning random variates, etc. internally  
+ * call cModule::rng() and cRNG::intRand(), cRNG::doubleRand().
  */
 
 /**
