@@ -1143,7 +1143,7 @@ cModulePar::~cModulePar()
 
 // other member functions
 
-const char *cModulePar::fullPath()
+const char *cModulePar::fullPath() const
 {
     // use cObject::fullPath()'s static buffer
     // hide param vector: skip directly to owner module
