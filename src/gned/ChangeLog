@@ -1,3 +1,32 @@
+2001-07-11  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
+
+	*  (Repository):
+	removed files: ebnf.tab.c lex.yy.c
+	new files: ebnf.tab.cc lex.yy.cc
+
+	* Makefile.in
+	targets renamed:
+		ebnf.tab.c  ->  ebnf.tab.cc
+		lex.yy.c    ->  lex.yy.cc
+	(ebnf.tab.cc): mv ebnf.tab.c to ebnf.tab.cc
+	(lex.yy.cc): mv lex.yy.c to lex.yy.cc
+	(lex.yy.o): renamed lex.yy.c to lex.yy.cc
+	(ebnf.tab.o): renamed ebnf.tab.c to ebnf.tab.cc
+	
+
+	* Makefile.vc
+	targets renamed:
+		ebnf.tab.c  ->  ebnf.tab.cc
+		lex.yy.c    ->  lex.yy.cc
+	(ebnf.tab.cc): mv ebnf.tab.c to ebnf.tab.cc
+	(lex.yy.cc): mv lex.yy.c to lex.yy.cc
+	(lex.yy.obj): renamed lex.yy.c to lex.yy.cc
+	(ebnf.tab.obj): renamed ebnf.tab.c to ebnf.tab.cc
+
+	* Makefile.bc
+	(ebnf.tab.obj): renamed ebnf.tab.c to ebnf.tab.cc
+	(lex.yy.obj): renamed lex.yy.c to lex.yy.cc
+
 2001-07-11 Andras Varga
 
 	* ebnf.y: Eric Wu's Tru64/MPI port. Tru64 needs extra #includes.
