@@ -44,6 +44,7 @@ class SIM_API cGate : public cObject
 {
     friend class cModule;
   protected:
+    mutable char *fullname; // buffer to store full name of object
     int  serno;         // index if gate vector, 0 otherwise
     int  vectsize;      // gate vector size (-1 if not vector)
     char typ;           // type of gate: 'I' or 'O'
@@ -83,7 +84,7 @@ class SIM_API cGate : public cObject
     /**
      * Destructor.
      */
-    virtual ~cGate() {}
+    virtual ~cGate();
 
     /**
      * Assignment operator. The name member doesn't get copied;
@@ -127,16 +128,20 @@ class SIM_API cGate : public cObject
     /**
      * Returns the full name of the gate, which is name() plus the
      * index in square brackets (e.g. "out[4]"). Redefined to add the
-     * index. This method returns pointer to a static buffer which is
-     * overwritten by subsequent calls!
+     * index.
      */
     virtual const char *fullName() const;
 
     /**
-     * The original fullPath2() method is redefined to hide the
+     * Redefined. (Reason: a C++ rule that overloaded virtual methods must be redefined together.)
+     */
+    virtual const char *fullPath() const;
+
+    /**
+     * The original fullPath() method is redefined to hide the
      * internal array (a cArray) used to store the gate objects.
      */
-    virtual const char *fullPath2(char *buffer, int bufsize) const;
+    virtual const char *fullPath(char *buffer, int bufsize) const;
 
     /**
      * Writes textual information about this object to the stream.

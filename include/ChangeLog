@@ -1,8 +1,20 @@
+2002-03-04  Andras Varga
+
+	* cobject.h: cObject::free(cObject *) renamed to dealloc() to avoid
+        misunderstandings
+
+	* coutvect.h: new methods: valuesReceived(), valuesStored()
+
+        * cobject.h, cmodule.h, cgate.h, cpar.h, csimul.h:
+        fullPath2(buf,bufsize) renamed to fullPath(buf,bufsize). cObject's
+        fullPath() method (without arg) had to be duplicated in all affected
+        classes because a (seemingly meaningless) C++ rule says overloaded
+        virtual functions must be redefined together.
+
 2002-03-04  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* util.h (class opp_string): use delete[] in functions
 	~opp_string, allocate and operator=
-
 
 2002-03-03  Andras Varga
 

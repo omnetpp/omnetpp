@@ -24,6 +24,8 @@
 #include "defs.h"
 #include "util.h"
 
+#define FULLPATHBUF_SIZE  1024
+
 //=== classes declared here
 class  cObject;
 class  cStaticFlag;
@@ -51,7 +53,7 @@ SIM_API extern cHead enums;               ///< List of cEnum objects.
  * Return values of CompareFunc should be
  * - greater than zero if a > b
  * - smaller than zero if a < b
- * 
+ *
  * @ingroup EnumsTypes
  */
 typedef int (*CompareFunc)(cObject *a, cObject *b);
@@ -96,6 +98,7 @@ class SIM_API cObject
 
     static int staticflag;            // to determine 'storage' (1 while in main())
     static int heapflag;              // to determine 'storage' (1 immediately after 'new')
+    static char fullpathbuf[FULLPATHBUF_SIZE]; // buffer for fullPath()
 
   protected:
     /** @name Ownership control.
@@ -149,7 +152,7 @@ class SIM_API cObject
      *         obj->setOwner(NULL);
      * </pre>
      */
-    void free(cObject *object)
+    void dealloc(cObject *object)
         {if(object->storage()=='D') delete object; else object->setOwner(NULL);}
     //@}
 
@@ -268,7 +271,7 @@ class SIM_API cObject
      * Returns the full path of the object in the object hierarchy,
      * like "comp.modem[5].baud-rate". The result is placed into the buffer passed.
      */
-    virtual const char *fullPath2(char *buffer, int buffersize) const;
+    virtual const char *fullPath(char *buffer, int buffersize) const;
     //@}
 
     /** @name Object ownership. */

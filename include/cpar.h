@@ -818,10 +818,15 @@ class SIM_API cModulePar : public cPar
     virtual const char *inspectorFactoryName() const {return "cModuleParIFC";}
 
     /**
-     * The original fullPath2() method is redefined to hide the
+     * Redefined. (Reason: a C++ rule that overloaded virtual methods must be redefined together.)
+     */
+    virtual const char *fullPath() const;
+
+    /**
+     * The original fullPath() method is redefined to hide the
      * internal array (a cArray) used to store the parameter objects.
      */
-    virtual const char *fullPath2(char *buffer, int bufsize) const;
+    virtual const char *fullPath(char *buffer, int bufsize) const;
     //@}
 
     /** @name Set/get owner module. */

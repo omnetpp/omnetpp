@@ -163,9 +163,14 @@ class SIM_API cSimulation : public cObject
     virtual void writeContents(ostream& os);
 
     /**
+     * Redefined. (Reason: a C++ rule that overloaded virtual methods must be redefined together.)
+     */
+    virtual const char *fullPath() const;
+
+    /**
      * Returns the name of the simulation object, "simulation".
      */
-    virtual const char *fullPath2(char *buffer, int bufsize) const;
+    virtual const char *fullPath(char *buffer, int bufsize) const;
 
     /**
      * Assignment is not supported for this class. This function raises an error when called.

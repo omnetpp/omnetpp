@@ -153,7 +153,7 @@ class SIM_API cCoroutine
     /**
      * Delete coroutine and release its stack space.
      */
-    void free();
+    void destroy();
 
     /**
      * Restart the coroutine.

@@ -117,6 +117,7 @@ class SIM_API cModule : public cObject
     static bool pause_in_sendmsg; // if true, split send() with transferToMain()
 
   protected:
+    mutable char *fullname; // buffer to store full name of object
     cModuleType *mod_type;  // type of this module
     int mod_id;             // id (subscript into cSimulation)
     cModule *parentmodp;    // pointer to parent module
@@ -212,7 +213,7 @@ class SIM_API cModule : public cObject
     /**
      * Destructor.
      */
-    virtual ~cModule() {}
+    virtual ~cModule();
 
     /**
      * Assignment operator. The name member doesn't get copied;
@@ -244,17 +245,23 @@ class SIM_API cModule : public cObject
     virtual const char *inspectorFactoryName() const {return "cModuleIFC";}
 
     /**
-     * Returns full name of the module in a static buffer, in the form
-     * <tt>"name"</tt> or <tt>"name[index]"</tt>.
+     * Returns the full name of the module, which is name() plus the
+     * index in square brackets (e.g. "module[4]"). Redefined to add the
+     * index.
      */
     virtual const char *fullName() const;
 
     /**
+     * Redefined. (Reason: a C++ rule that overloaded virtual methods must be redefined together.)
+     */
+    virtual const char *fullPath() const;
+
+    /**
      * Returns the full path name of the module. Example: <tt>"mynet.node[12].gen"</tt>.
-     * The original fullPath2() was redefined in order to hide the global cSimulation
+     * The original fullPath() was redefined in order to hide the global cSimulation
      * instance in the path name (it would add "simulation." to the beginning of the full path).
      */
-    virtual const char *fullPath2(char *buffer, int bufsize) const;
+    virtual const char *fullPath(char *buffer, int bufsize) const;
     //@}
 
     /** @name Setting up the module. */

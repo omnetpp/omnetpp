@@ -375,6 +375,12 @@ SIM_API int  opp_strcmp(const char *, const char *);
 SIM_API bool opp_strmatch(const char *, const char *);
 
 /**
+ * Same as the standard strlen() function, except that does not crash
+ * on NULL pointers but returns 0.
+ */
+SIM_API int opp_strlen(const char *);
+
+/**
  * Creates a string like "component[35]" into dest, the first argument.
  */
 SIM_API char *opp_mkindexedname(char *dest, const char *name, int index);

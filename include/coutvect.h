@@ -41,7 +41,7 @@ class SIM_API cOutVector : public cObject
     bool enabled;        // if false, record() method will do nothing
     int tuple;           // values: 1 or 2
     void *handle;        // identifies output vector for the output vector manager
-    long num_recorded;   // total number of values passed to output vector
+    long num_received;   // total number of values passed to the output vector object
     long num_stored;     // number of values actually stored
 
     // the following members will be used directly by inspectors
@@ -79,7 +79,8 @@ class SIM_API cOutVector : public cObject
     //@{
 
     /**
-     * Sets the name of the object.
+     * Sets the name of the object. It is not possible to call this method after the
+     * first call to record().
      */
     virtual void setName(const char *name);
 
@@ -133,7 +134,7 @@ class SIM_API cOutVector : public cObject
     /**
      * Enables recording data via this object. (It is enabled by default.)
      */
-    virtual void enable() {enabled=true;}
+    virtual void enable()  {enabled=true;}
 
     /**
      * Disables recording data via this object. record() methods will return
@@ -145,6 +146,20 @@ class SIM_API cOutVector : public cObject
      * Returns true if recording the data is enabled, false otherwise.
      */
     virtual bool isEnabled()  {return enabled;}
+
+    /**
+     * Returns the total number of values passed to the record() method of
+     * this output vector object. This includes the values passed while
+     * the object was disabled (see disable()).
+     */
+    long valuesReceived()  {return num_received;}
+
+    /**
+     * Returns the number of values actually stored by this output vector object.
+     * The values passed while the object was disabled (via disable(),
+     * environment configuration, filtering, etc.) do not count.
+     */
+    long valuesStored()  {return num_stored;}
     //@}
 };
 
