@@ -128,13 +128,13 @@ class SIM_API cMessage : public cObject
     // parameter list
     cArray& parList()
         {if (!parlistp) _createparlist(); return *parlistp;}
-    cPar& addPar(char *s) {cPar *p=new cPar(s);parList().add(p);return *p;}
-    cPar& addPar(cPar *p) {parList().add(p); return *p;}
-    cPar& addPar(cPar& p) {parList().add(&p); return p;} // DEPRECATED
-    cPar& par(int n);                             // get parameter by index
-    cPar& par(char *s);                           // get parameter by name
-    int findPar(char *s);                         // get index of parameter, -1 if doesn't exist
-    bool hasPar(char *s) {return findPar(s)>=0;}  // check if parameter exists
+    cPar& addPar(const char *s)  {cPar *p=new cPar(s);parList().add(p);return *p;}
+    cPar& addPar(cPar *p)  {parList().add(p); return *p;}
+    cPar& addPar(cPar& p)  {parList().add(&p); return p;} // DEPRECATED
+    cPar& par(int n);                                   // get parameter by index
+    cPar& par(const char *s);                           // get parameter by name
+    int findPar(const char *s);                         // get index of parameter, -1 if doesn't exist
+    bool hasPar(const char *s) {return findPar(s)>=0;}  // check if parameter exists
 
     // message encapsulation
     void encapsulate(cMessage *msg);
@@ -155,7 +155,10 @@ class SIM_API cMessage : public cObject
     simtime_t arrivalTime()  {return delivd;}  // delivery time
 
     bool arrivedOn(int g) {return g==togate;}  // arrived on gate g?
-    bool arrivedOn(char *s, int g=0);          // arrived on gate s[g]?
+    bool arrivedOn(const char *s, int g=0);    // arrived on gate s[g]?
+
+    // message appearance in Tkenv
+    virtual const char *displayString();       // returns ""; redefine to get custom appearance
 
     static int cmpbydelivtime(cObject *one, cObject *other); // compare delivery times
     static int cmpbypriority(cObject *one, cObject *other);  // compare priorities

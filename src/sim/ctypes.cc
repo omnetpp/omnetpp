@@ -61,12 +61,6 @@ Define_Function( hypot, 2 )
 Define_Function( log,   1 )
 Define_Function( log10, 1 )
 
-//-------------------------------------------------------------------------
-// *** NEW ***
-ostream& operator<<(ostream& os, char *s)
-{
-    return os << (const char *)s;
-}
 
 //=========================================================================
 //=== cModuleInterface - member functions
@@ -74,223 +68,223 @@ ostream& operator<<(ostream& os, char *s)
 cModuleInterface::cModuleInterface(const char *name, sDescrItem *descr_tab ) :
   cObject(name, &modinterfaces)
 {
-     gatev = NULL;
-     paramv = NULL;
-     machinev = NULL;
+    gatev = NULL;
+    paramv = NULL;
+    machinev = NULL;
 
-     setup( descr_tab );
+    setup( descr_tab );
 
-     // if no interface has been registered with this name, register ourselves
-     if (modinterfaces.find(name)!=NULL)
-     {
-         setOwner( &modinterfaces );
-     }
+    // if no interface has been registered with this name, register ourselves
+    if (modinterfaces.find(name)!=NULL)
+    {
+        setOwner( &modinterfaces );
+    }
 
-     // do consistency check anyway
-     check_consistency();
+    // do consistency check anyway
+    check_consistency();
 }
 
 void cModuleInterface::setup( sDescrItem *descr_tab )
 {
-     // Sets up gates and params in this cModuleInterface.
-     //
-     // descr_tab points to the data table created by the macros:
-     //    Interface(...)
-     //      Parameter( parname, types )
-     //      Gate( gatename, type )
-     //      Machine( machinename )
-     //    End
-     // This function copies the info into three separate vectors:
-     //    gatev, paramv, machinev
-     // The create() member function will use it.
+    // Sets up gates and params in this cModuleInterface.
+    //
+    // descr_tab points to the data table created by the macros:
+    //    Interface(...)
+    //      Parameter( parname, types )
+    //      Gate( gatename, type )
+    //      Machine( machinename )
+    //    End
+    // This function copies the info into three separate vectors:
+    //    gatev, paramv, machinev
+    // The create() member function will use it.
 
-     sDescrItem *tab;
+    sDescrItem *tab;
 
-     ngate = nparam = nmachine = 0;
-     for (tab=descr_tab; tab->what!='E'; tab++)
-     {
-        switch( tab->what ) {
-          case 'G': ngate++;    break;
-          case 'P': nparam++;   break;
-          case 'M': nmachine++; break;
+    ngate = nparam = nmachine = 0;
+    for (tab=descr_tab; tab->what!='E'; tab++)
+    {
+       switch( tab->what ) {
+         case 'G': ngate++;    break;
+         case 'P': nparam++;   break;
+         case 'M': nmachine++; break;
+       }
+    }
+    if (nmachine==0) nmachine=1;  // machine parameter "default"
+
+    allocate( ngate, nparam, nmachine ); // allocate vectors of gates and params
+
+    int g=0, p=0, m=0;      // fill vector with data
+    for (tab=descr_tab; tab->what!='E'; tab++)
+    {
+        bool v; int l; char *s;
+        switch (tab->what) {
+           case 'G':  // GATE( name, Input/Output )
+              s = opp_strdup( tab->name );
+              v = s && (l=strlen(s))>=3 && s[l-2]=='[' && s[l-1]==']';
+              if (v)  s[ strlen(s)-2 ]='\x0';  // cut off '[]'
+              gatev[g].name = s;
+              gatev[g].type = tab->type;
+              gatev[g].vect = v;
+              g++;
+              break;
+
+           case 'P':  // PARAM( name, types )
+              paramv[p].name = opp_strdup( tab->name );
+              paramv[p].types = opp_strdup( tab->types );
+              p++;
+              break;
+
+           case 'M':  // MACHINE( name )
+              machinev[m].name = opp_strdup( tab->name );
+              m++;
+              break;
         }
-     }
-     if (nmachine==0) nmachine=1;  // machine parameter "default"
-
-     allocate( ngate, nparam, nmachine ); // allocate vectors of gates and params
-
-     int g=0, p=0, m=0;      // fill vector with data
-     for (tab=descr_tab; tab->what!='E'; tab++)
-     {
-         bool v; int l; char *s;
-         switch (tab->what) {
-            case 'G':  // GATE( name, Input/Output )
-               s = opp_strdup( tab->name );
-               v = s && (l=strlen(s))>=3 && s[l-2]=='[' && s[l-1]==']';
-               if (v)  s[ strlen(s)-2 ]='\x0';  // cut off '[]'
-               gatev[g].name = s;
-               gatev[g].type = tab->type;
-               gatev[g].vect = v;
-               g++;
-               break;
-
-            case 'P':  // PARAM( name, types )
-               paramv[p].name = opp_strdup( tab->name );
-               paramv[p].types = opp_strdup( tab->types );
-               p++;
-               break;
-
-            case 'M':  // MACHINE( name )
-               machinev[m].name = opp_strdup( tab->name );
-               m++;
-               break;
-         }
-     }
-     if (m==0) machinev[m].name = opp_strdup( "default" ); // add "default"
+    }
+    if (m==0) machinev[m].name = opp_strdup( "default" ); // add "default"
 }
 
 cModuleInterface::cModuleInterface( cModuleInterface& mi ) :
-  cObject( NULL, &modtypes),
-  gatev(NULL),
-  paramv(NULL),
-  machinev(NULL)
+ cObject( NULL, &modtypes),
+ gatev(NULL),
+ paramv(NULL),
+ machinev(NULL)
 {
-     setName(mi.name());
-     operator=( mi );
+    setName(mi.name());
+    operator=( mi );
 }
 
 cModuleInterface::~cModuleInterface()
 {
-     int i;
-     for (i=0; i<ngate; i++)    {delete gatev[i].name;}
-     for (i=0; i<nparam; i++)   {delete paramv[i].name;delete paramv[i].types;}
-     for (i=0; i<nmachine; i++) {delete machinev[i].name;}
-     delete[] gatev;
-     delete[] paramv;
-     delete[] machinev;
+    int i;
+    for (i=0; i<ngate; i++)    {delete gatev[i].name;}
+    for (i=0; i<nparam; i++)   {delete paramv[i].name;delete paramv[i].types;}
+    for (i=0; i<nmachine; i++) {delete machinev[i].name;}
+    delete[] gatev;
+    delete[] paramv;
+    delete[] machinev;
 }
 
 cModuleInterface& cModuleInterface::operator=(cModuleInterface&)
 {
-     opp_error("cModuleInterface cannot copy itself!");
-     return *this;
+    opp_error("cModuleInterface cannot copy itself!");
+    return *this;
 }
 
 void cModuleInterface::allocate( int ngte, int npram, int nmach )
 {
-     ngate = ngte;
-     gatev = new sGateInfo[ngate];
+    ngate = ngte;
+    gatev = new sGateInfo[ngate];
 
-     nparam = npram;
-     paramv = new sParamInfo[nparam];
+    nparam = npram;
+    paramv = new sParamInfo[nparam];
 
-     nmachine = nmach;
-     machinev = new sMachineInfo[nmachine];
+    nmachine = nmach;
+    machinev = new sMachineInfo[nmachine];
 
-     if ((ngate&&!gatev) || (nparam&&!paramv) || (nmachine&&!machinev))
-         opp_error(eNOMEM);
+    if ((ngate&&!gatev) || (nparam&&!paramv) || (nmachine&&!machinev))
+        opp_error(eNOMEM);
 }
 
 void cModuleInterface::addParametersGatesTo( cModule *module)
 {
-     int i;
-     for (i=0;i<nmachine;i++)
-        module->addMachinePar( machinev[i].name );
-     for (i=0;i<ngate;i++)
-        module->addGate( gatev[i].name, gatev[i].type );
-     for (i=0;i<nparam;i++)
-     {
-        module->addPar( paramv[i].name );
-        if (opp_strcmp(paramv[i].types,"S")==0)
-        {
-           module->par( paramv[i].name ) = "";
-           module->par( paramv[i].name ).setInput(true);
-        }
-     }
+    int i;
+    for (i=0;i<nmachine;i++)
+       module->addMachinePar( machinev[i].name );
+    for (i=0;i<ngate;i++)
+       module->addGate( gatev[i].name, gatev[i].type );
+    for (i=0;i<nparam;i++)
+    {
+       module->addPar( paramv[i].name );
+       if (opp_strcmp(paramv[i].types,"S")==0)
+       {
+          module->par( paramv[i].name ) = "";
+          module->par( paramv[i].name ).setInput(true);
+       }
+    }
 }
 
 void cModuleInterface::checkParametersOf( cModule *mod )
 {
-     // check parameter types and convert CONST parameters to constant
-     for (int i=0;i<nparam;i++)
-     {
-         cPar *par = &(mod->par( paramv[i].name ));
+    // check parameter types and convert CONST parameters to constant
+    for (int i=0;i<nparam;i++)
+    {
+        cPar *par = &(mod->par( paramv[i].name ));
 
-         if (!strchr(paramv[i].types, '*') &&
-             !strchr(paramv[i].types, par->type()))
-         {
-            opp_error("Module declaration doesn't allow type `%c'"
-                             " for parameter `%s'",
-                             par->type(), par->fullPath());
-         }
+        if (!strchr(paramv[i].types, '*') &&
+            !strchr(paramv[i].types, par->type()))
+        {
+           opp_error("Module declaration doesn't allow type `%c'"
+                            " for parameter `%s'",
+                            par->type(), par->fullPath());
+        }
 
-         if (strchr(paramv[i].types,'#'))
-         {
-            par->convertToConst();
-         }
-     }
+        if (strchr(paramv[i].types,'#'))
+        {
+           par->convertToConst();
+        }
+    }
 }
 
 void cModuleInterface::check_consistency()
 {
-     cObject *list = owner(); setOwner(NULL);
-     cModuleInterface *m = findModuleInterface( name() );
-     if (!m)
-     {
-          setOwner(list);
-          return;
-     }
+    cObject *list = owner(); setOwner(NULL);
+    cModuleInterface *m = findModuleInterface( name() );
+    if (!m)
+    {
+         setOwner(list);
+         return;
+    }
 
-     char *what,*which;
-     int id;
+    char *what,*which;
+    int id;
 
-     if (ngate!=m->ngate)
-           {what="number of gates";goto error1;}
-     if (nparam!=m->nparam)
-           {what="number of parameters";goto error1;}
-     if (nmachine!=m->nmachine)
-           {what="number of machine pars";goto error1;}
+    if (ngate!=m->ngate)
+          {what="number of gates";goto error1;}
+    if (nparam!=m->nparam)
+          {what="number of parameters";goto error1;}
+    if (nmachine!=m->nmachine)
+          {what="number of machine pars";goto error1;}
 
-     int i;
-     for (i=0;i<nmachine;i++)
-     {
-        if (opp_strcmp(machinev[i].name,m->machinev[i].name)!=0)
-           {what="names for machine par";id=i;which=machinev[i].name;goto error2;}
-     }
-     for (i=0;i<nparam;i++)
-     {
-        if (opp_strcmp(paramv[i].name,m->paramv[i].name)!=0)
-           {what="names for parameter";id=i;which=paramv[i].name;goto error2;}
-        if (paramv[i].types!=NULL || m->paramv[i].types!=NULL)
-           if ((paramv[i].types==NULL && m->paramv[i].types!=NULL) ||
-               (paramv[i].types!=NULL && m->paramv[i].types==NULL) ||
-               strspn(paramv[i].types,m->paramv[i].types)!=strlen(paramv[i].types)||
-               strspn(m->paramv[i].types,paramv[i].types)!=strlen(m->paramv[i].types)
-              )
-               {what="allowed types for parameter";id=i;which=paramv[i].name;goto error2;}
-     }
-     for (i=0;i<ngate;i++)
-     {
-        if (opp_strcmp(gatev[i].name,m->gatev[i].name)!=0)
-           {what="names for gate #";id=i;which=gatev[i].name;goto error2;}
-        if (gatev[i].type!=m->gatev[i].type)
-           {what="direction (in/out) for gate";id=i;which=gatev[i].name;goto error2;}
-        if (gatev[i].vect!=m->gatev[i].vect)
-           {what="vector/scalar type for gate";id=i;which=gatev[i].name;goto error2;}
-     }
-     return;
+    int i;
+    for (i=0;i<nmachine;i++)
+    {
+       if (opp_strcmp(machinev[i].name,m->machinev[i].name)!=0)
+          {what="names for machine par";id=i;which=machinev[i].name;goto error2;}
+    }
+    for (i=0;i<nparam;i++)
+    {
+       if (opp_strcmp(paramv[i].name,m->paramv[i].name)!=0)
+          {what="names for parameter";id=i;which=paramv[i].name;goto error2;}
+       if (paramv[i].types!=NULL || m->paramv[i].types!=NULL)
+          if ((paramv[i].types==NULL && m->paramv[i].types!=NULL) ||
+              (paramv[i].types!=NULL && m->paramv[i].types==NULL) ||
+              strspn(paramv[i].types,m->paramv[i].types)!=strlen(paramv[i].types)||
+              strspn(m->paramv[i].types,paramv[i].types)!=strlen(m->paramv[i].types)
+             )
+              {what="allowed types for parameter";id=i;which=paramv[i].name;goto error2;}
+    }
+    for (i=0;i<ngate;i++)
+    {
+       if (opp_strcmp(gatev[i].name,m->gatev[i].name)!=0)
+          {what="names for gate #";id=i;which=gatev[i].name;goto error2;}
+       if (gatev[i].type!=m->gatev[i].type)
+          {what="direction (in/out) for gate";id=i;which=gatev[i].name;goto error2;}
+       if (gatev[i].vect!=m->gatev[i].vect)
+          {what="vector/scalar type for gate";id=i;which=gatev[i].name;goto error2;}
+    }
+    return;
 
-     error1:
-     opp_error("Inconsistent module interfaces (Interface..End) for `%s':"
-                      " %s does not match",
-                      name(), what);
-     return;
+    error1:
+    opp_error("Inconsistent module interfaces (Interface..End) for `%s':"
+                     " %s does not match",
+                     name(), what);
+    return;
 
-     error2:
-     opp_error("Inconsistent module interfaces (Interface..End) for `%s':"
-                      " %s `%s' (#%d) do not match",
-                      name(), what, which, id);
-     return;
+    error2:
+    opp_error("Inconsistent module interfaces (Interface..End) for `%s':"
+                     " %s `%s' (#%d) do not match",
+                     name(), what, which, id);
+    return;
 }
 
 //=========================================================================
@@ -301,23 +295,23 @@ cModuleType::cModuleType(const char *classname,
                          ModuleCreateFunc cf) :
   cObject(classname, &modtypes)
 {
-     // create_func:
-     //   Ptr to a small function that creates a module of type classname.
-     //   E.g, if classname is "Processor", create_func points to a function
-     //   like this:
-     //      static cModule *Processor__create(char *name, cModule *parentmod )
-     //      {
-     //           return (cModule *) new Processor(name, parentmod);
-     //      }
-     //  For each module type, such a function is automatically created by
-     //  the Define_Module( classname ) macro.
+    // create_func:
+    //   Ptr to a small function that creates a module of type classname.
+    //   E.g, if classname is "Processor", create_func points to a function
+    //   like this:
+    //      static cModule *Processor__create(char *name, cModule *parentmod )
+    //      {
+    //           return (cModule *) new Processor(name, parentmod);
+    //      }
+    //  For each module type, such a function is automatically created by
+    //  the Define_Module( classname ) macro.
 
-     create_func = cf;
+    create_func = cf;
 
-     // We cannot find() the interface object (and store its pointer) yet,
-     // because it might not have been created yet.
-     interface_name = opp_strdup(interf_name);
-     interface = NULL;
+    // We cannot find() the interface object (and store its pointer) yet,
+    // because it might not have been created yet.
+    interface_name = opp_strdup(interf_name);
+    interface = NULL;
 }
 
 
@@ -343,7 +337,7 @@ cModuleType& cModuleType::operator=(cModuleType& mt)
     return *this;
 }
 
-cModule *cModuleType::create(char *modname, cModule *parentmod, bool local)
+cModule *cModuleType::create(const char *modname, cModule *parentmod, bool local)
 {
     // Creates a module.
     //  In addition to creating an object of the correct type,
@@ -506,7 +500,7 @@ cFunctionType *findfunctionbyptr(MathFunc f)
 //=== creates an object of type passed in a string
 //    e.g: cObject *param = createOne( "cPar" );
 //    used when objects are restored from network data packet or file
-cObject *createOne(char *classname)
+cObject *createOne(const char *classname)
 {
     cClassRegister *p = (cClassRegister *)classes.find( classname );
     if (p!=NULL)

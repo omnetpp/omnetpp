@@ -80,7 +80,7 @@
 // create cModuleType
 // version 1: module interface has the same name as module
 #define Define_Module(CLASSNAME) \
-  static cModule *CLASSNAME##__create(char *name, cModule *parentmod ) \
+  static cModule *CLASSNAME##__create(const char *name, cModule *parentmod ) \
   { \
      return (cModule *) new CLASSNAME(name, parentmod); \
   } \
@@ -88,7 +88,7 @@
 
 // version 2: use different module interface (support for 'like' phrase in NED)
 #define Define_Module_Like(CLASSNAME,INTERFACE) \
-  static cModule *CLASSNAME##__create(char *name, cModule *parentmod ) \
+  static cModule *CLASSNAME##__create(const char *name, cModule *parentmod ) \
   { \
      return (cModule *) new CLASSNAME(name, parentmod); \
   } \
@@ -97,9 +97,10 @@
 // declaration of module class members:
 #define Module_Class_Members(CLASSNAME,BASECLASS,STACK) \
     public: \
-      CLASSNAME(char *name, cModule *parentmod, unsigned stk=STACK) : \
+      CLASSNAME(const char *name, cModule *parentmod, unsigned stk=STACK) : \
            BASECLASS(name, parentmod, stk) {} \
       virtual const char *className()  {return #CLASSNAME;}
 
 
 #endif
+

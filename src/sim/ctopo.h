@@ -149,10 +149,10 @@ class SIM_API cTopology : public cObject
 
      // Include modules with given types (classnames). List of types must be
      // terminated by NULL.
-     void extractByModuleType(char *type1,...);
+     void extractByModuleType(const char *type1,...);
 
      // Include modules with given parameter and (optionally) given value.
-     void extractByParameter(char *parname, cPar *value=NULL);
+     void extractByParameter(const char *parname, cPar *value=NULL);
 
      // Functions to examine topology by hand. Users also need to rely on
      // sTopoNode and sTopoLink member functions.

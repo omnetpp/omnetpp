@@ -209,7 +209,7 @@ cPar& cMessage::par(int n)
     }
 }
 
-cPar& cMessage::par(char *s)
+cPar& cMessage::par(const char *s)
 {
     cArray& parlist = parList();
     int pn = parlist.find( s );
@@ -222,7 +222,7 @@ cPar& cMessage::par(char *s)
     }
 }
 
-int cMessage::findPar(char *s)
+int cMessage::findPar(const char *s)
 {
     if (!parlistp) return -1;
     return parList().find( s );
@@ -244,9 +244,15 @@ cGate *cMessage::arrivalGate()
     return mod->gate( togate );
 }
 
-bool cMessage::arrivedOn(char *s, int g)
+bool cMessage::arrivedOn(const char *s, int g)
 {
     return togate==simulation.contextModule()->findGate(s,g);
+}
+
+const char *cMessage::displayString()
+{
+    // redefine to get messages with custom appearance
+    return "";
 }
 
 int cMessage::cmpbydelivtime(cObject *one, cObject *other)

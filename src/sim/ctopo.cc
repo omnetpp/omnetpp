@@ -102,7 +102,7 @@ void cTopology::clear()
 
 static int selectByParameter(cModule *mod, void *data)
 {
-    struct sTmp {char *parname; cPar *value;};
+    struct sTmp {const char *parname; cPar *value;};
     sTmp *d = (sTmp *)data;
 
     if (!mod || mod->findPar(d->parname)<0) return 0;
@@ -110,23 +110,23 @@ static int selectByParameter(cModule *mod, void *data)
     return 1;
 }
 
-void cTopology::extractByParameter(char *parname, cPar *value)
+void cTopology::extractByParameter(const char *parname, cPar *value)
 {
-    struct {char *p; cPar *v;} data = {parname, value};
+    struct {const char *p; cPar *v;} data = {parname, value};
     extractFromNetwork( selectByParameter, (void *)&data );
 }
 
 static int selectByModuleType(cModule *mod, void *data)
 {
-    for (char **d = (char **)data; *d; d++)
+    for (const char **d = (const char **)data; *d; d++)
         if (strcmp(mod->className(),*d)==0)
             return 1;
     return 0;
 }
 
-void cTopology::extractByModuleType(char *type1,...)
+void cTopology::extractByModuleType(const char *type1,...)
 {
-    char *data[32];
+    const char *data[32];
     int k=0;
     data[k++] = type1;
 

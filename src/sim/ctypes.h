@@ -46,7 +46,7 @@ class  cModule;
 class  cPar;
 
 //=== function types used by cModuleType & cLinkType
-typedef cModule *(*ModuleCreateFunc)(char *, cModule *);
+typedef cModule *(*ModuleCreateFunc)(const char *, cModule *);
 typedef cPar *(*ParCreateFunc)();
 
 //==========================================================================
@@ -159,7 +159,7 @@ class SIM_API cModuleType : public cObject
     virtual cObject *dup()     {return new cModuleType(*this);}
     cModuleType& operator=(cModuleType& mi);
 
-    cModule *create(char *name, cModule *parentmod, bool local=true);
+    cModule *create(const char *name, cModule *parentmod, bool local=true);
     void buildInside(cModule *mod);
 
     // convenience function: create()+buildInside()+scheduleStart(now)+callInitialize()
@@ -248,7 +248,7 @@ class SIM_API cClassRegister : public cObject
     cObject *createOne()  {return creatorfunc();}
 };
 
-SIM_API cObject *createOne(char *type);
+SIM_API cObject *createOne(const char *type);
 
 //==========================================================================
 // cInspectorFactory - base class for inspector factories of specific classes
