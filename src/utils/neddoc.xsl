@@ -434,7 +434,7 @@
 
 <xsl:template name="create-tags">
    <neddoc-tags>
-      <xsl:for-each select="//simple-module|//compound-module|//channel|//network">
+      <xsl:for-each select="//simple-module|//compound-module|//channel|//network|//message|//class|//struct|//enum">
          <xsl:sort select="concat(local-name(.),':',@name)"/>
          <tag type="{local-name(.)}"
               name="{@name}"
