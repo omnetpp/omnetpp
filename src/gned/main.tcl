@@ -47,30 +47,26 @@ set gned(icons) {}
 #===================================================================
 
 proc create_omnetpp_window {} {
-    set w .omnetpp
-    if {[winfo exists $w]} {
-        wm deiconify $w; return
-    }
 
     global gned fonts icons tcl_version help_tips
 
-    toplevel $w -class Toplevel
-    wm focusmodel $w passive
-    wm geometry $w 640x450
+    # toplevel . -class Toplevel
+    wm focusmodel . passive
+    wm geometry . 640x450
 
-    wm maxsize $w 1009 738
-    wm minsize $w 1 1
-    wm overrideredirect $w 0
-    wm resizable $w 1 1
-    wm deiconify $w
-    wm title $w "OMNeT++/GNED"
-    wm protocol $w WM_DELETE_WINDOW {fileExit}
+    wm maxsize . 1009 738
+    wm minsize . 1 1
+    wm overrideredirect . 0
+    wm resizable . 1 1
+    wm deiconify .
+    wm title . "OMNeT++/GNED"
+    wm protocol . WM_DELETE_WINDOW {fileExit}
 
     #################################
     # Menu bar
     #################################
-    menu $w.menubar
-    $w config -menu $w.menubar
+    menu .menubar
+    . config -menu .menubar
 
     # Create menus
     foreach i {
@@ -81,14 +77,14 @@ proc create_omnetpp_window {} {
        {optionsmenu  -label Options -underline 0}
        {helpmenu     -label Help -underline 0}
     } {
-       eval $w.menubar add cascade -menu $w.menubar.$i
-       menu "$w.menubar.[lindex $i 0]" -tearoff 0
+       eval .menubar add cascade -menu .menubar.$i
+       menu ".menubar.[lindex $i 0]" -tearoff 0
     }
 
     # File menu
     foreach i {
       {command -command fileNewNedfile   -label {New NED file} -underline 0}
-      {cascade -menu $w.menubar.filemenu.newmenu -label {New component} -underline 1}
+      {cascade -menu .menubar.filemenu.newmenu -label {New component} -underline 1}
       {separator}
       {command -command fileOpen         -label {Open...} -underline 0}
       {command -command fileSave         -label {Save} -underline 0}
@@ -99,11 +95,11 @@ proc create_omnetpp_window {} {
       {separator}
       {command -command fileExit -label Exit -underline 1}
     } {
-      eval $w.menubar.filemenu add $i
+      eval .menubar.filemenu add $i
     }
 
     # File menu, New component... submenu
-    menu $w.menubar.filemenu.newmenu -tearoff 0
+    menu .menubar.filemenu.newmenu -tearoff 0
     foreach i {
       {command -command {fileNewComponent imports} -label {imports} -underline 0}
       {command -command {fileNewComponent channel} -label {channel} -underline 0}
@@ -111,7 +107,7 @@ proc create_omnetpp_window {} {
       {command -command {fileNewComponent module}  -label {module}  -underline 0}
       {command -command {fileNewComponent network} -label {network} -underline 0}
     } {
-       eval $w.menubar.filemenu.newmenu add $i
+       eval .menubar.filemenu.newmenu add $i
     }
 
     # Edit menu
@@ -124,7 +120,7 @@ proc create_omnetpp_window {} {
       {separator}
       {command -command editCheck    -label {Check consistency} -underline 0}
     } {
-      eval $w.menubar.editmenu add $i
+      eval .menubar.editmenu add $i
     }
 
     # View menu
@@ -132,7 +128,7 @@ proc create_omnetpp_window {} {
       {command -command switchToGraphics -label {As Graphics} -underline 3}
       {command -command switchToNED      -label {As NED source} -underline 3}
     } {
-      eval $w.menubar.viewmenu add $i
+      eval .menubar.viewmenu add $i
     }
 
     # Draw menu
@@ -145,7 +141,7 @@ proc create_omnetpp_window {} {
       {command -command {propertiesSelected $gned(canvas)} -label {Properties of selected item...}}
       {command -command {drawOptionsSelected $gned(canvas)} -label {Appearance of selected item...}}
     } {
-      eval $w.menubar.drawmenu add $i
+      eval .menubar.drawmenu add $i
     }
 
     # Options menu
@@ -156,7 +152,7 @@ proc create_omnetpp_window {} {
       {separator}
       {command -command optionsViewFile -label {View/edit file...} -underline 0}
     } {
-      eval $w.menubar.optionsmenu add $i
+      eval .menubar.optionsmenu add $i
     }
 
     # Help menu
@@ -165,7 +161,7 @@ proc create_omnetpp_window {} {
       {separator}
       {command -command {helpRelNotes} -label {Release notes} -underline 0}
     } {
-      eval $w.menubar.helpmenu add $i
+      eval .menubar.helpmenu add $i
     }
 
 
@@ -173,7 +169,7 @@ proc create_omnetpp_window {} {
     # Create horiz. toolbar
     #################################
 
-    frame $w.toolbar -relief raised -borderwidth 1
+    frame .toolbar -relief raised -borderwidth 1
     foreach i {
       {sep0    -separator}
       {new     -image $icons(new)   -command {fileNewComponent module}}
@@ -189,16 +185,16 @@ proc create_omnetpp_window {} {
       {sep3    -separator}
       {check   -image $icons(check) -command {editCheck}}
     } {
-      set b [eval iconbutton $w.toolbar.$i]
+      set b [eval iconbutton .toolbar.$i]
       pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2
     }
-    $w.toolbar.graph config -relief sunken
+    .toolbar.graph config -relief sunken
 
     # close button
-    set b [button $w.toolbar.close -image $icons(close) -command fileCloseCanvas -relief flat]
+    set b [button .toolbar.close -image $icons(close) -command fileCloseCanvas -relief flat]
     pack $b -anchor n -expand 0 -fill none -side right -padx 0 -pady 2
 
-    set gned(horiz-toolbar) $w.toolbar
+    set gned(horiz-toolbar) .toolbar
 
     set help_tips($gned(horiz-toolbar).new)   {Create new module in current file}
     set help_tips($gned(horiz-toolbar).open)  {Open NED file}
@@ -215,33 +211,33 @@ proc create_omnetpp_window {} {
     #################################
     # Create main display area
     #################################
-    frame $w.main
+    frame .main
 
 
     #################################
     # Create manager (vert. tree view)
     #################################
-    frame $w.main.mgr -relief flat -borderwidth 1
+    frame .main.mgr -relief flat -borderwidth 1
 
-    vertResizeBar $w.main.mgr.resize $w.main.mgr.tree
+    vertResizeBar .main.mgr.resize .main.mgr.tree
 
-    canvas $w.main.mgr.tree -width 140 -bg #ffffe0 -relief groove \
-                            -yscrollcommand "$w.main.mgr.sb set"
-    scrollbar $w.main.mgr.sb -command "$w.main.mgr.tree yview"
-    pack $w.main.mgr.resize -side right -fill y
-    pack $w.main.mgr.sb -side right -fill y
-    pack $w.main.mgr.tree -side left -fill y -padx 0 -pady 0 -ipadx 0 -ipady 0
+    canvas .main.mgr.tree -width 140 -bg #ffffe0 -relief groove \
+                            -yscrollcommand ".main.mgr.sb set"
+    scrollbar .main.mgr.sb -command ".main.mgr.tree yview"
+    pack .main.mgr.resize -side right -fill y
+    pack .main.mgr.sb -side right -fill y
+    pack .main.mgr.tree -side left -fill y -padx 0 -pady 0 -ipadx 0 -ipady 0
 
-    set gned(manager) $w.main.mgr
+    set gned(manager) .main.mgr
     initTreeManager
 
 
     #################################
     # Create vert. toolbar
     #################################
-    frame $w.main.toolbar -relief raised -borderwidth 1
+    frame .main.toolbar -relief raised -borderwidth 1
 
-    set gned(toolbar) $w.main.toolbar
+    set gned(toolbar) .main.toolbar
 
     foreach i {
       {sep0     -separator}
@@ -275,20 +271,20 @@ proc create_omnetpp_window {} {
     #################################
     # Create canvas & scrollbars
     #################################
-    frame $w.main.f
+    frame .main.f
 
 
     #################################
     # Create tabs below
     #################################
-    frame $w.main.f.tabs
-    pack $w.main.f.tabs -expand 0 -fill x -side bottom -ipadx 0 -ipady 0 -padx 0 -pady 0
+    frame .main.f.tabs
+    pack .main.f.tabs -expand 0 -fill x -side bottom -ipadx 0 -ipady 0 -padx 0 -pady 0
 
 
     #################################
     # Create main area and scrollbars
     #################################
-    set ww $w.main.f
+    set ww .main.f
 
     frame $ww.grid
     scrollbar $ww.hsb -orient horiz
@@ -308,26 +304,26 @@ proc create_omnetpp_window {} {
     #################################
     # Pack the vert.toolbar, the tree manager and the main area
     #################################
-    pack $w.main.mgr     -expand 0 -fill y    -side left
-    pack $w.main.toolbar -expand 0 -fill y    -side left
-    pack $w.main.f       -expand 1 -fill both -side right
+    pack .main.mgr     -expand 0 -fill y    -side left
+    pack .main.toolbar -expand 0 -fill y    -side left
+    pack .main.f       -expand 1 -fill both -side right
 
     #################################
     # Create status bar
     #################################
-    frame $w.statusbar -relief sunken -border 1
-    label $w.statusbar.mode -justify left -text {(mode)}
+    frame .statusbar -relief sunken -border 1
+    label .statusbar.mode -justify left -text {(mode)}
 
-    pack $w.statusbar.mode -anchor n -expand 0 -side left
+    pack .statusbar.mode -anchor n -expand 0 -side left
 
-    set gned(statusbar) $w.statusbar
+    set gned(statusbar) .statusbar
 
     #################################
     # Pack main and status bar
     #################################
-    pack $w.statusbar -fill x -side bottom -padx 2 -pady 2
-    pack $w.toolbar   -side top -fill x
-    pack $w.main      -expand 1 -fill both -side top
+    pack .statusbar -fill x -side bottom -padx 2 -pady 2
+    pack .toolbar   -side top -fill x
+    pack .main      -expand 1 -fill both -side top
 }
 
 #===================================================================

@@ -49,6 +49,7 @@ General:
   for both text and graphics
 - ctrl-mousemove should copy the items on canvas
 - different vertical toolbar when changing from graphics to NED view
+- scrolbar for the tabs below if there are too many windows open
 
 Dialogs:
 - TBD

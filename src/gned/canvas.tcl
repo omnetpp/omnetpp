@@ -84,7 +84,6 @@ proc openUnnamedCanvas {} {
 #
 proc openModuleOnNewCanvas {modkey} {
     global gned ned canvas fonts
-    set w .omnetpp
 
     # check type of item
     set type $ned($modkey,type)
@@ -99,9 +98,9 @@ proc openModuleOnNewCanvas {modkey} {
     set canv_id $gned(canvas_lastid)
 
     # create widgets and register in $canvas()
-    set canv $w.main.f.c$canv_id
-    set txt  $w.main.f.t$canv_id
-    set tab $w.main.f.tabs.tab$canv_id
+    set canv .main.f.c$canv_id
+    set txt  .main.f.t$canv_id
+    set tab  .main.f.tabs.tab$canv_id
 
     set canvas($canv_id,canvas)      $canv
     set canvas($canv_id,textedit)    $txt
@@ -143,7 +142,6 @@ proc openModuleOnNewCanvas {modkey} {
 #
 proc switchToCanvas {canv_id} {
     global gned canvas ned
-    set w .omnetpp
 
     # unmap old canvas
     if {$gned(canvas_id)!=""} {
@@ -175,7 +173,6 @@ proc switchToCanvas {canv_id} {
 #
 proc setCanvasMode {mode} {
     global gned canvas ned
-    set w .omnetpp
 
     set canv_id $gned(canvas_id)
 
@@ -200,12 +197,12 @@ proc setCanvasMode {mode} {
         error "invalid mode $mode"
     }
 
-    set hsb  $w.main.f.hsb
-    set vsb  $w.main.f.vsb
+    set hsb  .main.f.hsb
+    set vsb  .main.f.vsb
     $hsb config -command "$c xview"
     $vsb config -command "$c yview"
     $c config -xscrollcommand "$hsb set" -yscrollcommand "$vsb set"
-    grid $c -in $w.main.f.grid -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news
+    grid $c -in .main.f.grid -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news
     focus $c
 
     set canvas($canv_id,mode) $mode
@@ -303,9 +300,9 @@ proc adjustWindowTitle {} {
 
     # update window title
     if {$ned($fkey,filename)!=""} {
-       wm title .omnetpp "GNED - $ned($fkey,filename) - $ned($modkey,name)"
+       wm title . "GNED - $ned($fkey,filename) - $ned($modkey,name)"
     } else {
-       wm title .omnetpp "OMNeT++/GNED - $ned($modkey,name) (not saved yet)"
+       wm title . "GNED - $ned($modkey,name) (not saved yet)"
     }
 
     # update tab

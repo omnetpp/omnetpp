@@ -122,7 +122,7 @@ int NEDParser::parseText(Tcl_Interp *intrp, char *nedtext, int nedfilekey,
 
 char *NEDParser::storeInTempBuf(char *s)
 {
-    int l = strlen(s);
+    int l = strlen(s)+1;
     if (l>=tmpbuflen)
     {
         delete tmpbuf;
