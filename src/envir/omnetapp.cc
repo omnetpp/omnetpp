@@ -410,7 +410,7 @@ void TOmnetApp::readOptions()
 
     opt_total_stack_kb = cfg->getAsInt( "General", "total-stack-kb", TOTAL_STACK_KB );
     if (cfg->getAsBool("General", "distributed", false))
-         ev.printfmsg("Warning: ini file entry distributed= is obsolete (parallel simulation support was reimplemented in version 2.4)");
+         ev.printfmsg("Warning: config entry distributed= is obsolete (parallel simulation support was reimplemented for version 3.0)");
     opt_parsim = cfg->getAsBool("General", "parallel-simulation", false);
     if (!opt_parsim)
     {
@@ -435,6 +435,15 @@ void TOmnetApp::readOptions()
     opt_snapshotmanager_class = cfg->getAsString("General", "snapshotmanager-class", "cFileSnapshotManager");
 
     opt_fname_append_host = cfg->getAsBool("General","fname-append-host",false);
+
+    // FIXME do thorough job of warning! all genX-seed 0..31, all runs
+    if (cfg->exists2("Run 1", "General", "random-seed") ||
+        cfg->exists2("Run 1", "General", "gen0-seed") ||
+        cfg->exists2("Run 1", "General", "gen1-seed")
+       )
+         ev.printfmsg("Warning: config entries random-seed= and genX-seed= are obsolete, "
+                      "YOUR SEEDS ARE NOT BEING USED "
+                      "(check new Random Number Architecture for version 3.0)");
 
     // other options are read on per-run basis
 }
