@@ -37,8 +37,8 @@ NEDFileBuffer::NEDFileBuffer()
 
 NEDFileBuffer::~NEDFileBuffer()
 {
-    delete wholeFile;
-    delete lineBeg;
+    delete [] wholeFile;
+    delete [] lineBeg;
     delete [] commentBuf;
 }
 

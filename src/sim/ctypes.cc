@@ -155,8 +155,8 @@ cModuleInterface::cModuleInterface(const cModuleInterface& mi) :
 cModuleInterface::~cModuleInterface()
 {
     int i;
-    for (i=0; i<numgates; i++)    {delete gatev[i].name;}
-    for (i=0; i<numparams; i++)   {delete paramv[i].name;delete paramv[i].types;}
+    for (i=0; i<numgates; i++)    {delete [] gatev[i].name;}
+    for (i=0; i<numparams; i++)   {delete [] paramv[i].name;delete [] paramv[i].types;}
     delete [] gatev;
     delete [] paramv;
 }
@@ -339,7 +339,7 @@ cModuleType::cModuleType(const cModuleType& mi) :
 
 cModuleType::~cModuleType()
 {
-    delete interface_name;
+    delete [] interface_name;
 }
 
 cModuleType& cModuleType::operator=(const cModuleType& mt)
