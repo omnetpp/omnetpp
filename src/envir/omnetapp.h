@@ -190,6 +190,7 @@ class ENVIR_API TOmnetApp
     virtual void moduleMethodCalled(cModule *from, cModule *to, const char *method) {}
     virtual void moduleCreated(cModule *newmodule) {}
     virtual void moduleDeleted(cModule *module) {}
+    virtual void moduleReparented(cModule *module, cModule *oldparent) {}
     virtual void connectionCreated(cGate *srcgate) {}
     virtual void connectionRemoved(cGate *srcgate) {}
     virtual void displayStringChanged(cGate *gate) {}

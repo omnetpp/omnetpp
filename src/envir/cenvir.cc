@@ -293,6 +293,11 @@ void cEnvir::moduleDeleted(cModule *module)
     app->moduleDeleted(module);
 }
 
+void cEnvir::moduleReparented(cModule *module, cModule *oldparent)
+{
+    app->moduleReparented(module, oldparent);
+}
+
 void cEnvir::connectionCreated(cGate *srcgate)
 {
     app->connectionCreated(srcgate);
