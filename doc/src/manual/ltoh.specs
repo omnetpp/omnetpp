@@ -93,8 +93,8 @@ htmlfile_spec := $BASE.htm
 # End specifications for standard Latex command
 #
 
-#:comm   :\opp:OMNEST::
-:comm   :\opp:OMNeT++::
+:comm   :\opp:OMNEST::
+#:comm   :\opp:OMNeT++::
 
 :comm   :\omnetpp:OMNeT++::
 :comm   :\omnest:OMNEST::
@@ -133,7 +133,7 @@ htmlfile_spec := $BASE.htm
 :comm   :\fprog(\[.*?\])?{(.*?)}:<tt>$2</tt>::
 :comm   :\cclass(\[.*?\])?{(.*?)}:<tt>$2</tt>::
 :comm   :\fmac(\[.*?\])?{(.*?)}:<tt>$2</tt>::
-:comm   :\includegraphics(\[.*?\])?{(.*?)}:<img src="$2.gif">::
+:comm   :\includegraphics(\[.*?\])?{figures/(.*?)}:<img src="$2.gif">::
 # WRONG --  :comm   :\chapter\*{(.*?)}:<br><br><br><b>$2</b>::
 # WRONG --  :comm   :$\^(.*)\$:<sup>$1</sup>::
 # WRONG --  :comm   :\'(.):&\1acute;:
