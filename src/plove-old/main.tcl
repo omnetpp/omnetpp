@@ -206,10 +206,10 @@ proc createMainArea {w} {
     frame $w.f3 -relief flat -border 2 ;# plotted vectors
     frame $w.f4 -relief flat -border 2 ;# plot, save etc. action buttons
 
+    pack $w.f4 -expand 0 -fill both -side right -anchor w -padx 3 -pady 3
     pack $w.f1 -expand 1 -fill both -side left -anchor w -padx 3 -pady 3
     pack $w.f2 -expand 0 -fill both -side left -anchor w -padx 3 -pady 3
     pack $w.f3 -expand 1 -fill both -side left -anchor w -padx 3 -pady 3
-    pack $w.f4 -expand 0 -fill both -side left -anchor w -padx 3 -pady 3
 
     #
     # Pane 1
@@ -223,10 +223,10 @@ proc createMainArea {w} {
     button $w.f1.but.repl -text {Repl...} -command {replaceInTitles 1}
     button $w.f1.but.del  -text {Delete}  -command {delVectors 1}
     pack $w.f1.but -expand 0 -fill x -side bottom
-    pack $w.f1.but.load -side left
-    pack $w.f1.but.sel  -side left
-    pack $w.f1.but.repl -side left
-    pack $w.f1.but.del  -side left
+    pack $w.f1.but.load -side left -expand 1 -fill x
+    pack $w.f1.but.sel  -side left -expand 1 -fill x
+    pack $w.f1.but.repl -side left -expand 1 -fill x
+    pack $w.f1.but.del  -side left -expand 1 -fill x
 
     label $w.f1.status -relief groove
     pack $w.f1.status -expand 0 -fill x -side bottom
@@ -286,10 +286,10 @@ proc createMainArea {w} {
     button $w.f3.but.dup -text {Dup} -command {dupVectors 2}
 
     pack $w.f3.but -expand 0 -fill x -side bottom
-    pack $w.f3.but.opt -side left
-    pack $w.f3.but.fil -side left
-    pack $w.f3.but.del -side left
-    pack $w.f3.but.dup -side left
+    pack $w.f3.but.opt -side left -expand 1 -fill x
+    pack $w.f3.but.fil -side left -expand 1 -fill x
+    pack $w.f3.but.del -side left -expand 1 -fill x
+    pack $w.f3.but.dup -side left -expand 1 -fill x
 
     label $w.f3.status -relief groove
     pack $w.f3.status -expand 0 -fill x -side bottom
@@ -413,7 +413,7 @@ proc createMainWindow {{geom ""}} {
 
     set w .
     wm focusmodel $w passive
-    if {$geom != ""} {wm geometry $w $geom}
+    if {$geom != ""} {wm geometry $w $geom} else {wm geometry $w "640x360"}
     wm maxsize $w 1009 738
     wm minsize $w 1 1
     wm overrideredirect $w 0

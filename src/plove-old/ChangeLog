@@ -89,4 +89,4 @@ Apr 28, 2001
  - bugfix in .ploverc handling
 May 2, 2001
  - fixed Help|README when using compiled-in Tcl code
-
+ - geometry management improved
