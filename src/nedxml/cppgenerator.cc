@@ -267,7 +267,6 @@ void NEDCppGenerator::printTemporaryVariables(const char *indent)
         out << indent << "// temporary variables:\n";
         out << indent << "cPar tmpval;\n";  // for compiled expressions
         out << indent << "const char *type_name;\n";   // for submodule creation
-        out << indent << "int size;\n";  // for gatesize
         out << "\n";
 }
 
@@ -329,14 +328,6 @@ void NEDCppGenerator::writeProlog(ostream& out)
            "#  pragma warn -wuse\n"
            "#endif\n\n";
 
-    out << "static void check_module_count(int num, const char *mod, const char *parentmod) {\n";
-    out << "    if (num<0)\n";
-    out << "        throw new cException(\"Negative module vector size %s[%d] in compound module %s\", mod,(int)num,parentmod);\n";
-    out << "}\n";
-    out << "static void check_gate_count(int num, const char *mod, const char *gate, const char *parentmod) {\n";
-    out << "    if (num<0)\n";
-    out << "        throw new cException(\"Negative gate vector size %s.%s[%d] in compound module %s\", mod,gate,(int)num,parentmod);\n";
-    out << "}\n";
     out << "static void check_anc_param(cPar *ptr, const char *parname, const char *compoundmod) {\n";
     out << "    if (!ptr)\n";
     out << "        throw new cException(\"Unknown ancestor parameter named %s in compound module %s\", parname,compoundmod);\n";
@@ -351,6 +342,13 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "    return modtype;\n";
     out << "}\n\n";
 
+    out << "static void _checkModuleVectorSize(int vectorsize, const char *mod)\n";
+    out << "{\n";
+    out << "    if (vectorsize<0)\n";
+    out << "        throw new cException(\"Negative module vector size %s[%d]\", mod, vectorsize);\n";
+    out << "}\n";
+    out << "\n";
+
     out << "static void _readModuleParameters(cModule *mod)\n";
     out << "{\n";
     out << "    int n = mod->params();\n";
@@ -361,51 +359,6 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "            mod->par(k).read();\n";
     out << "        }\n";
     out << "    }\n";
-    out << "}\n";
-    out << "\n";
-
-    out << "static cFunctionType *_getFunction(const char *funcname, int argcount)\n";
-    out << "{\n";
-    out << "    cFunctionType *functype = findFunction(funcname,argcount);\n";
-    out << "    if (!functype)\n";
-    out << "        throw new cException(\"Function %s with %d args not found\", funcname, argcount);\n";
-    out << "    return functype;\n";
-    out << "}\n";
-    out << "\n";
-
-    // FIXME seems to be unused...
-    out << "static cChannel *_createSimpleChannel(double delay, double error, double datarate)\n";
-    out << "{\n";
-    out << "    cChannel *channel = new cSimpleChannel(\"channel\");\n";
-    out << "    if (delay!=0)\n";
-    out << "    {\n";
-    out << "        cPar *par = new cPar(\"delay\");\n";
-    out << "        (*par) = delay;\n";
-    out << "        channel->addPar(par);\n";
-    out << "    }\n";
-    out << "    if (error!=0)\n";
-    out << "    {\n";
-    out << "        cPar *par = new cPar(\"error\");\n";
-    out << "        (*par) = error;\n";
-    out << "        channel->addPar(par);\n";
-    out << "    }\n";
-    out << "    if (datarate!=0)\n";
-    out << "    {\n";
-    out << "        cPar *par = new cPar(\"datarate\");\n";
-    out << "        (*par) = datarate;\n";
-    out << "        channel->addPar(par);\n";
-    out << "    }\n";
-    out << "    return channel;\n";
-    out << "}\n";
-    out << "\n";
-
-    out << "static cChannel *_createChannel(const char *name)\n";
-    out << "{\n";
-    out << "    cChannelType *chantype = findChannelType(name);\n";
-    out << "    if (!chantype)\n";
-    out << "        throw new cException(\"Channel type %s not found\", name);\n";
-    out << "    cChannel *channel = chantype->create(\"channel\");\n";
-    out << "    return channel;\n";
     out << "}\n";
     out << "\n";
 
@@ -425,6 +378,7 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "    return g;\n";
     out << "}\n";
     out << "\n";
+
     out << "static cGate *_checkGate(cModule *mod, const char *gatename, int gateindex)\n";
     out << "{\n";
     out << "    cGate *g = mod->gate(gatename, gateindex);\n";
@@ -434,6 +388,34 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "}\n";
     out << "\n";
 
+    out << "static cFunctionType *_getFunction(const char *funcname, int argcount)\n";
+    out << "{\n";
+    out << "    cFunctionType *functype = findFunction(funcname,argcount);\n";
+    out << "    if (!functype)\n";
+    out << "        throw new cException(\"Function %s with %d args not found\", funcname, argcount);\n";
+    out << "    return functype;\n";
+    out << "}\n";
+    out << "\n";
+
+    out << "static cChannel *_createChannel(const char *name)\n";
+    out << "{\n";
+    out << "    cChannelType *chantype = findChannelType(name);\n";
+    out << "    if (!chantype)\n";
+    out << "        throw new cException(\"Channel type %s not found\", name);\n";
+    out << "    cChannel *channel = chantype->create(\"channel\");\n";
+    out << "    return channel;\n";
+    out << "}\n";
+    out << "\n";
+
+    out << "static cChannel *_createNonTypedSimpleChannel(double delay, double error, double datarate)\n";
+    out << "{\n";
+    out << "    cChannel *channel = new cSimpleChannel(\"channel\");\n";
+    out << "    channel->setDelay(delay);\n";
+    out << "    channel->setError(error);\n";
+    out << "    channel->setDatarate(datarate);\n";
+    out << "    return channel;\n";
+    out << "}\n";
+    out << "\n";
 }
 
 // generators
@@ -756,7 +738,7 @@ void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int m
         generateItem(vectorsize, indent, mode);
         out << ";\n";
 
-        out << indent << "check_module_count(" << submodulesize_var.c_str() << ",\"" << submodule_name.c_str() << "\",\"" << module_name.c_str() << "\");\n";
+        out << indent << "_checkModuleVectorSize(" << submodulesize_var.c_str() << ",\"" << submodule_name.c_str() << "\");\n";
         out << indent << "cModule **" << submodule_var.c_str() << " = new cModule *[" << submodulesize_var.c_str() << "];\n\n";
         out << indent << "for (submod_index=0; submod_index<" << submodulesize_var.c_str() << "; submod_index++)\n";
         out << indent << "{\n";
@@ -851,13 +833,12 @@ void NEDCppGenerator::doGatesizes(GatesizesNode *node, const char *indent, int m
 
 void NEDCppGenerator::doGatesize(GatesizeNode *node, const char *indent, int mode, const char *)
 {
-    out << indent << "size = ";
+    out << indent << submodule_var.c_str() << "->setGateSize(\"" << node->getName() << "\", (int)(";
+
     ExpressionNode *vectorsize = findExpression(node, "vector-size");
     if (vectorsize)  generateItem(vectorsize, indent, mode);
-    out << ";\n";
 
-    out << indent << "check_gate_count(size, \"" << submodule_name.c_str() << "\",\"" << node->getName() << "\",\"" << module_name.c_str() << "\");\n";
-    out << indent << submodule_var.c_str() << "->setGateSize(\"" << node->getName() << "\", size);\n\n";
+    out << "));\n";
 }
 
 void NEDCppGenerator::doSubstmachines(SubstmachinesNode *node, const char *indent, int mode, const char *arg)
@@ -876,11 +857,9 @@ void NEDCppGenerator::doConnections(ConnectionsNode *node, const char *indent, i
     out << indent << "//\n";
     out << indent << "// connections:\n";
     out << indent << "//\n";
-    out << indent << "cChannelType *channeltype;\n";
-    out << indent << "cModule *tmpmod;\n";
-    out << indent << "cPar *par;\n";
-    out << indent << "cChannel *channel;\n";
     out << indent << "cGate *srcgate, *destgate;\n\n";
+    out << indent << "cChannel *channel;\n";
+    out << indent << "cPar *par;\n";
 
     // generate children
     generateChildren(node, indent, mode);
@@ -953,7 +932,7 @@ void NEDCppGenerator::resolveConnectionAttributes(ConnectionNode *node, const ch
     if (isDelaySimple && isErrorSimple && isDatarateSimple)
     {
         // generate optimized code: delay, error, datarate with a specialized function
-        out << indent << "channel = _createSimpleChannel("
+        out << indent << "channel = _createNonTypedSimpleChannel("
             << (delay ? delay->getValue() : "0") << ", "
             << (error ? error->getValue() : "0") << ", "
             << (datarate ? datarate->getValue() : "0") << ");\n";
@@ -969,13 +948,14 @@ void NEDCppGenerator::resolveConnectionAttributes(ConnectionNode *node, const ch
                 generateItem(child, indent, mode);
             }
         }
-        return;
     }
-
-    // fallback: general code
-    out << "\n" << indent << "// add channel\n";
-    out << indent << "channel = new cSimpleChannel(\"channel\");\n";
-    generateChildrenWithTags(node, "conn-attr", indent);
+    else
+    {
+        // fallback: general code
+        out << "\n" << indent << "// add channel\n";
+        out << indent << "channel = new cSimpleChannel(\"channel\");\n";
+        generateChildrenWithTags(node, "conn-attr", indent);
+    }
 }
 
 void NEDCppGenerator::doConnection(ConnectionNode *node, const char *indent, int mode, const char *arg)
