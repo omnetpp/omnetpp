@@ -71,8 +71,9 @@ enum eMessageKind
  * dup() function. The control info field facilitates modelling communication
  * between protocol layers. The context pointer field makes it easier to
  * work with several timers (self-messages) at a time.
- * A useful method is isSelfMessage() which tells apart self-messages from
- * messages received from other modules.
+ * Useful methods are isSelfMessage(), which tells apart self-messages from
+ * messages received from other modules, and isScheduled(), which returns
+ * whether a self-message is currently scheduled.
  *
  * Further fields can be added to cMessage via message declarations (.msg files)
  * which are translated into C++ classes. An example message declaration:
@@ -86,6 +87,8 @@ enum eMessageKind
  *        int ttl =  32;     // time to live
  * }
  * \endcode
+ *
+ * @see cSimpleModule, cQueue
  *
  * @ingroup SimCore
  */
