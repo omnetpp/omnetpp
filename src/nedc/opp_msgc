@@ -1006,18 +1006,6 @@ sub generateClass
     foreach $fieldname (@fieldlist)
     {
         if (!$fisabstract{$fieldname}) {
-            if ($classtype{$ftype{$fieldname}} eq 'cobject') {
-                if ($fisarray{$fieldname}) {
-                    if ($farraysize{$fieldname} ne '') {
-                        print CC "    for (i=0; i<$farraysize{$fieldname}; i++)\n";
-                        print CC "        drop(&(this->$var{$fieldname}\[i\]));\n";
-                    } else {
-                        print CC "    for (i=0; i<$varsize{$fieldname}; i++)\n";
-                        print CC "        drop(&(this->$var{$fieldname}\[i\]));\n";
-                    }
-                }
-            }
-
             if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
                 print CC "    for (i=0; i<$farraysize{$fieldname}; i++)\n";
                 print CC "        this->$var{$fieldname}\[i\] = other.$var{$fieldname}\[i\];\n";
