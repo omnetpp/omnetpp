@@ -20,7 +20,7 @@
 #ifndef __CCOR_H
 #define __CCOR_H
 
-#include "cobject.h"  // bool (for old C++)
+#include "cobject.h"  // bool (for old C++) -- FIXME remove!
 
 // The following define selects which coroutine-set to use.
 // The non-portable version (module stacks allocated on heap)
@@ -51,8 +51,14 @@
 #define SAFETY_AREA     512
 #define MIN_STACKSIZE  1024
 
-// coroutine function pointer
+
+/**
+ * Prototype for functions that can be used with cCoroutine objects as
+ * coroutine bodies.
+ * @ingroup EnumsTypes
+ */
 typedef void (*CoroutineFnp)( void * );
+
 
 #ifdef PORTABLE_COROUTINES
 

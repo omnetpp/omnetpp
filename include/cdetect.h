@@ -40,7 +40,16 @@ class cADByStddev;
 //=== class mentioned here:
 class cStatistic;
 
+/**
+ * Prototype for callback functions used by a cTransientDetection object.
+ * @ingroup EnumsTypes
+ */
 typedef void (*PostTDFunc)(cTransientDetection *, void *);
+
+/**
+ * Prototype for callback functions used by a cAccuracyDetection object.
+ * @ingroup EnumsTypes
+ */
 typedef void (*PostADFunc)(cAccuracyDetection *, void *);
 
 //==========================================================================

@@ -1,3 +1,7 @@
+2001-08-12 Andras Varga
+
+	* documented all typedefs
+
 2001-08-11 Andras Varga
 
 	* added _CONSTs to all copy constructors, operator=()'s and dup()'s

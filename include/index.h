@@ -32,7 +32,7 @@
  *
  * If you are browsing the documentation to get familiar with
  * OMNeT++ in general, you should start from <b>Modules -->
- * Simulation core classes --> cSimplemodule</b>.
+ * Simulation core classes --> cSimpleModule</b>.
  */
 
 
@@ -158,7 +158,7 @@
  */
 
 /**
- * @defgroup ConstantsTypes  Constants, types, function typedefs
+ * @defgroup EnumsTypes  Enums, types, function typedefs
  */
 
 /**

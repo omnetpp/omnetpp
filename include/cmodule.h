@@ -61,25 +61,40 @@ class  cSimulation;
 class  cNetworkType;
 
 /**
- * Connect two gates.
+ * @name Connecting gates.
+ * @ingroup Functions
+ */
+//@{
+
+/**
+ * Connects two gates.
  */
 SIM_API void connect(cModule *frm, int frg,
                      cLinkType *linkp,
                      cModule *tom, int tog);
 
 /**
- * Connect two gates.
+ * Connects two gates.
  */
 SIM_API void connect(cModule *frm, int frg,
                      cPar *delayp, cPar *errorp, cPar *dataratep,
                      cModule *tom, int tog);
+//@}
+
 
 //=== operator new used by the NEW() macro:
 class ___nosuchclass;
 void *operator new(size_t m,___nosuchclass *);
 
-// Function to notify inspector about display string changes
-//  args: (sub)module which changed; immediate refresh wanted or not; inspector's data
+
+/**
+ * Prototype for callback functions that are used to notify graphical user
+ * interfaces about display string changes.
+ *
+ * Args: (sub)module which changed; immediate refresh wanted or not; inspector's data
+ *
+ * @ingroup EnumsTypes
+ */
 typedef void (*DisplayStringNotifyFunc)(cModule*,bool,void*);
 
 //==========================================================================

@@ -124,14 +124,57 @@ typedef double       simtime_t;
 
 //=== memory mgmt functions for void* pointers
 //    (used by cLinkedList and cPar)
+
+/**
+ * Prototype for functions that are called by some objects (cPar, cLinkedList)
+ * to free up user-defined data structures.
+ * @ingroup EnumsTypes
+ */
 typedef void (*VoidDelFunc)(void *);
+
+/**
+ * Prototype for functions that are called by some objects (cPar, cLinkedList)
+ * to duplicate user-defined data structures.
+ * @ingroup EnumsTypes
+ */
 typedef void *(*VoidDupFunc)(void *);
 
 //=== used by cPar expressions
+
+/**
+ * Prototype for mathematical functions that can be used in reverse
+ * Polish expressions (see sXElem).
+ * @ingroup EnumsTypes
+ */
 typedef double (*MathFunc)(...);
+
+/**
+ * Prototype for mathematical functions taking no arguments
+ * that can be used in reverse Polish expressions (see sXElem).
+ * @ingroup EnumsTypes
+ */
 typedef double (*MathFuncNoArg)();
+
+/**
+ * Prototype for mathematical functions taking one argument
+ * that can be used in reverse Polish expressions (see sXElem).
+ * @ingroup EnumsTypes
+ */
 typedef double (*MathFunc1Arg)(double);
+
+/**
+ * Prototype for mathematical functions taking two arguments
+ * that can be used in reverse Polish expressions (see sXElem).
+ * @ingroup EnumsTypes
+ */
 typedef double (*MathFunc2Args)(double,double);
+
+/**
+ * Prototype for mathematical functions taking three arguments
+ * that can be used in reverse Polish expressions (see sXElem).
+ * @ingroup EnumsTypes
+ */
 typedef double (*MathFunc3Args)(double,double,double);
 
 #endif
+

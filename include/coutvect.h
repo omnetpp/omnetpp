@@ -111,6 +111,12 @@ class SIM_API cOutFileMgr : public cObject
 
 //==========================================================================
 
+
+/**
+ * Prototype for callback functions that are used to notify graphical user
+ * interfaces when values are recorded to an output vector (see cOutVector).
+ * @ingroup EnumsTypes
+ */
 typedef void (*RecordFunc)(void *, double, double);
 
 class TOutVectorInspector;
@@ -146,7 +152,7 @@ class SIM_API cOutVector : public cObject
     friend class TOutVectorInspector;
     friend class TOutVectorWindow;
     RecordFunc record_in_inspector; // to notify inspector about file writes
-    void *data_for_inspector;
+    void *data_for_inspector;       // FIXME: why not via a setCallback() function??
 
   public:
     /** @name Constructors, destructor, assignment */

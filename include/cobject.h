@@ -34,18 +34,29 @@ class  cIterator;
 class  cHead;
 
 //=== Global objects:
+SIM_API extern cHead superhead;           ///< List of other global lists.
+SIM_API extern cHead networks;            ///< List of available networks.
+SIM_API extern cHead modinterfaces;       ///< List of all module interfaces.
+SIM_API extern cHead modtypes;            ///< List of all module types.
+SIM_API extern cHead linktypes;           ///< List of link types.
+SIM_API extern cHead functions;           ///< List of function types.
+SIM_API extern cHead classes;             ///< List of cClassRegister objects.
+SIM_API extern cHead inspectorfactories;  ///< List of cInspectorFactory objects.
+SIM_API extern cHead enums;               ///< List of cEnum objects.
 
-SIM_API extern cHead superhead;           /// list of global lists
-SIM_API extern cHead networks;            /// list of available networks
-SIM_API extern cHead modinterfaces;       /// list of all module interfaces
-SIM_API extern cHead modtypes;            /// list of all module types
-SIM_API extern cHead linktypes;           /// list of link types
-SIM_API extern cHead functions;           /// list of function types
-SIM_API extern cHead classes;             /// list of cClassRegister objects
-SIM_API extern cHead inspectorfactories;  /// list of cInspectorFactory objects
-SIM_API extern cHead enums;               /// list of cEnum objects
 
+/**
+ * Prototype for functions that can be used by cQueue objects configured as
+ * priority queues to compare two objects.
+ * @ingroup EnumsTypes
+ */
 typedef int (*CompareFunc)(cObject *, cObject *);
+
+/**
+ * Prototype for functions that can be used with the foreach() mechanism
+ * defined in cObject.
+ * @ingroup EnumsTypes
+ */
 typedef bool (*ForeachFunc)(cObject *,bool);
 
 

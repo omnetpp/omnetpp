@@ -34,7 +34,17 @@ class cKSplitIterator;
 // K: the grid size of the algorithm
 #define K 2
 
+
+/**
+ * Prototype for cell split criterion functions used by cKSplit objects.
+ * @ingroup EnumsTypes
+ */
 typedef int (*KSplitCritFunc)(_CONST cKSplit&, sGrid&, int, double *);
+
+/**
+ * Prototype for cell division criterion functions used by cKSplit objects.
+ * @ingroup EnumsTypes
+ */
 typedef double (*KSplitDivFunc)(_CONST cKSplit&, sGrid&, double, double *);
 
 // cell split criteria

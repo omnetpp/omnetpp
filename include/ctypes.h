@@ -46,7 +46,19 @@ class  cModule;
 class  cPar;
 
 //=== function types used by cModuleType & cLinkType
+
+/**
+ * Prototype for functions that are called by cModuleType objects
+ * to create modules of a specific type.
+ * @ingroup EnumsTypes
+ */
 typedef cModule *(*ModuleCreateFunc)(const char *, cModule *);
+
+/**
+ * Prototype for functions that are called by cLinkType objects
+ * to create parameter objects for a link of a specific type.
+ * @ingroup EnumsTypes
+ */
 typedef cPar *(*ParCreateFunc)();
 
 //==========================================================================
