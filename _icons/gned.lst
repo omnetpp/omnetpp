@@ -7,7 +7,7 @@ cogwheel_vs.gif
 compound_vs.gif
 copy.gif
 cut.gif
-delete.gif
+del.gif
 draw.gif
 drawopts.gif
 file_vs.gif
@@ -16,6 +16,7 @@ graph.gif
 grid.gif
 import.gif
 incl_vs.gif
+container_vs.gif
 module.gif
 ned.gif
 net_vs.gif
