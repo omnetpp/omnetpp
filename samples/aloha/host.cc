@@ -40,16 +40,21 @@ void Host::initialize()
     server = simulation.moduleByPath("server");
     if (!server) error("server not found");
 
-    endTxEvent = new cMessage("endTxEvent");
-    state = IDLE;
-    pkCounter = 0;
     txRate = par("txRate");
     radioDelay = par("radioDelay");
     iaTime = &par("iaTime");
     pkLenBits = &par("pkLenBits");
 
-    slotTime = part("slotTime");
+    slotTime = par("slotTime");
     isSlotted = slotTime>0;
+    WATCH(slotTime);
+    WATCH(isSlotted);
+
+    endTxEvent = new cMessage("endTxEvent");
+    state = IDLE;
+    pkCounter = 0;
+    WATCH(state);
+    WATCH(pkCounter)
 
     if (ev.isGUI())
     {
