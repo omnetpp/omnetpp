@@ -2723,26 +2723,21 @@ will also become owned by the message object (again, this can be
 changed), and they are deallocated automatically when the
 message object is deleted.
 
-\subsubsection{The \textit{local objects} list}
+But objects are not being stored in another object have an owner
+as well. If you just create a message object inside a simple module
+(e.g. from \fname{activity()}, \fname{handleMessage()}
+or any function called from them), it will be owned by simple module.
 
-But objects which, not being stored in another object, appear not to
-have owners usually have one as well. If you just create a
-message object inside a simple module (e.g. from \fname{activity()},
-\fname{handleMessage()} or any function called from them), it will
-be \textit{owned by simple module}, or more precisely, by
-its \textit{``local objects list''} (a member of \cclass{cSimpleModule}).
-
-So the following line:
+The following line:
 
 \begin{verbatim}
 cMessage *msg = new cMessage("HELLO");
 \end{verbatim}
 
 actually creates the message object and automatically adds it
-to the module's local objects list.
-  \footnote{More precisely: to the \textit{currently executing} module's
-  local object list, because that is the best guess a \fname{cMessage}
-  constructor can do.}
+to the module's object list.
+  \footnote{More precisely: to the \textit{currently executing} module,
+  because that is the best guess a \fname{cMessage} constructor can do.}
 
 The local objects list also plays a role when an object is
 removed from a container object (e.g. when a message is removed
@@ -2774,23 +2769,9 @@ probably with another module (i.e. already sent), or
 currently scheduled, or inside a queue, a message or some
 other object -- in either case, you do not have any authority
 to send it. When you get this error message (\ttt{"not owner of object"}),
-you might feel tempted to forcibly take ownership of the message object
-by means of \fname{setOwner()}. Note that it would be
-entirely wrong, and would probably lead to crash further on in
-your program. \textit{Do not use} \fname{setOwner()}! Instead,
-you need to carefully examine who
-has the ownership of the message, why's that, and then
-probably you'll need to fix the logic somewhere
+you need to carefully examine the error message: which object has the ownership
+of the message, why's that, and then probably you'll need to fix the logic somewhere
 in your program.
-
-\subsubsection{The \textit{class members} list}
-
-For completeness, it should also be mentioned that class
-members of a simple module are collected on a \textit{``class members list''}.
-The reason for the existence of this list is not so much garbage collection
-or sanity checks, but rather assisting Tkenv in displaying
-the class members list in simple module inspectors.
-
 
 
 
@@ -2928,15 +2909,8 @@ of \fname{activity()} are just left on the coroutine stack.
 They themselves need not (and must not) be deleted using the
 \fname{delete} operator, but they need to be properly destructed
 (their destructors called) so that the memory \textit{they} allocated
-can be released. As of {\opp} version 2.3, this is done by actually
-calling the method named \fname{discard()} in the \cclass{cObject} destructor
-instead of the directly the \fname{delete} operator. \fname{discard()}
-invokes either the \fname{delete} operator (if the object was allocated
-dynamically) or directly the object's destructor (if the object was
-a local variable in \fname{activity()} or a function called from
-\fname{activity()}). In future releases, the implementation might
-be changed to rely on C++ exceptions (stack unwinding) for proper
-cleanup.
+can be released. For doing that, the implementation relies
+a side effect of C++ exceptions, that is stack unwinding.
 
 
 \subsection{What cQueue and cArray do}
@@ -2958,9 +2932,6 @@ from that object's \fname{owner()} pointer.)
 The default behaviour of \cclass{cQueue} and \cclass{cArray} is
 to take ownership of the objects inserted.
 This behavior can be changed via the \textit{takeOwnership} flag.
-The flag is part of \cclass{cObject} so that every container object
-can make use of it, and can be get/set via the
-\fname{takeOwnership()} and \fname{setTakeOwnership()} methods.
 
 Here's what the \textit{insert} operation of \cclass{cQueue} (or \cclass{cArray}) does:
 \begin{itemize}
@@ -2975,7 +2946,7 @@ The corresponding source code:
 \begin{verbatim}
 void cQueue::insert(cObject *obj)
 {
-    // insert into queue data structure (linked list)
+    // insert into queue data structure
     ...
 
     // take ownership if needed
@@ -3019,7 +2990,7 @@ implemented like this:
 \begin{verbatim}
 cObject *cQueue::remove(cObject *obj)
 {
-    // remove object from queue data structure (linked list)
+    // remove object from queue data structure
     ...
 
     // release ownership if needed
@@ -3094,46 +3065,6 @@ is implemented as \fname{new cArray(*this)}).
 %also from Tkenv), but this is very rarely needed.
 %
 
-\subsection{Change of implementation}
-
-In the current release (version 2.3), the data structure
-used to maintain the ownership tree is in \cclass{cObject}.
-The ownership principle is also enforced in \cclass{cObject},
-so it is the \cclass{cObject} destructor that deletes all owned objects.
-  \footnote{This is also the reason why there are currently so few
-  \fname{delete} calls in the simulation kernel sources:
-  container classes like \cclass{cArray} or \cclass{cQueue}
-  leave the task of deleting the contained objects they own to the
-  \cclass{cObject} destructor.}
-
-This behaviour will probably be changed in the next major release,
-and every class will be made responsible for deleting its own owned
-objects. This will be closer to the usual C++ practice and will
-make the {\opp} simulation library easier to understand. Also, it
-will be more efficient with both memory and execution time, without
-losing significant functionality.
-
-The change will be transparent to simulations, unless you implemented
-a container class which relies on \cclass{cObject}'s destructor
-to destroy owned objects.
-
-
-As of the 2.3 release, \cclass{cObject} contains 4 pointers.
-\textit{ownerp} points to the owner, \textit{firstchildp}
-points to the first owned object,
-while \textit{prevp}, \textit{nextp} are used to build a doubly linked list
-of objects held by the same owner. These pointers are private data
-members, they cannot be accessed directly, only via certain
-member functions. Changing the owner of an object
-(\fname{setOwner()} method in \cclass{cObject})
-involves about 8-9 pointer assignments (i.e., \textit{ownerp},
-\textit{prevp}, \textit{nextp} and \textit{firstchildp} in the object,
-in its owner and siblings).
-
-This data structure is likely to change: \textit{firstchildp},
-\textit{prevp} and \textit{nextp} will be removed from \cclass{cObject},
-and only \textit{ownerp} will remain. The \fname{setOwner()} method
-will probably be removed entirely.
 
 \section{Tips for speeding up the simulation}
 
@@ -3144,7 +3075,7 @@ Here are a few tips that can help you make the simulation faster:
     messages if possible.}
   \item{Turn off the display of screen messages when you run the
     simulation.  You can do this in the ini file. Alternatively, you
-    can place \#ifdefs around your \texttt{ev<<} and
+    can place \ttt{\#ifdef}s around your \texttt{ev<<} and
     \index{ev.printf()} calls and turn off the define when compiling
     the simulation for speed.}
   \item{Store the module parameters in local variables to avoid
