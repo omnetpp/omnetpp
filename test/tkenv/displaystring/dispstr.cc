@@ -6,8 +6,6 @@ class Gen : public cSimpleModule
 
     virtual void activity();
 
-    void setTag(const char *tagname, int k, const char *value);
-    void removeTag(const char *tagname);
     void show();
 
     void icons();
@@ -46,18 +44,18 @@ void Gen::activity()
 void Gen::icons()
 {
     ev << "ICONS -- valid values only:\n";
-    setTag("i", 0, "ball");  show();
-    setTag("i", 0, "ball_s");  show();
-    setTag("i", 0, "ball_vs");  show();
-    setTag("i", 0, "cloud_s");  show();
-    setTag("i", 0, "cloud");  show();
-    setTag("i", 0, "cloud_l");  show();
-    setTag("i", 0, "switch1"); show();
-    setTag("i", 0, "switch2"); show();
-    setTag("i", 0, "printer"); show();
-    setTag("i", 0, "penguin"); show();
-    setTag("i", 0, ""); show();
-    removeTag("i"); show();
+    displayString().setTagArg("i", 0, "ball");  show();
+    displayString().setTagArg("i", 0, "ball_s");  show();
+    displayString().setTagArg("i", 0, "ball_vs");  show();
+    displayString().setTagArg("i", 0, "cloud_s");  show();
+    displayString().setTagArg("i", 0, "cloud");  show();
+    displayString().setTagArg("i", 0, "cloud_l");  show();
+    displayString().setTagArg("i", 0, "switch1"); show();
+    displayString().setTagArg("i", 0, "switch2"); show();
+    displayString().setTagArg("i", 0, "printer"); show();
+    displayString().setTagArg("i", 0, "penguin"); show();
+    displayString().setTagArg("i", 0, ""); show();
+    displayString().removeTag("i"); show();
 }
 
 void Gen::boxes()
@@ -73,9 +71,9 @@ void Gen::boxes()
         {
             for (const char **h = height; *h; h++)
             {
-                setTag("b", 0, *w);
-                setTag("b", 1, *h);
-                setTag("b", 2, *sh);
+                displayString().setTagArg("b", 0, *w);
+                displayString().setTagArg("b", 1, *h);
+                displayString().setTagArg("b", 2, *sh);
                 show();
             }
         }
@@ -85,10 +83,10 @@ void Gen::boxes()
 void Gen::options()
 {
     ev << "OPTIONS -- valid values only:\n";
-    setTag("b",0,"50");
-    setTag("b",1,"50");
-    setTag("b",2,"oval");
-    setTag("i",0,"laptop2");
+    displayString().setTagArg("b",0,"50");
+    displayString().setTagArg("b",1,"50");
+    displayString().setTagArg("b",2,"oval");
+    displayString().setTagArg("i",0,"laptop2");
 
     const char *fill[] = {"", "-", "yellow", "#00ff00", "@2080ff", NULL};
     const char *outline[] = {"", "-", "blue", "#ff0000", "@ff80a0", NULL};
@@ -99,9 +97,9 @@ void Gen::options()
         {
             for (const char **bd = borderwidth; *bd; bd++)
             {
-                setTag("o", 0, *f);
-                setTag("o", 1, *o);
-                setTag("o", 2, *bd);
+                displayString().setTagArg("o", 0, *f);
+                displayString().setTagArg("o", 1, *o);
+                displayString().setTagArg("o", 2, *bd);
                 show();
             }
         }
@@ -115,7 +113,7 @@ void Gen::hue()
     {
         char buf[10];
         sprintf(buf, "@%2.2xffff", i);
-        setTag("o", 0, buf);
+        displayString().setTagArg("o", 0, buf);
         show();
     }
 }
@@ -127,7 +125,7 @@ void Gen::saturation()
     {
         char buf[10];
         sprintf(buf, "@40%2.2xff", i);
-        setTag("o", 0, buf);
+        displayString().setTagArg("o", 0, buf);
         show();
     }
 }
@@ -139,23 +137,9 @@ void Gen::brightness()
     {
         char buf[10];
         sprintf(buf, "@4080%2.2x", i);
-        setTag("o", 0, buf);
+        displayString().setTagArg("o", 0, buf);
         show();
     }
-}
-
-void Gen::setTag(const char *tagname, int k, const char *value)
-{
-    cDisplayStringParser p(displayString());
-    p.setTagArg(tagname, k, value);
-    setDisplayString(p.getString());
-}
-
-void Gen::removeTag(const char *tagname)
-{
-    cDisplayStringParser p(displayString());
-    p.removeTag(tagname);
-    setDisplayString(p.getString());
 }
 
 void Gen::show()

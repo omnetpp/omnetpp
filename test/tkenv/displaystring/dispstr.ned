@@ -14,6 +14,7 @@ endsimple
 
 module Dummy 
 endmodule 
+
 module DisplayStringTest 
     submodules: 
         hue: Gen; 
@@ -30,7 +31,6 @@ module DisplayStringTest
             parameters: 
                 what = "brightness", 
                 startTime = 300; 
-                               
             display: "p=229,51;b=40,24";
         icons: Gen; 
             parameters: 
