@@ -142,9 +142,12 @@ ENVIR_API bool memoryIsLow();
 class ENVIR_API cEnvir : public std::ostream
 {
   public:
-    TOmnetApp *app;  // the "simulation application" instance
+    // internal variables
+    TOmnetApp *app;  // the application" instance
     bool disable_tracing;
+    bool debug_on_errors;
   private:
+    // further internal vars
     evbuf ev_buf;
     bool isgui;
 

@@ -83,6 +83,7 @@ cOmnetAppRegistration *chooseBestOmnetApp()
 cEnvir::cEnvir() : ostream(&ev_buf), ev_buf(this)
 {
     disable_tracing = false;
+    debug_on_errors = false;
     app = NULL;
 }
 

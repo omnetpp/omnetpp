@@ -22,6 +22,7 @@
 
 #include <stdlib.h> // atol, atof
 #include <string.h> // strncpy
+#include <string>
 #include "defs.h"
 #include "envdefs.h"
 #include "cconfig.h"
@@ -42,24 +43,27 @@ class ENVIR_API cIniFile : public cConfiguration
   private:
     char *fname;                // file name
 
+    struct sFile {
+        char *fname;            // name of the file (absolute path)
+        char *directory;        // directory (substring of fname)
+    };
+
     struct sEntry {             // one entry contains:
         int section_id;         //  section it belongs to
         char *key;              //  key
         cPatternMatcher *keypattern; // key as pattern
         char *value;            //  its value (without quotes)
-        char *rawvalue;         //  if original was quoted, this is the
-                                //        strdupped version of it, otherwise NULL
+        char *rawvalue;         //  original value with quotes, or NULL if it had no quotes
+        int file_id;            //  file it was read from
+        int lineno;             //  line number in file
         bool accessed;          //  has it been accessed?
     };
 
-    char **sections;            // table of section names
-    int sectiontable_size;      // size of section table allocated
-    int num_sections;           // number of sections used
+    std::vector<sFile> files;      // table of ini files
+    std::vector<char *> sections;  // table of section names
+    std::vector<sEntry> entries;   // table of entries
 
-    sEntry *entries;            // table of entries
-    int entrytable_size;        // size of entry table allocated
-    int num_entries;            // number of entries used
-
+    sEntry *_findEntry(const char *section, const char *key);
     const char *_getValue(const char *section, const char *key, bool raw);
     void _readFile(const char *fname, int section_id);
     void clearContents();
@@ -97,6 +101,8 @@ class ENVIR_API cIniFile : public cConfiguration
     virtual double getAsTime(const char *section, const char *key, double defaultvalue=0.0);
     virtual const char *getAsString(const char *section, const char *key, const char *defaultvalue=""); // quotes stripped (if any)
     virtual const char *getAsCustom(const char *section, const char *key, const char *defaultvalue=NULL); // with quotes (if any)
+    virtual const char *getBaseDirectoryFor(const char *section, const char *key);
+    virtual std::string getLocation(const char *section, const char *key);
     virtual bool notFound();
     virtual std::vector<opp_string> getEntriesWithPrefix(const char *section, const char *keypart1, const char *keypart2);
     //@}
@@ -110,6 +116,8 @@ class ENVIR_API cIniFile : public cConfiguration
     virtual double getAsTime2(const char *section1, const char *section2, const char *key, double defaultvalue=0.0);
     virtual const char *getAsString2(const char *section1, const char *section2, const char *key, const char *defaultvalue="");
     virtual const char *getAsCustom2(const char *section1, const char *section2, const char *key, const char *defaultvalue="");
+    virtual const char *getBaseDirectoryFor(const char *section1, const char *section2, const char *key);
+    virtual std::string getLocation(const char *section1, const char *section2, const char *key);
     virtual std::vector<opp_string> getEntriesWithPrefix(const char *section1, const char *section2, const char *keypart1, const char *keypart2);
     //@}
 
@@ -130,11 +138,14 @@ class ENVIR_API cIniFileIterator
    public:
       cIniFileIterator(cIniFile *i)  {ini=i; idx=0;}
       void reset()            {idx=0;}
-      bool end()              {return (bool)(idx>=ini->num_entries);}
-      void operator++(int)    {if (idx<ini->num_entries) idx++;}
+      bool end()              {return (bool)(idx>=ini->entries.size());}
+      void operator++(int)    {if (idx<ini->entries.size()) idx++;}
       const char *section()   {return ini->sections[ini->entries[idx].section_id];}
       const char *entry()     {return ini->entries[idx].key;}
       const char *value()     {return ini->entries[idx].value;}
+      const char *baseDir()   {return ini->files[ini->entries[idx].file_id].directory;}
+      const char *fileName()  {return ini->files[ini->entries[idx].file_id].fname;}
+      int lineNumber()        {return ini->entries[idx].lineno;}
       bool accessed()         {return ini->entries[idx].accessed;}
 };
 

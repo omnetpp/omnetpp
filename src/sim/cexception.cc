@@ -195,7 +195,7 @@ cRuntimeError::cRuntimeError(const cObject *where, const char *msgformat...)
 
 void cRuntimeError::breakIntoDebuggerIfRequested()
 {
-    if (ev.config()->getAsBool("General", "debug-on-errors", false))
+    if (ev.debug_on_errors)
     {
         printf("\n"
                "RUNTIME ERROR. A cRuntimeError exception is about to be thrown,\n"

@@ -107,34 +107,59 @@ class ENVIR_API cConfiguration : public cPolymorphic
 
     /** @name Getter methods */
     //@{
-    /** Return a config value as bool */
+    /** Returns a config value as bool */
     virtual bool getAsBool(const char *section, const char *key, bool defaultvalue=false) = 0;
-    /** Return a config value as long */
+    /** Returns a config value as long */
     virtual long getAsInt(const char *section, const char *key, long defaultvalue=0) = 0;
-    /** Return a config value as double */
+    /** Returns a config value as double */
     virtual double getAsDouble(const char *section, const char *key, double defaultvalue=0.0) = 0;
-    /** Return a config value as time */
+    /** Returns a config value as time */
     virtual double getAsTime(const char *sect, const char *key, double defaultvalue=0.0) = 0;
-    /** Return a config value as string */
+    /** Returns a config value as string */
     virtual const char *getAsString(const char *section, const char *key, const char *defaultvalue="") = 0; // quotes stripped (if any)
-    /** Return a config entry's "raw" (unparsed) value */
+    /** Returns a config entry's "raw" (unparsed) value */
     virtual const char *getAsCustom(const char *section, const char *key, const char *defaultvalue=NULL) = 0; // with quotes (if any)
+    /**
+     * Returns the base directory, to which the entry's value -- if it is a string
+     * to be interpreted as a file name -- should be understood as relative.
+     * This method in the cInifile class returns the location of the ini file in which
+     * the given entry occurred. Other cConfiguration implementations may return "."
+     * to mean the current working directory. For example, this function is used by the
+     * preload-ned-files= ini file entry to ensure that files are loaded from the correct 
+     * place.
+     */
+    virtual const char *getBaseDirectoryFor(const char *section, const char *key) = 0;
+    /**
+     * Returns the location from which this entry was read (e.g. name of the ini file).
+     * This can be useful for debugging; it is not used by the system for any other purpose.
+     */
+    virtual std::string getLocation(const char *section, const char *key) = 0;
     //@}
 
     /** @name Getter methods, with fallback to another section */
     //@{
-    /** Return a config value as bool */
+    /** Returns a config value as bool */
     virtual bool getAsBool2(const char *section1, const char *section2, const char *key, bool defaultvalue=false) = 0;
-    /** Return a config value as long */
+    /** Returns a config value as long */
     virtual long getAsInt2(const char *section1, const char *section2, const char *key, long defaultvalue=0) = 0;
-    /** Return a config value as double */
+    /** Returns a config value as double */
     virtual double getAsDouble2(const char *section1, const char *section2, const char *key, double defaultvalue=0.0) = 0;
-    /** Return a config value as time */
+    /** Returns a config value as time */
     virtual double getAsTime2(const char *section1, const char *section2, const char *key, double defaultvalue=0.0) = 0;
-    /** Return a config value as string */
+    /** Returns a config value as string */
     virtual const char *getAsString2(const char *section1, const char *section2, const char *key, const char *defaultvalue="") = 0;
-    /** Return a config entry's "raw" (unparsed) value */
+    /** Returns a config entry's "raw" (unparsed) value */
     virtual const char *getAsCustom2(const char *section1, const char *section2, const char *key, const char *defaultvalue="") = 0;
+    /**
+     * Returns getBaseDirectoryFor(section1, key) or getBaseDirectoryFor(section2, key),
+     * depending where the given entry was found.
+     */
+    virtual const char *getBaseDirectoryFor(const char *section1, const char *section2, const char *key) = 0;
+    /**
+     * Returns getLocation(section1, key) or getLocation(section2, key),
+     * depending where the given entry was found.
+     */
+    virtual std::string getLocation(const char *section1, const char *section2, const char *key) = 0;
     //@}
 
     /** @name Special */

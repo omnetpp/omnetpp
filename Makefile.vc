@@ -109,7 +109,6 @@ plove:
 
 utils:
 	@echo ===== Compiling $@ ====
-	echo @$(WISH:/=\) -f $(OMNETPP_ROOT)/bitmaps/showpics > $(OMNETPP_ROOT:/=\)\bitmaps\showpics.bat
 	cd /d $(OMNETPP_SRC_DIR:/=\)\utils &&  $(MAKE) $(MOPTS) $(MAKEFILE)
 
 #

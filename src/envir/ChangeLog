@@ -1,3 +1,9 @@
+2005-03-18  Andras Varga
+
+	* cinifile.h/cc: implemented getBaseDirectoryFor() and getLocation() 
+	functions in cInifile: the class now remembers from which ini file 
+	every entry was read from. Also, class was upgraded to use std::vector.
+
 2005-03-02  Andras Varga
 
 	* omnetapp.cc: fix: RNGs were initialized with run number of the

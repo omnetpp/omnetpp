@@ -464,6 +464,8 @@ void TOmnetApp::readOptions()
                      "THE SEEDS YOU SPECIFIED ARE NOT USED. "
                      "Please update your ini file to the OMNeT++ 3.0 Random Number Architecture.");
 
+    ev.debug_on_errors = cfg->getAsBool("General", "debug-on-errors", false);
+
     // other options are read on per-run basis
 }
 

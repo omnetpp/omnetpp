@@ -32,14 +32,6 @@
 
 cIniFile::cIniFile()
 {
-    sectiontable_size = 32;
-    sections = new char*[sectiontable_size];
-    num_sections = 0;
-
-    entrytable_size = 128;
-    entries = new sEntry[entrytable_size];
-    num_entries = 0;
-
     warnings=false;
     notfound = false;
 
@@ -55,7 +47,7 @@ void cIniFile::initializeFrom(cConfiguration *)
 {
 }
 
-#define SYNTAX_ERROR(txt) throw new cRuntimeError("Error reading `%s' line %d: %s",fname,line,txt);
+#define SYNTAX_ERROR(txt) throw new cRuntimeError("Error reading `%s' line %d: %s",fname,lineno,txt);
 
 void cIniFile::readFile(const char *filename)
 {
@@ -66,11 +58,16 @@ void cIniFile::readFile(const char *filename)
 
 void cIniFile::_readFile(const char *fname, int section_id)
 {
+    files.push_back(sFile());
+    int file_id = files.size()-1;
+    files[file_id].fname = opp_strdup(absolutePath(fname).c_str());
+    files[file_id].directory = opp_strdup(directoryOf(files[file_id].fname).c_str());
+
     const int bufsize = MAX_LINE+2; // +2 for CR (or LF) + EOS
     char buf[bufsize];
 
     FILE *file;
-    int line=0;
+    int lineno=0;
     int i;
 
     buf[bufsize-1] = '\0'; // 'line too long' guard
@@ -89,7 +86,7 @@ void cIniFile::_readFile(const char *fname, int section_id)
         // join lines that end with backslash
         for(;;)
         {
-            line++;
+            lineno++;
             fgets(buf+len,bufsize-len,file);
             len+=strlen(buf+len);
 
@@ -149,13 +146,13 @@ void cIniFile::_readFile(const char *fname, int section_id)
            if (!*s) SYNTAX_ERROR("section name should not be empty");
 
            // maybe already exists
-           for (i=0; i<num_sections; i++)
+           for (i=0; i<sections.size(); i++)
                if (strcmp(sections[i],s)==0)
                    break;
-           if (i==num_sections) {
-               sections[section_id=num_sections++] = opp_strdup(s);
-           }
-           else {
+           if (i==sections.size()) {
+               section_id = sections.size();
+               sections.push_back(opp_strdup(s));
+           } else {
                section_id = i;
            }
         }
@@ -198,7 +195,8 @@ void cIniFile::_readFile(const char *fname, int section_id)
            }
 
            // fill in the entry
-           sEntry& entry = entries[num_entries++];
+           entries.push_back(sEntry());
+           sEntry& entry = entries.back();
            entry.section_id = section_id;
            entry.key = opp_strdup(s);
            if (*e=='"') {
@@ -209,47 +207,29 @@ void cIniFile::_readFile(const char *fname, int section_id)
               entry.rawvalue = NULL;
               entry.value = opp_strdup(e);
            }
-           entry.accessed = 0;
+           entry.accessed = false;
            entry.keypattern = new cPatternMatcher();
            entry.keypattern->setPattern(entry.key, !oldwildcardsmode, true, true);
+           entry.file_id = file_id;
+           entry.lineno = lineno;
 
            // // maybe already exists
-           // for (i=0; i<num_entries; i++)
+           // for (i=0; i<entries.size(); i++)
            //   if (entries[i].section==sect && strcmp(entries[i].key,s)==0)
            //      break;
-           // if (i==num_entries)
+           // if (i==entries.size())
            // {
-           //    entries[num_entries].section = sect;   //fill in the entry
-           //    entries[num_entries].key = opp_strdup(s);
-           //    entries[num_entries].value = opp_strdup(e);
-           //    entries[num_entries++].accessed = 0;
+           //    entries[entries.size()].section = sect;   //fill in the entry
+           //    entries[entries.size()].key = opp_strdup(s);
+           //    entries[entries.size()].value = opp_strdup(e);
+           //    entries[entries.size()++].accessed = 0;
            // }
            // else
            // {
-           //    ev.printfmsg("Warning: `%s', line %d: duplicate entry %s=",fname,line,s);
+           //    ev.printfmsg("Warning: `%s', line %d: duplicate entry %s=",fname,lineno,s);
            //    delete entries[i].value;
            //    entries[i].value = opp_strdup(e);
            // }
-        }
-
-        if (num_entries>=entrytable_size) {
-           // reallocate entries[] array
-           int newsize = 2*entrytable_size;
-           sEntry *tmp = new sEntry[newsize];
-           memcpy(tmp,entries,num_entries*sizeof(sEntry));
-           delete [] entries;
-           entries = tmp;
-           entrytable_size = newsize;
-        }
-
-        if (num_sections>=sectiontable_size) {
-           // reallocate sections[] array
-           int newsize = 2*sectiontable_size;
-           char **tmp = new char*[newsize];
-           memcpy(tmp,sections,num_sections*sizeof(char*));
-           delete [] sections;
-           sections = tmp;
-           sectiontable_size = newsize;
         }
     }
     fclose(file);
@@ -259,24 +239,26 @@ void cIniFile::_readFile(const char *fname, int section_id)
 void cIniFile::clearContents()
 {
     int i;
-    for (i=0; i<num_sections; i++)
+    for (i=0; i<sections.size(); i++)
        delete [] sections[i];
-    for (i=0; i<num_entries; i++)
+    for (i=0; i<entries.size(); i++)
     {
        delete [] entries[i].key;
        delete entries[i].keypattern;
        delete [] entries[i].value;
        delete [] entries[i].rawvalue;
     }
-    delete [] sections;
-    delete [] entries;
-    num_sections = num_entries = 0;
+    for (i=0; i<files.size(); i++)
+    {
+       delete [] files[i].fname;
+       delete [] files[i].directory;
+    }
 
     delete [] fname;
     fname = NULL;
 }
 
-const char *cIniFile::_getValue(const char *sect, const char *ent, bool raw)
+cIniFile::sEntry *cIniFile::_findEntry(const char *sect, const char *key)
 {
     notfound=false;  // clear error flag
     int i;
@@ -284,25 +266,25 @@ const char *cIniFile::_getValue(const char *sect, const char *ent, bool raw)
     // search for section
     int section_id = -1;
     if (sect)
-       for(i=0; i<num_sections && section_id<0; i++)
+       for(i=0; i<sections.size() && section_id<0; i++)
           if (strcmp(sect,sections[i])==0)
               section_id = i;
 
     // search for entry
-    for(i=0; i<num_entries; i++)
+    for(i=0; i<entries.size(); i++)
     {
        if (!sect || entries[i].section_id==section_id)
        {
-          if (strcmp(ent,entries[i].key)==0)
+          if (strcmp(key,entries[i].key)==0)
           {
-              entries[i].accessed=1;
-              return (raw && entries[i].rawvalue) ? entries[i].rawvalue : entries[i].value;
+              entries[i].accessed = true;
+              return &entries[i];
           }
 
-          if (entries[i].keypattern->matches(ent))
+          if (entries[i].keypattern->matches(key))
           {
-              entries[i].accessed=1;
-              return (raw && entries[i].rawvalue) ? entries[i].rawvalue : entries[i].value;
+              entries[i].accessed = true;
+              return &entries[i];
           }
        }
     }
@@ -311,32 +293,39 @@ const char *cIniFile::_getValue(const char *sect, const char *ent, bool raw)
     return NULL;
 }
 
+const char *cIniFile::_getValue(const char *sect, const char *key, bool raw)
+{
+    sEntry *entry = _findEntry(sect, key);
+    if (!entry)
+        return NULL;
+    return (raw && entry->rawvalue) ? entry->rawvalue : entry->value;
+}
 
 int cIniFile::getNumSections()
 {
-    return num_sections;
+    return sections.size();
 }
 
 const char *cIniFile::getSectionName(int k)
 {
-    if (k<0 || k>=num_sections)
+    if (k<0 || k>=sections.size())
         return NULL;
     return sections[k];
 }
 
-bool cIniFile::exists(const char *sect, const char *ent)
+bool cIniFile::exists(const char *sect, const char *key)
 {
-    return _getValue(sect, ent, true)!=NULL;
+    return _getValue(sect, key, true)!=NULL;
 }
 
-bool cIniFile::getAsBool(const char *sect, const char *ent, bool defaultval)
+bool cIniFile::getAsBool(const char *sect, const char *key, bool defaultval)
 {
-    const char *s = _getValue(sect, ent, true);
+    const char *s = _getValue(sect, key, true);
     if (s==0 || *s==0)
     {
        if (warnings)
           ev.printf("Entry [%s]/%s= not in ini file, %s used as default\n",
-                     sect,ent,defaultval?"true":"false");
+                     sect,key,defaultval?"true":"false");
        return defaultval;
     }
 
@@ -352,20 +341,20 @@ bool cIniFile::getAsBool(const char *sect, const char *ent, bool defaultval)
     else
     {
        ev.printf("Entry [%s]/%s=: `%s' is not a valid bool value, use true/false,on/off, yes/no or 0/1\n",
-                 sect,ent,s);
+                 sect,key,s);
        val = defaultval;
     }
     return val;
 }
 
-long cIniFile::getAsInt(const char *sect, const char *ent, long defaultval)
+long cIniFile::getAsInt(const char *sect, const char *key, long defaultval)
 {
-    const char *s = _getValue(sect, ent, true);
+    const char *s = _getValue(sect, key, true);
     if (s==0 || *s==0)
     {
        if (warnings)
           ev.printf("Entry [%s]/%s= not in ini file, %ld used as default\n",
-                     sect,ent,defaultval);
+                     sect,key,defaultval);
        return defaultval;
     }
 
@@ -377,14 +366,14 @@ long cIniFile::getAsInt(const char *sect, const char *ent, long defaultval)
     return val;
 }
 
-double cIniFile::getAsDouble(const char *sect, const char *ent, double defaultval)
+double cIniFile::getAsDouble(const char *sect, const char *key, double defaultval)
 {
-    const char *s = _getValue(sect, ent, true);
+    const char *s = _getValue(sect, key, true);
     if (s==0 || *s==0)
     {
        if (warnings)
           ev.printf("Entry [%s]/%s= not in ini file, %g used as default\n",
-                     sect,ent,defaultval);
+                     sect,key,defaultval);
        return defaultval;
     }
 
@@ -393,46 +382,64 @@ double cIniFile::getAsDouble(const char *sect, const char *ent, double defaultva
     return val;
 }
 
-const char *cIniFile::getAsString(const char *sect, const char *ent, const char *defaultval)
+const char *cIniFile::getAsString(const char *sect, const char *key, const char *defaultval)
 {
-    const char *s = _getValue(sect, ent, false);
+    const char *s = _getValue(sect, key, false);
     if (s==0)
     {
        if (warnings)
           ev.printf("Entry [%s]/%s= not in ini file, \"%s\" used as default\n",
-                     sect,ent,defaultval?defaultval:"");
+                     sect,key,defaultval?defaultval:"");
        return defaultval;
     }
 
     return s;
 }
 
-double cIniFile::getAsTime(const char *sect, const char *ent, double defaultval)
+double cIniFile::getAsTime(const char *sect, const char *key, double defaultval)
 {
-    const char *s = _getValue(sect, ent, true);
+    const char *s = _getValue(sect, key, true);
     if (s==0)
     {
        if (warnings)
           ev.printf("Entry [%s]/%s= not in ini file, %g used as default\n",
-                     sect,ent,defaultval);
+                     sect,key,defaultval);
        return defaultval;
     }
 
     return strToSimtime(s);
 }
 
-const char *cIniFile::getAsCustom(const char *sect, const char *ent, const char *defaultval)
+const char *cIniFile::getAsCustom(const char *sect, const char *key, const char *defaultval)
 {
-    const char *s = _getValue(sect, ent, true);
+    const char *s = _getValue(sect, key, true);
     if (s==0)
     {
        if (warnings)
           ev.printf("Entry [%s]/%s= not in ini file, \"%s\" used as default\n",
-                     sect,ent,defaultval?defaultval:"");
+                     sect,key,defaultval?defaultval:"");
        return defaultval;
     }
 
     return s;
+}
+
+const char *cIniFile::getBaseDirectoryFor(const char *section, const char *key)
+{
+    sEntry *entry = _findEntry(section, key);
+    if (!entry)
+        return NULL;
+    return files[entry->file_id].directory;
+}
+
+std::string cIniFile::getLocation(const char *section, const char *key)
+{
+    sEntry *entry = _findEntry(section, key);
+    if (!entry)
+        return "";
+    char buf[16];
+    sprintf(buf, "%d", entry->lineno);
+    return std::string(files[entry->file_id].fname) + ":" + buf;
 }
 
 bool cIniFile::notFound()
@@ -444,9 +451,9 @@ bool cIniFile::notFound()
 
 //-----------
 
-bool cIniFile::exists2(const char *sect1, const char *sect2, const char *ent)
+bool cIniFile::exists2(const char *sect1, const char *sect2, const char *key)
 {
-    return exists(sect1, ent) || exists(sect2, ent);
+    return exists(sect1, key) || exists(sect2, key);
 }
 
 bool cIniFile::getAsBool2(const char *sect1, const char *sect2, const char *key, bool defaultval)
@@ -527,6 +534,26 @@ const char *cIniFile::getAsCustom2(const char *sect1, const char *sect2, const c
     return a;
 }
 
+const char *cIniFile::getBaseDirectoryFor(const char *sect1, const char *sect2, const char *key)
+{
+    bool w = warnings; warnings = false;
+    const char *a = getBaseDirectoryFor(sect1,key);
+    if (notfound)
+         a = getBaseDirectoryFor(sect2,key);
+    warnings = w;
+    return a;
+}
+
+std::string cIniFile::getLocation(const char *sect1, const char *sect2, const char *key)
+{
+    bool w = warnings; warnings = false;
+    std::string a = getLocation(sect1,key);
+    if (notfound)
+         a = getLocation(sect2,key);
+    warnings = w;
+    return a;
+}
+
 const char *cIniFile::fileName() const
 {
     return fname;
@@ -549,7 +576,7 @@ std::vector<opp_string> cIniFile::getEntriesWithPrefix(const char *section, cons
     // search for section
     int section_id = -1;
     if (section)
-       for(i=0; i<num_sections && section_id<0; i++)
+       for(i=0; i<sections.size() && section_id<0; i++)
           if (strcmp(section,sections[i])==0)
               section_id = i;
 
@@ -560,7 +587,7 @@ std::vector<opp_string> cIniFile::getEntriesWithPrefix(const char *section, cons
     int prefixlen = strlen(keyprefix.c_str());
 
     std::vector<opp_string> result;
-    for (i=0; i<num_entries; i++)
+    for (i=0; i<entries.size(); i++)
     {
        if (!section || entries[i].section_id==section_id)
        {
