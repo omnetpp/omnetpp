@@ -41,6 +41,9 @@
 proc split_dispstr {str array w modptr parent} {
    upvar $array arr
 
+   regsub -all -- {\\n} $str "\n" str
+   regsub -all -- {\\t} $str "\t" str
+
    foreach tag [split $str {;}] {
       set tag [split $tag {=}]
       set key [lindex $tag 0]
