@@ -15,6 +15,7 @@
 	- accept symbolic constant for array size (before it could only be 
 	  numeric constant)
 	- enums can be predeclared (needed if they come from another msg file)
+	- fields can have an enum type and an initializer at the same time
 
 2004-02-24  Andras Varga
 

@@ -202,9 +202,8 @@ while ($msg =~ s/enum\s+([A-Za-z_][A-Za-z0-9_]*)\s*;//s)
 }
 
 
-
 # parse enums in ned text
-while ($msg =~ s/enum\s+(.+?)\s*{(.*?)};?//s)
+while ($msg =~ s/enum\s+([A-Za-z0-9_ \t]+?)\s*{(.*?)};?//s)
 {
     $enumhdr = $1;
     $fields = $2;
@@ -379,7 +378,6 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
         while ($fields =~ s/^(.*?);//s)
         {
             $field = $1;
-
             # abstract
             if ($field =~ s/^\s*abstract\s+//s) {
                 $isabstract = 1;
@@ -391,7 +389,7 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
             }
 
             # enum
-            if ($field =~ s/enum\s*\((.*?)\)\s*$//s) {
+            if ($field =~ s/enum\s*\((.*?)\)\s*//s) {
                 $fieldenum = $1;
             } else {
                 $fieldenum = '';
