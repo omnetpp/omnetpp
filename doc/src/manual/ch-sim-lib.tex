@@ -145,15 +145,15 @@ const char *str = msg->name(); // --> returns ptr to  ""
 Objects have two more member functions which return other sort
 of names based on the name attribute: \fname{fullName()} and \fname{fullPath()}.
 
-Suppose we have a module in the network university\_lan, compound
-module fddi\_ring, simple module station[10]. If you call the functions
+Suppose we have a module in the network universityLan, compound
+module fddiRing, simple module station[10]. If you call the functions
 on the simple module object (\cclass{cSimpleModule} inherits from
 \cclass{cObject}, too), the functions will return these values:
 
 \begin{verbatim}
 ev << module->name(); // --> "station"
 ev << module->fullName(); // --> "station[10]"
-ev << module->fullPath(); // --> "university_lan.fddi_ring.station[10]"
+ev << module->fullPath(); // --> "universityLan.fddiRing.station[10]"
 \end{verbatim}
 
 
@@ -166,7 +166,7 @@ inside the module would produce results like this:
 void FDDIStation::activity()
 {
     cQueue buffer("buffer");
-    ev << buffer->fullPath(); // --> "university_lan.fddi_ring.
+    ev << buffer->fullPath(); // --> "universityLan.fddiRing.
                               // station[10].buffer"
 }
 \end{verbatim}
@@ -268,13 +268,13 @@ output operators:
 
 \begin{verbatim}
 ev << "packet received, sequence number is "
-   << seq_num << endl;
+   << seqNum << endl;
 \end{verbatim}
 
 An alternative solution is \fname{ev.printf()}:
 
 \begin{verbatim}
-ev.printf("packet received, sequence number is %d\n", seq_num);
+ev.printf("packet received, sequence number is %d\n", seqNum);
 \end{verbatim}
 
 \subsubsection{Simulation time conversion}
@@ -1329,7 +1329,7 @@ must be terminated by NULL.
 Second, you can extract all modules which have a certain parameter:
 
 \begin{verbatim}
-topo.extractByParameter( "ip_address" );
+topo.extractByParameter( "ipAddress" );
 \end{verbatim}
 
 
@@ -1338,7 +1338,7 @@ for the module to be included in the graph:
 
 \begin{verbatim}
 cPar yes = "yes";
-topo.extractByParameter( "include_in_topo", &yes );
+topo.extractByParameter( "includeInTopo", &yes );
 \end{verbatim}
 
 The third form allows you to pass a function which can determine for
@@ -1348,12 +1348,12 @@ void* pointer. An example which selects all top-level modules (and
 does not use the void* pointer):
 
 \begin{verbatim}
-int select_function(cModule *mod, void *)
+int selectFunction(cModule *mod, void *)
 {
   return mod->parentModule() == simulation.systemModule();
 }
 
-topo.extractFromNetwork( select_function, NULL );
+topo.extractFromNetwork( selectFunction, NULL );
 \end{verbatim}
 
 %
@@ -1622,13 +1622,13 @@ automatically determining the range.
 
 \begin{verbatim}
 setRange(lower,upper);
-setRangeAuto(num_firstvals, range_ext_factor);
-setRangeAutoLower(upper, num_firstvals, range_ext_factor);
-setRangeAutoUpper(lower, num, range_ext_factor);
+setRangeAuto(numFirstvals, rangeExtFactor);
+setRangeAutoLower(upper, numFirstvals, rangeExtFactor);
+setRangeAutoUpper(lower, num, rangeExtFactor);
 \end{verbatim}
 
 \begin{verbatim}
-setNumFirstVals(num_firstvals);
+setNumFirstVals(numFirstvals);
 \end{verbatim}
 
 The following example creates a histogram with 20 cells and automatic
@@ -1740,8 +1740,8 @@ double rnd = histogram.random();
 You can also wrap the distribution object in a \cclass{cPar}:
 
 \begin{verbatim}
-cPar rnd_par("rnd_par");
-rnd_par.setDoubleValue(&histogram);
+cPar rndPar("rndPar");
+rndPar.setDoubleValue(&histogram);
 \end{verbatim}
 
 
@@ -1750,7 +1750,7 @@ and whenever it is asked for the value, calls the histogram object's \fname{rand
 function:
 
 \begin{verbatim}
-double rnd = (double)rnd_par; // random number from the cPSquare
+double rnd = (double)rndPar; // random number from the cPSquare
 \end{verbatim}
 
 \subsubsection{Storing/loading distributions}
@@ -1817,7 +1817,7 @@ void addBinBound(double x);
 \end{verbatim}
 
 Rangemin and rangemax is chosen after collecting the
-\texttt{num\_firstvals} initial observations. One cannot add cell
+\texttt{numFirstVals} initial observations. One cannot add cell
 boundaries when the histogram has already been transformed.
 
 
@@ -2094,13 +2094,13 @@ member is used to output a value (or a value pair) with a timestamp.
 It can be used like this:
 
 \begin{verbatim}
-cOutVector resp_v("response time");
+cOutVector respV("response time");
 
 while (...)
 {
-  double response_time;
+  double responseTime;
   //...
-  resp_v.record( response_time );
+  respV.record( responseTime );
   //...
 }
 \end{verbatim}
@@ -2159,8 +2159,8 @@ function.  It is overloaded, you can use it to write doubles and
 strings (const char *):
 
 \begin{verbatim}
-double avg_throughput = total_bits / simTime();
-recordScalar("Average throughput", avg_throughput);
+double avgThroughput = totalBits / simTime();
+recordScalar("Average throughput", avgThroughput);
 \end{verbatim}
 
 You can record whole statistics objects by calling \fname{recordStats()}:

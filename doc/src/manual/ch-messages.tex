@@ -370,13 +370,13 @@ The \fname{addObject()}, \fname{getObject()}, \fname{hasObject()},
 as the key to the array. An example:
 
 \begin{verbatim}
-cLongHistogram *pklen_distr = new cLongHistogram("pklen_distr");
-msg->addObject( pklen_distr );
+cLongHistogram *pklenDistr = new cLongHistogram("pklenDistr");
+msg->addObject( pklenDistr );
 ...
-if (msg->hasObject("pklen_distr"))
+if (msg->hasObject("pklenDistr"))
 {
-   cLongHistogram *pklen_distr =
-       (cLongHistogram *) msg->getObject("pklen_distr");
+   cLongHistogram *pklenDistr =
+       (cLongHistogram *) msg->getObject("pklenDistr");
    ...
 }
 \end{verbatim}
@@ -436,22 +436,22 @@ accessed using an overloaded \fname{par()} function.
 Example:
 
 \begin{verbatim}
-msg->addPar("dest_addr");
-msg->par("dest_addr") = 168;
+msg->addPar("destAddr");
+msg->par("destAddr") = 168;
 ...
-long dest_addr = msg->par("dest_addr");
+long destAddr = msg->par("destAddr");
 \end{verbatim}
 
 %%
 %% hide old examples...
 %%
 %%\ begin{verbatim}
-%%if  (msg->hasPar("dest_addr")) {
-%%   long dest_addr = msg->par("dest_addr");
+%%if  (msg->hasPar("destAddr")) {
+%%   long destAddr = msg->par("destAddr");
 %%   ...
 %%}
-%%int index = msg->findPar("dest_addr");
-%%long dest_addr = msg->par(index);
+%%int index = msg->findPar("destAddr");
+%%long destAddr = msg->par(index);
 %%\ end{verbatim}
 %%
 
@@ -1527,7 +1527,7 @@ Tkenv for debugging. While \fname{cPar}-based message parameters can be viewed i
 message inspector windows, fields added via subclassing do not appear
 there. The reason is that Tkenv, being just another C++ library in your
 simulation program, doesn't know about your C++ instance variables.
-The problem cannot be solved entirely within Tkenv, because C++ does not 
+The problem cannot be solved entirely within Tkenv, because C++ does not
 support ``reflection'' (extracting class information at runtime)
 like for example Java does.
 

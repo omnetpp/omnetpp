@@ -1733,10 +1733,10 @@ Define_Module( BurstyGenerator );
 void BurstyGenerator::initialize()
 \{
   fsm.setName("fsm");
-  sleepTimeMean = par("sleep_time_mean");
-  burstTimeMean = par("burst_time_mean");
-  sendIATime = par("send_ia_time");
-  msgLength = &par("msg_length");
+  sleepTimeMean = par("sleepTimeMean");
+  burstTimeMean = par("burstTimeMean");
+  sendIATime = par("sendIATime");
+  msgLength = &par("msgLength");
   i = 0;
   WATCH(i); // always put watches in initialize()
   startStopBurst = new cMessage("startStopBurst");
@@ -1842,6 +1842,7 @@ output gate\index{output!gate} using one of the following functions:
 \begin{verbatim}
 send(cMessage *msg, const char *gateName, int index=0);
 send(cMessage *msg, int gateId);
+send(cMessage *msg, cGate *gate);
 \end{verbatim}
 
 In the first function, the argument \ttt{gateName} is the name of
@@ -1850,9 +1851,9 @@ a vector gate, \ttt{index} determines though which particular output
 gate this has to be done; otherwise, the \ttt{index} argument is not
 needed.
 
-The second function uses the gate Id, and because it does
-not have to search through the gate array, it is faster than
-the first one.
+The second and third functions use the gate Id and the pointer to the gate
+object. They are faster than the third one because they don't have to
+search through the gate array.
 
 Examples:
 
@@ -1989,7 +1990,7 @@ followed by message sending. In {\opp}, it is possible to implement
 it like this:
 
 \begin{verbatim}
-wait( some_delay );
+wait( someDelay );
 send( msg, "outgate" );
 \end{verbatim}
 
@@ -2004,8 +2005,10 @@ However, there is a more straightforward method than the above two,
 and this is delayed sending\index{delayed sending}. Delayed sending
 can be done with one of these functions:
 
-\fname[sendDelayed()]{sendDelayed(cMessage *msg, double delay, const char *gate\_name, int index);}\\
-\fname[sendDelayed()]{sendDelayed(cMessage *msg, double delay, int gate\_id);}
+\begin{verbatim}
+sendDelayed(cMessage *msg, double delay, const char *gateName, int index);
+sendDelayed(cMessage *msg, double delay, int gateId);
+\end{verbatim}
 
 
 The arguments are the same as for \fname{send()}, except for the extra \textit{delay}
@@ -2310,7 +2313,7 @@ Module parameters can be accessed\index{module!accessing parameters}
 with the \fname{par()} member function of \cclass{cModule}:
 
 \begin{verbatim}
-cPar& delay_par = par("delay");
+cPar& delayPar = par("delay");
 \end{verbatim}
 
 The \cclass{cPar} class is a general value-storing object. It supports
@@ -2318,8 +2321,8 @@ type casts to numeric types, so parameter values can be read
 like this:
 
 \begin{verbatim}
-int num_tasks = par("num_tasks");
-double proc_delay = par("proc_delay");
+int numTasks = par("numTasks");
+double processingDelay = par("processingDelay");
 \end{verbatim}
 
 If the parameter is a random variable or its value can change
@@ -2327,11 +2330,11 @@ during execution, it is best to store a reference to it and re-read
 the value each time it is needed:
 
 \begin{verbatim}
-cPar& wait_time = par("wait_time");
+cPar& waitTime = par("waitTime");
 for(;;)
 {
   //...
-  wait( (simtime_t)wait_time );
+  wait( (simtime_t)waitTime );
 }
 \end{verbatim}
 
@@ -2350,14 +2353,14 @@ used as a means of module communication\index{module!communication}.
 An example:
 
 \begin{verbatim}
-par("wait_time") = 0.12;
+par("waitTime") = 0.12;
 \end{verbatim}
 
 Or:
 
 \begin{verbatim}
-cPar& wait_time = par("wait_time");
-wait_time = 0.12;
+cPar& waitTime = par("waitTime");
+waitTime = 0.12;
 \end{verbatim}
 
 
@@ -2427,8 +2430,8 @@ member function:
 int id = outgate->id();
 \end{verbatim}
 
-For a module with input gates from\_app and in[3] and output gates
-of to\_app and status, the array may look like this:
+For a module with input gates fromApp and in[3] and output gates
+of toApp and status, the array may look like this:
 
 
 \begin{longtable}{|c|c|c|}
@@ -2437,9 +2440,9 @@ of to\_app and status, the array may look like this:
 \tabheadcol
 \textbf{ID} & \textbf{dir} & \textbf{name[index]}\\\hline
 % ROW 2
-0 & \textit{input} & \ttt{from\_app} \\\hline
+0 & \textit{input} & \ttt{fromApp} \\\hline
 % ROW 3
-1 & \textit{output} & \ttt{to\_app} \\\hline
+1 & \textit{output} & \ttt{toApp} \\\hline
 % ROW 4
 2 & \multicolumn{2}{c|}{\textit{empty}}\\\hline
 % ROW 5
@@ -2718,7 +2721,7 @@ for (cSubModIterator iter(*parentModule()); !iter.end(); iter++)
   if (iter()->isName(name())) // if iter() is in the same
                               // vector as this module
   {
-    int its_index = iter()->index();
+    int itsIndex = iter()->index();
     // do something to it
   }
 }
