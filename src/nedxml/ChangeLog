@@ -1,3 +1,8 @@
+2004-02-11  Andras Varga
+
+	* ned.y: didn't accept negative numbers and symbolic constants in
+	msg files as field and enum values
+
 2004-02-04  ------ omnetpp-3.0pre1 released ------
 
 2003-10-19  Andras Varga

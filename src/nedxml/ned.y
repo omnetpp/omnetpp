@@ -2138,7 +2138,7 @@ enumfield
                   ps.enumfield->setName(toString(@1));
                   setComments(ps.enumfield,@1,@1);
                 }
-        | NAME '=' INTCONSTANT ';'
+        | NAME '=' enumvalue ';'
                 {
                   ps.enumfield = (EnumFieldNode *)createNodeWithTag(NED_ENUM_FIELD, ps.enumfields);
                   ps.enumfield->setName(toString(@1));
@@ -2355,10 +2355,19 @@ fieldvalue
         : STRINGCONSTANT
         | CHARCONSTANT
         | INTCONSTANT
+        | '-' INTCONSTANT
         | REALCONSTANT
+        | '-' REALCONSTANT
         | timeconstant
         | TRUE_
         | FALSE_
+        | NAME
+        ;
+
+enumvalue
+        : INTCONSTANT
+        | '-' INTCONSTANT
+        | NAME
         ;
 
 opt_semicolon : ';' | ;
