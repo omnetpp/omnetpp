@@ -1,6 +1,9 @@
-Modifications to the JAR compiler
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Modifications to the JAR/NEDC compiler
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 by Andras Varga, from March 1996
+
+Initial version was written on AIX by Alex Paalvast, Jan Heijmans and
+Robert van der Leij, during summer 1995.
 
 #1-9 Mar 8-15 1996:
  - begun porting to DOS/Borland C++
@@ -48,7 +51,7 @@ by Andras Varga, from March 1996
  - under MSDOS, limit output filenames to 8+3 chars
  - stop processing if there's parse error in ANY file
 #28 Mar 29 1996:
- - inreased buffer sizes....
+ - increased buffer sizes....
 #38-51 Apr-May 1996
   - PVM, machine, on
   - to do: system module: host.domain,
@@ -206,5 +209,9 @@ by Andras Varga, from March 1996
   - updated for sim172b: simulation.error() --> simError()
 #116 Feb 7, 1999
   - updated for sim174
-
---- CVS begin ---
+#117 June 21, 1999
+  - all sources checked in under CVS
+  - makefile.in modified for use with GNU Autoconf; also renamed to Makefile.in
+  - version.log renamed to ChangeLog
+  - removed support for DOS with BC3.1
+  - portability change: ebnf.y now includes malloc.h

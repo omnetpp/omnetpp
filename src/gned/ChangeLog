@@ -122,3 +122,8 @@
  - user interface redesigned: place manager at left, toolbar icons, tooltips etc.
 #46  May 1 1999
  GNED 1.2 ALPHA 1 released
+#47 June 21, 1999
+  - all sources checked in under CVS
+  - makefile.in modified for use with GNU Autoconf; also renamed to Makefile.in
+  - version.log renamed to ChangeLog
+

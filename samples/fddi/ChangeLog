@@ -1,78 +1,77 @@
-// version.log: FDDI version conrol
 FDDI24.arj:
-more or less working FDDI ring version, implemented as a vector of computers
+  more or less working FDDI ring version, implemented as a vector of computers
 FDDI30.arj:
-preparing for TUB Northen FDDI ring smulation, it compiles, but runs still
-the vector implemented ring as in fddi24.arj
+  preparing for TUB Northen FDDI ring smulation, it compiles, but runs still
+  the vector implemented ring as in fddi24.arj
 FDDI31.arj:
-the token goes round amoung 3 stations of the N. ring
+  the token goes round amoung 3 stations of the N. ring
 FDDI33.arj:
-The topology of the Northen ring is decribed, everywhere the same cable is used
-compiles, but does not run: loop bounday problems with CON-s.
-...
+  The topology of the Northen ring is decribed, everywhere the same cable is used
+  compiles, but does not run: loop bounday problems with CON-s.
+  ...
 FDDI37.arj:
-Takes the load of the fddi stations from files, runs only under linux, because
-the file names are 12 char long. (MAC address)
+  Takes the load of the fddi stations from files, runs only under linux, because
+  the file names are 12 char long. (MAC address)
 FDDI38.arj:
-Runs under dos correctly too: the last 6 characters of the linux filenames are
-used under dos.
-...
+  Runs under dos correctly too: the last 6 characters of the linux filenames are
+  used under dos.
+  ...
 FDDI40.arj:
-The MAC algorithm was rewised according to the FDDI MAC standard.
-The algorithm used is described in: STATETR2.XLS
-This version seems to operate correctly
+  The MAC algorithm was rewised according to the FDDI MAC standard.
+  The algorithm used is described in: STATETR2.XLS
+  This version seems to operate correctly
 FDDI41.arj:
-The direction of the connections was reversed, because they're always
-"upstream neighbours"
-The address of Goliat was corrected to "Sun___1BD035"
-The sniffer is stll in its old place, it should be transferred, if the new 10
-results would be used
+  The direction of the connections was reversed, because they're always
+  "upstream neighbours"
+  The address of Goliat was corrected to "Sun___1BD035"
+  The sniffer is stll in its old place, it should be transferred, if the new 10
+  results would be used
 FDDI42.arj:
-The real cable lengths are used: transmission delay is calculated from them
-using light speed of 200m/microseconds
-...
+  The real cable lengths are used: transmission delay is calculated from them
+  using light speed of 200m/microseconds
+  ...
 FDDI45.arj:
-Rewritten for the new version of OMNeT++ (sim 103)
+  Rewritten for the new version of OMNeT++ (sim 103)
 FDDI46.arj:
-The last version before building a real "Sniffer". Here, sniffer is still just
-a SAS.
+  The last version before building a real "Sniffer". Here, sniffer is still just
+  a SAS.
 FDDI47.arj:
-An FDDI_Sniffer exists, but its simples moules have empty activity() functions.
-Compiles, but doest work for the reason above.
+  An FDDI_Sniffer exists, but its simples moules have empty activity() functions.
+  Compiles, but doest work for the reason above.
 FDDI48.arj:
-The FDDI_Sniffer is coded, but not tested yet. It is very much like its base
-class the differences are: two virtual member functions redefined.
-(and these are made virtual in the base class)
-ERROR: repeat loses the name of the FDDI_FRAME-s
+  The FDDI_Sniffer is coded, but not tested yet. It is very much like its base
+  class the differences are: two virtual member functions redefined.
+  (and these are made virtual in the base class)
+  ERROR: repeat loses the name of the FDDI_FRAME-s
 FDDI49.arj
-Runs correctly (without msg name loss) with the new simulation kernel
+  Runs correctly (without msg name loss) with the new simulation kernel
 FDDI50.arj
-IdleTimes mechanism deleted.
-There is only one FDDI_MAC activity function.
-if ( findpar("StationID") < 0 )
-  my_station_id = parentmod()->index(); //in the case of a ring made by indexing
-else
-  my_station_id = par("StationID")
+  IdleTimes mechanism deleted.
+  There is only one FDDI_MAC activity function.
+  if ( findpar("StationID") < 0 )
+    my_station_id = parentmod()->index(); //in the case of a ring made by indexing
+  else
+    my_station_id = par("StationID")
 
 FDDI51.arj
-In the NeD file:
-- parameter max_idle deleted
-- time is given in ns and us
-- between stations in the same building, 10m cable length is assumed
-In the .cc file:
-FDDI_Sink and FDDI_Monitor::activity() functions...
+  In the NeD file:
+  - parameter max_idle deleted
+  - time is given in ns and us
+  - between stations in the same building, 10m cable length is assumed
+  In the .cc file:
+  FDDI_Sink and FDDI_Monitor::activity() functions...
 FDDI51a.arj
-Thinking about introducing a parameter "TrafficFromTracefile"...
+  Thinking about introducing a parameter "TrafficFromTracefile"...
 FDDI51b.arj
-Introducing the parameter mentioned above, taking the load from tracefile
-if yes and from previously saved statistics file, if no. But the second is
-NOT finished yet!
+  Introducing the parameter mentioned above, taking the load from tracefile
+  if yes and from previously saved statistics file, if no. But the second is
+  NOT finished yet!
 FDDI52.arj
-Introducing the parameter "TrafficFromTracefile", taking the load from
-tracefile if yes and from previously saved statistics file, if no.
+  Introducing the parameter "TrafficFromTracefile", taking the load from
+  tracefile if yes and from previously saved statistics file, if no.
 FDDI53.arj
-A hierarcy of FDDI_Generator classes was introduced.
-The user can select the generator type of the SAS-s from the *.ini file.
+  A hierarcy of FDDI_Generator classes was introduced.
+  The user can select the generator type of the SAS-s from the *.ini file.
 Possible types:
 - FDDI_GeneratorFromTraceFile
 - FDDI_GeneratorHistogram2x1D // not tested yet
@@ -139,58 +138,50 @@ FDDI64.tgz
 FDDI65.tgz
 - separate files for different parts:
 
-The essential files for the FDDI MAC:
-fddi_mac.ned fddi_def.h fddi_mac.h fddi_mac.cc
+  The essential files for the FDDI MAC:
+  fddi_mac.ned fddi_def.h fddi_mac.h fddi_mac.cc
 
-The files for the SSM Input and Output interfaces:
-ssm_ifs.ned ssmifdef.h ssm_ifs.h ssm_ifs.cc
+  The files for the SSM Input and Output interfaces:
+  ssm_ifs.ned ssmifdef.h ssm_ifs.h ssm_ifs.cc
 
-The file that contains the topology description of the FDDI network:
-fddi_net.ned
+  The file that contains the topology description of the FDDI network:
+  fddi_net.ned
 
-Other parts of the simulation:
-othermod.ned otherdef.h othermod.h othermod.cc
-
+  Other parts of the simulation:
+  othermod.ned otherdef.h othermod.h othermod.cc
 FDDI66.tgz
 - inorder_epsilon value was corrected to 1e-10
 - filenames were made DOS compatible
-
 FDDI67.arj
 - some beautifying
-
 FDDI68.arj
 - upgraded for sim151
-
 FDDI69.arj
 - upgraded for JAR100/SIM158: parameter type declarations (string, numeric)
   added to NED files;
 - adopted to cancelEvent()'s changed behaviour
-
 FDDI70.arj (--VA)
-- corrected a missing ':string' type declaration in a NED file
-
+  - corrected a missing ':string' type declaration in a NED file
 FDDI73.arj (--VA)
-- `display:' phrases added to NED
-- bug fixed in othermods.h: FDDI_Address_Generator's constructor didn't initialize f
-- fddi_mac.cc: FDDI_MAC: setOwner calls for sync_buf/async_buf removed;
-- added a name string to sync_buf/async_buf
-
+  - `display:' phrases added to NED
+  - bug fixed in othermods.h: FDDI_Address_Generator's constructor didn't initialize f
+  - fddi_mac.cc: FDDI_MAC: setOwner calls for sync_buf/async_buf removed;
+  - added a name string to sync_buf/async_buf
 FDDI74.arj (--VA)
-- improved "display:" stuff in fddi_net.ned
-
+  - improved "display:" stuff in fddi_net.ned
 FDDI76.arj
-- updated to the new histograms in sim161
-
+  - updated to the new histograms in sim161
 FDDI77.arj (--VA)
-- added fddi.ide; doesn't run correctly under NT though (causes exception)
-
+  - added fddi.ide; doesn't run correctly under NT though (causes exception)
 FDDI78.arj (--VA)
-- makefile renamed to makefile.in
-
+  - makefile renamed to makefile.in
 FDDI79.arj (--VA)
-- simulation.error() calls corrected to error()
-
+  - simulation.error() calls corrected to error()
 FDDI80.arj (--VA)
-- ?
+  - ?
+#81 June 21, 1999
+  - all sources checked in under CVS
+  - makefile.in modified for use with GNU Autoconf; also renamed to Makefile.in
+  - version.log renamed to ChangeLog; some cosmetics on it (indents etc)
+  - removed support for DOS with BC3.1
 
----CVS begin---

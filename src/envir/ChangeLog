@@ -184,3 +184,9 @@
   - updated for sim172d
 #126 Feb 9, 1999
   - updated for sim174
+#127 June 21, 1999
+  - all sources checked in under CVS
+  - makefile.in modified for use with GNU Autoconf; also renamed to Makefile.in
+  - version.log renamed to ChangeLog
+  - removed support for DOS with BC3.1
+

@@ -39,6 +39,10 @@
  - widgets.tcl updated
 #21 Jan 1, 1999
  - small fixes
+#22 June 21, 1999
+  - all sources checked in under CVS
+  - added a small, almost dummy Makefile.in
+  - version.log renamed to ChangeLog
 
 
-   
+
