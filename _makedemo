@@ -2,7 +2,7 @@
 # make OMNeT++ demo package
 #
 
-DIR=../demo
+DIR=../omnetpp-demo
 TCLTK_DIR=e:/tcl
 
 if [ ! -f configure.in ]; then
