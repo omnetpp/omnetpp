@@ -192,7 +192,7 @@
 // internal: parameter allowed types. To be used with module interface declarations.
 #define ParType_Const      "#"
 #define ParType_Any        "*"
-#define ParType_Numeric    "LDXFT"
+#define ParType_Numeric    "LDCXFT"
 #define ParType_Bool       "B"
 #define ParType_String     "S"
 

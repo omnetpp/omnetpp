@@ -663,16 +663,18 @@ void NEDCppGenerator::doParam(ParamNode *node, const char *indent, int mode, con
 {
     const char *typecode;
     const char *datatype = node->getDataType();
-    if (strcmp(datatype,"numeric"))
-       typecode = "ParType_Numeric";
-    if (strcmp(datatype,"numeric const"))
-       typecode = "ParType_Numeric ParType_Const";
-    if (strcmp(datatype,"string"))
-       typecode = "ParType_String";
-    if (strcmp(datatype,"bool"))
-       typecode = "ParType_Bool";
-    if (strcmp(datatype,"any"))
-       typecode = "ParType_Any";
+    if (!strcmp(datatype,"numeric"))
+        typecode = "ParType_Numeric";
+    else if (!strcmp(datatype,"numeric const"))
+        typecode = "ParType_Numeric ParType_Const";
+    else if (!strcmp(datatype,"string"))
+        typecode = "ParType_String";
+    else if (!strcmp(datatype,"bool"))
+        typecode = "ParType_Bool";
+    else if (!strcmp(datatype,"any"))
+        typecode = "ParType_Any";
+    else
+        {INTERNAL_ERROR1(node, "doParam(): unexpected parameter datatype '%s'", datatype);typecode = "ParType_Any";}
 
     out << indent << "Parameter(" << node->getName() << ", " << typecode << ")\n";
 }
