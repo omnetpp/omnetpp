@@ -173,6 +173,14 @@ Defaults: \textit{iconname}: no default -- if no icon name is present, \textit{b
 If this option is present, size cannot be included in the icon name (\ttt{"i="} tag)
 with the \ttt{"i=\textit{<iconname>}\_\textit{<size>}"} notation.}\\\hline
 %%
+\tbf{i2=}\textit{iconname},\textit{color},\textit{percentage}
+&
+{\raggedright Displays a small "modifier" icon at the top right corner of the primary icon.
+Suggested icons are \ttt{status/busy}, \ttt{status/down}, \ttt{status/up},
+\ttt{status/asleep}, etc.
+
+The arguments are analoguous with those of \ttt{"i="}.}\\\hline
+%%
 \tbf{r=}\textit{radius},\textit{fillcolor},\textit{color},\textit{width}
 &
 {\raggedright Draws a circle (or a filled circle) around the submodule with
@@ -189,6 +197,15 @@ It expects a \cclass{cQueue} object's name (as set by the \fname{setName()}
 method, see section \ref{sec:sim-lib:name}). Tkenv will do a depth-first
 search to find the object, and it will find the queue object within submodules
 as well.}\\\hline
+%%
+\tbf{t=}\textit{text},\textit{pos},\textit{color}
+&
+{\raggedright Displays a short text by the icon. The text is meant to convey status information
+(\textit{"up"}, \textit{"down"}, \textit{"5Kb in buffer"}) or statistics
+(\textit{"4 pks received"}). \textit{pos} can be \ttt{"l"}, \ttt{"r"} or \ttt{"t"}
+for left, right and top.
+
+Defaults: \textit{radius}=100, \textit{pos}="t", \textit{color}=blue}\\\hline
 
 \end{longtable}
 
@@ -201,7 +218,7 @@ Examples:
 
 
 
-\subsection{Compound module display strings}
+\subsection{Background display strings}
 
 The tags that can be used in enclosing module display strings are:
 
@@ -383,7 +400,7 @@ A hypen (\textit{"-"}) specified as color means transparent.
 The \ttt{"i="} display string tag allows for colorization of icons.
 It accepts a target color and a percentage as the degree of colorization.
 Percentage has no effect if the target color is missing.
-Brightness of icon is also affected -- to keep original brightness,
+Brightness of icon is also affected -- to keep the original brightness,
 specify a color with about 50% brightness (e.g. #808080 mid-grey,
 #008000 mid-green).
 
