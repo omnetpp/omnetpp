@@ -46,6 +46,7 @@ proc initTreeManager {} {
     bind $gned(manager).tree <Button-3> {
         set key [Tree:nodeat %W %x %y]
         if {$key!=""} {
+            Tree:setselection %W $key
             treemanagerPopup $key %X %Y
         }
     }
@@ -105,14 +106,30 @@ proc treemanagerPopup {key x y} {
 
 proc nedfilePopup {key} {
     global ned
-    # FIXME:
+
     foreach i {
-      {command -command "editProps $key" -label {Save} -underline 0}
-      {command -command "editProps $key" -label {Close} -underline 0}
+      {cascade -menu .popup.newmenu -label {New} -underline 0}
+      {separator}
+      {command -command "saveNED $key" -label {Save} -underline 0}
+      {command -command "puts {Not implemented}" -label {Save As...} -underline 1}
+      {command -command "puts {Not implemented}" -label {Close} -underline 0}
+      {separator}
+      {command -command "displayCodeForItem $key" -label {Show NED code...} -underline 0}
       {separator}
       {command -command "deleteItem $key; updateTreeManager" -label {Delete} -underline 0}
     } {
        eval .popup add $i
+    }
+
+    menu .popup.newmenu -tearoff 0
+    foreach i {
+      {command -command "addItem imports $key; updateTreeManager" -label {imports} -underline 0}
+      {command -command "addItem channel $key; updateTreeManager" -label {channel} -underline 0}
+      {command -command "addItem simple $key;  updateTreeManager" -label {simple}  -underline 0}
+      {command -command "addItem module $key;  updateTreeManager" -label {module}  -underline 0}
+      {command -command "addItem network $key; updateTreeManager" -label {network} -underline 0}
+    } {
+       eval .popup.newmenu add $i
     }
 }
 
@@ -120,8 +137,8 @@ proc modulePopup {key} {
     global ned
     # FIXME:
     foreach i {
-      {command -command "editProps $key" -label {Open on canvas} -underline 1}
-      {command -command "editProps $key" -label {Close its canvas} -underline 1}
+      {command -command "openModuleOnNewCanvas $key" -label {Open on canvas} -underline 0}
+      {command -command "displayCodeForItem $key" -label {Show NED code...} -underline 0}
       {separator}
       {command -command "deleteItem $key; updateTreeManager" -label {Delete} -underline 0}
     } {
@@ -133,7 +150,8 @@ proc defaultPopup {key} {
     global ned
     # FIXME:
     foreach i {
-      {command -command "displayCodeForItem $key" -label {Show NED code} -underline 0}
+      {command -command "displayCodeForItem $key" -label {Show NED fragment...} -underline 0}
+      {separator}
       {command -command "deleteItem $key; updateTreeManager" -label {Delete} -underline 0}
     } {
        eval .popup add $i
@@ -142,7 +160,14 @@ proc defaultPopup {key} {
 
 #--------------------------------------
 proc displayCodeForItem {key} {
-    global fonts
+    global ned fonts
+
+    if [info exist ned($key,name)] {
+        set txt "$ned($key,type) $ned($key,name)"
+    } else {
+        set txt "$ned($key,type)"
+    }
+
 
     # open file viewer/editor window
     set w .nedcode
@@ -156,12 +181,12 @@ proc displayCodeForItem {key} {
     wm minsize $w 1 1
     wm overrideredirect $w 0
     wm resizable $w 1 1
-    wm title $w "NED code"
+    wm title $w "NED code -- $txt"
 
     frame $w.main
     scrollbar $w.main.sb -borderwidth 1 -command "$w.main.text yview"
     pack $w.main.sb -anchor center -expand 0 -fill y -side right
-    text $w.main.text -width 60 -yscrollcommand "$w.main.sb set" -wrap none -font $fonts(fixed)
+    text $w.main.text -width 60 -yscrollcommand "$w.main.sb set" -wrap none -font $fonts(fixed) -bg #c0c0c0
     pack $w.main.text -anchor center -expand 1 -fill both -side left
 
     frame $w.butt
