@@ -1863,7 +1863,7 @@ topo.extractFromNetwork( select_function, NULL );
 
 A \cclass{cTopology} object uses two types: \cclass{sTopoNode} for
 nodes and \cclass{sTopoLink} for edges. (\cclass{sTopo\-Link\-In} and
-\cclass{sTopoLinkOut} are 'aliases' for \cclass{sTopoLink}; we'll
+\cclass{sTopoLinkOut} are `aliases' for \cclass{sTopoLink}; we'll
 speak about them later.)
 
 Once you have the topology extracted, you can start exploring
@@ -3385,8 +3385,8 @@ struct sGrid
 {
   int parent;   // index of parent grid
   int reldepth; // depth = (reldepth - rootgrid's reldepth)
-  long total;   // sum of cells & all subgrids (includes 'mother')
-  int mother;   // observations 'inherited' from mother cell
+  long total;   // sum of cells & all subgrids (includes `mother')
+  int mother;   // observations `inherited' from mother cell
   int cells[K]; // cell values
 };
 \end{verbatim}

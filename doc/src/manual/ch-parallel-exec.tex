@@ -29,17 +29,17 @@ segments:
 \begin{enumerate}
   \item{\textbf{Conservative synchronization}\index{conservative
       synchronization} exploits knowledge about when segments send
-    messages to other segments, and uses 'null' messages to propagate
+    messages to other segments, and uses `null' messages to propagate
     this info to other segments. This may speed up simulation, since
     e.g. if a segment knows it won't receive any messages from other
     segments until $t+\Delta t$ simulation time, it may advance until
     $t+\Delta t$ without the need for external synchronization.
     Conservative syncronization requires modifications to existing
-    models, i.e., inserting code which sends out the 'null' messages.
+    models, i.e., inserting code which sends out the `null' messages.
     Conservative simulation tends to converge to sequential simulation
     (slowed down by communication between segments) if there's not
     enough parallelism in the model, or parallelism is not exploited
-    by sending enough 'null' messages.}
+    by sending enough `null' messages.}
 
   \item{\textbf{Optimistic synchronization}\index{optimistic
       synchronization} allows incausalities to occur, but detects and

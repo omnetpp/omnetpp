@@ -88,7 +88,7 @@ or from the same module (\textit{self-messages} are used to implement
 timers).
 
 
-\textit{Gates}index{gate} are the input and output interfaces of
+\textit{Gates}\index{gate} are the input and output interfaces of
 modules; messages are sent out through output gates and arrive through
 input gates.
 
@@ -111,7 +111,7 @@ Due to the hierarchical structure of the model, messages typically
 travel through a series of connections, to start and arrive in simple
 modules. Such series of connections that go from simple module to
 simple module are called \textit{routes}.  Compound modules act as
-'cardboard boxes' in the model, transparently relaying messages
+`cardboard boxes' in the model, transparently relaying messages
 between their inside and their outside world.
 
 
@@ -218,8 +218,7 @@ by reference.
 During simulation execution, if a module changes the value of
 a parameter taken by reference, the changed value propagates
 to other modules. This effect can be used to tune the model or
-as a second means of module communication. Pointer-valued parameters
-can be used to implement shared memory.
+as a second means of module communication.
 
 
 \subsection{Topology description method}
@@ -300,10 +299,10 @@ ownership only needs to be explicitly managed when the user wants to
 do something non-typical.
 
 
-The \textit{forEach}\index{forEach mechanism} mechanism allows one to
+The \textit{foreach}\index{forEach mechanism} mechanism allows one to
 enumerate the objects inside a container object in a uniform way and
 do some operation on them. This feature which makes it possible to
-handle many objects together. (The forEach feature is extensively used
+handle many objects together. (The \textit{foreach} feature is extensively used
 by the user interfaces with debugging capability and the snapshot
 mechanism; see later.)
 
@@ -383,10 +382,9 @@ a user interface to form a simulation executable.
 
 \textbf{Running the simulation and analyzing the results}
 
-The simulation executable is a standalone program\footnote{as long as
-  it is linked statically}; thus, it can be run on other machines
-without {\opp} or the model files being present. When the program is
-started, it reads in a configuration
+The simulation executable is a standalone program,
+thus it can be run on other machines without {\opp} or the model files
+being present. When the program is started, it reads in a configuration
 file\index{simulation!configuration file} (usually called
 \texttt{omnetpp.ini}\index{omnetpp.ini}); it contains settings that
 control how the simulation is run, values for model parameters, etc.
@@ -417,7 +415,7 @@ of the model visible to the user, to start/stop simulation execution,
 and possibly allow the user intervene by changing variables/objects
 inside the model. This is very important in the development/debugging
 phase of the simulation project. Just as important, a hands-on
-experience allows the user to get a 'feel' about the model's
+experience allows the user to get a `feel' about the model's
 behaviour. A nice graphical user interface can also be used to
 demonstrate how the model works internally.
 
@@ -459,29 +457,30 @@ The \texttt{omnetpp} directory contains the following subdirectories.
 The simulation system itself:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-  \tbf{omnetpp/}       {\opp} root directory
-    \tbf{bin/}         {\opp} executables (GNED, nedc, etc.)
-    \tbf{include/}     header files for simulation models
-    \tbf{lib/}         library files
-    \tbf{bitmaps/}     icons that can be used in network graphics
-    \tbf{doc/}         manual (PDF), readme, license, etc.
-      \tbf{html/}      manual in HTML
-       \tbf{api/}      API reference in HTML
-    \tbf{src/}         {\opp} sources
-      \tbf{nedc/}      NED compiler\index{ned!compiler}
-      \tbf{sim/}       simulation kernel
-        \tbf{std/}     files for non-distributed execution
-        \tbf{pvm/}     files for distributed execution over PVM
-        \tbf{mpi/}     files for distributed execution using MPI
-      \tbf{nedxml/}    the NEDXML library
-      \tbf{envir/}     common code for user interfaces
-      \tbf{cmdenv/}    command-line user interface
-      \tbf{tkenv/}     Tcl/Tk-based user interface
-      \tbf{gned/}      graphical NED editor\index{ned!graphical interface}
-      \tbf{plove/}     output vector analyzer and plotting tool
-      \tbf{utils/}     makefile-autocreator etc
-    \tbf{test/}        regression test suite for the simulation kernel
-      \tbf{distrib/}   regression test suite for built-in distributions
+  \tbf{omnetpp/}         {\opp} root directory
+    \tbf{bin/}           {\opp} executables (GNED, nedc, etc.)
+    \tbf{include/}       header files for simulation models
+    \tbf{lib/}           library files
+    \tbf{bitmaps/}       icons that can be used in network graphics
+    \tbf{doc/}           manual (PDF), readme, license, etc.
+      \tbf{html/}        manual in HTML
+       \tbf{api/}        API reference in HTML
+       \tbf{nedxml-api/} API reference for the NEDXML library
+    \tbf{src/}           {\opp} sources
+      \tbf{nedc/}        NED compiler\index{ned!compiler}
+      \tbf{sim/}         simulation kernel
+        \tbf{std/}       files for non-distributed execution
+        \tbf{pvm/}       files for distributed execution over PVM
+        \tbf{mpi/}       files for distributed execution using MPI
+      \tbf{envir/}       common code for user interfaces
+      \tbf{cmdenv/}      command-line user interface
+      \tbf{tkenv/}       Tcl/Tk-based user interface
+      \tbf{gned/}        graphical NED editor\index{ned!graphical interface}
+      \tbf{plove/}       output vector analyzer and plotting tool
+      \tbf{nedxml/}      NEDXML library (experimental)
+      \tbf{utils/}       makefile-autocreator etc
+    \tbf{test/}          regression test suite
+      \tbf{distrib/}     regression test suite for built-in distributions
 \end{Verbatim}
 
 There is a tutorial, contributed by Nick van Foreest
@@ -501,13 +500,14 @@ Makefiles are included.
     \tbf{samples/}     directories for sample simulations
       \tbf{nim/}       a simple two-player game
       \tbf{hcube/}     hypercube network with deflection routing
-      \tbf{token/}     Token Ring network
+      \tbf{token/}     simple model of a Token Ring LAN
       \tbf{fddi/}      an accurate FDDI MAC simulation
       \tbf{hist/}      demo of the histogram classes
-      \tbf{dyna/}      dynamic module creation (client-server network)
+      \tbf{dyna/}      model of a client-server network
+      \tbf{dyna2/}     a version of dyna, using message subclassing
       \tbf{fifo1/}     single-server queue
       \tbf{fifo2/}     another version of fifo, with handleMessage() and FSM
-      \tbf{topo/}      demonstrates creating various topologies
+      \tbf{topo/}      NED demo, shows how to create various topologies
       \tbf{demo/}      several sim. models in a single executable
 \end{Verbatim}
 
