@@ -20,7 +20,8 @@
 
 
 /**
- * Get a filtered subset of all scalars. All four filter parameters may be null.
+ * Get a filtered subset of all scalars. All four filter parameters may be omitted
+ * (for fileRef, moduleName, scalarName this means NULL, for runNumber it means -1)
  */
 void getFilteredScalarList(const ScalarManager& scalarMgr,
                ScalarManager::FileRef fileRef, int runNumber,

@@ -51,7 +51,7 @@ int loadScalar_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getFileAndRunList_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getModuleList_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getScalarNameList_cmd(ClientData, Tcl_Interp *, int, const char **);
-int getFilteredVectorList_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getFilteredScalarList_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getFilePathOf_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getFileNameOf_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getDirectoryOf_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -74,7 +74,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getFileAndRunList",     getFileAndRunList_cmd },    // opp_getFileAndRunList
    { "opp_getModuleList",         getModuleList_cmd },        // opp_getModuleList
    { "opp_getScalarNameList",     getScalarNameList_cmd },    // opp_getScalarNameList
-   { "opp_getFilteredVectorList", getFilteredVectorList_cmd },// opp_getFilteredVectorList $fileAndRun $module $name
+   { "opp_getFilteredScalarList", getFilteredScalarList_cmd },// opp_getFilteredScalarList $fileAndRun $module $name
    // components of a scalar
    { "opp_getFilePathOf",         getFilePathOf_cmd },        // opp_getFilePathOf $id
    { "opp_getFileNameOf",         getFileNameOf_cmd },        // opp_getFileNameOf $id
@@ -156,9 +156,9 @@ int getScalarNameList_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
     return TCL_OK;
 }
 
-int getFilteredVectorList_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+int getFilteredScalarList_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-    if (argc!=4) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getFilteredVectorList <fileAndRun> <module> <name>\"", TCL_STATIC); return TCL_ERROR;}
+    if (argc!=4) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getFilteredScalarList <fileAndRun> <module> <name>\"", TCL_STATIC); return TCL_ERROR;}
 
     const char *fileAndRunPattern = argv[1];
     const char *modulePattern = argv[2];

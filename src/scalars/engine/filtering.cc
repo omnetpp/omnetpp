@@ -32,7 +32,7 @@ void getFilteredScalarList(const ScalarManager& scalarMgr,
     {
         const ScalarManager::Datum& d = *i;
         if ((fileRef!=noFile && d.fileRef==fileRef) &&
-            (runNumber && d.runNumber==runNumber) &&
+            (runNumber!=-1 && d.runNumber==runNumber) &&
             (moduleName && *d.moduleNameRef==moduleName) &&
             (scalarName && *d.scalarNameRef==scalarName)
            )

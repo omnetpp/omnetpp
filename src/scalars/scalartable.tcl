@@ -112,7 +112,7 @@ proc getFilteredList {} {
     if {$name=="<all>"} {set name ""}
 
     # get list
-    return [opp_getFilteredVectorList $file $module $name]
+    return [opp_getFilteredScalarList $file $module $name]
 
 }
 
