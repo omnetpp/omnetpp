@@ -704,7 +704,7 @@ Sources: @ref tictoc11.ned, @ref tictoc11.msg, @ref txc11.cc, @ref omnetpp.ini
 
 @section s12 Step 12: Adding statistics collection
 
-The previous simulation model is does something interesting enough
+The previous simulation model does something interesting enough
 so that we can collect some statistics. For example, you may be interested
 in the average hop count a message has to travel before reaching
 its destination.
