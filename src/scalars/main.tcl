@@ -98,11 +98,11 @@ proc createMainArea {w} {
     label $fp.namelabel -text "Scalar name:" -justify left -anchor w
 
     #combo $fp.fileentry [concat {{}} [getClassNames]]
-    combo $fp.fileentry {<all>}
+    combo $fp.fileentry {*}
     $fp.fileentry.entry config -textvariable tmp(file)
-    combo $fp.moduleentry {<all>}
+    combo $fp.moduleentry {*}
     $fp.moduleentry.entry config -textvariable tmp(module)
-    combo $fp.nameentry {<all>}
+    combo $fp.nameentry {*}
     $fp.nameentry.entry config -textvariable tmp(name)
 
     #set filehelptext "Wildcards accepted (*,?)"

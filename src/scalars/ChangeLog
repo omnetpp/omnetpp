@@ -1,3 +1,12 @@
+2005-03-25  Andras Varga
+
+	* engine/util.cc,h added, contains strdictcmp()
+
+	* tkcmd.cc: fix: use dictionary compare (strdictcmp()) for ordering
+	elements in charts
+
+	* in main filter combos, "<all>" changed to "*"
+
 2005-01-17  Andras Varga
 
 	* combobox.tcl updated to version 2.3 which also works on Mac OS/X 

@@ -35,7 +35,8 @@ SCALARS_OBJS = scalars$(SCALARS_EMBED_SUFFIX).o \
 ENGINE_OBJS =  engine/scalarmanager.o \
                engine/filtering.o \
                engine/patmatch.o \
-               engine/texception.o
+               engine/texception.o \
+               engine/util.o
 
 OBJS = $(SCALARS_OBJS) $(ENGINE_OBJS)
 

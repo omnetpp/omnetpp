@@ -29,3 +29,44 @@ scalar "largeNet.switchA.mac[2]" 	"frames sent" 	23
 #scalar "largeNet.switchA.mac[2]" 	"frames rcvd" 	13
 scalar "largeNet.switchA.mac[2]" 	"whatever" 	333
 
+run 4 "largeNet"
+scalar "net.host[0].app" 	"stat" 	3.333
+scalar "net.host[1].app" 	"stat" 	3.333
+scalar "net.host[2].app" 	"stat" 	3.333
+scalar "net.host[3].app" 	"stat" 	3.333
+scalar "net.host[4].app" 	"stat" 	3.333
+scalar "net.host[10].app" 	"stat" 	3.333
+scalar "net.host[11].app" 	"stat" 	3.333
+scalar "net.host[12].app" 	"stat" 	3.333
+scalar "net.host[13].app" 	"stat" 	3.333
+scalar "net.host[20].app" 	"stat" 	3.333
+scalar "net.host[21].app" 	"stat" 	3.333
+scalar "net.host[22].app" 	"stat" 	3.333
+scalar "net.host[23].app" 	"stat" 	3.333
+scalar "net.host[24].app" 	"stat" 	3.333
+scalar "net.host[100].app" 	"stat" 	3.333
+scalar "net.host[101].app" 	"stat" 	3.333
+scalar "net.host[102].app" 	"stat" 	3.333
+
+scalar "net.server.app0" 	"stat" 	3.333
+scalar "net.server.app1" 	"stat" 	3.333
+scalar "net.server.app2" 	"stat" 	3.333
+scalar "net.server.app3" 	"stat" 	3.333
+scalar "net.server.app4" 	"stat" 	3.333
+scalar "net.server.app10" 	"stat" 	3.333
+scalar "net.server.app11" 	"stat" 	3.333
+scalar "net.server.app12" 	"stat" 	3.333
+scalar "net.server.app13" 	"stat" 	3.333
+scalar "net.server.app20" 	"stat" 	3.333
+scalar "net.server.app21" 	"stat" 	3.333
+scalar "net.server.app22" 	"stat" 	3.333
+scalar "net.server.app23" 	"stat" 	3.333
+scalar "net.server.app24" 	"stat" 	3.333
+scalar "net.server.app100" 	"stat" 	3.333
+scalar "net.server.app101" 	"stat" 	3.333
+scalar "net.server.app102" 	"stat" 	3.333
+
+scalar "net.server2.app" 	"stat" 	3.333
+scalar "net.server2.applic" 	"stat" 	3.333
+scalar "net.server2.appl" 	"stat" 	3.333
+

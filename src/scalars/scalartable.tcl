@@ -91,9 +91,9 @@ proc refreshFilters {} {
     regsub -all -- {! \*} $namewildcardwords {} namewildcardwords
 
     # fill combo boxes
-    set filelist [concat "<all>" $filewildcardwords $filelist]
-    set modulelist [concat "<all>" $modulewildcardwords $modulelist]
-    set namelist [concat "<all>" $namewildcardwords $namelist]
+    set filelist [concat "*" $filewildcardwords $filelist]
+    set modulelist [concat "*" $modulewildcardwords $modulelist]
+    set namelist [concat "*" $namewildcardwords $namelist]
 
     puts "DBG:   updating combo boxes"
     comboconfig .main.f.filter.pars.fileentry $filelist
@@ -110,9 +110,9 @@ proc getFilteredList {} {
     set module $tmp(module)
     set name $tmp(name)
 
-    if {$file=="<all>"} {set file ""}
-    if {$module=="<all>"} {set module ""}
-    if {$name=="<all>"} {set name ""}
+    if {$file=="*"} {set file ""}
+    if {$module=="*"} {set module ""}
+    if {$name=="*"} {set name ""}
 
     # get list
     return [opp_getFilteredScalarList $file $module $name]

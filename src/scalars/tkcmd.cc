@@ -29,6 +29,7 @@
 #include "tkutil.h"
 #include "engine/scalarmanager.h"
 #include "engine/filtering.h"
+#include "engine/util.h"
 
 
 
@@ -295,7 +296,7 @@ static bool lessByModuleRef(int id1, int id2)
 {
     const ScalarManager::Datum& d1 = scalarMgr.getValue(id1);
     const ScalarManager::Datum& d2 = scalarMgr.getValue(id2);
-    return *(d1.moduleNameRef) < *(d2.moduleNameRef);
+    return strdictcmp(d1.moduleNameRef->c_str(), d2.moduleNameRef->c_str()) < 0;
 }
 
 static bool equalByModuleRef(int id1, int id2)
