@@ -27,6 +27,7 @@
 #include "cmessage.h"
 #include "ctypes.h"
 #include "speedmtr.h"
+#include "platdep.h"
 
 #include "tkdefs.h"
 #include "tkapp.h"
@@ -418,9 +419,9 @@ bool TOmnetTkApp::doRunSimulation()
         // delay loop for slow simulation
         if (runmode==RUNMODE_SLOW)
         {
-            clock_t start = clock(); // FIXME should use gettimeofday()
-            double dclk = opt_stepdelay / 1000.0 * CLOCKS_PER_SEC;
-            while (clock()-start<dclk && !stopsimulation_flag)
+            struct timeb start, now;
+            ftime(&start);
+            while ((ftime(&now), opp_difftimebmillis(now,start)<opt_stepdelay) && !stopsimulation_flag)
                 Tcl_Eval(interp, "update");
         }
 
