@@ -61,6 +61,7 @@
       pre.src { font-size:8pt; background:#E0E0E0; padding-left:5pt }
       th { font-size:10pt; text-align:left; vertical-align:top; background:#E0E0f0 }
       td { font-size:10pt; text-align:left; vertical-align:top }
+      tt { font-family:Courier,Courier New,Fixed,Terminal }
       .navbar     { font-size:8pt; }
       .navbarlink { font-size:8pt; }
       .indextitle { font-size:12pt; }
