@@ -187,7 +187,7 @@ configsamples:
 configtutorial:
 	@echo ===== Configuring .dsp and .mak files for tutorial/queues =====
 	cd /d $(OMNETPP_TUTORIAL_DIR:/=\)\queues
-	ren *.cc *.cpp
+	-ren *.cc *.cpp
 	$(REPLACE:/=\) queues.dsp.in - "@OMNETPP_INCL_DIR@" "$(OMNETPP_INCL_DIR)" | \
 	$(REPLACE:/=\) -             - "@OMNETPP_LIB_DIR@"  "$(OMNETPP_LIB_DIR)"  | \
 	$(REPLACE:/=\) -             - "@OMNETPP_BIN_DIR@"  "$(OMNETPP_BIN_DIR:/=\)"  | \
