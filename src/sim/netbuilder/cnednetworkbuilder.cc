@@ -58,7 +58,8 @@ void cNEDNetworkBuilder::setupNetwork(NetworkNode *networknode)
 
     cModuleType *modtype = findModuleType(modtypename);
     if (!modtype)
-        throw new cException("dynamic module builder: module type definition `%s' for network %s not found",
+        throw new cException("dynamic module builder: module type definition `%s' "
+                             "for network %s not found (Define_Module() missing?)",
                              modtypename, modname);
 
     cModule *networkp = modtype->create(modname, NULL);
@@ -137,7 +138,8 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
 
     cModuleType *modtype = findModuleType(modtypename);
     if (!modtype)
-        throw new cException("dynamic module builder: module type definition `%s' for submodule %s in (%s)%s not found",
+        throw new cException("dynamic module builder: module type definition `%s' "
+                             "for submodule %s in (%s)%s not found (Define_Module() missing?)",
                              modtypename, modname, modp->className(), modp->fullPath());
 
     ExpressionNode *vectorsizeexpr = findExpression(submod, "vector-size");
