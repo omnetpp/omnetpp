@@ -26,9 +26,9 @@
 
 Register_Class(cMPICommunications);
 
-// default 128k. FIXME make this configurable! if too small, simulation
-// can block in MPI send calls.
-#define PER_SEGMENT_MPI_SEND_BUFFER (256*1024)
+// default is 256k. If too small, simulation can block in MPI send calls.
+// FIXME make this configurable!
+#define MPI_SEND_BUFFER_PER_PARTITION (256*1024)
 
 
 cMPICommunications::cMPICommunications()
@@ -44,16 +44,27 @@ cMPICommunications::~cMPICommunications()
 
 void cMPICommunications::init()
 {
+    // sanity check
+    int argc = ev.argCount();
+    char **argv = ev.argVector();
+    for (int i=1; i<argc; i++)
+        if (argv[i][0]=='-' && argv[i][1]=='p')
+            ev.printf("WARNING: cMPICommunications doesn't need -p command-line option, ignored\n");
+
+    // get numPartitions and myRank from MPI
     MPI_Init(0,0);
     MPI_Comm_size(MPI_COMM_WORLD, &numPartitions);
     MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
 
-    // set up MPI send buffer
-    int bufSize = PER_SEGMENT_MPI_SEND_BUFFER * (numPartitions-1);
+    ev.printf("cMPICommunications: started as process %d out of %d.\n", myRank, numPartitions);
+    if (numPartitions==1)
+        ev.printf("WARNING: MPI thinks this process is the only one in the session "
+                  "(did you use mpirun to start this program?)\n");
+
+    // set up MPI send buffer (+16K prevents MPI_Buffer_attach() error if numPartitions==1)
+    int bufSize = MPI_SEND_BUFFER_PER_PARTITION * (numPartitions-1) + 16384;
     char *buf = new char[bufSize];
     MPI_Buffer_attach(buf, bufSize);
-
-    ev.printf("cMPICommunications: started as process %d out of %d.\n", myRank, numPartitions);
 }
 
 void cMPICommunications::shutdown()
