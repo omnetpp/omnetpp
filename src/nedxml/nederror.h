@@ -48,7 +48,7 @@ void NEDInternalError(const char *file, int line, NEDElement *context, const cha
 
 
 /**
- * Low-level routines throw an exception instead of calling NEDError() directly.
+ * Low-level routines throw an exception instead of calling NEDError().
  */
 class NEDException
 {

@@ -465,8 +465,7 @@ foreach $element (@elements)
     $startletter = $1;
     print CC "    if (tagname[0]=='$startletter' && !strcmp(tagname,\"$element\"))  return new $elementclass{$element}();\n";
 }
-print CC "    INTERNAL_ERROR1(NULL,\"createNodeWithTag(): unknown tag '%s'\", tagname);\n";
-print CC "    return NULL;\n";
+print CC "    throw new NEDException(\"unknown tag '%s', cannot create object to represent it\", tagname);\n";
 print CC "}\n\n";
 print CC "NEDElement *NEDElementFactory::createNodeWithTag(int tagcode)\n";
 print CC "{\n";
@@ -477,8 +476,8 @@ foreach $element (@elements)
     $startletter = $1;
     print CC "        case $enumname{$element}: return new $elementclass{$element}();\n";
 }
-print CC "        default: INTERNAL_ERROR1(NULL,\"createNodeWithTag(): unknown tag code %d\", tagcode); return NULL;\n";
 print CC "    }\n";
+print CC "    throw new NEDException(\"unknown tag code %d, cannot create object to represent it\", tagcode);\n";
 print CC "}\n\n";
 
 

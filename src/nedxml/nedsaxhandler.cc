@@ -38,8 +38,16 @@ NEDElement *NEDSAXHandler::getTree()
 void NEDSAXHandler::startElement(const char *name, const char **atts)
 {
     // initialize node
-    NEDElement *node = NEDElementFactory::getInstance()->createNodeWithTag(name);
-//FIXME: what if no such element????
+    NEDElement *node;
+    bool unknown = false;
+    try {
+        node = NEDElementFactory::getInstance()->createNodeWithTag(name);
+    } catch (NEDException *e) {
+        NEDError(current, "error: %s", e->errorMessage());
+        delete e;
+        node = new UnknownNode();
+        node->setAttribute("element", name);
+    }
 
     // "debug info"
     char buf[200];
@@ -47,12 +55,15 @@ void NEDSAXHandler::startElement(const char *name, const char **atts)
     node->setSourceLocation(buf);
 
     // set attributes
-    for (int i=0; atts && atts[i]; i+=2) {
-        try {
-            node->setAttribute(atts[i], atts[i+1]);
-        } catch (NEDException *e) {
-            NEDError(node, "error in attribute '%s': %s", atts[i],e->errorMessage());
-            delete e;
+    if (!unknown)
+    {
+        for (int i=0; atts && atts[i]; i+=2) {
+            try {
+                node->setAttribute(atts[i], atts[i+1]);
+            } catch (NEDException *e) {
+                NEDError(node, "error in attribute '%s': %s", atts[i],e->errorMessage());
+                delete e;
+            }
         }
     }
 
