@@ -75,7 +75,7 @@ opp_nmakemake [-h] [-f] [-e ext] [-o make-target] [-n] [-u user-interface]
     -r, --recurse         Call make recursively in all subdirectories. If you
                           need to maintain a specific order, declare dependen-
                           cies in the makefrag.vc file.
-    -X directory, --except directory
+    -X directory, -Xdirectory, --except directory
                           With -r (recurse) option: ignore the given directory
     -b directory, --basedir directory
                           Project base (root) directory; all absolute paths
@@ -146,6 +146,12 @@ could not figure out.
     elsif ($arg eq '-X' || $arg eq '--except')
     {
         $dir = shift @ARGV;
+        push(@exceptdirs, $dir);
+    }
+    elsif ($arg =~ /^-X/)
+    {
+        $dir = $arg;
+        $dir =~ s/^-X//;
         push(@exceptdirs, $dir);
     }
     elsif ($arg eq '-b' || $arg eq '--basedir')

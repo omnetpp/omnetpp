@@ -133,7 +133,7 @@ opp_makemake [-h] [-f] [-m] [-o make-target] [-r] [-n] [-s] [-u userinterface]
     -r, --recurse         Call make recursively in all subdirectories. If you
                           need to maintain a specific order, declare dependen-
                           cies in the makefrag file.
-    -X directory, --except directory
+    -X directory, -Xdirectory, --except directory
                           With -r (recurse) option: ignore the given directory
     -b directory, --basedir directory
                           Project base (root) directory; all absolute paths
@@ -203,6 +203,11 @@ EOT
         -X | --except)
         shift
         exceptdirs="$exceptdirs $1"
+        ;;
+
+        -X*)
+        dir=`echo $1 | sed 's/^-X//'`
+        exceptdirs="$exceptdirs $dir"
         ;;
 
         -b | --basedir)
