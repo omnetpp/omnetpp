@@ -1,5 +1,5 @@
 #==========================================================================
-#  MAIN.TCL -
+#  DEMO.TCL -
 #            part of the Tcl/Tk windowing environment of
 #                            OMNeT++
 #==========================================================================
@@ -13,361 +13,152 @@
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
-set samples {../dyna ../fddi ../fifo1 ../fifo2 ../hcube ../hist ../nim ../pvmex ../token}
+foreach i {
+   {dyna ../dyna Dyna}
+   {fddi ../fddi FDDI}
+   {fifo1 ../fifo1 FIFO1}
+   {fifo2 ../fifo2 FIFO2}
+   {hcube ../hcube HCube}
+   {hist ../hist Hist}
+   {nim ../nim Nim}
+   {pvmex ../pvmex PVMEx}
+   {token ../token Token}
+} {
+   set sample [lindex $i 0]
+   lappend samples $sample
+   set dir($sample) [lindex $i 1]
+   set name($sample) [lindex $i 2]
+}
 
+set colors(banner) #e0e0a0
+set colors(unselbutton) #c0c0c0
+set colors(selbutton) #ffffff
+set colors(startbutton) #c0c000
 
-#===================================================================
-#    MAIN OMNET++ WINDOW
-#===================================================================
-
-proc create_omnetpp_window {} {
-
-    global icons fonts tcl_version help_tips
+proc createWindow {} {
+    global samples dir name fonts colors
 
     wm focusmodel . passive
-    wm geometry . 540x275
-    wm maxsize . 1009 738
     wm minsize . 1 1
     wm overrideredirect . 0
     wm resizable . 1 1
     wm deiconify .
-    wm title . "OMNeT++/Tkenv"
-    wm protocol . WM_DELETE_WINDOW {exit_omnetpp}
+    wm title . "OMNeT++ Demo"
+    wm protocol . WM_DELETE_WINDOW {exit}
 
     #################################
     # Menu bar
     #################################
 
-    if {$tcl_version < 8.0} {
-        frame .menubar -borderwidth 1 -relief raised
-        pack .menubar -expand 0 -fill x -side top
-    } else {
-        menu .menubar
-        . config -menu .menubar
-    }
+    menu .menubar
+    . config -menu .menubar
 
     # Create menus
     foreach i {
-       {filemenu     -$label_opt File -underline 0}
-       {simulatemenu -$label_opt Simulate -underline 0}
-       {tracemenu    -$label_opt Trace -underline 0}
-       {inspectmenu  -$label_opt Inspect -underline 0}
-       {viewmenu     -$label_opt View -underline 0}
-       {optionsmenu  -$label_opt Options -underline 0}
-       {helpmenu     -$label_opt Help -underline 0}
+       {filemenu     -label File -underline 0}
+       {helpmenu     -label Help -underline 0}
     } {
-       if {$tcl_version < 8.0} {
-           set label_opt "text"; set m ".m"
-           set mb [eval menubutton .menubar.$i -padx 4 -pady 3]
-           menu $mb.m -tearoff 0
-           $mb config -menu $mb.m
-       } else {
-           set label_opt "label"; set m ""
-           eval .menubar add cascade -menu .menubar.$i
-           menu ".menubar.[lindex $i 0]" -tearoff 0
-       }
+       eval .menubar add cascade -menu .menubar.$i
+       menu ".menubar.[lindex $i 0]" -tearoff 0
     }
 
     # File menu
     foreach i {
-      {command -command new_run -label {Select Run #...} -underline 7}
-      {command -command new_network -label {Select network...} -underline 7}
-      {command -command create_snapshot -label {Create snapshot...} -underline 7}
-      {separator}
-      {command -command exit_omnetpp -label Exit -underline 1}
+      {command -command exit -label Exit -underline 1}
     } {
-      eval .menubar.filemenu$m add $i
-    }
-
-    # Simulate menu
-    #  {command -command init_step -label {First real event} -underline 1}
-    #  {separator}
-    foreach i {
-      {command -command one_step -label {One step} -underline 4}
-      {command -command slow_exec -label {Slow execution} -underline 1}
-      {separator}
-      {command -command run -label {Run} -underline 0 ;# -accelerator F9}
-      {command -command run_fast -label {Fast run (rare display updates)} -underline 0}
-      {command -command run_notracing -label {Express run (tracing off)} -underline 0}
-      {command -command run_until -label {Run until...} -underline 4}
-      {separator}
-      {command -command stop_simulation -label {Stop execution} -underline 0}
-      {separator}
-      {command -command call_finish -label {Call finish() for all modules} -underline 0}
-      {command -command rebuild -label {Rebuild network} -underline 1}
-    } {
-      eval .menubar.simulatemenu$m add $i
-    }
-
-    # Trace menu
-    foreach i {
-      {command -command module_windows -label {Module output...} -underline 0}
-      {command -command message_windows -label {Message sending...} -underline 8}
-      {separator}
-      {command -command clear_windows -label {Clear main window} -underline 0}
-    } {
-      eval .menubar.tracemenu$m add $i
-    }
-
-    # Inspect menu
-    foreach i {
-      {command -command inspect_systemmodule -label {Network} -underline 0}
-      {command -command inspect_messagequeue -label {Scheduled events (FES)} -underline 0}
-      {separator}
-      {cascade -label {Linked-in components} -underline 10 -menu .menubar.inspectmenu$m.components}
-      {separator}
-      {command -command inspect_anyobject -label {From list of all objects...} -underline 0}
-      {command -command inspect_matching -label {By pattern matching...} -underline 3}
-      {command -command inspect_bypointer -label {By pointer...} -underline 4}
-    } {
-      eval .menubar.inspectmenu$m add $i
-    }
-
-    # Inspect|Components menu
-    menu .menubar.inspectmenu$m.components -tearoff 0
-    foreach i {
-      {command -command inspect_networks -label {Available networks} -underline 10}
-      {command -command inspect_moduletypes -label {Module types} -underline 0}
-      {command -command inspect_channeltypes -label {Channel types} -underline 0}
-      {command -command inspect_functions -label {Registered functions} -underline 11}
-    } {
-      eval .menubar.inspectmenu$m.components add $i
-    }
-
-    # Inspect|Special menu
-    #  {cascade -label {Special} -underline 1 -menu .menubar.inspectmenu$m.special}
-    # menu .menubar.inspectmenu$m.special -tearoff 0
-    # foreach i {
-    #  {command -command inspect_anyobject -label {From list of all objects...} -underline 0}
-    #  {command -command inspect_matching -label {By pattern matching...} -underline 3}
-    #  {command -command inspect_bypointer -label {By pointer...} -underline 4}
-    #} {
-    #  eval .menubar.inspectmenu$m.special add $i
-    #}
-
-    # View menu
-    foreach i {
-      {command -label {Ini file} -underline 0 -command {view_file [opp_getfilename ini]}}
-      {command -label {README} -underline 0 -command {view_file README}}
-      {separator}
-      {command -label {Snapshot file} -underline 0 -command {view_file [opp_getfilename snapshot]}}
-      {command -label {Output vector file} -underline 0 -command {view_file [opp_getfilename outvector]}}
-      {command -label {Parameter changes file} -underline 0 -command {view_file [opp_getfilename parchanges]}}
-      {command -label {Inspector list file} -underline 1 -command {view_file inspect.lst}}
-      {separator}
-      {command -label {View/Edit file...} -underline 0 -command {edit_textfile}}
-    } {
-      eval .menubar.viewmenu$m add $i
-    }
-
-    # Options menu
-    foreach i {
-      {command -command simulation_options -label {Simulation options...} -underline 0}
-      {separator}
-      {command -label {Load inspector list...} -underline 0 -command load_inspectorlist}
-      {command -label {Save open inspectors list...} -underline 0 -command save_inspectorlist}
-      {command -label {Update inspectors now} -underline 0 -command opp_updateinspectors}
-      {separator}
-      {command -command show_console -label {TCL console} -underline 0}
-    } {
-      eval .menubar.optionsmenu$m add $i
+      eval .menubar.filemenu add $i
     }
 
     # Help menu
     foreach i {
-      {command -command about -label {About OMNeT++} -underline 0}
+      {command -command helpAbout -label {About OMNeT++} -underline 0}
     } {
-      eval .menubar.helpmenu$m add $i
+      eval .menubar.helpmenu add $i
     }
-
-    # Pack menus on menubar
-    if {$tcl_version < 8.0} {
-        foreach i {
-          filemenu simulatemenu tracemenu inspectmenu viewmenu optionsmenu helpmenu
-        } {
-          pack .menubar.$i -anchor n -expand 0 -fill none -side left
-        }
-    }
-
-    #################################
-    # Create toolbar
-    #################################
-
-    frame .toolbar -relief raised -borderwidth 1
-    foreach i {
-      {sep0     -separator}
-      {step     -image $icons(step)    -command {one_step}}
-      {sep1     -separator}
-      {run      -image $icons(run)     -command {run}}
-      {fastrun  -image $icons(fast)    -command {run_fast}}
-      {exprrun  -image $icons(express) -command {run_notracing}}
-      {sep2     -separator}
-      {until    -image $icons(until)   -command {run_until}}
-      {sep3     -separator}
-      {stop     -image $icons(stop)    -command {stop_simulation}}
-      {sep4     -separator}
-      {network  -image $icons(network) -command {inspect_systemmodule}}
-      {fes      -image $icons(fes)     -command {inspect_messagequeue}}
-    } {
-      set b [eval iconbutton .toolbar.$i]
-      pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2
-    }
-
-    set help_tips(.toolbar.step)    {Execute one event}
-    set help_tips(.toolbar.run)     {Run with full animation}
-    set help_tips(.toolbar.fastrun) {Run faster: no animation and rare inspector updates}
-    set help_tips(.toolbar.exprrun) {Run at full speed: no text output, animation or inspector updates}
-    set help_tips(.toolbar.until)   {Run until time or event number}
-    set help_tips(.toolbar.stop)    {Stop simulation (if running)}
-    set help_tips(.toolbar.network) {Inspect network}
-    set help_tips(.toolbar.fes)     {Inspect Future Event Set}
-
-    #################################
-    # Create status bar
-    #################################
-
-    frame .statusbar
-    label .statusbar.networklabel \
-        -relief groove -text {(no network set up)} -width 19
-    label .statusbar.eventlabel \
-        -justify left -relief groove -text {Event #0} -width 12
-    label .statusbar.timelabel \
-        -justify left -relief groove -text {T=0.0000000 (0.00s)} -width 20
-    label .statusbar.nextlabel \
-        -justify left -relief groove -text Next: -width 26
-
-    pack .statusbar.networklabel -anchor n -expand 1 -fill x -side left
-    pack .statusbar.eventlabel -anchor n -expand 1 -fill x -side left
-    pack .statusbar.timelabel -anchor n -expand 1 -fill x -side left
-    pack .statusbar.nextlabel -anchor n -expand 1 -fill x -side right
 
     #################################
     # Create main display area
     #################################
 
-    frame .main -borderwidth 1 -height 30 -relief sunken -width 30
-    text .main.text -yscrollcommand ".main.sb set"
-    scrollbar .main.sb -command ".main.text yview"
-    .main.text tag configure event -foreground blue
+    frame .sel 
+    frame .main
+    pack .sel -expand 0 -fill y  -side left -padx 2
+    pack .main -expand 1 -fill both  -side right  -padx 2
 
-    pack .main.sb -anchor center -expand 0 -fill y  -side right
-    pack .main.text -anchor center -expand 1 -fill both -side left
+    frame .main.up
+    frame .main.lo
+    frame .main.mid
+    pack .main.up -expand 0 -fill x  -side top
+    pack .main.mid -expand 1 -fill both -side top
+    pack .main.lo -expand 0 -fill x  -side bottom
 
-    #################################
-    # Pack everything
-    #################################
-    if {$tcl_version < 8.0} {
-        pack .menubar   -anchor center -expand 0 -fill x -side top
+    label .main.up.banner -bg $colors(banner)
+    pack .main.up.banner -fill x -side top -padx 5 -pady 2 
+
+    text .main.mid.text -yscrollcommand ".main.mid.sb set"
+    scrollbar .main.mid.sb -command ".main.mid.text yview"
+    pack .main.mid.sb -anchor center -expand 0 -fill y  -side right
+    pack .main.mid.text -anchor center -expand 1 -fill both -side left
+
+    button .main.lo.start -bg $colors(startbutton) -font $fonts(bold)
+    pack .main.lo.start -expand 1 -fill x  -padx 10 -pady 6
+
+    label .sel.banner -text "Sample simulations:" -bg $colors(banner)
+    pack .sel.banner -fill x -side top -padx 5 -pady 2 
+    foreach i $samples {
+        button .sel.$i -text $name($i) -command "showDemo $i"
+        pack .sel.$i -fill x -side top -padx 5 -pady 2
     }
-    pack .toolbar   -anchor center -expand 0 -fill x -side top
-    pack .statusbar -anchor center -expand 0 -fill x -side top
-    pack .main      -anchor center -expand 1 -fill both -side top
-
-    global tcl_platform
-    if {$tcl_platform(platform) == "windows"} {
-        update
-    }
+    showDemo [lindex $samples 0]
 }
 
-#===================================================================
-#    LOAD BITMAPS
-#===================================================================
+proc helpAbout {} {
+    tk_messageBox -title {About OMNeT++ Demo} -type ok -icon info -message \
+{\
+OMNeT++ Discrete Event Simulation System
+*** Demo ***
 
-proc load_bitmaps {path} {
-   global tcl_platform
-
-   puts "Loading bitmaps from $path:"
-
-   # On Windows, we use ";" to separate directories in $path. Using ":" (the
-   # Unix separator) would cause trouble with dirs containing drive letter
-   # (like "c:\bitmaps"). Using a space is also not an option (think of
-   # "C:\Program Files\...").
-
-   if {$tcl_platform(platform) == "unix"} {
-       set sep {:;}
-   } else {
-       set sep {;}
-   }
-
-   set files {}
-   foreach dir [split $path $sep] {
-       set files [concat $files \
-                     [glob -nocomplain -- [file join $dir {*.gif}]] \
-                     [glob -nocomplain -- [file join $dir {*.xpm}]] \
-                     [glob -nocomplain -- [file join $dir {*.xbm}]]]
-   }
-   if {[llength $files] == 0} {puts "none found!"; return}
-
-   foreach f $files {
-
-      set type ""
-      case [string tolower [file extension $f]] {
-        {.xbm} {set type bitmap}
-        {.xbm} {set type photo}
-        {.gif} {set type photo}
-      }
-      if {$type==""} {error "load_bitmaps: internal error"}
-
-      set name [string tolower [file tail [file rootname $f]]]
-      if {$name=="proc"} {
-         puts -nonewline "(*** $name -- Tk dislikes this name, skipping ***) "
-      } elseif [catch {image type $name}] {
-         if [catch {
-            image create $type $name -file $f
-            puts -nonewline "$name "
-         } err] {
-            puts -nonewline "(*** $name is bad: $err ***) "
-         }
-      } else {
-         puts -nonewline "($name is duplicate) "
-      }
-   }
-   puts ""
+(c) Andras Varga, 1992-99
+Technical University of Budapest
+Dept. of Telecommunications
 }
 
+}
 
-#===================================================================
-#    LOAD PLUGINS
-#===================================================================
+proc showDemo {sample} {
+   global samples dir name colors
 
-proc load_plugins {path} {
-   puts ""
-   puts "Loading plugins:"
-
-   # load tcl files
-   set files [lsort [glob -nocomplain -- [file join $path {*.tcl}]]]
-   if {[llength $files] == 0} {
-      puts "no .tcl file in $path"
-   } else {
-      foreach file $files {
-         if [catch {source $file} errmsg] {
-             puts ""
-             puts "error in sourcing $file: $errmsg"
-         } else {
-             set name [string tolower [file tail [file rootname $file]]]
-             puts -nonewline "$name "
-         }
-      }
-      puts ""
+   foreach i $samples {
+        .sel.$i config -relief raised -bg $colors(unselbutton)
    }
+   .sel.$sample config -relief sunken -bg $colors(selbutton)
 
-   # load dynamic libraries
-   set files [lsort [glob -nocomplain -- [file join $path {*.so*}]]]
-   if {[llength $files] == 0} {
-      puts "no .so file in $path"
-   } else {
-      foreach file $files {
-         if [catch {opp_loadlib $file} errmsg] {
-             puts ""
-             puts "error in loading shared library $file: $errmsg"
-         } else {
-             set name [string tolower [file tail [file rootname $file]]]
-             puts -nonewline "$name "
-         }
-      }
-      puts ""
-   }
+   .main.up.banner config -text "$name($sample) README"
+   .main.lo.start config -text "Launch $name($sample)  (command: demo -f $dir($sample)/omnetpp.ini)"
+   .main.lo.start config -command "runSample $sample"
 
+   loadfile .main.mid.text "$dir($sample)/README"
+}
+
+proc loadfile {t filename} {
+    if [catch {open $filename r} f] {
+       messagebox {Error} "Error: $f" info ok
+       return
+    }
+    set contents [read $f]
+    close $f
+
+    set curpos [$t index insert]
+    $t delete 1.0 end
+    $t insert end $contents
+    catch {$t mark set insert $curpos}
+    $t see insert
+}
+
+proc runSample {sample} {
+   global samples dir name
+
+   exec all -f "$dir($sample)/omnetpp.ini" &
 }
 
 #===================================================================
@@ -452,20 +243,9 @@ proc checkVersion {} {
 }
 
 
-proc startup_commands {} {
 
-    set run [opp_getsimoption default-run]
-    if {$run>0} {
-        opp_newrun $run
-
-        if {[opp_object_systemmodule] != [opp_object_nullpointer]} {
-            opp_inspect [opp_object_systemmodule] (default)
-            # tk_messageBox -title {OMNeT++} -message {[Run 1] set up.} \
-                            -type ok -icon info
-        }
-    } else {
-        new_run
-    }
-
-}
+checkVersion
+generic_bindings
+font_bindings
+createWindow
 
