@@ -68,6 +68,16 @@ void NEDInternalError(const char *file, int line, NEDElement *context, const cha
     exit(-1);
 }
 
+NEDException::NEDException(const char *msgformat...)
+{
+    va_list va;
+    va_start(va, msgformat);
+    char message[1024];
+    vsprintf(message,msgformat,va);
+    va_end(va);
 
+    errormsg = message;
 
+    *(char *)0 = 0;
+}
 

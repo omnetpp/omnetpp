@@ -28,7 +28,7 @@
  *
  * @ingroup CppGenerator
  */
-void generateCpp(ostream& out, NEDElement *node);
+void generateCpp(ostream& out, ostream& outh, NEDElement *node);
 
 
 /**
@@ -42,6 +42,8 @@ void generateCpp(ostream& out, NEDElement *node);
 class NEDCppGenerator
 {
   protected:
+    ostream& out;
+    ostream& outh;
     bool in_network;
     std::string module_name;
     std::string submodule_name;
@@ -56,59 +58,76 @@ class NEDCppGenerator
     CppExpressionGenerator exprgen;
 
   public:
-    NEDCppGenerator();
+    NEDCppGenerator(ostream& out, ostream& outh);
     ~NEDCppGenerator();
     void setIndentSize(int indentsize);
-    void generate(ostream& out, NEDElement *node);
+    void generate(NEDElement *node);
 
   protected:
     const char *increaseIndent(const char *indent);
     const char *decreaseIndent(const char *indent);
 
-    void generateItem(ostream& out, NEDElement *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void generateChildren(ostream& out, NEDElement *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void generateChildrenWithTags(ostream& out, NEDElement *node, const char *tags, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void generateChildrenExceptTags(ostream& out, NEDElement *node, const char *tags, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void generateItem(NEDElement *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void generateChildren(NEDElement *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void generateChildrenWithTags(NEDElement *node, const char *tags, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void generateChildrenExceptTags(NEDElement *node, const char *tags, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    ExpressionNode *findExpression(NEDElement *parent, const char *target);
 
     void writeProlog(ostream& out);
-    void printTemporaryVariables(ostream& out, const char *indent);
-    void beginConditionalBlock(ostream& out, NEDElement *node, const char *&indent, int mode, const char *);
-    void endConditionalBlock(ostream& out, NEDElement *node, const char *&indent, int mode, const char *);
+    void printTemporaryVariables(const char *indent);
+    void beginConditionalBlock(NEDElement *node, const char *&indent, int mode, const char *);
+    void endConditionalBlock(NEDElement *node, const char *&indent, int mode, const char *);
 
-    void doNedFile(ostream& out, NedFileNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doNedFiles(ostream& out, NedFilesNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doImports(ostream& out, ImportNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doImport(ostream& out, ImportedFileNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doChannel(ostream& out, ChannelNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doChannelAttr(ostream& out, ChannelAttrNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doNetwork(ostream& out, NetworkNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doSimple(ostream& out, SimpleModuleNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doModule(ostream& out, CompoundModuleNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doParams(ostream& out, ParamsNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doParam(ostream& out, ParamNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doGates(ostream& out, GatesNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doGate(ostream& out, GateNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doMachines(ostream& out, MachinesNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doMachine(ostream& out, MachineNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doSubmodules(ostream& out, SubmodulesNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doSubmodule(ostream& out, SubmoduleNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doSubmoduleCleanup(ostream& out, SubmoduleNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doSubstparams(ostream& out, SubstparamsNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doSubstparam(ostream& out, SubstparamNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doGatesizes(ostream& out, GatesizesNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doGatesize(ostream& out, GatesizeNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doSubstmachines(ostream& out, SubstmachinesNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doSubstmachine(ostream& out, SubstmachineNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doConnections(ostream& out, ConnectionsNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doConnection(ostream& out, ConnectionNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doConnattr(ostream& out, ConnAttrNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doForloop(ostream& out, ForLoopNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doLoopvar(ostream& out, LoopVarNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doDisplayString(ostream& out, DisplayStringNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doExpression(ostream& out, ExpressionNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doNedFile(NedFileNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doNedFiles(NedFilesNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doImports(ImportNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doImport(ImportedFileNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doChannel(ChannelNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doChannelAttr(ChannelAttrNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doNetwork(NetworkNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doSimple(SimpleModuleNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doModule(CompoundModuleNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doParams(ParamsNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doParam(ParamNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doGates(GatesNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doGate(GateNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doMachines(MachinesNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doMachine(MachineNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doSubmodules(SubmodulesNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doSubmodule(SubmoduleNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doSubmoduleCleanup(SubmoduleNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doSubstparams(SubstparamsNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doSubstparam(SubstparamNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doGatesizes(GatesizesNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doGatesize(GatesizeNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doSubstmachines(SubstmachinesNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doSubstmachine(SubstmachineNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doConnections(ConnectionsNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void resolveGate(const char *var, const char *indent, const char *modname, ExpressionNode *modindex, const char *gatename, ExpressionNode *gateindex);
+    void doConnection(ConnectionNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doConnattr(ConnAttrNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doForloop(ForLoopNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doLoopvar(LoopVarNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doDisplayString(DisplayStringNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doExpression(ExpressionNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
 
-    ExpressionNode *findExpression(NEDElement *parent, const char *target);
-    void resolveGate(ostream& out, const char *var, const char *indent, const char *modname, ExpressionNode *modindex, const char *gatename, ExpressionNode *gateindex);
+    struct ClassDesc;
+    struct FieldDesc;
+
+    void doCppinclude(CppincludeNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doCppStruct(CppStructNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doCppCobject(CppCobjectNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doCppNoncobject(CppNoncobjectNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doEnum(EnumNode *node, const char *indent, int mode, const char *);
+    void doEnumFields(EnumFieldsNode *node, const char *indent, int mode, const char *);
+    void doEnumField(EnumFieldNode *node, const char *indent, int mode, const char *);
+    void doMessage(MessageNode *node, const char *, int, const char *);
+    void doClass(ClassNode *node, const char *, int, const char *);
+    void doStruct(StructNode *node, const char *, int, const char *);
+    void prepareForCodeGeneration(NEDElement *node, ClassDesc& cld, FieldDesc *&fld, int& numfields);
+    void generateClass(ClassDesc& cld, FieldDesc *&fld, int numfields);
+    void generateStruct(ClassDesc& cld, FieldDesc *&fld, int numfields);
+    void generateDescriptorClass(ClassDesc& cld, FieldDesc *&fld, int numfields);
 };
 
 #endif

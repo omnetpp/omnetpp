@@ -433,6 +433,67 @@ void NEDBasicValidator::validateElement(ConstNode *node)
     }
 }
 
+void NEDBasicValidator::validateElement(CppincludeNode *node)
+{
+    // FIXME check filename syntax
+}
+
+void NEDBasicValidator::validateElement(CppStructNode *node)
+{
+}
+
+void NEDBasicValidator::validateElement(CppCobjectNode *node)
+{
+}
+
+void NEDBasicValidator::validateElement(CppNoncobjectNode *node)
+{
+}
+
+void NEDBasicValidator::validateElement(EnumNode *node)
+{
+}
+
+void NEDBasicValidator::validateElement(EnumFieldsNode *node)
+{
+}
+
+void NEDBasicValidator::validateElement(EnumFieldNode *node)
+{
+}
+
+void NEDBasicValidator::validateElement(MessageNode *node)
+{
+}
+
+void NEDBasicValidator::validateElement(ClassNode *node)
+{
+}
+
+void NEDBasicValidator::validateElement(StructNode *node)
+{
+}
+
+void NEDBasicValidator::validateElement(FieldsNode *node)
+{
+}
+
+void NEDBasicValidator::validateElement(FieldNode *node)
+{
+    // FIXME check syntax of default value
+    // FIXME check type of default value agrees with field type
+}
+
+void NEDBasicValidator::validateElement(PropertiesNode *node)
+{
+}
+
+void NEDBasicValidator::validateElement(PropertyNode *node)
+{
+    // FIXME check syntax of value
+}
+
+
 void NEDBasicValidator::validateElement(UnknownNode *node)
 {
 }

@@ -17,13 +17,20 @@
 
 #include <string.h>
 #include "nedelement.h"
+#include "nederror.h"
 
 
 long NEDElement::lastid = 0;
 
 bool NEDElement::stringToBool(const char *s)
 {
-    return s && !strcmp(s,"true"); // FIXME: validation error if no match?
+// FIXME upper layers should catch exception
+    if (!strcmp(s,"true"))
+        return true;
+    else if (!strcmp(s,"false"))
+        return false;
+    else
+        throw new NEDException("invalid attribute value '%s': should be 'true' or 'false'",(s?s:""));
 }
 
 const char *NEDElement::boolToString(bool b)
@@ -33,11 +40,13 @@ const char *NEDElement::boolToString(bool b)
 
 int NEDElement::stringToEnum(const char *s, const char *vals[], int nums[], int n)
 {
-    if (!s) return nums[0]; // FIXME: validation error if no match?
+// FIXME upper layers should catch exception
+    if (!s)
+        throw new NEDException("attribute cannot be empty: should be one of the allowed words '%s', etc.",vals[0]);
     for (int i=0; i<n; i++)
         if (!strcmp(s,vals[i]))
             return nums[i];
-    return -1; // FIXME: validation error if no match?
+    throw new NEDException("invalid attribute value '%s': should be one of the allowed words '%s', etc.",s,vals[0]);
 }
 
 const char *NEDElement::enumToString(int b, const char *vals[], int nums[], int n)
@@ -85,7 +94,9 @@ void NEDElement::applyDefaults()
     int n = getNumAttributes();
     for (int i=0; i<n; i++)
     {
-        setAttribute(i,getAttributeDefault(i));
+        const char *defaultval = getAttributeDefault(i);
+        if (defaultval && defaultval[0])
+            setAttribute(i,defaultval);
     }
 }
 
@@ -101,7 +112,7 @@ void NEDElement::setId(long _id)
 
 const char *NEDElement::getSourceLocation() const
 {
-    return srcloc;
+    return srcloc.c_str();
 }
 
 void NEDElement::setSourceLocation(const char *loc)

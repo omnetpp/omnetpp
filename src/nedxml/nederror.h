@@ -29,5 +29,27 @@ void clearErrors();
 
 void NEDInternalError(const char *file, int line, NEDElement *context, const char *message, ...);
 
+
+/**
+ * Low-level routines throw an exception instead of calling NEDError() directly.
+ */
+class NEDException
+{
+  protected:
+    std::string errormsg;
+
+  public:
+    /**
+     * The error message can be generated in a printf-like manner.
+     */
+    NEDException(const char *msg,...);
+
+    /**
+     * Returns the text of the error.
+     */
+    const char *errorMessage() {return errormsg.c_str();}
+};
+
+
 #endif
 

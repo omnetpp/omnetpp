@@ -89,7 +89,7 @@ void NEDDTDValidator::checkEmpty(NEDElement *node)
 void NEDDTDValidator::checkRequiredAttribute(NEDElement *node, const char *attr)
 {
     const char *s = node->getAttribute(attr);
-    if (!s)
+    if (!s || !*s)
         {NEDError(node,"DTD validation error: required attribute %s is empty", attr); return;}
 }
 
@@ -101,7 +101,7 @@ void NEDDTDValidator::checkEnumeratedAttribute(NEDElement *node, const char *att
 void NEDDTDValidator::checkNameAttribute(NEDElement *node, const char *attr)
 {
     const char *s = node->getAttribute(attr);
-    if (!s)
+    if (!s || !*s)
         return;
     if (!isalpha(*s) && *s!='_')
         {NEDError(node,"DTD validation error: attribute %s='%s' starts with invalid character", attr, node->getAttribute(attr)); return;}
@@ -113,7 +113,7 @@ void NEDDTDValidator::checkNameAttribute(NEDElement *node, const char *attr)
 void NEDDTDValidator::checkCommentAttribute(NEDElement *node, const char *attr)
 {
     const char *s = node->getAttribute(attr);
-    if (!s)
+    if (!s || !*s)
         return;
     bool incomment = false;
     for (; *s; s++)
@@ -136,7 +136,7 @@ void NEDDTDValidator::checkCommentAttribute(NEDElement *node, const char *attr)
 void NEDDTDValidator::checkNMTokenAttribute(NEDElement *node, const char *attr)
 {
     const char *s = node->getAttribute(attr);
-    if (!s)
+    if (!s || !*s)
         return;
     for (; *s; s++)
         if (!isalpha(*s) && !isdigit(*s) && !strchr("!#$%&()*+,-./:;<=>?@[\\]^_`{|}~",*s))  //FIXME check against XML spec!

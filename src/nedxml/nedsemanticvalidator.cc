@@ -18,6 +18,11 @@
 #include "nedcompiler.h" // for NEDSymbolTable
 
 
+inline bool strnotnull(const char *s)
+{
+    return s && s[0];
+}
+
 NEDSemanticValidator::NEDSemanticValidator(bool parsedExpr, NEDSymbolTable *symbtab)
 {
     parsedExpressions = parsedExpr;
@@ -70,7 +75,7 @@ void NEDSemanticValidator::validateElement(NetworkNode *node)
         NEDError(node, "redefinition of network with name '%s'",node->getName());
 
     // make sure module type exists
-    const char *type_name = node->getLikeName() ? node->getLikeName() : node->getTypeName();
+    const char *type_name = strnotnull(node->getLikeName()) ? node->getLikeName() : node->getTypeName();
     moduletypedecl = symboltable->getModuleDeclaration(type_name);
     if (!moduletypedecl)
         NEDError(node, "unknown module type '%s'",type_name);
@@ -121,7 +126,7 @@ void NEDSemanticValidator::validateElement(SubmodulesNode *node)
 void NEDSemanticValidator::validateElement(SubmoduleNode *node)
 {
     // make sure module type exists
-    const char *type_name = node->getLikeName() ? node->getLikeName() : node->getTypeName();
+    const char *type_name = strnotnull(node->getLikeName()) ? node->getLikeName() : node->getTypeName();
     moduletypedecl = symboltable->getModuleDeclaration(type_name);
     if (!moduletypedecl)
         NEDError(node, "unknown module type '%s'",type_name);
@@ -138,9 +143,18 @@ void NEDSemanticValidator::validateElement(SubstparamNode *node)
 
     // make sure parameter exists in module type
     const char *paramname = node->getName();
-    ParamNode *paramdecl = (ParamNode *)findChildWithTagAndAttribute(moduletypedecl->getFirstChildWithTag(NED_PARAMS), NED_PARAM, "name", paramname);
+    ParamsNode *paramsdecl = (ParamsNode *)moduletypedecl->getFirstChildWithTag(NED_PARAMS);
+    if (!paramsdecl)
+    {
+        NEDError(node, "module type does not have parameters");
+        return;
+    }
+    ParamNode *paramdecl = (ParamNode *)findChildWithTagAndAttribute(paramsdecl, NED_PARAM, "name", paramname);
     if (!paramdecl)
+    {
         NEDError(node, "module type does not have a parameter named '%s'",paramname);
+        return;
+    }
 
     // check type matches
     //FIXME
@@ -157,18 +171,48 @@ void NEDSemanticValidator::validateElement(GatesizeNode *node)
 
     // make sure gate exists in module type
     const char *gatename = node->getName();
-    GateNode *gatedecl = (GateNode *)findChildWithTagAndAttribute(moduletypedecl->getFirstChildWithTag(NED_GATES), NED_GATE, "name", gatename);
+    GatesNode *gatesdecl = (GatesNode *)moduletypedecl->getFirstChildWithTag(NED_GATES);
+    if (!gatesdecl)
+    {
+        NEDError(node, "module type does not have gates");
+        return;
+    }
+    GateNode *gatedecl = (GateNode *)findChildWithTagAndAttribute(gatesdecl, NED_GATE, "name", gatename);
     if (!gatedecl)
-        NEDError(node, "module type does not have a gate name '%s'",gatename);
+    {
+        NEDError(node, "module type does not have a gate named '%s'",gatename);
+        return;
+    }
 
     // check it is vector
-    //FIXME
+    if (!gatedecl->getIsVector())
+        NEDError(node, "gate '%s' is not a vector gate",gatename);
 }
 
 void NEDSemanticValidator::validateElement(SubstmachinesNode *node)
 {
+    if (!moduletypedecl)
+        return;
+
     // make sure machine counts match in module type and here
-    //FIXME
+    MachinesNode *machinesdecl = (MachinesNode *)moduletypedecl->getFirstChildWithTag(NED_MACHINES);
+    NEDElement *child;
+
+    int substcount = 0;
+    for (child=node->getFirstChildWithTag(NED_SUBSTMACHINE); child; child = child->getNextSiblingWithTag(NED_SUBSTMACHINE))
+        substcount++;
+
+    int count = 0;
+    if (!machinesdecl)
+	    count = 1;
+	else
+	    for (child=machinesdecl->getFirstChildWithTag(NED_MACHINE); child; child = child->getNextSiblingWithTag(NED_MACHINE))
+            count++;
+
+    if (count<substcount)
+        NEDError(node, "too many machines, module type expects only %d",count);
+    if (count>substcount)
+        NEDError(node, "too few machines, module type expects %d",count);
 }
 
 void NEDSemanticValidator::validateElement(SubstmachineNode *node)
@@ -183,6 +227,8 @@ void NEDSemanticValidator::validateElement(ConnectionNode *node)
 {
     // validate gate and module types (vector or single)
     // FIXME
+
+//    for (SubmodulesNode *submods=node->getFirstChildWithTag(NED_SUBSTMACHINE); child; child = child->getNextSiblingWithTag(NED_SUBSTMACHINE))
 }
 
 void NEDSemanticValidator::validateElement(ConnAttrNode *node)
@@ -222,6 +268,66 @@ void NEDSemanticValidator::validateElement(IdentNode *node)
 }
 
 void NEDSemanticValidator::validateElement(ConstNode *node)
+{
+}
+
+void NEDSemanticValidator::validateElement(CppincludeNode *node)
+{
+}
+
+void NEDSemanticValidator::validateElement(CppStructNode *node)
+{
+}
+
+void NEDSemanticValidator::validateElement(CppCobjectNode *node)
+{
+}
+
+void NEDSemanticValidator::validateElement(CppNoncobjectNode *node)
+{
+}
+
+void NEDSemanticValidator::validateElement(EnumNode *node)
+{
+    // FIXME check extends-name
+}
+
+void NEDSemanticValidator::validateElement(EnumFieldsNode *node)
+{
+}
+
+void NEDSemanticValidator::validateElement(EnumFieldNode *node)
+{
+}
+
+void NEDSemanticValidator::validateElement(MessageNode *node)
+{
+    // FIXME check extends-name
+}
+
+void NEDSemanticValidator::validateElement(ClassNode *node)
+{
+    // FIXME check extends-name
+}
+
+void NEDSemanticValidator::validateElement(StructNode *node)
+{
+    // FIXME check extends-name
+}
+
+void NEDSemanticValidator::validateElement(FieldsNode *node)
+{
+}
+
+void NEDSemanticValidator::validateElement(FieldNode *node)
+{
+}
+
+void NEDSemanticValidator::validateElement(PropertiesNode *node)
+{
+}
+
+void NEDSemanticValidator::validateElement(PropertyNode *node)
 {
 }
 

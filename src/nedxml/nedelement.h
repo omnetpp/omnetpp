@@ -22,7 +22,7 @@
 #pragma warning(disable:4786)
 #endif
 
-#include "nedstring.h"
+#include <string>
 
 /**
  * Base class for objects in a NED object tree, the XML-based
@@ -37,7 +37,7 @@ class NEDElement
 {
   private:
     int id;
-    NEDString srcloc;
+    std::string srcloc;
     NEDElement *parent;
     NEDElement *firstchild;
     NEDElement *lastchild;

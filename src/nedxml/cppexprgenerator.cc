@@ -13,7 +13,7 @@
   `terms' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>
+
 #include "cppexprgenerator.h"
 #include "nederror.h"
 
@@ -50,6 +50,10 @@ static struct { char *fname; int args; } known_funcs[] =
 
 int CppExpressionGenerator::count = 0;
 
+CppExpressionGenerator::CppExpressionGenerator(ostream& _out) : out(_out)
+{
+}
+
 void CppExpressionGenerator::collectExpressions(NEDElement *node)
 {
     exprMap.clear();
@@ -78,13 +82,35 @@ bool CppExpressionGenerator::needsExpressionClass(ExpressionNode *expr)
     NEDElement *node = expr->getFirstChild();
     if (!node)  {INTERNAL_ERROR0(expr, "needsExpressionClass(): empty expression");return false;}
     int tag = node->getTagCode();
-    if (tag==NED_IDENT || tag==NED_CONST) // FIXME: some paramrefs and functions may also qualify
-        return false;
 
     // only non-const parameter assignments and channel attrs need expression classes (?)
     int parenttag = expr->getParent()->getTagCode();
-    if (parenttag!=NED_SUBSTPARAM && parenttag!=NED_CHANNEL_ATTR)
+    if (parenttag!=NED_SUBSTPARAM && parenttag!=NED_CHANNEL_ATTR && parenttag!=NED_CONN_ATTR)
         return false;
+
+    // identifiers and constants never need expression classes
+    if (tag==NED_IDENT || tag==NED_CONST)
+        return false;
+
+    // special functions (INPUT, INDEX, SIZEOF) may also go without expression classes
+    if (tag==NED_FUNCTION)
+    {
+        const char *funcname = ((FunctionNode *)node)->getName();
+        if (!strcmp(funcname,"index"))
+            return false;
+        if (!strcmp(funcname,"sizeof"))
+            return false;
+        if (!strcmp(funcname,"input"))
+        {
+            NEDElement *op1 = node->getFirstChild();
+            NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
+            if ((!op1 || op1->getTagCode()==NED_CONST) && (!op2 || op2->getTagCode()==NED_CONST))
+                return false;
+        }
+    }
+
+    // FIXME: some paramrefs and functions may also qualify
+
     return true;
 }
 
@@ -128,7 +154,7 @@ void CppExpressionGenerator::doExtractArgs(ExpressionInfo& info, NEDElement *nod
     }
 }
 
-void CppExpressionGenerator::generateExpressionClass(ostream& out, ExpressionInfo& info)
+void CppExpressionGenerator::generateExpressionClass(ExpressionInfo& info)
 {
     const char *classname = info.name.c_str();
     NEDElementVector::iterator i;
@@ -175,7 +201,7 @@ void CppExpressionGenerator::generateExpressionClass(ostream& out, ExpressionInf
 
     // expression method:
     out << "    double evaluate()  {return ";
-    generateChildren(out, info.expr, "               ", MODE_EXPRESSION_CLASS);
+    generateChildren(info.expr, "               ", MODE_EXPRESSION_CLASS);
     out << ";}\n";
     out << "};\n\n";
 }
@@ -202,7 +228,7 @@ const char *CppExpressionGenerator::getNameForArg(NEDElement *node)
         {INTERNAL_ERROR1(node, "getNameForArg(): unexpected tag '%s'", node->getTagName());return NULL;}
 }
 
-void CppExpressionGenerator::doValueForArg(ostream& out, NEDElement *node)
+void CppExpressionGenerator::doValueForArg(NEDElement *node)
 {
     if (node->getTagCode()==NED_IDENT)
         out << ((IdentNode *)node)->getName() << "_var";
@@ -212,25 +238,25 @@ void CppExpressionGenerator::doValueForArg(ostream& out, NEDElement *node)
         {INTERNAL_ERROR1(node, "doValueForArg(): unexpected tag '%s'", node->getTagName());}
 }
 
-void CppExpressionGenerator::generateExpressionClasses(ostream& out)
+void CppExpressionGenerator::generateExpressionClasses()
 {
    if (!exprMap.empty())
    {
        out << "namespace {  // unnamed namespace to avoid name clashes\n\n";
        for (NEDExpressionMap::iterator i=exprMap.begin(); i!=exprMap.end(); ++i)
-           generateExpressionClass(out, (*i).second);
+           generateExpressionClass((*i).second);
        out << "}  // end unnamed namespace\n\n";
    }
 }
 
-void CppExpressionGenerator::generateExpressionUsage(ostream& out, ExpressionNode *expr, const char *indent)
+void CppExpressionGenerator::generateExpressionUsage(ExpressionNode *expr, const char *indent)
 {
     // find name in hash table
     NEDExpressionMap::iterator e = exprMap.find(expr);
     if (e==exprMap.end())
     {
         // inline expression
-        generateChildren(out, expr, indent, MODE_INLINE_EXPRESSION);
+        generateChildren(expr, indent, MODE_INLINE_EXPRESSION);
     }
     else
     {
@@ -245,43 +271,43 @@ void CppExpressionGenerator::generateExpressionUsage(ostream& out, ExpressionNod
         for (NEDElementVector::iterator i=info.args.begin(); i!=info.args.end(); ++i)
         {
             out << ", ";
-            doValueForArg(out, (*i));
+            doValueForArg((*i));
         }
         out << "))";
     }
 }
 
-void CppExpressionGenerator::generateChildren(ostream& out, NEDElement *node, const char *indent, int mode)
+void CppExpressionGenerator::generateChildren(NEDElement *node, const char *indent, int mode)
 {
     for (NEDElement *child=node->getFirstChild(); child; child = child->getNextSibling())
     {
-        generateItem(out, child, indent, mode);
+        generateItem(child, indent, mode);
     }
 }
 
-void CppExpressionGenerator::generateItem(ostream& out, NEDElement *node, const char *indent, int mode)
+void CppExpressionGenerator::generateItem(NEDElement *node, const char *indent, int mode)
 {
     int tagcode = node->getTagCode();
     switch (tagcode)
     {
         case NED_OPERATOR:
-            doOperator(out, (OperatorNode *)node, indent, mode); break;
+            doOperator((OperatorNode *)node, indent, mode); break;
         case NED_FUNCTION:
-            doFunction(out, (FunctionNode *)node, indent, mode); break;
+            doFunction((FunctionNode *)node, indent, mode); break;
         case NED_PARAM_REF:
-            doParamref(out, (ParamRefNode *)node, indent, mode); break;
+            doParamref((ParamRefNode *)node, indent, mode); break;
         case NED_IDENT:
-            doIdent(out, (IdentNode *)node, indent, mode); break;
+            doIdent((IdentNode *)node, indent, mode); break;
         case NED_CONST:
-            doConst(out, (ConstNode *)node, indent, mode); break;
+            doConst((ConstNode *)node, indent, mode); break;
         case NED_EXPRESSION:
-            doExpression(out, (ExpressionNode *)node, indent, mode); break;
+            doExpression((ExpressionNode *)node, indent, mode); break;
         default:
             INTERNAL_ERROR1(node,"generateItem(): unexpected tag %s", node->getTagName());
     }
 }
 
-void CppExpressionGenerator::doOperator(ostream& out, OperatorNode *node, const char *indent, int mode)
+void CppExpressionGenerator::doOperator(OperatorNode *node, const char *indent, int mode)
 {
     NEDElement *op1 = node->getFirstChild();
     NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
@@ -291,32 +317,58 @@ void CppExpressionGenerator::doOperator(ostream& out, OperatorNode *node, const 
     {
         // unary
         out << node->getName();
-        generateItem(out,op1,indent,mode);
+        generateItem(op1,indent,mode);
     }
     else if (!op3)
     {
-        // binary. Always put parens -- C++ operator precendence may be different
-        // from NED's, and anyway who cares in generated C++ code...
-        out << "(";
-        generateItem(out,op1,indent,mode);
-        out << node->getName();
-        generateItem(out,op2,indent,mode);
-        out << ")";
+        // binary.
+        const char *name = node->getName();
+        const char *funcname = NULL;
+        if (!strcmp(name,"^"))
+            funcname = "pow";
+        else if (!strcmp(name,"#"))
+            funcname = "bin_xor";
+        else if (!strcmp(name,"&"))
+            funcname = "bin_and";
+        else if (!strcmp(name,"|"))
+            funcname = "bin_or";
+        else if (!strcmp(name,"<<"))
+            funcname = "shift_left";
+        else if (!strcmp(name,">>"))
+            funcname = "shift_right";
+
+        if (funcname)
+        {
+            out << funcname << "(";
+            generateItem(op1,indent,mode);
+            out << ",";
+            generateItem(op2,indent,mode);
+            out << ")";
+        }
+        else
+        {
+            // always put parens to force NED precedence (might be different from C++'s)
+            out << "(";
+            generateItem(op1,indent,mode);
+            out << name;
+            generateItem(op2,indent,mode);
+            out << ")";
+        }
     }
     else
     {
         // tertiary can only be "?:"
         out << "(";
-        generateItem(out,op1,indent,mode);
+        generateItem(op1,indent,mode);
         out << " ? ";
-        generateItem(out,op2,indent,mode);
+        generateItem(op2,indent,mode);
         out << " : ";
-        generateItem(out,op3,indent,mode);
+        generateItem(op3,indent,mode);
         out << ")";
     }
 }
 
-void CppExpressionGenerator::doFunction(ostream& out, FunctionNode *node, const char *indent, int mode)
+void CppExpressionGenerator::doFunction(FunctionNode *node, const char *indent, int mode)
 {
     const char *funcname = node->getName();
     NEDElement *op1 = node->getFirstChild();
@@ -338,7 +390,35 @@ void CppExpressionGenerator::doFunction(ostream& out, FunctionNode *node, const 
     }
     else if (!strcmp(funcname,"input"))
     {
-        // FIXME handle...
+        if (mode==MODE_INLINE_EXPRESSION)
+        {
+            out << "(tmpval=";
+            if (op1) {
+                generateItem(op1,indent,mode);
+            } else {
+                out << "0L";
+            }
+            if (op2) {
+                out << ", tmpval.setPrompt(";
+                generateItem(op2,indent,mode);
+                out << ")";
+            }
+            out << ", tmpval.setInput(true), tmpval)";
+        }
+        else
+        {
+            // FIXME: NOT GOOD THIS WAY! if inside expression, input cpar must become member of the expr class...
+            out << "(p=new cPar(), (*p)=";
+            if (op1) {
+                generateItem(op1,indent,mode);
+            }
+            if (op2) {
+                out << ", p->setPrompt(";
+                generateItem(op2,indent,mode);
+                out << ")";
+            }
+            out << ", p->setInput(true), (*p))";
+        }
         return;
     }
 
@@ -358,20 +438,20 @@ void CppExpressionGenerator::doFunction(ostream& out, FunctionNode *node, const 
 
     out << "(";
     if (op1) {
-        generateItem(out,op1,indent,mode);
+        generateItem(op1,indent,mode);
     }
     if (op2) {
         out << ", ";
-        generateItem(out,op2,indent,mode);
+        generateItem(op2,indent,mode);
     }
     if (op3) {
         out << ", ";
-        generateItem(out,op3,indent,mode);
+        generateItem(op3,indent,mode);
     }
     out << ")";
 }
 
-void CppExpressionGenerator::doParamref(ostream& out, ParamRefNode *node, const char *indent, int mode)
+void CppExpressionGenerator::doParamref(ParamRefNode *node, const char *indent, int mode)
 {
     if (mode==MODE_EXPRESSION_CLASS)
     {
@@ -404,7 +484,7 @@ void CppExpressionGenerator::doParamref(ostream& out, ParamRefNode *node, const 
     }
 }
 
-void CppExpressionGenerator::doIdent(ostream& out, IdentNode *node, const char *indent, int mode)
+void CppExpressionGenerator::doIdent(IdentNode *node, const char *indent, int mode)
 {
     if (mode==MODE_EXPRESSION_CLASS)
     {
@@ -416,7 +496,7 @@ void CppExpressionGenerator::doIdent(ostream& out, IdentNode *node, const char *
     }
 }
 
-void CppExpressionGenerator::doConst(ostream& out, ConstNode *node, const char *indent, int mode)
+void CppExpressionGenerator::doConst(ConstNode *node, const char *indent, int mode)
 {
     bool isstring = (node->getType()==NED_CONST_STRING);
 
@@ -425,8 +505,8 @@ void CppExpressionGenerator::doConst(ostream& out, ConstNode *node, const char *
     if (isstring) out << "\"";
 }
 
-void CppExpressionGenerator::doExpression(ostream& out, ExpressionNode *node, const char *indent, int mode)
+void CppExpressionGenerator::doExpression(ExpressionNode *node, const char *indent, int mode)
 {
-    generateItem(out, node->getFirstChild(), indent, mode);
+    generateItem(node->getFirstChild(), indent, mode);
 }
 

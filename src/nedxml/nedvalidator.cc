@@ -63,6 +63,20 @@ void  NEDValidatorBase::validateElement(NEDElement *node)
         case NED_PARAM_REF: validateElement((ParamRefNode *) node); break;
         case NED_IDENT: validateElement((IdentNode *) node); break;
         case NED_CONST: validateElement((ConstNode *) node); break;
+        case NED_CPPINCLUDE: validateElement((CppincludeNode *) node); break;
+        case NED_CPP_STRUCT: validateElement((CppStructNode *) node); break;
+        case NED_CPP_COBJECT: validateElement((CppCobjectNode *) node); break;
+        case NED_CPP_NONCOBJECT: validateElement((CppNoncobjectNode *) node); break;
+        case NED_ENUM: validateElement((EnumNode *) node); break;
+        case NED_ENUM_FIELDS: validateElement((EnumFieldsNode *) node); break;
+        case NED_ENUM_FIELD: validateElement((EnumFieldNode *) node); break;
+        case NED_MESSAGE: validateElement((MessageNode *) node); break;
+        case NED_CLASS: validateElement((ClassNode *) node); break;
+        case NED_STRUCT: validateElement((StructNode *) node); break;
+        case NED_FIELDS: validateElement((FieldsNode *) node); break;
+        case NED_FIELD: validateElement((FieldNode *) node); break;
+        case NED_PROPERTIES: validateElement((PropertiesNode *) node); break;
+        case NED_PROPERTY: validateElement((PropertyNode *) node); break;
         case NED_UNKNOWN: validateElement((UnknownNode *) node); break;
         default: INTERNAL_ERROR1(node,"validateElement(): unknown tag '%s'", node->getTagName());
     }

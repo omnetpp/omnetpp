@@ -16,6 +16,7 @@
 
 #include "nedsaxhandler.h"
 #include "nedelements.h"
+#include "nederror.h"
 
 
 NEDSAXHandler::NEDSAXHandler(const char *fname)
@@ -40,14 +41,21 @@ void NEDSAXHandler::startElement(const char *name, const char **atts)
 {
     // initialize node
     NEDElement *node = NEDElementFactory::getInstance()->createNodeWithTag(name);
-    for (int i=0; atts[i]; i+=2) {
-        node->setAttribute(atts[i], atts[i+1]);
-    }
 
     // "debug info"
     char buf[200];
     sprintf(buf,"%s:%d",sourcefilename, parser->getCurrentLineNumber());
     node->setSourceLocation(buf);
+
+    // set attributes
+    for (int i=0; atts[i]; i+=2) {
+        try {
+            node->setAttribute(atts[i], atts[i+1]);
+        } catch (NEDException *e) {
+            NEDError(node, "error in attribute '%s': %s", atts[i],e->errorMessage());
+            delete e;
+        }
+    }
 
     // add to tree
     if (!root) {

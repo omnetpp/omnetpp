@@ -154,7 +154,7 @@ int NEDFileBuffer::lastColumn(char *s)
 
 char *NEDFileBuffer::getPosition(int line, int column)
 {
-    if (line>numLines)
+    if (line<0 || line>numLines)
         return lineBeg[numLines]+strlen(lineBeg[numLines]);
 
     char *s = lineBeg[line];

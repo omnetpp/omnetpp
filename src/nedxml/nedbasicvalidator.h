@@ -73,6 +73,20 @@ class NEDBasicValidator : public NEDValidatorBase
     virtual void validateElement(ParamRefNode *node);
     virtual void validateElement(IdentNode *node);
     virtual void validateElement(ConstNode *node);
+    virtual void validateElement(CppincludeNode *node);
+    virtual void validateElement(CppStructNode *node);
+    virtual void validateElement(CppCobjectNode *node);
+    virtual void validateElement(CppNoncobjectNode *node);
+    virtual void validateElement(EnumNode *node);
+    virtual void validateElement(EnumFieldsNode *node);
+    virtual void validateElement(EnumFieldNode *node);
+    virtual void validateElement(MessageNode *node);
+    virtual void validateElement(ClassNode *node);
+    virtual void validateElement(StructNode *node);
+    virtual void validateElement(FieldsNode *node);
+    virtual void validateElement(FieldNode *node);
+    virtual void validateElement(PropertiesNode *node);
+    virtual void validateElement(PropertyNode *node);
     virtual void validateElement(UnknownNode *node);
 };
 

@@ -21,14 +21,14 @@
 
 void generateNed(ostream& out, NEDElement *node, bool newsyntax)
 {
-    NEDGenerator nedgen;
+    NEDGenerator nedgen(out);
     nedgen.setNewSyntax(newsyntax);
-    nedgen.generate(out, node, "");
+    nedgen.generate(node, "");
 }
 
 //-----------------------------------------
 
-NEDGenerator::NEDGenerator()
+NEDGenerator::NEDGenerator(ostream& _out) : out(_out)
 {
     newsyntax = true;
     indentsize = 4;
@@ -48,9 +48,9 @@ void NEDGenerator::setIndentSize(int indentsiz)
     indentsize = indentsiz;
 }
 
-void NEDGenerator::generate(ostream& out, NEDElement *node, const char *indent)
+void NEDGenerator::generate(NEDElement *node, const char *indent)
 {
-    generateNedItem(out, node, indent, false);
+    generateNedItem(node, indent, false);
 }
 
 const char *NEDGenerator::increaseIndent(const char *indent)
@@ -78,15 +78,15 @@ inline bool strnotnull(const char *s)
 
 //---------------------------------------------------------------------------
 
-void NEDGenerator::generateChildren(ostream& out, NEDElement *node, const char *indent, const char *arg)
+void NEDGenerator::generateChildren(NEDElement *node, const char *indent, const char *arg)
 {
     for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
     {
-        generateNedItem(out, child, indent, child==node->getLastChild(), arg);
+        generateNedItem(child, indent, child==node->getLastChild(), arg);
     }
 }
 
-void NEDGenerator::generateChildrenWithType(ostream& out, NEDElement *node, int tagcode, const char *indent, const char *arg)
+void NEDGenerator::generateChildrenWithType(NEDElement *node, int tagcode, const char *indent, const char *arg)
 {
     // find last
     NEDElement *lastWithTag = NULL;
@@ -101,14 +101,14 @@ void NEDGenerator::generateChildrenWithType(ostream& out, NEDElement *node, int 
     {
         if (child->getTagCode()==tagcode)
         {
-            generateNedItem(out, child, indent, child==lastWithTag, arg);
+            generateNedItem(child, indent, child==lastWithTag, arg);
         }
     }
 }
 
 //---------------------------------------------------------------------------
 
-void NEDGenerator::printExpression(ostream& out, NEDElement *node, const char *attr, const char *indent)
+void NEDGenerator::printExpression(NEDElement *node, const char *attr, const char *indent)
 {
     if (strnotnull(node->getAttribute(attr)))
     {
@@ -120,13 +120,13 @@ void NEDGenerator::printExpression(ostream& out, NEDElement *node, const char *a
         {
             if (strnotnull(expr->getTarget()) && !strcmp(expr->getTarget(),attr))
             {
-                generateNedItem(out, expr, indent, false, NULL);
+                generateNedItem(expr, indent, false, NULL);
             }
         }
     }
 }
 
-void NEDGenerator::printVector(ostream& out, NEDElement *node, const char *attr, const char *indent)
+void NEDGenerator::printVector(NEDElement *node, const char *attr, const char *indent)
 {
     if (strnotnull(node->getAttribute(attr)))
     {
@@ -141,14 +141,14 @@ void NEDGenerator::printVector(ostream& out, NEDElement *node, const char *attr,
                  !strcmp(((ExpressionNode *)child)->getTarget(),attr))
             {
                 out << "[";
-                generateNedItem(out, child, indent, false, NULL);
+                generateNedItem(child, indent, false, NULL);
                 out << "]";
             }
         }
     }
 }
 
-void NEDGenerator::printIfExpression(ostream& out, NEDElement *node, const char *attr, const char *indent)
+void NEDGenerator::printIfExpression(NEDElement *node, const char *attr, const char *indent)
 {
     if (strnotnull(node->getAttribute(attr)))
     {
@@ -163,7 +163,7 @@ void NEDGenerator::printIfExpression(ostream& out, NEDElement *node, const char 
                  !strcmp(((ExpressionNode *)child)->getTarget(),attr))
             {
                 out << " if ";
-                generateNedItem(out, child, indent, false, NULL);
+                generateNedItem(child, indent, false, NULL);
             }
         }
     }
@@ -172,7 +172,7 @@ void NEDGenerator::printIfExpression(ostream& out, NEDElement *node, const char 
 
 //---------------------------------------------------------------------------
 
-void NEDGenerator::appendBannerComment(ostream& out, const char *comment, const char *indent)
+void NEDGenerator::appendBannerComment(const char *comment, const char *indent)
 {
     if (!strnotnull(comment))
         return;
@@ -180,7 +180,7 @@ void NEDGenerator::appendBannerComment(ostream& out, const char *comment, const 
     out << comment;
 }
 
-void NEDGenerator::appendRightComment(ostream& out, const char *comment, const char *indent)
+void NEDGenerator::appendRightComment(const char *comment, const char *indent)
 {
     if (!strnotnull(comment))
         return;
@@ -188,7 +188,7 @@ void NEDGenerator::appendRightComment(ostream& out, const char *comment, const c
     out << comment;
 }
 
-void NEDGenerator::appendInlineRightComment(ostream& out, const char *comment, const char *indent)
+void NEDGenerator::appendInlineRightComment(const char *comment, const char *indent)
 {
     if (!strnotnull(comment))
         return;
@@ -196,7 +196,7 @@ void NEDGenerator::appendInlineRightComment(ostream& out, const char *comment, c
     out << comment;
 }
 
-void NEDGenerator::appendTrailingComment(ostream& out, const char *comment, const char *indent)
+void NEDGenerator::appendTrailingComment(const char *comment, const char *indent)
 {
     if (!strnotnull(comment))
         return;
@@ -206,288 +206,288 @@ void NEDGenerator::appendTrailingComment(ostream& out, const char *comment, cons
 
 //---------------------------------------------------------------------------
 
-void NEDGenerator::doNedfiles(ostream& out, NedFilesNode *node, const char *indent, bool, const char *)
+void NEDGenerator::doNedfiles(NedFilesNode *node, const char *indent, bool, const char *)
 {
-    generateChildren(out, node, indent);
+    generateChildren(node, indent);
 }
 
-void NEDGenerator::doNedfile(ostream& out, NedFileNode *node, const char *indent, bool, const char *)
+void NEDGenerator::doNedfile(NedFileNode *node, const char *indent, bool, const char *)
 {
-    appendBannerComment(out, node->getBannerComment(), indent);
-    generateChildren(out, node, indent);
+    appendBannerComment(node->getBannerComment(), indent);
+    generateChildren(node, indent);
 }
 
-void NEDGenerator::doImports(ostream& out, ImportNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doImports(ImportNode *node, const char *indent, bool islast, const char *)
 {
-    appendBannerComment(out, node->getBannerComment(), indent);
+    appendBannerComment(node->getBannerComment(), indent);
     out << indent << "import ";
-    appendRightComment(out, node->getRightComment(), indent);
-    generateChildren(out, node, increaseIndent(indent));
-    appendTrailingComment(out, node->getTrailingComment(), "");
+    appendRightComment(node->getRightComment(), indent);
+    generateChildren(node, increaseIndent(indent));
+    appendTrailingComment(node->getTrailingComment(), "");
 }
 
-void NEDGenerator::doImport(ostream& out, ImportedFileNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doImport(ImportedFileNode *node, const char *indent, bool islast, const char *)
 {
-    appendBannerComment(out, node->getBannerComment(), indent);
+    appendBannerComment(node->getBannerComment(), indent);
     out << indent << "\"" << node->getFilename() << "\"";
     if (islast) {
         out << ";";
     } else {
         out << ",";
     }
-    appendRightComment(out, node->getRightComment(), indent);
+    appendRightComment(node->getRightComment(), indent);
 }
 
-void NEDGenerator::doChannel(ostream& out, ChannelNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doChannel(ChannelNode *node, const char *indent, bool islast, const char *)
 {
-    appendBannerComment(out, node->getBannerComment(), indent);
+    appendBannerComment(node->getBannerComment(), indent);
     out << indent << "channel " << node->getName() << "\n";
     if (newsyntax) out << indent << "{";
-    appendRightComment(out, node->getRightComment(), indent);
-    generateChildren(out, node, increaseIndent(indent));
+    appendRightComment(node->getRightComment(), indent);
+    generateChildren(node, increaseIndent(indent));
     out << indent << (newsyntax?"}":"endchannel");
-    appendTrailingComment(out, node->getTrailingComment(), "");
+    appendTrailingComment(node->getTrailingComment(), "");
 }
 
-void NEDGenerator::doChanattr(ostream& out, ChannelAttrNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doChanattr(ChannelAttrNode *node, const char *indent, bool islast, const char *)
 {
-    appendBannerComment(out, node->getBannerComment(), indent);
-    out << indent << "" << node->getName() << " ";
-    printExpression(out, node, "value",indent);
+    appendBannerComment(node->getBannerComment(), indent);
+    out << indent << node->getName() << " ";
+    printExpression(node, "value",indent);
     out << ";";
-    appendRightComment(out, node->getRightComment(), indent);
+    appendRightComment(node->getRightComment(), indent);
 }
 
-void NEDGenerator::doNetwork(ostream& out, NetworkNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doNetwork(NetworkNode *node, const char *indent, bool islast, const char *)
 {
-    appendBannerComment(out, node->getBannerComment(), indent);
+    appendBannerComment(node->getBannerComment(), indent);
     out << indent << "network " << node->getName() << " : " << node->getTypeName() << "\n";
     if (newsyntax) out << indent << "{";
-    appendRightComment(out, node->getRightComment(), indent);
+    appendRightComment(node->getRightComment(), indent);
 
-    generateChildrenWithType(out, node, NED_SUBSTMACHINES, increaseIndent(indent));
-    generateChildrenWithType(out, node, NED_SUBSTPARAMS, increaseIndent(indent));
+    generateChildrenWithType(node, NED_SUBSTMACHINES, increaseIndent(indent));
+    generateChildrenWithType(node, NED_SUBSTPARAMS, increaseIndent(indent));
 
     out << indent << (newsyntax?"}":"endnetwork");
-    appendTrailingComment(out, node->getTrailingComment(), "");
+    appendTrailingComment(node->getTrailingComment(), "");
 }
 
-void NEDGenerator::doSimple(ostream& out, SimpleModuleNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doSimple(SimpleModuleNode *node, const char *indent, bool islast, const char *)
 {
-    appendBannerComment(out, node->getBannerComment(), indent);
+    appendBannerComment(node->getBannerComment(), indent);
     out << indent << "simple " << node->getName() << "\n";
     if (newsyntax) out << indent << "{";
-    appendRightComment(out, node->getRightComment(), indent);
+    appendRightComment(node->getRightComment(), indent);
 
-    generateChildrenWithType(out, node, NED_MACHINES, increaseIndent(indent));
-    generateChildrenWithType(out, node, NED_PARAMS, increaseIndent(indent));
-    generateChildrenWithType(out, node, NED_GATES, increaseIndent(indent));
+    generateChildrenWithType(node, NED_MACHINES, increaseIndent(indent));
+    generateChildrenWithType(node, NED_PARAMS, increaseIndent(indent));
+    generateChildrenWithType(node, NED_GATES, increaseIndent(indent));
 
     out << indent << (newsyntax?"}":"endsimple");
-    appendTrailingComment(out, node->getTrailingComment(), "");
+    appendTrailingComment(node->getTrailingComment(), "");
 }
 
-void NEDGenerator::doModule(ostream& out, CompoundModuleNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doModule(CompoundModuleNode *node, const char *indent, bool islast, const char *)
 {
-    appendBannerComment(out, node->getBannerComment(), indent);
+    appendBannerComment(node->getBannerComment(), indent);
     out << indent << "module " << node->getName() << "\n";
     if (newsyntax) out << indent << "{";
-    appendRightComment(out, node->getRightComment(), indent);
+    appendRightComment(node->getRightComment(), indent);
 
-    generateChildrenWithType(out, node, NED_MACHINES, increaseIndent(indent));
-    generateChildrenWithType(out, node, NED_PARAMS, increaseIndent(indent));
-    generateChildrenWithType(out, node, NED_GATES, increaseIndent(indent));
-    generateChildrenWithType(out, node, NED_SUBMODULES, increaseIndent(indent));
-    generateChildrenWithType(out, node, NED_CONNECTIONS, increaseIndent(indent));
-    generateChildrenWithType(out, node, NED_DISPLAY_STRING, increaseIndent(indent));
+    generateChildrenWithType(node, NED_MACHINES, increaseIndent(indent));
+    generateChildrenWithType(node, NED_PARAMS, increaseIndent(indent));
+    generateChildrenWithType(node, NED_GATES, increaseIndent(indent));
+    generateChildrenWithType(node, NED_SUBMODULES, increaseIndent(indent));
+    generateChildrenWithType(node, NED_CONNECTIONS, increaseIndent(indent));
+    generateChildrenWithType(node, NED_DISPLAY_STRING, increaseIndent(indent));
 
     out << indent << (newsyntax?"}":"endmodule");
-    appendTrailingComment(out, node->getTrailingComment(), "");
+    appendTrailingComment(node->getTrailingComment(), "");
 }
 
-void NEDGenerator::doParams(ostream& out, ParamsNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doParams(ParamsNode *node, const char *indent, bool islast, const char *)
 {
-    appendBannerComment(out, node->getBannerComment(), indent);
+    appendBannerComment(node->getBannerComment(), indent);
     out << indent << "parameters:";
-    appendRightComment(out, node->getRightComment(), indent);
-    generateChildren(out, node, increaseIndent(indent));
+    appendRightComment(node->getRightComment(), indent);
+    generateChildren(node, increaseIndent(indent));
 }
 
-void NEDGenerator::doParam(ostream& out, ParamNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doParam(ParamNode *node, const char *indent, bool islast, const char *)
 {
-    appendBannerComment(out, node->getBannerComment(), indent);
-    out << indent << "" << node->getName() << " : " << node->getDataType();
+    appendBannerComment(node->getBannerComment(), indent);
+    out << indent << node->getName() << " : " << node->getDataType();
     if (islast || newsyntax) {
         out << ";";
     } else {
         out << ",";
     }
-    appendRightComment(out, node->getRightComment(), indent);
+    appendRightComment(node->getRightComment(), indent);
 }
 
-void NEDGenerator::doGates(ostream& out, GatesNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doGates(GatesNode *node, const char *indent, bool islast, const char *)
 {
-    appendBannerComment(out, node->getBannerComment(), indent);
+    appendBannerComment(node->getBannerComment(), indent);
     out << indent << "gates:";
-    appendRightComment(out, node->getRightComment(), indent);
-    generateChildren(out, node, increaseIndent(indent));
+    appendRightComment(node->getRightComment(), indent);
+    generateChildren(node, increaseIndent(indent));
 }
 
-void NEDGenerator::doGate(ostream& out, GateNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doGate(GateNode *node, const char *indent, bool islast, const char *)
 {
-    appendBannerComment(out, node->getBannerComment(), indent);
+    appendBannerComment(node->getBannerComment(), indent);
     out << indent << (node->getDirection()==NED_GATEDIR_INPUT ? "in: " : "out: ") << node->getName();
     if (node->getIsVector()) {
         out << "[]";
     }
     out << ";";
-    appendRightComment(out, node->getRightComment(), indent);
+    appendRightComment(node->getRightComment(), indent);
 }
 
-void NEDGenerator::doMachines(ostream& out, MachinesNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doMachines(MachinesNode *node, const char *indent, bool islast, const char *)
 {
-    appendBannerComment(out, node->getBannerComment(), indent);
+    appendBannerComment(node->getBannerComment(), indent);
     out << indent << "machines:";
-    appendRightComment(out, node->getRightComment(), indent);
-    generateChildren(out, node, increaseIndent(indent));
+    appendRightComment(node->getRightComment(), indent);
+    generateChildren(node, increaseIndent(indent));
 }
 
-void NEDGenerator::doMachine(ostream& out, MachineNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doMachine(MachineNode *node, const char *indent, bool islast, const char *)
 {
-    appendBannerComment(out, node->getBannerComment(), indent);
-    out << indent << "" << node->getName();
+    appendBannerComment(node->getBannerComment(), indent);
+    out << indent << node->getName();
     if (islast || newsyntax) {
         out << ";";
     } else {
         out << ",";
     }
-    appendRightComment(out, node->getRightComment(), indent);
+    appendRightComment(node->getRightComment(), indent);
 }
 
-void NEDGenerator::doSubmodules(ostream& out, SubmodulesNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doSubmodules(SubmodulesNode *node, const char *indent, bool islast, const char *)
 {
-    appendBannerComment(out, node->getBannerComment(), indent);
+    appendBannerComment(node->getBannerComment(), indent);
     out << indent << "submodules:";
-    appendRightComment(out, node->getRightComment(), indent);
-    generateChildren(out, node, increaseIndent(indent));
+    appendRightComment(node->getRightComment(), indent);
+    generateChildren(node, increaseIndent(indent));
 }
 
-void NEDGenerator::doSubmodule(ostream& out, SubmoduleNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doSubmodule(SubmoduleNode *node, const char *indent, bool islast, const char *)
 {
-    appendBannerComment(out, node->getBannerComment(), indent);
+    appendBannerComment(node->getBannerComment(), indent);
     out << indent << node->getName() << ": " << node->getTypeName();
-    printVector(out, node, "vector-size",indent);
+    printVector(node, "vector-size",indent);
     if (strnotnull(node->getLikeName())) {
         out << " like " << node->getLikeName();
     }
     out << ";";
-    appendRightComment(out, node->getRightComment(), indent);
+    appendRightComment(node->getRightComment(), indent);
 
-    generateChildrenWithType(out, node, NED_SUBSTMACHINES, increaseIndent(indent));
-    generateChildrenWithType(out, node, NED_SUBSTPARAMS, increaseIndent(indent));
-    generateChildrenWithType(out, node, NED_GATESIZES, increaseIndent(indent));
-    generateChildrenWithType(out, node, NED_DISPLAY_STRING, increaseIndent(indent));
+    generateChildrenWithType(node, NED_SUBSTMACHINES, increaseIndent(indent));
+    generateChildrenWithType(node, NED_SUBSTPARAMS, increaseIndent(indent));
+    generateChildrenWithType(node, NED_GATESIZES, increaseIndent(indent));
+    generateChildrenWithType(node, NED_DISPLAY_STRING, increaseIndent(indent));
 }
 
-void NEDGenerator::doSubstparams(ostream& out, SubstparamsNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doSubstparams(SubstparamsNode *node, const char *indent, bool islast, const char *)
 {
-    appendBannerComment(out, node->getBannerComment(), indent);
+    appendBannerComment(node->getBannerComment(), indent);
     out << indent << "parameters";
-    printIfExpression(out, node, "condition",indent);
+    printIfExpression(node, "condition",indent);
     out << ":";
 
-    appendRightComment(out, node->getRightComment(), indent);
-    generateChildren(out, node, increaseIndent(indent));
+    appendRightComment(node->getRightComment(), indent);
+    generateChildren(node, increaseIndent(indent));
 }
 
-void NEDGenerator::doSubstparam(ostream& out, SubstparamNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doSubstparam(SubstparamNode *node, const char *indent, bool islast, const char *)
 {
-    appendBannerComment(out, node->getBannerComment(), indent);
-    out << indent << "" << node->getName() << " = ";
-    printExpression(out, node, "value",indent);
+    appendBannerComment(node->getBannerComment(), indent);
+    out << indent << node->getName() << " = ";
+    printExpression(node, "value",indent);
     if (islast || newsyntax) {
         out << ";";
     } else {
         out << ",";
     }
-    appendRightComment(out, node->getRightComment(), indent);
+    appendRightComment(node->getRightComment(), indent);
 }
 
-void NEDGenerator::doGatesizes(ostream& out, GatesizesNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doGatesizes(GatesizesNode *node, const char *indent, bool islast, const char *)
 {
-    appendBannerComment(out, node->getBannerComment(), indent);
+    appendBannerComment(node->getBannerComment(), indent);
     out << indent << "gatesizes";
-    printIfExpression(out, node, "condition",indent);
+    printIfExpression(node, "condition",indent);
     out << ":";
 
-    appendRightComment(out, node->getRightComment(), indent);
-    generateChildren(out, node, increaseIndent(indent));
+    appendRightComment(node->getRightComment(), indent);
+    generateChildren(node, increaseIndent(indent));
 }
 
-void NEDGenerator::doGatesize(ostream& out, GatesizeNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doGatesize(GatesizeNode *node, const char *indent, bool islast, const char *)
 {
-    appendBannerComment(out, node->getBannerComment(), indent);
-    out << indent << "" << node->getName();
-    printVector(out, node, "vector-size",indent);
+    appendBannerComment(node->getBannerComment(), indent);
+    out << indent << node->getName();
+    printVector(node, "vector-size",indent);
     if (islast || newsyntax) {
         out << ";";
     } else {
         out << ",";
     }
-    appendRightComment(out, node->getRightComment(), indent);
+    appendRightComment(node->getRightComment(), indent);
 }
 
-void NEDGenerator::doSubstmachines(ostream& out, SubstmachinesNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doSubstmachines(SubstmachinesNode *node, const char *indent, bool islast, const char *)
 {
-    appendBannerComment(out, node->getBannerComment(), indent);
+    appendBannerComment(node->getBannerComment(), indent);
     out << indent << "on";
-    printIfExpression(out, node, "condition",indent);
+    printIfExpression(node, "condition",indent);
     out << ":";
 
-    appendRightComment(out, node->getRightComment(), indent);
-    generateChildren(out, node, increaseIndent(indent));
+    appendRightComment(node->getRightComment(), indent);
+    generateChildren(node, increaseIndent(indent));
 }
 
-void NEDGenerator::doSubstmachine(ostream& out, SubstmachineNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doSubstmachine(SubstmachineNode *node, const char *indent, bool islast, const char *)
 {
-    appendBannerComment(out, node->getBannerComment(), indent);
-    out << indent << "" << node->getName();
+    appendBannerComment(node->getBannerComment(), indent);
+    out << indent << node->getName();
     if (islast || newsyntax) {
         out << ";";
     } else {
         out << ",";
     }
-    appendRightComment(out, node->getRightComment(), indent);
+    appendRightComment(node->getRightComment(), indent);
 }
 
-void NEDGenerator::doConnections(ostream& out, ConnectionsNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doConnections(ConnectionsNode *node, const char *indent, bool islast, const char *)
 {
-    appendBannerComment(out, node->getBannerComment(), indent);
+    appendBannerComment(node->getBannerComment(), indent);
     if (!node->getCheckUnconnected()) {
         out << indent << "connections nocheck:";
     } else {
         out << indent << "connections:";
     }
-    appendRightComment(out, node->getRightComment(), indent);
-    generateChildren(out, node, increaseIndent(indent));
+    appendRightComment(node->getRightComment(), indent);
+    generateChildren(node, increaseIndent(indent));
 }
 
-void NEDGenerator::printGate(ostream& out, NEDElement *conn, const char *modname, const char *modindexattr,
+void NEDGenerator::printGate(NEDElement *conn, const char *modname, const char *modindexattr,
                              const char *gatename, const char *gateindexattr, const char *indent)
 {
     if (strnotnull(modname)) {
         out << modname;
-        printVector(out, conn, modindexattr,indent);
+        printVector(conn, modindexattr,indent);
         out << ".";
     }
 
     out << gatename;
-    printVector(out, conn, gateindexattr,indent);
+    printVector(conn, gateindexattr,indent);
 }
 
-void NEDGenerator::doConnection(ostream& out, ConnectionNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doConnection(ConnectionNode *node, const char *indent, bool islast, const char *)
 {
-    appendBannerComment(out, node->getBannerComment(), indent);
+    appendBannerComment(node->getBannerComment(), indent);
 
     //  direction
     const char *arrow;
@@ -503,27 +503,27 @@ void NEDGenerator::doConnection(ostream& out, ConnectionNode *node, const char *
     // print src
     out << indent;
     if (srcfirst) {
-        printGate(out, node, node->getSrcModule(), "src-module-index", node->getSrcGate(), "src-gate-index", indent);
+        printGate(node, node->getSrcModule(), "src-module-index", node->getSrcGate(), "src-gate-index", indent);
     } else {
-        printGate(out, node, node->getDestModule(), "dest-module-index", node->getDestGate(), "dest-gate-index", indent);
+        printGate(node, node->getDestModule(), "dest-module-index", node->getDestGate(), "dest-gate-index", indent);
     }
 
     // arrow
     out << arrow;
 
     // print channel attributes
-    generateChildrenWithType(out, node, NED_CONN_ATTR, indent, arrow);
+    generateChildrenWithType(node, NED_CONN_ATTR, indent, arrow);
 
     // print dest
     out << " ";
     if (srcfirst) {
-        printGate(out, node, node->getDestModule(), "dest-module-index", node->getDestGate(), "dest-gate-index", indent);
+        printGate(node, node->getDestModule(), "dest-module-index", node->getDestGate(), "dest-gate-index", indent);
     } else {
-        printGate(out, node, node->getSrcModule(), "src-module-index", node->getSrcGate(), "src-gate-index", indent);
+        printGate(node, node->getSrcModule(), "src-module-index", node->getSrcGate(), "src-gate-index", indent);
     }
 
     // print 'if' clause
-    printIfExpression(out, node, "condition",indent);
+    printIfExpression(node, "condition",indent);
 
     // print display string
     DisplayStringNode *dispstr = (DisplayStringNode *) node->getFirstChildWithTag(NED_DISPLAY_STRING);
@@ -535,57 +535,57 @@ void NEDGenerator::doConnection(ostream& out, ConnectionNode *node, const char *
     out << ";";
 
     // print comments
-    appendRightComment(out, node->getRightComment(), indent);
+    appendRightComment(node->getRightComment(), indent);
 }
 
-void NEDGenerator::doConnattr(ostream& out, ConnAttrNode *node, const char *indent, bool islast, const char *arrow)
+void NEDGenerator::doConnattr(ConnAttrNode *node, const char *indent, bool islast, const char *arrow)
 {
     if (!strcmp(node->getName(),"channel")) {
         //  sorry for the special case :-(
-        printExpression(out, node, "value",indent);
+        printExpression(node, "value",indent);
     } else {
         out << " " << node->getName() << " ";
-        printExpression(out, node, "value",indent);
+        printExpression(node, "value",indent);
     }
-    appendInlineRightComment(out, node->getRightComment(), "");
+    appendInlineRightComment(node->getRightComment(), "");
     if (islast) {
         out << arrow;
     }
 }
 
-void NEDGenerator::doForloop(ostream& out, ForLoopNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doForloop(ForLoopNode *node, const char *indent, bool islast, const char *)
 {
-    appendBannerComment(out, node->getBannerComment(), indent);
+    appendBannerComment(node->getBannerComment(), indent);
     out << indent << "for ";
-    generateChildrenWithType(out, node, NED_LOOP_VAR, increaseIndent(indent));
+    generateChildrenWithType(node, NED_LOOP_VAR, increaseIndent(indent));
     out << " do";
-    appendRightComment(out, node->getRightComment(), indent);
-    generateChildrenWithType(out, node, NED_CONNECTION, increaseIndent(indent));
+    appendRightComment(node->getRightComment(), indent);
+    generateChildrenWithType(node, NED_CONNECTION, increaseIndent(indent));
     out << indent << "endfor;";
-    appendTrailingComment(out, node->getTrailingComment(), "");
+    appendTrailingComment(node->getTrailingComment(), "");
 }
 
-void NEDGenerator::doLoopvar(ostream& out, LoopVarNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doLoopvar(LoopVarNode *node, const char *indent, bool islast, const char *)
 {
-    appendBannerComment(out, node->getBannerComment(), indent);
+    appendBannerComment(node->getBannerComment(), indent);
     out << node->getParamName() << "=";
-    printExpression(out, node, "from-value",indent);
+    printExpression(node, "from-value",indent);
     out << "..";
-    printExpression(out, node, "to-value",indent);
+    printExpression(node, "to-value",indent);
     if (!islast) out << ", ";
-    appendRightComment(out, node->getRightComment(), indent);
+    appendRightComment(node->getRightComment(), indent);
 }
 
-void NEDGenerator::doDisplaystring(ostream& out, DisplayStringNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doDisplaystring(DisplayStringNode *node, const char *indent, bool islast, const char *)
 {
-    appendBannerComment(out, node->getBannerComment(), indent);
+    appendBannerComment(node->getBannerComment(), indent);
     out << indent << "display: \"" << node->getValue() << "\";";
-    appendInlineRightComment(out, node->getRightComment(), "");
+    appendInlineRightComment(node->getRightComment(), "");
 }
 
-void NEDGenerator::doExpression(ostream& out, ExpressionNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doExpression(ExpressionNode *node, const char *indent, bool islast, const char *)
 {
-    generateChildren(out,node,indent);
+    generateChildren(node,indent);
 }
 
 int NEDGenerator::getOperatorPriority(const char *op, int args)
@@ -655,7 +655,7 @@ bool NEDGenerator::isOperatorLeftAssoc(const char *op)
     return true;
 }
 
-void NEDGenerator::doOperator(ostream& out, OperatorNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doOperator(OperatorNode *node, const char *indent, bool islast, const char *)
 {
     NEDElement *op1 = node->getFirstChild();
     NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
@@ -665,7 +665,7 @@ void NEDGenerator::doOperator(ostream& out, OperatorNode *node, const char *inde
     {
         // unary
         out << node->getName();
-        generateNedItem(out,op1,indent,false,NULL);
+        generateNedItem(op1,indent,false,NULL);
     }
     else if (!op3)
     {
@@ -689,12 +689,12 @@ void NEDGenerator::doOperator(ostream& out, OperatorNode *node, const char *inde
         }
 
         if (needsParen) out << "(";
-        generateNedItem(out,op1,indent,false,NULL);
+        generateNedItem(op1,indent,false,NULL);
         if (spacious)
             out << " " << node->getName() << " ";
         else
             out << node->getName();
-        generateNedItem(out,op2,indent,false,NULL);
+        generateNedItem(op2,indent,false,NULL);
         if (needsParen) out << ")";
     }
     else
@@ -704,16 +704,16 @@ void NEDGenerator::doOperator(ostream& out, OperatorNode *node, const char *inde
         bool spacious = true; // FIXME something better here!!!
 
         if (needsParen) out << "(";
-        generateNedItem(out,op1,indent,false,NULL);
+        generateNedItem(op1,indent,false,NULL);
         out << (spacious ? " ? " : "?");
-        generateNedItem(out,op1,indent,false,NULL);
+        generateNedItem(op1,indent,false,NULL);
         out << (spacious ? " : " : ":");
-        generateNedItem(out,op1,indent,false,NULL);
+        generateNedItem(op1,indent,false,NULL);
         if (needsParen) out << ")";
     }
 }
 
-void NEDGenerator::doFunction(ostream& out, FunctionNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doFunction(FunctionNode *node, const char *indent, bool islast, const char *)
 {
     NEDElement *op1 = node->getFirstChild();
     NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
@@ -721,20 +721,20 @@ void NEDGenerator::doFunction(ostream& out, FunctionNode *node, const char *inde
 
     out << node->getName() << "(";
     if (op1) {
-        generateNedItem(out,op1,indent,false,NULL);
+        generateNedItem(op1,indent,false,NULL);
     }
     if (op2) {
         out << ", ";
-        generateNedItem(out,op2,indent,false,NULL);
+        generateNedItem(op2,indent,false,NULL);
     }
     if (op3) {
         out << ", ";
-        generateNedItem(out,op3,indent,false,NULL);
+        generateNedItem(op3,indent,false,NULL);
     }
     out << ")";
 }
 
-void NEDGenerator::doParamref(ostream& out, ParamRefNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doParamref(ParamRefNode *node, const char *indent, bool islast, const char *)
 {
     if (node->getIsAncestor())
         out << "ancestor ";
@@ -744,19 +744,19 @@ void NEDGenerator::doParamref(ostream& out, ParamRefNode *node, const char *inde
 
     if (strnotnull(node->getModule())) {
         out << node->getModule();
-        printVector(out, node, "module-index", indent);
+        printVector(node, "module-index", indent);
         out << ".";
     }
 
     out << node->getParamName();
 }
 
-void NEDGenerator::doIdent(ostream& out, IdentNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doIdent(IdentNode *node, const char *indent, bool islast, const char *)
 {
     out << node->getName();
 }
 
-void NEDGenerator::doConst(ostream& out, ConstNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doConst(ConstNode *node, const char *indent, bool islast, const char *)
 {
     bool isstring = (node->getType()==NED_CONST_STRING);
 
@@ -769,84 +769,256 @@ void NEDGenerator::doConst(ostream& out, ConstNode *node, const char *indent, bo
     if (isstring) out << "\"";
 }
 
+void NEDGenerator::doCppinclude(CppincludeNode *node, const char *indent, bool islast, const char *)
+{
+    appendBannerComment(node->getBannerComment(), indent);
+    out << indent << "cppinclude " << node->getFilename();
+    appendRightComment(node->getRightComment(), indent);
+    appendTrailingComment(node->getTrailingComment(), "");
+}
+
+void NEDGenerator::doCppStruct(CppStructNode *node, const char *indent, bool islast, const char *)
+{
+    appendBannerComment(node->getBannerComment(), indent);
+    out << indent << "struct " << node->getName() << ";";
+    appendRightComment(node->getRightComment(), indent);
+    appendTrailingComment(node->getTrailingComment(), "");
+}
+
+void NEDGenerator::doCppCobject(CppCobjectNode *node, const char *indent, bool islast, const char *)
+{
+    appendBannerComment(node->getBannerComment(), indent);
+    out << indent << "cobject " << node->getName() << ";";
+    appendRightComment(node->getRightComment(), indent);
+    appendTrailingComment(node->getTrailingComment(), "");
+}
+
+void NEDGenerator::doCppNoncobject(CppNoncobjectNode *node, const char *indent, bool islast, const char *)
+{
+    appendBannerComment(node->getBannerComment(), indent);
+    out << indent << "noncobject " << node->getName() << ";";
+    appendRightComment(node->getRightComment(), indent);
+    appendTrailingComment(node->getTrailingComment(), "");
+}
+
+void NEDGenerator::doEnum(EnumNode *node, const char *indent, bool islast, const char *)
+{
+    appendBannerComment(node->getBannerComment(), indent);
+    out << indent << "enum " << node->getName();
+    if (strnotnull(node->getExtendsName()))
+        out << " extends " << node->getExtendsName();
+    appendRightComment(node->getRightComment(), indent);
+    out << indent << "{\n";
+    generateChildren(node, increaseIndent(indent));
+    out << indent << "};";
+    appendTrailingComment(node->getTrailingComment(), "");
+}
+
+void NEDGenerator::doEnumFields(EnumFieldsNode *node, const char *indent, bool islast, const char *)
+{
+    appendBannerComment(node->getBannerComment(), indent);
+    appendRightComment(node->getRightComment(), indent);
+    generateChildren(node, indent);
+}
+
+void NEDGenerator::doEnumField(EnumFieldNode *node, const char *indent, bool islast, const char *)
+{
+    appendBannerComment(node->getBannerComment(), indent);
+    out << indent << node->getName();
+    if (strnotnull(node->getValue()))
+        out << " = " << node->getValue();
+    out << ";";
+    appendRightComment(node->getRightComment(), indent);
+}
+
+void NEDGenerator::doMessage(MessageNode *node, const char *indent, bool islast, const char *)
+{
+    appendBannerComment(node->getBannerComment(), indent);
+    out << indent << "message " << node->getName();
+    if (strnotnull(node->getExtendsName()))
+        out << " extends " << node->getExtendsName();
+    appendRightComment(node->getRightComment(), indent);
+    out << indent << "{\n";
+    generateChildren(node, increaseIndent(indent));
+    out << indent << "};";
+    appendTrailingComment(node->getTrailingComment(), "");
+}
+
+void NEDGenerator::doClass(ClassNode *node, const char *indent, bool islast, const char *)
+{
+    appendBannerComment(node->getBannerComment(), indent);
+    out << indent << "class " << node->getName();
+    if (strnotnull(node->getExtendsName()))
+        out << " extends " << node->getExtendsName();
+    appendRightComment(node->getRightComment(), indent);
+    out << indent << "{\n";
+    generateChildren(node, increaseIndent(indent));
+    out << indent << "};";
+    appendTrailingComment(node->getTrailingComment(), "");
+}
+
+void NEDGenerator::doStruct(StructNode *node, const char *indent, bool islast, const char *)
+{
+    appendBannerComment(node->getBannerComment(), indent);
+    out << indent << "struct " << node->getName();
+    if (strnotnull(node->getExtendsName()))
+        out << " extends " << node->getExtendsName();
+    appendRightComment(node->getRightComment(), indent);
+    out << indent << "{\n";
+    generateChildren(node, increaseIndent(indent));
+    out << indent << "};";
+    appendTrailingComment(node->getTrailingComment(), "");
+}
+
+void NEDGenerator::doFields(FieldsNode *node, const char *indent, bool islast, const char *)
+{
+    appendBannerComment(node->getBannerComment(), indent);
+    out << indent << "fields:";
+    appendRightComment(node->getRightComment(), indent);
+    generateChildren(node, increaseIndent(indent));
+}
+
+void NEDGenerator::doField(FieldNode *node, const char *indent, bool islast, const char *)
+{
+    appendBannerComment(node->getBannerComment(), indent);
+    out << indent;
+    if (node->getIsVirtual())
+        out << "virtual ";
+    out << node->getDataType() << " " << node->getName();
+    if (node->getIsVector() && strnotnull(node->getVectorSize()))
+        out << "[" << node->getVectorSize() << "]";
+    else if (node->getIsVector())
+        out << "[]";
+    if (strnotnull(node->getEnumName()))
+        out << " enum(" << node->getEnumName() << ")";
+    if (strnotnull(node->getDefaultValue()))
+        out << " = " << node->getDefaultValue();
+    out << ";";
+    appendRightComment(node->getRightComment(), indent);
+}
+
+void NEDGenerator::doProperties(PropertiesNode *node, const char *indent, bool islast, const char *)
+{
+    appendBannerComment(node->getBannerComment(), indent);
+    out << indent << "properties:";
+    appendRightComment(node->getRightComment(), indent);
+    generateChildren(node, increaseIndent(indent));
+}
+
+void NEDGenerator::doProperty(PropertyNode *node, const char *indent, bool islast, const char *)
+{
+    appendBannerComment(node->getBannerComment(), indent);
+    out << indent << node->getName() << " = " << node->getValue() << ";";
+    appendRightComment(node->getRightComment(), indent);
+}
+
+
 //---------------------------------------------------------------------------
 
-void NEDGenerator::generateNedItem(ostream& out, NEDElement *node, const char *indent, bool islast, const char *arg)
+void NEDGenerator::generateNedItem(NEDElement *node, const char *indent, bool islast, const char *arg)
 {
     // dispatch
     int tagcode = node->getTagCode();
     switch (tagcode)
     {
         case NED_NED_FILES:
-            doNedfiles(out, (NedFilesNode *)node, indent, islast, arg); break;
+            doNedfiles((NedFilesNode *)node, indent, islast, arg); break;
         case NED_NED_FILE:
-            doNedfile(out, (NedFileNode *)node, indent, islast, arg); break;
+            doNedfile((NedFileNode *)node, indent, islast, arg); break;
         case NED_IMPORT:
-            doImports(out, (ImportNode *)node, indent, islast, arg); break;
+            doImports((ImportNode *)node, indent, islast, arg); break;
         case NED_IMPORTED_FILE:
-            doImport(out, (ImportedFileNode *)node, indent, islast, arg); break;
+            doImport((ImportedFileNode *)node, indent, islast, arg); break;
         case NED_CHANNEL:
-            doChannel(out, (ChannelNode *)node, indent, islast, arg); break;
+            doChannel((ChannelNode *)node, indent, islast, arg); break;
         case NED_CHANNEL_ATTR:
-            doChanattr(out, (ChannelAttrNode *)node, indent, islast, arg); break;
+            doChanattr((ChannelAttrNode *)node, indent, islast, arg); break;
         case NED_NETWORK:
-            doNetwork(out, (NetworkNode *)node, indent, islast, arg); break;
+            doNetwork((NetworkNode *)node, indent, islast, arg); break;
         case NED_SIMPLE_MODULE:
-            doSimple(out, (SimpleModuleNode *)node, indent, islast, arg); break;
+            doSimple((SimpleModuleNode *)node, indent, islast, arg); break;
         case NED_COMPOUND_MODULE:
-            doModule(out, (CompoundModuleNode *)node, indent, islast, arg); break;
+            doModule((CompoundModuleNode *)node, indent, islast, arg); break;
         case NED_PARAMS:
-            doParams(out, (ParamsNode *)node, indent, islast, arg); break;
+            doParams((ParamsNode *)node, indent, islast, arg); break;
         case NED_PARAM:
-            doParam(out, (ParamNode *)node, indent, islast, arg); break;
+            doParam((ParamNode *)node, indent, islast, arg); break;
         case NED_GATES:
-            doGates(out, (GatesNode *)node, indent, islast, arg); break;
+            doGates((GatesNode *)node, indent, islast, arg); break;
         case NED_GATE:
-            doGate(out, (GateNode *)node, indent, islast, arg); break;
+            doGate((GateNode *)node, indent, islast, arg); break;
         case NED_MACHINES:
-            doMachines(out, (MachinesNode *)node, indent, islast, arg); break;
+            doMachines((MachinesNode *)node, indent, islast, arg); break;
         case NED_MACHINE:
-            doMachine(out, (MachineNode *)node, indent, islast, arg); break;
+            doMachine((MachineNode *)node, indent, islast, arg); break;
         case NED_SUBMODULES:
-            doSubmodules(out, (SubmodulesNode *)node, indent, islast, arg); break;
+            doSubmodules((SubmodulesNode *)node, indent, islast, arg); break;
         case NED_SUBMODULE:
-            doSubmodule(out, (SubmoduleNode *)node, indent, islast, arg); break;
+            doSubmodule((SubmoduleNode *)node, indent, islast, arg); break;
         case NED_SUBSTPARAMS:
-            doSubstparams(out, (SubstparamsNode *)node, indent, islast, arg); break;
+            doSubstparams((SubstparamsNode *)node, indent, islast, arg); break;
         case NED_SUBSTPARAM:
-            doSubstparam(out, (SubstparamNode *)node, indent, islast, arg); break;
+            doSubstparam((SubstparamNode *)node, indent, islast, arg); break;
         case NED_GATESIZES:
-            doGatesizes(out, (GatesizesNode *)node, indent, islast, arg); break;
+            doGatesizes((GatesizesNode *)node, indent, islast, arg); break;
         case NED_GATESIZE:
-            doGatesize(out, (GatesizeNode *)node, indent, islast, arg); break;
+            doGatesize((GatesizeNode *)node, indent, islast, arg); break;
         case NED_SUBSTMACHINES:
-            doSubstmachines(out, (SubstmachinesNode *)node, indent, islast, arg); break;
+            doSubstmachines((SubstmachinesNode *)node, indent, islast, arg); break;
         case NED_SUBSTMACHINE:
-            doSubstmachine(out, (SubstmachineNode *)node, indent, islast, arg); break;
+            doSubstmachine((SubstmachineNode *)node, indent, islast, arg); break;
         case NED_CONNECTIONS:
-            doConnections(out, (ConnectionsNode *)node, indent, islast, arg); break;
+            doConnections((ConnectionsNode *)node, indent, islast, arg); break;
         case NED_CONNECTION:
-            doConnection(out, (ConnectionNode *)node, indent, islast, arg); break;
+            doConnection((ConnectionNode *)node, indent, islast, arg); break;
         case NED_CONN_ATTR:
-            doConnattr(out, (ConnAttrNode *)node, indent, islast, arg); break;
+            doConnattr((ConnAttrNode *)node, indent, islast, arg); break;
         case NED_FOR_LOOP:
-            doForloop(out, (ForLoopNode *)node, indent, islast, arg); break;
+            doForloop((ForLoopNode *)node, indent, islast, arg); break;
         case NED_LOOP_VAR:
-            doLoopvar(out, (LoopVarNode *)node, indent, islast, arg); break;
+            doLoopvar((LoopVarNode *)node, indent, islast, arg); break;
         case NED_DISPLAY_STRING:
-            doDisplaystring(out, (DisplayStringNode *)node, indent, islast, arg); break;
+            doDisplaystring((DisplayStringNode *)node, indent, islast, arg); break;
         case NED_EXPRESSION:
-            doExpression(out, (ExpressionNode *)node, indent, islast, arg); break;
+            doExpression((ExpressionNode *)node, indent, islast, arg); break;
         case NED_OPERATOR:
-            doOperator(out, (OperatorNode *)node, indent, islast, arg); break;
+            doOperator((OperatorNode *)node, indent, islast, arg); break;
         case NED_FUNCTION:
-            doFunction(out, (FunctionNode *)node, indent, islast, arg); break;
+            doFunction((FunctionNode *)node, indent, islast, arg); break;
         case NED_PARAM_REF:
-            doParamref(out, (ParamRefNode *)node, indent, islast, arg); break;
+            doParamref((ParamRefNode *)node, indent, islast, arg); break;
         case NED_IDENT:
-            doIdent(out, (IdentNode *)node, indent, islast, arg); break;
+            doIdent((IdentNode *)node, indent, islast, arg); break;
         case NED_CONST:
-            doConst(out, (ConstNode *)node, indent, islast, arg); break;
+            doConst((ConstNode *)node, indent, islast, arg); break;
+        case NED_CPPINCLUDE:
+            doCppinclude((CppincludeNode *)node, indent, islast, arg); break;
+        case NED_CPP_STRUCT:
+            doCppStruct((CppStructNode *)node, indent, islast, arg); break;
+        case NED_CPP_COBJECT:
+            doCppCobject((CppCobjectNode *)node, indent, islast, arg); break;
+        case NED_CPP_NONCOBJECT:
+            doCppNoncobject((CppNoncobjectNode *)node, indent, islast, arg); break;
+        case NED_ENUM:
+            doEnum((EnumNode *)node, indent, islast, arg); break;
+        case NED_ENUM_FIELDS:
+            doEnumFields((EnumFieldsNode *)node, indent, islast, arg); break;
+        case NED_ENUM_FIELD:
+            doEnumField((EnumFieldNode *)node, indent, islast, arg); break;
+        case NED_MESSAGE:
+            doMessage((MessageNode *)node, indent, islast, arg); break;
+        case NED_CLASS:
+            doClass((ClassNode *)node, indent, islast, arg); break;
+        case NED_STRUCT:
+            doStruct((StructNode *)node, indent, islast, arg); break;
+        case NED_FIELDS:
+            doFields((FieldsNode *)node, indent, islast, arg); break;
+        case NED_FIELD:
+            doField((FieldNode *)node, indent, islast, arg); break;
+        case NED_PROPERTIES:
+            doProperties((PropertiesNode *)node, indent, islast, arg); break;
+        case NED_PROPERTY:
+            doProperty((PropertyNode *)node, indent, islast, arg); break;
         default:
             INTERNAL_ERROR1(node, "generateNedItem(): unknown tag '%s'", node->getTagName());
     }
