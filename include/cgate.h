@@ -133,12 +133,10 @@ class SIM_API cGate : public cObject
     virtual const char *fullName() const;
 
     /**
-     * The original fullPath() method is redefined to hide the
+     * The original fullPath2() method is redefined to hide the
      * internal array (a cArray) used to store the gate objects.
-     * This method returns pointer to a static buffer which is
-     * overwritten by subsequent calls!
      */
-    virtual const char *fullPath() const;
+    virtual const char *fullPath2(char *buffer, int bufsize) const;
 
     /**
      * Writes textual information about this object to the stream.

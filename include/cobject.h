@@ -254,11 +254,17 @@ class SIM_API cObject
         {return name();}
 
     /**
-     * Returns the full path of the object in the object hieararchy,
+     * Returns the full path of the object in the object hierarchy,
      * like "comp.modem[5].baud-rate". NOTE: the returned pointer points
      * into a static buffer, which is overwritten by subsequent calls!
      */
     virtual const char *fullPath() const;
+
+    /**
+     * Returns the full path of the object in the object hierarchy,
+     * like "comp.modem[5].baud-rate". The result is placed into the buffer passed.
+     */
+    virtual const char *fullPath2(char *buffer, int buffersize) const;
     //@}
 
     /** @name Object ownership. */

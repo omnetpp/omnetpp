@@ -172,7 +172,7 @@ class SIM_API cSimulation : public cObject
     /**
      * Returns the name of the simulation object, "simulation".
      */
-    virtual const char *fullPath() const {return name();}
+    virtual const char *fullPath2(char *buffer, int bufsize) const;
 
     /**
      * Assignment is not supported for this class. This function raises an error when called.

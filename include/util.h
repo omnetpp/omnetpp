@@ -43,6 +43,7 @@
 #define mystrcmp         opp_strcmp
 #define mystrmatch       opp_strmatch
 #define fastconcat       opp_concat
+#define indexedname      opp_mkindexedname
 
 /**
  * @name Converting simulation time to and from string form.
@@ -338,13 +339,12 @@ SIM_API double shift_right(double a, double b);
 
 
 /**
- * @name Value-added string functions.
+ * @name String-related utility functions.
  *
- * These functions replace some of the <string.h> functions.
- * The difference is that they also accept NULL pointers as empty strings (""),
- * and also use operator new instead of malloc().
- * It is recommended to use these functions instead of the original
- * <string.h> functions.
+ * Some of these functions are similar to <string.h> functions, with the
+ * exception that they also accept NULL pointers as empty strings (""),
+ * and use operator new instead of malloc(). It is recommended to use these
+ * functions instead of the original <string.h> functions.
  *
  * @ingroup Functions
  */
@@ -373,6 +373,31 @@ SIM_API int  opp_strcmp(const char *, const char *);
  * shorter one. NULL pointers are treated like pointers to a null string ("").
  */
 SIM_API bool opp_strmatch(const char *, const char *);
+
+/**
+ * Creates a string like "component[35]" into dest, the first argument.
+ */
+SIM_API char *opp_mkindexedname(char *dest, const char *name, int index);
+
+/**
+ * Concatenates up to four strings. Returns a pointer to a static buffer
+ * of length 256. If the result length would exceed 256, it is truncated.
+ */
+SIM_API char *opp_concat(const char *s1, const char *s2, const char *s3=NULL, const char *s4=NULL);
+
+/**
+ * Copies src string into desc, and if its length would exceed maxlen,
+ * it is truncated with an ellipsis. For example, <tt>opp_strprettytrunc(buf,
+ * "long-long",6)</tt> yields <tt>"lon..."</tt>.
+ */
+SIM_API char *opp_strprettytrunc(char *dest, const char *src, unsigned maxlen);
+
+/**
+ * Returns the pointer passed as argument unchanged, except that if it was NULL,
+ * it returns a pointer to a null string ("").
+ */
+inline const char *correct(const char *);
+
 //@}
 
 /**
@@ -380,22 +405,6 @@ SIM_API bool opp_strmatch(const char *, const char *);
  * @ingroup Functions
  */
 //@{
-
-/**
- * Concatenates up to four strings. Returns a pointer to a static buffer of length 256.
- */
-SIM_API char *opp_concat(const char *s1, const char *s2, const char *s3=NULL, const char *s4=NULL);
-
-/**
- * Creates a string like "component[35]" into buf, the first argument.
- */
-SIM_API char *indexedname(char *buf, const char *name, int index);
-
-/**
- * Returns the pointer passed as argument unchanged, except that if it was NULL,
- * it returns a pointer to a null string ("").
- */
-inline const char *correct(const char *);
 
 /**
  * Tests equality of two doubles, with the given precision.
@@ -499,6 +508,12 @@ class SIM_API opp_string
      * length of the string should not be exceeded.
      */
     char *buffer() const        {return str;}
+
+    /**
+     * Allocates a buffer of the given size.
+     */
+    char *allocate(unsigned size)
+                               {delete str;str=new char[size];return str;}
 
     /**
      * Deletes the old value and opp_strdup()'s the new value

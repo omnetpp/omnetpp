@@ -1,3 +1,12 @@
+2001-10-28 Andras Varga
+
+	* util.h: opp_string::allocate(), opp_strprettytrunc() added; 
+        indexedname() renamed to opp_mkindexedname() (old name still exists
+        as macro)
+        * cobject.h, cmodule.h, csimul.h, cgate.h, cpar.h: added
+        fullPath2(buffer,buflen) which produces the result in an external
+        buffer; cObject::fullPath() now relies on fullPath2().
+
 2001-10-06 Andras Varga
 
 	* cstruct.h: fixed bugs that came up while testing experimental msg

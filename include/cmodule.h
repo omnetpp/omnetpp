@@ -250,11 +250,11 @@ class SIM_API cModule : public cObject
     virtual const char *fullName() const;
 
     /**
-     * Returns the full path name of the module. Example: "mynet.node[12].gen".
-     * Redefined in order to hide the global cSimulation instance in the
-     * path name (it would add "simulation." to the beginning of the full path).
+     * Returns the full path name of the module. Example: <tt>"mynet.node[12].gen"</tt>.
+     * The original fullPath2() was redefined in order to hide the global cSimulation
+     * instance in the path name (it would add "simulation." to the beginning of the full path).
      */
-    virtual const char *fullPath() const;
+    virtual const char *fullPath2(char *buffer, int bufsize) const;
     //@}
 
     /** @name Setting up the module. */
