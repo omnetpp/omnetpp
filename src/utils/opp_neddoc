@@ -1,7 +1,0 @@
-#! /bin/sh
-NEDDOC_XSL=`dirname $0`/neddoc.xsl
-
-nedtool -x -e -y -m -o /tmp/xxx $*
-xsltproc $NEDDOC_XSL /tmp/xxx
-rm -f /tmp/xxx
-
