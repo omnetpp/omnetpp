@@ -59,11 +59,13 @@ Delta from 3.0 beta 1:
 - User Manual revised
 
 - Several bugfixes and new test cases, significant performance improvements 
-  in the network setup code
+  in the network setup code; more intuitive error messages at places.
 
 - The new <parametername>.use-default=true notation in omnetpp.ini makes it
   possible to apply the NED file defaults (specified via input()) to some
   or all unbound module parameters.
+
+- histogram classes (cLongHistogram, cDoubleHistogram) revisited
 
 
 OMNeT++ 3.0 beta 1 (Nov 24 2004)

@@ -196,7 +196,7 @@ class SIM_API cDensityEstBase : public cStdDev
      * being the range of the 100 pre-collected values extended 1.3 times
      * symmetrically.
      */
-    virtual void setRangeAuto(int num_firstvals, double range_ext_fact);
+    virtual void setRangeAuto(int num_firstvals=100, double range_ext_fact=2.0);
 
     /**
      * Selects a histogram range setup method where the upper bound of the range
@@ -205,7 +205,7 @@ class SIM_API cDensityEstBase : public cStdDev
      * The lower bound is calculated by extending the range (minimum of observations, upper)
      * range_ext_fact times.
      */
-    virtual void setRangeAutoLower(double upper, int num_firstvals, double range_ext_fact);
+    virtual void setRangeAutoLower(double upper, int num_firstvals=100, double range_ext_fact=2.0);
 
     /**
      * Selects a histogram range setup method where the lower bound of the range
@@ -214,7 +214,7 @@ class SIM_API cDensityEstBase : public cStdDev
      * The upper bound is calculated by extending the range (lower, maximum of observations)
      * range_ext_fact times.
      */
-    virtual void setRangeAutoUpper(double lower, int num_firstvals, double range_ext_fact);
+    virtual void setRangeAutoUpper(double lower, int num_firstvals=100, double range_ext_fact=2.0);
 
     /**
      * Sets the number of values to be pre-collected before transformation takes

@@ -281,6 +281,18 @@ class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
  * hist.setNumCells(100);
  * \endcode
  *
+ * If you know that the numbers will be nonnegative, but you don't
+ * know their ranges, you can use the following (which will set up 20
+ * cells, with the range 0..20, or 0..40, or 0..60 etc, depending on
+ * the range of the initial observations):
+ *
+ * \code
+ * cLongHistogram hist("hist");
+ * hist.setRangeAutoUpper(0);
+ * hist.setNumCells(20);
+ * \endcode
+ *
+ *
  * @ingroup Statistics
  */
 class SIM_API cLongHistogram : public cEqdHistogramBase

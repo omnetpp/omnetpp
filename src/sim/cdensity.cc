@@ -226,7 +226,7 @@ void cDensityEstBase::setupRange()
 void cDensityEstBase::collect(double val)
 {
     if (range_mode == RANGE_INVALID && !transformed())
-        setRangeAuto(100, 2);
+        setRangeAuto();
 
     if (firstvals==0 && !transformed())
         transform();
