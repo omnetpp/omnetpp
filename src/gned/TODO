@@ -63,7 +63,7 @@ General:
 - speed up data structure, get rid of "foreach i [array names ned ...]" statements...
 - it's possible to exit GNED while editing canvas(es) in text mode which have
   unsaved changes!!!
-- GNED should remember the directory of the last opened file
+- open/save dialog should remember the directory ***DONE***
 
 Dialogs:
 - merge "Drawing options" dialogs into properties

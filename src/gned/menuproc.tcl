@@ -46,15 +46,21 @@ proc fileNewComponent {type} {
 }
 
 proc fileOpen {{fname ""}} {
-   global gned env canvas ned
+   global gned env canvas ned config
 
-   catch {cd [file dirname $fname]}
+   if {[string compare [file tail $fname] $fname]==0} {
+       set dir $config(default-dir)
+   } else {
+       set dir [file dirname $fname]
+   }
+
    set fname [file tail $fname]
    set fname [tk_getOpenFile -defaultextension ".ned" \
-              -initialdir [pwd] -initialfile $fname \
+              -initialdir $dir -initialfile $fname \
               -filetypes {{{NED files} {*.ned}} {{All files} {*}}}]
 
    if {$fname!=""} {
+      set config(default-dir) [file dirname $fname]
       # regsub "^$env(HOME)/" $fname "~/" fname
       loadNED $fname
    }
@@ -81,7 +87,7 @@ proc fileSave {{nedfilekey {}}} {
 }
 
 proc fileSaveAs {{nedfilekey {}}} {
-   global gned canvas ned env
+   global gned canvas ned env config
 
    if {$nedfilekey==""} {
       # default: current canvas
@@ -98,13 +104,19 @@ proc fileSaveAs {{nedfilekey {}}} {
       set fname "unnamed.ned"
    }
 
-   catch {cd [file dirname $fname]}
+   if {[string compare [file tail $fname] $fname]==0} {
+       set dir $config(default-dir)
+   } else {
+       set dir [file dirname $fname]
+   }
+
    set fname [file tail $fname]
    set fname [tk_getSaveFile -defaultextension ".ned" \
-              -initialdir [pwd] -initialfile $fname \
+              -initialdir $dir -initialfile $fname \
               -filetypes {{{NED files} {*.ned}} {{All files} {*}}}]
 
    if {$fname!=""} {
+      set config(default-dir) [file dirname $fname]
       # regsub "^$env(HOME)/" $fname "~/" fname
 
       set ned($nedfilekey,unnamed) 0

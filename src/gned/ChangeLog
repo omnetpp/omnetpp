@@ -216,3 +216,4 @@ Aug 26, 2000
  - find/replace operation improved
  - implemented "find next"
  - find/replace dialog contents is now preserved
+ - open/save dialogs now remember the directory
