@@ -23,12 +23,9 @@
 
 
 /**
- * Container object that holds objects derived from cObject.
- * cDefaultList stores the pointers of the objects inserted instead of making copies.
- * cDefaultList works as an array, but if it gets full, it grows automatically by
- * a specified delta.
- *
- * cDefaultList owns all objects inserted.
+ * Internal class, used as a base class for cModule. cDefaultList acts 
+ * as a "soft owner" (see object ownership discussion in cObjct documentation).
+ * Do not subclass your own classes from cDefaultList.
  *
  * @ingroup Containers
  */
