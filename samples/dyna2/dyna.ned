@@ -88,7 +88,9 @@ module ClientServer
                 processing_time = input(0.2s,"Query processing time:"); 
         switch: Switch; 
             parameters: 
-                pk_rate = 80; 
+                // switch_pk_rate should be >= num_clients, otherwise switch will 
+                // become the bottleneck
+                pk_rate = 1.5*num_clients;
             gatesizes: 
                 in[num_clients+1], 
                 out[num_clients+1]; 

@@ -1,0 +1,3 @@
+"dyna.client[2]" "Client" "3" "504x162+9+342"
+"dyna.server" "Server" "3" "502x125+10+536"
+"simulation.scheduled-events.CONN_REQ" "cMessage" "1" "349x199+227+432"

@@ -15,6 +15,7 @@ Define_Module( ServerProcess );
 
 void ServerProcess::activity()
 {
+    // retrieve parameters
     cPar& processing_time = parentModule()->par("processing_time");
 
     int client_addr=0, own_addr=0;
@@ -23,11 +24,18 @@ void ServerProcess::activity()
     DynaPacket *pk;
     DynaDataPacket *datapk;
 
+    // receive the CONN_REQ we were created to handle
     ev << "Started, waiting for DYNA_CONN_REQ\n";
     pk = (DynaPacket *) receive();
     client_addr = pk->getSrcAddress();
     own_addr = pk->getDestAddress();
 
+    // set the module name to something informative
+    char buf[30];
+    sprintf(buf, "serverproc%d-clientaddr%d", id(), client_addr);
+    setName(buf);
+
+    // respond to CONN_REQ by CONN_ACK
     ev << "client is addr=" << client_addr << ", sending DYNA_CONN_ACK\n";
     pk->setName("DYNA_CONN_ACK");
     pk->setKind(DYNA_CONN_ACK);
@@ -36,6 +44,7 @@ void ServerProcess::activity()
     pk->setServerProcId(id());
     send(pk, "out");
 
+    // process data packets until DISC_REQ comes
     for(;;)
     {
         ev << "waiting for DATA(query) (or DYNA_DISC_REQ)\n";
@@ -62,6 +71,7 @@ void ServerProcess::activity()
         send(datapk, "out");
     }
 
+    // connection teardown in response to DISC_REQ
     ev << "got DYNA_DISC_REQ, sending DYNA_DISC_ACK\n";
     pk->setName("DYNA_DISC_ACK");
     pk->setKind(DYNA_DISC_ACK);
