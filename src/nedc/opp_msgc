@@ -135,11 +135,11 @@ print CC "\n";
 print CC "// Another default rule (prevents compiler from choosing base class' doPacking())\n";
 print CC "template<typename T>\n";
 print CC "void doPacking(cCommBuffer *, T& t) {\n";
-print CC "    throw new cException(\"Parsim error: no doPacking() function for type %s (check .msg and _m.cc/h files!)\",opp_typename(typeid(t)));\n";
+print CC "    throw new cException(\"Parsim error: no doPacking() function for type %s or its base class (check .msg and _m.cc/h files!)\",opp_typename(typeid(t)));\n";
 print CC "}\n";
 print CC "template<typename T>\n";
 print CC "void doUnpacking(cCommBuffer *, T& t) {\n";
-print CC "    throw new cException(\"Parsim error: no doUnpacking() function for type %s (check .msg and _m.cc/h files!)\",opp_typename(typeid(t)));\n";
+print CC "    throw new cException(\"Parsim error: no doUnpacking() function for type %s or its base class (check .msg and _m.cc/h files!)\",opp_typename(typeid(t)));\n";
 print CC "}\n";
 print CC "\n";
 print CC "// Automatically supply array (un)packing functions\n";
@@ -153,6 +153,8 @@ print CC "void doUnpacking(cCommBuffer *b, T *t, int n) {\n";
 print CC "    for (int i=0; i<n; i++)\n";
 print CC "        doUnpacking(b,t[i]);\n";
 print CC "}\n";
+print CC "inline void doPacking(cCommBuffer *, cPolymorphic&) {}\n";
+print CC "inline void doUnpacking(cCommBuffer *, cPolymorphic&) {}\n";
 print CC "\n";
 print CC "#define DOPACKING(T,R) \\\n";
 print CC "    inline void doPacking(cCommBuffer *b, T R a) {b->pack(a);}  \\\n";
@@ -882,9 +884,9 @@ sub generateClass
         } else {
             print H "    virtual cObject *dup() const {return new $msgclass(*this);}\n";
         }
-        print H "    virtual void netPack(cCommBuffer *b);\n";
-        print H "    virtual void netUnpack(cCommBuffer *b);\n";
     }
+    print H "    virtual void netPack(cCommBuffer *b);\n";
+    print H "    virtual void netUnpack(cCommBuffer *b);\n";
     print H "\n";
     print H "    // field getter/setter methods\n";
     foreach $fieldname (@fieldlist)
@@ -1105,7 +1107,11 @@ sub generateClass
     print CC "void $msgclass\:\:netPack(cCommBuffer *b)\n";
     print CC "{\n";
     if ($msgbaseclass ne "") {
-        print CC "    $msgbaseclass\:\:netPack(b);\n";
+        if ($classtype eq "cobject") {
+            print CC "    $msgbaseclass\:\:netPack(b);\n";
+        } else {
+            print CC "    doPacking(b,($msgbaseclass&)*this);\n"; # this would do for cObject too, but the other is nicer
+        }
     }
     foreach $fieldname (@fieldlist)
     {
@@ -1127,7 +1133,11 @@ sub generateClass
     print CC "void $msgclass\:\:netUnpack(cCommBuffer *b)\n";
     print CC "{\n";
     if ($msgbaseclass ne "") {
-        print CC "    $msgbaseclass\:\:netUnpack(b);\n";
+        if ($classtype eq "cobject") {
+            print CC "    $msgbaseclass\:\:netUnpack(b);\n";
+        } else {
+            print CC "    doUnpacking(b,($msgbaseclass&)*this);\n"; # this would do for cObject too, but the other is nicer
+        }
     }
     foreach $fieldname (@fieldlist)
     {
