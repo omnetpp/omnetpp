@@ -699,7 +699,7 @@ proc filteredobjectlist_dialog {} {
     bind $fp.nameentry <Return> "$w.f.filter.buttons.refresh invoke"
     bind $lb <Double-Button-1> "inspect_item_in $lb; after 500 \{raise $w; focus $lb\}"
     bind $lb <Key-Return> "inspect_item_in $lb; after 500 \{raise $w; focus $lb\}"
-    bind $lb <Button-3> "filteredobjectlist_popup %X %Y %W"
+    bind $lb <Button-3> "filteredobjectlist_popup %X %Y $w"
 
     focus $fp.nameentry
 
@@ -791,18 +791,17 @@ proc filteredobjectlist_refresh {w} {
 #
 # helper procedure for filteredobjectlist_dialog -- creates popup menu
 #
-proc filteredobjectlist_popup {w X Y w} {
-    set ptr [lindex [multicolumnlistbox_curselection $w] 0]
+proc filteredobjectlist_popup {X Y w} {
+    set lb $w.f.main.list
+    set ptr [lindex [multicolumnlistbox_curselection $lb] 0]
     if {$ptr==""} return
     set insptypes [opp_supported_insp_types $ptr]
-
-    set lb $w.f.main.list
 
     set p $w.popup
     catch {destroy $p}
     menu $p -tearoff 0
     foreach type $insptypes {
-       $p add command -label "$type..." -command "opp_inspect $ptr \{$type\}; after 500 \{raise $w; focus $lb\}"
+       $p add command -label "$type..." -command "opp_inspect $ptr \{$type\}; after 500 \{catch \{raise $w; focus $lb\}\}"
     }
     $p post $X $Y
 }
