@@ -1,0 +1,34 @@
+# Tkenv configuration
+option updatefreq_fast	{50}
+option updatefreq_express	{10000}
+option stepdelay	{300 ms}
+option use_mainwindow	{1}
+option print_banners	{1}
+option animation_enabled	{1}
+option nexteventmarkers	{0}
+option senddirect_arrows	{1}
+option anim_methodcalls	{1}
+option methodcalls_delay	{200}
+option animation_msgnames	{1}
+option animation_msgcolors	{1}
+option penguin_mode	{0}
+option showlayouting	{1}
+option bubbles	{1}
+option animation_speed	{1.44}
+option bkpts_enabled	{1}
+config last-nedfile	{}
+config filtobjlist-category	{amqpcsgvo}
+config filtobjlist-maxcount	{100000}
+config editor-findstring	{}
+config editor-regexp	{0}
+config filtobjlist-class	{}
+config filtobjlist-name	{}
+config editor-backwards	{1}
+config display-treeview	{1}
+config editor-case-sensitive	{0}
+config editor-whole-words	{0}
+config filtobjlist-order	{Class}
+inspector "alohaNet.server.channel utilization" "cOutVector" "2" "386x326+5+20"
+inspector "alohaNet.server.collision multiplicity" "cOutVector" "2" "386x326+397+379"
+inspector "alohaNet.server.collision length" "cOutVector" "2" "386x326+3+378"
+

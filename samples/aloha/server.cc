@@ -29,6 +29,7 @@ class Server : public cSimpleModule
     double currentChannelUtilization;
 
     cOutVector collisionMultiplicityVector;
+    cOutVector collisionLengthVector;
     cOutVector channelUtilizationVector;
 
   public:
@@ -61,6 +62,7 @@ void Server::initialize()
     WATCH(currentChannelUtilization);
 
     collisionMultiplicityVector.setName("collision multiplicity");
+    collisionLengthVector.setName("collision length");
     channelUtilizationVector.setName("channel utilization");
 
     if (ev.isGUI()) displayString().setTagArg("i2",0,"x_off");
@@ -83,6 +85,7 @@ void Server::handleMessage(cMessage *msg)
         {
             totalCollisionTime += dt;
             collisionMultiplicityVector.record(currentCollisionNumFrames);
+            collisionLengthVector.record(dt);
         }
         currentChannelUtilization = totalReceiveTime/simTime();
         channelUtilizationVector.record(currentChannelUtilization);
