@@ -395,12 +395,13 @@ void NEDBasicValidator::validateElement(FunctionNode *node)
     {
          if (args!=0)
              NEDError(node, "operator 'index' does not take arguments");
-
+         // find submodule node we're under
          NEDElement *parent = node->getParent();
          while (parent && parent->getTagCode()!=NED_SUBMODULE)
              parent = parent->getParent();
          if (!parent || parent->getFirstChildWithAttribute(NED_EXPRESSION, "target", "vector-size")==NULL)
              NEDError(node, "'index' may only occur in a submodule vector's definition");
+         // TBD also check we're not part of this vector-size expression
          return;
     }
     else if (!strcmp(func,"sizeof"))
@@ -411,7 +412,7 @@ void NEDBasicValidator::validateElement(FunctionNode *node)
              NEDError(node, "argument of operator 'sizeof' should be an identifier");
          else
          {
-             // FIXME further check it's a meaningful identifier!
+             // TBD further check it's an existing parent module gate or submodule name
          }
          return;
     }
