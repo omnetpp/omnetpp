@@ -612,9 +612,19 @@ following:
 
 To make the model execute longer, after a message arrives to its destination
 the destination node will generate another message with a random destination
-address, and so forth.
+address, and so forth. Read the full code: @ref txc10.cc.
 
-See the full code in @ref txc10.cc.
+When you run the model, it'll look like this:
+
+<img src="step10a.gif">
+
+You can double-click on the messages to open an inspector for them.
+(You'll either have to temporarily stop the simulation for that,
+or to be very fast in handling the mouse). The inspector window
+displays lots of useful information; the message fields can be seen
+on the Contents page.
+
+<img src="step10b.gif">
 
 Sources: @ref tictoc10.ned, @ref tictoc10.msg, @ref txc10.cc, @ref omnetpp.ini
 
