@@ -412,15 +412,17 @@ int runExpress_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 
 int oneStepInModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2 && argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
 
    cObject *object; int type;
    splitInspectorName( argv[1], object, type);
    if (!object) {Tcl_SetResult(interp, "wrong inspectorname string", TCL_STATIC); return TCL_ERROR;}
 
+   bool fast = (argc==3 && strcmp(argv[2],"fast")==0);
+
    // fast run until we get to that module
-   app->runSimulation( 0, 0, false, false, (cSimpleModule *)object );
+   app->runSimulation( 0, 0, false, fast, (cSimpleModule *)object );
 
    return TCL_OK;
 }

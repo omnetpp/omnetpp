@@ -285,7 +285,7 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
 
     bkpt_hit = false;
     stop_simulation = false;
-    animation_ok = !fastexec && !stepwithinmodule;
+    animation_ok = !fastexec;
 
     clearNextModuleDisplay();
     clearPerformanceDisplay();
@@ -331,7 +331,7 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
             if (until_event>0 && simulation.eventNumber()>=until_event) break;
 
             // display update
-            bool frequent_updates = !fastexec && !stepwithinmodule;
+            bool frequent_updates = !fastexec;
             if (frequent_updates || simulation.eventNumber()%opt_updatefreq_fast==0)
             {
                 updateSimtimeDisplay();
@@ -340,7 +340,7 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
                     speedometer.beginNewInterval();
                     updatePerformanceDisplay(speedometer);
                 }
-                if (!stepwithinmodule) updateInspectors();
+                updateInspectors();
                 Tcl_Eval(interp, "update");
             }
 

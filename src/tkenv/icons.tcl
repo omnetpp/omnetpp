@@ -46,6 +46,19 @@ set icons(until) [image create photo -data {
     2wMRADs=
 }]
 
+set icons(mrun) [image create photo -data {
+    R0lGODlhGQATALMAAEAAAMbGxoAAAP///8AAAAAAAP//////////////////////////////
+    /////////yH5BAEAAAEALAAAAAAZABMAAARAMMhJq704680pIRYhCF0gkt5Ynqh0rqPqCgAc
+    o2PdsXGQ27Hab3fTDTksnY9mUy6dGhH0uAFAA9Zracvter+SCAA7
+}]
+
+set icons(mfast) [image create photo -data {
+    R0lGODlhGQATALMAAEAAAMbGxoAAAP///8AAAAAAAP//////////////////////////////
+    /////////yH5BAEAAAEALAAAAAAZABMAAARSMMhJq704680JsR4oCCJJEWOFmufIBuu7lqkU
+    syhA17c56iqXCyZM/XYCXU93DLqAN2CzNY0BA9PJ6kpMUrI2b4uLFVMA5ADagk5z3vC4fK6J
+    AAA7
+}]
+
 set icons(stop) [image create photo -data {
     R0lGODlhFAATALMAAAAAAMbGxv8AAMAAAP9gYP//////////////////////////////////
     /////////yH5BAEAAAEALAAAAAAUABMAAARQMMhJq6UkayLElVknjp3FkWiJpenKtuALc0Ut

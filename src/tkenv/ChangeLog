@@ -1,3 +1,8 @@
+2003-01-23  Andras Varga
+
+	* "Step" button in module inspectors replaced with 3 buttons ("Run 
+	until next local event", "Fast run until next local event", "Stop")
+
 2003-01-19  Andras Varga
 
 	* Cygwin fixes; put checkTckTkVersion and setupTkOptions (was generic_-
@@ -12,7 +17,8 @@
 2003-01-14  Andras Varga
 
 	* enhancement: graphical module inspector: don't bug the user with 
-	error dialogs if icon for a module is not found; just only display the 'unknown' icon.
+	error dialogs if icon for a module is not found; just only display 
+	the 'unknown' icon.
 
 2003-01-12  Andras Varga
 

@@ -26,16 +26,20 @@ proc create_compoundmodinspector {name geom} {
     iconbutton $w.toolbar.sep1   -separator
     iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
     iconbutton $w.toolbar.sep2   -separator
-    iconbutton $w.toolbar.step   -image $icons(step) -command "one_step_in_module $w"
-    foreach i {graph win sep1 parent sep2 step} {
+    iconbutton $w.toolbar.mrun   -image $icons(mrun) -command "module_run $w"
+    iconbutton $w.toolbar.mfast  -image $icons(mfast) -command "module_run_fast $w"
+    iconbutton $w.toolbar.stop   -image $icons(stop) -command "stop_simulation"
+    foreach i {graph win sep1 parent sep2 mrun mfast stop} {
        pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
     }
-    bind $w <Control-F4> "one_step_in_module $w"
+    bind $w <Control-F4> "module_run_fast $w"
 
     set help_tips($w.toolbar.graph)   {Inspect as network graphics}
     set help_tips($w.toolbar.win)     {See module output}
     set help_tips($w.toolbar.parent)  {Inspect parent module}
-    set help_tips($w.toolbar.step)    {Stop at events in this module (Ctrl-F4)}
+    set help_tips($w.toolbar.mrun)    {Run until next local event}
+    set help_tips($w.toolbar.mfast)   {Fast run until next local event (Ctrl-F4)}
+    set help_tips($w.toolbar.stop)    {Stop running simulation (F8)}
 
     set nb $w.nb
     notebook $nb
@@ -73,15 +77,19 @@ proc create_simplemodinspector {name geom} {
     iconbutton $w.toolbar.sep1   -separator
     iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
     iconbutton $w.toolbar.sep2   -separator
-    iconbutton $w.toolbar.step   -image $icons(step) -command "one_step_in_module $w"
-    foreach i {win sep1 parent sep2 step} {
+    iconbutton $w.toolbar.mrun   -image $icons(mrun) -command "module_run $w"
+    iconbutton $w.toolbar.mfast  -image $icons(mfast) -command "module_run_fast $w"
+    iconbutton $w.toolbar.stop   -image $icons(stop) -command "stop_simulation"
+    foreach i {win sep1 parent sep2 mrun mfast stop} {
        pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
     }
-    bind $w <Control-F4> "one_step_in_module $w"
+    bind $w <Control-F4> "module_run_fast $w"
 
-    set help_tips($w.toolbar.win)    {See module output}
-    set help_tips($w.toolbar.parent) {Inspect parent module}
-    set help_tips($w.toolbar.step)   {Stop at events in this module (Ctrl-F4)}
+    set help_tips($w.toolbar.win)     {See module output}
+    set help_tips($w.toolbar.parent)  {Inspect parent module}
+    set help_tips($w.toolbar.mrun)    {Run until next local event}
+    set help_tips($w.toolbar.mfast)   {Fast run until next local event (Ctrl-F4)}
+    set help_tips($w.toolbar.stop)    {Stop running simulation (F8)}
 
     set nb $w.nb
     notebook $nb
@@ -121,18 +129,23 @@ proc create_simplemodinspector {name geom} {
     create_inspector_listbox $nb.submods
 }
 
-proc one_step_in_module {w} {
-    # implements modulewindow's Step icon
-
+proc module_run {w} {
+    # invoked from toolbar in module inspectors
     if [check_running] return
 
     if {[network_ready] == 1} {
-        #display_stopdialog normal
         opp_onestepinmodule $w
-        #remove_stopdialog
     }
 }
 
+proc module_run_fast {w} {
+    # invoked from toolbar in module inspectors
+    if [check_running] return
+
+    if {[network_ready] == 1} {
+        opp_onestepinmodule $w fast
+    }
+}
 
 proc create_simplemodulewindow {name geom} {
     _create_modulewindow $name $geom 0
@@ -151,23 +164,27 @@ proc _create_modulewindow {name geom iscompound} {
     # Add icons
     if {$iscompound} {
         # for compound module
-        iconbutton $w.toolbar.obj    -image $icons(asobject) -command "inspect_this $w {As Object}"
         iconbutton $w.toolbar.graph  -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
+        iconbutton $w.toolbar.obj    -image $icons(asobject) -command "inspect_this $w {As Object}"
         iconbutton $w.toolbar.sep1   -separator
         iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
         iconbutton $w.toolbar.sep2   -separator
-        iconbutton $w.toolbar.step   -image $icons(step) -command "one_step_in_module $w"
+        iconbutton $w.toolbar.mrun   -image $icons(mrun) -command "module_run $w"
+        iconbutton $w.toolbar.mfast  -image $icons(mfast) -command "module_run_fast $w"
+        iconbutton $w.toolbar.stop   -image $icons(stop) -command "stop_simulation"
         iconbutton $w.toolbar.sep3   -separator
         iconbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
-        foreach i {obj graph sep1 parent sep2 step sep3 find} {
+        foreach i {obj graph sep1 parent sep2 mrun mfast stop sep3 find} {
            pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
         }
-        bind $w <Control-F4> "one_step_in_module $w"
+        bind $w <Control-F4> "module_run_fast $w"
 
-        set help_tips($w.toolbar.obj)    {Inspect as object}
         set help_tips($w.toolbar.graph)  {Inspect as network graphics}
+        set help_tips($w.toolbar.obj)    {Inspect as object}
         set help_tips($w.toolbar.parent) {Inspect parent module}
-        set help_tips($w.toolbar.step)   {Stop at events in this module (Ctrl-F4)}
+        set help_tips($w.toolbar.mrun)   {Run until next local event}
+        set help_tips($w.toolbar.mfast)  {Fast run until next local event (Ctrl-F4)}
+        set help_tips($w.toolbar.stop)   {Stop running simulation (F8)}
         set help_tips($w.toolbar.find)   {Find string in window}
     } else {
         # for simple module
@@ -175,17 +192,21 @@ proc _create_modulewindow {name geom iscompound} {
         iconbutton $w.toolbar.sep1   -separator
         iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
         iconbutton $w.toolbar.sep2   -separator
-        iconbutton $w.toolbar.step   -image $icons(step) -command "one_step_in_module $w"
+        iconbutton $w.toolbar.mrun   -image $icons(mrun) -command "module_run $w"
+        iconbutton $w.toolbar.mfast  -image $icons(mfast) -command "module_run_fast $w"
+        iconbutton $w.toolbar.stop   -image $icons(stop) -command "stop_simulation"
         iconbutton $w.toolbar.sep3   -separator
         iconbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
-        foreach i {obj sep1 parent sep2 step sep3 find} {
+        foreach i {obj sep1 parent sep2 mrun mfast stop sep3 find} {
            pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
         }
-        bind $w <Control-F4> "one_step_in_module $w"
+        bind $w <Control-F4> "module_run_fast $w"
 
         set help_tips($w.toolbar.obj)    {Inspect as object}
         set help_tips($w.toolbar.parent) {Inspect parent module}
-        set help_tips($w.toolbar.step)   {Stop at events in this module (Ctrl-F4)}
+        set help_tips($w.toolbar.mrun)   {Run until next local event}
+        set help_tips($w.toolbar.mfast)  {Fast run until next local event (Ctrl-F4)}
+        set help_tips($w.toolbar.stop)   {Stop running simulation (F8)}
         set help_tips($w.toolbar.find)   {Find string in window}
     }
 
