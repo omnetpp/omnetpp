@@ -1378,8 +1378,12 @@ fi
 #----------------------
 
 if test ! -n "$PVM_CFLAGS"; then
-    # FIXME:
-    PVM_CFLAGS="-I$PVM_ROOT/include"
+    if test ! -n "$PVM_ROOT"; then
+        echo "configure: warning: No PVM_CFLAGS set in configure.user" 1>&2
+        echo "configure: warning: May run into problems building SIM_PVM!" 1>&2
+    else
+        PVM_CFLAGS="-I$PVM_ROOT/include"
+    fi
 fi
 
 if test ! -n "$PVM_LIBS"; then
@@ -1392,22 +1396,22 @@ LIBS="-lgpvm3 -lpvm3
 for lib_path_swith in "" $PVM_ROOT/lib/$PVM_ARCH; do
   if test -n "$lib_path_swith"; then
     echo $ac_n "checking whether -lgpvm3 is in $lib_path_swith""... $ac_c" 1>&6
-echo "configure:1396: checking whether -lgpvm3 is in $lib_path_swith" >&5
+echo "configure:1400: checking whether -lgpvm3 is in $lib_path_swith" >&5
     lib_path_swith="-L$lib_path_swith"
   else
     echo $ac_n "checking whether -lgpvm3 is in linker path""... $ac_c" 1>&6
-echo "configure:1400: checking whether -lgpvm3 is in linker path" >&5
+echo "configure:1404: checking whether -lgpvm3 is in linker path" >&5
   fi
   LDFLAGS="$save_LDFLAGS $lib_path_swith"
   cat > conftest.$ac_ext <<EOF
-#line 1404 "configure"
+#line 1408 "configure"
 #include "confdefs.h"
 char pvm_joingroup();
 int main() {
 pvm_joingroup()
 ; return 0; }
 EOF
-if { (eval echo configure:1411: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:1415: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   echo "$ac_t""yes" 1>&6;succ=yes;break
 else
@@ -1453,7 +1457,7 @@ if test ! -n "$TK_LIBS"; then
 # Uses ac_ vars as temps to allow command line to override cache and checks.
 # --without-x overrides everything else, but does not touch the cache.
 echo $ac_n "checking for X""... $ac_c" 1>&6
-echo "configure:1457: checking for X" >&5
+echo "configure:1461: checking for X" >&5
 
 # Check whether --with-x or --without-x was given.
 if test "${with_x+set}" = set; then
@@ -1515,12 +1519,12 @@ if test "$ac_x_includes" = NO; then
 
   # First, try using that file with no special directory specified.
 cat > conftest.$ac_ext <<EOF
-#line 1519 "configure"
+#line 1523 "configure"
 #include "confdefs.h"
 #include <$x_direct_test_include>
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:1524: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:1528: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 if test -z "$ac_err"; then
   rm -rf conftest*
@@ -1589,14 +1593,14 @@ if test "$ac_x_libraries" = NO; then
   ac_save_LIBS="$LIBS"
   LIBS="-l$x_direct_test_library $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 1593 "configure"
+#line 1597 "configure"
 #include "confdefs.h"
 
 int main() {
 ${x_direct_test_function}()
 ; return 0; }
 EOF
-if { (eval echo configure:1600: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:1604: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   LIBS="$ac_save_LIBS"
 # We can link X programs with no special library path.
@@ -1699,22 +1703,22 @@ LIBS="-ltcl$ver $SYS_LIBS"
 for lib_path_swith in "" /opt/lib; do
   if test -n "$lib_path_swith"; then
     echo $ac_n "checking whether -ltcl$ver is in $lib_path_swith""... $ac_c" 1>&6
-echo "configure:1703: checking whether -ltcl$ver is in $lib_path_swith" >&5
+echo "configure:1707: checking whether -ltcl$ver is in $lib_path_swith" >&5
     lib_path_swith="-L$lib_path_swith"
   else
     echo $ac_n "checking whether -ltcl$ver is in linker path""... $ac_c" 1>&6
-echo "configure:1707: checking whether -ltcl$ver is in linker path" >&5
+echo "configure:1711: checking whether -ltcl$ver is in linker path" >&5
   fi
   LDFLAGS="$save_LDFLAGS $lib_path_swith"
   cat > conftest.$ac_ext <<EOF
-#line 1711 "configure"
+#line 1715 "configure"
 #include "confdefs.h"
 char Tcl_Init();
 int main() {
 Tcl_Init()
 ; return 0; }
 EOF
-if { (eval echo configure:1718: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:1722: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   echo "$ac_t""yes" 1>&6;succ=yes;break
 else
@@ -1742,22 +1746,22 @@ LIBS="-ltk$ver $TK_LIBS $SYS_LIBS"
 for lib_path_swith in "" /opt/lib; do
   if test -n "$lib_path_swith"; then
     echo $ac_n "checking whether -ltk$ver is in $lib_path_swith""... $ac_c" 1>&6
-echo "configure:1746: checking whether -ltk$ver is in $lib_path_swith" >&5
+echo "configure:1750: checking whether -ltk$ver is in $lib_path_swith" >&5
     lib_path_swith="-L$lib_path_swith"
   else
     echo $ac_n "checking whether -ltk$ver is in linker path""... $ac_c" 1>&6
-echo "configure:1750: checking whether -ltk$ver is in linker path" >&5
+echo "configure:1754: checking whether -ltk$ver is in linker path" >&5
   fi
   LDFLAGS="$save_LDFLAGS $lib_path_swith"
   cat > conftest.$ac_ext <<EOF
-#line 1754 "configure"
+#line 1758 "configure"
 #include "confdefs.h"
 char Tk_BindEvent();
 int main() {
 Tk_BindEvent()
 ; return 0; }
 EOF
-if { (eval echo configure:1761: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:1765: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   echo "$ac_t""yes" 1>&6;succ=yes;break
 else
@@ -1798,7 +1802,7 @@ fi
 #----------------------
 
 echo $ac_n "checking for 8-bit clean memcmp""... $ac_c" 1>&6
-echo "configure:1802: checking for 8-bit clean memcmp" >&5
+echo "configure:1806: checking for 8-bit clean memcmp" >&5
 if eval "test \"`echo '$''{'ac_cv_func_memcmp_clean'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1806,7 +1810,7 @@ else
   ac_cv_func_memcmp_clean=no
 else
   cat > conftest.$ac_ext <<EOF
-#line 1810 "configure"
+#line 1814 "configure"
 #include "confdefs.h"
 
 main()
@@ -1816,7 +1820,7 @@ main()
 }
 
 EOF
-if { (eval echo configure:1820: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+if { (eval echo configure:1824: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
 then
   ac_cv_func_memcmp_clean=yes
 else
@@ -1834,12 +1838,12 @@ echo "$ac_t""$ac_cv_func_memcmp_clean" 1>&6
 test $ac_cv_func_memcmp_clean = no && LIBOBJS="$LIBOBJS memcmp.${ac_objext}"
 
 echo $ac_n "checking return type of signal handlers""... $ac_c" 1>&6
-echo "configure:1838: checking return type of signal handlers" >&5
+echo "configure:1842: checking return type of signal handlers" >&5
 if eval "test \"`echo '$''{'ac_cv_type_signal'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 1843 "configure"
+#line 1847 "configure"
 #include "confdefs.h"
 #include <sys/types.h>
 #include <signal.h>
@@ -1856,7 +1860,7 @@ int main() {
 int i;
 ; return 0; }
 EOF
-if { (eval echo configure:1860: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+if { (eval echo configure:1864: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
   rm -rf conftest*
   ac_cv_type_signal=void
 else
@@ -1875,12 +1879,12 @@ EOF
 
 
 echo $ac_n "checking for vprintf""... $ac_c" 1>&6
-echo "configure:1879: checking for vprintf" >&5
+echo "configure:1883: checking for vprintf" >&5
 if eval "test \"`echo '$''{'ac_cv_func_vprintf'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 1884 "configure"
+#line 1888 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char vprintf(); below.  */
@@ -1903,7 +1907,7 @@ vprintf();
 
 ; return 0; }
 EOF
-if { (eval echo configure:1907: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:1911: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_vprintf=yes"
 else
@@ -1927,12 +1931,12 @@ fi
 
 if test "$ac_cv_func_vprintf" != yes; then
 echo $ac_n "checking for _doprnt""... $ac_c" 1>&6
-echo "configure:1931: checking for _doprnt" >&5
+echo "configure:1935: checking for _doprnt" >&5
 if eval "test \"`echo '$''{'ac_cv_func__doprnt'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 1936 "configure"
+#line 1940 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char _doprnt(); below.  */
@@ -1955,7 +1959,7 @@ _doprnt();
 
 ; return 0; }
 EOF
-if { (eval echo configure:1959: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:1963: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func__doprnt=yes"
 else
@@ -1982,12 +1986,12 @@ fi
 for ac_func in select strdup strspn strstr
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
-echo "configure:1986: checking for $ac_func" >&5
+echo "configure:1990: checking for $ac_func" >&5
 if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 1991 "configure"
+#line 1995 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char $ac_func(); below.  */
@@ -2010,7 +2014,7 @@ $ac_func();
 
 ; return 0; }
 EOF
-if { (eval echo configure:2014: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:2018: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_$ac_func=yes"
 else
@@ -2099,9 +2103,16 @@ else
    GNED_EMBED_SUFFIX=
 fi
 
+if test "$PLOVE_EMBED_TCL" = yes; then
+   PLOVE_VARIANT=plove-exe
+else
+   PLOVE_VARIANT=plove-sh
+fi
+
 #----------------------
 # Subtitutions.
 #----------------------
+
 
 
 
@@ -2349,6 +2360,7 @@ s%@SIM_PVM_IF_POSSIBLE@%$SIM_PVM_IF_POSSIBLE%g
 s%@GNED_IF_POSSIBLE@%$GNED_IF_POSSIBLE%g
 s%@TKENV_EMBED_SUFFIX@%$TKENV_EMBED_SUFFIX%g
 s%@GNED_EMBED_SUFFIX@%$GNED_EMBED_SUFFIX%g
+s%@PLOVE_VARIANT@%$PLOVE_VARIANT%g
 s%@OMNETPP_TKENV_DIR@%$OMNETPP_TKENV_DIR%g
 s%@OMNETPP_GNED_DIR@%$OMNETPP_GNED_DIR%g
 

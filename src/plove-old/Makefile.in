@@ -16,19 +16,25 @@ TK_CFLAGS=@TK_CFLAGS@
 TK_LIBS=@TK_LIBS@
 SYS_LIBS=@SYS_LIBS@
 
+# The following is either 'plove-exe' (embedded Tcl code) or 'plove-sh' (no embedding)
+PLOVE_VARIANT=@PLOVE_VARIANT@
+
 #
 # Local definitions
 #
 COPTS=$(CFLAGS) $(TK_CFLAGS)
-
+OBJS=plove.o
 
 all: plove
-	# (dir=`pwd`; cd $(OMNETPP_BIN_DIR); rm -f plove; ln -s $$dir/plove .)
+
+plove: $(PLOVE_VARIANT)
 	../utils/install-prog plove $(OMNETPP_BIN_DIR)
 
-plove :
-	$(CC) $(LDFLAGS) $(OBJS) $(TK_LIBS) $(SYS_LIBS) -o gned
-	../utils/install-prog plove $(OMNETPP_BIN_DIR)
+plove-sh: plove.sh
+	cp plove.sh plove
+
+plove-exe: $(OBJS)
+	$(CC) $(LDFLAGS) $(OBJS) $(TK_LIBS) $(SYS_LIBS) -o plove
 
 plove.o: plove.cc tclcode.cc
 	$(CXX) -c $(COPTS) plove.cc
@@ -44,6 +50,6 @@ depend:
 	makedepend -Y -I. -fMakefile.in -- *.c *.cc
 
 clean:
-	rm -f tclcode.cc *.o plove$(EXE_SUFFIX)
+	rm -f tclcode.cc *.o plove$(EXE_SUFFIX) plove
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

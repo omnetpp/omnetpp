@@ -24,13 +24,13 @@ OBJS = plove.obj
 #
 
 all: $(PLOVE_EXE_IF_NEEDED)
-	echo @$(WISH:/=\) -f $(OMNETPP_SRC_DIR)/plove/plove %%1 %%2 %%3 %%4 %%5 %%6 %%7 %%8 %%9 > plove.bat
+	echo @$(WISH:/=\) -f $(OMNETPP_SRC_DIR)/plove/plove.sh %%1 %%2 %%3 %%4 %%5 %%6 %%7 %%8 %%9 > plove.bat
 	del $(OMNETPP_BIN_DIR:/=\)\plove.bat $(OMNETPP_BIN_DIR:/=\)\plove.exe 2> nul
         if "$(PLOVE_EXE_IF_NEEDED)x"=="x"  copy plove.bat $(OMNETPP_BIN_DIR:/=\)
         if not "$(PLOVE_EXE_IF_NEEDED)x"=="x"  copy plove.exe $(OMNETPP_BIN_DIR:/=\)
 
 plove.bat:
-	echo @$(WISH:/=\) -f $(OMNETPP_SRC_DIR)/plove/plove %%1 %%2 %%3 %%4 %%5 %%6 %%7 %%8 %%9 > plove.bat
+	echo @$(WISH:/=\) -f $(OMNETPP_SRC_DIR)/plove/plove.sh %%1 %%2 %%3 %%4 %%5 %%6 %%7 %%8 %%9 > plove.bat
         copy plove.bat $(OMNETPP_BIN_DIR:/=\)
 
 plove.exe : $(OBJS)

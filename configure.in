@@ -309,6 +309,12 @@ else
    GNED_EMBED_SUFFIX=
 fi
 
+if test "$PLOVE_EMBED_TCL" = yes; then
+   PLOVE_VARIANT=plove-exe
+else
+   PLOVE_VARIANT=plove-sh
+fi
+
 #----------------------
 # Subtitutions.
 #----------------------
@@ -353,6 +359,7 @@ AC_SUBST(GNED_IF_POSSIBLE)
 
 AC_SUBST(TKENV_EMBED_SUFFIX)
 AC_SUBST(GNED_EMBED_SUFFIX)
+AC_SUBST(PLOVE_VARIANT)
 
 AC_SUBST(OMNETPP_TKENV_DIR)
 AC_SUBST(OMNETPP_GNED_DIR)
