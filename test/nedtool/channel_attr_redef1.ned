@@ -1,5 +1,4 @@
-//ERROR: parse error
-//todo: error message could be somewhat better...
+//ERROR: name 'error' not unique
 channel Channel
    error 0.01;
    error 0.02;
