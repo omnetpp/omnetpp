@@ -39,6 +39,7 @@ cHead linktypes         ( "link-types",         &superhead );
 cHead functions         ( "functions",          &superhead );
 cHead classes           ( "classes",            &superhead );
 cHead inspectorfactories( "inspector-factories",&superhead );
+cHead enums             ( "enums",              &superhead );
 
 //=== Registration
 Register_Class( cHead )

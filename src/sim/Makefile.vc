@@ -15,7 +15,7 @@ CPPOBJS= ccor.obj ctypes.obj carray.obj cgate.obj cmodule.obj csimul.obj cobject
 	 cstat.obj chist.obj cdensity.obj cvarhist.obj cpsquare.obj cksplit.obj \
          cmessage.obj cdetect.obj cstk.obj util.obj cllist.obj ctopo.obj errmsg.obj \
 	 cmsgheap.obj cnetmod.obj coutvect.obj cqueue.obj chead.obj cwatch.obj \
-         cpacket.obj cfsm.obj
+         cpacket.obj cfsm.obj cstruct.obj cenum.obj
 CPPOBJS_STD= std\netpack.obj
 CPPOBJS_PVM= pvm\pvmmod.obj pvm/pvmpack.obj
 LIBS= $(OMNETPP_SRC_DIR)/envir/envir.ilib
@@ -124,6 +124,12 @@ coutvect.obj : coutvect.cc
 
 cstk.obj : cstk.cc
 	$(CXX) $(COPTS) /c /Tp cstk.cc
+
+cstruct.obj: cstruct.cc
+	$(CXX) $(COPTS) /c /Tp cstruct.cc
+
+cenum.obj: cenum.cc
+	$(CXX) $(COPTS) /c /Tp cenum.cc
 
 util.obj : util.cc
 	$(CXX) $(COPTS) /c /Tp util.cc

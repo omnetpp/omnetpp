@@ -31,7 +31,7 @@ CPPOBJS= ccor.o ctypes.o carray.o cgate.o cmodule.o csimul.o cobject.o cpar.o \
 	 cstat.o chist.o cdensity.o cvarhist.o cpsquare.o cksplit.o \
          cmessage.o cdetect.o cstk.o util.o cllist.o ctopo.o errmsg.o \
 	 cmsgheap.o cnetmod.o coutvect.o cqueue.o chead.o cwatch.o \
-         cpacket.o cfsm.o
+         cpacket.o cfsm.o cenum.o cstruct.o
 CPPOBJS_STD= std/netpack.o
 CPPOBJS_PVM= pvm/pvmmod.o pvm/pvmpack.o
 ASMOBJS=
@@ -144,6 +144,12 @@ coutvect.o : coutvect.cc
 
 cstk.o : cstk.cc
 	$(CXX) -c $(COPTS) cstk.cc
+
+cenum.o : cenum.cc
+	$(CXX) -c $(COPTS) cenum.cc
+
+cstruct.o : cstruct.cc
+	$(CXX) -c $(COPTS) cstruct.cc
 
 util.o : util.cc
 	$(CXX) -c $(COPTS) util.cc

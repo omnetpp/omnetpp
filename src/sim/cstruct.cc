@@ -18,9 +18,15 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>
+#include <stdio.h>   // sprintf
+#include <stdlib.h>  // atol
 #include <string.h>
+#include <assert.h>
 #include "cstruct.h"
+#include "cenum.h"
+#include "util.h"
+#include "errmsg.h"
+#include "ctypes.h"  // createOne()
 // #include "cenum.h" --TBD
 
 
@@ -43,7 +49,7 @@ long cStructDescriptor::string2long(const char *s)
 }
 
 
-unsigned cStructDescriptor::long string2ulong(const char *s)
+unsigned long cStructDescriptor::string2ulong(const char *s)
 {
     return (unsigned long) atol(s);
 }
@@ -77,13 +83,42 @@ double cStructDescriptor::string2double(const char *s)
 
 void cStructDescriptor::enum2string(long e, const char *enumname, char *buf, int bufsize)
 {
-    // TBD
+    assert(bufsize>=30); // FIXME: very crude check
+
+    sprintf(buf,"%ld",e);
+    cEnum *enump = findEnum(enumname);
+    if (!enump) {
+        // this enum type is not registered
+        return;
+    }
+    const char *s = enump->stringFor(e);
+    if (!s) {
+        // no string for this numeric value
+        sprintf(buf+strlen(buf), " (unknown)");
+        return;
+    }
+    sprintf(buf+strlen(buf), " (%s)",s);
 }
 
 
 long cStructDescriptor::string2enum(const char *s, const char *enumname)
 {
-    // TBD
+    // return zero if string cannot be parsed
+
+    // try to interpret as numeric value
+    if (s[0]>=0 && s[0]<=9) {
+        return atol(s);
+    }
+
+    // try to recognize string
+    cEnum *enump = findEnum(enumname);
+    if (!enump) {
+        // this enum type is not registered
+        return 0;
+    }
+
+    // FIXME: should strip possible spaces, parens etc.
+    return enump->lookup(s,0);
 }
 
 //-----------------------------------------------------------
@@ -104,9 +139,10 @@ cObject *cStructDescriptor::dup()
     return NULL;
 }
 
-cStructDescriptor& operator=(cStructDescriptor& cs);
+cStructDescriptor& cStructDescriptor::operator=(cStructDescriptor& cs)
 {
     opp_error("Assignment not supported");  //FIXME better msg
+    return *this;
 }
 
 cStructDescriptor *cStructDescriptor::createDescriptorFor(cObject *obj)
@@ -124,7 +160,7 @@ cStructDescriptor *cStructDescriptor::createDescriptorFor(const char *classname,
     // create and initialize a structure descriptor object
     cStructDescriptor *sd = (cStructDescriptor *) createOne(sdclass);
     sd->setStruct(p);
-    return p;
+    return sd;
 }
 
 

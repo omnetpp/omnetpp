@@ -1,3 +1,8 @@
+2001-07-02 Andras Varga
+   
+        * cenum.cc,cstruct.cc: fixed, added to makefile.in and makefile.vc. 
+        Dependencies to be updated in both makefiles! Code still untested.
+
 2001-06-28 Andras Varga
 
        	* cstruct.cc added: classes to support self-describing data structures,
