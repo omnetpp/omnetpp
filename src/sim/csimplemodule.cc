@@ -333,6 +333,8 @@ int cSimpleModule::sendDelayed(cMessage *msg, double delay, cGate *outgate)
        throw new cException("send()/sendDelayed(): gate pointer is NULL");
     if (outgate->type()=='I')
        throw new cException("send()/sendDelayed(): cannot send via an input gate (`%s')",outgate->name());
+    if (!outgate->toGate())  // NOTE: without this error check, msg would become self-message
+       throw new cException("send()/sendDelayed(): gate `%s' not connected",outgate->fullName());
     if (msg==NULL)
         throw new cException("send()/sendDelayed(): message pointer is NULL");
     if (msg->owner()!=this)

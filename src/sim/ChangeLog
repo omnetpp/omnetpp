@@ -1,3 +1,9 @@
+2005-02-06  Andras Varga
+
+	* csimplemodule.cc: send()/sendDelayed() fix: check if output gate is
+	connected. If we didn't throw error there, msg would be delivered back
+	to the sender module as a self-message.
+	
 2005-01-12  Andras Varga
 
 	csimplemodule.cc, csimul.cc: changed the way scheduled events or sent
