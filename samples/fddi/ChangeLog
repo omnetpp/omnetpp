@@ -200,5 +200,7 @@ Dec 23, 1999
 Jan 25, 2000
   - ssm_ifs.cc updated because of cArray interface change
 ------ omnetpp-2.0b3 released ------
-Mar 12. 2000
+Mar 12, 2000
   - readme expanded with advice on PVM setup
+May 7, 2000
+  - char * --> const char * changes

@@ -407,7 +407,7 @@ void FDDI_MAC::PlayTTRP() // Play the Timed Token Ring Protocol
 		new cMessage("TOKEN_SEND_END",TOKEN_SEND_END,0));
   }
 
-FDDI_MAC::FDDI_MAC(char *namestr, cModule *parentmod) :
+FDDI_MAC::FDDI_MAC(const char *namestr, cModule *parentmod) :
 	    cSimpleModule(namestr, parentmod, FDDI_MAC_HEAPSIZE),
             sync_buf("sync_buf"),
             async_buf("async_buf")
@@ -431,7 +431,7 @@ FDDI_MAC::FDDI_MAC(char *namestr, cModule *parentmod) :
   SyncFinished=false;	 // transm. of sync. packets is already finished
   }
 
-FDDI_MAC4Ring::FDDI_MAC4Ring(char *namestr, cModule *parentmod) :
+FDDI_MAC4Ring::FDDI_MAC4Ring(const char *namestr, cModule *parentmod) :
 		 FDDI_MAC(namestr,parentmod)
   {
   }

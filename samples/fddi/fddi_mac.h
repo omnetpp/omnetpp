@@ -105,15 +105,15 @@ class FDDI_MAC : public cSimpleModule // Media Access Control sublayer for FDDI
   virtual void activity();
 
   public:
-  FDDI_MAC(char *namestr, cModule *parentmod);
-  virtual char *className()  {return "FDDI_MAC";}
+  FDDI_MAC(const char *namestr, cModule *parentmod);
+  virtual const char *className()  {return "FDDI_MAC";}
   };
 
 class FDDI_MAC4Ring : public FDDI_MAC
   {
   public:
-  FDDI_MAC4Ring(char *namestr, cModule *parentmod);
-  virtual char *className()  {return "FDDI_MAC4Ring";}
+  FDDI_MAC4Ring(const char *namestr, cModule *parentmod);
+  virtual const char *className()  {return "FDDI_MAC4Ring";}
   };
 
 class FDDI_MAC4Sniffer : public FDDI_MAC
@@ -122,9 +122,9 @@ class FDDI_MAC4Sniffer : public FDDI_MAC
   virtual void Frame2RepArrived(cMessage *);
 
   public:
-  FDDI_MAC4Sniffer(char *namestr, cModule *parentmod):
+  FDDI_MAC4Sniffer(const char *namestr, cModule *parentmod):
     FDDI_MAC(namestr, parentmod) { }
-  virtual char *className()  {return "FDDI_MAC4Sniffer";}
+  virtual const char *className()  {return "FDDI_MAC4Sniffer";}
   };
 
 #endif

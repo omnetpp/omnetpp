@@ -36,9 +36,9 @@ class FDDI_Generator : public cSimpleModule
     double LoadMultiplier;
 
   public:
-  FDDI_Generator(char *namestr, cModule *parentmod):
+  FDDI_Generator(const char *namestr, cModule *parentmod):
     cSimpleModule(namestr, parentmod, GENERATOR_HEAPSIZE) { f = 0; }
-  virtual char *className()  {return "FDDI_Generator";}
+  virtual const char *className()  {return "FDDI_Generator";}
   ~FDDI_Generator() { if ( f ) fclose(f); }
   virtual void activity();
   protected:
@@ -54,9 +54,9 @@ class FDDI_GeneratorFromTraceFile : public FDDI_Generator
   char * line;
 
   public:
-  FDDI_GeneratorFromTraceFile(char *namestr, cModule *parentmod) :
+  FDDI_GeneratorFromTraceFile(const char *namestr, cModule *parentmod) :
     FDDI_Generator(namestr, parentmod) { line=0; }
-  virtual char *className()  {return "FDDI_GeneratorFromTarceFile";}
+  virtual const char *className()  {return "FDDI_GeneratorFromTarceFile";}
   ~FDDI_GeneratorFromTraceFile() { if ( line ) delete [] line; }
   protected:
   virtual void InitStatistics();
@@ -67,9 +67,9 @@ class FDDI_GeneratorFromTraceFile : public FDDI_Generator
 class FDDI_GeneratorHistogram2x1D : public FDDI_Generator
   {
   public:
-  FDDI_GeneratorHistogram2x1D(char *namestr, cModule *parentmod):
+  FDDI_GeneratorHistogram2x1D(const char *namestr, cModule *parentmod):
     FDDI_Generator(namestr, parentmod) { }
-  virtual char *className()  {return "FDDI_GeneratorHistogram2x1D";}
+  virtual const char *className()  {return "FDDI_GeneratorHistogram2x1D";}
   protected:
   virtual void InitStatistics();
   virtual bool RetrieveDestLength(cMessage *, int &, int &);
@@ -79,9 +79,9 @@ class FDDI_GeneratorHistogram2x1D : public FDDI_Generator
 class FDDI_GeneratorPiSquare2x1D : public FDDI_Generator
   {
   public:
-  FDDI_GeneratorPiSquare2x1D(char *namestr, cModule *parentmod):
+  FDDI_GeneratorPiSquare2x1D(const char *namestr, cModule *parentmod):
     FDDI_Generator(namestr, parentmod) { }
-  virtual char *className()  {return "FDDI_GeneratorPiSquare2x1D";}
+  virtual const char *className()  {return "FDDI_GeneratorPiSquare2x1D";}
   protected:
   virtual void InitStatistics();
   virtual bool RetrieveDestLength(cMessage *, int &, int &);
@@ -91,9 +91,9 @@ class FDDI_GeneratorPiSquare2x1D : public FDDI_Generator
 class FDDI_GeneratorKSplit2x1D : public FDDI_Generator
   {
   public:
-  FDDI_GeneratorKSplit2x1D(char *namestr, cModule *parentmod):
+  FDDI_GeneratorKSplit2x1D(const char *namestr, cModule *parentmod):
     FDDI_Generator(namestr, parentmod) { }
-  virtual char *className()  {return "FDDI_GeneratorKSplit2x1D";}
+  virtual const char *className()  {return "FDDI_GeneratorKSplit2x1D";}
   protected:
   virtual void InitStatistics();
   virtual bool RetrieveDestLength(cMessage *, int &, int &);
@@ -103,9 +103,9 @@ class FDDI_GeneratorKSplit2x1D : public FDDI_Generator
 class FDDI_GeneratorKSplit2D : public FDDI_Generator
   {
   public:
-  FDDI_GeneratorKSplit2D(char *namestr, cModule *parentmod):
+  FDDI_GeneratorKSplit2D(const char *namestr, cModule *parentmod):
     FDDI_Generator(namestr, parentmod) { }
-  virtual char *className()  {return "FDDI_GeneratorKSplit2D";}
+  virtual const char *className()  {return "FDDI_GeneratorKSplit2D";}
   protected:
   virtual void InitStatistics();
   virtual bool RetrieveDestLength(cMessage *, int &, int &);
@@ -122,7 +122,7 @@ class FDDI_Address_Generator : public cSimpleModule
     cBag length_histograms;
 
   public:
-  FDDI_Address_Generator(char *namestr, cModule *parentmod):
+  FDDI_Address_Generator(const char *namestr, cModule *parentmod):
     cSimpleModule(namestr, parentmod, GENERATOR_HEAPSIZE) { f = 0; }
   ~FDDI_Address_Generator() { if ( f ) fclose(f); }
   virtual void activity();
