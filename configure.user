@@ -27,8 +27,8 @@ NEDCFLAGS='-Wno-unused'
 # Select here whether you want to build static or shared libraries.
 # If you change this setting, remember to delete the other set of libraries
 # (or at least the soft links from lib/).
-# On CYGWIN, only static libraries can be used. The default setting is
-# `if-not-cygwin'.
+# On Windows (Cygwin or MinGW), only static libraries can be used. The default
+# setting is `if-not-windows'.
 #
 #build_shared_libs=yes
 #build_shared_libs=no
@@ -76,8 +76,8 @@ WITH_PARSIM=yes
 # case add -lX11 to TK_LIBS.
 #
 # With MinGW I use the following:
-#  TK_CFLAGS="-I/d/home/tools/Tcl-8.4.1/include -fwritable-strings"
-#  TK_LIBS="-L/d/home/tools/Tcl-8.4.1/lib -ltk84 -ltcl84"
+#  TK_CFLAGS="-I/d/home/tools/Tcl-8.4.2/include -fwritable-strings"
+#  TK_LIBS="-L/d/home/tools/Tcl-8.4.2/lib -ltk84 -ltcl84"
 # With Cygwin, you can try:
 #  TK_CFLAGS="-fwritable-strings"
 #  TK_LIBS="-lcygtk83 -lcygtcl83"
