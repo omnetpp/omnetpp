@@ -26,16 +26,48 @@
 //=== classes declared here
 class  cWatch;
 
+/** @name Watches
+ *
+ * @ingroup Macros
+ */
+//@{
+
 /**
- * MISSINGDOC:
+ * Enables int, long, double, char, etc. variables to be inspectable in Tkenv
+ * and to be included into the snapshot file. Example usage:
+ * <PRE>
+ *   int i;
+ *   WATCH(i);
+ * </PRE>
+ *
+ * The WATCH() macro expands to a dynamically created cWatch object, like
+ * this:
+ * <PRE>
+ *   new cWatch("i",i);
+ * </PRE>
+ *
+ * The WATCH() macro must be executed exactly once for a variable,
+ * otherwise a new cWatch object is created every time. The alternative
+ * is LWATCH which works by creating a local variable.
+ *
+ * LWATCH expands to something like
+ * <PRE>
+ *   cWatch i__varshell("i",i);
+ * </PRE>
+ *
+ * @hideinitializer
+ * @see LWATCH()
  */
 #define WATCH(var)   new cWatch( #var, var );
 
 /**
- * MISSINGDOC:
+ * Like WATCH(), but may be executed more than once.
+ *
+ * @hideinitializer
+ * @see WATCH()
  */
 #define LWATCH(var)  cWatch var##__varshell( #var, var );
-
+//@}
 
 //==========================================================================
 

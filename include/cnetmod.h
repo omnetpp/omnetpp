@@ -68,6 +68,8 @@ class SIM_API cNetMod : public cModule
     cMessage *after_modinit_msg;
 
   public:
+    /** @name Constructors, destructor, assignment. */
+    //@{
 
     /**
      * Constructor.
@@ -79,7 +81,15 @@ class SIM_API cNetMod : public cModule
      */
     virtual ~cNetMod() {}
 
-    // redefined functions
+    /**
+     * Assignment operator. The name member doesn't get copied;
+     * see cObject's operator=() for more details.
+     */
+    virtual cNetMod& operator=(cNetMod& other);
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
 
     /**
      * Returns pointer to a string containing the class name, "cNetMod".
@@ -91,8 +101,10 @@ class SIM_API cNetMod : public cModule
      * See cObject for more details.
      */
     virtual const char *inspectorFactoryName() const {return "cNetModIFC";}
+    //@}
 
-    // redefined cModule functions
+    /** @name Redefined cModule member functions. */
+    //@{
 
     /**
      * FIXME: redefined cModule functions
@@ -118,13 +130,15 @@ class SIM_API cNetMod : public cModule
      * MISSINGDOC: cNetMod:void callFinish()
      */
     virtual void callFinish();
+    //@}
 
-    // new functions
+    /** @name FIXME: new functions. */
+    //@{
 
     /**
-     * FIXME: new functions
+     * FIXME: is local host in 'm' list?
      */
-    int isLocalMachineIn(cArray& m);   // is local host in 'm' list?
+    int isLocalMachineIn(cArray& m);
 
     /**
      * MISSINGDOC: cNetMod:cGate*ingate(int)
@@ -155,13 +169,6 @@ class SIM_API cNetMod : public cModule
      * MISSINGDOC: cNetMod:int findoutgate(char*)
      */
     virtual int findoutgate(const char *s)=0;
-
-
-    /**
-     * Assignment operator. The name member doesn't get copied;
-     * see cObject's operator=() for more details.
-     */
-    virtual cNetMod& operator=(cNetMod& other);
 
     /**
      * MISSINGDOC: cNetMod:char*localhost()
@@ -207,11 +214,13 @@ class SIM_API cNetMod : public cModule
      * MISSINGDOC: cNetMod:int net_addgate(cModule*,int,char)
      */
     virtual int net_addgate(cModule *mod, int gate, char tp) {return 0;}
+    //@}
 
-    // functions to be called from sim.application (TOmnetApp descendant)
+    /** @name Functions to be called from the simulation application (=cEnvir implementation). */
+    //@{
 
     /**
-     * FIXME: functions to be called from sim.application (TOmnetApp descendant)
+     * FIXME:
      */
     virtual void putmsg_onconsole(const char *s) = 0;
 
@@ -229,8 +238,10 @@ class SIM_API cNetMod : public cModule
      * MISSINGDOC: cNetMod:bool askyesno_onconsole(char*)
      */
     virtual bool askyesno_onconsole(const char *question) = 0;
+    //@}
 
-    // control functions
+    /** @name Controlling parallel execution. */
+    //@{
 
     /**
      * FIXME: control functions
@@ -266,6 +277,7 @@ class SIM_API cNetMod : public cModule
      * MISSINGDOC: cNetMod:void send_runnumber(int)
      */
     virtual void send_runnumber(int run_nr) = 0;
+    //@}
 };
 
 #endif

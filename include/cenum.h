@@ -33,6 +33,7 @@
  * or #define). To be used mostly from Tkenv and possibly other user interfaces.
  *
  * @ingroup Internals
+ * @see sEnumBuilder
  */
 class cEnum : public cObject
 {
@@ -44,7 +45,11 @@ class cEnum : public cObject
      sEnum *vect;      // vector of objects
      int size;         // size of vector; always prime
      int items;        // number if items in the vector
+
   public:
+    /** @name Constructors, destructor, assignment. */
+    //@{
+
     /**
      * Copy constructor.
      */
@@ -59,6 +64,16 @@ class cEnum : public cObject
      * Destructor.
      */
     virtual ~cEnum();
+
+    /**
+     * Assignment operator. The name member doesn't get copied;
+     * see cObject's operator=() for more details.
+     */
+    cEnum& operator=(cEnum& list);
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
 
     /**
      * Returns pointer to a string containing the class name, "cEnum".
@@ -76,12 +91,10 @@ class cEnum : public cObject
      * See cObject for more details.
      */
     virtual void info(char *buf);
+    //@}
 
-    /**
-     * Assignment operator. The name member doesn't get copied;
-     * see cObject's operator=() for more details.
-     */
-    cEnum& operator=(cEnum& list);
+    /** @name Insertion and lookup. */
+    //@{
 
     /**
      * Add an item to the enum. If that numeric code exist, overwrite it.
@@ -99,6 +112,7 @@ class cEnum : public cObject
      * second argument (or -1).
      */
     int lookup(const char *str, int fallback=-1);
+    //@}
 };
 
 //==========================================================================
@@ -118,7 +132,7 @@ class cEnum : public cObject
  *       0, NULL);
  *  </TT></PRE>
  */
-class sEnumBuilder
+class sEnumBuilder  //FIXME: make inner class to cEnum?
 {
   public:
     /**

@@ -179,8 +179,7 @@ struct sXElem
 //==========================================================================
 
 /**
- * Parameter class are designed to hold a value. Many types are
- * available:
+ * Parameter class are designed to hold a value.
  *
  * Types and type characters:
  *
@@ -203,6 +202,7 @@ struct sXElem
  * cObject pointed to in 'P' type, cStatistic in disTribution type
  *
  * @ingroup SimCore
+ * @see sXElem
  */
 class SIM_API cPar : public cObject
 {
@@ -335,83 +335,100 @@ class SIM_API cPar : public cObject
     //@{
 
     /**
-     * FIXME: new functions:
+     * Sets the value to the given bool value.
      */
-    cPar& setBoolValue(bool b);              // bool
+    cPar& setBoolValue(bool b);
 
     /**
-     * MISSINGDOC: cPar:cPar&setLongValue(long)
+     * Sets the value to the given long value.
      */
-    cPar& setLongValue(long l);              // long
+    cPar& setLongValue(long l);
 
     /**
-     * MISSINGDOC: cPar:cPar&setStringValue(char*)
+     * Sets the value to the given string value.
+     * The cPar will make its own copy of the string. NULL is also accepted
+     * and treated as an empty string.
      */
-    cPar& setStringValue(const char *s);     // string
+    cPar& setStringValue(const char *s);
 
     /**
-     * MISSINGDOC: cPar:cPar&setDoubleValue(double)
+     * Sets the value to the given double value.
      */
-    cPar& setDoubleValue(double d);          // double
+    cPar& setDoubleValue(double d);
 
     /**
-     * MISSINGDOC: cPar:cPar&setDoubleValue(cStatistic*)
+     * Sets the value to the given distribution.
+     * Every time the cPar's value is asked a random number produced
+     * by res.random() will be returned.
      */
-    cPar& setDoubleValue(cStatistic *res);   // distribution
+    cPar& setDoubleValue(cStatistic *res);
 
     /**
-     * MISSINGDOC: cPar:cPar&setDoubleValue(sXElem*,int)
+     * Sets the value to the given expression.
+     * Every time the cPar's value is asked the expression will be
+     * evaluated.
      */
-    cPar& setDoubleValue(sXElem *x, int n);  // expression
+    cPar& setDoubleValue(sXElem *x, int n);
 
     /**
-     * MISSINGDOC: cPar:cPar&setDoubleValue(MathFuncNoArg)
+     * Sets the value to the given math function with no arguments.
+     * Every time the cPar's value is asked the function will be called.
      */
-    cPar& setDoubleValue(MathFuncNoArg f);   // math func: 0,1,2,3 args
+    cPar& setDoubleValue(MathFuncNoArg f);
 
     /**
-     * MISSINGDOC: cPar:cPar&setDoubleValue(MathFunc1Arg,double)
+     * Sets the value to the given math function with one argument.
+     * Every time the cPar's value is asked the function will be called
+     * with p1 as an argument.
      */
     cPar& setDoubleValue(MathFunc1Arg  f, double p1);
 
     /**
-     * MISSINGDOC: cPar:cPar&setDoubleValue(MathFunc2Args,double,double)
+     * Sets the value to the given math function with two arguments.
+     * Every time the cPar's value is asked the function will be called
+     * with p1 and p2 as an arguments.
      */
     cPar& setDoubleValue(MathFunc2Args f, double p1, double p2);
 
     /**
-     * MISSINGDOC: cPar:cPar&setDoubleValue(MathFunc3Args,double,double,double)
+     * Sets the value to the given math function with three arguments.
+     * Every time the cPar's value is asked the function will be called
+     * with p1, p2 and p3 as an arguments.
      */
     cPar& setDoubleValue(MathFunc3Args f, double p1, double p2, double p3);
 
     /**
-     * MISSINGDOC: cPar:cPar&setPointerValue(void*)
-     * See also configPointer()!
+     * Sets the value to the given pointer. The ownership of the block
+     * pointer to can be controlled using configPointer().
+     *
+     * @see configPointer
      */
-    cPar& setPointerValue(void *ptr);        // void* pointer
+    cPar& setPointerValue(void *ptr);
 
     /**
-     * MISSINGDOC: cPar:cPar&setObjectValue(cObject*)
-     * See cObject's ownership control: takeOwnership() flag, etc.
+     * Sets the value to the given object. Whether cPar will take the
+     * ownership of the object depends on the takeOwnership() flag
+     * (see cObject).
      */
-    cPar& setObjectValue(cObject *obj);      // cObject* pointer
+    cPar& setObjectValue(cObject *obj);
 
     /**
      * Configures memory management for the void* pointer ('P') type.
      * Similar to cLinkedList's configPointer() function.
+     *
      * <TABLE BORDER=1>
-     * <TR><TD WIDTH=96><B>delete func.</B></TD><TD WIDTH=89><B>dupl.func.</B>
-     * </TD><TD WIDTH=92><B>itemsize</B></TD><TD WIDTH=317><B>behaviour</B>
-     * </TD></TR>
-     * <TR><TD WIDTH=96>NULL</TD><TD WIDTH=89>NULL
-     * </TD><TD WIDTH=92>0</TD><TD WIDTH=317>Pointer is treated as mere pointer - no memory management. Duplication copies the pointer, and deletion does nothing.
-     * </TD></TR>
-     * <TR><TD WIDTH=96>NULL</TD><TD WIDTH=89>NULL
-     * </TD><TD WIDTH=92>>0 size</TD><TD WIDTH=317>Plain memory management. Duplication is done with new char[size]+memcpy(), and deletion is done via delete.
-     * </TD></TR>
-     * <TR><TD WIDTH=96>NULL or user's delete func.</TD><TD WIDTH=89>user's dupfunc.
-     * </TD><TD WIDTH=92>indifferent</TD><TD WIDTH=317>Sophisticated memory management. Duplication is done by calling the user-supplied duplication function, which should do the allocation and the appropriate copying. Deletion is done by calling the user-supplied delete function, or the delete operator if it is not supplied.
-     * </TD></TR>
+     *   <TR>
+     *     <TH>delete func.</TH><TH>dupl.func.</TH><TH>itemsize</TH><TH>behaviour</TH>
+     *   </TR>
+     *   <TR>
+     *     <TD>NULL</TD><TD>NULL</TD><TD>0</TD><TD>Pointer is treated as mere pointer - no memory management. Duplication copies the pointer, and deletion does nothing.</TD>
+     *   </TR>
+     *   <TR>
+     *     <TD>NULL</TD><TD>NULL</TD><TD>0 size</TD><TD>Plain memory management. Duplication is done with new char[size]+memcpy(), and deletion is done via delete.</TD>
+     *   </TR>
+     *   <TR>
+     *     <TD>NULL or user's delete func.</TD><TD>user's dupfunc.</TD><TD>indifferent</TD><TD WIDTH=317>Sophisticated memory management. Duplication is done by calling the user-supplied duplication function, which should do the allocation and the appropriate copying. Deletion is done by calling the user-supplied delete function, or the delete operator if it is not supplied.</TD>
+     *   </TR>
      * </TABLE>
      */
     void configPointer( VoidDelFunc delfunc, VoidDupFunc dupfunc, size_t itemsize=0);
@@ -421,39 +438,36 @@ class SIM_API cPar : public cObject
     //@{
 
     /**
-     * FIXME: functions to return value
-     *   conversion operators also exist; see later
+     * Returns value as a boolean. The cPar type must be bool (B) or long (L).
      */
     bool   boolValue();
 
     /**
-     * Returns value as long. Converts from types long (L),
-     * double (D), Boolean (B), function (F), distribution (T) and expression
-     * (X).
+     * Returns value as long. The cPar type must be types long (L),
+     * double (D), Boolean (B), function (F), distribution (T) or
+     * expression (X).
      */
     long   longValue();
 
     /**
-     * Returns value as char*. Only for string (S) type.
+     * Returns value as const char *. Only for string (S) type.
      */
     const char *stringValue();
 
     /**
-     * Returns value as double. Converts from types long (L),
+     * Returns value as double. The cPar type must be types long (L),
      * double (D), function (F), Boolean (B), distribution (T) and expression
      * (X).
      */
     double doubleValue();
 
     /**
-     * Returns value as pointer to cObject. Type must be pointer
-     * (P).
+     * Returns value as a void * pointer. The cPar type must be pointer (P).
      */
     void *pointerValue();
 
     /**
-     * Returns value as pointer to cObject. Type must be pointer
-     * (O).
+     * Returns value as pointer to cObject. The cPar type must be pointer (O).
      */
     cObject *objectValue();
     //@}
@@ -462,21 +476,25 @@ class SIM_API cPar : public cObject
     //@{
 
     /**
-     * TBD
+     * Creates a redirection to another cPar. A cPar object can be set
+     * to stand for a value actually stored in another cPar object.
+     * This is called indirect or redirected value. When using redirection,
+     * every operation on the value (i.e. reading or changing it)
+     * will be actually done to the other cPar object.
      */
     cPar& setRedirection(cPar *par);
 
     /**
-     * TBD
+     * Returns true if this object is redirected to another cPar.
      */
     bool isRedirected() {return typechar=='I';}
 
     /**
-     * Returns NULL if the cPar's value is not redirected
-     * to another cPar; otherwise it returns the pointer of
-     * that cPar. This function is the only way to determine
-     * if an object is redirected or not (type() returns the
-     * type of the other cPar: 'D', 'L' etc).
+     * Returns NULL if the cPar's value is not redirected to another cPar;
+     * otherwise it returns the pointer of that cPar.
+     * This function and isRedirected() are the only ways to determine
+     * if an object is redirected or not (type() returns the type of
+     * the other cPar: 'D', 'L' etc).
      */
     cPar *redirection();
 
@@ -494,7 +512,7 @@ class SIM_API cPar : public cObject
      * it returns the type of the object it is redirected to (for example,
      * 'D', 'L', etc.)
      */
-    char type();                   // type char
+    char type();
 
     /**
      * Returns true if the stored value is of a numeric type.
@@ -504,24 +522,23 @@ class SIM_API cPar : public cObject
     /**
      * Returns the prompt text or NULL.
      */
-    const char *prompt();          // prompt text
+    const char *prompt();
 
     /**
      * Sets the prompt text.
      */
-    void setPrompt(const char *s); // set prompt str
+    void setPrompt(const char *s);
 
     /**
-     * Sets (ip=true) or clears (ip=false) the input
-     * flag.
+     * Sets (ip=true) or clears (ip=false) the input flag.
      */
-    void setInput(bool ip);        // set input flag
+    void setInput(bool ip);
 
     /**
      * Returns true if the parameter is of input type (the input
      * flag is set).
      */
-    bool isInput();                // is an input value?
+    bool isInput();
 
     /**
      * Returns true if the value has changed since the last
@@ -784,7 +801,9 @@ class SIM_API cModulePar : public cPar
     virtual const char *inspectorFactoryName() const {return "cModuleParIFC";}
 
     /**
-     * MISSINGDOC: cModulePar:char*fullPath()
+     * The original fullPath() method is redefined to suppress (hide) the internal
+     * parameter array object (a cArray used to store module parameters)
+     * in the object full name.
      */
     virtual const char *fullPath() const;
     //@}
@@ -793,7 +812,7 @@ class SIM_API cModulePar : public cPar
     //@{
 
     /**
-     * FIXME: Does parameter logging.
+     * Redefined to add parameter logging.
      */
     virtual void valueChanges();
     //@}
@@ -802,12 +821,12 @@ class SIM_API cModulePar : public cPar
     //@{
 
     /**
-     * FIXME: new functions
+     * Sets a pointer to the module which has this cPar as module parameter.
      */
     void setOwnerModule(cModule *om)   {omodp=om;}
 
     /**
-     * MISSINGDOC: cModulePar:cModule*ownerModule()
+     * Returns a pointer to the module which has this cPar as module parameter.
      */
     cModule *ownerModule()             {return omodp;}
     //@}
@@ -882,3 +901,5 @@ class SIM_API cModulePar : public cPar
 //#endif
 
 #endif
+
+

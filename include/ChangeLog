@@ -1,3 +1,8 @@
+2001-07-27 Andras Varga
+
+	* cenum.h cfsm.h cnetmod.h cpar.h cstruct.h cwatch.h macros.h util.h:
+        improved/added documentation comments
+
 2001-07-24 Andras Varga
 
 	* misc documentation improvements

@@ -36,10 +36,44 @@
 #define FSM_MAXT  64
 
 /**
- * Used like switch() in order to execute one state change of an FSM
+ * Implements a Finite State Machine. FSM state is stored in
+ * an object of type cFSM.
  *
- * FIXME: refine doc!
+ * There are two kinds of states: transient and steady. At each
+ * execution of the FSM_Switch() statement, the FSM transitions out
+ * of the current (steady) state, potentially undergoes a series of
+ * state changes to transient states, and arrives at another
+ * steady state.
+ *
+ * The actual FSM is embedded in an FSM_Switch(), which has cases for
+ * entering and leaving each state:
+ *
+ * <PRE>
+ * FSM_Switch(fsm)
+ * {
+ *     case FSM_Exit(state1):
+ *         //...
+ *         break;
+ *     case FSM_Enter(state1):
+ *         //...
+ *         break;
+ *     case FSM_Exit(state2):
+ *         //...
+ *         break;
+ *     case FSM_Enter(state2):
+ *         //...
+ *         break;
+ *     //...
+ * }
+ * </PRE>
+ *
+ * States are declared in enums, using the FSM_Transient() and FSM_Steady() macros.
+ *
+ * State transitions are done via calls to FSM_Goto(), which simply stores the
+ * new state in the cFSM object.
+ *
  * @hideinitializer
+ * @see cFSM, FSM_Transient, FSM_Steady, FSM_Goto, FSM_Debug, FSM_Print
  */
 //
 // operation:
@@ -60,34 +94,51 @@
      switch (FSM_Print(fsm,__i&1),(((fsm).state()<<1)|(__i&1)))
 
 /**
- * To be used in enum which declares states
+ * Declares a transient state; to be used in enum which declares states.
+ * Example:
  *
- * FIXME: refine doc!
+ * <PRE>
+ * enum {
+ *    INIT = 0,
+ *    SLEEP = FSM_Steady(1),
+ *    ACTIVE = FSM_Steady(2),
+ *    SEND = FSM_Transient(1),
+ * };
+ * </PRE>
+ *
+ * The numbers in parens must be unique within the state type and they are
+ * used for constructing numeric IDs for the states.
+ *
  * @hideinitializer
+ * @see FSM_Steady, FSM_Switch
  */
 #define FSM_Transient(state)   (-(state))
 
 /**
- * To be used in enum which declares states
+ * Declares a steady state; to be used in enum which declares states.
+ * See example in FSM_Transient.
  *
- * FIXME: refine doc!
  * @hideinitializer
+ * @see FSM_Transient, FSM_Switch
  */
 #define FSM_Steady(state)      (state)
 
 /**
- * To be used in "cases" within an FSM_Switch()
+ * Within an FSM_Switch() case branch, declares code to be executed
+ * on entering the given state. No calls to FSM_Goto() are allowed
+ * within a state's Enter block.
  *
- * FIXME: refine doc!
  * @hideinitializer
+ * @see FSM_Switch
  */
 #define FSM_Enter(state)  ((state)<<1)
 
 /**
- * To be used in "cases" within an FSM_Switch()
+ * Within an FSM_Switch() case branch, declares code to be executed
+ * on exiting the given state.
  *
- * FIXME: refine doc!
  * @hideinitializer
+ * @see FSM_Switch
  */
 #define FSM_Exit(state)   (((state)<<1)|1)
 
@@ -98,8 +149,8 @@
  * is the enum name itself and not some variable that contains the
  * state code.
  *
- * FIXME: refine doc!
  * @hideinitializer
+ * @see FSM_Switch
  */
 #define FSM_Goto(fsm,state)   (fsm).setState(state,#state)
 
@@ -109,6 +160,7 @@
  *
  * FIXME: refine doc! this doc belongs to FSM_Print!
  * @hideinitializer
+ * @see FSM_Switch
  */
 #ifdef FSM_DEBUG
 #define FSM_Print(fsm,exiting) \
@@ -127,11 +179,10 @@
 
 /**
  * Store the state of an FSM. This class is used in conjunction with
- * the FSM_Switch(), FSM_Transient(), FSM_Steady(), FSM_Enter(),
- * FSM_Exit(), FSM_Goto() macros.
+ * the FSM_Switch() and other FSM_ macros.
  *
  * @ingroup SimSupport
- * @see FSM_Switch and other FSM_ macros
+ * @see FSM_Switch, FSM_Transient, FSM_Steady, FSM_Enter, FSM_Exit, FSM_Goto
  */
 class SIM_API cFSM : public cObject
 {
@@ -144,7 +195,10 @@ class SIM_API cFSM : public cObject
     //
     int _state;
     const char *_statename;   // just a ptr to an external string
+
   public:
+    /** @name Constructors, destructor, assignment. */
+    //@{
 
     /**
      * Constructor.
@@ -155,6 +209,16 @@ class SIM_API cFSM : public cObject
      * Copy constructor.
      */
     cFSM(cFSM& vs) {setName(vs.name());operator=(vs);}
+
+    /**
+     * Assignment operator. The name member doesn't get copied;
+     * see cObject's operator=() for more details.
+     */
+    cFSM& operator=(cFSM& vs);
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
 
     /**
      * Returns pointer to a string containing the class name, "cFSM".
@@ -173,18 +237,11 @@ class SIM_API cFSM : public cObject
      */
     virtual void info(char *buf);
 
-
     /**
      * Returns the name of the inspector factory class associated with this class.
      * See cObject for more details.
      */
     virtual const char *inspectorFactoryName() const {return "cFSMIFC";}
-
-    /**
-     * Assignment operator. The name member doesn't get copied;
-     * see cObject's operator=() for more details.
-     */
-    cFSM& operator=(cFSM& vs);
 
     /**
      * Writes textual information about this object to the stream.
@@ -205,28 +262,38 @@ class SIM_API cFSM : public cObject
      * See cObject for more details.
      */
     virtual int netUnpack();
+    //@}
 
-    // new functions
+    /** @name FSM functions. */
+    //@{
 
     /**
-     * FIXME: new functions
+     * Returns the state the FSM is currently in.
      */
     int state()  {return _state;}
 
     /**
-     * MISSINGDOC: cFSM:char*stateName()
+     * Returns the name of the state the FSM is currently in.
      */
     const char *stateName() {return _statename?_statename:"";}
 
     /**
-     * MISSINGDOC: cFSM:int inTransientState()
+     * Returns true if the FSM is currently in a transient state.
      */
     int inTransientState()  {return _state<0;}
 
     /**
-     * MISSINGDOC: cFSM:void setState(int,char*)
+     * Sets the state of the FSM. This method is usually invoked through
+     * the FSM_Goto() macro.
+     *
+     * The first arg is the state code. The second arg is the name of the state.
+     * setState() assumes this is pointer to a string literal (the string is
+     * not copied, only the pointer is stored).
+     *
+     * @see FSM_Goto
      */
     void setState(int state, const char *stn=NULL)  {_state=state;_statename=stn;}
+    //@}
 };
 
 #endif

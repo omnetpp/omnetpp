@@ -24,9 +24,13 @@
 #include "defs.h"
 
 
+/**
+ * Number of random number generators.
+ */
 #define NUM_RANDOM_GENERATORS    32
 
-#define INTRAND_MAX  0x7ffffffeL  /* = 2**31-2 */
+#define INTRAND_MAX  0x7ffffffeL  /* = 2**31-2 FIXME */
+
 
 //
 // #defines provided for backwards compatibility.
@@ -181,60 +185,71 @@ inline  double genk_dblrand(int gen_nr);
 //@{
 
 /**
- * MISSINGDOC:
+ * Returns a random number with uniform distribution in the range [a,b).
+ * Uses generator 0.
  */
 SIM_API double uniform(double a, double b);
 
 /**
- * MISSINGDOC:
+ * Returns a random integer with uniform distribution in the range [a,b],
+ * inclusive. (Note that the function can also return b!)
+ * Uses generator 0.
  */
 SIM_API double intuniform(double a, double b);
 
 /**
- * MISSINGDOC:
+ * Returns a random number with exponential distribution with the given mean
+ * (with parameter 1/mean).
+ * Uses generator 0.
  */
-SIM_API double exponential(double p);
+SIM_API double exponential(double mean);
 
 /**
- * MISSINGDOC:
+ * Returns a random number with normal distribution with the given mean and variance.
+ * Uses generator 0.
  */
-SIM_API double normal(double m, double d);
+SIM_API double normal(double mean, double variance);
 
 /**
- * MISSINGDOC:
+ * Normal distribution truncated to nonnegative values.
+ * Note that because it is implemented with a loop that discards
+ * negative values until a nonnegative comes, the execution time
+ * is not bounded (a large negative mean with much smaller variance
+ * may result in many iterations and very long execution time).
+ * Uses generator 0.
  */
-SIM_API double truncnormal(double m, double d);
+SIM_API double truncnormal(double mean, double varianced);
 
 
 /**
- * Same as the function without the genk_ prefix, only uses random generator
+ * Same as uniform(), only uses random generator
  * gen_nr instead of generator 0.
  */
 SIM_API double genk_uniform(double gen_nr, double a, double b);
 
 /**
- * Same as the function without the genk_ prefix, only uses random generator
+ * Same as intuniform(), only uses random generator
  * gen_nr instead of generator 0.
  */
 SIM_API double genk_intuniform(double gen_nr, double a, double b);
 
 /**
- * Same as the function without the genk_ prefix, only uses random generator
+ * Same as exponential(), only uses random generator
  * gen_nr instead of generator 0.
  */
 SIM_API double genk_exponential(double gen_nr, double p);
 
 /**
- * Same as the function without the genk_ prefix, only uses random generator
+ * Same as normal(), only uses random generator
  * gen_nr instead of generator 0.
  */
-SIM_API double genk_normal(double gen_nr, double m, double d);
+SIM_API double genk_normal(double gen_nr, double mean, double variance);
 
 /**
- * Same as the function without the genk_ prefix, only uses random generator
+ * Same as truncnormal(), only uses random generator
  * gen_nr instead of generator 0.
  */
-SIM_API double genk_truncnormal(double gen_nr, double m, double d);
+SIM_API double genk_truncnormal(double gen_nr, double mean, double variance);
 //@}
 
 
@@ -245,62 +260,72 @@ SIM_API double genk_truncnormal(double gen_nr, double m, double d);
 //@{
 
 /**
- * MISSINGDOC:
+ * Returns the minimum of a and b.
  */
 SIM_API double min(double a, double b);
 
 /**
- * MISSINGDOC:
+ * Returns the maximum of a and b.
  */
 SIM_API double max(double a, double b);
 
 /**
- * MISSINGDOC:
+ * Returns the boolean AND of a and b.
+ * (Any nonzero number is treated as true.)
  */
 SIM_API double bool_and(double a, double b);
 
 /**
- * MISSINGDOC:
+ * Returns the boolean OR of a and b.
+ * (Any nonzero number is treated as true.)
  */
 SIM_API double bool_or(double a, double b);
 
 /**
- * MISSINGDOC:
+ * Returns the boolean Exclusive OR of a and b.
+ * (Any nonzero number is treated as true.)
  */
 SIM_API double bool_xor(double a, double b);
 
 /**
- * MISSINGDOC:
+ * Returns the boolean negation of a.
+ * (Any nonzero number is treated as true.)
  */
 SIM_API double bool_not(double a);
 
 /**
- * MISSINGDOC:
+ * Returns the binary AND of a and b.
+ * (a and b are converted to unsigned long for the operation.)
  */
 SIM_API double bin_and(double a, double b);
 
 /**
- * MISSINGDOC:
+ * Returns the binary OR of a and b.
+ * (a and b are converted to unsigned long for the operation.)
  */
 SIM_API double bin_or(double a, double b);
 
 /**
- * MISSINGDOC:
+ * Returns the binary exclusive OR of a and b.
+ * (a and b are converted to unsigned long for the operation.)
  */
 SIM_API double bin_xor(double a, double b);
 
 /**
- * MISSINGDOC:
+ * Returns the bitwise negation (unary complement) of a.
+ * (a is converted to unsigned long for the operation.)
  */
 SIM_API double bin_compl(double a);
 
 /**
- * MISSINGDOC:
+ * Shifts a b bits to the left.
+ * (a and b are converted to unsigned long for the operation.)
  */
 SIM_API double shift_left(double a, double b);
 
 /**
- * MISSINGDOC:
+ * Shifts a b bits to the right.
+ * (a and b are converted to unsigned long for the operation.)
  */
 SIM_API double shift_right(double a, double b);
 //@}
@@ -309,30 +334,37 @@ SIM_API double shift_right(double a, double b);
 /**
  * @name Value-added string functions.
  *
- *  They also accept NULL pointers (treat them as ptr to "") and use
- *  operator new instead of malloc().
+ * These functions replace some of the <string.h> functions.
+ * The difference is that they also accept NULL pointers as empty strings (""),
+ * and also use operator new instead of malloc().
+ * It is recommended to use these functions instead of the original
+ * <string.h> functions.
  *
  * @ingroup Functions
  */
 //@{
 
 /**
- * MISSINGDOC:
+ * Duplicates the string. If the pointer passed is NULL or points
+ * to a null string (""), NULL is returned.
  */
 SIM_API char *opp_strdup(const char *);
 
 /**
- * MISSINGDOC:
+ * Same as the standard strcpy() function, except that NULL pointers
+ * in the second argument are treated like pointers to a null string ("").
  */
 SIM_API char *opp_strcpy(char *,const char *);
 
 /**
- * MISSINGDOC:
+ * Same as the standard strcmp() function, except that NULL pointers
+ * are treated like pointers to a null string ("").
  */
 SIM_API int  opp_strcmp(const char *, const char *);
 
 /**
- * MISSINGDOC:
+ * Returns true if the two strings are identical up to the length of the
+ * shorter one. NULL pointers are treated like pointers to a null string ("").
  */
 SIM_API bool opp_strmatch(const char *, const char *);
 //@}
@@ -354,7 +386,8 @@ SIM_API char *opp_concat(const char *s1, const char *s2, const char *s3=NULL, co
 SIM_API char *indexedname(char *buf, const char *name, int index);
 
 /**
- * Correct NULL pointer to "" (ptr to a null string).
+ * Returns the pointer passed as argument unchanged, except that if it was NULL,
+ * it returns a pointer to a null string ("").
  */
 inline const char *correct(const char *);
 
@@ -389,7 +422,9 @@ SIM_API void opp_error(int errcode,...);
 SIM_API void opp_error(const char *msg,...);
 
 /**
- * Message + question: continue or abort?
+ * Issues a warning. In a graphical user interface, this will cause
+ * a message box to pop up with the given message, and the
+ * user will be given a chance to continue or abort the simulation.
  */
 SIM_API void opp_warning(int errcode,...);
 
