@@ -1997,7 +1997,7 @@ send( msg, "outgate" );
 
 If the module needs to react to messages that arrive during the delay,
 \fname{wait()} cannot be used and the timer mechanism described in
-Section \ref{sec:ch-sim-lib:self-messages}, ``Self-messages'', would
+Section \ref{sec:ch-simple-modules:self-messages}, ``Self-messages'', would
 need to be employed.
 
 
@@ -2144,7 +2144,7 @@ if (!queue.empty())
 
 
 \subsection{Modeling events using self-messages}
-\label{sec:ch-sim-lib:self-messages}
+\label{sec:ch-simple-modules:self-messages}
 
 In most simulation models it is necessary to implement timers,
 or schedule events that occur at some point in the future.
@@ -2321,7 +2321,7 @@ for(;;)
 }
 \end{verbatim}
 
-If the wait\_time parameter was given a random value (e.g. \ttt{exponential(1.0)})
+If the \ttt{wait\_time} parameter was given a random value (e.g. \ttt{exponential(1.0)})
 in the NED source or the ini file, the above code results in
 a different delay each time.
 
@@ -2331,7 +2331,6 @@ execution. If the parameter was taken by reference
 \fpar[ned!keywords!ref]{ref} modifier in the NED file), other modules
 will also see the change.  Thus, parameters taken by reference can be
 used as a means of module communication\index{module!communication}.
-
 
 An example:
 
@@ -2346,9 +2345,9 @@ cPar& waitTime = par("waitTime");
 waitTime = 0.12;
 \end{verbatim}
 
+The \cclass{cPar} class is discussed in more detail in section
+\ref{sec:ch-sim-lib:cpar}.
 
-See \cclass{cPar} explanation later in this manual for further information
-on how to change a \cclass{cPar}'s value.
 
 
 \section{Accessing gates and connections}

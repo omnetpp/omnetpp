@@ -710,62 +710,81 @@ for (int i=0; i<array.items(); i++)
 
 
 \section{The parameter class: cPar}
+\label{sec:ch-sim-lib:cpar}
 
-Module parameters are represented as \cclass{cPar} objects.
+Module parameters (as discussed in section \ref{ch:simple-modules:parameters})
+are represented as \cclass{cPar} objects.
+The module parameter name is the \cclass{cPar} object's name, and the object
+can store any parameter type supported by the NED language, that is,
+numeric (long or double), bool, string and XML config file reference.
+    \footnote{\cclass{cPar} objects used to be employed also for adding
+    parameters (extra fields) to \cclass{cMessage}. However, while technically this is
+    still feasible, message definitions (section \ref{ch:messages:message-definitions})
+    are a far superior solution in every respect.}
 
-\subsection{Basic usage}
+Module parameters are accessed via \cclass{cModule}'s \fname{par()} method:
 
-\cclass{cPar} is a class that is designed to hold a value. The value
-is numeric (long or double) in the first place, but string, pointer
-and other types are also supported.
+\begin{verbatim}
+cPar& par(const char *parameterName);
+\end{verbatim}
 
-cPar is used in {\opp} in the following places:
+\subsection{Reading the value}
 
-\begin{itemize}
-  \item{as module parameters}
-  \item{as message parameters}
-\end{itemize}
+\cclass{cPar} has a number of methods for getting the parameter's value:
 
-There are many ways to set a \cclass{cPar}'s value. One is the set...Value()
+\begin{verbatim}
+bool boolValue();
+long longValue();
+const char *stringValue();
+double doubleValue();
+cXMLElement *xmlValue();
+\end{verbatim}
+
+There are also overloaded type cast operators for C/C++ primitive types
+including \ttt{bool}, \ttt{int}, \ttt{long}, \ttt{double}, \ttt{const char *},
+and also for \ttt{cXMLElement *}.
+    \footnote{\cclass{cPar} also supports the \ttt{void *} and \ttt{cObject *} types,
+    but these types were used primarily for message parameters before
+    message definitions (section \ref{ch:messages:message-definitions})
+    got supported, and you cannot create such module parameters from NED.}
+
+Thus, any of the following ways would work to store a parameter's value in
+a variable:
+
+\begin{verbatim}
+double foo = par("foo").doubleValue();
+double foo = (double) par("foo");
+double foo = par("foo");
+\end{verbatim}
+
+If you use the \ttt{par("foo")} parameter in expressions (such as
+\ttt{4*par("foo")+2}), the C++ compiler may be unable to decide
+between overloaded operators and report ambiguity. In that case
+you have to clarify by adding either an explicit cast
+(\ttt{(double)par("foo")} or \ttt{(long)par("foo")}) or use
+the \ttt{doubleValue()} or \ttt{longValue()} methods.
+
+\subsection{Changing the value}
+
+There are many ways to set a \cclass{cPar}'s value. One is the \ttt{set...Value()}
 member functions:
 
 \begin{verbatim}
-cPar pp("pp");
-pp.setDoubleValue(1.0);
+cPar& foo = par("foo");
+foo.setLongValue(12);
+foo.setDoubleValue(2.7371);
+foo.setStringValue("one two three");
 \end{verbatim}
 
-
-or by using overloaded operators:
+There are also overloaded assignment operators for C++ primitive types,
+\ttt{const char *}, and \ttt{cXMLElement *}.
 
 \begin{verbatim}
 cPar pp("pp");
-pp = 1.0;
+pp = 12;
+pp = 2.7371;
+pp = "one two three";
 \end{verbatim}
-
-
-For reading its value, it is best to use overloaded type cast
-operators:
-
-\begin{verbatim}
-double d1 = (double)pp;
-// or simply:
-double d2 = pp;
-\end{verbatim}
-
-Long integers:
-
-\begin{verbatim}
-pp = 89363L; // or:
-pp.setLongValue( 89363L );
-\end{verbatim}
-
-Character string:
-
-\begin{verbatim}
-pp = "hi there"; // or:
-pp.setStringValue( "hi there" );
-\end{verbatim}
-
 
 The \cclass{cPar} object makes its own copy of the string, so the
 original one does not need to be preserved. Short strings (less than
@@ -773,33 +792,31 @@ original one does not need to be preserved. Short strings (less than
 are stored in the object's memory space (and are not dynamically
 allocated).
 
-There are several other types \cclass{cPar} can store: such as boolean,
-void* pointer; cObject* pointer,  function with constant args;
+\cclass{cPar} can also store other types which yield numeric
+results such as function with constant args;
 they will be mentioned in the next section.
 
 For numeric and string types, an input flag\index{input flag} can be
 set. In this case, when the object's value is first used, the
 parameter value will be searched for in the configuration (ini)
-file\index{ini file}; if it is not found there, the user will be given
-a chance to enter the value interactively.
-
+file\index{ini file}; if it is not found there, the user will be offered
+to enter the value interactively.
 
 Examples:
 
 \begin{verbatim}
-cPar inp("inp");
-inp.setPrompt("Enter my value:");
-inp.setInput( true );   // make it an input parameter
-double a = (double)inp; // the user will be prompted HERE
+cPar foo("foo");
+foo.setPrompt("Enter foo value:");
+foo.setInput(true);   // make it an input parameter
+
+double d = (double)foo; // the user will be prompted HERE
 \end{verbatim}
 
-
-
-
-\subsection{Random number generation through cPar}
+\subsection{Setting cPar to return random numbers}
 
 Setting \cclass{cPar} to call a function with constant arguments can
-be used to make \cclass{cPar} return random variables\index{random!variables} of different distributions\index{distribution}:
+be used to make \cclass{cPar} return random variables\index{random!variables}
+from different distributions\index{distribution}:
 
 \begin{verbatim}
 cPar rnd("rnd");
@@ -812,15 +829,14 @@ rnd.setDoubleValue(exponential, 10.0); // exponential distr. (mean)
 taking double arguments and returning double. Each time you read the
 value of a \cclass{cPar} containing a function like above, the
 function will be called with the given constant arguments (e.g.
-normal(100.0,5.0)) and its return value used.
-
+\ttt{normal(100.0,5.0)}) and its return value used.
 
 The above functions use number 0 from the several random number
-generators. To use another generator, use the genk\_xxx versions
+generators. To use another generator, use the \ttt{genk\_xxx} versions
 of the random functions:
 
 \begin{verbatim}
-rnd.setDoubleValue(genk\_normal, 3, 100.0, 5.0); // uses generator 3
+rnd.setDoubleValue(genk_normal, 3, 100.0, 5.0); // uses generator 3
 \end{verbatim}
 
 A \cclass{cPar} object can also be set to return a random variable from
@@ -841,17 +857,18 @@ rnd2.setDoubleValue(hist);
 % These section got dumped in 3.0, they can be digged out from the CVS if needed.
 %
 
-\subsection{cPar data types}
+\subsection{cPar storage types}
 
-\cclass{cPar} supports several data types. Data types are internally
+\cclass{cPar} supports the basic data types (long, double, bool, string, XML) via
+several \textit{storage types}. Storage types are internally
 identified by type characters. The type character is
-returned by the \fname{type()} member function.
+returned by the \fname{type()} method.
 
 Example:
 
 \begin{verbatim}
 cPar par = 10L;
-char typechar = par.type(); // returns 'L'
+char typechar = par.type(); // returns storage type 'L'
 \end{verbatim}
 
 The all \cclass{cPar} data types and are summarized in the table below.
@@ -863,10 +880,8 @@ to be called.
 \hline
 % ROW 1
 \tabheadcol
-\textbf{Type\linebreak
-char} &
-\textbf{Type \linebreak
-name} &
+\textbf{Type\linebreak char} &
+\textbf{Storage\linebreak type} &
 \textbf{Member functions} &
 \textbf{Description}\\
 \hline
@@ -968,7 +983,7 @@ cPar *\fname{redirection()}; \linebreak
 and reading operates on the other \cclass{cPar}; even the \fname{type()} function
 will return the type in the other \cclass{cPar} (so you'll never get 'I'
 as the type). This redirection can only be broken with the \fname{cancelRedirection()}
-member function. Module parameters taken by REF use this mechanism.}\\\hline
+member function. Module parameters taken by \ttt{ref} use this mechanism.}\\\hline
 \end{longtable}
 
 

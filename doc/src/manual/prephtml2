@@ -13,8 +13,8 @@ $tagfile = "../../api/opptags.xml";
 
 #$apidir = "../api";
 $apidir = "../../api";
-#$templatefile = "omnetpp.thtml";
-$templatefile = "omnest.thtml";
+$templatefile = "omnetpp.thtml";
+#$templatefile = "omnest.thtml";
 
 #
 # read template file
