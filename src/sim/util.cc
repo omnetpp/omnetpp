@@ -23,9 +23,9 @@
 #include <ctype.h>   // isspace()
 #include <math.h>
 #include "util.h"
+#include "distrib.h" // dummy()
 #include "cenvir.h"
 #include "cmodule.h"
-#include "csimul.h"  // simulation.error()
 #include "macros.h"  // Define_Function()
 #include "cexception.h"
 
@@ -439,8 +439,9 @@ static void _dummy_func()
       cPacket x;
       cPacket y(x);
       x.info(NULL);
-      cWatch w(NULL,*(int*)NULL);
+      cWatch w(NULL,*(int*)&x);
       w.pointer(); w.typeChar();
+      exponential(1.0);
       //_dummy_for_env();
 }
 
