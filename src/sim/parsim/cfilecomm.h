@@ -105,11 +105,6 @@ class cFileCommunications : public cParsimCommunications
      * received, false otherwise.
      */
     virtual bool receiveNonblocking(int filtTag, cCommBuffer *buffer,  int& receivedTag, int& sourceProcId);
-
-    /**
-     * Blocks until all partitions call the same method.
-     */
-    virtual void synchronize();
     //@}
 };
 

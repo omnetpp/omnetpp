@@ -76,7 +76,7 @@ void cCommBufferBase::reset()
 
 void cCommBufferBase::extendBufferFor(int dataSize)
 {
-    // FIXME move reallocate+copy out of loop
+    // TBD move reallocate+copy out of loop (more efficient)
     while (mMsgSize+dataSize >= mBufferSize)
     {
         // increase the size of the buffer while

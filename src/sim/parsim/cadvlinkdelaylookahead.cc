@@ -140,7 +140,6 @@ void cAdvancedLinkDelayLookahead::startRun()
 
 void cAdvancedLinkDelayLookahead::endRun()
 {
-    // FIXME implement
 }
 
 double cAdvancedLinkDelayLookahead::getCurrentLookahead(cMessage *msg, int procId, void *data)
@@ -155,7 +154,7 @@ double cAdvancedLinkDelayLookahead::getCurrentLookahead(cMessage *msg, int procI
     simtime_t now = sim->simTime();
     simtime_t newLinkEot = now + link->lookahead;
 
-    // FIXME finish...
+    // TBD finish...
     return 0.0;
 }
 

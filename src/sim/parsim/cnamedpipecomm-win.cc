@@ -280,11 +280,6 @@ bool cNamedPipeCommunications::receiveNonblocking(int filtTag, cCommBuffer *buff
     return receive(filtTag, buffer, receivedTag, sourceProcId, false);
 }
 
-void cNamedPipeCommunications::synchronize()
-{
-    // FIXME not implemented
-}
-
 #endif  /* USE_WINDOWS_PIPES */
 
 

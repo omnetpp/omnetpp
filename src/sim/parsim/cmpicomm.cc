@@ -170,11 +170,4 @@ bool cMPICommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, in
     return false;
 }
 
-void cMPICommunications::synchronize()
-{
-    int status = MPI_Barrier(MPI_COMM_WORLD);
-    if (status!=MPI_SUCCESS)
-        throw new cException("cMPICommunications::synchronize(): MPI error %d", status);
-}
-
 

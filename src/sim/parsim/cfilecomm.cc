@@ -278,9 +278,5 @@ bool cFileCommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, i
     return ret;
 }
 
-void cFileCommunications::synchronize()
-{
-    // FIXME not implemented
-}
 
 
