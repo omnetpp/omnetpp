@@ -5,7 +5,7 @@ distributions only use the given RNG.
 Some functions are called with several different argument sets:
 this is because the impl. chooses different generation methods
 for different parameter values.
- 
+
 %global:
 
 // store seeds in array
@@ -43,13 +43,13 @@ for (int rng=0; rng<=2; rng++)
     CHECKSEEDS(exponential(1.0, rng));
     CHECKSEEDS(normal(1.0, 1.0, rng));
     CHECKSEEDS(truncnormal(1.0, 1.0, rng));
-    // CHECKSEEDS(gamma_d(0.5, 2.0, rng));  -- relies on incomplete gamma_d()
-    // CHECKSEEDS(gamma_d(2.0, 2.0, rng));  -- relies on incomplete gamma_d()
-    // CHECKSEEDS(beta(1.0, 1.0, rng));  -- relies on incomplete gamma_d()
+    CHECKSEEDS(gamma_d(0.5, 2.0, rng));
+    CHECKSEEDS(gamma_d(2.0, 2.0, rng));
+    CHECKSEEDS(beta(1.0, 1.0, rng));
     CHECKSEEDS(erlang_k(1, 1.0, rng));
-    // CHECKSEEDS(chi_square(1, rng));  -- relies on incomplete gamma_d()
-    // CHECKSEEDS(chi_square(2, rng));  -- relies on incomplete gamma_d()
-    // CHECKSEEDS(student_t(1, rng));  -- relies on incomplete gamma_d()
+    CHECKSEEDS(chi_square(1, rng));
+    CHECKSEEDS(chi_square(2, rng));
+    CHECKSEEDS(student_t(1, rng));
     CHECKSEEDS(cauchy(1.0, 2.0, rng));
     CHECKSEEDS(triang(1.0, 2.0, 3.0, rng));
     CHECKSEEDS(lognormal(1.0, 1.0, rng));
@@ -68,12 +68,17 @@ for (int rng=0; rng<=2; rng++)
 ev << "finished";
 
 %contains: stdout
-RNG=0:
 checking uniform\(1.0, 2.0, rng\)
 checking exponential\(1.0, rng\)
 checking normal\(1.0, 1.0, rng\)
 checking truncnormal\(1.0, 1.0, rng\)
+checking gamma_d\(0.5, 2.0, rng\)
+checking gamma_d\(2.0, 2.0, rng\)
+checking beta\(1.0, 1.0, rng\)
 checking erlang_k\(1, 1.0, rng\)
+checking chi_square\(1, rng\)
+checking chi_square\(2, rng\)
+checking student_t\(1, rng\)
 checking cauchy\(1.0, 2.0, rng\)
 checking triang\(1.0, 2.0, 3.0, rng\)
 checking lognormal\(1.0, 1.0, rng\)
@@ -92,7 +97,13 @@ checking uniform\(1.0, 2.0, rng\)
 checking exponential\(1.0, rng\)
 checking normal\(1.0, 1.0, rng\)
 checking truncnormal\(1.0, 1.0, rng\)
+checking gamma_d\(0.5, 2.0, rng\)
+checking gamma_d\(2.0, 2.0, rng\)
+checking beta\(1.0, 1.0, rng\)
 checking erlang_k\(1, 1.0, rng\)
+checking chi_square\(1, rng\)
+checking chi_square\(2, rng\)
+checking student_t\(1, rng\)
 checking cauchy\(1.0, 2.0, rng\)
 checking triang\(1.0, 2.0, 3.0, rng\)
 checking lognormal\(1.0, 1.0, rng\)
@@ -111,7 +122,13 @@ checking uniform\(1.0, 2.0, rng\)
 checking exponential\(1.0, rng\)
 checking normal\(1.0, 1.0, rng\)
 checking truncnormal\(1.0, 1.0, rng\)
+checking gamma_d\(0.5, 2.0, rng\)
+checking gamma_d\(2.0, 2.0, rng\)
+checking beta\(1.0, 1.0, rng\)
 checking erlang_k\(1, 1.0, rng\)
+checking chi_square\(1, rng\)
+checking chi_square\(2, rng\)
+checking student_t\(1, rng\)
 checking cauchy\(1.0, 2.0, rng\)
 checking triang\(1.0, 2.0, 3.0, rng\)
 checking lognormal\(1.0, 1.0, rng\)
@@ -126,7 +143,6 @@ checking hypergeometric\(1, 2, 2, rng\)
 checking poisson\(1.0, rng\)
 checking poisson\(35.0, rng\)
 finished
-
 %not-contains: stdout
 ERROR:
 
