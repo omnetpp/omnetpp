@@ -1,0 +1,25 @@
+Figures in the manual
+=====================
+
+Figures are maintained in figures.ppt. Filenames of figures should be given
+as a one-line "Notes" text.
+
+To create gif and pdf files needed for html and pdf versions of the manual:
+ - open figures.ppt
+ - Save As: Windows Metafile (wmf). This will create Slide1.wmf, Slide2.wmf
+   etc. in the figures/ subdir.
+ - Run the ExportNotesText macro, and type "figures-rename.bat" as file name
+ - exit ppt
+
+Then:
+ - run figures-rename.bat to get normal filenames.
+ - run figures-convert.bat to convert wmf files to gif and pdf.
+
+figures-convert.bat uses ImageMagick 6. PDF is created via gif (rather than
+directly from wmf) because this strangely results in smaller files and
+better quality (whatever -densite and -scale options are passed to wmf 
+conversion).
+
+Because we use ImageMagick, all pdf figures will be raster images (not vector),
+but oh well... Couldn't find good tool for batch wmf-to-pdf conversion 
+(it should also crop the pictures because wmf's are full-slide size!)
