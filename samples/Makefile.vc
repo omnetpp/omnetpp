@@ -1,0 +1,15 @@
+#
+# Global definitions
+#
+!include ..\configuser.vc
+
+rundemo.bat:
+	echo @$(WISH:/=\) -f ^%~dpn0 ^%* > rundemo.bat
+
+depend:
+
+clean:
+	-del rundemo.bat
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+

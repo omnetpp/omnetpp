@@ -1,0 +1,20 @@
+TicToc
+======
+
+TicToc contains a series of simulation models numbered 1 through 11 which can
+be used as a tutorial. The models are of increasing complexity -- they start 
+from the basics and introduce new OMNeT++ features or simulation techniques 
+with each step. The additions are well commented, so the models -- read 
+together with the Manual and the API documentation -- can help you build up
+a good working knowledge of OMNeT++ in a short time.
+
+Each model is self-contained, with its number in the file names, so e.g.
+TicToc-3 consists of tictoc3.ned and txc3.cc. (The omnetpp.ini file is shared
+between them). The makefile is set up so that the executable contains all
+simulation models, and when you start it you can choose which model you
+want to run. It is recommended that you first read the source code of the 
+given simulation (say tictoc3.ned and txc3.cc), then run it and find out
+what it does and why.
+
+Have fun!
+

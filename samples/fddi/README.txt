@@ -1,0 +1,48 @@
+FDDI
+====
+
+The FDDI_MAC simple module is an accurate FDDI MAC simulation. Based on 
+FDDI_MAC, a number of network nodes are put together: FDDI station, router, 
+network analyzer.
+
+There is a general FDDI network model:
+
+  - FDDIRing is a simple FDDI ring of identical nodes (FDDIStations). 
+    The stations are connected in the form of a ring, plus each of them is 
+    connected to a 'stat' module.
+
+  - FDDIRing can be simulated using the FDDI1 network.
+
+Other ring models are models of the former FDDI backbone of the Technical 
+University of Budapest:
+
+  - TUBSRing is the model if the Southern FDDI ring. From the dual attached
+    ring only one direction is modelled; all the stations are modelled just
+    with SAS.
+
+  - TUBNRing: is the model if the Northern FDDI ring. The stations are
+    connected in ring topology, plus there are some concentrators. From the
+    dual attached ring only one direction is modelled; all the stations are
+    modeled just with SAS, and all the concentrators are modelled with
+    SAC-4.
+
+The topology (the stations, the order of stations, the cable lengths) is
+real. The offered load of the ring is generated from histograms, stored in
+files in the load/ directory. The traffic is also based on reality: the
+files were generated from measurements made on the live network with a
+Sniffer.
+
+The NRing network can be used to model the Northern ring alone, but it is 
+more interesting to simulate the two rings together.
+
+In real life, the two FDDI rings (Southern Ring and Northern Ring)
+connected by a router. The traffic flowing through the router can be
+simulated packet-by-packet or statistically:
+
+  - the TUB_wired module (TUBw network) simulates each packet transmission;
+
+  - with the TUB_SSM module (TUBs network), the two rings are interconnected
+    by Statistical Synchronisation interfaces, so only the statistical
+    characteristics of the packet flow (frame length histograms, etc.) are 
+    exchanged between the two rings.
+

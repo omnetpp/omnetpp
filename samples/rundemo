@@ -1,0 +1,278 @@
+#!/bin/sh
+# the next line restarts using wish (on cygwin, use wish84 or the like) \
+exec wish "$0" "$@"
+
+#==========================================================================
+#  DEMO
+#  part of OMNeT++
+#==========================================================================
+
+#--------------------------------------------------------------
+#  Copyright (C) 1992-2003 Andras Varga
+#
+#  This file is distributed WITHOUT ANY WARRANTY. See the file
+#  `license' for details on this and other legal matters.
+#--------------------------------------------------------------
+
+# columns below: name directory unix-command windows-command
+set i 0
+foreach line {
+   {"Tictoc"     "tictoc"    "./tictoc"    "tictoc.exe"}
+   {"Fifo"       "fifo"      "./fifo"      "fifo.exe"}
+   {"CQN"        "cqn"       "./cqn"       "cqn.exe"}
+   {"Queueing"   "queueing"  "./queueing"  "queueing.exe"}
+   {"Hist"       "hist"      "./hist"      "hist.exe"}
+   {"P-to-P"     "p-to-p"    "./p-to-p"    "p-to-p.exe"}
+   {"Aloha"      "aloha"     "./aloha"     "aloha.exe"}
+   {"Dyna"       "dyna"      "./dyna"      "dyna.exe"}
+   {"FDDI"       "fddi"      "./fddi"      "fddi.exe"}
+   {"HCube"      "hcube"     "./hcube"     "hcube.exe"}
+   {"Routing"    "routing"   "./routing"   "routing.exe"}
+   {"RoutingDB"  "routingdb" "./routingdb" "routingdb.exe"}
+   {"TokenRing"  "tokenring" "./tokenring" "tokenring.exe"}
+   {"Topology"   "topology"  "./topology"  "topology.exe"}
+} {
+   set name $i
+   incr i
+   lappend samples $name
+   set title($name) [lindex $line 0]
+   set dir($name) [lindex $line 1]
+   set uprog($name) [lindex $line 2]
+   set wprog($name) [lindex $line 3]
+}
+
+
+proc createWindow {} {
+    global samples title dir uprog wprog fonts colors
+
+    wm focusmodel . passive
+    wm minsize . 1 1
+    wm overrideredirect . 0
+    wm resizable . 1 1
+    wm deiconify .
+    wm title . "OMNeT++ Demo Simulations"
+    wm protocol . WM_DELETE_WINDOW {exit}
+
+    #################################
+    # Menu bar
+    #################################
+
+    menu .menubar
+    . config -menu .menubar
+
+    # Create menus
+    foreach i {
+       {filemenu     -label File -underline 0}
+       {helpmenu     -label Help -underline 0}
+    } {
+       eval .menubar add cascade -menu .menubar.$i
+       menu ".menubar.[lindex $i 0]" -tearoff 0
+    }
+
+    # File menu
+    foreach i {
+      {command -command exit -label Exit -underline 1}
+    } {
+      eval .menubar.filemenu add $i
+    }
+
+    # Help menu
+    foreach i {
+      {command -command helpAbout -label {About OMNeT++} -underline 0}
+    } {
+      eval .menubar.helpmenu add $i
+    }
+
+    #################################
+    # Create main display area
+    #################################
+
+    frame .sel -bd 2 -relief groove
+    frame .main -bd 2 -relief groove
+    pack .sel -expand 0 -fill y  -side left -padx 2
+    pack .main -expand 1 -fill both  -side right  -padx 2
+
+    frame .main.up
+    frame .main.lo
+    frame .main.mid
+    pack .main.up -expand 0 -fill x  -side top
+    pack .main.lo -expand 0 -fill x  -side bottom
+    pack .main.mid -expand 1 -fill both -side top
+
+    label .main.up.banner -bg $colors(banner) -relief groove  -font $fonts(bold)
+    pack .main.up.banner -fill x -side top
+
+    text .main.mid.text -yscrollcommand ".main.mid.sb set" -width 74 -height 20  -wrap none
+    scrollbar .main.mid.sb -command ".main.mid.text yview"
+    pack .main.mid.sb -anchor center -expand 0 -fill y  -side right
+    pack .main.mid.text -anchor center -expand 1 -fill both -side left
+
+    button .main.lo.start -bg $colors(startbutton) -font $fonts(bold)
+    pack .main.lo.start -expand 1 -fill x  -padx 10 -pady 6
+
+    label .sel.banner -text "Sample simulations:" -bg $colors(banner) -relief groove -font $fonts(bold)
+    pack .sel.banner -fill x -side top
+    foreach i $samples {
+        button .sel.$i -text $title($i) -command "showDemo $i"
+        pack .sel.$i -fill x -side top -padx 5 -pady 2
+    }
+    showDemo [lindex $samples 0]
+}
+
+proc helpAbout {} {
+    tk_messageBox -title {About OMNeT++ Demo} -type ok -icon info -message \
+{\
+OMNeT++ Discrete Event Simulation System
+Sample Simulations
+
+(c) Andras Varga, 1992-2003
+}
+
+}
+
+proc showDemo {sample} {
+   global samples title dir uprog wprog colors tcl_platform
+
+   foreach i $samples {
+        .sel.$i config -relief raised -bg $colors(unselbutton)
+   }
+   .sel.$sample config -relief sunken -bg $colors(selbutton)
+
+   if {$tcl_platform(platform) == "unix"} {
+     set cmd "cd $dir($sample); $uprog($sample)"
+   } else {
+     set cmd "cd $dir($sample); $wprog($sample)"
+   }
+   .main.up.banner config -text "$title($sample) README"
+   .main.lo.start config -text "Launch $title($sample)  (command: $cmd)"
+   .main.lo.start config -command "runSample $sample"
+
+   loadFile .main.mid.text "$dir($sample)/Readme.txt"
+}
+
+proc loadFile {t filename} {
+    $t delete 1.0 end
+
+    if [catch {
+       set f [open $filename r]
+       set contents [read $f]
+       close $f
+    } err] {
+       #tk_messageBox -title {OMNeT++ Demo} -type ok -icon error -message "Cannot display README: $err"
+       return
+    }
+
+    $t insert end $contents
+    $t mark set insert 1.0
+}
+
+proc runSample {sample} {
+   global samples title dir uprog wprog tcl_platform
+
+   if {$tcl_platform(platform) == "unix"} {
+     set prog $uprog($sample)
+   } else {
+     set prog $wprog($sample)
+   }
+
+   set pwd [pwd]
+   if [catch {
+      cd $dir($sample);
+      exec $prog &
+    } err] {
+      tk_messageBox -title {OMNeT++ Demo} -type ok -icon error -message "Error running the simulation program: $err"
+   }
+   cd $pwd
+}
+
+#===================================================================
+#    GENERIC BINDINGS
+#===================================================================
+
+proc generic_bindings {} {
+   bind Button <Return> {tkButtonInvoke %W}
+}
+
+#===================================================================
+#    FONT BINDINGS
+#===================================================================
+
+proc font_bindings {} {
+   global fonts tcl_platform colors
+
+   set colors(banner)      #e0e0a0
+   set colors(unselbutton) #c0c0c0
+   set colors(selbutton)   #ffffff
+   set colors(startbutton) #e0e0a0
+
+   #
+   # fonts() array elements:
+   #  normal:  menus, labels etc
+   #  bold:    buttons
+   #  icon:    toolbar 'icons'
+   #  big:     STOP button
+   #  msgname: message name during animation
+   #  fixed:   text windows and listboxes
+   #
+
+   if {$tcl_platform(platform) == "unix"} {
+      set fonts(normal) -Adobe-Helvetica-Medium-R-Normal-*-*-120-*-*-*-*-*-*
+      set fonts(bold)   -Adobe-Helvetica-Bold-R-Normal-*-*-120-*-*-*-*-*-*
+      set fonts(icon)   -Adobe-Times-Bold-I-Normal-*-*-120-*-*-*-*-*-*
+      set fonts(big)    -Adobe-Helvetica-Medium-R-Normal-*-*-180-*-*-*-*-*-*
+      set fonts(msgname) -Adobe-Helvetica-Medium-R-Normal-*-*-120-*-*-*-*-*-*
+      set fonts(fixed)  fixed
+      set fonts(balloon) -Adobe-Helvetica-Medium-R-Normal-*-*-120-*-*-*-*-*-*
+   } else {
+      # Windows, Mac
+      set fonts(normal) -Adobe-Helvetica-Medium-R-Normal-*-*-140-*-*-*-*-*-*
+      set fonts(bold)   -Adobe-Helvetica-Bold-R-Normal-*-*-140-*-*-*-*-*-*
+      set fonts(icon)   -Adobe-Helvetica-Bold-R-Normal-*-*-140-*-*-*-*-*-*
+      set fonts(big)    -Adobe-Helvetica-Medium-R-Normal-*-*-180-*-*-*-*-*-*
+      set fonts(msgname) -Adobe-Helvetica-Medium-R-Normal-*-*-140-*-*-*-*-*-*
+      set fonts(fixed)  FixedSys
+      set fonts(balloon) -Adobe-Helvetica-Medium-R-Normal-*-*-140-*-*-*-*-*-*
+   }
+
+   if {$tcl_platform(platform) == "unix"} {
+       option add *Scrollbar.width  12
+       option add *Menubutton.font  $fonts(normal)
+       option add *Menu.font        $fonts(normal)
+       option add *Label.font       $fonts(normal)
+       option add *Entry.font       $fonts(normal)
+       option add *Listbox.font     $fonts(fixed)
+       option add *Text.font        $fonts(fixed)
+       option add *Button.font      $fonts(bold)
+   }
+}
+
+proc checkVersion {} {
+
+   global tk_version tk_patchLevel
+
+   catch {package require Tk}
+   if {$tk_version<8.0} {
+      wm deiconify .
+      wm title . "Bad news..."
+      frame .f
+      pack .f -expand 1 -fill both -padx 2 -pady 2
+      label .f.l1 -text "Your version of Tcl/Tk is too old!"
+      label .f.l2 -text "Tcl/Tk 8.0 or later required."
+      button .f.b -text "OK" -command {exit}
+      pack .f.l1 .f.l2 -side top -padx 5
+      pack .f.b -side top -pady 5
+      focus .f.b
+      wm protocol . WM_DELETE_WINDOW {exit}
+      tkwait variable ok
+   }
+   if {[string compare $tk_patchLevel "8.0p1"]<0} {
+      tk_messageBox -title {Warning} -type ok -icon warning \
+        -message {Old Tcl/Tk version. At least 8.0p1 is strongly recommended!}
+   }
+}
+
+checkVersion
+generic_bindings
+font_bindings
+createWindow
+
