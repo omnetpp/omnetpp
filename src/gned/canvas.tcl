@@ -373,6 +373,34 @@ proc adjustWindowTitle {} {
 }
 
 
+# checkNEDFileEdits --
+#
+# Before-save and before-close check: checks if all canvases belonging 
+# to this file are in graphics mode (or NED source hasn't been changed). 
+# If everything is OK, returns 0, otherwise pops up error
+# dialog and returns 1.
+#
+proc nedfileContainsTextEdits {nedfilekey} {
+    global canvas ned gned
+    foreach i [array names canvas "*,canvas"] {
+        regsub -- ",canvas" $i "" loop_canvid
+        set loop_modkey $canvas($loop_canvid,module-key)
+        set loop_nedfilekey $ned($loop_modkey,parentkey)
+        # does this canvas belong to the file to be closed?
+        if {$loop_nedfilekey==$nedfilekey} {
+            # does canvas contain unsaved text edits?
+            if {$canvas($loop_canvid,mode)=="textedit" && [textCanvasContainsChanges $loop_canvid]}  {
+                switchToCanvas $loop_canvid
+                tk_messageBox -icon warning -type ok -title GNED \
+                    -message "Please switch back '$ned($loop_modkey,name)' to graphics mode first! \
+                       The NED source has been edited, and your changes must be backparsed before the file can be saved."
+                return 1
+            }
+        }
+    }
+    return 0
+}
+
 # exportCanvasesToPostscript --
 #
 # Loops through all open canvases and saves the pictures into postscript files

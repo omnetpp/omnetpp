@@ -76,6 +76,12 @@ proc fileSave {{nedfilekey {}}} {
       if {$ned($nedfilekey,type)!="nedfile"} {error "internal error in fileSave"}
    }
 
+   # can only save file if all canvases are in graphics mode (or NED source not edited)
+   if [nedfileContainsTextEdits $nedfilekey] {
+      return
+   }
+   
+   # actually save
    if {!$ned($nedfilekey,aux-isunnamed)} {
       saveNED $nedfilekey
       nedfileClearDirty $nedfilekey
@@ -92,6 +98,11 @@ proc fileSaveAs {{nedfilekey {}}} {
       set canv_id $gned(canvas_id)
       set modkey $canvas($canv_id,module-key)
       set nedfilekey $ned($modkey,parentkey)
+   }
+
+   # can only save file if all canvases are in graphics mode (or NED source not edited)
+   if [nedfileContainsTextEdits $nedfilekey] {
+      return
    }
 
    if {$ned($nedfilekey,filename)!=""} {
@@ -148,23 +159,9 @@ proc fileCloseNedfile {{nedfilekey {}}} {
        set nedfilekey $ned($modkey,parentkey)
    }
 
-   # all canvases belonging to this file must be in graphics mode
-   # (or must be unchanged)
-   foreach i [array names canvas "*,canvas"] {
-       regsub -- ",canvas" $i "" loop_canvid
-       set loop_modkey $canvas($loop_canvid,module-key)
-       set loop_nedfilekey $ned($loop_modkey,parentkey)
-       # does this canvas belong to the file to be closed?
-       if {$loop_nedfilekey==$nedfilekey} {
-           # does canvas contain unsaved text edits?
-           if {$canvas($loop_canvid,mode)=="textedit" && [textCanvasContainsChanges $loop_canvid]}  {
-               switchToCanvas $loop_canvid
-               tk_messageBox -icon warning -type ok -title GNED \
-                   -message "Switch back '$ned($loop_modkey,name)' to graphics mode first! \
-                      The NED source has been edited, and your changes must be backparsed before the canvas can be closed."
-               return
-           }
-       }
+   # can only close file if all canvases are in graphics mode (or NED source not edited)
+   if [nedfileContainsTextEdits $nedfilekey] {
+      return
    }
 
    # offer saving it

@@ -1,3 +1,8 @@
+2003-09-08  Andras Varga
+
+	* bugfix: textedits were not saved until you switched back to graphics
+	mode
+
 2003-09-04  Andras Varga
 
 	* implemented "Consult module declaration" button
@@ -29,7 +34,7 @@
 	can be selected from combo, and channel also. Input is also fully 
 	validated. Remaining issue: gate directions not observed.
 
-FIXME!!! when submodule has random placement, strange thing happpens 
+FIXME!!! when submodule has random placement, strange thing happens 
 after OK'ing Props dialog
 
 2003-08-11  Andras Varga
