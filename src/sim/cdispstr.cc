@@ -169,9 +169,9 @@ int cDisplayString::getNumArgs(int tagindex) const
 
 const char *cDisplayString::getTagArg(int tagindex, int index) const
 {
-    if (tagindex<0 || tagindex>=numtags) return NULL;
-    if (index<0 || index>=tags[tagindex].numargs) return NULL;
-    return tags[tagindex].args[index];
+    if (tagindex<0 || tagindex>=numtags) return "";
+    if (index<0 || index>=tags[tagindex].numargs) return "";
+    return correct(tags[tagindex].args[index]);
 }
 
 
