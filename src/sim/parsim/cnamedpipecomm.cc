@@ -81,7 +81,7 @@ cNamedPipeCommunications::~cNamedPipeCommunications()
 void cNamedPipeCommunications::init()
 {
     // get numPartitions and myProcId from "-p" command-line option
-    // FIXME this is the same as in cFileCommunications -- should go into common base class?
+    // TBD this is the same as in cFileCommunications -- should go into common base class?
     int argc = ev.argCount();
     char **argv = ev.argVector();
     int i;
@@ -197,23 +197,10 @@ void cNamedPipeCommunications::send(cCommBuffer *buffer, int tag, int destinatio
 
 bool cNamedPipeCommunications::receive(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking)
 {
-    return doReceive(buffer, receivedTag, sourceProcId, blocking);
-
-    // FIXME implement tag filtering...
-#if 0
     if (filtTag==PARSIM_ANY_TAG)
-    {
-        if (storedBuffers.empty())
-        {
-            return doReceive(buffer, receivedTag, sourceProcId, blocking);
-        }
-        else
-        {
-            storedBuffers.pop();
-            ...
-        }
-    }
-#endif
+        return doReceive(buffer, receivedTag, sourceProcId, blocking);
+    // TBD implement tag filtering (tag filtering not used by current parsim implementation)
+    throw new cException("cNamedPipeCommunications: tag filtering not implemented");
 }
 
 bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking)
@@ -265,7 +252,8 @@ bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, 
 
 bool cNamedPipeCommunications::receiveBlocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId)
 {
-    // FIXME active wait :-(
+    // select() call inside receive() will block for max 1s, yielding CPU
+    // to other processes in the meantime
     while (!receive(filtTag, buffer, receivedTag, sourceProcId, true))
     {
         if (ev.idle())

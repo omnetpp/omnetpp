@@ -210,8 +210,10 @@ void cNamedPipeCommunications::send(cCommBuffer *buffer, int tag, int destinatio
 
 bool cNamedPipeCommunications::receive(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking)
 {
-    return doReceive(buffer, receivedTag, sourceProcId, blocking);
-    // FIXME implement tag filtering (copy from unix version)...
+    if (filtTag==PARSIM_ANY_TAG)
+        return doReceive(buffer, receivedTag, sourceProcId, blocking);
+    // TBD implement tag filtering (tag filtering not used by current parsim implementation)
+    throw new cException("cNamedPipeCommunications: tag filtering not implemented");
 }
 
 bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking)
@@ -219,7 +221,7 @@ bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, 
     cMemCommBuffer *b = (cMemCommBuffer *)buffer;
     b->reset();
 
-    // FIXME handle "blocking"
+    // TBD may be refined to handle blocking=true (right now just returns immediately)
 
     // select pipe to read
     int i, k;
@@ -266,11 +268,14 @@ bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, 
 
 bool cNamedPipeCommunications::receiveBlocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId)
 {
-    // FIXME active wait :-(
+    // receive() currently doesn't handle blocking (PeekNamedPipe() returns
+    // immediately if nothing has been received), so we need to sleep a little
+    // between invocations, in order to save CPU cycles.
     while (!receive(filtTag, buffer, receivedTag, sourceProcId, true))
     {
         if (ev.idle())
             return false;
+        usleep(10000); // be polite and wait 0.01s
     }
     return true;
 }

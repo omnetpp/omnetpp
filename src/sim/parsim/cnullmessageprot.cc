@@ -126,8 +126,6 @@ void cNullMessageProtocol::startRun()
 void cNullMessageProtocol::endRun()
 {
     lookaheadcalc->endRun();
-
-    // FIXME implement the rest
 }
 
 void cNullMessageProtocol::processOutgoingMessage(cMessage *msg, int destProcId, int destModuleId, int destGateId, void *data)

@@ -39,7 +39,7 @@ class cNMPLookahead : public cPolymorphic
 {
   protected:
     cSimulation *sim;
-    cParsimCommunications *comm; // FIXME only reason we need this is numPartitions
+    cParsimCommunications *comm; // TBD this is just to access numPartitions -- optimize out?
     cParsimPartition *partition;
     // cNullMessageProtocol *nullmsgprot;
 
