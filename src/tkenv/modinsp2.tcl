@@ -187,6 +187,7 @@ proc draw_submod {c submodptr name dispstr i n default_layout} {
                set x [expr $x + ($i % $perrow) * $dx]
                set y [expr $y + int($i / $perrow) * $dy]
            }
+           i -
            ri -
            ring {
                set rx [lindex $tags(p) 3]
