@@ -55,11 +55,10 @@ of the library and type:
 
     make clean
     make 
-    make install-local
 
-The last line is that copies the libraries from the src/ tree to lib/.
-Note that typing `make' in the top-level omnetpp directory includes
-`make install-local' for all libraries and programs.
+NOTE: the 'install-local' make target found in earlier OMNeT++ versions
+was removed in 2.0beta4. The built libraries and programs are immediately
+copied to the lib/ and bin/ subdirs.
 
 
 3. Portability issues

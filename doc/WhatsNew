@@ -7,12 +7,6 @@ This is mainly a maintenance and bugfix release, a preparation to the 2.0 final
 release: most of the changes improve on the ISO compliance, cleanliness,
 portability or quality of the code rather than adding new features.
 
-Improvements on the simulation library: sum() and sqrSum() members added to the
-statistics classes (cStdDev & subclasses); isNumeric() member added to cPar;
-remove(cObject *) added to cArray. Also, three functions were added to cModule
-to facilitate navigating the module hierarchy: int findSubmodule(...),
-cModule *submodule(...) and cModule *moduleByRelativePath(...).
-
 Steps toward better ISO compliance: the source was made 'const char *'-correct,
 and the TRUE/FALSE #defines were replaced by the true/false C++ keywords.
 Also, nearly all '-Wall' gcc warnings were eliminated from the source.
@@ -23,6 +17,12 @@ between Windows DLLs and Unix shared objects. (For me it seems like the Unix
 approach is a lot more flexible.) The MSVC makefiles were further refined
 using a contribution from Balazs Kelemen.
 
+Improvements on the simulation library: sum() and sqrSum() members added to the
+statistics classes (cStdDev & subclasses); isNumeric() member added to cPar;
+remove(cObject *) added to cArray. Also, three functions were added to cModule
+to facilitate navigating the module hierarchy: int findSubmodule(...),
+cModule *submodule(...) and cModule *moduleByRelativePath(...).
+
 New feature in Envir: you may link more than one user interfaces into a
 simulation executable, and you can select the appropriate one at runtime
 with the [General]/user-interface=Tkenv (or =Cmdenv) ini file option or the
@@ -30,16 +30,22 @@ with the [General]/user-interface=Tkenv (or =Cmdenv) ini file option or the
 
 In NEDC (and GNED), fixed the ?: operator and changed its precedence to bind
 looser than || and &&. Changed nedc-generated code to suppress warnings about
-unused variables (which are normal anyway in machine-generated code).
+unused variables (which are normal anyway in machine-generated code); this
+could only be done for MSVC and Borland C++, because gcc lacks pragmas.
 
 In Tkenv, setDisplayString() and module parameters in display strings are
-finally implemented...
+finally implemented.
 
-Makefiles change: install-local target eliminated...
+Makefiles change: the 'install-local' target was eliminated: the new-built
+libraries and programs are immediately copied to the lib/ and bin/ subdirs.
 
-Several other smaller changes like fixed PVM execution; improved error handling,
-bugfix related to wrong transmissionFinishes() behavior, etc; see the
+Several other smaller changes like fixed PVM execution; improved error
+handling, bugfix related to wrong transmissionFinishes() behavior, etc; see the
 sim/ChangeLog file.
+
+Some features like multi-stage module initialization, send(cMessage*,cGate*)
+call, message appearance customization (message display strings) are left
+for next releases.
 
 
 In the OMNeT++ 2.0 beta 3 version (Jan 2000)
@@ -70,7 +76,6 @@ Some API changes were made to improve the clarity of the code. See API_CHANGES
 in the doc/ directory.
 
 TVEnv was removed from the distribution.
-
 
 
 In the OMNeT++ 2.0 beta 1 and 2 versions (Sep,Nov 1999)
