@@ -1,7 +1,10 @@
 //
-// file: closednet.ned
+// This file is part of an OMNeT++ simulation example.
 //
-// part of Queues - an OMNeT++ demo simulation
+// Contributed by Nick van Foreest
+//
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
 //
 
 

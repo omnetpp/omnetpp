@@ -1,7 +1,11 @@
-//-------------------------------------------------------------
-// file: gen.h
-//        (part of Queues - an OMNeT++ demo simulation)
-//-------------------------------------------------------------
+//
+// This file is part of an OMNeT++ simulation example.
+//
+// Contributed by Nick van Foreest
+//
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
+//
 
 #ifndef __GEN_H
 #define __GEN_H

@@ -1,14 +1,20 @@
-//-------------------------------------------------------------
-// file: fifo.h
-//        (part of Queues - an OMNeT++ demo simulation)
-//-------------------------------------------------------------
+//
+// This file is part of an OMNeT++ simulation example.
+//
+// Contributed by Nick van Foreest
+//
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
+//
 
 #ifndef __FIFO_H
 #define __FIFO_H
 
 #include <omnetpp.h>
 
-// Fifo : abstract base class for single-server queues
+/**
+ * Abstract base class for single-server queues
+ */
 class Fifo : public cSimpleModule
 {
   public:

@@ -1,7 +1,11 @@
-// -------------------------------------------------------------
-// file: fifonet.ned
-//        (part of Queues - an OMNeT++ demo simulation)
-// -------------------------------------------------------------
+//
+// This file is part of an OMNeT++ simulation example.
+//
+// Contributed by Nick van Foreest
+//
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
+//
 
 
 import
@@ -9,9 +13,8 @@ import
     "fifo",
     "sink";
 
-// FifoNet --
 //
-// generator + FIFO + sink
+// Generator + FIFO + sink
 //
 module FifoNet
     parameters:

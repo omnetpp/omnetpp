@@ -1,12 +1,15 @@
-//-------------------------------------------------------------
-// file: gen.ned
-//        (part of Queues - an OMNeT++ demo simulation)
-//-------------------------------------------------------------
-
-
-// Generator --
 //
-// generates messages (jobs,packets etc.)
+// This file is part of an OMNeT++ simulation example.
+//
+// Contributed by Nick van Foreest
+//
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
+//
+
+
+//
+// Generates messages (jobs,packets etc.)
 //
 simple Generator
     parameters:

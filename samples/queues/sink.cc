@@ -1,7 +1,11 @@
-//------------------------------------------------------------- file:
-// file: sink.cc
-//      (part of Queues - an OMNeT++ demo simulation)
-//-------------------------------------------------------------
+//
+// This file is part of an OMNeT++ simulation example.
+//
+// Contributed by Nick van Foreest
+//
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
+//
 
 #include "sink.h"
 
@@ -13,18 +17,11 @@ void Sink::initialize()
     waitStats.setName("Waiting time statistics");
 }
 
-void Sink::activity()
+void Sink::handleMessage(cMessage *msg)
 {
-    for(;;)
-    {
-        cMessage *msg = receive();
-        double d = simTime()-msg->timestamp();
-
-        waitStats.collect( d );
-
-        delete msg;
-
-    }
+    double d = simTime() - msg->timestamp();
+    waitStats.collect( d );
+    delete msg;
 }
 
 void Sink::finish()

@@ -1,12 +1,15 @@
-//-------------------------------------------------------------
-// file: fifo.ned
-//        (part of Queues - an OMNeT++ demo simulation)
-//-------------------------------------------------------------
-
-
-// Fifo --
 //
-// single-server queue, same service rate for each packet
+// This file is part of an OMNeT++ simulation example.
+//
+// Contributed by Nick van Foreest
+//
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
+//
+
+
+//
+// Single-server queue, same service rate for each packet
 //
 simple Fifo
     parameters:
