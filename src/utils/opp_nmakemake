@@ -382,7 +382,7 @@ TKENV_LIBS=envir.lib tkenv.lib \$(TK_LIBS)
 KERNEL_LIBS=sim_std.lib
 
 !if \"\$(WITH_NETBUILDER)\"==\"yes\"
-KERNEL_LIBS= \$(KERNEL_LIBS) -lnedxml \$(XML_LIBS)
+KERNEL_LIBS= \$(KERNEL_LIBS) nedxml.lib \$(XML_LIBS)
 !endif
 
 !if \"\$(WITH_PARSIM)\"==\"yes\"
