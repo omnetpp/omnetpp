@@ -1,3 +1,7 @@
+2002-06-24  Andras Varga
+
+	* ccoroutine.h/cc: use Fiber API on Windows
+
 2002-06-17  Andras Varga
 
 	* cpar.cc: new feature: cPar can use compiled expressions subclassed 
