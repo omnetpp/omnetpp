@@ -311,7 +311,7 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
     /**
      * Constructor.
      */
-    explicit cTDExpandingWindows(const char *name,
+    explicit cTDExpandingWindows(const char *name=NULL,
                         int reps=3, int minw=4, double wind=1.3, double acc=0.3,
                         PostTDFunc f=NULL,void *p=NULL);
 
