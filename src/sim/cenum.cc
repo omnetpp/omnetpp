@@ -99,6 +99,7 @@ void cEnum::insert(int key, const char *str)
         for (i=0; size >= sizes[i] && sizes[i]; i++);
         size=sizes[i];
 
+        // mark all slots empty (string=NULL)
         vect = new sEnum[size];
         for (i=0; i<size; i++)
             vect[i].string=NULL;
@@ -124,16 +125,17 @@ void cEnum::insert(int key, const char *str)
     while (vect[k].string && vect[k].key!=key)
         k = (k+1)%size;
 
-    // consistency check
-    if (vect[k].key == key && vect[k].string && strcmp(vect[k].string, str))
+    if (vect[k].string)
     {
-        // oops! same keys but different strings!
-        throw new cException("Key mismatch for enum %s: %s and %s have the same value (%d)",
-                name(), vect[k].string, str, key);
+        // found a slot with this key, check consistency (strings must be the same)
+        assert(vect[k].key==key);
+        if (strcmp(vect[k].string, str))
+            throw new cException("Key mismatch for enum %s: %s and %s have the same value (%d)",
+                                 name(), vect[k].string, str, key);
     }
-    else if (vect[k].key != key)
+    else
     {
-        // ...and insert there
+        // ...empty slot found, insert it here
         vect[k].key = key;
         vect[k].string = opp_strdup(str);
         items++;

@@ -1220,7 +1220,7 @@ double cPar::evaluate()
              tos-=3;
              break;
            case '@':
-             if(!e.f2 || tos<1) throw new cException(this,eBADEXP);
+             if(tos<1) throw new cException(this,eBADEXP);
              switch(e.op) {
                 case '+':
                    stk[tos-1] = stk[tos-1] + stk[tos];
