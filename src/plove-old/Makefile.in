@@ -1,13 +1,49 @@
 #
-# variables set by `configure':
+# Definitions to be customized by 'configure'
 #
+CXX=@CXX@
+CC=@CC@
+YACC=@YACC@
+LEX=@LEX@
+
+CFLAGS=@CFLAGS@
+LDFLAGS=@LDFLAGS@
+EXE_SUFFIX=@EXE_SUFFIX@
+
 OMNETPP_BIN_DIR=@OMNETPP_BIN_DIR@
 
+TK_CFLAGS=@TK_CFLAGS@
+TK_LIBS=@TK_LIBS@
+SYS_LIBS=@SYS_LIBS@
+
+#
+# Local definitions
+#
+COPTS=$(CFLAGS) $(TK_CFLAGS)
+
+
 all: plove
-	(dir=`pwd`; cd $(OMNETPP_BIN_DIR); rm -f plove; ln -s $$dir/plove .)
+	# (dir=`pwd`; cd $(OMNETPP_BIN_DIR); rm -f plove; ln -s $$dir/plove .)
+	../utils/install-prog plove $(OMNETPP_BIN_DIR)
+
+plove :
+	$(CC) $(LDFLAGS) $(OBJS) $(TK_LIBS) $(SYS_LIBS) -o gned
+	../utils/install-prog plove $(OMNETPP_BIN_DIR)
+
+plove.o: plove.cc tclcode.cc
+	$(CXX) -c $(COPTS) plove.cc
+
+tclcode.cc: *.tcl
+	../utils/tcl2c tclcode.cc *.tcl
+
+missing-library:
+	@ echo '*** No Tk installation found -- skipping Plove'
 
 depend:
+	makedepend -Y -I. -- *.c *.cc
+	makedepend -Y -I. -fMakefile.in -- *.c *.cc
 
 clean:
+	rm -f tclcode.cc *.o plove$(EXE_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

@@ -66,4 +66,5 @@ Aug 29, 2000
 ------ omnetpp-2.0p1 released ------
 March 24, 2001
  - prepared executable wrapper around Plove, with compiled-in Tcl code (optional)
- TBD: Makefile.vc decently, Makefile.in!!!
+
+TBD: Makefile.in!!!
