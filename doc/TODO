@@ -3,12 +3,17 @@ Further plans...
 Aug 25 1998, somewhat updated in Aug 1999 and Jan 2000
 
 
+COMPREHENSIVE TEST SUITE
+~~~~~~~~~~~~~~~~~~~~~~~~
+would be really useful to test the integrity of the sim. library after
+code changes!!!
+
+
 better MSVC support
 ~~~~~~~~~~~~~~~~~~~
 replace the coroutine library with Win32 fibers
-support making DLLs
 wizard interface to create OMNeT++ projects and add .ned files to projects
-makemake should support creating MSVC makefiles (is this needed???)
+maybe makemake should support creating MSVC makefiles? (someone needs this?)
 
 
 distribute binaries for NT
@@ -76,8 +81,7 @@ by deriving new simple module classes from them).
  
 documentation
 ~~~~~~~~~~~~~
-update exman.doc
-split html versions of manuals into chapters (that is, modify utils/prephtml)
+fill TBD's
 general polishing
 
 

@@ -3,9 +3,9 @@ What's New
 
 In the OMNeT++ 2.0 beta 4 version (May 2000)
 --------------------------------------------
-This is mainly a maintenance and bugfix release, a preparation to the 2.0 final
-release: most of the changes improve on the ISO compliance, cleanliness,
-portability or quality of the code rather than adding new features.
+This is release is a preparation to the 2.0 final release: most of the changes
+improve on the ISO compliance, cleanliness, portability or quality of the code
+and fix bugs, but there are a number of new features too.
 
 Steps toward better ISO compliance: the source was made 'const char *'-correct,
 and the TRUE/FALSE #defines were replaced by the true/false C++ keywords.
@@ -17,11 +17,14 @@ between Windows DLLs and Unix shared objects. (For me it seems like the Unix
 approach is a lot more flexible.) The MSVC makefiles were further refined
 using a contribution from Balazs Kelemen.
 
-Improvements on the simulation library: sum() and sqrSum() members added to the
-statistics classes (cStdDev & subclasses); isNumeric() member added to cPar;
-remove(cObject *) added to cArray. Also, three functions were added to cModule
-to facilitate navigating the module hierarchy: int findSubmodule(...),
-cModule *submodule(...) and cModule *moduleByRelativePath(...).
+Improvements on the simulation library: Multi-stage module initialization
+support via cModule's initialize(int stage) and int numInitStages() functions.
+The send...() functions now have versions which take cGate* pointers.
+sum() and sqrSum() members added to the statistics classes (cStdDev and
+subclasses); isNumeric() member added to cPar; remove(cObject *) added to
+cArray. Also, three functions were added to cModule to facilitate navigating
+the module hierarchy: int findSubmodule(...), cModule *submodule(...) and
+cModule *moduleByRelativePath(...).
 
 New Cmdenv/Tkenv features: you may link more than one user interfaces into the
 simulation executable, and you can select one at runtime with the
@@ -34,6 +37,8 @@ can now be configured from the ini file: [Cmdenv]/extra-stack= and
 The setDisplayString() sim.library functions are now properly handled by Tkenv,
 so you can change the network graphics at runtime. Module parameters in display
 strings (e.g. in "p=$xpos,$ypos;i=router") are also implemented finally.
+However, implementing the message appearance customization feature (message
+display strings) was left for next releases.
 
 In NEDC (and GNED), fixed the ?: operator and changed its precedence to bind
 looser than || and &&. Changed nedc-generated code to suppress warnings about
@@ -41,10 +46,10 @@ unused variables (which are normal anyway in machine-generated code); this
 could only be done for MSVC and Borland C++ because gcc seems to lack such a
 pragma.
 
-Unfortunately I didn't get a chance to further refine GNED; it would be nice
-to have contributors to GNED development. (Basically only Tcl/Tk programming
-is required [no need to touch the C++ part], and I could give any support
-needed.)
+Unfortunately I didn't get a chance to further refine GNED. It would really 
+help to have contributors to GNED development, so if you're interested, please
+write! (Basically only Tcl/Tk programming is required [no need to touch the
+C++ part], and I could give any support needed.)
 
 Makefiles change: the 'install-local' target was eliminated: the new-built
 libraries and programs are immediately copied to the lib/ and bin/ subdirs.
@@ -54,10 +59,6 @@ with OMNeT++ in doc/.
 Several other smaller changes like fixed PVM execution; improved error
 handling, bugfix related to wrong transmissionFinishes() behavior, etc; see the
 sim/ChangeLog file.
-
-Some features like multi-stage module initialization, send(cMessage*,cGate*)
-call, message appearance customization (message display strings) are left
-for next releases.
 
 
 In the OMNeT++ 2.0 beta 3 version (Jan 2000)
