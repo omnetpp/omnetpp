@@ -19,7 +19,7 @@ OMNETPP_SAMPLES_DIR =   @OMNETPP_SAMPLES_DIR@
 
 all: check-env components
 
-components: all-libs all-progs install-local all-samples
+components: libs progs install-local samples
 
 
 #=====================================================================
@@ -33,11 +33,11 @@ components: all-libs all-progs install-local all-samples
 # Group targets. Note that utils has to be built before libs and progs
 # because tcl2c might be needed to build tkenv or gned.
 #
-all-libs: utils sim envir cmdenv tkenv tvenv
+libs: utils sim envir cmdenv tkenv tvenv
 
-all-progs: utils nedc gned plove
+progs: utils nedc gned plove
 
-all-samples: dyna fddi fifo1 fifo2 hcube hist nim pvmex token
+samples: dyna fddi fifo1 fifo2 hcube hist nim pvmex token
 
 
 #
@@ -81,7 +81,7 @@ utils:
 #
 
 dyna:
-	cd $(OMNETPP_SAMPLES_DIR)/dynai && $(MAKE)
+	cd $(OMNETPP_SAMPLES_DIR)/dyna && $(MAKE)
 
 fddi:
 	cd $(OMNETPP_SAMPLES_DIR)/fddi && $(MAKE)
