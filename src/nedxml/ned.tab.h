@@ -3,6 +3,7 @@
 
 # ifndef YYSTYPE
 #  define YYSTYPE int
+#  define YYSTYPE_IS_TRIVIAL 1
 # endif
 
 #ifndef YYLTYPE
@@ -16,6 +17,7 @@ typedef struct yyltype
 } yyltype;
 
 # define YYLTYPE yyltype
+# define YYLTYPE_IS_TRIVIAL 1
 #endif
 
 # define	INCLUDE	257
