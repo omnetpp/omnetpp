@@ -164,7 +164,7 @@ fi
 
 if test ! -n "$PVM_LIBS"; then
     # test for -lpvm3 and -lgpvm3 at the same time
-    OPP_CHECK_LIB_WITHPATH(pvm3, pvm_joingroup, $PVM_ROOT/lib/$PVM_ARCH,
+    OPP_CHECK_LIB_WITHPATH(gpvm3, pvm_joingroup, $PVM_ROOT/lib/$PVM_ARCH,
       PVM_LIBS="$lib_path_swith -lgpvm3 -lpvm3",
       [PVM_LIBS=""
        AC_MSG_WARN(if you do have PVM3 then set PVM_ROOT and PVM_ARCH...)
