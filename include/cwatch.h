@@ -111,6 +111,11 @@ class SIM_API cWatch : public cObject
     /**
      * Initialize the shell to hold the given variable.
      */
+    cWatch(const char *name, bool& b)  : cObject(name) {ptr=&b; type='b';}
+
+    /**
+     * Initialize the shell to hold the given variable.
+     */
     cWatch(const char *name, int& i)  : cObject(name) {ptr=&i; type='i';}
 
     /**

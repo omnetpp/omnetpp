@@ -57,7 +57,6 @@
  *
  * Classes that make it easier to write simulation models:
  *    - cPacket is a subclass of cMessage, it is used to represent packets, frames, etc. transmitted in a communication network
- *    - cOutVector is used to record vector simulation results (an output vector) to file
  *    - cTopology supports routing in telecommunication or multiprocessor networks.
  *    - cFSM is used to build Final State Machines
  *    - cWatch makes variables visible (inspectable) in Tkenv
@@ -105,24 +104,26 @@
  * the cTransientDetection and cAccuracyDetection abstract base classes.
  *
  * The classes are:
- *   - cStdDev keeps number of samples, mean, standard deviation, minimum
- *     and maximum value etc.
- *   - cWeightedStdDev is similar to cStdDev, but accepts weighted observations.
- *     cWeightedStdDev can be used for example to calculate time average.
- *     It is the only weighted statistics class.
- *   - cLongHistogram and cDoubleHistogram are descendants of cStdDev and
- *     also keep an approximation of the distribution of the observations
- *     using equidistant (equal-sized) cell histograms.
- *   - cVarHistogram implements a histogram where cells do not need to be
- *     the same size. You can manually add the cell (bin) boundaries,
- *     or alternatively, automatically have a partitioning created where
- *     each bin has the same number of observations (or as close to that
- *     as possible).
- *   - cPSquare is a class that uses the P<sup>2</sup> algorithm by Jain
- *     and Chlamtac. The algorithm calculates quantiles without storing
- *     the observations.
- *   - cKSplit uses a novel, experimental method, based on an adaptive
- *     histogram-like algorithm.
+ *    - cOutVector is used to record vector simulation results (an output 
+ *      vector, containing <i>(time, value)</i> pairs) to file
+ *    - cStdDev keeps number of samples, mean, standard deviation, minimum
+ *      and maximum value etc.
+ *    - cWeightedStdDev is similar to cStdDev, but accepts weighted observations.
+ *      cWeightedStdDev can be used for example to calculate time average.
+ *      It is the only weighted statistics class.
+ *    - cLongHistogram and cDoubleHistogram are descendants of cStdDev and
+ *      also keep an approximation of the distribution of the observations
+ *      using equidistant (equal-sized) cell histograms.
+ *    - cVarHistogram implements a histogram where cells do not need to be
+ *      the same size. You can manually add the cell (bin) boundaries,
+ *      or alternatively, automatically have a partitioning created where
+ *      each bin has the same number of observations (or as close to that
+ *      as possible).
+ *    - cPSquare is a class that uses the P<sup>2</sup> algorithm by Jain
+ *      and Chlamtac. The algorithm calculates quantiles without storing
+ *      the observations.
+ *    - cKSplit uses a novel, experimental method, based on an adaptive
+ *      histogram-like algorithm.
  *
  * Transient and result accuracy detection classes:
  *   - cTDExpandingWindows is a transient detection algorithm which uses

@@ -40,7 +40,7 @@ class TOutVectorWindow;
  * A cOutVector object can write doubles to the output vector file
  * (or any another device determined by the current cOutputVectorManager).
  *
- * @ingroup SimSupport
+ * @ingroup Statistics
  */
 class SIM_API cOutVector : public cObject
 {
