@@ -35,7 +35,7 @@ else
 fi
 
 echo applying xslt stylesheet...
-xsltproc  --stringparam outputdir "$OUTDIR" --stringparam imagesxml "" $NEDDOC_XSL $TMPFILE || exit 1
+xsltproc  --stringparam outputdir "$OUTDIR" --stringparam imagesxml "$imagesxsl" $NEDDOC_XSL $TMPFILE || exit 1
 
 echo formatting comments...
 perl $NEDDOC_PL $OUTDIR/*.html || exit 1
