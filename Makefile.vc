@@ -5,16 +5,19 @@
 #=====================================================================
 
 #
-# Directories
+# Options
 #
 include configuser.vc
 
 MOPTS=/nologo
 MAKEFILE=/F Makefile.vc
 
-# fixme: ilib only needed if dlls are to be built
-ILIB=ilib
-#ILIB=
+# envir_ilib only needed if dlls are to be built
+!if "$(LIB_SUFFIX)"==".dll"
+ENVIR_ILIB=envir_ilib
+!else
+ENVIR_ILIB=
+!endif
 
 #=====================================================================
 #
@@ -36,7 +39,7 @@ components: libs progs install-local
 #
 #=====================================================================
 
-LIBS=$(ILIB) sim envir cmdenv tkenv
+LIBS=$(ENVIR_ILIB) sim envir cmdenv tkenv
 PROGS=utils nedc gned plove
 SAMPLES=dyna fddi fifo1 fifo2 hcube hist nim pvmex token demo
 
@@ -53,7 +56,7 @@ samples: $(SAMPLES)
 # Libraries
 #
 
-ilib:
+envir_ilib:
 	cd /d $(OMNETPP_SRC_DIR:/=\)\envir && $(MAKE) $(MOPTS) $(MAKEFILE) envir.ilib
 
 sim:
