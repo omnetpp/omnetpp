@@ -1,6 +1,8 @@
 2004-07-06  Andras Varga
 
-	* cmdenv.cc: fixed Speedometer usage
+	* cmdenv.cc: fixed Speedometer usage; added milliseconds to elapsed 
+	time. FIXME calculated + speedometer values don't correspond because
+	the two call ftime() independently
 
 2004-06-07  ------ omnetpp-3.0a5 released ------
 
