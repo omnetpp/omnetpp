@@ -114,11 +114,11 @@ class SIM_API cFSM : public cObject
   public:
     explicit cFSM(const char *name=NULL);
     cFSM(cFSM& vs) {setName(vs.name());operator=(vs);}
-    virtual const char *className()  {return "cFSM";}
+    virtual const char *className() const {return "cFSM";}
     virtual cObject *dup()   {return new cFSM(*this);}
     virtual void info(char *buf);
 
-    virtual const char *inspectorFactoryName() {return "cFSMIFC";}
+    virtual const char *inspectorFactoryName() const {return "cFSMIFC";}
     cFSM& operator=(cFSM& vs);
     virtual void writeContents(ostream& os);
     virtual int netPack();

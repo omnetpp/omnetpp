@@ -57,6 +57,7 @@ class SIM_API cObject
 {
     friend class cHead;
     friend class cIterator;
+    friend class const_cIterator;
     friend class cStaticFlag;
 
   protected:
@@ -94,7 +95,7 @@ class SIM_API cObject
     //
 
     // create a copy of `obj':
-    cObject(cObject& obj);
+    cObject(const cObject& obj);
 
     // create object with no name and default owner:
     cObject();
@@ -116,7 +117,7 @@ class SIM_API cObject
 
     // copies the object EXCEPT for the NAME string;
     //  derived classes are expected to define similar functions (e.g.cPar::operator=(cPar&))
-    cObject& operator=(cObject& o);
+    cObject& operator=(const cObject& o);
 
     //
     // Handling the name string member
@@ -126,20 +127,20 @@ class SIM_API cObject
     //
 
     void setName(const char *s)  {delete namestr; namestr=opp_strdup(s);}
-    const char *name()           {return namestr ? namestr : "";}
-    bool isName(const char *s)   {return !opp_strcmp(namestr,s);}
+    const char *name() const     {return namestr ? namestr : "";}
+    bool isName(const char *s) const {return !opp_strcmp(namestr,s);}
 
     // longer names composed of name()
-    virtual const char *fullName()     // "name[index]", e.g. "modem[5]"
+    virtual const char *fullName() const  // "name[index]", e.g. "modem[5]"
         {return name();}
-    virtual const char *fullPath();    // "comp.modem[5].baud-rate"
+    virtual const char *fullPath() const; // "comp.modem[5].baud-rate"
 
     //
     // Object ownership
     //
 
     // returns the owner of this object
-    cObject *owner()      {return ownerp;}
+    cObject *owner() const {return ownerp;}
 
     // make `newowner' the owner of this object
     void setOwner(cObject *newowner);
@@ -162,7 +163,7 @@ class SIM_API cObject
     //
 
     // return pointer to type string; must be redefined in derived classes!
-    virtual const char *className()  {return "cObject";}
+    virtual const char *className() const {return "cObject";}
 
     // put a one-line description of object into `buf':
     virtual void info(char *buf);
@@ -173,7 +174,7 @@ class SIM_API cObject
     virtual TInspector *inspector(int type, void *data);
 
     // return name of inspector factory object
-    virtual const char *inspectorFactoryName() {return "cObjectIFC";}
+    virtual const char *inspectorFactoryName() const {return "cObjectIFC";}
 
     // write out header + call writeContents():
     virtual void writeTo(ostream& os);

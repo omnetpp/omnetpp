@@ -64,14 +64,14 @@ class SIM_API cGate : public cObject
     virtual ~cGate() {}
 
     // redefined functions
-    virtual const char *className()  {return "cGate";}
+    virtual const char *className() const {return "cGate";}
     virtual cObject *dup()  {return new cGate(*this);}
-    virtual const char *inspectorFactoryName() {return "cGateIFC";}
+    virtual const char *inspectorFactoryName() const {return "cGateIFC";}
     virtual void forEach(ForeachFunc f);
     virtual void info(char *buf);
     cGate& operator=(cGate& gate);
-    virtual const char *fullName();
-    virtual const char *fullPath();
+    virtual const char *fullName() const;
+    virtual const char *fullPath() const;
     virtual void writeContents(ostream& os);
 
     // new functions
@@ -84,19 +84,19 @@ class SIM_API cGate : public cObject
     void setTo(cGate *g);
     void setOwnerModule(cModule *m, int gid);
 
-    bool isVector()        {return vectsize>=0;}
-    int index()            {return serno;}
-    int size()             {return vectsize<0?1:vectsize;}
-    char type()            {return typ;}
-    cModule *ownerModule() {return omodp;}
-    int id()               {return gateid;}
+    bool isVector() const  {return vectsize>=0;}
+    int index() const      {return serno;}
+    int size()  const      {return vectsize<0?1:vectsize;}
+    char type() const      {return typ;}
+    cModule *ownerModule() const {return omodp;}
+    int id() const         {return gateid;}
     cLinkType *link()      {return linkp;}
     cPar *delay()          {return delayp;}
     cPar *error()          {return errorp;}
     cPar *datarate()       {return dataratep;}
 
-    cGate *fromGate()      {return fromgatep;}
-    cGate *toGate()        {return togatep;}
+    cGate *fromGate() const {return fromgatep;}
+    cGate *toGate() const   {return togatep;}
 
     cGate *sourceGate();
     cGate *destinationGate();
@@ -107,7 +107,7 @@ class SIM_API cGate : public cObject
     void deliver(cMessage *msg);   // called by send() functions
 
     int routeContains(cModule *m, int g=-1);
-    bool isConnected();
+    bool isConnected() const;
     bool isRouteOK();
 
     // visualization/animation support

@@ -99,7 +99,7 @@
     public: \
       CLASSNAME(const char *name, cModule *parentmod, unsigned stk=STACK) : \
            BASECLASS(name, parentmod, stk) {} \
-      virtual const char *className()  {return #CLASSNAME;}
+      virtual const char *className() const {return #CLASSNAME;}
 
 
 #endif

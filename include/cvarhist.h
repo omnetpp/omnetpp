@@ -74,7 +74,7 @@ class SIM_API cVarHistogram : public cHistogramBase //--LG
     virtual ~cVarHistogram();
 
     // redefined functions
-    virtual const char *className()  {return "cVarHistogram";}
+    virtual const char *className() const {return "cVarHistogram";}
     virtual cObject *dup()    {return new cVarHistogram(*this);}
     cVarHistogram& operator=(cVarHistogram& res);
     virtual int netPack();

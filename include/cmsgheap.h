@@ -46,10 +46,10 @@ class SIM_API cMessageHeap : public cObject
     virtual ~cMessageHeap();
 
     // redefined functions
-    virtual const char *className()  {return "cMessageHeap";}
+    virtual const char *className() const {return "cMessageHeap";}
     virtual cObject *dup()  {return new cMessageHeap(*this);}
     virtual void info(char *buf);
-    virtual const char *inspectorFactoryName() {return "cMessageHeapIFC";}
+    virtual const char *inspectorFactoryName() const {return "cMessageHeapIFC";}
     virtual void forEach(ForeachFunc f);
     cMessageHeap& operator=(cMessageHeap& msgqueue);
     // no netPack() and netUnpack()

@@ -38,9 +38,9 @@ class SIM_API cPacket : public cMessage
        cMessage(name,MK_PACKET) {_protocol=protocol;_pdu=pdu;}
     cPacket (cPacket& m);
     virtual cObject *dup() {return new cPacket(*this);}
-    const char *className()  {return "cPacket";}
+    const char *className() const {return "cPacket";}
     cPacket& operator=(cPacket& m);
-    virtual const char *inspectorFactoryName() {return "cPacketIFC";}
+    virtual const char *inspectorFactoryName() const {return "cPacketIFC";}
     virtual void info(char *buf);
     virtual int netPack();
     virtual int netUnpack();

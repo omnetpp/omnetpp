@@ -57,7 +57,7 @@ class SIM_API cTransientDetection : public cObject
     virtual ~cTransientDetection()  {}
 
     // redefined functions
-    virtual const char *className()  {return "cTransientDetection";}
+    virtual const char *className() const {return "cTransientDetection";}
     virtual int netPack();
     virtual int netUnpack();
 
@@ -86,7 +86,7 @@ class SIM_API cAccuracyDetection : public cObject
     virtual ~cAccuracyDetection()  {}
 
     // redefined functions
-    virtual const char *className()  {return "cAccuracyDetection";}
+    virtual const char *className() const {return "cAccuracyDetection";}
     virtual int netPack();
     virtual int netUnpack();
 
@@ -131,7 +131,7 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
     virtual ~cTDExpandingWindows();
 
     // redefined functions
-    virtual const char *className()  {return "cTDExpandingWindows";}
+    virtual const char *className() const {return "cTDExpandingWindows";}
     cTDExpandingWindows& operator=(cTDExpandingWindows& res);
 
     // redefined cTransientDetection functions
@@ -173,7 +173,7 @@ class SIM_API cADByStddev : public cAccuracyDetection
     virtual ~cADByStddev()  {}
 
     // redefined functions
-    virtual const char *className()  {return "cADByStddev";}
+    virtual const char *className() const {return "cADByStddev";}
     cADByStddev& operator=(cADByStddev& res);
 
     // redefined cAccuracyDetection functions

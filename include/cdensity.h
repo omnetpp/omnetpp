@@ -82,10 +82,10 @@ class SIM_API cDensityEstBase : public cStdDev
     virtual ~cDensityEstBase();
 
     // redefined functions
-    virtual const char *className()  {return "cDensityEstBase";}
+    virtual const char *className() const {return "cDensityEstBase";}
     cDensityEstBase& operator=(cDensityEstBase& res);
     virtual void writeContents(ostream& os);
-    virtual const char *inspectorFactoryName() {return "cDensityEstBaseIFC";}
+    virtual const char *inspectorFactoryName() const {return "cDensityEstBaseIFC";}
     virtual int netPack();
     virtual int netUnpack();
     // dup() and inspector(..) not needed

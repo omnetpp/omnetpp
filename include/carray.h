@@ -47,10 +47,10 @@ class SIM_API cBag : public cObject
     virtual ~cBag()  {clear();}
 
     // redefined functions
-    virtual const char *className()  {return "cBag";}
+    virtual const char *className() const {return "cBag";}
     virtual cObject *dup()  {return new cBag(*this);}
     virtual void info(char *buf);
-    virtual const char *inspectorFactoryName()  {return "cBagIFC";}
+    virtual const char *inspectorFactoryName() const {return "cBagIFC";}
 
     virtual int netPack();
     virtual int netUnpack();
@@ -60,13 +60,16 @@ class SIM_API cBag : public cObject
 
     // new functions
     void clear();                    // delete whole contents
-    int items() {return lastused+1;} // number of objects contained
+    int items() const {return lastused+1;} // number of objects contained
     int add(void *obj);              // add a new item
     int addAt(int m, void *obj);     // add a new item at position m
-    int find(void *obj);             // index of an item (-1 if not found)
+    int find(void *obj) const;             // index of an item (-1 if not found)
     void *get(int m);                // get item by index
+    const void *get(int m) const;    // get item by index
     void *operator[](int m)          // act as a vector
           {return get(m);}
+    const void *operator[](int m) const // act as a vector
+      {return get(m);}
     bool isUsed(int m);              // see if item m exists or not
     void *remove(int m);             // get item; returns true if existed
 };
@@ -91,10 +94,10 @@ class SIM_API cArray : public cObject
     virtual ~cArray();
 
     // redefined functions
-    virtual const char *className()  {return "cArray";}
+    virtual const char *className() const {return "cArray";}
     virtual cObject *dup()  {return new cArray(*this);}
     virtual void info(char *buf);
-    virtual const char *inspectorFactoryName() {return "cArrayIFC";}
+    virtual const char *inspectorFactoryName() const {return "cArrayIFC";}
     virtual void forEach(ForeachFunc f);
     cArray& operator=(cArray& list);
 
@@ -102,20 +105,26 @@ class SIM_API cArray : public cObject
     virtual int netUnpack();
 
     // new functions
-    int items() {return last+1;}    // number of objects contained (at most)
+    int items() const {return last+1;}    // number of objects contained (at most)
     void clear();                   // delete whole contents
     int add(cObject *obj);          // add object at first free position
     int addAt(int m,cObject *obj);  // add object at given position
 
-    int find(cObject *obj);         // index of an item (-1 if not found)
-    int find(const char *objname);  // index of an item (-1 if not found)
+    int find(cObject *obj)const ;       // index of an item (-1 if not found)
+    int find(const char *objname) const;// index of an item (-1 if not found)
     cObject *get(int m);                // get item by index
     cObject *get(const char *objname);  // get item by name
+    const cObject *get(int m) const;          // get item by index
+    const cObject *get(const char *objname) const;  // get item by name
 
     cObject *operator[](int m)      // act as a vector
-       {return get(m);}
+      {return get(m);}
     cObject *operator[](const char *objname)  // indexable with name, too
-       {return get(objname);}
+      {return get(objname);}
+    const cObject *operator[](int m) const     // act as a vector
+      {return get(m);}
+    const cObject *operator[](const char *objname) const  // indexable with name, too
+      {return get(objname);}
 
     bool exist(int m)               // see if slot m used or not
       {return m>=0 && m<=last && vect[m]!=NULL;}

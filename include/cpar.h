@@ -128,10 +128,10 @@ class SIM_API cPar : public cObject
     virtual ~cPar();
 
     // redefined functions
-    virtual const char *className()  {return "cPar";}
+    virtual const char *className() const {return "cPar";}
     virtual cObject *dup()   {return new cPar(*this);}
     virtual void info(char *buf);
-    virtual const char *inspectorFactoryName() {return "cParIFC";}
+    virtual const char *inspectorFactoryName() const {return "cParIFC";}
     virtual void writeContents(ostream& os);
     cPar& operator=(cPar& otherpar);
     virtual int netPack();
@@ -254,10 +254,10 @@ class SIM_API cModulePar : public cPar
     virtual ~cModulePar();
 
     // redefined functions
-    virtual const char *className()  {return "cModulePar";}
+    virtual const char *className() const {return "cModulePar";}
     virtual cObject *dup()  {return new cPar(*this);}
-    virtual const char *inspectorFactoryName() {return "cModuleParIFC";}
-    virtual const char *fullPath();
+    virtual const char *inspectorFactoryName() const {return "cModuleParIFC";}
+    virtual const char *fullPath() const;
     cModulePar& operator=(cModulePar& otherpar);
 
     // redefined cPar function

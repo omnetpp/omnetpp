@@ -61,10 +61,10 @@ class SIM_API cWatch : public cObject
     cWatch(const char *name, double& d): cObject(name) {ptr=&d; type='d';}
     cWatch(const char *name, char* &s) : cObject(name) {ptr=&s; type='s';}
     cWatch(const char *name, cObject* &o) : cObject(name) {ptr=&o; type='o';}
-    virtual const char *className()  {return "cWatch";}
+    virtual const char *className() const {return "cWatch";}
     virtual cObject *dup()   {return new cWatch(*this);}
     virtual void info(char *buf);
-    virtual const char *inspectorFactoryName() {return "cWatchIFC";}
+    virtual const char *inspectorFactoryName() const {return "cWatchIFC";}
     cWatch& operator=(cWatch& vs)
           {ptr=vs.ptr;type=vs.type;return *this;}
     virtual void writeContents(ostream& os);

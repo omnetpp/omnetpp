@@ -106,11 +106,11 @@ class SIM_API cSimulation : public cObject
      virtual ~cSimulation();
 
      // redefined functions
-     virtual const char *className()  {return "cSimulation";}
-     virtual const char *inspectorFactoryName() {return "cSimulationIFC";}
+     virtual const char *className() const {return "cSimulation";}
+     virtual const char *inspectorFactoryName() const {return "cSimulationIFC";}
      virtual void forEach(ForeachFunc f);
      virtual void writeContents(ostream& os);
-     virtual const char *fullPath() {return name();}
+     virtual const char *fullPath() const {return name();}
 
      // new functions
      void setup();                      // things that cannot be done

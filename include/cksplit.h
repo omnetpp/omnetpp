@@ -100,7 +100,7 @@ class SIM_API cKSplit : public cDensityEstBase
     virtual ~cKSplit();
 
     // redefined functions
-    virtual const char *className()  {return "cKSplit";}
+    virtual const char *className() const {return "cKSplit";}
     virtual cObject *dup()   {return new cKSplit (*this);}
     cKSplit& operator=(cKSplit& res);
     virtual void writeContents(ostream& os);

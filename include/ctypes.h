@@ -118,7 +118,7 @@ class SIM_API cModuleInterface : public cObject
     virtual ~cModuleInterface();
 
     // redefined functions
-    virtual const char *className()  {return "cModuleInterface";}
+    virtual const char *className() const {return "cModuleInterface";}
     virtual cObject *dup()  {return new cModuleInterface(*this);}
     cModuleInterface& operator=(cModuleInterface& mi);
 
@@ -155,7 +155,7 @@ class SIM_API cModuleType : public cObject
     virtual ~cModuleType();
 
     // redefined functions
-    virtual const char *className()  {return "cModuleType";}
+    virtual const char *className() const {return "cModuleType";}
     virtual cObject *dup()     {return new cModuleType(*this);}
     cModuleType& operator=(cModuleType& mi);
 
@@ -182,7 +182,7 @@ class SIM_API cLinkType : public cObject
     virtual ~cLinkType()    {}
 
     // redefined functions
-    virtual const char *className()  {return "cLinkType";}
+    virtual const char *className() const {return "cLinkType";}
     virtual cObject *dup()     {return new cLinkType(*this);}
     cLinkType& operator=(cLinkType& o);
 
@@ -206,7 +206,7 @@ class SIM_API cNetworkType : public cObject
     virtual ~cNetworkType() {}
 
     // redefined functions
-    virtual const char *className()  {return "cNetworkType";}
+    virtual const char *className() const {return "cNetworkType";}
 };
 
 //==========================================================================
@@ -224,7 +224,7 @@ class SIM_API cFunctionType : public cObject
     virtual ~cFunctionType() {}
 
     // redefined functions
-    virtual const char *className()  {return "cFunctionType";}
+    virtual const char *className() const {return "cFunctionType";}
 };
 
 cFunctionType *findfunctionbyptr(MathFunc f);
@@ -242,7 +242,7 @@ class SIM_API cClassRegister : public cObject
     virtual ~cClassRegister() {}
 
     // redefined functions
-    virtual const char *className()  {return "cClassRegister";}
+    virtual const char *className() const {return "cClassRegister";}
 
     // new functions
     cObject *createOne()  {return creatorfunc();}
@@ -262,7 +262,7 @@ class SIM_API cInspectorFactory : public cObject
     virtual ~cInspectorFactory() {}
 
     // redefined functions
-    virtual const char *className()  {return "cInspectorFactory";}
+    virtual const char *className() const {return "cInspectorFactory";}
 
     // new functions;
     TInspector *createInspectorFor(cObject *object,int type,void *data);

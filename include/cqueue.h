@@ -59,10 +59,10 @@ class SIM_API cQueue : public cObject
     virtual ~cQueue();
 
     // redefined functions
-    virtual const char *className()  {return "cQueue";}
+    virtual const char *className() const {return "cQueue";}
     virtual cObject *dup()  {return new cQueue(*this);}
     virtual void info(char *buf);
-    virtual const char *inspectorFactoryName() {return "cQueueIFC";}
+    virtual const char *inspectorFactoryName() const {return "cQueueIFC";}
     virtual void forEach(ForeachFunc f);
     virtual int netPack();
     virtual int netUnpack();

@@ -67,8 +67,8 @@ class SIM_API cNetMod : public cModule
     virtual ~cNetMod() {}
 
     // redefined functions
-    virtual const char *className()  {return "cNetMod";}
-    virtual const char *inspectorFactoryName() {return "cNetModIFC";}
+    virtual const char *className() const {return "cNetMod";}
+    virtual const char *inspectorFactoryName() const {return "cNetModIFC";}
 
     // redefined cModule functions
     virtual bool isSimple() {return false;}

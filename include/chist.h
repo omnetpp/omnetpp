@@ -38,7 +38,7 @@ class SIM_API cHistogramBase : public cDensityEstBase
     virtual ~cHistogramBase();
 
     // redefined functions
-    virtual const char *className()  {return "cHistogramBase";}
+    virtual const char *className() const {return "cHistogramBase";}
     cHistogramBase& operator=(cHistogramBase& res);
     virtual int netPack();
     virtual int netUnpack();
@@ -67,7 +67,7 @@ class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
     explicit cEqdHistogramBase(const char *name=NULL, int numcells=10);
 
     // redefined functions
-    virtual const char *className()  {return "cEqdHistogramBase";}
+    virtual const char *className() const {return "cEqdHistogramBase";}
     cEqdHistogramBase& operator=(cEqdHistogramBase& res);
     virtual int netPack();
     virtual int netUnpack();
@@ -100,7 +100,7 @@ class SIM_API cLongHistogram : public cEqdHistogramBase
     virtual ~cLongHistogram();
 
     // redefined functions
-    virtual const char *className()  {return "cLongHistogram";}
+    virtual const char *className() const {return "cLongHistogram";}
     virtual cObject *dup()    {return new cLongHistogram(*this);}
     virtual int netPack();
     virtual int netUnpack();
@@ -126,7 +126,7 @@ class SIM_API cDoubleHistogram : public cEqdHistogramBase
     virtual ~cDoubleHistogram();
 
     // redefined functions
-    virtual const char *className()  {return "cDoubleHistogram";}
+    virtual const char *className() const  {return "cDoubleHistogram";}
     virtual cObject *dup()  {return new cDoubleHistogram(*this);}
     virtual int netPack();
     virtual int netUnpack();

@@ -42,6 +42,7 @@ class  cInspectorFactory;
 
 class SIM_API cHead : public cObject
 {
+       friend class const_cIterator;
        friend class cIterator;
        friend class cObject;
    public:
@@ -50,8 +51,8 @@ class SIM_API cHead : public cObject
        virtual ~cHead()  {deleteChildren();}
 
        // redefined functions
-       virtual const char *className()  {return "cHead";}
-       virtual const char *inspectorFactoryName()  {return "cHeadIFC";}
+       virtual const char *className() const {return "cHead";}
+       virtual const char *inspectorFactoryName() const {return "cHeadIFC";}
        virtual void forEach(ForeachFunc f);
 
        // new functions
@@ -73,6 +74,19 @@ class SIM_API cIterator
       cObject *operator()()    {return p;}
       bool end()               {return (bool)(p==NULL);}
       cObject *operator++(int) {cObject *t=p; if(p) p=p->nextp; return t;}
+};
+
+
+class SIM_API const_cIterator
+{
+ private:
+  const cObject *p;
+ public:
+  const_cIterator(const cObject& h)    {p = &h ? h.firstchildp : NO(cObject);}
+  void init(const cObject& h)    {p = &h ? h.firstchildp : NO(cObject);}
+  const cObject *operator()() const {return p;}
+  bool end() const               {return (bool)(p==NULL);}
+  const cObject *operator++(int) {const cObject *t=p; if(p) p=p->nextp; return t;}
 };
 
 //==========================================================================

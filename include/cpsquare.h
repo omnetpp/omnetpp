@@ -43,7 +43,7 @@ class SIM_API cPSquare : public cDensityEstBase
     virtual ~cPSquare();
 
      // redefined functions
-    virtual const char *className()  {return "cPSquare";}
+    virtual const char *className() const {return "cPSquare";}
     virtual cObject *dup()   {return new cPSquare(*this);}
     cPSquare& operator=(cPSquare& res);
     virtual int netPack();

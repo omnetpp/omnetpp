@@ -40,9 +40,9 @@ class SIM_API cStatistic : public cObject
     virtual ~cStatistic()  {}
 
     // redefined functions
-    virtual const char *className()  {return "cStatistic";}
+    virtual const char *className() const {return "cStatistic";}
     cStatistic& operator=(cStatistic& res);
-    virtual const char *inspectorFactoryName() {return "cStatisticIFC";}
+    virtual const char *inspectorFactoryName() const {return "cStatisticIFC";}
     virtual int netPack();
     virtual int netUnpack();
 
@@ -99,7 +99,7 @@ class SIM_API cStdDev : public cStatistic
     virtual ~cStdDev() {}
 
     // redefined functions
-    virtual const char *className()  {return "cStdDev";}
+    virtual const char *className() const {return "cStdDev";}
     virtual cObject *dup() {return new cStdDev(*this);}
     virtual void info(char *buf);
     cStdDev& operator=(cStdDev& res);
@@ -143,7 +143,7 @@ class SIM_API cWeightedStdDev : public cStdDev
     virtual ~cWeightedStdDev() {}
 
     // redefined functions
-    virtual const char *className()  {return "cWeightedStdDev";}
+    virtual const char *className() const {return "cWeightedStdDev";}
     virtual cObject *dup() {return new cWeightedStdDev(*this);}
     cWeightedStdDev& operator=(cWeightedStdDev& res);
     virtual int netPack();

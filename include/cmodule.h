@@ -139,13 +139,13 @@ class SIM_API cModule : public cObject
     virtual ~cModule() {}
 
     // redefined functions
-    virtual const char *className()  {return "cModule";}
+    virtual const char *className() const {return "cModule";}
     virtual cObject *dup();
     virtual void forEach(ForeachFunc f);
-    virtual const char *inspectorFactoryName() {return "cModuleIFC";}
+    virtual const char *inspectorFactoryName() const {return "cModuleIFC";}
     cModule& operator=(cModule& mod);
-    virtual const char *fullName();       // "name[12]" (in a static buffer!)
-    virtual const char *fullPath();       // "sys.m[3].name[12]" (static buff!)
+    virtual const char *fullName() const;       // "name[12]" (in a static buffer!)
+    virtual const char *fullPath() const;       // "sys.m[3].name[12]" (static buff!)
 
     // setting up the module
     virtual void setId(int n);              // set module id
@@ -170,9 +170,9 @@ class SIM_API cModule : public cObject
     bool isOnLocalMachine();
 
     // if this module is in a module vector:
-    bool isVector()             {return vectsize>=0;}
-    int index()                 {return idx;}
-    int size()                  {return vectsize<0?1:vectsize;}
+    bool isVector() const       {return vectsize>=0;}
+    int index() const           {return idx;}
+    int size() const            {return vectsize<0?1:vectsize;}
 
     // submodule access:
     int findSubmodule(const char *submodname, int idx=-1);  // returns module id (-1 on error)
@@ -180,11 +180,13 @@ class SIM_API cModule : public cObject
     cModule *moduleByRelativePath(const char *path);        // find sub-sub-...-modules
 
     // module gates
-    int gates() {return gatev.items();}             // total num of gates
+    int gates() const {return gatev.items();}             // total num of gates
     cGate *gate(int g) {return (cGate*)gatev[g];}   // gate by id
+    const cGate *gate(int g) const {return (const cGate*)gatev[g];}   // gate by id
     cGate *gate(const char *gatename,int sn=-1);    // gate by name & index
-    int findGate(const char *gatename, int sn=-1);  // id of a gate (-1 on error)
-    bool hasGate(const char *gatename, int sn=-1) {return findGate(gatename,sn)>=0;} // check if gate exists
+    const cGate *gate(const char *gatename,int sn=-1) const;    // gate by name & index
+    int findGate(const char *gatename, int sn=-1) const;  // id of a gate (-1 on error)
+    bool hasGate(const char *gatename, int sn=-1) const {return findGate(gatename,sn)>=0;} // check if gate exists
 
     bool checkInternalConnections();      // true means OK; called from NEDC code
 
@@ -270,10 +272,10 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     virtual ~cSimpleModule();
 
     // redefined functions
-    virtual const char *className()  {return "cSimpleModule";}
+    virtual const char *className() const {return "cSimpleModule";}
     virtual cObject *dup()  {return new cSimpleModule(*this);}
     virtual void info(char *buf);
-    virtual const char *inspectorFactoryName() {return "cSimpleModuleIFC";}
+    virtual const char *inspectorFactoryName() const {return "cSimpleModuleIFC";}
     cSimpleModule& operator=(cSimpleModule& mod);
     virtual void forEach(ForeachFunc f);
 
@@ -351,7 +353,7 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     void wait(simtime_t time);        // waits 'time' units
     void end();                       // ends this module
     void endSimulation();             // finish the whole simulation
-    void error(const char *fmt,...);  // user error message
+    void error(const char *fmt,...) const;  // user error message
 
     //// access putaside-queue -- soon!
     //virtual cQueue& putAsideQueue();
@@ -386,10 +388,10 @@ class SIM_API cCompoundModule : public cModule
     virtual ~cCompoundModule();
 
     // redefined functions
-    virtual const char *className()  {return "cCompoundModule";}
+    virtual const char *className() const {return "cCompoundModule";}
     virtual cObject *dup()   {return new cCompoundModule(*this);}
     virtual void info(char *buf);
-    virtual const char *inspectorFactoryName()  {return "cCompoundModuleIFC";}
+    virtual const char *inspectorFactoryName() const {return "cCompoundModuleIFC";}
     cCompoundModule& operator=(cCompoundModule& mod);
 
     // redefined cModule functions

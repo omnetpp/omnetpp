@@ -65,10 +65,10 @@ class SIM_API cLinkedList : public cObject
     virtual ~cLinkedList();
 
     // redefined functions
-    virtual const char *className()  {return "cLinkedList";}
+    virtual const char *className() const  {return "cLinkedList";}
     virtual cObject *dup()  {return new cLinkedList(*this);}
     virtual void info(char *buf);
-    virtual const char *inspectorFactoryName() {return "cLinkedListIFC";}
+    virtual const char *inspectorFactoryName() const {return "cLinkedListIFC";}
     virtual int netPack();
     virtual int netUnpack();
     cLinkedList& operator=(cLinkedList& queue);

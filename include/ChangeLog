@@ -1,4 +1,36 @@
-Mar 10, 2001
- - The include/ directory was created. (Header files were formerly in src/sim;
-   if you're interested in earlier changes, refer to src/sim/ChangeLog.)
------- omnetpp-2.1 released ------
+2001-06-20  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
+
+	* carray.h (): const patches
+	* cdensity.h (): const patches
+	* cdetect.h (): const patches
+	* cfsm.h (): const patches
+	* cgate.h (): const patches
+	* chead.h (): const patches
+	* chist.h (): const patches
+	* cksplit.h (): const patches
+	* cllist.h (): const patches
+	* cmessage.h (): const patches
+	* cmodule.h (): const patches
+	* cmsgheap.h (): const patches
+	* cnetmod.h (): const patches
+	* cobject.h (): const patches
+	* coutvect.h (): const patches
+	* cpacket.h (): const patches
+	* cpar.h (): const patches
+	* cpsquare.h (): const patches
+	* cqueue.h (): const patches
+	* csimul.h (): const patches
+	* cstat.h (): const patches
+	* ctopo.h (): const patches
+	* ctypes.h (): const patches
+	* cvarhist.h (): const patches
+	* cwatch.h (): const patches
+	* macros.h (): const patches
+
+
+2001-03-10 Andras Varga
+	* ------ omnetpp-2.1 released ------
+
+	* The include/ directory was created. (Header files were formerly
+	in src/sim; if you're interested in earlier changes, refer to
+	src/sim/ChangeLog.)

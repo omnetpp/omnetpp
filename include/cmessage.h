@@ -97,10 +97,10 @@ class SIM_API cMessage : public cObject
     virtual ~cMessage();
 
     // redefined functions
-    virtual const char *className()  {return "cMessage";}
+    virtual const char *className() const {return "cMessage";}
     virtual cObject *dup()  {return new cMessage(*this);}
     virtual void info(char *buf);
-    virtual const char *inspectorFactoryName() {return "cMessageIFC";}
+    virtual const char *inspectorFactoryName() const {return "cMessageIFC";}
     virtual void forEach( ForeachFunc do_fn );
     virtual void writeContents(ostream& os);
     cMessage& operator=(cMessage& msg);
@@ -137,7 +137,7 @@ class SIM_API cMessage : public cObject
     cPar& addPar(cPar& p)  {parList().add(&p); return p;} // DEPRECATED
     cPar& par(int n);                                   // get parameter by index
     cPar& par(const char *s);                           // get parameter by name
-    int findPar(const char *s);                         // get index of parameter, -1 if doesn't exist
+    int findPar(const char *s) const;                   // get index of parameter, -1 if doesn't exist
     bool hasPar(const char *s) {return findPar(s)>=0;}  // check if parameter exists
 
     // message encapsulation
@@ -146,19 +146,19 @@ class SIM_API cMessage : public cObject
     cMessage *encapsulatedMsg() {return encapmsg;}
 
     // sending/arrival information
-    cGate *senderGate();                      // return NULL if scheduled
-    cGate *arrivalGate();                     //    or unsent message
+    cGate *senderGate() const;                // return NULL if scheduled
+    cGate *arrivalGate() const;               //    or unsent message
 
-    int senderModuleId()  {return frommod;}   // source module
-    int senderGateId()    {return fromgate;}  //    "   gate
-    int arrivalModuleId() {return tomod;}     // destination
-    int arrivalGateId()   {return togate;}    //    "   gate
+    int senderModuleId() const {return frommod;}   // source module
+    int senderGateId() const   {return fromgate;}  //    "   gate
+    int arrivalModuleId() const {return tomod;}    // destination
+    int arrivalGateId() const  {return togate;}    //    "   gate
 
-    simtime_t creationTime() {return created;} // creation time
-    simtime_t sendingTime()  {return sent;}    // sending time
-    simtime_t arrivalTime()  {return delivd;}  // delivery time
+    simtime_t creationTime() const {return created;} // creation time
+    simtime_t sendingTime()  const {return sent;}    // sending time
+    simtime_t arrivalTime()  const {return delivd;}  // delivery time
 
-    bool arrivedOn(int g) {return g==togate;}  // arrived on gate g?
+    bool arrivedOn(int g) const {return g==togate;}  // arrived on gate g?
     bool arrivedOn(const char *s, int g=0);    // arrived on gate s[g]?
 
     // message appearance in Tkenv

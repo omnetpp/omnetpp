@@ -126,10 +126,10 @@ class SIM_API cTopology : public cObject
     virtual ~cTopology();
 
      // redefined functions
-     virtual const char *className()  {return "cTopology";}
+     virtual const char *className() const {return "cTopology";}
      virtual cObject *dup()     {return new cTopology(*this);}
      virtual void info(char *buf);
-     virtual const char *inspectorFactoryName() {return "cTopologyIFC";}
+     virtual const char *inspectorFactoryName() const {return "cTopologyIFC";}
 
      virtual int netPack();
      virtual int netUnpack();

@@ -48,7 +48,7 @@ class SIM_API cOutFileMgr : public cObject
     virtual ~cOutFileMgr();
 
     // redefined functions
-    virtual const char *className()  {return "cOutFileMgr";}
+    virtual const char *className() const {return "cOutFileMgr";}
 
     // new functions
     void setFileName(const char *s);
@@ -109,10 +109,10 @@ class SIM_API cOutVector : public cObject
 
     // redefined functions
     virtual void setName(const char *name);
-    virtual const char *className()  {return "cOutVector";}
+    virtual const char *className() const {return "cOutVector";}
     virtual cObject *dup()    {return new cOutVector(*this);}
     virtual void info(char *buf);
-    virtual const char *inspectorFactoryName() {return "cOutVectorIFC";}
+    virtual const char *inspectorFactoryName() const {return "cOutVectorIFC";}
     // no operator=()
 
     // new functions
