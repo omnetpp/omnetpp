@@ -33,7 +33,6 @@ struct InspTypeName {int code; char *namestr;} insp_typenames[] =
      { INSP_DEFAULT,          "(default)"     },
      { INSP_OBJECT,           "As Object"     },
      { INSP_GRAPHICAL,        "As Graphics"   },
-     { INSP_CONTAINER,        "As Container"  },
      { INSP_MODULEOUTPUT,     "Module output" },
      { -1,                     NULL           }
 };

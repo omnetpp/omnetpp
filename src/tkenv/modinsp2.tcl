@@ -194,7 +194,7 @@ proc draw_submod {c submodptr name dispstr i n default_layout} {
                if {$rx==""} {set rx [expr ($sx+$sy)*$n/4]}
                set ry [lindex $tags(p) 4]
                if {$ry==""} {set ry $rx}
-               set x [expr $x + $rx + $rx*sin($i*6.2832/$n)]
+               set x [expr $x + $rx - $rx*sin($i*6.2832/$n)]
                set y [expr $y + $ry - $ry*cos($i*6.2832/$n)]
            }
            e -

@@ -1,3 +1,10 @@
+2002-11-24 Andras Varga
+
+	* modinsp.tcl: with "ring" layout, changed order of modules
+	from clockwise to the more natural counter-clockwise
+
+	* bugfix: cHead could not be inspected
+
 2002-11-12 Andras Varga
 
 	* ported to Tk8.4 (several 'char *' to 'const char *' changes)

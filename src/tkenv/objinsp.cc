@@ -119,7 +119,8 @@ class TContainerInspectorFactory : public cInspectorFactory
 
     double qualityAsDefault(cObject *object) {
         if (dynamic_cast<cArray *>(object) || dynamic_cast<cQueue *>(object) ||
-            dynamic_cast<cMessageHeap *>(object) || dynamic_cast<cHead *>(object)
+            dynamic_cast<cMessageHeap *>(object) || dynamic_cast<cHead *>(object) ||
+            dynamic_cast<cSimulation *>(object)
            )
             return 2.0;
         else

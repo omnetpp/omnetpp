@@ -306,7 +306,7 @@ proc module_windows {} {
          "Open trace window for simple modules:" \
          {Module output} \
          "modules [opp_object_systemmodule] deep simpleonly"
-    # set w [opp_inspect [opp_object_systemmodule] {As Container} ds]
+    # set w [opp_inspect [opp_object_systemmodule] {(default)} ds]
     # $w.buttons.type config -text modulewindow
 }
 
@@ -318,14 +318,14 @@ proc message_windows {} {
 
 proc clear_windows {} {
     # implements Trace|Clear windows...
-    # also called back from C++ code 
+    # also called back from C++ code
     # FIXME: should delete the contents of all text windows!!!
     .main.text delete 1.0 end
 }
 
 proc inspect_anyobject {} {
     # implements Inspect|Any simulation object...
-    opp_inspect [opp_object_simulation] {As Container} d
+    opp_inspect [opp_object_simulation] {(default)} d
 }
 
 proc inspect_matching {} {
@@ -405,19 +405,19 @@ proc inspect_messagequeue {} {
 #}
 
 proc inspect_networks {} {
-    opp_inspect [opp_object_networks] {As Container}
+    opp_inspect [opp_object_networks] {(default)}
 }
 
 proc inspect_moduletypes {} {
-    opp_inspect [opp_object_moduletypes] {As Container}
+    opp_inspect [opp_object_moduletypes] {(default)}
 }
 
 proc inspect_channeltypes {} {
-    opp_inspect [opp_object_channeltypes] {As Container}
+    opp_inspect [opp_object_channeltypes] {(default)}
 }
 
 proc inspect_functions {} {
-    opp_inspect [opp_object_functions] {As Container}
+    opp_inspect [opp_object_functions] {(default)}
 }
 
 proc simulation_options {} {

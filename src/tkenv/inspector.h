@@ -24,7 +24,6 @@
 enum { INSP_DEFAULT,
        INSP_OBJECT,
        INSP_GRAPHICAL,
-       INSP_CONTAINER,
        INSP_MODULEOUTPUT,
        NUM_INSPECTORTYPES   // this must be the last one
 };
