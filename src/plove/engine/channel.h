@@ -30,26 +30,63 @@ class Channel
     private:
         // note: a Channel should *never* hold a pointer back to its Ports
         // because ports may be copied after having been assigned to channels
-        // (e.g. in VectorFileReader which uses std::vector)
-        bool nomorewrites;
+        // (e.g. in VectorFileReader which uses std::vector). Node ptrs are OK.
         std::deque<Datum> buffer;
+        Node *producernode;
         Node *consumernode;
+        bool producerfinished;
+        bool consumerfinished;
     public:
-        Channel() {nomorewrites=false;consumernode=NULL;}
+        Channel();
         ~Channel() {}
+
+        Node *producerNode() const {return producernode;}
+        void setProducerNode(Node *node) {producernode = node;}
 
         Node *consumerNode() const {return consumernode;}
         void setConsumerNode(Node *node) {consumernode = node;}
 
+        /**
+         * Returns ptr to the first buffered data item (next one to be read), or NULL
+         */
         const Datum *peek() const;
-        void write(Datum *a, int n);
-        int read(Datum *a, int max);
-        void flush() {buffer.clear();}
-        bool closing()  {return nomorewrites;}
-        bool eof()  {return nomorewrites && length()==0;}
-        void close()  {nomorewrites=true;}
 
-        /** Number of buffered items */
+        /**
+         * Writes an array.
+         */
+        void write(Datum *a, int n);
+
+        /**
+         * Reads into an array. Returns number of items actually stored.
+         */
+        int read(Datum *a, int max);
+
+        /**
+         * Returns true if producer has already called close() which means
+         * there won't be any more data except those already in the buffer
+         */
+        bool closing()  {return producerfinished;}
+
+        /**
+         * Returns true if close() has been called and there's no buffered data
+         */
+        bool eof()  {return producerfinished && length()==0;}
+
+        /**
+         * Called by the producer to declare it will not write any more --
+         * if also there's no more buffered data (length()==0), that means EOF.
+         */
+        void close()  {producerfinished=true;}
+
+        /**
+         * Called when consumer has finished. Causes channel to ignore
+         * further writes (discard any data written).
+         */
+        void consumerClose() {buffer.clear();consumerfinished=true;}
+
+        /**
+         * Number of currently buffered items.
+         */
         int length() {return buffer.size();}
 };
 

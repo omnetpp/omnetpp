@@ -61,6 +61,7 @@ void DataflowManager::connect(Port *src, Port *dest)
 
     src->setChannel(ch);
     dest->setChannel(ch);
+    ch->setProducerNode(src->node());
     ch->setConsumerNode(dest->node());
 }
 
@@ -90,18 +91,25 @@ void DataflowManager::execute()
     // check all nodes have finished now
     for (int i=0; i<nodes.size(); i++)
         if (!nodes[i]->finished())
-            throw new Exception("execute: deadlock: node %s not finished but also not ready "
-                                "(maybe its source node(s) forgot to close the channel?)",
+            throw new Exception("execute: deadlock: no ready nodes but node %s not finished",
                                 nodes[i]->nodeType()->name());
 
     // check all channel buffers are empty
     for (int j=0; j<channels.size(); j++)
-        if (channels[j]->length()>0 || !channels[j]->closing())
-            throw new Exception("execute: all nodes finished but channel %d not closing or still buffering data", j);
+        if (!channels[j]->eof())
+            throw new Exception("execute: all nodes finished but channel %d not at eof", j);
 }
 
 Node *DataflowManager::selectNode()
 {
+    // FIXME todo:
+    // if node says it's finished():
+    // - call consumerClose() on its input channels (they'll ignore futher writes then);
+    // - call close() on its output channels
+    // - set state flag in node to FINISHED (so that we won't need to keep asking it)
+    // FIXME todo: remove all close(), closeAtEof(), flush() etc calls from nodes
+    //
+
     // if a channel has buffered too much, try to schedule its consumer node
     int nc = channels.size();
     for (int j=0; j!=nc; j++)

@@ -19,6 +19,12 @@
 #include "channel.h"
 
 
+Channel::Channel()
+{
+    consumernode = producernode = NULL;
+    consumerfinished = producerfinished = false;
+}
+
 const Datum *Channel::peek() const
 {
     if (buffer.size()==0)
@@ -29,6 +35,7 @@ const Datum *Channel::peek() const
 
 int Channel::read(Datum *a, int max)
 {
+    ASSERT(!consumerfinished);
     int n = buffer.size();
     if (n>max)
         n = max;
@@ -42,7 +49,9 @@ int Channel::read(Datum *a, int max)
 
 void Channel::write(Datum *a, int n)
 {
-    ASSERT(!nomorewrites);
+    ASSERT(!producerfinished);
+    if (consumerfinished)
+        return;  // discard data if consumer finished
     for (int i=0; i<n; i++)
         buffer.push_back(a[i]);
 }
