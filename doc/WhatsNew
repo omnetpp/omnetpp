@@ -14,7 +14,7 @@ doc/GPLElect for the background of these changes.
 Major archievements of this release are:
 - message subclassing made first-class citizen
 
-- extensive refactoring of the simulation kernel (backwards compatibility
+- extensive refactoring of the simulation kernel (backward compatibility
   was no.1 concern, so very few models will have to be changed to work
   with 2.3);
 
@@ -24,11 +24,11 @@ Major archievements of this release are:
 - more complete support for MSVC
 
 In addition to those above, many big and small changes have been done to 
-improve usability of the toolkit. Let's see it in details!
+improve usability of the toolkit:
 
 Simulation kernel refactoring:
 - on Windows, now Win32 native coroutines are used (Fibers API). This change
-  made it possible to introduce C++ exceptions, see next item.
+  made introduction of C++ exceptions possible, see next item.
 
 - error handling in simulation kernel (and in other libs too) changed to C++
   exceptions. This not only resulted in cleaner kernel code, but also has
@@ -40,14 +40,13 @@ Simulation kernel refactoring:
     immediately even when called from handleMessage(). (In earlier versions,
     handleMessage() had to go through in any case.)
   * you can now safely use C++ libraries that throw exceptions, e.g. STL.
-  * bottom line: stock Cygwin gcc is no longer usable (see later)
   Methods like cSimpleModule::error() and opp_error() remained for backwards
   compatibility (deprecated), but they simply throw cException. opp_warning()
   remained but its use is discouraged, see src/sim/ChangeLog for details.
 
-- use of C++ RTTI (Run-time Type Information). Consequences are that you can
+- use of C++ RTTI (Run-time Type Information). From now on, you can
   use dynamic_cast<> in your code, and you don't need to provide a className()
-  method in your classes (because we can figure it out using typeid in the 
+  method in your classes (because the kernel can figure it out using typeid in the 
   base class, cObject).
 
 - eliminated gcc 3.0.x warnings
@@ -771,8 +770,6 @@ has been replaced by the [Cmdenv]/runs-to-execute option and the
 Check the version.log files for the numerous other changes. Many bugfixes
 and code cleanups were made.
 
-Refman.doc is out of date, sorry! I'll try to catch up.
-
 ----------
-Andras Varga
+Copyright (C) 2002 Andras Varga
 

@@ -3,127 +3,208 @@ Compatibility Notes
 
 This file summarizes the changes in OMNeT++ across releases that affect
 backwards compatibility, to help you port models to more recent versions
-of OMNeT++. New features are not listed only changes in existing features.
+of OMNeT++.
+
+NEW FEATURES ARE NOT COVERED HERE -- SEE WHATSNEW INSTEAD.
 
 Legend:
-(!!!) incompatible change
- (!)  incompatible but minor change (change on a rarely used feature)
- (x)  method/class became deprecated (possibly with a better replacement feature
-      becoming available), or a method/class was renamed and a corresponding 
-      compatibility #define was added ('#define oldname newname')
- (-)  deprecated method/class or compatibility #define removed
- (o)  feature became obsolete
+(+)  	new feature
+(!!!) 	incompatible change (old code will not compile or work as previously)
+(!)  	incompatible but minor change (change on a rarely used feature)
+(-)  	method/class became deprecated (possibly with a better replacement feature
+     	becoming available), or a method/class was renamed and a corresponding 
+     	compatibility #define was added ('#define oldname newname')
+(x)  	removed a deprecated method, class or compatibility #define
+(i)  	information
 
-TBD!!!!!!!!!!!
 
-Changes in version 2.3b1 (Jan 13, 2003)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-- because of the introduction of C++ exception handling, methods like end(), 
-endSimulation() and deleteModule() as well as any runtime error cause
-handleMessage() to exit immediately. (In earlier versions, handleMessage() 
-went through in any case.)
+OMNeT++ 2.3b1 (Jan 13, 2003)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Simulation library:
+(+)	exceptions are used throughout the simulation library to signal
+	errors
 
-- rarely-used methods cSimpleModule::error(), opp_error() and opp_warning()
-are deprecated; they will be removed at some point in the future.
+(+)	new distributions: continuous distributions gamma_d(), beta(),
+ 	erlang_k(), chi_square(), student_t(), cauchy(), triang(),
+ 	lognormal(), weibull(), pareto_shifted(); discrete distributions
+ 	bernoulli(), binomial(), geometric(), negbinomial(), hypergeometric(),
+ 	poisson(). [contributed by Werner Sandmann]
+	
+(-)	deprecated genk_* functions.
 
-- redefining className() in your classes is now redundant (because the 
-simulation kernel is now compiled with C++ RTTI turned on, and so 
-cObject::className() can do the job).
+(+)	cWatch now supports 'bool'
 
-- several smaller auxiliary classes were made inner classes to their 'main'
-  classes. (Examples: cQueueIterator --> cQueue::Iterator, sTopoNode -->
-  cTopology::Node, etc; full list in include/ChangeLog.) Compatibility typedefs
-  exist for old names.
+(+)	new method waitAndEnqueue() added to cSimpleModule -- this function
+	should be used instead of wait() in places where messages may arrive
+	at the module during the wait interval. (see next items)
+	
+(!)	use wait() ONLY where you do NOT expect other messages to arrive
+	at the module, and receiveOn() only where you expect the mext message
+	to arrive on the specified gate. In a later release, wait() will
+	throw an error if a message arrives to it (or, with receiveOn(),
+	if the message arrives on the wrong gate), assuming it's an error
+	in the model logic. Where necessary, replace wait() with
+	waitAndEnqueue(). putAsideQueue will be removed some time
+	in the future (see next item).
 
-- refactoring on dynamic module creation: instead of modtype->buildInside(mod),
-  one should now write mod->buildInside(), which is more natural.
-  (Former syntax still works -- a cModuleType::buildInside() is still provided
-  for backward compatibility). buildInside() delegates task to doBuildInside()
-  (a new method), so it's doBuildInside() which should be redefined in
-  subclasses, and also nedc generates now doBuildInside() code.
+(-)	deprecated putAsideQueue. putAsideQueue has been only used 
+	by the methods wait(), receiveOn() (and receiveNewOn()). 
+	It stored "wrong" messages (that arrive during the wait period
+	or not on the specified gate). Because of putAsideQueue, the receive()
+	methods had to have 2 versions: receive..() and receiveNew..().
 
-- container objects are now more consistent in what they do when the requested
-  object doesn't exist:
-  * Convention 1: methods returning an object reference (e.g. cPar&) now
-    always throw an exception if the object is not found. (Until now, some
-    methods issued a warning and returned null reference, i.e. *(cPar*)NULL).
-  * Convention 2: methods returning a pointer (e.g. cGate*) return NULL
-    pointer if the object is not found. (Until now, some methods issued
-    a warning and returned NULL pointer.)
-  These conventions necessitated the following changes:
-  * par() of cModule and cMessage now throws an exception if parameter was not
-    found. (Check for existence of a parameter before accessing it can now be
-    replaced with try..catch if you want!)
-  * cModule: cGate *gate() methods no longer issue a warning if the
-    gate is not found, just return NULL.
-  * cArray::remove(cObject *) and cQueue::remove(cObject *) methods
-    now return NULL instead of the original pointer if the object was
-    not found.
+	Practice has shown that the usefulness of putAsideQueue was marginal,
+	its purpose was more often misunderstood than not, its implicit use
+	by wait() and the message receiving functions was highly error-prone.
+	It also bloated the API (receiveNew functions wouldn't have been
+	needed without it). On the other hand, it is easy to provide the needed
+	behavior of wait() using waitAndEnqueue(), or a loop with receive().
+	putAsideQueue will be removed at some point in the future. 
 
-- cSimulation changes:
-  * lastModuleIndex() renamed to lastModuleId();
-  * operator[] deprecated (use module(int) method instead)
-  * del() renamed to deleteModule(); add() renamed to addModule()
+(!)	do not use the receiveNew..() functions as they will be made 
+	redundant when putAsideQueue goes away.
 
-- channels are now represented by real objects (subclassed from cChannel) 
-  rather than parameters in cGate. Channels can be assigned to connections 
-  via cGate's setChannel() method; at the same time, DEPRECATED cGate's 
-  setDelay(), setError(), setDatarate(), setLink() methods (these attributes 
-  should be set on the channel object).
+(+)	added ev.flush(), although in most cases using the autoflush=yes/no
+	ini file option is a better idea
 
-- cSubModIterator: operator[] deprecated (use operator()(int) method instead)
+(-)	cSimplemodule: deprecated phase() (nobody really used it)
 
-- For further, more internal changes and for more details on the above changes
-  see include/ChangeLog and src/sim/ChangeLog.
+(+)	added macro Define_Function2
 
-- cGate: added isConnectedOutside() and isConnectedInside() utility methods;
-added connectTo() method, and DEPRECATED setFrom() and setTo()
+(+)	added check_and_cast<T>(cObject *p) template function --
+	it can be used to assert that a pointer is of the given T type.
+	It does dynamic_cast<T> and throws exception if the result is NULL
+	(ie. pointer types are incompatible). Useful with message subclassing.
 
-- cMessage: added convenience methods for attaching objects to a message:
-addObject(), getObject(), hasObject(), removeObject(). 
+(+)	because of the introduction of C++ exception handling, methods like end(), 
+	endSimulation() and deleteModule() as well as any runtime error cause
+	handleMessage() to exit immediately. (In earlier versions, handleMessage() 
+	went through in any case.)
 
-- changed MSVC flags!!!
-   Tested with MSVC 6.0 and Cygwin/gcc-2.95.3-5. With MSVC, one needs
-   to compile every source using /GR, otherwise Tkenv crashes (RTTI
-   exception)!
+(-)	rarely-used methods cSimpleModule::error(), opp_error() and opp_warning()
+	were deprecated; they will be removed at some point in the future.
 
-Cmdenv:
-- obsoleted omnetpp.ini entries: display-update=, verbose-simulation=.
+(!!!)	MSVC compile flags change: exception handling and RTTI MUST be ON from now.
+	You must compile EVERY source using /GR, otherwise Tkenv will crash
+	with RTTI exception!
 
-- introduced express-mode=yes/no (default: no) switch, with meaning similar
-  to Tkenv (non-express mode: detailed information printed; express mode:
-  only periodic status updates)
+(!) 	redefining className() in your classes is now not necessary (because the 
+	simulation kernel is now compiled with C++ RTTI turned on, and so 
+	cObject::className() can do the job).
 
-- in normal mode (express-mode=no), the following ini file entries are
-  taken into account:
-  * module-messages=yes/no (default: yes)
-       printing module ev<< output on/off (as before)
-  * event-banners=yes/no (default: yes)
-       printing event banners on/off; replaces verbose-simulation=
+(!)	several smaller auxiliary classes were made inner classes to their 'main'
+  	classes. (Examples: cQueueIterator --> cQueue::Iterator, sTopoNode -->
+	cTopology::Node, etc; full list in include/ChangeLog.) Compatibility
+	typedefs exist for old names but they will be removed at some point
+	in the future.
 
-- in express mode, following entries are used:
-  * status-frequency=<integer> (default: 100000)
-        print status update every n events (on today's computers, and for a 
-        typical simulation model, this will produce an update perhaps in every 
-        few seconds)
-  * performance-display=yes/no (default: yes)
-        print detailed (2-line) performance status
+(!)	refactoring on dynamic module creation: instead of modtype->buildInside(mod),
+	one should now write mod->buildInside(), which is more natural.
+	(Former syntax still works -- a cModuleType::buildInside() is still provided
+	for backward compatibility). buildInside() delegates task to doBuildInside()
+	(a new method), so it's doBuildInside() which should be redefined in
+	subclasses, and also nedc generates now doBuildInside() code.
 
-Tkenv:
-- with "ring" layout, changed display order of modules from clockwise to the
-  more natural counter-clockwise
+(i)	container objects are now more consistent in what they do when the requested
+	object doesn't exist:
+	  * Convention 1: methods returning an object reference (e.g. cPar&) now
+	    always throw an exception if the object is not found. (Until now, some
+	    methods issued a warning and returned null reference, i.e. *(cPar*)NULL).
+	  * Convention 2: methods returning a pointer (e.g. cGate*) return NULL
+	    pointer if the object is not found. (Until now, some methods issued
+	    a warning and returned NULL pointer.)
+	These conventions necessitated some changes (see next items):
 
-Envir:
-- filemgrs.cc: added fname-append-host=true/false ini file setting.
-  When turned on, appends the host name to the names of the output
-  files (output vector, output scalar, snapshot files). This is
-  useful when the simulation is run on multiple machines concurrently
-  (parallel independent runs (Akaroa) or parallel/distributed simulation),
-  and all running instances write to the same directory (e.g. shared
-  via NFS mount). [Idea from Steffen Sroka's Akaroa extension]
+(!)	par() of cModule and cMessage now throws an exception if parameter was not
+	found. (Check for existence of a parameter before accessing it can now be
+    	replaced with try..catch if you want!)
 
-	* added akoutvectormgr.h/cc: integrated Steffen Sroka's Akaroa
-	extension that supports multiple independent replicated simulation runs.
+(!)	cModule: cGate *gate() methods no longer issue a warning if the gate is not
+	found, just return NULL.
+
+(!)	cArray::remove(cObject *) and cQueue::remove(cObject *) methods now
+	return NULL instead of the original pointer if the object was
+	not found.
+
+(!)	cSimulation changes: lastModuleIndex() renamed to lastModuleId();
+	del() renamed to deleteModule(); add() renamed to addModule()
+
+(-)	cSimulation: operator[] deprecated (use module(int) method instead
+	to access a module by id)
+
+(+)	channels are now represented by real objects (subclassed from cChannel) 
+	rather than parameters in cGate. Channels can be assigned to connections 
+	via cGate's setChannel() method;
+
+(-)	deprecated cGate's setDelay(), setError(), setDatarate(), setLink()
+	methods (these attributes should be now set on the channel object).
+
+(-)	cSubModIterator: operator[] deprecated (use operator()(int) method instead)
+
+(+)	cGate: added isConnectedOutside() and isConnectedInside() utility methods
+
+(+)	cGate: added connectTo() method (setFrom() and setTo() got deprecated,
+	see next item)
+
+(-)	deprecated cGate's setFrom() and setTo() methods (use connectTo() instead)
+
+(+)	cMessage: added convenience methods for attaching objects to a message:
+	addObject(), getObject(), hasObject(), removeObject(). 
+
+User interfaces:
+(!)	Cmdenv: obsoleted omnetpp.ini entries: display-update=, verbose-simulation=;
+	they should be replaced with simplified and more powerful options,
+	see next item:
+
+(+)	Cmdenv: introduced express-mode=yes/no (default: no) switch, with
+	meaning similar	to Tkenv (non-express mode: detailed information printed;
+	express mode: only periodic status updates).
+
+(+)	Cmdenv: in normal mode (express-mode=no), the following new ini file
+	entries	are understood:
+	  module-messages=yes/no (default: yes)
+	       printing module ev<< output on/off (as before)
+	  event-banners=yes/no (default: yes)
+	       printing event banners on/off; replaces verbose-simulation=
+
+(+)	Cmdenv: in express mode, following new entries are supported:
+	  status-frequency=<integer> (default: 100000)
+	        print status update every n events (on today's computers, and for a 
+	        typical simulation model, default value will produce an update perhaps
+	        in every few seconds)
+	  performance-display=yes/no (default: yes)
+	        print detailed (2-line) performance status
+
+(+)	Cmdenv: new ini file option: autoflush=yes/no (default: no).
+	Causes fflush(stdout) to be called after each output (event banner,
+	status update, ev<< output, etc). This affects both express and normal mode.
+
+(+)	Cmdenv: new ini file option: message-trace=yes/no (default: no).
+	This causes logging each message sending (by send(),scheduleAt(), etc)
+	and message delivery on the standard output; effective only in normal mode.
+
+(i)	Tkenv: with "ring" layout, changed display order of modules from
+	clockwise to the more natural counter-clockwise
+
+(!)	changed positioning of vector modules with display string "p=x,y"
+	(that is, with position, but no explicit layout parameter).
+	"p=x,y" now ALWAYS means "p=x,y,exact", that is, the module is placed
+	at (x,y). Before, "p=x,y" meant "p=x,y,row" or "p=x,y,ring" (where "row
+	or ring" is a default layout) if the module was in a vector, and this
+	caused counterintuitive	displacements if a module was placed individually,
+	because a (dx,dy) shift coming from the layout was superponed onto the
+	position (x,y)).
+
+(+)	Envir (Cmdenv+Tkenv): added fname-append-host=true/false ini file setting.
+	When turned on, appends the host name to the names of the output
+	files (output vector, output scalar, snapshot files). This is
+	useful when the simulation is run on multiple machines concurrently
+	(parallel independent runs (Akaroa) or parallel/distributed simulation),
+	and all running instances write to the same directory (e.g. shared
+	via NFS mount). [Idea from Steffen Sroka's Akaroa extension]
+
+(+)	Envir (Cmdenv+Tkenv): integrated Steffen Sroka's Akaroa	extension
+	that supports multiple independent simulation runs.
 	Akaroa can be activated by specifying
 	  [General]
 	  outputvectormanager-class=AkOutputVectorManager
@@ -133,67 +214,68 @@ Envir:
 	For more info see the Akaroa home page and the OMNeT++ documentation.
 
 
-Changes in version 2.0b3 (Jan 18, 2000)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+OMNeT++ 2.2 (May 2002)
+~~~~~~~~~~~~~~~~~~~~~~
+(+)	The simulation kernel was made const-correct; because of this, older code
+	may need changes (especially where one didn't use the Module_Class_Members()
+	macro to define module classes.)
+	
+(!)	cModule's display string methods were reorganized:
+	the displayString(int type) method was split into displayString()
+	and displayStringAsParent(), eliminating the type parameter. Similar change
+	was made to the set...() methods. (Old methods remained but are now
+	deprecated.)
 
-In OMNeT++ 2.0b3, some changes were made to the simulation library which
-are not compatible with previous versions. These changes are believed to
-improve the quality of the simulation library, and I apologize for the 
-inconvenience...
+(+)	New methods: opp_nextrand(long& seed); opp_strlen(..);
+	opp_strprettytrunc(..); opp_mkindexedname(..) (the latter was formerly
+	called indexedname()).
 
-You can check src/sim/ChangeLog for more explanation on these changes;
-otherwise, just read on to learn what you should do to upgrade your existing
-code.
+(+)	fullName() no longer uses a static buffer; with fullPath(),
+	it is possible to avoid static buffers by using the new
+	fullPath(buffer,buflen) method.
 
-Find/replace (case sensitive, whole words only):
-  isA --> className  (cObject method)
-  isbad --> hasBitError  (cMessage method)
-  isgood --> !hasbitError  (cMessage method)
-  setError --> setBitError (cMessage method)
-  insertHead --> insert (cQueue method)
-  peekTail --> tail (cQueue method)
-  peekHead --> head (cQueue method)
-  get --> remove  (cQueue method -- be sure to leave alone other get()'s!)
-  getTail --> pop
-
-cQueue::getHead() was removed, you must rewrite the code manually:
-  q.getHead() --> q.remove(q.head())
-
-If you used cPar::setValue():
-  You must manually remove the first argument (the type char), and 
-  change the function name to setStringValue(..), setLongValue(..), 
-  setBoolValue(..), etc.
-
-If you used cPar's indirection functions:
-  redirection handling functions were changed to: setRedirection(cPar*),
-  isRedirected(), cPar* redirection(), cancelRedirection().
-  You have to update the code.
-
-You might rewrite your code to use the new convenience functions:
-  cMessage::hasPar(char*), cModule::hasPar(char*), cModule::hasGate(char*,int)
-
-If you used cPar constructors which assigned an initial value:
-  These constructors were removed. Rewrite the code to use setXXXValue() or
-  assignment. For example:
-          cPar address("address") = "152.66.77.88";
-  Existing client code like
-          msg->addPar( *new cPar("dest", 'L', dest );
-  can be rewritten as:
-          msg->addPar( *new cPar("dest") = dest );
-  or better as:
-           msg->addPar("dest") = dest;
-
-Math expressions using cPar now need explicit casts:
-  Expressions like
-     msg->par("count")+1
-  which used to compile now cause error ("too many possible conversions")
-  and must be disambiguated by adding explicit casts like this:
-     (int)msg->par("count")+1.
-
-cArray functions now take and return cObject _pointers_ instead of references.
-
-Remember to re-generate the *_n.cc files from the .ned files!
-  Type make clean; make ...
+(+)	In NED, an expression may now refer to a submodule parameter with the
+	following syntax: submod.par or submod[index].par. The index
+	may not be an expression itself.
 
 
---Andras
+OMNeT++ 2.1 (May 2001)
+OMNeT++ 2.0 patch 1 (March 2001)
+OMNeT++ 2.0 (February 2001)
+OMNeT++ 2.0b5 (June 2000)
+	No changes affecting code portability across versions.
+
+
+OMNeT++ 2.0b4 (May 2000)
+~~~~~~~~~~~~~~~~~~~~~~~~
+Simulation library:
+(!)	The source was made 'const char *'-correct
+
+(-)	deprecated TRUE/FALSE: the C++ true/false keywords should be used instead
+
+(+)	multi-stage module initialization support via cModule's
+	initialize(int stage) and int numInitStages() functions.
+
+(+)	the send...() functions now have versions which take cGate* pointers.
+
+(+)	sum() and sqrSum() members added to the statistics classes (cStdDev and
+	subclasses)
+
+(+)	isNumeric() member added to cPar
+
+(+)	remove(cObject *) added to cArray.
+
+(+)	functions added to cModule to facilitate navigating the module hierarchy:
+	int findSubmodule(...), cModule *submodule(...) and
+	cModule *moduleByRelativePath(...).
+
+User interfaces:
+(+)	you may link more than one user interfaces into the simulation
+	executable, and select one at runtime with the
+	[General]/user-interface=Tkenv (or =Cmdenv) ini file option or the -u Tkenv
+	(or -u Cmdenv) command-line argument to the simulation executable.
+
+(+)	The per-module extra stack size needed by the user interface libraries
+	can now be configured from the ini file: [Cmdenv]/extra-stack= and
+	[Tkenv]/extra-stack= options.
+

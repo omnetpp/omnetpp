@@ -7,7 +7,13 @@ This graph shows the CVS branch history.
 
   Main Trunk            Branches
 
-        ^                                      ^  ^     ^                              ^
+        ^
+        |
+        |
+   omnetpp-2_3b1 <---------------------------------------------------------------------|
+        |                                                                              |
+        |                                     (dead)  (dead)                           |
+        |                                      ^  ^     ^                              |
         |                                      |  |     |                              |
         |                                      |  |     |                              |
   merge-omnetpp-2_2p3 <-----------------------------omnetpp-2_2p3 >--bless-aix-patches-|
