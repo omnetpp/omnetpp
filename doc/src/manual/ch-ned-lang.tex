@@ -46,8 +46,8 @@ NED language are:
 \begin{verbatim}
   import channel endchannel simple endsimple module endmodule
   error delay datarate const parameters gates submodules connections
-  gatesizes on if for do endfor network endnetwork nocheck
-  ref ancestor true false like input numeric string bool char
+  gatesizes if for do endfor network endnetwork nocheck
+  ref ancestor true false like input numeric string bool char xml xmldoc
 \end{verbatim}
 
 
@@ -150,19 +150,15 @@ is the channel bandwidth in bits/second, used for calculating
 transmission time of a packet. The attributes can appear
 in any order.
 
-The values must be constants, or expressions that do not contain
-external references (e.g. names of module parameters).
-If you assign a random-valued expression (e.g. \ttt{truncnormal(0.005,0.001)}),
-it will be evaluated and a new random number generated for each
-packet transmission.
+The values should be constants.
 
 Example:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\tbf{channel} DialUpConnection
-    \tbf{delay} normal (0.004, 0.0018)
-    \tbf{error} 0.00001
-    \tbf{datarate} 14400
+\tbf{channel} LeasedLine
+    \tbf{delay} 0.0018  // sec
+    \tbf{error} 1e-8
+    \tbf{datarate} 128000  // bit/sec
 \tbf{endchannel}
 \end{Verbatim}
 
@@ -207,12 +203,13 @@ Parameters are identified by names.
 By convention, parameter names begin with lower-case letters.
 
 Parameters are declared by listing their names in the
-parameters:\index{module!simple!parameter declaration} section of a
+parameters:\index{module!parameter declaration} section of a
 module description. The parameter type can optionally be specified as
 \fpar[ned!keywords!numeric]{numeric}, \fpar[ned!keywords!numeric const]{numeric const}
 (or simply \fpar[ned!keywords!const]{const}),
 \fpar[ned!keywords!bool]{bool}, \fpar[ned!keywords!string]{string}, or
-\fpar[ned!keywords!anytype]{anytype}.
+\fpar[ned!keywords!xml]{xml}. (The last one, \ttt{xml} makes external XML files
+accessible to modules.)
 
 
 Example:
@@ -220,7 +217,7 @@ Example:
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{simple} TrafficGen
     \tbf{parameters}:
-        interArrivalTime,
+        interarrivalTime,
         numOfMessages : \tbf{const},
         address : \tbf{string};
     \tbf{gates}: //...
@@ -229,7 +226,7 @@ Example:
 
 If the parameter type is omitted, \fpar[ned!keywords!numeric]{numeric}
 is assumed. Practically, this means that you only need to explicitly
-specify the type for string, bool or char-valued parameters.
+specify the type for string, bool or xml-valued parameters.
 
 Note that the actual parameter values are given later, when the module
 is used as a building block of a compound module type or as a system
@@ -245,7 +242,7 @@ When you declare a parameter to be \fpar[ned!keywords!const]{const},
 it will be evaluated and replaced by the resulting constant value
 at the beginning of the simulation. This can be important when the
 original value was a random number\index{random!number} or an
-expression\index{ned!expression}. One is advised to write out the
+expression\index{ned!expression}. One is advised to write the
 \fpar[ned!keywords!const]{const} keyword for each parameter that
 should be constant.
 
@@ -278,7 +275,7 @@ contains a number of single gates.
 Gates are declared by listing their names in the
 \fpar[ned!keywords!gates]{gates:} section of a module description. An
 empty bracket pair [] denotes a gate vector\index{gate!vector}.
-Elements of the vector are numbered starting with zero.
+Elements of the vector are numbered from zero.
 
 Examples:
 
