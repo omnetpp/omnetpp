@@ -316,7 +316,7 @@ proc selectOrMoveStart {c x y ctrl} {
        } else {
            selectItem $key
        }
-       set mouse(mode) ""
+       set mouse(mode) "nothing"
 
     } elseif {$ned($key,selected) && [llength [selectedItems]]>=2} {
 
@@ -440,6 +440,10 @@ proc selectOrMoveStart {c x y ctrl} {
            set mouse(tweaked-items)  {}
            set mouse(conns-to-redraw) {}
        }
+       "nothing" {
+           set mouse(tweaked-items)  {}
+           set mouse(conns-to-redraw) {}
+       }
        default {
            error "unknown mouse mode $mouse(mode)"
        }
@@ -537,6 +541,10 @@ proc selectOrMoveDrag {c x y} {
           }
           _redrawArrow $c $key
        }
+    } elseif {$mouse(mode) == "nothing"} {
+       # nothing
+    } else {
+       error "unknown mouse mode $mouse(mode)"
     }
 
     foreach key $mouse(conns-to-redraw) {
@@ -601,8 +609,13 @@ proc selectOrMoveEnd {c x y} {
               selectItem $key
           }
        }
+    } elseif {$mouse(mode) == "nothing"} {
+       # nothing
+    } else {
+       error "unknown mouse mode $mouse(mode)"
     }
 }
+
 
 
 # drawStart --
