@@ -1,0 +1,7 @@
+Various NED demos
+=================
+
+Topologies: 
+  chain, mesh, star, hexagonal grid, full graph, random graph, binary tree
+
+Edit omnetpp.ini to select the demo you want to run.
