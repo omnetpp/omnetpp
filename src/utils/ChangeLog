@@ -84,4 +84,5 @@
   - version.log renamed to ChangeLog
   - cleanup: removed a number of old scripts
   - tcl2c.c moved here
-
+July 17, 1999
+  - seedtool help text changed
