@@ -1,0 +1,48 @@
+%description:
+Tests that ev<< output gets printed in Cmdenv, even unterminated lines.
+
+%module: {Module}
+
+class {Module} : public cSimpleModule
+{
+    Module_Class_Members({Module},cSimpleModule,32768)
+    virtual void activity();
+    virtual void finish();
+};
+
+Define_Module({Module});
+
+void {Module}::activity()
+{
+    ev << "activity line 1" << endl;
+    ev << "activity line 2\n";
+    ev << "activity line 3" << endl;
+    ev << "activity line 4\n";
+    ev << "activity unterminated line";
+}
+
+void {Module}::finish()
+{
+    ev << "finish line 1" << endl;
+    ev << "finish line 2\n";
+    ev << "finish line 3" << endl;
+    ev << "finish line 4\n";
+    ev << "finish unterminated line";
+}
+
+%exitcode: 1
+
+%contains-regex: stdout
+activity line 1
+activity line 2
+activity line 3
+activity line 4
+activity unterminated line.*
+finish line 1
+finish line 2
+finish line 3
+finish line 4
+finish unterminated line
+
+
+
