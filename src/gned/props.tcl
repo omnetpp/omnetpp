@@ -21,9 +21,10 @@ proc editProps {key} {
     global ned
 
     tk_messageBox -icon warning -type ok -title GNED \
-       -message "Nope. Until I update the dialogs to work with the new\
+       -message "Editing dialogs not ready yet. Sorry!\
+                 Until I finish updating the TCL code to work with the new\
                  internal data structure, you can use the NED source view\
-                 if you want to edit parameters, gates etc."
+                 if you want to edit module parameters, gates etc."
     return
 
     if {$ned($key,type)=="module"} {

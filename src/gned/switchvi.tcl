@@ -195,34 +195,4 @@ proc okToLoseChanges {msg} {
 }
 
 
-# deleteModuleData --
-#
-# Private proc for switchToGraphics.
-#
-# $key must be a top-level item. This proc is a simplified version
-# of deleteItem. Here we don't care about deleting graphics stuff
-# from the canvas (because the whole canvas will be cleared anyway),
-# and recursive deletion of data is also simplified (we don't need to
-# care about deleting 'related items' (ned(*,*-ownerkey)) because
-# such relations only occur within a module.
-#
-proc deleteModuleData {key} {
-   global ned
-
-   # delete children recursively
-   foreach childkey $ned($key,childrenkeys) {
-      deleteModuleData $childkey
-   }
-
-   # - deleting non-child linked objects omitted
-   # - deleting item from canvas is omitted
-   # - potentially closing the canvas is omitted
-   # - unlink from parent omitted
-
-   # delete from array
-   foreach i [array names ned "$key,*"] {
-      unset ned($i)
-   }
-}
-
 

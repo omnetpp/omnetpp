@@ -15,14 +15,11 @@ Data struct change:
 
 Drawing:
 - arrow.cc was modified!!! update in Tkenv!!!
-- when editing, order of blocks should be enforced!
-   e.g. parameters:, gates:, submodules:, connections: sohuld come in this order
 - if canvas is scrolled, mouse selection works with wrong positions
 - shift+click leaves a dot on canvas
 - paste does not work between canvases
 
 Load/save:
-- fileClose very slow
 - save: for canvases switched to text, it should save the text version (not good!)
 - load: if there's a parse error, load the whole stuff into a "scratch" text-mode canvas?
 

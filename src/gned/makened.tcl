@@ -167,7 +167,10 @@ proc generate_network {key indent islast} {
     appendBannerComment out $ned($key,banner-comment) $indent
     appendTo out "${indent}network $ned($key,name) : $ned($key,type-name)" nonewline
     appendRightComment out $ned($key,right-comment)
-    appendTo out [generateChildren $key $indent] nonewline
+
+    appendTo out [generateChildrenWithType $key substmachines $indent] nonewline
+    appendTo out [generateChildrenWithType $key substparams $indent] nonewline
+
     appendTo out "${indent}endnetwork" nonewline
     appendTrailingComment out $ned($key,trailing-comment) ""
     return $out
@@ -179,7 +182,11 @@ proc generate_simple {key indent islast} {
     appendBannerComment out $ned($key,banner-comment) $indent
     appendTo out "${indent}simple $ned($key,name)" nonewline
     appendRightComment out $ned($key,right-comment)
-    appendTo out [generateChildren $key $indent] nonewline
+
+    appendTo out [generateChildrenWithType $key machines $indent] nonewline
+    appendTo out [generateChildrenWithType $key params $indent] nonewline
+    appendTo out [generateChildrenWithType $key gates $indent] nonewline
+
     appendTo out "${indent}endsimple" nonewline
     appendTrailingComment out $ned($key,trailing-comment) ""
     return $out
@@ -191,7 +198,13 @@ proc generate_module {key indent islast} {
     appendBannerComment out $ned($key,banner-comment) $indent
     appendTo out "${indent}module $ned($key,name)" nonewline
     appendRightComment out $ned($key,right-comment)
-    appendTo out [generateChildren $key $indent] nonewline
+
+    appendTo out [generateChildrenWithType $key machines $indent] nonewline
+    appendTo out [generateChildrenWithType $key params $indent] nonewline
+    appendTo out [generateChildrenWithType $key gates $indent] nonewline
+    appendTo out [generateChildrenWithType $key submods $indent] nonewline
+    appendTo out [generateChildrenWithType $key conns $indent] nonewline
+
     set dispstr [makeModuleDispStr $key]
     if {$dispstr!=""} {
         # HACK: the "display:" line uses indent of "parameters:" line
@@ -288,7 +301,9 @@ proc generate_submod {key indent islast} {
     appendTo out ";" nonewline
     appendRightComment out $ned($key,right-comment)
 
-    appendTo out [generateChildren $key $indent] nonewline
+    appendTo out [generateChildrenWithType $key substmachines $indent] nonewline
+    appendTo out [generateChildrenWithType $key substparams $indent] nonewline
+    appendTo out [generateChildrenWithType $key gatesizes $indent] nonewline
 
     set dispstr [makeSubmoduleDispStr $key]
     if {$dispstr!=""} {

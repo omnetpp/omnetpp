@@ -110,11 +110,11 @@ proc getNodeInfo {w op {key {}}} {
 
       text {
         if [info exist ned($key,name)] {
-          return "$key:$ned($key,type) $ned($key,name)"
-          # return "$ned($key,type) $ned($key,name)"
+          # return "$key:$ned($key,type) $ned($key,name)"
+          return "$ned($key,type) $ned($key,name)"
         } else {
-          return "$key:$ned($key,type)"
-          # return "$ned($key,type)"
+          # return "$key:$ned($key,type)"
+          return "$ned($key,type)"
         }
       }
 
@@ -237,6 +237,9 @@ proc defaultPopup {key} {
 
     foreach i {
       {command -command "displayCodeForItem $key" -label {Show NED fragment...} -underline 0}
+      {separator}
+      {command -command "moveUpItem $key; updateTreeManager" -label {Move up} -underline 5}
+      {command -command "moveDownItem $key; updateTreeManager" -label {Move down} -underline 5}
       {separator}
       {command -command "deleteItem $key; updateTreeManager" -label {Delete}}
     } {

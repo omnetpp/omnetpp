@@ -155,7 +155,6 @@ proc create_omnetpp_window {} {
       {check -variable gned(autocheck) -label {Auto check module consistency} -underline 0}
       {separator}
       {command -command optionsViewFile -label {View/edit file...} -underline 0}
-      {command -command optionsTCLConsole -label {TCL console} -underline 0}
     } {
       eval $w.menubar.optionsmenu add $i
     }

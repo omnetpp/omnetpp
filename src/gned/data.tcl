@@ -420,36 +420,102 @@ proc checkArray {} {
    }
 }
 
+
 proc markNedfileOfItemDirty {key} {
     global ned
 
     # seach up until nedfile item
     while {$ned($key,type)!="nedfile"} {
-       set key $ned($key,parentkey)
+        set key $ned($key,parentkey)
     }
 
     # mark nedfile dirty
     if {$ned($key,dirty)==0} {
-       set ned($key,dirty) 1
-       updateTreeManager
+        set ned($key,dirty) 1
+        updateTreeManager
     }
 }
 
+
 proc nedfileIsDirty {key} {
-   global ned
+    global ned
 
-   if {$ned($key,type)!="nedfile"} {error "internal error in nedfileIsDirty"}
+    if {$ned($key,type)!="nedfile"} {error "internal error in nedfileIsDirty"}
 
-   return $ned($key,dirty)
+    return $ned($key,dirty)
 }
+
 
 proc nedfileClearDirty {key} {
-   global ned
+    global ned
 
-   if {$ned($key,type)!="nedfile"} {error "internal error in nedfileIsDirty"}
+    if {$ned($key,type)!="nedfile"} {error "internal error in nedfileIsDirty"}
 
-   set ned($key,dirty) 0
+    set ned($key,dirty) 0
 
-   updateTreeManager
+    updateTreeManager
 }
+
+
+proc deleteNedfile {nedfilekey} {
+    global ned
+
+    # guard against openUnnamedCanvas (called from destroyCanvas)
+    set ned($nedfilekey,being-deleted) 1
+
+    # close all related canvases
+    foreach key $ned($nedfilekey,childrenkeys) {
+        set ned($key,being-deleted) 1
+        set canv_id [canvasIdFromItemKey $key]
+        if {$canv_id!=""} {
+            destroyCanvas $canv_id
+        }
+    }
+    set canv_id [canvasIdFromItemKey $nedfilekey]
+    if {$canv_id!=""} {
+        destroyCanvas $canv_id
+    }
+
+    # delete from parent (root)
+    set root $ned($nedfilekey,parentkey)
+    set pos [lsearch -exact $ned($root,childrenkeys) $nedfilekey]
+    set ned($root,childrenkeys) [lreplace $ned($root,childrenkeys) $pos $pos]
+
+    # delete from array
+    deleteModuleData $nedfilekey
+}
+
+
+# deleteModuleData --
+#
+# used by switchToGraphics and deleteNedfile.
+#
+# $key must be a top-level item (not only a module). This proc is
+# a simplified version of deleteItem:
+#  o  deleting graphics stuff from the canvas is omitted
+#     (callers are supposed to clear the whole canvas manually)
+#  o  recursive deletion of data is also simplified
+#     (we don't need to care about deleting 'related items' (like
+#     ned(*,*-ownerkey)) because such relations do not occur between
+#     top-level items)
+#
+proc deleteModuleData {key} {
+    global ned
+
+    # delete children recursively
+    foreach childkey $ned($key,childrenkeys) {
+        deleteModuleData $childkey
+    }
+
+    # - deleting non-child linked objects omitted
+    # - deleting item from canvas is omitted
+    # - potentially closing the canvas is omitted
+    # - unlink from parent omitted
+
+    # delete from array
+    foreach i [array names ned "$key,*"] {
+        unset ned($i)
+    }
+}
+
 

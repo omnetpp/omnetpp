@@ -36,6 +36,7 @@ proc fileNewComponent {type} {
    set nedfilekey $ned($curmodkey,parentkey)
 
    set key [addItem $type $nedfilekey]
+   markNedfileOfItemDirty $key
 
    if {$type=="module"} {
        openModuleOnNewCanvas $key
@@ -137,7 +138,7 @@ proc fileCloseNedfile {{nedfilekey {}}} {
    if [nedfileIsDirty $nedfilekey] {
        if {$ned($nedfilekey,unnamed)} {
           set reply [tk_messageBox -title "Last chance" -icon warning -type yesno \
-                -message "File not saved yet. Save it now?"]
+                -message "Unnamed file not saved yet. Save it now?"]
           if {$reply=="yes"} fileSave
        } else {
           set fname $ned($nedfilekey,filename)
@@ -149,7 +150,7 @@ proc fileCloseNedfile {{nedfilekey {}}} {
    }
 
    # delete from memory
-   deleteItem $nedfilekey
+   deleteNedfile $nedfilekey
    updateTreeManager
 }
 
@@ -159,32 +160,36 @@ proc fileCloseCanvas {} {
 }
 
 proc fileExit {} {
-   global gned
+   global ned
 
-   # scan for unsaved files call fileCloseNedfile for them
-puts "dbg: fileExit is incomplete!"
-   for {set canv_id 1} {$canv_id<=$gned(canvas_lastid)} {incr canv_id} {
-      if {[info exist canvas($canv_id,canvas)]} {
-         if {$canvas($canv_id,changed)} {
-            if {$gned(canvas_id)!=$canv_id} {switchToCanvas $canv_id}
-            fileClose
-         }
-      }
+   # close all ned files
+   foreach key $ned(0,childrenkeys) {
+       if $ned($key,dirty) {
+           fileCloseNedfile $key
+       }
    }
    opp_exit
 }
 
 proc editCut {} {
+
+   tk_messageBox -title "GNED" -icon info -type ok -message "NED clipboard doesn't work yet. Sorry."
+   return
+
    editCopy
    deleteSelected
 }
 
 proc editCopy {} {
+
+   tk_messageBox -title "GNED" -icon info -type ok -message "NED clipboard doesn't work yet. Sorry."
+   return
+
    global clipboard_ned ned
 
    set selection [selectedItems]
 
-   # accept only submodules and connections whose both end will be copied
+   # accept only submodules and connections whose both ends will be copied
    set keys {}
    foreach key $selection {
       if {$ned($key,type)=="submod"} {
@@ -204,6 +209,10 @@ proc editCopy {} {
 }
 
 proc editPaste {} {
+
+   tk_messageBox -title "GNED" -icon info -type ok -message "NED clipboard doesn't work yet. Sorry."
+   return
+
    global clipboard_ned ned gned canvas
 
    deselectAllItems
@@ -232,10 +241,10 @@ proc editDelete {} {
 
 proc editCheck {} {
    tk_messageBox -title "GNED" -icon warning -type ok \
-                 -message "Not implemented yet. Here we should check that \
-                           submodule parameters and gates are consistent \
-                           with earlier module declarations, and offer
-                           to make automatic corrections."
+                 -message "Consistency Check not implemented yet.\
+                           It should check that submodule parameters and gates\
+                           are consistent with earlier module declarations and offer\
+                           making automatic corrections."
 }
 
 #proc optionsLoadBackground {} {
@@ -285,68 +294,15 @@ proc optionsViewFile {} {
     }
 }
 
-proc optionsTCLConsole {} {
-    set w .con
-    if {[winfo exists .con]} {
-        wm deiconify .con; return
-    }
-
-    toplevel .con
-    wm minsize .con 375 160
-    wm title .con "Tcl Console"
-    frame .con.fra5 \
-        -height 30 -width 30
-    pack .con.fra5 \
-        -anchor center -expand 1 -fill both -ipadx 0 -ipady 0 -padx 2 -pady 2 \
-        -side top
-    text .con.fra5.tex7 \
-        -highlightthickness 0 -state disabled -width 50 -height 6 \
-        -yscrollcommand {.con.fra5.scr8 set}
-    .con.fra5.tex7 tag configure command -underline 1
-    .con.fra5.tex7 tag configure error -foreground red
-    .con.fra5.tex7 tag configure output
-    pack .con.fra5.tex7 \
-        -anchor center -expand 1 -fill both -ipadx 0 -ipady 0 -padx 0 -pady 0 \
-        -side left
-    scrollbar .con.fra5.scr8 \
-        -command {.con.fra5.tex7 yview} -highlightthickness 0
-    pack .con.fra5.scr8 \
-        -anchor center -expand 0 -fill y -ipadx 0 -ipady 0 -padx 0 -pady 0 \
-        -side right
-    frame .con.fra6 \
-        -height 30 -width 30
-    pack .con.fra6 \
-        -anchor center -expand 0 -fill both -ipadx 0 -ipady 0 -padx 0 -pady 0 \
-        -side top
-    entry .con.fra6.ent10 \
-        -highlightthickness 0
-    pack .con.fra6.ent10 \
-        -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 2 -pady 2 \
-        -side top
-    bind .con.fra6.ent10 <Key-Return> {
-        .con.fra5.tex7 conf -state normal
-        .con.fra5.tex7 insert end \n[.con.fra6.ent10 get] command
-        if { [catch [.con.fra6.ent10 get] output] == 1 } {
-            .con.fra5.tex7 insert end "\n$output" error
-        } else {
-            .con.fra5.tex7 insert end "\n$output" output
-        }
-        .con.fra5.tex7 conf -state disabled
-        .con.fra5.tex7 yview end
-        .con.fra6.ent10 delete 0 end
-    }
-    focus .con.fra6.ent10
-}
-
 proc helpAbout {} {
     createOkCancelDialog .about "About OMNeT++/GNED"
 
     label .about.f.l -text \
 {
-GNED 1.2 ALPHA 1
+GNED 1.2 Beta 1
 Part of the OMNeT++ Discrete Event Simulator
 
-(C) 1997,99 Andras Varga
+(C) 1997-99 Andras Varga
 
 NO WARRANTY. See Help|Release notes and the 'license' file for details.
 }
