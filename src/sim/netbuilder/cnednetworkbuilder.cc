@@ -195,6 +195,7 @@ void cNEDNetworkBuilder::setupGateVectors(cModule *submodp, NEDElement *submod)
                 const char *gatename = gate->getName();
                 int vectorsize = (int) evaluate(modp, getExpr(gate, "vector-size"), submodp);
                 submodp->setGateSize(gatename, vectorsize);
+                printf("DBG: gatesize: %s.%s[%d]\n", submodp->fullPath(), gatename, vectorsize);
             }
         }
     }
