@@ -29,6 +29,10 @@ for i in sim/*; do
 done
 rm bin/makemake
 
+# touch shipped generated files
+touch src/nedc/ebnf.tab.c src/nedc/ebnf.tab.h \
+      src/gned/ebnf.tab.c src/gned/ebnf.tab.h
+
 # cleanup
 rm _setperm
 rm _tag

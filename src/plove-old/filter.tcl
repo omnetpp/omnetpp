@@ -153,7 +153,7 @@ proc getFilterParList {name} {
     set expr $filt($name,expr)
     set pars ""
 
-    while [regexp -- {\$\(([^)]*)\)} $expr match par] {
+    while {[regexp -- {\$\(([^)]*)\)} $expr match par]} {
         regsub  -all -- "\\$\\($par\\)" $expr {@} expr
         if {$par != "id"} {lappend pars $par}
     }

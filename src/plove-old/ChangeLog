@@ -46,3 +46,6 @@
 July 17, 1999
   - added slash/backslash option for gnuplot on Windows
 ------ omnetpp-2.0b2 released ------
+Jan 18, 2000
+  - bugfix: Plove hung on selecting filters
+
