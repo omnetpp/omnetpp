@@ -16,10 +16,10 @@
 *--------------------------------------------------------------*/
 
 /**
- * @mainpage OMNeT++ Parallel simulation support
+ * @mainpage @opp Parallel simulation support
  *
  * This documentation describes the architecture of the distributed
- * parallel simulation implementation in OMNeT++.
+ * parallel simulation implementation in @opp.
  *
  * All classes documented here are used internally -- if you're into
  * writing simulation models, there's nothing interesting for you here.
@@ -37,7 +37,7 @@
  *    This encapsulates all details of message passing between parts
  *    of a program that executes in parallel, and hides details of
  *    the communications library (MPI, PVM, ...). Subclasses implemented
- *    here are cMPICommunications, cNamedPipeCommunications, 
+ *    here are cMPICommunications, cNamedPipeCommunications,
  *    cFileCommunications.
  *
  * 2. Partition layer, represented by cParsimPartition. This encapsulates

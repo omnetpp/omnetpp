@@ -1,17 +1,17 @@
 /**
-@mainpage TicToc Tutorial for OMNeT++
+@mainpage TicToc Tutorial for @opp
 
-This short tutorial to OMNeT++ guides you through an example
+This short tutorial to @opp guides you through an example
 of modeling and simulation, showing you along the way some
-of the commonly used OMNeT++ features.
+of the commonly used @opp features.
 
 The tutorial is based on the Tictoc example simulation, which you
 can find in the <tt>samples/tictoc</tt> directory of your
-OMNeT++ installation, so you can try out immediately how
+@opp installation, so you can try out immediately how
 the examples work. However, you'll find the tutorial much more useful
 if you actually carry out at least the first steps described here.
 
-@note We assume here that you have a working OMNeT++ installation.
+@note We assume here that you have a working @opp installation.
 We also assume that you have a good C++ knowledge, and you are in general
 familiar with C/C++ development (editing source files, compiling, debugging etc.)
 on your operating system. (The latter two are out of our scope here --
@@ -19,7 +19,7 @@ there are excellent books, tutorials on the web, etc. if you need
 to update your knowledge on that.)
 
 To make the examples easier to follow, all source code in here is
-cross-linked to the OMNeT++ API documentation.
+cross-linked to the @opp API documentation.
 
 This document and the TicToc model are an expanded version of
 the original TicToc tutorial from Ahmet Sekercioglu (Monash University).
@@ -42,7 +42,7 @@ NEXT: @ref part1
 
 UP: @ref contents
 
-Since the most common application area of OMNeT++ is the simulation of
+Since the most common application area of @opp is the simulation of
 telecommunications networks, we'll borrow our topic from there.
 For a start, let us begin with a "network" that consists of two nodes.
 The nodes will do something simple: one the nodes will create a packet,
@@ -79,7 +79,7 @@ achieved by writing a C++ file txc1.cc:
 @include txc1.cc
 
 The Txc1 simple module type is represented by the C++ class Txc1, which
-has to be subclassed from cSimpleModule, and registered in OMNeT++ with the
+has to be subclassed from cSimpleModule, and registered in @opp with the
 Define_Module() macro. We redefine two methods from cSimpleModule: initialize()
 and handleMessage(). They are invoked from the simulation kernel:
 the first one only once, and the second one whenever a message arrives at the module.
@@ -92,7 +92,7 @@ assigned to the link in the NED file. The other module just sends it back
 (another 100ms delay), so it will result in a continuous ping-pong.
 
 Messages (packets, frames, jobs, etc) and events (timers, timeouts) are
-all represented by cMessage objects (or its subclasses) in OMNeT++.
+all represented by cMessage objects (or its subclasses) in @opp.
 After you send or schedule them, they will be held by the simulation
 kernel in the "scheduled events" or "future events" list until
 their time comes and they are delivered to the modules via handleMessage().
@@ -156,7 +156,7 @@ command:
 $ ./tictoc
 \endcode
 
-and hopefully you should now get the OMNeT++ simulation window.
+and hopefully you should now get the @opp simulation window.
 
 @note Windows: the command is just <tt>tictoc</tt>.
 
@@ -212,7 +212,7 @@ You can see the result here:
 <img src="step2a.gif">
 
 We also modify the C++ file to add some debug messages to Txc1 by
-writing to the OMNeT++ <tt>ev</tt> object like this:
+writing to the @opp <tt>ev</tt> object like this:
 
 @dontinclude txc2.cc
 @skipline ev <<
@@ -221,7 +221,7 @@ and
 
 @skipline ev <<
 
-When you run the simulation in the OMNeT++ GUI Tkenv, the following output
+When you run the simulation in the @opp GUI Tkenv, the following output
 will appear in the main text window:
 
 <img src="step2b.gif">
@@ -340,7 +340,7 @@ Sources: @ref tictoc4.ned, @ref txc4.cc, @ref omnetpp.ini
 
 In the previous models, tic and toc immediately sent back the
 received message. Here we'll add some timing: tic and toc will hold the
-message for 1 simulated second before sending it back. In OMNeT++
+message for 1 simulated second before sending it back. In @opp
 such timing is achieved by the module sending a message to itself.
 Such messages are called self-messages (but only because of the way they
 are used, otherwise they are ordinary message objects).
@@ -410,7 +410,7 @@ We'll assign the parameters in omnetpp.ini:
 
 You can try that no matter how many times you re-run the simulation (or
 restart it, Simulate|Rebuild network menu item), you'll get exactly the
-same results. This is because OMNeT++ uses a deterministic algorithm
+same results. This is because @opp uses a deterministic algorithm
 (by default the Mersenne Twister RNG) to generate random numbers, and
 initializes it to the same seed. This is important for reproducible
 simulations. You can experiment with different seeds if you add the
@@ -421,7 +421,7 @@ following lines to omnetpp.ini:
 seed-0-mt=532569  # or any other 32-bit value
 @endcode
 
-From the syntax you have probably guessed that OMNeT++ supports
+From the syntax you have probably guessed that @opp supports
 more than one RNGs. That's right, however, all models in this tutorial
 use RNG 0.
 
@@ -575,7 +575,7 @@ random destination, and we'll add the destination address to the message.
 
 The best way is to subclass cMessage and add destination as a data member.
 Hand-coding the message class is usually tedious because it contains
-a lot of boilerplate code, so we let OMNeT++ generate the class for us.
+a lot of boilerplate code, so we let @opp generate the class for us.
 The message class specification is in tictoc10.msg:
 
 @dontinclude tictoc10.msg
@@ -612,7 +612,7 @@ is not safe because if the message is <i>not</i> a TicTocMsg10 after all
 the program will just crash, causing an error which is difficult to explore.
 
 C++ offers a solution which is called dynamic_cast. Here we use check_and_cast<>()
-which is provided by OMNeT++: it tries to cast the pointer via dynamic_cast,
+which is provided by @opp: it tries to cast the pointer via dynamic_cast,
 and if it fails it stops the simulation with an error message, similar to the
 following:
 
@@ -851,7 +851,7 @@ charts.
 
 @section conclusion Conclusion
 
-Hope you have found this tutorial a useful introduction into OMNeT++. Comments
+Hope you have found this tutorial a useful introduction into @opp. Comments
 and suggestions will be appreciated.
 
 UP: @ref contents
