@@ -65,13 +65,14 @@ depend:
 
 clean:
 	del tclcode.cc *.obj gned.exe *.ilk *.pdb 2> nul
+	del *.ilk *.pdb 2> nul
 
 realclean: clean
 	del lex.yy.c ebnf.tab.c ebnf.tab.h
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-ebnf.tab.obj: ebnfcfg.h parsened.h nedfile.h 
+ebnf.tab.obj: ebnfcfg.h parsened.h nedfile.h
 lex.yy.obj: ebnf.tab.h ebnfcfg.h parsened.h
 arrow.obj: arrow.h
 gned.obj: arrow.h parsened.h tklib.h

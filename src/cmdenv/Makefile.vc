@@ -42,6 +42,7 @@ depend:
 
 clean:
 	del *.obj cmdenv.lib cmdenv.dll cmdenv.ilib cmdenv.exp 2> nul
+	del *.ilk *.pdb 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

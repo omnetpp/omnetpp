@@ -68,6 +68,7 @@ depend:
 
 clean:
 	del *.obj tkenv.lib tkenv.dll tkenv.ilib tkenv.exp tclcode.cc 2> nul
+	del *.ilk *.pdb 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
