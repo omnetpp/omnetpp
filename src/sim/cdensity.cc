@@ -226,9 +226,10 @@ void cDensityEstBase::setupRange()
 void cDensityEstBase::collect(double val)
 {
     if (range_mode == RANGE_INVALID && !transformed())
-        throw new cException(this,"must call setRange..() before collecting");
+        setRangeAuto(100, 2);
 
-    if (firstvals==0 && !transformed()) transform();
+    if (firstvals==0 && !transformed())
+        transform();
 
     cStdDev::collect(val); // this also increments num_samples
 

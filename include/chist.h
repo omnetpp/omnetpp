@@ -235,8 +235,9 @@ class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
  * cEqdHistogramBase, which contains most of the functionality.
  *
  * The histogram will be set up in the following way:
- *   - the cell size is - by definition - always integer. Cell boundaries
- *     are at halves (for example 9.5, 10.5);
+ *   - the cell size is - by definition - always integer.
+ *   - currently, cell boundaries are at halves (for example 9.5, 10.5);
+ *     this may change in further releases.
  *   - the number of cells is exactly <i>num_cells</i>, if specified
  *     using setNumCells() or as an argument to the constructor;
  *   - if the number of cells is not specified, there will be one cell
