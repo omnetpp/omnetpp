@@ -15,7 +15,7 @@
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -89,8 +89,7 @@ void cStatistic::addAccuracyDetection(cAccuracyDetection *obj)  //NL
 
 void cStatistic::collect2(double, double)
 {
-    throw new cException("(%s)%s: collect2() not implemented in %s",
-                       className(), fullName(),className());
+    throw new cException(this, "collect2() not implemented");
 }
 
 void cStatistic::freadvarsf (FILE *f,  const char *fmt, ...)
@@ -106,9 +105,7 @@ void cStatistic::freadvarsf (FILE *f,  const char *fmt, ...)
     char *fmt_comment = strstr(fmt,"#=");
     char *line_comment = strstr(line,"#=");
     if (fmt_comment && line_comment && strcmp(fmt_comment,line_comment)!=0)
-        throw new cException("(%s)%s: bad file format in loadFromFile(): "
-                         "expected `%s' and got `%s'",
-                         className(), fullName(),fmt,line);
+        throw new cException(this, "bad file format in loadFromFile(): expected `%s' and got `%s'",fmt,line);
 
     // actual read
     va_list args;
@@ -262,8 +259,7 @@ void cWeightedStdDev::clearResult()
 
 double cWeightedStdDev::variance() const
 {
-    throw new cException("(%s)%s: variance()/stddev() not implemented",
-                      className(), fullName());
+    throw new cException(this, "variance()/stddev() not implemented");
 
     // if (sum_weights==0)
     //   return 0.0;

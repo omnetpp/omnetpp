@@ -12,7 +12,7 @@
 //
 //=========================================================================
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -89,8 +89,7 @@ cPSquare& cPSquare::operator=(const cPSquare& res)
 
 void cPSquare::giveError()
 {
-    throw new cException("(%s)%s: setRange..() and setNumFirstVals() "
-                     "makes no sense with cPSquare", className(), fullName());
+    throw new cException(this, "setRange..() and setNumFirstVals() makes no sense with cPSquare");
 }
 
 #ifdef NEW_CODE_FROM_PUPPIS_WITH_FLOATING_POINT_EXCEPTION
@@ -253,7 +252,7 @@ double cPSquare::random() const
 
     //if (num_obs==0)   // newer, from PUPPIS
     if (numobs<numcells+1)
-        throw new cException("(%s)%s: must collect at least num_cells values before random() can be used", className(),fullPath());
+        throw new cException(this,"must collect at least num_cells values before random() can be used");
 
     s = numobs * genk_dblrand(genk);
 

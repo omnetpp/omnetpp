@@ -10,7 +10,7 @@
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -48,7 +48,7 @@ cException::cException(const char *msgformat...)
     va_end(va);
 }
 
-cException::cException(cObject *where, int errc...)
+cException::cException(const cObject *where, int errc...)
 {
     va_list va;
     va_start(va, errc);
@@ -56,7 +56,7 @@ cException::cException(cObject *where, int errc...)
     va_end(va);
 }
 
-cException::cException(cObject *where, const char *msgformat...)
+cException::cException(const cObject *where, const char *msgformat...)
 {
     va_list va;
     va_start(va, msgformat);
@@ -77,7 +77,7 @@ void cException::storeCtx()
     }
 }
 
-void cException::init(cObject *where, int errc, const char *fmt, va_list va)
+void cException::init(const cObject *where, int errc, const char *fmt, va_list va)
 {
     // store error code
     errorcode = errc;
@@ -85,7 +85,7 @@ void cException::init(cObject *where, int errc, const char *fmt, va_list va)
     // assemble message text
     char message[256] = "\0";
     if (where)
-        sprintf(message, "(%s)%s: ", where->className(), where->fullName());
+        sprintf(message, "(%s)%s: ", where->className(), where->fullPath());
     vsprintf(message+strlen(message),fmt,va);
     msg = message;
 

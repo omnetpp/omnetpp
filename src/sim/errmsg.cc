@@ -12,7 +12,7 @@
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -30,9 +30,9 @@
 
 char *emsg[] = {
   "No error -- everything's fine",                       // eOK
-  "(%s)%s: Cannot cast from type `%c' to `%c'",          // eBADCAST
-  "(%s)%s: Indirection would create circular reference", // eCIRCREF
-  "(%s)%s: Bad number of arguments, %d expected",        // eNUMARGS
+  "Cannot cast from type `%c' to `%c'",                  // eBADCAST
+  "Indirection would create circular reference",         // eCIRCREF
+  "Bad number of arguments, %d expected",                // eNUMARGS
   "Cannot find module interface `%s' needed to create module of type `%s'", // eNOMODIF
   "Error during starting up user interface",             // eUISTARTUP
   "Simulation stopped by segment on host `%s'",          // eSTOPSIMRCVD
@@ -44,14 +44,14 @@ char *emsg[] = {
   "Incausality during simulation",                       // eINCAUSAL
   "Message sent to already terminated module `%s'",      // eMODFIN
   "Transfer to nonexistent, finished or compound module",// eBADTRANSF
-  "(%s)%s: setValue(): Type `%c' does not suit arg types", // eBADINIT
+  "setValue(): Type `%c' does not suit arg types",       // eBADINIT
   "Something unexpected happened (internal error)",      // eUNEXP
   "Cannot use receive..() or wait() with handleMessage()", // eNORECV
   "",                                                    // eSTKLOW
   "No more events -- simulation ended",                  // eENDEDOK
   "Module initialization error",                         // eMODINI
-  "(%s)%s: Object #%d not found",                        // eNULLPTR
-  "(%s)%s: Object #%d not found",                        // eNULLREF
+  "Object #%d not found",                                // eNULLPTR
+  "Object #%d not found",                                // eNULLREF
   "Cannot write output vector file",                     // eOUTVECT
   "Cannot write parameter change file",                  // ePARCHF
   "wait(): negative delay",                              // eNEGTIME
@@ -61,7 +61,7 @@ char *emsg[] = {
   "Message cannot be delivered",                         // eNODEL
   "Simulation cancelled",                                // eCANCEL
   "Network definition not found",                        // eNONET
-  "(%s)%s: Badly formed Reverse Polish expression",      // eBADEXP
+  "Badly formed Reverse Polish expression",              // eBADEXP
   "All finish() functions called, simulation ended",     // eFINISH
   "Simulation stopped with endSimulation()",             // eENDSIM
   "CPU time limit reached -- simulation stopped",        // eREALTIME
@@ -69,7 +69,7 @@ char *emsg[] = {
   "This object cannot DUP itself",                       // eCANTDUP
   "FSM: infinite loop of transient states (now in state %s)", // eINFLOOP
   "FSM: state changed during state entry code (now in state %s)", // eSTATECHG
-  "(%s)%s: assignment, copying, dup() not supported by this class", // eCANTCOPY
+  "assignment, copying, dup() not supported by this class", // eCANTCOPY
   "Badly connected gate",                                // eBADGATE
   "Gate not connected to anything",                      // eNOTCONN
   "",                                                    // eBADKEY

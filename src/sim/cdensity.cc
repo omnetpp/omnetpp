@@ -12,7 +12,7 @@
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -94,7 +94,7 @@ void cDensityEstBase::clearResult ()
 void cDensityEstBase::setRange(double lower, double upper)
 {
     if (num_samples>0 || transformed())
-        throw new cException("(%s)%s: setRange() can only be called before collecting any values", className(), fullName());
+        throw new cException(this,"setRange() can only be called before collecting any values");
 
     range_mode = RANGE_FIXED;
     rangemin = lower;
@@ -104,7 +104,7 @@ void cDensityEstBase::setRange(double lower, double upper)
 void cDensityEstBase::setRangeAuto(int num_fstvals, double range_ext_fct)
 {
     if (num_samples>0 || transformed())
-        throw new cException("(%s)%s: setRange...() can only be called before collecting any values", className(), fullName());
+        throw new cException(this,"setRange...() can only be called before collecting any values");
 
     range_mode = RANGE_AUTO;
     num_firstvals = num_fstvals;
@@ -115,7 +115,7 @@ void cDensityEstBase::setRangeAuto(int num_fstvals, double range_ext_fct)
 void cDensityEstBase::setRangeAutoLower(double upper, int num_fstvals, double range_ext_fct)
 {
     if (num_samples>0 || transformed())
-        throw new cException("(%s)%s: setRange...() can only be called before collecting any values", className(), fullName());
+        throw new cException(this,"setRange...() can only be called before collecting any values");
 
     range_mode = RANGE_AUTOLOWER;
     num_firstvals = num_fstvals;
@@ -127,7 +127,7 @@ void cDensityEstBase::setRangeAutoLower(double upper, int num_fstvals, double ra
 void cDensityEstBase::setRangeAutoUpper(double lower, int num_fstvals, double range_ext_fct)
 {
     if (num_samples>0 || transformed())
-        throw new cException("(%s)%s: setRange...() can only be called before collecting any values", className(), fullName());
+        throw new cException(this,"setRange...() can only be called before collecting any values");
 
     range_mode = RANGE_AUTOUPPER;
     num_firstvals = num_fstvals;
@@ -139,7 +139,7 @@ void cDensityEstBase::setRangeAutoUpper(double lower, int num_fstvals, double ra
 void cDensityEstBase::setNumFirstVals(int num_fstvals)
 {
     if (num_samples>0 || transformed())
-        throw new cException("(%s)%s: setNumFirstVals() can only be called before collecting any values", className(), fullName());
+        throw new cException(this,"setNumFirstVals() can only be called before collecting any values");
 
     num_firstvals = num_fstvals;
     delete [] firstvals;
@@ -176,7 +176,7 @@ void cDensityEstBase::setupRange()
 void cDensityEstBase::collect(double val)
 {
     if (range_mode == RANGE_INVALID && !transformed())
-        throw new cException("(%s)%s: must call setRange..() before collecting",className(),fullName());
+        throw new cException(this,"must call setRange..() before collecting");
 
     if (firstvals==0 && !transformed()) transform();
 

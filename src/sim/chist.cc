@@ -15,7 +15,7 @@
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -162,7 +162,7 @@ void cEqdHistogramBase::collectTransformed (double val)
 double cEqdHistogramBase::pdf(double x) const
 {
     if (!transformed())
-        throw new cException("(%s)%s: pdf(x) cannot be called before histogram is transformed", className(),name());
+        throw new cException(this,"pdf(x) cannot be called before histogram is transformed");
 
     if (x<rangemin || x>rangemax)
         return 0.0;
@@ -172,7 +172,7 @@ double cEqdHistogramBase::pdf(double x) const
 
 double cEqdHistogramBase::cdf(double) const
 {
-    throw new cException("(%s)%s: cdf() not implemented",className(), name());
+    throw new cException(this,"cdf() not implemented");
 }
 
 // return kth basepoint
@@ -189,7 +189,7 @@ double cEqdHistogramBase::basepoint(int k) const
     else if (k==num_cells)
         return rangemax;
     else
-        throw new cException("(%s)%s: invalid basepoint index %u",className(),name(),k);
+        throw new cException(this,"invalid basepoint index %u",k);
 }
 
 double cEqdHistogramBase::cell(int k) const
@@ -197,7 +197,7 @@ double cEqdHistogramBase::cell(int k) const
     if (k<num_cells)
         return cellv[k];
     else
-        throw new cException("(%s)%s: invalid cell index %u",className(),name(),k);
+        throw new cException(this,"invalid cell index %u",k);
 }
 
 void cEqdHistogramBase::saveToFile(FILE *f) const

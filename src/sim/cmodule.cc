@@ -14,7 +14,7 @@
 //======================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -90,7 +90,7 @@ cModule::~cModule()
 
 cModule& cModule::operator=(const cModule&)
 {
-    throw new cException(eCANTDUP);
+    throw new cException(this, eCANTDUP);
 }
 
 void cModule::forEach(ForeachFunc do_fn )
@@ -171,10 +171,10 @@ const char *cModule::fullPath(char *buffer, int bufsize) const
 void cModule::addGate(const char *gname, char tp)
 {
     if (findGate(gname)>=0)
-       throw new cException("addGate(): Gate %s.%s already present", fullPath(), gname);
+       throw new cException(this, "addGate(): Gate %s.%s already present", fullPath(), gname);
 
      cGate *newg = new cGate( gname, tp );
-     newg->setOwnerModule( this, gatev.add( newg ));
+     newg->setOwnerModule(this, gatev.add( newg ));
 }
 
 void cModule::setGateSize(const char *gname, int size)
@@ -183,7 +183,7 @@ void cModule::setGateSize(const char *gname, int size)
     if (pos<0)
        pos = findGate(gname,0);
     if (pos<0)
-       throw new cException("setGateSize(): Gate %s.%s[] not found", fullPath(), gname);
+       throw new cException(this,"setGateSize(): Gate %s.%s[] not found", fullPath(), gname);
 
     char tp = gate(pos)->type();
     int oldsize = gate(pos)->size();
@@ -194,7 +194,7 @@ void cModule::setGateSize(const char *gname, int size)
     {
        cGate *g = (cGate *) gatev.remove( pos+i );
        if (g->fromGate() || g->toGate())
-          throw new cException("setGateSize(): Too late, gate %s already connected", g->fullPath());
+          throw new cException(this,"setGateSize(): Too late, gate %s already connected", g->fullPath());
        delete g;
     }
 
@@ -218,7 +218,7 @@ void cModule::addPar(const char *pname)
 {
     int i = findPar(pname);
     if (i!=-1)
-       throw new cException("addPar(): Parameter %s.%s already present",fullPath(), pname);
+       throw new cException(this,"addPar(): Parameter %s.%s already present",fullPath(), pname);
 
     i = paramv.add( new cModulePar(pname) );
     cModulePar *p = (cModulePar *) &par(i);
@@ -239,7 +239,7 @@ bool cModule::checkInternalConnections() const
        bool isconnected = g && ((g->type()=='I' && g->toGate()==NULL) ||
                                 (g->type()=='O' && g->fromGate()==NULL));
        if (!isconnected)
-            throw new cException("Gate `%s' is not connected", g->fullPath());
+            throw new cException(this,"Gate `%s' is not connected", g->fullPath());
     }
 
     // check submodules
@@ -250,7 +250,7 @@ bool cModule::checkInternalConnections() const
        {
           cGate *g = m->gate(j);
           if (g && !g->isConnected())
-             throw new cException("Gate `%s' is not connected", g->fullPath());
+             throw new cException(this,"Gate `%s' is not connected", g->fullPath());
        }
     }
     return true;
@@ -267,7 +267,7 @@ void cModule::setMachinePar(const char *pname, const char *value)
 {
     int i = machinev.find( pname );
     if (i==-1)
-         throw new cException("(%s)%s: Machine par `%s' does not exist", className(), fullPath(), pname);
+         throw new cException(this,"Machine par `%s' does not exist", pname);
 
     ((cPar *)machinev[i])->setStringValue(value);
 }
@@ -309,7 +309,7 @@ cModule *cModule::moduleByRelativePath(const char *path)
         else
         {
             if (s[strlen(s)-1]!=']')
-                throw new cException("moduleByRelativePath(): syntax error in path `%s'", path);
+                throw new cException(this,"moduleByRelativePath(): syntax error in path `%s'", path);
             *b='\0';
             modp = modp->submodule(s,atoi(b+1));
         }
@@ -371,7 +371,7 @@ cPar& cModule::par(int pn)
 {
     cPar *p = (cPar *)paramv[pn];
     if (!p)
-        throw new cException("(%s)%s: has no parameter #%d",className(),fullName(),pn);
+        throw new cException(this,"has no parameter #%d",pn);
     return *p;
 }
 
@@ -379,7 +379,7 @@ cPar& cModule::par(const char *s)
 {
     cPar *p = (cPar *)paramv.get(s);
     if (!p)
-        throw new cException("(%s)%s: has no parameter called `%s'",className(),fullName(),s);
+        throw new cException(this,"has no parameter called `%s'",s);
     return *p;
 }
 
@@ -391,7 +391,7 @@ cPar& cModule::ancestorPar(const char *name)
     while (pmod && (k=pmod->findPar(name))<0)
         pmod = pmod->parentmodp;
     if (!pmod)
-        throw new cException("(%s)%s: has no ancestor parameter called `%s'",className(),fullName(),name);
+        throw new cException(this,"has no ancestor parameter called `%s'",name);
     return pmod->par(k);
 }
 
@@ -500,7 +500,7 @@ void cModule::setDisplayStringAsParent(const char *s, bool immediate)
 void cModule::setDisplayString(int type, const char *s, bool immediate)
 {
     if (type<0 || type>=dispNUMTYPES)
-         throw new cException("(%s)%s: setDisplayString(): type %d out of range", className(), fullPath(), type );
+         throw new cException(this,"setDisplayString(): type %d out of range", type );
 
     if (type==dispENCLOSINGMOD)
     {
@@ -519,7 +519,7 @@ void cModule::setDisplayString(int type, const char *s, bool immediate)
 const char *cModule::displayString(int type)
 {
     if (type<0 || type>=dispNUMTYPES)
-         throw new cException("(%s)%s: displayString(): type %d out of range", className(), fullPath(), type );
+         throw new cException(this,"displayString(): type %d out of range", type );
 
     if (type==dispSUBMOD && (const char *)dispstr != NULL)
         return dispstr;

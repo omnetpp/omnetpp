@@ -12,7 +12,7 @@
 //========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -168,7 +168,7 @@ void cMessage::_createparlist()
 void cMessage::setLength(long l)
 {
     if (l<0)
-        throw new cException("(%s)%s: setLength(): negative length %ld",className(),fullName(),l);
+        throw new cException(this,"setLength(): negative length %ld",l);
     len=l;
 }
 
@@ -176,18 +176,18 @@ void cMessage::addLength(long l)
 {
     len+=l;
     if (len<0)
-        throw new cException("(%s)%s: addLength(): length became negative (%ld)",className(),fullName(),len);
+        throw new cException(this,"addLength(): length became negative (%ld)",len);
 }
 
 void cMessage::encapsulate(cMessage *msg)
 {
     if (encapmsg)
-        throw new cException("(%s)%s: encapsulate(): another message already encapsulated", className(),fullName());
+        throw new cException(this,"encapsulate(): another message already encapsulated");
 
     if (msg)
     {
         if (msg->owner()!=&(simulation.contextSimpleModule()->locals))
-            throw new cException("(%s)%s: encapsulate(): not owner of message", className(),fullName());
+            throw new cException(this,"encapsulate(): not owner of message");
         take( encapmsg = msg );
         len += encapmsg->len;
     }
@@ -198,7 +198,7 @@ cMessage *cMessage::decapsulate()
     if ((len>0) && encapmsg)
         len-=encapmsg->len;
     if (len<0)
-        throw new cException("(%s)%s: decapsulate(): msg length smaller than encapsulated msg length",className(),fullName());
+        throw new cException(this,"decapsulate(): msg length smaller than encapsulated msg length");
 
     cMessage *msg = encapmsg;
     encapmsg = NULL;
@@ -211,7 +211,7 @@ cPar& cMessage::par(int n)
     cArray& parlist = parList();
     cPar *p = (cPar *)parlist[n];
     if (!p)
-        throw new cException("(%s)%s: has no parameter #%d",className(),fullName(),n);
+        throw new cException(this,"has no parameter #%d",n);
     return *p;
 }
 
@@ -220,7 +220,7 @@ cPar& cMessage::par(const char *s)
     cArray& parlist = parList();
     cPar *p = (cPar *)parlist.get(s);
     if (!p)
-        throw new cException("(%s)%s: has no parameter called `%s'",className(),fullName(),s);
+        throw new cException(this,"has no parameter called `%s'",s);
     return *p;
 }
 

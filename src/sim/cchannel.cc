@@ -12,7 +12,7 @@
 //========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -123,7 +123,7 @@ cPar& cChannel::par(int n)
     cArray& parlist = parList();
     cPar *p = (cPar *)parlist[n];
     if (!p)
-        throw new cException("(%s)%s: has no parameter #%d",className(),fullName(),n);
+        throw new cException(this,"has no parameter #%d",n);
     return *p;
 }
 
@@ -132,7 +132,7 @@ cPar& cChannel::par(const char *s)
     cArray& parlist = parList();
     cPar *p = (cPar *)parlist.get(s);
     if (!p)
-        throw new cException("(%s)%s: has no parameter called `%s'",className(),fullName(),s);
+        throw new cException(this,"has no parameter called `%s'",s);
     return *p;
 }
 

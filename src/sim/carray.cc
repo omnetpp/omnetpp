@@ -13,7 +13,7 @@
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -304,7 +304,7 @@ void cArray::clear()
 int cArray::add(cObject *obj)
 {
     if (!obj)
-        throw new cException("(%s)%s: cannot insert NULL pointer",className(),fullName());
+        throw new cException(this,"cannot insert NULL pointer");
 
     int retval;
     if (takeOwnership()) take( obj );
@@ -335,14 +335,14 @@ int cArray::add(cObject *obj)
 int cArray::addAt(int m, cObject *obj)
 {
     if (!obj)
-        throw new cException("(%s)%s: cannot insert NULL pointer",className(),fullName());
+        throw new cException(this,"cannot insert NULL pointer");
 
     if (m<size)  // fits in current vector
     {
         if (m<0)
-            throw new cException("(%s)%s: addAt(): negative position %d", className(),fullPath(),m);
+            throw new cException(this,"addAt(): negative position %d",m);
         if (vect[m]!=NULL)
-            throw new cException("(%s)%s: addAt(): position %d already used", className(),fullPath(),m);
+            throw new cException(this,"addAt(): position %d already used",m);
         vect[m] = obj;
         if (takeOwnership()) take(obj);
         last = Max(m,last);
@@ -371,7 +371,7 @@ int cArray::addAt(int m, cObject *obj)
 int cArray::set(cObject *obj)
 {
     if (!obj)
-        throw new cException("(%s)%s: cannot insert NULL pointer",className(),fullName());
+        throw new cException(this,"cannot insert NULL pointer");
 
     int i = find(obj->name());
     if (i<0)

@@ -12,7 +12,7 @@
 //========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -41,7 +41,7 @@ cOutVector::cOutVector(const char *nam, int tupl) : cObject(nam)
     if (tuple!=1 && tuple!=2)
     {
         tuple = 0;
-        throw new cException("(%s)%s: constructor: invalid value (%d) for tuple; supported values are 1 and 2", className(), fullPath(), tupl);
+        throw new cException(this,"constructor: invalid value (%d) for tuple; supported values are 1 and 2", tupl);
     }
 
     // register early if possible (only needed for Akaroa...)
@@ -58,7 +58,7 @@ cOutVector::~cOutVector()
 void cOutVector::setName(const char *nam)
 {
     if (handle)
-        throw new cException("(%s)%s: setName(): changing name of an output vector after record() calls is not allowed", className(), fullPath());
+        throw new cException(this,"setName(): changing name of an output vector after record() calls is not allowed");
     cObject::setName(nam);
 
     // register early (only needed for Akaroa...)
@@ -79,7 +79,7 @@ bool cOutVector::record(double value)
 {
     // check tuple
     if (tuple!=1)
-        throw new cException(eNUMARGS,className(),fullPath(),1);
+        throw new cException(this,eNUMARGS,1);
 
     num_received++;
 
@@ -104,7 +104,7 @@ bool cOutVector::record(double value1, double value2)
 {
     // check tuple
     if (tuple!=2)
-        throw new cException(eNUMARGS,className(),fullPath(),2);
+        throw new cException(this,eNUMARGS,2);
 
     num_received++;
 

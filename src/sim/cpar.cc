@@ -13,7 +13,7 @@
 //=========================================================================
 
 /*--------------------------------------------------------------*
-Copyright (C) 1992-2001 Andras Varga
+Copyright (C) 1992-2002 Andras Varga
 Technical University of Budapest, Dept. of Telecommunications,
 Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -391,7 +391,7 @@ cPar& cPar::setDoubleValue(sXElem *x, int n)
         return ind.par->setDoubleValue(x,n);
 
     if (!x)
-        throw new cException(eBADINIT,className(),name(), 'X');
+        throw new cException(this,eBADINIT, 'X');
 
     beforeChange();
     deleteold();
@@ -431,7 +431,7 @@ cPar& cPar::setDoubleValue(cDoubleExpression *p)
         return ind.par->setDoubleValue(p);
 
     if (!p)
-        throw new cException(eBADINIT,className(),name(), 'P');
+        throw new cException(this,eBADINIT, 'P');
 
     beforeChange();
     deleteold();
@@ -448,7 +448,7 @@ cPar& cPar::setDoubleValue(cStatistic *res)
         return ind.par->setDoubleValue(res);
 
     if (!res)
-        throw new cException(eBADINIT,className(),name(), 'T');
+        throw new cException(this,eBADINIT, 'T');
 
     beforeChange();
     deleteold();
@@ -504,14 +504,14 @@ cPar& cPar::setRedirection(cPar *par)
         return ind.par->setRedirection(par);
 
     if (!par)
-        throw new cException(eBADINIT,className(),name(), 'I');
+        throw new cException(this,eBADINIT, 'I');
 
     // check for circular references
     cPar *p = par;
     while (p)
     {
         if (p==this)
-            throw new cException(eCIRCREF,className(),name());
+            throw new cException(this,eCIRCREF);
         p = p->isRedirected() ? p->ind.par : NULL;
     }
 
@@ -529,8 +529,7 @@ void cPar::configPointer( VoidDelFunc delfunc, VoidDupFunc dupfunc,
                       size_t itemsize)
 {
     if (typechar!='P')
-        throw new cException("(%s)%s: configPointer(): type is '%c';"
-                  " should be 'P'",className(),name(),typechar);
+        throw new cException(this,"configPointer(): type is '%c'; should be 'P'",typechar);
     ptr.delfunc = delfunc;
     ptr.dupfunc = dupfunc;
     ptr.itemsize = itemsize;
@@ -547,7 +546,7 @@ const char *cPar::stringValue()
     if (isInput())
         read();
     if (typechar!='S')
-        throw new cException(eBADCAST,className(),name(),typechar,'S');
+        throw new cException(this,eBADCAST,typechar,'S');
     return ss.sht ? ss.str : ls.str;
 }
 
@@ -575,7 +574,7 @@ bool cPar::boolValue()
     else if (isNumeric())
         return doubleValue()!=0;
     else
-        throw new cException(eBADCAST,className(),name(),typechar,'B');
+        throw new cException(this,eBADCAST,typechar,'B');
 }
 
 long cPar::longValue()
@@ -589,7 +588,7 @@ long cPar::longValue()
     else if (isNumeric())
         return (long)doubleValue();
     else
-        throw new cException(eBADCAST,className(),name(),typechar,'L');
+        throw new cException(this,eBADCAST,typechar,'L');
 }
 
 double cPar::doubleValue()
@@ -614,7 +613,7 @@ double cPar::doubleValue()
                func.argc==2 ? ((MathFunc2Args)func.f)(func.p1,func.p2) :
                               ((MathFunc3Args)func.f)(func.p1,func.p2,func.p3);
     else
-        throw new cException(eBADCAST,className(),name(),typechar,'D');
+        throw new cException(this,eBADCAST,typechar,'D');
 }
 
 void *cPar::pointerValue()
@@ -626,7 +625,7 @@ void *cPar::pointerValue()
     if (typechar=='P')
         return ptr.ptr;
     else
-        throw new cException(eBADCAST,className(),name(),typechar,'P');
+        throw new cException(this,eBADCAST,typechar,'P');
 }
 
 cObject *cPar::objectValue()
@@ -638,7 +637,7 @@ cObject *cPar::objectValue()
     if (typechar=='O')
         return obj.obj;
     else
-        throw new cException(eBADCAST,className(),name(),typechar,'O');
+        throw new cException(this,eBADCAST,typechar,'O');
 }
 
 bool cPar::isNumeric() const
@@ -677,8 +676,8 @@ bool cPar::equalsTo(cPar *par)
         case 'T': return dtr.res == par->dtr.res;
         case 'P': return ptr.ptr == par->ptr.ptr;
         case 'O': return obj.obj == par->obj.obj;
-        case 'X': throw new cException("(%s): equalsTo() with X type not implemented",className());
-        case 'C': throw new cException("(%s): equalsTo() with C type not implemented",className());
+        case 'X': throw new cException(this, "equalsTo() with X type not implemented");
+        case 'C': throw new cException(this, "equalsTo() with C type not implemented");
         default: return 0;
     }
 }
@@ -965,34 +964,34 @@ double cPar::evaluate()
        sXElem& e = expr.xelem[i];
        switch( toupper(e.type) ) {
            case 'D':
-             if(tos>=stksize - 1) throw new cException(eBADEXP,className(),name());
+             if(tos>=stksize - 1) throw new cException(this,eBADEXP);
              stk[++tos] = e.d;
              break;
            case 'P':
            case 'R':
-             if(!e.p || tos>=stksize - 1) throw new cException(eBADEXP,className(),name());
+             if(!e.p || tos>=stksize - 1) throw new cException(this,eBADEXP);
              stk[++tos] = (double)(*e.p);
              break;
            case '0':
-             if(!e.f0) throw new cException(eBADEXP,className(),name());
+             if(!e.f0) throw new cException(this,eBADEXP);
              stk[++tos] = e.f0();
              break;
            case '1':
-             if(!e.f1 || tos<0) throw new cException(eBADEXP,className(),name());
+             if(!e.f1 || tos<0) throw new cException(this,eBADEXP);
              stk[tos] = e.f1( stk[tos] );
              break;
            case '2':
-             if(!e.f2 || tos<1) throw new cException(eBADEXP,className(),name());
+             if(!e.f2 || tos<1) throw new cException(this,eBADEXP);
              stk[tos-1] = e.f2( stk[tos-1], stk[tos] );
              tos--;
              break;
            case '3':
-             if(!e.f3 || tos<2) throw new cException(eBADEXP,className(),name());
+             if(!e.f3 || tos<2) throw new cException(this,eBADEXP);
              stk[tos-2] = e.f3( stk[tos-2], stk[tos-1], stk[tos] );
              tos-=2;
              break;
            case '@':
-             if(!e.f2 || tos<1) throw new cException(eBADEXP,className(),name());
+             if(!e.f2 || tos<1) throw new cException(this,eBADEXP);
              switch(e.op) {
                 case '+':
                    stk[tos-1] = stk[tos-1] + stk[tos];
@@ -1047,23 +1046,23 @@ double cPar::evaluate()
                    tos-=2;
                    break;
                 default:
-                   throw new cException(eBADEXP,className(),name());
+                   throw new cException(this,eBADEXP);
                    return 0.0;
              }
              break;
            default:
-             throw new cException(eBADEXP,className(),name());
+             throw new cException(this,eBADEXP);
        }
     }
     if (tos!=0)
-        throw new cException(eBADEXP,className(),name());
+        throw new cException(this,eBADEXP);
     return stk[tos];
 }
 
 double cPar::fromstat()
 {
     if (typechar!='T')
-        throw new cException(eBADCAST,className(),name(),typechar,'T');
+        throw new cException(this,eBADCAST,typechar,'T');
     return  dtr.res->random();
 }
 

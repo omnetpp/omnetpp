@@ -19,7 +19,7 @@
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -512,7 +512,7 @@ cInspectorFactory::cInspectorFactory(const char *name, TInspector *(*f)(cObject 
 TInspector *cInspectorFactory::createInspectorFor(cObject *object,int type,void *data)
 {
     if (!inspFactoryFunc)
-        throw new cException("(%s)%s: factory function not set",className(),fullName());
+        throw new cException(this,"factory function not set");
 
     return (*inspFactoryFunc)(object,type,data);
 }

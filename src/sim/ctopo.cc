@@ -12,7 +12,7 @@
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -80,7 +80,7 @@ void cTopology::info(char *buf)
 
 cTopology& cTopology::operator=(const cTopology&)
 {
-    throw new cException("(%s)%s: operator= not implemented yet",className(),fullName());
+    throw new cException(this,"operator= not implemented yet");
 }
 
 void cTopology::clear()
@@ -227,7 +227,7 @@ void cTopology::extractFromNetwork(int (*selfunc)(cModule *,void *), void *data)
 sTopoNode *cTopology::node(int i)
 {
     if (i<0 || i>=num_nodes)
-        throw new cException("(%s)%s: invalid node index %d",className(),fullName(),i);
+        throw new cException(this,"invalid node index %d",i);
     return nodev+i;
 }
 
@@ -254,7 +254,7 @@ void cTopology::unweightedSingleShortestPathsTo(sTopoNode *_target)
     // multiple paths not supported :-(
 
     if (!_target)
-        throw new cException("(%s)%s: ..ShortestPathTo(): target node is NULL",className(),name());
+        throw new cException(this,"..ShortestPathTo(): target node is NULL");
     target = _target;
 
     for (int i=0; i<num_nodes; i++)
@@ -296,7 +296,7 @@ void cTopology::unweightedSingleShortestPathsTo(sTopoNode *_target)
 void cTopology::weightedSingleShortestPathsTo(sTopoNode *_target)
 {
     if (!_target)
-        throw new cException("(%s)%s: ..ShortestPathTo(): target node is NULL",className(),name());
+        throw new cException(this,"..ShortestPathTo(): target node is NULL");
 
     target = _target;
 

@@ -12,7 +12,7 @@
 //========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -55,8 +55,8 @@ cCoroutine::~cCoroutine()
 
 bool cCoroutine::setup(CoroutineFnp fnp, void *arg, unsigned stack_size )
 {
-    // stack_size sets the *committed* stack size; *reserved* (=available) 
-    // stack size is 1MB by default; this allows ~2048 coroutines in a 
+    // stack_size sets the *committed* stack size; *reserved* (=available)
+    // stack size is 1MB by default; this allows ~2048 coroutines in a
     // 2GB address space
     stacksize = stack_size;
     lpFiber = CreateFiber(stack_size, (LPFIBER_START_ROUTINE)fnp, arg);

@@ -12,7 +12,7 @@
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -197,7 +197,7 @@ void cLinkedList::insertBefore(void *where, void *item)
 {
     sLLElem *p = find_llelem(where);
     if (!p)
-        throw new cException("(%s)%s: insertBefore(w,o): item w not in list",className(),fullName());
+        throw new cException(this,"insertBefore(w,o): item w not in list");
     insbefore_llelem(p,item);
 }
 
@@ -205,7 +205,7 @@ void cLinkedList::insertAfter(void *where, void *item)
 {
     sLLElem *p = find_llelem(where);
     if (!p)
-        throw new cException("(%s)%s: insertAfter(w,o): item w not in list",className(),fullName());
+        throw new cException(this,"insertAfter(w,o): item w not in list");
     insafter_llelem(p,item);
 }
 
@@ -222,7 +222,7 @@ void *cLinkedList::remove(void *item)
 void *cLinkedList::pop()
 {
     if (!tailp)
-        throw new cException("(%s)%s: pop(): list empty",className(),fullName());
+        throw new cException(this,"pop(): list empty");
     return remove_llelem( tailp );
 }
 

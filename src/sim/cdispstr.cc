@@ -11,7 +11,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -250,7 +250,7 @@ bool cDisplayStringParser::parse()
     numtags = 1;
     tags[0].name = buffer;
     tags[0].numargs = 0;
-    for (int i=0; i<MAXARGS; i++) 
+    for (int i=0; i<MAXARGS; i++)
         tags[0].args[i] = NULL;
 
     char *s, *d;
@@ -322,10 +322,10 @@ void cDisplayStringParser::assemble()
     // assemble string
     for (int t=0; t<numtags; t++)
     {
-        if (t!=0) 
+        if (t!=0)
             strcat(dispstr, ";");
         strcatescaped(dispstr, tags[t].name);
-        if (tags[t].numargs>0) 
+        if (tags[t].numargs>0)
             strcat(dispstr, "=");
         for (int i=0; i<tags[t].numargs; i++)
         {

@@ -12,7 +12,7 @@
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -119,8 +119,7 @@ cQueue& cQueue::operator=(const cQueue& queue)
 void cQueue::setup(CompareFunc cmp, bool a)
 {
     if (!empty())
-        throw new cException("(%s)%s: setup() can only be called when queue is empty",
-                  className(),fullName());
+        throw new cException(this, "setup() can only be called when queue is empty");
 
     compare=cmp; asc=a;
 }
@@ -190,7 +189,7 @@ cObject *cQueue::remove_qelem(sQElem *p)
 void cQueue::insert(cObject *obj)
 {
     if (!obj)
-        throw new cException("(%s)%s: cannot insert NULL pointer in queue",className(),fullName());
+        throw new cException(this,"cannot insert NULL pointer in queue");
 
     if (takeOwnership())
         take(obj);
@@ -224,12 +223,11 @@ void cQueue::insert(cObject *obj)
 void cQueue::insertBefore(cObject *where, cObject *obj)
 {
     if (!obj)
-        throw new cException("(%s)%s: cannot insert NULL pointer in queue", className(),fullName());
+        throw new cException(this,"cannot insert NULL pointer in queue");
 
     sQElem *p = find_qelem(where);
     if (!p)
-        throw new cException("(%s)%s: insertBefore(w,o): object w=`%s' not in queue",
-                  className(),fullName(),where->name());
+        throw new cException(this, "insertBefore(w,o): object w=`%s' not in queue", where->name());
 
     if (takeOwnership())
         take(obj);
@@ -239,12 +237,11 @@ void cQueue::insertBefore(cObject *where, cObject *obj)
 void cQueue::insertAfter(cObject *where, cObject *obj)
 {
     if (!obj)
-        throw new cException("(%s)%s: cannot insert NULL pointer in queue", className(),fullName());
+        throw new cException(this,"cannot insert NULL pointer in queue");
 
     sQElem *p = find_qelem(where);
     if (!p)
-        throw new cException("(%s)%s: insertAfter(w,o): object w=`%s' not in queue",
-                  className(),fullName(),where->name());
+        throw new cException(this, "insertAfter(w,o): object w=`%s' not in queue",where->name());
 
     if (takeOwnership())
         take(obj);
@@ -274,7 +271,7 @@ cObject *cQueue::remove(cObject *obj)
 cObject *cQueue::pop()
 {
     if(!tailp)
-        throw new cException("(%s)%s: pop(): queue empty",className(),fullName());
+        throw new cException(this,"pop(): queue empty");
 
     return remove_qelem( tailp );
 }

@@ -15,7 +15,7 @@
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -116,7 +116,7 @@ cObject& cObject::operator=(const cObject&)
 
 void cObject::copyNotSupported() const
 {
-    throw new cException(eCANTCOPY,className(),name());
+    throw new cException(this,eCANTCOPY);
 }
 
 void cObject::info(char *buf)
