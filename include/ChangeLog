@@ -2,6 +2,10 @@ FIXME todo: create parsim/ (and nedxml/?) subdirectories here
 std::string for info() and fullPath()
 cMessage: change prio() from int to short (2 bytes less)
 
+2004-04-20   Andras Varga
+
+	* cobject.h, cpolymorphic.h: moved createDescriptor() into cPolymorphic
+
 2004-04-13   Andras Varga
 
 	* cenvir.h: added method bool cEnvir::disabled(); returns true when

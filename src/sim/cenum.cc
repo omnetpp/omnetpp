@@ -20,6 +20,7 @@
 
 #include <stdio.h>           // sprintf, fprintf
 #include <string.h>          // memcmp, memcpy, memset
+#include <assert.h>
 #include "macros.h"
 #include "ctypes.h"
 #include "csimul.h"

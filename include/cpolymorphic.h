@@ -21,6 +21,8 @@
 #include <string>
 #include "defs.h"
 
+class cStructDescriptor;
+
 /**
  * This is the ultimate base class for cObject, and thus for nearly all
  * OMNeT++ classes. cPolymorphic is a <b>lightweight common base class</b>:
@@ -47,6 +49,12 @@
  */
 class SIM_API cPolymorphic
 {
+  public:
+    // internal: creates and returns a descriptor object for this object passed 
+    // as argument. This version return an instance of the class className()+
+    // "Descriptor".
+    virtual cStructDescriptor *createDescriptor();
+
   public:
     /**
      * Constructor. It has an empty body. (The class doesn't have data members

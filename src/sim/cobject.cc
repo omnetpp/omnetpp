@@ -67,6 +67,11 @@ const char *cPolymorphic::className() const
     return opp_typename(typeid(*this));
 }
 
+cStructDescriptor *cPolymorphic::createDescriptor()
+{
+    return cStructDescriptor::createDescriptorFor(className(), (void *)this);
+}
+
 
 //==========================================================================
 //=== cObject - member functions
@@ -211,11 +216,6 @@ void cObject::setDefaultOwner(cDefaultList *list)
 cDefaultList *cObject::defaultOwner()
 {
     return defaultowner;
-}
-
-cStructDescriptor *cObject::createDescriptor()
-{
-    return cStructDescriptor::createDescriptorFor(className(), (void *)this);
 }
 
 cObject& cObject::operator=(const cObject&)
