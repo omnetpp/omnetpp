@@ -323,14 +323,14 @@ void TOmnetTkApp::runSimulation(int mode, simtime_t until_time, long until_event
     stopClock();
     stopsimulation_flag = false;
 
+    animating = true;
+    ev.disable_tracing = false;
+
     if (simstate==SIM_TERMINATED)
     {
         // call wrapper around simulation.callFinish() and simulation.endRun()
         finishSimulation();
     }
-
-    animating = true;
-    ev.disable_tracing = false;
 
     updateNextModuleDisplay();
     clearPerformanceDisplay();

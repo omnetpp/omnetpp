@@ -1,6 +1,11 @@
+2004-07-17  Andras Varga
+
+	* tkapp.cc: enable output (set disable_tracing=false) before calling
+	finish()
+
 2004-07-06  Andras Varga
 
-	* cmdenv.cc: fixed Speedometer usage
+	* tkapp.cc: fixed Speedometer usage
 
 2004-06-21   Andras Varga
 
