@@ -87,8 +87,9 @@ class SAXHandler
 
 
 /**
- * Front-end to XML parsers (non-validating, SAX parsers).
- * The current implementation uses Expat.
+ * Wraps XML SAX parsers (Expat and LibXML are supported at the moment,
+ * decided at compile-time. DTD validation is supported with LibXML.)
+ *
  * One must provide a SAXHandler for this class to be useful.
  *
  * @ingroup XMLParser
