@@ -47,7 +47,7 @@ void ExtHTTPClient::initialize()
     addr = par("addr");
     srvAddr = par("srvAddr");
 
-    displayString().setTagArg("t",0,"Enter into your browser:\nhttp://localhost:4242");
+    displayString().setTagArg("t",0,"Run the simulation, then\nenter into your browser:\nhttp://localhost:4242");
 }
 
 void ExtHTTPClient::handleMessage(cMessage *msg)
