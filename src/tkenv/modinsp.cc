@@ -544,10 +544,8 @@ void TGraphicalModWindow::redrawModules()
 void TGraphicalModWindow::redrawMessages()
 {
    Tcl_Interp *interp = getTkApplication()->getInterp();
-   cModule *mod = static_cast<cModule *>(object);
 
    // refresh & cleanup from prev. events
-   //setToolbarInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
    CHK(Tcl_VarEval(interp, canvas, " delete msg msgname", NULL));
 
    // this thingy is only needed if animation is going on
