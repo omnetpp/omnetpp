@@ -30,10 +30,6 @@
  */
 class cMPICommBuffer : public cCommBufferBase
 {
-  protected:
-    // extend buffer before packing
-    void extendBufferFor(int count, MPI_Datatype  dataType);
-
   public:
     /**
      * Constructor.

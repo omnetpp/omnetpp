@@ -38,7 +38,9 @@
 Register_Class(cNamedPipeCommunications);
 
 
-#define sleep(x) _sleep((x)*1000)
+#define sleep(x)  _sleep((x)*1000)
+#define usleep(x) _sleep((x)/1000)
+
 
 
 #define PIPE_INBUFFERSIZE  (1024*1024) /*1MB*/
