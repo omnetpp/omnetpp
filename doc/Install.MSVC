@@ -1,0 +1,92 @@
+Using OMNeT++ with Microsoft Visual C++
+=======================================
+
+1. Prerequisite: install Tcl/Tk
+
+Download and install Tcl/Tk. You need at least version 8.0p1, but it's better
+to download the latest version (currently 8.2).
+
+
+2. Installing OMNeT++
+
+Download the omnetpp source code and documentation from the omnetpp site.
+If you downloaded a zip file, extract its contents to the installation
+directory. If you downloaded a tgz file, copy it to the directory where
+you want to install OMNeT++, and extract the archive using the command:
+
+    tar zxvf omnetpp.tgz
+
+A subdirectory called something like omnetpp-2.0 will be created which
+will contain the simulator files. In this text we'll assume this directory
+is c:\omnetpp-2.0.
+
+Make sure the MSVC executables (nmake,cl,link,...) are in the path.
+It is also recommended that you put the c:\omnetpp-2.0\bin directory
+into the path.
+
+You should edit the configuser.vc file to make sure it contains
+the settings you need. You'll need to correct the paths in the following lines:
+  OMNETPP_ROOT=c:\omnetpp-2.0
+  TK_INCL_DIR=c:\tcl\include
+  TK_LIB_DIR=c:\tcl\lib
+and maybe also the .lib file names in the definition of TK_LIBS a few lines 
+further below.
+
+Then type
+    nmake -f Makefile.vc
+This should build the executables and the libraries and copy them to the bin
+and lib subdirectories within the top-level omnetpp directory.
+
+The sample simulations currently have no makefiles :-(
+I'll add makefiles and/or workspace files for them soon...
+
+
+3. Reconfiguring the libraries
+
+If you need to recompile the OMNeT++ components with different flags (e.g.
+for debugging or optimized for speed), then cd to the top-level omnetpp
+directory, edit configuser.vc accordingly, then say:
+
+    nmake -f Makefile.vc clean
+    nmake -f Makefile.vc
+
+If you want to recompile just a single library, then cd to the directory
+of the library and type:
+
+    nmake -f Makefile.vc clean
+    nmake -f Makefile.vc
+    nmake -f Makefile.vc install-local
+
+The last line is that copies the libraries from the src/ tree to lib/.
+(Typing `nmake -f Makefile.vc' in the top-level omnetpp directory includes
+`nmake install-local' for all libraries and programs.
+
+
+4. Linking simulations
+
+Hints to compile OMNeT++ simulations from the MSVC IDE:
+  - rename the .cc files to .cpp (ren *.cc *.cpp)
+  - make sure to turn off exception handling and RTTI
+  - to use Tkenv, link with sim_std.lib, envir.lib, tkenv.lib and the Tcl/Tk
+    libraries
+  - to use Cmdenv, link with sim_std.lib, envir.lib, and cmdenv.lib
+
+
+5. Using Plove
+
+If you want to use Plove, you should download and install Gnuplot.
+You'll also need a couple of Unix tools like grep and awk, the easiest way
+to get them is to download and install the Cygwin package from www.cygnus.com.
+
+When you have everything installed, start Plove and set the appropriate
+configuration in Options|External programs. If you entered everything correctly,
+Plove should work.
+
+A usual caveat is that Gnuplot expects forward slashes in filenames and Plove
+supplies backslashes or vica versa (there are multiple incompatible builds of
+Gnuplot on NT); it you suspect this might be the problem, reverse this setting
+in Options|External programs.
+
+Have fun!
+
+
