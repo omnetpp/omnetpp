@@ -109,7 +109,24 @@ cMpiMod::cMpiMod()
     mNum_Outgates=0;
     syncpoints=NULL;
     segments=0;
+    my_host = NULL;
+}
 
+//-------------------------------------------------------------------------
+// Destructor function
+cMpiMod::~cMpiMod()
+{
+	printf("Rank %d, cMpiMod::destructor\n", mMy_Rank);
+// ** --> TODO
+// Uncomment after major debugging has been done.
+//  if (pack)
+//	delete pack;
+// <-- **
+MPI_Finalize();
+}
+
+void cMpiMod::init()
+{
     MPI_Comm_size(MPI_COMM_WORLD, &mSize);
     MPI_Comm_rank(MPI_COMM_WORLD, &mMy_Rank);
 
@@ -146,19 +163,6 @@ cMpiMod::cMpiMod()
       else
         ev.printf("SLAVE: process not initialised. . .");
     }
-}
-
-//-------------------------------------------------------------------------
-// Destructor function
-cMpiMod::~cMpiMod()
-{
-	printf("Rank %d, cMpiMod::destructor\n", mMy_Rank);
-// ** --> TODO
-// Uncomment after major debugging has been done.
-//  if (pack)
-//	delete pack;
-// <-- **
-MPI_Finalize();
 }
 
 //-------------------------------------------------------------------------
@@ -669,7 +673,7 @@ void cMpiMod::do_process_netmsg(int tag)
               throw new cException("do_process_netmsg()/unpacking the message");
 
 
-            //FIXME            
+            //FIXME
             // del_syncpoint(msg->arrivalTime(),gate_num);
 
             netg = (cNetGate *)mOutgates[gate_num];

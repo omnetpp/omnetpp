@@ -93,6 +93,7 @@ class cMpiMod : public cNetMod
     virtual void callFinish();
 
     // redefined virtual functions
+    virtual void init();
     virtual void sync_after_modinits(); // sync before processing first 'real' event
     virtual void process_netmsgs();
     virtual void process_netmsg_blocking();
