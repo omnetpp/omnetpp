@@ -1,8 +1,8 @@
 \chapter{The Simulation Library}
 \label{cha:the-simulation-library}
 
-{\opp} has a rich C++ class library which you can use when implementing 
-simple modules. A quick overview of the areas supported by the 
+{\opp} has a rich C++ class library which you can use when implementing
+simple modules. A quick overview of the areas supported by the
 simulation library:
 \begin{itemize}
   \item{sending and receiving messages, scheduling and cancelling
@@ -16,7 +16,7 @@ simulation library:
     \cclass{cModule} (base class for
     \cclass{cSimpleModule}); \cclass{cPar} and
     \cclass{cGate} classes}
-  \item{accessing other modules in the network: member functions of \cclass{cModule} 
+  \item{accessing other modules in the network: member functions of \cclass{cModule}
     and \cclass{cGate}}
   \item{storing data in containers: \cclass{cArray},
     \cclass{cQueue}, \cclass{cBag} and
@@ -29,9 +29,9 @@ simulation library:
     \cclass{cDoubleHistogram},
     \cclass{cVarHistogram}, \cclass{cPSquare},
     \cclass{cKSplit} classes}
-  \item{making variables inspectable in the graphical user interface 
+  \item{making variables inspectable in the graphical user interface
     (Tkenv): the \fmac{WATCH()} macro (\cclass{cWatch} class)}
-  \item{sending debug output to and prompting for user input in the graphical 
+  \item{sending debug output to and prompting for user input in the graphical
     user interface (Tkenv\index{Tkenv}): the ev\index{ev} object (\cclass{cEnvir} class)}
 \end{itemize}
 
@@ -44,100 +44,100 @@ simulation library:
 \textbf{Base class}
 
 
-Classes in the {\opp} simulation library are derived from \cclass{cObject}. 
+Classes in the {\opp} simulation library are derived from \cclass{cObject}.
 Functionality and conventions that come from \cclass{cObject}:
 \begin{itemize}
   \item{name attribute}
-  \item{\fname{className()} member and other member functions giving textual 
+  \item{\fname{className()} member and other member functions giving textual
     information about the object}
   \item{conventions for assignment, copying, duplicating the object}
   \item{ownership\index{ownership} control for containers derived from \cclass{cObject}}
   \item{support for traversing the object tree}
-  \item{support for inspecting the object in graphical user interfaces 
+  \item{support for inspecting the object in graphical user interfaces
     (Tkenv)}
-  \item{support for automatic cleanup (garbage collection) at the end 
+  \item{support for automatic cleanup (garbage collection) at the end
     of the simulation}
 \end{itemize}
 
 
-Classes inherit and redefine several \cclass{cObject} member functions; 
-in the following we'll discuss some of the practically important 
+Classes inherit and redefine several \cclass{cObject} member functions;
+in the following we'll discuss some of the practically important
 ones.
 
 
 \textbf{Setting and getting attributes}
 
 
-Member functions that set and query object attributes follow 
-consistent naming. The setter member function has the form setSomething(...) 
-and its getter counterpart is named something(), i.e. the ''get'' 
-verb found in Java and some other libraries is omitted for brevity. 
-For example, the \textit{length} attribute of the \cclass{cMessage} class can 
+Member functions that set and query object attributes follow
+consistent naming. The setter member function has the form setSomething(...)
+and its getter counterpart is named something(), i.e. the ''get''
+verb found in Java and some other libraries is omitted for brevity.
+For example, the \textit{length} attribute of the \cclass{cMessage} class can
 be set and read like this:
 
-\begin{Verbatim}
+\begin{verbatim}
 msg->setLength( 1024 );
 length = msg->length();
-\end{Verbatim}
+\end{verbatim}
 
 
 \textbf{className()}
 
 
-For each class, the \fname{className()} member function returns the class 
+For each class, the \fname{className()} member function returns the class
 name as a string:
 
-\begin{Verbatim}
+\begin{verbatim}
 const char *classname = msg->className(); // returns "cMessage"
-\end{Verbatim}
+\end{verbatim}
 
 \textbf{Name attribute}
 
 
-An object can be assigned a name (a character string). The name 
-string is the first argument to the constructor of every class, 
-and it defaults to NULL (no name string). If you supply a name 
-string, the object will make its own copy (\fname{strdup()}). As an example, 
+An object can be assigned a name (a character string). The name
+string is the first argument to the constructor of every class,
+and it defaults to NULL (no name string). If you supply a name
+string, the object will make its own copy (\fname{strdup()}). As an example,
 you can create a message object like this:
 
-\begin{Verbatim}
+\begin{verbatim}
 cMessage *mymsg = new cMessage("mymsg");
-\end{Verbatim}
+\end{verbatim}
 
 
 You can also set the name after the object has been created:
 
-\begin{Verbatim}
+\begin{verbatim}
 mymsg->setName("mymsg");
-\end{Verbatim}
+\end{verbatim}
 
-You can get a pointer to the internally stored copy of the name 
+You can get a pointer to the internally stored copy of the name
 string like this:
 
-\begin{Verbatim}
+\begin{verbatim}
 const char *name = mymsg->name(); // --> returns ptr to internal copy
                                   // of "mymsg"
-\end{Verbatim}
+\end{verbatim}
 
 
-For convenience and efficiency reasons, the empty string '''' 
-and NULL are treated as equivalent by library objects: '''' 
-is stored as NULL (so that it does not consume heap), but it 
-is returned as '''' (so that it is easier to print 
-out etc). Thus, if you create a message object with either NULL 
-or '''' as name, it will be stored as NULL and \fname{name()} 
+For convenience and efficiency reasons, the empty string ''''
+and NULL are treated as equivalent by library objects: ''''
+is stored as NULL (so that it does not consume heap), but it
+is returned as '''' (so that it is easier to print
+out etc). Thus, if you create a message object with either NULL
+or '''' as name, it will be stored as NULL and \fname{name()}
 will return a pointer to '''', a static string:
 
-\begin{Verbatim}
+\begin{verbatim}
 cMessage *msg = new cMessage(NULL, <additional args>);
 const char *str = msg->name(); // --> returns ptr to  ""
-\end{Verbatim}
+\end{verbatim}
 
 
 \textbf{fullName() and fullPath()}
 
 
-Objects have two more member functions which return other sort 
+Objects have two more member functions which return other sort
 of names based on the name attribute: \fname{fullName()} and \fname{fullPath()}.
 
 Suppose we have a module in the network university\_lan, compound
@@ -145,28 +145,26 @@ module fddi\_ring, simple module station[10]. If you call the functions
 on the simple module object (\cclass{cSimpleModule} inherits from
 \cclass{cObject}, too), the functions will return these values:
 
-\begin{Verbatim}
+\begin{verbatim}
 ev << module->name(); // --> "station"
 ev << module->fullName(); // --> "station[10]"
 ev << module->fullPath(); // --> "university_lan.fddi_ring.station[10]"
-\end{Verbatim}
+\end{verbatim}
 
 
 
-These functions work for any object. For example, a local object 
+These functions work for any object. For example, a local object
 inside the module would produce results like this:
 
 
+\begin{verbatim}
 void FDDIStation::activity()
-
-
-\begin{Verbatim}
-{ 
+{
     cQueue buffer("buffer");
     ev << buffer->fullPath(); // --> "university_lan.fddi_ring.
                               // station[10].buffer"
 }
-\end{Verbatim}
+\end{verbatim}
 
 
 
@@ -179,12 +177,12 @@ pointers to static buffers. Each call will overwrite the previous
 content of the buffer, so for example you shouldn't put two calls in a
 single \fname{printf()} statement:
 
-\begin{Verbatim}
-ev.printf("object1 is '%s', object2 is '%s'\n", 
-          object1->fullPath(), 
+\begin{verbatim}
+ev.printf("object1 is '%s', object2 is '%s'\n",
+          object1->fullPath(),
           object2->fullPath()
          ); // WRONG! Same string is printed twice!!!
-\end{Verbatim}
+\end{verbatim}
 
 
 \textbf{Copying and duplicating objects}
@@ -196,9 +194,9 @@ contained objects also if necessary. This is especially useful in the
 case of message objects. \fname{dup()} returns a pointer of type
 \cclass[cObject]{cObject*}, so it needs to be cast to the proper type:
 
-\begin{Verbatim}
+\begin{verbatim}
 cMessage *copyMsg = (cMessage *) msg->dup();
-\end{Verbatim}
+\end{verbatim}
 
 
 \fname{dup()} works through calling the copy constructor, which in
@@ -220,7 +218,7 @@ the container.
 
 For example:
 
-\begin{Verbatim}
+\begin{verbatim}
 cQueue queue;
 
 //..
@@ -228,7 +226,7 @@ for (cQueueIterator queueIter(queue); !queueIter.end(); queueIter++)
 {
     cObject *containedObject = queueIter();
 }
-\end{Verbatim}
+\end{verbatim}
 
 
 \textbf{Ownership control}
@@ -254,24 +252,24 @@ for any object by calling its \fname{setOwner()} member function.
 \textbf{Tracing}
 
 
-The tracing feature will be used extensively in the code examples, 
-so it is shortly introduced here. It will be covered in detail 
+The tracing feature will be used extensively in the code examples,
+so it is shortly introduced here. It will be covered in detail
 in a later section.
 
 The ev\index{ev} object represents the user interface of the
 simulation.  You can send debugging output to ev with the C++-style
 output operators:
 
-\begin{Verbatim}
+\begin{verbatim}
 ev << "packet received, sequence number is "
    << seq_num << endl;
-\end{Verbatim}
+\end{verbatim}
 
 An alternative solution is \fname{ev.printf()}:
 
-\begin{Verbatim}
+\begin{verbatim}
 ev.printf("packet received, sequence number is %d\n", seq_num);
-\end{Verbatim}
+\end{verbatim}
 
 \textbf{Simulation time conversion}
 
@@ -287,19 +285,19 @@ the buffer pointed to by the second arg. If the second arg is omitted
 or it is NULL, \fname{simtimeToStr()} will place the result into a
 static buffer which is overwritten with each call:
 
-\begin{Verbatim}
+\begin{verbatim}
 char buf[32];
 ev.printf("t1=%s, t2=%s\n", simtimeToStr(t1), simTimeToStr(t2,buf));
-\end{Verbatim}
+\end{verbatim}
 
 
 The \fname{strToSimtime()} function parses a time specification passed
 in a string, and returns a \cclass{simtime\_t}. If the string cannot
 be entirely interpreted, -1 is returned:
 
-\begin{Verbatim}
+\begin{verbatim}
 simtime_t t = strToSimtime("30s 152ms");
-\end{Verbatim}
+\end{verbatim}
 
 Another variant, \fname{strToSimtime0()} can be used if the time
 string is a substring in a larger string. Instead of taking a char*,
@@ -309,11 +307,11 @@ interpreted as part of the time string, and returns the value. It
 never returns -1; if nothing at the beginning of the string looked
 like simulation time, it returns 0.
 
-\begin{Verbatim}
+\begin{verbatim}
 const char *s = ''30s 152ms and some rubbish'';
 
 simtime_t t = strToSimtime0(s); // now s points to "and some rubbish"
-\end{Verbatim}
+\end{verbatim}
 
 \textbf{Utility \texttt{<}string.h\texttt{>} functions}
 
@@ -338,7 +336,7 @@ to the result. The result's length shouldn't exceed 255 characters.
 
 \subsection{The cMessage class}
 
-In {\opp}, \cclass{cMessage} is a central class. Objects of \cclass{cMessage} and
+\cclass{cMessage} is a central class in {\opp}. Objects of \cclass{cMessage} and
 subclasses may model a number of things: events\index{events};
 messages\index{message}; packets\index{packets},
 frames\index{frames}, cells\index{cells}, bits or signals travelling
@@ -348,38 +346,38 @@ in a network; entities travelling in a system and so on.
 \textbf{Attributes}
 
 
-A \cclass{cMessage} object has number of attributes. Some are used by 
-the simulation kernel, others are provided just for the convenience 
+A \cclass{cMessage} object has number of attributes. Some are used by
+the simulation kernel, others are provided just for the convenience
 of the simulation programmer. A more-or-less complete list:
 \begin{itemize}
   \item{The \textit{name} attribute is inherited from \cclass{cObject}.}
-  \item{The \textit{message kind} attribute is supposed to carry some message 
-    type information. Zero and positive values can be freely used 
-    for any purpose. Negative values are reserved for use by the 
-    {\opp} simulation library; especially, MK\_PACKET (-1) and MK\_INFO 
-    (-2) are used to denote that the message is a network packet 
+  \item{The \textit{message kind} attribute is supposed to carry some message
+    type information. Zero and positive values can be freely used
+    for any purpose. Negative values are reserved for use by the
+    {\opp} simulation library; especially, MK\_PACKET (-1) and MK\_INFO
+    (-2) are used to denote that the message is a network packet
     (see the \cclass{cPacket} class later).}
-  \item{The \textit{length} attribute (understood in bits) is used to compute 
-    transmission delay when the message travels through a connection 
+  \item{The \textit{length} attribute (understood in bits) is used to compute
+    transmission delay when the message travels through a connection
     that has an assigned data rate.}
-  \item{The \textit{bit error flag} attribute is set to true by the simulation 
-    kernel with a probability of $1-(1-\textit{ber})^{\mathit{length}}$ when the 
-    message is sent through a connection that has an assigned bit 
+  \item{The \textit{bit error flag} attribute is set to true by the simulation
+    kernel with a probability of $1-(1-\textit{ber})^{\mathit{length}}$ when the
+    message is sent through a connection that has an assigned bit
     error rate (\textit{ber}).}
-  \item{The \textit{priority} attribute is used by the simulation kernel to 
-    order messages in the message queue (FES) that have the same 
+  \item{The \textit{priority} attribute is used by the simulation kernel to
+    order messages in the message queue (FES) that have the same
     arrival time values.}
-  \item{The \textit{time stamp} attribute is not used by the simulation kernel; 
-    you can use it for purposes like remembering the time when the 
+  \item{The \textit{time stamp} attribute is not used by the simulation kernel;
+    you can use it for purposes like remembering the time when the
     message was enqueued or re-sent.}
-  \item{Other attributes and data members make simulation programming 
-    easier, they will be discussed later: \textit{parameter list}, \textit{encapsulated 
+  \item{Other attributes and data members make simulation programming
+    easier, they will be discussed later: \textit{parameter list}, \textit{encapsulated
       message}, \textit{context pointer}.}
-  \item{A number of read-only attributes store information about the 
-    message's (last) sending/scheduling: \textit{source/destination module 
-      and gate}, \textit{sending (scheduling) and arrival time}. They are 
-    mostly used by the simulation kernel while the message is in 
-    the FES, but the information is still in the message object when 
+  \item{A number of read-only attributes store information about the
+    message's (last) sending/scheduling: \textit{source/destination module
+      and gate}, \textit{sending (scheduling) and arrival time}. They are
+    mostly used by the simulation kernel while the message is in
+    the FES, but the information is still in the message object when
     a module receives the message.}
 \end{itemize}
 
@@ -389,33 +387,33 @@ of the simulation programmer. A more-or-less complete list:
 
 A \cclass{cMessage} object can be created in the following way:
 
-\begin{Verbatim}
+\begin{verbatim}
 cMessage *msg = new cMessage("msg-name", kind, length,
                              priority, errorflag);
-\end{Verbatim}
+\end{verbatim}
 
 \index{message!data members}
 
-The kind, length, and priority are integers, and errorflag is boolean. 
-All arguments have default values, so the following initializations 
+The kind, length, and priority are integers, and errorflag is boolean.
+All arguments have default values, so the following initializations
 are also valid:
 
-\begin{Verbatim}
+\begin{verbatim}
 cMessage *msg1 = new cMessage;
 cMessage *msg2 = new cMessage("data-packet", DATAPACKET_KIND, 8*1500 );
-\end{Verbatim}
+\end{verbatim}
 
 
 Once a message has been created, its data members can be changed by the following functions:
 
-\begin{Verbatim}
+\begin{verbatim}
 msg->setKind( kind );
 msg->setLength( length );
 msg->setPriority( priority );
 msg->setBitError( err );
 msg->setTimestamp();
 msg->setTimestamp( simtime );
-\end{Verbatim}
+\end{verbatim}
 
 
 With these functions the user can set the message
@@ -428,157 +426,32 @@ sets the time stamp to the current simulation time.
 
 The values can be obtained by the following functions:
 
-\begin{Verbatim}
+\begin{verbatim}
 int k       = msg->kind();
 int p       = msg->priority();
 int l       = msg->length();
 bool b      = msg->hasBitError();
 simtime_t t = msg->timestamp();
-\end{Verbatim}
+\end{verbatim}
 
 
 \textbf{Duplicating messages}
 
 \index{message!duplication}
 
-It is often needed to duplicate a message (for example, send 
-one and keep a copy). This can be done in the standard ways as 
+It is often needed to duplicate a message (for example, send
+one and keep a copy). This can be done in the standard ways as
 for any other {\opp} object:
 
-\begin{Verbatim}
+\begin{verbatim}
 cMessage *copy1 = (cMessage *) msg->dup();
 cMessage *copy2 = new cMessage( *msg );
-\end{Verbatim}
+\end{verbatim}
 
 
-The two are equivalent. The resulting message is an exact copy 
-of the original, including message parameters (\cclass{cPar} or other 
+The two are equivalent. The resulting message is an exact copy
+of the original, including message parameters (\cclass{cPar} or other
 object types) and encapsulated messages.
-
-
-
-
-
-\subsection{Attaching parameters and objects to a message}
-
-\textbf{Adding, setting and reading parameters}
-
-
-You can add any number of parameters to a \cclass{cMessage}
-object\index{message!adding parameters}.  Parameters are objects of
-\cclass{cPar} type. You add a new parameter to the message with the
-\fname{addPar()} member function:
-
-\begin{Verbatim}
-msg->addPar("dest_addr");
-\end{Verbatim}
-
-You can get back the reference to the parameter
-object\index{message!accessing parameters} with the \fname{par()}
-member function, and because \cclass{cPar} supports typecasting and
-assignment, it is easy to read and set the value of a parameter:
-
-\begin{Verbatim}
-long dest_addr = msg->par("dest_addr");
-msg->par("dest_addr") = 168;
-\end{Verbatim}
-
-
-The \fname{addPar()} function also returns a reference to the added
-\cclass{cPar} object, so you can set the value of the new parameter at
-the same place:
-
-\begin{Verbatim}
-msg->addPar("dest_addr") = 168;
-\end{Verbatim}
-
-You can use the \fname{hasPar()} function to see if the message has a 
-given parameter or not:
-
-\begin{Verbatim}
-if (!msg->hasPar("dest_addr")) 
-  msg->addPar("dest_addr");
-\end{Verbatim}
-
-
-\textbf{Numeric indices}
-
-
-Message parameters can be accessed also by index in the parameter
-array. The \fname{findPar()} function returns the index of a parameter
-or -1 if the parameter cannot be found. The parameter can then be
-accessed using an overloaded \fname{par()} function. Access by index
-is more efficient than access by name (although access by name might
-become faster in the future by using hashtables):
-
-\begin{Verbatim}
-long dest_addr = 0;
-int index = msg->findPar("dest_addr");
-
-if (index>=0)
-  dest_addr = msg->par(index);
-\end{Verbatim}
-
-\textbf{Adding arbitrary data by accessing the internal array}
-
-
-Message parameters are stored in an object of type \cclass{cArray}
-which can store any object type not only
-\cclass{cPars}\index{message!parameter storage}. The \fname{parList()}
-member function lets you directly access the internal \cclass{cArray},
-so by calling \cclass{cArray}'s member functions you can attach any
-object to the message\index{message!attaching objects}. An example:
-
-\begin{Verbatim}
-cLongHistogram *pklen_distr = new cLongHistogram("pklen_distr");
-msg->parList().add( pklen_distr );
-
-...
-
-cLongHistogram *pklen_distr =
-    (cLongHistogram *) msg->parList().get("pklen_distr");
-\end{Verbatim}
-
-
-You should take care that names of the attached objects do not 
-clash with parameter names.
-
-If you do not add parameters to the message and do not call the \fname{parList()} 
-function, the internal \cclass{cArray} object will not be created. This 
-saves you both storage and execution time.
-
-You can attach non-object types (or non-\cclass{cObject} objects) to
-the message\index{message!attaching non-object types} by using
-\cclass{cPar}'s void* pointer 'P') type (see later in the description
-of \cclass{cPar}). An example:
-
-\begin{Verbatim}
-struct conn_t *conn = new conn_t; // conn_t is a C struct
-msg->addPar("conn") = (void *) conn;
-msg->par("conn").configPointer(NULL,NULL,sizeof(struct conn_t));
-\end{Verbatim}
-
-
-\textbf{Runtime overhead}
-
-
-It has been reported that using \cclass{cPar} message parameters might
-account for quite a large part of execution time (sometimes as much as
-80\%! ). If your simulation is going to be very CPU-intensive, you're
-probably better off subclassing\index{message!subclassing} either
-\cclass{cMessage} or rather \cclass{cPacket}, and adding the required
-parameters as ints, longs, bools, etc.  to the new message class.
-
-
-Some time in the future {\opp} will directly support message 
-subclassing, and it will make the new parameters inspectable 
-in the graphical user interface (Tkenv). This is a feature much 
-demanded by users.
-
-
-However, if you don't expect your simulations execute for hours, 
-then \cclass{cPar} parameters are the most convenient way to go.
-
 
 
 
@@ -597,7 +470,7 @@ the encapsulated message. An exception: when the encapsulating (outer)
 message has zero length, {\opp} assumes it is not a real packet but
 some out-of-band signal, so its length is left at zero.
 
-\begin{Verbatim}
+\begin{verbatim}
 cMessage *userdata = new cMessage("userdata");
 
 userdata->setLength(8*2000);
@@ -605,26 +478,26 @@ cMessage *tcpseg = new cMessage("tcp");
 tcpseg->setLength(8*24);
 tcpseg->encapsulate(userdata);
 ev << tcpseg->length() << endl; // --> 8*2024 = 16192
-\end{Verbatim}
+\end{verbatim}
 
 
-A message can only hold one encapsulated message at a time. The 
-second \fname{encapsulate()} call will result in an error. It is also 
-an error if the message to be encapsulated isn't owned by the 
+A message can only hold one encapsulated message at a time. The
+second \fname{encapsulate()} call will result in an error. It is also
+an error if the message to be encapsulated isn't owned by the
 module.
 
 You can get back the encapsulated message by \fname{decapsulate()}:
 
-\begin{Verbatim}
+\begin{verbatim}
 cMessage *userdata = tcpseg->decapsulate();
-\end{Verbatim}
+\end{verbatim}
 
-\fname{decapsulate()} will decrease the length of the message accordingly, 
-except if it was zero. If the length would become negative, an 
+\fname{decapsulate()} will decrease the length of the message accordingly,
+except if it was zero. If the length would become negative, an
 error occurs.
 
 
-The \fname{encapsulatedMsg()} function returns a pointer to the encapsulated 
+The \fname{encapsulatedMsg()} function returns a pointer to the encapsulated
 message, or NULL if no message was encapsulated.
 
 
@@ -633,47 +506,72 @@ message, or NULL if no message was encapsulated.
 
 \subsection{Information about the last sending}
 
-\textbf{Readonly attributes}
+There are several variables in \cclass{cMessage} that store
+information about the last time the message was sent or
+scheduled. These variables can only be read.
 
-
-The following functions exist in \cclass{cMessage}:
+\fname{isSelfMessage()} returns true if the message has been scheduled
+(\fname{scheduleAt()}) as opposed to being sent with one of the
+\fname{send...()} methods.
 
 \begin{Verbatim}[commandchars=\\\{\}]
 bool \fname{isSelfMessage()}
-cGate *\fname{senderGate()};
-cGate *\fname{arrivalGate()};
+\end{Verbatim}
 
+The following methods can tell where the message came from and
+where it arrived (will arrive).
+
+\begin{Verbatim}[commandchars=\\\{\}]
 int \fname{senderModuleId()};
 int \fname{senderGateId()};
 int \fname{arrivalModuleId()};
 int \fname{arrivalGateId()};
+\end{Verbatim}
 
+The following two methods are just convenience functions that
+combine module id and gate id into a gate object pointer.
+
+\begin{Verbatim}[commandchars=\\\{\}]
+cGate *\fname{senderGate()};
+cGate *\fname{arrivalGate()};
+\end{Verbatim}
+
+And there are further convenience functions to tell whether
+the message arrived on a specific gate given with id or
+name+index.
+
+\begin{Verbatim}[commandchars=\\\{\}]
+bool \fname[arrivedOn()]{arrivedOn}(int id);
+bool \fname{arrivedOn}(const char *gname, int gindex=0);
+\end{Verbatim}
+
+The following methods return message creation time and the last sending
+and arrival times.
+
+\begin{Verbatim}[commandchars=\\\{\}]
 simtime_t \fname{creationTime()}
 simtime_t \fname{sendingTime()};
 simtime_t \fname{arrivalTime()};
-bool \fname[arrivedOn()]{arrivedOn(int g)};
-bool arrivedOn(const char *s, int g=0);
 \end{Verbatim}
 
-TBD comments
 
 
-\textbf{Context pointer}
 
+\subsection{Context pointer}
 
 \cclass{cMessage} contains a void* pointer which is
 set/returned by the \fname{setContextPointer()} and
 \fname{contextPointer()} functions:
 
-\begin{Verbatim}
+\begin{verbatim}
 void *context =...;
 msg->setContextPointer( context );
 void *context2 = msg->contextPointer();
-\end{Verbatim}
+\end{verbatim}
 
 
-It can be used for any purpose by the simulation programmer. 
-It is not used by the simulation kernel, and it is treated as 
+It can be used for any purpose by the simulation programmer.
+It is not used by the simulation kernel, and it is treated as
 a mere pointer (no memory management is done on it).
 
 Intended purpose: a module which schedules several self-messages
@@ -690,8 +588,8 @@ enough ''context'' information about the event.
 \subsection{The cPacket class}
 
 
-The \cclass{cPacket} class is derived from \cclass{cMessage}. It is intended as 
-a base for all messages that model packets or frames in a telecommunications 
+The \cclass{cPacket} class is derived from \cclass{cMessage}. It is intended as
+a base for all messages that model packets or frames in a telecommunications
 network.
 
 \cclass{cPacket} adds two new data members to \cclass{cMessage}:
@@ -712,33 +610,113 @@ Acceptable message kind values are:
 \item{MK\_INFO}\index{MK\_INFO}
 \end{itemize}
 
-The \cclass{cPacket} constructor sets the message kind to MK\_PACKET. Both MK\_PACKET 
-and MK\_INFO are defined as negative integers. (Remember, negative 
-message kind values are reserved for the simulation library.)
+The \cclass{cPacket} constructor sets the message kind to \fname{MK\_PACKET}.
+Both \fname{MK\_PACKET} and \fname{MK\_INFO} are defined as negative integers.
+(Remember, negative message kind values are reserved for the simulation library.)
 
-The protocol and PDU fields would ideally take a value from the protocol.h 
-header in the simulation library. The contents of protocol.h 
+The protocol and PDU fields would ideally take a value from the \fname{protocol.h}
+header in the simulation library. The contents of \fname{protocol.h}
 is currently experimental; comments and contributions are welcome.
 
-TDB examples for protocol and pdu values.
+
+
+\subsection{Attaching parameters and objects}
+
+If you want to add parameters or objects to a message, the preferred
+way to do that is via message definitions, described in chapter
+\ref{cha:message-definitions}.
+
+\textbf{Attaching objects}
+
+The \cclass{cMessage} class has an internal \cclass{cArray} object which can
+carry objects\index{message!attaching objects}. Only objects
+that are derived from \cclass{cObject} (most {\opp} classes are so) can be attached.
+The \fname{addObject()}, \fname{getObject()}, \fname{hasObject()},
+\fname{removeObject()} methods use the object name
+as the key to the array. An example:
+
+\begin{verbatim}
+cLongHistogram *pklen_distr = new cLongHistogram("pklen_distr");
+msg->addObject( pklen_distr );
+...
+if (msg->hasObject("pklen_distr"))
+{
+   cLongHistogram *pklen_distr =
+       (cLongHistogram *) msg->getObject("pklen_distr");
+   ...
+}
+\end{verbatim}
+
+You should take care that names of the attached objects do not
+clash with each other or with \cclass{cPar} parameter names
+(see next section).
+If you do not attach anything to the message and do not call the
+\fname{parList()} function, the internal \cclass{cArray} object
+will not be created.
+This saves both storage and execution time.
+
+You can attach non-object types (or non-\cclass{cObject} objects) to
+the message\index{message!attaching non-object types} by using
+\cclass{cPar}'s void* pointer 'P') type (see later in the description
+of \cclass{cPar}). An example:
+
+\begin{verbatim}
+struct conn_t *conn = new conn_t; // conn_t is a C struct
+msg->addPar("conn") = (void *) conn;
+msg->par("conn").configPointer(NULL,NULL,sizeof(struct conn_t));
+\end{verbatim}
 
 
 
+\textbf{Attaching parameters}
 
+The old way of attaching parameters is adding \cclass{cPar} objects.
+There are several downsides of this approach, the most notable ones
+being large memory and runtime overhead. It has been reported that
+using \cclass{cPar} message parameters might account for a large
+part of execution time, sometimes as much as 80\%. (This depends
+on how many parameters you use.) Therefore it is recommended
+that you use message definitions \ref{cha:message-definitions}
+which adds the required parameters to the new message class
+as \ttt{int}, \ttt{long}, \ttt{bool} etc. class members, via
+subclassing.
 
-\subsection{Subclassing cMessage and cPacket}
+However, if you still need to use cPars, here's a short summary
+how you can do it.
+You add a new parameter to the message with the
+\fname{addPar()} member function, and get back a reference
+to the parameter object with the \fname{par()} member function.
+\fname{hasPar()} tells you if the message has a
+given parameter or not.
 
-TBD include an example
+Examples:
 
+\begin{verbatim}
+msg->addPar("dest_addr");
+msg->par("dest_addr") = 168;
 
+if (msg->hasPar("dest_addr")) {
+   long dest_addr = msg->par("dest_addr");
+   ...
+}
+\end{verbatim}
 
+Message parameters can be accessed also by index in the parameter
+array. The \fname{findPar()} function returns the index of a parameter
+or -1 if the parameter cannot be found. The parameter can then be
+accessed using an overloaded \fname{par()} function.
+
+\begin{verbatim}
+int index = msg->findPar("dest_addr");
+long dest_addr = msg->par(index);
+\end{verbatim}
 
 
 \section{Sending and receiving messages}
 
 \subsection{Sending messages}
 
-Once the message has been created, it can be sent through an 
+Once the message has been created, it can be sent through an
 output gate\index{output!gate} using one of these functions:
 
 \fname[send()]{send(cMessage *msg, const char *gate\_name, int index);}\\
@@ -746,20 +724,20 @@ output gate\index{output!gate} using one of these functions:
 
 
 
-For the first function, the argument gate\_name is the name of 
-the gate the message has to be sent through. If this gate is 
-a vector gate, index determines though which particular output 
-gate this has to be done; otherwise, the index argument is not 
+For the first function, the argument \fname{gate\_name} is the name of
+the gate the message has to be sent through. If this gate is
+a vector gate, index determines though which particular output
+gate this has to be done; otherwise, the index argument is not
 needed.
 
-The second function uses the gate number and because it does 
-not have to search through the gate array, it is faster than 
+The second function uses the gate number and because it does
+not have to search through the gate array, it is faster than
 the first one.
 
 
 Examples:
 
-\begin{Verbatim}
+\begin{verbatim}
 send( new cMessage("token"), "out-gate");
 send( new cMessage("token"), "vectorgate", i);
 
@@ -769,7 +747,7 @@ for (i=0; i<n; i++)
   send( new cMessage("packet"), out_gate_id);
   wait(in_time);
 }
-\end{Verbatim}
+\end{verbatim}
 
 
 All message sending functions check that you actually own the message
@@ -786,14 +764,14 @@ wants to send it.)
 
 \subsection{Delayed sending}
 
-It is often needed to model a delay (processing time etc) immediately 
-followed by message sending. In {\opp}, it is possible to implement 
+It is often needed to model a delay (processing time, etc.) immediately
+followed by message sending. In {\opp}, it is possible to implement
 it like this:
 
-\begin{Verbatim}
+\begin{verbatim}
 wait( some_delay );
 send( msg, "outgate" );
-\end{Verbatim}
+\end{verbatim}
 
 
 If the module needs to react to messages that arrive during the delay,
@@ -810,18 +788,18 @@ can be done with one of these functions:
 \fname[sendDelayed()]{sendDelayed(cMessage *msg, double delay, int gate\_id);}
 
 
-The arguments are the same as for \fname{send()}, except for the extra \textit{delay} 
-parameter. The effect of the function is the same as if the module 
-had kept the message for the delay interval and sent it afterwards. 
-That is, the sending time of the message will be the current 
-simulation time (time at the \fname{sendDelayed()} call) plus the delay. 
+The arguments are the same as for \fname{send()}, except for the extra \textit{delay}
+parameter. The effect of the function is the same as if the module
+had kept the message for the delay interval and sent it afterwards.
+That is, the sending time of the message will be the current
+simulation time (time at the \fname{sendDelayed()} call) plus the delay.
 The delay value must be nonnegative.
 
 Example:
 
-\begin{Verbatim}
+\begin{verbatim}
 sendDelayed( new cMessage("token"), 0.005, "out-gate");
-\end{Verbatim}
+\end{verbatim}
 
 
 
@@ -830,19 +808,19 @@ sendDelayed( new cMessage("token"), 0.005, "out-gate");
 
 \subsection{Direct message sending}
 
-Sometimes it is necessary or convenient to ignore gates/connections 
-and send a message directly to a remote destination module. The \fname{sendDirect()} 
-function does that, and it takes the pointer of the remote module 
-(\cclass{cModule} *). You can also specify a delay and an input gate of 
+Sometimes it is necessary or convenient to ignore gates/connections
+and send a message directly to a remote destination module. The \fname{sendDirect()}
+function does that, and it takes the pointer of the remote module
+(\cclass{cModule} *). You can also specify a delay and an input gate of
 the destination module.
 
-\begin{Verbatim}
+\begin{verbatim}
 cModule *destinationmodule =...;
 double delay = truncnormal(0.005, 0.0001);
 sendDirect( new cMessage, delay, destinationmodule, "in" );
-\end{Verbatim}
+\end{verbatim}
 
-The destination module receives the message as if it was sent 
+The destination module receives the message as if it was sent
 ''normally''.
 
 
@@ -853,12 +831,12 @@ The destination module receives the message as if it was sent
 only be used in the \fname{activity()} function,
 \fname{handleMessage()} gets the messages in its argument list.
 
-A message can be received by a number of functions, the most 
+A message can be received by a number of functions, the most
 general one is the \fname{receive()} function:
 
-\begin{Verbatim}
+\begin{verbatim}
 cMessage *msg = receive();
-\end{Verbatim}
+\end{verbatim}
 
 Simple module objects contain a built-in queue object called
 putAsideQueue\index{putAsideQueue}. The put-aside queue is used by
@@ -870,12 +848,12 @@ There are two groups of functions that receive messages:
 \item{\fname{receiveNew()}, \fname{receiveNewOn()}}
 \end{itemize}
 
-The functions \fname{receive()}/\fname{receiveOn()}check the put-aside queue 
-first and try to return a message from it. Only if they do not 
-find an appropriate message in the put-aside queue, will wait 
+The functions \fname{receive()}/\fname{receiveOn()}check the put-aside queue
+first and try to return a message from it. Only if they do not
+find an appropriate message in the put-aside queue, will wait
 for new messages.
 
-The functions \fname{receiveNew()}/\fname{receiveNewOn()} wait for new messages, 
+The functions \fname{receiveNew()}/\fname{receiveNewOn()} wait for new messages,
 ignoring the put-aside queue.
 
 Furthermore, the ...On() functions expect messages to arrive on a
@@ -888,7 +866,7 @@ return can be less than the current simulation time. A naive (and also
 incorrect) approach to check whether a message is a new one or it has
 been retrieved from the putaside-queue could be the following:
 
-\begin{Verbatim}
+\begin{verbatim}
 cMessage *msg = receive();
 
 if (msg->arrivalTime()<simTime()) // not correct! several events may
@@ -896,55 +874,55 @@ if (msg->arrivalTime()<simTime()) // not correct! several events may
 {
   // handle msg as an old message
 }
-\end{Verbatim}
+\end{verbatim}
 
 
 The correct way to do this is to check the putaside-queue:
 
-\begin{Verbatim}
+\begin{verbatim}
 bool queue_was_empty = putAsideQueue.empty();
 cMessage *msg = receive();
 
-if (!queue_was_empty) 
+if (!queue_was_empty)
 {
   // handle msg as an old message
 }
-\end{Verbatim}
+\end{verbatim}
 
 
-To discard the contents of the put-aside queue, one could use 
+To discard the contents of the put-aside queue, one could use
 the following code:
 
-\begin{Verbatim}
+\begin{verbatim}
 while (!putAsideQueue.empty())
   delete receive();
-\end{Verbatim}
+\end{verbatim}
 
 
-To demonstrate \fname{receiveOn()}, the following code fragment waits 
-for a message on one specific input gate and discards all messages 
+To demonstrate \fname{receiveOn()}, the following code fragment waits
+for a message on one specific input gate and discards all messages
 that arrived on other gates in the meanwhile:
 
-\begin{Verbatim}
+\begin{verbatim}
 cMessage *msg = receiveNewOn("important_input_gate");
 while (!putAsideQueue.empty())
   delete receive();
-\end{Verbatim}
+\end{verbatim}
 
 
-The above code is almost equivalent to the following, except 
+The above code is almost equivalent to the following, except
 that it preserves the previous contents of the put-aside queue:
 
-\begin{Verbatim}
+\begin{verbatim}
 cMessage *msg;
-for(;;) 
+for(;;)
 {
-  msg = receiveNew(); 
-  if (msg->arrivedOn("important_input_gate")) 
+  msg = receiveNew();
+  if (msg->arrivedOn("important_input_gate"))
     break;
   delete msg;
 }
-\end{Verbatim}
+\end{verbatim}
 
 
 All message receiving functions can be given a timeout
@@ -953,30 +931,30 @@ absolute simulation time.) If an appropriate message doesn't arrive
 within the timeout period, the function returns a NULL pointer. An
 example:
 
-\begin{Verbatim}
+\begin{verbatim}
 simtime_t timeout = 3.0;
 cMessage *msg = receive( timeout );
 
 if (msg=NULL)
-  // timeout expired without any messages\\
+  // timeout expired without any messages
 else
   // process message
-\end{Verbatim}
+\end{verbatim}
 
 
 
 \subsection{The wait() function}
 
-\textbf{With activity() only!} The \fname{wait()} function's implementation 
+\textbf{With activity() only!} The \fname{wait()} function's implementation
 contains a \fname{receive()} call which cannot be used in \fname{handleMessage()}.
 
-The \fname{wait()} function suspends the execution of the module for 
-a given amount of simulation time (a \textit{delta}), regardless whether 
+The \fname{wait()} function suspends the execution of the module for
+a given amount of simulation time (a \textit{delta}), regardless whether
 messages arrive at the module in the meanwhile or not:
 
-\begin{Verbatim}
+\begin{verbatim}
 wait( delay_interval );
-\end{Verbatim}
+\end{verbatim}
 
 In other simulation software, \fname{wait()} is often called hold.
 Internally, the \fname{wait()} function is implemented by a
@@ -985,13 +963,13 @@ Internally, the \fname{wait()} function is implemented by a
 to be prepared for arriving messages, for example message generators.
 An example:
 
-\begin{Verbatim}
+\begin{verbatim}
 for(;;)
 {
   wait( par("interarrival-time") );
   // generate and send message
 }
-\end{Verbatim}
+\end{verbatim}
 
 The messages that arrived during the \fname{wait()} call will
 accumulate in the putaside-queue. The putaside-queue can be examined
@@ -1008,9 +986,9 @@ contents is also retrieved by the \fname{receive()} or
 The module can send a message to itself\index{self-message} using the
 \fname{scheduleAt()} function:
 
-\begin{Verbatim}
+\begin{verbatim}
 scheduleAt( time, msg );
-\end{Verbatim}
+\end{verbatim}
 
 \fname{scheduleAt()} accepts an \textit{absolute} simulation time
 (usually \fname{simTime()}+\textit{something}).  Messages sent via
@@ -1027,9 +1005,9 @@ cancelled\index{self-message!cancelling}\index{message!cancelling}
 (removed from the FES). This is particularly useful because
 self-messages are often used to model timers.
 
-\begin{Verbatim}
+\begin{verbatim}
 cancelEvent( msg );
-\end{Verbatim}
+\end{verbatim}
 
 
 The \fname{cancelEvent()} function takes a pointer to the message to
@@ -1040,7 +1018,7 @@ the message is not in the FES\index{FES}.
 
 The following example shows how to implement timers:
 
-\begin{Verbatim}
+\begin{verbatim}
 cMessage *timeout_msg = new cMessage;
 
 scheduleAt( simTime()+10.0, timeout_msg );
@@ -1056,29 +1034,29 @@ else
   // other message has arrived, timer can be cancelled now:
   delete cancelEvent( timeout_msg );
 }
-\end{Verbatim}
+\end{verbatim}
 
-You can determine if a message is currently in the FES by calling 
+You can determine if a message is currently in the FES by calling
 its \fname{isScheduled()} member:
 
-\begin{Verbatim}
+\begin{verbatim}
 if (msg->isScheduled())
   delete cancelEvent(msg);
 else
   ...
-\end{Verbatim}
+\end{verbatim}
 
-An advanced version of the above code which also checks the put-aside 
+An advanced version of the above code which also checks the put-aside
 queue:
 
-\begin{Verbatim}
+\begin{verbatim}
 if (msg->isScheduled())
   delete cancelEvent(msg);
 else if (putAsideQueue.contains(msg))
   delete putAsideQueue.remove(msg);
 else
   ...
-\end{Verbatim}
+\end{verbatim}
 
 
 
@@ -1096,7 +1074,7 @@ currently free) when it finished its last transmission.
 
 An example:
 
-\begin{Verbatim}
+\begin{verbatim}
 cMessage *packet = new cMessage("DATA");
 packet->setLength( 1000 );
 
@@ -1105,7 +1083,7 @@ if (gate("TxGate")->isBusy()) // if gate is busy, wait until it
   wait( gate("TxGate")->transmissionFinishes() - simTime());
 }
 send( packet, ''TxGate'');
-\end{Verbatim}
+\end{verbatim}
 
 
 If the connection with a data rate is not immediately the one
@@ -1113,10 +1091,10 @@ connected to the simple module's output gate but
 the second one in the route, you have to check the second gate's busy
 condition.  You would use the following code:
 
-\begin{Verbatim}
-if (gate("mygate")->toGate()->isBusy()) 
+\begin{verbatim}
+if (gate("mygate")->toGate()->isBusy())
   //...
-\end{Verbatim}
+\end{verbatim}
 
 
 Note that if data rates change\index{data rate change} during the
@@ -1144,18 +1122,18 @@ can specify simulation time and CPU time limits\index{simulation time
 \textbf{Stopping on errors}
 
 
-If your simulation detects an error condition and wants to stop 
-the simulation, you can do it with the \fname{error()} member function 
+If your simulation detects an error condition and wants to stop
+the simulation, you can do it with the \fname{error()} member function
 of \cclass{cModule}. It is used like \fname{printf()}:
 
-\begin{Verbatim}
+\begin{verbatim}
 if (windowSize<1)
   error("Invalid window size %d; must be >=1", windowSize);
-\end{Verbatim}  
+\end{verbatim}
 
 
-Do not include a newline (''{\textbackslash}n'') or punctuation (period 
-or exclamation mark) in the printed-out text, it will be added 
+Do not include a newline (''{\textbackslash}n'') or punctuation (period
+or exclamation mark) in the printed-out text, it will be added
 by {\opp}.
 
 
@@ -1169,34 +1147,34 @@ by {\opp}.
 Module parameters can be accessed\index{module!accessing parameters}
 with the \fname{par()} member function of \cclass{cModule}:
 
-\begin{Verbatim}
+\begin{verbatim}
 cPar& delay_par = par("delay");
-\end{Verbatim}
+\end{verbatim}
 
-The \cclass{cPar} class is a general value-storing object. It supports 
-type casts to numeric types, so parameter values can be read 
+The \cclass{cPar} class is a general value-storing object. It supports
+type casts to numeric types, so parameter values can be read
 like this:
 
-\begin{Verbatim}
+\begin{verbatim}
 int num_tasks = par("num_tasks");
 double proc_delay = par("proc_delay");
-\end{Verbatim}
+\end{verbatim}
 
-If the parameter is a random variable or its value can change 
-during execution, it is best to store a reference to it and re-read 
+If the parameter is a random variable or its value can change
+during execution, it is best to store a reference to it and re-read
 the value each time it is needed:
 
-\begin{Verbatim}
+\begin{verbatim}
 cPar& wait_time = par("wait_time");
 for(;;)
 {
   //...
   wait( (simtime_t)wait_time );
 }
-\end{Verbatim}
+\end{verbatim}
 
-If the wait\_time parameter was given a random value (e.g. exponential(1.0)) 
-in the NED source or the ini file, the above code results in 
+If the wait\_time parameter was given a random value (e.g. exponential(1.0))
+in the NED source or the ini file, the above code results in
 a different delay each time.
 
 Parameter values can also be changed from the program, during
@@ -1209,19 +1187,19 @@ used as a means of module communication\index{module!communication}.
 
 An example:
 
-\begin{Verbatim}
+\begin{verbatim}
 par("wait_time") = 0.12;
-\end{Verbatim}
+\end{verbatim}
 
 Or:
 
-\begin{Verbatim}
+\begin{verbatim}
 cPar& wait_time = par("wait_time");
 wait_time = 0.12;
-\end{Verbatim}
+\end{verbatim}
 
 
-See \cclass{cPar} explanation later in this manual for further information 
+See \cclass{cPar} explanation later in this manual for further information
 on how to change a \cclass{cPar}'s value.
 
 
@@ -1239,18 +1217,18 @@ The \fname{gate()} member function of \cclass{cModule} returns a
 pointer to a \cclass{cGate} object, and an overloaded form of the
 function lets you to access elements of a vector gate:
 
-\begin{Verbatim}
+\begin{verbatim}
 cGate *outgate = gate("out");
 cGate *outvec5gate = gate("outvec",5);
-\end{Verbatim}
+\end{verbatim}
 
 
-For gate vectors\index{gate!vector}, the first form returns the first gate in the 
-vector (at index 0). 
+For gate vectors\index{gate!vector}, the first form returns the first gate in the
+vector (at index 0).
 
 
-The \fname{isVector()} member function can be used to determine if a 
-gate belongs to a gate vector or not. But this is almost insignificant, 
+The \fname{isVector()} member function can be used to determine if a
+gate belongs to a gate vector or not. But this is almost insignificant,
 because non-vector gates are treated as vectors with size 1.
 
 
@@ -1259,20 +1237,20 @@ Given a gate pointer, you can use the \fname{size()} and
 size of the gate vector\index{gate!vector size} and the
 index\index{gate!vector index} of the gate within the vector:
 
-\begin{Verbatim}
-int size2 = outvec5gate->size(); // --> size of outvec[] 
-int index = outvec5gate->index(); // --> 5 (it is gate 5 in the vector) 
-\end{Verbatim}
+\begin{verbatim}
+int size2 = outvec5gate->size(); // --> size of outvec[]
+int index = outvec5gate->index(); // --> 5 (it is gate 5 in the vector)
+\end{verbatim}
 
 
 For non-vector gates, \fname{size()} returns 1 and \fname{index()} returns 0.
 
-The \fname{type()} member function returns a character, 'I' for input 
+The \fname{type()} member function returns a character, 'I' for input
 gates and 'O' for output gates:
 
-\begin{Verbatim}
+\begin{verbatim}
 char type = outgate->type() // --> 'O'
-\end{Verbatim}
+\end{verbatim}
 
 \textbf{Gate IDs}
 
@@ -1283,11 +1261,11 @@ the \textit{gate ID}. The gate ID\index{gate!id} is returned by the \fname{id()}
 member function:
 
 
-\begin{Verbatim}
+\begin{verbatim}
 int id = outgate->id();
-\end{Verbatim}
+\end{verbatim}
 
-For a module with input gates from\_app and in[3] and output gates 
+For a module with input gates from\_app and in[3] and output gates
 of to\_app and status, the array may look like this:
 
 
@@ -1314,23 +1292,23 @@ of to\_app and status, the array may look like this:
 
 
 
-The array may have empty slots. Gate vectors are guaranteed to 
-occupy contiguous IDs, that is, it is legal to calculate the 
+The array may have empty slots. Gate vectors are guaranteed to
+occupy contiguous IDs, that is, it is legal to calculate the
 ID of \textit{gate[k]} as \ttt{gate(''gate'',0).id()+k}.
 
-Message sending and receiving functions accept both gate names 
-and gate IDs; the functions using gates IDs are a bit faster. 
-Gate IDs do not change during execution, so it is often worth 
+Message sending and receiving functions accept both gate names
+and gate IDs; the functions using gates IDs are a bit faster.
+Gate IDs do not change during execution, so it is often worth
 retrieving them in advance and using them instead of gate names.
 
 
 Gate IDs can also be determined with the \fname{findGate()}
 member of \cclass{cModule}:
 
-\begin{Verbatim}
+\begin{verbatim}
 int id1 = findGate("out");
 int id2 = findGate("outvect",5);
-\end{Verbatim}
+\end{verbatim}
 
 
 \textbf{Link parameters}
@@ -1338,12 +1316,12 @@ int id2 = findGate("outvect",5);
 
 The following member functions return the link attributes:
 
-\begin{Verbatim}
+\begin{verbatim}
 cLinkType *link = outgate->link();
 cPar *d = outgate->delay();
 cPar *e = outgate->error();
 cPar *r = outgate->datarate();
-\end{Verbatim}
+\end{verbatim}
 
 \textbf{Transmission state}
 
@@ -1357,8 +1335,9 @@ transmitting.
 
 \textbf{Connectivity}
 
-
-TBD figure
+%
+% TBD figure
+%
 
 The \fname{isConnected()} member function returns whether
 the gate is connected. If the gate is an output gate, the gate to
@@ -1366,7 +1345,7 @@ which it is connected is obtained by the \fname{toGate()}
 member function. For input gates, the function is
 \fname{fromGate()}.
 
-\begin{Verbatim}
+\begin{verbatim}
 cGate *gate = gate("somegate");
 if (gate->isConnected())
 {
@@ -1379,14 +1358,14 @@ else
 {
   ev << "gate not connected" << endl;
 }
-\end{Verbatim}
+\end{verbatim}
 
 
-An alternative to \fname{isConnected()} is to check the return value 
-of \fname{toGate()} or \fname{fromGate()}. The following code is fully equivalent 
+An alternative to \fname{isConnected()} is to check the return value
+of \fname{toGate()} or \fname{fromGate()}. The following code is fully equivalent
 to the one above:
 
-\begin{Verbatim}
+\begin{verbatim}
 cGate *gate = gate("somegate");
 cGate *othergate = (gate->type()=='O') ?
                    gate->toGate() : gate->fromGate();
@@ -1394,22 +1373,22 @@ if (othergate)
   ev << "gate is connected to: " << othergate->fullPath() << endl;
 else
   ev << "gate not connected" << endl;
-\end{Verbatim}
+\end{verbatim}
 
 To find out to which simple module a given output
 gate leads finally\index{gate!destination}, you would have to walk
 along the path like this (the \fname{ownerModule()} member function
 returns the module to which the gate belongs):
 
-\begin{Verbatim}
+\begin{verbatim}
 cGate *gate = gate("out");
-while (gate->toGate()!=NULL) 
+while (gate->toGate()!=NULL)
 {
   gate = gate->toGate();
 }
 
 cModule *destmod = gate->ownerModule();
-\end{Verbatim}
+\end{verbatim}
 
 
 but luckily, there are two convenience functions which do that:
@@ -1429,10 +1408,10 @@ If a module is part of a module vector\index{module!vector}, the
 \fname{index()} and \fname{size()} member functions can be used to
 query its index and the vector size:
 
-\begin{Verbatim}
-ev << "This is module [" << module->index() << 
+\begin{verbatim}
+ev << "This is module [" << module->index() <<
       "] in a vector of size [" << module->size() << "].\n";
-\end{Verbatim}
+\end{verbatim}
 
 
 \textbf{Module IDs}
@@ -1442,22 +1421,22 @@ Each module in the network has a unique ID that is returned by the
 \fname{id()} member function. The module ID\index{module!id} is used
 internally by the simulation kernel to identify modules.
 
-\begin{Verbatim}
+\begin{verbatim}
 int myModuleId = id();
-\end{Verbatim}
+\end{verbatim}
 
-If you know the module ID, you can ask the simulation object 
+If you know the module ID, you can ask the simulation object
 (a global variable) to get back the module pointer:
 
-\begin{Verbatim}
+\begin{verbatim}
 int id = 100;
 cModule *mod = simulation.module( id );
-\end{Verbatim}
+\end{verbatim}
 
 
-Module IDs are guaranteed to be unique, even when modules are 
-created and destroyed dynamically. That is, an ID which once 
-belonged to a module which was deleted is never issued to another 
+Module IDs are guaranteed to be unique, even when modules are
+created and destroyed dynamically. That is, an ID which once
+belonged to a module which was deleted is never issued to another
 module later.
 
 
@@ -1467,16 +1446,16 @@ module later.
 The surrounding compound module can be accessed by the
 \fname{parentModule()} member function:
 
-\begin{Verbatim}
+\begin{verbatim}
 cModule *parent = parentModule();
-\end{Verbatim}
+\end{verbatim}
 
-For example, the parameters of the parent module are accessed 
+For example, the parameters of the parent module are accessed
 like this:
 
-\begin{Verbatim}
+\begin{verbatim}
 double timeout = parentModule()->par( "timeout" );
-\end{Verbatim}
+\end{verbatim}
 
 
 \cclass{cModule}'s \fname{findSubmodule()} and \fname{submodule()}
@@ -1486,27 +1465,27 @@ is in a module vector). The first one returns the numeric module ID of
 the submodule, and the latter returns the module pointer.  If the
 submodule is not found, they return -1 or NULL, respectively.
 
-\begin{Verbatim}
+\begin{verbatim}
 int submodID = compoundmod->findSubmodule("child",5);
 cModule *submod = compoundmod->submodule("child",5);
-\end{Verbatim}
+\end{verbatim}
 
 
-The \fname{moduleByRelativePath()} member function can be used to find 
+The \fname{moduleByRelativePath()} member function can be used to find
 a submodule nested deeper than one level below. For example,
 
-\begin{Verbatim}
+\begin{verbatim}
 compoundmod->moduleByRelativePath("child[5].grandchild");
-\end{Verbatim}
+\end{verbatim}
 
 would give the same results as
 
-\begin{Verbatim}
+\begin{verbatim}
 compoundmod->submodule("child",5)->submodule("grandchild");
-\end{Verbatim}
+\end{verbatim}
 
-(Provided that child[5] does exist, because otherwise the second 
-version will crash with an access violation because of the NULL 
+(Provided that child[5] does exist, because otherwise the second
+version will crash with an access violation because of the NULL
 pointer.)
 
 
@@ -1523,31 +1502,31 @@ use \cclass{cSubModIterator}.
 
 For example:
 
-\begin{Verbatim}
-for (cSubModIterator submod(*parentModule()); !submod.end(); submod++)
+\begin{verbatim}
+for (cSubModIterator iter(*parentModule()); !iter.end(); iter++)
 {
-  ev << submod()->fullName();
+  ev << iter()->fullName();
 }
-\end{Verbatim}
+\end{verbatim}
 
-(\fname{submod()} is pointer to the current module the iterator is at.)
+(\fname{iter()} is pointer to the current module the iterator is at.)
 
 
 The above method can also be used to iterate along a module
 vector\index{module!vector!iteration}, since the \fname{name()}
 function returns the same for all modules:
 
-\begin{Verbatim}
-for (cSubModIterator submod(*parentModule()); !submod.end(); submod++)
+\begin{verbatim}
+for (cSubModIterator iter(*parentModule()); !iter.end(); iter++)
 {
-  if (submod()->isName( name() )) // if submod() is in the same
-                                  // vector as this module
+  if (iter()->isName(name())) // if iter() is in the same
+                              // vector as this module
   {
-    int its_index = submod()->index();
+    int its_index = iter()->index();
     // do something to it
   }
 }
-\end{Verbatim}
+\end{verbatim}
 
 
 \textbf{Walking along links}
@@ -1557,9 +1536,9 @@ To determine the module at the other end of a connection, use
 \cclass{cGate}'s \fname{fromGate()}, \fname{toGate()} and
 \fname{ownerModule()} functions. For example:
 
-\begin{Verbatim}
+\begin{verbatim}
 cModule *neighbour = gate( "outputgate" )->toGate()->ownerModule();
-\end{Verbatim}
+\end{verbatim}
 
 
 For input gates, you would use \fname{fromGate()} instead of \fname{toGate()}.
@@ -1580,15 +1559,15 @@ can be created this way. If you create a compound module dynamically,
 all its submodules will be recursively built.
 
 
-Let's suppose you are implementing a transport protocol for a 
-computer network model. It is convenient to have a separate module 
-to handle each connection. However, there's no way to know how 
-many connections there'll be simultaneously. The solution is 
-to create a manager module which receives connection requests 
-and creates a module for each connection. The Dyna example simulation 
+Let's suppose you are implementing a transport protocol for a
+computer network model. It is convenient to have a separate module
+to handle each connection. However, there's no way to know how
+many connections there'll be simultaneously. The solution is
+to create a manager module which receives connection requests
+and creates a module for each connection. The Dyna example simulation
 does something like this.
 
-It is often convenient to use direct message sending with dynamically 
+It is often convenient to use direct message sending with dynamically
 created modules.
 
 
@@ -1637,11 +1616,13 @@ stater messages, because the initializing code may insert new messages
 into the FES\index{FES}, and these messages should be processed
 \textit{after} the starter message.
 
-TBD
+%
+% TBD
+%
 
-\begin{Verbatim}
+\begin{verbatim}
 cModuleType *moduleType = findModuleType("TCPConnectionHandler");
-\end{Verbatim}
+\end{verbatim}
 
 
 \textbf{Simple form}
@@ -1649,37 +1630,36 @@ cModuleType *moduleType = findModuleType("TCPConnectionHandler");
 
 Mainly for creating simple modules.
 
-TBD
-
+%
+% TBD
+%
 
 \cclass{cModuleType} has
 \fname[createScheduleInit()]{createScheduleInit(const char *name,
   cModule *parentmod)} convenience function to get a module up and
 running in one step.
 
-\begin{Verbatim}
+\begin{verbatim}
 mod = modtype->createScheduleInit("name",this);
-\end{Verbatim}
+\end{verbatim}
 
-Does
-\ttt{\fname{create()}+\fname{buildInside()}+\fname{callInitialize()}+\fname[scheduleStart()]{scheduleStart(now)}}.
+It does \fname{create()} + \fname{buildInside()} + \fname{callInitialize()} +
+\fname[scheduleStart()]{scheduleStart(now)}.
 
 
 Should work for both simple and compound modules.
 
-
-Not applicable if the module:
+This method is not applicable if the module:
 \begin{itemize}
-\item{has parameters to be set}
-\item{has gate vector sizes to be set}
-\item{has gates to be connected before \fname{initialize()}}
+  \item{has parameters to be set}
+  \item{has gate vector sizes to be set}
+  \item{has gates to be connected before \fname{initialize()}}
 \end{itemize}
 
-Example:
-
-
-TBD
-
+%
+% Example:
+% TBD
+%
 
 \textbf{Expanded form}
 
@@ -1694,35 +1674,35 @@ If the previous simple form cannot be used. There are 5 steps:
   \item{call function that creates activation message(s) for the new
     simple module(s)}
 \end{enumerate}
-Each step (except for Step 3.) can be done with one line of code. 
+Each step (except for Step 3.) can be done with one line of code.
 
 
 
 See the following example where Step 3. is omitted:
 
-\begin{Verbatim}
+\begin{verbatim}
 // find descriptor object
 cModuleType *moduleType = findModuleType("TCPConnectionHandler");
 // create (possibly compound) module and build its submodules (if any)
 cModule *module = moduleType->create( "TCPconn", this );
-moduleType->buildInside( module );
+module->buildInside();
 // create activation message
 module->scheduleStart( simTime() );
-\end{Verbatim}
+\end{verbatim}
 
 If you want to set up parameter values or gate vector sizes (Step 3.),
 the code goes between the \fname{create()} and
 \fname{buildInside()} calls:
 
-\begin{Verbatim}
+\begin{verbatim}
 cModuleType *moduleType = findModuleType("TCP-conn-handler");
 cModule *module = moduleType->create( "TCPconn", this );
 // set up parameters and gate sizes before we set up its submodules
 module->par("window-size") = 4096;
 module->setGateSize("to-apps", 3);
-moduleType->buildInside( module );
+module->buildInside();
 module->scheduleStart( simTime() );
-\end{Verbatim}
+\end{verbatim}
 
 
 \textbf{Deleting}
@@ -1730,9 +1710,9 @@ module->scheduleStart( simTime() );
 
 To delete a module dynamically\index{module!dynamic deletion}:
 
-\begin{Verbatim}
+\begin{verbatim}
 module->deleteModule();
-\end{Verbatim}
+\end{verbatim}
 
 
 
@@ -1756,7 +1736,7 @@ There are two \fname{connect()}-functions that you can use to connect
 gates. For a normal user, they are useful for creating connections to
 dynamically created modules\index{connection!dynamic creation}.
 
-\begin{Verbatim}
+\begin{verbatim}
 connect( cModule *src_module, int src_gatenumber,
          cLinkType *channeltype,
          cModule *dest_module, int dest_gatenumber );
@@ -1764,19 +1744,19 @@ connect( cModule *src_module, int src_gatenumber,
 connect( cModule *src_module, int src_gatenumber,
          cPar *delay, cPar *error, cPar *datarate,
          cModule *dest_module, int dest_gatenumber );
-\end{Verbatim}
+\end{verbatim}
 
 
-Any of the channeltype, delay, error and datarate pointers can 
+Any of the channeltype, delay, error and datarate pointers can
 be NULL.
 
 An example:
 
-\begin{Verbatim}
+\begin{verbatim}
 connect( this, findGate("out"),
          (cLinkType *)NULL,
          module, module->findGate("in",0) );
-\end{Verbatim}
+\end{verbatim}
 
 
 
@@ -1813,8 +1793,8 @@ gate and also to find optimal routes\index{optimal routes}. The
 \cclass{cTopology} object can calculate shortest paths\index{shortest
   path} between nodes for you.
 
-The mapping between the graph (nodes, edges) and network model 
-(modules, gates, connections) is preserved: you can easily find 
+The mapping between the graph (nodes, edges) and network model
+(modules, gates, connections) is preserved: you can easily find
 the corresponding module for a \cclass{cTopology} node and vica versa.
 
 
@@ -1836,29 +1816,29 @@ First, you can specify which node types you want to include. The
 following code extracts all modules of type Router or User. (Router
 and User can be both simple and compound module types.)
 
-\begin{Verbatim}
+\begin{verbatim}
 cTopology topo;
 topo.extractByModuleType( "Router", "User", NULL );
-\end{Verbatim}
+\end{verbatim}
 
 
-Any number of module types (up to 32) can be supplied; the list 
+Any number of module types (up to 32) can be supplied; the list
 must be terminated by NULL.
 
 Second, you can extract all modules which have a certain parameter:
 
-\begin{Verbatim}
+\begin{verbatim}
 topo.extractByParameter( "ip_address" );
-\end{Verbatim}
+\end{verbatim}
 
 
-You can also specify that the parameter must have a certain value 
+You can also specify that the parameter must have a certain value
 for the module to be included in the graph:
 
-\begin{Verbatim}
+\begin{verbatim}
 cPar yes = "yes";
 topo.extractByParameter( "include_in_topo", &yes );
-\end{Verbatim}
+\end{verbatim}
 
 The third form allows you to pass a function which can determine for
 each module whether it should or should not be included.  You can have
@@ -1866,35 +1846,36 @@ each module whether it should or should not be included.  You can have
 void* pointer. An example which selects all top-level modules (and
 does not use the void* pointer):
 
-\begin{Verbatim}
+\begin{verbatim}
 int select_function(cModule *mod, void *)
 {
   return mod->parentModule() == simulation.systemModule();
 }
 
 topo.extractFromNetwork( select_function, NULL );
-\end{Verbatim}
+\end{verbatim}
 
-TBD one more example which \textit{does use} the void* ptr.
-
+%
+% TBD one more example which \textit{does use} the void* ptr.
+%
 
 A \cclass{cTopology} object uses two types: \cclass{sTopoNode} for
 nodes and \cclass{sTopoLink} for edges. (\cclass{sTopo\-Link\-In} and
 \cclass{sTopoLinkOut} are 'aliases' for \cclass{sTopoLink}; we'll
 speak about them later.)
 
-Once you have the topology extracted, you can start exploring 
+Once you have the topology extracted, you can start exploring
 it. Consider the following code (we'll explain it shortly):
 
-\begin{Verbatim}
+\begin{verbatim}
 for (int i=0; i<topo.nodes(); i++)
 {
   sTopoNode *node = topo.node(i);
   ev << "Node i=" << i << " is " << node->module()->fullPath() << endl;
-  ev << " It has " << node->outLinks() << " conns to other nodes\n"; 
+  ev << " It has " << node->outLinks() << " conns to other nodes\n";
   ev << " and " << node->inLinks() << " conns from other nodes\n";
 
-  ev << " Connections to other modules are:\n"; 
+  ev << " Connections to other modules are:\n";
   for (int j=0; j<node->outLinks(); j++)
   {
     sTopoNode *neighbour = node->out(j)->remoteNode();
@@ -1903,20 +1884,20 @@ for (int i=0; i<topo.nodes(); i++)
        << " through gate " << gate->fullName() << endl;
   }
 }
-\end{Verbatim}
+\end{verbatim}
 
-The \fname{nodes()} member function (1st line) returns the number of 
-nodes in the graph, and node(i) returns a pointer to the \textit{i}th 
+The \fname{nodes()} member function (1st line) returns the number of
+nodes in the graph, and node(i) returns a pointer to the \textit{i}th
 node, an \cclass{sTopoNode} structure.
 
 
-The correspondence between a graph node and a module can be obtained 
+The correspondence between a graph node and a module can be obtained
 by:
 
-\begin{Verbatim}
+\begin{verbatim}
 sTopoNode *node = topo.nodeFor( module );
 cModule *module = node->module();
-\end{Verbatim}
+\end{verbatim}
 
 
 The \fname{nodeFor()} member function returns a pointer to the graph
@@ -1955,14 +1936,14 @@ from \textit{all} nodes \textit{to} a target node. The algorithm is
 computationally inexpensive. In the simplest case, all edges are
 assumed to have the same weight.
 
-A real-life example when we have the target module pointer, finding 
+A real-life example when we have the target module pointer, finding
 the shortest path looks like this:
 
-\begin{Verbatim}
+\begin{verbatim}
 cModule *targetmodulep =...;
 sTopoNode *targetnode = topo.nodeFor( targetmodulep );
 topo.unweightedSingleShortestPathsTo( targetnode );
-\end{Verbatim}
+\end{verbatim}
 
 
 This performs the Dijkstra algorithm\index{Dijkstra algorithm} and
@@ -1974,7 +1955,7 @@ the previous call.
 
 Walking along the path from our module to the target node:
 
-\begin{Verbatim}
+\begin{verbatim}
 sTopoNode *node = topo.nodeFor( this );
 
 if (node == NULL)
@@ -2000,7 +1981,7 @@ else
     node = path->remoteNode();
   }
 }
-\end{Verbatim}
+\end{verbatim}
 
 
 The purpose of the \fname{distanceToTarget()} member function of a
@@ -2024,14 +2005,14 @@ Disabled nodes or edges are ignored by the shortest paths calculation
 algorithm. The \fname{enabled()} member function returns the state of
 a node or edge in the topology graph.
 
-One usage of \fname{disable()} is when you want to determine in how many 
-hops the target node can be reached from our node \textit{through 
-a particular output gate}. To calculate this, you calculate the 
-shortest paths to the target \textit{from the neighbor node}, but 
-you must disable the current node to prevent the shortest paths 
+One usage of \fname{disable()} is when you want to determine in how many
+hops the target node can be reached from our node \textit{through
+a particular output gate}. To calculate this, you calculate the
+shortest paths to the target \textit{from the neighbor node}, but
+you must disable the current node to prevent the shortest paths
 from going through it:
 
-\begin{Verbatim}
+\begin{verbatim}
 sTopoNode *thisnode = topo.nodeFor( this );
 thisnode->disable();
 topo.unweightedSingleShortestPathsTo( targetnode );
@@ -2043,15 +2024,15 @@ for (int j=0; j<thisnode->outLinks(); j++)
   ev << "Through gate " << link->localGate()->fullName() << " : "
      << 1 + link->remoteNode()->distanceToTarget() << " hops" << endl;
 }
-\end{Verbatim}
+\end{verbatim}
 
 In the future, other shortest path algorithms will also be implemented:
 
-\begin{Verbatim}
+\begin{verbatim}
 unweightedMultiShortestPathsTo(sTopoNode *target);
 weightedSingleShortestPathsTo(sTopoNode *target);
-weightedMultiShortestPathsTo(sTopoNode *target);\\
-\end{Verbatim}
+weightedMultiShortestPathsTo(sTopoNode *target);
+\end{verbatim}
 
 
 
@@ -2073,14 +2054,14 @@ default 32; this number is \#defined as
 \fmac{NUM\_RANDOM\_GE\-NE\-RA\-TORS} in utils.h).
 
 
-To avoid unwanted correlation, it is also important that different 
-simulation runs and different random number sources within one 
-simulation run use non-overlapping series of random numbers, 
-so the generators should be started with seeds well apart. For 
-selecting good seeds, the seedtool\index{seedtool} program can be used (it is 
+To avoid unwanted correlation, it is also important that different
+simulation runs and different random number sources within one
+simulation run use non-overlapping series of random numbers,
+so the generators should be started with seeds well apart. For
+selecting good seeds, the seedtool\index{seedtool} program can be used (it is
 documented later).
 
-The random number generator was taken from [JAIN91, pp. 441-444,455]. 
+The random number generator was taken from [JAIN91, pp. 441-444,455].
 It has the following properties:
 \begin{itemize}
 \item{Range: $1... 2^{31}-2$}
@@ -2092,7 +2073,7 @@ It has the following properties:
 
 The concrete implementation:
 
-\begin{Verbatim}
+\begin{verbatim}
 long intrand()
 {
   const long int a=16807, q=127773, r=2836;
@@ -2100,7 +2081,7 @@ long intrand()
   if (seed<=0) seed+=INTRAND_MAX;
   return seed;
 }
-\end{Verbatim}
+\end{verbatim}
 
 
 
@@ -2108,51 +2089,51 @@ long intrand()
 
 The generator is directly accessible through the \fname{intrand()} function:
 
-\begin{Verbatim}
+\begin{verbatim}
 long rnd = intrand();   // in the range 1..INTRAND\_MAX-1
-\end{Verbatim}
+\end{verbatim}
 
 The random number seed can be specified in the ini file
 (\fpar[random-seed]{random-seed=}) or set directly from within
 simple modules with the \fname{randseed()}
 function:
 
-\begin{Verbatim}
+\begin{verbatim}
 randseed( 10 );         // set seed to 10
 long seed = randseed(); // current seed value
-\end{Verbatim}
+\end{verbatim}
 
 
 Zero is not allowed as a seed.
 
 
-The \fname{intrand()} and \fname{randseed()} functions use generator 0. They have 
+The \fname{intrand()} and \fname{randseed()} functions use generator 0. They have
 another variant which uses a specified generator:
 
-\begin{Verbatim}
+\begin{verbatim}
 long rnd = genk_intrand(6); // like intrand(), using generator 6
 genk_randseed( k, 167 );    // set seed of generator k to 167
-\end{Verbatim}
+\end{verbatim}
 
 
 The \fname[intrand()]{intrand(n)} and \fname{dblrand()} functions are based on \fname{intrand()}:
 
-\begin{Verbatim}
+\begin{verbatim}
 int dice = 1 + intrand(6); // result of intrand(6) is in the range 0..5
                            // (it is calculated as intrand()%6)
 
 double prob = dblrand();   // dblrand() produces numbers in [0,1)
                            // calculated as
                            // intrand()/(double)INTRAND_MAX
-\end{Verbatim}
+\end{verbatim}
 
 
 They also have their counterparts that use generator $k$:
 
-\begin{Verbatim}
+\begin{verbatim}
 int dice = 1 + genk_intrand(k,6); // uses generator k
 double prob = genk_dblrand(k);    // ""
-\end{Verbatim}
+\end{verbatim}
 
 
 
@@ -2190,9 +2171,9 @@ The counterparts of the above functions using generator \textit{k}:
 \fname[genk\_truncnormal]{double genk\_truncnormal(double k, double mean, double deviation);}\\
 
 
-Note that they take the number of the generator as a double; 
-it is so because these functions are designed so that they can 
-be used with the \cclass{cPar} class and in NED files. You will find more 
+Note that they take the number of the generator as a double;
+it is so because these functions are designed so that they can
+be used with the \cclass{cPar} class and in NED files. You will find more
 information about this in the section describing \cclass{cPar}.
 
 If the above distributions do not suffice, you can write your own
@@ -2238,8 +2219,8 @@ which store \cclass{cMessage} objects. (However, the Future Event Set
 [FES]\index{FES} is not a \cclass{cQueue}; it is implemented with heap
 [class \cclass{cMessageHeap}] because it is a lot more efficient.)
 
-A queue object has a head and a tail. Normally, new elements 
-are inserted at its head and elements are removed at its tail. 
+A queue object has a head and a tail. Normally, new elements
+are inserted at its head and elements are removed at its tail.
 
 
 \begin{figure}[htbp]
@@ -2254,27 +2235,27 @@ The basic \cclass{cQueue} member functions dealing with insertion and removal
 are \fname{insert()} and \fname{pop()}. They are used
 like this:
 
-\begin{Verbatim}
+\begin{verbatim}
 cQueue queue("my-queue");
 cMessage *msg;
 
 // insert messages
 for (int i=0; i<10; i++)
-{ 
+{
   msg = new cMessage;
   queue.insert( msg );
 }
 
 // remove messages
 while( ! queue.empty() )
-{ 
+{
   msg = (cMessage *)queue.pop();
   delete msg;
 }
-\end{Verbatim}
+\end{verbatim}
 
 
-The \fname{length()} member function returns the number of items in the 
+The \fname{length()} member function returns the number of items in the
 queue, and \fname{empty()} tells whether there's anything in the queue.
 
 There are other functions dealing with insertion and removal.  The
@@ -2282,8 +2263,8 @@ There are other functions dealing with insertion and removal.  The
 new item exactly before and after a specified one, regardless of the
 ordering function.
 
-The \fname{tail()} and \fname{head()} functions return pointers to the objects 
-at the tail and head of the queue, without affecting queue contents. 
+The \fname{tail()} and \fname{head()} functions return pointers to the objects
+at the tail and head of the queue, without affecting queue contents.
 
 
 
@@ -2307,16 +2288,16 @@ compares the two objects and returns -1, 0 or 1 as the result (see the
 reference for details).  An example of setting up an ordered
 \cclass{cQueue}:
 
-\begin{Verbatim}
+\begin{verbatim}
 cQueue sortedqueue("sortedqueue", cObject::cmpbyname, true );
                         // sorted by object name, ascending
-\end{Verbatim}
+\end{verbatim}
 
 
-If the queue object is set up as an ordered queue, the \fname{insert()} 
-function uses the ordering function: it searches the queue contents 
-from the head until it reaches the position where the new item 
-needs to be inserted, and inserts it there. 
+If the queue object is set up as an ordered queue, the \fname{insert()}
+function uses the ordering function: it searches the queue contents
+from the head until it reaches the position where the new item
+needs to be inserted, and inserts it there.
 
 
 \textbf{Iterators}
@@ -2337,13 +2318,13 @@ beginning) of the queue.
 
 An example:
 
-\begin{Verbatim}
+\begin{verbatim}
 for( cQueueIterator iter(queue,1); !iter.end(), iter++)
 {
   cMessage *msg = (cMessage *) iter();
   //...
 }
-\end{Verbatim}
+\end{verbatim}
 
 
 
@@ -2367,65 +2348,65 @@ and gates.
 
 Creating an array:
 
-\begin{Verbatim}
+\begin{verbatim}
 cArray array("array");
-\end{Verbatim}
+\end{verbatim}
 
 Adding an object at the first free index:
 
-\begin{Verbatim}
+\begin{verbatim}
 cPar *p = new cPar("par");
 int index = array.add( p );
-\end{Verbatim}
+\end{verbatim}
 
 
-Adding an object at a given index (if the index is occupied, 
+Adding an object at a given index (if the index is occupied,
 you'll get an error message):
 
-\begin{Verbatim}
+\begin{verbatim}
 cPar *p = new cPar("par");
 int index = array.addAt(5,p);
-\end{Verbatim}
+\end{verbatim}
 
 
 Finding an object in the array:
 
-\begin{Verbatim}
+\begin{verbatim}
 int index = array.find(p);
-\end{Verbatim}
+\end{verbatim}
 
 Getting a pointer to an object at a given index:
 
-\begin{Verbatim}
-cPar *p = (cPar *) array[index]; 
-\end{Verbatim}
+\begin{verbatim}
+cPar *p = (cPar *) array[index];
+\end{verbatim}
 
-You can also search the array or get a pointer to an object by 
+You can also search the array or get a pointer to an object by
 the object's name:
 
-\begin{Verbatim}
+\begin{verbatim}
 int index = array.find("par");
 Par *p = (cPar *) array["par"];
-\end{Verbatim}
+\end{verbatim}
 
 
 You can remove an object from the array by calling \fname{remove()}
 with the object name, the index position or the object pointer:
 
-\begin{Verbatim}
+\begin{verbatim}
 array.remove("par");
-array.remove(index); 
-array.remove( p ); 
-\end{Verbatim}
+array.remove(index);
+array.remove( p );
+\end{verbatim}
 
 
 The \fname{remove()} function doesn't deallocate the object, but it
 returns the object pointer. If you also want to deallocate it, you can
 write:
 
-\begin{Verbatim}
-delete array.remove( index ); 
-\end{Verbatim}
+\begin{verbatim}
+delete array.remove( index );
+\end{verbatim}
 
 \textbf{Iteration}
 
@@ -2434,7 +2415,7 @@ delete array.remove( index );
 indices with an integer variable. The \fname{items()} member function
 returns the largest index plus one.
 
-\begin{Verbatim}
+\begin{verbatim}
 for (int i=0; i<array.items(); i++)
 {
   if (array[i]) // is this position used?
@@ -2443,7 +2424,7 @@ for (int i=0; i<array.items(); i++)
     ev << obj->name() << endl;
   }
 }
-\end{Verbatim}
+\end{verbatim}
 
 
 
@@ -2472,50 +2453,51 @@ is numeric (long or double) in the first place, but string, pointer
 and other types are also supported.
 
 cPar is used in {\opp} in the following places:
-\begin{Verbatim}
-\item{as module parameters}
-\item{as message parameters}
-\end{Verbatim}
 
-There are many ways to set a \cclass{cPar}'s value. One is the set...Value() 
+\begin{itemize}
+  \item{as module parameters}
+  \item{as message parameters}
+\end{itemize}
+
+There are many ways to set a \cclass{cPar}'s value. One is the set...Value()
 member functions:
 
-\begin{Verbatim}
+\begin{verbatim}
 cPar pp("pp");
 pp.setDoubleValue(1.0);
-\end{Verbatim}
+\end{verbatim}
 
 
 or by using overloaded operators:
 
-\begin{Verbatim}
+\begin{verbatim}
 cPar pp("pp");
 pp = 1.0;
-\end{Verbatim}
+\end{verbatim}
 
 
-For reading its value, it is best to use overloaded type cast 
+For reading its value, it is best to use overloaded type cast
 operators:
 
-\begin{Verbatim}
+\begin{verbatim}
 double d1 = (double)pp;
 // or simply:
 double d2 = pp;
-\end{Verbatim}
+\end{verbatim}
 
 Long integers:
 
-\begin{Verbatim}
+\begin{verbatim}
 pp = 89363L; // or:
 pp.setLongValue( 89363L );
-\end{Verbatim}
+\end{verbatim}
 
 Character string:
 
-\begin{Verbatim}
+\begin{verbatim}
 pp = "hi there"; // or:
 pp.setStringValue( "hi there" );
-\end{Verbatim}
+\end{verbatim}
 
 
 The \cclass{cPar} object makes its own copy of the string, so the
@@ -2524,8 +2506,8 @@ original one does not need to be preserved. Short strings (less than
 are stored in the object's memory space (and are not dynamically
 allocated).
 
-There are several other types \cclass{cPar} can store: such as boolean, 
-void* pointer; cObject* pointer,  function with constant args; 
+There are several other types \cclass{cPar} can store: such as boolean,
+void* pointer; cObject* pointer,  function with constant args;
 they will be mentioned in the next section.
 
 For numeric and string types, an input flag\index{input flag} can be
@@ -2537,12 +2519,12 @@ a chance to enter the value interactively.
 
 Examples:
 
-\begin{Verbatim}
+\begin{verbatim}
 cPar inp("inp");
 inp.setPrompt("Enter my value:");
 inp.setInput( true );   // make it an input parameter
 double a = (double)inp; // the user will be prompted HERE
-\end{Verbatim}
+\end{verbatim}
 
 
 
@@ -2552,12 +2534,12 @@ double a = (double)inp; // the user will be prompted HERE
 Setting \cclass{cPar} to call a function with constant arguments can
 be used to make \cclass{cPar} return random variables\index{random!variables} of different distributions\index{distribution}:
 
-\begin{Verbatim}
+\begin{verbatim}
 cPar rnd("rnd");
 rnd.setDoubleValue(intuniform, -10.0, 10.0);// uniform distr.
 rnd.setDoubleValue(normal, 100.0, 5.0); // normal distr. (mean,dev)
 rnd.setDoubleValue(exponential, 10.0); // exponential distr. (mean)
-\end{Verbatim}
+\end{verbatim}
 
 \fname{intuniform()}, \fname{normal()} etc. are ordinary C functions
 taking double arguments and returning double. Each time you read the
@@ -2566,45 +2548,45 @@ function will be called with the given constant arguments (e.g.
 normal(100.0,5.0)) and its return value used.
 
 
-The above functions use number 0 from the several random number 
-generators. To use another generator, use the genk\_xxx versions 
-of the random functions: 
+The above functions use number 0 from the several random number
+generators. To use another generator, use the genk\_xxx versions
+of the random functions:
 
-\begin{Verbatim}
+\begin{verbatim}
 rnd.setDoubleValue(genk\_normal, 3, 100.0, 5.0); // uses generator 3
-\end{Verbatim}
+\end{verbatim}
 
-A \cclass{cPar} object can also be set to return a random variable from 
+A \cclass{cPar} object can also be set to return a random variable from
 a distribution collected by a statistical data collection object:
 
-\begin{Verbatim}
+\begin{verbatim}
 cDoubleHistogram hist =....; // the distribution
 cPar rnd2("rnd2");
 rnd2.setDoubleValue(hist);
-\end{Verbatim}
+\end{verbatim}
 
 
 
 
 \subsection{Storing object and non-object pointers in cPar}
 
-\cclass{cPar} can store pointers to {\opp} objects. You can use both 
+\cclass{cPar} can store pointers to {\opp} objects. You can use both
 assignment and the \fname{setObjectValue()} member function:
 
-\begin{Verbatim}
+\begin{verbatim}
 cQueue *queue = new cQueue("queue"); // just an example
 cPar par1, par2;
 par1 = (cObject *) queue;
 par2.setObjectValue( queue );
-\end{Verbatim}
+\end{verbatim}
 
-To get the store pointer back, you can use typecast or the \fname{objectValue()} 
+To get the store pointer back, you can use typecast or the \fname{objectValue()}
 member function:
 
-\begin{Verbatim}
+\begin{verbatim}
 cQueue *q1 = (cQueue *)(cObject *)par1;
 cQueue *q2 = (cQueue *)par2.objectValue();
-\end{Verbatim}
+\end{verbatim}
 
 
 Whether the \cclass{cPar} object will own the other object or not is
@@ -2618,7 +2600,7 @@ pointers\index{non-object pointers} (for example C structs) or
 non-{\opp} object types in the parameter object.  It works very
 similarly to the above mechanism. An example:
 
-\begin{Verbatim}
+\begin{verbatim}
 double *mem = new double[15];
 cPar par1, par2;
 par1 = (void *) mem;
@@ -2626,7 +2608,7 @@ par2.setPointerValue( (void *)mem );
 ...
 double *m1 = (double *)(void *)par1;
 double *m2 = (double *)par2.pointerValue();
-\end{Verbatim}
+\end{verbatim}
 
 
 Memory management\index{cPar memory management} can be specified by
@@ -2645,13 +2627,13 @@ memory management, you can supply your own deallocation and
 duplication functions.  All this is documented in detail in the class
 library reference.  An example for simple memory management:
 
-\begin{Verbatim}
+\begin{verbatim}
 double *mem = new double[15];
 cPar par;
 par.setPointerValue((void *) mem);
 par.configPointer(NULL, NULL, 15*sizeof(double));
 // -> now if par goes out of scope, it will delete the 15-double array.
-\end{Verbatim}
+\end{verbatim}
 
 The \fname{configPointer()} setting only affects what happens when the
 \cclass{cPar} is deleted, duplicated or copied, but does \textit{not}
@@ -2662,11 +2644,11 @@ can be used to extract some dynamically allocated block out of the
 \cclass{cPar}: carrying on the previous example, you would extract the
 array of 15 doubles from the \cclass{cPar} like this:
 
-\begin{Verbatim}
+\begin{verbatim}
 double *mem2 = (double *)par.pointerValue();
 par.setValue( (void *)0 );
-// -> now par has nothing to do with the double[15] array 
-\end{Verbatim}
+// -> now par has nothing to do with the double[15] array
+\end{verbatim}
 
 
 
@@ -2686,9 +2668,9 @@ expressions\index{cPar!expressions}. In this case, the expression must
 be given in reversed Polish form\index{reversed polish notation}. An
 example:
 
-\begin{Verbatim}
+\begin{verbatim}
 sXElem *expression = new sXElem[5];
-expression[0] = &par( ''count'' ); // pointer to 
+expression[0] = &par( ''count'' ); // pointer to
 module parameter
 expression[1] = 1;
 expression[2] = '+';
@@ -2697,7 +2679,7 @@ expression[4] = '/';
 
 cPar expr("expr");
 expr.setDoubleValue(expression,5);
-\end{Verbatim}
+\end{verbatim}
 
 
 The \cclass{cPar} object created above contains the $(count+1)/2$
@@ -2711,7 +2693,7 @@ then the resulting constant would be used.
 Another example is a distribution\index{distribution} with mean and
 standard deviation given by module parameters:
 
-\begin{Verbatim}
+\begin{verbatim}
 sXElem *expression = new sXElem[3];
 expression[0] = &par("mean");
 expression[1] = &par("stddev");
@@ -2719,10 +2701,10 @@ expression[2] = normal; // pointer to the normal(double,double) func.
 
 cPar expr("expr");
 expr.setDoubleValue(expression,3);
-\end{Verbatim}
+\end{verbatim}
 
 
-For more information, see the reference and the code NEDC generates 
+For more information, see the reference and the code NEDC generates
 for parameter expressions\index{parameter!expressions}.
 
 
@@ -2754,21 +2736,21 @@ have different name than the value it refers to.)
 
 You create a redirection with the \fname{setRedirection()} function:
 
-\begin{Verbatim}
+\begin{verbatim}
 cPar *bb = new cPar("bb"); // background value
 bb = 10L;
 cPar a("a"); // we'll redirect this object
 
 a.setRedirection(bb); // create redirection
-\end{Verbatim}
+\end{verbatim}
 
 
 Now every operation you do on a's value will be done to bb:
 
-\begin{Verbatim}
+\begin{verbatim}
 long x = a; // returns bb's value, 10L
 a = 5;      // bb's value changes to 5
-\end{Verbatim}
+\end{verbatim}
 
 
 The only way to determine whether a is really holding the value or it
@@ -2777,11 +2759,11 @@ is redirected to another \cclass{cPar} is to use the
 \fname{redirection()} which returns the pointer to the background
 object, or NULL if there's no redirection:
 
-\begin{Verbatim}
+\begin{verbatim}
 cPar *redir = a.redirection(); // returns bb's pointer
 if (redir != NULL)
   ev << "a is redirected to " << redir->name() << endl;
-\end{Verbatim}
+\end{verbatim}
 
 
 To break the link between the two objects, use the
@@ -2792,34 +2774,32 @@ value to the redirected object (the other will be unaffected). If you
 want to cancel the indirection but keep the old value, you can do
 something like this:
 
-\begin{Verbatim}
+\begin{verbatim}
 cPar *value = a.redirection();  // bb's pointer
 a.cancelRedirection();          // break the link; value of a is now 0
 a = *value;                     // copy the contents of bb into a
-\end{Verbatim}
-
-
+\end{verbatim}
 
 
 
 
 \subsection{Type characters}
 
-Internally, \cclass{cPar} objects identify the types of the stored values 
-by type characters. The type character\index{type character} is returned by the \fname{type()} 
+Internally, \cclass{cPar} objects identify the types of the stored values
+by type characters. The type character\index{type character} is returned by the \fname{type()}
 member function:
 
-\begin{Verbatim}
+\begin{verbatim}
 cPar par = 10L;
 char typechar = par.type(); // returns 'L'
-\end{Verbatim}
+\end{verbatim}
 
-
-The full table of type characters is presented in the \textit{Summary} 
+The full table of type characters is presented in the \textit{Summary}
 section below.
 
-TBD \fname{isNumeric()} function.
-
+The \fname{isNumeric()} function tells whether the object
+stores one of the numeric types, so that e.g. \fname{asDoubleValue()}
+can be invoked on it.
 
 
 
@@ -2835,47 +2815,47 @@ in the following table:
 % ROW 1
 \tabheadcol
 \textbf{Type\linebreak
-char} & 
+char} &
 \textbf{Type \linebreak
-name} & 
-\textbf{Member functions} & 
+name} &
+\textbf{Member functions} &
 \textbf{Description}\\
 \hline
 %% ROW 2
-S &  string & 
+S &  string &
 \ttt{setStringValue( \linebreak
 \hspace*{0.3cm}  const char *); \linebreak
 const char * \linebreak
 \hspace*{0.3cm} \fname{stringValue()}; \linebreak
 op const char *(); \linebreak
-op=(const char *);} & 
+op=(const char *);} &
 {\raggedright
-string value. Short strings (len\texttt{<}=27) are stored inside 
+string value. Short strings (len\texttt{<}=27) are stored inside
 \cclass{cPar} object, without using heap allocation.}\\\hline
 %% ROW 3
-B &  boolean & 
+B &  boolean &
 \ttt{setBoolValue(bool); \linebreak
 bool \fname{boolValue()}; \linebreak
 op \fname{bool()}; \linebreak
 op=(bool);} &
 boolean value. Can also be retrieved from the object as long  (0 or 1).\\\hline
 %% ROW 4
-L & long int & 
+L & long int &
 \ttt{setLongValue(long); \linebreak
 long \fname{longValue()}; \linebreak
 op \fname{long()}; \linebreak
-op=(long);} & 
-signed long integer value. Can also be retrieved from the object 
+op=(long);} &
+signed long integer value. Can also be retrieved from the object
 as double.\\\hline
 %% ROW 5
-D & double & 
+D & double &
 \ttt{setDoubleValue(double); \linebreak
 double \fname{doubleValue()}; \linebreak
 op \fname{double()}; \linebreak
-op=(double);} & 
+op=(double);} &
 double-precision floating point value.\\\hline
 %% ROW 6
-F & function & 
+F & function &
 \ttt{setDoubleValue( \linebreak
 \hspace*{0.3cm} MathFunc, \linebreak
 \hspace*{0.3cm} [double], \linebreak
@@ -2883,44 +2863,44 @@ F & function &
 \hspace*{0.3cm} [double]); \linebreak
 double \fname{doubleValue()}; \linebreak
 op \fname{double()}; \linebreak
-} & 
-Mathematical function with constant arguments. The function 
-is given by its pointer; it must take 0,1,2 or 3 doubles and 
-return a double. This type is mainly used to generate random 
-numbers: e.g. the function takes mean and standard deviation 
+} &
+Mathematical function with constant arguments. The function
+is given by its pointer; it must take 0,1,2 or 3 doubles and
+return a double. This type is mainly used to generate random
+numbers: e.g. the function takes mean and standard deviation
 and returns random variable of a certain distribution.\\\hline
 %% ROW 7
-X & expr. & 
+X & expr. &
 \ttt{setDoubleValue( \linebreak
 \hspace*{0.3cm} sXElem*,int); \linebreak
 double \fname{doubleValue()}; \linebreak
 op \fname{double()};}
-& 
-Reverse Polish expression. Expression can contain constants, 
-\cclass{cPar} objects, refer to other \cclass{cPars} (e.g. module parameters), 
-can use many math operators (+-*/{\textasciicircum}\% etc), function calls 
-(function must take 0,1,2 or 3 doubles and return a double). 
+&
+Reverse Polish expression. Expression can contain constants,
+\cclass{cPar} objects, refer to other \cclass{cPars} (e.g. module parameters),
+can use many math operators (+-*/{\textasciicircum}\% etc), function calls
+(function must take 0,1,2 or 3 doubles and return a double).
 The expression must be given is in an sXElem array (see later).\\\hline
 %% ROW 8
-T & distrib. & 
+T & distrib. &
 \ttt{setDoubleValue( \linebreak
 \hspace*{0.3cm} \cclass{cStatistic}*); \linebreak
 double \fname{doubleValue()}; \linebreak
 op \fname{double()}; \linebreak
-} & 
-random variable generated from a distribution collected by a 
+} &
+random variable generated from a distribution collected by a
 statistical data collection object (derived from \cclass{cStatistic}).\\\hline
 %% ROW 9
-P & void* pointer & 
+P & void* pointer &
 \ttt{setPointerValue(void*); \linebreak
 void *\fname{pointerValue()}; \linebreak
 op void *(); \linebreak
-op=(void *);} & 
-pointer to a non-\cclass{cObject} item (C struct, non-\cclass{cObject} object 
-etc.) Memory management can be controlled through the \fname{configPointer()} 
+op=(void *);} &
+pointer to a non-\cclass{cObject} item (C struct, non-\cclass{cObject} object
+etc.) Memory management can be controlled through the \fname{configPointer()}
 member function.\\\hline
 %% ROW 10
-O & object pointer & 
+O & object pointer &
 \ttt{setObjectValue(cObject*); \linebreak
 cObject *\fname{objectValue()}; \linebreak
 op cObject *(); \linebreak
@@ -2929,16 +2909,16 @@ op=(cObject *);}
 {\raggedright pointer to an object derived from \cclass{cObject}.\\
 Ownership management is done through \fname{takeOwnership()}.}\\\hline
 %% ROW 11
-I & indirect value & 
+I & indirect value &
 \ttt{setRedirection(cPar*); \linebreak
 bool \fname{isRedirected()}; \linebreak
 cPar *\fname{redirection()}; \linebreak
 \fname{cancelRedirection()};}
 &
-{\raggedright value is redirected to another \cclass{cPar} object. All value setting 
-and reading operates on the other \cclass{cPar}; even the \fname{type()} function 
-will return the type in the other \cclass{cPar} (so you'll never get 'I' 
-as the type). This redirection can only be broken with the \fname{cancelRedirection()} 
+{\raggedright value is redirected to another \cclass{cPar} object. All value setting
+and reading operates on the other \cclass{cPar}; even the \fname{type()} function
+will return the type in the other \cclass{cPar} (so you'll never get 'I'
+as the type). This redirection can only be broken with the \fname{cancelRedirection()}
 member function.\\
 Module parameters taken by REF use this mechanism.}\\\hline
 \end{longtable}
@@ -2999,9 +2979,9 @@ statistics out of the object: \fname{samples()}, \fname{min()},
 \fname{sum()}, \fname{sqrSum()} with the obvious meanings. An example
 usage for \cclass{cStdDev}:
 
-\begin{Verbatim}
+\begin{verbatim}
 cStdDev stat("stat");
-for (int i=0; i<10; i++) 
+for (int i=0; i<10; i++)
   stat.collect( normal(0,1) );
 long num_samples = stat.samples();
 double smallest = stat.min(),
@@ -3009,7 +2989,7 @@ largest = stat.max();
 double mean = stat.mean(),
 standard_deviation = stat.stddev(),
 variance = stat.variance();
-\end{Verbatim}
+\end{verbatim}
 
 
 
@@ -3031,23 +3011,23 @@ few observations and determine the range from them. Methods which let
 you specify range settings are part of \cclass{cDensityEstBase}. The
 following member functions exist:
 
-\begin{Verbatim}
+\begin{verbatim}
 setRange(lower,upper);
 setRangeAuto(num_firstvals, range_ext_factor);
 setRangeAutoLower(upper, num_firstvals, range_ext_factor);
 setRangeAutoUpper(lower, num, range_ext_factor);
-\end{Verbatim}
+\end{verbatim}
 
 \textbf{setNumFirstVals(num\_firstvals);}
 
 
-The following example creates a histogram with 20 cells and automatic 
+The following example creates a histogram with 20 cells and automatic
 range estimation\index{histogram!range estimation}:
 
-\begin{Verbatim}
+\begin{verbatim}
 cDoubleHistogram histogram("histogram", 20);
 histogram.setRangeAuto(100,1.5);
-\end{Verbatim}
+\end{verbatim}
 
 
 Here, 20 is the number of cells (not including the underflow/overflow
@@ -3068,8 +3048,8 @@ range.
 
 After the cells have been set up, collecting can go on.
 
-The \fname{transformed()} function returns \textit{true} when the cells have 
-already been set up. You can force range estimation and setting 
+The \fname{transformed()} function returns \textit{true} when the cells have
+already been set up. You can force range estimation and setting
 up the cells by calling the \fname{transform()} function.
 
 The observations that fall outside the histogram range will be counted
@@ -3086,11 +3066,11 @@ member functions.
 
 You create a $P^{2}$ object by specifying the number of cells:
 
-\begin{Verbatim}
+\begin{verbatim}
 cPSquare psquare("interarrival-times", 20);
-\end{Verbatim}
+\end{verbatim}
 
-Afterwards, a \cclass{cPSquare} can be used with the same member functions 
+Afterwards, a \cclass{cPSquare} can be used with the same member functions
 as a histogram.
 
 
@@ -3116,16 +3096,16 @@ histogram types, plus \cclass{cPSquare} and \cclass{cKSplit}.
 
 An example:
 
-\begin{Verbatim}
+\begin{verbatim}
 long n = histogram.samples();
 for (int i=0; i<histogram.cells(); i++)
 {
-  double cellWidth = histogram.basepoint(i+1)-histogram.basepoint(i); 
+  double cellWidth = histogram.basepoint(i+1)-histogram.basepoint(i);
   int count = histogram.cell(i);
   double pdf = histogram.cellPDF(i);
   //...
 }
-\end{Verbatim}
+\end{verbatim}
 
 
 The \fname[pdf()]{pdf(x)} and \fname[cdf()]{cdf(x)} member functions
@@ -3140,28 +3120,28 @@ The \fname{random()} member function generates random
 numbers\index{random!numbers} from the distribution stored by the
 object:
 
-\begin{Verbatim}
+\begin{verbatim}
 double rnd = histogram.random();
-\end{Verbatim}
+\end{verbatim}
 
 
 \cclass{cStdDev} assumes normal distribution.
 
 You can also wrap the distribution object in a \cclass{cPar}:
 
-\begin{Verbatim}
+\begin{verbatim}
 cPar rnd_par("rnd_par");
 rnd_par.setDoubleValue(&histogram);
-\end{Verbatim}
+\end{verbatim}
 
 
-The \cclass{cPar} object stores the pointer to the histogram (or $P^{2}$ object), 
-and whenever it is asked for the value, calls the histogram object's \fname{random()} 
+The \cclass{cPar} object stores the pointer to the histogram (or $P^{2}$ object),
+and whenever it is asked for the value, calls the histogram object's \fname{random()}
 function:
 
-\begin{Verbatim}
+\begin{verbatim}
 double rnd = (double)rnd_par; // random number from the cPSquare
-\end{Verbatim}
+\end{verbatim}
 
 \textbf{Storing/loading distributions}
 
@@ -3173,10 +3153,10 @@ is inefficient) as a C function, you can describe it in histogram form
 stored in a text file, and use a histogram object with
 \fname{loadFromFile()}.
 
-You can also use \fname{saveToFile()}that writes out the distribution 
+You can also use \fname{saveToFile()}that writes out the distribution
 collected by the histogram object:
 
-\begin{Verbatim}
+\begin{verbatim}
 FILE *f = fopen("histogram.dat","w");
 histogram.saveToFile( f ); // save the distribution
 fclose( f );
@@ -3185,45 +3165,46 @@ FILE *f2 = fopen("histogram.dat","r");}
 cDoubleHistogram hist2("Hist-from-file");
 hist2.loadFromFile( f2 ); // load stored distribution
 fclose( f2 );
-\end{Verbatim}
+\end{verbatim}
 
 
 \textbf{Histogram with custom cells}
 
 
-\cclass{cVarHistogram} class. TBD comments.
+The \cclass{cVarHistogram} class can be used to create
+histograms with arbitrary (non-equidistant) cells.
+It can operate in two modes:
 
-
-Now we do support the following two uses of \cclass{cVarHistogram}:
 \begin{itemize}
-  \item{add all the boundaries (manually) before collecting samples}
-  \item{collect samples and \fname{transform()} makes the boundaries}
+  \item \textit{manual}, where you specify cell boundaries explicitly
+     before starting collecting
+  \item \textit{automatic}, where \fname{transform()} will set up the cells
+     after collecting a certain number of initial observations. The cells
+     will be set up so that as far as possible, an equal number of observations
+     fall into each cell (equi-probable cells).
 \end{itemize}
 
-Transform types for \cclass{cVarHistogram}:
+Modes are selected with a \textit{transform-type} parameter:
 \begin{itemize}
-  \item{\ttt{HIST\_TR\_NO\_TRANSFORM}: no transformation; uses bin boundaries 
+  \item{\ttt{HIST\_TR\_NO\_TRANSFORM}: no transformation; uses bin boundaries
     previously defined by \fname{addBinBound()}}
   \item{\ttt{HIST\_TR\_AUTO\_EPC\_DBL}: automatically creates equiprobable cells}
-  \item{\ttt{HIST\_TR\_AUTO\_EPC\_INT}: like the above, but uses a different 
-    hack :-)}
+  \item{\ttt{HIST\_TR\_AUTO\_EPC\_INT}: like the above, but for integers}
 \end{itemize}
-
 
 Creating an object:
 
-\begin{Verbatim}
+\begin{verbatim}
 cVarHistogram(const char *s=NULL,
               int numcells=11,
               int transformtype=HIST_TR_AUTO_EPC_DBL);
-\end{Verbatim}
-
+\end{verbatim}
 
 Manually adding a cell boundary:
 
-\begin{Verbatim}
+\begin{verbatim}
 void addBinBound(double x);
-\end{Verbatim}
+\end{verbatim}
 
 Rangemin and rangemax is chosen after collecting the
 \texttt{num\_firstvals} initial observations. One cannot add cell
@@ -3276,16 +3257,16 @@ are to be considered. In this paper we examine only the $k=2$ case.
 \begin{figure}[htbp]
   \begin{center}
     \includegraphics[width=3.442in, height=1.518in]{figures/usmanFig15}
-    \caption{Illustration of the k-split algorithm, $k=2$. The 
+    \caption{Illustration of the k-split algorithm, $k=2$. The
       numbers in boxes represent the observation count values}
   \end{center}
 \end{figure}
 
 
-For density estimation, the total number of observations that 
-fell into each cell of the partition has to be determined. For 
-this purpose, mother observations in each internal node of the 
-tree must be distributed among its child cells and propagated 
+For density estimation, the total number of observations that
+fell into each cell of the partition has to be determined. For
+this purpose, mother observations in each internal node of the
+tree must be distributed among its child cells and propagated
 up to the leaves.
 
 
@@ -3322,7 +3303,7 @@ m_{\cdots,i,j}=(1-\lambda )\frac{\tilde{n}_{\cdots,i}}{k} + \lambda \tilde{n}_{\
 \begin{figure}[htbp]
   \begin{center}
     \includegraphics[width=4.147in, height=1.567in]{figures/usmanFig16}
-    \caption{Density estimation from the k-split cell tree. We 
+    \caption{Density estimation from the k-split cell tree. We
       assume $\lambda=0$, i.e. we distribute mother observations
       evenly.}
   \end{center}
@@ -3362,15 +3343,36 @@ still under way.
 
 \textbf{The cKSplit class}
 
-
-TBD comments
-
+The \cclass{cKSplit} class is an implementation of the \textit{k-split} method.
 Member functions:
-\begin{Verbatim}
+
+%
+% TBD comments
+%
+
+\begin{verbatim}
 void setCritFunc(KSplitCritFunc _critfunc, double *_critdata);
 void setDivFunc(KSplitDivFunc \_divfunc, double *\_divdata);
 void rangeExtension( bool enabled );
+\end{verbatim}
 
+
+\begin{verbatim}
+int treeDepth();
+int treeDepth(sGrid& grid);
+\end{verbatim}
+
+\begin{verbatim}
+double realCellValue(sGrid& grid, int cell);
+void printGrids();
+\end{verbatim}
+
+\begin{verbatim}
+sGrid& grid(int k);
+sGrid& rootGrid();
+\end{verbatim}
+
+\begin{verbatim}
 struct sGrid
 {
   int parent;   // index of parent grid
@@ -3379,26 +3381,17 @@ struct sGrid
   int mother;   // observations 'inherited' from mother cell
   int cells[K]; // cell values
 };
-
-int treeDepth();
-int treeDepth(sGrid& grid);
-
-double realCellValue(sGrid& grid, int cell);
-void printGrids();
-
-sGrid& grid(int k);
-sGrid& rootGrid();
-\end{Verbatim}
+\end{verbatim}
 
 
 
 \subsection{Transient detection and result accuracy}
 
-In many simulations, only the steady state performance (i.e. 
-the performance after the system has reached a stable state) 
-is of interest. The initial part of the simulation is called 
-the transient period. After the model has entered steady state, 
-simulation must proceed until enough statistical data have been 
+In many simulations, only the steady state performance (i.e.
+the performance after the system has reached a stable state)
+is of interest. The initial part of the simulation is called
+the transient period. After the model has entered steady state,
+simulation must proceed until enough statistical data have been
 collected to compute result with the required accuracy.
 
 
@@ -3411,7 +3404,7 @@ do the specific algorithms on the data fed into the result object and
 tell if the transient period is over or the result accuracy has been
 reached.
 
-The base classes for classes implementing specific transient 
+The base classes for classes implementing specific transient
 detection and result accuracy detection algorithms are:
 \begin{itemize}
 \item{\cclass{cTransientDetection}: base class for transient detection}
@@ -3421,19 +3414,19 @@ detection and result accuracy detection algorithms are:
 
 \textbf{Basic usage}
 
+%
+% TBD comments
+%
 
-TBD comments
-
-
-Attaching detection objects to a \cclass{cStatistic} and getting pointers 
+Attaching detection objects to a \cclass{cStatistic} and getting pointers
 to the attached objects:
 
-\begin{Verbatim}
+\begin{verbatim}
 addTransientDetection(cTransientDetection *object);
 addAccuracyDetection(cAccuracyDetection *object);
 cTransientDetection *transientDetectionObject();
-cAccuracyDetection *accuracyDetectionObject(); 
-\end{Verbatim}
+cAccuracyDetection *accuracyDetectionObject();
+\end{verbatim}
 
 
 Detecting the end of the period:
@@ -3452,12 +3445,12 @@ is implemented, i.e.  there's one class derived from
 uses the sliding window approach with two windows, and checks the
 difference of the two averages to see if the transient period is over.
 
-\begin{Verbatim}
-void setParameters(int reps=3, 
+\begin{verbatim}
+void setParameters(int reps=3,
                    int minw=4,
-                   double wind=1.3, 
+                   double wind=1.3,
                    double acc=0.3);
-\end{Verbatim}
+\end{verbatim}
 
 \textbf{Accuracy detection}
 
@@ -3468,10 +3461,10 @@ is implemented, i.e.  there's one class derived from
 \cclass{cADByStddev} class is: divide the standard deviation by the
 square of the number of values and check if this is small enough.
 
-\begin{Verbatim}
-void setParameters(double acc=0.1, 
+\begin{verbatim}
+void setParameters(double acc=0.1,
                    int reps=3);
-\end{Verbatim}
+\end{verbatim}
 
 
 
@@ -3480,23 +3473,23 @@ void setParameters(double acc=0.1,
 
 \subsection{Output vectors: cOutVector}
 
-Objects of type \cclass{cOutVector} are responsible for writing time series 
-data (referred to as \textit{output vectors}) to a file. The \fname{record()} 
-member is used to output a value (or a value pair) with a timestamp. 
+Objects of type \cclass{cOutVector} are responsible for writing time series
+data (referred to as \textit{output vectors}) to a file. The \fname{record()}
+member is used to output a value (or a value pair) with a timestamp.
 
 It can be used like this:
 
-\begin{Verbatim}
+\begin{verbatim}
 cOutVector resp_v("response time");
 
 while (...)
 {
   double response_time;
   //...
-  resp_v.record( response_time );\\
+  resp_v.record( response_time );
   //...
 }
-\end{Verbatim}
+\end{verbatim}
 
 
 All \cclass{cOutVector} objects write to the same, common file. The
@@ -3511,7 +3504,7 @@ You can disable the output vector\index{output!vector} or specify a
 simulation time interval for recording either from the ini file or
 directly from program code:
 
-\begin{Verbatim}
+\begin{verbatim}
 cOutVector v("v");
 simtime_t t =...;
 
@@ -3519,7 +3512,7 @@ v.enable();
 v.disable();
 v.setStartTime( t );
 v.setStopTime( t+100.0 );
-\end{Verbatim}
+\end{verbatim}
 
 
 If the output vector object is disabled or the simulation time is
@@ -3551,19 +3544,19 @@ Output scalars are recorded with the \fname{recordScalar()} member
 function.  It is overloaded, you can use it to write doubles and
 strings (const char *):
 
-\begin{Verbatim}
+\begin{verbatim}
 double avg_throughput = total_bits / simTime();
 recordScalar("Average throughput", avg_throughput);
-\end{Verbatim}
+\end{verbatim}
 
 
 You can record whole statistics objects by calling \fname{recordStats()}:
 
-\begin{Verbatim}
+\begin{verbatim}
 cStdDev *eedstats = new cStdDev;
 ...
 recordStats("End-to-end Statistics", eedstats);
-\end{Verbatim}
+\end{verbatim}
 
 
 
@@ -3593,6 +3586,7 @@ complete list of these functions are presented here. Do not be
 embarrassed at the length of the list: most functions are not
 absolutely necessary to implement. For example, you do not need to
 redefine \fname{forEach()} unless your class is a container class.
+
 \begin{itemize}
   \item{default constructor, copy constructor. The copy constructor
     can simply call the assignment operator.}
@@ -3600,7 +3594,6 @@ redefine \fname{forEach()} unless your class is a container class.
     contents from another object)}
   \item{\fname{dup()}: duplicates the object by creating an exact copy
     (uses copy constructor\index{copy constructor})}
-  \item{\fname{className()}: returns class name string}
   \item{\fname{info()}: returns a one-line info about object contents}
   \item{\fname{writeContents()}: write a more detailed report about the
     object into a file}
@@ -3611,8 +3604,6 @@ redefine \fname{forEach()} unless your class is a container class.
     PVM\index{PVM}/MPI\index{MPI} from one segment to another.  The
     \fname{netPack()},\fname{netUnpack()}functions of the library
     classes are in the sim/pvm (sim/mpi) directory.}
-  \item{\fname{inspectorFactoryName()}: used by Tkenv to create
-    inspector windows\index{inspector windows} for objects of this type.}
 \end{itemize}
 
 One should also use the \fmac{Register\_Class()} macro to register the
@@ -3621,9 +3612,9 @@ PVM/MPI extension of {\opp}.
 
 Let us see a simple example. The header file:
 
-\begin{Verbatim}
+\begin{verbatim}
 // File: cmyclass.h
-#include "cobject.h"
+#include <omnetpp.h>
 
 class cMyClass : public cObject
 {
@@ -3633,17 +3624,16 @@ class cMyClass : public cObject
   cMyClass(const cMyClass& myclass);
   cMyClass(const char *name=NULL, int k=0);
   virtual ~cMyClass() {}
-  virtual const char *className() const {return "cMyClass";}
   virtual cObject *dup() const {return new cMyClass(*this);}
   virtual void info(char *buf);
   virtual void writeContents(ostream& os);
   cMyClass& operator=(const cMyClass& myclass);
 };
-\end{Verbatim}
+\end{verbatim}
 
 The corresponding .cc file:
 
-\begin{Verbatim}
+\begin{verbatim}
 // File: cmyclass.cc
 #include <stdio.h>
 #include <string.h>
@@ -3679,10 +3669,10 @@ cMyClass& cMyClass::operator=(const cMyClass& myclass)
   cObject::operator=(myclass);
   samples = myclass.samples;
 }
-\end{Verbatim}
+\end{verbatim}
 
 
-See the virtual functions of \cclass{cObject} in the class library reference 
+See the virtual functions of \cclass{cObject} in the class library reference
 for more information.
 
 
@@ -3693,16 +3683,25 @@ for more information.
 
 \subsection{Displaying information about module activity}
 
+You can have simple modules print textual output for
+debugging\index{debugging} purposes.
+
 The global object called ev represents the user interface of the
 simulation program. You can send data to ev\index{ev} using the
 C++-style I/O operator (\ttt{<}\ttt{<}).
 
-\begin{Verbatim}
+\begin{verbatim}
 ev << "started\n";
 ev << "about to send message #" <<  i << endl;
 ev << "queue full, discarding packet\n";
-\end{Verbatim}
+\end{verbatim}
 
+The more traditional-looking but functionally equivalent
+\fname{ev.printf()} form also exists.
+
+\begin{verbatim}
+ev.printf("%d packets dropped out of %d\n", drops, total);
+\end{verbatim}
 
 The exact way messages are displayed to the user depends on the user
 interface. In the command-line user interface (Cmdenv\index{Cmdenv}),
@@ -3712,36 +3711,10 @@ when it is not needed.) In windowing user interfaces
 (Tkenv\index{Tkenv}), each simple module can have
 a separate text output window.
 
-
-
 The above means that you should \textit{not} use \fname{printf()},
 \fname{cout} \fname{<<} and the like because with Tkenv, their output
-would appear in the xterm window behind the graphical window of the
+would appear in the terminal window behind the graphical window of the
 simulation application.
-
-The user can also specify a phase string\index{phase string} that is
-displayed at the top of the text output windows. The phase string can
-indicate what the module is currently doing.
-
-\begin{Verbatim}
-setPhase("starting up");
-for(;;)
-{
-  setPhase("idle");
-  //... 
-  setPhase("opening connection");
-  ev << "connection request from " << src << "\n";
-  //..
-  setPhase("connection alive");
-  //.. 
-  setPhase("closing connection");
-  //...
-}
-\end{Verbatim}
-
-Writing out informative messages at strategic points of the code 
-is an effective way debugging\index{debugging}.
-
 
 
 \subsection{Watches}
@@ -3751,21 +3724,23 @@ be inspect-able in Tkenv and to be output into the snapshot
 file\index{snapshot file}. In this case, you can create
 \cclass{cWatch} objects for them with the \fmac{WATCH()} macro:
 
-\begin{Verbatim}
+\begin{verbatim}
 int i; WATCH(i);
 char c; WATCH(c);
-\end{Verbatim}
+\end{verbatim}
 
-
-Tkenv also lets you change the value of the WATCHed variables.
+When you open an inspector for the simple module in Tkenv and click
+the Objects/Watches tab in it, you'll see your WATCHed variables
+and their values there. Tkenv also lets you change the value of a
+WATCHed variable.
 
 The \fmac{WATCH()} macro expands to a dynamically created \cclass{cWatch}
 object.  The object remembers the address and type of your variable.
 The macro expands to something like:
 
-\begin{Verbatim}
+\begin{verbatim}
 new cWatch("i",i);
-\end{Verbatim}
+\end{verbatim}
 
 
 You can also make a \texttt{WATCH} for pointers of type \ttt{char*} or
@@ -3773,12 +3748,12 @@ You can also make a \texttt{WATCH} for pointers of type \ttt{char*} or
 the pointer does not point to a valid location when Tkenv or
 \fname{snapshot()} wants to use it.
 
-You can also set watches for variables that are members of the 
+You can also set watches for variables that are members of the
 module class\index{module!watches} or for structure fields:
 
-\begin{Verbatim}
+\begin{verbatim}
 WATCH( lapbconfig.timeout );
-\end{Verbatim}
+\end{verbatim}
 
 
 \textbf{Placement of WATCHes}
@@ -3801,19 +3776,19 @@ The \fname{snapshot()} function outputs textual information about all
 or selected objects of the simulation (including the objects created
 in module functions by the user) into the snapshot file\index{snapshot file}.
 
-\begin{Verbatim}
+\begin{verbatim}
 bool snapshot(cObject *obj = &simulation, const char *label = NULL);
-\end{Verbatim}
+\end{verbatim}
 
 
 The function can be called from module functions, like this:
 
-\begin{Verbatim}
+\begin{verbatim}
 snapshot();     // dump the whole network
 snapshot(this); // dump this simple module and all its objects
 snapshot(&putAsideQueue);       // dump queue contents
 snapshot(&simulation.msgQueue); // dump future events
-\end{Verbatim}
+\end{verbatim}
 
 This will append snapshot information to the end of the snapshot file.
 (The snapshot file name has an extension of .sna, default is
@@ -3821,14 +3796,14 @@ omnetpp.sna\index{omnetpp.sna}. Actual file name can be set in the
 config file.)
 
 
-The snapshot file output is detailed enough to be used for debugging 
-the simulation: by regularly calling \fname{snapshot()}, one can trace 
-how the values of variables, objects changed over the simulation. 
-The arguments: label is a string that will appear in the output 
-file; obj is the object whose inside is of interest. By default, 
+The snapshot file output is detailed enough to be used for debugging
+the simulation: by regularly calling \fname{snapshot()}, one can trace
+how the values of variables, objects changed over the simulation.
+The arguments: label is a string that will appear in the output
+file; obj is the object whose inside is of interest. By default,
 the whole simulation (all modules etc) will be written out.
 
-If you run the simulation with Tkenv, you can also create a snapshot 
+If you run the simulation with Tkenv, you can also create a snapshot
 from the menu.
 
 
@@ -3859,10 +3834,10 @@ An example of a snapshot file:
         `sink' #5 (Sink)
       `comp[1]' #6 (Computer)
         `mac' #7 (TokenRingMAC)
-        `gen' #8 (Generator) 
+        `gen' #8 (Generator)
         `sink' #9 (Sink)
       `comp[2]' #10 (Computer)
-        `mac' #11 (TokenRingMAC) 
+        `mac' #11 (TokenRingMAC)
         `gen' #12 (Generator)
         `sink' #13 (Sink)
 end
@@ -3919,7 +3894,7 @@ end
   inside connection:  token.comp[0].mac.phy_in
   outside connection: token.comp[2].out
   delay: -
-  error: - 
+  error: -
   data rate: -
 end
 
@@ -3961,15 +3936,15 @@ end
 
 (cQueue) `token.comp[0].mac.local-objects.send-queue' begin
   0-->1         (cMessage) Tarr=0.0158105774 ( 15ms) Src=#4 Dest=#3
-  0-->2         (cMessage) Tarr=0.0163553310 ( 16ms) Src=#4 Dest=#3 
+  0-->2         (cMessage) Tarr=0.0163553310 ( 16ms) Src=#4 Dest=#3
   0-->1         (cMessage) Tarr=0.0205628236 ( 20ms) Src=#4 Dest=#3
   0-->2         (cMessage) Tarr=0.0242203591 ( 24ms) Src=#4 Dest=#3
   0-->2         (cMessage) Tarr=0.0300994268 ( 30ms) Src=#4 Dest=#3
   0-->1         (cMessage) Tarr=0.0364005251 ( 36ms) Src=#4 Dest=#3
-  0-->1         (cMessage) Tarr=0.0370745702 ( 37ms) Src=#4 Dest=#3 
+  0-->1         (cMessage) Tarr=0.0370745702 ( 37ms) Src=#4 Dest=#3
   0-->2         (cMessage) Tarr=0.0387984129 ( 38ms) Src=#4 Dest=#3
   0-->1         (cMessage) Tarr=0.0457462493 ( 45ms) Src=#4 Dest=#3
-  0-->2         (cMessage) Tarr=0.0487308918 ( 48ms) Src=#4 Dest=#3 
+  0-->2         (cMessage) Tarr=0.0487308918 ( 48ms) Src=#4 Dest=#3
   0-->2         (cMessage) Tarr=0.0514466766 ( 51ms) Src=#4 Dest=#3
 end
 
@@ -3977,19 +3952,19 @@ end
   #4 --> #3
   sent:         0.0158105774 ( 15ms)
   arrived:      0.0158105774 ( 15ms)
-  length:       33536 
+  length:       33536
   kind:         0
   priority:     0
-  error:        FALSE 
+  error:        FALSE
   time stamp:   0.0000000 ( 0.00s)
   parameter list:
-    dest        (cPar) 1 (L) 
+    dest        (cPar) 1 (L)
     source      (cPar) 0 (L)
     gentime     (cPar) 0.0158106 (D)
 end
 
 (cArray) `token.comp[0].mac.local-objects.send-queue.0-->1.par-vector' begin
-  dest          (cPar) 1 (L) 
+  dest          (cPar) 1 (L)
   source        (cPar) 0 (L)
   gentime       (cPar) 0.0158106 (D)
 end
@@ -4005,10 +3980,10 @@ end
 \textit{[...comp[0].gen and comp[0].sink stuff deleted from here...]}
 \textit{[...whole comp[1] and comp[2] stuff deleted from here...]}
 
-(cMessageHeap) `simulation.message-queue' begin 
+(cMessageHeap) `simulation.message-queue' begin
   1-->0         (cMessage) Tarr=0.0576872457 ( 57ms) Src=#8 Dest=#7
                 (cMessage) Tarr=0.0577201630 ( 57ms) Mod=#8 (selfmsg)
-                (cMessage) Tarr=0.0585677054 ( 58ms) Mod=#4 (selfmsg) 
+                (cMessage) Tarr=0.0585677054 ( 58ms) Mod=#4 (selfmsg)
                 (cMessage) Tarr=0.0594939072 ( 59ms) Mod=#12 (selfmsg)
                 (cMessage) Tarr=0.0601010000 ( 60ms) Mod=#7 (selfmsg)
   1-->2         (cMessage) Tarr=0.0601020000 ( 60ms) Src=#11 Dest=#13
@@ -4021,9 +3996,9 @@ To reduce the size of the file, you may well decide to make a snapshot
 only of a part of the model\index{snapshot, partial}. This example
 reports only about the current simple module's put-aside queue:
 
-\begin{Verbatim}
+\begin{verbatim}
 snapshot(&putAsideQueue);
-\end{Verbatim}
+\end{verbatim}
 
 
 
@@ -4031,14 +4006,14 @@ snapshot(&putAsideQueue);
 
 \subsection{Breakpoints}
 
-\textbf{With activity() only!} In those user interfaces which support 
-debugging, breakpoints stop execution and the state of the simulation 
+\textbf{With activity() only!} In those user interfaces which support
+debugging, breakpoints stop execution and the state of the simulation
 can be examined.
 
 You can set a breakpoint\index{breakpoint} inserting a
 \fname{breakpoint()} call into the source:
 
-\begin{Verbatim}
+\begin{verbatim}
 for(;;)
 {
   cMessage *msg = receive();
@@ -4047,10 +4022,10 @@ for(;;)
   send( reply_msg, "out" );
   //..
 }
-\end{Verbatim}
+\end{verbatim}
 
 
-In user interfaces that do not support debugging, \fname{breakpoint()} 
+In user interfaces that do not support debugging, \fname{breakpoint()}
 calls are simply ignored.
 
 
@@ -4072,14 +4047,14 @@ temporarily disable warnings in places where {\opp} would normally
 issue warnings but you know the code is correct. This is done in the
 following way:
 
-\begin{Verbatim}
+\begin{verbatim}
 bool w = simulation.warnings();
 simulation.setWarnings( false );
 ...
 ... // critical code
 ...
 simulation.setWarnings( w );
-\end{Verbatim}
+\end{verbatim}
 
 
 
@@ -4102,16 +4077,16 @@ buffer[256]): if the byte pattern happens to fall in the middle of
 such a local variable, it may be preserved intact and {\opp} does not
 detect the stack violation.
 
-To be able to make a good guess about stack size, you can use 
-the \fname{stackUsage()} call which tells you how much stack the module 
+To be able to make a good guess about stack size, you can use
+the \fname{stackUsage()} call which tells you how much stack the module
 actually uses. It is most conveniently called from \fname{finish()}:
 
-\begin{Verbatim}
+\begin{verbatim}
 void FooModule::finish()
 {
   ev << stackUsage() <<  "bytes of stack used\n";
 }
-\end{Verbatim}
+\end{verbatim}
 
 
 The value includes the extra stack added by the user interface library
@@ -4127,40 +4102,40 @@ effect with local variables.
 
 \section{Changing the network graphics at run-time}
 
-Sometimes it is useful to change the appearance of some components in
-the network graphics, such as the color of the
-modules\index{module!color}, color/width of connection arrows etc.
+\subsection{Setting display strings}
 
-\begin{sloppypar}
-  The appearance of nodes and connections is determined by the display
-  strings\index{display strings}. Display strings are initially taken
-  from the NED description (stuff like: \ttt{display:
-    ''p=100,10;i=pc''}). You can change the display string of a module
-  or connection arrow at run-time by calling
-  \fname{setDisplayString()}.  The display string of a connection
-  arrow\index{arrow display string} is stored in its source gate.
-  Display string changes will immediately take effect.
-\end{sloppypar}
+Sometimes it is useful to change the appearance or position of
+some components in the network graphics, such as the color of the
+modules\index{module!color}, color/width of connection arrows,
+position of a submodule, etc.
 
-Setting the module's appearance when it is displayed as a component 
-within a compound module$^{(new)}$:
+The appearance of nodes and connections is determined by the display
+strings\index{display strings}. Display strings (e.g. \ttt{"p=100,10;i=pc"})
+are initially taken from the NED description.
+You can change the display string of a module or connection arrow
+at run-time by calling methods named \fname{setDisplayString()}.
 
-\begin{Verbatim}
-  setDisplayString("p=100,100;b=60,30,rect;o=red,black,3", true);
-\end{Verbatim}
+Setting the module's appearance when it is displayed as a component
+within a compound module:
+
+\begin{verbatim}
+setDisplayString("p=100,100;b=60,30,rect;o=red,black,3", true);
+\end{verbatim}
 
 Setting appearance of a compound module when it's displayed as a
 bounding box for its submodules:
 
-\begin{Verbatim}
-  parentModule()->setDisplayStringAsParent(``p=100.....", true);
-\end{Verbatim}
+\begin{verbatim}
+parentModule()->setDisplayStringAsParent("p=100.....", true);
+\end{verbatim}
 
-Setting appearance of a connection, via its source gate:
+The display string of a connection arrow\index{arrow display string}
+is stored in its source gate, so you'll need to write something
+like this:
 
-\begin{Verbatim}
-  gate("out")->setDisplayString("o=yellow,3");
-\end{Verbatim}
+\begin{verbatim}
+gate("out")->setDisplayString("o=yellow,3");
+\end{verbatim}
 
 The \fname{setDisplayString()} methods additionally take a bool
 argument called \fvar{immediate}. It specifies whether the display
@@ -4174,6 +4149,35 @@ its drawback is that a \fname{setDisplayString()} followed by a
 animation first), because message animations are performed immediately
 (actually within the \fname{send()} call).
 
+
+\subsection{The cDisplayStringParser class}
+
+The \cclass{cDisplayStringParser} utility class lets you parse and
+manipulate display strings.
+
+As far as \cclass{cDisplayStringParser} is concerned, a display string
+(e.g. \ttt{"p=100,125;i=cloud"}) is a string that consist of several
+\textit{tags} separated by semicolons, and each tag has a \textit{name}
+and after an equal sign, zero or more \textit{arguments} separated by commas.
+
+The class facilitates tasks such as finding out what tags a display string
+has, adding new tags, adding arguments to existing tags,
+removing tags or replacing arguments. The internal storage method allows
+very fast operation; it will generally be faster than direct string manipulation.
+The class doesn't try to interpret the display string in any way, nor does
+it know the meaning of the different tags; it merely parses the string
+as data elements separated by semicolons, equal signs and commas.
+
+An example:
+
+\begin{Verbatim}
+cDisplayStringParser dispstr("a=1,2;p=alpha,,3");
+dispstr.insertTag("x");
+dispstr.setTagArg("x",0,"joe");
+dispstr.setTagArg("x",2,"jim");
+dispstr.setTagArg("p",0,"beta");
+ev << dispstr.getString();  // result: "x=joe,,jim;a=1,2;p=beta,,3"
+\end{Verbatim}
 
 
 
@@ -4254,12 +4258,12 @@ void MyComputer::activity()
 \end{Verbatim}
 
 
-The above simple module code models the message generation part 
-of a computer on a LAN. The module sends out messages (packets) 
-to different stations in every 1.5 seconds or so. The messages 
-have three parameters: the source address, the destination address 
-and a sequence number. The source address is the same in each 
-packet, and there are only three possible destination stations. 
+The above simple module code models the message generation part
+of a computer on a LAN. The module sends out messages (packets)
+to different stations in every 1.5 seconds or so. The messages
+have three parameters: the source address, the destination address
+and a sequence number. The source address is the same in each
+packet, and there are only three possible destination stations.
 The sequence number is different in each packet.
 
 
@@ -4282,9 +4286,9 @@ Somehow it must be told to the message object to leave our shared
 parameters\index{shared parameters} alone and not to become their
 owner. This is exactly what the
 
-\begin{Verbatim}
+\begin{verbatim}
 packet->parList().takeOwnership(false);
-\end{Verbatim}
+\end{verbatim}
 
 
 line does: it sets a flag that tells the message (to be more precise,
@@ -4311,9 +4315,9 @@ two possibilities to avoid writing NED files by hand:
 \item{building the network from C++ code}
 \end{enumerate}
 
-The two solutions have different advantages and disadvantages. 
-The first is more useful in the model development phase, while 
-the second one is better for writing larger scale, more productized 
+The two solutions have different advantages and disadvantages.
+The first is more useful in the model development phase, while
+the second one is better for writing larger scale, more productized
 simulation programs. In the next sections we examine both methods.
 
 
@@ -4335,8 +4339,8 @@ change, the NED-creating program can be easily modified. The
 disadvantage is that the resulting NED files are often quite big and
 the C++ compilation of the *\_n.cc files take too long.
 
-This method is best suited in the first phase of a simulation 
-project when the topology, the format of the data files, etc. 
+This method is best suited in the first phase of a simulation
+project when the topology, the format of the data files, etc.
 have not yet settled down.
 
 
@@ -4352,14 +4356,14 @@ builds the network would be quite similar to the *\_n.cc files output
 by nedc.
 
 
-Since writing such code is more complex than letting perl generate 
-NED files, this method is recommended when the simulation program 
-has to be somewhat more productized, for example when {\opp} 
-and the simulation model is embedded into a larger program, e.g. 
+Since writing such code is more complex than letting perl generate
+NED files, this method is recommended when the simulation program
+has to be somewhat more productized, for example when {\opp}
+and the simulation model is embedded into a larger program, e.g.
 a network design tool.
 
 
-%%% Local Variables: 
+%%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "usman"
-%%% End: 
+%%% End:
