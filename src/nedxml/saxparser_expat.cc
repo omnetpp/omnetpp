@@ -20,6 +20,9 @@
 #include "saxparser.h"
 
 
+static bool hasDTD = false;
+
+
 static void expatStartElementHandler(void *userData, const XML_Char *name, const XML_Char **atts)
 {
     SAXHandler *sh = (SAXHandler *)userData;
@@ -69,7 +72,7 @@ static void expatStartDoctypeDeclHandler(void *userData,
                                          const XML_Char *, // pubid
                                          int)              // has_internal_subset
 {
-    // FIXME error!!!
+    hasDTD = true;
 }
 
 SAXParser::SAXParser()
@@ -120,6 +123,16 @@ bool SAXParser::parse(const char *filename)
                     XML_GetCurrentLineNumber(parser));
             err=true;
             done=true;
+        }
+        if (hasDTD)
+        {
+            sprintf(errortext, "Cannot validate document and complete default attributes "
+                    "from DTD, because underlying parser (Expat) does not support it. "
+                    "Recompile OMNeT++ with another parser (LibXML), or remove DOCTYPE from "
+                    " %s",
+                    filename);
+            err=true;
+            done = true;
         }
     } while (!done);
 
