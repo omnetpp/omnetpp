@@ -3,6 +3,7 @@
 #
 
 DIR=../demo
+TCLTK_DIR=e:/tcl
 
 if [ ! -f configure.in ]; then
     echo Must be called in top-level omnetpp dir!!!
@@ -19,10 +20,15 @@ echo 'Copying binaries...'
 mkdir $DIR
 cp bin/gned.exe $DIR
 cp samples/demo/demo.exe $DIR/opp_demo.exe
-cp -r bitmaps $DIR
 
-echo 'Checking out samples...'
+echo 'Copying Tcl/Tk stuff...'
+cp $TCLTK_DIR/bin/*.dll $DIR
+cp -r $TCLTK_DIR/lib $DIR
+rm -rf $DIR/lib/*.lib
+
+echo 'Checking out samples & bitmaps...'
 (cd $DIR; cvs co samples > /dev/null)
+(cd $DIR; cvs co bitmaps > /dev/null)
 
 # clean samples
 echo 'Cleaning...'
@@ -69,14 +75,11 @@ echo Running the simulation...
 echo ***************************************************************************
 echo.
 set OMNETPP_BITMAP_PATH=..\..\bitmaps
+set TCL_LIBRARY=..\..\lib\tcl8.2
 cd samples\%1
 ..\..\opp_demo
 cd ..\..
 
 :end
 __END__
-
-
-
-
 
