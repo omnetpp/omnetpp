@@ -1,5 +1,3 @@
-%name: cQueue_dup_and_sort_1
-
 %description:
 check that cQueue::operator=() preserves order
 check that sorting by compareFunc() works correctly

@@ -1,5 +1,3 @@
-%name: cMessage_properties_1
-
 %description:
 Tests the following properties of cMessage:
 message kind, priority, length, bit error, timestamp, context pointer

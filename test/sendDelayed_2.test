@@ -1,5 +1,3 @@
-%name: sendDelayed_2
-
 %description:
 Basic test for cSimpleModule.sendDelayed().
 
@@ -58,7 +56,7 @@ void {Receiver}::activity()
    ev << "diff: " << diff << endl;
 }
 
-%inifile: @TNAME@.ini
+%inifile: @TESTNAME@.ini
 [General]
 network={net}
 

@@ -1,5 +1,3 @@
-%name: generic_className_1
-
 %description:
 Test the className() methods of several classes.
 

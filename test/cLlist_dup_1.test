@@ -1,5 +1,3 @@
-%name: cLlist_dup_1
-
 %description:
 check that cLinkedList::operator=() works correctly and preserves order
 

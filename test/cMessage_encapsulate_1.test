@@ -1,27 +1,17 @@
-%name: cMessage_encapsulate_1
-
 %description:
-Tests cMessage.encapsulate().
+Tests if encapsulated message can be retrieved with cMessage.encapsulate().
 
 %activity:
 cMessage *payload = new cMessage;
-payload->setLength(128);
-
 cMessage *frame = new cMessage;
-frame->setLength(32);
 
 frame->encapsulate(payload);
-ev << frame->length() << endl;
+cMessage *payload2 = frame->decapsulate();
 
-frame->decapsulate();
-ev << frame->length() << endl;
-
-ev << payload->length() << endl;
+ev << "payload==payload2: " << (payload==payload2) << endl;
 
 %ignore-exitcode: 1
 
 %contains: stdout
-160
-32
-128
+payload==payload2: 1
 

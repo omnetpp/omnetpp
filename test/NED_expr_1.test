@@ -1,0 +1,93 @@
+%description:
+**EXPERIMENTAL TEST**
+Tests parameter passing in NED.
+
+%file: {}.ned
+
+simple {Simple}
+   parameters:
+      p0,
+      p1,p2,p3,p4,
+      p1e,p2e,p3e,p4e,
+      p1c,p2c,p3c,p4c;
+endsimple
+
+module {Compound}
+   parameters:
+      par;
+   submodules:
+      a{Simple}: {Simple}
+	 parameters:
+	    p0 = 5,
+	    p1 = par,
+	    p2 = ref par,
+	    p3 = ancestor par,
+	    p4 = ref ancestor par,
+	    p1e = (par),
+	    p2e = (ref par),
+	    p3e = (ancestor par),
+	    p4e = (ancestor ref par),
+	    p1c = 1+(par),
+	    p2c = 1+(ref par),
+	    p3c = 1+(ancestor par),
+	    p4c = 1+(ancestor ref par);
+endmodule
+
+network {Net}: {Compound}
+   parameters:
+      par = 100;
+endnetwork
+
+%file: {}.cc
+
+#include "omnetpp.h"
+
+class {Simple} : public cSimpleModule
+{
+    Module_Class_Members({Simple},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Simple});
+
+#define PRINT_PARAMETER(x) ev << #x << " = " << (double)par(#x) << endl;
+
+void {Simple}::activity()
+{
+    PRINT_PARAMETER( p0 );
+    PRINT_PARAMETER( p1 );
+    PRINT_PARAMETER( p2 );
+    PRINT_PARAMETER( p3 );
+    PRINT_PARAMETER( p4 );
+    PRINT_PARAMETER( p1e );
+    PRINT_PARAMETER( p2e );
+    PRINT_PARAMETER( p3e );
+    PRINT_PARAMETER( p4e );
+    PRINT_PARAMETER( p1c );
+    PRINT_PARAMETER( p2c );
+    PRINT_PARAMETER( p3c );
+    PRINT_PARAMETER( p4c );
+}
+
+%inifile: {}.ini
+[General]
+network={Net}
+
+
+%ignore-exitcode: 1
+
+%contains: stdout
+p0 = 5
+p1 = 100
+p2 = 100
+p3 = 100
+p4 = 100
+p1e = 100
+p2e = 100
+p3e = 100
+p4e = 100
+p1c = 101
+p2c = 101
+p3c = 101
+p4c = 101
+

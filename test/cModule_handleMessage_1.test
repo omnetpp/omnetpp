@@ -1,5 +1,3 @@
-%name: cModule_handleMessage_1
-
 %description:
 Basic test for cSimpleModule.handleMessage().
 

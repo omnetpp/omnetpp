@@ -1,7 +1,5 @@
-%name: bugId_4
-
 %description:
-simulation crashes while starting if module type is set as parameter 
+simulation crashes while starting if module type is set as parameter
 see bug id 4 at http://cvs-int.etec.uni-karlsruhe.de/bugtracker
 for more details.
 
