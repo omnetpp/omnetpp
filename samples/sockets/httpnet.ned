@@ -20,25 +20,25 @@ import
 //
 module HTTPNet
     parameters:
-        numClients : numeric const;
+        numClients: numeric const;
     submodules:
         server: HTTPServer;
-            display: "i=device/server;p=426,166";
+            display: "i=device/server;p=426,178";
         cloud: Cloud;
             gatesizes:
                 in[numClients+2],
                 out[numClients+2];
-            display: "i=misc/cloud;p=274,170";
+            display: "i=misc/cloud;p=274,182";
         extClient: ExtHTTPClient;
             parameters:
                 addr = 1,
                 srvAddr = 0;
-            display: "i=device/pc2,gold;p=102,80;t=Run the simulation\, then\nenter into your browser:\nhttp://localhost:4242";
+            display: "i=device/pc2,gold;p=102,92;t=Run the simulation\, then\nenter into your browser:\nhttp://localhost:4242";
         client: HTTPClient[numClients];
             parameters:
                 addr = 2+index,
                 srvAddr = 0;
-            display: "i=device/pc2;p=102,150,col";
+            display: "i=device/pc2;p=102,162,col";
     connections:
         server.out --> cloud.in[0];
         server.in <-- cloud.out[0];
