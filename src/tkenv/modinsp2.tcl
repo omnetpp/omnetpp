@@ -316,6 +316,7 @@ proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n
        if {![info exists tags(m)]} {set tags(m) {a}}
 
        set mode [lindex $tags(m) 0]
+       if {$mode==""} {set mode "a"}
        set src_anch  [list [lindex $tags(m) 1] [lindex $tags(m) 2]]
        set dest_anch [list [lindex $tags(m) 3] [lindex $tags(m) 4]]
 
@@ -324,10 +325,9 @@ proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n
 
        regexp -- {^.[^.]*} $c win
 
-       # FIXME: the following line is not correct Tcl list handling...
        set arrow_coords [eval [concat opp_inspectorcommand $win arrowcoords \
                   $src_rect $dest_rect $src_i $src_n $dest_i $dest_n \
-                  [list $mode] $src_anch $dest_anch]]
+                  $mode $src_anch $dest_anch]]
 
        # puts "DEBUG: arrow=($arrow_coords)"
 
