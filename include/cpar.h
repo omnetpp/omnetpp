@@ -26,7 +26,7 @@
 
 #define SHORTSTR  27
 
-#define NOPAR  NO(cPar)
+#define NOPAR  NULL
 
 //=== classes declared here:
 class  cPar;
@@ -53,10 +53,10 @@ class cExpression
 };
 
 /**
- * Abstract base class for double-valued expressions. Currently 
+ * Abstract base class for double-valued expressions. Currently
  * used by the new, nedxml-based nedc, which generates
- * cDoubleExpression-based compiled expressions (used via cPar) 
- * for e.g. submodule parameters. 
+ * cDoubleExpression-based compiled expressions (used via cPar)
+ * for e.g. submodule parameters.
  *
  * The actual expression should be supplied by creating a subclass
  * and overriding evaluate().  The expression may use parameters
@@ -442,9 +442,9 @@ class SIM_API cPar : public cObject
     cPar& setDoubleValue(sXElem *x, int n);
 
     /**
-     * Sets the value to the given compiled expression. 
+     * Sets the value to the given compiled expression.
      * Every time the cPar's value is asked, the evaluate() function of
-     * cDoubleExpression will be called. The passed object will be 
+     * cDoubleExpression will be called. The passed object will be
      * deallocated (using operator delete) from the cPar destructor, and
      * also when the cPar object is assigned another value.
      */

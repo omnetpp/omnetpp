@@ -85,7 +85,7 @@ class SIM_API cHead : public cObject
     cHead(const cHead& h) : cObject(h)  {setName(h.name());operator=(h);}
 
     /**
-     * Destructor. Inherited from cObject, it deletes all owned objects 
+     * Destructor. Inherited from cObject, it deletes all owned objects
      * (i.e. those in the list) that were created on the heap.
      */
     virtual ~cHead()  {}
@@ -155,12 +155,12 @@ class SIM_API cIterator
     /**
      * Constructor.
      */
-    cIterator(const cObject& h)    {p = &h ? h.firstchildp : NO(cObject);}
+    cIterator(const cObject& h)    {p = &h ? h.firstchildp : NULL;}
 
     /**
      * Reinitialize the iterator.
      */
-    void init(cObject& h)    {p = &h ? h.firstchildp : NO(cObject);}
+    void init(cObject& h)    {p = &h ? h.firstchildp : NULL;}
 
     /**
      * Returns a pointer to the current object.
@@ -191,12 +191,12 @@ class SIM_API const_cIterator
     /**
      * Constructor.
      */
-    const_cIterator(const cObject& h)    {p = &h ? h.firstchildp : NO(cObject);}
+    const_cIterator(const cObject& h)    {p = &h ? h.firstchildp : NULL;}
 
     /**
      * Reinitialize the iterator.
      */
-    void init(const cObject& h)    {p = &h ? h.firstchildp : NO(cObject);}
+    void init(const cObject& h)    {p = &h ? h.firstchildp : NULL;}
 
     /**
      * Returns a pointer to the current object.

@@ -265,13 +265,13 @@ class SIM_API cLinkedListIterator
      * (if athead==0) item in the list.
      */
     cLinkedListIterator(const cLinkedList& q, int athead=1)  //FIXME: make bool!
-            {p=&q ? (athead ? q.headp : q.tailp) : NO(sLLElem);}
+            {p=&q ? (athead ? q.headp : q.tailp) : NULL;}
 
     /**
      * Reinitializes the iterator object.
      */
     void init(const cLinkedList& q, int athead=1)
-            {p=&q ? (athead ? q.headp : q.tailp) : NO(sLLElem);}
+            {p=&q ? (athead ? q.headp : q.tailp) : NULL;}
 
     /**
      * Returns the current item.

@@ -581,6 +581,13 @@ class SIM_API cClassRegister : public cObject
  * to the appropriate type by hand. The class must have been registered
  * previously with the Register_Class() macro. This function internally
  * relies on the cClassRegister class.
+ * 
+ * Example: 
+ *
+ * <code>cObject *param = createOne( "cPar" );</code>
+ *
+ * createOne() is used e.g. in parallel simulation when an object is received
+ * from another segment and it has to be demashalled.
  *
  * @see Register_Class() macro
  * @see cClassRegister class

@@ -1,5 +1,5 @@
 //==========================================================================
-//   STARTUP.H - header for
+//   ONSTARTUP.H - header for
 //                             OMNeT++
 //            Discrete System Simulation in C++
 //
@@ -17,15 +17,15 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __STARTUP_H
-#define __STARTUP_H
+#ifndef __ONSTARTUP_H
+#define __ONSTARTUP_H
 
 #include "defs.h"
 
 
 /**
  * Allows code fragments to be collected in global scope which will
- * them be executed from main() right after program startup. This is
+ * then be executed from main() right after program startup. This is
  * used by in OMNeT++ for building global registration lists of
  * module types, network types, etc. Registration lists in fact 
  * are a simple substitute for Java's Class.forName() method...

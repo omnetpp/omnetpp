@@ -187,7 +187,7 @@ class SIM_API cMessageHeapIterator
      * Returns the current object, then moves the iterator to the next item.
      * If the iterator has reached the end of the list, NULL is returned.
      */
-    cMessage *operator++(int)   {return pos<=q->n ? q->h[++pos] : NO(cMessage);}
+    cMessage *operator++(int)   {return pos<=q->n ? q->h[++pos] : NULL;}
 
     /**
      * Returns true if the iterator has reached the end of the list.

@@ -2,6 +2,11 @@
 
 	* cobject.h: clarified and extended documentation of cObject.
 
+	* csimul.cc: refactoring in cSimulation: del() renamed to deleteModule(),
+	add() to addModule()
+
+	* refactoring: NO(classname) macro (an alias to NULL) eliminated
+
 2002-10-08  Andras Varga
 
 	* chead.h: removed deleteChildren() from cHead destructor call.

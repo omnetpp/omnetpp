@@ -257,13 +257,13 @@ class SIM_API cQueueIterator
      * the last (a==0) object in the queue.
      */
     cQueueIterator(const cQueue& q, int athead=1)  //FIXME: make bool!
-            {p=&q ? (athead ? q.headp : q.tailp) : NO(sQElem);}
+            {p=&q ? (athead ? q.headp : q.tailp) : NULL;}
 
     /**
      * Reinitializes the iterator object.
      */
     void init(const cQueue& q, int athead=1)
-            {p=&q ? (athead ? q.headp : q.tailp) : NO(sQElem);}
+            {p=&q ? (athead ? q.headp : q.tailp) : NULL;}
 
     /**
      * OBSOLETE. Use operator () instead.

@@ -66,7 +66,8 @@
 #define NULL ((void*)0)
 #endif
 
-#define NO(cXX)   ((cXX *)NULL)
+// obsolete:
+// #define NO(cXX)   ((cXX *)NULL)
 
 //=== other common defines
 
@@ -80,7 +81,7 @@
 #undef FALSE
 #define TRUE true
 #define FALSE false
-#endif 
+#endif
 #endif
 
 //// old compilers which don't know bool are no longer supported

@@ -182,12 +182,12 @@ class SIM_API cSimulation : public cObject
     /**
      * Adds a new module and return its ID.
      */
-    int add(cModule *mod);
+    int addModule(cModule *mod);
 
     /**
      * Deletes a module identified by its ID.
      */
-    void del(int id);
+    void deleteModule(int id);
 
     /**
      * Returns highest used module ID.
@@ -202,12 +202,12 @@ class SIM_API cSimulation : public cObject
     /**
      * Looks up a module by ID.
      */
-    cModule *module(int id) const  {return id>=0 && id<size ? vect[id] : NO(cModule);}
+    cModule *module(int id) const  {return id>=0 && id<size ? vect[id] : NULL;}
 
     /**
      * Same as module(int), only this returns reference instead of pointer. FIXME may return null reference!
      */
-    cModule& operator[](int id) const {return id>=0 && id<size ? *vect[id] : *NO(cModule);}
+    cModule& operator[](int id) const {return id>=0 && id<size ? *vect[id] : *(cModule *)NULL;}
 
     /**
      * Sets the system module.
