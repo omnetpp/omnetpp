@@ -1220,14 +1220,14 @@ void cSimpleModule::activity()
 {
     // default thread function
     // the user must redefine this for the module to do anything useful
-    throw new cException("You should redefine activity() to do useful work");
+    throw new cException("Redefine activity() or specify zero stack size to use handleMessage()");
 }
 
 void cSimpleModule::handleMessage(cMessage *)
 {
     // handleMessage is an alternative to activity()
     // this is the default version
-    throw new cException("You should redefine handleMessage() if you specify zero stack size");
+    throw new cException("Redefine handleMessage() or specify non-zero stack size to use activity()");
 }
 
 //-------------
