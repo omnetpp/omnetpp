@@ -2,9 +2,8 @@
 check basic cOutVector functionality with tuple==1.
 
 %activity:
-// create object; also test that name change before record() takes effect
-cOutVector vec("dummy");
-vec.setName("vec");
+// create object
+cOutVector vec("vec");
 
 // record some data
 vec.record( 35 );

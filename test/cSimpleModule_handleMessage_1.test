@@ -35,9 +35,7 @@ void {Module}::finish()
 
 %contains: stdout
 initialize\(\) at 0
-.*
-handleMessage\(\) at 15
-.*
-finish\(\) at 15
+.*handleMessage\(\) at 15
+.*finish\(\) at 15
 
 
