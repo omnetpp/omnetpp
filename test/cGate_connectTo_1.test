@@ -1,0 +1,84 @@
+%description:
+Tests cGate::connectTo() and disconnect().
+
+%module_a: {Sender}
+
+class {Sender} : public cSimpleModule
+{
+    Module_Class_Members({Sender},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Sender});
+
+#define PRINT(g)   ev << #g << ":" << ((g) ? (g)->fullName() : "NULL") << endl
+
+void {Sender}::activity()
+{
+   cGate *out = gate("out");
+   cGate *rcvin = gate("out")->toGate();
+
+   // start clean
+   out->disconnect();
+
+   // connect, then check if OK
+   out->connectTo(rcvin);
+   PRINT(out->toGate());
+   PRINT(rcvin->fromGate());
+
+   // even send message to verify
+   cMessage *msg = new cMessage("hello");
+   send(msg, "out");
+   wait(1);
+
+   // disconnect, then check if OK
+   out->disconnect();
+   PRINT(out->toGate());
+   PRINT(rcvin->fromGate());
+
+   // disconnect should be idempotent
+   out->disconnect();
+   PRINT(out->toGate());
+   PRINT(rcvin->fromGate());
+
+   // connect twice -- second one must throw error
+   out->connectTo(rcvin);
+   PRINT(out->toGate());
+   PRINT(rcvin->fromGate());
+
+   out->connectTo(rcvin);
+}
+
+%module_b: {Receiver}
+
+class {Receiver} : public cSimpleModule
+{
+    Module_Class_Members({Receiver},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Receiver});
+
+void {Receiver}::activity()
+{
+    cMessage *msg = receive();
+    ev << "arrived:" << msg->name() << endl;
+}
+
+%exitcode: 1
+
+%contains-regex: stdout
+out->toGate\(\):in
+rcvin->fromGate\(\):out
+.*
+arrived:hello
+.*
+out->toGate\(\):NULL
+rcvin->fromGate\(\):NULL
+out->toGate\(\):NULL
+rcvin->fromGate\(\):NULL
+out->toGate\(\):in
+rcvin->fromGate\(\):out
+.*Error .*gate already connected
+
+
