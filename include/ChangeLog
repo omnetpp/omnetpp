@@ -1,5 +1,6 @@
 FIXME todo: create parsim/ (and nedxml/?) subdirectories here
 std::string for info() and fullPath()
+cMessage: change prio() from int to short (2 bytes less)
 
 2004-04-13   Andras Varga
 
@@ -11,6 +12,11 @@ std::string for info() and fullPath()
 	or (not that ?: binds looser than <<!!!):
 	   #define EV  ev.disabled()?ev:ev
 	   EV << "Packet " << msg->name() << " received\n";
+
+	* cmessage.h: added possibility to attach a "control info" object 
+	(cPolymorphic*) to cMessage. Purpose: communication between protocol
+	layers. New methods: setControlInfo(), removeControlInfo(), 
+	controlInfo().
 
 2004-03-22  ------ omnetpp-3.0a3 released ------
 

@@ -1,3 +1,8 @@
+2004-04-13  Andras Varga
+
+	* cmessage.cc: implemented new cMessage methods setControlInfo(), 
+	removeControlInfo(), controlInfo().
+
 2004-04-04  Andras Varga
 
 	* simplemodule.cc: cancelEvent(): don't throw error if message is not

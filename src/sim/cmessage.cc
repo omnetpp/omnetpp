@@ -47,6 +47,7 @@ cMessage::cMessage(const cMessage& msg) : cObject()
 {
     parlistp = NULL;
     encapmsg = NULL;
+    ctrlp = NULL;
     setName( msg.name() );
     operator=( msg );
 
@@ -60,6 +61,7 @@ cMessage::cMessage(const char *name, int k, long ln, int pri, bool err) : cObjec
     parlistp = NULL;
     encapmsg = NULL;
     contextptr = NULL;
+    ctrlp = NULL;
     refcount = 0;
     srcprocid = 0;
 
@@ -77,6 +79,7 @@ cMessage::~cMessage()
 {
     dropAndDelete(parlistp);
     dropAndDelete(encapmsg);
+    delete ctrlp;
     live_msgs--;
 }
 
@@ -165,6 +168,9 @@ void cMessage::writeContents(ostream& os)
         os << "  encapsulated message:\n";
         encapmsg->writeContents( os );
     }
+    if (ctrlp) {
+        os << "  control info: (" << ctrlp->className() << ") " << ctrlp->detailedInfo() << "\n";
+    }
 }
 
 void cMessage::netPack(cCommBuffer *buffer)
@@ -174,6 +180,9 @@ void cMessage::netPack(cCommBuffer *buffer)
 #else
 // FIXME what about refcount?
     cObject::netPack(buffer);
+
+    if (contextptr || ctrlp)
+        throw new cException(this,"netPack(): cannot pack object with contextPointer or controlInfo set");
 
     buffer->pack(msgkind);
     buffer->pack(prior);
@@ -321,6 +330,22 @@ cMessage *cMessage::decapsulate()
     encapmsg = NULL;
     if (msg) drop(msg);
     return msg;
+}
+
+void cMessage::setControlInfo(cPolymorphic *p)
+{
+    if (!p)
+        throw new cException(this,"setControlInfo(): pointer is NULL");
+    if (ctrlp)
+        throw new cException(this,"setControlInfo(): message already has control info attached");
+    ctrlp = p;
+}
+
+cPolymorphic *cMessage::removeControlInfo()
+{
+    cPolymorphic *p = ctrlp;
+    ctrlp = NULL;
+    return p;
 }
 
 cPar& cMessage::par(int n)

@@ -96,7 +96,8 @@ class SIM_API cMessage : public cObject
     unsigned char srcprocid;   // reserved for use by parallel execution: id of source partition
     cArray *parlistp;          // ptr to list of parameters
     cMessage *encapmsg;        // ptr to encapsulated msg
-    void *contextptr;          // a stored pointer -- user-defined meaning
+    cPolymorphic *ctrlp;       // ptr to "control info"
+    void *contextptr;          // a stored pointer -- user-defined meaning, used with self-messages
 
     int frommod,fromgate;      // source module and gate IDs -- set internally
     int tomod,togate;          // dest. module and gate IDs -- set internally
@@ -235,6 +236,30 @@ class SIM_API cMessage : public cObject
     void setContextPointer(void *p) {contextptr=p;}
 
     /**
+     * Attaches a "control info" structure (object) to the message.
+     * This is most useful when passing packets between protocol layers
+     * of a protocol stack: e.g. when sending down an IP datagram to Ethernet,
+     * the attached "control info" can contain the destination MAC address.
+     *
+     * The "control info" object will be deleted when the message is deleted.
+     * Only one "control info" structure can be attached (the second
+     * setControlInfo() call throws an error).
+     *
+     * When the message is duplicated or copied, copies will have their
+     * control info set to NULL because the cPolymorphic interface
+     * doesn't define dup/copy operations. (FIXME hmmm...)
+     * The assignment operator doesn't change control info.
+     */
+    void setControlInfo(cPolymorphic *p);
+
+    /**
+     * Removes the "control info" structure (object) from the message
+     * and returns its pointer. Returns NULL if there was no control info
+     * in the message
+     */
+    cPolymorphic *removeControlInfo();
+
+    /**
      * Returns message kind.
      */
     int  kind() const     {return msgkind;}
@@ -268,6 +293,11 @@ class SIM_API cMessage : public cObject
      * Returns the context pointer.
      */
     void *contextPointer() const {return contextptr;}
+
+    /**
+     * Returns pointer to the attached "control info".
+     */
+    cPolymorphic *controlInfo() const {return ctrlp;}
     //@}
 
     /** @name Dynamically attaching objects. */
