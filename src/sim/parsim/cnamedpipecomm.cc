@@ -34,6 +34,7 @@
 #include "cmemcommbuffer.h"
 #include "macros.h"
 #include "cenvir.h"
+#include "cconfig.h"
 
 
 Register_Class(cNamedPipeCommunications);
@@ -65,8 +66,7 @@ struct PipeHeader
 
 cNamedPipeCommunications::cNamedPipeCommunications()
 {
-    // FIXME hardcoded directory name
-    prefix = "comm/";
+    prefix = ev.config()->getAsString("General", "parsim-namedpipecommunications-prefix", "comm/");
     rpipes = NULL;
     wpipes = NULL;
     rrBase = 0;

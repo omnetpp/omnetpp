@@ -31,6 +31,7 @@
 #include "cmemcommbuffer.h"
 #include "macros.h"
 #include "cenvir.h"
+#include "cconfig.h"
 
 #include <windows.h>
 
@@ -72,8 +73,7 @@ struct PipeHeader
 
 cNamedPipeCommunications::cNamedPipeCommunications()
 {
-    // FIXME hardcoded name
-    prefix = "omnetpp";
+    prefix = ev.config()->getAsString("General", "parsim-namedpipecommunications-prefix", "omnetpp");
     rpipes = NULL;
     wpipes = NULL;
     rrBase = 0;

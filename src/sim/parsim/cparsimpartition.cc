@@ -30,6 +30,7 @@
 #include "creceivedexception.h"
 #include "messagetags.h"
 #include "cenvir.h"
+#include "cconfig.h"
 #include "macros.h"
 
 Register_Class(cParsimPartition);
@@ -40,7 +41,7 @@ cParsimPartition::cParsimPartition()
     sim = NULL;
     comm = NULL;
     synch = NULL;
-    debug = true;
+    debug = ev.config()->getAsBool("General", "parsim-debug", true);
 }
 
 cParsimPartition::~cParsimPartition()

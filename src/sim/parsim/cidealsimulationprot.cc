@@ -22,6 +22,7 @@
 #include "cmodule.h"
 #include "cgate.h"
 #include "cenvir.h"
+#include "cconfig.h"
 #include "cidealsimulationprot.h"
 #include "cplaceholdermod.h"
 #include "cparsimpartition.h"
@@ -47,9 +48,9 @@ inline bool cIdealSimulationProtocol::isExternalMessage(cMessage *msg)
 cIdealSimulationProtocol::cIdealSimulationProtocol() : cParsimProtocolBase()
 {
     fin = NULL;
-    debug = true; //FIXME from config file
+    debug = ev.config()->getAsBool("General", "parsim-debug", true);
 
-    tableSize = TABLESIZE;  //FIXME from config file
+    tableSize = ev.config()->getAsInt("General", "parsim-idealsimulationprotocol-tablesize", TABLESIZE);
     table = new ExternalEvent[tableSize];
     numItems = 0;
     nextPos = 0;

@@ -22,6 +22,7 @@
 #include "cmodule.h"
 #include "cgate.h"
 #include "cenvir.h"
+#include "cconfig.h"
 #include "cnullmessageprot.h"
 #include "clinkdelaylookahead.h"
 #include "cparsimpartition.h"
@@ -38,12 +39,15 @@ Register_Class(cNullMessageProtocol);
 
 cNullMessageProtocol::cNullMessageProtocol() : cParsimProtocolBase()
 {
-    lookaheadcalc = new cLinkDelayLookahead; // FIXME make this configurable
-    debug = true;
-
     numSeg = 0;
     segInfo = NULL;
-    laziness = 0.5;  // FIXME try 1.0?
+
+    const char *lookhClass = ev.config()->getAsString("General", "parsim-nullmessageprotocol-lookahead-class", "cLinkDelayLookahead");
+    lookaheadcalc = dynamic_cast<cNMPLookahead *>(createOne(lookhClass));
+    if (!lookaheadcalc) \
+         throw new cException("Class \"%s\" is not subclassed from cNMPLookahead", lookhClass);
+    debug = ev.config()->getAsBool("General", "parsim-debug", true);
+    laziness = ev.config()->getAsDouble("General", "parsim-nullmessageprotocol-laziness", 0.5);
 }
 
 cNullMessageProtocol::~cNullMessageProtocol()
