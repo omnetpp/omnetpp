@@ -1,76 +1,20 @@
 
-This description is based on a message from Enrik Berkhan to the OMNeT++
-mailing list. I only minimally edited it for OMNeT++ 2.0 beta 5, removing
-the issues that have been fixed since then.
+OMNeT++ is known to compile and work under Solaris 7 and 8.
 
-Please note that I won't be able to support or maintain any of this...
+You will need the following additional packages:
 
-Andras
+  * MANDATORY (available at http://www.sunfreeware.com/)
+    - gcc (version 2.95.x or 3.x)
+    - binutils (depending on which gcc version you use)
+    - flex
+    - bison
+    - tcl/tk
 
+  * OPTIONAL (needed for parallel simulation only)
+    - PVM (available at http://www.sunfreeware.com/)
+    - MPI (available at http://www-unix.mcs.anl.gov/mpi/mpich/)
 
---------------------------------------------------------------------------------
-To: OMNETPP Mailing List <omnetpp-l@it.swin.edu.au> 
-Subject: Re: Compiling 2.0b4 with GCC 2.95.2 
-From: Enrik Berkhan <enrik@starfleet.inka.de> 
-Date: Wed, 31 May 2000 00:53:28 +0200 
+If you have installed these packages, please proceed with Readme.Unix
+for installation instructions on OMNeT++.
 
-Hi,
-
-On Fri, May 26, 2000 at 05:36:43AM +1000, Richard Lyon wrote:
-> With the 2.0b4 there are some issues when compiling with the latest release
-> of GCC (2.95.2). So far I have found:
-> [Patches to make 2.0b4 compile with gcc 2.95.2]
-
-I've got it working with Solaris 8 x86. Besides Richard's changes, I had
-to do the following:
-
-Build enviroment:
-  - Solaris 8 x86
-  - gcc 2.95.2 19991024 from the contrib CD
-  - flex version 2.5.4 from the contrib CD
-  - GNU Bison version 1.28 from the contrib CD
-  - tcl8.2, tk8.2 from www.sunfreeware.com
-
-Addtional options for `c++' in configure.user:
-  o -fpic to produce position independent code. Otherwise, `gcc -shared'
-    refuses to build the shared libs by setting ld's `-z text' flag.
-    (Shared libs using position independent code are more efficient, see
-    the Solaris Linker and Libraries Guide.) Actually, only the objects
-    making it into shared libs should be built using this flag. Maybe GNU
-    libtool should be used to build the shared libs. Another option would
-    be to call `ld' with option `-z textoff'.
-
-  o -fwritable-strings to enable code like the following (e. g. from
-    src/tkenv/tkcmd.cc):
-
-    int simulationOk_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
-    {
-      ...
-      interp->result = simulation.ok() ? "1" : "0";
-      ...
-    }
-
-    where the lhs is of type (char *) and the rhs is (const char *) without
-    `-fwritable-strings'.
-
-Additional flags for TK_FLAGS:
-  o `-isystem /usr/openwin/include' to make the X include files behave like
-    system includes and tolerate non-ANSI constructs in them.
-
-Additional observations:
-  o ./src/sim/std/netpack.o is not cleaned by `make clean'. [done --Andras]
-
-  o had to use `CC=gcc ./configure', otherwise `/usr/bin/cc', which is a
-    NOP, is used to detect yywrap() in -lfl, which obviously must fail.
-    Don't know if this matters much.
-
-[...]
-
-That's all so far.
-
-Enrik
--- 
-Enrik Berkhan                                    enrik@starfleet.inka.de
-Fliederweg 8
-D-76297 Stutensee
-
+2002/04/12, Ulrich Kaage <kaage@int.uni-karlsruhe.de>
