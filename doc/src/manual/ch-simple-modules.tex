@@ -17,14 +17,7 @@ on how to design and code simple modules.
 This section contains a very brief introduction into how Discrete
 Event Simulation (DES) works, in order to introduce terms we'll use
 when explaining {\opp} concepts\index{simulation!concepts} and
-implementation. If you're familiar with DES\index{DES}, you can skip
-the next few sections.
-
-%
-%FIXME
-%ANDRAS Please Provide exact jump point, else the reader will not know how far they can skip ahead...
-%Gabor
-%
+implementation.
 
 
 \subsection{Discrete Event Simulation}
@@ -2784,7 +2777,7 @@ callee->doSomething();
 \end{verbatim}
 
 The \fname{check\_and\_cast<>()} template function on the second line
-is part of {\opp}. It does a standard C++ \ttt{dynamic_cast},
+is part of {\opp}. It does a standard C++ \ttt{dynamic\_cast},
 and checks the result: if it is NULL, \ttt{check\_and\_cast} raises an {\opp} error.
 Using \ttt{check\_and\_cast} saves you from writing error checking
 code: if \ttt{calleeModule} from the first line is NULL because
@@ -2805,7 +2798,9 @@ macro at the top of the methods that may be invoked from other
 modules. These calls perform context switching, and, in case of
 \ttt{Enter\_Method()}, notify the simulation GUI so that animation
 of the method call can take place. \ttt{Enter\_Method\_Silent()}
-does not animate the call.
+does not animate the call. \ttt{Enter\_Method()} expects a
+\ttt{printf()}-like argument list -- the resulting string will
+be displayed during animation.
 
 \begin{verbatim}
 void Callee::doSomething()

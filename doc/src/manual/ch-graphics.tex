@@ -628,16 +628,7 @@ create a submodule of that type \\\hline
 
 
 
-\section{Changing the network graphics at run-time}
-
-\subsection{Animation}
-
-%FIXME update
-% ev.isGUI(),
-
-% implemented bubble() -- submodules
-% can display a bubble with a short message like "Queue full!".
-% Added [Tkenv]/show-bubbles=true/false omnetpp.ini entry.
+\section{Enhancing animation}
 
 \subsection{Changing display strings at runtime}
 
@@ -683,14 +674,40 @@ as data elements separated by semicolons, equal signs and commas.
 
 An example:
 
-\begin{Verbatim}
+\begin{verbatim}
 dispStr->parse("a=1,2;p=alpha,,3");
 dispStr->insertTag("x");
 dispStr->setTagArg("x",0,"joe");
 dispStr->setTagArg("x",2,"jim");
 dispStr->setTagArg("p",0,"beta");
 ev << dispStr->getString();  // result: "x=joe,,jim;a=1,2;p=beta,,3"
-\end{Verbatim}
+\end{verbatim}
+
+
+\subsection{Bubbles}
+
+Modules can let the user know about important events (such as a node
+going down or coming up) by displaying a bubble with a short message
+("Going down", "Coming up", etc.) This is done by the \fname{bubble()} method
+of \cclass{cModule}. The method takes the string to be displayed
+as a \ttt{const char *} pointer.
+
+An example:
+
+\begin{verbatim}
+bubble("Going down!");
+\end{verbatim}
+
+If the module contains a lot of code that modifies the display string or
+displays bubbles, it is recommended to make these calls conditional
+on \ttt{ev.isGUI()}. The \ttt{ev.isGUI()} call returns \textit{false}
+when the simulation is run under Cmdenv, so one can make the code skip
+potentially expensive display string manipulation.
+
+\begin{verbatim}
+if (ev.isGUI())
+    bubble("Going down!");
+\end{verbatim}
 
 
 
