@@ -23,6 +23,7 @@
 #include "cinifile.h"
 #include "patmatch.h"
 #include "cexception.h"
+#include "fsutils.h"
 
 
 #define MAX_LINE   1024
@@ -128,7 +129,14 @@ void cIniFile::_readFile(const char *fname, int section_id)
             while (*e!=' ' && *e!='\t' && *e!='\0') e++;
             *e = '\0';
 
-            _readFile( s, section_id );    // process included inifile
+            // filenames should be relative to the current ini file we're processing,
+            // so cd into its directory before opening incuded file
+            opp_string dir, dummy;
+            splitFileName(fname, dir, dummy);
+            PushDir d(dir.c_str());
+
+            // process included inifile
+            _readFile(s, section_id);
         }
 
         // process section heading '[new section]'

@@ -5,6 +5,14 @@
 
 	* omnetapp.h/cc: makeOptionsEffective() merged into readPerRunOptions()
 
+	* omnetapp.cc: fixed ini file imports: included ini file names are now
+	understood as relative to the location of the ini file containing the 
+	"include" directive, rather than to the current working directory.
+	E.g. if your omnetpp.ini contains "include ../../settings.ini", then
+	settings.ini may now contain "include defaults.ini" (instead of 
+	"include ../../defaults.ini") to load defaults.ini from the same 
+	directory.
+
 2005-02-24  Andras Varga
 
 	* cenvir.cc: fix: simple modules etc in dynamically loaded dlls/so's
