@@ -409,6 +409,7 @@ opt_machinelist
 machinelist
         : machine ',' machinelist
         | machine ';'
+        ;
 
 machine
         : NAME
@@ -651,6 +652,7 @@ substparamblock
                        setComments(SUBSTPARAMS_KEY,@1,@4); )}
           opt_substparameters
                 {NEDC( close_if(); )}
+        ;
 
 opt_substparameters
         : substparameters
@@ -687,6 +689,7 @@ gatesizeblock
                        setComments(GATESIZES_KEY,@1,@4); )}
           opt_gatesizes
                 {NEDC( close_if(); )}
+        ;
 
 opt_gatesizes
         : gatesizes

@@ -78,11 +78,6 @@ realclean: clean
 	-del lex.yy.c ebnf.tab.c ebnf.tab.h 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-ebnf.tab.obj: ebnf.tab.c \
-  ebnf.h \
-  ebnfcfg.h \
-  jar_func.h \
-  jar_lib.h
 jar.obj: jar.c \
   jar_func.h \
   jar_lib.h
@@ -97,8 +92,3 @@ jar_mem.obj: jar_mem.c \
 jar_mod.obj: jar_mod.c \
   jar_func.h \
   jar_lib.h
-lex.yy.obj: lex.yy.c \
-  ebnf.h \
-  ebnf.tab.h \
-  ebnfcfg.h \
-  jar_func.h

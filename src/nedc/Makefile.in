@@ -10,7 +10,7 @@ MAKEDEPEND=@MAKEDEPEND@
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
 EXE_SUFFIX=@EXE_SUFFIX@
-EXPAT_LIB=@EXPAT_LIB@
+XML_LIBS=@XML_LIBS@
 
 OMNETPP_BIN_DIR=@OMNETPP_BIN_DIR@
 OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
@@ -29,7 +29,7 @@ all: nedc nedtool
 
 
 nedtool: main.o
-	$(CXX) $(LDFLAGS) -o nedtool main.o -L$(OMNETPP_LIB_DIR) -lnedxml $(EXPAT_LIB)
+	$(CXX) $(LDFLAGS) -o nedtool main.o -L$(OMNETPP_LIB_DIR) -lnedxml $(XML_LIBS)
 	../utils/install-prog nedtool $(OMNETPP_BIN_DIR)
 
 nedc: $(OBJS)
@@ -77,10 +77,6 @@ clean:
 	rm -f *.o lex.yy.c ebnf.tab.c ebnf.tab.h nedc nedtool *_n.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-ebnf.tab.o: ebnf.tab.c \
-  ebnf.h \
-  ebnfcfg.h \
-  jar_func.h
 jar.o: jar.c \
   jar_func.h \
   jar_lib.h
@@ -95,9 +91,3 @@ jar_mem.o: jar_mem.c \
 jar_mod.o: jar_mod.c \
   jar_func.h \
   jar_lib.h
-lex.yy.o: lex.yy.c \
-  unistd.h \
-  ebnf.h \
-  ebnf.tab.h \
-  ebnfcfg.h \
-  jar_func.h
