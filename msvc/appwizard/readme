@@ -1,0 +1,9 @@
+
+Bugs in the templates: [patched in the binary :-(]
+  handleMessage() --> handleMessage(cMessage *msg)
+  writeScalar --> recordScalar  (two places!)
+
+Todo:
+- add pictures
+- make separate src file group for ned files
+- add info: "The warning when 1st loading the project can be ignored"

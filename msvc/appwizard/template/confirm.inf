@@ -1,0 +1,19 @@
+Confirm create new OMNeT++ project
+
+This wizard will generate the following files:
+
++ $$root$$.h
++ omnetpp.ini
++ $$root$$.dsp
+
+Creating files for simple modules:
+$$BEGINLOOP(SIMPLE_N)
+  + $$MODULE_NAME$$.ned
+$$IF(IS_ACTIVITY)
+  + $$MODULE_NAME$$.cpp (activity() - template)
+$$ELSE
+  + $$MODULE_NAME$$.cpp (handleMessage() - template)
+$$ENDIF
+$$ENDLOOP // SIMPLE_N
+
+WARNING! You have to CLOSE and then open (recent) the workspace after creation finished.

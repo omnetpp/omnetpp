@@ -1,0 +1,234 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "#include ""afxres.rc""  // Standard components\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "Comments", "\0"
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "OMNETPPWIZARD AppWizard\0"
+            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "OMNETPPWIZARD\0"
+            VALUE "LegalCopyright", "Copyright © 2000\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "OMNETPPWIZARD.DLL\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "OMNeT++ AppWizard\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_CUSTOM1 DIALOGEX 0, 0, 304, 199
+STYLE DS_CONTROL | WS_CHILD | WS_BORDER
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "",IDC_STATIC,100,0,204,196,BS_FLAT
+    LTEXT           "Enter description for this project, and add simple modules.",
+                    IDC_STATIC,111,14,184,21
+    GROUPBOX        "Simple modules",IDC_STATIC,111,92,185,99
+    LISTBOX         IDC_SIMPLE_LIST,121,105,109,81,LBS_SORT | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Add...",IDC_ADD,237,105,50,14
+    PUSHBUTTON      "Edit...",IDC_EDIT,237,124,50,14
+    PUSHBUTTON      "Delete",IDC_DELETE,237,143,50,14
+    CONTROL         121,IDC_STATIC,"Static",SS_BITMAP,15,31,53,69,
+                    WS_EX_TRANSPARENT
+    EDITTEXT        IDC_DESCRIPTION,111,52,185,38,ES_MULTILINE | 
+                    ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_WANTRETURN
+    LTEXT           "Description:",IDC_STATIC,111,41,38,8
+END
+
+IDD_EDIT DIALOG DISCARDABLE  0, 0, 186, 151
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Edit simple module"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_SIMPLE_NAME,7,18,104,14,ES_AUTOHSCROLL
+    LTEXT           "Simple module name:",IDC_STATIC,7,7,97,8
+    EDITTEXT        IDC_SIMPLE_DESCRIPTION,7,46,172,52,ES_MULTILINE | 
+                    ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_WANTRETURN
+    LTEXT           "Description:",IDC_STATIC,7,35,38,8
+    CONTROL         "activity()",IDC_SIMPLE_ACTIVITY,"Button",
+                    BS_AUTORADIOBUTTON,13,116,42,10
+    GROUPBOX        "Use",IDC_STATIC,7,107,85,37
+    CONTROL         "handleMessage()",IDC_SIMPLE_HANDLEMESSAGE,"Button",
+                    BS_AUTORADIOBUTTON,13,128,70,10
+    EDITTEXT        IDC_SIMPLE_STACKSIZE,103,124,76,14,ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    LTEXT           "Stack size in bytes:",IDC_STATIC,103,113,62,8
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
+END
+
+IDD_DIRS DIALOG DISCARDABLE  0, 0, 304, 199
+STYLE DS_CONTROL | WS_CHILD
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "",IDC_STATIC,100,0,204,196,BS_FLAT
+    GROUPBOX        "OMNeT++ root directory",IDC_STATIC,108,33,189,34
+    EDITTEXT        IDC_OPPDIR,113,44,132,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse...",IDC_OPPDIR_BROWSE,249,44,44,14
+    GROUPBOX        "TCL/TK directory",IDC_STATIC,108,81,189,59
+    EDITTEXT        IDC_TCLDIR,113,92,132,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse...",IDC_TCLDIR_BROWSE,249,92,44,14
+    LTEXT           "Specify the directory of the installed components.",
+                    IDC_STATIC,108,12,187,16
+    LTEXT           "TCL/TK version:",IDC_STATIC,113,117,53,8
+    EDITTEXT        IDC_TCLVER,173,115,21,14,ES_AUTOHSCROLL
+    CONTROL         121,IDC_STATIC,"Static",SS_BITMAP,15,31,53,69
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEMPLATE
+//
+
+NEWPROJ.INF             TEMPLATE DISCARDABLE    "template\\newproj.inf"
+CONFIRM.INF             TEMPLATE DISCARDABLE    "template\\confirm.inf"
+OMNETPP.INI             TEMPLATE DISCARDABLE    "Template\\omnetpp.ini"
+TEMPLATE_N.CPP          TEMPLATE DISCARDABLE    "Template\\template_n.cpp"
+TEMPLATE.NED            TEMPLATE DISCARDABLE    "Template\\template.ned"
+TEMPLATE.H              TEMPLATE DISCARDABLE    "Template\\template.h"
+TEMPLATE.DSP            TEMPLATE DISCARDABLE    "Template\\template.dsp"
+ACTIVITY.CPP            TEMPLATE DISCARDABLE    "Template\\activity.cpp"
+HANDLEMESSAGE.CPP       TEMPLATE DISCARDABLE    "Template\\handlemessage.cpp"
+NETWORK.NED             TEMPLATE DISCARDABLE    "Template\\network.ned"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_OMNETPPWIZARD       ICON    DISCARDABLE     "res\\OmnetppWizard.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_BITMAP1             BITMAP  DISCARDABLE     "res\\omnetpp1.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_EDIT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 144
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+#include "afxres.rc"  // Standard components
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
