@@ -5,6 +5,14 @@ OMNeT++ is Copyright (C) 1992-99 Andras Varga, Technical University
 of Budapest, Dept. of Telecommunications, Stoczek u.2, H-1111 Budapest,
 Hungary.
 
+This file describes the license conditions of using OMNeT++. As an alternative,
+you may elect to use the GNU General Public License instead of this License
+for a particular copy of the following components of OMNeT++: nedc, sim,
+envir, cmdenv, utils, samples, and the auxiliary files that are necessary to
+build them. (The component names above refer to the contents of the
+corresponding subdirectories in the distribution.) The "GPLElect" file
+describes how to technically perform the election.
+
 OMNeT++ (the "Software") is distributed in the hope that it will be
 useful. You may copy and distribute verbatim copies of the Software
 as you receive it, in any medium, provided that you conspicuously and
@@ -25,23 +33,17 @@ to be incorporated into the Software or distribute a modified version of
 the Software, you must contact the authors.
 
 The sources of simulation models and the simulation results produced using
-the Software and extensions to the Software are not covered by this License;
-they fall under the license provided by their copyright holders.
+the Software and extensions to the Software are naturally not covered by
+this License.
 
-You may distribute simulation models in binary forms which contain OMNeT++
-libraries, if doing so otherwise complies to this License (see clause about
-non-profit use). 
+You may distribute simulation models in binary form which contain OMNeT++
+libraries if doing so otherwise complies to this License (esp. see clause
+about non-profit use), otherwise you must obtain a license from the author
+before doing so.
 
 If you use OMNeT++ in any work, the resulting document(s) (report, paper,
 article, book, etc.) should contain a reference to the Software and its
 authors.
-
-You may elect to use the GNU General Public License for a particular copy of
-the following components of OMNeT++: nedc, sim, envir, cmdenv, utils, samples,
-and the auxiliary files that are necessary to build them. (The component names
-above refer to the contents of the corresponding subdirectories in the
-distribution.) The "GPLElect" file describes how to technically perform
-the election.
 
 IN NO EVENT SHALL THE AUTHORS OR DISTRIBUTORS BE LIABLE TO ANY PARTY
 FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES
