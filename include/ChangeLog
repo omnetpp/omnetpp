@@ -1,3 +1,13 @@
+2001-09-14 Andras Varga
+
+	* utils.h: added opp_nextrand(long& seed)
+        * cmodule.cc: cModule's display string methods were reorganized:
+        displayString(type) method split into displayString() and
+        displayStringAsParent(), eliminating the type parameter. Similar change
+        to the set...() methods. Old methods remained but were made deprecated.
+        * cwatch.h: added unsigned int/long, signed/unsigned char, etc.
+        constructors to cWatch.
+
 2001-09-06 Andras Varga
 
 	* cleanup around object copying: every class has now a copy constructor,

@@ -38,7 +38,7 @@ enum {
        sREADY     // module is active
 };
 
-//=== display string selector
+//=== display string selector (DEPRECATED)
 enum {
        dispSUBMOD=0,        // display string: "as submodule"
        dispENCLOSINGMOD=1,  // display string: "as enclosing module"
@@ -135,7 +135,8 @@ class SIM_API cModule : public cObject
     int  idx;               // index if module vector, 0 otherwise
     int  vectsize;          // vector size, -1 if not a vector
 
-    opp_string dispstr[dispNUMTYPES]; // see setDisplayString(..) etc.
+    opp_string dispstr;     // display string as submodule
+    opp_string parentdispstr; // display string as parent (enclosing) module
 
     DisplayStringNotifyFunc notify_inspector;
     void *data_for_inspector;
@@ -557,22 +558,50 @@ class SIM_API cModule : public cObject
 
     /** @name Display strings. */
     //@{
-    // FIXME: split to 2x2 functions, and get rid of 'type' parameter!
 
     /**
-     * Change the display string for this module. The type can be
-     * dispSUBMOD ("as submodule") or dispENCLOSINGMOD ("as enclosing module").
-     * The immediate flag selects whether the change should become effective
-     * right now or later (after finishing the current event); this
-     *
+     * Returns the first display string.  This display string
+     * defines presentation when the module is displayed as a submodule
+     * in a compound module graphics.
      */
-    void setDisplayString(int type, const char *dispstr, bool immediate=true);
+    const char *displayString();
 
     /**
-     * Returns the display string for this module. The type can be
-     * dispSUBMOD ("as submodule") or dispENCLOSINGMOD ("as enclosing module").
+     * Sets the first display string for this module. This display string
+     * defines presentation when the module is displayed as a submodule
+     * in a compound module graphics.
+     *
+     * The immediate flag selects whether the change should become effective
+     * right now or later (after finishing the current event).
+     */
+    void setDisplayString(const char *dispstr, bool immediate=true);
+
+    /**
+     * Returns the second display string. This display string
+     * is used when this module is a compound module whose internals are
+     * being displayed in a window.
+     */
+    const char *displayStringAsParent();
+
+    /**
+     * Sets the second display string for this module. This display string
+     * is used when this module is a compound module whose internals are
+     * being displayed in a window.
+     *
+     * The immediate flag selects whether the change should become effective
+     * right now or later (after finishing the current event).
+     */
+    void setDisplayStringAsParent(const char *dispstr, bool immediate=true);
+
+    /**
+     * DEPRECATED.
      */
     const char *displayString(int type);
+
+    /**
+     * DEPRECATED.
+     */
+    void setDisplayString(int type, const char *dispstr, bool immediate=true);
 
     /**
      * Registers a notification function to be called when the display string

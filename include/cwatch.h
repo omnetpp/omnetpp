@@ -103,12 +103,32 @@ class SIM_API cWatch : public cObject
     /**
      * Initialize the shell to hold the given variable.
      */
-    cWatch(const char *name, int&  i)  : cObject(name) {ptr=&i; type='i';}
+    cWatch(const char *name, signed char& c)  : cObject(name) {ptr=&c; type='c';}
+
+    /**
+     * Initialize the shell to hold the given variable.
+     */
+    cWatch(const char *name, unsigned char& c)  : cObject(name) {ptr=&c; type='c';}
+
+    /**
+     * Initialize the shell to hold the given variable.
+     */
+    cWatch(const char *name, int& i)  : cObject(name) {ptr=&i; type='i';}
+
+    /**
+     * Initialize the shell to hold the given variable.
+     */
+    cWatch(const char *name, unsigned int& i)  : cObject(name) {ptr=&i; type='i';}
 
     /**
      * Initialize the shell to hold the given variable.
      */
     cWatch(const char *name, long& l)  : cObject(name) {ptr=&l; type='l';}
+
+    /**
+     * Initialize the shell to hold the given variable.
+     */
+    cWatch(const char *name, unsigned long& l)  : cObject(name) {ptr=&l; type='l';}
 
     /**
      * Initialize the shell to hold the given variable.
@@ -123,7 +143,17 @@ class SIM_API cWatch : public cObject
     /**
      * Initialize the shell to hold the given variable.
      */
-    cWatch(const char *name, cObject* &o) : cObject(name) {ptr=&o; type='o';}
+    cWatch(const char *name, signed char* &s) : cObject(name) {ptr=&s; type='s';}
+
+    /**
+     * Initialize the shell to hold the given variable.
+     */
+    cWatch(const char *name, unsigned char* &s) : cObject(name) {ptr=&s; type='s';}
+
+    /**
+     * Initialize the shell to hold the given variable.
+     */
+    cWatch(const char *name, const cObject* &o) : cObject(name) {ptr=&o; type='o';}
 
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.

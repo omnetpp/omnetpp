@@ -112,9 +112,15 @@ SIM_API char *simtimeToStr(simtime_t t, char *dest=NULL);
 SIM_API int testrand();
 
 /**
+ * Calculates the next random number with the given seed, and also updates
+ * the seed. This function is useful if the user wants to manage his/her own
+ * random number generators, independent of OMNeT++'s.
+ */
+SIM_API long opp_nextrand(long& seed);
+
+/**
  * Initialize random number generator 0 with a random value.
  */
-
 SIM_API void opp_randomize();
 
 /**
