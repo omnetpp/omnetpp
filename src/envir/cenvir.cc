@@ -321,6 +321,12 @@ void cEnvir::displayStringAsParentChanged(cModule *parentmodule)
 
 //-----------------------------------------------------------------
 
+void cEnvir::bubble(cModule *mod, const char *text)
+{
+    if (!isgui || disable_tracing) return;
+    app->bubble(mod, text);
+}
+
 void cEnvir::printfmsg(const char *fmt,...)
 {
     va_list va;

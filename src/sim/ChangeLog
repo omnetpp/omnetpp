@@ -1,3 +1,7 @@
+2004-01-09  Andras Varga
+
+	* cmodule.cc: implemented bubble()
+
 2004-01-06  Andras Varga
 
 	* cdispstr.cc: notify() and assemble() only if needed (there's change)

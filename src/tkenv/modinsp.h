@@ -88,6 +88,7 @@ class TGraphicalModWindow : public TInspector
       virtual void displayStringChanged(cModule *submodule);
       virtual void displayStringAsParentChanged();
       virtual void displayStringChanged(cGate *gate);
+      virtual void bubble(cModule *mod, const char *text);
 };
 
 

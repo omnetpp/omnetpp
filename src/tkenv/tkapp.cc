@@ -1509,6 +1509,16 @@ void TOmnetTkApp::breakpointHit( const char *label, cSimpleModule *mod )
         stopAtBreakpoint(label,mod);
 }
 
+void TOmnetTkApp::bubble(cModule *mod, const char *text)
+{
+    cModule *parentmod = mod->parentModule();
+    TInspector *insp = findInspector(parentmod,INSP_GRAPHICAL);
+    if (!insp) return;
+    TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
+    assert(modinsp);
+    modinsp->bubble(mod, text);
+}
+
 void TOmnetTkApp::putmsg(const char *str)
 {
     if (!interp)

@@ -450,7 +450,7 @@ void TGraphicalModWindow::redrawModules()
     Tcl_Interp *interp = getTkApplication()->getInterp();
 
     // then display all submodules
-    CHK(Tcl_VarEval(interp, canvas, " delete all",NULL));
+    CHK(Tcl_VarEval(interp, canvas, " delete dx",NULL)); // NOT "delete all" because that'd remove "bubbles" too!
     const cDisplayString blank;
     cSubModIterator it(*parentmodule);
     for (it.init(*parentmodule); !it.end(); it++)
@@ -517,6 +517,7 @@ void TGraphicalModWindow::redrawModules()
            }
         }
     }
+    CHK(Tcl_VarEval(interp, canvas, " raise bubble",NULL));
 }
 
 void TGraphicalModWindow::redrawMessages()
@@ -570,6 +571,7 @@ void TGraphicalModWindow::redrawMessages()
          }
       }
    }
+   CHK(Tcl_VarEval(interp, canvas, " raise bubble",NULL));
 }
 
 void TGraphicalModWindow::redrawNextEventMarker()
@@ -645,6 +647,12 @@ void TGraphicalModWindow::displayStringAsParentChanged()
 void TGraphicalModWindow::displayStringChanged(cGate *)
 {
    needs_redraw = true;
+}
+
+void TGraphicalModWindow::bubble(cModule *mod, const char *text)
+{
+   Tcl_Interp *interp = getTkApplication()->getInterp();
+   CHK(Tcl_VarEval(interp, "graphmodwin_bubble ",canvas," ",ptrToStr(mod)," {",text,"}",NULL));
 }
 
 int TGraphicalModWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)

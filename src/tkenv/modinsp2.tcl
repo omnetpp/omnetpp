@@ -180,18 +180,18 @@ proc draw_submod {c submodptr x y name dispstr} {
 
            $c create $sh $x1 $y1 $x2 $y2 \
                -fill $fill -width $width -outline $outline \
-               -tags "tooltip submod $submodptr"
+               -tags "dx tooltip submod $submodptr"
 
            if [info exists tags(i)] {
-               $c create image $x $y -image $img -anchor center -tags "tooltip submod $submodptr"
+               $c create image $x $y -image $img -anchor center -tags "dx tooltip submod $submodptr"
            }
 
-           $c create text $x [expr $y2+$width/2+3] -text $name -anchor n
+           $c create text $x [expr $y2+$width/2+3] -text $name -anchor n -tags "dx"
 
        } elseif [info exists tags(i)] {
 
-           $c create image $x $y -image $img -anchor center -tags "tooltip submod $submodptr"
-           $c create text $x [expr $y+$sy/2+3] -text $name -anchor n
+           $c create image $x $y -image $img -anchor center -tags "dx tooltip submod $submodptr"
+           $c create text $x [expr $y+$sy/2+3] -text $name -anchor n -tags "dx"
 
        }
 
@@ -200,7 +200,7 @@ proc draw_submod {c submodptr x y name dispstr} {
            set r [get_submod_coords $c $submodptr]
            set x [expr [lindex $r 2]+1]
            set y [lindex $r 1]
-           $c create text $x $y -text "q:n/a" -anchor nw -tags "qlen qlen-$submodptr"
+           $c create text $x $y -text "q:?" -anchor nw -tags "dx qlen qlen-$submodptr"
        }
 
        # r=<radius>,<fillcolor>,<color>,<width>
@@ -224,7 +224,7 @@ proc draw_submod {c submodptr x y name dispstr} {
            set y2 [expr $y + $radius/2]
 
            set circle [$c create oval $x1 $y1 $x2 $y2 \
-               -fill $rfill -width $rwidth -outline $routline]
+               -fill $rfill -width $rwidth -outline $routline -tags "dx"]
            $c lower $circle
        }
 
@@ -284,8 +284,8 @@ proc draw_enclosingmod {c ptr name dispstr} {
 
        $c create $sh $bx $by [expr $bx+$sx] [expr $by+$sy] \
            -fill $fill -width $width -outline $outline \
-           -tags "mod $ptr"
-       $c create text [expr $bx+3] [expr $by+3] -text $name -anchor nw -tags "tooltip modname"
+           -tags "dx mod $ptr"
+       $c create text [expr $bx+3] [expr $by+3] -text $name -anchor nw -tags "dx tooltip modname"
        $c lower mod
 
        set bb [$c bbox all]
@@ -344,8 +344,7 @@ proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n
        set width [lindex $tags(o) 1]
        if {$width == ""} {set width 1}
 
-       eval $c create line $arrow_coords -arrow last \
-           -fill $fill -width $width -tags "\"tooltip conn $gateptr\""
+       $c create line $arrow_coords -arrow last -fill $fill -width $width -tags "dx tooltip conn $gateptr"
 
     } errmsg] {
        tk_messageBox -type ok -title Error -icon error \
@@ -380,11 +379,11 @@ proc draw_message {c msgptr x y msgname msgkind} {
         } else {
             set color red
         }
-        set ball [$c create oval -5 -5 5 5 -fill $color -outline $color -tags "tooltip msg $msgptr"]
+        set ball [$c create oval -5 -5 5 5 -fill $color -outline $color -tags "dx tooltip msg $msgptr"]
         $c move $ball $x $y
 
         if [opp_getsimoption animation_msgnames] {
-            $c create text $x $y -text $msgname -anchor n -font $fonts(msgname) -tags "tooltip msgname $msgptr"
+            $c create text $x $y -text $msgname -anchor n -font $fonts(msgname) -tags "dx tooltip msgname $msgptr"
         }
 
     } else {
@@ -413,9 +412,9 @@ proc draw_message {c msgptr x y msgname msgkind} {
 
         if [info exists tags(i)] {
 
-            $c create image $x $y -image $img -anchor center -tags "tooltip msg $msgptr"
+            $c create image $x $y -image $img -anchor center -tags "dx tooltip msg $msgptr"
             if [opp_getsimoption animation_msgnames] {
-                $c create text $x [expr $y+$sy/2+3] -text $msgname -anchor n -tags "tooltip msgname $msgptr"
+                $c create text $x [expr $y+$sy/2+3] -text $msgname -anchor n -tags "dx tooltip msgname $msgptr"
             }
 
         } elseif [info exists tags(b)] {
@@ -442,9 +441,9 @@ proc draw_message {c msgptr x y msgname msgkind} {
             set width [lindex $tags(o) 2]
             if {$width == ""} {set width 1}
 
-            $c create $sh $x1 $y1 $x2 $y2 -fill $fill -width $width -outline $outline -tags "tooltip msg $msgptr"
+            $c create $sh $x1 $y1 $x2 $y2 -fill $fill -width $width -outline $outline -tags "dx tooltip msg $msgptr"
             if [opp_getsimoption animation_msgnames] {
-                $c create text $x [expr $y2+$width/2+3] -text $msgname -anchor n -tags "tooltip msgname $msgptr"
+                $c create text $x [expr $y2+$width/2+3] -text $msgname -anchor n -tags "dx tooltip msgname $msgptr"
             }
         }
     }
@@ -543,8 +542,7 @@ proc graphmodwin_rightclick {c X Y} {
    set ptr [lindex $ptr 0]
 
    if {$ptr!=""} {
-graphmodwin_bubble $c $ptr "?"
-      #popup_insp_menu $ptr $X $Y
+      popup_insp_menu $ptr $X $Y
    }
 }
 
@@ -980,10 +978,10 @@ proc graphmodwin_qlen_rightclick {c X Y} {
 proc graphmodwin_bubble {c modptr txt} {
     set r  [get_submod_coords $c $modptr]
     set x [expr ([lindex $r 0]+[lindex $r 2])/2]
-    set y [expr (2*[lindex $r 1]+[lindex $r 3])/3]
+    set y [expr [lindex $r 1]+4]
 
-    while {[string length $txt]<7} {set txt " $txt "}
-    set txtid  [$c create text $x $y -text " $txt " -anchor c]
+    while {[string length $txt]<5} {set txt " $txt "}
+    set txtid  [$c create text $x $y -text " $txt " -anchor c -tags "bubble"]
     set color #F8F8D8
     set bb [$c bbox $txtid]
 
@@ -1025,7 +1023,7 @@ proc graphmodwin_bubble {c modptr txt} {
                  $x1o $ym  \
                  $x1o $ym ]
 
-    set bubbleid [$c create polygon $pp -outline black -fill $color -width 1 -smooth 1]
+    set bubbleid [$c create polygon $pp -outline black -fill $color -width 1 -smooth 1 -tags "bubble"]
     $c lower $bubbleid $txtid
 
     set dx [expr $x-$xme]
@@ -1034,7 +1032,9 @@ proc graphmodwin_bubble {c modptr txt} {
     $c move $bubbleid $dx $dy
     $c move $txtid $dx $dy
 
-    after 1500 [list $c delete $txtid $bubbleid]
+    set sp [opp_getsimoption animation_speed]
+    set ad [expr int(1000 / (0.1+$sp))]
+    after $ad [list $c delete $txtid $bubbleid]
 }
 
 
