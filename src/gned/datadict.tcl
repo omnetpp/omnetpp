@@ -259,8 +259,13 @@ set ned_attr(submod,label-cid)        {}
 set ned_attr(submod,disp-icon)            {}
 set ned_attr(submod,disp-xpos)            {}
 set ned_attr(submod,disp-ypos)            {}
+set ned_attr(submod,disp-layout)          {}
+set ned_attr(submod,disp-layoutpar1)      {}
+set ned_attr(submod,disp-layoutpar2)      {}
+set ned_attr(submod,disp-layoutpar3)      {}
 set ned_attr(submod,disp-xsize)           {}
 set ned_attr(submod,disp-ysize)           {}
+set ned_attr(submod,disp-shape)           {}
 set ned_attr(submod,disp-outlinecolor)    {}
 set ned_attr(submod,disp-fillcolor)       {}
 set ned_attr(submod,disp-linethickness)   {}

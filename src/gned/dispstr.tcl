@@ -122,10 +122,15 @@ proc parse_submod_dispstr {key} {
    if [info exist tags(p)] {
       set ned($key,disp-xpos) [lindex $tags(p) 0]
       set ned($key,disp-ypos) [lindex $tags(p) 1]
+      set ned($key,disp-layout) [lindex $tags(p) 2]
+      set ned($key,disp-layoutpar1) [lindex $tags(p) 3]
+      set ned($key,disp-layoutpar2) [lindex $tags(p) 4]
+      set ned($key,disp-layoutpar3) [lindex $tags(p) 5]
    }
    if [info exist tags(b)] {
       set ned($key,disp-xsize) [lindex $tags(b) 0]
       set ned($key,disp-ysize) [lindex $tags(b) 1]
+      set ned($key,disp-shape) [lindex $tags(b) 2]
    }
    if [info exist tags(i)] {
       set ned($key,disp-icon) [lindex $tags(i) 0]
@@ -214,15 +219,22 @@ proc update_module_dispstr {key} {
 proc update_submod_dispstr {key} {
    global ned
 
+   # start by parsing old display string...
    set order [split_dispstr $ned($key,displaystring) tags]
 
+   # then we'll update certain parts in it...
    if ![info exist tags(p)] {set tags(p) {}}
    _setlistitem tags(p) 0 $ned($key,disp-xpos)
    _setlistitem tags(p) 1 $ned($key,disp-ypos)
+   _setlistitem tags(p) 2 $ned($key,disp-layout)
+   _setlistitem tags(p) 3 $ned($key,disp-layoutpar1)
+   _setlistitem tags(p) 4 $ned($key,disp-layoutpar2)
+   _setlistitem tags(p) 5 $ned($key,disp-layoutpar3)
 
    if ![info exist tags(b)] {set tags(b) {}}
    _setlistitem tags(b) 0 $ned($key,disp-xsize)
    _setlistitem tags(b) 1 $ned($key,disp-ysize)
+   _setlistitem tags(b) 2 $ned($key,disp-shape)
 
    if ![info exist tags(o)] {set tags(o) {}}
    _setlistitem tags(o) 0 $ned($key,disp-fillcolor)

@@ -6,7 +6,11 @@
 	* bugfix: when a loop connection was deleted in graphics mode, 
 	empty for loop was left behind which is syntactically invalid in NED
 
-	* bugfix: disallow reserved words as name
+	* bugfix: disallow reserved words as name for submodules, modules, etc.
+	TBD not checked for parameter names yet
+
+	* bugfix: layout parameter in display strings ("row", "matrix", etc)
+	was lost
 
 2003-08-01  Andras Varga
 
