@@ -22,7 +22,7 @@ The dist/ dir can be used to test the functions.
    ev.printf("%s: m=%lg v=%lg\n", #f, s.mean(), s.variance()); \
  }
 
-int rng=1;
+int rng=0;
 int numrepl=10000;
 
 // uniform(a,b): m=(a+b)/2

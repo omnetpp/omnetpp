@@ -115,6 +115,7 @@ void {Simple}::activity()
 %inifile: {}.ini
 [General]
 network={Net}
+num-rngs=10
 
 [Parameters]
 # set all variates to use rng 9

@@ -117,6 +117,7 @@ void {Simple}::activity()
 %inifile: {}.ini
 [General]
 network={Net}
+num-rngs=10
 
 %contains: stdout
 uniform_par
