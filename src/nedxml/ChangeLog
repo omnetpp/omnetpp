@@ -6,7 +6,7 @@
         and complete attrs from DTD.
 
         * saxparser_expat.cc: error message if document has DOCTYPE declared,
-        because we cannot validate it with Expat not complete default attrs
+        because we cannot validate it with Expat, nor complete default attrs
         from DTD
 
 2004-07-27  Andras Varga
