@@ -1,5 +1,5 @@
 //
-// This file is part of an OMNeT++ simulation example.
+// This file is part of an OMNeT++/OMNEST simulation example.
 //
 // Copyright (C) 1992-2004 Andras Varga
 //
