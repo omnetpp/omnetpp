@@ -104,4 +104,4 @@ typedef
 #define	UMIN	340
 
 
-extern YYSTYPE yylval;
+extern YYSTYPE nedyylval;

@@ -69,14 +69,14 @@ lex.yy.o: lex.yy.cc
 	$(CXX) -c $(COPTS) lex.yy.cc
 
 lex.yy.cc: ned.lex
-	$(LEX) ned.lex
-	mv lex.yy.c lex.yy.cc
+	$(LEX) -Pnedyy ned.lex
+	mv lex.nedyy.c lex.yy.cc
 
 ned.tab.o: ned.tab.h ned.tab.cc
 	$(CXX) -c $(COPTS) ned.tab.cc
 
 ned.tab.cc ned.tab.h: ned.y
-	$(YACC) -b ned -d ned.y
+	$(YACC) -p nedyy -b ned -d ned.y
 	mv ned.tab.c ned.tab.cc
 
 depend:

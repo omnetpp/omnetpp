@@ -1,3 +1,10 @@
+2004-11-02  Andras Varga
+	
+	* Makefile.in/vc, nedgrammar.h: prefix ned parser symbols with "nedyy"
+	(-p nedyy and -Pnedyy options to bison and flex) to avoid conflicts 
+	with parsers in other libraries. [Akaroa was reported by Ana Cristina 
+	Aguiar, TU Berlin]
+
 2004-10-25  Andras Varga
 	
 	* cppgenerator.cc: updated for fullPath() signature change (see 

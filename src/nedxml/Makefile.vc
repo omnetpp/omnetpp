@@ -40,14 +40,14 @@ nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl ned
         perl dtdclassgen.pl ned.dtd
 
 ned.tab.h ned.tab.cc : ned.y
-        $(YACC:/=\) -b ned -d ned.y
+        $(YACC:/=\) -p nedyy -b ned -d ned.y
         copy ned.tab.c ned.tab.cc
         del ned.tab.c
 
 lex.yy.cc: ned.lex
-        $(LEX:/=\) ned.lex
-        copy lex.yy.c lex.yy.cc
-        del lex.yy.c
+        $(LEX:/=\) -Pnedyy ned.lex
+        copy lex.nedyy.c lex.yy.cc
+        del lex.nedyy.c
 
 unistd.h: 
         echo. > unistd.h

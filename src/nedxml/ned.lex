@@ -200,12 +200,12 @@ char textbuf[TEXTBUF_LEN];
 *    used to signal end of inputstream
 *    not used with flex (only with lex) --VA
 ***************************************************/
-#ifndef yywrap
-int yywrap(void)
+//#ifndef yywrap
+static int yywrap(void)
 {
          return 1;
 }
-#endif
+//#endif
 
 /***************************************************
 * comment() -created 6 july 1995 alex paalvast

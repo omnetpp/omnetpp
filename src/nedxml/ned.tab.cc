@@ -4,6 +4,13 @@
 
 #define YYBISON 1  /* Identify Bison output.  */
 
+#define yyparse nedyyparse
+#define yylex nedyylex
+#define yyerror nedyyerror
+#define yylval nedyylval
+#define yychar nedyychar
+#define yydebug nedyydebug
+#define yynerrs nedyynerrs
 #define YYLSP_NEEDED
 
 #define	INCLUDE	257
