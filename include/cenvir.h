@@ -351,6 +351,21 @@ class ENVIR_API cEnvir : public std::ostream
      * cache the file and return the same pointer to several callers.
      */
     cXMLElement *getXMLDocument(const char *filename, const char *path=NULL);
+
+    /**
+     * Called from cSimpleModule, it returns how much extra stack space
+     * the user interface recommends for activity() simple modules.
+     */
+    unsigned extraStackForEnvir();
+
+    /**
+     * Access to the configuration data (by default, omnetpp.ini).
+     * This is provided here for the benefit of schedulers, parallel
+     * simulation algorithms and other simulation kernel extensions.
+     * Models (simple modules) should NOT directly access the configuration --
+     * they should rely on module parameters to get input.
+     */
+    cConfiguration *config();
     //@}
 
     /** @name Input/output methods called from simple modules or the simulation kernel. */
@@ -531,13 +546,6 @@ class ENVIR_API cEnvir : public std::ostream
 
     /** @name Miscellaneous functions. */
     //@{
-
-    /**
-     * Called from cSimpleModule; it returns how much extra stack space
-     * the user interface recommends for the simple modules.
-     */
-    unsigned extraStackForEnvir();
-
     /**
      * Access to original command-line arguments.
      */
@@ -549,13 +557,9 @@ class ENVIR_API cEnvir : public std::ostream
     char **argVector();
 
     /**
-     * Access to the configuration data (by default, omnetpp.ini).
-     * This is provided here for the benefit of schedulers, parallel
-     * simulation algorithms and other simulation kernel extensions.
-     * Models (simple modules) should NOT access the configuration --
-     * they should rely on module parameters to get input.
+     * The function underlying cSimulation::getUniqueNumber().
      */
-    cConfiguration *config();
+    unsigned long getUniqueNumber();
 
     /**
      * May be called from the simulation while actively waiting

@@ -372,8 +372,15 @@ class SIM_API cSimulation : public cObject
     cSimpleModule *contextSimpleModule() const;
     //@}
 
-    /** @name Snapshots. */
+    /** @name Miscellaneous. */
     //@{
+    /**
+     * This function is guaranteed to return a different integer every time
+     * it is called (usually 0, 1, 2, ...). This method is recommended over
+     * incrementing a global variable because it works also with distributed
+     * execution. Useful for generating unique network addresses, etc.
+     */
+    unsigned long getUniqueNumber();
 
     /**
      * Writes a snapshot of the given object and its children to the
@@ -381,6 +388,7 @@ class SIM_API cSimulation : public cObject
      * This method is called internally from cSimpleModule's snapshot().
      */
     bool snapshot(cObject *obj, const char *label);
+
     //@}
 };
 
