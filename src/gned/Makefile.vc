@@ -93,21 +93,11 @@ realclean: clean
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 arrow.obj: arrow.cc \
   arrow.h
-ebnf.tab.obj: ebnf.tab.cc \
-  ebnf.h \
-  ebnfcfg.h \
-  parsened.h \
-  nedfile.h
 gned.obj: gned.cc \
   arrow.h \
   parsened.h \
   tklib.h \
   ebnf.h
-lex.yy.obj: lex.yy.cc \
-  ebnf.h \
-  ebnf.tab.h \
-  ebnfcfg.h \
-  parsened.h
 nedfile.obj: nedfile.cc \
   nedfile.h \
   parsened.h \

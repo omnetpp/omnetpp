@@ -67,6 +67,4 @@ clean:
 	rm -f tclcode.cc *.o plove$(EXE_SUFFIX) plove
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-plove.o: plove.cc \
-  tclcode.cc
-tclcode.o: tclcode.cc
+plove.o: plove.cc

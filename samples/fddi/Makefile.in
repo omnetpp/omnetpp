@@ -141,11 +141,17 @@ re-makemake-m:
 fddi_mac.o: fddi_mac.cc \
   fddi_def.h \
   fddi_mac.h
+fddi_mac_n.o: fddi_mac_n.cc
+fddi_nets_n.o: fddi_nets_n.cc
+fddi_nodes_n.o: fddi_nodes_n.cc
+fddi_rings_n.o: fddi_rings_n.cc
 othermod.o: othermod.cc \
   otherdef.h \
   fddi_def.h \
   othermod.h
+othermod_n.o: othermod_n.cc
 ssm_ifs.o: ssm_ifs.cc \
   ssmifdef.h \
   fddi_def.h \
   ssm_ifs.h
+ssm_ifs_n.o: ssm_ifs_n.cc

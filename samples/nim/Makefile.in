@@ -106,5 +106,6 @@ re-makemake-m:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 game.o: game.cc
+nim_n.o: nim_n.cc
 players.o: players.cc \
   players.h

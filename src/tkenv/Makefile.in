@@ -135,6 +135,8 @@ inspect.o: inspect.cc \
   ../../include/cenvir.h \
   ../../include/cenum.h \
   ../../include/cstruct.h \
+  ../../include/cchannel.h \
+  ../../include/cdispstr.h \
   ../../include/envirext.h \
   ../../include/ccoroutine.h \
   ../envir/omnetapp.h \
@@ -208,6 +210,8 @@ objinsp.o: objinsp.cc \
   ../../include/cenvir.h \
   ../../include/cenum.h \
   ../../include/cstruct.h \
+  ../../include/cchannel.h \
+  ../../include/cdispstr.h \
   ../../include/envirext.h \
   ../../include/ccoroutine.h \
   ../envir/omnetapp.h \

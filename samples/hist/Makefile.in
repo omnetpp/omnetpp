@@ -103,3 +103,4 @@ re-makemake-m:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 hist.o: hist.cc
+hist_n.o: hist_n.cc

@@ -145,10 +145,23 @@ clean:
 #	rm -f nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+cppexprgenerator.o: cppexprgenerator.cc \
+  cppexprgenerator.h \
+  nederror.h \
+  nedelements.h \
+  nedelement.h
 cppgenerator.o: cppgenerator.cc \
   nedelements.h \
   cppgenerator.h \
-  nedelement.h
+  nederror.h \
+  nedelement.h \
+  cppexprgenerator.h
+cppmsggenerator.o: cppmsggenerator.cc \
+  nedelements.h \
+  cppgenerator.h \
+  nederror.h \
+  nedelement.h \
+  cppexprgenerator.h
 nedbasicvalidator.o: nedbasicvalidator.cc \
   nederror.h \
   nedbasicvalidator.h \
@@ -167,10 +180,11 @@ nedcompiler.o: nedcompiler.cc \
   nedgrammar.h \
   nedvalidator.h
 neddtdvalidator.o: neddtdvalidator.cc \
+  nederror.h \
   neddtdvalidator.h \
+  nedelement.h \
   nedelements.h \
-  nedvalidator.h \
-  nedelement.h
+  nedvalidator.h
 neddtdvalidator1.o: neddtdvalidator1.cc \
   nederror.h \
   neddtdvalidator.h \
@@ -178,8 +192,10 @@ neddtdvalidator1.o: neddtdvalidator1.cc \
   nedelements.h \
   nedvalidator.h
 nedelement.o: nedelement.cc \
-  nedelement.h
+  nedelement.h \
+  nederror.h
 nedelements.o: nedelements.cc \
+  nederror.h \
   nedelements.h \
   nedelement.h
 nederror.o: nederror.cc \
@@ -192,6 +208,7 @@ nedfilebuffer.o: nedfilebuffer.cc \
   nedelement.h
 nedgenerator.o: nedgenerator.cc \
   nedgenerator.h \
+  nederror.h \
   nedelements.h \
   nedelement.h
 nedparser.o: nedparser.cc \
@@ -204,6 +221,7 @@ nedparser.o: nedparser.cc \
 nedsaxhandler.o: nedsaxhandler.cc \
   nedsaxhandler.h \
   nedelements.h \
+  nederror.h \
   nedelement.h \
   saxparser.h
 nedsemanticvalidator.o: nedsemanticvalidator.cc \
@@ -213,13 +231,19 @@ nedsemanticvalidator.o: nedsemanticvalidator.cc \
   nedelement.h \
   nedvalidator.h \
   nedelements.h
-nedvalidator.o: nedvalidator.cc \
-  nedvalidator.h \
-  nedelements.h \
+nedutil.o: nedutil.cc \
+  nederror.h \
+  nedutil.h \
   nedelement.h
+nedvalidator.o: nedvalidator.cc \
+  nederror.h \
+  nedvalidator.h \
+  nedelement.h \
+  nedelements.h
 nedxmlparser.o: nedxmlparser.cc \
   saxparser.h \
   nedsaxhandler.h \
+  nederror.h \
   nedelement.h
 saxparser_expat.o: saxparser_expat.cc \
   saxparser.h

@@ -99,10 +99,9 @@ gned.o: gned.cc \
   arrow.h \
   parsened.h \
   tklib.h \
-  tclcode.cc \
   ebnf.h
 lex.yy.o: lex.yy.cc \
-  unistd.h \
+  ./unistd.h \
   ebnf.h \
   ebnf.tab.h \
   ebnfcfg.h \
@@ -116,6 +115,5 @@ parsened.o: parsened.cc \
   nedfile.h \
   tklib.h \
   ebnf.h
-tclcode.o: tclcode.cc
 tklib.o: tklib.cc \
   tklib.h

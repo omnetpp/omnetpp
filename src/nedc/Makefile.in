@@ -77,9 +77,15 @@ clean:
 	rm -f *.o lex.yy.c ebnf.tab.c ebnf.tab.h nedc nedtool *_n.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-jar.o: jar.c \
+ebnf.tab.o: ebnf.tab.c \
+  ebnf.h \
+  ebnfcfg.h \
   jar_func.h \
   jar_lib.h
+jar.o: jar.c \
+  jar_func.h \
+  jar_lib.h \
+  ./unistd.h
 jar_expr.o: jar_expr.c \
   jar_func.h \
   jar_lib.h
@@ -91,3 +97,9 @@ jar_mem.o: jar_mem.c \
 jar_mod.o: jar_mod.c \
   jar_func.h \
   jar_lib.h
+lex.yy.o: lex.yy.c \
+  ./unistd.h \
+  ebnf.h \
+  ebnf.tab.h \
+  ebnfcfg.h \
+  jar_func.h

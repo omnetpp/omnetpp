@@ -87,6 +87,30 @@ clean:
 	rm -f *.o libenvir$(A_LIB_SUFFIX) libenvir$(SO_LIB_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+akoutvectormgr.o: akoutvectormgr.cc \
+  ../../include/cenvir.h \
+  omnetapp.h \
+  cinifile.h \
+  ../../include/csimul.h \
+  ../../include/cmodule.h \
+  ../../include/cstat.h \
+  ../../include/macros.h \
+  ../../include/defs.h \
+  ../../include/cpar.h \
+  ../../include/cobject.h \
+  ../../include/util.h \
+  ../../include/carray.h \
+  ../../include/chead.h \
+  args.h \
+  envdefs.h \
+  ../../include/envirext.h \
+  ../../include/errmsg.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
+  ../../include/coutvect.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h \
+  ../../include/ctypes.h
 args.o: args.cc \
   args.h \
   envdefs.h \
@@ -129,6 +153,7 @@ cinifile.o: cinifile.cc \
 filemgrs.o: filemgrs.cc \
   ../../include/defs.h \
   ../../include/cenvir.h \
+  cinifile.h \
   omnetapp.h \
   ../../include/csimul.h \
   ../../include/cmodule.h \
@@ -138,10 +163,10 @@ filemgrs.o: filemgrs.cc \
   ../../include/cpar.h \
   ../../include/cobject.h \
   ../../include/util.h \
+  envdefs.h \
   ../../include/carray.h \
   ../../include/chead.h \
   args.h \
-  envdefs.h \
   ../../include/envirext.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \

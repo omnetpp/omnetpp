@@ -230,6 +230,27 @@ carray.o: carray.cc \
   ../../include/chead.h \
   ../../include/cobject.h \
   ../../include/util.h
+cchannel.o: cchannel.cc \
+  ../../include/cmessage.h \
+  ../../include/cmodule.h \
+  ../../include/carray.h \
+  ../../include/cpar.h \
+  ../../include/cenvir.h \
+  ../../include/csimul.h \
+  ../../include/macros.h \
+  ../../include/cgate.h \
+  ../../include/cexception.h \
+  ../../include/cchannel.h \
+  ../../include/cobject.h \
+  ../../include/util.h \
+  ../../include/defs.h \
+  ../../include/ccoroutine.h \
+  ../../include/chead.h \
+  ../../include/cqueue.h \
+  ../../include/errmsg.h \
+  ../../include/cmsgheap.h \
+  ../../include/coutvect.h \
+  ../../include/ctypes.h
 ccoroutine.o: ccoroutine.cc \
   ../../include/ccoroutine.h \
   task.h \
@@ -256,6 +277,11 @@ cdetect.o: cdetect.cc \
   ../../include/coutvect.h \
   ../../include/cobject.h \
   ../../include/cstat.h
+cdispstr.o: cdispstr.cc \
+  ../../include/cdispstr.h \
+  ../../include/cobject.h \
+  ../../include/util.h \
+  ../../include/defs.h
 cenum.o: cenum.cc \
   ../../include/macros.h \
   ../../include/ctypes.h \
@@ -298,6 +324,7 @@ cgate.o: cgate.cc \
   ../../include/csimul.h \
   ../../include/macros.h \
   ../../include/cgate.h \
+  ../../include/cchannel.h \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/defs.h \
@@ -667,6 +694,8 @@ std/netpack.o: std/netpack.cc \
   ../../include/cenvir.h \
   ../../include/cenum.h \
   ../../include/cstruct.h \
+  ../../include/cchannel.h \
+  ../../include/cdispstr.h \
   ../../include/envirext.h \
   ../../include/ccoroutine.h
 pvm/pvmmod.o: pvm/pvmmod.cc \
@@ -729,6 +758,8 @@ pvm/pvmpack.o: pvm/pvmpack.cc \
   ../../include/cenvir.h \
   ../../include/cenum.h \
   ../../include/cstruct.h \
+  ../../include/cchannel.h \
+  ../../include/cdispstr.h \
   ../../include/envirext.h \
   ../../include/ccoroutine.h \
   pvm/pvmdefs.h
@@ -795,5 +826,7 @@ mpi/mpipack.o: mpi/mpipack.cc \
   ../../include/cenvir.h \
   ../../include/cenum.h \
   ../../include/cstruct.h \
+  ../../include/cchannel.h \
+  ../../include/cdispstr.h \
   ../../include/envirext.h \
   ../../include/ccoroutine.h
