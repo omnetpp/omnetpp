@@ -1,3 +1,5 @@
+# Only needed for development with Cygwin1.1 (not needed for b20!)
+
 for i in `find . -name 'Makefile*' -o -name '*.h' -o -name '*.cc' -o -name '*.c' -o -name '*.ned' -o -name '*.y' -o -name '*.lex' -o -name install-prog -o -name install-lib -o -name Version`
 do
     echo Removing ^M, $i
