@@ -32,12 +32,12 @@ OMNeT++ has a graphical topology editor called GNED and also a tool
 called Plove for analyzing and plotting simulation output. Both tools
 are written using Tcl/Tk.
 
-OMNeT++ contains support for parallel simulation, using either
-Conservative or Statistical Synchronization. Communication can use
-the MPI (Message Passing Interface) or the PVM (Parallel Virtual
-Machine) libraries.
+OMNeT++ contains a flexible parallel distributed simulation framework. 
+It can use MPI or alternative means (e.g. named pipe) for communication
+between LPs, and it support the Null Message Algorithm (Chandy-Misra-Bryant)
+and Ideal Simulation Protocol (Bagrodia).
 
-OMNeT++ Home Page: http://www.hit.bme.hu/phd/vargaa/omnetpp.htm
+OMNeT++ Home Page: www.omnetpp.org
 
 
 OMNeT++ is PhDware!
@@ -72,12 +72,12 @@ omnetpp/              OMNeT++ root directory
    src/               OMNeT++ sources
        nedc/          NED compiler
        sim/           simulation kernel
-            std/      files for non-distributed execution
-            mpi       files for distributed execution using MPI
-            pvm/      files for distributed execution over PVM
+          parsim/     parallel simulation subsystem
+          netbuilder/ dynamic loading of NED files
        envir/         common code for user interfaces
        cmdenv/        command-line user interface
        tkenv/         Tcl/Tk-based user interface
+       nedxml/        NED parser/generator, C++ code generator, XML, etc.
        gned/          graphical NED editor
        plove/         output vector analyzer and plotting tool
        utils/         makefile-autocreator etc

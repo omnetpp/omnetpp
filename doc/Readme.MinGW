@@ -9,8 +9,7 @@ continue reading from Introduction.
 
   1. Install required software: MSYS and MinGW; Windows ports of bison and
      flex (UnxUtils versions are fine); Tcl/Tk; Perl; Gnuplot. LibXML/LibXSLT
-     or at least Expat is also recommended. Optionally you can install
-     Akaroa, PVM or MPI.
+     or at least Expat is also recommended. Optional libraries: Akaroa, MPI.
   2. Make sure bison, flex, and Tcl/Tk are in the PATH, and the following
      variables are set correctly: BISON_SIMPLE, TCL_LIBRARY.
   3. Download OMNeT++ source package and unpack it (say into c:\omnetpp).
@@ -69,7 +68,7 @@ you installed MinGW into c:\MinGW and MSYS to c:\MinGW\MSYS.
 You'll need to install Windows versions of the bison and flex Unix tools
 (UnxUtils versions are fine); Tcl/Tk binaries; Perl. It is
 also recommended that you install LibXML and LibXSLT, or at least Expat.
-Optionally you can install Akaroa, PVM or MPI. The file 3rdparty.txt file
+Optionally you can install Akaroa and MPI. The file 3rdparty.txt file
 contains more info about these packages. Installing them in a directory
 whose name doesn't contain space will save you trouble.
 

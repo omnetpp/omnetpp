@@ -15,8 +15,8 @@ You will need the following additional packages:
     - libXML, libXSLT
     - if libXML is not available, you can use Expat
 
-  * OPTIONAL (needed for parallel simulation only)
-    - PVM (available at http://www.sunfreeware.com/)
+  * OPTIONAL
+    - Akaroa
     - MPI (available at http://www-unix.mcs.anl.gov/mpi/mpich/)
 
 If you have installed these packages, please proceed with Readme.Unix
