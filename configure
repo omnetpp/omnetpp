@@ -764,6 +764,10 @@ ac_env_PERL_set=${PERL+set}
 ac_env_PERL_value=$PERL
 ac_cv_env_PERL_set=${PERL+set}
 ac_cv_env_PERL_value=$PERL
+ac_env_XSLTPROC_set=${XSLTPROC+set}
+ac_env_XSLTPROC_value=$XSLTPROC
+ac_cv_env_XSLTPROC_set=${XSLTPROC+set}
+ac_cv_env_XSLTPROC_value=$XSLTPROC
 ac_env_CPP_set=${CPP+set}
 ac_env_CPP_value=$CPP
 ac_cv_env_CPP_set=${CPP+set}
@@ -864,6 +868,7 @@ Some influential environment variables:
   CXXFLAGS    C++ compiler flags
   DOXYGEN     The Doxygen documentation tool
   PERL        The Perl interpreter
+  XSLTPROC    A command line xslt processor
   CPP         C preprocessor
 
 Use these variables to override the choices made by `configure' or to help
@@ -1323,6 +1328,7 @@ if test "$cygwin" = yes; then
 fi
 
 OMNETPP_SRC_DIR="$OMNETPP_ROOT/src"
+OMNETPP_UTILS_DIR="$OMNETPP_SRC_DIR/utils"
 OMNETPP_DOC_DIR="$OMNETPP_ROOT/doc"
 OMNETPP_SAMPLES_DIR="$OMNETPP_ROOT/samples"
 OMNETPP_TUTORIAL_DIR="$OMNETPP_ROOT/tutorial"
@@ -3405,34 +3411,30 @@ fi
 set dummy doxygen; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
-if test "${ac_cv_path_DOXYGEN+set}" = set; then
+if test "${ac_cv_prog_DOXYGEN+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  case $DOXYGEN in
-  [\\/]* | ?:[\\/]*)
-  ac_cv_path_DOXYGEN="$DOXYGEN" # Let the user override the test with a path.
-  ;;
-  *)
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+  if test -n "$DOXYGEN"; then
+  ac_cv_prog_DOXYGEN="$DOXYGEN" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
 for as_dir in $PATH
 do
   IFS=$as_save_IFS
   test -z "$as_dir" && as_dir=.
   for ac_exec_ext in '' $ac_executable_extensions; do
   if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_path_DOXYGEN="$as_dir/$ac_word$ac_exec_ext"
+    ac_cv_prog_DOXYGEN="doxygen"
     echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
 done
 done
 
-  test -z "$ac_cv_path_DOXYGEN" && ac_cv_path_DOXYGEN="doxygen"
-  ;;
-esac
+  test -z "$ac_cv_prog_DOXYGEN" && ac_cv_prog_DOXYGEN="not found"
 fi
-DOXYGEN=$ac_cv_path_DOXYGEN
-
+fi
+DOXYGEN=$ac_cv_prog_DOXYGEN
 if test -n "$DOXYGEN"; then
   echo "$as_me:$LINENO: result: $DOXYGEN" >&5
 echo "${ECHO_T}$DOXYGEN" >&6
@@ -3442,39 +3444,43 @@ echo "${ECHO_T}no" >&6
 fi
 
 
+if test "$DOXYGEN" = "not found"; then
+   { echo "$as_me:$LINENO: WARNING: doxygen is needed to create the OMNeT++ reference manual.
+   It is available from http://www.doxygen.org/" >&5
+echo "$as_me: WARNING: doxygen is needed to create the OMNeT++ reference manual.
+   It is available from http://www.doxygen.org/" >&2;}
+fi
+
 # perl is needed for experimental nedc message subclassing (see feature nedc-subcl)
 
 # Extract the first word of "perl", so it can be a program name with args.
 set dummy perl; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
-if test "${ac_cv_path_PERL+set}" = set; then
+if test "${ac_cv_prog_PERL+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  case $PERL in
-  [\\/]* | ?:[\\/]*)
-  ac_cv_path_PERL="$PERL" # Let the user override the test with a path.
-  ;;
-  *)
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+  if test -n "$PERL"; then
+  ac_cv_prog_PERL="$PERL" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
 for as_dir in $PATH
 do
   IFS=$as_save_IFS
   test -z "$as_dir" && as_dir=.
   for ac_exec_ext in '' $ac_executable_extensions; do
   if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_path_PERL="$as_dir/$ac_word$ac_exec_ext"
+    ac_cv_prog_PERL="perl"
     echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
 done
 done
 
-  ;;
-esac
+  test -z "$ac_cv_prog_PERL" && ac_cv_prog_PERL="not found"
 fi
-PERL=$ac_cv_path_PERL
-
+fi
+PERL=$ac_cv_prog_PERL
 if test -n "$PERL"; then
   echo "$as_me:$LINENO: result: $PERL" >&5
 echo "${ECHO_T}$PERL" >&6
@@ -3483,6 +3489,52 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
+
+# xsltproc
+
+# Extract the first word of "xsltproc", so it can be a program name with args.
+set dummy xsltproc; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_prog_XSLTPROC+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$XSLTPROC"; then
+  ac_cv_prog_XSLTPROC="$XSLTPROC" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_XSLTPROC="xsltproc"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+  test -z "$ac_cv_prog_XSLTPROC" && ac_cv_prog_XSLTPROC="not found"
+fi
+fi
+XSLTPROC=$ac_cv_prog_XSLTPROC
+if test -n "$XSLTPROC"; then
+  echo "$as_me:$LINENO: result: $XSLTPROC" >&5
+echo "${ECHO_T}$XSLTPROC" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+
+if test "$XSLTPROC" = "not found"; then
+   { echo "$as_me:$LINENO: WARNING: xsltproc is needed for opp_neddoc
+   You can get the sources from http://xmlsoft.org/XSLT/" >&5
+echo "$as_me: WARNING: xsltproc is needed for opp_neddoc
+   You can get the sources from http://xmlsoft.org/XSLT/" >&2;}
+fi
 
 # FIXME: the following lines will need some check
 AS="as"
@@ -5503,13 +5555,14 @@ fi
 #----------------------
 # Files to be generated
 #----------------------
-ac_config_files="$ac_config_files Makefile src/cmdenv/Makefile src/envir/Makefile src/gned/Makefile src/nedxml/Makefile src/nedc/Makefile src/plove/Makefile src/sim/Makefile src/tkenv/Makefile src/utils/Makefile src/utils/opp_makemake samples/dyna/Makefile samples/fddi/Makefile samples/fifo1/Makefile samples/fifo2/Makefile samples/hcube/Makefile samples/hist/Makefile samples/nim/Makefile samples/pvmex/Makefile samples/token/Makefile samples/demo/Makefile tutorial/queues/Makefile include/Makefile test/Makefile"
+ac_config_files="$ac_config_files Makefile src/cmdenv/Makefile src/envir/Makefile src/gned/Makefile src/nedxml/Makefile src/nedc/Makefile src/plove/Makefile src/sim/Makefile src/tkenv/Makefile src/utils/Makefile src/utils/opp_makemake src/utils/opp_neddoc samples/dyna/Makefile samples/fddi/Makefile samples/fifo1/Makefile samples/fifo2/Makefile samples/hcube/Makefile samples/hist/Makefile samples/nim/Makefile samples/pvmex/Makefile samples/token/Makefile samples/demo/Makefile tutorial/queues/Makefile include/Makefile test/Makefile"
 
 
 
 #----------------------
 # Substitutions.
 #----------------------
+
 
 
 
@@ -6084,6 +6137,7 @@ do
   "src/tkenv/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/tkenv/Makefile" ;;
   "src/utils/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/utils/Makefile" ;;
   "src/utils/opp_makemake" ) CONFIG_FILES="$CONFIG_FILES src/utils/opp_makemake" ;;
+  "src/utils/opp_neddoc" ) CONFIG_FILES="$CONFIG_FILES src/utils/opp_neddoc" ;;
   "samples/dyna/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/dyna/Makefile" ;;
   "samples/fddi/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/fddi/Makefile" ;;
   "samples/fifo1/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/fifo1/Makefile" ;;
@@ -6203,6 +6257,7 @@ s,@RANLIB@,$RANLIB,;t t
 s,@ac_ct_RANLIB@,$ac_ct_RANLIB,;t t
 s,@DOXYGEN@,$DOXYGEN,;t t
 s,@PERL@,$PERL,;t t
+s,@XSLTPROC@,$XSLTPROC,;t t
 s,@CPP@,$CPP,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@OMNETPP_VERSION@,$OMNETPP_VERSION,;t t
@@ -6211,6 +6266,7 @@ s,@OMNETPP_INCL_DIR@,$OMNETPP_INCL_DIR,;t t
 s,@OMNETPP_LIB_DIR@,$OMNETPP_LIB_DIR,;t t
 s,@OMNETPP_BITMAP_PATH@,$OMNETPP_BITMAP_PATH,;t t
 s,@OMNETPP_SRC_DIR@,$OMNETPP_SRC_DIR,;t t
+s,@OMNETPP_UTILS_DIR@,$OMNETPP_UTILS_DIR,;t t
 s,@OMNETPP_DOC_DIR@,$OMNETPP_DOC_DIR,;t t
 s,@OMNETPP_SAMPLES_DIR@,$OMNETPP_SAMPLES_DIR,;t t
 s,@OMNETPP_TUTORIAL_DIR@,$OMNETPP_TUTORIAL_DIR,;t t
@@ -6471,6 +6527,9 @@ fi
 
 
 chmod +x src/utils/opp_makemake
+chmod +x src/utils/opp_test
+chmod +x src/utils/opp_makedep
+chmod +x src/utils/opp_neddoc
 
 #----------------------
 # Check if the path contains omnetpp/bin (it should)
