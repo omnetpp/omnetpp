@@ -78,6 +78,9 @@ void cNEDNetworkBuilder::setupNetwork(NetworkNode *networknode)
 
 void cNEDNetworkBuilder::buildInside(cModule *modp, CompoundModuleNode *modulenode)
 {
+    // set display string
+    setBackgroundDisplayString(modp, modulenode);
+
     // loop through submods and add them
     submodMap.clear();
     SubmodulesNode *submods = modulenode->getFirstSubmodulesChild();
@@ -216,6 +219,16 @@ void cNEDNetworkBuilder::setConnDisplayString(cGate *srcgatep, ConnectionNode *c
     {
         const char *dispstr = dispstrnode->getValue();
         srcgatep->setDisplayString(dispstr);
+    }
+}
+
+void cNEDNetworkBuilder::setBackgroundDisplayString(cModule *modp, CompoundModuleNode *mod)
+{
+    DisplayStringNode *dispstrnode = mod->getFirstDisplayStringChild();
+    if (dispstrnode)
+    {
+        const char *dispstr = dispstrnode->getValue();
+        modp->setBackgroundDisplayString(dispstr);
     }
 }
 

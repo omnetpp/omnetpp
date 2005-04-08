@@ -87,6 +87,7 @@ tkcmd.obj: tkcmd.cc \
   tkutil.h \
   engine/scalarmanager.h \
   engine/filtering.h \
+  engine/util.h \
   engine/texception.h
 tklib.obj: tklib.cc \
   tklib.h \
@@ -106,3 +107,5 @@ engine/scalarmanager.obj: engine/scalarmanager.cc \
   engine/texception.h
 engine/texception.obj: engine/texception.cc \
   engine/texception.h
+engine/util.obj: engine/util.cc \
+  engine/util.h
