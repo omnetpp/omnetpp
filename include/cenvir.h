@@ -48,7 +48,7 @@ template <class E, class T = std::char_traits<E> >
 public:
     basic_evbuf(cEnvir *ev) : _ev(ev) {}
 #ifdef __GNUC__
-    // it doesn't make sense, but gcc>=3.4 insists on fully qualifying pptr() and pbase() from the base class
+    // gcc>=3.4 insists on fully qualifying pptr() and pbase() from the base class
     bool isempty() {return std::basic_stringbuf<E,T>::pptr()==std::basic_stringbuf<E,T>::pbase();}
 #else
     // and VC6.0 doesn't understand the above, fully qualified version (same problem as below). Oh well, C++...

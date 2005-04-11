@@ -421,6 +421,9 @@ void opp_terminate(const char *msgformat...)
 
 const char *opp_typename(const std::type_info& t)
 {
+    if (t == typeid(std::string))
+        return "std::string"; // otherwise we'd get "std::basic_string<........>"
+    
     const char *s = t.name();
 
     // correct gcc 2.9x bug: it prepends the type name with its length
