@@ -22,7 +22,7 @@ seed-1-mt = 885
 seed-2-mt = 848
 
 [Cmdenv]
-# Run 1 and Run 2 repeat -- must get the same seeds.
+# Runs occurring more than once should get the same seeds every time.
 # Also, Run 2 and Run 4 must have the same seeds because they both use [General].
 runs-to-execute = 2,1,4,3,1,2,3,4
 

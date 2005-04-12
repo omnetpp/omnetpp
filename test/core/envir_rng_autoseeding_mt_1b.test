@@ -18,7 +18,7 @@ network={}_network
 num-rngs=3
 
 [Cmdenv]
-# Run 1 and Run 5 repeat -- must get the same seeds. All others must be different.
+# Runs occurring more than once should get the same seeds every time.
 runs-to-execute = 4,2,5,3,1,5,1
 
 %contains-regex: stdout
