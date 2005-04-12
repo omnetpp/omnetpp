@@ -22,7 +22,7 @@ seed-2-mt = 848
 
 [Cmdenv]
 # Run 1 and Run 2 repeat -- must get the same seeds.
-runs-to-execute = 1,2,3,2,1
+runs-to-execute = 3,2,1,3,1,2
 
 [Run 1]
 seed-0-mt = 793
@@ -38,15 +38,6 @@ seed-1-mt = 467
 seed-2-mt = 497
 
 %contains-regex: stdout
-Preparing for Run #1\..*
-ev.rng-0: 1773256507  3374371453, drawn 2
-ev.rng-1: 345413299  2799562883, drawn 2
-ev.rng-2: 227844297  4101779991, drawn 2
-.*
-Preparing for Run #2\..*
-ev.rng-0: 2254393713  1261982705, drawn 2
-ev.rng-1: 1858543364  225661242, drawn 2
-ev.rng-2: 741472848  1938224766, drawn 2
 .*
 Preparing for Run #3\..*
 ev.rng-0: 1485903282  1518241553, drawn 2
@@ -62,4 +53,19 @@ Preparing for Run #1\..*
 ev.rng-0: 1773256507  3374371453, drawn 2
 ev.rng-1: 345413299  2799562883, drawn 2
 ev.rng-2: 227844297  4101779991, drawn 2
+.*
+Preparing for Run #3\..*
+ev.rng-0: 1485903282  1518241553, drawn 2
+ev.rng-1: 2355297642  3233577405, drawn 2
+ev.rng-2: 762090162  3944582764, drawn 2
+.*
+Preparing for Run #1\..*
+ev.rng-0: 1773256507  3374371453, drawn 2
+ev.rng-1: 345413299  2799562883, drawn 2
+ev.rng-2: 227844297  4101779991, drawn 2
+.*
+Preparing for Run #2\..*
+ev.rng-0: 2254393713  1261982705, drawn 2
+ev.rng-1: 1858543364  225661242, drawn 2
+ev.rng-2: 741472848  1938224766, drawn 2
 
