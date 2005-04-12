@@ -1,5 +1,7 @@
 %description:
-check that rng mapping in omnetpp.ini works properly
+Check that rng seeding works properly.
+IMPORTANT: FOR (b),(c),... VERSIONS OF THIS TEST, take the (a),
+change the runs-to-execute parameter and reorder the output accordingly.
 
 %activity:
 for (int i=0; i<ev.numRNGs(); i++)

@@ -1,0 +1,52 @@
+%description:
+Check that rng seeding works properly.
+IMPORTANT: FOR (b),(c),... VERSIONS OF THIS TEST, take the (a),
+change the runs-to-execute parameter and reorder the output accordingly.
+
+%activity:
+for (int i=0; i<ev.numRNGs(); i++)
+{
+    ev << "ev.rng-" << i << ": ";
+    ev << rng(i)->intRand() << "  " << rng(i)->intRand();
+    ev << ", drawn " << rng(i)->numbersDrawn() << "\n";
+}
+
+%inifile: {}.ini
+[General]
+network={}_network
+num-rngs=3
+
+[Cmdenv]
+# Run 1 and Run 5 repeat -- must get the same seeds. All others must be different.
+runs-to-execute = 4,2,5,3,1,5,1
+
+%contains-regex: stdout
+.*Run #4.*
+ev.rng-0: 1916507803  662124363, drawn 2
+ev.rng-1: 2608511152  3340206418, drawn 2
+ev.rng-2: 3959502168  2207369835, drawn 2
+.*Run #2.*
+ev.rng-0: 4069378761  3834805130, drawn 2
+ev.rng-1: 976413892  327741615, drawn 2
+ev.rng-2: 47736148  3751350723, drawn 2
+.*Run #5.*
+ev.rng-0: 3494301429  3645644232, drawn 2
+ev.rng-1: 1402977518  959027881, drawn 2
+ev.rng-2: 780729585  1265576559, drawn 2
+.*Run #3.*
+ev.rng-0: 1565348188  44556670, drawn 2
+ev.rng-1: 1283169405  3312796937, drawn 2
+ev.rng-2: 293375679  774252441, drawn 2
+.*Run #1.*
+ev.rng-0: 303761048  2365658986, drawn 2
+ev.rng-1: 3868139694  4153361530, drawn 2
+ev.rng-2: 236996814  953453411, drawn 2
+.*Run #5.*
+ev.rng-0: 3494301429  3645644232, drawn 2
+ev.rng-1: 1402977518  959027881, drawn 2
+ev.rng-2: 780729585  1265576559, drawn 2
+.*Run #1.*
+ev.rng-0: 303761048  2365658986, drawn 2
+ev.rng-1: 3868139694  4153361530, drawn 2
+ev.rng-2: 236996814  953453411, drawn 2
+
