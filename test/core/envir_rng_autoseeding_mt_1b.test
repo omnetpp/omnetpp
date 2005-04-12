@@ -1,7 +1,8 @@
 %description:
 Check that rng seeding works properly.
 IMPORTANT: FOR (b),(c),... VERSIONS OF THIS TEST, take the (a),
-change the runs-to-execute parameter and reorder the output accordingly.
+change the runs-to-execute parameter -- result should be the same,
+only in different order.
 
 %activity:
 for (int i=0; i<ev.numRNGs(); i++)
