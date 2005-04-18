@@ -33,11 +33,11 @@ void NEDError(NEDElement *context, const char *message, ...)
 
     const char *loc = context ? context->getSourceLocation() : NULL;
     if (loc)
-        fprintf(stderr, "%s: %s\n", loc, messagebuf);
+        fprintf(stderr, "%s: error: %s\n", loc, messagebuf);
     else if (context)
-        fprintf(stderr, "<%s>: %s\n", context->getTagName(), messagebuf);
+        fprintf(stderr, "<%s>: error: %s\n", context->getTagName(), messagebuf);
     else
-        fprintf(stderr, "%s\n", messagebuf);
+        fprintf(stderr, "error: %s\n", messagebuf);
 
     err = true;
 }
