@@ -276,21 +276,6 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
     if {[winfo class $graph]=="Barchart"} {
         set tmp(barmode) [$graph cget -barmode]
         set tmp(barbaseline) [$graph cget -baseline]
-    } else {
-        if {[$graph element names]=={}} {
-            set tmp(showsymbols) "yes"
-            set tmp(symboltype)  "(no change)"
-            set tmp(symbolsize)  3
-            set tmp(linetype)   "step"
-        } else {
-            set e [lindex [$graph element names] 0]
-            set tmp(showsymbols) [expr [$graph element cget $e -pixels]==0 ? 0 : 1]
-            set tmp(symboltype)  "(no change)"  ;#[$graph element cget $e -symbol]
-            set tmp(symbolsize)  [$graph element cget $e -pixels]
-            if {$tmp(symbolsize)==0} {set tmp(symbolsize) 3}
-            set tmp(linetype)  [$graph element cget $e -smooth]
-            if {[$graph element cget $e -linewidth]==0} {set tmp(linetype) "none"}
-        }
     }
 
     set linenames {(all)}
@@ -298,6 +283,8 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
         lappend linenames [$graph element cget $e -label]
     }
     set tmp(selectedline) "(all)"
+
+    bltGraph_ReadPropertiesOfSelectedLine $graph
 
     set tmp(legendshow) [expr [$graph legend cget -hide]==0 ? "yes" : "no"]
     set tmp(legendpos) [$graph legend cget -position]
@@ -361,6 +348,7 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
     set f $nb.lines
     label-combo $f.sel "Apply to lines:" $linenames
     $f.sel.e configure -textvariable tmp(selectedline)
+    combo-onchange $f.sel.e [list bltGraph_ReadPropertiesOfSelectedLine $graph]
 
     labelframe $f.symf -relief groove -border 2 -text "Symbols"
     checkbutton $f.symf.on -text "Display symbols" -variable tmp(showsymbols)
@@ -411,6 +399,37 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
     destroy $w
 }
 
+proc bltGraph_ReadPropertiesOfSelectedLine {graph} {
+    global tmp
+
+    if {[$graph element names]=={}} {
+        set tmp(showsymbols) "yes"
+        set tmp(symboltype)  "(no change)"
+        set tmp(symbolsize)  3
+        set tmp(linetype)   "step"
+    } else {
+        set e [lindex [$graph element names] 0]
+        foreach i [$graph element names] {
+            if {$tmp(selectedline)=="(all)" || [$graph element cget $i -label]==$tmp(selectedline)} {
+                set e $i
+                break
+            }
+        }
+        set tmp(showsymbols) [expr [$graph element cget $e -pixels]==0 ? 0 : 1]
+        if {$tmp(selectedline)=="(all)"} {
+            set tmp(symboltype) "(no change)"
+        } else {
+            set tmp(symboltype) [$graph element cget $e -symbol]
+        }
+        set tmp(symbolsize)  [$graph element cget $e -pixels]
+        if {$tmp(symbolsize)==0} {set tmp(symbolsize) 3}
+        set tmp(linetype)  [$graph element cget $e -smooth]
+        if {$tmp(linetype)=="quadratic" || $tmp(linetype)=="cubic"} {
+            set tmp(linetype) "catrom"
+        }
+        if {[$graph element cget $e -linewidth]==0} {set tmp(linetype) "none"}
+    }
+}
 
 proc bltGraph_PropertiesDialogApply {graph} {
     global tmp
