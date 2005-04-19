@@ -478,6 +478,9 @@ proc bltGraph_PropertiesDialogApply {graph} {
     catch {$graph legend config -anchor $tmp(legendanchor)}
     catch {$graph legend config -relief $tmp(legendrelief)}
     catch {$graph legend config -font $tmp(legendfont)}
+
+    # update dialog with what we've done
+    bltGraph_ReadPropertiesOfSelectedLine $graph
 }
 
 
