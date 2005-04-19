@@ -120,7 +120,7 @@ proc createVectorPlot {{idlist {}}} {
             set color [getChartColor $i]
             set symbol [getChartSymbol $i]
             $graph element create line$id -x $xvecname -y $yvecname -color $color -label $vec($id,title)
-            $graph element config line$id -symbol $symbol -pixels 0
+            $graph element config line$id -symbol $symbol -pixels 3
             incr i
         }
 
