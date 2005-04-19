@@ -279,18 +279,20 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
     } else {
         if {[$graph element names]=={}} {
             set tmp(showsymbols) "yes"
-            set tmp(symbolsize)  5
-            set tmp(showlines)   "yes"
-            set tmp(linesmooth)  "linear"
+            set tmp(symboltype)  "(default)"
+            set tmp(symbolsize)  3
+            set tmp(linetype)   "step"
         } else {
             set e [lindex [$graph element names] 0]
-            set tmp(showsymbols) [expr [$graph element cget $e -pixels]==0 ? "no" : "yes"]
+            set tmp(showsymbols) [expr [$graph element cget $e -pixels]==0 ? 0 : 1]
+            set tmp(symboltype)  [$graph element cget $e -symbol]
             set tmp(symbolsize)  [$graph element cget $e -pixels]
-            if {$tmp(symbolsize)==0} {set tmp(symbolsize) 5}
-            set tmp(showlines)   [expr [$graph element cget $e -linewidth]==0 ? "no" : "yes"]
-            set tmp(linesmooth)  [$graph element cget $e -smooth]
+            if {$tmp(symbolsize)==0} {set tmp(symbolsize) 3}
+            set tmp(linetype)  [$graph element cget $e -smooth]
+            if {[$graph element cget $e -linewidth]==0} {set tmp(linetype) "none"}
         }
     }
+
     set tmp(legendshow) [expr [$graph legend cget -hide]==0 ? "yes" : "no"]
     set tmp(legendpos) [$graph legend cget -position]
     set tmp(legendanchor) [$graph legend cget -anchor]
@@ -349,15 +351,22 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
     # Lines page -- all elements together
     # only if {[winfo class $graph]=="Graph"} ?
     set f $nb.lines
-    label-combo $f.showsym "Display symbols" {yes no}
-    label-combo $f.symsize "Symbol size" {1 3 5 7 9 11}
-    label-combo $f.showlin "Connect points" {yes no}
-    label-combo $f.smooth "Line type" {linear step natural}
-    pack $f.showsym $f.symsize $f.showlin $f.smooth -side top -expand 0 -fill x
-    $f.showsym.e configure -textvariable tmp(showsymbols)
-    $f.symsize.e configure -textvariable tmp(symbolsize)
-    $f.showlin.e configure -textvariable tmp(showlines)
-    $f.smooth.e configure -textvariable tmp(linesmooth)
+    labelframe $f.symf -relief groove -border 2 -text "Symbols"
+    checkbutton $f.symf.on -text "Display symbols" -variable tmp(showsymbols)
+    label-combo $f.symf.type "   Symbol type" {(default) square circle diamond plus cross splus scross triangle}
+    label-combo $f.symf.size "   Symbol size" {1 3 5 7 9 11}
+    $f.symf.type.e configure -textvariable tmp(symboltype)
+    $f.symf.size.e configure -textvariable tmp(symbolsize)
+    pack $f.symf.on $f.symf.type $f.symf.size -side top -expand 0 -fill none -anchor w
+
+    labelframe $f.linesf -relief groove -border 2 -text "Lines"
+    radiobutton $f.linesf.none -text "none" -value ""  -variable tmp(linetype)
+    radiobutton $f.linesf.lin  -text "linear" -value "linear"  -variable tmp(linetype)
+    radiobutton $f.linesf.step -text "step" -value "step"  -variable tmp(linetype)
+    radiobutton $f.linesf.natu -text "spline" -value "catrom"  -variable tmp(linetype)
+    pack $f.linesf.none $f.linesf.lin $f.linesf.step $f.linesf.natu -side top -expand 0 -fill none -anchor w
+
+    pack $f.symf $f.linesf -side top -expand 0 -fill x
 
     # Bars page -- all elements together
     # only if {[winfo class $graph]=="Barchart"} ?
@@ -405,12 +414,17 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
         } else {
             foreach i [$graph element names] {
                 set pixels $tmp(symbolsize)
-                if {$tmp(showsymbols)=="no"} {set pixels 0}
+                if {$tmp(showsymbols)==0} {set pixels 0}
                 catch {$graph element configure $i -pixels $pixels}
+                catch {$graph element configure $i -symbol $tmp(symboltype)}
                 set linewidth 1
-                if {$tmp(showlines)=="no"} {set linewidth 0}
-                catch {$graph element configure $i -linewidth $linewidth}
-                catch {$graph element configure $i -smooth $tmp(linesmooth)}
+                set linesmooth $tmp(linetype)
+                if {$tmp(linetype)=="none"} {
+                    set linewidth 0
+                    set linesmooth "linear"
+                }
+                $graph element configure $i -linewidth $linewidth
+                $graph element configure $i -smooth $linesmooth
             }
         }
 

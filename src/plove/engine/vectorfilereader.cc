@@ -146,7 +146,7 @@ void VectorFileReaderNode::process()
 
         // skip line termination
         if (*s && *s!='\r' && *s!='\n')
-            throw new Exception("invalid vector file syntax: garbage at end of line");
+            throw new Exception("invalid vector file syntax: garbage at end of line ('%c')", *s);
         while (*s=='\r' || *s=='\n') s++;
         line = s;
     }
