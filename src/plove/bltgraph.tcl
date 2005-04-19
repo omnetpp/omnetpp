@@ -302,6 +302,8 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
     # create the dialog
     set w .bltwin.graphprops
     createOkCancelDialog $w "Graph Properties"
+    button $w.buttons.applybutton  -text {Apply} -width 10
+    pack $w.buttons.applybutton  -anchor n -side right -padx 2
     wm geometry $w 360x300
 
     # tabnotebook
@@ -360,7 +362,7 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
     pack $f.symf.on $f.symf.type $f.symf.size -side top -expand 0 -fill none -anchor w
 
     labelframe $f.linesf -relief groove -border 2 -text "Lines"
-    radiobutton $f.linesf.none -text "none" -value ""  -variable tmp(linetype)
+    radiobutton $f.linesf.none -text "none" -value "none"  -variable tmp(linetype)
     radiobutton $f.linesf.lin  -text "linear" -value "linear"  -variable tmp(linetype)
     radiobutton $f.linesf.step -text "step" -value "step"  -variable tmp(linetype)
     radiobutton $f.linesf.natu -text "spline" -value "catrom"  -variable tmp(linetype)
@@ -392,51 +394,60 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
     pack $f.show $f.pos $f.anchor $f.relief $f.font -side top -anchor w -fill x
 
     # execute dialog
+    $w.buttons.applybutton config -command [list bltGraph_PropertiesDialogApply $graph]
     if {[execOkCancelDialog $w] == 1} {
-        # the catch{} statements below may make detecting errors more difficult
-        # but spare us the validation
-        catch {$graph config -title $tmp(graphtitle)}
-        catch {$graph config -font $tmp(titlefont)}
-
-        catch {$graph axis config x -title $tmp(axisxlabel)}
-        catch {$graph axis config y -title $tmp(axisylabel)}
-        catch {$graph axis config x -titlefont $tmp(axistitlefont)}
-        catch {$graph axis config y -titlefont $tmp(axistitlefont)}
-        catch {$graph axis config x -tickfont $tmp(axistickfont)}
-        catch {$graph axis config y -tickfont $tmp(axistickfont)}
-        catch {$graph axis config x -rotate $tmp(axisxrotate)}
-        catch {$graph axis config x -subdivisions $tmp(axisxdiv)}
-        catch {$graph axis config y -subdivisions $tmp(axisydiv)}
-
-        if {[winfo class $graph]=="Barchart"} {
-            catch {$graph configure -barmode $tmp(barmode)}
-            catch {$graph configure -baseline $tmp(barbaseline)}
-        } else {
-            foreach i [$graph element names] {
-                set pixels $tmp(symbolsize)
-                if {$tmp(showsymbols)==0} {set pixels 0}
-                catch {$graph element configure $i -pixels $pixels}
-                catch {$graph element configure $i -symbol $tmp(symboltype)}
-                set linewidth 1
-                set linesmooth $tmp(linetype)
-                if {$tmp(linetype)=="none"} {
-                    set linewidth 0
-                    set linesmooth "linear"
-                }
-                $graph element configure $i -linewidth $linewidth
-                $graph element configure $i -smooth $linesmooth
-            }
-        }
-
-        catch {$graph legend config -hide [expr $tmp(legendshow)=="no"]}
-        catch {$graph legend config -position $tmp(legendpos)}
-        catch {$graph legend config -anchor $tmp(legendanchor)}
-        catch {$graph legend config -relief $tmp(legendrelief)}
-        catch {$graph legend config -font $tmp(legendfont)}
+        bltGraph_PropertiesDialogApply $graph
     }
     set tmp(graphprops-last-open-tab) [$nb index select]
     destroy $w
 }
+
+
+proc bltGraph_PropertiesDialogApply {graph} {
+    global tmp
+
+    # the catch{} statements below may make detecting errors more difficult
+    # but spare us the validation
+    catch {$graph config -title $tmp(graphtitle)}
+    catch {$graph config -font $tmp(titlefont)}
+
+    catch {$graph axis config x -title $tmp(axisxlabel)}
+    catch {$graph axis config y -title $tmp(axisylabel)}
+    catch {$graph axis config x -titlefont $tmp(axistitlefont)}
+    catch {$graph axis config y -titlefont $tmp(axistitlefont)}
+    catch {$graph axis config x -tickfont $tmp(axistickfont)}
+    catch {$graph axis config y -tickfont $tmp(axistickfont)}
+    catch {$graph axis config x -rotate $tmp(axisxrotate)}
+    catch {$graph axis config x -subdivisions $tmp(axisxdiv)}
+    catch {$graph axis config y -subdivisions $tmp(axisydiv)}
+
+    if {[winfo class $graph]=="Barchart"} {
+        catch {$graph configure -barmode $tmp(barmode)}
+        catch {$graph configure -baseline $tmp(barbaseline)}
+    } else {
+        foreach i [$graph element names] {
+            set pixels $tmp(symbolsize)
+            if {$tmp(showsymbols)==0} {set pixels 0}
+            catch {$graph element configure $i -pixels $pixels}
+            catch {$graph element configure $i -symbol $tmp(symboltype)}
+            set linewidth 1
+            set linesmooth $tmp(linetype)
+            if {$tmp(linetype)=="none"} {
+                set linewidth 0
+                set linesmooth "linear"
+            }
+            catch {$graph element configure $i -linewidth $linewidth}
+            catch {$graph element configure $i -smooth $linesmooth}
+        }
+    }
+
+    catch {$graph legend config -hide [expr $tmp(legendshow)=="no"]}
+    catch {$graph legend config -position $tmp(legendpos)}
+    catch {$graph legend config -anchor $tmp(legendanchor)}
+    catch {$graph legend config -relief $tmp(legendrelief)}
+    catch {$graph legend config -font $tmp(legendfont)}
+}
+
 
 #
 # Utility for creating charts and plots
