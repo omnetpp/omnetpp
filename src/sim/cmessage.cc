@@ -94,29 +94,32 @@ std::string cMessage::info() const
 
     std::stringstream out;
     const char *deletedstr = "<deleted module>";
-    out << "T=" << simtimeToStr(delivd);
+    //out << "T=" << simtimeToStr(delivd);
+
+    out << "T=" << simtimeToStrShort(delivd);
+    out << ", in dt=" << simtimeToStrShort(delivd-simulation.simTime());
 
 #define MODNAME(modp) ((modp) ? (modp)->fullPath().c_str() : deletedstr)
     if (kind()==MK_STARTER)
     {
         cModule *tomodp = simulation.module(tomod);
-        out << " starter for " << MODNAME(tomodp) << " (id=" << tomod << ") ";
+        out << "; starter for " << MODNAME(tomodp) << " (id=" << tomod << ") ";
     }
     else if (kind()==MK_TIMEOUT)
     {
         cModule *tomodp = simulation.module(tomod);
-        out << " timeout for " << MODNAME(tomodp) << " (id=" << tomod << ") ";
+        out << "; timeout for " << MODNAME(tomodp) << " (id=" << tomod << ") ";
     }
     else if (frommod==tomod)
     {
         cModule *tomodp = simulation.module(tomod);
-        out << " selfmsg for " << MODNAME(tomodp) << " (id=" << tomod << ") ";
+        out << "; selfmsg for " << MODNAME(tomodp) << " (id=" << tomod << ") ";
     }
     else
     {
         cModule *frommodp = simulation.module(frommod);
         cModule *tomodp = simulation.module(tomod);
-        out << " src=" << MODNAME(frommodp) << " (id=" << frommod << ") ";
+        out << "; src=" << MODNAME(frommodp) << " (id=" << frommod << ") ";
         out << " dest=" << MODNAME(tomodp) << " (id=" << tomod << ") ";
     }
 #undef MODNAME

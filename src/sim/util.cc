@@ -108,6 +108,39 @@ char *simtimeToStr(simtime_t t, char *buf)
    return b;
 }
 
+char *simtimeToStrShort(simtime_t t, char *buf)
+{
+   // Print simulation time into a string -- short version.
+   static char buf2[48];
+   char *b = buf ? buf : buf2;
+
+   if (t==0.0)
+       sprintf(b,"0s");
+   // Note that in the following line, a small constant is added to t
+   // in order to eliminate truncation errors (like: "1.0000000e-6 (0us)")
+
+   // TBD change int(...) to int(...+0.5) and remove +=1e-16; test a lot
+   // with different values, e.g. 0.1 increments!
+   else if (t+=1e-16, t<1e-9)
+       sprintf(b,"%.5gs", t);
+   else if (t<1e-6)
+       sprintf(b,"%.5gns", t*1e9);
+   else if (t<1e-3)
+       sprintf(b,"%.5gus", t*1e6);
+   else if (t<1.0)
+       sprintf(b,"%.5gms", t*1e3);
+   else if (t<3600.0)
+       sprintf(b,"%.5gs", t);
+   else if (t<86400.0)
+       sprintf(b,"%dh %dm", int(long(t)/3600L), int((long(t)%3600L)/60L));
+   else if (t<864000000.0)
+       sprintf(b,"%dd %dh", int(t/86400L), int((long(t)%86400L)/3600L));
+   else
+       sprintf(b,"%.5gs", t);
+
+   return b;
+}
+
 // *
 // * old version of simtimeToStr():
 // *
@@ -423,7 +456,7 @@ const char *opp_typename(const std::type_info& t)
 {
     if (t == typeid(std::string))
         return "std::string"; // otherwise we'd get "std::basic_string<........>"
-    
+
     const char *s = t.name();
 
     // correct gcc 2.9x bug: it prepends the type name with its length

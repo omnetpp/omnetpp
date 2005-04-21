@@ -1,3 +1,10 @@
+2005-04-21  Andras Varga
+
+	* util.cc: implemented simtimeToStrShort().
+
+	* cmessage.cc: changed cMessage::info() to display time *until* 
+	arrivaltime as well
+
 2005-04-05  Andras Varga
 
 	* cstringtokenizer.cc: fix: prepared cStringTokenizer for receiving 
