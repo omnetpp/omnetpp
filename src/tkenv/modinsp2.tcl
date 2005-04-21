@@ -1303,9 +1303,9 @@ proc redraw_timeline {} {
     set fesrange [opp_sortfesandgetrange]
     set fesmin [lindex $fesrange 0]
     set fesmax [lindex $fesrange 1]
-    if [expr $fesmin!=0 && $fesmax!=0] {
+        if [expr $fesmin!=0 && $fesmax!=0] {
         set fesminexp [expr int(floor(log10($fesmin)))]
-        set fesmaxexp [expr int(floor(log10($fesmax)))]
+        set fesmaxexp [expr int(ceil(log10($fesmax)))]
         if {$fesminexp < $minexp && $fesminexp > -10} {set minexp $fesminexp}
         if {$fesmaxexp > $maxexp && $fesmaxexp < 10} {set maxexp $fesmaxexp}
     }
@@ -1349,6 +1349,7 @@ proc redraw_timeline {} {
     # draw events
     set dtmin [expr 1e$minexp]
     set minlabelx 0
+    set labelssuppressed 0
     set msgs [opp_fesmsgs $config(timeline-maxnumevents)]
     foreach msgptr $msgs {
         # calculate position
@@ -1377,10 +1378,17 @@ proc redraw_timeline {} {
                 set msglabel [opp_getobjectfullname $msgptr]
             }
             if {$msglabel!=""} {
-                $c create text $x 17 -text $msglabel -anchor $anchor -font $fonts(msgname) -tags "dx tooltip msgname $msgptr"
+                set labelid [$c create text $x 17 -text $msglabel -anchor $anchor -font $fonts(msgname) -tags "dx tooltip msgname $msgptr"]
+
+                # label for only those msgs past this label's right edge will be displayed
+                set minlabelx [lindex [$c bbox $labelid] 2]
+                set labelssuppressed 0
             }
-            # ensure some distance between displayed msg names
-            set minlabelx [expr $x+50]
+        } else {
+            incr labelssuppressed
+            if {$labelssuppressed==1} {
+                $c insert $labelid end ",..."
+            }
         }
    }
 }
