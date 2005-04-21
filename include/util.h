@@ -74,9 +74,16 @@ SIM_API simtime_t strToSimtime0(const char *&str);
 /**
  * Converts simulation time (passed as simtime_t) into a
  * string like "0.0120000 (12ms)". If no destination pointer
- * is given, uses a static buffer.
+ * is given, it will use a static buffer.
  */
 SIM_API char *simtimeToStr(simtime_t t, char *dest=NULL);
+
+/**
+ * Converts simulation time (passed as simtime_t) into a short string 
+ * form like "12.37ms". If no destination pointer is given, it will use 
+ * a static buffer.
+ */
+SIM_API char *simtimeToStrShort(simtime_t t, char *buf=NULL);
 //@}
 
 

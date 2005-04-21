@@ -1,3 +1,7 @@
+2005-04-21  Andras Varga
+
+	* util.h: added simtimeToStrShort().
+
 2005-04-04  Andras Varga
 
 	* cenvir.h: fixed compilation bug in gcc3.4. For some contorted 
