@@ -23,10 +23,9 @@
 
 class cMessage;
 
-//==========================================================================
 
 /**
- * Stores future event set. The underlying data structure is heap;
+ * Stores the future event set. The underlying data structure is heap;
  * the array used to store the heap expands as needed.
  *
  * @see Iterator
@@ -160,6 +159,14 @@ class SIM_API cMessageHeap : public cObject
      * not in the heap, returns NULL.
      */
     cMessage *get(cMessage *event);
+
+    /**
+     * Returns the mth message in the heap if 0 <= m < length(), and NULL
+     * otherwise. Note that iteration does not necessarily return messages
+     * in increasing timestamp (arrivalTime()) order unless you called
+     * sort() before.
+     */
+    cMessage *peek(int m);
 
     /**
      * Sorts the contents of the heap. This is only necessary if one wants

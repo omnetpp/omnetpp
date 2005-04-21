@@ -127,6 +127,14 @@ cMessageHeap& cMessageHeap::operator=(const cMessageHeap& heap)
     return *this;
 }
 
+cMessage *cMessageHeap::peek(int m)
+{
+    // map 0..n-1 index range to heap's internal 1..n indices
+    if (m<0 || m>=n)
+        return NULL;
+    return h[m+1];
+}
+
 void cMessageHeap::sort()
 {
     qsort(h+1,n,sizeof(cMessage *),qsort_cmp_msgs);

@@ -39,7 +39,7 @@ set config(rununtil-mode) "Express (tracing off)"
 set config(rununtil-time) ""
 set config(rununtil-event) ""
 set config(display-timeline) 1
-set config(timeline-maxnumevents) 100
+set config(timeline-maxnumevents) 1000
 
 set pluginlist {}
 
