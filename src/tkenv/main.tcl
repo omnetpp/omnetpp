@@ -247,7 +247,7 @@ proc create_omnetpp_window {} {
       {sep7     -separator}
       {objs     -image $icons(findobj) -command {inspect_filteredobjectlist}}
       {sep8     -separator}
-      {tline    -image $icons(fes)    -command {toggle_timeline}}
+      {tline    -image $icons(fes)     -command {toggle_timeline}}
       {tree     -image $icons(tree)    -command {toggle_treeview}}
       {sep9     -separator}
       {options  -image $icons(config)  -command {simulation_options}}
@@ -366,6 +366,12 @@ proc create_omnetpp_window {} {
         .toolbar.tree config -relief raised
     } else {
         .toolbar.tree config -relief sunken
+    }
+
+    if {$config(display-timeline)==0} {
+        .toolbar.tline config -relief raised
+    } else {
+        .toolbar.tline config -relief sunken
     }
 
     #
