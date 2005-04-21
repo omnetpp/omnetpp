@@ -87,7 +87,7 @@ int getModulePar_cmd(ClientData, Tcl_Interp *, int, const char **);
 int setModulePar_cmd(ClientData, Tcl_Interp *, int, const char **);
 int moduleByPath_cmd(ClientData, Tcl_Interp *, int, const char **);
 int fesMsgs_cmd(ClientData, Tcl_Interp *, int, const char **);
-int fesTimeRange_cmd(ClientData, Tcl_Interp *, int, const char **);
+int sortFesAndGetRange_cmd(ClientData, Tcl_Interp *, int, const char **);
 int msgArrTimeFromNow_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 int inspect_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -164,7 +164,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getmodulepar",     getModulePar_cmd         }, // args: <modptr> <parname> ret: value
    { "opp_setmodulepar",     setModulePar_cmd         }, // args: <modptr> <parname> <value>
    { "opp_fesmsgs",          fesMsgs_cmd              }, // args: <maxnum>
-   { "opp_festimerange",     fesTimeRange_cmd         }, // args: -
+   { "opp_sortfesandgetrange",sortFesAndGetRange_cmd  }, // args: -  ret: {minDeltaT maxDeltaT}
    { "opp_msgarrtimefromnow",msgArrTimeFromNow_cmd    }, // args: <modptr>
 
    // Inspector stuff
@@ -1095,30 +1095,22 @@ int fesMsgs_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    return TCL_OK;
 }
 
-int fesTimeRange_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+int sortFesAndGetRange_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
 
    // find smallest t!=simTime() element, and greatest element.
-   // Note: we must iterate because heap is not necessarily ordered!
-   cMessage *first = simulation.msgQueue.peekFirst();
-   if (!first) {Tcl_SetResult(interp, "0 0", TCL_STATIC); return TCL_OK;}
-   simtime_t tmin = first->arrivalTime();
-   simtime_t tmax = first->arrivalTime();
+   simulation.msgQueue.sort();
+   int len = simulation.msgQueue.length();
+   if (len==0) {Tcl_SetResult(interp, "0 0", TCL_STATIC); return TCL_OK;}
    simtime_t now = simulation.simTime();
-   for (cMessageHeap::Iterator msg(simulation.msgQueue); !msg.end(); msg++)
-   {
-       simtime_t tmsg = msg()->arrivalTime();
-       if (tmin==now) {
-           if (tmsg!=now)
-               tmin = tmsg;
-       } else if (tmsg<tmin && tmsg!=now) {
-           tmin = tmsg;
-       }
-       if (tmsg>tmax) {
-           tmax = tmsg;
-       }
-   }
+   simtime_t tmin = now;
+   for (int i=0; i<len; i++)
+       if (simulation.msgQueue.peek(i)->arrivalTime()!=now)
+           {tmin = simulation.msgQueue.peek(i)->arrivalTime(); break;}
+   simtime_t tmax = simulation.msgQueue.peek(len-1)->arrivalTime();
+
+   // return result
    Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
    Tcl_ListObjAppendElement(interp, listobj, Tcl_NewDoubleObj(tmin-now));
    Tcl_ListObjAppendElement(interp, listobj, Tcl_NewDoubleObj(tmax-now));

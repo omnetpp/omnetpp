@@ -1296,11 +1296,11 @@ proc redraw_timeline {} {
     #   1. turn on/off .timeline
     #   2. draw "..." if not all msgs are displayed
 
-    # adjust range
+    # sort the FES and adjust display range
     set minexp $tkenv(timeline-minexp)
     set maxexp $tkenv(timeline-maxexp)
 
-    set fesrange [opp_festimerange]
+    set fesrange [opp_sortfesandgetrange]
     set fesmin [lindex $fesrange 0]
     set fesmax [lindex $fesrange 1]
     if [expr $fesmin!=0 && $fesmax!=0] {
@@ -1348,8 +1348,10 @@ proc redraw_timeline {} {
 
     # draw events
     set dtmin [expr 1e$minexp]
+    set minlabelx 0
     set msgs [opp_fesmsgs $config(timeline-maxnumevents)]
     foreach msgptr $msgs {
+        # calculate position
         set dt [opp_msgarrtimefromnow $msgptr]
         if {$dt < $dtmin} {
             set anchor "sw"
@@ -1359,6 +1361,7 @@ proc redraw_timeline {} {
             set x [expr int($x0+(log10($dt)-$minexp)*$dx)]
         }
 
+        # display ball
         if [opp_getsimoption animation_msgcolors] {
            set msgkind [opp_getobjectfield $msgptr kind]
            set color [lindex {red green blue white yellow cyan magenta black} [expr $msgkind % 8]]
@@ -1367,11 +1370,17 @@ proc redraw_timeline {} {
         }
         set ball [$c create oval -3 -4 3 4 -fill $color -outline $color -tags "dx tooltip msg $msgptr"]
         $c move $ball $x 19
-        if [opp_getsimoption animation_msgnames] {
-            set msglabel [opp_getobjectfullname $msgptr]
-        }
-        if {$msglabel!=""} {
-            $c create text $x 17 -text $msglabel -anchor $anchor -font $fonts(msgname) -tags "dx tooltip msgname $msgptr"
+
+        # print msg name, if it's not too close to previous label
+        if {$x>=$minlabelx} {
+            if [opp_getsimoption animation_msgnames] {
+                set msglabel [opp_getobjectfullname $msgptr]
+            }
+            if {$msglabel!=""} {
+                $c create text $x 17 -text $msglabel -anchor $anchor -font $fonts(msgname) -tags "dx tooltip msgname $msgptr"
+            }
+            # ensure some distance between displayed msg names
+            set minlabelx [expr $x+50]
         }
    }
 }
