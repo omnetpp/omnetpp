@@ -117,5 +117,7 @@ proc load_tkenvrc {{fname ".tkenvrc"}} {
 proc reflectSettingsInGui {} {
    toggle_treeview
    toggle_treeview
+   toggle_timeline
+   toggle_timeline
 }
 

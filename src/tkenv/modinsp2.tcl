@@ -1285,9 +1285,12 @@ set tkenv(timeline-minexp) -1
 set tkenv(timeline-maxexp) +1
 
 proc redraw_timeline {} {
-    global fonts tkenv config
+    global fonts tkenv config widgets
 
-    set c .timeline
+    # spare work if we're not displayed
+    if {$config(display-timeline)==0} {return}
+
+    set c $widgets(timeline)
 
     # FIXME
     #   1. turn on/off .timeline
@@ -1344,10 +1347,11 @@ proc redraw_timeline {} {
     }
 
     # draw events
+    set dtmin [expr 1e$minexp]
     set msgs [opp_fesmsgs $config(timeline-maxnumevents)]
     foreach msgptr $msgs {
         set dt [opp_msgarrtimefromnow $msgptr]
-        if [expr $dt < 1e$minexp] {
+        if {$dt < $dtmin} {
             set anchor "sw"
             set x 10
         } else {

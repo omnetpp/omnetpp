@@ -312,6 +312,21 @@ proc toggle_treeview {} {
    }
 }
 
+proc toggle_timeline {} {
+   global config widgets
+
+   if {$config(display-timeline)==1} {
+       set config(display-timeline) 0
+       pack forget $widgets(timeline)
+       .toolbar.tline config -relief raised
+   } else {
+       set config(display-timeline) 1
+       pack $widgets(timeline) -before .main -anchor center -expand 0 -fill x -side top
+       .toolbar.tline config -relief sunken
+       redraw_timeline
+   }
+}
+
 proc set_gui_for_runmode {mode {modinspwin ""} {untilmode ""}} {
     global opp
     set w $modinspwin

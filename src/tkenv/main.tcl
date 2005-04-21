@@ -198,6 +198,7 @@ proc create_omnetpp_window {} {
     # Options menu
     foreach i {
       {command -command simulation_options -label {Simulation options...} -underline 0}
+      {command -command toggle_timeline -label {Show/hide timeline} -underline 10}
       {command -command toggle_treeview -label {Show/hide object tree} -underline 1}
       {separator}
       {command -label {Load config...} -underline 0 -command load_tkenv_config}
@@ -241,12 +242,12 @@ proc create_omnetpp_window {} {
       {finish   -image $icons(finish)  -command {call_finish}}
       {sep5     -separator}
       {network  -image $icons(network) -command {inspect_systemmodule}}
-      {fes      -image $icons(fes)     -command {inspect_messagequeue}}
       {sep6     -separator}
       {find     -image $icons(find)    -command {edit_find}}
       {sep7     -separator}
       {objs     -image $icons(findobj) -command {inspect_filteredobjectlist}}
       {sep8     -separator}
+      {tline    -image $icons(fes)    -command {toggle_timeline}}
       {tree     -image $icons(tree)    -command {toggle_treeview}}
       {sep9     -separator}
       {options  -image $icons(config)  -command {simulation_options}}
@@ -267,8 +268,8 @@ proc create_omnetpp_window {} {
     set help_tips(.toolbar.restart) {Rebuild network}
     set help_tips(.toolbar.finish)  {Call finish()}
     set help_tips(.toolbar.network) {Inspect network}
-    set help_tips(.toolbar.fes)     {Inspect scheduled events (Future Event Set)}
     set help_tips(.toolbar.objs)    {Find/inspect objects (Ctrl-S)}
+    set help_tips(.toolbar.tline)   {Show/hide timeline}
     set help_tips(.toolbar.tree)    {Show/hide object tree}
     set help_tips(.toolbar.options) {Simulation options}
     set help_tips(.toolbar.find)    {Find string in main window (Ctrl-F)}
@@ -280,12 +281,14 @@ proc create_omnetpp_window {} {
     frame .statusbar
     frame .statusbar2
     frame .statusbar3
+
     canvas .timeline -borderwidth 2 -relief groove -height 30
     bind .timeline <Configure> "redraw_timeline"
     .timeline bind msg <Double-1> "graphmodwin_dblclick .timeline"
     .timeline bind msgname <Double-1> "graphmodwin_dblclick .timeline"
     .timeline bind msg <3> "graphmodwin_rightclick .timeline %X %Y"
     .timeline bind msgname <3> "graphmodwin_rightclick .timeline %X %Y"
+    set widgets(timeline) .timeline
 
     label .statusbar.networklabel \
         -relief groove -text {(no network set up)} -width 18 -anchor w
