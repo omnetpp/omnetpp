@@ -38,6 +38,8 @@ set config(confirm-exit) 1
 set config(rununtil-mode) "Express (tracing off)"
 set config(rununtil-time) ""
 set config(rununtil-event) ""
+set config(display-timeline) 1
+set config(timeline-maxnumevents) 100
 
 set pluginlist {}
 
@@ -278,6 +280,12 @@ proc create_omnetpp_window {} {
     frame .statusbar
     frame .statusbar2
     frame .statusbar3
+    canvas .timeline -borderwidth 2 -relief groove -height 30
+    bind .timeline <Configure> "redraw_timeline"
+    .timeline bind msg <Double-1> "graphmodwin_dblclick .timeline"
+    .timeline bind msgname <Double-1> "graphmodwin_dblclick .timeline"
+    .timeline bind msg <3> "graphmodwin_rightclick .timeline %X %Y"
+    .timeline bind msgname <3> "graphmodwin_rightclick .timeline %X %Y"
 
     label .statusbar.networklabel \
         -relief groove -text {(no network set up)} -width 18 -anchor w
@@ -376,6 +384,7 @@ proc create_omnetpp_window {} {
     pack .statusbar  -anchor center -expand 0 -fill x -side top
     pack .statusbar2 -anchor center -expand 0 -fill x -side top
     pack .statusbar3 -anchor center -expand 0 -fill x -side top
+    pack .timeline   -anchor center -expand 0 -fill x -side top
     pack .main       -anchor center -expand 1 -fill both -side top
 
     focus .main.text

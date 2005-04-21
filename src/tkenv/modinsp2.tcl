@@ -1281,4 +1281,93 @@ proc animate2:move {c ball dx dy i} {
     }
 }
 
+set tkenv(timeline-minexp) -1
+set tkenv(timeline-maxexp) +1
 
+proc redraw_timeline {} {
+    global fonts tkenv config
+
+    set c .timeline
+
+    # FIXME
+    #   1. turn on/off .timeline
+    #   2. draw "..." if not all msgs are displayed
+
+    # adjust range
+    set minexp $tkenv(timeline-minexp)
+    set maxexp $tkenv(timeline-maxexp)
+
+    set fesrange [opp_festimerange]
+    set fesmin [lindex $fesrange 0]
+    set fesmax [lindex $fesrange 1]
+    if [expr $fesmin!=0 && $fesmax!=0] {
+        set fesminexp [expr int(floor(log10($fesmin)))]
+        set fesmaxexp [expr int(floor(log10($fesmax)))]
+        if {$fesminexp < $minexp && $fesminexp > -10} {set minexp $fesminexp}
+        if {$fesmaxexp > $maxexp && $fesmaxexp < 10} {set maxexp $fesmaxexp}
+    }
+    set tkenv(timeline-minexp) $minexp
+    set tkenv(timeline-maxexp) $maxexp
+
+    # start drawing
+    $c delete all
+
+    # draw axis
+    set w [winfo width $c]
+    incr w -10
+    $c create line 20 19 $w 19 -arrow last -fill black -width 1
+    $c create text [expr $w+4] 20 -anchor ne -text "sec"
+
+    # draw ticks
+    set dx [expr $w/($maxexp-$minexp+1)]
+    set x0 [expr int($dx/2)+15]
+    set x $x0
+    for {set i $minexp} {$i<=$maxexp} {incr i} {
+        $c create line $x 16 $x 23 -fill black -width 1
+        if {$i>=4} {
+            set txt "1e$i"
+        } elseif {$i>=0} {
+           set txt "1[string repeat 0 $i]"
+        } elseif {$i>=-3} {
+           set txt "0.[string repeat 0 [expr -$i-1]]1"
+        } else {
+            set txt "1e$i"
+        }
+        $c create text $x 20 -anchor n -text "+${txt}" -fill "#808080" -font $fonts(msgname)
+
+        # minor ticks at 2, 4, 6, 8
+        foreach tick {0.301 0.602 0.778 0.903} {
+            set minorx [expr $x+int($tick*$dx)]
+            $c create line $minorx 19 $minorx 22 -fill black -width 1
+        }
+        incr x $dx
+    }
+
+    # draw events
+    set msgs [opp_fesmsgs $config(timeline-maxnumevents)]
+    foreach msgptr $msgs {
+        set dt [opp_msgarrtimefromnow $msgptr]
+        if [expr $dt < 1e$minexp] {
+            set anchor "sw"
+            set x 10
+        } else {
+            set anchor "s"
+            set x [expr int($x0+(log10($dt)-$minexp)*$dx)]
+        }
+
+        if [opp_getsimoption animation_msgcolors] {
+           set msgkind [opp_getobjectfield $msgptr kind]
+           set color [lindex {red green blue white yellow cyan magenta black} [expr $msgkind % 8]]
+        } else {
+            set color red
+        }
+        set ball [$c create oval -3 -4 3 4 -fill $color -outline $color -tags "dx tooltip msg $msgptr"]
+        $c move $ball $x 19
+        if [opp_getsimoption animation_msgnames] {
+            set msglabel [opp_getobjectfullname $msgptr]
+        }
+        if {$msglabel!=""} {
+            $c create text $x 17 -text $msglabel -anchor $anchor -font $fonts(msgname) -tags "dx tooltip msgname $msgptr"
+        }
+   }
+}

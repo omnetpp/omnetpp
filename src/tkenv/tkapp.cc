@@ -857,6 +857,8 @@ void TOmnetTkApp::updateSimtimeDisplay()
                         "Msgs present: ", buf,
                         "}", NULL ));
 
+    // time axis
+    CHK(Tcl_Eval(interp, "redraw_timeline"));
 }
 
 void TOmnetTkApp::updateNextModuleDisplay()

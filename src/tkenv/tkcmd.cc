@@ -86,6 +86,9 @@ int hsbToRgb_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getModulePar_cmd(ClientData, Tcl_Interp *, int, const char **);
 int setModulePar_cmd(ClientData, Tcl_Interp *, int, const char **);
 int moduleByPath_cmd(ClientData, Tcl_Interp *, int, const char **);
+int fesMsgs_cmd(ClientData, Tcl_Interp *, int, const char **);
+int fesTimeRange_cmd(ClientData, Tcl_Interp *, int, const char **);
+int msgArrTimeFromNow_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 int inspect_cmd(ClientData, Tcl_Interp *, int, const char **);
 int supportedInspTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -160,6 +163,10 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_modulebypath",     moduleByPath_cmd         }, // args: <fullpath> ret: modptr
    { "opp_getmodulepar",     getModulePar_cmd         }, // args: <modptr> <parname> ret: value
    { "opp_setmodulepar",     setModulePar_cmd         }, // args: <modptr> <parname> <value>
+   { "opp_fesmsgs",          fesMsgs_cmd              }, // args: <maxnum>
+   { "opp_festimerange",     fesTimeRange_cmd         }, // args: -
+   { "opp_msgarrtimefromnow",msgArrTimeFromNow_cmd    }, // args: <modptr>
+
    // Inspector stuff
    { "opp_inspect",           inspect_cmd           }, // args: <ptr> <type> <opt> ret: window
    { "opp_supported_insp_types",supportedInspTypes_cmd}, // args: <ptr>  ret: insp type list
@@ -1074,6 +1081,57 @@ int moduleByPath_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
    const char *path = argv[1];
    cModule *mod = simulation.moduleByPath(path);
    Tcl_SetResult(interp, ptrToStr(mod), TCL_VOLATILE);
+   return TCL_OK;
+}
+
+int fesMsgs_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   int maxNum = atoi(argv[1]);
+   Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
+   for (cMessageHeap::Iterator msg(simulation.msgQueue); maxNum>0 && !msg.end(); msg++, maxNum--)
+       Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(ptrToStr(msg()), -1));
+   Tcl_SetObjResult(interp, listobj);
+   return TCL_OK;
+}
+
+int fesTimeRange_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+
+   // find smallest t!=simTime() element, and greatest element.
+   // Note: we must iterate because heap is not necessarily ordered!
+   cMessage *first = simulation.msgQueue.peekFirst();
+   if (!first) {Tcl_SetResult(interp, "0 0", TCL_STATIC); return TCL_OK;}
+   simtime_t tmin = first->arrivalTime();
+   simtime_t tmax = first->arrivalTime();
+   simtime_t now = simulation.simTime();
+   for (cMessageHeap::Iterator msg(simulation.msgQueue); !msg.end(); msg++)
+   {
+       simtime_t tmsg = msg()->arrivalTime();
+       if (tmin==now) {
+           if (tmsg!=now)
+               tmin = tmsg;
+       } else if (tmsg<tmin && tmsg!=now) {
+           tmin = tmsg;
+       }
+       if (tmsg>tmax) {
+           tmax = tmsg;
+       }
+   }
+   Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
+   Tcl_ListObjAppendElement(interp, listobj, Tcl_NewDoubleObj(tmin-now));
+   Tcl_ListObjAppendElement(interp, listobj, Tcl_NewDoubleObj(tmax-now));
+   Tcl_SetObjResult(interp, listobj);
+   return TCL_OK;
+}
+
+int msgArrTimeFromNow_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   cMessage *msg = (cMessage *)strToPtr( argv[1] );
+   if (!msg) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   Tcl_SetObjResult(interp, Tcl_NewDoubleObj(msg->arrivalTime()-simulation.simTime()));
    return TCL_OK;
 }
 
