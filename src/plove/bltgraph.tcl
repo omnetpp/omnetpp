@@ -254,24 +254,26 @@ proc bltGraph_ShowCoordinates {graph} {
 }
 
 proc bltGraph_ShowLabel { graph x y } {
-    global fonts
-    set markerName "marker"
-    catch { $graph marker delete $markerName }
-    if [$graph element closest $x $y info] {
-        set nx $info(x)
-        set ny $info(y)
-        set font $fonts(bold)
-    } else {
-        set coords [$graph invtransform $x $y]
-        set nx [lindex $coords 0]
-        set ny [lindex $coords 1]
-        set font $fonts(normal)
+    catch {
+        global fonts
+        set markerName "marker"
+        catch { $graph marker delete $markerName }
+        if [$graph element closest $x $y info] {
+            set nx $info(x)
+            set ny $info(y)
+            set font $fonts(bold)
+        } else {
+            set coords [$graph invtransform $x $y]
+            set nx [lindex $coords 0]
+            set ny [lindex $coords 1]
+            set font $fonts(normal)
+        }
+        set label [format "(%g, %g)" $nx $ny]
+        if {$y<50}  {set anchor "n"} else {set anchor "s"}
+        if {$x<200} {append anchor "w"} else {append anchor "e"}
+        $graph marker create text -coords [list $nx $ny] -name $markerName \
+           -text $label -font $font -anchor $anchor -justify left -yoffset 0 -bg {}
     }
-    set label [format "(%g, %g)" $nx $ny]
-    if {$y<50}  {set anchor "n"} else {set anchor "s"}
-    if {$x<200} {append anchor "w"} else {append anchor "e"}
-    $graph marker create text -coords [list $nx $ny] -name $markerName \
-       -text $label -font $font -anchor $anchor -justify left -yoffset 0 -bg {}
 }
 
 proc bltGraph_Properties {{what ""}} {
