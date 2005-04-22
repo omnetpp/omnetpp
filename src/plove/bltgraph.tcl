@@ -257,12 +257,9 @@ proc bltGraph_ShowLabel { graph x y } {
     global fonts
     set markerName "marker"
     catch { $graph marker delete $markerName }
-    if [$graph element closest $x $y info -interpolate yes] {
-        # $info(x) and $info(y) are buggy: they return cursor coordinates $x and $y
-        set xvec [$graph element cget $info(name) -xdata]
-        set yvec [$graph element cget $info(name) -ydata]
-        set nx [$xvec range $info(index) $info(index)]
-        set ny [$yvec range $info(index) $info(index)]
+    if [$graph element closest $x $y info] {
+        set nx $info(x)
+        set ny $info(y)
         set font $fonts(bold)
     } else {
         set coords [$graph invtransform $x $y]
