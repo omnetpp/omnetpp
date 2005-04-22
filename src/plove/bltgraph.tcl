@@ -271,8 +271,10 @@ proc bltGraph_ShowLabel { graph x y } {
         set font $fonts(normal)
     }
     set label [format "(%g, %g)" $nx $ny]
+    if {$y<50}  {set anchor "n"} else {set anchor "s"}
+    if {$x<200} {append anchor "w"} else {append anchor "e"}
     $graph marker create text -coords [list $nx $ny] -name $markerName \
-       -text $label -font $font -anchor nw -justify left -yoffset 0 -bg {}
+       -text $label -font $font -anchor $anchor -justify left -yoffset 0 -bg {}
 }
 
 proc bltGraph_Properties {{what ""}} {
