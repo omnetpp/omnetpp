@@ -111,7 +111,8 @@ proc createBltGraph {graphtype {graphtitle ""}} {
     Blt_ActiveLegend $graph
     blt::ZoomStack $graph ButtonPress-1 ButtonPress-2
     blt::Crosshairs $graph
-    blt::ClosestPoint $graph
+    #blt::ClosestPoint $graph
+    bltGraph_ShowCoordinates $graph
 
     bind $graph <3>  {.popup post %X %Y}
     return $graph
@@ -246,6 +247,32 @@ proc bltGraph_SavePostscript {} {
         }
     }
     bltGraph_RestoreBg $graph
+}
+
+proc bltGraph_ShowCoordinates {graph} {
+    bind $graph <Motion>  {bltGraph_ShowLabel %W %x %y}
+}
+
+proc bltGraph_ShowLabel { graph x y } {
+    global fonts
+    set markerName "marker"
+    catch { $graph marker delete $markerName }
+    if [$graph element closest $x $y info -interpolate yes] {
+        # $info(x) and $info(y) are buggy: they return cursor coordinates $x and $y
+        set xvec [$graph element cget $info(name) -xdata]
+        set yvec [$graph element cget $info(name) -ydata]
+        set nx [$xvec range $info(index) $info(index)]
+        set ny [$yvec range $info(index) $info(index)]
+        set font $fonts(bold)
+    } else {
+        set coords [$graph invtransform $x $y]
+        set nx [lindex $coords 0]
+        set ny [lindex $coords 1]
+        set font $fonts(normal)
+    }
+    set label [format "(%g, %g)" $nx $ny]
+    $graph marker create text -coords [list $nx $ny] -name $markerName \
+       -text $label -font $font -anchor nw -justify left -yoffset 0 -bg {}
 }
 
 proc bltGraph_Properties {{what ""}} {
