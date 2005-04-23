@@ -282,7 +282,7 @@ proc create_omnetpp_window {} {
     frame .statusbar2
     frame .statusbar3
 
-    canvas .timeline -borderwidth 2 -relief groove -height 30
+    canvas .timeline -borderwidth 2 -relief groove -height 40
     bind .timeline <Configure> "redraw_timeline"
     .timeline bind msg <Double-1> "graphmodwin_dblclick .timeline"
     .timeline bind msgname <Double-1> "graphmodwin_dblclick .timeline"

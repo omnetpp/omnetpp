@@ -1292,10 +1292,6 @@ proc redraw_timeline {} {
 
     set c $widgets(timeline)
 
-    # FIXME
-    #   1. turn on/off .timeline
-    #   2. draw "..." if not all msgs are displayed
-
     # sort the FES and adjust display range
     set minexp $tkenv(timeline-minexp)
     set maxexp $tkenv(timeline-maxexp)
@@ -1318,15 +1314,15 @@ proc redraw_timeline {} {
     # draw axis
     set w [winfo width $c]
     incr w -10
-    $c create line 20 19 $w 19 -arrow last -fill black -width 1
-    $c create text [expr $w+4] 20 -anchor ne -text "sec"
+    $c create line 20 29 $w 29 -arrow last -fill black -width 1
+    $c create text [expr $w+4] 30 -anchor ne -text "sec"
 
     # draw ticks
     set dx [expr $w/($maxexp-$minexp+1)]
     set x0 [expr int($dx/2)+15]
     set x $x0
     for {set i $minexp} {$i<=$maxexp} {incr i} {
-        $c create line $x 16 $x 23 -fill black -width 1
+        $c create line $x 26 $x 33 -fill black -width 1
         if {$i>=4} {
             set txt "1e$i"
         } elseif {$i>=0} {
@@ -1336,19 +1332,20 @@ proc redraw_timeline {} {
         } else {
             set txt "1e$i"
         }
-        $c create text $x 20 -anchor n -text "+${txt}" -fill "#808080" -font $fonts(msgname)
+        $c create text $x 30 -anchor n -text "+$txt" -fill "#808080" -font $fonts(msgname)
 
         # minor ticks at 2, 4, 6, 8
         foreach tick {0.301 0.602 0.778 0.903} {
             set minorx [expr $x+int($tick*$dx)]
-            $c create line $minorx 19 $minorx 22 -fill black -width 1
+            $c create line $minorx 29 $minorx 32 -fill black -width 1
         }
         incr x $dx
     }
 
     # draw events
     set dtmin [expr 1e$minexp]
-    set minlabelx 0
+    set minlabelx -1000
+    set minlabelx2 -1000
     set labelssuppressed 0
     set msgs [opp_fesmsgs $config(timeline-maxnumevents)]
     foreach msgptr $msgs {
@@ -1369,26 +1366,31 @@ proc redraw_timeline {} {
         } else {
             set color red
         }
-        set ball [$c create oval -3 -4 3 4 -fill $color -outline $color -tags "dx tooltip msg $msgptr"]
-        $c move $ball $x 19
+        set ball [$c create oval -2 -3 2 4 -fill $color -outline $color -tags "dx tooltip msg $msgptr"]
+        $c move $ball $x 29
 
         # print msg name, if it's not too close to previous label
-        if {$x>=$minlabelx} {
-            if [opp_getsimoption animation_msgnames] {
-                set msglabel [opp_getobjectfullname $msgptr]
-            }
-            if {$msglabel!=""} {
-                set labelid [$c create text $x 17 -text $msglabel -anchor $anchor -font $fonts(msgname) -tags "dx tooltip msgname $msgptr"]
-
-                # label for only those msgs past this label's right edge will be displayed
+        # label for only those msgs past this label's right edge will be displayed
+        set msglabel [opp_getobjectfullname $msgptr]
+        if {$msglabel!=""} {
+            set estlabelx [expr $x-3*[string length $msglabel]]
+            if {$estlabelx>=$minlabelx} {
+                set labelid [$c create text $x 27 -text $msglabel -anchor $anchor -font $fonts(msgname) -tags "dx tooltip msgname $msgptr"]
                 set minlabelx [lindex [$c bbox $labelid] 2]
                 set labelssuppressed 0
-            }
-        } else {
-            incr labelssuppressed
-            if {$labelssuppressed==1} {
-                $c insert $labelid end ",..."
+            } elseif {$estlabelx>=$minlabelx2} {
+                set labelid [$c create text $x 17 -text $msglabel -anchor $anchor -font $fonts(msgname) -tags "dx tooltip msgname $msgptr"]
+                $c create line $x 24 $x 14 -fill "#808080" -width 1 -tags "h"
+                set minlabelx2 [lindex [$c bbox $labelid] 2]
+                set labelssuppressed 0
+            } else {
+                incr labelssuppressed
+                if {$labelssuppressed==1} {
+                    $c insert $labelid end ",..."
+                }
             }
         }
-   }
+    }
+    $c lower "h"
 }
+
