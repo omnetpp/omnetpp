@@ -13,7 +13,6 @@
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
-
 set graphnumber 0
 
 proc createBltGraph {graphtype {graphtitle ""}} {
@@ -100,15 +99,15 @@ proc createBltGraph {graphtype {graphtitle ""}} {
     $graph configure -plotpadx 8
     $graph configure -plotpady 8
     $graph crosshairs configure -dashes {1 1}
-    $graph legend configure -position right
+    $graph legend configure -position plotarea
     $graph legend configure -anchor ne
     $graph legend configure -relief solid
-    $graph legend configure -borderwidth 1
+    $graph legend configure -borderwidth 0
     $graph legend configure -font [$graph axis cget x -tickfont]
 
     pack $graph -expand 1 -fill both
 
-    Blt_ActiveLegend $graph
+    #Blt_ActiveLegend $graph
     blt::ZoomStack $graph ButtonPress-1 ButtonPress-2
     blt::Crosshairs $graph
     #blt::ClosestPoint $graph
@@ -116,6 +115,20 @@ proc createBltGraph {graphtype {graphtitle ""}} {
 
     bind $graph <3>  {.popup post %X %Y}
     return $graph
+}
+
+proc bltgraph_ActiveLegend { graph } {
+    # interferes with zooming, so only turn on if legend is outside plotarea
+    $graph legend bind all <Enter> [list blt::ActivateLegend $graph ]
+    $graph legend bind all <Leave> [list blt::DeactivateLegend $graph]
+    $graph legend bind all <ButtonPress-1> [list blt::HighlightLegend $graph]
+}
+
+proc bltgraph_PassiveLegend { graph } {
+    blt::DeactivateLegend $graph
+    $graph legend bind all <Enter> { }
+    $graph legend bind all <Leave> { }
+    $graph legend bind all <ButtonPress-1> { }
 }
 
 proc createBltGraphPopup {} {
@@ -140,12 +153,19 @@ proc createBltGraphPopup {} {
 }
 
 proc bltGraph_Close {} {
-    # delete tab
+    global zoomInfo
+
+    # identify tab
     set w .bltwin
     set f [$w.nb tab cget select -window]
 
-    # delete vectors used by the graph
+    # cancel zoom's marching ants, otherwise it causes runtime error
     set graph $f.g
+    if { [info exists zoomInfo($graph,afterId)] } {
+        after cancel $zoomInfo($graph,afterId)
+    }
+
+    # delete vectors used by the graph
     foreach e [$graph element names] {
        # note "catch": not sure -x is was given as BLT vector name -- Tcl list also possible
        catch {[$graph element cget $e -x] delete}
@@ -251,6 +271,7 @@ proc bltGraph_SavePostscript {} {
 
 proc bltGraph_ShowCoordinates {graph} {
     bind $graph <Motion>  {bltGraph_ShowLabel %W %x %y}
+    bind $graph <Leave>   {bltGraph_RemoveLabel %W}
 }
 
 proc bltGraph_ShowLabel { graph x y } {
@@ -276,13 +297,17 @@ proc bltGraph_ShowLabel { graph x y } {
     }
 }
 
+proc bltGraph_RemoveLabel { graph } {
+    set markerName "marker"
+    catch { $graph marker delete $markerName }
+}
+
 proc bltGraph_Properties {{what ""}} {
     set w .bltwin
     set graph [$w.nb tab cget select -window].g
     bltGraph_PropertiesDialog $graph $what
 }
 
-#FIXME to some better place
 set tmp(graphprops-last-open-tab) 0
 
 proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
@@ -314,10 +339,11 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
 
     bltGraph_ReadPropertiesOfSelectedLine $graph
 
-    set tmp(legendshow) [expr [$graph legend cget -hide]==0 ? "yes" : "no"]
+    set tmp(legendshow) [expr [$graph legend cget -hide]==0 ? 1 : 0]
     set tmp(legendpos) [$graph legend cget -position]
     set tmp(legendanchor) [$graph legend cget -anchor]
     set tmp(legendrelief) [$graph legend cget -relief]
+    set tmp(legendborder) [$graph legend cget -border]
     set tmp(legendfont) [$graph legend cget -font]
 
     # create the dialog
@@ -368,10 +394,10 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
     $f.xdiv.e configure -textvariable tmp(xdiv)
     $f.ydiv.e configure -textvariable tmp(ydiv)
     pack $f.xlabel $f.ylabel $f.titlefont $f.tickfont $f.xrotate -side top -anchor w -expand 0 -fill x
-    #FIXME "axis -subdivisions" doesn't seem to work in BLT
+    #NOTE: "axis -subdivisions" doesn't seem to work in BLT
     #pack $f.xdiv $f.ydiv -side top -anchor w -expand 0 -fill x
 
-    # Lines page -- all elements together
+    # Lines page
     # only if {[winfo class $graph]=="Graph"} ?
     set f $nb.lines
     label-combo $f.sel "Apply to lines:" $linenames
@@ -406,17 +432,45 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
 
     # Legend page
     set f $nb.legend
-    label-combo $f.show "Display legend" {yes no}
-    label-combo $f.pos "Position" {plotarea leftmargin rightmargin topmargin bottommargin}
-    label-combo $f.anchor "Anchor" {n s e w ne nw se sw}
-    label-combo $f.relief "Relief" {flat solid raised sunken}
-    label-entry $f.font "Font"
-    $f.show.e configure -textvariable tmp(legendshow)
-    $f.pos.e configure -textvariable tmp(legendpos)
-    $f.anchor.e configure -textvariable tmp(legendanchor)
-    $f.relief.e configure -textvariable tmp(legendrelief)
-    $f.font.e configure -textvariable tmp(legendfont)
-    pack $f.show $f.pos $f.anchor $f.relief $f.font -side top -anchor w -fill x
+    checkbutton $f.show -text "Display legend" -variable tmp(legendshow)
+    labelframe $f.app -relief groove -border 2 -text "Appearance"
+    label-entry $f.app.font "Font"
+    checkbutton $f.app.bd -text "Border" -variable tmp(legendborder)
+    #label-combo $f.relief "Relief" {flat solid raised sunken}
+    pack $f.app.bd -side top -expand 0 -fill none -anchor w
+    pack $f.app.font -side top -anchor w -fill x
+    #$f.relief.e configure -textvariable tmp(legendrelief)
+    labelframe $f.pos -relief groove -border 2 -text "Position"
+    radiobutton $f.pos.pi -text "inside the plot" -value "plotarea" -variable tmp(legendpos)
+    radiobutton $f.pos.pa -text "above" -value "topmargin" -variable tmp(legendpos)
+    radiobutton $f.pos.pb -text "below" -value "bottommargin" -variable tmp(legendpos)
+    radiobutton $f.pos.pl -text "left" -value "leftmargin" -variable tmp(legendpos)
+    radiobutton $f.pos.pr -text "right" -value "rightmargin" -variable tmp(legendpos)
+    grid $f.pos.pi $f.pos.pa $f.pos.pl -sticky w
+    grid x         $f.pos.pb $f.pos.pr -sticky w
+    grid columnconfig $f.pos 0 -weight 0
+    grid columnconfig $f.pos 1 -weight 0
+    grid columnconfig $f.pos 2 -weight 1
+    labelframe $f.anch -relief groove -border 2 -text "Anchoring"
+    radiobutton $f.anch.n -text "north" -value "n" -variable tmp(legendanchor)
+    radiobutton $f.anch.s -text "south" -value "s" -variable tmp(legendanchor)
+    radiobutton $f.anch.e -text "east" -value "e" -variable tmp(legendanchor)
+    radiobutton $f.anch.w -text "west" -value "w" -variable tmp(legendanchor)
+    radiobutton $f.anch.ne -text "northeast" -value "ne" -variable tmp(legendanchor)
+    radiobutton $f.anch.nw -text "northwest" -value "nw" -variable tmp(legendanchor)
+    radiobutton $f.anch.se -text "southeast" -value "se" -variable tmp(legendanchor)
+    radiobutton $f.anch.sw -text "southwest" -value "sw" -variable tmp(legendanchor)
+    grid $f.anch.n  $f.anch.e $f.anch.ne $f.anch.se -sticky w
+    grid $f.anch.s  $f.anch.w $f.anch.nw $f.anch.sw -sticky w
+    grid columnconfig $f.anch 0 -weight 0
+    grid columnconfig $f.anch 1 -weight 0
+    grid columnconfig $f.anch 2 -weight 0
+    grid columnconfig $f.anch 3 -weight 1
+    pack $f.show -side top -expand 0 -fill none -anchor w
+    pack $f.app -side top -anchor w -fill x
+    pack $f.pos -side top -anchor w -fill x
+    pack $f.anch -side top -anchor w -fill x
+    $f.app.font.e configure -textvariable tmp(legendfont)
 
     # execute dialog
     $w.buttons.applybutton config -command [list bltGraph_PropertiesDialogApply $graph]
@@ -501,12 +555,18 @@ proc bltGraph_PropertiesDialogApply {graph} {
         }
     }
 
-    catch {$graph legend config -hide [expr $tmp(legendshow)=="no"]}
+    catch {$graph legend config -hide [expr $tmp(legendshow)==0]}
     catch {$graph legend config -position $tmp(legendpos)}
     catch {$graph legend config -anchor $tmp(legendanchor)}
+    catch {$graph legend config -border $tmp(legendborder)}
     catch {$graph legend config -relief $tmp(legendrelief)}
     catch {$graph legend config -font $tmp(legendfont)}
 
+    if {$tmp(legendpos)=="plotarea"} {
+        bltgraph_PassiveLegend $graph
+    } else {
+        bltgraph_ActiveLegend $graph
+    }
     # update dialog with what we've done
     bltGraph_ReadPropertiesOfSelectedLine $graph
 }

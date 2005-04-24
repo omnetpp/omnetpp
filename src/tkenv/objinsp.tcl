@@ -105,7 +105,7 @@ proc create_messageinspector {name geom} {
     # page 1: info
     label-entry $nb.info.name Name:
     label-entry $nb.info.kind Kind:
-    label-entry $nb.info.length Length:
+    label-entry $nb.info.length {Length (bits):}
     label-entry $nb.info.prio Priority:
     label-entry $nb.info.error BitErrors:
     label-button $nb.info.encapmsg {Encapsulated msg:}
