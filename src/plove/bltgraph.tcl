@@ -67,8 +67,8 @@ proc createBltGraph {graphtype {graphtitle ""}} {
         pack $w.nb -expand 1 -fill both
 
         bind $w <1>      {.popup unpost}
-        bind $w <Escape> {.popup unpost}
-        bind $w.nb <3>   {%W select active; .popup post %X %Y}
+        bind $w <Escape> {bltGraph_CancelZoom; .popup unpost}
+        bind $w.nb <3>   {%W select active; bltGraph_CancelZoom; .popup post %X %Y}
     }
 
     # create page for graph
@@ -114,7 +114,7 @@ proc createBltGraph {graphtype {graphtitle ""}} {
     bltGraph_ShowCoordinates $graph
     # no Blt_ActiveLegend $graph! passiveLegend is used by default
 
-    bind $graph <3>  {.popup post %X %Y}
+    bind $graph <3>  {bltGraph_CancelZoom; .popup post %X %Y}
     return $graph
 }
 
@@ -218,6 +218,17 @@ proc bltGraph_Copy {} {
              -message "Sorry, copying the graph to the clipboard only works on Windows."
     }
     bltGraph_RestoreBg $graph
+}
+
+proc bltGraph_CancelZoom {} {
+    global zoomInfo
+    set w .bltwin
+    set graph [$w.nb tab cget select -window].g
+    if { [info exists zoomInfo($graph,corner)] } {
+        if {$zoomInfo($graph,corner) == "B"} {
+            blt::ResetZoom $graph
+        }
+    }
 }
 
 proc bltGraph_ZoomOut {} {
