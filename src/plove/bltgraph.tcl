@@ -107,11 +107,12 @@ proc createBltGraph {graphtype {graphtitle ""}} {
 
     pack $graph -expand 1 -fill both
 
-    #Blt_ActiveLegend $graph
+    # Attention, BLT and/or Tcl is broken!!! 'blt::' commands don't work 
+    # unless at least one 'Blt_' command was executed before them
+    Blt_Crosshairs $graph
     blt::ZoomStack $graph ButtonPress-1 ButtonPress-2
-    blt::Crosshairs $graph
-    #blt::ClosestPoint $graph
     bltGraph_ShowCoordinates $graph
+    # no Blt_ActiveLegend $graph! passiveLegend is used by default
 
     bind $graph <3>  {.popup post %X %Y}
     return $graph
