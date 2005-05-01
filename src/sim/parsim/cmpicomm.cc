@@ -23,6 +23,8 @@
 #include "cmpicommbuffer.h"
 #include "macros.h"
 #include "cenvir.h"
+#include "cconfig.h"
+#include "platdep/misc.h"
 
 Register_Class(cMPICommunications);
 
@@ -69,6 +71,9 @@ void cMPICommunications::init()
 
 void cMPICommunications::shutdown()
 {
+    // wait a little before exiting MPI, to prevent peers getting killed by SIGPIPE
+    // on a write before they would get a chance to process the broadcastException.
+    usleep(1000000);  // 1s
     MPI_Finalize();
 }
 

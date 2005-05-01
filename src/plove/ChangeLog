@@ -1,3 +1,8 @@
+2005-04-30  Andras Varga
+
+	* bltgraph.tcl: several refinements on the chart window and in its
+	properties dialog
+
 2005-03-31  ------ omnetpp-3.1 released ------
 
 2005-01-17  Andras Varga

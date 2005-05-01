@@ -125,7 +125,7 @@ void cMPICommBuffer::pack(double d)
 
 void cMPICommBuffer::pack(long double d)
 {
-    extendBufferFor(sizeof(long_double));
+    extendBufferFor(sizeof(long double));
     if (MPI_Pack(&d, 1, MPI_LONG_DOUBLE, mBuffer, mBufferSize, &mMsgSize, MPI_COMM_WORLD))
         throw new cRuntimeError("cMPICommBuffer::pack(long double): MPI_Pack() returned error");
 }

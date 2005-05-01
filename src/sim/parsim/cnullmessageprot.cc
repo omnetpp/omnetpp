@@ -97,7 +97,7 @@ void cNullMessageProtocol::startRun()
         {
             sprintf(buf,"resendEOT-%d", i);
             cMessage *eotMsg =  new cMessage(buf,MK_PARSIM_RESENDEOT);
-            eotMsg->setContextPointer((void *)i);  // khmm...
+            eotMsg->setContextPointer((void *)(long)i);  // khmm...
             segInfo[i].eotEvent = eotMsg;
             rescheduleEvent(eotMsg, 0.0);
         }
@@ -243,7 +243,7 @@ cMessage *cNullMessageProtocol::getNextEvent()
         if (msg->kind() == MK_PARSIM_RESENDEOT)
         {
             // send null messages if window closed for a partition
-            int procId = (int) msg->contextPointer();  // khmm...
+            int procId = (long) msg->contextPointer();  // khmm...
             sendNullMessage(procId, msg->arrivalTime());
         }
         else if (msg->kind() == MK_PARSIM_EIT)

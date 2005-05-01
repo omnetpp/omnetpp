@@ -29,7 +29,7 @@ proc createBltGraph {graphtype {graphtitle ""}} {
         wm deiconify $w
         wm title $w "Graphs"
         wm protocol $w WM_DELETE_WINDOW {bltGraph_CloseWindow}
-        wm geometry $w "640x540"
+        wm geometry $w "660x540"
 
         # toolbar
         set toolbar $w.toolbar
@@ -86,7 +86,8 @@ proc createBltGraph {graphtype {graphtitle ""}} {
     # create graph or barchart
     if {$graphtype=="graph"} {
         blt::graph $graph
-        $graph pen configure "activeLine" -color navy -linewidth 1 -symbol none
+        # configure highlight color
+        $graph pen configure "activeLine" -linewidth 1
     } elseif {$graphtype=="barchart"} {
         blt::barchart $graph
         $graph configure -barmode aligned
@@ -104,32 +105,17 @@ proc createBltGraph {graphtype {graphtitle ""}} {
     $graph legend configure -relief solid
     $graph legend configure -borderwidth 0
     $graph legend configure -font [$graph axis cget x -tickfont]
-
     pack $graph -expand 1 -fill both
 
-    # Attention, BLT and/or Tcl is broken!!! 'blt::' commands don't work 
-    # unless at least one 'Blt_' command was executed before them
+    # Attention! 'blt::' commands somehow don't get loaded until at least
+    # one 'Blt_' command was executed before them
     Blt_Crosshairs $graph
     blt::ZoomStack $graph ButtonPress-1 ButtonPress-2
     bltGraph_ShowCoordinates $graph
-    # no Blt_ActiveLegend $graph! passiveLegend is used by default
+    bltGraph_ActiveLegend $graph
 
     bind $graph <3>  {bltGraph_CancelZoom; .popup post %X %Y}
     return $graph
-}
-
-proc bltgraph_ActiveLegend { graph } {
-    # interferes with zooming, so only turn on if legend is outside plotarea
-    $graph legend bind all <Enter> [list blt::ActivateLegend $graph ]
-    $graph legend bind all <Leave> [list blt::DeactivateLegend $graph]
-    $graph legend bind all <ButtonPress-1> [list blt::HighlightLegend $graph]
-}
-
-proc bltgraph_PassiveLegend { graph } {
-    blt::DeactivateLegend $graph
-    $graph legend bind all <Enter> { }
-    $graph legend bind all <Leave> { }
-    $graph legend bind all <ButtonPress-1> { }
 }
 
 proc createBltGraphPopup {} {
@@ -218,6 +204,58 @@ proc bltGraph_Copy {} {
              -message "Sorry, copying the graph to the clipboard only works on Windows."
     }
     bltGraph_RestoreBg $graph
+}
+
+proc bltGraph_ActiveLegend {graph} {
+    # BLT's built-in ActiveLegend interferes with zoom window selection
+    $graph legend bind all <ButtonPress-1> [list bltGraph_HighlightLegend]
+}
+
+proc bltGraph_HighlightLegend {} {
+    global zoomInfo
+    set w .bltwin
+    set graph [$w.nb tab cget select -window].g
+
+    # don't react if zoom window selection is in progress
+    if { [info exists zoomInfo($graph,corner)] } {
+        if {$zoomInfo($graph,corner) == "B"} {
+            return
+        }
+    }
+
+    # remove highlight from all lines
+    set elem [$graph legend get current]
+    set relief [$graph element cget $elem -labelrelief]
+
+    foreach e [$graph element names] {
+        if {[$graph element cget $e -labelrelief]!="flat"} {
+            $graph element configure $e -labelrelief flat
+            $graph element deactivate $e
+        }
+    }
+
+    # then highlight this one if it wasn't highlighted before
+    if { $relief == "flat" } {
+        $graph pen configure "activeLine" -color "#ff1000" \
+           -symbol [$graph element cget $elem -symbol] \
+           -pixels [$graph element cget $elem -pixels] \
+
+        $graph element configure $elem -labelrelief solid
+        $graph element activate $elem
+
+        # flash it a little
+        foreach i {1 2 3} {
+            update idletasks
+            after 80
+            $graph element deactivate $elem
+            update idletasks
+            after 80
+            $graph element activate $elem
+        }
+    }
+
+    # cancel zoom window selection which also started at click
+    after idle bltGraph_CancelZoom
 }
 
 proc bltGraph_CancelZoom {} {
@@ -325,51 +363,26 @@ set tmp(graphprops-last-open-tab) 0
 proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
     global tmp
 
-    # fill dialog with data
     # this must be done before widget creations, otherwise combo doesn't obey the settings
-    set tmp(graphtitle) [$graph cget -title]
-    set tmp(titlefont) [$graph cget -font]
-
-    set tmp(axisxlabel) [$graph axis cget x -title]
-    set tmp(axisylabel) [$graph axis cget y -title]
-    set tmp(axistitlefont) [$graph axis cget x -titlefont]
-    set tmp(axistickfont) [$graph axis cget x -tickfont]
-    set tmp(axisxrotate) [$graph axis cget x -rotate]
-    set tmp(axisxdiv) [$graph axis cget x -subdivisions]
-    set tmp(axisydiv) [$graph axis cget y -subdivisions]
-
-    if {[winfo class $graph]=="Barchart"} {
-        set tmp(barmode) [$graph cget -barmode]
-        set tmp(barbaseline) [$graph cget -baseline]
-    }
-
     set linenames {(all)}
     foreach e [$graph element names] {
         lappend linenames [$graph element cget $e -label]
     }
     set tmp(selectedline) "(all)"
-
-    bltGraph_ReadPropertiesOfSelectedLine $graph
-
-    set tmp(legendshow) [expr [$graph legend cget -hide]==0 ? 1 : 0]
-    set tmp(legendpos) [$graph legend cget -position]
-    set tmp(legendanchor) [$graph legend cget -anchor]
-    set tmp(legendrelief) [$graph legend cget -relief]
-    set tmp(legendborder) [$graph legend cget -border]
-    set tmp(legendfont) [$graph legend cget -font]
+    bltGraph_PropertiesDialogRead $graph
 
     # create the dialog
     set w .bltwin.graphprops
     createOkCancelDialog $w "Graph Properties"
     button $w.buttons.applybutton  -text {Apply} -width 10
     pack $w.buttons.applybutton  -anchor n -side right -padx 2
-    wm geometry $w 360x300
+    wm geometry $w 360x320
 
     # tabnotebook
     set nb $w.f.nb
     blt::tabnotebook $nb -tearoff no -relief flat
     pack $nb -expand 1 -fill both
-    foreach {tab title} {titles "Title" axes "Axes" lines "Lines" bars "Bars" legend "Legend"} {
+    foreach {tab title} {titles "Titles" axes "Axes" lines "Lines" bars "Bars" legend "Legend"} {
         frame $nb.$tab
         set tabs($tab) [$nb insert end -text $title -window $nb.$tab  -fill both]
     }
@@ -381,40 +394,71 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
 
     # Titles page
     set f $nb.titles
-    label-entry $f.title "Graph title"
-    label-entry $f.font "Font"
-    $f.title.e config -textvariable tmp(graphtitle)
-    $f.font.e configure -textvariable tmp(titlefont)
-    pack $f.title $f.font -side top -anchor w -expand 0 -fill x
+    labelframe $f.t -relief groove -border 2 -text "Graph title"
+    label-entry $f.t.title "Graph title"
+    label-entry $f.t.font "Title font"
+    labelframe $f.a -relief groove -border 2 -text "Axis titles"
+    label-entry $f.a.xlabel "X axis title"
+    label-entry $f.a.ylabel "Y axis title"
+    label-entry $f.a.titlefont "Axis title font"
+    label-entry $f.a.tickfont "Label font"
+    label-combo $f.a.xrotate "Rotate X labels by" {0 30 45 60 90}
+    $f.t.title.e config -textvariable tmp(graphtitle)
+    $f.t.font.e configure -textvariable tmp(titlefont)
+    $f.a.xlabel.e configure -textvariable tmp(axisxlabel)
+    $f.a.ylabel.e configure -textvariable tmp(axisylabel)
+    $f.a.titlefont.e configure -textvariable tmp(axistitlefont)
+    $f.a.tickfont.e configure -textvariable tmp(axistickfont)
+    $f.a.xrotate.e configure -textvariable tmp(axisxrotate)
+    pack $f.t.title $f.t.font -side top -anchor w -expand 0 -fill x
+    pack $f.a.xlabel $f.a.ylabel $f.a.titlefont $f.a.tickfont $f.a.xrotate -side top -anchor w -expand 0 -fill x
+    pack $f.t $f.a -side top -anchor w -expand 0 -fill x
 
     # Axes page
     set f $nb.axes
-    label-entry $f.xlabel "X axis title"
-    label-entry $f.ylabel "Y axis title"
-    label-entry $f.titlefont "Title font"
-    label-entry $f.tickfont "Label font"
-    label-combo $f.xrotate "Rotate X labels by" {0 30 45 60 90}
-    label-combo $f.xdiv "X axis subdivisions" {1 2 4 5 10}
-    label-combo $f.ydiv "Y axis subdivisions" {1 2 4 5 10}
-    # FIXME axis min, max, logarithmic; x labels off (for bar charts); -invertxy
-    # also: label-combo $f.display "Grid lines" {off {at major ticks} {at all ticks}}
-    $f.xlabel.e configure -textvariable tmp(axisxlabel)
-    $f.ylabel.e configure -textvariable tmp(axisylabel)
-    $f.titlefont.e configure -textvariable tmp(axistitlefont)
-    $f.tickfont.e configure -textvariable tmp(axistickfont)
-    $f.xrotate.e configure -textvariable tmp(axisxrotate)
-    $f.xdiv.e configure -textvariable tmp(xdiv)
-    $f.ydiv.e configure -textvariable tmp(ydiv)
-    pack $f.xlabel $f.ylabel $f.titlefont $f.tickfont $f.xrotate -side top -anchor w -expand 0 -fill x
-    #NOTE: "axis -subdivisions" doesn't seem to work in BLT
+    labelframe $f.b -relief groove -border 2 -text "Axis bounds"
+    label $f.b.xlabel -text "X axis"
+    label $f.b.ylabel -text "Y axis"
+    label $f.b.minlabel -text "Min"
+    label $f.b.maxlabel -text "Max"
+    entry $f.b.xmin -textvariable tmp(axisxmin)
+    entry $f.b.xmax -textvariable tmp(axisxmax)
+    entry $f.b.ymin -textvariable tmp(axisymin)
+    entry $f.b.ymax -textvariable tmp(axisymax)
+    grid x           $f.b.minlabel  $f.b.maxlabel -sticky w -padx 3 -pady 3
+    grid $f.b.xlabel $f.b.xmin      $f.b.xmax     -sticky w -padx 3 -pady 3
+    grid $f.b.ylabel $f.b.ymin      $f.b.ymax     -sticky w -padx 3 -pady 3
+    grid columnconfig $f.b 0 -weight 1
+    grid columnconfig $f.b 1 -weight 2
+    grid columnconfig $f.b 2 -weight 2
+    labelframe $f.l -relief groove -border 2 -text "Axis options"
+    checkbutton $f.l.xlog -text "logarithmic X axis" -variable tmp(axisxlog)
+    checkbutton $f.l.ylog -text "logarithmic Y axis" -variable tmp(axisylog)
+    checkbutton $f.l.invxy -text "invert X,Y" -variable tmp(invertxy)
+    labelframe $f.g -relief groove -border 2 -text "Grid"
+    radiobutton $f.g.gnone -text "none" -value "none" -variable tmp(grid)
+    radiobutton $f.g.gmaj -text "at major ticks" -value "major" -variable tmp(grid)
+    radiobutton $f.g.gmin -text "at all ticks" -value "minor" -variable tmp(grid)
+    pack $f.l.xlog $f.l.ylog $f.l.invxy -side top -expand 0 -fill none -anchor w
+    pack $f.g.gnone $f.g.gmaj $f.g.gmin -side top -expand 0 -fill none -anchor w
+    # NOTE: "axis -subdivisions" doesn't seem to work in BLT
+    #label-combo $f.xdiv "X axis subdivisions" {1 2 4 5 10}
+    #label-combo $f.ydiv "Y axis subdivisions" {1 2 4 5 10}
+    #$f.xdiv.e configure -textvariable tmp(xdiv)
+    #f.ydiv.e configure -textvariable tmp(ydiv)
+    grid $f.b - -sticky new
+    grid $f.l $f.g -sticky new
+    grid rowconfig $f 0 -weight 0
+    grid rowconfig $f 1 -weight 1
     #pack $f.xdiv $f.ydiv -side top -anchor w -expand 0 -fill x
 
     # Lines page
+    # TBD set color, separate page with checkboxes to turn individual lines on/off
     # only if {[winfo class $graph]=="Graph"} ?
     set f $nb.lines
     label-combo $f.sel "Apply to lines:" $linenames
     $f.sel.e configure -textvariable tmp(selectedline)
-    combo-onchange $f.sel.e [list bltGraph_ReadPropertiesOfSelectedLine $graph]
+    combo-onchange $f.sel.e [list bltGraph_PropertiesDialogReadSelectedLine $graph]
 
     labelframe $f.symf -relief groove -border 2 -text "Symbols"
     checkbutton $f.symf.on -text "Display symbols" -variable tmp(showsymbols)
@@ -430,8 +474,11 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
     radiobutton $f.linesf.step -text "step" -value "step"  -variable tmp(linetype)
     radiobutton $f.linesf.natu -text "spline" -value "catrom"  -variable tmp(linetype)
     pack $f.linesf.none $f.linesf.lin $f.linesf.step $f.linesf.natu -side top -expand 0 -fill none -anchor w
+    checkbutton $f.hide -text "Hide" -variable tmp(linehide)
 
-    pack $f.sel $f.symf $f.linesf -side top -expand 0 -fill x
+    pack $f.sel -side top -expand 0 -fill x
+    pack $f.symf $f.linesf -side top -expand 0 -fill x
+    pack $f.hide -side top -expand 0 -fill none -anchor w
 
     # Bars page -- all elements together
     # only if {[winfo class $graph]=="Barchart"} ?
@@ -446,7 +493,7 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
     set f $nb.legend
     checkbutton $f.show -text "Display legend" -variable tmp(legendshow)
     labelframe $f.app -relief groove -border 2 -text "Appearance"
-    label-entry $f.app.font "Font"
+    label-entry $f.app.font "Legend font"
     checkbutton $f.app.bd -text "Border" -variable tmp(legendborder)
     #label-combo $f.relief "Relief" {flat solid raised sunken}
     pack $f.app.bd -side top -expand 0 -fill none -anchor w
@@ -493,7 +540,52 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
     destroy $w
 }
 
-proc bltGraph_ReadPropertiesOfSelectedLine {graph} {
+proc bltGraph_PropertiesDialogRead {graph} {
+    global tmp
+
+    # fill dialog with data
+    set tmp(graphtitle) [$graph cget -title]
+    set tmp(titlefont) [$graph cget -font]
+
+    set tmp(axisxlabel) [$graph axis cget x -title]
+    set tmp(axisylabel) [$graph axis cget y -title]
+    set tmp(axistitlefont) [$graph axis cget x -titlefont]
+    set tmp(axistickfont) [$graph axis cget x -tickfont]
+    set tmp(axisxrotate) [$graph axis cget x -rotate]
+    set tmp(axisxdiv) [$graph axis cget x -subdivisions]
+    set tmp(axisydiv) [$graph axis cget y -subdivisions]
+    set tmp(axisxmin) [$graph axis cget x -min]
+    set tmp(axisxmax) [$graph axis cget x -max]
+    set tmp(axisymin) [$graph axis cget y -min]
+    set tmp(axisymax) [$graph axis cget y -max]
+    set tmp(axisxlog) [$graph axis cget x -logscale]
+    set tmp(axisylog) [$graph axis cget y -logscale]
+    set tmp(invertxy) [$graph cget -invertxy]
+
+    if {[$graph grid cget -hide]} {
+        set tmp(grid) "none"
+    } elseif {[$graph grid cget -minor]} {
+        set tmp(grid) "minor"
+    } else {
+        set tmp(grid) "major"
+    }
+
+    if {[winfo class $graph]=="Barchart"} {
+        set tmp(barmode) [$graph cget -barmode]
+        set tmp(barbaseline) [$graph cget -baseline]
+    }
+
+    bltGraph_PropertiesDialogReadSelectedLine $graph
+
+    set tmp(legendshow) [expr [$graph legend cget -hide]==0 ? 1 : 0]
+    set tmp(legendpos) [$graph legend cget -position]
+    set tmp(legendanchor) [$graph legend cget -anchor]
+    set tmp(legendrelief) [$graph legend cget -relief]
+    set tmp(legendborder) [$graph legend cget -border]
+    set tmp(legendfont) [$graph legend cget -font]
+}
+
+proc bltGraph_PropertiesDialogReadSelectedLine {graph} {
     global tmp
 
     if {[$graph element names]=={}} {
@@ -501,6 +593,7 @@ proc bltGraph_ReadPropertiesOfSelectedLine {graph} {
         set tmp(symboltype)  "(no change)"
         set tmp(symbolsize)  3
         set tmp(linetype)   "step"
+        set tmp(linehide)   0
     } else {
         set e [lindex [$graph element names] 0]
         foreach i [$graph element names] {
@@ -522,6 +615,7 @@ proc bltGraph_ReadPropertiesOfSelectedLine {graph} {
             set tmp(linetype) "catrom"
         }
         if {[$graph element cget $e -linewidth]==0} {set tmp(linetype) "none"}
+        set tmp(linehide)  [$graph element cget $e -hide]
     }
 }
 
@@ -542,6 +636,23 @@ proc bltGraph_PropertiesDialogApply {graph} {
     catch {$graph axis config x -rotate $tmp(axisxrotate)}
     catch {$graph axis config x -subdivisions $tmp(axisxdiv)}
     catch {$graph axis config y -subdivisions $tmp(axisydiv)}
+    catch {$graph axis config x -min $tmp(axisxmin)}
+    catch {$graph axis config x -max $tmp(axisxmax)}
+    catch {$graph axis config y -min $tmp(axisymin)}
+    catch {$graph axis config y -max $tmp(axisymax)}
+    catch {$graph axis config x -logscale $tmp(axisxlog)}
+    catch {$graph axis config y -logscale $tmp(axisylog)}
+    catch {$graph config -invertxy $tmp(invertxy)}
+
+    if {$tmp(grid)=="major"} {
+        catch {$graph grid configure -hide 0}
+        catch {$graph grid configure -minor 0}
+    } elseif {$tmp(grid)=="minor"} {
+        catch {$graph grid configure -hide 0}
+        catch {$graph grid configure -minor 1}
+    } else {
+        catch {$graph grid configure -hide 1}
+    }
 
     if {[winfo class $graph]=="Barchart"} {
         catch {$graph configure -barmode $tmp(barmode)}
@@ -563,6 +674,7 @@ proc bltGraph_PropertiesDialogApply {graph} {
                 }
                 catch {$graph element configure $i -linewidth $linewidth}
                 catch {$graph element configure $i -smooth $linesmooth}
+                catch {$graph element configure $i -hide $tmp(linehide)}
             }
         }
     }
@@ -574,13 +686,8 @@ proc bltGraph_PropertiesDialogApply {graph} {
     catch {$graph legend config -relief $tmp(legendrelief)}
     catch {$graph legend config -font $tmp(legendfont)}
 
-    if {$tmp(legendpos)=="plotarea"} {
-        bltgraph_PassiveLegend $graph
-    } else {
-        bltgraph_ActiveLegend $graph
-    }
     # update dialog with what we've done
-    bltGraph_ReadPropertiesOfSelectedLine $graph
+    bltGraph_PropertiesDialogRead $graph
 }
 
 
@@ -589,9 +696,9 @@ proc bltGraph_PropertiesDialogApply {graph} {
 #
 proc getChartColor {i} {
     set graphcolors {
-        red blue green cyan yellow black orange purple gray magenta
-        turquoise lightgray violet wheat maroon tan darkgray
-        red4 green4 blue4
+        blue red2 green orange #008000
+        darkgray #a00000 #008080 cyan #808000
+        #8080ff yellow black purple gray
     }
     set color [lindex $graphcolors [expr $i % [llength $graphcolors]]]
     return $color
