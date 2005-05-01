@@ -709,7 +709,7 @@ proc getChartColor {i} {
 #
 proc getChartSymbol {i} {
     set list {
-        square circle diamond plus cross splus scross triangle
+        square circle diamond plus cross triangle
     }
     set sel [lindex $list [expr $i % [llength $list]]]
     return $sel

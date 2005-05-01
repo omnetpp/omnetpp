@@ -136,15 +136,19 @@ proc loadVectorFile {fname} {
        tk_messageBox -icon warning -type ok -title Error \
                      -message "Sorry, zipped vector files not yet supported with new Plove engine"
        return
-    } else {
-       busyCursor "Scanning $fname..."
-       set vectors [opp_getvectorlist $fname]
-       idleCursor
     }
 
+    # grep vectors from file
+    busyCursor "Scanning $fname..."
+    set vectors [opp_getvectorlist $fname]
+    idleCursor
+
+    # fill vec() array
+    set idlist {}
     foreach vector $vectors {
         set id $vec(nextid)
         incr vec(nextid)
+        lappend idlist $id
 
         set vec($id,fname)  $fname
         set vec($id,vecid)  [lindex $vector 0]
@@ -155,9 +159,30 @@ proc loadVectorFile {fname} {
         set vec($id,zipped) $zipped
         set vec($id,filter) ""
         set vec($id,filtpfx) ""
+    }
+
+    # sort vectors
+    set idlist [lsort -command compareVectors $idlist]
+
+    # insert them into the listbox
+    foreach id $idlist {
         $g(listbox1) insert end "$vec($id,title) $g(spaces) $id"
     }
+
     status 1
+}
+
+proc compareVectors {ida idb} {
+    global vec
+    set a $vec($ida,title)
+    set b $vec($idb,title)
+    if {$a==$b} {
+        return 0
+    } elseif {[lindex [lsort -dictionary [list $a $b]] 0]==$a} {
+        return -1
+    } else {
+        return 1
+    }
 }
 
 proc moveOrCopyVectors {fr to} {
@@ -227,7 +252,7 @@ proc delVectors {{lb {}}} {
     if {$sel == ""} {
         # delete filter and array elements
         set id [lindex [$g(listbox$lb) get active] end]
-        if {$id!=""} { 
+        if {$id!=""} {
             if {$vec($id,filter)!=""} {
                 opp_compoundfiltertype $vec($id,filter) delete
             }
