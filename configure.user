@@ -97,12 +97,12 @@ WITH_PARSIM=yes
 
 #
 # Compiler and linker options for MPI (optional component).
-# Typing `mpicc -showme' can give you a hint about MPI_LIBS
+# On LAM/MPI, typing `mpic++ -showme' can give you a hint about MPI_LIBS.
 #
 # If commented out, the configure script will try to autodetect it
 #
 #MPI_CFLAGS="-I /usr/include"
-#MPI_LIBS="-llamf77mpi -lmpi -llam -lutil"
+#MPI_LIBS="-pthread -llammpio -llammpi++ -llamf77mpi -lmpi -llam -laio -laio -lutil"
 
 #
 # Compiler and linker options for Expat (optional component)

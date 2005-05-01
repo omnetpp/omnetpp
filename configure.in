@@ -170,7 +170,7 @@ fi
 
 # for MPI
 MPI_CFLAGS=
-MPI_LIBS=
+MPI_LIBS="-pthread -llammpio -llammpi++ -llamf77mpi -lmpi -llam -laio -laio -lutil"
 
 # for Expat
 EXPAT_CFLAGS=
