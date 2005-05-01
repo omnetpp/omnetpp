@@ -272,7 +272,7 @@ PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
 ac_unique_file="include/omnetpp.h"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX YACC LEX LEXLIB LEX_OUTPUT_ROOT RANLIB ac_ct_RANLIB DOXYGEN PERL XSLTPROC GHOSTSCRIPT CONVERT DOT GIFTRANS CXXCPP WISH OMNETPP_VERSION OMNETPP_BIN_DIR OMNETPP_INCL_DIR OMNETPP_LIB_DIR OMNETPP_BITMAP_PATH OMNETPP_SRC_DIR OMNETPP_UTILS_DIR OMNETPP_DOC_DIR OMNETPP_SAMPLES_DIR OMNETPP_TEST_DIR MYPWD NEDC MSGC NEDTOOL GNED NEDCFLAGS AS AR SHLIB_LD MAKEDEPEND A_LIB_SUFFIX SO_LIB_SUFFIX LIB_SUFFIX EXE_SUFFIX HAVE_DLOPEN TK_CFLAGS TK_LIBS HAVE_BLT BLT_LIBS HAVE_MPI MPI_CFLAGS MPI_LIBS SYS_LIBS XMLPARSER XML_CFLAGS XML_LIBS AKAROA_CFLAGS AKAROA_LIBS TKENV_IF_POSSIBLE GNED_IF_POSSIBLE SCALARS_IF_POSSIBLE PLOVE_IF_POSSIBLE TKENV_EMBED_SUFFIX GNED_EMBED_SUFFIX SCALARS_EMBED_SUFFIX PLOVE_EMBED_SUFFIX OMNETPP_TKENV_DIR OMNETPP_GNED_DIR OMNETPP_SCALARS_DIR OMNETPP_PLOVE_DIR WITH_NETBUILDER WITH_PARSIM LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX YACC LEX LEXLIB LEX_OUTPUT_ROOT RANLIB ac_ct_RANLIB DOXYGEN PERL XSLTPROC GHOSTSCRIPT CONVERT DOT GIFTRANS CXXCPP WISH OMNETPP_VERSION OMNETPP_BIN_DIR OMNETPP_INCL_DIR OMNETPP_LIB_DIR OMNETPP_BITMAP_PATH OMNETPP_SRC_DIR OMNETPP_UTILS_DIR OMNETPP_DOC_DIR OMNETPP_SAMPLES_DIR OMNETPP_TEST_DIR MYPWD NEDC MSGC NEDTOOL GNED NEDCFLAGS AS AR SHLIB_LD MAKEDEPEND A_LIB_SUFFIX SO_LIB_SUFFIX LIB_SUFFIX EXE_SUFFIX NO_TCL HAVE_DLOPEN TK_CFLAGS TK_LIBS HAVE_BLT BLT_LIBS HAVE_MPI MPI_CFLAGS MPI_LIBS SYS_LIBS XMLPARSER XML_CFLAGS XML_LIBS AKAROA_CFLAGS AKAROA_LIBS TKENV_IF_POSSIBLE GNED_IF_POSSIBLE SCALARS_IF_POSSIBLE PLOVE_IF_POSSIBLE USERIF_LIBS TKENV_EMBED_SUFFIX GNED_EMBED_SUFFIX SCALARS_EMBED_SUFFIX PLOVE_EMBED_SUFFIX OMNETPP_TKENV_DIR OMNETPP_GNED_DIR OMNETPP_SCALARS_DIR OMNETPP_PLOVE_DIR WITH_NETBUILDER WITH_PARSIM LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -1390,6 +1390,7 @@ host=$ac_cv_host
 host_cpu=`echo $ac_cv_host | sed 's/^\([^-]*\)-\([^-]*\)-\(.*\)$/\1/'`
 host_vendor=`echo $ac_cv_host | sed 's/^\([^-]*\)-\([^-]*\)-\(.*\)$/\2/'`
 host_os=`echo $ac_cv_host | sed 's/^\([^-]*\)-\([^-]*\)-\(.*\)$/\3/'`
+
 
 
 # figure out here if we have gcc or not -- we'll need it soon
@@ -4038,6 +4039,19 @@ fi
 #----------------------
 # Check for Tcl/Tk.
 #----------------------
+if test -n "$NO_TCL"; then
+
+# skip testing for TCL
+TKENV_IF_POSSIBLE=missing-library
+GNED_IF_POSSIBLE=missing-library
+SCALARS_IF_POSSIBLE=missing-library
+PLOVE_IF_POSSIBLE=missing-library
+
+# and build samples using Cmdenv (TBD)
+USERIF_LIBS='$(CMDENV_LIBS)'
+
+else  #find end of "if" after BLT testing
+
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -4963,20 +4977,12 @@ rm -f conftest.err conftest.$ac_objext \
    LIBS=$save_LIBS
 
 fi
-if test $tcltk_ok = yes; then
-    TKENV_IF_POSSIBLE=tkenv
-    GNED_IF_POSSIBLE=gned
-    SCALARS_IF_POSSIBLE=scalars
-    PLOVE_IF_POSSIBLE=plove
-else
-    TKENV_IF_POSSIBLE=missing-library
-    GNED_IF_POSSIBLE=missing-library
-    SCALARS_IF_POSSIBLE=missing-library
-    PLOVE_IF_POSSIBLE=missing-library
+if test $tcltk_ok = no; then
+    # try to give a hint in the error message about the problem
     if test "$no_x" = "yes"; then
         if test "$cygwin" = yes; then
-            { { echo "$as_me:$LINENO: error: Cannot build Tcl/Tk apps, probably due to missing X11 headers -- try installing the XFree86 packages or get the X headers from www.omnetpp.org" >&5
-echo "$as_me: error: Cannot build Tcl/Tk apps, probably due to missing X11 headers -- try installing the XFree86 packages or get the X headers from www.omnetpp.org" >&2;}
+            { { echo "$as_me:$LINENO: error: Cannot build Tcl/Tk apps, probably due to missing X11 headers -- try installing the XFree86 packages or get the X headers from www.omnetpp.org." >&5
+echo "$as_me: error: Cannot build Tcl/Tk apps, probably due to missing X11 headers -- try installing the XFree86 packages or get the X headers from www.omnetpp.org." >&2;}
    { (exit 1); exit 1; }; }
         else
             { { echo "$as_me:$LINENO: error: Cannot build Tcl/Tk apps, probably due to misconfigured or missing X11 headers or libs. Check config.log for more info!" >&5
@@ -5047,6 +5053,9 @@ if echo 'catch {package require Tk 8.4; puts OK}; exit' | $WISH | grep OK >/dev/
 echo "$as_me: error: wish command \"package require Tk 8.4\" failed: probably old Tcl/Tk version, version 8.4.0+ required" >&2;}
    { (exit 1); exit 1; }; }
 fi
+
+# note: square brackets necessary otherwise M4 messes up the Tcl command
+tcl_library=`echo 'puts [info library]; exit' | $WISH`
 
 
 #----------------------
@@ -5128,6 +5137,17 @@ echo "$as_me: WARNING: Cannot compile or link program with BLT: BLT or BLT-devel
     HAVE_BLT=no
 fi
 
+# if we got through until here, enable building of the following progs:
+TKENV_IF_POSSIBLE=tkenv
+GNED_IF_POSSIBLE=gned
+SCALARS_IF_POSSIBLE=scalars
+PLOVE_IF_POSSIBLE=plove
+
+# and build samples using Tkenv
+USERIF_LIBS='$(TKENV_LIBS)'
+
+fi # end of Tcl tests ($NO_TCL=="" branch)
+
 #----------------------
 # Check for MPI.
 #----------------------
@@ -5193,6 +5213,71 @@ rm -f conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
+if test $mpi_ok = no; then
+   lamlibs="-pthread -llammpio -llammpi++ -llamf77mpi -lmpi -llam -laio -laio -lutil"
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$MPI_CFLAGS"
+   LIBS="$lamlibs"
+
+   echo "$as_me:$LINENO: checking for MPI with CFLAGS=\"$MPI_CFLAGS\" LIBS=\"$lamlibs\"" >&5
+echo $ECHO_N "checking for MPI with CFLAGS=\"$MPI_CFLAGS\" LIBS=\"$lamlibs\"... $ECHO_C" >&6
+
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <mpi.h>
+int
+main ()
+{
+MPI_Init(0,0);
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_cxx_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6; mpi_ok=yes; MPI_LIBS="$lamlibs"
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; mpi_ok=no;
+fi
+rm -f conftest.err conftest.$ac_objext \
+      conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+fi
 if test $mpi_ok = yes; then
    HAVE_MPI=yes
 else
@@ -5614,6 +5699,8 @@ fi
 #----------------------
 # Substitutions.
 #----------------------
+
+
 
 
 
@@ -6417,6 +6504,7 @@ s,@A_LIB_SUFFIX@,$A_LIB_SUFFIX,;t t
 s,@SO_LIB_SUFFIX@,$SO_LIB_SUFFIX,;t t
 s,@LIB_SUFFIX@,$LIB_SUFFIX,;t t
 s,@EXE_SUFFIX@,$EXE_SUFFIX,;t t
+s,@NO_TCL@,$NO_TCL,;t t
 s,@HAVE_DLOPEN@,$HAVE_DLOPEN,;t t
 s,@TK_CFLAGS@,$TK_CFLAGS,;t t
 s,@TK_LIBS@,$TK_LIBS,;t t
@@ -6435,6 +6523,7 @@ s,@TKENV_IF_POSSIBLE@,$TKENV_IF_POSSIBLE,;t t
 s,@GNED_IF_POSSIBLE@,$GNED_IF_POSSIBLE,;t t
 s,@SCALARS_IF_POSSIBLE@,$SCALARS_IF_POSSIBLE,;t t
 s,@PLOVE_IF_POSSIBLE@,$PLOVE_IF_POSSIBLE,;t t
+s,@USERIF_LIBS@,$USERIF_LIBS,;t t
 s,@TKENV_EMBED_SUFFIX@,$TKENV_EMBED_SUFFIX,;t t
 s,@GNED_EMBED_SUFFIX@,$GNED_EMBED_SUFFIX,;t t
 s,@SCALARS_EMBED_SUFFIX@,$SCALARS_EMBED_SUFFIX,;t t
@@ -6729,7 +6818,7 @@ WARNING: The configuration script has found problems with the following packages
   $OPP_PROBLEM_PACKAGES
 
 Scroll up to see the warning messages (use shift+PgUp key). While you can
-still use OMNeT++/OMNEST in the current configuration, be aware that certain
+still use OMNeT++/OMNEST in the current configuration, be aware that some
 functionality may be degraded or unavailable.
 
 EOT
@@ -6808,5 +6897,49 @@ build_shared_libs=yes line to build_shared_libs=no, then delete the shared
 libraries, re-run configure and make.
 EOT
   fi
+fi
+
+#----------------------
+# Check if TCL_LIBRARY is set.
+#----------------------
+
+if test -n "$NO_TCL"; then
+
+    cat << EOT
+
+OMNeT++/OMNEST was configured without Tcl/Tk (\$NO_TCL set) -- GUI components
+will not be available. Also, sample simulations will not compile until you
+manually switch them over to Cmdenv, by editing their Makefiles.
+EOT
+
+elif test -z "$TCL_LIBRARY"; then
+
+    cat 1>&2 << EOT
+
+WARNING: The TCL_LIBRARY environment variable is not set, and without it
+OMNEST/OMNeT++ GUI programs may be unable to find the BLT library.
+Please set it to point to the following directory:
+    $tcl_library
+
+Add the corresponding line to your startup file:
+  export TCL_LIBRARY=$tcl_library
+         # into .(bash_)profile if you use bash or other sh-like shell
+  setenv TCL_LIBRARY $tcl_library
+         # into .cshrc if you use tcsh or other csh-like shell
+For additional information, please visit the "Common installation problems"
+page on www.omnetpp.org.
+EOT
+
+elif test ! -f "$TCL_LIBRARY/init.tcl"; then
+
+    cat 1>&2 << EOT
+
+WARNING: Your TCL_LIBRARY variable seems to be set incorrectly: there's no
+init.tcl file in that directory! (Usual location is /usr/lib/tcl8.4.)
+EOT
+
+else
+    echo
+    echo "TCL_LIBRARY is set. Good!"
 fi
 

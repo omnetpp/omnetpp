@@ -39,6 +39,7 @@ AC_CONFIG_SRCDIR(include/omnetpp.h)
 AC_LANG(C++)
 AC_CONFIG_AUX_DIR(src/utils)
 AC_CANONICAL_HOST()
+
 # figure out here if we have gcc or not -- we'll need it soon
 #FIXME: skip if CC var already exists
 AC_PROG_CC
@@ -170,7 +171,7 @@ fi
 
 # for MPI
 MPI_CFLAGS=
-MPI_LIBS="-pthread -llammpio -llammpi++ -llamf77mpi -lmpi -llam -laio -laio -lutil"
+MPI_LIBS=
 
 # for Expat
 EXPAT_CFLAGS=
@@ -321,6 +322,19 @@ fi
 #----------------------
 # Check for Tcl/Tk.
 #----------------------
+if test -n "$NO_TCL"; then
+
+# skip testing for TCL
+TKENV_IF_POSSIBLE=missing-library
+GNED_IF_POSSIBLE=missing-library
+SCALARS_IF_POSSIBLE=missing-library
+PLOVE_IF_POSSIBLE=missing-library
+
+# and build samples using Cmdenv (TBD)
+USERIF_LIBS='$(CMDENV_LIBS)'
+
+else  #find end of "if" after BLT testing
+
 OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $TK_CFLAGS, $TK_LIBS, tcltk_ok)
 if test $tcltk_ok = no; then
     # try to find Tcl/Tk ourselves, but it usually needs to link with Xlib
@@ -361,19 +375,11 @@ if test $tcltk_ok = no -a "$cygwin" = yes; then
     OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk84 -lcygtcl84,
                   tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk84 -lcygtcl84")
 fi
-if test $tcltk_ok = yes; then
-    TKENV_IF_POSSIBLE=tkenv
-    GNED_IF_POSSIBLE=gned
-    SCALARS_IF_POSSIBLE=scalars
-    PLOVE_IF_POSSIBLE=plove
-else
-    TKENV_IF_POSSIBLE=missing-library
-    GNED_IF_POSSIBLE=missing-library
-    SCALARS_IF_POSSIBLE=missing-library
-    PLOVE_IF_POSSIBLE=missing-library
+if test $tcltk_ok = no; then
+    # try to give a hint in the error message about the problem
     if test "$no_x" = "yes"; then
         if test "$cygwin" = yes; then
-            AC_MSG_ERROR([Cannot build Tcl/Tk apps, probably due to missing X11 headers -- try installing the XFree86 packages or get the X headers from www.omnetpp.org])
+            AC_MSG_ERROR([Cannot build Tcl/Tk apps, probably due to missing X11 headers -- try installing the XFree86 packages or get the X headers from www.omnetpp.org.])
         else
             AC_MSG_ERROR([Cannot build Tcl/Tk apps, probably due to misconfigured or missing X11 headers or libs. Check config.log for more info!])
         fi
@@ -394,6 +400,9 @@ if echo 'catch {package require Tk 8.4; puts OK}; exit' | $WISH | grep OK >/dev/
     AC_MSG_ERROR([wish command "package require Tk 8.4" failed: probably old Tcl/Tk version, version 8.4.0+ required])
 fi
 
+# note: square brackets necessary otherwise M4 messes up the Tcl command
+[tcl_library=`echo 'puts [info library]; exit' | $WISH`]
+
 
 #----------------------
 # Check for BLT. $TK_CFLAGS and $TK_LIBS plus $BLT_LIBS should be enough
@@ -411,10 +420,25 @@ else
     HAVE_BLT=no
 fi
 
+# if we got through until here, enable building of the following progs:
+TKENV_IF_POSSIBLE=tkenv
+GNED_IF_POSSIBLE=gned
+SCALARS_IF_POSSIBLE=scalars
+PLOVE_IF_POSSIBLE=plove
+
+# and build samples using Tkenv
+USERIF_LIBS='$(TKENV_LIBS)'
+
+fi # end of Tcl tests ($NO_TCL=="" branch)
+
 #----------------------
 # Check for MPI.
 #----------------------
 OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $MPI_CFLAGS, $MPI_LIBS, mpi_ok)
+if test $mpi_ok = no; then
+   lamlibs="-pthread -llammpio -llammpi++ -llamf77mpi -lmpi -llam -laio -laio -lutil"
+   OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $MPI_CFLAGS, $lamlibs, mpi_ok, MPI_LIBS="$lamlibs")
+fi
 if test $mpi_ok = yes; then
    HAVE_MPI=yes
 else
@@ -603,6 +627,7 @@ AC_SUBST(SO_LIB_SUFFIX)
 AC_SUBST(LIB_SUFFIX)
 AC_SUBST(EXE_SUFFIX)
 
+AC_SUBST(NO_TCL)
 AC_SUBST(HAVE_DLOPEN)
 AC_SUBST(TK_CFLAGS)
 AC_SUBST(TK_LIBS)
@@ -625,6 +650,7 @@ AC_SUBST(GNED_IF_POSSIBLE)
 AC_SUBST(SCALARS_IF_POSSIBLE)
 AC_SUBST(PLOVE_IF_POSSIBLE)
 
+AC_SUBST(USERIF_LIBS)
 AC_SUBST(TKENV_EMBED_SUFFIX)
 AC_SUBST(GNED_EMBED_SUFFIX)
 AC_SUBST(SCALARS_EMBED_SUFFIX)
@@ -663,7 +689,7 @@ WARNING: The configuration script has found problems with the following packages
   $OPP_PROBLEM_PACKAGES
 
 Scroll up to see the warning messages (use shift+PgUp key). While you can
-still use OMNeT++/OMNEST in the current configuration, be aware that certain
+still use OMNeT++/OMNEST in the current configuration, be aware that some
 functionality may be degraded or unavailable.
 
 EOT
@@ -727,8 +753,8 @@ WARNING: You selected shared libraries in configure.user, but your
 LD_LIBRARY_PATH doesn't seem to contain $OMNETPP_LIB_DIR!
 
 So that the dynamic linker can find the OMNeT++/OMNEST shared libs, you either
-have to create symbolic links from /usr/lib to the OMNeT++/OMNEST shared 
-libraries (you can do it as root), or better, set the LD_LIBRARY_PATH 
+have to create symbolic links from /usr/lib to the OMNeT++/OMNEST shared
+libraries (you can do it as root), or better, set the LD_LIBRARY_PATH
 environment variable.
 
 Add the corresponding line to your startup file:
@@ -742,5 +768,49 @@ build_shared_libs=yes line to build_shared_libs=no, then delete the shared
 libraries, re-run configure and make.
 EOT
   fi
+fi
+
+#----------------------
+# Check if TCL_LIBRARY is set.
+#----------------------
+
+if test -n "$NO_TCL"; then
+
+    cat << EOT
+
+OMNeT++/OMNEST was configured without Tcl/Tk (\$NO_TCL set) -- GUI components
+will not be available. Also, sample simulations will not compile until you
+manually switch them over to Cmdenv, by editing their Makefiles.
+EOT
+
+elif test -z "$TCL_LIBRARY"; then
+
+    cat 1>&2 << EOT
+
+WARNING: The TCL_LIBRARY environment variable is not set, and without it
+OMNEST/OMNeT++ GUI programs may be unable to find the BLT library.
+Please set it to point to the following directory:
+    $tcl_library
+
+Add the corresponding line to your startup file:
+  export TCL_LIBRARY=$tcl_library
+         # into .(bash_)profile if you use bash or other sh-like shell
+  setenv TCL_LIBRARY $tcl_library
+         # into .cshrc if you use tcsh or other csh-like shell
+For additional information, please visit the "Common installation problems"
+page on www.omnetpp.org.
+EOT
+
+elif test ! -f "$TCL_LIBRARY/init.tcl"; then
+
+    cat 1>&2 << EOT
+
+WARNING: Your TCL_LIBRARY variable seems to be set incorrectly: there's no
+init.tcl file in that directory! (Usual location is /usr/lib/tcl8.4.)
+EOT
+
+else
+    echo
+    echo "TCL_LIBRARY is set. Good!"
 fi
 

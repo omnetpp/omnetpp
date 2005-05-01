@@ -76,13 +76,17 @@ WITH_PARSIM=yes
 # case add -lX11 to TK_LIBS.
 #
 # With MinGW I use the following:
-#  TK_CFLAGS="-I/d/home/tools/Tcl-8.4.2/include -fwritable-strings"
-#  TK_LIBS="-L/d/home/tools/Tcl-8.4.2/lib -ltk84 -ltcl84"
+#  TK_CFLAGS="-I/d/home/tools/Tcl-8.4.5/include -fwritable-strings"
+#  TK_LIBS="-L/d/home/tools/Tcl-8.4.5/lib -ltk84 -ltcl84"
 # With Cygwin, you can try:
 #  TK_CFLAGS="-fwritable-strings"
-#  TK_LIBS="-lcygtk83 -lcygtcl83"
+#  TK_LIBS="-ltk84 -ltcl84"
 #
 # If commented out, the configure script will try to autodetect it
+#
+# If you don't have Tcl/Tk installed, adding 
+#  NO_TCL=true
+# below lets you build just the non-GUI components.
 #
 #TK_CFLAGS=
 #TK_LIBS=
