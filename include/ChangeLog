@@ -1,29 +1,35 @@
+2005-04-28  Andras Varga
+
+	* cmessage.h: added byteLength(), setByteLength(), addByteLength()
+	convenience functions. They just invoke the length(), setLength(),
+	addLength() methods.
+
 2005-04-21  Andras Varga
 
 	* util.h: added simtimeToStrShort().
 
 2005-04-04  Andras Varga
 
-	* cenvir.h: fixed compilation bug in gcc3.4. For some contorted 
-	reason, in template classes gcc 3.4 seems to insist on fully 
-	qualifying calls to methods from the base class. This seems to make
-	no sense at all, and indeed was not a problem with gcc<3.4, vc6.0 or
-	vc7.1, and even gcc3.4 is willing to compile the old code if run with 
+	* cenvir.h: fixed compilation bug in gcc3.4. For some obscure reason,
+	in template classes gcc 3.4 seems to insist on fully qualifying calls
+	to methods from the base class. This does not appear to make much
+	sense, and indeed was not a problem with gcc<3.4, vc6.0 or vc7.1,
+	and even gcc3.4 is willing to compile the old code if run with
 	the -fpermissive option. Oh well...
 
 2005-03-31  ------ omnetpp-3.1 released ------
 
 2005-03-22  Andras Varga
 
-	* cenvir.h: cEnvir::getParameter() return type changed from 
+	* cenvir.h: cEnvir::getParameter() return type changed from
 	const char * to std::string. This was needed because if the
 	parameter value contains the xmldoc() function, getParameter()
-	will modify the file name in it to make it relative to the 
+	will modify the file name in it to make it relative to the
 	position of the ini file the setting was read from.
 
 2005-03-18  Andras Varga
 
-	* cconfig.h: added getBaseDirectoryFor() and getLocation() functions 
+	* cconfig.h: added getBaseDirectoryFor() and getLocation() functions
 	to cConfiguration
 
 	* added cstrtokenizer.h, which contains cStringTokenizer
@@ -33,7 +39,7 @@
 	* cscheduler.h: added method executionResumed() to cScheduler and
 	cRealtimeScheduler
 
-	* cstruct.h, ctypes.h: constructor usage patches to satisfy gcc 3.3.5 
+	* cstruct.h, ctypes.h: constructor usage patches to satisfy gcc 3.3.5
 	[reported by Tom Parker]
 
 2005-03-15  Andras Varga
@@ -48,14 +54,14 @@
 
 	* create platdep/ subdirectory
 
-	* cscheduler.h: added cRealTimeScheduler class, added startRun(), 
+	* cscheduler.h: added cRealTimeScheduler class, added startRun(),
 	endRun() virtual functions to cScheduler
 
 
 2004-12-29  ------ omnetpp-3.0 released ------
 
 2004-12-22  Andras Varga
-	
+
 	* chist.h: cLongHistogram: if number of cells is not specified,
 	it will be determined automatically from the range (more info in class
 	doc)
@@ -84,7 +90,7 @@
 
 2004-11-27  Andras Varga
 
-	* added cvisitor.h, nearly all files changed: old forEach(do_fn) 
+	* added cvisitor.h, nearly all files changed: old forEach(do_fn)
 	changed	to forEachChild(cVisitor *) (Visitor pattern)
 
 2004-11-25  Andras Varga
@@ -92,7 +98,7 @@
 	* cmodule.h: displayStringAsParent() renamed to backgroundDisplay-
 	String() (compatibility #define added)
 
-	* cchannel.h: cSimpleChannel renamed to cBasicChannel (compatibility 
+	* cchannel.h: cSimpleChannel renamed to cBasicChannel (compatibility
 	#define added)
 
 2004-11-23  ------ omnetpp-3.0b1 released ------
@@ -113,10 +119,10 @@
 
 	* added crng.h
 
-	* cenvir.h: added methods int numRNGs() and cRNG *rng(int k), which 
+	* cenvir.h: added methods int numRNGs() and cRNG *rng(int k), which
 	allow access to the RNGs. The concept is that there are a number
-	of RNGs available for the simulation, numbered globaly 0..N. 
-	Every module uses one or more RNGs identified with "module-local RNG 
+	of RNGs available for the simulation, numbered globaly 0..N.
+	Every module uses one or more RNGs identified with "module-local RNG
 	numbers", and every local RNG number maps to a global RNGs -- and you
 	can specify the mapping. Thus e.g. several module types can all work
 	with RNG 0 (local RNG number), and you map some modules to physical
@@ -126,7 +132,7 @@
 	in the given module
 
 	* cmodule.h: added cRNG *rng(int k) which returns the RNG of the given
-	local RNG number. This function maps k to a physical RNG number and 
+	local RNG number. This function maps k to a physical RNG number and
 	calls ev.rng(k) with it.
 
 	* random.h: following symbols and functions were removed because they

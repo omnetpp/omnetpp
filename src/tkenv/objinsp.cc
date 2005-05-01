@@ -227,6 +227,7 @@ void TMessageInspector::update()
    setEntry(".nb.info.name.e", msg->name() );
    setEntry(".nb.info.kind.e", (long)msg->kind() );
    setEntry(".nb.info.length.e", (long)msg->length() );
+   setLabel(".nb.info.lengthb.e", (long)msg->byteLength() );
    setEntry(".nb.info.prio.e", (long)msg->priority() );
    setEntry(".nb.info.error.e", (long)msg->hasBitError() );
    setEntry(".nb.send.tstamp.e", msg->timestamp() );

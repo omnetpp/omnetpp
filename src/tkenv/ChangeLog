@@ -1,3 +1,7 @@
+2005-05-01  Andras Varga
+
+	* cMessage inspector now displays message size in bytes as well
+
 2005-04-21  Andras Varga
 
 	* added implementation of timeline

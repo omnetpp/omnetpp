@@ -216,14 +216,31 @@ class SIM_API cMessage : public cObject
     void setLength(long l);
 
     /**
+     * Sets message length (bytes). This is just a convenience function which
+     * invokes setLength() with 8*l as argument. The caller must take care
+     * that the result does not overflow (i.e. fits into a long).
+     */
+    void setByteLength(long l)  {setLength(l<<3);}
+
+    /**
      * Changes message length by the given value (bits). This is useful for
      * modeling encapsulation/decapsulation. (See also encapsulate() and
-     * decapsulate().)
+     * decapsulate().) The caller must take care that the result does not
+     * overflow (i.e. fits into a long).
      *
      * The value may be negative (message length may be decreased too).
-     * If the resulting length would be negative, the method throws a cRuntimeError.
+     * If the resulting length would be negative, the method throws a
+     * cRuntimeError.
      */
     void addLength(long delta);
+
+    /**
+     * Changes message length by the given value (bytes). This is just a
+     * convenience function which invokes addLength() with 8*l as argument.
+     * The caller must take care that the result does not overflow (i.e.
+     * fits into a long).
+     */
+    void addByteLength(long delta)  {addLength(delta<<3);}
 
     /**
      * Set bit error flag.
@@ -277,17 +294,23 @@ class SIM_API cMessage : public cObject
     /**
      * Returns message kind.
      */
-    int  kind() const     {return msgkind;}
+    int kind() const  {return msgkind;}
 
     /**
      * Returns message priority.
      */
-    int  priority() const {return prior;}
+    int priority() const {return prior;}
 
     /**
      * Returns message length (bits).
      */
     long length() const   {return len;}
+
+    /**
+     * Returns message length in bytes, that is, length()/8. If length()
+     * is not a multiple of 8, the result is rounded up.
+     */
+    long byteLength() const  {return (len+7)>>3;}
 
     /**
      * Returns true if bit error flag is set, false otherwise.

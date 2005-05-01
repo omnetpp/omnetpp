@@ -26,6 +26,7 @@
 #include "carray.h"
 #include "cexception.h"
 #include "cdefaultlist.h"
+#include "cwatch.h"
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"
@@ -33,6 +34,10 @@
 
 //=== Registration
 Register_Class(cDefaultList);
+
+
+// doGC will be configured from Envir
+bool cDefaultList::doGC;
 
 
 cDefaultList::cDefaultList(const char *name) :
@@ -68,13 +73,31 @@ cDefaultList::cDefaultList(const cDefaultList& list) : cObject()
 
 cDefaultList::~cDefaultList()
 {
-    // delete all owned objects. One place we make use of this is behavior is
-    // when a simple module gets deleted -- there we have to delete all dynamically
-    // allocated objects held by the module.
-    // TBD consider not deleting -- delete might crash if there were objects in structs etc.
-    while (count>0)
-        delete vect[0];
-    delete [] vect;
+    if (doGC)
+    {
+        // delete all owned objects. One place we make use of this is behavior is
+        // when a simple module gets deleted -- there we have to delete all dynamically
+        // allocated objects held by the module. But: deletion has dangers,
+        // i.e. if we try to delete objects embedded in other objects/structs or
+        // arrays, it will crash mysteriously to the user -- so consider not deleting.
+        while (count>0)
+            delete vect[0];
+        delete [] vect;
+    }
+    else
+    {
+        // experimental: do not delete objects (except cWatches), just print their names
+        for (int i=0; i<count; i++)
+        {
+            if (dynamic_cast<cWatch *>(vect[i]))
+                delete vect[i--]; // "i--" used because delete will move last item to position i
+            else
+                printf("undisposed: (%s) %s\n", vect[i]->className(), vect[i]->fullPath().c_str());
+        }
+
+        // we can free up the pointer array itself though
+        delete [] vect;
+    }
 }
 
 void cDefaultList::doInsert(cObject *obj)

@@ -1,3 +1,9 @@
+2005-05-01  Andras Varga
+
+	* omnetapp.cc: added [General]/perform-gc omnetpp.ini option 
+	(default=true). If turned off, sim.kernel doesn't do garbage 
+	collection when deleting the network.
+
 2005-04-05  Andras Varga
 
 	* cinifile.cc: fix: getAsFilenames() crashed if ini file entry is was ""

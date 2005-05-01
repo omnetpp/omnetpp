@@ -37,6 +37,8 @@ class SIM_API cDefaultList : public cObject
     cObject **vect;   // vector of objects
     int size;         // size of vector
     int count;        // number of elements stored
+  public:
+    static bool doGC; // whether garbage collection is necessary in destructor
 
   private:
     void construct();

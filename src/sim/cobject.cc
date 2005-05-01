@@ -142,7 +142,8 @@ cDefaultList defaultList;
 
 cObject::cObject(const cObject& obj)
 {
-    nameunion = obj.nameunion;
+    nameunion.chars[MAX_INTERNAL_NAME] = nameunion.chars[0] = '\0';
+    setName(obj.name());
     defaultowner->doInsert(this);
     operator=( obj );
 
