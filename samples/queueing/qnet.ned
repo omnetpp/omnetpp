@@ -28,11 +28,11 @@ module QNet
         passiveq: QPassiveQueue[3];
             gatesizes:
                 out[1];
-            display: "p=349,70,column;i=block/process;q=queue";
+            display: "p=349,70,column;i=block/passiveq;q=queue";
         qserver: QServer;
             gatesizes:
                 in[3];
-            display: "p=443,130;i=block/queue";
+            display: "p=443,130;i=block/server";
         leave2: QSink;
             display: "p=546,130;i=block/sink";
         leave1: QSink;
