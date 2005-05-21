@@ -1,3 +1,8 @@
+2005-05-20  Andras Varga
+
+	* opp_nmakemake: added printing of "entering <directory>", "leaving
+	<directory>" messages
+
 2005-03-31  ------ omnetpp-3.1 released ------
 
 2005-03-03  Andras Varga
