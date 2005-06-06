@@ -655,7 +655,7 @@ $args1 =~ s/ -f / /g;
 # cmd.exe thinks that no "for" args is an error (!?!?)
 print OUT "
 generateheaders: \$(GENERATEDHEADERS)
-\t\@if not \"\$(SUBDIRS)\"==\"\" for %%i in ( \$(SUBDIRS) ) do \@cd %%i && cd && $makecommand generateheaders && cd .. || exit /b 1
+\t\@if not \"\$(SUBDIRS)\"==\"\" for %%i in ( \$(SUBDIRS) ) do \@cd %%i && echo [opp_msgc in %%i] && $makecommand generateheaders && cd .. || exit /b 1
 
 clean:
 ";
@@ -665,15 +665,15 @@ print OUT "\t-del \$(TARGET)\$(EXE_SUFFIX) 2>NUL" if ($type eq "exe");
 print OUT "\t-del *.obj *.idb *.pdb .tstamp 2>NUL
 \t-del *_n.$ccext *_n.h *_m.$ccext *_m.h 2>NUL
 \t-del *.vec *.sca 2>NUL
-\t-for %%i in ( \$(SUBDIRS) ) do cd %%i && cd && $makecommand clean && cd .. || exit /b 1
+\t-for %%i in ( \$(SUBDIRS) ) do cd %%i && echo [clean in %%i] && $makecommand clean && cd .. || exit /b 1
 
 depend:
 \t\$(MAKEDEPEND) \$(INCLUDE_PATH) -f $makefile -- *.$ccext
-\tif not \"\$(SUBDIRS)\"==\"\" for %%i in ( \$(SUBDIRS) ) do cd %%i && cd && $makecommand depend && cd .. || exit /b 1
+\tif not \"\$(SUBDIRS)\"==\"\" for %%i in ( \$(SUBDIRS) ) do cd %%i && echo [depend in %%i] && $makecommand depend && cd .. || exit /b 1
 
 makefiles:
 \topp_nmakemake -f $args1
-\tif not \"\$(SUBDIRS)\"==\"\" for %%i in ( \$(SUBDIRS) ) do cd %%i && cd && $makecommand makefiles && cd .. || exit /b 1
+\tif not \"\$(SUBDIRS)\"==\"\" for %%i in ( \$(SUBDIRS) ) do cd %%i && echo [makemake in %%i] && $makecommand makefiles && cd .. || exit /b 1
 
 # \"re-makemake\" is a deprecated, historic name of the above target
 re-makemake: makefiles

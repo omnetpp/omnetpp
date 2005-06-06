@@ -22,6 +22,7 @@
 #include <assert.h>
 #include <string.h>
 #include <fstream>
+#include <errno.h> // SGI
 #include "cenvir.h"
 #include "omnetapp.h"
 #include "csimul.h"

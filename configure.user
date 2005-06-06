@@ -107,6 +107,7 @@ WITH_PARSIM=yes
 #
 #MPI_CFLAGS="-I /usr/include"
 #MPI_LIBS="-pthread -llammpio -llammpi++ -llamf77mpi -lmpi -llam -laio -laio -lutil"
+#MPI_LIBS="-lmpi++ -lmpi"   #SGI
 
 #
 # Compiler and linker options for Expat (optional component)
