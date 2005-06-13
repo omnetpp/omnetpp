@@ -774,8 +774,18 @@ If the run number or the RNG number is different, {\opp} does its best
 to choose different seeds which are also sufficiently apart in the RNG's sequence
 so that the generated sequences don't overlap.
 
-For the \ttt{cMersenneTwister} random number generator, fullfilling the latter
-condition is easy, due to the extreme long sequence of the RNG.
+The run number can be specified either in in omnetpp.ini (e.g. via the
+\ttt{[Cmdenv]/runs-to-execute=} entry) or on the command line:
+
+\begin{verbatim}
+./mysim -r 1
+./mysim -r 2
+./mysim -r 3
+\end{verbatim}
+
+For the \ttt{cMersenneTwister} random number generator, selecting seeds
+so that the generated sequences don't overlap is easy,
+due to the extremely long sequence of the RNG.
 The RNG is initialized from the 32-bit seed value $seed = runNumber*numRngs + rngNumber$.
 (This implies that simulation runs participating in the study should have
 the same number of RNGs set).
@@ -810,6 +820,10 @@ The following ini file explicitly initializes two of the random
 number generators, and uses different seed values for each run:
 
 \begin{verbatim}
+[General]
+rng-class=cLCG32  # needed because the default is cMersenneTwister
+num-rngs = 2
+
 [Run 1]
 seed-0-lcg32 = 1768507984
 seed-1-lcg32 = 33648008
@@ -820,17 +834,24 @@ seed-1-lcg32 = 703931312
 ...
 \end{verbatim}
 
-To use a seed value for all runs, you have to put the necessary
-seed entries into the \ttt{[General]} section.
+To manually set seeds for the Mersenne Twister RNG (which should
+seldom, if ever, be necessary), use the \ttt{seed-0-mt=},
+\ttt{seed-1-mt=}, etc settings:
 
 \begin{verbatim}
 [General]
-gen0-seed = 1768507984
-gen1-seed = 33648008
+num-rngs = 2
+
+[Run 1]
+seed-0-mt = 1317366363
+seed-1-mt = 1453732904
+
+[Run 2]
+...
 \end{verbatim}
 
-All other random number generators (2,3,...) will have their seeds
-automatically assigned.
+To set a seed value for all runs, place the necessary seed entries
+into the \ttt{[General]} section.
 
 
 \subsection{Choosing good seed values: the seedtool utility}
