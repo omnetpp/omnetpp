@@ -1,3 +1,8 @@
+2005-06-24  Andras Varga
+
+	* modinsp2.tcl: fix: r= display string tag worked incorrectly: circle
+	was displayed with radius = r/2 instead of r
+
 2005-05-01  Andras Varga
 
 	* cMessage inspector now displays message size in bytes as well

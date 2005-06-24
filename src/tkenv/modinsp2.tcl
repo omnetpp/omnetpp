@@ -278,10 +278,10 @@ proc draw_submod {c submodptr x y name dispstr} {
            set rwidth [lindex $tags(r) 3]
            if {$rwidth == ""} {set rwidth 1}
 
-           set x1 [expr $x - $radius/2]
-           set y1 [expr $y - $radius/2]
-           set x2 [expr $x + $radius/2]
-           set y2 [expr $y + $radius/2]
+           set x1 [expr $x - $radius]
+           set y1 [expr $y - $radius]
+           set x2 [expr $x + $radius]
+           set y2 [expr $y + $radius]
 
            set circle [$c create oval $x1 $y1 $x2 $y2 \
                -fill $rfill -width $rwidth -outline $routline -tags "dx"]
