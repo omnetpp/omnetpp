@@ -695,19 +695,18 @@ class SIM_API cPar : public cObject
     //@{
 
     /**
-     * Places the value in text format it into buffer buf which
-     * is maxlen characters long.
+     * Returns the value in text format.
      */
     virtual std::string getAsText() const;
 
     /**
      * This function tries to interpret the argument text as a type
-     * typed value. type=='?' means that the type is to be auto-selected.
-     * On success, cPar is updated with the new value and true
-     * is returned, otherwise the function returns false. No
-     * error message is generated.
+     * typed value (L=long, S=string, etc). type=='?' (the default)
+     * means that the type is to be auto-selected. On success,
+     * cPar is updated with the new value and true is returned,
+     * otherwise the function returns false. No error message is generated.
      */
-    virtual bool setFromText(const char *text, char tp);
+    virtual bool setFromText(const char *text, char type='?');
     //@}
 
     /** @name Overloaded assignment and conversion operators. */

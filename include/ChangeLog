@@ -1,3 +1,7 @@
+2005-06-25  Andras Varga
+
+	* cpar.h: added default value to type parameter of setFromText().
+
 2005-04-28  Andras Varga
 
 	* cmessage.h: added byteLength(), setByteLength(), addByteLength()
