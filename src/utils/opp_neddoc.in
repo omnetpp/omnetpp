@@ -292,6 +292,7 @@ if ($screenshots)
         foreach $i (glob("$outdir/*.eps"))
         {
            print "#" if (!$debug && $verbose);
+           $i = tobackslash($i);
            $jpg = $i;
            $jpg =~ s/eps$/jpg/;
            if ($CONVERT ne "") {
@@ -349,6 +350,7 @@ if ($have_dot)
     foreach $i (glob("$outdir/*.dot"))
     {
        print "#" if (!$debug && $verbose);
+       $i = tobackslash($i);
        $gif = $i; $gif =~ s/dot$/gif/;
        $map = $i; $map =~ s/dot$/map/;
        runprog($DOT, "-Tgif",  "<$i", ">$gif", "2>>$outdir/dot.err")==0 || error("error invoking DOT");
