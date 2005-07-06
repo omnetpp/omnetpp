@@ -158,6 +158,8 @@ void NEDCppGenerator::generateItem(NEDElement *node, const char *indent, int mod
                     doStructDecl((StructDeclNode *)node, newindent, mode, arg); break;
                 case NED_CLASS_DECL:
                     doClassDecl((ClassDeclNode *)node, newindent, mode, arg); break;
+                case NED_MESSAGE_DECL:
+                    doMessageDecl((MessageDeclNode *)node, newindent, mode, arg); break;
                 case NED_ENUM_DECL:
                     doEnumDecl((EnumDeclNode *)node, newindent, mode, arg); break;
                 case NED_ENUM:

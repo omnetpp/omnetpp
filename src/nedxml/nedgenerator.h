@@ -146,6 +146,7 @@ class NEDGenerator
     void doCplusplus(CplusplusNode *node, const char *indent, bool islast, const char *);
     void doStructDecl(StructDeclNode *node, const char *indent, bool islast, const char *);
     void doClassDecl(ClassDeclNode *node, const char *indent, bool islast, const char *);
+    void doMessageDecl(MessageDeclNode *node, const char *indent, bool islast, const char *);
     void doEnumDecl(EnumDeclNode *node, const char *indent, bool islast, const char *);
     void doEnum(EnumNode *node, const char *indent, bool islast, const char *);
     void doEnumFields(EnumFieldsNode *node, const char *indent, bool islast, const char *);

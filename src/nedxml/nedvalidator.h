@@ -6,7 +6,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2002-2005 Andras Varga
+  Copyright (C) 2002-2004 Andras Varga
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -24,7 +24,7 @@
 
 /**
  * GENERATED CLASS. Abtract base class for NED validators.
- *
+ * 
  * @ingroup Validation
  */
 class NEDValidatorBase
@@ -81,6 +81,7 @@ class NEDValidatorBase
     virtual void validateElement(CplusplusNode *node) = 0;
     virtual void validateElement(StructDeclNode *node) = 0;
     virtual void validateElement(ClassDeclNode *node) = 0;
+    virtual void validateElement(MessageDeclNode *node) = 0;
     virtual void validateElement(EnumDeclNode *node) = 0;
     virtual void validateElement(EnumNode *node) = 0;
     virtual void validateElement(EnumFieldsNode *node) = 0;

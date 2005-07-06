@@ -6,7 +6,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2002-2005 Andras Varga
+  Copyright (C) 2002-2004 Andras Varga
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -25,7 +25,7 @@
 
 /**
  * GENERATED CLASS. Validates a NEDElement tree by the DTD.
- *
+ * 
  * @ingroup Validation
  */
 class NEDDTDValidator : public NEDValidatorBase
@@ -86,6 +86,7 @@ class NEDDTDValidator : public NEDValidatorBase
     virtual void validateElement(CplusplusNode *node);
     virtual void validateElement(StructDeclNode *node);
     virtual void validateElement(ClassDeclNode *node);
+    virtual void validateElement(MessageDeclNode *node);
     virtual void validateElement(EnumDeclNode *node);
     virtual void validateElement(EnumNode *node);
     virtual void validateElement(EnumFieldsNode *node);

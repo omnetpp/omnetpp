@@ -169,6 +169,7 @@ struct ParserState
     CplusplusNode *cplusplus;
     StructDeclNode *structdecl;
     ClassDeclNode *classdecl;
+    MessageDeclNode *messagedecl;
     EnumDeclNode *enumdecl;
     EnumNode *enump;
     MessageNode *messagep;
@@ -267,6 +268,7 @@ definition
         | cplusplus
         | struct_decl
         | class_decl
+        | message_decl
         | enum_decl
 
         | enum
@@ -2152,6 +2154,15 @@ class_decl
                   ps.classdecl->setIsCobject(false);
                   ps.classdecl->setName(toString(@3));
                   setComments(ps.classdecl,@1,@2);
+                }
+        ;
+
+message_decl
+        : MESSAGE NAME ';'
+                {
+                  ps.messagedecl = (MessageDeclNode *)createNodeWithTag(NED_MESSAGE_DECL, ps.nedfile );
+                  ps.messagedecl->setName(toString(@2));
+                  setComments(ps.messagedecl,@1,@2);
                 }
         ;
 

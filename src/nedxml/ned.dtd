@@ -17,7 +17,7 @@
 <!ELEMENT ned-files ((ned-files|ned-file)*)>
 
 <!ELEMENT ned-file ((import|channel|simple-module|compound-module|network|
-                     cplusplus|struct-decl|class-decl|enum-decl|
+                     cplusplus|struct-decl|class-decl|message-decl|enum-decl|
                      enum|message|class|struct)*)>
 <!ATTLIST ned-file
      filename            CDATA     #IMPLIED
@@ -283,6 +283,13 @@
 <!ATTLIST class-decl
      name                NMTOKEN   #REQUIRED
      is-cobject      (true|false)  "false"
+     banner-comment      CDATA     #IMPLIED
+     right-comment       CDATA     "&#10;"
+     trailing-comment    CDATA     "&#10;" >
+
+<!ELEMENT message-decl EMPTY>
+<!ATTLIST message-decl
+     name                NMTOKEN   #REQUIRED
      banner-comment      CDATA     #IMPLIED
      right-comment       CDATA     "&#10;"
      trailing-comment    CDATA     "&#10;" >

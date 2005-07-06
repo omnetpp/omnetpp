@@ -601,6 +601,10 @@ void NEDBasicValidator::validateElement(ClassDeclNode *node)
 {
 }
 
+void NEDBasicValidator::validateElement(MessageDeclNode *node)
+{
+}
+
 void NEDBasicValidator::validateElement(EnumDeclNode *node)
 {
 }

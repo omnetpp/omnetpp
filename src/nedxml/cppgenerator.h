@@ -145,6 +145,7 @@ class NEDCppGenerator
     void doCplusplus(CplusplusNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doStructDecl(StructDeclNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doClassDecl(ClassDeclNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doMessageDecl(MessageDeclNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doEnumDecl(EnumDeclNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doEnum(EnumNode *node, const char *indent, int mode, const char *);
     void doEnumFields(EnumFieldsNode *node, const char *indent, int mode, const char *);

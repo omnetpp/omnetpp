@@ -6,7 +6,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2002-2005 Andras Varga
+  Copyright (C) 2002-2004 Andras Varga
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -174,6 +174,11 @@ StructDeclNode *NedFileNode::getFirstStructDeclChild() const
 ClassDeclNode *NedFileNode::getFirstClassDeclChild() const
 {
     return (ClassDeclNode *)getFirstChildWithTag(NED_CLASS_DECL);
+}
+
+MessageDeclNode *NedFileNode::getFirstMessageDeclChild() const
+{
+    return (MessageDeclNode *)getFirstChildWithTag(NED_MESSAGE_DECL);
 }
 
 EnumDeclNode *NedFileNode::getFirstEnumDeclChild() const
@@ -2391,6 +2396,60 @@ ClassDeclNode *ClassDeclNode::getNextClassDeclNodeSibling() const
     return (ClassDeclNode *)getNextSiblingWithTag(NED_CLASS_DECL);
 }
 
+int MessageDeclNode::getNumAttributes() const
+{
+    return 4;
+}
+
+const char *MessageDeclNode::getAttributeName(int k) const
+{
+    switch (k) {
+        case 0: return "name";
+        case 1: return "banner-comment";
+        case 2: return "right-comment";
+        case 3: return "trailing-comment";
+        default: return 0;
+    }
+}
+
+const char *MessageDeclNode::getAttribute(int k) const
+{
+    switch (k) {
+        case 0: return name.c_str();
+        case 1: return bannerComment.c_str();
+        case 2: return rightComment.c_str();
+        case 3: return trailingComment.c_str();
+        default: return 0;
+    }
+}
+
+void MessageDeclNode::setAttribute(int k, const char *val)
+{
+    switch (k) {
+        case 0: name = val; break;
+        case 1: bannerComment = val; break;
+        case 2: rightComment = val; break;
+        case 3: trailingComment = val; break;
+        default: ;
+    }
+}
+
+const char *MessageDeclNode::getAttributeDefault(int k) const
+{
+    switch (k) {
+        case 0: return "";
+        case 1: return "";
+        case 2: return "\n";
+        case 3: return "\n";
+        default: return 0;
+    }
+}
+
+MessageDeclNode *MessageDeclNode::getNextMessageDeclNodeSibling() const
+{
+    return (MessageDeclNode *)getNextSiblingWithTag(NED_MESSAGE_DECL);
+}
+
 int EnumDeclNode::getNumAttributes() const
 {
     return 4;
@@ -3153,6 +3212,7 @@ NEDElement *NEDElementFactory::createNodeWithTag(const char *tagname)
     if (tagname[0]=='c' && !strcmp(tagname,"cplusplus"))  return new CplusplusNode();
     if (tagname[0]=='s' && !strcmp(tagname,"struct-decl"))  return new StructDeclNode();
     if (tagname[0]=='c' && !strcmp(tagname,"class-decl"))  return new ClassDeclNode();
+    if (tagname[0]=='m' && !strcmp(tagname,"message-decl"))  return new MessageDeclNode();
     if (tagname[0]=='e' && !strcmp(tagname,"enum-decl"))  return new EnumDeclNode();
     if (tagname[0]=='e' && !strcmp(tagname,"enum"))  return new EnumNode();
     if (tagname[0]=='e' && !strcmp(tagname,"enum-fields"))  return new EnumFieldsNode();
@@ -3209,6 +3269,7 @@ NEDElement *NEDElementFactory::createNodeWithTag(int tagcode)
         case NED_CPLUSPLUS: return new CplusplusNode();
         case NED_STRUCT_DECL: return new StructDeclNode();
         case NED_CLASS_DECL: return new ClassDeclNode();
+        case NED_MESSAGE_DECL: return new MessageDeclNode();
         case NED_ENUM_DECL: return new EnumDeclNode();
         case NED_ENUM: return new EnumNode();
         case NED_ENUM_FIELDS: return new EnumFieldsNode();

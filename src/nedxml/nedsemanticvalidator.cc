@@ -343,6 +343,10 @@ void NEDSemanticValidator::validateElement(ClassDeclNode *node)
 {
 }
 
+void NEDSemanticValidator::validateElement(MessageDeclNode *node)
+{
+}
+
 void NEDSemanticValidator::validateElement(EnumDeclNode *node)
 {
 }

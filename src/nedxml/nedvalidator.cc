@@ -6,7 +6,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2002-2005 Andras Varga
+  Copyright (C) 2002-2004 Andras Varga
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -69,6 +69,7 @@ void  NEDValidatorBase::validateElement(NEDElement *node)
         case NED_CPLUSPLUS: validateElement((CplusplusNode *) node); break;
         case NED_STRUCT_DECL: validateElement((StructDeclNode *) node); break;
         case NED_CLASS_DECL: validateElement((ClassDeclNode *) node); break;
+        case NED_MESSAGE_DECL: validateElement((MessageDeclNode *) node); break;
         case NED_ENUM_DECL: validateElement((EnumDeclNode *) node); break;
         case NED_ENUM: validateElement((EnumNode *) node); break;
         case NED_ENUM_FIELDS: validateElement((EnumFieldsNode *) node); break;
