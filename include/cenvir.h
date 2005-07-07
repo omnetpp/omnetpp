@@ -47,13 +47,8 @@ template <class E, class T = std::char_traits<E> >
     class basic_evbuf : public std::basic_stringbuf<E,T> {
 public:
     basic_evbuf(cEnvir *ev) : _ev(ev) {}
-#ifdef __GNUC__
-    // gcc>=3.4 insists on fully qualifying pptr() and pbase() from the base class
-    bool isempty() {return std::basic_stringbuf<E,T>::pptr()==std::basic_stringbuf<E,T>::pbase();}
-#else
-    // and VC6.0 doesn't understand the above, fully qualified version (same problem as below). Oh well, C++...
-    bool isempty() {return pptr()==pbase();}
-#endif
+    // gcc>=3.4 needs either this-> or std::basic_stringbuf<E,T>:: in front of pptr()/pbase()
+    bool isempty() {return this->pptr()==this->pbase();}
 protected:
     virtual int sync();
     virtual std::streamsize xsputn(const E *s, std::streamsize n) {
