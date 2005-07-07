@@ -325,13 +325,10 @@ void TOmnetApp::startRun()
     outvectmgr->startRun();
     outscalarmgr->startRun();
     snapshotmgr->startRun();
-    nextuniquenumber = 0;
     if (opt_parsim)
     {
 #ifdef WITH_PARSIM
         parsimpartition->startRun();
-        nextuniquenumber = (unsigned)parsimcomm->getProcId() *
-                           ((~0UL) / (unsigned)parsimcomm->getNumPartitions());
 #endif
     }
     simulation.scheduler()->startRun();
@@ -590,6 +587,14 @@ void TOmnetApp::readPerRunOptions(int run_no)
         rngs[i] = rng;
         rngs[i]->initialize(run_no, i, num_rngs, getConfig());
     }
+
+    // init nextuniquenumber -- startRun() is too late because simple module ctors have run by then
+    nextuniquenumber = 0;
+#ifdef WITH_PARSIM
+    if (opt_parsim)
+        nextuniquenumber = (unsigned)parsimcomm->getProcId() * ((~0UL) / (unsigned)parsimcomm->getNumPartitions());
+#endif
+
 }
 
 void TOmnetApp::globAndLoadNedFile(const char *fnamepattern)

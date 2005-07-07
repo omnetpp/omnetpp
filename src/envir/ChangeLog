@@ -1,3 +1,9 @@
+2005-07-07  Andras Varga
+
+	omnetapp.cc: fix: ev.getUniqueNumber() produced garbage if it was 
+	called from module constructors (its initialization took place too 
+	late).
+
 2005-05-01  Andras Varga
 
 	* omnetapp.cc: added [General]/perform-gc omnetpp.ini option 
