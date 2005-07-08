@@ -288,6 +288,70 @@ Node *DifferenceNodeType::create(DataflowManager *, StringMap& attrs) const
 }
 
 //-----
+MovingAverageNode::MovingAverageNode(double alph)
+{
+    firstRead = true;
+    prevy=0;
+    alpha = alph;
+    oneMinusAlpha = 1-alph;
+}
+
+bool MovingAverageNode::isReady() const
+{
+    return in()->length()>0;
+}
+
+void MovingAverageNode::process()
+{
+    if (firstRead)
+    {
+        Datum d;
+        in()->read(&d,1);
+        prevy = d.y;
+        out()->write(&d,1);
+        firstRead = false;
+    }
+
+    int n = in()->length();
+    for (int i=0; i<n; i++)
+    {
+        Datum d;
+        in()->read(&d,1);
+        d.y = prevy = oneMinusAlpha*d.y + alpha*prevy;
+        out()->write(&d,1);
+    }
+}
+
+//--
+
+const char *MovingAverageNodeType::description() const
+{
+    return "Applies the exponentially weighted moving average filter:\n"
+           "y[k] = (1-alpha)*y[k] + alpha*y[k-1]";
+}
+
+void MovingAverageNodeType::getAttributes(StringMap& attrs) const
+{
+    attrs["alpha"] = "filter constant";
+}
+
+void MovingAverageNodeType::getAttrDefaults(StringMap& attrs) const
+{
+    attrs["alpha"] = "0.1";
+}
+
+Node *MovingAverageNodeType::create(DataflowManager *, StringMap& attrs) const
+{
+    checkAttrNames(attrs);
+
+    double alpha = atof(attrs["alpha"].c_str());
+
+    Node *node = new MovingAverageNode(alpha);
+    node->setNodeType(this);
+    return node;
+}
+
+//-----
 
 bool SumNode::isReady() const
 {

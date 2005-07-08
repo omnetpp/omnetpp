@@ -63,6 +63,7 @@ NodeTypeRegistry::NodeTypeRegistry()
 
     add(new WindowAverageNodeType());
     add(new SlidingWindowAverageNodeType());
+    add(new MovingAverageNodeType());
     add(new DifferenceQuotientNodeType());
     add(new NopNodeType());
     add(new AdderNodeType());

@@ -171,6 +171,34 @@ class DifferenceNodeType : public FilterNodeType
 //----
 
 /**
+ * Processing node which calculates moving average
+ */
+class MovingAverageNode : public FilterNode
+{
+    protected:
+        double alpha, oneMinusAlpha;
+        bool firstRead;
+        double prevy;
+    public:
+        MovingAverageNode(double alph);
+        virtual ~MovingAverageNode() {}
+        virtual bool isReady() const;
+        virtual void process();
+};
+
+class MovingAverageNodeType : public FilterNodeType
+{
+    public:
+        virtual const char *name() const {return "movingavg";}
+        virtual const char *description() const;
+        virtual void getAttributes(StringMap& attrs) const;
+        virtual void getAttrDefaults(StringMap& attrs) const;
+        virtual Node *create(DataflowManager *, StringMap& attrs) const;
+};
+
+//----
+
+/**
  * Processing node which substracts the previous value from every value
  */
 class SumNode : public FilterNode

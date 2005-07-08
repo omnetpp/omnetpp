@@ -1,6 +1,6 @@
 2005-07-08  Andras Varga
 
-	* engine: new filters: divider, modulo, difference, sum, 
+	* engine: new filters: divide, modulo, difference, sum, movingavg, 
 	diffquot [from Michael Tuexen], slidingwinavg
 
 	* fix: in winavg, average of last <winsize values wasn't written out
