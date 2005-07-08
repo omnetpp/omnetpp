@@ -102,9 +102,9 @@ proc editFilterForVector {ids} {
             opp_compoundfiltertype $filtname delete
         }
 
-        foreach id $ids {
-            #debug "vec$id --> \"$vec($id,filter)\""
-        }
+        #foreach id $ids {
+        #    debug "vec$id --> \"$vec($id,filter)\""
+        #}
 
         #set title  ...
         #set prefix ...
@@ -119,8 +119,9 @@ proc editFilterForVector {ids} {
         #        set vec($id,filtpfx) $prefix
         #    }
         #}
-    }
 
+        return 1
+    }
 }
 
 proc editFilterForVectorDialog {name parentw} {
