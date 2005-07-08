@@ -10,6 +10,8 @@
 
 	* more dialogs display filter descriptions now
 
+	* vectors with filters are now marked with '*'
+
 2005-04-30  Andras Varga
 
 	* bltgraph.tcl: several refinements on the chart window and in its

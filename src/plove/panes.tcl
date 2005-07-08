@@ -121,6 +121,12 @@ proc makeTitle {id} {
     set vec($id,title)  $tit
 }
 
+proc makeListboxRow {id} {
+    global vec g
+    if {$vec($id,filter)==""} {set s ""} else {set s " *"}
+    return "$vec($id,title)$s $g(spaces) $id"
+}
+
 proc loadVectorFile {fname} {
     global g vec config vec
 
@@ -166,7 +172,7 @@ proc loadVectorFile {fname} {
 
     # insert them into the listbox
     foreach id $idlist {
-        $g(listbox1) insert end "$vec($id,title) $g(spaces) $id"
+        $g(listbox1) insert end [makeListboxRow $id]
     }
 
     status 1
@@ -295,7 +301,7 @@ proc dupVector {id to} {
         set vec($newid,filter) [generateUniqFilterName]
         opp_compoundfiltertype $vec($id,filter) clone $vec($newid,filter)
     }
-    $g(listbox$to) insert end "$vec($newid,title) $g(spaces) $newid"
+    $g(listbox$to) insert end [makeListboxRow $newid]
     $g(listbox$to) selection set end
 }
 
@@ -433,7 +439,7 @@ proc replaceInTitles {{lb {}}} {
                 set id [lindex $str end]
                 regsub -- $find $vec($id,title) $repl vec($id,title)
                 $g(listbox$lb) delete $pos
-                $g(listbox$lb) insert $pos "$vec($id,title) $g(spaces) $id"
+                $g(listbox$lb) insert $pos [makeListboxRow $id]
                 $g(listbox$lb) selection set $pos
             }
         }
@@ -525,7 +531,7 @@ proc vectorInfo {{lb ""} {y ""}} {
                 set vec($id,title) $title
 
                 $g(listbox$lb) delete $pos
-                $g(listbox$lb) insert $pos "$vec($id,title) $g(spaces) $id"
+                $g(listbox$lb) insert $pos [makeListboxRow $id]
                 $g(listbox$lb) selection set $pos
             }
         }
@@ -565,7 +571,7 @@ proc editVectorFilters {{lb ""}  {y ""}} {
         foreach pos $sel {
             set id [lindex [$g(listbox$lb) get $pos] end]
             $g(listbox$lb) delete $pos
-            $g(listbox$lb) insert $pos "$vec($id,title) $g(spaces) $id"
+            $g(listbox$lb) insert $pos [makeListboxRow $id]
             $g(listbox$lb) selection set $pos
         }
     }
