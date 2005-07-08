@@ -143,6 +143,9 @@ proc chartCreateBarChart {} {
     } elseif {$charttype=="runs"} {
         createChartWithRunsOnXAxis $graph $idlist
     }
+
+    # apply defaults to graph and lines
+    bltGraph_applyDefaults $graph
 }
 
 proc chartCreateScatterPlot {} {
@@ -171,5 +174,9 @@ proc chartCreateScatterPlot {} {
     # create empty chart
     set graph [createBltGraph graph $chartname]
 
+    # do the plot
     createScatterPlot $graph $idlist $modulename $scalarname
+
+    # apply defaults to graph and lines
+    bltGraph_applyDefaults $graph
 }

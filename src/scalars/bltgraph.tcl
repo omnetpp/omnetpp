@@ -27,7 +27,7 @@ proc createBltGraph {graphtype {graphtitle ""}} {
     if ![winfo exist $w] {
         toplevel $w
         wm deiconify $w
-        wm title $w "Graphs"
+        wm title $w "Charts"
         wm protocol $w WM_DELETE_WINDOW {bltGraph_CloseWindow}
         wm geometry $w "660x540"
 
@@ -243,10 +243,11 @@ proc bltGraph_HighlightLegend {} {
 
     # then highlight this one if it wasn't highlighted before
     if { $relief == "flat" } {
-        $graph pen configure "activeLine" -color "#ff1000" \
-           -symbol [$graph element cget $elem -symbol]
-           #-pixels [$graph element cget $elem -pixels]
-
+        if {[winfo class $graph]!="Barchart"} {
+            $graph pen configure "activeLine" -color "#ff1000" \
+                   -symbol [$graph element cget $elem -symbol]
+                   -pixels [$graph element cget $elem -pixels]
+        }
         $graph element configure $elem -labelrelief solid
         $graph element activate $elem
 
@@ -390,7 +391,12 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
     set nb $w.f.nb
     blt::tabnotebook $nb -tearoff no -relief flat
     pack $nb -expand 1 -fill both
-    foreach {tab title} {titles "Titles" axes "Axes" lines "Lines" bars "Bars" legend "Legend"} {
+    if {[winfo class $graph]=="Barchart"} {
+        set pages {titles "Titles" axes "Axes" bars  "Bars"  legend "Legend"}
+    } else {
+        set pages {titles "Titles" axes "Axes" lines "Lines" legend "Legend"}
+    }
+    foreach {tab title} $pages {
         frame $nb.$tab
         set tabs($tab) [$nb insert end -text $title -window $nb.$tab  -fill both]
     }
@@ -460,42 +466,46 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
     grid rowconfig $f 1 -weight 1
     #pack $f.xdiv $f.ydiv -side top -anchor w -expand 0 -fill x
 
-    # Lines page
-    # TBD set color, separate page with checkboxes to turn individual lines on/off
-    # only if {[winfo class $graph]=="Graph"} ?
-    set f $nb.lines
-    label-combo $f.sel "Apply to lines:" $linenames
-    $f.sel.e configure -textvariable tmp(selectedline)
-    combo-onchange $f.sel.e [list bltGraph_PropertiesDialogReadSelectedLine $graph]
+    if {[winfo class $graph]!="Barchart"} {
+        # Lines page
+        # TBD set color, separate page with checkboxes to turn individual lines on/off
+        # only if {[winfo class $graph]=="Graph"} ?
+        set f $nb.lines
+        label-combo $f.sel "Apply to lines:" $linenames
+        $f.sel.e configure -textvariable tmp(selectedline)
+        combo-onchange $f.sel.e [list bltGraph_PropertiesDialogReadSelectedLine $graph]
 
-    labelframe $f.symf -relief groove -border 2 -text "Symbols"
-    checkbutton $f.symf.on -text "Display symbols" -variable tmp(showsymbols)
-    label-combo $f.symf.type "   Symbol type" {"(no change)" square circle diamond plus cross splus scross triangle}
-    label-combo $f.symf.size "   Symbol size" {1 3 5 7 9 11}
-    $f.symf.type.e configure -textvariable tmp(symboltype)
-    $f.symf.size.e configure -textvariable tmp(symbolsize)
-    pack $f.symf.on $f.symf.type $f.symf.size -side top -expand 0 -fill none -anchor w
+        labelframe $f.symf -relief groove -border 2 -text "Symbols"
+        checkbutton $f.symf.on -text "Display symbols" -variable tmp(showsymbols)
+        label-combo $f.symf.type "   Symbol type" {"(no change)" square circle diamond plus cross splus scross triangle}
+        label-combo $f.symf.size "   Symbol size" {1 3 5 7 9 11}
+        $f.symf.type.e configure -textvariable tmp(symboltype)
+        $f.symf.size.e configure -textvariable tmp(symbolsize)
+        pack $f.symf.on $f.symf.type $f.symf.size -side top -expand 0 -fill none -anchor w
 
-    labelframe $f.linesf -relief groove -border 2 -text "Lines"
-    radiobutton $f.linesf.none -text "none" -value "none"  -variable tmp(linetype)
-    radiobutton $f.linesf.lin  -text "linear" -value "linear"  -variable tmp(linetype)
-    radiobutton $f.linesf.step -text "step" -value "step"  -variable tmp(linetype)
-    radiobutton $f.linesf.natu -text "spline" -value "catrom"  -variable tmp(linetype)
-    pack $f.linesf.none $f.linesf.lin $f.linesf.step $f.linesf.natu -side top -expand 0 -fill none -anchor w
-    checkbutton $f.hide -text "Hide" -variable tmp(linehide)
+        labelframe $f.linesf -relief groove -border 2 -text "Lines"
+        radiobutton $f.linesf.none -text "none" -value "none"  -variable tmp(linetype)
+        radiobutton $f.linesf.lin  -text "linear" -value "linear"  -variable tmp(linetype)
+        radiobutton $f.linesf.step -text "step" -value "step"  -variable tmp(linetype)
+        radiobutton $f.linesf.natu -text "spline" -value "catrom"  -variable tmp(linetype)
+        pack $f.linesf.none $f.linesf.lin $f.linesf.step $f.linesf.natu -side top -expand 0 -fill none -anchor w
+        checkbutton $f.hide -text "Hide" -variable tmp(linehide)
 
-    pack $f.sel -side top -expand 0 -fill x
-    pack $f.symf $f.linesf -side top -expand 0 -fill x
-    pack $f.hide -side top -expand 0 -fill none -anchor w
+        pack $f.sel -side top -expand 0 -fill x
+        pack $f.symf $f.linesf -side top -expand 0 -fill x
+        pack $f.hide -side top -expand 0 -fill none -anchor w
+    }
 
-    # Bars page -- all elements together
-    # only if {[winfo class $graph]=="Barchart"} ?
-    set f $nb.bars
-    label-entry $f.barbaseline "Baseline"
-    label-combo $f.barmode "Bar placement" {aligned overlap infront stacked}
-    pack $f.barbaseline $f.barmode -side top -expand 0 -fill x
-    $f.barbaseline.e configure -textvariable tmp(barbaseline)
-    $f.barmode.e configure -textvariable tmp(barmode)
+    if {[winfo class $graph]=="Barchart"} {
+        # Bars page -- all elements together
+        # only if {[winfo class $graph]=="Barchart"} ?
+        set f $nb.bars
+        label-entry $f.barbaseline "Baseline"
+        label-combo $f.barmode "Bar placement" {aligned overlap infront stacked}
+        pack $f.barbaseline $f.barmode -side top -expand 0 -fill x
+        $f.barbaseline.e configure -textvariable tmp(barbaseline)
+        $f.barmode.e configure -textvariable tmp(barmode)
+    }
 
     # Legend page
     set f $nb.legend
@@ -579,12 +589,14 @@ proc bltGraph_PropertiesDialogRead {graph} {
         set tmp(grid) "major"
     }
 
+    if {[winfo class $graph]!="Barchart"} {
+        bltGraph_PropertiesDialogReadSelectedLine $graph
+    }
+
     if {[winfo class $graph]=="Barchart"} {
         set tmp(barmode) [$graph cget -barmode]
         set tmp(barbaseline) [$graph cget -baseline]
     }
-
-    bltGraph_PropertiesDialogReadSelectedLine $graph
 
     set tmp(legendshow) [expr [$graph legend cget -hide]==0 ? 1 : 0]
     set tmp(legendpos) [$graph legend cget -position]
@@ -611,19 +623,19 @@ proc bltGraph_PropertiesDialogReadSelectedLine {graph} {
                 break
             }
         }
-        set tmp(showsymbols) 0; #FIXME [expr [$graph element cget $e -pixels]==0 ? 0 : 1]
+        set tmp(showsymbols) [expr [$graph element cget $e -pixels]==0 ? 0 : 1]
         if {$tmp(selectedline)=="(all)"} {
             set tmp(symboltype) "(no change)"
         } else {
             set tmp(symboltype) [$graph element cget $e -symbol]
         }
-        set tmp(symbolsize) 0; #FIXME [$graph element cget $e -pixels]
+        set tmp(symbolsize)  [$graph element cget $e -pixels]
         if {$tmp(symbolsize)==0} {set tmp(symbolsize) 3}
-        set tmp(linetype) 0; #FIXME [$graph element cget $e -smooth]
+        set tmp(linetype)  [$graph element cget $e -smooth]
         if {$tmp(linetype)=="quadratic" || $tmp(linetype)=="cubic"} {
             set tmp(linetype) "catrom"
         }
-        #FIXME if {[$graph element cget $e -linewidth]==0} {set tmp(linetype) "none"}
+        if {[$graph element cget $e -linewidth]==0} {set tmp(linetype) "none"}
         set tmp(linehide)  [$graph element cget $e -hide]
     }
 }
@@ -759,11 +771,12 @@ proc bltGraph_applyDefaults {graph} {
     catch {$graph legend config -relief $config(bltgraph-legendrelief)}
     catch {$graph legend config -font $config(bltgraph-legendfont)}
 
-    # set elementname [lindex [$graph element names] 0]
-    foreach i [$graph element names] {
-        catch {$graph element configure $i -pixels $config(bltgraph-elempixels)}
-        catch {$graph element configure $i -linewidth $config(bltgraph-elemlinewidth)}
-        catch {$graph element configure $i -smooth $config(bltgraph-elemsmooth)}
+    if {[winfo class $graph]!="Barchart"} {
+        foreach i [$graph element names] {
+            catch {$graph element configure $i -pixels $config(bltgraph-elempixels)}
+            catch {$graph element configure $i -linewidth $config(bltgraph-elemlinewidth)}
+            catch {$graph element configure $i -smooth $config(bltgraph-elemsmooth)}
+        }
     }
 }
 
@@ -773,34 +786,36 @@ proc bltGraph_applyDefaults {graph} {
 proc bltGraph_saveAsDefaults {graph} {
     global config
 
-    set config(bltgraph-titlefont) [$graph cget -font ]
-    set config(bltgraph-axistitlefont) [$graph axis cget x -titlefont ]
-    set config(bltgraph-axistitlefont) [$graph axis cget y -titlefont ]
-    set config(bltgraph-axistickfont) [$graph axis cget x -tickfont ]
-    set config(bltgraph-axistickfont) [$graph axis cget y -tickfont ]
-    set config(bltgraph-axisxrotate) [$graph axis cget x -rotate ]
-    set config(bltgraph-axisxdiv) [$graph axis cget x -subdivisions ]
-    set config(bltgraph-axisydiv) [$graph axis cget y -subdivisions ]
-    set config(bltgraph-axisxlog) [$graph axis cget x -logscale ]
-    set config(bltgraph-axisylog) [$graph axis cget y -logscale ]
-    set config(bltgraph-invertxy) [$graph cget -invertxy ]
-    set config(bltgraph-gridhide) [$graph grid cget -hide ]
-    set config(bltgraph-gridminor) [$graph grid cget -minor ]
+    set config(bltgraph-titlefont) [$graph cget -font]
+    set config(bltgraph-axistitlefont) [$graph axis cget x -titlefont]
+    set config(bltgraph-axistitlefont) [$graph axis cget y -titlefont]
+    set config(bltgraph-axistickfont) [$graph axis cget x -tickfont]
+    set config(bltgraph-axistickfont) [$graph axis cget y -tickfont]
+    set config(bltgraph-axisxrotate) [$graph axis cget x -rotate]
+    set config(bltgraph-axisxdiv) [$graph axis cget x -subdivisions]
+    set config(bltgraph-axisydiv) [$graph axis cget y -subdivisions]
+    set config(bltgraph-axisxlog) [$graph axis cget x -logscale]
+    set config(bltgraph-axisylog) [$graph axis cget y -logscale]
+    set config(bltgraph-invertxy) [$graph cget -invertxy]
+    set config(bltgraph-gridhide) [$graph grid cget -hide]
+    set config(bltgraph-gridminor) [$graph grid cget -minor]
 
-    set config(bltgraph-barmode) [$graph cget -barmode ]
-    set config(bltgraph-barbaseline) [$graph cget -baseline ]
+    set config(bltgraph-barmode) [$graph cget -barmode]
+    set config(bltgraph-barbaseline) [$graph cget -baseline]
 
-    set config(bltgraph-legendshow) [$graph legend cget -hide ]
-    set config(bltgraph-legendpos) [$graph legend cget -position ]
-    set config(bltgraph-legendanchor) [$graph legend cget -anchor ]
-    set config(bltgraph-legendborder) [$graph legend cget -border ]
-    set config(bltgraph-legendrelief) [$graph legend cget -relief ]
-    set config(bltgraph-legendfont) [$graph legend cget -font ]
+    set config(bltgraph-legendshow) [$graph legend cget -hide]
+    set config(bltgraph-legendpos) [$graph legend cget -position]
+    set config(bltgraph-legendanchor) [$graph legend cget -anchor]
+    set config(bltgraph-legendborder) [$graph legend cget -border]
+    set config(bltgraph-legendrelief) [$graph legend cget -relief]
+    set config(bltgraph-legendfont) [$graph legend cget -font]
 
-    set e [lindex [$graph element names] 0]
-    set config(bltgraph-elempixels) 0; #FIXME [$graph element cget $e -pixels ]
-    set config(bltgraph-elemsmooth) 0; #FIXME [$graph element cget $e -smooth ]
-    set config(bltgraph-elemlinewidth) 0; #FIXME [$graph element cget $e -linewidth ]
+    if {[winfo class $graph]!="Barchart"} {
+        set e [lindex [$graph element names] 0]
+        set config(bltgraph-elempixels) [$graph element cget $e -pixels]
+        set config(bltgraph-elemsmooth) [$graph element cget $e -smooth]
+        set config(bltgraph-elemlinewidth [$graph element cget $e -linewidth]
+    }
 }
 
 
