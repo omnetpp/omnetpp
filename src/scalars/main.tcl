@@ -14,6 +14,9 @@
 #----------------------------------------------------------------#
 
 
+# config
+set config(configfile)       "~/.scalarsrc"
+
 #
 # simple debug-print procedure
 #
@@ -266,6 +269,16 @@ proc startScalars {argv} {
    init_balloons
    createBltGraphPopup
    createMainWindow
+
+   set origconfigfile $config(configfile)
+   set defaultconfigfile [file join $OMNETPP_SCALARS_DIR .scalarsrc]
+   if [file readable $defaultconfigfile] {
+       loadConfig $defaultconfigfile
+   }
+   set config(configfile) $origconfigfile
+   if [file readable $config(configfile)] {
+       loadConfig $config(configfile)
+   }
 
    foreach f $argv {
        loadScalarFile $f

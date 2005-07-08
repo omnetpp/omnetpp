@@ -36,8 +36,7 @@ proc fileLoad {} {
 }
 
 proc fileExit {} {
-    #exitCleanup
-    #saveConfig "~/.scalarsrc"
+    saveConfig "~/.scalarsrc"
     exit
 }
 

@@ -34,6 +34,7 @@ if [info exist OMNETPP_SCALARS_DIR] {
    source [file join $dir charts.tcl]
    source [file join $dir dialogs.tcl]
    source [file join $dir bltgraph.tcl]
+   source [file join $dir config.tcl]
    set OMNETPP_SCALARS_README [file join $OMNETPP_SCALARS_DIR README]
 } else {
    set OMNETPP_SCALARS_DIR [file dirname $argv0]
