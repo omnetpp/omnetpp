@@ -96,7 +96,7 @@ void ArrayBuilderNode::extractVector(double *&x, double *&y, size_t& len)
 
 const char *ArrayBuilderNodeType::description() const
 {
-    return "Collects data into an array. The arrays can be accessed as BLT vectors or"
+    return "Collects data into an array. The arrays can be accessed as BLT vectors or\n"
            "as two double* arrays in the C++ API.";
 }
 

@@ -335,7 +335,13 @@ proc editSubfilterDialog {parentw k} {
     createOkCancelDialog $w "Subfilter Properties"
     wm geometry $w 400x300
 
+    # filter selector
     set name [opp_compoundfiltertype "%tmp%" subfilterType $k]
+
+    # filter description
+    labelframe $w.f.f0 -text "Filter description"
+    label $w.f.f0.desc -justify left
+    pack $w.f.f0.desc -expand 0 -fill none -anchor w
 
     # add entry fields and focus on first one
     labelframe $w.f.f1 -text "Assign filter parameters"
@@ -347,7 +353,7 @@ proc editSubfilterDialog {parentw k} {
     }
     set tmp(lastfiltercombovalue) ""
     set visibletypes [opp_getnodetypes]
-    label-combo $w.f.name "Type:" $visibletypes $name "editSubfilter_refreshParamsListbox $w.f.name.e $plb $k"
+    label-combo $w.f.name "Type:" $visibletypes $name "editSubfilter_refreshParamsListbox $w.f.name.e $plb $k $w.f.f0.desc"
     #FIXME show description here instead
 
     grid $w.f.f1.params - -sticky news
@@ -358,6 +364,7 @@ proc editSubfilterDialog {parentw k} {
     grid rowconfig $w.f.f1 0 -weight 1
 
     pack $w.f.name -anchor center -expand 0 -fill x -side top -padx 5 -pady 5
+    pack $w.f.f0 -anchor w -expand 0 -fill x -side top -padx 5 -pady 5
     pack $w.f.f1 -anchor center -expand 1 -fill both -side top -padx 5 -pady 5
 
     bind $plb <Double-Button-1> "$w.f.f1.edit invoke"
@@ -403,7 +410,7 @@ proc editSubfilter_changePar {plb} {
     }
 }
 
-proc editSubfilter_refreshParamsListbox {combo plb k} {
+proc editSubfilter_refreshParamsListbox {combo plb k filtdesclabel} {
     global tmp
 
     # eliminate a subtle UI bug: when closing the dialog by pressing Enter, filter
@@ -423,8 +430,10 @@ proc editSubfilter_refreshParamsListbox {combo plb k} {
     multicolumnlistbox_deleteall $plb
     if {![opp_nodetype $filttype exists]} {
         set filtTypeAttrs {}
+        $filtdesclabel config -text "(no such filter)"
     } else {
         set filtTypeAttrs [opp_nodetype $filttype attrs]
+        $filtdesclabel config -text [opp_nodetype $filttype description]
     }
     foreach attr $filtTypeAttrs {
         set name [lindex $attr 0]

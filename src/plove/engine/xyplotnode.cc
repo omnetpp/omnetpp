@@ -100,8 +100,8 @@ bool XYPlotNode::finished() const
 
 const char *XYPlotNodeType::description() const
 {
-    return "Creates x-y plot by matching values that arrive on one x and several "
-           "y ports by their timestamps. (One value on x and one on y create one "
+    return "Creates x-y plot by matching values that arrive on one x and several\n"
+           "y ports by their timestamps. (One value on x and one on y create one\n"
            "output value when their timestamps are equal).";
 }
 

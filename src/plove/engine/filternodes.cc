@@ -398,8 +398,7 @@ void LinearTrendNode::process()
 
 const char *LinearTrendNodeType::description() const
 {
-    return "Adds linear component to input series: y(t) = x(t) + a*t. "
-           "Also useful for removing linear trends.";
+    return "Adds linear component to input series: y(t) = x(t) + a*t";
 }
 
 void LinearTrendNodeType::getAttributes(StringMap& attrs) const
@@ -446,8 +445,7 @@ void CropNode::process()
 
 const char *CropNodeType::description() const
 {
-    return "Keeps values between t1 and t2, including. "
-           "Values before t1 and after t2 are discarded.";
+    return "Discards values outside the [t1, t2] interval";
 }
 
 void CropNodeType::getAttributes(StringMap& attrs) const

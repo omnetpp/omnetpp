@@ -142,6 +142,11 @@ proc editFilterForVectorDialog {name parentw} {
 
     set sfname [opp_compoundfiltertype "%tmp%" subfilterType 0]
 
+    # filter description
+    labelframe $w.f.f0 -text "Filter description"
+    label $w.f.f0.desc -justify left
+    pack $w.f.f0.desc -expand 0 -fill none -anchor w
+
     # add entry fields and focus on first one
     labelframe $w.f.f1 -text "Assign filter parameters"
     set plb $w.f.f1.params
@@ -152,7 +157,7 @@ proc editFilterForVectorDialog {name parentw} {
     }
     set tmp(lastfiltercombovalue) ""
     set visibletypes [concat [list ""] [opp_getnodetypes]]
-    label-combo $w.f.name "Apply filter:" $visibletypes $sfname "editSubfilter_refreshParamsListbox $w.f.name.e $plb 0"
+    label-combo $w.f.name "Apply filter:" $visibletypes $sfname "editSubfilter_refreshParamsListbox $w.f.name.e $plb 0 $w.f.f0.desc"
 
     grid $w.f.f1.params - -sticky news
     button $w.f.f1.edit -text " Change... " -width 8 -command "editSubfilter_changePar $plb"
@@ -162,6 +167,7 @@ proc editFilterForVectorDialog {name parentw} {
     grid rowconfig $w.f.f1 0 -weight 1
 
     pack $w.f.name -anchor center -side top -expand 0 -fill x -padx 5 -pady 5
+    pack $w.f.f0 -anchor center -side top -expand 0 -fill both -padx 5 -pady 5
     pack $w.f.f1 -anchor center -side top -expand 1 -fill both -padx 5 -pady 5
 
     set tmp(advanced) 0

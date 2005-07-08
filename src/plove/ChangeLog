@@ -8,6 +8,8 @@
 	* getvectors.cc: fix: last bufsize bytes of the file wasn't scanned for 
 	vector lines
 
+	* more dialogs display filter descriptions now
+
 2005-04-30  Andras Varga
 
 	* bltgraph.tcl: several refinements on the chart window and in its
