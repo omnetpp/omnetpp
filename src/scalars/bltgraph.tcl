@@ -363,6 +363,16 @@ proc bltGraph_RemoveLabel { graph } {
 proc bltGraph_Properties {{what ""}} {
     set w .bltwin
     set graph [$w.nb tab cget select -window].g
+
+    if {$what=="lines" && [winfo class $graph]=="Barchart"} {
+        tk_messageBox -icon warning -type ok  -parent .bltwin -message "Cannot configure lines on a bar chart, sorry."
+        return
+    }
+    if {$what=="bars" && [winfo class $graph]!="Barchart"} {
+        tk_messageBox -icon warning -type ok  -parent .bltwin -message "Cannot configure bars on a graph, sorry."
+        return
+    }
+
     bltGraph_PropertiesDialog $graph $what
 }
 

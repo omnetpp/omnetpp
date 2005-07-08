@@ -128,11 +128,11 @@ proc createBltGraphPopup {} {
     foreach i {
       {command -label {Zoom out} -underline 0 -command bltGraph_ZoomOut}
       {separator}
-      {command -label {Title...} -underline 0    -command {bltGraph_Properties titles} }
-      {command -label {Axes...} -underline 0      -command {bltGraph_Properties axes} }
-      {command -label {Lines...} -underline 0     -command {bltGraph_Properties lines} }
-      {command -label {Bars...} -underline 0     -command {bltGraph_Properties bars} }
-      {command -label {Legend...} -underline 1    -command {bltGraph_Properties legend} }
+      {command -label {Title...} -underline 0 -command {bltGraph_Properties titles} }
+      {command -label {Axes...}  -underline 0 -command {bltGraph_Properties axes} }
+      {command -label {Lines...} -underline 0 -command {bltGraph_Properties lines} }
+      {command -label {Bars...}  -underline 0 -command {bltGraph_Properties bars} }
+      {command -label {Legend...} -underline 1 -command {bltGraph_Properties legend} }
       {separator}
       {command -label {Copy to clipboard} -underline 0  -command bltGraph_Copy}
       {command -label {Save picture...} -underline 0    -command bltGraph_SavePicture}
@@ -363,6 +363,16 @@ proc bltGraph_RemoveLabel { graph } {
 proc bltGraph_Properties {{what ""}} {
     set w .bltwin
     set graph [$w.nb tab cget select -window].g
+
+    if {$what=="lines" && [winfo class $graph]=="Barchart"} {
+        tk_messageBox -icon warning -type ok  -parent .bltwin -message "Cannot configure lines on a bar chart, sorry."
+        return
+    }
+    if {$what=="bars" && [winfo class $graph]!="Barchart"} {
+        tk_messageBox -icon warning -type ok  -parent .bltwin -message "Cannot configure bars on a graph, sorry."
+        return
+    }
+
     bltGraph_PropertiesDialog $graph $what
 }
 
