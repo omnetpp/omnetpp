@@ -74,8 +74,8 @@ void getVectors(const char *fname, OutVectorArray& array)
 
         char *line = buffer;
 
-        // process buffer contents
-        while (!eofreached)
+        // process all full lines
+        while (1)
         {
             // do we have a full line?
             char *s = line;
@@ -136,13 +136,16 @@ void getVectors(const char *fname, OutVectorArray& array)
 
             // skip line termination
             if (*s && *s!='\r' && *s!='\n')
-                throw new Exception("invalid vector file syntax: garbage at end of line");
+                throw new Exception("invalid vector file syntax: garbage at end of line ('%c')", *s);
             while (*s=='\r' || *s=='\n') s++;
             line = s;
         }
+
+        // copy the last (partial) line to beginning of buffer
         bufferused = endbuffer-line;
         memcpy(buffer, line, bufferused);
     }
+
     fclose(f);
 }
 

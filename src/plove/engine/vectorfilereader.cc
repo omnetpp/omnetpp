@@ -151,12 +151,10 @@ void VectorFileReaderNode::process()
         line = s;
     }
 
-    if (!eofreached)
-    {
-        // copy the last (partial) line to beginning of buffer
-        bufferused = endbuffer-line;
-        memcpy(buffer, line, bufferused);
-    }
+    // copy the last (partial) line to beginning of buffer
+    bufferused = endbuffer-line;
+    memcpy(buffer, line, bufferused);
+
     return;
 }
 

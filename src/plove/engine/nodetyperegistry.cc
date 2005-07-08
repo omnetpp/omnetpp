@@ -24,6 +24,7 @@
 #include "vectorfilewriter.h"
 #include "filewriter.h"
 #include "windowavg.h"
+#include "slidingwinavg.h"
 #include "filternodes.h"
 #include "mergernodes.h"
 #include "xyplotnode.h"
@@ -60,6 +61,7 @@ NodeTypeRegistry::NodeTypeRegistry()
     add(new XYPlotNodeType());
 
     add(new WindowAverageNodeType());
+    add(new SlidingWindowAverageNodeType());
     add(new NopNodeType());
     add(new AdderNodeType());
     add(new MultiplierNodeType());

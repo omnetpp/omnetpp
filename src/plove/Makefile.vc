@@ -37,6 +37,7 @@ ENGINE_OBJS =  engine/exception.obj \
                engine/channel.obj \
                engine/dataflowmanager.obj \
                engine/windowavg.obj \
+               engine/slidingwinavg.obj \
                engine/arraybuilder.obj \
                engine/filewriter.obj \
                engine/vectorfilereader.obj \

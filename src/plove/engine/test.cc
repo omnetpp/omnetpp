@@ -85,7 +85,7 @@ main()
 
         /*
         RandomSourceNode *src = new RandomSourceNode(17);
-        WindowAverageNode *winavg = new WindowAverageNode(5);
+        SlidingWindowAverageNode *winavg = new SlidingWindowAverageNode(5);
         PrinterNode *sink = new PrinterNode();
 
         net.addNode(src);

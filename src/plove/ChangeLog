@@ -1,6 +1,12 @@
 2005-07-08  Andras Varga
 
-	* engine: new filters: divider, modulo, difference, sum, slope
+	* engine: new filters: divider, modulo, difference, sum, slope, 
+	slidingwinavg
+
+	* fix: in winavg, average of last <winsize values wasn't written out
+
+	* getvectors.cc: fix: last bufsize bytes of the file wasn't scanned for 
+	vector lines
 
 2005-04-30  Andras Varga
 

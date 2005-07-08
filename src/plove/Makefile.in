@@ -46,6 +46,7 @@ ENGINE_OBJS =  engine/exception.o \
                engine/channel.o \
                engine/dataflowmanager.o \
                engine/windowavg.o \
+               engine/slidingwinavg.o \
                engine/arraybuilder.o \
                engine/filewriter.o \
                engine/vectorfilereader.o \

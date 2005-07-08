@@ -49,11 +49,11 @@ void WindowAverageNode::process()
         for (int i=0; i<n; i++)
             sumy += array[i].y;
         Datum o;
-        o.x = array[0].x;
+        o.x = array[n-1].x;
         o.y = sumy/n;
         out()->write(&o,1);
     }
-    while (in()->length()>=winsize);
+    while (in()->length()>=winsize || (in()->closing() && in()->length()>0));
 }
 
 //-----
@@ -61,7 +61,7 @@ void WindowAverageNode::process()
 const char *WindowAverageNodeType::description() const
 {
     return "Makes batched averages. Replaces every `winsize' input values "
-           "with their mean. Time is the time of the first value in the batch.";
+           "with their mean. Time is the time of the last value in the batch.";
 }
 
 void WindowAverageNodeType::getAttributes(StringMap& attrs) const
