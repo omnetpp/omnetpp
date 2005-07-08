@@ -83,7 +83,137 @@ class MultiplierNode : public FilterNode
 class MultiplierNodeType : public FilterNodeType
 {
     public:
-        virtual const char *name() const {return "multiply";}
+        virtual const char *name() const {return "multiply-by";}
+        virtual const char *description() const;
+        virtual void getAttributes(StringMap& attrs) const;
+        virtual void getAttrDefaults(StringMap& attrs) const;
+        virtual Node *create(DataflowManager *, StringMap& attrs) const;
+};
+
+//----
+
+/**
+ * Processing node which divides every value by a constant.
+ */
+class DividerNode : public FilterNode
+{
+    protected:
+        double a;
+    public:
+        DividerNode(double a)  {this->a = a;}
+        virtual ~DividerNode() {}
+        virtual bool isReady() const;
+        virtual void process();
+};
+
+class DividerNodeType : public FilterNodeType
+{
+    public:
+        virtual const char *name() const {return "divide-by";}
+        virtual const char *description() const;
+        virtual void getAttributes(StringMap& attrs) const;
+        virtual void getAttrDefaults(StringMap& attrs) const;
+        virtual Node *create(DataflowManager *, StringMap& attrs) const;
+};
+
+//----
+
+/**
+ * Processing node which computes value modulo a constant.
+ */
+class ModuloNode : public FilterNode
+{
+    protected:
+        double a;
+    public:
+        ModuloNode(double a)  {this->a = a;}
+        virtual ~ModuloNode() {}
+        virtual bool isReady() const;
+        virtual void process();
+};
+
+class ModuloNodeType : public FilterNodeType
+{
+    public:
+        virtual const char *name() const {return "modulo";}
+        virtual const char *description() const;
+        virtual void getAttributes(StringMap& attrs) const;
+        virtual void getAttrDefaults(StringMap& attrs) const;
+        virtual Node *create(DataflowManager *, StringMap& attrs) const;
+};
+
+//----
+
+/**
+ * Processing node which substracts the previous value from every value
+ */
+class DifferenceNode : public FilterNode
+{
+    protected:
+        double prevy;
+    public:
+        DifferenceNode()  {prevy = 0;}
+        virtual ~DifferenceNode() {}
+        virtual bool isReady() const;
+        virtual void process();
+};
+
+class DifferenceNodeType : public FilterNodeType
+{
+    public:
+        virtual const char *name() const {return "difference";}
+        virtual const char *description() const;
+        virtual void getAttributes(StringMap& attrs) const;
+        virtual void getAttrDefaults(StringMap& attrs) const;
+        virtual Node *create(DataflowManager *, StringMap& attrs) const;
+};
+
+//----
+
+/**
+ * Processing node which substracts the previous value from every value
+ */
+class SumNode : public FilterNode
+{
+    protected:
+        double sum;
+    public:
+        SumNode()    {sum = 0;}
+        virtual ~SumNode() {}
+        virtual bool isReady() const;
+        virtual void process();
+};
+
+class SumNodeType : public FilterNodeType
+{
+    public:
+        virtual const char *name() const {return "sum";}
+        virtual const char *description() const;
+        virtual void getAttributes(StringMap& attrs) const;
+        virtual void getAttrDefaults(StringMap& attrs) const;
+        virtual Node *create(DataflowManager *, StringMap& attrs) const;
+};
+//----
+
+/**
+ * Processing node which outputs the slope of the line between the data point and the previous one
+ */
+class SlopeNode : public FilterNode
+{
+    protected:
+        bool firstpoint;
+        double prevx, prevy;
+    public:
+        SlopeNode()    {firstpoint = true; prevx = prevy = 0;}
+        virtual ~SlopeNode() {}
+        virtual bool isReady() const;
+        virtual void process();
+};
+
+class SlopeNodeType : public FilterNodeType
+{
+    public:
+        virtual const char *name() const {return "slope";}
         virtual const char *description() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;

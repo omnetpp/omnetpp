@@ -63,6 +63,11 @@ NodeTypeRegistry::NodeTypeRegistry()
     add(new NopNodeType());
     add(new AdderNodeType());
     add(new MultiplierNodeType());
+    add(new DividerNodeType());
+    add(new ModuloNodeType());
+    add(new DifferenceNodeType());
+    add(new SumNodeType());
+    add(new SlopeNodeType());
     add(new TimeShiftNodeType());
     add(new LinearTrendNodeType());
     add(new CropNodeType());

@@ -1,3 +1,7 @@
+2005-07-08  Andras Varga
+
+	* engine: new filters: divider, modulo, difference, sum, slope
+
 2005-04-30  Andras Varga
 
 	* bltgraph.tcl: several refinements on the chart window and in its

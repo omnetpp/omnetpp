@@ -16,6 +16,7 @@
 #pragma warning(disable:4786)
 #endif
 
+#include <math.h>
 #include "channel.h"
 #include "filternodes.h"
 
@@ -79,7 +80,7 @@ void AdderNode::process()
 
 const char *AdderNodeType::description() const
 {
-    return "Adds a constant to the input: y(t) = x(t)+c.";
+    return "Adds a constant to the input: y(t) = x(t)+c";
 }
 
 void AdderNodeType::getAttributes(StringMap& attrs) const
@@ -121,7 +122,7 @@ void MultiplierNode::process()
 
 const char *MultiplierNodeType::description() const
 {
-    return "Multiplies input by a constant: y(t) = a*x(t).";
+    return "Multiplies input by a constant: y(t) = a*x(t)";
 }
 
 void MultiplierNodeType::getAttributes(StringMap& attrs) const
@@ -141,6 +142,250 @@ Node *MultiplierNodeType::create(DataflowManager *, StringMap& attrs) const
     double a = atof(attrs["a"].c_str());
 
     Node *node = new MultiplierNode(a);
+    node->setNodeType(this);
+    return node;
+}
+
+//-----
+
+bool DividerNode::isReady() const
+{
+    return in()->length()>0;
+}
+
+void DividerNode::process()
+{
+    int n = in()->length();
+    for (int i=0; i<n; i++)
+    {
+        Datum d;
+        in()->read(&d,1);
+        d.y /= a;
+        out()->write(&d,1);
+    }
+}
+
+//--
+
+const char *DividerNodeType::description() const
+{
+    return "Divides input by a constant: y(t) = x(t)/a";
+}
+
+void DividerNodeType::getAttributes(StringMap& attrs) const
+{
+    attrs["a"] = "the divider constant";
+}
+
+void DividerNodeType::getAttrDefaults(StringMap& attrs) const
+{
+    attrs["a"] = "1.0";
+}
+
+Node *DividerNodeType::create(DataflowManager *, StringMap& attrs) const
+{
+    checkAttrNames(attrs);
+
+    double a = atof(attrs["a"].c_str());
+
+    Node *node = new DividerNode(a);
+    node->setNodeType(this);
+    return node;
+}
+
+//-----
+
+bool ModuloNode::isReady() const
+{
+    return in()->length()>0;
+}
+
+void ModuloNode::process()
+{
+    int n = in()->length();
+    for (int i=0; i<n; i++)
+    {
+        Datum d;
+        in()->read(&d,1);
+        d.y -= floor(d.y/a)*a;
+        out()->write(&d,1);
+    }
+}
+
+//--
+
+const char *ModuloNodeType::description() const
+{
+    return "Computes input modulo a constant: y(t) = x(t)%a";
+}
+
+void ModuloNodeType::getAttributes(StringMap& attrs) const
+{
+    attrs["a"] = "the modulus";
+}
+
+void ModuloNodeType::getAttrDefaults(StringMap& attrs) const
+{
+    attrs["a"] = "1";
+}
+
+Node *ModuloNodeType::create(DataflowManager *, StringMap& attrs) const
+{
+    checkAttrNames(attrs);
+
+    double a = atof(attrs["a"].c_str());
+
+    Node *node = new ModuloNode(a);
+    node->setNodeType(this);
+    return node;
+}
+
+//-----
+
+bool DifferenceNode::isReady() const
+{
+    return in()->length()>0;
+}
+
+void DifferenceNode::process()
+{
+    int n = in()->length();
+    for (int i=0; i<n; i++)
+    {
+        Datum d;
+        in()->read(&d,1);
+
+        double tmp = d.y;
+        d.y -= prevy;
+        prevy = tmp;
+
+        out()->write(&d,1);
+    }
+}
+
+//--
+
+const char *DifferenceNodeType::description() const
+{
+    return "Substracts the previous value from every value: y[k] = y[k] - y[k-1]";
+}
+
+void DifferenceNodeType::getAttributes(StringMap& attrs) const
+{
+}
+
+void DifferenceNodeType::getAttrDefaults(StringMap& attrs) const
+{
+}
+
+Node *DifferenceNodeType::create(DataflowManager *, StringMap& attrs) const
+{
+    checkAttrNames(attrs);
+
+    Node *node = new DifferenceNode();
+    node->setNodeType(this);
+    return node;
+}
+
+//-----
+
+bool SumNode::isReady() const
+{
+    return in()->length()>0;
+}
+
+void SumNode::process()
+{
+    int n = in()->length();
+    for (int i=0; i<n; i++)
+    {
+        Datum d;
+        in()->read(&d,1);
+
+        sum += d.y;
+        d.y = sum;
+
+        out()->write(&d,1);
+    }
+}
+
+//--
+
+const char *SumNodeType::description() const
+{
+    return "Sums up values: y[k] = SUM(y[i], i=0..k)";
+}
+
+void SumNodeType::getAttributes(StringMap& attrs) const
+{
+}
+
+void SumNodeType::getAttrDefaults(StringMap& attrs) const
+{
+}
+
+Node *SumNodeType::create(DataflowManager *, StringMap& attrs) const
+{
+    checkAttrNames(attrs);
+
+    Node *node = new SumNode();
+    node->setNodeType(this);
+    return node;
+}
+
+//-----
+
+bool SlopeNode::isReady() const
+{
+    return in()->length()>0;
+}
+
+void SlopeNode::process()
+{
+    int n = in()->length();
+    for (int i=0; i<n; i++)
+    {
+        Datum d;
+        in()->read(&d,1);
+
+        if (firstpoint)
+        {
+            prevx = d.x;
+            prevy = d.y;
+            firstpoint = false;
+        }
+        else
+        {
+            double q = (d.y-prevy) / (d.x-prevx);
+            prevx = d.x;
+            prevy = d.y;
+            d.y = q;
+            out()->write(&d,1);
+        }
+    }
+}
+
+//--
+
+const char *SlopeNodeType::description() const
+{
+    return "Calculate the slope of the line between the data point and the previous one: "
+           "y[k] = (y[k]-y[k-1]) / (x[k]-x[k-1])";
+}
+
+void SlopeNodeType::getAttributes(StringMap& attrs) const
+{
+}
+
+void SlopeNodeType::getAttrDefaults(StringMap& attrs) const
+{
+}
+
+Node *SlopeNodeType::create(DataflowManager *, StringMap& attrs) const
+{
+    checkAttrNames(attrs);
+
+    Node *node = new SlopeNode();
     node->setNodeType(this);
     return node;
 }
@@ -168,7 +413,7 @@ void TimeShiftNode::process()
 
 const char *TimeShiftNodeType::description() const
 {
-    return "Shifts the input series in time by a constant: y(t) = x(t-dt).";
+    return "Shifts the input series in time by a constant: y(t) = x(t-dt)";
 }
 
 void TimeShiftNodeType::getAttributes(StringMap& attrs) const
