@@ -61,7 +61,7 @@ void WindowAverageNode::process()
 const char *WindowAverageNodeType::description() const
 {
     return "Makes batched averages. Replaces every `winsize' input values "
-           "with their mean. Time is the time of the last value in the batch.";
+           "with their mean. Time is the time of the first value in the batch.";
 }
 
 void WindowAverageNodeType::getAttributes(StringMap& attrs) const

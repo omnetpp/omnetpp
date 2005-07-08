@@ -333,63 +333,6 @@ Node *SumNodeType::create(DataflowManager *, StringMap& attrs) const
     return node;
 }
 
-//-----
-
-bool SlopeNode::isReady() const
-{
-    return in()->length()>0;
-}
-
-void SlopeNode::process()
-{
-    int n = in()->length();
-    for (int i=0; i<n; i++)
-    {
-        Datum d;
-        in()->read(&d,1);
-
-        if (firstpoint)
-        {
-            prevx = d.x;
-            prevy = d.y;
-            firstpoint = false;
-        }
-        else
-        {
-            double q = (d.y-prevy) / (d.x-prevx);
-            prevx = d.x;
-            prevy = d.y;
-            d.y = q;
-            out()->write(&d,1);
-        }
-    }
-}
-
-//--
-
-const char *SlopeNodeType::description() const
-{
-    return "Calculate the slope of the line between the data point and the previous one: "
-           "y[k] = (y[k]-y[k-1]) / (x[k]-x[k-1])";
-}
-
-void SlopeNodeType::getAttributes(StringMap& attrs) const
-{
-}
-
-void SlopeNodeType::getAttrDefaults(StringMap& attrs) const
-{
-}
-
-Node *SlopeNodeType::create(DataflowManager *, StringMap& attrs) const
-{
-    checkAttrNames(attrs);
-
-    Node *node = new SlopeNode();
-    node->setNodeType(this);
-    return node;
-}
-
 //------
 
 bool TimeShiftNode::isReady() const

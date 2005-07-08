@@ -196,33 +196,6 @@ class SumNodeType : public FilterNodeType
 //----
 
 /**
- * Processing node which outputs the slope of the line between the data point and the previous one
- */
-class SlopeNode : public FilterNode
-{
-    protected:
-        bool firstpoint;
-        double prevx, prevy;
-    public:
-        SlopeNode()    {firstpoint = true; prevx = prevy = 0;}
-        virtual ~SlopeNode() {}
-        virtual bool isReady() const;
-        virtual void process();
-};
-
-class SlopeNodeType : public FilterNodeType
-{
-    public:
-        virtual const char *name() const {return "slope";}
-        virtual const char *description() const;
-        virtual void getAttributes(StringMap& attrs) const;
-        virtual void getAttrDefaults(StringMap& attrs) const;
-        virtual Node *create(DataflowManager *, StringMap& attrs) const;
-};
-
-//----
-
-/**
  * Processing node which shifts every value in time.
  */
 class TimeShiftNode : public FilterNode

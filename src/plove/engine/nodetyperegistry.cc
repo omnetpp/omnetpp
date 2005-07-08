@@ -28,6 +28,7 @@
 #include "filternodes.h"
 #include "mergernodes.h"
 #include "xyplotnode.h"
+#include "diffquot.h"
 
 
 NodeTypeRegistry *NodeTypeRegistry::inst;
@@ -62,6 +63,7 @@ NodeTypeRegistry::NodeTypeRegistry()
 
     add(new WindowAverageNodeType());
     add(new SlidingWindowAverageNodeType());
+    add(new DifferenceQuotientNodeType());
     add(new NopNodeType());
     add(new AdderNodeType());
     add(new MultiplierNodeType());
@@ -69,7 +71,6 @@ NodeTypeRegistry::NodeTypeRegistry()
     add(new ModuloNodeType());
     add(new DifferenceNodeType());
     add(new SumNodeType());
-    add(new SlopeNodeType());
     add(new TimeShiftNodeType());
     add(new LinearTrendNodeType());
     add(new CropNodeType());
