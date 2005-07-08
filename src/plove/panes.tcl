@@ -123,7 +123,16 @@ proc makeTitle {id} {
 
 proc makeListboxRow {id} {
     global vec g
-    if {$vec($id,filter)==""} {set s ""} else {set s " *"}
+    set s ""
+    if {$vec($id,filter)!=""} {
+        set s " \["
+        set n [opp_compoundfiltertype $vec($id,filter) numSubfilters]
+        for {set i 0} {$i<$n} {incr i} {
+            if {$i!=0} {append s ","}
+            append s [opp_compoundfiltertype $vec($id,filter) subfilterType $i]
+        }
+        append s "\]"
+    }
     return "$vec($id,title)$s $g(spaces) $id"
 }
 

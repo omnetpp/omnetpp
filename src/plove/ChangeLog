@@ -10,7 +10,9 @@
 
 	* more dialogs display filter descriptions now
 
-	* vectors with filters are now marked with '*'
+	* filters on vectors are now visible in the panel
+
+	* defaults can be saved
 
 2005-04-30  Andras Varga
 

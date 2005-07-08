@@ -124,6 +124,9 @@ proc createVectorPlot {{idlist {}}} {
             incr i
         }
 
+        # apply defaults to graph and lines
+        bltGraph_applyDefaults $graph
+
         idleCursor
 
     } errmsg] {

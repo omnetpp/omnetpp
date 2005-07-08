@@ -43,6 +43,8 @@ proc createBltGraph {graphtype {graphtitle ""}} {
           {zoomout -image $icons(find)     -command bltGraph_ZoomOut}
           {sep2    -separator}
           {config  -image $icons(config)   -command bltGraph_Properties}
+          {sep3    -separator}
+          {savedef -image $icons(check)    -command bltGraph_saveAsDefaults1}
         } {
           set b [eval iconbutton $toolbar.$i]
           pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2
@@ -57,6 +59,7 @@ proc createBltGraph {graphtype {graphtitle ""}} {
         set help_tips($toolbar.saveps) {Save Postscript...}
         set help_tips($toolbar.zoomout) {Zoom out}
         set help_tips($toolbar.config) {Properties...}
+        set help_tips($toolbar.savedef) {Store settings as defaults}
 
         set help_tips($toolbar.close)   {Close}
 
@@ -88,6 +91,8 @@ proc createBltGraph {graphtype {graphtitle ""}} {
         blt::graph $graph
         # configure highlight color
         $graph pen configure "activeLine" -linewidth 1
+        $graph grid configure -hide 0
+        $graph grid configure -minor 1
     } elseif {$graphtype=="barchart"} {
         blt::barchart $graph
         $graph configure -barmode aligned
@@ -131,7 +136,9 @@ proc createBltGraphPopup {} {
       {separator}
       {command -label {Copy to clipboard} -underline 0  -command bltGraph_Copy}
       {command -label {Save picture...} -underline 0    -command bltGraph_SavePicture}
-      {command -label {Save Postscript...} -underline 0 -command bltGraph_SavePostscript}
+      {command -label {Save Postscript...} -underline 2 -command bltGraph_SavePostscript}
+      {separator}
+      {command -label {Store settings as defaults} -underline 1 -command bltGraph_saveAsDefaults1}
       {separator}
       {command -label {Close} -underline 2 -command bltGraph_Close}
     } {
@@ -375,7 +382,8 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
     set w .bltwin.graphprops
     createOkCancelDialog $w "Graph Properties"
     button $w.buttons.applybutton  -text {Apply} -width 10
-    pack $w.buttons.applybutton  -anchor n -side right -padx 2
+    button $w.buttons.savedefbutton  -text {Store as defaults}
+    pack $w.buttons.applybutton $w.buttons.savedefbutton -anchor n -side right -padx 2
     wm geometry $w 360x320
 
     # tabnotebook
@@ -533,6 +541,7 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
 
     # execute dialog
     $w.buttons.applybutton config -command [list bltGraph_PropertiesDialogApply $graph]
+    $w.buttons.savedefbutton config -command [list bltGraph_PropertiesDialogSaveAsDefault $graph]
     if {[execOkCancelDialog $w] == 1} {
         bltGraph_PropertiesDialogApply $graph
     }
@@ -690,6 +699,10 @@ proc bltGraph_PropertiesDialogApply {graph} {
     bltGraph_PropertiesDialogRead $graph
 }
 
+proc bltGraph_PropertiesDialogSaveAsDefault {graph} {
+    bltGraph_PropertiesDialogApply $graph
+    bltGraph_saveAsDefaults $graph
+}
 
 #
 # Utility for creating charts and plots
@@ -715,3 +728,89 @@ proc getChartSymbol {i} {
     return $sel
 }
 
+
+#
+# Apply saved defaults to the graph
+#
+proc bltGraph_applyDefaults {graph} {
+    global config
+
+    catch {$graph config -font $config(bltgraph-titlefont)}
+    catch {$graph axis config x -titlefont $config(bltgraph-axistitlefont)}
+    catch {$graph axis config y -titlefont $config(bltgraph-axistitlefont)}
+    catch {$graph axis config x -tickfont $config(bltgraph-axistickfont)}
+    catch {$graph axis config y -tickfont $config(bltgraph-axistickfont)}
+    catch {$graph axis config x -rotate $config(bltgraph-axisxrotate)}
+    catch {$graph axis config x -subdivisions $config(bltgraph-axisxdiv)}
+    catch {$graph axis config y -subdivisions $config(bltgraph-axisydiv)}
+    catch {$graph axis config x -logscale $config(bltgraph-axisxlog)}
+    catch {$graph axis config y -logscale $config(bltgraph-axisylog)}
+    catch {$graph config -invertxy $config(bltgraph-invertxy)}
+    catch {$graph grid configure -hide $config(bltgraph-gridhide)}
+    catch {$graph grid configure -minor $config(bltgraph-gridminor)}
+
+    catch {$graph configure -barmode $config(bltgraph-barmode)}
+    catch {$graph configure -baseline $config(bltgraph-barbaseline)}
+
+    catch {$graph legend config -hide $config(bltgraph-legendshow)}
+    catch {$graph legend config -position $config(bltgraph-legendpos)}
+    catch {$graph legend config -anchor $config(bltgraph-legendanchor)}
+    catch {$graph legend config -border $config(bltgraph-legendborder)}
+    catch {$graph legend config -relief $config(bltgraph-legendrelief)}
+    catch {$graph legend config -font $config(bltgraph-legendfont)}
+
+    # set elementname [lindex [$graph element names] 0]
+    foreach i [$graph element names] {
+        catch {$graph element configure $i -pixels $config(bltgraph-elempixels)}
+        catch {$graph element configure $i -linewidth $config(bltgraph-elemlinewidth)}
+        catch {$graph element configure $i -smooth $config(bltgraph-elemsmooth)}
+    }
+}
+
+#
+# Save current graph settings as defaults
+#
+proc bltGraph_saveAsDefaults {graph} {
+    global config
+
+    set config(bltgraph-titlefont) [$graph cget -font ]
+    set config(bltgraph-axistitlefont) [$graph axis cget x -titlefont ]
+    set config(bltgraph-axistitlefont) [$graph axis cget y -titlefont ]
+    set config(bltgraph-axistickfont) [$graph axis cget x -tickfont ]
+    set config(bltgraph-axistickfont) [$graph axis cget y -tickfont ]
+    set config(bltgraph-axisxrotate) [$graph axis cget x -rotate ]
+    set config(bltgraph-axisxdiv) [$graph axis cget x -subdivisions ]
+    set config(bltgraph-axisydiv) [$graph axis cget y -subdivisions ]
+    set config(bltgraph-axisxlog) [$graph axis cget x -logscale ]
+    set config(bltgraph-axisylog) [$graph axis cget y -logscale ]
+    set config(bltgraph-invertxy) [$graph cget -invertxy ]
+    set config(bltgraph-gridhide) [$graph grid cget -hide ]
+    set config(bltgraph-gridminor) [$graph grid cget -minor ]
+
+    set config(bltgraph-barmode) [$graph cget -barmode ]
+    set config(bltgraph-barbaseline) [$graph cget -baseline ]
+
+    set config(bltgraph-legendshow) [$graph legend cget -hide ]
+    set config(bltgraph-legendpos) [$graph legend cget -position ]
+    set config(bltgraph-legendanchor) [$graph legend cget -anchor ]
+    set config(bltgraph-legendborder) [$graph legend cget -border ]
+    set config(bltgraph-legendrelief) [$graph legend cget -relief ]
+    set config(bltgraph-legendfont) [$graph legend cget -font ]
+
+    set e [lindex [$graph element names] 0]
+    set config(bltgraph-elempixels) [$graph element cget $e -pixels ]
+    set config(bltgraph-elemsmooth) [$graph element cget $e -smooth ]
+    set config(bltgraph-elemlinewidth) [$graph element cget $e -linewidth ]
+}
+
+
+#
+# Invike bltGraph_saveAsDefaults for currently visible graph
+#
+proc bltGraph_saveAsDefaults1 {} {
+    # identify tab
+    set w .bltwin
+    set f [$w.nb tab cget select -window]
+    set graph $f.g
+    bltGraph_saveAsDefaults $graph
+}
