@@ -49,7 +49,7 @@ void WindowAverageNode::process()
         for (int i=0; i<n; i++)
             sumy += array[i].y;
         Datum o;
-        o.x = array[n-1].x;
+        o.x = array[0].x;
         o.y = sumy/n;
         out()->write(&o,1);
     }

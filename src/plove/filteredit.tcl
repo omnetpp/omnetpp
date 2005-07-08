@@ -104,6 +104,7 @@ proc editFilter {name parentw} {
     #
 
     # add entry fields and focus on first one
+    label $nb.gen.help -justify left -text "Here you can assemble a compound filter by cascading existing ones."
     labelframe $nb.gen.f0 -text "General"
     label-entry $nb.gen.f0.name "Name:" $name
     label-text $nb.gen.f0.descr "Description:" 3 [opp_nodetype "%tmp%" description]
@@ -127,6 +128,7 @@ proc editFilter {name parentw} {
     grid columnconfig $nb.gen.f1 0 -weight 1
     grid rowconfig $nb.gen.f1 0 -weight 1
 
+    pack $nb.gen.help -anchor w -expand 0 -fill none -side top -padx 5 -pady 5
     pack $nb.gen.f0 -anchor center -expand 1 -fill both -side top -padx 5 -pady 5
     pack $nb.gen.f1 -anchor center -expand 1 -fill both -side top -padx 5 -pady 5
 
@@ -135,6 +137,7 @@ proc editFilter {name parentw} {
     #
 
     # add entry fields and focus on first one
+    label $nb.int.help -justify left -text "Subfilters will be applied in top-down order. They can refer to parameters defined on the previous page."
     labelframe $nb.int.f1 -text "Composed of filters"
     set flb $nb.int.f1.filters
     multicolumnlistbox $flb {
@@ -143,16 +146,17 @@ proc editFilter {name parentw} {
         {params   Parameters}
     }
 
-    grid $nb.int.f1.filters - - - - -sticky news
     button $nb.int.f1.app  -text " Append... "  -width 8 -command "editFilter_appendSubfilter $flb"
     button $nb.int.f1.ins  -text " Insert... "  -width 8 -command "editFilter_insertSubfilter $flb"
     button $nb.int.f1.edit -text " Edit... " -width 8 -command "editFilter_editSubfilter $flb"
     button $nb.int.f1.del  -text " Delete "  -width 8 -command "editFilter_deleteSubfilter $flb"
 
+    grid $nb.int.f1.filters - - - - -sticky news
     grid x $nb.int.f1.app $nb.int.f1.ins $nb.int.f1.edit $nb.int.f1.del -sticky news -padx 5 -pady 5
     grid columnconfig $nb.int.f1 0 -weight 1
     grid rowconfig $nb.int.f1 0 -weight 1
 
+    pack $nb.int.help -anchor w -expand 0 -fill none -side top -padx 5 -pady 5
     pack $nb.int.f1 -anchor center -expand 1 -fill both -side top -padx 5 -pady 5
 
     bind $plb <Double-Button-1> "$nb.gen.f1.edit invoke"
@@ -162,6 +166,7 @@ proc editFilter {name parentw} {
     bind $flb <Key-Return> "$nb.int.f1.edit invoke"
 
     focus $nb.gen.f0.name.e
+    notebook_showpage $nb gen
 
     # fill dialog with data
     foreach par [opp_nodetype "%tmp%" attrs] {

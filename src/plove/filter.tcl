@@ -223,6 +223,7 @@ proc editFilterForVectorAdvancedDialog {name parentw} {
     set f $w.f
 
     # add entry fields and focus on first one
+    label $f.help -justify left -text "You can add several filters, and they will be applied in top-down order."
     labelframe $f.f1 -text "Filters"
     set flb $f.f1.filters
     multicolumnlistbox $flb {
@@ -242,6 +243,7 @@ proc editFilterForVectorAdvancedDialog {name parentw} {
     grid columnconfig $f.f1 0 -weight 1
     grid rowconfig $f.f1 0 -weight 1
 
+    pack $f.help -anchor w -expand 0 -fill none -side top -padx 5 -pady 5
     pack $f.f1 -anchor center -expand 1 -fill both -side top -padx 5 -pady 5
 
     bind $flb <Double-Button-1> "$f.f1.edit invoke"

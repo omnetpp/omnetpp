@@ -22,7 +22,7 @@
 
 DifferenceQuotientNode::DifferenceQuotientNode()
 {
-    firstRead = FALSE;
+    firstRead = false;
 }
 
 bool DifferenceQuotientNode::isReady() const
@@ -37,7 +37,7 @@ void DifferenceQuotientNode::process()
     if (!firstRead)
     {
         in()->read(&l, 1);
-        firstRead = TRUE;
+        firstRead = true;
     }
 
     do {
