@@ -1,3 +1,8 @@
+2005-07-09  Andras Varga
+
+	* time.h: added opp_asctime() which produces string representation
+	of time time in "yyyy-mm-dd hh:mm:ss" format
+
 2005-03-31  ------ omnetpp-3.1 released ------
 
 2005-01-10  Andras Varga

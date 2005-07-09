@@ -18,6 +18,8 @@
 #ifndef __PLATDEP_TIME_H
 #define __PLATDEP_TIME_H
 
+#include <time.h>  // localtime()
+#include <stdio.h> // sprintf()
 #include <math.h>  // fmod()
 
 //
@@ -121,5 +123,15 @@ inline long timeval_diff_usec(const timeval& t2, const timeval& t1)
 
 inline timeval operator+(const timeval& a, const timeval& b) {return timeval_add(a,b);}
 inline timeval operator-(const timeval& a, const timeval& b) {return timeval_substract(a,b);}
+
+// prints time in "yyyy-mm-dd hh:mm:ss" format
+inline char *opp_asctime(time_t t, char *buf)
+{
+    struct tm now = *localtime(&t);
+    sprintf(buf,"%d-%02d-%02d %02d:%02d:%02d",
+                now.tm_year+1900, now.tm_mon+1, now.tm_mday,
+                now.tm_hour, now.tm_min, now.tm_sec);
+    return buf;
+}
 
 #endif
