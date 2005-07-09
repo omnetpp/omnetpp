@@ -10,7 +10,7 @@ There are two macros provided:
 Requirements: MSVC 6.0.SP1. Without SP1, AddNedFile may crash the IDE due to
 bugs in the Visual Studio Scripting Host.
 
-NOTE: An OMNeT++ Wizard is not provided in OMNeT++/OMNEST 3.0 or 3.1;
+NOTE: An OMNeT++ Wizard is not provided in OMNeT++/OMNEST 3.0, 3.1 or 3.2;
 we recommend that you start your project by copying one of the sample
 simulations provided.
 
@@ -31,7 +31,7 @@ Installation of the macros:
 
 2. Activate the macro file within the MSVC IDE:
    Tools|Customize --> select Add-ins and Macro Files tab --> in the listbox,
-   tick the 'omnetpp' item. This should also be done by the OMNeT++/OMNEST 
+   tick the 'omnetpp' item. This should also be done by the OMNeT++/OMNEST
    installer.
 
 3. Add icons to the MSVC toolbar:

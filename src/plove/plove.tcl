@@ -13,7 +13,7 @@
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
-puts {Plove 3.1 - Output vector plotting tool, part of OMNeT++/OMNEST.
+puts {Plove 3.2 - Output vector plotting tool, part of OMNeT++/OMNEST.
 (c) 1992-2005 Andras Varga
 See the license for distribution terms and warranty disclaimer.
 }

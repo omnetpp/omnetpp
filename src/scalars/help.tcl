@@ -16,7 +16,7 @@
 proc helpAbout {} {
     # implements Help|About
     aboutDialog "About Scalars" {
-Scalars 3.1
+Scalars 3.2
 Part of OMNeT++/OMNEST
 
 (c) 2004-2005 Andras Varga

@@ -21,9 +21,11 @@ option expressmode_autoupdate	{1}
 config rununtil-event	{}
 config last-nedfile	{}
 config filtobjlist-category	{amqpcsgvo}
+config display-timeline	{1}
 config filtobjlist-maxcount	{100000}
 config editor-findstring	{}
 config rununtil-time	{}
+config dontshow	{}
 config editor-regexp	{0}
 config filtobjlist-class	{}
 config rununtil-mode	{Express (tracing off)}
@@ -31,11 +33,12 @@ config filtobjlist-name	{}
 config confirm-exit	{1}
 config editor-backwards	{1}
 config display-treeview	{1}
+config timeline-maxnumevents	{1000}
 config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
-inspector "alohaNet.server.channel utilization" "cOutVector" "2" "386x326+3+19"
 inspector "alohaNet.server.collision multiplicity" "cOutVector" "2" "386x326+396+380"
+inspector "alohaNet.server.channel utilization" "cOutVector" "2" "386x326+3+19"
 inspector "alohaNet.server.collision length" "cOutVector" "2" "386x326+3+378"
 inspector "alohaNet" "ALOHAnet" "2" "617x576+22+29"
 

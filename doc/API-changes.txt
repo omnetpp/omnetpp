@@ -20,6 +20,11 @@ Legend:
 (i)     information
 
 
+OMNeT++ 3.2 (Jul 2005)
+~~~~~~~~~~~~~~~~~~~~~~
+<TBD>
+
+
 OMNeT++ 3.1 (Mar 2005)
 ~~~~~~~~~~~~~~~~~~~~~~
 Simulation library:

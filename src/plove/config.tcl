@@ -162,7 +162,7 @@ proc saveConfig {{fname {}}} {
            set fout [open $fname w]
 
            # save config
-           puts $fout "version 3.1"
+           puts $fout "version 3.2"
 
            puts $fout "\n# general config"
            foreach i [lsort [array names config]] {
@@ -230,7 +230,7 @@ proc loadConfig {{fname {}}} {
                set cat [lindex $line 0]
                if {$cat == "version"} {
                    set fversion [lindex $line 1]
-                   if {$fversion!="3.0" && $fversion!="3.1"} {
+                   if {$fversion!="3.0" && $fversion!="3.1" && $fversion!="3.2"} {
                        error "unrecognized file version $fversion"
                    }
                }

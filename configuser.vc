@@ -16,7 +16,7 @@
 OMNETPP_ROOT=d:/home/omnetpp
 
 # Version. Should ideally come from the 'Version' file...
-OMNETPP_VERSION=omnetpp-3.1
+OMNETPP_VERSION=omnetpp-3.2
 
 #
 # Directory and version of Tcl/Tk and BLT, for example "8.4" and "2.4".
@@ -192,7 +192,7 @@ XML_LIBS=$(LIBXML_LIBS)
 !endif
 
 # winsock is needed by libxml as well as the sockets example, maybe in the future by other libs too
-SYS_LIBS=wsock32.lib 
+SYS_LIBS=wsock32.lib
 
 #
 # Tools
