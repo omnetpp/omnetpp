@@ -245,7 +245,7 @@ proc bltGraph_HighlightLegend {} {
     if { $relief == "flat" } {
         if {[winfo class $graph]!="Barchart"} {
             $graph pen configure "activeLine" -color "#ff1000" \
-                   -symbol [$graph element cget $elem -symbol]
+                   -symbol [$graph element cget $elem -symbol] \
                    -pixels [$graph element cget $elem -pixels]
         }
         $graph element configure $elem -labelrelief solid
