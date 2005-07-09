@@ -44,8 +44,8 @@ static void parseAndAppendQuotedString(char *&s, std::string& dest)
 
 void getVectors(const char *fname, OutVectorArray& array)
 {
-    //const int buffersize = 64*1024;  // 64K buffer
-    const int buffersize = 200;
+    const int buffersize = 64*1024;  // 64K buffer
+    //const int buffersize = 200;
     char *buffer = new char[buffersize+100];  // +1 for EOS, +100 for MSVC hack (see later)
     int bufferused = 0;
     FILE *f = NULL;

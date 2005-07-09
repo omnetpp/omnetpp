@@ -82,7 +82,13 @@ void DataflowManager::execute()
     while (true)
     {
         Node *node = selectNode();
-        if (!node) break;
+        if (!node)
+        {
+            // try once more -- see selectNode()'s code for explanation
+            node = selectNode();
+            if (!node)
+                break;
+        }
         DBG(("execute: invoking %s\n", node->nodeType()->name()));
         node->process();
     }
@@ -123,7 +129,7 @@ bool DataflowManager::nodeFinished(Node *node)
     if (!node->finished())
         return false;
 
-    //printf("DBG: %s finished\n", node->nodeType()->name());
+    DBG(("DBG: %s finished\n", node->nodeType()->name()));
     node->setAlreadyFinished();
     int nc = channels.size();
     for (int i=0; i!=nc; i++)
@@ -131,12 +137,12 @@ bool DataflowManager::nodeFinished(Node *node)
         Channel *ch = channels[i];
         if (ch->consumerNode()==node)
         {
-            //printf("DBG:   one input closed\n");
+            DBG(("DBG:   one input closed\n"));
             ch->consumerClose();
         }
         if (ch->producerNode()==node)
         {
-            //printf("DBG:   one output closed\n");
+            DBG(("DBG:   one output closed\n"));
             ch->close();
         }
     }
@@ -168,11 +174,18 @@ Node *DataflowManager::selectNode()
         Node *node = nodes[i];
         if (!node->alreadyFinished() && !nodeFinished(node) && node->isReady())
         {
+            if (i==lastnode)
+                DBG(("DBG: %s invoked again -- perhaps its process() doesn't do as much at once as it could?\n", node->nodeType()->name()));
             lastnode = i;
             return node;
         }
     }
     while (i!=lastnode);
+
+    // IMPORTANT: caller must try it again once, when it receives NULL!
+    // In the while loop above, nodeFinished() may have a side effect
+    // of enabling a node (via setting eof() on its input) which we've
+    // already tried.
     return NULL;
 }
 
