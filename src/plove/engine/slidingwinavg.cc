@@ -65,7 +65,7 @@ void SlidingWindowAverageNode::process()
 const char *SlidingWindowAverageNodeType::description() const
 {
     return "Replaces every value with the mean of values in the window:\n"
-           "y[k] = SUM(k[i],i=k-winsize+1..k)/winsize";
+           "y[k] = SUM(y[i],i=k-winsize+1..k)/winsize";
 }
 
 void SlidingWindowAverageNodeType::getAttributes(StringMap& attrs) const
