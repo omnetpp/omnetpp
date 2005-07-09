@@ -1,3 +1,8 @@
+2005-07-09  Andras Varga
+
+	* filemgrs.cc: include time in "run..." lines of .sca files. Time is
+	in "yyyy-mm-dd hh:mm:ss" format
+
 2005-07-07  Andras Varga
 
 	omnetapp.cc: fix: ev.getUniqueNumber() produced garbage if it was 

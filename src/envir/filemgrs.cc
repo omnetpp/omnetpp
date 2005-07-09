@@ -23,6 +23,7 @@
 #include <string.h>
 #include <fstream>
 #include <errno.h> // SGI
+#include "platdep/time.h"
 #include "cenvir.h"
 #include "omnetapp.h"
 #include "csimul.h"
@@ -239,7 +240,12 @@ void cFileOutputScalarManager::init()
     if (!initialized)
     {
         initialized = true;
-        CHECK(fprintf(f,"run %d \"%s\"\n", simulation.runNumber(), simulation.networkType()->name()));
+
+        char buf[32]; // for opp_asctime: "yyyy-mm-dd hh:mm:ss"
+        CHECK(fprintf(f,"run %d \"%s\" \"%s\"\n",
+                      simulation.runNumber(),
+                      simulation.networkType()->name(),
+                      opp_asctime(time(0), buf)));
     }
 }
 
