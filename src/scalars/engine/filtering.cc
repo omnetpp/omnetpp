@@ -21,20 +21,20 @@
 
 
 void getFilteredScalarList(const ScalarManager& scalarMgr,
-               ScalarManager::FileRef fileRef, int runNumber,
-               const char *moduleName, const char *scalarName,
+               ScalarManager::RunRef runRef, const char *moduleName, const char *scalarName,
                ScalarManager::IntVector& outVec)
 {
+    ScalarManager::StringRef moduleNameRef = moduleName ? scalarMgr.getModuleNames().find(moduleName) : NULL;
+    ScalarManager::StringRef scalarNameRef = scalarName ? scalarMgr.getScalarNames().find(scalarName) : NULL;
+
     const ScalarManager::Values& scalars = scalarMgr.getValues();
-    ScalarManager::FileRef noFile = scalarMgr.getFiles().end();
     int k=0;
     for (ScalarManager::Values::const_iterator i=scalars.begin(); i!=scalars.end(); i++,k++)
     {
         const ScalarManager::Datum& d = *i;
-        if ((fileRef!=noFile && d.fileRef==fileRef) &&
-            (runNumber!=-1 && d.runNumber==runNumber) &&
-            (moduleName && *d.moduleNameRef==moduleName) &&
-            (scalarName && *d.scalarNameRef==scalarName)
+        if ((runRef==NULL || d.runRef==runRef) &&
+            (moduleNameRef==NULL || d.moduleNameRef==moduleNameRef) &&
+            (scalarNameRef==NULL || d.scalarNameRef==scalarNameRef)
            )
         {
             outVec.push_back(k);
@@ -74,30 +74,28 @@ void getFilteredScalarList2(const ScalarManager& scalarMgr,
         transform_pattern(nameFilter, namePattern);
     }
 
-    // iterate over all values and add matching ones to outVec
+    // iterate over all values and add matching ones to outVec.
+    // we can exploit the fact that ScalarManager contains the data in the order
+    // they were read from file, i.e. grouped by file and run number
+
     const ScalarManager::Values& scalars = scalarMgr.getValues();
-    std::string lastFnameAndRun;
-    ScalarManager::FileRef lastFileRef = scalarMgr.getFiles().end();
-    int lastRunNumber = -1;
+    ScalarManager::RunRef lastRunRef = NULL;
+    bool lastRunMatched = false;
     for (ScalarManager::Values::const_iterator i=scalars.begin(); i!=scalars.end(); i++)
     {
         const ScalarManager::Datum& d = *i;
 
         if (fileAndRunFilter && fileAndRunFilter[0])
         {
-            // we can exploit the fact that ScalarManager contains the data in the order
-            // they were read from file, i.e. grouped by file and run number
-            if (lastFileRef!=d.fileRef || lastRunNumber!=d.runNumber)
+            if (lastRunRef!=d.runRef)
             {
-                char buf[16];
-                sprintf(buf,"%d",d.runNumber);
-                lastFnameAndRun = d.fileRef->second.fileName + " #" + buf;
-                lastFileRef = d.fileRef;
-                lastRunNumber = d.runNumber;
+                lastRunRef = d.runRef;
+                lastRunMatched = (patMatchFile
+                    ? stringmatch(filePattern, lastRunRef->fileAndRunName.c_str())
+                    : !strcmp(lastRunRef->fileAndRunName.c_str(), fileAndRunFilter));
             }
-            if (patMatchFile ? !stringmatch(filePattern, lastFnameAndRun.c_str())
-                             : strcmp(lastFnameAndRun.c_str(), fileAndRunFilter))
-                continue; // no match
+            if (!lastRunMatched)
+                continue;
         }
 
         if (moduleFilter && moduleFilter[0] &&

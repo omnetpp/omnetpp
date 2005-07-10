@@ -20,12 +20,10 @@
 
 
 /**
- * Get a filtered subset of all scalars. All four filter parameters may be omitted
- * (for fileRef, moduleName, scalarName this means NULL, for runNumber it means -1)
+ * Get a filtered subset of all scalars. All four filter parameters may be omitted (NULL)
  */
 void getFilteredScalarList(const ScalarManager& scalarMgr,
-               ScalarManager::FileRef fileRef, int runNumber,
-               const char *moduleName, const char *scalarName,
+               ScalarManager::RunRef runRef, const char *moduleName, const char *scalarName,
                ScalarManager::IntVector& outVec);
 
 /**

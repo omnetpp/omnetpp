@@ -18,6 +18,7 @@
 
 #include <stdlib.h>
 #include <fstream>
+#include <sstream>
 #include <iostream>
 #include <memory>
 #include "patmatch.h"
@@ -34,12 +35,22 @@ ScalarManager::~ScalarManager()
 {
 }
 
-void ScalarManager::addValue(FileRef fileRef, int runNumber, const char *moduleName,
+ScalarManager::StringRef ScalarManager::stringMapFindOrInsert(StringSet& set, const std::string& str)
+{
+    StringRef m = set.find(str);
+    if (m==set.end())
+    {
+        std::pair<StringSet::iterator,bool> p = set.insert(str);
+        m = p.first;
+    }
+    return m;
+}
+
+void ScalarManager::addValue(RunRef runRef, const char *moduleName,
                              const char *scalarName, double value)
 {
     Datum d;
-    d.fileRef = fileRef;
-    d.runNumber = runNumber;
+    d.runRef = runRef;
 
     // lines in omnetpp.sca are usually grouped by module, we can exploit this for efficiency
     if (lastInsertedModuleRef!=moduleNames.end() && *lastInsertedModuleRef==moduleName)
@@ -48,22 +59,11 @@ void ScalarManager::addValue(FileRef fileRef, int runNumber, const char *moduleN
     }
     else
     {
-        StringRef m = moduleNames.find(moduleName);
-        if (m==moduleNames.end())
-        {
-            std::pair<StringSet::iterator,bool> p = moduleNames.insert(std::string(moduleName));
-            m = p.first;
-        }
+        StringRef m = stringMapFindOrInsert(moduleNames, std::string(moduleName));
         d.moduleNameRef = lastInsertedModuleRef = m;
     }
 
-    StringRef s = scalarNames.find(scalarName);
-    if (s==scalarNames.end())
-    {
-        std::pair<StringSet::iterator,bool> p = scalarNames.insert(std::string(scalarName));
-        s = p.first;
-    }
-    d.scalarNameRef = s;
+    d.scalarNameRef = stringMapFindOrInsert(scalarNames, std::string(scalarName));
 
     d.value = value;
 
@@ -71,34 +71,48 @@ void ScalarManager::addValue(FileRef fileRef, int runNumber, const char *moduleN
 }
 
 
-void ScalarManager::dump(FileRef fileRef, int runNumber, std::ostream out) const
+void ScalarManager::dump(FileRef fileRef, std::ostream& out) const
 {
+    RunRef prevRunRef = NULL;
     for (Values::const_iterator i = scalarValues.begin(); i!=scalarValues.end(); i++)
     {
         const Datum& d = *i;
-        if (d.fileRef==fileRef && d.runNumber==runNumber)
+        if (d.runRef->fileRef==fileRef)
         {
-            out << "scalar \"" << (*d.moduleNameRef) << "\"\t\""
-                << (*d.scalarNameRef) << "\"\t" << d.value << "\n";
+            if (d.runRef!=prevRunRef)
+            {
+                out << "run " << d.runRef->runNumber << " " << d.runRef->networkName
+                    << " \"" << d.runRef->date << "\"\n";
+                prevRunRef = d.runRef;
+            }
+            out << "scalar \"" << *d.moduleNameRef << "\"\t\""
+                << *d.scalarNameRef << "\"\t" << d.value << "\n";
         }
     }
 }
 
 
-static void parseAndAppendQuotedString(char *&s, std::string& dest)
+static void parseString(char *&s, std::string& dest, int lineNum)
 {
     while (*s==' ' || *s=='\t') s++;
-    if (*s!='"')
-        throw new TException("invalid vector file syntax: invalid vector definition: missing opening quote");
-    char *start = s+1;
-    s++;
-    while (*s && (*s!='"' || *(s-1)=='\\') && *s!='\r' && *s!='\n') s++;
-    if (*s!='"')
-        throw new TException("invalid vector file syntax: invalid vector definition: missing closing quote");
-    *s = '\0';
-    dest += start;
-    *s = '"';
-    s++;
+    if (*s=='"')
+    {
+        // parse quoted string
+        char *start = s+1;
+        s++;
+        while (*s && (*s!='"' || *(s-1)=='\\') && *s!='\r' && *s!='\n') s++;
+        if (*s!='"')
+            throw new TException("invalid vector file syntax: missing close quote, line %d", lineNum);
+        dest.assign(start, s-start);
+        s++;
+    }
+    else
+    {
+        // parse unquoted string
+        char *start = s;
+        while (*s && *s!=' ' && *s!='\t' && *s!='\r' && *s!='\n') s++;
+        dest.assign(start, s-start); // can be empty as well
+    }
 }
 
 static void splitFileName(const char *pathname, std::string& dir, std::string& fnameonly)
@@ -130,59 +144,83 @@ static void splitFileName(const char *pathname, std::string& dir, std::string& f
     }
 }
 
-void ScalarManager::processLine(char *&s, FileMap::iterator fileRef, int& runNumber)
+void ScalarManager::processLine(char *&s, RunRef& runRef, FileRef fileRef, int lineNum)
 {
     if (!strncmp(s,"run ",4))
     {
         // parse and store run number
         s+=4;
-        runNumber = atoi(s);
-        fileRef->second.runNumbers.push_back(runNumber);  // FIXME if not already there!
+        std::string runNumber, networkName, date;
+        parseString(s, runNumber, lineNum);
+        parseString(s, networkName, lineNum);
+        parseString(s, date, lineNum);
         while (*s && *s!='\r' && *s!='\n') s++;
+        if (runNumber.empty())
+            throw new TException("invalid scalar file: no run number on `run' line, line %d", lineNum);
+
+        // add a new Run, and fill in its members
+        runList.push_back(Run());
+        runRef = --(runList.end());
+
+        Run& run = runList.back();
+        run.fileRef = fileRef;
+        run.runNumber = atoi(runNumber.c_str());
+        run.networkName = networkName;
+        run.date = date;
+        run.lineNum = lineNum;
+
+        std::stringstream os;
+        os << runNumber << " (at line " << lineNum << ")";
+        run.runName = os.str();
+        //if (!date.empty())
+        //    run.runName += " (" + date + ")";
+        run.fileAndRunName = fileRef->filePath + "#" + runRef->runName;
     }
     else if (!strncmp(s,"scalar ",7))
     {
-        if (runNumber==-1)
-            throw new TException("invalid scalar file: no `run' line before first `scalar' line");
+        if (runRef==NULL)
+            throw new TException("invalid scalar file: no `run' line before first `scalar' line, line %d", lineNum);
 
         s+=7;
 
         std::string moduleName;
         std::string scalarName;
-        parseAndAppendQuotedString(s, moduleName);
-        parseAndAppendQuotedString(s, scalarName);
+        parseString(s, moduleName, lineNum);
+        parseString(s, scalarName, lineNum);
 
         char *e;
         double value = strtod(s,&e);
         if (s==e)
-            throw new TException("invalid scalar file syntax: invalid value column");
+            throw new TException("invalid scalar file syntax: invalid value column, line %d", lineNum);
         s = e;
         while (*s==' ' || *s=='\t') s++;
 
-        addValue(fileRef, runNumber, moduleName.c_str(), scalarName.c_str(), value);
+        addValue(runRef, moduleName.c_str(), scalarName.c_str(), value);
     }
 }
 
 
 ScalarManager::FileRef ScalarManager::loadFile(const char *filename)
 {
-    FileMap::iterator fileRef = scalarFiles.find(filename);
-    if (fileRef!=scalarFiles.end())
-        throw new TException("file already loaded");
+    // check
+    for (FileRef i = fileList.begin(); i!=fileList.end(); i++)
+        if (i->filePath==filename)
+            throw new TException("file already loaded");
 
     // open file
     FILE *f = fopen(filename, "r");
     if (!f)
         throw new TException("cannot open `%s' for read", filename);
 
-    scalarFiles[filename]; // force adding it to the map
-    fileRef = scalarFiles.find(filename);
-
-    fileRef->second.filePath = filename;
-    splitFileName(filename, fileRef->second.directory, fileRef->second.fileName);
+    // add to fileList
+    fileList.push_back(File());
+    FileRef fileRef = --(fileList.end());
+    File& file = fileList.back();
+    file.filePath = filename;
+    splitFileName(filename, file.directory, file.fileName);
 
     int lineNum = 0;
-    int runNumber = -1;
+    RunRef runRef = NULL;
 
     // process file, reading it in large chunks
     const int buffersize = 4*1024*1024;  // 4MB
@@ -239,7 +277,7 @@ ScalarManager::FileRef ScalarManager::loadFile(const char *filename)
                 char old = *endline;
                 *endline = 0;
 
-                processLine(s, fileRef, runNumber);
+                processLine(s, runRef, fileRef, lineNum);
 
                 *endline = old;
             }
@@ -257,20 +295,9 @@ ScalarManager::FileRef ScalarManager::loadFile(const char *filename)
     }
     printf("DBG: read %d lines\n",lineNum);
 
+    // dump(fileRef, std::cout);
+
     return fileRef;
 }
 
 
-
-/*
-int main(int argc, char **argv)
-{
-    if (argc<2)
-        return 1;
-
-    ScalarManager scamgr;
-    ScalarManager::FileRef ref = scamgr.loadFile(argv[1]);
-    scamgr.dump(ref,1,std::cout);
-    return 0;
-}
-*/

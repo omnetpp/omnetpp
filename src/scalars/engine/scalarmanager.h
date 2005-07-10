@@ -19,6 +19,7 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <list>
 
 #include "texception.h"
 
@@ -36,25 +37,39 @@ class ScalarManager
 {
   public:
     typedef std::vector<int> IntVector;
+    typedef std::set<std::string> StringSet;
+    typedef StringSet::const_iterator StringRef;
+    typedef std::vector<StringRef> StringRefVector;
 
     struct File
     {
-        std::string filePath;
+        std::string filePath; // directory + fileName
         std::string directory;
         std::string fileName;
-        IntVector runNumbers;
     };
 
-    typedef std::map<std::string,File> FileMap;
-    typedef FileMap::const_iterator FileRef;
+    typedef std::list<File> FileList;
+    typedef FileList::const_iterator FileRef;
 
-    typedef std::set<std::string> StringSet;
-    typedef StringSet::const_iterator StringRef;
-
-    struct Datum
+    struct Run
     {
         FileRef fileRef;
         int runNumber;
+        std::string networkName;
+        std::string date;
+        int lineNum;
+
+        // these fields are concatenation of the above ones, cached for fast string matching
+        std::string runName;
+        std::string fileAndRunName;
+    };
+
+    typedef std::list<Run> RunList;
+    typedef RunList::const_iterator RunRef;
+
+    struct Datum
+    {
+        RunRef runRef;
         StringRef moduleNameRef;
         StringRef scalarNameRef;
         double value;
@@ -63,15 +78,21 @@ class ScalarManager
     typedef std::vector<Datum> Values;
 
   private:
-    FileMap scalarFiles;
+    FileList fileList;
+    RunList runList;
     StringSet moduleNames;
     StringSet scalarNames;
+    StringSet classNames;
 
     Values scalarValues;
 
     StringRef lastInsertedModuleRef;
 
-    void processLine(char *&line, FileMap::iterator fileRef, int& runNumber);
+  private:
+    // utility, called during processing one line
+    void processLine(char *&line, RunRef& runRef, FileRef fileRef, int lineNum);
+
+    static StringRef stringMapFindOrInsert(StringSet& set, const std::string& str);
 
   public:
     ScalarManager();
@@ -79,15 +100,16 @@ class ScalarManager
 
     const Values& getValues() const  {return scalarValues;}
     const Datum& getValue(int id) const  {return scalarValues[id];}
-    const FileMap& getFiles() const  {return scalarFiles;}
+    const FileList& getFiles() const  {return fileList;}
+    const RunList& getRuns() const  {return runList;}
     const StringSet& getModuleNames() const  {return moduleNames;}
     const StringSet& getScalarNames() const  {return scalarNames;}
 
-    void addValue(FileRef fileRef, int runNumber, const char *moduleName, const char *scalarName, double value);
+    void addValue(RunRef runRef, const char *moduleName, const char *scalarName, double value);
 
     FileRef loadFile(const char *filename);
 
-    void dump(FileRef fileRef, int runNumber, std::ostream out) const;
+    void dump(FileRef fileRef, std::ostream& out) const;
 };
 
 #endif

@@ -113,17 +113,10 @@ int getFileAndRunList_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
     if (argc!=1) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getFileAndRunList\"", TCL_STATIC); return TCL_ERROR;}
     CATCH_EXCEPTIONS(
         Tcl_Obj *vectorlist = Tcl_NewListObj(0, NULL);
-        for (ScalarManager::FileRef i = scalarMgr.getFiles().begin(); i!=scalarMgr.getFiles().end(); ++i)
+        for (ScalarManager::RunRef i = scalarMgr.getRuns().begin(); i!=scalarMgr.getRuns().end(); ++i)
         {
-            const ScalarManager::File& file = i->second;
-            for (int j=0; j<(int)file.runNumbers.size(); j++)
-            {
-                char buf[16];
-                sprintf(buf,"%d",file.runNumbers[j]);
-                std::string str = file.fileName + " #" + buf;
-                Tcl_Obj *strobj = Tcl_NewStringObj(TCLCONST(str.c_str()),-1);
-                Tcl_ListObjAppendElement(interp, vectorlist, strobj);
-            }
+            Tcl_Obj *strobj = Tcl_NewStringObj(TCLCONST(i->fileAndRunName.c_str()),-1);
+            Tcl_ListObjAppendElement(interp, vectorlist, strobj);
         }
         Tcl_SetObjResult(interp, vectorlist);
     )
@@ -186,7 +179,7 @@ int getFilePathOf_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
     if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getFilePathOf <id>\"", TCL_STATIC); return TCL_ERROR;}
     int id = atoi(argv[1]);
     if (id<0 || id>=(int)scalarMgr.getValues().size()) {Tcl_SetResult(interp, "id out of range", TCL_STATIC); return TCL_ERROR;}
-    Tcl_SetResult(interp, TCLCONST(scalarMgr.getValue(id).fileRef->second.filePath.c_str()), TCL_VOLATILE);
+    Tcl_SetResult(interp, TCLCONST(scalarMgr.getValue(id).runRef->fileRef->filePath.c_str()), TCL_VOLATILE);
     return TCL_OK;
 }
 
@@ -195,7 +188,7 @@ int getFileNameOf_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
     if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getFileNameOf <id>\"", TCL_STATIC); return TCL_ERROR;}
     int id = atoi(argv[1]);
     if (id<0 || id>=(int)scalarMgr.getValues().size()) {Tcl_SetResult(interp, "id out of range", TCL_STATIC); return TCL_ERROR;}
-    Tcl_SetResult(interp, TCLCONST(scalarMgr.getValue(id).fileRef->second.fileName.c_str()), TCL_VOLATILE);
+    Tcl_SetResult(interp, TCLCONST(scalarMgr.getValue(id).runRef->fileRef->fileName.c_str()), TCL_VOLATILE);
     return TCL_OK;
 }
 
@@ -204,16 +197,16 @@ int getDirectoryOf_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
     if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getDirectoryOf <id>\"", TCL_STATIC); return TCL_ERROR;}
     int id = atoi(argv[1]);
     if (id<0 || id>=(int)scalarMgr.getValues().size()) {Tcl_SetResult(interp, "id out of range", TCL_STATIC); return TCL_ERROR;}
-    Tcl_SetResult(interp, TCLCONST(scalarMgr.getValue(id).fileRef->second.directory.c_str()), TCL_VOLATILE);
+    Tcl_SetResult(interp, TCLCONST(scalarMgr.getValue(id).runRef->fileRef->directory.c_str()), TCL_VOLATILE);
     return TCL_OK;
 }
 
 int getRunNoOf_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-    if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getModuleOf <id>\"", TCL_STATIC); return TCL_ERROR;}
+    if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getRunNoOf <id>\"", TCL_STATIC); return TCL_ERROR;}
     int id = atoi(argv[1]);
     if (id<0 || id>=(int)scalarMgr.getValues().size()) {Tcl_SetResult(interp, "id out of range", TCL_STATIC); return TCL_ERROR;}
-    Tcl_SetObjResult(interp, Tcl_NewIntObj(scalarMgr.getValue(id).runNumber));
+    Tcl_SetResult(interp, TCLCONST(scalarMgr.getValue(id).runRef->runName.c_str()), TCL_VOLATILE);
     return TCL_OK;
 }
 
@@ -254,11 +247,11 @@ int getListboxLine_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
 
     Tcl_Obj *vectorlist = Tcl_NewListObj(0, NULL);
     Tcl_ListObjAppendElement(interp, vectorlist, Tcl_NewStringObj("dir",-1));
-    Tcl_ListObjAppendElement(interp, vectorlist, Tcl_NewStringObj(TCLCONST(d.fileRef->second.directory.c_str()),-1));
+    Tcl_ListObjAppendElement(interp, vectorlist, Tcl_NewStringObj(TCLCONST(d.runRef->fileRef->directory.c_str()),-1));
     Tcl_ListObjAppendElement(interp, vectorlist, Tcl_NewStringObj("file",-1));
-    Tcl_ListObjAppendElement(interp, vectorlist, Tcl_NewStringObj(TCLCONST(d.fileRef->second.fileName.c_str()),-1));
+    Tcl_ListObjAppendElement(interp, vectorlist, Tcl_NewStringObj(TCLCONST(d.runRef->fileRef->fileName.c_str()),-1));
     Tcl_ListObjAppendElement(interp, vectorlist, Tcl_NewStringObj("run",3));
-    Tcl_ListObjAppendElement(interp, vectorlist, Tcl_NewIntObj(d.runNumber));
+    Tcl_ListObjAppendElement(interp, vectorlist, Tcl_NewStringObj(TCLCONST(d.runRef->runName.c_str()),-1));
     Tcl_ListObjAppendElement(interp, vectorlist, Tcl_NewStringObj("module",7));
     Tcl_ListObjAppendElement(interp, vectorlist, Tcl_NewStringObj(TCLCONST(d.moduleNameRef->c_str()),-1));
     Tcl_ListObjAppendElement(interp, vectorlist, Tcl_NewStringObj("name",4));
@@ -279,7 +272,7 @@ typedef bool (*CompareFunc)(int id1, int id2);
 
 static bool sameGroupFileRunScalar(const ScalarManager::Datum& d1, const ScalarManager::Datum& d2)
 {
-    return d1.fileRef==d2.fileRef && d1.runNumber==d2.runNumber && d1.scalarNameRef==d2.scalarNameRef;
+    return d1.runRef==d2.runRef && d1.scalarNameRef==d2.scalarNameRef;
 }
 
 static bool sameGroupModuleScalar(const ScalarManager::Datum& d1, const ScalarManager::Datum& d2)
@@ -289,7 +282,7 @@ static bool sameGroupModuleScalar(const ScalarManager::Datum& d1, const ScalarMa
 
 static bool sameGroupFileRunModule(const ScalarManager::Datum& d1, const ScalarManager::Datum& d2)
 {
-    return d1.fileRef==d2.fileRef && d1.runNumber==d2.runNumber && d1.moduleNameRef==d2.moduleNameRef;
+    return d1.runRef==d2.runRef && d1.moduleNameRef==d2.moduleNameRef;
 }
 
 static bool lessByModuleRef(int id1, int id2)
@@ -310,26 +303,21 @@ static bool lessByFileAndRun(int id1, int id2)
 {
     const ScalarManager::Datum& d1 = scalarMgr.getValue(id1);
     const ScalarManager::Datum& d2 = scalarMgr.getValue(id2);
-    const std::string& fname1 = d1.fileRef->second.filePath;
-    const std::string& fname2 = d2.fileRef->second.filePath;
-    if (fname1==fname2)
-        return d1.runNumber < d2.runNumber;
-    else
-        return fname1 < fname2;
+    return strdictcmp(d1.runRef->fileAndRunName.c_str(), d2.runRef->fileAndRunName.c_str());
 }
 
 static bool equalByFileAndRun(int id1, int id2)
 {
     const ScalarManager::Datum& d1 = scalarMgr.getValue(id1);
     const ScalarManager::Datum& d2 = scalarMgr.getValue(id2);
-    return d1.fileRef==d2.fileRef && d1.runNumber==d2.runNumber;
+    return d1.runRef == d2.runRef;
 }
 
 static bool lessByScalarNameRef(int id1, int id2)
 {
     const ScalarManager::Datum& d1 = scalarMgr.getValue(id1);
     const ScalarManager::Datum& d2 = scalarMgr.getValue(id2);
-    return *(d1.scalarNameRef) < *(d2.scalarNameRef);
+    return strdictcmp(d1.scalarNameRef->c_str(), d2.scalarNameRef->c_str());
 }
 
 static bool equalByScalarNameRef(int id1, int id2)
