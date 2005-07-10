@@ -826,7 +826,7 @@ proc bltGraph_saveAsDefaults {graph} {
         set e [lindex [$graph element names] 0]
         set config(bltgraph-elempixels) [$graph element cget $e -pixels]
         set config(bltgraph-elemsmooth) [$graph element cget $e -smooth]
-        set config(bltgraph-elemlinewidth [$graph element cget $e -linewidth]
+        set config(bltgraph-elemlinewidth) [$graph element cget $e -linewidth]
     }
 }
 

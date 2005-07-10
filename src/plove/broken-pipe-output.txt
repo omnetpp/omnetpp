@@ -1,0 +1,54 @@
+$ gdb plove
+...
+Program received signal SIGPIPE, Broken pipe.
+0xffffe410 in ?? ()
+(gdb) bt
+#0  0xffffe410 in ?? ()
+#1  0xbfffc878 in ?? ()
+#2  0x00000001 in ?? ()
+#3  0xbfffc8f0 in ?? ()
+#4  0x40500eb6 in do_writev () from /lib/tls/libc.so.6
+#5  0x40168f9e in _X11TransSocketWritev () from /usr/X11R6/lib/libX11.so.6
+#6  0x4016860f in _X11TransWritev () from /usr/X11R6/lib/libX11.so.6
+#7  0x4014be7a in _XSend () from /usr/X11R6/lib/libX11.so.6
+#8  0x4012b317 in XDrawLines () from /usr/X11R6/lib/libX11.so.6
+#9  0x4005c092 in Blt_MapLegend () from /usr/lib/libBLT24.so
+#10 0x4005dfe1 in Blt_MapLegend () from /usr/lib/libBLT24.so
+#11 0x40051e98 in Blt_DrawElements () from /usr/lib/libBLT24.so
+#12 0x4006ae1f in Blt_GraphInit () from /usr/lib/libBLT24.so
+#13 0x4006b24d in Blt_DrawGraph () from /usr/lib/libBLT24.so
+#14 0x4006b42b in Blt_LayoutGraph () from /usr/lib/libBLT24.so
+#15 0x40332a8d in TclServiceIdle () from /usr/lib/libtcl8.4.so
+#16 0x4036aad5 in Tcl_DoOneEvent () from /usr/lib/libtcl8.4.so
+
+
+$ valgrind --tool=memcheck --trace-syscalls=yes plove
+...
+SYSCALL[5701,1](  4) blocking:write ( 3, 0x1BED0358, 16 )
+--5701-- sys_wait_results: got PX_RunSyscall for TID 1: syscall 4 result 16
+SYSCALL[5701,1](  3) blocking:read ( 3, 0x52BFB620, 32 )
+--5701-- sys_wait_results: got PX_RunSyscall for TID 1: syscall 3 result 32
+SYSCALL[5701,1](  3) blocking:read ( 3, 0x52BFB520, 12 )
+--5701-- sys_wait_results: got PX_RunSyscall for TID 1: syscall 3 result 12
+SYSCALL[5701,1](  3) blocking:read ( 3, 0x52BFB620, 32 )
+--5701-- sys_wait_results: got PX_RunSyscall for TID 1: syscall 3 result 32
+SYSCALL[5701,1](146) blocking:writev ( 3, 0x52BFB8C0, 2 )
+--5701-- sys_wait_results: got PX_RunSyscall for TID 1: syscall 146 result 112896
+SYSCALL[5701,1](146) blocking:writev ( 3, 0x52BFB8C0, 1 )
+--5701-- sys_wait_results: got PX_RunSyscall for TID 1: syscall 146 result -32
+SYSCALL[5701,1](  4) blocking:write ( 2, 0x52BF9224, 65 )
+X connection to :0.0 broken (explicit kill or server shutdown).
+--5701-- sys_wait_results: got PX_RunSyscall for TID 1: syscall 4 result 65
+SYSCALL[5701,1]( 91):munmap ( 0x1B914000, 4096 )
+--5701-- Caught __NR_exit; running __libc_freeres()
+SYSCALL[5701,1]( 91):munmap ( 0x1B908000, 21436 )
+SYSCALL[5701,1]( 91):munmap ( 0x1BF8F000, 208464 )
+SYSCALL[5701,1]( 91):munmap ( 0x0, 0 )
+--5701-- __libc_freeres() done; really quitting!
+==5701==
+==5701== ERROR SUMMARY: 108 errors from 3 contexts (suppressed: 37 from 1)
+==5701== malloc/free: in use at exit: 167957690 bytes in 44016 blocks.
+==5701== malloc/free: 190034 allocs, 146018 frees, 613277891 bytes allocated.
+==5701== For a detailed leak analysis,  rerun with: --leak-check=yes
+==5701== For counts of detected errors, rerun with: -v
+

@@ -42,16 +42,37 @@ proc getVectorsToPlot {} {
 
 
 proc checkmemory {arraylist} {
+    global tcl_platform
+
     array set arraybuilder $arraylist
     set numpoints 0
+    set maxlen 0
     foreach id [array names arraybuilder] {
-        incr numpoints [opp_arraybuilder $arraybuilder($id) length]
+        set len [opp_arraybuilder $arraybuilder($id) length]
+        incr numpoints $len
+        if {$maxlen < $len} {set maxlen $len}
     }
+
+    # check if we'll have enough memory (BLT has a tendency to just call abort()
+    # when it fails to malloc memory).
     if [catch {opp_checkmemory $numpoints}] {
-        error "Not enough memory, plot contains too many points ($numpoints). \
+        error "Not enough memory, plot contains too many points ($numpoints).\n\
+              \n\
               You can decrease the number of points by selecting fewer vectors to plot, \
-              limit the time period plotted (\"crop\" filter), or aggregate points by \
-              using e.g. the \"winavg\" filter."
+              or by applying e.g. the \"crop\" or the \"winavg\" filter."
+    }
+
+    if {$tcl_platform(platform) == "unix"} {
+        # if a vector is too long, that will cause Plove to be killed with "Broken pipe"
+        # while writing to the X server. See broken-pipe-output.txt.
+        if {$numpoints>200000} {
+            set msg "One of the vectors in the plot contains too many points ($numpoints). \
+                    Some X servers don't like that, which will cause Plove to be killed by SIGPIPE. \
+                    You can decrease the number of points e.g. by applying the \"crop\" or the \"winavg\" filter.\n\
+                    \nTake the risk and try it anyway?"
+            set ans [tk_messageBox -title "Warning" -icon warning -type yesno -message $msg]
+            if {$ans=="no"} {error "cancelled"}
+        }
     }
 }
 
@@ -99,8 +120,7 @@ proc createVectorPlot {{idlist {}}} {
         # execute
         opp_executenetwork $net
 
-        # check if we'll have enough memory (BLT has a tendency to just
-        # abort() when fails to malloc memory).
+        # check if we'll have enough memory
         checkmemory [array get arraybuilder]
 
         # create graph
@@ -186,8 +206,7 @@ proc createVectorScatterPlot {idlist xid chartname} {
         # execute
         opp_executenetwork $net
 
-        # check if we'll have enough memory (BLT has a tendency to just
-        # abort() when fails to malloc memory).
+        # check if we'll have enough memory
         checkmemory [array get arraybuilder]
 
         # create graph

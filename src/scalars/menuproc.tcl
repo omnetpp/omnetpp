@@ -53,7 +53,7 @@ proc editCopy {} {
 # Copy table contents to clipboard (tab-separated), with "Name" and "Value" columns
 #
 proc editCopy1 {} {
-    # FIXME doesn't obey current listbox sorting -- manybe should get IDs from listbox?
+    # FIXME doesn't obey current listbox sorting -- maybe should get IDs from listbox?
     # should maybe also obey listbox selection?
     set idlist [getFilteredList]
     set data "Directory\tFile\tRun#\tModule\tName\tValue\n"
