@@ -1,4 +1,7 @@
-This occurs inside BLT, if a line on the graph contains more than ~500,000 points (SUSE 9.1).
+This occurs inside BLT, if a line on the graph contains more than ~500,000 
+points (SUSE 9.1). Cannot do much against it, it appears that the X server
+(XFree86) says "enough" :(
+
 
 $ gdb plove
 ...
