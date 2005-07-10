@@ -86,6 +86,12 @@ class Channel
         void consumerClose() {buffer.clear();consumerfinished=true;}
 
         /**
+         * Returns true when the consumer has closed the channel, that is, 
+         * it will not read any more data from the channel.
+         */
+        bool consumerClosed() {return consumerfinished;}
+
+        /**
          * Number of currently buffered items.
          */
         int length() {return buffer.size();}

@@ -50,7 +50,7 @@ void AHost::initialize()
     WATCH(slotTime);
     WATCH(isSlotted);
 
-    endTxEvent = new cMessage("endTxEvent");
+    endTxEvent = new cMessage("send/endTx");
     state = IDLE;
     pkCounter = 0;
     WATCH((int&)state);

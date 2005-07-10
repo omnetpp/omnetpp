@@ -393,9 +393,9 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
     set w .bltwin.graphprops
     createOkCancelDialog $w "Graph Properties"
     button $w.buttons.applybutton  -text {Apply} -width 10
-    button $w.buttons.savedefbutton  -text {Store as defaults}
+    button $w.buttons.savedefbutton  -text {Set as defaults}
     pack $w.buttons.applybutton $w.buttons.savedefbutton -anchor n -side right -padx 2
-    wm geometry $w 360x320
+    wm geometry $w 400x330
 
     # tabnotebook
     set nb $w.f.nb
@@ -474,6 +474,8 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
     grid $f.l $f.g -sticky new
     grid rowconfig $f 0 -weight 0
     grid rowconfig $f 1 -weight 1
+    grid columnconfig $f 0 -weight 1
+    grid columnconfig $f 1 -weight 1
     #pack $f.xdiv $f.ydiv -side top -anchor w -expand 0 -fill x
 
     if {[winfo class $graph]!="Barchart"} {
