@@ -1,3 +1,5 @@
+This occurs inside BLT, if a line on the graph contains more than ~500,000 points (SUSE 9.1).
+
 $ gdb plove
 ...
 Program received signal SIGPIPE, Broken pipe.
