@@ -2789,14 +2789,7 @@ build_shared_libs=if-not-windows
 # Default flags for values for other variables that come from configure.user.
 #----------------------
 
-# for Tcl/Tk
-# following line relies on having AC_PROG_CXX earlier!
-if test "$GCC" = "yes"; then
-   TK_CFLAGS="-fwritable-strings"
-else
-   # other compilers use different flag, but we can't figure it out here
-   TK_CFLAGS=
-fi
+TK_CFLAGS=
 TK_LIBS=
 
 if test "$cygwin" = yes; then

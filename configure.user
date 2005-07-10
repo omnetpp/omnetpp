@@ -61,12 +61,11 @@ WITH_PARSIM=yes
 #
 # With gcc, settings typically look like this:
 #
-# TK_CFLAGS="-I/usr/local/include -fwritable-strings"
+# TK_CFLAGS="-I/usr/local/include"
 # TK_LIBS="-L/usr/local/lib -ltk8.4 -ltcl8.4"
 #
 # /usr/local/include should be replaced with the directory where tcl.h and tk.h
 # live. If they are in two different directories, use two -I switches.
-# The '-fwritable-strings' flag is a gcc option Tcl needs.
 #
 # /usr/local/lib should be replaced with the directory that contains the Tcl/Tk
 # library files (something like libtcl84.so, libtk8.4.a etc; search for libtcl*
@@ -76,10 +75,10 @@ WITH_PARSIM=yes
 # case add -lX11 to TK_LIBS.
 #
 # With MinGW I use the following:
-#  TK_CFLAGS="-I/d/home/tools/Tcl-8.4.5/include -fwritable-strings"
+#  TK_CFLAGS="-I/d/home/tools/Tcl-8.4.5/include"
 #  TK_LIBS="-L/d/home/tools/Tcl-8.4.5/lib -ltk84 -ltcl84"
 # With Cygwin, you can try:
-#  TK_CFLAGS="-fwritable-strings"
+#  TK_CFLAGS=
 #  TK_LIBS="-ltk84 -ltcl84"
 #
 # If commented out, the configure script will try to autodetect it
