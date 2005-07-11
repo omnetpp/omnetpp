@@ -22,9 +22,11 @@
 /**
  * Get a filtered subset of all scalars. All four filter parameters may be omitted (NULL)
  */
+/* not used
 void getFilteredScalarList(const ScalarManager& scalarMgr,
                ScalarManager::RunRef runRef, const char *moduleName, const char *scalarName,
                ScalarManager::IntVector& outVec);
+*/
 
 /**
  * Get a filtered subset of all scalars. All three filter parameters may be null,

@@ -20,6 +20,7 @@
 #include "filtering.h"
 
 
+/* --- not used, 2nd one is more general ---
 void getFilteredScalarList(const ScalarManager& scalarMgr,
                ScalarManager::RunRef runRef, const char *moduleName, const char *scalarName,
                ScalarManager::IntVector& outVec)
@@ -42,7 +43,7 @@ void getFilteredScalarList(const ScalarManager& scalarMgr,
         }
     }
 }
-
+*/
 
 void getFilteredScalarList2(const ScalarManager& scalarMgr,
                const char *fileAndRunFilter,
