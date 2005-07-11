@@ -101,7 +101,7 @@ IntVectorVector DataSorter::doGrouping(const IntVector& idlist, GroupingFunc sam
 
     // parse idlist and do grouping as well, on the fly
     IntVectorVector vv;
-    for (int ii=0; ii<idlist.size(); ii++)
+    for (int ii = 0; ii < (int)idlist.size(); ii++)
     {
         int id = idlist[ii];
 
@@ -254,7 +254,7 @@ IntVector DataSorter::getModuleAndNamePairs(const IntVector& idlist, int maxcoun
     ScalarManager::IntVector vec;
 
     // go through idlist and pick ids that represent a new (module, name pair)
-    for (int ii=0; ii<idlist.size(); ii++)
+    for (int ii = 0; ii < (int)idlist.size(); ii++)
     {
         int id = idlist[ii];
 

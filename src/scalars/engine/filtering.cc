@@ -24,8 +24,9 @@ void getFilteredScalarList(const ScalarManager& scalarMgr,
                ScalarManager::RunRef runRef, const char *moduleName, const char *scalarName,
                ScalarManager::IntVector& outVec)
 {
-    ScalarManager::StringRef moduleNameRef = moduleName ? scalarMgr.getModuleNames().find(moduleName) : NULL;
-    ScalarManager::StringRef scalarNameRef = scalarName ? scalarMgr.getScalarNames().find(scalarName) : NULL;
+    ScalarManager::StringRef null = NULL;
+    ScalarManager::StringRef moduleNameRef = moduleName ? scalarMgr.getModuleNames().find(moduleName) : null;
+    ScalarManager::StringRef scalarNameRef = scalarName ? scalarMgr.getScalarNames().find(scalarName) : null;
 
     const ScalarManager::Values& scalars = scalarMgr.getValues();
     int k=0;
@@ -33,8 +34,8 @@ void getFilteredScalarList(const ScalarManager& scalarMgr,
     {
         const ScalarManager::Datum& d = *i;
         if ((runRef==NULL || d.runRef==runRef) &&
-            (moduleNameRef==NULL || d.moduleNameRef==moduleNameRef) &&
-            (scalarNameRef==NULL || d.scalarNameRef==scalarNameRef)
+            (moduleNameRef==null || d.moduleNameRef==moduleNameRef) &&
+            (scalarNameRef==null || d.scalarNameRef==scalarNameRef)
            )
         {
             outVec.push_back(k);
