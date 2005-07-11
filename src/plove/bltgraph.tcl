@@ -395,7 +395,7 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
     button $w.buttons.applybutton  -text {Apply} -width 10
     button $w.buttons.savedefbutton  -text {Set as defaults}
     pack $w.buttons.applybutton $w.buttons.savedefbutton -anchor n -side right -padx 2
-    wm geometry $w 400x330
+    wm geometry $w 430x350
 
     # tabnotebook
     set nb $w.f.nb

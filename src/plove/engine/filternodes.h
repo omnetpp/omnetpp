@@ -176,7 +176,7 @@ class DifferenceNodeType : public FilterNodeType
 class MovingAverageNode : public FilterNode
 {
     protected:
-        double alpha, oneMinusAlpha;
+        double alpha;
         bool firstRead;
         double prevy;
     public:

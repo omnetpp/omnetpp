@@ -293,7 +293,6 @@ MovingAverageNode::MovingAverageNode(double alph)
     firstRead = true;
     prevy=0;
     alpha = alph;
-    oneMinusAlpha = 1-alph;
 }
 
 bool MovingAverageNode::isReady() const
@@ -317,7 +316,7 @@ void MovingAverageNode::process()
     {
         Datum d;
         in()->read(&d,1);
-        d.y = prevy = oneMinusAlpha*d.y + alpha*prevy;
+        d.y = prevy = prevy + alpha*(d.y-prevy);
         out()->write(&d,1);
     }
 }
@@ -327,12 +326,12 @@ void MovingAverageNode::process()
 const char *MovingAverageNodeType::description() const
 {
     return "Applies the exponentially weighted moving average filter:\n"
-           "y[k] = (1-alpha)*y[k] + alpha*y[k-1]";
+           "yout[k] = yout[k-1] + alpha*(y[k]-yout[k-1])";
 }
 
 void MovingAverageNodeType::getAttributes(StringMap& attrs) const
 {
-    attrs["alpha"] = "filter constant";
+    attrs["alpha"] = "smoothing constant";
 }
 
 void MovingAverageNodeType::getAttrDefaults(StringMap& attrs) const
