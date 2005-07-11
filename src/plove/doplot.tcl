@@ -65,8 +65,8 @@ proc checkmemory {arraylist} {
     if {$tcl_platform(platform) == "unix"} {
         # if a vector is too long, that will cause Plove to be killed with "Broken pipe"
         # while writing to the X server. See broken-pipe-output.txt.
-        if {$numpoints>200000} {
-            set msg "One of the vectors in the plot contains too many points ($numpoints). \
+        if {$maxlen>200000} {
+            set msg "One of the vectors in the plot contains too many points ($maxlen). \
                     Some X servers don't like that, which will cause Plove to be killed by SIGPIPE. \
                     You can decrease the number of points e.g. by applying the \"crop\" or the \"winavg\" filter.\n\
                     \nTake the risk and try it anyway?"

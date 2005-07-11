@@ -155,6 +155,15 @@ engine/dataflowmanager.obj: engine/dataflowmanager.cc \
   engine/util.h \
   engine/node.h \
   engine/exception.h
+engine/diffquot.obj: engine/diffquot.cc \
+  engine/channel.h \
+  engine/diffquot.h \
+  engine/util.h \
+  engine/node.h \
+  engine/exception.h \
+  engine/commonnodes.h \
+  engine/nodetype.h \
+  engine/dataflowmanager.h
 engine/exception.obj: engine/exception.cc \
   engine/exception.h
 engine/filewriter.obj: engine/filewriter.cc \
@@ -203,15 +212,26 @@ engine/nodetyperegistry.obj: engine/nodetyperegistry.cc \
   engine/vectorfilewriter.h \
   engine/filewriter.h \
   engine/windowavg.h \
+  engine/slidingwinavg.h \
   engine/filternodes.h \
   engine/mergernodes.h \
   engine/xyplotnode.h \
+  engine/diffquot.h \
   engine/exception.h \
   engine/commonnodes.h \
   engine/node.h \
   engine/nodetype.h \
   engine/dataflowmanager.h \
   engine/channel.h
+engine/slidingwinavg.obj: engine/slidingwinavg.cc \
+  engine/channel.h \
+  engine/slidingwinavg.h \
+  engine/util.h \
+  engine/node.h \
+  engine/exception.h \
+  engine/commonnodes.h \
+  engine/nodetype.h \
+  engine/dataflowmanager.h
 engine/test.obj: engine/test.cc
 engine/vectorfilereader.obj: engine/vectorfilereader.cc \
   engine/channel.h \

@@ -143,6 +143,7 @@ cdefaultlist.obj: cdefaultlist.cc \
   ../../include/carray.h \
   ../../include/cexception.h \
   ../../include/cdefaultlist.h \
+  ../../include/cwatch.h \
   ../../include/ccommbuffer.h \
   ../../include/onstartup.h \
   ../../include/ctypes.h \
@@ -1303,6 +1304,8 @@ parsim/cmpicomm.obj: parsim/cmpicomm.cc \
   parsim/cmpicommbuffer.h \
   ../../include/macros.h \
   ../../include/cenvir.h \
+  ../../include/cconfig.h \
+  ../../include/platdep/misc.h \
   ../../include/cparsimcomm.h \
   ../../include/cpolymorphic.h \
   ../../include/defs.h \

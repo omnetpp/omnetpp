@@ -175,6 +175,7 @@ cxmldoccache.obj: cxmldoccache.cc \
   ../../include/opp_string.h
 filemgrs.obj: filemgrs.cc \
   ../../include/defs.h \
+  ../../include/platdep/time.h \
   ../../include/cenvir.h \
   omnetapp.h \
   ../../include/csimul.h \
@@ -189,7 +190,6 @@ filemgrs.obj: filemgrs.cc \
   envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfig.h \
-  ../../include/platdep/time.h \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
