@@ -29,11 +29,10 @@ class DataflowManager;
  *
  * @see Node, Channel, Port
  */
-//FIXME rename to (t,val)
 struct Datum
 {
-    double x;  //< usually t simulation time
-    double y;  //< usually the value at t
+    double x;  ///< usually t simulation time
+    double y;  ///< usually the value at t
 };
 
 

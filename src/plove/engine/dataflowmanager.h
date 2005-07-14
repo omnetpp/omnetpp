@@ -33,17 +33,47 @@ class DataflowManager
         int threshold; // channel buffer upper limit
         int lastnode; // for round robin
 
-        Node *selectNode();
-        bool nodeFinished(Node *node);
-    public:
-        DataflowManager();
-        ~DataflowManager();
-        void addNode(Node *node);
+    protected:
+        // utility called from connect()
         void addChannel(Channel *channel);
+
+        // scheduler function called by execute()
+        Node *selectNode();
+
+        // returns true of a node has finished; if so, also closes
+        // its input an output channels (side effect!)
+        bool nodeFinished(Node *node);
+
+    public:
+        /**
+         * Constructor
+         */
+        DataflowManager();
+
+        /**
+         * Destructor
+         */
+        ~DataflowManager();
+
+        /**
+         * Add a node to the data-flow network.
+         */
+        void addNode(Node *node);
+
+        /**
+         * Connects two Node ports via a Channel object.
+         */
         void connect(Port *src, Port *dest);
+
+        /**
+         * Executes the data-flow network. That will basically keep
+         * calling the process() method of nodes that say they are
+         * ready (isReady() method) until they are all done (finished()
+         * method). If none of them are ready but there are ones which
+         * haven't finished yet, the method declares a deadlock.
+         */
         void execute();
 };
-
 
 #endif
 
