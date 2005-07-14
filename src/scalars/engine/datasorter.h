@@ -109,7 +109,9 @@ class DataSorter
     IntVectorVector groupByModuleAndName(const IntVector& idlist);
 
     /**
-     *
+     * Group and align data for a scatter plot. The first vector will contain the 
+     * x coordinates, further vectors the y1, y2, etc series. Points are sorted
+     * by x coordinate. For missing points in y1, y2, etc, the vector contains -1. 
      */
     IntVectorVector prepareScatterPlot(const IntVector& idlist, const char *moduleName, const char *scalarName);
 
@@ -123,7 +125,8 @@ class DataSorter
     IntVector getModuleAndNamePairs(const IntVector& idList, int maxcount);
 
     /**
-     *
+     * Arranges the data into a tabular form suitable for pasting into a spreadsheet:
+     * one dimension is module and scalar name, the other is file+run number.
      */
     IntVectorVector prepareCopyToClipboard(const IntVector& idlist);
 };
