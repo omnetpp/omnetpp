@@ -29,6 +29,79 @@
 
 ScalarManager *DataSorter::tmpScalarMgr;
 
+IntVector DataSorter::getFilteredScalarList(const char *fileAndRunFilter,
+                                            const char *moduleFilter,
+                                            const char *nameFilter)
+{
+    // prepare for wildcard matches
+    bool patMatchFile = contains_wildcards(fileAndRunFilter);
+    bool patMatchModule = contains_wildcards(moduleFilter);
+    bool patMatchName = contains_wildcards(nameFilter);
+
+    short *filePattern = NULL;
+    if (patMatchFile)
+    {
+        filePattern = new short[512]; // FIXME!
+        transform_pattern(fileAndRunFilter, filePattern);
+    }
+
+    short *modulePattern = NULL;
+    if (patMatchModule)
+    {
+        modulePattern = new short[512]; // FIXME!
+        transform_pattern(moduleFilter, modulePattern);
+    }
+    short *namePattern = NULL;
+    if (patMatchName)
+    {
+        namePattern = new short[512]; // FIXME!
+        transform_pattern(nameFilter, namePattern);
+    }
+
+    // iterate over all values and add matching ones to outVec.
+    // we can exploit the fact that ScalarManager contains the data in the order
+    // they were read from file, i.e. grouped by file and run number
+    IntVector outVec;
+    const ScalarManager::Values& scalars = scalarMgr->getValues();
+    ScalarManager::RunRef lastRunRef = NULL;
+    bool lastRunMatched = false;
+    for (ScalarManager::Values::const_iterator i=scalars.begin(); i!=scalars.end(); i++)
+    {
+        const ScalarManager::Datum& d = *i;
+
+        if (fileAndRunFilter && fileAndRunFilter[0])
+        {
+            if (lastRunRef!=d.runRef)
+            {
+                lastRunRef = d.runRef;
+                lastRunMatched = (patMatchFile
+                    ? stringmatch(filePattern, lastRunRef->fileAndRunName.c_str())
+                    : !strcmp(lastRunRef->fileAndRunName.c_str(), fileAndRunFilter));
+            }
+            if (!lastRunMatched)
+                continue;
+        }
+
+        if (moduleFilter && moduleFilter[0] &&
+            (patMatchModule ? !stringmatch(modulePattern, d.moduleNameRef->c_str())
+                            : strcmp(d.moduleNameRef->c_str(), moduleFilter))
+           )
+            continue; // no match
+
+        if (nameFilter && nameFilter[0] &&
+            (patMatchName ? !stringmatch(namePattern, d.scalarNameRef->c_str())
+                          : strcmp(d.scalarNameRef->c_str(), nameFilter))
+           )
+            continue; // no match
+
+        // everything matched
+        int id = i - scalars.begin();
+        outVec.push_back(id);
+    }
+    return outVec;
+}
+
+
 
 bool DataSorter::sameGroupFileRunScalar(const ScalarManager::Datum& d1, const ScalarManager::Datum& d2)
 {
@@ -119,7 +192,7 @@ IntVectorVector DataSorter::doGrouping(const IntVector& idlist, GroupingFunc sam
         if (i==vv.end())
         {
             // not found -- new one has to be added
-            vv.push_back(ScalarManager::IntVector());
+            vv.push_back(IntVector());
             i = vv.end()-1;
         }
 
@@ -199,7 +272,7 @@ IntVectorVector DataSorter::prepareScatterPlot(const IntVector& idlist, const ch
     for (IntVectorVector::iterator i=vv.begin(); i!=vv.end(); ++i)
     {
         int id = -1;
-        for (ScalarManager::IntVector::iterator j=i->begin(); j!=i->end(); ++j)
+        for (IntVector::iterator j=i->begin(); j!=i->end(); ++j)
             if (*j!=-1)
                 {id = *j;break;}
         if (id==-1)
@@ -227,7 +300,7 @@ IntVectorVector DataSorter::prepareScatterPlot(const IntVector& idlist, const ch
     std::sort(vv2[0].begin(), vv2[0].end(), lessByValue);
 
     // step two: remove id=-1 elements from the beginning of X series
-    ScalarManager::IntVector::iterator firstvalue=vv2[0].begin();
+    IntVector::iterator firstvalue=vv2[0].begin();
     while (*firstvalue==-1 && firstvalue!=vv2[0].end()) ++firstvalue;
     vv2[0].erase(vv2[0].begin(),firstvalue);
 
@@ -251,7 +324,7 @@ IntVectorVector DataSorter::prepareScatterPlot(const IntVector& idlist, const ch
 
 IntVector DataSorter::getModuleAndNamePairs(const IntVector& idlist, int maxcount)
 {
-    ScalarManager::IntVector vec;
+    IntVector vec;
 
     // go through idlist and pick ids that represent a new (module, name pair)
     for (int ii = 0; ii < (int)idlist.size(); ii++)
@@ -260,7 +333,7 @@ IntVector DataSorter::getModuleAndNamePairs(const IntVector& idlist, int maxcoun
 
         // check if module and name of this id is already in vec[]
         const ScalarManager::Datum& d = scalarMgr->getValue(id);
-        ScalarManager::IntVector::iterator i;
+        IntVector::iterator i;
         for (i=vec.begin(); i!=vec.end(); ++i)
         {
             const ScalarManager::Datum& vd = scalarMgr->getValue(*i);

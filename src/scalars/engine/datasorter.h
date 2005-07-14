@@ -27,8 +27,8 @@
 #include <string.h>
 #include <assert.h>
 #include "scalarmanager.h"
-#include "filtering.h"
 #include "util.h"
+#include "patmatch.h"
 
 
 typedef std::vector<int> IntVector;
@@ -84,6 +84,14 @@ class DataSorter
      * Constructor.
      */
     DataSorter(ScalarManager *sm) {scalarMgr = sm;}
+
+    /**
+     * Get a filtered subset of all scalars. All three filter parameters may be null,
+     * or may contain wildcards (*,?). Full string search (substrings need * both ends).
+     */
+    IntVector getFilteredScalarList(const char *fileAndRunFilter,
+                                    const char *moduleFilter,
+                                    const char *nameFilter);
 
     /**
      * Form groups (IntVectors) by runRef+scalarName.

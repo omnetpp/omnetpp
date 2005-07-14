@@ -32,7 +32,6 @@ SCALARS_OBJS = scalars$(SCALARS_EMBED_SUFFIX).obj \
                tkcmd.obj \
                tkutil.obj
 ENGINE_OBJS =  engine/scalarmanager.obj \
-               engine/filtering.obj \
                engine/datasorter.obj \
                engine/patmatch.obj \
                engine/texception.obj \
@@ -87,7 +86,6 @@ tkcmd.obj: tkcmd.cc \
   tklib.h \
   tkutil.h \
   engine/scalarmanager.h \
-  engine/filtering.h \
   engine/util.h \
   engine/datasorter.h \
   engine/texception.h
@@ -100,12 +98,6 @@ engine/datasorter.obj: engine/datasorter.cc \
   engine/scalarmanager.h \
   engine/util.h \
   engine/datasorter.h \
-  engine/texception.h \
-  engine/filtering.h
-engine/filtering.obj: engine/filtering.cc \
-  engine/patmatch.h \
-  engine/filtering.h \
-  engine/scalarmanager.h \
   engine/texception.h
 engine/patmatch.obj: engine/patmatch.cc \
   engine/patmatch.h

@@ -26,7 +26,6 @@
 #include "tklib.h"
 #include "tkutil.h"
 #include "engine/scalarmanager.h"
-#include "engine/filtering.h"
 #include "engine/util.h"
 #include "engine/datasorter.h"
 
@@ -159,15 +158,13 @@ int getFilteredScalarList_cmd(ClientData, Tcl_Interp *interp, int argc, const ch
     const char *modulePattern = argv[2];
     const char *namePattern = argv[3];
 
-    ScalarManager::IntVector vec;
-    getFilteredScalarList2(scalarMgr, fileAndRunPattern, modulePattern, namePattern, vec);
+    DataSorter sorter(&scalarMgr);
+    IntVector vec = sorter.getFilteredScalarList(fileAndRunPattern, modulePattern, namePattern);
 
     // set vector
     Tcl_Obj *vectorlist = Tcl_NewListObj(0, NULL);
-    for (ScalarManager::IntVector::iterator i = vec.begin(); i!=vec.end(); ++i)
-    {
+    for (IntVector::iterator i = vec.begin(); i!=vec.end(); ++i)
         Tcl_ListObjAppendElement(interp, vectorlist, Tcl_NewIntObj(*i));
-    }
     Tcl_SetObjResult(interp, vectorlist);
 
     return TCL_OK;
@@ -283,8 +280,8 @@ static Tcl_Obj *doConvertToTcl(Tcl_Interp *interp, const IntVectorVector& vv)
     for (IntVectorVector::const_iterator i=vv.begin(); i!=vv.end(); ++i)
     {
         Tcl_Obj *idlist = Tcl_NewListObj(0, NULL);
-        const ScalarManager::IntVector& v = *i;
-        for (ScalarManager::IntVector::const_iterator j = v.begin(); j!=v.end(); ++j)
+        const IntVector& v = *i;
+        for (IntVector::const_iterator j = v.begin(); j!=v.end(); ++j)
             Tcl_ListObjAppendElement(interp, idlist, Tcl_NewIntObj(*j));
         Tcl_ListObjAppendElement(interp, vectorlist, idlist);
     }
@@ -350,7 +347,7 @@ int getModuleAndNamePairs_cmd(ClientData, Tcl_Interp *interp, int argc, const ch
 
     // return vec[]
     Tcl_Obj *vobj = Tcl_NewListObj(0, NULL);
-    for (ScalarManager::IntVector::iterator i = vec.begin(); i!=vec.end(); ++i)
+    for (IntVector::iterator i = vec.begin(); i!=vec.end(); ++i)
         Tcl_ListObjAppendElement(interp, vobj, Tcl_NewIntObj(*i));
     Tcl_SetObjResult(interp, vobj);
     return TCL_OK;
