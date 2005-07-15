@@ -1,7 +1,7 @@
 
 NED Syntax Highlight in GNU Emacs
 =================================
-
+ned-mode.el
 
     Author's comment:
     "I have attached a lisp file that implements syntax highlighting
@@ -25,3 +25,12 @@ to your .emacs before the two statements above:
 Enjoy.
 
 Aug 24, 1999
+
+
+INI Syntax Highlight
+====================
+ini-mode.el
+
+Contributed by Don Hilton. Installation goes like ned-mode.el's.
+
+
