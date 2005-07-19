@@ -1,10 +1,29 @@
 What's New
 ==========
 
-OMNeT++ 3.2 (Jul 2005)
-----------------------
+OMNeT++ 3.2 snapshot (Jul 2005)
+-------------------------------
+A brief summary of the changes so far:
+- Plove and Scalars: improved Chart Settings dialog, and default settings
+  can now be saved. New Plove filters, and fix in the winavg filter.
+- Tkenv: added Timeline Status Bar
+- Tkenv: fixed the r= display string tag (it displayed a circle half the
+  specified size)
+- Tkenv: cMessage inspector now displays message size in bytes as well (not 
+  just in bits); also, it now displays time *until* arrival time (a delta)
+  in addition to the absolute arrival time.
+- new cMessage member functions: byteLength(), setByteLength(), addByte-
+  Length(). They just invoke the length(), setLength(), addLength() methods.
+- new utility function simtimeToStrShort()
+- fixed gcc-4 compilation errors, and removed -fwritable-strings compiler
+  option
+- fixes and improvements on opp_neddoc
+- configure script now accepts NO_TCL=1 variable (for emergency use only)
+- opp_nmakemake: improved output of recursive build
 - Readme.MSVC updated on how to build DLLs from simple modules
-<TBD>
+Plus a number of smaller fixes, see the ChangeLogs in individual directories.
+Documentation update is still TBD.
+
 
 OMNeT++ 3.1 (Mar 2005)
 ----------------------
