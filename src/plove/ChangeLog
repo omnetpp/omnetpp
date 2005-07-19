@@ -1,3 +1,7 @@
+2005-07-19  Andras Varga
+
+	* file reading changed to use FileTokenizer.
+
 2005-07-08  Andras Varga
 
 	* engine: new filters: divide, modulo, difference, sum, movingavg, 

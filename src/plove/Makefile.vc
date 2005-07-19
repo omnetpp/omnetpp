@@ -32,6 +32,7 @@ PLOVE_OBJS = plove$(PLOVE_EMBED_SUFFIX).obj \
              tkutil.obj \
              tkcmd.obj
 ENGINE_OBJS =  engine/exception.obj \
+               engine/filetokenizer.obj \
                engine/commonnodes.obj \
                engine/nodetype.obj \
                engine/channel.obj \

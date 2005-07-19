@@ -63,10 +63,11 @@ static bool parseDouble(char *s, double& dest)
 
 void VectorFileReaderNode::process()
 {
-    FileTokenizer::CharPVector vec;
-    while (ftok.getLine(vec))
+    for (int k=0; k<1000 && ftok.getLine(); k++)
     {
-        if (vec.size()>=3 && isdigit(vec[0][0]))  // silently ignore incomplete lines
+        int numtokens = ftok.numTokens();
+        char **vec = ftok.tokens();
+        if (numtokens>=3 && isdigit(vec[0][0]))  // silently ignore incomplete lines
         {
             // extract vector id
             char *e;
@@ -78,14 +79,11 @@ void VectorFileReaderNode::process()
             if (portvec!=ports.end())
             {
                 // parse time and value
-                double time, value;
-                if (!parseDouble(vec[1],time) || !parseDouble(vec[2],value))
+                Datum a;
+                if (!parseDouble(vec[1],a.x) || !parseDouble(vec[2],a.y))
                     throw new Exception("invalid vector file syntax: invalid time or value column, line %d", ftok.lineNum());
 
                 // write to port(s)
-                Datum a;
-                a.x = time;
-                a.y = value;
                 for (PortVector::iterator p=portvec->second.begin(); p!=portvec->second.end(); ++p)
                     p->channel()->write(&a,1);
 
@@ -94,7 +92,7 @@ void VectorFileReaderNode::process()
         }
     }
 
-    if (!ftok.eof())
+    if (!ftok.ok() && !ftok.eof())
         throw new Exception(ftok.errorMsg().c_str());
 }
 

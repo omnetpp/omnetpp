@@ -26,14 +26,16 @@
 void getVectors(const char *fname, OutVectorArray& array)
 {
     FileTokenizer ftok(fname);
-    FileTokenizer::CharPVector vec;
 
-    while (ftok.getLine(vec))
+    while (ftok.getLine())
     {
-        if (vec.size()>0 && vec[0][0]=='v' && !strncmp(vec[0],"vector",6))
+        int numtokens = ftok.numTokens();
+        char **vec = ftok.tokens();
+
+        if (numtokens>0 && vec[0][0]=='v' && !strncmp(vec[0],"vector",6))
         {
             // vector line
-            if (vec.size()<4)
+            if (numtokens<4)
                 throw new Exception("invalid vector file syntax: too few items on 'vector' line, line %d", ftok.lineNum());
 
             VecData vecdata;

@@ -32,6 +32,7 @@ SCALARS_OBJS = scalars$(SCALARS_EMBED_SUFFIX).obj \
                tkcmd.obj \
                tkutil.obj
 ENGINE_OBJS =  engine/scalarmanager.obj \
+               engine/filetokenizer.obj \
                engine/datasorter.obj \
                engine/patmatch.obj \
                engine/texception.obj \

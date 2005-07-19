@@ -1,3 +1,7 @@
+2005-07-19  Andras Varga
+
+	* file reading changed to use FileTokenizer.
+
 2005-07-10  Andras Varga
 
 	* prepared for the fact that a single sca file may contain several 
