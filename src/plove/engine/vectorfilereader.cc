@@ -63,7 +63,7 @@ static bool parseDouble(char *s, double& dest)
 
 void VectorFileReaderNode::process()
 {
-    for (int k=0; k<1000 && ftok.getLine(); k++)
+    for (int k=0; k<1000 && ftok.readLine(); k++)
     {
         int numtokens = ftok.numTokens();
         char **vec = ftok.tokens();

@@ -89,7 +89,7 @@ size_t FileTokenizer::readMore()
 }
 
 
-bool FileTokenizer::getLine()
+bool FileTokenizer::readLine()
 {
     if (errcode!=OK)
         return false;
@@ -274,7 +274,7 @@ int main(int argc, char **argv)
         return 1;
 
     FileTokenizer ftok(argv[1],200);
-    while (ftok.getLine())
+    while (ftok.readLine())
     {
         int numtokens = ftok.numTokens();
         char **vec = ftok.tokens();

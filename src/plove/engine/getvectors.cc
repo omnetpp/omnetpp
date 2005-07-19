@@ -27,7 +27,7 @@ void getVectors(const char *fname, OutVectorArray& array)
 {
     FileTokenizer ftok(fname);
 
-    while (ftok.getLine())
+    while (ftok.readLine())
     {
         int numtokens = ftok.numTokens();
         char **vec = ftok.tokens();

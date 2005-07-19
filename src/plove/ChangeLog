@@ -2,6 +2,11 @@
 
 	* file reading changed to use FileTokenizer.
 
+	* Plove currently just ignores the "incomplete last line" error, to
+	make it possible to open .vec files being written by a running 
+	simulation. [suggested by Michael Tuexen]
+
+
 2005-07-08  Andras Varga
 
 	* engine: new filters: divide, modulo, difference, sum, movingavg, 

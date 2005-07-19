@@ -61,25 +61,62 @@ class FileTokenizer
     size_t readMore();
 
   public:
+    /**
+     * Creates a tokenizer object for the given file, with the given
+     * buffer size. The file doesn't get opened yet.
+     */
     FileTokenizer(const char *fileName, size_t bufferSize=64*1024);
+
+    /**
+     * Destructor.
+     */
     ~FileTokenizer();
 
     /**
-     * Returns false if: cannot read, incomplete line (missing CRLF),
-     * unmatched quote, etc.
+     * Tokenizes a line, results can be accessed via numTokens() and
+     * tokens(). Return is true if there's no error; it's false if
+     * file could not be opened/read, last line was incomplete line
+     * (missing CRLF), line was too long (>bufferSize) or there
+     * were too many items on the line (currently >16,000), or
+     * there was an unmatched quote. See StatusCode values.
      */
-    bool getLine();
+    bool readLine();
 
+    /**
+     * Number of tokens read by the last readLine() call.
+     */
     int numTokens() {return numtokens;}
+
+    /**
+     * Array that holds the tokens read by the last readLine() call;
+     * contents will be overwritten with the next call.
+     */
     char **tokens() {return vec;}
 
+    /**
+     * True if more readLine() calls are permitted.
+     */
     bool ok() const {return errcode==OK;}
+
+    /**
+     * True if end of input file was reached without any error.
+     */
     bool eof() const {return errcode==EOFREACHED;}
 
+    /**
+     * Number of last line parsed by readLine().
+     */
     int lineNum() const {return linenum;}
 
+    /**
+     * Detailed error code; this completes ok() and eof().
+     */
     StatusCode errorCode() const {return errcode;}
 
+    /**
+     * Produces a textual error message, based on the error code
+     * and the line number.
+     */
     std::string errorMsg() const;
 };
 

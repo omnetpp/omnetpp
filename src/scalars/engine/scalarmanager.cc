@@ -244,7 +244,7 @@ ScalarManager::FileRef ScalarManager::loadFile(const char *filename)
     RunRef runRef = NULL;
 
     FileTokenizer ftok(filename);
-    while (ftok.getLine())
+    while (ftok.readLine())
     {
         int numtokens = ftok.numTokens();
         char **vec = ftok.tokens();
