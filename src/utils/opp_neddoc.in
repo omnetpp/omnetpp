@@ -400,7 +400,8 @@ sub runprog
     if ($isWindows) {
         system($ENV{COMSPEC}, "/c", @prog);
     } else {
-        system(@prog);
+        my $cmd = join(' ',@prog);
+        system($cmd);
     }
 }
 

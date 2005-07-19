@@ -1,3 +1,12 @@
+2005-07-19  Andras Varga
+
+	* opp_neddoc.in: changed runprog so that it gives system() a single
+	string. This is necessary because we need to use the shell because
+	of redirections. As documented at http://perldoc.perl.org/functions/
+	system.html, perl uses the shell to execute a program if there is 
+	only one scalar parameter and this must contain a shell metacharacter.
+	[reported by Johann Glaser]
+
 2005-05-20  Andras Varga
 
 	* opp_nmakemake: added printing of "entering <directory>", "leaving
