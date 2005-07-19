@@ -19,6 +19,7 @@
 #include <string>
 #include "node.h"
 #include "nodetype.h"
+#include "filetokenizer.h"
 
 // read in 64K chunks (apparently it doesn't matter much if we use a bigger buffer)
 #define VECFILEREADER_BUFSIZE  (64*1024)
@@ -34,13 +35,7 @@ class VectorFileReaderNode : public Node
         typedef std::map<int,PortVector> Portmap;
     private:
         Portmap ports;
-        std::string fname;
-        FILE *f;
-        int linenum;
-        bool eofreached;
-        size_t buffersize;
-        char *buffer;
-        int bufferused;
+        FileTokenizer ftok;
 
     public:
         VectorFileReaderNode(const char *filename, size_t bufferSize = VECFILEREADER_BUFSIZE);

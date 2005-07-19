@@ -20,20 +20,14 @@
 #include "vectorfilereader.h"
 
 
-VectorFileReaderNode::VectorFileReaderNode(const char *fileName, size_t bufferSize)
+VectorFileReaderNode::VectorFileReaderNode(const char *fileName, size_t bufferSize) :
+  ftok(fileName, bufferSize)
+
 {
-    fname = fileName;
-    buffersize = bufferSize;
-    f = NULL;
-    linenum = 0;
-    eofreached = false;
-    buffer = new char[buffersize+100];  // +1 for EOS, +100 for MSVC hack (see later)
-    bufferused = 0;
 }
 
 VectorFileReaderNode::~VectorFileReaderNode()
 {
-    delete [] buffer;
 }
 
 Port *VectorFileReaderNode::addVector(int vectorId)
@@ -51,112 +45,42 @@ bool VectorFileReaderNode::isReady() const
 
 static double zero =0;
 
-static bool parseDouble(char *&s, double& dest)
+static bool parseDouble(char *s, double& dest)
 {
     char *e;
     dest = strtod(s,&e);
-    if (s==e)
+    if (!*e)
     {
-        return false;
+        return true;
     }
-    if (*e && *e!=' ' && *e!='\t')
+    if (*e=='#' && *(e+1)=='I' && *(e+2)=='N' && *(e+3)=='F')
     {
-        if (*e=='#' && *(e+1)=='I' && *(e+2)=='N' && *(e+3)=='F')
-        {
-            dest = dest * 1/zero;  // +INF or -INF
-            e+=4;
-            if (*e && *e!=' ' && *e!='\t')
-                return false;
-        }
-        else
-        {
-            return false;
-        }
+        dest = dest * 1/zero;  // +INF or -INF
+        return true;
     }
-    s = e;
-    return true;
+    return false;
 }
 
 void VectorFileReaderNode::process()
 {
-    // open file if needed
-    if (!f)
+    FileTokenizer::CharPVector vec;
+    while (ftok.getLine(vec))
     {
-        f = fopen(fname.c_str(), "r");
-        if (!f)
-            throw new Exception("cannot open `%s' for read", fname.c_str());
-    }
-
-    // read enough bytes to fill the buffer
-    int bytesread = fread(buffer+bufferused, 1, buffersize-bufferused, f);
-    if (feof(f))
-        eofreached = true;
-    if (ferror(f))
-        throw new Exception("error reading from `%s'", fname.c_str());
-    buffer[bufferused+bytesread] = '\0';
-    const char *endbuffer = buffer+bufferused+bytesread;
-
-    char *line = buffer;
-
-    // process all full lines
-    while (1)
-    {
-        // do we have a full line?
-        char *s = line;
-        while (*s && *s!='\r' && *s!='\n') s++;
-        char *endline = s;
-        if (!*s && !eofreached)  // if at eof, we have to process unterminated last line, too
-            break;
-
-        linenum++;
-
-        s = line;
-
-        // skip leading white space
-        while (*s==' ' || *s=='\t') s++;
-
-        if (!*s && eofreached)
+        if (vec.size()>=3 && isdigit(vec[0][0]))  // silently ignore incomplete lines
         {
-            // end of file, no more work
-            break;
-        }
-        else if (!*s || *s=='\r' || *s=='\n')
-        {
-            // blank line, ignore
-        }
-        else if (!isdigit(*s))
-        {
-            // ignore "vector..." and comment ("#...") lines
-            while (*s && *s!='\r' && *s!='\n') s++;
-        }
-        else
-        {
-            // parse line
-            char old = *endline;
-            *endline = 0;
-
             // extract vector id
             char *e;
-            int vectorId = (int) strtol(s,&e,10);
-            if (s==e)
-                throw new Exception("invalid vector file syntax: invalid vector id column, line %d", linenum);
-            s = e;
+            int vectorId = (int) strtol(vec[0],&e,10);
+            if (*e)
+                throw new Exception("invalid vector file syntax: invalid vector id column, line %d", ftok.lineNum());
 
             Portmap::iterator portvec = ports.find(vectorId);
-            if (portvec==ports.end())
-            {
-                // skip rest of irrelevant line
-                while (*s && *s!='\r' && *s!='\n') s++;
-            }
-            else
+            if (portvec!=ports.end())
             {
                 // parse time and value
                 double time, value;
-                if (!parseDouble(s,time) || !parseDouble(s,value))
-                    throw new Exception("invalid vector file syntax: invalid time or value column, line %d", linenum);
-
-                // skip trailing white space
-                while (*s==' ' || *s=='\t') s++;
+                if (!parseDouble(vec[1],time) || !parseDouble(vec[2],value))
+                    throw new Exception("invalid vector file syntax: invalid time or value column, line %d", ftok.lineNum());
 
                 // write to port(s)
                 Datum a;
@@ -167,27 +91,16 @@ void VectorFileReaderNode::process()
 
                 //DBG(("vectorfilereader: written id=%d (%lg,%lg)\n", vectorId, time, value));
             }
-
-            *endline = old;
         }
-
-        // skip line termination
-        if (*s && *s!='\r' && *s!='\n')
-            throw new Exception("invalid vector file syntax: garbage at end of line ('%c'), line %d", *s, linenum);
-        while (*s=='\r' || *s=='\n') s++;
-        line = s;
     }
 
-    // copy the last (partial) line to beginning of buffer
-    bufferused = endbuffer-line;
-    memcpy(buffer, line, bufferused);
-
-    return;
+    if (!ftok.eof())
+        throw new Exception(ftok.errorMsg().c_str());
 }
 
 bool VectorFileReaderNode::finished() const
 {
-    return eofreached;
+    return ftok.eof();
 }
 
 //-----
