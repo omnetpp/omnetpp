@@ -101,6 +101,7 @@ class TInspectorPanel
       cPolymorphic *object;
    public:
       TInspectorPanel(const char *widgetname, cPolymorphic *obj);
+      virtual ~TInspectorPanel() {}
       virtual void setObject(cPolymorphic *obj);
       virtual void update() = 0;
       virtual void writeBack() = 0;

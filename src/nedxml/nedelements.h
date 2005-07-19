@@ -2994,9 +2994,13 @@ class UnknownNode : public NEDElement
  */
 class NEDElementFactory
 {
-  protected:
+  private:
     static NEDElementFactory *f;
+    // ctor is private, because only one instance is allowed
+    NEDElementFactory() {}
   public:
+    /** Destructor */
+    virtual ~NEDElementFactory() {}
     /** Returns factory instance */
     static NEDElementFactory *getInstance();
     /** Creates NEDElement subclass which corresponds to tagname */

@@ -497,7 +497,7 @@ void TOutVectorWindow::update()
        }
    }
 
-   double tmin = tmin = tbase-tf*(canvaswidth-20);
+   double tmin = tbase-tf*(canvaswidth-20);
 
    if (moving_tline<tmin)
        moving_tline=tbase;
