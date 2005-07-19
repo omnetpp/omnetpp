@@ -25,6 +25,7 @@ VectorFileReaderNode::VectorFileReaderNode(const char *fileName, size_t bufferSi
     fname = fileName;
     buffersize = bufferSize;
     f = NULL;
+    linenum = 0;
     eofreached = false;
     buffer = new char[buffersize+100];  // +1 for EOS, +100 for MSVC hack (see later)
     bufferused = 0;
@@ -45,6 +46,34 @@ Port *VectorFileReaderNode::addVector(int vectorId)
 
 bool VectorFileReaderNode::isReady() const
 {
+    return true;
+}
+
+static double zero =0;
+
+static bool parseDouble(char *&s, double& dest)
+{
+    char *e;
+    dest = strtod(s,&e);
+    if (s==e)
+    {
+        return false;
+    }
+    if (*e && *e!=' ' && *e!='\t')
+    {
+        if (*e=='#' && *(e+1)=='I' && *(e+2)=='N' && *(e+3)=='F')
+        {
+            dest = dest * 1/zero;  // +INF or -INF
+            e+=4;
+            if (*e && *e!=' ' && *e!='\t')
+                return false;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    s = e;
     return true;
 }
 
@@ -75,10 +104,17 @@ void VectorFileReaderNode::process()
         // do we have a full line?
         char *s = line;
         while (*s && *s!='\r' && *s!='\n') s++;
+        char *endline = s;
         if (!*s && !eofreached)  // if at eof, we have to process unterminated last line, too
             break;
 
+        linenum++;
+
         s = line;
+
+        // skip leading white space
+        while (*s==' ' || *s=='\t') s++;
+
         if (!*s && eofreached)
         {
             // end of file, no more work
@@ -88,7 +124,7 @@ void VectorFileReaderNode::process()
         {
             // blank line, ignore
         }
-        else if (*s=='v' || *s=='#')
+        else if (!isdigit(*s))
         {
             // ignore "vector..." and comment ("#...") lines
             while (*s && *s!='\r' && *s!='\n') s++;
@@ -96,11 +132,14 @@ void VectorFileReaderNode::process()
         else
         {
             // parse line
+            char old = *endline;
+            *endline = 0;
+
             // extract vector id
             char *e;
             int vectorId = (int) strtol(s,&e,10);
             if (s==e)
-                throw new Exception("invalid vector file syntax: invalid vector id column");
+                throw new Exception("invalid vector file syntax: invalid vector id column, line %d", linenum);
             s = e;
 
             Portmap::iterator portvec = ports.find(vectorId);
@@ -111,24 +150,10 @@ void VectorFileReaderNode::process()
             }
             else
             {
-                // MSVC hack: their strtol() calls strlen() first (!!!), so we have to shorten the string somewhat
-                char oldchar = *(s+60);
-                char *olds = s;
-                *(s+60) = 0;
-
-                // time
-                double time = strtod(s,&e);
-                if (s==e)
-                    throw new Exception("invalid vector file syntax: invalid time column");
-                s = e;
-
-                // value
-                double value = strtod(s,&e);
-                if (s==e)
-                    throw new Exception("invalid vector file syntax: invalid value column");
-                s = e;
-
-                *(olds+60) = oldchar; // MSVC hack
+                // parse time and value
+                double time, value;
+                if (!parseDouble(s,time) || !parseDouble(s,value))
+                    throw new Exception("invalid vector file syntax: invalid time or value column, line %d", linenum);
 
                 // skip trailing white space
                 while (*s==' ' || *s=='\t') s++;
@@ -142,11 +167,13 @@ void VectorFileReaderNode::process()
 
                 //DBG(("vectorfilereader: written id=%d (%lg,%lg)\n", vectorId, time, value));
             }
+
+            *endline = old;
         }
 
         // skip line termination
         if (*s && *s!='\r' && *s!='\n')
-            throw new Exception("invalid vector file syntax: garbage at end of line ('%c')", *s);
+            throw new Exception("invalid vector file syntax: garbage at end of line ('%c'), line %d", *s, linenum);
         while (*s=='\r' || *s=='\n') s++;
         line = s;
     }

@@ -26,20 +26,27 @@ inline void skipSpace(char *&s)
     while (*s==' ' || *s=='\t') s++;
 }
 
-static void parseAndAppendQuotedString(char *&s, std::string& dest)
+static void parseString(char *&s, std::string& dest, int lineNum)
 {
     while (*s==' ' || *s=='\t') s++;
-    if (*s!='"')
-        throw new Exception("invalid vector file syntax: invalid vector definition: missing opening quote");
-    char *start = s+1;
-    s++;
-    while (*s && (*s!='"' || *(s-1)=='\\') && *s!='\r' && *s!='\n') s++;
-    if (*s!='"')
-        throw new Exception("invalid vector file syntax: invalid vector definition: missing closing quote");
-    *s = '\0';
-    dest += start;
-    *s = '"';
-    s++;
+    if (*s=='"')
+    {
+        // parse quoted string
+        char *start = s+1;
+        s++;
+        while (*s && (*s!='"' || *(s-1)=='\\') && *s!='\r' && *s!='\n') s++;
+        if (*s!='"')
+            throw new Exception("invalid syntax: missing close quote, line %d", lineNum);
+        dest.assign(start, s-start);
+        s++;
+    }
+    else
+    {
+        // parse unquoted string
+        char *start = s;
+        while (*s && *s!=' ' && *s!='\t' && *s!='\r' && *s!='\n') s++;
+        dest.assign(start, s-start); // can be empty as well
+    }
 }
 
 void getVectors(const char *fname, OutVectorArray& array)
@@ -50,6 +57,7 @@ void getVectors(const char *fname, OutVectorArray& array)
     int bufferused = 0;
     FILE *f = NULL;
     bool eofreached = false;
+    int linenum = 0;
 
     // open file if needed
     if (!f)
@@ -83,15 +91,17 @@ void getVectors(const char *fname, OutVectorArray& array)
             if (!*s && !eofreached)  // if at eof, we have to process unterminated last line, too
                 break;
 
+            linenum++;
+
             s = line;
+
+            // skip leading white space
+            while (*s==' ' || *s=='\t') s++;
+
             if (!*s && eofreached)
             {
                 // end of file, no more work
                 break;
-            }
-            else if (!*s || *s=='\r' || *s=='\n')
-            {
-                // blank line, ignore
             }
             else if (*s=='v' && !strncmp(s,"vector",6))
             {
@@ -110,7 +120,7 @@ void getVectors(const char *fname, OutVectorArray& array)
                 char *e;
                 vecdata.vectorId = (int) strtol(s,&e,10);
                 if (s==e)
-                    throw new Exception("invalid vector file syntax: invalid vector id in vector definition");
+                    throw new Exception("invalid vector file syntax: invalid vector id in vector definition, line %d", linenum);
                 s = e;
 
                 *(olds+60) = oldchar; // MSVC hack
@@ -118,8 +128,8 @@ void getVectors(const char *fname, OutVectorArray& array)
                 DBG(("getvectors: seen vector %d\n", vecdata.vectorId));
 
                 // module name, vector name
-                parseAndAppendQuotedString(s,vecdata.moduleName);
-                parseAndAppendQuotedString(s,vecdata.vectorName);
+                parseString(s, vecdata.moduleName, linenum);
+                parseString(s, vecdata.vectorName, linenum);
 
                 array.push_back(vecdata);
 
@@ -130,13 +140,13 @@ void getVectors(const char *fname, OutVectorArray& array)
             }
             else
             {
-                // data line, skip it
+                // not a "vector" line, skip it
                 while (*s && *s!='\r' && *s!='\n') s++;
             }
 
             // skip line termination
             if (*s && *s!='\r' && *s!='\n')
-                throw new Exception("invalid vector file syntax: garbage at end of line ('%c')", *s);
+                throw new Exception("invalid vector file syntax: garbage at end of line ('%c'), line %d", *s, linenum);
             while (*s=='\r' || *s=='\n') s++;
             line = s;
         }

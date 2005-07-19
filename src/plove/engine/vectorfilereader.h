@@ -36,6 +36,7 @@ class VectorFileReaderNode : public Node
         Portmap ports;
         std::string fname;
         FILE *f;
+        int linenum;
         bool eofreached;
         size_t buffersize;
         char *buffer;

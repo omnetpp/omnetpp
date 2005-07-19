@@ -102,7 +102,7 @@ static void parseString(char *&s, std::string& dest, int lineNum)
         s++;
         while (*s && (*s!='"' || *(s-1)=='\\') && *s!='\r' && *s!='\n') s++;
         if (*s!='"')
-            throw new TException("invalid vector file syntax: missing close quote, line %d", lineNum);
+            throw new TException("invalid syntax: missing close quote, line %d", lineNum);
         dest.assign(start, s-start);
         s++;
     }
@@ -113,6 +113,35 @@ static void parseString(char *&s, std::string& dest, int lineNum)
         while (*s && *s!=' ' && *s!='\t' && *s!='\r' && *s!='\n') s++;
         dest.assign(start, s-start); // can be empty as well
     }
+}
+
+static double zero =0;
+
+static bool parseDouble(char *&s, double& dest)
+{
+    char *e;
+    dest = strtod(s,&e);
+    if (s==e)
+    {
+        return false;
+    }
+    if (*e && *e!=' ' && *e!='\t')
+    {
+        if (*e=='#' && *(e+1)=='I' && *(e+2)=='N' && *(e+3)=='F')
+        {
+            dest = dest * 1/zero;  // +INF or -INF
+            e+=4;
+            if (*e && *e!=' ' && *e!='\t')
+                return false;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    s = e;
+    while (*s==' ' || *s=='\t') s++;
+    return true;
 }
 
 static void splitFileName(const char *pathname, std::string& dir, std::string& fnameonly)
@@ -188,14 +217,16 @@ void ScalarManager::processLine(char *&s, RunRef& runRef, FileRef fileRef, int l
         parseString(s, moduleName, lineNum);
         parseString(s, scalarName, lineNum);
 
-        char *e;
-        double value = strtod(s,&e);
-        if (s==e)
+        double value;
+        if (!parseDouble(s,value))
             throw new TException("invalid scalar file syntax: invalid value column, line %d", lineNum);
-        s = e;
-        while (*s==' ' || *s=='\t') s++;
 
         addValue(runRef, moduleName.c_str(), scalarName.c_str(), value);
+    }
+    else
+    {
+        // some other line, ignore
+        while (*s && *s!='\r' && *s!='\n') s++;
     }
 }
 
@@ -257,6 +288,10 @@ ScalarManager::FileRef ScalarManager::loadFile(const char *filename)
             //printf("%d\r",lineNum);
 
             s = line;
+
+            // skip leading white space
+            while (*s==' ' || *s=='\t') s++;
+
             if (!*s && eofreached)
             {
                 // end of file, no more work
@@ -284,7 +319,7 @@ ScalarManager::FileRef ScalarManager::loadFile(const char *filename)
 
             // skip line termination
             if (*s && *s!='\r' && *s!='\n')
-                throw new TException("invalid file syntax: garbage at end of line: `%s'",s);
+                throw new TException("invalid file syntax: garbage at end of line %d",lineNum);
             while (*s=='\r' || *s=='\n') s++;
             line = s;
         }

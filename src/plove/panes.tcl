@@ -148,14 +148,18 @@ proc loadVectorFile {fname} {
     set zipped [string match "*.gz" $fname]
 
     if {$zipped} {
-       tk_messageBox -icon warning -type ok -title Error \
+        tk_messageBox -icon warning -type ok -title Error \
                      -message "Sorry, zipped vector files not yet supported with new Plove engine"
-       return
+        return
     }
 
     # grep vectors from file
     busyCursor "Scanning $fname..."
-    set vectors [opp_getvectorlist $fname]
+    if [catch {set vectors [opp_getvectorlist $fname]} err] {
+        idleCursor
+        tk_messageBox -icon error -type ok -title Error -message "Error scanning $fname: $err"
+        return
+    }
     idleCursor
 
     # fill vec() array
