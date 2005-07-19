@@ -287,19 +287,19 @@ if ($screenshots)
     {
         print "exporting screenshots in Postscript using GNED...\n" if $verbose;
         if ($GNED eq "") {error("gned not configured");}
-        runprog($GNED, "--", "-c", $outdir, "-e", "jpg", "\@$outdir/filelist.txt", ">$nul")==0 || error("error invoking GNED");
-        print "converting Postscript to JPG...\n" if $verbose;
+        runprog($GNED, "--", "-c", $outdir, "-e", "png", "\@$outdir/filelist.txt", ">$nul")==0 || error("error invoking GNED");
+        print "converting Postscript to PNG...\n" if $verbose;
         foreach $i (glob("$outdir/*.eps"))
         {
            print "#" if (!$debug && $verbose);
            $i = tobackslash($i);
-           $jpg = $i;
-           $jpg =~ s/eps$/jpg/;
+           $png = $i;
+           $png =~ s/eps$/png/;
            if ($CONVERT ne "") {
               # we prefer ImageMagick because many Ghostscript versions are broken (ignore -dEPSCrop)
-              runprog($CONVERT, $i, $jpg, ">>$outdir/ghostscript.err")==0 || error("error invoking ImageMagick convert");
+              runprog($CONVERT, $i, $png, ">>$outdir/ghostscript.err")==0 || error("error invoking ImageMagick convert");
            } else {
-              runprog($GHOSTSCRIPT, "-dEPSCrop", "-sNOPAUSE", "-sBATCH", "-sDEVICE=jpeg", "-sOutputFile=$jpg", $i, ">>$outdir/ghostscript.err")==0 || error("error invoking Ghostscript");
+              runprog($GHOSTSCRIPT, "-dEPSCrop", "-sNOPAUSE", "-sBATCH", "-sDEVICE=png16m", "-sOutputFile=$png", $i, ">>$outdir/ghostscript.err")==0 || error("error invoking Ghostscript");
            }
         }
         print "\n" if (!$debug && $verbose);
