@@ -9,6 +9,13 @@
 #
 
 #
+# Edit here if you want to use a different compiler than the one autodetected
+# by configure.
+#
+#CC=/usr/local/gcc/4.0.1/bin/gcc
+#CXX=/usr/local/gcc/4.0.1/bin/g++
+
+#
 # Compiler optimization switches. Choose -O3 for speed, -g for debugging the libs.
 # (Note: For maximum debugging info use switch -ggdb or -gstabs+3 when using gcc and gdb)
 # With gcc, do NOT use --omit-frame-pointer (it crashes when coroutines and
