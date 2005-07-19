@@ -54,7 +54,9 @@ void getVectors(const char *fname, OutVectorArray& array)
         }
     }
 
-    if (!ftok.eof())
+    // ignore "incomplete last line" error, because we might be reading
+    // a vec file currently being written by a simulation
+    if (!ftok.eof() && ftok.errorCode()!=FileTokenizer::INCOMPLETELINE)
         throw new Exception(ftok.errorMsg().c_str());
 }
 

@@ -92,13 +92,15 @@ void VectorFileReaderNode::process()
         }
     }
 
-    if (!ftok.ok() && !ftok.eof())
+    // ignore "incomplete last line" error, because we might be reading
+    // a vec file currently being written by a simulation
+    if (!ftok.ok() && !ftok.eof() && ftok.errorCode()!=FileTokenizer::INCOMPLETELINE)
         throw new Exception(ftok.errorMsg().c_str());
 }
 
 bool VectorFileReaderNode::finished() const
 {
-    return ftok.eof();
+    return !ftok.ok();
 }
 
 //-----
