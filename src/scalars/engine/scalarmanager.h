@@ -90,7 +90,7 @@ class ScalarManager
 
   private:
     // utility, called during processing one line
-    void processLine(char *&line, RunRef& runRef, FileRef fileRef, int lineNum);
+    void processLine(char **vec, int numtokens, RunRef& runRef, FileRef fileRef, int lineNum);
 
     static StringRef stringMapFindOrInsert(StringSet& set, const std::string& str);
 

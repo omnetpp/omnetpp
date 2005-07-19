@@ -23,6 +23,7 @@
 #include <memory>
 #include "patmatch.h"
 #include "scalarmanager.h"
+#include "filetokenizer.h"
 
 
 
@@ -173,18 +174,11 @@ static void splitFileName(const char *pathname, std::string& dir, std::string& f
     }
 }
 
-void ScalarManager::processLine(char *&s, RunRef& runRef, FileRef fileRef, int lineNum)
+void ScalarManager::processLine(char **vec, int numtokens, RunRef& runRef, FileRef fileRef, int lineNum)
 {
-    if (!strncmp(s,"run ",4))
+    if (numtokens>=1 && !strcmp(vec[0],"run"))
     {
-        // parse and store run number
-        s+=4;
-        std::string runNumber, networkName, date;
-        parseString(s, runNumber, lineNum);
-        parseString(s, networkName, lineNum);
-        parseString(s, date, lineNum);
-        while (*s && *s!='\r' && *s!='\n') s++;
-        if (runNumber.empty())
+        if (numtokens<2)
             throw new TException("invalid scalar file: no run number on `run' line, line %d", lineNum);
 
         // add a new Run, and fill in its members
@@ -193,40 +187,36 @@ void ScalarManager::processLine(char *&s, RunRef& runRef, FileRef fileRef, int l
 
         Run& run = runList.back();
         run.fileRef = fileRef;
-        run.runNumber = atoi(runNumber.c_str());
-        run.networkName = networkName;
-        run.date = date;
+        run.runNumber = atoi(vec[1]);
+        run.networkName = numtokens<3 ? "" : vec[2];
+        run.date = numtokens<4 ? "" : vec[3];
         run.lineNum = lineNum;
 
         std::stringstream os;
-        os << runNumber << " (at line " << lineNum << ")";
+        os << run.runNumber << " (at line " << lineNum << ")";
         run.runName = os.str();
         //if (!date.empty())
         //    run.runName += " (" + date + ")";
         run.fileAndRunName = fileRef->filePath + "#" + runRef->runName;
     }
-    else if (!strncmp(s,"scalar ",7))
+    else if (numtokens>=1 && !strcmp(vec[0],"scalar"))
     {
         if (runRef==NULL)
             throw new TException("invalid scalar file: no `run' line before first `scalar' line, line %d", lineNum);
 
-        s+=7;
-
-        std::string moduleName;
-        std::string scalarName;
-        parseString(s, moduleName, lineNum);
-        parseString(s, scalarName, lineNum);
+        // syntax: "scalar <module> <scalarname> <value>"
+        if (numtokens<4)
+            throw new TException("invalid scalar file: too few items on `scalar' line, line %d", lineNum);
 
         double value;
-        if (!parseDouble(s,value))
+        if (!parseDouble(vec[3],value))
             throw new TException("invalid scalar file syntax: invalid value column, line %d", lineNum);
 
-        addValue(runRef, moduleName.c_str(), scalarName.c_str(), value);
+        addValue(runRef, vec[1], vec[2], value);
     }
     else
     {
         // some other line, ignore
-        while (*s && *s!='\r' && *s!='\n') s++;
     }
 }
 
@@ -238,10 +228,11 @@ ScalarManager::FileRef ScalarManager::loadFile(const char *filename)
         if (i->filePath==filename)
             throw new TException("file already loaded");
 
-    // open file
+    // try if file can be opened, before we add it to our database
     FILE *f = fopen(filename, "r");
     if (!f)
         throw new TException("cannot open `%s' for read", filename);
+    fclose(f);
 
     // add to fileList
     fileList.push_back(File());
@@ -250,87 +241,17 @@ ScalarManager::FileRef ScalarManager::loadFile(const char *filename)
     file.filePath = filename;
     splitFileName(filename, file.directory, file.fileName);
 
-    int lineNum = 0;
     RunRef runRef = NULL;
 
-    // process file, reading it in large chunks
-    const int buffersize = 4*1024*1024;  // 4MB
-    char *buffer = new char[buffersize+1];
-    std::auto_ptr<char> bufferDeleter(buffer);
-    int bufferused = 0;
-    bool eofreached = false;
-
-    while (!eofreached)
+    FileTokenizer ftok(filename);
+    while (ftok.getLine())
     {
-        // read enough bytes to fill the buffer
-        int bytesread = fread(buffer+bufferused, 1, buffersize-bufferused, f);
-        if (feof(f))
-            eofreached = true;
-        if (ferror(f))
-            throw new TException("error reading from `%s'", filename);
-
-        buffer[bufferused+bytesread] = '\0';
-        const char *endbuffer = buffer+bufferused+bytesread;
-
-        char *line = buffer;
-
-        // process all full lines
-        while (1)
-        {
-            // do we have a full line?
-            char *s = line;
-            while (*s && *s!='\r' && *s!='\n') s++;
-            char *endline = s;
-            if (!*s && !eofreached)  // if at eof, we have to process unterminated last line, too
-                break;
-
-            lineNum++;
-            //printf("%d\r",lineNum);
-
-            s = line;
-
-            // skip leading white space
-            while (*s==' ' || *s=='\t') s++;
-
-            if (!*s && eofreached)
-            {
-                // end of file, no more work
-                break;
-            }
-            else if (!*s || *s=='\r' || *s=='\n')
-            {
-                // blank line, ignore
-            }
-            else if (*s=='#')
-            {
-                // ignore ("#...") lines
-                while (*s && *s!='\r' && *s!='\n') s++;
-            }
-            else
-            {
-                // parse line
-                char old = *endline;
-                *endline = 0;
-
-                processLine(s, runRef, fileRef, lineNum);
-
-                *endline = old;
-            }
-
-            // skip line termination
-            if (*s && *s!='\r' && *s!='\n')
-                throw new TException("invalid file syntax: garbage at end of line %d",lineNum);
-            while (*s=='\r' || *s=='\n') s++;
-            line = s;
-        }
-
-        // copy the last (partial) line to beginning of buffer
-        bufferused = endbuffer-line;
-        memcpy(buffer, line, bufferused);
+        int numtokens = ftok.numTokens();
+        char **vec = ftok.tokens();
+        processLine(vec, numtokens, runRef, fileRef, ftok.lineNum());
     }
-    printf("DBG: read %d lines\n",lineNum);
-
-    // dump(fileRef, std::cout);
+    if (!ftok.eof())
+        throw new TException(ftok.errorMsg().c_str());
 
     return fileRef;
 }
