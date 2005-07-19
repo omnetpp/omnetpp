@@ -1,0 +1,20 @@
+%description:
+check recording of +-INF.
+
+%global:
+static double zero = 0;
+
+%activity:
+// create object
+cOutVector vec("vec");
+
+// record INF and -INF
+wait(1);
+vec.record(1/zero);
+vec.record(-1/zero);
+
+%contains: {}.vec
+vector 0  "{}_network"  "vec"  1
+0	1	1.#INF
+0	1	-1.#INF
+
