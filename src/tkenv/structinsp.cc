@@ -47,7 +47,7 @@ void TStructPanel::flushIfNeeded(int limit)
     {
         Tcl_Interp *interp = getTkApplication()->getInterp();
         TclQuotedString quotedstr(buf);
-        CHK(Tcl_VarEval(interp, widgetname, ".txt insert end ", quotedstr.get(), NULL));
+        CHK(Tcl_VarEval(interp, widgetname, ".txt insert end ", quotedstr.get(), " field", NULL));
         writeptr = buf; // reset writeptr to beginning of buffer
     }
 }

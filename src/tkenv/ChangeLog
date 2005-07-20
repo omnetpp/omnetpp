@@ -1,3 +1,9 @@
+2005-07-20  Andras Varga
+
+	* inspector.tcl, structinsp.cc: in message inspector Fields and 
+	Control Info pages, indented 2nd, 3rd etc lines of very long entries,
+	to make it more legible (Tk text tag -lmargin2 option)
+
 2005-06-24  Andras Varga
 
 	* modinsp2.tcl: fix: r= display string tag worked incorrectly: circle
