@@ -42,6 +42,7 @@ FileTokenizer::FileTokenizer(const char *fileName, size_t bufferSize)
 FileTokenizer::~FileTokenizer()
 {
     delete [] buffer;
+    delete [] vec;
 }
 
 size_t FileTokenizer::readMore()
@@ -49,7 +50,7 @@ size_t FileTokenizer::readMore()
     // open file if needed
     if (!f)
     {
-        f = fopen(fname.c_str(), "rb");
+        f = fopen(fname.c_str(), "rb");  // 'b' turns off CR/LF translation and might be faster
         if (!f)
         {
             errcode = CANNOTOPEN;
@@ -102,15 +103,23 @@ bool FileTokenizer::readLine()
 
     linenum++;
     char *s = databeg;
+    char eolcharseen = 0;
 
     // loop through the tokens on the line
     for (;;)
     {
+        if (eolcharseen)
+        {
+            // '\r' or '\n' was seen after last token, but it was overwritten
+            // with the token's terminating zero char
+            break;
+        }
+
         // skip spaces before token (needs *dataend==0 sentry!)
-        //SKIPWHILE(*s==' ' || *s=='\t');
         while (*s==' ' || *s=='\t') s++;
         if (s==dataend)
         {
+            // if we reached end of buffer meanwhile, read more data and try again
             s -= readMore();
             if (errcode==EOFREACHED)
                errcode = INCOMPLETELINE;
@@ -126,7 +135,7 @@ bool FileTokenizer::readLine()
 
         if (*s=='\r' || *s=='\n')
         {
-            // end of line -- exit loop
+            // end of line found -- exit loop
             break;
         }
         else if (*s=='"')
@@ -134,10 +143,11 @@ bool FileTokenizer::readLine()
             // parse quoted string
             char *start = s+1;
             s++;
-            //SKIPWHILE(s!=dataend && (*s!='"' || *(s-1)=='\\') && *s!='\r' && *s!='\n');
+            // try find end of quoted string
             while (s!=dataend && (*s!='"' || *(s-1)=='\\') && *s!='\r' && *s!='\n') s++;
             if (s==dataend)
             {
+                // if we reached end of buffer meanwhile, read more data and try again
                 int offset = readMore();
                 s -= offset;
                 start -= offset;
@@ -152,18 +162,22 @@ bool FileTokenizer::readLine()
                     return false;
                 }
             }
+            // check we found the close quote
             if (*s!='"')
             {
                 errcode = UNMATCHEDQUOTE;
                 return false;
             }
+            // terminate quoted string with zero, overwriting close quote
             *s = 0;
+            // add string to array (if there's room)
             if (numtokens==vecsize)
             {
                 errcode = TOOMANYTOKENS;
                 return false;
             }
             vec[numtokens++] = start;
+            // skip to next valid character
             s++;
             if (s==dataend)
             {
@@ -178,9 +192,11 @@ bool FileTokenizer::readLine()
         {
             // parse unquoted string
             char *start = s;
+            // try find end of string (tab, space or cr/lf)
             while (s!=dataend && *s!=' ' && *s!='\t' && *s!='\r' && *s!='\n') s++;
             if (s==dataend)
             {
+                // if we reached end of buffer meanwhile, read more data and try again
                 int offset = readMore();
                 s -= offset;
                 start -= offset;
@@ -195,30 +211,40 @@ bool FileTokenizer::readLine()
                     return false;
                 }
             }
+            // terminate string with zero, but take note if we overwrite cr/lf with that!
+            if (*s=='\r' || *s=='\n')
+                eolcharseen = *s;
             *s = 0;
+            // add string to array (if there's room)
             if (numtokens==vecsize)
             {
                 errcode = TOOMANYTOKENS;
                 return false;
             }
             vec[numtokens++] = start;
-            s++;
-            if (s==dataend)
+            // skip to next valid character (unless we just overwrote a cr/lf,
+            // in which case its location counts as next valid char)
+            if (!eolcharseen)
             {
-                s -= readMore();
-                if (errcode==EOFREACHED)
-                   errcode = INCOMPLETELINE;
-                if (errcode!=OK)
-                    return false;
+                s++;
+                if (s==dataend)
+                {
+                    s -= readMore();
+                    if (errcode==EOFREACHED)
+                       errcode = INCOMPLETELINE;
+                    if (errcode!=OK)
+                        return false;
+                }
             }
         }
     }
 
-    // here, s still points to a valid character
+    // here, s still points to a valid character (1st char of cr/lf)
     assert(s<dataend);
+    assert(eolcharseen==0 ? (*s=='\r' || *s=='\n') : (*s==0));
 
     // skip cr/lf. Note: last line should NOT YET report eof!
-    if (*s=='\r')
+    if (eolcharseen=='\r' || *s=='\r')
     {
         s++;
         if (s==dataend)
@@ -228,7 +254,7 @@ bool FileTokenizer::readLine()
                 return errcode==EOFREACHED ? true : false;
         }
     }
-    if (*s=='\n')
+    if (eolcharseen=='\n' || *s=='\n')
     {
         s++;
         if (s==dataend)
@@ -239,6 +265,7 @@ bool FileTokenizer::readLine()
         }
     }
 
+    // next line will start from our current s
     databeg = s;
     return true;
 }
@@ -250,15 +277,16 @@ std::string FileTokenizer::errorMsg() const
     {
         case OK:             out << "OK"; break;
         case EOFREACHED:     out << "end of file"; break;
-        case CANNOTOPEN:     out << "cannot open " << fname; break;
-        case CANNOTREAD:     out << "error reading " << fname; break;
-        case INCOMPLETELINE: out << "incomplete last line in " << fname; break;
-        case UNMATCHEDQUOTE: out << "unmatched quote in " << fname; break;
-        case LINETOOLONG:    out << "line too long in " << fname; break;
-        case TOOMANYTOKENS:  out << "too many tokens per line in " << fname; break;
+        case CANNOTOPEN:     out << "cannot open file"; break;
+        case CANNOTREAD:     out << "error reading from file"; break;
+        case INCOMPLETELINE: out << "incomplete last line"; break;
+        case UNMATCHEDQUOTE: out << "unmatched quote"; break;
+        case LINETOOLONG:    out << "line too long"; break;
+        case TOOMANYTOKENS:  out << "too many tokens per line"; break;
         default:             out << "???";
     }
-    out << ", line " << linenum;
+    if (errcode!=CANNOTOPEN)
+        out << ", line " << linenum;
     return out.str();
 }
 

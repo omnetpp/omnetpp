@@ -40,4 +40,3 @@ scalar "largeNet.switchA.mac[0]" 	"frames rcvd" 	131
 scalar "largeNet.switchA.mac[1]" 	"simulated time" 	2.354
 scalar "largeNet.switchA.mac[1]" 	"frames sent" 	45
 scalar "largeNet.switchA.mac[1]" 	"frames rcvd" 	34
-
