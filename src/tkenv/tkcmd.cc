@@ -89,6 +89,7 @@ int moduleByPath_cmd(ClientData, Tcl_Interp *, int, const char **);
 int fesMsgs_cmd(ClientData, Tcl_Interp *, int, const char **);
 int sortFesAndGetRange_cmd(ClientData, Tcl_Interp *, int, const char **);
 int msgArrTimeFromNow_cmd(ClientData, Tcl_Interp *, int, const char **);
+int patmatch_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 int inspect_cmd(ClientData, Tcl_Interp *, int, const char **);
 int supportedInspTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -166,6 +167,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_fesmsgs",          fesMsgs_cmd              }, // args: <maxnum>
    { "opp_sortfesandgetrange",sortFesAndGetRange_cmd  }, // args: -  ret: {minDeltaT maxDeltaT}
    { "opp_msgarrtimefromnow",msgArrTimeFromNow_cmd    }, // args: <modptr>
+   { "opp_patmatch",         patmatch_cmd             }, // args: <string> <pattern>
 
    // Inspector stuff
    { "opp_inspect",           inspect_cmd           }, // args: <ptr> <type> <opt> ret: window
@@ -1124,6 +1126,17 @@ int msgArrTimeFromNow_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
    cMessage *msg = (cMessage *)strToPtr( argv[1] );
    if (!msg) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
    Tcl_SetObjResult(interp, Tcl_NewDoubleObj(msg->arrivalTime()-simulation.simTime()));
+   return TCL_OK;
+}
+
+int patmatch_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   const char *s = argv[1];
+   const char *p = argv[2];
+   cPatternMatcher pat;
+   TRY(pat.setPattern(p, true, true, true));
+   Tcl_SetResult(interp, TCLCONST(pat.matches(s) ? "1" : "0"), TCL_STATIC);
    return TCL_OK;
 }
 

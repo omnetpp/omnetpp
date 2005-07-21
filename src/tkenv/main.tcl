@@ -43,6 +43,9 @@ set config(timeline-maxnumevents) 1000
 
 set pluginlist {}
 
+set contextmenurules(keys) {}
+
+
 #
 # simple debug-print procedure
 #

@@ -230,17 +230,96 @@ proc create_inspector_listbox {w} {
     focus $w.main.list
 }
 
+#
+# Extends context menu with extra items. Example config for the INET Framework:
+#
+# extendContextMenu {
+#    {"INET: Interfaces"             "**"  "**interfaceTable.interfaces"     "*vector*"}
+#    {"INET: IP Routing Table"       "**"  "**routingTable.routes"           "*vector*"}
+#    {"INET: IP Multicast Routes"    "**"  "**routingTable.multicastRoutes"  "*vector*"}
+#    {"INET: IPv6 Routing Table"     "**"  "**routingTable6.routeList"       "*vector*"}
+#    {"INET: IPv6 Destination Cache" "**"  "**routingTable6.destCache"       "*map*"   }
+#    {"INET: ARP cache"              "**"  "**arp.arpCache"                  "*map*"   }
+#    {"INET: TCP connections"        "**"  "**tcp.tcpAppConnMap"             "*map*"   }
+#
+#    {"INET: Interfaces"             "**.interfaceTable"  "interfaces"      "*vector*"}
+#    {"INET: IP Routing Table"       "**.routingTable"    "routes"          "*vector*"}
+#    {"INET: IP Multicast Routes"    "**.routingTable"    "multicastRoutes" "*vector*"}
+#    {"INET: IPv6 Routing Table"     "**.routingTable6"   "routeList"       "*vector*"}
+#    {"INET: IPv6 Destination Cache" "**.routingTable6"   "destCache"       "*map*"   }
+#    {"INET: ARP cache"              "**.arp"             "arpCache"        "*map*"   }
+#    {"INET: TCP connections"        "**.tcp"             "tcpAppConnMap"   "*map*"   }
+# }
+#
+proc extendContextMenu {rules} {
+    global contextmenurules
+
+    set i [llength $contextmenurules(keys)]
+    foreach line $rules {
+       lappend contextmenurules(keys) $i
+       if {[llength $line]!=4} {
+           set rulename "\"[lindex $line 0]\""
+           tk_messageBox -type ok -icon info -title Info -message "Context menu inspector rule $rulename should contain 4 items, ignoring."
+       } else {
+           set contextmenurules($i,label)   [lindex $line 0]
+           set contextmenurules($i,context) [lindex $line 1]
+           set contextmenurules($i,name)    [lindex $line 2]
+           set contextmenurules($i,class)   [lindex $line 3]
+       }
+       incr i
+    }
+}
+
 proc popup_insp_menu {ptr X Y} {
+    global contextmenurules
 
-   if {$ptr==""} return
-   set insptypes [opp_supported_insp_types $ptr]
+    if {$ptr==""} return
 
-   catch {destroy .popup}
-   menu .popup -tearoff 0
-   foreach type $insptypes {
-      .popup add command -label "$type..." -command "opp_inspect $ptr \{$type\}"
-   }
-   .popup post $X $Y
+    # create popup menu
+    catch {destroy .popup}
+    menu .popup -tearoff 0
+
+    # add inspector types supported by the object
+    set insptypes [opp_supported_insp_types $ptr]
+    foreach type $insptypes {
+       .popup add command -label "$type..." -command "opp_inspect $ptr \{$type\}"
+    }
+
+    # add further menu items
+    set name [opp_getobjectfullpath $ptr]
+    set allcategories "mqsgvo"
+    set first 1
+    foreach key $contextmenurules(keys) {
+       #debug "trying $contextmenurules($key,label): opp_getsubobjectsfilt $ptr $allcategories $contextmenurules($key,class) $name.$contextmenurules($key,name) 1"
+       # check context matches
+       if ![opp_patmatch $name $contextmenurules($key,context)] {
+           continue
+       }
+       # check we have such object
+       set objlist [opp_getsubobjectsfilt $ptr $allcategories $contextmenurules($key,class) "$name.$contextmenurules($key,name)" 1 ""]
+       if {$objlist!={}} {
+           if {$first} {
+               set first 0
+               .popup add separator
+           }
+           .popup add command -label "$contextmenurules($key,label)..." -command "inspect_contextmenurules $ptr $key"
+       }
+    }
+    .popup post $X $Y
+}
+
+proc inspect_contextmenurules {ptr key} {
+    global contextmenurules
+    set allcategories "mqsgvo"
+    set name [opp_getobjectfullpath $ptr]
+    set objlist [opp_getsubobjectsfilt $ptr $allcategories $contextmenurules($key,class) "$name.$contextmenurules($key,name)" 100 ""]
+    if {[llength $objlist] > 5} {
+        tk_messageBox -type ok -icon info -title Info -message "This matches [llength $objlist]+ objects, opening inspectors only for the first five."
+        set objlist [lrangle $objlist 0 4]
+    }
+    foreach objptr $objlist {
+        opp_inspect $objptr "(default)"
+    }
 }
 
 proc ask_inspectortype {ptr parentwin {typelist {}}} {
