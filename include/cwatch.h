@@ -328,7 +328,7 @@ inline cWatchBase *createWatch_cPolymorphic(const char *varname, cPolymorphic& o
 }
 
 // for objects
-inline cWatchBase *createWatch_cPolymorphicPtr(const char *varname, cPolymorphic *ptr) {
+inline cWatchBase *createWatch_cPolymorphicPtr(const char *varname, cPolymorphic *&ptr) {
     return new cWatch_cPolymorphicPtr(varname, ptr);
 }
 

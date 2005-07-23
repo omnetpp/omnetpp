@@ -100,8 +100,8 @@ void WatchTest::activity()
 
     GeneratedClass *gcp = new GeneratedClass;
     GeneratedMessage *gmp = new GeneratedMessage("gmp-obj");
-    //WATCH_PTR(gcp);
-    //WATCH_PTR(gmp);
+    WATCH_PTR((cPolymorphic*&)gcp);
+    WATCH_PTR((cPolymorphic*&)gmp);
 
     for(;;) wait(1);
 }
