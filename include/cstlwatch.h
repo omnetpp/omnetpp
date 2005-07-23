@@ -31,13 +31,14 @@
 //
 // Internal class
 //
-class SIM_API cVectorWatcherBase : public cObject
+class SIM_API cVectorWatcherBase : public cWatchBase
 {
   public:
-    cVectorWatcherBase(const char *name) : cObject(name) {}
+    cVectorWatcherBase(const char *name) : cWatchBase(name) {}
 
     virtual std::string info() const;
     virtual std::string detailedInfo() const;
+    virtual bool supportsAssignment() const {return false;}
 
     virtual const char *elemTypeName() const = 0;
     virtual int size() const = 0;

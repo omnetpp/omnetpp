@@ -48,7 +48,7 @@ class SIM_API cVectorWatchDescriptor : public cStructDescriptor
 
 Register_Class(cVectorWatchDescriptor);
 
-cVectorWatchDescriptor::cVectorWatchDescriptor() : cStructDescriptor("cObject")
+cVectorWatchDescriptor::cVectorWatchDescriptor() : cStructDescriptor("cVectorWatcherBase")
 {
 }
 
