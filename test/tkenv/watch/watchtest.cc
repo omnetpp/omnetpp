@@ -94,14 +94,14 @@ void WatchTest::activity()
     //WATCH(gs), WATCH_OBJ(gs) -- don't work because no op<<, and not cPolymorphic
 
     GeneratedClass gc;
-    GeneratedMessage gm;
+    GeneratedMessage gm("gm-obj");
     WATCH_OBJ(gc);
     WATCH_OBJ(gm);
 
     GeneratedClass *gcp = new GeneratedClass;
-    GeneratedMessage *gmp = new GeneratedMessage;
-    WATCH_PTR(gcp);
-    WATCH_PTR(gmp);
+    GeneratedMessage *gmp = new GeneratedMessage("gmp-obj");
+    //WATCH_PTR(gcp);
+    //WATCH_PTR(gmp);
 
     for(;;) wait(1);
 }
