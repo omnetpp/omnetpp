@@ -5,7 +5,7 @@
 //
 //
 //  Declaration of the following classes:
-//    cWatch    : shell for a char/int/long/double/char*/cObject* variable
+//    cWatchBase etc: make primitive types, structs etc inspectable
 //
 //==========================================================================
 
@@ -19,196 +19,271 @@
 #ifndef __CWATCH_H
 #define __CWATCH_H
 
+#include <iostream>
+#include <sstream>
 #include "cobject.h"
 
-//=== classes declared here
-class  cWatch;
-
-/** @name Watches
- *
- * @ingroup Macros
- */
-//@{
 
 /**
- * Enables int, long, double, char, etc. variables to be inspectable in Tkenv
- * and to be included into the snapshot file. Example usage:
- * <PRE>
- *   int i;
- *   WATCH(i);
- * </PRE>
- *
- * The WATCH() macro expands to a dynamically created cWatch object, like
- * this:
- * <PRE>
- *   new cWatch("i",i);
- * </PRE>
- *
- * The WATCH() macro must be executed exactly once for a variable,
- * otherwise a new cWatch object is created every time. The alternative
- * is LWATCH which works by creating a local variable.
- *
- * LWATCH() expands to a cWatch object as local variable.
- * <PRE>
- *   cWatch tmp("i",i);
- * </PRE>
- *
- * @hideinitializer
- * @see LWATCH()
- */
-#define WATCH(var)   new cWatch( #var, var );
-
-/**
- * Like WATCH(), but may be executed more than once.
- *
- * @hideinitializer
- * @see WATCH()
- */
-#define LWATCH(var)  cWatch var##__varshell( #var, var );
-//@}
-
-//==========================================================================
-
-/**
- * Utility class to make int, long, double, char, etc. variables
- * to be inspectable in Tkenv.
+ * Utility class to make primitive types and non-cObject objects
+ * inspectable in Tkenv.
  *
  * Users rarely need to create cWatch objects directly, they rather use
  * the WATCH() and LWATCH() macros.
  *
  * @ingroup SimSupport
  */
-// TBD update watches to use templates
-class SIM_API cWatch : public cObject
+class SIM_API cWatchBase : public cObject
 {
-  private:
-    void *ptr;
-    char type;
-
   public:
     /** @name Constructors, destructor, assignment */
     //@{
-
-    /**
-     * Copy constructor.
-     */
-    cWatch(const cWatch& vs);
-
     /**
      * Initialize the shell to hold the given variable.
      */
-    cWatch(const char *name, char& c)  : cObject(name) {ptr=&c; type='c';}
+    cWatchBase(const char *name)  : cObject(name) {}
 
     /**
-     * Initialize the shell to hold the given variable.
+     * Copy constructor not supported: it will raise an error via dup().
      */
-    cWatch(const char *name, signed char& c)  : cObject(name) {ptr=&c; type='c';}
+    cWatchBase(const cWatchBase& v) : cObject(v.name()) {operator=(v);}
 
     /**
-     * Initialize the shell to hold the given variable.
+     * Assignment not supported: it will raise an error.
      */
-    cWatch(const char *name, unsigned char& c)  : cObject(name) {ptr=&c; type='c';}
+    cWatchBase& operator=(const cWatchBase&) {copyNotSupported();return *this;}
 
     /**
-     * Initialize the shell to hold the given variable.
+     * dup() not supported: it will raise an error.
      */
-    cWatch(const char *name, bool& b)  : cObject(name) {ptr=&b; type='b';}
-
-    /**
-     * Initialize the shell to hold the given variable.
-     */
-    cWatch(const char *name, int& i)  : cObject(name) {ptr=&i; type='i';}
-
-    /**
-     * Initialize the shell to hold the given variable.
-     */
-    cWatch(const char *name, unsigned int& i)  : cObject(name) {ptr=&i; type='i';}
-
-    /**
-     * Initialize the shell to hold the given variable.
-     */
-    cWatch(const char *name, long& l)  : cObject(name) {ptr=&l; type='l';}
-
-    /**
-     * Initialize the shell to hold the given variable.
-     */
-    cWatch(const char *name, unsigned long& l)  : cObject(name) {ptr=&l; type='l';}
-
-    /**
-     * Initialize the shell to hold the given variable.
-     */
-    cWatch(const char *name, double& d): cObject(name) {ptr=&d; type='d';}
-
-    /**
-     * Initialize the shell to hold the given variable.
-     */
-    cWatch(const char *name, const char* &s) : cObject(name) {ptr=&s; type='s';}
-
-    /**
-     * Initialize the shell to hold the given variable.
-     */
-    cWatch(const char *name, const signed char* &s) : cObject(name) {ptr=&s; type='s';}
-
-    /**
-     * Initialize the shell to hold the given variable.
-     */
-    cWatch(const char *name, const unsigned char* &s) : cObject(name) {ptr=&s; type='s';}
-
-    /**
-     * Initialize the shell to hold the given variable.
-     */
-    cWatch(const char *name, const cObject* &o) : cObject(name) {ptr=&o; type='o';}
-
-    /**
-     * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
-     */
-    cWatch& operator=(const cWatch& vs)     {ptr=vs.ptr;type=vs.type;return *this;}
+    virtual cObject *dup() const {copyNotSupported(); return NULL;}
     //@}
 
-    /** @name Redefined cObject member functions. */
+    /** @name New methods */
     //@{
+    /**
+     * Tells if changing the variable's value via assign() is supported.
+     */
+    virtual bool supportsAssignment() const = 0;
 
     /**
-     * Creates and returns an exact copy of this object.
-     * See cObject for more details.
+     * Changes the watched variable's value. May only be called if
+     * supportsAssignment() returns true.
      */
-    virtual cObject *dup() const   {return new cWatch(*this);}
-
-    /**
-     * Produces a one-line information about the object.
-     * Output is like this: "int samples = 12 (12U, 0xC)"
-     */
-    virtual std::string info() const;
-
-    /**
-     * Writes the value of the variable to the output stream.
-     * The output looks like this: "int samples = 12 (12U, 0xC)".
-     */
-    virtual void writeContents(std::ostream& os);
-    //@}
-
-    /** @name Accessing the stored variable reference. */
-    //@{
-
-    /**
-     * Does actual work for info() and writeContents().
-     * The output looks like this: "int samples = 12 (12U, 0xC)".
-     */
-    virtual void printTo(char *s) const;
-
-    /**
-     * Returns the type of the referenced variable.
-     * The return value is 'c','i','l','d','s','o' for char, int, long,
-     * double, string, cObject pointer, respectively.
-     */
-    char typeChar() const {return type;}
-
-    /**
-     * Returns pointer to the referenced variable.
-     */
-    void *pointer() const {return ptr;}
+    virtual void assign(const char *s) {}
     //@}
 };
 
+
+/**
+ * Template Watch class, for any type that supports operator<<.
+ */
+template<typename T>
+class SIM_API cGenericReadonlyWatch : public cWatchBase
+{
+  private:
+    const T& r;
+  public:
+    cGenericReadonlyWatch(const char *name, const T& x) : cWatchBase(name), r(x) {}
+    virtual const char *className() const {return opp_typename(typeid(T));}
+    virtual bool supportsAssignment() const {return false;}
+    virtual std::string info() const
+    {
+        std::stringstream out;
+        out << r;
+        return out.str();
+    }
+};
+
+
+/**
+ * Template Watch class, for any type that supports operator<<,
+ * and operator>> for assignment.
+ */
+template<typename T>
+class SIM_API cGenericAssignableWatch : public cWatchBase
+{
+  private:
+    T& r;
+  public:
+    cGenericAssignableWatch(const char *name, T& x) : cWatchBase(name), r(x) {}
+    virtual const char *className() const {return opp_typename(typeid(T));}
+    virtual bool supportsAssignment() const {return true;}
+    virtual std::string info() const
+    {
+        std::stringstream out;
+        out << r;
+        return out.str();
+    }
+    virtual void assign(const char *s)
+    {
+        std::stringstream in(s);
+        in >> r;
+    }
+};
+
+/**
+ * Watch class, specifically for bool.
+ */
+class SIM_API cWatch_bool : public cWatchBase
+{
+  private:
+    bool& r;
+  public:
+    cWatch_bool(const char *name, bool& x) : cWatchBase(name), r(x) {}
+    virtual const char *className() const {return "bool";}
+    virtual bool supportsAssignment() const {return true;}
+    virtual std::string info() const
+    {
+        return r ? "true" : "false";
+    }
+    virtual void assign(const char *s)
+    {
+        r = *s!='0' && *s!='n' && *s!='N' && *s!='f' && *s!='F';
+    }
+};
+
+/**
+ * Watch class, specifically for char.
+ */
+class SIM_API cWatch_char : public cWatchBase
+{
+  private:
+    char& r;
+  public:
+    cWatch_char(const char *name, char& x) : cWatchBase(name), r(x) {}
+    virtual const char *className() const {return "char";}
+    virtual bool supportsAssignment() const {return true;}
+    virtual std::string info() const
+    {
+        std::stringstream out;
+        out << "'" << r << "' (" << int(r) << ")";
+        return out.str();
+    }
+    virtual void assign(const char *s)
+    {
+        if (s[0]=='\'')
+            r = s[1];
+        else
+            r = atoi(s);
+    }
+};
+
+/**
+ * Watch class, specifically for std::string.
+ */
+class SIM_API cWatch_stdstring : public cWatchBase
+{
+  private:
+    std::string& r;
+  public:
+    cWatch_stdstring(const char *name, std::string& x) : cWatchBase(name), r(x) {}
+    virtual const char *className() const {return "std::string";}
+    virtual bool supportsAssignment() const {return true;}
+    virtual std::string info() const
+    {
+        std::stringstream out;
+        out << "\"" << r << "\"";
+        return out.str();
+    }
+    virtual void assign(const char *s)
+    {
+        r = s;
+    }
+};
+
+/**
+ * Watch class, specifically for objects subclassed from cPolymorphic.
+ */
+class SIM_API cWatch_cPolymorphic : public cWatchBase
+{
+  private:
+    cPolymorphic *p;
+  public:
+    cWatch_cPolymorphic(const char *name, cPolymorphic *ptr) : cWatchBase(name), p(ptr) {}
+    cWatch_cPolymorphic(const char *name, cPolymorphic& ref) : cWatchBase(name), p(&ref) {}
+    virtual const char *className() const {return p ? p->className() : "n/a";}
+    virtual std::string info() const {return p ? p->info() : "<null>";}
+    virtual bool supportsAssignment() const {return false;}
+};
+
+
+inline cWatchBase *createWatch(const char *varname, short& d) {
+    return new cGenericAssignableWatch<short>(varname, d);
+}
+
+inline cWatchBase *createWatch(const char *varname, unsigned short& d) {
+    return new cGenericAssignableWatch<unsigned short>(varname, d);
+}
+
+inline cWatchBase *createWatch(const char *varname, int& d) {
+    return new cGenericAssignableWatch<int>(varname, d);
+}
+
+inline cWatchBase *createWatch(const char *varname, unsigned int& d) {
+    return new cGenericAssignableWatch<unsigned int>(varname, d);
+}
+
+inline cWatchBase *createWatch(const char *varname, long& d) {
+    return new cGenericAssignableWatch<long>(varname, d);
+}
+
+inline cWatchBase *createWatch(const char *varname, unsigned long& d) {
+    return new cGenericAssignableWatch<unsigned long>(varname, d);
+}
+
+inline cWatchBase *createWatch(const char *varname, float& d) {
+    return new cGenericAssignableWatch<float>(varname, d);
+}
+
+inline cWatchBase *createWatch(const char *varname, double& d) {
+    return new cGenericAssignableWatch<double>(varname, d);
+}
+
+inline cWatchBase *createWatch(const char *varname, bool& d) {
+    return new cWatch_bool(varname, d);
+}
+
+inline cWatchBase *createWatch(const char *varname, char& d) {
+    return new cWatch_char(varname, d);
+}
+
+inline cWatchBase *createWatch(const char *varname, unsigned char& d) {
+    return new cWatch_char(varname, *(char *)&d);
+}
+
+inline cWatchBase *createWatch(const char *varname, signed char& d) {
+    return new cWatch_char(varname, *(char *)&d);
+}
+
+inline cWatchBase *createWatch(const char *varname, std::string& v) {
+    return new cWatch_stdstring(varname, v);
+}
+
+inline cWatchBase *createWatch(const char *varname, cPolymorphic *ptr) {
+    return new cWatch_cPolymorphic(varname, ptr);
+}
+
+inline cWatchBase *createWatch(const char *varname, cPolymorphic& ref) {
+    return new cWatch_cPolymorphic(varname, ref);
+}
+
+template<typename T>
+inline cWatchBase *createWatch_genericAssignable(const char *varname, T& d) {
+    return new cGenericAssignableWatch<T>(varname, d);
+}
+
+template<typename T>
+inline cWatchBase *createWatch_genericReadonly(const char *varname, T& d) {
+    return new cGenericReadonlyWatch<T>(varname, d);
+}
+
+
+#define WATCH(v)           createWatch(#v,(v))
+#define WATCH_STRUCT(v)    createWatch_genericReadonly(#v,(v))
+#define WATCH_STRUCT_RW(v) createWatch_genericAssignable(#v,(v))
+
+
 #endif
+
 
