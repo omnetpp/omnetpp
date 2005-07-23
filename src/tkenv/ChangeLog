@@ -2,6 +2,9 @@
 
 	* WATCH implementation changed
 
+	* cGate inspector: channel attributes (delay, error and datarate)
+	can now be changed from the GUI. [suggested by Michael Tuexen]
+
 2005-07-21  Andras Varga
 
 	* inspector.tcl: added support for custom items on the context

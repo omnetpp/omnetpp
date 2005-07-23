@@ -26,6 +26,8 @@
 #include <assert.h>
 
 #include "csimplemodule.h"
+#include "cchannel.h"
+#include "cgate.h"
 #include "cmessage.h"
 #include "cpar.h"
 #include "carray.h"
@@ -988,22 +990,24 @@ void TGateInspector::update()
    char buf[64];
    sprintf(buf,"#%d", g->id());
    setLabel(".main.id.e", buf);
-   //setLabel(".main.mod.e", g->ownerModule()->fullPath().c_str());
    setEntry(".main.dispstr.e", g->displayString().getString());
+   cBasicChannel *ch = dynamic_cast<cBasicChannel*>(g->channel());
+   if (ch)
+   {
+       setEntry(".main.delay.e", ch->delay());
+       setEntry(".main.error.e", ch->error());
+       setEntry(".main.datarate.e", ch->datarate());
+   }
+   else
+   {
+       setEntry(".main.delay.e", 0.0);
+       setEntry(".main.error.e", 0.0);
+       setEntry(".main.datarate.e", 0.0);
+   }
+   setLabel(".main.trfinish.e", g->transmissionFinishes());
 
-   if (g->delay()) setLabel(".main.delay.e", (double)(*g->delay()) );
-              else setLabel(".main.delay.e", "none" );
-   if (g->error()) setLabel(".main.error.e", (double)(*g->error()) );
-              else setLabel(".main.error.e", "none" );
-   if (g->datarate()) setLabel(".main.datarate.e", (double)(*g->datarate()) );
-              else setLabel(".main.datarate.e", "none" );
-
-   setLabel(".main.trfinish.e", g->transmissionFinishes() );
-
-   cGate *gate;
-   setInspectButton(".main.from",gate=g->fromGate(), true, INSP_DEFAULT);
-   setInspectButton(".main.to",gate=g->toGate(), true, INSP_DEFAULT);
-   //setToolbarInspectButton(".toolbar.mod",g->ownerModule(), INSP_DEFAULT);
+   setInspectButton(".main.from", g->fromGate(), true, INSP_DEFAULT);
+   setInspectButton(".main.to", g->toGate(), true, INSP_DEFAULT);
 }
 
 void TGateInspector::writeBack()
@@ -1011,6 +1015,21 @@ void TGateInspector::writeBack()
    cGate *g = static_cast<cGate *>(object);
    g->setName(getEntry(".main.name.e"));
    g->displayString().parse(getEntry(".main.dispstr.e"));
+   cBasicChannel *ch = dynamic_cast<cBasicChannel*>(g->channel());
+   double delay = atof(getEntry(".main.delay.e"));
+   double error = atof(getEntry(".main.error.e"));
+   double datarate = atof(getEntry(".main.datarate.e"));
+   if (delay!=0 || error!=0 || datarate!=0 || ch!=NULL)
+   {
+       if (!ch)
+       {
+           ch = new cBasicChannel("channel");
+           g->setChannel(ch);
+       }
+       ch->setDelay(delay<0 ? 0 : delay);
+       ch->setError(error<0 ? 0 : error>1 ? 1 : error);
+       ch->setDatarate(datarate<0 ? 0 : datarate);
+   }
 
    TInspector::writeBack();    // must be there after all changes
 }
@@ -1090,19 +1109,19 @@ int TGraphicalGateWindow::redraw(Tcl_Interp *interp, int, const char **)
    for (g = gate->sourceGate(); g->toGate()!=NULL; g=g->toGate())
    {
         char chan[128] = "";
-        if (g->datarate())
+        if (g->datarate() && g->datarate()->doubleValue()!=0)
         {
             strcat(chan,"datarate ");
             strcat(chan, g->datarate()->getAsText().c_str());
             strcat(chan,"bps  ");
         }
-        if (g->delay())
+        if (g->delay() && g->delay()->doubleValue()!=0)
         {
             strcat(chan,"delay ");
             strcat(chan, g->delay()->getAsText().c_str());
             strcat(chan,"s  ");
         }
-        if (g->error())
+        if (g->error() && g->error()->doubleValue()!=0)
         {
             strcat(chan,"error ");
             strcat(chan, g->error()->getAsText().c_str());

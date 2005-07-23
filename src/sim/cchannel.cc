@@ -357,7 +357,7 @@ bool cBasicChannel::deliver(cMessage *msg, simtime_t t)
         return false;
 
     // transmission delay modelling
-    double datarate;
+    double datarate, error;
 
     if (dataratep && (datarate = (double)(*dataratep))!=0.0)
     {
@@ -377,9 +377,9 @@ bool cBasicChannel::deliver(cMessage *msg, simtime_t t)
     }
 
     // bit error rate modelling
-    if (errorp)
+    if (errorp && (error = (double)(*errorp))!=0.0)
     {
-        if( dblrand() < 1.0 - pow(1.0-(double)(*errorp), msg->length()) )
+        if (dblrand() < 1.0 - pow(1.0-error, msg->length()))
             msg->setBitError(true);
     }
 

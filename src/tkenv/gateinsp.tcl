@@ -24,13 +24,6 @@ proc create_gateinspector {name geom} {
     set w $name
     create_inspector_toplevel $w $geom
 
-    #iconbutton $w.toolbar.sep1 -separator
-    #iconbutton $w.toolbar.mod  -image $icons(parent) ;#command assigned from C++
-    #pack $w.toolbar.sep1 -anchor n -side left
-    #pack $w.toolbar.mod -anchor n -side left
-
-    #set help_tips($w.toolbar.mod) {Inspect owner module}
-
     frame $w.main
     pack $w.main -anchor center -expand 1 -fill both -side top
 
@@ -39,10 +32,9 @@ proc create_gateinspector {name geom} {
     label-button $w.main.from {From:}
     label-button $w.main.to {To:}
     label-entry $w.main.dispstr {Display string:}
-    #label-sunkenlabel $w.main.mod  {Module:}
-    label-sunkenlabel $w.main.delay {Delay:}
-    label-sunkenlabel $w.main.error {Error:}
-    label-sunkenlabel $w.main.datarate {Data rate:}
+    label-entry $w.main.delay {Delay:}
+    label-entry $w.main.error {Error:}
+    label-entry $w.main.datarate {Data rate:}
     label-sunkenlabel $w.main.trfinish {Tx finishes:}
 
     pack $w.main.name -fill x -side top
@@ -50,7 +42,6 @@ proc create_gateinspector {name geom} {
     pack $w.main.from -fill x -side top
     pack $w.main.to -fill x -side top
     pack $w.main.dispstr -fill x -side top
-    #pack $w.main.mod -fill x -side top
     pack $w.main.delay -fill x -side top
     pack $w.main.error -fill x -side top
     pack $w.main.datarate -fill x -side top
