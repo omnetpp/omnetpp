@@ -235,17 +235,56 @@ void createStdPointerMapWatcher(const char *varname, std::map<KeyT,ValueT,CmpT>&
     new cStdPointerMapWatcher<KeyT,ValueT,CmpT>(varname, m);
 }
 
-#define WATCH_VECTOR(v)      createStdVectorWatcher(#v,(v))
 
-#define WATCH_PTRVECTOR(v)   createStdPointerVectorWatcher(#v,(v))
 
-#define WATCH_LIST(v)        createStdListWatcher(#v,(v))
+/**
+ * @name WATCH macros for STL container classes
+ * @ingroup Macros
+ */
+//@{
 
-#define WATCH_PTRLIST(v)     createStdPointerListWatcher(#v,(v))
+/**
+ * Makes std::vectors inspectable in Tkenv. See also WATCH_PTRVECTOR().
+ *
+ * @hideinitializer
+ */
+#define WATCH_VECTOR(variable)      createStdVectorWatcher(#variable,(variable))
 
+/**
+ * Makes std::vectors storing pointers inspectable in Tkenv. See also WATCH_VECTOR().
+ *
+ * @hideinitializer
+ */
+#define WATCH_PTRVECTOR(variable)   createStdPointerVectorWatcher(#variable,(variable))
+
+/**
+ * Makes std::lists inspectable in Tkenv. See also WATCH_PTRLIST().
+ *
+ * @hideinitializer
+ */
+#define WATCH_LIST(variable)        createStdListWatcher(#variable,(variable))
+
+/**
+ * Makes std::lists storing pointers inspectable in Tkenv. See also WATCH_LIST().
+ *
+ * @hideinitializer
+ */
+#define WATCH_PTRLIST(variable)     createStdPointerListWatcher(#variable,(variable))
+
+/**
+ * Makes std::maps inspectable in Tkenv. See also WATCH_PTRMAP().
+ *
+ * @hideinitializer
+ */
 #define WATCH_MAP(m)         createStdMapWatcher(#m,(m))
 
+/**
+ * Makes std::maps storing pointers inspectable in Tkenv. See also WATCH_MAP().
+ *
+ * @hideinitializer
+ */
 #define WATCH_PTRMAP(m)      createStdPointerMapWatcher(#m,(m))
+//@}
 
 #endif
 

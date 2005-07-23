@@ -26,12 +26,10 @@
 
 /**
  * Utility class to make primitive types and non-cObject objects
- * inspectable in Tkenv.
+ * inspectable in Tkenv. To be used only via the WATCH, WATCH_PTR,
+ * WATCH_OBJ, WATCH_VECTOR etc macros.
  *
- * Users rarely need to create cWatch objects directly, they rather use
- * the WATCH() and LWATCH() macros.
- *
- * @ingroup SimSupport
+ * @ingroup Internals
  */
 class SIM_API cWatchBase : public cObject
 {
@@ -77,6 +75,7 @@ class SIM_API cWatchBase : public cObject
 
 /**
  * Template Watch class, for any type that supports operator<<.
+ * @ingroup Internals
  */
 template<typename T>
 class SIM_API cGenericReadonlyWatch : public cWatchBase
@@ -99,6 +98,7 @@ class SIM_API cGenericReadonlyWatch : public cWatchBase
 /**
  * Template Watch class, for any type that supports operator<<,
  * and operator>> for assignment.
+ * @ingroup Internals
  */
 template<typename T>
 class SIM_API cGenericAssignableWatch : public cWatchBase
@@ -124,6 +124,7 @@ class SIM_API cGenericAssignableWatch : public cWatchBase
 
 /**
  * Watch class, specifically for bool.
+ * @ingroup Internals
  */
 class SIM_API cWatch_bool : public cWatchBase
 {
@@ -145,6 +146,7 @@ class SIM_API cWatch_bool : public cWatchBase
 
 /**
  * Watch class, specifically for char.
+ * @ingroup Internals
  */
 class SIM_API cWatch_char : public cWatchBase
 {
@@ -171,6 +173,7 @@ class SIM_API cWatch_char : public cWatchBase
 
 /**
  * Watch class, specifically for std::string.
+ * @ingroup Internals
  */
 class SIM_API cWatch_stdstring : public cWatchBase
 {
@@ -194,18 +197,34 @@ class SIM_API cWatch_stdstring : public cWatchBase
 
 /**
  * Watch class, specifically for objects subclassed from cPolymorphic.
+ * @ingroup Internals
  */
 class SIM_API cWatch_cPolymorphic : public cWatchBase
 {
   private:
-    cPolymorphic *p;
+    cPolymorphic& r;
   public:
-    cWatch_cPolymorphic(const char *name, cPolymorphic *ptr) : cWatchBase(name), p(ptr) {}
-    cWatch_cPolymorphic(const char *name, cPolymorphic& ref) : cWatchBase(name), p(&ref) {}
-    virtual const char *className() const {return p ? p->className() : "n/a";}
-    virtual std::string info() const {return p ? p->info() : "<null>";}
+    cWatch_cPolymorphic(const char *name, cPolymorphic& ref) : cWatchBase(name), r(ref) {}
+    virtual const char *className() const {return r.className();}
+    virtual std::string info() const {return r.info();}
     virtual bool supportsAssignment() const {return false;}
-    virtual cStructDescriptor *createDescriptor() {return p ? p->createDescriptor() : NULL;}
+    virtual cStructDescriptor *createDescriptor() {return r.createDescriptor();}
+};
+
+/**
+ * Watch class, specifically for pointers to objects subclassed from cPolymorphic.
+ * @ingroup Internals
+ */
+class SIM_API cWatch_cPolymorphicPtr : public cWatchBase
+{
+  private:
+    cPolymorphic *&rp;
+  public:
+    cWatch_cPolymorphicPtr(const char *name, cPolymorphic *&ptr) : cWatchBase(name), rp(ptr) {}
+    virtual const char *className() const {return rp->className() : "n/a";}
+    virtual std::string info() const {return rp ? rp->info() : "<null>";}
+    virtual bool supportsAssignment() const {return false;}
+    virtual cStructDescriptor *createDescriptor() {return rp ? rp->createDescriptor() : NULL;}
 };
 
 
@@ -261,29 +280,68 @@ inline cWatchBase *createWatch(const char *varname, std::string& v) {
     return new cWatch_stdstring(varname, v);
 }
 
-inline cWatchBase *createWatch(const char *varname, cPolymorphic *ptr) {
-    return new cWatch_cPolymorphic(varname, ptr);
+// this is the fallback, if none of the above match
+template<typename T>
+inline cWatchBase *createWatch(const char *varname, T& d) {
+    return new cGenericReadonlyWatch<T>(varname, d);
 }
 
-inline cWatchBase *createWatch(const char *varname, cPolymorphic& ref) {
-    return new cWatch_cPolymorphic(varname, ref);
-}
-
+// to be used if T also has op>> defined
 template<typename T>
 inline cWatchBase *createWatch_genericAssignable(const char *varname, T& d) {
     return new cGenericAssignableWatch<T>(varname, d);
 }
 
-template<typename T>
-inline cWatchBase *createWatch_genericReadonly(const char *varname, T& d) {
-    return new cGenericReadonlyWatch<T>(varname, d);
+// for objects
+inline cWatchBase *createWatch_cPolymorphic(const char *varname, cPolymorphic *ptr) {
+    return new cWatch_cPolymorphic(varname, ptr);
+}
+
+// for objects
+inline cWatchBase *createWatch_cPolymorphicPtr(const char *varname, cPolymorphic *ptr) {
+    return new cWatch_cPolymorphicPtr(varname, ptr);
 }
 
 
-#define WATCH(v)     createWatch(#v,(v))
-#define WATCH2(v)    createWatch_genericReadonly(#v,(v))
-#define WATCH2_RW(v) createWatch_genericAssignable(#v,(v))
+/**
+ * @name WATCH macros
+ * @ingroup Macros
+ */
+//@{
 
+/**
+ * Makes primitive types and types with operator<< inspectable in Tkenv.
+ * See also WATCH_RW(), WATCH_PTR(), WATCH_OBJ(), WATCH_VECTOR(),
+ * WATCH_PTRVECTOR(), etc. macros.
+ *
+ * @hideinitializer
+ */
+#define WATCH(variable)    createWatch(#variable,(variable))
+
+/**
+ * Makes types with operator<< and operator>> inspectable in Tkenv.
+ * operator>> is used to enable changing the variable's value interactively.
+ *
+ * @hideinitializer
+ */
+#define WATCH_RW(variable) createWatch_genericAssignable(#variable,(variable))
+
+/**
+ * Makes classes derived from cPolymorphic inspectable in Tkenv.
+ * See also WATCH_PTR().
+ *
+ * @hideinitializer
+ */
+#define WATCH_OBJ(variable) createWatch_cPolymorphic(#variable,(variable))
+
+/**
+ * Makes pointers to objects derived from cPolymorphic inspectable in Tkenv.
+ * See also WATCH_OBJ().
+ *
+ * @hideinitializer
+ */
+#define WATCH_PTR(variable) createWatch_cPolymorphicPtr(#variable,(variable))
+//@}
 
 #endif
 
