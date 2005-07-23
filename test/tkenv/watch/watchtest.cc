@@ -2,7 +2,7 @@
 
 class WatchTest : public cSimpleModule
 {
-    Module_Class_Members(WatchTest,cSimpleModule,16384)
+    Module_Class_Members(WatchTest,cSimpleModule,16384);
     virtual void activity();
 };
 
@@ -25,7 +25,7 @@ void WatchTest::activity()
 
     WATCH(b1);
     WATCH(b2);
-    WATCH(c;
+    WATCH(c);
     WATCH(uc);
     WATCH(sc);
     WATCH(s);
