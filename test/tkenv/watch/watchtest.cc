@@ -8,6 +8,9 @@ class WatchTest : public cSimpleModule
 
 Define_Module(WatchTest);
 
+//
+// Test data structures
+//
 struct Point
 {
     int x; int y;
@@ -25,6 +28,27 @@ std::istream& operator>>(std::istream& is, Point& p)
     return is >> dummy >> p.x >> dummy >> p.y >> dummy;
 }
 
+class APolygon : public cPolymorphic
+{
+  public:
+    int n;
+    int edgeLen;
+    APolygon(int nsides, int edgeLength) {n=nsides; edgeLen=edgeLength;}
+    std::string info() const {
+        std::stringstream out;
+        out << "n=" << n << ", edgeLen=" << edgeLen << " (printed by info())";
+        return out.str();
+    }
+};
+
+std::ostream& operator<<(std::ostream& os, const APolygon& p)
+{
+    return os << "n=" << p.n << ", edgeLen=" << p.edgeLen << " (printed by op<<)";
+}
+
+//
+// Main function
+//
 void WatchTest::activity()
 {
     bool b1 = true;
@@ -58,6 +82,12 @@ void WatchTest::activity()
 
     Point point_rw(100,200);
     WATCH_RW(point_rw);
+
+    APolygon poly_WATCH(5,100);
+    WATCH(poly_WATCH);
+
+    APolygon poly_WATCH_OBJ(5,100);
+    WATCH_OBJ(poly_WATCH_OBJ);
 
     for(;;) wait(1);
 }

@@ -159,7 +159,34 @@ class SIM_API cWatch_char : public cWatchBase
     virtual std::string info() const
     {
         std::stringstream out;
-        out << "'" << r << "' (" << int(r) << ")";
+        out << "'" << (r>=0&&r<' '?' ':r) << "' (" << int(r) << ")";
+        return out.str();
+    }
+    virtual void assign(const char *s)
+    {
+        if (s[0]=='\'')
+            r = s[1];
+        else
+            r = atoi(s);
+    }
+};
+
+/**
+ * Watch class, specifically for unsigned char.
+ * @ingroup Internals
+ */
+class SIM_API cWatch_uchar : public cWatchBase
+{
+  private:
+    unsigned char& r;
+  public:
+    cWatch_uchar(const char *name, unsigned char& x) : cWatchBase(name), r(x) {}
+    virtual const char *className() const {return "unsigned char";}
+    virtual bool supportsAssignment() const {return true;}
+    virtual std::string info() const
+    {
+        std::stringstream out;
+        out << "'" << (char)(r<' '?' ':r) << "' (" << int(r) << ")";
         return out.str();
     }
     virtual void assign(const char *s)
@@ -191,7 +218,10 @@ class SIM_API cWatch_stdstring : public cWatchBase
     }
     virtual void assign(const char *s)
     {
-        r = s;
+        if (s[0]=='"' && s[strlen(s)-1]=='"')
+            r.assign(s+1, strlen(s)-2);
+        else
+            r = s;
     }
 };
 
@@ -221,7 +251,7 @@ class SIM_API cWatch_cPolymorphicPtr : public cWatchBase
     cPolymorphic *&rp;
   public:
     cWatch_cPolymorphicPtr(const char *name, cPolymorphic *&ptr) : cWatchBase(name), rp(ptr) {}
-    virtual const char *className() const {return rp->className() : "n/a";}
+    virtual const char *className() const {return rp? rp->className() : "n/a";}
     virtual std::string info() const {return rp ? rp->info() : "<null>";}
     virtual bool supportsAssignment() const {return false;}
     virtual cStructDescriptor *createDescriptor() {return rp ? rp->createDescriptor() : NULL;}
@@ -269,7 +299,7 @@ inline cWatchBase *createWatch(const char *varname, char& d) {
 }
 
 inline cWatchBase *createWatch(const char *varname, unsigned char& d) {
-    return new cWatch_char(varname, *(char *)&d);
+    return new cWatch_uchar(varname, d);
 }
 
 inline cWatchBase *createWatch(const char *varname, signed char& d) {
@@ -293,8 +323,8 @@ inline cWatchBase *createWatch_genericAssignable(const char *varname, T& d) {
 }
 
 // for objects
-inline cWatchBase *createWatch_cPolymorphic(const char *varname, cPolymorphic *ptr) {
-    return new cWatch_cPolymorphic(varname, ptr);
+inline cWatchBase *createWatch_cPolymorphic(const char *varname, cPolymorphic& obj) {
+    return new cWatch_cPolymorphic(varname, obj);
 }
 
 // for objects
