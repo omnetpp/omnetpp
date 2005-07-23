@@ -31,10 +31,10 @@
 //
 // Internal class
 //
-class SIM_API cVectorWatcherBase : public cWatchBase
+class SIM_API cStdVectorWatcherBase : public cWatchBase
 {
   public:
-    cVectorWatcherBase(const char *name) : cWatchBase(name) {}
+    cStdVectorWatcherBase(const char *name) : cWatchBase(name) {}
 
     virtual std::string info() const;
     virtual std::string detailedInfo() const;
@@ -51,13 +51,13 @@ class SIM_API cVectorWatcherBase : public cWatchBase
 // Internal class
 //
 template<class T>
-class SIM_API cVectorWatcher : public cVectorWatcherBase
+class SIM_API cStdVectorWatcher : public cStdVectorWatcherBase
 {
   protected:
     std::vector<T>& v;
     std::string classname;
   public:
-    cVectorWatcher(const char *name, std::vector<T>& var) : cVectorWatcherBase(name), v(var) {
+    cStdVectorWatcher(const char *name, std::vector<T>& var) : cStdVectorWatcherBase(name), v(var) {
         classname = std::string("std::vector<")+opp_typename(typeid(T))+">";
     }
     const char *className() const {return classname.c_str();}
@@ -67,9 +67,9 @@ class SIM_API cVectorWatcher : public cVectorWatcherBase
 };
 
 template <class T>
-void createVectorWatcher(const char *varname, std::vector<T>& v)
+void createStdVectorWatcher(const char *varname, std::vector<T>& v)
 {
-    new cVectorWatcher<T>(varname, v);
+    new cStdVectorWatcher<T>(varname, v);
 }
 
 
@@ -77,24 +77,24 @@ void createVectorWatcher(const char *varname, std::vector<T>& v)
 // Internal class
 //
 template<class T>
-class SIM_API cPointerVectorWatcher : public cVectorWatcher<T>
+class SIM_API cStdPointerVectorWatcher : public cStdVectorWatcher<T>
 {
   public:
-    cPointerVectorWatcher(const char *name, std::vector<T>& var) : cVectorWatcher<T>(name, var) {}
+    cStdPointerVectorWatcher(const char *name, std::vector<T>& var) : cStdVectorWatcher<T>(name, var) {}
     virtual std::string at(int i) const {std::stringstream out; out << *(this->v[i]); return out.str();}
 };
 
 template <class T>
-void createPointerVectorWatcher(const char *varname, std::vector<T>& v)
+void createStdPointerVectorWatcher(const char *varname, std::vector<T>& v)
 {
-    new cPointerVectorWatcher<T>(varname, v);
+    new cStdPointerVectorWatcher<T>(varname, v);
 }
 
 //
 // Internal class
 //
 template<class T>
-class SIM_API cListWatcher : public cVectorWatcherBase
+class SIM_API cStdListWatcher : public cStdVectorWatcherBase
 {
   protected:
     std::list<T>& v;
@@ -102,7 +102,7 @@ class SIM_API cListWatcher : public cVectorWatcherBase
     mutable typename std::list<T>::iterator it;
     mutable int itPos;
   public:
-    cListWatcher(const char *name, std::list<T>& var) : cVectorWatcherBase(name), v(var) {
+    cStdListWatcher(const char *name, std::list<T>& var) : cStdVectorWatcherBase(name), v(var) {
         itPos=-1;
         classname = std::string("std::list<")+opp_typename(typeid(T))+">";
     }
@@ -135,9 +135,9 @@ class SIM_API cListWatcher : public cVectorWatcherBase
 };
 
 template <class T>
-void createListWatcher(const char *varname, std::list<T>& v)
+void createStdListWatcher(const char *varname, std::list<T>& v)
 {
-    new cListWatcher<T>(varname, v);
+    new cStdListWatcher<T>(varname, v);
 }
 
 
@@ -145,10 +145,10 @@ void createListWatcher(const char *varname, std::list<T>& v)
 // Internal class
 //
 template<class T>
-class SIM_API cPointerListWatcher : public cListWatcher<T>
+class SIM_API cStdPointerListWatcher : public cStdListWatcher<T>
 {
   public:
-    cPointerListWatcher(const char *name, std::list<T>& var) : cListWatcher<T>(name, var) {}
+    cStdPointerListWatcher(const char *name, std::list<T>& var) : cStdListWatcher<T>(name, var) {}
     virtual std::string atIt() const {
         std::stringstream out;
         out << (**this->it);
@@ -157,16 +157,16 @@ class SIM_API cPointerListWatcher : public cListWatcher<T>
 };
 
 template <class T>
-void createPointerListWatcher(const char *varname, std::list<T>& v)
+void createStdPointerListWatcher(const char *varname, std::list<T>& v)
 {
-    new cPointerListWatcher<T>(varname, v);
+    new cStdPointerListWatcher<T>(varname, v);
 }
 
 //
 // Internal class
 //
 template<class KeyT, class ValueT, class CmpT>
-class SIM_API cMapWatcher : public cVectorWatcherBase
+class SIM_API cStdMapWatcher : public cStdVectorWatcherBase
 {
   protected:
     std::map<KeyT,ValueT,CmpT>& m;
@@ -174,7 +174,7 @@ class SIM_API cMapWatcher : public cVectorWatcherBase
     mutable int itPos;
     std::string classname;
   public:
-    cMapWatcher(const char *name, std::map<KeyT,ValueT,CmpT>& var) : cVectorWatcherBase(name), m(var) {
+    cStdMapWatcher(const char *name, std::map<KeyT,ValueT,CmpT>& var) : cStdVectorWatcherBase(name), m(var) {
         itPos=-1;
         classname = std::string("std::map<")+opp_typename(typeid(KeyT))+","+opp_typename(typeid(ValueT))+">";
     }
@@ -207,9 +207,9 @@ class SIM_API cMapWatcher : public cVectorWatcherBase
 };
 
 template <class KeyT, class ValueT, class CmpT>
-void createMapWatcher(const char *varname, std::map<KeyT,ValueT,CmpT>& m)
+void createStdMapWatcher(const char *varname, std::map<KeyT,ValueT,CmpT>& m)
 {
-    new cMapWatcher<KeyT,ValueT,CmpT>(varname, m);
+    new cStdMapWatcher<KeyT,ValueT,CmpT>(varname, m);
 }
 
 
@@ -217,10 +217,10 @@ void createMapWatcher(const char *varname, std::map<KeyT,ValueT,CmpT>& m)
 // Internal class
 //
 template<class KeyT, class ValueT, class CmpT>
-class SIM_API cPointerMapWatcher : public cMapWatcher<KeyT,ValueT,CmpT>
+class SIM_API cStdPointerMapWatcher : public cStdMapWatcher<KeyT,ValueT,CmpT>
 {
   public:
-    cPointerMapWatcher(const char *name, std::map<KeyT,ValueT,CmpT>& var) : cMapWatcher<KeyT,ValueT,CmpT>(name, var) {}
+    cStdPointerMapWatcher(const char *name, std::map<KeyT,ValueT,CmpT>& var) : cStdMapWatcher<KeyT,ValueT,CmpT>(name, var) {}
     virtual std::string atIt() const {
         std::stringstream out;
         out << this->it->first << "  ==>  " << *(this->it->second);
@@ -229,22 +229,22 @@ class SIM_API cPointerMapWatcher : public cMapWatcher<KeyT,ValueT,CmpT>
 };
 
 template<class KeyT, class ValueT, class CmpT>
-void createPointerMapWatcher(const char *varname, std::map<KeyT,ValueT,CmpT>& m)
+void createStdPointerMapWatcher(const char *varname, std::map<KeyT,ValueT,CmpT>& m)
 {
-    new cPointerMapWatcher<KeyT,ValueT,CmpT>(varname, m);
+    new cStdPointerMapWatcher<KeyT,ValueT,CmpT>(varname, m);
 }
 
-#define WATCH_VECTOR(v)      createVectorWatcher(#v,(v))
+#define WATCH_VECTOR(v)      createStdVectorWatcher(#v,(v))
 
-#define WATCH_PTRVECTOR(v)   createPointerVectorWatcher(#v,(v))
+#define WATCH_PTRVECTOR(v)   createStdPointerVectorWatcher(#v,(v))
 
-#define WATCH_LIST(v)        createListWatcher(#v,(v))
+#define WATCH_LIST(v)        createStdListWatcher(#v,(v))
 
-#define WATCH_PTRLIST(v)     createPointerListWatcher(#v,(v))
+#define WATCH_PTRLIST(v)     createStdPointerListWatcher(#v,(v))
 
-#define WATCH_MAP(m)         createMapWatcher(#m,(m))
+#define WATCH_MAP(m)         createStdMapWatcher(#m,(m))
 
-#define WATCH_PTRMAP(m)      createPointerMapWatcher(#m,(m))
+#define WATCH_PTRMAP(m)      createStdPointerMapWatcher(#m,(m))
 
 #endif
 
