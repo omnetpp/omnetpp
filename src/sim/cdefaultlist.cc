@@ -89,7 +89,7 @@ cDefaultList::~cDefaultList()
         // experimental: do not delete objects (except cWatches), just print their names
         for (int i=0; i<count; i++)
         {
-            if (dynamic_cast<cWatch *>(vect[i]))
+            if (dynamic_cast<cWatchBase *>(vect[i]))
                 delete vect[i--]; // "i--" used because delete will move last item to position i
             else
                 printf("undisposed: (%s) %s\n", vect[i]->className(), vect[i]->fullPath().c_str());

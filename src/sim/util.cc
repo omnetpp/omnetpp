@@ -519,8 +519,8 @@ void _sim_dummy_func()
       cPacket x;
       cPacket y(x);
       x.info();
-      cWatch w(NULL,*(int*)&x);
-      w.pointer(); w.typeChar();
+      cWatch_bool w(NULL,*(bool*)&x);
+      w.supportsAssignment();
       exponential(1.0);
       cSequentialScheduler sch;
       sch.setSimulation(NULL);
