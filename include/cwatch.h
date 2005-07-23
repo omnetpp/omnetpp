@@ -334,8 +334,9 @@ inline cWatchBase *createWatch_cPolymorphic(const char *varname, cPolymorphic& o
 // of type cPolymorphic*: the compiler has to be able to cast that
 // implicitly from SomeDerivedType* -- this way we don't accept pointers
 // that are REALLY unrelated.
-inline cWatchBase *createWatch_cPolymorphicPtr(const char *varname, cPolymorphic *&ptr, cPolymorphic *) {
-    return new cWatch_cPolymorphicPtr(varname, ptr);
+inline cWatchBase *createWatch_cPolymorphicPtr(const char *varname, cPolymorphic *&refp, cPolymorphic *p) {
+    ASSERT(refp==p);
+    return new cWatch_cPolymorphicPtr(varname, refp);
 }
 
 
