@@ -289,7 +289,12 @@ class TWatchInspectorFactory : public cInspectorFactory
   public:
     TWatchInspectorFactory(const char *name) : cInspectorFactory(name) {}
 
-    bool supportsObject(cObject *obj) {return dynamic_cast<cWatchBase *>(obj)!=NULL;}
+    bool supportsObject(cObject *obj) {
+        // if it has a structdescriptor, we say we don't support it because we leave it to TObjInspector
+        cStructDescriptor *sd = obj->createDescriptor();
+        delete sd;
+        return !sd && dynamic_cast<cWatchBase *>(obj)!=NULL;
+    }
     int inspectorType() {return INSP_OBJECT;}
     double qualityAsDefault(cObject *object) {return 2.0;}
     TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
