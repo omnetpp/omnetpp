@@ -116,8 +116,31 @@ void WatchTest::activity()
     WATCH_PTR(gcp);
     WATCH_PTR(gmp);
 
-    int *wrongp = (int *)gpc;
+    int *wrongp = (int *)gcp;
     //WATCH_PTR(wrongp); -- this has to give a compile error
+
+    //
+    // Vectors, lists and maps
+    //
+    std::vector<int> vi;
+    vi.push_back(2);
+    vi.push_back(3);
+    vi.push_back(5);
+    vi.push_back(7);
+    WATCH_VECTOR(vi);
+
+    std::list<std::string> ls;
+    ls.push_back("two");
+    ls.push_back("three");
+    ls.push_back("five");
+    ls.push_back("seven");
+    WATCH_LIST(ls);
+
+    std::map<int,std::string> m;
+    m[1] = "one";
+    m[2] = "two";
+    m[3] = "three";
+    WATCH_MAP(m);
 
     for(;;) wait(1);
 }
