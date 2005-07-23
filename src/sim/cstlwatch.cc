@@ -29,7 +29,7 @@ class SIM_API cStdVectorWatcherDescriptor : public cStructDescriptor
     cStdVectorWatcherDescriptor();
     virtual ~cStdVectorWatcherDescriptor();
     cStdVectorWatcherDescriptor& operator=(const cStdVectorWatcherDescriptor& other);
-    virtual cStdObject *dup() const {return new cStdVectorWatcherDescriptor(*this);}
+    virtual cObject *dup() const {return new cStdVectorWatcherDescriptor(*this);}
 
     virtual int getFieldCount();
     virtual const char *getFieldName(int field);
