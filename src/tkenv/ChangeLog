@@ -1,3 +1,7 @@
+2005-07-23  Andras Varga
+
+	* WATCH implementation changed
+
 2005-07-21  Andras Varga
 
 	* inspector.tcl: added support for custom items on the context

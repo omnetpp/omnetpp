@@ -587,8 +587,8 @@ int getObjectBaseClass_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
        Tcl_SetResult(interp, "cStatistic", TCL_STATIC);
    else if (dynamic_cast<cMessageHeap *>(object))
        Tcl_SetResult(interp, "cMessageHeap", TCL_STATIC);
-   else if (dynamic_cast<cWatch *>(object))
-       Tcl_SetResult(interp, "cWatch", TCL_STATIC);
+   else if (dynamic_cast<cWatchBase *>(object))
+       Tcl_SetResult(interp, "cWatchBase", TCL_STATIC);
    else
        Tcl_SetResult(interp, TCLCONST(object->className()), TCL_STATIC);
    return TCL_OK;

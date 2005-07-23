@@ -315,7 +315,7 @@ proc inspect_contextmenurules {ptr key} {
     set objlist [opp_getsubobjectsfilt $ptr $allcategories $contextmenurules($key,class) "$name.$contextmenurules($key,name)" 100 ""]
     if {[llength $objlist] > 5} {
         tk_messageBox -type ok -icon info -title Info -message "This matches [llength $objlist]+ objects, opening inspectors only for the first five."
-        set objlist [lrangle $objlist 0 4]
+        set objlist [lrange $objlist 0 4]
     }
     foreach objptr $objlist {
         opp_inspect $objptr "(default)"

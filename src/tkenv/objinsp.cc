@@ -289,7 +289,7 @@ class TWatchInspectorFactory : public cInspectorFactory
   public:
     TWatchInspectorFactory(const char *name) : cInspectorFactory(name) {}
 
-    bool supportsObject(cObject *obj) {return dynamic_cast<cWatch *>(obj)!=NULL;}
+    bool supportsObject(cObject *obj) {return dynamic_cast<cWatchBase *>(obj)!=NULL;}
     int inspectorType() {return INSP_OBJECT;}
     double qualityAsDefault(cObject *object) {return 2.0;}
     TInspector *createInspectorFor(cObject *object,int type,const char *geom,void *data) {
@@ -319,69 +319,20 @@ void TWatchInspector::update()
 {
    TInspector::update();
 
-   cWatch *watch = static_cast<cWatch *>(object);
-
-   char *type,val[128];
-   void *p = watch->pointer();
-   switch (watch->typeChar())
-   {
-         case 'c':  sprintf(val, "'%c' (%d,0x%x)",
-                                 *(char *)p, *(char *)p, *(char *)p );
-                    type = "char ";
-                    break;
-         case 'i':  sprintf(val, "%d (%uU, 0x%x)",
-                                 *(int *)p, *(int *)p, *(int *)p );
-                    type = "int ";
-                    break;
-         case 'l':  sprintf(val, "%ldL (%luLU, 0x%lx)",
-                                 *(long *)p, *(long *)p, *(long *)p );
-                    type = "long ";
-                    break;
-         case 'd':  sprintf(val, "%f",
-                                 *(double *)p );
-                    type = "double ";
-                    break;
-         case 's':  if (*(char **)p==NULL)
-                       sprintf(val, "NULL");
-                    else
-                       sprintf(val, "\"%.120s\"", *(char **)p);
-                    type = "char *";
-                    break;
-         case 'b':  sprintf(val, "%s", (*(bool *)p ? "true" : "false"));
-                    type = "bool ";
-                    break;
-         case 'o':  if (*(cObject **)p==NULL)
-                       sprintf(val, "NULL");
-                    else
-                       sprintf(val, "not NULL");
-                    type = "cObject *";
-                    break;
-         default:   strcpy(val,"???");
-                    type = "? ";
-   }
-   char name[64];
-   sprintf(name,"%s%.50s = ",type,watch->name());
-   setLabel(".main.name.l", name );
-   setEntry(".main.name.e", val );
+   cWatchBase *watch = static_cast<cWatchBase *>(object);
+   setLabel(".main.name.l", (std::string(watch->className())+watch->name()).c_str());
+   setEntry(".main.name.e", watch->info().c_str());
 }
 
 void TWatchInspector::writeBack()
 {
    Tcl_Interp *interp = getTkApplication()->getInterp();
-   cWatch *watch = static_cast<cWatch *>(object);
-
+   cWatchBase *watch = static_cast<cWatchBase *>(object);
    const char *s = getEntry(".main.name.e");
-   void *p = watch->pointer();
-   switch (watch->typeChar())
-   {
-         case 'c':  *(char *)p = s[1]; break;
-         case 'i':  sscanf(s,"%d", (int *)p); break;
-         case 'l':  sscanf(s,"%ld",(long *)p); break;
-         case 'd':  sscanf(s,"%lf",(double *)p); break;
-         case 'b':  *(bool *)p = (s[0]=='1' || s[0]=='t' || s[0]=='y' || s[0]=='T' || s[0]=='Y'); break;
-         default:   CHK(Tcl_Eval(interp,"messagebox {Warning}"
-                  " {You can only change char, int, bool, long or double watches} info ok"));
-   }
+   if (watch->supportsAssignment())
+       watch->assign(s);
+   else
+      CHK(Tcl_VarEval(interp,"messagebox {Warning} {This inspector doesn't support changing the value.} warning ok", NULL));
    TInspector::writeBack();    // must be there after all changes
 }
 

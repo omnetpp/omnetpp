@@ -634,8 +634,8 @@ proc getClassNames {} {
     foreach classptr $classes {
         lappend classnames [opp_getobjectfullname $classptr]
     }
-    # still there're classes which are not registered
-    lappend classnames {cWatch}
+    # add classes that are not registered
+    #lappend classnames ...
 
     return [lsort -dictionary $classnames]
 }

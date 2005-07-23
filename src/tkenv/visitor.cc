@@ -119,10 +119,10 @@ void cFilteredCollectObjectsVisitor::visit(cObject *obj)
         ((category&CATEGORY_MODULES) && dynamic_cast<cModule *>(obj)) ||
         ((category&CATEGORY_MESSAGES) && dynamic_cast<cMessage *>(obj)) ||
         ((category&CATEGORY_QUEUES) && dynamic_cast<cQueue *>(obj)) ||
-        ((category&CATEGORY_VARIABLES) && (dynamic_cast<cWatch *>(obj) ||
+        ((category&CATEGORY_VARIABLES) && (dynamic_cast<cWatchBase *>(obj) ||
                                            dynamic_cast<cFSM *>(obj))) ||
         ((category&CATEGORY_STATISTICS) &&(dynamic_cast<cOutVector *>(obj) ||
-                                           dynamic_cast<cWatch *>(obj) ||
+                                           dynamic_cast<cWatchBase *>(obj) ||
                                            dynamic_cast<cStatistic *>(obj))) ||
         ((category&CATEGORY_MODPARAMS) &&(dynamic_cast<cModulePar *>(obj))) ||
         ((category&CATEGORY_CHANSGATES) &&(dynamic_cast<cChannel *>(obj) ||
@@ -130,7 +130,7 @@ void cFilteredCollectObjectsVisitor::visit(cObject *obj)
         ((category&CATEGORY_OTHERS) && (!dynamic_cast<cModule *>(obj) &&
                                         !dynamic_cast<cMessage *>(obj) &&
                                         !dynamic_cast<cQueue *>(obj) &&
-                                        !dynamic_cast<cWatch *>(obj) &&
+                                        !dynamic_cast<cWatchBase *>(obj) &&
                                         !dynamic_cast<cFSM *>(obj) &&
                                         !dynamic_cast<cOutVector *>(obj) &&
                                         !dynamic_cast<cStatistic *>(obj) &&
