@@ -52,6 +52,9 @@ std::ostream& operator<<(std::ostream& os, const APolygon& p)
 //
 void WatchTest::activity()
 {
+    //
+    // Basic types
+    //
     bool b1 = true;
     bool b2 = false;
     char c = 'a';
@@ -78,17 +81,27 @@ void WatchTest::activity()
     WATCH(ul);
     WATCH(str);
 
+    //
+    // Structs/classes via op<<
+    //
     Point point(100,200);
     WATCH(point);
 
     Point point_rw(100,200);
     WATCH_RW(point_rw);
 
+    //
+    // Structs/classes via cPolymorphic and info(); no structdesc.
+    //
     APolygon poly_WATCH(5,100);
     WATCH(poly_WATCH);
 
     APolygon poly_WATCH_OBJ(5,100);
     WATCH_OBJ(poly_WATCH_OBJ);
+
+    //
+    // Generated structs/classes (with structdesc.)
+    //
 
     //GeneratedStruct gs;
     //WATCH(gs), WATCH_OBJ(gs) -- don't work because no op<<, and not cPolymorphic
@@ -100,8 +113,11 @@ void WatchTest::activity()
 
     GeneratedClass *gcp = new GeneratedClass;
     GeneratedMessage *gmp = new GeneratedMessage("gmp-obj");
-    WATCH_PTR((cPolymorphic*&)gcp);
-    WATCH_PTR((cPolymorphic*&)gmp);
+    WATCH_PTR(gcp);
+    WATCH_PTR(gmp);
+
+    int *wrongp = (int *)gpc;
+    //WATCH_PTR(wrongp); -- this has to give a compile error
 
     for(;;) wait(1);
 }

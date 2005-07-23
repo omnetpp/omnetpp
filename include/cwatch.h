@@ -327,8 +327,14 @@ inline cWatchBase *createWatch_cPolymorphic(const char *varname, cPolymorphic& o
     return new cWatch_cPolymorphic(varname, obj);
 }
 
-// for objects
-inline cWatchBase *createWatch_cPolymorphicPtr(const char *varname, cPolymorphic *&ptr) {
+// for pointers to objects.
+// NOTE: this is a bit tricky. C++ thinks that (cPolymorphic*&) and
+// (SomeDerivedType*&) are unrelated, so we have to force the cast
+// in the WATCH_PTR() macro. But to stay type-safe, we include a 3rd arg
+// of type cPolymorphic*: the compiler has to be able to cast that
+// implicitly from SomeDerivedType* -- this way we don't accept pointers
+// that are REALLY unrelated.
+inline cWatchBase *createWatch_cPolymorphicPtr(const char *varname, cPolymorphic *&ptr, cPolymorphic *) {
     return new cWatch_cPolymorphicPtr(varname, ptr);
 }
 
@@ -370,7 +376,7 @@ inline cWatchBase *createWatch_cPolymorphicPtr(const char *varname, cPolymorphic
  *
  * @hideinitializer
  */
-#define WATCH_PTR(variable) createWatch_cPolymorphicPtr(#variable,(variable))
+#define WATCH_PTR(variable) createWatch_cPolymorphicPtr(#variable,(cPolymorphic*&)(variable),(variable))
 //@}
 
 #endif
