@@ -1,4 +1,5 @@
 #include <omnetpp.h>
+#include "watchtest_m.h"
 
 class WatchTest : public cSimpleModule
 {
@@ -88,6 +89,19 @@ void WatchTest::activity()
 
     APolygon poly_WATCH_OBJ(5,100);
     WATCH_OBJ(poly_WATCH_OBJ);
+
+    //GeneratedStruct gs;
+    //WATCH(gs), WATCH_OBJ(gs) -- don't work because no op<<, and not cPolymorphic
+
+    GeneratedClass gc;
+    GeneratedMessage gm;
+    WATCH_OBJ(gc);
+    WATCH_OBJ(gm);
+
+    GeneratedClass *gcp = new GeneratedClass;
+    GeneratedMessage *gmp = new GeneratedMessage;
+    WATCH_PTR(gcp);
+    WATCH_PTR(gmp);
 
     for(;;) wait(1);
 }
