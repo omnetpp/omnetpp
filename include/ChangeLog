@@ -1,6 +1,9 @@
 2005-07-23  Andras Varga
 
-	* cwatch.h: WATCH implementation changed
+	* cwatch.h: WATCH() implementation changed; introduced WATCH2() and 
+	WATCH2_RW()
+
+	* added cstlwatch.h: macros WATCH_VECTOR(), WATCH_PTRVECTOR, etc
 
 2005-06-25  Andras Varga
 

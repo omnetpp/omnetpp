@@ -205,6 +205,7 @@ class SIM_API cWatch_cPolymorphic : public cWatchBase
     virtual const char *className() const {return p ? p->className() : "n/a";}
     virtual std::string info() const {return p ? p->info() : "<null>";}
     virtual bool supportsAssignment() const {return false;}
+    virtual cStructDescriptor *createDescriptor() {return p ? p->createDescriptor() : NULL;}
 };
 
 
@@ -279,9 +280,9 @@ inline cWatchBase *createWatch_genericReadonly(const char *varname, T& d) {
 }
 
 
-#define WATCH(v)           createWatch(#v,(v))
-#define WATCH_STRUCT(v)    createWatch_genericReadonly(#v,(v))
-#define WATCH_STRUCT_RW(v) createWatch_genericAssignable(#v,(v))
+#define WATCH(v)     createWatch(#v,(v))
+#define WATCH2(v)    createWatch_genericReadonly(#v,(v))
+#define WATCH2_RW(v) createWatch_genericAssignable(#v,(v))
 
 
 #endif

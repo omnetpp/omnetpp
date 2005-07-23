@@ -89,7 +89,8 @@ tkcmd.obj: tkcmd.cc \
   engine/scalarmanager.h \
   engine/util.h \
   engine/datasorter.h \
-  engine/texception.h
+  engine/texception.h \
+  engine/patmatch.h
 tklib.obj: tklib.cc \
   tklib.h \
   tkutil.h
@@ -99,12 +100,16 @@ engine/datasorter.obj: engine/datasorter.cc \
   engine/scalarmanager.h \
   engine/util.h \
   engine/datasorter.h \
-  engine/texception.h
+  engine/texception.h \
+  engine/patmatch.h
+engine/filetokenizer.obj: engine/filetokenizer.cc \
+  engine/filetokenizer.h
 engine/patmatch.obj: engine/patmatch.cc \
   engine/patmatch.h
 engine/scalarmanager.obj: engine/scalarmanager.cc \
   engine/patmatch.h \
   engine/scalarmanager.h \
+  engine/filetokenizer.h \
   engine/texception.h
 engine/texception.obj: engine/texception.cc \
   engine/texception.h

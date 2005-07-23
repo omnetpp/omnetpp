@@ -503,10 +503,11 @@ void cContextSwitcher::methodCall(const char *fmt,...)
 }
 
 //==========================================================================
-// dummy function to force stupid Unix linkers to include these symbols
+// dummy function to force over-optimizing Unix linkers to include these symbols
 // in the library
 
 #include "cwatch.h"
+#include "cstlwatch.h"
 #include "cpacket.h"
 #include "clcg32.h"
 #include "cmersennetwister.h"
@@ -520,6 +521,8 @@ void _sim_dummy_func()
       cPacket y(x);
       x.info();
       cWatch_bool w(NULL,*(bool*)&x);
+      std::vector<int> v;
+      WATCH_VECTOR(v);
       w.supportsAssignment();
       exponential(1.0);
       cSequentialScheduler sch;

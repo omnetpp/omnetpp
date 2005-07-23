@@ -38,6 +38,7 @@
 #include "cllist.h"
 #include "globals.h"
 #include "cwatch.h"
+#include "cstlwatch.h"
 #include "cpar.h"
 #include "cgate.h"
 #include "cmessage.h"

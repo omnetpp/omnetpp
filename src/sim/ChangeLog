@@ -2,6 +2,8 @@
 
 	* cwatch.cc: WATCH implementation changed
 
+	* added cstlwatch.cc
+
 2005-04-27  Andras Varga
 
 	* cobject.cc: fixed bug in cObject copy ctor. Problem hasn't surfaced

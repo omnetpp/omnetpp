@@ -16,7 +16,7 @@ CPPOBJS_STD= task.obj ccoroutine.obj ctypes.obj carray.obj cgate.obj \
          cmodule.obj csimplemodule.obj csimul.obj cobject.obj cvisitor.obj cpar.obj \
          cstat.obj chist.obj cdensity.obj cvarhist.obj cpsquare.obj cksplit.obj \
          cmessage.obj cdetect.obj util.obj cllist.obj ctopo.obj errmsg.obj \
-         cmsgheap.obj coutvect.obj cqueue.obj globals.obj cwatch.obj \
+         cmsgheap.obj coutvect.obj cqueue.obj globals.obj cwatch.obj cstlwatch.obj \
          cpacket.obj cfsm.obj cstruct.obj cchannel.obj cenum.obj cexception.obj cdispstr.obj \
          cdefaultlist.obj cscheduler.obj onstartup.obj distrib.obj \
          cxmlelement.obj cmersennetwister.obj clcg32.obj cstrtokenizer.obj
@@ -738,6 +738,23 @@ cstat.obj: cstat.cc \
   ../../include/cdefaultlist.h \
   ../../include/ctypes.h \
   ../../include/opp_string.h
+cstlwatch.obj: cstlwatch.cc \
+  ../../include/cstlwatch.h \
+  ../../include/cstruct.h \
+  ../../include/macros.h \
+  ../../include/cobject.h \
+  ../../include/cenvir.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/cpolymorphic.h \
+  ../../include/cexception.h \
+  ../../include/cvisitor.h \
+  ../../include/opp_string.h \
+  ../../include/cenum.h \
+  ../../include/onstartup.h \
+  ../../include/carray.h \
+  ../../include/ctypes.h \
+  ../../include/globals.h
 cstrtokenizer.obj: cstrtokenizer.cc \
   ../../include/cstrtokenizer.h \
   ../../include/defs.h
@@ -926,6 +943,7 @@ util.obj: util.cc \
   ../../include/macros.h \
   ../../include/cexception.h \
   ../../include/cwatch.h \
+  ../../include/cstlwatch.h \
   ../../include/cpacket.h \
   clcg32.h \
   cmersennetwister.h \
