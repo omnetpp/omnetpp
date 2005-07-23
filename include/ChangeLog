@@ -1,7 +1,9 @@
 2005-07-23  Andras Varga
 
-	* cwatch.h: WATCH() implementation changed; introduced WATCH2() and 
-	WATCH2_RW()
+	* cwatch.h: WATCH() implementation changed: now anything can be watched 
+	that has operator<<. If it also has operator>> and it gets watched via
+	WATCH_RW(), it can also be modified from the GUI. Objects and pointers 
+	to objects can also be watched with WATCH_OBJ() and WATCH_PTR().
 
 	* added cstlwatch.h: macros WATCH_VECTOR(), WATCH_PTRVECTOR, etc
 

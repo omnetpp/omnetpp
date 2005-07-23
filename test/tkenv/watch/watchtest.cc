@@ -142,6 +142,7 @@ void WatchTest::activity()
     m[3] = "three";
     WATCH_MAP(m);
 
+    // TBD: PTRVECTOR, PTRMAP etc.
     for(;;) wait(1);
 }
 
