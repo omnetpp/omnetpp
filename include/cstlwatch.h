@@ -20,6 +20,7 @@
 
 #include <vector>
 #include <list>
+#include <set>
 #include <map>
 #include <string>
 #include <iostream>
@@ -163,6 +164,80 @@ void createStdPointerListWatcher(const char *varname, std::list<T>& v)
     new cStdPointerListWatcher<T>(varname, v);
 }
 
+
+//
+// Internal class
+//
+template<class T>
+class SIM_API cStdSetWatcher : public cStdVectorWatcherBase
+{
+  protected:
+    std::set<T>& v;
+    std::string classname;
+    mutable typename std::set<T>::iterator it;
+    mutable int itPos;
+  public:
+    cStdSetWatcher(const char *name, std::set<T>& var) : cStdVectorWatcherBase(name), v(var) {
+        itPos=-1;
+        classname = std::string("std::set<")+opp_typename(typeid(T))+">";
+    }
+    const char *className() const {return classname.c_str();}
+    virtual const char *elemTypeName() const {return opp_typename(typeid(T));}
+    virtual int size() const {return v.size();}
+    virtual std::string at(int i) const {
+        // std::set doesn't support random access iterator and iteration is slow,
+        // so we have to use a trick, knowing that Tkenv will call this function with
+        // i=0, i=1, etc...
+        if (i==0) {
+            it=v.begin(); itPos=0;
+        } else if (i==itPos+1 && it!=v.end()) {
+            ++it; ++itPos;
+        } else {
+            it=v.begin();
+            for (int k=0; k<i && it!=v.end(); k++) ++it;
+            itPos=i;
+        }
+        if (it==v.end()) {
+            return std::string("out of bounds");
+        }
+        return atIt();
+    }
+    virtual std::string atIt() const {
+        std::stringstream out;
+        out << (*it);
+        return out.str();
+    }
+};
+
+template <class T>
+void createStdSetWatcher(const char *varname, std::set<T>& v)
+{
+    new cStdSetWatcher<T>(varname, v);
+}
+
+
+//
+// Internal class
+//
+template<class T>
+class SIM_API cStdPointerSetWatcher : public cStdSetWatcher<T>
+{
+  public:
+    cStdPointerSetWatcher(const char *name, std::set<T>& var) : cStdSetWatcher<T>(name, var) {}
+    virtual std::string atIt() const {
+        std::stringstream out;
+        out << (**this->it);
+        return out.str();
+    }
+};
+
+template <class T>
+void createStdPointerSetWatcher(const char *varname, std::set<T>& v)
+{
+    new cStdPointerSetWatcher<T>(varname, v);
+}
+
+
 //
 // Internal class
 //
@@ -270,6 +345,20 @@ void createStdPointerMapWatcher(const char *varname, std::map<KeyT,ValueT,CmpT>&
  * @hideinitializer
  */
 #define WATCH_PTRLIST(variable)     createStdPointerListWatcher(#variable,(variable))
+
+/**
+ * Makes std::sets inspectable in Tkenv. See also WATCH_PTRSET().
+ *
+ * @hideinitializer
+ */
+#define WATCH_SET(variable)        createStdSetWatcher(#variable,(variable))
+
+/**
+ * Makes std::sets storing pointers inspectable in Tkenv. See also WATCH_SET().
+ *
+ * @hideinitializer
+ */
+#define WATCH_PTRSET(variable)     createStdPointerSetWatcher(#variable,(variable))
 
 /**
  * Makes std::maps inspectable in Tkenv. See also WATCH_PTRMAP().

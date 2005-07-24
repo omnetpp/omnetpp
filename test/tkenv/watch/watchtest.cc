@@ -142,6 +142,16 @@ void WatchTest::activity()
     m[3] = "three";
     WATCH_MAP(m);
 
+    std::set<std::string> ss;
+    ss.insert("Dopey");
+    ss.insert("Sleepy");
+    ss.insert("Grumpy");
+    ss.insert("Sneezy");
+    ss.insert("Happy");
+    ss.insert("Bashful");
+    ss.insert("Doc");
+    WATCH_SET(ss);
+
     // TBD: PTRVECTOR, PTRMAP etc.
     for(;;) wait(1);
 }
