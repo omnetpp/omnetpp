@@ -21,6 +21,7 @@
 set config(configfile) "~/.gnedrc"
 set config(snaptogrid) 1
 set config(connmodeauto) 1
+set config(autoextend) 1
 set config(autocheck) 0
 set config(editor-findstring)     ""
 set config(editor-replacestring)  ""
@@ -187,6 +188,7 @@ proc createMainWindow {} {
     foreach i {
       {check -command {toggleGrid 0} -variable config(snaptogrid) -label {Snap to grid} -underline 0}
       {check -variable config(connmodeauto) -label {Default conn. drawing mode is auto} -underline 0}
+      {check -variable config(autoextend) -label {Autoextend gates using gate++ notation} -underline 0}
       {separator}
       {command -command optionsViewFile -label {View/edit text file...} -underline 0}
     } {

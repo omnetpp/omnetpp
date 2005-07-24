@@ -104,9 +104,14 @@ proc dragAndDropFinish {x y} {
 #
 proc createSubmoduleOnCanvas {typekey {canvx {}} {canvy {}}} {
     global ned defaultparvalue gned canvas
+    global config gned
 
     if {$canvx==""} {set canvx [expr 100+100*rand()]}
     if {$canvy==""} {set canvy [expr 100+100*rand()]}
+
+    if {$config(snaptogrid)} {
+       snapToGrid canvx canvy
+    }
 
     # find parent module key
     set modkey $canvas($gned(canvas_id),module-key)
@@ -152,14 +157,16 @@ proc createSubmoduleOnCanvas {typekey {canvx {}} {canvy {}}} {
         set gsizkey {}
         foreach gkey [getChildrenWithType $gateskey gate] {
             if {$ned($gkey,isvector)} {
-                if {$gsizkey==""} {
-                   set gsizkey [addItem gatesizes $key]
+                if {!$config(autoextend)} {
+                    if {$gsizkey==""} {
+                       set gsizkey [addItem gatesizes $key]
+                    }
+                    set gskey [addItem gatesize $gsizkey]
+                    set ned($gskey,name) $ned($gkey,name)
+                    set ned($gskey,size) 1
+                    set ned($gskey,right-comment) " TBD\n"
+                    # copy over comments too?
                 }
-                set gskey [addItem gatesize $gsizkey]
-                set ned($gskey,name) $ned($gkey,name)
-                set ned($gskey,size) 1
-                set ned($gskey,right-comment) " TBD\n"
-                # copy over comments too?
             }
         }
     }

@@ -1,3 +1,17 @@
+2005-07-24  Andras Varga
+
+	* checked in patches from Michael Franzen: 
+
+	- new option "Autoextend gates using gate++ notation". When this option
+	is enabled (Options Menu), GNED does not generate "gatesizes" sections,
+	and automatically uses the extension operator "++" on all ports that 
+	are connected. However, you always can use indices in the property page
+	of modules to override automatic port extension.
+
+        - "Snap to Grid" did not work when dragging a new module on the canvas
+        
+        - deleting multiple selected objects often resulted in an error message.
+
 2005-04-04  Andras Varga
 
 	* fix: gned didn't understand module parameters of type xml, introduced

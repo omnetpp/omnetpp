@@ -277,9 +277,11 @@ proc deleteSelected {} {
     if {$keys!=""} {markCanvasDirty}
 
     foreach key $keys {
-        if {$ned($key,type)!="module"} {
-            deleteItem $key
-        }
+       if {[info exist ned($key,type)]} {
+            if {$ned($key,type)!="module"} {
+                deleteItem $key
+            }
+       }
     }
 
     updateTreeManager
@@ -958,6 +960,11 @@ proc drawEnd {c x y} {
                       set ned($key,disp-drawmode) "a"
                    } else {
                       set ned($key,disp-drawmode) "m"
+                   }
+
+                   if {$config(autoextend)} {
+                       set ned($key,src-gate-plusplus) {1}
+                       set ned($key,dest-gate-plusplus) {1}
                    }
 
                    drawItem $key
