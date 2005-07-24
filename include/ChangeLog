@@ -1,3 +1,8 @@
+2005-07-24  Andras Varga
+
+	* cdispstr.h: added setTagArg() method for numeric (long) argument as 
+	well. (Just converts it to string and calls the other setTagArg()).
+
 2005-07-23  Andras Varga
 
 	* cwatch.h: WATCH() implementation changed: now anything can be watched 

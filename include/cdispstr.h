@@ -190,6 +190,12 @@ class SIM_API cDisplayString
     bool setTagArg(const char *tagname, int index, const char *value);
 
     /**
+     * Convenience function to set a tag argument to a numeric value. Converts
+     * 'value' to string, then calls setTagArg(const char *, int, const char *).
+     */
+    bool setTagArg(const char *tagname, int index, long value);
+
+    /**
      * Removes the given tag with all its arguments from the display
      * string. The result is true if the tag was actually deleted
      * (it existed before), false otherwise.
