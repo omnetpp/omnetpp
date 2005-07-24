@@ -372,7 +372,7 @@ int cMessage::findPar(const char *s) const
 cGate *cMessage::senderGate() const
 {
     if (frommod<0 || fromgate<0)  return NULL;
-    cModule *mod = simulation.module( frommod );
+    cModule *mod = simulation.module(frommod);
     if (!mod) return NULL;
     return mod->gate( fromgate );
 }
@@ -380,14 +380,23 @@ cGate *cMessage::senderGate() const
 cGate *cMessage::arrivalGate() const
 {
     if (tomod<0 || togate<0)  return NULL;
-    cModule *mod = simulation.module( tomod );
+    cModule *mod = simulation.module(tomod);
     if (!mod) return NULL;
-    return mod->gate( togate );
+    return mod->gate(togate);
 }
 
-bool cMessage::arrivedOn(const char *s, int g)
+bool cMessage::arrivedOn(const char *s)
 {
-    return togate==simulation.contextModule()->findGate(s,g);
+    cGate *arrgate = arrivalGate();
+    if (!arrgate) return false;
+    return arrgate->isName(s);
+}
+
+bool cMessage::arrivedOn(const char *s, int gateindex)
+{
+    cGate *arrgate = arrivalGate();
+    if (!arrgate) return false;
+    return arrgate->isName(s) && arrgate->index()==gateindex;
 }
 
 const char *cMessage::displayString() const
