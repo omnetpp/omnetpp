@@ -140,6 +140,12 @@ bool cDisplayString::setTagArg(const char *tagname, int index, const char *value
     return setTagArg(t, index, value);
 }
 
+bool cDisplayString::setTagArg(const char *tagname, int index, long value)
+{
+    char buf[32];
+    sprintf(buf, "%ld", value);
+    return setTagArg(tagname, index, buf);
+}
 
 bool cDisplayString::removeTag(const char *tagname)
 {

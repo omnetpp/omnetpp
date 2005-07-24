@@ -1,3 +1,7 @@
+2005-07-24  Andras Varga
+
+	* cdispstr.cc: added setTagArg() method for numeric (long) argument.
+
 2005-07-23  Andras Varga
 
 	* cwatch.cc: WATCH implementation changed
