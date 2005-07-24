@@ -5,6 +5,8 @@
 
 	* cpar.h: added isConstant() member to cPar
 
+	* cmessage.h: added cModule *senderModule() to cMessage
+
 2005-07-23  Andras Varga
 
 	* cwatch.h: WATCH() implementation changed: now anything can be watched 

@@ -531,6 +531,13 @@ class SIM_API cMessage : public cObject
     bool isScheduled() const {return heapindex!=-1;}
 
     /**
+     * Returns a pointer to the sender module. It returns NULL if the message
+     * hasn't been sent/scheduled yet, or if the sender module got deleted
+     * in the meantime.
+     */
+    cModule *senderModule() const {return simulation.module(frommod);}
+
+    /**
      * Returns pointers to the gate from which the message was sent and
      * on which gate it arrived. A NULL pointer is returned
      * for new (unsent) messages and messages sent via scheduleAt().
