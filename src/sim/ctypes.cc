@@ -503,6 +503,9 @@ cModule *cModuleType::createScheduleInit(char *modname, cModule *parentmod)
     // functions might contain scheduleAt() calls which could otherwise insert
     // a message BEFORE the starter messages for module...
     //
+    if (!parentmod)
+        throw new cRuntimeError("createScheduleInit(): parent module pointer cannot be NULL "
+                                "when creating module named '%s' of type %s", modname, name());
     cModule *mod = create(modname, parentmod);
     mod->buildInside();
     mod->scheduleStart( simulation.simTime() );

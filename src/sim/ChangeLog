@@ -9,6 +9,9 @@
 	* cxmlelement.cc: added getFirstChildWithTagName(const char *tagname)
 	and getNextSiblingByTagName(const char *tagname) to cXMLElement
 
+	* ctypes.cc: cModuleType::createScheduleInit(): NULL is not allowed
+	as parent module
+
 2005-07-23  Andras Varga
 
 	* cwatch.cc: WATCH implementation changed

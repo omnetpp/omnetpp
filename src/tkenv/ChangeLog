@@ -1,3 +1,11 @@
+2005-07-24  Andras Varga
+
+	* tkapp.cc: flush output vector file and output scalar file after
+	every event while single-stepping (F4) or when the user stops
+	a running simulation (F8). This makes it possible examine a vec
+	file with Plove without exiting the simulation program [suggested by
+	Michael Tuexen]
+
 2005-07-23  Andras Varga
 
 	* WATCH implementation changed

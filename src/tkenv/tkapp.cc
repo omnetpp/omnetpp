@@ -267,6 +267,8 @@ void TOmnetTkApp::doOneStep()
         updateNextModuleDisplay();
         updateInspectors();
         simstate = SIM_READY;
+        outvectmgr->flush();
+        outscalarmgr->flush();
     }
     catch (cTerminationException *e)
     {
@@ -324,6 +326,8 @@ void TOmnetTkApp::runSimulation(int mode, simtime_t until_time, long until_event
                 cont = doRunSimulation();
         }
         simstate = SIM_READY;
+        outvectmgr->flush();
+        outscalarmgr->flush();
     }
     catch (cTerminationException *e)
     {
