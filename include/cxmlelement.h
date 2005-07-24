@@ -200,6 +200,28 @@ class SIM_API cXMLElement
     virtual cXMLElement *getPreviousSibling() const;
 
     /**
+     * Returns pointer to the first child element with the given tag name,
+     * or NULL if this element has no such children.
+     */
+    virtual cXMLElement *getFirstChildWithTag(const char *tagname) const;
+
+    /**
+     * Returns pointer to the next sibling of this element with the given
+     * tag name. Return NULL if there're no such subsequent elements.
+     *
+     * getFirstChildWithTag() and getNextSiblingWithTag() are a convient way
+     * to loop through elements with a certain tag name in the child list:
+     *
+     * <pre>
+     * for (cXMLElement *child=node->getFirstChildWithTag("foo"); child; child = child->getNextSiblingWithTag("foo"))
+     * {
+     *     ...
+     * }
+     * </pre>
+     */
+    virtual cXMLElement *getNextSiblingWithTag(const char *tagname) const;
+
+    /**
      * Returns list of child elements.
      */
     virtual cXMLElementList getChildren() const;

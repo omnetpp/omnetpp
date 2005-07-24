@@ -182,6 +182,29 @@ const cXMLAttributeMap& cXMLElement::getAttributes() const
     return attrs;
 }
 
+cXMLElement *cXMLElement::getFirstChildWithTag(const char *tagname) const
+{
+    cXMLElement *node = this->getFirstChild();
+    while (node)
+    {
+        if (!strcasecmp(node->getTagName(),tagname))
+            return node;
+        node = node->getNextSibling();
+    }
+    return NULL;
+}
+
+cXMLElement *cXMLElement::getNextSiblingWithTag(const char *tagname) const
+{
+    cXMLElement *node = this->getNextSibling();
+    while (node)
+    {
+        if (!strcasecmp(node->getTagName(),tagname))
+            return node;
+        node = node->getNextSibling();
+    }
+    return NULL;
+}
 
 cXMLElementList cXMLElement::getChildren() const
 {

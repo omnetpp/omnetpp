@@ -11,6 +11,9 @@
 	now checks if msg arrived one of the vector's gates. [hint from Ignacio
 	Arenas Jimenez]
 
+	* cxmlelement.h: added getFirstChildWithTagName(const char *tagname)
+	and getNextSiblingByTagName(const char *tagname) to cXMLElement
+
 2005-07-23  Andras Varga
 
 	* cwatch.h: WATCH() implementation changed: now anything can be watched 

@@ -6,6 +6,9 @@
 
 	* cmessage.cc: arrivedOn() impl change, see include/ChangeLog
 
+	* cxmlelement.cc: added getFirstChildWithTagName(const char *tagname)
+	and getNextSiblingByTagName(const char *tagname) to cXMLElement
+
 2005-07-23  Andras Varga
 
 	* cwatch.cc: WATCH implementation changed
