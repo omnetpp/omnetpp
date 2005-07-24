@@ -2,6 +2,8 @@
 
 	* cdispstr.cc: added setTagArg() method for numeric (long) argument.
 
+	* cpar.cc: added isConstant() member to cPar
+
 2005-07-23  Andras Varga
 
 	* cwatch.cc: WATCH implementation changed

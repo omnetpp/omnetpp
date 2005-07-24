@@ -3,6 +3,8 @@
 	* cdispstr.h: added setTagArg() method for numeric (long) argument as 
 	well. (Just converts it to string and calls the other setTagArg()).
 
+	* cpar.h: added isConstant() member to cPar
+
 2005-07-23  Andras Varga
 
 	* cwatch.h: WATCH() implementation changed: now anything can be watched 

@@ -916,6 +916,13 @@ bool cPar::isNumeric() const
            typechar=='F';
 }
 
+bool cPar::isConstant() const
+{
+    return typechar=='S' ||
+           typechar=='B' ||
+           typechar=='L' ||
+           typechar=='D';
+}
 
 bool cPar::equalsTo(cPar *par)
 {

@@ -642,6 +642,13 @@ class SIM_API cPar : public cObject
     bool isNumeric() const;
 
     /**
+     * Returns true if the value is constant. It returns true if
+     * the type is 'L', 'D', 'B', or 'S', that is, the object stores
+     * a long, double, boolean or string constant.
+     */
+    bool isConstant() const;
+
+    /**
      * Returns the prompt text or NULL.
      */
     const char *prompt() ;
