@@ -110,6 +110,11 @@ class cFileOutputVectorManager : public cOutputVectorManager
      * Returns the file name.
      */
     const char *fileName() const;
+
+    /**
+     * Calls fflush().
+     */
+    virtual void flush();
     //@}
 };
 
@@ -172,6 +177,11 @@ class cFileOutputScalarManager : public cOutputScalarManager
      * Returns the file name.
      */
     const char *fileName() const;
+
+    /**
+     * Calls fflush().
+     */
+    virtual void flush();
     //@}
 };
 

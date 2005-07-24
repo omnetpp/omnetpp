@@ -1,3 +1,8 @@
+2005-07-24  Andras Varga
+
+	* filemgrs.h/cc: implemented newly added flush() virtual function to 
+	cFileOutputVectorManager and cFileOutputScalarManager classes
+
 2005-07-07  Andras Varga
 
 	omnetapp.cc: fix: ev.getUniqueNumber() produced garbage if it was 

@@ -180,6 +180,12 @@ const char *cFileOutputVectorManager::fileName() const
     return fname.c_str();
 }
 
+void cFileOutputVectorManager::flush()
+{
+    if (f)
+        fflush(f);
+}
+
 
 //=================================================================
 
@@ -257,6 +263,12 @@ void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, d
 const char *cFileOutputScalarManager::fileName() const
 {
     return fname.c_str();
+}
+
+void cFileOutputScalarManager::flush()
+{
+    if (f)
+        fflush(f);
 }
 
 //=================================================================

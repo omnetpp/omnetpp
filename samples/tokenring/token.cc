@@ -230,8 +230,8 @@ void TokenRingMAC::activity()
                 ev << "Releasing token." << endl;
                 if (ev.isGUI())
                 {
-                    parentModule()->displayString().setTagArg("i",1,NULL);
-                    parentModule()->displayString().setTagArg("t",0,NULL);
+                    parentModule()->displayString().setTagArg("i",1,"");
+                    parentModule()->displayString().setTagArg("t",0,"");
                 }
             }
             send(token, "phy_out");

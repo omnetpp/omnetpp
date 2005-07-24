@@ -118,6 +118,11 @@ class SIM_API cOutputVectorManager : public cPolymorphic
      * producing file output.
      */
     virtual const char *fileName() const = 0;
+
+    /**
+     * Force writing out all buffered output.
+     */
+    virtual void flush() = 0;
     //@}
 };
 
@@ -191,6 +196,11 @@ class SIM_API cOutputScalarManager : public cPolymorphic
      * producing file output.
      */
     virtual const char *fileName() const = 0;
+
+    /**
+     * Force writing out all buffered output.
+     */
+    virtual void flush() = 0;
     //@}
 };
 
