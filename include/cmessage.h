@@ -599,10 +599,17 @@ class SIM_API cMessage : public cObject
     bool arrivedOn(int g) const {return g==togate;}
 
     /**
-     * Return true if the message arrived through the gate
-     * given with its name and index (if multiple gate).
+     * Return true if the message arrived on the gate given with its name.
+     * If it's a vector gate, the method returns true if the message arrived
+     * on any gate in the vector.
      */
-    bool arrivedOn(const char *s, int g=0);
+    bool arrivedOn(const char *s);
+
+    /**
+     * Return true if the message arrived through the given gate
+     * in the named gate vector.
+     */
+    bool arrivedOn(const char *s, int gateindex);
     //@}
 
     /** @name Internally used methods. */

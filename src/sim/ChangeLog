@@ -4,7 +4,7 @@
 
 	* cpar.cc: added isConstant() member to cPar
 
-	* cgate.cc: arrivedOn() impl change, see include/ChangeLog
+	* cmessage.cc: arrivedOn() impl change, see include/ChangeLog
 
 2005-07-23  Andras Varga
 

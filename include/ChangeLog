@@ -7,6 +7,10 @@
 
 	* cmessage.h: added cModule *senderModule() to cMessage
 
+	* cmessage.h: if "vector" is a vector gate, msg->arrivedOn("vector") 
+	now checks if msg arrived one of the vector's gates. [hint from Ignacio
+	Arenas Jimenez]
+
 2005-07-23  Andras Varga
 
 	* cwatch.h: WATCH() implementation changed: now anything can be watched 
