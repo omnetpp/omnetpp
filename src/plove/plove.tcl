@@ -46,7 +46,7 @@ if [info exist OMNETPP_PLOVE_DIR] {
 }
 
 if [catch {package require BLT} err] {
-    puts "*** Cannot load the BLT Tcl extension (version 2.4z required). Sorry..."
+    puts "*** The BLT Tcl/Tk extension is required by this program -- please make sure it is installed, and TCL_LIBRARY is set properly."
     exit
 }
 if {$blt_patchLevel!="2.4z"} {

@@ -65,7 +65,7 @@ proc start_tkenv {} {
   determine_clocks_per_sec
 
   if {!$HAVE_BLT} {
-      puts "\n*** BLT Tcl/Tk extension NOT FOUND -- please install it"
+      puts "\n*** BLT Tcl/Tk extension not found -- please make sure it is installed, and TCL_LIBRARY is set properly."
   }
 
   global tcl_platform

@@ -85,7 +85,7 @@ proc startGNED {argv} {
    fileNewNedfile
 
    if {!$HAVE_BLT} {
-      puts "\n*** BLT NOT FOUND. Please install this Tcl/Tk extension to get an improved GUI!"
+       puts "\n*** BLT Tcl/Tk extension not found -- please make sure it is installed, and TCL_LIBRARY is set properly."
    }
 
    if [file readable $config(configfile)] {
