@@ -1,3 +1,7 @@
+2005-07-25  Andras Varga
+
+	* coutvect.cc: implemented recordWithTimestamp() functions.
+
 2005-07-24  Andras Varga
 
 	* cdispstr.cc: added setTagArg() method for numeric (long) argument.

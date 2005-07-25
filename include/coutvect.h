@@ -29,7 +29,7 @@
  * interfaces when values are recorded to an output vector (see cOutVector).
  * @ingroup EnumsTypes
  */
-typedef void (*RecordFunc)(void *, double, double);
+typedef void (*RecordFunc)(void *, simtime_t, double, double);
 
 class TOutVectorInspector;
 class TOutVectorWindow;
@@ -50,6 +50,7 @@ class SIM_API cOutVector : public cObject
     void *handle;        // identifies output vector for the output vector manager
     long num_received;   // total number of values passed to the output vector object
     long num_stored;     // number of values actually stored
+    simtime_t last_t;    // last timestamp written, needed to ensure increasing timestamp order
 
     // the following members will be used directly by inspectors
     RecordFunc record_in_inspector; // to notify inspector about file writes
@@ -64,7 +65,8 @@ class SIM_API cOutVector : public cObject
     //@{
 
     /**
-     * Constructor. Accepts the object name. The second argument can be 1 or 2.
+     * Constructor. Accepts the object name, and tuple which can be 1 or 2
+     * (2 is discouraged).
      */
     explicit cOutVector(const char *name=NULL, int tuple=1);
 
@@ -123,23 +125,47 @@ class SIM_API cOutVector : public cObject
 
     /**
      * Records the value with the current simulation time as timestamp.
-     * It can be used only in the case if the instance of cOutVector was created with tuple=1,
-     * otherwise it throws cRuntimeError.
+     * This method can be used with cOutVectors created with tuple=1.
      *
-     * The return value is true if the data was actually recorded, and false if it
-     * was not recorded (because of filtering, etc.)
+     * The return value is true if the data was actually recorded, and false
+     * if it was not recorded (because of filtering, etc.)
      */
     virtual bool record(double value);
 
     /**
      * Records two values with the current simulation time as timestamp.
-     * It can be used only in the case if the instance of cOutVector was created with tuple=2,
-     * otherwise it throws cRuntimeError.
+     * This method can be used with cOutVectors created with tuple=2.
      *
-     * The return value is true if the data was actually recorded, and false if it
-     * was not recorded (because of filtering, etc.)
+     * The return value is true if the data was actually recorded, and false
+     * if it was not recorded (because of filtering, etc.)
      */
     virtual bool record(double value1, double value2);
+
+    /**
+     * Records the value with the given time as timestamp. Values must be
+     * recorded in increasing timestamp order, that is, it is not possible
+     * to record a value with a timestamp that is less than that of the
+     * last recorded value.
+     *
+     * This method can be used with cOutVectors created with tuple=1.
+     *
+     * The return value is true if the data was actually recorded, and false
+     * if it was not recorded (because of filtering, etc.)
+     */
+    virtual bool recordWithTimestamp(simtime_t t, double value);
+
+    /**
+     * Records two values with the given time as timestamp. Values must be
+     * recorded in increasing timestamp order, that is, it is not possible
+     * to record a value with a timestamp that is less than that of the
+     * last recorded value.
+     *
+     * This method can be used with cOutVectors created with tuple=2.
+     *
+     * The return value is true if the data was actually recorded, and false
+     * if it was not recorded (because of filtering, etc.)
+     */
+    virtual bool recordWithTimestamp(simtime_t t, double value1, double value2);
 
     /**
      * Enables recording data via this object. (It is enabled by default.)

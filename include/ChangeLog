@@ -1,3 +1,10 @@
+2005-07-25  Andras Varga
+
+	* coutvect.h: made it possible to record values into output vectors
+	by a timestamp other than simTime(): added recordWithTimestamp()
+	functions to cOutVector. (Increasing timestamp order must still be
+	ensured.)
+
 2005-07-24  Andras Varga
 
 	* cdispstr.h: added setTagArg() method for numeric (long) argument as 

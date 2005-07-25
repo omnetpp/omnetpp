@@ -41,6 +41,7 @@ cOutVector::cOutVector(const char *nam, int tuple) : cObject(nam)
     num_stored = 0;
     record_in_inspector = NULL;
     tupl = tuple;
+    last_t = 0;
 
     if (tupl!=1 && tupl!=2)
     {
@@ -89,17 +90,33 @@ void cOutVector::netUnpack(cCommBuffer *buffer)
     throw new cRuntimeError(this, "netUnpack(): not supported");
 }
 
+
 bool cOutVector::record(double value)
+{
+    return recordWithTimestamp(simulation.simTime(), value);
+}
+
+bool cOutVector::record(double value1, double value2)
+{
+    return recordWithTimestamp(simulation.simTime(), value1, value2);
+}
+
+bool cOutVector::recordWithTimestamp(simtime_t t, double value)
 {
     // check tuple
     if (tupl!=1)
         throw new cRuntimeError(this,eNUMARGS,1);
 
+    // check timestamp
+    if (t>last_t)
+        throw new cRuntimeError(this,"Cannot record data with an earlier timestamp (%s) than the previously recorded value", simtimeToStr(t));
+    last_t = t;
+
     num_received++;
 
     // pass data to inspector
     if (record_in_inspector)
-        record_in_inspector(data_for_inspector,value,0.0);
+        record_in_inspector(data_for_inspector,t,value,0.0);
 
     if (!enabled)
         return false;
@@ -109,22 +126,27 @@ bool cOutVector::record(double value)
         handle = ev.registerOutputVector(simulation.contextModule()->fullPath().c_str(), name(), tupl);
 
     // pass data to envir for storage
-    bool stored = ev.recordInOutputVector(handle, simulation.simTime(), value);
+    bool stored = ev.recordInOutputVector(handle, t, value);
     if (stored) num_stored++;
     return stored;
 }
 
-bool cOutVector::record(double value1, double value2)
+bool cOutVector::recordWithTimestamp(simtime_t t, double value1, double value2)
 {
     // check tuple
     if (tupl!=2)
         throw new cRuntimeError(this,eNUMARGS,2);
 
+    // check timestamp
+    if (t>last_t)
+        throw new cRuntimeError(this,"Cannot record data with an earlier timestamp (%s) than the previously recorded value", simtimeToStr(t));
+    last_t = t;
+
     num_received++;
 
     // pass data to inspector
     if (record_in_inspector)
-        record_in_inspector(data_for_inspector,value1,value2);
+        record_in_inspector(data_for_inspector,t,value1,value2);
 
     if (!enabled)
         return false;
@@ -134,11 +156,9 @@ bool cOutVector::record(double value1, double value2)
         handle = ev.registerOutputVector(simulation.contextModule()->fullPath().c_str(), name(), tupl);
 
     // pass data to envir for storage
-    bool stored = ev.recordInOutputVector(handle, simulation.simTime(), value1, value2);
+    bool stored = ev.recordInOutputVector(handle, t, value1, value2);
     if (stored) num_stored++;
     return stored;
 }
-
-
 
 
