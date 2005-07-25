@@ -4,12 +4,12 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
-//   Written by:  Andras Varga & David Wu, 2003
+//   Written by:  Andras Varga, 2003
 //
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2003-2005 Andras Varga & David Wu
+  Copyright (C) 2003-2005 Andras Varga
   Monash University, Dept. of Electrical and Computer Systems Eng.
   Melbourne, Australia
 
@@ -27,28 +27,6 @@ class cCommBuffer;
 class cObject;
 class opp_string;
 
-/**
- * Utility function: check if pointer is NULL, store result in given
- * buffer and also return it as bool. It is used when storing
- * dynamically allocated data.
- */
-SIM_API bool notNull(void *ptr, cCommBuffer *buffer);
-
-/**
- * Utility function: unpack a bool flag stored by notNull() and
- * return it.
- */
-SIM_API bool checkFlag(cCommBuffer *buffer);
-
-/**
- * Utility function: packs an object
- */
-SIM_API void packObject(cObject *obj, cCommBuffer *buffer);
-
-/**
- * Utility function: unpacks an object
- */
-SIM_API cObject *unpackObject(cCommBuffer *buffer);
 
 
 /**
@@ -342,6 +320,29 @@ class SIM_API cCommBuffer : public cPolymorphic
      * Unpacks an array of opp_strings.
      */
     virtual void unpack(opp_string *d, int size) = 0;
+    //@}
+
+    /** @name Utility functions */
+    //@{
+    /**
+     * Stores and returns the given flag.
+     */
+    bool packFlag(bool flag)  {pack(flag); return flag;}
+
+    /**
+     * Unpacks and returns a bool flag stored by packFlag().
+     */
+    bool checkFlag() {bool flag; unpack(flag); return flag;}
+
+    /**
+     * Packs an object.
+     */
+    virtual void packObject(cObject *obj);
+
+    /**
+     * Unpacks and returns an object.
+     */
+    virtual cObject *unpackObject();
     //@}
 };
 

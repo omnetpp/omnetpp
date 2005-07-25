@@ -9,6 +9,9 @@
 	changes, by redefining the handleParameterChange(const char *parname) 
 	virtual	method of cModule.
 
+	* ccommbuffer.h: moved packObject(), unpackObject(), checkFlag(),
+	isNull() (renamed to packFlag) into cCommBuffer.
+
 2005-07-24  Andras Varga
 
 	* cdispstr.h: added setTagArg() method for numeric (long) argument as 
