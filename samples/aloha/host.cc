@@ -54,7 +54,7 @@ void AHost::initialize()
     state = IDLE;
     pkCounter = 0;
     WATCH((int&)state);
-    WATCH(pkCounter)
+    WATCH(pkCounter);
 
     if (ev.isGUI())
         displayString().setTagArg("t",2,"#808000");
