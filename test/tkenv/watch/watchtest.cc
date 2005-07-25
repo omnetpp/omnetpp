@@ -5,7 +5,7 @@ class WatchTest : public cSimpleModule
 {
     Module_Class_Members(WatchTest,cSimpleModule,16384);
     virtual void activity();
-    virtual void parameterChanged(const char *parname);
+    virtual void handleParameterChange(const char *parname);
 };
 
 Define_Module(WatchTest);
@@ -157,9 +157,9 @@ void WatchTest::activity()
     for(;;) wait(1);
 }
 
-void WatchTest::parameterChanged(const char *parname)
+void WatchTest::handleParameterChange(const char *parname)
 {
-    ev << "parameterChanged(): " << parname << "\n";
+    ev << "handleParameterChange(): " << parname << "\n";
     new cMessage("dummymsg"); // test that this module will be the owner
 }
 

@@ -2,8 +2,8 @@
 
 	* coutvect.cc: implemented recordWithTimestamp() functions.
 
-	* cpar.cc: added call to omodp->parameterChanged() to cModulePar each 
-	time the parameter's value changes.
+	* cpar.cc: added call to omodp->handleParameterChange() to cModulePar 
+	each time the parameter's value changes.
 
 	* cpar.cc: removed beforeChange()/afterChange() calls from setInput()
 	and setPrompt(), because these methods don't change the stored value.

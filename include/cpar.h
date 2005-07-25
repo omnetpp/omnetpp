@@ -941,7 +941,7 @@ class SIM_API cModulePar : public cPar
     /** @name Redefined cPar member functions */
     //@{
     /**
-     * Calls the owner module's parameterChanged() method.
+     * Calls owner module's handleParameterChange() method.
      */
     virtual void afterChange();
     //@}

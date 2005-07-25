@@ -6,7 +6,7 @@
 	ensured.)
 
 	* cmodule.h: modules can now get notified when a module parameter
-	changes, by redefining the new parameterChanged(const char *parname) 
+	changes, by redefining the handleParameterChange(const char *parname) 
 	virtual	method of cModule.
 
 2005-07-24  Andras Varga

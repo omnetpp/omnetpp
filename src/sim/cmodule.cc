@@ -657,7 +657,7 @@ void cModule::finish()
     // Should be redefined by user.
 }
 
-void cModule::parameterChanged(const char *)
+void cModule::handleParameterChange(const char *)
 {
     // Called when a module parameter changes.
     // Can be redefined by user.

@@ -106,7 +106,7 @@ typedef void (*DisplayStringNotifyFunc)(cModule*,bool,void*);
 class SIM_API cModule : public cDefaultList
 {
     friend class cGate;
-    friend class cModulePar; // needs to call parameterChanged()
+    friend class cModulePar; // needs to call handleParameterChange()
     friend class cSimulation;
     friend class cModuleType;
     friend class cSubModIterator;
@@ -250,12 +250,15 @@ class SIM_API cModule : public cDefaultList
      * This method is called by the simulation kernel to notify the module
      * that the value of an existing module parameter got changed.
      * Redefining this method allows simple modules to be prepared for
-     * parameter changes, e.g. by re-reading the value. To make it easier
-     * to write correct simple modules, the function does NOT get called
-     * during initialize() or finish().
+     * parameter changes, e.g. by re-reading the value.
      * This default implementation does nothing.
+     *
+     * To make it easier to write correct simple modules, the function does
+     * NOT get called during initialize() or finish(). One must be careful
+     * changing parameters from inside this method though, to avoid creating
+     * infinite notification loops.
      */
-    virtual void parameterChanged(const char *parname);
+    virtual void handleParameterChange(const char *parname);
     //@}
 
   public:
