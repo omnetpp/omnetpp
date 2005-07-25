@@ -108,8 +108,9 @@ bool cOutVector::recordWithTimestamp(simtime_t t, double value)
         throw new cRuntimeError(this,eNUMARGS,1);
 
     // check timestamp
-    if (t>last_t)
-        throw new cRuntimeError(this,"Cannot record data with an earlier timestamp (%s) than the previously recorded value", simtimeToStr(t));
+    if (t<last_t)
+        throw new cRuntimeError(this,"Cannot record data with an earlier timestamp (t=%s) "
+                                     "than the previously recorded value", simtimeToStr(t));
     last_t = t;
 
     num_received++;
@@ -138,8 +139,9 @@ bool cOutVector::recordWithTimestamp(simtime_t t, double value1, double value2)
         throw new cRuntimeError(this,eNUMARGS,2);
 
     // check timestamp
-    if (t>last_t)
-        throw new cRuntimeError(this,"Cannot record data with an earlier timestamp (%s) than the previously recorded value", simtimeToStr(t));
+    if (t<last_t)
+        throw new cRuntimeError(this,"Cannot record data with an earlier timestamp (t=%s) "
+                                     "than the previously recorded value", simtimeToStr(t));
     last_t = t;
 
     num_received++;
