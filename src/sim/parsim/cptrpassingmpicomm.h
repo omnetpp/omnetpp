@@ -39,7 +39,7 @@ class cPtrPassingMPICommunications : public cMPICommunications
     /**
      * Creates an empty buffer of type cPtrPassingMPICommBuffer.
      */
-    virtual cCommBuffer *doCreateCommBuffer();
+    virtual cMPICommBuffer *doCreateCommBuffer();
 };
 
 #endif

@@ -87,7 +87,7 @@ int cMPICommunications::getProcId()
     return myRank;
 }
 
-cCommBuffer *cMPICommunications::doCreateCommBuffer()
+cMPICommBuffer *cMPICommunications::doCreateCommBuffer()
 {
     return new cMPICommBuffer();
 }
@@ -98,7 +98,7 @@ cCommBuffer *cMPICommunications::createCommBuffer()
     cMPICommBuffer *buffer;
     if (recycledBuffer)
     {
-        buffer = (cMPICommBuffer *)recycledBuffer;
+        buffer = recycledBuffer;
         buffer->reset();
         recycledBuffer = NULL;
     }
@@ -113,7 +113,7 @@ void cMPICommunications::recycleCommBuffer(cCommBuffer *buffer)
 {
     // we pool only one reusable buffer -- additional buffer are created/deleted on demand
     if (!recycledBuffer)
-        recycledBuffer = buffer;
+        recycledBuffer = (cMPICommBuffer *)buffer;
     else
         delete buffer;
 }
@@ -123,8 +123,7 @@ void cMPICommunications::send(cCommBuffer *buffer, int tag, int destination)
     cMPICommBuffer *b = (cMPICommBuffer *)buffer;
     // Note: we must use *buffered* send, otherwise we may block here and
     // cause deadlock
-    int status = MPI_Bsend(b->getBuffer(), b->getMessageSize(),
-                                 MPI_PACKED, destination, tag, MPI_COMM_WORLD);
+    int status = MPI_Bsend(b->getBuffer(), b->getMessageSize(), MPI_PACKED, destination, tag, MPI_COMM_WORLD);
     if (status!=MPI_SUCCESS)
         throw new cRuntimeError("cMPICommunications::send(): MPI error %d", status);
 }

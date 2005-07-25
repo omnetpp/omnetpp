@@ -17,12 +17,12 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
-#include "cparsimcomm.h"
-
 #ifndef __CMPICOMM_H__
 #define __CMPICOMM_H__
 
+#include "cparsimcomm.h"
+
+class cMPICommBuffer;
 
 /**
  * MPI implementation of the basic parallel simulation communications layer.
@@ -32,7 +32,7 @@
 class cMPICommunications : public cParsimCommunications
 {
   protected:
-    cCommBuffer *recycledBuffer;
+    cMPICommBuffer *recycledBuffer;
     int numPartitions;
     int myRank;
 
@@ -40,7 +40,7 @@ class cMPICommunications : public cParsimCommunications
     /**
      * Factory method behind createCommBuffer()
      */
-    virtual cCommBuffer *doCreateCommBuffer();
+    virtual cMPICommBuffer *doCreateCommBuffer();
 
   public:
     /**

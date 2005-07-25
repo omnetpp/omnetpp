@@ -25,7 +25,7 @@ cPtrPassingMPICommunications::cPtrPassingMPICommunications()
 {
 }
 
-cCommBuffer *cPtrPassingMPICommunications::doCreateCommBuffer()
+cMPICommBuffer *cPtrPassingMPICommunications::doCreateCommBuffer()
 {
     return new cPtrPassingMPICommBuffer();
 }
