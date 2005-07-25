@@ -443,21 +443,14 @@ void cPar::setPrompt(const char *s)
 {
      if (isRedirected())
          {ind.par->setPrompt(s);return;}
-     beforeChange();
      promptstr = s;     // string's operator=() does delete+opp_strdup()
-     afterChange();
 }
 
 void cPar::setInput(bool ip)
 {
      if (isRedirected())
          {ind.par->setInput(ip);return;}
-     if (inputflag!=ip)
-     {
-         beforeChange();
-         inputflag = ip;
-         afterChange();
-     }
+     inputflag = ip;
 }
 
 //-----------------------------------------------------------------------

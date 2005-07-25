@@ -304,14 +304,14 @@ class SIM_API cPar : public cObject
     //@{
 
     /**
-     * Called each time before the value of this object changes.
+     * Called each time before the stored value changes.
      * It can be used for tracking parameter changes.
      * This default implementation does nothing.
      */
     virtual void beforeChange();
 
     /**
-     * Called each time after the value of this object changed.
+     * Called each time after the stored value changes.
      * It can be used for tracking parameter changes.
      * This default implementation does nothing.
      */
