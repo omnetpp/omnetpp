@@ -36,6 +36,12 @@ class cMPICommunications : public cParsimCommunications
     int numPartitions;
     int myRank;
 
+  protected:
+    /**
+     * Factory method behind createCommBuffer()
+     */
+    virtual cCommBuffer *doCreateCommBuffer();
+
   public:
     /**
      * Constructor.

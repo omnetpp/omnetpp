@@ -87,6 +87,11 @@ int cMPICommunications::getProcId()
     return myRank;
 }
 
+cCommBuffer *cMPICommunications::doCreateCommBuffer()
+{
+    return new cMPICommBuffer();
+}
+
 cCommBuffer *cMPICommunications::createCommBuffer()
 {
     // we pool only one reusable buffer -- additional buffers are created/deleted on demand
@@ -99,7 +104,7 @@ cCommBuffer *cMPICommunications::createCommBuffer()
     }
     else
     {
-        buffer = new cMPICommBuffer();
+        buffer = doCreateCommBuffer();
     }
     return buffer;
 }

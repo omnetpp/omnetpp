@@ -1,3 +1,12 @@
+2005-07-25  Andras Varga
+
+        * added cPtrPassingMPICommunications, for use with 64-bit shared memory
+        superclusters where passing pointers to objects is enough (i.e. 
+        serialization/deserialization is not needed).
+
+	* several files: adopted to cCommBuffer change (packObject(), 
+	unpackObject() moved into the class)
+
 2005-05-01  Andras Varga
 
 	* cnullmessageprot.cc: eliminated warnings when compiled on 64-bit

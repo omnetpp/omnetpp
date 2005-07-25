@@ -74,6 +74,7 @@ cGate *cPlaceHolderModule::createGateObject(const char *gname, char tp)
 #include "cfilecomm.h"
 #include "cnamedpipecomm.h"
 //#include "cmpicomm.h"
+//#include "cptrpassingmpicomm.h"
 #include "cnosynchronization.h"
 #include "cnullmessageprot.h"
 #include "cidealsimulationprot.h"
@@ -84,6 +85,7 @@ void parsim_dummy()
     cFileCommunications fc;
     cNamedPipeCommunications npc;
     //cMPICommunications mc;
+    //cPtrPassingMPICommunications ppmc;
     cNoSynchronization ns;
     cNullMessageProtocol np;
     cIdealSimulationProtocol ip;
