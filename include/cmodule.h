@@ -186,7 +186,7 @@ class SIM_API cModule : public cDefaultList
     virtual cGate *createGateObject(const char *gname, char tp);
 
   protected:
-    /** @name Initialization and finish hooks.
+    /** @name Initialization, finish and parameter change hooks.
      *
      * Initialize and finish functions should (may) be provided by the user,
      * to perform special tasks at the beginning and the end of the simulation.
