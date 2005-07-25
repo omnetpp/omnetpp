@@ -2,6 +2,9 @@
 
 	* coutvect.cc: implemented recordWithTimestamp() functions.
 
+	* cpar.cc: added call to omodp->parameterChanged() to cModulePar each 
+	time the parameter's value changes.
+
 2005-07-24  Andras Varga
 
 	* cdispstr.cc: added setTagArg() method for numeric (long) argument.

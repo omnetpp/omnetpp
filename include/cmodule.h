@@ -106,6 +106,7 @@ typedef void (*DisplayStringNotifyFunc)(cModule*,bool,void*);
 class SIM_API cModule : public cDefaultList
 {
     friend class cGate;
+    friend class cModulePar; // needs to call parameterChanged()
     friend class cSimulation;
     friend class cModuleType;
     friend class cSubModIterator;
@@ -231,7 +232,7 @@ class SIM_API cModule : public cDefaultList
      * number of initialization stages required. This default implementation
      * does single-stage init, that is, returns 1.
      */
-    virtual int  numInitStages() const  {return 1;}
+    virtual int numInitStages() const  {return 1;}
 
     /**
      * Single-stage initialization hook. This default implementation
@@ -244,6 +245,15 @@ class SIM_API cModule : public cDefaultList
      * terminated without error. This default implementation does nothing.
      */
     virtual void finish();
+
+    /**
+     * This method is called by the simulation kernel to notify the module
+     * that the value of an existing module parameter got changed.
+     * Redefining this method allows simple modules to be prepared for
+     * parameter changes, e.g. by re-reading the value.
+     * This default implementation does nothing.
+     */
+    virtual void parameterChanged(const char *parname);
     //@}
 
   public:

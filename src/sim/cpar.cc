@@ -1584,4 +1584,11 @@ cModulePar& cModulePar::operator=(const cModulePar& otherpar)
     return *this;
 }
 
-
+void cModulePar::afterChange()
+{
+    if (omodp)
+    {
+        cContextSwitcher tmp(omodp);
+        omodp->parameterChanged(name());
+    }
+}

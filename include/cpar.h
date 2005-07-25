@@ -938,6 +938,14 @@ class SIM_API cModulePar : public cPar
     virtual const char *fullPath(char *buffer, int bufsize) const;
     //@}
 
+    /** @name Redefined cPar member functions */
+    //@{
+    /**
+     * Calls the owner module's parameterChanged() method.
+     */
+    virtual void afterChange();
+    //@}
+
     /** @name Set/get owner module. */
     //@{
 

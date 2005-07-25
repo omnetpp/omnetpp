@@ -656,6 +656,12 @@ void cModule::finish()
     // Should be redefined by user.
 }
 
+void cModule::parameterChanged(const char *)
+{
+    // Called when a module parameter changes.
+    // Can be redefined by user.
+}
+
 void cModule::callInitialize()
 {
     int stage = 0;
