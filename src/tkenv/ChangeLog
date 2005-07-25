@@ -1,3 +1,8 @@
+2005-07-25  Andras Varga
+
+	* statinsp.cc: cOutVector callback method signature change: added
+	simtime_t to record_in_insp() arg list.
+
 2005-07-24  Andras Varga
 
 	* tkapp.cc: flush output vector file and output scalar file after

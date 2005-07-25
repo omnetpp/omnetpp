@@ -274,10 +274,10 @@ void CircBuffer::add(simtime_t t, double value1, double value2)
    if (n<siz) n++;
 }
 
-static void record_in_insp(void *data, double val1, double val2)
+static void record_in_insp(void *data, simtime_t t, double val1, double val2)
 {
    TOutVectorWindow *insp = (TOutVectorWindow *) data;
-   insp->circbuf.add(simulation.simTime(),val1,val2);
+   insp->circbuf.add(t,val1,val2);
 }
 
 TOutVectorWindow::TOutVectorWindow(cObject *obj,int typ,const char *geom,void *dat,int size) :
