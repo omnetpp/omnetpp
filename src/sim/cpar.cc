@@ -1579,7 +1579,7 @@ cModulePar& cModulePar::operator=(const cModulePar& otherpar)
 
 void cModulePar::afterChange()
 {
-    if (omodp)
+    if (omodp && simulation.contextType()==CTX_EVENT) // don't call during build, initialize or finish
     {
         cContextSwitcher tmp(omodp);
         omodp->parameterChanged(name());

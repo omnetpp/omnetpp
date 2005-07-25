@@ -470,12 +470,11 @@ const char *opp_typename(const std::type_info& t)
 
 //==========================================================================
 
-cContextSwitcher::cContextSwitcher(cModule *thisptr, int ctxtype)
+cContextSwitcher::cContextSwitcher(cModule *thisptr)
 {
     // save current context and switch to new
     callerContext = simulation.contextModule();
-    contexttype = simulation.contextType();
-    simulation.setContextModule(thisptr, ctxtype);
+    simulation.setContextModule(thisptr);
 }
 
 cContextSwitcher::~cContextSwitcher()
@@ -484,7 +483,7 @@ cContextSwitcher::~cContextSwitcher()
     if (!callerContext)
         simulation.setGlobalContext();
     else
-        simulation.setContextModule(callerContext, contexttype);
+        simulation.setContextModule(callerContext);
 }
 
 void cContextSwitcher::methodCall(const char *fmt,...)
@@ -500,6 +499,20 @@ void cContextSwitcher::methodCall(const char *fmt,...)
     va_end(va);
 
     ev.moduleMethodCalled(callerContext, methodContext, buf);
+}
+
+//----
+
+cContextTypeSwitcher::cContextTypeSwitcher(int ctxtype)
+{
+    // save current context type and switch to new one
+    contexttype = simulation.contextType();
+    simulation.setContextType(ctxtype);
+}
+
+cContextTypeSwitcher::~cContextTypeSwitcher()
+{
+    simulation.setContextType(contexttype);
 }
 
 //==========================================================================

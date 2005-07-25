@@ -354,6 +354,7 @@ void cSimulation::setupNetwork(cNetworkType *network, int run_num)
     try
     {
         // call NEDC-generated network setup function
+        cContextTypeSwitcher tmp(CTX_BUILD);
         networktype->setupNetwork();
     }
     catch (cException *)
@@ -555,7 +556,8 @@ void cSimulation::transferTo(cSimpleModule *modp)
 void cSimulation::doOneEvent(cSimpleModule *mod)
 {
     // switch to the module's context
-    setContextModule( mod );
+    setContextModule(mod);
+    setContextType(CTX_EVENT);
 
     try
     {
@@ -623,10 +625,9 @@ void cSimulation::transferToMain()
     }
 }
 
-void cSimulation::setContextModule(cModule *p, int ctxtype)
+void cSimulation::setContextModule(cModule *p)
 {
     contextmodp = p;
-    contexttype = ctxtype;
     cObject::setDefaultOwner(p);
 }
 

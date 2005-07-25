@@ -80,7 +80,7 @@ class SIM_API cSimulation : public cObject
     cModule *systemmodp;      // pointer to system module
     cSimpleModule *runningmodp; // the module currently executing activity() (NULL if handleMessage() or in main)
     cModule *contextmodp;     // module in context (or NULL)
-    int contexttype;          // CTX_BUILDINSIDE, CTX_EVENT, CTX_INITIALIZE or CTX_FINISH
+    int contexttype;          // CTX_BUILD, CTX_EVENT, CTX_INITIALIZE or CTX_FINISH
     cNetworkType *networktype; // network type
     cScheduler *schedulerp;   // event scheduler
 
@@ -346,7 +346,12 @@ class SIM_API cSimulation : public cObject
     /**
      * Sets the module in context. Used internally.
      */
-    void setContextModule(cModule *p, int ctxtype=CTX_EVENT);
+    void setContextModule(cModule *p);
+
+    /**
+     * Sets the context type (see CTX_xxx constants). Used internally.
+     */
+    void setContextType(int ctxtype)  {contexttype = ctxtype;}
 
     /**
      * Sets global context. Used internally.
@@ -365,7 +370,7 @@ class SIM_API cSimulation : public cObject
 
     /**
      * Return value only valid if contextModule()!=NULL. Returns one of:
-     * CTX_BUILDINSIDE, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH depending on
+     * CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH depending on
      * what the module in context is doing.
      */
     int contextType() const {return contexttype;}

@@ -250,7 +250,9 @@ class SIM_API cModule : public cDefaultList
      * This method is called by the simulation kernel to notify the module
      * that the value of an existing module parameter got changed.
      * Redefining this method allows simple modules to be prepared for
-     * parameter changes, e.g. by re-reading the value.
+     * parameter changes, e.g. by re-reading the value. To make it easier
+     * to write correct simple modules, the function does NOT get called
+     * during initialize() or finish().
      * This default implementation does nothing.
      */
     virtual void parameterChanged(const char *parname);

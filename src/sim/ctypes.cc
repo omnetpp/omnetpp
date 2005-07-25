@@ -427,6 +427,7 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     //  this function inserts it into cSimulation's module vector
     //  and adds parameter and gate objects specified in the interface
     //  description.
+    cContextTypeSwitcher tmp(CTX_BUILD);
 
     // Object members of the new module class are collected to tmplist.
     cDefaultList tmplist;

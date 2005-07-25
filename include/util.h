@@ -27,7 +27,7 @@
 class cModule;
 
 // logically belongs to csimul.h but must be here because of declaration order
-enum {CTX_BUILDINSIDE, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH};
+enum {CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH};
 
 //
 // #defines provided for backwards compatibility.
@@ -79,8 +79,8 @@ SIM_API simtime_t strToSimtime0(const char *&str);
 SIM_API char *simtimeToStr(simtime_t t, char *dest=NULL);
 
 /**
- * Converts simulation time (passed as simtime_t) into a short string 
- * form like "12.37ms". If no destination pointer is given, it will use 
+ * Converts simulation time (passed as simtime_t) into a short string
+ * form like "12.37ms". If no destination pointer is given, it will use
  * a static buffer.
  */
 SIM_API char *simtimeToStrShort(simtime_t t, char *buf=NULL);
@@ -363,12 +363,11 @@ class SIM_API cContextSwitcher
 {
   private:
     cModule *callerContext;
-    int contexttype;
   public:
     /**
      * Switches context to the given module
      */
-    cContextSwitcher(cModule *thisptr, int ctxtype=CTX_EVENT);
+    cContextSwitcher(cModule *thisptr);
 
     /**
      * Restores the original context
@@ -382,6 +381,29 @@ class SIM_API cContextSwitcher
     void methodCall(const char *fmt,...);
 };
 
+/**
+ * The constructor switches the context type, and the destructor restores
+ * the original context type.
+ *
+ * @see cSimulation::contextModule(), cSimulation::setContextModule()
+ * @ingroup Internals
+ */
+class SIM_API cContextTypeSwitcher
+{
+  private:
+    int contexttype;
+  public:
+
+    /**
+     * Switches the context type (see CTX_xxx constants)
+     */
+    cContextTypeSwitcher(int ctxtype);
+
+    /**
+     * Restores the original context type
+     */
+    ~cContextTypeSwitcher();
+};
 
 //==========================================================================
 //=== Implementation of utility functions:
