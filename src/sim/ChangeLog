@@ -11,6 +11,8 @@
 	* several files: adopted to cCommBuffer change (packObject(), 
 	unpackObject() moved into the class)
 
+	* cstat.cc: cStdDev::info() now prints mean, stddev, min, max as well
+
 2005-07-24  Andras Varga
 
 	* cdispstr.cc: added setTagArg() method for numeric (long) argument.

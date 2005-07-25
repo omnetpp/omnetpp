@@ -192,7 +192,11 @@ cStdDev::cStdDev(const char *s) : cStatistic(s)
 std::string cStdDev::info() const
 {
     std::stringstream out;
-    out << "n=" << num_samples;
+    out << "n=" << samples()
+        << " mean=" << mean()
+        << " stddev=" << stddev()
+        << " min=" << min()
+        << " max=" << max();
     return out.str();
 }
 
