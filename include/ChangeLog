@@ -5,6 +5,10 @@
 	functions to cOutVector. (Increasing timestamp order must still be
 	ensured.)
 
+	* cmodule.h: modules can now get notified when a module parameter
+	changes, by redefining the new parameterChanged(const char *parname) 
+	virtual	method of cModule.
+
 2005-07-24  Andras Varga
 
 	* cdispstr.h: added setTagArg() method for numeric (long) argument as 
