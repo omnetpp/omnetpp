@@ -155,7 +155,7 @@ void cNullMessageProtocol::processOutgoingMessage(cMessage *msg, int destProcId,
         buffer->pack(eot);
         buffer->pack(destModuleId);
         buffer->pack(destGateId);
-        packObject(msg,buffer);
+        buffer->packObject(msg);
         comm->send(buffer, TAG_CMESSAGE_WITH_NULLMESSAGE, destProcId);
     }
     else
@@ -165,7 +165,7 @@ void cNullMessageProtocol::processOutgoingMessage(cMessage *msg, int destProcId,
         // send cMessage
         buffer->pack(destModuleId);
         buffer->pack(destGateId);
-        packObject(msg,buffer);
+        buffer->packObject(msg);
         comm->send(buffer, TAG_CMESSAGE, destProcId);
     }
     comm->recycleCommBuffer(buffer);
@@ -185,14 +185,14 @@ void cNullMessageProtocol::processReceivedBuffer(cCommBuffer *buffer, int tag, i
             processReceivedEIT(sourceProcId, eit);
             buffer->unpack(destModuleId);
             buffer->unpack(destGateId);
-            msg = (cMessage *)unpackObject(buffer);
+            msg = (cMessage *)buffer->unpackObject();
             processReceivedMessage(msg, destModuleId, destGateId, sourceProcId);
             break;
 
         case TAG_CMESSAGE:
             buffer->unpack(destModuleId);
             buffer->unpack(destGateId);
-            msg = (cMessage *)unpackObject(buffer);
+            msg = (cMessage *)buffer->unpackObject();
             processReceivedMessage(msg, destModuleId, destGateId, sourceProcId);
             break;
 

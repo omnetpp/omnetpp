@@ -72,7 +72,7 @@ void cDensityEstBase::netPack(cCommBuffer *buffer)
     buffer->pack(range_mode);
     buffer->pack(transfd);
 
-    if (notNull(firstvals, buffer))
+    if (buffer->packFlag(firstvals!=NULL))
         buffer->pack(firstvals, num_firstvals);
 #endif
 }
@@ -93,7 +93,7 @@ void cDensityEstBase::netUnpack(cCommBuffer *buffer)
     buffer->unpack(range_mode);
     buffer->unpack(transfd);
 
-    if (checkFlag(buffer))
+    if (buffer->checkFlag())
     {
         firstvals = new double[num_firstvals];
         buffer->unpack(firstvals, num_firstvals);

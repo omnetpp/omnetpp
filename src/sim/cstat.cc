@@ -82,10 +82,10 @@ void cStatistic::netPack(cCommBuffer *buffer)
 
     buffer->pack(genk);
 
-    if (notNull(td, buffer))
-        packObject(td, buffer);
-    if (notNull(ra, buffer))
-        packObject(ra, buffer);
+    if (buffer->packFlag(td!=NULL))
+        buffer->packObject(td);
+    if (buffer->packFlag(ra!=NULL))
+        buffer->packObject(ra);
 #endif
 }
 
@@ -98,10 +98,10 @@ void cStatistic::netUnpack(cCommBuffer *buffer)
 
     buffer->unpack(genk);
 
-    if (checkFlag(buffer))
-        take(td = (cTransientDetection *) unpackObject(buffer));
-    if (checkFlag(buffer))
-        take(ra = (cAccuracyDetection *) unpackObject(buffer));
+    if (buffer->checkFlag())
+        take(td = (cTransientDetection *) buffer->unpackObject());
+    if (buffer->checkFlag())
+        take(ra = (cAccuracyDetection *) buffer->unpackObject());
 #endif
 }
 

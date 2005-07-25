@@ -8,6 +8,9 @@
 	* cpar.cc: removed beforeChange()/afterChange() calls from setInput()
 	and setPrompt(), because these methods don't change the stored value.
 
+	* several files: adopted to cCommBuffer change (packObject(), 
+	unpackObject() moved into the class)
+
 2005-07-24  Andras Varga
 
 	* cdispstr.cc: added setTagArg() method for numeric (long) argument.

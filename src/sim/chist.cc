@@ -70,7 +70,7 @@ void cHistogramBase::netPack(cCommBuffer *buffer)
     cDensityEstBase::netPack(buffer);
     buffer->pack(num_cells);
 
-    if (notNull(cellv, buffer))
+    if (buffer->packFlag(cellv!=NULL))
         buffer->pack(cellv, num_cells);
 #endif
 }
@@ -83,7 +83,7 @@ void cHistogramBase::netUnpack(cCommBuffer *buffer)
     cDensityEstBase::netUnpack(buffer);
     buffer->pack(num_cells);
 
-    if (checkFlag(buffer))
+    if (buffer->checkFlag())
     {
         cellv = new unsigned int[num_cells];
         buffer->unpack(cellv, num_cells);

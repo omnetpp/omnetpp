@@ -44,7 +44,7 @@ void cParsimProtocolBase::processOutgoingMessage(cMessage *msg, int destProcId, 
 
     buffer->pack(destModuleId);
     buffer->pack(destGateId);
-    packObject(msg, buffer);
+    buffer->packObject(msg);
     comm->send(buffer, TAG_CMESSAGE, destProcId);
 
     comm->recycleCommBuffer(buffer);
@@ -61,7 +61,7 @@ void cParsimProtocolBase::processReceivedBuffer(cCommBuffer *buffer, int tag, in
         case TAG_CMESSAGE:
             buffer->unpack(destModuleId);
             buffer->unpack(destGateId);
-            msg = (cMessage *)unpackObject(buffer);
+            msg = (cMessage *)buffer->unpackObject();
             processReceivedMessage(msg, destModuleId, destGateId, sourceProcId);
             break;
 

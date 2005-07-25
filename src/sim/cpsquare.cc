@@ -82,9 +82,9 @@ void cPSquare::netPack(cCommBuffer *buffer)
     buffer->pack(numcells);
     buffer->pack(numobs);
 
-    if (notNull(n, buffer))
+    if (buffer->packFlag(n!=NULL))
         buffer->pack(n, numcells + 2);
-    if (notNull(q, buffer))
+    if (buffer->packFlag(q!=NULL))
         buffer->pack(q, numcells + 2);
 #endif
 }
@@ -99,13 +99,13 @@ void cPSquare::netUnpack(cCommBuffer *buffer)
     buffer->unpack(numcells);
     buffer->unpack(numobs);
 
-    if (checkFlag(buffer))
+    if (buffer->checkFlag())
     {
         n = new int[numcells + 2];
         buffer->unpack(n, numcells + 2);
     }
 
-    if (checkFlag(buffer))
+    if (buffer->checkFlag())
     {
         q = new double[numcells + 2];
         buffer->unpack(q, numcells + 2);

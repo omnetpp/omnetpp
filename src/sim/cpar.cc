@@ -302,8 +302,8 @@ void cPar::netPack(cCommBuffer *buffer)
     case 'T':
         if (dtr.res && dtr.res->owner() != this)
             throw new cRuntimeError(this,"netPack(): cannot transmit pointer to \"external\" object");
-        if (notNull(dtr.res, buffer))
-            packObject(dtr.res,buffer);
+        if (buffer->packFlag(dtr.res!=NULL))
+            buffer->packObject(dtr.res);
         break;
 
     case 'I':
@@ -319,8 +319,8 @@ void cPar::netPack(cCommBuffer *buffer)
     case 'O':
         if (obj.obj && obj.obj->owner() != this)
             throw new cRuntimeError(this,"netPack(): cannot transmit pointer to \"external\" object");
-        if (notNull(obj.obj, buffer))
-            packObject(obj.obj,buffer);
+        if (buffer->packFlag(obj.obj!=NULL))
+            buffer->packObject(obj.obj);
         break;
 
     case 'M':
@@ -384,10 +384,10 @@ void cPar::netUnpack(cCommBuffer *buffer)
         break;
 
     case 'T':
-        if (!checkFlag(buffer))
+        if (!buffer->checkFlag())
             dtr.res = NULL;
         else
-            take(dtr.res = (cStatistic *) unpackObject(buffer));
+            take(dtr.res = (cStatistic *) buffer->unpackObject());
         break;
 
     case 'I':
@@ -397,10 +397,10 @@ void cPar::netUnpack(cCommBuffer *buffer)
         throw new cRuntimeError(this,"netUnpack(): unpacking types I, P, X, M not implemented");
 
     case 'O':
-        if (!checkFlag(buffer))
+        if (!buffer->checkFlag())
             obj.obj = NULL;
         else
-            take(obj.obj = unpackObject(buffer));
+            take(obj.obj = buffer->unpackObject());
         break;
     }
 #endif

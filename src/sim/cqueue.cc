@@ -92,7 +92,7 @@ void cQueue::netPack(cCommBuffer *buffer)
     {
         if (iter()->owner() != this)
             throw new cRuntimeError(this,"netPack(): cannot transmit pointer to \"external\" object");
-        packObject(iter(),buffer);
+        buffer->packObject(iter());
     }
 #endif
 }
@@ -109,7 +109,7 @@ void cQueue::netUnpack(cCommBuffer *buffer)
 
     for (int i=0; i<n; i++)
     {
-        cObject *obj = unpackObject(buffer);
+        cObject *obj = buffer->unpackObject();
         insert(obj);
     }
 #endif

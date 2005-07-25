@@ -186,11 +186,11 @@ void cMessage::netPack(cCommBuffer *buffer)
     buffer->pack(heapindex);
     buffer->pack(insertordr);
 
-    if (notNull(parlistp, buffer))
-        packObject(parlistp,buffer);
+    if (buffer->packFlag(parlistp!=NULL))
+        buffer->packObject(parlistp);
 
-    if (notNull(encapmsg, buffer))
-        packObject(encapmsg,buffer);
+    if (buffer->packFlag(encapmsg!=NULL))
+        buffer->packObject(encapmsg);
 #endif
 }
 
@@ -219,11 +219,11 @@ void cMessage::netUnpack(cCommBuffer *buffer)
     buffer->unpack(heapindex);
     buffer->unpack(insertordr);
 
-    if (checkFlag(buffer))
-        take(parlistp = (cArray *) unpackObject(buffer));
+    if (buffer->checkFlag())
+        take(parlistp = (cArray *) buffer->unpackObject());
 
-    if (checkFlag(buffer))
-        take(encapmsg = (cMessage *) unpackObject(buffer));
+    if (buffer->checkFlag())
+        take(encapmsg = (cMessage *) buffer->unpackObject());
 #endif
 }
 

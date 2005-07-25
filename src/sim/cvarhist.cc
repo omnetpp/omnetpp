@@ -72,7 +72,7 @@ void cVarHistogram::netPack(cCommBuffer *buffer)
     cHistogramBase::netPack(buffer);
 
     buffer->pack(max_num_cells);
-    if (notNull(bin_bounds, buffer))
+    if (buffer->packFlag(bin_bounds!=NULL))
         buffer->pack(bin_bounds, max_num_cells + 1);
 #endif
 }
@@ -85,7 +85,7 @@ void cVarHistogram::netUnpack(cCommBuffer *buffer)
     cHistogramBase::netUnpack(buffer);
 
     buffer->unpack(max_num_cells);
-    if (checkFlag(buffer))
+    if (buffer->checkFlag())
     {
         bin_bounds = new double[max_num_cells + 1];
         buffer->unpack(bin_bounds, max_num_cells + 1);

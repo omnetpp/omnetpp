@@ -6,7 +6,6 @@
 //
 //   Written by:  Andras Varga, 2003
 //
-//
 //=========================================================================
 
 /*--------------------------------------------------------------*
@@ -25,35 +24,20 @@
 #include "ctypes.h"    // createOne()
 
 
-bool notNull(void *ptr, cCommBuffer *buffer)
+void cCommBuffer::packObject(cObject *obj)
 {
-    bool flag = ptr != NULL;
-    buffer->pack(flag);
-    return flag;
+    pack(obj->className());
+    obj->netPack(this);
 }
 
-bool checkFlag(cCommBuffer *buffer)
-{
-    bool flag = 0;
-    buffer->unpack(flag);
-    return flag;
-}
-
-
-void packObject(cObject *obj, cCommBuffer *buffer)
-{
-    buffer->pack(obj->className());
-    obj->netPack(buffer);
-}
-
-cObject *unpackObject(cCommBuffer *buffer)
+cObject *cCommBuffer::unpackObject()
 {
     char *classname;
-    buffer->unpack(classname);
+    unpack(classname);
     cObject *obj = (cObject *) createOne(classname);
     delete [] classname;
 
-    obj->netUnpack(buffer);
+    obj->netUnpack(this);
     return obj;
 }
 

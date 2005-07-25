@@ -377,11 +377,11 @@ void cArray::netPack(cCommBuffer *buffer)
 
     for (int i = 0; i <= last; i++)
     {
-        if (notNull(vect[i], buffer))
+        if (buffer->packFlag(vect[i]!=NULL))
         {
             if (vect[i]->owner() != this)
                 throw new cRuntimeError(this,"netPack(): cannot transmit pointer to \"external\" object");
-            packObject(vect[i], buffer);
+            buffer->packObject(vect[i]);
         }
     }
 #endif
@@ -404,10 +404,10 @@ void cArray::netUnpack(cCommBuffer *buffer)
     vect = new cObject *[size];
     for (int i = 0; i <= last; i++)
     {
-        if (!checkFlag(buffer))
+        if (!buffer->checkFlag())
             vect[i] = NULL;
         else
-            take(vect[i] = unpackObject(buffer));
+            take(vect[i] = buffer->unpackObject());
     }
 #endif
 }
