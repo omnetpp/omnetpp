@@ -1,3 +1,7 @@
+2005-07-26  Andras Varga
+
+	* cnednetworkbuilder.cc: didn't check gate directions on connecting
+
 2005-04-08  Andras Varga
 
 	* cnednetworkbuilder.cc: background display strings were not set

@@ -383,6 +383,17 @@ void cNEDNetworkBuilder::addConnection(cModule *modp, ConnectionNode *conn)
                                      conn->getDestGatePlusplus());
     cChannel *channel = createChannelForConnection(conn,modp);
 
+    // check directions
+    cGate *errg = NULL;
+    if (srcg->ownerModule()==modp ? srcg->type()!='I' : srcg->type()!='O')
+        errg = srcg;
+    if (destg->ownerModule()==modp ? destg->type()!='O' : destg->type()!='I')
+        errg = destg;
+    if (errg)
+        throw new cRuntimeError("dynamic module builder: gate %s in (%s)%s is being "
+                                "connected the wrong way: directions don't match",
+                                errg->fullPath().c_str(), modp->className(), modp->fullPath().c_str());
+
     // connect
     if (channel)
         srcg->connectTo(destg, channel);
