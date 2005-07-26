@@ -72,9 +72,7 @@ proc fileOpen {{fname ""}} {
               -filetypes {{{NED files} {*.ned}} {{All files} {*}}}]
 
    if {$fname!=""} {
-      set config(default-dir) [file dirname $fname]
-      # regsub "^$env(HOME)/" $fname "~/" fname
-      loadNED $fname
+      loadNEDrec $fname
    }
 }
 
@@ -472,6 +470,18 @@ proc toggleGrid {setvar} {
         $gned(graphics-toolbar).grid config -relief sunken
     } else {
         $gned(graphics-toolbar).grid config -relief raised
+    }
+}
+
+proc togglePortcheck {setvar} {
+    if {$setvar} {
+        showTextOnceDialog "nocheckSet"
+    }
+}
+
+proc toggleAutosize {setvar} {
+    if {$setvar} {
+        showTextOnceDialog "autosizeSet"
     }
 }
 

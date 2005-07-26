@@ -22,6 +22,9 @@ set config(configfile) "~/.gnedrc"
 set config(snaptogrid) 1
 set config(connmodeauto) 1
 set config(autoextend) 1
+set config(autosize) 0
+set config(noportcheck) 0
+set config(autoimport) 0
 set config(autocheck) 0
 set config(editor-findstring)     ""
 set config(editor-replacestring)  ""
@@ -188,7 +191,10 @@ proc createMainWindow {} {
     foreach i {
       {check -command {toggleGrid 0} -variable config(snaptogrid) -label {Snap to grid} -underline 0}
       {check -variable config(connmodeauto) -label {Default conn. drawing mode is auto} -underline 0}
-      {check -variable config(autoextend) -label {Autoextend gates using gate++ notation} -underline 0}
+      {check -variable config(autoimport) -label {Open imported files automatically} -underline 0}
+      {check -variable config(autoextend) -label {Autoextend vector gates using the ++ notation} -underline 0}
+      {check -command {toggleAutosize $config(autosize)} -variable config(autosize) -label {Auto-calculate gate size} -underline 0}
+      {check -command {togglePortcheck $config(noportcheck)} -variable config(noportcheck) -label {Set "nocheck" for new modules} -underline 0}
       {separator}
       {command -command optionsViewFile -label {View/edit text file...} -underline 0}
     } {
@@ -591,6 +597,14 @@ the background rectangle) is now always auto-adjusting to the bounding box\
 of the submodules you're drawing in it. To turn off this behavior, drag the right\
 or bottom edge of the background rectangle to the desired size.\
 There is a toolbar button for turning it on again.}
-
-
+#----------------
+set hints(nocheckSet)  {Selecting the "nocheck" option causes the "nocheck" keyword to be appended to the \
+"connections" section in the NED file. This means that the simulator will not check for \
+unconnected gates in this compound module when the simulation is run. Simple modules should \
+take care not to send messages via output gates that are not connected.}
+#----------------
+set hints(autosizeSet)  {When this option is set, Gned will automatically generate \
+re-calculated "gatesizes" entries for all input and output gates every time you change \
+the gate index of a connection. If you need full control over those entries, this \
+option should not be checked!}
 

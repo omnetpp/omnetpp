@@ -183,6 +183,13 @@ proc createSubmoduleOnCanvas {typekey {canvx {}} {canvy {}}} {
         }
     }
 
+    # HACK: add icon if specified in right comment (//deficon ...)
+    if {[lindex $ned($typekey,right-comment) 0] == "deficon:"} {
+        if {[info exist ned($key,disp-icon)]} {
+            set ned($key,disp-icon) [lindex $ned($typekey,right-comment) 1]
+        }
+    }
+
     # set coords
     set x1 [expr $canvx-20]
     set y1 [expr $canvy-14]
@@ -196,6 +203,7 @@ proc createSubmoduleOnCanvas {typekey {canvx {}} {canvy {}}} {
 
     # draw on canvas
     drawItem $key
+    deselectAllItems
     selectItem $key
     markCanvasDirty
     updateTreeManager

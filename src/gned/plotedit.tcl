@@ -921,6 +921,9 @@ proc drawEnd {c x y} {
                    set connskey [getChildrenWithType $modkey conns]
                    if {[llength $connskey]==0} {
                        set connskey [addItem conns $modkey]
+
+                       set ned($connskey,nocheck) $config(noportcheck)
+
                    } elseif {[llength $connskey]>1} {
                        error "Internal error: more than one 'conns'"
                    }
@@ -963,8 +966,8 @@ proc drawEnd {c x y} {
                    }
 
                    if {$config(autoextend)} {
-                       set ned($key,src-gate-plusplus) {1}
-                       set ned($key,dest-gate-plusplus) {1}
+                      set_plusplus $key src
+                      set_plusplus $key dest
                    }
 
                    drawItem $key

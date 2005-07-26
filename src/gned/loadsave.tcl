@@ -155,4 +155,66 @@ proc loadNED {nedfile} {
 }
 
 
+# loadNEDrec --
+#
+# Load NED file and its imports recursiveley
+#
+proc loadNEDrec {fname} {
+    global ned gned config
+
+    set imports {}
+    set dir [file dirname $fname]
+
+    set canv_id {}
+
+    while {$fname != ""} {
+        set config(default-dir) [file dirname $fname]
+        # regsub "^$env(HOME)/" $fname "~/" fname
+        loadNED $fname
+
+        #save canvas id of first opened file
+        if {$canv_id == ""} {
+            set canv_id $gned(canvas_id)
+        }
+
+        if {!$config(autoimport)} {
+            break
+        }
+
+        # find key of last opened file
+        foreach fkey [getChildrenWithType 0 nedfile] {
+            if {[info exist ned($fkey,filename)] && ($fname == $ned($fkey,filename))} {
+
+                # key found: collect imports of last opened file
+                set impskey [getChildrenWithType $fkey imports]
+                if {$impskey != ""} {
+                    foreach impkey [getChildrenWithType $impskey import] {
+
+                        # key of imported file found: add name of import-file to "imports" if not already open
+                        set impfile $dir/$ned($impkey,name).ned
+                        set isOpen 0
+                        foreach fkey [getChildrenWithType 0 nedfile] {
+                            if {$impfile == $ned($fkey,filename)} {
+                                set isOpen 1
+                            }
+                        }
+                        if {!$isOpen} {
+                            lappend imports $impfile
+                        }
+                    }
+                }
+                break
+            }
+        }
+
+        # open imported files
+        set fname [lindex $imports 0]
+        set imports [lreplace $imports 0 0]
+    }
+
+    # switch to canvas of first opened file
+    if {$canv_id != ""} {
+        switchToCanvas $canv_id
+    }
+}
 

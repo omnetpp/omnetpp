@@ -17,7 +17,7 @@
 
 
 proc editModuleProps {key} {
-    global gned ned
+    global gned ned config tmp_nocheck
 
     # create dialog with OK and Cancel buttons
     set w .modprops
@@ -38,9 +38,11 @@ proc editModuleProps {key} {
     label-entry $nb.general.name "Name:"
     label-text  $nb.general.comment "Doc. comments:" 4
     label-text  $nb.general.rcomment "End-line comments:" 2
+    checkbutton $nb.general.r1 -text "Allow unconnected gates (\"nocheck\")" -variable tmp_nocheck
     pack $nb.general.name  -expand 0 -fill x -side top
     pack $nb.general.comment -expand 1 -fill both -side top
     pack $nb.general.rcomment -expand 0 -fill x -side top
+    pack $nb.general.r1  -expand 0 -fill none -side top -anchor w
 
     # create "Parameters" page
     label $nb.pars.l -text  "Parameters:"
@@ -83,6 +85,13 @@ proc editModuleProps {key} {
     $nb.general.comment.t insert 1.0 $ned($key,banner-comment)
     $nb.general.rcomment.t insert 1.0 $ned($key,right-comment)
 
+    set connskey [getChildrenWithType $key conns]
+    if {[llength $connskey]==0} {
+        set connskey [addItem conns $key]
+        set ned($connskey,nocheck) $config(noportcheck)
+    }
+    set tmp_nocheck $ned($connskey,nocheck)
+
     # fill tables
     ModProps:fillTableEditFromNed $nb.pars.tbl  $key params
     ModProps:fillTableEditFromNed $nb.gates.tbl $key gates
@@ -94,6 +103,12 @@ proc editModuleProps {key} {
         set ned($key,name) [$nb.general.name.e get]
         set ned($key,banner-comment) [getCommentFromText $nb.general.comment.t]
         set ned($key,right-comment) [getCommentFromText $nb.general.rcomment.t]
+
+        set ned($connskey,nocheck) $tmp_nocheck
+
+        if {$tmp_nocheck} {
+            showTextOnceDialog "nocheckSet"
+        }
 
         ModProps:updateNedFromTableEdit $nb.pars.tbl  $key params   param   name
         ModProps:updateNedFromTableEdit $nb.gates.tbl $key gates    gate    name

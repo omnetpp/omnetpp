@@ -100,6 +100,12 @@ proc startGNED {argv} {
    set files {}
    processCommandline $argv convertandexit imgsuffix outdir files
 
+   if {$convertandexit} {
+       # turn off autoimport during batch run, otherwise it'll bring up heaps of error dialogs
+       set old_autoimport $config(autoimport)
+       set config(autoimport) 0
+   }
+
    if {!$convertandexit} {
        wm deiconify .
    }
@@ -107,7 +113,7 @@ proc startGNED {argv} {
    foreach fname $files {
        if {!$convertandexit || [string match "*.ned" $fname]} {
            if [file exist $fname] {
-               loadNED $fname
+               loadNEDrec $fname
            } else {
                fileNewNedfile $fname
            }
@@ -118,6 +124,7 @@ proc startGNED {argv} {
    if {$convertandexit} {
        # just save the canvases to file then exit
        exportCanvasesToPostscript $outdir [file join $outdir "images.xml"] $imgsuffix
+       set config(autoimport) $old_autoimport
        fileExit
    }
 }

@@ -17,7 +17,7 @@
 
 
 proc editConnectionProps {key} {
-    global gned ned canvas
+    global gned ned canvas config
     global tmp
 
     set modkey [getContainingModule $key]
@@ -160,6 +160,25 @@ proc editConnectionProps {key} {
         set ned($key,src-gate-index) [$nb.gates.from.gate.index get]
         set ned($key,dest-gate-index) [$nb.gates.to.gate.index get]
 
+        if {$ned($key,src-gate-index)=="++"} {
+            set ned($key,src-gate-index) ""
+            set ned($key,src-gate-plusplus) 1
+        }
+        if {$ned($key,dest-gate-index)=="++"} {
+            set ned($key,dest-gate-index) ""
+            set ned($key,dest-gate-plusplus) 1
+        }
+
+        if {$config(autosize)} {
+           ConnProps:fillGateSize $key src
+           ConnProps:fillGateSize $key dest
+        }
+
+        #if {$config(autoextend)} {
+        #   set_plusplus $key src
+        #   set_plusplus $key dest
+        #}
+
         set ned($key,arrowdir-l2r) $tmp(l2r)
 
         puts "FIXME todo: 'for' to be handled!"
@@ -269,7 +288,7 @@ proc ConnProps:gateSpec {w} {
     label $w.mod.l1 -text  "  Module:" -anchor w -width 8
     #label $w.mod.name -width 20 -relief sunken -anchor w
     combobox::combobox $w.mod.name -width 14
-    label $w.mod.lb -text  "  index \["
+    label $w.mod.lb -text  "              index \[" -justify right -width 14
     entry $w.mod.index -width 6
     label $w.mod.rb -text  "\]   "
     pack $w.mod.l1 -expand 0 -side left -padx 2 -pady 2
@@ -283,7 +302,7 @@ proc ConnProps:gateSpec {w} {
     #entry $w.gate.name -width 14
     #button $w.gate.c -text "..." -width 3
     combobox::combobox $w.gate.name -width 14
-    label $w.gate.lb -text  "  index \["
+    label $w.gate.lb -text  "  index or \"++\" \[" -width 14
     entry $w.gate.index -width 6
     label $w.gate.rb -text  "\]   "
     pack $w.gate.l1 -expand 0 -side left -padx 2 -pady 2
@@ -292,6 +311,61 @@ proc ConnProps:gateSpec {w} {
     pack $w.gate.lb -expand 0 -side left -padx 2 -pady 2
     pack $w.gate.index -expand 1 -fill x -side left -padx 2 -pady 2
     pack $w.gate.rb -expand 0 -side left -padx 2 -pady 2
+}
+
+proc ConnProps:MaxGateIndex {in_connkey srcdest} {
+    global ned
+
+    # Look up all connections of current module
+    # and find the maximum index of their source/destination
+    set connskey [getChildrenWithType [getContainingModule $in_connkey] conns]
+
+    set max -1;
+    set connkey {}
+    foreach connkey [getChildrenWithType $connskey conn] {
+       if {$ned($in_connkey,${srcdest}-ownerkey)==$ned($connkey,${srcdest}-ownerkey) \
+           && $ned($in_connkey,${srcdest}gate)==$ned($connkey,${srcdest}gate)} {
+           if {$max < $ned($connkey,${srcdest}-gate-index)} {
+               set max  $ned($connkey,${srcdest}-gate-index)
+           }
+       }
+    }
+
+    return $max
+}
+
+proc ConnProps:fillGateSize {key srcdest} {
+    global ned
+
+    set max [ConnProps:MaxGateIndex $key $srcdest]
+
+    # generate/delete gatesize entries for the source/destination gates
+    set wrk_module $ned($key,${srcdest}-ownerkey)
+    set gsizkey [getChildrenWithType $wrk_module gatesizes]
+    set gskey ""
+
+    if {($gsizkey == "") && ($max!=-1)} {
+        set gsizkey [addItem gatesizes $wrk_module]
+    }
+
+    if {$gsizkey != ""} {
+        set gskey [getChildrenWithName $gsizkey $ned($key,${srcdest}gate)]
+    }
+
+    if {$max!=-1} {
+        if {$gskey == ""} {
+           set gskey [addItem gatesize $gsizkey]
+           set ned($gskey,name) $ned($key,${srcdest}gate)
+           set ned($gskey,size) 1
+           set ned($gskey,right-comment) " TBD\n"
+        }
+
+        set ned($gskey,size) [expr $max + 1]
+    } else {
+        if {$gskey != ""} {
+            deleteItem $gskey
+        }
+    }
 }
 
 proc ConnProps:fillGateSpec {w key srcdest modkey} {
@@ -308,9 +382,72 @@ proc ConnProps:fillGateSpec {w key srcdest modkey} {
     }
     $w.mod.index insert 0 $ned($key,${srcdest}-mod-index)
     $w.gate.name insert 0 $ned($key,${srcdest}gate)
-    $w.gate.index insert 0 $ned($key,${srcdest}-gate-index)
+    if {$ned($key,${srcdest}-gate-plusplus)} {
+        $w.gate.index insert 0 "++"
+    } else {
+        $w.gate.index insert 0 $ned($key,${srcdest}-gate-index)
+    }
 
     bind $w.gate.name <FocusIn> [list ConnProps:refreshGateCombo $w $modkey]
+}
+
+proc set_plusplus {connkey srcdest} {
+    global ned
+
+    set modkey $ned($connkey,${srcdest}-ownerkey)
+
+    if {$ned($modkey,type)=="submod"} {
+        #
+        # find appropriate module definition and look up what gates it has
+        #
+        set submodkey [findSubmodule [getContainingModule $connkey] $ned($modkey,name)]
+        set submodkey [lindex $submodkey 0]; # to be safe
+
+        if {$submodkey==""} {
+            set ned($connkey,${srcdest}-gate-plusplus) {1}
+            return
+        }
+
+        if {$ned($submodkey,like-name)!=""} {
+            set modtypename $ned($submodkey,like-name)
+        } else {
+            set modtypename $ned($submodkey,type-name)
+        }
+        set modtypekey [concat [itemKeyFromName $modtypename module] \
+                               [itemKeyFromName $modtypename simple]]
+
+        if {$modtypekey==""} {
+            set ned($connkey,${srcdest}-gate-plusplus) {1}
+            return
+        }
+
+        # if there are multiple definitions of this type, just take the first one
+        set modtypekey [lindex $modtypekey 0]
+        set wrk_gates [getChildrenWithType $modtypekey gates]
+
+        if {$wrk_gates != ""} {
+           set wrk_gate [getChildrenWithName $wrk_gates $ned($connkey,${srcdest}gate)]
+           if {$wrk_gate=="" || ($ned($connkey,${srcdest}-gate-index) == "" && $ned($wrk_gate,isvector))} {
+              set ned($connkey,${srcdest}-gate-plusplus) {1}
+           } else {
+              set ned($connkey,${srcdest}-gate-plusplus) {0}
+           }
+        }
+    } else {
+        # gates of parent module
+        set wrk_gates [getChildrenWithType $modkey gates]
+        if {$wrk_gates != ""} {
+           set wrk_gate [getChildrenWithName $wrk_gates $ned($connkey,${srcdest}gate)]
+           if {$wrk_gate != "" && $ned($wrk_gate,isvector)} {
+              if {$ned($connkey,${srcdest}-gate-index) == ""} {
+                 set ned($connkey,${srcdest}-gate-index) [expr [ConnProps:MaxGateIndex $connkey $srcdest] + 1]
+              }
+           } else {
+              set ned($connkey,${srcdest}-gate-index) {}
+           }
+        }
+        set ned($connkey,${srcdest}-gate-plusplus) {0}
+    }
 }
 
 proc ConnProps:refreshGateCombo {w modkey} {
