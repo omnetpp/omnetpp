@@ -1,3 +1,8 @@
+2005-07-26  Andras Varga
+
+	* tkapp.cc/h: added support for OPP_PLUGIN_PATH environment variable,
+	and [Tkenv]/plugin-path=dir1:dir2:... omnetpp.ini entry.
+
 2005-07-25  Andras Varga
 
 	* statinsp.cc: cOutVector callback method signature change: added

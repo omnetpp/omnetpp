@@ -35,11 +35,15 @@
 #include "tklib.h"
 #include "inspector.h"
 #include "inspfactory.h"
-
 #include "modinsp.h"
-
 #include "platdep/time.h"
 
+
+// default plugin path -- allow overriding it via compiler option (-D)
+// (default bitmap path comes from makefile)
+#ifndef OMNETPP_PLUGIN_PATH
+#define OMNETPP_PLUGIN_PATH "./plugins"
+#endif
 
 //
 // Register the Tkenv user interface
@@ -119,6 +123,12 @@ void TOmnetTkApp::setup()
     if (!opt_bitmap_path.empty())
         bitmap_path = std::string(opt_bitmap_path.c_str()) + ";" + bitmap_path;
 
+    // path for plugins
+    const char *plugin_path_env = getenv("OMNETPP_PLUGIN_PATH");
+    std::string plugin_path = plugin_path_env ? plugin_path_env : OMNETPP_PLUGIN_PATH;
+    if (!opt_plugin_path.empty())
+        plugin_path = std::string(opt_plugin_path.c_str()) + ";" + plugin_path;
+
     // set up Tcl/Tk
     interp = initTk( args->argCount(), args->argVector() );
     if (!interp)
@@ -131,6 +141,7 @@ void TOmnetTkApp::setup()
     createTkCommands( interp, tcl_commands );
 
     Tcl_SetVar(interp, "OMNETPP_BITMAP_PATH", TCLCONST(bitmap_path.c_str()), TCL_GLOBAL_ONLY);
+    Tcl_SetVar(interp, "OMNETPP_PLUGIN_PATH", TCLCONST(plugin_path.c_str()), TCL_GLOBAL_ONLY);
 
     // eval Tcl sources: either from .tcl files or from compiled-in string
     // literal (tclcode.cc)...
@@ -1014,6 +1025,7 @@ void TOmnetTkApp::readOptions()
     opt_use_mainwindow = cfg->getAsBool( "Tkenv", "use-mainwindow", true );
     opt_expressmode_autoupdate = cfg->getAsBool( "Tkenv", "expressmode-autoupdate", true );
     opt_bitmap_path = cfg->getAsFilenames( "Tkenv", "bitmap-path", "").c_str();
+    opt_plugin_path = cfg->getAsFilenames( "Tkenv", "plugin-path", "").c_str();
 }
 
 void TOmnetTkApp::readPerRunOptions(int run_nr)

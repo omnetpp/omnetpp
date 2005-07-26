@@ -41,9 +41,6 @@ if [info exist OMNETPP_TKENV_DIR] {
 
 }
 
-# hardcoded plugin path for now
-set OMNETPP_PLUGIN_PATH "./plugins"
-
 #
 # Execute startup code
 #

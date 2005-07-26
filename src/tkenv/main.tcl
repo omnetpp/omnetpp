@@ -526,6 +526,9 @@ proc load_plugins {path} {
    # Unix separator) would cause trouble with dirs containing drive letter
    # (like "c:\bitmaps"). Using a space is also not an option (think of
    # "C:\Program Files\...").
+   #
+   # We'd ever wanted to read plugins relative to the executable,
+   # its path is available via [info nameofexecutable].
 
    if {$tcl_platform(platform) == "unix"} {
        set dllpattern "*.so*"
