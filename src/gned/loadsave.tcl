@@ -186,20 +186,23 @@ proc loadNEDrec {fname} {
             if {[info exist ned($fkey,filename)] && ($fname == $ned($fkey,filename))} {
 
                 # key found: collect imports of last opened file
-                set impskey [getChildrenWithType $fkey imports]
-                if {$impskey != ""} {
+                set impskeys [getChildrenWithType $fkey imports]
+                foreach impskey $impskeys {
                     foreach impkey [getChildrenWithType $impskey import] {
 
                         # key of imported file found: add name of import-file to "imports" if not already open
-                        set impfile $dir/$ned($impkey,name).ned
+                        set impfilename "$dir/$ned($impkey,name)"
+                        if ![string match "*.ned" $impfilename] {
+                            append impfilename ".ned"
+                        }
                         set isOpen 0
                         foreach fkey [getChildrenWithType 0 nedfile] {
-                            if {$impfile == $ned($fkey,filename)} {
+                            if {$impfilename == $ned($fkey,filename)} {
                                 set isOpen 1
                             }
                         }
                         if {!$isOpen} {
-                            lappend imports $impfile
+                            lappend imports $impfilename
                         }
                     }
                 }
@@ -217,4 +220,5 @@ proc loadNEDrec {fname} {
         switchToCanvas $canv_id
     }
 }
+
 

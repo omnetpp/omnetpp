@@ -38,11 +38,14 @@ proc editModuleProps {key} {
     label-entry $nb.general.name "Name:"
     label-text  $nb.general.comment "Doc. comments:" 4
     label-text  $nb.general.rcomment "End-line comments:" 2
-    checkbutton $nb.general.r1 -text "Allow unconnected gates (\"nocheck\")" -variable tmp_nocheck
+    checkbutton $nb.general.r1 -text "Allow unconnected gates inside (\"nocheck\")" -variable tmp_nocheck
     pack $nb.general.name  -expand 0 -fill x -side top
     pack $nb.general.comment -expand 1 -fill both -side top
     pack $nb.general.rcomment -expand 0 -fill x -side top
-    pack $nb.general.r1  -expand 0 -fill none -side top -anchor w
+    if {$ned($key,type)=="module"} {
+        # don't show this control for simple modules
+        pack $nb.general.r1  -expand 0 -fill none -side top -anchor w
+    }
 
     # create "Parameters" page
     label $nb.pars.l -text  "Parameters:"

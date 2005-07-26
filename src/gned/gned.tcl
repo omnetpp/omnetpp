@@ -101,7 +101,7 @@ proc startGNED {argv} {
    processCommandline $argv convertandexit imgsuffix outdir files
 
    if {$convertandexit} {
-       # turn off autoimport during batch run, otherwise it'll bring up heaps of error dialogs
+       # turn off autoimport during batch run, otherwise it may bring up heaps of error dialogs
        set old_autoimport $config(autoimport)
        set config(autoimport) 0
    }

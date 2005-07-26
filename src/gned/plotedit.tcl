@@ -237,7 +237,13 @@ proc openSubmodule c {
    }
 
    if {$ned($key,type)=="submod"} {
-      set typename $ned($key,type-name)
+      if {$ned($key,like-name)==""} {
+         set typename $ned($key,type-name)
+      } else {
+         set typename $ned($key,like-name)
+         tk_messageBox -title GNED -icon info -type ok \
+              -message "This submodule is defined using \"like\" -- any module that has the same gates as $typename can be configured to appear here at runtime."
+      }
       if {$typename=="" || $typename=="Unknown"} {
          tk_messageBox -title "Info" -icon info -type ok \
               -message "Module type for this submodule is not yet filled in.\
@@ -247,12 +253,13 @@ proc openSubmodule c {
          set modkey [itemKeyFromName $typename module]
          openModuleOnCanvas $modkey
       } elseif {[itemKeyFromName $typename simple]!=""} {
-         if {[tk_messageBox -title GNED -icon question -type yesno \
-             -message "This is a simple module of type \"$typename\". Do you want to open the type declaration?"]=="yes"
-         } {
-            set modkey [itemKeyFromName $typename simple]
-            editModuleProps $modkey
-         }
+         # if {[tk_messageBox -title GNED -icon question -type yesno \
+         #     -message "This is a simple module of type \"$typename\". Do you want to open the type declaration?"]=="yes"
+         # } {
+         #    ...
+         # }
+         set modkey [itemKeyFromName $typename simple]
+         editModuleProps $modkey
       } else {
          tk_messageBox -title "Error" -icon warning -type ok \
               -message "Module type \"$typename\" is unknown. If \"$typename\" is an\
