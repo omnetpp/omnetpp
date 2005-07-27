@@ -22,8 +22,8 @@
 
 class cStructDescriptor;
 
-#define BUFSIZE     2048           /* buffer size */
-#define MAXWRITE    255            /* one sprintf() shouldn't be more than 255 chars */
+#define BUFSIZE     4096           /* buffer size */
+#define MAXWRITE    3072           /* one sprintf() shouldn't be more than MAXWRITE chars */
 #define FLUSHLIMIT  (BUFSIZE-MAXWRITE-2)
 
 class TStructPanel : public TInspectorPanel
