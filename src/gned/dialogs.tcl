@@ -29,7 +29,7 @@ proc editImportPath {} {
     button $w.f.add -text " Add directory... " -command editImportPath:addDir
 
     # setting geometry
-    $w.f config -padx 5 -pady 5
+    $w.f config -padx 5 -pady 2
     grid $w.f.lbl -  -sticky nw
     grid $w.f.txt $w.f.sb -sticky news
     grid $w.f.add - -sticky ne -pady 5
