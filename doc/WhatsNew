@@ -1,26 +1,93 @@
 What's New
 ==========
 
-OMNeT++ 3.2 snapshot (Jul 2005)
--------------------------------
-A brief summary of the changes so far:
-- Plove and Scalars: improved Chart Settings dialog, and default settings
-  can now be saved. New Plove filters, and fix in the winavg filter.
-- Tkenv: added Timeline Status Bar
-- Tkenv: fixed the r= display string tag (it displayed a circle half the
-  specified size)
-- Tkenv: cMessage inspector now displays message size in bytes as well (not 
-  just in bits); also, it now displays time *until* arrival time (a delta)
-  in addition to the absolute arrival time.
-- new cMessage member functions: byteLength(), setByteLength(), addByte-
-  Length(). They just invoke the length(), setLength(), addLength() methods.
-- new utility function simtimeToStrShort()
-- fixed gcc-4 compilation errors, and removed -fwritable-strings compiler
-  option
-- fixes and improvements on opp_neddoc
-- configure script now accepts NO_TCL=1 variable (for emergency use only)
-- opp_nmakemake: improved output of recursive build
-- Readme.MSVC updated on how to build DLLs from simple modules
+OMNeT++ 3.2 snapshots (Jul 2005)
+--------------------------------
+A brief summary of the changes since 3.2pre1:
+
+- WATCH() overhaul: now anything can be watched that has operator<<. If it
+  also has operator>>, you can use WATCH_RW() to make it editable on the GUI.
+  Objects and pointers to objects can be watched with WATCH_OBJ() and
+  WATCH_PTR(). STL container classes can be watched via WATCH_VECTOR(),
+  WATCH_PTRVECTOR(), WATCH_MAP(), WATCH_PTRMAP(), etc.
+
+- modules can now get notified when a module parameter changes. Just redefine
+  the new handleParameterChange(const char *parname) method of cModule.
+
+- parallel distributed simulation: added the cPtrPassingMPICommunications
+  class, for use in 64-bit supercomputing clusters like SGI Altix.
+
+- Tkenv:
+  - flush omnetpp.vec every time the simulation is stopped (to enable looking
+    at it with Plove to decide if simulation needs to be run longer)
+
+  - added support for OPP_PLUGIN_PATH environment variable, and
+    [Tkenv]/plugin-path= omnetpp.ini entry.
+
+  - cGate inspector: channel attributes (delay, error and datarate)
+    can now be changed from the GUI.
+
+  - added support for custom items on the context menu (e.g. right-click
+    on a router, "Inspect Routing Table..." Usage: place a .tcl file into
+    the plugin path (./plugins by default) that calls the extendContextMenu
+    Tcl procedure.
+
+- GNED: Michael Franzen contributed several improvements and fixes:
+  - new option: "Open imported files automatically": tries to open all the
+    files that are imported by an opened NED file. (It takes care that
+    every NED file is opened only once.)
+
+  - an "import path" can be specified, which is a list of directories
+    where imported files are searched for (Andras)
+
+  - new option: "Autoextend gates using gate++ notation". When this option
+    is enabled (Options Menu), GNED does not generate "gatesizes" sections,
+    and automatically uses the extension operator "++" on all gates that
+    are connected. However, you always can use indices in the property page
+    of modules to override automatic gate extension.
+
+  - "Auto-calculate gate size": when switched on, this option generates
+    "gatesize" entries for every gate of a module that is endpoint for
+    indexed connections. The code searches for the maximum index of all
+    connections ending at that port and generates the "gatesize" entry
+    from that. If no indexed connection to the port is found, the
+    "gatesize" entry is removed again.
+
+  - "Set 'nocheck' for new modules": generates "connections nocheck" for
+    all newly generated modules. This feature has a counterpart in the
+    property page of modules: an "Allow unconnected gates" checkbox
+    to enable/disable this feature for each module individually.
+
+  - plus several smaller fixes
+
+- heaps of small API improvements, see include/ChangeLog. A sample:
+   - cOutvector: added recordWithTimestamp()
+   - cDisplayString: setTagArg() now accepts numeric (long) arg too.
+   - cMessage: if "vector" is a vector gate, msg->arrivedOn("vector")
+     now checks if msg arrived one of the vector's gates.
+   - cXMLElement: added getFirstChildWithTagName() and getNextSiblingBy-
+     TagName()
+Thanks to Michael Tuexen, Ignacio Arenas Jimenez and Wei Yang Ng who suggested
+several of the above improvements.
+
+Changes in 3.2pre1:
+  - Plove and Scalars: improved Chart Settings dialog, and default settings
+    can now be saved. New Plove filters, and fix in the winavg filter.
+  - Tkenv: added Timeline Status Bar
+  - Tkenv: fixed the r= display string tag (it displayed a circle half the
+    specified size)
+  - Tkenv: cMessage inspector now displays message size in bytes as well (not
+    just in bits); also, it now displays time *until* arrival time (a delta)
+    in addition to the absolute arrival time.
+  - new cMessage member functions: byteLength(), setByteLength(), addByte-
+    Length(). They just invoke the length(), setLength(), addLength() methods.
+  - new utility function simtimeToStrShort()
+  - fixed gcc-4 compilation errors, and removed -fwritable-strings compiler
+    option
+  - fixes and improvements on opp_neddoc
+  - configure script now accepts NO_TCL=1 variable (for emergency use only)
+  - opp_nmakemake: improved output of recursive build
+  - Readme.MSVC updated on how to build DLLs from simple modules
 Plus a number of smaller fixes, see the ChangeLogs in individual directories.
 Documentation update is still TBD.
 
