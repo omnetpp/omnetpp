@@ -168,7 +168,7 @@ proc loadNEDrec {fname} {
         if [catch {loadNED $fname} errmsg] {
            tk_messageBox -icon warning -type ok -message "Error loading $fname: $errmsg"
 
-           # open imported files
+           # remove this file from the list, and resume
            set fname [lindex $tobeimported 0]
            set tobeimported [lreplace $tobeimported 0 0]
            continue

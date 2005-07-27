@@ -6,9 +6,35 @@
 2005-07-26  Andras Varga
 
 	* integrated several patches from Michael Franzen:
-	- "Open imported files automatically"
-	- "Auto-calculate gate size"
-	- "Set "nocheck" for new modules"
+
+	- "Open imported files automatically": tries to open all the files 
+	that are imported by an opened NED file. (It takes care that every NED 
+	file is opened only once.)
+
+	- "Auto-calculate gate size": When switched on, this option generates 
+	"gatesize" entries for every port of a module that is endpoint for 
+	indexed connections. The code searches for the maximum index of all 
+	connections ending at that port and generates the "gatesize" entry 
+	from that. If no indexed connection to the port is found, the 
+	"gatesize" entry is removed again.
+
+	- "Set 'nocheck' for new modules": generates "connections nocheck" for
+	all newly generated modules. This feature has a counterpart in the 
+	property page of modules: I added a checkbox "Do not check connections 
+	(nocheck)" to enable/disable this feature for each module individually.
+
+	This latter option and the "gatesize" option got a warning-dialog that 
+	pops up when they are used for the first time (using your 
+	hints-mechanism)  to make the user aware of the consequences that usage 
+	of the respective feature may have.
+
+	- to add default icon from right comment of dragged modules, if right 
+	comment starts with "deficon: ..." (this a *temporary* solution for
+	specifying a default icon)
+
+	- dragging a module on the canvas: deselect all items before selecting
+	the newly dropped one
+
 
 2005-07-24  Andras Varga
 
