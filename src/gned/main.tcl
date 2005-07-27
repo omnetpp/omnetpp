@@ -24,7 +24,7 @@ set config(connmodeauto) 1
 set config(autoextend) 1
 set config(autosize) 0
 set config(noportcheck) 0
-set config(autoimport) 0
+set config(autoimport) 1
 set config(autocheck) 0
 set config(importpath) {}
 set config(editor-findstring)     ""

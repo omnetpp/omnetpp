@@ -1,3 +1,8 @@
+2005-07-27  Andras Varga
+
+	* implemented import paths: searching imported files in import 
+	directories, import path edit dialog, etc.
+
 2005-07-26  Andras Varga
 
 	* integrated several patches from Michael Franzen:
