@@ -34,6 +34,7 @@ set config(editor-whole-words)    0
 set config(editor-regexp)         0
 set config(editor-backwards)      0
 set config(default-dir)           "."
+set config(default-impdir)        "."
 set config(iconprefix)            ""
 set config(iconsize)              "normal"
 

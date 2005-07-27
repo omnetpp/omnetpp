@@ -26,11 +26,13 @@ proc editImportPath {} {
     label $w.f.lbl -text "Edit import path (one directory per line):" -pady 5
     text $w.f.txt -yscrollcommand "$w.f.sb set"
     scrollbar $w.f.sb -command "$w.f.txt yview"
+    button $w.f.add -text " Add directory... " -command editImportPath:addDir
 
     # setting geometry
     $w.f config -padx 5 -pady 5
     grid $w.f.lbl -  -sticky nw
     grid $w.f.txt $w.f.sb -sticky news
+    grid $w.f.add - -sticky ne -pady 5
     grid columnconfigure $w.f 0 -weight 1
     grid rowconfigure $w.f 1 -weight 1
 
@@ -50,3 +52,16 @@ proc editImportPath {} {
     destroy $w
 }
 
+proc editImportPath:addDir {} {
+    global config
+
+    set w .dlg
+    set txt $w.f.txt
+
+    set dir [tk_chooseDirectory -title "Select directory to add to import path:" \
+                                -initialdir $config(default-impdir) \
+                                -parent .dlg  -mustexist true]
+    if {$dir!=""} {
+        $txt insert "insert linestart" "$dir\n"
+    }
+}
