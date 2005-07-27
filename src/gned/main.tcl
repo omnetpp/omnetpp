@@ -26,6 +26,7 @@ set config(autosize) 0
 set config(noportcheck) 0
 set config(autoimport) 0
 set config(autocheck) 0
+set config(importpath) {}
 set config(editor-findstring)     ""
 set config(editor-replacestring)  ""
 set config(editor-case-sensitive) 0
@@ -195,6 +196,8 @@ proc createMainWindow {} {
       {check -variable config(autoextend) -label {Autoextend vector gates using the ++ notation} -underline 0}
       {check -command {toggleAutosize $config(autosize)} -variable config(autosize) -label {Auto-calculate gate size} -underline 0}
       {check -command {togglePortcheck $config(noportcheck)} -variable config(noportcheck) -label {Set "nocheck" for new modules} -underline 0}
+      {separator}
+      {command -command editImportPath -label {Edit import path...} -underline 0}
       {separator}
       {command -command optionsViewFile -label {View/edit text file...} -underline 0}
     } {

@@ -68,6 +68,7 @@ if [info exist OMNETPP_GNED_DIR] {
    source [file join $dir netwprops.tcl]
    source [file join $dir props.tcl]
    source [file join $dir submprops.tcl]
+   source [file join $dir dialogs.tcl]
 }
 
 #
