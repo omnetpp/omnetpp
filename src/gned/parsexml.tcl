@@ -20,7 +20,7 @@
 
 catch {package require xml}
 
-# loadNED --
+# loadXML --
 #
 #
 proc loadXML {xmlfile} {

@@ -14,19 +14,28 @@
 #----------------------------------------------------------------#
 
 
-proc editImportPath {} {
+proc editImportPath {{fname ""}} {
     global config
 
     # create dialog with OK and Cancel buttons
     set w .dlg
     createOkCancelDialog $w "Edit import path"
-    wm geometry $w "380x260"
+    wm geometry $w "380x360"
 
     # create widgets
-    label $w.f.lbl -text "Edit import path (one directory per line):" -pady 5
+    label $w.f.lbl -pady 5 -justify left
+    if {$fname==""} {
+        $w.f.lbl config -text "Edit import path (one directory per line):"
+    } else {
+        $w.f.lbl config -text "Imported file\n    $fname\nwas not found in any of the current import directories -- please\nadd its location (syntax is one directory per line):"
+    }
     text $w.f.txt -yscrollcommand "$w.f.sb set"
     scrollbar $w.f.sb -command "$w.f.txt yview"
-    button $w.f.add -text " Add directory... " -command editImportPath:addDir
+    if {$fname==""} {
+        button $w.f.add -text " Add directory... " -command editImportPath:addDir
+    } else {
+        button $w.f.add -text " Add directory... " -command [list editImportPath:addDirForFile $fname]
+    }
 
     # setting geometry
     $w.f config -padx 5 -pady 2
@@ -48,8 +57,12 @@ proc editImportPath {} {
         set dirlist [string trim $dirlist]
         regsub -all -- { *\n[\n ]*} $dirlist "\n" dirlist
         set config(importpath) [split $dirlist "\n"]
+
+        destroy $w
+        return 1
     }
     destroy $w
+    return 0
 }
 
 proc editImportPath:addDir {} {
@@ -62,6 +75,25 @@ proc editImportPath:addDir {} {
                                 -initialdir $config(default-impdir) \
                                 -parent .dlg  -mustexist true]
     if {$dir!=""} {
+        set config(default-impdir) $dir
+        $txt insert "insert linestart" "$dir\n"
+    }
+}
+
+proc editImportPath:addDirForFile {fname} {
+    global config
+
+    set w .dlg
+    set txt $w.f.txt
+
+    set fpath [tk_getOpenFile -title "Select directory for $fname" \
+                              -initialdir $config(default-impdir) \
+                               -initialfile $fname \
+                               -filetypes {{{NED files} {*.ned}} {{All files} {*}}} \
+                               -parent .dlg]
+    if {$fpath!=""} {
+        set dir [file dirname $fpath]
+        set config(default-impdir) $dir
         $txt insert "insert linestart" "$dir\n"
     }
 }

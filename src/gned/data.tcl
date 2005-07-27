@@ -686,6 +686,20 @@ proc getContainingModule {key} {
     return $key
 }
 
+# findNEDFileByFilename --
+#
+# If given NED file has already been loaded, returns its key, otherrwise ""
+#
+proc findNEDFileByFilename {fname} {
+    global ned
+
+    foreach key [getChildrenWithType 0 nedfile] {
+        if {$fname == $ned($key,filename)} {
+            return $key
+        }
+    }
+    return ""
+}
 
 # getModuleNameList --
 #

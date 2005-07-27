@@ -72,7 +72,7 @@ proc fileOpen {{fname ""}} {
               -filetypes {{{NED files} {*.ned}} {{All files} {*}}}]
 
    if {$fname!=""} {
-      # filename == "" means used cancelled
+      # filename == "" means user cancelled
       loadNEDrec $fname
    }
 }

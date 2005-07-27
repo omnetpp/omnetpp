@@ -91,25 +91,20 @@ proc loadNED {nedfile} {
                                -nedarray tmp_ned \
                                -errorsarray tmp_errors \
                                -nedfilekey $filekey]} errmsg] {
-        tk_messageBox -icon error -title "Error" -type ok -message "Error loading $nedfile:\n$errmsg"
         catch {unset tmp_ned}
         catch {unset tmp_errors}
         busy
-        return
+        error $errmsg
     }
 
     # handle parse errors
     if {$num_errs!="0"} {
         # simplified handling: display only the first error
         set errmsg "$tmp_errors(0,type): $tmp_errors(0,text) in line $tmp_errors(0,line)"
-
-        tk_messageBox -icon error -title "Error(s)" -type ok \
-            -message "Error(s) loading $nedfile:\n$errmsg"
-
         catch {unset tmp_ned}
         catch {unset tmp_errors}
         busy
-        return
+        error $errmsg
     }
 
     ## debug code:
@@ -162,15 +157,22 @@ proc loadNED {nedfile} {
 proc loadNEDrec {fname} {
     global ned gned config
 
-    set imports {}
+    set tobeimported {}
+    # regsub "^$env(HOME)/" $fname "~/" fname
     set dir [file dirname $fname]
+    set config(default-dir) [file dirname $fname]
 
     set canv_id {}
 
-    while {$fname != ""} {
-        set config(default-dir) [file dirname $fname]
-        # regsub "^$env(HOME)/" $fname "~/" fname
-        loadNED $fname
+    while {$fname!=""} {
+        if [catch {loadNED $fname} errmsg] {
+           tk_messageBox -icon warning -type ok -message "Error loading $fname: $errmsg"
+
+           # open imported files
+           set fname [lindex $tobeimported 0]
+           set tobeimported [lreplace $tobeimported 0 0]
+           continue
+        }
 
         #save canvas id of first opened file
         if {$canv_id == ""} {
@@ -181,38 +183,37 @@ proc loadNEDrec {fname} {
             break
         }
 
-        # find key of last opened file
-        foreach fkey [getChildrenWithType 0 nedfile] {
-            if {[info exist ned($fkey,filename)] && ($fname == $ned($fkey,filename))} {
+        # find key of last opened file (must exist)
+        set fkey [findNEDFileByFilename $fname]
 
-                # key found: collect imports of last opened file
-                set impskeys [getChildrenWithType $fkey imports]
-                foreach impskey $impskeys {
-                    foreach impkey [getChildrenWithType $impskey import] {
-
-                        # key of imported file found: add name of import-file to "imports" if not already open
-                        set impfilename "$dir/$ned($impkey,name)"
-                        if ![string match "*.ned" $impfilename] {
-                            append impfilename ".ned"
-                        }
-                        set isOpen 0
-                        foreach fkey [getChildrenWithType 0 nedfile] {
-                            if {$impfilename == $ned($fkey,filename)} {
-                                set isOpen 1
-                            }
-                        }
-                        if {!$isOpen} {
-                            lappend imports $impfilename
-                        }
+        # collect list of import files into list "tobeimported"
+        set impskeys [getChildrenWithType $fkey imports]
+        foreach impskey $impskeys {
+            foreach impkey [getChildrenWithType $impskey import] {
+                # imported file found
+                set impfilename $ned($impkey,name)
+                if ![string match "*.ned" $impfilename] {
+                    append impfilename ".ned"
+                }
+                # search import path for this file, asking the user for assistance
+                set dir [searchPathForImportedFile $impfilename $dir]
+                while {$dir==""} {
+                    if ![editImportPath $impfilename] break
+                    set dir [searchPathForImportedFile $impfilename $dir]
+                }
+                # if we found it in the path and not already open, add to list
+                if {$dir!=""} {
+                    set impfilename "$dir/$impfilename"
+                    if {[findNEDFileByFilename $impfilename]==""} {
+                        lappend tobeimported $impfilename
                     }
                 }
-                break
             }
         }
 
         # open imported files
-        set fname [lindex $imports 0]
-        set imports [lreplace $imports 0 0]
+        set fname [lindex $tobeimported 0]
+        set tobeimported [lreplace $tobeimported 0 0]
     }
 
     # switch to canvas of first opened file
@@ -221,4 +222,22 @@ proc loadNEDrec {fname} {
     }
 }
 
+#
+# search import directories for file
+#
+proc searchPathForImportedFile {impfilename curdir} {
+    global config
 
+    # try default dir
+    if [file exists [file join $curdir $impfilename]] {
+        return $curdir
+    }
+
+    # search import path for this file
+    foreach impdir $config(importpath) {
+        if [file exists [file join $impdir $impfilename]] {
+            return $impdir
+        }
+    }
+    return ""
+}
