@@ -28,8 +28,8 @@ proc create_compoundmodinspector {name geom} {
     iconbutton $w.toolbar.sep1   -separator
     #iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
     #iconbutton $w.toolbar.sep2   -separator
-    iconbutton $w.toolbar.mrun   -image $icons(mrun) -command "module_run $w"
-    iconbutton $w.toolbar.mfast  -image $icons(mfast) -command "module_run_fast $w"
+    iconbutton $w.toolbar.mrun   -image $icons(mrun) -command "runsimulation_local $w normal"
+    iconbutton $w.toolbar.mfast  -image $icons(mfast) -command "runsimulation_local $w fast"
     iconbutton $w.toolbar.stop   -image $icons(stop) -command "stop_simulation"
     foreach i {graph win sep1 mrun mfast stop} {
        pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
@@ -40,7 +40,7 @@ proc create_compoundmodinspector {name geom} {
     pack $w.toolbar.revert -anchor n -side right -padx 0 -pady 2
     pack $w.toolbar.apply -anchor n -side right -padx 0 -pady 2
 
-    bind $w <Control-F4> "module_run_fast $w"
+    bind $w <Control-F4> "runsimulation_local $w fast"
 
     set help_tips($w.toolbar.owner)   {Inspect parent module}
     set help_tips($w.toolbar.graph)   {Inspect as network graphics}

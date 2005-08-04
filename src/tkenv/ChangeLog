@@ -1,3 +1,7 @@
+2005-08-04  Andras Varga
+
+	* added "Run until next local event" to modules' context menu
+
 2005-07-26  Andras Varga
 
 	* tkapp.cc/h: added support for OPP_PLUGIN_PATH environment variable,

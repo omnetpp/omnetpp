@@ -285,6 +285,15 @@ proc popup_insp_menu {ptr X Y} {
        .popup add command -label "$type..." -command "opp_inspect $ptr \{$type\}"
     }
 
+    # add "run until" menu items
+    set baseclass [opp_getobjectbaseclass $ptr]
+    if {$baseclass=="cSimpleModule" || $baseclass=="cCompoundModule"} {
+        set w ".$ptr-0"  ;#hack
+        .popup add separator
+        .popup add command -label "Run until next event in this module" -command "runsimulation_local $w normal"
+        .popup add command -label "Fast run until next event in this module" -command "runsimulation_local $w fast"
+    }
+
     # add further menu items
     set name [opp_getobjectfullpath $ptr]
     set allcategories "mqsgvo"
