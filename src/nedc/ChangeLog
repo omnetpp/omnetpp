@@ -1,3 +1,8 @@
+2005-08-04  Andras Varga
+
+	* opp_msgc: it is no longer required to write out "fields:" in an
+	otherwise empty class definition
+
 2005-04-04  Andras Varga
 
 	* nedtool.cc: fixed a bug introduced in 3.1: while it's true that 

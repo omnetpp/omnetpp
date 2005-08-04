@@ -393,6 +393,22 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
     }
 
     #
+    # check if there's some garbage before "fields:" or "properties:"
+    #
+    $scrap = $body;
+    $scrap =~ s/fields:(.*)$//s;
+    $scrap =~ s/properties:(.*)$//s;
+    if ($scrap =~ /[^ \t\n]/s)
+    {
+        $scrap =~ s/\n\n+/\n\n/sg;
+        $scrap =~ s/^\n//s;
+        $scrap =~ s/\n$//s;
+        print STDERR "*** Error: some parts not understood in '$msgname' (nothing may occur before 'fields:' or 'properties:'):\n"; $ret=1;
+        print STDERR "'$scrap'\n";
+        next;
+    }
+
+    #
     # process "properties:"
     #
     $scrap = '';
@@ -499,11 +515,6 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
             print STDERR "*** Error: some parts not understood in 'fields' section of '$msgname':\n"; $ret=1;
             print STDERR "'$scrap'\n";
         }
-    }
-    else
-    {
-        print STDERR "*** Error: no 'fields' section in '$msgname'\n"; $ret=1;
-        next;
     }
 
     # now generate code

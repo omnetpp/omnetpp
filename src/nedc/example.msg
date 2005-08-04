@@ -25,7 +25,7 @@ class PayloadPacket;
 class noncobject mystring;
 
 // imports are not yet supported :-(
-import "othermsgs.msg";
+// import "othermsgs.msg";
 
 // create an enum
 enum ProtocolTypes
@@ -41,12 +41,17 @@ enum MoreProtocolTypes extends ProtocolTypes
     TP4 = 4;
 };
 
+// empty message object
+message BlankMsg { 
+  bla bla bla
+};
+
 // message object
 message FooPacket extends BasicPacket
 {
     fields:
         char type='x';
-        IPAddress *x;
+        // not supported: IPAddress *x;
         short version=2;
         int protocolId enum(ProtocolTypes);
         bool hasPayload;
