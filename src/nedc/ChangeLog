@@ -7,6 +7,9 @@
 	dllexport/dllimport on Windows: 
 	   opp_msgc -x MY_EXPORT_DEFINE foo.msg
 
+	* opp_msgc: generated C++ header now contains relevant part of the
+	.msg files as Doxygen comment
+
 2005-04-04  Andras Varga
 
 	* nedtool.cc: fixed a bug introduced in 3.1: while it's true that 

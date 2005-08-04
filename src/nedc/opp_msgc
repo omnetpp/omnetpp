@@ -265,6 +265,7 @@ while ($msg =~ s/enum\s+([A-Za-z_][A-Za-z0-9_]*)\s*;//s)
 # parse enums in ned text
 while ($msg =~ s/enum\s+([A-Za-z0-9_ \t]+?)\s*{(.*?)};?//s)
 {
+    $source = $&;
     $enumhdr = $1;
     $fields = $2;
 
@@ -335,7 +336,9 @@ while ($msg =~ s/enum\s+([A-Za-z0-9_ \t]+?)\s*{(.*?)};?//s)
     push(@enums, $enumname);
 
     print H "/**\n";
-    print H " * Enum generated from $filename by opp_msgc.\n";
+    print H " * Enum generated from <tt>$filename</tt> by opp_msgc.\n";
+    $source =~ s/^/ * /mg;
+    print H " * <pre>\n$source\n * </pre>\n";
     print H " */\n";
     print H "enum $enumname {\n";
     foreach $fieldname (@fieldlist)
@@ -373,6 +376,7 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
     #
     # parse message { ... } syntax
     #
+    $source = $&;
     $keyword = $1;  # 'message' or 'class' or 'struct'
     $msghdr = $2;   # must be "<name>" or "<name> extends <name>"
     $body = $3;
@@ -835,7 +839,10 @@ sub prepareForCodeGeneration
 sub generateClass
 {
     print H "/**\n";
-    print H " * Class generated from $filename by opp_msgc.\n";
+    print H " * Class generated from <tt>$filename</tt> by opp_msgc.\n";
+    $source =~ s/^/ * /mg;
+    print H " * <pre>\n$source\n * </pre>\n";
+
     if ($gap)
     {
         print H " *\n";
