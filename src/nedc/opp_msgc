@@ -19,6 +19,7 @@ Usage: opp_msgc [-s <cc-file-suffix>] [-t <h-file-suffix>]
   -I <dir>    add directory to include path
   -s <suffix> output C++ file suffix (defaults to: _m.cc)
   -t <suffix> output C++ header file suffix (defaults to: _m.h)
+  -x <symbol> DLLEXPORT define, to be added to class declarations
   -h          output in current directory
 ';
 
@@ -34,6 +35,7 @@ if ($#ARGV == -1)
 $filename = '';
 $ccsuffix = '_m.cc';
 $hsuffix = '_m.h';
+$exportdef = '';
 while (@ARGV)
 {
     $arg = shift @ARGV;
@@ -54,6 +56,12 @@ while (@ARGV)
     elsif ($arg =~ /^-I/)
     {
         # import not supported: just ignore -I<dir> for now
+    }
+    elsif ($arg eq "-x")
+    {
+        $exportdef = shift @ARGV;
+        $exportdef =~ s/[ \t]//g;
+        $exportdef .= " ";
     }
     elsif ($arg eq "-h")
     {
@@ -835,7 +843,7 @@ sub generateClass
         print H " * The minimum code to be written for $realmsgclass is the following:\n";
         print H " *\n";
         print H " * <pre>\n";
-        print H " * class $realmsgclass : public $msgclass\n";
+        print H " * class $exportdef$realmsgclass : public $msgclass\n";
         print H " * {\n";
         print H " *   public:\n";
         if ($classtype eq "cobject") {
@@ -867,9 +875,9 @@ sub generateClass
     }
     print H " */\n";
     if ($msgbaseclass eq "") {
-        print H "class $msgclass\n";
+        print H "class $exportdef$msgclass\n";
     } else {
-        print H "class $msgclass : public $msgbaseclass\n";
+        print H "class $exportdef$msgclass : public $msgbaseclass\n";
     }
     print H "{\n";
     print H "  protected:\n";
@@ -1244,9 +1252,9 @@ sub generateStruct
     print H " * Struct generated from $filename by opp_msgc.\n";
     print H " */\n";
     if ($msgbaseclass eq "") {
-        print H "struct $msgclass\n";
+        print H "struct $exportdef$msgclass\n";
     } else {
-        print H "struct $msgclass : public $msgbaseclass\n";
+        print H "struct $exportdef$msgclass : public $msgbaseclass\n";
     }
     print H "{\n";
     print H "    $msgclass();\n";

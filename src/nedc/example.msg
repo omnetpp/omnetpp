@@ -43,7 +43,7 @@ enum MoreProtocolTypes extends ProtocolTypes
 
 // empty message object
 message BlankMsg { 
-  bla bla bla
+    // garbage
 };
 
 // message object

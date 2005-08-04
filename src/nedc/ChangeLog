@@ -3,6 +3,10 @@
 	* opp_msgc: it is no longer required to write out "fields:" in an
 	otherwise empty class definition
 
+	* opp_msgc: added the possibility to declare generated classes to be
+	dllexport/dllimport on Windows: 
+	   opp_msgc -x MY_EXPORT_DEFINE foo.msg
+
 2005-04-04  Andras Varga
 
 	* nedtool.cc: fixed a bug introduced in 3.1: while it's true that 
