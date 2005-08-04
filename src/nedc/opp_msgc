@@ -11,8 +11,8 @@ eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}' && eval 'exec perl -S $0 $
 #
 # If no args, print usage
 #
-$Usage = 'opp_msgc - part of OMNeT++. (c) 2002-2003 Andras Varga
-Message subclassing compiler (experimental prototype, written in Perl)
+$Usage = 'opp_msgc - part of OMNeT++. (c) 2002-2005 Andras Varga
+Translates .msg files into C++
 
 Usage: opp_msgc [-s <cc-file-suffix>] [-t <h-file-suffix>]
                 [-I <dir> -I ...] [-h] <nedfile>
