@@ -901,9 +901,13 @@ sub generateClass
             }
         }
     }
+    print H "\n";
+    print H "    // protected and unimplemented operator==(), to prevent accidental usage\n";
+    print H "    bool operator==(const $msgclass&);\n";
     if ($gap) {
         print H "    // make constructors protected to avoid instantiation\n";
     } else {
+        print H "\n";
         print H "  public:\n";
     }
     if ($classtype eq "cobject") {
@@ -919,6 +923,7 @@ sub generateClass
     if ($gap) {
         print H "    // make assignment operator protected to force the user override it\n";
         print H "    $msgclass& operator=(const $msgclass& other);\n";
+        print H "\n";
         print H "  public:\n";
     }
     print H "    virtual ~$msgclass();\n";
