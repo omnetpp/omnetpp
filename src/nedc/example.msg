@@ -60,6 +60,7 @@ message FooPacket extends BasicPacket
         string host[];
         IPAddress src;
         IPAddress dest;
+        PayloadPacket twoPayloads[2];
         PayloadPacket payload[];
 };
 
