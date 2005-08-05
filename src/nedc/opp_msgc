@@ -183,7 +183,7 @@ print CC "DOPACKING(long double,_)\n";
 print CC "DOPACKING(char *,_)\n";
 print CC "DOPACKING(const char *,_)\n";
 print CC "DOPACKING(opp_string,&)\n";
-print CC "//DOPACKING(std::string,&)\n"; #FIXME add it after cCommBuffer support is done
+print CC "//DOPACKING(std::string,&)\n"; #TBD add it after cCommBuffer support is done
 print CC "#undef _\n";
 print CC "#undef DOPACKING\n";
 print CC "\n\n";
@@ -969,13 +969,14 @@ sub generateClass
     }
     print H "};\n\n";
 
-    if ($classtype eq "cobject" && !$gap) {
-        # we only register cObject subclasses. If something is at least cPolymorphic,
-        # it could be registed in theory too, but we'll leave this to the user.
-        print CC "Register_Class($msgclass);\n\n";
-    }
-
     if (!$gap) {
+        if ($classtype eq "cobject") {
+            print CC "Register_Class($msgclass);\n\n";
+        } elsif ($classtype eq "noncobject") {
+            # we don't know whether this class is cPolymorphic or not, so we can't register it
+            print CC "// if $msgclass descends from cPolymorphic, you may want to register it in one of your .cc files\n";
+            print CC "// Register_Class($msgclass);\n\n";
+        }
         print H "inline void doPacking(cCommBuffer *b, $realmsgclass& obj) {obj.netPack(b);}\n";
         print H "inline void doUnpacking(cCommBuffer *b, $realmsgclass& obj) {obj.netUnpack(b);}\n\n";
     }
