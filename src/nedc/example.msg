@@ -56,7 +56,7 @@ message FooPacket extends BasicPacket
         int protocolId enum(ProtocolTypes);
         bool hasPayload;
         long length;
-        long route[4];
+        unsigned long route[4];
         string host[];
         IPAddress src;
         IPAddress dest;
@@ -115,7 +115,7 @@ struct MyStruct
 struct MyDerivedStruct extends MyStruct
 {
     fields:
-        char code;
+        unsigned char code;
         short prot enum(ProtocolTypes); 
         MyStruct substruct;  // also as embedded data member
 };
