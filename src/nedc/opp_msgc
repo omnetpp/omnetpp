@@ -507,7 +507,7 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
                 $arraysize = '';
             }
 
-            # type fieldname
+            # fieldtype fieldname
             if ($field =~ /^\s*(.+?)\s*([A-Za-z0-9_]+)\s*$/s)
             {
                 $fieldtype = $1;
@@ -521,7 +521,7 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
                 $fisarray{$fieldname} = $isarray;
                 $farraysize{$fieldname} = $arraysize;
                 $fenumname{$fieldname} = $fieldenum;
-#                print "$fieldname: $ftype{$fieldname} =$fval{$fieldname}  []:$fisarray{$fieldname}  [$farraysize{$fieldname}]\n";
+                #print "field=$fieldname type=$ftype{$fieldname} value=$fval{$fieldname} isarray=$fisarray{$fieldname} arraysize=$farraysize{$fieldname}\n";
             }
             else {$scrap.=$field;}
         }
