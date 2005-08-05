@@ -107,7 +107,7 @@ struct MyStruct
 {
     fields:
         char array[10];
-        short version;
+        short version = 5;
 };
 
 

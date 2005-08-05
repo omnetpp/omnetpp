@@ -328,8 +328,8 @@ while ($msg =~ s/enum\s+([A-Za-z0-9_ \t]+?)\s*{(.*?)};?//s)
     $scrap .= $fields;
     if ($scrap =~ /[^ \t\n]/s) {
         $scrap =~ s/\n\n+/\n\n/sg;
-        $scrap =~ s/^\n//s;
-        $scrap =~ s/\n$//s;
+        $scrap =~ s/^\n+//s;
+        $scrap =~ s/\n+$//s;
         print STDERR "*** Error: some parts not understood in enum $enumname:\n"; $ret=1;
         print STDERR "'$scrap'\n";
     }
@@ -390,8 +390,8 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
 
     # reset
     @fieldlist = ();
+    @baseclassfieldlist = ();
     @proplist = ();
-    undef %pval;
 
     if ($msghdr =~ /^([^ \t\n]+?)\s*extends\s*([^ \t\n]+?)$/s)
     {
@@ -420,8 +420,8 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
     if ($scrap =~ /[^ \t\n]/s)
     {
         $scrap =~ s/\n\n+/\n\n/sg;
-        $scrap =~ s/^\n//s;
-        $scrap =~ s/\n$//s;
+        $scrap =~ s/^\n+//s;
+        $scrap =~ s/\n+$//s;
         print STDERR "*** Error: some parts not understood in '$msgname' (nothing may occur before 'fields:' or 'properties:'):\n"; $ret=1;
         print STDERR "'$scrap'\n";
         next;
@@ -451,8 +451,8 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
         if ($scrap =~ /[^ \t\n]/s)
         {
             $scrap =~ s/\n\n+/\n\n/sg;
-            $scrap =~ s/^\n//s;
-            $scrap =~ s/\n$//s;
+            $scrap =~ s/^\n+//s;
+            $scrap =~ s/\n+$//s;
             print STDERR "*** Error: some parts not understood in 'properties' section of '$msgname':\n"; $ret=1;
             print STDERR "'$scrap'\n";
         }
@@ -507,11 +507,12 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
                 $arraysize = '';
             }
 
-            # fieldtype fieldname
-            if ($field =~ /^\s*(.+?)\s*([A-Za-z0-9_]+)\s*$/s)
+            # 'fieldtype fieldname'...
+            if ($field =~ /^\s*([A-Za-z_][A-Za-z0-9_]*[ \t\n*]+)([A-Za-z_][A-Za-z0-9_]*)\s*$/s)
             {
                 $fieldtype = $1;
                 $fieldname = $2;
+                $fieldtype =~ s/\s*$//sg;
                 $fieldtype =~ s/\s+/ /sg;
 
                 push(@fieldlist,$fieldname);
@@ -521,7 +522,29 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
                 $fisarray{$fieldname} = $isarray;
                 $farraysize{$fieldname} = $arraysize;
                 $fenumname{$fieldname} = $fieldenum;
-                #print "field=$fieldname type=$ftype{$fieldname} value=$fval{$fieldname} isarray=$fisarray{$fieldname} arraysize=$farraysize{$fieldname}\n";
+                #print "$msgname field=$fieldname type=$ftype{$fieldname} value=$fval{$fieldname} isarray=$fisarray{$fieldname} arraysize=$farraysize{$fieldname}\n";
+            }
+            # ...or just fieldname
+            elsif ($field =~ /^\s*([A-Za-z_][A-Za-z0-9_]*)\s*$/s)
+            {
+                $fieldname = $1;
+
+                if ($isabstract) {
+                    print STDERR "*** Error: an abstract field needs a type in '$msgname'\n"; $ret=1;
+                }
+                if ($isarray) {
+                    print STDERR "*** Error: cannot set array field of the base class in '$msgname'\n"; $ret=1;
+                }
+                if ($fieldenum ne '') {
+                    print STDERR "*** Error: cannot specify enum for base class field in '$msgname'\n"; $ret=1;
+                }
+                if ($fieldvalue eq '') {
+                    print STDERR "*** Error: missing field type in '$msgname'\n"; $ret=1;
+                }
+
+                push(@baseclassfieldlist,$fieldname);
+                $fval{$fieldname} = $fieldvalue;
+                #print "$msgname baseclassfield=$fieldname value=$fval{$fieldname}\n";
             }
             else {$scrap.=$field;}
         }
@@ -529,8 +552,8 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
         if ($scrap =~ /[^ \t\n]/s)
         {
             $scrap =~ s/\n\n+/\n\n/sg;
-            $scrap =~ s/^\n//s;
-            $scrap =~ s/\n$//s;
+            $scrap =~ s/^\n+//s;
+            $scrap =~ s/\n+$//s;
             print STDERR "*** Error: some parts not understood in 'fields' section of '$msgname':\n"; $ret=1;
             print STDERR "'$scrap'\n";
         }
@@ -1008,7 +1031,17 @@ sub generateClass
         }
     }
     print CC "{\n";
-    print CC "    unsigned int i;\n";
+    foreach $fieldname (@baseclassfieldlist)
+    {
+        $capfieldname = $fieldname;
+        $capfieldname =~ s/(.)(.*)/uc($1).$2/e;
+        $setter = "set".$capfieldname;
+        print CC "    this->$setter($fval{$fieldname});\n";
+    }
+    print CC "\n" if (@baseclassfieldlist!=() && @fieldlist!=());
+    my $hasarray=0;
+    foreach $fieldname (@fieldlist) {$hasarray=1 if ($fisarray{$fieldname});}
+    print CC "    unsigned int i;\n" if ($hasarray);
     foreach $fieldname (@fieldlist)
     {
         if (!$fisabstract{$fieldname}) {
@@ -1316,6 +1349,11 @@ sub generateStruct
 
     print CC "$msgclass\:\:$msgclass()\n";
     print CC "{\n";
+    foreach $fieldname (@baseclassfieldlist)
+    {
+        print CC "    this->$fieldname = $fval{$fieldname};\n";
+    }
+    print CC "\n" if (@baseclassfieldlist!=() && @fieldlist!=());
     my $hasarray=0;
     foreach $fieldname (@fieldlist) {$hasarray=1 if ($fisarray{$fieldname});}
     print CC "    unsigned int i;\n" if ($hasarray);

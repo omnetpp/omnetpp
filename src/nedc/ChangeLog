@@ -6,6 +6,12 @@
 	* opp_msgc: generate a protected and unimplemented operator==(), 
 	to prevent accidental usage of compiler-generated one
 
+	* opp_msgc: added the possibility to set a base class field.
+	E.g. kind=5 will generate the setKind(5) line into the constructor.
+	Currently opp_msgc is not prepared to check if such field actually
+	exists in the base class, so such errors may only be detected during 
+	C++ compilation.
+
 2005-08-04  Andras Varga
 
 	* opp_msgc: it is no longer required to write out "fields:" in an
