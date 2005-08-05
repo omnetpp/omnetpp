@@ -1,3 +1,8 @@
+2005-08-06  Andras Varga
+
+	* opp_makemake.in, opp_nmakemake: added -P option (just gets passed 
+	to opp_msgc)
+
 2005-07-19  Andras Varga
 
 	* opp_neddoc.in: changed runprog so that it gives system() a single

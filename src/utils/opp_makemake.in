@@ -38,7 +38,7 @@ force=n
 tstamp=y
 tstampdirs=""
 exceptdirs=""
-
+exportdefopt=""
 
 # save a temporary Perl script, for conversion of absolute paths to relative
 abs2rel=/tmp/abs2rel.$$.$RANDOM
@@ -158,6 +158,7 @@ opp_makemake [-h] [-f] [-m] [-o make-target] [-r] [-n] [-s] [-u userinterface]
     -Idir                 Additional NED and C++ include directory
     -Llibrary-path        Additional library path
     -llibrary             Additional library to link against
+    -P symbol, -Psymbol   -P option to be passed to opp_msgc
     -i filename, --includefragment filename
                           Append file to near end of Makefile. The file makefrag
                           is appended implicitly if no -i options are given.
@@ -272,6 +273,15 @@ EOT
 
         -l*)
         libs="$libs $1"
+        ;;
+
+        -P)
+        shift
+        exportdefopt="-P$1"
+        ;;
+
+        -P*)
+        exportdefopt=$1
         ;;
 
         *)
@@ -576,10 +586,11 @@ OMNETPP_LIBS=-L\$(OMNETPP_LIB_DIR) \$(USERIF_LIBS) \$(KERNEL_LIBS) \$(SYS_LIBS)
 
 COPTS=\$(CFLAGS) \$(INCLUDE_PATH) -I\$(OMNETPP_INCL_DIR)
 NEDCOPTS=\$(CFLAGS) \$(NEDCFLAGS) \$(INCLUDE_PATH) -I\$(OMNETPP_INCL_DIR)
-
 EOT
 fi
 
+echo "MSGCOPTS=$exportdefopt \$(INCLUDE_PATH)"
+echo
 echo "#------------------------------------------------------------------------------"
 echo
 
@@ -706,7 +717,7 @@ for i in *.msg; do
         echo
 
         echo "$c $h: $i"
-        echo '	$(MSGC) $(INCLUDE_PATH) '$i
+        echo '	$(MSGC) $(MSGCOPTS) '$i
         echo
 done
 

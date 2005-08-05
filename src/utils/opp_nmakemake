@@ -43,6 +43,7 @@ $force="n";
 $tstamp="y";
 @tstampdirs = ();
 @exceptdirs = ();
+$exportdefopt = "";
 
 $makecommand = 'nmake /nologo /f Makefile.vc';
 
@@ -100,6 +101,7 @@ opp_nmakemake [-h] [-f] [-e ext] [-o make-target] [-n] [-u user-interface]
     -Ldir                 Add a directory to the library path
     -llibrary             Additional library to link against
                           (e.g. -lmylibrary.lib)
+    -P symbol, -Psymbol   -P option to be passed to opp_msgc
     -c filename, --configfile filename
                           Included config file (default:"../../configuser.vc")
     -i filename, --includefragment filename
@@ -217,6 +219,14 @@ could not figure out.
     {
         $arg =~ s/^-l//;
         $libs .= " $arg";
+    }
+    elsif ($arg eq '-P')
+    {
+        $exportdefopt = '-P' . shift @ARGV;
+    }
+    elsif ($arg =~ /^-P/)
+    {
+        $exportdefopt = $arg;
     }
     else
     {
@@ -470,6 +480,7 @@ OMNETPP_LIBS=/libpath:\$(OMNETPP_LIB_DIR) \$(USERIF_LIBS) \$(KERNEL_LIBS) \$(SYS
 
 COPTS=\$(CFLAGS) \$(INCLUDE_PATH) -I\$(OMNETPP_INCL_DIR)
 NEDCOPTS=\$(CFLAGS) \$(NEDCFLAGS) \$(INCLUDE_PATH) -I\$(OMNETPP_INCL_DIR)
+MSGCOPTS=$exportdefopt \$(INCLUDE_PATH)
 
 #------------------------------------------------------------------------------
 ";
@@ -616,7 +627,7 @@ foreach $i (glob("*.msg"))
     print OUT "\n";
 
     print OUT "$c $h: $i\n";
-    print OUT "\t\$(MSGC:/=\\) -s _m.$ccext \$(INCLUDE_PATH) $i\n";
+    print OUT "\t\$(MSGC:/=\\) -s _m.$ccext \$(MSGCOPTS) $i\n";
     print OUT "\n";
 }
 
