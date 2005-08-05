@@ -13,7 +13,7 @@
 
 	* opp_msgc: added the possibility to declare generated classes to be
 	dllexport/dllimport on Windows: 
-	   opp_msgc -x MY_EXPORT_DEFINE foo.msg
+	   opp_msgc -P MY_EXPORT_DEFINE foo.msg
 
 	* opp_msgc: generated C++ header now contains relevant part of the
 	.msg files as Doxygen comment

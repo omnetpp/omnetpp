@@ -19,7 +19,8 @@ Usage: opp_msgc [-s <cc-file-suffix>] [-t <h-file-suffix>]
   -I <dir>    add directory to include path
   -s <suffix> output C++ file suffix (defaults to: _m.cc)
   -t <suffix> output C++ header file suffix (defaults to: _m.h)
-  -x <symbol> DLLEXPORT define, to be added to class declarations
+  -P <symbol> #define symbol that expands to dllexport/dllimport on Windows
+              (added to class declarations)
   -h          output in current directory
 ';
 
@@ -57,9 +58,16 @@ while (@ARGV)
     {
         # import not supported: just ignore -I<dir> for now
     }
-    elsif ($arg eq "-x")
+    elsif ($arg eq "-P")
     {
         $exportdef = shift @ARGV;
+        $exportdef =~ s/[ \t]//g;
+        $exportdef .= " ";
+    }
+    elsif ($arg =~ /^-P/)
+    {
+        $exportdef = $arg;
+        $exportdef =~ s/^-P//;
         $exportdef =~ s/[ \t]//g;
         $exportdef .= " ";
     }
@@ -1304,8 +1312,8 @@ sub generateStruct
     }
     print H "};\n\n";
 
-    print H "void doPacking(cCommBuffer *b, $msgclass& a);\n";
-    print H "void doUnpacking(cCommBuffer *b, $msgclass& a);\n\n";
+    print H "void $exportdef"."doPacking(cCommBuffer *b, $msgclass& a);\n";
+    print H "void $exportdef"."doUnpacking(cCommBuffer *b, $msgclass& a);\n\n";
 
     print CC "$msgclass\:\:$msgclass()\n";
     print CC "{\n";
