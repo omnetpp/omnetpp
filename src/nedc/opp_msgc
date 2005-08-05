@@ -19,8 +19,7 @@ Usage: opp_msgc [-s <cc-file-suffix>] [-t <h-file-suffix>]
   -I <dir>    add directory to include path
   -s <suffix> output C++ file suffix (defaults to: _m.cc)
   -t <suffix> output C++ header file suffix (defaults to: _m.h)
-  -P <symbol> #define symbol that expands to dllexport/dllimport on Windows
-              (added to class declarations)
+  -P <symbol> add dllexport/dllimport symbol to class declarations
   -h          output in current directory
 ';
 
