@@ -392,6 +392,7 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
     @fieldlist = ();
     @baseclassfieldlist = ();
     @proplist = ();
+    undef %pval;
 
     if ($msghdr =~ /^([^ \t\n]+?)\s*extends\s*([^ \t\n]+?)$/s)
     {
@@ -508,7 +509,7 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
             }
 
             # 'fieldtype fieldname'...
-            if ($field =~ /^\s*([A-Za-z_][A-Za-z0-9_]*[ \t\n*]+)([A-Za-z_][A-Za-z0-9_]*)\s*$/s)
+            if ($field =~ /^\s*([A-Za-z_][A-Za-z0-9_* \t\n]*[* \t\n])([A-Za-z_][A-Za-z0-9_]*)\s*$/s)
             {
                 $fieldtype = $1;
                 $fieldname = $2;
@@ -983,17 +984,17 @@ sub generateClass
         if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
             print H "    virtual unsigned int $getsize{$fieldname}() const$pure;\n";
             print H "    virtual $rettype{$fieldname} $getter{$fieldname}(unsigned int k)$constifprimitivetype$pure;\n";
-            print H "    virtual const $rettype{$fieldname} $getter{$fieldname}(unsigned int k) const$pure;\n" if ($isstruct);
+            print H "    virtual const $rettype{$fieldname} $getter{$fieldname}(unsigned int k) const {return const_cast<$msgclass*>(this)->$getter{$fieldname}(k);}\n" if ($isstruct);
             print H "    virtual void $setter{$fieldname}(unsigned int k, $argtype{$fieldname} $var{$fieldname})$pure;\n";
         } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
             print H "    virtual void $alloc{$fieldname}(unsigned int size)$pure;\n";
             print H "    virtual unsigned int $getsize{$fieldname}() const$pure;\n";
             print H "    virtual $rettype{$fieldname} $getter{$fieldname}(unsigned int k)$constifprimitivetype$pure;\n";
-            print H "    virtual const $rettype{$fieldname} $getter{$fieldname}(unsigned int k) const$pure;\n" if ($isstruct);
+            print H "    virtual const $rettype{$fieldname} $getter{$fieldname}(unsigned int k) const {return const_cast<$msgclass*>(this)->$getter{$fieldname}(k);}\n" if ($isstruct);
             print H "    virtual void $setter{$fieldname}(unsigned int k, $argtype{$fieldname} $var{$fieldname})$pure;\n";
         } else {
             print H "    virtual $rettype{$fieldname} $getter{$fieldname}()$constifprimitivetype$pure;\n";
-            print H "    virtual const $rettype{$fieldname} $getter{$fieldname}() const$pure;\n" if ($isstruct);
+            print H "    virtual const $rettype{$fieldname} $getter{$fieldname}() const {return const_cast<$msgclass*>(this)->$getter{$fieldname}();}\n" if ($isstruct);
             print H "    virtual void $setter{$fieldname}($argtype{$fieldname} $var{$fieldname})$pure;\n";
         }
     }
@@ -1239,15 +1240,6 @@ sub generateClass
                 print CC "    if (k>=$farraysize{$fieldname}) throw new cException(\"Array of size $farraysize{$fieldname} indexed by \%d\", k);\n";
                 print CC "    return $var{$fieldname}\[k\]$maybe_c_str{$fieldname};\n";
                 print CC "}\n\n";
-                if ($isstruct)
-                {
-                    # const version if the getter above
-                    print CC "const $rettype{$fieldname} $msgclass\:\:$getter{$fieldname}(unsigned int k) const\n";
-                    print CC "{\n";
-                    print CC "    if (k>=$farraysize{$fieldname}) throw new cException(\"Array of size $farraysize{$fieldname} indexed by \%d\", k);\n";
-                    print CC "    return $var{$fieldname}\[k\]$maybe_c_str{$fieldname};\n";
-                    print CC "}\n\n";
-                }
                 print CC "void $msgclass\:\:$setter{$fieldname}(unsigned int k, $argtype{$fieldname} $var{$fieldname})\n";
                 print CC "{\n";
                 print CC "    if (k>=$farraysize{$fieldname}) throw new cException(\"Array of size $farraysize{$fieldname} indexed by \%d\", k);\n";
@@ -1282,15 +1274,6 @@ sub generateClass
                 print CC "    if (k>=$varsize{$fieldname}) throw new cException(\"Array of size \%d indexed by \%d\", $varsize{$fieldname}, k);\n";
                 print CC "    return $var{$fieldname}\[k\]$maybe_c_str{$fieldname};\n";
                 print CC "}\n\n";
-                if ($isstruct)
-                {
-                    # const version if the getter above
-                    print CC "const $rettype{$fieldname} $msgclass\:\:$getter{$fieldname}(unsigned int k) const\n";
-                    print CC "{\n";
-                    print CC "    if (k>=$varsize{$fieldname}) throw new cException(\"Array of size \%d indexed by \%d\", $varsize{$fieldname}, k);\n";
-                    print CC "    return $var{$fieldname}\[k\]$maybe_c_str{$fieldname};\n";
-                    print CC "}\n\n";
-                }
                 print CC "void $msgclass\:\:$setter{$fieldname}(unsigned int k, $argtype{$fieldname} $var{$fieldname})\n";
                 print CC "{\n";
                 print CC "    if (k>=$varsize{$fieldname}) throw new cException(\"Array of size \%d indexed by \%d\", $varsize{$fieldname}, k);\n";
@@ -1301,14 +1284,6 @@ sub generateClass
                 print CC "{\n";
                 print CC "    return $var{$fieldname}$maybe_c_str{$fieldname};\n";
                 print CC "}\n\n";
-                if ($isstruct)
-                {
-                    # const version if the getter above
-                    print CC "const $rettype{$fieldname} $msgclass\:\:$getter{$fieldname}() const\n";
-                    print CC "{\n";
-                    print CC "    return $var{$fieldname}$maybe_c_str{$fieldname};\n";
-                    print CC "}\n\n";
-                }
                 print CC "void $msgclass\:\:$setter{$fieldname}($argtype{$fieldname} $var{$fieldname})\n";
                 print CC "{\n";
                 print CC "    this->$var{$fieldname} = $var{$fieldname};\n";

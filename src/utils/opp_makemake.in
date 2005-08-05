@@ -113,7 +113,7 @@ opp_makemake: generate OMNeT++/OMNEST Makefile based on contents of current
 directory
 
 opp_makemake [-h] [-f] [-m] [-o make-target] [-r] [-n] [-s] [-u userinterface]
-        [-c configfile] [-p] [-w] [-x] [-Idir] [-Llibrary-path] [-llibrary]
+        [-c configfile] [-w] [-x] [-Idir] [-Llibrary-path] [-llibrary]
         [-i makefile-fragment-file] [directories, library and object files]...
     -h, --help            This help text
     -f, --force           Force overwriting existing Makefile (or config file)
@@ -166,7 +166,7 @@ opp_makemake [-h] [-f] [-m] [-o make-target] [-r] [-n] [-s] [-u userinterface]
                           -w option.
     library or object     Link with that file
 
-With the -n and -s options, -u, -p and -l have no effect. makefrag (and the
+With the -n and -s options, -u and -l have no effect. makefrag (and the
 -i option) is useful when a source file (.ned, .msg or .cc) is to be generated
 from other files, or when you want to add extra dependencies that opp_makemake
 could not figure out.

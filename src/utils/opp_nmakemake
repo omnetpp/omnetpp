@@ -59,7 +59,7 @@ opp_nmakemake: create MSVC makefile for an OMNeT++/OMNEST model, based on
 source files in current directory
 
 opp_nmakemake [-h] [-f] [-e ext] [-o make-target] [-n] [-u user-interface]
-              [-w] [-x] [-p] [-M] [-Idir] [-Ldir] [-llibrary] [-c configdir]
+              [-w] [-x] [-M] [-Idir] [-Ldir] [-llibrary] [-c configdir]
               [-i makefile-fragment-file]
               [directories, library and object files]...
     -h, --help            This help text
@@ -84,7 +84,7 @@ opp_nmakemake [-h] [-f] [-e ext] [-o make-target] [-n] [-u user-interface]
                           ease compiling the project in a different directory.
     -n, --nolink          Produce object files but do not create executable or
                           library. Useful for models with parts in several
-                          directories. With this option, -u, -p and -l have
+                          directories. With this option, -u and -l have
                           no effect.
     -w, --withobjects     Link with all object files found in -I directories,
                           or include them if library is created. Ignored when
@@ -115,7 +115,7 @@ opp_nmakemake [-h] [-f] [-e ext] [-o make-target] [-n] [-u user-interface]
 
 Default output is Makefile.vc, which you can invoke by typing
   nmake -f Makefile.vc
-With the -n and -s options, -u, -p and -l have no effect. makefrag.vc (and the
+With the -n and -s options, -u and -l have no effect. makefrag.vc (and the
 -i option) is useful when a source file (.ned, .msg or .cc) is to be generated
 from other files, or when you want to add extra dependencies that opp_makemake
 could not figure out.
