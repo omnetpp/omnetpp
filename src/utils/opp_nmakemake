@@ -45,6 +45,7 @@ $tstamp="y";
 @exceptdirs = ();
 $exportdefopt = "";
 $importlibs = "";
+$fordll = "n";
 
 
 $makecommand = 'nmake /nologo /f Makefile.vc';
@@ -94,8 +95,10 @@ opp_nmakemake [-h] [-f] [-e ext] [-o make-target] [-n] [-u user-interface]
                           the -l Cmdenv/Tkenv command-line option).
     -t library, --importlib library
                           With -t (build DLL) option: specifies an import
-                          library for the DLL. This option may occur more than
-                          once.
+                          library for the DLL.
+    -d, --fordll          Compile C++ files for use in DLLs (i.e. with the
+                          WIN32_DLL symbol defined). The -s (build DLL) option
+                          implies this one.
     -w, --withobjects     Link with all object files found in -I directories,
                           or include them if library is created. Ignored when
                           -n option is present. Dependencies between directo-
@@ -180,11 +183,16 @@ could not figure out.
     }
     elsif ($arg eq '-s' || $arg eq '--make-so')
     {
+        $fordll = "y";
         $type = "so";
     }
     elsif ($arg eq '-t' || $arg eq '--importlib')
     {
         $importlibs .= ' ' . shift @ARGV;
+    }
+    elsif ($arg eq '-d' || $arg eq '--fordll')
+    {
+        $fordll = "y";
     }
     elsif ($arg eq '-w' || $arg eq '--withobjects')
     {
@@ -441,6 +449,12 @@ $xobjs = join( " \\\n            ", @xobjs);
 $extdirobjs = join( " \\\n            ", @extdirobjs);
 $extdirtstamps = join( " \\\n            ", @extdirtstamps);
 
+$fordllopt = '';
+if ($fordll eq 'y') {
+    $fordllopt = '/DWIN32_DLL';
+}
+
+
 print OUT "
 
 # Name of target to be created (-o option)
@@ -491,7 +505,7 @@ KERNEL_LIBS= \$(KERNEL_LIBS) \$(MPI_LIBS)
 # Simulation kernel and user interface libraries
 OMNETPP_LIBS=/libpath:\$(OMNETPP_LIB_DIR) \$(USERIF_LIBS) \$(KERNEL_LIBS) \$(SYS_LIBS)
 
-COPTS=\$(CFLAGS) \$(INCLUDE_PATH) -I\$(OMNETPP_INCL_DIR)
+COPTS=\$(CFLAGS) $fordllopt \$(INCLUDE_PATH) -I\$(OMNETPP_INCL_DIR)
 NEDCOPTS=\$(COPTS) \$(NEDCFLAGS)
 MSGCOPTS=$exportdefopt \$(INCLUDE_PATH)
 

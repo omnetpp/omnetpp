@@ -1,9 +1,9 @@
 2005-08-06  Andras Varga
 
-	* opp_nmakemake: implemented -s, -t options to enable building a DLL
+	* opp_nmakemake: implemented -s, -t, -d options to enable building DLLs
 
-	* opp_makemake.in: added -t option (a do-nothing option) for command-
-	line compatibility with opp_nmakemake
+	* opp_makemake.in: added -t, -d options (do-nothing options) for 
+	command-line compatibility with opp_nmakemake
 
 2005-08-05  Andras Varga
 

@@ -149,6 +149,8 @@ opp_makemake [-h] [-f] [-m] [-o make-target] [-r] [-n] [-s] [-u userinterface]
     -t library, --importlib library
                           This option is ignored. It's only there for command-
                           line compatibility with Windows (opp_nmakemake).
+    -d, --fordll          This option is ignored. It's only there for command-
+                          line compatibility with Windows (opp_nmakemake).
     -w, --withobjects     Link with all object files found in -I directories,
                           or include them if library is created. Ignored when
                           -n option is present. Dependencies between directo-
@@ -232,6 +234,10 @@ EOT
         -t | --importlib)
         # this option is ignored, it's only there for Windows compatibility
         shift
+        ;;
+
+        -d | --fordll)
+        # this option is ignored, it's only there for Windows compatibility
         ;;
 
         -w | --withobjects)
