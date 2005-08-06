@@ -479,6 +479,15 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
                 $isabstract = 0;
             }
 
+            #
+            # NOTE: we cannot properly support 'readonly' fields in opp_msgc,
+            # because we don't know if a field is new or it's already defined
+            # in the base class! So we cannot decide we should put it into the
+            # descriptor class or not.
+            #
+            # Implementing proper imports will solve this issue.
+            #
+
             # enum
             if ($field =~ s/enum\s*\((.*?)\)\s*//s) {
                 $fieldenum = $1;
