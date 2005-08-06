@@ -552,11 +552,12 @@ void NEDDTDValidator::validateElement(FieldNode *node)
 
     checkRequiredAttribute(node, "name");
     checkNameAttribute(node, "name");
-    checkRequiredAttribute(node, "data-type");
     const char *vals2[] = {"true","false"};
     checkEnumeratedAttribute(node, "is-abstract", vals2, sizeof(vals2)/sizeof(const char *));
     const char *vals3[] = {"true","false"};
-    checkEnumeratedAttribute(node, "is-vector", vals3, sizeof(vals3)/sizeof(const char *));
+    checkEnumeratedAttribute(node, "is-readonly", vals3, sizeof(vals3)/sizeof(const char *));
+    const char *vals4[] = {"true","false"};
+    checkEnumeratedAttribute(node, "is-vector", vals4, sizeof(vals4)/sizeof(const char *));
     checkNameAttribute(node, "enum-name");
     checkCommentAttribute(node, "banner-comment");
     checkCommentAttribute(node, "right-comment");

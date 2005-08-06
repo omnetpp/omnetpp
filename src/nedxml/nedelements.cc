@@ -2945,7 +2945,7 @@ FieldNode *FieldsNode::getFirstFieldChild() const
 
 int FieldNode::getNumAttributes() const
 {
-    return 9;
+    return 10;
 }
 
 const char *FieldNode::getAttributeName(int k) const
@@ -2954,12 +2954,13 @@ const char *FieldNode::getAttributeName(int k) const
         case 0: return "name";
         case 1: return "data-type";
         case 2: return "is-abstract";
-        case 3: return "is-vector";
-        case 4: return "vector-size";
-        case 5: return "enum-name";
-        case 6: return "default-value";
-        case 7: return "banner-comment";
-        case 8: return "right-comment";
+        case 3: return "is-readonly";
+        case 4: return "is-vector";
+        case 5: return "vector-size";
+        case 6: return "enum-name";
+        case 7: return "default-value";
+        case 8: return "banner-comment";
+        case 9: return "right-comment";
         default: return 0;
     }
 }
@@ -2970,12 +2971,13 @@ const char *FieldNode::getAttribute(int k) const
         case 0: return name.c_str();
         case 1: return dataType.c_str();
         case 2: return boolToString(isAbstract);
-        case 3: return boolToString(isVector);
-        case 4: return vectorSize.c_str();
-        case 5: return enumName.c_str();
-        case 6: return defaultValue.c_str();
-        case 7: return bannerComment.c_str();
-        case 8: return rightComment.c_str();
+        case 3: return boolToString(isReadonly);
+        case 4: return boolToString(isVector);
+        case 5: return vectorSize.c_str();
+        case 6: return enumName.c_str();
+        case 7: return defaultValue.c_str();
+        case 8: return bannerComment.c_str();
+        case 9: return rightComment.c_str();
         default: return 0;
     }
 }
@@ -2986,12 +2988,13 @@ void FieldNode::setAttribute(int k, const char *val)
         case 0: name = val; break;
         case 1: dataType = val; break;
         case 2: isAbstract = stringToBool(val); break;
-        case 3: isVector = stringToBool(val); break;
-        case 4: vectorSize = val; break;
-        case 5: enumName = val; break;
-        case 6: defaultValue = val; break;
-        case 7: bannerComment = val; break;
-        case 8: rightComment = val; break;
+        case 3: isReadonly = stringToBool(val); break;
+        case 4: isVector = stringToBool(val); break;
+        case 5: vectorSize = val; break;
+        case 6: enumName = val; break;
+        case 7: defaultValue = val; break;
+        case 8: bannerComment = val; break;
+        case 9: rightComment = val; break;
         default: ;
     }
 }
@@ -3003,11 +3006,12 @@ const char *FieldNode::getAttributeDefault(int k) const
         case 1: return "";
         case 2: return "false";
         case 3: return "false";
-        case 4: return "";
+        case 4: return "false";
         case 5: return "";
         case 6: return "";
         case 7: return "";
-        case 8: return "\n";
+        case 8: return "";
+        case 9: return "\n";
         default: return 0;
     }
 }

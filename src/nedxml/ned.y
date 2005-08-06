@@ -46,7 +46,7 @@
 
 %token CPLUSPLUS CPLUSPLUSBODY
 %token MESSAGE CLASS STRUCT ENUM NONCOBJECT
-%token EXTENDS FIELDS PROPERTIES ABSTRACT
+%token EXTENDS FIELDS PROPERTIES ABSTRACT READONLY
 %token CHARTYPE SHORTTYPE INTTYPE LONGTYPE DOUBLETYPE UNSIGNED_
 
 %token SIZEOF SUBMODINDEX PLUSPLUS
@@ -136,6 +136,10 @@ struct ParserState
     bool storeSourceCode;
     bool inLoop;
     bool inNetwork;
+
+    /* tmp flags, used with msg fields */
+    bool isAbstract;
+    bool isReadonly;
 
     /* NED-I: modules, channels, networks */
     NedFileNode *nedfile;
@@ -2359,27 +2363,42 @@ fields
         ;
 
 field
-        : fielddatatype NAME
+        : fieldmodifiers fielddatatype NAME
+                {
+                  ps.field = (FieldNode *)createNodeWithTag(NED_FIELD, ps.fields);
+                  ps.field->setName(toString(@3));
+                  ps.field->setDataType(toString(@2));
+                  ps.field->setIsAbstract(ps.isAbstract);
+                  ps.field->setIsReadonly(ps.isReadonly);
+                }
+           opt_fieldvector opt_fieldenum opt_fieldvalue ';'
+                {
+                  setComments(ps.field,@1,@7);
+                }
+        | fieldmodifiers NAME
                 {
                   ps.field = (FieldNode *)createNodeWithTag(NED_FIELD, ps.fields);
                   ps.field->setName(toString(@2));
-                  ps.field->setDataType(toString(@1));
+                  ps.field->setIsAbstract(ps.isAbstract);
+                  ps.field->setIsReadonly(ps.isReadonly);
                 }
            opt_fieldvector opt_fieldenum opt_fieldvalue ';'
                 {
                   setComments(ps.field,@1,@6);
                 }
-        | ABSTRACT fielddatatype NAME
-                {
-                  ps.field = (FieldNode *)createNodeWithTag(NED_FIELD, ps.fields);
-                  ps.field->setName(toString(@3));
-                  ps.field->setDataType(toString(@2));
-                  ps.field->setIsAbstract(true);
-                }
-            opt_fieldvector opt_fieldenum opt_fieldvalue ';'
-                {
-                  setComments(ps.field,@1,@7);
-                }
+        ;
+
+fieldmodifiers
+        : ABSTRACT
+                { ps.isAbstract = true; ps.isReadonly = false; }
+        | READONLY
+                { ps.isAbstract = false; ps.isReadonly = true; }
+        | ABSTRACT READONLY
+                { ps.isAbstract = true; ps.isReadonly = true; }
+        | READONLY ABSTRACT
+                { ps.isAbstract = true; ps.isReadonly = true; }
+        |
+                { ps.isAbstract = false; ps.isReadonly = false; }
         ;
 
 fielddatatype

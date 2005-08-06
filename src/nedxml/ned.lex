@@ -121,6 +121,7 @@ char textbuf[TEXTBUF_LEN];
 "fields"                { count(); return FIELDS; }
 "properties"            { count(); return PROPERTIES; }
 "abstract"              { count(); return ABSTRACT; }
+"readonly"              { count(); return READONLY; }
 
 "char"                  { count(); return CHARTYPE; }
 "short"                 { count(); return SHORTTYPE; }

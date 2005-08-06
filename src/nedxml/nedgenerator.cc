@@ -931,7 +931,11 @@ void NEDGenerator::doField(FieldNode *node, const char *indent, bool islast, con
     out << indent;
     if (node->getIsAbstract())
         out << "abstract ";
-    out << node->getDataType() << " " << node->getName();
+    if (node->getIsReadonly())
+        out << "readonly ";
+    if (strnotnull(node->getDataType()))
+        out << node->getDataType() << " ";
+    out << node->getName();
     if (node->getIsVector() && strnotnull(node->getVectorSize()))
         out << "[" << node->getVectorSize() << "]";
     else if (node->getIsVector())

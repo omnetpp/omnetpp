@@ -639,7 +639,43 @@ void NEDBasicValidator::validateElement(FieldsNode *node)
 
 void NEDBasicValidator::validateElement(FieldNode *node)
 {
+    NEDElement *classNode = node->getParent()->getParent();
+    bool isStruct = !strcmp(classNode->getTagName(), "struct");
+
+    if (node->getIsAbstract() && isStruct)
+          NEDError(node, "a struct cannot have abstract fields");
+
+    if (node->getIsAbstract() && strnotnull(node->getDefaultValue()))
+         NEDError(node, "an abstract field cannot be assigned a default value");
+
+    if (node->getIsVector() && strnull(node->getVectorSize()) && isStruct)
+         NEDError(node, "a struct cannot have dynamic array fields");
+
+    // if (strnotnull(node->getDataType())) // type is there
+    // {
+    //      if (defined in base class too)
+    //      {
+    //          if (!node->getIsReadonly())
+    //              NEDError(node, "field is already declared in a base class (only readonly fields can be overridden)");
+    //          if (node->getIsReadonly() && type is not the same)
+    //              NEDError(node, "field is already declared in a base class with a different type");
+    //      }
+    // }
+
+    if (strnull(node->getDataType())) // type is missing
+    {
+         if (node->getIsAbstract())
+             NEDError(node, "an abstract field needs a type");
+         if (node->getIsVector())
+             NEDError(node, "cannot set array field of the base class");
+         if (strnotnull(node->getEnumName()))
+             NEDError(node, "cannot specify enum for base class field");
+         if (strnull(node->getDefaultValue()))
+             NEDError(node, "missing field type");
+    }
+
     // TBD check syntax of default value, and that its type agrees with field type
+
 }
 
 void NEDBasicValidator::validateElement(PropertiesNode *node)
