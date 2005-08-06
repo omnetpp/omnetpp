@@ -42,14 +42,15 @@ using std::ios;
 
 
 // file types
-enum {XML, NED, CPP, NOTHING};
+enum {XML_FILE, NED_FILE, MSG_FILE, CPP_FILE, UNKNOWN_FILE};
 
 // option variables
 bool opt_gencpp = false;           // -c
 bool opt_genxml = false;           // -x
 bool opt_genned = false;           // -n
+bool opt_genmsg = false;           // -g
 bool opt_validateonly = false;     // -v
-int opt_nextfiletype = NOTHING;    // -X
+int opt_nextfiletype = UNKNOWN_FILE; // -X
 bool opt_newsyntax = false;        // -N
 const char *opt_suffix = NULL;     // -s
 const char *opt_hdrsuffix = NULL;  // -S
@@ -78,14 +79,16 @@ void printUsage()
        "    or: nedtool [options] @<filelist-file>\n"
        "  -c: generate C++ (default)\n"
        "  -x: generate XML (you may need -y, -e and -p as well)\n"
-       "  -n: generate NED (you may need -y and -e as well)\n"
+       "  -n: generate NED file (you may need -y and -e as well)\n"
        "      HINT: NED-to-NED conversion performs pretty-printing.\n"
+       "  -g: generate MSG file (you may need -y and -e as well)\n"
+       "      HINT: MSG-to-MSG conversion performs pretty-printing.\n"
        "  -v: no output (only validate input)\n"
        "  -m: output is a single file (out_n.* by default)\n"
        "  -o <filename>: with -m: output file name\n"
        "  -h  place output file into current directory\n"
        "  -I <dir>: add directory to NED include path\n"
-       "  -X xml/ned/off: following files are XML/NED up to '-X off'\n"
+       "  -X xml/ned/msg/off: following files are XML, NED or MSG up to '-X off'\n"
        "  -N: with -n: use new NED syntax (experimental)\n"
        "  -s <suffix>: suffix for generated files\n"
        "  -S <suffix>: when generating C++, suffix for generated header files\n"
@@ -129,24 +132,26 @@ bool processFile(const char *fname)
 
     // determine file type
     int ftype = opt_nextfiletype;
-    if (ftype==NOTHING)
+    if (ftype==UNKNOWN_FILE)
     {
         if (!strcmp(".ned", fname+strlen(fname)-4))
-            ftype=NED;
+            ftype=NED_FILE;
+        if (!strcmp(".msg", fname+strlen(fname)-4))
+            ftype=MSG_FILE;
         if (!strcmp(".xml", fname+strlen(fname)-4))
-            ftype=XML;
-        if (ftype==NOTHING)
-            ftype=NED;
+            ftype=XML_FILE;
+        if (ftype==UNKNOWN_FILE)
+            ftype=NED_FILE;
     }
 
     // process input tree
     NEDElement *tree = 0;
     clearErrors();
-    if (ftype==XML)
+    if (ftype==XML_FILE)
     {
         tree = parseXML(fname);
     }
-    else if (ftype==NED)
+    else if (ftype==NED_FILE || ftype==MSG_FILE)
     {
         NEDParser parser;
         parser.setParseExpressions(!opt_unparsedexpr);
@@ -214,15 +219,17 @@ bool processFile(const char *fname)
         if (!suffix)
         {
             if (opt_genxml)
-                suffix = "_n.xml";
+                suffix = (ftype==MSG_FILE) ? "_m.xml" : "_n.xml";
             else if (opt_genned)
                 suffix = "_n.ned";
+            else if (opt_genmsg)
+                suffix = "_m.msg";
             else
-                suffix = "_n.cc";
+                suffix = (ftype==MSG_FILE) ? "_m.cc" : "_n.cc";
         }
         if (!hdrsuffix)
         {
-            hdrsuffix = "_n.h";
+            hdrsuffix = "_m.h";
         }
 
         char outfname[1024];
@@ -237,7 +244,7 @@ bool processFile(const char *fname)
             generateXML(out, tree, opt_srcloc);
             out.close();
         }
-        else if (opt_genned)
+        else if (opt_genned || opt_genmsg)
         {
             ofstream out(outfname);
             generateNed(out, tree, opt_newsyntax);
@@ -337,6 +344,10 @@ int main(int argc, char **argv)
         {
             opt_genned = true;
         }
+        else if (!strcmp(argv[i],"-g"))
+        {
+            opt_genmsg = true;
+        }
         else if (!strcmp(argv[i],"-v"))
         {
             opt_validateonly = true;
@@ -362,11 +373,13 @@ int main(int argc, char **argv)
                 return 1;
             }
             if (!strcmp(argv[i],"ned"))
-                opt_nextfiletype = NED;
+                opt_nextfiletype = NED_FILE;
+            else if (!strcmp(argv[i],"msg"))
+                opt_nextfiletype = MSG_FILE;
             else if (!strcmp(argv[i],"xml"))
-                opt_nextfiletype = XML;
+                opt_nextfiletype = XML_FILE;
             else if (!strcmp(argv[i],"off"))
-                opt_nextfiletype = NOTHING;
+                opt_nextfiletype = UNKNOWN_FILE;
             else {
                 fprintf(stderr,"nedtool: unknown file type %s after -X\n",argv[i]);
                 return 1;
@@ -448,7 +461,7 @@ int main(int argc, char **argv)
         }
         else
         {
-            if (opt_mergeoutput && !opt_genxml && !opt_genned)
+            if (opt_mergeoutput && !opt_genxml && !opt_genned && !opt_genmsg)
             {
                 fprintf(stderr,"nedtool: option -m not supported with C++ output\n");
                 return 1;
