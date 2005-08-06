@@ -81,8 +81,8 @@ class MyClass
     properties:
         customize = true;
     fields:
-        abstract char type='x';
-        abstract short version=2;
+        abstract char type;
+        abstract short version;
 };
 
 // class not derived from cObject

@@ -525,6 +525,10 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
                 $fieldtype =~ s/\s*$//sg;
                 $fieldtype =~ s/\s+/ /sg;
 
+                if ($isabstract && $fieldvalue ne '') {
+                    print STDERR "*** Error: an abstract cannot be assigned a value in '$msgname'\n"; $ret=1;
+                }
+
                 push(@fieldlist,$fieldname);
                 $ftype{$fieldname} = $fieldtype;
                 $fval{$fieldname} = $fieldvalue;
