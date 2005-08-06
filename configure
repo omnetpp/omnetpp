@@ -2749,7 +2749,7 @@ LDFLAGS=
 
 AS="as"
 AR="ar cr"
-SHLIB_LD="$CXX -shared -fPIC"
+#SHLIB_LD: leave it for later (CC may get overridden by user)
 SHLIB_CFLAGS="-fPIC"
 NEDC="nedtool"
 MSGC="opp_msgc"
@@ -2791,6 +2791,14 @@ build_shared_libs=if-not-windows
 
 TK_CFLAGS=
 TK_LIBS=
+
+if test -d /usr/include/tcl8.4; then
+    # this was reported to be the case on Debian 3.1 "sarge"
+    TK_CFLAGS="-I/usr/include/tcl8.4"
+fi
+if test -d /usr/include/tcl8.5; then
+    TK_CFLAGS="-I/usr/include/tcl8.5"
+fi
 
 if test "$cygwin" = yes; then
     BLT_LIBS="-lBLT24 -mwindows -lwinspool"
@@ -3247,6 +3255,10 @@ else
   RANLIB="$ac_cv_prog_RANLIB"
 fi
 
+
+if test "$SHLIB_LD" = ""; then
+    SHLIB_LD="$CXX -shared -fPIC"
+fi
 
 # doxygen is used for generation of api doc
 

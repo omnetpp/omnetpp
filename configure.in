@@ -113,7 +113,7 @@ LDFLAGS=
 
 AS="as"
 AR="ar cr"
-SHLIB_LD="$CXX -shared -fPIC"
+#SHLIB_LD: leave it for later (CC may get overridden by user)
 SHLIB_CFLAGS="-fPIC"
 NEDC="nedtool"
 MSGC="opp_msgc"
@@ -219,6 +219,10 @@ AC_PROG_LEX
 # AC_PROG_CC -- these are needed at the top
 # AC_PROG_CXX
 AC_PROG_RANLIB
+
+if test "$SHLIB_LD" = ""; then
+    SHLIB_LD="$CXX -shared -fPIC"
+fi
 
 # doxygen is used for generation of api doc
 AC_ARG_VAR(DOXYGEN, The Doxygen documentation tool)
