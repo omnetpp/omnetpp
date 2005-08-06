@@ -144,7 +144,11 @@ opp_makemake [-h] [-f] [-m] [-o make-target] [-r] [-n] [-s] [-u userinterface]
     -n, --nolink          Produce object files but do not create executable or
                           library. Useful for models with parts in several dirs.
     -s, --make-so         Make shared library. Useful if you want to load the
-                          model dynamically (Cmdenv/Tkenv -l so-file switch).
+                          model dynamically (via the load-libs= omnetpp.ini or
+                          the -l Cmdenv/Tkenv command-line option).
+    -t library, --importlib library
+                          This option is ignored. It's only there for command-
+                          line compatibility with Windows (opp_nmakemake).
     -w, --withobjects     Link with all object files found in -I directories,
                           or include them if library is created. Ignored when
                           -n option is present. Dependencies between directo-
@@ -223,6 +227,11 @@ EOT
 
         -s | --make-so)
         type="so"
+        ;;
+
+        -t | --importlib)
+        # this option is ignored, it's only there for Windows compatibility
+        shift
         ;;
 
         -w | --withobjects)

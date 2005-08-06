@@ -44,6 +44,8 @@ $tstamp="y";
 @tstampdirs = ();
 @exceptdirs = ();
 $exportdefopt = "";
+$importlibs = "";
+
 
 $makecommand = 'nmake /nologo /f Makefile.vc';
 
@@ -87,6 +89,13 @@ opp_nmakemake [-h] [-f] [-e ext] [-o make-target] [-n] [-u user-interface]
                           library. Useful for models with parts in several
                           directories. With this option, -u and -l have
                           no effect.
+    -s, --make-so         Build a DLL. Useful if you want to load the
+                          model dynamically (via the load-libs= omnetpp.ini or
+                          the -l Cmdenv/Tkenv command-line option).
+    -t library, --importlib library
+                          With -t (build DLL) option: specifies an import
+                          library for the DLL. This option may occur more than
+                          once.
     -w, --withobjects     Link with all object files found in -I directories,
                           or include them if library is created. Ignored when
                           -n option is present. Dependencies between directo-
@@ -169,10 +178,14 @@ could not figure out.
     {
         $type = "o";
     }
-    # elsif ($arg eq '-s' || $arg eq '--make-so')
-    # {
-    #    $type = "so";
-    # }
+    elsif ($arg eq '-s' || $arg eq '--make-so')
+    {
+        $type = "so";
+    }
+    elsif ($arg eq '-t' || $arg eq '--importlib')
+    {
+        $importlibs .= ' ' . shift @ARGV;
+    }
     elsif ($arg eq '-w' || $arg eq '--withobjects')
     {
         $linkwithobjects = "y";
@@ -449,8 +462,8 @@ EXT_DIR_OBJS=$extdirobjs
 # time stamps of other directories (used as dependency)
 EXT_DIR_TSTAMPS=$extdirtstamps
 
-# Additional libraries (-L option -l option)
-LIBS=$libpath$libs
+# Additional libraries (-L, -l, -t options)
+LIBS=$libpath$libs$importlibs
 
 #------------------------------------------------------------------------------
 ";
@@ -548,7 +561,7 @@ if ($type eq 'exe')
 elsif ($type eq 'so')
 {
     print OUT "\$(TARGET): \$(OBJS) \$(EXTRA_OBJS) \$(EXT_DIR_TSTAMPS) $subdirs_target $makefile\n";
-    print OUT "\t\$(SHLIB_LD) -o \$(TARGET) \$(OBJS) \$(EXTRA_OBJS) \$(EXT_DIR_OBJS)\n";
+    print OUT "\t\$(SHLIB_LD) \$(OBJS) \$(EXTRA_OBJS) \$(EXT_DIR_OBJS) \$(LIBS) /out:\$(TARGET)\n";
     print OUT "\t\@echo.>.tstamp\n";
 }
 elsif ($type eq 'o')
