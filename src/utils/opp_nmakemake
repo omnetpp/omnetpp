@@ -492,7 +492,7 @@ KERNEL_LIBS= \$(KERNEL_LIBS) \$(MPI_LIBS)
 OMNETPP_LIBS=/libpath:\$(OMNETPP_LIB_DIR) \$(USERIF_LIBS) \$(KERNEL_LIBS) \$(SYS_LIBS)
 
 COPTS=\$(CFLAGS) \$(INCLUDE_PATH) -I\$(OMNETPP_INCL_DIR)
-NEDCOPTS=\$(CFLAGS) \$(NEDCFLAGS) \$(INCLUDE_PATH) -I\$(OMNETPP_INCL_DIR)
+NEDCOPTS=\$(COPTS) \$(NEDCFLAGS)
 MSGCOPTS=$exportdefopt \$(INCLUDE_PATH)
 
 #------------------------------------------------------------------------------
