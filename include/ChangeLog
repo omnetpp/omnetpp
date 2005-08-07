@@ -1,5 +1,14 @@
 2005-08-07  Andras Varga
 
+	* cxmlelement.h: the builtin mini-XPath interpreter now understands
+	parameters inside predicates, i.e. the following is valid syntax:
+	"element[@attr=$PARAM]". Before, only literals were allowed, like
+	"element[@attr='something']". Parameters values are supplied by 
+	a resolver object (cXMLElement::ParamResolver) which can be programmed
+	by the user and passed into the mini-XPath evaluator.
+
+2005-08-07  Andras Varga
+
 	* cmessage.h: implemented reference counting of encapsulated messages.
 	This should dramatically increase performance of wireless simulations 
 	where lots of message duplication is done (AirFrames) with most copies 

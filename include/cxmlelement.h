@@ -70,6 +70,23 @@ typedef std::map<std::string,std::string> cXMLAttributeMap;
 // TBD if namespaces are supported by Expat & libxml in an easy way, maybe do it here
 class SIM_API cXMLElement
 {
+  public:
+    /**
+     * Base class for classes that resolve parameters ($PARAM) that occur in
+     * in XPath expressions to their values.
+     */
+    class ParamResolver
+    {
+      public:
+        /**
+         * To be redefined in subclasses. If paramname is recognized, the method
+         * should store the value in the 'value' argument and return true;
+         * otherwise it should return false.
+         */
+        virtual bool resolve(const char *paramname, std::string& value) = 0;
+        virtual ~ParamResolver() {}
+    };
+
   private:
     std::string ename;
     std::string srcloc;
@@ -112,7 +129,7 @@ class SIM_API cXMLElement
     virtual cXMLElement *removeChild(cXMLElement *node);
 
     // internal: matches from root element
-    static cXMLElement *getDocumentElementByPath(cXMLElement *documentnode, const char *pathexpr);
+    static cXMLElement *getDocumentElementByPath(cXMLElement *documentnode, const char *pathexpr, ParamResolver *resolver=NULL);
 
     /** @name Common properties */
     //@{
@@ -284,7 +301,7 @@ class SIM_API cXMLElement
      * The method throws an exception if the path expression is invalid,
      * and returns NULL if the element is not found.
      */
-    cXMLElement *getElementByPath(const char *pathexpression);
+    cXMLElement *getElementByPath(const char *pathexpression, ParamResolver *resolver=NULL);
 
     /**
      * Dumps tree content to ev in a XML-like format. This method is only
