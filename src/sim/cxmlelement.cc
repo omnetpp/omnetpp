@@ -270,10 +270,28 @@ cXMLElement *cXMLElement::getElementById(const char *idattrvalue)
     return NULL;
 }
 
-//---
-// Minimalistic XPath interpreter follows...
+//---------------
 
-static bool parseTagName(std::string& tagname, const char *stepexpr, int len)
+/*
+ * A minimalistic XPath interpreter follows.
+ */
+class MiniXPath
+{
+  private:
+    bool parseTagName(std::string& tagname, const char *stepexpr, int len);
+    bool parseBracketedNum(int& n, const char *s, int len);
+    bool parseConstant(std::string& value, const char *s, int len);
+    bool parseBracketedAttrEquals(std::string& attr, std::string& value, const char *s, int len);
+    cXMLElement *getFirstSiblingWithAttribute(cXMLElement *firstsibling, const char *tagname, const char *attr, const char *attrvalue);
+    cXMLElement *getNthSibling(cXMLElement *firstsibling, const char *tagname, int n);
+    cXMLElement *recursiveMatch(cXMLElement *node, const char *pathexpr);
+    cXMLElement *matchSeparator(cXMLElement *node, const char *seppathexpr);
+  public:
+    MiniXPath() {}
+    cXMLElement *matchPathExpression(cXMLElement *node, const char *pathexpr);
+};
+
+bool MiniXPath::parseTagName(std::string& tagname, const char *stepexpr, int len)
 {
     const char *lbracket = strchr(stepexpr, '[');
     if (!lbracket || lbracket-stepexpr>=len)
@@ -283,7 +301,7 @@ static bool parseTagName(std::string& tagname, const char *stepexpr, int len)
     return true;
 }
 
-static bool parseBracketedNum(int& n, const char *s, int len)
+bool MiniXPath::parseBracketedNum(int& n, const char *s, int len)
 {
     if (*s!='[' || *(s+len-1)!=']')
         return false;
@@ -294,7 +312,7 @@ static bool parseBracketedNum(int& n, const char *s, int len)
     return true;
 }
 
-static bool parseConstant(std::string& value, const char *s, int len)
+bool MiniXPath::parseConstant(std::string& value, const char *s, int len)
 {
     // we get the part after the equal sign in "[@attrname=...]", try to
     // match 'value', "value" or $PARAM
@@ -315,7 +333,7 @@ static bool parseConstant(std::string& value, const char *s, int len)
     return false;
 }
 
-static bool parseBracketedAttrEquals(std::string& attr, std::string& value, const char *s, int len)
+bool MiniXPath::parseBracketedAttrEquals(std::string& attr, std::string& value, const char *s, int len)
 {
     // try to match "[@attrname='value']"
     if (len<7)
@@ -331,7 +349,7 @@ static bool parseBracketedAttrEquals(std::string& attr, std::string& value, cons
     return parseConstant(value, equalsign+1, s+len-1-equalsign-1);
 }
 
-static cXMLElement *getFirstSiblingWithAttribute(cXMLElement *firstsibling, const char *tagname, const char *attr, const char *attrvalue)
+cXMLElement *MiniXPath::getFirstSiblingWithAttribute(cXMLElement *firstsibling, const char *tagname, const char *attr, const char *attrvalue)
 {
     for (cXMLElement *child=firstsibling; child; child=child->getNextSibling())
     {
@@ -345,7 +363,7 @@ static cXMLElement *getFirstSiblingWithAttribute(cXMLElement *firstsibling, cons
     return NULL;
 }
 
-static cXMLElement *getNthSibling(cXMLElement *firstsibling, const char *tagname, int n)
+cXMLElement *MiniXPath::getNthSibling(cXMLElement *firstsibling, const char *tagname, int n)
 {
     for (cXMLElement *child=firstsibling; child; child=child->getNextSibling())
         if (!tagname || !strcasecmp(child->getTagName(),tagname))
@@ -354,9 +372,7 @@ static cXMLElement *getNthSibling(cXMLElement *firstsibling, const char *tagname
     return NULL;
 }
 
-static cXMLElement *matchPathExpression(cXMLElement *node, const char *pathexpr);
-
-static cXMLElement *recursiveMatch(cXMLElement *node, const char *pathexpr)
+cXMLElement *MiniXPath::recursiveMatch(cXMLElement *node, const char *pathexpr)
 {
     cXMLElement *res = matchPathExpression(node, pathexpr);
     if (res)
@@ -371,7 +387,7 @@ static cXMLElement *recursiveMatch(cXMLElement *node, const char *pathexpr)
 }
 
 // handle "/" or "//" at front of pattern
-static cXMLElement *matchSeparator(cXMLElement *node, const char *seppathexpr)
+cXMLElement *MiniXPath::matchSeparator(cXMLElement *node, const char *seppathexpr)
 {
     assert(!*seppathexpr || *seppathexpr=='/');
     if (!*seppathexpr)
@@ -383,7 +399,7 @@ static cXMLElement *matchSeparator(cXMLElement *node, const char *seppathexpr)
 }
 
 // "node": the current node (".") whose children we'll try to match
-static cXMLElement *matchPathExpression(cXMLElement *node, const char *pathexpr)
+cXMLElement *MiniXPath::matchPathExpression(cXMLElement *node, const char *pathexpr)
 {
     // find end of first pattern step
     const char *sep = strchr(pathexpr, '/');
@@ -468,6 +484,8 @@ static cXMLElement *matchPathExpression(cXMLElement *node, const char *pathexpr)
     }
 }
 
+//-------------------------------------
+
 cXMLElement *cXMLElement::getDocumentElementByPath(cXMLElement *documentnode, const char *pathexpr)
 {
     const char *pathexpr1 = pathexpr;
@@ -476,7 +494,7 @@ cXMLElement *cXMLElement::getDocumentElementByPath(cXMLElement *documentnode, co
     if (pathexpr1[0]=='.')
         throw new cRuntimeError("cXMLElement::getDocumentElementByPath(): paths with `.' at the front "
                                 "are only supported by getElementByPath() (path expression: `%s')", pathexpr);
-    return matchPathExpression(documentnode, pathexpr1);
+    return MiniXPath().matchPathExpression(documentnode, pathexpr1);
 }
 
 cXMLElement *cXMLElement::getElementByPath(const char *pathexpr)
@@ -484,7 +502,7 @@ cXMLElement *cXMLElement::getElementByPath(const char *pathexpr)
     if (pathexpr[0]=='/')
         throw new cRuntimeError("cXMLElement::getElementByPath(): paths beginning with `/' "
                                 "not supported by getElementByPath() (path expression: `%s')", pathexpr);
-    return matchPathExpression(this, pathexpr);
+    return MiniXPath().matchPathExpression(this, pathexpr);
 }
 
 void cXMLElement::debugDump(int depth) const
