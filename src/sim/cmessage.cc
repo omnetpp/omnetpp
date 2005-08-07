@@ -31,6 +31,9 @@
 #include "ccommbuffer.h"
 #endif
 
+// comment out to disable reference-counting for encapsulated messages
+#define REFCOUNTING
+
 using std::ostream;
 
 //=== registration
@@ -56,7 +59,7 @@ cMessage::cMessage(const cMessage& msg) : cObject()
     live_msgs++;
 }
 
-cMessage::cMessage(const char *name, int k, long ln, int pri, bool err) : cObject( name )
+cMessage::cMessage(const char *name, int k, long ln, int pri, bool err) : cObject(name)
 {
     msgkind=k; len=ln; prior=pri; error=err;
     parlistp = NULL;
@@ -78,8 +81,11 @@ cMessage::cMessage(const char *name, int k, long ln, int pri, bool err) : cObjec
 
 cMessage::~cMessage()
 {
-    dropAndDelete(parlistp);
-    dropAndDelete(encapmsg);
+    if (parlistp)
+        dropAndDelete(parlistp);
+    if (encapmsg)
+        _deleteEncapMsg();
+
     if (dynamic_cast<cObject *>(ctrlp))
         dropAndDelete((cObject *)ctrlp);
     else
@@ -131,7 +137,10 @@ void cMessage::forEachChild(cVisitor *v)
     if (parlistp)
         v->visit(parlistp);
     if (encapmsg)
+    {
+        _detachEncapMsg();  // see method comment why this is needed
         v->visit(encapmsg);
+    }
 }
 
 void cMessage::writeContents(ostream& os)
@@ -153,6 +162,7 @@ void cMessage::writeContents(ostream& os)
     }
     if (encapmsg) {
         os << "  encapsulated message:\n";
+        _detachEncapMsg();  // see method comment why this is needed
         encapmsg->writeContents( os );
     }
     if (ctrlp) {
@@ -201,6 +211,7 @@ void cMessage::netUnpack(cCommBuffer *buffer)
 #else
     cObject::netUnpack(buffer);
 
+    ASSERT(refcount==0);
     buffer->unpack(msgkind);
     buffer->unpack(prior);
     buffer->unpack(len);
@@ -223,7 +234,10 @@ void cMessage::netUnpack(cCommBuffer *buffer)
         take(parlistp = (cArray *) buffer->unpackObject());
 
     if (buffer->checkFlag())
+    {
         take(encapmsg = (cMessage *) buffer->unpackObject());
+        encapmsg->refcount = 1;
+    }
 #endif
 }
 
@@ -248,15 +262,27 @@ cMessage& cMessage::operator=(const cMessage& msg)
 
     dropAndDelete(parlistp);
     if (msg.parlistp)
-        take( parlistp = (cArray *)msg.parlistp->dup() );
+        take(parlistp = (cArray *)msg.parlistp->dup());
     else
         parlistp = NULL;
 
+#ifndef REFCOUNTING
     dropAndDelete(encapmsg);
     if (msg.encapmsg)
-        take( encapmsg = (cMessage *)msg.encapmsg->dup() );
+        take(encapmsg = (cMessage *)msg.encapmsg->dup());
     else
         encapmsg = NULL;
+#else
+    if (encapmsg)
+        _deleteEncapMsg();
+    encapmsg = msg.encapmsg;
+    if (encapmsg && ++encapmsg->refcount==0)   // refcount overflow
+    {
+        --encapmsg->refcount;
+        take(encapmsg = (cMessage *)encapmsg->dup());
+        encapmsg->refcount = 1;
+    }
+#endif
 
     contextptr = msg.contextptr;
 
@@ -273,9 +299,44 @@ cMessage& cMessage::operator=(const cMessage& msg)
 
 void cMessage::_createparlist()
 {
-    parlistp = new cArray( "parameters", 5, 5 );
-    take( parlistp );
+    parlistp = new cArray("parameters", 5, 5);
+    take(parlistp);
 }
+
+#ifdef REFCOUNTING
+void cMessage::_deleteEncapMsg()
+{
+    if (encapmsg->refcount>1)
+    {
+        encapmsg->refcount--;
+    }
+    else
+    {
+        // note: dropAndDelete(encapmsg) cannot be used, because due to refcounting
+        // ownerp is not valid (may be any former owner, possibly deleted since then)
+        encapmsg->ownerp = NULL;
+        delete encapmsg;
+    }
+}
+#endif
+
+#ifdef REFCOUNTING
+void cMessage::_detachEncapMsg()
+{
+    if (encapmsg->refcount>1)
+    {
+        encapmsg->refcount--;
+        take(encapmsg = (cMessage *)encapmsg->dup());
+        encapmsg->refcount = 1;
+    }
+    else
+    {
+        // note: due to refcounting, ownerp may be anything here (any former owner),
+        // so set it to ourselves
+        encapmsg->ownerp = this;
+    }
+}
+#endif
 
 void cMessage::setLength(long l)
 {
@@ -302,22 +363,54 @@ void cMessage::encapsulate(cMessage *msg)
             throw new cRuntimeError(this,"encapsulate(): not owner of message (%s)%s, owner is (%s)%s",
                                     msg->className(), msg->fullName(),
                                     msg->owner()->className(), msg->owner()->fullPath().c_str());
-        take( encapmsg = msg );
+        take(encapmsg = msg);
+#ifdef REFCOUNTING
+        ASSERT(encapmsg->refcount==0);
+        encapmsg->refcount = 1;
+#endif
         len += encapmsg->len;
     }
 }
 
 cMessage *cMessage::decapsulate()
 {
-    if ((len>0) && encapmsg)
-        len-=encapmsg->len;
+    if (!encapmsg)
+        return NULL;
+    if (len>0)
+        len -= encapmsg->len;
     if (len<0)
-        throw new cRuntimeError(this,"decapsulate(): msg length smaller than encapsulated msg length");
+        throw new cRuntimeError(this,"decapsulate(): msg length is smaller than encapsulated msg length");
 
+#ifdef REFCOUNTING
+    if (encapmsg->refcount>1)
+    {
+        encapmsg->refcount--;
+        cMessage *msg = (cMessage *)encapmsg->dup();
+        encapmsg = NULL;
+        return msg;
+    }
+    ASSERT(encapmsg->refcount==1);
+    encapmsg->refcount = 0;
+    encapmsg->ownerp = this;
+#endif
     cMessage *msg = encapmsg;
     encapmsg = NULL;
     if (msg) drop(msg);
     return msg;
+}
+
+cMessage *cMessage::encapsulatedMsg() const
+{
+#ifdef REFCOUNTING
+    // encapmsg may be shared (refcount>1) -- we'll make our own copy,
+    // so that other messages are not affected in case the user modifies
+    // the encapsulated message via the returned pointer.
+    // Trick: this is a const method, so we can only do changes via a
+    // non-const copy if the 'this' pointer.
+    if (encapmsg)
+        const_cast<cMessage *>(this)->_detachEncapMsg();
+#endif
+    return encapmsg;
 }
 
 void cMessage::setControlInfo(cPolymorphic *p)
