@@ -6,32 +6,48 @@ cMessage *payload = new cMessage;
 ev << "refcount=" << payload->refCount() << "\n";
 
 // encapsulate
-cMessage *packet = new cMessage;
-packet->encapsulate(payload);
-ev << "refcount=" << payload->refCount() << "\n";
-
-// duplicate packet that contains it
-cMessage *copy1 = (cMessage *)packet->dup();
+cMessage *msg0 = new cMessage;
+msg0->encapsulate(payload);
 ev << "after encap: refcount=" << payload->refCount() << "\n";
 
-cMessage *copy2 = (cMessage *)packet->dup();
+// duplicate msg0 that contains it
+cMessage *msg1 = (cMessage *)msg0->dup();
 ev << "after dup: refcount=" << payload->refCount() << "\n";
 
-cMessage *copy3 = (cMessage *)copy1->dup();
+cMessage *msg2 = (cMessage *)msg0->dup();
+ev << "after dup: refcount=" << payload->refCount() << "\n";
+
+cMessage *msg3 = (cMessage *)msg1->dup();
 ev << "after dup: refcount=" << payload->refCount() << "\n";
 
 // decapsulate
-cMessage *decap1 = copy1->decapsulate();
+cMessage *decapsmsg = msg1->decapsulate();
 ev << "after decap: refcount=" << payload->refCount() << ", "
-   << (payload==decap1 ? "same" : "different") << "\n";
+   << (payload==decapsmsg ? "same" : "different") << ", "
+   << "decapsmsg.refcount=" << decapsmsg->refCount() << "\n";
 
-cMessage *encapmsg = copy2->encapsulatedMsg();
+// test encapsulatedMsg
+cMessage *encapmsg = msg2->encapsulatedMsg();
 ev << "after encapsulatedmsg: refcount=" << payload->refCount() << ", "
    << (payload==encapmsg ? "same" : "different") << ", "
    << "encapmsg.refcount=" << encapmsg->refCount() << "\n";
 
+// test delete with refcount=1
+delete msg2;
+
+// test delete with refcount>1
+delete msg3;
+ev << "after delete: refcount=" << payload->refCount() << "\n";
+
+delete msg0;
+
 %contains: stdout
-160
-32
-128
+refcount=0
+after encap: refcount=1
+after dup: refcount=2
+after dup: refcount=3
+after dup: refcount=4
+after decap: refcount=3, different, decapsmsg.refcount=0
+after encapsulatedmsg: refcount=2, different, encapmsg.refcount=1
+after delete: refcount=1
 
