@@ -121,6 +121,7 @@ class NEDCppGenerator
     void doMachines(MachinesNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doMachine(MachineNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doSubmodules(SubmodulesNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void resolveSubmoduleType(SubmoduleNode *node, const char *indent);
     void doSubmodule(SubmoduleNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doSubmoduleFinally(SubmoduleNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doSubstparams(SubstparamsNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);

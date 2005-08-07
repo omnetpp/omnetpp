@@ -737,12 +737,8 @@ void NEDCppGenerator::doSubmodules(SubmodulesNode *node, const char *indent, int
     generateChildren(node, indent, mode);
 }
 
-void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::resolveSubmoduleType(SubmoduleNode *node, const char *indent)
 {
-    out << indent << "//\n";
-    out << indent << "// submodule '" << node->getName() << "':\n";
-    out << indent << "//\n";
-
     // find module descriptor
     if (!strnotnull(node->getLikeParam()))
     {
@@ -753,6 +749,13 @@ void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int m
         out << indent << "modtypename = mod->par(\"" << node->getLikeParam() << "\");\n";
         out << indent << "modtype = _getModuleType(modtypename);\n";
     }
+}
+
+void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int mode, const char *)
+{
+    out << indent << "//\n";
+    out << indent << "// submodule '" << node->getName() << "':\n";
+    out << indent << "//\n";
 
     // create module
     const char *submodule_name = node->getName();
@@ -760,6 +763,7 @@ void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int m
     ExpressionNode *vectorsize = findExpression(node, "vector-size");
     if (!vectorsize)
     {
+        resolveSubmoduleType(node, indent);
         submodule_var = node->getName();
         submodule_var += "_p";
         out << indent << "cModule *" << submodule_var.c_str() << " = modtype->create(\"" << submodule_name << "\", mod);\n";
@@ -777,7 +781,11 @@ void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int m
         out << ");\n";
 
         out << indent << "_checkModuleVectorSize(" << submodulesize_var.c_str() << ",\"" << submodule_name << "\");\n";
-        out << indent << "cModule **" << submodule_var.c_str() << " = new cModule *[" << submodulesize_var.c_str() << "];\n\n";
+        out << indent << "cModule **" << submodule_var.c_str() << " = new cModule *[" << submodulesize_var.c_str() << "];\n";
+        out << indent << "if (" << submodulesize_var.c_str() << ">0)\n";
+        out << indent << "{\n";
+        resolveSubmoduleType(node, increaseIndent(indent));
+        out << indent << "}\n";
         out << indent << "for (submodindex=0; submodindex<" << submodulesize_var.c_str() << "; submodindex++)\n";
         out << indent << "{\n";
         submodule_var += "[submodindex]";
