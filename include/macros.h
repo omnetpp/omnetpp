@@ -120,8 +120,12 @@
 
 /**
  * Similar to Define_Module(), except that it couples the class with the
- * NED interface of the given name. This macro is used in connection with
- * the 'like' phrase in NED.
+ * NED interface of the given name. 
+ * 
+ * While this macro continues to be supported, it is NOT RECOMMENDED because 
+ * modules defined with it don't show up in documentation generated with 
+ * opp_neddoc. One can use NED's <tt>like</tt> feature with the normal 
+ * Define_Module() macro too, it doesn't require Define_Module_Like().
  *
  * @hideinitializer
  */
