@@ -101,7 +101,7 @@ class SIM_API cMessage : public cObject
     int prior;                 // priority -- used for scheduling msgs with equal times
     long len;                  // length of message -- used for bit errors and transm.delay
     bool error : 1;            // bit error occurred during transmission
-    unsigned char refcount : 7;// reference count for encapsulated message (0: not encapsulated, max 127)
+    unsigned char refcount : 7;// how many messages have this one encapsulated (0: not encapsulated, max 127)
     unsigned char srcprocid;   // reserved for use by parallel execution: id of source partition
     cArray *parlistp;          // ptr to list of parameters
     cMessage *encapmsg;        // ptr to encapsulated msg
@@ -117,8 +117,20 @@ class SIM_API cMessage : public cObject
     int heapindex;             // used by cMessageHeap (-1 if not on heap)
     unsigned long insertordr;  // used by cMessageHeap
 
-    // helper function
+    // internal: create parlist
     void _createparlist();
+
+    // internal: if encapmsg is shared (refcount>1), creates a private copy for this msg,
+    // and in any case it sets encapmsg's owner to be this object. This method
+    // has to be called before any operation on encapmsg, to prevent trouble
+    // that may arise from accessing shared message instances. E.g. without calling
+    // _detachEncapMsg(), encapmsg's ownerp is unpredictable (may be any previous owner,
+    // possibly not even existing any more) which makes even a call to its fullPath()
+    // method dangerous.
+    void _detachEncapMsg();
+
+    // internal: delete encapmsg, paying attention to its refcount (assumes encapmsg!=NULL)
+    void _deleteEncapMsg();
 
     // global variables for statistics
     static long total_msgs;
@@ -499,8 +511,17 @@ class SIM_API cMessage : public cObject
     //@{
 
     /**
-     * Encapsulates msg in the message. msg->length()
-     * will be added to the length of the message.
+     * Encapsulates msg in the message. msg->length() is increased by the
+     * length of the encapsulated message.
+     *
+     * IMPORTANT NOTE: IT IS FORBIDDEN TO KEEP A POINTER TO A MESSAGE
+     * AFTER IT WAS ENCAPSULATED. For performance reasons, encapsulated
+     * messages are reference counted, meaning that the encapsulated
+     * message is not duplicated when you duplicate a message, but rather,
+     * both (all) copies share the same message instance. Any change done
+     * to the encapsulated message would affect other messages as well.
+     * Decapsulation (and even calling encapsulatedMsg()) will create an
+     * own (non-shared) copy of the message.
      */
     void encapsulate(cMessage *msg);
 
@@ -513,8 +534,23 @@ class SIM_API cMessage : public cObject
 
     /**
      * Returns a pointer to the encapsulated message, or NULL.
+     *
+     * IMPORTANT: see notes at encapsulate() about reference counting
+     * of encapsulated messages.
      */
-    cMessage *encapsulatedMsg() const {return encapmsg;}
+    cMessage *encapsulatedMsg() const;
+
+    /**
+     * Returns how in many other messages this message is encapsulated.
+     * Normally this is zero; after encapsulation it will become one,
+     * and it will increase when the encapsulating message is dupped or
+     * copied.
+     *
+     * FIXME comment: forbidden to keep the ptr and change
+     * anything after encapsulation! messes up refcounting: change would
+     * affect other messages as well
+     */
+    int refCount() const {return refcount;}
     //@}
 
     /** @name Sending/arrival information. */

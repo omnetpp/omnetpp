@@ -137,6 +137,7 @@ class SIM_API cObject : public cPolymorphic
   private:
     friend class cDefaultList;
     friend class cSimulation;
+    friend class cMessage;  // because of refcounting business
 
     union
     {
@@ -146,7 +147,7 @@ class SIM_API cObject : public cPolymorphic
     } nameunion;
 
     cObject *ownerp;       // owner pointer
-    int pos;               // used if owner is a cDefaultList
+    int pos;               // used only if owner is a cDefaultList
 
     // list in which objects are accumulated if there's no simple module in context
     // (see also setDefaultOwner() and cSimulation::setContextModule())
