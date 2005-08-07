@@ -294,6 +294,27 @@ static bool parseBracketedNum(int& n, const char *s, int len)
     return true;
 }
 
+static bool parseConstant(std::string& value, const char *s, int len)
+{
+    // we get the part after the equal sign in "[@attrname=...]", try to
+    // match 'value', "value" or $PARAM
+    if (*s=='\'' && *(s+len-1)=='\'')
+    {
+        value.assign(s+1, len-2);
+        return true;
+    }
+    else if (*s=='"' && *(s+len-1)=='"')
+    {
+        value.assign(s+1, len-2);
+        return true;
+    }
+    //else if (*s=='$' && resolver!=NULL)
+    //{
+    //   return resolver->resolve(value, std::string(s+1,len-1).c_str());
+    //}
+    return false;
+}
+
 static bool parseBracketedAttrEquals(std::string& attr, std::string& value, const char *s, int len)
 {
     // try to match "[@attrname='value']"
@@ -307,12 +328,7 @@ static bool parseBracketedAttrEquals(std::string& attr, std::string& value, cons
     if (!equalsign || equalsign-s>=len)
         return false;
     attr.assign(s+2, equalsign-s-2);
-    if (*(equalsign+1)!='\'' && *(equalsign+1)!='"')
-        return false;
-    if (*(s+len-2)!='\'' && *(s+len-2)!='"')
-        return false;
-    value.assign(equalsign+2, s+len-2-equalsign-2);
-    return true;
+    return parseConstant(value, equalsign+1, s+len-1-equalsign-1);
 }
 
 static cXMLElement *getFirstSiblingWithAttribute(cXMLElement *firstsibling, const char *tagname, const char *attr, const char *attrvalue)
