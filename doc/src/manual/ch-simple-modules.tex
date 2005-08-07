@@ -424,11 +424,12 @@ follows this approach.
 
 The C++ implementation of a simple\index{module!simple} module consists of:
 \begin{itemize}
-\item{declaration of the module class: your class subclassed from \cclass{cSimpleModule}
-(either directly or indirectly)}
-\item{a module type registration (\fmac{Define\_Module()} or
-    \fmac{Define\_Module\_Like()} macro)}
-\item{implementation of the module class}
+  \item{declaration of the module class: your class directly or indirectly
+        subclassed from \cclass{cSimpleModule}}
+  \item{a module type registration (\fmac{Define\_Module()} macro)}
+      \footnote{For completeness, there is also a \fmac{Define\_Module\_Like()}
+                macro, but it's rarely useful.}
+  \item{implementation of the module class}
 \end{itemize}
 
 
@@ -492,20 +493,9 @@ generates code from it which should only appear in one \ttt{.cc} file.
 
 \subsection{Several modules, single NED interface}
 
-An alternative form of the module type registration, the \fmac{Define\_Module\_Like()}
-macro takes two arguments and associates the class with a NED simple module
-declaration of a different name. You can use this form when you have several
-modules which share the same interface.
-
-To support submodule types defined as parameters in
-NED files (see section \ref{sec:ch-ned-lang:like}),
-you can reuse an existing NED simple module definition
-for several simple module types.
-
-Suppose you have three different C++ module classes (\ttt{TokenRingMAC},
-\ttt{EthernetMAC}, \ttt{FDDIMAC}) which have identical gates and parameters.
-Then you can create a single NED declaration, \ttt{GenericMAC} for them
-and write the following module type registrations in the C++ code:
+As an alternative to \fmac{Define\_Module()}, one can the use
+\fmac{Define\_Module\_Like()} macro to associate a class with a NED
+simple module declaration of a \textit{different} name. An example:
 
 \begin{verbatim}
 Define_Module_Like(TokenRingMAC, GenericMAC);
@@ -513,32 +503,17 @@ Define_Module_Like(EthernetMAC, GenericMAC);
 Define_Module_Like(FDDIMAC, GenericMAC);
 \end{verbatim}
 
-You won't be able to directly refer to the \ttt{TokenRingMAC},
-\ttt{EthernetMAC}, \ttt{FDDIMAC} module types in your NED files,
-because NED doesn't know about them (their names don't appear
-in any NED file you could import), but you can use them wherever
-a submodule type was defined as a parameter to the compound module:
+This would associate the \ttt{TokenRingMAC}, \ttt{EthernetMAC} and
+\ttt{FDDIMAC} C++ classes (which don't have NED counterparts)
+with the \ttt{GenericMAC} module defined in NED (only). Since
+\ttt{TokenRingMAC}, \ttt{EthernetMAC} and \ttt{FDDIMAC} don't appear
+in NED files, they cannot be used directly, only via NED's \ttt{like}
+construct \ref{sec:ch-ned-lang:like}.
 
-\begin{verbatim}
-module Host
-    parameters:
-        macType: string;
-    submodules:
-        mac: macType like GenericMAC;
-                // if macType=="EthernetMAC" --> OK!
-     ...
-endmodule
-\end{verbatim}
-
-\begin{sloppypar}
-The \ttt{macType} parameter should take the value \texttt{"TokenRingMAC"},
-\texttt{"EthernetMAC"} or \texttt{"FDDIMAC"}, and a submodule of the appropriate
-type will be created. The value for the parameter can even be given in
-the ini file. This gives you a powerful tool to customize simulation
-models (see also \textit{Topology templates}, Section
-\ref{sec:ch-ned-lang:topology-templates}).
-\end{sloppypar}
-
+Although \fmac{Define\_Module\_Like()} may occasionally spare you
+writing some NED files, its use is not recommended, mainly because
+modules defined with it don't show up in documentation generated
+with \ttt{opp_neddoc} \ref{cha:neddoc}.
 
 
 
