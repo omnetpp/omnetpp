@@ -7,8 +7,6 @@
 	a resolver object (cXMLElement::ParamResolver) which can be programmed
 	by the user and passed into the mini-XPath evaluator.
 
-2005-08-07  Andras Varga
-
 	* cmessage.h: implemented reference counting of encapsulated messages.
 	This should dramatically increase performance of wireless simulations 
 	where lots of message duplication is done (AirFrames) with most copies 

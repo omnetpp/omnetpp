@@ -1,5 +1,10 @@
 2005-08-07  Andras Varga
 
+	* cxmlelement.cc: the builtin mini-XPath interpreter turned into a 
+	class (MiniXPath), and it now understands parameters ($PARAM) inside 
+	predicates; parameter values come from a cXMLElement::ParamResolver
+	object.
+
 	* cmessage.cc: implemented reference counting of encapsulated messages.
 	See include/ChangeLog for more comments.
 

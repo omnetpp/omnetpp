@@ -278,6 +278,8 @@ cXMLElement *cXMLElement::getElementById(const char *idattrvalue)
 class MiniXPath
 {
   private:
+    cXMLElement::ParamResolver *resolver;
+  private:
     bool parseTagName(std::string& tagname, const char *stepexpr, int len);
     bool parseBracketedNum(int& n, const char *s, int len);
     bool parseConstant(std::string& value, const char *s, int len);
@@ -287,7 +289,7 @@ class MiniXPath
     cXMLElement *recursiveMatch(cXMLElement *node, const char *pathexpr);
     cXMLElement *matchSeparator(cXMLElement *node, const char *seppathexpr);
   public:
-    MiniXPath() {}
+    MiniXPath(cXMLElement::ParamResolver *resolver=NULL) {this->resolver=resolver;}
     cXMLElement *matchPathExpression(cXMLElement *node, const char *pathexpr);
 };
 
@@ -326,10 +328,10 @@ bool MiniXPath::parseConstant(std::string& value, const char *s, int len)
         value.assign(s+1, len-2);
         return true;
     }
-    //else if (*s=='$' && resolver!=NULL)
-    //{
-    //   return resolver->resolve(value, std::string(s+1,len-1).c_str());
-    //}
+    else if (*s=='$' && resolver!=NULL)
+    {
+       return resolver->resolve(std::string(s+1,len-1).c_str(), value);
+    }
     return false;
 }
 
@@ -486,7 +488,8 @@ cXMLElement *MiniXPath::matchPathExpression(cXMLElement *node, const char *pathe
 
 //-------------------------------------
 
-cXMLElement *cXMLElement::getDocumentElementByPath(cXMLElement *documentnode, const char *pathexpr)
+cXMLElement *cXMLElement::getDocumentElementByPath(cXMLElement *documentnode, const char *pathexpr,
+                                                   cXMLElement::ParamResolver *resolver)
 {
     const char *pathexpr1 = pathexpr;
     while (pathexpr1[0]=='/')
@@ -494,15 +497,15 @@ cXMLElement *cXMLElement::getDocumentElementByPath(cXMLElement *documentnode, co
     if (pathexpr1[0]=='.')
         throw new cRuntimeError("cXMLElement::getDocumentElementByPath(): paths with `.' at the front "
                                 "are only supported by getElementByPath() (path expression: `%s')", pathexpr);
-    return MiniXPath().matchPathExpression(documentnode, pathexpr1);
+    return MiniXPath(resolver).matchPathExpression(documentnode, pathexpr1);
 }
 
-cXMLElement *cXMLElement::getElementByPath(const char *pathexpr)
+cXMLElement *cXMLElement::getElementByPath(const char *pathexpr, cXMLElement::ParamResolver *resolver)
 {
     if (pathexpr[0]=='/')
         throw new cRuntimeError("cXMLElement::getElementByPath(): paths beginning with `/' "
                                 "not supported by getElementByPath() (path expression: `%s')", pathexpr);
-    return MiniXPath().matchPathExpression(this, pathexpr);
+    return MiniXPath(resolver).matchPathExpression(this, pathexpr);
 }
 
 void cXMLElement::debugDump(int depth) const
