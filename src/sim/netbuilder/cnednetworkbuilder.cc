@@ -136,33 +136,38 @@ void cNEDNetworkBuilder::addChannelAttr(cChannel *chanp, ChannelAttrNode *channe
     chanp->addPar(p);
 }
 
+cModuleType *cNEDNetworkBuilder::findAndCheckModuleType(const char *modtypename, cModule *modp, const char *submodname)
+{
+    cModuleType *modtype = findModuleType(modtypename);
+    if (!modtype)
+        throw new cRuntimeError("dynamic module builder: module type definition `%s' for submodule %s "
+                                "in (%s)%s not found (Define_Module() missing from C++ source?)",
+                                modtypename, submodname, modp->className(), modp->fullPath().c_str());
+    return modtype;
+}
+
 void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
 {
     // create submodule
-    const char *modname = submod->getName();
-    const char *modtypename;
+    const char *submodname = submod->getName();
+    const char *submodtypename;
     if (strnull(submod->getLikeParam()))
     {
-        modtypename = submod->getTypeName();
+        submodtypename = submod->getTypeName();
     }
     else
     {
         const char *parname = submod->getLikeParam();
-        modtypename = modp->par(parname).stringValue();
+        submodtypename = modp->par(parname).stringValue();
     }
-
-    cModuleType *modtype = findModuleType(modtypename);
-    if (!modtype)
-        throw new cRuntimeError("dynamic module builder: module type definition `%s' "
-                                "for submodule %s in (%s)%s not found (Define_Module() missing from C++ source?)",
-                                modtypename, modname, modp->className(), modp->fullPath().c_str());
 
     ExpressionNode *vectorsizeexpr = findExpression(submod, "vector-size");
 
     if (!vectorsizeexpr)
     {
-        cModule *submodp = modtype->create(modname, modp);
-        ModulePtrVector& v = submodMap[modname];
+        cModuleType *submodtype = findAndCheckModuleType(submodtypename, modp, submodname);
+        cModule *submodp = submodtype->create(submodname, modp);
+        ModulePtrVector& v = submodMap[submodname];
         v.push_back(submodp);
 
         setDisplayString(submodp, submod);
@@ -173,10 +178,13 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
     else
     {
         int vectorsize = (int) evaluate(modp, vectorsizeexpr);
-        ModulePtrVector& v = submodMap[modname];
+        ModulePtrVector& v = submodMap[submodname];
+        cModuleType *submodtype = NULL;
         for (int i=0; i<vectorsize; i++)
         {
-            cModule *submodp = modtype->create(modname, modp, vectorsize, i);
+            if (!submodtype)
+                submodtype = findAndCheckModuleType(submodtypename, modp, submodname);
+            cModule *submodp = submodtype->create(submodname, modp, vectorsize, i);
             v.push_back(submodp);
             setDisplayString(submodp, submod);
             assignSubmoduleParams(submodp, submod);

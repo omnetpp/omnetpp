@@ -63,6 +63,7 @@ class cNEDNetworkBuilder
   protected:
     cModule *_submodule(cModule *parentmodp, const char *submodname, int idx=-1);
     void addChannelAttr(cChannel *chanp, ChannelAttrNode *channelattr);
+    cModuleType *findAndCheckModuleType(const char *modtypename, cModule *modp, const char *submodname);
     void addSubmodule(cModule *modp, SubmoduleNode *submod);
     void setDisplayString(cModule *submodp, SubmoduleNode *submod);
     void setConnDisplayString(cGate *srcgatep, ConnectionNode *conn);
