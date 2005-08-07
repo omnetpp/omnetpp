@@ -1,0 +1,37 @@
+%description:
+Tests reference counting of encapsulated messages.
+
+%activity:
+cMessage *payload = new cMessage;
+ev << "refcount=" << payload->refCount() << "\n";
+
+// encapsulate
+cMessage *packet = new cMessage;
+packet->encapsulate(payload);
+ev << "refcount=" << payload->refCount() << "\n";
+
+// duplicate packet that contains it
+cMessage *copy1 = (cMessage *)packet->dup();
+ev << "after encap: refcount=" << payload->refCount() << "\n";
+
+cMessage *copy2 = (cMessage *)packet->dup();
+ev << "after dup: refcount=" << payload->refCount() << "\n";
+
+cMessage *copy3 = (cMessage *)copy1->dup();
+ev << "after dup: refcount=" << payload->refCount() << "\n";
+
+// decapsulate
+cMessage *decap1 = copy1->decapsulate();
+ev << "after decap: refcount=" << payload->refCount() << ", "
+   << (payload==decap1 ? "same" : "different") << "\n";
+
+cMessage *encapmsg = copy2->encapsulatedMsg();
+ev << "after encapsulatedmsg: refcount=" << payload->refCount() << ", "
+   << (payload==encapmsg ? "same" : "different") << ", "
+   << "encapmsg.refcount=" << encapmsg->refCount() << "\n";
+
+%contains: stdout
+160
+32
+128
+
