@@ -84,7 +84,11 @@ cMessage::~cMessage()
     if (parlistp)
         dropAndDelete(parlistp);
     if (encapmsg)
+#ifdef REFCOUNTING
         _deleteEncapMsg();
+#else
+        dropAndDelete(encapmsg);
+#endif
 
     if (dynamic_cast<cObject *>(ctrlp))
         dropAndDelete((cObject *)ctrlp);
@@ -138,7 +142,9 @@ void cMessage::forEachChild(cVisitor *v)
         v->visit(parlistp);
     if (encapmsg)
     {
+#ifdef REFCOUNTING
         _detachEncapMsg();  // see method comment why this is needed
+#endif
         v->visit(encapmsg);
     }
 }
@@ -162,7 +168,9 @@ void cMessage::writeContents(ostream& os)
     }
     if (encapmsg) {
         os << "  encapsulated message:\n";
+#ifdef REFCOUNTING
         _detachEncapMsg();  // see method comment why this is needed
+#endif
         encapmsg->writeContents( os );
     }
     if (ctrlp) {
