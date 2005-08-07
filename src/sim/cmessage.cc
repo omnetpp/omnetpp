@@ -48,7 +48,7 @@ long cMessage::live_msgs = 0;
 
 cMessage::cMessage(const cMessage& msg) : cObject()
 {
-    refcount = 0;
+    sharecount = 0;
     parlistp = NULL;
     encapmsg = NULL;
     ctrlp = NULL;
@@ -66,7 +66,7 @@ cMessage::cMessage(const char *name, int k, long ln, int pri, bool err) : cObjec
     encapmsg = NULL;
     contextptr = NULL;
     ctrlp = NULL;
-    refcount = 0;
+    sharecount = 0;
     srcprocid = 0;
 
     frommod=fromgate=-1;
@@ -219,7 +219,7 @@ void cMessage::netUnpack(cCommBuffer *buffer)
 #else
     cObject::netUnpack(buffer);
 
-    ASSERT(refcount==0);
+    ASSERT(sharecount==0);
     buffer->unpack(msgkind);
     buffer->unpack(prior);
     buffer->unpack(len);
@@ -242,10 +242,7 @@ void cMessage::netUnpack(cCommBuffer *buffer)
         take(parlistp = (cArray *) buffer->unpackObject());
 
     if (buffer->checkFlag())
-    {
         take(encapmsg = (cMessage *) buffer->unpackObject());
-        encapmsg->refcount = 1;
-    }
 #endif
 }
 
@@ -253,9 +250,9 @@ cMessage& cMessage::operator=(const cMessage& msg)
 {
     if (this==&msg) return *this;
 
-    if (refcount!=0)
-        throw new cRuntimeError(this,"operator=(): assigning to a refcounted msg object "
-                                "(probably encapsulated in another message) not supported");
+    if (sharecount!=0)
+        throw new cRuntimeError(this,"operator=(): this message is refcounted (shared between "
+                                     "several messages), it is forbidden to change it");
 
     cObject::operator=(msg);
 
@@ -284,11 +281,10 @@ cMessage& cMessage::operator=(const cMessage& msg)
     if (encapmsg)
         _deleteEncapMsg();
     encapmsg = msg.encapmsg;
-    if (encapmsg && ++encapmsg->refcount==0)   // refcount overflow
+    if (encapmsg && ++encapmsg->sharecount==0)   // sharecount overflow
     {
-        --encapmsg->refcount;
+        --encapmsg->sharecount;
         take(encapmsg = (cMessage *)encapmsg->dup());
-        encapmsg->refcount = 1;
     }
 #endif
 
@@ -314,13 +310,13 @@ void cMessage::_createparlist()
 #ifdef REFCOUNTING
 void cMessage::_deleteEncapMsg()
 {
-    if (encapmsg->refcount>1)
+    if (encapmsg->sharecount>0)
     {
-        encapmsg->refcount--;
+        encapmsg->sharecount--;
     }
     else
     {
-        // note: dropAndDelete(encapmsg) cannot be used, because due to refcounting
+        // note: dropAndDelete(encapmsg) cannot be used, because due to sharecounting
         // ownerp is not valid (may be any former owner, possibly deleted since then)
         encapmsg->ownerp = NULL;
         delete encapmsg;
@@ -331,15 +327,14 @@ void cMessage::_deleteEncapMsg()
 #ifdef REFCOUNTING
 void cMessage::_detachEncapMsg()
 {
-    if (encapmsg->refcount>1)
+    if (encapmsg->sharecount>0)
     {
-        encapmsg->refcount--;
+        encapmsg->sharecount--;
         take(encapmsg = (cMessage *)encapmsg->dup());
-        encapmsg->refcount = 1;
     }
     else
     {
-        // note: due to refcounting, ownerp may be anything here (any former owner),
+        // note: due to sharecounting, ownerp may be anything here (any former owner),
         // so set it to ourselves
         encapmsg->ownerp = this;
     }
@@ -373,8 +368,7 @@ void cMessage::encapsulate(cMessage *msg)
                                     msg->owner()->className(), msg->owner()->fullPath().c_str());
         take(encapmsg = msg);
 #ifdef REFCOUNTING
-        ASSERT(encapmsg->refcount==0);
-        encapmsg->refcount = 1;
+        ASSERT(encapmsg->sharecount==0);
 #endif
         len += encapmsg->len;
     }
@@ -390,15 +384,13 @@ cMessage *cMessage::decapsulate()
         throw new cRuntimeError(this,"decapsulate(): msg length is smaller than encapsulated msg length");
 
 #ifdef REFCOUNTING
-    if (encapmsg->refcount>1)
+    if (encapmsg->sharecount>0)
     {
-        encapmsg->refcount--;
+        encapmsg->sharecount--;
         cMessage *msg = (cMessage *)encapmsg->dup();
         encapmsg = NULL;
         return msg;
     }
-    ASSERT(encapmsg->refcount==1);
-    encapmsg->refcount = 0;
     encapmsg->ownerp = this;
 #endif
     cMessage *msg = encapmsg;
@@ -410,7 +402,7 @@ cMessage *cMessage::decapsulate()
 cMessage *cMessage::encapsulatedMsg() const
 {
 #ifdef REFCOUNTING
-    // encapmsg may be shared (refcount>1) -- we'll make our own copy,
+    // encapmsg may be shared (sharecount>0) -- we'll make our own copy,
     // so that other messages are not affected in case the user modifies
     // the encapsulated message via the returned pointer.
     // Trick: this is a const method, so we can only do changes via a

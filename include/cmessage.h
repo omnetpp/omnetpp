@@ -101,7 +101,11 @@ class SIM_API cMessage : public cObject
     int prior;                 // priority -- used for scheduling msgs with equal times
     long len;                  // length of message -- used for bit errors and transm.delay
     bool error : 1;            // bit error occurred during transmission
-    unsigned char refcount : 7;// how many messages have this one encapsulated (0: not encapsulated, max 127)
+    unsigned char sharecount : 7; // num of msgs MINUS ONE that have this one encapsulated.
+                               // 0: not shared (not encapsulated or encapsulated in one message);
+                               // 1: shared once (shared among two messages);
+                               // 2: shared twice (shared among three messages); etc.
+                               // max sharecount is 127 (after that, a new msg is created).
     unsigned char srcprocid;   // reserved for use by parallel execution: id of source partition
     cArray *parlistp;          // ptr to list of parameters
     cMessage *encapmsg;        // ptr to encapsulated msg
@@ -117,10 +121,14 @@ class SIM_API cMessage : public cObject
     int heapindex;             // used by cMessageHeap (-1 if not on heap)
     unsigned long insertordr;  // used by cMessageHeap
 
+    // global variables for statistics
+    static long total_msgs;
+    static long live_msgs;
+
     // internal: create parlist
     void _createparlist();
 
-    // internal: if encapmsg is shared (refcount>1), creates a private copy for this msg,
+    // internal: if encapmsg is shared (sharecount>0), creates a private copy for this msg,
     // and in any case it sets encapmsg's owner to be this object. This method
     // has to be called before any operation on encapmsg, to prevent trouble
     // that may arise from accessing shared message instances. E.g. without calling
@@ -129,12 +137,12 @@ class SIM_API cMessage : public cObject
     // method dangerous.
     void _detachEncapMsg();
 
-    // internal: delete encapmsg, paying attention to its refcount (assumes encapmsg!=NULL)
+    // internal: delete encapmsg, paying attention to its sharecount (assumes encapmsg!=NULL)
     void _deleteEncapMsg();
 
-    // global variables for statistics
-    static long total_msgs;
-    static long live_msgs;
+  public:
+    // internal: only to be used by test cases
+    int shareCount() const {return sharecount;}
 
   public:
     /** @name Constructors, destructor, assignment */
@@ -539,18 +547,6 @@ class SIM_API cMessage : public cObject
      * of encapsulated messages.
      */
     cMessage *encapsulatedMsg() const;
-
-    /**
-     * Returns how in many other messages this message is encapsulated.
-     * Normally this is zero; after encapsulation it will become one,
-     * and it will increase when the encapsulating message is dupped or
-     * copied.
-     *
-     * FIXME comment: forbidden to keep the ptr and change
-     * anything after encapsulation! messes up refcounting: change would
-     * affect other messages as well
-     */
-    int refCount() const {return refcount;}
     //@}
 
     /** @name Sending/arrival information. */

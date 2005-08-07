@@ -1,3 +1,12 @@
+2005-08-07  Andras Varga
+
+	* cmessage.h: implemented reference counting of encapsulated messages.
+	This should dramatically increase performance of wireless simulations 
+	where lots of message duplication is done (AirFrames) with most copies 
+	discarded without looking into them (noisy channel or wrong L2 dest
+	address). There' nominal (<1%) performance penalty for other 
+	simulations.
+
 2005-07-25  Andras Varga
 
 	* coutvect.h: made it possible to record values into output vectors

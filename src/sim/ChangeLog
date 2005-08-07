@@ -1,3 +1,8 @@
+2005-08-07  Andras Varga
+
+	* cmessage.cc: implemented reference counting of encapsulated messages.
+	See include/ChangeLog for more comments.
+
 2005-07-25  Andras Varga
 
 	* coutvect.cc: implemented recordWithTimestamp() functions.

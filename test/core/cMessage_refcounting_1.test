@@ -3,51 +3,51 @@ Tests reference counting of encapsulated messages.
 
 %activity:
 cMessage *payload = new cMessage;
-ev << "refcount=" << payload->refCount() << "\n";
+ev << "sharecount=" << payload->shareCount() << "\n";
 
 // encapsulate
 cMessage *msg0 = new cMessage;
 msg0->encapsulate(payload);
-ev << "after encap: refcount=" << payload->refCount() << "\n";
+ev << "after encap: sharecount=" << payload->shareCount() << "\n";
 
-// duplicate msg0 that contains it
+// duplicate msg three times: this must result in sharecount=3
 cMessage *msg1 = (cMessage *)msg0->dup();
-ev << "after dup: refcount=" << payload->refCount() << "\n";
+ev << "after dup: sharecount=" << payload->shareCount() << "\n";
 
-cMessage *msg2 = (cMessage *)msg0->dup();
-ev << "after dup: refcount=" << payload->refCount() << "\n";
+cMessage *msg2 = (cMessage *)msg1->dup();
+ev << "after dup: sharecount=" << payload->shareCount() << "\n";
 
-cMessage *msg3 = (cMessage *)msg1->dup();
-ev << "after dup: refcount=" << payload->refCount() << "\n";
+cMessage *msg3 = (cMessage *)msg0->dup();
+ev << "after dup: sharecount=" << payload->shareCount() << "\n";
 
-// decapsulate
+// decapsulate: this should cause an own (non-shared) copy to be made
 cMessage *decapsmsg = msg1->decapsulate();
-ev << "after decap: refcount=" << payload->refCount() << ", "
+ev << "after decap: sharecount=" << payload->shareCount() << ", "
    << (payload==decapsmsg ? "same" : "different") << ", "
-   << "decapsmsg.refcount=" << decapsmsg->refCount() << "\n";
+   << "decapsmsg.sharecount=" << decapsmsg->shareCount() << "\n";
 
-// test encapsulatedMsg
+// test encapsulatedMsg:  this should cause an own (non-shared) copy to be made
 cMessage *encapmsg = msg2->encapsulatedMsg();
-ev << "after encapsulatedmsg: refcount=" << payload->refCount() << ", "
+ev << "after encapsulatedmsg: sharecount=" << payload->shareCount() << ", "
    << (payload==encapmsg ? "same" : "different") << ", "
-   << "encapmsg.refcount=" << encapmsg->refCount() << "\n";
+   << "encapmsg.sharecount=" << encapmsg->shareCount() << "\n";
 
-// test delete with refcount=1
+// test delete with sharecount=0
 delete msg2;
 
-// test delete with refcount>1
+// test delete with sharecount>0
 delete msg3;
-ev << "after delete: refcount=" << payload->refCount() << "\n";
+ev << "after delete: sharecount=" << payload->shareCount() << "\n";
 
 delete msg0;
 
 %contains: stdout
-refcount=0
-after encap: refcount=1
-after dup: refcount=2
-after dup: refcount=3
-after dup: refcount=4
-after decap: refcount=3, different, decapsmsg.refcount=0
-after encapsulatedmsg: refcount=2, different, encapmsg.refcount=1
-after delete: refcount=1
+sharecount=0
+after encap: sharecount=0
+after dup: sharecount=1
+after dup: sharecount=2
+after dup: sharecount=3
+after decap: sharecount=2, different, decapsmsg.sharecount=0
+after encapsulatedmsg: sharecount=1, different, encapmsg.sharecount=0
+after delete: sharecount=0
 
