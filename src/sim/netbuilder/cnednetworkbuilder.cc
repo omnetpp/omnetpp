@@ -70,6 +70,8 @@ void cNEDNetworkBuilder::setupNetwork(NetworkNode *networknode)
                                 modtypename, modname);
 
     cModule *networkp = modtype->create(modname, NULL);
+
+    cContextSwitcher __ctx(submodp); // params need to be evaluated in the module's context
     assignSubmoduleParams(networkp, networknode);
     readInputParams(networkp);
 
@@ -170,6 +172,7 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
         ModulePtrVector& v = submodMap[submodname];
         v.push_back(submodp);
 
+        cContextSwitcher __ctx(submodp); // params need to be evaluated in the module's context
         setDisplayString(submodp, submod);
         assignSubmoduleParams(submodp, submod);
         readInputParams(submodp);
@@ -186,6 +189,8 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
                 submodtype = findAndCheckModuleType(submodtypename, modp, submodname);
             cModule *submodp = submodtype->create(submodname, modp, vectorsize, i);
             v.push_back(submodp);
+
+            cContextSwitcher __ctx(submodp); // params need to be evaluated in the module's context
             setDisplayString(submodp, submod);
             assignSubmoduleParams(submodp, submod);
             readInputParams(submodp);

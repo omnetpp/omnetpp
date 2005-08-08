@@ -552,6 +552,7 @@ void NEDCppGenerator::doNetwork(NetworkNode *node, const char *indent, int mode,
     submodule_var = node->getName();
     submodule_var += "_p";
     out << indent << "cModule *" << submodule_var.c_str() << " = modtype->create(\"" << submodule_name << "\", NULL);\n\n";
+    out << indent << "cContextSwitcher __ctx(" << submodule_var.c_str() << "); // do the rest in this module's context\n";
 
     // generate children (except expressions)
     generateChildrenWithTags(node, "substmachines,substparams,gatesizes", indent, mode);
@@ -763,11 +764,14 @@ void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int m
     ExpressionNode *vectorsize = findExpression(node, "vector-size");
     if (!vectorsize)
     {
+        out << indent << "int " << node->getName() << "_size = 1;\n";
         resolveSubmoduleType(node, indent);
         submodule_var = node->getName();
         submodule_var += "_p";
         out << indent << "cModule *" << submodule_var.c_str() << " = modtype->create(\"" << submodule_name << "\", mod);\n";
-        out << indent << "int " << node->getName() << "_size = 1;\n";
+        out << indent << "{\n";
+        indent = increaseIndent(indent);
+        out << indent << "cContextSwitcher __ctx(" << submodule_var.c_str() << "); // do the rest in this module's context\n";
     }
     else
     {
@@ -791,6 +795,7 @@ void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int m
         submodule_var += "[submodindex]";
         indent = increaseIndent(indent);
         out << indent << submodule_var.c_str() << " = modtype->create(\"" << submodule_name << "\", mod, " << submodulesize_var.c_str() << ", submodindex);\n";
+        out << indent << "cContextSwitcher __ctx(" << submodule_var.c_str() << "); // do the rest in this module's context\n";
     }
     out << "\n";
 
@@ -806,17 +811,13 @@ void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int m
     DisplayStringNode *dispstr = (DisplayStringNode *)node->getFirstChildWithTag(NED_DISPLAY_STRING);
     if (dispstr)
     {
-        out << indent << submodule_var.c_str() << "->setDisplayString(\"" <<  dispstr->getValue() << "\");\n\n";
+        out << indent << submodule_var.c_str() << "->setDisplayString(\"" <<  dispstr->getValue() << "\");\n";
     }
 
     // note: we'll call buildinside only if all connections on this level have been built as well
 
-    if (vectorsize)
-    {
-        indent = decreaseIndent(indent);
-        out << indent << "}\n";
-    }
-    out << "\n";
+    indent = decreaseIndent(indent);
+    out << indent << "}\n\n";
 }
 
 void NEDCppGenerator::doSubmoduleFinally(SubmoduleNode *node, const char *indent, int mode, const char *)

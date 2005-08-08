@@ -1,3 +1,11 @@
+2005-08-08  Andras Varga
+
+	* cppgenerator.cc: assign submodule parameters, gatesizes etc 
+	in that submodule's context (use cContextSwitcher); same for network.
+	This is mainly needed for ModNameParamResolver to work correctly
+	($MODULE_NAME etc for XPath expressions are taken from the module 
+	in context).
+
 2005-08-07  Andras Varga
 
 	* cppgenerator.cc: don't look for module type if module vector size 
