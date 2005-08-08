@@ -1,3 +1,10 @@
+2005-08-08  Andras Varga
+
+	* omnetapp.cc: make use of ModNameParamResolver in getXMLDocument().
+	This will allow parameters like $MODULE_FULLPATH, $MODULE_INDEX etc
+	to be used in XPath expressions (see doc of ModNameParamResolver
+	for the full list)
+
 2005-07-24  Andras Varga
 
 	* filemgrs.h/cc: implemented newly added flush() virtual function to 

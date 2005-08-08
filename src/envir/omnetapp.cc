@@ -461,9 +461,14 @@ cXMLElement *TOmnetApp::getXMLDocument(const char *filename, const char *path)
     cXMLElement *documentnode = xmlcache->getDocument(filename);
     assert(documentnode);
     if (path)
-        return cXMLElement::getDocumentElementByPath(documentnode, path);
+    {
+        ModNameParamResolver resolver(simulation.contextModule()); // resolves $MODULE_NAME etc in XPath expr.
+        return cXMLElement::getDocumentElementByPath(documentnode, path, &resolver);
+    }
     else
+    {
         return documentnode->getFirstChild();
+    }
 }
 
 cConfiguration *TOmnetApp::getConfig()
