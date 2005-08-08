@@ -71,7 +71,7 @@ void cNEDNetworkBuilder::setupNetwork(NetworkNode *networknode)
 
     cModule *networkp = modtype->create(modname, NULL);
 
-    cContextSwitcher __ctx(submodp); // params need to be evaluated in the module's context
+    cContextSwitcher __ctx(networkp); // params need to be evaluated in the module's context
     assignSubmoduleParams(networkp, networknode);
     readInputParams(networkp);
 

@@ -541,6 +541,7 @@ static std::string my_itostr(int d)
 
 bool ModNameParamResolver::resolve(const char *paramname, std::string& value)
 {
+    //printf("resolving $%s in context=%s\n", paramname, mod ? mod->fullPath().c_str() : "NULL");
     if (!mod)
         return false;
     cModule *parentMod = mod->parentModule();
@@ -555,7 +556,7 @@ bool ModNameParamResolver::resolve(const char *paramname, std::string& value)
     else if (!strcmp(paramname, "MODULE_INDEX"))
         value = my_itostr(mod->index());
     else if (!strcmp(paramname, "MODULE_ID"))
-        value = my_itostr(mod->index());
+        value = my_itostr(mod->id());
 
     else if (!strcmp(paramname, "PARENTMODULE_FULLPATH") && parentMod)
         value = parentMod->fullPath();
@@ -566,7 +567,7 @@ bool ModNameParamResolver::resolve(const char *paramname, std::string& value)
     else if (!strcmp(paramname, "PARENTMODULE_INDEX") && parentMod)
         value = my_itostr(parentMod->index());
     else if (!strcmp(paramname, "PARENTMODULE_ID") && parentMod)
-        value = my_itostr(parentMod->index());
+        value = my_itostr(parentMod->id());
 
     else if (!strcmp(paramname, "GRANDPARENTMODULE_FULLPATH") && grandparentMod)
         value = grandparentMod->fullPath();
@@ -577,10 +578,11 @@ bool ModNameParamResolver::resolve(const char *paramname, std::string& value)
     else if (!strcmp(paramname, "GRANDPARENTMODULE_INDEX") && grandparentMod)
         value = my_itostr(grandparentMod->index());
     else if (!strcmp(paramname, "GRANDPARENTMODULE_ID") && grandparentMod)
-        value = my_itostr(grandparentMod->index());
+        value = my_itostr(grandparentMod->id());
     else
         return false;
 
+    //printf("  --> '%s'\n", value.c_str());
     return true;
 }
 
