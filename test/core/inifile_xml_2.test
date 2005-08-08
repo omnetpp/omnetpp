@@ -62,13 +62,11 @@ Define_Module({Simple});
 
 void {Simple}::activity()
 {
-    cXMLElement *node1 = par("xmlconfig1");
-    ASSERT(node1);
-    ev << node1->getTagName() << " at " << node1->getSourceLocation() << endl;
-
-    cXMLElement *node2 = par("xmlconfig2");
-    ASSERT(node2);
-    ev << node2->getTagName() << " at " << node2->getSourceLocation() << endl;
+    for (int i=0; i<params(); i++)
+    {
+        cXMLElement *node = par(i).xmlValue();
+        ev << par(i).name() << ": <" << node->getTagName() << " id='"<< node->getAttribute("id") << "'>" << endl;
+    }
 }
 
 
