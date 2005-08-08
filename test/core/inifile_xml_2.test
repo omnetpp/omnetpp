@@ -1,0 +1,100 @@
+%description:
+Check that $MODULE_NAME etc parameters are properly recognised in the
+path expression: xmldoc("filename.xml", "pathexpr")
+
+$MODULE_FULLPATH, $MODULE_FULLNAME, $MODULE_NAME, $MODULE_INDEX, $MODULE_ID
+$PARENTMODULE_FULLPATH, ...
+$GRANDPARENTMODULE_FULLPATH,...
+
+%file: {}.xml
+
+<foo >
+    <foo id="2" color="red">one</foo>
+    <foo id="3">
+    </foo>
+</foo>
+
+%global:
+
+#ifdef _MSC_VER
+#pragma warning(disable:4786)
+#endif
+
+
+%file: {}.ned
+
+simple {Simple}
+    parameters:
+        by_module_fullpath: xml,
+        by_module_fullname: xml,
+        by_module_name: xml,
+        by_module_index: xml,
+        by_module_id: xml,
+
+        by_parentmodule_fullpath: xml,
+        by_parentmodule_fullname: xml,
+        by_parentmodule_name: xml,
+        by_parentmodule_index: xml,
+        by_parentmodule_id: xml,
+
+        by_grandparentmodule_fullpath: xml,
+        by_grandparentmodule_fullname: xml,
+        by_grandparentmodule_name: xml,
+        by_grandparentmodule_index: xml,
+        by_grandparentmodule_id: xml;
+endsimple
+
+network {Net} : {Simple}
+endnetwork
+
+%file: {}.cc
+
+#include <string.h>
+#include <omnetpp.h>
+
+class {Simple} : public cSimpleModule
+{
+    Module_Class_Members({Simple},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Simple});
+
+void {Simple}::activity()
+{
+    cXMLElement *node1 = par("xmlconfig1");
+    ASSERT(node1);
+    ev << node1->getTagName() << " at " << node1->getSourceLocation() << endl;
+
+    cXMLElement *node2 = par("xmlconfig2");
+    ASSERT(node2);
+    ev << node2->getTagName() << " at " << node2->getSourceLocation() << endl;
+}
+
+
+%inifile: {}.ini
+[General]
+network={Net}
+
+[Parameters]
+**.by_module_fullpath = xmldoc("{}.xml","//foo[@att=$MODULE_FULLPATH]");
+**.by_module_fullname = xmldoc("{}.xml","//foo[@att=$MODULE_FULLNAME]");
+**.by_module_name =     xmldoc("{}.xml","//foo[@att=$MODULE_NAME]");
+**.by_module_index =    xmldoc("{}.xml","//foo[@att=$MODULE_INDEX]");
+**.by_module_id =       xmldoc("{}.xml","//foo[@att=$MODULE_ID]");
+
+**.by_parentmodule_fullpath = xmldoc("{}.xml","//foo[@att=$PARENTMODULE_FULLPATH]");
+**.by_parentmodule_fullname = xmldoc("{}.xml","//foo[@att=$PARENTMODULE_FULLNAME]");
+**.by_parentmodule_name =     xmldoc("{}.xml","//foo[@att=$PARENTMODULE_NAME]");
+**.by_parentmodule_index =    xmldoc("{}.xml","//foo[@att=$PARENTMODULE_INDEX]");
+**.by_parentmodule_id =       xmldoc("{}.xml","//foo[@att=$PARENTMODULE_ID]");
+
+**.by_grandparentmodule_fullpath = xmldoc("{}.xml","//foo[@att=$GRANDPARENTMODULE_FULLPATH]");
+**.by_grandparentmodule_fullname = xmldoc("{}.xml","//foo[@att=$GRANDPARENTMODULE_FULLNAME]");
+**.by_grandparentmodule_name =     xmldoc("{}.xml","//foo[@att=$GRANDPARENTMODULE_NAME]");
+**.by_grandparentmodule_index =    xmldoc("{}.xml","//foo[@att=$GRANDPARENTMODULE_INDEX]");
+**.by_grandparentmodule_id =       xmldoc("{}.xml","//foo[@att=$GRANDPARENTMODULE_ID]");
+
+%contains-regex: stdout
+foo at .*{}\.xml:2
+baz at .*{}\.xml:6
