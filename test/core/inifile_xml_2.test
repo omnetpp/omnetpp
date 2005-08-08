@@ -9,23 +9,23 @@ $GRANDPARENTMODULE_FULLPATH,...
 %file: {}.xml
 
 <foo >
-    <foo id="fp" att="red"/>
-    <foo id="fn" att="red"/>
-    <foo id="n"  att="red"/>
-    <foo id="i"  att="red"/>
-    <foo id="id" att="red"/>
+    <foo id="fp" att="{net}.subnet[0].simp[0]"/>
+    <foo id="fn" att="simp[0]"/>
+    <foo id="n"  att="simp"/>
+    <foo id="i"  att="0"/>
+    <foo id="id" att="6"/>
 
-    <foo id="p_fp" att="red"/>
-    <foo id="p_fn" att="red"/>
-    <foo id="p_n"  att="red"/>
-    <foo id="p_i"  att="red"/>
-    <foo id="p_id" att="red"/>
+    <foo id="p_fp" att="{net}.subnet[0]"/>
+    <foo id="p_fn" att="subnet[0]"/>
+    <foo id="p_n"  att="subnet"/>
+    <foo id="p_i"  att="0"/>
+    <foo id="p_id" att="2"/>
 
-    <foo id="gp_fp" att="red"/>
-    <foo id="gp_fn" att="red"/>
-    <foo id="gp_n"  att="red"/>
-    <foo id="gp_i"  att="red"/>
-    <foo id="gp_id" att="red"/>
+    <foo id="gp_fp" att="{net}"/>
+    <foo id="gp_fn" att="{net}"/>
+    <foo id="gp_n"  att="{net}"/>
+    <foo id="gp_i"  att="0"/>
+    <foo id="gp_id" att="1"/>
 </foo>
 
 %global:
@@ -36,6 +36,9 @@ $GRANDPARENTMODULE_FULLPATH,...
 
 
 %file: {}.ned
+
+module {Dummy}
+endmodule
 
 simple {Simple}
     parameters:
@@ -58,7 +61,20 @@ simple {Simple}
         by_grandparentmodule_id: xml;
 endsimple
 
-network {Net} : {Simple}
+module {Subnet}
+    submodules:
+        dum1: {Dummy};
+        dum2: {Dummy}[2];
+        simp: {Simple}[1];
+        dum3: {Dummy};
+endmodule
+
+module {Net}
+    submodules:
+        subnet: {Subnet}[1];
+endmodule
+
+network {net} : {Net}
 endnetwork
 
 %file: {}.cc
@@ -86,7 +102,7 @@ void {Simple}::activity()
 
 %inifile: {}.ini
 [General]
-network={Net}
+network={net}
 
 [Parameters]
 **.by_module_fullpath = xmldoc("{}.xml","//foo[@att=$MODULE_FULLPATH]");
