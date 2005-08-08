@@ -9,9 +9,23 @@ $GRANDPARENTMODULE_FULLPATH,...
 %file: {}.xml
 
 <foo >
-    <foo id="2" color="red">one</foo>
-    <foo id="3">
-    </foo>
+    <foo id="fp" att="red"/>
+    <foo id="fn" att="red"/>
+    <foo id="n"  att="red"/>
+    <foo id="i"  att="red"/>
+    <foo id="id" att="red"/>
+
+    <foo id="p_fp" att="red"/>
+    <foo id="p_fn" att="red"/>
+    <foo id="p_n"  att="red"/>
+    <foo id="p_i"  att="red"/>
+    <foo id="p_id" att="red"/>
+
+    <foo id="gp_fp" att="red"/>
+    <foo id="gp_fn" att="red"/>
+    <foo id="gp_n"  att="red"/>
+    <foo id="gp_i"  att="red"/>
+    <foo id="gp_id" att="red"/>
 </foo>
 
 %global:
