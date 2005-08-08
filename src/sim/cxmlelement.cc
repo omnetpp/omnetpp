@@ -27,6 +27,7 @@
 #include "cxmlelement.h"
 #include "cexception.h"
 #include "cenvir.h"
+#include "cmodule.h" // for ModNameParamResolver
 
 #ifdef _MSC_VER
 #define strcasecmp  stricmp
@@ -273,7 +274,7 @@ cXMLElement *cXMLElement::getElementById(const char *idattrvalue)
 //---------------
 
 /*
- * A minimalistic XPath interpreter follows.
+ * A minimalistic XPath interpreter.
  */
 class MiniXPath
 {
@@ -527,5 +528,68 @@ void cXMLElement::debugDump(int depth) const
         child->debugDump(depth+1);
     for (i=0; i<depth; i++) ev << "  ";
     ev << "</" << getTagName() << ">\n";
+}
+
+//---------------
+
+static std::string my_itostr(int d)
+{
+    char buf[32];
+    sprintf(buf, "%d", d);
+    return std::string(buf);
+}
+
+bool ModNameParamResolver::resolve(const char *paramname, std::string& value)
+{
+    if (!mod)
+        return false;
+    cModule *parentMod = mod->parentModule();
+    cModule *grandparentMod = parentMod ? parentMod->parentModule() : NULL;
+
+    if (!strcmp(paramname, "MODULE_FULLPATH"))
+        value = mod->fullPath();
+    else if (!strcmp(paramname, "MODULE_FULLNAME"))
+        value = mod->fullName();
+    else if (!strcmp(paramname, "MODULE_NAME"))
+        value = mod->name();
+    else if (!strcmp(paramname, "MODULE_INDEX"))
+        value = my_itostr(mod->index());
+    else if (!strcmp(paramname, "MODULE_ID"))
+        value = my_itostr(mod->index());
+
+    else if (!strcmp(paramname, "PARENTMODULE_FULLPATH") && parentMod)
+        value = parentMod->fullPath();
+    else if (!strcmp(paramname, "PARENTMODULE_FULLNAME") && parentMod)
+        value = parentMod->fullName();
+    else if (!strcmp(paramname, "PARENTMODULE_NAME") && parentMod)
+        value = parentMod->name();
+    else if (!strcmp(paramname, "PARENTMODULE_INDEX") && parentMod)
+        value = my_itostr(parentMod->index());
+    else if (!strcmp(paramname, "PARENTMODULE_ID") && parentMod)
+        value = my_itostr(parentMod->index());
+
+    else if (!strcmp(paramname, "GRANDPARENTMODULE_FULLPATH") && grandparentMod)
+        value = grandparentMod->fullPath();
+    else if (!strcmp(paramname, "GRANDPARENTMODULE_FULLNAME") && grandparentMod)
+        value = grandparentMod->fullName();
+    else if (!strcmp(paramname, "GRANDPARENTMODULE_NAME") && grandparentMod)
+        value = grandparentMod->name();
+    else if (!strcmp(paramname, "GRANDPARENTMODULE_INDEX") && grandparentMod)
+        value = my_itostr(grandparentMod->index());
+    else if (!strcmp(paramname, "GRANDPARENTMODULE_ID") && grandparentMod)
+        value = my_itostr(grandparentMod->index());
+    else
+        return false;
+
+    return true;
+}
+
+bool StringMapParamResolver::resolve(const char *paramname, std::string& value)
+{
+    StringMap::iterator it = params.find(paramname);
+    if (it==params.end())
+        return false;
+    value = it->second;
+    return true;
 }
 

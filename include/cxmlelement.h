@@ -24,6 +24,7 @@
 #include "defs.h"
 
 class cXMLElement;
+class cModule;
 
 /**
  * A list of XML elements. Used with cXMLElement.
@@ -311,6 +312,38 @@ class SIM_API cXMLElement
      */
     void debugDump(int depth=0) const;
     //@}
+};
+
+/**
+ * A parameter resolver class for cXMLElement (more precisely, for
+ * cXMLElement::getElementByPath()) that, given a cModule pointer, resolves
+ * the following parameters: $MODULE_FULLPATH, $MODULE_FULLNAME, $MODULE_NAME,
+ * $MODULE_INDEX, $MODULE_ID; $PARENTMODULE_FULLPATH etc;
+ * $GRANDPARENTMODULE_FULLPATH etc.
+ */
+class SIM_API ModNameParamResolver : public cXMLElement::ParamResolver
+{
+  protected:
+    cModule *mod;
+  public:
+    ModNameParamResolver(cModule *mod)  {this->mod = mod;}
+    virtual bool resolve(const char *paramname, std::string& value);
+};
+
+/**
+ * A parameter resolver class for cXMLElement (more precisely, for
+ * cXMLElement::getElementByPath()), which resolves parameters from
+ * a string map that contains (parametername, value) pairs.
+ */
+class SIM_API StringMapParamResolver : public cXMLElement::ParamResolver
+{
+  public:
+    typedef std::map<std::string,std::string> StringMap;
+  protected:
+    StringMap params;
+  public:
+    StringMapParamResolver(const StringMap& m)  {params = m;}
+    virtual bool resolve(const char *paramname, std::string& value);
 };
 
 #endif
