@@ -6,75 +6,75 @@ OMNeT++ 3.2 snapshots (Jul-Aug 2005)
 A brief summary of the changes since 3.2pre2:
 
 Tkenv:
-   - the "Find/Inspect Objects" dialog became nonmodal, and it can be kept
-     open while the simulation is running.
+  - the "Find/Inspect Objects" dialog became nonmodal, and it can be kept
+    open while the simulation is running.
 
-   - added the "Run until next local event" command to modules' context menu
-     (which pops up when you right-click an icon)
+  - added the "Run until next local event" command to modules' context menu
+    (which pops up when you right-click an icon)
 
 GNED:
-   - reorganized and improved connection properties dialog (knows what gates
-     submodules have, which gates are vectors, only offers output gates as src
-     gate and input gates as dest gate, etc.)
+  - reorganized and improved connection properties dialog (knows what gates
+    submodules have, which gates are vectors, only offers output gates as src
+    gate and input gates as dest gate, etc.)
 
 opp_msgc:
-   - "const fix": generate both const and non-const getter methods for fields
-     of class or struct type.
+  - "const fix": generate both const and non-const getter methods for fields
+    of class or struct type.
 
-   - it is no longer required to write out "fields:" in an otherwise empty 
-     class definition
+  - it is no longer required to write out "fields:" in an otherwise empty
+    class definition
 
-   - added the possibility to set a base class field. E.g. kind=5 will 
-     generate the setKind(5) line into the constructor.
+  - added the possibility to set a base class field. E.g. kind=5 will
+    generate the setKind(5) line into the constructor.
 
-   - generate a protected and unimplemented operator==(), to prevent 
-     accidental usage of compiler-generated one
+  - generate a protected and unimplemented operator==(), to prevent
+    accidental usage of compiler-generated one
 
-   - added the possibility (-P option) to declare generated classes to be
-     dllexport/dllimport on Windows.
+  - added the possibility (-P option) to declare generated classes to be
+    dllexport/dllimport on Windows.
 
-   - generated C++ header now contains relevant part of the .msg files as 
-     Doxygen comment
+  - generated C++ header now contains relevant part of the .msg files as
+    Doxygen comment
 
 nedtool, dynamic NED loading:
-   - don't look for the module type if the module vector size is zero
+  - don't look for the module type if the module vector size is zero
 
 opp_nmakemake:
-   - added options (-s, -t, -d) to enable building Windows DLLs from simple
-     modules, plus -P option to support opp_msgc's similar option
+  - added options (-s, -t, -d) to enable building Windows DLLs from simple
+    modules, plus -P option to support opp_msgc's similar option
 
 Simulation kernel:
-   - implemented reference counting of encapsulated messages. This should 
-     dramatically increase performance of wireless simulations, where lots
-     of message duplication is done (AirFrames) with most copies discarded
-     without looking into them (noisy channel or wrong L2 dest address).
-     There' nominal (<1%) performance penalty for other simulations.
+  - implemented reference counting of encapsulated messages. This should
+    dramatically increase performance of wireless simulations, where lots
+    of message duplication is done (AirFrames) with most copies discarded
+    without looking into them (noisy channel or wrong L2 dest address).
+    There' nominal (<1%) performance penalty for other simulations.
 
 omnetpp.ini:
-   - one can now use parameters like $MODULE_FULLPATH in the 2nd argument
-     of xmldoc(), i.e. the paths expression to select part of an XML file
-     to load. This allows for assigning XML params of several modules with a
-     single line in omnetpp.ini. Consider the following:
-       **.xmlConfig=xmldoc("all-in-one.xml","config[@mod=$MODULE_FULLPATH]")
-     where all-in-one.xml contains <config mod="net.host1.rt">...</config>
-     elements for every module.
+  - one can now use parameters like $MODULE_FULLPATH in the 2nd argument
+    of xmldoc(), i.e. the paths expression to select part of an XML file
+    to load. This allows for assigning XML params of several modules with a
+    single line in omnetpp.ini. Consider the following:
+      **.xmlConfig=xmldoc("all-in-one.xml","config[@mod=$MODULE_FULLPATH]")
+    where all-in-one.xml contains <config mod="net.host1.rt">...</config>
+    elements for every module.
 
-   - also fixed some anomalies in the path expression interpreter.
+  - also fixed some anomalies in the path expression interpreter.
 
 Summary of the changes in 3.2pre2:
 
 Simulation kernel:
-- WATCH() overhaul: now anything can be watched that has operator<<. If it
-  also has operator>>, you can use WATCH_RW() to make it editable on the GUI.
-  Objects and pointers to objects can be watched with WATCH_OBJ() and
-  WATCH_PTR(). STL container classes can be watched via WATCH_VECTOR(),
-  WATCH_PTRVECTOR(), WATCH_MAP(), WATCH_PTRMAP(), etc.
+  - WATCH() overhaul: now anything can be watched that has operator<<. If it
+    also has operator>>, you can use WATCH_RW() to make it editable on the GUI.
+    Objects and pointers to objects can be watched with WATCH_OBJ() and
+    WATCH_PTR(). STL container classes can be watched via WATCH_VECTOR(),
+    WATCH_PTRVECTOR(), WATCH_MAP(), WATCH_PTRMAP(), etc.
 
-- modules can now get notified when a module parameter changes. Just redefine
-  the new handleParameterChange(const char *parname) method of cModule.
+  - modules can now get notified when a module parameter changes. Just redefine
+    the new handleParameterChange(const char *parname) method of cModule.
 
-- parallel distributed simulation: added the cPtrPassingMPICommunications
-  class, for use in 64-bit supercomputing clusters like SGI Altix.
+  - parallel distributed simulation: added the cPtrPassingMPICommunications
+    class, for use in 64-bit supercomputing clusters like SGI Altix.
 
 Tkenv:
   - flush omnetpp.vec every time the simulation is stopped (to enable looking
