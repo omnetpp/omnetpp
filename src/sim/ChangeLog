@@ -1,3 +1,8 @@
+2005-08-09  Andras Varga
+
+	* cxmlelement.cc: bugfixes in the mini-XPath interpreter (leading
+	'//' was handled incorrectly), and stripped minixpath.cc/h from it.
+
 2005-08-07  Andras Varga
 
 	* cxmlelement.cc: the builtin mini-XPath interpreter turned into a 
