@@ -1,10 +1,69 @@
 What's New
 ==========
 
-OMNeT++ 3.2 snapshots (Jul 2005)
---------------------------------
-A brief summary of the changes since 3.2pre1:
+OMNeT++ 3.2 snapshots (Jul-Aug 2005)
+------------------------------------
+A brief summary of the changes since 3.2pre2:
 
+Tkenv:
+   - the "Find/Inspect Objects" dialog became nonmodal, and it can be kept
+     open while the simulation is running.
+
+   - added the "Run until next local event" command to modules' context menu
+     (which pops up when you right-click an icon)
+
+GNED:
+   - reorganized and improved connection properties dialog (knows what gates
+     submodules have, which gates are vectors, only offers output gates as src
+     gate and input gates as dest gate, etc.)
+
+opp_msgc:
+   - "const fix": generate both const and non-const getter methods for fields
+     of class or struct type.
+
+   - it is no longer required to write out "fields:" in an otherwise empty 
+     class definition
+
+   - added the possibility to set a base class field. E.g. kind=5 will 
+     generate the setKind(5) line into the constructor.
+
+   - generate a protected and unimplemented operator==(), to prevent 
+     accidental usage of compiler-generated one
+
+   - added the possibility (-P option) to declare generated classes to be
+     dllexport/dllimport on Windows.
+
+   - generated C++ header now contains relevant part of the .msg files as 
+     Doxygen comment
+
+nedtool, dynamic NED loading:
+   - don't look for the module type if the module vector size is zero
+
+opp_nmakemake:
+   - added options (-s, -t, -d) to enable building Windows DLLs from simple
+     modules, plus -P option to support opp_msgc's similar option
+
+Simulation kernel:
+   - implemented reference counting of encapsulated messages. This should 
+     dramatically increase performance of wireless simulations, where lots
+     of message duplication is done (AirFrames) with most copies discarded
+     without looking into them (noisy channel or wrong L2 dest address).
+     There' nominal (<1%) performance penalty for other simulations.
+
+omnetpp.ini:
+   - one can now use parameters like $MODULE_FULLPATH in the 2nd argument
+     of xmldoc(), i.e. the paths expression to select part of an XML file
+     to load. This allows for assigning XML params of several modules with a
+     single line in omnetpp.ini. Consider the following:
+       **.xmlConfig=xmldoc("all-in-one.xml","config[@mod=$MODULE_FULLPATH]")
+     where all-in-one.xml contains <config mod="net.host1.rt">...</config>
+     elements for every module.
+
+   - also fixed some anomalies in the path expression interpreter.
+
+Summary of the changes in 3.2pre2:
+
+Simulation kernel:
 - WATCH() overhaul: now anything can be watched that has operator<<. If it
   also has operator>>, you can use WATCH_RW() to make it editable on the GUI.
   Objects and pointers to objects can be watched with WATCH_OBJ() and
@@ -17,7 +76,7 @@ A brief summary of the changes since 3.2pre1:
 - parallel distributed simulation: added the cPtrPassingMPICommunications
   class, for use in 64-bit supercomputing clusters like SGI Altix.
 
-- Tkenv:
+Tkenv:
   - flush omnetpp.vec every time the simulation is stopped (to enable looking
     at it with Plove to decide if simulation needs to be run longer)
 
@@ -32,7 +91,7 @@ A brief summary of the changes since 3.2pre1:
     the plugin path (./plugins by default) that calls the extendContextMenu
     Tcl procedure.
 
-- GNED: Michael Franzen contributed several improvements and fixes:
+GNED: Michael Franzen contributed several improvements and fixes:
   - new option: "Open imported files automatically": tries to open all the
     files that are imported by an opened NED file. (It takes care that
     every NED file is opened only once.)
@@ -60,7 +119,7 @@ A brief summary of the changes since 3.2pre1:
 
   - plus several smaller fixes
 
-- heaps of small API improvements, see include/ChangeLog. A sample:
+Heaps of small API improvements, see include/ChangeLog. A sample:
    - cOutvector: added recordWithTimestamp()
    - cDisplayString: setTagArg() now accepts numeric (long) arg too.
    - cMessage: if "vector" is a vector gate, msg->arrivedOn("vector")
