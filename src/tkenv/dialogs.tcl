@@ -760,9 +760,7 @@ proc filteredobjectlist_inspectorupdate {} {
 #
 proc filteredobjectlist_popup {X Y w} {
     global filtobjlist_state
-    if {$filtobjlist_state(outofdate)} {
-        return
-    }
+
     set lb $w.f.main.list
     set ptr [lindex [multicolumnlistbox_curselection $lb] 0]
     if {$ptr==""} return
@@ -771,21 +769,24 @@ proc filteredobjectlist_popup {X Y w} {
     set p $w.popup
     catch {destroy $p}
     menu $p -tearoff 0
+    if {$filtobjlist_state(outofdate)} {set state "disabled"} else {set state "normal"}
     foreach type $insptypes {
-       $p add command -label "$type..." -command "opp_inspect $ptr \{$type\}; after 500 \{catch \{raise $w; focus $lb\}\}"
+       $p add command -label "$type..." -state $state -command "opp_inspect $ptr \{$type\}; after 500 \{catch \{raise $w; focus $lb\}\}"
     }
     $p post $X $Y
 }
 
 proc filteredobjectlist_inspect {lb} {
     global filtobjlist_state
+
+    set w .objdlg
     if {$filtobjlist_state(outofdate)} {
         if {[is_running]} {
             set advice "please stop the simulation and click Refresh first"
         } else {
             set advice "please click Refresh first"
         }
-        tk_messageBox -icon info -type ok -title {Filtered object list} \
+        tk_messageBox -parent $w -icon info -type ok -title {Filtered object list} \
                       -message "Dialog contents might be out of date -- $advice."
         return
     }
