@@ -233,7 +233,7 @@ cXMLElement *MiniXPath::matchStep(cXMLElement *node, const char *pathexpr)
     }
 }
 
-/*
+/* this function is currently unused
 bool MiniXPath::nodeMatchesStepExpr(cXMLElement *node, const char *stepexpr, int steplen)
 {
     // match first pattern step.
@@ -292,54 +292,4 @@ cXMLElement *MiniXPath::matchPathExpression(cXMLElement *node, const char *pathe
     else
         return matchStep(node->getParentNode(), pathexpr);
 }
-
-/*
-cXMLElement *MiniXPath::matchPathExpression(cXMLElement *node, const char *pathexpr, cXMLElement *root)
-{
-    // we don't have a document element (root node doesn't have a parent),
-    // that's why matching the beginning of the path has to be handled specially
-    // (matchSeparator(), matchStep(), recursiveMatch() all work on the
-    // children of the node passed)
-
-    ASSERT(root!=NULL || pathexpr[0]!='/');
-
-    // explore then skip starting '/' or '//'
-    bool slash = (pathexpr[0]=='/' && pathexpr[1]!='/');
-    bool slashslash = (pathexpr[0]=='/' && pathexpr[1]=='/');
-    while (pathexpr[0]=='/') pathexpr++;
-
-    // find end of first pattern step
-    const char *sep = strchr(pathexpr, '/');
-    if (!sep) sep = pathexpr+strlen(pathexpr);
-
-    const char *stepexpr = pathexpr;
-    int steplen = sep-pathexpr;
-
-    // if pathexpr starts with '/' or '//', then match from root
-    if (slashslash)
-    {
-        node = root; // match from root
-
-        // check if root matches
-        if (nodeMatchesStepExpr(node, stepexpr, steplen) && matchSeparator(node, sep))
-            return node;
-
-         // no, try to match deeper
-         return recursiveMatch(node, sep);
-    }
-    else
-    {
-        // if starts with '/', match root node
-        if (slash)
-            node = root;
-
-        // check if 1st step matches our context node
-        if (!nodeMatchesStepExpr(node, stepexpr, steplen))
-            return NULL;
-
-         // ok, match the rest
-         return matchSeparator(node, sep);
-     }
-}
-*/
 

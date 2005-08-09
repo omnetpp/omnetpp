@@ -29,6 +29,7 @@ class MiniXPath
 {
   private:
     cXMLElement::ParamResolver *resolver;
+
   private:
     bool parseTagNameFromStepExpr(std::string& tagname, const char *stepexpr, int len);
     bool parseBracketedNum(int& n, const char *s, int len);
@@ -39,7 +40,6 @@ class MiniXPath
     cXMLElement *recursiveMatch(cXMLElement *node, const char *pathexpr);
     cXMLElement *matchSeparator(cXMLElement *node, const char *seppathexpr);
     cXMLElement *matchStep(cXMLElement *node, const char *pathexpr);
-    bool nodeMatchesStepExpr(cXMLElement *node, const char *stepexpr, int steplen);
 
   public:
     /**

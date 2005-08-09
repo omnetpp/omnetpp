@@ -302,7 +302,7 @@ class SIM_API cXMLElement
      * The method throws an exception if the path expression is invalid,
      * and returns NULL if the element is not found.
      */
-    cXMLElement *getElementByPath(const char *pathexpression, ParamResolver *resolver=NULL);
+    cXMLElement *getElementByPath(const char *pathexpression, cXMLElement *root=NULL, ParamResolver *resolver=NULL);
 
     /**
      * Dumps tree content to ev in a XML-like format. This method is only
