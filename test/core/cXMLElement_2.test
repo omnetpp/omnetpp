@@ -33,7 +33,7 @@ Check cXMLElement::getElementByPath() basic functionality
 static void getElement(const char *pathexpr)
 {
     cXMLElement *rootelement = ev.getXMLDocument("{}.xml", NULL);
-    cXMLElement *node = rootelement->getElementByPath(pathexpr);
+    cXMLElement *node = rootelement->getElementByPath(pathexpr, rootelement, NULL);
 
     ev << (!pathexpr ? "''" : pathexpr) << ": " << (!node ? "null" : node->getAttribute("id")) << "\n";
 }
