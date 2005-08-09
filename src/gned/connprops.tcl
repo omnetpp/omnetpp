@@ -421,7 +421,11 @@ proc ConnProps:refreshGateCombo {w modkey srcdest} {
         # gates of parent module
         if {$srcdest=="src"} {set gtype "in"} else {set gtype "out"}
         if {$config(autoextend)} {set vecsuffix "++"} else {set vecsuffix "\[...\]"}
+        # hack: comboconfig overwrites editbox content too, so save and restore it
+        set oldtext [$w.gatename get]
         comboconfig $w.gatename [getGateNameList $modkey $gtype $vecsuffix]
+        $w.gatename delete 0 end
+        $w.gatename insert 0 $oldtext
     } else {
         #
         # find appropriate module definition and look up what gates it has
@@ -448,7 +452,11 @@ proc ConnProps:refreshGateCombo {w modkey srcdest} {
         set modtypekey [lindex $modtypekey 0]
         if {$srcdest=="src"} {set gtype "out"} else {set gtype "in"}
         if {$config(autoextend)} {set vecsuffix "++"} else {set vecsuffix "\[...\]"}
+        # hack: comboconfig overwrites editbox content too, so save and restore it
+        set oldtext [$w.gatename get]
         comboconfig $w.gatename [getGateNameList $modtypekey $gtype $vecsuffix]
+        $w.gatename delete 0 end
+        $w.gatename insert 0 $oldtext
     }
 }
 
