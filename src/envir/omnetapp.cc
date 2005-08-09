@@ -162,9 +162,10 @@ void TOmnetApp::setup()
          // install snapshot manager
          CREATE_BY_CLASSNAME(snapshotmgr, opt_snapshotmanager_class.c_str(), cSnapshotManager, "snapshot manager");
 
-         // set up for distributed execution
+         // set up for sequential or distributed execution
          if (!opt_parsim)
          {
+             // sequential
              CREATE_BY_CLASSNAME(scheduler, opt_scheduler_class.c_str(), cScheduler, "event scheduler");
              scheduler->setSimulation(&simulation);
              simulation.setScheduler(scheduler);
@@ -172,7 +173,7 @@ void TOmnetApp::setup()
          else
          {
 #ifdef WITH_PARSIM
-             // create components
+             // parsim: create components
              CREATE_BY_CLASSNAME(parsimcomm, opt_parsimcomm_class.c_str(), cParsimCommunications, "parallel simulation communications layer");
              parsimpartition = new cParsimPartition();
              cParsimSynchronizer *parsimsynchronizer;
