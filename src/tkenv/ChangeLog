@@ -1,3 +1,7 @@
+2005-08-09  Andras Varga
+
+	* dialogs.tcl: Find/Inspect Objects dialog became nonmodal.
+
 2005-08-04  Andras Varga
 
 	* added "Run until next local event" to modules' context menu

@@ -550,7 +550,7 @@ proc clear_windows {} {
 
 proc inspect_filteredobjectlist {} {
     # implements Find/inspect objects...
-    filteredobjectlist_dialog
+    filteredobjectlist_window
 }
 
 proc inspect_bypointer {} {

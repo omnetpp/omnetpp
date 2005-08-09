@@ -39,6 +39,7 @@ proc inspectorupdate_callback {} {
 
     inspectorlist_openinspectors
     notifyPlugins inspectorUpdate
+    filteredobjectlist_inspectorupdate
 }
 
 

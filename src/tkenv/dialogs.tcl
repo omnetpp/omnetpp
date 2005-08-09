@@ -487,18 +487,53 @@ proc _doFind {w findstring case words regexp backwards} {
 }
 
 
-# filteredobjectlist_dialog --
+# filteredobjectlist_window --
 #
 # Implements the "Find/inspect objects" dialog.
 # Currently only used to open module windows.
 #
-proc filteredobjectlist_dialog {} {
-    global config tmp
+proc filteredobjectlist_window {} {
+    global config tmp icons help_tips
     global HAVE_BLT
 
     set w .objdlg
+
+    # if already exists, show it
+    if {[winfo exists $w]} {
+        wm deiconify $w; return
+    }
+
+    # otherwise create
     createCloseDialog $w "Find/inspect objects"
 
+    # Create toolbar
+    frame $w.toolbar -relief raised -borderwidth 1
+    pack $w.toolbar -anchor center -expand 0 -fill x -side top -before $w.f
+    foreach i {
+      {sep01    -separator}
+      {step     -image $icons(step)    -command {one_step}}
+      {sep1     -separator}
+      {run      -image $icons(run)     -command {run_normal}}
+      {fastrun  -image $icons(fast)    -command {run_fast}}
+      {exprrun  -image $icons(express) -command {run_express}}
+      {sep2     -separator}
+      {until    -image $icons(until)   -command {run_until}}
+      {sep3     -separator}
+      {stop     -image $icons(stop)    -command {stop_simulation}}
+    } {
+      set b [eval iconbutton $w.toolbar.$i]
+      pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2
+    }
+
+    set help_tips($w.toolbar.step)    {Execute one event (F4)}
+    set help_tips($w.toolbar.run)     {Run with full animation (F5)}
+    set help_tips($w.toolbar.fastrun) {Run faster: no animation and rare inspector updates (F6)}
+    set help_tips($w.toolbar.exprrun) {Run at full speed: no text output, animation or inspector updates (F7)}
+    set help_tips($w.toolbar.until)   {Run until time or event number}
+    set help_tips($w.toolbar.stop)    {Stop running simulation (F8)}
+
+
+    # vars
     set tmp(class)    $config(filtobjlist-class)
     set tmp(name)     $config(filtobjlist-name)
     set tmp(order)    $config(filtobjlist-order)
@@ -531,9 +566,11 @@ proc filteredobjectlist_dialog {} {
     label $fp.classhelp -text $classhelptext -justify left -anchor w
     label $fp.namehelp -text $namehelptext -justify left -anchor w
 
-    grid $fp.classlabel $fp.namelabel -sticky nw  -padx 5
-    grid $fp.classentry $fp.nameentry -sticky news -padx 5
-    grid $fp.classhelp $fp.namehelp   -sticky nw  -padx 5
+    button $fp.refresh -text "Refresh" -width 10 -command "filteredobjectlist_refresh $w"
+
+    grid $fp.classlabel $fp.namelabel x           -sticky nw   -padx 5
+    grid $fp.classentry $fp.nameentry $fp.refresh -sticky news -padx 5
+    grid $fp.classhelp $fp.namehelp   x           -sticky nw   -padx 5
     grid columnconfig $fp 0 -weight 1
     grid columnconfig $fp 1 -weight 3
 
@@ -567,12 +604,6 @@ proc filteredobjectlist_dialog {} {
     }
 
 
-    # "Refresh" button
-    frame $w.f.filter.buttons
-    pack $w.f.filter.buttons -anchor center -expand 1 -fill x -side top
-    button $w.f.filter.buttons.refresh -text "Refresh" -width 10 -command "filteredobjectlist_refresh $w"
-    pack $w.f.filter.buttons.refresh -anchor e -expand 0 -fill none -side top -padx 5 -pady 5
-
     # number of objects
     label $w.f.numobj -text "Found 0 objects" -justify left -anchor w
     pack $w.f.numobj -anchor w -expand 0 -fill x -side top
@@ -602,15 +633,27 @@ proc filteredobjectlist_dialog {} {
     # leave listbox empty -- filling it with all objects might take too long
 
     # Configure dialog
-    bind $fp.classentry.entry <Return> "$w.f.filter.buttons.refresh invoke"
-    bind $fp.nameentry <Return> "$w.f.filter.buttons.refresh invoke"
-    bind $lb <Double-Button-1> "inspect_item_in $lb; after 500 \{raise $w; focus $lb\}"
-    bind $lb <Key-Return> "inspect_item_in $lb; after 500 \{raise $w; focus $lb\}"
+    $w.buttons.closebutton config -command filteredobjectlist_window_close
+    wm protocol $w WM_DELETE_WINDOW "$w.buttons.closebutton invoke"
+
+    bind $fp.classentry.entry <Return> "$fp.refresh invoke"
+    bind $fp.nameentry <Return> "$fp.refresh invoke"
+    bind $lb <Double-Button-1> "filteredobjectlist_inspect $lb; after 500 \{raise $w; focus $lb\}"
+    bind $lb <Key-Return> "filteredobjectlist_inspect $lb; after 500 \{raise $w; focus $lb\}"
     bind $lb <Button-3> "filteredobjectlist_popup %X %Y $w"
+    bind $w <Escape> "$w.buttons.closebutton invoke"
+    bind_runcommands $w
 
     focus $fp.nameentry
 
-    execCloseDialog $w
+}
+
+#
+# Closes Filtered object dialog
+#
+proc filteredobjectlist_window_close {} {
+    global config tmp
+    set w .objdlg
 
     set config(filtobjlist-class)    $tmp(class)
     set config(filtobjlist-name)     $tmp(name)
@@ -622,7 +665,7 @@ proc filteredobjectlist_dialog {} {
 
 # getClassNames --
 #
-# helper proc for filteredobjectlist_dialog
+# helper proc for filteredobjectlist_window
 #
 proc getClassNames {} {
     # modules and channels are not registered as classes, add them manually
@@ -642,10 +685,11 @@ proc getClassNames {} {
 
 # filteredobjectlist_refresh --
 #
-# helper proc for filteredobjectlist_dialog
+# helper proc for filteredobjectlist_window
 #
 proc filteredobjectlist_refresh {w} {
     global config tmp HAVE_BLT
+    global filtobjlist_state
 
     set tmp(category) ""
     set categories {m q p c s g v o}
@@ -695,15 +739,30 @@ proc filteredobjectlist_refresh {w} {
         foreach ptr $objlist {
             multicolumnlistbox_insert $lb $ptr [list ptr $ptr class [opp_getobjectclassname $ptr] name [opp_getobjectfullpath $ptr] info [opp_getobjectinfostring $ptr]]
         }
+        set filtobjlist_state(outofdate) 0
         #$lb selection set 0
     }
 }
 
+set filtobjlist_state(outofdate) 0
+
+#
+# Called from inspectorupdate_callback whenever inspectors should be refereshed
+#
+proc filteredobjectlist_inspectorupdate {} {
+    global filtobjlist_state
+    set filtobjlist_state(outofdate) 1
+}
+
 # filteredobjectlist_popup --
 #
-# helper procedure for filteredobjectlist_dialog -- creates popup menu
+# helper procedure for filteredobjectlist_window -- creates popup menu
 #
 proc filteredobjectlist_popup {X Y w} {
+    global filtobjlist_state
+    if {$filtobjlist_state(outofdate)} {
+        return
+    }
     set lb $w.f.main.list
     set ptr [lindex [multicolumnlistbox_curselection $lb] 0]
     if {$ptr==""} return
@@ -718,3 +777,18 @@ proc filteredobjectlist_popup {X Y w} {
     $p post $X $Y
 }
 
+proc filteredobjectlist_inspect {lb} {
+    global filtobjlist_state
+    if {$filtobjlist_state(outofdate)} {
+        if {[is_running]} {
+            set advice "please stop the simulation and click Refresh first"
+        } else {
+            set advice "please click Refresh first"
+        }
+        tk_messageBox -icon info -type ok -title {Filtered object list} \
+                      -message "Dialog contents might be out of date -- $advice."
+        return
+    }
+
+    inspect_item_in $lb
+}

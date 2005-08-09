@@ -165,8 +165,8 @@ proc create_omnetpp_window {} {
       {separator}
       {cascade -label {Available components} -underline 10 -menu .menubar.inspectmenu$m.components}
       {separator}
-      {command -command inspect_filteredobjectlist -label {Find/inspect objects...} -accel {Ctrl-S} -underline 0}
-      {command -command inspect_bypointer -label {By pointer...} -underline 4}
+      {command -command inspect_filteredobjectlist -label {Show 'Find/inspect objects' window} -accel {Ctrl-S} -underline 0}
+      {command -command inspect_bypointer -label {Inspect by pointer...} -underline 4}
       {separator}
       {command -command opp_updateinspectors -label {Refresh inspectors} -underline 0}
     } {
@@ -406,6 +406,7 @@ proc create_omnetpp_window {} {
     ###############################
     bind_findcommands_to_textwidget .main.text
     bind_runcommands .
+    bind_othercommands .
 }
 
 proc bind_runcommands {w} {
@@ -414,6 +415,9 @@ proc bind_runcommands {w} {
     bind $w <F6> {run_fast}
     bind $w <F7> {run_express}
     bind $w <F8> {stop_simulation}
+}
+
+proc bind_othercommands {w} {
     bind $w <Control-s> {inspect_filteredobjectlist}
     bind $w <Control-S> {inspect_filteredobjectlist}
 }
