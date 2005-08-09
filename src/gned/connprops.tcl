@@ -97,8 +97,6 @@ proc editConnectionProps {key} {
     # fill "Gates" page
     ConnProps:fillGateSpec $nb.gates.from $key src $modkey
     ConnProps:fillGateSpec $nb.gates.to $key dest $modkey
-    ConnProps:refreshGateCombo $nb.gates.from $modkey src
-    ConnProps:refreshGateCombo $nb.gates.to $modkey dest
     $nb.gates.condition.e  insert 0 $ned($key,condition)
     set tmp(l2r) $ned($key,arrowdir-l2r)
 
@@ -130,8 +128,6 @@ proc editConnectionProps {key} {
         # 'Gates' page
         set ned($key,condition) [$nb.gates.condition.e get]
 
-
-#---------------------------------------
         set srcmodname [$nb.gates.from.modname get]
         if {$srcmodname=="" || $srcmodname=="<parent>"} {
             set ned($key,src-ownerkey) $modkey
@@ -343,6 +339,8 @@ proc ConnProps:fillGateSpec {w key srcdest modkey} {
     } else {
         $w.modname insert 0 "<parent>"
     }
+    ConnProps:refreshGateCombo $w $modkey $srcdest
+    $w.gatename delete 0 end
     if {$ned($key,${srcdest}-gate-plusplus)} {
         $w.gatename insert 0 "$ned($key,${srcdest}gate)++"
     } elseif {$ned($key,${srcdest}-gate-index)!=""} {
