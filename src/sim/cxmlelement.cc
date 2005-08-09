@@ -281,7 +281,7 @@ class MiniXPath
   private:
     cXMLElement::ParamResolver *resolver;
   private:
-    bool parseTagName(std::string& tagname, const char *stepexpr, int len);
+    bool parseTagNameFromStepExpr(std::string& tagname, const char *stepexpr, int len);
     bool parseBracketedNum(int& n, const char *s, int len);
     bool parseConstant(std::string& value, const char *s, int len);
     bool parseBracketedAttrEquals(std::string& attr, std::string& value, const char *s, int len);
@@ -289,12 +289,26 @@ class MiniXPath
     cXMLElement *getNthSibling(cXMLElement *firstsibling, const char *tagname, int n);
     cXMLElement *recursiveMatch(cXMLElement *node, const char *pathexpr);
     cXMLElement *matchSeparator(cXMLElement *node, const char *seppathexpr);
+    cXMLElement *matchStep(cXMLElement *node, const char *pathexpr);
+    bool nodeMatchesStepExpr(cXMLElement *node, const char *stepexpr, int steplen);
   public:
-    MiniXPath(cXMLElement::ParamResolver *resolver=NULL) {this->resolver=resolver;}
-    cXMLElement *matchPathExpression(cXMLElement *node, const char *pathexpr);
+    /**
+     * Ctor takes the resolver for parameters ($PARAM).
+     */
+    MiniXPath(cXMLElement::ParamResolver *resolver);
+    /**
+     * Returns the first match for pathexpr, from the given node as context.
+     * Optional root element will be used if path expression starts with '/' or '//'.
+     */
+    cXMLElement *matchPathExpression(cXMLElement *node, const char *pathexpr, cXMLElement *root);
 };
 
-bool MiniXPath::parseTagName(std::string& tagname, const char *stepexpr, int len)
+MiniXPath::MiniXPath(cXMLElement::ParamResolver *resolver)
+{
+    this->resolver = resolver;
+}
+
+bool MiniXPath::parseTagNameFromStepExpr(std::string& tagname, const char *stepexpr, int len)
 {
     const char *lbracket = strchr(stepexpr, '[');
     if (!lbracket || lbracket-stepexpr>=len)
@@ -377,7 +391,7 @@ cXMLElement *MiniXPath::getNthSibling(cXMLElement *firstsibling, const char *tag
 
 cXMLElement *MiniXPath::recursiveMatch(cXMLElement *node, const char *pathexpr)
 {
-    cXMLElement *res = matchPathExpression(node, pathexpr);
+    cXMLElement *res = matchStep(node, pathexpr);
     if (res)
         return res;
     for (cXMLElement *child=node->getFirstChild(); child; child=child->getNextSibling())
@@ -398,11 +412,11 @@ cXMLElement *MiniXPath::matchSeparator(cXMLElement *node, const char *seppathexp
     else if (*(seppathexpr+1)=='/')
         return recursiveMatch(node, seppathexpr+2); // separator is "//"  -- match in any depth
     else
-        return matchPathExpression(node, seppathexpr+1); // separator is "/"  -- match a child
+        return matchStep(node, seppathexpr+1); // separator is "/"  -- match a child
 }
 
 // "node": the current node (".") whose children we'll try to match
-cXMLElement *MiniXPath::matchPathExpression(cXMLElement *node, const char *pathexpr)
+cXMLElement *MiniXPath::matchStep(cXMLElement *node, const char *pathexpr)
 {
     // find end of first pattern step
     const char *sep = strchr(pathexpr, '/');
@@ -437,8 +451,10 @@ cXMLElement *MiniXPath::matchPathExpression(cXMLElement *node, const char *pathe
     }
     else if (stepexpr[0]=='*' && parseBracketedNum(n, stepexpr+1, steplen-1))
     {
-        cXMLElement *newnode = getNthSibling(node->getFirstChild(), NULL, n);
-        return matchSeparator(newnode, sep);
+        cXMLElement *nthnode = getNthSibling(node->getFirstChild(), NULL, n);
+        if (!nthnode)
+            return NULL;
+        return matchSeparator(nthnode, sep);
     }
     else if (stepexpr[0]=='*' && parseBracketedAttrEquals(attr, value, stepexpr+1, steplen-1))
     {
@@ -452,7 +468,7 @@ cXMLElement *MiniXPath::matchPathExpression(cXMLElement *node, const char *pathe
         }
         return NULL;
     }
-    else if (parseTagName(tagname, stepexpr, steplen) && steplen==(int)tagname.length())
+    else if (parseTagNameFromStepExpr(tagname, stepexpr, steplen) && steplen==(int)tagname.length())
     {
         for (cXMLElement *child=getNthSibling(node->getFirstChild(), tagname.c_str(), 0);
              child;
@@ -464,12 +480,14 @@ cXMLElement *MiniXPath::matchPathExpression(cXMLElement *node, const char *pathe
         }
         return NULL;
     }
-    else if (parseTagName(tagname, stepexpr, steplen) && parseBracketedNum(n, stepexpr+tagname.length(), steplen-tagname.length()))
+    else if (parseTagNameFromStepExpr(tagname, stepexpr, steplen) && parseBracketedNum(n, stepexpr+tagname.length(), steplen-tagname.length()))
     {
-        cXMLElement *newnode = getNthSibling(node->getFirstChild(), tagname.c_str(), n);
-        return matchSeparator(newnode, sep);
+        cXMLElement *nthnode = getNthSibling(node->getFirstChild(), tagname.c_str(), n);
+        if (!nthnode)
+            return NULL;
+        return matchSeparator(nthnode, sep);
     }
-    else if (parseTagName(tagname, stepexpr, steplen) && parseBracketedAttrEquals(attr, value, stepexpr+tagname.length(), steplen-tagname.length()))
+    else if (parseTagNameFromStepExpr(tagname, stepexpr, steplen) && parseBracketedAttrEquals(attr, value, stepexpr+tagname.length(), steplen-tagname.length()))
     {
         for (cXMLElement *child=getFirstSiblingWithAttribute(node->getFirstChild(), tagname.c_str(), attr.c_str(), value.c_str());
              child;
@@ -487,26 +505,131 @@ cXMLElement *MiniXPath::matchPathExpression(cXMLElement *node, const char *pathe
     }
 }
 
+/*
+bool MiniXPath::nodeMatchesStepExpr(cXMLElement *node, const char *stepexpr, int steplen)
+{
+    // match first pattern step.
+    // might be one of: ".", "..", "*", "tagname", "tagname[n]", "tagname[@attr='value']"
+    int n;
+    std::string tagname, attr, value;
+    if (!strncmp(stepexpr,".",steplen))
+    {
+        return true;
+    }
+    else if (!strncmp(stepexpr,"..",steplen))
+    {
+        return false;
+    }
+    else if (!strncmp(stepexpr,"*",steplen))
+    {
+        return true;
+    }
+    else if (stepexpr[0]=='*' && parseBracketedNum(n, stepexpr+1, steplen-1))
+    {
+        return n==0;
+    }
+    else if (stepexpr[0]=='*' && parseBracketedAttrEquals(attr, value, stepexpr+1, steplen-1))
+    {
+        const char *attrvalue = node->getAttribute(attr.c_str());
+        return attrvalue && value==attrvalue;
+    }
+    else if (parseTagNameFromStepExpr(tagname, stepexpr, steplen) && steplen==(int)tagname.length())
+    {
+        return tagname==node->getTagName();
+    }
+    else if (parseTagNameFromStepExpr(tagname, stepexpr, steplen) && parseBracketedNum(n, stepexpr+tagname.length(), steplen-tagname.length()))
+    {
+        return tagname==node->getTagName() && n==0;
+    }
+    else if (parseTagNameFromStepExpr(tagname, stepexpr, steplen) && parseBracketedAttrEquals(attr, value, stepexpr+tagname.length(), steplen-tagname.length()))
+    {
+        const char *attrvalue = node->getAttribute(attr.c_str());
+        return tagname==node->getTagName() && attrvalue && value==attrvalue;
+    }
+    else
+    {
+        throw new cRuntimeError("cXMLElement::getElementByPath(): invalid step in expression `%s'", stepexpr);
+    }
+}
+*/
+
+cXMLElement *MiniXPath::matchPathExpression(cXMLElement *node, const char *pathexpr, cXMLElement *root)
+{
+    ASSERT(root!=NULL || pathexpr[0]!='/');
+
+    if (pathexpr[0]=='/')
+        return matchSeparator(root->getParentNode(), pathexpr);
+    else if (pathexpr[0]=='.')
+        return matchStep(node, pathexpr);
+    else
+        return matchStep(node->getParentNode(), pathexpr);
+}
+
+/*
+cXMLElement *MiniXPath::matchPathExpression(cXMLElement *node, const char *pathexpr, cXMLElement *root)
+{
+    // we don't have a document element (root node doesn't have a parent),
+    // that's why matching the beginning of the path has to be handled specially
+    // (matchSeparator(), matchStep(), recursiveMatch() all work on the
+    // children of the node passed)
+
+    ASSERT(root!=NULL || pathexpr[0]!='/');
+
+    // explore then skip starting '/' or '//'
+    bool slash = (pathexpr[0]=='/' && pathexpr[1]!='/');
+    bool slashslash = (pathexpr[0]=='/' && pathexpr[1]=='/');
+    while (pathexpr[0]=='/') pathexpr++;
+
+    // find end of first pattern step
+    const char *sep = strchr(pathexpr, '/');
+    if (!sep) sep = pathexpr+strlen(pathexpr);
+
+    const char *stepexpr = pathexpr;
+    int steplen = sep-pathexpr;
+
+    // if pathexpr starts with '/' or '//', then match from root
+    if (slashslash)
+    {
+        node = root; // match from root
+
+        // check if root matches
+        if (nodeMatchesStepExpr(node, stepexpr, steplen) && matchSeparator(node, sep))
+            return node;
+
+         // no, try to match deeper
+         return recursiveMatch(node, sep);
+    }
+    else
+    {
+        // if starts with '/', match root node
+        if (slash)
+            node = root;
+
+        // check if 1st step matches our context node
+        if (!nodeMatchesStepExpr(node, stepexpr, steplen))
+            return NULL;
+
+         // ok, match the rest
+         return matchSeparator(node, sep);
+     }
+}
+*/
 //-------------------------------------
 
 cXMLElement *cXMLElement::getDocumentElementByPath(cXMLElement *documentnode, const char *pathexpr,
                                                    cXMLElement::ParamResolver *resolver)
 {
-    const char *pathexpr1 = pathexpr;
-    while (pathexpr1[0]=='/')
-        pathexpr1++;
-    if (pathexpr1[0]=='.')
-        throw new cRuntimeError("cXMLElement::getDocumentElementByPath(): paths with `.' at the front "
-                                "are only supported by getElementByPath() (path expression: `%s')", pathexpr);
-    return MiniXPath(resolver).matchPathExpression(documentnode, pathexpr1);
+    cXMLElement *root = documentnode->getFirstChild();
+    return MiniXPath(resolver).matchPathExpression(root, pathexpr, root);
 }
 
-cXMLElement *cXMLElement::getElementByPath(const char *pathexpr, cXMLElement::ParamResolver *resolver)
+cXMLElement *cXMLElement::getElementByPath(const char *pathexpr, cXMLElement::ParamResolver *resolver, cXMLElement *root)
 {
-    if (pathexpr[0]=='/')
-        throw new cRuntimeError("cXMLElement::getElementByPath(): paths beginning with `/' "
-                                "not supported by getElementByPath() (path expression: `%s')", pathexpr);
-    return MiniXPath(resolver).matchPathExpression(this, pathexpr);
+    if (pathexpr[0]=='/' && !root)
+        throw new cRuntimeError("cXMLElement::getElementByPath(): absolute path expression "
+                                "(one starting with  '/') can only be used if root node is "
+                                "also specified (path expression: `%s')", pathexpr);
+    return MiniXPath(resolver).matchPathExpression(this, pathexpr, root);
 }
 
 void cXMLElement::debugDump(int depth) const
