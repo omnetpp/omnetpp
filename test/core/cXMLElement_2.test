@@ -13,15 +13,16 @@ Check cXMLElement::getElementByPath() basic functionality
         <bar id="7" color="red">four</bar>
         <bar id="8">five</bar>
         <bar id="9" color="yellow">
-            <baz id="10" color="green" weight="heavy">six</baz>
+            <bar id="10" color="green" weight="heavy">six</bar>
         </bar>
     </foo>
     <bar id="11" color="green">
         <foo id="12">seven</foo>
         <bar id="13">eight</bar>
         <bar id="14">nine</bar>
+        <bar id="15">ten</bar>
     </bar>
-    <bar id="15">ten</bar>
+    <bar id="16">ten</bar>
 </foo>
 
 %global:
@@ -49,20 +50,24 @@ getElement("./foo");
 getElement("./././foo/././.");
 
 getElement("foo");
-getElement("bar");
 getElement("nothing");
+getElement("foo/bar");
+getElement("foo/nothing");
 
-getElement("bar[0]");
-getElement("bar[2]");
-getElement("bar[3]");
+getElement("foo/bar[0]");
+getElement("foo/bar[2]");
+getElement("foo/bar[3]");
 
-getElement("bar[@color='green']");
-getElement("bar[@id='11']");
-getElement("bar[1]/bar[1]");
+getElement("foo/bar[@color='green']");
+getElement("foo/bar[@id='11']");
+getElement("foo/bar[1]/bar[2]");
 
-getElement("./*/bar");
-getElement("./*[@color='green']/bar");
-getElement("./*[3]/*[1]");
+getElement("*/bar[0]");
+getElement("foo/*");
+
+getElement("*/*/bar");
+getElement("*/*[@color='green']/bar");
+getElement("*/*[3]/*[1]");
 
 getElement(".//baz");
 getElement(".//bar[@color='yellow']");
@@ -78,29 +83,32 @@ getElement("./*");
 getElement("./*/foo");
 
 %contains: stdout
-.: 1
-././.: 1
-./foo: 2
-./././foo/././.: 2
-foo: 2
-bar: 3
+.: null
+././.: null
+./foo: 1
+./././foo/././.: 1
+foo: 1
 nothing: null
-bar[0]: 3
-bar[2]: 15
-bar[3]: null
-bar[@color='green']: 11
-bar[@id='11']: 11
-bar[1]/bar[1]: 14
-./*/bar: 5
-./*[@color='green']/bar: 13
-./*[3]/*[1]: 13
-.//baz: 10
+foo/bar: 3
+foo/nothing: null
+foo/bar[0]: 3
+foo/bar[2]: 16
+foo/bar[3]: null
+foo/bar[@color='green']: 11
+foo/bar[@id='11']: 11
+foo/bar[1]/bar[2]: 15
+*/bar[0]: 3
+foo/*: 2
+*/*/bar: 5
+*/*[@color='green']/bar: 13
+*/*[3]/*[1]: 13
+.//baz: null
 .//bar[@color='yellow']: 9
 .//bar[@color='green']/foo: 12
 .//nothing: null
-*: 2
-*/foo: 4
-*/bar: 5
-*/bar/././././.: 5
-./*: 2
-./*/foo: 4
+*: 1
+*/foo: 2
+*/bar: 3
+*/bar/././././.: 3
+./*: 1
+./*/foo: 2

@@ -163,7 +163,7 @@ cXMLElement *MiniXPath::matchStep(cXMLElement *node, const char *pathexpr)
     }
     else if (!strncmp(stepexpr,"..",steplen))
     {
-        if (node->getParentNode())
+        if (node->getParentNode() && node!=root)
             return matchSeparator(node->getParentNode(), sep);
         return NULL;
     }
@@ -285,11 +285,28 @@ cXMLElement *MiniXPath::matchPathExpression(cXMLElement *node, const char *pathe
 {
     ASSERT(root!=NULL || pathexpr[0]!='/');
 
+    this->root = root;
     if (pathexpr[0]=='/')
+    {
+        // plain "/" or "/." doesn't shouldn't anything (try with any XPath interpreter!)
+        while (pathexpr[0]=='/' && pathexpr[1]=='.' && pathexpr[2]=='/')
+            pathexpr += 2;
+        if (!pathexpr[0] || (pathexpr[0]=='/' && !pathexpr[1]) || (pathexpr[0]=='/' && pathexpr[1]=='.' && !pathexpr[2]))
+            return NULL;
+
+        // match
         return matchSeparator(root->getParentNode(), pathexpr);
-    else if (pathexpr[0]=='.')
-        return matchStep(node, pathexpr);
+    }
     else
+    {
+        // plain ".", "./." or "././." doesn't shouldn't anything (try with any XPath interpreter!)
+        while (pathexpr[0]=='.' && pathexpr[1]=='/' && pathexpr[2]!='/')
+            pathexpr += 2;
+        if (!pathexpr[0] || (pathexpr[0]=='.' && !pathexpr[1]))
+            return NULL;
+
+        // match
         return matchStep(node->getParentNode(), pathexpr);
+    }
 }
 

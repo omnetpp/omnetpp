@@ -28,6 +28,7 @@
 class MiniXPath
 {
   private:
+    cXMLElement *root; // root node of the ongoing match
     cXMLElement::ParamResolver *resolver;
 
   private:
