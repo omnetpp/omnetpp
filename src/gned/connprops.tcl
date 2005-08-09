@@ -97,15 +97,15 @@ proc editConnectionProps {key} {
     # fill "Gates" page
     ConnProps:fillGateSpec $nb.gates.from $key src $modkey
     ConnProps:fillGateSpec $nb.gates.to $key dest $modkey
-    ConnProps:refreshGateCombo $nb.gates.from $modkey
-    ConnProps:refreshGateCombo $nb.gates.to $modkey
+    ConnProps:refreshGateCombo $nb.gates.from $modkey src
+    ConnProps:refreshGateCombo $nb.gates.to $modkey dest
     $nb.gates.condition.e  insert 0 $ned($key,condition)
     set tmp(l2r) $ned($key,arrowdir-l2r)
 
     # fill "Attributes" page
     set tmp(usechannel) 0
     ConnProps:notUseChannel $w
-     foreach connattr_key [getChildren $key] {
+    foreach connattr_key [getChildren $key] {
         if {$ned($connattr_key,type)!="connattr"} {error "non-connattr child of conn!"}
         set attrname  $ned($connattr_key,name)
         set attrvalue $ned($connattr_key,value)
@@ -119,7 +119,7 @@ proc editConnectionProps {key} {
     }
 
     # focus on first one
-    focus $nb.gates.from.mod.name
+    focus $nb.gates.from.modname
 
     # exec the dialog, extract its contents if OK was pressed, then delete dialog
     if {[execOkCancelDialog $w ConnProps:validate] == 1} {
@@ -130,58 +130,45 @@ proc editConnectionProps {key} {
         # 'Gates' page
         set ned($key,condition) [$nb.gates.condition.e get]
 
-        set srcmodname [$nb.gates.from.mod.name get]
+
+#---------------------------------------
+        set srcmodname [$nb.gates.from.modname get]
         if {$srcmodname=="" || $srcmodname=="<parent>"} {
             set ned($key,src-ownerkey) $modkey
         } else {
-            set ned($key,src-ownerkey) [findSubmodule $modkey $srcmodname]
+            splitIndexedName $srcmodname srcmodname0 ned($key,src-mod-index) dummy
+            set ned($key,src-ownerkey) [findSubmodule $modkey $srcmodname0]
             if {$ned($key,src-ownerkey)==""} {
                 # something bad happened (validation didn't work?) -- hide it...
                 set ned($key,src-ownerkey) $modkey
             }
         }
-        set destmodname [$nb.gates.to.mod.name get]
+        set destmodname [$nb.gates.to.modname get]
         if {$destmodname=="" || $destmodname=="<parent>"} {
             set ned($key,dest-ownerkey) $modkey
         } else {
-            set ned($key,dest-ownerkey) [findSubmodule $modkey $destmodname]
+            splitIndexedName $destmodname destmodname0 ned($key,dest-mod-index) dummy
+            set ned($key,dest-ownerkey) [findSubmodule $modkey $destmodname0]
             if {$ned($key,dest-ownerkey)==""} {
                 # something bad happened (validation didn't work?) -- hide it...
                 set ned($key,dest-ownerkey) $modkey
             }
         }
 
-        set ned($key,src-mod-index) [$nb.gates.from.mod.index get]
-        set ned($key,dest-mod-index) [$nb.gates.to.mod.index get]
+        set srcgate [$nb.gates.from.gatename get]
+        splitIndexedName $srcgate ned($key,srcgate) ned($key,src-gate-index) ned($key,src-gate-plusplus)
 
-        set ned($key,srcgate) [$nb.gates.from.gate.name get]
-        set ned($key,destgate) [$nb.gates.to.gate.name get]
-
-        set ned($key,src-gate-index) [$nb.gates.from.gate.index get]
-        set ned($key,dest-gate-index) [$nb.gates.to.gate.index get]
-
-        if {$ned($key,src-gate-index)=="++"} {
-            set ned($key,src-gate-index) ""
-            set ned($key,src-gate-plusplus) 1
-        }
-        if {$ned($key,dest-gate-index)=="++"} {
-            set ned($key,dest-gate-index) ""
-            set ned($key,dest-gate-plusplus) 1
-        }
+        set destgate [$nb.gates.to.gatename get]
+        splitIndexedName $destgate ned($key,destgate) ned($key,dest-gate-index) ned($key,dest-gate-plusplus)
 
         if {$config(autosize)} {
-           ConnProps:fillGateSize $key src
-           ConnProps:fillGateSize $key dest
+            ConnProps:fillGateSize $key src
+            ConnProps:fillGateSize $key dest
         }
-
-        #if {$config(autoextend)} {
-        #   set_plusplus $key src
-        #   set_plusplus $key dest
-        #}
 
         set ned($key,arrowdir-l2r) $tmp(l2r)
 
-        puts "FIXME todo: 'for' to be handled!"
+        # FIXME todo: 'for' to be handled
 
         # 'Attributes' page
         foreach connattr_key [getChildren $key] {
@@ -240,14 +227,14 @@ proc ConnProps:validate {w} {
     set nb $w.f.nb
     if [catch {
         set modkey $tmp(modulekey) ;# this is ugly, but how otherwise...
-        assertSubmodExists $nb.gates.from.mod.name "source submodule" $modkey
-        assertSubmodExists $nb.gates.to.mod.name "destination submodule" $modkey
+        assertSubmodExists $nb.gates.from.modname "source submodule" $modkey
+        assertSubmodExists $nb.gates.to.modname "destination submodule" $modkey
 
-        assertEntryFilledIn $nb.gates.from.gate.name "source gate name"
-        assertEntryIsValidName $nb.gates.from.gate.name "source gate name"
+        assertEntryFilledIn $nb.gates.from.gatename "source gate name"
+        assertEntryIsValidGateSpec $nb.gates.from.gatename "source gate name"
 
-        assertEntryFilledIn $nb.gates.to.gate.name "destination gate name"
-        assertEntryIsValidName $nb.gates.to.gate.name "destination gate name"
+        assertEntryFilledIn $nb.gates.to.gatename "destination gate name"
+        assertEntryIsValidGateSpec $nb.gates.to.gatename "destination gate name"
 
         if {$tmp(usechannel)} {
             assertEntryFilledIn $nb.attrs.channel.e "channel type"
@@ -279,38 +266,11 @@ proc ConnProps:forLoopEdit {w} {
 
 proc ConnProps:gateSpec {w} {
     frame $w
-    frame $w.mod
-    frame $w.gate
-    pack $w.mod -expand 0 -fill x -side top
-    pack $w.gate -expand 0 -fill x -side top
-
-    # add "Module ... index [...]" line
-    label $w.mod.l1 -text  "  Module:" -anchor w -width 8
-    #label $w.mod.name -width 20 -relief sunken -anchor w
-    combobox::combobox $w.mod.name -width 14
-    label $w.mod.lb -text  "              index \[" -justify right -width 14
-    entry $w.mod.index -width 6
-    label $w.mod.rb -text  "\]   "
-    pack $w.mod.l1 -expand 0 -side left -padx 2 -pady 2
-    pack $w.mod.name  -expand 1 -fill x -side left -padx 2 -pady 2
-    pack $w.mod.lb -expand 0 -side left -padx 2 -pady 2
-    pack $w.mod.index -expand 1 -fill x -side left -padx 2 -pady 2
-    pack $w.mod.rb -expand 0 -side left -padx 2 -pady 2
-
-    # add "Gate ... index [...]" line
-    label $w.gate.l1 -text  "  Gate:" -anchor w -width 8
-    #entry $w.gate.name -width 14
-    #button $w.gate.c -text "..." -width 3
-    combobox::combobox $w.gate.name -width 14
-    label $w.gate.lb -text  "  index or \"++\" \[" -width 14
-    entry $w.gate.index -width 6
-    label $w.gate.rb -text  "\]   "
-    pack $w.gate.l1 -expand 0 -side left -padx 2 -pady 2
-    pack $w.gate.name  -expand 1 -fill x -side left -padx 2 -pady 2
-    #pack [wsize $w.gate.c 20 20] -expand 0 -side left -padx 0 -pady 2
-    pack $w.gate.lb -expand 0 -side left -padx 2 -pady 2
-    pack $w.gate.index -expand 1 -fill x -side left -padx 2 -pady 2
-    pack $w.gate.rb -expand 0 -side left -padx 2 -pady 2
+    label $w.l1 -text  "Module:" -anchor w -width 8
+    combobox::combobox $w.modname -width 25
+    label $w.l2 -text  "  Gate:" -anchor w -width 8
+    combobox::combobox $w.gatename -width 25
+    pack $w.l1 $w.modname $w.l2 $w.gatename -expand 0 -side left -padx 2 -pady 2
 }
 
 proc ConnProps:MaxGateIndex {in_connkey srcdest} {
@@ -372,23 +332,26 @@ proc ConnProps:fillGateSpec {w key srcdest modkey} {
     global ned
 
     set submodkey $ned($key,${srcdest}-ownerkey)
-    #$w.mod.name config -text $ned($submodkey,name)
-    comboconfig $w.mod.name [concat "<parent>" [getNameList $modkey submods]]
-    $w.mod.name delete 0 end
+    comboconfig $w.modname [concat "<parent>" [getSubmodNameList $modkey "\[...\]"]]
+    $w.modname delete 0 end
     if {$ned($submodkey,type)=="submod"} {
-        $w.mod.name insert 0 $ned($submodkey,name)
+        if {$ned($key,${srcdest}-mod-index)!=""} {
+            $w.modname insert 0 "$ned($submodkey,name)\[$ned($key,${srcdest}-mod-index)\]"
+        } else {
+            $w.modname insert 0 $ned($submodkey,name)
+        }
     } else {
-        $w.mod.name insert 0 "<parent>"
+        $w.modname insert 0 "<parent>"
     }
-    $w.mod.index insert 0 $ned($key,${srcdest}-mod-index)
-    $w.gate.name insert 0 $ned($key,${srcdest}gate)
     if {$ned($key,${srcdest}-gate-plusplus)} {
-        $w.gate.index insert 0 "++"
+        $w.gatename insert 0 "$ned($key,${srcdest}gate)++"
+    } elseif {$ned($key,${srcdest}-gate-index)!=""} {
+        $w.gatename insert 0 "$ned($key,${srcdest}gate)\[$ned($key,${srcdest}-gate-index)\]"
     } else {
-        $w.gate.index insert 0 $ned($key,${srcdest}-gate-index)
+        $w.gatename insert 0 $ned($key,${srcdest}gate)
     }
 
-    bind $w.gate.name <FocusIn> [list ConnProps:refreshGateCombo $w $modkey]
+    bind $w.gatename <FocusIn> [list ConnProps:refreshGateCombo $w $modkey $srcdest]
 }
 
 proc set_plusplus {connkey srcdest} {
@@ -450,19 +413,23 @@ proc set_plusplus {connkey srcdest} {
     }
 }
 
-proc ConnProps:refreshGateCombo {w modkey} {
-    global ned
+proc ConnProps:refreshGateCombo {w modkey srcdest} {
+    global ned config
+
     #debug "modkey=$modkey"
-    #set submodname [$w.mod.name cget -text]
-    set submodname [$w.mod.name get]
+    set submodname [$w.modname get]
+    #debug "$srcdest submodname=$submodname"
     if {$submodname=="" || $submodname=="<parent>"} {
         # gates of parent module
-        comboconfig $w.gate.name [getNameList $modkey gates]
+        if {$srcdest=="src"} {set gtype "in"} else {set gtype "out"}
+        if {$config(autoextend)} {set vecsuffix "++"} else {set vecsuffix "\[...\]"}
+        comboconfig $w.gatename [getGateNameList $modkey $gtype $vecsuffix]
     } else {
         #
         # find appropriate module definition and look up what gates it has
         #
-        set submodkey [findSubmodule $modkey $submodname]
+        splitIndexedName $submodname submodname0 index dummy
+        set submodkey [findSubmodule $modkey $submodname0]
         set submodkey [lindex $submodkey 0]; # to be safe
         #debug "submodkey=$submodkey"
         if {$submodkey==""} {return}
@@ -471,14 +438,19 @@ proc ConnProps:refreshGateCombo {w modkey} {
         } else {
             set modtypename $ned($submodkey,type-name)
         }
+        #debug "$srcdest submodtype=$modtypename"
         set modtypekey [concat [itemKeyFromName $modtypename module] \
                                [itemKeyFromName $modtypename simple]]
         #debug "modtypekey=$modtypekey"
-        if {$modtypekey==""} {return}
+        if {$modtypekey==""} {
+            comboconfig $w.gatename [list "" "? ($modtypename unknown)"]
+            return
+        }
         # if there are multiple definitions of this type, just take the first one
         set modtypekey [lindex $modtypekey 0]
-        #debug "modtypekey-2=$modtypekey"
-        comboconfig $w.gate.name [getNameList $modtypekey gates]
+        if {$srcdest=="src"} {set gtype "out"} else {set gtype "in"}
+        if {$config(autoextend)} {set vecsuffix "++"} else {set vecsuffix "\[...\]"}
+        comboconfig $w.gatename [getGateNameList $modtypekey $gtype $vecsuffix]
     }
 }
 

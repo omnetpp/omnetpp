@@ -238,6 +238,40 @@ proc assertEntryIsValidName {w what} {
     }
 }
 
+# assertEntryIsValidGateSpec --
+#
+# Helper proc to be used from execOkCancelDialog validation procs.
+# This one is only used from the connection properties dialog.
+#
+proc assertEntryIsValidGateSpec {w what} {
+    global ned
+
+    set value [$w get]
+    splitIndexedName $value name index plusplus
+
+    #debug "$value: name=$name index=$index"
+    if ![isNameLegal $name] {
+        focus $w
+        error "Note: $what does not contain a valid name, name++ or name\[index\]!"
+    }
+}
+
+#
+# Parses a string in the form "name", "name[index]" or "name++"
+#
+proc splitIndexedName {value namevar indexvar plusplusvar} {
+    upvar $namevar name
+    upvar $indexvar index
+    upvar $plusplusvar plusplus
+    set index ""
+    set name $value
+    set plusplus 0
+    if [regexp -- {^([^+]*)\+\+ *$} $value dummy name dummy] {
+        set plusplus 1
+    } else {
+        regexp -- {^([^[]*)(\[(.*)\])? *$} $value dummy name dummy index
+    }
+}
 
 # assertSubmodExists --
 #
@@ -251,13 +285,26 @@ proc assertSubmodExists {w what modkey} {
     if {$value=="" || $value=="<parent>"} {
         return
     }
-    if ![isNameLegal $value] {
+
+    # split it
+    splitIndexedName $value name index dummy
+
+    if ![isNameLegal $name] {
         focus $w
-        error "Note: $what does not contain a valid name!"
+        error "Note: $what does not contain a valid name or name\[index\]!"
     }
-    if {[findSubmodule $modkey $value]==""} {
+    set submodkey [findSubmodule $modkey $name]
+    if {$submodkey==""} {
         focus $w
-        error "Note: \"$value\" is not a submodule in this compound module!"
+        error "Note: \"$name\" is not a submodule in this compound module!"
+    }
+    if {$ned($submodkey,vectorsize)=="" && $index!=""} {
+        focus $w
+        error "Note: \"$name\" is not a vector submodule!"
+    }
+    if {$ned($submodkey,vectorsize)!="" && $index==""} {
+        focus $w
+        error "Note: \"$name\" is a vector submodule, specify an index!"
     }
 }
 

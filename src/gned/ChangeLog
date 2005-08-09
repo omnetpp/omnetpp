@@ -1,3 +1,7 @@
+2005-08-09  Andras Varga
+
+	* reorganized and improved connection properties dialog
+
 2005-07-27  Andras Varga
 
 	* implemented import paths: searching imported files in import 

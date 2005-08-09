@@ -756,6 +756,56 @@ proc getNameList {componentkey sectiontype} {
     return $list
 }
 
+# getGateNameList --
+#
+# get a list of gates of a module type -- vector gates are suffixed with
+# $vecsuffix (which is can be conveniently '[]', '[...]' or '++')
+#
+proc getGateNameList {modtypekey gatetype vecsuffix} {
+    global ned
+    set list {}
+    set sectionkeylist [getChildrenWithType $modtypekey gates]
+    foreach sectionkey $sectionkeylist {
+        foreach key [getChildren $sectionkey] {
+            if {$ned($key,type)=="gate" && $ned($key,gatetype)==$gatetype} {
+                if {[lsearch -exact $list $ned($key,name)]==-1} {
+                    if {$ned($key,isvector)} {
+                        lappend list $ned($key,name)$vecsuffix
+                    } else {
+                        lappend list $ned($key,name)
+                    }
+                }
+            }
+        }
+    }
+    return $list
+}
+
+# getSubmodNameList --
+#
+# get a list of submodules in a compound module type -- submod vectors are suffixed with
+# $vecsuffix (which is can be conveniently '[]' or '[...]')
+#
+proc getSubmodNameList {modtypekey vecsuffix} {
+    global ned
+    set list {}
+    set sectionkeylist [getChildrenWithType $modtypekey submods]
+    foreach sectionkey $sectionkeylist {
+        foreach key [getChildren $sectionkey] {
+            if {$ned($key,type)=="submod"} {
+                if {[lsearch -exact $list $ned($key,name)]==-1} {
+                    if {$ned($key,vectorsize)!=""} {
+                        lappend list $ned($key,name)$vecsuffix
+                    } else {
+                        lappend list $ned($key,name)
+                    }
+                }
+            }
+        }
+    }
+    return $list
+}
+
 # findSubmodule --
 #
 # Find submodule from its name within a specified compound module
