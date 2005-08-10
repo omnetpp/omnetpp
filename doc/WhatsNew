@@ -59,7 +59,7 @@ omnetpp.ini:
     where all-in-one.xml contains <config mod="net.host1.rt">...</config>
     elements for every module.
 
-  - also fixed some anomalies in the path expression interpreter.
+  - also fixed some anomalies in the XML path expression interpreter.
 
 Summary of the changes in 3.2pre2:
 
