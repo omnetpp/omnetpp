@@ -754,13 +754,19 @@ proc filteredobjectlist_inspectorupdate {} {
     set filtobjlist_state(outofdate) 1
 }
 
+proc filteredobjectlist_isnotsafetoinspect {} {
+    global filtobjlist_state
+    if {$filtobjlist_state(outofdate) || [is_running]} {
+        return 1
+    }
+    return 0
+}
+
 # filteredobjectlist_popup --
 #
 # helper procedure for filteredobjectlist_window -- creates popup menu
 #
 proc filteredobjectlist_popup {X Y w} {
-    global filtobjlist_state
-
     set lb $w.f.main.list
     set ptr [lindex [multicolumnlistbox_curselection $lb] 0]
     if {$ptr==""} return
@@ -769,7 +775,7 @@ proc filteredobjectlist_popup {X Y w} {
     set p $w.popup
     catch {destroy $p}
     menu $p -tearoff 0
-    if {$filtobjlist_state(outofdate)} {set state "disabled"} else {set state "normal"}
+    if {[filteredobjectlist_isnotsafetoinspect]} {set state "disabled"} else {set state "normal"}
     foreach type $insptypes {
        $p add command -label "$type..." -state $state -command "opp_inspect $ptr \{$type\}; after 500 \{catch \{raise $w; focus $lb\}\}"
     }
@@ -777,10 +783,8 @@ proc filteredobjectlist_popup {X Y w} {
 }
 
 proc filteredobjectlist_inspect {lb} {
-    global filtobjlist_state
-
     set w .objdlg
-    if {$filtobjlist_state(outofdate)} {
+    if {[filteredobjectlist_isnotsafetoinspect]} {
         if {[is_running]} {
             set advice "please stop the simulation and click Refresh first"
         } else {
