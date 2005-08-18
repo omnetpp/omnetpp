@@ -4,10 +4,7 @@
 //  A safety pool heap manager with some debugging features.
 //  Debugging features can be selected via #defines, see below.
 //
-//    Contents:
-//       MemManager  - memory management class
-//       new, delete - allocation operators
-//       bool cmdenvMemoryIsLow() function
+//  This file is DEPRECATED, see below
 //
 //==========================================================================
 
@@ -17,6 +14,16 @@
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
+
+//
+// **********  DEPRECATED  DEPRECATED  DEPRECATED  DEPRECATED  **********
+//
+//  USING THESE ROUTINES FOR HEAP DEBUGGING IS DEPRECATED AND UNSUPPORTED.
+//  Use tools like Valgrind or Purify instead.
+//
+// **********  DEPRECATED  DEPRECATED  DEPRECATED  DEPRECATED  **********
+//
+
 
 //
 // Compile this file only if explicitly enabled
