@@ -1,3 +1,7 @@
+2005-09-12  Andras Varga
+
+	* cxmlelement.h: several members of cXMLElement made const
+
 2005-08-07  Andras Varga
 
 	* cxmlelement.h: the builtin mini-XPath interpreter now understands

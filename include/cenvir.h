@@ -343,8 +343,8 @@ class ENVIR_API cEnvir : public std::ostream
      * accepted, and the first path component must name the root element
      * of the document (with getElementByPath() it would match a child element
      * of the current element). That is, a leading "/" is always assumed
-     * at the beginning of the path expression, even if it may not explicitly
-     * be there.
+     * at the beginning of the path expression, even if it is not explicitly
+     * there.
      *
      * The method throws an exception if the document cannot be found or the
      * given path expression is invalid. Returns NULL if the element denoted

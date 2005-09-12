@@ -253,7 +253,7 @@ class SIM_API cXMLElement
      * Returns list of contained elements with the given tag name, in preorder
      * traversal order.
      */
-    virtual cXMLElementList getElementsByTagName(const char *tagname);
+    virtual cXMLElementList getElementsByTagName(const char *tagname) const;
     //@}
 
     /** @name Utility functions */
@@ -271,7 +271,7 @@ class SIM_API cXMLElement
      * value. ("id" attributes are supposed to be unique in an XML document.)
      * Returns NULL if not found.
      */
-    cXMLElement *getElementById(const char *idattrvalue);
+    cXMLElement *getElementById(const char *idattrvalue) const;
 
     /**
      * Returns the first element designated by the given path expression.
@@ -302,13 +302,13 @@ class SIM_API cXMLElement
      * The method throws an exception if the path expression is invalid,
      * and returns NULL if the element is not found.
      */
-    cXMLElement *getElementByPath(const char *pathexpression, cXMLElement *root=NULL, ParamResolver *resolver=NULL);
+    cXMLElement *getElementByPath(const char *pathexpression, cXMLElement *root=NULL, ParamResolver *resolver=NULL) const;
 
     /**
      * Dumps tree content to ev in a XML-like format. This method is only
      * useful for debugging, because it does not perform necessary escaping
      * in text nodes and attribute values, so the output is not necessarily
-     * valid XML.
+     * well-formed XML.
      */
     void debugDump(int depth=0) const;
     //@}
