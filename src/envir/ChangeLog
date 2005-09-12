@@ -1,9 +1,48 @@
 2005-09-12  Andras Varga
 
-	* filemgrs.cc: increased the precision of outputting double-precision 
-	numbers into .vec and .sca files to 15 digits (%.15g) from 9 digits 
-	(%.9g).	15 digits is roughly the precision that is carried by the 
-	52-bit mantissa of IEEE 754 double precision floating point numbers.
+	* filemgrs.cc/h: added new omnetpp.ini settings to adjust number
+	of significant digits recorded into output vector and output scalar
+	files:
+	    [General]
+	    output-scalar-precision=<int>,  default=12
+	    output-vector-precision=<int>,  default=12
+	The default precision is 12 digits. The following has to be considered
+	when changing the default value:
+
+	IEEE-754 doubles are 64-bit numbers. The mantissa is 52 bits, which
+	is roughly equivalent to 16 decimal places (52*log(2)/log(10)).
+	However, due to rounding errors (see program below), usually only
+	12..14 digits are correct, and the rest is pretty much random garbage
+	which should be ignored. However, when you convert the decimal
+	representation back into an IEEE-754 double (as in Plove and Scalars),
+	an additional small error will occurs because 0.1 (0.01, etc) cannot be
+	represented precisely in binary. This error of converting to/from
+	decimal (text) format is usually smaller than the one that the double
+	variable already had before recording it into the file, however if
+	it is important you can eliminate it by setting >16 digits precision
+	for the file (but again, be aware that the last digits are garbage).
+
+	To see finite machine precision and rounding errors, try this code:
+	    double x = 0.1;
+	    while (true)  {
+	       printf("%.15g\n", x);
+	       x = x + 0.1;
+	    }
+
+	The following, more advanced version will also print the error of
+	converting back from text to double:
+	    double x = 0.1;
+	    while (true) {
+	        char line[120];
+	        sprintf(line, "%.15g \t%.14g \t%.13g \t%.12g", x, x, x, x);
+	        double x15, x14, x13, x12;
+	        sscanf(line, "%lg%lg%lg%lg", &x15, &x14, &x13, &x12);
+	        printf("%s \t| %g  %g  %g  %g\n", line, (x15-x), (x14-x), (x13-x), (x12-x));
+	        x = x + 0.1;
+	    }
+
+	For the complexity of the issue, see "What Every Computer Scientist 
+	Should Know About Floating-Point Arithmetic" by David Goldberg.
 
 2005-08-08  Andras Varga
 
@@ -14,19 +53,19 @@
 
 2005-07-24  Andras Varga
 
-	* filemgrs.h/cc: implemented newly added flush() virtual function to 
+	* filemgrs.h/cc: implemented newly added flush() virtual function to
 	cFileOutputVectorManager and cFileOutputScalarManager classes
 
 2005-07-07  Andras Varga
 
-	omnetapp.cc: fix: ev.getUniqueNumber() produced garbage if it was 
-	called from module constructors (its initialization took place too 
+	omnetapp.cc: fix: ev.getUniqueNumber() produced garbage if it was
+	called from module constructors (its initialization took place too
 	late).
 
 2005-05-01  Andras Varga
 
-	* omnetapp.cc: added [General]/perform-gc omnetpp.ini option 
-	(default=true). If turned off, sim.kernel doesn't do garbage 
+	* omnetapp.cc: added [General]/perform-gc omnetpp.ini option
+	(default=true). If turned off, sim.kernel doesn't do garbage
 	collection when deleting the network.
 
 2005-04-05  Andras Varga
@@ -43,16 +82,16 @@
 
 	* omnetapp.cc/h, cenvir.cc: cEnvir::getParameter() return type changed
 	from const char * to std::string. This was needed because if the
-	parameter value contains the xmldoc() function, getParameter() will 
-	now modify the file name in it to make it relative to the 
+	parameter value contains the xmldoc() function, getParameter() will
+	now modify the file name in it to make it relative to the
 	position of the ini file the setting was read from.
 
 	* omnetapp.cc/h: handling of -h option moved into TOmnetApp base class.
 
 2005-03-21  Andras Varga
 
-	* omnetapp.cc: fixed memory leak in shutdown code: RNG objects 
-	didn't get freed in TOmnetApp destructor. [discovered and patch 
+	* omnetapp.cc: fixed memory leak in shutdown code: RNG objects
+	didn't get freed in TOmnetApp destructor. [discovered and patch
 	provided by Nigel Sheridan-Smith]
 
 2005-03-18  Andras Varga

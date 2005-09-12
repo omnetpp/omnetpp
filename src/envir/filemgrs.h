@@ -50,6 +50,7 @@ class cFileOutputVectorManager : public cOutputVectorManager
     long nextid;       // holds next free ID for output vectors
     opp_string fname;  // output file name
     FILE *f;           // file ptr of output file
+    int prec;          // number of significant digits when writing doubles (time, value)
 
   protected:
     void openFile();
@@ -129,6 +130,7 @@ class cFileOutputScalarManager : public cOutputScalarManager
   protected:
     opp_string fname;  // output file name
     FILE *f;           // file ptr of output file
+    int prec;          // number of significant digits when writing doubles
 
   protected:
     bool initialized;

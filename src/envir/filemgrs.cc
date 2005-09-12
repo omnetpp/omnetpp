@@ -65,6 +65,7 @@ cFileOutputVectorManager::cFileOutputVectorManager()
 {
     nextid = 0;
     f = NULL;
+    prec = ev.config()->getAsInt("General", "output-vector-precision", 12);
 }
 
 cFileOutputVectorManager::~cFileOutputVectorManager()
@@ -151,7 +152,7 @@ bool cFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double va
         if (!vp->initialised)
             initVector(vp);
         assert(f!=NULL);
-        CHECK(fprintf(f,"%ld\t%.15g\t%.15g\n", vp->id, t, value));
+        CHECK(fprintf(f,"%ld\t%.*g\t%.*g\n", vp->id, prec, t, prec, value));
         return true;
     }
     return false;
@@ -169,7 +170,7 @@ bool cFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double va
         if (!vp->initialised)
             initVector(vp);
         assert(f!=NULL);
-        CHECK(fprintf(f,"%ld\t%.15g\t%.15g\t%.15g\n",vp->id, t, value1, value2));
+        CHECK(fprintf(f,"%ld\t%.*g\t%.*g\t%.*g\n", vp->id, prec, t, prec, value1, prec, value2));
         return true;
     }
     return false;
@@ -199,6 +200,7 @@ Register_Class(cFileOutputScalarManager);
 cFileOutputScalarManager::cFileOutputScalarManager()
 {
     f = NULL;
+    prec = ev.config()->getAsInt("General", "output-scalar-precision", 12);
 }
 
 cFileOutputScalarManager::~cFileOutputScalarManager()
@@ -257,7 +259,8 @@ void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, d
 
     if (!f) return;
 
-    CHECK(fprintf(f,"scalar \"%s\" \t\"%s\" \t%.15g\n", module->fullPath().c_str(), name ? name : "(null)", value));
+    CHECK(fprintf(f,"scalar \"%s\" \t\"%s\" \t%.*g\n", module->fullPath().c_str(),
+                    name ? name : "(null)", prec, value));
 }
 
 const char *cFileOutputScalarManager::fileName() const
