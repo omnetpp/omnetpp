@@ -163,7 +163,7 @@ cXMLElement *MiniXPath::matchStep(cXMLElement *node, const char *pathexpr)
     }
     else if (!strncmp(stepexpr,"..",steplen))
     {
-        if (node->getParentNode() && node!=root)
+        if (node->getParentNode() && node->getParentNode()!=docNode)
             return matchSeparator(node->getParentNode(), sep);
         return NULL;
     }
@@ -281,32 +281,37 @@ bool MiniXPath::nodeMatchesStepExpr(cXMLElement *node, const char *stepexpr, int
 }
 */
 
-cXMLElement *MiniXPath::matchPathExpression(cXMLElement *node, const char *pathexpr, cXMLElement *root)
+cXMLElement *MiniXPath::matchPathExpression(cXMLElement *contextNode, const char *pathexpr, cXMLElement *documentNode)
 {
-    ASSERT(root!=NULL || pathexpr[0]!='/');
-
-    this->root = root;
+    this->docNode = documentNode;
     if (pathexpr[0]=='/')
     {
-        // plain "/" or "/." doesn't shouldn't anything (try with any XPath interpreter!)
+        // we need the document node if path starts with "/"
+        if (documentNode==NULL)
+            throw new cRuntimeError("Mini XPath engine: cannot evaluate a path starting with '/' "
+                                    "if the documentNode optional parameter is not supplied");
+
+        // plain "/" or "/." or "/./." doesn't match anything (try with any XPath interpreter)
         while (pathexpr[0]=='/' && pathexpr[1]=='.' && pathexpr[2]=='/')
             pathexpr += 2;
         if (!pathexpr[0] || (pathexpr[0]=='/' && !pathexpr[1]) || (pathexpr[0]=='/' && pathexpr[1]=='.' && !pathexpr[2]))
             return NULL;
 
         // match
-        return matchSeparator(root->getParentNode(), pathexpr);
+        return matchSeparator(docNode, pathexpr);
     }
     else
     {
-        // plain ".", "./." or "././." doesn't shouldn't anything (try with any XPath interpreter!)
+        // plain ".", "./." or "././." matches the context node itself
         while (pathexpr[0]=='.' && pathexpr[1]=='/' && pathexpr[2]!='/')
             pathexpr += 2;
-        if (!pathexpr[0] || (pathexpr[0]=='.' && !pathexpr[1]))
-            return NULL;
+        if (!pathexpr[0])
+            return NULL;  // plain "./" is nothing
+        if (pathexpr[0]=='.' && !pathexpr[1])
+            return contextNode;
 
         // match
-        return matchStep(node->getParentNode(), pathexpr);
+        return matchStep(contextNode, pathexpr);
     }
 }
 

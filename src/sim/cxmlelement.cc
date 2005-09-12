@@ -225,11 +225,11 @@ cXMLElementList cXMLElement::getChildrenByTagName(const char *tagname) const
     return list;
 }
 
-cXMLElementList cXMLElement::getElementsByTagName(const char *tagname)
+cXMLElementList cXMLElement::getElementsByTagName(const char *tagname) const
 {
     cXMLElementList list;
     if (!strcasecmp(getTagName(),tagname))
-        list.push_back(this);
+        list.push_back(const_cast<cXMLElement *>(this));
     doGetElementsByTagName(tagname,list);
     return list;
 }
@@ -258,11 +258,11 @@ cXMLElement *cXMLElement::getFirstChildWithAttribute(const char *tagname, const 
     return NULL;
 }
 
-cXMLElement *cXMLElement::getElementById(const char *idattrvalue)
+cXMLElement *cXMLElement::getElementById(const char *idattrvalue) const
 {
     const char *id = getAttribute("id");
     if (id && !strcmp(id,idattrvalue))
-        return this;
+        return const_cast<cXMLElement *>(this);
     for (cXMLElement *child=getFirstChild(); child; child=child->getNextSibling())
     {
         cXMLElement *res = child->getElementById(idattrvalue);
@@ -275,17 +275,22 @@ cXMLElement *cXMLElement::getElementById(const char *idattrvalue)
 cXMLElement *cXMLElement::getDocumentElementByPath(cXMLElement *documentnode, const char *pathexpr,
                                                    cXMLElement::ParamResolver *resolver)
 {
-    cXMLElement *root = documentnode->getFirstChild();
-    return MiniXPath(resolver).matchPathExpression(root, pathexpr, root);
+    return MiniXPath(resolver).matchPathExpression(documentnode, pathexpr, documentnode);
 }
 
-cXMLElement *cXMLElement::getElementByPath(const char *pathexpr, cXMLElement *root, cXMLElement::ParamResolver *resolver)
+cXMLElement *cXMLElement::getElementByPath(const char *pathexpr, cXMLElement *root, cXMLElement::ParamResolver *resolver) const
 {
     if (pathexpr[0]=='/' && !root)
         throw new cRuntimeError("cXMLElement::getElementByPath(): absolute path expression "
-                                "(one starting with  '/') can only be used if root node is "
+                                "(that begins with  '/') can only be used if root node is "
                                 "also specified (path expression: `%s')", pathexpr);
-    return MiniXPath(resolver).matchPathExpression(this, pathexpr, root);
+    if (root && !root->getParentNode())
+        throw new cRuntimeError("cXMLElement::getElementByPath(): root element must have a "
+                                "parent node, the \"document node\" (path expression: `%s')", pathexpr);
+
+    return MiniXPath(resolver).matchPathExpression(const_cast<cXMLElement *>(this),
+                                                   pathexpr,
+                                                   root->getParentNode());
 }
 
 void cXMLElement::debugDump(int depth) const

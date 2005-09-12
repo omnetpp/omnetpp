@@ -28,7 +28,7 @@
 class MiniXPath
 {
   private:
-    cXMLElement *root; // root node of the ongoing match
+    cXMLElement *docNode; // document node (parent of root element) of the ongoing match
     cXMLElement::ParamResolver *resolver;
 
   private:
@@ -50,9 +50,10 @@ class MiniXPath
 
     /**
      * Returns the first match for pathexpr, from the given node as context.
-     * Optional root element will be used if path expression starts with '/' or '//'.
+     * Optional document node (i.e. parent of root element) will be used
+     * if path expression starts with '/' or '//'.
      */
-    cXMLElement *matchPathExpression(cXMLElement *node, const char *pathexpr, cXMLElement *root);
+    cXMLElement *matchPathExpression(cXMLElement *contextNode, const char *pathexpr, cXMLElement *documentNode);
 };
 
 #endif
