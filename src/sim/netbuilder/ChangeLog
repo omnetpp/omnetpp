@@ -1,3 +1,7 @@
+2005-09-12  Andras Varga
+
+	* fix in loadnedfile.cc [reported by Johnny Lai]
+
 2005-08-08  Andras Varga
 
 	* cnednetworkbuilder.cc: assign submodule parameters, gatesizes etc 

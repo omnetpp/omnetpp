@@ -150,7 +150,6 @@ void loadNedFile(const char *fname, bool isXML)
 
             // create module interface object
             cModuleInterface *modif = createModuleInterfaceFrom(node);
-            delete node; // no longer needed
 
             // and replace existing one
             cModuleInterface *oldmodif = findModuleInterface(name);
@@ -160,6 +159,9 @@ void loadNedFile(const char *fname, bool isXML)
                 delete modinterfaces.instance()->remove(oldmodif);
             }
             modinterfaces.instance()->add(modif);
+
+            // no longer needed (cannot be deleted earlier because "name" var points into it)
+            delete node;
         }
         else if (node->getTagCode()==NED_COMPOUND_MODULE)
         {
