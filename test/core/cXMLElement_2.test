@@ -50,26 +50,24 @@ getElement("./foo");
 getElement("./././foo/././.");
 
 getElement("foo");
+getElement("bar");
 getElement("nothing");
-getElement("foo/bar");
-getElement("foo/nothing");
 
-getElement("foo/bar[0]");
-getElement("foo/bar[2]");
-getElement("foo/bar[3]");
+getElement("bar[0]");
+getElement("bar[2]");
+getElement("bar[3]");
 
-getElement("foo/bar[@color='green']");
-getElement("foo/bar[@id='11']");
-getElement("foo/bar[1]/bar[2]");
+getElement("bar[@color='green']");
+getElement("bar[@id='11']");
+getElement("bar[1]/bar[2]");
 
 getElement("*/bar[0]");
 getElement("foo/*");
 
-getElement("*/*/bar");
-getElement("*/*[@color='green']/bar");
-getElement("*/*[3]/*[1]");
+getElement("*/bar");
+getElement("*[@color='green']/bar");
+getElement("*[3]/*[1]");
 
-getElement(".//baz");
 getElement(".//bar[@color='yellow']");
 getElement(".//bar[@color='green']/foo");
 getElement(".//nothing");
@@ -83,32 +81,32 @@ getElement("./*");
 getElement("./*/foo");
 
 %contains: stdout
-.: null
-././.: null
-./foo: 1
-./././foo/././.: 1
-foo: 1
+.: 1
+././.: 1
+./foo: 2
+./././foo/././.: 2
+foo: 2
+bar: 3
 nothing: null
-foo/bar: 3
-foo/nothing: null
-foo/bar[0]: 3
-foo/bar[2]: 16
-foo/bar[3]: null
-foo/bar[@color='green']: 11
-foo/bar[@id='11']: 11
-foo/bar[1]/bar[2]: 15
-*/bar[0]: 3
-foo/*: 2
-*/*/bar: 5
-*/*[@color='green']/bar: 13
-*/*[3]/*[1]: 13
-.//baz: null
+bar[0]: 3
+bar[2]: 16
+bar[3]: null
+bar[@color='green']: 11
+bar[@id='11']: 11
+bar[1]/bar[2]: 15
+*/bar[0]: 5
+foo/*: 7
+*/bar: 5
+*[@color='green']/bar: 13
+*[3]/*[1]: 13
 .//bar[@color='yellow']: 9
 .//bar[@color='green']/foo: 12
 .//nothing: null
-*: 1
-*/foo: 2
-*/bar: 3
-*/bar/././././.: 3
-./*: 1
-./*/foo: 2
+*: 2
+*/foo: 4
+*/bar: 5
+*/bar/././././.: 5
+./*: 2
+./*/foo: 4
+
+
