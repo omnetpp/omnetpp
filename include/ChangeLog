@@ -2,6 +2,8 @@
 
 	* cxmlelement.h: several members of cXMLElement made const
 
+	* cstrtokenizer.h: added hasMoreTokens() method
+
 2005-08-07  Andras Varga
 
 	* cxmlelement.h: the builtin mini-XPath interpreter now understands

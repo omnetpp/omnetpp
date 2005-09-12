@@ -67,6 +67,12 @@ class SIM_API cStringTokenizer
     void setDelimiter(const char *s);
 
     /**
+     * Returns true if there're more tokens (i.e. the next nextToken() 
+     * call won't return NULL).
+     */
+    bool hasMoreTokens()  {return rest!=NULL;}
+
+    /**
      * Returns the next token. The returned pointers will stay valid as long
      * as the tokenizer object exists. If there're no more tokens,
      * a NULL pointer will be returned.
