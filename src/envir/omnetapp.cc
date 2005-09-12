@@ -180,8 +180,8 @@ void TOmnetApp::setup()
              CREATE_BY_CLASSNAME(parsimsynchronizer, opt_parsimsynch_class.c_str(), cParsimSynchronizer, "parallel simulation synchronization layer");
 
              // wire them together (note: 'parsimsynchronizer' is also the scheduler for 'simulation')
-             parsimpartition->setContext(&simulation,parsimcomm,parsimsynchronizer);
-             parsimsynchronizer->setContext(&simulation,parsimpartition,parsimcomm);
+             parsimpartition->setContext(&simulation, parsimcomm, parsimsynchronizer);
+             parsimsynchronizer->setContext(&simulation, parsimpartition, parsimcomm);
              simulation.setScheduler(parsimsynchronizer);
              scheduler = parsimsynchronizer;
 
@@ -468,6 +468,7 @@ cXMLElement *TOmnetApp::getXMLDocument(const char *filename, const char *path)
     }
     else
     {
+        // returns the root element (child of the document node)
         return documentnode->getFirstChild();
     }
 }

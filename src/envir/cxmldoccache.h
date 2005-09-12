@@ -46,7 +46,9 @@ class ENVIR_API cXMLDocCache : public cPolymorphic
     virtual ~cXMLDocCache();
 
     /**
-     * Returns the given document.
+     * Returns the given document. NOTE: The returned node is the equivalent
+     * of the DOM "Document node", which is the <i>parent</i> of the
+     * root element, not the root element itself.
      */
     virtual cXMLElement *getDocument(const char *filename);
 };
