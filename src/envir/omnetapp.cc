@@ -480,6 +480,14 @@ cConfiguration *TOmnetApp::getConfig()
 
 //-------------------------------------------------------------
 
+void TOmnetApp::undisposedObject(cObject *obj)
+{
+    if (opt_print_undisposed)
+        ::printf("undisposed: (%s) %s\n", obj->className(), obj->fullPath().c_str());
+}
+
+//-------------------------------------------------------------
+
 void TOmnetApp::processFileName(opp_string& fname)
 {
     if (opt_fname_append_host)
@@ -553,7 +561,8 @@ void TOmnetApp::readOptions()
                      "Please update your ini file to the OMNeT++ 3.0 Random Number Architecture.");
 
     ev.debug_on_errors = cfg->getAsBool("General", "debug-on-errors", false);
-    cDefaultList::doGC = cfg->getAsBool("General", "perform-gc", true);
+    cDefaultList::doGC = cfg->getAsBool("General", "perform-gc", false);
+    opt_print_undisposed = cfg->getAsBool("General", "print-undisposed", true);
 
     // other options are read on per-run basis
 }

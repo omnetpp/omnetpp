@@ -1,5 +1,14 @@
 2005-09-12  Andras Varga
 
+        * cenvir.cc, omnetapp.cc/h: default of "perform-gc" option changed to
+        false. USER-ALLOCATED OBJECTS ARE NO LONGER DELETED AT NETWORK CLEANUP.
+
+        * new option:
+            [General]
+            print-undisposed=<bool>, default=true
+	Selects whether the list of undisposed user objects is dumped at
+	network cleanup (provided perform-gc=false).
+
 	* filemgrs.cc/h: added new omnetpp.ini settings to adjust number
 	of significant digits recorded into output vector and output scalar
 	files:
@@ -46,7 +55,7 @@
 	        x = x + 0.1;
 	    }
 
-	For the complexity of the issue, see "What Every Computer Scientist 
+	For the complexity of the issue, see "What Every Computer Scientist
 	Should Know About Floating-Point Arithmetic" by David Goldberg.
 
 2005-08-08  Andras Varga

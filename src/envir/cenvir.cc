@@ -352,6 +352,10 @@ void cEnvir::backgroundDisplayStringChanged(cModule *parentmodule)
     app->backgroundDisplayStringChanged(parentmodule);
 }
 
+void cEnvir::undisposedObject(cObject *obj)
+{
+    app->undisposedObject(obj);
+}
 
 //-----------------------------------------------------------------
 

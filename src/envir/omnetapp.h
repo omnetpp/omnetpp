@@ -75,6 +75,7 @@ class ENVIR_API TOmnetApp
 
     bool opt_pause_in_sendmsg;
     bool opt_warnings;
+    bool opt_print_undisposed;
 
     simtime_t opt_simtimelimit;
     long opt_cputimelimit;
@@ -210,6 +211,7 @@ class ENVIR_API TOmnetApp
     virtual void displayStringChanged(cGate *gate) {}
     virtual void displayStringChanged(cModule *submodule) {}
     virtual void backgroundDisplayStringChanged(cModule *parentmodule) {}
+    virtual void undisposedObject(cObject *obj);
     //@}
 
     /** @name Functions called by cEnvir's similar functions.
