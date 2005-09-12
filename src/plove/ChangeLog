@@ -1,3 +1,7 @@
+2005-09-12  Andras Varga
+
+	* made it recognize Linux and Win32 flavour of INF/-INF.
+
 2005-07-19  Andras Varga
 
 	* file reading changed to use FileTokenizer.

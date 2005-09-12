@@ -118,31 +118,21 @@ static void parseString(char *&s, std::string& dest, int lineNum)
 
 static double zero =0;
 
-static bool parseDouble(char *&s, double& dest)
+static bool parseDouble(char *s, double& dest)
 {
     char *e;
     dest = strtod(s,&e);
-    if (s==e)
+    if (!*e)
     {
-        return false;
+        return true;
     }
-    if (*e && *e!=' ' && *e!='\t')
+    if (strstr(s,"INF") || strstr(s, "inf"))
     {
-        if (*e=='#' && *(e+1)=='I' && *(e+2)=='N' && *(e+3)=='F')
-        {
-            dest = dest * 1/zero;  // +INF or -INF
-            e+=4;
-            if (*e && *e!=' ' && *e!='\t')
-                return false;
-        }
-        else
-        {
-            return false;
-        }
+        dest = 1/zero;  // +INF or -INF
+        if (*s=='-') dest = -dest;
+        return true;
     }
-    s = e;
-    while (*s==' ' || *s=='\t') s++;
-    return true;
+    return false;
 }
 
 static void splitFileName(const char *pathname, std::string& dir, std::string& fnameonly)

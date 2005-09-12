@@ -53,9 +53,10 @@ static bool parseDouble(char *s, double& dest)
     {
         return true;
     }
-    if (*e=='#' && *(e+1)=='I' && *(e+2)=='N' && *(e+3)=='F')
+    if (strstr(s,"INF") || strstr(s, "inf"))
     {
-        dest = dest * 1/zero;  // +INF or -INF
+        dest = 1/zero;  // +INF or -INF
+        if (*s=='-') dest = -dest;
         return true;
     }
     return false;

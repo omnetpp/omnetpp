@@ -70,3 +70,8 @@ scalar "net.server2.app" 	"stat" 	3.333
 scalar "net.server2.applic" 	"stat" 	3.333
 scalar "net.server2.appl" 	"stat" 	3.333
 
+scalar "net.server2.appl" 	"INF/msvc" 	1.#INF
+scalar "net.server2.appl" 	"-INF/msvc" 	-1.#INF
+scalar "net.server2.appl" 	"INF/linux" 	inf
+scalar "net.server2.appl" 	"-INF/linux" 	-inf
+
