@@ -22,6 +22,11 @@
 	it is important you can eliminate it by setting >16 digits precision
 	for the file (but again, be aware that the last digits are garbage).
 
+	OMNeT++ internally uses the "%g" format of C's printf(), specifically
+	"%.*g". The precision specified in omnetpp.ini simply goes in there.
+	The upper limit of precision seems to be 17 digits (setting it higher
+	doesn't make any difference in the output).
+
 	To see finite machine precision and rounding errors, try this code:
 	    double x = 0.1;
 	    while (true)  {
