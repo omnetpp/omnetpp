@@ -7,7 +7,8 @@
             [General]
             print-undisposed=<bool>, default=true
 	Selects whether the list of undisposed user objects is dumped at
-	network cleanup (provided perform-gc=false).
+	network cleanup (provided perform-gc=false). Ideally, users should
+	fix simple module destructors instead of turning this option off.
 
 	* filemgrs.cc/h: added new omnetpp.ini settings to adjust number
 	of significant digits recorded into output vector and output scalar
