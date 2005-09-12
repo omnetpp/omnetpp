@@ -3,6 +3,8 @@
 	* cxmlelement.cc, minixpath.cc: fixed getElementByPath() bug 
 	introduced 2005-08-09.
 
+	* cdefaultlist.cc: destructor to use ev.undisposedObject().
+
 2005-08-09  Andras Varga
 
 	* cxmlelement.cc: bugfixes in the mini-XPath interpreter (leading

@@ -92,7 +92,7 @@ cDefaultList::~cDefaultList()
             if (dynamic_cast<cWatchBase *>(vect[i]))
                 delete vect[i--]; // "i--" used because delete will move last item to position i
             else
-                printf("undisposed: (%s) %s\n", vect[i]->className(), vect[i]->fullPath().c_str());
+                ev.undisposedObject(vect[i]);
         }
 
         // we can free up the pointer array itself though
