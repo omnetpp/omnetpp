@@ -513,5 +513,14 @@ T check_and_cast(cPolymorphic *p)
     return ret;
 }
 
+/**
+ * The 'const' version of check_and_cast<>().
+ */
+template<class T>
+const T check_and_cast(const cPolymorphic *p)
+{
+    return check_and_cast<T>(const_cast<cPolymorphic *>(p));
+}
+
 #endif
 
