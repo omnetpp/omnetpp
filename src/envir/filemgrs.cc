@@ -151,7 +151,7 @@ bool cFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double va
         if (!vp->initialised)
             initVector(vp);
         assert(f!=NULL);
-        CHECK(fprintf(f,"%ld\t%.9g\t%.9g\n", vp->id, t, value));
+        CHECK(fprintf(f,"%ld\t%.15g\t%.15g\n", vp->id, t, value));
         return true;
     }
     return false;
@@ -169,7 +169,7 @@ bool cFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double va
         if (!vp->initialised)
             initVector(vp);
         assert(f!=NULL);
-        CHECK(fprintf(f,"%ld\t%.9g\t%.9g\t%.9g\n",vp->id, t, value1, value2));
+        CHECK(fprintf(f,"%ld\t%.15g\t%.15g\t%.15g\n",vp->id, t, value1, value2));
         return true;
     }
     return false;
@@ -257,7 +257,7 @@ void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, d
 
     if (!f) return;
 
-    CHECK(fprintf(f,"scalar \"%s\" \t\"%s\" \t%.9g\n", module->fullPath().c_str(), name ? name : "(null)", value));
+    CHECK(fprintf(f,"scalar \"%s\" \t\"%s\" \t%.15g\n", module->fullPath().c_str(), name ? name : "(null)", value));
 }
 
 const char *cFileOutputScalarManager::fileName() const

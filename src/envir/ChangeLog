@@ -1,3 +1,10 @@
+2005-09-12  Andras Varga
+
+	* filemgrs.cc: increased the precision of outputting double-precision 
+	numbers into .vec and .sca files to 15 digits (%.15g) from 9 digits 
+	(%.9g).	15 digits is roughly the precision that is carried by the 
+	52-bit mantissa of IEEE 754 double precision floating point numbers.
+
 2005-08-08  Andras Varga
 
 	* omnetapp.cc: make use of ModNameParamResolver in getXMLDocument().
