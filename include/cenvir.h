@@ -303,6 +303,12 @@ class ENVIR_API cEnvir : public std::ostream
      * Notifies the environment that a module display string has been changed.
      */
     void backgroundDisplayStringChanged(cModule *parentmodule);
+
+    /**
+     * Called from module destructors, to notify the environment about objects
+     * that the user didn't delete in the module destructor.
+     */
+    void undisposedObject(cObject *obj);
     //@}
 
     /** @name Methods called by the simulation kernel to access configuration settings. */

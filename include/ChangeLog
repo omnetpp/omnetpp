@@ -4,6 +4,8 @@
 
 	* cstrtokenizer.h: added hasMoreTokens() method
 
+	* cenvir.h: added undisposedObject() method
+
 2005-08-07  Andras Varga
 
 	* cxmlelement.h: the builtin mini-XPath interpreter now understands
