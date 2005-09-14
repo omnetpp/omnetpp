@@ -105,13 +105,13 @@ class FDDI_MAC : public cSimpleModule // Media Access Control sublayer for FDDI
   virtual void activity();
 
   public:
-  FDDI_MAC(const char *namestr, cModule *parentmod);
+  FDDI_MAC(const char *namestr=NULL, cModule *parentmod=NULL); //FIXME
   };
 
 class FDDI_MAC4Ring : public FDDI_MAC
   {
   public:
-  FDDI_MAC4Ring(const char *namestr, cModule *parentmod);
+  FDDI_MAC4Ring(const char *namestr=NULL, cModule *parentmod=NULL);   //FIXME
   };
 
 class FDDI_MAC4Sniffer : public FDDI_MAC
@@ -120,7 +120,7 @@ class FDDI_MAC4Sniffer : public FDDI_MAC
   virtual void Frame2RepArrived(cMessage *);
 
   public:
-  FDDI_MAC4Sniffer(const char *namestr, cModule *parentmod):
+  FDDI_MAC4Sniffer(const char *namestr=NULL, cModule *parentmod=NULL):  //FIXME
     FDDI_MAC(namestr, parentmod) { }
   };
 

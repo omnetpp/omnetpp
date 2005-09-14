@@ -36,7 +36,7 @@ class FDDI_Generator : public cSimpleModule
     double LoadMultiplier;
 
   public:
-  FDDI_Generator(const char *namestr, cModule *parentmod):
+  FDDI_Generator(const char *namestr=NULL, cModule *parentmod=NULL): //FIXME
     cSimpleModule(namestr, parentmod, GENERATOR_HEAPSIZE) { f = 0; }
   ~FDDI_Generator() { if ( f ) fclose(f); }
   virtual void activity();
@@ -53,7 +53,7 @@ class FDDI_GeneratorFromTraceFile : public FDDI_Generator
   char * line;
 
   public:
-  FDDI_GeneratorFromTraceFile(const char *namestr, cModule *parentmod) :
+  FDDI_GeneratorFromTraceFile(const char *namestr=NULL, cModule *parentmod=NULL) : //FIXME
     FDDI_Generator(namestr, parentmod) { line=0; }
   ~FDDI_GeneratorFromTraceFile() { if ( line ) delete [] line; }
   protected:
@@ -65,7 +65,7 @@ class FDDI_GeneratorFromTraceFile : public FDDI_Generator
 class FDDI_GeneratorHistogram2x1D : public FDDI_Generator
   {
   public:
-  FDDI_GeneratorHistogram2x1D(const char *namestr, cModule *parentmod):
+  FDDI_GeneratorHistogram2x1D(const char *namestr=NULL, cModule *parentmod=NULL): //FIXME
     FDDI_Generator(namestr, parentmod) { }
   protected:
   virtual void InitStatistics();
@@ -76,7 +76,7 @@ class FDDI_GeneratorHistogram2x1D : public FDDI_Generator
 class FDDI_GeneratorPiSquare2x1D : public FDDI_Generator
   {
   public:
-  FDDI_GeneratorPiSquare2x1D(const char *namestr, cModule *parentmod):
+  FDDI_GeneratorPiSquare2x1D(const char *namestr=NULL, cModule *parentmod=NULL): //FIXME
     FDDI_Generator(namestr, parentmod) { }
   protected:
   virtual void InitStatistics();
@@ -87,7 +87,7 @@ class FDDI_GeneratorPiSquare2x1D : public FDDI_Generator
 class FDDI_GeneratorKSplit2x1D : public FDDI_Generator
   {
   public:
-  FDDI_GeneratorKSplit2x1D(const char *namestr, cModule *parentmod):
+  FDDI_GeneratorKSplit2x1D(const char *namestr=NULL, cModule *parentmod=NULL): //FIXME
     FDDI_Generator(namestr, parentmod) { }
   protected:
   virtual void InitStatistics();
@@ -98,7 +98,7 @@ class FDDI_GeneratorKSplit2x1D : public FDDI_Generator
 class FDDI_GeneratorKSplit2D : public FDDI_Generator
   {
   public:
-  FDDI_GeneratorKSplit2D(const char *namestr, cModule *parentmod):
+  FDDI_GeneratorKSplit2D(const char *namestr=NULL, cModule *parentmod=NULL): //FIXME
     FDDI_Generator(namestr, parentmod) { }
   protected:
   virtual void InitStatistics();
@@ -116,7 +116,7 @@ class FDDI_Address_Generator : public cSimpleModule
     cBag length_histograms;
 
   public:
-  FDDI_Address_Generator(const char *namestr, cModule *parentmod):
+  FDDI_Address_Generator(const char *namestr=NULL, cModule *parentmod=NULL): //FIXME
     cSimpleModule(namestr, parentmod, GENERATOR_HEAPSIZE) { f = 0; }
   ~FDDI_Address_Generator() { if ( f ) fclose(f); }
   virtual void activity();
