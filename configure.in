@@ -441,8 +441,12 @@ fi # end of Tcl tests ($NO_TCL=="" branch)
 #----------------------
 OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $MPI_CFLAGS, $MPI_LIBS, mpi_ok)
 if test $mpi_ok = no; then
-   lamlibs="-pthread -llammpio -llammpi++ -llamf77mpi -lmpi -llam -laio -laio -lutil"
-   OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $MPI_CFLAGS, $lamlibs, mpi_ok, MPI_LIBS="$lamlibs")
+   mpilibs="-pthread -llammpio -llammpi++ -lmpi -llam -laio -laio -lutil"
+   OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $MPI_CFLAGS, $mpilibs, mpi_ok, MPI_LIBS="$mpilibs")
+fi
+if test $mpi_ok = no; then
+   mpilibs="-lmpi++ -lmpi"   #SGI
+   OPP_CHECK_LIB(MPI, mpi.h, MPI_Init(0,0), $MPI_CFLAGS, $mpilibs, mpi_ok, MPI_LIBS="$mpilibs")
 fi
 if test $mpi_ok = yes; then
    HAVE_MPI=yes
