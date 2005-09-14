@@ -84,7 +84,7 @@ class SIM_API cPolymorphic
      * Can be redefined (as done in cObject) to return an object name.
      * This version just returns "".
      */
-    virtual const char *fullName() const  {return "";}
+    virtual const char *fullName() const;
 
     /**
      * Can be redefined (as done in cObject) to return an object full path,
@@ -92,7 +92,7 @@ class SIM_API cPolymorphic
      * with the object's location in the object hierarchy.
      * This version just returns fullName() (which is by default "").
      */
-    virtual std::string fullPath() const   {return std::string(fullName());}
+    virtual std::string fullPath() const;
 
     /**
      * Can be redefined to produce a one-line description of object into `buf'.
@@ -103,13 +103,13 @@ class SIM_API cPolymorphic
      *
      * @see detailedInfo()
      */
-    virtual std::string info() const  {return std::string();}
+    virtual std::string info() const;
 
     /**
      * DEPRECATED. Copies first MAX_OBJECTINFO characters of
      * <tt>info().c_str()</tt> into `buf'. Use info() instead.
      */
-    virtual void info(char *buf)  {opp_strprettytrunc(buf, info().c_str(), MAX_OBJECTINFO);}
+    virtual void info(char *buf);
 
     /**
      * Can be redefined to produce a detailed, multi-line, arbitrarily long
@@ -117,7 +117,18 @@ class SIM_API cPolymorphic
      * user interface (Tkenv) together with other object data (e.g. class name)
      * wherever it is feasible to display a multi-line string.
      */
-    virtual std::string detailedInfo() const  {return std::string();}
+    virtual std::string detailedInfo() const;
+
+#if 0
+    // PROBLEM: the following method cannot be supported under MSVC 6.0 (it gives
+    // error C2555: overriding virtual function differs only by return type)
+    /**
+     * Should be redefined in subclasses to create an exact copy of this object.
+     * The default implementation just throws an error, to indicate that
+     * the method was not redefined.
+     */
+    virtual cPolymorphic *dup() const;
+#endif
     //@}
 };
 
