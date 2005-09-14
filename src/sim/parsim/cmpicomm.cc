@@ -52,8 +52,13 @@ void cMPICommunications::init()
         if (argv[i][0]=='-' && argv[i][1]=='p')
             ev.printf("WARNING: cMPICommunications doesn't need -p command-line option, ignored\n");
 
+    // init MPI
+    int dummyArgc = 1;
+    char *dummyArgs[] = {argv[0]};
+    char **dummyArgv = dummyArgs;
+    MPI_Init(&dummyArgc, &dummyArgv);
+
     // get numPartitions and myRank from MPI
-    MPI_Init(0,0);
     MPI_Comm_size(MPI_COMM_WORLD, &numPartitions);
     MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
 
