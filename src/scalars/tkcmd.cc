@@ -17,7 +17,6 @@
 #pragma warning(disable:4786)
 #endif
 
-#include <algorithm>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

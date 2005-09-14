@@ -25,6 +25,7 @@
 #include "scalarmanager.h"
 #include "util.h"
 #include "datasorter.h"
+#include "patmatch.h"
 
 
 ScalarManager *DataSorter::tmpScalarMgr;
@@ -101,7 +102,10 @@ IntVector DataSorter::getFilteredScalarList(const char *fileAndRunFilter,
     return outVec;
 }
 
-
+static void sortIntArray(IntVector::iterator begin, IntVector::iterator end, bool (*less)(int,int))
+{
+    std::sort(begin, end, less);
+}
 
 bool DataSorter::sameGroupFileRunScalar(const ScalarManager::Datum& d1, const ScalarManager::Datum& d2)
 {
@@ -208,7 +212,7 @@ void DataSorter::sortAndAlign(IntVectorVector& vv, CompareFunc less, CompareFunc
 
     // order each group by module name
     for (IntVectorVector::iterator i=vv.begin(); i!=vv.end(); ++i)
-        std::sort(i->begin(), i->end(), less);
+        sortIntArray(i->begin(), i->end(), less); // MSVC 6.0 produces linker error for std::sort
 
     // now insert "null" elements (id=-1) so that every group is of same length,
     // and same indices are "equal()"
@@ -297,7 +301,7 @@ IntVectorVector DataSorter::prepareScatterPlot(const IntVector& idlist, const ch
     IntVectorVector vv2;
     vv2.resize(vv.size());
     vv2[0] = vv[0];
-    std::sort(vv2[0].begin(), vv2[0].end(), lessByValue);
+    sortIntArray(vv2[0].begin(), vv2[0].end(), lessByValue);  // MSVC 6.0 produces linker error for std::sort
 
     // step two: remove id=-1 elements from the beginning of X series
     IntVector::iterator firstvalue=vv2[0].begin();

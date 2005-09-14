@@ -21,14 +21,7 @@
 #pragma warning(disable:4786)
 #endif
 
-#include <algorithm>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
 #include "scalarmanager.h"
-#include "util.h"
-#include "patmatch.h"
 
 
 typedef std::vector<int> IntVector;
