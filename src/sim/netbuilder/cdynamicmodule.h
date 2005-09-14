@@ -30,7 +30,7 @@ class cDynamicModuleType : public cModuleType
   protected:
     CompoundModuleNode *modulenode;  // contains NEDElement tree
 
-    virtual cModule *createModuleObject(const char *modname, cModule *parentmod);
+    virtual cModule *createModuleObject();
 
   public:
     cDynamicModuleType(const char *name, CompoundModuleNode *moduleNode);
@@ -61,7 +61,7 @@ class cDynamicCompoundModule : public cCompoundModule
      * Constructor. Note that module objects should not be created directly,
      * only via their cModuleType objects. See cModule constructor for more info.
      */
-    cDynamicCompoundModule(const char *name, cModule *parentmod);
+    cDynamicCompoundModule();
 
     /**
      * Copy constructor.

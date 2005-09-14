@@ -52,7 +52,7 @@ class  cChannel;
  * to create modules of a specific type.
  * @ingroup EnumsTypes
  */
-typedef cModule *(*ModuleCreateFunc)(const char *, cModule *);
+typedef cModule *(*ModuleCreateFunc)();
 
 /**
  * DEPRECATED. Prototype for functions that are called by cLinkType objects
@@ -307,7 +307,7 @@ class SIM_API cModuleType : public cObject
     ModuleCreateFunc create_func;
 
     // internal: here it invokes create_func
-    virtual cModule *createModuleObject(const char *modname, cModule *parentmod);
+    virtual cModule *createModuleObject();
 
   public:
     /** @name Constructors, destructor, assignment */

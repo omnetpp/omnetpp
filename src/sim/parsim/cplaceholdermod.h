@@ -45,7 +45,7 @@ class SIM_API cPlaceHolderModule : public cModule
      * Constructor. Note that module objects should not be created directly,
      * only via their cModuleType objects. See cModule constructor for more info.
      */
-    cPlaceHolderModule(const char *name, cModule *parentmod);
+    cPlaceHolderModule();
 
     /**
      * Destructor.

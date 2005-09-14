@@ -16,15 +16,13 @@
 #include "cproxygate.h"
 
 
-cPlaceHolderModule::cPlaceHolderModule(const cPlaceHolderModule& mod) :
-  cModule(NULL,NULL)
+cPlaceHolderModule::cPlaceHolderModule(const cPlaceHolderModule& mod)
 {
     setName(mod.name());
     operator=(mod);
 }
 
-cPlaceHolderModule::cPlaceHolderModule(const char *name, cModule *parentmod) :
-  cModule(name, parentmod)
+cPlaceHolderModule::cPlaceHolderModule() 
 {
 }
 

@@ -46,9 +46,8 @@ const cModule *cModule::lastmodulefullpathmod = NULL;
 //
 
 cModule::cModule(const cModule& mod) :
- cDefaultList(),
- gatev(NULL, 0,2),
- paramv(NULL, 0,2)
+ gatev("gates", 0,2),
+ paramv("parameters", 0,2)
 {
     //take(&gatev);
     //take(&paramv);
@@ -68,8 +67,7 @@ cModule::cModule(const cModule& mod) :
     operator=(mod);
 }
 
-cModule::cModule(const char *name, cModule *parentmod) :
- cDefaultList(name),
+cModule::cModule() :
  gatev("gates",0,2),
  paramv("parameters",0,2)
 {
@@ -87,10 +85,8 @@ cModule::cModule(const char *name, cModule *parentmod) :
     bgdispstr = NULL;
 
     prevp = nextp = firstsubmodp = lastsubmodp = NULL;
-    if (parentmod)
-        parentmod->insertSubmodule(this);
 
-    ev_enabled = true; // may be overridden from cEnvir::moduleCreated() hook
+    ev_enabled = true; // may get overridden from cEnvir::moduleCreated() hook
 
     // cModuleType::create() call will create gates, params
 }
@@ -775,15 +771,13 @@ void cModule::bubble(const char *text)
 //==========================================================================
 //=== cCompoundModule - member functions
 
-cCompoundModule::cCompoundModule(const cCompoundModule& mod) :
-  cModule(NULL,NULL)
+cCompoundModule::cCompoundModule(const cCompoundModule& mod)
 {
     setName(mod.name());
     operator=(mod);
 }
 
-cCompoundModule::cCompoundModule(const char *name, cModule *parentmod ) :
-  cModule( name, parentmod )
+cCompoundModule::cCompoundModule()
 {
 }
 

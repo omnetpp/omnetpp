@@ -1,3 +1,8 @@
+2005-09-14  Andras Varga
+
+	* cmodule.cc, csimplemodule.cc, etc: module constructor signature 
+	change, see comment in include/ChangeLog
+
 2005-09-12  Andras Varga
 
 	* cxmlelement.cc, minixpath.cc: fixed getElementByPath() bug 

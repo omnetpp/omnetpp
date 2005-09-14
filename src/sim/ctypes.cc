@@ -376,9 +376,9 @@ cModuleType::cModuleType(const char *classname,
     //   Ptr to a small function that creates a module of type classname.
     //   E.g, if classname is "Processor", create_func points to a function
     //   like this:
-    //      static cModule *Processor__create(char *name, cModule *parentmod )
+    //      static cModule *Processor__create()
     //      {
-    //           return (cModule *) new Processor(name, parentmod);
+    //           return (cModule *) new Processor();
     //      }
     //  For each module type, such a function is automatically created by
     //  the Define_Module( classname ) macro.
@@ -438,17 +438,19 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     cModule *mod;
 #ifdef WITH_PARSIM
     if (ev.isModuleLocal(parentmod,modname,index))
-        mod = createModuleObject(modname, parentmod);
+        mod = createModuleObject();
     else
-        mod = new cPlaceHolderModule(modname, parentmod);
+        mod = new cPlaceHolderModule();
 #else
-    mod = createModuleObject(modname, parentmod);
+    mod = createModuleObject();
 #endif
-
-    // set module type, vector size
+    // set up module: set name, module type, vector size, parent
+    mod->setName(modname);
     mod->setModuleType(this);
     if (vectorsize>=0)
         mod->setIndex(index, vectorsize);
+    if (parentmod)
+        parentmod->insertSubmodule(mod);
 
     // set system module (must be done before takeAllObjectsFrom(tmplist) because
     // if parentmod==NULL, mod itself is on tmplist)
@@ -479,9 +481,9 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     return mod;
 }
 
-cModule *cModuleType::createModuleObject(const char *modname, cModule *parentmod)
+cModule *cModuleType::createModuleObject()
 {
-    return create_func(modname, parentmod);
+    return create_func();
 }
 
 void cModuleType::buildInside(cModule *mod)

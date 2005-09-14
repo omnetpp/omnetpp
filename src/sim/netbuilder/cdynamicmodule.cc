@@ -29,9 +29,9 @@ cDynamicModuleType::cDynamicModuleType(const char *name, CompoundModuleNode *mod
     modulenode = moduleNode;
 }
 
-cModule *cDynamicModuleType::createModuleObject(const char *modname, cModule *parentmod)
+cModule *cDynamicModuleType::createModuleObject()
 {
-    return new cDynamicCompoundModule(modname, parentmod);
+    return new cDynamicCompoundModule();
 }
 
 void cDynamicModuleType::buildInside(cModule *mod)
@@ -48,13 +48,11 @@ cDynamicModuleType::~cDynamicModuleType()
 //--------------
 
 
-cDynamicCompoundModule::cDynamicCompoundModule(const char *name, cModule *parentmod) :
-  cCompoundModule(name, parentmod)
+cDynamicCompoundModule::cDynamicCompoundModule() 
 {
 }
 
-cDynamicCompoundModule::cDynamicCompoundModule(const cDynamicCompoundModule& mod) :
-  cCompoundModule(0,0)
+cDynamicCompoundModule::cDynamicCompoundModule(const cDynamicCompoundModule& mod)
 {
     operator=(mod);
 }

@@ -112,28 +112,22 @@
  * @hideinitializer
  */
 #define Define_Module(CLASSNAME) \
-  static cModule *CLASSNAME##__create(const char *name, cModule *parentmod) \
-  { \
-     return (cModule *) new CLASSNAME(name, parentmod); \
-  } \
+  static cModule *CLASSNAME##__create() {return new CLASSNAME();} \
   EXECUTE_ON_STARTUP(CLASSNAME##__mod, modtypes.instance()->add(new cModuleType(#CLASSNAME,#CLASSNAME,(ModuleCreateFunc)CLASSNAME##__create));)
 
 /**
  * Similar to Define_Module(), except that it couples the class with the
- * NED interface of the given name. 
- * 
- * While this macro continues to be supported, it is NOT RECOMMENDED because 
- * modules defined with it don't show up in documentation generated with 
- * opp_neddoc. One can use NED's <tt>like</tt> feature with the normal 
+ * NED interface of the given name.
+ *
+ * While this macro continues to be supported, it is NOT RECOMMENDED because
+ * modules defined with it don't show up in documentation generated with
+ * opp_neddoc. One can use NED's <tt>like</tt> feature with the normal
  * Define_Module() macro too, it doesn't require Define_Module_Like().
  *
  * @hideinitializer
  */
 #define Define_Module_Like(CLASSNAME,INTERFACENAME) \
-  static cModule *CLASSNAME##__create(const char *name, cModule *parentmod) \
-  { \
-     return (cModule *) new CLASSNAME(name, parentmod); \
-  } \
+  static cModule *CLASSNAME##__create() {return new CLASSNAME();} \
   EXECUTE_ON_STARTUP(CLASSNAME##__mod, modtypes.instance()->add(new cModuleType(#CLASSNAME,#INTERFACENAME,(ModuleCreateFunc)CLASSNAME##__create));)
 
 /**
@@ -153,16 +147,17 @@
  *
  * @hideinitializer
  */
+// TODO dummy args can be removed in a later version, when all models have been ported
 #define Module_Class_Members(CLASSNAME,BASECLASS,STACK) \
     public: \
-      CLASSNAME(const char *name, cModule *parentmod, unsigned stk=STACK) : \
-           BASECLASS(name, parentmod, stk) {}
+      CLASSNAME(const char *dummy1=0, cModule *dummy2=0, unsigned stk=STACK) : BASECLASS(0,0,stk) {}
 //@}
 
 //=========================================================================
 
-// internal: declaration of a module interface (module gates and params)
-// example:
+//
+// Internal: declaration of a module interface (module gates and params).
+// Example:
 //    ModuleInterface(CLASSNAME)
 //        Gate(NAME,TYPE)
 //        Parameter(NAME,TYPES)

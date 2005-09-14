@@ -277,7 +277,7 @@ class SIM_API cModule : public cDefaultList
      * an ID to the module, inserting it into the global <tt>simulation</tt>
      * object (see cSimulation), etc.).
      */
-    cModule(const char *name, cModule *parentmod);
+    cModule();
 
     /**
      * Destructor.
@@ -704,7 +704,7 @@ class SIM_API cCompoundModule : public cModule
      * Constructor. Note that module objects should not be created directly,
      * only via their cModuleType objects. See cModule constructor for more info.
      */
-    cCompoundModule(const char *name, cModule *parentmod);
+    cCompoundModule();
 
     /**
      * Destructor.

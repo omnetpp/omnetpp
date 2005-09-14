@@ -130,8 +130,7 @@ void cSimpleModule::activate(void *p)
     assert(/*invoking transferTo() on an already deleted module?*/ 0);
 }
 
-cSimpleModule::cSimpleModule(const cSimpleModule& mod) :
-  cModule(mod.name(), mod.parentModule())
+cSimpleModule::cSimpleModule(const cSimpleModule& mod)
 {
     timeoutmsg = NULL;
     coroutine = NULL;
@@ -139,8 +138,31 @@ cSimpleModule::cSimpleModule(const cSimpleModule& mod) :
     operator=( mod );
 }
 
-cSimpleModule::cSimpleModule(const char *name, cModule *parentmod, unsigned stksize) :
-  cModule(name, parentmod)
+// legacy constructor, only for backwards compatiblity; first two args are unused
+cSimpleModule::cSimpleModule(const char *, cModule *, unsigned stksize)
+{
+    state = sREADY;
+    coroutine = NULL;
+
+    usesactivity = (stksize!=0);
+
+    // for an activity() module, timeoutmsg will be created in scheduleStart()
+    // which must always be called
+    timeoutmsg = NULL;
+
+    if (usesactivity)
+    {
+       // setup coroutine, allocate stack for it
+       coroutine = new cCoroutine;
+       if (!coroutine->setup(cSimpleModule::activate, this, stksize+ev.extraStackForEnvir()))
+           throw new cRuntimeError("Cannot create coroutine with %d+%d bytes of stack space for module `%s' -- "
+                                   "see Manual for hints on how to increase the number of coroutines that can be created, "
+                                   "or rewrite modules to use handleMessage() instead of activity()",
+                                   stksize,ev.extraStackForEnvir(),fullPath().c_str());
+    }
+}
+
+cSimpleModule::cSimpleModule(unsigned stksize)
 {
     state = sREADY;
     coroutine = NULL;

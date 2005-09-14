@@ -1,3 +1,43 @@
+2005-09-14  Andras Varga
+
+	* cmodule.h, csimplemodule.h, ctypes.h, macros.h: signature of module
+	constructors simplified, from
+	    cModule(const char *name, cModule *parent) and
+	    cSimpleModule(const char *name, cModule *parent, unsigned stack)
+	to
+	    cModule() and
+	    cSimpleModule(unsigned stack=0)
+	The purpose is to ease writing constructors, e.g. for a handleMessage()
+	module class "PacketSink : public cSimpleModule", the constructor is
+	just
+	    PacketSink() {}
+	instead of the former
+	    PacketSink(const char *name, cModule *parent) :
+	       cSimpleModule(name, parent, 0) {}
+
+	Backwards compatibility: module classes using Module_Class_Members()
+	(95%) are not affected. For module classes using hand-coded
+	constructors, adding NULL as a default value to the "name" and "parent"
+	ctor arguments will make the class work with both OMNeT++ 3.2 and
+	earlier versions:
+	    PacketSink(const char *name=NULL, cModule *parent=NULL) :
+	       cSimpleModule(name, parent, 0) {}
+	This affects very few modules, e.g. two in the current INET Framework
+	release.
+
+	Motivation: since cleanup-time garbage collection is off by default
+	in OMNeT++ 3.2, users are encouraged to write proper destructors.
+	However, destructors can only be written if constructors set pointer
+	members of the class to NULL. (This is currently customarily done
+	in the initialize() method; however, pointers must be initialized
+	to NULL even if initialize() doesn't get called due to a runtime error
+	earlier in another module's initialize(), otherwise the destructor will
+	crash.) The Module_Class_Members() macro (currently used in 95% of
+	the cases) defines an empty constructor, one cannot put statements
+	into it -- so one must use hand-coded constructors. The new signature
+	of constructors makes it possible to write much more compact code,
+	and will make it more comfortable for users.
+
 2005-09-12  Andras Varga
 
 	* cxmlelement.h: several members of cXMLElement made const
@@ -11,15 +51,15 @@
 	* cxmlelement.h: the builtin mini-XPath interpreter now understands
 	parameters inside predicates, i.e. the following is valid syntax:
 	"element[@attr=$PARAM]". Before, only literals were allowed, like
-	"element[@attr='something']". Parameters values are supplied by 
+	"element[@attr='something']". Parameters values are supplied by
 	a resolver object (cXMLElement::ParamResolver) which can be programmed
 	by the user and passed into the mini-XPath evaluator.
 
 	* cmessage.h: implemented reference counting of encapsulated messages.
-	This should dramatically increase performance of wireless simulations 
-	where lots of message duplication is done (AirFrames) with most copies 
+	This should dramatically increase performance of wireless simulations
+	where lots of message duplication is done (AirFrames) with most copies
 	discarded without looking into them (noisy channel or wrong L2 dest
-	address). There' nominal (<1%) performance penalty for other 
+	address). There' nominal (<1%) performance penalty for other
 	simulations.
 
 2005-07-25  Andras Varga
@@ -30,7 +70,7 @@
 	ensured.)
 
 	* cmodule.h: modules can now get notified when a module parameter
-	changes, by redefining the handleParameterChange(const char *parname) 
+	changes, by redefining the handleParameterChange(const char *parname)
 	virtual	method of cModule.
 
 	* ccommbuffer.h: moved packObject(), unpackObject(), checkFlag(),
@@ -38,14 +78,14 @@
 
 2005-07-24  Andras Varga
 
-	* cdispstr.h: added setTagArg() method for numeric (long) argument as 
+	* cdispstr.h: added setTagArg() method for numeric (long) argument as
 	well. (Just converts it to string and calls the other setTagArg()).
 
 	* cpar.h: added isConstant() member to cPar
 
 	* cmessage.h: added cModule *senderModule() to cMessage
 
-	* cmessage.h: if "vector" is a vector gate, msg->arrivedOn("vector") 
+	* cmessage.h: if "vector" is a vector gate, msg->arrivedOn("vector")
 	now checks if msg arrived one of the vector's gates. [hint from Ignacio
 	Arenas Jimenez]
 
@@ -57,9 +97,9 @@
 
 2005-07-23  Andras Varga
 
-	* cwatch.h: WATCH() implementation changed: now anything can be watched 
+	* cwatch.h: WATCH() implementation changed: now anything can be watched
 	that has operator<<. If it also has operator>> and it gets watched via
-	WATCH_RW(), it can also be modified from the GUI. Objects and pointers 
+	WATCH_RW(), it can also be modified from the GUI. Objects and pointers
 	to objects can also be watched with WATCH_OBJ() and WATCH_PTR().
 
 	* added cstlwatch.h: macros WATCH_VECTOR(), WATCH_PTRVECTOR, etc

@@ -120,8 +120,18 @@ class SIM_API cSimpleModule : public cModule
     /**
      * Constructor. Note that module objects should not be created directly,
      * only via their cModuleType objects. See cModule constructor for more info.
+     * The stacksize parameter should only be used with simple modules using
+     * activity().
      */
-    cSimpleModule(const char *name, cModule *parentmod, unsigned stk);
+    cSimpleModule(unsigned stacksize = 0);
+
+    /**
+     * COMPATIBILITY. This constructor is only provided to make it possible
+     * to write simple modules that don't use the Module_Class_Members
+     * macro and can also be compiled with OMNeT++ versions earlier than
+     * 3.2. The first two args are unused in this and later versions.
+     */
+    cSimpleModule(const char *name, cModule *parent, unsigned stacksize);
 
     /**
      * Destructor.
