@@ -910,7 +910,7 @@ sub generateClass
         }
         print H " *     $realmsgclass& operator=(const $realmsgclass& other) {$msgclass\:\:operator=(other); return *this;}\n";
         if ($classtype eq "cobject") {
-            print H " *     virtual cObject *dup() const {return new $realmsgclass(*this);}\n";
+            print H " *     virtual cPolymorphic *dup() const {return new $realmsgclass(*this);}\n";
         }
         print H " *     // ADD CODE HERE to redefine and implement pure virtual functions from $msgclass\n";
         print H " * };\n";
@@ -976,9 +976,9 @@ sub generateClass
     }
     if ($classtype eq "cobject") {
         if ($gap) {
-            print H "    virtual cObject *dup() const {throw new cException(\"You forgot to manually add a dup() function to class $realmsgclass\");}\n";
+            print H "    virtual cPolymorphic *dup() const {throw new cException(\"You forgot to manually add a dup() function to class $realmsgclass\");}\n";
         } else {
-            print H "    virtual cObject *dup() const {return new $msgclass(*this);}\n";
+            print H "    virtual cPolymorphic *dup() const {return new $msgclass(*this);}\n";
         }
     }
     print H "    virtual void netPack(cCommBuffer *b);\n";
@@ -1405,7 +1405,7 @@ sub generateDescriptorClass
     print CC "    $msgdescclass();\n";
     print CC "    virtual ~$msgdescclass();\n";
     print CC "    $msgdescclass& operator=(const $msgdescclass& other);\n";
-    print CC "    virtual cObject *dup() const {return new $msgdescclass(*this);}\n";
+    print CC "    virtual cPolymorphic *dup() const {return new $msgdescclass(*this);}\n";
 
 
     print CC "\n";

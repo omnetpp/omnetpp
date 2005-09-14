@@ -57,7 +57,7 @@ class cInspectorFactory : public cObject
     /**
      * dup not supported
      */
-    cObject *dup() const {copyNotSupported();return NULL;}
+    cPolymorphic *dup() const {copyNotSupported();return NULL;}
     //@}
 
 
