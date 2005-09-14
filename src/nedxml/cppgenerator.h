@@ -55,7 +55,7 @@ class NEDCppGenerator
 
     enum {
       MODE_NORMAL,
-      MODE_FINALLY,
+      MODE_FINALLY
     };
 
     CppExpressionGenerator exprgen;

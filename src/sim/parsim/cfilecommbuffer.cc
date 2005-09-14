@@ -151,14 +151,14 @@ void cFileCommBuffer::pack(unsigned long d)
 void cFileCommBuffer::pack(float d)
 {
     extendBufferFor(30);
-    STORE("f %lg",d);
+    STORE("f %g",d);
 }
 
 
 void cFileCommBuffer::pack(double d)
 {
     extendBufferFor(30);
-    STORE("d %lg",d);
+    STORE("d %g",d);
 }
 
 

@@ -89,5 +89,5 @@ void parsim_dummy()
     cIdealSimulationProtocol ip;
     cLinkDelayLookahead ldla;
     // prevent "unused variable" warnings:
-    printf("%p%p%p%p%p%p",&fc,&npc,&ns,&np,&ip,&ldla);
+    (void)fc; (void)npc; (void)ns; (void)np; (void)ip; (void)ldla;
 }

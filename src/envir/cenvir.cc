@@ -569,11 +569,11 @@ void env_dummy_function() {
     exponential(1.0);
     Speedometer a;
     cFileOutputVectorManager o;
-    printf("%p%p",&a,&o); // eliminate 'unused var' warning
+    (void)a; (void)o; // eliminate 'unused var' warning
 #ifdef WITH_AKAROA
     cAkOutputVectorManager ao;
     cAkaroaRNG ar;
-    printf("%p%p",&ao,&ar); // eliminate 'unused var' warning
+    (void)ao; (void)ar; // eliminate 'unused var' warning
 #endif
 }
 

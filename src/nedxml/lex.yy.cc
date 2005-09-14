@@ -634,7 +634,8 @@ char *yytext;
 # include <io.h>
 # define isatty _isatty
 #else
-extern "C" { int isatty(int); }
+//extern "C" { int isatty(int); }
+# include <unistd.h>
 #endif
 
 #include "nedgrammar.h"
@@ -658,7 +659,7 @@ LineColumn pos,prevpos;
 #define TEXTBUF_LEN 1024
 char textbuf[TEXTBUF_LEN];
 
-#line 662 "lex.nedyy.c"
+#line 663 "lex.nedyy.c"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -809,9 +810,9 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 65 "ned.lex"
+#line 66 "ned.lex"
 
-#line 815 "lex.nedyy.c"
+#line 816 "lex.nedyy.c"
 
 	if ( yy_init )
 		{
@@ -896,575 +897,575 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 66 "ned.lex"
+#line 67 "ned.lex"
 { comment(); }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 67 "ned.lex"
+#line 68 "ned.lex"
 { comment(); }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 69 "ned.lex"
+#line 70 "ned.lex"
 { count(); use_chanattrname_token = 0; return INCLUDE; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 70 "ned.lex"
+#line 71 "ned.lex"
 { count(); use_chanattrname_token = 0; return NETWORK; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 71 "ned.lex"
+#line 72 "ned.lex"
 { count(); use_chanattrname_token = 0; return MODULE; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 72 "ned.lex"
+#line 73 "ned.lex"
 { count(); use_chanattrname_token = 0; return SIMPLE; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 73 "ned.lex"
+#line 74 "ned.lex"
 { count(); use_chanattrname_token = 1; return CHANNEL; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 74 "ned.lex"
+#line 75 "ned.lex"
 { count(); return FOR; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 75 "ned.lex"
+#line 76 "ned.lex"
 { count(); return DO; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 76 "ned.lex"
+#line 77 "ned.lex"
 { count(); return TRUE_; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 77 "ned.lex"
+#line 78 "ned.lex"
 { count(); return FALSE_; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 78 "ned.lex"
+#line 79 "ned.lex"
 { count(); return REF; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 79 "ned.lex"
+#line 80 "ned.lex"
 { count(); return ANCESTOR; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 80 "ned.lex"
+#line 81 "ned.lex"
 { count(); return INPUT_; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 81 "ned.lex"
+#line 82 "ned.lex"
 { count(); return CONSTDECL; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 82 "ned.lex"
+#line 83 "ned.lex"
 { count(); return SIZEOF; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 83 "ned.lex"
+#line 84 "ned.lex"
 { count(); return ENDSIMPLE; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 84 "ned.lex"
+#line 85 "ned.lex"
 { count(); return ENDMODULE; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 85 "ned.lex"
+#line 86 "ned.lex"
 { count(); return ENDCHANNEL; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 86 "ned.lex"
+#line 87 "ned.lex"
 { count(); return ENDNETWORK; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 87 "ned.lex"
+#line 88 "ned.lex"
 { count(); return ENDFOR; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 88 "ned.lex"
+#line 89 "ned.lex"
 { count(); return PARAMETERS; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 89 "ned.lex"
+#line 90 "ned.lex"
 { count(); return GATES; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 90 "ned.lex"
+#line 91 "ned.lex"
 { count(); return GATESIZES; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 91 "ned.lex"
+#line 92 "ned.lex"
 { count(); return IN; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 92 "ned.lex"
+#line 93 "ned.lex"
 { count(); return OUT; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 93 "ned.lex"
+#line 94 "ned.lex"
 { count(); return SUBMODULES; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 94 "ned.lex"
+#line 95 "ned.lex"
 { count(); return CONNECTIONS; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 95 "ned.lex"
+#line 96 "ned.lex"
 { count(); return DISPLAY; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 96 "ned.lex"
+#line 97 "ned.lex"
 { count(); return ON; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 97 "ned.lex"
+#line 98 "ned.lex"
 { count(); return LIKE; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 98 "ned.lex"
+#line 99 "ned.lex"
 { count(); return RIGHT_ARROW; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 99 "ned.lex"
+#line 100 "ned.lex"
 { count(); return LEFT_ARROW; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 100 "ned.lex"
+#line 101 "ned.lex"
 { count(); return TO; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 101 "ned.lex"
+#line 102 "ned.lex"
 { count(); return TO; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 102 "ned.lex"
+#line 103 "ned.lex"
 { count(); return TO; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 103 "ned.lex"
+#line 104 "ned.lex"
 { count(); return IF; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 104 "ned.lex"
+#line 105 "ned.lex"
 { count(); return SUBMODINDEX; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 105 "ned.lex"
+#line 106 "ned.lex"
 { count(); return NOCHECK; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 106 "ned.lex"
+#line 107 "ned.lex"
 { count(); return XMLDOC; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 108 "ned.lex"
+#line 109 "ned.lex"
 { count(); return NUMERICTYPE; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 109 "ned.lex"
+#line 110 "ned.lex"
 { count(); return STRINGTYPE; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 110 "ned.lex"
+#line 111 "ned.lex"
 { count(); return BOOLTYPE; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 111 "ned.lex"
+#line 112 "ned.lex"
 { count(); return XMLTYPE; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 112 "ned.lex"
+#line 113 "ned.lex"
 { count(); return ANYTYPE; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 114 "ned.lex"
+#line 115 "ned.lex"
 { count(); use_chanattrname_token = 0; return CPLUSPLUS; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 115 "ned.lex"
+#line 116 "ned.lex"
 { count(); use_chanattrname_token = 0; return STRUCT; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 116 "ned.lex"
+#line 117 "ned.lex"
 { count(); use_chanattrname_token = 0; return MESSAGE; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 117 "ned.lex"
+#line 118 "ned.lex"
 { count(); use_chanattrname_token = 0; return CLASS; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 118 "ned.lex"
+#line 119 "ned.lex"
 { count(); use_chanattrname_token = 0; return NONCOBJECT; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 119 "ned.lex"
+#line 120 "ned.lex"
 { count(); use_chanattrname_token = 0; return ENUM; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 120 "ned.lex"
+#line 121 "ned.lex"
 { count(); return EXTENDS; }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 121 "ned.lex"
+#line 122 "ned.lex"
 { count(); return FIELDS; }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 122 "ned.lex"
+#line 123 "ned.lex"
 { count(); return PROPERTIES; }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 123 "ned.lex"
+#line 124 "ned.lex"
 { count(); return ABSTRACT; }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 124 "ned.lex"
+#line 125 "ned.lex"
 { count(); return READONLY; }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 126 "ned.lex"
+#line 127 "ned.lex"
 { count(); return CHARTYPE; }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 127 "ned.lex"
+#line 128 "ned.lex"
 { count(); return SHORTTYPE; }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 128 "ned.lex"
+#line 129 "ned.lex"
 { count(); return INTTYPE; }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 129 "ned.lex"
+#line 130 "ned.lex"
 { count(); return LONGTYPE; }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 130 "ned.lex"
+#line 131 "ned.lex"
 { count(); return DOUBLETYPE; }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 131 "ned.lex"
+#line 132 "ned.lex"
 { count(); return UNSIGNED_; }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 133 "ned.lex"
+#line 134 "ned.lex"
 { count(); return use_chanattrname_token ? CHANATTRNAME : NAME; }
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 134 "ned.lex"
+#line 135 "ned.lex"
 { count(); return use_chanattrname_token ? CHANATTRNAME : NAME; }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 135 "ned.lex"
+#line 136 "ned.lex"
 { count(); return use_chanattrname_token ? CHANATTRNAME : NAME; }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 137 "ned.lex"
+#line 138 "ned.lex"
 { count(); return NAME; }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 138 "ned.lex"
+#line 139 "ned.lex"
 { count(); return INTCONSTANT; }
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 139 "ned.lex"
+#line 140 "ned.lex"
 { count(); return INTCONSTANT; }
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 140 "ned.lex"
+#line 141 "ned.lex"
 { count(); return REALCONSTANT; }
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 141 "ned.lex"
+#line 142 "ned.lex"
 { count(); return REALCONSTANT; }
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 143 "ned.lex"
+#line 144 "ned.lex"
 { count(); return STRINGCONSTANT; }
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 144 "ned.lex"
+#line 145 "ned.lex"
 { count(); return CHARCONSTANT; }
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 146 "ned.lex"
+#line 147 "ned.lex"
 { count(); BEGIN(cplusplusbody); }
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 147 "ned.lex"
+#line 148 "ned.lex"
 { extendCount(); BEGIN(INITIAL); return CPLUSPLUSBODY; }
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 148 "ned.lex"
+#line 149 "ned.lex"
 { extendCount(); }
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 149 "ned.lex"
+#line 150 "ned.lex"
 { extendCount(); }
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 151 "ned.lex"
+#line 152 "ned.lex"
 { count(); return PLUSPLUS; }
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 153 "ned.lex"
+#line 154 "ned.lex"
 { count(); return (';'); }
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 154 "ned.lex"
+#line 155 "ned.lex"
 { count(); return (','); }
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
-#line 155 "ned.lex"
+#line 156 "ned.lex"
 { count(); return (':'); }
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 156 "ned.lex"
+#line 157 "ned.lex"
 { count(); return ('='); }
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 157 "ned.lex"
+#line 158 "ned.lex"
 { count(); return ('('); }
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
-#line 158 "ned.lex"
+#line 159 "ned.lex"
 { count(); return (')'); }
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
-#line 159 "ned.lex"
+#line 160 "ned.lex"
 { count(); return ('['); }
 	YY_BREAK
 case 85:
 YY_RULE_SETUP
-#line 160 "ned.lex"
+#line 161 "ned.lex"
 { count(); return (']'); }
 	YY_BREAK
 case 86:
 YY_RULE_SETUP
-#line 161 "ned.lex"
+#line 162 "ned.lex"
 { count(); return ('{'); }
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
-#line 162 "ned.lex"
+#line 163 "ned.lex"
 { count(); return ('}'); }
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
-#line 163 "ned.lex"
+#line 164 "ned.lex"
 { count(); return ('.'); }
 	YY_BREAK
 case 89:
 YY_RULE_SETUP
-#line 164 "ned.lex"
+#line 165 "ned.lex"
 { count(); return ('?'); }
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
-#line 166 "ned.lex"
+#line 167 "ned.lex"
 { count(); return OR; }
 	YY_BREAK
 case 91:
 YY_RULE_SETUP
-#line 167 "ned.lex"
+#line 168 "ned.lex"
 { count(); return AND; }
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
-#line 168 "ned.lex"
+#line 169 "ned.lex"
 { count(); return XOR; }
 	YY_BREAK
 case 93:
 YY_RULE_SETUP
-#line 169 "ned.lex"
+#line 170 "ned.lex"
 { count(); return NOT; }
 	YY_BREAK
 case 94:
 YY_RULE_SETUP
-#line 171 "ned.lex"
+#line 172 "ned.lex"
 { count(); return BIN_OR; }
 	YY_BREAK
 case 95:
 YY_RULE_SETUP
-#line 172 "ned.lex"
+#line 173 "ned.lex"
 { count(); return BIN_AND; }
 	YY_BREAK
 case 96:
 YY_RULE_SETUP
-#line 173 "ned.lex"
+#line 174 "ned.lex"
 { count(); return BIN_XOR; }
 	YY_BREAK
 case 97:
 YY_RULE_SETUP
-#line 174 "ned.lex"
+#line 175 "ned.lex"
 { count(); return BIN_COMPL; }
 	YY_BREAK
 case 98:
 YY_RULE_SETUP
-#line 175 "ned.lex"
+#line 176 "ned.lex"
 { count(); return SHIFT_LEFT; }
 	YY_BREAK
 case 99:
 YY_RULE_SETUP
-#line 176 "ned.lex"
+#line 177 "ned.lex"
 { count(); return SHIFT_RIGHT; }
 	YY_BREAK
 case 100:
 YY_RULE_SETUP
-#line 178 "ned.lex"
+#line 179 "ned.lex"
 { count(); return '^'; }
 	YY_BREAK
 case 101:
 YY_RULE_SETUP
-#line 179 "ned.lex"
+#line 180 "ned.lex"
 { count(); return '+'; }
 	YY_BREAK
 case 102:
 YY_RULE_SETUP
-#line 180 "ned.lex"
+#line 181 "ned.lex"
 { count(); return '-'; }
 	YY_BREAK
 case 103:
 YY_RULE_SETUP
-#line 181 "ned.lex"
+#line 182 "ned.lex"
 { count(); return '*'; }
 	YY_BREAK
 case 104:
 YY_RULE_SETUP
-#line 182 "ned.lex"
+#line 183 "ned.lex"
 { count(); return '/'; }
 	YY_BREAK
 case 105:
 YY_RULE_SETUP
-#line 183 "ned.lex"
+#line 184 "ned.lex"
 { count(); return '%'; }
 	YY_BREAK
 case 106:
 YY_RULE_SETUP
-#line 185 "ned.lex"
+#line 186 "ned.lex"
 { count(); return EQ; }
 	YY_BREAK
 case 107:
 YY_RULE_SETUP
-#line 186 "ned.lex"
+#line 187 "ned.lex"
 { count(); return NE; }
 	YY_BREAK
 case 108:
 YY_RULE_SETUP
-#line 187 "ned.lex"
+#line 188 "ned.lex"
 { count(); return LS; }
 	YY_BREAK
 case 109:
 YY_RULE_SETUP
-#line 188 "ned.lex"
+#line 189 "ned.lex"
 { count(); return LE; }
 	YY_BREAK
 case 110:
 YY_RULE_SETUP
-#line 189 "ned.lex"
+#line 190 "ned.lex"
 { count(); return GT; }
 	YY_BREAK
 case 111:
 YY_RULE_SETUP
-#line 190 "ned.lex"
+#line 191 "ned.lex"
 { count(); return GE; }
 	YY_BREAK
 case 112:
 YY_RULE_SETUP
-#line 192 "ned.lex"
+#line 193 "ned.lex"
 { count(); }
 	YY_BREAK
 case 113:
 YY_RULE_SETUP
-#line 193 "ned.lex"
+#line 194 "ned.lex"
 { count(); return INVALID_CHAR; }
 	YY_BREAK
 case 114:
 YY_RULE_SETUP
-#line 195 "ned.lex"
+#line 196 "ned.lex"
 ECHO;
 	YY_BREAK
-#line 1468 "lex.nedyy.c"
+#line 1469 "lex.nedyy.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(cplusplusbody):
 	yyterminate();
@@ -2031,7 +2032,7 @@ YY_BUFFER_STATE b;
 
 #ifndef YY_ALWAYS_INTERACTIVE
 #ifndef YY_NEVER_INTERACTIVE
-extern int isatty YY_PROTO(( int ));
+#include <unistd.h>
 #endif
 #endif
 
@@ -2351,7 +2352,7 @@ int main()
 	return 0;
 	}
 #endif
-#line 195 "ned.lex"
+#line 196 "ned.lex"
 
 
 /***************************************************

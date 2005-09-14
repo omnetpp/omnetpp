@@ -62,7 +62,7 @@ class CppExpressionGenerator
 
     enum {
       MODE_INLINE_EXPRESSION,
-      MODE_EXPRESSION_CLASS,
+      MODE_EXPRESSION_CLASS
     };
 
     void doExtractArgs(ExpressionInfo& info, NEDElement *node);

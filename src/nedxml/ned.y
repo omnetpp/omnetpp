@@ -2836,7 +2836,7 @@ ConstNode *createTimeConst(const char *text)
        np->error(msg, pos.li);
    }
    char buf[32];
-   sprintf(buf,"%lg",t);
+   sprintf(buf,"%g",t);
    c->setValue(buf);
 
    return c;

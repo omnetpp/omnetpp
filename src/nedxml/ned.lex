@@ -36,7 +36,8 @@ S  [ \t\v\n\r\f]
 # include <io.h>
 # define isatty _isatty
 #else
-extern "C" { int isatty(int); }
+//extern "C" { int isatty(int); }
+# include <unistd.h>
 #endif
 
 #include "nedgrammar.h"

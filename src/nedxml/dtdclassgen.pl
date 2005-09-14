@@ -242,6 +242,7 @@ foreach $element (@elements)
 {
     print H "    $enumname{$element},\n";
 }
+print H "    EXTRA_GARBAGE_TO_SATISFY_GCC_PEDANTIC\n";
 print H "};\n\n";
 
 print H "enum {NED_GATEDIR_INPUT, NED_GATEDIR_OUTPUT};\n";

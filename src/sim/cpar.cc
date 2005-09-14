@@ -1089,9 +1089,9 @@ bool cPar::setFromText(const char *text, char tp)
     else if (strspn(tmp,"+-0123456789")==strlen(tmp)) // long?
     {
         long num;
-        unsigned len;
+        int len;
         if (0==sscanf(tmp,"%ld%n",&num,&len)) goto error;
-        if (len<strlen(tmp) || !strchr("?LD",tp)) goto error;
+        if (len < (int)strlen(tmp) || !strchr("?LD",tp)) goto error;
         if (tp=='?' || tp=='L')
            setLongValue(num);
         else
@@ -1100,9 +1100,9 @@ bool cPar::setFromText(const char *text, char tp)
     else if (strspn(tmp,"+-.eE0123456789")==strlen(tmp)) // double?
     {
         double num;
-        unsigned len;
+        int len;
         if (0==sscanf(tmp,"%lf%n",&num,&len)) goto error;
-        if (len<strlen(tmp) || !strchr("?D",tp)) goto error;
+        if (len < (int)strlen(tmp) || !strchr("?D",tp)) goto error;
         setDoubleValue(num);
     }
     else if ((d=strToSimtime(tmp))>=0.0) // double given as time?

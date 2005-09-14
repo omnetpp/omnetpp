@@ -322,7 +322,7 @@ int opp_vsscanf(const char *s, const char *fmt, va_list va)
             }
             else if (fmt[1]=='u')
             {
-                k+=sscanf(s,"%u%n",va_arg(va,int*),&n);
+                k+=sscanf(s,"%u%n",va_arg(va,unsigned int*),&n);
                 s+=n; fmt+=2;
             }
             else if (fmt[1]=='l' && fmt[2]=='d')
@@ -332,7 +332,7 @@ int opp_vsscanf(const char *s, const char *fmt, va_list va)
             }
             else if (fmt[1]=='l' && fmt[2]=='u')
             {
-                k+=sscanf(s,"%lu%n",va_arg(va,long*),&n);
+                k+=sscanf(s,"%lu%n",va_arg(va,unsigned long*),&n);
                 s+=n; fmt+=3;
             }
             else if (fmt[1]=='l' && fmt[2]=='g')

@@ -282,7 +282,7 @@ void BasicSpringEmbedderLayout::execute()
             maxdcounter=0;
     }
     clock_t end = clock();
-    printf("DBG: layout done in %lg secs, %d iterations (%lg sec/iter)\n",
+    printf("DBG: layout done in %g secs, %d iterations (%g sec/iter)\n",
            (end-beg)/(double)CLOCKS_PER_SEC, i, (end-beg)/(double)CLOCKS_PER_SEC/i);
 
     // clean up canvas after the drawing
@@ -665,14 +665,14 @@ void BasicSpringEmbedderLayout::debugDraw(int step)
     for (NodeList::iterator i=nodes.begin(); i!=nodes.end(); ++i)
     {
         Node& n = *(*i);
-        sprintf(coords,"%lg %lg %lg %lg", n.x-n.sx, n.y-n.sy, n.x+n.sx, n.y+n.sy);
+        sprintf(coords,"%g %g %g %g", n.x-n.sx, n.y-n.sy, n.x+n.sx, n.y+n.sy);
         const char *color = colors[n.color % (sizeof(colors)/sizeof(char*))];
         Tcl_VarEval(interp, canvas, " create rect ",coords," -outline ",color," -tag node", NULL);
     }
     for (EdgeList::iterator j=edges.begin(); j!=edges.end(); ++j)
     {
         Edge& e = *j;
-        sprintf(coords,"%lg %lg %lg %lg", e.from->x, e.from->y, e.to->x, e.to->y);
+        sprintf(coords,"%g %g %g %g", e.from->x, e.from->y, e.to->x, e.to->y);
         const char *color = colors[e.from->color % (sizeof(colors)/sizeof(char*))];
         Tcl_VarEval(interp, canvas, " create line ",coords," -fill ",color,NULL);
     }

@@ -56,7 +56,7 @@ class cNullMessageProtocol : public cParsimProtocolBase
     enum
     {
         MK_PARSIM_EIT =       MK_PARSIM_BEGIN - 1,
-        MK_PARSIM_RESENDEOT = MK_PARSIM_BEGIN - 2,
+        MK_PARSIM_RESENDEOT = MK_PARSIM_BEGIN - 2
     };
 
     bool debug;

@@ -92,30 +92,6 @@ void ScalarManager::dump(FileRef fileRef, std::ostream& out) const
     }
 }
 
-
-static void parseString(char *&s, std::string& dest, int lineNum)
-{
-    while (*s==' ' || *s=='\t') s++;
-    if (*s=='"')
-    {
-        // parse quoted string
-        char *start = s+1;
-        s++;
-        while (*s && (*s!='"' || *(s-1)=='\\') && *s!='\r' && *s!='\n') s++;
-        if (*s!='"')
-            throw new TException("invalid syntax: missing close quote, line %d", lineNum);
-        dest.assign(start, s-start);
-        s++;
-    }
-    else
-    {
-        // parse unquoted string
-        char *start = s;
-        while (*s && *s!=' ' && *s!='\t' && *s!='\r' && *s!='\n') s++;
-        dest.assign(start, s-start); // can be empty as well
-    }
-}
-
 static double zero =0;
 
 static bool parseDouble(char *s, double& dest)

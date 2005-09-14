@@ -55,7 +55,7 @@ class TOmnetTkApp : public TOmnetApp
           RUNMODE_SLOW = 0,
           RUNMODE_NORMAL = 1,
           RUNMODE_FAST = 2,
-          RUNMODE_EXPRESS = 3,
+          RUNMODE_EXPRESS = 3
       };
 
       struct sPathEntry {
