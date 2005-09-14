@@ -172,10 +172,10 @@ MAKEDEPEND=${MAKEDEPEND:-opp_makedep -Y --objdirtree}
 #----------------------
 # Check compiler
 #----------------------
-# icc, icpc: Intel compiler (further ones we could try: KCC CC cxx cc++ xlC aCC -- but probably wouldn't work)
+# icc, icpc: Intel compiler (further ones: Sun Studio: cxx, IBM: xlC)
 # TODO eliminate CC from the build process altogether, leave CXX only
-AC_PROG_CC(gcc icc cc)
-AC_PROG_CXX(g++ c++ gcc icpc icc)
+AC_PROG_CC(icc gcc cc xlc)
+AC_PROG_CXX(icpc g++ c++ cxx xlC)
 
 AS=${AS:-as}
 AR=${AR:-ar cr}
