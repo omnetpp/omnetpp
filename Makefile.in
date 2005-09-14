@@ -33,7 +33,7 @@ components: libs progs samples
 #
 #=====================================================================
 
-LIBS=sim nedxml envir cmdenv tkenv
+LIBS=nedxml sim envir cmdenv tkenv
 PROGS=utils nedc gned scalars plove
 SAMPLES=aloha cqn dyna fddi fifo hcube hist neddemo p-to-p queueing routing queues tictoc tokenring sockets
 
