@@ -240,7 +240,9 @@ print H " */\n";
 print H "enum NEDElementCode {\n";
 foreach $element (@elements)
 {
-    print H "    $enumname{$element},\n";
+    print H "    $enumname{$element}";
+    print H "," unless ($element eq $elements[$#elements]);
+    print H "\n";
 }
 print H "};\n\n";
 

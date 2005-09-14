@@ -350,7 +350,9 @@ while ($msg =~ s/enum\s+([A-Za-z0-9_ \t]+?)\s*{(.*?)};?//s)
     print H "enum $enumname {\n";
     foreach $fieldname (@fieldlist)
     {
-        print H "    $fieldname = $fval{$fieldname},\n";
+        print H "    $fieldname = $fval{$fieldname}";
+        print H "," unless ($fieldname eq $fieldlist[$#fieldlist]);
+        print H "\n";
     }
     print H "};\n\n";
 
