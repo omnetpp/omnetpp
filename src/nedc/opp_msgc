@@ -976,6 +976,8 @@ sub generateClass
     if (!$gap) {
         print H "    $msgclass& operator=(const $msgclass& other);\n";
     }
+    # unfortunately we don't know whether this class is cPolymorphic or not, so we can't add a dup() there...
+    # TODO once we drop MSVC 6.0 support, we can use covariant return types here, and that'll solve the problem.
     if ($classtype eq "cobject") {
         if ($gap) {
             print H "    virtual cPolymorphic *dup() const {throw new cException(\"You forgot to manually add a dup() function to class $realmsgclass\");}\n";
