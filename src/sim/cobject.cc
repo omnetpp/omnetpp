@@ -60,20 +60,6 @@ void printAllObjects()
 
 
 //==========================================================================
-//=== cPolymorphic - member functions
-
-const char *cPolymorphic::className() const
-{
-    return opp_typename(typeid(*this));
-}
-
-cStructDescriptor *cPolymorphic::createDescriptor()
-{
-    return cStructDescriptor::createDescriptorFor(className(), (void *)this);
-}
-
-
-//==========================================================================
 //=== Internally used visitors
 
 /**

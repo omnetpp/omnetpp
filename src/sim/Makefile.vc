@@ -12,7 +12,7 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 #
 COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I. /DBUILDING_SIM /Fd"sim_std.pdb"
 
-CPPOBJS_STD= task.obj ccoroutine.obj ctypes.obj carray.obj cgate.obj \
+CPPOBJS_STD= task.obj ccoroutine.obj ctypes.obj carray.obj cgate.obj cpolymorphic.obj \
          cmodule.obj csimplemodule.obj csimul.obj cobject.obj cvisitor.obj cpar.obj \
          cstat.obj chist.obj cdensity.obj cvarhist.obj cpsquare.obj cksplit.obj \
          cmessage.obj cdetect.obj util.obj cllist.obj ctopo.obj errmsg.obj \
