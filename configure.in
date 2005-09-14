@@ -40,12 +40,6 @@ AC_LANG(C++)
 AC_CONFIG_AUX_DIR(src/utils)
 AC_CANONICAL_HOST()
 
-# figure out here if we have gcc or not -- we'll need it soon
-#FIXME: skip if CC var already exists
-AC_PROG_CC
-AC_PROG_CXX
-
-
 #
 # OMNeT++/OMNEST version number
 #
@@ -77,7 +71,7 @@ esac
 OPP_PROBLEM_PACKAGES=
 
 #
-# Location of various components. Can be overridden in configure.user.
+# Location of various components. They are defined here so that they can be overridden in configure.user.
 #
 OMNETPP_ROOT=`pwd`
 if test "$mingw" = yes; then
@@ -91,7 +85,6 @@ OMNETPP_SRC_DIR="$OMNETPP_ROOT/src"
 OMNETPP_UTILS_DIR="$OMNETPP_SRC_DIR/utils"
 OMNETPP_DOC_DIR="$OMNETPP_ROOT/doc"
 OMNETPP_SAMPLES_DIR="$OMNETPP_ROOT/samples"
-# OMNETPP_MODELS_DIR="$OMNETPP_ROOT/models"
 OMNETPP_TEST_DIR="$OMNETPP_ROOT/test"
 OMNETPP_BITMAP_PATH="./bitmaps;$OMNETPP_ROOT/bitmaps"
 
@@ -105,21 +98,6 @@ OMNETPP_NEDC_DIR="$OMNETPP_SRC_DIR/nedc"
 OMNETPP_SCALARS_DIR="$OMNETPP_SRC_DIR/scalars"
 OMNETPP_PLOVE_DIR="$OMNETPP_SRC_DIR/plove"
 
-CFLAGS='-g Wall'
-#CFLAGS='-O3 -DNDEBUG=1'
-NEDCFLAGS='-Wno-unused'
-
-LDFLAGS=
-
-AS="as"
-AR="ar cr"
-#SHLIB_LD: leave it for later (CC may get overridden by user)
-SHLIB_CFLAGS="-fPIC"
-NEDC="nedtool"
-MSGC="opp_msgc"
-NEDTOOL="nedtool"
-GNED="gned"
-MAKEDEPEND="opp_makedep -Y --objdirtree"
 
 if test "$cygwin" = yes; then
     MYPWD="$OMNETPP_SRC_DIR/utils/cygpwd"
@@ -170,23 +148,6 @@ else
     BLT_LIBS="-lBLT24"
 fi
 
-# for MPI
-MPI_CFLAGS=
-MPI_LIBS=
-
-# for Expat
-EXPAT_CFLAGS=
-EXPAT_LIBS=-lexpat
-
-# for LibXML
-LIBXML_CFLAGS=
-LIBXML_LIBS="-lxml2"
-
-# for Akaroa
-AKAROA_CFLAGS=
-AKAROA_LIBS="-lakaroa -lfl"
-
-
 #----------------------
 # Read user settings (and allow override the above settings)
 #----------------------
@@ -196,7 +157,33 @@ AC_MSG_NOTICE(-----------------------------------------------)
 . ./configure.user
 
 #----------------------
-# check Cygwin
+# Set variables to defaults if not already set.
+# Note: ${VAR:-defaultvalue} used below appears to be a POSIX syntax.
+#----------------------
+CFLAGS=${CFLAGS:- -O2 -DNDEBUG=1}
+NEDCFLAGS=${NEDCFLAGS:- -Wno-unused}
+
+NEDC=${NEDC:-nedtool}
+MSGC=${MSGC:-opp_msgc}
+NEDTOOL=${NEDTOOL:-nedtool}
+GNED=${GNED:-gned}
+MAKEDEPEND=${MAKEDEPEND:-opp_makedep -Y --objdirtree}
+
+#----------------------
+# Check compiler
+#----------------------
+# icc, icpc: Intel compiler (further ones we could try: KCC CC cxx cc++ xlC aCC -- but probably wouldn't work)
+# TODO eliminate CC from the build process altogether, leave CXX only
+AC_PROG_CC(gcc icc cc)
+AC_PROG_CXX(g++ c++ gcc icpc icc)
+
+AS=${AS:-as}
+AR=${AR:-ar cr}
+SHLIB_LD=${SHLIB_LD:-$CXX -shared -fPIC}
+
+
+#----------------------
+# Check Cygwin
 #----------------------
 if test "$WITH_PARSIM" = "yes" -a "$cygwin" = "yes"; then
    AC_MSG_ERROR([WITH_PARSIM=yes not supported with Cygwin -- please edit configure.user!])
@@ -220,16 +207,13 @@ AC_PROG_LEX
 # AC_PROG_CXX
 AC_PROG_RANLIB
 
-if test "$SHLIB_LD" = ""; then
-    SHLIB_LD="$CXX -shared -fPIC"
-fi
 
 # doxygen is used for generation of api doc
 AC_ARG_VAR(DOXYGEN, The Doxygen documentation tool)
 AC_CHECK_PROG(DOXYGEN, doxygen, doxygen, not found)
 
 if test "$DOXYGEN" = "not found"; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES doxygen"
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  doxygen"
    AC_MSG_WARN(doxygen not found -- it is needed to create the OMNeT++/OMNEST API reference and also useful with opp_neddoc.)
    AC_MSG_WARN(It is available from http://www.doxygen.org/)
 fi
@@ -243,7 +227,7 @@ AC_ARG_VAR(XSLTPROC, A command line xslt processor)
 AC_CHECK_PROG(XSLTPROC, xsltproc, xsltproc, not found)
 
 if test "$XSLTPROC" = "not found"; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES xsltproc"
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  xsltproc"
    AC_MSG_WARN(xsltproc from the libxml/libxslt packages not found -- it is needed by opp_neddoc.)
    AC_MSG_WARN(You can get it from http://xmlsoft.org/XSLT/)
 fi
@@ -254,7 +238,7 @@ AC_ARG_VAR(GHOSTSCRIPT, Ghostscript is used for EPS-JPG conversion by opp_neddoc
 AC_CHECK_PROG(GHOSTSCRIPT, gs, gs,)
 
 if test "$GHOSTSCRIPT" = ""; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES Ghostscript"
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Ghostscript"
    AC_MSG_WARN(Ghostscript not found -- it is needed by opp_neddoc to create diagrams.)
 fi
 
@@ -263,7 +247,7 @@ AC_ARG_VAR(CONVERT, convert (ImageMagick) is used for EPS-JPG conversion by opp_
 AC_CHECK_PROG(CONVERT, convert, convert,)
 
 if test "$CONVERT" = ""; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES ImageMagick"
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  ImageMagick"
    AC_MSG_WARN(convert program from the ImageMagick package not found -- opp_neddoc may export broken network diagrams due to a Ghostscript problem.)
 fi
 
@@ -272,7 +256,7 @@ AC_ARG_VAR(DOT, Graph drawing program from the Graphviz package)
 AC_CHECK_PROG(DOT, dot, dot,)
 
 if test "$DOT" = ""; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES Graphviz"
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Graphviz"
    AC_MSG_WARN(dot program from Graphviz not found -- it is needed by opp_neddoc to generate diagrams.)
 fi
 
@@ -281,7 +265,7 @@ AC_ARG_VAR(GIFTRANS, Utility to make GIFs transparent)
 AC_CHECK_PROG(GIFTRANS, giftrans, giftrans,)
 
 if test "$GIFTRANS" = ""; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES giftrans"
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  giftrans"
    AC_MSG_WARN(giftrans not found -- opp_neddoc needs it to make the background of diagrams transparent.)
 fi
 
@@ -416,11 +400,11 @@ OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $BLT_LIBS $TK_LIB
 if test $blt_ok = yes; then
     HAVE_BLT=yes
     if echo 'catch {package require BLT 2.4; puts OK}; exit' | $WISH | grep OK >/dev/null; then :; else
-        OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES BLT"
+        OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  BLT"
         AC_MSG_WARN([Tcl cannot load BLT (wish command "package require BLT 2.4" failed), probably BLT not installed correctly.])
     fi
 else
-    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES BLT"
+    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  BLT"
     AC_MSG_WARN([Cannot compile or link program with BLT: BLT or BLT-devel may not be installed -- check config.log for details. Plove and Scalars require BLT to build.])
     HAVE_BLT=no
 fi
@@ -452,6 +436,8 @@ if test $mpi_ok = yes; then
    HAVE_MPI=yes
 else
    HAVE_MPI=no
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  MPI (optional)"
+   AC_MSG_WARN([Optional package MPI (needed for parallel simulation) not found.])
 fi
 
 #----------------------
@@ -467,7 +453,10 @@ if test $libxml_ok = no; then
                   libxml_ok, LIBXML_CFLAGS="-I/usr/include/libxml2" LIBXML_LIBS="-lxml2")
 fi
 OPP_CHECK_LIB(Expat XML parser, expat.h, XML_ParserCreate(0), $EXPAT_CFLAGS, $EXPAT_LIBS, expat_ok)
-
+if test $expat_ok = no; then
+    expatlibs="-lexpat"
+    OPP_CHECK_LIB(Expat XML parser, expat.h, XML_ParserCreate(0), $EXPAT_CFLAGS, $expatlibs, expat_ok, EXPAT_LIBS=$expatlibs)
+fi
 if test $libxml_ok = yes; then
    AC_MSG_NOTICE([Using LibXML for XML parsing])
    XMLPARSER=libxml
@@ -481,7 +470,7 @@ elif test $expat_ok = yes; then
    XML_LIBS=$EXPAT_LIBS
 else
    XMLPARSER=none
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES (no XML parser)"
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  LibXML/Expat"
    AC_MSG_WARN([No suitable XML parser found: no support for XML input])
 fi
 
@@ -489,9 +478,16 @@ fi
 # Check for Akaroa header and lib
 #----------------------
 OPP_CHECK_LIB(Akaroa, akaroa.H, AkObservation(0.0), $AKAROA_CFLAGS, $AKAROA_LIBS, akaroa_ok)
+if test $akaroa_ok = no; then
+    akaroalibs="-lakaroa -lfl"
+    OPP_CHECK_LIB(Akaroa, akaroa.H, AkObservation(0.0), $AKAROA_CFLAGS, $akaroalibs, akaroa_ok, AKAROA_LIBS="$akaroalibs")
+fi
 if test $akaroa_ok = yes; then
    CFLAGS="$CFLAGS -DWITH_AKAROA"
    SYS_LIBS="$SYS_LIBS $AKAROA_LIBS"
+else
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Akaroa (optional)"
+   AC_MSG_WARN([Optional package Akaroa not found])
 fi
 
 #----------------------
@@ -693,13 +689,15 @@ chmod +x src/utils/opp_neddoc
 if test "$OPP_PROBLEM_PACKAGES" != ""; then
       cat 1>&2 << EOT
 
-WARNING: The configuration script has found problems with the following packages:
+WARNING: The configuration script could not detect the following packages:
 
   $OPP_PROBLEM_PACKAGES
 
-Scroll up to see the warning messages (use shift+PgUp key). While you can
-still use OMNeT++/OMNEST in the current configuration, be aware that some
-functionality may be degraded or unavailable.
+Scroll up to see the warning messages (use shift+PgUp key), and see config.log
+for more details. While you can use OMNeT++/OMNEST in the current
+configuration, please be aware that some functionality may be unavailable
+or incomplete.
+
 
 EOT
 fi

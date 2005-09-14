@@ -1393,230 +1393,150 @@ host_os=`echo $ac_cv_host | sed 's/^\([^-]*\)-\([^-]*\)-\(.*\)$/\3/'`
 
 
 
-# figure out here if we have gcc or not -- we'll need it soon
-#FIXME: skip if CC var already exists
+#
+# OMNeT++/OMNEST version number
+#
+OMNETPP_VERSION=`cat Version | sed 's/omnetpp-//'`
+
+#
+#  Set system/arch specific values
+#
+case $host in
+  sparc-sun-*)
+    CFLAGS_ARCH="-DSUNSPARC"
+    ;;
+  *-*-cygwin*)
+    cygwin=yes
+    windows=yes
+    ;;
+  *-*-mingw32*)
+    mingw=yes
+    windows=yes
+    ;;
+  *-hp-hpux*)
+    SO_LIB_SUFFIX=".sl"
+    ;;
+  *)
+    ;;
+esac
+
+# We'll collect in this variable the components we've detected problems with
+OPP_PROBLEM_PACKAGES=
+
+#
+# Location of various components. They are defined here so that they can be overridden in configure.user.
+#
+OMNETPP_ROOT=`pwd`
+if test "$mingw" = yes; then
+    OMNETPP_ROOT=`pwd -W`
+fi
+if test "$cygwin" = yes; then
+    OMNETPP_ROOT=`cygpath -w $OMNETPP_ROOT | sed 's|\\\\|/|g'`
+fi
+
+OMNETPP_SRC_DIR="$OMNETPP_ROOT/src"
+OMNETPP_UTILS_DIR="$OMNETPP_SRC_DIR/utils"
+OMNETPP_DOC_DIR="$OMNETPP_ROOT/doc"
+OMNETPP_SAMPLES_DIR="$OMNETPP_ROOT/samples"
+OMNETPP_TEST_DIR="$OMNETPP_ROOT/test"
+OMNETPP_BITMAP_PATH="./bitmaps;$OMNETPP_ROOT/bitmaps"
+
+OMNETPP_BIN_DIR="$OMNETPP_ROOT/bin"
+OMNETPP_INCL_DIR="$OMNETPP_ROOT/include"
+OMNETPP_LIB_DIR="$OMNETPP_ROOT/lib"
+
+OMNETPP_TKENV_DIR="$OMNETPP_SRC_DIR/tkenv"
+OMNETPP_GNED_DIR="$OMNETPP_SRC_DIR/gned"
+OMNETPP_NEDC_DIR="$OMNETPP_SRC_DIR/nedc"
+OMNETPP_SCALARS_DIR="$OMNETPP_SRC_DIR/scalars"
+OMNETPP_PLOVE_DIR="$OMNETPP_SRC_DIR/plove"
+
+
+if test "$cygwin" = yes; then
+    MYPWD="$OMNETPP_SRC_DIR/utils/cygpwd"
+else
+    MYPWD="pwd"
+fi
+
+#
+# set default library suffixes. May be already defined
+# with system/arch specific values
+#
+A_LIB_SUFFIX=${A_LIB_SUFFIX:-".a"}
+SO_LIB_SUFFIX=${SO_LIB_SUFFIX:-".so"}
+
+if test "$cygwin" = yes; then
+    EXE_SUFFIX=".exe"
+else
+    EXE_SUFFIX=
+fi
+
+
+# total stack size on NT defaults to 128MB (will be added to LDFLAGS later):
+CYGWIN_STACKSIZE=134217728
+
+build_shared_libs=if-not-windows
+#build_shared_libs=yes
+#build_shared_libs=no
+
+
+#----------------------
+# Default flags for values for other variables that come from configure.user.
+#----------------------
+
+TK_CFLAGS=
+TK_LIBS=
+
+if test -d /usr/include/tcl8.4; then
+    # this was reported to be the case on Debian 3.1 "sarge"
+    TK_CFLAGS="-I/usr/include/tcl8.4"
+fi
+if test -d /usr/include/tcl8.5; then
+    TK_CFLAGS="-I/usr/include/tcl8.5"
+fi
+
+if test "$cygwin" = yes; then
+    BLT_LIBS="-lBLT24 -mwindows -lwinspool"
+else
+    BLT_LIBS="-lBLT24"
+fi
+
+#----------------------
+# Read user settings (and allow override the above settings)
+#----------------------
+{ echo "$as_me:$LINENO: -----------------------------------------------" >&5
+echo "$as_me: -----------------------------------------------" >&6;}
+{ echo "$as_me:$LINENO: reading configure.user for your custom settings" >&5
+echo "$as_me: reading configure.user for your custom settings" >&6;}
+{ echo "$as_me:$LINENO: -----------------------------------------------" >&5
+echo "$as_me: -----------------------------------------------" >&6;}
+. ./configure.user
+
+#----------------------
+# Set variables to defaults if not already set.
+# Note: ${VAR:-defaultvalue} used below appears to be a POSIX syntax.
+#----------------------
+CFLAGS=${CFLAGS:- -O2 -DNDEBUG=1}
+NEDCFLAGS=${NEDCFLAGS:- -Wno-unused}
+
+NEDC=${NEDC:-nedtool}
+MSGC=${MSGC:-opp_msgc}
+NEDTOOL=${NEDTOOL:-nedtool}
+GNED=${GNED:-gned}
+MAKEDEPEND=${MAKEDEPEND:-opp_makedep -Y --objdirtree}
+
+#----------------------
+# Check compiler
+#----------------------
+# icc, icpc: Intel compiler (further ones we could try: KCC CC cxx cc++ xlC aCC -- but probably wouldn't work)
+# TODO eliminate CC from the build process altogether, leave CXX only
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 if test -n "$ac_tool_prefix"; then
-  # Extract the first word of "${ac_tool_prefix}gcc", so it can be a program name with args.
-set dummy ${ac_tool_prefix}gcc; ac_word=$2
-echo "$as_me:$LINENO: checking for $ac_word" >&5
-echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
-if test "${ac_cv_prog_CC+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  if test -n "$CC"; then
-  ac_cv_prog_CC="$CC" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_CC="${ac_tool_prefix}gcc"
-    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-
-fi
-fi
-CC=$ac_cv_prog_CC
-if test -n "$CC"; then
-  echo "$as_me:$LINENO: result: $CC" >&5
-echo "${ECHO_T}$CC" >&6
-else
-  echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6
-fi
-
-fi
-if test -z "$ac_cv_prog_CC"; then
-  ac_ct_CC=$CC
-  # Extract the first word of "gcc", so it can be a program name with args.
-set dummy gcc; ac_word=$2
-echo "$as_me:$LINENO: checking for $ac_word" >&5
-echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
-if test "${ac_cv_prog_ac_ct_CC+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  if test -n "$ac_ct_CC"; then
-  ac_cv_prog_ac_ct_CC="$ac_ct_CC" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_ac_ct_CC="gcc"
-    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-
-fi
-fi
-ac_ct_CC=$ac_cv_prog_ac_ct_CC
-if test -n "$ac_ct_CC"; then
-  echo "$as_me:$LINENO: result: $ac_ct_CC" >&5
-echo "${ECHO_T}$ac_ct_CC" >&6
-else
-  echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6
-fi
-
-  CC=$ac_ct_CC
-else
-  CC="$ac_cv_prog_CC"
-fi
-
-if test -z "$CC"; then
-  if test -n "$ac_tool_prefix"; then
-  # Extract the first word of "${ac_tool_prefix}cc", so it can be a program name with args.
-set dummy ${ac_tool_prefix}cc; ac_word=$2
-echo "$as_me:$LINENO: checking for $ac_word" >&5
-echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
-if test "${ac_cv_prog_CC+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  if test -n "$CC"; then
-  ac_cv_prog_CC="$CC" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_CC="${ac_tool_prefix}cc"
-    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-
-fi
-fi
-CC=$ac_cv_prog_CC
-if test -n "$CC"; then
-  echo "$as_me:$LINENO: result: $CC" >&5
-echo "${ECHO_T}$CC" >&6
-else
-  echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6
-fi
-
-fi
-if test -z "$ac_cv_prog_CC"; then
-  ac_ct_CC=$CC
-  # Extract the first word of "cc", so it can be a program name with args.
-set dummy cc; ac_word=$2
-echo "$as_me:$LINENO: checking for $ac_word" >&5
-echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
-if test "${ac_cv_prog_ac_ct_CC+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  if test -n "$ac_ct_CC"; then
-  ac_cv_prog_ac_ct_CC="$ac_ct_CC" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_ac_ct_CC="cc"
-    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-
-fi
-fi
-ac_ct_CC=$ac_cv_prog_ac_ct_CC
-if test -n "$ac_ct_CC"; then
-  echo "$as_me:$LINENO: result: $ac_ct_CC" >&5
-echo "${ECHO_T}$ac_ct_CC" >&6
-else
-  echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6
-fi
-
-  CC=$ac_ct_CC
-else
-  CC="$ac_cv_prog_CC"
-fi
-
-fi
-if test -z "$CC"; then
-  # Extract the first word of "cc", so it can be a program name with args.
-set dummy cc; ac_word=$2
-echo "$as_me:$LINENO: checking for $ac_word" >&5
-echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
-if test "${ac_cv_prog_CC+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  if test -n "$CC"; then
-  ac_cv_prog_CC="$CC" # Let the user override the test.
-else
-  ac_prog_rejected=no
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    if test "$as_dir/$ac_word$ac_exec_ext" = "/usr/ucb/cc"; then
-       ac_prog_rejected=yes
-       continue
-     fi
-    ac_cv_prog_CC="cc"
-    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-
-if test $ac_prog_rejected = yes; then
-  # We found a bogon in the path, so make sure we never use it.
-  set dummy $ac_cv_prog_CC
-  shift
-  if test $# != 0; then
-    # We chose a different compiler from the bogus one.
-    # However, it has the same basename, so the bogon will be chosen
-    # first if we set CC to just the basename; use the full file name.
-    shift
-    ac_cv_prog_CC="$as_dir/$ac_word${1+' '}$@"
-  fi
-fi
-fi
-fi
-CC=$ac_cv_prog_CC
-if test -n "$CC"; then
-  echo "$as_me:$LINENO: result: $CC" >&5
-echo "${ECHO_T}$CC" >&6
-else
-  echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6
-fi
-
-fi
-if test -z "$CC"; then
-  if test -n "$ac_tool_prefix"; then
-  for ac_prog in cl
+  for ac_prog in gcc icc cc
   do
     # Extract the first word of "$ac_tool_prefix$ac_prog", so it can be a program name with args.
 set dummy $ac_tool_prefix$ac_prog; ac_word=$2
@@ -1658,7 +1578,7 @@ fi
 fi
 if test -z "$CC"; then
   ac_ct_CC=$CC
-  for ac_prog in cl
+  for ac_prog in gcc icc cc
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
@@ -1699,8 +1619,6 @@ fi
 done
 
   CC=$ac_ct_CC
-fi
-
 fi
 
 
@@ -2331,7 +2249,7 @@ ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 if test -n "$ac_tool_prefix"; then
-  for ac_prog in $CCC g++ c++ gpp aCC CC cxx cc++ cl FCC KCC RCC xlC_r xlC
+  for ac_prog in $CCC g++ c++ gcc icpc icc
   do
     # Extract the first word of "$ac_tool_prefix$ac_prog", so it can be a program name with args.
 set dummy $ac_tool_prefix$ac_prog; ac_word=$2
@@ -2373,7 +2291,7 @@ fi
 fi
 if test -z "$CXX"; then
   ac_ct_CXX=$CXX
-  for ac_prog in $CCC g++ c++ gpp aCC CC cxx cc++ cl FCC KCC RCC xlC_r xlC
+  for ac_prog in $CCC g++ c++ gcc icpc icc
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
@@ -2681,161 +2599,13 @@ ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ex
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
 
-
-#
-# OMNeT++/OMNEST version number
-#
-OMNETPP_VERSION=`cat Version | sed 's/omnetpp-//'`
-
-#
-#  Set system/arch specific values
-#
-case $host in
-  sparc-sun-*)
-    CFLAGS_ARCH="-DSUNSPARC"
-    ;;
-  *-*-cygwin*)
-    cygwin=yes
-    windows=yes
-    ;;
-  *-*-mingw32*)
-    mingw=yes
-    windows=yes
-    ;;
-  *-hp-hpux*)
-    SO_LIB_SUFFIX=".sl"
-    ;;
-  *)
-    ;;
-esac
-
-# We'll collect in this variable the components we've detected problems with
-OPP_PROBLEM_PACKAGES=
-
-#
-# Location of various components. Can be overridden in configure.user.
-#
-OMNETPP_ROOT=`pwd`
-if test "$mingw" = yes; then
-    OMNETPP_ROOT=`pwd -W`
-fi
-if test "$cygwin" = yes; then
-    OMNETPP_ROOT=`cygpath -w $OMNETPP_ROOT | sed 's|\\\\|/|g'`
-fi
-
-OMNETPP_SRC_DIR="$OMNETPP_ROOT/src"
-OMNETPP_UTILS_DIR="$OMNETPP_SRC_DIR/utils"
-OMNETPP_DOC_DIR="$OMNETPP_ROOT/doc"
-OMNETPP_SAMPLES_DIR="$OMNETPP_ROOT/samples"
-# OMNETPP_MODELS_DIR="$OMNETPP_ROOT/models"
-OMNETPP_TEST_DIR="$OMNETPP_ROOT/test"
-OMNETPP_BITMAP_PATH="./bitmaps;$OMNETPP_ROOT/bitmaps"
-
-OMNETPP_BIN_DIR="$OMNETPP_ROOT/bin"
-OMNETPP_INCL_DIR="$OMNETPP_ROOT/include"
-OMNETPP_LIB_DIR="$OMNETPP_ROOT/lib"
-
-OMNETPP_TKENV_DIR="$OMNETPP_SRC_DIR/tkenv"
-OMNETPP_GNED_DIR="$OMNETPP_SRC_DIR/gned"
-OMNETPP_NEDC_DIR="$OMNETPP_SRC_DIR/nedc"
-OMNETPP_SCALARS_DIR="$OMNETPP_SRC_DIR/scalars"
-OMNETPP_PLOVE_DIR="$OMNETPP_SRC_DIR/plove"
-
-CFLAGS='-g Wall'
-#CFLAGS='-O3 -DNDEBUG=1'
-NEDCFLAGS='-Wno-unused'
-
-LDFLAGS=
-
-AS="as"
-AR="ar cr"
-#SHLIB_LD: leave it for later (CC may get overridden by user)
-SHLIB_CFLAGS="-fPIC"
-NEDC="nedtool"
-MSGC="opp_msgc"
-NEDTOOL="nedtool"
-GNED="gned"
-MAKEDEPEND="opp_makedep -Y --objdirtree"
-
-if test "$cygwin" = yes; then
-    MYPWD="$OMNETPP_SRC_DIR/utils/cygpwd"
-else
-    MYPWD="pwd"
-fi
-
-#
-# set default library suffixes. May be already defined
-# with system/arch specific values
-#
-A_LIB_SUFFIX=${A_LIB_SUFFIX:-".a"}
-SO_LIB_SUFFIX=${SO_LIB_SUFFIX:-".so"}
-
-if test "$cygwin" = yes; then
-    EXE_SUFFIX=".exe"
-else
-    EXE_SUFFIX=
-fi
-
-
-# total stack size on NT defaults to 128MB (will be added to LDFLAGS later):
-CYGWIN_STACKSIZE=134217728
-
-build_shared_libs=if-not-windows
-#build_shared_libs=yes
-#build_shared_libs=no
+AS=${AS:-as}
+AR=${AR:-ar cr}
+SHLIB_LD=${SHLIB_LD:-$CXX -shared -fPIC}
 
 
 #----------------------
-# Default flags for values for other variables that come from configure.user.
-#----------------------
-
-TK_CFLAGS=
-TK_LIBS=
-
-if test -d /usr/include/tcl8.4; then
-    # this was reported to be the case on Debian 3.1 "sarge"
-    TK_CFLAGS="-I/usr/include/tcl8.4"
-fi
-if test -d /usr/include/tcl8.5; then
-    TK_CFLAGS="-I/usr/include/tcl8.5"
-fi
-
-if test "$cygwin" = yes; then
-    BLT_LIBS="-lBLT24 -mwindows -lwinspool"
-else
-    BLT_LIBS="-lBLT24"
-fi
-
-# for MPI
-MPI_CFLAGS=
-MPI_LIBS=
-
-# for Expat
-EXPAT_CFLAGS=
-EXPAT_LIBS=-lexpat
-
-# for LibXML
-LIBXML_CFLAGS=
-LIBXML_LIBS="-lxml2"
-
-# for Akaroa
-AKAROA_CFLAGS=
-AKAROA_LIBS="-lakaroa -lfl"
-
-
-#----------------------
-# Read user settings (and allow override the above settings)
-#----------------------
-{ echo "$as_me:$LINENO: -----------------------------------------------" >&5
-echo "$as_me: -----------------------------------------------" >&6;}
-{ echo "$as_me:$LINENO: reading configure.user for your custom settings" >&5
-echo "$as_me: reading configure.user for your custom settings" >&6;}
-{ echo "$as_me:$LINENO: -----------------------------------------------" >&5
-echo "$as_me: -----------------------------------------------" >&6;}
-. ./configure.user
-
-#----------------------
-# check Cygwin
+# Check Cygwin
 #----------------------
 if test "$WITH_PARSIM" = "yes" -a "$cygwin" = "yes"; then
    { { echo "$as_me:$LINENO: error: WITH_PARSIM=yes not supported with Cygwin -- please edit configure.user!" >&5
@@ -3256,9 +3026,6 @@ else
 fi
 
 
-if test "$SHLIB_LD" = ""; then
-    SHLIB_LD="$CXX -shared -fPIC"
-fi
 
 # doxygen is used for generation of api doc
 
@@ -3300,7 +3067,7 @@ fi
 
 
 if test "$DOXYGEN" = "not found"; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES doxygen"
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  doxygen"
    { echo "$as_me:$LINENO: WARNING: doxygen not found -- it is needed to create the OMNeT++/OMNEST API reference and also useful with opp_neddoc." >&5
 echo "$as_me: WARNING: doxygen not found -- it is needed to create the OMNeT++/OMNEST API reference and also useful with opp_neddoc." >&2;}
    { echo "$as_me:$LINENO: WARNING: It is available from http://www.doxygen.org/" >&5
@@ -3386,7 +3153,7 @@ fi
 
 
 if test "$XSLTPROC" = "not found"; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES xsltproc"
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  xsltproc"
    { echo "$as_me:$LINENO: WARNING: xsltproc from the libxml/libxslt packages not found -- it is needed by opp_neddoc." >&5
 echo "$as_me: WARNING: xsltproc from the libxml/libxslt packages not found -- it is needed by opp_neddoc." >&2;}
    { echo "$as_me:$LINENO: WARNING: You can get it from http://xmlsoft.org/XSLT/" >&5
@@ -3433,7 +3200,7 @@ fi
 
 
 if test "$GHOSTSCRIPT" = ""; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES Ghostscript"
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Ghostscript"
    { echo "$as_me:$LINENO: WARNING: Ghostscript not found -- it is needed by opp_neddoc to create diagrams." >&5
 echo "$as_me: WARNING: Ghostscript not found -- it is needed by opp_neddoc to create diagrams." >&2;}
 fi
@@ -3477,7 +3244,7 @@ fi
 
 
 if test "$CONVERT" = ""; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES ImageMagick"
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  ImageMagick"
    { echo "$as_me:$LINENO: WARNING: convert program from the ImageMagick package not found -- opp_neddoc may export broken network diagrams due to a Ghostscript problem." >&5
 echo "$as_me: WARNING: convert program from the ImageMagick package not found -- opp_neddoc may export broken network diagrams due to a Ghostscript problem." >&2;}
 fi
@@ -3521,7 +3288,7 @@ fi
 
 
 if test "$DOT" = ""; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES Graphviz"
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Graphviz"
    { echo "$as_me:$LINENO: WARNING: dot program from Graphviz not found -- it is needed by opp_neddoc to generate diagrams." >&5
 echo "$as_me: WARNING: dot program from Graphviz not found -- it is needed by opp_neddoc to generate diagrams." >&2;}
 fi
@@ -3565,7 +3332,7 @@ fi
 
 
 if test "$GIFTRANS" = ""; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES giftrans"
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  giftrans"
    { echo "$as_me:$LINENO: WARNING: giftrans not found -- opp_neddoc needs it to make the background of diagrams transparent." >&5
 echo "$as_me: WARNING: giftrans not found -- opp_neddoc needs it to make the background of diagrams transparent." >&2;}
 fi
@@ -5131,12 +4898,12 @@ rm -f conftest.err conftest.$ac_objext \
 if test $blt_ok = yes; then
     HAVE_BLT=yes
     if echo 'catch {package require BLT 2.4; puts OK}; exit' | $WISH | grep OK >/dev/null; then :; else
-        OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES BLT"
+        OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  BLT"
         { echo "$as_me:$LINENO: WARNING: Tcl cannot load BLT (wish command \"package require BLT 2.4\" failed), probably BLT not installed correctly." >&5
 echo "$as_me: WARNING: Tcl cannot load BLT (wish command \"package require BLT 2.4\" failed), probably BLT not installed correctly." >&2;}
     fi
 else
-    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES BLT"
+    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  BLT"
     { echo "$as_me:$LINENO: WARNING: Cannot compile or link program with BLT: BLT or BLT-devel may not be installed -- check config.log for details. Plove and Scalars require BLT to build." >&5
 echo "$as_me: WARNING: Cannot compile or link program with BLT: BLT or BLT-devel may not be installed -- check config.log for details. Plove and Scalars require BLT to build." >&2;}
     HAVE_BLT=no
@@ -5219,16 +4986,16 @@ rm -f conftest.err conftest.$ac_objext \
    LIBS=$save_LIBS
 
 if test $mpi_ok = no; then
-   lamlibs="-pthread -llammpio -llammpi++ -llamf77mpi -lmpi -llam -laio -laio -lutil"
+   mpilibs="-pthread -llammpio -llammpi++ -lmpi -llam -laio -laio -lutil"
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
    CXXFLAGS="$MPI_CFLAGS"
-   LIBS="$lamlibs"
+   LIBS="$mpilibs"
 
-   echo "$as_me:$LINENO: checking for MPI with CFLAGS=\"$MPI_CFLAGS\" LIBS=\"$lamlibs\"" >&5
-echo $ECHO_N "checking for MPI with CFLAGS=\"$MPI_CFLAGS\" LIBS=\"$lamlibs\"... $ECHO_C" >&6
+   echo "$as_me:$LINENO: checking for MPI with CFLAGS=\"$MPI_CFLAGS\" LIBS=\"$mpilibs\"" >&5
+echo $ECHO_N "checking for MPI with CFLAGS=\"$MPI_CFLAGS\" LIBS=\"$mpilibs\"... $ECHO_C" >&6
 
    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -5268,7 +5035,72 @@ if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
   echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; mpi_ok=yes; MPI_LIBS="$lamlibs"
+echo "${ECHO_T}yes" >&6; mpi_ok=yes; MPI_LIBS="$mpilibs"
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; mpi_ok=no;
+fi
+rm -f conftest.err conftest.$ac_objext \
+      conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+fi
+if test $mpi_ok = no; then
+   mpilibs="-lmpi++ -lmpi"   #SGI
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$MPI_CFLAGS"
+   LIBS="$mpilibs"
+
+   echo "$as_me:$LINENO: checking for MPI with CFLAGS=\"$MPI_CFLAGS\" LIBS=\"$mpilibs\"" >&5
+echo $ECHO_N "checking for MPI with CFLAGS=\"$MPI_CFLAGS\" LIBS=\"$mpilibs\"... $ECHO_C" >&6
+
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <mpi.h>
+int
+main ()
+{
+MPI_Init(0,0);
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_cxx_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6; mpi_ok=yes; MPI_LIBS="$mpilibs"
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
@@ -5287,6 +5119,9 @@ if test $mpi_ok = yes; then
    HAVE_MPI=yes
 else
    HAVE_MPI=no
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  MPI (optional)"
+   { echo "$as_me:$LINENO: WARNING: Optional package MPI (needed for parallel simulation) not found." >&5
+echo "$as_me: WARNING: Optional package MPI (needed for parallel simulation) not found." >&2;}
 fi
 
 #----------------------
@@ -5544,7 +5379,71 @@ rm -f conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
+if test $expat_ok = no; then
+    expatlibs="-lexpat"
 
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$EXPAT_CFLAGS"
+   LIBS="$expatlibs"
+
+   echo "$as_me:$LINENO: checking for Expat XML parser with CFLAGS=\"$EXPAT_CFLAGS\" LIBS=\"$expatlibs\"" >&5
+echo $ECHO_N "checking for Expat XML parser with CFLAGS=\"$EXPAT_CFLAGS\" LIBS=\"$expatlibs\"... $ECHO_C" >&6
+
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <expat.h>
+int
+main ()
+{
+XML_ParserCreate(0);
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_cxx_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6; expat_ok=yes; EXPAT_LIBS=$expatlibs
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; expat_ok=no;
+fi
+rm -f conftest.err conftest.$ac_objext \
+      conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+fi
 if test $libxml_ok = yes; then
    { echo "$as_me:$LINENO: Using LibXML for XML parsing" >&5
 echo "$as_me: Using LibXML for XML parsing" >&6;}
@@ -5561,7 +5460,7 @@ echo "$as_me: WARNING: DTD validation is not supported with Expat, only with Lib
    XML_LIBS=$EXPAT_LIBS
 else
    XMLPARSER=none
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES (no XML parser)"
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  LibXML/Expat"
    { echo "$as_me:$LINENO: WARNING: No suitable XML parser found: no support for XML input" >&5
 echo "$as_me: WARNING: No suitable XML parser found: no support for XML input" >&2;}
 fi
@@ -5631,9 +5530,78 @@ rm -f conftest.err conftest.$ac_objext \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
+if test $akaroa_ok = no; then
+    akaroalibs="-lakaroa -lfl"
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$AKAROA_CFLAGS"
+   LIBS="$akaroalibs"
+
+   echo "$as_me:$LINENO: checking for Akaroa with CFLAGS=\"$AKAROA_CFLAGS\" LIBS=\"$akaroalibs\"" >&5
+echo $ECHO_N "checking for Akaroa with CFLAGS=\"$AKAROA_CFLAGS\" LIBS=\"$akaroalibs\"... $ECHO_C" >&6
+
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <akaroa.H>
+int
+main ()
+{
+AkObservation(0.0);
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_cxx_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6; akaroa_ok=yes; AKAROA_LIBS="$akaroalibs"
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; akaroa_ok=no;
+fi
+rm -f conftest.err conftest.$ac_objext \
+      conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+fi
 if test $akaroa_ok = yes; then
    CFLAGS="$CFLAGS -DWITH_AKAROA"
    SYS_LIBS="$SYS_LIBS $AKAROA_LIBS"
+else
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Akaroa (optional)"
+   { echo "$as_me:$LINENO: WARNING: Optional package Akaroa not found" >&5
+echo "$as_me: WARNING: Optional package Akaroa not found" >&2;}
 fi
 
 #----------------------
@@ -6818,13 +6786,15 @@ chmod +x src/utils/opp_neddoc
 if test "$OPP_PROBLEM_PACKAGES" != ""; then
       cat 1>&2 << EOT
 
-WARNING: The configuration script has found problems with the following packages:
+WARNING: The configuration script could not detect the following packages:
 
   $OPP_PROBLEM_PACKAGES
 
-Scroll up to see the warning messages (use shift+PgUp key). While you can
-still use OMNeT++/OMNEST in the current configuration, be aware that some
-functionality may be degraded or unavailable.
+Scroll up to see the warning messages (use shift+PgUp key), and see config.log
+for more details. While you can use OMNeT++/OMNEST in the current
+configuration, please be aware that some functionality may be unavailable
+or incomplete.
+
 
 EOT
 fi
