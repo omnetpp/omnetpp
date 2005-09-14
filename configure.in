@@ -177,6 +177,11 @@ MAKEDEPEND=${MAKEDEPEND:-opp_makedep -Y --objdirtree}
 AC_PROG_CC(icc gcc cc xlc)
 AC_PROG_CXX(icpc g++ c++ cxx xlC)
 
+if test "$CXX" = "icpc"; then
+    # disable a useless warning with the Intel compiler
+    CFLAGS="$CFLAGS -wd654"
+fi
+
 AS=${AS:-as}
 AR=${AR:-ar cr}
 SHLIB_LD=${SHLIB_LD:-$CXX -shared -fPIC}

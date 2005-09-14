@@ -2599,6 +2599,11 @@ ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ex
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
 
+if test "$CXX" = "icpc"; then
+    # disable a useless warning with the Intel compiler
+    CFLAGS="$CFLAGS -wd654"
+fi
+
 AS=${AS:-as}
 AR=${AR:-ar cr}
 SHLIB_LD=${SHLIB_LD:-$CXX -shared -fPIC}
