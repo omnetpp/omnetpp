@@ -70,7 +70,7 @@ class SIM_API cPSquare : public cDensityEstBase
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() const   {return new cPSquare(*this);}
+    virtual cPolymorphic *dup() const   {return new cPSquare(*this);}
 
     /**
      * Serializes the object into a PVM or MPI send buffer.

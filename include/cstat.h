@@ -300,7 +300,7 @@ class SIM_API cStdDev : public cStatistic
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() const {return new cStdDev(*this);}
+    virtual cPolymorphic *dup() const {return new cStdDev(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.
@@ -451,7 +451,7 @@ class SIM_API cWeightedStdDev : public cStdDev
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() const {return new cWeightedStdDev(*this);}
+    virtual cPolymorphic *dup() const {return new cWeightedStdDev(*this);}
 
     /**
      * Serializes the object into a PVM or MPI send buffer.

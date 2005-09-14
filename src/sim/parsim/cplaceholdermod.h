@@ -65,7 +65,7 @@ class SIM_API cPlaceHolderModule : public cModule
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() const   {return new cPlaceHolderModule(*this);}
+    virtual cPolymorphic *dup() const   {return new cPlaceHolderModule(*this);}
     //@}
 
     /** @name Redefined cModule functions */

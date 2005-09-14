@@ -164,7 +164,7 @@ class SIM_API cQueue : public cObject
      * Contained objects that are owned by the queue will be duplicated
      * so that the new queue will have its own copy of them.
      */
-    virtual cObject *dup() const  {return new cQueue(*this);}
+    virtual cPolymorphic *dup() const  {return new cQueue(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.

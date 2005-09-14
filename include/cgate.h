@@ -97,7 +97,7 @@ class SIM_API cGate : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() const  {return new cGate(*this);}
+    virtual cPolymorphic *dup() const  {return new cGate(*this);}
 
     /**
      * Calls v->visit(this) for each contained object.

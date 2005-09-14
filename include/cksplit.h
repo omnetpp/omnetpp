@@ -207,7 +207,7 @@ class SIM_API cKSplit : public cDensityEstBase
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() const   {return new cKSplit (*this);}
+    virtual cPolymorphic *dup() const   {return new cKSplit (*this);}
 
     /**
      * Writes textual information about this object to the stream.

@@ -1,5 +1,10 @@
 2005-09-14  Andras Varga
 
+	* cpolymorphic.h, cobject.h, etc: dup() moved up to cPolymorphic, and 
+	return type changed to cPolymorphic. Once we drop MSVC 6.0 support,
+	return types can be changed to class itself, i.e. in class Foo it can
+	be defined as Foo *dup(). Unfortunately MSVC 6.0 doesn't support this.
+
 	* cmodule.h, csimplemodule.h, ctypes.h, macros.h: signature of module
 	constructors simplified, from
 	    cModule(const char *name, cModule *parent) and

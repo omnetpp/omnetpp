@@ -99,7 +99,7 @@ class SIM_API cOutVector : public cObject
      * Dupping is not implemented for cOutVector. This function
      * gives an error (throws cRuntimeError) when called.
      */
-    virtual cObject *dup() const    {return new cOutVector(*this);}
+    virtual cPolymorphic *dup() const    {return new cOutVector(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.

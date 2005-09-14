@@ -144,7 +144,7 @@ cQueue& cQueue::operator=(const cQueue& queue)
     for (cQueue::Iterator iter(queue, 0); !iter.end(); iter--)
     {
         if (iter()->owner()==const_cast<cQueue*>(&queue))
-            {takeOwnership(true); insert( iter()->dup() );}
+            {takeOwnership(true); insert( (cObject *)iter()->dup() );}
         else
             {takeOwnership(false); insert( iter() );}
     }

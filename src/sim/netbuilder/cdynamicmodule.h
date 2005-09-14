@@ -87,7 +87,7 @@ class cDynamicCompoundModule : public cCompoundModule
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() const   {return new cDynamicCompoundModule(*this);}
+    virtual cPolymorphic *dup() const   {return new cDynamicCompoundModule(*this);}
     //@}
 };
 

@@ -117,7 +117,7 @@ class SIM_API cMessageHeap : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() const  {return new cMessageHeap(*this);}
+    virtual cPolymorphic *dup() const  {return new cMessageHeap(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.

@@ -330,7 +330,7 @@ class SIM_API cLongHistogram : public cEqdHistogramBase
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() const    {return new cLongHistogram(*this);}
+    virtual cPolymorphic *dup() const    {return new cLongHistogram(*this);}
     //@}
 
   protected:
@@ -455,7 +455,7 @@ class SIM_API cDoubleHistogram : public cEqdHistogramBase
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() const  {return new cDoubleHistogram(*this);}
+    virtual cPolymorphic *dup() const  {return new cDoubleHistogram(*this);}
     //@}
 
     /** @name Redefined member functions from cStatistic and its subclasses. */

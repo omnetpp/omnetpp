@@ -54,7 +54,7 @@ class SIM_API cWatchBase : public cObject
     /**
      * dup() not supported: it will raise an error.
      */
-    virtual cObject *dup() const {copyNotSupported(); return NULL;}
+    virtual cPolymorphic *dup() const {copyNotSupported(); return NULL;}
     //@}
 
     /** @name New methods */

@@ -84,7 +84,7 @@ class SIM_API cBag : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() const  {return new cBag(*this);}
+    virtual cPolymorphic *dup() const  {return new cBag(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.
@@ -311,7 +311,7 @@ class SIM_API cArray : public cObject
      * Contained objects that are owned by cArray will be duplicated
      * so that the new cArray will have its own copy of them.
      */
-    virtual cObject *dup() const  {return new cArray(*this);}
+    virtual cPolymorphic *dup() const  {return new cArray(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.

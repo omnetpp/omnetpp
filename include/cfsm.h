@@ -221,7 +221,7 @@ class SIM_API cFSM : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() const   {return new cFSM(*this);}
+    virtual cPolymorphic *dup() const   {return new cFSM(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.

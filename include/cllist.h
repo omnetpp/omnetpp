@@ -162,7 +162,7 @@ class SIM_API cLinkedList : public cObject
      * Contained items are treated as configured with configPointer().
      * By default, only pointers are copied.
      */
-    virtual cObject *dup() const  {return new cLinkedList(*this);}
+    virtual cPolymorphic *dup() const  {return new cLinkedList(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.

@@ -1477,7 +1477,7 @@ cPar& cPar::operator=(const cPar& val)
     {
          cObject *&p = obj.obj;
          if (p->owner()==const_cast<cPar*>(&val))
-            take( p=p->dup() );
+            take( p = (cObject *)p->dup() );
     }
     // type 'I' does not use ownership so we can skip it.
 

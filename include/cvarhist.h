@@ -132,7 +132,7 @@ class SIM_API cVarHistogram : public cHistogramBase //--LG
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() const    {return new cVarHistogram(*this);}
+    virtual cPolymorphic *dup() const    {return new cVarHistogram(*this);}
 
     /**
      * Serializes the object into a PVM or MPI send buffer.

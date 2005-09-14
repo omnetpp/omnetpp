@@ -724,7 +724,7 @@ class SIM_API cCompoundModule : public cModule
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() const   {return new cCompoundModule(*this);}
+    virtual cPolymorphic *dup() const   {return new cCompoundModule(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.

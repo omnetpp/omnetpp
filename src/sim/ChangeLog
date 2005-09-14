@@ -1,5 +1,8 @@
 2005-09-14  Andras Varga
 
+	* cpolymorphic.cc, etc: dup() moved up to cPolymorphic, and return type
+	changed to cPolymorphic. See include/ChangeLog.
+
 	* cmodule.cc, csimplemodule.cc, etc: module constructor signature 
 	change, see comment in include/ChangeLog
 

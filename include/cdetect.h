@@ -308,7 +308,7 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
      * Dupping is not implemented for this class. This function
      * gives an error (throws cRuntimeError) when called.
      */
-    virtual cObject *dup() const  {return new cTDExpandingWindows(*this);}
+    virtual cPolymorphic *dup() const  {return new cTDExpandingWindows(*this);}
     //@}
 
     /** @name Redefined cTransientDetection member functions. */
@@ -413,7 +413,7 @@ class SIM_API cADByStddev : public cAccuracyDetection
      * Dupping is not implemented for this class. This function
      * gives an error (throws cRuntimeError) when called.
      */
-    virtual cObject *dup() const  {return new cADByStddev(*this);}
+    virtual cPolymorphic *dup() const  {return new cADByStddev(*this);}
     //@}
 
     /** @name Redefined cAccuracyDetection functions. */

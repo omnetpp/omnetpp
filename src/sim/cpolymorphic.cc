@@ -55,12 +55,9 @@ std::string cPolymorphic::detailedInfo() const
     return std::string();
 }
 
-#if 0
-// not yet -- see header file for more info
 cPolymorphic *cPolymorphic::dup() const
 {
     throw new cRuntimeError("The dup() method, declared in cPolymorphic, is not "
                             "redefined in class %s", className());
 }
-#endif
 

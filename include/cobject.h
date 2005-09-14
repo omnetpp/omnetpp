@@ -279,7 +279,7 @@ class SIM_API cObject : public cPolymorphic
      * In derived classes, it is usually implemented as
      * <tt>return new ClassName(*this)</tt>.
      */
-    virtual cObject *dup() const    {return new cObject(*this);}
+    virtual cPolymorphic *dup() const    {return new cObject(*this);}
 
     /**
      * The assignment operator. Derived classes should contain similar

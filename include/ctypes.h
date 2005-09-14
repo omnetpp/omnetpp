@@ -182,7 +182,7 @@ class SIM_API cModuleInterface : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() const  {return new cModuleInterface(*this);}
+    virtual cPolymorphic *dup() const  {return new cModuleInterface(*this);}
     //@}
 
     /** @name Setting up a module interface manually */
@@ -341,7 +341,7 @@ class SIM_API cModuleType : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() const     {return new cModuleType(*this);}
+    virtual cPolymorphic *dup() const     {return new cModuleType(*this);}
     //@}
 
     /** @name Module creation */
@@ -489,7 +489,7 @@ class SIM_API cLinkType : public cChannelType
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() const  {return new cLinkType(*this);}
+    virtual cPolymorphic *dup() const  {return new cLinkType(*this);}
     //@}
 
     /** @name Channel object creation */
@@ -617,7 +617,7 @@ class SIM_API cFunctionType : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() const  {return new cFunctionType(*this);}
+    virtual cPolymorphic *dup() const  {return new cFunctionType(*this);}
     //@}
 
     /** @name Member access. */
@@ -715,7 +715,7 @@ class SIM_API cClassRegister : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() const  {return new cClassRegister(*this);}
+    virtual cPolymorphic *dup() const  {return new cClassRegister(*this);}
     //@}
 
     /** @name Factory function. */

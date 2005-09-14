@@ -130,7 +130,7 @@ class SIM_API cSimulation : public cObject
      * Dupping is not implemented for this class. This function
      * gives an error (throws cRuntimeError) via operator= when called.
      */
-    virtual cObject *dup() const  {return new cSimulation(*this);}
+    virtual cPolymorphic *dup() const  {return new cSimulation(*this);}
 
     /**
      * Calls v->visit(this) for each contained object.

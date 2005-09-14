@@ -119,16 +119,12 @@ class SIM_API cPolymorphic
      */
     virtual std::string detailedInfo() const;
 
-#if 0
-    // PROBLEM: the following method cannot be supported under MSVC 6.0 (it gives
-    // error C2555: overriding virtual function differs only by return type)
     /**
      * Should be redefined in subclasses to create an exact copy of this object.
      * The default implementation just throws an error, to indicate that
      * the method was not redefined.
      */
     virtual cPolymorphic *dup() const;
-#endif
     //@}
 };
 

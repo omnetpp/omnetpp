@@ -85,7 +85,7 @@ class SIM_API cChannel : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() const  {return new cChannel(*this);}
+    virtual cPolymorphic *dup() const  {return new cChannel(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.
@@ -239,7 +239,7 @@ class SIM_API cBasicChannel : public cChannel
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() const  {return new cBasicChannel(*this);}
+    virtual cPolymorphic *dup() const  {return new cBasicChannel(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.

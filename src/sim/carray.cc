@@ -343,7 +343,7 @@ cArray& cArray::operator=(const cArray& list)
 
     for (int i=0; i<=last; i++)
         if (vect[i] && vect[i]->owner()==const_cast<cArray*>(&list))
-            take( vect[i] = vect[i]->dup() );
+            take( vect[i] = (cObject *)vect[i]->dup() );
     return *this;
 }
 

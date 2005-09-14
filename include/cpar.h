@@ -365,7 +365,7 @@ class SIM_API cPar : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() const   {return new cPar(*this);}
+    virtual cPolymorphic *dup() const   {return new cPar(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.
@@ -924,7 +924,7 @@ class SIM_API cModulePar : public cPar
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() const  {return new cPar(*this);}
+    virtual cPolymorphic *dup() const  {return new cPar(*this);}
 
     /**
      * Redefined. (Reason: a C++ rule that overloaded virtual methods must be redefined together.)

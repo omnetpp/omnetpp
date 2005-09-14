@@ -95,7 +95,7 @@ class SIM_API cDefaultList : public cObject
     /**
      * Duplication. Throws exception.
      */
-    virtual cObject *dup() const  {return new cDefaultList(*this);}
+    virtual cPolymorphic *dup() const  {return new cDefaultList(*this);}
 
     /**
      * Returns true.

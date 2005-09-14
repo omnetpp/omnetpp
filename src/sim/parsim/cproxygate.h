@@ -79,7 +79,7 @@ class cProxyGate : public cGate
     /**
      * Duplicates the gate object.
      */
-    virtual cObject *dup() const   {return new cProxyGate(*this);}
+    virtual cPolymorphic *dup() const   {return new cProxyGate(*this);}
 
     /**
      * Assigment operator.
