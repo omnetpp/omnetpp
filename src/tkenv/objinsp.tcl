@@ -50,6 +50,7 @@ proc create_objinspector {name geom} {
     # page 2: fields
     if {$fieldspage_needed} {
         create_structpanel $nb.fields
+        notebook_showpage $nb fields
     }
 }
 
