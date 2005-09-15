@@ -22,25 +22,24 @@
 #include <omnetpp.h>
 
 class SSM_OIF_by_frequency : public cSimpleModule
-  {
+{
   public:
-  SSM_OIF_by_frequency() : cSimpleModule(SSM_OIF_HEAPSIZE) {}   //NEWCTOR2
-  virtual void activity();
-  };
+    SSM_OIF_by_frequency() : cSimpleModule(SSM_OIF_STACKSIZE) {}
+    virtual void activity();
+};
 
 class SSM_OIF_by_time : public cSimpleModule
-  {
+{
   public:
-  SSM_OIF_by_time() : cSimpleModule(SSM_OIF_HEAPSIZE) {}   //NEWCTOR2
-  virtual void activity();
-  };
+    SSM_OIF_by_time() : cSimpleModule(SSM_OIF_STACKSIZE) {}
+    virtual void activity();
+};
 
 class SSM_IIF : public cSimpleModule
-  {
+{
   public:
-  SSM_IIF() : cSimpleModule(SSM_IIF_HEAPSIZE) {}   //NEWCTOR2
-  virtual void activity();
-  };
+    SSM_IIF() : cSimpleModule(SSM_IIF_STACKSIZE) {}
+    virtual void activity();
+};
 
 #endif
-

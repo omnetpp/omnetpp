@@ -20,11 +20,11 @@
 #define __OTHERDEF_H
 
 
-#define GENERATOR_HEAPSIZE   16384
-#define STAT_HEAPSIZE        16384
-#define SINK_HEAPSIZE        16384
-#define MONITOR_HEAPSIZE     16384
-#define LOADCONTROL_HEAPSIZE 16384
+#define GENERATOR_STACKSIZE   16384
+#define STAT_STACKSIZE        16384
+#define SINK_STACKSIZE        16384
+#define MONITOR_STACKSIZE     16384
+#define LOADCONTROL_STACKSIZE 16384
 
 #define LOAD_CONTROL_SELFMSG 95 /* LoadControl self message */
 
@@ -33,4 +33,3 @@
 #define RING_1_PREFIX "sr"
 
 #endif
-

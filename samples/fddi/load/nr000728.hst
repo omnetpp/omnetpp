@@ -2,7 +2,7 @@
 1 # Destination ID
 
 #
-# (cDoubleHistogram) StCol.local-objects.Inter Arrivial Time
+# (cDoubleHistogram) StCol.Inter-Arrival Time
 #
 82759	 #= num_samples
 0 0.08879	 #= min, max
@@ -40,7 +40,7 @@
 0.0010305	 #= cellsize
 
 #
-# (cLongHistogram) StCol.local-objects.Packet Length
+# (cLongHistogram) StCol.Packet Length
 #
 82759	 #= num_samples
 61 1521	 #= min, max
@@ -79,7 +79,7 @@
 2 # Destination ID
 
 #
-# (cDoubleHistogram) StCol.local-objects.Inter Arrivial Time
+# (cDoubleHistogram) StCol.Inter-Arrival Time
 #
 586	 #= num_samples
 7e-05 0.07641	 #= min, max
@@ -117,7 +117,7 @@
 0.002394	 #= cellsize
 
 #
-# (cLongHistogram) StCol.local-objects.Packet Length
+# (cLongHistogram) StCol.Packet Length
 #
 586	 #= num_samples
 61 597	 #= min, max
@@ -156,7 +156,7 @@
 3 # Destination ID
 
 #
-# (cDoubleHistogram) StCol.local-objects.Inter Arrivial Time
+# (cDoubleHistogram) StCol.Inter-Arrival Time
 #
 6137	 #= num_samples
 6e-05 0.06568	 #= min, max
@@ -194,7 +194,7 @@
 0.0011115	 #= cellsize
 
 #
-# (cLongHistogram) StCol.local-objects.Packet Length
+# (cLongHistogram) StCol.Packet Length
 #
 6137	 #= num_samples
 61 1521	 #= min, max
@@ -233,7 +233,7 @@
 13 # Destination ID
 
 #
-# (cDoubleHistogram) StCol.local-objects.Inter Arrivial Time
+# (cDoubleHistogram) StCol.Inter-Arrival Time
 #
 19209	 #= num_samples
 6e-05 0.0826	 #= min, max
@@ -271,7 +271,7 @@
 0.001489	 #= cellsize
 
 #
-# (cLongHistogram) StCol.local-objects.Packet Length
+# (cLongHistogram) StCol.Packet Length
 #
 19209	 #= num_samples
 61 1521	 #= min, max
