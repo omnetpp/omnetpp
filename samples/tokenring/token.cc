@@ -79,6 +79,17 @@ void Generator::activity()
     }
 }
 
+TokenRingMAC::TokenRingMAC() : cSimpleModule(16384)
+{
+    transmEnd = recvEnd = NULL;
+}
+
+TokenRingMAC::~TokenRingMAC()
+{
+    cancelAndDelete(transmEnd);
+    cancelAndDelete(recvEnd);
+}
+
 void TokenRingMAC::activity()
 {
     dataRate = par("dataRate");     // 4 or 16 Mbit/s

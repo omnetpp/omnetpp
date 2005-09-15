@@ -12,9 +12,19 @@
 #include "queuebase.h"
 
 
+QueueBase::QueueBase()
+{
+    msgServiced = endServiceMsg = NULL;
+}
+
+QueueBase::~QueueBase()
+{
+    delete msgServiced;
+    cancelAndDelete(endServiceMsg);
+}
+
 void QueueBase::initialize()
 {
-    msgServiced = NULL;
     endServiceMsg = new cMessage("end-service");
     queue.setName("queue");
 }

@@ -24,9 +24,7 @@ class HTTPServer : public QueueBase
     typedef std::map<std::string, std::string> StringMap;
     StringMap htdocs;
 
-  public:
-    HTTPServer() {}   //NEWCTOR
-
+  protected:
     virtual void initialize();
     virtual simtime_t startService(cMessage *msg);
     virtual void endService(cMessage *msg);

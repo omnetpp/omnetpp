@@ -44,7 +44,10 @@ class TokenRingMAC : public cSimpleModule
     bool debug;
 
   public:
-    TokenRingMAC() : cSimpleModule(16384) {}   //NEWCTOR2
+    TokenRingMAC();
+    virtual ~TokenRingMAC();
+
+  protected:
     virtual void activity();
     virtual void finish();
     virtual void storeDataPacket(TRApplicationData *data);
@@ -55,13 +58,13 @@ class TokenRingMAC : public cSimpleModule
 class Generator : public cSimpleModule
 {
   public:
-    Generator() : cSimpleModule(16384) {}   //NEWCTOR2
+    Generator() : cSimpleModule(16384) {}
     virtual void activity();
 };
 
 class Sink : public cSimpleModule
 {
-  protected:
+  private:
     // output vector to record statistics
     cOutVector endToEndDelay;
 
@@ -71,8 +74,7 @@ class Sink : public cSimpleModule
 
     bool debug;
 
-  public:
-    Sink() {}   //NEWCTOR
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };

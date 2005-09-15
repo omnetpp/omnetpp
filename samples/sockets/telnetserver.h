@@ -18,9 +18,7 @@
  */
 class TelnetServer : public QueueBase
 {
-  public:
-    TelnetServer() {}   //NEWCTOR
-
+  protected:
     virtual simtime_t startService(cMessage *msg);
     virtual void endService(cMessage *msg);
     virtual std::string processChars(const char *chars);

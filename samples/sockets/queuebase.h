@@ -24,8 +24,10 @@ class QueueBase : public cSimpleModule
     cQueue queue;
 
   public:
-    QueueBase() {}   //NEWCTOR
+    QueueBase();
+    virtual ~QueueBase();
 
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 
@@ -36,3 +38,4 @@ class QueueBase : public cSimpleModule
 };
 
 #endif
+
