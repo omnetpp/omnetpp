@@ -370,6 +370,14 @@ class SIM_API cSimpleModule : public cModule
      * If the message is not currently scheduled, nothing happens.
      */
     cMessage *cancelEvent(cMessage *msg);
+
+    /**
+     * Invokes cancelEvent() on the message (in case it is scheduled), then
+     * deletes it. A NULL pointer is also accepted, then the method does nothing.
+     * This method is especially useful in simple module destructors, to dispose
+     * of self-messages that the module has allocated.
+     */
+    void cancelAndDelete(cMessage *msg);
     //@}
 
     /** @name Receiving messages.
