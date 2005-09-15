@@ -16,6 +16,9 @@
 #define STACKSIZE 16384
 
 
+/**
+ * Packet generator; see NED file for more info.
+ */
 class HCGenerator : public cSimpleModule
 {
   public:
@@ -23,6 +26,9 @@ class HCGenerator : public cSimpleModule
     virtual void activity();
 };
 
+/**
+ * Packet sink; see NED file for more info.
+ */
 class HCSink : public cSimpleModule
 {
   public:

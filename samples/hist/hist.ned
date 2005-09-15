@@ -9,7 +9,13 @@
 
 
 //
-// Simple module to demonstrate the usage of the histogram classes.
+// A module to demonstrate the usage of the histogram classes.
+//
+// It generates a number of random observations, and collects them
+// in various histogram-like objects: floating-point and integer
+// equal-bin histograms (cDoubleHistogram, cLongHistogram),
+// variable-bin histogram (cVarHistogram), the P^2 and k-split
+// algorithms (cPSquare, cKSplit).
 //
 simple HistogramDemo
     parameters:
@@ -22,7 +28,7 @@ endsimple
 
 
 //
-// A single-module network, HistogramDemo.
+// Instantiates HistogramDemo as network consisting of just one single-module.
 //
 network Histograms : HistogramDemo
     parameters:

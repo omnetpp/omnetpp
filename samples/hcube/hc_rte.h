@@ -15,6 +15,9 @@
 #define STACKSIZE 16384
 
 
+/**
+ * A router node that implements deflection routing; see NED file for more info.
+ */
 class HCRouter : public cSimpleModule
 {
   public:

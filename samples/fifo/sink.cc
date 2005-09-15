@@ -10,6 +10,9 @@
 #include <omnetpp.h>
 
 
+/**
+ * Packet sink; see NED file for more info.
+ */
 class FFSink : public cSimpleModule
 {
   private:

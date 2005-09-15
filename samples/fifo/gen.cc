@@ -11,6 +11,9 @@
 #include <omnetpp.h>
 
 
+/**
+ * Generates messages or jobs; see NED file for more info.
+ */
 class FFGenerator : public cSimpleModule
 {
   private:

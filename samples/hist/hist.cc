@@ -13,6 +13,9 @@
 #define STACKSIZE 16384
 
 
+/**
+ * Demonstrates histogram classes; see NED file for more info.
+ */
 class HistogramDemo : public cSimpleModule
 {
   public:

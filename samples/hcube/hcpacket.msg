@@ -8,6 +8,9 @@
 //
 
 
+//
+// Represents a packet in the network.
+//
 message HCPacket
 {
     fields:
