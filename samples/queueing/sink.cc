@@ -10,6 +10,9 @@
 #include <omnetpp.h>
 
 
+/**
+ * Discards incoming messages, and collects statistics.
+ */
 class QSink : public cSimpleModule
 {
   private:

@@ -10,6 +10,9 @@
 #include <omnetpp.h>
 
 
+/**
+ * Delays every message by a given time interval.
+ */
 class QDelay : public cSimpleModule
 {
   private:

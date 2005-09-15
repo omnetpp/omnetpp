@@ -12,6 +12,9 @@
 
 #include <omnetpp.h>
 
+/**
+ * A passive queue, designed to co-operate with QServer using method calls.
+ */
 class QPassiveQueue : public cSimpleModule
 {
   private:

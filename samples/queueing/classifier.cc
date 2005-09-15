@@ -10,6 +10,10 @@
 #include <omnetpp.h>
 
 
+/**
+ * Classifies messages based on the message kind value, and sends
+ * them to the corresponding output gates.
+ */
 class QClassifier : public cSimpleModule
 {
   protected:

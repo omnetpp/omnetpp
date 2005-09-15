@@ -14,6 +14,13 @@
 
 class QPassiveQueue;
 
+
+/**
+ * The queue server. It cooperates with several QPassiveQueue's
+ * which queue up the jobs, and send them to QServer by request.
+ *
+ * @see QPassiveQueue
+ */
 class QServer : public cSimpleModule
 {
   private:
