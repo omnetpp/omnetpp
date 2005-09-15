@@ -10,83 +10,33 @@
 
 #include <omnetpp.h>
 
-
-class ChainNode : public cSimpleModule
+class DoNothing : public cSimpleModule
 {
-  public:
-    ChainNode() {}   //NEWCTOR
+  protected:
     virtual void handleMessage(cMessage *) {}
 };
 
+class ChainNode : public DoNothing {};
 Define_Module(ChainNode);
 
-
-class MeshNode : public cSimpleModule
-{
-  public:
-    MeshNode() {}   //NEWCTOR
-    virtual void handleMessage(cMessage *) {}
-};
-
+class MeshNode : public DoNothing {};
 Define_Module(MeshNode);
 
-
-class StarNode : public cSimpleModule
-{
-  public:
-    StarNode() {}   //NEWCTOR
-    virtual void handleMessage(cMessage *) {}
-};
-
+class StarNode : public DoNothing {};
 Define_Module(StarNode);
 
-
-class HubNode : public cSimpleModule
-{
-  public:
-    HubNode() {}   //NEWCTOR
-    virtual void handleMessage(cMessage *) {}
-};
-
+class HubNode : public DoNothing {};
 Define_Module(HubNode);
 
-
-class RndNode : public cSimpleModule
-{
-  public:
-    RndNode() {}   //NEWCTOR
-    virtual void handleMessage(cMessage *) {}
-};
-
+class RndNode : public DoNothing {};
 Define_Module(RndNode);
 
-
-class FullGraphNode : public cSimpleModule
-{
-  public:
-    FullGraphNode() {}   //NEWCTOR
-    virtual void handleMessage(cMessage *) {}
-};
-
+class FullGraphNode : public DoNothing {};
 Define_Module(FullGraphNode);
 
-
-class HexGridNode : public cSimpleModule
-{
-  public:
-    HexGridNode() {}   //NEWCTOR
-    virtual void handleMessage(cMessage *) {}
-};
-
+class HexGridNode : public DoNothing {};
 Define_Module(HexGridNode);
 
-
-class BinaryTreeNode : public cSimpleModule
-{
-  public:
-    BinaryTreeNode() {}   //NEWCTOR
-    virtual void handleMessage(cMessage *) {}
-};
-
+class BinaryTreeNode : public DoNothing {};
 Define_Module(BinaryTreeNode);
 
