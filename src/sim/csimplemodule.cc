@@ -534,6 +534,12 @@ cMessage *cSimpleModule::cancelEvent(cMessage *msg)
     return msg;
 }
 
+void cSimpleModule::cancelAndDelete(cMessage *msg)
+{
+    if (msg)
+        delete cancelEvent(msg);
+}
+
 void cSimpleModule::arrived( cMessage *msg, int ongate, simtime_t t)
 {
     if (state==sENDED)

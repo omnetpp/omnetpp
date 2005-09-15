@@ -1,3 +1,7 @@
+2005-09-15  Andras Varga
+
+	* csimplemodule.cc: added method cancelAndDelete(cMessage *msg).
+
 2005-09-14  Andras Varga
 
 	* cpolymorphic.cc, etc: dup() moved up to cPolymorphic, and return type
