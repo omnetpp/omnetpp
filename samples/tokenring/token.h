@@ -23,8 +23,7 @@
 
 class TokenRingMAC : public cSimpleModule
 {
-    Module_Class_Members(TokenRingMAC,cSimpleModule,16384)
-
+  private:
     int myAddress;
     long dataRate;
     double tokenHoldingTime;
@@ -44,6 +43,8 @@ class TokenRingMAC : public cSimpleModule
 
     bool debug;
 
+  public:
+    TokenRingMAC() : cSimpleModule(16384) {}   //NEWCTOR2
     virtual void activity();
     virtual void finish();
     virtual void storeDataPacket(TRApplicationData *data);
@@ -53,7 +54,8 @@ class TokenRingMAC : public cSimpleModule
 
 class Generator : public cSimpleModule
 {
-    Module_Class_Members(Generator,cSimpleModule,16384)
+  public:
+    Generator() : cSimpleModule(16384) {}   //NEWCTOR2
     virtual void activity();
 };
 
@@ -70,7 +72,7 @@ class Sink : public cSimpleModule
     bool debug;
 
   public:
-    Module_Class_Members(Sink,cSimpleModule,0)
+    Sink() {}   //NEWCTOR
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };

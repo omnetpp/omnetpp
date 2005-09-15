@@ -25,7 +25,7 @@ class Txc11 : public cSimpleModule
     long numReceived;
 
   public:
-    Module_Class_Members(Txc11, cSimpleModule, 0);
+    Txc11() {}   //NEWCTOR
 
     virtual TicTocMsg11 *generateMessage();
     virtual void forwardMessage(TicTocMsg11 *msg);

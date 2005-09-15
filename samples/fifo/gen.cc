@@ -13,10 +13,11 @@
 
 class FFGenerator : public cSimpleModule
 {
-  public:
-    Module_Class_Members(FFGenerator,cSimpleModule,0);
-
+  private:
     cMessage *sendMessageEvent;
+
+  public:
+    FFGenerator() {}   //NEWCTOR
 
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);

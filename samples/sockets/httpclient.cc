@@ -14,11 +14,12 @@
 
 class HTTPClient : public cSimpleModule
 {
-  public:
-    Module_Class_Members(HTTPClient,cSimpleModule,0);
-
+  private:
     int addr;
     int srvAddr;
+
+  public:
+    HTTPClient() {}   //NEWCTOR
 
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);

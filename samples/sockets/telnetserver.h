@@ -19,7 +19,7 @@
 class TelnetServer : public QueueBase
 {
   public:
-    Module_Class_Members(TelnetServer,QueueBase,0);
+    TelnetServer() {}   //NEWCTOR
 
     virtual simtime_t startService(cMessage *msg);
     virtual void endService(cMessage *msg);

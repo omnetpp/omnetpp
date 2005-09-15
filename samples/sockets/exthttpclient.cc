@@ -18,9 +18,7 @@
  */
 class ExtHTTPClient : public cSimpleModule
 {
-  public:
-    Module_Class_Members(ExtHTTPClient,cSimpleModule,0);
-
+  private:
     cMessage *rtEvent;
     cSocketRTScheduler *rtScheduler;
 
@@ -29,6 +27,9 @@ class ExtHTTPClient : public cSimpleModule
 
     int addr;
     int srvAddr;
+
+  public:
+    ExtHTTPClient() {}   //NEWCTOR
 
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);

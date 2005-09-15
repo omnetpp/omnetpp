@@ -13,7 +13,8 @@
 
 class ChainNode : public cSimpleModule
 {
-    Module_Class_Members(ChainNode,cSimpleModule,0)
+  public:
+    ChainNode() {}   //NEWCTOR
     virtual void handleMessage(cMessage *) {}
 };
 
@@ -22,7 +23,8 @@ Define_Module(ChainNode);
 
 class MeshNode : public cSimpleModule
 {
-    Module_Class_Members(MeshNode,cSimpleModule,0)
+  public:
+    MeshNode() {}   //NEWCTOR
     virtual void handleMessage(cMessage *) {}
 };
 
@@ -31,7 +33,8 @@ Define_Module(MeshNode);
 
 class StarNode : public cSimpleModule
 {
-    Module_Class_Members(StarNode,cSimpleModule,0)
+  public:
+    StarNode() {}   //NEWCTOR
     virtual void handleMessage(cMessage *) {}
 };
 
@@ -40,7 +43,8 @@ Define_Module(StarNode);
 
 class HubNode : public cSimpleModule
 {
-    Module_Class_Members(HubNode,cSimpleModule,0)
+  public:
+    HubNode() {}   //NEWCTOR
     virtual void handleMessage(cMessage *) {}
 };
 
@@ -49,7 +53,8 @@ Define_Module(HubNode);
 
 class RndNode : public cSimpleModule
 {
-    Module_Class_Members(RndNode,cSimpleModule,0)
+  public:
+    RndNode() {}   //NEWCTOR
     virtual void handleMessage(cMessage *) {}
 };
 
@@ -58,7 +63,8 @@ Define_Module(RndNode);
 
 class FullGraphNode : public cSimpleModule
 {
-    Module_Class_Members(FullGraphNode,cSimpleModule,0)
+  public:
+    FullGraphNode() {}   //NEWCTOR
     virtual void handleMessage(cMessage *) {}
 };
 
@@ -67,7 +73,8 @@ Define_Module(FullGraphNode);
 
 class HexGridNode : public cSimpleModule
 {
-    Module_Class_Members(HexGridNode,cSimpleModule,0)
+  public:
+    HexGridNode() {}   //NEWCTOR
     virtual void handleMessage(cMessage *) {}
 };
 
@@ -76,7 +83,8 @@ Define_Module(HexGridNode);
 
 class BinaryTreeNode : public cSimpleModule
 {
-    Module_Class_Members(BinaryTreeNode,cSimpleModule,0)
+  public:
+    BinaryTreeNode() {}   //NEWCTOR
     virtual void handleMessage(cMessage *) {}
 };
 

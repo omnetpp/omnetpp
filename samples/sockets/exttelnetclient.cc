@@ -18,9 +18,7 @@
  */
 class ExtTelnetClient : public cSimpleModule
 {
-  public:
-    Module_Class_Members(ExtTelnetClient,cSimpleModule,0);
-
+  private:
     cMessage *rtEvent;
     cSocketRTScheduler *rtScheduler;
 
@@ -29,6 +27,9 @@ class ExtTelnetClient : public cSimpleModule
 
     int addr;
     int srvAddr;
+
+  public:
+    ExtTelnetClient() {}   //NEWCTOR
 
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);

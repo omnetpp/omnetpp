@@ -20,11 +20,12 @@
  */
 class HTTPServer : public QueueBase
 {
-  public:
-    Module_Class_Members(HTTPServer,QueueBase,0);
-
+  private:
     typedef std::map<std::string, std::string> StringMap;
     StringMap htdocs;
+
+  public:
+    HTTPServer() {}   //NEWCTOR
 
     virtual void initialize();
     virtual simtime_t startService(cMessage *msg);

@@ -12,7 +12,8 @@
 
 class Switch : public cSimpleModule
 {
-    Module_Class_Members(Switch,cSimpleModule,16384)
+  public:
+    Switch() : cSimpleModule(16384) {}   //NEWCTOR2
     virtual void activity();
 };
 

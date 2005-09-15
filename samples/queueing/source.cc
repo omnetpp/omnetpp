@@ -12,10 +12,11 @@
 
 class QSource : public cSimpleModule
 {
-  public:
-    Module_Class_Members(QSource,cSimpleModule,0);
-
+  private:
     cMessage *sendMessage;
+
+  public:
+    QSource() {}   //NEWCTOR
 
     // the virtual functions
     virtual void initialize();

@@ -19,8 +19,8 @@
  */
 class Txc1 : public cSimpleModule
 {
-    // This is a macro; it expands to constructor definition.
-    Module_Class_Members(Txc1, cSimpleModule, 0);
+  public:
+    Txc1() {}   //NEWCTOR
 
     // The following redefined virtual function holds the algorithm.
     virtual void initialize();

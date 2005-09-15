@@ -12,13 +12,13 @@
 
 class AbstractQueue : public cSimpleModule
 {
-  public:
-    Module_Class_Members(AbstractQueue,cSimpleModule,0);
-
+  protected:
     cMessage *msgServiced;
     cMessage *endServiceMsg;
     cQueue queue;
 
+  public:
+    AbstractQueue() {}   //NEWCTOR
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 
@@ -74,7 +74,7 @@ void AbstractQueue::handleMessage(cMessage *msg)
 class Queue: public AbstractQueue
 {
   public:
-    Module_Class_Members(Queue, AbstractQueue,0);
+    Queue() {}   //NEWCTOR
     virtual void initialize();
 
     virtual simtime_t startService(cMessage *msg);

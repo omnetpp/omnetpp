@@ -28,7 +28,7 @@ class AHost : public cSimpleModule
     int pkCounter;
 
   public:
-    Module_Class_Members(AHost,cSimpleModule,0);
+    AHost() {}   //NEWCTOR
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };

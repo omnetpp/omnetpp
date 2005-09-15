@@ -22,7 +22,8 @@
  */
 class Txc9 : public cSimpleModule
 {
-    Module_Class_Members(Txc9, cSimpleModule, 0);
+  public:
+    Txc9() {}   //NEWCTOR
 
     virtual void forwardMessage(cMessage *msg);
     virtual void initialize();

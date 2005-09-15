@@ -26,8 +26,9 @@ class Tic7 : public cSimpleModule
   protected:
     double timeout;  // timeout
     cMessage *timeoutEvent;  // holds pointer to the timeout self-message
+
   public:
-    Module_Class_Members(Tic7, cSimpleModule, 0);
+    Tic7() {}   //NEWCTOR
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };
@@ -79,7 +80,7 @@ void Tic7::handleMessage(cMessage *msg)
 class Toc7 : public cSimpleModule
 {
   public:
-    Module_Class_Members(Toc7, cSimpleModule, 0);
+    Toc7() {}   //NEWCTOR
     virtual void handleMessage(cMessage *msg);
 };
 

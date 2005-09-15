@@ -28,7 +28,7 @@ class App : public cSimpleModule
     int pkReceived;
 
   public:
-    Module_Class_Members(App,cSimpleModule,0);
+    App() {}   //NEWCTOR
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };

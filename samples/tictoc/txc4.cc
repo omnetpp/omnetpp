@@ -22,7 +22,7 @@ class Txc4 : public cSimpleModule
     int counter;
 
   public:
-    Module_Class_Members(Txc4, cSimpleModule, 0);
+    Txc4() {}   //NEWCTOR
 
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);

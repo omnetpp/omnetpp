@@ -29,7 +29,7 @@ class PointToPointIF : public cSimpleModule
     long numFramesDropped;
 
   public:
-    Module_Class_Members(PointToPointIF, cSimpleModule, 0);
+    PointToPointIF() {}   //NEWCTOR
 
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);

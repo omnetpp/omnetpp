@@ -13,7 +13,7 @@
 class QSink : public cSimpleModule
 {
   public:
-    Module_Class_Members(QSink,cSimpleModule,0)
+    QSink() {}   //NEWCTOR
 
     cStdDev qstats;
     cOutVector qtime;

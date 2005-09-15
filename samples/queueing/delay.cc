@@ -14,8 +14,9 @@ class QDelay : public cSimpleModule
 {
   protected:
     int currentlyStored;
+
   public:
-    Module_Class_Members(QDelay,cSimpleModule,0);
+    QDelay() {}   //NEWCTOR
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };

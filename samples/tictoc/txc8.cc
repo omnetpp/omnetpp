@@ -25,8 +25,9 @@ class Tic8 : public cSimpleModule
     cMessage *timeoutEvent;  // holds pointer to the timeout self-message
     int seq;  // message sequence number
     cMessage *message;  // message that has to be re-sent on timeout
+
   public:
-    Module_Class_Members(Tic8, cSimpleModule, 0);
+    Tic8() {}   //NEWCTOR
 
     virtual cMessage *generateNewMessage();
     virtual void sendCopyOf(cMessage *msg);
@@ -98,7 +99,7 @@ void Tic8::sendCopyOf(cMessage *msg)
 class Toc8 : public cSimpleModule
 {
   public:
-    Module_Class_Members(Toc8, cSimpleModule, 0);
+    Toc8() {}   //NEWCTOR
     virtual void handleMessage(cMessage *msg);
 };
 

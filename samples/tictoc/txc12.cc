@@ -32,7 +32,7 @@ class Txc12 : public cSimpleModule
     cOutVector hopCountVector;
 
   public:
-    Module_Class_Members(Txc12, cSimpleModule, 0);
+    Txc12() {}   //NEWCTOR
 
     virtual TicTocMsg12 *generateMessage();
     virtual void forwardMessage(TicTocMsg12 *msg);

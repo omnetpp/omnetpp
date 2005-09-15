@@ -24,7 +24,7 @@ class Txc6 : public cSimpleModule
     cMessage *tictocMsg;
 
   public:
-    Module_Class_Members(Txc6, cSimpleModule, 0);
+    Txc6() {}   //NEWCTOR
 
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);

@@ -25,7 +25,7 @@ class QServer : public cSimpleModule
     bool hasAcceptedOffer;
 
   public:
-    Module_Class_Members(QServer,cSimpleModule,0);
+    QServer() {}   //NEWCTOR
 
     virtual void initialize(int stage);
     virtual int numInitStages() const {return 2;}

@@ -14,8 +14,9 @@ class Server : public cSimpleModule
 {
   protected:
     cModuleType *srvProcType;
+
   public:
-    Module_Class_Members(Server,cSimpleModule,0);
+    Server() {}   //NEWCTOR
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };

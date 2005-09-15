@@ -12,9 +12,9 @@
 
 class HistogramDemo : public cSimpleModule
 {
-    public:
-      Module_Class_Members(HistogramDemo,cSimpleModule,16384)
-      virtual void activity();
+  public:
+    HistogramDemo() : cSimpleModule(16384) {}   //NEWCTOR2
+    virtual void activity();
 };
 
 Define_Module( HistogramDemo );

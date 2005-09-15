@@ -31,7 +31,7 @@ class Txc5 : public cSimpleModule
     cMessage *tictocMsg; // variable to remember the message until we send it back
 
   public:
-    Module_Class_Members(Txc5, cSimpleModule, 0);
+    Txc5() {}   //NEWCTOR
 
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);

@@ -15,7 +15,7 @@
 class PPSource : public cSimpleModule
 {
   public:
-    Module_Class_Members(PPSource,cSimpleModule,0)
+    PPSource() {}   //NEWCTOR
 
     // parameters
     cPar *sleepTime;

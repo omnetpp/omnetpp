@@ -24,7 +24,7 @@ class Routing : public cSimpleModule
     RoutingTable rtable;
 
   public:
-    Module_Class_Members(Routing,cSimpleModule,0);
+    Routing() {}   //NEWCTOR
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };

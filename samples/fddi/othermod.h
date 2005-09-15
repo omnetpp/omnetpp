@@ -127,38 +127,43 @@ class FDDI_Address_Generator : public cSimpleModule
 
 class FDDI_Generator4Ring : public cSimpleModule
   {
-  Module_Class_Members(FDDI_Generator4Ring,cSimpleModule,GENERATOR_HEAPSIZE)
+  public:
+  FDDI_Generator4Ring() : cSimpleModule(GENERATOR_HEAPSIZE) {}   //NEWCTOR2
   virtual void activity();
   };
 
 class FDDI_Generator4Sniffer : public cSimpleModule
   {
-  Module_Class_Members(FDDI_Generator4Sniffer,cSimpleModule,GENERATOR_HEAPSIZE)
+  public:
+  FDDI_Generator4Sniffer() : cSimpleModule(GENERATOR_HEAPSIZE) {}   //NEWCTOR2
   virtual void activity();
   };
 
 class Stat : public cSimpleModule
   {
-  Module_Class_Members(Stat,cSimpleModule,STAT_HEAPSIZE)
+  public:
+  Stat() : cSimpleModule(STAT_HEAPSIZE) {}   //NEWCTOR2
   virtual void activity();
   };
 
 class FDDI_Sink : public cSimpleModule
   {
-  Module_Class_Members(FDDI_Sink,cSimpleModule,SINK_HEAPSIZE)
+  public:
+  FDDI_Sink() : cSimpleModule(SINK_HEAPSIZE) {}   //NEWCTOR2
   virtual void activity();
   };
 
 class FDDI_Monitor : public cSimpleModule
   {
-  Module_Class_Members(FDDI_Monitor,cSimpleModule,MONITOR_HEAPSIZE)
+  public:
+  FDDI_Monitor() : cSimpleModule(MONITOR_HEAPSIZE) {}   //NEWCTOR2
   virtual void activity();
   };
 
 class LoadControl : public cSimpleModule
   {
   public:
-  Module_Class_Members(LoadControl,cSimpleModule,LOADCONTROL_HEAPSIZE)
+  LoadControl() : cSimpleModule(LOADCONTROL_HEAPSIZE) {}   //NEWCTOR2
   virtual void activity();
   };
 

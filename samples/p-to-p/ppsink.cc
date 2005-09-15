@@ -13,12 +13,12 @@
 
 class PPSink : public cSimpleModule
 {
-  public:
-    Module_Class_Members(PPSink,cSimpleModule,0)
-
+  private:
     cStdDev qstats;
     cOutVector qtime;
 
+  public:
+    PPSink() {}   //NEWCTOR
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
     virtual void finish();

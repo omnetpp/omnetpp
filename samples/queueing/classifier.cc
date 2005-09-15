@@ -13,7 +13,7 @@
 class QClassifier : public cSimpleModule
 {
   public:
-    Module_Class_Members(QClassifier,cSimpleModule,0);
+    QClassifier() {}   //NEWCTOR
     virtual void handleMessage(cMessage *msg);
 };
 

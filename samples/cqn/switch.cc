@@ -15,7 +15,7 @@ class Switch : public cSimpleModule
   protected:
     int numGates;
   public:
-    Module_Class_Members(Switch,cSimpleModule,0);
+    Switch() {}   //NEWCTOR
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };

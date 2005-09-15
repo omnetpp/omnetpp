@@ -21,7 +21,7 @@ class Txc3 : public cSimpleModule
     int counter;  // Note the counter here
 
   public:
-    Module_Class_Members(Txc3, cSimpleModule, 0);
+    Txc3() {}   //NEWCTOR
 
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);

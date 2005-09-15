@@ -12,7 +12,8 @@
 
 class ServerProcess : public cSimpleModule
 {
-    Module_Class_Members(ServerProcess,cSimpleModule,16384)
+  public:
+    ServerProcess() : cSimpleModule(16384) {}   //NEWCTOR2
     virtual void activity();
 };
 

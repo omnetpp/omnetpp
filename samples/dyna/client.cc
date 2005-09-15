@@ -12,7 +12,8 @@
 
 class Client : public cSimpleModule
 {
-    Module_Class_Members(Client,cSimpleModule,16384)
+  public:
+    Client() : cSimpleModule(16384) {}   //NEWCTOR2
     virtual void activity();
 };
 

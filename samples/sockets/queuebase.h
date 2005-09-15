@@ -18,12 +18,13 @@
  */
 class QueueBase : public cSimpleModule
 {
-  public:
-    Module_Class_Members(QueueBase,cSimpleModule,0);
-
+  private:
     cMessage *msgServiced;
     cMessage *endServiceMsg;
     cQueue queue;
+
+  public:
+    QueueBase() {}   //NEWCTOR
 
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);

@@ -33,7 +33,7 @@ class AServer : public cSimpleModule
     cOutVector channelUtilizationVector;
 
   public:
-    Module_Class_Members(AServer,cSimpleModule,0);
+    AServer() {}   //NEWCTOR
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
     virtual void finish();

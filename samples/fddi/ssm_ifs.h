@@ -24,21 +24,21 @@
 class SSM_OIF_by_frequency : public cSimpleModule
   {
   public:
-  Module_Class_Members(SSM_OIF_by_frequency,cSimpleModule,SSM_OIF_HEAPSIZE)
+  SSM_OIF_by_frequency() : cSimpleModule(SSM_OIF_HEAPSIZE) {}   //NEWCTOR2
   virtual void activity();
   };
 
 class SSM_OIF_by_time : public cSimpleModule
   {
   public:
-  Module_Class_Members(SSM_OIF_by_time,cSimpleModule,SSM_OIF_HEAPSIZE)
+  SSM_OIF_by_time() : cSimpleModule(SSM_OIF_HEAPSIZE) {}   //NEWCTOR2
   virtual void activity();
   };
 
 class SSM_IIF : public cSimpleModule
   {
   public:
-  Module_Class_Members(SSM_IIF,cSimpleModule,SSM_IIF_HEAPSIZE)
+  SSM_IIF() : cSimpleModule(SSM_IIF_HEAPSIZE) {}   //NEWCTOR2
   virtual void activity();
   };
 

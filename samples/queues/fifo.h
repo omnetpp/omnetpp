@@ -17,17 +17,16 @@
  */
 class Fifo : public cSimpleModule
 {
-  public:
-    Module_Class_Members(Fifo,cSimpleModule,0);
-
+  protected:
     cMessage *msgServiced;
     cMessage *endServiceMsg;
     cQueue queue;
 
-    // Note that jobDist is a pointer, and jobsInSys is not. I included both ways to show you
-    // two ways of doing the same kind of thing.
     cDoubleHistogram *jobDist;
     cOutVector jobsInSys;
+
+  public:
+    Fifo() {}   //NEWCTOR
 
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);

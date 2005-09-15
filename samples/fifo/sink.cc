@@ -13,7 +13,7 @@
 class FFSink : public cSimpleModule
 {
   public:
-    Module_Class_Members(FFSink,cSimpleModule,0);
+    FFSink() {}   //NEWCTOR
 
     cStdDev qstats;
     cOutVector qtime;

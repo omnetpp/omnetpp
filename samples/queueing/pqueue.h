@@ -19,7 +19,7 @@ class QPassiveQueue : public cSimpleModule
     int jobRequestedOnGate;
 
   public:
-    Module_Class_Members(QPassiveQueue,cSimpleModule,0);
+    QPassiveQueue() {}   //NEWCTOR
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 

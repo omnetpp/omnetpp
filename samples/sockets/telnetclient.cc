@@ -17,11 +17,12 @@
  */
 class TelnetClient : public cSimpleModule
 {
-  public:
-    Module_Class_Members(TelnetClient,cSimpleModule,0);
-
+  private:
     int addr;
     int srvAddr;
+
+  public:
+    TelnetClient() {}   //NEWCTOR
 
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
