@@ -12,8 +12,7 @@
 
 class QClassifier : public cSimpleModule
 {
-  public:
-    QClassifier() {}   //NEWCTOR
+  protected:
     virtual void handleMessage(cMessage *msg);
 };
 

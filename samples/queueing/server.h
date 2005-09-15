@@ -16,7 +16,7 @@ class QPassiveQueue;
 
 class QServer : public cSimpleModule
 {
-  protected:
+  private:
     int numQueues;
     QPassiveQueue **queues;
 
@@ -25,13 +25,16 @@ class QServer : public cSimpleModule
     bool hasAcceptedOffer;
 
   public:
-    QServer() {}   //NEWCTOR
+    QServer();
+    virtual ~QServer();
 
+  protected:
     virtual void initialize(int stage);
     virtual int numInitStages() const {return 2;}
     virtual void handleMessage(cMessage *msg);
 
-    // Following method is called from QPassiveQueue:
+  public:
+    // The following method is called from QPassiveQueue:
     virtual bool okToSend();
 };
 

@@ -26,8 +26,10 @@ class Fifo : public cSimpleModule
     cOutVector jobsInSys;
 
   public:
-    Fifo() {}   //NEWCTOR
+    Fifo();
+    virtual ~Fifo();
 
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
     virtual void finish();

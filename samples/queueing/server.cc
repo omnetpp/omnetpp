@@ -13,6 +13,16 @@
 
 Define_Module(QServer);
 
+QServer::QServer()
+{
+    queues = NULL;
+}
+
+QServer::~QServer()
+{
+    delete [] queues;
+}
+
 void QServer::initialize(int stage)
 {
     // use multi-stage initialization: QPassiveQueues initialize in stage 0,

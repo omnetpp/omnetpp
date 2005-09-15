@@ -16,14 +16,25 @@ class QSource : public cSimpleModule
     cMessage *sendMessage;
 
   public:
-    QSource() {}   //NEWCTOR
+    QSource();
+    virtual ~QSource();
 
-    // the virtual functions
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };
 
 Define_Module(QSource);
+
+QSource::QSource()
+{
+    sendMessage = NULL;
+}
+
+QSource::~QSource()
+{
+    cancelAndDelete(sendMessage);
+}
 
 void QSource::initialize()
 {

@@ -17,14 +17,13 @@
 
 class Routing : public cSimpleModule
 {
-  protected:
+  private:
     int myAddress;
 
     typedef std::map<int,int> RoutingTable; // destaddr -> port
     RoutingTable rtable;
 
-  public:
-    Routing() {}   //NEWCTOR
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };

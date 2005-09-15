@@ -12,12 +12,11 @@
 
 class QSink : public cSimpleModule
 {
-  public:
-    QSink() {}   //NEWCTOR
-
+  private:
     cStdDev qstats;
     cOutVector qtime;
 
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
     virtual void finish();
@@ -47,3 +46,4 @@ void QSink::finish()
     ev << "Max lifetime:         " << qstats.max() << endl;
     ev << "Standard deviation:   " << qstats.stddev() << endl;
 }
+

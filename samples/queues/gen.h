@@ -15,7 +15,7 @@
 class Generator : public cSimpleModule
 {
   public:
-    Generator() : cSimpleModule(8192) {}   //NEWCTOR2
+    Generator() : cSimpleModule(8192) {}
     virtual void activity();
 };
 

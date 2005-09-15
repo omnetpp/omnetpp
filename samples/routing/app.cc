@@ -28,13 +28,26 @@ class App : public cSimpleModule
     int pkReceived;
 
   public:
-    App() {}   //NEWCTOR
+    App();
+    virtual ~App();
+
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };
 
 Define_Module(App);
 
+
+App::App()
+{
+    generatePacket = NULL;
+}
+
+App::~App()
+{
+    cancelAndDelete(generatePacket);
+}
 
 void App::initialize()
 {

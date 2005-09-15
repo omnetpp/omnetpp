@@ -12,11 +12,10 @@
 
 class QDelay : public cSimpleModule
 {
-  protected:
+  private:
     int currentlyStored;
 
-  public:
-    QDelay() {}   //NEWCTOR
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };

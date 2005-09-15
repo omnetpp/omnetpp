@@ -14,16 +14,16 @@
 
 class QPassiveQueue : public cSimpleModule
 {
-  protected:
+  private:
     cQueue queue;
     int jobRequestedOnGate;
 
-  public:
-    QPassiveQueue() {}   //NEWCTOR
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 
-    // Following methods are called from QServer:
+  public:
+    // The following methods are called from QServer:
     virtual bool isEmpty();
     virtual void request(int gateIndex);
     virtual void storeRequest(int gateIndex);

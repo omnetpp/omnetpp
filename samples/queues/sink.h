@@ -17,9 +17,7 @@ class Sink : public cSimpleModule
   private:
     cStdDev waitStats;
 
-  public:
-    Sink() {}   //NEWCTOR
-
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
     virtual void finish();

@@ -11,6 +11,19 @@
 
 Define_Module( Fifo );
 
+Fifo::Fifo()
+{
+    msgServiced = endServiceMsg = NULL;
+    jobDist = NULL;
+}
+
+Fifo::~Fifo()
+{
+    delete jobDist;
+    delete msgServiced;
+    cancelAndDelete(endServiceMsg);
+}
+
 void Fifo::initialize()
 {
     // give the queue object a name, so that we can refer to it in the "q=" display string tag
