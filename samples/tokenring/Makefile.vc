@@ -58,7 +58,7 @@ NEDCOPTS=$(CFLAGS) $(NEDCFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 
 #------------------------------------------------------------------------------
 # object files in this directory
-OBJS= token_m.obj token.obj
+OBJS= token_m.obj token.obj gen.obj sink.obj
 
 # header files generated (from msg files)
 GENERATEDHEADERS= token_m.h
@@ -87,6 +87,11 @@ token_m.cpp token_m.h: token.msg
 token.obj: token.cpp
 	$(CXX) -c $(COPTS) /Tp token.cpp
 
+gen.obj: gen.cpp
+	$(CXX) -c $(COPTS) /Tp gen.cpp
+
+sink.obj: sink.cpp
+	$(CXX) -c $(COPTS) /Tp sink.cpp
 
 #doc: neddoc doxy
 
@@ -118,7 +123,6 @@ re-makemake: makefiles
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 token.obj: token.cpp \
-  token.h \
   token_m.h
 token_m.obj: token_m.cpp \
   token_m.h

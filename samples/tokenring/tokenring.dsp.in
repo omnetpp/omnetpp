@@ -145,6 +145,14 @@ SOURCE=.\token.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\gen.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\sink.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\token.msg
 
 !IF  "$(CFG)" == "tokenring - Win32 Debug Tkenv"
