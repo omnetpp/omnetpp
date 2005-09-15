@@ -41,6 +41,21 @@ class Txc5 : public cSimpleModule
 
 Define_Module(Txc5);
 
+Txc5::Txc5()
+{
+    // Set the pointer to NULL, so that the destructor won't crash
+    // even if initialize() doesn't get called because of a runtime
+    // error or user cancellation during the startup process.
+    event = tictocMsg = NULL;
+}
+
+Txc5::~Txc5()
+{
+    // Dispose of dynamically allocated the objects
+    cancelAndDelete(event);
+    delete tictocMsg;
+}
+
 void Txc5::initialize()
 {
     // Create the event object we'll use for timing -- just any ordinary message.

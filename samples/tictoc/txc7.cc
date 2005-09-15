@@ -40,9 +40,6 @@ Define_Module(Tic7);
 
 Txc7::Txc7()
 {
-    // set the pointer to NULL, so that the destructor won't crash
-    // even if initialize() doesn't get called because of a runtime
-    // error or user cancellation during the startup process.
     timeoutEvent = NULL;
 }
 

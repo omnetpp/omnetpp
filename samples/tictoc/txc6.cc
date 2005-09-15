@@ -34,6 +34,17 @@ class Txc6 : public cSimpleModule
 
 Define_Module(Txc6);
 
+Txc6::Txc6()
+{
+    event = tictocMsg = NULL;
+}
+
+Txc6::~Txc6()
+{
+    cancelAndDelete(event);
+    delete tictocMsg;
+}
+
 void Txc6::initialize()
 {
     event = new cMessage("event");
