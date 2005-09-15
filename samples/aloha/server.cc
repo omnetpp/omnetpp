@@ -10,6 +10,9 @@
 
 #include <omnetpp.h>
 
+/**
+ * Aloha server; see NED file for more info.
+ */
 class AServer : public cSimpleModule
 {
   protected:
@@ -33,13 +36,24 @@ class AServer : public cSimpleModule
     cOutVector channelUtilizationVector;
 
   public:
-    AServer() {}   //NEWCTOR
+    AServer();
+    virtual ~AServer();
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
     virtual void finish();
 };
 
 Define_Module(AServer);
+
+AServer::AServer()
+{
+    endRxEvent = NULL;
+}
+
+AServer::~AServer()
+{
+    cancelAndDelete(endRxEvent);
+}
 
 void AServer::initialize()
 {

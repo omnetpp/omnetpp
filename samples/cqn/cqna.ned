@@ -12,6 +12,9 @@ import "queue.ned";
 import "switch.ned";
 
 
+//
+// Closed Queueing Network, variant "A".
+//
 module ClosedQueueingNetA
     parameters:
         numTandems : numeric const, // number of switches (and also of tandem queues)
@@ -49,6 +52,9 @@ module ClosedQueueingNetA
 endmodule
 
 
+//
+// Instantiates ClosedQueueingNetA.
+//
 network cqnA : ClosedQueueingNetA
 endnetwork
 

@@ -10,12 +10,15 @@
 
 #include <omnetpp.h>
 
+/**
+ * Sends received packets to one of the outputs; see NED file for more info
+ */
 class Switch : public cSimpleModule
 {
   protected:
     int numGates;
+
   public:
-    Switch() {}   //NEWCTOR
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };

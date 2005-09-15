@@ -8,6 +8,10 @@
 //
 
 
+//
+// Sends received packets to a randomly chosen output. Gates are
+// chosen with uniform probability.
+//
 simple Switch
     gates:
         in: in;

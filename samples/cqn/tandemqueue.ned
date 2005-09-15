@@ -12,6 +12,9 @@ import "queue.ned";
 import "switch.ned";
 
 
+//
+// A "tandem queue" for the "B" variant of the Closed Queueing Network.
+//
 module TandemQueue
     parameters:
         numQueues : numeric const,

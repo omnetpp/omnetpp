@@ -10,10 +10,13 @@
 
 #include "dynapacket_m.h"
 
+/**
+ * Simulates a switch between clients and server; see NED file for more info
+ */
 class Switch : public cSimpleModule
 {
   public:
-    Switch() : cSimpleModule(16384) {}   //NEWCTOR2
+    Switch() : cSimpleModule(16384) {}
     virtual void activity();
 };
 

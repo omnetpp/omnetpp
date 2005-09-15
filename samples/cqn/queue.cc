@@ -10,6 +10,11 @@
 
 #include <omnetpp.h>
 
+/**
+ * Abstract base class for single-server queues. Subclasses are
+ * expected to redefine the arrival(), startService() and endService()
+ * methods.
+ */
 class AbstractQueue : public cSimpleModule
 {
   protected:
@@ -18,7 +23,8 @@ class AbstractQueue : public cSimpleModule
     cQueue queue;
 
   public:
-    AbstractQueue() {}   //NEWCTOR
+    AbstractQueue();
+    virtual ~AbstractQueue();
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 
@@ -28,10 +34,19 @@ class AbstractQueue : public cSimpleModule
     virtual void endService(cMessage *msg) = 0;
 };
 
+AbstractQueue::AbstractQueue()
+{
+    msgServiced = endServiceMsg = NULL;
+}
+
+AbstractQueue::~AbstractQueue()
+{
+    delete msgServiced;
+    cancelAndDelete(endServiceMsg);
+}
 
 void AbstractQueue::initialize()
 {
-    msgServiced = NULL;
     endServiceMsg = new cMessage("end-service");
     queue.setName("queue");
 }
@@ -71,17 +86,19 @@ void AbstractQueue::handleMessage(cMessage *msg)
 
 //------------------------------------------------
 
+/**
+ * Queue model, with service time as parameter; see NED file for more info.
+ */
 class Queue: public AbstractQueue
 {
   public:
-    Queue() {}   //NEWCTOR
     virtual void initialize();
 
     virtual simtime_t startService(cMessage *msg);
     virtual void endService(cMessage *msg);
 };
 
-Define_Module( Queue );
+Define_Module(Queue);
 
 void Queue::initialize()
 {

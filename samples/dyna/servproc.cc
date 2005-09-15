@@ -10,10 +10,13 @@
 
 #include "dynapacket_m.h"
 
+/**
+ * Dynamically launched process in the server; see NED file for more info
+ */
 class ServerProcess : public cSimpleModule
 {
   public:
-    ServerProcess() : cSimpleModule(16384) {}   //NEWCTOR2
+    ServerProcess() : cSimpleModule(16384) {}
     virtual void activity();
 };
 

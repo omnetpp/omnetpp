@@ -10,13 +10,15 @@
 
 #include "dynapacket_m.h"
 
+/**
+ * The server computer; see NED file for more info
+ */
 class Server : public cSimpleModule
 {
   protected:
     cModuleType *srvProcType;
 
   public:
-    Server() {}   //NEWCTOR
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };

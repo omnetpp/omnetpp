@@ -10,6 +10,10 @@
 
 import "tandemqueue.ned";
 
+
+//
+// Closed Queueing Network, variant "B".
+//
 module ClosedQueueingNetB
     parameters:
         numTandems : numeric const,
@@ -29,6 +33,10 @@ module ClosedQueueingNetB
         endfor;
 endmodule
 
+
+//
+// Instantiates ClosedQueueingNetB.
+//
 network cqnB: ClosedQueueingNetB
 endnetwork
 

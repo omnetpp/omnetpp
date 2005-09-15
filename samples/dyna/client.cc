@@ -10,10 +10,13 @@
 
 #include "dynapacket_m.h"
 
+/**
+ * Client computer; see NED file for more info
+ */
 class Client : public cSimpleModule
 {
   public:
-    Client() : cSimpleModule(16384) {}   //NEWCTOR2
+    Client() : cSimpleModule(16384) {}
     virtual void activity();
 };
 
@@ -22,10 +25,10 @@ Define_Module( Client );
 void Client::activity()
 {
     // query module parameters
-    double timeout = par( "timeout" );
-    cPar& connectionIaTime = par( "connIaTime" );
-    cPar& queryIaTime = par( "queryIaTime" );
-    cPar& numQuery = par( "numQuery" );
+    double timeout = par("timeout");
+    cPar& connectionIaTime = par("connIaTime");
+    cPar& queryIaTime = par("queryIaTime");
+    cPar& numQuery = par("numQuery");
 
     DynaPacket *connReq, *connAck, *discReq, *discAck;
     DynaDataPacket *query, *answer;

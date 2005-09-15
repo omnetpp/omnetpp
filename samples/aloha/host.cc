@@ -10,6 +10,9 @@
 
 #include <omnetpp.h>
 
+/**
+ * Aloha host; see NED file for more info.
+ */
 class AHost : public cSimpleModule
 {
   protected:
@@ -28,12 +31,23 @@ class AHost : public cSimpleModule
     int pkCounter;
 
   public:
-    AHost() {}   //NEWCTOR
+    AHost();
+    virtual ~AHost();
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };
 
 Define_Module(AHost);
+
+AHost::AHost()
+{
+    endTxEvent = NULL;
+}
+
+AHost::~AHost()
+{
+    cancelAndDelete(endTxEvent);
+}
 
 void AHost::initialize()
 {
