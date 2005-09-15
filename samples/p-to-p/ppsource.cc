@@ -14,9 +14,7 @@
 
 class PPSource : public cSimpleModule
 {
-  public:
-    PPSource() {}   //NEWCTOR
-
+  private:
     // parameters
     cPar *sleepTime;
     cPar *burstTime;
@@ -37,12 +35,27 @@ class PPSource : public cSimpleModule
     cMessage *startStopBurst;
     cMessage *sendMessage;
 
-    // the virtual functions
+  public:
+    PPSource();
+    virtual ~PPSource();
+
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };
 
 Define_Module( PPSource );
+
+PPSource::PPSource()
+{
+    startStopBurst = sendMessage = NULL;
+}
+
+PPSource::~PPSource()
+{
+    cancelAndDelete(startStopBurst);
+    cancelAndDelete(sendMessage);
+}
 
 void PPSource::initialize()
 {

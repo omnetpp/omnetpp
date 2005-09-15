@@ -19,7 +19,7 @@
  */
 class PointToPointIF : public cSimpleModule
 {
-  protected:
+  private:
     long frameCapacity;
     cGate *gateToWatch;
 
@@ -29,8 +29,10 @@ class PointToPointIF : public cSimpleModule
     long numFramesDropped;
 
   public:
-    PointToPointIF() {}   //NEWCTOR
+    PointToPointIF();
+    virtual ~PointToPointIF();
 
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 
@@ -40,6 +42,16 @@ class PointToPointIF : public cSimpleModule
 };
 
 Define_Module(PointToPointIF);
+
+PointToPointIF::PointToPointIF()
+{
+    endTransmissionEvent = NULL;
+}
+
+PointToPointIF::~PointToPointIF()
+{
+    cancelAndDelete(endTransmissionEvent);
+}
 
 void PointToPointIF::initialize()
 {

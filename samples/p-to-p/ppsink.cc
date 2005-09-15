@@ -17,8 +17,7 @@ class PPSink : public cSimpleModule
     cStdDev qstats;
     cOutVector qtime;
 
-  public:
-    PPSink() {}   //NEWCTOR
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
     virtual void finish();
