@@ -15,6 +15,10 @@
 #include <omnetpp.h>
 #include "packet_m.h"
 
+
+/**
+ * Demonstrates static routing, utilizing the cTopology class.
+ */
 class Routing : public cSimpleModule
 {
   private:

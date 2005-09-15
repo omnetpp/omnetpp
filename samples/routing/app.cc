@@ -15,15 +15,22 @@
 #include <omnetpp.h>
 #include "packet_m.h"
 
+
+/**
+ * Generates traffic for the network.
+ */
 class App : public cSimpleModule
 {
-  protected:
+  private:
+    // configuration:
     int myAddress;
     double iatime;
     long pkCounter;
 
     std::vector<int> destAddresses;
     cMessage *generatePacket;
+
+    // statistics:
     cLongHistogram hopCounts;
     int pkReceived;
 

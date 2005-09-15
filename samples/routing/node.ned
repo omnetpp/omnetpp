@@ -8,6 +8,10 @@
 //
 
 
+
+//
+// Application model to generate traffic for the network.
+//
 simple App
     parameters:
         destAddresses : string;
@@ -16,6 +20,10 @@ simple App
         out: out;
 endsimple
 
+
+//
+// Models a router.
+//
 simple Routing
     gates:
         in: in[];
@@ -24,6 +32,11 @@ simple Routing
         out: localOut;
 endsimple
 
+
+//
+// A "Node" consists of a Router plus an App module which represents the
+// aggregate traffic of the subnets connected to that router.
+//
 module Node
     parameters:
         address : numeric;

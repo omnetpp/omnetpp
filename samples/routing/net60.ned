@@ -9,6 +9,10 @@
 
 import "node";
 
+
+//
+// A network topology commonly known as the "NTT backbone".
+//
 module Net60
     submodules:
         rte: Node[57];
