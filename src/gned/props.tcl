@@ -254,6 +254,10 @@ proc assertEntryIsValidGateSpec {w what} {
         focus $w
         error "Note: $what does not contain a valid name, name++ or name\[index\]!"
     }
+    if [string match "*..*" $index] {
+        focus $w
+        error "Note: please replace the dots in $what with a valid index!"
+    }
 }
 
 #

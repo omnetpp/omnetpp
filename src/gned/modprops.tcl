@@ -88,12 +88,15 @@ proc editModuleProps {key} {
     $nb.general.comment.t insert 1.0 $ned($key,banner-comment)
     $nb.general.rcomment.t insert 1.0 $ned($key,right-comment)
 
-    set connskey [getChildrenWithType $key conns]
-    if {[llength $connskey]==0} {
-        set connskey [addItem conns $key]
-        set ned($connskey,nocheck) $config(noportcheck)
+    if {$ned($key,type)=="module"} {
+        # simple modules don't have "connections:"
+        set connskey [getChildrenWithType $key conns]
+        if {[llength $connskey]==0} {
+            set connskey [addItem conns $key]
+            set ned($connskey,nocheck) $config(noportcheck)
+        }
+        set tmp_nocheck $ned($connskey,nocheck)
     }
-    set tmp_nocheck $ned($connskey,nocheck)
 
     # fill tables
     ModProps:fillTableEditFromNed $nb.pars.tbl  $key params
@@ -107,10 +110,12 @@ proc editModuleProps {key} {
         set ned($key,banner-comment) [getCommentFromText $nb.general.comment.t]
         set ned($key,right-comment) [getCommentFromText $nb.general.rcomment.t]
 
-        set ned($connskey,nocheck) $tmp_nocheck
-
-        if {$tmp_nocheck} {
-            showTextOnceDialog "nocheckSet"
+        if {$ned($key,type)=="module"} {
+            # simple modules don't have "connections:"
+            set ned($connskey,nocheck) $tmp_nocheck
+            if {$tmp_nocheck} {
+                showTextOnceDialog "nocheckSet"
+            }
         }
 
         ModProps:updateNedFromTableEdit $nb.pars.tbl  $key params   param   name

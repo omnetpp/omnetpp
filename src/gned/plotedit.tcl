@@ -972,6 +972,17 @@ proc drawEnd {c x y} {
                       set ned($key,disp-drawmode) "m"
                    }
 
+                   #  set srcgate to "in" and destgate to "out" in case of connections to a parent-module
+                   set submodkey $ned($key,src-ownerkey)
+                   if {$ned($submodkey,type)!="submod"} {
+                      set ned($key,srcgate) {in}
+                   }
+
+                   set submodkey $ned($key,dest-ownerkey)
+                   if {$ned($submodkey,type)!="submod"} {
+                      set ned($key,destgate) {out}
+                   }
+
                    if {$config(autoextend)} {
                       set_plusplus $key src
                       set_plusplus $key dest

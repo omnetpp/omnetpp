@@ -1,3 +1,20 @@
+2005-09-15  Andras Varga
+
+	* checked in another bunch of patches from Michael Franzen:
+
+	- dragdrop.tcl: modified "dragAndDropFinish" to take canvas scroll 
+	  position into account
+ 
+	- plotedit.tcl: modified "drawEnd" to set srcgate to "in" and 
+	  destgate to "out" in case of connections to a parent-module
+ 
+	- connprops.tcl: changed "editConnectionProps" to replace gate indices 
+	  "..." by a reasonable number to avoid error in "fill gate size" and 
+	  to make usage of the dialog somewhat more comfortable
+
+	- connprops.tcl: changed "refreshGateCombo": "++" is no longer added 
+	  to parent module connections (since this is not valid there)
+
 2005-08-09  Andras Varga
 
 	* reorganized and improved connection properties dialog

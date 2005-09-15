@@ -89,6 +89,12 @@ proc dragAndDropFinish {x y} {
 
     # create module
     set typekey $mouse(typekey)
+
+    # take scrolling into account
+    set c $canvas($canv_id,canvas)
+    set x [expr int([$c canvasx $x])]
+    set y [expr int([$c canvasy $y])]
+
     set canvx [expr $x - [winfo rootx $w]]
     set canvy [expr $y - [winfo rooty $w]]
 
@@ -115,6 +121,14 @@ proc createSubmoduleOnCanvas {typekey {canvx {}} {canvy {}}} {
 
     # find parent module key
     set modkey $canvas($gned(canvas_id),module-key)
+
+    # crude check for recursivity
+    if {$modkey==$typekey} {
+        set typename $ned($modkey,name)
+        tk_messageBox -icon error -type ok -title Error -message \
+             "Cannot add a submodule of type '$typename' to the compound module '$typename'!\nThe compound module would contain itself."
+        return
+    }
 
     # find submods
     set submodskey [getChildrenWithType $modkey submods]
