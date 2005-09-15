@@ -79,7 +79,7 @@ void Generator::activity()
     }
 }
 
-TokenRingMAC::TokenRingMAC() : cSimpleModule(16384)
+TokenRingMAC::TokenRingMAC() : cSimpleModule(STACKSIZE)
 {
     transmEnd = recvEnd = NULL;
 }

@@ -10,13 +10,15 @@
 
 #include "dynapacket_m.h"
 
+#define STACKSIZE 16384
+
 /**
  * Simulates a switch between clients and server; see NED file for more info
  */
 class Switch : public cSimpleModule
 {
   public:
-    Switch() : cSimpleModule(16384) {}
+    Switch() : cSimpleModule(STACKSIZE) {}
     virtual void activity();
 };
 

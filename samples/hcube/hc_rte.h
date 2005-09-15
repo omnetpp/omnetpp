@@ -12,10 +12,13 @@
 
 #include <omnetpp.h>
 
+#define STACKSIZE 16384
+
+
 class HCRouter : public cSimpleModule
 {
   public:
-    HCRouter() : cSimpleModule(16384) {}
+    HCRouter() : cSimpleModule(STACKSIZE) {}
     virtual void activity();
 };
 

@@ -21,6 +21,9 @@
 #include <omnetpp.h>
 #include "token_m.h"
 
+#define STACKSIZE 16384
+
+
 class TokenRingMAC : public cSimpleModule
 {
   private:
@@ -58,7 +61,7 @@ class TokenRingMAC : public cSimpleModule
 class Generator : public cSimpleModule
 {
   public:
-    Generator() : cSimpleModule(16384) {}
+    Generator() : cSimpleModule(STACKSIZE) {}
     virtual void activity();
 };
 

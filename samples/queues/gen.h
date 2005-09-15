@@ -12,10 +12,13 @@
 
 #include <omnetpp.h>
 
+#define STACKSIZE 16384
+
+
 class Generator : public cSimpleModule
 {
   public:
-    Generator() : cSimpleModule(8192) {}
+    Generator() : cSimpleModule(STACKSIZE) {}
     virtual void activity();
 };
 

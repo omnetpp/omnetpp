@@ -8,12 +8,15 @@
 //
 
 
-#include "omnetpp.h"
+#include <omnetpp.h>
+
+#define STACKSIZE 16384
+
 
 class HistogramDemo : public cSimpleModule
 {
   public:
-    HistogramDemo() : cSimpleModule(16384) {}
+    HistogramDemo() : cSimpleModule(STACKSIZE) {}
     virtual void activity();
 };
 

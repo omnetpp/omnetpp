@@ -13,17 +13,20 @@
 
 #include <omnetpp.h>
 
+#define STACKSIZE 16384
+
+
 class HCGenerator : public cSimpleModule
 {
   public:
-    HCGenerator() : cSimpleModule(16384) {}
+    HCGenerator() : cSimpleModule(STACKSIZE) {}
     virtual void activity();
 };
 
 class HCSink : public cSimpleModule
 {
   public:
-    HCSink() : cSimpleModule(16384) {}
+    HCSink() : cSimpleModule(STACKSIZE) {}
     virtual void activity();
 };
 

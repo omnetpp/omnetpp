@@ -10,13 +10,15 @@
 
 #include "dynapacket_m.h"
 
+#define STACKSIZE 16384
+
 /**
  * Client computer; see NED file for more info
  */
 class Client : public cSimpleModule
 {
   public:
-    Client() : cSimpleModule(16384) {}
+    Client() : cSimpleModule(STACKSIZE) {}
     virtual void activity();
 };
 

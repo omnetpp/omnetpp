@@ -10,13 +10,16 @@
 
 #include "dynapacket_m.h"
 
+#define STACKSIZE 16384
+
+
 /**
  * Dynamically launched process in the server; see NED file for more info
  */
 class ServerProcess : public cSimpleModule
 {
   public:
-    ServerProcess() : cSimpleModule(16384) {}
+    ServerProcess() : cSimpleModule(STACKSIZE) {}
     virtual void activity();
 };
 
