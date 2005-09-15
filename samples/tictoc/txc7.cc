@@ -23,17 +23,33 @@
  */
 class Tic7 : public cSimpleModule
 {
-  protected:
+  private:
     double timeout;  // timeout
     cMessage *timeoutEvent;  // holds pointer to the timeout self-message
 
   public:
-    Tic7() {}   //NEWCTOR
+    Txc7();
+    virtual ~Txc7();
+
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };
 
 Define_Module(Tic7);
+
+Txc7::Txc7()
+{
+    // set the pointer to NULL, so that the destructor won't crash
+    // even if initialize() doesn't get called because of a runtime
+    // error or user cancellation during the startup process.
+    timeoutEvent = NULL;
+}
+
+Txc7::~Txc7()
+{
+    cancelAndDelete(timeoutEvent);
+}
 
 void Tic7::initialize()
 {

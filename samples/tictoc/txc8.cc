@@ -20,15 +20,17 @@
  */
 class Tic8 : public cSimpleModule
 {
-  protected:
+  private:
     double timeout;  // timeout
     cMessage *timeoutEvent;  // holds pointer to the timeout self-message
     int seq;  // message sequence number
     cMessage *message;  // message that has to be re-sent on timeout
 
   public:
-    Tic8() {}   //NEWCTOR
+    Txc8();
+    virtual ~Txc8();
 
+  protected:
     virtual cMessage *generateNewMessage();
     virtual void sendCopyOf(cMessage *msg);
     virtual void initialize();
@@ -36,6 +38,16 @@ class Tic8 : public cSimpleModule
 };
 
 Define_Module(Tic8);
+
+Txc8::Txc8()
+{
+    timeoutEvent = NULL;
+}
+
+Txc8::~Txc8()
+{
+    cancelAndDelete(timeoutEvent);
+}
 
 void Tic8::initialize()
 {

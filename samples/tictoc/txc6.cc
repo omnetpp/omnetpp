@@ -19,13 +19,15 @@
  */
 class Txc6 : public cSimpleModule
 {
-  protected:
+  private:
     cMessage *event;
     cMessage *tictocMsg;
 
   public:
-    Txc6() {}   //NEWCTOR
+    Txc6();
+    virtual ~Txc6();
 
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };

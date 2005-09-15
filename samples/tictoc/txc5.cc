@@ -26,13 +26,15 @@
  */
 class Txc5 : public cSimpleModule
 {
-  protected:
+  private:
     cMessage *event; // pointer to the event object which we'll use for timing
     cMessage *tictocMsg; // variable to remember the message until we send it back
 
   public:
-    Txc5() {}   //NEWCTOR
+    Txc5();
+    virtual ~Txc5();
 
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };
