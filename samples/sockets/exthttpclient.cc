@@ -29,8 +29,10 @@ class ExtHTTPClient : public cSimpleModule
     int srvAddr;
 
   public:
-    ExtHTTPClient() {}   //NEWCTOR
+    ExtHTTPClient();
+    virtual ~ExtHTTPClient();
 
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
     void handleSocketEvent();
@@ -38,6 +40,16 @@ class ExtHTTPClient : public cSimpleModule
 };
 
 Define_Module(ExtHTTPClient);
+
+ExtHTTPClient::ExtHTTPClient()
+{
+    rtEvent = NULL;
+}
+
+ExtHTTPClient::~ExtHTTPClient()
+{
+    cancelAndDelete(rtEvent);
+}
 
 void ExtHTTPClient::initialize()
 {

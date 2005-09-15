@@ -29,8 +29,10 @@ class ExtTelnetClient : public cSimpleModule
     int srvAddr;
 
   public:
-    ExtTelnetClient() {}   //NEWCTOR
+    ExtTelnetClient();
+    virtual ~ExtTelnetClient();
 
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
     void handleSocketEvent();
@@ -38,6 +40,16 @@ class ExtTelnetClient : public cSimpleModule
 };
 
 Define_Module(ExtTelnetClient);
+
+ExtTelnetClient::ExtTelnetClient()
+{
+    rtEvent = NULL;
+}
+
+ExtTelnetClient::~ExtTelnetClient()
+{
+    cancelAndDelete(rtEvent);
+}
 
 void ExtTelnetClient::initialize()
 {
