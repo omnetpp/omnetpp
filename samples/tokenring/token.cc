@@ -6,6 +6,8 @@
 // This file is distributed WITHOUT ANY WARRANTY. See the file
 // `license' for details on this and other legal matters.
 //
+
+
 //
 // Authors: Gabor Lencse, Andras Varga (TU Budapest)
 // Based on the code by:
@@ -13,14 +15,8 @@
 //          Gerard van de Weerd (TU Delft)
 //
 
-#include <stdio.h>
-#include "token.h"
+#include <omnetpp.h>
 #include "token_m.h"
-
-// Module registration:
-Define_Module( Sink );
-Define_Module( Generator );
-Define_Module( TokenRingMAC );
 
 
 // Token length is 3 octets (24 bits)
@@ -31,53 +27,49 @@ Define_Module( TokenRingMAC );
 //   SD(1), AC(1), FC(1), DEST(6), SOURCE(6), DATA(n), CS(4), ED(1), FS(1)
 #define TR_HEADER_BITS 168
 
-//
-// Activities of the simple modules
-//
-void Generator::activity()
+#define STACKSIZE 16384
+
+
+/**
+ * Token Ring MAC layer; see NED file for more info.
+ */
+class TokenRingMAC : public cSimpleModule
 {
-    int numMessages = par("numMessages");
-    int numStations = par("numStations");
-    cPar& interArrivalTime = par("interArrivalTime"); // take by ref since it can be random
-    cPar& messageLength = par("messageLength"); // take by ref since it can be random
-    int myAddress = par("address");
+  private:
+    int myAddress;
+    long dataRate;
+    double tokenHoldingTime;
+    int queueMaxLen;
 
-    bool debug=true;
-    WATCH(debug);
+    cQueue sendQueue;
+    int sendQueueBytes;
+    cOutVector queueLenPackets;
+    cOutVector queueLenBytes;
+    cOutVector queueingTime;
+    int numPacketsToSend;
+    int numPacketsToSendDropped;
+    cOutVector queueDrops;
 
-    char msgname[30];
+    cMessage *transmEnd;
+    cMessage *recvEnd;
 
-    for (int i=0; i<numMessages; i++)
-    {
-        // select length of data (bytes)
-        int length = (int)messageLength;
+    bool debug;
 
-        // select a destination randomly (but not the local station)
-        int dest = intrand(numStations-1);
-        if (dest>=myAddress) dest++;
+  public:
+    TokenRingMAC();
+    virtual ~TokenRingMAC();
 
-        // create message
-        sprintf(msgname, "app%d-data%d", myAddress, i);
-        TRApplicationData *msg = new TRApplicationData(msgname);
-        msg->setDestination(dest);
-        msg->setLength(8*length); // length is measured in bits
-        msg->setData("here's some application data...");
+  protected:
+    virtual void activity();
+    virtual void finish();
+    virtual void storeDataPacket(TRApplicationData *data);
+    virtual void beginReceiveFrame(TRFrame *frame);
+    virtual void endReceiveFrame(cMessage *data);
+};
 
-        // send message on gate "out", which is connected to the Token Ring MAC
-        if (debug)
-        {
-            ev << "Generated application data to send: \"" << msgname << "\", "
-                  "length=" << length << " bytes, dest=" << dest << endl;
-        }
-        send(msg, "out");
 
-        // wait between messages. Note that interArrivalTime is a reference to the module
-        // parameter "interArrivalTime" which will be evaluated here. The module parameter
-        // can be set to a random variate (for example: truncnormal(0.5,0.1)),
-        // and then we'll get random delay here.
-        wait( interArrivalTime );
-    }
-}
+Define_Module( TokenRingMAC );
+
 
 TokenRingMAC::TokenRingMAC() : cSimpleModule(STACKSIZE)
 {
@@ -407,35 +399,4 @@ void TokenRingMAC::finish()
     ev << endl;
 }
 
-
-void Sink::initialize()
-{
-    endToEndDelay.setName("End-to-End Delay");
-
-    endToEndDelayKS.setName("End-to-End Delay histogram (K-split)");
-    endToEndDelayKS.setRangeAutoUpper(0.0, 100, 2.0);
-    endToEndDelayPS.setName("End-to-End Delay histogram (P2)");
-
-    debug=true;
-    WATCH(debug);
-}
-
-void Sink::handleMessage(cMessage *msg)
-{
-    simtime_t eed = simTime() - msg->creationTime();
-    if (debug)
-    {
-        ev << "Received app. data: \"" << msg->name() << "\", "
-              "length=" << msg->length()/8 << "bytes, " <<
-              "end-to-end delay=" << simtimeToStr(eed) << endl;
-    }
-
-    // record statistics to output vector file and histograms
-    endToEndDelay.record(eed);
-    endToEndDelayKS.collect(eed);
-    endToEndDelayPS.collect(eed);
-
-    // message no longer needed
-    delete msg;
-}
 
