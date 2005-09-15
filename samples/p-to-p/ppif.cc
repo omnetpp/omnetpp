@@ -13,9 +13,8 @@
 
 
 /**
- * Point-to-point interface module.
- *
- * While one frame is transmitted, additional frames get queued up.
+ * Point-to-point interface module. While one frame is transmitted,
+ * additional frames get queued up; see NED file for more info.
  */
 class PointToPointIF : public cSimpleModule
 {

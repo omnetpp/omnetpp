@@ -12,6 +12,9 @@
 
 #include <omnetpp.h>
 
+/**
+ * Consumes packets; see NED file for more info.
+ */
 class Sink : public cSimpleModule
 {
   private:

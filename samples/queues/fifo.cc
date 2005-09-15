@@ -9,6 +9,7 @@
 
 #include "fifo.h"
 
+
 Define_Module( Fifo );
 
 Fifo::Fifo()

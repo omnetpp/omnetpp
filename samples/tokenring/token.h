@@ -24,6 +24,9 @@
 #define STACKSIZE 16384
 
 
+/**
+ * Token Ring MAC layer; see NED file for more info.
+ */
 class TokenRingMAC : public cSimpleModule
 {
   private:
@@ -58,6 +61,10 @@ class TokenRingMAC : public cSimpleModule
     virtual void endReceiveFrame(cMessage *data);
 };
 
+
+/**
+ * Generates traffic; see NED file for more info.
+ */
 class Generator : public cSimpleModule
 {
   public:
@@ -65,6 +72,10 @@ class Generator : public cSimpleModule
     virtual void activity();
 };
 
+
+/**
+ * Consumes packets; see NED file for more info.
+ */
 class Sink : public cSimpleModule
 {
   private:

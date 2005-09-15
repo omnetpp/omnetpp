@@ -11,6 +11,10 @@
 #include <omnetpp.h>
 #include "netpkt_m.h"
 
+/**
+ * Represents the network "cloud" between clients and the server;
+ * see NED file for more info.
+ */
 class Cloud : public cSimpleModule
 {
   private:

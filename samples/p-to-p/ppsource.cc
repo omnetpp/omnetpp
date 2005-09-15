@@ -12,6 +12,9 @@
 #include <omnetpp.h>
 
 
+/**
+ * A bursty packet generator; see NED file for more info.
+ */
 class PPSource : public cSimpleModule
 {
   private:

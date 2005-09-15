@@ -15,6 +15,9 @@
 #define STACKSIZE 16384
 
 
+/**
+ * Generates jobs (messages); see NED file for more info.
+ */
 class Generator : public cSimpleModule
 {
   public:

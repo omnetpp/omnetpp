@@ -13,7 +13,7 @@
 #include <omnetpp.h>
 
 /**
- * Abstract base class for single-server queues
+ * Implements a single-server queue; see NED file for more info.
  */
 class Fifo : public cSimpleModule
 {
