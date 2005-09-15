@@ -17,13 +17,25 @@ class FFGenerator : public cSimpleModule
     cMessage *sendMessageEvent;
 
   public:
-    FFGenerator() {}   //NEWCTOR
+     FFGenerator();
+     virtual ~FFGenerator();
 
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };
 
 Define_Module(FFGenerator);
+
+FFGenerator::FFGenerator()
+{
+    sendMessageEvent = NULL;
+}
+
+FFGenerator::~FFGenerator()
+{
+    cancelAndDelete(sendMessageEvent);
+}
 
 void FFGenerator::initialize()
 {

@@ -13,7 +13,7 @@
 class HistogramDemo : public cSimpleModule
 {
   public:
-    HistogramDemo() : cSimpleModule(16384) {}   //NEWCTOR2
+    HistogramDemo() : cSimpleModule(16384) {}
     virtual void activity();
 };
 

@@ -11,10 +11,19 @@
 #include <omnetpp.h>
 #include "fifo.h"
 
+FFAbstractFifo::FFAbstractFifo()
+{
+    msgServiced = endServiceMsg = NULL;
+}
+
+FFAbstractFifo::~FFAbstractFifo()
+{
+    delete msgServiced;
+    cancelAndDelete(endServiceMsg);
+}
 
 void FFAbstractFifo::initialize()
 {
-    msgServiced = NULL;
     endServiceMsg = new cMessage("end-service");
     queue.setName("queue");
 }

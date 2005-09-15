@@ -16,14 +16,14 @@
 class HCGenerator : public cSimpleModule
 {
   public:
-    HCGenerator() : cSimpleModule(16384) {}   //NEWCTOR2
+    HCGenerator() : cSimpleModule(16384) {}
     virtual void activity();
 };
 
 class HCSink : public cSimpleModule
 {
   public:
-    HCSink() : cSimpleModule(16384) {}   //NEWCTOR2
+    HCSink() : cSimpleModule(16384) {}
     virtual void activity();
 };
 

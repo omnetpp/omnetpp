@@ -12,12 +12,11 @@
 
 class FFSink : public cSimpleModule
 {
-  public:
-    FFSink() {}   //NEWCTOR
-
+  private:
     cStdDev qstats;
     cOutVector qtime;
 
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
     virtual void finish();

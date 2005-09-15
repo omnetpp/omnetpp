@@ -24,7 +24,8 @@ class FFAbstractFifo : public cSimpleModule
     cQueue queue;
 
   public:
-    FFAbstractFifo() {}   //NEWCTOR
+    FFAbstractFifo();
+    virtual ~FFAbstractFifo();
 
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
@@ -40,9 +41,7 @@ class FFAbstractFifo : public cSimpleModule
  */
 class FFPacketFifo : public FFAbstractFifo
 {
-  public:
-    FFPacketFifo() {}   //NEWCTOR
-
+  protected:
     virtual simtime_t startService(cMessage *msg);
     virtual void endService(cMessage *msg);
 };
@@ -52,9 +51,7 @@ class FFPacketFifo : public FFAbstractFifo
  */
 class FFBitFifo : public FFAbstractFifo
 {
-  public:
-    FFBitFifo() {}   //NEWCTOR
-
+  protected:
     virtual simtime_t startService(cMessage *msg);
     virtual void endService(cMessage *msg);
 };

@@ -19,7 +19,7 @@
 #define PROPDEL     (0.99*SLOT_TIME)
 
 // Module registration:
-Define_Module( HCRouter )
+Define_Module( HCRouter );
 
 void deflectionRouting(int my_address,int dim,
                        int *rte_dest, int num_rte, int *rte_port,

@@ -15,7 +15,7 @@
 class HCRouter : public cSimpleModule
 {
   public:
-    HCRouter() : cSimpleModule(16384) {}   //NEWCTOR2
+    HCRouter() : cSimpleModule(16384) {}
     virtual void activity();
 };
 
