@@ -21,9 +21,7 @@ class TelnetClient : public cSimpleModule
     int addr;
     int srvAddr;
 
-  public:
-    TelnetClient() {}   //NEWCTOR
-
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
     void simulateUserTyping();

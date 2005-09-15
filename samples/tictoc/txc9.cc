@@ -22,9 +22,7 @@
  */
 class Txc9 : public cSimpleModule
 {
-  public:
-    Txc9() {}   //NEWCTOR
-
+  protected:
     virtual void forwardMessage(cMessage *msg);
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);

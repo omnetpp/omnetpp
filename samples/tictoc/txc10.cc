@@ -35,9 +35,7 @@
  */
 class Txc10 : public cSimpleModule
 {
-  public:
-    Txc10() {}   //NEWCTOR
-
+  protected:
     virtual TicTocMsg10 *generateMessage();
     virtual void forwardMessage(TicTocMsg10 *msg);
     virtual void initialize();

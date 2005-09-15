@@ -18,9 +18,7 @@ class HTTPClient : public cSimpleModule
     int addr;
     int srvAddr;
 
-  public:
-    HTTPClient() {}   //NEWCTOR
-
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
     void sendHTTPRequest();

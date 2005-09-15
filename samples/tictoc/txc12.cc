@@ -25,15 +25,13 @@
  */
 class Txc12 : public cSimpleModule
 {
-  protected:
+  private:
     long numSent;
     long numReceived;
     cLongHistogram hopCountStats;
     cOutVector hopCountVector;
 
-  public:
-    Txc12() {}   //NEWCTOR
-
+  protected:
     virtual TicTocMsg12 *generateMessage();
     virtual void forwardMessage(TicTocMsg12 *msg);
     virtual void initialize();

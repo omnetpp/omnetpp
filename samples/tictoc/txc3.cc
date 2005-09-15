@@ -17,12 +17,10 @@
  */
 class Txc3 : public cSimpleModule
 {
-  protected:
+  private:
     int counter;  // Note the counter here
 
-  public:
-    Txc3() {}   //NEWCTOR
-
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };

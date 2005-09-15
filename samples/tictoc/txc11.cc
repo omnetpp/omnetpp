@@ -20,13 +20,11 @@
  */
 class Txc11 : public cSimpleModule
 {
-  protected:
+  private:
     long numSent;
     long numReceived;
 
-  public:
-    Txc11() {}   //NEWCTOR
-
+  protected:
     virtual TicTocMsg11 *generateMessage();
     virtual void forwardMessage(TicTocMsg11 *msg);
     virtual void updateDisplay();

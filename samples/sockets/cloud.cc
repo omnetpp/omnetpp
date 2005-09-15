@@ -16,8 +16,7 @@ class Cloud : public cSimpleModule
   private:
     double propDelay;
 
-  public:
-    Cloud() {}   //NEWCTOR
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };

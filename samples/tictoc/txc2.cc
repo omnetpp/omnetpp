@@ -20,9 +20,7 @@
  */
 class Txc2 : public cSimpleModule
 {
-  public:
-    Txc2() {}   //NEWCTOR
-
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };

@@ -19,9 +19,7 @@
  */
 class Txc1 : public cSimpleModule
 {
-  public:
-    Txc1() {}   //NEWCTOR
-
+  protected:
     // The following redefined virtual function holds the algorithm.
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);

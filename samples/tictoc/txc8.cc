@@ -98,8 +98,7 @@ void Tic8::sendCopyOf(cMessage *msg)
  */
 class Toc8 : public cSimpleModule
 {
-  public:
-    Toc8() {}   //NEWCTOR
+  protected:
     virtual void handleMessage(cMessage *msg);
 };
 

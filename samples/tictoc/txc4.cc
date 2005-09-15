@@ -18,12 +18,10 @@
  */
 class Txc4 : public cSimpleModule
 {
-  protected:
+  private:
     int counter;
 
-  public:
-    Txc4() {}   //NEWCTOR
-
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };

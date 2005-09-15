@@ -79,8 +79,7 @@ void Tic7::handleMessage(cMessage *msg)
  */
 class Toc7 : public cSimpleModule
 {
-  public:
-    Toc7() {}   //NEWCTOR
+  protected:
     virtual void handleMessage(cMessage *msg);
 };
 
