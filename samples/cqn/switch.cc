@@ -15,10 +15,10 @@
  */
 class Switch : public cSimpleModule
 {
-  protected:
+  private:
     int numGates;
 
-  public:
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };

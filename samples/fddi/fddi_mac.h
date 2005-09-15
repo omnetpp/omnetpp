@@ -30,6 +30,7 @@ class CountDownCounter
     simtime_t StartTime;
     double InitValue;
     bool enabled;
+
   public:
     void operator=(double InitVal)
     {

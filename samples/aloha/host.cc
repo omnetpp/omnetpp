@@ -15,7 +15,7 @@
  */
 class AHost : public cSimpleModule
 {
-  protected:
+  private:
     // parameters
     double radioDelay;
     double txRate;
@@ -33,6 +33,8 @@ class AHost : public cSimpleModule
   public:
     AHost();
     virtual ~AHost();
+
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };

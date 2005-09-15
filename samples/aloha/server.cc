@@ -15,7 +15,7 @@
  */
 class AServer : public cSimpleModule
 {
-  protected:
+  private:
     // state variables, event pointers
     bool channelBusy;
     cMessage *endRxEvent;
@@ -38,6 +38,8 @@ class AServer : public cSimpleModule
   public:
     AServer();
     virtual ~AServer();
+
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
     virtual void finish();

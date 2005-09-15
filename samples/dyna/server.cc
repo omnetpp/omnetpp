@@ -15,10 +15,10 @@
  */
 class Server : public cSimpleModule
 {
-  protected:
+  private:
     cModuleType *srvProcType;
 
-  public:
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };

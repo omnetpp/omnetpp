@@ -27,6 +27,7 @@ class FFAbstractFifo : public cSimpleModule
     FFAbstractFifo();
     virtual ~FFAbstractFifo();
 
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 

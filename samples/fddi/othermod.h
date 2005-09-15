@@ -38,9 +38,9 @@ class FDDI_Generator : public cSimpleModule
   public:
     FDDI_Generator() : cSimpleModule(GENERATOR_STACKSIZE) {f = 0;}
     ~FDDI_Generator() {if (f) fclose(f);}
-    virtual void activity();
 
   protected:
+    virtual void activity();
     virtual void InitStatistics() = 0;
 
     // Returns false at the end of trace file, (if load is taken directly from
@@ -107,6 +107,8 @@ class FDDI_Address_Generator : public cSimpleModule
   public:
     FDDI_Address_Generator() : cSimpleModule(GENERATOR_STACKSIZE) {f = 0;}
     ~FDDI_Address_Generator() {if (f) fclose(f);}
+
+  protected:
     virtual void activity();
     virtual void InitStatistics();
     virtual int RetrieveNewAddress(int);
