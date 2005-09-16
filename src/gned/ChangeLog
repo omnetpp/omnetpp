@@ -1,3 +1,8 @@
+2005-09-16  Andras Varga
+
+	* connprops.tcl, data.tcl: some further fixes on gate selection in
+	the connprops dialog
+
 2005-09-15  Andras Varga
 
 	* checked in another bunch of patches from Michael Franzen:

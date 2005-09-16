@@ -841,7 +841,7 @@ proc getGateNameList {modkey submodkey modtypekey gatetype} {
             if {$ned($key,type)=="gate" && $ned($key,gatetype)==$gatetype} {
                 # gate found
                 set gatename $ned($key,name)
-                if {!$ned($key,is-vector)} {
+                if {!$ned($key,isvector)} {
                     lappend list "$gatename"
                 } else {
                     # vector
