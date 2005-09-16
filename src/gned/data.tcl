@@ -756,18 +756,58 @@ proc getNameList {componentkey sectiontype} {
     return $list
 }
 
+#
+# Finds all occurrences of the given gate in the compound module, and
+# return the list of indices it occurs with. E.g. {0 1 i j+1}
+# $submodkey=$modkey indicates parent module.
+#
+proc getAllGateUsages {modkey submodkey gatename} {
+    global ned
+
+    set indices {}
+
+    set connskey [getChildrenWithType $modkey conns]
+
+    # collect connections, then loop through them
+    set connkeys [getChildrenWithType $connskey conn]
+    foreach forloopkey [getChildrenWithType $connskey forloop] {
+        set connkeys [concat $connkeys [getChildrenWithType $forloopkey conn]]
+    }
+
+    # collect indices for that connection
+    foreach connkey $connkeys {
+       if {$ned($connkey,src-ownerkey)==$submodkey && $ned($connkey,srcgate)==$gatename} {
+           if {$ned($connkey,src-gate-plusplus)} {
+               lappend indices "++"
+           } else {
+               lappend indices $ned($connkey,src-gate-index)
+           }
+       }
+       if {$ned($connkey,dest-ownerkey)==$submodkey && $ned($connkey,destgate)==$gatename} {
+           if {$ned($connkey,dest-gate-plusplus)} {
+               lappend indices "++"
+           } else {
+               lappend indices $ned($connkey,dest-gate-index)
+           }
+       }
+    }
+    return $indices
+}
+
 # getGateNameList --
 #
-# get a list of gates of a module type -- vector gates are suffixed with
-# $vecsuffix (which is can be conveniently '[]', '[...]' or '++')
+# get a list of gates of a module type, to be offered for connecting (ConnProps dialog)
+# vector gates are suffixed with either "++" or an appropriate index.
 #
-proc getGateNameList {modtypekey gatetype vecsuffix} {
+proc getGateNameList {modkey modtypekey gatetype} {
     global ned
     set list {}
     set sectionkeylist [getChildrenWithType $modtypekey gates]
     foreach sectionkey $sectionkeylist {
         foreach key [getChildren $sectionkey] {
             if {$ned($key,type)=="gate" && $ned($key,gatetype)==$gatetype} {
+                # gate found
+
                 if {[lsearch -exact $list $ned($key,name)]==-1} {
                     if {$ned($key,isvector)} {
                         lappend list $ned($key,name)$vecsuffix
