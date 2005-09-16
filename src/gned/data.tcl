@@ -794,12 +794,45 @@ proc getAllGateUsages {modkey submodkey gatename} {
     return $indices
 }
 
+proc getMaxGateIndex {connkey srcdest} {
+    global ned
+
+    set modkey    [getContainingModule $connkey]
+    set submodkey $ned($connkey,${srcdest}-ownerkey)
+    set gatename  $ned($connkey,${srcdest}gate)
+
+    return [getMaxGateIndex2 $modkey $submodkey $gatename]
+}
+
+proc getMaxGateIndex2 {modkey submodkey gatename} {
+    global ned
+
+    # Look up all connections of current module, and find the
+    # maximum index of their source/destination.
+    # If we find any index which is not numeric, we return -1.
+    # Note: we could be a little smarter, e.g. if we find gate[i] inside a for i=0..n-1
+    # loop we might conclude that gatesize is (n-1)+1, but that's just another
+    # special case. The proper, full solution looks sort of hard...
+
+    set indices [getAllGateUsages $modkey $submodkey $gatename]
+
+    set max -1
+    foreach index $indices {
+        if {![string is integer $index]} {return -1}
+        if {$max < $index} {set max $index}
+    }
+    return $max
+}
+
 # getGateNameList --
 #
 # get a list of gates of a module type, to be offered for connecting (ConnProps dialog)
 # vector gates are suffixed with either "++" or an appropriate index.
 #
-proc getGateNameList {modkey modtypekey gatetype} {
+# if {$config(autoextend)} {set vecsuffix "++"} else {set vecsuffix "\[...\]"}
+# but: "++" not allowed on parent module's gates
+#
+proc getGateNameList {modkey submodkey modtypekey gatetype} {
     global ned
     set list {}
     set sectionkeylist [getChildrenWithType $modtypekey gates]
@@ -807,12 +840,25 @@ proc getGateNameList {modkey modtypekey gatetype} {
         foreach key [getChildren $sectionkey] {
             if {$ned($key,type)=="gate" && $ned($key,gatetype)==$gatetype} {
                 # gate found
-
-                if {[lsearch -exact $list $ned($key,name)]==-1} {
-                    if {$ned($key,isvector)} {
-                        lappend list $ned($key,name)$vecsuffix
+                set gatename $ned($key,name)
+                if {!$ned($key,is-vector)} {
+                    lappend list "$gatename"
+                } else {
+                    # vector
+                    set usedindices [getAllGateUsages $modkey $submodkey $gatename]
+                    set max [getMaxGateIndex2 $modkey $submodkey $gatename]
+                    if {$usedindices==""} {
+                        if {$modkey!=$submodkey} {lappend list "$gatename++"}
+                        lappend list "$gatename\[0\]"
+                        lappend list "$gatename\[...\]"
+                    } elseif {$max!=-1} {
+                        set maxplus1 [expr $max + 1]
+                        if {$modkey!=$submodkey} {lappend list "$gatename++"}
+                        lappend list "$gatename\[$maxplus1\]"
+                        lappend list "$gatename\[...\]"
                     } else {
-                        lappend list $ned($key,name)
+                        if {$modkey!=$submodkey} {lappend list "$gatename++"}
+                        lappend list "$gatename\[...\]"
                     }
                 }
             }

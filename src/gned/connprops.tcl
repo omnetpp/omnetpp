@@ -271,34 +271,10 @@ proc ConnProps:gateSpec {w} {
     pack $w.l1 $w.modname $w.l2 $w.gatename -expand 0 -side left -padx 2 -pady 2
 }
 
-proc ConnProps:maxGateIndex {connkey srcdest} {
-    global ned
-
-    # Look up all connections of current module, and find the
-    # maximum index of their source/destination.
-    # If we find any index which is not numeric, we return -1.
-    # Note: we could be a little smarter, e.g. if we find gate[i] inside a for i=0..n-1
-    # loop we might conclude that gatesize is (n-1)+1, but that's just another
-    # special case. The proper, full solution looks sort of hard...
-
-    set modkey    [getContainingModule $connkey]
-    set submodkey $ned($connkey,${srcdest}-ownerkey)
-    set gatename  $ned($connkey,${srcdest}gate)
-
-    set indices [getAllGateUsages $modkey $submodkey $gatename]
-
-    set max -1
-    foreach index $indices {
-        if {![string is integer $index]} {return -1}
-        if {$max < $index} {set max $index}
-    }
-    return $max
-}
-
 proc ConnProps:fillGateSize {key srcdest} {
     global ned
 
-    set max [ConnProps:maxGateIndex $key $srcdest]
+    set max [getMaxGateIndex $key $srcdest]
 
     # if not all indices to this gate are numeric, give up
     if {$max==-1} {
@@ -411,7 +387,7 @@ proc set_plusplus {connkey srcdest} {
            set wrk_gate [getChildrenWithName $wrk_gates $ned($connkey,${srcdest}gate)]
            if {$wrk_gate != "" && $ned($wrk_gate,isvector)} {
               if {$ned($connkey,${srcdest}-gate-index) == ""} {
-                 set ned($connkey,${srcdest}-gate-index) [expr [ConnProps:maxGateIndex $connkey $srcdest] + 1]
+                 set ned($connkey,${srcdest}-gate-index) [expr [getMaxGateIndex $connkey $srcdest] + 1]
               }
            } else {
               set ned($connkey,${srcdest}-gate-index) {}
@@ -431,10 +407,10 @@ proc ConnProps:refreshGateCombo {w modkey srcdest} {
         # gates of parent module
         if {$srcdest=="src"} {set gtype "in"} else {set gtype "out"}
         # if {$config(autoextend)} {set vecsuffix "++"} else {set vecsuffix "\[...\]"}   # "++" not allowed on parent module's gates
-        set vecsuffix "\[...\]"
+        #set vecsuffix "\[...\]"
         # hack: comboconfig overwrites editbox content too, so save and restore it
         set oldtext [$w.gatename get]
-        comboconfig $w.gatename [getGateNameList $modkey $modkey $gtype $vecsuffix]
+        comboconfig $w.gatename [getGateNameList $modkey $modkey $modkey $gtype]
         $w.gatename delete 0 end
         $w.gatename insert 0 $oldtext
     } else {
@@ -462,10 +438,10 @@ proc ConnProps:refreshGateCombo {w modkey srcdest} {
         # if there are multiple definitions of this type, just take the first one
         set modtypekey [lindex $modtypekey 0]
         if {$srcdest=="src"} {set gtype "out"} else {set gtype "in"}
-        if {$config(autoextend)} {set vecsuffix "++"} else {set vecsuffix "\[...\]"}
+        #if {$config(autoextend)} {set vecsuffix "++"} else {set vecsuffix "\[...\]"}
         # hack: comboconfig overwrites editbox content too, so save and restore it
         set oldtext [$w.gatename get]
-        comboconfig $w.gatename [getGateNameList $modkey $modtypekey $gtype $vecsuffix]
+        comboconfig $w.gatename [getGateNameList $modkey $submodkey $modtypekey $gtype]
         $w.gatename delete 0 end
         $w.gatename insert 0 $oldtext
     }
