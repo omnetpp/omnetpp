@@ -272,7 +272,7 @@ PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
 ac_unique_file="include/omnetpp.h"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX YACC LEX LEXLIB LEX_OUTPUT_ROOT RANLIB ac_ct_RANLIB DOXYGEN PERL XSLTPROC GHOSTSCRIPT CONVERT DOT GIFTRANS CXXCPP WISH OMNETPP_VERSION OMNETPP_BIN_DIR OMNETPP_INCL_DIR OMNETPP_LIB_DIR OMNETPP_BITMAP_PATH OMNETPP_SRC_DIR OMNETPP_UTILS_DIR OMNETPP_DOC_DIR OMNETPP_SAMPLES_DIR OMNETPP_TEST_DIR MYPWD NEDC MSGC NEDTOOL GNED NEDCFLAGS AS AR SHLIB_LD MAKEDEPEND A_LIB_SUFFIX SO_LIB_SUFFIX LIB_SUFFIX EXE_SUFFIX NO_TCL HAVE_DLOPEN TK_CFLAGS TK_LIBS HAVE_BLT BLT_LIBS HAVE_MPI MPI_CFLAGS MPI_LIBS SYS_LIBS XMLPARSER XML_CFLAGS XML_LIBS AKAROA_CFLAGS AKAROA_LIBS TKENV_IF_POSSIBLE GNED_IF_POSSIBLE SCALARS_IF_POSSIBLE PLOVE_IF_POSSIBLE USERIF_LIBS TKENV_EMBED_SUFFIX GNED_EMBED_SUFFIX SCALARS_EMBED_SUFFIX PLOVE_EMBED_SUFFIX OMNETPP_TKENV_DIR OMNETPP_GNED_DIR OMNETPP_SCALARS_DIR OMNETPP_PLOVE_DIR WITH_NETBUILDER WITH_PARSIM LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX RANLIB ac_ct_RANLIB YACC LEX LEXLIB LEX_OUTPUT_ROOT MAKE DOXYGEN PERL XSLTPROC GHOSTSCRIPT CONVERT DOT GIFTRANS CXXCPP WISH OMNETPP_VERSION OMNETPP_BIN_DIR OMNETPP_INCL_DIR OMNETPP_LIB_DIR OMNETPP_BITMAP_PATH OMNETPP_SRC_DIR OMNETPP_UTILS_DIR OMNETPP_DOC_DIR OMNETPP_SAMPLES_DIR OMNETPP_TEST_DIR MYPWD NEDC MSGC NEDTOOL GNED NEDCFLAGS AS AR SHLIB_LD MAKEDEPEND A_LIB_SUFFIX SO_LIB_SUFFIX LIB_SUFFIX EXE_SUFFIX NO_TCL HAVE_DLOPEN TK_CFLAGS TK_LIBS HAVE_BLT BLT_LIBS HAVE_MPI MPI_CFLAGS MPI_LIBS SYS_LIBS XMLPARSER XML_CFLAGS XML_LIBS AKAROA_CFLAGS AKAROA_LIBS TKENV_IF_POSSIBLE GNED_IF_POSSIBLE SCALARS_IF_POSSIBLE PLOVE_IF_POSSIBLE USERIF_LIBS TKENV_EMBED_SUFFIX GNED_EMBED_SUFFIX SCALARS_EMBED_SUFFIX PLOVE_EMBED_SUFFIX OMNETPP_TKENV_DIR OMNETPP_GNED_DIR OMNETPP_SCALARS_DIR OMNETPP_PLOVE_DIR WITH_NETBUILDER WITH_PARSIM LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -2607,6 +2607,175 @@ fi
 AS=${AS:-as}
 AR=${AR:-ar cr}
 SHLIB_LD=${SHLIB_LD:-$CXX -shared -fPIC}
+if test -n "$ac_tool_prefix"; then
+  # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
+set dummy ${ac_tool_prefix}ranlib; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_prog_RANLIB+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$RANLIB"; then
+  ac_cv_prog_RANLIB="$RANLIB" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_RANLIB="${ac_tool_prefix}ranlib"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+fi
+fi
+RANLIB=$ac_cv_prog_RANLIB
+if test -n "$RANLIB"; then
+  echo "$as_me:$LINENO: result: $RANLIB" >&5
+echo "${ECHO_T}$RANLIB" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+fi
+if test -z "$ac_cv_prog_RANLIB"; then
+  ac_ct_RANLIB=$RANLIB
+  # Extract the first word of "ranlib", so it can be a program name with args.
+set dummy ranlib; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_prog_ac_ct_RANLIB+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$ac_ct_RANLIB"; then
+  ac_cv_prog_ac_ct_RANLIB="$ac_ct_RANLIB" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_ac_ct_RANLIB="ranlib"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+  test -z "$ac_cv_prog_ac_ct_RANLIB" && ac_cv_prog_ac_ct_RANLIB=":"
+fi
+fi
+ac_ct_RANLIB=$ac_cv_prog_ac_ct_RANLIB
+if test -n "$ac_ct_RANLIB"; then
+  echo "$as_me:$LINENO: result: $ac_ct_RANLIB" >&5
+echo "${ECHO_T}$ac_ct_RANLIB" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+  RANLIB=$ac_ct_RANLIB
+else
+  RANLIB="$ac_cv_prog_RANLIB"
+fi
+
+
+#----------------------
+# test for "-z allextract" (Sun) or "--whole-archive" (GNU) linker option,
+#----------------------
+# Goal: to eliminate "silly linker problem", that is, to convince the linker
+# to include constructors of static C++ object in statically linked libraries.
+# To test, we'll compile the following code into a static library:
+#      #include <stdio.h>
+#      class A { public: A() {printf("=WORKS=\n");} };
+#      static A a;
+# Then we link it with the following program:
+#      int main() {return 0;}
+# And check if the executable prints '=WORKS=' when run.
+#
+echo "$as_me:$LINENO: checking for flags needed to link with static libs containing simple modules" >&5
+echo $ECHO_N "checking for flags needed to link with static libs containing simple modules... $ECHO_C" >&6
+echo '#include <stdio.h>' >conftest_a.cc
+echo 'class A { public: A() {printf("=WORKS=\n");} };' >>conftest_a.cc
+echo 'static A a;' >> conftest_a.cc
+echo 'int main() {return 0;}' >> conftest_m.cc
+if $CXX -c conftest_a.cc >/dev/null 2>/dev/null && \
+   $CXX -c conftest_m.cc >/dev/null 2>/dev/null && \
+   $AR libconftest_a.a conftest_a.o >/dev/null 2>/dev/null && \
+   $RANLIB libconftest_a.a >/dev/null 2>/dev/null; \
+then
+   silly_ok="no"
+   # 1st try.
+   if $CXX -o conftest conftest_m.o libconftest_a.a >/dev/null 2>/dev/null; then
+      if ./conftest 2>/dev/null | grep '=WORKS=' >/dev/null; then
+         echo "$as_me:$LINENO: result: none" >&5
+echo "${ECHO_T}none" >&6
+         silly_ok="yes"
+      fi
+   fi
+
+   # 2nd try.
+   silly1=-Wl,--whole-archive
+   silly2=-Wl,--no-whole-archive
+   if test $silly_ok = "no" && \
+      $CXX -o conftest conftest_m.o $silly1 libconftest_a.a $silly2 >/dev/null 2>/dev/null && \
+      ./conftest 2>/dev/null | grep '=WORKS=' >/dev/null; \
+   then
+      echo "$as_me:$LINENO: result: --whole-archive" >&5
+echo "${ECHO_T}--whole-archive" >&6
+      { echo "$as_me:$LINENO: NOTE: Use the following syntax when linking with static libraries" >&5
+echo "$as_me: NOTE: Use the following syntax when linking with static libraries" >&6;}
+      { echo "$as_me:$LINENO: containing simple modules and other dynamically registered components:" >&5
+echo "$as_me: containing simple modules and other dynamically registered components:" >&6;}
+      { echo "$as_me:$LINENO:    $CXX ... $silly1 <libs> $silly2 ..." >&5
+echo "$as_me:    $CXX ... $silly1 <libs> $silly2 ..." >&6;}
+      silly_ok="yes"
+   fi
+
+   # 3rd try.
+   silly1=-Wl,-z,allextract
+   silly2=-Wl,-z,defaultextract
+   if test $silly_ok = "no" && \
+      $CXX -o conftest conftest_m.o $silly1 libconftest_a.a $silly2 >/dev/null 2>/dev/null && \
+      ./conftest 2>/dev/null | grep '=WORKS=' >/dev/null; \
+   then
+      echo "$as_me:$LINENO: result: --whole-archive" >&5
+echo "${ECHO_T}--whole-archive" >&6
+      { echo "$as_me:$LINENO: NOTE: Use the following syntax when linking with static libraries" >&5
+echo "$as_me: NOTE: Use the following syntax when linking with static libraries" >&6;}
+      { echo "$as_me:$LINENO: containing simple modules and other dynamically registered components:" >&5
+echo "$as_me: containing simple modules and other dynamically registered components:" >&6;}
+      { echo "$as_me:$LINENO:    $CXX ... $silly1 <libs> $silly2 ..." >&5
+echo "$as_me:    $CXX ... $silly1 <libs> $silly2 ..." >&6;}
+      silly_ok="yes"
+   fi
+
+   # no solution found
+   if test $silly_ok = "no"; then
+      echo "$as_me:$LINENO: result: no solution found" >&5
+echo "${ECHO_T}no solution found" >&6
+      { echo "$as_me:$LINENO: WARNING: Avoid linking with static libraries containing simple modules" >&5
+echo "$as_me: WARNING: Avoid linking with static libraries containing simple modules" >&2;}
+      { echo "$as_me:$LINENO: WARNING: and other dynamically registered components. Those components" >&5
+echo "$as_me: WARNING: and other dynamically registered components. Those components" >&2;}
+      { echo "$as_me:$LINENO: WARNING: will not be found by the simulation program, because the linker" >&5
+echo "$as_me: WARNING: will not be found by the simulation program, because the linker" >&2;}
+      { echo "$as_me:$LINENO: WARNING: leaves them out of the executable." >&5
+echo "$as_me: WARNING: leaves them out of the executable." >&2;}
+   fi
+else
+   echo "$as_me:$LINENO: result: test failed" >&5
+echo "${ECHO_T}test failed" >&6
+fi
+rm -f conftest_a.* conftest_m.* libconftest_a.a
 
 
 #----------------------
@@ -2948,18 +3117,17 @@ _ACEOF
 fi
 
 fi
-# AC_PROG_CC -- these are needed at the top
-# AC_PROG_CXX
-if test -n "$ac_tool_prefix"; then
-  # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
-set dummy ${ac_tool_prefix}ranlib; ac_word=$2
+
+# make must be GNU make
+# Extract the first word of "make ", so it can be a program name with args.
+set dummy make ; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
-if test "${ac_cv_prog_RANLIB+set}" = set; then
+if test "${ac_cv_prog_MAKE+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test -n "$RANLIB"; then
-  ac_cv_prog_RANLIB="$RANLIB" # Let the user override the test.
+  if test -n "$MAKE"; then
+  ac_cv_prog_MAKE="$MAKE" # Let the user override the test.
 else
 as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
 for as_dir in $PATH
@@ -2968,69 +3136,37 @@ do
   test -z "$as_dir" && as_dir=.
   for ac_exec_ext in '' $ac_executable_extensions; do
   if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_RANLIB="${ac_tool_prefix}ranlib"
+    ac_cv_prog_MAKE="make"
     echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
 done
 done
 
+  test -z "$ac_cv_prog_MAKE" && ac_cv_prog_MAKE="not found"
 fi
 fi
-RANLIB=$ac_cv_prog_RANLIB
-if test -n "$RANLIB"; then
-  echo "$as_me:$LINENO: result: $RANLIB" >&5
-echo "${ECHO_T}$RANLIB" >&6
+MAKE=$ac_cv_prog_MAKE
+if test -n "$MAKE"; then
+  echo "$as_me:$LINENO: result: $MAKE" >&5
+echo "${ECHO_T}$MAKE" >&6
 else
   echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6
 fi
 
-fi
-if test -z "$ac_cv_prog_RANLIB"; then
-  ac_ct_RANLIB=$RANLIB
-  # Extract the first word of "ranlib", so it can be a program name with args.
-set dummy ranlib; ac_word=$2
-echo "$as_me:$LINENO: checking for $ac_word" >&5
-echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
-if test "${ac_cv_prog_ac_ct_RANLIB+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
+if test "$MAKE" = "not found"; then
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES make"
+   { { echo "$as_me:$LINENO: error: make program not found -- it is required to build OMNeT++/OMNEST" >&5
+echo "$as_me: error: make program not found -- it is required to build OMNeT++/OMNEST" >&2;}
+   { (exit and also for model development.); exit and also for model development.; }; }
 else
-  if test -n "$ac_ct_RANLIB"; then
-  ac_cv_prog_ac_ct_RANLIB="$ac_ct_RANLIB" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_ac_ct_RANLIB="ranlib"
-    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-
-  test -z "$ac_cv_prog_ac_ct_RANLIB" && ac_cv_prog_ac_ct_RANLIB=":"
+   if make --version 2>/dev/null | grep -i GNU >/dev/null; then :; else
+       { { echo "$as_me:$LINENO: error: GNU Make is required to build OMNeT++/OMNEST." >&5
+echo "$as_me: error: GNU Make is required to build OMNeT++/OMNEST." >&2;}
+   { (exit 1); exit 1; }; }
+   fi
 fi
-fi
-ac_ct_RANLIB=$ac_cv_prog_ac_ct_RANLIB
-if test -n "$ac_ct_RANLIB"; then
-  echo "$as_me:$LINENO: result: $ac_ct_RANLIB" >&5
-echo "${ECHO_T}$ac_ct_RANLIB" >&6
-else
-  echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6
-fi
-
-  RANLIB=$ac_ct_RANLIB
-else
-  RANLIB="$ac_cv_prog_RANLIB"
-fi
-
-
 
 # doxygen is used for generation of api doc
 
@@ -3117,6 +3253,11 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
+if test "$PERL" = "not found"; then
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  perl"
+   { echo "$as_me:$LINENO: WARNING: Perl not found -- please install it! Perl is required by opp_msgc" >&5
+echo "$as_me: WARNING: Perl not found -- please install it! Perl is required by opp_msgc" >&2;}
+fi
 
 # xsltproc
 
@@ -6443,12 +6584,13 @@ s,@OBJEXT@,$OBJEXT,;t t
 s,@CXX@,$CXX,;t t
 s,@CXXFLAGS@,$CXXFLAGS,;t t
 s,@ac_ct_CXX@,$ac_ct_CXX,;t t
+s,@RANLIB@,$RANLIB,;t t
+s,@ac_ct_RANLIB@,$ac_ct_RANLIB,;t t
 s,@YACC@,$YACC,;t t
 s,@LEX@,$LEX,;t t
 s,@LEXLIB@,$LEXLIB,;t t
 s,@LEX_OUTPUT_ROOT@,$LEX_OUTPUT_ROOT,;t t
-s,@RANLIB@,$RANLIB,;t t
-s,@ac_ct_RANLIB@,$ac_ct_RANLIB,;t t
+s,@MAKE@,$MAKE,;t t
 s,@DOXYGEN@,$DOXYGEN,;t t
 s,@PERL@,$PERL,;t t
 s,@XSLTPROC@,$XSLTPROC,;t t

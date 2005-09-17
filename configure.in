@@ -185,6 +185,80 @@ fi
 AS=${AS:-as}
 AR=${AR:-ar cr}
 SHLIB_LD=${SHLIB_LD:-$CXX -shared -fPIC}
+AC_PROG_RANLIB
+
+#----------------------
+# test for "-z allextract" (Sun) or "--whole-archive" (GNU) linker option,
+#----------------------
+# Goal: to eliminate "silly linker problem", that is, to convince the linker
+# to include constructors of static C++ object in statically linked libraries.
+# To test, we'll compile the following code into a static library:
+#      #include <stdio.h>
+#      class A { public: A() {printf("=WORKS=\n");} };
+#      static A a;
+# Then we link it with the following program:
+#      int main() {return 0;}
+# And check if the executable prints '=WORKS=' when run.
+#
+AC_MSG_CHECKING(for flags needed to link with static libs containing simple modules)
+echo '#include <stdio.h>' >conftest_a.cc
+echo 'class A { public: A() {printf("=WORKS=\n");} };' >>conftest_a.cc
+echo 'static A a;' >> conftest_a.cc
+echo 'int main() {return 0;}' >> conftest_m.cc
+if $CXX -c conftest_a.cc >/dev/null 2>/dev/null && \
+   $CXX -c conftest_m.cc >/dev/null 2>/dev/null && \
+   $AR libconftest_a.a conftest_a.o >/dev/null 2>/dev/null && \
+   $RANLIB libconftest_a.a >/dev/null 2>/dev/null; \
+then
+   silly_ok="no"
+   # 1st try.
+   if $CXX -o conftest conftest_m.o libconftest_a.a >/dev/null 2>/dev/null; then
+      if ./conftest 2>/dev/null | grep '=WORKS=' >/dev/null; then
+         AC_MSG_RESULT(none)
+         silly_ok="yes"
+      fi
+   fi
+
+   # 2nd try.
+   silly1=-Wl,--whole-archive
+   silly2=-Wl,--no-whole-archive
+   if test $silly_ok = "no" && \
+      $CXX -o conftest conftest_m.o $silly1 libconftest_a.a $silly2 >/dev/null 2>/dev/null && \
+      ./conftest 2>/dev/null | grep '=WORKS=' >/dev/null; \
+   then
+      AC_MSG_RESULT(--whole-archive)
+      AC_MSG_NOTICE([NOTE: Use the following syntax when linking with static libraries])
+      AC_MSG_NOTICE([containing simple modules and other dynamically registered components:])
+      AC_MSG_NOTICE([   $CXX ... $silly1 <libs> $silly2 ...])
+      silly_ok="yes"
+   fi
+
+   # 3rd try.
+   silly1=-Wl,-z,allextract
+   silly2=-Wl,-z,defaultextract
+   if test $silly_ok = "no" && \
+      $CXX -o conftest conftest_m.o $silly1 libconftest_a.a $silly2 >/dev/null 2>/dev/null && \
+      ./conftest 2>/dev/null | grep '=WORKS=' >/dev/null; \
+   then
+      AC_MSG_RESULT(--whole-archive)
+      AC_MSG_NOTICE([NOTE: Use the following syntax when linking with static libraries])
+      AC_MSG_NOTICE([containing simple modules and other dynamically registered components:])
+      AC_MSG_NOTICE([   $CXX ... $silly1 <libs> $silly2 ...])
+      silly_ok="yes"
+   fi
+   
+   # no solution found
+   if test $silly_ok = "no"; then
+      AC_MSG_RESULT(no solution found)
+      AC_MSG_WARN([Avoid linking with static libraries containing simple modules])
+      AC_MSG_WARN([and other dynamically registered components. Those components])
+      AC_MSG_WARN([will not be found by the simulation program, because the linker])
+      AC_MSG_WARN([leaves them out of the executable.])
+   fi
+else
+   AC_MSG_RESULT(test failed)
+fi
+rm -f conftest_a.* conftest_m.* libconftest_a.a
 
 
 #----------------------
@@ -208,10 +282,17 @@ if test "$YACC" = "yacc"; then
    AC_MSG_ERROR([Bison not found, needed to build OMNeT++/OMNEST -- please install it!])
 fi
 AC_PROG_LEX
-# AC_PROG_CC -- these are needed at the top
-# AC_PROG_CXX
-AC_PROG_RANLIB
 
+# make must be GNU make
+AC_CHECK_PROG(MAKE, make , make, not found)
+if test "$MAKE" = "not found"; then
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES make"
+   AC_MSG_ERROR(make program not found -- it is required to build OMNeT++/OMNEST, and also for model development.)
+else
+   if make --version 2>/dev/null | grep -i GNU >/dev/null; then :; else
+       AC_MSG_ERROR(GNU Make is required to build OMNeT++/OMNEST.)
+   fi
+fi
 
 # doxygen is used for generation of api doc
 AC_ARG_VAR(DOXYGEN, The Doxygen documentation tool)
@@ -226,6 +307,10 @@ fi
 # perl is needed for opp_msgc
 AC_ARG_VAR(PERL, The Perl interpreter)
 AC_CHECK_PROG(PERL, perl, perl, not found)
+if test "$PERL" = "not found"; then
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  perl"
+   AC_MSG_WARN(Perl not found -- please install it! Perl is required by opp_msgc, opp_neddoc and other features.)
+fi
 
 # xsltproc
 AC_ARG_VAR(XSLTPROC, A command line xslt processor)
