@@ -178,8 +178,26 @@ AC_PROG_CC(icc gcc cc xlc)
 AC_PROG_CXX(icpc g++ c++ cxx xlC)
 
 if test "$CXX" = "icpc"; then
-    # disable a useless warning with the Intel compiler
-    CFLAGS="$CFLAGS -wd654"
+    # disable useless warnings and 'remarks' with the Intel compiler:
+    #
+    # warning #654: overloaded virtual function "NEDElement::setAttribute" is only partially overridden
+    # warning #177: label "yyerrlab1" was declared but never referenced
+    # remark #869: parameter "node" was never referenced
+    # remark #981: operands are evaluated in unspecified order
+    # remark #279: controlling expression is constant  (occurs in unfinished cppmsggenerator.cc code)
+    # remark #1572: floating-point equality and inequality comparisons are unreliable
+    # remark #424: extra ";" ignored
+    # remark #1682: implicit conversion of a 64-bit integral type to a smaller integral type (potential portability..
+    # remark #1683: explicit conversion of a 64-bit integral type to a smaller integral type (potential portability..
+    # remark #810: conversion from "unsigned int" to "char" may lose significant bits
+    # remark #810: conversion from "long" to "double" may lose significant bits
+    # remark #1418: external definition with no prior declaration
+    # remark #1419: external declaration in primary source file
+    # remark #383: value copied to temporary, reference to temporary used
+    #
+
+    #CFLAGS="$CFLAGS -wd654 -wd177 -wd869 -wd981 -wd279 -wd1572 -wd424 -wd1682 -wd1683 -wd810 -wd1418 -wd1419"
+    CFLAGS="$CFLAGS -w1 -wd654 -wd177"
 fi
 
 AS=${AS:-as}

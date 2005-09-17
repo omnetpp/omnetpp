@@ -124,7 +124,7 @@ cXMLElement *MiniXPath::recursiveMatch(cXMLElement *node, const char *pathexpr)
         return res;
     for (cXMLElement *child=node->getFirstChild(); child; child=child->getNextSibling())
     {
-        cXMLElement *res = recursiveMatch(child, pathexpr);
+        res = recursiveMatch(child, pathexpr);
         if (res)
             return res;
     }

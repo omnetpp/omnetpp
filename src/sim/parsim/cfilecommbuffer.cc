@@ -88,35 +88,35 @@ void cFileCommBuffer::setMessageSize(int size)
 void cFileCommBuffer::pack(char d)
 {
     extendBufferFor(16);
-    STORE("c %d",d);
+    STORE("c %d",(int)d);
 }
 
 
 void cFileCommBuffer::pack(unsigned char d)
 {
     extendBufferFor(16);
-    STORE("uc %u",d);
+    STORE("uc %u",(unsigned int)d);
 }
 
 
 void cFileCommBuffer::pack(bool d)
 {
     extendBufferFor(16);
-    STORE("b %d",d);
+    STORE("b %d",(int)d);
 }
 
 
 void cFileCommBuffer::pack(short d)
 {
     extendBufferFor(16);
-    STORE("s %d",d);
+    STORE("s %d",(int)d);
 }
 
 
 void cFileCommBuffer::pack(unsigned short d)
 {
     extendBufferFor(16);
-    STORE("us %u",d);
+    STORE("us %u",(unsigned int)d);
 }
 
 

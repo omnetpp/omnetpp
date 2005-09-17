@@ -583,10 +583,10 @@ void TOmnetApp::readPerRunOptions(int run_no)
     cModule::pause_in_sendmsg = opt_pause_in_sendmsg;
 
     // run RNG self-test
-    cRNG *rng;
-    CREATE_BY_CLASSNAME(rng, opt_rng_class.c_str(), cRNG, "random number generator");
-    rng->selfTest();
-    delete rng;
+    cRNG *testrng;
+    CREATE_BY_CLASSNAME(testrng, opt_rng_class.c_str(), cRNG, "random number generator");
+    testrng->selfTest();
+    delete testrng;
 
     // set up RNGs
     int i;
