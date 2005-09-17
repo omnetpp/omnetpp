@@ -197,33 +197,37 @@ AC_PROG_RANLIB
 # Strategy: we'll compile the following program into a shared library:
 #      void function_from_main();
 #      void some_func() {func_from_main();}
-# Then we link it with the following program:
+# Then we *independently* compile with the following program:
+#      #include <dlfcn.h>
 #      void func_from_main() {}
-#      int main() {return 0;}
+#      int main() {return dlopen("libconftest_a.so",RTLD_NOW)==0;}
 # And we expect to be able to run the program successfully.
+#
 AC_MSG_CHECKING(if --export-dynamic linker option is supported/needed)
 echo 'void func_from_main();' >conftest_a.cc
 echo 'void some_func() {func_from_main();}' >>conftest_a.cc
-echo 'void func_from_main() {}' >conftest_m.cc
-echo 'int main() {return 0;}' >>conftest_m.cc
+echo '#include <dlfcn.h>' >conftest_m.cc
+echo '#include <stdio.h>' >>conftest_m.cc
+echo 'void func_from_main() {}' >>conftest_m.cc
+echo 'int main() {if (dlopen("./libconftest_a.so",RTLD_NOW)!=0) return 0; printf("%s\n",dlerror()); return 1;}' >>conftest_m.cc
 if $CXX -c conftest_a.cc >/dev/null 2>/dev/null && \
    $CXX -c conftest_m.cc >/dev/null 2>/dev/null && \
    $SHLIB_LD -o libconftest_a.so conftest_a.o >/dev/null 2>/dev/null; \
 then
    silly_ok="no"
    # 1st try.
-   if $CXX -o conftest conftest_m.o libconftest_a.so >/dev/null 2>/dev/null; then
-      if LD_LIBRARY_PATH=. ./conftest >/dev/null 92>/dev/null; then
+   if $CXX -o conftest conftest_m.o -ldl >/dev/null 2>/dev/null; then
+      if ./conftest >/dev/null 2>/dev/null; then
          AC_MSG_RESULT(not needed)
          silly_ok="yes"
       fi
    fi
    # 2nd try.
    if test $silly_ok = "no" && \
-      $CXX -o conftest -Wl,--export-dynamic conftest_m.o libconftest_a.so >/dev/null 2>/dev/null; \
+      $CXX -o conftest -Wl,--export-dynamic conftest_m.o -ldl >/dev/null 2>/dev/null; \
    then
-      if LD_LIBRARY_PATH=. ./conftest >/dev/null 92>/dev/null; then
-         AC_MSG_RESULT(supported)
+      if ./conftest >/dev/null 2>/dev/null; then
+         AC_MSG_RESULT(supported and needed)
          LDFLAGS="$LDFLAGS -Wl,--export-dynamic"
          silly_ok="yes"
       fi
