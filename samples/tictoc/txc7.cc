@@ -28,8 +28,8 @@ class Tic7 : public cSimpleModule
     cMessage *timeoutEvent;  // holds pointer to the timeout self-message
 
   public:
-    Txc7();
-    virtual ~Txc7();
+    Tic7();
+    virtual ~Tic7();
 
   protected:
     virtual void initialize();
@@ -38,12 +38,12 @@ class Tic7 : public cSimpleModule
 
 Define_Module(Tic7);
 
-Txc7::Txc7()
+Tic7::Tic7()
 {
     timeoutEvent = NULL;
 }
 
-Txc7::~Txc7()
+Tic7::~Tic7()
 {
     cancelAndDelete(timeoutEvent);
 }

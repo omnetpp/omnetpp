@@ -27,8 +27,8 @@ class Tic8 : public cSimpleModule
     cMessage *message;  // message that has to be re-sent on timeout
 
   public:
-    Txc8();
-    virtual ~Txc8();
+    Tic8();
+    virtual ~Tic8();
 
   protected:
     virtual cMessage *generateNewMessage();
@@ -39,12 +39,12 @@ class Tic8 : public cSimpleModule
 
 Define_Module(Tic8);
 
-Txc8::Txc8()
+Tic8::Tic8()
 {
     timeoutEvent = NULL;
 }
 
-Txc8::~Txc8()
+Tic8::~Tic8()
 {
     cancelAndDelete(timeoutEvent);
 }
