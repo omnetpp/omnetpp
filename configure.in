@@ -227,7 +227,7 @@ then
       $CXX -o conftest -Wl,--export-dynamic conftest_m.o -ldl >/dev/null 2>/dev/null; \
    then
       if ./conftest >/dev/null 2>/dev/null; then
-         AC_MSG_RESULT(supported and needed)
+         AC_MSG_RESULT(both)
          LDFLAGS="$LDFLAGS -Wl,--export-dynamic"
          silly_ok="yes"
       fi

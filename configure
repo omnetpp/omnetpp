@@ -2730,8 +2730,8 @@ echo "${ECHO_T}not needed" >&6
       $CXX -o conftest -Wl,--export-dynamic conftest_m.o -ldl >/dev/null 2>/dev/null; \
    then
       if ./conftest >/dev/null 2>/dev/null; then
-         echo "$as_me:$LINENO: result: supported and needed" >&5
-echo "${ECHO_T}supported and needed" >&6
+         echo "$as_me:$LINENO: result: both" >&5
+echo "${ECHO_T}both" >&6
          LDFLAGS="$LDFLAGS -Wl,--export-dynamic"
          silly_ok="yes"
       fi
