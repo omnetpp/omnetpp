@@ -205,6 +205,14 @@ AR=${AR:-ar cr}
 SHLIB_LD=${SHLIB_LD:-$CXX -shared -fPIC}
 AC_PROG_RANLIB
 
+if test "$build_shared_libs" = "if-not-windows" -o "$build_shared_libs" = "yes"; then
+    if echo $CFLAGS | grep -i -- -fPIC >/dev/null 2>/dev/null; then :; else
+        AC_MSG_NOTICE([NOTE: if you get problems building shared libraries (e.g. libnedxml.so),])
+        AC_MSG_NOTICE([you may need to add -fPIC or -fpic to CFLAGS.])
+    fi
+fi 
+
+
 #----------------------
 # Test if --export-dynamic or -E linker option is accepted and/or needed
 #----------------------

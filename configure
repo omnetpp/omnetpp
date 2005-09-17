@@ -2706,6 +2706,16 @@ else
 fi
 
 
+if test "$build_shared_libs" = "if-not-windows" -o "$build_shared_libs" = "yes"; then
+    if echo $CFLAGS | grep -i -- -fPIC >/dev/null 2>/dev/null; then :; else
+        { echo "$as_me:$LINENO: NOTE: if you get problems building shared libraries (e.g. libnedxml.so)," >&5
+echo "$as_me: NOTE: if you get problems building shared libraries (e.g. libnedxml.so)," >&6;}
+        { echo "$as_me:$LINENO: you may need to add -fPIC or -fpic to CFLAGS." >&5
+echo "$as_me: you may need to add -fPIC or -fpic to CFLAGS." >&6;}
+    fi
+fi
+
+
 #----------------------
 # Test if --export-dynamic or -E linker option is accepted and/or needed
 #----------------------
