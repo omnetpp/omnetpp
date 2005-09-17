@@ -54,7 +54,7 @@ class NEDElementUserData
 class NEDElement
 {
   private:
-    int id;
+    long id;
     std::string srcloc;
     NEDElement *parent;
     NEDElement *firstchild;
