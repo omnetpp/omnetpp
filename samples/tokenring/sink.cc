@@ -37,6 +37,7 @@ class Sink : public cSimpleModule
   protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
+    virtual void finish();
 };
 
 Define_Module( Sink );
@@ -71,5 +72,10 @@ void Sink::handleMessage(cMessage *msg)
 
     // message no longer needed
     delete msg;
+}
+
+void Sink::finish()
+{
+    endToEndDelayKS.recordScalar();
 }
 
