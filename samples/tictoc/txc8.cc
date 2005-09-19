@@ -41,12 +41,13 @@ Define_Module(Tic8);
 
 Tic8::Tic8()
 {
-    timeoutEvent = NULL;
+    timeoutEvent = message = NULL;
 }
 
 Tic8::~Tic8()
 {
     cancelAndDelete(timeoutEvent);
+    delete message;
 }
 
 void Tic8::initialize()
