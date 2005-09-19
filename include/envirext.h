@@ -48,7 +48,7 @@ class cPar;
  *
  * @ingroup EnvirExtensions
  */
-class SIM_API cOutputVectorManager : public cPolymorphic
+class ENVIR_API cOutputVectorManager : public cPolymorphic
 {
   private:
     // copy constructor and assignment unsupported, make them inaccessible and also leave unimplemented
@@ -147,7 +147,7 @@ class SIM_API cOutputVectorManager : public cPolymorphic
  *
  * @ingroup EnvirExtensions
  */
-class SIM_API cOutputScalarManager : public cPolymorphic
+class ENVIR_API cOutputScalarManager : public cPolymorphic
 {
   private:
     // copy constructor and assignment unsupported, make them inaccessible and also leave unimplemented
@@ -224,7 +224,7 @@ class SIM_API cOutputScalarManager : public cPolymorphic
  *
  * @ingroup EnvirExtensions
  */
-class SIM_API cSnapshotManager : public cPolymorphic
+class ENVIR_API cSnapshotManager : public cPolymorphic
 {
   private:
     // copy constructor and assignment unsupported, make them inaccessible and also leave unimplemented

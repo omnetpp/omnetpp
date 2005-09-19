@@ -76,7 +76,7 @@ class SIM_API cXMLElement
      * Base class for classes that resolve parameters ($PARAM) that occur in
      * in XPath expressions to their values.
      */
-    class ParamResolver
+    class SIM_API ParamResolver
     {
       public:
         /**
