@@ -66,7 +66,7 @@ class SIM_API cTopology : public cObject
     /**
      * Supporting class for cTopology, represents a node in the graph.
      */
-    class Node
+    class SIM_API Node
     {
         friend class cTopology;
 
@@ -181,7 +181,7 @@ class SIM_API cTopology : public cObject
     /**
      * Supporting class for cTopology, represents a link in the graph.
      */
-    class Link
+    class SIM_API Link
     {
         friend class cTopology;
 
@@ -234,7 +234,7 @@ class SIM_API cTopology : public cObject
      * LinkIn and LinkOut provide convenience functions that return the
      * 'local' and 'remote' end of the connection when traversing the topology.
      */
-    class LinkIn : public Link
+    class SIM_API LinkIn : public Link
     {
       public:
         /**
