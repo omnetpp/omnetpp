@@ -76,8 +76,11 @@ void Tic8::handleMessage(cMessage *msg)
     }
     else // message arrived
     {
-        // Acknowledgement received -- delete the stored message and cancel
-        // the timeout event.
+        // Acknowledgement received!
+        ev << "Received: " << msg->name() << "\n";
+        delete msg;
+
+        // Also delete the stored message and cancel the timeout event.
         ev << "Timer cancelled.\n";
         cancelEvent(timeoutEvent);
         delete message;

@@ -19,7 +19,6 @@
  * if the packet doesn't arrive within a certain period, we'll assume it
  * was lost and create another one. The timeout will be handled using
  * (what else?) a self-message.
- *
  */
 class Tic7 : public cSimpleModule
 {
