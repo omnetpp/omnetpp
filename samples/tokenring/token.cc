@@ -36,24 +36,30 @@
 class TokenRingMAC : public cSimpleModule
 {
   private:
+    // configuration
     int myAddress;
     long dataRate;
-    double tokenHoldingTime;
+    simtime_t tokenHoldingTime;
     int queueMaxLen;
+    bool debug;
 
-    cQueue sendQueue;
-    int sendQueueBytes;
+    // state variables
+    cQueue sendQueue;    // send buffer
+    int sendQueueBytes;  // queue length in bytes
+
+    cMessage *transmEnd; // self-message to signal end of transmission
+    cMessage *recvEnd;   // self-message to signal end of reception
+
+    TRToken *token;      // non-NULL while we're holding the token
+
+
+    // statistics
     cOutVector queueLenPackets;
     cOutVector queueLenBytes;
     cOutVector queueingTime;
     int numPacketsToSend;
     int numPacketsToSendDropped;
     cOutVector queueDrops;
-
-    cMessage *transmEnd;
-    cMessage *recvEnd;
-
-    bool debug;
 
   public:
     TokenRingMAC();
@@ -74,13 +80,14 @@ Define_Module( TokenRingMAC );
 
 TokenRingMAC::TokenRingMAC() : cSimpleModule(STACKSIZE)
 {
-    transmEnd = recvEnd = NULL;
+    transmEnd = recvEnd = token = NULL;
 }
 
 TokenRingMAC::~TokenRingMAC()
 {
     cancelAndDelete(transmEnd);
     cancelAndDelete(recvEnd);
+    delete token;
 }
 
 void TokenRingMAC::activity()
@@ -133,7 +140,7 @@ void TokenRingMAC::activity()
         // token arrived?
         else if (dynamic_cast<TRToken *>(msg)!=NULL)
         {
-            TRToken *token = (TRToken *)msg;
+            token = (TRToken *)msg;
             if (debug)
             {
                 ev << "Token arrived (we can keep it for THT=" << simtimeToStr(tokenHoldingTime) << ")" << endl;
@@ -211,6 +218,7 @@ void TokenRingMAC::activity()
                 }
             }
             send(token, "phy_out");
+            token = NULL;
         }
 
         // frame arrived from network?
