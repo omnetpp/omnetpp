@@ -62,6 +62,7 @@ class TokenRingMAC : public cSimpleModule
   protected:
     virtual void activity();
     virtual void finish();
+    virtual void handleMessagesWhileTransmitting();
     virtual void storeDataPacket(TRApplicationData *data);
     virtual void beginReceiveFrame(TRFrame *frame);
     virtual void endReceiveFrame(cMessage *data);
@@ -191,39 +192,11 @@ void TokenRingMAC::activity()
 
                 // we're busy until we finished transmission
                 scheduleAt(simTime()+transmission_time, transmEnd);
-                while ((msg = receive())!=transmEnd)
-                {
-                    // while we are transmitting, a token cannot arrive (because
-                    // we hold it), but any of the other events may occur:
-
-                    // data from higher layer
-                    if (dynamic_cast<TRApplicationData *>(msg)!=NULL)
-                    {
-                        // store packet in queue and update statistics
-                        storeDataPacket((TRApplicationData *)msg);
-                    }
-                    // frame from network (must be one of our own frames)
-                    else if (dynamic_cast<TRFrame *>(msg)!=NULL)
-                    {
-                        TRFrame *frame = (TRFrame *)msg;
-                        beginReceiveFrame(frame);
-                    }
-                    // end receiving a packet (if we sent a frame to ourselves,
-                    // its receival may end while we're still transmitting)
-                    else if (msg==recvEnd)
-                    {
-                        cMessage *data = (cMessage *) recvEnd->contextPointer();
-                        endReceiveFrame(data);
-                    }
-                    else
-                    {
-                        throw new cRuntimeError("unexpected message arrived: (%s)%s", msg->className(), msg->name());
-                    }
-                }
+                handleMessagesWhileTransmitting();
 
                 if (debug)
                 {
-                    ev << "End transmission started at " << simtimeToStr(transmStartTime) << endl;
+                    ev << "End transmission " << simtimeToStr(transmStartTime) << endl;
                 }
             }
 
@@ -247,6 +220,40 @@ void TokenRingMAC::activity()
             beginReceiveFrame(frame);
         }
         // end receiving a packet?
+        else if (msg==recvEnd)
+        {
+            cMessage *data = (cMessage *) recvEnd->contextPointer();
+            endReceiveFrame(data);
+        }
+        else
+        {
+            throw new cRuntimeError("unexpected message arrived: (%s)%s", msg->className(), msg->name());
+        }
+    }
+}
+
+void TokenRingMAC::handleMessagesWhileTransmitting()
+{
+    cMessage *msg;
+    while ((msg = receive())!=transmEnd)
+    {
+        // while we are transmitting, a token cannot arrive (because
+        // we hold it), but any of the other events may occur:
+
+        // data from higher layer
+        if (dynamic_cast<TRApplicationData *>(msg)!=NULL)
+        {
+            // store packet in queue and update statistics
+            storeDataPacket((TRApplicationData *)msg);
+        }
+        // frame from network (must be one of our own frames)
+        else if (dynamic_cast<TRFrame *>(msg)!=NULL)
+        {
+            TRFrame *frame = (TRFrame *)msg;
+            beginReceiveFrame(frame);
+        }
+        // end receiving a packet (if we sent a frame to ourselves,
+        // its reception may end while we're still transmitting)
         else if (msg==recvEnd)
         {
             cMessage *data = (cMessage *) recvEnd->contextPointer();
