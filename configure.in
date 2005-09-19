@@ -142,12 +142,6 @@ if test -d /usr/include/tcl8.5; then
     TK_CFLAGS="-I/usr/include/tcl8.5"
 fi
 
-if test "$cygwin" = yes; then
-    BLT_LIBS="-lBLT24 -mwindows -lwinspool"
-else
-    BLT_LIBS="-lBLT24"
-fi
-
 #----------------------
 # Read user settings (and allow override the above settings)
 #----------------------
@@ -195,8 +189,9 @@ if test "$CXX" = "icpc"; then
     # remark #1419: external declaration in primary source file
     # remark #383: value copied to temporary, reference to temporary used
     #
-
     #CFLAGS="$CFLAGS -wd654 -wd177 -wd869 -wd981 -wd279 -wd1572 -wd424 -wd1682 -wd1683 -wd810 -wd1418 -wd1419"
+
+    # -w1 disables all remarks
     CFLAGS="$CFLAGS -w1 -wd654 -wd177"
 fi
 
@@ -210,14 +205,14 @@ if test "$build_shared_libs" = "if-not-windows" -o "$build_shared_libs" = "yes";
         AC_MSG_NOTICE([NOTE: if you get problems building shared libraries (e.g. libnedxml.so),])
         AC_MSG_NOTICE([you may need to add -fPIC or -fpic to CFLAGS.])
     fi
-fi 
+fi
 
 
 #----------------------
 # Test if --export-dynamic or -E linker option is accepted and/or needed
 #----------------------
 # We want to be able to dynamically load extensions into simulation executables,
-# so we need to ensure that all symbols in the executable are visible to 
+# so we need to ensure that all symbols in the executable are visible to
 # dynamically loaded libraries. However, not all linkers need or support
 # --export-dynamic.
 # Strategy: we'll compile the following program into a shared library:
@@ -332,7 +327,7 @@ then
       AC_MSG_NOTICE([   $CXX ... $silly1 <libs> $silly2 ...])
       silly_ok="yes"
    fi
-   
+
    # no solution found
    if test $silly_ok = "no"; then
       AC_MSG_RESULT(no solution found)
@@ -573,16 +568,33 @@ fi
 # Check for BLT. $TK_CFLAGS and $TK_LIBS plus $BLT_LIBS should be enough
 #----------------------
 OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $BLT_LIBS $TK_LIBS, blt_ok)
+if test $blt_ok = no -a "$cygwin" = yes; then
+    bltlibs="-lBLT24 -mwindows -lwinspool"
+    OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
+fi
+if test $blt_ok = no; then
+    bltlibs="-lBLT24"
+    OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
+fi
+if test $blt_ok = no; then
+    bltlibs="-lBLT"
+    OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
+fi
+if test $blt_ok = no; then
+    bltlibs="-lBLT2.4"
+    OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
+fi
+if test $blt_ok = no; then
+    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  BLT"
+    AC_MSG_WARN([Cannot compile or link program with BLT: BLT or BLT-devel may not be installed -- check config.log for details. Plove and Scalars require BLT to build.])
+    HAVE_BLT=no
+fi
 if test $blt_ok = yes; then
     HAVE_BLT=yes
     if echo 'catch {package require BLT 2.4; puts OK}; exit' | $WISH | grep OK >/dev/null; then :; else
         OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  BLT"
         AC_MSG_WARN([Tcl cannot load BLT (wish command "package require BLT 2.4" failed), probably BLT not installed correctly.])
     fi
-else
-    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  BLT"
-    AC_MSG_WARN([Cannot compile or link program with BLT: BLT or BLT-devel may not be installed -- check config.log for details. Plove and Scalars require BLT to build.])
-    HAVE_BLT=no
 fi
 
 # if we got through until here, enable building of the following progs:
