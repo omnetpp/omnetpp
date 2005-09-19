@@ -2407,7 +2407,7 @@ The following methods \textbf{must} be implemented:
         name (\fname{name()}) of the other object it receives, then call the
         assignment operator (see below).}
   \item{\textit{Destructor}.}
-  \item{\textit{Duplication function,} \fname{cObject *dup() const}.
+  \item{\textit{Duplication function,} \fname{cPolymorphic *dup() const}.
         It should create and return an exact duplicate of the object.
         It is usually a one-line function, implemented with the help
         of the \ttt{new} operator and the copy constructor.}
@@ -2513,7 +2513,7 @@ class NewClass : public cObject
     NewClass(const char *name=NULL, int d=0);
     NewClass(const NewClass& other);
     virtual ~NewClass();
-    virtual cObject *dup() const;
+    virtual cPolymorphic *dup() const;
     NewClass& operator=(const NewClass& other);
 
     virtual void forEachChild(cVisitor *v);

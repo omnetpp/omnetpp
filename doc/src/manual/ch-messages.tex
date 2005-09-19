@@ -1202,7 +1202,7 @@ class FooPacket : public FooPacket_Base
     FooPacket(const FooPacket& other) : FooPacket_Base(other) {}
     FooPacket& operator=(const FooPacket& other)
         {FooPacket_Base::operator=(other); return *this;}
-    virtual cObject *dup() {return new FooPacket(*this);}
+    virtual cPolymorphic *dup() {return new FooPacket(*this);}
 };
 
 Register_Class(FooPacket);
@@ -1333,7 +1333,7 @@ class STLMessage : public STLMessage_Base
         bar = other.bar;
         return *this;
     }
-    virtual cObject *dup() {return new STLMessage(*this);}
+    virtual cPolymorphic *dup() {return new STLMessage(*this);}
 
     // foo methods
     virtual void setFooArraySize(unsigned int size) {}

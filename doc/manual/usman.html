@@ -28,7 +28,7 @@ a:visited {text-decoration: none;}
 <I><FONT SIZE=+1>Discrete Event Simulation System</FONT></I></FONT></h1>
 -->
 
-<H1><B>User Manual</B></H1><H3>OMNeT++ version 3.1</H3><H1>Chapters</H1>
+<H1><B>User Manual</B></H1><H3>OMNeT++ version 3.2</H3><H1>Chapters</H1>
 <p>
 <B><A HREF="#toc_1" class="toc">1 Introduction</A></B><BR>
 <B><A HREF="#toc_2" class="toc">2 Overview</A></B><BR>
@@ -354,6 +354,7 @@ a:visited {text-decoration: none;}
 <TR> <TD align=left>
 
 <p><b>Date</b> </TD> <TD align=left> <b>Author</b> </TD> <TD align=left> <b>Change</b></TD></TR>
+<TR> <TD align=left> 2005/07 </TD> <TD align=left> AV </TD> <TD align=left> updated for the OMNeT++ 3.2 release</TD></TR>
 <TR> <TD align=left> 2005/03 </TD> <TD align=left> AV </TD> <TD align=left> updated for the OMNeT++ 3.1 release</TD></TR>
 <TR> <TD align=left> 2004/12 </TD> <TD align=left> AV </TD> <TD align=left> updated for the OMNeT++ 3.0 release</TD></TR>
 <TR> <TD align=left> 2003/06 </TD> <TD align=left> AV </TD> <TD align=left> Mentioned Grace and ROOT in section "Visualizing...".
@@ -2060,8 +2061,8 @@ with the following differences:
 
 <p><ul>
   <li>^ is used for power-of (and not bitwise XOR as in C)
-  <li># is used for logical XOR (same as != between logical values), and
-        ## is used for bitwise XOR
+  <li>## is used for logical XOR (same as != between logical values), and
+        # is used for bitwise XOR
   <li>the precedence of bitwise operators (&amp;, |, #) have been raised
         to bind stronger than relational operations. This precedence is usually
         more convenient than the C/C++ one.
@@ -3251,11 +3252,12 @@ follows this approach.
 
 <p>The C++ implementation of a simple<!--module!simple--> module consists of:
 <ul>
-<li>declaration of the module class: your class subclassed from <tt><a href="../api/classcSimpleModule.html">cSimpleModule</a></tt>
-(either directly or indirectly)
-<li>a module type registration (<tt>Define_Module()</tt> or
-    <tt>Define_Module_Like()</tt> macro)
-<li>implementation of the module class
+  <li>declaration of the module class: your class directly or indirectly
+        subclassed from <tt><a href="../api/classcSimpleModule.html">cSimpleModule</a></tt>
+  <li>a module type registration (<tt>Define_Module()</tt> macro)
+      <br><ul><font size=-1>[For completeness, there is also a <tt>Define_Module_Like()</tt>
+                macro, but it's rarely useful.]</font></ul>
+  <li>implementation of the module class
 </ul>
 
 <p>
@@ -3319,20 +3321,9 @@ generates code from it which should only appear in one <tt>.cc</tt> file.
 <p>
 <H3><A NAME="sec168"/>4.3.3 Several modules, single NED interface</H3>
 
-<p>An alternative form of the module type registration, the <tt>Define_Module_Like()</tt>
-macro takes two arguments and associates the class with a NED simple module
-declaration of a different name. You can use this form when you have several
-modules which share the same interface.
-
-<p>To support submodule types defined as parameters in
-NED files (see section <a href="#sec131">[3.5.3]</a>),
-you can reuse an existing NED simple module definition
-for several simple module types.
-
-<p>Suppose you have three different C++ module classes (<tt>TokenRingMAC</tt>,
-<tt>EthernetMAC</tt>, <tt>FDDIMAC</tt>) which have identical gates and parameters.
-Then you can create a single NED declaration, <tt>GenericMAC</tt> for them
-and write the following module type registrations in the C++ code:
+<p>As an alternative to <tt>Define_Module()</tt>, one can the use
+<tt>Define_Module_Like()</tt> macro to associate the class with a NED
+simple module declaration of a <i>different</i> name. An example:
 
 <pre>
 Define_Module_Like(TokenRingMAC, GenericMAC);
@@ -3340,36 +3331,21 @@ Define_Module_Like(EthernetMAC, GenericMAC);
 Define_Module_Like(FDDIMAC, GenericMAC);
 </pre>
 <p>
-You won't be able to directly refer to the <tt>TokenRingMAC</tt>,
-<tt>EthernetMAC</tt>, <tt>FDDIMAC</tt> module types in your NED files,
-because NED doesn't know about them (their names don't appear
-in any NED file you could import), but you can use them wherever
-a submodule type was defined as a parameter to the compound module:
+This would associate the <tt>TokenRingMAC</tt>, <tt>EthernetMAC</tt> and
+<tt>FDDIMAC</tt> C++ classes (which don't have NED counterparts)
+with the <tt>GenericMAC</tt> module defined in NED (only). Since
+<tt>TokenRingMAC</tt>, <tt>EthernetMAC</tt> and <tt>FDDIMAC</tt> don't appear
+in NED files, they cannot be used directly, only via NED's <tt>like</tt>
+construct<a href="#sec131">[3.5.3]</a>.
 
-<pre>
-module Host
-    parameters:
-        macType: string;
-    submodules:
-        mac: macType like GenericMAC;
-                // if macType=="EthernetMAC" --&gt; OK!
-     ...
-endmodule
-</pre>
-<p>
-<p>
-The <tt>macType</tt> parameter should take the value <tt>"TokenRingMAC"</tt>,
-<tt>"EthernetMAC"</tt> or <tt>"FDDIMAC"</tt>, and a submodule of the appropriate
-type will be created. The value for the parameter can even be given in
-the ini file. This gives you a powerful tool to customize simulation
-models (see also <i>Topology templates</i>, Section
-<a href="#sec150">[3.8.3]</a>).
-</p>
+<p>Although <tt>Define_Module_Like()</tt> may occasionally spare you
+writing some NED files, its use is not recommended, mainly because
+modules defined with it don't show up in documentation generated
+with <tt>opp_neddoc</tt><a href="#sec361">[11]</a>.
 
 <p>
 
-<p>
-<H3><A NAME="sec169"/>4.3.4 The class declaration</H3>
+<p><H3><A NAME="sec169"/>4.3.4 The class declaration</H3>
 
 <p>As mentioned before, simple<!--module!simple--> module classes have
 to be derived from <tt><a href="../api/classcSimpleModule.html">cSimpleModule</a></tt> (either directly or
@@ -5177,7 +5153,7 @@ The <tt><a href="../api/classcPar.html">cPar</a></tt> class is discussed in more
 <p>
 <H3><A NAME="sec187"/>4.7.1 Emulating parameter arrays</H3>
 
-<p>As of version 3.1, OMNeT++ does not support parameter arrays,
+<p>As of version 3.2, OMNeT++ does not support parameter arrays,
 but in practice they can be emulated using string parameters.
 One can assign the parameter a string which contains all values
 in a textual form (for example, <tt>"0 1.234 3.95 5.467"</tt>), then
@@ -7558,7 +7534,7 @@ previous chapters:
     <tt><a href="../api/classcDoubleHistogram.html">cDoubleHistogram</a></tt>, <tt><a href="../api/classcVarHistogram.html">cVarHistogram</a></tt>, <tt><a href="../api/classcPSquare.html">cPSquare</a></tt>,
     <tt><a href="../api/classcKSplit.html">cKSplit</a></tt> classes
   <li>making variables inspectable in the graphical user interface
-    (Tkenv): the <tt>WATCH()</tt> macro (<tt><a href="../api/classcWatch.html">cWatch</a></tt> class)
+    (Tkenv): the <tt>WATCH()</tt> macro (<tt>cWatch</tt> class)
   <li>sending debug output to and prompting for user input in the graphical
     user interface (Tkenv<!--Tkenv-->): the <tt>ev</tt><!--ev--> object (<tt><a href="../api/classcEnvir.html">cEnvir</a></tt> class)
 </ul>
@@ -9551,7 +9527,7 @@ The format and processing of output vector files is described in section
 <p>You may want some of your int, long, double, char, etc. variables to
 be inspectable in Tkenv and to be output into the snapshot
 file<!--snapshot file-->. In this case, you can create
-<tt><a href="../api/classcWatch.html">cWatch</a></tt> objects for them with the <tt>WATCH()</tt> macro:
+<tt>cWatch</tt> objects for them with the <tt>WATCH()</tt> macro:
 
 <pre>
 int i; WATCH(i);
@@ -9563,12 +9539,12 @@ the Objects/Watches tab in it, you'll see your WATCHed variables
 and their values there. Tkenv also lets you change the value of a
 WATCHed variable.
 
-<p>The <tt>WATCH()</tt> macro expands to a dynamically created <tt><a href="../api/classcWatch.html">cWatch</a></tt>
+<p>The <tt>WATCH()</tt> macro expands to a dynamically created <tt>cWatch</tt>
 object.  The object remembers the address and type of your variable.
 The macro expands to something like:
 
 <pre>
-new <a href="../api/classcWatch.html">cWatch</a>("i",i);
+new cWatch("i",i);
 </pre>
 <p>
 
@@ -9589,11 +9565,11 @@ WATCH( lapbconfig.timeout );
 
 <p>
 Be careful not to execute a <tt>WATCH()</tt> statement more than once,
-as each call would create a new <tt><a href="../api/classcWatch.html">cWatch</a></tt> object! If you use
+as each call would create a new <tt>cWatch</tt> object! If you use
 <tt>activity()</tt>, the best place for WATCHes is the top of the
 <tt>activity()</tt> function.  If you use <tt>handleMessage()</tt>,
 place the <tt>WATCH()</tt> statement into <tt>initialize()</tt>.
-<tt>WATCH()</tt> creates a dynamic <tt><a href="../api/classcWatch.html">cWatch</a></tt> object, and we do
+<tt>WATCH()</tt> creates a dynamic <tt>cWatch</tt> object, and we do
 not want to create a new object each time <tt>handleMessage()</tt> is
 called.
 
@@ -11726,8 +11702,18 @@ If the run number or the RNG number is different, OMNeT++ does its best
 to choose different seeds which are also sufficiently apart in the RNG's sequence
 so that the generated sequences don't overlap.
 
-<p>For the <tt>cMersenneTwister</tt> random number generator, fullfilling the latter
-condition is easy, due to the extreme long sequence of the RNG.
+<p>The run number can be specified either in in omnetpp.ini (e.g. via the
+<tt>[Cmdenv]/runs-to-execute=</tt> entry) or on the command line:
+
+<pre>
+./mysim -r 1
+./mysim -r 2
+./mysim -r 3
+</pre>
+<p>
+For the <tt>cMersenneTwister</tt> random number generator, selecting seeds
+so that the generated sequences don't overlap is easy,
+due to the extremely long sequence of the RNG.
 The RNG is initialized from the 32-bit seed value <i>seed = runNumber*numRngs + rngNumber</i>.
 (This implies that simulation runs participating in the study should have
 the same number of RNGs set).
@@ -11762,6 +11748,10 @@ in the ini file.
 number generators, and uses different seed values for each run:
 
 <pre>
+[General]
+rng-class=cLCG32  # needed because the default is cMersenneTwister
+num-rngs = 2
+
 [Run 1]
 seed-0-lcg32 = 1768507984
 seed-1-lcg32 = 33648008
@@ -11772,17 +11762,24 @@ seed-1-lcg32 = 703931312
 ...
 </pre>
 <p>
-To use a seed value for all runs, you have to put the necessary
-seed entries into the <tt>[General]</tt> section.
+To manually set seeds for the Mersenne Twister RNG (which should
+seldom, if ever, be necessary), use the <tt>seed-0-mt=</tt>,
+<tt>seed-1-mt=</tt>, etc settings:
 
 <pre>
 [General]
-gen0-seed = 1768507984
-gen1-seed = 33648008
+num-rngs = 2
+
+[Run 1]
+seed-0-mt = 1317366363
+seed-1-mt = 1453732904
+
+[Run 2]
+...
 </pre>
 <p>
-All other random number generators (2,3,...) will have their seeds
-automatically assigned.
+To set a seed value for all runs, place the necessary seed entries
+into the <tt>[General]</tt> section.
 
 <p>
 <H3><A NAME="sec308"/>8.6.6 Choosing good seed values: the seedtool utility</H3>
