@@ -168,6 +168,7 @@ void cEnvir::setup(int argc, char *argv[])
             CREATE_BY_CLASSNAME(configobject, configclass, cConfiguration, "configuration");
             configobject->initializeFrom(inifile);
             delete inifile;
+            inifile = NULL;
 
             // load libs from this config as well
             std::string libs = configobject->getAsFilenames("General", "load-libs", NULL);
