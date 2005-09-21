@@ -97,14 +97,14 @@ SCALARS_IF_POSSIBLE=scalars
 # This option is available at present for Tkenv, GNED, Scalars and Plove.
 # Set the following variables to "yes" to enable embedding Tcl files.
 #
-EMBED_TCL_CODE=yes
+EMBED_TCL_CODE=no
 
 #
 # It is possible to compile GNED, Scalars and Plove as Windows GUI apps
 # (ie. not as console apps). Set the following variable to "yes" to enable
 # compiling GUI apps.
 #
-USE_WINMAIN=yes
+USE_WINMAIN=no
 
 #
 # Set to "yes" to enable simulation executables load NED files dynamically.
@@ -119,10 +119,10 @@ WITH_PARSIM=yes
 #
 # Choose between debug and release libraries here
 #
-#CFLAGS=$(CFLAGS_DEBUG)
-#LDFLAGS=$(LDFLAGS_DEBUG)
-CFLAGS=$(CFLAGS_RELEASE)
-LDFLAGS=$(LDFLAGS_RELEASE)
+CFLAGS=$(CFLAGS_DEBUG)
+LDFLAGS=$(LDFLAGS_DEBUG)
+#CFLAGS=$(CFLAGS_RELEASE)
+#LDFLAGS=$(LDFLAGS_RELEASE)
 
 
 #==============================================================================
@@ -203,7 +203,7 @@ CXX=cl.exe /nologo
 LINK=link.exe /nologo
 AS=cl.exe /nologo
 AR=lib.exe /nologo
-SHLIB_LD=link.exe /nologo /dll
+SHLIB_LD=$(LINK) /dll $(LDFLAGS)
 RC=rc.exe
 
 # dependency generator (needs Perl!)
