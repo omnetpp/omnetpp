@@ -236,11 +236,11 @@ DOXYGEN=$(DOXYGEN_DIR)/bin/doxygen
 #   /debug: build debug executable
 #   /subsystem:console: build console-mode application (also works for GUI apps)
 #
-CFLAGS_DEBUG=/nologo /EHsc /GR /FD /Zm250 /MLd /Od /GZ /Zi
-LDFLAGS_DEBUG=/nologo /subsystem:console /debug
+CFLAGS_DEBUG=/EHsc /GR /FD /Zm250 /MLd /Od /GZ /Zi
+LDFLAGS_DEBUG=/subsystem:console /debug
 
-CFLAGS_RELEASE=/nologo /EHsc /GR /FD /Zm250 /ML /O2 /DNDEBUG
-LDFLAGS_RELEASE=/nologo /subsystem:console
+CFLAGS_RELEASE=/EHsc /GR /FD /Zm250 /ML /O2 /DNDEBUG
+LDFLAGS_RELEASE=/subsystem:console
 
 # LIB_SUFFIX is either .lib or .dll
 LIB_SUFFIX=.lib
