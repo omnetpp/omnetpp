@@ -235,12 +235,14 @@ DOXYGEN=$(DOXYGEN_DIR)/bin/doxygen
 # Linker switches:
 #   /debug: build debug executable
 #   /subsystem:console: build console-mode application (also works for GUI apps)
+#   /opt:noref: keep functions and/or data that is never referenced 
+#      (needed if a .lib contains simple modules or other dynamically registered components)
 #
 CFLAGS_DEBUG=/EHsc /GR /FD /Zm250 /MLd /Od /GZ /Zi
-LDFLAGS_DEBUG=/subsystem:console /debug
+LDFLAGS_DEBUG=/subsystem:console /opt:noref /debug
 
 CFLAGS_RELEASE=/EHsc /GR /FD /Zm250 /ML /O2 /DNDEBUG
-LDFLAGS_RELEASE=/subsystem:console
+LDFLAGS_RELEASE=/subsystem:console /opt:noref
 
 # LIB_SUFFIX is either .lib or .dll
 LIB_SUFFIX=.lib
