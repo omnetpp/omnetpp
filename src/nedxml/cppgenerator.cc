@@ -622,9 +622,7 @@ void NEDCppGenerator::doModule(CompoundModuleNode *node, const char *indent, int
     out << "class " << module_name << " : public cCompoundModule\n";
     out << "{\n";
     out << "  public:\n";
-    out << "    " << module_name << "(const char *name, cModule *parent) :\n";
-    out << "      cCompoundModule(name, parent) {}\n";
-    out << "\n";
+    out << "    " << module_name << "() : cCompoundModule() {}\n";
     out << "  protected:\n";
     out << "    virtual void doBuildInside();\n";
     out << "};\n\n";
