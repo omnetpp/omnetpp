@@ -76,7 +76,8 @@ void printUsage()
     fprintf(stderr,
        "nedtool -- part of OMNeT++/OMNEST, (C) 2002-2005 Andras Varga\n"
        "Syntax: nedtool [options] <file1> <file2> ...\n"
-       "    or: nedtool [options] @<filelist-file>\n"
+       "Files may be given in a listfile as well, with the @listfile or @@listfile\n"
+       "syntax (check the difference below.)\n"
        "  -c: generate C++ (default)\n"
        "  -x: generate XML (you may need -y, -e and -p as well)\n"
        "  -n: generate NED file (you may need -y and -e as well)\n"
@@ -98,6 +99,12 @@ void printUsage()
        "  -t: with NED parsing: include source code of components in XML\n"
        "  -p: with -x: add source location info (src-loc attributes) to XML output\n"
        "  -V: verbose\n"
+       "  @listfile: listfile should contain one file per line (@ or @@ listfiles\n"
+       "      also accepted). Files are interpreted as relative to the listfile.\n"
+       "      @ listfiles can be invoked from anywhere, with the same effect.\n"
+       "  @@listfile: like @listfile, but contents is interpreted as relative to\n"
+       "      the current working directory. @@ listfiles can be put anywhere,\n"
+       "      including /tmp -- effect only depends on the working directory.\n"
        "NOTE: C++ code generation from .msg files and the new NED-2 syntax are still\n"
        "experimental and should not be used in production environment. Message (.msg)\n"
        "should be processed with opp_msgc.\n"
@@ -128,7 +135,7 @@ void createFileNameWithSuffix(char *outfname, const char *infname, const char *s
 
 bool processFile(const char *fname)
 {
-    if (opt_verbose) fprintf(stderr,"processing '%s'...\n",fname);
+    if (opt_verbose) fprintf(stdout,"processing '%s'...\n",fname);
 
     // determine file type
     int ftype = opt_nextfiletype;
@@ -269,18 +276,38 @@ bool processFile(const char *fname)
 }
 
 
-bool processListFile(const char *listfilename)
+bool processListFile(const char *listfilename, bool istemplistfile)
 {
     const int maxline=1024;
     char line[maxline];
+    char olddir[1024] = "";
 
-    if (opt_verbose) fprintf(stderr,"processing list file '%s'...\n",listfilename);
+    if (opt_verbose) fprintf(stdout,"processing list file '%s'...\n",listfilename);
 
     ifstream in(listfilename, ios::in);
     if (in.fail())
     {
         fprintf(stderr,"nedtool: cannot open list file '%s'\n",listfilename);
         return false;
+    }
+
+    if (!istemplistfile)
+    {
+        // with @listfile, files should be relative to list file, so try cd into list file's directory
+        // (with @@listfile, files are relative to the wd, so we don't cd)
+        std::string dir, fnameonly;
+        splitFileName(listfilename, dir, fnameonly);
+        if (!getcwd(olddir,1024))
+        {
+            fprintf(stderr,"nedtool: cannot get the name of current directory\n");
+            return false;
+        }
+        if (opt_verbose) fprintf(stdout,"changing into '%s'...\n",dir.c_str());
+        if (chdir(dir.c_str()))
+        {
+            fprintf(stderr,"nedtool: cannot temporarily change to directory `%s' (does it exist?)\n", dir.c_str());
+            return false;
+        }
     }
 
     while (in.getline(line, maxline))
@@ -291,10 +318,8 @@ bool processListFile(const char *listfilename)
         const char *fname = line;
         if (fname[0]=='@')
         {
-            // included list files are relative to this list file
-            std::string dir = directoryOf(listfilename);
-            std::string newlistfile = tidyFilename(concatDirAndFile(dir.c_str(), fname+1).c_str());
-            if (!processListFile(newlistfile.c_str()))
+            bool istmp = (fname[1]=='@');
+            if (!processListFile(fname+(istmp?2:1), istmp))
             {
                 in.close();
                 return false;
@@ -316,6 +341,16 @@ bool processListFile(const char *listfilename)
         return false;
     }
     in.close();
+
+    if (olddir[0])
+    {
+        if (opt_verbose) fprintf(stdout,"changing back to '%s'...\n",olddir);
+        if (chdir(olddir))
+        {
+            fprintf(stderr,"nedtool: cannot change back to directory `%s'\n", olddir);
+            return false;
+        }
+    }
     return true;
 }
 
@@ -456,7 +491,9 @@ int main(int argc, char **argv)
         }
         else if (argv[i][0]=='@')
         {
-            if (!processListFile(argv[i]+1))
+            // treat @listfile and @@listfile differently
+            bool istmp = (argv[i][1]=='@');
+            if (!processListFile(argv[i]+(istmp?2:1), istmp))
                 return 1;
         }
         else

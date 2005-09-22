@@ -1,3 +1,14 @@
+2005-09-22  Andras Varga
+
+	* nedtool.cc: reverted change on 2005-04-04, and implemented @listfile
+	and @@listfile syntax:
+	@listfile: listfile should contain one file per line (@ or @@ listfiles
+	   also accepted). Files are interpreted as relative to the listfile.
+	   @ listfiles can be invoked from anywhere, with the same effect.
+	@@listfile: like @listfile, but contents is interpreted as relative to
+	   the current working directory. @@ listfiles can be put anywhere,
+	   including /tmp -- effect only depends on the working directory.
+
 2005-09-14  Andras Varga
 
 	* opp_msgc: adapted to dup() return type change, see include/ChangeLog
