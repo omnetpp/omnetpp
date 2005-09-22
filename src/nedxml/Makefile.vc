@@ -10,7 +10,8 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) $(XML_CFLAGS) /I. /Fd"nedxml.pdb"
+COPTS=$(CFLAGS) $(XML_CFLAGS) /I. /Fd"nedxml.pdb" /DBUILDTIME_OPPVER="$(OMNETPP_VERSION)"
+
 OBJS= nedelements.obj nedelement.obj nederror.obj \
       nedvalidator.obj neddtdvalidator.obj neddtdvalidator1.obj \
       nedbasicvalidator.obj nedsemanticvalidator.obj nedcompiler.obj \

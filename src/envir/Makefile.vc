@@ -14,7 +14,8 @@ CFLAGS=$(CFLAGS) /DWITH_NETBUILDER
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "../sim" /DBUILDING_ENVIR /DHAVE_DLOPEN=$(HAVE_DLOPEN) /Fd"envir.pdb"
+COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "../sim" /DBUILDING_ENVIR /DHAVE_DLOPEN=$(HAVE_DLOPEN) /Fd"envir.pdb" /DBUILDTIME_OPPVER="$(OMNETPP_VERSION)"
+
 OBJS=args.obj cenvir.obj cinifile.obj main.obj omnetapp.obj fsutils.obj \
      patmatch.obj speedmtr.obj filemgrs.obj akoutvectormgr.obj \
      akaroarng.obj cxmldoccache.obj

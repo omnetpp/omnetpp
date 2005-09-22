@@ -25,7 +25,7 @@ HAVE_DLOPEN=@HAVE_DLOPEN@
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) $(AKAROA_CFLAGS) -I$(OMNETPP_INCL_DIR) -I../sim -DBUILDING_ENVIR -DHAVE_DLOPEN=$(HAVE_DLOPEN)
+COPTS=$(CFLAGS) $(AKAROA_CFLAGS) -I$(OMNETPP_INCL_DIR) -I../sim -DBUILDING_ENVIR -DHAVE_DLOPEN=$(HAVE_DLOPEN) -DBUILDTIME_OPPVER="$(OMNETPP_VERSION)"
 
 OBJS=args.o cenvir.o cinifile.o main.o omnetapp.o fsutils.o \
      patmatch.o speedmtr.o filemgrs.o akoutvectormgr.o \

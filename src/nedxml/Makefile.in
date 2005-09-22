@@ -29,7 +29,7 @@ XMLPARSER=@XMLPARSER@
 #
 # Local definitions
 #
-COPTS=$(CPPFLAGS) $(CFLAGS) $(XML_CFLAGS) -I$(OMNETPP_INCL_DIR) -I. -DBUILDING_NEDXML
+COPTS=$(CPPFLAGS) $(CFLAGS) $(XML_CFLAGS) -I$(OMNETPP_INCL_DIR) -I. -DBUILDING_NEDXML -DBUILDTIME_OPPVER="$(OMNETPP_VERSION)"
 
 OBJS= nedelements.o nedelement.o nederror.o \
       nedvalidator.o neddtdvalidator.o neddtdvalidator1.o \

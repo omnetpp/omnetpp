@@ -19,7 +19,8 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "../envir" $(TK_CFLAGS) /DBUILDING_TKENV /Fd"tkenv.pdb"
+COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "../envir" $(TK_CFLAGS) /DBUILDING_TKENV /Fd"tkenv.pdb" /DBUILDTIME_OPPVER="$(OMNETPP_VERSION)"
+
 OBJS = tkapp$(TKENV_EMBED_SUFFIX).obj tkcmd.obj tklib.obj inspector.obj \
        inspfactory.obj objinsp.obj modinsp.obj statinsp.obj structinsp.obj \
        arrow.obj visitor.obj tkutil.obj graphlayout.obj

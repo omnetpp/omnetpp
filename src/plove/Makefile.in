@@ -27,7 +27,7 @@ OMNETPP_PLOVE_DIR=@OMNETPP_PLOVE_DIR@
 PLOVE_EMBED_SUFFIX=@PLOVE_EMBED_SUFFIX@
 
 ifeq ($(HAVE_BLT),no)
-error: 
+error:
 	@echo "*** Warning: cannot build Plove -- install BLT and re-run configure!"
 endif
 
@@ -35,7 +35,7 @@ endif
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) $(TK_CFLAGS) $(BLT_CFLAGS) -DHAVE_BLT
+COPTS=$(CFLAGS) $(TK_CFLAGS) $(BLT_CFLAGS) -DHAVE_BLT -DBUILDTIME_OPPVER="$(OMNETPP_VERSION)"
 
 PLOVE_OBJS = plove$(PLOVE_EMBED_SUFFIX).o \
                tklib.o \

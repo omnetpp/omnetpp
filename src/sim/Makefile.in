@@ -29,7 +29,7 @@ SO_LIB_SUFFIX=@SO_LIB_SUFFIX@
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I. -DBUILDING_SIM $(MPI_CFLAGS) $(PVM_CFLAGS)
+COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I. -DBUILDING_SIM $(MPI_CFLAGS) $(PVM_CFLAGS) -DBUILDTIME_OPPVER="$(OMNETPP_VERSION)"
 
 CPPOBJS_STD = task.o ccoroutine.o ctypes.o carray.o cgate.o cpolymorphic.o \
          cmodule.o csimplemodule.o csimul.o cobject.o cvisitor.o cpar.o \

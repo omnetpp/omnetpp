@@ -4,6 +4,12 @@
 !include ..\..\configuser.vc
 
 #
+# Local definitions
+#
+COPTS=$(CFLAGS) /DBUILDTIME_OPPVER="$(OMNETPP_VERSION)"
+
+
+#
 # Targets
 #
 all: seedtool.exe tcl2c.exe opp_replace.exe opp_neddoc

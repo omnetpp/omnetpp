@@ -6,7 +6,7 @@
 #
 # Local definitions (OMNETPP_INCL_DIR is used for platdep/*)
 #
-COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)"
+COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /DBUILDTIME_OPPVER="$(OMNETPP_VERSION)"
 
 #
 # Targets
