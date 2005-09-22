@@ -203,8 +203,10 @@ void TOmnetApp::setup()
              const char *fname;
              while ((fname = tokenizer.nextToken())!=NULL)
              {
-                 if (fname[0]=='@')
-                     globAndLoadListFile(fname+1);
+                 if (fname[0]=='@' && fname[1]=='@')
+                     globAndLoadListFile(fname+2, true);
+                 else if (fname[0]=='@')
+                     globAndLoadListFile(fname+1, false);
                  else if (fname[0])
                      globAndLoadNedFile(fname);
              }
@@ -628,32 +630,31 @@ void TOmnetApp::globAndLoadNedFile(const char *fnamepattern)
     }
 }
 
-void TOmnetApp::globAndLoadListFile(const char *fnamepattern)
+void TOmnetApp::globAndLoadListFile(const char *fnamepattern, bool istemplistfile)
 {
     try {
         FileGlobber glob(fnamepattern);
         const char *fname;
         while ((fname=glob.getNext())!=NULL)
         {
-            processListFile(fname);
+            processListFile(fname, istemplistfile);
         }
     } catch (std::runtime_error e) {
         throw new cRuntimeError(e.what());
     }
 }
 
-void TOmnetApp::processListFile(const char *listfilename)
+void TOmnetApp::processListFile(const char *listfilename, bool istemplistfile)
 {
-    // files should be relative to list file, so try cd into list file's directory
-    std::string dir, fnameonly;
-    splitFileName(listfilename, dir, fnameonly);
-    PushDir d(dir.c_str());
-
-    std::ifstream in(fnameonly.c_str(), std::ios::in);
+    std::ifstream in(listfilename, std::ios::in);
     if (in.fail())
         throw new cRuntimeError("Cannot open list file '%s'",listfilename);
 
     ev.printf("Processing listfile: %s\n", listfilename);
+
+    // @listfile: files should be relative to list file, so try cd into list file's directory
+    // @@listfile (temp=true): don't cd.
+    PushDir d(istemplistfile ? NULL : directoryOf(listfilename).c_str());
 
     const int maxline=1024;
     char line[maxline];
@@ -664,8 +665,10 @@ void TOmnetApp::processListFile(const char *listfilename)
             line[len-1] = '\0';
         const char *fname = line;
 
-        if (fname[0]=='@')
-            globAndLoadListFile(fname+1);
+        if (fname[0]=='@' && fname[1]=='@')
+            globAndLoadListFile(fname+2, true);
+        else if (fname[0]=='@')
+            globAndLoadListFile(fname+1, false);
         else if (fname[0] && fname[0]!='#')
             globAndLoadNedFile(fname);
     }

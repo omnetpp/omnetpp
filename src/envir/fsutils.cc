@@ -25,6 +25,8 @@
 
 PushDir::PushDir(const char *changetodir)
 {
+    if (!changetodir)
+        return;
     olddir.reserve(1024);
     if (!getcwd(olddir.buffer(),1024))
         throw new cRuntimeError("Cannot get the name of current directory");
@@ -34,8 +36,11 @@ PushDir::PushDir(const char *changetodir)
 
 PushDir::~PushDir()
 {
-    if (chdir(olddir.c_str()))
-        throw new cRuntimeError("Cannot change back to directory `%s'", olddir.c_str());
+    if (!olddir.empty())
+    {
+        if (chdir(olddir.c_str()))
+            throw new cRuntimeError("Cannot change back to directory `%s'", olddir.c_str());
+    }
 }
 
 //------------

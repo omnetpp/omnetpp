@@ -177,10 +177,10 @@ class ENVIR_API TOmnetApp
     virtual void globAndLoadNedFile(const char *fnamepattern);
 
     // Utility function: NED file loading and list file handling
-    virtual void globAndLoadListFile(const char *fnamepattern);
+    virtual void globAndLoadListFile(const char *fnamepattern, bool istemplistfile);
 
     // Utility function: NED file loading and list file handling
-    virtual void processListFile(const char *listfilename);
+    virtual void processListFile(const char *listfilename, bool istemplistfile);
 
     /**
      * Partition Id when parallel simulation is active.

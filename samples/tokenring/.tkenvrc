@@ -37,5 +37,5 @@ config timeline-maxnumevents	{1000}
 config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
-inspector "token" "TokenRing" "2" "345x381+44+-13"
+inspector "token" "TokenRing" "2" "345x381+92+243"
 

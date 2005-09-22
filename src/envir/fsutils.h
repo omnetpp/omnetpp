@@ -25,7 +25,8 @@
 
 /**
  * Utility class for temporary change of directory. Changes back to
- * original dir when goes out of scope.
+ * original dir when goes out of scope. Does nothing if NULL is passed
+ * to the constructor.
  */
 class PushDir
 {

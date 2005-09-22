@@ -37,6 +37,6 @@ config timeline-maxnumevents	{1000}
 config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
-inspector "TUBw" "TUB_wired" "2" "341x408+546+248"
 inspector "TUBw.NRing" "TUBNRing" "2" "621x529+48+62"
+inspector "TUBw" "TUB_wired" "2" "341x408+546+248"
 
