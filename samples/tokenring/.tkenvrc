@@ -21,7 +21,6 @@ option expressmode_autoupdate	{1}
 config rununtil-event	{}
 config last-nedfile	{}
 config filtobjlist-category	{mqsgvo}
-config display-timeline	{1}
 config filtobjlist-maxcount	{100000}
 config editor-findstring	{}
 config rununtil-time	{}
@@ -33,9 +32,12 @@ config filtobjlist-name	{}
 config confirm-exit	{1}
 config editor-backwards	{1}
 config display-treeview	{1}
-config timeline-maxnumevents	{1000}
 config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
-inspector "token" "TokenRing" "2" "345x381+92+243"
+inspector "token.comp[4].sink.End-to-End Delay histogram (K-split)" "cKSplit" "2" "386x215+348+465"
+inspector "token" "TokenRing" "2" "343x375+1+-4"
+inspector "token.comp[0]" "Computer" "2" "298x298+15+405"
+inspector "token.comp[0].mac.Queueing time (sec)" "cOutVector" "2" "379x201+355+228"
+inspector "token.comp[0].mac.sendQueue" "cQueue" "1" "379x186+354+8"
 
