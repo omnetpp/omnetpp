@@ -1,3 +1,9 @@
+2005-09-22  Andras Varga
+
+	* nedbasicvalidator.cc: enabled parent module gates to get connected
+	with "++". Parentmodgate++ connects the first unconnected gate, but 
+	it doesn't create new ones -- it is an error to exceed sizeof(gate).
+
 2005-08-08  Andras Varga
 
 	* cppgenerator.cc: assign submodule parameters, gatesizes etc 

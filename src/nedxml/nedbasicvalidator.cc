@@ -320,12 +320,6 @@ void NEDBasicValidator::validateElement(ConnectionNode *node)
     bool opt[] = {true, true, true, true, true};
     checkExpressionAttributes(node, expr, opt, 5);
 
-    // parent gate plusplus not allowed
-    if (strnull(node->getSrcModule()) && node->getSrcGatePlusplus())
-        NEDError(node, "wrong source gate: '++' cannot be used on parent module's gates");
-    if (strnull(node->getDestModule()) && node->getDestGatePlusplus())
-        NEDError(node, "wrong destination gate: '++' cannot be used on parent module's gates");
-
     // plusplus and gate index expression cannot be both there
     bool srcGateIx =  node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "src-gate-index")!=NULL;
     bool destGateIx = node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "dest-gate-index")!=NULL;

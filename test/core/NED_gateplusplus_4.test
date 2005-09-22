@@ -1,0 +1,61 @@
+%description:
+Test that parentgate++: try to connect more gates than it has.
+
+%file: {}.ned
+
+module {Part}
+    gates:
+        in: in[];
+        out: out[];
+    connections nocheck:
+endmodule
+
+module {Node}
+    gates:
+        in: in[];
+        out: out[];
+    submodules:
+        part: {Part};
+    connections:
+        // connect to parent module gates, plus overrun it
+        for i=0..5 do
+            part.out++ --> out++;
+            part.in++ <-- in++;
+        endfor
+endmodule
+
+module {Network}
+    submodules:
+        node1: {Node};
+            gatesizes:
+                in[5], out[5];
+        node2: {Node};
+        node3: {Node};
+            gatesizes:
+                in[5], out[5];
+    connections nocheck:
+        // node1: connect all gates
+        for i=0..4 do
+            node1.out[i] --> node1.in[i];
+        endfor
+
+        // node2: same as node1, only we use "++" to create the gates
+        for i=0..4 do
+            node2.out++ --> node2.in++;
+        endfor
+
+        // node3: ditto, but we leave some gates unconnected
+        node3.out[2] --> node3.in[2];
+endmodule
+
+network {network}: {Network}
+endnetwork
+
+%file: {}.cc
+// prevent "no object files" linker error if test is run alone
+
+%exitcode: 1
+
+%contains: stdout
+gates are all connected
+
