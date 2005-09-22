@@ -848,16 +848,16 @@ proc getGateNameList {modkey submodkey modtypekey gatetype} {
                     set usedindices [getAllGateUsages $modkey $submodkey $gatename]
                     set max [getMaxGateIndex2 $modkey $submodkey $gatename]
                     if {$usedindices==""} {
-                        if {$modkey!=$submodkey} {lappend list "$gatename++"}
+                        lappend list "$gatename++"
                         lappend list "$gatename\[0\]"
                         lappend list "$gatename\[...\]"
                     } elseif {$max!=-1} {
                         set maxplus1 [expr $max + 1]
-                        if {$modkey!=$submodkey} {lappend list "$gatename++"}
+                        lappend list "$gatename++"
                         lappend list "$gatename\[$maxplus1\]"
                         lappend list "$gatename\[...\]"
                     } else {
-                        if {$modkey!=$submodkey} {lappend list "$gatename++"}
+                        lappend list "$gatename++"
                         lappend list "$gatename\[...\]"
                     }
                 }

@@ -53,6 +53,11 @@ proc getCommentFromText {w} {
 
 proc processCommentAfterEdit {comment} {
 
+    #debug "processCommentAfterEdit (($comment))"
+    if {$comment=="" || $comment=="-" || $comment=="\n" || $comment=="-\n"} {
+        return ""
+    }
+
     # kill lines with single '-' (would mean a blank line in comment)
     regsub -all "\n-\n" $comment "\n\n" comment
     regsub -all "^-\n" $comment "\n" comment

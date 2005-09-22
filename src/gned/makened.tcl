@@ -521,6 +521,8 @@ proc appendBannerComment {outvar comment indent {default {}}} {
 proc appendRightComment {outvar comment} {
     upvar $outvar out
 
+    debug "------------"
+    debug "orig rightcomment: (($comment))"
     if {$comment==""} {set comment "-\n"}
 
     regsub ".*\n" $out "" lastline
@@ -528,12 +530,12 @@ proc appendRightComment {outvar comment} {
     #debug "lastline: ($lastline)"
     #debug "indent:   ($indent)"
 
-    #debug "rightcomment: (($comment))"
+    debug "rightcomment: (($comment))"
     set comment " //$comment"
     regsub -all "\n" $comment "\n$indent //" comment
     regsub -all "//-\n" $comment "\n" comment
     regsub -all "$indent //$" $comment "" comment
-    #debug "turned into:  (($comment))"
+    debug "turned into:  (($comment))"
 
     append out $comment
 }

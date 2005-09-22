@@ -1,3 +1,11 @@
+2005-09-22  Andras Varga
+
+	* fixed bogus handling of empty comments: stray "//"'s appeared in
+	the source after using the Properties dialogs.
+
+	* allow "++" to be used on parent module gates (this got enabled 
+	in nedtool and netbuilder as well)
+
 2005-09-16  Andras Varga
 
 	* connprops.tcl, data.tcl: some further fixes on gate selection in
