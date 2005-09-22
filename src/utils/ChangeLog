@@ -1,3 +1,7 @@
+2005-09-22  Andras Varga
+
+	* opp_neddoc.in: changed to use @@listfile syntax to invoke nedtool.
+
 2005-08-06  Andras Varga
 
 	* opp_nmakemake: implemented -s, -t, -d options to enable building DLLs

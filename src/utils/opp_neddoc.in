@@ -279,7 +279,7 @@ unlink("$outdir/filelist.tmp") if (!debug);
 #
 print "transforming to xml...\n" if $verbose;
 if ($NEDTOOL eq "") {error("nedtool not configured");}
-runprog($NEDTOOL, "-x", "-e", "-t", "-y", "-m", "-o", "$outdir/inputfiles.xml", "\@$outdir/filelist.txt")==0 || error("error invoking nedtool");
+runprog($NEDTOOL, "-x", "-e", "-t", "-y", "-m", "-o", "$outdir/inputfiles.xml", "\@\@$outdir/filelist.txt")==0 || error("error invoking nedtool");
 
 if ($screenshots)
 {

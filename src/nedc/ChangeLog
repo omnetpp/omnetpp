@@ -8,6 +8,7 @@
 	@@listfile: like @listfile, but contents is interpreted as relative to
 	   the current working directory. @@ listfiles can be put anywhere,
 	   including /tmp -- effect only depends on the working directory.
+	@@listfile is primarily used by opp_neddoc.
 
 2005-09-14  Andras Varga
 
