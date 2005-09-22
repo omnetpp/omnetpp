@@ -435,13 +435,17 @@ std::string cIniFile::getAsFilenames(const char *sect, const char *key, const ch
     const char *baseDir = files[entry->file_id].directory;
 
     // tokenize the string, and prepend each item with baseDir.
-    // recognize and treat list files (beginning with '@') specially.
+    // recognize and treat list files (beginning with '@' or '@@') specially.
     std::string result;
     cStringTokenizer tokenizer(entry->value);
     const char *token;
     while ((token = tokenizer.nextToken())!=NULL)
     {
-        if (token[0]=='@')
+        if (token[0]=='@' && token[1]=='@')
+        {
+            result += "@@" + tidyFilename(concatDirAndFile(baseDir, token+2).c_str()) + " ";
+        }
+        else if (token[0]=='@')
         {
             result += "@" + tidyFilename(concatDirAndFile(baseDir, token+1).c_str()) + " ";
         }
