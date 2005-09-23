@@ -156,7 +156,7 @@ int main(int argc, char *argv[])
                "See the license for distribution terms and warranty disclaimer.\n"
                "\n"
                "Generates seeds for the LCG32 random number generator. This RNG has a\n"
-               "period length of 2^31-2, which makes about 2,147 million random numbers.\n"
+               "period length of 2^31-2, which makes about 2.147 billion random numbers.\n"
                "Note that Mersenne Twister is also available in OMNeT++, which has a\n"
                "practically infinite period length (2^19937).\n\n"
                 "Usage:\n"

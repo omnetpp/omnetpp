@@ -75,7 +75,9 @@ void printUsage()
 {
     fprintf(stderr,
        "nedtool -- part of OMNeT++/OMNEST, (C) 2002-2005 Andras Varga\n"
-       "Syntax: nedtool [options] <file1> <file2> ...\n"
+       "Release: " RELEASE ", edition: " EDITION ".\n"
+       "\n"
+       "Usage: nedtool [options] <file1> <file2> ...\n"
        "Files may be given in a listfile as well, with the @listfile or @@listfile\n"
        "syntax (check the difference below.)\n"
        "  -c: generate C++ (default)\n"
@@ -107,7 +109,7 @@ void printUsage()
        "      including /tmp -- effect only depends on the working directory.\n"
        "NOTE: C++ code generation from .msg files and the new NED-2 syntax are still\n"
        "experimental and should not be used in production environment. Message (.msg)\n"
-       "should be processed with opp_msgc.\n"
+       "files should be processed with opp_msgc.\n"
     );
 }
 

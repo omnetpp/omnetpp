@@ -27,6 +27,7 @@ ENVIR_API int main(int argc, char *argv[])
     cStaticFlag dummy;
 
     printf("OMNeT++/OMNEST Discrete Event Simulation  (C) 1992-2005 Andras Varga\n");
+    printf("Release: " RELEASE ", edition: " EDITION ".\n");
     printf("See the license for distribution terms and warranty disclaimer\n");
 
     ev.setup(argc,argv);

@@ -50,6 +50,9 @@ int loadPlove(Tcl_Interp *interp)
     // add OMNeT++'s commands to Tcl
     createTkCommands( interp, tcl_commands );
 
+    Tcl_SetVar(interp, "OMNETPP_RELEASE", RELEASE, TCL_GLOBAL_ONLY);
+    Tcl_SetVar(interp, "OMNETPP_EDITION", EDITION, TCL_GLOBAL_ONLY);
+
     // load sources
 #ifdef OMNETPP_PLOVE_DIR
     // Case A: TCL code in separate .tcl files

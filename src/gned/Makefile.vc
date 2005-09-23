@@ -20,7 +20,7 @@ LDFLAGS=$(LDFLAGS) /SUBSYSTEM:WINDOWS
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) $(TK_CFLAGS) /I.  /DBUILDTIME_OPPVER="$(OMNETPP_VERSION)"
+COPTS=$(CFLAGS) $(TK_CFLAGS) /I.  /DRELEASE="\"$(OMNETPP_VERSION)\"" /DEDITION="\"$(OMNETPP_EDITION)\""
 
 OBJS = gned$(GNED_EMBED_SUFFIX).obj tklib.obj tkcmd.obj arrow.obj \
        ebnf.tab.obj lex.yy.obj parsened.obj nedfile.obj

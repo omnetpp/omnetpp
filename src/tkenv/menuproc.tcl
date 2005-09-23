@@ -82,16 +82,17 @@ proc check_running {} {
 
 proc about {} {
     # implements Help|About
-
-    aboutDialog "About OMNeT++/OMNEST" {\
-This simulation model was created using:
+    global OMNETPP_RELEASE OMNETPP_EDITION
+    aboutDialog "About OMNeT++/OMNEST" "
+This simulation model uses:
 
 OMNeT++/OMNEST
 Discrete Event Simulation Framework
-(c) Andras Varga, 1992-2004
 
-NO WARRANTY -- see license for details.
-}
+(C) 1992-2005 Andras Varga
+Release: $OMNETPP_RELEASE, edition: $OMNETPP_EDITION
+
+NO WARRANTY -- see license for details."
 }
 
 proc exit_omnetpp {} {

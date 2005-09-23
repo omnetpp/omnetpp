@@ -13,10 +13,11 @@
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
-puts {Scalars 3.2 -- Output scalar plotting tool, part of OMNeT++/OMNEST.
-(c) 2004-2005 Andras Varga
-See the license for distribution terms and warranty disclaimer.
-}
+puts "Scalars -- part of OMNeT++/OMNEST, (C) 1992-2005 Andras Varga"
+puts "Release: $OMNETPP_RELEASE, edition: $OMNETPP_EDITION"
+puts "A tool for visualizing Output Scalar (.sca) files"
+puts "See the license for distribution terms and warranty disclaimer."
+puts ""
 
 # OMNETPP_SCALARS_DIR is set from scalars.cc or scalars
 if [info exist OMNETPP_SCALARS_DIR] {

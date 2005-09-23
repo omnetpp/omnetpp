@@ -57,6 +57,8 @@ int loadGNED(Tcl_Interp *interp)
     createTkCommands( interp, tcl_commands );
 
     Tcl_SetVar(interp, "OMNETPP_BITMAP_PATH", bitmap_dir, TCL_GLOBAL_ONLY);
+    Tcl_SetVar(interp, "OMNETPP_RELEASE", RELEASE, TCL_GLOBAL_ONLY);
+    Tcl_SetVar(interp, "OMNETPP_EDITION", EDITION, TCL_GLOBAL_ONLY);
 
     // load sources
 #ifdef OMNETPP_GNED_DIR
@@ -134,7 +136,7 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int nCm
 }
 #else
 int main(int argc, const char *argv[])
-    {
+{
     runTkApplication(argc,argv,initGNED);
     return 0;
 }

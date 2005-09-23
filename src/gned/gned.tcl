@@ -16,14 +16,11 @@
 #
 # intro text
 #
-puts {GNED 3.2 - Graphical Network Editor, part of OMNeT++/OMNEST.
-(c) 1992-2005 Andras Varga
-See the license for distribution terms and warranty disclaimer.
-
-GNED uses human-readable NED as the ONLY file format. It is a fully
-two-way tool: you can edit the modules in graphics or in NED source form,
-and switch to the other view any time.
-}
+puts "GNED -- part of OMNeT++/OMNEST, (C) 1992-2005 Andras Varga"
+puts "Release: $OMNETPP_RELEASE, edition: $OMNETPP_EDITION"
+puts "Graphical Editor for the NED Language"
+puts "See the license for distribution terms and warranty disclaimer."
+puts ""
 
 #
 # Load library files

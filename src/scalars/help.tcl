@@ -15,13 +15,15 @@
 
 proc helpAbout {} {
     # implements Help|About
-    aboutDialog "About Scalars" {
-Scalars 3.2
+    global OMNETPP_RELEASE OMNETPP_EDITION
+    aboutDialog "About Scalars" "
+Scalars
+Output Scalar Plotting Tool
+
 Part of OMNeT++/OMNEST
+(C) 1992-2005 Andras Varga
+Release: $OMNETPP_RELEASE, edition: $OMNETPP_EDITION
 
-(c) 2004-2005 Andras Varga
-
-NO WARRANTY -- see license for details.
-}
+NO WARRANTY -- see license for details."
 }
 

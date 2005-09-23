@@ -13,10 +13,11 @@
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
-puts {Plove 3.2 - Output vector plotting tool, part of OMNeT++/OMNEST.
-(c) 1992-2005 Andras Varga
-See the license for distribution terms and warranty disclaimer.
-}
+puts "Plove -- part of OMNeT++/OMNEST, (C) 1992-2005 Andras Varga"
+puts "Release: $OMNETPP_RELEASE, edition: $OMNETPP_EDITION"
+puts "A tool for visualizing Output Vector (.vec) files"
+puts "See the license for distribution terms and warranty disclaimer."
+puts ""
 
 # OMNETPP_PLOVE_DIR is set from plove.cc or plove
 if [info exist OMNETPP_PLOVE_DIR] {

@@ -15,13 +15,15 @@
 
 proc helpAbout {} {
     # implements Help|About
-    aboutDialog "About Plove" {
-Plove 3.2
+    global OMNETPP_RELEASE OMNETPP_EDITION
+    aboutDialog "About Plove" "
+Plove
+Output Vector Plotting Tool
+
 Part of OMNeT++/OMNEST
+(C) 1992-2005 Andras Varga
+Release: $OMNETPP_RELEASE, edition: $OMNETPP_EDITION
 
-(c) 1997-2005 Andras Varga
-
-NO WARRANTY -- see license for details.
-}
+NO WARRANTY -- see license for details."
 }
 
