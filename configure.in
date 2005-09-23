@@ -753,7 +753,6 @@ AC_CONFIG_FILES(
   src/utils/Makefile
   src/utils/opp_makemake
   src/utils/opp_neddoc
-  src/utils/ver.h
   samples/aloha/Makefile
   samples/cqn/Makefile
   samples/dyna/Makefile
@@ -870,6 +869,11 @@ chmod +x src/utils/opp_test
 chmod +x src/utils/opp_makedep
 chmod +x src/utils/opp_neddoc
 
+(
+cd src/utils && cp ver.h.base ver.h && \
+echo '#define OMNETPP_RELEASE "'$OMNETPP_VERSION)'"' >>ver.h && \
+echo '#define OMNETPP_EDITION "'$OMNETPP_EDITION'"' >>ver.h
+)
 
 #----------------------
 # Check $OPP_PROBLEM_PACKAGES
