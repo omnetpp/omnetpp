@@ -6,7 +6,7 @@
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) /DRELEASE="\"$(OMNETPP_VERSION)\"" /DEDITION="\"$(OMNETPP_EDITION)\""
+COPTS=$(CFLAGS)
 
 
 #

@@ -34,6 +34,7 @@
 #include "nedcompiler.h"
 #include "platdep/misc.h"
 #include "platdep/fileutil.h"  // splitFileName
+#include "../utils/ver.h"
 
 
 using std::ofstream;
@@ -75,7 +76,7 @@ void printUsage()
 {
     fprintf(stderr,
        "nedtool -- part of OMNeT++/OMNEST, (C) 2002-2005 Andras Varga\n"
-       "Release: " RELEASE ", edition: " EDITION ".\n"
+       "Release: " OMNETPP_RELEASE ", edition: " OMNETPP_EDITION ".\n"
        "\n"
        "Usage: nedtool [options] <file1> <file2> ...\n"
        "Files may be given in a listfile as well, with the @listfile or @@listfile\n"

@@ -34,6 +34,7 @@ extern "C" int Blt_Init(Tcl_Interp *interp);
 #endif
 
 #include "tklib.h"
+#include "../utils/ver.h"
 
 
 int loadScalars(Tcl_Interp *interp)
@@ -50,8 +51,8 @@ int loadScalars(Tcl_Interp *interp)
     // add OMNeT++'s commands to Tcl
     createTkCommands( interp, tcl_commands );
 
-    Tcl_SetVar(interp, "OMNETPP_RELEASE", RELEASE, TCL_GLOBAL_ONLY);
-    Tcl_SetVar(interp, "OMNETPP_EDITION", EDITION, TCL_GLOBAL_ONLY);
+    Tcl_SetVar(interp, "OMNETPP_OMNETPP_RELEASE", OMNETPP_RELEASE, TCL_GLOBAL_ONLY);
+    Tcl_SetVar(interp, "OMNETPP_OMNETPP_EDITION", OMNETPP_EDITION, TCL_GLOBAL_ONLY);
 
     // load sources
 #ifdef OMNETPP_SCALARS_DIR

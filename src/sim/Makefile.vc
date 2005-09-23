@@ -10,7 +10,7 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I. /DBUILDING_SIM /Fd"sim_std.pdb" /DRELEASE="\"$(OMNETPP_VERSION)\"" /DEDITION="\"$(OMNETPP_EDITION)\""
+COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I. /DBUILDING_SIM /Fd"sim_std.pdb"
 
 CPPOBJS_STD= task.obj ccoroutine.obj ctypes.obj carray.obj cgate.obj cpolymorphic.obj \
          cmodule.obj csimplemodule.obj csimul.obj cobject.obj cvisitor.obj cpar.obj \

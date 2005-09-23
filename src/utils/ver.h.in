@@ -1,0 +1,23 @@
+//==========================================================================
+//  VER.H - part of
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
+//
+//==========================================================================
+
+/*--------------------------------------------------------------*
+  Copyright (C) 1992-2005 Andras Varga
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  `license' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
+#ifndef __VER_H
+#define __VER_H
+
+#define OMNETPP_RELEASE "@OMNETPP_RELEASE@"
+#define OMNETPP_EDITION "@OMNETPP_EDITION@"
+
+#endif
+
+

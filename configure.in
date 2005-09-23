@@ -753,6 +753,7 @@ AC_CONFIG_FILES(
   src/utils/Makefile
   src/utils/opp_makemake
   src/utils/opp_neddoc
+  src/utils/ver.h
   samples/aloha/Makefile
   samples/cqn/Makefile
   samples/dyna/Makefile
