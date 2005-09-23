@@ -5,8 +5,8 @@
 #
 
 # Use -N to test with dynamic NED loading
-OPT=
-#OPT="-N"
+#OPT=
+OPT="-N"
 
 
 # --- nothing to change below this line ---

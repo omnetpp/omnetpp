@@ -9,12 +9,14 @@ static double zero = 0;
 cOutVector vec("vec");
 
 // record INF and -INF
+// note: msvc says '1.#INF', gcc says 'inf', hence the ugly regex
+
 wait(1);
 vec.record(1/zero);
 vec.record(-1/zero);
 
-%contains: {}.vec
+%contains-regex: {}.vec
 vector 0  "{}_network"  "vec"  1
-0	1	1.#INF
-0	1	-1.#INF
+0	1	((1\.#INF)|(inf))
+0	1	-((1\.#INF)|(inf))
 
