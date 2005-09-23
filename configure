@@ -1397,6 +1397,7 @@ host_os=`echo $ac_cv_host | sed 's/^\([^-]*\)-\([^-]*\)-\(.*\)$/\3/'`
 # OMNeT++/OMNEST version number
 #
 OMNETPP_VERSION=`cat Version | sed 's/omnetpp-//'`
+OMNETPP_EDITION="Academic Public License"
 
 #
 #  Set system/arch specific values
