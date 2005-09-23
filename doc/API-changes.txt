@@ -22,7 +22,8 @@ Legend:
 
 OMNeT++ 3.2 (Jul 2005)
 ~~~~~~~~~~~~~~~~~~~~~~
-<TBD>
+(+)     added cStringTokenizer::hasMoreTokens()
+TBD finish
 
 
 OMNeT++ 3.1 (Mar 2005)

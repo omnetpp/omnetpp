@@ -3,8 +3,57 @@ What's New
 
 OMNeT++ 3.2 snapshots (Jul-Aug 2005)
 ------------------------------------
-A brief summary of the changes since 3.2pre2:
 
+OMNeT++ 3.2pre4
+---------------
+Simulation kernel:
+  - cleanup-time garbage collection turned OFF by default. Simple modules
+    have to deallocate all dynamically objects themselves, that is,
+    proper destructors have to be added to every simple module class.
+    Related new omnetpp.ini entries: perform-gc=<yes/no>, print-undisposed=
+    <yes/no>.
+
+  - added method cSimpleModule::cancelAndDelete(cMessage *msg) method, to
+    facilitate writing destructors.
+
+  - requirement for simple module constructors changed: they are invoked
+    without args now. Module_Class_Members() is now unnecessary, but still
+    accepted. See include/ChangeLog for details. All sample simulations
+    have been updated accordingly.
+
+  - dup() method got moved to cPolymorphic, and return type changed to
+    cPolymorphic. In the next release we'll drop MSVC 6.0 support,
+    and move to covariant return types (which MSVC 6.0 doesn't support).
+
+Other:
+  - NED: enabled parent module gates to get connected with "++".
+    parentmodgate++ connects the first unconnected gate, but it doesn't
+    create new ones -- it is an error to exceed sizeof(gate).
+
+  - Precision in output vector/scalar files, that is, the number of
+    significant digits printed can be set from the configuration now:
+    [General] / output-scalar-precision=<int>, output-vector-precision=<int>.
+    The default is 12, but it might not be straightforward to decide what
+    is the "optimal" setting -- see src/envir/ChangeLog for a discussion.
+
+  - configure script revised significantly: better detection of compiler
+    (e.g. the Intel compiler is autodetected now); detection of linker
+    flags needed for OMNeT++ models to be put into static/dynamic libs
+    (-z allextract/--whole-archive, --export-dynamic); detection of "make"
+    program (must be GNU make); improvement in detecting BLT and MPI.
+    Now it also allows variables to be defined on the command line before
+    running ./configure, as an alternative to configure.user.
+
+  - nedtool and the preload-ned-files= omnetpp.ini entry now distinguishes
+    between two types of listfiles, @listfile and @@listfile; the difference
+    is in the interpretation of relative paths contained in the list file;
+    see src/nedc/ChangeLog for details.
+
+  - GNED: further improvements
+
+
+OMNeT++ 3.2pre3
+---------------
 Tkenv:
   - the "Find/Inspect Objects" dialog became nonmodal, and it can be kept
     open while the simulation is running.
@@ -61,8 +110,9 @@ omnetpp.ini:
 
   - also fixed some anomalies in the XML path expression interpreter.
 
-Summary of the changes in 3.2pre2:
 
+OMNeT++ 3.2pre2
+---------------
 Simulation kernel:
   - WATCH() overhaul: now anything can be watched that has operator<<. If it
     also has operator>>, you can use WATCH_RW() to make it editable on the GUI.
@@ -129,7 +179,9 @@ Heaps of small API improvements, see include/ChangeLog. A sample:
 Thanks to Michael Tuexen, Ignacio Arenas Jimenez and Wei Yang Ng who suggested
 several of the above improvements.
 
-Changes in 3.2pre1:
+
+OMNeT++ 3.2pre1
+----------------
   - Plove and Scalars: improved Chart Settings dialog, and default settings
     can now be saved. New Plove filters, and fix in the winavg filter.
   - Tkenv: added Timeline Status Bar
@@ -303,7 +355,7 @@ Delta from 3.0 beta 1:
 
 - The new <parametername>.use-default=true notation in omnetpp.ini makes it
   possible to apply the NED file defaults (specified via input()) to some
-  or all unbound module parameters.
+  or all unassigned module parameters.
 
 - histogram classes (cLongHistogram, cDoubleHistogram) revisited
 
