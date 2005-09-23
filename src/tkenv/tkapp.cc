@@ -144,8 +144,8 @@ void TOmnetTkApp::setup()
     Tcl_SetVar(interp, "OMNETPP_BITMAP_PATH", TCLCONST(bitmap_path.c_str()), TCL_GLOBAL_ONLY);
     Tcl_SetVar(interp, "OMNETPP_PLUGIN_PATH", TCLCONST(plugin_path.c_str()), TCL_GLOBAL_ONLY);
 
-    Tcl_SetVar(interp, "OMNETPP_OMNETPP_RELEASE", OMNETPP_RELEASE, TCL_GLOBAL_ONLY);
-    Tcl_SetVar(interp, "OMNETPP_OMNETPP_EDITION", OMNETPP_EDITION, TCL_GLOBAL_ONLY);
+    Tcl_SetVar(interp, "OMNETPP_RELEASE", OMNETPP_RELEASE, TCL_GLOBAL_ONLY);
+    Tcl_SetVar(interp, "OMNETPP_EDITION", OMNETPP_EDITION, TCL_GLOBAL_ONLY);
 
     // eval Tcl sources: either from .tcl files or from compiled-in string
     // literal (tclcode.cc)...
