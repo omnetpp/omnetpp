@@ -44,6 +44,7 @@ AC_CANONICAL_HOST()
 # OMNeT++/OMNEST version number
 #
 OMNETPP_VERSION=`cat Version | sed 's/omnetpp-//'`
+OMNETPP_EDITION="Academic Public License"
 
 #
 #  Set system/arch specific values
@@ -871,8 +872,8 @@ chmod +x src/utils/opp_neddoc
 
 (
 cd src/utils && cp ver.h.base ver.h && \
-echo '#define OMNETPP_RELEASE "'$OMNETPP_VERSION)'"' >>ver.h && \
-echo '#define OMNETPP_EDITION "'$OMNETPP_EDITION'"' >>ver.h
+echo "#define OMNETPP_RELEASE \"$OMNETPP_VERSION\"" >>ver.h && \
+echo "#define OMNETPP_EDITION \"$OMNETPP_EDITION\"" >>ver.h
 )
 
 #----------------------
