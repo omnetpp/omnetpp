@@ -290,7 +290,7 @@ cXMLElement *cXMLElement::getElementByPath(const char *pathexpr, cXMLElement *ro
 
     return MiniXPath(resolver).matchPathExpression(const_cast<cXMLElement *>(this),
                                                    pathexpr,
-                                                   root->getParentNode());
+                                                   root ? root->getParentNode() : NULL);
 }
 
 void cXMLElement::debugDump(int depth) const
