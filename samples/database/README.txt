@@ -17,6 +17,14 @@ cMySQLOutputVectorManager and cMySQLOutputScalarManager) which completely
 generic -- they can be used with any simulation model to make it
 datatabase-enabled, without having to change a single line of source code.
 
+Possible uses of the database include:
+  - if you're doing heaps of simulation experiments: organized storage
+    for their configuration and results;
+  - remote access and intelligent queries/reports via the "LAMP" setup
+    (Linux+Apache+MySQL+PHP) -- should I add tools like PHP/SWF Charts
+    and JpGraph as well;
+  - many reporting tools like Eclipse/BIRT work from a database as well.
+
 The current code was written for the MySQL database (www.mysql.com), but it
 can be easily ported to other databases like PostgreSQL or Oracle as well,
 by making use of their C/C++ APIs.
@@ -50,20 +58,21 @@ Steps to get things up and running:
    need to link against the MySQL library (-lmysql).
 
 3.
-You'll find your way around -- in sql/ there are scripts to create the
-tables, and in examples/, well, two examples. The "tokenring" one is only
-specific to that model in that the concrete module parameters in the config
-database are for that model. The easiest way to put another model's existing
-config file (say mymodel.ini) into the database is by adding
+
+The "tokenring" one is only specific to that model in that the concrete module
+parameters in the config database are for that model. The easiest way to put
+another model's existing config file (say mymodel.ini) into the database
+is by adding
    include mymodel.ini
 into tokenring.ini, and mysqlconfiguration-dumpbootcfg in it. When you start
 the simulation, all ini file contents get dumped onto stdout in the form of
 SQL INSERT statements, which only have to be edited a bit.
 
-The code obviously hasn't received much testing, but it seems to work well
-on my laptop (XP, VC7.1, MySQL 4.1). I tested it with the current 3.2 head,
-but it should compile with 3.1 as well. Please let me know if there's any
-problem.
+The code has been tested with MySQL 4.1.
+
+Good luck!
+
+---
 
 [1] It is also possible to build a Windows DLL from them, but this
     has not yet been tested out and currently not recommended.
