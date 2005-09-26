@@ -25,6 +25,12 @@ Simulation kernel:
     cPolymorphic. In the next release we'll drop MSVC 6.0 support,
     and move to covariant return types (which MSVC 6.0 doesn't support).
 
+New examples: 
+  - database integration. With the given extensions, one can transparently 
+    redirect output vectors and output scalars into a MySQL database, read 
+    module parameters from a MySQL database (all without modification of 
+    existing models), or build a network from topology stored in a database.
+
 Other:
   - NED: enabled parent module gates to get connected with "++".
     parentmodgate++ connects the first unconnected gate, but it doesn't
