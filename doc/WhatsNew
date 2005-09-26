@@ -1,11 +1,8 @@
 What's New
 ==========
 
-OMNeT++ 3.2 snapshots (Jul-Aug 2005)
-------------------------------------
-
-OMNeT++ 3.2pre4
----------------
+OMNeT++ 3.2pre4 (Sep 2005)
+--------------------------
 Simulation kernel:
   - cleanup-time garbage collection turned OFF by default. Simple modules
     have to deallocate all dynamically objects themselves, that is,
@@ -20,6 +17,10 @@ Simulation kernel:
     without args now. Module_Class_Members() is now unnecessary, but still
     accepted. See include/ChangeLog for details. All sample simulations
     have been updated accordingly.
+
+    POTENTIAL INCOMPATIBILITY: modules with handcoded constructors need 
+    to be modified. Add default values to constructor arguments: 
+    (const char *name=NULL, cModule *parent=NULL).
 
   - dup() method got moved to cPolymorphic, and return type changed to
     cPolymorphic. In the next release we'll drop MSVC 6.0 support,
@@ -58,8 +59,8 @@ Other:
   - GNED: further improvements
 
 
-OMNeT++ 3.2pre3
----------------
+OMNeT++ 3.2pre3 (Aug 2005)
+--------------------------
 Tkenv:
   - the "Find/Inspect Objects" dialog became nonmodal, and it can be kept
     open while the simulation is running.
