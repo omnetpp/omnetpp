@@ -17,7 +17,7 @@ cMySQLOutputVectorManager and cMySQLOutputScalarManager) which completely
 generic -- they can be used with any simulation model to make it
 datatabase-enabled, without having to change a single line of source code.
 
-Possible uses of the database include:
+Possible uses of a database include:
   - if you're doing heaps of simulation experiments: organized storage
     for their configuration and results;
   - remote access and intelligent queries/reports via the "LAMP" setup
@@ -28,6 +28,11 @@ Possible uses of the database include:
 The current code was written for the MySQL database (www.mysql.com), but it
 can be easily ported to other databases like PostgreSQL or Oracle as well,
 by making use of their C/C++ APIs.
+
+Performance: I have observed that with MyISAM tables and INSERT DELAYED,
+the performance drop with cMySQLOutputVectorManager was almost unnoticeable
+(less than 5%) compared to file output. Measurements were done with the
+Token Ring model, on XP, with MySQL 4.1 running on the *same* machine.
 
 Directory contents:
   - C++ sources (.cc/h) for the above classes;
