@@ -1,7 +1,7 @@
-//ERROR: wrong destination gate: '++' cannot be used on parent module's gates
+//ERROR: wrong destination gate for connection: extra gate index or '++'
 module Network
     gates:
-        out: out[];
+        out: out;
     connections:
         out++ <-- b.out;
 endmodule
