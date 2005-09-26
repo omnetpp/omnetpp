@@ -24,7 +24,7 @@ OMNETPP_VERSION=omnetpp-3.2
 # Leave BLT_VER empty if you don't have BLT. BLT is expected to reside
 # in the same directory tree as Tcl/Tk.
 #
-TK_DIR=d:/home/tools/Tcl-8.4.5
+TK_DIR=d:/home/tools/Tcl-8.4.11
 TK_VER=8.4
 BLT_VER=2.4
 
