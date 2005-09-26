@@ -10,12 +10,14 @@ It demonstrates four ways of using a database:
   - recording output vectors to the database, instead of omnetpp.vec;
   - writing output scalars to the database, instead of omnetpp.sca.
 
-The first one is implemented as a simple module (cMySQLNetBuilder).
+The first one is implemented as a simple module (cMySQLNetBuilder),
+and it is intended as an example that can be customised at will.
 
 The latter three are plug-in extensions to Envir (cMySQLConfiguration,
-cMySQLOutputVectorManager and cMySQLOutputScalarManager) which completely
-generic -- they can be used with any simulation model to make it
-datatabase-enabled, without having to change a single line of source code.
+cMySQLOutputVectorManager and cMySQLOutputScalarManager) and they are
+completely generic -- they can be used with any simulation model to make it
+datatabase-enabled, without having to change a single line of source code
+in it.
 
 Possible uses of a database include:
   - if you're doing heaps of simulation experiments: organized storage
@@ -23,7 +25,8 @@ Possible uses of a database include:
   - remote access and intelligent queries/reports via the "LAMP" setup
     (Linux+Apache+MySQL+PHP) -- should I add tools like PHP/SWF Charts
     and JpGraph as well;
-  - many reporting tools like Eclipse/BIRT work from a database as well.
+  - many reporting tools like Eclipse/BIRT also work from a database;
+  - interfacing with network management systems
 
 The current code was written for the MySQL database (www.mysql.com), but it
 can be easily ported to other databases like PostgreSQL or Oracle as well,
@@ -32,15 +35,14 @@ by making use of their C/C++ APIs.
 Performance: I have observed that with MyISAM tables and INSERT DELAYED,
 the performance drop with cMySQLOutputVectorManager was almost unnoticeable
 (less than 5%) compared to file output. Measurements were done with the
-Token Ring model, on XP, with MySQL 4.1 running on the *same* machine.
+Token Ring model, on Windows XP, with MySQL 4.1 running on the *same* machine.
 
 Directory contents:
   - C++ sources (.cc/h) for the above classes;
   - the sql/ subdirectory contains SQL scripts to create the necessary
     database tables;
-  - example1/ configures the Token Ring model to read configuration
-    (module parameters) from the database, and write output scalars
-    and vectors there;
+  - example1/ configures the Token Ring model to read module parameters
+    from the database, and write output scalars and vectors there;
   - example2/ demonstrates cMySQLNetBuilder, and builds a network with a
     topology coming from the database. An SQL script to fill the database
     with the topology info (nodes and links) is provided.
@@ -48,30 +50,56 @@ Directory contents:
 Steps to get things up and running:
 
 1. First, you obviously need a working MySQL database. Make sure you can
-   log in using the "mysql" console, and you can create tables, insert
-   rows etc, using SQL. Also make sure that you have the necessary header
-   files (mysql.h, etc) and libraries (libmysql.a/so) to build programs
+   log in using the MySQL console ("mysql"), and you can create tables,
+   insert rows etc using SQL. Also make sure that you have the necessary
+   header files (mysql.h, etc) and libraries (libmysql.a/so) to build programs
    with MySQL access -- they are in the MySQL-devel packages on Linux.
 
 2. Take the given C++ sources, and compile+link them into your simulation.
    (Use Token Ring sample simulation if you're unsure -- the sample database
    contents for demonstrating cMySQLConfiguration is for this model.)
-   On Linux/Unix, you can also build a shared library, and have it
-   loaded into the simulation dynamically (using the load-libs= omnetpp.ini
-   entry) [1]. To get the sources built, the MySQL includes AND OMNeT++'s src/envir
-   directory need to be in the include path (-I compiler options), and you
-   need to link against the MySQL library (-lmysql).
+   On Linux/Unix, you can also build a shared library, and have it loaded
+   into the simulation dynamically (using the load-libs= omnetpp.ini
+   entry) [1]. To get the sources built, the MySQL headers AND OMNeT++'s
+   src/envir directory need to be in the include path (-I compiler options),
+   and you need to link against the MySQL library (-lmysql).
 
-3.
+3. Create the database tables: log in using the MySQL console, and
+   copy/paste the contents of the scripts in sql/ into it. (Or use the
+   "source <filename>" command at the mysql prompt.) If you want to try
+   cMySQLNetBuilder or cMySQLConfiguration, fill in the database with
+   the sample data by executing the *.sql files in the example subdirectories
+   in much the same way.
 
-The "tokenring" one is only specific to that model in that the concrete module
-parameters in the config database are for that model. The easiest way to put
+4. Adjust the database name, user, password and other connection properties
+   in the ini files in the example directories. The full set of config options
+   understood are documented in oppmysqlutils.h as:
+      [General]
+      mysql-host = <hostname>
+      mysql-user = <username>
+      mysql-password = <password>
+      mysql-database = <database-name>
+      mysql-port = <TCP-port-number>
+      mysql-socket = <unix-socket-name>
+      mysql-clientflag = <int>
+      mysql-use-pipe = <true/false>  # Windows named pipes
+      mysql-options-file = <MySQL-options-filename>
+   Not all of them make sense together and most have defaults; look up
+   the MySQL documentation if in trouble.
+
+5. Run the simulation! If you get an "Error connecting to MySQL" error,
+   go back to Step 4. Otherwise you should be able to query the data
+   on the MySQL console, try e.g. "SELECT * FROM vector;"
+
+
+If you are interested in cMySQLConfiguration: The easiest way to put
 another model's existing config file (say mymodel.ini) into the database
 is by adding
    include mymodel.ini
-into tokenring.ini, and mysqlconfiguration-dumpbootcfg in it. When you start
-the simulation, all ini file contents get dumped onto stdout in the form of
-SQL INSERT statements, which only have to be edited a bit.
+into tokenring.ini, and enabling mysqlconfiguration-dumpbootcfg in it.
+When you start the simulation, all ini file contents get dumped onto
+stdout in the form of SQL INSERT statements, which only have to be edited
+a bit.
 
 The code has been tested with MySQL 4.1.
 
