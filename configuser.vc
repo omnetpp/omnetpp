@@ -49,7 +49,7 @@ XMLPARSER=libxml
 #
 # Location of Expat (only used if XMLPARSER=expat, see above)
 #
-EXPAT_DIR=d:/home/tools/expat-1.95.6
+EXPAT_DIR=d:/home/tools/expat-1.95.8
 
 #
 # Location of LibXML2 and its supporting library ICONV (only used if XMLPARSER=libxml)
