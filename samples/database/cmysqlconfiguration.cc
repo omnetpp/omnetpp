@@ -94,7 +94,7 @@ int cMySQLConfiguration::getSectionId(cConfiguration *cfg, const char *sectionNa
 
 int cMySQLConfiguration::getFileId(const char *fileName)
 {
-    for (int i=0; i<files.size(); i++)
+    for (int i=0; i<(int)files.size(); i++)
         if (strcmp(fileName, files[i].fname)==0)
             return i;
     return -1;
@@ -113,7 +113,6 @@ void cMySQLConfiguration::copyExistingConfig(cConfiguration *cfg)
     if (!ini)
         throw new cRuntimeError("cMySQLConfiguration: boot-time config is not a cIniFile");
 
-    int k = 0;
     for (cIniFileIterator it(ini); !it.end(); it++)
     {
         int secnum = getSectionId(cfg, it.section());

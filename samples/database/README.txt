@@ -15,16 +15,14 @@ and it is intended as an example that can be customised at will.
 
 The latter three are plug-in extensions to Envir (cMySQLConfiguration,
 cMySQLOutputVectorManager and cMySQLOutputScalarManager) and they are
-completely generic -- they can be used with any simulation model to make it
-datatabase-enabled, without having to change a single line of source code
-in it.
+completely generic -- they can be used with any simulation model to make them 
+datatabase-enabled, without having to change a single line of source code.
 
 Possible uses of a database include:
   - if you're doing heaps of simulation experiments: organized storage
     for their configuration and results;
   - remote access and intelligent queries/reports via the "LAMP" setup
-    (Linux+Apache+MySQL+PHP) -- should I add tools like PHP/SWF Charts
-    and JpGraph as well;
+    (Linux+Apache+MySQL+PHP) and tools like PHP/SWF Charts or JpGraph;
   - many reporting tools like Eclipse/BIRT also work from a database;
   - interfacing with network management systems
 
@@ -106,9 +104,6 @@ editing, the result can be used as an SQL script.
 
 The code has been tested with MySQL 4.1.
 
-Good luck!
+Enjoy!
 
----
 
-[1] It is also possible to build a Windows DLL from them, but this
-    has not yet been tested out and currently not recommended.
