@@ -55,7 +55,7 @@ EXPAT_DIR=d:/home/tools/expat-1.95.6
 # Location of LibXML2 and its supporting library ICONV (only used if XMLPARSER=libxml)
 #
 ICONV_DIR=d:/home/tools/iconv-1.9.1.win32
-LIBXML_DIR=d:/home/tools/libxml2-2.6.17.win32
+LIBXML_DIR=d:/home/tools/libxml2-2.6.20.win32
 
 #
 # Directory of various tools
