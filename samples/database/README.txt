@@ -10,25 +10,35 @@ It demonstrates four ways of using a database:
   - recording output vectors to the database, instead of omnetpp.vec;
   - writing output scalars to the database, instead of omnetpp.sca.
 
-The first one is implemented as a simple module (cMySQLNetBuilder), and
-the latter three as plug-in extensions to Envir (cMySQLConfiguration,
-cMySQLOutputVectorManager and cMySQLOutputScalarManager) which can
-make any simulation datatabase-enabled, without having to change a single
-line in them.
+The first one is implemented as a simple module (cMySQLNetBuilder).
+
+The latter three are plug-in extensions to Envir (cMySQLConfiguration,
+cMySQLOutputVectorManager and cMySQLOutputScalarManager) which completely
+generic -- they can be used with any simulation model to make it
+datatabase-enabled, without having to change a single line of source code.
 
 The current code was written for the MySQL database (www.mysql.com), but it
 can be easily ported to other databases like PostgreSQL or Oracle as well,
 by making use of their C/C++ APIs.
 
+Directory contents:
+  - C++ sources (.cc/h) for the above classes;
+  - the sql/ subdirectory contains SQL scripts to create the necessary
+    database tables;
+  - example1/ configures the Token Ring model to read configuration
+    (module parameters) from the database, and write output scalars
+    and vectors there;
+  - example2/ demonstrates cMySQLNetBuilder, and builds a network with a
+    topology coming from the database. An SQL script to fill the database
+    with the topology info (nodes and links) is provided.
 
 Steps to get things up and running:
 
 1. First, you obviously need a working MySQL database. Make sure you can
    log in using the "mysql" console, and you can create tables, insert
-   rows etc, using SQL. Also make sure that you can build C/C++ programs
-   with MySQL access, that is, you have the necessary header files
-   (mysql.h etc) and libraries (libmysql.a/so) -- they are in the
-   MySQL-devel packages on Linux.
+   rows etc, using SQL. Also make sure that you have the necessary header
+   files (mysql.h, etc) and libraries (libmysql.a/so) to build programs
+   with MySQL access -- they are in the MySQL-devel packages on Linux.
 
 2. Take the given C++ sources, and compile+link them into your simulation.
    (Use Token Ring sample simulation if you're unsure -- the sample database
