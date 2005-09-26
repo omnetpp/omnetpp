@@ -30,6 +30,11 @@ array set colors {
    color4 #4cb28a
    color5 #d0b48f
    color6 #80a3a7
+   color7 #4b9adb
+   color8 #948ca6
+   color9 #e99b04
+   colorA #e1e0d8
+   colorB #748e16
 }
 
 #
@@ -58,6 +63,7 @@ foreach line {
    {color5  "HCube"            "hcube"            "./hcube"     "hcube.exe"}
    {color5  "Routing"          "routing"          "./routing"   "routing.exe"}
    {color5  "Routing/Networks" "routing/networks" "../routing"  "..\\routing.exe"}
+   {color7  "Database (NEW)"   "database/README"}
    {color6  "Parallel CQN"     "cqn/parsim"       "./runparsim" "runparsim.bat"}
    {color6  "Dyna/RealTime"    "dyna/realtime"   "../dyna"     "..\\dyna.exe"}
    {color6  "Sockets/HTTP"     "sockets"          "./sockets -r 1"  "sockets.exe -r 1"}
@@ -111,9 +117,9 @@ proc createWindow {} {
     wm protocol . WM_DELETE_WINDOW {exit}
 
     if {$tcl_platform(platform) == "unix"} {
-        wm geometry . "690x570"
+        wm geometry . "690x595"
     } else {
-        wm geometry . "650x510"
+        wm geometry . "650x535"
     }
 
     #################################
@@ -403,7 +409,7 @@ proc checkVersion {} {
 proc checkDirNoSpaces {} {
    set pwd [pwd]
    if {[string first " " $pwd]!=-1} {
-      wm withdraw . 
+      wm withdraw .
       tk_messageBox -title "OMNeT++/OMNEST Demo" -type ok -icon error \
         -message "The current working directory is \"$pwd\", which contains a space. Please reinstall OMNeT++/OMNEST into a directory whose name doesn't contain space!"
       exit 1
