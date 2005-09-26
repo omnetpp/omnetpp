@@ -43,6 +43,9 @@ cXMLElement *root = ev.getXMLDocument("{}.xml");
 cXMLElement *bar9 = root->getElementById("9");
 
 getElement(bar9, root, "../../..");
+getElement(bar9, root, "../../../foo");
 
 %contains: stdout
 ../../..: null
+../../../foo: null
+
