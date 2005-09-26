@@ -91,15 +91,18 @@ Steps to get things up and running:
    go back to Step 4. Otherwise you should be able to query the data
    on the MySQL console, try e.g. "SELECT * FROM vector;"
 
+A hint about cMySQLConfiguration:
 
-If you are interested in cMySQLConfiguration: The easiest way to put
-another model's existing config file (say mymodel.ini) into the database
-is by adding
-   include mymodel.ini
-into tokenring.ini, and enabling mysqlconfiguration-dumpbootcfg in it.
-When you start the simulation, all ini file contents get dumped onto
-stdout in the form of SQL INSERT statements, which only have to be edited
-a bit.
+The easiest way to transfer the contents of an existing omnetpp.ini file
+into the database is by using the mysqlconfiguration-dumpbootcfg=true
+configuration option, which prints the current configuration as a series
+of SQL INSERT statements. Add the following lines to your omnetpp.ini:
+      [General]
+      configuration-class = "cMySQLConfiguration"
+      mysqlconfiguration-dumpbootcfg = true
+      ...
+Then start the simulation and redirect the output into a file. After some
+editing, the result can be used as an SQL script.
 
 The code has been tested with MySQL 4.1.
 
