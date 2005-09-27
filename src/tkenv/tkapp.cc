@@ -305,6 +305,12 @@ void TOmnetTkApp::doOneStep()
     if (simstate==SIM_TERMINATED)
     {
         // call wrapper around simulation.callFinish() and simulation.endRun()
+        //
+        // NOTE: if the simulation is in SIM_ERROR, we don't want endRun() to be
+        // called yet, because we want to allow the user to force finish() from
+        // the GUI -- and finish() has to precede endRun(). endRun() will be called
+        // just before a new network gets set up, or on Tkenv shutdown.
+        //
         finishSimulation();
     }
 }
@@ -367,6 +373,12 @@ void TOmnetTkApp::runSimulation(int mode, simtime_t until_time, long until_event
     if (simstate==SIM_TERMINATED)
     {
         // call wrapper around simulation.callFinish() and simulation.endRun()
+        //
+        // NOTE: if the simulation is in SIM_ERROR, we don't want endRun() to be
+        // called yet, because we want to allow the user to force finish() from
+        // the GUI -- and finish() has to precede endRun(). endRun() will be called
+        // just before a new network gets set up, or on Tkenv shutdown.
+        //
         finishSimulation();
     }
 
