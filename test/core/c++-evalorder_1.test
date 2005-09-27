@@ -1,0 +1,32 @@
+%description:
+test evaluation order.
+plain C++ version:
+
+  #include <iostream>
+  using namespace std;
+
+  int x=0;
+
+  int f() {return ++x;}
+
+  int main()
+  {
+      cout << f() << " " << f() << endl;
+      return 0;
+  }
+
+This strangely yields different results, even with the same
+gcc version (but different architecture):
+   Itanium 64 bit, SuSE Linux,    g++ 3.3.3 ---> 1 2
+   x86     32 bit, Red Hat Linux, g++ 3.3.3 ---> 2 1
+
+%global:
+int x=0;
+int f() {return ++x;}
+
+%activity:
+ev << f() << " " << f() << endl;
+
+%contains-regex: stdout
+(1 2)|(2 1)
+
