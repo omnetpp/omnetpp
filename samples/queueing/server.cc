@@ -17,10 +17,13 @@ Define_Module(QServer);
 QServer::QServer()
 {
     queues = NULL;
+    msgServiced = endServiceMsg = NULL;
 }
 
 QServer::~QServer()
 {
+    delete msgServiced;
+    cancelAndDelete(endServiceMsg);
     delete [] queues;
 }
 
