@@ -1,3 +1,8 @@
+2005-09-27  Andras Varga
+
+	* tkapp.cc: bugfix: should call endRun() instead of simulation.endRun()
+	[reported by Johann Glaser]
+
 2005-08-09  Andras Varga
 
 	* dialogs.tcl: Find/Inspect Objects dialog became nonmodal.
