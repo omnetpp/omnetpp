@@ -228,21 +228,21 @@ then
    AC_MSG_RESULT(no)
    fpic=""
 fi
-if test $fpic = "x" && \
+if test "$fpic" = "x" && \
    $CXX -fPIC -c conftest.cc >/dev/null 2>/dev/null && \
    $SHLIB_LD -fPIC -o conftest.so conftest.o >/dev/null 2>/dev/null; \
 then
    AC_MSG_RESULT(yes)
    fpic="-fPIC"
 fi
-if test $fpic = "x" && \
+if test "$fpic" = "x" && \
    $CXX -fpic -c conftest.cc >/dev/null 2>/dev/null && \
    $SHLIB_LD -fpic -o conftest.so conftest.o >/dev/null 2>/dev/null; \
 then
    AC_MSG_RESULT(-fpic)
    fpic="-fpic"
 fi
-if test $fpic = "x"; then
+if test "$fpic" = "x"; then
    AC_MSG_RESULT(failure)
    AC_MSG_WARN([COULD NOT FIGURE OUT HOW TO BUILD SHARED LIBRARY -- reverting to static libs])
    build_shared_libs="no"
