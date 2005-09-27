@@ -578,7 +578,7 @@ void TOmnetTkApp::finishSimulation()
     // then endrun
     try
     {
-        simulation.endRun();
+        endRun();
     }
     catch (cException *e)
     {
@@ -619,7 +619,7 @@ void TOmnetTkApp::newNetwork(const char *network_name)
         // finish & cleanup previous run if we haven't done so yet
         if (simstate!=SIM_NONET)
         {
-            simulation.endRun();
+            endRun();
             simulation.deleteNetwork();
             simstate = SIM_NONET;
         }
@@ -658,7 +658,7 @@ void TOmnetTkApp::newRun(int run)
         // finish & cleanup previous run if we haven't done so yet
         if (simstate!=SIM_NONET)
         {
-            simulation.endRun();
+            endRun();
             simulation.deleteNetwork();
             simstate = SIM_NONET;
         }
