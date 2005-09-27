@@ -222,7 +222,12 @@ AC_MSG_CHECKING(if shared libs need -fPIC)
 echo 'int x;' >conftest.cc
 echo 'int getX() {return x;}' >>conftest.cc
 fpic="x"
-if $CXX -c conftest.cc >/dev/null 2>/dev/null && \
+if echo $CFLAGS | grep -i -- "-fPIC" >/dev/null 2>/dev/null; then
+   AC_MSG_RESULT([skip (already in CFLAGS)])
+   fpic=""
+fi
+if test "$fpic" = "x" && \
+   $CXX -c conftest.cc >/dev/null 2>/dev/null && \
    $SHLIB_LD -o conftest.so conftest.o >/dev/null 2>/dev/null; \
 then
    AC_MSG_RESULT(no)
