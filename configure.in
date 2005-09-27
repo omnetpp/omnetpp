@@ -198,15 +198,59 @@ fi
 
 AS=${AS:-as}
 AR=${AR:-ar cr}
-SHLIB_LD=${SHLIB_LD:-$CXX -shared -fPIC}
+SHLIB_LD=${SHLIB_LD:-$CXX -shared}
 AC_PROG_RANLIB
 
-if test "$build_shared_libs" = "if-not-windows" -o "$build_shared_libs" = "yes"; then
-    if echo $CFLAGS | grep -i -- -fPIC >/dev/null 2>/dev/null; then :; else
-        AC_MSG_NOTICE([NOTE: if you get problems building shared libraries (e.g. libnedxml.so),])
-        AC_MSG_NOTICE([you may need to add -fPIC or -fpic to CFLAGS.])
-    fi
+
+
+#----------------------
+# Test if "-fPIC" is needed for shared libs (there's a performance penalty if we use it unnecessarily)
+#----------------------
+# To test, we try to compile the following code into a shared library:
+#      int x;
+#      int getX() {return x;}
+#
+
+#if test "$build_shared_libs" = "if-not-windows" -o "$build_shared_libs" = "yes"; then
+#    if echo $CFLAGS | grep -i -- -fPIC >/dev/null 2>/dev/null; then :; else
+#        AC_MSG_NOTICE([NOTE: if you get problems building shared libraries (e.g. libnedxml.so),])
+#        AC_MSG_NOTICE([you may need to add -fPIC or -fpic to CFLAGS.])
+#    fi
+#fi
+
+AC_MSG_CHECKING(if shared libs need -fPIC)
+echo 'int x;' >conftest.cc
+echo 'int getX() {return x;}' >>conftest.cc
+fpic="x"
+if $CXX -c conftest.cc >/dev/null 2>/dev/null && \
+   $SHLIB_LD -o conftest.so conftest.o >/dev/null 2>/dev/null; \
+then
+   AC_MSG_RESULT(no)
+   fpic=""
 fi
+if test $fpic = "x" && \
+   $CXX -fPIC -c conftest.cc >/dev/null 2>/dev/null && \
+   $SHLIB_LD -fPIC -o conftest.so conftest.o >/dev/null 2>/dev/null; \
+then
+   AC_MSG_RESULT(yes)
+   fpic="-fPIC"
+fi
+if test $fpic = "x" && \
+   $CXX -fpic -c conftest.cc >/dev/null 2>/dev/null && \
+   $SHLIB_LD -fpic -o conftest.so conftest.o >/dev/null 2>/dev/null; \
+then
+   AC_MSG_RESULT(-fpic)
+   fpic="-fpic"
+fi
+if test $fpic = "x"; then
+   AC_MSG_RESULT(failure)
+   AC_MSG_WARN([COULD NOT FIGURE OUT HOW TO BUILD SHARED LIBRARY -- reverting to static libs])
+   build_shared_libs="no"
+else
+   CFLAGS="$CFLAGS $fpic"
+   SHLIB_LD="$SHLIB_LD $fpic"
+fi
+rm -f conftest.*
 
 
 #----------------------
