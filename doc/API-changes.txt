@@ -20,10 +20,109 @@ Legend:
 (i)     information
 
 
-OMNeT++ 3.2 (Jul 2005)
+OMNeT++ 3.2 (Oct 2005)
 ~~~~~~~~~~~~~~~~~~~~~~
-(+)     added cStringTokenizer::hasMoreTokens()
-TBD finish
+(!)     user-written module classes: expected signature of module constructors
+        simplified, from
+            cModule(const char *name, cModule *parent) and
+            cSimpleModule(const char *name, cModule *parent, unsigned stack)
+        to
+            cModule() and
+            cSimpleModule(unsigned stack=0)
+        The purpose is to ease writing constructors, e.g. for a handleMessage()
+        module class "PacketSink : public cSimpleModule", the constructor is
+        just
+            PacketSink() {}
+        instead of the former
+            PacketSink(const char *name, cModule *parent) :
+               cSimpleModule(name, parent, 0) {}
+
+        Backwards compatibility: module classes using Module_Class_Members()
+        (95%) are not affected. For module classes using hand-coded
+        constructors, adding NULL as a default value to the "name" and "parent"
+        ctor arguments will make the class work with both OMNeT++ 3.2 and
+        earlier versions:
+            PacketSink(const char *name=NULL, cModule *parent=NULL) :
+               cSimpleModule(name, parent, 0) {}
+        This affects very few modules, e.g. two in the current INET Framework
+        release.
+
+        Motivation: since cleanup-time garbage collection is off by default
+        in OMNeT++ 3.2, users are encouraged to write proper destructors.
+        However, destructors can only be written if constructors set pointer
+        members of the class to NULL. (This is currently customarily done
+        in the initialize() method; however, pointers must be initialized
+        to NULL even if initialize() doesn't get called due to a runtime error
+        earlier in another module's initialize(), otherwise the destructor will
+        crash.) The Module_Class_Members() macro (currently used in 95% of
+        the cases) defines an empty constructor, one cannot put statements
+        into it -- so one must use hand-coded constructors. The new signature
+        of constructors makes it possible to write much more compact code,
+        and will make it more comfortable for users.
+
+(-)     deprecated Module_Class_Members() -- see above
+
+(+)     cModule: modules can now get notified when a module parameter changes,
+        by redefining the new handleParameterChange(const char *parname)
+        virtual method of cModule.
+
+(+)     cSimpleModule: added method cancelAndDelete(cMessage *msg), for use
+        in simple module destructors.
+
+(!)     dup() method of cObject moved up to cPolymorphic, and the return type
+        changed to cPolymorphic. Once we drop MSVC 6.0 support, return types
+        can be changed to class itself, i.e. in class Foo it can be defined
+        as Foo *dup(). Unfortunately MSVC 6.0 doesn't support covariant return
+        types. Other compilers do.
+
+(!)     cMessage: implemented reference counting of encapsulated messages.
+        There is one implication: ONE MUST NOT CHANGE ANYTHING IN A MESSAGE
+        ENCAPSULATED IN ANOTHER MESSAGE! That's because the encapsulated
+        message might be shared among several other messages.
+
+(+)     cMessage length can now be get/set in bytes as well, not only in bits:
+        added byteLength(), setByteLength(), addByteLength() convenience
+        functions. They just invoke the length(), setLength(), addLength()
+        methods, combined with a multiplication or division by 8.
+
+(+)     cMessage: added cModule *senderModule() method
+
+(!)     cMessage: if "vector" is a vector gate, msg->arrivedOn("vector")
+        now checks if msg arrived one of the vector's gates.
+
+(+)     cOutVector: added recordWithTimestamp() method, to make it possible
+        to record values into output vectors with a timestamp other than
+        simTime(). Increasing timestamp order is still enforced.
+
+(+)     cPar: added isConstant() member to cPar
+
+(+)     cPar: added default value to type parameter of setFromText()
+
+(+)     WATCH() implementation changed: now anything can be watched that has
+        operator<<. If it also has operator>> and it gets watched via
+        WATCH_RW(), it can also be modified from the GUI. Objects and pointers
+        to objects can also be watched with WATCH_OBJ() and WATCH_PTR().
+
+(+)     added macros to watch STL containers: WATCH_VECTOR(),
+        WATCH_PTRVECTOR(), WATCH_LIST(), WATCH_PTRLIST(), WATCH_SET(),
+        WATCH_PTRSET(), WATCH_MAP(), WATCH_PTRMAP().
+
+(+)     cDisplayString: added setTagArg() method for numeric (long) argument
+        as well. Just converts it to string and calls the other setTagArg().
+
+(+)     cXMLElement: added getFirstChildWithTagName(const char *tagname)
+        and getNextSiblingByTagName(const char *tagname) methods
+
+(!)     cXMLElement: several member functions made const
+
+(+)     added cStringTokenizer::hasMoreTokens() convenience method
+
+(+)     added simtimeToStrShort()
+
+(!)     moved packObject(), unpackObject(), checkFlag(), isNull() methods
+        (last one renamed to packFlag) into cCommBuffer
+
+(!)     cOutputVectorManager, cOutputScalarManager interfaces: added flush()
 
 
 OMNeT++ 3.1 (Mar 2005)
@@ -382,8 +481,6 @@ User interfaces:
         caused counterintuitive displacements if a module was placed individually,
         because a (dx,dy) shift coming from the layout was superponed onto the
         position (x,y)).
-
-
 
 
 OMNeT++ 2.2 (May 2002)
