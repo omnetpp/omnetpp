@@ -1,3 +1,7 @@
+2005-10-05  Andras Varga
+
+	* cgate.cc: performance: made fullname creation on-demand
+
 2005-09-15  Andras Varga
 
 	* csimplemodule.cc: added method cancelAndDelete(cMessage *msg).

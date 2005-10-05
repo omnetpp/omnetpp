@@ -88,20 +88,28 @@ void cGate::setName(const char *s)
 {
     cObject::setName(s);
 
-    // update fullname
-    if (isVector())
+    // invalidate fullname (it'll be recreated on demand)
+    if (fullname)
     {
-        if (fullname)  delete [] fullname;
-        fullname = new char[opp_strlen(name())+10];
-        strcpy(fullname, name());
-        opp_appendindex(fullname, index());
+        delete [] fullname;
+        fullname = NULL;
     }
 }
 
 const char *cGate::fullName() const
 {
     // if not in a vector, normal name() will do
-    return isVector() ? fullname : name();
+    if (!isVector())
+        return name();
+
+    // otherwise, produce fullname if not already there
+    if (!fullname)
+    {
+        fullname = new char[opp_strlen(name())+10];
+        strcpy(fullname, name());
+        opp_appendindex(fullname, index());
+    }
+    return fullname;
 }
 
 std::string cGate::fullPath() const
@@ -185,14 +193,11 @@ void cGate::setIndex(int sn, int vs)
     serno = sn;
     vectsize = vs;
 
-    // update fullname
-    if (fullname)  delete [] fullname;
-    fullname = NULL;
-    if (isVector())
+    // invalidate fullname (it'll be recreated on demand)
+    if (fullname)
     {
-        fullname = new char[opp_strlen(name())+10];
-        strcpy(fullname, name());
-        opp_appendindex(fullname, index());
+        delete [] fullname;
+        fullname = NULL;
     }
 }
 
