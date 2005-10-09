@@ -147,6 +147,13 @@ class SIM_API cPar : public cObject
          */
         void operator=(int _i)            {type='D'; d=_i;  }
 
+
+        /**
+         * Effect during evaluation of the expression: pushes the given number
+         * (which is converted to double) on the evaluation stack.
+         */
+        void operator=(short _i)            {type='D'; d=_i;  }
+
         /**
          * Effect during evaluation of the expression: pushes the given number
          * (which is converted to double) on the evaluation stack.
@@ -304,14 +311,14 @@ class SIM_API cPar : public cObject
     //@{
 
     /**
-     * Called each time before the stored value changes.
+     * Called each time before the value of this object changes.
      * It can be used for tracking parameter changes.
      * This default implementation does nothing.
      */
     virtual void beforeChange();
 
     /**
-     * Called each time after the stored value changes.
+     * Called each time after the value of this object changed.
      * It can be used for tracking parameter changes.
      * This default implementation does nothing.
      */
@@ -750,6 +757,16 @@ class SIM_API cPar : public cObject
     cPar& operator=(unsigned int i)  {return setLongValue((long)i);}
 
     /**
+     * Converts the argument to long, and calls setLongValue().
+     */
+    cPar& operator=(short i)  {return setLongValue((long)i);}
+
+    /**
+     * Converts the argument to long, and calls setLongValue().
+     */
+    cPar& operator=(unsigned short i)  {return setLongValue((long)i);}
+
+    /**
      * Equivalent to setLongValue().
      */
     cPar& operator=(long l)          {return setLongValue(l);}
@@ -813,6 +830,16 @@ class SIM_API cPar : public cObject
      * Calls longValue() and converts the result to unsigned int.
      */
     operator unsigned int()  {return (unsigned int)longValue();}
+
+    /**
+     * Calls longValue() and converts the result to short.
+     */
+    operator short()  {return (short)longValue();}
+
+    /**
+     * Calls longValue() and converts the result to unsigned short.
+     */
+    operator unsigned short()  {return (unsigned short)longValue();}
 
     /**
      * Equivalent to longValue().

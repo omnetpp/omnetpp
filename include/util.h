@@ -66,8 +66,9 @@ SIM_API simtime_t strToSimtime(const char *str);
  * passed to the first character which cannot be interpreted
  * as part of the time string, or to the terminating zero.
  * Empty string is accepted as 0.0.
- * E.g. strToSimtime0("3s 600ms x") will return 3.6 and the
- * pointerstr will point to the character 'x'.
+ *
+ * Example: strToSimtime0("3s 600ms x") will return 3.6 and the
+ * str pointer will point to the character 'x'.
  */
 SIM_API simtime_t strToSimtime0(const char *&str);
 

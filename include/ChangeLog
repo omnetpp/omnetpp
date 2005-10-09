@@ -1,3 +1,8 @@
+2005-10-09  Andras Varga
+
+	* cpar.h: added conversion to/from short and unsigned short [patch 
+	from Omer Sinan Kaya]
+
 2005-09-15  Andras Varga
 
 	* csimplemodule.h: added method cancelAndDelete(cMessage *msg), 

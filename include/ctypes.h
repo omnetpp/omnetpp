@@ -744,7 +744,7 @@ class SIM_API cClassRegister : public cObject
  * relies on the cClassRegister class.
  *
  * If the class is not registered, this function throws an exception.
- * If you'd prefer having NULL pointer retured instead, use the
+ * If you'd prefer having a NULL pointer returned instead, use the
  * createOneIfClassIsKnown() function.
  *
  * Example:

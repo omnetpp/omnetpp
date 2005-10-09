@@ -490,12 +490,11 @@ inline std::ostream& operator<< (std::ostream& os, cObject& o) {
  * if the result is NULL (which indicates incompatible types), an exception
  * is thrown.
  *
- * Example:
+ * In the following example, MyPacket is a subclass of cMessage, and we want
+ * to assert that the message received is actually a MyPacket. If not, 
+ * the simulation stops with an error message as the result of the exception.
  * <pre>
  *   cMessage *msg = receive();
- *   // MyPacket is a subclass of cMessage. The next line makes sure
- *   // it is actually a MyPacket that we received -- if not, the simulation
- *   // stops with an error message as the result of the exception
  *   MyPacket *pkt = check_and_cast<MyPacket *>(msg);
  * </pre>
  *
