@@ -420,7 +420,7 @@ if test "$MAKE" = "not found"; then
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES make"
    AC_MSG_ERROR(make program not found -- it is required to build OMNeT++/OMNEST, and also for model development.)
 else
-   if make --version 2>/dev/null | grep -i GNU >/dev/null; then :; else
+   if $MAKE --version 2>/dev/null | grep -i GNU >/dev/null; then :; else
        AC_MSG_ERROR(GNU Make is required to build OMNeT++/OMNEST.)
    fi
 fi
