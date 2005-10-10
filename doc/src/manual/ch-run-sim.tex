@@ -1967,22 +1967,18 @@ If you suspect that you may have memory allocation problems
 (crashes associated with double-deletion or accessing already
 deleted block, or memory leaks), you can use specialized tools
 to track them down.
-  \footnote{Alternatively, you can go through the full code,
-  review it looking for bugs. In my experience, the latter one
-  has proved to be far more efficient than using any kind
-  of memory debugger.}
 
-The number one of these tools is \textit{Purify} from Rational Software.
-This is a commercial tool. Not particularly cheap, but it has
-very good reputation and proved its usefulness many times.
+By far the most efficient, most robust and most versatile tool
+is \textit{Valgrind}, originally developed for debugging KDE.
 
-There are several open source tools you can try. The best seems
-to be \textit{Valgrind} used by the KDE people.
-Other good ones are \textit{NJAMD}, \textit{MemProf}, \textit{MPatrol}
-and \textit{dmalloc}, while \textit{ElectricFence} seems
-to be included in most Linux distributions.
+Other memory debuggers are \textit{NJAMD}, \textit{MemProf},
+\textit{MPatrol}, \textit{dmalloc} and \textit{ElectricFence}.
 Most of the above tools support tracking down memory leaks as well as
 detecting double deletion, writing past the end of an allocated block, etc.
+
+A proven commercial tool \textit{Rational Purify}. It has
+a good reputation and proved its usefulness many times.
+
 
 
 % \subsubsection{Poor man's memory leak debugger}

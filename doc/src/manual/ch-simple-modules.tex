@@ -60,7 +60,7 @@ attribute in the event class). Time within the model is often called
 \textit{simulation time}\index{simulation time}, \textit{model time}
 \index{model!time} or \textit{virtual time}\index{virtual time}
 as opposed to real time\index{real time} or CPU time\index{CPU time}
-or which refers to how long the simulation program has been running or
+which refer to how long the simulation program has been running and
 how much CPU time it has consumed.
 
 
@@ -81,7 +81,7 @@ Such simulators usually work according to the following pseudocode:
     \textit{retrieve first event from FES}
     \textit{t:= timestamp of this event}
     \textbf{\textit{process event}}
-    \textit{(processing may insert new events in  FES or delete existing ones)}
+    \textit{(processing may insert new events in FES or delete existing ones)}
 \textit{\}}
 \textit{finish simulation (write statistical results, etc.)}
 \end{Verbatim}
@@ -106,17 +106,17 @@ packet, updating the retry count, scheduling another ``timeout''
 event, and so on. The user code may also remove events from the FES\index{FES},
 for example when canceling timeouts.
 
-The simulation stops when there are no more events left (this happens
+The simulation stops when there are no events left (this happens
 rarely in practice), or when it isn't necessary for the simulation
 to run further because the model time or the CPU time has reached
 a given limit, or because the statistics have reached the desired
-accuracy. At this time, before the program exits, the simulation
-programmer will typically want to record statistics into output
-files.
+accuracy. At this time, before the program exits, the user
+will typically want to record statistics into output files.
 
 
 
 \subsection{Simple modules in {\opp}}
+\label{sec:simple-modules-in-opp}
 
 In {\opp}, events occur inside simple modules\index{module!simple}.
 Simple modules encapsulate C++ code that generates events and reacts to events,
@@ -127,7 +127,7 @@ class, which is part of the {\opp} class library.
 \cclass{cSimpleModule}, just as \cclass{cCompoundModule}, is derived
 from a common base class, \cclass{cModule}.
 
-\cclass{cSimpleModule}, although stuffed with simulation-related
+\cclass{cSimpleModule}, although packed with simulation-related
 functionality, doesn't do anything useful by itself -- you have
 to redefine some virtual member functions to make it do useful work.
 
@@ -216,7 +216,87 @@ equal if they are ``very close'' (if they differ
 less than \textit{simtime\_precision}). This approach, however, would
 be more likely to cause confusion than actually cure the problem.
 
-
+%---------------
+%TBD
+%Point: floating point errors shouldn't matter. Simulation is the model
+%of the real world. When two events in the real world occur "simultaneously",
+%their "order" usually cannot be determined and is basically unpredictable,
+%so it should not matter in which order we simulate them.
+%
+%Try increments of 0.1 -- errors will soon come in
+%
+%As an aside: One could think about switching "simtime_t" to "long double".
+%This doesn't seem to be a very good idea. While "double" is standard 64-bit
+%IEEE-754 practically everywhere, there doesn't seem to be an agreement what
+%"long double" should mean in C/C++: 64, 80, 96 or 128 bits (see e.g. [1])
+%-- so simulations could yield somewhat different results on different
+%platforms, which is not very desirable.
+%For example, in Win32, "long double"=="double".
+%
+% User comment:
+%> So why not use some integer based time instead? If you are using a
+%> 64bit integer value, and have some functions to setup the timebase
+%> before the simulation run (how much a difference of 1 in the integers
+%> represent in the timebase, for instance 1ns or 1ps) you could get rid
+%> of all the nasty effects of floating-points with the drawback of some
+%> runtime limitations. But still if use a 64bit integer with an timebase
+%> resolution of 1ns (nano-second), you can represent a timespace about
+%> 584 years, which should be quiet enough for the most simulations.
+%> Usually integer operations are still faster than floating-point ones
+%> (especially doubles) and so simulation speed can be enhanced as well.
+%
+%FIXME TBD
+% Re: integer-based simulation time
+%
+%> It's a good point that 64-bit integers would provide enough range and
+%> resolution (585yrs with ns prec.) for most simulations. But certainly
+%> for not all (some special studies may require sub-ns times, or longer
+%> time than 585yrs), and the other drawback is that C++
+%> provides no comfortable way of working with such numbers (there isn't
+%> such 1e9-shifted fixed-point mode in C/C++ so you'd have to calculate
+%> *everything* in nanoseconds, which is quite a nuisance.) Practically,
+%> to switch the sim kernel to 64-bit integer time (long long, int64,
+%> __int64 on msvc) one would have to change the simtime_t typedef and
+%> the simtimeToStr()/ strToSimtime() funcions at the bare minimum, but
+%> probably there'be other places to change as well (printf's "%lg" is
+%> probably used at some places etc). I don't think it's really feasible.
+%>
+%> But even without all that, when you have beautiful 52-bit integer arithmetic
+%> already built in! I'm talking about the IEEE double-prec number's
+%> 52-bit mantissa.
+%> If you stick to putting integers into doubles, that'll give you
+%> *precise* calculations up to 2^52 = 4.5e15, that is 1250hrs with ns
+%> precision. To do that you'd go on with the current sim kernel
+%> unchanged, but interpret simtime_t in nanoseconds not seconds, and you
+%> restrict yourself to use only integer values with it. The time
+%> displayed on the UI which comes from
+%> simtimeToStr()/strToSimtime() would be crap of course (unless you
+%> replace those functions), but all time calculations will be precise.
+%>
+%> If you'd like to experimentally verify this, please compile and run
+%> the attached little program.
+%
+%#include <stdio.h>
+%#include <math.h>
+%
+%void main()
+%{
+%    // change these two
+%    double start = pow(2.0,50.0);
+%    double increment = 99.0;
+%
+%    double x = floor(start);
+%    int i = 0;
+%    for (;;)
+%    {
+%        double xprev = x;
+%        x = x + increment;
+%        if (floor(x)!=x) printf("\nProblem at x=%lg: not whole number\n", x);
+%        if (x-xprev != increment) printf("\nProblem at x=%lg: increment not right\n", x);
+%        if ((i++ & 0x00ffffff)==0) printf("."); // monitor progress
+%    }
+%}
+%---------------
 
 \subsection{FES implementation}
 
@@ -422,204 +502,312 @@ follows this approach.
 
 \subsection{Overview}
 
-The C++ implementation of a simple\index{module!simple} module consists of:
-\begin{itemize}
-  \item{declaration of the module class: your class directly or indirectly
-        subclassed from \cclass{cSimpleModule}}
-  \item{a module type registration (\fmac{Define\_Module()} macro)}
+As mentioned before \ref{sec:simple-modules-in-opp}, a simple module\index{module!simple}
+is nothing more than a C++ class which has to be subclassed from
+\cclass{cSimpleModule}, with one or more virtual member functions redefined
+to define its behavior.
+
+The class has to be registered with {\opp} via the \fmac{Define\_Module()} macro.
+The \fmac{Define\_Module()} line should always be put into \ttt{.cc} or \ttt{.cpp}
+files and not header file (\ttt{.h}), because the compiler generates code from it.
       \footnote{For completeness, there is also a \fmac{Define\_Module\_Like()}
-                macro, but it's rarely useful.}
-  \item{implementation of the module class}
-\end{itemize}
+                macro, but its use is discouraged and might even be removed in
+                future {\opp} releases.}
 
-
-For example, the C++ source for a Sliding Window Protocol implementation
-might look like this:
+The following \ttt{HelloModule} is about the simplest simple module one could write.
+We could have left out the \ttt{initialize()} method as well to make it even smaller,
+but where would it say Hello then? Note \cclass{cSimpleModule} as base class,
+and the \fmac{Define\_Module()} line.
 
 \begin{verbatim}
-// file: swp.cc
+// file: HelloModule.cc
 #include <omnetpp.h>
 
-// module class declaration:
-class SlidingWindowProtocol : public cSimpleModule
+class HelloModule : public cSimpleModule
 {
-    Module_Class_Members(SlidingWindowProtocol,cSimpleModule,0)
+  protected:
+    virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };
 
-// module type registration:
-Define_Module( SlidingWindowProtocol );
+// register module class with OMNeT++
+Define_Module(HelloModule);
 
-// implementation of the module class:
-void SlidingWindowProtocol::handleMessage(cMessage *msg)
+void HelloModule::initialize()
 {
-   ...
+    ev << "Hello World!\n";
+}
+
+void HelloModule::handleMessage(cMessage *msg)
+{
+    delete msg; // just discard everything we receive
 }
 \end{verbatim}
 
-In order to be able to refer to this simple\index{module!simple} module type in NED
-files, we should have an associated NED declaration which might
+In order to be able to refer to this simple\index{module!simple} module type
+in NED files, we should have an associated NED declaration which might
 look like this:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-// file: swp.ned
-\textbf{simple} SlidingWindowProtocol
-    \textbf{parameters}:
-        windowSize: \textbf{numeric const};
+// file: HelloModule.ned
+\textbf{simple} HelloModule
     \textbf{gates}:
-        \textbf{in:} fromNetw, fromHigherLayer;
-        \textbf{out:} toNetw, toHigherLayer;
+        \textbf{in:} in;
 \textbf{endsimple}
 \end{Verbatim}
 
 
-\subsection{The module type registration}
-\index{module!declaration}
+\subsection{Constructor}
 
-The above example contained the following module type declaration:
+Simple modules are never instantiated by the user directly, but rather by
+the simulation kernel. This implies that one cannot write arbitrary
+constructors: the signature must be what is expected by the simulation kernel.
+Luckily, this contract is very simple: the constructor must be public, and must take
+no arguments.
 
-\begin{verbatim}
-Define_Module(SlidingWindowProtocol);
-\end{verbatim}
-
-This line tells {\opp} that you want to use the \ttt{SlidingWindowProtocol}
-C++ class as a simple module type, and that it should look for an associated
-NED simple module declaration with the same name (\ttt{simple SlidingWindowProtocol
-... endsimple}) to determine what gates and parameters this module should have.
-
-\fmac{Define\_Module()} should not be put into header files, because the compiler
-generates code from it which should only appear in one \ttt{.cc} file.
-
-
-\subsection{Several modules, single NED interface}
-
-As an alternative to \fmac{Define\_Module()}, one can the use
-\fmac{Define\_Module\_Like()} macro to associate a class with a NED
-simple module declaration of a \textit{different} name. An example:
-
-\begin{verbatim}
-Define_Module_Like(TokenRingMAC, GenericMAC);
-Define_Module_Like(EthernetMAC, GenericMAC);
-Define_Module_Like(FDDIMAC, GenericMAC);
-\end{verbatim}
-
-This would associate the \ttt{TokenRingMAC}, \ttt{EthernetMAC} and
-\ttt{FDDIMAC} C++ classes (which don't have NED counterparts)
-with the \ttt{GenericMAC} module defined in NED (only). Since
-\ttt{TokenRingMAC}, \ttt{EthernetMAC} and \ttt{FDDIMAC} don't appear
-in NED files, they cannot be used directly, only via NED's \ttt{like}
-construct \ref{sec:ch-ned-lang:like}.
-
-Although \fmac{Define\_Module\_Like()} may occasionally spare you
-writing some NED files, its use is not recommended, mainly because
-modules defined with it don't show up in documentation generated
-with \ttt{opp_neddoc} \ref{cha:neddoc}.
-
-
-
-\subsection{The class declaration}
-
-As mentioned before, simple\index{module!simple} module classes have
-to be derived from \cclass{cSimpleModule} (either directly or
-indirectly). In addition to overwriting some of the previously
-mentioned four member functions (\fname{initialize()},
-\fname{handleMessage()}, \fname{activity()}, \fname{finish()}), you
-have to write a constructor\index{module!constructor} and some more
-functions. Some of this task can be automated, so when writing the C++
-class declaration, you have two choices:
+\cclass{cSimpleModule} itself has two constructors:
 \begin{enumerate}
-\item{either use a macro which expands to the ``stock'' version of the
-    functions}
-\item{or write them yourself.}
+  \item{\ttt{cSimpleModule()} -- one without arguments}
+  \item{\ttt{cSimpleModule(size_t stacksize)} -- one that accepts the coroutine stack size}
 \end{enumerate}
 
-\subsubsection{Using macro to declare the constructor}
+The first version should be used with \fname{handleMessage()} simple modules,
+and the second one with \fname{activity()} modules.
+(With the latter, the \fname{activity()} method of the module class
+runs as a coroutine\index{coroutine} which needs a separate CPU stack,
+usually of 16..32K. This will be discussed in detail later.)
+Passing zero stack size to the latter constructor also selects \ttt{handleMessage()}.
 
-If you choose the first solution, you use the
-\fmac{Module\_Class\_Members()} macro:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-Module_Class_Members(\textit{classname}, \textit{baseclass}, \textit{stacksize});
-\end{Verbatim}
-
-The first two arguments are obvious (\textit{baseclass} is usually \cclass{cSimpleModule}),
-but \textit{stacksize} needs some explanation. For simple modules implemented
-with \ttt{handleMessage()} it should be zero, but if you use \fname{activity()},
-the module code runs as a coroutine\index{coroutine}, so it will need a separate
-stack of 16-32K. (This will be discussed in detail later.)
-
-
-As an example, the class declaration
+Thus, the following constructor definitions are all OK, and select
+\fname{handleMessage()} to be used with the module:
 
 \begin{verbatim}
-class SlidingWindowProtocol : public cSimpleModule
+HelloModule::HelloModule() {...}
+HelloModule::HelloModule() : cSimpleModule() {...}
+\end{verbatim}
+
+It is also OK to omit the constructor altogether, because the
+compiler-generated one is also suitable.
+
+The following constructor definition selects \fname{activity()} to be used
+with the module:
+
+\begin{verbatim}
+HelloModule::HelloModule() : cSimpleModule(16384) {...}
+\end{verbatim}
+
+
+\subsection{Constructor and destructor vs initialize() and finish()}
+
+The \fname{initialize()} and \fname{finish()} methods will be discussed
+in a later section in detail, but because their apparent similarity
+to the constructor and the destructor is prone to cause some confusion,
+we'll briefly cover them here.
+
+The constructor gets called when the module is created, as part of the
+model setup process. At that time, everything is just being built,
+so there isn't a lot things one can do from the constructor.
+In contrast, \fname{initialize()} gets called just before the
+simulation starts executing, when everything else has been set up
+already.
+
+\fname{finish()} is for recording statistics, and it only gets called
+when the simulation has terminated normally. It does not get called when
+the simulations stops with an error message. The destructor always
+gets called at the end, no matter how the simulation stopped, but
+at that time it is fair to assume that the simulation model has been
+halfway demolished already.
+
+Based on the above, the following conventions exist for these four methods:
+
+\tbf{Constructor conventions:}
+
+Set pointer members of the module class to \ttt{NULL}; postpone all other
+initialization tasks to \fname{initialize()}.
+
+\tbf{\fname{initialize()} conventions:}
+
+Perform all initialization tasks: read module parameters, initialize
+class variables, allocate dynamic data structures with \ttt{new};
+also allocate and initialize self-messages (timers) if needed.
+
+\tbf{\fname{finish()} conventions:}
+
+Record statistics. Do \tbf{not} \ttt{delete} anything or cancel timers --
+all cleanup must be done in the destructor.
+
+\tbf{destructor conventions:}
+
+Delete everything which was allocated by \ttt{new} and is still held
+by the module class. With self-messages (timers), use the
+\fname{cancelAndDelete(msg)} function! It is almost always wrong
+to just delete a self-message from the destructor, because it might be
+in the scheduled events list. The \fname{cancelAndDelete(msg)} function
+checks for that first, and cancels the message before deletion if necessary.
+
+
+\subsection{Compatibility with earlier versions}
+
+{\opp} versions earlier than 3.2 expected a different module class
+constructor, with the following signature:
+
+\begin{verbatim}
+MyModule(const char *name, cModule *parentModule, size_t stack=<stacksize>);
+\end{verbatim}
+
+For convenience, a macro named \fmac{Module\_Class\_Members()} was also
+provided, which expanded to a default (i.e. do-nothing) constructor implementation.
+
+In {\opp} 3.2, the \fmac{Module\_Class\_Members()} macro has been retained
+but expands to the new constructor definition. Thus a module which uses
+\fmac{Module\_Class\_Members()} does not need to be changed to work with
+{\opp} 3.2 or later. When compatiblity with older versions is no longer
+required, the macro call can simply be deleted.
+
+Some (few) modules had hand-coded constructors instead of using
+\fmac{Module\_Class\_Members()}. These modules will produce a compile
+error with {\opp} 3.2 or later, saying \textit{no appropriate constructor
+available}. The easiest way to get them working is to add \ttt{=NULL}
+default value to both the \ttt{name} and the \ttt{parentModule} arguments:
+
+\begin{verbatim}
+MyModule(const char *name=NULL, cModule *parentModule=NULL, size_t stack=<stacksize>);
+\end{verbatim}
+
+Again, when compatibility with older {\opp} versions is no longer required,
+the redundant constructor arguments can be removed.
+
+
+\subsection{"Garbage collection" and compatibility}
+
+{\opp} versions before the 3.2 release had a feature which often was,
+informally and also somewhat incorrectly, called \textit{"garbage
+collection"} (GC). The purpose of this feature was to mitigate the need for
+writing destructors, and often constructors as well by providing automatic
+cleanup at the end of the simulation. (It did not do anything during
+simulation, as the name might suggest.)
+
+{\opp} (all versions) keep track of user-allocated simulation objects
+(typically: messages) and their ownerships. What the \textit{"garbage
+collection"} feature did was that during the cleanup of the model, after
+each module destructor finished, it checked whether there were simulations
+objects left that were apparently owned by that module but not deallocated
+by the destructor -- and if it found such objects, it invoked \ttt{delete}
+on them.
+
+It worked out nicely in 90 percent of cases, but occasionally it resulted
+in spurious crashes which were hard to debug for users not familiar
+with {\opp} internals or lacking advanced C++ skills.
+    \footnote{These crashes occurred due to lack of information available
+              to the GC mechanism, e.g. C++ provides no way to detect
+              if an object is part of an array, or it's inside a struct or class.}
+
+Starting from {\opp} 3.2, this cleanup-time GC " mechanism has been disabled by default
+(\ttt{perform-gc=} configuration option, see \ref{sec:ch-run-sim:general-section}),
+and it generally not recommended to turn it back on. It does not do any harm
+to run any simulation model without GC (apart from the memory leak).
+
+It is expected that existing modules will be updated for {\opp} 3.2 sooner
+or later, by adding proper constructors and destructors. To catalyse this
+process, {\opp} dumps the list of unreleased objects at the end of the
+simulation. This dump can also be turned off in the configuration
+(\ttt{print-undisposed=} configuration option, see \ref{sec:ch-run-sim:general-section}).
+
+
+\subsection{An example}
+
+The following code is a bit longer but actually useful simple module
+implementation. It demonstrates several of the above concepts, plus
+some others which will be explained in later sections:
+\begin{enumerate}
+  \item{constructor, initialize and destructor conventions}
+  \item{using messages for timers}
+  \item{accessing module parameters}
+  \item{recording statistics at the end of the simulation}
+  \item{documenting the programmer's assumptions using ASSERT()}
+\end{enumerate}
+
+\begin{verbatim}
+// file: FFGenerator.h
+
+#include <omnetpp.h>
+
+/**
+ * Generates messages or jobs; see NED file for more info.
+ */
+class FFGenerator : public cSimpleModule
 {
-    Module_Class_Members(SlidingWindowProtocol,cSimpleModule,0)
-    ...
+  private:
+    cMessage *sendMessageEvent;
+    long numSent;
+
+  public:
+     FFGenerator();
+     virtual ~FFGenerator();
+
+  protected:
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+    virtual void finish();
 };
 \end{verbatim}
 
-expands to something like this:
-
 \begin{verbatim}
-class SlidingWindowProtocol : public cSimpleModule
+// file: FFGenerator.cc
+
+#include "FFGenerator.cc"
+
+// register module class with OMNeT++
+Define_Module(FFGenerator);
+
+FFGenerator::FFGenerator()
 {
-  public:
-    SlidingWindowProtocol(const char *name, cModule *parent, unsigned stacksize=0) :
-        cSimpleModule(name, parent, stacksize) {}
-    ...
-};
-\end{verbatim}
+    sendMessageEvent = NULL;
+}
 
-\subsubsection{Expanded form of the constructor}
-
-If you have data members in the class that you want to initialize in the
-constructor, you cannot use the \ttt{Module\_Class\_Members()} macro.
-Then you have to write the constructor yourself.
-
-The constructor\index{module!constructor} should take the following
-arguments (which also have to be passed further to the base class):
-
-\begin{itemize}
-  \item{\ttt{const char *name}, which is the name of the module}
-  \item{\ttt{cModule *parentmodule}, pointer to the parent module}
-  \item{\ttt{unsigned stacksize=\textit{stacksize}}, the coroutine stack size}
-\end{itemize}
-
-You should not change the number or types of the arguments taken
-by the constructor, because it will be called by {\opp}-generated
-code.
-
-An example:
-
-\begin{verbatim}
-class TokenRingMAC : public cSimpleModule
+void FFGenerator::initialize()
 {
-  public:
-    cQueue queue; // a data member
-    TokenRingMAC(const char *name, cModule *parent, unsigned stacksize=0);
-    ...
-};
+    numSent = 0;
+    sendMessageEvent = new cMessage("sendMessageEvent");
+    scheduleAt(0.0, sendMessageEvent);
+}
 
-TokenRingMAC(const char *name, cModule *parent, unsigned stacksize) :
-    cSimpleModule(name, parent, stacksize), queue("queue")
+void FFGenerator::handleMessage(cMessage *msg)
 {
-    // initialize data members
+    ASSERT(msg==sendMessageEvent);
+
+    cMessage *m = new cMessage("packet");
+    m->setLength(par("msgLength"));
+    send(m, "out");
+    numSent++;
+
+    double deltaT = (double)par("sendIaTime");
+    scheduleAt(simTime()+deltaT, sendMessageEvent);
+}
+
+void FFGenerator::finish()
+{
+    recordScalar("packets sent", numSent);
+}
+
+FFGenerator::~FFGenerator()
+{
+    cancelAndDelete(sendMessageEvent);
 }
 \end{verbatim}
 
+It also needs a NED declaration to be able to use it in NED files:
 
-\subsubsection{Stack size decides between handleMessage() and activity()}
+\begin{Verbatim}[commandchars=\\\{\}]
+// file: FFGenerator.ned
+\textbf{simple} FFGenerator
+    \textbf{parameters}:
+        sendIaTime: \textbf{numeric};
+    \textbf{gates}:
+        \textbf{out:} out;
+\textbf{endsimple}
+\end{Verbatim}
 
-\begin{itemize}
-\item{if the specified stack size is zero, \fname{handleMessage()} will be used;}
-\item{if it is greater than zero, \fname{activity()} will be used.}
-\end{itemize}
-
-If you make a mistake (e.g. you forget to set zero stack size
-\index{zero stack size} for a \fname{handleMessage()}
-simple module): the default versions of the
-functions issue error messages telling you what the problem is.
 
 
 
@@ -1409,16 +1597,8 @@ Keep in mind that \fname{finish()} is not always called, so it isn't a
 good place for cleanup code which should run every time the module is
 deleted. \fname{finish()} is only a good place for writing statistics,
 result post-processing and other operations  which are supposed to run only on
-successful completion.
-
-Cleanup code should go into the destructor\index{module!destructor}.
-Actually, you rarely need to write a destructor yourself, because {\opp}
-keeps track of objects you create and disposes of them automatically
-(a sort of automatic garbage collection). It cannot track
-objects that are not derived from \cclass{cObject}, however, so they may
-need to be deleted manually by the destructor. Garbage collection
-is discussed in more detail in section \ref{sec:ch-sim-lib:garbage-collection}.
-
+successful completion. Cleanup code should go into the
+destructor\index{module!destructor}.
 
 
 \subsubsection{Multi-stage initialization}

@@ -54,10 +54,7 @@ Functionality and conventions that come from \cclass{cObject}:
   \item{conventions for assignment, copying, duplicating the object}
   \item{ownership\index{ownership} control for containers derived from \cclass{cObject}}
   \item{support for traversing the object tree}
-  \item{support for inspecting the object in graphical user interfaces
-    (Tkenv)}
-  \item{support for automatic cleanup (garbage collection) at the end
-    of the simulation}
+  \item{support for inspecting the object in graphical user interfaces (Tkenv)}
 \end{itemize}
 
 
@@ -2355,10 +2352,7 @@ your particular purpose or not. Subclassing \cclass{cObject}
 generally means you have more code to write (as you \textit{have to}
 redefine certain virtual functions and adhere to conventions)
 and your class will be a bit more heavy-weight.
-In turn, it will integrate into {\opp} better, for example
-it will be more visible in Tkenv and can be automatically
-garbage-collected (this will be discussed later). If you
-need to store your objects in {\opp} objects like \cclass{cQueue},
+However, if you need to store your objects in {\opp} objects like \cclass{cQueue},
 or you'll want to store {\opp} classes in your object,
 then you \textit{must} subclass from \cclass{cObject}.
   \footnote{For simplicity, in the these sections ``{\opp} object''
