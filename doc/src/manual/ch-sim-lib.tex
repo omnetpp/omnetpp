@@ -29,8 +29,8 @@ This chapter discusses the rest of the simulation library:
   \item{distribution estimation: \cclass{cLongHistogram},
     \cclass{cDoubleHistogram}, \cclass{cVarHistogram}, \cclass{cPSquare},
     \cclass{cKSplit} classes}
-  \item{making variables inspectable in the graphical user interface
-    (Tkenv): the \fmac{WATCH()} macro (\cclass{cWatch} class)}
+  \item{making variables inspectable in the graphical user interface (Tkenv):
+        the \fmac{WATCH()} macros}
   \item{sending debug output to and prompting for user input in the graphical
     user interface (Tkenv\index{Tkenv}): the \ttt{ev}\index{ev} object (\cclass{cEnvir} class)}
 \end{itemize}
@@ -2126,58 +2126,116 @@ Some things to consider:
 
 
 
-\section{WATCHes and snapshots}
+\section{Watches and snapshots}
 
-\subsection{WATCHes}
+\subsection{Basic watches}
 
-You may want some of your \ttt{int}, \ttt{long}, \ttt{double}, \ttt{char}, etc. variables to
-be inspectable in Tkenv and to be output into the snapshot
-file\index{snapshot file}. In this case, you can create
-\cclass{cWatch} objects for them with the \fmac{WATCH()} macro:
+It would be nice, but variables of type \ttt{int}, \ttt{long}, \ttt{double}
+do not show up by default in Tkenv; neither do STL classes
+(\ttt{std::string}, \ttt{std::vector}, etc.) or your own structs and
+classes. This is because the simulation kernel, being a library, knows
+nothing about types and variables in your source code.
+
+{\opp} provides \fmac{WATCH()} and set of other macros to come to your rescue,
+and make variable to be inspectable in Tkenv and to be output into the snapshot
+file\index{snapshot file}. \fmac{WATCH()} macros are usually placed into
+\fname{initialize()} (to watch instance variables) or to the top of the
+\fname{activity()} function (to watch its local variables), the point being
+that they should only be executed once.
 
 \begin{verbatim}
-int i; WATCH(i);
-char c; WATCH(c);
+long packetsSent;
+double idleTime;
+
+WATCH(packetsSent);
+WATCH(idleTime);
+\end{verbatim}
+
+Of course, members of classes and structs can also be watched:
+
+\begin{verbatim}
+WATCH(config.maxRetries);
 \end{verbatim}
 
 When you open an inspector for the simple module in Tkenv and click
-the Objects/Watches tab in it, you'll see your WATCHed variables
+the Objects/Watches tab in it, you'll see your watched variables
 and their values there. Tkenv also lets you change the value of a
-WATCHed variable.
+watched variable.
 
-The \fmac{WATCH()} macro expands to a dynamically created \cclass{cWatch}
-object.  The object remembers the address and type of your variable.
-The macro expands to something like:
+The \fmac{WATCH()} macro can be used with any type that has a
+stream output operator (\ttt{operator<<}) defined{\new}. By default,
+this includes all primitive types and \ttt{std::string}, but since
+you can write \ttt{operator<<} for your classes/structs and basically
+any type, \fmac{WATCH()} can be used with anything. The only limitation
+is that since the output should more or less fit on single line, the
+amount of information that can be conveniently displayed is limited.
+
+An example stream output operator:
 
 \begin{verbatim}
-new cWatch("i",i);
+std::ostream& operator<<(std::ostream& os, const ClientInfo& cli)
+{
+    os << "addr=" << cli.clientAddr << "  port=" << cli.clientPort; // no endl!
+    return os;
+}
 \end{verbatim}
 
+And the \ttt{WATCH()} line:
+
+\begin{verbatim}
+WATCH(currentClientInfo);
+\end{verbatim}
+
+
+\subsection{Read-write watches{\new}}
+
+Watches for primitive types and \ttt{std::string} allow for changing
+the value from the GUI as well, but for other types you need to explicitly
+add support for that. What you need to do is define a stream input
+operator (\ttt{operator>>}) and use the \fmac{WATCH_RW()} macro instead of
+\fmac{WATCH()}.
+
+The stream input operator:
+
+\begin{verbatim}
+std::ostream& operator>>(std::istream& is, ClientInfo& cli)
+{
+    // read a line from "is" and parse its contents into "cli"
+    return is;
+}
+\end{verbatim}
+
+And the \ttt{WATCH()} line:
+
+\begin{verbatim}
+WATCH_RW(currentClientInfo);
+\end{verbatim}
+
+
+\subsection{Pointer watches{\new}}
+
+FIXME TBD
 
 You can also make a \texttt{WATCH} for pointers of type \ttt{char*} or
 \cclass[cObject]{cObject*}, but this may cause a segmentation fault if
 the pointer does not point to a valid location when Tkenv or
 \fname{snapshot()} wants to use it.
 
-You can also set watches for variables that are members of the
-module class\index{module!watches} or for structure fields:
 
-\begin{verbatim}
-WATCH( lapbconfig.timeout );
-\end{verbatim}
+Objects and pointers to objects can also be watched with WATCH_OBJ() and WATCH_PTR().
 
 
-\subsubsection{Placement of WATCHes}
+\subsection{STL watches{\new}}
+
+FIXME TBD
+
+macros to watch STL containers:
+WATCH_VECTOR(),
+WATCH_PTRVECTOR(), WATCH_LIST(), WATCH_PTRLIST(), WATCH_SET(),
+WATCH_PTRSET(), WATCH_MAP(), WATCH_PTRMAP().
 
 
-Be careful not to execute a \fmac{WATCH()} statement more than once,
-as each call would create a new \cclass{cWatch} object! If you use
-\fname{activity()}, the best place for WATCHes is the top of the
-\fname{activity()} function.  If you use \fname{handleMessage()},
-place the \fname{WATCH()} statement into \fname{initialize()}.
-\fname{WATCH()} creates a dynamic \cclass{cWatch} object, and we do
-not want to create a new object each time \fname{handleMessage()} is
-called.
+
 
 
 
