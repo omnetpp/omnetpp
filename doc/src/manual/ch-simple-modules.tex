@@ -2545,6 +2545,16 @@ while ((token = tokenizer.nextToken())!=NULL)
     numbers.push_back(atoi(token));   // convert and store
 \end{verbatim}
 
+The class also has a \fname{hasMoreTokens()} method, so the above
+code can also be written as
+
+\begin{verbatim}
+...
+cStringTokenizer tokenizer(str);
+while (tokenizer.hasMoreTokens())
+    numbers.push_back(atoi(tokenizer.nextToken()));
+\end{verbatim}
+
 For converting \ttt{long}s and \ttt{double}s, replace \ttt{atoi()}
 with \ttt{atol()} and \ttt{atof()}, respectively.
 
@@ -2715,7 +2725,7 @@ An example:
 
 \begin{verbatim}
 cMessage *packet = new cMessage("DATA");
-packet->setLength( 1000 );
+packet->setByteLength(1024);  // 1K
 
 if (gate("TxGate")->isBusy()) // if gate is busy, wait until it
 {                             // becomes free

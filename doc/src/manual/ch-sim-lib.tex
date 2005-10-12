@@ -74,7 +74,7 @@ For example, the \textit{length} attribute of the \cclass{cMessage} class can
 be set and read like this:
 
 \begin{verbatim}
-msg->setLength( 1024 );
+msg->setLength(1024);
 length = msg->length();
 \end{verbatim}
 
@@ -321,6 +321,9 @@ static buffer which is overwritten with each call. An example:
 char buf[32];
 ev.printf("t1=%s, t2=%s\n", simtimeToStr(t1), simTimeToStr(t2,buf));
 \end{verbatim}
+
+The \fname{simtimeToStrShort()} is similar to \fname{simtimeToStr()},
+but its output is more concise.
 
 The \fname{strToSimtime()} function parses a time specification passed
 in a string, and returns a \cclass{simtime\_t}. If the string cannot
@@ -838,6 +841,11 @@ between overloaded operators and report ambiguity. In that case
 you have to clarify by adding either an explicit cast
 (\ttt{(double)par("foo")} or \ttt{(long)par("foo")}) or use
 the \ttt{doubleValue()} or \ttt{longValue()} methods.
+
+The \fname{isConstant()} method can be used to determine whether a
+\cclass{cPar} stores a constant, or an expression that may produce a different
+value every time the object is read, such as \ttt{1+exponential(0.5)}.
+
 
 \subsection{Changing the value}
 
@@ -1937,6 +1945,9 @@ void Sink::handleMessage(cMessage *msg)
 }
 \end{verbatim}
 
+There is also a \fname{recordWithTimestamp()} method{\new}, to make it
+possible to record values into output vectors with a timestamp other than
+\fname{simTime()}. Increasing timestamp order is still enforced though.
 
 All \cclass{cOutVector} objects write to a single \textit{output vector file}
 named \ttt{omnetpp.vec} by default.
@@ -2631,7 +2642,7 @@ are owned by the object -- details will be covered in section
 \ref{sec:ch-sim-lib:ownership-management}.
 
 \begin{verbatim}
-cObject *NewClass::dup() const
+cPolymorphic *NewClass::dup() const
 {
     return new NewClass(*this);
 }
@@ -2967,12 +2978,6 @@ is implemented as \fname{new cArray(*this)}).
 %
 %
 %\subsection{If you use STL containers}
-%
-%TBD
-%
-%It is also possible to set the owner of an object explicitly to
-%\ttt{NULL} and thus hide it from the ownership mechanism (and thus probably
-%also from Tkenv), but this is very rarely needed.
 %
 
 

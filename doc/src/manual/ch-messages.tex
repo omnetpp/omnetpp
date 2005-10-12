@@ -92,18 +92,17 @@ Length and priority are integers, and the bit error flag is boolean.
 
 \index{message!data members}
 
-
 Once a message has been created, its data members can be changed by the following functions:
 
 \begin{verbatim}
 msg->setKind( kind );
 msg->setLength( length );
+msg->setByteLength( lengthInBytes );
 msg->setPriority( priority );
 msg->setBitError( err );
 msg->setTimestamp();
 msg->setTimestamp( simtime );
 \end{verbatim}
-
 
 With these functions the user can set the message
 kind\index{message!kind}, the message length\index{message@length},
@@ -111,7 +110,8 @@ the priority\index{message!priority}, the error
 flag\index{message!error flag} and the time stamp\index{message!time
   stamp}. The \fname{setTimeStamp()} function without any argument
 sets the time stamp to the current simulation time.
-
+\fname{setByteLength()} sets the same length field as \fname{setLength()},
+only the parameters gets internally multiplied by 8.
 
 The values can be obtained by the following functions:
 
@@ -119,13 +119,16 @@ The values can be obtained by the following functions:
 int k       = msg->kind();
 int p       = msg->priority();
 int l       = msg->length();
+int lb      = msg->byteLength();
 bool b      = msg->hasBitError();
 simtime_t t = msg->timestamp();
 \end{verbatim}
 
+\fname{byteLength()} also reads the length field as \fname{length()},
+but the result gets divided by 8 and rounded up.
+
 
 \subsubsection{Duplicating messages}
-
 \index{message!duplication}
 
 It is often necessary to duplicate a message (for example, sending
@@ -221,10 +224,11 @@ int \fname{arrivalModuleId()};
 int \fname{arrivalGateId()};
 \end{Verbatim}
 
-The following two methods are just convenience functions that
-combine module id and gate id into a gate object pointer.
+The following methods are just convenience functions which build
+on the ones above.
 
 \begin{Verbatim}[commandchars=\\\{\}]
+cModule *\fname{senderModule()};
 cGate *\fname{senderGate()};
 cGate *\fname{arrivalGate()};
 \end{Verbatim}
@@ -323,11 +327,11 @@ some out-of-band signal, so its length is left at zero.
 \begin{verbatim}
 cMessage *userdata = new cMessage("userdata");
 
-userdata->setLength(8*2000);
+userdata->setByteLength(2048);  // 2K
 cMessage *tcpseg = new cMessage("tcp");
-tcpseg->setLength(8*24);
+tcpseg->setByteLength(24);
 tcpseg->encapsulate(userdata);
-ev << tcpseg->length() << endl; // --> 8*2024 = 16192
+ev << tcpseg->byteLength() << endl; // --> 2048+24 = 2072
 \end{verbatim}
 
 A message can only hold one encapsulated message at a time. The
@@ -346,7 +350,35 @@ except if it was zero. If the length would become negative, an
 error occurs.
 
 The \fname{encapsulatedMsg()} function returns a pointer to the encapsulated
-message, or NULL if no message was encapsulated.
+message, or \ttt{NULL} if no message was encapsulated.
+
+\subsubsection{Reference counting{\new}}
+
+Since the 3.2 release, {\opp} implements reference counting of
+encapsulated messages, meaning that if you \fname{dup()} a message
+that contains an encapsulated message, then the encapsulated message will
+not be duplicated, only a reference count incremented. Duplication of
+the encapsulated message is deferred until \fname{decapsulate()}
+actually gets called. If the outer message gets deleted without its
+\fname{decapsulate()} method ever being called, then the reference
+count of the encapsulated message simply gets decremented. The
+encapsulated message is deleted when its reference count reaches
+zero.
+
+Reference counting can significantly improve performance, especially
+in LAN and wireless scenarios. For example, in the simulation of a
+broadcast LAN or WLAN, the IP, TCP and higher layer packets won't
+get duplicated (and then discarded without being used) if the
+MAC address doesn't match in the first place.
+
+The reference counting mechanism works transparently. However, there
+is one implication: \tbf{one must not change anything in a message
+that is encapsulated into another!} That is,
+\fname{encapsulatedMsg()} should be viewed as if it returned a
+pointer to a read-only object (it returns a \ttt{const} pointer
+indeed), for quite obvious reasons: the encapsulated message may be
+shared between several messages, and any change would affect those
+other messages as well.
 
 
 \subsubsection{Encapsulating several messages}
