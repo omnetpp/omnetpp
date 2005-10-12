@@ -225,7 +225,7 @@ At times it can be useful to be able stop the simulation at the place of the err
 (just before the exception is thrown) and use a C++ debugger to look
 at the stack trace and examine variables. Enabling the \ttt{debug-on-errors}
 ini file entry lets you do that -- check it in section
-\ref{sec:ch-run-sim:general-section}  {\new}.
+\ref{sec:ch-run-sim:general-section}  .
 
 If you detect an error condition in your code, you can stop the
 simulation with an error message using the \fname{opp\_error()} function.
@@ -887,13 +887,13 @@ foo.setInput(true);   // make it an input parameter
 double d = (double)foo; // the user will be prompted HERE
 \end{verbatim}
 
-There are further \ttt{set..()} functions to assign other value types:
-double function with constant args (MathFuncNoArgs, MathFunc1Args, etc),
+Further \ttt{set..()} functions to assign other storage types,
+e.g. double function with constant args (MathFuncNoArgs, MathFunc1Args, etc),
 reverse Polish expression, compiled expressions based on
-\cclass{cDoubleExpression} , random distribution based on a
+\cclass{cDoubleExpression}, random distribution based on a
 \cclass{cStatistic}'s \fname{random()} method, pointer to \cclass{cObject},
-etc. These functions are documented in the API Reference, however, they are
-rarely useful for programming simulation models.
+etc. are listed in the next section; however, they are rarely useful
+for programming simulation models.
 
 
 %
@@ -1962,7 +1962,7 @@ output vector object.
 While output vectors are to record time series data and thus they
 typically record a large volume of data during a simulation run,
 output scalars\index{output!scalars} are supposed to record a single
-value per simulation run. You can use outputs scalars
+value per simulation run. You can use output scalars
 
 \begin{itemize}
 \item{to record summary data at the end of the simulation run}
@@ -2032,13 +2032,94 @@ The format and processing of output vector files is described in section
 \ref{sec:ch-ana-sim:output-scalars}.
 
 
+\subsection{Precision}
+\label{sec:outputfile-precision}
+
+Output scalar and output vector files are text files, and floating point
+values (\ttt{double}s) are recorded into it using \ttt{fprintf()}'s
+\ttt{"\%g"} format.
+The number of significant digits can be configured using the
+\ttt{output-scalar-precision=} and \ttt{output-vector-precision=}
+configuration entries (see \ref{sec:ch-run-sim:general-section}).
+The default precision is 12 digits. The following has to be considered
+when changing the default value:
+
+IEEE-754 doubles are 64-bit numbers. The mantissa is 52 bits, which
+is roughly equivalent to 16 decimal places (52*log(2)/log(10)).
+However, due to rounding errors, usually only
+12..14 digits are correct, and the rest is pretty much random garbage
+which should be ignored. However, when you convert the decimal
+representation back into an IEEE-754 double (as in Plove and Scalars),
+an additional small error will occurs because 0.1, 0.01, etc cannot be
+accurately represented in binary. This conversion error is usually
+smaller than the one that the \ttt{double}
+variable already had before recording into the file, however if
+it is important you can eliminate it by setting >16 digits precision
+for the file (but again, be aware that the last digits are garbage).
+The practical upper limit is 17 digits, setting it higher
+doesn't make any difference in \ttt{fprintf()}'s output.
+
+% To see finite machine precision and rounding errors, try this code:
+%
+% \ begin{verbatim}
+% double x = 0.1;
+% while (true)  {
+%    printf("%.15g\n", x);
+%    x = x + 0.1;
+% }
+% \ end{verbatim}
+%
+% The following, more advanced version will also print the error of
+% converting back from text to double:
+%
+% \ begin{verbatim}
+% double x = 0.1;
+% while (true) {
+%     char line[120];
+%     sprintf(line, "%.15g \t%.14g \t%.13g \t%.12g", x, x, x, x);
+%     double x15, x14, x13, x12;
+%     sscanf(line, "%lg%lg%lg%lg", &x15, &x14, &x13, &x12);
+%     printf("%s \t| %g  %g  %g  %g\n", line, (x15-x), (x14-x), (x13-x), (x12-x));
+%     x = x + 0.1;
+% }
+% \ end{verbatim}
+%
+% For the complexity of the issue, see "What Every Computer Scientist
+% Should Know About Floating-Point Arithmetic" by David Goldberg.
+
+
+Errors coming from converting to/from decimal representation can be
+eliminated by choosing an output vector/output scalar manager class
+which stores \ttt{double}s in their native binary form.
+The appropriate configuration entries are \ttt{outputvectormanager-class=}
+and \ttt{outputvectormanager-class=}; see \ref{sec:ch-run-sim:general-section}.
+For example, \cclass{cMySQLOutputScalarManager} and \cclass{cMySQLOutputScalarManager}
+provided in \ttt{samples/database} fulfill this requirement.
+
+However, before worrying too much about rounding and conversion errors,
+it is worth considering what is the \textit{real} accuracy of your results.
+Some things to consider:
+
+\begin{itemize}
+  \item{in real life, it is very hard to measure quantities (weight, distance,
+     even time) with more than a few digits of precision. What precision
+     are your input data? For example, if you approximate inter-arrival
+     time as \textit{exponential(0.153)} when the mean is really
+     \textit{0.152601...} and the distribution is not even exactly exponential,
+     you are already starting out with a bigger error than rounding can cause.}
+
+  \item{the simulation model is itself an approximation of real life. How much
+     error do the (known and unknown) simplifications cause in the results?}
+\end{itemize}
+
+
 
 
 \section{WATCHes and snapshots}
 
 \subsection{WATCHes}
 
-You may want some of your int, long, double, char, etc. variables to
+You may want some of your \ttt{int}, \ttt{long}, \ttt{double}, \ttt{char}, etc. variables to
 be inspectable in Tkenv and to be output into the snapshot
 file\index{snapshot file}. In this case, you can create
 \cclass{cWatch} objects for them with the \fmac{WATCH()} macro:

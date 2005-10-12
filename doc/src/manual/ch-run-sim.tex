@@ -299,7 +299,7 @@ in kilobytes. You need to increase this value if you get the
 \fpar{debug-on-errors} = false & When set to \ttt{true}, runtime errors will
 cause the simulation program to break into the C++ debugger (if the simulation
 is running under one, or just-in-time debugging is activated).
-Once in the debugger, you can view the stack trace or examine variables. {\new}\\\hline
+Once in the debugger, you can view the stack trace or examine variables. \\\hline
 %%
 \fpar{load-libs} = & {\raggedright List of shared libraries (separated by
 spaces) to load in the initialization phase. {\opp} appends a platform-specific
@@ -308,6 +308,23 @@ This feature can be used to dynamically load Envir extensions (RNGs, output vect
 managers, etc.) or simple modules. Example:
 
 \fpar{load-libs} = \ttt{"../lib/rng2 ../lib/ospfrouting"}}\\\hline
+%%
+\fpar{perform-gc} = false & {\raggedright If \ttt{true}, the simulation kernel
+will \ttt{delete} on network cleanup the simulation objects not deleted
+by simple module destructors. Not recommended because it may cause crashes
+under certain scenarios. See \ref{sec:garbage-collection}. {\new}}\\\hline
+%%
+\fpar{print-undisposed} = true & {\raggedright When perform-gc is \ttt{false}
+(default setting), it selects whether simulation objects not deleted by
+simple module destructors should be reported by the simulation kernel. {\new}}\\\hline
+%%
+\fpar{output-scalar-precision} = \ttt{12} & {\raggedright Adjusts the number
+of significant digits recorded into the output scalar file.
+See \ref{sec:outputfile-precision} for a discussion. {\new}}\\\hline
+%%
+\fpar{output-vector-precision} = \ttt{12} & {\raggedright Adjusts the number
+of significant digits recorded into the output vector file.
+See \ref{sec:outputfile-precision} for a discussion. {\new}}\\\hline
 %%
 \fpar{fname-append-host} = false & {\raggedright Turning it on will cause the
 host name and process Id to be appended to the names of output files
@@ -477,7 +494,7 @@ The run-specific settings take precedence over the overall settings.
 Though runs are identified by numbers, you can assign them short
 descriptive labels, which will get displayed e.g. in the Tkenv
 run selection dialog. Just place a \ttt{description="some text"}
-line under the \ttt{[Run x]} heading. {\new}
+line under the \ttt{[Run x]} heading.
 
 An example \ttt{omnetpp.ini} (everything after \# is a comment):
 
