@@ -887,41 +887,13 @@ foo.setInput(true);   // make it an input parameter
 double d = (double)foo; // the user will be prompted HERE
 \end{verbatim}
 
-\subsection{Setting cPar to return random numbers}
-
-Setting \cclass{cPar} to call a function with constant arguments can
-be used to make \cclass{cPar} return random variables\index{random!variables}
-from different distributions\index{distribution}:
-
-\begin{verbatim}
-cPar rnd("rnd");
-rnd.setDoubleValue(intuniform, -10.0, 10.0);// uniform distr.
-rnd.setDoubleValue(normal, 100.0, 5.0); // normal distr. (mean,dev)
-rnd.setDoubleValue(exponential, 10.0); // exponential distr. (mean)
-\end{verbatim}
-
-\fname{intuniform()}, \fname{normal()} etc. are ordinary C functions
-taking double arguments and returning double. Each time you read the
-value of a \cclass{cPar} containing a function like above, the
-function will be called with the given constant arguments (e.g.
-\ttt{normal(100.0,5.0)}) and its return value used.
-
-The above functions use number 0 from the several random number
-generators. To use another generator, use the \ttt{genk\_xxx} versions
-of the random functions:
-
-\begin{verbatim}
-rnd.setDoubleValue(genk_normal, 3, 100.0, 5.0); // uses generator 3
-\end{verbatim}
-
-A \cclass{cPar} object can also be set to return a random variable from
-a distribution collected by a statistical data collection object:
-
-\begin{verbatim}
-cDoubleHistogram hist =....; // the distribution
-cPar rnd2("rnd2");
-rnd2.setDoubleValue(hist);
-\end{verbatim}
+There are further \ttt{set..()} functions to assign other value types:
+double function with constant args (MathFuncNoArgs, MathFunc1Args, etc),
+reverse Polish expression, compiled expressions based on
+\cclass{cDoubleExpression} , random distribution based on a
+\cclass{cStatistic}'s \fname{random()} method, pointer to \cclass{cObject},
+etc. These functions are documented in the API Reference, however, they are
+rarely useful for programming simulation models.
 
 
 %
@@ -1945,8 +1917,7 @@ class Sink : public cSimpleModule
 {
   protected:
     cOutVector endToEndDelayVec;
-  public:
-    Module_Class_Members(Sink,cSimpleModule,0)
+
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };
@@ -2024,8 +1995,7 @@ class Sink : public cSimpleModule
 {
   protected:
     cStdDev eedStats;
-  public:
-    Module_Class_Members(Sink,cSimpleModule,0)
+
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
     virtual void finish();
@@ -2246,11 +2216,11 @@ You can set a breakpoint\index{breakpoint} inserting a
 \begin{verbatim}
 for(;;)
 {
-  cMessage *msg = receive();
-  breakpoint("before-processing");
-  breakpoint("before-send");
-  send( reply_msg, "out" );
-  //..
+    cMessage *msg = receive();
+    breakpoint("before-processing");
+    breakpoint("before-send");
+    send( reply_msg, "out" );
+    //..
 }
 \end{verbatim}
 
@@ -2323,8 +2293,7 @@ The value includes the extra stack added by the user interface library
 (see \textit{extraStackforEnvir}\index{extraStackforEnvir} in
 envir/omnetapp.h), which is currently 8K for Cmdenv and at least 16K
 for Tkenv.
-  \footnote{The actual value is dependent on the operating
-  system, e.g. SUN Solaris needs more space.}
+  \footnote{The actual value is platform-dependent.}
 
 \fname{stackUsage()}also works by checking the existence of predefined
 byte patterns in the stack area, so it is also subject to the above

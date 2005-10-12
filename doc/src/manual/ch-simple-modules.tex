@@ -573,7 +573,8 @@ no arguments:
 \cclass{cSimpleModule} itself has two constructors:
 \begin{enumerate}
   \item{\ttt{cSimpleModule()} -- one without arguments}
-  \item{\ttt{cSimpleModule(size_t stacksize)} -- one that accepts the coroutine stack size}
+  \item{\ttt{cSimpleModule(size_t stacksize)} -- one that accepts the coroutine
+        stack size\index{module!stack size}\index{stack!size}}
 \end{enumerate}
 
 The first version should be used with \fname{handleMessage()} simple modules,
@@ -749,8 +750,8 @@ class FFGenerator : public cSimpleModule
     long numSent;
 
   public:
-     FFGenerator();
-     virtual ~FFGenerator();
+    FFGenerator();
+    virtual ~FFGenerator();
 
   protected:
     virtual void initialize();
@@ -998,8 +999,6 @@ class FooProtocol : public cSimpleModule
     virtual void processMsgFromLowerLayer(FooPacket *packet);
     virtual void processTimer(cMessage *timer);
 
-  public:
-    Module_Class_Members(FooProtocol, cSimpleModule, 0);
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };
@@ -1052,13 +1051,14 @@ discussed yet, but the code is probably understandable nevertheless.)
 \begin{Verbatim}[commandchars=\\\{\}]
 class Generator : public cSimpleModule
 \{
-    Module_Class_Members(Generator,cSimpleModule,0)
-                                // note zero stack size!
+  public:
+    Generator() : cSimpleModule() {}
+  protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 \};
 
-Define_Module( Generator );
+Define_Module(Generator);
 
 void Generator::initialize()
 \{
@@ -1097,15 +1097,16 @@ The code:
 \begin{Verbatim}[commandchars=\\\{\}]
 class BurstyGenerator : public cSimpleModule
 \{
-    Module_Class_Members(Generator,cSimpleModule,0)
-    // note the zero stack size!
+  protected:
     int burstLength;
     int burstCounter;
+
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 \};
 
-Define_Module( BurstyGenerator );
+Define_Module(BurstyGenerator);
+
 void BurstyGenerator::initialize()
 \{
     // init parameters and state variables
@@ -1677,12 +1678,11 @@ An example:
 \begin{verbatim}
 class ModifiedTransportProtocol : public TransportProtocol
 {
-  public:
-    Module_Class_Members(ModifiedTransportProtocol, TransportProtocol,0)
+  protected:
     virtual void recalculateTimeout();
 };
 
-Define_Module( ModifiedTransportProtocol );
+Define_Module(ModifiedTransportProtocol);
 
 void ModifiedTransportProtocol::recalculateTimeout()
 {
@@ -1762,17 +1762,17 @@ FSM_Switch(fsm)
 \{
   case FSM_Exit(\textit{state1}):
     //...
-  break;
+    break;
   case FSM_Enter(\textit{state1}):
     //...
-  break;
+    break;
   case FSM_Exit(\textit{state2}):
     //...
-  break;
+    break;
   case FSM_Enter(\textit{state2}):
     //...
-  break;
-    //...
+    break;
+  //...
 \};
 \end{Verbatim}
 
@@ -1859,48 +1859,46 @@ simulation.
 
 class BurstyGenerator : public cSimpleModule
 \{
- public:
-  Module_Class_Members(BurstyGenerator,cSimpleModule,0);
+  protected:
+    // parameters
+    double sleepTimeMean;
+    double burstTimeMean;
+    double sendIATime;
+    cPar *msgLength;
 
-  // parameters
-  double sleepTimeMean;
-  double burstTimeMean;
-  double sendIATime;
-  cPar *msgLength;
+    // FSM and its states
+    cFSM fsm;
+    enum \{
+      INIT = 0,
+      SLEEP = FSM_Steady(1),
+      ACTIVE = FSM_Steady(2),
+      SEND = FSM_Transient(1),
+    \};
 
-  // FSM and its states
-  cFSM fsm;
-  enum \{
-    INIT = 0,
-    SLEEP = FSM_Steady(1),
-    ACTIVE = FSM_Steady(2),
-    SEND = FSM_Transient(1),
-  \};
+    // variables used
+    int i;
+    cMessage *startStopBurst;
+    cMessage *sendMessage;
 
-  // variables used
-  int i;
-  cMessage *startStopBurst;
-  cMessage *sendMessage;
-
-  // the virtual functions
-  virtual void initialize();
-  virtual void handleMessage(cMessage *msg);
+    // the virtual functions
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
 \};
 
-Define_Module( BurstyGenerator );
+Define_Module(BurstyGenerator);
 
 void BurstyGenerator::initialize()
 \{
-  fsm.setName("fsm");
-  sleepTimeMean = par("sleepTimeMean");
-  burstTimeMean = par("burstTimeMean");
-  sendIATime = par("sendIATime");
-  msgLength = &par("msgLength");
-  i = 0;
-  WATCH(i); // always put watches in initialize()
-  startStopBurst = new cMessage("startStopBurst");
-  sendMessage = new cMessage("sendMessage");
-  scheduleAt(0.0,startStopBurst);
+    fsm.setName("fsm");
+    sleepTimeMean = par("sleepTimeMean");
+    burstTimeMean = par("burstTimeMean");
+    sendIATime = par("sendIATime");
+    msgLength = &par("msgLength");
+    i = 0;
+    WATCH(i); // always put watches in initialize()
+    startStopBurst = new cMessage("startStopBurst");
+    sendMessage = new cMessage("sendMessage");
+    scheduleAt(0.0,startStopBurst);
 \}
 
 void BurstyGenerator::handleMessage(cMessage *msg)
