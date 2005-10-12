@@ -1779,7 +1779,7 @@ files (output vector, output scalar, snapshot files).
 
 
 
-\section{Typical problems}
+\section{Typical issues}
 
 \subsection{Stack problems}
 
@@ -2007,6 +2007,47 @@ a good reputation and proved its usefulness many times.
 % been freed up properly, that is, your simulation program is likely to
 % have memory leaks\index{memory leaks}.
 
+
+\subsection{Simulation executes slowly}
+
+What can you do if the simulation executes much slower than you expect?
+The best advice that can be given here is that you should
+\tbf{use a good profiler} to find out how much time is spent in each
+part of the program. Do not make the mistake of omitting this step,
+thinking that you know "which part is slow"! Even for experienced
+programmers, profiling session is all too often full of surprises.
+It often turns out that lots of CPU time is spent in completely
+innocent-looking statements, while the big and complex algorithm
+doesn't take nearly as much time as expected. \textit{Don't assume anything
+-- profile before you optimize!}
+    \footnote{And before blaming the simulation kernel for poor performance...}
+
+A really impressive profiler on Linux is the \textit{Valgrind}-based
+\textit{callgrind}, and its visualizer \textit{KCachegrind}.
+Unfortunately it won't be ported to Windows anytime soon.
+On Windows, you're out of luck -- commercial products may help, or,
+port your simulation to Linux. The latter goes usually much smoother
+than one would expect.
+
+
+%
+%Use a profiler! KCachegrind.
+%
+%EV trick.
+%
+%Here are a few tips that can help you make the simulation faster:
+%\begin{itemize}
+%  \item{Use message subclassing instead of adding \fname{cPar}'s to messages.}
+%  \item{Try to minimize message creations and deletions. Reuse
+%    messages if possible.}
+%  \item{Turn off the display of screen messages when you run the
+%    simulation.  You can do this in the ini file. Alternatively, you
+%    can place \ttt{\#ifdef}s around your \texttt{ev<<} and
+%    \index{ev.printf()} calls and turn off the define when compiling
+%    the simulation for speed.}
+%  \item{Store the module parameters in local variables to avoid
+%    calling \cclass{cPar} member functions every time.}
+%\end{itemize}
 
 
 %%

@@ -515,8 +515,8 @@ files and not header file (\ttt{.h}), because the compiler generates code from i
                 future {\opp} releases.}
 
 The following \ttt{HelloModule} is about the simplest simple module one could write.
-We could have left out the \ttt{initialize()} method as well to make it even smaller,
-but where would it say Hello then? Note \cclass{cSimpleModule} as base class,
+(We could have left out the \ttt{initialize()} method as well to make it even smaller,
+but how would it say Hello then?) Note \cclass{cSimpleModule} as base class,
 and the \fmac{Define\_Module()} line.
 
 \begin{verbatim}
@@ -545,7 +545,7 @@ void HelloModule::handleMessage(cMessage *msg)
 \end{verbatim}
 
 In order to be able to refer to this simple\index{module!simple} module type
-in NED files, we should have an associated NED declaration which might
+in NED files, we also need an associated NED declaration which might
 look like this:
 
 \begin{Verbatim}[commandchars=\\\{\}]
@@ -563,7 +563,12 @@ Simple modules are never instantiated by the user directly, but rather by
 the simulation kernel. This implies that one cannot write arbitrary
 constructors: the signature must be what is expected by the simulation kernel.
 Luckily, this contract is very simple: the constructor must be public, and must take
-no arguments.
+no arguments:
+
+\begin{verbatim}
+  public:
+    HelloModule();  // constructor takes no arguments
+\end{verbatim}
 
 \cclass{cSimpleModule} itself has two constructors:
 \begin{enumerate}
@@ -587,10 +592,10 @@ HelloModule::HelloModule() : cSimpleModule() {...}
 \end{verbatim}
 
 It is also OK to omit the constructor altogether, because the
-compiler-generated one is also suitable.
+compiler-generated one is suitable too.
 
 The following constructor definition selects \fname{activity()} to be used
-with the module:
+with the module, with 16K of coroutine stack:
 
 \begin{verbatim}
 HelloModule::HelloModule() : cSimpleModule(16384) {...}
@@ -664,7 +669,7 @@ but expands to the new constructor definition. Thus a module which uses
 {\opp} 3.2 or later. When compatiblity with older versions is no longer
 required, the macro call can simply be deleted.
 
-Some (few) modules had hand-coded constructors instead of using
+Some (few) modules have hand-coded constructors instead of using
 \fmac{Module\_Class\_Members()}. These modules will produce a compile
 error with {\opp} 3.2 or later, saying \textit{no appropriate constructor
 available}. The easiest way to get them working is to add \ttt{=NULL}
@@ -700,9 +705,11 @@ in spurious crashes which were hard to debug for users not familiar
 with {\opp} internals or lacking advanced C++ skills.
     \footnote{These crashes occurred due to lack of information available
               to the GC mechanism, e.g. C++ provides no way to detect
-              if an object is part of an array, or it's inside a struct or class.}
+              from the pointer whether an object is part of an array, or is
+              inside a struct or class. The solution was to use pointers:
+              pointer array, pointer as class member, etc.}
 
-Starting from {\opp} 3.2, this cleanup-time GC " mechanism has been disabled by default
+Starting from {\opp} 3.2, this cleanup-time GC mechanism has been disabled by default
 (\ttt{perform-gc=} configuration option, see \ref{sec:ch-run-sim:general-section}),
 and it generally not recommended to turn it back on. It does not do any harm
 to run any simulation model without GC (apart from the memory leak).
