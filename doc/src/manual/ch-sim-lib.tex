@@ -2192,7 +2192,7 @@ WATCH(currentClientInfo);
 Watches for primitive types and \ttt{std::string} allow for changing
 the value from the GUI as well, but for other types you need to explicitly
 add support for that. What you need to do is define a stream input
-operator (\ttt{operator>>}) and use the \fmac{WATCH_RW()} macro instead of
+operator (\ttt{operator>>}) and use the \fmac{WATCH\_RW()} macro instead of
 \fmac{WATCH()}.
 
 The stream input operator:
@@ -2222,7 +2222,7 @@ the pointer does not point to a valid location when Tkenv or
 \fname{snapshot()} wants to use it.
 
 
-Objects and pointers to objects can also be watched with WATCH_OBJ() and WATCH_PTR().
+Objects and pointers to objects can also be watched with WATCH\_OBJ() and WATCH\_PTR().
 
 
 \subsection{STL watches{\new}}
@@ -2230,9 +2230,9 @@ Objects and pointers to objects can also be watched with WATCH_OBJ() and WATCH_P
 FIXME TBD
 
 macros to watch STL containers:
-WATCH_VECTOR(),
-WATCH_PTRVECTOR(), WATCH_LIST(), WATCH_PTRLIST(), WATCH_SET(),
-WATCH_PTRSET(), WATCH_MAP(), WATCH_PTRMAP().
+WATCH\_VECTOR(),
+WATCH\_PTRVECTOR(), WATCH\_LIST(), WATCH\_PTRLIST(), WATCH\_SET(),
+WATCH\_PTRSET(), WATCH\_MAP(), WATCH\_PTRMAP().
 
 
 
