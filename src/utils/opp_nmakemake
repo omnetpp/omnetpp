@@ -747,9 +747,9 @@ sub abs2rel($;$;$;)
     $cur  =~ s|\\|/|g;
     $base =~ s|\\|/|g;
 
-    $abs  =~ s|/./|/|g;
-    $cur  =~ s|/./|/|g;
-    $base =~ s|/./|/|g;
+    $abs  =~ s|/\./|/|g;
+    $cur  =~ s|/\./|/|g;
+    $base =~ s|/\./|/|g;
 
     $abs  =~ s|//+|/|g;
     $cur  =~ s|//+|/|g;

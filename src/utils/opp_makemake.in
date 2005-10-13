@@ -63,9 +63,9 @@ sub abs2rel(\$;\$;\$;)
     }
 
     # some normalization
-    \$abs  =~ s|/./|/|g;
-    \$cur  =~ s|/./|/|g;
-    \$base =~ s|/./|/|g;
+    \$abs  =~ s|/\\./|/|g;
+    \$cur  =~ s|/\\./|/|g;
+    \$base =~ s|/\\./|/|g;
 
     \$abs  =~ s|//+|/|g;
     \$cur  =~ s|//+|/|g;

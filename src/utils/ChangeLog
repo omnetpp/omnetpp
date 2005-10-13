@@ -1,3 +1,8 @@
+2005-10-13  Andras Varga
+
+	* opp_makemake, opp_nmakemake: fix: internal abs2rel routine didn't 
+	work for 1-char directory names
+
 2005-09-22  Andras Varga
 
 	* opp_neddoc.in: changed to use @@listfile syntax to invoke nedtool.
