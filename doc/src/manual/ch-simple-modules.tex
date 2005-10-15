@@ -848,8 +848,8 @@ and \ttt{InterfaceTable} and \ttt{RoutingTable} in the \textit{INET Framework}.
 This section discusses \cclass{cSimpleModule}'s four previously
 mentioned member functions, intended to be redefined by the user:
 \fname{initialize()}, \fname{handleMessage()}, \fname{activity()}
-and \fname{finish()}.
-
+and \fname{finish()}, plus a fifth, less frequently used one,
+\fname{handleParameterChange}.
 
 
 
@@ -1662,6 +1662,49 @@ end-of-simulation events, but -- as documented in the PARSEC manual --
 this has led to awkward programming in many cases, so for PARSEC
 end-of-simulation events were dropped in favour of \fname{finish()}
 (called \fname{finalize()} in PARSEC).
+
+
+\subsection{handleParameterChange(){\new}}
+
+The \fname{handleParameterChange()} method was added in {\opp} 3.2,
+and it gets called by the simulation kernel when a module parameter changes.
+The method signature is the following:
+
+\begin{verbatim}
+void handleParameterChange(const char *parname);
+\end{verbatim}
+
+The user can redefine this method to let the module react to runtime parameter
+changes. A typical use is to re-read the changed parameter, and update
+the module state if needed. For example, if a timeout value changes,
+one can restart or modify running timers.
+
+The primary motivation for this functionality was to facilitate
+the implementation of \textit{scenario manager} modules which
+can be programmed to change parameters at certain simulation times.
+Such modules can be very convenient in studies involving transient behaviour.
+
+The following example shows a queue module, which supports
+runtime change of its \ttt{serviceTime} parameter:
+
+\begin{verbatim}
+void Queue::handleParameterChange(const char *parname)
+{
+    if (strcmp(parname, "serviceTime")==0)
+    {
+        // queue service time parameter changed, re-read it
+        serviceTime = par("serviceTime");
+
+        // if there any job being serviced, modify its service time
+        if (endServiceMsg->isScheduled())
+        {
+            cancelEvent(endServiceMsg);
+            scheduleAt(simTime()+serviceTime, endServiceMsg);
+        }
+    }
+}
+\end{verbatim}
+
 
 
 
