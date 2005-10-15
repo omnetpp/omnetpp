@@ -39,7 +39,7 @@
 2005-07-21  Andras Varga
 
 	* inspector.tcl: added support for custom items on the context
-	menu (e.g. right-click on a router, "Inspect Routing Table,,,"
+	menu (e.g. right-click on a router, "Inspect Routing Table..."
 	Usage: via extendContextMenu proc. [idea: Wei Yang Ng]
 
 2005-07-20  Andras Varga
