@@ -2205,37 +2205,75 @@ std::ostream& operator>>(std::istream& is, ClientInfo& cli)
 }
 \end{verbatim}
 
-And the \ttt{WATCH()} line:
+And the \ttt{WATCH\_RW()} line:
 
 \begin{verbatim}
 WATCH_RW(currentClientInfo);
 \end{verbatim}
 
 
-\subsection{Pointer watches{\new}}
+\subsection{Structured watches{\new}}
 
-FIXME TBD
+\ttt{WATCH()} and \ttt{WATCH\_RW()} are basic watches: they allow one
+line of (unstructured) text to be displayed. However, if you have a
+data structure generated from message definitions (see Chapter \ref{cha:messages}),
+then one can do better. The message compiler automatically generates
+meta-information describing individual fields of the class or struct,
+which makes it possible to display the contents on field level.
 
-You can also make a \texttt{WATCH} for pointers of type \ttt{char*} or
-\cclass[cObject]{cObject*}, but this may cause a segmentation fault if
-the pointer does not point to a valid location when Tkenv or
-\fname{snapshot()} wants to use it.
+The \texttt{WATCH} macros to be used for this purpose are \fmac{WATCH\_OBJ()}
+and \fmac{WATCH\_PTR()}. Both expect the object to be subclassed from
+\cclass{cPolymorphic}; \fmac{WATCH\_OBJ()} expects a reference to such class,
+and \fmac{WATCH\_PTR()} expects a pointer variable.
 
+\begin{verbatim}
+ExtensionHeader hdr;
+ExtensionHeader *hdrPtr;
+...
+WATCH_OBJ(hdr);
+WATCH_PTR(hdrPtr);
+\end{verbatim}
 
-Objects and pointers to objects can also be watched with WATCH\_OBJ() and WATCH\_PTR().
+CAUTION: With \fmac{WATCH\_PTR()}, the pointer variable must point to a valid
+object or be \ttt{NULL} at all times, otherwise the GUI may crash
+while trying to display the object. This practically means that
+the pointer should be initialized to \ttt{NULL} even if not used, and
+should be set to \ttt{NULL} when the object to which it points gets deleted.
+
+\begin{verbatim}
+delete watchedPtr;
+watchedPtr = NULL;  // set to NULL when object gets deleted
+\end{verbatim}
 
 
 \subsection{STL watches{\new}}
 
-FIXME TBD
+The standard C++ container classes (\ttt{vector}, \ttt{map}, \ttt{set}, etc)
+also have structured watches, available via the following macros:
 
-macros to watch STL containers:
-WATCH\_VECTOR(),
-WATCH\_PTRVECTOR(), WATCH\_LIST(), WATCH\_PTRLIST(), WATCH\_SET(),
-WATCH\_PTRSET(), WATCH\_MAP(), WATCH\_PTRMAP().
+\fmac{WATCH\_VECTOR()}, \fmac{WATCH\_PTRVECTOR()},
+\fmac{WATCH\_LIST()}, \fmac{WATCH\_PTRLIST()},
+\fmac{WATCH\_SET()}, \fmac{WATCH\_PTRSET()},
+\fmac{WATCH\_MAP()}, \fmac{WATCH\_PTRMAP()}.
 
+The \ttt{PTR}-less versions expect the data items ("T") to have
+stream output operators (\ttt{operator <<}), because that's how
+they will display them. The \ttt{PTR} versions assume that
+data items are pointers to some type which has \ttt{operator <<}.
+\fmac{WATCH\_PTRMAP()} assumes that only the value type (``second'')
+is a pointer, the key type (``first'') is not. (If you happen to use
+pointers as key, then define \ttt{operator <<} for the pointer type
+itself.)
 
+Examples:
 
+\begin{verbatim}
+std::vector<int> intvec;
+WATCH_VECTOR(intvec);
+
+std::map<std::string,Command*> commandMap;
+WATCH_PTRMAP(commandMap);
+\end{verbatim}
 
 
 

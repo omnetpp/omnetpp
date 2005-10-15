@@ -245,10 +245,10 @@ We add the counter as a class member:
 
 @dontinclude txc3.cc
 @skip class Txc3
-@until public:
+@until protected:
 
 We set the variable to 10 in initialize() and decrement in handleMessage(),
-that is, on every message arrival . After it reaches zero, the simulation
+that is, on every message arrival. After it reaches zero, the simulation
 will run out of events and terminate.
 
 Note the
@@ -393,7 +393,7 @@ use of this feature we have to read the parameter in handleMessage()
 every time we use it.
 
 @dontinclude txc6.cc
-@skip double delay
+@skip The "delayTime" module parameter
 @until scheduleAt(
 
 In addition, we'll "lose" (delete) the packet with a small (hardcoded) probability.
@@ -668,7 +668,7 @@ received, we've added two counters to the module class: numSent and numReceived.
 
 @dontinclude txc11.cc
 @skip class Txc11
-@until public:
+@until protected:
 
 They are set to zero and WATCH'ed in the initialize() method. Now we
 can use the Find/inspect objects dialog (Inspect menu; it is also on
@@ -721,7 +721,7 @@ to the class.
 
 @dontinclude txc12.cc
 @skipline class Txc12
-@until public:
+@until protected:
 
 When a message arrives at the destination node, we update the statistics.
 The following code has been added to handleMessage():
