@@ -3,6 +3,49 @@ What's New
 
 OMNeT++ 3.2 (Oct 2005)
 ----------------------
+The following brief list wraps up the most important new features and
+changes since the 3.1 release. Please read on to the sections about the
+the prereleases (3.2pre1..4) for more details on these points, and for
+a more complete list. Even more details can be found in the doc/API-Changes
+file and the ChangeLog files of the individual source directories.
+
+General:
+  - support for database (MySQL) storage of: model topology, model
+    configuration, output vectors and scalars and model topology.
+
+Simulation core:
+  - simplified the signature of simple module constructors; Module_Class_Mem-
+    bers() is no longer required. Please check below or in doc/API-changes
+    for backward compatibility information.
+
+  - cleanup-time garbage collection turned OFF by default. It can be turned
+    on manually, but the preferred way is to add proper destructors to
+    simple modules.
+
+  - implemented reference counting of encapsulated messages, primarily to
+    increase the performance of wireless simulations.
+
+  - WATCH() revisited: now its variants support STL container classes, and
+    basically any data type that has operator<<.
+
+  - modules can now get notified when a module parameter changes. Just redefine
+    the new handleParameterChange(const char *parname) method of cModule.
+
+  - several other API improvements -- see doc/API-Changes.
+
+  - several opp_msgc improvements
+
+GUI:
+  - added the TimeBar to Tkenv, and made the "Find/Inspect Objects" dialog
+    nonmodal (a long-standing wish).
+
+  - several GNED refinements, the most visible one being that on opening a NED
+    file it automatically tries to open all its imports as well (feature can
+    be turned off).
+
+  - big usability improvements in Plove and Scalars: Chart Settings dialog
+    has been redesigned, and your custom settings can be saved as defaults.
+    Plove also has new filters, and some problems got fixed in existing ones.
 
 
 OMNeT++ 3.2pre4 (Sep 2005)
@@ -22,18 +65,18 @@ Simulation kernel:
     accepted. See include/ChangeLog for details. All sample simulations
     have been updated accordingly.
 
-    POTENTIAL INCOMPATIBILITY: modules with handcoded constructors need 
-    to be modified. Add default values to constructor arguments: 
+    POTENTIAL INCOMPATIBILITY: modules with handcoded constructors need
+    to be modified. Add default values to constructor arguments:
     (const char *name=NULL, cModule *parent=NULL).
 
   - dup() method got moved to cPolymorphic, and return type changed to
     cPolymorphic. In the next release we'll drop MSVC 6.0 support,
     and move to covariant return types (which MSVC 6.0 doesn't support).
 
-New examples: 
-  - database integration. With the given extensions, one can transparently 
-    redirect output vectors and output scalars into a MySQL database, read 
-    module parameters from a MySQL database (all without modification of 
+New examples:
+  - database integration. With the given extensions, one can transparently
+    redirect output vectors and output scalars into a MySQL database, read
+    module parameters from a MySQL database (all without modification of
     existing models), or build a network from topology stored in a database.
 
 Other:
