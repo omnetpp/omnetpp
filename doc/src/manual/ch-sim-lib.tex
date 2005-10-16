@@ -2043,7 +2043,7 @@ The format and processing of output vector files is described in section
 \ref{sec:ch-ana-sim:output-scalars}.
 
 
-\subsection{Precision}
+\subsection{Precision{\new}}
 \label{sec:outputfile-precision}
 
 Output scalar and output vector files are text files, and floating point
@@ -2853,7 +2853,7 @@ into them. But this is not limited to objects inserted into a container:
 From the user's point of view, ownership is managed transparently.
 For example, when you create a new \cclass{cMessage},
 it will be owned by the simple module. When you send it, it will
-first be handed over to (i.e. change owership to) the FES, and,
+first be handed over to (i.e. change owership to) the FES\index{FES}, and,
 upon arrival, to the destination simple module. When you encapsulate
 the message in another one, the encapsulating message will become
 the owner. When you decapsulate it again, the currently active

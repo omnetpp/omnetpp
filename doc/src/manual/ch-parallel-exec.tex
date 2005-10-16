@@ -528,7 +528,7 @@ event scheduling, processing model messages outgoing from the LP,
 and messages (model messages or internal messages) arriving
 from other LPs. The first hook, event scheduling is a function
 invoked by the simulation kernel to determine the next simulation
-event; it also has full access to the future event list (FEL) and
+event; it also has full access to the future event set (FES\index{FES}) and
 can add/remove events for its own use.
 Conservative parallel simulation algorithms will use this hook
 to block the simulation if the next event is unsafe, e.g. the

@@ -90,11 +90,11 @@ Such simulators usually work according to the following pseudocode:
 The first, initialization step usually builds the data structures
 representing the simulation model, calls any user-defined
 initialization code, and inserts initial events\index{initial events}
-into the FES to ensure that the simulation can start. Initialization
+into the FES\index{FES} to ensure that the simulation can start. Initialization
 strategy can differ considerably from one simulator to another.
 
 
-The subsequent loop consumes events from the FES and processes
+The subsequent loop consumes events from the FES\index{FES} and processes
 them. Events are processed in strict timestamp order in order
 to maintain causality, that is, to ensure that no event may have
 an effect on earlier events.
@@ -1352,7 +1352,7 @@ event'', it will transfer the control back to the simulation kernel by
 a \ttt{transferTo(main)} call. Initially,
 simple\index{module!simple} modules using \fname{activity()} are
 ``booted'' by events (\textit{''starter messages''}\index{starter messages})
-inserted into the FES by the simulation kernel before the
+inserted into the FES\index{FES} by the simulation kernel before the
 start of the simulation.
 
 
@@ -1536,7 +1536,7 @@ after the simulation has completed
 The \fname{initialize()} functions of the modules are invoked
 \textit{before} the first event is processed, but \textit{after} the
 initial events (starter messages\index{starter messages}) have been
-placed into the FES by the simulation kernel.
+placed into the FES\index{FES} by the simulation kernel.
 
 
 Both simple and compound modules have \fname{initialize()} functions.
@@ -2423,7 +2423,7 @@ simulation time, first you have to cancel it using \fname{cancelEvent()}.
 \subsubsection{Cancelling an event}
 
 Scheduled self-messages can be cancelled\index{self-message!cancelling}
-\index{message!cancelling} (removed from the FES).
+\index{message!cancelling} (removed from the FES\index{FES}).
 This is particularly useful because self-messages are often used
 to model timers.
 

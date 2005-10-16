@@ -108,6 +108,7 @@ htmlfile_spec := $BASE.htm
 :{}     :\index:<!--:-->:
 :{2}    :\href#1#2:<a href="#1">#2</a>::
 :{1}    :\cite#1:[<a href="#bib-#1">#1</a>]::
+:{1}    :\url#1:<a href="#1">#1</a>::
 @{}     @\caption@<center><i>Figure: @</i></center>@
 :comm   :\textbar:|::
 :comm   :\textasciicircum:^::
@@ -125,6 +126,8 @@ htmlfile_spec := $BASE.htm
 :comm   :\bibitem(\[(.*?)\])?{(.*?)}:<a name="bib-$3"></a>[$2]&nbsp;&nbsp;::
 :comm   :\newblock:::
 :comm   :\em:::
+:comm   :\c{S}:S::
+:comm   :\u{g}:g::
 :comm   :\fpar(\[.*?\])?{(.*?)}:<tt>$2</tt>::
 :comm   :\fdef(\[.*?\])?{(.*?)}:<tt>$2</tt>::
 :comm   :\fvar(\[.*?\])?{(.*?)}:<tt>$2</tt>::

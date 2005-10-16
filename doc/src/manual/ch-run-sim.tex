@@ -742,7 +742,7 @@ The \ttt{rng-class=} configuration entry sets the random number
 generator class to be used. It defaults to \ttt{"cMersenneTwister"},
 the Mersenne Twister RNG. Other available classes are \ttt{"cLCG32"}
 (the "legacy" RNG of {\opp} 2.3 and earlier versions, with a cycle length
-of $2^31-2$), and \ttt{"cAkaroaRNG"} (Akaroa's random number generator,
+of $2^{31}-2$), and \ttt{"cAkaroaRNG"} (Akaroa's random number generator,
 see section \ref{sec:ch-run-sim:akaroa}).
 
 \subsection{RNG mapping}
@@ -812,7 +812,7 @@ the same number of RNGs set).
     published about seed selection for MT.}
 
 For the \ttt{cLCG32} random number generator, the situation is more difficult,
-because the range of this RNG is rather short ($2^31-1$, about 2 billion).
+because the range of this RNG is rather short ($2^{31}-1$, about 2 billion).
 For this RNG, {\opp} uses a table of 256 pre-generated seeds, equally spaced
 in the RNG's sequence. Index into the table is calculated with the
 $runNumber*numRngs + rngNumber$ formula. Care should be taken that
@@ -1073,7 +1073,7 @@ perhaps a few times per second) \\\hline
 \fpar{performance-display}=yes/no (default: yes) & In express mode only:
 print detailed performance information. Turning it on results in a 3-line
 entry printed on each update, containing ev/sec, simsec/sec, ev/simsec,
-number of messages created/still present/currently scheduled in FES.
+number of messages created/still present/currently scheduled in FES\index{FES}.
 \\\hline
 %%
 \fpar{extra-stack-kb} = 8 & Specifies the extra amount of stack
@@ -1148,7 +1148,7 @@ because it may indicate the `health' of your simulation.
    \item{\ttt{Present}: the number of message objects currently present
      in the simulation model, that is, the number of messages created (see above)
      minus the number of messages already deleted. This number includes
-     the messages in the FES.}
+     the messages in the FES\index{FES}.}
    \item{\ttt{In FES}: the number of messages currently scheduled in the
      Future Event Set.}
 \end{itemize}

@@ -38,7 +38,7 @@ of the simulation programmer. A more-or-less complete list:
     message is sent through a connection that has an assigned bit
     error rate (\textit{ber}).}
   \item{The \textit{priority} attribute is used by the simulation kernel to
-    order messages in the message queue (FES) that have the same
+    order messages in the message queue (FES\index{FES}) that have the same
     arrival time values.}
   \item{The \textit{time stamp} attribute is not used by the simulation kernel;
     you can use it for purposes such as noting the time when the
@@ -50,7 +50,7 @@ of the simulation programmer. A more-or-less complete list:
     message's (last) sending/scheduling: \textit{source/destination module
       and gate}, \textit{sending (scheduling) and arrival time}. They are
     mostly used by the simulation kernel while the message is in
-    the FES, but the information is still in the message object when
+    the FES\index{FES}, but the information is still in the message object when
     a module receives the message.}
 \end{itemize}
 
