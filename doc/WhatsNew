@@ -1,6 +1,10 @@
 What's New
 ==========
 
+OMNeT++ 3.2 (Oct 2005)
+----------------------
+
+
 OMNeT++ 3.2pre4 (Sep 2005)
 --------------------------
 Simulation kernel:
@@ -129,9 +133,6 @@ Simulation kernel:
 
   - modules can now get notified when a module parameter changes. Just redefine
     the new handleParameterChange(const char *parname) method of cModule.
-
-  - parallel distributed simulation: added the cPtrPassingMPICommunications
-    class, for use in 64-bit supercomputing clusters like SGI Altix.
 
 Tkenv:
   - flush omnetpp.vec every time the simulation is stopped (to enable looking
