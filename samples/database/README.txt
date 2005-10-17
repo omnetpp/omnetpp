@@ -145,10 +145,10 @@ syntax, but the equivalent will work on Windows too):
    mysql-use-pipe = <true/false>  # use Windows named pipes
    mysql-options-file = <MySQL-options-filename>
 
-   Not all of them make sense together and most have defaults, for example,
-   with a Linux MySQL default installation and no password (NOT RECOMMENDED),
-   I got away with setting the mysql-database entry only. Look up the MySQL 
-   documentation if in trouble.
+   Not all of them make sense together and most have defaults. For example,
+   with a Linux MySQL default installation and no password (which is, BTW,
+   not recommended) I got away with setting the mysql-database= entry only. 
+   Look up the MySQL documentation if in trouble.
 
    For the Token Ring example, the provided sample ini file will likely work, 
    just copy it over from the example1/ directory:
