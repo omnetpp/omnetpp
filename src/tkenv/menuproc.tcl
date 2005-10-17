@@ -88,8 +88,8 @@ This simulation model uses:
 
 OMNeT++/OMNEST
 Discrete Event Simulation Framework
-
-(C) 1992-2005 Andras Varga
+" \
+"(C) 1992-2005 Andras Varga
 Release: $OMNETPP_RELEASE, edition: $OMNETPP_EDITION
 
 NO WARRANTY -- see license for details."

@@ -503,8 +503,8 @@ proc helpAbout {} {
     aboutDialog "About GNED" "
 GNED
 Graphical Network Editor
-
-Part of OMNeT++/OMNEST
+" \
+"Part of OMNeT++/OMNEST
 (C) 1992-2005 Andras Varga
 Release: $OMNETPP_RELEASE, edition: $OMNETPP_EDITION
 

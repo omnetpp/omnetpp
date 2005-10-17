@@ -19,8 +19,8 @@ proc helpAbout {} {
     aboutDialog "About Scalars" "
 Scalars
 Output Scalar Plotting Tool
-
-Part of OMNeT++/OMNEST
+" \
+"Part of OMNeT++/OMNEST
 (C) 1992-2005 Andras Varga
 Release: $OMNETPP_RELEASE, edition: $OMNETPP_EDITION
 

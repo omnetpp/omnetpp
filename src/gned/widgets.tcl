@@ -1055,14 +1055,20 @@ proc execCloseDialog w {
 #
 # Displays an About dialog.
 #
-proc aboutDialog {title contents} {
+proc aboutDialog {title part1 part2} {
+    global fonts
     catch {destroy .about}
-    createOkCancelDialog .about $title
-    label .about.f.l -text $contents
-    pack .about.f.l -expand 1 -fill both
-    destroy .about.buttons.cancelbutton
-    execOkCancelDialog .about
-    destroy .about
+    set w .about
+    createOkCancelDialog $w $title
+    $w.f config -padx 0 -pady 0 -bg #e0e0a0 -border 2 -relief groove
+    # -font $fonts(big)
+    label $w.f.l1 -text "$part1" -bg #e0e0a0 -padx 30 -font $fonts(bold)
+    label $w.f.l2 -text "$part2\n\n" -bg #e0e0a0 -padx 30
+    pack $w.f.l1 -expand 0 -fill x -side top
+    pack $w.f.l2 -expand 1 -fill both -side top
+    destroy $w.buttons.cancelbutton
+    execOkCancelDialog $w
+    destroy $w
 }
 
 
