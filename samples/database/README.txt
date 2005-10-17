@@ -47,7 +47,8 @@ Directory contents:
 Steps to get things up and running (These instructions use Linux command-line
 syntax, but the equivalent will work on Windows too):
 
-1. First, you obviously need a working MySQL database. Make sure you can
+1. First, you obviously need a working MySQL database. The code has been 
+   tested with MySQL 4.1, so that's what we recommend. Make sure you can
    log in using the MySQL console ("mysql"), and you can create tables,
    insert rows etc using SQL. 
    
@@ -57,10 +58,11 @@ syntax, but the equivalent will work on Windows too):
    mysql> exit;
 
    Also make sure that you have the necessary header files (mysql.h, etc) 
-   and libraries (mysql.lib on Windows, or libmysqlclient.so on Linux) 
+   and libraries (libmysqlclient.so on Linux, mysqlclient.lib on Windows) 
    to build programs with MySQL access. If you are installing from RPM
    in Linux, you need the "-devel" package to get these files. If installed,
-   they usually can be found in /usr/include/mysql and /usr/lib.
+   they usually can be found in /usr/include/mysql and /usr/lib. On Windows,
+   you need the full package (~40 Meg) not just the Essentials one.
 
 2. Create the database tables: log in using the MySQL console, and
    copy/paste the contents of the scripts in sql/ into it. (Or use the
@@ -93,10 +95,17 @@ syntax, but the equivalent will work on Windows too):
    $ opp_makemake -f -N -x -I/usr/include/mysql -I$HOME/omnetpp/src/envir \ 
    -lmysqlclient 
    $ make
+
+   On Windows, the last commands would look like this (provided you installed
+   MySQL into C:\MySQL):
+
+   > opp_nmakemake -f -N -x -IC:/MySQL/include -IC:/OMNeT++/src/envir \ 
+   -LC:/MySQL/lib -lmysqlclient.lib
+   > nmake -f Makefile.vc
    
    On Linux, you can also build a shared library, and have it loaded
    into the simulation dynamically (using the load-libs= omnetpp.ini
-   entry) [1].
+   entry).
 
 4. Fill the database with the input data. If you want to use cMySQLConfiguration,
    this means INSERTs into the config, configsection and configentry tables, 
@@ -178,8 +187,6 @@ of SQL INSERT statements. Add the following lines to your omnetpp.ini:
       ...
 Then start the simulation and redirect the output into a file. After some
 editing, the result can be used as an SQL script.
-
-The code has been tested with MySQL 4.1.
 
 Enjoy!
 
