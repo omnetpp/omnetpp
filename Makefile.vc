@@ -35,7 +35,7 @@ ENVIR_ILIB=
 #=====================================================================
 
 
-all: prereq components reminder
+all: checkenv components reminder
 
 components: libs progs configsamples samples
 
@@ -53,8 +53,8 @@ SAMPLES=aloha cqn dyna fddi fifo hcube hist neddemo p-to-p queueing routing queu
 #
 # Group targets. Note that utils has to be built BEFORE other libs and progs.
 #
-libs: utils $(LIBS)
-progs: $(PROGS)
+libs: ver_h utils $(LIBS)
+progs: ver_h $(PROGS)
 samples: rundemo $(SAMPLES)
 
 
@@ -189,7 +189,7 @@ docu:
 #
 # Tests
 #
-tests: prereq libs progs
+tests: checkenv libs progs
 	@echo ===== Running tests ====
         @cd /d $(OMNETPP_TEST_DIR:/=\) && call runtest.cmd
 
@@ -200,7 +200,7 @@ tests: prereq libs progs
 #=====================================================================
 
 
-prereq:
+checkenv:
 	@echo ===== Checking environment =====
 	@if not .%OS%.==.Windows_NT. echo ERROR: This makefile can ONLY be used on NT4.0, Win2K or XP!
 	@echo  Checking if $(CXX) works...
@@ -209,6 +209,8 @@ prereq:
 	@cd /d $(OMNETPP_ROOT:/=\) || echo ERROR: The directory defined in configuser.vc as OMNETPP_ROOT does not exist. && exit 1
 	@echo Checking if TCL_LIB/TCL_VER is correctly set...
 	@cd /d $(_TCL_LIBRARY:/=\) || echo ERROR: The directory $(_TCL_LIBRARY) does not exist. TK_DIR or TK_VER defined in configuser.vc might be wrong. && exit 1
+
+ver_h:
 	@cd /d $(OMNETPP_SRC_DIR:/=\)\utils && copy ver.h.base ver.h && echo #define OMNETPP_RELEASE "$(OMNETPP_VERSION)" >>ver.h && echo #define OMNETPP_EDITION "$(OMNETPP_EDITION)" >>ver.h
 
 configsamples:
