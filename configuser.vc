@@ -75,7 +75,7 @@ DOXYGEN_DIR=d:/home/tools/doxygen
 # XSLTPROC is part of LibXSLT. DOT comes from the GraphViz package.
 # XSLTPROC is the only required one, GHOSTSCRIPT, GIFTRANS and DOT are optional
 # but of course affect documentation quality.
-XSLTPROC=d:/home/tools/libxslt-1.1.9.win32/bin/xsltproc.exe
+XSLTPROC=d:/home/tools/libxslt-1.1.14p.win32/bin/xsltproc.exe
 GHOSTSCRIPT=d:/home/tools/gs/gs8.11/bin/gswin32c.exe
 GIFTRANS=d:/home/tools/misc/giftrans.exe
 DOT=d:/home/tools/Graphviz/bin/dot.exe
@@ -97,14 +97,14 @@ SCALARS_IF_POSSIBLE=scalars
 # This option is available at present for Tkenv, GNED, Scalars and Plove.
 # Set the following variables to "yes" to enable embedding Tcl files.
 #
-EMBED_TCL_CODE=no
+EMBED_TCL_CODE=yes
 
 #
 # It is possible to compile GNED, Scalars and Plove as Windows GUI apps
 # (ie. not as console apps). Set the following variable to "yes" to enable
 # compiling GUI apps.
 #
-USE_WINMAIN=no
+USE_WINMAIN=yes
 
 #
 # Set to "yes" to enable simulation executables load NED files dynamically.
@@ -119,8 +119,8 @@ WITH_PARSIM=yes
 #
 # Choose between debug and release libraries here
 #
-CFLAGS=$(CFLAGS_DEBUG)
-LDFLAGS=$(LDFLAGS_DEBUG)
+CFLAGS=$(CFLAGS_RELEASE)
+LDFLAGS=$(LDFLAGS_RELEASE)
 #CFLAGS=$(CFLAGS_RELEASE)
 #LDFLAGS=$(LDFLAGS_RELEASE)
 
