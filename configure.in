@@ -156,6 +156,7 @@ AC_MSG_NOTICE(-----------------------------------------------)
 # Note: ${VAR:-defaultvalue} used below appears to be a POSIX syntax.
 #----------------------
 CFLAGS=${CFLAGS:- -O2 -DNDEBUG=1}
+USER_CFLAGS=${USER_CFLAGS:-$CFLAGS}
 NEDCFLAGS=${NEDCFLAGS:- -Wno-unused}
 
 NEDC=${NEDC:-nedtool}
@@ -194,6 +195,7 @@ if test "$CXX" = "icpc"; then
 
     # -w1 disables all remarks
     CFLAGS="$CFLAGS -w1 -wd654 -wd177"
+    USER_CFLAGS="$USER_CFLAGS -w1 -wd654 -wd177"
 fi
 
 AS=${AS:-as}
@@ -253,6 +255,7 @@ if test "$fpic" = "x"; then
    build_shared_libs="no"
 else
    CFLAGS="$CFLAGS $fpic"
+   USER_CFLAGS="$USER_CFLAGS $fpic"
    SHLIB_LD="$SHLIB_LD $fpic"
 fi
 rm -f conftest.*
@@ -403,6 +406,7 @@ fi
 # set arch specific flags
 #----------------------
 CFLAGS="$CFLAGS $CFLAGS_ARCH"
+USER_CFLAGS="$USER_CFLAGS $CFLAGS_ARCH"
 
 #----------------------
 # Checks for programs.
@@ -753,8 +757,7 @@ if test "$build_shared_libs" = yes; then
     LIB_SUFFIX='$(SO_LIB_SUFFIX)'
     if test "$cygwin" = yes; then
         CFLAGS="$CFLAGS -DWIN32_DLL"
-    else
-        CFLAGS="$CFLAGS $SHLIB_CFLAGS"
+        USER_CFLAGS="$USER_CFLAGS -DWIN32_DLL"
     fi
 else
     LIB_SUFFIX='$(A_LIB_SUFFIX)'
@@ -781,10 +784,14 @@ fi
 #----------------------
 if test "$WITH_PARSIM" = yes; then
    CFLAGS="$CFLAGS -DWITH_PARSIM"
+   USER_CFLAGS="$USER_CFLAGS -DWITH_PARSIM"
 fi
 if test "$WITH_NETBUILDER" = yes; then
    CFLAGS="$CFLAGS -DWITH_NETBUILDER"
+   USER_CFLAGS="$USER_CFLAGS -DWITH_NETBUILDER"
 fi
+
+
 
 #----------------------
 # Files to be generated
@@ -845,6 +852,8 @@ AC_SUBST(LEX)
 AC_SUBST(CC)
 AC_SUBST(CXX)
 AC_SUBST(CPPFLAGS)
+AC_SUBST(CFLAGS)
+AC_SUBST(USER_CFLAGS)
 AC_SUBST(MYPWD)
 AC_SUBST(NEDC)
 AC_SUBST(MSGC)

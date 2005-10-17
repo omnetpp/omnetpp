@@ -26,6 +26,12 @@ CFLAGS='-g -Wall'
 #CFLAGS='-gstabs+3 -Wall'
 #CFLAGS='-O2 -DNDEBUG=1'
 
+#
+# CFLAGS for simulation models: opp_makemake will generate Makefiles with this
+# value as CFLAGS. If left empty, it defaults to the above CFLAGS setting.
+#
+USER_CFLAGS=
+
 # To suppress the 'unused variable' warnings in ned-generated _n.cc files
 # -Wno-unused is added to NEDCFLAGS
 NEDCFLAGS='-Wno-unused'

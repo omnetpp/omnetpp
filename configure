@@ -272,7 +272,7 @@ PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
 ac_unique_file="include/omnetpp.h"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX RANLIB ac_ct_RANLIB YACC LEX LEXLIB LEX_OUTPUT_ROOT MAKE DOXYGEN PERL XSLTPROC GHOSTSCRIPT CONVERT DOT GIFTRANS CXXCPP WISH OMNETPP_VERSION OMNETPP_EDITION OMNETPP_BIN_DIR OMNETPP_INCL_DIR OMNETPP_LIB_DIR OMNETPP_BITMAP_PATH OMNETPP_SRC_DIR OMNETPP_UTILS_DIR OMNETPP_DOC_DIR OMNETPP_SAMPLES_DIR OMNETPP_TEST_DIR MYPWD NEDC MSGC NEDTOOL GNED NEDCFLAGS AS AR SHLIB_LD MAKEDEPEND A_LIB_SUFFIX SO_LIB_SUFFIX LIB_SUFFIX EXE_SUFFIX NO_TCL HAVE_DLOPEN TK_CFLAGS TK_LIBS HAVE_BLT BLT_LIBS HAVE_MPI MPI_CFLAGS MPI_LIBS SYS_LIBS XMLPARSER XML_CFLAGS XML_LIBS AKAROA_CFLAGS AKAROA_LIBS TKENV_IF_POSSIBLE GNED_IF_POSSIBLE SCALARS_IF_POSSIBLE PLOVE_IF_POSSIBLE USERIF_LIBS TKENV_EMBED_SUFFIX GNED_EMBED_SUFFIX SCALARS_EMBED_SUFFIX PLOVE_EMBED_SUFFIX OMNETPP_TKENV_DIR OMNETPP_GNED_DIR OMNETPP_SCALARS_DIR OMNETPP_PLOVE_DIR WITH_NETBUILDER WITH_PARSIM LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX RANLIB ac_ct_RANLIB YACC LEX LEXLIB LEX_OUTPUT_ROOT MAKE DOXYGEN PERL XSLTPROC GHOSTSCRIPT CONVERT DOT GIFTRANS CXXCPP WISH OMNETPP_VERSION OMNETPP_EDITION OMNETPP_BIN_DIR OMNETPP_INCL_DIR OMNETPP_LIB_DIR OMNETPP_BITMAP_PATH OMNETPP_SRC_DIR OMNETPP_UTILS_DIR OMNETPP_DOC_DIR OMNETPP_SAMPLES_DIR OMNETPP_TEST_DIR USER_CFLAGS MYPWD NEDC MSGC NEDTOOL GNED NEDCFLAGS AS AR SHLIB_LD MAKEDEPEND A_LIB_SUFFIX SO_LIB_SUFFIX LIB_SUFFIX EXE_SUFFIX NO_TCL HAVE_DLOPEN TK_CFLAGS TK_LIBS HAVE_BLT BLT_LIBS HAVE_MPI MPI_CFLAGS MPI_LIBS SYS_LIBS XMLPARSER XML_CFLAGS XML_LIBS AKAROA_CFLAGS AKAROA_LIBS TKENV_IF_POSSIBLE GNED_IF_POSSIBLE SCALARS_IF_POSSIBLE PLOVE_IF_POSSIBLE USERIF_LIBS TKENV_EMBED_SUFFIX GNED_EMBED_SUFFIX SCALARS_EMBED_SUFFIX PLOVE_EMBED_SUFFIX OMNETPP_TKENV_DIR OMNETPP_GNED_DIR OMNETPP_SCALARS_DIR OMNETPP_PLOVE_DIR WITH_NETBUILDER WITH_PARSIM LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -1512,6 +1512,7 @@ echo "$as_me: -----------------------------------------------" >&6;}
 # Note: ${VAR:-defaultvalue} used below appears to be a POSIX syntax.
 #----------------------
 CFLAGS=${CFLAGS:- -O2 -DNDEBUG=1}
+USER_CFLAGS=${USER_CFLAGS:-$CFLAGS}
 NEDCFLAGS=${NEDCFLAGS:- -Wno-unused}
 
 NEDC=${NEDC:-nedtool}
@@ -2616,11 +2617,12 @@ if test "$CXX" = "icpc"; then
 
     # -w1 disables all remarks
     CFLAGS="$CFLAGS -w1 -wd654 -wd177"
+    USER_CFLAGS="$USER_CFLAGS -w1 -wd654 -wd177"
 fi
 
 AS=${AS:-as}
 AR=${AR:-ar cr}
-SHLIB_LD=${SHLIB_LD:-$CXX -shared -fPIC}
+SHLIB_LD=${SHLIB_LD:-$CXX -shared}
 if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
 set dummy ${ac_tool_prefix}ranlib; ac_word=$2
@@ -2702,14 +2704,69 @@ else
 fi
 
 
-if test "$build_shared_libs" = "if-not-windows" -o "$build_shared_libs" = "yes"; then
-    if echo $CFLAGS | grep -i -- -fPIC >/dev/null 2>/dev/null; then :; else
-        { echo "$as_me:$LINENO: NOTE: if you get problems building shared libraries (e.g. libnedxml.so)," >&5
-echo "$as_me: NOTE: if you get problems building shared libraries (e.g. libnedxml.so)," >&6;}
-        { echo "$as_me:$LINENO: you may need to add -fPIC or -fpic to CFLAGS." >&5
-echo "$as_me: you may need to add -fPIC or -fpic to CFLAGS." >&6;}
-    fi
+
+
+#----------------------
+# Test if "-fPIC" is needed for shared libs (there's a performance penalty if we use it unnecessarily)
+#----------------------
+# To test, we try to compile the following code into a shared library:
+#      int x;
+#      int getX() {return x;}
+#
+
+#if test "$build_shared_libs" = "if-not-windows" -o "$build_shared_libs" = "yes"; then
+#    if echo $CFLAGS | grep -i -- -fPIC >/dev/null 2>/dev/null; then :; else
+#        AC_MSG_NOTICE([NOTE: if you get problems building shared libraries (e.g. libnedxml.so),])
+#        AC_MSG_NOTICE([you may need to add -fPIC or -fpic to CFLAGS.])
+#    fi
+#fi
+
+echo "$as_me:$LINENO: checking if shared libs need -fPIC" >&5
+echo $ECHO_N "checking if shared libs need -fPIC... $ECHO_C" >&6
+echo 'int x;' >conftest.cc
+echo 'int getX() {return x;}' >>conftest.cc
+fpic="x"
+if echo $CFLAGS | grep -i -- "-fPIC" >/dev/null 2>/dev/null; then
+   echo "$as_me:$LINENO: result: skip (already in CFLAGS)" >&5
+echo "${ECHO_T}skip (already in CFLAGS)" >&6
+   fpic=""
 fi
+if test "$fpic" = "x" && \
+   $CXX -c conftest.cc >/dev/null 2>/dev/null && \
+   $SHLIB_LD -o conftest.so conftest.o >/dev/null 2>/dev/null; \
+then
+   echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+   fpic=""
+fi
+if test "$fpic" = "x" && \
+   $CXX -fPIC -c conftest.cc >/dev/null 2>/dev/null && \
+   $SHLIB_LD -fPIC -o conftest.so conftest.o >/dev/null 2>/dev/null; \
+then
+   echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6
+   fpic="-fPIC"
+fi
+if test "$fpic" = "x" && \
+   $CXX -fpic -c conftest.cc >/dev/null 2>/dev/null && \
+   $SHLIB_LD -fpic -o conftest.so conftest.o >/dev/null 2>/dev/null; \
+then
+   echo "$as_me:$LINENO: result: -fpic" >&5
+echo "${ECHO_T}-fpic" >&6
+   fpic="-fpic"
+fi
+if test "$fpic" = "x"; then
+   echo "$as_me:$LINENO: result: failure" >&5
+echo "${ECHO_T}failure" >&6
+   { echo "$as_me:$LINENO: WARNING: COULD NOT FIGURE OUT HOW TO BUILD SHARED LIBRARY -- reverting to static libs" >&5
+echo "$as_me: WARNING: COULD NOT FIGURE OUT HOW TO BUILD SHARED LIBRARY -- reverting to static libs" >&2;}
+   build_shared_libs="no"
+else
+   CFLAGS="$CFLAGS $fpic"
+   USER_CFLAGS="$USER_CFLAGS $fpic"
+   SHLIB_LD="$SHLIB_LD $fpic"
+fi
+rm -f conftest.*
 
 
 #----------------------
@@ -2884,6 +2941,7 @@ fi
 # set arch specific flags
 #----------------------
 CFLAGS="$CFLAGS $CFLAGS_ARCH"
+USER_CFLAGS="$USER_CFLAGS $CFLAGS_ARCH"
 
 #----------------------
 # Checks for programs.
@@ -3254,7 +3312,7 @@ if test "$MAKE" = "not found"; then
 echo "$as_me: error: make program not found -- it is required to build OMNeT++/OMNEST" >&2;}
    { (exit and also for model development.); exit and also for model development.; }; }
 else
-   if make --version 2>/dev/null | grep -i GNU >/dev/null; then :; else
+   if "$MAKE" --version 2>/dev/null | grep -i GNU >/dev/null; then :; else
        { { echo "$as_me:$LINENO: error: GNU Make is required to build OMNeT++/OMNEST." >&5
 echo "$as_me: error: GNU Make is required to build OMNeT++/OMNEST." >&2;}
    { (exit 1); exit 1; }; }
@@ -6129,8 +6187,7 @@ if test "$build_shared_libs" = yes; then
     LIB_SUFFIX='$(SO_LIB_SUFFIX)'
     if test "$cygwin" = yes; then
         CFLAGS="$CFLAGS -DWIN32_DLL"
-    else
-        CFLAGS="$CFLAGS $SHLIB_CFLAGS"
+        USER_CFLAGS="$USER_CFLAGS -DWIN32_DLL"
     fi
 else
     LIB_SUFFIX='$(A_LIB_SUFFIX)'
@@ -6157,10 +6214,14 @@ fi
 #----------------------
 if test "$WITH_PARSIM" = yes; then
    CFLAGS="$CFLAGS -DWITH_PARSIM"
+   USER_CFLAGS="$USER_CFLAGS -DWITH_PARSIM"
 fi
 if test "$WITH_NETBUILDER" = yes; then
    CFLAGS="$CFLAGS -DWITH_NETBUILDER"
+   USER_CFLAGS="$USER_CFLAGS -DWITH_NETBUILDER"
 fi
+
+
 
 #----------------------
 # Files to be generated
@@ -6172,6 +6233,8 @@ fi
 #----------------------
 # Substitutions.
 #----------------------
+
+
 
 
 
@@ -6966,6 +7029,7 @@ s,@OMNETPP_UTILS_DIR@,$OMNETPP_UTILS_DIR,;t t
 s,@OMNETPP_DOC_DIR@,$OMNETPP_DOC_DIR,;t t
 s,@OMNETPP_SAMPLES_DIR@,$OMNETPP_SAMPLES_DIR,;t t
 s,@OMNETPP_TEST_DIR@,$OMNETPP_TEST_DIR,;t t
+s,@USER_CFLAGS@,$USER_CFLAGS,;t t
 s,@MYPWD@,$MYPWD,;t t
 s,@NEDC@,$NEDC,;t t
 s,@MSGC@,$MSGC,;t t
