@@ -30,6 +30,11 @@ int strdictcmp(const char *s1, const char *s2)
             if (l1!=l2)
                 return l1<l2 ? -1 : 1;
         }
+        else if (c1==c2) // very frequent in our case
+        {
+            s1++;
+            s2++;
+        }
         else
         {
             char lc1 = tolower(c1);

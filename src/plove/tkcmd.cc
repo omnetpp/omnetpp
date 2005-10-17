@@ -373,7 +373,7 @@ int checkmemory_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    size_t memrequired = (size_t)(numpoints*pointsize*2);
    try {
        char *tmp = new char[memrequired];
-       delete tmp;
+       delete [] tmp;
    } catch (...) {
        Tcl_SetResult(interp, "BLT might not have enough memory for the plot", TCL_STATIC);
        return TCL_ERROR;

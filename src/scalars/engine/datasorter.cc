@@ -124,6 +124,7 @@ bool DataSorter::sameGroupFileRunModule(const ScalarManager::Datum& d1, const Sc
 
 bool DataSorter::lessByModuleRef(int id1, int id2)
 {
+    if (id1==-1 || id2==-1) return id2!=-1; // -1 is the smallest
     const ScalarManager::Datum& d1 = tmpScalarMgr->getValue(id1);
     const ScalarManager::Datum& d2 = tmpScalarMgr->getValue(id2);
     return strdictcmp(d1.moduleNameRef->c_str(), d2.moduleNameRef->c_str()) < 0;
@@ -131,6 +132,7 @@ bool DataSorter::lessByModuleRef(int id1, int id2)
 
 bool DataSorter::equalByModuleRef(int id1, int id2)
 {
+    if (id1==-1 || id2==-1) return id1==id2;
     const ScalarManager::Datum& d1 = tmpScalarMgr->getValue(id1);
     const ScalarManager::Datum& d2 = tmpScalarMgr->getValue(id2);
     return d1.moduleNameRef == d2.moduleNameRef;
@@ -138,13 +140,15 @@ bool DataSorter::equalByModuleRef(int id1, int id2)
 
 bool DataSorter::lessByFileAndRun(int id1, int id2)
 {
+    if (id1==-1 || id2==-1) return id2!=-1; // -1 is the smallest
     const ScalarManager::Datum& d1 = tmpScalarMgr->getValue(id1);
     const ScalarManager::Datum& d2 = tmpScalarMgr->getValue(id2);
-    return strdictcmp(d1.runRef->fileAndRunName.c_str(), d2.runRef->fileAndRunName.c_str());
+    return strdictcmp(d1.runRef->fileAndRunName.c_str(), d2.runRef->fileAndRunName.c_str()) < 0;
 }
 
 bool DataSorter::equalByFileAndRun(int id1, int id2)
 {
+    if (id1==-1 || id2==-1) return id1==id2;
     const ScalarManager::Datum& d1 = tmpScalarMgr->getValue(id1);
     const ScalarManager::Datum& d2 = tmpScalarMgr->getValue(id2);
     return d1.runRef == d2.runRef;
@@ -152,13 +156,15 @@ bool DataSorter::equalByFileAndRun(int id1, int id2)
 
 bool DataSorter::lessByScalarNameRef(int id1, int id2)
 {
+    if (id1==-1 || id2==-1) return id2!=-1; // -1 is the smallest
     const ScalarManager::Datum& d1 = tmpScalarMgr->getValue(id1);
     const ScalarManager::Datum& d2 = tmpScalarMgr->getValue(id2);
-    return strdictcmp(d1.scalarNameRef->c_str(), d2.scalarNameRef->c_str());
+    return strdictcmp(d1.scalarNameRef->c_str(), d2.scalarNameRef->c_str()) < 0;
 }
 
 bool DataSorter::equalByScalarNameRef(int id1, int id2)
 {
+    if (id1==-1 || id2==-1) return id1==id2;
     const ScalarManager::Datum& d1 = tmpScalarMgr->getValue(id1);
     const ScalarManager::Datum& d2 = tmpScalarMgr->getValue(id2);
     return d1.scalarNameRef == d2.scalarNameRef;
@@ -166,6 +172,7 @@ bool DataSorter::equalByScalarNameRef(int id1, int id2)
 
 bool DataSorter::lessByValue(int id1, int id2)
 {
+    if (id1==-1 || id2==-1) return id2!=-1; // -1 is the smallest
     const ScalarManager::Datum& d1 = tmpScalarMgr->getValue(id1);
     const ScalarManager::Datum& d2 = tmpScalarMgr->getValue(id2);
     return d1.value < d2.value;
