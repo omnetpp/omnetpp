@@ -84,7 +84,7 @@ proc about {} {
     # implements Help|About
     global OMNETPP_RELEASE OMNETPP_EDITION
     aboutDialog "About OMNeT++/OMNEST" "
-This simulation model uses:
+This simulation model is based on:
 
 OMNeT++/OMNEST
 Discrete Event Simulation Framework
