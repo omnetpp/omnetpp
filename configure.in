@@ -533,6 +533,9 @@ else
    AC_MSG_WARN([no dlopen(): dynamic loading of libs not possible])
 fi
 
+# winsock (for MinGW)
+OPP_CHECK_LIB(winsock, winsock.h, socket(0,0,0), , -lwsock32, wsock_ok, SYS_LIBS="-lwsock32 $SYS_LIBS")
+
 #----------------------
 # Check for Tcl/Tk.
 #----------------------
