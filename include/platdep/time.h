@@ -26,7 +26,7 @@
 // Platform-independent gettimeofday(), and some basic timeval operations
 //
 
-#ifndef _MSC_VER
+#ifndef _WIN32
 # include <sys/time.h>
 # include <unistd.h>
 #else

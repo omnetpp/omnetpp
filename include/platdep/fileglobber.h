@@ -16,7 +16,7 @@
 #ifndef __PLATDEP_FILEGLOBBER_H
 #define __PLATDEP_FILEGLOBBER_H
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 #include <io.h>
 #include <stdlib.h> // _MAX_PATH
 #else

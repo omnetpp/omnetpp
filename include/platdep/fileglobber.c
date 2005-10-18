@@ -24,7 +24,7 @@
 #include "platdep/misc.h"
 #include "platdep/fileglobber.h"
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 
 #include <io.h>
 #include <direct.h>

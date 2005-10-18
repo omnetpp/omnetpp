@@ -19,7 +19,7 @@
 //
 // Common Unix functionality
 //
-#ifdef _MSC_VER
+#ifdef _WIN32
 
 #include <process.h>
 #include <io.h>
@@ -76,7 +76,7 @@ inline std::string opp_getWindowsError(DWORD errorCode)
 //
 // Basic platform-independent way of getting the file listing of a directory
 //
-#ifdef _MSC_VER
+#ifdef _WIN32
 
 #define SHELL_DOES_NOT_EXPAND_WILDCARDS 1
 

@@ -22,7 +22,7 @@
 // Platform-independent handling of sockets
 //
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 //
 // Winsock version
 //
