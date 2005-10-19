@@ -10,7 +10,7 @@ h1,h2,h3,h4,h5,h6,.subheading,.toc {font-family: "Trebuchet MS", Geneva, Arial, 
 h1 {color: #006f00;}
 h2 {color: #006f00;}
 h3 {color: #006f00;}
-pre { margin-left:8pt; font-size:8pt; background:#fffff4; padding:5pt; border:1px solid; border-color:#a0a0a0 }
+pre { margin-left:8pt; background:#fffff4; padding:5pt; border:1px solid; border-color:#a0a0a0 }
 table {background:#fffff4; margin-left:8pt; border-collapse:collapse; border: 2px solid}
 td,th {text-align:left; vertical-align:top; border:1px solid; padding:3pt; border-color:#000000}
 .subheading {color: black; font-weight: bold;}
