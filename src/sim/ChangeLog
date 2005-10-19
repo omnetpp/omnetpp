@@ -1,3 +1,5 @@
+2005-10-19  ------ omnetpp-3.2 released ------
+
 2005-10-05  Andras Varga
 
 	* cgate.cc: performance: made fullname creation on-demand

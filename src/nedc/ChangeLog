@@ -1,3 +1,5 @@
+2005-10-19  ------ omnetpp-3.2 released ------
+
 2005-09-22  Andras Varga
 
 	* nedtool.cc: reverted change on 2005-04-04, and implemented @listfile

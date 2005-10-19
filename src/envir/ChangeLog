@@ -1,3 +1,5 @@
+2005-10-19  ------ omnetpp-3.2 released ------
+
 2005-09-22  Andras Varga
 
 	* implemented @@listfile in the preload-ned-files option. 

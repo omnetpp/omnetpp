@@ -1,3 +1,5 @@
+2005-10-19  ------ omnetpp-3.2 released ------
+
 2005-10-09  Andras Varga
 
 	* cpar.h: added conversion to/from short and unsigned short [patch 
