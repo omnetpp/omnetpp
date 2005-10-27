@@ -1,3 +1,8 @@
+2005-10-27  Andras Varga
+
+	* csimul.h: setSimTime() added (internal use only!), needed for SystemC
+	integration support
+
 2005-10-19  ------ omnetpp-3.2 released ------
 
 2005-10-09  Andras Varga

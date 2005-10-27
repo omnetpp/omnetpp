@@ -279,6 +279,13 @@ class SIM_API cSimulation : public cObject
     int  runNumber() const           {return run_number;}
 
     /**
+     * WARNING: INTERNAL USE ONLY. This method should NEVER be invoked from 
+     * simulation models, only from scheduler classes subclassed from 
+     * cScheduler.
+     */
+    void setSimTime(simtime_t time) { sim_time = time; }
+
+    /**
      * Returns current simulation time.
      */
     simtime_t simTime() const       {return sim_time;}
