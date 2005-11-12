@@ -253,10 +253,18 @@ class SIM_API cModule : public cDefaultList
      * parameter changes, e.g. by re-reading the value.
      * This default implementation does nothing.
      *
-     * To make it easier to write correct simple modules, the function does
-     * NOT get called during initialize() or finish(). One must be careful
-     * changing parameters from inside this method though, to avoid creating
-     * infinite notification loops.
+     * To make it easier to write predictable simple modules, the function does
+     * NOT get called during initialize() or finish(). If you need
+     * notifications within those two functions as well, add the following
+     * code to them:
+     *
+     * <pre>
+     * for (int i=0; i<params(); i++)
+     *     handleParameterChange(par(i).name());
+     * </pre>
+     *
+     * Also, one must be extremely careful when changing parameters from inside
+     * handleParameterChange(), to avoid creating an infinite notification loop.
      */
     virtual void handleParameterChange(const char *parname);
     //@}
@@ -535,13 +543,13 @@ class SIM_API cModule : public cDefaultList
 
     /**
      * Returns reference to the module parameter identified with its
-     * index p. Returns <tt>*NULL</tt> if the object doesn't exist.
+     * index p. Throws an error if the parameter does not exist.
      */
     cPar& par(int p);
 
     /**
      * Returns reference to the module parameter specified with its name.
-     * Returns <tt>*NULL</tt> if the object doesn't exist.
+     * Throws an error if the parameter does not exist.
      */
     cPar& par(const char *parname);
 
