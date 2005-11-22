@@ -97,7 +97,7 @@ SCALARS_IF_POSSIBLE=scalars
 # This option is available at present for Tkenv, GNED, Scalars and Plove.
 # Set the following variables to "yes" to enable embedding Tcl files.
 #
-EMBED_TCL_CODE=yes
+EMBED_TCL_CODE=no
 
 #
 # It is possible to compile GNED, Scalars and Plove as Windows GUI apps
@@ -237,14 +237,18 @@ DOXYGEN=$(DOXYGEN_DIR)/bin/doxygen
 # Linker switches:
 #   /debug: build debug executable
 #   /subsystem:console: build console-mode application (also works for GUI apps)
-#   /opt:noref: keep functions and/or data that is never referenced 
-#      (needed if a .lib contains simple modules or other dynamically registered components)
+#   /opt:noref: keep functions and/or data that is never referenced (DOES NOT WORK!)
+#       see http://forums.microsoft.com/MSDN/ShowPost.aspx?PostID=144087&SiteID=1&mode=1
 #
 CFLAGS_DEBUG=/EHsc /GR /FD /Zm250 /MLd /Od /GZ /Zi
 LDFLAGS_DEBUG=/subsystem:console /opt:noref /debug
 
 CFLAGS_RELEASE=/EHsc /GR /FD /Zm250 /ML /O2 /DNDEBUG
 LDFLAGS_RELEASE=/subsystem:console /opt:noref
+
+# for NesCT only -- OMNeT++ is NOT thread-safe!!!
+CFLAGS_DEBUG_MT=/EHsc /GR /FD /Zm250 /MTd /Od /GZ /Zi
+CFLAGS_RELEASE_MT=/EHsc /GR /FD /Zm250 /MT /O2 /DNDEBUG
 
 # LIB_SUFFIX is either .lib or .dll
 LIB_SUFFIX=.lib
