@@ -456,8 +456,8 @@ class SIM_API cTopology : public cObject
     Node *nodeFor(cModule *mod);
     //@}
 
-    /** @name Algorithms to find shortest paths.
-     *
+    /** @name Algorithms to find shortest paths. */
+    /*
      * To be implemented:
      *    -  void unweightedMultiShortestPathsTo(Node *target);
      *    -  void weightedSingleShortestPathsTo(Node *target);
