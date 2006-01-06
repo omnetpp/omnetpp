@@ -298,7 +298,7 @@ proc bltGraph_SavePicture {} {
            set img [image create photo]
            $graph snap $img
            # or this: blt::winop snap $graph $img
-           $img write "graph.gif" -format "GIF"
+           $img write $fname -format "GIF"
        } err] {
            bltGraph_RestoreBg $graph
            tk_messageBox -icon error -type ok  -parent .bltwin -message "Error: $err"
