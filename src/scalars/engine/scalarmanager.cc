@@ -26,10 +26,6 @@
 #include "filetokenizer.h"
 
 
-// create a NULL RunRef
-static ScalarManager::RunList dummy;
-const ScalarManager::RunRef ScalarManager::NULL_RUNREF = dummy.end();
-
 ScalarManager::ScalarManager()
 {
     lastInsertedModuleRef = moduleNames.end();
@@ -170,7 +166,7 @@ void ScalarManager::processLine(char **vec, int numtokens, RunRef& runRef, FileR
     }
     else if (numtokens>=1 && !strcmp(vec[0],"scalar"))
     {
-        if (runRef==NULL_RUNREF)
+        if (runRef==runList.end())
             throw new TException("invalid scalar file: no `run' line before first `scalar' line, line %d", lineNum);
 
         // syntax: "scalar <module> <scalarname> <value>"
@@ -210,7 +206,7 @@ ScalarManager::FileRef ScalarManager::loadFile(const char *filename)
     file.filePath = filename;
     splitFileName(filename, file.directory, file.fileName);
 
-    RunRef runRef = NULL_RUNREF;
+    RunRef runRef = runList.end();
 
     FileTokenizer ftok(filename);
     while (ftok.readLine())
