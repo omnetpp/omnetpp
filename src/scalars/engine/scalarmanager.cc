@@ -26,7 +26,9 @@
 #include "filetokenizer.h"
 
 
-const ScalarManager::RunRef ScalarManager::NULL_RUNREF = RunList().end();
+// create a NULL RunRef
+static ScalarManager::RunList dummy;
+const ScalarManager::RunRef ScalarManager::NULL_RUNREF = dummy.end();
 
 ScalarManager::ScalarManager()
 {
@@ -75,7 +77,7 @@ void ScalarManager::addValue(RunRef runRef, const char *moduleName,
 
 void ScalarManager::dump(FileRef fileRef, std::ostream& out) const
 {
-    RunRef prevRunRef = NULL_RUNREF;
+    RunRef prevRunRef = runList.end();
     for (Values::const_iterator i = scalarValues.begin(); i!=scalarValues.end(); i++)
     {
         const Datum& d = *i;
