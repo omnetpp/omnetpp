@@ -28,11 +28,11 @@ all: seedtool.exe tcl2c.exe opp_replace.exe opp_neddoc
 	copy opp_stacktool.cmd $(OMNETPP_BIN_DIR:/=\)
 
 seedtool.exe : seedtool.cc
-	$(CXX) /Tp seedtool.cc
+	$(CXX) $(CFLAGS) /Tp seedtool.cc
 	copy seedtool.exe $(OMNETPP_BIN_DIR:/=\)
 
 tcl2c.exe: tcl2c.c
-	$(CXX) tcl2c.c
+	$(CXX) $(CFLAGS) tcl2c.c
 
 opp_replace.exe: opp_replace.c
 	$(CXX) $(CFLAGS) opp_replace.c

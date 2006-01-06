@@ -107,6 +107,8 @@ class ScalarManager
 
     void addValue(RunRef runRef, const char *moduleName, const char *scalarName, double value);
 
+    static const RunRef NULL_RUNREF;
+
     FileRef loadFile(const char *filename);
 
     void dump(FileRef fileRef, std::ostream& out) const;

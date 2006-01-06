@@ -227,11 +227,9 @@ DOXYGEN=$(DOXYGEN_DIR)/bin/doxygen
 #   /GR: enable RTTI
 #   /FD: generate file dependencies
 #   /Zm200: internal compiler memory allocation 200% (needed by some omnetpp lib sources)
-#   /ML: use single-threaded LIBC
-#   /MLd: use single-theaded debug LIBC
 #   /Od: disable optimizations (for debug code)
 #   /O2: optimize for speed
-#   /GZ: catch release-build errors in debug build
+#   /RTC1: enable fast checks
 #   /Zi: build program database (PDB file) which contains debug info
 #   /DNDEBUG: #defines NDEBUG (removes assert() from generated code)
 # Linker switches:
@@ -240,15 +238,11 @@ DOXYGEN=$(DOXYGEN_DIR)/bin/doxygen
 #   /opt:noref: keep functions and/or data that is never referenced (DOES NOT WORK!)
 #       see http://forums.microsoft.com/MSDN/ShowPost.aspx?PostID=144087&SiteID=1&mode=1
 #
-CFLAGS_DEBUG=/EHsc /GR /FD /Zm250 /MLd /Od /GZ /Zi
+CFLAGS_DEBUG=/EHsc /GR /FD /Zm250 /Od /RTC1 /Zi /D_CRT_SECURE_NO_DEPRECATE
 LDFLAGS_DEBUG=/subsystem:console /opt:noref /debug
 
-CFLAGS_RELEASE=/EHsc /GR /FD /Zm250 /ML /O2 /DNDEBUG
+CFLAGS_RELEASE=/EHsc /GR /FD /Zm250 /O2 /DNDEBUG /D_CRT_SECURE_NO_DEPRECATE
 LDFLAGS_RELEASE=/subsystem:console /opt:noref
-
-# for NesCT only -- OMNeT++ is NOT thread-safe!!!
-CFLAGS_DEBUG_MT=/EHsc /GR /FD /Zm250 /MTd /Od /GZ /Zi
-CFLAGS_RELEASE_MT=/EHsc /GR /FD /Zm250 /MT /O2 /DNDEBUG
 
 # LIB_SUFFIX is either .lib or .dll
 LIB_SUFFIX=.lib

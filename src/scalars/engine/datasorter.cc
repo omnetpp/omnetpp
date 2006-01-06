@@ -64,7 +64,7 @@ IntVector DataSorter::getFilteredScalarList(const char *fileAndRunFilter,
     // they were read from file, i.e. grouped by file and run number
     IntVector outVec;
     const ScalarManager::Values& scalars = scalarMgr->getValues();
-    ScalarManager::RunRef lastRunRef = NULL;
+    ScalarManager::RunRef lastRunRef = ScalarManager::NULL_RUNREF;
     bool lastRunMatched = false;
     for (ScalarManager::Values::const_iterator i=scalars.begin(); i!=scalars.end(); i++)
     {

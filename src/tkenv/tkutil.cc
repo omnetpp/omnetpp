@@ -35,6 +35,12 @@
 
 
 
+TclQuotedString::TclQuotedString()
+{
+    quotedstr = NULL;
+    buf[0] = '\0';
+}
+
 TclQuotedString::TclQuotedString(const char *s)
 {
     int flags;
@@ -44,6 +50,22 @@ TclQuotedString::TclQuotedString(const char *s)
 }
 
 TclQuotedString::TclQuotedString(const char *s, int n)
+{
+    int flags;
+    int quotedlen = Tcl_ScanCountedElement(TCLCONST(s), n, &flags);
+    quotedstr = quotedlen<80 ? buf : Tcl_Alloc(quotedlen+1);
+    Tcl_ConvertCountedElement(TCLCONST(s), n, quotedstr, flags);
+}
+
+void TclQuotedString::set(const char *s)
+{
+    int flags;
+    int quotedlen = Tcl_ScanElement(TCLCONST(s), &flags);
+    quotedstr = quotedlen<80 ? buf : Tcl_Alloc(quotedlen+1);
+    Tcl_ConvertElement(TCLCONST(s), quotedstr, flags);
+}
+
+void TclQuotedString::set(const char *s, int n)
 {
     int flags;
     int quotedlen = Tcl_ScanCountedElement(TCLCONST(s), n, &flags);

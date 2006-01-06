@@ -26,6 +26,7 @@
 #include "filetokenizer.h"
 
 
+const ScalarManager::RunRef ScalarManager::NULL_RUNREF = RunList().end();
 
 ScalarManager::ScalarManager()
 {
@@ -74,7 +75,7 @@ void ScalarManager::addValue(RunRef runRef, const char *moduleName,
 
 void ScalarManager::dump(FileRef fileRef, std::ostream& out) const
 {
-    RunRef prevRunRef = NULL;
+    RunRef prevRunRef = NULL_RUNREF;
     for (Values::const_iterator i = scalarValues.begin(); i!=scalarValues.end(); i++)
     {
         const Datum& d = *i;
@@ -167,7 +168,7 @@ void ScalarManager::processLine(char **vec, int numtokens, RunRef& runRef, FileR
     }
     else if (numtokens>=1 && !strcmp(vec[0],"scalar"))
     {
-        if (runRef==NULL)
+        if (runRef==NULL_RUNREF)
             throw new TException("invalid scalar file: no `run' line before first `scalar' line, line %d", lineNum);
 
         // syntax: "scalar <module> <scalarname> <value>"
@@ -207,7 +208,7 @@ ScalarManager::FileRef ScalarManager::loadFile(const char *filename)
     file.filePath = filename;
     splitFileName(filename, file.directory, file.fileName);
 
-    RunRef runRef = NULL;
+    RunRef runRef = NULL_RUNREF;
 
     FileTokenizer ftok(filename);
     while (ftok.readLine())

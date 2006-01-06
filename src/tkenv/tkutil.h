@@ -58,8 +58,13 @@ class TclQuotedString
     char buf[80];  // used only if string is short, to spare alloc/dealloc
     char *quotedstr;
   public:
+    TclQuotedString();
     TclQuotedString(const char *s);
     TclQuotedString(const char *s, int n);
+
+    void set(const char *s);
+    void set(const char *s, int n);
+
     ~TclQuotedString();
     const char *get() {return quotedstr;}
     operator const char *() {return quotedstr;}

@@ -612,7 +612,7 @@ double cKSplit::random() const
      } //while (finish2..
      x -= sum;
 
-     xi += i * (rangemax - rangemin) / pow (K, cd);
+     xi += i * (rangemax - rangemin) / pow ((double)K, cd);
 
      if (gridv[location].cells[i] < 0)
      { location = -(int)gridv[location].cells[i];
@@ -623,7 +623,7 @@ double cKSplit::random() const
 
    }     //while (finish1..
 
-   xa = xi + (rangemax - rangemin) / pow (K, cd);
+   xa = xi + (rangemax - rangemin) / pow ((double)K, cd);
 
    x = rand () / (double)RAND_MAX * (xa - xi) + xi;
    return x;
@@ -676,7 +676,7 @@ double cKSplit::pdf (double x) const
 
    Grid lp = gridv[location];
 
-   return realCellValue(lp,i) / pow (K, dpth - cdpth);
+   return realCellValue(lp,i) / pow ((double)K, dpth - cdpth);
 }
 
 double cKSplit::cdf (double) const

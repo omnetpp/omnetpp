@@ -365,10 +365,10 @@ std::string TOmnetApp::getParameter(int run_no, const char *parname)
         // Make XML file location relative to the ini file in which it occurs.
         // Find substring between first two quotes (that is, the XML filename),
         // and prefix it with the directory.
-        char *begQuote = strchr(str+6,'"');
+        const char *begQuote = strchr(str+6,'"');
         if (!begQuote)
             return std::string(str);
-        char *endQuote = strchr(begQuote+1,'"');
+        const char *endQuote = strchr(begQuote+1,'"');
         while (endQuote && *(endQuote-1)=='\\' && *(endQuote-2)!='\\')
             endQuote = strchr(endQuote+1,'"');
         if (!endQuote)
@@ -446,7 +446,7 @@ void TOmnetApp::getOutVectorConfig(int run_no, const char *modname,const char *v
     }
 
     // parse interval string
-    char *ellipsis = strstr(s,"..");
+    const char *ellipsis = strstr(s,"..");
     if (!ellipsis)
         throw new cRuntimeError("Error in output vector interval %s=%s -- contains no `..'",buffer,s);
 

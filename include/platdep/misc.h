@@ -30,7 +30,6 @@
 #define getcwd _getcwd
 #define chdir  _chdir
 #define usleep(x) _sleep((x)/1000)
-//#define stat _stat
 #define mkdir(x,y) _mkdir(x)
 
 #else

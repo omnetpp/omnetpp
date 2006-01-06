@@ -1630,14 +1630,17 @@ void TOmnetTkApp::sputn(const char *s, int n)
         return;
     }
 
-    // Quote Tcl special characters: {}[]$ etc
-    TclQuotedString quotedstr(s,n);
+    // we'll need to quote Tcl special characters: {}[]$ etc; do it on demand
+    bool quotedstr_is_set = false;
+    TclQuotedString quotedstr;
 
     // output string into main window
     cModule *module = simulation.contextModule();
     const char *tag = (!module) ? "log" : "";
     if (!module || opt_use_mainwindow)
     {
+        quotedstr.set(s,n);
+        quotedstr_is_set = true;
         CHK(Tcl_VarEval(interp,
             ".main.text insert end ",quotedstr.get()," ", tag ,"\n"
             ".main.text see end", NULL));
@@ -1650,6 +1653,12 @@ void TOmnetTkApp::sputn(const char *s, int n)
         TInspector *insp = findInspector(mod,INSP_MODULEOUTPUT);
         if (insp)
         {
+            // Tcl-quote string if not done yet
+            if (!quotedstr_is_set)
+            {
+                quotedstr.set(s,n);
+                quotedstr_is_set = true;
+            }
             CHK(Tcl_VarEval(interp,
               insp->windowName(),".main.text insert end ",quotedstr.get()," ", tag, "\n",
               insp->windowName(),".main.text see end", NULL));
