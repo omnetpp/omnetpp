@@ -73,6 +73,11 @@
 // in case someone still needs the old name
 #define FULLPATHBUF_SIZE  MAX_OBJECTFULLPATH
 
+// disable VC8.0 warnings on Unix syscalls
+#ifdef _MSC_VER
+#pragma warning(disable:4996)
+#endif
+
 //=== other common defines
 
 #ifndef PI

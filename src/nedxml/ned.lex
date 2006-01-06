@@ -35,6 +35,7 @@ S  [ \t\v\n\r\f]
 #elif defined(_MSC_VER)
 # include <io.h>
 # define isatty _isatty
+# pragma warning(disable:4996) /* disable VC8.0 warnings on fileno(), etc */
 #else
 //extern "C" { int isatty(int); }
 # include <unistd.h>

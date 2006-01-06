@@ -581,6 +581,7 @@ char *yytext;
 #ifdef _MSC_VER
 #include <io.h>
 #define isatty _isatty
+#pragma warning(disable:4996) /* disable VC8.0 warnings on fileno(), etc */
 #endif
 
 #include "ebnf.h"
@@ -612,7 +613,7 @@ LineColumn pos,prevpos;
 #define TEXTBUF_LEN 1024
 char textbuf[TEXTBUF_LEN];
 
-#line 616 "lex.yy.c"
+#line 617 "lex.yy.c"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -763,9 +764,9 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 81 "ebnf.lex"
+#line 82 "ebnf.lex"
 
-#line 769 "lex.yy.c"
+#line 770 "lex.yy.c"
 
 	if ( yy_init )
 		{
@@ -850,266 +851,266 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 82 "ebnf.lex"
+#line 83 "ebnf.lex"
 { comment(); }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 83 "ebnf.lex"
+#line 84 "ebnf.lex"
 { comment(); }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 85 "ebnf.lex"
+#line 86 "ebnf.lex"
 { count(); return (INCLUDE); }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 86 "ebnf.lex"
+#line 87 "ebnf.lex"
 { count(); return (INCLUDE); }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 87 "ebnf.lex"
+#line 88 "ebnf.lex"
 { count(); return (NETWORK); }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 88 "ebnf.lex"
+#line 89 "ebnf.lex"
 { count(); return (MODULE); }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 89 "ebnf.lex"
+#line 90 "ebnf.lex"
 { count(); return (SIMPLE); }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 90 "ebnf.lex"
+#line 91 "ebnf.lex"
 { count(); return (CHANNEL); }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 91 "ebnf.lex"
+#line 92 "ebnf.lex"
 { count(); return (DELAY); }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 92 "ebnf.lex"
+#line 93 "ebnf.lex"
 { count(); return (ERROR); }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 93 "ebnf.lex"
+#line 94 "ebnf.lex"
 { count(); return (DATARATE); }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 94 "ebnf.lex"
+#line 95 "ebnf.lex"
 { count(); return (FOR); }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 95 "ebnf.lex"
+#line 96 "ebnf.lex"
 { count(); return (DO); }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 96 "ebnf.lex"
+#line 97 "ebnf.lex"
 { count(); return (_TRUE); }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 97 "ebnf.lex"
+#line 98 "ebnf.lex"
 { count(); return (_FALSE); }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 98 "ebnf.lex"
+#line 99 "ebnf.lex"
 { count(); return (REF); }
 	YY_BREAK
 /*"byvalue"               { count(); return (BYVALUE); }  --VA*/
 case 17:
 YY_RULE_SETUP
-#line 100 "ebnf.lex"
+#line 101 "ebnf.lex"
 { count(); return (ANCESTOR); }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 101 "ebnf.lex"
+#line 102 "ebnf.lex"
 { count(); return (INPUT); }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 102 "ebnf.lex"
+#line 103 "ebnf.lex"
 { count(); return (NED_CONST); }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 103 "ebnf.lex"
+#line 104 "ebnf.lex"
 { count(); return (SIZEOF); }  /* --VA*/
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 104 "ebnf.lex"
+#line 105 "ebnf.lex"
 { count(); return (ENDSIMPLE); }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 105 "ebnf.lex"
+#line 106 "ebnf.lex"
 { count(); return (ENDMODULE); }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 106 "ebnf.lex"
+#line 107 "ebnf.lex"
 { count(); return (ENDCHANNEL); }
 	YY_BREAK
 /*"endgates"              { count(); return (ENDGATES); } --VA*/
 case 24:
 YY_RULE_SETUP
-#line 108 "ebnf.lex"
+#line 109 "ebnf.lex"
 { count(); return (ENDNETWORK); }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 109 "ebnf.lex"
+#line 110 "ebnf.lex"
 { count(); return (ENDFOR); }
 	YY_BREAK
 /*"endsubmodules"         { count(); return (ENDSUBMODULES); } --VA*/
 /*"endconnections"        { count(); return (ENDCONNECTIONS); } --VA*/
 case 26:
 YY_RULE_SETUP
-#line 112 "ebnf.lex"
+#line 113 "ebnf.lex"
 { count(); return (PARAMETERS); }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 113 "ebnf.lex"
+#line 114 "ebnf.lex"
 { count(); return (GATES); }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 114 "ebnf.lex"
+#line 115 "ebnf.lex"
 { count(); return (GATESIZES); }  /* --VA*/
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 115 "ebnf.lex"
+#line 116 "ebnf.lex"
 { count(); return (IN); }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 116 "ebnf.lex"
+#line 117 "ebnf.lex"
 { count(); return (OUT); }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 117 "ebnf.lex"
+#line 118 "ebnf.lex"
 { count(); return (SUBMODULES); }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 118 "ebnf.lex"
+#line 119 "ebnf.lex"
 { count(); return (CONNECTIONS); }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 119 "ebnf.lex"
+#line 120 "ebnf.lex"
 { count(); return (DISPLAY); }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 120 "ebnf.lex"
+#line 121 "ebnf.lex"
 { count(); return (ON); }          /* --LG */
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 121 "ebnf.lex"
+#line 122 "ebnf.lex"
 { count(); return (LIKE); }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 122 "ebnf.lex"
+#line 123 "ebnf.lex"
 { count(); return (MACHINES); }         /* --LG */
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 123 "ebnf.lex"
+#line 124 "ebnf.lex"
 { count(); return (IO_INTERFACES); }    /* --LG */
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 124 "ebnf.lex"
+#line 125 "ebnf.lex"
 { count(); return (IFPAIR); }    /* --LG */
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 125 "ebnf.lex"
+#line 126 "ebnf.lex"
 { count(); return (RIGHT_ARROW); }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 126 "ebnf.lex"
+#line 127 "ebnf.lex"
 { count(); return (LEFT_ARROW); } /* --VA */
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 127 "ebnf.lex"
+#line 128 "ebnf.lex"
 { count(); return (TO); }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 128 "ebnf.lex"
+#line 129 "ebnf.lex"
 { count(); return (TO); }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 129 "ebnf.lex"
+#line 130 "ebnf.lex"
 { count(); return (TO); }  /* --VA */
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 130 "ebnf.lex"
+#line 131 "ebnf.lex"
 { count(); return (IF); }  /* --VA */
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 131 "ebnf.lex"
+#line 132 "ebnf.lex"
 { count(); return (SUBMODINDEX); }  /* --VA */
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 132 "ebnf.lex"
+#line 133 "ebnf.lex"
 { count(); return (NOCHECK); }  /* --VA */
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 134 "ebnf.lex"
+#line 135 "ebnf.lex"
 { count(); return (NUMERICTYPE); } /* --VA */
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 135 "ebnf.lex"
+#line 136 "ebnf.lex"
 { count(); return (STRINGTYPE); } /* --VA */
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 136 "ebnf.lex"
+#line 137 "ebnf.lex"
 { count(); return (BOOLTYPE); } /* --VA */
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 137 "ebnf.lex"
+#line 138 "ebnf.lex"
 { count(); return (XMLTYPE); }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 138 "ebnf.lex"
+#line 139 "ebnf.lex"
 { count(); return (ANYTYPE); } /* --VA */
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 141 "ebnf.lex"
+#line 142 "ebnf.lex"
 { count();
                                 NEDC(yylval = strdup(yytext);)
                                 GNED(yylval = 0;)
@@ -1117,7 +1118,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 145 "ebnf.lex"
+#line 146 "ebnf.lex"
 { count();
                                 NEDC(yylval = strdup(yytext);)
                                 GNED(yylval = 0;)
@@ -1125,7 +1126,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 149 "ebnf.lex"
+#line 150 "ebnf.lex"
 { count();
                                 NEDC(yylval = strdup(yytext);)
                                 GNED(yylval = 0;)
@@ -1133,7 +1134,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 153 "ebnf.lex"
+#line 154 "ebnf.lex"
 { count();
                                 NEDC(yylval = strdup(yytext);)
                                 GNED(yylval = 0;)
@@ -1141,7 +1142,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 158 "ebnf.lex"
+#line 159 "ebnf.lex"
 { count();
                                 NEDC(yylval = strdup(yytext);)
                                 GNED(yylval = 0;)
@@ -1149,185 +1150,185 @@ YY_RULE_SETUP
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 163 "ebnf.lex"
+#line 164 "ebnf.lex"
 { count(); return PLUSPLUS; }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 165 "ebnf.lex"
+#line 166 "ebnf.lex"
 { count(); return (';'); }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 166 "ebnf.lex"
+#line 167 "ebnf.lex"
 { count(); return (','); }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 167 "ebnf.lex"
+#line 168 "ebnf.lex"
 { count(); return (':'); }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 168 "ebnf.lex"
+#line 169 "ebnf.lex"
 { count(); return ('='); }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 169 "ebnf.lex"
+#line 170 "ebnf.lex"
 { count(); return ('('); }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 170 "ebnf.lex"
+#line 171 "ebnf.lex"
 { count(); return (')'); }
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 171 "ebnf.lex"
+#line 172 "ebnf.lex"
 { count(); return ('['); }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 172 "ebnf.lex"
+#line 173 "ebnf.lex"
 { count(); return (']'); }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 173 "ebnf.lex"
+#line 174 "ebnf.lex"
 { count(); return ('.'); }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 174 "ebnf.lex"
+#line 175 "ebnf.lex"
 { count(); return ('?'); } /* --VA */
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 176 "ebnf.lex"
+#line 177 "ebnf.lex"
 { count(); return (OR); }  /* --VA */
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 177 "ebnf.lex"
+#line 178 "ebnf.lex"
 { count(); return (AND); } /* --VA */
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 178 "ebnf.lex"
+#line 179 "ebnf.lex"
 { count(); return (XOR); } /* --VA */
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 179 "ebnf.lex"
+#line 180 "ebnf.lex"
 { count(); return (NOT); } /* --VA */
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 181 "ebnf.lex"
+#line 182 "ebnf.lex"
 { count(); return (BIN_OR); }  /* --VA */
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 182 "ebnf.lex"
+#line 183 "ebnf.lex"
 { count(); return (BIN_AND); } /* --VA */
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 183 "ebnf.lex"
+#line 184 "ebnf.lex"
 { count(); return (BIN_XOR); } /* --VA */
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 184 "ebnf.lex"
+#line 185 "ebnf.lex"
 { count(); return (BIN_COMPL); } /* --VA */
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 185 "ebnf.lex"
+#line 186 "ebnf.lex"
 { count(); return (SHIFT_LEFT); } /* --VA */
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 186 "ebnf.lex"
+#line 187 "ebnf.lex"
 { count(); return (SHIFT_RIGHT); } /* --VA */
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 188 "ebnf.lex"
+#line 189 "ebnf.lex"
 { count(); return (EXP); }
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 189 "ebnf.lex"
+#line 190 "ebnf.lex"
 { count(); return (PLUS); }
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
-#line 190 "ebnf.lex"
+#line 191 "ebnf.lex"
 { count(); return (MIN); }
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 191 "ebnf.lex"
+#line 192 "ebnf.lex"
 { count(); return (MUL); }
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 192 "ebnf.lex"
+#line 193 "ebnf.lex"
 { count(); return (DIV); }
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
-#line 193 "ebnf.lex"
+#line 194 "ebnf.lex"
 { count(); return (MOD); }
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
-#line 195 "ebnf.lex"
+#line 196 "ebnf.lex"
 { count(); return (EQ); }  /* --VA */
 	YY_BREAK
 case 85:
 YY_RULE_SETUP
-#line 196 "ebnf.lex"
+#line 197 "ebnf.lex"
 { count(); return (NE); }  /* --VA */
 	YY_BREAK
 case 86:
 YY_RULE_SETUP
-#line 197 "ebnf.lex"
+#line 198 "ebnf.lex"
 { count(); return (LS); }  /* --VA */
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
-#line 198 "ebnf.lex"
+#line 199 "ebnf.lex"
 { count(); return (LE); }  /* --VA */
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
-#line 199 "ebnf.lex"
+#line 200 "ebnf.lex"
 { count(); return (GT); }  /* --VA */
 	YY_BREAK
 case 89:
 YY_RULE_SETUP
-#line 200 "ebnf.lex"
+#line 201 "ebnf.lex"
 { count(); return (GE); }  /* --VA */
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
-#line 202 "ebnf.lex"
+#line 203 "ebnf.lex"
 { count(); }
 	YY_BREAK
 case 91:
 YY_RULE_SETUP
-#line 203 "ebnf.lex"
+#line 204 "ebnf.lex"
 { count(); return (INVALID_CHAR); }
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
-#line 205 "ebnf.lex"
+#line 206 "ebnf.lex"
 ECHO;
 	YY_BREAK
-#line 1331 "lex.yy.c"
+#line 1332 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2213,7 +2214,7 @@ int main()
 	return 0;
 	}
 #endif
-#line 205 "ebnf.lex"
+#line 206 "ebnf.lex"
 
 
 /***************************************************

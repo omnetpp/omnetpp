@@ -22,6 +22,10 @@
 #include <assert.h>
 #include "nedfile.h"
 
+#ifdef _MSC_VER
+#pragma warning(disable:4996) // disable VC8.0 warnings on stat(), etc
+#endif
+
 //-----------------------------------------------------------
 
 NEDFile::NEDFile()

@@ -45,6 +45,7 @@ E                       [Ee][+-]?{D}+
 #ifdef _MSC_VER
 #include <io.h>
 #define isatty _isatty
+#pragma warning(disable:4996) /* disable VC8.0 warnings on fileno(), etc */
 #endif
 
 #include "ebnf.h"
