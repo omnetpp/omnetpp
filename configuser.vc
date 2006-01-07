@@ -229,7 +229,8 @@ DOXYGEN=$(DOXYGEN_DIR)/bin/doxygen
 #   /Zm200: internal compiler memory allocation 200% (needed by some omnetpp lib sources)
 #   /Od: disable optimizations (for debug code)
 #   /O2: optimize for speed
-#   /RTC1: enable fast checks
+#   /RTCs: stack frame runtime checking (Note: don't use /RTCu & /RTC1, as they cause a
+#          problem in bison's boilerplate code (bison.simple, "uninitialized var 'yyval'")
 #   /Zi: build program database (PDB file) which contains debug info
 #   /DNDEBUG: #defines NDEBUG (removes assert() from generated code)
 # Linker switches:
@@ -238,7 +239,7 @@ DOXYGEN=$(DOXYGEN_DIR)/bin/doxygen
 #   /opt:noref: keep functions and/or data that is never referenced (DOES NOT WORK!)
 #       see http://forums.microsoft.com/MSDN/ShowPost.aspx?PostID=144087&SiteID=1&mode=1
 #
-CFLAGS_DEBUG=/EHsc /GR /FD /Zm250 /Od /RTC1 /Zi /D_CRT_SECURE_NO_DEPRECATE
+CFLAGS_DEBUG=/EHsc /GR /FD /Zm250 /Od /RTCs /Zi /D_CRT_SECURE_NO_DEPRECATE
 LDFLAGS_DEBUG=/subsystem:console /opt:noref /debug
 
 CFLAGS_RELEASE=/EHsc /GR /FD /Zm250 /O2 /DNDEBUG /D_CRT_SECURE_NO_DEPRECATE
