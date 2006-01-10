@@ -758,7 +758,7 @@ sub abs2rel($;$;$;)
     $cur  =~ s|/*$|/|;
     $base =~ s|/*$|/|;
 
-    if (!($abs =~ /^$base/i && $cur =~ /^$base/i)) {
+    if (!($abs =~ /^\Q$base\E/i && $cur =~ /^\Q$base\E/i)) {
         return $abs;
     }
 
@@ -768,9 +768,9 @@ sub abs2rel($;$;$;)
        $abs =~ m|^(.*?/)|;
        my $prefix = $1;
        last if ($prefix eq '');
-       if ($cur =~ /^$prefix/i) {
-           $abs =~ s/^$prefix//i;
-           $cur =~ s/^$prefix//i;
+       if ($cur =~ /^\Q$prefix\E/i) {
+           $abs =~ s/^\Q$prefix\E//i;
+           $cur =~ s/^\Q$prefix\E//i;
        } else {
            last;
        }
