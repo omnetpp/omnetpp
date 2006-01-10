@@ -34,7 +34,7 @@ OBJS= arraybuilder.obj channel.obj commonnodes.obj compoundfilter.obj \
 #
 all : scave.lib
 
-scave.lib : unistd.h $(OBJS)
+scave.lib : $(OBJS)
 	$(AR) /out:scave.lib $(OBJS)
 	copy scave.lib $(OMNETPP_LIB_DIR:/=\)
 	- copy /b scave.pdb $(OMNETPP_LIB_DIR:/=\) 2>nul

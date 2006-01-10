@@ -46,7 +46,7 @@ components: libs progs configsamples samples
 #
 #=====================================================================
 
-LIBS=$(ENVIR_ILIB) nedxml sim envir cmdenv scave
+LIBS=$(ENVIR_ILIB) scave nedxml sim envir cmdenv
 PROGS=utils nedc
 SAMPLES=aloha cqn dyna fddi fifo hcube hist neddemo p-to-p queueing routing queues tictoc tokenring sockets
 
@@ -190,7 +190,7 @@ tests: checkenv libs progs
 
 checkenv:
 	@echo ===== Checking environment =====
-	@if not .%OS%.==.Windows_NT. echo ERROR: This makefile can ONLY be used on NT4.0, Win2K or XP!
+	@if not .%OS%.==.Windows_NT. echo ERROR: This makefile can ONLY be used on NT4.0, Win2K or XP! && exit 1
 	@echo  Checking if $(CXX) works...
 	@$(CXX) /? /nologo <nul > nul || echo ERROR: Could not run $(CXX). Probably PATH does not contain its BIN or DLL directory. && exit 1
 	@echo Checking if OMNETPP_ROOT is correctly set...
