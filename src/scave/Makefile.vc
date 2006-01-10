@@ -1,0 +1,54 @@
+#
+# Global definitions
+#
+!include ..\..\configuser.vc
+
+!if "$(LIB_SUFFIX)"==".dll"
+CFLAGS=$(CFLAGS) /DWIN32_DLL
+!endif
+
+#
+# Local definitions
+#
+COPTS=$(CFLAGS) $(XML_CFLAGS) /I. /Fd"scave.pdb"
+
+OBJS= arraybuilder.obj channel.obj commonnodes.obj compoundfilter.obj \
+      cstrtokenizer.obj dataflowmanager.obj datasorter.obj diffquot.obj \
+      exception.obj filetokenizer.obj filewriter.obj filternodes.obj \
+      idlist.obj mergernodes.obj nodetype.obj nodetyperegistry.obj \
+      patmatch.obj resultfilemanager.obj slidingwinavg.obj util.obj \
+      vectorfilereader.obj vectorfilewriter.obj windowavg.obj \
+      xyplotnode.obj
+
+#
+# Automatic rules
+#
+.SUFFIXES : .cc
+
+.cc.obj:
+	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
+
+
+#
+# Targets (TBD: build dll)
+#
+all : scave.lib
+
+scave.lib : unistd.h $(OBJS)
+	$(AR) /out:scave.lib $(OBJS)
+	copy scave.lib $(OMNETPP_LIB_DIR:/=\)
+	- copy /b scave.pdb $(OMNETPP_LIB_DIR:/=\) 2>nul
+
+doc:
+	$(DOXYGEN:/=\) doxy.cfg
+
+depend:
+	$(MAKEDEPEND) -I. -fMakefile.vc -- *.cc
+
+clean:
+	- del *.obj 2> nul
+	- del *.ilk *.idb *.pdb 2> nul
+
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+

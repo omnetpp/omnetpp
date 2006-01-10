@@ -38,8 +38,8 @@ nedxml.lib : unistd.h $(OBJS)
 	copy nedxml.lib $(OMNETPP_LIB_DIR:/=\)
 	- copy /b nedxml.pdb $(OMNETPP_LIB_DIR:/=\) 2>nul
 
-nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl ned.dtd
-	perl dtdclassgen.pl ned.dtd
+nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl ned2.dtd
+	perl dtdclassgen.pl ned2.dtd
 
 ned.tab.h ned.tab.cc : ned.y
 	$(YACC:/=\) -p nedyy -b ned -d ned.y

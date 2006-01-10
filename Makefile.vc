@@ -46,8 +46,8 @@ components: libs progs configsamples samples
 #
 #=====================================================================
 
-LIBS=$(ENVIR_ILIB) nedxml sim envir cmdenv tkenv
-PROGS=utils nedc gned scalars plove
+LIBS=$(ENVIR_ILIB) nedxml sim envir cmdenv scave
+PROGS=utils nedc
 SAMPLES=aloha cqn dyna fddi fifo hcube hist neddemo p-to-p queueing routing queues tictoc tokenring sockets
 
 #
@@ -78,9 +78,9 @@ cmdenv:
 	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SRC_DIR:/=\)\cmdenv && $(MAKE) $(MOPTS) $(MAKEFILE)
 
-tkenv:
+scave:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SRC_DIR:/=\)\tkenv && $(MAKE) $(MOPTS) $(MAKEFILE)
+	cd /d $(OMNETPP_SRC_DIR:/=\)\scave && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 nedxml:
 	@echo ===== Compiling $@ ====
@@ -93,18 +93,6 @@ nedxml:
 nedc:
 	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SRC_DIR:/=\)\nedc && $(MAKE) $(MOPTS) $(MAKEFILE)
-
-gned:
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SRC_DIR:/=\)\gned && $(MAKE) $(MOPTS) $(MAKEFILE)
-
-scalars:
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SRC_DIR:/=\)\scalars && $(MAKE) $(MOPTS) $(MAKEFILE)
-
-plove:
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SRC_DIR:/=\)\plove && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 utils:
 	@echo ===== Compiling $@ ====

@@ -1,0 +1,80 @@
+#
+# Definitions to be customized by 'configure'
+#
+CXX=@CXX@
+YACC=@YACC@
+LEX=@LEX@
+AR=@AR@
+RANLIB=@RANLIB@
+SHLIB_LD=@SHLIB_LD@
+MAKEDEPEND=@MAKEDEPEND@
+DOXYGEN=@DOXYGEN@
+CPPFLAGS=@CPPFLAGS@
+CFLAGS=@CFLAGS@
+XML_CFLAGS=@XML_CFLAGS@
+
+OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
+OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
+
+OMNETPP_VERSION=@OMNETPP_VERSION@
+OMNETPP_EDITION=@OMNETPP_EDITION@
+
+
+# LIB_SUFFIX is either A_LIB_SUFFIX or SO_LIB_SUFFIX
+LIB_SUFFIX=@LIB_SUFFIX@
+
+A_LIB_SUFFIX=@A_LIB_SUFFIX@
+SO_LIB_SUFFIX=@SO_LIB_SUFFIX@
+
+XMLPARSER=@XMLPARSER@
+
+#
+# Local definitions
+#
+COPTS=$(CPPFLAGS) $(CFLAGS) $(XML_CFLAGS) -I$(OMNETPP_INCL_DIR) -I. -DBUILDING_NEDXML
+
+OBJS= arraybuilder.o channel.o commonnodes.o compoundfilter.o \
+      cstrtokenizer.o dataflowmanager.o datasorter.o diffquot.o \
+      exception.o filetokenizer.o filewriter.o filternodes.o \
+      idlist.o mergernodes.o nodetype.o nodetyperegistry.o \
+      patmatch.o resultfilemanager.o slidingwinavg.o util.o \
+      vectorfilereader.o vectorfilewriter.o windowavg.o \
+      xyplotnode.o
+#
+# Automatic rules
+#
+.SUFFIXES : .cc
+
+.cc.o:
+	$(CXX) -c $(COPTS) -o $@ $<
+
+#
+# Targets
+#
+default : scavelib
+
+scavelib : libscave$(LIB_SUFFIX)
+
+libscave$(A_LIB_SUFFIX): $(OBJS)
+	$(AR) libscave$(A_LIB_SUFFIX) $(OBJS)
+	$(RANLIB) libscave$(A_LIB_SUFFIX)
+	../utils/install-lib libscave$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libscave$(A_LIB_SUFFIX)
+
+libscave$(SO_LIB_SUFFIX) : $(OBJS)
+	$(SHLIB_LD) -o libscave$(SO_LIB_SUFFIX) $(OBJS)
+	../utils/install-lib libscave$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libscave$(SO_LIB_SUFFIX)
+
+depend:
+	$(MAKEDEPEND) -I../../include -- *.cc
+	$(MAKEDEPEND) -I../../include -fMakefile.in -- *.cc
+
+doc:
+	# NOTE: doxy.cfg has the output directory hardcoded!
+	$(DOXYGEN) doxy.cfg
+
+clean:
+	rm -f *.o
+	rm -f libscave$(A_LIB_SUFFIX) libscave$(SO_LIB_SUFFIX)
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+

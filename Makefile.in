@@ -33,8 +33,8 @@ components: libs progs samples
 #
 #=====================================================================
 
-LIBS=nedxml sim envir cmdenv tkenv
-PROGS=utils nedc gned scalars plove
+LIBS=nedxml sim envir cmdenv scave
+PROGS=utils nedc
 SAMPLES=aloha cqn dyna fddi fifo hcube hist neddemo p-to-p queueing routing queues tictoc tokenring sockets
 
 #
@@ -61,8 +61,8 @@ envir:
 cmdenv:
 	cd $(OMNETPP_SRC_DIR)/cmdenv && $(MAKE)
 
-tkenv:
-	cd $(OMNETPP_SRC_DIR)/tkenv && $(MAKE)
+scave:
+	cd $(OMNETPP_SRC_DIR)/scave && $(MAKE)
 
 #
 # Programs
@@ -70,15 +70,6 @@ tkenv:
 
 nedc:
 	cd $(OMNETPP_SRC_DIR)/nedc && $(MAKE)
-
-gned:
-	cd $(OMNETPP_SRC_DIR)/gned && $(MAKE)
-
-scalars:
-	cd $(OMNETPP_SRC_DIR)/scalars && $(MAKE)
-
-plove:
-	cd $(OMNETPP_SRC_DIR)/plove && $(MAKE)
 
 utils:
 	cd $(OMNETPP_SRC_DIR)/utils &&  $(MAKE)
