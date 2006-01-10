@@ -42,6 +42,9 @@ enum {CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH};
 #define fastconcat       opp_concat
 #define indexedname      opp_mkindexedname
 
+// windows.h defines min() and max() as macros
+#undef min
+#undef max
 
 /**
  * @name Converting simulation time to and from string form.
