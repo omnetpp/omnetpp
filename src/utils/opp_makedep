@@ -99,7 +99,7 @@ $Makefile = "Makefile";
 if ($#ARGV == -1)
 {
     print $Usage;
-    exit(1);
+    exit(0);
 }
 
 #

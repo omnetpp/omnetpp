@@ -26,7 +26,7 @@ Usage: opp_msgc [-s <cc-file-suffix>] [-t <h-file-suffix>]
 if ($#ARGV == -1)
 {
     print $Usage;
-    exit(1);
+    exit(0);
 }
 
 #
