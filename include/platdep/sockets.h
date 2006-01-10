@@ -19,14 +19,25 @@
 #define __PLATDEP_SOCKETS_H
 
 //
-// Platform-independent handling of sockets
+// With some care, it's possible to write platform-independent socket code
+// using the macros below.
 //
 
 #ifdef _WIN32
 //
 // Winsock version
 //
-#include <winsock.h>
+
+// include <winsock.h> or <winsock2.h> (mutually exclusive) if neither has been included yet
+#if !defined(_WINSOCKAPI_) && !defined(_WINSOCK2API_)
+# ifndef WANT_WINSOCK2
+#  include <winsock.h>
+# else
+#  include <winsock2.h>
+# endif
+#endif
+#undef min
+#undef max
 
 // Winsock prefixes error codes with "WS"
 #define SOCKETERR(x)  WS#x
@@ -45,7 +56,11 @@ inline int initsocketlibonce() {
     if (inited) return 0;
     inited = true;
     WSAData wsaData;
+#ifdef _WINSOCKAPI_
     return WSAStartup(MAKEWORD(1,1), &wsaData);
+#else
+    return WSAStartup(MAKEWORD(2,2), &wsaData);
+#endif
 }
 
 

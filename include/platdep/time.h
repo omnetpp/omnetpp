@@ -32,9 +32,17 @@
 #else
 # include <sys/types.h>
 # include <sys/timeb.h>  // ftime(), timeb
-# include <winsock.h>  // for timeval (!)
-# undef min  // would conflict with omnetpp's util.h
-# undef max
+
+// timeval is declared in <winsock.h> and <winsock2.h>; they're mutually exclusive
+# if !defined(_WINSOCKAPI_) && !defined(_WINSOCK2API_)
+#  ifdef WANT_WINSOCK2
+#   include <winsock2.h>
+#  else
+#   include <winsock.h>
+#  endif
+#  undef min
+#  undef max
+# endif
 
 // Windows doesn't have gettimeofday(), so emulate it with ftime()
 inline int gettimeofday(struct timeval *tv, struct timezone *)
