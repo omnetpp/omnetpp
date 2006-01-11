@@ -29,6 +29,7 @@ $hfile = "nedelements.h";
 $ccfile = "nedelements.cc";
 $validatorhfile = "nedvalidator.h";
 $validatorccfile = "nedvalidator.cc";
+$dtdvalidatorbasehfile = "neddtdvalidatorbase.h";
 $dtdvalidatorhfile = "neddtdvalidator.h";
 $dtdvalidatorccfile = "neddtdvalidator.cc";
 
@@ -181,11 +182,14 @@ foreach $element (@elements)
            if ($atttypes[$i] eq '(left|right)') {
               $enumname = "lr";
            }
-           elsif ($atttypes[$i] eq '(input|output)') {
+           elsif ($atttypes[$i] eq '(input|output|inout)') {
               $enumname = "io";
            }
+           elsif ($atttypes[$i] eq '(double|int|string|bool|xml)') {
+              $enumname = "partype";
+           }
            elsif ($atttypes[$i] eq '(bool|int|real|string|time)') {
-              $enumname = "type";
+              $enumname = "littype";
            }
            else {
               die "Error: unrecognized enum $atttypes[$i]\n";
@@ -563,7 +567,7 @@ print DTDVAL_H "$copyright\n";
 print DTDVAL_H "#ifndef __DTDVALIDATOR_H\n";
 print DTDVAL_H "#define __DTDVALIDATOR_H\n\n";
 print DTDVAL_H "#include \"nedelements.h\"\n";
-print DTDVAL_H "#include \"$validatorhfile\"\n\n";
+print DTDVAL_H "#include \"$dtdvalidatorbasehfile\"\n\n";
 
 print DTDVAL_CC "$copyright\n";
 print DTDVAL_CC "#include <stdio.h>\n";
@@ -575,20 +579,8 @@ print DTDVAL_H " * GENERATED CLASS. Validates a NEDElement tree by the DTD.\n";
 print DTDVAL_H " * \n";
 print DTDVAL_H " * \@ingroup Validation\n";
 print DTDVAL_H " */\n";
-print DTDVAL_H "class NEDDTDValidator : public NEDValidatorBase\n";
+print DTDVAL_H "class NEDDTDValidator : public NEDDTDValidatorBase\n";
 print DTDVAL_H "{\n";
-print DTDVAL_H "  protected:\n";
-print DTDVAL_H "    /** \@name Utility functions */\n";
-print DTDVAL_H "    //\@{\n";
-print DTDVAL_H "    void checkSequence(NEDElement *node, int tags[], char mult[], int n);\n";
-print DTDVAL_H "    void checkChoice(NEDElement *node, int tags[], int n, char mult);\n";
-print DTDVAL_H "    void checkEmpty(NEDElement *node);\n";
-print DTDVAL_H "    void checkRequiredAttribute(NEDElement *node, const char *attr);\n";
-print DTDVAL_H "    void checkEnumeratedAttribute(NEDElement *node, const char *attr, const char *vals[], int n);\n";
-print DTDVAL_H "    void checkNameAttribute(NEDElement *node, const char *attr);\n";
-print DTDVAL_H "    void checkCommentAttribute(NEDElement *node, const char *attr);\n";
-print DTDVAL_H "    void checkNMTokenAttribute(NEDElement *node, const char *attr);\n";
-print DTDVAL_H "    //\@}\n";
 print DTDVAL_H "  public:\n";
 print DTDVAL_H "    NEDDTDValidator() {}\n";
 print DTDVAL_H "    virtual ~NEDDTDValidator() {}\n\n";

@@ -22,41 +22,37 @@
 
 #include "nedelement.h"
 
-class NedFilesNode;
+class FilesNode;
 class NedFileNode;
 class ImportNode;
-class ImportedFileNode;
-class ChannelNode;
-class ChannelAttrNode;
-class NetworkNode;
-class SimpleModuleNode;
-class CompoundModuleNode;
-class ParamsNode;
+class PropertydefNode;
+class SimpleNode;
+class InterfaceNode;
+class ModuleNode;
+class ParametersNode;
+class ParametersBlockNode;
 class ParamNode;
+class PropertyNode;
+class KeyValueNode;
 class GatesNode;
+class GateBlockNode;
 class GateNode;
-class MachinesNode;
-class MachineNode;
 class SubmodulesNode;
 class SubmoduleNode;
-class SubstparamsNode;
-class SubstparamNode;
-class GatesizesNode;
-class GatesizeNode;
-class SubstmachinesNode;
-class SubstmachineNode;
 class ConnectionsNode;
 class ConnectionNode;
-class ConnAttrNode;
-class ForLoopNode;
-class LoopVarNode;
-class DisplayStringNode;
+class ChannelInterfaceNode;
+class ChannelNode;
+class ConnectionBlockNode;
+class LoopNode;
+class ConditionNode;
 class ExpressionNode;
 class OperatorNode;
 class FunctionNode;
 class ParamRefNode;
 class IdentNode;
 class ConstNode;
+class MsgFileNode;
 class CplusplusNode;
 class StructDeclNode;
 class ClassDeclNode;
@@ -81,41 +77,37 @@ class UnknownNode;
  * @ingroup Data
  */
 enum NEDElementCode {
-    NED_NED_FILES,
+    NED_FILES,
     NED_NED_FILE,
     NED_IMPORT,
-    NED_IMPORTED_FILE,
-    NED_CHANNEL,
-    NED_CHANNEL_ATTR,
-    NED_NETWORK,
-    NED_SIMPLE_MODULE,
-    NED_COMPOUND_MODULE,
-    NED_PARAMS,
+    NED_PROPERTYDEF,
+    NED_SIMPLE,
+    NED_INTERFACE,
+    NED_MODULE,
+    NED_PARAMETERS,
+    NED_PARAMETERS_BLOCK,
     NED_PARAM,
+    NED_PROPERTY,
+    NED_KEY_VALUE,
     NED_GATES,
+    NED_GATE_BLOCK,
     NED_GATE,
-    NED_MACHINES,
-    NED_MACHINE,
     NED_SUBMODULES,
     NED_SUBMODULE,
-    NED_SUBSTPARAMS,
-    NED_SUBSTPARAM,
-    NED_GATESIZES,
-    NED_GATESIZE,
-    NED_SUBSTMACHINES,
-    NED_SUBSTMACHINE,
     NED_CONNECTIONS,
     NED_CONNECTION,
-    NED_CONN_ATTR,
-    NED_FOR_LOOP,
-    NED_LOOP_VAR,
-    NED_DISPLAY_STRING,
+    NED_CHANNEL_INTERFACE,
+    NED_CHANNEL,
+    NED_CONNECTION_BLOCK,
+    NED_LOOP,
+    NED_CONDITION,
     NED_EXPRESSION,
     NED_OPERATOR,
     NED_FUNCTION,
     NED_PARAM_REF,
     NED_IDENT,
     NED_CONST,
+    NED_MSG_FILE,
     NED_CPLUSPLUS,
     NED_STRUCT_DECL,
     NED_CLASS_DECL,
@@ -139,30 +131,30 @@ enum {NED_ARROWDIR_LEFT, NED_ARROWDIR_RIGHT};
 enum {NED_CONST_BOOL, NED_CONST_INT, NED_CONST_REAL, NED_CONST_STRING, NED_CONST_TIME};
 
 /**
- * GENERATED CLASS. Represents the &lt;ned-files&gt; XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;files&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT ned-files ((ned-files|ned-file)*)>
+ * <!ELEMENT files ((ned-file|msg-file)*)>
  * 
  * </pre>
  * 
  * @ingroup Data
  */
-class NedFilesNode : public NEDElement
+class FilesNode : public NEDElement
 {
   private:
   public:
     /** @name Constructors, destructor */
     //@{
-    NedFilesNode() {applyDefaults();}
-    NedFilesNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~NedFilesNode() {}
+    FilesNode() {applyDefaults();}
+    FilesNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~FilesNode() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
-    virtual const char *getTagName() const {return "ned-files";}
-    virtual int getTagCode() const {return NED_NED_FILES;}
+    virtual const char *getTagName() const {return "files";}
+    virtual int getTagCode() const {return NED_FILES;}
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
@@ -173,9 +165,9 @@ class NedFilesNode : public NEDElement
     /** @name Typed access to attributes, children and siblings */
     //@{
 
-    virtual NedFilesNode *getNextNedFilesNodeSibling() const;
-    virtual NedFilesNode *getFirstNedFilesChild() const;
+    virtual FilesNode *getNextFilesNodeSibling() const;
     virtual NedFileNode *getFirstNedFileChild() const;
+    virtual MsgFileNode *getFirstMsgFileChild() const;
     //@}
 };
 
@@ -183,14 +175,12 @@ class NedFilesNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;ned-file&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT ned-file ((import|channel|simple-module|compound-module|network|
- *                      cplusplus|struct-decl|class-decl|message-decl|enum-decl|
- *                      enum|message|class|struct)*)>
+ * <!ELEMENT ned-file ((import|propertydef|property|channel|
+ *                      channel-interface|simple|module|interface)*)>
  * <!ATTLIST ned-file
- *      filename            CDATA     #IMPLIED
- *      source-code         CDATA     #IMPLIED
- *      preferred-indent    CDATA     "4"
- *      banner-comment      CDATA     #IMPLIED >
+ *      filename           CDATA     #REQUIRED
+ *      package            CDATA     #IMPLIED
+ * >
  * </pre>
  * 
  * @ingroup Data
@@ -199,9 +189,7 @@ class NedFileNode : public NEDElement
 {
   private:
     std::string filename;
-    std::string sourceCode;
-    std::string preferredIndent;
-    std::string bannerComment;
+    std::string package;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -225,28 +213,18 @@ class NedFileNode : public NEDElement
     //@{
     const char * getFilename() const  {return filename.c_str();}
     void setFilename(const char * val)  {filename = val;}
-    const char * getSourceCode() const  {return sourceCode.c_str();}
-    void setSourceCode(const char * val)  {sourceCode = val;}
-    const char * getPreferredIndent() const  {return preferredIndent.c_str();}
-    void setPreferredIndent(const char * val)  {preferredIndent = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
+    const char * getPackage() const  {return package.c_str();}
+    void setPackage(const char * val)  {package = val;}
 
     virtual NedFileNode *getNextNedFileNodeSibling() const;
     virtual ImportNode *getFirstImportChild() const;
+    virtual PropertydefNode *getFirstPropertydefChild() const;
+    virtual PropertyNode *getFirstPropertyChild() const;
     virtual ChannelNode *getFirstChannelChild() const;
-    virtual SimpleModuleNode *getFirstSimpleModuleChild() const;
-    virtual CompoundModuleNode *getFirstCompoundModuleChild() const;
-    virtual NetworkNode *getFirstNetworkChild() const;
-    virtual CplusplusNode *getFirstCplusplusChild() const;
-    virtual StructDeclNode *getFirstStructDeclChild() const;
-    virtual ClassDeclNode *getFirstClassDeclChild() const;
-    virtual MessageDeclNode *getFirstMessageDeclChild() const;
-    virtual EnumDeclNode *getFirstEnumDeclChild() const;
-    virtual EnumNode *getFirstEnumChild() const;
-    virtual MessageNode *getFirstMessageChild() const;
-    virtual ClassNode *getFirstClassChild() const;
-    virtual StructNode *getFirstStructChild() const;
+    virtual ChannelInterfaceNode *getFirstChannelInterfaceChild() const;
+    virtual SimpleNode *getFirstSimpleChild() const;
+    virtual ModuleNode *getFirstModuleChild() const;
+    virtual InterfaceNode *getFirstInterfaceChild() const;
     //@}
 };
 
@@ -254,10 +232,10 @@ class NedFileNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;import&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT import (imported-file*)>
+ * <!ELEMENT import EMPTY>
  * <!ATTLIST import
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;" >
+ *      filename           CDATA     #REQUIRED
+ * >
  * </pre>
  * 
  * @ingroup Data
@@ -265,8 +243,7 @@ class NedFileNode : public NEDElement
 class ImportNode : public NEDElement
 {
   private:
-    std::string bannerComment;
-    std::string rightComment;
+    std::string filename;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -288,102 +265,41 @@ class ImportNode : public NEDElement
 
     /** @name Typed access to attributes, children and siblings */
     //@{
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
-
-    virtual ImportNode *getNextImportNodeSibling() const;
-    virtual ImportedFileNode *getFirstImportedFileChild() const;
-    //@}
-};
-
-/**
- * GENERATED CLASS. Represents the &lt;imported-file&gt; XML element in memory. DTD declaration:
- * 
- * <pre>
- * <!ELEMENT imported-file EMPTY>
- * <!ATTLIST imported-file
- *      filename            CDATA     #REQUIRED
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;" >
- * </pre>
- * 
- * @ingroup Data
- */
-class ImportedFileNode : public NEDElement
-{
-  private:
-    std::string filename;
-    std::string bannerComment;
-    std::string rightComment;
-  public:
-    /** @name Constructors, destructor */
-    //@{
-    ImportedFileNode() {applyDefaults();}
-    ImportedFileNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~ImportedFileNode() {}
-    //@}
-
-    /** @name Redefined NEDElement methods, incl. generic access to attributes */
-    //@{
-    virtual const char *getTagName() const {return "imported-file";}
-    virtual int getTagCode() const {return NED_IMPORTED_FILE;}
-    virtual int getNumAttributes() const;
-    virtual const char *getAttributeName(int k) const;
-    virtual const char *getAttribute(int k) const;
-    virtual void setAttribute(int k, const char *val);
-    virtual const char *getAttributeDefault(int k) const;
-    //@}
-
-    /** @name Typed access to attributes, children and siblings */
-    //@{
     const char * getFilename() const  {return filename.c_str();}
     void setFilename(const char * val)  {filename = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
 
-    virtual ImportedFileNode *getNextImportedFileNodeSibling() const;
+    virtual ImportNode *getNextImportNodeSibling() const;
     //@}
 };
 
 /**
- * GENERATED CLASS. Represents the &lt;channel&gt; XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;propertydef&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT channel (channel-attr*, display-string?)>
- * <!ATTLIST channel
- *      name                NMTOKEN   #REQUIRED
- *      source-code         CDATA     #IMPLIED
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;"
- *      trailing-comment    CDATA     "&#10;" >
+ * <!ELEMENT propertydef (key-value*)>
+ * <!ATTLIST propertydef
+ *      name               NMTOKEN   #REQUIRED
+ * >
  * </pre>
  * 
  * @ingroup Data
  */
-class ChannelNode : public NEDElement
+class PropertydefNode : public NEDElement
 {
   private:
     std::string name;
-    std::string sourceCode;
-    std::string bannerComment;
-    std::string rightComment;
-    std::string trailingComment;
   public:
     /** @name Constructors, destructor */
     //@{
-    ChannelNode() {applyDefaults();}
-    ChannelNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~ChannelNode() {}
+    PropertydefNode() {applyDefaults();}
+    PropertydefNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~PropertydefNode() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
-    virtual const char *getTagName() const {return "channel";}
-    virtual int getTagCode() const {return NED_CHANNEL;}
+    virtual const char *getTagName() const {return "propertydef";}
+    virtual int getTagCode() const {return NED_PROPERTYDEF;}
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
@@ -395,54 +311,40 @@ class ChannelNode : public NEDElement
     //@{
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
-    const char * getSourceCode() const  {return sourceCode.c_str();}
-    void setSourceCode(const char * val)  {sourceCode = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
-    const char * getTrailingComment() const  {return trailingComment.c_str();}
-    void setTrailingComment(const char * val)  {trailingComment = val;}
 
-    virtual ChannelNode *getNextChannelNodeSibling() const;
-    virtual ChannelAttrNode *getFirstChannelAttrChild() const;
-    virtual DisplayStringNode *getFirstDisplayStringChild() const;
+    virtual PropertydefNode *getNextPropertydefNodeSibling() const;
+    virtual KeyValueNode *getFirstKeyValueChild() const;
     //@}
 };
 
 /**
- * GENERATED CLASS. Represents the &lt;channel-attr&gt; XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;simple&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT channel-attr (expression?)>
- * <!ATTLIST channel-attr
- *      name                NMTOKEN   #REQUIRED
- *      value               CDATA     #IMPLIED
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;" >
+ * <!ELEMENT simple (extends?, interface-name*, parameters?, gates?)>
+ * <!ATTLIST simple
+ *      name               NMTOKEN   #REQUIRED
+ * >
  * </pre>
  * 
  * @ingroup Data
  */
-class ChannelAttrNode : public NEDElement
+class SimpleNode : public NEDElement
 {
   private:
     std::string name;
-    std::string value;
-    std::string bannerComment;
-    std::string rightComment;
   public:
     /** @name Constructors, destructor */
     //@{
-    ChannelAttrNode() {applyDefaults();}
-    ChannelAttrNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~ChannelAttrNode() {}
+    SimpleNode() {applyDefaults();}
+    SimpleNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~SimpleNode() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
-    virtual const char *getTagName() const {return "channel-attr";}
-    virtual int getTagCode() const {return NED_CHANNEL_ATTR;}
+    virtual const char *getTagName() const {return "simple";}
+    virtual int getTagCode() const {return NED_SIMPLE;}
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
@@ -454,182 +356,43 @@ class ChannelAttrNode : public NEDElement
     //@{
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
-    const char * getValue() const  {return value.c_str();}
-    void setValue(const char * val)  {value = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
 
-    virtual ChannelAttrNode *getNextChannelAttrNodeSibling() const;
-    virtual ExpressionNode *getFirstExpressionChild() const;
-    //@}
-};
-
-/**
- * GENERATED CLASS. Represents the &lt;network&gt; XML element in memory. DTD declaration:
- * 
- * <pre>
- * <!ELEMENT network (substmachines?,substparams?)>
- * <!ATTLIST network
- *      name                NMTOKEN   #REQUIRED
- *      type-name           NMTOKEN   #REQUIRED
- *      source-code         CDATA     #IMPLIED
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;"
- *      trailing-comment    CDATA     "&#10;" >
- * </pre>
- * 
- * @ingroup Data
- */
-class NetworkNode : public NEDElement
-{
-  private:
-    std::string name;
-    std::string typeName;
-    std::string sourceCode;
-    std::string bannerComment;
-    std::string rightComment;
-    std::string trailingComment;
-  public:
-    /** @name Constructors, destructor */
-    //@{
-    NetworkNode() {applyDefaults();}
-    NetworkNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~NetworkNode() {}
-    //@}
-
-    /** @name Redefined NEDElement methods, incl. generic access to attributes */
-    //@{
-    virtual const char *getTagName() const {return "network";}
-    virtual int getTagCode() const {return NED_NETWORK;}
-    virtual int getNumAttributes() const;
-    virtual const char *getAttributeName(int k) const;
-    virtual const char *getAttribute(int k) const;
-    virtual void setAttribute(int k, const char *val);
-    virtual const char *getAttributeDefault(int k) const;
-    //@}
-
-    /** @name Typed access to attributes, children and siblings */
-    //@{
-    const char * getName() const  {return name.c_str();}
-    void setName(const char * val)  {name = val;}
-    const char * getTypeName() const  {return typeName.c_str();}
-    void setTypeName(const char * val)  {typeName = val;}
-    const char * getSourceCode() const  {return sourceCode.c_str();}
-    void setSourceCode(const char * val)  {sourceCode = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
-    const char * getTrailingComment() const  {return trailingComment.c_str();}
-    void setTrailingComment(const char * val)  {trailingComment = val;}
-
-    virtual NetworkNode *getNextNetworkNodeSibling() const;
-    virtual SubstmachinesNode *getFirstSubstmachinesChild() const;
-    virtual SubstparamsNode *getFirstSubstparamsChild() const;
-    //@}
-};
-
-/**
- * GENERATED CLASS. Represents the &lt;simple-module&gt; XML element in memory. DTD declaration:
- * 
- * <pre>
- * <!ELEMENT simple-module (machines?, params?, gates?, display-string?)>
- * <!ATTLIST simple-module
- *      name                NMTOKEN   #REQUIRED
- *      source-code         CDATA     #IMPLIED
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;"
- *      trailing-comment    CDATA     "&#10;" >
- * </pre>
- * 
- * @ingroup Data
- */
-class SimpleModuleNode : public NEDElement
-{
-  private:
-    std::string name;
-    std::string sourceCode;
-    std::string bannerComment;
-    std::string rightComment;
-    std::string trailingComment;
-  public:
-    /** @name Constructors, destructor */
-    //@{
-    SimpleModuleNode() {applyDefaults();}
-    SimpleModuleNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~SimpleModuleNode() {}
-    //@}
-
-    /** @name Redefined NEDElement methods, incl. generic access to attributes */
-    //@{
-    virtual const char *getTagName() const {return "simple-module";}
-    virtual int getTagCode() const {return NED_SIMPLE_MODULE;}
-    virtual int getNumAttributes() const;
-    virtual const char *getAttributeName(int k) const;
-    virtual const char *getAttribute(int k) const;
-    virtual void setAttribute(int k, const char *val);
-    virtual const char *getAttributeDefault(int k) const;
-    //@}
-
-    /** @name Typed access to attributes, children and siblings */
-    //@{
-    const char * getName() const  {return name.c_str();}
-    void setName(const char * val)  {name = val;}
-    const char * getSourceCode() const  {return sourceCode.c_str();}
-    void setSourceCode(const char * val)  {sourceCode = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
-    const char * getTrailingComment() const  {return trailingComment.c_str();}
-    void setTrailingComment(const char * val)  {trailingComment = val;}
-
-    virtual SimpleModuleNode *getNextSimpleModuleNodeSibling() const;
-    virtual MachinesNode *getFirstMachinesChild() const;
-    virtual ParamsNode *getFirstParamsChild() const;
+    virtual SimpleNode *getNextSimpleNodeSibling() const;
+    virtual  *getFirstExtendsChild() const;
+    virtual  *getFirstInterfaceNameChild() const;
+    virtual ParametersNode *getFirstParametersChild() const;
     virtual GatesNode *getFirstGatesChild() const;
-    virtual DisplayStringNode *getFirstDisplayStringChild() const;
     //@}
 };
 
 /**
- * GENERATED CLASS. Represents the &lt;compound-module&gt; XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;interface&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT compound-module (machines?, params?, gates?,
- *                   submodules?, connections?, display-string?)>
- * <!ATTLIST compound-module
- *      name                NMTOKEN   #REQUIRED
- *      source-code         CDATA     #IMPLIED
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;"
- *      trailing-comment    CDATA     "&#10;" >
+ * <!ELEMENT interface (extends*, parameters?, gates?)>
+ * <!ATTLIST interface
+ *      name               NMTOKEN   #REQUIRED
+ * >
  * </pre>
  * 
  * @ingroup Data
  */
-class CompoundModuleNode : public NEDElement
+class InterfaceNode : public NEDElement
 {
   private:
     std::string name;
-    std::string sourceCode;
-    std::string bannerComment;
-    std::string rightComment;
-    std::string trailingComment;
   public:
     /** @name Constructors, destructor */
     //@{
-    CompoundModuleNode() {applyDefaults();}
-    CompoundModuleNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~CompoundModuleNode() {}
+    InterfaceNode() {applyDefaults();}
+    InterfaceNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~InterfaceNode() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
-    virtual const char *getTagName() const {return "compound-module";}
-    virtual int getTagCode() const {return NED_COMPOUND_MODULE;}
+    virtual const char *getTagName() const {return "interface";}
+    virtual int getTagCode() const {return NED_INTERFACE;}
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
@@ -641,54 +404,93 @@ class CompoundModuleNode : public NEDElement
     //@{
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
-    const char * getSourceCode() const  {return sourceCode.c_str();}
-    void setSourceCode(const char * val)  {sourceCode = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
-    const char * getTrailingComment() const  {return trailingComment.c_str();}
-    void setTrailingComment(const char * val)  {trailingComment = val;}
 
-    virtual CompoundModuleNode *getNextCompoundModuleNodeSibling() const;
-    virtual MachinesNode *getFirstMachinesChild() const;
-    virtual ParamsNode *getFirstParamsChild() const;
+    virtual InterfaceNode *getNextInterfaceNodeSibling() const;
+    virtual  *getFirstExtendsChild() const;
+    virtual ParametersNode *getFirstParametersChild() const;
+    virtual GatesNode *getFirstGatesChild() const;
+    //@}
+};
+
+/**
+ * GENERATED CLASS. Represents the &lt;module&gt; XML element in memory. DTD declaration:
+ * 
+ * <pre>
+ * <!ELEMENT module (extends?, interface-name*, parameters?, gates?,
+ *                   submodules?, connections?)>
+ * <!ATTLIST module
+ *      name               NMTOKEN   #REQUIRED
+ *  >
+ * </pre>
+ * 
+ * @ingroup Data
+ */
+class ModuleNode : public NEDElement
+{
+  private:
+    std::string name;
+  public:
+    /** @name Constructors, destructor */
+    //@{
+    ModuleNode() {applyDefaults();}
+    ModuleNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~ModuleNode() {}
+    //@}
+
+    /** @name Redefined NEDElement methods, incl. generic access to attributes */
+    //@{
+    virtual const char *getTagName() const {return "module";}
+    virtual int getTagCode() const {return NED_MODULE;}
+    virtual int getNumAttributes() const;
+    virtual const char *getAttributeName(int k) const;
+    virtual const char *getAttribute(int k) const;
+    virtual void setAttribute(int k, const char *val);
+    virtual const char *getAttributeDefault(int k) const;
+    //@}
+
+    /** @name Typed access to attributes, children and siblings */
+    //@{
+    const char * getName() const  {return name.c_str();}
+    void setName(const char * val)  {name = val;}
+
+    virtual ModuleNode *getNextModuleNodeSibling() const;
+    virtual  *getFirstExtendsChild() const;
+    virtual  *getFirstInterfaceNameChild() const;
+    virtual ParametersNode *getFirstParametersChild() const;
     virtual GatesNode *getFirstGatesChild() const;
     virtual SubmodulesNode *getFirstSubmodulesChild() const;
     virtual ConnectionsNode *getFirstConnectionsChild() const;
-    virtual DisplayStringNode *getFirstDisplayStringChild() const;
     //@}
 };
 
 /**
- * GENERATED CLASS. Represents the &lt;params&gt; XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;parameters&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT params (param*)>
- * <!ATTLIST params
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;" >
+ * <!ELEMENT parameters ((property|param|parameters-block)*)>
+ * <!ATTLIST parameters
+ *     is-implicit         (true|false)    "true"
+ * >
  * </pre>
  * 
  * @ingroup Data
  */
-class ParamsNode : public NEDElement
+class ParametersNode : public NEDElement
 {
   private:
-    std::string bannerComment;
-    std::string rightComment;
+    bool isImplicit;
   public:
     /** @name Constructors, destructor */
     //@{
-    ParamsNode() {applyDefaults();}
-    ParamsNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~ParamsNode() {}
+    ParametersNode() {applyDefaults();}
+    ParametersNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~ParametersNode() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
-    virtual const char *getTagName() const {return "params";}
-    virtual int getTagCode() const {return NED_PARAMS;}
+    virtual const char *getTagName() const {return "parameters";}
+    virtual int getTagCode() const {return NED_PARAMETERS;}
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
@@ -698,12 +500,54 @@ class ParamsNode : public NEDElement
 
     /** @name Typed access to attributes, children and siblings */
     //@{
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
+    bool getIsImplicit() const  {return isImplicit;}
+    void setIsImplicit(bool val)  {isImplicit = val;}
 
-    virtual ParamsNode *getNextParamsNodeSibling() const;
+    virtual ParametersNode *getNextParametersNodeSibling() const;
+    virtual PropertyNode *getFirstPropertyChild() const;
+    virtual ParamNode *getFirstParamChild() const;
+    virtual ParametersBlockNode *getFirstParametersBlockChild() const;
+    //@}
+};
+
+/**
+ * GENERATED CLASS. Represents the &lt;parameters-block&gt; XML element in memory. DTD declaration:
+ * 
+ * <pre>
+ * <!ELEMENT parameters-block (condition, (property|param)*)>
+ * 
+ * </pre>
+ * 
+ * @ingroup Data
+ */
+class ParametersBlockNode : public NEDElement
+{
+  private:
+  public:
+    /** @name Constructors, destructor */
+    //@{
+    ParametersBlockNode() {applyDefaults();}
+    ParametersBlockNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~ParametersBlockNode() {}
+    //@}
+
+    /** @name Redefined NEDElement methods, incl. generic access to attributes */
+    //@{
+    virtual const char *getTagName() const {return "parameters-block";}
+    virtual int getTagCode() const {return NED_PARAMETERS_BLOCK;}
+    virtual int getNumAttributes() const;
+    virtual const char *getAttributeName(int k) const;
+    virtual const char *getAttribute(int k) const;
+    virtual void setAttribute(int k, const char *val);
+    virtual const char *getAttributeDefault(int k) const;
+    //@}
+
+    /** @name Typed access to attributes, children and siblings */
+    //@{
+
+    virtual ParametersBlockNode *getNextParametersBlockNodeSibling() const;
+    virtual ConditionNode *getFirstConditionChild() const;
+    virtual PropertyNode *getFirstPropertyChild() const;
     virtual ParamNode *getFirstParamChild() const;
     //@}
 };
@@ -712,12 +556,13 @@ class ParamsNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;param&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT param EMPTY>
+ * <!ELEMENT param (expression?)>
  * <!ATTLIST param
- *      name                NMTOKEN   #REQUIRED
- *      data-type           CDATA     "numeric"
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;" >
+ *      name               NMTOKEN   #REQUIRED
+ *      type               (double|int|string|bool|xml) #REQUIRED
+ *      is-function        (true|false)    "false"
+ *      value               CDATA     #IMPLIED
+ *  >
  * </pre>
  * 
  * @ingroup Data
@@ -726,9 +571,9 @@ class ParamNode : public NEDElement
 {
   private:
     std::string name;
-    std::string dataType;
-    std::string bannerComment;
-    std::string rightComment;
+    int type;
+    bool isFunction;
+    std::string value;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -752,14 +597,118 @@ class ParamNode : public NEDElement
     //@{
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
-    const char * getDataType() const  {return dataType.c_str();}
-    void setDataType(const char * val)  {dataType = val;}
+    int getType() const  {return type;}
+    void setType(int val)  {type = val;}
+    bool getIsFunction() const  {return isFunction;}
+    void setIsFunction(bool val)  {isFunction = val;}
+    const char * getValue() const  {return value.c_str();}
+    void setValue(const char * val)  {value = val;}
+
+    virtual ParamNode *getNextParamNodeSibling() const;
+    virtual ExpressionNode *getFirstExpressionChild() const;
+    //@}
+};
+
+/**
+ * GENERATED CLASS. Represents the &lt;property&gt; XML element in memory. DTD declaration:
+ * 
+ * <pre>
+ * <!ELEMENT property EMPTY>
+ * <!ATTLIST property
+ *      name                NMTOKEN   #REQUIRED
+ *      value               CDATA     #IMPLIED
+ *      banner-comment      CDATA     #IMPLIED
+ *      right-comment       CDATA     "&#10;" >
+ * </pre>
+ * 
+ * @ingroup Data
+ */
+class PropertyNode : public NEDElement
+{
+  private:
+    std::string name;
+    std::string value;
+    std::string bannerComment;
+    std::string rightComment;
+  public:
+    /** @name Constructors, destructor */
+    //@{
+    PropertyNode() {applyDefaults();}
+    PropertyNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~PropertyNode() {}
+    //@}
+
+    /** @name Redefined NEDElement methods, incl. generic access to attributes */
+    //@{
+    virtual const char *getTagName() const {return "property";}
+    virtual int getTagCode() const {return NED_PROPERTY;}
+    virtual int getNumAttributes() const;
+    virtual const char *getAttributeName(int k) const;
+    virtual const char *getAttribute(int k) const;
+    virtual void setAttribute(int k, const char *val);
+    virtual const char *getAttributeDefault(int k) const;
+    //@}
+
+    /** @name Typed access to attributes, children and siblings */
+    //@{
+    const char * getName() const  {return name.c_str();}
+    void setName(const char * val)  {name = val;}
+    const char * getValue() const  {return value.c_str();}
+    void setValue(const char * val)  {value = val;}
     const char * getBannerComment() const  {return bannerComment.c_str();}
     void setBannerComment(const char * val)  {bannerComment = val;}
     const char * getRightComment() const  {return rightComment.c_str();}
     void setRightComment(const char * val)  {rightComment = val;}
 
-    virtual ParamNode *getNextParamNodeSibling() const;
+    virtual PropertyNode *getNextPropertyNodeSibling() const;
+    //@}
+};
+
+/**
+ * GENERATED CLASS. Represents the &lt;key-value&gt; XML element in memory. DTD declaration:
+ * 
+ * <pre>
+ * <!ELEMENT key-value EMPTY>
+ * <!ATTLIST key-value
+ *      key                CDATA   #IMPLIED
+ *      value              CDATA   #IMPLIED
+ * >
+ * </pre>
+ * 
+ * @ingroup Data
+ */
+class KeyValueNode : public NEDElement
+{
+  private:
+    std::string key;
+    std::string value;
+  public:
+    /** @name Constructors, destructor */
+    //@{
+    KeyValueNode() {applyDefaults();}
+    KeyValueNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~KeyValueNode() {}
+    //@}
+
+    /** @name Redefined NEDElement methods, incl. generic access to attributes */
+    //@{
+    virtual const char *getTagName() const {return "key-value";}
+    virtual int getTagCode() const {return NED_KEY_VALUE;}
+    virtual int getNumAttributes() const;
+    virtual const char *getAttributeName(int k) const;
+    virtual const char *getAttribute(int k) const;
+    virtual void setAttribute(int k, const char *val);
+    virtual const char *getAttributeDefault(int k) const;
+    //@}
+
+    /** @name Typed access to attributes, children and siblings */
+    //@{
+    const char * getKey() const  {return key.c_str();}
+    void setKey(const char * val)  {key = val;}
+    const char * getValue() const  {return value.c_str();}
+    void setValue(const char * val)  {value = val;}
+
+    virtual KeyValueNode *getNextKeyValueNodeSibling() const;
     //@}
 };
 
@@ -767,10 +716,8 @@ class ParamNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;gates&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT gates (gate*)>
- * <!ATTLIST gates
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;" >
+ * <!ELEMENT gates ((gate|gate-block)*)>
+ * 
  * </pre>
  * 
  * @ingroup Data
@@ -778,8 +725,6 @@ class ParamNode : public NEDElement
 class GatesNode : public NEDElement
 {
   private:
-    std::string bannerComment;
-    std::string rightComment;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -801,12 +746,50 @@ class GatesNode : public NEDElement
 
     /** @name Typed access to attributes, children and siblings */
     //@{
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
 
     virtual GatesNode *getNextGatesNodeSibling() const;
+    virtual GateNode *getFirstGateChild() const;
+    virtual GateBlockNode *getFirstGateBlockChild() const;
+    //@}
+};
+
+/**
+ * GENERATED CLASS. Represents the &lt;gate-block&gt; XML element in memory. DTD declaration:
+ * 
+ * <pre>
+ * <!ELEMENT gate-block (condition, gate*)>
+ * 
+ * </pre>
+ * 
+ * @ingroup Data
+ */
+class GateBlockNode : public NEDElement
+{
+  private:
+  public:
+    /** @name Constructors, destructor */
+    //@{
+    GateBlockNode() {applyDefaults();}
+    GateBlockNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~GateBlockNode() {}
+    //@}
+
+    /** @name Redefined NEDElement methods, incl. generic access to attributes */
+    //@{
+    virtual const char *getTagName() const {return "gate-block";}
+    virtual int getTagCode() const {return NED_GATE_BLOCK;}
+    virtual int getNumAttributes() const;
+    virtual const char *getAttributeName(int k) const;
+    virtual const char *getAttribute(int k) const;
+    virtual void setAttribute(int k, const char *val);
+    virtual const char *getAttributeDefault(int k) const;
+    //@}
+
+    /** @name Typed access to attributes, children and siblings */
+    //@{
+
+    virtual GateBlockNode *getNextGateBlockNodeSibling() const;
+    virtual ConditionNode *getFirstConditionChild() const;
     virtual GateNode *getFirstGateChild() const;
     //@}
 };
@@ -815,13 +798,12 @@ class GatesNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;gate&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT gate EMPTY>
+ * <!ELEMENT gate (expression?)>
  * <!ATTLIST gate
- *      name                NMTOKEN   #REQUIRED
- *      direction      (input|output) #REQUIRED
- *      is-vector       (true|false)  "false"
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;" >
+ *      name               NMTOKEN   #REQUIRED
+ *      type               (input|output|inout) #REQUIRED
+ *      vector-size        CDATA     #IMPLIED
+ * >
  * </pre>
  * 
  * @ingroup Data
@@ -830,10 +812,8 @@ class GateNode : public NEDElement
 {
   private:
     std::string name;
-    int direction;
-    bool isVector;
-    std::string bannerComment;
-    std::string rightComment;
+    int type;
+    std::string vectorSize;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -857,115 +837,13 @@ class GateNode : public NEDElement
     //@{
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
-    int getDirection() const  {return direction;}
-    void setDirection(int val)  {direction = val;}
-    bool getIsVector() const  {return isVector;}
-    void setIsVector(bool val)  {isVector = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
+    int getType() const  {return type;}
+    void setType(int val)  {type = val;}
+    const char * getVectorSize() const  {return vectorSize.c_str();}
+    void setVectorSize(const char * val)  {vectorSize = val;}
 
     virtual GateNode *getNextGateNodeSibling() const;
-    //@}
-};
-
-/**
- * GENERATED CLASS. Represents the &lt;machines&gt; XML element in memory. DTD declaration:
- * 
- * <pre>
- * <!ELEMENT machines (machine*)>
- * <!ATTLIST machines
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;" >
- * </pre>
- * 
- * @ingroup Data
- */
-class MachinesNode : public NEDElement
-{
-  private:
-    std::string bannerComment;
-    std::string rightComment;
-  public:
-    /** @name Constructors, destructor */
-    //@{
-    MachinesNode() {applyDefaults();}
-    MachinesNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~MachinesNode() {}
-    //@}
-
-    /** @name Redefined NEDElement methods, incl. generic access to attributes */
-    //@{
-    virtual const char *getTagName() const {return "machines";}
-    virtual int getTagCode() const {return NED_MACHINES;}
-    virtual int getNumAttributes() const;
-    virtual const char *getAttributeName(int k) const;
-    virtual const char *getAttribute(int k) const;
-    virtual void setAttribute(int k, const char *val);
-    virtual const char *getAttributeDefault(int k) const;
-    //@}
-
-    /** @name Typed access to attributes, children and siblings */
-    //@{
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
-
-    virtual MachinesNode *getNextMachinesNodeSibling() const;
-    virtual MachineNode *getFirstMachineChild() const;
-    //@}
-};
-
-/**
- * GENERATED CLASS. Represents the &lt;machine&gt; XML element in memory. DTD declaration:
- * 
- * <pre>
- * <!ELEMENT machine EMPTY>
- * <!ATTLIST machine
- *      name                NMTOKEN   #REQUIRED
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;" >
- * </pre>
- * 
- * @ingroup Data
- */
-class MachineNode : public NEDElement
-{
-  private:
-    std::string name;
-    std::string bannerComment;
-    std::string rightComment;
-  public:
-    /** @name Constructors, destructor */
-    //@{
-    MachineNode() {applyDefaults();}
-    MachineNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~MachineNode() {}
-    //@}
-
-    /** @name Redefined NEDElement methods, incl. generic access to attributes */
-    //@{
-    virtual const char *getTagName() const {return "machine";}
-    virtual int getTagCode() const {return NED_MACHINE;}
-    virtual int getNumAttributes() const;
-    virtual const char *getAttributeName(int k) const;
-    virtual const char *getAttribute(int k) const;
-    virtual void setAttribute(int k, const char *val);
-    virtual const char *getAttributeDefault(int k) const;
-    //@}
-
-    /** @name Typed access to attributes, children and siblings */
-    //@{
-    const char * getName() const  {return name.c_str();}
-    void setName(const char * val)  {name = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
-
-    virtual MachineNode *getNextMachineNodeSibling() const;
+    virtual ExpressionNode *getFirstExpressionChild() const;
     //@}
 };
 
@@ -974,9 +852,7 @@ class MachineNode : public NEDElement
  * 
  * <pre>
  * <!ELEMENT submodules (submodule*)>
- * <!ATTLIST submodules
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;" >
+ * 
  * </pre>
  * 
  * @ingroup Data
@@ -984,8 +860,6 @@ class MachineNode : public NEDElement
 class SubmodulesNode : public NEDElement
 {
   private:
-    std::string bannerComment;
-    std::string rightComment;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -1007,10 +881,6 @@ class SubmodulesNode : public NEDElement
 
     /** @name Typed access to attributes, children and siblings */
     //@{
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
 
     virtual SubmodulesNode *getNextSubmodulesNodeSibling() const;
     virtual SubmoduleNode *getFirstSubmoduleChild() const;
@@ -1021,15 +891,14 @@ class SubmodulesNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;submodule&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT submodule (expression?, substmachines*, substparams*,
- *                      gatesizes*, display-string?)>
+ * <!ELEMENT submodule (expression*, parameters?, gates?)>
  * <!ATTLIST submodule
- *      name                NMTOKEN   #REQUIRED
- *      type-name           NMTOKEN   #REQUIRED
- *      like-param          NMTOKEN   #IMPLIED
- *      vector-size         CDATA     #IMPLIED
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;" >
+ *      name               NMTOKEN   #REQUIRED
+ *      type               NMTOKEN   #IMPLIED
+ *      like-type          NMTOKEN   #IMPLIED
+ *      like-param         CDATA     #IMPLIED
+ *      vector-size        CDATA     #IMPLIED
+ * >
  * </pre>
  * 
  * @ingroup Data
@@ -1038,11 +907,10 @@ class SubmoduleNode : public NEDElement
 {
   private:
     std::string name;
-    std::string typeName;
+    std::string type;
+    std::string likeType;
     std::string likeParam;
     std::string vectorSize;
-    std::string bannerComment;
-    std::string rightComment;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -1066,345 +934,19 @@ class SubmoduleNode : public NEDElement
     //@{
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
-    const char * getTypeName() const  {return typeName.c_str();}
-    void setTypeName(const char * val)  {typeName = val;}
+    const char * getType() const  {return type.c_str();}
+    void setType(const char * val)  {type = val;}
+    const char * getLikeType() const  {return likeType.c_str();}
+    void setLikeType(const char * val)  {likeType = val;}
     const char * getLikeParam() const  {return likeParam.c_str();}
     void setLikeParam(const char * val)  {likeParam = val;}
     const char * getVectorSize() const  {return vectorSize.c_str();}
     void setVectorSize(const char * val)  {vectorSize = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
 
     virtual SubmoduleNode *getNextSubmoduleNodeSibling() const;
     virtual ExpressionNode *getFirstExpressionChild() const;
-    virtual SubstmachinesNode *getFirstSubstmachinesChild() const;
-    virtual SubstparamsNode *getFirstSubstparamsChild() const;
-    virtual GatesizesNode *getFirstGatesizesChild() const;
-    virtual DisplayStringNode *getFirstDisplayStringChild() const;
-    //@}
-};
-
-/**
- * GENERATED CLASS. Represents the &lt;substparams&gt; XML element in memory. DTD declaration:
- * 
- * <pre>
- * <!ELEMENT substparams (expression?, substparam*)>
- * <!ATTLIST substparams
- *      condition           CDATA     #IMPLIED
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;" >
- * </pre>
- * 
- * @ingroup Data
- */
-class SubstparamsNode : public NEDElement
-{
-  private:
-    std::string condition;
-    std::string bannerComment;
-    std::string rightComment;
-  public:
-    /** @name Constructors, destructor */
-    //@{
-    SubstparamsNode() {applyDefaults();}
-    SubstparamsNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~SubstparamsNode() {}
-    //@}
-
-    /** @name Redefined NEDElement methods, incl. generic access to attributes */
-    //@{
-    virtual const char *getTagName() const {return "substparams";}
-    virtual int getTagCode() const {return NED_SUBSTPARAMS;}
-    virtual int getNumAttributes() const;
-    virtual const char *getAttributeName(int k) const;
-    virtual const char *getAttribute(int k) const;
-    virtual void setAttribute(int k, const char *val);
-    virtual const char *getAttributeDefault(int k) const;
-    //@}
-
-    /** @name Typed access to attributes, children and siblings */
-    //@{
-    const char * getCondition() const  {return condition.c_str();}
-    void setCondition(const char * val)  {condition = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
-
-    virtual SubstparamsNode *getNextSubstparamsNodeSibling() const;
-    virtual ExpressionNode *getFirstExpressionChild() const;
-    virtual SubstparamNode *getFirstSubstparamChild() const;
-    //@}
-};
-
-/**
- * GENERATED CLASS. Represents the &lt;substparam&gt; XML element in memory. DTD declaration:
- * 
- * <pre>
- * <!ELEMENT substparam (expression?)>
- * <!ATTLIST substparam
- *      name                NMTOKEN   #REQUIRED
- *      value               CDATA     #IMPLIED
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;" >
- * </pre>
- * 
- * @ingroup Data
- */
-class SubstparamNode : public NEDElement
-{
-  private:
-    std::string name;
-    std::string value;
-    std::string bannerComment;
-    std::string rightComment;
-  public:
-    /** @name Constructors, destructor */
-    //@{
-    SubstparamNode() {applyDefaults();}
-    SubstparamNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~SubstparamNode() {}
-    //@}
-
-    /** @name Redefined NEDElement methods, incl. generic access to attributes */
-    //@{
-    virtual const char *getTagName() const {return "substparam";}
-    virtual int getTagCode() const {return NED_SUBSTPARAM;}
-    virtual int getNumAttributes() const;
-    virtual const char *getAttributeName(int k) const;
-    virtual const char *getAttribute(int k) const;
-    virtual void setAttribute(int k, const char *val);
-    virtual const char *getAttributeDefault(int k) const;
-    //@}
-
-    /** @name Typed access to attributes, children and siblings */
-    //@{
-    const char * getName() const  {return name.c_str();}
-    void setName(const char * val)  {name = val;}
-    const char * getValue() const  {return value.c_str();}
-    void setValue(const char * val)  {value = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
-
-    virtual SubstparamNode *getNextSubstparamNodeSibling() const;
-    virtual ExpressionNode *getFirstExpressionChild() const;
-    //@}
-};
-
-/**
- * GENERATED CLASS. Represents the &lt;gatesizes&gt; XML element in memory. DTD declaration:
- * 
- * <pre>
- * <!ELEMENT gatesizes (expression?, gatesize*)>
- * <!ATTLIST gatesizes
- *      condition           CDATA     #IMPLIED
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;" >
- * </pre>
- * 
- * @ingroup Data
- */
-class GatesizesNode : public NEDElement
-{
-  private:
-    std::string condition;
-    std::string bannerComment;
-    std::string rightComment;
-  public:
-    /** @name Constructors, destructor */
-    //@{
-    GatesizesNode() {applyDefaults();}
-    GatesizesNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~GatesizesNode() {}
-    //@}
-
-    /** @name Redefined NEDElement methods, incl. generic access to attributes */
-    //@{
-    virtual const char *getTagName() const {return "gatesizes";}
-    virtual int getTagCode() const {return NED_GATESIZES;}
-    virtual int getNumAttributes() const;
-    virtual const char *getAttributeName(int k) const;
-    virtual const char *getAttribute(int k) const;
-    virtual void setAttribute(int k, const char *val);
-    virtual const char *getAttributeDefault(int k) const;
-    //@}
-
-    /** @name Typed access to attributes, children and siblings */
-    //@{
-    const char * getCondition() const  {return condition.c_str();}
-    void setCondition(const char * val)  {condition = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
-
-    virtual GatesizesNode *getNextGatesizesNodeSibling() const;
-    virtual ExpressionNode *getFirstExpressionChild() const;
-    virtual GatesizeNode *getFirstGatesizeChild() const;
-    //@}
-};
-
-/**
- * GENERATED CLASS. Represents the &lt;gatesize&gt; XML element in memory. DTD declaration:
- * 
- * <pre>
- * <!ELEMENT gatesize (expression?)>
- * <!ATTLIST gatesize
- *      name                NMTOKEN   #REQUIRED
- *      vector-size         CDATA     #IMPLIED
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;" >
- * </pre>
- * 
- * @ingroup Data
- */
-class GatesizeNode : public NEDElement
-{
-  private:
-    std::string name;
-    std::string vectorSize;
-    std::string bannerComment;
-    std::string rightComment;
-  public:
-    /** @name Constructors, destructor */
-    //@{
-    GatesizeNode() {applyDefaults();}
-    GatesizeNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~GatesizeNode() {}
-    //@}
-
-    /** @name Redefined NEDElement methods, incl. generic access to attributes */
-    //@{
-    virtual const char *getTagName() const {return "gatesize";}
-    virtual int getTagCode() const {return NED_GATESIZE;}
-    virtual int getNumAttributes() const;
-    virtual const char *getAttributeName(int k) const;
-    virtual const char *getAttribute(int k) const;
-    virtual void setAttribute(int k, const char *val);
-    virtual const char *getAttributeDefault(int k) const;
-    //@}
-
-    /** @name Typed access to attributes, children and siblings */
-    //@{
-    const char * getName() const  {return name.c_str();}
-    void setName(const char * val)  {name = val;}
-    const char * getVectorSize() const  {return vectorSize.c_str();}
-    void setVectorSize(const char * val)  {vectorSize = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
-
-    virtual GatesizeNode *getNextGatesizeNodeSibling() const;
-    virtual ExpressionNode *getFirstExpressionChild() const;
-    //@}
-};
-
-/**
- * GENERATED CLASS. Represents the &lt;substmachines&gt; XML element in memory. DTD declaration:
- * 
- * <pre>
- * <!ELEMENT substmachines (expression?, substmachine*)>
- * <!ATTLIST substmachines
- *      condition           CDATA     #IMPLIED
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;" >
- * </pre>
- * 
- * @ingroup Data
- */
-class SubstmachinesNode : public NEDElement
-{
-  private:
-    std::string condition;
-    std::string bannerComment;
-    std::string rightComment;
-  public:
-    /** @name Constructors, destructor */
-    //@{
-    SubstmachinesNode() {applyDefaults();}
-    SubstmachinesNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~SubstmachinesNode() {}
-    //@}
-
-    /** @name Redefined NEDElement methods, incl. generic access to attributes */
-    //@{
-    virtual const char *getTagName() const {return "substmachines";}
-    virtual int getTagCode() const {return NED_SUBSTMACHINES;}
-    virtual int getNumAttributes() const;
-    virtual const char *getAttributeName(int k) const;
-    virtual const char *getAttribute(int k) const;
-    virtual void setAttribute(int k, const char *val);
-    virtual const char *getAttributeDefault(int k) const;
-    //@}
-
-    /** @name Typed access to attributes, children and siblings */
-    //@{
-    const char * getCondition() const  {return condition.c_str();}
-    void setCondition(const char * val)  {condition = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
-
-    virtual SubstmachinesNode *getNextSubstmachinesNodeSibling() const;
-    virtual ExpressionNode *getFirstExpressionChild() const;
-    virtual SubstmachineNode *getFirstSubstmachineChild() const;
-    //@}
-};
-
-/**
- * GENERATED CLASS. Represents the &lt;substmachine&gt; XML element in memory. DTD declaration:
- * 
- * <pre>
- * <!ELEMENT substmachine EMPTY>
- * <!ATTLIST substmachine
- *      name                NMTOKEN   #REQUIRED
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;" >
- * </pre>
- * 
- * @ingroup Data
- */
-class SubstmachineNode : public NEDElement
-{
-  private:
-    std::string name;
-    std::string bannerComment;
-    std::string rightComment;
-  public:
-    /** @name Constructors, destructor */
-    //@{
-    SubstmachineNode() {applyDefaults();}
-    SubstmachineNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~SubstmachineNode() {}
-    //@}
-
-    /** @name Redefined NEDElement methods, incl. generic access to attributes */
-    //@{
-    virtual const char *getTagName() const {return "substmachine";}
-    virtual int getTagCode() const {return NED_SUBSTMACHINE;}
-    virtual int getNumAttributes() const;
-    virtual const char *getAttributeName(int k) const;
-    virtual const char *getAttribute(int k) const;
-    virtual void setAttribute(int k, const char *val);
-    virtual const char *getAttributeDefault(int k) const;
-    //@}
-
-    /** @name Typed access to attributes, children and siblings */
-    //@{
-    const char * getName() const  {return name.c_str();}
-    void setName(const char * val)  {name = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
-
-    virtual SubstmachineNode *getNextSubstmachineNodeSibling() const;
+    virtual ParametersNode *getFirstParametersChild() const;
+    virtual GatesNode *getFirstGatesChild() const;
     //@}
 };
 
@@ -1412,11 +954,9 @@ class SubstmachineNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;connections&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT connections ((connection|for-loop)*)>
+ * <!ELEMENT connections ((connection|connection-block)*)>
  * <!ATTLIST connections
- *      check-unconnected (true|false) "true"
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;" >
+ *      check-unconnected (true|false) "true">
  * </pre>
  * 
  * @ingroup Data
@@ -1425,8 +965,6 @@ class ConnectionsNode : public NEDElement
 {
   private:
     bool checkUnconnected;
-    std::string bannerComment;
-    std::string rightComment;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -1450,14 +988,10 @@ class ConnectionsNode : public NEDElement
     //@{
     bool getCheckUnconnected() const  {return checkUnconnected;}
     void setCheckUnconnected(bool val)  {checkUnconnected = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
 
     virtual ConnectionsNode *getNextConnectionsNodeSibling() const;
     virtual ConnectionNode *getFirstConnectionChild() const;
-    virtual ForLoopNode *getFirstForLoopChild() const;
+    virtual ConnectionBlockNode *getFirstConnectionBlockChild() const;
     //@}
 };
 
@@ -1465,9 +999,9 @@ class ConnectionsNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;connection&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT connection ((expression|conn-attr|display-string)*)>
+ * <!ELEMENT connection (expression*, parameters?)>
  * <!ATTLIST connection
- *      condition           CDATA     #IMPLIED
+ *      channel-name        NMTOKEN   #IMPLIED
  *      src-module          NMTOKEN   #IMPLIED
  *      src-module-index    CDATA     #IMPLIED
  *      src-gate            NMTOKEN   #REQUIRED
@@ -1478,9 +1012,8 @@ class ConnectionsNode : public NEDElement
  *      dest-gate           NMTOKEN   #REQUIRED
  *      dest-gate-plusplus (true|false) "false"
  *      dest-gate-index     CDATA     #IMPLIED
- *      arrow-direction  (left|right) "right"
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;" >
+ *      is-left-to-right   (true|false) #REQUIRED
+ * >
  * </pre>
  * 
  * @ingroup Data
@@ -1488,7 +1021,7 @@ class ConnectionsNode : public NEDElement
 class ConnectionNode : public NEDElement
 {
   private:
-    std::string condition;
+    std::string channelName;
     std::string srcModule;
     std::string srcModuleIndex;
     std::string srcGate;
@@ -1499,9 +1032,7 @@ class ConnectionNode : public NEDElement
     std::string destGate;
     bool destGatePlusplus;
     std::string destGateIndex;
-    int arrowDirection;
-    std::string bannerComment;
-    std::string rightComment;
+    bool isLeftToRight;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -1523,8 +1054,8 @@ class ConnectionNode : public NEDElement
 
     /** @name Typed access to attributes, children and siblings */
     //@{
-    const char * getCondition() const  {return condition.c_str();}
-    void setCondition(const char * val)  {condition = val;}
+    const char * getChannelName() const  {return channelName.c_str();}
+    void setChannelName(const char * val)  {channelName = val;}
     const char * getSrcModule() const  {return srcModule.c_str();}
     void setSrcModule(const char * val)  {srcModule = val;}
     const char * getSrcModuleIndex() const  {return srcModuleIndex.c_str();}
@@ -1545,51 +1076,43 @@ class ConnectionNode : public NEDElement
     void setDestGatePlusplus(bool val)  {destGatePlusplus = val;}
     const char * getDestGateIndex() const  {return destGateIndex.c_str();}
     void setDestGateIndex(const char * val)  {destGateIndex = val;}
-    int getArrowDirection() const  {return arrowDirection;}
-    void setArrowDirection(int val)  {arrowDirection = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
+    bool getIsLeftToRight() const  {return isLeftToRight;}
+    void setIsLeftToRight(bool val)  {isLeftToRight = val;}
 
     virtual ConnectionNode *getNextConnectionNodeSibling() const;
     virtual ExpressionNode *getFirstExpressionChild() const;
-    virtual ConnAttrNode *getFirstConnAttrChild() const;
-    virtual DisplayStringNode *getFirstDisplayStringChild() const;
+    virtual ParametersNode *getFirstParametersChild() const;
     //@}
 };
 
 /**
- * GENERATED CLASS. Represents the &lt;conn-attr&gt; XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;channel-interface&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT conn-attr (expression*)>
- * <!ATTLIST conn-attr
- *      name                NMTOKEN   #REQUIRED
- *      value               CDATA     #IMPLIED
- *      right-comment       CDATA     "" >
+ * <!ELEMENT channel-interface (extends*, parameters?)>
+ * <!ATTLIST channel-interface
+ *      name               NMTOKEN   #REQUIRED
+ * >
  * </pre>
  * 
  * @ingroup Data
  */
-class ConnAttrNode : public NEDElement
+class ChannelInterfaceNode : public NEDElement
 {
   private:
     std::string name;
-    std::string value;
-    std::string rightComment;
   public:
     /** @name Constructors, destructor */
     //@{
-    ConnAttrNode() {applyDefaults();}
-    ConnAttrNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~ConnAttrNode() {}
+    ChannelInterfaceNode() {applyDefaults();}
+    ChannelInterfaceNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~ChannelInterfaceNode() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
-    virtual const char *getTagName() const {return "conn-attr";}
-    virtual int getTagCode() const {return NED_CONN_ATTR;}
+    virtual const char *getTagName() const {return "channel-interface";}
+    virtual int getTagCode() const {return NED_CHANNEL_INTERFACE;}
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
@@ -1601,47 +1124,41 @@ class ConnAttrNode : public NEDElement
     //@{
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
-    const char * getValue() const  {return value.c_str();}
-    void setValue(const char * val)  {value = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
 
-    virtual ConnAttrNode *getNextConnAttrNodeSibling() const;
-    virtual ExpressionNode *getFirstExpressionChild() const;
+    virtual ChannelInterfaceNode *getNextChannelInterfaceNodeSibling() const;
+    virtual  *getFirstExtendsChild() const;
+    virtual ParametersNode *getFirstParametersChild() const;
     //@}
 };
 
 /**
- * GENERATED CLASS. Represents the &lt;for-loop&gt; XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;channel&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT for-loop (loop-var+,connection*)>
- * <!ATTLIST for-loop
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;"
- *      trailing-comment    CDATA     "&#10;" >
+ * <!ELEMENT channel (extends?, channel-interface-name*, parameters?)>
+ * <!ATTLIST channel
+ *      name                NMTOKEN   #REQUIRED
+ * >
  * </pre>
  * 
  * @ingroup Data
  */
-class ForLoopNode : public NEDElement
+class ChannelNode : public NEDElement
 {
   private:
-    std::string bannerComment;
-    std::string rightComment;
-    std::string trailingComment;
+    std::string name;
   public:
     /** @name Constructors, destructor */
     //@{
-    ForLoopNode() {applyDefaults();}
-    ForLoopNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~ForLoopNode() {}
+    ChannelNode() {applyDefaults();}
+    ChannelNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~ChannelNode() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
-    virtual const char *getTagName() const {return "for-loop";}
-    virtual int getTagCode() const {return NED_FOR_LOOP;}
+    virtual const char *getTagName() const {return "channel";}
+    virtual int getTagCode() const {return NED_CHANNEL;}
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
@@ -1651,54 +1168,89 @@ class ForLoopNode : public NEDElement
 
     /** @name Typed access to attributes, children and siblings */
     //@{
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
-    const char * getTrailingComment() const  {return trailingComment.c_str();}
-    void setTrailingComment(const char * val)  {trailingComment = val;}
+    const char * getName() const  {return name.c_str();}
+    void setName(const char * val)  {name = val;}
 
-    virtual ForLoopNode *getNextForLoopNodeSibling() const;
-    virtual LoopVarNode *getFirstLoopVarChild() const;
+    virtual ChannelNode *getNextChannelNodeSibling() const;
+    virtual  *getFirstExtendsChild() const;
+    virtual  *getFirstChannelInterfaceNameChild() const;
+    virtual ParametersNode *getFirstParametersChild() const;
+    //@}
+};
+
+/**
+ * GENERATED CLASS. Represents the &lt;connection-block&gt; XML element in memory. DTD declaration:
+ * 
+ * <pre>
+ * <!ELEMENT connection-block ((loop|condition)*,connection*)>
+ * 
+ * </pre>
+ * 
+ * @ingroup Data
+ */
+class ConnectionBlockNode : public NEDElement
+{
+  private:
+  public:
+    /** @name Constructors, destructor */
+    //@{
+    ConnectionBlockNode() {applyDefaults();}
+    ConnectionBlockNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~ConnectionBlockNode() {}
+    //@}
+
+    /** @name Redefined NEDElement methods, incl. generic access to attributes */
+    //@{
+    virtual const char *getTagName() const {return "connection-block";}
+    virtual int getTagCode() const {return NED_CONNECTION_BLOCK;}
+    virtual int getNumAttributes() const;
+    virtual const char *getAttributeName(int k) const;
+    virtual const char *getAttribute(int k) const;
+    virtual void setAttribute(int k, const char *val);
+    virtual const char *getAttributeDefault(int k) const;
+    //@}
+
+    /** @name Typed access to attributes, children and siblings */
+    //@{
+
+    virtual ConnectionBlockNode *getNextConnectionBlockNodeSibling() const;
+    virtual LoopNode *getFirstLoopChild() const;
+    virtual ConditionNode *getFirstConditionChild() const;
     virtual ConnectionNode *getFirstConnectionChild() const;
     //@}
 };
 
 /**
- * GENERATED CLASS. Represents the &lt;loop-var&gt; XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;loop&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT loop-var (expression*)>
- * <!ATTLIST loop-var
+ * <!ELEMENT loop (expression*)>
+ * <!ATTLIST loop
  *      param-name          NMTOKEN   #REQUIRED
  *      from-value          CDATA     #IMPLIED
- *      to-value            CDATA     #IMPLIED
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;" >
+ *      to-value            CDATA     #IMPLIED>
  * </pre>
  * 
  * @ingroup Data
  */
-class LoopVarNode : public NEDElement
+class LoopNode : public NEDElement
 {
   private:
     std::string paramName;
     std::string fromValue;
     std::string toValue;
-    std::string bannerComment;
-    std::string rightComment;
   public:
     /** @name Constructors, destructor */
     //@{
-    LoopVarNode() {applyDefaults();}
-    LoopVarNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~LoopVarNode() {}
+    LoopNode() {applyDefaults();}
+    LoopNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~LoopNode() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
-    virtual const char *getTagName() const {return "loop-var";}
-    virtual int getTagCode() const {return NED_LOOP_VAR;}
+    virtual const char *getTagName() const {return "loop";}
+    virtual int getTagCode() const {return NED_LOOP;}
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
@@ -1714,47 +1266,40 @@ class LoopVarNode : public NEDElement
     void setFromValue(const char * val)  {fromValue = val;}
     const char * getToValue() const  {return toValue.c_str();}
     void setToValue(const char * val)  {toValue = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
 
-    virtual LoopVarNode *getNextLoopVarNodeSibling() const;
+    virtual LoopNode *getNextLoopNodeSibling() const;
     virtual ExpressionNode *getFirstExpressionChild() const;
     //@}
 };
 
 /**
- * GENERATED CLASS. Represents the &lt;display-string&gt; XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;condition&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT display-string EMPTY>
- * <!ATTLIST display-string
- *      value               CDATA     #IMPLIED
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;" >
+ * <!ELEMENT condition (expression?)>
+ * <!ATTLIST condition
+ *      condition          CDATA     #IMPLIED
+ * >
  * </pre>
  * 
  * @ingroup Data
  */
-class DisplayStringNode : public NEDElement
+class ConditionNode : public NEDElement
 {
   private:
-    std::string value;
-    std::string bannerComment;
-    std::string rightComment;
+    std::string condition;
   public:
     /** @name Constructors, destructor */
     //@{
-    DisplayStringNode() {applyDefaults();}
-    DisplayStringNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~DisplayStringNode() {}
+    ConditionNode() {applyDefaults();}
+    ConditionNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~ConditionNode() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
-    virtual const char *getTagName() const {return "display-string";}
-    virtual int getTagCode() const {return NED_DISPLAY_STRING;}
+    virtual const char *getTagName() const {return "condition";}
+    virtual int getTagCode() const {return NED_CONDITION;}
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
@@ -1764,14 +1309,11 @@ class DisplayStringNode : public NEDElement
 
     /** @name Typed access to attributes, children and siblings */
     //@{
-    const char * getValue() const  {return value.c_str();}
-    void setValue(const char * val)  {value = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
+    const char * getCondition() const  {return condition.c_str();}
+    void setCondition(const char * val)  {condition = val;}
 
-    virtual DisplayStringNode *getNextDisplayStringNodeSibling() const;
+    virtual ConditionNode *getNextConditionNodeSibling() const;
+    virtual ExpressionNode *getFirstExpressionChild() const;
     //@}
 };
 
@@ -2074,6 +1616,63 @@ class ConstNode : public NEDElement
     void setValue(const char * val)  {value = val;}
 
     virtual ConstNode *getNextConstNodeSibling() const;
+    //@}
+};
+
+/**
+ * GENERATED CLASS. Represents the &lt;msg-file&gt; XML element in memory. DTD declaration:
+ * 
+ * <pre>
+ * <!ELEMENT msg-file ((cplusplus|struct-decl|class-decl|message-decl|enum-decl|
+ *                      enum|message|class|struct)*)>
+ * <!ATTLIST msg-file
+ *      filename            CDATA     #IMPLIED
+ *      package             CDATA     #IMPLIED >
+ * </pre>
+ * 
+ * @ingroup Data
+ */
+class MsgFileNode : public NEDElement
+{
+  private:
+    std::string filename;
+    std::string package;
+  public:
+    /** @name Constructors, destructor */
+    //@{
+    MsgFileNode() {applyDefaults();}
+    MsgFileNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~MsgFileNode() {}
+    //@}
+
+    /** @name Redefined NEDElement methods, incl. generic access to attributes */
+    //@{
+    virtual const char *getTagName() const {return "msg-file";}
+    virtual int getTagCode() const {return NED_MSG_FILE;}
+    virtual int getNumAttributes() const;
+    virtual const char *getAttributeName(int k) const;
+    virtual const char *getAttribute(int k) const;
+    virtual void setAttribute(int k, const char *val);
+    virtual const char *getAttributeDefault(int k) const;
+    //@}
+
+    /** @name Typed access to attributes, children and siblings */
+    //@{
+    const char * getFilename() const  {return filename.c_str();}
+    void setFilename(const char * val)  {filename = val;}
+    const char * getPackage() const  {return package.c_str();}
+    void setPackage(const char * val)  {package = val;}
+
+    virtual MsgFileNode *getNextMsgFileNodeSibling() const;
+    virtual CplusplusNode *getFirstCplusplusChild() const;
+    virtual StructDeclNode *getFirstStructDeclChild() const;
+    virtual ClassDeclNode *getFirstClassDeclChild() const;
+    virtual MessageDeclNode *getFirstMessageDeclChild() const;
+    virtual EnumDeclNode *getFirstEnumDeclChild() const;
+    virtual EnumNode *getFirstEnumChild() const;
+    virtual MessageNode *getFirstMessageChild() const;
+    virtual ClassNode *getFirstClassChild() const;
+    virtual StructNode *getFirstStructChild() const;
     //@}
 };
 

@@ -34,66 +34,64 @@ static int type_nums[] = {NED_CONST_BOOL, NED_CONST_INT, NED_CONST_REAL, NED_CON
 static const int type_n = 5;
 
 
-int NedFilesNode::getNumAttributes() const
+int FilesNode::getNumAttributes() const
 {
     return 0;
 }
 
-const char *NedFilesNode::getAttributeName(int k) const
+const char *FilesNode::getAttributeName(int k) const
 {
     switch (k) {
         default: return 0;
     }
 }
 
-const char *NedFilesNode::getAttribute(int k) const
+const char *FilesNode::getAttribute(int k) const
 {
     switch (k) {
         default: return 0;
     }
 }
 
-void NedFilesNode::setAttribute(int k, const char *val)
+void FilesNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         default: ;
     }
 }
 
-const char *NedFilesNode::getAttributeDefault(int k) const
+const char *FilesNode::getAttributeDefault(int k) const
 {
     switch (k) {
         default: return 0;
     }
 }
 
-NedFilesNode *NedFilesNode::getNextNedFilesNodeSibling() const
+FilesNode *FilesNode::getNextFilesNodeSibling() const
 {
-    return (NedFilesNode *)getNextSiblingWithTag(NED_NED_FILES);
+    return (FilesNode *)getNextSiblingWithTag(NED_FILES);
 }
 
-NedFilesNode *NedFilesNode::getFirstNedFilesChild() const
-{
-    return (NedFilesNode *)getFirstChildWithTag(NED_NED_FILES);
-}
-
-NedFileNode *NedFilesNode::getFirstNedFileChild() const
+NedFileNode *FilesNode::getFirstNedFileChild() const
 {
     return (NedFileNode *)getFirstChildWithTag(NED_NED_FILE);
 }
 
+MsgFileNode *FilesNode::getFirstMsgFileChild() const
+{
+    return (MsgFileNode *)getFirstChildWithTag(NED_MSG_FILE);
+}
+
 int NedFileNode::getNumAttributes() const
 {
-    return 4;
+    return 2;
 }
 
 const char *NedFileNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "filename";
-        case 1: return "source-code";
-        case 2: return "preferred-indent";
-        case 3: return "banner-comment";
+        case 1: return "package";
         default: return 0;
     }
 }
@@ -102,9 +100,7 @@ const char *NedFileNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return filename.c_str();
-        case 1: return sourceCode.c_str();
-        case 2: return preferredIndent.c_str();
-        case 3: return bannerComment.c_str();
+        case 1: return package.c_str();
         default: return 0;
     }
 }
@@ -113,9 +109,7 @@ void NedFileNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: filename = val; break;
-        case 1: sourceCode = val; break;
-        case 2: preferredIndent = val; break;
-        case 3: bannerComment = val; break;
+        case 1: package = val; break;
         default: ;
     }
 }
@@ -125,8 +119,6 @@ const char *NedFileNode::getAttributeDefault(int k) const
     switch (k) {
         case 0: return "";
         case 1: return "";
-        case 2: return "4";
-        case 3: return "";
         default: return 0;
     }
 }
@@ -141,81 +133,50 @@ ImportNode *NedFileNode::getFirstImportChild() const
     return (ImportNode *)getFirstChildWithTag(NED_IMPORT);
 }
 
+PropertydefNode *NedFileNode::getFirstPropertydefChild() const
+{
+    return (PropertydefNode *)getFirstChildWithTag(NED_PROPERTYDEF);
+}
+
+PropertyNode *NedFileNode::getFirstPropertyChild() const
+{
+    return (PropertyNode *)getFirstChildWithTag(NED_PROPERTY);
+}
+
 ChannelNode *NedFileNode::getFirstChannelChild() const
 {
     return (ChannelNode *)getFirstChildWithTag(NED_CHANNEL);
 }
 
-SimpleModuleNode *NedFileNode::getFirstSimpleModuleChild() const
+ChannelInterfaceNode *NedFileNode::getFirstChannelInterfaceChild() const
 {
-    return (SimpleModuleNode *)getFirstChildWithTag(NED_SIMPLE_MODULE);
+    return (ChannelInterfaceNode *)getFirstChildWithTag(NED_CHANNEL_INTERFACE);
 }
 
-CompoundModuleNode *NedFileNode::getFirstCompoundModuleChild() const
+SimpleNode *NedFileNode::getFirstSimpleChild() const
 {
-    return (CompoundModuleNode *)getFirstChildWithTag(NED_COMPOUND_MODULE);
+    return (SimpleNode *)getFirstChildWithTag(NED_SIMPLE);
 }
 
-NetworkNode *NedFileNode::getFirstNetworkChild() const
+ModuleNode *NedFileNode::getFirstModuleChild() const
 {
-    return (NetworkNode *)getFirstChildWithTag(NED_NETWORK);
+    return (ModuleNode *)getFirstChildWithTag(NED_MODULE);
 }
 
-CplusplusNode *NedFileNode::getFirstCplusplusChild() const
+InterfaceNode *NedFileNode::getFirstInterfaceChild() const
 {
-    return (CplusplusNode *)getFirstChildWithTag(NED_CPLUSPLUS);
-}
-
-StructDeclNode *NedFileNode::getFirstStructDeclChild() const
-{
-    return (StructDeclNode *)getFirstChildWithTag(NED_STRUCT_DECL);
-}
-
-ClassDeclNode *NedFileNode::getFirstClassDeclChild() const
-{
-    return (ClassDeclNode *)getFirstChildWithTag(NED_CLASS_DECL);
-}
-
-MessageDeclNode *NedFileNode::getFirstMessageDeclChild() const
-{
-    return (MessageDeclNode *)getFirstChildWithTag(NED_MESSAGE_DECL);
-}
-
-EnumDeclNode *NedFileNode::getFirstEnumDeclChild() const
-{
-    return (EnumDeclNode *)getFirstChildWithTag(NED_ENUM_DECL);
-}
-
-EnumNode *NedFileNode::getFirstEnumChild() const
-{
-    return (EnumNode *)getFirstChildWithTag(NED_ENUM);
-}
-
-MessageNode *NedFileNode::getFirstMessageChild() const
-{
-    return (MessageNode *)getFirstChildWithTag(NED_MESSAGE);
-}
-
-ClassNode *NedFileNode::getFirstClassChild() const
-{
-    return (ClassNode *)getFirstChildWithTag(NED_CLASS);
-}
-
-StructNode *NedFileNode::getFirstStructChild() const
-{
-    return (StructNode *)getFirstChildWithTag(NED_STRUCT);
+    return (InterfaceNode *)getFirstChildWithTag(NED_INTERFACE);
 }
 
 int ImportNode::getNumAttributes() const
 {
-    return 2;
+    return 1;
 }
 
 const char *ImportNode::getAttributeName(int k) const
 {
     switch (k) {
-        case 0: return "banner-comment";
-        case 1: return "right-comment";
+        case 0: return "filename";
         default: return 0;
     }
 }
@@ -223,8 +184,7 @@ const char *ImportNode::getAttributeName(int k) const
 const char *ImportNode::getAttribute(int k) const
 {
     switch (k) {
-        case 0: return bannerComment.c_str();
-        case 1: return rightComment.c_str();
+        case 0: return filename.c_str();
         default: return 0;
     }
 }
@@ -232,8 +192,7 @@ const char *ImportNode::getAttribute(int k) const
 void ImportNode::setAttribute(int k, const char *val)
 {
     switch (k) {
-        case 0: bannerComment = val; break;
-        case 1: rightComment = val; break;
+        case 0: filename = val; break;
         default: ;
     }
 }
@@ -242,7 +201,6 @@ const char *ImportNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return "";
-        case 1: return "\n";
         default: return 0;
     }
 }
@@ -252,473 +210,350 @@ ImportNode *ImportNode::getNextImportNodeSibling() const
     return (ImportNode *)getNextSiblingWithTag(NED_IMPORT);
 }
 
-ImportedFileNode *ImportNode::getFirstImportedFileChild() const
+int PropertydefNode::getNumAttributes() const
 {
-    return (ImportedFileNode *)getFirstChildWithTag(NED_IMPORTED_FILE);
+    return 1;
 }
 
-int ImportedFileNode::getNumAttributes() const
-{
-    return 3;
-}
-
-const char *ImportedFileNode::getAttributeName(int k) const
-{
-    switch (k) {
-        case 0: return "filename";
-        case 1: return "banner-comment";
-        case 2: return "right-comment";
-        default: return 0;
-    }
-}
-
-const char *ImportedFileNode::getAttribute(int k) const
-{
-    switch (k) {
-        case 0: return filename.c_str();
-        case 1: return bannerComment.c_str();
-        case 2: return rightComment.c_str();
-        default: return 0;
-    }
-}
-
-void ImportedFileNode::setAttribute(int k, const char *val)
-{
-    switch (k) {
-        case 0: filename = val; break;
-        case 1: bannerComment = val; break;
-        case 2: rightComment = val; break;
-        default: ;
-    }
-}
-
-const char *ImportedFileNode::getAttributeDefault(int k) const
-{
-    switch (k) {
-        case 0: return "";
-        case 1: return "";
-        case 2: return "\n";
-        default: return 0;
-    }
-}
-
-ImportedFileNode *ImportedFileNode::getNextImportedFileNodeSibling() const
-{
-    return (ImportedFileNode *)getNextSiblingWithTag(NED_IMPORTED_FILE);
-}
-
-int ChannelNode::getNumAttributes() const
-{
-    return 5;
-}
-
-const char *ChannelNode::getAttributeName(int k) const
+const char *PropertydefNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "name";
-        case 1: return "source-code";
-        case 2: return "banner-comment";
-        case 3: return "right-comment";
-        case 4: return "trailing-comment";
         default: return 0;
     }
 }
 
-const char *ChannelNode::getAttribute(int k) const
+const char *PropertydefNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return name.c_str();
-        case 1: return sourceCode.c_str();
-        case 2: return bannerComment.c_str();
-        case 3: return rightComment.c_str();
-        case 4: return trailingComment.c_str();
         default: return 0;
     }
 }
 
-void ChannelNode::setAttribute(int k, const char *val)
+void PropertydefNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: name = val; break;
-        case 1: sourceCode = val; break;
-        case 2: bannerComment = val; break;
-        case 3: rightComment = val; break;
-        case 4: trailingComment = val; break;
         default: ;
     }
 }
 
-const char *ChannelNode::getAttributeDefault(int k) const
+const char *PropertydefNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return "";
-        case 1: return "";
-        case 2: return "";
-        case 3: return "\n";
-        case 4: return "\n";
         default: return 0;
     }
 }
 
-ChannelNode *ChannelNode::getNextChannelNodeSibling() const
+PropertydefNode *PropertydefNode::getNextPropertydefNodeSibling() const
 {
-    return (ChannelNode *)getNextSiblingWithTag(NED_CHANNEL);
+    return (PropertydefNode *)getNextSiblingWithTag(NED_PROPERTYDEF);
 }
 
-ChannelAttrNode *ChannelNode::getFirstChannelAttrChild() const
+KeyValueNode *PropertydefNode::getFirstKeyValueChild() const
 {
-    return (ChannelAttrNode *)getFirstChildWithTag(NED_CHANNEL_ATTR);
+    return (KeyValueNode *)getFirstChildWithTag(NED_KEY_VALUE);
 }
 
-DisplayStringNode *ChannelNode::getFirstDisplayStringChild() const
+int SimpleNode::getNumAttributes() const
 {
-    return (DisplayStringNode *)getFirstChildWithTag(NED_DISPLAY_STRING);
+    return 1;
 }
 
-int ChannelAttrNode::getNumAttributes() const
-{
-    return 4;
-}
-
-const char *ChannelAttrNode::getAttributeName(int k) const
+const char *SimpleNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "name";
-        case 1: return "value";
-        case 2: return "banner-comment";
-        case 3: return "right-comment";
         default: return 0;
     }
 }
 
-const char *ChannelAttrNode::getAttribute(int k) const
+const char *SimpleNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return name.c_str();
-        case 1: return value.c_str();
-        case 2: return bannerComment.c_str();
-        case 3: return rightComment.c_str();
         default: return 0;
     }
 }
 
-void ChannelAttrNode::setAttribute(int k, const char *val)
+void SimpleNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: name = val; break;
-        case 1: value = val; break;
-        case 2: bannerComment = val; break;
-        case 3: rightComment = val; break;
         default: ;
     }
 }
 
-const char *ChannelAttrNode::getAttributeDefault(int k) const
+const char *SimpleNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return "";
-        case 1: return "";
-        case 2: return "";
-        case 3: return "\n";
         default: return 0;
     }
 }
 
-ChannelAttrNode *ChannelAttrNode::getNextChannelAttrNodeSibling() const
+SimpleNode *SimpleNode::getNextSimpleNodeSibling() const
 {
-    return (ChannelAttrNode *)getNextSiblingWithTag(NED_CHANNEL_ATTR);
+    return (SimpleNode *)getNextSiblingWithTag(NED_SIMPLE);
 }
 
-ExpressionNode *ChannelAttrNode::getFirstExpressionChild() const
+ *SimpleNode::getFirstExtendsChild() const
 {
-    return (ExpressionNode *)getFirstChildWithTag(NED_EXPRESSION);
+    return ( *)getFirstChildWithTag();
 }
 
-int NetworkNode::getNumAttributes() const
+ *SimpleNode::getFirstInterfaceNameChild() const
 {
-    return 6;
+    return ( *)getFirstChildWithTag();
 }
 
-const char *NetworkNode::getAttributeName(int k) const
+ParametersNode *SimpleNode::getFirstParametersChild() const
 {
-    switch (k) {
-        case 0: return "name";
-        case 1: return "type-name";
-        case 2: return "source-code";
-        case 3: return "banner-comment";
-        case 4: return "right-comment";
-        case 5: return "trailing-comment";
-        default: return 0;
-    }
+    return (ParametersNode *)getFirstChildWithTag(NED_PARAMETERS);
 }
 
-const char *NetworkNode::getAttribute(int k) const
-{
-    switch (k) {
-        case 0: return name.c_str();
-        case 1: return typeName.c_str();
-        case 2: return sourceCode.c_str();
-        case 3: return bannerComment.c_str();
-        case 4: return rightComment.c_str();
-        case 5: return trailingComment.c_str();
-        default: return 0;
-    }
-}
-
-void NetworkNode::setAttribute(int k, const char *val)
-{
-    switch (k) {
-        case 0: name = val; break;
-        case 1: typeName = val; break;
-        case 2: sourceCode = val; break;
-        case 3: bannerComment = val; break;
-        case 4: rightComment = val; break;
-        case 5: trailingComment = val; break;
-        default: ;
-    }
-}
-
-const char *NetworkNode::getAttributeDefault(int k) const
-{
-    switch (k) {
-        case 0: return "";
-        case 1: return "";
-        case 2: return "";
-        case 3: return "";
-        case 4: return "\n";
-        case 5: return "\n";
-        default: return 0;
-    }
-}
-
-NetworkNode *NetworkNode::getNextNetworkNodeSibling() const
-{
-    return (NetworkNode *)getNextSiblingWithTag(NED_NETWORK);
-}
-
-SubstmachinesNode *NetworkNode::getFirstSubstmachinesChild() const
-{
-    return (SubstmachinesNode *)getFirstChildWithTag(NED_SUBSTMACHINES);
-}
-
-SubstparamsNode *NetworkNode::getFirstSubstparamsChild() const
-{
-    return (SubstparamsNode *)getFirstChildWithTag(NED_SUBSTPARAMS);
-}
-
-int SimpleModuleNode::getNumAttributes() const
-{
-    return 5;
-}
-
-const char *SimpleModuleNode::getAttributeName(int k) const
-{
-    switch (k) {
-        case 0: return "name";
-        case 1: return "source-code";
-        case 2: return "banner-comment";
-        case 3: return "right-comment";
-        case 4: return "trailing-comment";
-        default: return 0;
-    }
-}
-
-const char *SimpleModuleNode::getAttribute(int k) const
-{
-    switch (k) {
-        case 0: return name.c_str();
-        case 1: return sourceCode.c_str();
-        case 2: return bannerComment.c_str();
-        case 3: return rightComment.c_str();
-        case 4: return trailingComment.c_str();
-        default: return 0;
-    }
-}
-
-void SimpleModuleNode::setAttribute(int k, const char *val)
-{
-    switch (k) {
-        case 0: name = val; break;
-        case 1: sourceCode = val; break;
-        case 2: bannerComment = val; break;
-        case 3: rightComment = val; break;
-        case 4: trailingComment = val; break;
-        default: ;
-    }
-}
-
-const char *SimpleModuleNode::getAttributeDefault(int k) const
-{
-    switch (k) {
-        case 0: return "";
-        case 1: return "";
-        case 2: return "";
-        case 3: return "\n";
-        case 4: return "\n";
-        default: return 0;
-    }
-}
-
-SimpleModuleNode *SimpleModuleNode::getNextSimpleModuleNodeSibling() const
-{
-    return (SimpleModuleNode *)getNextSiblingWithTag(NED_SIMPLE_MODULE);
-}
-
-MachinesNode *SimpleModuleNode::getFirstMachinesChild() const
-{
-    return (MachinesNode *)getFirstChildWithTag(NED_MACHINES);
-}
-
-ParamsNode *SimpleModuleNode::getFirstParamsChild() const
-{
-    return (ParamsNode *)getFirstChildWithTag(NED_PARAMS);
-}
-
-GatesNode *SimpleModuleNode::getFirstGatesChild() const
+GatesNode *SimpleNode::getFirstGatesChild() const
 {
     return (GatesNode *)getFirstChildWithTag(NED_GATES);
 }
 
-DisplayStringNode *SimpleModuleNode::getFirstDisplayStringChild() const
+int InterfaceNode::getNumAttributes() const
 {
-    return (DisplayStringNode *)getFirstChildWithTag(NED_DISPLAY_STRING);
+    return 1;
 }
 
-int CompoundModuleNode::getNumAttributes() const
-{
-    return 5;
-}
-
-const char *CompoundModuleNode::getAttributeName(int k) const
+const char *InterfaceNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "name";
-        case 1: return "source-code";
-        case 2: return "banner-comment";
-        case 3: return "right-comment";
-        case 4: return "trailing-comment";
         default: return 0;
     }
 }
 
-const char *CompoundModuleNode::getAttribute(int k) const
+const char *InterfaceNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return name.c_str();
-        case 1: return sourceCode.c_str();
-        case 2: return bannerComment.c_str();
-        case 3: return rightComment.c_str();
-        case 4: return trailingComment.c_str();
         default: return 0;
     }
 }
 
-void CompoundModuleNode::setAttribute(int k, const char *val)
+void InterfaceNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: name = val; break;
-        case 1: sourceCode = val; break;
-        case 2: bannerComment = val; break;
-        case 3: rightComment = val; break;
-        case 4: trailingComment = val; break;
         default: ;
     }
 }
 
-const char *CompoundModuleNode::getAttributeDefault(int k) const
+const char *InterfaceNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return "";
-        case 1: return "";
-        case 2: return "";
-        case 3: return "\n";
-        case 4: return "\n";
         default: return 0;
     }
 }
 
-CompoundModuleNode *CompoundModuleNode::getNextCompoundModuleNodeSibling() const
+InterfaceNode *InterfaceNode::getNextInterfaceNodeSibling() const
 {
-    return (CompoundModuleNode *)getNextSiblingWithTag(NED_COMPOUND_MODULE);
+    return (InterfaceNode *)getNextSiblingWithTag(NED_INTERFACE);
 }
 
-MachinesNode *CompoundModuleNode::getFirstMachinesChild() const
+ *InterfaceNode::getFirstExtendsChild() const
 {
-    return (MachinesNode *)getFirstChildWithTag(NED_MACHINES);
+    return ( *)getFirstChildWithTag();
 }
 
-ParamsNode *CompoundModuleNode::getFirstParamsChild() const
+ParametersNode *InterfaceNode::getFirstParametersChild() const
 {
-    return (ParamsNode *)getFirstChildWithTag(NED_PARAMS);
+    return (ParametersNode *)getFirstChildWithTag(NED_PARAMETERS);
 }
 
-GatesNode *CompoundModuleNode::getFirstGatesChild() const
+GatesNode *InterfaceNode::getFirstGatesChild() const
 {
     return (GatesNode *)getFirstChildWithTag(NED_GATES);
 }
 
-SubmodulesNode *CompoundModuleNode::getFirstSubmodulesChild() const
+int ModuleNode::getNumAttributes() const
+{
+    return 1;
+}
+
+const char *ModuleNode::getAttributeName(int k) const
+{
+    switch (k) {
+        case 0: return "name";
+        default: return 0;
+    }
+}
+
+const char *ModuleNode::getAttribute(int k) const
+{
+    switch (k) {
+        case 0: return name.c_str();
+        default: return 0;
+    }
+}
+
+void ModuleNode::setAttribute(int k, const char *val)
+{
+    switch (k) {
+        case 0: name = val; break;
+        default: ;
+    }
+}
+
+const char *ModuleNode::getAttributeDefault(int k) const
+{
+    switch (k) {
+        case 0: return "";
+        default: return 0;
+    }
+}
+
+ModuleNode *ModuleNode::getNextModuleNodeSibling() const
+{
+    return (ModuleNode *)getNextSiblingWithTag(NED_MODULE);
+}
+
+ *ModuleNode::getFirstExtendsChild() const
+{
+    return ( *)getFirstChildWithTag();
+}
+
+ *ModuleNode::getFirstInterfaceNameChild() const
+{
+    return ( *)getFirstChildWithTag();
+}
+
+ParametersNode *ModuleNode::getFirstParametersChild() const
+{
+    return (ParametersNode *)getFirstChildWithTag(NED_PARAMETERS);
+}
+
+GatesNode *ModuleNode::getFirstGatesChild() const
+{
+    return (GatesNode *)getFirstChildWithTag(NED_GATES);
+}
+
+SubmodulesNode *ModuleNode::getFirstSubmodulesChild() const
 {
     return (SubmodulesNode *)getFirstChildWithTag(NED_SUBMODULES);
 }
 
-ConnectionsNode *CompoundModuleNode::getFirstConnectionsChild() const
+ConnectionsNode *ModuleNode::getFirstConnectionsChild() const
 {
     return (ConnectionsNode *)getFirstChildWithTag(NED_CONNECTIONS);
 }
 
-DisplayStringNode *CompoundModuleNode::getFirstDisplayStringChild() const
+int ParametersNode::getNumAttributes() const
 {
-    return (DisplayStringNode *)getFirstChildWithTag(NED_DISPLAY_STRING);
+    return 1;
 }
 
-int ParamsNode::getNumAttributes() const
-{
-    return 2;
-}
-
-const char *ParamsNode::getAttributeName(int k) const
+const char *ParametersNode::getAttributeName(int k) const
 {
     switch (k) {
-        case 0: return "banner-comment";
-        case 1: return "right-comment";
+        case 0: return "is-implicit";
         default: return 0;
     }
 }
 
-const char *ParamsNode::getAttribute(int k) const
+const char *ParametersNode::getAttribute(int k) const
 {
     switch (k) {
-        case 0: return bannerComment.c_str();
-        case 1: return rightComment.c_str();
+        case 0: return boolToString(isImplicit);
         default: return 0;
     }
 }
 
-void ParamsNode::setAttribute(int k, const char *val)
+void ParametersNode::setAttribute(int k, const char *val)
 {
     switch (k) {
-        case 0: bannerComment = val; break;
-        case 1: rightComment = val; break;
+        case 0: isImplicit = stringToBool(val); break;
         default: ;
     }
 }
 
-const char *ParamsNode::getAttributeDefault(int k) const
+const char *ParametersNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
-        case 1: return "\n";
+        case 0: return "true";
         default: return 0;
     }
 }
 
-ParamsNode *ParamsNode::getNextParamsNodeSibling() const
+ParametersNode *ParametersNode::getNextParametersNodeSibling() const
 {
-    return (ParamsNode *)getNextSiblingWithTag(NED_PARAMS);
+    return (ParametersNode *)getNextSiblingWithTag(NED_PARAMETERS);
 }
 
-ParamNode *ParamsNode::getFirstParamChild() const
+PropertyNode *ParametersNode::getFirstPropertyChild() const
+{
+    return (PropertyNode *)getFirstChildWithTag(NED_PROPERTY);
+}
+
+ParamNode *ParametersNode::getFirstParamChild() const
+{
+    return (ParamNode *)getFirstChildWithTag(NED_PARAM);
+}
+
+ParametersBlockNode *ParametersNode::getFirstParametersBlockChild() const
+{
+    return (ParametersBlockNode *)getFirstChildWithTag(NED_PARAMETERS_BLOCK);
+}
+
+int ParametersBlockNode::getNumAttributes() const
+{
+    return 0;
+}
+
+const char *ParametersBlockNode::getAttributeName(int k) const
+{
+    switch (k) {
+        default: return 0;
+    }
+}
+
+const char *ParametersBlockNode::getAttribute(int k) const
+{
+    switch (k) {
+        default: return 0;
+    }
+}
+
+void ParametersBlockNode::setAttribute(int k, const char *val)
+{
+    switch (k) {
+        default: ;
+    }
+}
+
+const char *ParametersBlockNode::getAttributeDefault(int k) const
+{
+    switch (k) {
+        default: return 0;
+    }
+}
+
+ParametersBlockNode *ParametersBlockNode::getNextParametersBlockNodeSibling() const
+{
+    return (ParametersBlockNode *)getNextSiblingWithTag(NED_PARAMETERS_BLOCK);
+}
+
+ConditionNode *ParametersBlockNode::getFirstConditionChild() const
+{
+    return (ConditionNode *)getFirstChildWithTag(NED_CONDITION);
+}
+
+PropertyNode *ParametersBlockNode::getFirstPropertyChild() const
+{
+    return (PropertyNode *)getFirstChildWithTag(NED_PROPERTY);
+}
+
+ParamNode *ParametersBlockNode::getFirstParamChild() const
 {
     return (ParamNode *)getFirstChildWithTag(NED_PARAM);
 }
@@ -732,9 +567,9 @@ const char *ParamNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "name";
-        case 1: return "data-type";
-        case 2: return "banner-comment";
-        case 3: return "right-comment";
+        case 1: return "type";
+        case 2: return "is-function";
+        case 3: return "value";
         default: return 0;
     }
 }
@@ -743,9 +578,9 @@ const char *ParamNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return name.c_str();
-        case 1: return dataType.c_str();
-        case 2: return bannerComment.c_str();
-        case 3: return rightComment.c_str();
+        case 1: return enumToString(type, partype_vals, partype_nums, partype_n);
+        case 2: return boolToString(isFunction);
+        case 3: return value.c_str();
         default: return 0;
     }
 }
@@ -754,9 +589,9 @@ void ParamNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: name = val; break;
-        case 1: dataType = val; break;
-        case 2: bannerComment = val; break;
-        case 3: rightComment = val; break;
+        case 1: type = stringToEnum(val, partype_vals, partype_nums, partype_n); break;
+        case 2: isFunction = stringToBool(val); break;
+        case 3: value = val; break;
         default: ;
     }
 }
@@ -765,9 +600,9 @@ const char *ParamNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return "";
-        case 1: return "numeric";
-        case 2: return "";
-        case 3: return "\n";
+        case 1: return "";
+        case 2: return "false";
+        case 3: return "";
         default: return 0;
     }
 }
@@ -777,16 +612,119 @@ ParamNode *ParamNode::getNextParamNodeSibling() const
     return (ParamNode *)getNextSiblingWithTag(NED_PARAM);
 }
 
-int GatesNode::getNumAttributes() const
+ExpressionNode *ParamNode::getFirstExpressionChild() const
+{
+    return (ExpressionNode *)getFirstChildWithTag(NED_EXPRESSION);
+}
+
+int PropertyNode::getNumAttributes() const
+{
+    return 4;
+}
+
+const char *PropertyNode::getAttributeName(int k) const
+{
+    switch (k) {
+        case 0: return "name";
+        case 1: return "value";
+        case 2: return "banner-comment";
+        case 3: return "right-comment";
+        default: return 0;
+    }
+}
+
+const char *PropertyNode::getAttribute(int k) const
+{
+    switch (k) {
+        case 0: return name.c_str();
+        case 1: return value.c_str();
+        case 2: return bannerComment.c_str();
+        case 3: return rightComment.c_str();
+        default: return 0;
+    }
+}
+
+void PropertyNode::setAttribute(int k, const char *val)
+{
+    switch (k) {
+        case 0: name = val; break;
+        case 1: value = val; break;
+        case 2: bannerComment = val; break;
+        case 3: rightComment = val; break;
+        default: ;
+    }
+}
+
+const char *PropertyNode::getAttributeDefault(int k) const
+{
+    switch (k) {
+        case 0: return "";
+        case 1: return "";
+        case 2: return "";
+        case 3: return "\n";
+        default: return 0;
+    }
+}
+
+PropertyNode *PropertyNode::getNextPropertyNodeSibling() const
+{
+    return (PropertyNode *)getNextSiblingWithTag(NED_PROPERTY);
+}
+
+int KeyValueNode::getNumAttributes() const
 {
     return 2;
+}
+
+const char *KeyValueNode::getAttributeName(int k) const
+{
+    switch (k) {
+        case 0: return "key";
+        case 1: return "value";
+        default: return 0;
+    }
+}
+
+const char *KeyValueNode::getAttribute(int k) const
+{
+    switch (k) {
+        case 0: return key.c_str();
+        case 1: return value.c_str();
+        default: return 0;
+    }
+}
+
+void KeyValueNode::setAttribute(int k, const char *val)
+{
+    switch (k) {
+        case 0: key = val; break;
+        case 1: value = val; break;
+        default: ;
+    }
+}
+
+const char *KeyValueNode::getAttributeDefault(int k) const
+{
+    switch (k) {
+        case 0: return "";
+        case 1: return "";
+        default: return 0;
+    }
+}
+
+KeyValueNode *KeyValueNode::getNextKeyValueNodeSibling() const
+{
+    return (KeyValueNode *)getNextSiblingWithTag(NED_KEY_VALUE);
+}
+
+int GatesNode::getNumAttributes() const
+{
+    return 0;
 }
 
 const char *GatesNode::getAttributeName(int k) const
 {
     switch (k) {
-        case 0: return "banner-comment";
-        case 1: return "right-comment";
         default: return 0;
     }
 }
@@ -794,8 +732,6 @@ const char *GatesNode::getAttributeName(int k) const
 const char *GatesNode::getAttribute(int k) const
 {
     switch (k) {
-        case 0: return bannerComment.c_str();
-        case 1: return rightComment.c_str();
         default: return 0;
     }
 }
@@ -803,8 +739,6 @@ const char *GatesNode::getAttribute(int k) const
 void GatesNode::setAttribute(int k, const char *val)
 {
     switch (k) {
-        case 0: bannerComment = val; break;
-        case 1: rightComment = val; break;
         default: ;
     }
 }
@@ -812,8 +746,6 @@ void GatesNode::setAttribute(int k, const char *val)
 const char *GatesNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
-        case 1: return "\n";
         default: return 0;
     }
 }
@@ -828,19 +760,70 @@ GateNode *GatesNode::getFirstGateChild() const
     return (GateNode *)getFirstChildWithTag(NED_GATE);
 }
 
+GateBlockNode *GatesNode::getFirstGateBlockChild() const
+{
+    return (GateBlockNode *)getFirstChildWithTag(NED_GATE_BLOCK);
+}
+
+int GateBlockNode::getNumAttributes() const
+{
+    return 0;
+}
+
+const char *GateBlockNode::getAttributeName(int k) const
+{
+    switch (k) {
+        default: return 0;
+    }
+}
+
+const char *GateBlockNode::getAttribute(int k) const
+{
+    switch (k) {
+        default: return 0;
+    }
+}
+
+void GateBlockNode::setAttribute(int k, const char *val)
+{
+    switch (k) {
+        default: ;
+    }
+}
+
+const char *GateBlockNode::getAttributeDefault(int k) const
+{
+    switch (k) {
+        default: return 0;
+    }
+}
+
+GateBlockNode *GateBlockNode::getNextGateBlockNodeSibling() const
+{
+    return (GateBlockNode *)getNextSiblingWithTag(NED_GATE_BLOCK);
+}
+
+ConditionNode *GateBlockNode::getFirstConditionChild() const
+{
+    return (ConditionNode *)getFirstChildWithTag(NED_CONDITION);
+}
+
+GateNode *GateBlockNode::getFirstGateChild() const
+{
+    return (GateNode *)getFirstChildWithTag(NED_GATE);
+}
+
 int GateNode::getNumAttributes() const
 {
-    return 5;
+    return 3;
 }
 
 const char *GateNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "name";
-        case 1: return "direction";
-        case 2: return "is-vector";
-        case 3: return "banner-comment";
-        case 4: return "right-comment";
+        case 1: return "type";
+        case 2: return "vector-size";
         default: return 0;
     }
 }
@@ -849,10 +832,8 @@ const char *GateNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return name.c_str();
-        case 1: return enumToString(direction, io_vals, io_nums, io_n);
-        case 2: return boolToString(isVector);
-        case 3: return bannerComment.c_str();
-        case 4: return rightComment.c_str();
+        case 1: return enumToString(type, io_vals, io_nums, io_n);
+        case 2: return vectorSize.c_str();
         default: return 0;
     }
 }
@@ -861,10 +842,8 @@ void GateNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: name = val; break;
-        case 1: direction = stringToEnum(val, io_vals, io_nums, io_n); break;
-        case 2: isVector = stringToBool(val); break;
-        case 3: bannerComment = val; break;
-        case 4: rightComment = val; break;
+        case 1: type = stringToEnum(val, io_vals, io_nums, io_n); break;
+        case 2: vectorSize = val; break;
         default: ;
     }
 }
@@ -874,9 +853,7 @@ const char *GateNode::getAttributeDefault(int k) const
     switch (k) {
         case 0: return "";
         case 1: return "";
-        case 2: return "false";
-        case 3: return "";
-        case 4: return "\n";
+        case 2: return "";
         default: return 0;
     }
 }
@@ -886,117 +863,19 @@ GateNode *GateNode::getNextGateNodeSibling() const
     return (GateNode *)getNextSiblingWithTag(NED_GATE);
 }
 
-int MachinesNode::getNumAttributes() const
+ExpressionNode *GateNode::getFirstExpressionChild() const
 {
-    return 2;
-}
-
-const char *MachinesNode::getAttributeName(int k) const
-{
-    switch (k) {
-        case 0: return "banner-comment";
-        case 1: return "right-comment";
-        default: return 0;
-    }
-}
-
-const char *MachinesNode::getAttribute(int k) const
-{
-    switch (k) {
-        case 0: return bannerComment.c_str();
-        case 1: return rightComment.c_str();
-        default: return 0;
-    }
-}
-
-void MachinesNode::setAttribute(int k, const char *val)
-{
-    switch (k) {
-        case 0: bannerComment = val; break;
-        case 1: rightComment = val; break;
-        default: ;
-    }
-}
-
-const char *MachinesNode::getAttributeDefault(int k) const
-{
-    switch (k) {
-        case 0: return "";
-        case 1: return "\n";
-        default: return 0;
-    }
-}
-
-MachinesNode *MachinesNode::getNextMachinesNodeSibling() const
-{
-    return (MachinesNode *)getNextSiblingWithTag(NED_MACHINES);
-}
-
-MachineNode *MachinesNode::getFirstMachineChild() const
-{
-    return (MachineNode *)getFirstChildWithTag(NED_MACHINE);
-}
-
-int MachineNode::getNumAttributes() const
-{
-    return 3;
-}
-
-const char *MachineNode::getAttributeName(int k) const
-{
-    switch (k) {
-        case 0: return "name";
-        case 1: return "banner-comment";
-        case 2: return "right-comment";
-        default: return 0;
-    }
-}
-
-const char *MachineNode::getAttribute(int k) const
-{
-    switch (k) {
-        case 0: return name.c_str();
-        case 1: return bannerComment.c_str();
-        case 2: return rightComment.c_str();
-        default: return 0;
-    }
-}
-
-void MachineNode::setAttribute(int k, const char *val)
-{
-    switch (k) {
-        case 0: name = val; break;
-        case 1: bannerComment = val; break;
-        case 2: rightComment = val; break;
-        default: ;
-    }
-}
-
-const char *MachineNode::getAttributeDefault(int k) const
-{
-    switch (k) {
-        case 0: return "";
-        case 1: return "";
-        case 2: return "\n";
-        default: return 0;
-    }
-}
-
-MachineNode *MachineNode::getNextMachineNodeSibling() const
-{
-    return (MachineNode *)getNextSiblingWithTag(NED_MACHINE);
+    return (ExpressionNode *)getFirstChildWithTag(NED_EXPRESSION);
 }
 
 int SubmodulesNode::getNumAttributes() const
 {
-    return 2;
+    return 0;
 }
 
 const char *SubmodulesNode::getAttributeName(int k) const
 {
     switch (k) {
-        case 0: return "banner-comment";
-        case 1: return "right-comment";
         default: return 0;
     }
 }
@@ -1004,8 +883,6 @@ const char *SubmodulesNode::getAttributeName(int k) const
 const char *SubmodulesNode::getAttribute(int k) const
 {
     switch (k) {
-        case 0: return bannerComment.c_str();
-        case 1: return rightComment.c_str();
         default: return 0;
     }
 }
@@ -1013,8 +890,6 @@ const char *SubmodulesNode::getAttribute(int k) const
 void SubmodulesNode::setAttribute(int k, const char *val)
 {
     switch (k) {
-        case 0: bannerComment = val; break;
-        case 1: rightComment = val; break;
         default: ;
     }
 }
@@ -1022,8 +897,6 @@ void SubmodulesNode::setAttribute(int k, const char *val)
 const char *SubmodulesNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
-        case 1: return "\n";
         default: return 0;
     }
 }
@@ -1040,18 +913,17 @@ SubmoduleNode *SubmodulesNode::getFirstSubmoduleChild() const
 
 int SubmoduleNode::getNumAttributes() const
 {
-    return 6;
+    return 5;
 }
 
 const char *SubmoduleNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "name";
-        case 1: return "type-name";
-        case 2: return "like-param";
-        case 3: return "vector-size";
-        case 4: return "banner-comment";
-        case 5: return "right-comment";
+        case 1: return "type";
+        case 2: return "like-type";
+        case 3: return "like-param";
+        case 4: return "vector-size";
         default: return 0;
     }
 }
@@ -1060,11 +932,10 @@ const char *SubmoduleNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return name.c_str();
-        case 1: return typeName.c_str();
-        case 2: return likeParam.c_str();
-        case 3: return vectorSize.c_str();
-        case 4: return bannerComment.c_str();
-        case 5: return rightComment.c_str();
+        case 1: return type.c_str();
+        case 2: return likeType.c_str();
+        case 3: return likeParam.c_str();
+        case 4: return vectorSize.c_str();
         default: return 0;
     }
 }
@@ -1073,11 +944,10 @@ void SubmoduleNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: name = val; break;
-        case 1: typeName = val; break;
-        case 2: likeParam = val; break;
-        case 3: vectorSize = val; break;
-        case 4: bannerComment = val; break;
-        case 5: rightComment = val; break;
+        case 1: type = val; break;
+        case 2: likeType = val; break;
+        case 3: likeParam = val; break;
+        case 4: vectorSize = val; break;
         default: ;
     }
 }
@@ -1090,7 +960,6 @@ const char *SubmoduleNode::getAttributeDefault(int k) const
         case 2: return "";
         case 3: return "";
         case 4: return "";
-        case 5: return "\n";
         default: return 0;
     }
 }
@@ -1105,385 +974,25 @@ ExpressionNode *SubmoduleNode::getFirstExpressionChild() const
     return (ExpressionNode *)getFirstChildWithTag(NED_EXPRESSION);
 }
 
-SubstmachinesNode *SubmoduleNode::getFirstSubstmachinesChild() const
+ParametersNode *SubmoduleNode::getFirstParametersChild() const
 {
-    return (SubstmachinesNode *)getFirstChildWithTag(NED_SUBSTMACHINES);
+    return (ParametersNode *)getFirstChildWithTag(NED_PARAMETERS);
 }
 
-SubstparamsNode *SubmoduleNode::getFirstSubstparamsChild() const
+GatesNode *SubmoduleNode::getFirstGatesChild() const
 {
-    return (SubstparamsNode *)getFirstChildWithTag(NED_SUBSTPARAMS);
-}
-
-GatesizesNode *SubmoduleNode::getFirstGatesizesChild() const
-{
-    return (GatesizesNode *)getFirstChildWithTag(NED_GATESIZES);
-}
-
-DisplayStringNode *SubmoduleNode::getFirstDisplayStringChild() const
-{
-    return (DisplayStringNode *)getFirstChildWithTag(NED_DISPLAY_STRING);
-}
-
-int SubstparamsNode::getNumAttributes() const
-{
-    return 3;
-}
-
-const char *SubstparamsNode::getAttributeName(int k) const
-{
-    switch (k) {
-        case 0: return "condition";
-        case 1: return "banner-comment";
-        case 2: return "right-comment";
-        default: return 0;
-    }
-}
-
-const char *SubstparamsNode::getAttribute(int k) const
-{
-    switch (k) {
-        case 0: return condition.c_str();
-        case 1: return bannerComment.c_str();
-        case 2: return rightComment.c_str();
-        default: return 0;
-    }
-}
-
-void SubstparamsNode::setAttribute(int k, const char *val)
-{
-    switch (k) {
-        case 0: condition = val; break;
-        case 1: bannerComment = val; break;
-        case 2: rightComment = val; break;
-        default: ;
-    }
-}
-
-const char *SubstparamsNode::getAttributeDefault(int k) const
-{
-    switch (k) {
-        case 0: return "";
-        case 1: return "";
-        case 2: return "\n";
-        default: return 0;
-    }
-}
-
-SubstparamsNode *SubstparamsNode::getNextSubstparamsNodeSibling() const
-{
-    return (SubstparamsNode *)getNextSiblingWithTag(NED_SUBSTPARAMS);
-}
-
-ExpressionNode *SubstparamsNode::getFirstExpressionChild() const
-{
-    return (ExpressionNode *)getFirstChildWithTag(NED_EXPRESSION);
-}
-
-SubstparamNode *SubstparamsNode::getFirstSubstparamChild() const
-{
-    return (SubstparamNode *)getFirstChildWithTag(NED_SUBSTPARAM);
-}
-
-int SubstparamNode::getNumAttributes() const
-{
-    return 4;
-}
-
-const char *SubstparamNode::getAttributeName(int k) const
-{
-    switch (k) {
-        case 0: return "name";
-        case 1: return "value";
-        case 2: return "banner-comment";
-        case 3: return "right-comment";
-        default: return 0;
-    }
-}
-
-const char *SubstparamNode::getAttribute(int k) const
-{
-    switch (k) {
-        case 0: return name.c_str();
-        case 1: return value.c_str();
-        case 2: return bannerComment.c_str();
-        case 3: return rightComment.c_str();
-        default: return 0;
-    }
-}
-
-void SubstparamNode::setAttribute(int k, const char *val)
-{
-    switch (k) {
-        case 0: name = val; break;
-        case 1: value = val; break;
-        case 2: bannerComment = val; break;
-        case 3: rightComment = val; break;
-        default: ;
-    }
-}
-
-const char *SubstparamNode::getAttributeDefault(int k) const
-{
-    switch (k) {
-        case 0: return "";
-        case 1: return "";
-        case 2: return "";
-        case 3: return "\n";
-        default: return 0;
-    }
-}
-
-SubstparamNode *SubstparamNode::getNextSubstparamNodeSibling() const
-{
-    return (SubstparamNode *)getNextSiblingWithTag(NED_SUBSTPARAM);
-}
-
-ExpressionNode *SubstparamNode::getFirstExpressionChild() const
-{
-    return (ExpressionNode *)getFirstChildWithTag(NED_EXPRESSION);
-}
-
-int GatesizesNode::getNumAttributes() const
-{
-    return 3;
-}
-
-const char *GatesizesNode::getAttributeName(int k) const
-{
-    switch (k) {
-        case 0: return "condition";
-        case 1: return "banner-comment";
-        case 2: return "right-comment";
-        default: return 0;
-    }
-}
-
-const char *GatesizesNode::getAttribute(int k) const
-{
-    switch (k) {
-        case 0: return condition.c_str();
-        case 1: return bannerComment.c_str();
-        case 2: return rightComment.c_str();
-        default: return 0;
-    }
-}
-
-void GatesizesNode::setAttribute(int k, const char *val)
-{
-    switch (k) {
-        case 0: condition = val; break;
-        case 1: bannerComment = val; break;
-        case 2: rightComment = val; break;
-        default: ;
-    }
-}
-
-const char *GatesizesNode::getAttributeDefault(int k) const
-{
-    switch (k) {
-        case 0: return "";
-        case 1: return "";
-        case 2: return "\n";
-        default: return 0;
-    }
-}
-
-GatesizesNode *GatesizesNode::getNextGatesizesNodeSibling() const
-{
-    return (GatesizesNode *)getNextSiblingWithTag(NED_GATESIZES);
-}
-
-ExpressionNode *GatesizesNode::getFirstExpressionChild() const
-{
-    return (ExpressionNode *)getFirstChildWithTag(NED_EXPRESSION);
-}
-
-GatesizeNode *GatesizesNode::getFirstGatesizeChild() const
-{
-    return (GatesizeNode *)getFirstChildWithTag(NED_GATESIZE);
-}
-
-int GatesizeNode::getNumAttributes() const
-{
-    return 4;
-}
-
-const char *GatesizeNode::getAttributeName(int k) const
-{
-    switch (k) {
-        case 0: return "name";
-        case 1: return "vector-size";
-        case 2: return "banner-comment";
-        case 3: return "right-comment";
-        default: return 0;
-    }
-}
-
-const char *GatesizeNode::getAttribute(int k) const
-{
-    switch (k) {
-        case 0: return name.c_str();
-        case 1: return vectorSize.c_str();
-        case 2: return bannerComment.c_str();
-        case 3: return rightComment.c_str();
-        default: return 0;
-    }
-}
-
-void GatesizeNode::setAttribute(int k, const char *val)
-{
-    switch (k) {
-        case 0: name = val; break;
-        case 1: vectorSize = val; break;
-        case 2: bannerComment = val; break;
-        case 3: rightComment = val; break;
-        default: ;
-    }
-}
-
-const char *GatesizeNode::getAttributeDefault(int k) const
-{
-    switch (k) {
-        case 0: return "";
-        case 1: return "";
-        case 2: return "";
-        case 3: return "\n";
-        default: return 0;
-    }
-}
-
-GatesizeNode *GatesizeNode::getNextGatesizeNodeSibling() const
-{
-    return (GatesizeNode *)getNextSiblingWithTag(NED_GATESIZE);
-}
-
-ExpressionNode *GatesizeNode::getFirstExpressionChild() const
-{
-    return (ExpressionNode *)getFirstChildWithTag(NED_EXPRESSION);
-}
-
-int SubstmachinesNode::getNumAttributes() const
-{
-    return 3;
-}
-
-const char *SubstmachinesNode::getAttributeName(int k) const
-{
-    switch (k) {
-        case 0: return "condition";
-        case 1: return "banner-comment";
-        case 2: return "right-comment";
-        default: return 0;
-    }
-}
-
-const char *SubstmachinesNode::getAttribute(int k) const
-{
-    switch (k) {
-        case 0: return condition.c_str();
-        case 1: return bannerComment.c_str();
-        case 2: return rightComment.c_str();
-        default: return 0;
-    }
-}
-
-void SubstmachinesNode::setAttribute(int k, const char *val)
-{
-    switch (k) {
-        case 0: condition = val; break;
-        case 1: bannerComment = val; break;
-        case 2: rightComment = val; break;
-        default: ;
-    }
-}
-
-const char *SubstmachinesNode::getAttributeDefault(int k) const
-{
-    switch (k) {
-        case 0: return "";
-        case 1: return "";
-        case 2: return "\n";
-        default: return 0;
-    }
-}
-
-SubstmachinesNode *SubstmachinesNode::getNextSubstmachinesNodeSibling() const
-{
-    return (SubstmachinesNode *)getNextSiblingWithTag(NED_SUBSTMACHINES);
-}
-
-ExpressionNode *SubstmachinesNode::getFirstExpressionChild() const
-{
-    return (ExpressionNode *)getFirstChildWithTag(NED_EXPRESSION);
-}
-
-SubstmachineNode *SubstmachinesNode::getFirstSubstmachineChild() const
-{
-    return (SubstmachineNode *)getFirstChildWithTag(NED_SUBSTMACHINE);
-}
-
-int SubstmachineNode::getNumAttributes() const
-{
-    return 3;
-}
-
-const char *SubstmachineNode::getAttributeName(int k) const
-{
-    switch (k) {
-        case 0: return "name";
-        case 1: return "banner-comment";
-        case 2: return "right-comment";
-        default: return 0;
-    }
-}
-
-const char *SubstmachineNode::getAttribute(int k) const
-{
-    switch (k) {
-        case 0: return name.c_str();
-        case 1: return bannerComment.c_str();
-        case 2: return rightComment.c_str();
-        default: return 0;
-    }
-}
-
-void SubstmachineNode::setAttribute(int k, const char *val)
-{
-    switch (k) {
-        case 0: name = val; break;
-        case 1: bannerComment = val; break;
-        case 2: rightComment = val; break;
-        default: ;
-    }
-}
-
-const char *SubstmachineNode::getAttributeDefault(int k) const
-{
-    switch (k) {
-        case 0: return "";
-        case 1: return "";
-        case 2: return "\n";
-        default: return 0;
-    }
-}
-
-SubstmachineNode *SubstmachineNode::getNextSubstmachineNodeSibling() const
-{
-    return (SubstmachineNode *)getNextSiblingWithTag(NED_SUBSTMACHINE);
+    return (GatesNode *)getFirstChildWithTag(NED_GATES);
 }
 
 int ConnectionsNode::getNumAttributes() const
 {
-    return 3;
+    return 1;
 }
 
 const char *ConnectionsNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "check-unconnected";
-        case 1: return "banner-comment";
-        case 2: return "right-comment";
         default: return 0;
     }
 }
@@ -1492,8 +1001,6 @@ const char *ConnectionsNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return boolToString(checkUnconnected);
-        case 1: return bannerComment.c_str();
-        case 2: return rightComment.c_str();
         default: return 0;
     }
 }
@@ -1502,8 +1009,6 @@ void ConnectionsNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: checkUnconnected = stringToBool(val); break;
-        case 1: bannerComment = val; break;
-        case 2: rightComment = val; break;
         default: ;
     }
 }
@@ -1512,8 +1017,6 @@ const char *ConnectionsNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return "true";
-        case 1: return "";
-        case 2: return "\n";
         default: return 0;
     }
 }
@@ -1528,20 +1031,20 @@ ConnectionNode *ConnectionsNode::getFirstConnectionChild() const
     return (ConnectionNode *)getFirstChildWithTag(NED_CONNECTION);
 }
 
-ForLoopNode *ConnectionsNode::getFirstForLoopChild() const
+ConnectionBlockNode *ConnectionsNode::getFirstConnectionBlockChild() const
 {
-    return (ForLoopNode *)getFirstChildWithTag(NED_FOR_LOOP);
+    return (ConnectionBlockNode *)getFirstChildWithTag(NED_CONNECTION_BLOCK);
 }
 
 int ConnectionNode::getNumAttributes() const
 {
-    return 14;
+    return 12;
 }
 
 const char *ConnectionNode::getAttributeName(int k) const
 {
     switch (k) {
-        case 0: return "condition";
+        case 0: return "channel-name";
         case 1: return "src-module";
         case 2: return "src-module-index";
         case 3: return "src-gate";
@@ -1552,9 +1055,7 @@ const char *ConnectionNode::getAttributeName(int k) const
         case 8: return "dest-gate";
         case 9: return "dest-gate-plusplus";
         case 10: return "dest-gate-index";
-        case 11: return "arrow-direction";
-        case 12: return "banner-comment";
-        case 13: return "right-comment";
+        case 11: return "is-left-to-right";
         default: return 0;
     }
 }
@@ -1562,7 +1063,7 @@ const char *ConnectionNode::getAttributeName(int k) const
 const char *ConnectionNode::getAttribute(int k) const
 {
     switch (k) {
-        case 0: return condition.c_str();
+        case 0: return channelName.c_str();
         case 1: return srcModule.c_str();
         case 2: return srcModuleIndex.c_str();
         case 3: return srcGate.c_str();
@@ -1573,9 +1074,7 @@ const char *ConnectionNode::getAttribute(int k) const
         case 8: return destGate.c_str();
         case 9: return boolToString(destGatePlusplus);
         case 10: return destGateIndex.c_str();
-        case 11: return enumToString(arrowDirection, lr_vals, lr_nums, lr_n);
-        case 12: return bannerComment.c_str();
-        case 13: return rightComment.c_str();
+        case 11: return boolToString(isLeftToRight);
         default: return 0;
     }
 }
@@ -1583,7 +1082,7 @@ const char *ConnectionNode::getAttribute(int k) const
 void ConnectionNode::setAttribute(int k, const char *val)
 {
     switch (k) {
-        case 0: condition = val; break;
+        case 0: channelName = val; break;
         case 1: srcModule = val; break;
         case 2: srcModuleIndex = val; break;
         case 3: srcGate = val; break;
@@ -1594,9 +1093,7 @@ void ConnectionNode::setAttribute(int k, const char *val)
         case 8: destGate = val; break;
         case 9: destGatePlusplus = stringToBool(val); break;
         case 10: destGateIndex = val; break;
-        case 11: arrowDirection = stringToEnum(val, lr_vals, lr_nums, lr_n); break;
-        case 12: bannerComment = val; break;
-        case 13: rightComment = val; break;
+        case 11: isLeftToRight = stringToBool(val); break;
         default: ;
     }
 }
@@ -1615,9 +1112,7 @@ const char *ConnectionNode::getAttributeDefault(int k) const
         case 8: return "";
         case 9: return "false";
         case 10: return "";
-        case 11: return "right";
-        case 12: return "";
-        case 13: return "\n";
+        case 11: return "";
         default: return 0;
     }
 }
@@ -1632,242 +1127,273 @@ ExpressionNode *ConnectionNode::getFirstExpressionChild() const
     return (ExpressionNode *)getFirstChildWithTag(NED_EXPRESSION);
 }
 
-ConnAttrNode *ConnectionNode::getFirstConnAttrChild() const
+ParametersNode *ConnectionNode::getFirstParametersChild() const
 {
-    return (ConnAttrNode *)getFirstChildWithTag(NED_CONN_ATTR);
+    return (ParametersNode *)getFirstChildWithTag(NED_PARAMETERS);
 }
 
-DisplayStringNode *ConnectionNode::getFirstDisplayStringChild() const
+int ChannelInterfaceNode::getNumAttributes() const
 {
-    return (DisplayStringNode *)getFirstChildWithTag(NED_DISPLAY_STRING);
+    return 1;
 }
 
-int ConnAttrNode::getNumAttributes() const
-{
-    return 3;
-}
-
-const char *ConnAttrNode::getAttributeName(int k) const
+const char *ChannelInterfaceNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "name";
-        case 1: return "value";
-        case 2: return "right-comment";
         default: return 0;
     }
 }
 
-const char *ConnAttrNode::getAttribute(int k) const
+const char *ChannelInterfaceNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return name.c_str();
-        case 1: return value.c_str();
-        case 2: return rightComment.c_str();
         default: return 0;
     }
 }
 
-void ConnAttrNode::setAttribute(int k, const char *val)
+void ChannelInterfaceNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: name = val; break;
-        case 1: value = val; break;
-        case 2: rightComment = val; break;
         default: ;
     }
 }
 
-const char *ConnAttrNode::getAttributeDefault(int k) const
+const char *ChannelInterfaceNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return "";
-        case 1: return "";
-        case 2: return "";
         default: return 0;
     }
 }
 
-ConnAttrNode *ConnAttrNode::getNextConnAttrNodeSibling() const
+ChannelInterfaceNode *ChannelInterfaceNode::getNextChannelInterfaceNodeSibling() const
 {
-    return (ConnAttrNode *)getNextSiblingWithTag(NED_CONN_ATTR);
+    return (ChannelInterfaceNode *)getNextSiblingWithTag(NED_CHANNEL_INTERFACE);
 }
 
-ExpressionNode *ConnAttrNode::getFirstExpressionChild() const
+ *ChannelInterfaceNode::getFirstExtendsChild() const
 {
-    return (ExpressionNode *)getFirstChildWithTag(NED_EXPRESSION);
+    return ( *)getFirstChildWithTag();
 }
 
-int ForLoopNode::getNumAttributes() const
+ParametersNode *ChannelInterfaceNode::getFirstParametersChild() const
 {
-    return 3;
+    return (ParametersNode *)getFirstChildWithTag(NED_PARAMETERS);
 }
 
-const char *ForLoopNode::getAttributeName(int k) const
+int ChannelNode::getNumAttributes() const
+{
+    return 1;
+}
+
+const char *ChannelNode::getAttributeName(int k) const
 {
     switch (k) {
-        case 0: return "banner-comment";
-        case 1: return "right-comment";
-        case 2: return "trailing-comment";
+        case 0: return "name";
         default: return 0;
     }
 }
 
-const char *ForLoopNode::getAttribute(int k) const
+const char *ChannelNode::getAttribute(int k) const
 {
     switch (k) {
-        case 0: return bannerComment.c_str();
-        case 1: return rightComment.c_str();
-        case 2: return trailingComment.c_str();
+        case 0: return name.c_str();
         default: return 0;
     }
 }
 
-void ForLoopNode::setAttribute(int k, const char *val)
+void ChannelNode::setAttribute(int k, const char *val)
 {
     switch (k) {
-        case 0: bannerComment = val; break;
-        case 1: rightComment = val; break;
-        case 2: trailingComment = val; break;
+        case 0: name = val; break;
         default: ;
     }
 }
 
-const char *ForLoopNode::getAttributeDefault(int k) const
+const char *ChannelNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return "";
-        case 1: return "\n";
-        case 2: return "\n";
         default: return 0;
     }
 }
 
-ForLoopNode *ForLoopNode::getNextForLoopNodeSibling() const
+ChannelNode *ChannelNode::getNextChannelNodeSibling() const
 {
-    return (ForLoopNode *)getNextSiblingWithTag(NED_FOR_LOOP);
+    return (ChannelNode *)getNextSiblingWithTag(NED_CHANNEL);
 }
 
-LoopVarNode *ForLoopNode::getFirstLoopVarChild() const
+ *ChannelNode::getFirstExtendsChild() const
 {
-    return (LoopVarNode *)getFirstChildWithTag(NED_LOOP_VAR);
+    return ( *)getFirstChildWithTag();
 }
 
-ConnectionNode *ForLoopNode::getFirstConnectionChild() const
+ *ChannelNode::getFirstChannelInterfaceNameChild() const
+{
+    return ( *)getFirstChildWithTag();
+}
+
+ParametersNode *ChannelNode::getFirstParametersChild() const
+{
+    return (ParametersNode *)getFirstChildWithTag(NED_PARAMETERS);
+}
+
+int ConnectionBlockNode::getNumAttributes() const
+{
+    return 0;
+}
+
+const char *ConnectionBlockNode::getAttributeName(int k) const
+{
+    switch (k) {
+        default: return 0;
+    }
+}
+
+const char *ConnectionBlockNode::getAttribute(int k) const
+{
+    switch (k) {
+        default: return 0;
+    }
+}
+
+void ConnectionBlockNode::setAttribute(int k, const char *val)
+{
+    switch (k) {
+        default: ;
+    }
+}
+
+const char *ConnectionBlockNode::getAttributeDefault(int k) const
+{
+    switch (k) {
+        default: return 0;
+    }
+}
+
+ConnectionBlockNode *ConnectionBlockNode::getNextConnectionBlockNodeSibling() const
+{
+    return (ConnectionBlockNode *)getNextSiblingWithTag(NED_CONNECTION_BLOCK);
+}
+
+LoopNode *ConnectionBlockNode::getFirstLoopChild() const
+{
+    return (LoopNode *)getFirstChildWithTag(NED_LOOP);
+}
+
+ConditionNode *ConnectionBlockNode::getFirstConditionChild() const
+{
+    return (ConditionNode *)getFirstChildWithTag(NED_CONDITION);
+}
+
+ConnectionNode *ConnectionBlockNode::getFirstConnectionChild() const
 {
     return (ConnectionNode *)getFirstChildWithTag(NED_CONNECTION);
 }
 
-int LoopVarNode::getNumAttributes() const
+int LoopNode::getNumAttributes() const
 {
-    return 5;
+    return 3;
 }
 
-const char *LoopVarNode::getAttributeName(int k) const
+const char *LoopNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "param-name";
         case 1: return "from-value";
         case 2: return "to-value";
-        case 3: return "banner-comment";
-        case 4: return "right-comment";
         default: return 0;
     }
 }
 
-const char *LoopVarNode::getAttribute(int k) const
+const char *LoopNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return paramName.c_str();
         case 1: return fromValue.c_str();
         case 2: return toValue.c_str();
-        case 3: return bannerComment.c_str();
-        case 4: return rightComment.c_str();
         default: return 0;
     }
 }
 
-void LoopVarNode::setAttribute(int k, const char *val)
+void LoopNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: paramName = val; break;
         case 1: fromValue = val; break;
         case 2: toValue = val; break;
-        case 3: bannerComment = val; break;
-        case 4: rightComment = val; break;
         default: ;
     }
 }
 
-const char *LoopVarNode::getAttributeDefault(int k) const
+const char *LoopNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return "";
         case 1: return "";
         case 2: return "";
-        case 3: return "";
-        case 4: return "\n";
         default: return 0;
     }
 }
 
-LoopVarNode *LoopVarNode::getNextLoopVarNodeSibling() const
+LoopNode *LoopNode::getNextLoopNodeSibling() const
 {
-    return (LoopVarNode *)getNextSiblingWithTag(NED_LOOP_VAR);
+    return (LoopNode *)getNextSiblingWithTag(NED_LOOP);
 }
 
-ExpressionNode *LoopVarNode::getFirstExpressionChild() const
+ExpressionNode *LoopNode::getFirstExpressionChild() const
 {
     return (ExpressionNode *)getFirstChildWithTag(NED_EXPRESSION);
 }
 
-int DisplayStringNode::getNumAttributes() const
+int ConditionNode::getNumAttributes() const
 {
-    return 3;
+    return 1;
 }
 
-const char *DisplayStringNode::getAttributeName(int k) const
+const char *ConditionNode::getAttributeName(int k) const
 {
     switch (k) {
-        case 0: return "value";
-        case 1: return "banner-comment";
-        case 2: return "right-comment";
+        case 0: return "condition";
         default: return 0;
     }
 }
 
-const char *DisplayStringNode::getAttribute(int k) const
+const char *ConditionNode::getAttribute(int k) const
 {
     switch (k) {
-        case 0: return value.c_str();
-        case 1: return bannerComment.c_str();
-        case 2: return rightComment.c_str();
+        case 0: return condition.c_str();
         default: return 0;
     }
 }
 
-void DisplayStringNode::setAttribute(int k, const char *val)
+void ConditionNode::setAttribute(int k, const char *val)
 {
     switch (k) {
-        case 0: value = val; break;
-        case 1: bannerComment = val; break;
-        case 2: rightComment = val; break;
+        case 0: condition = val; break;
         default: ;
     }
 }
 
-const char *DisplayStringNode::getAttributeDefault(int k) const
+const char *ConditionNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return "";
-        case 1: return "";
-        case 2: return "\n";
         default: return 0;
     }
 }
 
-DisplayStringNode *DisplayStringNode::getNextDisplayStringNodeSibling() const
+ConditionNode *ConditionNode::getNextConditionNodeSibling() const
 {
-    return (DisplayStringNode *)getNextSiblingWithTag(NED_DISPLAY_STRING);
+    return (ConditionNode *)getNextSiblingWithTag(NED_CONDITION);
+}
+
+ExpressionNode *ConditionNode::getFirstExpressionChild() const
+{
+    return (ExpressionNode *)getFirstChildWithTag(NED_EXPRESSION);
 }
 
 int ExpressionNode::getNumAttributes() const
@@ -2198,7 +1724,7 @@ const char *ConstNode::getAttributeName(int k) const
 const char *ConstNode::getAttribute(int k) const
 {
     switch (k) {
-        case 0: return enumToString(type, type_vals, type_nums, type_n);
+        case 0: return enumToString(type, littype_vals, littype_nums, littype_n);
         case 1: return text.c_str();
         case 2: return value.c_str();
         default: return 0;
@@ -2208,7 +1734,7 @@ const char *ConstNode::getAttribute(int k) const
 void ConstNode::setAttribute(int k, const char *val)
 {
     switch (k) {
-        case 0: type = stringToEnum(val, type_vals, type_nums, type_n); break;
+        case 0: type = stringToEnum(val, littype_vals, littype_nums, littype_n); break;
         case 1: text = val; break;
         case 2: value = val; break;
         default: ;
@@ -2228,6 +1754,97 @@ const char *ConstNode::getAttributeDefault(int k) const
 ConstNode *ConstNode::getNextConstNodeSibling() const
 {
     return (ConstNode *)getNextSiblingWithTag(NED_CONST);
+}
+
+int MsgFileNode::getNumAttributes() const
+{
+    return 2;
+}
+
+const char *MsgFileNode::getAttributeName(int k) const
+{
+    switch (k) {
+        case 0: return "filename";
+        case 1: return "package";
+        default: return 0;
+    }
+}
+
+const char *MsgFileNode::getAttribute(int k) const
+{
+    switch (k) {
+        case 0: return filename.c_str();
+        case 1: return package.c_str();
+        default: return 0;
+    }
+}
+
+void MsgFileNode::setAttribute(int k, const char *val)
+{
+    switch (k) {
+        case 0: filename = val; break;
+        case 1: package = val; break;
+        default: ;
+    }
+}
+
+const char *MsgFileNode::getAttributeDefault(int k) const
+{
+    switch (k) {
+        case 0: return "";
+        case 1: return "";
+        default: return 0;
+    }
+}
+
+MsgFileNode *MsgFileNode::getNextMsgFileNodeSibling() const
+{
+    return (MsgFileNode *)getNextSiblingWithTag(NED_MSG_FILE);
+}
+
+CplusplusNode *MsgFileNode::getFirstCplusplusChild() const
+{
+    return (CplusplusNode *)getFirstChildWithTag(NED_CPLUSPLUS);
+}
+
+StructDeclNode *MsgFileNode::getFirstStructDeclChild() const
+{
+    return (StructDeclNode *)getFirstChildWithTag(NED_STRUCT_DECL);
+}
+
+ClassDeclNode *MsgFileNode::getFirstClassDeclChild() const
+{
+    return (ClassDeclNode *)getFirstChildWithTag(NED_CLASS_DECL);
+}
+
+MessageDeclNode *MsgFileNode::getFirstMessageDeclChild() const
+{
+    return (MessageDeclNode *)getFirstChildWithTag(NED_MESSAGE_DECL);
+}
+
+EnumDeclNode *MsgFileNode::getFirstEnumDeclChild() const
+{
+    return (EnumDeclNode *)getFirstChildWithTag(NED_ENUM_DECL);
+}
+
+EnumNode *MsgFileNode::getFirstEnumChild() const
+{
+    return (EnumNode *)getFirstChildWithTag(NED_ENUM);
+}
+
+MessageNode *MsgFileNode::getFirstMessageChild() const
+{
+    return (MessageNode *)getFirstChildWithTag(NED_MESSAGE);
+}
+
+ClassNode *MsgFileNode::getFirstClassChild() const
+{
+    return (ClassNode *)getFirstChildWithTag(NED_CLASS);
+}
+
+StructNode *MsgFileNode::getFirstStructChild() const
+{
+    return (StructNode *)getFirstChildWithTag(NED_STRUCT);
 }
 
 int CplusplusNode::getNumAttributes() const
@@ -3178,41 +2795,37 @@ NEDElementFactory *NEDElementFactory::getInstance()
 
 NEDElement *NEDElementFactory::createNodeWithTag(const char *tagname)
 {
-    if (tagname[0]=='n' && !strcmp(tagname,"ned-files"))  return new NedFilesNode();
+    if (tagname[0]=='f' && !strcmp(tagname,"files"))  return new FilesNode();
     if (tagname[0]=='n' && !strcmp(tagname,"ned-file"))  return new NedFileNode();
     if (tagname[0]=='i' && !strcmp(tagname,"import"))  return new ImportNode();
-    if (tagname[0]=='i' && !strcmp(tagname,"imported-file"))  return new ImportedFileNode();
-    if (tagname[0]=='c' && !strcmp(tagname,"channel"))  return new ChannelNode();
-    if (tagname[0]=='c' && !strcmp(tagname,"channel-attr"))  return new ChannelAttrNode();
-    if (tagname[0]=='n' && !strcmp(tagname,"network"))  return new NetworkNode();
-    if (tagname[0]=='s' && !strcmp(tagname,"simple-module"))  return new SimpleModuleNode();
-    if (tagname[0]=='c' && !strcmp(tagname,"compound-module"))  return new CompoundModuleNode();
-    if (tagname[0]=='p' && !strcmp(tagname,"params"))  return new ParamsNode();
+    if (tagname[0]=='p' && !strcmp(tagname,"propertydef"))  return new PropertydefNode();
+    if (tagname[0]=='s' && !strcmp(tagname,"simple"))  return new SimpleNode();
+    if (tagname[0]=='i' && !strcmp(tagname,"interface"))  return new InterfaceNode();
+    if (tagname[0]=='m' && !strcmp(tagname,"module"))  return new ModuleNode();
+    if (tagname[0]=='p' && !strcmp(tagname,"parameters"))  return new ParametersNode();
+    if (tagname[0]=='p' && !strcmp(tagname,"parameters-block"))  return new ParametersBlockNode();
     if (tagname[0]=='p' && !strcmp(tagname,"param"))  return new ParamNode();
+    if (tagname[0]=='p' && !strcmp(tagname,"property"))  return new PropertyNode();
+    if (tagname[0]=='k' && !strcmp(tagname,"key-value"))  return new KeyValueNode();
     if (tagname[0]=='g' && !strcmp(tagname,"gates"))  return new GatesNode();
+    if (tagname[0]=='g' && !strcmp(tagname,"gate-block"))  return new GateBlockNode();
     if (tagname[0]=='g' && !strcmp(tagname,"gate"))  return new GateNode();
-    if (tagname[0]=='m' && !strcmp(tagname,"machines"))  return new MachinesNode();
-    if (tagname[0]=='m' && !strcmp(tagname,"machine"))  return new MachineNode();
     if (tagname[0]=='s' && !strcmp(tagname,"submodules"))  return new SubmodulesNode();
     if (tagname[0]=='s' && !strcmp(tagname,"submodule"))  return new SubmoduleNode();
-    if (tagname[0]=='s' && !strcmp(tagname,"substparams"))  return new SubstparamsNode();
-    if (tagname[0]=='s' && !strcmp(tagname,"substparam"))  return new SubstparamNode();
-    if (tagname[0]=='g' && !strcmp(tagname,"gatesizes"))  return new GatesizesNode();
-    if (tagname[0]=='g' && !strcmp(tagname,"gatesize"))  return new GatesizeNode();
-    if (tagname[0]=='s' && !strcmp(tagname,"substmachines"))  return new SubstmachinesNode();
-    if (tagname[0]=='s' && !strcmp(tagname,"substmachine"))  return new SubstmachineNode();
     if (tagname[0]=='c' && !strcmp(tagname,"connections"))  return new ConnectionsNode();
     if (tagname[0]=='c' && !strcmp(tagname,"connection"))  return new ConnectionNode();
-    if (tagname[0]=='c' && !strcmp(tagname,"conn-attr"))  return new ConnAttrNode();
-    if (tagname[0]=='f' && !strcmp(tagname,"for-loop"))  return new ForLoopNode();
-    if (tagname[0]=='l' && !strcmp(tagname,"loop-var"))  return new LoopVarNode();
-    if (tagname[0]=='d' && !strcmp(tagname,"display-string"))  return new DisplayStringNode();
+    if (tagname[0]=='c' && !strcmp(tagname,"channel-interface"))  return new ChannelInterfaceNode();
+    if (tagname[0]=='c' && !strcmp(tagname,"channel"))  return new ChannelNode();
+    if (tagname[0]=='c' && !strcmp(tagname,"connection-block"))  return new ConnectionBlockNode();
+    if (tagname[0]=='l' && !strcmp(tagname,"loop"))  return new LoopNode();
+    if (tagname[0]=='c' && !strcmp(tagname,"condition"))  return new ConditionNode();
     if (tagname[0]=='e' && !strcmp(tagname,"expression"))  return new ExpressionNode();
     if (tagname[0]=='o' && !strcmp(tagname,"operator"))  return new OperatorNode();
     if (tagname[0]=='f' && !strcmp(tagname,"function"))  return new FunctionNode();
     if (tagname[0]=='p' && !strcmp(tagname,"param-ref"))  return new ParamRefNode();
     if (tagname[0]=='i' && !strcmp(tagname,"ident"))  return new IdentNode();
     if (tagname[0]=='c' && !strcmp(tagname,"const"))  return new ConstNode();
+    if (tagname[0]=='m' && !strcmp(tagname,"msg-file"))  return new MsgFileNode();
     if (tagname[0]=='c' && !strcmp(tagname,"cplusplus"))  return new CplusplusNode();
     if (tagname[0]=='s' && !strcmp(tagname,"struct-decl"))  return new StructDeclNode();
     if (tagname[0]=='c' && !strcmp(tagname,"class-decl"))  return new ClassDeclNode();
@@ -3235,41 +2848,37 @@ NEDElement *NEDElementFactory::createNodeWithTag(const char *tagname)
 NEDElement *NEDElementFactory::createNodeWithTag(int tagcode)
 {
     switch (tagcode) {
-        case NED_NED_FILES: return new NedFilesNode();
+        case NED_FILES: return new FilesNode();
         case NED_NED_FILE: return new NedFileNode();
         case NED_IMPORT: return new ImportNode();
-        case NED_IMPORTED_FILE: return new ImportedFileNode();
-        case NED_CHANNEL: return new ChannelNode();
-        case NED_CHANNEL_ATTR: return new ChannelAttrNode();
-        case NED_NETWORK: return new NetworkNode();
-        case NED_SIMPLE_MODULE: return new SimpleModuleNode();
-        case NED_COMPOUND_MODULE: return new CompoundModuleNode();
-        case NED_PARAMS: return new ParamsNode();
+        case NED_PROPERTYDEF: return new PropertydefNode();
+        case NED_SIMPLE: return new SimpleNode();
+        case NED_INTERFACE: return new InterfaceNode();
+        case NED_MODULE: return new ModuleNode();
+        case NED_PARAMETERS: return new ParametersNode();
+        case NED_PARAMETERS_BLOCK: return new ParametersBlockNode();
         case NED_PARAM: return new ParamNode();
+        case NED_PROPERTY: return new PropertyNode();
+        case NED_KEY_VALUE: return new KeyValueNode();
         case NED_GATES: return new GatesNode();
+        case NED_GATE_BLOCK: return new GateBlockNode();
         case NED_GATE: return new GateNode();
-        case NED_MACHINES: return new MachinesNode();
-        case NED_MACHINE: return new MachineNode();
         case NED_SUBMODULES: return new SubmodulesNode();
         case NED_SUBMODULE: return new SubmoduleNode();
-        case NED_SUBSTPARAMS: return new SubstparamsNode();
-        case NED_SUBSTPARAM: return new SubstparamNode();
-        case NED_GATESIZES: return new GatesizesNode();
-        case NED_GATESIZE: return new GatesizeNode();
-        case NED_SUBSTMACHINES: return new SubstmachinesNode();
-        case NED_SUBSTMACHINE: return new SubstmachineNode();
         case NED_CONNECTIONS: return new ConnectionsNode();
         case NED_CONNECTION: return new ConnectionNode();
-        case NED_CONN_ATTR: return new ConnAttrNode();
-        case NED_FOR_LOOP: return new ForLoopNode();
-        case NED_LOOP_VAR: return new LoopVarNode();
-        case NED_DISPLAY_STRING: return new DisplayStringNode();
+        case NED_CHANNEL_INTERFACE: return new ChannelInterfaceNode();
+        case NED_CHANNEL: return new ChannelNode();
+        case NED_CONNECTION_BLOCK: return new ConnectionBlockNode();
+        case NED_LOOP: return new LoopNode();
+        case NED_CONDITION: return new ConditionNode();
         case NED_EXPRESSION: return new ExpressionNode();
         case NED_OPERATOR: return new OperatorNode();
         case NED_FUNCTION: return new FunctionNode();
         case NED_PARAM_REF: return new ParamRefNode();
         case NED_IDENT: return new IdentNode();
         case NED_CONST: return new ConstNode();
+        case NED_MSG_FILE: return new MsgFileNode();
         case NED_CPLUSPLUS: return new CplusplusNode();
         case NED_STRUCT_DECL: return new StructDeclNode();
         case NED_CLASS_DECL: return new ClassDeclNode();

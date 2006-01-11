@@ -1,5 +1,5 @@
 //==========================================================================
-// neddtdvalidator1.cc -
+// neddtdvalidatorbase.cc -
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -17,10 +17,10 @@
 #include <string.h>
 #include <stdio.h>
 #include "nederror.h"
-#include "neddtdvalidator.h"
+#include "neddtdvalidatorbase.h"
 
 
-void NEDDTDValidator::checkSequence(NEDElement *node, int tags[], char mult[], int n)
+void NEDDTDValidatorBase::checkSequence(NEDElement *node, int tags[], char mult[], int n)
 {
     NEDElement *p = node->getFirstChild();
     for (int i=0; i<n; i++)
@@ -53,7 +53,7 @@ void NEDDTDValidator::checkSequence(NEDElement *node, int tags[], char mult[], i
         {NEDError(node, "DTD validation error: child element '%s' unexpected", p->getTagName()); return;}
 }
 
-void NEDDTDValidator::checkChoice(NEDElement *node, int tags[], int n, char mult)
+void NEDDTDValidatorBase::checkChoice(NEDElement *node, int tags[], int n, char mult)
 {
     NEDElement *p = node->getFirstChild();
     int i;
@@ -82,21 +82,21 @@ void NEDDTDValidator::checkChoice(NEDElement *node, int tags[], int n, char mult
     }
 }
 
-void NEDDTDValidator::checkEmpty(NEDElement *node)
+void NEDDTDValidatorBase::checkEmpty(NEDElement *node)
 {
     if (node->getFirstChild()) {
         NEDError(node,"DTD validation error: EMPTY element has children\n");
     }
 }
 
-void NEDDTDValidator::checkRequiredAttribute(NEDElement *node, const char *attr)
+void NEDDTDValidatorBase::checkRequiredAttribute(NEDElement *node, const char *attr)
 {
     const char *s = node->getAttribute(attr);
     if (!s || !*s)
         {NEDError(node,"DTD validation error: required attribute %s is empty", attr); return;}
 }
 
-void NEDDTDValidator::checkEnumeratedAttribute(NEDElement *node, const char *attr, const char *vals[], int n)
+void NEDDTDValidatorBase::checkEnumeratedAttribute(NEDElement *node, const char *attr, const char *vals[], int n)
 {
     const char *s = node->getAttribute(attr);
     if (!s || !*s)
@@ -110,7 +110,7 @@ void NEDDTDValidator::checkEnumeratedAttribute(NEDElement *node, const char *att
                   "enumerated values ('%s',...)", attr, vals[0]);
 }
 
-void NEDDTDValidator::checkNameAttribute(NEDElement *node, const char *attr)
+void NEDDTDValidatorBase::checkNameAttribute(NEDElement *node, const char *attr)
 {
     const char *s = node->getAttribute(attr);
     if (!s || !*s)
@@ -122,7 +122,7 @@ void NEDDTDValidator::checkNameAttribute(NEDElement *node, const char *attr)
             {NEDError(node,"DTD validation error: attribute %s='%s' contains invalid character (valid NED identifier expected)", attr, node->getAttribute(attr)); return;}
 }
 
-void NEDDTDValidator::checkCommentAttribute(NEDElement *node, const char *attr)
+void NEDDTDValidatorBase::checkCommentAttribute(NEDElement *node, const char *attr)
 {
     const char *s = node->getAttribute(attr);
     if (!s || !*s)
@@ -145,7 +145,7 @@ void NEDDTDValidator::checkCommentAttribute(NEDElement *node, const char *attr)
     }
 }
 
-void NEDDTDValidator::checkNMTokenAttribute(NEDElement *node, const char *attr)
+void NEDDTDValidatorBase::checkNMTokenAttribute(NEDElement *node, const char *attr)
 {
     //
     // DEVIATION FROM W3C STANDARDS. NMTOKEN should allow letters, digits, period,
