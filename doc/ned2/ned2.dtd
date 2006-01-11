@@ -22,7 +22,7 @@
      filename           CDATA     #REQUIRED
 >
 
-<!ELEMENT propertydef (key-value*)>
+<!ELEMENT propertydef (key-value*, property*)>
 <!ATTLIST propertydef
      name               NMTOKEN   #REQUIRED
 >
@@ -49,16 +49,18 @@
 >
 <!ELEMENT parameters-block (condition, (property|param)*)>
 
-<!ELEMENT param (expression?)>
+<!ELEMENT param (expression?,property*)>
 <!ATTLIST param
-     name               NMTOKEN   #REQUIRED
      type               (double|int|string|bool|xml) #REQUIRED
      is-function        (true|false)    "false"
-     value               CDATA     #IMPLIED
+     qualifier		CDATA	  #IMPLIED
+     name               NMTOKEN   #REQUIRED
+     value              CDATA     #IMPLIED
  >
 
-<!ELEMENT property (key-value*)>
+<!ELEMENT property (key-value*, property*)>
 <!ATTLIST property
+     qualifier		CDATA	  #IMPLIED
      name               NMTOKEN   #REQUIRED
 >
 
@@ -72,7 +74,7 @@
 
 <!ELEMENT gate-block (condition, gate*)>
 
-<!ELEMENT gate (expression?)>
+<!ELEMENT gate (expression?,property*)>
 <!ATTLIST gate
      name               NMTOKEN   #REQUIRED
      type               (input|output|inout) #REQUIRED
