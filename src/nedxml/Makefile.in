@@ -34,7 +34,7 @@ XMLPARSER=@XMLPARSER@
 COPTS=$(CPPFLAGS) $(CFLAGS) $(XML_CFLAGS) -I$(OMNETPP_INCL_DIR) -I. -DBUILDING_NEDXML
 
 OBJS= nedelements.o nedelement.o nederror.o \
-      nedvalidator.o neddtdvalidator.o neddtdvalidator1.o \
+      nedvalidator.o neddtdvalidator.o neddtdvalidatorbase.o \
       nedbasicvalidator.o nedsemanticvalidator.o nedcompiler.o \
       cppmsggenerator.o cppgenerator.o cppexprgenerator.o nedgenerator.o \
       nedfilebuffer.o nedparser.o ned.tab.o lex.yy.o nedutil.o \
@@ -135,7 +135,7 @@ nedcompiler.o: nedcompiler.cc \
   nedelements.h \
   nedgrammar.h \
   nedvalidator.h
-neddtdvalidator1.o: neddtdvalidator1.cc \
+neddtdvalidatorbase.o: neddtdvalidatorbase.cc \
   nederror.h \
   neddtdvalidator.h \
   nedelement.h \
