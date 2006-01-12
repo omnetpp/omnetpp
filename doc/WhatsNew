@@ -1,6 +1,14 @@
 What's New
 ==========
 
+OMNeT++ 3.2p1 (Jan 2006)
+------------------------
+This is a maintenance release. Changes include:
+  - support for VC8.0 (Microsoft Visual C++ 2005 [Express]).
+  - opp_nmakemake -b <dir> failed for directory names containing "++"
+  - fixed bug in Plove/Scalars "Save picture" function
+
+
 OMNeT++ 3.2 (Oct 2005)
 ----------------------
 The following brief list wraps up the most important new features and
