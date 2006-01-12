@@ -32,6 +32,18 @@
      name               NMTOKEN   #REQUIRED
 >
 
+<!ELEMENT extends (whitespace*)>
+<!ATTLIST extends
+     name               NMTOKEN   #REQUIRED>
+
+<!ELEMENT interface-name (whitespace*)>
+<!ATTLIST interface-name
+     name               NMTOKEN   #REQUIRED>
+
+<!ELEMENT channel-interface-name (whitespace*)>
+<!ATTLIST channel-interface-name
+     name               NMTOKEN   #REQUIRED>
+
 <!ELEMENT simple (whitespace*, extends?, interface-name*, parameters?, gates?)>
 <!ATTLIST simple
      name               NMTOKEN   #REQUIRED
@@ -305,8 +317,8 @@
      banner-comment      CDATA     #IMPLIED
      right-comment       CDATA     "&#10;" >
 
-<!ELEMENT msgproperties (whitespace*, msgproperty*)>
-<!ATTLIST msgproperties
+<!ELEMENT properties (whitespace*, msgproperty*)>
+<!ATTLIST properties
      banner-comment      CDATA     #IMPLIED
      right-comment       CDATA     "&#10;" >
 
