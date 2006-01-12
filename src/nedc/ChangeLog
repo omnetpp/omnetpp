@@ -1,3 +1,5 @@
+2006-01-12  ------ omnetpp-3.2p1 released ------
+
 2006-01-09  Andras Varga
 
 	* nedtool, opp_msgc: return exit code 0 when called without args (just

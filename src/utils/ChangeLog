@@ -1,3 +1,5 @@
+2006-01-12  ------ omnetpp-3.2p1 released ------
+
 2006-01-09  Andras Varga
 
 	* opp_nmakemake: failed if a directory name contained "++" when the -b

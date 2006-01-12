@@ -97,7 +97,7 @@ SCALARS_IF_POSSIBLE=scalars
 # This option is available at present for Tkenv, GNED, Scalars and Plove.
 # Set the following variables to "yes" to enable embedding Tcl files.
 #
-EMBED_TCL_CODE=no
+EMBED_TCL_CODE=yes
 
 #
 # It is possible to compile GNED, Scalars and Plove as Windows GUI apps
@@ -119,10 +119,10 @@ WITH_PARSIM=yes
 #
 # Choose between debug and release libraries here
 #
-#CFLAGS=$(CFLAGS_RELEASE)
-#LDFLAGS=$(LDFLAGS_RELEASE)
-CFLAGS=$(CFLAGS_DEBUG)
-LDFLAGS=$(LDFLAGS_DEBUG)
+CFLAGS=$(CFLAGS_RELEASE)
+LDFLAGS=$(LDFLAGS_RELEASE)
+#CFLAGS=$(CFLAGS_DEBUG)
+#LDFLAGS=$(LDFLAGS_DEBUG)
 
 
 #==============================================================================
@@ -148,7 +148,7 @@ OMNETPP_SCALARS_DIR=$(OMNETPP_ROOT)/src/scalars
 OMNETPP_PLOVE_DIR=$(OMNETPP_ROOT)/src/plove
 OMNETPP_BITMAP_PATH=./bitmaps;$(OMNETPP_ROOT)/bitmaps
 
-OMNETPP_EDITION=Academic Public License
+OMNETPP_EDITION="Commercial Edition"
 
 #
 # Libraries

@@ -1,3 +1,5 @@
+2006-01-12  ------ omnetpp-3.2p1 released ------
+
 2006-01-10  Andras Varga
 
 	* platdep/time.h, platdep/socket.h: made it possible to choose between
