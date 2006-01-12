@@ -17,7 +17,13 @@ simple Queue
         double msgPerSec = default(100); // maybe overridden by another default()
         int capacity = 100;  // fixed value, cannot be overridden
         int processingTime = exponential(10); // const value returns always the same number
-        int function waitTime = exponential(20); // evaluates exp(20) each time the parameter accessed
+        int function waitTime = exponential(20); // evaluates exp(20) each
+                                                 // time the parameter accessed
+
+                                                      // time the parameter accessed
+                                                      // time the parameter accessed
+
+                                                      // time the parameter accessed
     gates:
         input in[];  // input gates
         input in2[5];  // input gates with fixed size
