@@ -1,21 +1,14 @@
-OMNeT++ Discrete Event Simulation System
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+OMNeT++/OMNEST Discrete Event Simulation System
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Copyright (c) 1998-2004 Andras Varga.
+Copyright (c) 1998-2006 Andras Varga.
 
-OMNeT++ is subject to the license described in the "License" file.
+OMNeT++/OMNEST is subject to the license described in the "License" file.
 
-OMNeT++ software distribution may contain bundled 3rd party software packages
-which are subject to their own respective licenses. 3rdparty.txt lists
+OMNeT++/OMNEST software distribution may contain bundled 3rd party software 
+packages which are subject to their own respective licenses. 3rdparty.txt lists
 such software packages.
 
-Important
-~~~~~~~~~
-If you use OMNeT++ for your research and happen to publish the results in some
-form, please include a reference to OMNeT++ and let me know.
-
-In any case, if you find OMNeT++ useful for your work, I'd be more than happy
-learn about that.
 
 What you'll find in the OMNeT++ directory
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
