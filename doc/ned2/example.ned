@@ -77,6 +77,7 @@ simple QueueWithNInputs extends Queue
 //
 // one property name may occur more than once !!! (properties themselves cannot be
 // stored in hashtable! or: store in hastable of property vectors)
+// in this case the tag 'id' must be used as a primary key to identidy the proper property eg.
 //
 simple TCP
 {
@@ -87,8 +88,8 @@ simple TCP
         string tcpAlgorithmClass @classname("ITCPAlgorithm"); // alternative syntax:
                                                              // specify it accepts a class name, and specify base class
         @kernel(starttime=49);
-        @recordstats(name="stat1", storeintervall=5,averaging=true); // recording seqNum etc. into output vectors on/off
-        @recordstats(name="stat2", storeintervall=9,averaging=false); // recording seqNum etc. into output vectors on/off
+        @recordstats(id="stat1", storeintervall=5,averaging=true); // recording seqNum etc. into output vectors on/off, 'id' is the primary key (must be unique)
+        @recordstats(id="stat2", storeintervall=9,averaging=false); // recording seqNum etc. into output vectors on/off
         @display("i=block/transport");
     gates:
         inout toApp[] @labels(TCPControlInfo);  // inout; label means "sends/expects msg with TCPControlInfo"

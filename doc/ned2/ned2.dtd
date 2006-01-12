@@ -145,40 +145,42 @@
   **  Expressions
   -->
 
-<!ELEMENT expression (whitespace*, (operator|function|param-ref|ident|const))>
+<!ELEMENT expression (whitespace*, (operator|function|ref|const))>
 <!ATTLIST expression
-     target              CDATA     #IMPLIED >
+     target              CDATA     #IMPLIED
+>
 
-<!ELEMENT operator (whitespace*, (operator|function|param-ref|ident|const)+)>
+<!ELEMENT operator (whitespace*, (operator|function|ref|const)+)>
 <!ATTLIST operator
-     name                CDATA     #REQUIRED >
+     name                CDATA     #REQUIRED
+>
 
-<!ELEMENT function (whitespace*, (operator|function|param-ref|ident|const)*)>
+<!ELEMENT function (whitespace*, (operator|function|ref|const)*)>
 <!ATTLIST function
-     name                NMTOKEN   #REQUIRED >
+     name                NMTOKEN   #REQUIRED
+>
 
-<!ELEMENT param-ref (whitespace*, expression*)>
-<!ATTLIST param-ref
+<!-- Ref is either a parameter reference or an identifier for 'sizeof' operator
+     format is 'name' or 'module.name' or 'module[n].name'
+-->
+<!ELEMENT ref (whitespace*, expression*)>
+<!ATTLIST ref
      module              CDATA     #IMPLIED
      module-index        CDATA     #IMPLIED
-     param-name          NMTOKEN   #REQUIRED
-     param-index         CDATA     #IMPLIED
-     is-ref           (true|false) "false"
-     is-ancestor      (true|false) "false" >
+     name          	 NMTOKEN   #REQUIRED
+>
 
-<!-- for loop variables, etc. -->
-<!ELEMENT ident (whitespace*)>
-<!ATTLIST ident
-     name                NMTOKEN   #REQUIRED >
 
 <!ELEMENT const (whitespace*)>
 <!-- Note: value is in fact REQUIRED, but empty attr value should
      also be accepted because that represents the "" string literal
  -->
 <!ATTLIST const
-     type  (bool|int|real|string|time)  #REQUIRED
+     type  (double|int|string|bool|unit)  #REQUIRED
+     unit-type		 CDATA	   #IMPLIED
      text                CDATA     #IMPLIED
-     value               CDATA     #IMPLIED>
+     value               CDATA     #IMPLIED
+>
 
 <!--**********************************************************************-->
 
