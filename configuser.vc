@@ -148,7 +148,7 @@ OMNETPP_SCALARS_DIR=$(OMNETPP_ROOT)/src/scalars
 OMNETPP_PLOVE_DIR=$(OMNETPP_ROOT)/src/plove
 OMNETPP_BITMAP_PATH=./bitmaps;$(OMNETPP_ROOT)/bitmaps
 
-OMNETPP_EDITION="Commercial Edition"
+OMNETPP_EDITION=Academic Edition
 
 #
 # Libraries
