@@ -242,6 +242,7 @@ print H " * \n";
 print H " * \@ingroup Data\n";
 print H " */\n";
 print H "enum NEDElementCode {\n";
+print H "    NED_NULL = 0,  // 0 is reserved\n";
 foreach $element (@elements)
 {
     print H "    $enumname{$element}";
@@ -252,7 +253,9 @@ print H "};\n\n";
 
 print H "enum {NED_GATEDIR_INPUT, NED_GATEDIR_OUTPUT};\n";
 print H "enum {NED_ARROWDIR_LEFT, NED_ARROWDIR_RIGHT};\n";
-print H "enum {NED_CONST_BOOL, NED_CONST_INT, NED_CONST_REAL, NED_CONST_STRING, NED_CONST_TIME};\n";
+print H "enum {NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};\n";
+print H "enum {NED_CONST_DOUBLE, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_UNIT};\n";
+
 print H "\n";
 
 print CC "static const char *io_vals[] = {\"input\", \"output\"};\n";
@@ -263,10 +266,15 @@ print CC "static const char *lr_vals[] = {\"left\", \"right\"};\n";
 print CC "static int lr_nums[] = {NED_ARROWDIR_LEFT, NED_ARROWDIR_RIGHT};\n";
 print CC "static const int lr_n = 2;\n";
 print CC "\n";
-print CC "static const char *type_vals[] = {\"bool\", \"int\", \"real\", \"string\", \"time\"};\n";
-print CC "static int type_nums[] = {NED_CONST_BOOL, NED_CONST_INT, NED_CONST_REAL, NED_CONST_STRING, NED_CONST_TIME};\n";
-print CC "static const int type_n = 5;\n";
+print CC "static const char *partype_vals[] = {\"double\", \"int\", \"string\", \"bool\", \"xml\"};\n";
+print CC "static int partype_nums[] = {NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};\n";
+print CC "static const int partype_n = 5;\n";
+print CC "\n";
+print CC "static const char *littype_vals[] = {\"double\", \"int\", \"string\", \"bool\", \"unit\"};\n";
+print CC "static int littype_nums[] = {NED_CONST_DOUBLE, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_UNIT};\n";
+print CC "static const int littype_n = 5;\n";
 print CC "\n\n";
+
 
 foreach $element (@elements)
 {
@@ -598,7 +606,7 @@ foreach $element (@elements)
 {
     print DTDVAL_CC "void NEDDTDValidator\:\:validateElement($elementclass{$element} *node)\n";
     print DTDVAL_CC "{\n";
-    if ($elementdef{$element} =~ /^\(([^|]*)\)$/) {
+    if ($elementdef{$element} =~ /^\(([^|]*)\)$/) {  # in parens, does not contain "|"
        @a = split(',',$1);
        $tags='';
        $mult='';
@@ -608,13 +616,11 @@ foreach $element (@elements)
           $mult .= "'".$2."'," if ($2 ne '');
           $mult .= "'1'," if ($2 eq '');
        }
-       $tags =~ s/,$//;
-       $mult =~ s/,$//;
-       print DTDVAL_CC "    int tags[] = {$tags};\n";
-       print DTDVAL_CC "    char mult[] = {$mult};\n";
-       print DTDVAL_CC "    checkSequence(node, tags, mult, sizeof(tags)/sizeof(int));\n";
+       print DTDVAL_CC "    int tags[] = {$tags NED_NULL};\n";
+       print DTDVAL_CC "    char mult[] = {$mult 0};\n";
+       print DTDVAL_CC "    checkSequence(node, tags, mult);\n";
     }
-    elsif ($elementdef{$element} =~ /^\(\(([^,]*)\)([*?+]?)\)$/) {
+    elsif ($elementdef{$element} =~ /^\(\(([^,]*)\)([*?+]?)\)$/) { # like ((a|b|c)*)
        @a = split('\|',$1);
        $mult = $2;
        if ($mult eq '') {$mult='1';}
@@ -622,9 +628,42 @@ foreach $element (@elements)
        foreach $e (@a) {
           $tags .= $enumname{$e}.",";
        }
-       $tags =~ s/,$//;
-       print DTDVAL_CC "    int tags[] = {$tags};\n";
-       print DTDVAL_CC "    checkChoice(node, tags, sizeof(tags)/sizeof(int), \'$mult\');\n";
+       print DTDVAL_CC "    int tags[] = {$tags NED_NULL};\n";
+       print DTDVAL_CC "    checkChoice(node, tags, \'$mult\');\n";
+    }
+    elsif ($elementdef{$element} =~ /^\((.*)\)$/) {  # fallback: in parens
+       print DTDVAL_CC "    Choice choices[] = {\n";
+       print "DBG: parsing $1\n";
+       @seqs = split(',',$1);
+       foreach $seq (@seqs) {
+          if ($seq =~ /^\((.*)\)([*?+]?$)/) {
+              print "DBG:   CHOICE=( $1 )  MUL=$2\n";
+              @choicetags = split('\|',$1);
+              $mul = $2;
+              if ($mul eq '') {$mul = '1';}
+
+              print DTDVAL_CC "        {{";
+              foreach $choicetag (@choicetags) {
+                  if (! $choicetag =~ /^[a-zA-Z0-9-_]+$/) {
+                      die "Cannot parse element def for $element: $elementdef{$element}: $choicetag does not look like an element name\n";
+                  }
+                  print DTDVAL_CC $enumname{$choicetag}.", ";
+              }
+              print DTDVAL_CC "NED_NULL}, '$mul'},\n";
+          }
+          elsif ($seq =~ /^([a-zA-Z0-9-_]+)([*?+]?$)/) {
+              print "DBG:   NAME=$1  MUL=$2\n";
+              $name = $1;
+              $mul = $2;
+              if ($mul eq '') {$mul = '1';}
+              print DTDVAL_CC "        {{".$enumname{$name}.", NED_NULL}, '$mul'},\n";
+          }
+          else {
+              die "Cannot parse $seq in element def for $element: $elementdef{$element}\n";
+          }
+       }
+       print DTDVAL_CC "    };\n";
+       print DTDVAL_CC "    checkSeqOfChoices(node, choices, sizeof(choices)/sizeof(Choice));\n";
     }
     elsif ($elementdef{$element} eq 'EMPTY') {
        print DTDVAL_CC "    checkEmpty(node);\n";

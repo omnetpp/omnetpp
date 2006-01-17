@@ -20,10 +20,10 @@
 #include "neddtdvalidatorbase.h"
 
 
-void NEDDTDValidatorBase::checkSequence(NEDElement *node, int tags[], char mult[], int n)
+void NEDDTDValidatorBase::checkSequence(NEDElement *node, int tags[], char mult[])
 {
     NEDElement *p = node->getFirstChild();
-    for (int i=0; i<n; i++)
+    for (int i=0; tags[i]; i++)
     {
        switch (mult[i])
        {
@@ -53,47 +53,63 @@ void NEDDTDValidatorBase::checkSequence(NEDElement *node, int tags[], char mult[
         {NEDError(node, "DTD validation error: child element '%s' unexpected", p->getTagName()); return;}
 }
 
-void NEDDTDValidatorBase::checkChoice(NEDElement *node, int tags[], int n, char mult)
+void NEDDTDValidatorBase::tryCheckChoice(NEDElement *node, NEDElement *&curchild, int tags[], char mult)
 {
-    NEDElement *p = node->getFirstChild();
+    // note: 'node' argument is solely used by NEDError() (when curchild==NULL)
     int i;
     if (mult=='1' || mult=='+')
     {
-        if (!p)
-             {NEDError(node,"DTD validation error: child element '' unexpected\n"); return;}
-        for (i=0; i<n; i++)
-             if (p->getTagCode()==tags[i])
+        if (!curchild)
+             {NEDError(node,"DTD validation error: child element of multiplicity '1' or '+' missing\n"); return;}
+        for (i=0; tags[i]; i++)
+             if (curchild->getTagCode()==tags[i])
                  break;
-        if (i==n)
-             {NEDError(node,"DTD validation error: child element '%s' unexpected", p->getTagName()); return;}
-        p = p->getNextSibling();
+        if (!tags[i])
+            return; // curchild didn't match
+        curchild = curchild->getNextSibling();
     }
     if (mult=='+' || mult=='*')
     {
-        while (p)
+        while (curchild)
         {
-            for (i=0; i<n; i++)
-                if (p->getTagCode()==tags[i])
+            for (i=0; tags[i]; i++)
+                if (curchild->getTagCode()==tags[i])
                    break;
-            if (i==n)
-                {NEDError(node,"DTD validation error: child element '%s' unexpected", p->getTagName()); return;}
-            p = p->getNextSibling();
+            if (!tags[i])
+                return; // curchild didn't match
+            curchild = curchild->getNextSibling();
         }
     }
 }
 
+void NEDDTDValidatorBase::checkChoice(NEDElement *node, int tags[], char mult)
+{
+    NEDElement *curchild = node->getFirstChild();
+    tryCheckChoice(node, curchild, tags, mult);
+    if (curchild)
+        NEDError(node,"DTD validation error: child element '%s' unexpected", curchild->getTagName());
+}
+
+void NEDDTDValidatorBase::checkSeqOfChoices(NEDElement *node, Choice choices[], int n)
+{
+    NEDElement *curchild = node->getFirstChild();
+    for (int i=0; i<n; i++)
+        tryCheckChoice(node, curchild, choices[i].tags, choices[i].mult);
+    if (curchild)
+        NEDError(node,"DTD validation error: child element '%s' unexpected", curchild->getTagName());
+}
+
 void NEDDTDValidatorBase::checkEmpty(NEDElement *node)
 {
-    if (node->getFirstChild()) {
+    if (node->getFirstChild())
         NEDError(node,"DTD validation error: EMPTY element has children\n");
-    }
 }
 
 void NEDDTDValidatorBase::checkRequiredAttribute(NEDElement *node, const char *attr)
 {
     const char *s = node->getAttribute(attr);
     if (!s || !*s)
-        {NEDError(node,"DTD validation error: required attribute %s is empty", attr); return;}
+        NEDError(node,"DTD validation error: required attribute %s is empty", attr);
 }
 
 void NEDDTDValidatorBase::checkEnumeratedAttribute(NEDElement *node, const char *attr, const char *vals[], int n)

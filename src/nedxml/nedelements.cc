@@ -29,9 +29,13 @@ static const char *lr_vals[] = {"left", "right"};
 static int lr_nums[] = {NED_ARROWDIR_LEFT, NED_ARROWDIR_RIGHT};
 static const int lr_n = 2;
 
-static const char *type_vals[] = {"bool", "int", "real", "string", "time"};
-static int type_nums[] = {NED_CONST_BOOL, NED_CONST_INT, NED_CONST_REAL, NED_CONST_STRING, NED_CONST_TIME};
-static const int type_n = 5;
+static const char *partype_vals[] = {"double", "int", "string", "bool", "xml"};
+static int partype_nums[] = {NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};
+static const int partype_n = 5;
+
+static const char *littype_vals[] = {"double", "int", "string", "bool", "unit"};
+static int littype_nums[] = {NED_CONST_DOUBLE, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_UNIT};
+static const int littype_n = 5;
 
 
 int FilesNode::getNumAttributes() const

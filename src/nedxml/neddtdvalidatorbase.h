@@ -27,10 +27,19 @@
 class NEDDTDValidatorBase : public NEDValidatorBase
 {
   protected:
+    struct Choice {
+        int tags[20]; // array terminated by NED_NULL (increase size if needed)
+        char mult;
+    };
+
+    // helper function
+    void tryCheckChoice(NEDElement *node, NEDElement *&curchild, int tags[], char mult);
+
     /** @name Utility functions */
     //@{
-    void checkSequence(NEDElement *node, int tags[], char mult[], int n);
-    void checkChoice(NEDElement *node, int tags[], int n, char mult);
+    void checkSequence(NEDElement *node, int tags[], char mult[]);
+    void checkChoice(NEDElement *node, int tags[], char mult);
+    void checkSeqOfChoices(NEDElement *node, Choice choices[], int n);
     void checkEmpty(NEDElement *node);
     void checkRequiredAttribute(NEDElement *node, const char *attr);
     void checkEnumeratedAttribute(NEDElement *node, const char *attr, const char *vals[], int n);
