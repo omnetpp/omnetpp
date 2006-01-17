@@ -49,7 +49,7 @@ inline int gettimeofday(struct timeval *tv, struct timezone *)
 {
     struct timeb tb;
     ftime(&tb);
-    tv->tv_sec = tb.time;
+    tv->tv_sec = (long) tb.time;
     tv->tv_usec = tb.millitm * 1000UL;
     return 0;
 }
