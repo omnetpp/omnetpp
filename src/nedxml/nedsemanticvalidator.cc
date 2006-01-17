@@ -49,36 +49,24 @@ void NEDSemanticValidator::validateElement(NedFileNode *node)
 {
 }
 
+void NEDSemanticValidator::validateElement(WhitespaceNode *node)
+{
+}
+
 void NEDSemanticValidator::validateElement(ImportNode *node)
 {
 }
 
-void NEDSemanticValidator::validateElement(ImportedFileNode *node)
+void NEDSemanticValidator::validateElement(PropertydefNode *node)
 {
 }
 
-void NEDSemanticValidator::validateElement(ChannelNode *node)
-{
-    // make sure channel type name does not exist yet
-    if (symboltable->getChannelDeclaration(node->getName()))
-        NEDError(node, "redefinition of channel with name '%s'",node->getName());
-}
-
-void NEDSemanticValidator::validateElement(ChannelAttrNode *node)
+void NEDSemanticValidator::validateElement(ExtendsNode *node)
 {
 }
 
-void NEDSemanticValidator::validateElement(NetworkNode *node)
+void NEDSemanticValidator::validateElement(InterfaceNameNode *node)
 {
-    // make sure network name does not exist yet
-    if (symboltable->getNetworkDeclaration(node->getName()))
-        NEDError(node, "redefinition of network with name '%s'",node->getName());
-
-    // make sure module type exists
-    const char *type_name = node->getTypeName();
-    moduletypedecl = symboltable->getModuleDeclaration(type_name);
-    if (!moduletypedecl)
-        NEDError(node, "unknown module type '%s'",type_name);
 }
 
 void NEDSemanticValidator::validateElement(SimpleModuleNode *node)
@@ -88,6 +76,10 @@ void NEDSemanticValidator::validateElement(SimpleModuleNode *node)
         NEDError(node, "redefinition of module with name '%s'",node->getName());
 }
 
+void NEDSemanticValidator::validateElement(ModuleInterfaceNode *node)
+{
+}
+
 void NEDSemanticValidator::validateElement(CompoundModuleNode *node)
 {
     // make sure module type name does not exist yet
@@ -95,49 +87,17 @@ void NEDSemanticValidator::validateElement(CompoundModuleNode *node)
         NEDError(node, "redefinition of module with name '%s'",node->getName());
 }
 
-void NEDSemanticValidator::validateElement(ParamsNode *node)
+void NEDSemanticValidator::validateElement(ParametersNode *node)
+{
+}
+
+void NEDSemanticValidator::validateElement(ParamGroupNode *node)
 {
 }
 
 void NEDSemanticValidator::validateElement(ParamNode *node)
 {
-}
-
-void NEDSemanticValidator::validateElement(GatesNode *node)
-{
-}
-
-void NEDSemanticValidator::validateElement(GateNode *node)
-{
-}
-
-void NEDSemanticValidator::validateElement(MachinesNode *node)
-{
-}
-
-void NEDSemanticValidator::validateElement(MachineNode *node)
-{
-}
-
-void NEDSemanticValidator::validateElement(SubmodulesNode *node)
-{
-}
-
-void NEDSemanticValidator::validateElement(SubmoduleNode *node)
-{
-    // make sure module type exists
-    const char *type_name = node->getTypeName();
-    moduletypedecl = symboltable->getModuleDeclaration(type_name);
-    if (!moduletypedecl)
-        NEDError(node, "unknown module type '%s'",type_name);
-}
-
-void NEDSemanticValidator::validateElement(SubstparamsNode *node)
-{
-}
-
-void NEDSemanticValidator::validateElement(SubstparamNode *node)
-{
+    // FIXME code comes from substparamnode -- REVISE
     if (!moduletypedecl)
         return;
 
@@ -150,12 +110,25 @@ void NEDSemanticValidator::validateElement(SubstparamNode *node)
     // TBD compile-time check for type mismatch
 }
 
-void NEDSemanticValidator::validateElement(GatesizesNode *node)
+void NEDSemanticValidator::validateElement(PropertyNode *node)
 {
 }
 
-void NEDSemanticValidator::validateElement(GatesizeNode *node)
+void NEDSemanticValidator::validateElement(KeyValueNode *node)
 {
+}
+
+void NEDSemanticValidator::validateElement(GatesNode *node)
+{
+}
+
+void NEDSemanticValidator::validateElement(GateGroupNode *node)
+{
+}
+
+void NEDSemanticValidator::validateElement(GateNode *node)
+{
+    // FIXME the following lines come from gatesizenode -- REVISE!
     if (!moduletypedecl)
         return;
 
@@ -179,34 +152,30 @@ void NEDSemanticValidator::validateElement(GatesizeNode *node)
         NEDError(node, "gate '%s' is not a vector gate",gatename);
 }
 
-void NEDSemanticValidator::validateElement(SubstmachinesNode *node)
+void NEDSemanticValidator::validateElement(NetworkNode *node)
 {
+    // make sure network name does not exist yet
+    if (symboltable->getNetworkDeclaration(node->getName()))
+        NEDError(node, "redefinition of network with name '%s'",node->getName());
+
+    // make sure module type exists
+    const char *type_name = node->getTypeName();
+    moduletypedecl = symboltable->getModuleDeclaration(type_name);
     if (!moduletypedecl)
-        return;
-
-    // make sure machine counts match in module type and here
-    MachinesNode *machinesdecl = (MachinesNode *)moduletypedecl->getFirstChildWithTag(NED_MACHINES);
-    NEDElement *child;
-
-    int substcount = 0;
-    for (child=node->getFirstChildWithTag(NED_SUBSTMACHINE); child; child = child->getNextSiblingWithTag(NED_SUBSTMACHINE))
-        substcount++;
-
-    int count = 0;
-    if (!machinesdecl)
-        count = 1;
-    else
-        for (child=machinesdecl->getFirstChildWithTag(NED_MACHINE); child; child = child->getNextSiblingWithTag(NED_MACHINE))
-            count++;
-
-    if (count<substcount)
-        NEDError(node, "too many machines, module type expects only %d",count);
-    if (count>substcount)
-        NEDError(node, "too few machines, module type expects %d",count);
+        NEDError(node, "unknown module type '%s'",type_name);
 }
 
-void NEDSemanticValidator::validateElement(SubstmachineNode *node)
+void NEDSemanticValidator::validateElement(SubmodulesNode *node)
 {
+}
+
+void NEDSemanticValidator::validateElement(SubmoduleNode *node)
+{
+    // make sure module type exists
+    const char *type_name = node->getTypeName();
+    moduletypedecl = symboltable->getModuleDeclaration(type_name);
+    if (!moduletypedecl)
+        NEDError(node, "unknown module type '%s'",type_name);
 }
 
 void NEDSemanticValidator::validateElement(ConnectionsNode *node)
@@ -291,19 +260,26 @@ void NEDSemanticValidator::validateElement(ConnectionNode *node)
     validateConnGate(node->getDestModule(), destModIx, node->getDestGate(), destGateIx, compound, node, false);
 }
 
-void NEDSemanticValidator::validateElement(ConnAttrNode *node)
+void NEDSemanticValidator::validateElement(ChannelInterfaceNode *node)
 {
 }
 
-void NEDSemanticValidator::validateElement(ForLoopNode *node)
+void NEDSemanticValidator::validateElement(ChannelNode *node)
+{
+    // make sure channel type name does not exist yet
+    if (symboltable->getChannelDeclaration(node->getName()))
+        NEDError(node, "redefinition of channel with name '%s'",node->getName());
+}
+
+void NEDSemanticValidator::validateElement(ConnectionGroupNode *node)
 {
 }
 
-void NEDSemanticValidator::validateElement(LoopVarNode *node)
+void NEDSemanticValidator::validateElement(LoopNode *node)
 {
 }
 
-void NEDSemanticValidator::validateElement(DisplayStringNode *node)
+void NEDSemanticValidator::validateElement(ConditionNode *node)
 {
 }
 
@@ -319,15 +295,15 @@ void NEDSemanticValidator::validateElement(FunctionNode *node)
 {
 }
 
-void NEDSemanticValidator::validateElement(ParamRefNode *node)
-{
-}
-
-void NEDSemanticValidator::validateElement(IdentNode *node)
+void NEDSemanticValidator::validateElement(RefNode *node)
 {
 }
 
 void NEDSemanticValidator::validateElement(ConstNode *node)
+{
+}
+
+void NEDSemanticValidator::validateElement(MsgFileNode *node)
 {
 }
 
@@ -407,7 +383,7 @@ void NEDSemanticValidator::validateElement(PropertiesNode *node)
 {
 }
 
-void NEDSemanticValidator::validateElement(PropertyNode *node)
+void NEDSemanticValidator::validateElement(MsgpropertyNode *node)
 {
 }
 

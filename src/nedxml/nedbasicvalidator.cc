@@ -170,42 +170,52 @@ void NEDBasicValidator::checkExpressionAttributes(NEDElement *node, const char *
 
 void NEDBasicValidator::validateElement(FilesNode *node)
 {
+    //FIXME revise
 }
 
 void NEDBasicValidator::validateElement(NedFileNode *node)
 {
+    //FIXME revise
 }
 
 void NEDBasicValidator::validateElement(WhitespaceNode *node)
 {
+    //FIXME revise
 }
 
 void NEDBasicValidator::validateElement(ImportNode *node)
 {
+    //FIXME revise
 }
 
 void NEDBasicValidator::validateElement(PropertydefNode *node)
 {
+    //FIXME revise
 }
 
 void NEDBasicValidator::validateElement(ExtendsNode *node)
 {
+    //FIXME revise
 }
 
 void NEDBasicValidator::validateElement(InterfaceNameNode *node)
 {
+    //FIXME revise
 }
 
 void NEDBasicValidator::validateElement(SimpleModuleNode *node)
 {
+    //FIXME revise
 }
 
 void NEDBasicValidator::validateElement(ModuleInterfaceNode *node)
 {
+    //FIXME revise
 }
 
 void NEDBasicValidator::validateElement(CompoundModuleNode *node)
 {
+    //FIXME revise
 }
 
 void NEDBasicValidator::validateElement(ParametersNode *node)
@@ -217,18 +227,22 @@ void NEDBasicValidator::validateElement(ParametersNode *node)
 
 void NEDBasicValidator::validateElement(ParamGroupNode *node)
 {
+    //FIXME revise
 }
 
 void NEDBasicValidator::validateElement(ParamNode *node)
 {
+    //FIXME revise
 }
 
 void NEDBasicValidator::validateElement(PropertyNode *node)
 {
+    //FIXME revise
 }
 
 void NEDBasicValidator::validateElement(KeyValueNode *node)
 {
+    //FIXME revise
 }
 
 void NEDBasicValidator::validateElement(GatesNode *node)
@@ -240,10 +254,12 @@ void NEDBasicValidator::validateElement(GatesNode *node)
 
 void NEDBasicValidator::validateElement(GateGroupNode *node)
 {
+    //FIXME revise
 }
 
 void NEDBasicValidator::validateElement(GateNode *node)
 {
+    //FIXME revise
 }
 
 void NEDBasicValidator::validateElement(SubmodulesNode *node)
@@ -254,6 +270,7 @@ void NEDBasicValidator::validateElement(SubmodulesNode *node)
 
 void NEDBasicValidator::validateElement(SubmoduleNode *node)
 {
+    //FIXME revise
     const char *expr[] = {"vector-size"};
     bool opt[] = {true};
     checkExpressionAttributes(node, expr, opt, 1);
@@ -310,11 +327,13 @@ void NEDBasicValidator::validateElement(SubmoduleNode *node)
 
 void NEDBasicValidator::validateElement(ConnectionsNode *node)
 {
+    //FIXME revise
     // TBD if check=true, make sure all gates are connected
 }
 
 void NEDBasicValidator::validateElement(ConnectionNode *node)
 {
+    //FIXME revise
     const char *expr[] = {"condition", "src-module-index", "src-gate-index", "dest-module-index", "dest-gate-index"};
     bool opt[] = {true, true, true, true, true};
     checkExpressionAttributes(node, expr, opt, 5);
@@ -330,14 +349,17 @@ void NEDBasicValidator::validateElement(ConnectionNode *node)
 
 void NEDBasicValidator::validateElement(ChannelInterfaceNode *node)
 {
+    //FIXME revise
 }
 
 void NEDBasicValidator::validateElement(ChannelNode *node)
 {
+    //FIXME revise
 }
 
 void NEDBasicValidator::validateElement(ConnectionGroupNode *node)
 {
+    //FIXME revise
     // TODO check loop vars are unique etc
 }
 
@@ -351,14 +373,17 @@ void NEDBasicValidator::validateElement(LoopNode *node)
 
 void NEDBasicValidator::validateElement(ConditionNode *node)
 {
+    //FIXME revise
 }
 
 void NEDBasicValidator::validateElement(ExpressionNode *node)
 {
+    //FIXME revise
 }
 
 void NEDBasicValidator::validateElement(OperatorNode *node)
 {
+    //FIXME revise
     // check operator name is valid and argument count matches
     const char *op = node->getName();
 
@@ -406,6 +431,7 @@ void NEDBasicValidator::validateElement(OperatorNode *node)
 
 void NEDBasicValidator::validateElement(FunctionNode *node)
 {
+    //FIXME revise
     // if we know the function, check argument count
     const char *func = node->getName();
     int args = node->getNumChildren();
@@ -493,6 +519,7 @@ void NEDBasicValidator::validateElement(FunctionNode *node)
 
 void NEDBasicValidator::validateElement(RefNode *node)
 {
+    //FIXME revise
     const char *expr[] = {"module-index", "param-index"};
     bool opt[] = {true, true};
     checkExpressionAttributes(node, expr, opt, 2);
