@@ -10,78 +10,97 @@
   **  NED-2.
   -->
 
-<!ELEMENT ned-file ((import|propertydef|property|channel|
+<!ELEMENT ned-file (whitespace*, (import|propertydef|property|channel|
                      channel-interface|simple|module|interface)*)>
 <!ATTLIST ned-file
      filename           CDATA     #REQUIRED
      package            CDATA     #IMPLIED
 >
 
-<!ELEMENT import EMPTY>
+<!ELEMENT whitespace EMPTY>
+<!ATTLIST whitespace
+		locid	NMTOKEN	  #REQUIRED
+		content CDATA	  #REQUIRED>
+
+<!ELEMENT import (whitespace*)>
 <!ATTLIST import
      filename           CDATA     #REQUIRED
 >
 
-<!ELEMENT propertydef (key-value*)>
+<!ELEMENT propertydef (whitespace*, key-value*, property*)>
 <!ATTLIST propertydef
      name               NMTOKEN   #REQUIRED
 >
 
-<!ELEMENT simple (extends?, interface-name*, parameters?, gates?)>
+<!ELEMENT extends (whitespace*)>
+<!ATTLIST extends
+     name               NMTOKEN   #REQUIRED>
+
+<!ELEMENT interface-name (whitespace*)>
+<!ATTLIST interface-name
+     name               NMTOKEN   #REQUIRED>
+
+<!ELEMENT channel-interface-name (whitespace*)>
+<!ATTLIST channel-interface-name
+     name               NMTOKEN   #REQUIRED>
+
+<!ELEMENT simple (whitespace*, extends?, interface-name*, parameters?, gates?)>
 <!ATTLIST simple
      name               NMTOKEN   #REQUIRED
 >
 
-<!ELEMENT interface (extends*, parameters?, gates?)>
+<!ELEMENT interface (whitespace*, extends*, parameters?, gates?)>
 <!ATTLIST interface
      name               NMTOKEN   #REQUIRED
 >
 
-<!ELEMENT module (extends?, interface-name*, parameters?, gates?,
+<!ELEMENT module (whitespace*, extends?, interface-name*, parameters?, gates?,
                   submodules?, connections?)>
 <!ATTLIST module
      name               NMTOKEN   #REQUIRED
  >
 
-<!ELEMENT parameters ((property|param|parameters-block)*)>
+<!ELEMENT parameters (whitespace*, (property|param|param-group)*)>
 <!ATTLIST parameters
     is-implicit         (true|false)    "true"
 >
-<!ELEMENT parameters-block (condition, (property|param)*)>
+<!ELEMENT param-group (whitespace*, condition, (property|param)*)>
 
-<!ELEMENT param (expression?)>
+<!ELEMENT param (whitespace*, expression?, property*)>
 <!ATTLIST param
-     name               NMTOKEN   #REQUIRED
      type               (double|int|string|bool|xml) #REQUIRED
      is-function        (true|false)    "false"
-     value               CDATA     #IMPLIED
+     qualifier		CDATA	  #IMPLIED
+     name               NMTOKEN   #REQUIRED
+     value              CDATA     #IMPLIED
  >
 
-<!ELEMENT property (key-value*)>
+<!ELEMENT property (whitespace*, key-value*, property*)>
 <!ATTLIST property
+     qualifier		CDATA	  #IMPLIED
      name               NMTOKEN   #REQUIRED
 >
 
-<!ELEMENT key-value EMPTY>
+<!ELEMENT key-value (whitespace*)>
 <!ATTLIST key-value
      key                CDATA   #IMPLIED
      value              CDATA   #IMPLIED
 >
 
-<!ELEMENT gates ((gate|gate-block)*)>
+<!ELEMENT gates (whitespace*, (gate|gate-group)*)>
 
-<!ELEMENT gate-block (condition, gate*)>
+<!ELEMENT gate-group (whitespace*, condition, gate*)>
 
-<!ELEMENT gate (expression?)>
+<!ELEMENT gate (whitespace*, expression?, property*)>
 <!ATTLIST gate
      name               NMTOKEN   #REQUIRED
      type               (input|output|inout) #REQUIRED
      vector-size        CDATA     #IMPLIED
 >
 
-<!ELEMENT submodules (submodule*)>
+<!ELEMENT submodules (whitespace*, submodule*)>
 
-<!ELEMENT submodule (expression*, parameters?, gates?)>
+<!ELEMENT submodule (whitespace*, expression*, parameters?, gates?)>
 <!ATTLIST submodule
      name               NMTOKEN   #REQUIRED
      type               NMTOKEN   #IMPLIED
@@ -91,11 +110,11 @@
 >
 
 
-<!ELEMENT connections ((connection|connection-block)*)>
+<!ELEMENT connections (whitespace*, (connection|connection-group)*)>
 <!ATTLIST connections
      check-unconnected (true|false) "true">
 
-<!ELEMENT connection (expression*, parameters?)>
+<!ELEMENT connection (whitespace*, expression*, parameters?)>
 <!ATTLIST connection
      channel-name        NMTOKEN   #IMPLIED
      src-module          NMTOKEN   #IMPLIED
@@ -111,25 +130,25 @@
      is-left-to-right   (true|false) #REQUIRED
 >
 
-<!ELEMENT channel-interface (extends*, parameters?)>
+<!ELEMENT channel-interface (whitespace*, extends*, parameters?)>
 <!ATTLIST channel-interface
      name               NMTOKEN   #REQUIRED
 >
 
-<!ELEMENT channel (extends?, channel-interface-name*, parameters?)>
+<!ELEMENT channel (whitespace*, extends?, channel-interface-name*, parameters?)>
 <!ATTLIST channel
      name                NMTOKEN   #REQUIRED
 >
 
-<!ELEMENT connection-block ((loop|condition)*,connection*)>
+<!ELEMENT connection-group (whitespace*, (loop|condition)*, connection*)>
 
-<!ELEMENT loop (expression*)>
+<!ELEMENT loop (whitespace*, expression*)>
 <!ATTLIST loop
      param-name          NMTOKEN   #REQUIRED
      from-value          CDATA     #IMPLIED
      to-value            CDATA     #IMPLIED>
 
-<!ELEMENT condition (expression?)>
+<!ELEMENT condition (whitespace*, expression?)>
 <!ATTLIST condition
      condition          CDATA     #IMPLIED
 >
@@ -138,40 +157,42 @@
   **  Expressions
   -->
 
-<!ELEMENT expression ((operator|function|param-ref|ident|const))>
+<!ELEMENT expression (whitespace*, (operator|function|ref|const))>
 <!ATTLIST expression
-     target              CDATA     #IMPLIED >
+     target              CDATA     #IMPLIED
+>
 
-<!ELEMENT operator ((operator|function|param-ref|ident|const)+)>
+<!ELEMENT operator (whitespace*, (operator|function|ref|const)+)>
 <!ATTLIST operator
-     name                CDATA     #REQUIRED >
+     name                CDATA     #REQUIRED
+>
 
-<!ELEMENT function ((operator|function|param-ref|ident|const)*)>
+<!ELEMENT function (whitespace*, (operator|function|ref|const)*)>
 <!ATTLIST function
-     name                NMTOKEN   #REQUIRED >
+     name                NMTOKEN   #REQUIRED
+>
 
-<!ELEMENT param-ref (expression*)>
-<!ATTLIST param-ref
+<!-- Ref is either a parameter reference or an identifier for 'sizeof' operator
+     format is 'name' or 'module.name' or 'module[n].name'
+-->
+<!ELEMENT ref (whitespace*, expression*)>
+<!ATTLIST ref
      module              CDATA     #IMPLIED
      module-index        CDATA     #IMPLIED
-     param-name          NMTOKEN   #REQUIRED
-     param-index         CDATA     #IMPLIED
-     is-ref           (true|false) "false"
-     is-ancestor      (true|false) "false" >
+     name          	 NMTOKEN   #REQUIRED
+>
 
-<!-- for loop variables, etc. -->
-<!ELEMENT ident EMPTY>
-<!ATTLIST ident
-     name                NMTOKEN   #REQUIRED >
 
-<!ELEMENT const EMPTY>
+<!ELEMENT const (whitespace*)>
 <!-- Note: value is in fact REQUIRED, but empty attr value should
      also be accepted because that represents the "" string literal
  -->
 <!ATTLIST const
-     type  (bool|int|real|string|time)  #REQUIRED
+     type  (double|int|string|bool|unit)  #REQUIRED
+     unit-type		 CDATA	   #IMPLIED
      text                CDATA     #IMPLIED
-     value               CDATA     #IMPLIED>
+     value               CDATA     #IMPLIED
+>
 
 <!--**********************************************************************-->
 
@@ -181,14 +202,14 @@
 **
 -->
 
-<!ELEMENT msg-file ((cplusplus|struct-decl|class-decl|message-decl|enum-decl|
+<!ELEMENT msg-file (whitespace*, (cplusplus|struct-decl|class-decl|message-decl|enum-decl|
                      enum|message|class|struct)*)>
 
 <!ATTLIST msg-file
      filename            CDATA     #IMPLIED
      package             CDATA     #IMPLIED >
 
-<!ELEMENT cplusplus EMPTY>
+<!ELEMENT cplusplus (whitespace*)>
 <!ATTLIST cplusplus
      body                CDATA     #REQUIRED
      banner-comment      CDATA     #IMPLIED
@@ -197,14 +218,14 @@
 
 <!-- C++ type announcements -->
 
-<!ELEMENT struct-decl EMPTY>
+<!ELEMENT struct-decl (whitespace*)>
 <!ATTLIST struct-decl
      name                NMTOKEN   #REQUIRED
      banner-comment      CDATA     #IMPLIED
      right-comment       CDATA     "&#10;"
      trailing-comment    CDATA     "&#10;" >
 
-<!ELEMENT class-decl EMPTY>
+<!ELEMENT class-decl (whitespace*)>
 <!ATTLIST class-decl
      name                NMTOKEN   #REQUIRED
      is-cobject      (true|false)  "false"
@@ -212,14 +233,14 @@
      right-comment       CDATA     "&#10;"
      trailing-comment    CDATA     "&#10;" >
 
-<!ELEMENT message-decl EMPTY>
+<!ELEMENT message-decl (whitespace*)>
 <!ATTLIST message-decl
      name                NMTOKEN   #REQUIRED
      banner-comment      CDATA     #IMPLIED
      right-comment       CDATA     "&#10;"
      trailing-comment    CDATA     "&#10;" >
 
-<!ELEMENT enum-decl EMPTY>
+<!ELEMENT enum-decl (whitespace*)>
 <!ATTLIST enum-decl
      name                NMTOKEN   #REQUIRED
      banner-comment      CDATA     #IMPLIED
@@ -228,7 +249,7 @@
 
 <!-- Enums -->
 
-<!ELEMENT enum (enum-fields?)>
+<!ELEMENT enum (whitespace*, enum-fields?)>
 <!ATTLIST enum
      name                NMTOKEN   #REQUIRED
      extends-name        NMTOKEN   #IMPLIED
@@ -237,12 +258,12 @@
      right-comment       CDATA     "&#10;"
      trailing-comment    CDATA     "&#10;" >
 
-<!ELEMENT enum-fields (enum-field*)>
+<!ELEMENT enum-fields (whitespace*, enum-field*)>
 <!ATTLIST enum-fields
      banner-comment      CDATA     #IMPLIED
      right-comment       CDATA     "&#10;" >
 
-<!ELEMENT enum-field EMPTY>
+<!ELEMENT enum-field (whitespace*)>
 <!ATTLIST enum-field
      name                NMTOKEN   #REQUIRED
      value               CDATA     #IMPLIED
@@ -251,7 +272,7 @@
 
 <!-- Message, class, struct -->
 
-<!ELEMENT message (properties?,fields?)>
+<!ELEMENT message (whitespace*, properties?, fields?)>
 <!ATTLIST message
      name                NMTOKEN   #REQUIRED
      extends-name        NMTOKEN   #IMPLIED
@@ -260,7 +281,7 @@
      right-comment       CDATA     "&#10;"
      trailing-comment    CDATA     "&#10;" >
 
-<!ELEMENT class (properties?,fields?)>
+<!ELEMENT class (whitespace*, properties?, fields?)>
 <!ATTLIST class
      name                NMTOKEN   #REQUIRED
      extends-name        NMTOKEN   #IMPLIED
@@ -269,7 +290,7 @@
      right-comment       CDATA     "&#10;"
      trailing-comment    CDATA     "&#10;" >
 
-<!ELEMENT struct (properties?,fields?)>
+<!ELEMENT struct (whitespace*, properties?,fields?)>
 <!ATTLIST struct
      name                NMTOKEN   #REQUIRED
      extends-name        NMTOKEN   #IMPLIED
@@ -278,12 +299,12 @@
      right-comment       CDATA     "&#10;"
      trailing-comment    CDATA     "&#10;" >
 
-<!ELEMENT fields (field*)>
+<!ELEMENT fields (whitespace*, field*)>
 <!ATTLIST fields
      banner-comment      CDATA     #IMPLIED
      right-comment       CDATA     "&#10;" >
 
-<!ELEMENT field EMPTY>
+<!ELEMENT field (whitespace*)>
 <!ATTLIST field
      name                NMTOKEN   #REQUIRED
      data-type           CDATA     #IMPLIED
@@ -296,13 +317,13 @@
      banner-comment      CDATA     #IMPLIED
      right-comment       CDATA     "&#10;" >
 
-<!ELEMENT properties (property*)>
+<!ELEMENT properties (whitespace*, msgproperty*)>
 <!ATTLIST properties
      banner-comment      CDATA     #IMPLIED
      right-comment       CDATA     "&#10;" >
 
-<!ELEMENT property EMPTY>
-<!ATTLIST property
+<!ELEMENT msgproperty (whitespace*)>
+<!ATTLIST msgproperty
      name                NMTOKEN   #REQUIRED
      value               CDATA     #IMPLIED
      banner-comment      CDATA     #IMPLIED
