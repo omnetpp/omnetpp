@@ -29,10 +29,9 @@ class ImportNode;
 class PropertydefNode;
 class ExtendsNode;
 class InterfaceNameNode;
-class ChannelInterfaceNameNode;
-class SimpleNode;
-class InterfaceNode;
-class ModuleNode;
+class SimpleModuleNode;
+class ModuleInterfaceNode;
+class CompoundModuleNode;
 class ParametersNode;
 class ParamGroupNode;
 class ParamNode;
@@ -88,10 +87,9 @@ enum NEDElementCode {
     NED_PROPERTYDEF,
     NED_EXTENDS,
     NED_INTERFACE_NAME,
-    NED_CHANNEL_INTERFACE_NAME,
-    NED_SIMPLE,
-    NED_INTERFACE,
-    NED_MODULE,
+    NED_SIMPLE_MODULE,
+    NED_MODULE_INTERFACE,
+    NED_COMPOUND_MODULE,
     NED_PARAMETERS,
     NED_PARAM_GROUP,
     NED_PARAM,
@@ -184,11 +182,10 @@ class FilesNode : public NEDElement
  * 
  * <pre>
  * <!ELEMENT ned-file (whitespace*, (import|propertydef|property|channel|
- *                      channel-interface|simple|module|interface)*)>
+ *                      channel-interface|simple-module|compound-module|module-interface)*)>
  * <!ATTLIST ned-file
  *      filename           CDATA     #REQUIRED
- *      package            CDATA     #IMPLIED
- * >
+ *      package            CDATA     #IMPLIED>
  * </pre>
  * 
  * @ingroup Data
@@ -231,9 +228,9 @@ class NedFileNode : public NEDElement
     virtual PropertyNode *getFirstPropertyChild() const;
     virtual ChannelNode *getFirstChannelChild() const;
     virtual ChannelInterfaceNode *getFirstChannelInterfaceChild() const;
-    virtual SimpleNode *getFirstSimpleChild() const;
-    virtual ModuleNode *getFirstModuleChild() const;
-    virtual InterfaceNode *getFirstInterfaceChild() const;
+    virtual SimpleModuleNode *getFirstSimpleModuleChild() const;
+    virtual CompoundModuleNode *getFirstCompoundModuleChild() const;
+    virtual ModuleInterfaceNode *getFirstModuleInterfaceChild() const;
     //@}
 };
 
@@ -243,8 +240,8 @@ class NedFileNode : public NEDElement
  * <pre>
  * <!ELEMENT whitespace EMPTY>
  * <!ATTLIST whitespace
- * 		locid	NMTOKEN	  #REQUIRED
- * 		content CDATA	  #REQUIRED>
+ *      locid              NMTOKEN   #REQUIRED
+ *      content            CDATA     #REQUIRED>
  * </pre>
  * 
  * @ingroup Data
@@ -290,8 +287,7 @@ class WhitespaceNode : public NEDElement
  * <pre>
  * <!ELEMENT import (whitespace*)>
  * <!ATTLIST import
- *      filename           CDATA     #REQUIRED
- * >
+ *      filename           CDATA     #REQUIRED>
  * </pre>
  * 
  * @ingroup Data
@@ -335,8 +331,7 @@ class ImportNode : public NEDElement
  * <pre>
  * <!ELEMENT propertydef (whitespace*, key-value*, property*)>
  * <!ATTLIST propertydef
- *      name               NMTOKEN   #REQUIRED
- * >
+ *      name               NMTOKEN   #REQUIRED>
  * </pre>
  * 
  * @ingroup Data
@@ -465,32 +460,32 @@ class InterfaceNameNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the &lt;channel-interface-name&gt; XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;simple-module&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT channel-interface-name (whitespace*)>
- * <!ATTLIST channel-interface-name
+ * <!ELEMENT simple-module (whitespace*, extends?, interface-name*, parameters?, gates?)>
+ * <!ATTLIST simple-module
  *      name               NMTOKEN   #REQUIRED>
  * </pre>
  * 
  * @ingroup Data
  */
-class ChannelInterfaceNameNode : public NEDElement
+class SimpleModuleNode : public NEDElement
 {
   private:
     std::string name;
   public:
     /** @name Constructors, destructor */
     //@{
-    ChannelInterfaceNameNode() {applyDefaults();}
-    ChannelInterfaceNameNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~ChannelInterfaceNameNode() {}
+    SimpleModuleNode() {applyDefaults();}
+    SimpleModuleNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~SimpleModuleNode() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
-    virtual const char *getTagName() const {return "channel-interface-name";}
-    virtual int getTagCode() const {return NED_CHANNEL_INTERFACE_NAME;}
+    virtual const char *getTagName() const {return "simple-module";}
+    virtual int getTagCode() const {return NED_SIMPLE_MODULE;}
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
@@ -503,52 +498,7 @@ class ChannelInterfaceNameNode : public NEDElement
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
 
-    virtual ChannelInterfaceNameNode *getNextChannelInterfaceNameNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
-    //@}
-};
-
-/**
- * GENERATED CLASS. Represents the &lt;simple&gt; XML element in memory. DTD declaration:
- * 
- * <pre>
- * <!ELEMENT simple (whitespace*, extends?, interface-name*, parameters?, gates?)>
- * <!ATTLIST simple
- *      name               NMTOKEN   #REQUIRED
- * >
- * </pre>
- * 
- * @ingroup Data
- */
-class SimpleNode : public NEDElement
-{
-  private:
-    std::string name;
-  public:
-    /** @name Constructors, destructor */
-    //@{
-    SimpleNode() {applyDefaults();}
-    SimpleNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~SimpleNode() {}
-    //@}
-
-    /** @name Redefined NEDElement methods, incl. generic access to attributes */
-    //@{
-    virtual const char *getTagName() const {return "simple";}
-    virtual int getTagCode() const {return NED_SIMPLE;}
-    virtual int getNumAttributes() const;
-    virtual const char *getAttributeName(int k) const;
-    virtual const char *getAttribute(int k) const;
-    virtual void setAttribute(int k, const char *val);
-    virtual const char *getAttributeDefault(int k) const;
-    //@}
-
-    /** @name Typed access to attributes, children and siblings */
-    //@{
-    const char * getName() const  {return name.c_str();}
-    void setName(const char * val)  {name = val;}
-
-    virtual SimpleNode *getNextSimpleNodeSibling() const;
+    virtual SimpleModuleNode *getNextSimpleModuleNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
     virtual ExtendsNode *getFirstExtendsChild() const;
     virtual InterfaceNameNode *getFirstInterfaceNameChild() const;
@@ -558,33 +508,32 @@ class SimpleNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the &lt;interface&gt; XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;module-interface&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT interface (whitespace*, extends*, parameters?, gates?)>
- * <!ATTLIST interface
- *      name               NMTOKEN   #REQUIRED
- * >
+ * <!ELEMENT module-interface (whitespace*, extends*, parameters?, gates?)>
+ * <!ATTLIST module-interface
+ *      name               NMTOKEN   #REQUIRED>
  * </pre>
  * 
  * @ingroup Data
  */
-class InterfaceNode : public NEDElement
+class ModuleInterfaceNode : public NEDElement
 {
   private:
     std::string name;
   public:
     /** @name Constructors, destructor */
     //@{
-    InterfaceNode() {applyDefaults();}
-    InterfaceNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~InterfaceNode() {}
+    ModuleInterfaceNode() {applyDefaults();}
+    ModuleInterfaceNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~ModuleInterfaceNode() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
-    virtual const char *getTagName() const {return "interface";}
-    virtual int getTagCode() const {return NED_INTERFACE;}
+    virtual const char *getTagName() const {return "module-interface";}
+    virtual int getTagCode() const {return NED_MODULE_INTERFACE;}
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
@@ -597,7 +546,7 @@ class InterfaceNode : public NEDElement
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
 
-    virtual InterfaceNode *getNextInterfaceNodeSibling() const;
+    virtual ModuleInterfaceNode *getNextModuleInterfaceNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
     virtual ExtendsNode *getFirstExtendsChild() const;
     virtual ParametersNode *getFirstParametersChild() const;
@@ -606,34 +555,34 @@ class InterfaceNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the &lt;module&gt; XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;compound-module&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT module (whitespace*, extends?, interface-name*, parameters?, gates?,
+ * <!ELEMENT compound-module (whitespace*, extends?, interface-name*, parameters?, gates?,
  *                   submodules?, connections?)>
- * <!ATTLIST module
+ * <!ATTLIST compound-module
  *      name               NMTOKEN   #REQUIRED
- *  >
+ * >
  * </pre>
  * 
  * @ingroup Data
  */
-class ModuleNode : public NEDElement
+class CompoundModuleNode : public NEDElement
 {
   private:
     std::string name;
   public:
     /** @name Constructors, destructor */
     //@{
-    ModuleNode() {applyDefaults();}
-    ModuleNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~ModuleNode() {}
+    CompoundModuleNode() {applyDefaults();}
+    CompoundModuleNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~CompoundModuleNode() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
-    virtual const char *getTagName() const {return "module";}
-    virtual int getTagCode() const {return NED_MODULE;}
+    virtual const char *getTagName() const {return "compound-module";}
+    virtual int getTagCode() const {return NED_COMPOUND_MODULE;}
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
@@ -646,7 +595,7 @@ class ModuleNode : public NEDElement
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
 
-    virtual ModuleNode *getNextModuleNodeSibling() const;
+    virtual CompoundModuleNode *getNextCompoundModuleNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
     virtual ExtendsNode *getFirstExtendsChild() const;
     virtual InterfaceNameNode *getFirstInterfaceNameChild() const;
@@ -663,8 +612,7 @@ class ModuleNode : public NEDElement
  * <pre>
  * <!ELEMENT parameters (whitespace*, (property|param|param-group)*)>
  * <!ATTLIST parameters
- *     is-implicit         (true|false)    "true"
- * >
+ *     is-implicit         (true|false)  "true">
  * </pre>
  * 
  * @ingroup Data
@@ -755,11 +703,10 @@ class ParamGroupNode : public NEDElement
  * <!ELEMENT param (whitespace*, expression?, property*)>
  * <!ATTLIST param
  *      type               (double|int|string|bool|xml) #REQUIRED
- *      is-function        (true|false)    "false"
- *      qualifier		CDATA	  #IMPLIED
+ *      is-function        (true|false)  "false"
+ *      qualifier          CDATA     #IMPLIED
  *      name               NMTOKEN   #REQUIRED
- *      value              CDATA     #IMPLIED
- *  >
+ *      value              CDATA     #IMPLIED>
  * </pre>
  * 
  * @ingroup Data
@@ -817,9 +764,8 @@ class ParamNode : public NEDElement
  * <pre>
  * <!ELEMENT property (whitespace*, key-value*, property*)>
  * <!ATTLIST property
- *      qualifier		CDATA	  #IMPLIED
- *      name               NMTOKEN   #REQUIRED
- * >
+ *      qualifier          CDATA     #IMPLIED
+ *      name               NMTOKEN   #REQUIRED>
  * </pre>
  * 
  * @ingroup Data
@@ -869,8 +815,7 @@ class PropertyNode : public NEDElement
  * <!ELEMENT key-value (whitespace*)>
  * <!ATTLIST key-value
  *      key                CDATA   #IMPLIED
- *      value              CDATA   #IMPLIED
- * >
+ *      value              CDATA   #IMPLIED>
  * </pre>
  * 
  * @ingroup Data
@@ -1003,8 +948,7 @@ class GateGroupNode : public NEDElement
  * <!ATTLIST gate
  *      name               NMTOKEN   #REQUIRED
  *      type               (input|output|inout) #REQUIRED
- *      vector-size        CDATA     #IMPLIED
- * >
+ *      vector-size        CDATA     #IMPLIED>
  * </pre>
  * 
  * @ingroup Data
@@ -1101,8 +1045,7 @@ class SubmodulesNode : public NEDElement
  *      type               NMTOKEN   #IMPLIED
  *      like-type          NMTOKEN   #IMPLIED
  *      like-param         CDATA     #IMPLIED
- *      vector-size        CDATA     #IMPLIED
- * >
+ *      vector-size        CDATA     #IMPLIED>
  * </pre>
  * 
  * @ingroup Data
@@ -1211,15 +1154,14 @@ class ConnectionsNode : public NEDElement
  *      src-module          NMTOKEN   #IMPLIED
  *      src-module-index    CDATA     #IMPLIED
  *      src-gate            NMTOKEN   #REQUIRED
- *      src-gate-plusplus (true|false) "false"
+ *      src-gate-plusplus  (true|false) "false"
  *      src-gate-index      CDATA     #IMPLIED
  *      dest-module         NMTOKEN   #IMPLIED
  *      dest-module-index   CDATA     #IMPLIED
  *      dest-gate           NMTOKEN   #REQUIRED
  *      dest-gate-plusplus (true|false) "false"
  *      dest-gate-index     CDATA     #IMPLIED
- *      is-left-to-right   (true|false) #REQUIRED
- * >
+ *      is-left-to-right   (true|false) #REQUIRED>
  * </pre>
  * 
  * @ingroup Data
@@ -1298,8 +1240,7 @@ class ConnectionNode : public NEDElement
  * <pre>
  * <!ELEMENT channel-interface (whitespace*, extends*, parameters?)>
  * <!ATTLIST channel-interface
- *      name               NMTOKEN   #REQUIRED
- * >
+ *      name                NMTOKEN   #REQUIRED>
  * </pre>
  * 
  * @ingroup Data
@@ -1343,10 +1284,9 @@ class ChannelInterfaceNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;channel&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT channel (whitespace*, extends?, channel-interface-name*, parameters?)>
+ * <!ELEMENT channel (whitespace*, extends?, interface-name*, parameters?)>
  * <!ATTLIST channel
- *      name                NMTOKEN   #REQUIRED
- * >
+ *      name                NMTOKEN   #REQUIRED>
  * </pre>
  * 
  * @ingroup Data
@@ -1382,7 +1322,7 @@ class ChannelNode : public NEDElement
     virtual ChannelNode *getNextChannelNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
     virtual ExtendsNode *getFirstExtendsChild() const;
-    virtual ChannelInterfaceNameNode *getFirstChannelInterfaceNameChild() const;
+    virtual InterfaceNameNode *getFirstInterfaceNameChild() const;
     virtual ParametersNode *getFirstParametersChild() const;
     //@}
 };
@@ -1489,8 +1429,7 @@ class LoopNode : public NEDElement
  * <pre>
  * <!ELEMENT condition (whitespace*, expression?)>
  * <!ATTLIST condition
- *      condition          CDATA     #IMPLIED
- * >
+ *      condition           CDATA     #IMPLIED>
  * </pre>
  * 
  * @ingroup Data
@@ -1684,7 +1623,7 @@ class FunctionNode : public NEDElement
  * <!ATTLIST ref
  *      module              CDATA     #IMPLIED
  *      module-index        CDATA     #IMPLIED
- *      name          	 NMTOKEN   #REQUIRED
+ *      name                NMTOKEN   #REQUIRED
  * >
  * </pre>
  * 
@@ -1737,7 +1676,7 @@ class RefNode : public NEDElement
  * <!ELEMENT const (whitespace*)>
  * <!ATTLIST const
  *      type  (double|int|string|bool|unit)  #REQUIRED
- *      unit-type		 CDATA	   #IMPLIED
+ *      unit-type           CDATA     #IMPLIED
  *      text                CDATA     #IMPLIED
  *      value               CDATA     #IMPLIED
  * >

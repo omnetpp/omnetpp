@@ -65,10 +65,9 @@ class NEDBasicValidator : public NEDValidatorBase
     virtual void validateElement(PropertydefNode *node) = 0;
     virtual void validateElement(ExtendsNode *node) = 0;
     virtual void validateElement(InterfaceNameNode *node) = 0;
-    virtual void validateElement(ChannelInterfaceNameNode *node) = 0;
-    virtual void validateElement(SimpleNode *node) = 0;
-    virtual void validateElement(InterfaceNode *node) = 0;
-    virtual void validateElement(ModuleNode *node) = 0;
+    virtual void validateElement(SimpleModuleNode *node) = 0;
+    virtual void validateElement(ModuleInterfaceNode *node) = 0;
+    virtual void validateElement(CompoundModuleNode *node) = 0;
     virtual void validateElement(ParametersNode *node) = 0;
     virtual void validateElement(ParamGroupNode *node) = 0;
     virtual void validateElement(ParamNode *node) = 0;

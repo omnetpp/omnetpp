@@ -38,10 +38,9 @@ void  NEDValidatorBase::validateElement(NEDElement *node)
         case NED_PROPERTYDEF: validateElement((PropertydefNode *) node); break;
         case NED_EXTENDS: validateElement((ExtendsNode *) node); break;
         case NED_INTERFACE_NAME: validateElement((InterfaceNameNode *) node); break;
-        case NED_CHANNEL_INTERFACE_NAME: validateElement((ChannelInterfaceNameNode *) node); break;
-        case NED_SIMPLE: validateElement((SimpleNode *) node); break;
-        case NED_INTERFACE: validateElement((InterfaceNode *) node); break;
-        case NED_MODULE: validateElement((ModuleNode *) node); break;
+        case NED_SIMPLE_MODULE: validateElement((SimpleModuleNode *) node); break;
+        case NED_MODULE_INTERFACE: validateElement((ModuleInterfaceNode *) node); break;
+        case NED_COMPOUND_MODULE: validateElement((CompoundModuleNode *) node); break;
         case NED_PARAMETERS: validateElement((ParametersNode *) node); break;
         case NED_PARAM_GROUP: validateElement((ParamGroupNode *) node); break;
         case NED_PARAM: validateElement((ParamNode *) node); break;

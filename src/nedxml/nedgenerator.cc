@@ -290,7 +290,7 @@ void NEDGenerator::doSimple(SimpleModuleNode *node, const char *indent, bool isl
     if (newsyntax) out << indent << "{";
 
     generateChildrenWithType(node, NED_MACHINES, increaseIndent(indent));
-    generateChildrenWithType(node, NED_PARAMS, increaseIndent(indent));
+    generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
     generateChildrenWithType(node, NED_GATES, increaseIndent(indent));
 
     out << indent << (newsyntax?"}":"endsimple");
@@ -305,7 +305,7 @@ void NEDGenerator::doModule(CompoundModuleNode *node, const char *indent, bool i
     if (newsyntax) out << indent << "{";
 
     generateChildrenWithType(node, NED_MACHINES, increaseIndent(indent));
-    generateChildrenWithType(node, NED_PARAMS, increaseIndent(indent));
+    generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
     generateChildrenWithType(node, NED_GATES, increaseIndent(indent));
     generateChildrenWithType(node, NED_SUBMODULES, increaseIndent(indent));
     generateChildrenWithType(node, NED_CONNECTIONS, increaseIndent(indent));
@@ -990,7 +990,7 @@ void NEDGenerator::generateNedItem(NEDElement *node, const char *indent, bool is
             doSimple((SimpleModuleNode *)node, indent, islast, arg); break;
         case NED_COMPOUND_MODULE:
             doModule((CompoundModuleNode *)node, indent, islast, arg); break;
-        case NED_PARAMS:
+        case NED_PARAMETERS:
             doParams((ParamsNode *)node, indent, islast, arg); break;
         case NED_PARAM:
             doParam((ParamNode *)node, indent, islast, arg); break;

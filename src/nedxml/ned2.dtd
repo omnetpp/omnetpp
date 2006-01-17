@@ -118,7 +118,7 @@
 <!ATTLIST channel-interface
      name                NMTOKEN   #REQUIRED>
 
-<!ELEMENT channel (whitespace*, extends?, channel-interface-name*, parameters?)>
+<!ELEMENT channel (whitespace*, extends?, interface-name*, parameters?)>
 <!ATTLIST channel
      name                NMTOKEN   #REQUIRED>
 

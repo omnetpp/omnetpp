@@ -32,7 +32,7 @@ void NEDDTDValidator::validateElement(NedFileNode *node)
 {
     Choice choices[] = {
         {{NED_WHITESPACE, NED_NULL}, '*'},
-        {{NED_IMPORT, NED_PROPERTYDEF, NED_PROPERTY, NED_CHANNEL, NED_CHANNEL_INTERFACE, NED_SIMPLE, NED_MODULE, NED_INTERFACE, NED_NULL}, '*'},
+        {{NED_IMPORT, NED_PROPERTYDEF, NED_PROPERTY, NED_CHANNEL, NED_CHANNEL_INTERFACE, NED_SIMPLE_MODULE, NED_COMPOUND_MODULE, NED_MODULE_INTERFACE, NED_NULL}, '*'},
     };
     checkSeqOfChoices(node, choices, sizeof(choices)/sizeof(Choice));
 
@@ -87,17 +87,7 @@ void NEDDTDValidator::validateElement(InterfaceNameNode *node)
     checkNameAttribute(node, "name");
 }
 
-void NEDDTDValidator::validateElement(ChannelInterfaceNameNode *node)
-{
-    int tags[] = {NED_WHITESPACE, NED_NULL};
-    char mult[] = {'*', 0};
-    checkSequence(node, tags, mult);
-
-    checkRequiredAttribute(node, "name");
-    checkNameAttribute(node, "name");
-}
-
-void NEDDTDValidator::validateElement(SimpleNode *node)
+void NEDDTDValidator::validateElement(SimpleModuleNode *node)
 {
     int tags[] = {NED_WHITESPACE,NED_EXTENDS,NED_INTERFACE_NAME,NED_PARAMETERS,NED_GATES, NED_NULL};
     char mult[] = {'*','?','*','?','?', 0};
@@ -107,7 +97,7 @@ void NEDDTDValidator::validateElement(SimpleNode *node)
     checkNameAttribute(node, "name");
 }
 
-void NEDDTDValidator::validateElement(InterfaceNode *node)
+void NEDDTDValidator::validateElement(ModuleInterfaceNode *node)
 {
     int tags[] = {NED_WHITESPACE,NED_EXTENDS,NED_PARAMETERS,NED_GATES, NED_NULL};
     char mult[] = {'*','*','?','?', 0};
@@ -117,7 +107,7 @@ void NEDDTDValidator::validateElement(InterfaceNode *node)
     checkNameAttribute(node, "name");
 }
 
-void NEDDTDValidator::validateElement(ModuleNode *node)
+void NEDDTDValidator::validateElement(CompoundModuleNode *node)
 {
     int tags[] = {NED_WHITESPACE,NED_EXTENDS,NED_INTERFACE_NAME,NED_PARAMETERS,NED_GATES,NED_SUBMODULES,NED_CONNECTIONS, NED_NULL};
     char mult[] = {'*','?','*','?','?','?','?', 0};
@@ -280,7 +270,7 @@ void NEDDTDValidator::validateElement(ChannelInterfaceNode *node)
 
 void NEDDTDValidator::validateElement(ChannelNode *node)
 {
-    int tags[] = {NED_WHITESPACE,NED_EXTENDS,NED_CHANNEL_INTERFACE_NAME,NED_PARAMETERS, NED_NULL};
+    int tags[] = {NED_WHITESPACE,NED_EXTENDS,NED_INTERFACE_NAME,NED_PARAMETERS, NED_NULL};
     char mult[] = {'*','?','*','?', 0};
     checkSequence(node, tags, mult);
 

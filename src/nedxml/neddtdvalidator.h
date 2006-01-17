@@ -43,10 +43,9 @@ class NEDDTDValidator : public NEDDTDValidatorBase
     virtual void validateElement(PropertydefNode *node);
     virtual void validateElement(ExtendsNode *node);
     virtual void validateElement(InterfaceNameNode *node);
-    virtual void validateElement(ChannelInterfaceNameNode *node);
-    virtual void validateElement(SimpleNode *node);
-    virtual void validateElement(InterfaceNode *node);
-    virtual void validateElement(ModuleNode *node);
+    virtual void validateElement(SimpleModuleNode *node);
+    virtual void validateElement(ModuleInterfaceNode *node);
+    virtual void validateElement(CompoundModuleNode *node);
     virtual void validateElement(ParametersNode *node);
     virtual void validateElement(ParamGroupNode *node);
     virtual void validateElement(ParamNode *node);

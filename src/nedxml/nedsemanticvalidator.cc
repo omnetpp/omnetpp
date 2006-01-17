@@ -143,7 +143,7 @@ void NEDSemanticValidator::validateElement(SubstparamNode *node)
 
     // make sure parameter exists in module type
     const char *paramName = node->getName();
-    NEDElement *params = moduletypedecl->getFirstChildWithTag(NED_PARAMS);
+    NEDElement *params = moduletypedecl->getFirstChildWithTag(NED_PARAMETERS);
     if (!params || params->getFirstChildWithAttribute(NED_PARAM, "name", paramName)==NULL)
         {NEDError(node, "module type '%s' has no parameter named '%s'", moduletypedecl->getAttribute("name"), paramName);return;}
 

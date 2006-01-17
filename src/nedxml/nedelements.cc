@@ -162,19 +162,19 @@ ChannelInterfaceNode *NedFileNode::getFirstChannelInterfaceChild() const
     return (ChannelInterfaceNode *)getFirstChildWithTag(NED_CHANNEL_INTERFACE);
 }
 
-SimpleNode *NedFileNode::getFirstSimpleChild() const
+SimpleModuleNode *NedFileNode::getFirstSimpleModuleChild() const
 {
-    return (SimpleNode *)getFirstChildWithTag(NED_SIMPLE);
+    return (SimpleModuleNode *)getFirstChildWithTag(NED_SIMPLE_MODULE);
 }
 
-ModuleNode *NedFileNode::getFirstModuleChild() const
+CompoundModuleNode *NedFileNode::getFirstCompoundModuleChild() const
 {
-    return (ModuleNode *)getFirstChildWithTag(NED_MODULE);
+    return (CompoundModuleNode *)getFirstChildWithTag(NED_COMPOUND_MODULE);
 }
 
-InterfaceNode *NedFileNode::getFirstInterfaceChild() const
+ModuleInterfaceNode *NedFileNode::getFirstModuleInterfaceChild() const
 {
-    return (InterfaceNode *)getFirstChildWithTag(NED_INTERFACE);
+    return (ModuleInterfaceNode *)getFirstChildWithTag(NED_MODULE_INTERFACE);
 }
 
 int WhitespaceNode::getNumAttributes() const
@@ -421,12 +421,12 @@ WhitespaceNode *InterfaceNameNode::getFirstWhitespaceChild() const
     return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
 }
 
-int ChannelInterfaceNameNode::getNumAttributes() const
+int SimpleModuleNode::getNumAttributes() const
 {
     return 1;
 }
 
-const char *ChannelInterfaceNameNode::getAttributeName(int k) const
+const char *SimpleModuleNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "name";
@@ -434,7 +434,7 @@ const char *ChannelInterfaceNameNode::getAttributeName(int k) const
     }
 }
 
-const char *ChannelInterfaceNameNode::getAttribute(int k) const
+const char *SimpleModuleNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return name.c_str();
@@ -442,7 +442,7 @@ const char *ChannelInterfaceNameNode::getAttribute(int k) const
     }
 }
 
-void ChannelInterfaceNameNode::setAttribute(int k, const char *val)
+void SimpleModuleNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: name = val; break;
@@ -450,7 +450,7 @@ void ChannelInterfaceNameNode::setAttribute(int k, const char *val)
     }
 }
 
-const char *ChannelInterfaceNameNode::getAttributeDefault(int k) const
+const char *SimpleModuleNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return "";
@@ -458,89 +458,42 @@ const char *ChannelInterfaceNameNode::getAttributeDefault(int k) const
     }
 }
 
-ChannelInterfaceNameNode *ChannelInterfaceNameNode::getNextChannelInterfaceNameNodeSibling() const
+SimpleModuleNode *SimpleModuleNode::getNextSimpleModuleNodeSibling() const
 {
-    return (ChannelInterfaceNameNode *)getNextSiblingWithTag(NED_CHANNEL_INTERFACE_NAME);
+    return (SimpleModuleNode *)getNextSiblingWithTag(NED_SIMPLE_MODULE);
 }
 
-WhitespaceNode *ChannelInterfaceNameNode::getFirstWhitespaceChild() const
-{
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
-}
-
-int SimpleNode::getNumAttributes() const
-{
-    return 1;
-}
-
-const char *SimpleNode::getAttributeName(int k) const
-{
-    switch (k) {
-        case 0: return "name";
-        default: return 0;
-    }
-}
-
-const char *SimpleNode::getAttribute(int k) const
-{
-    switch (k) {
-        case 0: return name.c_str();
-        default: return 0;
-    }
-}
-
-void SimpleNode::setAttribute(int k, const char *val)
-{
-    switch (k) {
-        case 0: name = val; break;
-        default: ;
-    }
-}
-
-const char *SimpleNode::getAttributeDefault(int k) const
-{
-    switch (k) {
-        case 0: return "";
-        default: return 0;
-    }
-}
-
-SimpleNode *SimpleNode::getNextSimpleNodeSibling() const
-{
-    return (SimpleNode *)getNextSiblingWithTag(NED_SIMPLE);
-}
-
-WhitespaceNode *SimpleNode::getFirstWhitespaceChild() const
+WhitespaceNode *SimpleModuleNode::getFirstWhitespaceChild() const
 {
     return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
 }
 
-ExtendsNode *SimpleNode::getFirstExtendsChild() const
+ExtendsNode *SimpleModuleNode::getFirstExtendsChild() const
 {
     return (ExtendsNode *)getFirstChildWithTag(NED_EXTENDS);
 }
 
-InterfaceNameNode *SimpleNode::getFirstInterfaceNameChild() const
+InterfaceNameNode *SimpleModuleNode::getFirstInterfaceNameChild() const
 {
     return (InterfaceNameNode *)getFirstChildWithTag(NED_INTERFACE_NAME);
 }
 
-ParametersNode *SimpleNode::getFirstParametersChild() const
+ParametersNode *SimpleModuleNode::getFirstParametersChild() const
 {
     return (ParametersNode *)getFirstChildWithTag(NED_PARAMETERS);
 }
 
-GatesNode *SimpleNode::getFirstGatesChild() const
+GatesNode *SimpleModuleNode::getFirstGatesChild() const
 {
     return (GatesNode *)getFirstChildWithTag(NED_GATES);
 }
 
-int InterfaceNode::getNumAttributes() const
+int ModuleInterfaceNode::getNumAttributes() const
 {
     return 1;
 }
 
-const char *InterfaceNode::getAttributeName(int k) const
+const char *ModuleInterfaceNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "name";
@@ -548,7 +501,7 @@ const char *InterfaceNode::getAttributeName(int k) const
     }
 }
 
-const char *InterfaceNode::getAttribute(int k) const
+const char *ModuleInterfaceNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return name.c_str();
@@ -556,7 +509,7 @@ const char *InterfaceNode::getAttribute(int k) const
     }
 }
 
-void InterfaceNode::setAttribute(int k, const char *val)
+void ModuleInterfaceNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: name = val; break;
@@ -564,7 +517,7 @@ void InterfaceNode::setAttribute(int k, const char *val)
     }
 }
 
-const char *InterfaceNode::getAttributeDefault(int k) const
+const char *ModuleInterfaceNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return "";
@@ -572,37 +525,37 @@ const char *InterfaceNode::getAttributeDefault(int k) const
     }
 }
 
-InterfaceNode *InterfaceNode::getNextInterfaceNodeSibling() const
+ModuleInterfaceNode *ModuleInterfaceNode::getNextModuleInterfaceNodeSibling() const
 {
-    return (InterfaceNode *)getNextSiblingWithTag(NED_INTERFACE);
+    return (ModuleInterfaceNode *)getNextSiblingWithTag(NED_MODULE_INTERFACE);
 }
 
-WhitespaceNode *InterfaceNode::getFirstWhitespaceChild() const
+WhitespaceNode *ModuleInterfaceNode::getFirstWhitespaceChild() const
 {
     return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
 }
 
-ExtendsNode *InterfaceNode::getFirstExtendsChild() const
+ExtendsNode *ModuleInterfaceNode::getFirstExtendsChild() const
 {
     return (ExtendsNode *)getFirstChildWithTag(NED_EXTENDS);
 }
 
-ParametersNode *InterfaceNode::getFirstParametersChild() const
+ParametersNode *ModuleInterfaceNode::getFirstParametersChild() const
 {
     return (ParametersNode *)getFirstChildWithTag(NED_PARAMETERS);
 }
 
-GatesNode *InterfaceNode::getFirstGatesChild() const
+GatesNode *ModuleInterfaceNode::getFirstGatesChild() const
 {
     return (GatesNode *)getFirstChildWithTag(NED_GATES);
 }
 
-int ModuleNode::getNumAttributes() const
+int CompoundModuleNode::getNumAttributes() const
 {
     return 1;
 }
 
-const char *ModuleNode::getAttributeName(int k) const
+const char *CompoundModuleNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "name";
@@ -610,7 +563,7 @@ const char *ModuleNode::getAttributeName(int k) const
     }
 }
 
-const char *ModuleNode::getAttribute(int k) const
+const char *CompoundModuleNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return name.c_str();
@@ -618,7 +571,7 @@ const char *ModuleNode::getAttribute(int k) const
     }
 }
 
-void ModuleNode::setAttribute(int k, const char *val)
+void CompoundModuleNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: name = val; break;
@@ -626,7 +579,7 @@ void ModuleNode::setAttribute(int k, const char *val)
     }
 }
 
-const char *ModuleNode::getAttributeDefault(int k) const
+const char *CompoundModuleNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return "";
@@ -634,42 +587,42 @@ const char *ModuleNode::getAttributeDefault(int k) const
     }
 }
 
-ModuleNode *ModuleNode::getNextModuleNodeSibling() const
+CompoundModuleNode *CompoundModuleNode::getNextCompoundModuleNodeSibling() const
 {
-    return (ModuleNode *)getNextSiblingWithTag(NED_MODULE);
+    return (CompoundModuleNode *)getNextSiblingWithTag(NED_COMPOUND_MODULE);
 }
 
-WhitespaceNode *ModuleNode::getFirstWhitespaceChild() const
+WhitespaceNode *CompoundModuleNode::getFirstWhitespaceChild() const
 {
     return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
 }
 
-ExtendsNode *ModuleNode::getFirstExtendsChild() const
+ExtendsNode *CompoundModuleNode::getFirstExtendsChild() const
 {
     return (ExtendsNode *)getFirstChildWithTag(NED_EXTENDS);
 }
 
-InterfaceNameNode *ModuleNode::getFirstInterfaceNameChild() const
+InterfaceNameNode *CompoundModuleNode::getFirstInterfaceNameChild() const
 {
     return (InterfaceNameNode *)getFirstChildWithTag(NED_INTERFACE_NAME);
 }
 
-ParametersNode *ModuleNode::getFirstParametersChild() const
+ParametersNode *CompoundModuleNode::getFirstParametersChild() const
 {
     return (ParametersNode *)getFirstChildWithTag(NED_PARAMETERS);
 }
 
-GatesNode *ModuleNode::getFirstGatesChild() const
+GatesNode *CompoundModuleNode::getFirstGatesChild() const
 {
     return (GatesNode *)getFirstChildWithTag(NED_GATES);
 }
 
-SubmodulesNode *ModuleNode::getFirstSubmodulesChild() const
+SubmodulesNode *CompoundModuleNode::getFirstSubmodulesChild() const
 {
     return (SubmodulesNode *)getFirstChildWithTag(NED_SUBMODULES);
 }
 
-ConnectionsNode *ModuleNode::getFirstConnectionsChild() const
+ConnectionsNode *CompoundModuleNode::getFirstConnectionsChild() const
 {
     return (ConnectionsNode *)getFirstChildWithTag(NED_CONNECTIONS);
 }
@@ -1543,9 +1496,9 @@ ExtendsNode *ChannelNode::getFirstExtendsChild() const
     return (ExtendsNode *)getFirstChildWithTag(NED_EXTENDS);
 }
 
-ChannelInterfaceNameNode *ChannelNode::getFirstChannelInterfaceNameChild() const
+InterfaceNameNode *ChannelNode::getFirstInterfaceNameChild() const
 {
-    return (ChannelInterfaceNameNode *)getFirstChildWithTag(NED_CHANNEL_INTERFACE_NAME);
+    return (InterfaceNameNode *)getFirstChildWithTag(NED_INTERFACE_NAME);
 }
 
 ParametersNode *ChannelNode::getFirstParametersChild() const
@@ -3169,10 +3122,9 @@ NEDElement *NEDElementFactory::createNodeWithTag(const char *tagname)
     if (tagname[0]=='p' && !strcmp(tagname,"propertydef"))  return new PropertydefNode();
     if (tagname[0]=='e' && !strcmp(tagname,"extends"))  return new ExtendsNode();
     if (tagname[0]=='i' && !strcmp(tagname,"interface-name"))  return new InterfaceNameNode();
-    if (tagname[0]=='c' && !strcmp(tagname,"channel-interface-name"))  return new ChannelInterfaceNameNode();
-    if (tagname[0]=='s' && !strcmp(tagname,"simple"))  return new SimpleNode();
-    if (tagname[0]=='i' && !strcmp(tagname,"interface"))  return new InterfaceNode();
-    if (tagname[0]=='m' && !strcmp(tagname,"module"))  return new ModuleNode();
+    if (tagname[0]=='s' && !strcmp(tagname,"simple-module"))  return new SimpleModuleNode();
+    if (tagname[0]=='m' && !strcmp(tagname,"module-interface"))  return new ModuleInterfaceNode();
+    if (tagname[0]=='c' && !strcmp(tagname,"compound-module"))  return new CompoundModuleNode();
     if (tagname[0]=='p' && !strcmp(tagname,"parameters"))  return new ParametersNode();
     if (tagname[0]=='p' && !strcmp(tagname,"param-group"))  return new ParamGroupNode();
     if (tagname[0]=='p' && !strcmp(tagname,"param"))  return new ParamNode();
@@ -3225,10 +3177,9 @@ NEDElement *NEDElementFactory::createNodeWithTag(int tagcode)
         case NED_PROPERTYDEF: return new PropertydefNode();
         case NED_EXTENDS: return new ExtendsNode();
         case NED_INTERFACE_NAME: return new InterfaceNameNode();
-        case NED_CHANNEL_INTERFACE_NAME: return new ChannelInterfaceNameNode();
-        case NED_SIMPLE: return new SimpleNode();
-        case NED_INTERFACE: return new InterfaceNode();
-        case NED_MODULE: return new ModuleNode();
+        case NED_SIMPLE_MODULE: return new SimpleModuleNode();
+        case NED_MODULE_INTERFACE: return new ModuleInterfaceNode();
+        case NED_COMPOUND_MODULE: return new CompoundModuleNode();
         case NED_PARAMETERS: return new ParametersNode();
         case NED_PARAM_GROUP: return new ParamGroupNode();
         case NED_PARAM: return new ParamNode();

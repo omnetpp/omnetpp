@@ -110,7 +110,7 @@ void NEDCppGenerator::generateItem(NEDElement *node, const char *indent, int mod
                     doSimple((SimpleModuleNode *)node, newindent, mode, arg); break;
                 case NED_COMPOUND_MODULE:
                     doModule((CompoundModuleNode *)node, newindent, mode, arg); break;
-                case NED_PARAMS:
+                case NED_PARAMETERS:
                     doParams((ParamsNode *)node, newindent, mode, arg); break;
                 case NED_PARAM:
                     doParam((ParamNode *)node, newindent, mode, arg); break;

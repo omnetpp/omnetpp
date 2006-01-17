@@ -196,15 +196,11 @@ void NEDBasicValidator::validateElement(InterfaceNameNode *node)
 {
 }
 
-void NEDBasicValidator::validateElement(ChannelInterfaceNameNode *node)
-{
-}
-
 void NEDBasicValidator::validateElement(SimpleModuleNode *node)
 {
 }
 
-void NEDBasicValidator::validateElement(InterfaceNode *node)
+void NEDBasicValidator::validateElement(ModuleInterfaceNode *node)
 {
 }
 
@@ -269,7 +265,7 @@ void NEDBasicValidator::validateElement(SubmoduleNode *node)
         NEDElement *compound = node->getParentWithTag(NED_COMPOUND_MODULE);
         if (!compound)
             INTERNAL_ERROR0(node,"occurs outside a compound-module");
-        NEDElement *params = compound->getFirstChildWithTag(NED_PARAMS);
+        NEDElement *params = compound->getFirstChildWithTag(NED_PARAMETERS);
         if (!params || params->getFirstChildWithAttribute(NED_PARAM, "name", paramName)==NULL)
             {NEDError(node, "compound module has no parameter named '%s'", paramName);return;}
     }
@@ -286,7 +282,7 @@ void NEDBasicValidator::validateElement(SubmoduleNode *node)
 //}
 
 // TODO merge into 'parameters'
-void NEDBasicValidator::validateElement(SubstparamNode *node)
+//void NEDBasicValidator::validateElement(SubstparamNode *node)
 //{
 //    const char *expr[] = {"value"};
 //    bool opt[] = {false};
@@ -440,8 +436,8 @@ void NEDBasicValidator::validateElement(FunctionNode *node)
     {
          if (args!=1)
              NEDError(node, "operator 'sizeof' takes one argument");
-         else if (node->getFirstChild()->getTagCode()!=NED_IDENT)
-             NEDError(node, "argument of operator 'sizeof' should be an identifier");
+         //else if (node->getFirstChild()->getTagCode()!=NED_IDENT)
+         //    NEDError(node, "argument of operator 'sizeof' should be an identifier");
          else
          {
              // TBD further check it's an existing parent module gate or submodule name
@@ -502,21 +498,22 @@ void NEDBasicValidator::validateElement(RefNode *node)
     checkExpressionAttributes(node, expr, opt, 2);
 
     // FIXME loopvar and gatename for sizeof is also represented as RefNode!!!
-   
+
     // make sure parameter exists
-    if (strnull(node->getModule()) && !node->getIsAncestor())
+    if (strnull(node->getModule()))
     {
-        const char *paramName = node->getParamName();
+        const char *paramName = node->getName();
         NEDElement *compound = node->getParentWithTag(NED_COMPOUND_MODULE);
         if (!compound)
             INTERNAL_ERROR0(node,"occurs outside a compound-module");
-        NEDElement *params = compound->getFirstChildWithTag(NED_PARAMS);
+        NEDElement *params = compound->getFirstChildWithTag(NED_PARAMETERS);
         if (!params || params->getFirstChildWithAttribute(NED_PARAM, "name", paramName)==NULL)
         {
-            if (node->getParentWithTag(NED_FOR_LOOP))
-                NEDError(node, "no compound module parameter or loop variable named '%s'", paramName);
-            else
-                NEDError(node, "compound module has no parameter named '%s'", paramName);
+            // FIXME TODO
+            //if (node->getParentWithTag(NED_FOR_LOOP))
+            //    NEDError(node, "no compound module parameter or loop variable named '%s'", paramName);
+            //else
+            //    NEDError(node, "compound module has no parameter named '%s'", paramName);
         }
     }
 }
@@ -564,7 +561,7 @@ void NEDBasicValidator::validateElement(ConstNode *node)
             NEDError(node, "invalid integer constant '%s'", value);
         // TBD check that if text is present, it's the same as value
     }
-    else if (type==NED_CONST_REAL)
+    else if (type==NED_CONST_DOUBLE)
     {
         // check real
         char *s;
@@ -578,13 +575,13 @@ void NEDBasicValidator::validateElement(ConstNode *node)
         // string: no restriction
         // TBD check that if text is present, it's the same as value
     }
-    else if (type==NED_CONST_TIME)
+    else if (type==NED_CONST_UNIT)
     {
-        // value of a time constant is a real number; text is the original form
+        // value of a time/bandwidth/etc constant is a real number; text is the original form
         char *s;
         strtod(value, &s);
         if (s && *s)
-            NEDError(node, "invalid value for time constant '%s' (expected as real number)", value);
+            NEDError(node, "invalid value for unit constant '%s' (expected as real number)", value);
     }
 }
 

@@ -58,7 +58,7 @@ static ParamNode *getParameterDecl(NEDElement *moduletypedecl, const char *param
 {
     if (!moduletypedecl)
         return NULL;
-    ParamsNode *paramsdecl = (ParamsNode *)moduletypedecl->getFirstChildWithTag(NED_PARAMS);
+    ParamsNode *paramsdecl = (ParamsNode *)moduletypedecl->getFirstChildWithTag(NED_PARAMETERS);
     if (!paramsdecl)
         return NULL;
     return (ParamNode *) paramsdecl->getFirstChildWithAttribute(NED_PARAM, "name", paramName);
