@@ -188,7 +188,7 @@ foreach $element (@elements)
            elsif ($atttypes[$i] eq '(double|int|string|bool|xml)') {
               $enumname = "partype";
            }
-           elsif ($atttypes[$i] eq '(bool|int|real|string|time)') {
+           elsif ($atttypes[$i] eq '(double|int|string|bool|unit)') {
               $enumname = "littype";
            }
            else {

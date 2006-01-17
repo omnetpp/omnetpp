@@ -33,18 +33,22 @@ void  NEDValidatorBase::validateElement(NEDElement *node)
     switch (node->getTagCode()) {
         case NED_FILES: validateElement((FilesNode *) node); break;
         case NED_NED_FILE: validateElement((NedFileNode *) node); break;
+        case NED_WHITESPACE: validateElement((WhitespaceNode *) node); break;
         case NED_IMPORT: validateElement((ImportNode *) node); break;
         case NED_PROPERTYDEF: validateElement((PropertydefNode *) node); break;
+        case NED_EXTENDS: validateElement((ExtendsNode *) node); break;
+        case NED_INTERFACE_NAME: validateElement((InterfaceNameNode *) node); break;
+        case NED_CHANNEL_INTERFACE_NAME: validateElement((ChannelInterfaceNameNode *) node); break;
         case NED_SIMPLE: validateElement((SimpleNode *) node); break;
         case NED_INTERFACE: validateElement((InterfaceNode *) node); break;
         case NED_MODULE: validateElement((ModuleNode *) node); break;
         case NED_PARAMETERS: validateElement((ParametersNode *) node); break;
-        case NED_PARAMETERS_BLOCK: validateElement((ParametersBlockNode *) node); break;
+        case NED_PARAM_GROUP: validateElement((ParamGroupNode *) node); break;
         case NED_PARAM: validateElement((ParamNode *) node); break;
         case NED_PROPERTY: validateElement((PropertyNode *) node); break;
         case NED_KEY_VALUE: validateElement((KeyValueNode *) node); break;
         case NED_GATES: validateElement((GatesNode *) node); break;
-        case NED_GATE_BLOCK: validateElement((GateBlockNode *) node); break;
+        case NED_GATE_GROUP: validateElement((GateGroupNode *) node); break;
         case NED_GATE: validateElement((GateNode *) node); break;
         case NED_SUBMODULES: validateElement((SubmodulesNode *) node); break;
         case NED_SUBMODULE: validateElement((SubmoduleNode *) node); break;
@@ -52,14 +56,13 @@ void  NEDValidatorBase::validateElement(NEDElement *node)
         case NED_CONNECTION: validateElement((ConnectionNode *) node); break;
         case NED_CHANNEL_INTERFACE: validateElement((ChannelInterfaceNode *) node); break;
         case NED_CHANNEL: validateElement((ChannelNode *) node); break;
-        case NED_CONNECTION_BLOCK: validateElement((ConnectionBlockNode *) node); break;
+        case NED_CONNECTION_GROUP: validateElement((ConnectionGroupNode *) node); break;
         case NED_LOOP: validateElement((LoopNode *) node); break;
         case NED_CONDITION: validateElement((ConditionNode *) node); break;
         case NED_EXPRESSION: validateElement((ExpressionNode *) node); break;
         case NED_OPERATOR: validateElement((OperatorNode *) node); break;
         case NED_FUNCTION: validateElement((FunctionNode *) node); break;
-        case NED_PARAM_REF: validateElement((ParamRefNode *) node); break;
-        case NED_IDENT: validateElement((IdentNode *) node); break;
+        case NED_REF: validateElement((RefNode *) node); break;
         case NED_CONST: validateElement((ConstNode *) node); break;
         case NED_MSG_FILE: validateElement((MsgFileNode *) node); break;
         case NED_CPLUSPLUS: validateElement((CplusplusNode *) node); break;
@@ -76,7 +79,7 @@ void  NEDValidatorBase::validateElement(NEDElement *node)
         case NED_FIELDS: validateElement((FieldsNode *) node); break;
         case NED_FIELD: validateElement((FieldNode *) node); break;
         case NED_PROPERTIES: validateElement((PropertiesNode *) node); break;
-        case NED_PROPERTY: validateElement((PropertyNode *) node); break;
+        case NED_MSGPROPERTY: validateElement((MsgpropertyNode *) node); break;
         case NED_UNKNOWN: validateElement((UnknownNode *) node); break;
         default: INTERNAL_ERROR1(node,"validateElement(): unknown tag '%s'", node->getTagName());
     }

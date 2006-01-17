@@ -45,18 +45,22 @@ class NEDValidatorBase
     //@{
     virtual void validateElement(FilesNode *node) = 0;
     virtual void validateElement(NedFileNode *node) = 0;
+    virtual void validateElement(WhitespaceNode *node) = 0;
     virtual void validateElement(ImportNode *node) = 0;
     virtual void validateElement(PropertydefNode *node) = 0;
+    virtual void validateElement(ExtendsNode *node) = 0;
+    virtual void validateElement(InterfaceNameNode *node) = 0;
+    virtual void validateElement(ChannelInterfaceNameNode *node) = 0;
     virtual void validateElement(SimpleNode *node) = 0;
     virtual void validateElement(InterfaceNode *node) = 0;
     virtual void validateElement(ModuleNode *node) = 0;
     virtual void validateElement(ParametersNode *node) = 0;
-    virtual void validateElement(ParametersBlockNode *node) = 0;
+    virtual void validateElement(ParamGroupNode *node) = 0;
     virtual void validateElement(ParamNode *node) = 0;
     virtual void validateElement(PropertyNode *node) = 0;
     virtual void validateElement(KeyValueNode *node) = 0;
     virtual void validateElement(GatesNode *node) = 0;
-    virtual void validateElement(GateBlockNode *node) = 0;
+    virtual void validateElement(GateGroupNode *node) = 0;
     virtual void validateElement(GateNode *node) = 0;
     virtual void validateElement(SubmodulesNode *node) = 0;
     virtual void validateElement(SubmoduleNode *node) = 0;
@@ -64,14 +68,13 @@ class NEDValidatorBase
     virtual void validateElement(ConnectionNode *node) = 0;
     virtual void validateElement(ChannelInterfaceNode *node) = 0;
     virtual void validateElement(ChannelNode *node) = 0;
-    virtual void validateElement(ConnectionBlockNode *node) = 0;
+    virtual void validateElement(ConnectionGroupNode *node) = 0;
     virtual void validateElement(LoopNode *node) = 0;
     virtual void validateElement(ConditionNode *node) = 0;
     virtual void validateElement(ExpressionNode *node) = 0;
     virtual void validateElement(OperatorNode *node) = 0;
     virtual void validateElement(FunctionNode *node) = 0;
-    virtual void validateElement(ParamRefNode *node) = 0;
-    virtual void validateElement(IdentNode *node) = 0;
+    virtual void validateElement(RefNode *node) = 0;
     virtual void validateElement(ConstNode *node) = 0;
     virtual void validateElement(MsgFileNode *node) = 0;
     virtual void validateElement(CplusplusNode *node) = 0;
@@ -88,7 +91,7 @@ class NEDValidatorBase
     virtual void validateElement(FieldsNode *node) = 0;
     virtual void validateElement(FieldNode *node) = 0;
     virtual void validateElement(PropertiesNode *node) = 0;
-    virtual void validateElement(PropertyNode *node) = 0;
+    virtual void validateElement(MsgpropertyNode *node) = 0;
     virtual void validateElement(UnknownNode *node) = 0;
     //@}
 };
