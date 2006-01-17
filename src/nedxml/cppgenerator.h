@@ -106,7 +106,7 @@ class NEDCppGenerator
     void endConditionalBlock(NEDElement *node, const char *&indent, int mode, const char *);
 
     void doNedFile(NedFileNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doNedFiles(NedFilesNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doNedFiles(FilesNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doImports(ImportNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doImport(ImportedFileNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doChannel(ChannelNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);

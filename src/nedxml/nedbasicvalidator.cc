@@ -168,7 +168,7 @@ void NEDBasicValidator::checkExpressionAttributes(NEDElement *node, const char *
     }
 }
 
-void NEDBasicValidator::validateElement(NedFilesNode *node)
+void NEDBasicValidator::validateElement(FilesNode *node)
 {
 }
 
@@ -176,28 +176,27 @@ void NEDBasicValidator::validateElement(NedFileNode *node)
 {
 }
 
+void NEDBasicValidator::validateElement(WhitespaceNode *node)
+{
+}
+
 void NEDBasicValidator::validateElement(ImportNode *node)
 {
 }
 
-void NEDBasicValidator::validateElement(ImportedFileNode *node)
+void NEDBasicValidator::validateElement(PropertydefNode *node)
 {
 }
 
-void NEDBasicValidator::validateElement(ChannelNode *node)
+void NEDBasicValidator::validateElement(ExtendsNode *node)
 {
-    // make sure submodule names are unique
-    checkUniqueness(node, NED_CHANNEL_ATTR, "name");
 }
 
-void NEDBasicValidator::validateElement(ChannelAttrNode *node)
+void NEDBasicValidator::validateElement(InterfaceNameNode *node)
 {
-    const char *expr[] = {"value"};
-    bool opt[] = {false};
-    checkExpressionAttributes(node, expr, opt, 1);
 }
 
-void NEDBasicValidator::validateElement(NetworkNode *node)
+void NEDBasicValidator::validateElement(ChannelInterfaceNameNode *node)
 {
 }
 
@@ -205,37 +204,49 @@ void NEDBasicValidator::validateElement(SimpleModuleNode *node)
 {
 }
 
+void NEDBasicValidator::validateElement(InterfaceNode *node)
+{
+}
+
 void NEDBasicValidator::validateElement(CompoundModuleNode *node)
 {
 }
 
-void NEDBasicValidator::validateElement(ParamsNode *node)
+void NEDBasicValidator::validateElement(ParametersNode *node)
 {
     // make sure parameter names are unique
+    // TODO consider paramgroups
     checkUniqueness(node, NED_PARAM, "name");
+}
+
+void NEDBasicValidator::validateElement(ParamGroupNode *node)
+{
 }
 
 void NEDBasicValidator::validateElement(ParamNode *node)
 {
 }
 
+void NEDBasicValidator::validateElement(PropertyNode *node)
+{
+}
+
+void NEDBasicValidator::validateElement(KeyValueNode *node)
+{
+}
+
 void NEDBasicValidator::validateElement(GatesNode *node)
 {
     // make sure gate names are unique
+    // TODO consider gate groups
     checkUniqueness(node, NED_GATE, "name");
 }
 
+void NEDBasicValidator::validateElement(GateGroupNode *node)
+{
+}
+
 void NEDBasicValidator::validateElement(GateNode *node)
-{
-}
-
-void NEDBasicValidator::validateElement(MachinesNode *node)
-{
-    // make sure machine names are unique
-    checkUniqueness(node, NED_MACHINE, "name");
-}
-
-void NEDBasicValidator::validateElement(MachineNode *node)
 {
 }
 
@@ -264,50 +275,42 @@ void NEDBasicValidator::validateElement(SubmoduleNode *node)
     }
 }
 
-void NEDBasicValidator::validateElement(SubstparamsNode *node)
-{
-    const char *expr[] = {"condition"};
-    bool opt[] = {true};
-    checkExpressionAttributes(node, expr, opt, 1);
+//void NEDBasicValidator::validateElement(SubstparamsNode *node)
+//{
+//    const char *expr[] = {"condition"};
+//    bool opt[] = {true};
+//    checkExpressionAttributes(node, expr, opt, 1);
+//
+//    // make sure parameter names are unique
+//    checkUniqueness(node, NED_SUBSTPARAM, "name");
+//}
 
-    // make sure parameter names are unique
-    checkUniqueness(node, NED_SUBSTPARAM, "name");
-}
-
+// TODO merge into 'parameters'
 void NEDBasicValidator::validateElement(SubstparamNode *node)
-{
-    const char *expr[] = {"value"};
-    bool opt[] = {false};
-    checkExpressionAttributes(node, expr, opt, 1);
-}
+//{
+//    const char *expr[] = {"value"};
+//    bool opt[] = {false};
+//    checkExpressionAttributes(node, expr, opt, 1);
+//}
 
-void NEDBasicValidator::validateElement(GatesizesNode *node)
-{
-    const char *expr[] = {"condition"};
-    bool opt[] = {true};
-    checkExpressionAttributes(node, expr, opt, 1);
+// TODO merge into 'gates'
+//void NEDBasicValidator::validateElement(GatesizesNode *node)
+//{
+//    const char *expr[] = {"condition"};
+//    bool opt[] = {true};
+//    checkExpressionAttributes(node, expr, opt, 1);
+//
+//    // make sure gate names are unique
+//    checkUniqueness(node, NED_GATESIZE, "name");
+//}
 
-    // make sure gate names are unique
-    checkUniqueness(node, NED_GATESIZE, "name");
-}
-
-void NEDBasicValidator::validateElement(GatesizeNode *node)
-{
-    const char *expr[] = {"vector-size"};
-    bool opt[] = {true};
-    checkExpressionAttributes(node, expr, opt, 1);
-}
-
-void NEDBasicValidator::validateElement(SubstmachinesNode *node)
-{
-    const char *expr[] = {"condition"};
-    bool opt[] = {true};
-    checkExpressionAttributes(node, expr, opt, 1);
-}
-
-void NEDBasicValidator::validateElement(SubstmachineNode *node)
-{
-}
+// TODO merge into 'gates'
+//void NEDBasicValidator::validateElement(GatesizeNode *node)
+//{
+//    const char *expr[] = {"vector-size"};
+//    bool opt[] = {true};
+//    checkExpressionAttributes(node, expr, opt, 1);
+//}
 
 void NEDBasicValidator::validateElement(ConnectionsNode *node)
 {
@@ -329,29 +332,28 @@ void NEDBasicValidator::validateElement(ConnectionNode *node)
         NEDError(node, "wrong destination gate: cannot have both gate index and '++' operator specified");
 }
 
-void NEDBasicValidator::validateElement(ConnAttrNode *node)
+void NEDBasicValidator::validateElement(ChannelInterfaceNode *node)
 {
-    const char *expr[] = {"value"};
-    bool opt[] = {false};
-    checkExpressionAttributes(node, expr, opt, 1);
-
-    // if this is a "channel", expression must contain a single string constant!!!
 }
 
-void NEDBasicValidator::validateElement(ForLoopNode *node)
+void NEDBasicValidator::validateElement(ChannelNode *node)
 {
-    // make sure loop variable names are unique
-    checkUniqueness(node, NED_LOOP_VAR, "param-name");
 }
 
-void NEDBasicValidator::validateElement(LoopVarNode *node)
+void NEDBasicValidator::validateElement(ConnectionGroupNode *node)
 {
-    const char *expr[] = {"from-value", "to-value"};
-    bool opt[] = {false, false};
-    checkExpressionAttributes(node, expr, opt, 2);
+    // TODO check loop vars are unique etc
 }
 
-void NEDBasicValidator::validateElement(DisplayStringNode *node)
+void NEDBasicValidator::validateElement(LoopNode *node)
+{
+    //TODO adapt
+    //const char *expr[] = {"from-value", "to-value"};
+    //bool opt[] = {false, false};
+    //checkExpressionAttributes(node, expr, opt, 2);
+}
+
+void NEDBasicValidator::validateElement(ConditionNode *node)
 {
 }
 
@@ -493,12 +495,14 @@ void NEDBasicValidator::validateElement(FunctionNode *node)
     }
 }
 
-void NEDBasicValidator::validateElement(ParamRefNode *node)
+void NEDBasicValidator::validateElement(RefNode *node)
 {
     const char *expr[] = {"module-index", "param-index"};
     bool opt[] = {true, true};
     checkExpressionAttributes(node, expr, opt, 2);
 
+    // FIXME loopvar and gatename for sizeof is also represented as RefNode!!!
+   
     // make sure parameter exists
     if (strnull(node->getModule()) && !node->getIsAncestor())
     {
@@ -517,21 +521,22 @@ void NEDBasicValidator::validateElement(ParamRefNode *node)
     }
 }
 
-void NEDBasicValidator::validateElement(IdentNode *node)
-{
-    // IdentNode may occur: (1) as loop variable inside for-loops (2) argument to sizeof
-    if (node->getParent()->getTagCode()==NED_FUNCTION &&
-        !strcmp(((FunctionNode*)node->getParent())->getName(),"sizeof"))
-        return;
-
-    // make sure ident (loop variable) exists
-    const char *name = node->getName();
-    NEDElement *forloop = node->getParentWithTag(NED_FOR_LOOP);
-    if (!forloop)
-        INTERNAL_ERROR1(node,"loop variable '%s' occurs outside for loop", name);
-    if (forloop->getFirstChildWithAttribute(NED_LOOP_VAR, "param-name", name)==NULL)
-        NEDError(node, "no loop variable named '%s' in enclosing for loop", name);
-}
+// TODO merge into Ref code
+//void NEDBasicValidator::validateElement(IdentNode *node)
+//{
+//    // IdentNode may occur: (1) as loop variable inside for-loops (2) argument to sizeof
+//    if (node->getParent()->getTagCode()==NED_FUNCTION &&
+//        !strcmp(((FunctionNode*)node->getParent())->getName(),"sizeof"))
+//        return;
+//
+//    // make sure ident (loop variable) exists
+//    const char *name = node->getName();
+//    NEDElement *forloop = node->getParentWithTag(NED_FOR_LOOP);
+//    if (!forloop)
+//        INTERNAL_ERROR1(node,"loop variable '%s' occurs outside for loop", name);
+//    if (forloop->getFirstChildWithAttribute(NED_LOOP_VAR, "param-name", name)==NULL)
+//        NEDError(node, "no loop variable named '%s' in enclosing for loop", name);
+//}
 
 void NEDBasicValidator::validateElement(ConstNode *node)
 {
@@ -581,6 +586,10 @@ void NEDBasicValidator::validateElement(ConstNode *node)
         if (s && *s)
             NEDError(node, "invalid value for time constant '%s' (expected as real number)", value);
     }
+}
+
+void NEDBasicValidator::validateElement(MsgFileNode *node)
+{
 }
 
 void NEDBasicValidator::validateElement(CplusplusNode *node)
@@ -676,7 +685,7 @@ void NEDBasicValidator::validateElement(PropertiesNode *node)
 {
 }
 
-void NEDBasicValidator::validateElement(PropertyNode *node)
+void NEDBasicValidator::validateElement(MsgpropertyNode *node)
 {
     // TBD check syntax of value
 }

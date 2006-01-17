@@ -206,7 +206,7 @@ void NEDGenerator::appendTrailingComment(const char *comment, const char *indent
 
 //---------------------------------------------------------------------------
 
-void NEDGenerator::doNedfiles(NedFilesNode *node, const char *indent, bool, const char *)
+void NEDGenerator::doNedfiles(FilesNode *node, const char *indent, bool, const char *)
 {
     generateChildren(node, indent);
 }
@@ -973,7 +973,7 @@ void NEDGenerator::generateNedItem(NEDElement *node, const char *indent, bool is
     switch (tagcode)
     {
         case NED_NED_FILES:
-            doNedfiles((NedFilesNode *)node, indent, islast, arg); break;
+            doNedfiles((FilesNode *)node, indent, islast, arg); break;
         case NED_NED_FILE:
             doNedfile((NedFileNode *)node, indent, islast, arg); break;
         case NED_IMPORT:

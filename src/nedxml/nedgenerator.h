@@ -102,7 +102,7 @@ class NEDGenerator
 
     /** @name Generate NED code from the given element */
     //@{
-    void doNedfiles(NedFilesNode *node, const char *indent, bool islast, const char *);
+    void doNedfiles(FilesNode *node, const char *indent, bool islast, const char *);
     void doNedfile(NedFileNode *node, const char *indent, bool islast, const char *);
     void doImports(ImportNode *node, const char *indent, bool islast, const char *);
     void doImport(ImportedFileNode *node, const char *indent, bool islast, const char *);

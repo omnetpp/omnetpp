@@ -93,7 +93,7 @@ void NEDCppGenerator::generateItem(NEDElement *node, const char *indent, int mod
             switch (tagcode)
             {
                 case NED_NED_FILES:
-                    doNedFiles((NedFilesNode *)node, newindent, mode, arg); break;
+                    doNedFiles((FilesNode *)node, newindent, mode, arg); break;
                 case NED_NED_FILE:
                     doNedFile((NedFileNode *)node, newindent, mode, arg); break;
                 case NED_IMPORT:
@@ -436,7 +436,7 @@ void NEDCppGenerator::writeProlog(ostream& out)
 }
 
 // generators
-void NEDCppGenerator::doNedFiles(NedFilesNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doNedFiles(FilesNode *node, const char *indent, int mode, const char *)
 {
     generateChildren(node, increaseIndent(indent));
 }

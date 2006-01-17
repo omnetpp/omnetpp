@@ -41,7 +41,7 @@ NEDSemanticValidator::~NEDSemanticValidator()
 {
 }
 
-void NEDSemanticValidator::validateElement(NedFilesNode *node)
+void NEDSemanticValidator::validateElement(FilesNode *node)
 {
 }
 
