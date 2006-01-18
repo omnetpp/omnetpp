@@ -78,12 +78,14 @@ NEDParser *np;
 struct ParserState
 {
     bool storeSourceCode;
+    bool parseExpressions; //FIXME currently unused; needed?
 
     /* tmp flags, used with msg fields */
     bool isAbstract;
     bool isReadonly;
 
     /* MSG-II: message subclassing */
+    MsgFileNode *msgfile;
     CplusplusNode *cplusplus;
     StructDeclNode *structdecl;
     ClassDeclNode *classdecl;
@@ -97,7 +99,7 @@ struct ParserState
     EnumFieldsNode *enumfields;
     EnumFieldNode *enumfield;
     PropertiesNode *properties;
-    PropertyNode *property;
+    MsgpropertyNode *msgproperty;
     FieldsNode *fields;
     FieldNode *field;
 } ps;
@@ -154,7 +156,7 @@ definition
 cplusplus
         : CPLUSPLUS CPLUSPLUSBODY opt_semicolon
                 {
-                  ps.cplusplus = (CplusplusNode *)createNodeWithTag(NED_CPLUSPLUS, ps.nedfile );
+                  ps.cplusplus = (CplusplusNode *)createNodeWithTag(NED_CPLUSPLUS, ps.msgfile );
                   ps.cplusplus->setBody(toString(trimDoubleBraces(@2)));
                   setComments(ps.cplusplus,@1,@2);
                 }
@@ -163,7 +165,7 @@ cplusplus
 struct_decl
         : STRUCT NAME ';'
                 {
-                  ps.structdecl = (StructDeclNode *)createNodeWithTag(NED_STRUCT_DECL, ps.nedfile );
+                  ps.structdecl = (StructDeclNode *)createNodeWithTag(NED_STRUCT_DECL, ps.msgfile );
                   ps.structdecl->setName(toString(@2));
                   setComments(ps.structdecl,@1,@2);
                 }
@@ -172,14 +174,14 @@ struct_decl
 class_decl
         : CLASS NAME ';'
                 {
-                  ps.classdecl = (ClassDeclNode *)createNodeWithTag(NED_CLASS_DECL, ps.nedfile );
+                  ps.classdecl = (ClassDeclNode *)createNodeWithTag(NED_CLASS_DECL, ps.msgfile );
                   ps.classdecl->setName(toString(@2));
                   ps.classdecl->setIsCobject(true);
                   setComments(ps.classdecl,@1,@2);
                 }
         | CLASS NONCOBJECT NAME ';'
                 {
-                  ps.classdecl = (ClassDeclNode *)createNodeWithTag(NED_CLASS_DECL, ps.nedfile );
+                  ps.classdecl = (ClassDeclNode *)createNodeWithTag(NED_CLASS_DECL, ps.msgfile );
                   ps.classdecl->setIsCobject(false);
                   ps.classdecl->setName(toString(@3));
                   setComments(ps.classdecl,@1,@2);
@@ -189,7 +191,7 @@ class_decl
 message_decl
         : MESSAGE NAME ';'
                 {
-                  ps.messagedecl = (MessageDeclNode *)createNodeWithTag(NED_MESSAGE_DECL, ps.nedfile );
+                  ps.messagedecl = (MessageDeclNode *)createNodeWithTag(NED_MESSAGE_DECL, ps.msgfile );
                   ps.messagedecl->setName(toString(@2));
                   setComments(ps.messagedecl,@1,@2);
                 }
@@ -198,7 +200,7 @@ message_decl
 enum_decl
         : ENUM NAME ';'
                 {
-                  ps.enumdecl = (EnumDeclNode *)createNodeWithTag(NED_ENUM_DECL, ps.nedfile );
+                  ps.enumdecl = (EnumDeclNode *)createNodeWithTag(NED_ENUM_DECL, ps.msgfile );
                   ps.enumdecl->setName(toString(@2));
                   setComments(ps.enumdecl,@1,@2);
                 }
@@ -207,7 +209,7 @@ enum_decl
 enum
         : ENUM NAME '{'
                 {
-                  ps.enump = (EnumNode *)createNodeWithTag(NED_ENUM, ps.nedfile );
+                  ps.enump = (EnumNode *)createNodeWithTag(NED_ENUM, ps.msgfile );
                   ps.enump->setName(toString(@2));
                   setComments(ps.enump,@1,@2);
                   ps.enumfields = (EnumFieldsNode *)createNodeWithTag(NED_ENUM_FIELDS, ps.enump);
@@ -218,7 +220,7 @@ enum
                 }
         | ENUM NAME EXTENDS NAME '{'
                 {
-                  ps.enump = (EnumNode *)createNodeWithTag(NED_ENUM, ps.nedfile );
+                  ps.enump = (EnumNode *)createNodeWithTag(NED_ENUM, ps.msgfile );
                   ps.enump->setName(toString(@2));
                   ps.enump->setExtendsName(toString(@4));
                   setComments(ps.enump,@1,@4);
@@ -259,7 +261,7 @@ enumfield
 message
         : MESSAGE NAME '{'
                 {
-                  ps.msgclassorstruct = ps.messagep = (MessageNode *)createNodeWithTag(NED_MESSAGE, ps.nedfile );
+                  ps.msgclassorstruct = ps.messagep = (MessageNode *)createNodeWithTag(NED_MESSAGE, ps.msgfile );
                   ps.messagep->setName(toString(@2));
                   setComments(ps.messagep,@1,@2);
                 }
@@ -269,7 +271,7 @@ message
                 }
         | MESSAGE NAME EXTENDS NAME '{'
                 {
-                  ps.msgclassorstruct = ps.messagep = (MessageNode *)createNodeWithTag(NED_MESSAGE, ps.nedfile );
+                  ps.msgclassorstruct = ps.messagep = (MessageNode *)createNodeWithTag(NED_MESSAGE, ps.msgfile );
                   ps.messagep->setName(toString(@2));
                   ps.messagep->setExtendsName(toString(@4));
                   setComments(ps.messagep,@1,@4);
@@ -283,7 +285,7 @@ message
 class
         : CLASS NAME '{'
                 {
-                  ps.msgclassorstruct = ps.classp = (ClassNode *)createNodeWithTag(NED_CLASS, ps.nedfile );
+                  ps.msgclassorstruct = ps.classp = (ClassNode *)createNodeWithTag(NED_CLASS, ps.msgfile );
                   ps.classp->setName(toString(@2));
                   setComments(ps.classp,@1,@2);
                 }
@@ -293,7 +295,7 @@ class
                 }
         | CLASS NAME EXTENDS NAME '{'
                 {
-                  ps.msgclassorstruct = ps.classp = (ClassNode *)createNodeWithTag(NED_CLASS, ps.nedfile );
+                  ps.msgclassorstruct = ps.classp = (ClassNode *)createNodeWithTag(NED_CLASS, ps.msgfile );
                   ps.classp->setName(toString(@2));
                   ps.classp->setExtendsName(toString(@4));
                   setComments(ps.classp,@1,@4);
@@ -307,7 +309,7 @@ class
 struct
         : STRUCT NAME '{'
                 {
-                  ps.msgclassorstruct = ps.structp = (StructNode *)createNodeWithTag(NED_STRUCT, ps.nedfile );
+                  ps.msgclassorstruct = ps.structp = (StructNode *)createNodeWithTag(NED_STRUCT, ps.msgfile );
                   ps.structp->setName(toString(@2));
                   setComments(ps.structp,@1,@2);
                 }
@@ -317,7 +319,7 @@ struct
                 }
         | STRUCT NAME EXTENDS NAME '{'
                 {
-                  ps.msgclassorstruct = ps.structp = (StructNode *)createNodeWithTag(NED_STRUCT, ps.nedfile );
+                  ps.msgclassorstruct = ps.structp = (StructNode *)createNodeWithTag(NED_STRUCT, ps.msgfile );
                   ps.structp->setName(toString(@2));
                   ps.structp->setExtendsName(toString(@4));
                   setComments(ps.structp,@1,@4);
@@ -351,10 +353,10 @@ properties
 property
         : NAME '=' propertyvalue ';'
                 {
-                  ps.property = (PropertyNode *)createNodeWithTag(NED_PROPERTY, ps.properties);
-                  ps.property->setName(toString(@1));
-                  ps.property->setValue(toString(@3));
-                  setComments(ps.property,@1,@3);
+                  ps.msgproperty = (MsgpropertyNode *)createNodeWithTag(NED_MSGPROPERTY, ps.properties);
+                  ps.msgproperty->setName(toString(@1));
+                  ps.msgproperty->setValue(toString(@3));
+                  setComments(ps.msgproperty,@1,@3);
                 }
         ;
 
@@ -521,7 +523,7 @@ extern int yydebug; /* needed if compiled with yacc --VA */
 
 extern char textbuf[];
 
-int runparse (NEDParser *p,NedFileNode *nf,bool parseexpr, bool storesrc, const char *sourcefname)
+int runparse (NEDParser *p,MsgFileNode *nf,bool parseexpr, bool storesrc, const char *sourcefname)
 {
 #if YYDEBUG != 0      /* #if added --VA */
     yydebug = YYDEBUGGING_ON;
@@ -536,13 +538,13 @@ int runparse (NEDParser *p,NedFileNode *nf,bool parseexpr, bool storesrc, const 
         yyrestart( yyin );
 
     np = p;
-    ps.nedfile = nf;
+    ps.msgfile = nf;
     ps.parseExpressions = parseexpr;
     ps.storeSourceCode = storesrc;
     sourcefilename = sourcefname;
 
     if (storesrc)
-        ps.nedfile->setSourceCode(np->nedsource->getFullText());
+        ps.msgfile->setSourceCode(np->nedsource->getFullText());
 
     try {
         return yyparse();
