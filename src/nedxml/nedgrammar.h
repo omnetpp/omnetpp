@@ -23,36 +23,38 @@
 
 #ifdef PARSER_PREFIX_USED
 
-// from lex.yy.cc:
-#define yy_create_buffer nedyy_create_buffer
-#define yy_delete_buffer nedyy_delete_buffer
-#define yy_scan_buffer nedyy_scan_buffer
-#define yy_scan_string nedyy_scan_string
-#define yy_scan_bytes nedyy_scan_bytes
-#define yy_flex_debug nedyy_flex_debug
-#define yy_init_buffer nedyy_init_buffer
-#define yy_flush_buffer nedyy_flush_buffer
-#define yy_load_buffer_state nedyy_load_buffer_state
-#define yy_switch_to_buffer nedyy_switch_to_buffer
-#define yyin nedyyin
-#define yyleng nedyyleng
-#define yylex nedyylex
-#define yyout nedyyout
-#define yyrestart nedyyrestart
-#define yytext nedyytext
-#define yywrap nedyywrap
+// FIXME figure out if this stuff is needed
 
-// from ned.tab.cc:
-#define yyparse nedyyparse
-#define yylex nedyylex
-#define yyerror nedyyerror
-#define yylval nedyylval
-#define yychar nedyychar
-#define yydebug nedyydebug
-#define yynerrs nedyynerrs
-
-// only new bisons define the following, but works with older ones (1.28) too
-#define yylloc nedyylloc
+//// from lex.yy.cc:
+//#define yy_create_buffer nedyy_create_buffer
+//#define yy_delete_buffer nedyy_delete_buffer
+//#define yy_scan_buffer nedyy_scan_buffer
+//#define yy_scan_string nedyy_scan_string
+//#define yy_scan_bytes nedyy_scan_bytes
+//#define yy_flex_debug nedyy_flex_debug
+//#define yy_init_buffer nedyy_init_buffer
+//#define yy_flush_buffer nedyy_flush_buffer
+//#define yy_load_buffer_state nedyy_load_buffer_state
+//#define yy_switch_to_buffer nedyy_switch_to_buffer
+//#define yyin nedyyin
+//#define yyleng nedyyleng
+//#define yylex nedyylex
+//#define yyout nedyyout
+//#define yyrestart nedyyrestart
+//#define yytext nedyytext
+//#define yywrap nedyywrap
+//
+//// from ned.tab.cc:
+//#define yyparse nedyyparse
+//#define yylex nedyylex
+//#define yyerror nedyyerror
+//#define yylval nedyylval
+//#define yychar nedyychar
+//#define yydebug nedyydebug
+//#define yynerrs nedyynerrs
+//
+//// only new bisons define the following, but works with older ones (1.28) too
+//#define yylloc nedyylloc
 
 #endif
 
