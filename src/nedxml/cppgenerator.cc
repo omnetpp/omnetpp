@@ -545,7 +545,7 @@ void NEDCppGenerator::doNetwork(NetworkNode *node, const char *indent, int mode,
     // - network cannot be a vector of modules
 
     // find module descriptor
-    out << indent << "modtype = _getModuleType(\"" << node->getTypeName() << "\");\n";
+    out << indent << "modtype = _getModuleType(\"" << node->getType() << "\");\n";
 
     // create module
     const char *submodule_name = node->getName();
@@ -712,7 +712,7 @@ void NEDCppGenerator::doGate(GateNode *node, const char *indent, int mode, const
 {
     out << indent << "Gate(" << node->getName();
     out << (node->getIsVector() ? "[]" : "") << ", ";
-    out << (node->getDirection()==NED_GATEDIR_INPUT ? "GateDir_Input" : "GateDir_Output") << ")\n";
+    out << (node->getType()==NED_GATEDIR_INPUT ? "GateDir_Input" : "GateDir_Output") << ")\n";
 }
 
 void NEDCppGenerator::doMachines(MachinesNode *node, const char *indent, int mode, const char *)
@@ -741,7 +741,7 @@ void NEDCppGenerator::resolveSubmoduleType(SubmoduleNode *node, const char *inde
     // find module descriptor
     if (!strnotnull(node->getLikeParam()))
     {
-        out << indent << "modtype = _getModuleType(\"" << node->getTypeName() << "\");\n";
+        out << indent << "modtype = _getModuleType(\"" << node->getType() << "\");\n";
     }
     else
     {

@@ -271,7 +271,7 @@ void NEDGenerator::doChanattr(ChannelAttrNode *node, const char *indent, bool is
 void NEDGenerator::doNetwork(NetworkNode *node, const char *indent, bool islast, const char *)
 {
     appendBannerComment(node->getBannerComment(), indent);
-    out << indent << "network " << node->getName() << " : " << node->getTypeName();
+    out << indent << "network " << node->getName() << " : " << node->getType();
     appendRightComment(node->getRightComment(), indent);
     if (newsyntax) out << indent << "{";
 
@@ -346,7 +346,7 @@ void NEDGenerator::doGates(GatesNode *node, const char *indent, bool islast, con
 void NEDGenerator::doGate(GateNode *node, const char *indent, bool islast, const char *)
 {
     appendBannerComment(node->getBannerComment(), indent);
-    out << indent << (node->getDirection()==NED_GATEDIR_INPUT ? "in: " : "out: ") << node->getName();
+    out << indent << (node->getType()==NED_GATEDIR_INPUT ? "in: " : "out: ") << node->getName();
     if (node->getIsVector()) {
         out << "[]";
     }
@@ -389,11 +389,11 @@ void NEDGenerator::doSubmodule(SubmoduleNode *node, const char *indent, bool isl
     if (strnotnull(node->getLikeParam())) {
         out << node->getLikeParam();
         printVector(node, "vector-size",indent);
-        out << " like " << node->getTypeName();
+        out << " like " << node->getType();
     }
     else
     {
-        out << node->getTypeName();
+        out << node->getType();
         printVector(node, "vector-size",indent);
     }
     out << ";";

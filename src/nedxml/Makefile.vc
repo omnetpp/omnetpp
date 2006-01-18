@@ -14,10 +14,11 @@ COPTS=$(CFLAGS) $(XML_CFLAGS) /I. /Fd"nedxml.pdb"
 
 OBJS= nedelements.obj nedelement.obj nederror.obj \
       nedvalidator.obj neddtdvalidator.obj neddtdvalidatorbase.obj \
-      nedbasicvalidator.obj nedsemanticvalidator.obj nedcompiler.obj \
-      cppgenerator.obj cppmsggenerator.obj cppexprgenerator.obj nedgenerator.obj \
+      nedbasicvalidator.obj nedsemanticvalidator.obj \
       nedfilebuffer.obj nedparser.obj ned.tab.obj lex.yy.obj nedutil.obj \
-      xmlgenerator.obj nedxmlparser.obj nedsaxhandler.obj saxparser_$(XMLPARSER).obj \
+      nedgenerator.obj xmlgenerator.obj \
+      nedxmlparser.obj nedsaxhandler.obj saxparser_$(XMLPARSER).obj \
+      nedcompiler.obj cppgenerator.obj cppmsggenerator.obj cppexprgenerator.obj 
 
 #
 # Automatic rules

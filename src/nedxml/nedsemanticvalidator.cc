@@ -164,20 +164,6 @@ void NEDSemanticValidator::validateElement(GateNode *node)
 //        NEDError(node, "gate '%s' is not a vector gate",gatename);
 }
 
-void NEDSemanticValidator::validateElement(NetworkNode *node)
-{
-    // FIXME revise
-    // make sure network name does not exist yet
-    if (symboltable->getNetworkDeclaration(node->getName()))
-        NEDError(node, "redefinition of network with name '%s'",node->getName());
-
-    // make sure module type exists
-    const char *type_name = node->getTypeName();
-    moduletypedecl = symboltable->getModuleDeclaration(type_name);
-    if (!moduletypedecl)
-        NEDError(node, "unknown module type '%s'",type_name);
-}
-
 void NEDSemanticValidator::validateElement(SubmodulesNode *node)
 {
     // FIXME revise
@@ -187,7 +173,7 @@ void NEDSemanticValidator::validateElement(SubmoduleNode *node)
 {
     // FIXME revise
     // make sure module type exists
-    const char *type_name = node->getTypeName();
+    const char *type_name = node->getType();
     moduletypedecl = symboltable->getModuleDeclaration(type_name);
     if (!moduletypedecl)
         NEDError(node, "unknown module type '%s'",type_name);
@@ -209,9 +195,9 @@ void NEDSemanticValidator::checkGate(GateNode *gate, bool hasGateIndex, bool isI
         NEDError(conn, "%s: missing gate index ('%s' is a vector gate)", q, gate->getName());
 
     // check gate direction, check if vector
-    if (isInput && gate->getDirection()==NED_GATEDIR_OUTPUT)
+    if (isInput && gate->getType()==NED_GATEDIR_OUTPUT)
         NEDError(conn, "%s: input gate expected but '%s' is an output gate", q, gate->getName());
-    else if (!isInput && gate->getDirection()==NED_GATEDIR_INPUT)
+    else if (!isInput && gate->getType()==NED_GATEDIR_INPUT)
         NEDError(conn, "%s: output gate expected but '%s' is an input gate", q, gate->getName());
 }
 
@@ -249,7 +235,7 @@ void NEDSemanticValidator::validateConnGate(const char *submodName, bool hasSubm
                 NEDError(conn, "%s: missing submodule index ('%s' is a vector submodule)", q, submodName);
 
             // check gate
-            NEDElement *submodType = symboltable->getModuleDeclaration(submod->getTypeName());
+            NEDElement *submodType = symboltable->getModuleDeclaration(submod->getType());
             if (!submodType)
                 return; // we gave error earlier if submod type is not present
             NEDElement *gates = submodType->getFirstChildWithTag(NED_GATES);

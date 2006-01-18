@@ -562,7 +562,7 @@ class ModuleInterfaceNode : public NEDElement
  *                   submodules?, connections?)>
  * <!ATTLIST compound-module
  *      name               NMTOKEN   #REQUIRED
- * >
+ *      is-network         (true|false) "false">
  * </pre>
  * 
  * @ingroup Data
@@ -571,6 +571,7 @@ class CompoundModuleNode : public NEDElement
 {
   private:
     std::string name;
+    bool isNetwork;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -594,6 +595,8 @@ class CompoundModuleNode : public NEDElement
     //@{
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
+    bool getIsNetwork() const  {return isNetwork;}
+    void setIsNetwork(bool val)  {isNetwork = val;}
 
     virtual CompoundModuleNode *getNextCompoundModuleNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
@@ -814,8 +817,8 @@ class PropertyNode : public NEDElement
  * <pre>
  * <!ELEMENT key-value (whitespace*)>
  * <!ATTLIST key-value
- *      key                CDATA   #IMPLIED
- *      value              CDATA   #IMPLIED>
+ *      key                CDATA     #IMPLIED
+ *      value              CDATA     #IMPLIED>
  * </pre>
  * 
  * @ingroup Data
@@ -948,6 +951,7 @@ class GateGroupNode : public NEDElement
  * <!ATTLIST gate
  *      name               NMTOKEN   #REQUIRED
  *      type               (input|output|inout) #REQUIRED
+ *      is-vector          (true|false) false
  *      vector-size        CDATA     #IMPLIED>
  * </pre>
  * 
@@ -958,6 +962,7 @@ class GateNode : public NEDElement
   private:
     std::string name;
     int type;
+    bool isVector;
     std::string vectorSize;
   public:
     /** @name Constructors, destructor */
@@ -984,6 +989,8 @@ class GateNode : public NEDElement
     void setName(const char * val)  {name = val;}
     int getType() const  {return type;}
     void setType(int val)  {type = val;}
+    bool getIsVector() const  {return isVector;}
+    void setIsVector(bool val)  {isVector = val;}
     const char * getVectorSize() const  {return vectorSize.c_str();}
     void setVectorSize(const char * val)  {vectorSize = val;}
 
@@ -1474,8 +1481,7 @@ class ConditionNode : public NEDElement
  * <pre>
  * <!ELEMENT expression (whitespace*, (operator|function|ref|const))>
  * <!ATTLIST expression
- *      target              CDATA     #IMPLIED
- * >
+ *      target              CDATA     #IMPLIED>
  * </pre>
  * 
  * @ingroup Data
@@ -1523,8 +1529,7 @@ class ExpressionNode : public NEDElement
  * <pre>
  * <!ELEMENT operator (whitespace*, (operator|function|ref|const)+)>
  * <!ATTLIST operator
- *      name                CDATA     #REQUIRED
- * >
+ *      name                CDATA     #REQUIRED>
  * </pre>
  * 
  * @ingroup Data
@@ -1572,8 +1577,7 @@ class OperatorNode : public NEDElement
  * <pre>
  * <!ELEMENT function (whitespace*, (operator|function|ref|const)*)>
  * <!ATTLIST function
- *      name                NMTOKEN   #REQUIRED
- * >
+ *      name                NMTOKEN   #REQUIRED>
  * </pre>
  * 
  * @ingroup Data
@@ -1623,8 +1627,7 @@ class FunctionNode : public NEDElement
  * <!ATTLIST ref
  *      module              CDATA     #IMPLIED
  *      module-index        CDATA     #IMPLIED
- *      name                NMTOKEN   #REQUIRED
- * >
+ *      name                NMTOKEN   #REQUIRED>
  * </pre>
  * 
  * @ingroup Data
@@ -1678,8 +1681,7 @@ class RefNode : public NEDElement
  *      type  (double|int|string|bool|unit)  #REQUIRED
  *      unit-type           CDATA     #IMPLIED
  *      text                CDATA     #IMPLIED
- *      value               CDATA     #IMPLIED
- * >
+ *      value               CDATA     #IMPLIED>
  * </pre>
  * 
  * @ingroup Data

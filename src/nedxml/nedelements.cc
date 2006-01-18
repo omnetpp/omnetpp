@@ -552,13 +552,14 @@ GatesNode *ModuleInterfaceNode::getFirstGatesChild() const
 
 int CompoundModuleNode::getNumAttributes() const
 {
-    return 1;
+    return 2;
 }
 
 const char *CompoundModuleNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "name";
+        case 1: return "is-network";
         default: return 0;
     }
 }
@@ -567,6 +568,7 @@ const char *CompoundModuleNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return name.c_str();
+        case 1: return boolToString(isNetwork);
         default: return 0;
     }
 }
@@ -575,6 +577,7 @@ void CompoundModuleNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: name = val; break;
+        case 1: isNetwork = stringToBool(val); break;
         default: ;
     }
 }
@@ -583,6 +586,7 @@ const char *CompoundModuleNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return "";
+        case 1: return "false";
         default: return 0;
     }
 }
@@ -1040,7 +1044,7 @@ GateNode *GateGroupNode::getFirstGateChild() const
 
 int GateNode::getNumAttributes() const
 {
-    return 3;
+    return 4;
 }
 
 const char *GateNode::getAttributeName(int k) const
@@ -1048,7 +1052,8 @@ const char *GateNode::getAttributeName(int k) const
     switch (k) {
         case 0: return "name";
         case 1: return "type";
-        case 2: return "vector-size";
+        case 2: return "is-vector";
+        case 3: return "vector-size";
         default: return 0;
     }
 }
@@ -1058,7 +1063,8 @@ const char *GateNode::getAttribute(int k) const
     switch (k) {
         case 0: return name.c_str();
         case 1: return enumToString(type, io_vals, io_nums, io_n);
-        case 2: return vectorSize.c_str();
+        case 2: return boolToString(isVector);
+        case 3: return vectorSize.c_str();
         default: return 0;
     }
 }
@@ -1068,7 +1074,8 @@ void GateNode::setAttribute(int k, const char *val)
     switch (k) {
         case 0: name = val; break;
         case 1: type = stringToEnum(val, io_vals, io_nums, io_n); break;
-        case 2: vectorSize = val; break;
+        case 2: isVector = stringToBool(val); break;
+        case 3: vectorSize = val; break;
         default: ;
     }
 }
@@ -1078,7 +1085,8 @@ const char *GateNode::getAttributeDefault(int k) const
     switch (k) {
         case 0: return "";
         case 1: return "";
-        case 2: return "";
+        case 2: return false;
+        case 3: return "";
         default: return 0;
     }
 }
