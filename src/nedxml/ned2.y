@@ -203,7 +203,7 @@ definition
         ;
 
 /*
- * Imports
+ * Import
  */
 import
         : IMPORT STRINGCONSTANT ';'
@@ -213,6 +213,72 @@ import
                   ps.import->setFilename(toString(trimQuotes(@1)));
                   setComments(ps.import,@1);
                 }
+        ;
+
+/*
+ * Property declaration
+ */
+propertydecl
+        : PROPERTY '@' NAME ';'
+                { /*TBD*/ }
+        | PROPERTY '@' NAME '(' opt_propertydecl_keys ')' ';'
+                { /*TBD*/ }
+        ;
+
+opt_propertydecl_keys
+        : propertydecl_keys
+        |
+        ;
+
+propertydecl_keys
+        : propertydecl_keys ',' propertydecl_key
+                { /*TBD*/ }
+        | propertydecl_key
+                { /*TBD*/ }
+        ;
+
+propertydecl_key
+        : NAME
+        ;
+
+/*
+ * Property
+ */
+property
+        : '@' NAME
+                { /*TBD*/ }
+        | '@' NAME '(' opt_property_keys ')' ';'
+                { /*TBD*/ }
+        ;
+
+opt_property_keys
+        : property_keys
+        |
+        ;
+
+property_keys
+        : property_keys ',' property_key
+                { /*TBD*/ }
+        | property_key
+                { /*TBD*/ }
+        ;
+
+property_key
+        : NAME '=' property_value
+                { /*TBD*/ }
+        | property_value
+                { /*TBD*/ }
+        ;
+
+property_value
+        : TRUE_
+        | FALSE_
+        | NAME
+        | INTCONSTANT
+        | REALCONSTANT
+        | STRINGCONSTANT
+        | CHARCONSTANT
+        | quantity
         ;
 
 /*
@@ -242,6 +308,18 @@ opt_inheritance
         | EXTENDS NAME
         | LIKE likenames
         | EXTENDS NAME LIKE likenames
+        ;
+
+/*
+ * Channel Interface
+ */
+channelinterfacedefinition
+        : channelinterface_header '{'
+            opt_paramblock
+          '}' opt_semicolon
+                {
+                  setTrailingComment(ps.module,@6);
+                }
         ;
 
 /*

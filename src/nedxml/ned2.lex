@@ -71,7 +71,7 @@ char textbuf[TEXTBUF_LEN];
 %}
 
 %%
-"//"                    { comment(); }
+"//"                     { comment(); }
 
 "import"                 { count(); return IMPORT; }
 "package"                { count(); return PACKAGE; }
