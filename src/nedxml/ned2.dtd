@@ -49,7 +49,7 @@
                   submodules?, connections?)>
 <!ATTLIST compound-module
      name               NMTOKEN   #REQUIRED
->
+     is-network         (true|false) "false">
 
 <!ELEMENT parameters (whitespace*, (property|param|param-group)*)>
 <!ATTLIST parameters
@@ -140,18 +140,15 @@
 
 <!ELEMENT expression (whitespace*, (operator|function|ref|const))>
 <!ATTLIST expression
-     target              CDATA     #IMPLIED
->
+     target              CDATA     #IMPLIED>
 
 <!ELEMENT operator (whitespace*, (operator|function|ref|const)+)>
 <!ATTLIST operator
-     name                CDATA     #REQUIRED
->
+     name                CDATA     #REQUIRED>
 
 <!ELEMENT function (whitespace*, (operator|function|ref|const)*)>
 <!ATTLIST function
-     name                NMTOKEN   #REQUIRED
->
+     name                NMTOKEN   #REQUIRED>
 
 <!-- Ref is either a parameter reference or an identifier for 'sizeof' operator
      format is 'name' or 'module.name' or 'module[n].name'
@@ -160,8 +157,7 @@
 <!ATTLIST ref
      module              CDATA     #IMPLIED
      module-index        CDATA     #IMPLIED
-     name                NMTOKEN   #REQUIRED
->
+     name                NMTOKEN   #REQUIRED>
 
 
 <!ELEMENT const (whitespace*)>
@@ -172,8 +168,7 @@
      type  (double|int|string|bool|unit)  #REQUIRED
      unit-type           CDATA     #IMPLIED
      text                CDATA     #IMPLIED
-     value               CDATA     #IMPLIED
->
+     value               CDATA     #IMPLIED>
 
 <!--**********************************************************************-->
 

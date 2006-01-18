@@ -59,18 +59,22 @@ void NEDSemanticValidator::validateElement(ImportNode *node)
 
 void NEDSemanticValidator::validateElement(PropertydefNode *node)
 {
+    // FIXME revise
 }
 
 void NEDSemanticValidator::validateElement(ExtendsNode *node)
 {
+    // FIXME revise
 }
 
 void NEDSemanticValidator::validateElement(InterfaceNameNode *node)
 {
+    // FIXME revise
 }
 
 void NEDSemanticValidator::validateElement(SimpleModuleNode *node)
 {
+    // FIXME revise
     // make sure module type name does not exist yet
     if (symboltable->getModuleDeclaration(node->getName()))
         NEDError(node, "redefinition of module with name '%s'",node->getName());
@@ -78,10 +82,12 @@ void NEDSemanticValidator::validateElement(SimpleModuleNode *node)
 
 void NEDSemanticValidator::validateElement(ModuleInterfaceNode *node)
 {
+    // FIXME revise
 }
 
 void NEDSemanticValidator::validateElement(CompoundModuleNode *node)
 {
+    // FIXME revise
     // make sure module type name does not exist yet
     if (symboltable->getModuleDeclaration(node->getName()))
         NEDError(node, "redefinition of module with name '%s'",node->getName());
@@ -89,10 +95,12 @@ void NEDSemanticValidator::validateElement(CompoundModuleNode *node)
 
 void NEDSemanticValidator::validateElement(ParametersNode *node)
 {
+    // FIXME revise
 }
 
 void NEDSemanticValidator::validateElement(ParamGroupNode *node)
 {
+    // FIXME revise
 }
 
 void NEDSemanticValidator::validateElement(ParamNode *node)
@@ -112,18 +120,22 @@ void NEDSemanticValidator::validateElement(ParamNode *node)
 
 void NEDSemanticValidator::validateElement(PropertyNode *node)
 {
+    // FIXME revise
 }
 
 void NEDSemanticValidator::validateElement(KeyValueNode *node)
 {
+    // FIXME revise
 }
 
 void NEDSemanticValidator::validateElement(GatesNode *node)
 {
+    // FIXME revise
 }
 
 void NEDSemanticValidator::validateElement(GateGroupNode *node)
 {
+    // FIXME revise
 }
 
 void NEDSemanticValidator::validateElement(GateNode *node)
@@ -148,12 +160,13 @@ void NEDSemanticValidator::validateElement(GateNode *node)
     }
 
     // check it is vector
-    if (!gatedecl->getIsVector())
-        NEDError(node, "gate '%s' is not a vector gate",gatename);
+//    if (!gatedecl->getIsVector())
+//        NEDError(node, "gate '%s' is not a vector gate",gatename);
 }
 
 void NEDSemanticValidator::validateElement(NetworkNode *node)
 {
+    // FIXME revise
     // make sure network name does not exist yet
     if (symboltable->getNetworkDeclaration(node->getName()))
         NEDError(node, "redefinition of network with name '%s'",node->getName());
@@ -167,10 +180,12 @@ void NEDSemanticValidator::validateElement(NetworkNode *node)
 
 void NEDSemanticValidator::validateElement(SubmodulesNode *node)
 {
+    // FIXME revise
 }
 
 void NEDSemanticValidator::validateElement(SubmoduleNode *node)
 {
+    // FIXME revise
     // make sure module type exists
     const char *type_name = node->getTypeName();
     moduletypedecl = symboltable->getModuleDeclaration(type_name);
@@ -180,10 +195,12 @@ void NEDSemanticValidator::validateElement(SubmoduleNode *node)
 
 void NEDSemanticValidator::validateElement(ConnectionsNode *node)
 {
+    // FIXME revise
 }
 
 void NEDSemanticValidator::checkGate(GateNode *gate, bool hasGateIndex, bool isInput, NEDElement *conn, bool isSrc)
 {
+    // FIXME revise
     // check gate direction, check if vector
     const char *q = isSrc ? "wrong source gate for connection" : "wrong destination gate for connection";
     if (hasGateIndex && !gate->getIsVector())
@@ -202,6 +219,7 @@ void NEDSemanticValidator::validateConnGate(const char *submodName, bool hasSubm
                                             const char *gateName, bool hasGateIndex,
                                             NEDElement *parent, NEDElement *conn, bool isSrc)
 {
+    // FIXME revise
     const char *q = isSrc ? "wrong source gate for connection" : "wrong destination gate for connection";
     if (strnull(submodName))
     {
@@ -246,6 +264,7 @@ void NEDSemanticValidator::validateConnGate(const char *submodName, bool hasSubm
 
 void NEDSemanticValidator::validateElement(ConnectionNode *node)
 {
+    // FIXME revise
     // make sure submodule and gate names are valid, gate direction is OK
     // and that gates & modules are really vector (or really not)
     NEDElement *compound = node->getParentWithTag(NED_COMPOUND_MODULE);
@@ -262,10 +281,12 @@ void NEDSemanticValidator::validateElement(ConnectionNode *node)
 
 void NEDSemanticValidator::validateElement(ChannelInterfaceNode *node)
 {
+    // FIXME revise
 }
 
 void NEDSemanticValidator::validateElement(ChannelNode *node)
 {
+    // FIXME revise
     // make sure channel type name does not exist yet
     if (symboltable->getChannelDeclaration(node->getName()))
         NEDError(node, "redefinition of channel with name '%s'",node->getName());
@@ -273,30 +294,37 @@ void NEDSemanticValidator::validateElement(ChannelNode *node)
 
 void NEDSemanticValidator::validateElement(ConnectionGroupNode *node)
 {
+    // FIXME revise
 }
 
 void NEDSemanticValidator::validateElement(LoopNode *node)
 {
+    // FIXME revise
 }
 
 void NEDSemanticValidator::validateElement(ConditionNode *node)
 {
+    // FIXME revise
 }
 
 void NEDSemanticValidator::validateElement(ExpressionNode *node)
 {
+    // FIXME revise
 }
 
 void NEDSemanticValidator::validateElement(OperatorNode *node)
 {
+    // FIXME revise
 }
 
 void NEDSemanticValidator::validateElement(FunctionNode *node)
 {
+    // FIXME revise
 }
 
 void NEDSemanticValidator::validateElement(RefNode *node)
 {
+    // FIXME revise
 }
 
 void NEDSemanticValidator::validateElement(ConstNode *node)

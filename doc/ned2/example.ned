@@ -270,7 +270,7 @@ channel Eth
 };
 
 
-network Network   // "network" is exactly as "module", but: not gates; implicit property @isnetwork(true)
+network Network   // "network" is exactly as "module", but: not gates
 {
     types: // defines locally used channel and module types
         channel PPPLink {
