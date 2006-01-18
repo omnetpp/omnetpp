@@ -1,5 +1,5 @@
 /*==================================================
- * File: ned2.lex
+ * File: msg2.lex
  *
  *  Lexical analyser for OMNeT++ MSG-2.
  *
@@ -82,12 +82,14 @@ char textbuf[TEXTBUF_LEN];
 "abstract"              { count(); return ABSTRACT; }
 "readonly"              { count(); return READONLY; }
 
+"bool"                  { count(); return BOOLTYPE; }
 "char"                  { count(); return CHARTYPE; }
 "short"                 { count(); return SHORTTYPE; }
 "int"                   { count(); return INTTYPE; }
 "long"                  { count(); return LONGTYPE; }
 "double"                { count(); return DOUBLETYPE; }
 "unsigned"              { count(); return UNSIGNED_; }
+"string"                { count(); return STRINGTYPE; }
 
 {L}({L}|{D})*           { count(); return NAME; }
 {D}+                    { count(); return INTCONSTANT; }

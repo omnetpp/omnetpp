@@ -16,9 +16,9 @@ OBJS= nedelements.obj nedelement.obj nederror.obj \
       nedvalidator.obj neddtdvalidator.obj neddtdvalidatorbase.obj \
       nedbasicvalidator.obj nedsemanticvalidator.obj \
       nedfilebuffer.obj nedparser.obj \
-      ned2.tab.obj lex.ned2yy.obj \
       msg2.tab.obj lex.msg2yy.obj \
       ned.tab.obj lex.nedyy.obj \
+      ned2.tab.obj lex.ned2yy.obj \
       nedutil.obj nedgenerator.obj xmlgenerator.obj \
       nedxmlparser.obj nedsaxhandler.obj saxparser_$(XMLPARSER).obj \
       nedcompiler.obj cppgenerator.obj cppmsggenerator.obj cppexprgenerator.obj

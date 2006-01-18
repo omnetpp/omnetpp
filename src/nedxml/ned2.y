@@ -93,51 +93,32 @@ struct ParserState
     bool isAbstract;
     bool isReadonly;
 
-    /* NED-I: modules, channels, networks */
+    /* NED-II: modules, channels */
     NedFileNode *nedfile;
+    WhitespaceNode *whitespace;
     ImportNode *imports;
-    ImportedFileNode *import;
-    ChannelNode *channel;
-    ChannelAttrNode *chanattr;
-    NetworkNode *network;
+    PropertydefNode *propertydef;
+    ExtendsNode *extends;
+    InterfaceNameNode *interfacename;
     NEDElement *module;  // in fact, CompoundModuleNode* or SimpleModule*
-    ParamsNode *params;
+    ModuleInterfaceNode *moduleinterface;
+    ParametersNode *parameters;
+    ParamGroupNode *paramgroup;
     ParamNode *param;
+    PropertyNode *property;
+    KeyValueNode *keyvalue;
     GatesNode *gates;
+    GateGroupNode *gategroup;
     GateNode *gate;
-    MachinesNode *machines;
-    MachineNode *machine;
     SubmodulesNode *submods;
     SubmoduleNode *submod;
-    SubstparamsNode *substparams;
-    SubstparamNode *substparam;
-    GatesizesNode *gatesizes;
-    GatesizeNode *gatesize;
-    SubstmachinesNode *substmachines;
-    SubstmachineNode *substmachine;
     ConnectionsNode *conns;
     ConnectionNode *conn;
-    ConnAttrNode *connattr;
-    ForLoopNode *forloop;
-    LoopVarNode *loopvar;
-
-    /* NED-II: message subclassing */
-    CplusplusNode *cplusplus;
-    StructDeclNode *structdecl;
-    ClassDeclNode *classdecl;
-    MessageDeclNode *messagedecl;
-    EnumDeclNode *enumdecl;
-    EnumNode *enump;
-    MessageNode *messagep;
-    ClassNode *classp;
-    StructNode *structp;
-    NEDElement *msgclassorstruct;
-    EnumFieldsNode *enumfields;
-    EnumFieldNode *enumfield;
-    PropertiesNode *properties;
-    PropertyNode *property;
-    FieldsNode *fields;
-    FieldNode *field;
+    ChannelInterfaceNode *channelinterface;
+    ChannelNode *channel;
+    ConnectionGroupNode *connectiongroup;
+    LoopNode *loop;
+    ConditionNode *condition;
 } ps;
 
 NEDElement *createNodeWithTag(int tagcode, NEDElement *parent=NULL);
@@ -1002,368 +983,16 @@ numconst
                 { $$ = createConst(NED_CONST_INT, toString(@1)); }
         | REALCONSTANT
                 { $$ = createConst(NED_CONST_REAL, toString(@1)); }
-        | timeconstant
+        | quantity
                 { $$ = createTimeConst(toString(@1)); }
 
         ;
 
-timeconstant
-        : timeconstant INTCONSTANT NAME
-        | timeconstant REALCONSTANT NAME
+quantity
+        : quantity INTCONSTANT NAME
+        | quantity REALCONSTANT NAME
         | INTCONSTANT NAME
         | REALCONSTANT NAME
-        ;
-
-/*
- * NED-2: Message subclassing (no shift-reduce conflict here)
- */
-
-cplusplus
-        : CPLUSPLUS CPLUSPLUSBODY opt_semicolon
-                {
-                  ps.cplusplus = (CplusplusNode *)createNodeWithTag(NED_CPLUSPLUS, ps.nedfile );
-                  ps.cplusplus->setBody(toString(trimDoubleBraces(@2)));
-                  setComments(ps.cplusplus,@1,@2);
-                }
-        ;
-
-struct_decl
-        : STRUCT NAME ';'
-                {
-                  ps.structdecl = (StructDeclNode *)createNodeWithTag(NED_STRUCT_DECL, ps.nedfile );
-                  ps.structdecl->setName(toString(@2));
-                  setComments(ps.structdecl,@1,@2);
-                }
-        ;
-
-class_decl
-        : CLASS NAME ';'
-                {
-                  ps.classdecl = (ClassDeclNode *)createNodeWithTag(NED_CLASS_DECL, ps.nedfile );
-                  ps.classdecl->setName(toString(@2));
-                  ps.classdecl->setIsCobject(true);
-                  setComments(ps.classdecl,@1,@2);
-                }
-        | CLASS NONCOBJECT NAME ';'
-                {
-                  ps.classdecl = (ClassDeclNode *)createNodeWithTag(NED_CLASS_DECL, ps.nedfile );
-                  ps.classdecl->setIsCobject(false);
-                  ps.classdecl->setName(toString(@3));
-                  setComments(ps.classdecl,@1,@2);
-                }
-        ;
-
-message_decl
-        : MESSAGE NAME ';'
-                {
-                  ps.messagedecl = (MessageDeclNode *)createNodeWithTag(NED_MESSAGE_DECL, ps.nedfile );
-                  ps.messagedecl->setName(toString(@2));
-                  setComments(ps.messagedecl,@1,@2);
-                }
-        ;
-
-enum_decl
-        : ENUM NAME ';'
-                {
-                  ps.enumdecl = (EnumDeclNode *)createNodeWithTag(NED_ENUM_DECL, ps.nedfile );
-                  ps.enumdecl->setName(toString(@2));
-                  setComments(ps.enumdecl,@1,@2);
-                }
-        ;
-
-enum
-        : ENUM NAME '{'
-                {
-                  ps.enump = (EnumNode *)createNodeWithTag(NED_ENUM, ps.nedfile );
-                  ps.enump->setName(toString(@2));
-                  setComments(ps.enump,@1,@2);
-                  ps.enumfields = (EnumFieldsNode *)createNodeWithTag(NED_ENUM_FIELDS, ps.enump);
-                }
-          opt_enumfields '}' opt_semicolon
-                {
-                  setTrailingComment(ps.enump,@6);
-                }
-        | ENUM NAME EXTENDS NAME '{'
-                {
-                  ps.enump = (EnumNode *)createNodeWithTag(NED_ENUM, ps.nedfile );
-                  ps.enump->setName(toString(@2));
-                  ps.enump->setExtendsName(toString(@4));
-                  setComments(ps.enump,@1,@4);
-                  ps.enumfields = (EnumFieldsNode *)createNodeWithTag(NED_ENUM_FIELDS, ps.enump);
-                }
-          opt_enumfields '}' opt_semicolon
-                {
-                  setTrailingComment(ps.enump,@8);
-                }
-        ;
-
-opt_enumfields
-        : enumfields
-        |
-        ;
-
-enumfields
-        : enumfields enumfield
-        | enumfield
-        ;
-
-enumfield
-        : NAME ';'
-                {
-                  ps.enumfield = (EnumFieldNode *)createNodeWithTag(NED_ENUM_FIELD, ps.enumfields);
-                  ps.enumfield->setName(toString(@1));
-                  setComments(ps.enumfield,@1,@1);
-                }
-        | NAME '=' enumvalue ';'
-                {
-                  ps.enumfield = (EnumFieldNode *)createNodeWithTag(NED_ENUM_FIELD, ps.enumfields);
-                  ps.enumfield->setName(toString(@1));
-                  ps.enumfield->setValue(toString(@3));
-                  setComments(ps.enumfield,@1,@3);
-                }
-        ;
-
-message
-        : MESSAGE NAME '{'
-                {
-                  ps.msgclassorstruct = ps.messagep = (MessageNode *)createNodeWithTag(NED_MESSAGE, ps.nedfile );
-                  ps.messagep->setName(toString(@2));
-                  setComments(ps.messagep,@1,@2);
-                }
-          opt_propertiesblock opt_fieldsblock '}' opt_semicolon
-                {
-                  setTrailingComment(ps.messagep,@7);
-                }
-        | MESSAGE NAME EXTENDS NAME '{'
-                {
-                  ps.msgclassorstruct = ps.messagep = (MessageNode *)createNodeWithTag(NED_MESSAGE, ps.nedfile );
-                  ps.messagep->setName(toString(@2));
-                  ps.messagep->setExtendsName(toString(@4));
-                  setComments(ps.messagep,@1,@4);
-                }
-          opt_propertiesblock opt_fieldsblock '}' opt_semicolon
-                {
-                  setTrailingComment(ps.messagep,@9);
-                }
-        ;
-
-class
-        : CLASS NAME '{'
-                {
-                  ps.msgclassorstruct = ps.classp = (ClassNode *)createNodeWithTag(NED_CLASS, ps.nedfile );
-                  ps.classp->setName(toString(@2));
-                  setComments(ps.classp,@1,@2);
-                }
-          opt_propertiesblock opt_fieldsblock '}' opt_semicolon
-                {
-                  setTrailingComment(ps.classp,@7);
-                }
-        | CLASS NAME EXTENDS NAME '{'
-                {
-                  ps.msgclassorstruct = ps.classp = (ClassNode *)createNodeWithTag(NED_CLASS, ps.nedfile );
-                  ps.classp->setName(toString(@2));
-                  ps.classp->setExtendsName(toString(@4));
-                  setComments(ps.classp,@1,@4);
-                }
-          opt_propertiesblock opt_fieldsblock '}' opt_semicolon
-                {
-                  setTrailingComment(ps.classp,@9);
-                }
-        ;
-
-struct
-        : STRUCT NAME '{'
-                {
-                  ps.msgclassorstruct = ps.structp = (StructNode *)createNodeWithTag(NED_STRUCT, ps.nedfile );
-                  ps.structp->setName(toString(@2));
-                  setComments(ps.structp,@1,@2);
-                }
-          opt_propertiesblock opt_fieldsblock '}' opt_semicolon
-                {
-                  setTrailingComment(ps.structp,@7);
-                }
-        | STRUCT NAME EXTENDS NAME '{'
-                {
-                  ps.msgclassorstruct = ps.structp = (StructNode *)createNodeWithTag(NED_STRUCT, ps.nedfile );
-                  ps.structp->setName(toString(@2));
-                  ps.structp->setExtendsName(toString(@4));
-                  setComments(ps.structp,@1,@4);
-                }
-          opt_propertiesblock opt_fieldsblock '}' opt_semicolon
-                {
-                  setTrailingComment(ps.structp,@9);
-                }
-        ;
-
-opt_propertiesblock
-        : PROPERTIES ':'
-                {
-                  ps.properties = (PropertiesNode *)createNodeWithTag(NED_PROPERTIES, ps.msgclassorstruct);
-                  setComments(ps.properties,@1);
-                }
-          opt_properties
-        |
-        ;
-
-opt_properties
-        : properties
-        |
-        ;
-
-properties
-        : properties property
-        | property
-        ;
-
-property
-        : NAME '=' propertyvalue ';'
-                {
-                  ps.property = (PropertyNode *)createNodeWithTag(NED_PROPERTY, ps.properties);
-                  ps.property->setName(toString(@1));
-                  ps.property->setValue(toString(@3));
-                  setComments(ps.property,@1,@3);
-                }
-        ;
-
-propertyvalue
-        : STRINGCONSTANT
-        | INTCONSTANT
-        | REALCONSTANT
-        | timeconstant
-        | TRUE_
-        | FALSE_
-        ;
-
-opt_fieldsblock
-        : FIELDS ':'
-                {
-                  ps.fields = (FieldsNode *)createNodeWithTag(NED_FIELDS, ps.msgclassorstruct);
-                  setComments(ps.fields,@1);
-                }
-          opt_fields
-        |
-        ;
-
-opt_fields
-        : fields
-        |
-        ;
-
-fields
-        : fields field
-        | field
-        ;
-
-field
-        : fieldmodifiers fielddatatype NAME
-                {
-                  ps.field = (FieldNode *)createNodeWithTag(NED_FIELD, ps.fields);
-                  ps.field->setName(toString(@3));
-                  ps.field->setDataType(toString(@2));
-                  ps.field->setIsAbstract(ps.isAbstract);
-                  ps.field->setIsReadonly(ps.isReadonly);
-                }
-           opt_fieldvector opt_fieldenum opt_fieldvalue ';'
-                {
-                  setComments(ps.field,@1,@7);
-                }
-        | fieldmodifiers NAME
-                {
-                  ps.field = (FieldNode *)createNodeWithTag(NED_FIELD, ps.fields);
-                  ps.field->setName(toString(@2));
-                  ps.field->setIsAbstract(ps.isAbstract);
-                  ps.field->setIsReadonly(ps.isReadonly);
-                }
-           opt_fieldvector opt_fieldenum opt_fieldvalue ';'
-                {
-                  setComments(ps.field,@1,@6);
-                }
-        ;
-
-fieldmodifiers
-        : ABSTRACT
-                { ps.isAbstract = true; ps.isReadonly = false; }
-        | READONLY
-                { ps.isAbstract = false; ps.isReadonly = true; }
-        | ABSTRACT READONLY
-                { ps.isAbstract = true; ps.isReadonly = true; }
-        | READONLY ABSTRACT
-                { ps.isAbstract = true; ps.isReadonly = true; }
-        |
-                { ps.isAbstract = false; ps.isReadonly = false; }
-        ;
-
-fielddatatype
-        : NAME
-        | NAME '*'
-
-        | CHARTYPE
-        | SHORTTYPE
-        | INTTYPE
-        | LONGTYPE
-
-        | UNSIGNED_ CHARTYPE
-        | UNSIGNED_ SHORTTYPE
-        | UNSIGNED_ INTTYPE
-        | UNSIGNED_ LONGTYPE
-
-        | DOUBLETYPE
-        | STRINGTYPE
-        | BOOLTYPE
-        ;
-
-
-opt_fieldvector
-        : '[' INTCONSTANT ']'
-                {
-                  ps.field->setIsVector(true);
-                  ps.field->setVectorSize(toString(@2));
-                }
-        | '[' NAME ']'
-                {
-                  ps.field->setIsVector(true);
-                  ps.field->setVectorSize(toString(@2));
-                }
-        | '[' ']'
-                {
-                  ps.field->setIsVector(true);
-                }
-        |
-        ;
-
-opt_fieldenum
-        : ENUM '(' NAME ')'
-                {
-                  ps.field->setEnumName(toString(@3));
-                }
-        |
-        ;
-
-opt_fieldvalue
-        : '=' fieldvalue
-                {
-                  ps.field->setDefaultValue(toString(@2));
-                }
-        |
-        ;
-
-fieldvalue
-        : STRINGCONSTANT
-        | CHARCONSTANT
-        | INTCONSTANT
-        | '-' INTCONSTANT
-        | REALCONSTANT
-        | '-' REALCONSTANT
-        | timeconstant
-        | TRUE_
-        | FALSE_
-        | NAME
-        ;
-
-enumvalue
-        : INTCONSTANT
-        | '-' INTCONSTANT
-        | NAME
         ;
 
 opt_semicolon : ';' | ;
