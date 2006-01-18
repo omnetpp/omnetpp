@@ -134,8 +134,8 @@ struct ParserState
 {
     bool parseExpressions;
     bool storeSourceCode;
-    bool inLoop;
-    bool inNetwork;
+//    bool inLoop;
+//    bool inNetwork;
 
     /* tmp flags, used with msg fields */
     bool isAbstract;
@@ -143,31 +143,30 @@ struct ParserState
 
     /* NED-I: modules, channels, networks */
     NedFileNode *nedfile;
+    WhitespaceNode *whitespace;
     ImportNode *imports;
-    ImportedFileNode *import;
-    ChannelNode *channel;
-    ChannelAttrNode *chanattr;
-    NetworkNode *network;
+    PropertydefNode *propertydef;
+    ExtendsNode *extends;
+    InterfaceNameNode *interfacename;
     NEDElement *module;  // in fact, CompoundModuleNode* or SimpleModule*
-    ParamsNode *params;
+    ModuleInterfaceNode *moduleinterface;
+    ParametersNode *parameters;
+    ParamGroupNode *paramgroup;
     ParamNode *param;
+    PropertyNode *property;
+    KeyValueNode *keyvalue;
     GatesNode *gates;
+    GateGroupNode *gategroup;
     GateNode *gate;
-    MachinesNode *machines;
-    MachineNode *machine;
     SubmodulesNode *submods;
     SubmoduleNode *submod;
-    SubstparamsNode *substparams;
-    SubstparamNode *substparam;
-    GatesizesNode *gatesizes;
-    GatesizeNode *gatesize;
-    SubstmachinesNode *substmachines;
-    SubstmachineNode *substmachine;
     ConnectionsNode *conns;
     ConnectionNode *conn;
-    ConnAttrNode *connattr;
-    ForLoopNode *forloop;
-    LoopVarNode *loopvar;
+    ChannelInterfaceNode *channelinterface;
+    ChannelNode *channel;
+    ConnectionGroupNode *connectiongroup;
+    LoopNode *loop;
+    ConditionNode *condition;
 
     /* NED-II: message subclassing */
     CplusplusNode *cplusplus;
@@ -183,7 +182,7 @@ struct ParserState
     EnumFieldsNode *enumfields;
     EnumFieldNode *enumfield;
     PropertiesNode *properties;
-    PropertyNode *property;
+    MsgpropertyNode *msgproperty;
     FieldsNode *fields;
     FieldNode *field;
 } ps;
