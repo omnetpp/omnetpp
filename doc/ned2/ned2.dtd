@@ -11,26 +11,23 @@
   -->
 
 <!ELEMENT ned-file (whitespace*, (import|propertydef|property|channel|
-                     channel-interface|simple|module|interface)*)>
+                     channel-interface|simple-module|compound-module|module-interface)*)>
 <!ATTLIST ned-file
      filename           CDATA     #REQUIRED
-     package            CDATA     #IMPLIED
->
+     package            CDATA     #IMPLIED>
 
 <!ELEMENT whitespace EMPTY>
 <!ATTLIST whitespace
-		locid	NMTOKEN	  #REQUIRED
-		content CDATA	  #REQUIRED>
+     locid              NMTOKEN   #REQUIRED
+     content            CDATA     #REQUIRED>
 
 <!ELEMENT import (whitespace*)>
 <!ATTLIST import
-     filename           CDATA     #REQUIRED
->
+     filename           CDATA     #REQUIRED>
 
 <!ELEMENT propertydef (whitespace*, key-value*, property*)>
 <!ATTLIST propertydef
-     name               NMTOKEN   #REQUIRED
->
+     name               NMTOKEN   #REQUIRED>
 
 <!ELEMENT extends (whitespace*)>
 <!ATTLIST extends
@@ -40,52 +37,43 @@
 <!ATTLIST interface-name
      name               NMTOKEN   #REQUIRED>
 
-<!ELEMENT channel-interface-name (whitespace*)>
-<!ATTLIST channel-interface-name
+<!ELEMENT simple-module (whitespace*, extends?, interface-name*, parameters?, gates?)>
+<!ATTLIST simple-module
      name               NMTOKEN   #REQUIRED>
 
-<!ELEMENT simple (whitespace*, extends?, interface-name*, parameters?, gates?)>
-<!ATTLIST simple
-     name               NMTOKEN   #REQUIRED
->
+<!ELEMENT module-interface (whitespace*, extends*, parameters?, gates?)>
+<!ATTLIST module-interface
+     name               NMTOKEN   #REQUIRED>
 
-<!ELEMENT interface (whitespace*, extends*, parameters?, gates?)>
-<!ATTLIST interface
-     name               NMTOKEN   #REQUIRED
->
-
-<!ELEMENT module (whitespace*, extends?, interface-name*, parameters?, gates?,
+<!ELEMENT compound-module (whitespace*, extends?, interface-name*, parameters?, gates?,
                   submodules?, connections?)>
-<!ATTLIST module
+<!ATTLIST compound-module
      name               NMTOKEN   #REQUIRED
- >
+>
 
 <!ELEMENT parameters (whitespace*, (property|param|param-group)*)>
 <!ATTLIST parameters
-    is-implicit         (true|false)    "true"
->
+    is-implicit         (true|false)  "true">
+
 <!ELEMENT param-group (whitespace*, condition, (property|param)*)>
 
 <!ELEMENT param (whitespace*, expression?, property*)>
 <!ATTLIST param
      type               (double|int|string|bool|xml) #REQUIRED
-     is-function        (true|false)    "false"
-     qualifier		CDATA	  #IMPLIED
+     is-function        (true|false)  "false"
+     qualifier          CDATA     #IMPLIED
      name               NMTOKEN   #REQUIRED
-     value              CDATA     #IMPLIED
- >
+     value              CDATA     #IMPLIED>
 
 <!ELEMENT property (whitespace*, key-value*, property*)>
 <!ATTLIST property
-     qualifier		CDATA	  #IMPLIED
-     name               NMTOKEN   #REQUIRED
->
+     qualifier          CDATA     #IMPLIED
+     name               NMTOKEN   #REQUIRED>
 
 <!ELEMENT key-value (whitespace*)>
 <!ATTLIST key-value
      key                CDATA   #IMPLIED
-     value              CDATA   #IMPLIED
->
+     value              CDATA   #IMPLIED>
 
 <!ELEMENT gates (whitespace*, (gate|gate-group)*)>
 
@@ -95,8 +83,7 @@
 <!ATTLIST gate
      name               NMTOKEN   #REQUIRED
      type               (input|output|inout) #REQUIRED
-     vector-size        CDATA     #IMPLIED
->
+     vector-size        CDATA     #IMPLIED>
 
 <!ELEMENT submodules (whitespace*, submodule*)>
 
@@ -106,9 +93,7 @@
      type               NMTOKEN   #IMPLIED
      like-type          NMTOKEN   #IMPLIED
      like-param         CDATA     #IMPLIED
-     vector-size        CDATA     #IMPLIED
->
-
+     vector-size        CDATA     #IMPLIED>
 
 <!ELEMENT connections (whitespace*, (connection|connection-group)*)>
 <!ATTLIST connections
@@ -120,25 +105,22 @@
      src-module          NMTOKEN   #IMPLIED
      src-module-index    CDATA     #IMPLIED
      src-gate            NMTOKEN   #REQUIRED
-     src-gate-plusplus (true|false) "false"
+     src-gate-plusplus  (true|false) "false"
      src-gate-index      CDATA     #IMPLIED
      dest-module         NMTOKEN   #IMPLIED
      dest-module-index   CDATA     #IMPLIED
      dest-gate           NMTOKEN   #REQUIRED
      dest-gate-plusplus (true|false) "false"
      dest-gate-index     CDATA     #IMPLIED
-     is-left-to-right   (true|false) #REQUIRED
->
+     is-left-to-right   (true|false) #REQUIRED>
 
 <!ELEMENT channel-interface (whitespace*, extends*, parameters?)>
 <!ATTLIST channel-interface
-     name               NMTOKEN   #REQUIRED
->
+     name                NMTOKEN   #REQUIRED>
 
-<!ELEMENT channel (whitespace*, extends?, channel-interface-name*, parameters?)>
+<!ELEMENT channel (whitespace*, extends?, interface-name*, parameters?)>
 <!ATTLIST channel
-     name                NMTOKEN   #REQUIRED
->
+     name                NMTOKEN   #REQUIRED>
 
 <!ELEMENT connection-group (whitespace*, (loop|condition)*, connection*)>
 
@@ -150,8 +132,7 @@
 
 <!ELEMENT condition (whitespace*, expression?)>
 <!ATTLIST condition
-     condition          CDATA     #IMPLIED
->
+     condition           CDATA     #IMPLIED>
 
 <!--
   **  Expressions
@@ -179,7 +160,7 @@
 <!ATTLIST ref
      module              CDATA     #IMPLIED
      module-index        CDATA     #IMPLIED
-     name          	 NMTOKEN   #REQUIRED
+     name                NMTOKEN   #REQUIRED
 >
 
 
@@ -189,7 +170,7 @@
  -->
 <!ATTLIST const
      type  (double|int|string|bool|unit)  #REQUIRED
-     unit-type		 CDATA	   #IMPLIED
+     unit-type           CDATA     #IMPLIED
      text                CDATA     #IMPLIED
      value               CDATA     #IMPLIED
 >

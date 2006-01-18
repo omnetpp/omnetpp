@@ -333,6 +333,10 @@ module Host
     submodules:
         app: <this.@type> like TCPApp;  // <this.@type> can be abbreviated as <>
 
+        // xxxxxxxxxxxx
+
+
+        // the following xxx
         apps[N]: <>; // uses @moduletype property, type unchecked; <> operator converts string to type
         apps[N]: <> like TCPApp;  // uses @moduletype property
         apps[]: <appType[]> like TCPApp;  // with string arrays; not implemented
