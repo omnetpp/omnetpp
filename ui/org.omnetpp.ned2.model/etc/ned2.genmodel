@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <genmodel:GenModel xmi:version="2.0"
     xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
-    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/org.omnetpp.ned2.model/src"
-    modelPluginID="org.omnetpp.ned2.model" modelName="Ned2" importerID="org.eclipse.xsd.ecore.importer">
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" copyrightText=""
+    modelDirectory="/org.omnetpp.ned2.model/src" editDirectory="/org.omnetpp.ned2.provider/src"
+    editorDirectory="/org.omnetpp.ned2.editor.tree/src" modelPluginID="org.omnetpp.ned2.model"
+    templateDirectory="" redirection="" modelName="Ned2" modelPluginClass="org.omnetpp.ned2.model.ModelPlugin"
+    editPluginClass="org.omnetpp.ned2.provider.Ned2ProviderPlugin" editorPluginClass="org.omnetpp.ned2.editor.tree.Ned2TreeEditorPlugin"
+    suppressInterfaces="true" codeFormatting="true" testSuiteClass="org.omnetpp.ned2.tests.Ned2AllTests"
+    importerID="org.eclipse.xsd.ecore.importer">
   <foreignModel>ned2.xsd</foreignModel>
-  <genPackages prefix="Ned2" basePackage="org.omnetpp.schema" resource="XML" disposableProviderFactory="true"
+  <genPackages prefix="Ned2" basePackage="org.omnetpp.ned2.model" resource="XML" disposableProviderFactory="true"
       ecorePackage="ned2.ecore#/">
     <genClasses ecoreClass="ned2.ecore#//Channel">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Channel/whitespace"/>
