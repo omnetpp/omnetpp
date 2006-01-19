@@ -192,13 +192,13 @@ definition
                 { if (ps.storeSourceCode) ps.channel->setSourceCode(toString(@1)); }
         | channelinterfacedefinition
                 { if (ps.storeSourceCode) ps.channelinterf->setSourceCode(toString(@1)); }
-        | simpledefinition
+        | simplemoduledefinition
                 { if (ps.storeSourceCode) ((SimpleModuleNode *)ps.module)->setSourceCode(toString(@1)); }
-        | moduledefinition
+        | compoundmoduledefinition
                 { if (ps.storeSourceCode) ((CompoundModuleNode *)ps.module)->setSourceCode(toString(@1)); }
         | networkdefinition
                 { if (ps.storeSourceCode) ps.network->setSourceCode(toString(@1)); }
-        | interfacedefinition  /* FIXME: moduleinterfacedefinition? */
+        | moduleinterfacedefinition
                 { if (ps.storeSourceCode) ps.interf->setSourceCode(toString(@1)); }
         ;
 
@@ -310,11 +310,16 @@ opt_inheritance
         | EXTENDS NAME LIKE likenames
         ;
 
+likenames
+        : likenames ',' NAME
+        | NAME
+        ;
+
 /*
  * Channel Interface
  */
 channelinterfacedefinition
-        : channelinterface_header '{'
+        : channelinterfaceheader '{'
             opt_paramblock
           '}' opt_semicolon
                 {
@@ -322,11 +327,32 @@ channelinterfacedefinition
                 }
         ;
 
+channelinterfaceheader
+        : CHANNEL INTERFACE NAME
+                {
+                  //FIXME
+                  ps.channel = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.nedfile );
+                  ps.channel->setName(toString(@2));
+                  setComments(ps.channel,@1,@2);
+                }
+           opt_interfaceinheritance
+        ;
+
+opt_interfaceinheritance
+        : EXTENDS interfacenames
+        |
+        ;
+
+interfacenames
+        : interfacenames ',' NAME
+        | NAME
+        ;
+
 /*
  * Simple module
  */
-simpledefinition
-        : simpleheader '{'
+simplemoduledefinition
+        : simplemoduleheader '{'
             opt_paramblock
             opt_gateblock
           '}' opt_semicolon
@@ -335,20 +361,21 @@ simpledefinition
                 }
         ;
 
-simpleheader
+simplemoduleheader
         : SIMPLE NAME
                 {
                   ps.module = (SimpleModuleNode *)createNodeWithTag(NED_SIMPLE_MODULE, ps.nedfile );
                   ((SimpleModuleNode *)ps.module)->setName(toString(@2));
                   setComments(ps.module,@1,@2);
                 }
+          opt_inheritance
         ;
 
 /*
  * Module
  */
-moduledefinition
-        : moduleheader '{'
+compoundmoduledefinition
+        : compoundmoduleheader '{'
             opt_paramblock
             opt_gateblock
             opt_submodblock
@@ -359,13 +386,14 @@ moduledefinition
                 }
         ;
 
-moduleheader
+compoundmoduleheader
         : MODULE NAME
                 {
                   ps.module = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.nedfile );
                   ((CompoundModuleNode *)ps.module)->setName(toString(@2));
                   setComments(ps.module,@1,@2);
                 }
+          opt_inheritance
         ;
 
 /*
@@ -385,12 +413,37 @@ networkdefinition
         ;
 
 networkheader
-        : NETWORK NAME ':' NAME opt_semicolon
+        : NETWORK NAME
                 {
                   ps.network = addNetwork(ps.nedfile,@2,@4);
                   setComments(ps.network,@1,@5);
                   ps.inNetwork=1;
                 }
+          opt_inheritance
+        ;
+
+/*
+ * Module Interface
+ */
+moduleinterfacedefinition
+        : moduleinterfaceheader '{'
+            opt_paramblock
+            opt_gateblock
+          '}' opt_semicolon
+                {
+                  setTrailingComment(ps.module,@6);
+                }
+        ;
+
+moduleinterfaceheader
+        : INTERFACE NAME
+                {
+                  //FIXME
+                  ps.channel = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.nedfile );
+                  ps.channel->setName(toString(@2));
+                  setComments(ps.channel,@1,@2);
+                }
+           opt_interfaceinheritance
         ;
 
 /*
@@ -407,73 +460,98 @@ paramblock
                   ps.params = (ParamsNode *)createNodeWithTag(NED_PARAMS, ps.module );
                   setComments(ps.params,@1,@2);
                 }
-          opt_parameters
+          opt_params
                 {
                 }
         ;
 
-opt_parameters
-        : parameters ';'
+opt_params
+        : params
         |
         ;
 
-parameters
-        : parameters ';' parameter   /* semicolon as separator */
+params
+        : params paramgroup
                 {
-                  setComments(ps.param,@3);
+                  setComments(ps.param,@2);
                 }
-        | parameter
+        | params param_or_property
+                {
+                  setComments(ps.param,@2);
+                }
+        | param_or_property
                 {
                   setComments(ps.param,@1);
                 }
         ;
 
+paramgroup
+        : condition '{' params_nogroup '}'
+        | '{' params_nogroup '}'
+        ;
+
+params_nogroup   /* same as params, but without the paramgroup rule */
+        : params param_or_property
+                {
+                  setComments(ps.param,@2);
+                }
+        | param_or_property
+                {
+                  setComments(ps.param,@1);
+                }
+        ;
+
+param_or_property
+        : param
+        | property
+        ;
 
 /*
  * Parameter
  */
-parameter
-        : NAME
+param
+        : paramtype opt_function NAME opt_properties ';'
                 {
+                  //FIXME
                   ps.param = addParameter(ps.params,@1,TYPE_NUMERIC);
                 }
-        | NAME ':' NUMERICTYPE
-                {
-                  ps.param = addParameter(ps.params,@1,TYPE_NUMERIC);
-                }
-        | CONSTDECL NAME /* for compatibility */
-                {
-                  ps.param = addParameter(ps.params,@2,TYPE_CONST_NUM);
-                }
-        | NAME ':' CONSTDECL
-                {
-                  ps.param = addParameter(ps.params,@1,TYPE_CONST_NUM);
-                }
-        | NAME ':' CONSTDECL NUMERICTYPE
-                {
-                  ps.param = addParameter(ps.params,@1,TYPE_CONST_NUM);
-                }
-        | NAME ':' NUMERICTYPE CONSTDECL
-                {
-                  ps.param = addParameter(ps.params,@1,TYPE_CONST_NUM);
-                }
-        | NAME ':' STRINGTYPE
-                {
-                  ps.param = addParameter(ps.params,@1,TYPE_STRING);
-                }
-        | NAME ':' BOOLTYPE
-                {
-                  ps.param = addParameter(ps.params,@1,TYPE_BOOL);
-                }
-        | NAME ':' XMLTYPE
-                {
-                  ps.param = addParameter(ps.params,@1,TYPE_XML);
-                }
-        | NAME ':' ANYTYPE
-                {
-                  ps.param = addParameter(ps.params,@1,TYPE_ANYTYPE);
-                }
+        | paramtype opt_function NAME '=' expression opt_properties ';'
+        | NAME '=' expression opt_properties ';'
         ;
+
+paramtype
+        : DOUBLETYPE
+        | INTTYPE
+        | STRINGTYPE
+        | BOOLTYPE
+        | XMLTYPE
+        ;
+
+opt_properties
+        : properties
+        |
+        ;
+
+properties
+        : properties property
+        | property
+        ;
+
+opt_function
+        : FUNCTION
+        |
+        ;
+
+/*
+ * Condition
+ */
+condition
+        : IF expression
+                {
+                  //FIXME
+                }
+
+/*------------------------------------*/
 
 /*
  * Gates
