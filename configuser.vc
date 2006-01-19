@@ -13,10 +13,10 @@
 # Directory names with spaces may also cause problems, it's better to use
 # short file names (e.g. 'C:/PROGRA~1' instead of 'C:/Program files').
 #
-OMNETPP_ROOT=d:/home/omnetpp40/core
+OMNETPP_ROOT=d:/home/omnetpp40/omnetpp
 
 # Version. Should ideally come from the 'Version' file...
-OMNETPP_VERSION=omnetpp-3.2
+OMNETPP_VERSION=omnetpp-4.0a1
 
 #
 # Directory and version of Tcl/Tk and BLT, for example "8.4" and "2.4".
