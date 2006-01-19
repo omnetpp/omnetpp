@@ -378,6 +378,7 @@ compoundmoduledefinition
         : compoundmoduleheader '{'
             opt_paramblock
             opt_gateblock
+            opt_typeblock
             opt_submodblock
             opt_connblock
           '}' opt_semicolon
@@ -632,6 +633,50 @@ gatetype
         ;
 
 /*
+ * Local Types
+ */
+opt_localtypeblock
+        : localtypeblock
+        |
+        ;
+
+localtypeblock
+        : TYPES ':'
+                {
+                  ps.types = (TypesNode *)createNodeWithTag(NED_TYPES, ps.module );
+                  setComments(ps.types,@1,@2);
+                }
+           opt_localtypes
+        ;
+
+opt_localtypes
+        : localtypes
+        |
+        ;
+
+localtypes
+        : localtypes localtype
+        | localtype
+        ;
+
+localtype
+        : propertydecl
+                { /*TBD*/ }
+        | channeldefinition
+                { if (ps.storeSourceCode) ps.channel->setSourceCode(toString(@1)); }
+        | channelinterfacedefinition
+                { if (ps.storeSourceCode) ps.channelinterf->setSourceCode(toString(@1)); }
+        | simplemoduledefinition
+                { if (ps.storeSourceCode) ((SimpleModuleNode *)ps.module)->setSourceCode(toString(@1)); }
+        | compoundmoduledefinition
+                { if (ps.storeSourceCode) ((CompoundModuleNode *)ps.module)->setSourceCode(toString(@1)); }
+        | networkdefinition
+                { if (ps.storeSourceCode) ps.network->setSourceCode(toString(@1)); }
+        | moduleinterfacedefinition
+                { if (ps.storeSourceCode) ps.interf->setSourceCode(toString(@1)); }
+        ;
+
+/*
  * Submodules
  */
 opt_submodblock
@@ -809,15 +854,17 @@ connection
                 }
         | leftgatespec DBLARROW rightgatespec ';'
                 {
-                  ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
+                  ps.conn->setArrowDirection(NED_ARROWDIR_BIDIR);
                   setComments(ps.conn,@1,@5);
                 }
         | leftgatespec DBLARROW channeldescr DBLARROW rightgatespec ';'
                 {
-                  ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
+                  ps.conn->setArrowDirection(NED_ARROWDIR_BIDIR);
                   setComments(ps.conn,@1,@7);
                 }
         ;
+
+/* FIXME add grammar for ".i", ".o" notation!!! */
 
 leftgatespec
         : leftmod '.' leftgate
@@ -929,25 +976,19 @@ parentrightgate
                 }
         ;
 
-
 channeldescr
         : NAME
                 {
                   ps.connattr = addConnAttr(ps.conn,"channel");
                   addExpression(ps.connattr, "value",@1,createExpression(createConst(NED_CONST_STRING, toString(@1))));
                 }
-        | NAME expression
-                {
-                  ps.connattr = addConnAttr(ps.conn,toString(@1));
-                  addExpression(ps.connattr, "value",@2,$2);
-                }
-        | channeldescr NAME expression
-                {
-                  ps.connattr = addConnAttr(ps.conn,toString(@2));
-                  addExpression(ps.connattr, "value",@3,$3);
-                }
+        | '{'
+            opt_paramblock
+          '}'
+        | NAME ':' likeparam LIKE NAME '{'
+            opt_paramblock
+          '}'
         ;
-
 
 /*
  * Common part

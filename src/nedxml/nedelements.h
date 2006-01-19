@@ -40,6 +40,7 @@ class KeyValueNode;
 class GatesNode;
 class GateGroupNode;
 class GateNode;
+class TypesNode;
 class SubmodulesNode;
 class SubmoduleNode;
 class ConnectionsNode;
@@ -98,6 +99,7 @@ enum NEDElementCode {
     NED_GATES,
     NED_GATE_GROUP,
     NED_GATE,
+    NED_TYPES,
     NED_SUBMODULES,
     NED_SUBMODULE,
     NED_CONNECTIONS,
@@ -131,10 +133,11 @@ enum NEDElementCode {
     NED_UNKNOWN
 };
 
-enum {NED_GATEDIR_INPUT, NED_GATEDIR_OUTPUT};
-enum {NED_ARROWDIR_LEFT, NED_ARROWDIR_RIGHT};
+enum {NED_GATEDIR_INPUT, NED_GATEDIR_OUTPUT, NED_GATEDIR_INOUT};
+enum {NED_ARROWDIR_LEFT, NED_ARROWDIR_RIGHT, NED_ARROWDIR_BIDIR};
 enum {NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};
 enum {NED_CONST_DOUBLE, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_UNIT};
+enum {NED_SUBGATE_I, NED_SUBGATE_O, NED_SUBGATE_BOTH};
 
 /**
  * GENERATED CLASS. Represents the &lt;files&gt; XML element in memory. DTD declaration:
@@ -182,7 +185,7 @@ class FilesNode : public NEDElement
  * 
  * <pre>
  * <!ELEMENT ned-file (whitespace*, (import|propertydef|property|channel|
- *                      channel-interface|simple-module|compound-module|module-interface)*)>
+ *                     channel-interface|simple-module|compound-module|module-interface)*)>
  * <!ATTLIST ned-file
  *      filename           CDATA     #REQUIRED
  *      package            CDATA     #IMPLIED>
@@ -558,8 +561,8 @@ class ModuleInterfaceNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;compound-module&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT compound-module (whitespace*, extends?, interface-name*, parameters?, gates?,
- *                   submodules?, connections?)>
+ * <!ELEMENT compound-module (whitespace*, extends?, interface-name*,
+ *                            parameters?, gates?, types?, submodules?, connections?)>
  * <!ATTLIST compound-module
  *      name               NMTOKEN   #REQUIRED
  *      is-network         (true|false) "false">
@@ -604,6 +607,7 @@ class CompoundModuleNode : public NEDElement
     virtual InterfaceNameNode *getFirstInterfaceNameChild() const;
     virtual ParametersNode *getFirstParametersChild() const;
     virtual GatesNode *getFirstGatesChild() const;
+    virtual TypesNode *getFirstTypesChild() const;
     virtual SubmodulesNode *getFirstSubmodulesChild() const;
     virtual ConnectionsNode *getFirstConnectionsChild() const;
     //@}
@@ -1002,6 +1006,52 @@ class GateNode : public NEDElement
 };
 
 /**
+ * GENERATED CLASS. Represents the &lt;types&gt; XML element in memory. DTD declaration:
+ * 
+ * <pre>
+ * <!ELEMENT types (whitespace*, (channel|channel-interface|simple-module|
+ *                                compound-module|module-interface)*)>
+ * 
+ * </pre>
+ * 
+ * @ingroup Data
+ */
+class TypesNode : public NEDElement
+{
+  private:
+  public:
+    /** @name Constructors, destructor */
+    //@{
+    TypesNode() {applyDefaults();}
+    TypesNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~TypesNode() {}
+    //@}
+
+    /** @name Redefined NEDElement methods, incl. generic access to attributes */
+    //@{
+    virtual const char *getTagName() const {return "types";}
+    virtual int getTagCode() const {return NED_TYPES;}
+    virtual int getNumAttributes() const;
+    virtual const char *getAttributeName(int k) const;
+    virtual const char *getAttribute(int k) const;
+    virtual void setAttribute(int k, const char *val);
+    virtual const char *getAttributeDefault(int k) const;
+    //@}
+
+    /** @name Typed access to attributes, children and siblings */
+    //@{
+
+    virtual TypesNode *getNextTypesNodeSibling() const;
+    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual ChannelNode *getFirstChannelChild() const;
+    virtual ChannelInterfaceNode *getFirstChannelInterfaceChild() const;
+    virtual SimpleModuleNode *getFirstSimpleModuleChild() const;
+    virtual CompoundModuleNode *getFirstCompoundModuleChild() const;
+    virtual ModuleInterfaceNode *getFirstModuleInterfaceChild() const;
+    //@}
+};
+
+/**
  * GENERATED CLASS. Represents the &lt;submodules&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
@@ -1163,12 +1213,14 @@ class ConnectionsNode : public NEDElement
  *      src-gate            NMTOKEN   #REQUIRED
  *      src-gate-plusplus  (true|false) "false"
  *      src-gate-index      CDATA     #IMPLIED
+ *      src-gate-subg       (i|o)     #IMPLIED
  *      dest-module         NMTOKEN   #IMPLIED
  *      dest-module-index   CDATA     #IMPLIED
  *      dest-gate           NMTOKEN   #REQUIRED
  *      dest-gate-plusplus (true|false) "false"
  *      dest-gate-index     CDATA     #IMPLIED
- *      is-left-to-right   (true|false) #REQUIRED>
+ *      dest-gate-subg      (i|o)     #IMPLIED
+ *      arrow-direction    (l2r|r2l|bidir) #REQUIRED>
  * </pre>
  * 
  * @ingroup Data
@@ -1182,12 +1234,14 @@ class ConnectionNode : public NEDElement
     std::string srcGate;
     bool srcGatePlusplus;
     std::string srcGateIndex;
+    int srcGateSubg;
     std::string destModule;
     std::string destModuleIndex;
     std::string destGate;
     bool destGatePlusplus;
     std::string destGateIndex;
-    bool isLeftToRight;
+    int destGateSubg;
+    int arrowDirection;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -1221,6 +1275,8 @@ class ConnectionNode : public NEDElement
     void setSrcGatePlusplus(bool val)  {srcGatePlusplus = val;}
     const char * getSrcGateIndex() const  {return srcGateIndex.c_str();}
     void setSrcGateIndex(const char * val)  {srcGateIndex = val;}
+    int getSrcGateSubg() const  {return srcGateSubg;}
+    void setSrcGateSubg(int val)  {srcGateSubg = val;}
     const char * getDestModule() const  {return destModule.c_str();}
     void setDestModule(const char * val)  {destModule = val;}
     const char * getDestModuleIndex() const  {return destModuleIndex.c_str();}
@@ -1231,8 +1287,10 @@ class ConnectionNode : public NEDElement
     void setDestGatePlusplus(bool val)  {destGatePlusplus = val;}
     const char * getDestGateIndex() const  {return destGateIndex.c_str();}
     void setDestGateIndex(const char * val)  {destGateIndex = val;}
-    bool getIsLeftToRight() const  {return isLeftToRight;}
-    void setIsLeftToRight(bool val)  {isLeftToRight = val;}
+    int getDestGateSubg() const  {return destGateSubg;}
+    void setDestGateSubg(int val)  {destGateSubg = val;}
+    int getArrowDirection() const  {return arrowDirection;}
+    void setArrowDirection(int val)  {arrowDirection = val;}
 
     virtual ConnectionNode *getNextConnectionNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;

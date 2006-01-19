@@ -61,6 +61,7 @@ class NEDValidatorBase
     virtual void validateElement(GatesNode *node) = 0;
     virtual void validateElement(GateGroupNode *node) = 0;
     virtual void validateElement(GateNode *node) = 0;
+    virtual void validateElement(TypesNode *node) = 0;
     virtual void validateElement(SubmodulesNode *node) = 0;
     virtual void validateElement(SubmoduleNode *node) = 0;
     virtual void validateElement(ConnectionsNode *node) = 0;

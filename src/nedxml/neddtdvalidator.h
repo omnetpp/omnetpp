@@ -54,6 +54,7 @@ class NEDDTDValidator : public NEDDTDValidatorBase
     virtual void validateElement(GatesNode *node);
     virtual void validateElement(GateGroupNode *node);
     virtual void validateElement(GateNode *node);
+    virtual void validateElement(TypesNode *node);
     virtual void validateElement(SubmodulesNode *node);
     virtual void validateElement(SubmoduleNode *node);
     virtual void validateElement(ConnectionsNode *node);

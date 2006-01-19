@@ -21,13 +21,13 @@
 #include "nederror.h"
 #include "nedelements.h"
 
-static const char *io_vals[] = {"input", "output"};
-static int io_nums[] = {NED_GATEDIR_INPUT, NED_GATEDIR_OUTPUT};
-static const int io_n = 2;
+static const char *gatetype_vals[] = {"input", "output", "inout"};
+static int gatetype_nums[] = {NED_GATEDIR_INPUT, NED_GATEDIR_OUTPUT, NED_GATEDIR_INOUT};
+static const int gatetype_n = 3;
 
-static const char *lr_vals[] = {"left", "right"};
-static int lr_nums[] = {NED_ARROWDIR_LEFT, NED_ARROWDIR_RIGHT};
-static const int lr_n = 2;
+static const char *arrowdir_vals[] = {"left", "right", "bidir"};
+static int arrowdir_nums[] = {NED_ARROWDIR_LEFT, NED_ARROWDIR_RIGHT, NED_ARROWDIR_BIDIR};
+static const int arrowdir_n = 3;
 
 static const char *partype_vals[] = {"double", "int", "string", "bool", "xml"};
 static int partype_nums[] = {NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};
@@ -38,6 +38,9 @@ static int littype_nums[] = {NED_CONST_DOUBLE, NED_CONST_INT, NED_CONST_STRING, 
 static const int littype_n = 5;
 
 
+static const char *subgate_vals[] = {"i", "o", ""};
+static int subgate_nums[] = {NED_SUBGATE_I, NED_SUBGATE_O, NED_SUBGATE_BOTH};
+static const int subgate_n = 3;
 int FilesNode::getNumAttributes() const
 {
     return 0;
@@ -621,6 +624,11 @@ GatesNode *CompoundModuleNode::getFirstGatesChild() const
     return (GatesNode *)getFirstChildWithTag(NED_GATES);
 }
 
+TypesNode *CompoundModuleNode::getFirstTypesChild() const
+{
+    return (TypesNode *)getFirstChildWithTag(NED_TYPES);
+}
+
 SubmodulesNode *CompoundModuleNode::getFirstSubmodulesChild() const
 {
     return (SubmodulesNode *)getFirstChildWithTag(NED_SUBMODULES);
@@ -1062,7 +1070,7 @@ const char *GateNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return name.c_str();
-        case 1: return enumToString(type, io_vals, io_nums, io_n);
+        case 1: return enumToString(type, gatetype_vals, gatetype_nums, gatetype_n);
         case 2: return boolToString(isVector);
         case 3: return vectorSize.c_str();
         default: return 0;
@@ -1073,7 +1081,7 @@ void GateNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: name = val; break;
-        case 1: type = stringToEnum(val, io_vals, io_nums, io_n); break;
+        case 1: type = stringToEnum(val, gatetype_vals, gatetype_nums, gatetype_n); break;
         case 2: isVector = stringToBool(val); break;
         case 3: vectorSize = val; break;
         default: ;
@@ -1109,6 +1117,74 @@ ExpressionNode *GateNode::getFirstExpressionChild() const
 PropertyNode *GateNode::getFirstPropertyChild() const
 {
     return (PropertyNode *)getFirstChildWithTag(NED_PROPERTY);
+}
+
+int TypesNode::getNumAttributes() const
+{
+    return 0;
+}
+
+const char *TypesNode::getAttributeName(int k) const
+{
+    switch (k) {
+        default: return 0;
+    }
+}
+
+const char *TypesNode::getAttribute(int k) const
+{
+    switch (k) {
+        default: return 0;
+    }
+}
+
+void TypesNode::setAttribute(int k, const char *val)
+{
+    switch (k) {
+        default: ;
+    }
+}
+
+const char *TypesNode::getAttributeDefault(int k) const
+{
+    switch (k) {
+        default: return 0;
+    }
+}
+
+TypesNode *TypesNode::getNextTypesNodeSibling() const
+{
+    return (TypesNode *)getNextSiblingWithTag(NED_TYPES);
+}
+
+WhitespaceNode *TypesNode::getFirstWhitespaceChild() const
+{
+    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+}
+
+ChannelNode *TypesNode::getFirstChannelChild() const
+{
+    return (ChannelNode *)getFirstChildWithTag(NED_CHANNEL);
+}
+
+ChannelInterfaceNode *TypesNode::getFirstChannelInterfaceChild() const
+{
+    return (ChannelInterfaceNode *)getFirstChildWithTag(NED_CHANNEL_INTERFACE);
+}
+
+SimpleModuleNode *TypesNode::getFirstSimpleModuleChild() const
+{
+    return (SimpleModuleNode *)getFirstChildWithTag(NED_SIMPLE_MODULE);
+}
+
+CompoundModuleNode *TypesNode::getFirstCompoundModuleChild() const
+{
+    return (CompoundModuleNode *)getFirstChildWithTag(NED_COMPOUND_MODULE);
+}
+
+ModuleInterfaceNode *TypesNode::getFirstModuleInterfaceChild() const
+{
+    return (ModuleInterfaceNode *)getFirstChildWithTag(NED_MODULE_INTERFACE);
 }
 
 int SubmodulesNode::getNumAttributes() const
@@ -1296,7 +1372,7 @@ ConnectionGroupNode *ConnectionsNode::getFirstConnectionGroupChild() const
 
 int ConnectionNode::getNumAttributes() const
 {
-    return 12;
+    return 14;
 }
 
 const char *ConnectionNode::getAttributeName(int k) const
@@ -1308,12 +1384,14 @@ const char *ConnectionNode::getAttributeName(int k) const
         case 3: return "src-gate";
         case 4: return "src-gate-plusplus";
         case 5: return "src-gate-index";
-        case 6: return "dest-module";
-        case 7: return "dest-module-index";
-        case 8: return "dest-gate";
-        case 9: return "dest-gate-plusplus";
-        case 10: return "dest-gate-index";
-        case 11: return "is-left-to-right";
+        case 6: return "src-gate-subg";
+        case 7: return "dest-module";
+        case 8: return "dest-module-index";
+        case 9: return "dest-gate";
+        case 10: return "dest-gate-plusplus";
+        case 11: return "dest-gate-index";
+        case 12: return "dest-gate-subg";
+        case 13: return "arrow-direction";
         default: return 0;
     }
 }
@@ -1327,12 +1405,14 @@ const char *ConnectionNode::getAttribute(int k) const
         case 3: return srcGate.c_str();
         case 4: return boolToString(srcGatePlusplus);
         case 5: return srcGateIndex.c_str();
-        case 6: return destModule.c_str();
-        case 7: return destModuleIndex.c_str();
-        case 8: return destGate.c_str();
-        case 9: return boolToString(destGatePlusplus);
-        case 10: return destGateIndex.c_str();
-        case 11: return boolToString(isLeftToRight);
+        case 6: return enumToString(srcGateSubg, subgate_vals, subgate_nums, subgate_n);
+        case 7: return destModule.c_str();
+        case 8: return destModuleIndex.c_str();
+        case 9: return destGate.c_str();
+        case 10: return boolToString(destGatePlusplus);
+        case 11: return destGateIndex.c_str();
+        case 12: return enumToString(destGateSubg, subgate_vals, subgate_nums, subgate_n);
+        case 13: return enumToString(arrowDirection, arrowdir_vals, arrowdir_nums, arrowdir_n);
         default: return 0;
     }
 }
@@ -1346,12 +1426,14 @@ void ConnectionNode::setAttribute(int k, const char *val)
         case 3: srcGate = val; break;
         case 4: srcGatePlusplus = stringToBool(val); break;
         case 5: srcGateIndex = val; break;
-        case 6: destModule = val; break;
-        case 7: destModuleIndex = val; break;
-        case 8: destGate = val; break;
-        case 9: destGatePlusplus = stringToBool(val); break;
-        case 10: destGateIndex = val; break;
-        case 11: isLeftToRight = stringToBool(val); break;
+        case 6: srcGateSubg = stringToEnum(val, subgate_vals, subgate_nums, subgate_n); break;
+        case 7: destModule = val; break;
+        case 8: destModuleIndex = val; break;
+        case 9: destGate = val; break;
+        case 10: destGatePlusplus = stringToBool(val); break;
+        case 11: destGateIndex = val; break;
+        case 12: destGateSubg = stringToEnum(val, subgate_vals, subgate_nums, subgate_n); break;
+        case 13: arrowDirection = stringToEnum(val, arrowdir_vals, arrowdir_nums, arrowdir_n); break;
         default: ;
     }
 }
@@ -1368,9 +1450,11 @@ const char *ConnectionNode::getAttributeDefault(int k) const
         case 6: return "";
         case 7: return "";
         case 8: return "";
-        case 9: return "false";
-        case 10: return "";
+        case 9: return "";
+        case 10: return "false";
         case 11: return "";
+        case 12: return "";
+        case 13: return "";
         default: return 0;
     }
 }
@@ -3141,6 +3225,7 @@ NEDElement *NEDElementFactory::createNodeWithTag(const char *tagname)
     if (tagname[0]=='g' && !strcmp(tagname,"gates"))  return new GatesNode();
     if (tagname[0]=='g' && !strcmp(tagname,"gate-group"))  return new GateGroupNode();
     if (tagname[0]=='g' && !strcmp(tagname,"gate"))  return new GateNode();
+    if (tagname[0]=='t' && !strcmp(tagname,"types"))  return new TypesNode();
     if (tagname[0]=='s' && !strcmp(tagname,"submodules"))  return new SubmodulesNode();
     if (tagname[0]=='s' && !strcmp(tagname,"submodule"))  return new SubmoduleNode();
     if (tagname[0]=='c' && !strcmp(tagname,"connections"))  return new ConnectionsNode();
@@ -3196,6 +3281,7 @@ NEDElement *NEDElementFactory::createNodeWithTag(int tagcode)
         case NED_GATES: return new GatesNode();
         case NED_GATE_GROUP: return new GateGroupNode();
         case NED_GATE: return new GateNode();
+        case NED_TYPES: return new TypesNode();
         case NED_SUBMODULES: return new SubmodulesNode();
         case NED_SUBMODULE: return new SubmoduleNode();
         case NED_CONNECTIONS: return new ConnectionsNode();

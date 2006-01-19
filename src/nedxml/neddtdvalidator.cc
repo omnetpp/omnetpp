@@ -109,8 +109,8 @@ void NEDDTDValidator::validateElement(ModuleInterfaceNode *node)
 
 void NEDDTDValidator::validateElement(CompoundModuleNode *node)
 {
-    int tags[] = {NED_WHITESPACE,NED_EXTENDS,NED_INTERFACE_NAME,NED_PARAMETERS,NED_GATES,NED_SUBMODULES,NED_CONNECTIONS, NED_NULL};
-    char mult[] = {'*','?','*','?','?','?','?', 0};
+    int tags[] = {NED_WHITESPACE,NED_EXTENDS,NED_INTERFACE_NAME,NED_PARAMETERS,NED_GATES,NED_TYPES,NED_SUBMODULES,NED_CONNECTIONS, NED_NULL};
+    char mult[] = {'*','?','*','?','?','?','?','?', 0};
     checkSequence(node, tags, mult);
 
     checkRequiredAttribute(node, "name");
@@ -208,6 +208,16 @@ void NEDDTDValidator::validateElement(GateNode *node)
     checkEnumeratedAttribute(node, "is-vector", vals2, sizeof(vals2)/sizeof(const char *));
 }
 
+void NEDDTDValidator::validateElement(TypesNode *node)
+{
+    Choice choices[] = {
+        {{NED_WHITESPACE, NED_NULL}, '*'},
+        {{NED_CHANNEL, NED_CHANNEL_INTERFACE, NED_SIMPLE_MODULE, NED_COMPOUND_MODULE, NED_MODULE_INTERFACE, NED_NULL}, '*'},
+    };
+    checkSeqOfChoices(node, choices, sizeof(choices)/sizeof(Choice));
+
+}
+
 void NEDDTDValidator::validateElement(SubmodulesNode *node)
 {
     int tags[] = {NED_WHITESPACE,NED_SUBMODULE, NED_NULL};
@@ -252,14 +262,18 @@ void NEDDTDValidator::validateElement(ConnectionNode *node)
     checkNameAttribute(node, "src-gate");
     const char *vals4[] = {"true","false"};
     checkEnumeratedAttribute(node, "src-gate-plusplus", vals4, sizeof(vals4)/sizeof(const char *));
+    const char *vals6[] = {"i","o"};
+    checkEnumeratedAttribute(node, "src-gate-subg", vals6, sizeof(vals6)/sizeof(const char *));
     checkNameAttribute(node, "dest-module");
     checkRequiredAttribute(node, "dest-gate");
     checkNameAttribute(node, "dest-gate");
-    const char *vals9[] = {"true","false"};
-    checkEnumeratedAttribute(node, "dest-gate-plusplus", vals9, sizeof(vals9)/sizeof(const char *));
-    checkRequiredAttribute(node, "is-left-to-right");
-    const char *vals11[] = {"true","false"};
-    checkEnumeratedAttribute(node, "is-left-to-right", vals11, sizeof(vals11)/sizeof(const char *));
+    const char *vals10[] = {"true","false"};
+    checkEnumeratedAttribute(node, "dest-gate-plusplus", vals10, sizeof(vals10)/sizeof(const char *));
+    const char *vals12[] = {"i","o"};
+    checkEnumeratedAttribute(node, "dest-gate-subg", vals12, sizeof(vals12)/sizeof(const char *));
+    checkRequiredAttribute(node, "arrow-direction");
+    const char *vals13[] = {"l2r","r2l","bidir"};
+    checkEnumeratedAttribute(node, "arrow-direction", vals13, sizeof(vals13)/sizeof(const char *));
 }
 
 void NEDDTDValidator::validateElement(ChannelInterfaceNode *node)

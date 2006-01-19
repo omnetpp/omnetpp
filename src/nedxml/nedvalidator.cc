@@ -49,6 +49,7 @@ void  NEDValidatorBase::validateElement(NEDElement *node)
         case NED_GATES: validateElement((GatesNode *) node); break;
         case NED_GATE_GROUP: validateElement((GateGroupNode *) node); break;
         case NED_GATE: validateElement((GateNode *) node); break;
+        case NED_TYPES: validateElement((TypesNode *) node); break;
         case NED_SUBMODULES: validateElement((SubmodulesNode *) node); break;
         case NED_SUBMODULE: validateElement((SubmoduleNode *) node); break;
         case NED_CONNECTIONS: validateElement((ConnectionsNode *) node); break;

@@ -179,11 +179,8 @@ foreach $element (@elements)
         }
         elsif ($atttypes[$i] =~ /^\(.*\)$/) {
            $argtype = "int";
-           if ($atttypes[$i] eq '(left|right)') {
-              $enumname = "lr";
-           }
-           elsif ($atttypes[$i] eq '(input|output|inout)') {
-              $enumname = "io";
+           if ($atttypes[$i] eq '(input|output|inout)') {
+              $enumname = "gatetype";
            }
            elsif ($atttypes[$i] eq '(double|int|string|bool|xml)') {
               $enumname = "partype";
@@ -191,6 +188,13 @@ foreach $element (@elements)
            elsif ($atttypes[$i] eq '(double|int|string|bool|unit)') {
               $enumname = "littype";
            }
+           elsif ($atttypes[$i] eq '(l2r|r2l|bidir)') {
+              $enumname = "arrowdir";
+           }
+           elsif ($atttypes[$i] eq '(i|o)') {
+              $enumname = "subgate";
+           }
+
            else {
               die "Error: unrecognized enum $atttypes[$i]\n";
            }
@@ -251,20 +255,21 @@ foreach $element (@elements)
 }
 print H "};\n\n";
 
-print H "enum {NED_GATEDIR_INPUT, NED_GATEDIR_OUTPUT};\n";
-print H "enum {NED_ARROWDIR_LEFT, NED_ARROWDIR_RIGHT};\n";
+print H "enum {NED_GATEDIR_INPUT, NED_GATEDIR_OUTPUT, NED_GATEDIR_INOUT};\n";
+print H "enum {NED_ARROWDIR_LEFT, NED_ARROWDIR_RIGHT, NED_ARROWDIR_BIDIR};\n";
 print H "enum {NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};\n";
 print H "enum {NED_CONST_DOUBLE, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_UNIT};\n";
+print H "enum {NED_SUBGATE_I, NED_SUBGATE_O, NED_SUBGATE_BOTH};\n";
 
 print H "\n";
 
-print CC "static const char *io_vals[] = {\"input\", \"output\"};\n";
-print CC "static int io_nums[] = {NED_GATEDIR_INPUT, NED_GATEDIR_OUTPUT};\n";
-print CC "static const int io_n = 2;\n";
+print CC "static const char *gatetype_vals[] = {\"input\", \"output\", \"inout\"};\n";
+print CC "static int gatetype_nums[] = {NED_GATEDIR_INPUT, NED_GATEDIR_OUTPUT, NED_GATEDIR_INOUT};\n";
+print CC "static const int gatetype_n = 3;\n";
 print CC "\n";
-print CC "static const char *lr_vals[] = {\"left\", \"right\"};\n";
-print CC "static int lr_nums[] = {NED_ARROWDIR_LEFT, NED_ARROWDIR_RIGHT};\n";
-print CC "static const int lr_n = 2;\n";
+print CC "static const char *arrowdir_vals[] = {\"left\", \"right\", \"bidir\"};\n";
+print CC "static int arrowdir_nums[] = {NED_ARROWDIR_LEFT, NED_ARROWDIR_RIGHT, NED_ARROWDIR_BIDIR};\n";
+print CC "static const int arrowdir_n = 3;\n";
 print CC "\n";
 print CC "static const char *partype_vals[] = {\"double\", \"int\", \"string\", \"bool\", \"xml\"};\n";
 print CC "static int partype_nums[] = {NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};\n";
@@ -274,6 +279,9 @@ print CC "static const char *littype_vals[] = {\"double\", \"int\", \"string\", 
 print CC "static int littype_nums[] = {NED_CONST_DOUBLE, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_UNIT};\n";
 print CC "static const int littype_n = 5;\n";
 print CC "\n\n";
+print CC "static const char *subgate_vals[] = {\"i\", \"o\", \"\"};\n";
+print CC "static int subgate_nums[] = {NED_SUBGATE_I, NED_SUBGATE_O, NED_SUBGATE_BOTH};\n";
+print CC "static const int subgate_n = 3;\n";
 
 
 foreach $element (@elements)
