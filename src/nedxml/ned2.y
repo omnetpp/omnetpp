@@ -14,7 +14,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
 /* Reserved words */
 %token IMPORT, PACKAGE, PROPERTY
 %token MODULE, SIMPLE, NETWORK, CHANNEL, INTERFACE, CHANNELINTERFACE
@@ -28,7 +27,7 @@
 
 /* Other tokens: identifiers, numeric literals, operators etc */
 %token NAME INTCONSTANT REALCONSTANT STRINGCONSTANT CHARCONSTANT
-%token SUBMODINDEX PLUSPLUS DOUBLEASTERISK
+%token PLUSPLUS DOUBLEASTERISK
 %token EQ NE GT GE LS LE
 %token AND OR XOR NOT
 %token BIN_AND BIN_OR BIN_XOR BIN_COMPL
@@ -123,6 +122,8 @@ struct ParserState
 
 NEDElement *createNodeWithTag(int tagcode, NEDElement *parent=NULL);
 
+void setSourceCode(NEDElement *node, YYLTYPE tokenpos);
+
 void setFileComment(NEDElement *node);
 void setBannerComment(NEDElement *node, YYLTYPE tokenpos);
 void setRightComment(NEDElement *node, YYLTYPE tokenpos);
@@ -130,17 +131,17 @@ void setTrailingComment(NEDElement *node, YYLTYPE tokenpos);
 void setComments(NEDElement *node, YYLTYPE pos);
 void setComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos);
 
-ChannelAttrNode *addChanAttr(NEDElement *channel, const char *attrname);
+//XXX ChannelAttrNode *addChanAttr(NEDElement *channel, const char *attrname);
 ParamNode *addParameter(NEDElement *params, YYLTYPE namepos, int type);
 GateNode *addGate(NEDElement *gates, YYLTYPE namepos, int is_in, int is_vector );
 SubmoduleNode *addSubmodule(NEDElement *submods, YYLTYPE namepos, YYLTYPE typepos,YYLTYPE likeparampos);
-GatesizeNode *addGateSize(NEDElement *gatesizes, YYLTYPE namepos);
-SubstparamNode *addSubstparam(NEDElement *substparams, YYLTYPE namepos);
-SubstmachineNode *addSubstmachine(NEDElement *substmachines, YYLTYPE namepos);
-ConnAttrNode *addConnAttr(NEDElement *conn, const char *attrname);
-LoopVarNode *addLoopVar(NEDElement *forloop, YYLTYPE varnamepos);
-NetworkNode *addNetwork(NEDElement *nedfile, YYLTYPE namepos, YYLTYPE typepos);
-DisplayStringNode *addDisplayString(NEDElement *parent, YYLTYPE dispstrpos);
+//XXX GatesizeNode *addGateSize(NEDElement *gatesizes, YYLTYPE namepos);
+//XXX SubstparamNode *addSubstparam(NEDElement *substparams, YYLTYPE namepos);
+//XXX SubstmachineNode *addSubstmachine(NEDElement *substmachines, YYLTYPE namepos);
+//XXX ConnAttrNode *addConnAttr(NEDElement *conn, const char *attrname);
+//XXX LoopVarNode *addLoopVar(NEDElement *forloop, YYLTYPE varnamepos);
+//XXX NetworkNode *addNetwork(NEDElement *nedfile, YYLTYPE namepos, YYLTYPE typepos);
+//XXX DisplayStringNode *addDisplayString(NEDElement *parent, YYLTYPE dispstrpos);
 
 YYLTYPE trimBrackets(YYLTYPE vectorpos);
 YYLTYPE trimQuotes(YYLTYPE vectorpos);
@@ -155,8 +156,8 @@ const char *toString(long);
 ExpressionNode *createExpression(NEDElement *expr);
 OperatorNode *createOperator(const char *op, NEDElement *operand1, NEDElement *operand2=NULL, NEDElement *operand3=NULL);
 FunctionNode *createFunction(const char *funcname, NEDElement *arg1=NULL, NEDElement *arg2=NULL, NEDElement *arg3=NULL, NEDElement *arg4=NULL);
-ParamRefNode *createParamRef(const char *param, const char *paramindex=NULL, const char *module=NULL, const char *moduleindex=NULL);
-IdentNode *createIdent(const char *name);
+RefNode *createParamRef(const char *param, const char *paramindex=NULL, const char *module=NULL, const char *moduleindex=NULL);
+//XXX IdentNode *createIdent(const char *name);
 ConstNode *createConst(int type, const char *value, const char *text=NULL);
 ConstNode *createTimeConst(const char *text);
 NEDElement *createRef(const char *name);
@@ -556,6 +557,9 @@ qualifier_elems
         ;
 
 qualifier_elem   /* this attempts to capture inifile-like patterns; FIXME should soak up reserved names as well */
+        : '!'
+        ;
+/*FIXME
         : '.'
         | '*'
         | DOUBLEASTERISK
@@ -565,6 +569,7 @@ qualifier_elem   /* this attempts to capture inifile-like patterns; FIXME should
         | '[' qualifier_elems ']'
         | '{' qualifier_elems '}'
         ;
+*/
 
 /*
  * Condition
@@ -792,14 +797,14 @@ connections
 
 connectionsitem
         : connectiongroup
-        | connection whereclause
-        | connection
+        | connection whereclause ';'
+        | connection ';'
         ;
 
 connectiongroup
-        : whereclause '{' connections_nogroup '}'
-        | '{' connections_nogroup '}' whereclause
-        | '{' connections_nogroup '}'
+        : whereclause '{' connections_nogroup '}' opt_semicolon
+        | '{' connections_nogroup '}' whereclause ';'
+        | '{' connections_nogroup '}' opt_semicolon
         ;
 
 connections_nogroup   /* same as connections, but without the connectiongroup rule */
@@ -814,8 +819,8 @@ connections_nogroup   /* same as connections, but without the connectiongroup ru
         ;
 
 connectionsitem_nogroup
-        : connection whereclause
-        | connection
+        : connection whereclause ';'
+        | connection ';'
         ;
 
 whereclause
@@ -846,34 +851,34 @@ loopvar
  * Connection
  */
 connection
-        : leftgatespec RIGHTARROW rightgatespec ';'
+        : leftgatespec RIGHTARROW rightgatespec
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
                   setComments(ps.conn,@1,@5);
                 }
-        | leftgatespec RIGHTARROW channeldescr RIGHTARROW rightgatespec ';'
+        | leftgatespec RIGHTARROW channeldescr RIGHTARROW rightgatespec
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
                   setComments(ps.conn,@1,@7);
                 }
-        | leftgatespec LEFTARROW rightgatespec ';'
+        | leftgatespec LEFTARROW rightgatespec
                 {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_LEFT);
                   setComments(ps.conn,@1,@5);
                 }
-        | leftgatespec LEFTARROW channeldescr LEFTARROW rightgatespec ';'
+        | leftgatespec LEFTARROW channeldescr LEFTARROW rightgatespec
                 {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_LEFT);
                   setComments(ps.conn,@1,@7);
                 }
-        | leftgatespec DBLARROW rightgatespec ';'
+        | leftgatespec DBLARROW rightgatespec
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_BIDIR);
                   setComments(ps.conn,@1,@5);
                 }
-        | leftgatespec DBLARROW channeldescr DBLARROW rightgatespec ';'
+        | leftgatespec DBLARROW channeldescr DBLARROW rightgatespec
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_BIDIR);
                   setComments(ps.conn,@1,@7);
@@ -1028,8 +1033,18 @@ expression
         ;
 
 /*
- * Expressions (3 shift-reduce conflicts here)
+ * Expressions
  */
+
+/*
+FIXME currently unused:
+   PACKAGE
+   WITHCPPCLASS
+   DEFAULT
+   CONST_
+   INDEX_
+   DOUBLEASTERISK
+*/
 
 xmldocvalue
         : XMLDOC '(' stringconstant ',' stringconstant ')'
@@ -1145,9 +1160,9 @@ numconst_expr
         ;
 
 special_expr
-        : SUBMODINDEX
+        : INDEX_
                 { if (ps.parseExpressions) $$ = createFunction("index"); }
-        | SUBMODINDEX '(' ')'
+        | INDEX_ '(' ')'
                 { if (ps.parseExpressions) $$ = createFunction("index"); }
         | SIZEOF '(' NAME ')'
                 { if (ps.parseExpressions) $$ = createFunction("sizeof", createIdent(toString(@3))); }
@@ -1176,8 +1191,6 @@ quantity
         ;
 
 opt_semicolon : ';' | ;
-
-comma_or_semicolon : ',' | ';' ;
 
 %%
 
@@ -1497,9 +1510,9 @@ ExpressionNode *createExpression(NEDElement *expr)
    return expression;
 }
 
-ParamRefNode *createParamRef(const char *param, const char *paramindex, const char *module, const char *moduleindex)
+RefNode *createParamRef(const char *param, const char *paramindex, const char *module, const char *moduleindex)
 {
-   ParamRefNode *par = (ParamRefNode *)createNodeWithTag(NED_PARAM_REF);
+   RefNode *par = (RefNode *)createNodeWithTag(NED_PARAM_REF);
    par->setParamName(param);
    if (paramindex) par->setParamIndex(paramindex);
    if (module) par->setModule(module);
