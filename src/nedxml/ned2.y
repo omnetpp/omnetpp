@@ -21,14 +21,14 @@
 %token EXTENDS, LIKE, WITHCPPCLASS
 %token TYPES, PARAMETERS, GATES, SUBMODULES, CONNECTIONS, ALLOWUNCONNECTED
 %token DOUBLETYPE, INTTYPE, STRINGTYPE, BOOLTYPE, XMLTYPE, FUNCTION
-%token INPUT, OUTPUT, INOUT
-%token IF
-%token RIGHTARROW, LEFTARROW, DBLARROW, WHILE, TO
+%token INPUT_, OUTPUT_, INOUT_
+%token IF, WHERE
+%token RIGHTARROW, LEFTARROW, DBLARROW, TO
 %token TRUE_, FALSE_, DEFAULT, CONST_, SIZEOF, INDEX_, XMLDOC
 
 /* Other tokens: identifiers, numeric literals, operators etc */
 %token NAME INTCONSTANT REALCONSTANT STRINGCONSTANT CHARCONSTANT
-%token SUBMODINDEX PLUSPLUS
+%token SUBMODINDEX PLUSPLUS DOUBLEASTERISK
 %token EQ NE GT GE LS LE
 %token AND OR XOR NOT
 %token BIN_AND BIN_OR BIN_XOR BIN_COMPL
@@ -159,7 +159,7 @@ ParamRefNode *createParamRef(const char *param, const char *paramindex=NULL, con
 IdentNode *createIdent(const char *name);
 ConstNode *createConst(int type, const char *value, const char *text=NULL);
 ConstNode *createTimeConst(const char *text);
-NEDElement *createParamRefOrIdent(const char *name);
+NEDElement *createRef(const char *name);
 NEDElement *unaryMinus(NEDElement *node);
 
 void addVector(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr);
@@ -547,7 +547,23 @@ opt_function
         ;
 
 qualifier
-        : FIXME_TODO
+        : qualifier_elems
+        ;
+
+qualifier_elems
+        : qualifier_elems qualifier_elem
+        | qualifier_elem
+        ;
+
+qualifier_elem   /* this attempts to capture inifile-like patterns; FIXME should soak up reserved names as well */
+        : '.'
+        | '*'
+        | DOUBLEASTERISK
+        | NAME
+        | INTCONSTANT
+        | TO
+        | '[' qualifier_elems ']'
+        | '{' qualifier_elems '}'
         ;
 
 /*
@@ -627,20 +643,20 @@ gate
         ;
 
 gatetype
-        : INPUT
-        | OUTPUT
-        | INOUT
+        : INPUT_
+        | OUTPUT_
+        | INOUT_
         ;
 
 /*
  * Local Types
  */
-opt_localtypeblock
-        : localtypeblock
+opt_typeblock
+        : typeblock
         |
         ;
 
-localtypeblock
+typeblock
         : TYPES ':'
                 {
                   ps.types = (TypesNode *)createNodeWithTag(NED_TYPES, ps.module );
@@ -830,23 +846,23 @@ loopvar
  * Connection
  */
 connection
-        : leftgatespec RIGHT_ARROW rightgatespec ';'
+        : leftgatespec RIGHTARROW rightgatespec ';'
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
                   setComments(ps.conn,@1,@5);
                 }
-        | leftgatespec RIGHT_ARROW channeldescr RIGHT_ARROW rightgatespec ';'
+        | leftgatespec RIGHTARROW channeldescr RIGHTARROW rightgatespec ';'
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
                   setComments(ps.conn,@1,@7);
                 }
-        | leftgatespec LEFT_ARROW rightgatespec ';'
+        | leftgatespec LEFTARROW rightgatespec ';'
                 {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_LEFT);
                   setComments(ps.conn,@1,@5);
                 }
-        | leftgatespec LEFT_ARROW channeldescr LEFT_ARROW rightgatespec ';'
+        | leftgatespec LEFTARROW channeldescr LEFTARROW rightgatespec ';'
                 {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_LEFT);
@@ -1005,10 +1021,6 @@ expression
                 {
                   if (ps.parseExpressions) $$ = createExpression($1);
                 }
-        | inputvalue
-                {
-                  if (ps.parseExpressions) $$ = createExpression($1);
-                }
         | xmldocvalue
                 {
                   if (ps.parseExpressions) $$ = createExpression($1);
@@ -1018,17 +1030,6 @@ expression
 /*
  * Expressions (3 shift-reduce conflicts here)
  */
-
-inputvalue
-        : INPUT_ '(' expr ',' expr ')'
-                { if (ps.parseExpressions) $$ = createFunction("input", $3, $5); }
-        | INPUT_ '(' expr ')'
-                { if (ps.parseExpressions) $$ = createFunction("input", $3); }
-        | INPUT_ '(' ')'
-                { if (ps.parseExpressions) $$ = createFunction("input"); }
-        | INPUT_
-                { if (ps.parseExpressions) $$ = createFunction("input"); }
-        ;
 
 xmldocvalue
         : XMLDOC '(' stringconstant ',' stringconstant ')'
@@ -1124,29 +1125,7 @@ parameter_expr
         : NAME
                 {
                   // if there's no modifier, might be a loop variable too
-                  $$ = createParamRefOrIdent(toString(@1));
-                }
-        | REF NAME
-                {
-                  $$ = createParamRef(toString(@2));
-                  ((ParamRefNode *)$$)->setIsRef(true);
-                }
-        | REF ANCESTOR NAME
-                {
-                  $$ = createParamRef(toString(@3));
-                  ((ParamRefNode *)$$)->setIsRef(true);
-                  ((ParamRefNode *)$$)->setIsAncestor(true);
-                }
-        | ANCESTOR REF NAME
-                {
-                  $$ = createParamRef(toString(@3));
-                  ((ParamRefNode *)$$)->setIsRef(true);
-                  ((ParamRefNode *)$$)->setIsAncestor(true);
-                }
-        | ANCESTOR NAME
-                {
-                  $$ = createParamRef(toString(@2));
-                  ((ParamRefNode *)$$)->setIsAncestor(true);
+                  $$ = createRef(toString(@1));
                 }
         ;
 
@@ -1564,7 +1543,7 @@ ConstNode *createTimeConst(const char *text)
    return c;
 }
 
-NEDElement *createParamRefOrIdent(const char *name)
+NEDElement *createRef(const char *name)
 {
     // determine if 'name' can be a loop variable. if so, use createIdent()
     bool isvar = false;

@@ -102,16 +102,16 @@ char textbuf[TEXTBUF_LEN];
 "xml"                    { count(); return XMLTYPE; }
 "function"               { count(); return FUNCTION; }
 
-"input"                  { count(); return INPUT; }
-"output"                 { count(); return OUTPUT; }
-"inout"                  { count(); return INOUT; }
+"input"                  { count(); return INPUT_; }
+"output"                 { count(); return OUTPUT_; }
+"inout"                  { count(); return INOUT_; }
 
 "if"                     { count(); return IF; }
 
 "-->"                    { count(); return RIGHTARROW; }
 "<--"                    { count(); return LEFTARROW; }
 "<-->"                   { count(); return DBLARROW; }
-"while"                  { count(); return WHILE; }
+"where"                  { count(); return WHERE; }
 ".."                     { count(); return TO; }
 
 "true"                   { count(); return TRUE_; }
@@ -131,6 +131,7 @@ char textbuf[TEXTBUF_LEN];
 \"[^\"]*\"              { count(); return STRINGCONSTANT; }
 \'[^\']\'               { count(); return CHARCONSTANT; }
 
+"**"                    { count(); return DOUBLEASTERISK; }
 "++"                    { count(); return PLUSPLUS; }
 
 ";"                     { count(); return (';'); }
