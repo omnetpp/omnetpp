@@ -801,10 +801,10 @@ connectionsitem
         | connection ';'
         ;
 
-connectiongroup
-        : whereclause '{' connections_nogroup '}' opt_semicolon
+connectiongroup  /* note: semicolon at end is mandatory (cannot be opt_semicolon because it'd be ambiguous where "where" clause in "{a-->b;} where i>0 {c-->d;}" belongs) */
+        : whereclause '{' connections_nogroup '}' ';'
         | '{' connections_nogroup '}' whereclause ';'
-        | '{' connections_nogroup '}' opt_semicolon
+        | '{' connections_nogroup '}' ';'
         ;
 
 connections_nogroup   /* same as connections, but without the connectiongroup rule */
