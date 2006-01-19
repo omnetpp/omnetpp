@@ -1,0 +1,358 @@
+<schema
+  xmlns='http://www.w3.org/2001/XMLSchema'
+  targetNamespace='http://omnetpp.org/schema/ned2'
+  xmlns:ned2='http://omnetpp.org/schema/ned2'>
+
+  <complexType name='files'>
+   <sequence>
+    <element name='ned-file' type='ned2:ned-file' minOccurs='0' maxOccurs='unbounded'/>
+   </sequence>
+  </complexType>
+
+  <complexType name='ned-file'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+    <choice minOccurs='0' maxOccurs='unbounded'>
+     <element name='import' type='ned2:import'/>
+     <element name='propertydef' type='ned2:propertydef'/>
+     <element name='property' type='ned2:property'/>
+     <element name='channel' type='ned2:channel'/>
+     <element name='channel-interface' type='ned2:channel-interface'/>
+     <element name='simple-module' type='ned2:simple-module'/>
+     <element name='compound-module' type='ned2:compound-module'/>
+     <element name='module-interface' type='ned2:module-interface'/>
+    </choice>
+   </sequence>
+   <attribute name='filename' type='string' use='required'/>
+   <attribute name='package' type='string' use='optional'/>
+  </complexType>
+
+  <complexType name='whitespace'>
+   <attribute name='locid' type='NMTOKEN' use='required'/>
+   <attribute name='content' type='string' use='required'/>
+  </complexType>
+
+  <complexType name='import'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+   </sequence>
+   <attribute name='filename' type='string' use='required'/>
+  </complexType>
+
+  <complexType name='propertydef'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='key-value' type='ned2:key-value' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='property' type='ned2:property' minOccurs='0' maxOccurs='unbounded'/>
+   </sequence>
+   <attribute name='name' type='NMTOKEN' use='required'/>
+  </complexType>
+
+  <complexType name='extends'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+   </sequence>
+   <attribute name='name' type='NMTOKEN' use='required'/>
+  </complexType>
+
+  <complexType name='interface-name'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+   </sequence>
+   <attribute name='name' type='NMTOKEN' use='required'/>
+  </complexType>
+
+  <complexType name='simple-module'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='extends' type='ned2:extends' minOccurs='0' maxOccurs='1'/>
+    <element name='interface-name' type='ned2:interface-name' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='parameters' type='ned2:parameters' minOccurs='0' maxOccurs='1'/>
+    <element name='gates' type='ned2:gates' minOccurs='0' maxOccurs='1'/>
+   </sequence>
+   <attribute name='name' type='NMTOKEN' use='required'/>
+  </complexType>
+
+  <complexType name='module-interface'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='extends' type='ned2:extends' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='parameters' type='ned2:parameters' minOccurs='0' maxOccurs='1'/>
+    <element name='gates' type='ned2:gates' minOccurs='0' maxOccurs='1'/>
+   </sequence>
+   <attribute name='name' type='NMTOKEN' use='required'/>
+  </complexType>
+
+  <complexType name='compound-module'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='extends' type='ned2:extends' minOccurs='0' maxOccurs='1'/>
+    <element name='interface-name' type='ned2:interface-name' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='parameters' type='ned2:parameters' minOccurs='0' maxOccurs='1'/>
+    <element name='gates' type='ned2:gates' minOccurs='0' maxOccurs='1'/>
+    <element name='types' type='ned2:types' minOccurs='0' maxOccurs='1'/>
+    <element name='submodules' type='ned2:submodules' minOccurs='0' maxOccurs='1'/>
+    <element name='connections' type='ned2:connections' minOccurs='0' maxOccurs='1'/>
+   </sequence>
+   <attribute name='name' type='NMTOKEN' use='required'/>
+   <attribute name='is-network' type='boolean' default='false'/>
+  </complexType>
+
+  <complexType name='parameters'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+    <choice minOccurs='0' maxOccurs='unbounded'>
+     <element name='property' type='ned2:property'/>
+     <element name='param' type='ned2:param'/>
+     <element name='param-group' type='ned2:param-group'/>
+    </choice>
+   </sequence>
+   <attribute name='is-implicit' type='boolean' default='true'/>
+  </complexType>
+
+  <complexType name='param-group'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='condition' type='ned2:condition'/>
+    <choice minOccurs='0' maxOccurs='unbounded'>
+     <element name='property' type='ned2:property'/>
+     <element name='param' type='ned2:param'/>
+    </choice>
+   </sequence>
+  </complexType>
+
+  <complexType name='param'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='expression' type='ned2:expression' minOccurs='0' maxOccurs='1'/>
+    <element name='property' type='ned2:property' minOccurs='0' maxOccurs='unbounded'/>
+   </sequence>
+   <attribute name='type' type='string' use='required'/>
+   <attribute name='is-function' type='boolean' default='false'/>
+   <attribute name='qualifier' type='string' use='optional'/>
+   <attribute name='name' type='NMTOKEN' use='required'/>
+   <attribute name='value' type='string' use='optional'/>
+  </complexType>
+
+  <complexType name='property'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='key-value' type='ned2:key-value' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='property' type='ned2:property' minOccurs='0' maxOccurs='unbounded'/>
+   </sequence>
+   <attribute name='qualifier' type='string' use='optional'/>
+   <attribute name='name' type='NMTOKEN' use='required'/>
+  </complexType>
+
+  <complexType name='key-value'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+   </sequence>
+   <attribute name='key' type='string' use='optional'/>
+   <attribute name='value' type='string' use='optional'/>
+  </complexType>
+
+  <complexType name='gates'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+    <choice minOccurs='0' maxOccurs='unbounded'>
+     <element name='gate' type='ned2:gate'/>
+     <element name='gate-group' type='ned2:gate-group'/>
+    </choice>
+   </sequence>
+  </complexType>
+
+  <complexType name='gate-group'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='condition' type='ned2:condition'/>
+    <element name='gate' type='ned2:gate' minOccurs='0' maxOccurs='unbounded'/>
+   </sequence>
+  </complexType>
+
+  <complexType name='gate'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='expression' type='ned2:expression' minOccurs='0' maxOccurs='1'/>
+    <element name='property' type='ned2:property' minOccurs='0' maxOccurs='unbounded'/>
+   </sequence>
+   <attribute name='name' type='NMTOKEN' use='required'/>
+   <attribute name='type' type='string' use='required'/>
+   <attribute name='is-vector' type='boolean' default='false'/>
+   <attribute name='vector-size' type='string' use='optional'/>
+  </complexType>
+
+  <complexType name='types'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+    <choice minOccurs='0' maxOccurs='unbounded'>
+     <element name='channel' type='ned2:channel'/>
+     <element name='channel-interface' type='ned2:channel-interface'/>
+     <element name='simple-module' type='ned2:simple-module'/>
+     <element name='compound-module' type='ned2:compound-module'/>
+     <element name='module-interface' type='ned2:module-interface'/>
+    </choice>
+   </sequence>
+  </complexType>
+
+  <complexType name='submodules'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='submodule' type='ned2:submodule' minOccurs='0' maxOccurs='unbounded'/>
+   </sequence>
+  </complexType>
+
+  <complexType name='submodule'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='expression' type='ned2:expression' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='parameters' type='ned2:parameters' minOccurs='0' maxOccurs='1'/>
+    <element name='gates' type='ned2:gates' minOccurs='0' maxOccurs='1'/>
+   </sequence>
+   <attribute name='name' type='NMTOKEN' use='required'/>
+   <attribute name='type' type='NMTOKEN' use='optional'/>
+   <attribute name='like-type' type='NMTOKEN' use='optional'/>
+   <attribute name='like-param' type='string' use='optional'/>
+   <attribute name='vector-size' type='string' use='optional'/>
+  </complexType>
+
+  <complexType name='connections'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+    <choice minOccurs='0' maxOccurs='unbounded'>
+     <element name='connection' type='ned2:connection'/>
+     <element name='connection-group' type='ned2:connection-group'/>
+    </choice>
+   </sequence>
+   <attribute name='check-unconnected' type='boolean' default='true'/>
+  </complexType>
+
+  <complexType name='connection'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='expression' type='ned2:expression' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='parameters' type='ned2:parameters' minOccurs='0' maxOccurs='1'/>
+   </sequence>
+   <attribute name='channel-name' type='NMTOKEN' use='optional'/>
+   <attribute name='src-module' type='NMTOKEN' use='optional'/>
+   <attribute name='src-module-index' type='string' use='optional'/>
+   <attribute name='src-gate' type='NMTOKEN' use='required'/>
+   <attribute name='src-gate-plusplus' type='boolean' default='false'/>
+   <attribute name='src-gate-index' type='string' use='optional'/>
+   <attribute name='src-gate-subg' type='string' use='optional'/>
+   <attribute name='dest-module' type='NMTOKEN' use='optional'/>
+   <attribute name='dest-module-index' type='string' use='optional'/>
+   <attribute name='dest-gate' type='NMTOKEN' use='required'/>
+   <attribute name='dest-gate-plusplus' type='boolean' default='false'/>
+   <attribute name='dest-gate-index' type='string' use='optional'/>
+   <attribute name='dest-gate-subg' type='string' use='optional'/>
+   <attribute name='arrow-direction' type='string' use='required'/>
+  </complexType>
+
+  <complexType name='channel-interface'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='extends' type='ned2:extends' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='parameters' type='ned2:parameters' minOccurs='0' maxOccurs='1'/>
+   </sequence>
+   <attribute name='name' type='NMTOKEN' use='required'/>
+  </complexType>
+
+  <complexType name='channel'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='extends' type='ned2:extends' minOccurs='0' maxOccurs='1'/>
+    <element name='interface-name' type='ned2:interface-name' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='parameters' type='ned2:parameters' minOccurs='0' maxOccurs='1'/>
+   </sequence>
+   <attribute name='name' type='NMTOKEN' use='required'/>
+  </complexType>
+
+  <complexType name='connection-group'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+    <choice minOccurs='0' maxOccurs='unbounded'>
+     <element name='loop' type='ned2:loop'/>
+     <element name='condition' type='ned2:condition'/>
+    </choice>
+    <element name='connection' type='ned2:connection' minOccurs='0' maxOccurs='unbounded'/>
+   </sequence>
+  </complexType>
+
+  <complexType name='loop'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='expression' type='ned2:expression' minOccurs='0' maxOccurs='unbounded'/>
+   </sequence>
+   <attribute name='param-name' type='NMTOKEN' use='required'/>
+   <attribute name='from-value' type='string' use='optional'/>
+   <attribute name='to-value' type='string' use='optional'/>
+  </complexType>
+
+  <complexType name='condition'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='expression' type='ned2:expression' minOccurs='0' maxOccurs='1'/>
+   </sequence>
+   <attribute name='condition' type='string' use='optional'/>
+  </complexType>
+
+  <complexType name='expression'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+    <choice>
+     <element name='operator' type='ned2:operator'/>
+     <element name='function' type='ned2:function'/>
+     <element name='ref' type='ned2:ref'/>
+     <element name='const' type='ned2:const'/>
+    </choice>
+   </sequence>
+   <attribute name='target' type='string' use='optional'/>
+  </complexType>
+
+  <complexType name='operator'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+    <choice maxOccurs='unbounded'>
+     <element name='operator' type='ned2:operator'/>
+     <element name='function' type='ned2:function'/>
+     <element name='ref' type='ned2:ref'/>
+     <element name='const' type='ned2:const'/>
+    </choice>
+   </sequence>
+   <attribute name='name' type='string' use='required'/>
+  </complexType>
+
+  <complexType name='function'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+    <choice minOccurs='0' maxOccurs='unbounded'>
+     <element name='operator' type='ned2:operator'/>
+     <element name='function' type='ned2:function'/>
+     <element name='ref' type='ned2:ref'/>
+     <element name='const' type='ned2:const'/>
+    </choice>
+   </sequence>
+   <attribute name='name' type='NMTOKEN' use='required'/>
+  </complexType>
+
+  <complexType name='ref'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='expression' type='ned2:expression' minOccurs='0' maxOccurs='unbounded'/>
+   </sequence>
+   <attribute name='module' type='string' use='optional'/>
+   <attribute name='module-index' type='string' use='optional'/>
+   <attribute name='name' type='NMTOKEN' use='required'/>
+  </complexType>
+
+  <complexType name='const'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+   </sequence>
+   <attribute name='type' type='string' use='required'/>
+   <attribute name='unit-type' type='string' use='optional'/>
+   <attribute name='text' type='string' use='optional'/>
+   <attribute name='value' type='string' use='optional'/>
+  </complexType>
+</schema>

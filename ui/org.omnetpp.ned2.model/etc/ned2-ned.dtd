@@ -45,8 +45,8 @@
 <!ATTLIST module-interface
      name               NMTOKEN   #REQUIRED>
 
-<!ELEMENT compound-module (whitespace*, extends?, interface-name*, parameters?, gates?,
-                  submodules?, connections?)>
+<!ELEMENT compound-module (whitespace*, extends?, interface-name*,
+                           parameters?, gates?, types?, submodules?, connections?)>
 <!ATTLIST compound-module
      name               NMTOKEN   #REQUIRED
      is-network         (true|false) "false">
@@ -85,6 +85,9 @@
      type               (input|output|inout) #REQUIRED
      is-vector          (true|false) false
      vector-size        CDATA     #IMPLIED>
+
+<!ELEMENT types (whitespace*, (channel|channel-interface|simple-module|
+                               compound-module|module-interface)*)>
 
 <!ELEMENT submodules (whitespace*, submodule*)>
 
