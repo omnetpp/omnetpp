@@ -633,11 +633,11 @@ foreach $element (@elements)
     }
     elsif ($elementdef{$element} =~ /^\((.*)\)$/) {  # fallback: in parens
        print DTDVAL_CC "    Choice choices[] = {\n";
-       print "DBG: parsing $1\n";
+       #print "DBG: parsing $1\n";
        @seqs = split(',',$1);
        foreach $seq (@seqs) {
           if ($seq =~ /^\((.*)\)([*?+]?$)/) {
-              print "DBG:   CHOICE=( $1 )  MUL=$2\n";
+              #print "DBG:   CHOICE=( $1 )  MUL=$2\n";
               @choicetags = split('\|',$1);
               $mul = $2;
               if ($mul eq '') {$mul = '1';}
@@ -652,7 +652,7 @@ foreach $element (@elements)
               print DTDVAL_CC "NED_NULL}, '$mul'},\n";
           }
           elsif ($seq =~ /^([a-zA-Z0-9-_]+)([*?+]?$)/) {
-              print "DBG:   NAME=$1  MUL=$2\n";
+              #print "DBG:   NAME=$1  MUL=$2\n";
               $name = $1;
               $mul = $2;
               if ($mul eq '') {$mul = '1';}
