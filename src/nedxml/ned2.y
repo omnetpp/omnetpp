@@ -545,6 +545,10 @@ opt_function
         |
         ;
 
+qualifier
+        : FIXME_TODO
+        ;
+
 /*
  * Condition
  */
@@ -753,29 +757,17 @@ connectionsitem_nogroup
         | connection
         ;
 
-/*/////////////////////////////*/
-
-connection
-        : loopconnection
-        | notloopconnection
+whereclause
+        : WHERE whereitems
         ;
 
-loopconnection
-        : FOR
-                {
-                  ps.forloop = (ForLoopNode *)createNodeWithTag(NED_FOR_LOOP, ps.conns );
-                  ps.inLoop=1;
-                }
-          loopvarlist DO notloopconnections ENDFOR ';'
-                {
-                  ps.inLoop=0;
-                  setComments(ps.forloop,@1,@4);
-                  setTrailingComment(ps.forloop,@6);
-                }
+whereitems
+        : whereitems ',' whereitem
+        | whereitem
         ;
 
-loopvarlist
-        : loopvar ',' loopvarlist
+whereitem
+        : condition
         | loopvar
         ;
 
@@ -789,48 +781,40 @@ loopvar
                 }
         ;
 
-opt_conncondition
-        : IF expression
-                {
-                  addExpression(ps.conn, "condition",@2,$2);
-                }
-        |
-        ;
-
-opt_conn_displaystr
-        : DISPLAY STRINGCONSTANT
-                {
-                  addDisplayString(ps.conn,@2);
-                }
-        |
-        ;
-
-notloopconnections
-        : notloopconnections notloopconnection
-        | notloopconnection
-        ;
-
-notloopconnection
-        : leftgatespec RIGHT_ARROW rightgatespec opt_conncondition opt_conn_displaystr ';'
+/*
+ * Connection
+ */
+connection
+        : leftgatespec RIGHT_ARROW rightgatespec ';'
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
                   setComments(ps.conn,@1,@5);
                 }
-        | leftgatespec RIGHT_ARROW channeldescr RIGHT_ARROW rightgatespec opt_conncondition opt_conn_displaystr ';'
+        | leftgatespec RIGHT_ARROW channeldescr RIGHT_ARROW rightgatespec ';'
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
                   setComments(ps.conn,@1,@7);
                 }
-        | leftgatespec LEFT_ARROW rightgatespec opt_conncondition opt_conn_displaystr ';'
+        | leftgatespec LEFT_ARROW rightgatespec ';'
                 {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_LEFT);
                   setComments(ps.conn,@1,@5);
                 }
-        | leftgatespec LEFT_ARROW channeldescr LEFT_ARROW rightgatespec opt_conncondition opt_conn_displaystr ';'
+        | leftgatespec LEFT_ARROW channeldescr LEFT_ARROW rightgatespec ';'
                 {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_LEFT);
+                  setComments(ps.conn,@1,@7);
+                }
+        | leftgatespec DBLARROW rightgatespec ';'
+                {
+                  ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
+                  setComments(ps.conn,@1,@5);
+                }
+        | leftgatespec DBLARROW channeldescr DBLARROW rightgatespec ';'
+                {
+                  ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
                   setComments(ps.conn,@1,@7);
                 }
         ;

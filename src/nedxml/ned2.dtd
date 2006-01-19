@@ -108,12 +108,14 @@
      src-gate            NMTOKEN   #REQUIRED
      src-gate-plusplus  (true|false) "false"
      src-gate-index      CDATA     #IMPLIED
+     src-gate-subg       (i|o)     #IMPLIED
      dest-module         NMTOKEN   #IMPLIED
      dest-module-index   CDATA     #IMPLIED
      dest-gate           NMTOKEN   #REQUIRED
      dest-gate-plusplus (true|false) "false"
      dest-gate-index     CDATA     #IMPLIED
-     is-left-to-right   (true|false) #REQUIRED>
+     dest-gate-subg      (i|o)     #IMPLIED
+     arrow-direction    (l2r|r2l|bidir) #REQUIRED>
 
 <!ELEMENT channel-interface (whitespace*, extends*, parameters?)>
 <!ATTLIST channel-interface

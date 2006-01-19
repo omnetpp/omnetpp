@@ -369,7 +369,7 @@ network Network2
 
 
 
-interface channel PPPLikeChannel
+channelinterface PPPLikeChannel
 {
 };
 
@@ -407,7 +407,7 @@ channel PPPLine
 
 // channel with or without corresponding C++ class
 // (@withcppclass property idea was discarded)
-channel withcppclass PPPLine
+channel withcppclass PPPLine   // FIXME find better syntax...
 {
 };
 
