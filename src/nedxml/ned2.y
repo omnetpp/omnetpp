@@ -17,7 +17,7 @@
 
 /* Reserved words */
 %token IMPORT, PACKAGE, PROPERTY
-%token MODULE, SIMPLE, NETWORK, CHANNEL, INTERFACE
+%token MODULE, SIMPLE, NETWORK, CHANNEL, INTERFACE, CHANNELINTERFACE
 %token EXTENDS, LIKE, WITHCPPCLASS
 %token TYPES, PARAMETERS, GATES, SUBMODULES, CONNECTIONS, ALLOWUNCONNECTED
 %token DOUBLETYPE, INTTYPE, STRINGTYPE, BOOLTYPE, XMLTYPE, FUNCTION
@@ -328,7 +328,7 @@ channelinterfacedefinition
         ;
 
 channelinterfaceheader
-        : CHANNEL INTERFACE NAME
+        : CHANNELINTERFACE NAME
                 {
                   //FIXME
                   ps.channel = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.nedfile );
@@ -447,7 +447,7 @@ moduleinterfaceheader
         ;
 
 /*
- * Parameters - new syntax
+ * Parameters
  */
 opt_paramblock
         : paramblock
@@ -471,18 +471,20 @@ opt_params
         ;
 
 params
-        : params paramgroup
+        : params paramsitem
                 {
                   setComments(ps.param,@2);
                 }
-        | params param_or_property
-                {
-                  setComments(ps.param,@2);
-                }
-        | param_or_property
+        | paramsitem
                 {
                   setComments(ps.param,@1);
                 }
+        ;
+
+paramsitem
+        : param
+        | paramgroup
+        | property
         ;
 
 paramgroup
@@ -491,17 +493,17 @@ paramgroup
         ;
 
 params_nogroup   /* same as params, but without the paramgroup rule */
-        : params param_or_property
+        : params_nogroup paramsitem_nogroup
                 {
                   setComments(ps.param,@2);
                 }
-        | param_or_property
+        | paramsitem_nogroup
                 {
                   setComments(ps.param,@1);
                 }
         ;
 
-param_or_property
+paramsitem_nogroup
         : param
         | property
         ;
@@ -517,6 +519,7 @@ param
                 }
         | paramtype opt_function NAME '=' expression opt_properties ';'
         | NAME '=' expression opt_properties ';'
+        | qualifier '.' NAME '=' expression opt_properties ';'
         ;
 
 paramtype
@@ -551,8 +554,6 @@ condition
                   //FIXME
                 }
 
-/*------------------------------------*/
-
 /*
  * Gates
  */
@@ -578,50 +579,56 @@ opt_gates
         ;
 
 gates
-        : gates IN gatesI ';'
-        | IN  gatesI ';'
-        | gates OUT gatesO ';'
-        | OUT gatesO ';'
-        ;
-
-gatesI
-        : gatesI ',' gateI
-        | gateI
-        ;
-
-gateI
-        : NAME '[' ']'
+        : gates gatesitem
                 {
-                  ps.gate = addGate(ps.gates, @1, 1, 1 );
-                  setComments(ps.gate,@1,@3);
+                  setComments(ps.gate,@2);
                 }
-        | NAME
+        | gatesitem
                 {
-                  ps.gate = addGate(ps.gates, @1, 1, 0 );
                   setComments(ps.gate,@1);
                 }
         ;
 
-gatesO
-        : gatesO ',' gateO
-        | gateO
+gatesitem
+        : gategroup
+        | gate
         ;
 
-gateO
-        : NAME '[' ']'
+gategroup
+        : condition '{' gates_nogroup '}'
+        | '{' gates_nogroup '}'
+        ;
+
+gates_nogroup   /* same as gates, but without the gategroup rule */
+        : gates_nogroup gate
                 {
-                  ps.gate = addGate(ps.gates, @1, 0, 1 );
-                  setComments(ps.gate,@1,@3);
+                  setComments(ps.gate,@2);
                 }
-        | NAME
+        | gate
                 {
-                  ps.gate = addGate(ps.gates, @1, 0, 0 );
                   setComments(ps.gate,@1);
                 }
         ;
 
 /*
- * Submodules - new syntax
+ * Gate
+ */
+gate
+        : gatetype NAME opt_properties ';'
+        | gatetype NAME '[' ']' opt_properties ';'
+        | gatetype NAME '[' expression ']' opt_properties ';'
+        | NAME opt_properties ';'
+        | NAME '[' expression ']' opt_properties ';'
+        ;
+
+gatetype
+        : INPUT
+        | OUTPUT
+        | INOUT
+        ;
+
+/*
+ * Submodules
  */
 opt_submodblock
         : submodblock
@@ -650,50 +657,33 @@ submodules
         ;
 
 submodule
-        : NAME ':' NAME opt_semicolon
+        : submoduleheader '{'
                 {
                   ps.submod = addSubmodule(ps.submods, @1, @3, NULLPOS);
                   setComments(ps.submod,@1,@4);
                 }
-          opt_on_blocks
-          submodule_body
-                {
-                }
-        | NAME ':' NAME vector opt_semicolon
+          opt_paramblock
+          opt_gateblock
+          '}' opt_semicolon
+        ;
+
+submoduleheader
+        : NAME ':' NAME
+        | NAME vector ':' NAME
                 {
                   ps.submod = addSubmodule(ps.submods, @1, @3, NULLPOS);
                   addVector(ps.submod, "vector-size",@4,$4);
                   setComments(ps.submod,@1,@5);
                 }
-          opt_on_blocks
-          submodule_body
-                {
-                }
-        | NAME ':' NAME LIKE NAME opt_semicolon
-                {
-                  ps.submod = addSubmodule(ps.submods, @1, @5, @3);
-                  setComments(ps.submod,@1,@6);
-                }
-          opt_on_blocks
-          submodule_body
-                {
-                }
-        | NAME ':' NAME vector LIKE NAME opt_semicolon
-                {
-                  ps.submod = addSubmodule(ps.submods, @1, @6, @3);
-                  addVector(ps.submod, "vector-size",@4,$4);
-                  setComments(ps.submod,@1,@7);
-                }
-          opt_on_blocks
-          submodule_body
-                {
-                }
+        | NAME ':' likeparam LIKE NAME
+        | NAME vector ':' likeparam  LIKE NAME
         ;
 
-submodule_body
-        : opt_substparamblocks
-          opt_gatesizeblocks
-          opt_submod_displayblock
+likeparam
+        : '<' '>'
+        | '<' '@' NAME '>'
+        | '<' qualifier '.' '@' NAME '>'  /* note: qualifier here must be "this" */
+        | '<' expression '>'
         ;
 
 /*
@@ -705,7 +695,7 @@ opt_connblock
         ;
 
 connblock
-        : CONNECTIONS NOCHECK ':'
+        : CONNECTIONS ALLOWUNCONNECTED ':'
                 {
                   ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.module );
                   ps.conns->setCheckUnconnected(false);
@@ -731,9 +721,39 @@ opt_connections
         ;
 
 connections
-        : connections connection
+        : connections connectionsitem
+        | connectionsitem
+        ;
+
+connectionsitem
+        : connectiongroup
+        | connection whereclause
         | connection
         ;
+
+connectiongroup
+        : whereclause '{' connections_nogroup '}'
+        | '{' connections_nogroup '}' whereclause
+        | '{' connections_nogroup '}'
+        ;
+
+connections_nogroup   /* same as connections, but without the connectiongroup rule */
+        : connections_nogroup connectionsitem_nogroup
+                {
+                  setComments(ps.gate,@2);
+                }
+        | connectionsitem_nogroup
+                {
+                  setComments(ps.gate,@1);
+                }
+        ;
+
+connectionsitem_nogroup
+        : connection whereclause
+        | connection
+        ;
+
+/*/////////////////////////////*/
 
 connection
         : loopconnection

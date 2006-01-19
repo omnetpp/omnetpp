@@ -82,6 +82,7 @@ char textbuf[TEXTBUF_LEN];
 "network"                { count(); return NETWORK; }
 "channel"                { count(); return CHANNEL; }
 "interface"              { count(); return INTERFACE; }
+"channelinterface"       { count(); return CHANNELINTERFACE; }
 
 "extends"                { count(); return EXTENDS; }
 "like"                   { count(); return LIKE; }
