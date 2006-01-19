@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="org.omnetpp.ned.editor.text"
+   name="%pluginName"
+   version="4.0"
+   provider-name="%providerName"
+   class="org.omnetpp.ned.editor.text.NedEditorPlugin">
+
+   <runtime>
+      <library name="NedTextEdit.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+   <requires>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.jface.text"/>
+      <import plugin="org.eclipse.ui.workbench.texteditor"/>
+      <import plugin="org.eclipse.ui.editors"/>
+      <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.ui.views"/>
+      <import plugin="org.eclipse.core.resources"/>
+   </requires>
+
+<!-- =========================================================================== -->
+<!-- Text based NED editor                                                       -->
+<!-- =========================================================================== -->
+
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="org.omnetpp.ned.editor.text.NedEditor"
+            contributorClass="org.omnetpp.ned.editor.text.NedActionContributor"
+            default="true"
+            extensions="%nedFileExtensions"
+            icon="icons/16/gned.gif"
+            id="org.omnetpp.ned.editor.text.NedEditor"
+            name="%nedEditorName">
+      </editor>
+   </extension>
+   
+   <extension
+         id="NedDocumentSetupParticipant"
+         name="%documentSetupParticipantName"
+         point="org.eclipse.core.filebuffers.documentSetup">
+      <participant
+            extensions="%nedFileExtensions"
+            class="org.omnetpp.ned.editor.text.NedDocumentSetupParticipant">
+      </participant>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.editors.templates">
+      <contextType
+            class="org.omnetpp.ned.editor.text.assist.NedContextType"
+            id="org.omnetpp.ned.editor.text.default"
+            name="NED File"/>
+      <resolver
+            name="Parameters"
+            type="param"
+            icon="icons/16/resolver.gif"
+            description="Module parameters"
+            contextTypeId="org.omnetpp.ned.editor.text.default"
+            class="org.omnetpp.ned.editor.text.assist.NedVariableResolver">
+      </resolver>
+      <resolver
+            name="Module type"
+            type="modtype"
+            icon="icons/16/resolver.gif"
+            description="Module type"
+            contextTypeId="org.omnetpp.ned.editor.text.default"
+            class="org.omnetpp.ned.editor.text.assist.NedVariableResolver">
+      </resolver>
+      <resolver
+            class="org.omnetpp.ned.editor.text.assist.NedVariableResolver"
+            contextTypeId="org.omnetpp.ned.editor.text.default"
+            description="A NED file"
+            icon="icons/16/resolver.gif"
+            name="Filename"
+            type="filename"/>
+      <include
+      		file="templates/ned.xml"
+      		translations="templates/ned.properties">
+      </include>
+   </extension>
+   
+</plugin>

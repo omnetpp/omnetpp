@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/org.omnetpp.ned.model/src"
+    editDirectory="/org.omnetpp.ned.provider/src" editorDirectory="/org.omnetpp.ned.editor.tree/src"
+    modelPluginID="org.omnetpp.ned.model" modelName="Ned" modelPluginClass="org.omnetpp.ned.model.ModelPlugin"
+    editPluginClass="org.omnetpp.ned.provider.NedProviderPlugin" editorPluginClass="org.omnetpp.ned.editor.tree.NedTreeEditorPlugin"
+    importerID="org.eclipse.emf.importer.ecore">
+  <foreignModel>../../org.omnetpp.model.ned/src/org/omnetpp/model/ned.ecore</foreignModel>
+  <genPackages prefix="Ned" basePackage="org.omnetpp.ned.model" resource="XML" disposableProviderFactory="true"
+      ecorePackage="ned.ecore#/">
+    <genClasses ecoreClass="ned.ecore#//Channel">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned.ecore#//Channel/channelAttr"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned.ecore#//Channel/displayString"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Channel/bannerComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Channel/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Channel/rightComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Channel/trailingComment"/>
+    </genClasses>
+    <genClasses ecoreClass="ned.ecore#//ChannelAttr">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//ChannelAttr/bannerComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//ChannelAttr/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//ChannelAttr/rightComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//ChannelAttr/trailingComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//ChannelAttr/value"/>
+    </genClasses>
+    <genClasses ecoreClass="ned.ecore#//CompoundModule">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned.ecore#//CompoundModule/params"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned.ecore#//CompoundModule/gates"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned.ecore#//CompoundModule/submodules"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned.ecore#//CompoundModule/connections"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned.ecore#//CompoundModule/displayString"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//CompoundModule/bannerComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//CompoundModule/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//CompoundModule/rightComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//CompoundModule/trailingComment"/>
+    </genClasses>
+    <genClasses ecoreClass="ned.ecore#//ConnAttr">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//ConnAttr/bannerComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//ConnAttr/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//ConnAttr/rightComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//ConnAttr/trailingComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//ConnAttr/value"/>
+    </genClasses>
+    <genClasses ecoreClass="ned.ecore#//Connection">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned.ecore#//Connection/connAttr"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned.ecore#//Connection/displayString"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Connection/bannerComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Connection/condition"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Connection/destGate"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Connection/destGateIndex"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Connection/destGatePlusplus"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Connection/destModule"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Connection/destModuleIndex"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Connection/rightComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Connection/rightToLeft"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Connection/srcGate"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Connection/srcGateIndex"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Connection/srcGatePlusplus"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Connection/srcModule"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Connection/srcModuleIndex"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Connection/trailingComment"/>
+    </genClasses>
+    <genClasses ecoreClass="ned.ecore#//Connections">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute ned.ecore#//Connections/group"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned.ecore#//Connections/connection"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned.ecore#//Connections/forLoop"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Connections/bannerComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Connections/checkUnconnected"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Connections/rightComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Connections/trailingComment"/>
+    </genClasses>
+    <genClasses ecoreClass="ned.ecore#//DisplayString">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//DisplayString/bannerComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//DisplayString/rightComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//DisplayString/trailingComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//DisplayString/value"/>
+    </genClasses>
+    <genClasses ecoreClass="ned.ecore#//ForLoop">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned.ecore#//ForLoop/forLoop"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned.ecore#//ForLoop/connection"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//ForLoop/bannerComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//ForLoop/fromValue"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//ForLoop/paramName"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//ForLoop/rightComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//ForLoop/toValue"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//ForLoop/trailingComment"/>
+    </genClasses>
+    <genClasses ecoreClass="ned.ecore#//Gate">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Gate/bannerComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Gate/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Gate/output"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Gate/rightComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Gate/trailingComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Gate/vector"/>
+    </genClasses>
+    <genClasses ecoreClass="ned.ecore#//Gates">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned.ecore#//Gates/gate"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Gates/bannerComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Gates/rightComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Gates/trailingComment"/>
+    </genClasses>
+    <genClasses ecoreClass="ned.ecore#//Gatesize">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Gatesize/bannerComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Gatesize/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Gatesize/rightComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Gatesize/trailingComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Gatesize/vectorSize"/>
+    </genClasses>
+    <genClasses ecoreClass="ned.ecore#//Gatesizes">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned.ecore#//Gatesizes/gatesize"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Gatesizes/bannerComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Gatesizes/condition"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Gatesizes/rightComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Gatesizes/trailingComment"/>
+    </genClasses>
+    <genClasses ecoreClass="ned.ecore#//Import">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Import/bannerComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Import/filename"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Import/rightComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Import/trailingComment"/>
+    </genClasses>
+    <genClasses ecoreClass="ned.ecore#//NedFile">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute ned.ecore#//NedFile/group"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned.ecore#//NedFile/import"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned.ecore#//NedFile/channel"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned.ecore#//NedFile/simpleModule"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned.ecore#//NedFile/compoundModule"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned.ecore#//NedFile/network"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//NedFile/bannerComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//NedFile/rightComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//NedFile/trailingComment"/>
+    </genClasses>
+    <genClasses ecoreClass="ned.ecore#//Network">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned.ecore#//Network/substparams"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Network/bannerComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Network/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Network/rightComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Network/trailingComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Network/typeName"/>
+    </genClasses>
+    <genClasses ecoreClass="ned.ecore#//Param">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Param/bannerComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Param/dataType"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Param/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Param/rightComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Param/trailingComment"/>
+    </genClasses>
+    <genClasses ecoreClass="ned.ecore#//Params">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned.ecore#//Params/param"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Params/bannerComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Params/rightComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Params/trailingComment"/>
+    </genClasses>
+    <genClasses ecoreClass="ned.ecore#//SimpleModule">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned.ecore#//SimpleModule/params"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned.ecore#//SimpleModule/gates"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned.ecore#//SimpleModule/displayString"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//SimpleModule/bannerComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//SimpleModule/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//SimpleModule/rightComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//SimpleModule/trailingComment"/>
+    </genClasses>
+    <genClasses ecoreClass="ned.ecore#//Submodule">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned.ecore#//Submodule/substparams"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned.ecore#//Submodule/gatesizes"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned.ecore#//Submodule/displayString"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Submodule/bannerComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Submodule/likeParam"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Submodule/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Submodule/rightComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Submodule/trailingComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Submodule/typeName"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Submodule/vectorSize"/>
+    </genClasses>
+    <genClasses ecoreClass="ned.ecore#//Submodules">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned.ecore#//Submodules/submodule"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Submodules/bannerComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Submodules/rightComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Submodules/trailingComment"/>
+    </genClasses>
+    <genClasses ecoreClass="ned.ecore#//Substparam">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Substparam/bannerComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Substparam/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Substparam/rightComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Substparam/trailingComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Substparam/value"/>
+    </genClasses>
+    <genClasses ecoreClass="ned.ecore#//Substparams">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned.ecore#//Substparams/substparam"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Substparams/bannerComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Substparams/condition"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Substparams/rightComment"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned.ecore#//Substparams/trailingComment"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

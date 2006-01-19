@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            name="Scalar Dataset Editor"
+            extensions="sdataset"
+            icon="icons/sdataset.gif"
+            contributorClass="com.omnest.scave.editors.ScalarDatasetEditorContributor"
+            class="com.omnest.scave.editors.ScalarDatasetEditor"
+            id="com.omnest.scave.editors.ScalarDatasetEditor">
+      </editor>
+      <editor
+            name="Vector Dataset Editor"
+            extensions="vdataset"
+            icon="icons/vdataset.gif"
+            contributorClass="com.omnest.scave.editors.VectorDatasetEditorContributor"
+            class="com.omnest.scave.editors.VectorDatasetEditor"
+            id="com.omnest.scave.editors.VectorDatasetEditor">
+      </editor>
+      <editor
+            name="Scalar Chart Editor"
+            extensions="schart"
+            icon="icons/barchart.gif"
+            contributorClass="com.omnest.scave.editors.ScalarChartEditorContributor"
+            class="com.omnest.scave.editors.ScalarChartEditor"
+            id="com.omnest.scave.editors.ScalarChartEditor">
+      </editor>
+      <editor
+            name="Vector Chart Editor"
+            extensions="vchart"
+            icon="icons/xyplot.gif"
+            contributorClass="com.omnest.scave.editors.VectorChartEditorContributor"
+            class="com.omnest.scave.editors.VectorChartEditor"
+            id="com.omnest.scave.editors.VectorChartEditor">
+      </editor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            objectClass="org.eclipse.core.resources.IFile"
+            nameFilter="plugin.xml"
+            id="com.omnest.scave.contribution1">
+         <menu
+               label="New Submenu"
+               path="additions"
+               id="com.omnest.scave.menu1">
+            <separator
+                  name="group1">
+            </separator>
+         </menu>
+         <action
+               label="New Action"
+               class="com.omnest.scave.popup.actions.NewAction"
+               menubarPath="com.omnest.scave.menu1/group1"
+               enablesFor="1"
+               id="com.omnest.scave.newAction">
+         </action>
+      </objectContribution>
+   </extension>
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="org.eclipse.ui.ide.workbench"
+            name="Scave">
+         <property
+               name="windowImages"
+               value="eclipse.gif,eclipse32.gif"/>
+         <property
+               name="aboutText"
+               value="%productBlurb"/>
+         <property
+               name="aboutImage"
+               value="eclipse_lg.gif"/>
+      </product>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="com.omnest.scave.plugin.ScavePerspective"
+            icon="icons/sample.gif"
+            id="com.omnest.scave.ScavePerspective"
+            name="Result Analysis - OMNEST"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="com.omnest.scave.New"
+            name="Result analysis - OMNEST"/>
+      <wizard
+            category="com.omnest.scave.New"
+            class="com.omnest.scave.wizards.SampleNewWizard"
+            icon="icons/sample.gif"
+            id="com.omnest.scave.wizards.SampleNewWizard"
+            name="Sample New Wizard"/>
+      <wizard
+            canFinishEarly="true"
+            category="com.omnest.scave.New"
+            class="com.omnest.scave.wizards.UntitledTextFileWizard"
+            hasPages="false"
+            icon="icons/sample.gif"
+            id="com.omnest.scave.wizards.SampleNewWizard2"
+            name="Whatever new scave wizard"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="com.omnest.scave.ActionSet"
+            label="Scava ActionSet 1"
+            visible="true">
+         <action
+               class="com.omnest.scave.actions.NewScalarDatasetActionDelegate"
+               icon="icons/sdataset.gif"
+               id="com.omnest.scave.NewScalarDatasetAction"
+               label="New Scalar Dataset"
+               style="push"
+               toolbarPath="scave"
+               tooltip="New Scalar Dataset"/>
+         <action
+               class="com.omnest.scave.actions.NewVectorDatasetActionDelegate"
+               icon="icons/vdataset.gif"
+               id="com.omnest.scave.NewVectorDatasetAction"
+               label="New Vector Dataset"
+               style="push"
+               toolbarPath="scave"
+               tooltip="New Vector Dataset"/>
+         <action
+               class="com.omnest.scave.actions.NewScalarChartActionDelegate"
+               icon="icons/barchart.gif"
+               id="com.omnest.scave.NewScalarChartAction"
+               label="New Scalar Chart"
+               style="push"
+               toolbarPath="scave"
+               tooltip="New Scalar Chart"/>
+         <action
+               class="com.omnest.scave.actions.NewVectorChartActionDelegate"
+               icon="icons/xyplot.gif"
+               id="com.omnest.scave.NewVectorChartAction"
+               label="New Vector Chart"
+               style="push"
+               toolbarPath="scave"
+               tooltip="New Vector Chart"/>
+      </actionSet>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editorActions">
+   </extension>
+
+</plugin>

@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NED Domain model
+Bundle-SymbolicName: org.omnetpp.ned.model; singleton:=true
+Bundle-Version: 4.0.0
+Bundle-ClassPath: .
+Bundle-Activator: org.omnetpp.ned.model.ModelPlugin$Implementation
+Bundle-Vendor: OpenSim Ltd.
+Bundle-Localization: plugin
+Export-Package: org.omnetpp.ned.model,
+ org.omnetpp.ned.model.emf,
+ org.omnetpp.ned.model.emf.impl,
+ org.omnetpp.ned.model.emf.util,
+ org.omnetpp.ned.model.swig
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.emf.ecore;visibility:=reexport,
+ org.eclipse.emf.ecore.xmi;visibility:=reexport
+Eclipse-AutoStart: true

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+
+     <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            default="true"
+            name="NED Graphical Module Editor"
+            extensions="gned"
+            icon="images/_internal/gned.gif"
+            class="org.omnetpp.ned.editor.graph.ModuleEditor"
+            contributorClass="org.omnetpp.ned.editor.graph.actions.ModuleActionBarContributor"
+            id="org.omnetpp.ned.editor.graph.ModuleEditor">
+      </editor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            name="NED Wizards"
+            id="org.omnetpp.ned">
+      </category>
+      <wizard
+            name="New NED Module Wizard"
+            icon="/images/_internal/gned.gif"
+            category="org.omnetpp.ned"
+            class="org.omnetpp.ned.editor.graph.wizards.ModuleCreationWizard"
+            id="org.omnetpp.ned.editor.graph.wizard.new.file">
+         <description>
+            Create a new module in the NED file
+         </description>
+         <selection
+               class="org.eclipse.core.resources.IResource">
+         </selection>
+      </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            objectClass="org.eclipse.core.resources.IFile"
+            nameFilter="*.gned"
+            id="org.omnetpp.ned.editor.graph">
+         <action
+               label="Print"
+               class="org.omnetpp.ned.editor.graph.actions.ModulePrintAction"
+               menubarPath="additions"
+               enablesFor="1"
+               id="org.omnetpp.ned.editor.graph.actions.print">
+         </action>
+      </objectContribution>
+   </extension>
+
+</plugin>

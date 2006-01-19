@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+ <copyright>
+ </copyright>
+
+ $Id$
+-->
+
+<plugin>
+
+
+  <extension
+    point = "org.eclipse.ui.newWizards">
+    <category
+      id = "org.eclipse.emf.ecore.Wizard.category.ID"
+      name="%_UI_Wizard_category">
+    </category>
+    <wizard
+      id = "org.omnetpp.ned.model.emf.presentation.NedModelWizardID"
+      name = "%_UI_NedModelWizard_label"
+      class = "org.omnetpp.ned.model.emf.presentation.NedModelWizard"
+      category = "org.eclipse.emf.ecore.Wizard.category.ID"
+      icon = "icons/full/obj16/NedModelFile.gif">
+      <description>%_UI_NedModelWizard_description</description>
+      <selection class = "org.eclipse.core.resources.IResource" />
+    </wizard>
+  </extension>
+
+  <extension point = "org.eclipse.ui.editors">
+    <editor
+        id = "org.omnetpp.ned.model.emf.presentation.NedEditorID"
+        name = "%_UI_NedEditor_label"
+        icon = "icons/full/obj16/NedModelFile.gif"
+        extensions = "ned"
+        class = "org.omnetpp.ned.model.emf.presentation.NedEditor" 
+        contributorClass="org.omnetpp.ned.model.emf.presentation.NedActionBarContributor" >
+    </editor>
+  </extension>    
+</plugin>
