@@ -44,7 +44,7 @@ AC_CANONICAL_HOST()
 # OMNeT++/OMNEST version number
 #
 OMNETPP_VERSION=`cat Version | sed 's/omnetpp-//'`
-OMNETPP_EDITION="Commercial Edition"
+OMNETPP_EDITION="Academic Public License"
 
 #
 #  Set system/arch specific values

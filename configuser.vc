@@ -119,10 +119,10 @@ WITH_PARSIM=yes
 #
 # Choose between debug and release libraries here
 #
-CFLAGS=$(CFLAGS_RELEASE)
-LDFLAGS=$(LDFLAGS_RELEASE)
-#CFLAGS=$(CFLAGS_DEBUG)
-#LDFLAGS=$(LDFLAGS_DEBUG)
+#CFLAGS=$(CFLAGS_RELEASE)
+#LDFLAGS=$(LDFLAGS_RELEASE)
+CFLAGS=$(CFLAGS_DEBUG)
+LDFLAGS=$(LDFLAGS_DEBUG)
 
 
 #==============================================================================
@@ -148,7 +148,7 @@ OMNETPP_SCALARS_DIR=$(OMNETPP_ROOT)/src/scalars
 OMNETPP_PLOVE_DIR=$(OMNETPP_ROOT)/src/plove
 OMNETPP_BITMAP_PATH=./bitmaps;$(OMNETPP_ROOT)/bitmaps
 
-OMNETPP_EDITION=Academic Edition
+OMNETPP_EDITION=Academic Public License
 
 #
 # Libraries
