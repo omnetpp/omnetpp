@@ -178,7 +178,7 @@ bool CppExpressionGenerator::needsExpressionClass(ExpressionNode *expr, NEDEleme
         return false;
 
     // a single parameter as expression doesn't need expression class, except "ancestor ref param"
-    if (tag==NED_PARAM_REF && (!((ParamRefNode *)node)->getIsRef() || !((ParamRefNode *)node)->getIsAncestor()))
+    if (tag==NED_PARAM_REF && (!((RefNode *)node)->getIsRef() || !((RefNode *)node)->getIsAncestor()))
         return false;
 
     // special functions (INPUT, INDEX, SIZEOF) may also go without expression classes
@@ -234,7 +234,7 @@ void CppExpressionGenerator::doExtractArgs(ExpressionInfo& info, NEDElement *nod
              isctorarg = true;
         else if (tag==NED_FUNCTION)
              iscachedvar = true;
-        else if (tag==NED_PARAM_REF && !((ParamRefNode *)child)->getIsRef())
+        else if (tag==NED_PARAM_REF && !((RefNode *)child)->getIsRef())
              isctorarg = true;
 
         if (isctorarg)
@@ -333,7 +333,7 @@ const char *CppExpressionGenerator::getNameForArg(NEDElement *node)
     else if (node->getTagCode()==NED_FUNCTION)
         return ((FunctionNode *)node)->getName();
     else if (node->getTagCode()==NED_PARAM_REF)
-        return ((ParamRefNode *)node)->getParamName();
+        return ((RefNode *)node)->getParamName();
     else
         {INTERNAL_ERROR1(node, "getNameForArg(): unexpected tag '%s'", node->getTagName());return NULL;}
 }
@@ -347,7 +347,7 @@ void CppExpressionGenerator::doValueForArg(NEDElement *node)
     else if (isSizeofOp(node))
         doFunction((FunctionNode *)node, "", MODE_INLINE_EXPRESSION);
     else if (node->getTagCode()==NED_PARAM_REF)
-        doParamref((ParamRefNode *)node, "", MODE_INLINE_EXPRESSION);
+        doParamref((RefNode *)node, "", MODE_INLINE_EXPRESSION);
     else
         {INTERNAL_ERROR1(node, "doValueForArg(): unexpected tag '%s'", node->getTagName());}
 }
@@ -423,7 +423,7 @@ void CppExpressionGenerator::generateItem(NEDElement *node, const char *indent, 
         case NED_FUNCTION:
             doFunction((FunctionNode *)node, indent, mode); break;
         case NED_PARAM_REF:
-            doParamref((ParamRefNode *)node, indent, mode); break;
+            doParamref((RefNode *)node, indent, mode); break;
         case NED_IDENT:
             doIdent((IdentNode *)node, indent, mode); break;
         case NED_CONST:
@@ -610,7 +610,7 @@ void CppExpressionGenerator::doFunction(FunctionNode *node, const char *indent, 
     out << ")";
 }
 
-void CppExpressionGenerator::doParamref(ParamRefNode *node, const char *indent, int mode)
+void CppExpressionGenerator::doParamref(RefNode *node, const char *indent, int mode)
 {
     if (mode==MODE_EXPRESSION_CLASS)
     {

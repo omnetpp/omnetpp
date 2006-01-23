@@ -250,7 +250,7 @@ const char *toString(long);
 ExpressionNode *createExpression(NEDElement *expr);
 OperatorNode *createOperator(const char *op, NEDElement *operand1, NEDElement *operand2=NULL, NEDElement *operand3=NULL);
 FunctionNode *createFunction(const char *funcname, NEDElement *arg1=NULL, NEDElement *arg2=NULL, NEDElement *arg3=NULL, NEDElement *arg4=NULL);
-ParamRefNode *createParamRef(const char *param, const char *paramindex=NULL, const char *module=NULL, const char *moduleindex=NULL);
+RefNode *createParamRef(const char *param, const char *paramindex=NULL, const char *module=NULL, const char *moduleindex=NULL);
 IdentNode *createIdent(const char *name);
 ConstNode *createConst(int type, const char *value, const char *text=NULL);
 ConstNode *createTimeConst(const char *text);
@@ -2322,30 +2322,30 @@ case 222:
 #line 1182 "ned.y"
 {
                   yyval = createParamRef(toString(yylsp[0]));
-                  ((ParamRefNode *)yyval)->setIsRef(true);
+                  ((RefNode *)yyval)->setIsRef(true);
                 ;
     break;}
 case 223:
 #line 1187 "ned.y"
 {
                   yyval = createParamRef(toString(yylsp[0]));
-                  ((ParamRefNode *)yyval)->setIsRef(true);
-                  ((ParamRefNode *)yyval)->setIsAncestor(true);
+                  ((RefNode *)yyval)->setIsRef(true);
+                  ((RefNode *)yyval)->setIsAncestor(true);
                 ;
     break;}
 case 224:
 #line 1193 "ned.y"
 {
                   yyval = createParamRef(toString(yylsp[0]));
-                  ((ParamRefNode *)yyval)->setIsRef(true);
-                  ((ParamRefNode *)yyval)->setIsAncestor(true);
+                  ((RefNode *)yyval)->setIsRef(true);
+                  ((RefNode *)yyval)->setIsAncestor(true);
                 ;
     break;}
 case 225:
 #line 1199 "ned.y"
 {
                   yyval = createParamRef(toString(yylsp[0]));
-                  ((ParamRefNode *)yyval)->setIsAncestor(true);
+                  ((RefNode *)yyval)->setIsAncestor(true);
                 ;
     break;}
 case 227:
@@ -3216,9 +3216,9 @@ ExpressionNode *createExpression(NEDElement *expr)
    return expression;
 }
 
-ParamRefNode *createParamRef(const char *param, const char *paramindex, const char *module, const char *moduleindex)
+RefNode *createParamRef(const char *param, const char *paramindex, const char *module, const char *moduleindex)
 {
-   ParamRefNode *par = (ParamRefNode *)createNodeWithTag(NED_PARAM_REF);
+   RefNode *par = (RefNode *)createNodeWithTag(NED_PARAM_REF);
    par->setParamName(param);
    if (paramindex) par->setParamIndex(paramindex);
    if (module) par->setModule(module);

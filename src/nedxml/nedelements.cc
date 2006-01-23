@@ -834,14 +834,15 @@ PropertyNode *ParamNode::getFirstPropertyChild() const
 
 int PropertyNode::getNumAttributes() const
 {
-    return 2;
+    return 3;
 }
 
 const char *PropertyNode::getAttributeName(int k) const
 {
     switch (k) {
-        case 0: return "qualifier";
-        case 1: return "name";
+        case 0: return "is-implicit";
+        case 1: return "qualifier";
+        case 2: return "name";
         default: return 0;
     }
 }
@@ -849,8 +850,9 @@ const char *PropertyNode::getAttributeName(int k) const
 const char *PropertyNode::getAttribute(int k) const
 {
     switch (k) {
-        case 0: return qualifier.c_str();
-        case 1: return name.c_str();
+        case 0: return boolToString(isImplicit);
+        case 1: return qualifier.c_str();
+        case 2: return name.c_str();
         default: return 0;
     }
 }
@@ -858,8 +860,9 @@ const char *PropertyNode::getAttribute(int k) const
 void PropertyNode::setAttribute(int k, const char *val)
 {
     switch (k) {
-        case 0: qualifier = val; break;
-        case 1: name = val; break;
+        case 0: isImplicit = stringToBool(val); break;
+        case 1: qualifier = val; break;
+        case 2: name = val; break;
         default: ;
     }
 }
@@ -867,8 +870,9 @@ void PropertyNode::setAttribute(int k, const char *val)
 const char *PropertyNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
+        case 0: return "false";
         case 1: return "";
+        case 2: return "";
         default: return 0;
     }
 }

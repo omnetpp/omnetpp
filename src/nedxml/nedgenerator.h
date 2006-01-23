@@ -139,7 +139,7 @@ class NEDGenerator
     bool isOperatorLeftAssoc(const char *op);
     void doOperator(OperatorNode *node, const char *indent, bool islast, const char *);
     void doFunction(FunctionNode *node, const char *indent, bool islast, const char *);
-    void doParamref(ParamRefNode *node, const char *indent, bool islast, const char *);
+    void doParamref(RefNode *node, const char *indent, bool islast, const char *);
     void doIdent(IdentNode *node, const char *indent, bool islast, const char *);
     void doConst(ConstNode *node, const char *indent, bool islast, const char *);
 

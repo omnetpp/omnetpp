@@ -67,6 +67,7 @@
 
 <!ELEMENT property (whitespace*, key-value*, property*)>
 <!ATTLIST property
+     is-implicit        (true|false) "false"
      qualifier          CDATA     #IMPLIED
      name               NMTOKEN   #REQUIRED>
 

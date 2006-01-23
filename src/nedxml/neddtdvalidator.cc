@@ -163,6 +163,8 @@ void NEDDTDValidator::validateElement(PropertyNode *node)
     char mult[] = {'*','*','*', 0};
     checkSequence(node, tags, mult);
 
+    const char *vals0[] = {"true","false"};
+    checkEnumeratedAttribute(node, "is-implicit", vals0, sizeof(vals0)/sizeof(const char *));
     checkRequiredAttribute(node, "name");
     checkNameAttribute(node, "name");
 }

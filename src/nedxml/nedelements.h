@@ -771,6 +771,7 @@ class ParamNode : public NEDElement
  * <pre>
  * <!ELEMENT property (whitespace*, key-value*, property*)>
  * <!ATTLIST property
+ *      is-implicit        (true|false) "false"
  *      qualifier          CDATA     #IMPLIED
  *      name               NMTOKEN   #REQUIRED>
  * </pre>
@@ -780,6 +781,7 @@ class ParamNode : public NEDElement
 class PropertyNode : public NEDElement
 {
   private:
+    bool isImplicit;
     std::string qualifier;
     std::string name;
   public:
@@ -803,6 +805,8 @@ class PropertyNode : public NEDElement
 
     /** @name Typed access to attributes, children and siblings */
     //@{
+    bool getIsImplicit() const  {return isImplicit;}
+    void setIsImplicit(bool val)  {isImplicit = val;}
     const char * getQualifier() const  {return qualifier.c_str();}
     void setQualifier(const char * val)  {qualifier = val;}
     const char * getName() const  {return name.c_str();}

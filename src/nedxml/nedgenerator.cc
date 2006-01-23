@@ -770,7 +770,7 @@ void NEDGenerator::doFunction(FunctionNode *node, const char *indent, bool islas
     out << ")";
 }
 
-void NEDGenerator::doParamref(ParamRefNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doParamref(RefNode *node, const char *indent, bool islast, const char *)
 {
     if (node->getIsAncestor())
         out << "ancestor ";
@@ -1037,7 +1037,7 @@ void NEDGenerator::generateNedItem(NEDElement *node, const char *indent, bool is
         case NED_FUNCTION:
             doFunction((FunctionNode *)node, indent, islast, arg); break;
         case NED_PARAM_REF:
-            doParamref((ParamRefNode *)node, indent, islast, arg); break;
+            doParamref((RefNode *)node, indent, islast, arg); break;
         case NED_IDENT:
             doIdent((IdentNode *)node, indent, islast, arg); break;
         case NED_CONST:
