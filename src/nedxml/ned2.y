@@ -86,7 +86,7 @@ struct ParserState
     bool parseExpressions;
     bool storeSourceCode;
     bool inLoop;
-    bool inNetwork;
+    bool inTypes;
 
     /* tmp flags, used with msg fields */
     bool isAbstract;
@@ -155,11 +155,9 @@ const char *toString(long);
 ExpressionNode *createExpression(NEDElement *expr);
 OperatorNode *createOperator(const char *op, NEDElement *operand1, NEDElement *operand2=NULL, NEDElement *operand3=NULL);
 FunctionNode *createFunction(const char *funcname, NEDElement *arg1=NULL, NEDElement *arg2=NULL, NEDElement *arg3=NULL, NEDElement *arg4=NULL);
-RefNode *createParamRef(const char *param, const char *paramindex=NULL, const char *module=NULL, const char *moduleindex=NULL);
-//XXX IdentNode *createIdent(const char *name);
+RefNode *createRef(const char *param, const char *paramindex=NULL, const char *module=NULL, const char *moduleindex=NULL);
 ConstNode *createConst(int type, const char *value, const char *text=NULL);
-ConstNode *createTimeConst(const char *text);
-NEDElement *createRef(const char *name);
+ConstNode *createQuantity(const char *text);
 NEDElement *unaryMinus(NEDElement *node);
 
 void addVector(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr);
@@ -296,7 +294,7 @@ channeldefinition
 channelheader
         : CHANNEL NAME
                 {
-                  ps.component = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.nedfile);
+                  ps.component = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
                   ((ChannelNode *)ps.component)->setName(toString(@2));
                   setComments(ps.component,@1,@2);
                 }
@@ -330,7 +328,7 @@ channelinterfacedefinition
 channelinterfaceheader
         : CHANNELINTERFACE NAME
                 {
-                  ps.component = (ChannelInterfaceNode *)createNodeWithTag(NED_CHANNEL_INTERFACE, ps.nedfile);
+                  ps.component = (ChannelInterfaceNode *)createNodeWithTag(NED_CHANNEL_INTERFACE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
                   ((ChannelInterfaceNode *)ps.component)->setName(toString(@2));
                   setComments(ps.component,@1,@2);
                 }
@@ -363,7 +361,7 @@ simplemoduledefinition
 simplemoduleheader
         : SIMPLE NAME
                 {
-                  ps.component = (SimpleModuleNode *)createNodeWithTag(NED_SIMPLE_MODULE, ps.nedfile );
+                  ps.component = (SimpleModuleNode *)createNodeWithTag(NED_SIMPLE_MODULE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile );
                   ((SimpleModuleNode *)ps.component)->setName(toString(@2));
                   setComments(ps.component,@1,@2);
                 }
@@ -389,7 +387,7 @@ compoundmoduledefinition
 compoundmoduleheader
         : MODULE NAME
                 {
-                  ps.component = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.nedfile );
+                  ps.component = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile );
                   ((CompoundModuleNode *)ps.component)->setName(toString(@2));
                   setComments(ps.component,@1,@2);
                 }
@@ -408,14 +406,13 @@ networkdefinition
           '}' opt_semicolon
                 {
                   setTrailingComment(ps.component,@5);
-                  ps.inNetwork=0;
                 }
         ;
 
 networkheader
         : NETWORK NAME
                 {
-                  ps.component = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.nedfile );
+                  ps.component = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile );
                   ((CompoundModuleNode *)ps.component)->setName(toString(@2));
                   ((CompoundModuleNode *)ps.component)->setIsNetwork(true);
                   setComments(ps.component,@1,@2);
@@ -439,8 +436,7 @@ moduleinterfacedefinition
 moduleinterfaceheader
         : INTERFACE NAME
                 {
-                  //FIXME
-                  ps.component = (ModuleInterfaceNode *)createNodeWithTag(NED_MODULE_INTERFACE, ps.nedfile);
+                  ps.component = (ModuleInterfaceNode *)createNodeWithTag(NED_MODULE_INTERFACE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
                   ((ModuleInterfaceNode *)ps.component)->setName(toString(@2));
                   setComments(ps.component,@1,@2);
                 }
@@ -665,8 +661,12 @@ typeblock
                 {
                   ps.types = (TypesNode *)createNodeWithTag(NED_TYPES, ps.component);
                   setComments(ps.types,@1,@2);
+                  ps.inTypes = true;
                 }
            opt_localtypes
+                {
+                  ps.inTypes = false;
+                }
         ;
 
 opt_localtypes
@@ -1178,7 +1178,9 @@ special_expr
         | INDEX_ '(' ')'
                 { if (ps.parseExpressions) $$ = createFunction("index"); }
         | SIZEOF '(' NAME ')'
-                { if (ps.parseExpressions) $$ = createFunction("sizeof", createIdent(toString(@3))); }
+                { if (ps.parseExpressions) $$ = createFunction("sizeof", createRef(toString(@3))); }
+        | SIZEOF '(' NAME '.' NAME ')'
+                { if (ps.parseExpressions) $$ = createFunction("sizeof", createRef(toString(@5), NULL, toString(@3))); }
         ;
 
 stringconstant
@@ -1190,9 +1192,9 @@ numconst
         : INTCONSTANT
                 { $$ = createConst(NED_CONST_INT, toString(@1)); }
         | REALCONSTANT
-                { $$ = createConst(NED_CONST_REAL, toString(@1)); }
+                { $$ = createConst(NED_CONST_DOUBLE, toString(@1)); }
         | quantity
-                { $$ = createTimeConst(toString(@1)); }
+                { $$ = createQuantity(toString(@1)); }
 
         ;
 
@@ -1237,7 +1239,7 @@ int runparse (NEDParser *p,NedFileNode *nf,bool parseexpr, bool storesrc, const 
     sourcefilename = sourcefname;
 
     if (storesrc)
-        storeSourceCode(ps.nedfile, np->nedsource->getFullText());
+        storeSourceCode(ps.nedfile, np->nedsource->getFullTextPos());
 
     try {
         return yyparse();
@@ -1328,7 +1330,7 @@ PropertyNode *storeSourceCode(NEDElement *node, YYLTYPE tokenpos)
 {
      PropertyNode *prop = addProperty(node, "sourcecode");
      prop->setIsImplicit(true);
-     addPropertyValue(prop, NULL, toString(tokenpos));
+     addPropertyValue(prop, NULL, tokenpos);
      return prop;
 }
 
@@ -1336,7 +1338,7 @@ PropertyNode *storeComponentSourceCode(NEDElement *node, YYLTYPE tokenpos)
 {
      PropertyNode *prop = addComponentProperty(node, "sourcecode");
      prop->setIsImplicit(true);
-     addPropertyValue(prop, NULL, toString(tokenpos));
+     addPropertyValue(prop, NULL, tokenpos);
      return prop;
 }
 
@@ -1344,7 +1346,7 @@ PropertyNode *storeDisplayString(NEDElement *node, YYLTYPE tokenpos)
 {
      PropertyNode *prop = addComponentProperty(node, "display");
      prop->setIsImplicit(true);
-     addPropertyValue(prop, NULL, toString(tokenpos));
+     addPropertyValue(prop, NULL, tokenpos);
      return prop;
 }
 
@@ -1352,7 +1354,7 @@ PropertyNode *storeComponentDisplayString(NEDElement *node, YYLTYPE tokenpos)
 {
      PropertyNode *prop = addComponentProperty(node, "display");
      prop->setIsImplicit(true);
-     addPropertyValue(prop, NULL, toString(tokenpos));
+     addPropertyValue(prop, NULL, tokenpos);
      return prop;
 }
 
@@ -1405,21 +1407,9 @@ void setComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos)
 
 ParamNode *addParameter(NEDElement *params, YYLTYPE namepos, int type)
 {
-   const char *s;
-   switch (type)
-   {
-       case TYPE_NUMERIC:   s = "numeric"; break;
-       case TYPE_CONST_NUM: s = "numeric const"; break;
-       case TYPE_STRING:    s = "string"; break;
-       case TYPE_BOOL:      s = "bool"; break;
-       case TYPE_XML:       s = "xml"; break;
-       case TYPE_ANYTYPE:   s = "anytype"; break;
-       default: s="?";
-   }
-
    ParamNode *param = (ParamNode *)createNodeWithTag(NED_PARAM,params);
    param->setName( toString( namepos) );
-   param->setDataType( s );
+   param->setType( type );
    return param;
 }
 
@@ -1427,8 +1417,8 @@ GateNode *addGate(NEDElement *gates, YYLTYPE namepos, int is_in, int is_vector )
 {
    GateNode *gate = (GateNode *)createNodeWithTag(NED_GATE,gates);
    gate->setName( toString( namepos) );
-   gate->setDirection(is_in ? NED_GATEDIR_INPUT : NED_GATEDIR_OUTPUT);
-   gate->setIsVector(is_vector);
+//FIXME   gate->setDirection(is_in ? NED_GATEDIR_INPUT : NED_GATEDIR_OUTPUT);
+//FIXME   gate->setIsVector(is_vector);
    return gate;
 }
 
@@ -1436,8 +1426,8 @@ SubmoduleNode *addSubmodule(NEDElement *submods, YYLTYPE namepos, YYLTYPE typepo
 {
    SubmoduleNode *submod = (SubmoduleNode *)createNodeWithTag(NED_SUBMODULE,submods);
    submod->setName( toString( namepos) );
-   submod->setTypeName( toString( typepos) );
-   submod->setLikeParam( toString( likeparampos) );
+//FIXME   submod->setTypeName( toString( typepos) );
+//FIXME   submod->setLikeParam( toString( likeparampos) );
 
    return submod;
 }
@@ -1445,8 +1435,8 @@ SubmoduleNode *addSubmodule(NEDElement *submods, YYLTYPE namepos, YYLTYPE typepo
 LoopNode *addLoop(NEDElement *conngroup, YYLTYPE varnamepos)
 {
    LoopNode *loop = (LoopNode *)createNodeWithTag(NED_LOOP,conngroup);
-   LoopNode->setParamName( toString( varnamepos) );
-   return LoopNode;
+   loop->setParamName( toString( varnamepos) );
+   return loop;
 }
 
 YYLTYPE trimBrackets(YYLTYPE vectorpos)
@@ -1549,21 +1539,14 @@ ExpressionNode *createExpression(NEDElement *expr)
    return expression;
 }
 
-RefNode *createParamRef(const char *param, const char *paramindex, const char *module, const char *moduleindex)
+RefNode *createRef(const char *param, const char *paramindex, const char *module, const char *moduleindex)
 {
-   RefNode *par = (RefNode *)createNodeWithTag(NED_PARAM_REF);
-   par->setParamName(param);
-   if (paramindex) par->setParamIndex(paramindex);
+   RefNode *par = (RefNode *)createNodeWithTag(NED_REF);
+   par->setName(param);
+//FIXME   if (paramindex) par->setParamIndex(paramindex);
    if (module) par->setModule(module);
    if (moduleindex) par->setModuleIndex(moduleindex);
    return par;
-}
-
-IdentNode *createIdent(const char *name)
-{
-   IdentNode *ident = (IdentNode *)createNodeWithTag(NED_IDENT);
-   ident->setName(name);
-   return ident;
 }
 
 ConstNode *createConst(int type, const char *value, const char *text)
@@ -1575,13 +1558,13 @@ ConstNode *createConst(int type, const char *value, const char *text)
    return c;
 }
 
-ConstNode *createTimeConst(const char *text)
+ConstNode *createQuantity(const char *text)
 {
    ConstNode *c = (ConstNode *)createNodeWithTag(NED_CONST);
-   c->setType(NED_CONST_TIME);
+   c->setType(NED_CONST_UNIT);
    if (text) c->setText(text);
 
-   double t = NEDStrToSimtime(text);
+   double t = NEDStrToSimtime(text);  // FIXME...
    if (t<0)
    {
        char msg[130];
@@ -1595,22 +1578,6 @@ ConstNode *createTimeConst(const char *text)
    return c;
 }
 
-NEDElement *createRef(const char *name)
-{
-    // determine if 'name' can be a loop variable. if so, use createIdent()
-    bool isvar = false;
-    if (ps.inLoop)
-    {
-        for (NEDElement *child=ps.conngroup->getFirstChildWithTag(NED_CONNECTION_GROUP); child; child=child->getNextSiblingWithTag(NED_LOOP_VAR))
-        {
-            LoopNode *loop = (LoopNode *)child;
-            if (!strcmp(loop->getName(),name))
-                isvar = true;
-        }
-    }
-    return isvar ? (NEDElement *)createIdent(name) : (NEDElement *)createParamRef(name);
-}
-
 NEDElement *unaryMinus(NEDElement *node)
 {
     // if not a constant, must appy unary minus operator
@@ -1620,7 +1587,7 @@ NEDElement *unaryMinus(NEDElement *node)
     ConstNode *constNode = (ConstNode *)node;
 
     // only int and real constants can be negative, string, bool, etc cannot
-    if (constNode->getType()!=NED_CONST_INT && constNode->getType()!=NED_CONST_REAL)
+    if (constNode->getType()!=NED_CONST_INT && constNode->getType()!=NED_CONST_DOUBLE)
     {
        char msg[140];
        sprintf(msg,"unary minus not accepted before '%.100s'",constNode->getValue());

@@ -309,14 +309,19 @@ const char *NEDFileBuffer::getTrailingComment(YYLTYPE pos)
     return stripComment(get(comment));
 }
 
-const char *NEDFileBuffer::getFullText()
+YYLTYPE NEDFileBuffer::getFullTextPos()
 {
     YYLTYPE pos;
     pos.first_line = 1;
     pos.first_column = 0;
     pos.last_line = numLines+1;
     pos.last_column = 0;
-    return get(pos);
+    return pos;
+}
+
+const char *NEDFileBuffer::getFullText()
+{
+    return get(getFullTextPos());
 }
 
 // stripComment()

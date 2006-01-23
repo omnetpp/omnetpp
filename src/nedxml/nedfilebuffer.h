@@ -103,6 +103,11 @@ class NEDFileBuffer
     const char *getTrailingComment(YYLTYPE pos);
 
     /**
+     * Returns 1:0...end.
+     */
+    YYLTYPE getFullTextPos();
+
+    /**
      * Returns pointer to the full source code. Uses get()!
      */
     const char *getFullText();
