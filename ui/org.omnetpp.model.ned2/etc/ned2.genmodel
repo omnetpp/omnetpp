@@ -10,7 +10,7 @@
     codeFormatting="true" testSuiteClass="org.omnetpp.model.ned2.tests.Ned2AllTests"
     importerID="org.eclipse.xsd.ecore.importer">
   <foreignModel>ned2.xsd</foreignModel>
-  <genPackages prefix="Ned2" basePackage="org.omnetpp.ned2.model" resource="XML" disposableProviderFactory="true"
+  <genPackages prefix="Ned2" basePackage="org.omnetpp.model.ned2" resource="XML" disposableProviderFactory="true"
       ecorePackage="ned2.ecore#/">
     <genClasses ecoreClass="ned2.ecore#//Channel">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Channel/whitespace"/>

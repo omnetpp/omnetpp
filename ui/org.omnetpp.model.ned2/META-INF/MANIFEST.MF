@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: EMF Model for NED v2 language
+Bundle-SymbolicName: org.omnetpp.model.ned2; singleton:=true
+Bundle-Version: 4.0.0
+Bundle-ClassPath: .
+Bundle-Activator: org.omnetpp.model.ned2.ModelPlugin$Implementation
+Bundle-Vendor: OpenSim Ltd.
+Bundle-Localization: plugin
+Export-Package: org.omnetpp.model.ned2,
+ org.omnetpp.model.ned2.emf,
+ org.omnetpp.model.ned2.emf.util
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.emf.ecore;visibility:=reexport,
+ org.eclipse.emf.ecore.xmi;visibility:=reexport
+Eclipse-LazyStart: true

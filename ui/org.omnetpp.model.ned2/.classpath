@@ -2,9 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="var" path="ECLIPSE_CORE_RUNTIME"/>
-	<classpathentry kind="var" path="ECLIPSE_CORE_RESOURCES"/>
-	<classpathentry kind="var" path="EMF_COMMON"/>
-	<classpathentry kind="var" path="EMF_ECORE"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
