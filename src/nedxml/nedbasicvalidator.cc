@@ -252,6 +252,12 @@ void NEDBasicValidator::validateElement(GatesNode *node)
     checkUniqueness(node, NED_GATE, "name");
 }
 
+void NEDBasicValidator::validateElement(TypesNode *node)
+{
+    // make sure type names are unique
+    //FIXME checkUniqueness(node, NED_????, "name");
+}
+
 void NEDBasicValidator::validateElement(GateGroupNode *node)
 {
     //FIXME revise
