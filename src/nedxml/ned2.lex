@@ -166,12 +166,12 @@ char textbuf[TEXTBUF_LEN];
 "*"                     { count(); return '*'; }
 "/"                     { count(); return '/'; }
 "%"                     { count(); return '%'; }
+"<"                     { count(); return '<'; }
+">"                     { count(); return '>'; }
 
 "=="                    { count(); return EQ; }
 "!="                    { count(); return NE; }
-"<"                     { count(); return LS; }
 "<="                    { count(); return LE; }
-">"                     { count(); return GT; }
 ">="                    { count(); return GE; }
 
 {S}                     { count(); }

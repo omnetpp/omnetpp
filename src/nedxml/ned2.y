@@ -28,7 +28,7 @@
 /* Other tokens: identifiers, numeric literals, operators etc */
 %token NAME INTCONSTANT REALCONSTANT STRINGCONSTANT CHARCONSTANT
 %token PLUSPLUS DOUBLEASTERISK
-%token EQ NE GT GE LS LE
+%token EQ NE GE LE
 %token AND OR XOR NOT
 %token BIN_AND BIN_OR BIN_XOR BIN_COMPL
 %token SHIFT_LEFT SHIFT_RIGHT
@@ -38,7 +38,7 @@
 /* Operator precedences (low to high) and associativity */
 %left '?' ':'
 %left AND OR XOR
-%left EQ NE GT GE LS LE
+%left EQ NE '>' GE '<' LE
 %left BIN_AND BIN_OR BIN_XOR
 %left SHIFT_LEFT SHIFT_RIGHT
 %left '+' '-'
@@ -184,9 +184,9 @@ definition
         : import
 
         | propertydecl
-                { /*TBD*/ }
+                { }
         | property
-                { /*TBD*/ }
+                { }
         | channeldefinition
                 { if (ps.storeSourceCode) storeComponentSourceCode(ps.component, @1); }
         | channelinterfacedefinition
@@ -422,6 +422,7 @@ networkdefinition
         : networkheader '{'
             opt_paramblock
             opt_gateblock
+            opt_typeblock
             opt_submodblock
             opt_connblock
           '}' opt_semicolon
@@ -479,6 +480,9 @@ paramblock
                   setComments(ps.parameters,@1,@2);
                 }
           opt_params
+                {
+                }
+        | params   /* keyword is optional */   /* FIXME creation of ParametersNode!!!! */
                 {
                 }
         ;
@@ -1118,11 +1122,11 @@ expr
                 { if (ps.parseExpressions) $$ = createOperator("==", $1, $3); }
         | expr NE expr
                 { if (ps.parseExpressions) $$ = createOperator("!=", $1, $3); }
-        | expr GT expr
+        | expr '>' expr
                 { if (ps.parseExpressions) $$ = createOperator(">", $1, $3); }
         | expr GE expr
                 { if (ps.parseExpressions) $$ = createOperator(">=", $1, $3); }
-        | expr LS expr
+        | expr '<' expr
                 { if (ps.parseExpressions) $$ = createOperator("<", $1, $3); }
         | expr LE expr
                 { if (ps.parseExpressions) $$ = createOperator("<=", $1, $3); }
@@ -1590,7 +1594,7 @@ ConstNode *createQuantity(const char *text)
    c->setType(NED_CONST_UNIT);
    if (text) c->setText(text);
 
-   double t = NEDStrToSimtime(text);  // FIXME...
+   double t = 0; //NEDStrToSimtime(text);  // FIXME...
    if (t<0)
    {
        char msg[130];
