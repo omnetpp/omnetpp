@@ -17,6 +17,7 @@ simple Queue
         double msgPerSec = default(100); // maybe overridden by another default()
         int capacity = 100;  // fixed value, cannot be overridden
         int processingTime = exponential(10); // const value returns always the same number
+        int novalue;  // no value assigned here
         int function waitTime = exponential(20); // evaluates exp(20) each
                                                  // time the parameter accessed
     gates:
@@ -26,8 +27,8 @@ simple Queue
         inout thirdGate;
 };
 
-simple VeryFastQueue extends Queue {...} // "simple": VeryFastQueue C++ class required!!!
-module VeryFastQueue extends Queue {...} // "module": no VeryFastQueue C++ class! (Queue C++ class used)
+simple VeryFastQueue extends Queue { }  // "simple": VeryFastQueue C++ class required!!!
+module VeryFastQueue extends Queue { }  // "module": no VeryFastQueue C++ class! (Queue C++ class used)
 
 simple VeryFastQueue extends Queue  // "extends" inherits gates as well (they don't have to be repeated here)
 {
@@ -79,7 +80,7 @@ simple TCP
     parameters:
         int mss; // maximum segmentsize
         int advertisedWindow; // in bytes (Note: normally, NIC queues should be at least this size)
-        string tcpAlgorithmClass @choice("TCPTahoe", "TCPReno", "TCPNoCongestionControl", "DumbTCP", ...);
+        string tcpAlgorithmClass @choice("TCPTahoe", "TCPReno", "TCPNoCongestionControl", "DumbTCP"); // "..."
         string tcpAlgorithmClass @classname("ITCPAlgorithm"); // alternative syntax:
                                                              // specify it accepts a class name, and specify base class
         @kernel(starttime=49);
@@ -329,7 +330,6 @@ module Host
         app: <this.@type> like TCPApp;  // <this.@type> can be abbreviated as <>
 
         // xxxxxxxxxxxx
-
 
         // the following xxx
         apps[N]: <>; // uses @moduletype property, type unchecked; <> operator converts string to type
