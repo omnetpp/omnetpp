@@ -4,7 +4,7 @@
 
 package generic.queueing;  // default package for following components
 
-@someproperty(...); // file-level property
+@someproperty(somekey); // file-level property
 
 //
 // Simple FIFO module with a msg/sec processing rate and a finite buffer
@@ -19,11 +19,6 @@ simple Queue
         int processingTime = exponential(10); // const value returns always the same number
         int function waitTime = exponential(20); // evaluates exp(20) each
                                                  // time the parameter accessed
-
-                                                      // time the parameter accessed
-                                                      // time the parameter accessed
-
-                                                      // time the parameter accessed
     gates:
         input in[];  // input gates
         input in2[5];  // input gates with fixed size
