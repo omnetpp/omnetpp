@@ -268,7 +268,9 @@ channel Eth
 
 network Network   // "network" is exactly as "module", but: not gates
 {
-    types: // defines locally used channel and module types
+    parameters:
+        int a;
+    types: // defines locally used channel and module types  FIXME allow types before gates/params as well?
         channel PPPLink {
             parameters:
                 @display("c=red");
