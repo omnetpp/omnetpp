@@ -134,6 +134,7 @@ char textbuf[TEXTBUF_LEN];
 "**"                    { count(); return DOUBLEASTERISK; }
 "++"                    { count(); return PLUSPLUS; }
 
+"@"                     { count(); return '@'; }
 ";"                     { count(); return (';'); }
 ","                     { count(); return (','); }
 ":"                     { count(); return (':'); }

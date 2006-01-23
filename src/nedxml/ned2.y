@@ -171,7 +171,8 @@ void addExpression(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDE
  * Top-level components
  */
 nedfile
-        : somedefinitions
+        : packagedeclaration somedefinitions
+        | somedefinitions
         ;
 
 somedefinitions
@@ -200,13 +201,22 @@ definition
                 { if (ps.storeSourceCode) storeComponentSourceCode(ps.component, @1); }
         ;
 
+packagedeclaration         /* TDB package is currently not supported */
+        : PACKAGE packagename ';'
+        ;
+
+packagename                /* TDB package is currently not supported */
+        : packagename '.' NAME
+        | NAME
+        ;
+
+
 /*
  * Import
  */
 import
         : IMPORT STRINGCONSTANT ';'
                 {
-                  /* FIXME */
                   ps.import = (ImportNode *)createNodeWithTag(NED_IMPORT, ps.nedfile);
                   ps.import->setFilename(toString(trimQuotes(@1)));
                   setComments(ps.import,@1);
@@ -217,10 +227,17 @@ import
  * Property declaration
  */
 propertydecl
-        : PROPERTY '@' NAME ';'
-                { /*TBD*/ }
-        | PROPERTY '@' NAME '(' opt_propertydecl_keys ')' ';'
-                { /*TBD*/ }
+        : propertydecl_header ';'
+        | propertydecl_header '(' opt_propertydecl_keys ')' ';'
+        ;
+
+propertydecl_header
+        : PROPERTY '@' NAME
+                {
+                  ps.propertydef = (PropertydefNode *)createNodeWithTag(NED_PROPERTYDEF, ps.nedfile);
+                  ps.propertydef->setName(toString(@3));
+                  setComments(ps.propertydef,@1);
+                }
         ;
 
 opt_propertydecl_keys
@@ -243,9 +260,13 @@ propertydecl_key
  * Property
  */
 property
+        : property_nosemicolon ';'
+        ;
+
+property_nosemicolon
         : '@' NAME
                 { /*TBD*/ }
-        | '@' NAME '(' opt_property_keys ')' ';'
+        | '@' NAME '(' opt_property_keys ')'
                 { /*TBD*/ }
         ;
 
@@ -509,14 +530,14 @@ paramsitem_nogroup
  * Parameter
  */
 param
-        : paramtype opt_function NAME opt_properties ';'
+        : paramtype opt_function NAME opt_inline_properties ';'
                 {
                   //FIXME
                   ps.param = addParameter(ps.parameters,@1,TYPE_NUMERIC);
                 }
-        | paramtype opt_function NAME '=' expression opt_properties ';'
-        | NAME '=' expression opt_properties ';'
-        | qualifier '.' NAME '=' expression opt_properties ';'
+        | paramtype opt_function NAME '=' expression opt_inline_properties ';'
+        | NAME '=' expression opt_inline_properties ';'
+        | qualifier '.' NAME '=' expression opt_inline_properties ';'
         ;
 
 paramtype
@@ -527,14 +548,14 @@ paramtype
         | XMLTYPE
         ;
 
-opt_properties
-        : properties
+opt_inline_properties
+        : inline_properties
         |
         ;
 
-properties
-        : properties property
-        | property
+inline_properties
+        : inline_properties property_nosemicolon
+        | property_nosemicolon
         ;
 
 opt_function
@@ -635,11 +656,11 @@ gates_nogroup   /* same as gates, but without the gategroup rule */
  * Gate
  */
 gate
-        : gatetype NAME opt_properties ';'
-        | gatetype NAME '[' ']' opt_properties ';'
-        | gatetype NAME '[' expression ']' opt_properties ';'
-        | NAME opt_properties ';'
-        | NAME '[' expression ']' opt_properties ';'
+        : gatetype NAME opt_inline_properties ';'
+        | gatetype NAME '[' ']' opt_inline_properties ';'
+        | gatetype NAME '[' expression ']' opt_inline_properties ';'
+        | NAME opt_inline_properties ';'
+        | NAME '[' expression ']' opt_inline_properties ';'
         ;
 
 gatetype
@@ -726,7 +747,12 @@ submodules
         ;
 
 submodule
-        : submoduleheader '{'
+        : submoduleheader ';'
+                {
+                  ps.submod = addSubmodule(ps.submods, @1, @2, NULLPOS);
+                  setComments(ps.submod,@1,@2);
+                }
+        | submoduleheader '{'
                 {
                   ps.submod = addSubmodule(ps.submods, @1, @3, NULLPOS);
                   setComments(ps.submod,@1,@4);
@@ -1364,28 +1390,28 @@ PropertyNode *storeComponentDisplayString(NEDElement *node, YYLTYPE tokenpos)
 
 void setFileComment(NEDElement *node)
 {
-    node->setAttribute("file-comment", np->nedsource->getFileComment() );
+//XXX    node->setAttribute("file-comment", np->nedsource->getFileComment() );
 }
 
 void setBannerComment(NEDElement *node, YYLTYPE tokenpos)
 {
-    node->setAttribute("banner-comment", np->nedsource->getBannerComment(tokenpos) );
+//XXX    node->setAttribute("banner-comment", np->nedsource->getBannerComment(tokenpos) );
 }
 
 void setRightComment(NEDElement *node, YYLTYPE tokenpos)
 {
-    node->setAttribute("right-comment", np->nedsource->getTrailingComment(tokenpos) );
+//XXX    node->setAttribute("right-comment", np->nedsource->getTrailingComment(tokenpos) );
 }
 
 void setTrailingComment(NEDElement *node, YYLTYPE tokenpos)
 {
-    node->setAttribute("trailing-comment", np->nedsource->getTrailingComment(tokenpos) );
+//XXX    node->setAttribute("trailing-comment", np->nedsource->getTrailingComment(tokenpos) );
 }
 
 void setComments(NEDElement *node, YYLTYPE pos)
 {
-    setBannerComment(node, pos);
-    setRightComment(node, pos);
+//XXX    setBannerComment(node, pos);
+//XXX    setRightComment(node, pos);
 }
 
 void setComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos)
@@ -1394,8 +1420,8 @@ void setComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos)
     pos.last_line = lastpos.last_line;
     pos.last_column = lastpos.last_column;
 
-    setBannerComment(node, pos);
-    setRightComment(node, pos);
+//XXX    setBannerComment(node, pos);
+//XXX    setRightComment(node, pos);
 }
 
 //ChannelAttrNode *addChanAttr(NEDElement *channel, const char *attrname)
