@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gmfgen:GenDiagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gmfgen="http://www.eclipse.org/gmf/2005/GenModel" visualID="79" editPartClassName="NedFileEditPart" itemSemanticEditPolicyClassName="NedFileItemSemanticEditPolicy" notationViewFactoryClassName="NedFileViewFactory" editCommandsPackageName="org.omnetpp.ned2.editor.graph.gmf.edit.commands" editPartsPackageName="org.omnetpp.ned2.editor.graph.gmf.edit.parts" editPoliciesPackageName="org.omnetpp.ned2.editor.graph.gmf.edit.policies" editorPackageName="org.omnetpp.ned2.editor.graph.gmf.editor.part" providersPackageName="org.omnetpp.ned2.editor.graph.gmf.providers" notationViewFactoriesPackageName="org.omnetpp.ned2.editor.graph.gmf.view.factories" pluginID="org.omnetpp.ned2.editor.graph" pluginName="ned2 Plugin" canonicalEditPolicyClassName="NedFileCanonicalEditPolicy">
+  <diagramRunTimeClass href="../../../plugin/org.eclipse.gmf.runtime.notation/model/notation.genmodel#//notation/Diagram"/>
+  <viewmap xsi:type="gmfgen:FigureViewmap" figureQualifiedClassName="org.eclipse.draw2d.FreeformLayer"/>
+  <domainMetaModel href="../../org.omnetpp.ned2.model/etc/ned2.genmodel#//ned2"/>
+  <domainDiagramElement href="../../org.omnetpp.ned2.model/etc/ned2.genmodel#//ned2/NedFile"/>
+  <nodes visualID="1001" editPartClassName="CompoundModuleEditPart" itemSemanticEditPolicyClassName="CompoundModuleItemSemanticEditPolicy" notationViewFactoryClassName="CompoundModuleViewFactory" canonicalEditPolicyClassName="CompoundModuleCanonicalEditPolicy" graphicalNodeEditPolicyClassName="CompoundModuleGraphicalNodeEditPolicy">
+    <diagramRunTimeClass href="../../../plugin/org.eclipse.gmf.runtime.notation/model/notation.genmodel#//notation/Node"/>
+    <viewmap xsi:type="gmfgen:InnerClassViewmap" className="CompoundModuleFigure" classBody="&#xD;&#xA;/**&#xD;&#xA; * @generated&#xD;&#xA; */&#xD;&#xA;public class CompoundModuleFigure extends org.eclipse.draw2d.RectangleFigure {&#xD;&#xA;&#xD;&#xA;&#x9;/**&#xD;&#xA;&#x9; * @generated&#xD;&#xA;&#x9; */&#xD;&#xA;&#x9;public CompoundModuleFigure() {&#xD;&#xA;&#xD;&#xA;&#x9;}&#xD;&#xA;&#xD;&#xA;}"/>
+    <modelFacet>
+      <metaClass href="../../org.omnetpp.ned2.model/etc/ned2.genmodel#//ned2/CompoundModule"/>
+      <containmentMetaFeature href="../../org.omnetpp.ned2.model/etc/ned2.genmodel#//ned2/NedFile/compoundModule"/>
+      <childMetaFeature href="../../org.omnetpp.ned2.model/etc/ned2.genmodel#//ned2/NedFile/compoundModule"/>
+    </modelFacet>
+    <labels visualID="4001" editPartClassName="CompoundModule_nameEditPart" itemSemanticEditPolicyClassName="CompoundModule_nameItemSemanticEditPolicy" notationViewFactoryClassName="CompoundModule_nameViewFactory">
+      <diagramRunTimeClass href="../../../plugin/org.eclipse.gmf.runtime.notation/model/notation.genmodel#//notation/Node"/>
+      <viewmap xsi:type="gmfgen:FigureViewmap" figureQualifiedClassName="org.eclipse.draw2d.Label"/>
+      <modelFacet>
+        <metaFeature href="../../org.omnetpp.ned2.model/etc/ned2.genmodel#//ned2/CompoundModule/name"/>
+      </modelFacet>
+    </labels>
+  </nodes>
+  <palette>
+    <groups titleKey="ned2" createMethodName="createned2Group">
+      <nodeTools titleKey="CompoundModule" descriptionKey="Create new CompoundModule" createMethodName="createCompoundModuleCreationTool" genNode="//@nodes.0"/>
+    </groups>
+  </palette>
+</gmfgen:GenDiagram>
