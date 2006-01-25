@@ -868,7 +868,7 @@ whereitems
         ;
 
 whereitem
-        : condition
+        : expression   /* that is, a condition */
         | loop
         ;
 
