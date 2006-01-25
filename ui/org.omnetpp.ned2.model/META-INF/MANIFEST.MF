@@ -1,11 +1,11 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Omnetpp NED2 language model
+Bundle-Name: %pluginName
 Bundle-SymbolicName: org.omnetpp.ned2.model; singleton:=true
 Bundle-Version: 4.0.0
 Bundle-ClassPath: .
 Bundle-Activator: org.omnetpp.ned2.model.ModelPlugin$Implementation
-Bundle-Vendor: OpenSim Ltd.
+Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Export-Package: org.omnetpp.ned2.model,
  org.omnetpp.ned2.model.meta,
