@@ -73,7 +73,7 @@ lex.nedyy.cc: ned.lex
 	del lex.nedyy.c
 
 ned2.tab.h ned2.tab.cc : ned2.y
-	$(YACC:/=\) -p ned2yy -b ned2 -d ned2.y
+	$(YACC:/=\) --verbose --debug -p ned2yy -b ned2 -d ned2.y
 	copy ned2.tab.c ned2.tab.cc
 	del ned2.tab.c
 

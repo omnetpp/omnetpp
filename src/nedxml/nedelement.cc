@@ -62,6 +62,16 @@ const char *NEDElement::enumToString(int b, const char *vals[], int nums[], int 
     throw new NEDException("invalid integer value %d for enum attribute (not one of '%s'=%d etc)",b,vals[0],nums[0]);
 }
 
+void NEDElement::validateEnum(int b, const char *vals[], int nums[], int n)
+{
+    // code almost identical to enumToString()
+    for (int i=0; i<n; i++)
+        if (nums[i]==b)
+            return;
+    if (n==0) throw new NEDException("call to validateEnum() with n=0");
+    throw new NEDException("invalid integer value %d for enum attribute",b,vals[0],nums[0]);
+}
+
 NEDElement::NEDElement()
 {
     parent = 0;

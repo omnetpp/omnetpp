@@ -482,7 +482,7 @@ paramblock
           opt_params
                 {
                 }
-        | params   /* keyword is optional */   /* FIXME creation of ParametersNode!!!! */
+        | params   /* keyword is optional */ /*FIXME creation of ParametersNode!!!!*/  /*FIXME this rule introduces a shift/reduce conflict*/
                 {
                 }
         ;
@@ -537,11 +537,11 @@ param
         : paramtype opt_function NAME opt_inline_properties ';'
                 {
                   //FIXME
-                  ps.param = addParameter(ps.parameters,@1,TYPE_NUMERIC);
+                  //ps.param = addParameter(ps.parameters,@1,TYPE_NUMERIC);
                 }
-        | paramtype opt_function NAME '=' expression opt_inline_properties ';'
-        | NAME '=' expression opt_inline_properties ';'
-        | qualifier '.' NAME '=' expression opt_inline_properties ';'
+        | paramtype opt_function NAME '=' paramvalue opt_inline_properties ';'
+        | NAME '=' paramvalue opt_inline_properties ';'
+        | qualifier '.' NAME '=' paramvalue opt_inline_properties ';'
         ;
 
 paramtype
@@ -550,6 +550,11 @@ paramtype
         | STRINGTYPE
         | BOOLTYPE
         | XMLTYPE
+        ;
+
+paramvalue
+        : expression
+        | DEFAULT '(' expression ')'
         ;
 
 opt_inline_properties
@@ -775,7 +780,7 @@ submoduleheader
                   setComments(ps.submod,@1,@5);
                 }
         | NAME ':' likeparam LIKE NAME
-        | NAME vector ':' likeparam  LIKE NAME
+        | NAME vector ':' likeparam LIKE NAME
         ;
 
 likeparam
@@ -1081,9 +1086,7 @@ expression
 
 /*
 FIXME currently unused:
-   PACKAGE
    WITHCPPCLASS
-   DEFAULT
    CONST_
    INDEX_
    DOUBLEASTERISK

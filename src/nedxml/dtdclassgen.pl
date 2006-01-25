@@ -278,10 +278,11 @@ print CC "\n";
 print CC "static const char *littype_vals[] = {\"double\", \"int\", \"string\", \"bool\", \"unit\"};\n";
 print CC "static int littype_nums[] = {NED_CONST_DOUBLE, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_UNIT};\n";
 print CC "static const int littype_n = 5;\n";
-print CC "\n\n";
+print CC "\n";
 print CC "static const char *subgate_vals[] = {\"i\", \"o\", \"\"};\n";
 print CC "static int subgate_nums[] = {NED_SUBGATE_I, NED_SUBGATE_O, NED_SUBGATE_BOTH};\n";
 print CC "static const int subgate_n = 3;\n";
+print CC "\n";
 
 
 foreach $element (@elements)
@@ -352,7 +353,17 @@ foreach $element (@elements)
         } else {
             print H "    $argtypes[$i] get$ucvarnames[$i]() const  {return $varnames[$i];}\n";
         }
-        print H "    void set$ucvarnames[$i]($argtypes[$i] val)  {$varnames[$i] = val;}\n";
+        if ($argtypes[$i] eq "int") {
+            print H "    void set$ucvarnames[$i]($argtypes[$i] val);\n";
+            print CC "void $elementclass\:\:set$ucvarnames[$i]($argtypes[$i] val)\n";
+            print CC "{\n";
+            print CC "    validateEnum(val, $enumnames[$i]_vals, $enumnames[$i]_nums, $enumnames[$i]_n);\n";
+            print CC "    $varnames[$i] = val;\n";
+            print CC "}\n\n";
+        } else {
+            print H "    void set$ucvarnames[$i]($argtypes[$i] val)  {$varnames[$i] = val;}\n";
+        }
+
     }
     print H "\n";
     print H "    virtual $elementclass *getNext${elementclass}Sibling() const;\n";

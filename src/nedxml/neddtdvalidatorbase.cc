@@ -50,7 +50,7 @@ void NEDDTDValidatorBase::checkSequence(NEDElement *node, int tags[], char mult[
        }
     }
     if (p)
-        {NEDError(node, "DTD validation error: child element '%s' unexpected", p->getTagName()); return;}
+        NEDError(node, "DTD validation error: child element '%s' unexpected", p->getTagName());
 }
 
 void NEDDTDValidatorBase::tryCheckChoice(NEDElement *node, NEDElement *&curchild, int tags[], char mult)

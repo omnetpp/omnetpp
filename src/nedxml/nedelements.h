@@ -748,7 +748,7 @@ class ParamNode : public NEDElement
     /** @name Typed access to attributes, children and siblings */
     //@{
     int getType() const  {return type;}
-    void setType(int val)  {type = val;}
+    void setType(int val);
     bool getIsFunction() const  {return isFunction;}
     void setIsFunction(bool val)  {isFunction = val;}
     const char * getQualifier() const  {return qualifier.c_str();}
@@ -996,7 +996,7 @@ class GateNode : public NEDElement
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
     int getType() const  {return type;}
-    void setType(int val)  {type = val;}
+    void setType(int val);
     bool getIsVector() const  {return isVector;}
     void setIsVector(bool val)  {isVector = val;}
     const char * getVectorSize() const  {return vectorSize.c_str();}
@@ -1280,7 +1280,7 @@ class ConnectionNode : public NEDElement
     const char * getSrcGateIndex() const  {return srcGateIndex.c_str();}
     void setSrcGateIndex(const char * val)  {srcGateIndex = val;}
     int getSrcGateSubg() const  {return srcGateSubg;}
-    void setSrcGateSubg(int val)  {srcGateSubg = val;}
+    void setSrcGateSubg(int val);
     const char * getDestModule() const  {return destModule.c_str();}
     void setDestModule(const char * val)  {destModule = val;}
     const char * getDestModuleIndex() const  {return destModuleIndex.c_str();}
@@ -1292,9 +1292,9 @@ class ConnectionNode : public NEDElement
     const char * getDestGateIndex() const  {return destGateIndex.c_str();}
     void setDestGateIndex(const char * val)  {destGateIndex = val;}
     int getDestGateSubg() const  {return destGateSubg;}
-    void setDestGateSubg(int val)  {destGateSubg = val;}
+    void setDestGateSubg(int val);
     int getArrowDirection() const  {return arrowDirection;}
-    void setArrowDirection(int val)  {arrowDirection = val;}
+    void setArrowDirection(int val);
 
     virtual ConnectionNode *getNextConnectionNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
@@ -1777,7 +1777,7 @@ class ConstNode : public NEDElement
     /** @name Typed access to attributes, children and siblings */
     //@{
     int getType() const  {return type;}
-    void setType(int val)  {type = val;}
+    void setType(int val);
     const char * getUnitType() const  {return unitType.c_str();}
     void setUnitType(const char * val)  {unitType = val;}
     const char * getText() const  {return text.c_str();}

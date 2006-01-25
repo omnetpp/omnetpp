@@ -37,10 +37,10 @@ static const char *littype_vals[] = {"double", "int", "string", "bool", "unit"};
 static int littype_nums[] = {NED_CONST_DOUBLE, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_UNIT};
 static const int littype_n = 5;
 
-
 static const char *subgate_vals[] = {"i", "o", ""};
 static int subgate_nums[] = {NED_SUBGATE_I, NED_SUBGATE_O, NED_SUBGATE_BOTH};
 static const int subgate_n = 3;
+
 int FilesNode::getNumAttributes() const
 {
     return 0;
@@ -759,6 +759,12 @@ ParamNode *ParamGroupNode::getFirstParamChild() const
     return (ParamNode *)getFirstChildWithTag(NED_PARAM);
 }
 
+void ParamNode::setType(int val)
+{
+    validateEnum(val, partype_vals, partype_nums, partype_n);
+    type = val;
+}
+
 int ParamNode::getNumAttributes() const
 {
     return 5;
@@ -1052,6 +1058,12 @@ ConditionNode *GateGroupNode::getFirstConditionChild() const
 GateNode *GateGroupNode::getFirstGateChild() const
 {
     return (GateNode *)getFirstChildWithTag(NED_GATE);
+}
+
+void GateNode::setType(int val)
+{
+    validateEnum(val, gatetype_vals, gatetype_nums, gatetype_n);
+    type = val;
 }
 
 int GateNode::getNumAttributes() const
@@ -1372,6 +1384,24 @@ ConnectionNode *ConnectionsNode::getFirstConnectionChild() const
 ConnectionGroupNode *ConnectionsNode::getFirstConnectionGroupChild() const
 {
     return (ConnectionGroupNode *)getFirstChildWithTag(NED_CONNECTION_GROUP);
+}
+
+void ConnectionNode::setSrcGateSubg(int val)
+{
+    validateEnum(val, subgate_vals, subgate_nums, subgate_n);
+    srcGateSubg = val;
+}
+
+void ConnectionNode::setDestGateSubg(int val)
+{
+    validateEnum(val, subgate_vals, subgate_nums, subgate_n);
+    destGateSubg = val;
+}
+
+void ConnectionNode::setArrowDirection(int val)
+{
+    validateEnum(val, arrowdir_vals, arrowdir_nums, arrowdir_n);
+    arrowDirection = val;
 }
 
 int ConnectionNode::getNumAttributes() const
@@ -2031,6 +2061,12 @@ WhitespaceNode *RefNode::getFirstWhitespaceChild() const
 ExpressionNode *RefNode::getFirstExpressionChild() const
 {
     return (ExpressionNode *)getFirstChildWithTag(NED_EXPRESSION);
+}
+
+void ConstNode::setType(int val)
+{
+    validateEnum(val, littype_vals, littype_nums, littype_n);
+    type = val;
 }
 
 int ConstNode::getNumAttributes() const

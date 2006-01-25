@@ -69,6 +69,7 @@ class NEDElement
     static const char *boolToString(bool b);
     static int stringToEnum(const char *s, const char *vals[], int nums[], int n);
     static const char *enumToString(int b, const char *vals[], int nums[], int n);
+    static void validateEnum(int b, const char *vals[], int nums[], int n);
 
   public:
     /** @name Constructor, destructor */
