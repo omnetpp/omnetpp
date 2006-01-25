@@ -15,15 +15,15 @@
 *--------------------------------------------------------------*/
 
 /* Reserved words */
-%token IMPORT, PACKAGE, PROPERTY
-%token MODULE, SIMPLE, NETWORK, CHANNEL, INTERFACE, CHANNELINTERFACE
-%token EXTENDS, LIKE, WITHCPPCLASS
-%token TYPES, PARAMETERS, GATES, SUBMODULES, CONNECTIONS, ALLOWUNCONNECTED
-%token DOUBLETYPE, INTTYPE, STRINGTYPE, BOOLTYPE, XMLTYPE, FUNCTION
-%token INPUT_, OUTPUT_, INOUT_
-%token IF, WHERE
-%token RIGHTARROW, LEFTARROW, DBLARROW, TO
-%token TRUE_, FALSE_, DEFAULT, CONST_, SIZEOF, INDEX_, XMLDOC
+%token IMPORT PACKAGE PROPERTY
+%token MODULE SIMPLE NETWORK CHANNEL INTERFACE CHANNELINTERFACE
+%token EXTENDS LIKE WITHCPPCLASS
+%token TYPES PARAMETERS GATES SUBMODULES CONNECTIONS ALLOWUNCONNECTED
+%token DOUBLETYPE INTTYPE STRINGTYPE BOOLTYPE XMLTYPE FUNCTION
+%token INPUT_ OUTPUT_ INOUT_
+%token IF WHERE
+%token RIGHTARROW LEFTARROW DBLARROW TO
+%token TRUE_ FALSE_ DEFAULT CONST_ SIZEOF INDEX_ XMLDOC
 
 /* Other tokens: identifiers, numeric literals, operators etc */
 %token NAME INTCONSTANT REALCONSTANT STRINGCONSTANT CHARCONSTANT
@@ -48,6 +48,7 @@
 
 %start nedfile
 
+%glr-parser
 
 %{
 
@@ -67,7 +68,7 @@
 
 int yylex (void);
 void yyrestart(FILE *);
-void yyerror (char *s);
+void yyerror (const char *s);
 
 
 #include "nedparser.h"
@@ -342,7 +343,7 @@ channelinterfacedefinition
             opt_paramblock
           '}' opt_semicolon
                 {
-                  setTrailingComment(ps.component,@6);
+                  setTrailingComment(ps.component,@4);
                 }
         ;
 
@@ -482,7 +483,7 @@ paramblock
           opt_params
                 {
                 }
-        | params   /* keyword is optional */ /*FIXME creation of ParametersNode!!!!*/  /*FIXME this rule introduces a shift/reduce conflict*/
+        | params   /* keyword is optional */ /*FIXME creation of ParametersNode!!!!*/
                 {
                 }
         ;
@@ -763,8 +764,8 @@ submodule
                 }
         | submoduleheader '{'
                 {
-                  ps.submod = addSubmodule(ps.submods, @1, @3, NULLPOS);
-                  setComments(ps.submod,@1,@4);
+                  ps.submod = addSubmodule(ps.submods, @1, @2, NULLPOS);
+                  setComments(ps.submod,@1,@2);
                 }
           opt_paramblock
           opt_gateblock
@@ -777,17 +778,17 @@ submoduleheader
                 {
                   ps.submod = addSubmodule(ps.submods, @1, @3, NULLPOS);
                   addVector(ps.submod, "vector-size",@4,$4);
-                  setComments(ps.submod,@1,@5);
+                  setComments(ps.submod,@1,@4);
                 }
-        | NAME ':' likeparam LIKE NAME
-        | NAME vector ':' likeparam LIKE NAME
+        | NAME ':' likeparam
+        | NAME vector ':' likeparam
         ;
 
 likeparam
-        : '<' '>'
-        | '<' '@' NAME '>'
-        | '<' qualifier '.' '@' NAME '>'  /* note: qualifier here must be "this" */
-        | '<' expression '>'
+        : '<' '>'  LIKE NAME
+        | '<' '@' NAME '>'  LIKE NAME
+        | '<' qualifier '.' '@' NAME '>'  LIKE NAME /* note: qualifier here must be "this" */
+        | '<' expression '>' LIKE NAME  /* XXX expression is the source of one shift-reduce conflict because it may contain '>' */
         ;
 
 /*
@@ -888,34 +889,34 @@ connection
         : leftgatespec RIGHTARROW rightgatespec
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
-                  setComments(ps.conn,@1,@5);
+                  setComments(ps.conn,@1,@3);
                 }
         | leftgatespec RIGHTARROW channeldescr RIGHTARROW rightgatespec
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
-                  setComments(ps.conn,@1,@7);
+                  setComments(ps.conn,@1,@5);
                 }
         | leftgatespec LEFTARROW rightgatespec
                 {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_LEFT);
-                  setComments(ps.conn,@1,@5);
+                  setComments(ps.conn,@1,@3);
                 }
         | leftgatespec LEFTARROW channeldescr LEFTARROW rightgatespec
                 {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_LEFT);
-                  setComments(ps.conn,@1,@7);
+                  setComments(ps.conn,@1,@5);
                 }
         | leftgatespec DBLARROW rightgatespec
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_BIDIR);
-                  setComments(ps.conn,@1,@5);
+                  setComments(ps.conn,@1,@3);
                 }
         | leftgatespec DBLARROW channeldescr DBLARROW rightgatespec
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_BIDIR);
-                  setComments(ps.conn,@1,@7);
+                  setComments(ps.conn,@1,@5);
                 }
         ;
 
@@ -1284,7 +1285,7 @@ int runparse (NEDParser *p,NedFileNode *nf,bool parseexpr, bool storesrc, const 
 }
 
 
-void yyerror (char *s)
+void yyerror (const char *s)
 {
     if (strlen(s))
         strcpy(yyfailure, s);

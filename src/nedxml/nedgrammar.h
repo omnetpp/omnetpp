@@ -53,8 +53,7 @@
 //#define yydebug nedyydebug
 //#define yynerrs nedyynerrs
 //
-//// only new bisons define the following, but works with older ones (1.28) too
-//#define yylloc nedyylloc
+#define yylloc ned2yylloc
 
 #endif
 
