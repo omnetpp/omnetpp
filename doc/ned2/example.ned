@@ -204,7 +204,7 @@ module Host
             mss = 1024;
         };
         ip: IP;
-        ppp: PPP[sizeof(pppPort)];
+        ppp[sizeof(pppPort)]: PPP;
 
     connections allowunconnected:
         app[i].toTcp <--> { @display("c=red"); delay=0; } <--> tcp.toApp;
@@ -233,8 +233,8 @@ module Host
 {
     parameters:
         int delay;
-        uint mss0 = 1000;
-        uint mss = 500;
+        int mss0 = 1000;
+        int mss = 500;
     submodules:
         udp: UDP {
             maxpk = 2000;
@@ -277,7 +277,7 @@ network Network   // "network" is exactly as "module", but: not gates
                 delay = 10us;  // TODO distance-based delay spec?
         };
         module HostX extends Host {
-            ....
+            //...
         };
     submodules:
         hosts[100] : HostX;
@@ -318,7 +318,7 @@ network RandomGraph
 module Host
 {
     parameters:
-        uint N;
+        int N;
         string appType @moduleWithInterface(TCPApp); // "like TCPApp"
     submodules:
         apps[N]: <appType> like TCPApp; // they're all of the same type
@@ -327,7 +327,7 @@ module Host
 module Host
 {
     parameters:
-        uint N;
+        int N;
     submodules:
         app: <this.@type> like TCPApp;  // <this.@type> can be abbreviated as <>
 
