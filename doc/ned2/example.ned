@@ -374,9 +374,10 @@ channelinterface PPPLikeChannel
 // "like" syntax for channels
 network Network
 {
+    parameters:
+        string channelType;
     submodules:
         hosts[100] : HostX;
-        string channelType;
     connections:
         host[0].pppPort++ <--> <channelType> like PPPLikeChannel <--> host[1].pppPort++;
         host[0].pppPort++ <--> <> like PPPLikeChannel <--> host[1].pppPort++; // NOT VALID: where to put @type?
