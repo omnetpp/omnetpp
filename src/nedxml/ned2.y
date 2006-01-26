@@ -795,15 +795,23 @@ submoduleheader
                   addVector(ps.submod, "vector-size",@4,$4);
                   setComments(ps.submod,@1,@4);
                 }
-        | NAME ':' likeparam
-        | NAME vector ':' likeparam
+        | NAME ':' likephrase
+        | NAME vector ':' likephrase
+        ;
+
+/*
+ * Like Phrase (also used for connection channels)
+ */
+likephrase
+        : likeparam LIKE NAME
+        | likeparam LIKE '*'
         ;
 
 likeparam
-        : '<' '>'  LIKE NAME
-        | '<' '@' NAME '>'  LIKE NAME
-        | '<' qualifier '.' '@' NAME '>'  LIKE NAME /* note: qualifier here must be "this" */
-        | '<' expression '>' LIKE NAME  /* XXX expression is the source of one shift-reduce conflict because it may contain '>' */
+        : '<' '>'
+        | '<' '@' NAME '>'
+        | '<' qualifier '.' '@' NAME '>' /* note: qualifier here must be "this" */
+        | '<' expression '>' /* XXX expression is the source of one shift-reduce conflict because it may contain '>' */
         ;
 
 /*
@@ -1071,13 +1079,18 @@ channeldescr
                 }
             opt_paramblock
           '}'
-        | NAME ':' likeparam LIKE NAME '{'
+        | likephrase '{'
                 {
                   ps.component = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.conngroup);
                   ((ChannelNode *)ps.component)->setName(toString(@1));
                 }
             opt_paramblock
           '}'
+        | likephrase
+                {
+                  ps.component = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.conngroup);
+                  ((ChannelNode *)ps.component)->setName(toString(@1));
+                }
         ;
 
 /*
