@@ -245,9 +245,9 @@ module Host
             // left side scope is always "this."
             mss0 = 200;
             mss = mss0; // --> 1000 (parent's)
-//XXX            mss = this.mss0; // --> 200
+            mss = this.mss0; // --> 200
             mss = mss;  // --> 500 (parent's)
-//XXX            mss = udp.maxpk;
+            mss = udp.maxpk;
         }
      connections:
         tcp.out --> {delay = delay;} --> ip.in;
@@ -330,7 +330,7 @@ module Host
     parameters:
         int N;
     submodules:
-//XXX        app: <this.@type> like TCPApp;  // <this.@type> can be abbreviated as <>
+        app: <this.@type> like TCPApp;  // <this.@type> can be abbreviated as <>
 
         apps[N]: <> like *; // uses @moduletype property, type unchecked; <> operator converts string to type
         apps[N]: <> like TCPApp;  // uses @moduletype property
