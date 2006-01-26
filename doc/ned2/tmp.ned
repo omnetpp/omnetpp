@@ -463,15 +463,15 @@ network Network
         hosts[100] : Host {
             parameters:
                 // first the special cases. Stops at first match. index is reserved word.
-//XXX                @display("yrtyr") if index=3;
+                @display("yrtyr") if index==3;
                 @display("yrtyr");
-//XXX                parX = 45 if index>9;
+                parX = 45 if index>9;
                 if index>9 {
                     parY = 3;
                     parZ = 655;
                 }
             gates:
-//XXX                port[5] if index=3;
+                port[5] if index==3;
                 port[8];
                 if index>9 {
                     portA[34];

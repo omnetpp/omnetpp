@@ -463,7 +463,7 @@ network Network
         hosts[100] : Host {
             parameters:
                 // first the special cases. Stops at first match. index is reserved word.
-                @display("yrtyr") if index=3;
+                @display("yrtyr") if index==3;
                 @display("yrtyr");
                 parX = 45 if index>9;
                 if index>9 {
@@ -471,7 +471,7 @@ network Network
                     parZ = 655;
                 }
             gates:
-                port[5] if index=3;
+                port[5] if index==3;
                 port[8];
                 if index>9 {
                     portA[34];
