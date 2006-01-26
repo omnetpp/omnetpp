@@ -10,7 +10,7 @@
   **  NED-2.
   -->
 
-<!ELEMENT ned-file (whitespace*, (import|propertydef|property|channel|
+<!ELEMENT ned-file (whitespace*, (import|property-decl|property|channel|
                     channel-interface|simple-module|compound-module|module-interface)*)>
 <!ATTLIST ned-file
      filename           CDATA     #REQUIRED
@@ -25,8 +25,8 @@
 <!ATTLIST import
      filename           CDATA     #REQUIRED>
 
-<!ELEMENT propertydef (whitespace*, key-value*, property*)>
-<!ATTLIST propertydef
+<!ELEMENT property-decl (whitespace*, key-value*, property*)>
+<!ATTLIST property-decl
      name               NMTOKEN   #REQUIRED>
 
 <!ELEMENT extends (whitespace*)>
@@ -65,8 +65,9 @@
      name               NMTOKEN   #REQUIRED
      value              CDATA     #IMPLIED>
 
-<!ELEMENT property (whitespace*, key-value*, property*)>
+<!ELEMENT property (whitespace*, key-value*)>
 <!ATTLIST property
+     is-implicit        (true|false) "false"
      qualifier          CDATA     #IMPLIED
      name               NMTOKEN   #REQUIRED>
 
@@ -144,33 +145,33 @@
   **  Expressions
   -->
 
-<!ELEMENT expression (whitespace*, (operator|function|ref|const))>
+<!ELEMENT expression (whitespace*, (operator|function|ident|literal))>
 <!ATTLIST expression
      target              CDATA     #IMPLIED>
 
-<!ELEMENT operator (whitespace*, (operator|function|ref|const)+)>
+<!ELEMENT operator (whitespace*, (operator|function|ident|literal)+)>
 <!ATTLIST operator
      name                CDATA     #REQUIRED>
 
-<!ELEMENT function (whitespace*, (operator|function|ref|const)*)>
+<!ELEMENT function (whitespace*, (operator|function|ident|literal)*)>
 <!ATTLIST function
      name                NMTOKEN   #REQUIRED>
 
 <!-- Ref is either a parameter reference or an identifier for 'sizeof' operator
      format is 'name' or 'module.name' or 'module[n].name'
 -->
-<!ELEMENT ref (whitespace*, expression*)>
-<!ATTLIST ref
+<!ELEMENT ident (whitespace*, expression*)>
+<!ATTLIST ident
      module              CDATA     #IMPLIED
      module-index        CDATA     #IMPLIED
      name                NMTOKEN   #REQUIRED>
 
 
-<!ELEMENT const (whitespace*)>
+<!ELEMENT literal (whitespace*)>
 <!-- Note: value is in fact REQUIRED, but empty attr value should
      also be accepted because that represents the "" string literal
  -->
-<!ATTLIST const
+<!ATTLIST literal
      type  (double|int|string|bool|unit)  #REQUIRED
      unit-type           CDATA     #IMPLIED
      text                CDATA     #IMPLIED
