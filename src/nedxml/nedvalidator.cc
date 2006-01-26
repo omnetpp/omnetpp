@@ -35,7 +35,7 @@ void  NEDValidatorBase::validateElement(NEDElement *node)
         case NED_NED_FILE: validateElement((NedFileNode *) node); break;
         case NED_WHITESPACE: validateElement((WhitespaceNode *) node); break;
         case NED_IMPORT: validateElement((ImportNode *) node); break;
-        case NED_PROPERTYDEF: validateElement((PropertydefNode *) node); break;
+        case NED_PROPERTY_DECL: validateElement((PropertyDeclNode *) node); break;
         case NED_EXTENDS: validateElement((ExtendsNode *) node); break;
         case NED_INTERFACE_NAME: validateElement((InterfaceNameNode *) node); break;
         case NED_SIMPLE_MODULE: validateElement((SimpleModuleNode *) node); break;
@@ -62,8 +62,8 @@ void  NEDValidatorBase::validateElement(NEDElement *node)
         case NED_EXPRESSION: validateElement((ExpressionNode *) node); break;
         case NED_OPERATOR: validateElement((OperatorNode *) node); break;
         case NED_FUNCTION: validateElement((FunctionNode *) node); break;
-        case NED_REF: validateElement((RefNode *) node); break;
-        case NED_CONST: validateElement((ConstNode *) node); break;
+        case NED_IDENT: validateElement((IdentNode *) node); break;
+        case NED_LITERAL: validateElement((LiteralNode *) node); break;
         case NED_MSG_FILE: validateElement((MsgFileNode *) node); break;
         case NED_CPLUSPLUS: validateElement((CplusplusNode *) node); break;
         case NED_STRUCT_DECL: validateElement((StructDeclNode *) node); break;

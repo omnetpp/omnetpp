@@ -97,7 +97,7 @@ struct ParserState
     NedFileNode *nedfile;
     WhitespaceNode *whitespace;
     ImportNode *import;
-    PropertydefNode *propertydef;
+    PropertyDeclNode *propertydecl;
     ExtendsNode *extends;
     InterfaceNameNode *interfacename;
     NEDElement *component;  // compound/simple module, module interface, channel or channel interface
@@ -156,9 +156,9 @@ const char *toString(long);
 ExpressionNode *createExpression(NEDElement *expr);
 OperatorNode *createOperator(const char *op, NEDElement *operand1, NEDElement *operand2=NULL, NEDElement *operand3=NULL);
 FunctionNode *createFunction(const char *funcname, NEDElement *arg1=NULL, NEDElement *arg2=NULL, NEDElement *arg3=NULL, NEDElement *arg4=NULL);
-RefNode *createRef(const char *param, const char *paramindex=NULL, const char *module=NULL, const char *moduleindex=NULL);
-ConstNode *createConst(int type, const char *value, const char *text=NULL);
-ConstNode *createQuantity(const char *text);
+IdentNode *createRef(const char *param, const char *paramindex=NULL, const char *module=NULL, const char *moduleindex=NULL);
+LiteralNode *createConst(int type, const char *value, const char *text=NULL);
+LiteralNode *createQuantity(const char *text);
 NEDElement *unaryMinus(NEDElement *node);
 
 void addVector(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr);
@@ -235,9 +235,9 @@ propertydecl
 propertydecl_header
         : PROPERTY '@' NAME
                 {
-                  ps.propertydef = (PropertydefNode *)createNodeWithTag(NED_PROPERTYDEF, ps.nedfile);
-                  ps.propertydef->setName(toString(@3));
-                  setComments(ps.propertydef,@1);
+                  ps.propertydecl = (PropertyDeclNode *)createNodeWithTag(NED_PROPERTY_DECL, ps.nedfile);
+                  ps.propertydecl->setName(toString(@3));
+                  setComments(ps.propertydecl,@1);
                 }
         ;
 
@@ -1609,9 +1609,9 @@ ExpressionNode *createExpression(NEDElement *expr)
    return expression;
 }
 
-RefNode *createRef(const char *param, const char *paramindex, const char *module, const char *moduleindex)
+IdentNode *createRef(const char *param, const char *paramindex, const char *module, const char *moduleindex)
 {
-   RefNode *par = (RefNode *)createNodeWithTag(NED_REF);
+   IdentNode *par = (IdentNode *)createNodeWithTag(NED_IDENT);
    par->setName(param);
 //FIXME   if (paramindex) par->setParamIndex(paramindex);
    if (module) par->setModule(module);
@@ -1619,18 +1619,18 @@ RefNode *createRef(const char *param, const char *paramindex, const char *module
    return par;
 }
 
-ConstNode *createConst(int type, const char *value, const char *text)
+LiteralNode *createConst(int type, const char *value, const char *text)
 {
-   ConstNode *c = (ConstNode *)createNodeWithTag(NED_CONST);
+   LiteralNode *c = (LiteralNode *)createNodeWithTag(NED_LITERAL);
    c->setType(type);
    if (value) c->setValue(value);
    if (text) c->setText(text);
    return c;
 }
 
-ConstNode *createQuantity(const char *text)
+LiteralNode *createQuantity(const char *text)
 {
-   ConstNode *c = (ConstNode *)createNodeWithTag(NED_CONST);
+   LiteralNode *c = (LiteralNode *)createNodeWithTag(NED_LITERAL);
    c->setType(NED_CONST_UNIT);
    if (text) c->setText(text);
 
@@ -1651,10 +1651,10 @@ ConstNode *createQuantity(const char *text)
 NEDElement *unaryMinus(NEDElement *node)
 {
     // if not a constant, must appy unary minus operator
-    if (node->getTagCode()!=NED_CONST)
+    if (node->getTagCode()!=NED_LITERAL)
         return createOperator("-", node);
 
-    ConstNode *constNode = (ConstNode *)node;
+    LiteralNode *constNode = (LiteralNode *)node;
 
     // only int and real constants can be negative, string, bool, etc cannot
     if (constNode->getType()!=NED_CONST_INT && constNode->getType()!=NED_CONST_DOUBLE)

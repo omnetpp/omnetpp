@@ -78,9 +78,9 @@ class CppExpressionGenerator
     void generateItem(NEDElement *node, const char *indent, int mode);
     void doOperator(OperatorNode *node, const char *indent, int mode);
     void doFunction(FunctionNode *node, const char *indent, int mode);
-    void doParamref(RefNode *node, const char *indent, int mode);
-    void doIdent(IdentNode *node, const char *indent, int mode);
-    void doConst(ConstNode *node, const char *indent, int mode);
+    void doParamref(IdentNode *node, const char *indent, int mode);
+    void doIdent(ObsoleteIdentNode *node, const char *indent, int mode);
+    void doConst(LiteralNode *node, const char *indent, int mode);
     void doExpression(ExpressionNode *node, const char *indent, int mode);
 
     bool needsExpressionClass(ExpressionNode *expr, NEDElement *currentSubmodTypeDecl);

@@ -62,7 +62,7 @@ class NEDBasicValidator : public NEDValidatorBase
     virtual void validateElement(NedFileNode *node);
     virtual void validateElement(WhitespaceNode *node);
     virtual void validateElement(ImportNode *node);
-    virtual void validateElement(PropertydefNode *node);
+    virtual void validateElement(PropertyDeclNode *node);
     virtual void validateElement(ExtendsNode *node);
     virtual void validateElement(InterfaceNameNode *node);
     virtual void validateElement(SimpleModuleNode *node);
@@ -89,8 +89,8 @@ class NEDBasicValidator : public NEDValidatorBase
     virtual void validateElement(ExpressionNode *node);
     virtual void validateElement(OperatorNode *node);
     virtual void validateElement(FunctionNode *node);
-    virtual void validateElement(RefNode *node);
-    virtual void validateElement(ConstNode *node);
+    virtual void validateElement(IdentNode *node);
+    virtual void validateElement(LiteralNode *node);
     virtual void validateElement(MsgFileNode *node);
     virtual void validateElement(CplusplusNode *node);
     virtual void validateElement(StructDeclNode *node);

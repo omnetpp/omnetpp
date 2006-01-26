@@ -145,7 +145,7 @@ struct ParserState
     NedFileNode *nedfile;
     WhitespaceNode *whitespace;
     ImportNode *imports;
-    PropertydefNode *propertydef;
+    PropertyDeclNode *propertydecl;
     ExtendsNode *extends;
     InterfaceNameNode *interfacename;
     NEDElement *module;  // in fact, CompoundModuleNode* or SimpleModule*
@@ -222,9 +222,9 @@ ExpressionNode *createExpression(NEDElement *expr);
 OperatorNode *createOperator(const char *op, NEDElement *operand1, NEDElement *operand2=NULL, NEDElement *operand3=NULL);
 FunctionNode *createFunction(const char *funcname, NEDElement *arg1=NULL, NEDElement *arg2=NULL, NEDElement *arg3=NULL, NEDElement *arg4=NULL);
 ParamRefNode *createParamRef(const char *param, const char *paramindex=NULL, const char *module=NULL, const char *moduleindex=NULL);
-IdentNode *createIdent(const char *name);
-ConstNode *createConst(int type, const char *value, const char *text=NULL);
-ConstNode *createTimeConst(const char *text);
+ObsoleteIdentNode *createIdent(const char *name);
+LiteralNode *createConst(int type, const char *value, const char *text=NULL);
+LiteralNode *createTimeConst(const char *text);
 NEDElement *createParamRefOrIdent(const char *name);
 NEDElement *unaryMinus(NEDElement *node);
 
@@ -1932,25 +1932,25 @@ ParamRefNode *createParamRef(const char *param, const char *paramindex, const ch
    return par;
 }
 
-IdentNode *createIdent(const char *name)
+ObsoleteIdentNode *createIdent(const char *name)
 {
-   IdentNode *ident = (IdentNode *)createNodeWithTag(NED_IDENT);
+   ObsoleteIdentNode *ident = (ObsoleteIdentNode *)createNodeWithTag(NED_OBSOLETE_IDENT);
    ident->setName(name);
    return ident;
 }
 
-ConstNode *createConst(int type, const char *value, const char *text)
+LiteralNode *createConst(int type, const char *value, const char *text)
 {
-   ConstNode *c = (ConstNode *)createNodeWithTag(NED_CONST);
+   LiteralNode *c = (LiteralNode *)createNodeWithTag(NED_LITERAL);
    c->setType(type);
    if (value) c->setValue(value);
    if (text) c->setText(text);
    return c;
 }
 
-ConstNode *createTimeConst(const char *text)
+LiteralNode *createTimeConst(const char *text)
 {
-   ConstNode *c = (ConstNode *)createNodeWithTag(NED_CONST);
+   LiteralNode *c = (LiteralNode *)createNodeWithTag(NED_LITERAL);
    c->setType(NED_CONST_TIME);
    if (text) c->setText(text);
 
@@ -1987,10 +1987,10 @@ NEDElement *createParamRefOrIdent(const char *name)
 NEDElement *unaryMinus(NEDElement *node)
 {
     // if not a constant, must appy unary minus operator
-    if (node->getTagCode()!=NED_CONST)
+    if (node->getTagCode()!=NED_LITERAL)
         return createOperator("-", node);
 
-    ConstNode *constNode = (ConstNode *)node;
+    LiteralNode *constNode = (LiteralNode *)node;
 
     // only int and real constants can be negative, string, bool, etc cannot
     if (constNode->getType()!=NED_CONST_INT && constNode->getType()!=NED_CONST_REAL)

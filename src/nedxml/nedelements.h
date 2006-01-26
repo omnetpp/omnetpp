@@ -26,7 +26,7 @@ class FilesNode;
 class NedFileNode;
 class WhitespaceNode;
 class ImportNode;
-class PropertydefNode;
+class PropertyDeclNode;
 class ExtendsNode;
 class InterfaceNameNode;
 class SimpleModuleNode;
@@ -53,8 +53,8 @@ class ConditionNode;
 class ExpressionNode;
 class OperatorNode;
 class FunctionNode;
-class RefNode;
-class ConstNode;
+class IdentNode;
+class LiteralNode;
 class MsgFileNode;
 class CplusplusNode;
 class StructDeclNode;
@@ -85,7 +85,7 @@ enum NEDElementCode {
     NED_NED_FILE,
     NED_WHITESPACE,
     NED_IMPORT,
-    NED_PROPERTYDEF,
+    NED_PROPERTY_DECL,
     NED_EXTENDS,
     NED_INTERFACE_NAME,
     NED_SIMPLE_MODULE,
@@ -112,8 +112,8 @@ enum NEDElementCode {
     NED_EXPRESSION,
     NED_OPERATOR,
     NED_FUNCTION,
-    NED_REF,
-    NED_CONST,
+    NED_IDENT,
+    NED_LITERAL,
     NED_MSG_FILE,
     NED_CPLUSPLUS,
     NED_STRUCT_DECL,
@@ -184,7 +184,7 @@ class FilesNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;ned-file&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT ned-file (whitespace*, (import|propertydef|property|channel|
+ * <!ELEMENT ned-file (whitespace*, (import|property-decl|property|channel|
  *                     channel-interface|simple-module|compound-module|module-interface)*)>
  * <!ATTLIST ned-file
  *      filename           CDATA     #REQUIRED
@@ -227,7 +227,7 @@ class NedFileNode : public NEDElement
     virtual NedFileNode *getNextNedFileNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
     virtual ImportNode *getFirstImportChild() const;
-    virtual PropertydefNode *getFirstPropertydefChild() const;
+    virtual PropertyDeclNode *getFirstPropertyDeclChild() const;
     virtual PropertyNode *getFirstPropertyChild() const;
     virtual ChannelNode *getFirstChannelChild() const;
     virtual ChannelInterfaceNode *getFirstChannelInterfaceChild() const;
@@ -329,32 +329,32 @@ class ImportNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the &lt;propertydef&gt; XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;property-decl&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT propertydef (whitespace*, key-value*, property*)>
- * <!ATTLIST propertydef
+ * <!ELEMENT property-decl (whitespace*, key-value*, property*)>
+ * <!ATTLIST property-decl
  *      name               NMTOKEN   #REQUIRED>
  * </pre>
  * 
  * @ingroup Data
  */
-class PropertydefNode : public NEDElement
+class PropertyDeclNode : public NEDElement
 {
   private:
     std::string name;
   public:
     /** @name Constructors, destructor */
     //@{
-    PropertydefNode() {applyDefaults();}
-    PropertydefNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~PropertydefNode() {}
+    PropertyDeclNode() {applyDefaults();}
+    PropertyDeclNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~PropertyDeclNode() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
-    virtual const char *getTagName() const {return "propertydef";}
-    virtual int getTagCode() const {return NED_PROPERTYDEF;}
+    virtual const char *getTagName() const {return "property-decl";}
+    virtual int getTagCode() const {return NED_PROPERTY_DECL;}
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
@@ -367,7 +367,7 @@ class PropertydefNode : public NEDElement
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
 
-    virtual PropertydefNode *getNextPropertydefNodeSibling() const;
+    virtual PropertyDeclNode *getNextPropertyDeclNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
     virtual KeyValueNode *getFirstKeyValueChild() const;
     virtual PropertyNode *getFirstPropertyChild() const;
@@ -1540,7 +1540,7 @@ class ConditionNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;expression&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT expression (whitespace*, (operator|function|ref|const))>
+ * <!ELEMENT expression (whitespace*, (operator|function|ident|literal))>
  * <!ATTLIST expression
  *      target              CDATA     #IMPLIED>
  * </pre>
@@ -1579,8 +1579,8 @@ class ExpressionNode : public NEDElement
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
     virtual OperatorNode *getFirstOperatorChild() const;
     virtual FunctionNode *getFirstFunctionChild() const;
-    virtual RefNode *getFirstRefChild() const;
-    virtual ConstNode *getFirstConstChild() const;
+    virtual IdentNode *getFirstIdentChild() const;
+    virtual LiteralNode *getFirstLiteralChild() const;
     //@}
 };
 
@@ -1588,7 +1588,7 @@ class ExpressionNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;operator&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT operator (whitespace*, (operator|function|ref|const)+)>
+ * <!ELEMENT operator (whitespace*, (operator|function|ident|literal)+)>
  * <!ATTLIST operator
  *      name                CDATA     #REQUIRED>
  * </pre>
@@ -1627,8 +1627,8 @@ class OperatorNode : public NEDElement
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
     virtual OperatorNode *getFirstOperatorChild() const;
     virtual FunctionNode *getFirstFunctionChild() const;
-    virtual RefNode *getFirstRefChild() const;
-    virtual ConstNode *getFirstConstChild() const;
+    virtual IdentNode *getFirstIdentChild() const;
+    virtual LiteralNode *getFirstLiteralChild() const;
     //@}
 };
 
@@ -1636,7 +1636,7 @@ class OperatorNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;function&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT function (whitespace*, (operator|function|ref|const)*)>
+ * <!ELEMENT function (whitespace*, (operator|function|ident|literal)*)>
  * <!ATTLIST function
  *      name                NMTOKEN   #REQUIRED>
  * </pre>
@@ -1675,17 +1675,17 @@ class FunctionNode : public NEDElement
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
     virtual OperatorNode *getFirstOperatorChild() const;
     virtual FunctionNode *getFirstFunctionChild() const;
-    virtual RefNode *getFirstRefChild() const;
-    virtual ConstNode *getFirstConstChild() const;
+    virtual IdentNode *getFirstIdentChild() const;
+    virtual LiteralNode *getFirstLiteralChild() const;
     //@}
 };
 
 /**
- * GENERATED CLASS. Represents the &lt;ref&gt; XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;ident&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT ref (whitespace*, expression*)>
- * <!ATTLIST ref
+ * <!ELEMENT ident (whitespace*, expression*)>
+ * <!ATTLIST ident
  *      module              CDATA     #IMPLIED
  *      module-index        CDATA     #IMPLIED
  *      name                NMTOKEN   #REQUIRED>
@@ -1693,7 +1693,7 @@ class FunctionNode : public NEDElement
  * 
  * @ingroup Data
  */
-class RefNode : public NEDElement
+class IdentNode : public NEDElement
 {
   private:
     std::string module;
@@ -1702,15 +1702,15 @@ class RefNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    RefNode() {applyDefaults();}
-    RefNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~RefNode() {}
+    IdentNode() {applyDefaults();}
+    IdentNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~IdentNode() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
-    virtual const char *getTagName() const {return "ref";}
-    virtual int getTagCode() const {return NED_REF;}
+    virtual const char *getTagName() const {return "ident";}
+    virtual int getTagCode() const {return NED_IDENT;}
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
@@ -1727,18 +1727,18 @@ class RefNode : public NEDElement
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
 
-    virtual RefNode *getNextRefNodeSibling() const;
+    virtual IdentNode *getNextIdentNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
     virtual ExpressionNode *getFirstExpressionChild() const;
     //@}
 };
 
 /**
- * GENERATED CLASS. Represents the &lt;const&gt; XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;literal&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT const (whitespace*)>
- * <!ATTLIST const
+ * <!ELEMENT literal (whitespace*)>
+ * <!ATTLIST literal
  *      type  (double|int|string|bool|unit)  #REQUIRED
  *      unit-type           CDATA     #IMPLIED
  *      text                CDATA     #IMPLIED
@@ -1747,7 +1747,7 @@ class RefNode : public NEDElement
  * 
  * @ingroup Data
  */
-class ConstNode : public NEDElement
+class LiteralNode : public NEDElement
 {
   private:
     int type;
@@ -1757,15 +1757,15 @@ class ConstNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    ConstNode() {applyDefaults();}
-    ConstNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~ConstNode() {}
+    LiteralNode() {applyDefaults();}
+    LiteralNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~LiteralNode() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
-    virtual const char *getTagName() const {return "const";}
-    virtual int getTagCode() const {return NED_CONST;}
+    virtual const char *getTagName() const {return "literal";}
+    virtual int getTagCode() const {return NED_LITERAL;}
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
@@ -1784,7 +1784,7 @@ class ConstNode : public NEDElement
     const char * getValue() const  {return value.c_str();}
     void setValue(const char * val)  {value = val;}
 
-    virtual ConstNode *getNextConstNodeSibling() const;
+    virtual LiteralNode *getNextLiteralNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
     //@}
 };

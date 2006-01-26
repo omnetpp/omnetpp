@@ -570,7 +570,7 @@ void NEDGenerator::doConnattr(ConnAttrNode *node, const char *indent, bool islas
         //         </expression>
         //     </conn-attr>
         NEDElement *expr=node->getFirstChildWithTag(NED_EXPRESSION);
-        ConstNode *aconst = (ConstNode *)(expr ? expr->getFirstChildWithTag(NED_CONST) : NULL);
+        LiteralNode *aconst = (LiteralNode *)(expr ? expr->getFirstChildWithTag(NED_LITERAL) : NULL);
         bool exprOk = aconst && aconst->getType()==NED_CONST_STRING;
         const char *channelname = exprOk ? aconst->getValue() : node->getValue();
         out << " " << channelname << " ";
@@ -770,7 +770,7 @@ void NEDGenerator::doFunction(FunctionNode *node, const char *indent, bool islas
     out << ")";
 }
 
-void NEDGenerator::doParamref(RefNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doParamref(IdentNode *node, const char *indent, bool islast, const char *)
 {
     if (node->getIsAncestor())
         out << "ancestor ";
@@ -787,12 +787,12 @@ void NEDGenerator::doParamref(RefNode *node, const char *indent, bool islast, co
     out << node->getParamName();
 }
 
-void NEDGenerator::doIdent(IdentNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doIdent(ObsoleteIdentNode *node, const char *indent, bool islast, const char *)
 {
     out << node->getName();
 }
 
-void NEDGenerator::doConst(ConstNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doConst(LiteralNode *node, const char *indent, bool islast, const char *)
 {
     bool isstring = (node->getType()==NED_CONST_STRING);
 
@@ -1037,11 +1037,11 @@ void NEDGenerator::generateNedItem(NEDElement *node, const char *indent, bool is
         case NED_FUNCTION:
             doFunction((FunctionNode *)node, indent, islast, arg); break;
         case NED_PARAM_REF:
-            doParamref((RefNode *)node, indent, islast, arg); break;
-        case NED_IDENT:
-            doIdent((IdentNode *)node, indent, islast, arg); break;
-        case NED_CONST:
-            doConst((ConstNode *)node, indent, islast, arg); break;
+            doParamref((IdentNode *)node, indent, islast, arg); break;
+        case NED_OBSOLETE_IDENT:
+            doIdent((ObsoleteIdentNode *)node, indent, islast, arg); break;
+        case NED_LITERAL:
+            doConst((LiteralNode *)node, indent, islast, arg); break;
         case NED_CPLUSPLUS:
             doCplusplus((CplusplusNode *)node, indent, islast, arg); break;
         case NED_STRUCT_DECL:

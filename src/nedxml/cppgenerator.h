@@ -98,7 +98,7 @@ class NEDCppGenerator
     // find given expression node in parent.
     ExpressionNode *findExpression(NEDElement *parent, const char *target);
     // if expression consists of a constant, return its pointer, NULL otherwise.
-    ConstNode *getConstantExpression(ExpressionNode *node);
+    LiteralNode *getConstantExpression(ExpressionNode *node);
 
     void writeProlog(ostream& out);
     void printTemporaryVariables(const char *indent);

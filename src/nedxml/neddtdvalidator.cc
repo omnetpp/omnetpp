@@ -32,7 +32,7 @@ void NEDDTDValidator::validateElement(NedFileNode *node)
 {
     Choice choices[] = {
         {{NED_WHITESPACE, NED_NULL}, '*'},
-        {{NED_IMPORT, NED_PROPERTYDEF, NED_PROPERTY, NED_CHANNEL, NED_CHANNEL_INTERFACE, NED_SIMPLE_MODULE, NED_COMPOUND_MODULE, NED_MODULE_INTERFACE, NED_NULL}, '*'},
+        {{NED_IMPORT, NED_PROPERTY_DECL, NED_PROPERTY, NED_CHANNEL, NED_CHANNEL_INTERFACE, NED_SIMPLE_MODULE, NED_COMPOUND_MODULE, NED_MODULE_INTERFACE, NED_NULL}, '*'},
     };
     checkSeqOfChoices(node, choices, sizeof(choices)/sizeof(Choice));
 
@@ -57,7 +57,7 @@ void NEDDTDValidator::validateElement(ImportNode *node)
     checkRequiredAttribute(node, "filename");
 }
 
-void NEDDTDValidator::validateElement(PropertydefNode *node)
+void NEDDTDValidator::validateElement(PropertyDeclNode *node)
 {
     int tags[] = {NED_WHITESPACE,NED_KEY_VALUE,NED_PROPERTY, NED_NULL};
     char mult[] = {'*','*','*', 0};
@@ -331,7 +331,7 @@ void NEDDTDValidator::validateElement(ExpressionNode *node)
 {
     Choice choices[] = {
         {{NED_WHITESPACE, NED_NULL}, '*'},
-        {{NED_OPERATOR, NED_FUNCTION, NED_REF, NED_CONST, NED_NULL}, '1'},
+        {{NED_OPERATOR, NED_FUNCTION, NED_IDENT, NED_LITERAL, NED_NULL}, '1'},
     };
     checkSeqOfChoices(node, choices, sizeof(choices)/sizeof(Choice));
 
@@ -341,7 +341,7 @@ void NEDDTDValidator::validateElement(OperatorNode *node)
 {
     Choice choices[] = {
         {{NED_WHITESPACE, NED_NULL}, '*'},
-        {{NED_OPERATOR, NED_FUNCTION, NED_REF, NED_CONST, NED_NULL}, '+'},
+        {{NED_OPERATOR, NED_FUNCTION, NED_IDENT, NED_LITERAL, NED_NULL}, '+'},
     };
     checkSeqOfChoices(node, choices, sizeof(choices)/sizeof(Choice));
 
@@ -352,7 +352,7 @@ void NEDDTDValidator::validateElement(FunctionNode *node)
 {
     Choice choices[] = {
         {{NED_WHITESPACE, NED_NULL}, '*'},
-        {{NED_OPERATOR, NED_FUNCTION, NED_REF, NED_CONST, NED_NULL}, '*'},
+        {{NED_OPERATOR, NED_FUNCTION, NED_IDENT, NED_LITERAL, NED_NULL}, '*'},
     };
     checkSeqOfChoices(node, choices, sizeof(choices)/sizeof(Choice));
 
@@ -360,7 +360,7 @@ void NEDDTDValidator::validateElement(FunctionNode *node)
     checkNameAttribute(node, "name");
 }
 
-void NEDDTDValidator::validateElement(RefNode *node)
+void NEDDTDValidator::validateElement(IdentNode *node)
 {
     int tags[] = {NED_WHITESPACE,NED_EXPRESSION, NED_NULL};
     char mult[] = {'*','*', 0};
@@ -370,7 +370,7 @@ void NEDDTDValidator::validateElement(RefNode *node)
     checkNameAttribute(node, "name");
 }
 
-void NEDDTDValidator::validateElement(ConstNode *node)
+void NEDDTDValidator::validateElement(LiteralNode *node)
 {
     int tags[] = {NED_WHITESPACE, NED_NULL};
     char mult[] = {'*', 0};

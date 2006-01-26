@@ -57,7 +57,7 @@ void NEDSemanticValidator::validateElement(ImportNode *node)
 {
 }
 
-void NEDSemanticValidator::validateElement(PropertydefNode *node)
+void NEDSemanticValidator::validateElement(PropertyDeclNode *node)
 {
     // FIXME revise
 }
@@ -308,12 +308,12 @@ void NEDSemanticValidator::validateElement(FunctionNode *node)
     // FIXME revise
 }
 
-void NEDSemanticValidator::validateElement(RefNode *node)
+void NEDSemanticValidator::validateElement(IdentNode *node)
 {
     // FIXME revise
 }
 
-void NEDSemanticValidator::validateElement(ConstNode *node)
+void NEDSemanticValidator::validateElement(LiteralNode *node)
 {
 }
 

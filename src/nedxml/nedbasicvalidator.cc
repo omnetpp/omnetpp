@@ -188,7 +188,7 @@ void NEDBasicValidator::validateElement(ImportNode *node)
     //FIXME revise
 }
 
-void NEDBasicValidator::validateElement(PropertydefNode *node)
+void NEDBasicValidator::validateElement(PropertyDeclNode *node)
 {
     //FIXME revise
 }
@@ -483,7 +483,7 @@ void NEDBasicValidator::validateElement(FunctionNode *node)
          NEDElement *op1 = node->getFirstChild();
          NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
          if (args==2)
-             if (op2->getTagCode()!=NED_CONST || ((ConstNode *)op2)->getType()!=NED_CONST_STRING)
+             if (op2->getTagCode()!=NED_LITERAL || ((LiteralNode *)op2)->getType()!=NED_CONST_STRING)
                  NEDError(node, "second argument to 'input()' must be a string literal (prompt text)");
          NEDElement *parent = node->getParent();
          if (parent->getTagCode()!=NED_EXPRESSION)
@@ -496,8 +496,8 @@ void NEDBasicValidator::validateElement(FunctionNode *node)
              {NEDError(node, "'xmldoc()' takes 1 or 2 arguments");return;}
          NEDElement *op1 = node->getFirstChild();
          NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
-         if (op1->getTagCode()!=NED_CONST || ((ConstNode *)op1)->getType()!=NED_CONST_STRING ||
-             (op2 && (op2->getTagCode()!=NED_CONST || ((ConstNode *)op2)->getType()!=NED_CONST_STRING)))
+         if (op1->getTagCode()!=NED_LITERAL || ((LiteralNode *)op1)->getType()!=NED_CONST_STRING ||
+             (op2 && (op2->getTagCode()!=NED_LITERAL || ((LiteralNode *)op2)->getType()!=NED_CONST_STRING)))
              NEDError(node, "'xmldoc()' arguments must be string literals");
          return;
     }
@@ -523,14 +523,14 @@ void NEDBasicValidator::validateElement(FunctionNode *node)
     }
 }
 
-void NEDBasicValidator::validateElement(RefNode *node)
+void NEDBasicValidator::validateElement(IdentNode *node)
 {
     //FIXME revise
     const char *expr[] = {"module-index", "param-index"};
     bool opt[] = {true, true};
     checkExpressionAttributes(node, expr, opt, 2);
 
-    // FIXME loopvar and gatename for sizeof is also represented as RefNode!!!
+    // FIXME loopvar and gatename for sizeof is also represented as IdentNode!!!
 
     // make sure parameter exists
     if (strnull(node->getModule()))
@@ -552,9 +552,9 @@ void NEDBasicValidator::validateElement(RefNode *node)
 }
 
 // TODO merge into Ref code
-//void NEDBasicValidator::validateElement(IdentNode *node)
+//void NEDBasicValidator::validateElement(ObsoleteIdentNode *node)
 //{
-//    // IdentNode may occur: (1) as loop variable inside for-loops (2) argument to sizeof
+//    // ObsoleteIdentNode may occur: (1) as loop variable inside for-loops (2) argument to sizeof
 //    if (node->getParent()->getTagCode()==NED_FUNCTION &&
 //        !strcmp(((FunctionNode*)node->getParent())->getName(),"sizeof"))
 //        return;
@@ -568,7 +568,7 @@ void NEDBasicValidator::validateElement(RefNode *node)
 //        NEDError(node, "no loop variable named '%s' in enclosing for loop", name);
 //}
 
-void NEDBasicValidator::validateElement(ConstNode *node)
+void NEDBasicValidator::validateElement(LiteralNode *node)
 {
     // verify syntax of constant
     int type = node->getType();

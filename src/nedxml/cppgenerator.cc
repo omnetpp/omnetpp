@@ -236,14 +236,14 @@ ExpressionNode *NEDCppGenerator::findExpression(NEDElement *parent, const char *
     return NULL;
 }
 
-ConstNode *NEDCppGenerator::getConstantExpression(ExpressionNode *node)
+LiteralNode *NEDCppGenerator::getConstantExpression(ExpressionNode *node)
 {
     if (!node)
         return NULL;
     NEDElement *firstchild = node->getFirstChild();
-    if (!firstchild || firstchild->getTagCode()!=NED_CONST || firstchild->getNextSibling())
+    if (!firstchild || firstchild->getTagCode()!=NED_LITERAL || firstchild->getNextSibling())
         return NULL;
-    return (ConstNode *)firstchild;
+    return (LiteralNode *)firstchild;
 }
 
 //--------------------------------------
@@ -952,7 +952,7 @@ void NEDCppGenerator::resolveConnectionAttributes(ConnectionNode *node, const ch
 
     // channel?
     ConnAttrNode *channelAttr = (ConnAttrNode *)node->getFirstChildWithAttribute(NED_CONN_ATTR,"name","channel");
-    ConstNode *channel = getConstantExpression(findExpression(channelAttr,"value"));
+    LiteralNode *channel = getConstantExpression(findExpression(channelAttr,"value"));
     if (channel)
     {
         out << indent << "channel = _createChannel(\"" << channel->getValue() << "\");\n";
@@ -961,13 +961,13 @@ void NEDCppGenerator::resolveConnectionAttributes(ConnectionNode *node, const ch
 
     // optimization: assess if simplified code can be generated
     ConnAttrNode *delayAttr = (ConnAttrNode *)node->getFirstChildWithAttribute(NED_CONN_ATTR,"name","delay");
-    ConstNode *delay = getConstantExpression(findExpression(delayAttr,"value"));
+    LiteralNode *delay = getConstantExpression(findExpression(delayAttr,"value"));
     bool isDelaySimple =  !delayAttr ? true : delay!=NULL;
     ConnAttrNode *errorAttr = (ConnAttrNode *)node->getFirstChildWithAttribute(NED_CONN_ATTR,"name","error");
-    ConstNode *error = getConstantExpression(findExpression(errorAttr,"value"));
+    LiteralNode *error = getConstantExpression(findExpression(errorAttr,"value"));
     bool isErrorSimple =  !errorAttr ? true : error!=NULL;
     ConnAttrNode *datarateAttr = (ConnAttrNode *)node->getFirstChildWithAttribute(NED_CONN_ATTR,"name","datarate");
-    ConstNode *datarate = getConstantExpression(findExpression(datarateAttr,"value"));
+    LiteralNode *datarate = getConstantExpression(findExpression(datarateAttr,"value"));
     bool isDatarateSimple =  !datarateAttr ? true : datarate!=NULL;
 
     if (isDelaySimple && isErrorSimple && isDatarateSimple)
