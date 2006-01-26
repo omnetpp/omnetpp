@@ -898,11 +898,6 @@ KeyValueNode *PropertyNode::getFirstKeyValueChild() const
     return (KeyValueNode *)getFirstChildWithTag(NED_KEY_VALUE);
 }
 
-PropertyNode *PropertyNode::getFirstPropertyChild() const
-{
-    return (PropertyNode *)getFirstChildWithTag(NED_PROPERTY);
-}
-
 int KeyValueNode::getNumAttributes() const
 {
     return 2;

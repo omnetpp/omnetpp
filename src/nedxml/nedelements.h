@@ -769,7 +769,7 @@ class ParamNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;property&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT property (whitespace*, key-value*, property*)>
+ * <!ELEMENT property (whitespace*, key-value*)>
  * <!ATTLIST property
  *      is-implicit        (true|false) "false"
  *      qualifier          CDATA     #IMPLIED
@@ -815,7 +815,6 @@ class PropertyNode : public NEDElement
     virtual PropertyNode *getNextPropertyNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
     virtual KeyValueNode *getFirstKeyValueChild() const;
-    virtual PropertyNode *getFirstPropertyChild() const;
     //@}
 };
 

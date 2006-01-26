@@ -159,8 +159,8 @@ void NEDDTDValidator::validateElement(ParamNode *node)
 
 void NEDDTDValidator::validateElement(PropertyNode *node)
 {
-    int tags[] = {NED_WHITESPACE,NED_KEY_VALUE,NED_PROPERTY, NED_NULL};
-    char mult[] = {'*','*','*', 0};
+    int tags[] = {NED_WHITESPACE,NED_KEY_VALUE, NED_NULL};
+    char mult[] = {'*','*', 0};
     checkSequence(node, tags, mult);
 
     const char *vals0[] = {"true","false"};

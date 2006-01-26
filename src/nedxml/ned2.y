@@ -186,7 +186,7 @@ definition
 
         | propertydecl
                 { }
-        | property
+        | fileproperty
                 { }
         | channeldefinition
                 { if (ps.storeSourceCode) storeComponentSourceCode(ps.component, @1); }
@@ -228,8 +228,8 @@ import
  * Property declaration
  */
 propertydecl
-        : propertydecl_header ';'
-        | propertydecl_header '(' opt_propertydecl_keys ')' ';'
+        : propertydecl_header opt_inline_properties ';'
+        | propertydecl_header '(' opt_propertydecl_keys ')' opt_inline_properties ';'
         ;
 
 propertydecl_header
@@ -258,48 +258,12 @@ propertydecl_key
         ;
 
 /*
- * Property
+ * File Property
  */
-property
-        : property_nosemicolon ';'
+fileproperty
+        : property_namevalue ';'
         ;
 
-property_nosemicolon
-        : '@' NAME
-                { /*TBD*/ }
-        | '@' NAME '(' opt_property_keys ')'
-                { /*TBD*/ }
-        ;
-
-opt_property_keys
-        : property_keys
-        |
-        ;
-
-property_keys
-        : property_keys ',' property_key
-                { /*TBD*/ }
-        | property_key
-                { /*TBD*/ }
-        ;
-
-property_key
-        : NAME '=' property_value
-                { /*TBD*/ }
-        | property_value
-                { /*TBD*/ }
-        ;
-
-property_value
-        : TRUE_
-        | FALSE_
-        | NAME
-        | INTCONSTANT
-        | REALCONSTANT
-        | STRINGCONSTANT
-        | CHARCONSTANT
-        | quantity
-        ;
 
 /*
  * Channel
@@ -575,8 +539,8 @@ opt_inline_properties
         ;
 
 inline_properties
-        : inline_properties property_nosemicolon
-        | property_nosemicolon
+        : inline_properties property_namevalue
+        | property_namevalue
         ;
 
 opt_function
@@ -609,18 +573,48 @@ qualifier_elem   /* this attempts to capture inifile-like patterns; FIXME should
 */
 
 /*
- * Condition
+ * Property
  */
-opt_condition
-        : condition
+property
+        : property_namevalue opt_condition ';'
+        ;
+
+property_namevalue
+        : '@' NAME
+                { /*TBD*/ }
+        | '@' NAME '(' opt_property_keys ')'
+                { /*TBD*/ }
+        ;
+
+opt_property_keys
+        : property_keys
         |
         ;
 
-condition
-        : IF expression
-                {
-                  //FIXME
-                }
+property_keys
+        : property_keys ',' property_key
+                { /*TBD*/ }
+        | property_key
+                { /*TBD*/ }
+        ;
+
+property_key
+        : NAME '=' property_value
+                { /*TBD*/ }
+        | property_value
+                { /*TBD*/ }
+        ;
+
+property_value
+        : TRUE_
+        | FALSE_
+        | NAME
+        | INTCONSTANT
+        | REALCONSTANT
+        | STRINGCONSTANT
+        | CHARCONSTANT
+        | quantity
+        ;
 
 /*
  * Gates
@@ -682,11 +676,16 @@ gates_nogroup   /* same as gates, but without the gategroup rule */
  * Gate
  */
 gate
-        : gatetype NAME opt_inline_properties opt_condition ';'
-        | gatetype NAME '[' ']' opt_inline_properties opt_condition ';'
-        | gatetype NAME '[' expression ']' opt_inline_properties opt_condition ';'
-        | NAME opt_inline_properties opt_condition ';'
-        | NAME '[' expression ']' opt_inline_properties opt_condition ';'
+        : gate_typenamesize opt_inline_properties opt_condition ';'
+        ;
+
+gate_typenamesize
+        : gatetype NAME
+        | gatetype NAME '[' ']'
+        | gatetype NAME '[' expression ']'
+        | NAME
+        | NAME '[' ']'
+        | NAME '[' expression ']'
         ;
 
 gatetype
@@ -1049,7 +1048,7 @@ parentrightgate
         ;
 
 opt_subgate
-        : '/' NAME
+        : '$' NAME
         |
         ;
 
@@ -1080,6 +1079,20 @@ channeldescr
             opt_paramblock
           '}'
         ;
+
+/*
+ * Condition
+ */
+opt_condition
+        : condition
+        |
+        ;
+
+condition
+        : IF expression
+                {
+                  //FIXME
+                }
 
 /*
  * Common part
