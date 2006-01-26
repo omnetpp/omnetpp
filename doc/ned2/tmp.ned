@@ -331,13 +331,10 @@ module Host
     submodules:
 //XXX        app: <this.@type> like TCPApp;  // <this.@type> can be abbreviated as <>
 
-        // xxxxxxxxxxxx
-
-        // the following xxx
-//XXX        apps[N]: <>; // uses @moduletype property, type unchecked; <> operator converts string to type
+        apps[N]: <> like *; // uses @moduletype property, type unchecked; <> operator converts string to type
         apps[N]: <> like TCPApp;  // uses @moduletype property
-//XXX        apps[]: <appType[]> like TCPApp;  // with string arrays; not implemented
         apps[N]: <appType> like TCPApp;   // all modules are the same type (appType)
+        //apps[]: <appType[]> like TCPApp;  // with string arrays; not yet implemented
 };
 
 network Network
@@ -379,8 +376,10 @@ network Network
     submodules:
         hosts[100] : HostX;
     connections:
-//XXX        host[0].pppPort++ <--> <channelType> like PPPLikeChannel <--> host[1].pppPort++;
-//XXX        host[0].pppPort++ <--> <> like PPPLikeChannel <--> host[1].pppPort++; // NOT VALID: where to put @type?
+        host[0].pppPort++ <--> <channelType> like PPPLikeChannel <--> host[1].pppPort++;
+        host[0].pppPort++ <--> <> like PPPLikeChannel <--> host[1].pppPort++; // NOT VALID: where to put @type?
+        host[0].pppPort++ <--> <channelType> like * <--> host[1].pppPort++;
+        host[0].pppPort++ <--> <> like * <--> host[1].pppPort++; // NOT VALID: where to put @type?
 };
 
 // channel labels
