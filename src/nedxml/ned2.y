@@ -321,6 +321,13 @@ channelheader
                   setComments(ps.component,@1,@2);
                 }
            opt_inheritance
+        | CHANNEL WITHCPPCLASS NAME
+                {
+                  ps.component = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
+                  ((ChannelNode *)ps.component)->setName(toString(@2));
+                  setComments(ps.component,@1,@2);
+                }
+           opt_inheritance
         ;
 
 opt_inheritance
@@ -531,18 +538,22 @@ paramsitem_nogroup
         | property
         ;
 
+param
+        : param_typenamevalue opt_inline_properties opt_condition ';'
+        ;
+
 /*
  * Parameter
  */
-param
-        : paramtype opt_function NAME opt_inline_properties ';'
+param_typenamevalue
+        : paramtype opt_function NAME
                 {
                   //FIXME
                   //ps.param = addParameter(ps.parameters,@1,TYPE_NUMERIC);
                 }
-        | paramtype opt_function NAME '=' paramvalue opt_inline_properties ';'
-        | NAME '=' paramvalue opt_inline_properties ';'
-        | qualifier '.' NAME '=' paramvalue opt_inline_properties ';'
+        | paramtype opt_function NAME '=' paramvalue
+        | NAME '=' paramvalue
+        | qualifier '.' NAME '=' paramvalue
         ;
 
 paramtype
@@ -600,6 +611,11 @@ qualifier_elem   /* this attempts to capture inifile-like patterns; FIXME should
 /*
  * Condition
  */
+opt_condition
+        : condition
+        |
+        ;
+
 condition
         : IF expression
                 {
@@ -666,11 +682,11 @@ gates_nogroup   /* same as gates, but without the gategroup rule */
  * Gate
  */
 gate
-        : gatetype NAME opt_inline_properties ';'
-        | gatetype NAME '[' ']' opt_inline_properties ';'
-        | gatetype NAME '[' expression ']' opt_inline_properties ';'
-        | NAME opt_inline_properties ';'
-        | NAME '[' expression ']' opt_inline_properties ';'
+        : gatetype NAME opt_inline_properties opt_condition ';'
+        | gatetype NAME '[' ']' opt_inline_properties opt_condition ';'
+        | gatetype NAME '[' expression ']' opt_inline_properties opt_condition ';'
+        | NAME opt_inline_properties opt_condition ';'
+        | NAME '[' expression ']' opt_inline_properties opt_condition ';'
         ;
 
 gatetype
@@ -854,7 +870,7 @@ connections_nogroup   /* same as connections, but without the connectiongroup ru
         ;
 
 connectionsitem_nogroup
-        : connection whereclause ';' /* this is in fact illegal, but let validation find that out */
+        : connection whereclause ';' /* nested "where" is in fact illegal, but let validation find that out */
         | connection ';'
         ;
 
@@ -942,16 +958,16 @@ leftmod
         ;
 
 leftgate
-        : NAME vector
+        : NAME opt_subgate
+                {
+                  ps.conn->setSrcGate( toString( @1) );
+                }
+        | NAME vector opt_subgate
                 {
                   ps.conn->setSrcGate( toString( @1) );
                   addVector(ps.conn, "src-gate-index",@2,$2);
                 }
-        | NAME
-                {
-                  ps.conn->setSrcGate( toString( @1) );
-                }
-        | NAME PLUSPLUS
+        | NAME PLUSPLUS opt_subgate
                 {
                   ps.conn->setSrcGate( toString( @1) );
                   ps.conn->setSrcGatePlusplus(true);
@@ -959,20 +975,20 @@ leftgate
         ;
 
 parentleftgate
-        : NAME vector
+        : NAME opt_subgate
+                {
+                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn->setSrcModule("");
+                  ps.conn->setSrcGate(toString(@1));
+                }
+        | NAME vector opt_subgate
                 {
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
                   addVector(ps.conn, "src-gate-index",@2,$2);
                 }
-        | NAME
-                {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
-                  ps.conn->setSrcModule("");
-                  ps.conn->setSrcGate(toString(@1));
-                }
-        | NAME PLUSPLUS
+        | NAME PLUSPLUS opt_subgate
                 {
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
@@ -987,28 +1003,28 @@ rightgatespec
         ;
 
 rightmod
-        : NAME vector
+        : NAME
+                {
+                  ps.conn->setDestModule( toString(@1) );
+                }
+        | NAME vector
                 {
                   ps.conn->setDestModule( toString(@1) );
                   addVector(ps.conn, "dest-module-index",@2,$2);
                 }
-        | NAME
-                {
-                  ps.conn->setDestModule( toString(@1) );
-                }
         ;
 
 rightgate
-        : NAME vector
+        : NAME opt_subgate
+                {
+                  ps.conn->setDestGate( toString( @1) );
+                }
+        | NAME vector opt_subgate
                 {
                   ps.conn->setDestGate( toString( @1) );
                   addVector(ps.conn, "dest-gate-index",@2,$2);
                 }
-        | NAME
-                {
-                  ps.conn->setDestGate( toString( @1) );
-                }
-        | NAME PLUSPLUS
+        | NAME PLUSPLUS opt_subgate
                 {
                   ps.conn->setDestGate( toString( @1) );
                   ps.conn->setDestGatePlusplus(true);
@@ -1016,20 +1032,25 @@ rightgate
         ;
 
 parentrightgate
-        : NAME vector
+        : NAME opt_subgate
+                {
+                  ps.conn->setDestGate( toString( @1) );
+                }
+        | NAME vector opt_subgate
                 {
                   ps.conn->setDestGate( toString( @1) );
                   addVector(ps.conn, "dest-gate-index",@2,$2);
                 }
-        | NAME
-                {
-                  ps.conn->setDestGate( toString( @1) );
-                }
-        | NAME PLUSPLUS
+        | NAME PLUSPLUS opt_subgate
                 {
                   ps.conn->setDestGate( toString( @1) );
                   ps.conn->setDestGatePlusplus(true);
                 }
+        ;
+
+opt_subgate
+        : '/' NAME
+        |
         ;
 
 channeldescr
@@ -1104,6 +1125,8 @@ expr
         : simple_expr
         | '(' expr ')'
                 { $$ = $2; }
+        | CONST_ '(' expr ')'
+                { $$ = $3; /*FIXME*/ }
 
         | expr '+' expr
                 { if (ps.parseExpressions) $$ = createOperator("+", $1, $3); }
