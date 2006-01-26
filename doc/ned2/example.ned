@@ -210,8 +210,8 @@ module Host
         app[i].toTcp <--> { @display("c=red"); delay=0; } <--> tcp.toApp;
 
         // connect both directions separately (impl: 1 bidir obj, plus 2 child objects on-demand)
-        app[i].toTcp.out --> { @display("c=red"); delay=0; } --> tcp.toApp.in; // or .i, .o ?
-        app[i].toTcp.in <-- { @display("c=red"); delay=0; } <-- tcp.toApp.out;
+        app[i].toTcp$out --> { @display("c=red"); delay=0; } --> tcp.toApp$in; // or .i, .o ?
+        app[i].toTcp$in <-- { @display("c=red"); delay=0; } <-- tcp.toApp$out;
 
         tcp.toNetw <--> ip.toTcp;
 
