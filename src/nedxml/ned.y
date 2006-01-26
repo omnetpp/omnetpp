@@ -222,8 +222,8 @@ ExpressionNode *createExpression(NEDElement *expr);
 OperatorNode *createOperator(const char *op, NEDElement *operand1, NEDElement *operand2=NULL, NEDElement *operand3=NULL);
 FunctionNode *createFunction(const char *funcname, NEDElement *arg1=NULL, NEDElement *arg2=NULL, NEDElement *arg3=NULL, NEDElement *arg4=NULL);
 ParamRefNode *createParamRef(const char *param, const char *paramindex=NULL, const char *module=NULL, const char *moduleindex=NULL);
-ObsoleteIdentNode *createIdent(const char *name);
-LiteralNode *createConst(int type, const char *value, const char *text=NULL);
+ObsoleteIdentNode *createObsoleteIdent(const char *name);
+LiteralNode *createLiteral(int type, const char *value, const char *text=NULL);
 LiteralNode *createTimeConst(const char *text);
 NEDElement *createParamRefOrIdent(const char *name);
 NEDElement *unaryMinus(NEDElement *node);
@@ -1002,7 +1002,7 @@ channeldescr_old
         : NAME
                 {
                   ps.connattr = addConnAttr(ps.conn,"channel");
-                  addExpression(ps.connattr, "value",@1,createExpression(createConst(NED_CONST_STRING, toString(@1))));
+                  addExpression(ps.connattr, "value",@1,createExpression(createLiteral(NED_CONST_STRING, toString(@1))));
                 }
         | CHANATTRNAME expression
                 {
@@ -1083,9 +1083,9 @@ inputvalue
         ;
 
 xmldocvalue
-        : XMLDOC '(' stringconstant ',' stringconstant ')'
+        : XMLDOC '(' stringliteral ',' stringliteral ')'
                 { if (ps.parseExpressions) $$ = createFunction("xmldoc", $3, $5); }
-        | XMLDOC '(' stringconstant ')'
+        | XMLDOC '(' stringliteral ')'
                 { if (ps.parseExpressions) $$ = createFunction("xmldoc", $3); }
         ;
 
@@ -1166,9 +1166,9 @@ expr
 
 simple_expr
         : parameter_expr
-        | string_expr
-        | boolconst_expr
-        | numconst_expr
+        | stringliteral
+        | boolliteral
+        | numliteral
         | special_expr
         ;
 
@@ -1202,19 +1202,11 @@ parameter_expr
                 }
         ;
 
-string_expr
-        : stringconstant
-        ;
-
-boolconst_expr
+boolliteral
         : TRUE_
-                { $$ = createConst(NED_CONST_BOOL, "true"); }
+                { $$ = createLiteral(NED_CONST_BOOL, "true"); }
         | FALSE_
-                { $$ = createConst(NED_CONST_BOOL, "false"); }
-        ;
-
-numconst_expr
-        : numconst
+                { $$ = createLiteral(NED_CONST_BOOL, "false"); }
         ;
 
 special_expr
@@ -1223,19 +1215,19 @@ special_expr
         | SUBMODINDEX '(' ')'
                 { if (ps.parseExpressions) $$ = createFunction("index"); }
         | SIZEOF '(' NAME ')'
-                { if (ps.parseExpressions) $$ = createFunction("sizeof", createIdent(toString(@3))); }
+                { if (ps.parseExpressions) $$ = createFunction("sizeof", createObsoleteIdent(toString(@3))); }
         ;
 
-stringconstant
+stringliteral
         : STRINGCONSTANT
-                { $$ = createConst(NED_CONST_STRING, toString(trimQuotes(@1))); }
+                { $$ = createLiteral(NED_CONST_STRING, toString(trimQuotes(@1))); }
         ;
 
-numconst
+numliteral
         : INTCONSTANT
-                { $$ = createConst(NED_CONST_INT, toString(@1)); }
+                { $$ = createLiteral(NED_CONST_INT, toString(@1)); }
         | REALCONSTANT
-                { $$ = createConst(NED_CONST_REAL, toString(@1)); }
+                { $$ = createLiteral(NED_CONST_REAL, toString(@1)); }
         | quantity
                 { $$ = createTimeConst(toString(@1)); }
 
@@ -1932,14 +1924,14 @@ ParamRefNode *createParamRef(const char *param, const char *paramindex, const ch
    return par;
 }
 
-ObsoleteIdentNode *createIdent(const char *name)
+ObsoleteIdentNode *createObsoleteIdent(const char *name)
 {
    ObsoleteIdentNode *ident = (ObsoleteIdentNode *)createNodeWithTag(NED_OBSOLETE_IDENT);
    ident->setName(name);
    return ident;
 }
 
-LiteralNode *createConst(int type, const char *value, const char *text)
+LiteralNode *createLiteral(int type, const char *value, const char *text)
 {
    LiteralNode *c = (LiteralNode *)createNodeWithTag(NED_LITERAL);
    c->setType(type);
@@ -1970,7 +1962,7 @@ LiteralNode *createTimeConst(const char *text)
 
 NEDElement *createParamRefOrIdent(const char *name)
 {
-    // determine if 'name' can be a loop variable. if so, use createIdent()
+    // determine if 'name' can be a loop variable. if so, use createObsoleteIdent()
     bool isvar = false;
     if (ps.inLoop)
     {
@@ -1981,7 +1973,7 @@ NEDElement *createParamRefOrIdent(const char *name)
                 isvar = true;
         }
     }
-    return isvar ? (NEDElement *)createIdent(name) : (NEDElement *)createParamRef(name);
+    return isvar ? (NEDElement *)createObsoleteIdent(name) : (NEDElement *)createParamRef(name);
 }
 
 NEDElement *unaryMinus(NEDElement *node)

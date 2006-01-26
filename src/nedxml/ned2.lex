@@ -116,6 +116,7 @@ char textbuf[TEXTBUF_LEN];
 
 "true"                   { count(); return TRUE_; }
 "false"                  { count(); return FALSE_; }
+"this"                   { count(); return THIS_; }
 "default"                { count(); return DEFAULT; }
 "const"                  { count(); return CONST_; }
 "sizeof"                 { count(); return SIZEOF; }

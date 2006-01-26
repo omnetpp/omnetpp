@@ -23,7 +23,7 @@
 %token INPUT_ OUTPUT_ INOUT_
 %token IF WHERE
 %token RIGHTARROW LEFTARROW DBLARROW TO
-%token TRUE_ FALSE_ DEFAULT CONST_ SIZEOF INDEX_ XMLDOC
+%token TRUE_ FALSE_ THIS_ DEFAULT CONST_ SIZEOF INDEX_ XMLDOC
 
 /* Other tokens: identifiers, numeric literals, operators etc */
 %token NAME INTCONSTANT REALCONSTANT STRINGCONSTANT CHARCONSTANT
@@ -156,8 +156,8 @@ const char *toString(long);
 ExpressionNode *createExpression(NEDElement *expr);
 OperatorNode *createOperator(const char *op, NEDElement *operand1, NEDElement *operand2=NULL, NEDElement *operand3=NULL);
 FunctionNode *createFunction(const char *funcname, NEDElement *arg1=NULL, NEDElement *arg2=NULL, NEDElement *arg3=NULL, NEDElement *arg4=NULL);
-IdentNode *createRef(const char *param, const char *paramindex=NULL, const char *module=NULL, const char *moduleindex=NULL);
-LiteralNode *createConst(int type, const char *value, const char *text=NULL);
+IdentNode *createIdent(const char *param, const char *paramindex=NULL, const char *module=NULL, const char *moduleindex=NULL);
+LiteralNode *createLiteral(int type, const char *value, const char *text=NULL);
 LiteralNode *createQuantity(const char *text);
 NEDElement *unaryMinus(NEDElement *node);
 
@@ -517,7 +517,6 @@ param_typenamevalue
                 }
         | paramtype opt_function NAME '=' paramvalue
         | NAME '=' paramvalue
-        | qualifier '.' NAME '=' paramvalue
         ;
 
 paramtype
@@ -548,27 +547,26 @@ opt_function
         |
         ;
 
-qualifier
-        : qualifier_elems
+/*FIXME this used to be "qualifier"
+pattern
+        : pattern_elems
         ;
 
-qualifier_elems
-        : qualifier_elems qualifier_elem
-        | qualifier_elem
+pattern_elems
+        : pattern_elems pattern_elem
+        | pattern_elem
         ;
 
-qualifier_elem   /* this attempts to capture inifile-like patterns; FIXME should soak up reserved names as well */
-        : '!'
-        ;
-/*FIXME
+pattern_elem   /* this attempts to capture inifile-like patterns; FIXME should soak up reserved names as well * /
         : '.'
         | '*'
+        | '?'
         | DOUBLEASTERISK
         | NAME
         | INTCONSTANT
         | TO
-        | '[' qualifier_elems ']'
-        | '{' qualifier_elems '}'
+        | '[' pattern_elems ']'
+        | '{' pattern_elems '}'
         ;
 */
 
@@ -1134,16 +1132,14 @@ expression
 
 /*
 FIXME currently unused:
-   WITHCPPCLASS
-   CONST_
    INDEX_
    DOUBLEASTERISK
 */
 
 xmldocvalue
-        : XMLDOC '(' stringconstant ',' stringconstant ')'
+        : XMLDOC '(' stringliteral ',' stringliteral ')'
                 { if (ps.parseExpressions) $$ = createFunction("xmldoc", $3, $5); }
-        | XMLDOC '(' stringconstant ')'
+        | XMLDOC '(' stringliteral ')'
                 { if (ps.parseExpressions) $$ = createFunction("xmldoc", $3); }
         ;
 
@@ -1226,9 +1222,9 @@ expr
 
 simple_expr
         : parameter_expr
-        | string_expr
-        | boolconst_expr
-        | numconst_expr
+        | stringliteral
+        | boolliteral
+        | numliteral
         | special_expr
         ;
 
@@ -1236,23 +1232,26 @@ parameter_expr
         : NAME
                 {
                   // if there's no modifier, might be a loop variable too
-                  $$ = createRef(toString(@1));
+                  $$ = createIdent(toString(@1));
+                }
+        | qualifier '.' NAME
+                {
+                  // if there's no modifier, might be a loop variable too
+                  $$ = createIdent(toString(@1));
                 }
         ;
 
-string_expr
-        : stringconstant
+qualifier
+        : THIS_
+        | NAME  /* submodule name */
+        | NAME vector
         ;
 
-boolconst_expr
+boolliteral
         : TRUE_
-                { $$ = createConst(NED_CONST_BOOL, "true"); }
+                { $$ = createLiteral(NED_CONST_BOOL, "true"); }
         | FALSE_
-                { $$ = createConst(NED_CONST_BOOL, "false"); }
-        ;
-
-numconst_expr
-        : numconst
+                { $$ = createLiteral(NED_CONST_BOOL, "false"); }
         ;
 
 special_expr
@@ -1261,21 +1260,21 @@ special_expr
         | INDEX_ '(' ')'
                 { if (ps.parseExpressions) $$ = createFunction("index"); }
         | SIZEOF '(' NAME ')'
-                { if (ps.parseExpressions) $$ = createFunction("sizeof", createRef(toString(@3))); }
+                { if (ps.parseExpressions) $$ = createFunction("sizeof", createIdent(toString(@3))); }
         | SIZEOF '(' NAME '.' NAME ')'
-                { if (ps.parseExpressions) $$ = createFunction("sizeof", createRef(toString(@5), NULL, toString(@3))); }
+                { if (ps.parseExpressions) $$ = createFunction("sizeof", createIdent(toString(@5), NULL, toString(@3))); }
         ;
 
-stringconstant
+stringliteral
         : STRINGCONSTANT
-                { $$ = createConst(NED_CONST_STRING, toString(trimQuotes(@1))); }
+                { $$ = createLiteral(NED_CONST_STRING, toString(trimQuotes(@1))); }
         ;
 
-numconst
+numliteral
         : INTCONSTANT
-                { $$ = createConst(NED_CONST_INT, toString(@1)); }
+                { $$ = createLiteral(NED_CONST_INT, toString(@1)); }
         | REALCONSTANT
-                { $$ = createConst(NED_CONST_DOUBLE, toString(@1)); }
+                { $$ = createLiteral(NED_CONST_DOUBLE, toString(@1)); }
         | quantity
                 { $$ = createQuantity(toString(@1)); }
 
@@ -1622,7 +1621,7 @@ ExpressionNode *createExpression(NEDElement *expr)
    return expression;
 }
 
-IdentNode *createRef(const char *param, const char *paramindex, const char *module, const char *moduleindex)
+IdentNode *createIdent(const char *param, const char *paramindex, const char *module, const char *moduleindex)
 {
    IdentNode *par = (IdentNode *)createNodeWithTag(NED_IDENT);
    par->setName(param);
@@ -1632,7 +1631,7 @@ IdentNode *createRef(const char *param, const char *paramindex, const char *modu
    return par;
 }
 
-LiteralNode *createConst(int type, const char *value, const char *text)
+LiteralNode *createLiteral(int type, const char *value, const char *text)
 {
    LiteralNode *c = (LiteralNode *)createNodeWithTag(NED_LITERAL);
    c->setType(type);
