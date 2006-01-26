@@ -284,6 +284,7 @@ network Network   // "network" is exactly as "module", but: not gates
     connections:
         host[0].pppPort++ <--> PPPLink <--> host[1].pppPort++;
         host[0].pppPort++ <--> PPPLink {@display("c=green");} <--> host[3].pppPort++;
+        host[0].pppPort[host[0].destgate] <--> SomeLink {datarate = host[0].linkspeed;} <--> host[3].pppPort++;
 };
 
 module Network
