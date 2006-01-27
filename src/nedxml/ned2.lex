@@ -101,6 +101,7 @@ char textbuf[TEXTBUF_LEN];
 "bool"                   { count(); return BOOLTYPE; }
 "xml"                    { count(); return XMLTYPE; }
 "function"               { count(); return FUNCTION; }
+"typename"               { count(); return TYPENAME; }
 
 "input"                  { count(); return INPUT_; }
 "output"                 { count(); return OUTPUT_; }

@@ -19,7 +19,7 @@
 %token MODULE SIMPLE NETWORK CHANNEL INTERFACE CHANNELINTERFACE
 %token EXTENDS LIKE WITHCPPCLASS
 %token TYPES PARAMETERS GATES SUBMODULES CONNECTIONS ALLOWUNCONNECTED
-%token DOUBLETYPE INTTYPE STRINGTYPE BOOLTYPE XMLTYPE FUNCTION
+%token DOUBLETYPE INTTYPE STRINGTYPE BOOLTYPE XMLTYPE FUNCTION TYPENAME
 %token INPUT_ OUTPUT_ INOUT_
 %token IF WHERE
 %token RIGHTARROW LEFTARROW DBLARROW TO
@@ -48,6 +48,7 @@
 
 %start nedfile
 
+/* requires at least bison 1.50 (tested with bison 2.1) */
 %glr-parser
 
 %{
@@ -517,7 +518,8 @@ param_typenamevalue
                 }
         | paramtype opt_function NAME '=' paramvalue
         | NAME '=' paramvalue
-        | '(' pattern ')' '=' paramvalue
+        | TYPENAME '=' paramvalue
+        | '/' pattern '/' '=' paramvalue
         ;
 
 paramtype
@@ -548,17 +550,12 @@ opt_function
         |
         ;
 
-/*FIXME this used to be "qualifier"*/
-pattern
-        : pattern_elems
-        ;
-
-pattern_elems
-        : pattern_elems pattern_elem
+pattern /* this attempts to capture inifile-like patterns */
+        : pattern pattern_elem
         | pattern_elem
         ;
 
-pattern_elem   /* this attempts to capture inifile-like patterns */
+pattern_elem
         : '.'
         | '*'
         | '?'
@@ -566,13 +563,13 @@ pattern_elem   /* this attempts to capture inifile-like patterns */
         | NAME
         | INTCONSTANT
         | TO
-        | '[' pattern_elems ']'
-        | '{' pattern_elems '}'
-        /* soak up reserved words as well */
+        | '[' pattern ']'
+        | '{' pattern '}'
+        /* allow reserved words in patterns as well */
         | IMPORT | PACKAGE | PROPERTY
         | MODULE | SIMPLE | NETWORK | CHANNEL | INTERFACE | CHANNELINTERFACE
         | EXTENDS | LIKE | WITHCPPCLASS
-        | DOUBLETYPE | INTTYPE | STRINGTYPE | BOOLTYPE | XMLTYPE | FUNCTION
+        | DOUBLETYPE | INTTYPE | STRINGTYPE | BOOLTYPE | XMLTYPE | FUNCTION | TYPENAME
         | INPUT_ | OUTPUT_ | INOUT_ | IF | WHERE
         | TYPES | PARAMETERS | GATES | SUBMODULES | CONNECTIONS | ALLOWUNCONNECTED
         | TRUE_ | FALSE_ | THIS_ | DEFAULT | CONST_ | SIZEOF | INDEX_ | XMLDOC
