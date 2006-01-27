@@ -767,7 +767,7 @@ void ParamNode::setType(int val)
 
 int ParamNode::getNumAttributes() const
 {
-    return 5;
+    return 4;
 }
 
 const char *ParamNode::getAttributeName(int k) const
@@ -775,9 +775,8 @@ const char *ParamNode::getAttributeName(int k) const
     switch (k) {
         case 0: return "type";
         case 1: return "is-function";
-        case 2: return "qualifier";
-        case 3: return "name";
-        case 4: return "value";
+        case 2: return "name";
+        case 3: return "value";
         default: return 0;
     }
 }
@@ -787,9 +786,8 @@ const char *ParamNode::getAttribute(int k) const
     switch (k) {
         case 0: return enumToString(type, partype_vals, partype_nums, partype_n);
         case 1: return boolToString(isFunction);
-        case 2: return qualifier.c_str();
-        case 3: return name.c_str();
-        case 4: return value.c_str();
+        case 2: return name.c_str();
+        case 3: return value.c_str();
         default: return 0;
     }
 }
@@ -799,9 +797,8 @@ void ParamNode::setAttribute(int k, const char *val)
     switch (k) {
         case 0: type = stringToEnum(val, partype_vals, partype_nums, partype_n); break;
         case 1: isFunction = stringToBool(val); break;
-        case 2: qualifier = val; break;
-        case 3: name = val; break;
-        case 4: value = val; break;
+        case 2: name = val; break;
+        case 3: value = val; break;
         default: ;
     }
 }
@@ -813,7 +810,6 @@ const char *ParamNode::getAttributeDefault(int k) const
         case 1: return "false";
         case 2: return "";
         case 3: return "";
-        case 4: return "";
         default: return 0;
     }
 }
@@ -840,15 +836,14 @@ PropertyNode *ParamNode::getFirstPropertyChild() const
 
 int PropertyNode::getNumAttributes() const
 {
-    return 3;
+    return 2;
 }
 
 const char *PropertyNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "is-implicit";
-        case 1: return "qualifier";
-        case 2: return "name";
+        case 1: return "name";
         default: return 0;
     }
 }
@@ -857,8 +852,7 @@ const char *PropertyNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return boolToString(isImplicit);
-        case 1: return qualifier.c_str();
-        case 2: return name.c_str();
+        case 1: return name.c_str();
         default: return 0;
     }
 }
@@ -867,8 +861,7 @@ void PropertyNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: isImplicit = stringToBool(val); break;
-        case 1: qualifier = val; break;
-        case 2: name = val; break;
+        case 1: name = val; break;
         default: ;
     }
 }
@@ -878,7 +871,6 @@ const char *PropertyNode::getAttributeDefault(int k) const
     switch (k) {
         case 0: return "false";
         case 1: return "";
-        case 2: return "";
         default: return 0;
     }
 }

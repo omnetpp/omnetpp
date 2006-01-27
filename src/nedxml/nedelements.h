@@ -709,9 +709,8 @@ class ParamGroupNode : public NEDElement
  * <pre>
  * <!ELEMENT param (whitespace*, expression?, property*)>
  * <!ATTLIST param
- *      type               (double|int|string|bool|xml) #REQUIRED
+ *      type               (double|int|string|bool|xml) #IMPLIED
  *      is-function        (true|false)  "false"
- *      qualifier          CDATA     #IMPLIED
  *      name               NMTOKEN   #REQUIRED
  *      value              CDATA     #IMPLIED>
  * </pre>
@@ -723,7 +722,6 @@ class ParamNode : public NEDElement
   private:
     int type;
     bool isFunction;
-    std::string qualifier;
     std::string name;
     std::string value;
   public:
@@ -751,8 +749,6 @@ class ParamNode : public NEDElement
     void setType(int val);
     bool getIsFunction() const  {return isFunction;}
     void setIsFunction(bool val)  {isFunction = val;}
-    const char * getQualifier() const  {return qualifier.c_str();}
-    void setQualifier(const char * val)  {qualifier = val;}
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
     const char * getValue() const  {return value.c_str();}
@@ -772,7 +768,6 @@ class ParamNode : public NEDElement
  * <!ELEMENT property (whitespace*, key-value*)>
  * <!ATTLIST property
  *      is-implicit        (true|false) "false"
- *      qualifier          CDATA     #IMPLIED
  *      name               NMTOKEN   #REQUIRED>
  * </pre>
  * 
@@ -782,7 +777,6 @@ class PropertyNode : public NEDElement
 {
   private:
     bool isImplicit;
-    std::string qualifier;
     std::string name;
   public:
     /** @name Constructors, destructor */
@@ -807,8 +801,6 @@ class PropertyNode : public NEDElement
     //@{
     bool getIsImplicit() const  {return isImplicit;}
     void setIsImplicit(bool val)  {isImplicit = val;}
-    const char * getQualifier() const  {return qualifier.c_str();}
-    void setQualifier(const char * val)  {qualifier = val;}
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
 

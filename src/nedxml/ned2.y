@@ -90,6 +90,10 @@ struct ParserState
     bool inLoop;
     bool inTypes;
 
+    /* tmp flags, used with param */
+    int paramType;
+    bool isFunction;
+
     /* tmp flags, used with msg fields */
     bool isAbstract;
     bool isReadonly;
@@ -139,7 +143,7 @@ void setTrailingComment(NEDElement *node, YYLTYPE tokenpos);
 void setComments(NEDElement *node, YYLTYPE pos);
 void setComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos);
 
-ParamNode *addParameter(NEDElement *params, YYLTYPE namepos, int type);
+ParamNode *addParameter(NEDElement *params, YYLTYPE namepos);
 GateNode *addGate(NEDElement *gates, YYLTYPE namepos, int is_in, int is_vector );
 SubmoduleNode *addSubmodule(NEDElement *submods, YYLTYPE namepos, YYLTYPE typepos,YYLTYPE likeparampos);
 LoopNode *addLoop(NEDElement *conngroup, YYLTYPE varnamepos);
@@ -203,11 +207,11 @@ definition
                 { if (ps.storeSourceCode) storeComponentSourceCode(ps.component, @1); }
         ;
 
-packagedeclaration         /* TDB package is currently not supported */
+packagedeclaration         /* TBD package is currently not supported */
         : PACKAGE packagename ';'
         ;
 
-packagename                /* TDB package is currently not supported */
+packagename                /* TBD package is currently not supported */
         : packagename '.' NAME
         | NAME
         ;
@@ -220,8 +224,8 @@ import
         : IMPORT STRINGCONSTANT ';'
                 {
                   ps.import = (ImportNode *)createNodeWithTag(NED_IMPORT, ps.nedfile);
-                  ps.import->setFilename(toString(trimQuotes(@1)));
-                  setComments(ps.import,@1);
+                  ps.import->setFilename(toString(trimQuotes(@2)));
+                  //setComments(ps.import,@1);
                 }
         ;
 
@@ -238,7 +242,7 @@ propertydecl_header
                 {
                   ps.propertydecl = (PropertyDeclNode *)createNodeWithTag(NED_PROPERTY_DECL, ps.nedfile);
                   ps.propertydecl->setName(toString(@3));
-                  setComments(ps.propertydecl,@1);
+                  //setComments(ps.propertydecl,@1);
                 }
         ;
 
@@ -249,13 +253,14 @@ opt_propertydecl_keys
 
 propertydecl_keys
         : propertydecl_keys ',' propertydecl_key
-                { /*TBD*/ }
         | propertydecl_key
-                { /*TBD*/ }
         ;
 
 propertydecl_key
         : NAME
+                {
+                  ps.keyvalue = (KeyValueNode *)createNodeWithTag(NED_KEY_VALUE, ps.propertydecl);
+                }
         ;
 
 /*
@@ -283,14 +288,14 @@ channelheader
                 {
                   ps.component = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
                   ((ChannelNode *)ps.component)->setName(toString(@2));
-                  setComments(ps.component,@1,@2);
+                  //setComments(ps.component,@1,@2);
                 }
            opt_inheritance
         | CHANNEL WITHCPPCLASS NAME
                 {
                   ps.component = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
                   ((ChannelNode *)ps.component)->setName(toString(@2));
-                  setComments(ps.component,@1,@2);
+                  //setComments(ps.component,@1,@2);
                 }
            opt_inheritance
         ;
@@ -324,7 +329,7 @@ channelinterfaceheader
                 {
                   ps.component = (ChannelInterfaceNode *)createNodeWithTag(NED_CHANNEL_INTERFACE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
                   ((ChannelInterfaceNode *)ps.component)->setName(toString(@2));
-                  setComments(ps.component,@1,@2);
+                  //setComments(ps.component,@1,@2);
                 }
            opt_interfaceinheritance
         ;
@@ -357,7 +362,7 @@ simplemoduleheader
                 {
                   ps.component = (SimpleModuleNode *)createNodeWithTag(NED_SIMPLE_MODULE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile );
                   ((SimpleModuleNode *)ps.component)->setName(toString(@2));
-                  setComments(ps.component,@1,@2);
+                  //setComments(ps.component,@1,@2);
                 }
           opt_inheritance
         ;
@@ -383,7 +388,7 @@ compoundmoduleheader
                 {
                   ps.component = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile );
                   ((CompoundModuleNode *)ps.component)->setName(toString(@2));
-                  setComments(ps.component,@1,@2);
+                  //setComments(ps.component,@1,@2);
                 }
           opt_inheritance
         ;
@@ -410,7 +415,7 @@ networkheader
                   ps.component = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile );
                   ((CompoundModuleNode *)ps.component)->setName(toString(@2));
                   ((CompoundModuleNode *)ps.component)->setIsNetwork(true);
-                  setComments(ps.component,@1,@2);
+                  //setComments(ps.component,@1,@2);
                 }
           opt_inheritance
         ;
@@ -433,7 +438,7 @@ moduleinterfaceheader
                 {
                   ps.component = (ModuleInterfaceNode *)createNodeWithTag(NED_MODULE_INTERFACE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
                   ((ModuleInterfaceNode *)ps.component)->setName(toString(@2));
-                  setComments(ps.component,@1,@2);
+                  //setComments(ps.component,@1,@2);
                 }
            opt_interfaceinheritance
         ;
@@ -450,7 +455,7 @@ paramblock
         : PARAMETERS ':'
                 {
                   ps.parameters = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.component);
-                  setComments(ps.parameters,@1,@2);
+                  //setComments(ps.parameters,@1,@2);
                 }
           opt_params
                 {
@@ -468,11 +473,11 @@ opt_params
 params
         : params paramsitem
                 {
-                  setComments(ps.param,@2);
+                  //setComments(ps.param,@2);
                 }
         | paramsitem
                 {
-                  setComments(ps.param,@1);
+                  //setComments(ps.param,@1);
                 }
         ;
 
@@ -490,11 +495,11 @@ paramgroup
 params_nogroup   /* same as params, but without the paramgroup rule */
         : params_nogroup paramsitem_nogroup
                 {
-                  setComments(ps.param,@2);
+                  //setComments(ps.param,@2);
                 }
         | paramsitem_nogroup
                 {
-                  setComments(ps.param,@1);
+                  //setComments(ps.param,@1);
                 }
         ;
 
@@ -513,26 +518,59 @@ param
 param_typenamevalue
         : paramtype opt_function NAME
                 {
-                  //FIXME
-                  //ps.param = addParameter(ps.parameters,@1,TYPE_NUMERIC);
+                  ps.param = addParameter(ps.parameters, @3);
+                  ps.param->setType(ps.paramType);
+                  ps.param->setIsFunction(ps.isFunction);
                 }
         | paramtype opt_function NAME '=' paramvalue
+                {
+                  ps.param = addParameter(ps.parameters, @3);
+                  ps.param->setType(ps.paramType);
+                  ps.param->setIsFunction(ps.isFunction);
+                  addExpression(ps.param, "value",@5,$5);
+                }
         | NAME '=' paramvalue
+                {
+                  ps.param = addParameter(ps.parameters, @1);
+                  addExpression(ps.param, "value",@3,$3);
+                }
         | TYPENAME '=' paramvalue
+                {
+                  ps.param = addParameter(ps.parameters, @1);
+                  addExpression(ps.param, "value",@3,$3);
+                }
         | '/' pattern '/' '=' paramvalue
-        ;
+                {
+                  //FIXME create '/pattern/' type param!!
+                  ps.param = addParameter(ps.parameters, @2);
+                  addExpression(ps.param, "value",@5,$5);
+                }
 
 paramtype
         : DOUBLETYPE
+                { ps.paramType = NED_PARTYPE_DOUBLE; }
         | INTTYPE
+                { ps.paramType = NED_PARTYPE_INT; }
         | STRINGTYPE
+                { ps.paramType = NED_PARTYPE_STRING; }
         | BOOLTYPE
+                { ps.paramType = NED_PARTYPE_BOOL; }
         | XMLTYPE
+                { ps.paramType = NED_PARTYPE_XML; }
+        ;
+
+opt_function
+        : FUNCTION
+                { ps.isFunction = true; }
+        |
+                { ps.isFunction = false; }
         ;
 
 paramvalue
         : expression
+                { $$ = $1; }
         | DEFAULT '(' expression ')'
+                { $$ = $3; /*FIXME signal it's DEFAULT!!! */}
         ;
 
 opt_inline_properties
@@ -543,11 +581,6 @@ opt_inline_properties
 inline_properties
         : inline_properties property_namevalue
         | property_namevalue
-        ;
-
-opt_function
-        : FUNCTION
-        |
         ;
 
 pattern /* this attempts to capture inifile-like patterns */
@@ -631,7 +664,7 @@ gateblock
         : GATES ':'
                 {
                   ps.gates = (GatesNode *)createNodeWithTag(NED_GATES, ps.component);
-                  setComments(ps.gates,@1,@2);
+                  //setComments(ps.gates,@1,@2);
                 }
           opt_gates
                 {
@@ -646,11 +679,11 @@ opt_gates
 gates
         : gates gatesitem
                 {
-                  setComments(ps.gate,@2);
+                  //setComments(ps.gate,@2);
                 }
         | gatesitem
                 {
-                  setComments(ps.gate,@1);
+                  //setComments(ps.gate,@1);
                 }
         ;
 
@@ -667,11 +700,11 @@ gategroup
 gates_nogroup   /* same as gates, but without the gategroup rule */
         : gates_nogroup gate
                 {
-                  setComments(ps.gate,@2);
+                  //setComments(ps.gate,@2);
                 }
         | gate
                 {
-                  setComments(ps.gate,@1);
+                  //setComments(ps.gate,@1);
                 }
         ;
 
@@ -709,7 +742,7 @@ typeblock
         : TYPES ':'
                 {
                   ps.types = (TypesNode *)createNodeWithTag(NED_TYPES, ps.component);
-                  setComments(ps.types,@1,@2);
+                  //setComments(ps.types,@1,@2);
                   ps.inTypes = true;
                 }
            opt_localtypes
@@ -757,7 +790,7 @@ submodblock
         : SUBMODULES ':'
                 {
                   ps.submods = (SubmodulesNode *)createNodeWithTag(NED_SUBMODULES, ps.component);
-                  setComments(ps.submods,@1,@2);
+                  //setComments(ps.submods,@1,@2);
                 }
           opt_submodules
                 {
@@ -777,13 +810,11 @@ submodules
 submodule
         : submoduleheader ';'
                 {
-                  ps.submod = addSubmodule(ps.submods, @1, @2, NULLPOS);
-                  setComments(ps.submod,@1,@2);
+                  //setComments(ps.submod,@1,@2);
                 }
         | submoduleheader '{'
                 {
-                  ps.submod = addSubmodule(ps.submods, @1, @2, NULLPOS);
-                  setComments(ps.submod,@1,@2);
+                  //setComments(ps.submod,@1,@2);
                 }
           opt_paramblock
           opt_gateblock
@@ -792,14 +823,26 @@ submodule
 
 submoduleheader
         : NAME ':' NAME
-        | NAME vector ':' NAME
                 {
                   ps.submod = addSubmodule(ps.submods, @1, @3, NULLPOS);
-                  addVector(ps.submod, "vector-size",@4,$4);
-                  setComments(ps.submod,@1,@4);
+                }
+        | NAME vector ':' NAME
+                {
+                  ps.submod = addSubmodule(ps.submods, @1, @4, NULLPOS);
+                  addVector(ps.submod, "vector-size",@2,$2);
+                  //setComments(ps.submod,@1,@4);
                 }
         | NAME ':' likephrase
+                {
+                  ps.submod = addSubmodule(ps.submods, @1, @3, NULLPOS);
+                  //FIXME LIKE
+                }
         | NAME vector ':' likephrase
+                {
+                  ps.submod = addSubmodule(ps.submods, @1, @4, NULLPOS);
+                  addVector(ps.submod, "vector-size",@2,$2);
+                  //FIXME LIKE
+                }
         ;
 
 /*
@@ -830,7 +873,7 @@ connblock
                 {
                   ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.component);
                   ps.conns->setCheckUnconnected(false);
-                  setComments(ps.conns,@1,@3);
+                  //setComments(ps.conns,@1,@3);
                 }
           opt_connections
                 {
@@ -839,7 +882,7 @@ connblock
                 {
                   ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.component);
                   ps.conns->setCheckUnconnected(true);
-                  setComments(ps.conns,@1,@2);
+                  //setComments(ps.conns,@1,@2);
                 }
           opt_connections
                 {
@@ -871,11 +914,11 @@ connectiongroup  /* note: semicolon at end is mandatory (cannot be opt_semicolon
 connections_nogroup   /* same as connections, but without the connectiongroup rule */
         : connections_nogroup connectionsitem_nogroup
                 {
-                  setComments(ps.gate,@2);
+                  //setComments(ps.gate,@2);
                 }
         | connectionsitem_nogroup
                 {
-                  setComments(ps.gate,@1);
+                  //setComments(ps.gate,@1);
                 }
         ;
 
@@ -904,7 +947,7 @@ loop
                   ps.loop = addLoop(ps.conngroup,@1);
                   addExpression(ps.loop, "from-value",@3,$3);
                   addExpression(ps.loop, "to-value",@5,$5);
-                  setComments(ps.loop,@1,@5);
+                  //setComments(ps.loop,@1,@5);
                 }
         ;
 
@@ -915,34 +958,34 @@ connection
         : leftgatespec RIGHTARROW rightgatespec
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
-                  setComments(ps.conn,@1,@3);
+                  //setComments(ps.conn,@1,@3);
                 }
         | leftgatespec RIGHTARROW channeldescr RIGHTARROW rightgatespec
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
-                  setComments(ps.conn,@1,@5);
+                  //setComments(ps.conn,@1,@5);
                 }
         | leftgatespec LEFTARROW rightgatespec
                 {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_LEFT);
-                  setComments(ps.conn,@1,@3);
+                  //setComments(ps.conn,@1,@3);
                 }
         | leftgatespec LEFTARROW channeldescr LEFTARROW rightgatespec
                 {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_LEFT);
-                  setComments(ps.conn,@1,@5);
+                  //setComments(ps.conn,@1,@5);
                 }
         | leftgatespec DBLARROW rightgatespec
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_BIDIR);
-                  setComments(ps.conn,@1,@3);
+                  //setComments(ps.conn,@1,@3);
                 }
         | leftgatespec DBLARROW channeldescr DBLARROW rightgatespec
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_BIDIR);
-                  setComments(ps.conn,@1,@5);
+                  //setComments(ps.conn,@1,@5);
                 }
         ;
 
@@ -1227,12 +1270,12 @@ parameter_expr
         : NAME
                 {
                   // if there's no modifier, might be a loop variable too
-                  $$ = createIdent(toString(@1));
+                  if (ps.parseExpressions) $$ = createIdent(toString(@1));
                 }
         | qualifier '.' NAME
                 {
                   // if there's no modifier, might be a loop variable too
-                  $$ = createIdent(toString(@1));
+                  if (ps.parseExpressions) $$ = createIdent(toString(@1));
                 }
         ;
 
@@ -1244,9 +1287,9 @@ qualifier
 
 boolliteral
         : TRUE_
-                { $$ = createLiteral(NED_CONST_BOOL, "true"); }
+                { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_BOOL, "true"); }
         | FALSE_
-                { $$ = createLiteral(NED_CONST_BOOL, "false"); }
+                { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_BOOL, "false"); }
         ;
 
 special_expr
@@ -1262,16 +1305,16 @@ special_expr
 
 stringliteral
         : STRINGCONSTANT
-                { $$ = createLiteral(NED_CONST_STRING, toString(trimQuotes(@1))); }
+                { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_STRING, toString(trimQuotes(@1))); }
         ;
 
 numliteral
         : INTCONSTANT
-                { $$ = createLiteral(NED_CONST_INT, toString(@1)); }
+                { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_INT, toString(@1)); }
         | REALCONSTANT
-                { $$ = createLiteral(NED_CONST_DOUBLE, toString(@1)); }
+                { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_DOUBLE, toString(@1)); }
         | quantity
-                { $$ = createQuantity(toString(@1)); }
+                { if (ps.parseExpressions) $$ = createQuantity(toString(@1)); }
 
         ;
 
@@ -1482,11 +1525,10 @@ void setComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos)
 //    return chanattr;
 //}
 
-ParamNode *addParameter(NEDElement *params, YYLTYPE namepos, int type)
+ParamNode *addParameter(NEDElement *params, YYLTYPE namepos)
 {
    ParamNode *param = (ParamNode *)createNodeWithTag(NED_PARAM,params);
    param->setName( toString( namepos) );
-   param->setType( type );
    return param;
 }
 

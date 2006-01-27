@@ -175,6 +175,7 @@ bool processFile(const char *fname)
         return false;
     }
 
+/*FIXME FIXME FIXME validation temporarily commented out FIXME FIXME
     // DTD validation and additional basic validation
     NEDDTDValidator dtdvalidator;
     dtdvalidator.validate(tree);
@@ -192,6 +193,7 @@ bool processFile(const char *fname)
         return false;
     }
 
+*/
     // symbol table is needed for further validation and C++ code generation
 //XXX    NEDSymbolTable symboltable;
 

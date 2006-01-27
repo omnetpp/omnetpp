@@ -148,7 +148,6 @@ void NEDDTDValidator::validateElement(ParamNode *node)
     char mult[] = {'*','?','*', 0};
     checkSequence(node, tags, mult);
 
-    checkRequiredAttribute(node, "type");
     const char *vals0[] = {"double","int","string","bool","xml"};
     checkEnumeratedAttribute(node, "type", vals0, sizeof(vals0)/sizeof(const char *));
     const char *vals1[] = {"true","false"};
