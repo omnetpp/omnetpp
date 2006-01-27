@@ -59,16 +59,16 @@
 
 <!ELEMENT param (whitespace*, expression?, property*)>
 <!ATTLIST param
-     type               (double|int|string|bool|xml) #REQUIRED
+     type               (double|int|string|bool|xml) #IMPLIED
      is-function        (true|false)  "false"
-     qualifier          CDATA     #IMPLIED
      name               NMTOKEN   #REQUIRED
      value              CDATA     #IMPLIED>
+
+<!-- FIXME add element for /pattern/ style parameter assignments -->
 
 <!ELEMENT property (whitespace*, key-value*)>
 <!ATTLIST property
      is-implicit        (true|false) "false"
-     qualifier          CDATA     #IMPLIED
      name               NMTOKEN   #REQUIRED>
 
 <!ELEMENT key-value (whitespace*)>
