@@ -1111,7 +1111,6 @@ condition
 /*
  * Common part
  */
-
 vector
         : '[' expression ']'
                 { $$ = $2; }
@@ -1132,13 +1131,6 @@ expression
 /*
  * Expressions
  */
-
-/*
-FIXME currently unused:
-   INDEX_
-   DOUBLEASTERISK
-*/
-
 xmldocvalue
         : XMLDOC '(' stringliteral ',' stringliteral ')'
                 { if (ps.parseExpressions) $$ = createFunction("xmldoc", $3, $5); }
