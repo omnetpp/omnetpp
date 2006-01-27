@@ -4,6 +4,8 @@
 
 package generic.queueing;  // default package for following components
 
+import "foo.ned";
+
 @someproperty(somekey); // file-level property
 
 //
