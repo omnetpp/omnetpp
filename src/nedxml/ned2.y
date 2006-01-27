@@ -517,6 +517,7 @@ param_typenamevalue
                 }
         | paramtype opt_function NAME '=' paramvalue
         | NAME '=' paramvalue
+        | '(' pattern ')' '=' paramvalue
         ;
 
 paramtype
@@ -547,7 +548,7 @@ opt_function
         |
         ;
 
-/*FIXME this used to be "qualifier"
+/*FIXME this used to be "qualifier"*/
 pattern
         : pattern_elems
         ;
@@ -557,7 +558,7 @@ pattern_elems
         | pattern_elem
         ;
 
-pattern_elem   /* this attempts to capture inifile-like patterns; FIXME should soak up reserved names as well * /
+pattern_elem   /* this attempts to capture inifile-like patterns */
         : '.'
         | '*'
         | '?'
@@ -567,8 +568,15 @@ pattern_elem   /* this attempts to capture inifile-like patterns; FIXME should s
         | TO
         | '[' pattern_elems ']'
         | '{' pattern_elems '}'
+        /* soak up reserved words as well */
+        | IMPORT | PACKAGE | PROPERTY
+        | MODULE | SIMPLE | NETWORK | CHANNEL | INTERFACE | CHANNELINTERFACE
+        | EXTENDS | LIKE | WITHCPPCLASS
+        | DOUBLETYPE | INTTYPE | STRINGTYPE | BOOLTYPE | XMLTYPE | FUNCTION
+        | INPUT_ | OUTPUT_ | INOUT_ | IF | WHERE
+        | TYPES | PARAMETERS | GATES | SUBMODULES | CONNECTIONS | ALLOWUNCONNECTED
+        | TRUE_ | FALSE_ | THIS_ | DEFAULT | CONST_ | SIZEOF | INDEX_ | XMLDOC
         ;
-*/
 
 /*
  * Property
@@ -940,8 +948,6 @@ connection
                   setComments(ps.conn,@1,@5);
                 }
         ;
-
-/* FIXME add grammar for ".i", ".o" notation!!! */
 
 leftgatespec
         : leftmod '.' leftgate
