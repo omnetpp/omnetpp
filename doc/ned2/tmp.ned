@@ -330,11 +330,10 @@ module Host
     parameters:
         int N;
     submodules:
-        app: <this.@type> like TCPApp;  // <this.@type> can be abbreviated as <>
-
-        apps[N]: <> like *; // uses @moduletype property, type unchecked; <> operator converts string to type
-        apps[N]: <> like TCPApp;  // uses @moduletype property
-        apps[N]: <appType> like TCPApp;   // all modules are the same type (appType)
+        app: <> like TCPApp;
+        apps[N]: <> like *; // uses "typename" virtual parameter, type unchecked
+        apps[N]: <> like TCPApp;  // uses "typename" virtual parameter (idea of @type property was discarded)
+        apps[N]: <appType> like TCPApp;   // all modules are the same type (appType); conceptually, <> operator converts string to type
         //apps[]: <appType[]> like TCPApp;  // with string arrays; not yet implemented
 };
 
@@ -343,12 +342,11 @@ network Network
     submodules:
         host: Host {
             N = 5;
-//XXX            apps[0].@type("FTPApp");
-//XXX            apps[1..4].@type("WebBrowserApp");
+            /apps[0].typename/ = "FTPApp";  // "typename" is a keyword
+            /apps[1..4].typename/ = "WebBrowserApp";
 
             // if Host had a tcp submodule:
-//XXX            tcp.mss = 1024;  // if not explicitly set below
-//XXX            tcp.@display("i=block/cogwheel");  // if not explicitly set below
+            /tcp*.mss/ = 1024;
         }
 };
 
@@ -356,7 +354,7 @@ network Network2
 {
     submodules:
         host: <> like AbstractHost {
-            @type("FTPApp");
+            typename = "FTPApp";
         }
         // would be the same as:
         host: FTPApp;
@@ -378,9 +376,9 @@ network Network
         hosts[100] : HostX;
     connections:
         host[0].pppPort++ <--> <channelType> like PPPLikeChannel <--> host[1].pppPort++;
-        host[0].pppPort++ <--> <> like PPPLikeChannel <--> host[1].pppPort++; // NOT VALID: where to put @type?
+        host[0].pppPort++ <--> <> like PPPLikeChannel <--> host[1].pppPort++; // how to specify typename?
         host[0].pppPort++ <--> <channelType> like * <--> host[1].pppPort++;
-        host[0].pppPort++ <--> <> like * <--> host[1].pppPort++; // NOT VALID: where to put @type?
+        host[0].pppPort++ <--> <> like * <--> host[1].pppPort++; // how to specify typename?
 };
 
 // channel labels
