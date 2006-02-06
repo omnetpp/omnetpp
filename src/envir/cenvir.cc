@@ -358,8 +358,7 @@ void cEnvir::undisposedObject(cObject *obj)
     if (!app)
     {
         // we must have been called after cEnvir has already shut down
-        ::printf("<!> WARNING: global object variable detected at (%s)`%s' at %p; "
-                 "cObject-rooted global object variables are NOT ALLOWED in OMNeT++/OMNEST!\n",
+        ::printf("<!> WARNING: global object variable (DISCOURAGED) detected: (%s)`%s' at %p\n",
                  obj->className(), obj->fullPath().c_str(), obj);
         return;
     }
