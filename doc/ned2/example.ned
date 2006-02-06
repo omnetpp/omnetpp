@@ -37,6 +37,7 @@ simple VeryFastQueue extends Queue  // "extends" inherits gates as well (they do
     parameters: // this keyword is optional
         msgPerSec = 1000000;  // no type -> sets base class' parameter
         bool isVeryFast = true;  // add new parameter
+        novalue @addedproperty;	// attach a property to novalue parameter without assigning a value to it
 };
 
 simple QueueWithFourInputs extends Queue
