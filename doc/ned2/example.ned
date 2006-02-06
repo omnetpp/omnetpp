@@ -337,6 +337,7 @@ module Host
         apps[N]: <> like TCPApp;  // uses "typename" virtual parameter (idea of @type property was discarded)
         apps[N]: <appType> like TCPApp;   // all modules are the same type (appType); conceptually, <> operator converts string to type
         //apps[]: <appType[]> like TCPApp;  // with string arrays; not yet implemented
+        tcp : TCP;
 };
 
 network Network
@@ -463,8 +464,8 @@ network Network
         hosts[100] : Host {
             parameters:
                 // first the special cases. Stops at first match. index is reserved word.
-                @display("yrtyr") if index==3;
-                @display("yrtyr");
+                @display("c=green") if index==3;
+                @display("c=red");
                 parX = 45 if index>9;
                 if index>9 {
                     parY = 3;
