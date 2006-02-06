@@ -1630,6 +1630,15 @@ void TOmnetTkApp::sputn(const char *s, int n)
         return;
     }
 
+    // rough guard against forgotten "\n"'s in the code
+    if (n>5000)
+    {
+        const char *s2 = "... [line too long, truncated]\n";
+        this->sputn(s, 5000);
+        this->sputn(s2, strlen(s2));
+        return;
+    }
+
     // we'll need to quote Tcl special characters: {}[]$ etc; do it on demand
     bool quotedstr_is_set = false;
     TclQuotedString quotedstr;
