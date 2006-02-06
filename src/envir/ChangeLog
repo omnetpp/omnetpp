@@ -1,3 +1,10 @@
+2006-02-06  Andras Varga
+
+	* envir.cc: undisposedObject() to print warning if it's called after 
+	shutdown (when app==NULL). Source of such call is the destructor of
+	the global cDefaultList. Typically only global variables go to 
+	that list, and we strongly disapprove global vars.
+
 2006-01-12  ------ omnetpp-3.2p1 released ------
 
 2005-10-19  ------ omnetpp-3.2 released ------
