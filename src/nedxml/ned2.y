@@ -534,6 +534,10 @@ param_typenamevalue
                   ps.param = addParameter(ps.parameters, @1);
                   addExpression(ps.param, "value",@3,$3);
                 }
+        | NAME
+                {
+                  ps.param = addParameter(ps.parameters, @1);
+                }
         | TYPENAME '=' paramvalue
                 {
                   ps.param = addParameter(ps.parameters, @1);
@@ -616,10 +620,16 @@ property
         ;
 
 property_namevalue
+        : property_name
+        | property_name '(' opt_property_keys ')'
+        ;
+
+property_name
         : '@' NAME
-                { /*TBD*/ }
-        | '@' NAME '(' opt_property_keys ')'
-                { /*TBD*/ }
+                {
+                  ps.property = (PropertyNode *)createNodeWithTag(NED_PROPERTY, ps.nedfile/*FIXME!!!!!*/);
+                  ps.property->setName(toString(@2));
+                }
         ;
 
 opt_property_keys
@@ -629,16 +639,21 @@ opt_property_keys
 
 property_keys
         : property_keys ',' property_key
-                { /*TBD*/ }
         | property_key
-                { /*TBD*/ }
         ;
 
 property_key
         : NAME '=' property_value
-                { /*TBD*/ }
+                {
+                  ps.keyvalue = (KeyValueNode *)createNodeWithTag(NED_KEY_VALUE, ps.property);
+                  ps.keyvalue->setKey(toString(@1));
+                  ps.keyvalue->setValue(toString(@3));
+                }
         | property_value
-                { /*TBD*/ }
+                {
+                  ps.keyvalue = (KeyValueNode *)createNodeWithTag(NED_KEY_VALUE, ps.property);
+                  ps.keyvalue->setValue(toString(@1));
+                }
         ;
 
 property_value
