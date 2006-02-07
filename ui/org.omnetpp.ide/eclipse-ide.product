@@ -12,7 +12,17 @@
 
    <configIni use="default"/>
 
-   <windowImages i16="eclipse.gif" i32="eclipse32.gif" i48="eclipse48.gif" i64="eclipse.png" i128="eclipse32.png"/>
+   <launcherArgs>
+   </launcherArgs>
+
+   <windowImages i16="eclipse.gif" i32="eclipse32.gif" i48="eclipse48.gif"/>
+
+   <launcher>
+      <solaris/>
+      <win useIco="false">
+         <bmp/>
+      </win>
+   </launcher>
 
    <plugins>
       <plugin id="org.apache.lucene"/>
@@ -20,6 +30,7 @@
       <plugin id="org.eclipse.core.commands"/>
       <plugin id="org.eclipse.core.contenttype"/>
       <plugin id="org.eclipse.core.expressions"/>
+      <plugin id="org.eclipse.core.filebuffers"/>
       <plugin id="org.eclipse.core.filesystem"/>
       <plugin id="org.eclipse.core.filesystem.win32.x86"/>
       <plugin id="org.eclipse.core.jobs"/>
@@ -29,29 +40,47 @@
       <plugin id="org.eclipse.core.runtime"/>
       <plugin id="org.eclipse.core.runtime.compatibility"/>
       <plugin id="org.eclipse.core.variables"/>
+      <plugin id="org.eclipse.draw2d"/>
+      <plugin id="org.eclipse.emf.common"/>
+      <plugin id="org.eclipse.emf.common.ui"/>
+      <plugin id="org.eclipse.emf.ecore"/>
+      <plugin id="org.eclipse.emf.ecore.xmi"/>
+      <plugin id="org.eclipse.emf.edit"/>
+      <plugin id="org.eclipse.emf.edit.ui"/>
       <plugin id="org.eclipse.equinox.common"/>
       <plugin id="org.eclipse.equinox.preferences"/>
       <plugin id="org.eclipse.equinox.registry"/>
+      <plugin id="org.eclipse.gef"/>
       <plugin id="org.eclipse.help"/>
       <plugin id="org.eclipse.help.appserver"/>
       <plugin id="org.eclipse.help.base"/>
       <plugin id="org.eclipse.jface"/>
+      <plugin id="org.eclipse.jface.text"/>
       <plugin id="org.eclipse.osgi"/>
       <plugin id="org.eclipse.platform"/>
       <plugin id="org.eclipse.swt"/>
       <plugin id="org.eclipse.swt.win32.win32.x86"/>
+      <plugin id="org.eclipse.text"/>
       <plugin id="org.eclipse.ui"/>
       <plugin id="org.eclipse.ui.cheatsheets"/>
+      <plugin id="org.eclipse.ui.editors"/>
       <plugin id="org.eclipse.ui.forms"/>
       <plugin id="org.eclipse.ui.ide"/>
       <plugin id="org.eclipse.ui.intro"/>
       <plugin id="org.eclipse.ui.views"/>
       <plugin id="org.eclipse.ui.win32"/>
       <plugin id="org.eclipse.ui.workbench"/>
+      <plugin id="org.eclipse.ui.workbench.texteditor"/>
       <plugin id="org.eclipse.update.configurator"/>
       <plugin id="org.eclipse.update.core"/>
       <plugin id="org.eclipse.update.core.win32"/>
       <plugin id="org.eclipse.update.ui"/>
+      <plugin id="org.omnetpp.ide"/>
+      <plugin id="org.omnetpp.ned.editor.graph"/>
+      <plugin id="org.omnetpp.ned.editor.text"/>
+      <plugin id="org.omnetpp.ned.model"/>
+      <plugin id="org.omnetpp.ned.model.editor"/>
+      <plugin id="org.omnetpp.ned.provider"/>
    </plugins>
 
 </product>

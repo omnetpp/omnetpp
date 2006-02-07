@@ -12,7 +12,19 @@
 
    <configIni use="default"/>
 
+   <launcherArgs>
+   </launcherArgs>
+
    <windowImages i16="icons/sample2.gif"/>
+
+
+   <launcher>
+      <solaris/>
+      <win useIco="false">
+         <bmp/>
+      </win>
+   </launcher>
+
 
    <plugins>
       <plugin id="org.eclipse.core.commands"/>
