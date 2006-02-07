@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+
+   <extension
+         id="gned2"
+         point="org.eclipse.core.runtime.applications">
+      <application>
+         <run
+               class="org.omnetpp.ide.GNED2Application">
+         </run>
+      </application>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            name="NED Editiing"
+            class="org.omnetpp.ide.Perspective"
+            id="org.omnetpp.ide.perspective">
+      </perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            name="Message"
+            allowMultiple="true"
+            icon="icons/sample2.gif"
+            class="org.omnetpp.ide.View"
+            id="org.omnetpp.ide.view">
+      </view>
+      <view
+            name="Mailboxes"
+            allowMultiple="true"
+            icon="icons/sample3.gif"
+            class="org.omnetpp.ide.NavigationView"
+            id="org.omnetpp.ide.navigationView">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            name="Mail"
+            id="org.omnetpp.ide.category">
+      </category>
+      <command
+            name="Open Mailbox"
+            description="Opens a mailbox"
+            categoryId="org.omnetpp.ide.category"
+            id="org.omnetpp.ide.open">
+      </command>
+      <command
+            name="Open Message Dialog"
+            description="Open a message dialog"
+            categoryId="org.omnetpp.ide.category"
+            id="org.omnetpp.ide.openMessage">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="org.omnetpp.ide.open"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="CTRL+2">
+      </key>
+      <key
+            commandId="org.omnetpp.ide.openMessage"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="CTRL+3">
+      </key>
+      <key
+            commandId="org.eclipse.ui.file.exit"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="CTRL+X">
+      </key>
+   </extension>
+   <extension
+         id="omnetppide"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="org.omnetpp.ide.gned2"
+            name="OMNeT++ IDE">
+         <property
+               name="aboutText"
+               value="%aboutText"/>
+         <property
+               name="windowImages"
+               value="icons/sample2.gif"/>
+         <property
+               name="aboutImage"
+               value="product_lg.gif"/>
+      </product>
+   </extension>
+
+</plugin>
