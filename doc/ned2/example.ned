@@ -411,6 +411,38 @@ channel withcppclass PPPLine   // FIXME find better syntax...
 {
 };
 
+// modules as channels
+interface IBidirectionalChannel  // <-- predefined (built-in) type
+{
+    gates:
+       inout a;
+       inout b;
+};
+interface IUnidirectionalChannel  // <-- predefined (built-in) type
+{
+    gates:
+       input i;
+       output o;
+};
+
+module PPPLineModule like IBidirectionalChannel // <-- marks PPPLineModule as suitable for use as channel
+{
+    gates:
+       inout a;
+       inout b;
+};
+
+// example usage of modules as channels
+network PPPNet
+{
+    submodules:
+        node[10]: Node;
+    connections:
+        node[0].g++ <--> PPPLineModule <--> node[1].g++; // would implicitly create submodules named c1,c2,..., and connect them
+        node[0].g++ <--> PPPLineModule <--> node[3].g++; // allowed because PPPLineModule is "like" IBidirectionalChannel
+        //...
+}
+
 
 // "volatile" parameters -- "function" keyword
 simple Gen
