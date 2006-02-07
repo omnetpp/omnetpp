@@ -77,7 +77,7 @@
 <!ELEMENT key-value (whitespace*)>
 <!ATTLIST key-value
      key                CDATA     #IMPLIED
-     value              CDATA     #IMPLIED>
+     value              CDATA     #IMPLIED> <!-- FIXME use text&value, as in literal? or use literal here? -->
 
 <!ELEMENT gates (whitespace*, (gate|gate-group)*)>
 

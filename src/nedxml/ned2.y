@@ -55,6 +55,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stack>
 #include "nedgrammar.h"
 #include "nederror.h"
 
@@ -89,6 +90,7 @@ struct ParserState
     bool storeSourceCode;
     bool inLoop;
     bool inTypes;
+    std::stack<NEDElement *> propertyctx;  // top(): where to insert properties as we parse them
 
     /* tmp flags, used with param */
     int paramType;
@@ -106,6 +108,7 @@ struct ParserState
     ExtendsNode *extends;
     InterfaceNameNode *interfacename;
     NEDElement *component;  // compound/simple module, module interface, channel or channel interface
+        // ^^^^ FIXME this is wrong, because of embedded types!!!
     ParametersNode *parameters;
     ParamGroupNode *paramgroup;
     ParamNode *param;
@@ -127,7 +130,7 @@ struct ParserState
 NEDElement *createNodeWithTag(int tagcode, NEDElement *parent=NULL);
 
 PropertyNode *addProperty(NEDElement *node, const char *name);  // directly under the node
-PropertyNode *addComponentProperty(NEDElement *node, const char *name); // into ParametersNode
+PropertyNode *addComponentProperty(NEDElement *node, const char *name); // into ParametersNode child of node
 KeyValueNode *addPropertyValue(PropertyNode *prop, const char *key, YYLTYPE valuepos);
 
 PropertyNode *storeSourceCode(NEDElement *node, YYLTYPE tokenpos);  // directly under the node
@@ -276,9 +279,13 @@ fileproperty
  */
 channeldefinition
         : channelheader '{'
+                {
+                  ps.propertyctx.push(ps.component);
+                }
             opt_paramblock
           '}' opt_semicolon
                 {
+                  ps.propertyctx.pop();
                   setTrailingComment(ps.component,@4);
                 }
         ;
@@ -302,14 +309,30 @@ channelheader
 
 opt_inheritance
         :
-        | EXTENDS NAME
+        | EXTENDS extendsname
         | LIKE likenames
-        | EXTENDS NAME LIKE likenames
+        | EXTENDS extendsname LIKE likenames
+        ;
+
+extendsname
+        : NAME
+                {
+                  ps.extends = (ExtendsNode *)createNodeWithTag(NED_EXTENDS, ps.component);
+                  ps.extends->setName(toString(@1));
+                }
         ;
 
 likenames
-        : likenames ',' NAME
-        | NAME
+        : likenames ',' likename
+        | likename
+        ;
+
+likename
+        : NAME
+                {
+                  ps.interfacename = (InterfaceNameNode *)createNodeWithTag(NED_INTERFACE_NAME, ps.component);
+                  ps.interfacename->setName(toString(@1));
+                }
         ;
 
 /*
@@ -317,9 +340,13 @@ likenames
  */
 channelinterfacedefinition
         : channelinterfaceheader '{'
+                {
+                  ps.propertyctx.push(ps.component);
+                }
             opt_paramblock
           '}' opt_semicolon
                 {
+                  ps.propertyctx.pop();
                   setTrailingComment(ps.component,@4);
                 }
         ;
@@ -349,10 +376,14 @@ interfacenames
  */
 simplemoduledefinition
         : simplemoduleheader '{'
+                {
+                  ps.propertyctx.push(ps.component);
+                }
             opt_paramblock
             opt_gateblock
           '}' opt_semicolon
                 {
+                  ps.propertyctx.pop();
                   setTrailingComment(ps.component,@6);
                 }
         ;
@@ -372,6 +403,9 @@ simplemoduleheader
  */
 compoundmoduledefinition
         : compoundmoduleheader '{'
+                {
+                  ps.propertyctx.push(ps.component);
+                }
             opt_paramblock
             opt_gateblock
             opt_typeblock
@@ -379,6 +413,7 @@ compoundmoduledefinition
             opt_connblock
           '}' opt_semicolon
                 {
+                  ps.propertyctx.pop();
                   setTrailingComment(ps.component,@9);
                 }
         ;
@@ -398,6 +433,9 @@ compoundmoduleheader
  */
 networkdefinition
         : networkheader '{'
+                {
+                  ps.propertyctx.push(ps.component);
+                }
             opt_paramblock
             opt_gateblock
             opt_typeblock
@@ -405,6 +443,7 @@ networkdefinition
             opt_connblock
           '}' opt_semicolon
                 {
+                  ps.propertyctx.pop();
                   setTrailingComment(ps.component,@5);
                 }
         ;
@@ -425,10 +464,14 @@ networkheader
  */
 moduleinterfacedefinition
         : moduleinterfaceheader '{'
+                {
+                  ps.propertyctx.push(ps.component);
+                }
             opt_paramblock
             opt_gateblock
           '}' opt_semicolon
                 {
+                  ps.propertyctx.pop();
                   setTrailingComment(ps.component,@6);
                 }
         ;
@@ -627,8 +670,7 @@ property_namevalue
 property_name
         : '@' NAME
                 {
-                  ps.property = (PropertyNode *)createNodeWithTag(NED_PROPERTY, ps.nedfile/*FIXME!!!!!*/);
-                  ps.property->setName(toString(@2));
+                  ps.property = addProperty(ps.propertyctx.top(), toString(@2));
                 }
         ;
 
@@ -645,6 +687,7 @@ property_keys
 property_key
         : NAME '=' property_value
                 {
+                  //FIXME use addPropertyValue() function?
                   ps.keyvalue = (KeyValueNode *)createNodeWithTag(NED_KEY_VALUE, ps.property);
                   ps.keyvalue->setKey(toString(@1));
                   ps.keyvalue->setValue(toString(@3));
@@ -656,7 +699,7 @@ property_key
                 }
         ;
 
-property_value
+property_value  /* FIXME use LiteralNode and its rules here? */
         : TRUE_
         | FALSE_
         | NAME
@@ -1320,14 +1363,14 @@ special_expr
 
 stringliteral
         : STRINGCONSTANT
-                { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_STRING, toString(trimQuotes(@1))); }
+                { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_STRING, toString(trimQuotes(@1))); /*FIXME store both text&value*/ }
         ;
 
 numliteral
         : INTCONSTANT
-                { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_INT, toString(@1)); }
+                { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_INT, toString(@1)); /*FIXME store both text&value*/ }
         | REALCONSTANT
-                { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_DOUBLE, toString(@1)); }
+                { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_DOUBLE, toString(@1)); /*FIXME store both text&value*/ }
         | quantity
                 { if (ps.parseExpressions) $$ = createQuantity(toString(@1)); }
 
@@ -1367,22 +1410,32 @@ int runparse (NEDParser *p,NedFileNode *nf,bool parseexpr, bool storesrc, const 
     if (yyin)
         yyrestart( yyin );
 
+    // create parser state and NEDFileNode
     np = p;
     ps.nedfile = nf;
     ps.parseExpressions = parseexpr;
     ps.storeSourceCode = storesrc;
+    ps.propertyctx.push(ps.nedfile);
     sourcefilename = sourcefname;
 
     if (storesrc)
         storeSourceCode(ps.nedfile, np->nedsource->getFullTextPos());
 
+    // parse
+    int ret;
     try {
-        return yyparse();
+        ret = yyparse();
     } catch (NEDException *e) {
         NEDError(NULL, "internal error while parsing: %s", e->errorMessage());
         delete e;
         return 0;
     }
+
+    // more sanity checks
+    if (ps.propertyctx.size()!=1 || ps.propertyctx.top()!=ps.nedfile)
+        NEDError(NULL, "internal error while parsing: imbalanced propertyctx");
+
+    return ret;
 }
 
 
