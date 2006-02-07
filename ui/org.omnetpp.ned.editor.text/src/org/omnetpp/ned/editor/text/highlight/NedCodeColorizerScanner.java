@@ -33,6 +33,9 @@ public class NedCodeColorizerScanner extends RuleBasedScanner {
         for (int i= 0; i < NedHelper.highlightNedSpecialKeywords.length; i++)
             wordRuleSpecial.addWord(NedHelper.highlightNedSpecialKeywords[i], NedHelper.codeKeywordToken);
         rules.add(wordRuleSpecial);
+        
+        // detect properties (in form of @propname)
+        rules.add(new WordRule(NedHelper.nedAtWordDetector, NedHelper.codePropertyToken));
 
 		// Add word rule for keywords, types, and constants. If not recognized as either of these
         // then this is a regular identifier, so return an identifierToken by default

@@ -39,7 +39,7 @@ public class NedDocColorizerScanner extends RuleBasedScanner {
         list.add(tagRule);
 
         // Add word rule for keywords.
-        WordRule keywordRule= new WordRule(NedHelper.nedDocKeywordDetector, Token.UNDEFINED);
+        WordRule keywordRule= new WordRule(NedHelper.nedAtWordDetector, Token.UNDEFINED);
         for (int i= 0; i < NedHelper.highlightDocKeywords.length; i++)
             keywordRule.addWord("@" + NedHelper.highlightDocKeywords[i], NedHelper.docKeywordToken);
         list.add(keywordRule);

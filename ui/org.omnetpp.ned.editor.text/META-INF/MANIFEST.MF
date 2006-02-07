@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %pluginName
+Bundle-SymbolicName: org.omnetpp.ned.editor.text; singleton:=true
+Bundle-Version: 4.0.0
+Bundle-Activator: org.omnetpp.ned.editor.text.NedEditorPlugin
+Bundle-Vendor: %providerName
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui,
+ org.eclipse.jface.text,
+ org.eclipse.ui.workbench.texteditor,
+ org.eclipse.ui.editors,
+ org.eclipse.ui.ide,
+ org.eclipse.ui.views,
+ org.eclipse.core.resources
+Eclipse-LazyStart: true
+Export-Package: org.omnetpp.ned.editor.text,
+ org.omnetpp.ned.editor.text.assist,
+ org.omnetpp.ned.editor.text.highlight,
+ org.omnetpp.ned.editor.text.outline,
+ org.omnetpp.ned.editor.text.parser,
+ org.omnetpp.ned.editor.text.util
+Bundle-ClassPath: .

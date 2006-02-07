@@ -11,12 +11,12 @@ import org.eclipse.swt.widgets.Display;
 
 /**
  * This class contains all the possible keywords for syntaxt highlighting and context assist functions.
- * 
+ *
  * @author rhornig
  *
  */
 public class NedHelper {
-    
+
     /**
      * Convinience method, to returna system default color. Color constans come from SWT class e.g. SWT.COLOR_RED
      * @param color
@@ -25,7 +25,7 @@ public class NedHelper {
     public static Color getColor(int color) {
         return Display.getDefault().getSystemColor(color);
     }
-    
+
     /**
      * A generic white space detector
      */
@@ -67,7 +67,7 @@ public class NedHelper {
     /**
      * Detects kewords that athere to the @whatewer syntax, staring with @ and continuing with letters only.
      */
-    static class NedDocKeywordDetector implements IWordDetector {
+    static class NedAtWordDetector implements IWordDetector {
 
         public boolean isWordStart(char c) {
             return (c == '@');
@@ -77,7 +77,7 @@ public class NedHelper {
             return Character.isLetter(c);
         }
     }
-    
+
     /**
      * Detects kewords that look like an XML tag.
      */
@@ -97,32 +97,32 @@ public class NedHelper {
     public final static String[] highlightPrivateDocTodo = { "CHECKME", "FIXME", "TBD", "TODO" };
     public final static String[] highlightDocTags = { "a", "b", "body", "br", "center", "caption", "code", "dd", "dfn", "dl", "dt", "em", "form", "font", "hr", "h1", "h2", "h3", "i", "input", "img", "li", "meta", "multicol", "ol", "p", "small", "span", "strong", "sub", "sup", "table", "td", "th", "tr", "tt", "kbd", "ul", "var" };
     public final static String[] highlightDocKeywords = { "author", "bug", "date", "see", "since", "todo", "version", "warning" };
-    public final static String[] highlightNedTypes = { "anytype", "bool", "char", "double", "int", "long", "numeric", "short", "string", "unsigned", "xml" };
-    public final static String[] highlightNedSpecialKeywords = { "-->", "..", "...", "<--", "in:", "out:" };
-    public final static String[] highlightNedKeywords = { "abstract", "ancestor", "channel", "class", "connections", "const", "cplusplus", "datarate", "delay", "display", "do", "endchannel", "endfor", "endmodule", "endnetwork", "endsimple", "enum", "error", "extends", "fields", "for", "gates", "gatesizes", "if", "import", "index", "like", "message", "module", "network", "nocheck", "noncobject", "on", "parameters", "properties", "ref", "simple", "sizeof", "struct", "submodules", "to" };
-    public final static String[] highlightNedFunctions = { "acos", "asin", "atan", "atan2", "bernoulli", "beta", "binomial", "cauchy", "ceil", "chi_square", "cos", "erlang_k", "exp", "exponential", "fabs", "floor", "fmod", "gamma_d", "genk_exponential", "genk_intuniform", "genk_normal", "genk_truncnormal", "genk_uniform", "geometric", "hypergeometric", "hypot", "input", "intuniform", "log", "log10", "lognormal", "max", "min", "negbinomial", "normal", "pareto_shifted", "poisson", "pow", "sin", "sqrt", "student_t", "tan", "triang", "truncnormal", "uniform", "weibull", "xmldoc" };
+    public final static String[] highlightNedTypes = { "bool", "double", "function", "inout", "input", "int", "output", "string", "xml" };
+    public final static String[] highlightNedSpecialKeywords = { "-->", "<--", "<-->", ".." };
+    public final static String[] highlightNedKeywords = { "allowunconnected", "channel", "channelinterface", "connections", "extends", "gates", "if", "import", "index", "interface", "like", "module", "network", "package", "parameters", "property", "simple", "submodules", "this", "typename", "types", "where", "withcppclass" };
+    public final static String[] highlightNedFunctions = { "acos", "asin", "atan", "atan2", "bernoulli", "beta", "binomial", "cauchy", "ceil", "chi_square", "const", "cos", "default", "erlang_k", "exp", "exponential", "fabs", "floor", "fmod", "gamma_d", "genk_exponential", "genk_intuniform", "genk_normal", "genk_truncnormal", "genk_uniform", "geometric", "hypergeometric", "hypot", "intuniform", "log", "log10", "lognormal", "max", "min", "negbinomial", "normal", "pareto_shifted", "poisson", "pow", "sin", "sizeof", "sqrt", "student_t", "tan", "triang", "truncnormal", "uniform", "weibull", "xmldoc" };
     public final static String[] highlightConstants = { "false", "true" };
-    
+
     // word lists for completion
     public final static String[] proposedPrivateDocTodo = highlightPrivateDocTodo;
     public final static String[] proposedDocTags = highlightDocTags;
     public final static String[] proposedDocKeywords = highlightDocKeywords;
-    public final static String[] proposedNedTypes = { "anytype", "bool", "char", "numeric", "string", "xml" };
-    public final static String[] proposedNedKeywords = { "ancestor", "channel ", "connections:", "const", "datarate", "delay", "display:", "do", "endchannel", "endfor", "endmodule", "endnetwork", "endsimple", "error", "for", "gates:", "gatesizes:", "if", "import", "in:", "index", "like", "module ", "network ", "nocheck", "on", "out:", "parameters:", "ref", "simple ", "sizeof", "submodules:", "to" };
-    public final static String[] proposedNedFunctions = { "acos", "asin", "atan", "atan2", "bernoulli", "beta", "binomial", "cauchy", "ceil", "chi_square", "cos", "erlang_k", "exp", "exponential", "fabs", "floor", "fmod", "gamma_d", "genk_exponential", "genk_intuniform", "genk_normal", "genk_truncnormal", "genk_uniform", "geometric", "hypergeometric", "hypot", "input", "intuniform", "log", "log10", "lognormal", "max", "min", "negbinomial", "normal", "pareto_shifted", "poisson", "pow", "sin", "sqrt", "student_t", "tan", "triang", "truncnormal", "uniform", "weibull", "xmldoc" };
+    public final static String[] proposedNedTypes = { "bool", "double", "function", "inout", "input", "int", "output", "string", "xml" };
+    public final static String[] proposedNedKeywords = { "allowunconnected", "channel", "channelinterface", "connections:", "extends", "gates:", "if", "import", "index", "interface", "like", "module", "network", "package", "parameters:", "property", "simple", "submodules:", "this", "typename", "types:", "where", "withcppclass" };
+    public final static String[] proposedNedFunctions = { "acos", "asin", "atan", "atan2", "bernoulli", "beta", "binomial", "cauchy", "ceil", "chi_square", "const", "cos", "default", "erlang_k", "exp", "exponential", "fabs", "floor", "fmod", "gamma_d", "genk_exponential", "genk_intuniform", "genk_normal", "genk_truncnormal", "genk_uniform", "geometric", "hypergeometric", "hypot", "intuniform", "log", "log10", "lognormal", "max", "min", "negbinomial", "normal", "pareto_shifted", "poisson", "pow", "sin", "sizeof", "sqrt", "student_t", "tan", "triang", "truncnormal", "uniform", "weibull", "xmldoc" };
     public final static String[] proposedConstants = { "false", "true" };
-    
+
     // MSG specific completions - not used currently
 //    public final static String[] proposedMsgTypes = { "anytype", "bool", "char", "double", "int", "long", "numeric", "short", "string", "unsigned", "xml" };
 //    public final static String[] proposedMsgKeywords = { "abstract", "ancestor", "channel", "class", "connections", "const", "cplusplus", "datarate", "delay", "display", "do", "endchannel", "endfor", "endmodule", "endnetwork", "endsimple", "enum", "error", "extends", "fields", "for", "gates", "gatesizes", "if", "import", "in:", "index", "like", "message", "module", "network", "nocheck", "noncobject", "on", "out:", "parameters", "properties", "ref", "simple", "sizeof", "struct", "submodules", "to" };
-    
+
     // whitespace and word detectors for tokenization
     public final static NedWhitespaceDetector nedWhitespaceDetector = new NedWhitespaceDetector();
     public final static NedWordDetector nedWordDetector = new NedWordDetector();
     public final static NedSpecialWordDetector nedSpecialWordDetector = new NedSpecialWordDetector();
-    public final static NedDocKeywordDetector nedDocKeywordDetector = new NedDocKeywordDetector();
+    public final static NedAtWordDetector nedAtWordDetector = new NedAtWordDetector();
     public final static NedDocTagDetector nedDocTagDetector = new NedDocTagDetector();
-    
+
     // tokens for syntax highlighting
     // TODO these styles should be configurable
     public final static IToken docDefaultToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GRAY), null, SWT.ITALIC));
@@ -137,7 +137,8 @@ public class NedHelper {
     public final static IToken codeFunctionToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_MAGENTA), null, SWT.BOLD));
     public final static IToken codeTypeToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_BLUE), null, SWT.BOLD));
     public final static IToken codeIdentifierToken = new Token(new TextAttribute(getColor(SWT.COLOR_BLACK)));
+    public final static IToken codePropertyToken = new Token(new TextAttribute(getColor(SWT.COLOR_BLACK), null, SWT.BOLD));
     public final static IToken codeStringToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GREEN)));
     public final static IToken codeNumberToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GREEN)));
-    
+
 }

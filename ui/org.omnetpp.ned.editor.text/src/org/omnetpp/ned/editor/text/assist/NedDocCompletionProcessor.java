@@ -15,7 +15,7 @@ public class NedDocCompletionProcessor extends IncrementalCompletionProcessor {
 
     public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
         List result = 
-            createProposals(viewer, documentOffset, NedHelper.nedDocKeywordDetector,
+            createProposals(viewer, documentOffset, NedHelper.nedAtWordDetector,
                     "@", NedHelper.proposedDocKeywords, " ");
 
         result.addAll(createProposals(viewer, documentOffset, NedHelper.nedDocTagDetector, 
