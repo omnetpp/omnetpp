@@ -235,6 +235,11 @@ void NEDBasicValidator::validateElement(ParamNode *node)
     //FIXME revise
 }
 
+void NEDBasicValidator::validateElement(PatternNode *node)
+{
+    //FIXME revise
+}
+
 void NEDBasicValidator::validateElement(PropertyNode *node)
 {
     //FIXME revise

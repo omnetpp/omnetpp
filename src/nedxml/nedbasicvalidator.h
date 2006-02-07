@@ -71,6 +71,7 @@ class NEDBasicValidator : public NEDValidatorBase
     virtual void validateElement(ParametersNode *node);
     virtual void validateElement(ParamGroupNode *node);
     virtual void validateElement(ParamNode *node);
+    virtual void validateElement(PatternNode *node);
     virtual void validateElement(PropertyNode *node);
     virtual void validateElement(KeyValueNode *node);
     virtual void validateElement(GatesNode *node);

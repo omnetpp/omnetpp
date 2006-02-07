@@ -123,7 +123,7 @@ void NEDDTDValidator::validateElement(ParametersNode *node)
 {
     Choice choices[] = {
         {{NED_WHITESPACE, NED_NULL}, '*'},
-        {{NED_PROPERTY, NED_PARAM, NED_PARAM_GROUP, NED_NULL}, '*'},
+        {{NED_PROPERTY, NED_PARAM, NED_PATTERN, NED_PARAM_GROUP, NED_NULL}, '*'},
     };
     checkSeqOfChoices(node, choices, sizeof(choices)/sizeof(Choice));
 
@@ -136,7 +136,7 @@ void NEDDTDValidator::validateElement(ParamGroupNode *node)
     Choice choices[] = {
         {{NED_WHITESPACE, NED_NULL}, '*'},
         {{NED_CONDITION, NED_NULL}, '1'},
-        {{NED_PROPERTY, NED_PARAM, NED_NULL}, '*'},
+        {{NED_PROPERTY, NED_PARAM, NED_PATTERN, NED_NULL}, '*'},
     };
     checkSeqOfChoices(node, choices, sizeof(choices)/sizeof(Choice));
 
@@ -154,6 +154,16 @@ void NEDDTDValidator::validateElement(ParamNode *node)
     checkEnumeratedAttribute(node, "is-function", vals1, sizeof(vals1)/sizeof(const char *));
     checkRequiredAttribute(node, "name");
     checkNameAttribute(node, "name");
+}
+
+void NEDDTDValidator::validateElement(PatternNode *node)
+{
+    int tags[] = {NED_WHITESPACE,NED_EXPRESSION,NED_PROPERTY, NED_NULL};
+    char mult[] = {'*','?','*', 0};
+    checkSequence(node, tags, mult);
+
+    checkRequiredAttribute(node, "pattern");
+    checkRequiredAttribute(node, "value");
 }
 
 void NEDDTDValidator::validateElement(PropertyNode *node)

@@ -118,6 +118,11 @@ void NEDSemanticValidator::validateElement(ParamNode *node)
     // TBD compile-time check for type mismatch
 }
 
+void NEDSemanticValidator::validateElement(PatternNode *node)
+{
+    // FIXME revise
+}
+
 void NEDSemanticValidator::validateElement(PropertyNode *node)
 {
     // FIXME revise

@@ -35,6 +35,7 @@ class CompoundModuleNode;
 class ParametersNode;
 class ParamGroupNode;
 class ParamNode;
+class PatternNode;
 class PropertyNode;
 class KeyValueNode;
 class GatesNode;
@@ -94,6 +95,7 @@ enum NEDElementCode {
     NED_PARAMETERS,
     NED_PARAM_GROUP,
     NED_PARAM,
+    NED_PATTERN,
     NED_PROPERTY,
     NED_KEY_VALUE,
     NED_GATES,
@@ -617,7 +619,7 @@ class CompoundModuleNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;parameters&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT parameters (whitespace*, (property|param|param-group)*)>
+ * <!ELEMENT parameters (whitespace*, (property|param|pattern|param-group)*)>
  * <!ATTLIST parameters
  *     is-implicit         (true|false)  "true">
  * </pre>
@@ -656,6 +658,7 @@ class ParametersNode : public NEDElement
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
     virtual PropertyNode *getFirstPropertyChild() const;
     virtual ParamNode *getFirstParamChild() const;
+    virtual PatternNode *getFirstPatternChild() const;
     virtual ParamGroupNode *getFirstParamGroupChild() const;
     //@}
 };
@@ -664,7 +667,7 @@ class ParametersNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;param-group&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT param-group (whitespace*, condition, (property|param)*)>
+ * <!ELEMENT param-group (whitespace*, condition, (property|param|pattern)*)>
  * 
  * </pre>
  * 
@@ -700,6 +703,7 @@ class ParamGroupNode : public NEDElement
     virtual ConditionNode *getFirstConditionChild() const;
     virtual PropertyNode *getFirstPropertyChild() const;
     virtual ParamNode *getFirstParamChild() const;
+    virtual PatternNode *getFirstPatternChild() const;
     //@}
 };
 
@@ -755,6 +759,56 @@ class ParamNode : public NEDElement
     void setValue(const char * val)  {value = val;}
 
     virtual ParamNode *getNextParamNodeSibling() const;
+    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual ExpressionNode *getFirstExpressionChild() const;
+    virtual PropertyNode *getFirstPropertyChild() const;
+    //@}
+};
+
+/**
+ * GENERATED CLASS. Represents the &lt;pattern&gt; XML element in memory. DTD declaration:
+ * 
+ * <pre>
+ * <!ELEMENT pattern (whitespace*, expression?, property*)>
+ * <!ATTLIST pattern
+ *      pattern            CDATA     #REQUIRED
+ *      value              CDATA     #REQUIRED>
+ * </pre>
+ * 
+ * @ingroup Data
+ */
+class PatternNode : public NEDElement
+{
+  private:
+    std::string pattern;
+    std::string value;
+  public:
+    /** @name Constructors, destructor */
+    //@{
+    PatternNode() {applyDefaults();}
+    PatternNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~PatternNode() {}
+    //@}
+
+    /** @name Redefined NEDElement methods, incl. generic access to attributes */
+    //@{
+    virtual const char *getTagName() const {return "pattern";}
+    virtual int getTagCode() const {return NED_PATTERN;}
+    virtual int getNumAttributes() const;
+    virtual const char *getAttributeName(int k) const;
+    virtual const char *getAttribute(int k) const;
+    virtual void setAttribute(int k, const char *val);
+    virtual const char *getAttributeDefault(int k) const;
+    //@}
+
+    /** @name Typed access to attributes, children and siblings */
+    //@{
+    const char * getPattern() const  {return pattern.c_str();}
+    void setPattern(const char * val)  {pattern = val;}
+    const char * getValue() const  {return value.c_str();}
+    void setValue(const char * val)  {value = val;}
+
+    virtual PatternNode *getNextPatternNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
     virtual ExpressionNode *getFirstExpressionChild() const;
     virtual PropertyNode *getFirstPropertyChild() const;

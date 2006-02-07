@@ -696,6 +696,11 @@ ParamNode *ParametersNode::getFirstParamChild() const
     return (ParamNode *)getFirstChildWithTag(NED_PARAM);
 }
 
+PatternNode *ParametersNode::getFirstPatternChild() const
+{
+    return (PatternNode *)getFirstChildWithTag(NED_PATTERN);
+}
+
 ParamGroupNode *ParametersNode::getFirstParamGroupChild() const
 {
     return (ParamGroupNode *)getFirstChildWithTag(NED_PARAM_GROUP);
@@ -757,6 +762,11 @@ PropertyNode *ParamGroupNode::getFirstPropertyChild() const
 ParamNode *ParamGroupNode::getFirstParamChild() const
 {
     return (ParamNode *)getFirstChildWithTag(NED_PARAM);
+}
+
+PatternNode *ParamGroupNode::getFirstPatternChild() const
+{
+    return (PatternNode *)getFirstChildWithTag(NED_PATTERN);
 }
 
 void ParamNode::setType(int val)
@@ -830,6 +840,67 @@ ExpressionNode *ParamNode::getFirstExpressionChild() const
 }
 
 PropertyNode *ParamNode::getFirstPropertyChild() const
+{
+    return (PropertyNode *)getFirstChildWithTag(NED_PROPERTY);
+}
+
+int PatternNode::getNumAttributes() const
+{
+    return 2;
+}
+
+const char *PatternNode::getAttributeName(int k) const
+{
+    switch (k) {
+        case 0: return "pattern";
+        case 1: return "value";
+        default: return 0;
+    }
+}
+
+const char *PatternNode::getAttribute(int k) const
+{
+    switch (k) {
+        case 0: return pattern.c_str();
+        case 1: return value.c_str();
+        default: return 0;
+    }
+}
+
+void PatternNode::setAttribute(int k, const char *val)
+{
+    switch (k) {
+        case 0: pattern = val; break;
+        case 1: value = val; break;
+        default: ;
+    }
+}
+
+const char *PatternNode::getAttributeDefault(int k) const
+{
+    switch (k) {
+        case 0: return "";
+        case 1: return "";
+        default: return 0;
+    }
+}
+
+PatternNode *PatternNode::getNextPatternNodeSibling() const
+{
+    return (PatternNode *)getNextSiblingWithTag(NED_PATTERN);
+}
+
+WhitespaceNode *PatternNode::getFirstWhitespaceChild() const
+{
+    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+}
+
+ExpressionNode *PatternNode::getFirstExpressionChild() const
+{
+    return (ExpressionNode *)getFirstChildWithTag(NED_EXPRESSION);
+}
+
+PropertyNode *PatternNode::getFirstPropertyChild() const
 {
     return (PropertyNode *)getFirstChildWithTag(NED_PROPERTY);
 }
@@ -3247,6 +3318,7 @@ NEDElement *NEDElementFactory::createNodeWithTag(const char *tagname)
     if (tagname[0]=='p' && !strcmp(tagname,"parameters"))  return new ParametersNode();
     if (tagname[0]=='p' && !strcmp(tagname,"param-group"))  return new ParamGroupNode();
     if (tagname[0]=='p' && !strcmp(tagname,"param"))  return new ParamNode();
+    if (tagname[0]=='p' && !strcmp(tagname,"pattern"))  return new PatternNode();
     if (tagname[0]=='p' && !strcmp(tagname,"property"))  return new PropertyNode();
     if (tagname[0]=='k' && !strcmp(tagname,"key-value"))  return new KeyValueNode();
     if (tagname[0]=='g' && !strcmp(tagname,"gates"))  return new GatesNode();
@@ -3303,6 +3375,7 @@ NEDElement *NEDElementFactory::createNodeWithTag(int tagcode)
         case NED_PARAMETERS: return new ParametersNode();
         case NED_PARAM_GROUP: return new ParamGroupNode();
         case NED_PARAM: return new ParamNode();
+        case NED_PATTERN: return new PatternNode();
         case NED_PROPERTY: return new PropertyNode();
         case NED_KEY_VALUE: return new KeyValueNode();
         case NED_GATES: return new GatesNode();

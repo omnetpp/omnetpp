@@ -51,11 +51,11 @@
      name               NMTOKEN   #REQUIRED
      is-network         (true|false) "false">
 
-<!ELEMENT parameters (whitespace*, (property|param|param-group)*)>
+<!ELEMENT parameters (whitespace*, (property|param|pattern|param-group)*)>
 <!ATTLIST parameters
     is-implicit         (true|false)  "true">
 
-<!ELEMENT param-group (whitespace*, condition, (property|param)*)>
+<!ELEMENT param-group (whitespace*, condition, (property|param|pattern)*)>
 
 <!ELEMENT param (whitespace*, expression?, property*)>
 <!ATTLIST param
@@ -64,7 +64,10 @@
      name               NMTOKEN   #REQUIRED
      value              CDATA     #IMPLIED>
 
-<!-- FIXME add element for /pattern/ style parameter assignments -->
+<!ELEMENT pattern (whitespace*, expression?, property*)>
+<!ATTLIST pattern
+     pattern            CDATA     #REQUIRED
+     value              CDATA     #REQUIRED>
 
 <!ELEMENT property (whitespace*, key-value*)>
 <!ATTLIST property
