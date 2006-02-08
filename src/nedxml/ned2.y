@@ -1058,7 +1058,7 @@ connection
                   ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
                   //setComments(ps.conn,@1,@3);
                 }
-        | leftgatespec RIGHTARROW channeldescr RIGHTARROW rightgatespec
+        | leftgatespec RIGHTARROW channelspec RIGHTARROW rightgatespec
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
                   //setComments(ps.conn,@1,@5);
@@ -1069,7 +1069,7 @@ connection
                   ps.conn->setArrowDirection(NED_ARROWDIR_LEFT);
                   //setComments(ps.conn,@1,@3);
                 }
-        | leftgatespec LEFTARROW channeldescr LEFTARROW rightgatespec
+        | leftgatespec LEFTARROW channelspec LEFTARROW rightgatespec
                 {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_LEFT);
@@ -1080,7 +1080,7 @@ connection
                   ps.conn->setArrowDirection(NED_ARROWDIR_BIDIR);
                   //setComments(ps.conn,@1,@3);
                 }
-        | leftgatespec DBLARROW channeldescr DBLARROW rightgatespec
+        | leftgatespec DBLARROW channelspec DBLARROW rightgatespec
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_BIDIR);
                   //setComments(ps.conn,@1,@5);
@@ -1202,7 +1202,7 @@ opt_subgate
         |
         ;
 
-channeldescr
+channelspec
         : NAME
                 {
                   ps.chanspec = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.conn);
