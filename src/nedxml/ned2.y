@@ -522,18 +522,12 @@ moduleinterfaceheader
  * Parameters
  */
 opt_paramblock
-        : paramblock
-        |
-        ;
-
-paramblock
-        : PARAMETERS ':'
+        : opt_params   /* "parameters" keyword is optional */
+        | PARAMETERS ':'
                 {
                   ps.parameters->setIsImplicit(false);
-                  //setComments(ps.parameters,@1,@2);
                 }
           opt_params
-        | params   /* keyword is optional */
         ;
 
 opt_params
@@ -580,7 +574,14 @@ paramsitem_nogroup
         ;
 
 param
-        : param_typenamevalue opt_inline_properties opt_condition ';'
+        : param_typenamevalue
+                {
+                  ps.propertyscope.push(ps.param);
+                }
+          opt_inline_properties opt_condition ';'
+                {
+                  ps.propertyscope.pop();
+                }
         ;
 
 /*
@@ -798,7 +799,14 @@ gates_nogroup   /* same as gates, but without the gategroup rule */
  * Gate
  */
 gate
-        : gate_typenamesize opt_inline_properties opt_condition ';'
+        : gate_typenamesize
+                {
+                  ps.propertyscope.push(ps.gate);
+                }
+          opt_inline_properties opt_condition ';'
+                {
+                  ps.propertyscope.pop();
+                }
         ;
 
 gate_typenamesize
@@ -1200,14 +1208,22 @@ channeldescr
                   ps.chanspec = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.conn);
                   ps.chanspec->setName(toString(@1));
                 }
+        | likephrase
+                {
+                  ps.chanspec = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.conn);
+                  ps.chanspec->setName(toString(@1));
+                }
         | '{'
                 {
                   ps.chanspec = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.conn);
                   ps.blockscope.push(ps.chanspec);
+                  ps.parameters = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.chanspec);
+                  ps.propertyscope.push(ps.parameters);
                 }
             opt_paramblock
           '}'
                 {
+                  ps.propertyscope.pop();
                   ps.blockscope.pop();
                 }
         | NAME '{'
@@ -1215,10 +1231,13 @@ channeldescr
                   ps.chanspec = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.conn);
                   ps.chanspec->setName(toString(@1));
                   ps.blockscope.push(ps.chanspec);
+                  ps.parameters = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.chanspec);
+                  ps.propertyscope.push(ps.parameters);
                 }
             opt_paramblock
           '}'
                 {
+                  ps.propertyscope.pop();
                   ps.blockscope.pop();
                 }
         | likephrase '{'
@@ -1226,16 +1245,14 @@ channeldescr
                   ps.chanspec = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.conn);
                   ps.chanspec->setName(toString(@1));
                   ps.blockscope.push(ps.chanspec);
+                  ps.parameters = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.chanspec);
+                  ps.propertyscope.push(ps.parameters);
                 }
             opt_paramblock
           '}'
                 {
+                  ps.propertyscope.pop();
                   ps.blockscope.pop();
-                }
-        | likephrase
-                {
-                  ps.chanspec = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.conn);
-                  ps.chanspec->setName(toString(@1));
                 }
         ;
 
