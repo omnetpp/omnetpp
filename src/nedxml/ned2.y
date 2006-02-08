@@ -90,7 +90,9 @@ struct ParserState
     bool storeSourceCode;
     bool inLoop;
     bool inTypes;
-    std::stack<NEDElement *> propertyctx;  // top(): where to insert properties as we parse them
+    std::stack<NEDElement *> propertyscope; // top(): where to insert properties as we parse them
+    std::stack<NEDElement *> blockscope;    // top(): where to insert parameters, gates, etc
+    std::stack<NEDElement *> typescope;     // top(): as blockscope, but ignore submodules and connection channels
 
     /* tmp flags, used with param */
     int paramType;
@@ -122,6 +124,7 @@ struct ParserState
     SubmoduleNode *submod;
     ConnectionsNode *conns;
     ConnectionNode *conn;
+    ChannelNode *chanspec;
     ConnectionGroupNode *conngroup;
     LoopNode *loop;
     ConditionNode *condition;
@@ -197,7 +200,7 @@ definition
         | fileproperty
                 { }
         | channeldefinition
-                { if (ps.storeSourceCode) storeComponentSourceCode(ps.component, @1); }
+                { if (ps.storeSourceCode) storeComponentSourceCode(ps.component, @1); } /*FIXME won't work!!! if there's an embedded type in it, that'll hijack ps.component */
         | channelinterfacedefinition
                 { if (ps.storeSourceCode) storeComponentSourceCode(ps.component, @1); }
         | simplemoduledefinition
@@ -273,19 +276,23 @@ fileproperty
         : property_namevalue ';'
         ;
 
-
 /*
  * Channel
  */
 channeldefinition
         : channelheader '{'
                 {
-                  ps.propertyctx.push(ps.component);
+                  ps.typescope.push(ps.component);
+                  ps.blockscope.push(ps.component);
+                  ps.parameters = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.component);
+                  ps.propertyscope.push(ps.parameters);
                 }
             opt_paramblock
           '}' opt_semicolon
                 {
-                  ps.propertyctx.pop();
+                  ps.propertyscope.pop();
+                  ps.blockscope.pop();
+                  ps.typescope.pop();
                   setTrailingComment(ps.component,@4);
                 }
         ;
@@ -341,12 +348,17 @@ likename
 channelinterfacedefinition
         : channelinterfaceheader '{'
                 {
-                  ps.propertyctx.push(ps.component);
+                  ps.typescope.push(ps.component);
+                  ps.blockscope.push(ps.component);
+                  ps.parameters = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.component);
+                  ps.propertyscope.push(ps.parameters);
                 }
             opt_paramblock
           '}' opt_semicolon
                 {
-                  ps.propertyctx.pop();
+                  ps.propertyscope.pop();
+                  ps.blockscope.pop();
+                  ps.typescope.pop();
                   setTrailingComment(ps.component,@4);
                 }
         ;
@@ -377,13 +389,18 @@ interfacenames
 simplemoduledefinition
         : simplemoduleheader '{'
                 {
-                  ps.propertyctx.push(ps.component);
+                  ps.typescope.push(ps.component);
+                  ps.blockscope.push(ps.component);
+                  ps.parameters = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.component);
+                  ps.propertyscope.push(ps.parameters);
                 }
             opt_paramblock
             opt_gateblock
           '}' opt_semicolon
                 {
-                  ps.propertyctx.pop();
+                  ps.propertyscope.pop();
+                  ps.blockscope.pop();
+                  ps.typescope.pop();
                   setTrailingComment(ps.component,@6);
                 }
         ;
@@ -404,7 +421,10 @@ simplemoduleheader
 compoundmoduledefinition
         : compoundmoduleheader '{'
                 {
-                  ps.propertyctx.push(ps.component);
+                  ps.typescope.push(ps.component);
+                  ps.blockscope.push(ps.component);
+                  ps.parameters = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.component);
+                  ps.propertyscope.push(ps.parameters);
                 }
             opt_paramblock
             opt_gateblock
@@ -413,7 +433,9 @@ compoundmoduledefinition
             opt_connblock
           '}' opt_semicolon
                 {
-                  ps.propertyctx.pop();
+                  ps.propertyscope.pop();
+                  ps.blockscope.pop();
+                  ps.typescope.pop();
                   setTrailingComment(ps.component,@9);
                 }
         ;
@@ -434,7 +456,10 @@ compoundmoduleheader
 networkdefinition
         : networkheader '{'
                 {
-                  ps.propertyctx.push(ps.component);
+                  ps.typescope.push(ps.component);
+                  ps.blockscope.push(ps.component);
+                  ps.parameters = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.component);
+                  ps.propertyscope.push(ps.parameters);
                 }
             opt_paramblock
             opt_gateblock
@@ -443,7 +468,9 @@ networkdefinition
             opt_connblock
           '}' opt_semicolon
                 {
-                  ps.propertyctx.pop();
+                  ps.propertyscope.pop();
+                  ps.blockscope.pop();
+                  ps.typescope.pop();
                   setTrailingComment(ps.component,@5);
                 }
         ;
@@ -465,13 +492,18 @@ networkheader
 moduleinterfacedefinition
         : moduleinterfaceheader '{'
                 {
-                  ps.propertyctx.push(ps.component);
+                  ps.typescope.push(ps.component);
+                  ps.blockscope.push(ps.component);
+                  ps.parameters = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.component);
+                  ps.propertyscope.push(ps.parameters);
                 }
             opt_paramblock
             opt_gateblock
           '}' opt_semicolon
                 {
-                  ps.propertyctx.pop();
+                  ps.propertyscope.pop();
+                  ps.blockscope.pop();
+                  ps.typescope.pop();
                   setTrailingComment(ps.component,@6);
                 }
         ;
@@ -497,15 +529,11 @@ opt_paramblock
 paramblock
         : PARAMETERS ':'
                 {
-                  ps.parameters = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.component);
+                  ps.parameters->setIsImplicit(false);
                   //setComments(ps.parameters,@1,@2);
                 }
           opt_params
-                {
-                }
-        | params   /* keyword is optional */ /*FIXME creation of ParametersNode!!!!*/
-                {
-                }
+        | params   /* keyword is optional */
         ;
 
 opt_params
@@ -670,7 +698,7 @@ property_namevalue
 property_name
         : '@' NAME
                 {
-                  ps.property = addProperty(ps.propertyctx.top(), toString(@2));
+                  ps.property = addProperty(ps.propertyscope.top(), toString(@2));
                 }
         ;
 
@@ -721,7 +749,7 @@ opt_gateblock
 gateblock
         : GATES ':'
                 {
-                  ps.gates = (GatesNode *)createNodeWithTag(NED_GATES, ps.component);
+                  ps.gates = (GatesNode *)createNodeWithTag(NED_GATES, ps.blockscope.top());
                   //setComments(ps.gates,@1,@2);
                 }
           opt_gates
@@ -799,7 +827,7 @@ opt_typeblock
 typeblock
         : TYPES ':'
                 {
-                  ps.types = (TypesNode *)createNodeWithTag(NED_TYPES, ps.component);
+                  ps.types = (TypesNode *)createNodeWithTag(NED_TYPES, ps.blockscope.top());
                   //setComments(ps.types,@1,@2);
                   ps.inTypes = true;
                 }
@@ -823,7 +851,7 @@ localtype
         : propertydecl
                 { /*TBD*/ }
         | channeldefinition
-                { if (ps.storeSourceCode) storeComponentSourceCode(ps.component, @1); }
+                { if (ps.storeSourceCode) storeComponentSourceCode(ps.component, @1); } /*FIXME won't work*/
         | channelinterfacedefinition
                 { if (ps.storeSourceCode) storeComponentSourceCode(ps.component, @1); }
         | simplemoduledefinition
@@ -847,7 +875,7 @@ opt_submodblock
 submodblock
         : SUBMODULES ':'
                 {
-                  ps.submods = (SubmodulesNode *)createNodeWithTag(NED_SUBMODULES, ps.component);
+                  ps.submods = (SubmodulesNode *)createNodeWithTag(NED_SUBMODULES, ps.blockscope.top());
                   //setComments(ps.submods,@1,@2);
                 }
           opt_submodules
@@ -872,11 +900,15 @@ submodule
                 }
         | submoduleheader '{'
                 {
+                  ps.blockscope.push(ps.submod);
                   //setComments(ps.submod,@1,@2);
                 }
           opt_paramblock
           opt_gateblock
           '}' opt_semicolon
+                {
+                  ps.blockscope.pop();
+                }
         ;
 
 submoduleheader
@@ -929,7 +961,7 @@ opt_connblock
 connblock
         : CONNECTIONS ALLOWUNCONNECTED ':'
                 {
-                  ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.component);
+                  ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.blockscope.top());
                   ps.conns->setCheckUnconnected(false);
                   //setComments(ps.conns,@1,@3);
                 }
@@ -938,7 +970,7 @@ connblock
                 }
         | CONNECTIONS ':'
                 {
-                  ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.component);
+                  ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.blockscope.top());
                   ps.conns->setCheckUnconnected(true);
                   //setComments(ps.conns,@1,@2);
                 }
@@ -1165,33 +1197,45 @@ opt_subgate
 channeldescr
         : NAME
                 {
-                  ps.component = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.conngroup);
-                  ((ChannelNode *)ps.component)->setName(toString(@1));
+                  ps.chanspec = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.conn);
+                  ps.chanspec->setName(toString(@1));
                 }
         | '{'
                 {
-                  ps.component = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.conngroup);
+                  ps.chanspec = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.conn);
+                  ps.blockscope.push(ps.chanspec);
                 }
             opt_paramblock
           '}'
+                {
+                  ps.blockscope.pop();
+                }
         | NAME '{'
                 {
-                  ps.component = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.conngroup);
-                  ((ChannelNode *)ps.component)->setName(toString(@1));
+                  ps.chanspec = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.conn);
+                  ps.chanspec->setName(toString(@1));
+                  ps.blockscope.push(ps.chanspec);
                 }
             opt_paramblock
           '}'
+                {
+                  ps.blockscope.pop();
+                }
         | likephrase '{'
                 {
-                  ps.component = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.conngroup);
-                  ((ChannelNode *)ps.component)->setName(toString(@1));
+                  ps.chanspec = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.conn);
+                  ps.chanspec->setName(toString(@1));
+                  ps.blockscope.push(ps.chanspec);
                 }
             opt_paramblock
           '}'
+                {
+                  ps.blockscope.pop();
+                }
         | likephrase
                 {
-                  ps.component = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.conngroup);
-                  ((ChannelNode *)ps.component)->setName(toString(@1));
+                  ps.chanspec = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.conn);
+                  ps.chanspec->setName(toString(@1));
                 }
         ;
 
@@ -1415,7 +1459,7 @@ int runparse (NEDParser *p,NedFileNode *nf,bool parseexpr, bool storesrc, const 
     ps.nedfile = nf;
     ps.parseExpressions = parseexpr;
     ps.storeSourceCode = storesrc;
-    ps.propertyctx.push(ps.nedfile);
+    ps.propertyscope.push(ps.nedfile);
     sourcefilename = sourcefname;
 
     if (storesrc)
@@ -1432,8 +1476,10 @@ int runparse (NEDParser *p,NedFileNode *nf,bool parseexpr, bool storesrc, const 
     }
 
     // more sanity checks
-    if (ps.propertyctx.size()!=1 || ps.propertyctx.top()!=ps.nedfile)
-        NEDError(NULL, "internal error while parsing: imbalanced propertyctx");
+    if (ps.propertyscope.size()!=1 || ps.propertyscope.top()!=ps.nedfile)
+        NEDError(NULL, "internal error while parsing: imbalanced propertyscope");
+    if (!ps.blockscope.empty() || !ps.typescope.empty())
+        NEDError(NULL, "internal error while parsing: imbalanced blockscope or typescope");
 
     return ret;
 }
