@@ -174,6 +174,8 @@ void NEDDTDValidator::validateElement(ParamNode *node)
     checkEnumeratedAttribute(node, "is-function", vals1, sizeof(vals1)/sizeof(const char *));
     checkRequiredAttribute(node, "name");
     checkNameAttribute(node, "name");
+    const char *vals4[] = {"true","false"};
+    checkEnumeratedAttribute(node, "is-default", vals4, sizeof(vals4)/sizeof(const char *));
 }
 
 void NEDDTDValidator::validateElement(PatternNode *node)
@@ -184,6 +186,8 @@ void NEDDTDValidator::validateElement(PatternNode *node)
 
     checkRequiredAttribute(node, "pattern");
     checkRequiredAttribute(node, "value");
+    const char *vals2[] = {"true","false"};
+    checkEnumeratedAttribute(node, "is-default", vals2, sizeof(vals2)/sizeof(const char *));
 }
 
 void NEDDTDValidator::validateElement(PropertyNode *node)

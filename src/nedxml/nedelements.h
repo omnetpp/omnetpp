@@ -811,7 +811,8 @@ class ParamGroupNode : public NEDElement
  *      type               (double|int|string|bool|xml) #IMPLIED
  *      is-function        (true|false)  "false"
  *      name               NMTOKEN   #REQUIRED
- *      value              CDATA     #IMPLIED>
+ *      value              CDATA     #IMPLIED
+ *      is-default         (true|false)  "false">
  * </pre>
  * 
  * @ingroup Data
@@ -823,6 +824,7 @@ class ParamNode : public NEDElement
     bool isFunction;
     std::string name;
     std::string value;
+    bool isDefault;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -852,6 +854,8 @@ class ParamNode : public NEDElement
     void setName(const char * val)  {name = val;}
     const char * getValue() const  {return value.c_str();}
     void setValue(const char * val)  {value = val;}
+    bool getIsDefault() const  {return isDefault;}
+    void setIsDefault(bool val)  {isDefault = val;}
 
     virtual ParamNode *getNextParamNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
@@ -867,7 +871,8 @@ class ParamNode : public NEDElement
  * <!ELEMENT pattern (whitespace*, expression?, property*)>
  * <!ATTLIST pattern
  *      pattern            CDATA     #REQUIRED
- *      value              CDATA     #REQUIRED>
+ *      value              CDATA     #REQUIRED
+ *      is-default         (true|false)  "false">
  * </pre>
  * 
  * @ingroup Data
@@ -877,6 +882,7 @@ class PatternNode : public NEDElement
   private:
     std::string pattern;
     std::string value;
+    bool isDefault;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -902,6 +908,8 @@ class PatternNode : public NEDElement
     void setPattern(const char * val)  {pattern = val;}
     const char * getValue() const  {return value.c_str();}
     void setValue(const char * val)  {value = val;}
+    bool getIsDefault() const  {return isDefault;}
+    void setIsDefault(bool val)  {isDefault = val;}
 
     virtual PatternNode *getNextPatternNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;

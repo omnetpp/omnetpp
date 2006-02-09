@@ -896,7 +896,7 @@ void ParamNode::setType(int val)
 
 int ParamNode::getNumAttributes() const
 {
-    return 4;
+    return 5;
 }
 
 const char *ParamNode::getAttributeName(int k) const
@@ -906,6 +906,7 @@ const char *ParamNode::getAttributeName(int k) const
         case 1: return "is-function";
         case 2: return "name";
         case 3: return "value";
+        case 4: return "is-default";
         default: return 0;
     }
 }
@@ -917,6 +918,7 @@ const char *ParamNode::getAttribute(int k) const
         case 1: return boolToString(isFunction);
         case 2: return name.c_str();
         case 3: return value.c_str();
+        case 4: return boolToString(isDefault);
         default: return 0;
     }
 }
@@ -928,6 +930,7 @@ void ParamNode::setAttribute(int k, const char *val)
         case 1: isFunction = stringToBool(val); break;
         case 2: name = val; break;
         case 3: value = val; break;
+        case 4: isDefault = stringToBool(val); break;
         default: ;
     }
 }
@@ -939,6 +942,7 @@ const char *ParamNode::getAttributeDefault(int k) const
         case 1: return "false";
         case 2: return "";
         case 3: return "";
+        case 4: return "false";
         default: return 0;
     }
 }
@@ -965,7 +969,7 @@ PropertyNode *ParamNode::getFirstPropertyChild() const
 
 int PatternNode::getNumAttributes() const
 {
-    return 2;
+    return 3;
 }
 
 const char *PatternNode::getAttributeName(int k) const
@@ -973,6 +977,7 @@ const char *PatternNode::getAttributeName(int k) const
     switch (k) {
         case 0: return "pattern";
         case 1: return "value";
+        case 2: return "is-default";
         default: return 0;
     }
 }
@@ -982,6 +987,7 @@ const char *PatternNode::getAttribute(int k) const
     switch (k) {
         case 0: return pattern.c_str();
         case 1: return value.c_str();
+        case 2: return boolToString(isDefault);
         default: return 0;
     }
 }
@@ -991,6 +997,7 @@ void PatternNode::setAttribute(int k, const char *val)
     switch (k) {
         case 0: pattern = val; break;
         case 1: value = val; break;
+        case 2: isDefault = stringToBool(val); break;
         default: ;
     }
 }
@@ -1000,6 +1007,7 @@ const char *PatternNode::getAttributeDefault(int k) const
     switch (k) {
         case 0: return "";
         case 1: return "";
+        case 2: return "false";
         default: return 0;
     }
 }

@@ -97,6 +97,7 @@ struct ParserState
     /* tmp flags, used with param */
     int paramType;
     bool isFunction;
+    bool isDefault;
 
     /* tmp flags, used with msg fields */
     bool isAbstract;
@@ -600,26 +601,30 @@ param_typenamevalue
                   ps.param->setType(ps.paramType);
                   ps.param->setIsFunction(ps.isFunction);
                   addExpression(ps.param, "value",@5,$5);
+                  ps.param->setIsDefault(ps.isDefault);
                 }
         | NAME '=' paramvalue
                 {
                   ps.param = addParameter(ps.parameters, @1);
                   addExpression(ps.param, "value",@3,$3);
+                  ps.param->setIsDefault(ps.isDefault);
                 }
         | NAME
                 {
                   ps.param = addParameter(ps.parameters, @1);
                 }
-        | TYPENAME '=' paramvalue
+        | TYPENAME '=' paramvalue  /* this is to assign module type with the "<> like Foo" syntax */
                 {
                   ps.param = addParameter(ps.parameters, @1);
                   addExpression(ps.param, "value",@3,$3);
+                  ps.param->setIsDefault(ps.isDefault);
                 }
         | '/' pattern '/' '=' paramvalue
                 {
                   ps.pattern = (PatternNode *)createNodeWithTag(NED_PATTERN, ps.parameters);
                   ps.pattern->setPattern(toString(@2));
                   addExpression(ps.pattern, "value",@5,$5);
+                  ps.pattern->setIsDefault(ps.isDefault);
                 }
 
 paramtype
@@ -644,9 +649,9 @@ opt_function
 
 paramvalue
         : expression
-                { $$ = $1; }
+                { $$ = $1; ps.isDefault = false; }
         | DEFAULT '(' expression ')'
-                { $$ = $3; /*FIXME signal it's DEFAULT!!! */}
+                { $$ = $3; ps.isDefault = true; }
         ;
 
 opt_inline_properties
