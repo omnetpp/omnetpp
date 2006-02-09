@@ -81,6 +81,8 @@
       <plugin id="org.omnetpp.ned.model"/>
       <plugin id="org.omnetpp.ned.model.editor"/>
       <plugin id="org.omnetpp.ned.provider"/>
+      <plugin id="org.omnetpp.scave"/>
+      <plugin id="org.omnetpp.scave.engine"/>
    </plugins>
 
 </product>

@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Scave Processing Engine
+Bundle-SymbolicName: org.omnetpp.scave.engine
+Bundle-Version: 4.0.0
+Bundle-Localization: plugin
+Bundle-Vendor: OpenSim Ltd.
+Bundle-ClassPath: .
+Export-Package: org.omnetpp.scave.engine
+Eclipse-LazyStart: true

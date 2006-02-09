@@ -80,7 +80,7 @@ public class ScalarChartEditor extends DatasetEditor {
 		CategoryItemRenderer categoryitemrenderer = categoryplot.getRenderer();
 		categoryitemrenderer.setItemLabelsVisible(true);
 		BarRenderer barrenderer = (BarRenderer)categoryitemrenderer;
-		barrenderer.setMaxBarWidth(0.05D);
+		barrenderer.setMaximumBarWidth(0.05D);
 		return jfreechart;
 	}
 

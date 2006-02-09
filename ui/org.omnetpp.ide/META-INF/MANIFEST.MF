@@ -8,9 +8,5 @@ Bundle-Vendor: OpenSim Ltd.
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.omnetpp.ned.editor.text,
- org.omnetpp.ned.editor.graph,
- org.omnetpp.ned.model,
- org.omnetpp.ned.model.editor,
- org.omnetpp.ned.provider
+ org.omnetpp.ned.model.editor
 Eclipse-LazyStart: true
