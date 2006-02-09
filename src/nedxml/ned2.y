@@ -110,7 +110,6 @@ struct ParserState
     ExtendsNode *extends;
     InterfaceNameNode *interfacename;
     NEDElement *component;  // compound/simple module, module interface, channel or channel interface
-        // ^^^^ FIXME this is wrong, because of embedded types!!!
     ParametersNode *parameters;
     ParamGroupNode *paramgroup;
     ParamNode *param;
@@ -124,7 +123,7 @@ struct ParserState
     SubmoduleNode *submod;
     ConnectionsNode *conns;
     ConnectionNode *conn;
-    ChannelNode *chanspec;
+    ChannelSpecNode *chanspec;
     ConnectionGroupNode *conngroup;
     LoopNode *loop;
     ConditionNode *condition;
@@ -525,7 +524,7 @@ opt_paramblock
         : opt_params   /* "parameters" keyword is optional */
         | PARAMETERS ':'
                 {
-                  ps.parameters->setIsImplicit(false);
+                  ps.parameters->setIsImplicit(false);  /* FIXME flip the default in the dtd? is-EXplicit=false lenne a default? */
                 }
           opt_params
         ;
@@ -970,7 +969,7 @@ connblock
         : CONNECTIONS ALLOWUNCONNECTED ':'
                 {
                   ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.blockscope.top());
-                  ps.conns->setCheckUnconnected(false);
+                  ps.conns->setAllowUnconnected(true);
                   //setComments(ps.conns,@1,@3);
                 }
           opt_connections
@@ -979,7 +978,6 @@ connblock
         | CONNECTIONS ':'
                 {
                   ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.blockscope.top());
-                  ps.conns->setCheckUnconnected(true);
                   //setComments(ps.conns,@1,@2);
                 }
           opt_connections
@@ -1055,24 +1053,24 @@ loop
 connection
         : leftgatespec RIGHTARROW rightgatespec
                 {
-                  ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
+                  ps.conn->setArrowDirection(NED_ARROWDIR_L2R);
                   //setComments(ps.conn,@1,@3);
                 }
         | leftgatespec RIGHTARROW channelspec RIGHTARROW rightgatespec
                 {
-                  ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
+                  ps.conn->setArrowDirection(NED_ARROWDIR_L2R);
                   //setComments(ps.conn,@1,@5);
                 }
         | leftgatespec LEFTARROW rightgatespec
                 {
                   swapConnection(ps.conn);
-                  ps.conn->setArrowDirection(NED_ARROWDIR_LEFT);
+                  ps.conn->setArrowDirection(NED_ARROWDIR_R2L);
                   //setComments(ps.conn,@1,@3);
                 }
         | leftgatespec LEFTARROW channelspec LEFTARROW rightgatespec
                 {
                   swapConnection(ps.conn);
-                  ps.conn->setArrowDirection(NED_ARROWDIR_LEFT);
+                  ps.conn->setArrowDirection(NED_ARROWDIR_R2L);
                   //setComments(ps.conn,@1,@5);
                 }
         | leftgatespec DBLARROW rightgatespec
@@ -1221,17 +1219,17 @@ channelspec
 channelspec_header
         :
                 {
-                  ps.chanspec = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.conn);
+                  ps.chanspec = (ChannelSpecNode *)createNodeWithTag(NED_CHANNEL_SPEC, ps.conn);
                 }
         | NAME
                 {
-                  ps.chanspec = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.conn);
-                  ps.chanspec->setName(toString(@1));
+                  ps.chanspec = (ChannelSpecNode *)createNodeWithTag(NED_CHANNEL_SPEC, ps.conn);
+                  ps.chanspec->setType(toString(@1));
                 }
         | likephrase
                 {
-                  ps.chanspec = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.conn);
-                  ps.chanspec->setName(toString(@1));
+                  ps.chanspec = (ChannelSpecNode *)createNodeWithTag(NED_CHANNEL_SPEC, ps.conn);
+                  ps.chanspec->setType(toString(@1));
                 }
         ;
 

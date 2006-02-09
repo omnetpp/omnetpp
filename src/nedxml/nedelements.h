@@ -32,6 +32,8 @@ class InterfaceNameNode;
 class SimpleModuleNode;
 class ModuleInterfaceNode;
 class CompoundModuleNode;
+class ChannelInterfaceNode;
+class ChannelNode;
 class ParametersNode;
 class ParamGroupNode;
 class ParamNode;
@@ -46,8 +48,7 @@ class SubmodulesNode;
 class SubmoduleNode;
 class ConnectionsNode;
 class ConnectionNode;
-class ChannelInterfaceNode;
-class ChannelNode;
+class ChannelSpecNode;
 class ConnectionGroupNode;
 class LoopNode;
 class ConditionNode;
@@ -92,6 +93,8 @@ enum NEDElementCode {
     NED_SIMPLE_MODULE,
     NED_MODULE_INTERFACE,
     NED_COMPOUND_MODULE,
+    NED_CHANNEL_INTERFACE,
+    NED_CHANNEL,
     NED_PARAMETERS,
     NED_PARAM_GROUP,
     NED_PARAM,
@@ -106,8 +109,7 @@ enum NEDElementCode {
     NED_SUBMODULE,
     NED_CONNECTIONS,
     NED_CONNECTION,
-    NED_CHANNEL_INTERFACE,
-    NED_CHANNEL,
+    NED_CHANNEL_SPEC,
     NED_CONNECTION_GROUP,
     NED_LOOP,
     NED_CONDITION,
@@ -136,7 +138,7 @@ enum NEDElementCode {
 };
 
 enum {NED_GATEDIR_INPUT, NED_GATEDIR_OUTPUT, NED_GATEDIR_INOUT};
-enum {NED_ARROWDIR_LEFT, NED_ARROWDIR_RIGHT, NED_ARROWDIR_BIDIR};
+enum {NED_ARROWDIR_R2L, NED_ARROWDIR_L2R, NED_ARROWDIR_BIDIR};
 enum {NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};
 enum {NED_CONST_DOUBLE, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_UNIT};
 enum {NED_SUBGATE_I, NED_SUBGATE_O, NED_SUBGATE_BOTH};
@@ -612,6 +614,99 @@ class CompoundModuleNode : public NEDElement
     virtual TypesNode *getFirstTypesChild() const;
     virtual SubmodulesNode *getFirstSubmodulesChild() const;
     virtual ConnectionsNode *getFirstConnectionsChild() const;
+    //@}
+};
+
+/**
+ * GENERATED CLASS. Represents the &lt;channel-interface&gt; XML element in memory. DTD declaration:
+ * 
+ * <pre>
+ * <!ELEMENT channel-interface (whitespace*, extends*, parameters?)>
+ * <!ATTLIST channel-interface
+ *      name                NMTOKEN   #REQUIRED>
+ * </pre>
+ * 
+ * @ingroup Data
+ */
+class ChannelInterfaceNode : public NEDElement
+{
+  private:
+    std::string name;
+  public:
+    /** @name Constructors, destructor */
+    //@{
+    ChannelInterfaceNode() {applyDefaults();}
+    ChannelInterfaceNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~ChannelInterfaceNode() {}
+    //@}
+
+    /** @name Redefined NEDElement methods, incl. generic access to attributes */
+    //@{
+    virtual const char *getTagName() const {return "channel-interface";}
+    virtual int getTagCode() const {return NED_CHANNEL_INTERFACE;}
+    virtual int getNumAttributes() const;
+    virtual const char *getAttributeName(int k) const;
+    virtual const char *getAttribute(int k) const;
+    virtual void setAttribute(int k, const char *val);
+    virtual const char *getAttributeDefault(int k) const;
+    //@}
+
+    /** @name Typed access to attributes, children and siblings */
+    //@{
+    const char * getName() const  {return name.c_str();}
+    void setName(const char * val)  {name = val;}
+
+    virtual ChannelInterfaceNode *getNextChannelInterfaceNodeSibling() const;
+    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual ExtendsNode *getFirstExtendsChild() const;
+    virtual ParametersNode *getFirstParametersChild() const;
+    //@}
+};
+
+/**
+ * GENERATED CLASS. Represents the &lt;channel&gt; XML element in memory. DTD declaration:
+ * 
+ * <pre>
+ * <!ELEMENT channel (whitespace*, extends?, interface-name*, parameters?)>
+ * <!ATTLIST channel
+ *      name                NMTOKEN   #REQUIRED>
+ * </pre>
+ * 
+ * @ingroup Data
+ */
+class ChannelNode : public NEDElement
+{
+  private:
+    std::string name;
+  public:
+    /** @name Constructors, destructor */
+    //@{
+    ChannelNode() {applyDefaults();}
+    ChannelNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~ChannelNode() {}
+    //@}
+
+    /** @name Redefined NEDElement methods, incl. generic access to attributes */
+    //@{
+    virtual const char *getTagName() const {return "channel";}
+    virtual int getTagCode() const {return NED_CHANNEL;}
+    virtual int getNumAttributes() const;
+    virtual const char *getAttributeName(int k) const;
+    virtual const char *getAttribute(int k) const;
+    virtual void setAttribute(int k, const char *val);
+    virtual const char *getAttributeDefault(int k) const;
+    //@}
+
+    /** @name Typed access to attributes, children and siblings */
+    //@{
+    const char * getName() const  {return name.c_str();}
+    void setName(const char * val)  {name = val;}
+
+    virtual ChannelNode *getNextChannelNodeSibling() const;
+    virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual ExtendsNode *getFirstExtendsChild() const;
+    virtual InterfaceNameNode *getFirstInterfaceNameChild() const;
+    virtual ParametersNode *getFirstParametersChild() const;
     //@}
 };
 
@@ -1210,7 +1305,7 @@ class SubmoduleNode : public NEDElement
  * <pre>
  * <!ELEMENT connections (whitespace*, (connection|connection-group)*)>
  * <!ATTLIST connections
- *      check-unconnected (true|false) "true">
+ *      allow-unconnected (true|false) "false">
  * </pre>
  * 
  * @ingroup Data
@@ -1218,7 +1313,7 @@ class SubmoduleNode : public NEDElement
 class ConnectionsNode : public NEDElement
 {
   private:
-    bool checkUnconnected;
+    bool allowUnconnected;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -1240,8 +1335,8 @@ class ConnectionsNode : public NEDElement
 
     /** @name Typed access to attributes, children and siblings */
     //@{
-    bool getCheckUnconnected() const  {return checkUnconnected;}
-    void setCheckUnconnected(bool val)  {checkUnconnected = val;}
+    bool getAllowUnconnected() const  {return allowUnconnected;}
+    void setAllowUnconnected(bool val)  {allowUnconnected = val;}
 
     virtual ConnectionsNode *getNextConnectionsNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
@@ -1254,9 +1349,8 @@ class ConnectionsNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;connection&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT connection (whitespace*, expression*, parameters?)>
+ * <!ELEMENT connection (whitespace*, expression*, channel-spec?)>
  * <!ATTLIST connection
- *      channel-name        NMTOKEN   #IMPLIED
  *      src-module          NMTOKEN   #IMPLIED
  *      src-module-index    CDATA     #IMPLIED
  *      src-gate            NMTOKEN   #REQUIRED
@@ -1277,7 +1371,6 @@ class ConnectionsNode : public NEDElement
 class ConnectionNode : public NEDElement
 {
   private:
-    std::string channelName;
     std::string srcModule;
     std::string srcModuleIndex;
     std::string srcGate;
@@ -1312,8 +1405,6 @@ class ConnectionNode : public NEDElement
 
     /** @name Typed access to attributes, children and siblings */
     //@{
-    const char * getChannelName() const  {return channelName.c_str();}
-    void setChannelName(const char * val)  {channelName = val;}
     const char * getSrcModule() const  {return srcModule.c_str();}
     void setSrcModule(const char * val)  {srcModule = val;}
     const char * getSrcModuleIndex() const  {return srcModuleIndex.c_str();}
@@ -1344,37 +1435,41 @@ class ConnectionNode : public NEDElement
     virtual ConnectionNode *getNextConnectionNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
     virtual ExpressionNode *getFirstExpressionChild() const;
-    virtual ParametersNode *getFirstParametersChild() const;
+    virtual ChannelSpecNode *getFirstChannelSpecChild() const;
     //@}
 };
 
 /**
- * GENERATED CLASS. Represents the &lt;channel-interface&gt; XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;channel-spec&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT channel-interface (whitespace*, extends*, parameters?)>
- * <!ATTLIST channel-interface
- *      name                NMTOKEN   #REQUIRED>
+ * <!ELEMENT channel-spec (whitespace*, expression*, parameters?)>
+ * <!ATTLIST channel-spec
+ *      type               NMTOKEN   #IMPLIED
+ *      like-type          NMTOKEN   #IMPLIED
+ *      like-param         CDATA     #IMPLIED>
  * </pre>
  * 
  * @ingroup Data
  */
-class ChannelInterfaceNode : public NEDElement
+class ChannelSpecNode : public NEDElement
 {
   private:
-    std::string name;
+    std::string type;
+    std::string likeType;
+    std::string likeParam;
   public:
     /** @name Constructors, destructor */
     //@{
-    ChannelInterfaceNode() {applyDefaults();}
-    ChannelInterfaceNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~ChannelInterfaceNode() {}
+    ChannelSpecNode() {applyDefaults();}
+    ChannelSpecNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~ChannelSpecNode() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
-    virtual const char *getTagName() const {return "channel-interface";}
-    virtual int getTagCode() const {return NED_CHANNEL_INTERFACE;}
+    virtual const char *getTagName() const {return "channel-spec";}
+    virtual int getTagCode() const {return NED_CHANNEL_SPEC;}
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
@@ -1384,59 +1479,16 @@ class ChannelInterfaceNode : public NEDElement
 
     /** @name Typed access to attributes, children and siblings */
     //@{
-    const char * getName() const  {return name.c_str();}
-    void setName(const char * val)  {name = val;}
+    const char * getType() const  {return type.c_str();}
+    void setType(const char * val)  {type = val;}
+    const char * getLikeType() const  {return likeType.c_str();}
+    void setLikeType(const char * val)  {likeType = val;}
+    const char * getLikeParam() const  {return likeParam.c_str();}
+    void setLikeParam(const char * val)  {likeParam = val;}
 
-    virtual ChannelInterfaceNode *getNextChannelInterfaceNodeSibling() const;
+    virtual ChannelSpecNode *getNextChannelSpecNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
-    virtual ExtendsNode *getFirstExtendsChild() const;
-    virtual ParametersNode *getFirstParametersChild() const;
-    //@}
-};
-
-/**
- * GENERATED CLASS. Represents the &lt;channel&gt; XML element in memory. DTD declaration:
- * 
- * <pre>
- * <!ELEMENT channel (whitespace*, extends?, interface-name*, parameters?)>
- * <!ATTLIST channel
- *      name                NMTOKEN   #REQUIRED>
- * </pre>
- * 
- * @ingroup Data
- */
-class ChannelNode : public NEDElement
-{
-  private:
-    std::string name;
-  public:
-    /** @name Constructors, destructor */
-    //@{
-    ChannelNode() {applyDefaults();}
-    ChannelNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~ChannelNode() {}
-    //@}
-
-    /** @name Redefined NEDElement methods, incl. generic access to attributes */
-    //@{
-    virtual const char *getTagName() const {return "channel";}
-    virtual int getTagCode() const {return NED_CHANNEL;}
-    virtual int getNumAttributes() const;
-    virtual const char *getAttributeName(int k) const;
-    virtual const char *getAttribute(int k) const;
-    virtual void setAttribute(int k, const char *val);
-    virtual const char *getAttributeDefault(int k) const;
-    //@}
-
-    /** @name Typed access to attributes, children and siblings */
-    //@{
-    const char * getName() const  {return name.c_str();}
-    void setName(const char * val)  {name = val;}
-
-    virtual ChannelNode *getNextChannelNodeSibling() const;
-    virtual WhitespaceNode *getFirstWhitespaceChild() const;
-    virtual ExtendsNode *getFirstExtendsChild() const;
-    virtual InterfaceNameNode *getFirstInterfaceNameChild() const;
+    virtual ExpressionNode *getFirstExpressionChild() const;
     virtual ParametersNode *getFirstParametersChild() const;
     //@}
 };

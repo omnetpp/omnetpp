@@ -1968,14 +1968,14 @@ case 141:
 case 145:
 #line 867 "ned.y"
 {
-                  ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
+                  ps.conn->setArrowDirection(NED_ARROWDIR_L2R);
                   setComments(ps.conn,yylsp[-5],yylsp[-1]);
                 ;
     break;}
 case 146:
 #line 872 "ned.y"
 {
-                  ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
+                  ps.conn->setArrowDirection(NED_ARROWDIR_L2R);
                   setComments(ps.conn,yylsp[-7],yylsp[-1]);
                 ;
     break;}
@@ -1983,7 +1983,7 @@ case 147:
 #line 877 "ned.y"
 {
                   swapConnection(ps.conn);
-                  ps.conn->setArrowDirection(NED_ARROWDIR_LEFT);
+                  ps.conn->setArrowDirection(NED_ARROWDIR_R2L);
                   setComments(ps.conn,yylsp[-5],yylsp[-1]);
                 ;
     break;}
@@ -1991,7 +1991,7 @@ case 148:
 #line 883 "ned.y"
 {
                   swapConnection(ps.conn);
-                  ps.conn->setArrowDirection(NED_ARROWDIR_LEFT);
+                  ps.conn->setArrowDirection(NED_ARROWDIR_R2L);
                   setComments(ps.conn,yylsp[-7],yylsp[-1]);
                 ;
     break;}

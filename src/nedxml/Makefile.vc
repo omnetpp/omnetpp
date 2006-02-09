@@ -128,11 +128,23 @@ cppmsggenerator.obj: cppmsggenerator.cc \
   nedelement.h \
   cppexprgenerator.h \
   nedcompiler.h
+lex.ned2yy.obj: lex.ned2yy.cc \
+  ./unistd.h \
+  nedgrammar.h \
+  ned2.tab.h
 lex.yy.obj: lex.yy.cc \
   ./unistd.h \
   nedgrammar.h \
   ned.tab.h
 ned.tab.obj: ned.tab.cc \
+  nedgrammar.h \
+  nederror.h \
+  nedparser.h \
+  nedfilebuffer.h \
+  nedelements.h \
+  nedutil.h \
+  nedelement.h
+ned2.tab.obj: ned2.tab.cc \
   nedgrammar.h \
   nederror.h \
   nedparser.h \
@@ -156,19 +168,21 @@ nedcompiler.obj: nedcompiler.cc \
   nedelement.h \
   nedelements.h \
   nedgrammar.h \
+  neddtdvalidatorbase.h \
   nedvalidator.h
 neddtdvalidator.obj: neddtdvalidator.cc \
   nederror.h \
   neddtdvalidator.h \
   nedelement.h \
   nedelements.h \
+  neddtdvalidatorbase.h \
   nedvalidator.h
 neddtdvalidatorbase.obj: neddtdvalidatorbase.cc \
   nederror.h \
-  neddtdvalidator.h \
+  neddtdvalidatorbase.h \
   nedelement.h \
-  nedelements.h \
-  nedvalidator.h
+  nedvalidator.h \
+  nedelements.h
 nedelement.obj: nedelement.cc \
   nedelement.h \
   nederror.h
@@ -231,6 +245,20 @@ saxparser_none.obj: saxparser_none.cc \
   nederror.h \
   saxparser.h \
   nedelement.h
+tmp_nedtool.obj: tmp_nedtool.cc \
+  nedparser.h \
+  nederror.h \
+  nedxmlparser.h \
+  neddtdvalidator.h \
+  nedbasicvalidator.h \
+  nedsemanticvalidator.h \
+  xmlgenerator.h \
+  ../utils/ver.h \
+  nedgrammar.h \
+  nedelement.h \
+  nedelements.h \
+  neddtdvalidatorbase.h \
+  nedvalidator.h
 xmlgenerator.obj: xmlgenerator.cc \
   nedelements.h \
   xmlgenerator.h \

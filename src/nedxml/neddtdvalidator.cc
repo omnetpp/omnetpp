@@ -119,6 +119,26 @@ void NEDDTDValidator::validateElement(CompoundModuleNode *node)
     checkEnumeratedAttribute(node, "is-network", vals1, sizeof(vals1)/sizeof(const char *));
 }
 
+void NEDDTDValidator::validateElement(ChannelInterfaceNode *node)
+{
+    int tags[] = {NED_WHITESPACE,NED_EXTENDS,NED_PARAMETERS, NED_NULL};
+    char mult[] = {'*','*','?', 0};
+    checkSequence(node, tags, mult);
+
+    checkRequiredAttribute(node, "name");
+    checkNameAttribute(node, "name");
+}
+
+void NEDDTDValidator::validateElement(ChannelNode *node)
+{
+    int tags[] = {NED_WHITESPACE,NED_EXTENDS,NED_INTERFACE_NAME,NED_PARAMETERS, NED_NULL};
+    char mult[] = {'*','?','*','?', 0};
+    checkSequence(node, tags, mult);
+
+    checkRequiredAttribute(node, "name");
+    checkNameAttribute(node, "name");
+}
+
 void NEDDTDValidator::validateElement(ParametersNode *node)
 {
     Choice choices[] = {
@@ -258,53 +278,42 @@ void NEDDTDValidator::validateElement(ConnectionsNode *node)
     checkSeqOfChoices(node, choices, sizeof(choices)/sizeof(Choice));
 
     const char *vals0[] = {"true","false"};
-    checkEnumeratedAttribute(node, "check-unconnected", vals0, sizeof(vals0)/sizeof(const char *));
+    checkEnumeratedAttribute(node, "allow-unconnected", vals0, sizeof(vals0)/sizeof(const char *));
 }
 
 void NEDDTDValidator::validateElement(ConnectionNode *node)
+{
+    int tags[] = {NED_WHITESPACE,NED_EXPRESSION,NED_CHANNEL_SPEC, NED_NULL};
+    char mult[] = {'*','*','?', 0};
+    checkSequence(node, tags, mult);
+
+    checkNameAttribute(node, "src-module");
+    checkRequiredAttribute(node, "src-gate");
+    checkNameAttribute(node, "src-gate");
+    const char *vals3[] = {"true","false"};
+    checkEnumeratedAttribute(node, "src-gate-plusplus", vals3, sizeof(vals3)/sizeof(const char *));
+    const char *vals5[] = {"i","o"};
+    checkEnumeratedAttribute(node, "src-gate-subg", vals5, sizeof(vals5)/sizeof(const char *));
+    checkNameAttribute(node, "dest-module");
+    checkRequiredAttribute(node, "dest-gate");
+    checkNameAttribute(node, "dest-gate");
+    const char *vals9[] = {"true","false"};
+    checkEnumeratedAttribute(node, "dest-gate-plusplus", vals9, sizeof(vals9)/sizeof(const char *));
+    const char *vals11[] = {"i","o"};
+    checkEnumeratedAttribute(node, "dest-gate-subg", vals11, sizeof(vals11)/sizeof(const char *));
+    checkRequiredAttribute(node, "arrow-direction");
+    const char *vals12[] = {"l2r","r2l","bidir"};
+    checkEnumeratedAttribute(node, "arrow-direction", vals12, sizeof(vals12)/sizeof(const char *));
+}
+
+void NEDDTDValidator::validateElement(ChannelSpecNode *node)
 {
     int tags[] = {NED_WHITESPACE,NED_EXPRESSION,NED_PARAMETERS, NED_NULL};
     char mult[] = {'*','*','?', 0};
     checkSequence(node, tags, mult);
 
-    checkNameAttribute(node, "channel-name");
-    checkNameAttribute(node, "src-module");
-    checkRequiredAttribute(node, "src-gate");
-    checkNameAttribute(node, "src-gate");
-    const char *vals4[] = {"true","false"};
-    checkEnumeratedAttribute(node, "src-gate-plusplus", vals4, sizeof(vals4)/sizeof(const char *));
-    const char *vals6[] = {"i","o"};
-    checkEnumeratedAttribute(node, "src-gate-subg", vals6, sizeof(vals6)/sizeof(const char *));
-    checkNameAttribute(node, "dest-module");
-    checkRequiredAttribute(node, "dest-gate");
-    checkNameAttribute(node, "dest-gate");
-    const char *vals10[] = {"true","false"};
-    checkEnumeratedAttribute(node, "dest-gate-plusplus", vals10, sizeof(vals10)/sizeof(const char *));
-    const char *vals12[] = {"i","o"};
-    checkEnumeratedAttribute(node, "dest-gate-subg", vals12, sizeof(vals12)/sizeof(const char *));
-    checkRequiredAttribute(node, "arrow-direction");
-    const char *vals13[] = {"l2r","r2l","bidir"};
-    checkEnumeratedAttribute(node, "arrow-direction", vals13, sizeof(vals13)/sizeof(const char *));
-}
-
-void NEDDTDValidator::validateElement(ChannelInterfaceNode *node)
-{
-    int tags[] = {NED_WHITESPACE,NED_EXTENDS,NED_PARAMETERS, NED_NULL};
-    char mult[] = {'*','*','?', 0};
-    checkSequence(node, tags, mult);
-
-    checkRequiredAttribute(node, "name");
-    checkNameAttribute(node, "name");
-}
-
-void NEDDTDValidator::validateElement(ChannelNode *node)
-{
-    int tags[] = {NED_WHITESPACE,NED_EXTENDS,NED_INTERFACE_NAME,NED_PARAMETERS, NED_NULL};
-    char mult[] = {'*','?','*','?', 0};
-    checkSequence(node, tags, mult);
-
-    checkRequiredAttribute(node, "name");
-    checkNameAttribute(node, "name");
+    checkNMTokenAttribute(node, "type");
+    checkNMTokenAttribute(node, "like-type");
 }
 
 void NEDDTDValidator::validateElement(ConnectionGroupNode *node)

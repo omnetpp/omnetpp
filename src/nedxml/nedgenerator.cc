@@ -512,7 +512,7 @@ void NEDGenerator::doConnection(ConnectionNode *node, const char *indent, bool i
     //  direction
     const char *arrow;
     bool srcfirst;
-    if (node->getArrowDirection()==NED_ARROWDIR_RIGHT) {
+    if (node->getArrowDirection()==NED_ARROWDIR_L2R) {
         arrow = " -->";
         srcfirst = true;
     } else {

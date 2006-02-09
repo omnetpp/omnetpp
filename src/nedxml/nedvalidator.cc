@@ -41,6 +41,8 @@ void  NEDValidatorBase::validateElement(NEDElement *node)
         case NED_SIMPLE_MODULE: validateElement((SimpleModuleNode *) node); break;
         case NED_MODULE_INTERFACE: validateElement((ModuleInterfaceNode *) node); break;
         case NED_COMPOUND_MODULE: validateElement((CompoundModuleNode *) node); break;
+        case NED_CHANNEL_INTERFACE: validateElement((ChannelInterfaceNode *) node); break;
+        case NED_CHANNEL: validateElement((ChannelNode *) node); break;
         case NED_PARAMETERS: validateElement((ParametersNode *) node); break;
         case NED_PARAM_GROUP: validateElement((ParamGroupNode *) node); break;
         case NED_PARAM: validateElement((ParamNode *) node); break;
@@ -55,8 +57,7 @@ void  NEDValidatorBase::validateElement(NEDElement *node)
         case NED_SUBMODULE: validateElement((SubmoduleNode *) node); break;
         case NED_CONNECTIONS: validateElement((ConnectionsNode *) node); break;
         case NED_CONNECTION: validateElement((ConnectionNode *) node); break;
-        case NED_CHANNEL_INTERFACE: validateElement((ChannelInterfaceNode *) node); break;
-        case NED_CHANNEL: validateElement((ChannelNode *) node); break;
+        case NED_CHANNEL_SPEC: validateElement((ChannelSpecNode *) node); break;
         case NED_CONNECTION_GROUP: validateElement((ConnectionGroupNode *) node); break;
         case NED_LOOP: validateElement((LoopNode *) node); break;
         case NED_CONDITION: validateElement((ConditionNode *) node); break;

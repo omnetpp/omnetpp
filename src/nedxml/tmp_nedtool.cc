@@ -175,16 +175,18 @@ bool processFile(const char *fname)
         return false;
     }
 
-/*FIXME FIXME FIXME validation temporarily commented out FIXME FIXME
     // DTD validation and additional basic validation
     NEDDTDValidator dtdvalidator;
     dtdvalidator.validate(tree);
+/*
     if (errorsOccurred())
     {
         delete tree;
         return false;
     }
+*/
 
+/*FIXME FIXME FIXME validation temporarily commented out FIXME FIXME
     NEDBasicValidator basicvalidator(!opt_unparsedexpr);
     basicvalidator.validate(tree);
     if (errorsOccurred())
@@ -213,12 +215,13 @@ bool processFile(const char *fname)
 //XXX            validator.validate(tree);
         }
     }
+/*
     if (errorsOccurred())
     {
         delete tree;
         return false;
     }
-
+*/
     if (opt_mergeoutput)
     {
         outputtree->appendChild(tree);

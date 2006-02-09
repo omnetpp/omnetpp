@@ -51,6 +51,14 @@
      name               NMTOKEN   #REQUIRED
      is-network         (true|false) "false">
 
+<!ELEMENT channel-interface (whitespace*, extends*, parameters?)>
+<!ATTLIST channel-interface
+     name                NMTOKEN   #REQUIRED>
+
+<!ELEMENT channel (whitespace*, extends?, interface-name*, parameters?)>
+<!ATTLIST channel
+     name                NMTOKEN   #REQUIRED>
+
 <!ELEMENT parameters (whitespace*, (property|param|pattern|param-group)*)>
 <!ATTLIST parameters
     is-implicit         (true|false)  "true">
@@ -105,11 +113,10 @@
 
 <!ELEMENT connections (whitespace*, (connection|connection-group)*)>
 <!ATTLIST connections
-     check-unconnected (true|false) "true">
+     allow-unconnected (true|false) "false">
 
-<!ELEMENT connection (whitespace*, expression*, parameters?)>
+<!ELEMENT connection (whitespace*, expression*, channel-spec?)>
 <!ATTLIST connection
-     channel-name        NMTOKEN   #IMPLIED
      src-module          NMTOKEN   #IMPLIED
      src-module-index    CDATA     #IMPLIED
      src-gate            NMTOKEN   #REQUIRED
@@ -124,13 +131,11 @@
      dest-gate-subg      (i|o)     #IMPLIED
      arrow-direction    (l2r|r2l|bidir) #REQUIRED>
 
-<!ELEMENT channel-interface (whitespace*, extends*, parameters?)>
-<!ATTLIST channel-interface
-     name                NMTOKEN   #REQUIRED>
-
-<!ELEMENT channel (whitespace*, extends?, interface-name*, parameters?)>
-<!ATTLIST channel
-     name                NMTOKEN   #REQUIRED>
+<!ELEMENT channel-spec (whitespace*, expression*, parameters?)>
+<!ATTLIST channel-spec
+     type               NMTOKEN   #IMPLIED
+     like-type          NMTOKEN   #IMPLIED
+     like-param         CDATA     #IMPLIED>
 
 <!ELEMENT connection-group (whitespace*, (loop|condition)*, connection*)>
 

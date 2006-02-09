@@ -53,6 +53,8 @@ class NEDValidatorBase
     virtual void validateElement(SimpleModuleNode *node) = 0;
     virtual void validateElement(ModuleInterfaceNode *node) = 0;
     virtual void validateElement(CompoundModuleNode *node) = 0;
+    virtual void validateElement(ChannelInterfaceNode *node) = 0;
+    virtual void validateElement(ChannelNode *node) = 0;
     virtual void validateElement(ParametersNode *node) = 0;
     virtual void validateElement(ParamGroupNode *node) = 0;
     virtual void validateElement(ParamNode *node) = 0;
@@ -67,8 +69,7 @@ class NEDValidatorBase
     virtual void validateElement(SubmoduleNode *node) = 0;
     virtual void validateElement(ConnectionsNode *node) = 0;
     virtual void validateElement(ConnectionNode *node) = 0;
-    virtual void validateElement(ChannelInterfaceNode *node) = 0;
-    virtual void validateElement(ChannelNode *node) = 0;
+    virtual void validateElement(ChannelSpecNode *node) = 0;
     virtual void validateElement(ConnectionGroupNode *node) = 0;
     virtual void validateElement(LoopNode *node) = 0;
     virtual void validateElement(ConditionNode *node) = 0;

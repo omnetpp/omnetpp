@@ -25,8 +25,8 @@ static const char *gatetype_vals[] = {"input", "output", "inout"};
 static int gatetype_nums[] = {NED_GATEDIR_INPUT, NED_GATEDIR_OUTPUT, NED_GATEDIR_INOUT};
 static const int gatetype_n = 3;
 
-static const char *arrowdir_vals[] = {"left", "right", "bidir"};
-static int arrowdir_nums[] = {NED_ARROWDIR_LEFT, NED_ARROWDIR_RIGHT, NED_ARROWDIR_BIDIR};
+static const char *arrowdir_vals[] = {"l2r", "r2l", "bidir"};
+static int arrowdir_nums[] = {NED_ARROWDIR_L2R, NED_ARROWDIR_R2L, NED_ARROWDIR_BIDIR};
 static const int arrowdir_n = 3;
 
 static const char *partype_vals[] = {"double", "int", "string", "bool", "xml"};
@@ -637,6 +637,125 @@ SubmodulesNode *CompoundModuleNode::getFirstSubmodulesChild() const
 ConnectionsNode *CompoundModuleNode::getFirstConnectionsChild() const
 {
     return (ConnectionsNode *)getFirstChildWithTag(NED_CONNECTIONS);
+}
+
+int ChannelInterfaceNode::getNumAttributes() const
+{
+    return 1;
+}
+
+const char *ChannelInterfaceNode::getAttributeName(int k) const
+{
+    switch (k) {
+        case 0: return "name";
+        default: return 0;
+    }
+}
+
+const char *ChannelInterfaceNode::getAttribute(int k) const
+{
+    switch (k) {
+        case 0: return name.c_str();
+        default: return 0;
+    }
+}
+
+void ChannelInterfaceNode::setAttribute(int k, const char *val)
+{
+    switch (k) {
+        case 0: name = val; break;
+        default: ;
+    }
+}
+
+const char *ChannelInterfaceNode::getAttributeDefault(int k) const
+{
+    switch (k) {
+        case 0: return "";
+        default: return 0;
+    }
+}
+
+ChannelInterfaceNode *ChannelInterfaceNode::getNextChannelInterfaceNodeSibling() const
+{
+    return (ChannelInterfaceNode *)getNextSiblingWithTag(NED_CHANNEL_INTERFACE);
+}
+
+WhitespaceNode *ChannelInterfaceNode::getFirstWhitespaceChild() const
+{
+    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+}
+
+ExtendsNode *ChannelInterfaceNode::getFirstExtendsChild() const
+{
+    return (ExtendsNode *)getFirstChildWithTag(NED_EXTENDS);
+}
+
+ParametersNode *ChannelInterfaceNode::getFirstParametersChild() const
+{
+    return (ParametersNode *)getFirstChildWithTag(NED_PARAMETERS);
+}
+
+int ChannelNode::getNumAttributes() const
+{
+    return 1;
+}
+
+const char *ChannelNode::getAttributeName(int k) const
+{
+    switch (k) {
+        case 0: return "name";
+        default: return 0;
+    }
+}
+
+const char *ChannelNode::getAttribute(int k) const
+{
+    switch (k) {
+        case 0: return name.c_str();
+        default: return 0;
+    }
+}
+
+void ChannelNode::setAttribute(int k, const char *val)
+{
+    switch (k) {
+        case 0: name = val; break;
+        default: ;
+    }
+}
+
+const char *ChannelNode::getAttributeDefault(int k) const
+{
+    switch (k) {
+        case 0: return "";
+        default: return 0;
+    }
+}
+
+ChannelNode *ChannelNode::getNextChannelNodeSibling() const
+{
+    return (ChannelNode *)getNextSiblingWithTag(NED_CHANNEL);
+}
+
+WhitespaceNode *ChannelNode::getFirstWhitespaceChild() const
+{
+    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+}
+
+ExtendsNode *ChannelNode::getFirstExtendsChild() const
+{
+    return (ExtendsNode *)getFirstChildWithTag(NED_EXTENDS);
+}
+
+InterfaceNameNode *ChannelNode::getFirstInterfaceNameChild() const
+{
+    return (InterfaceNameNode *)getFirstChildWithTag(NED_INTERFACE_NAME);
+}
+
+ParametersNode *ChannelNode::getFirstParametersChild() const
+{
+    return (ParametersNode *)getFirstChildWithTag(NED_PARAMETERS);
 }
 
 int ParametersNode::getNumAttributes() const
@@ -1395,7 +1514,7 @@ int ConnectionsNode::getNumAttributes() const
 const char *ConnectionsNode::getAttributeName(int k) const
 {
     switch (k) {
-        case 0: return "check-unconnected";
+        case 0: return "allow-unconnected";
         default: return 0;
     }
 }
@@ -1403,7 +1522,7 @@ const char *ConnectionsNode::getAttributeName(int k) const
 const char *ConnectionsNode::getAttribute(int k) const
 {
     switch (k) {
-        case 0: return boolToString(checkUnconnected);
+        case 0: return boolToString(allowUnconnected);
         default: return 0;
     }
 }
@@ -1411,7 +1530,7 @@ const char *ConnectionsNode::getAttribute(int k) const
 void ConnectionsNode::setAttribute(int k, const char *val)
 {
     switch (k) {
-        case 0: checkUnconnected = stringToBool(val); break;
+        case 0: allowUnconnected = stringToBool(val); break;
         default: ;
     }
 }
@@ -1419,7 +1538,7 @@ void ConnectionsNode::setAttribute(int k, const char *val)
 const char *ConnectionsNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "true";
+        case 0: return "false";
         default: return 0;
     }
 }
@@ -1464,26 +1583,25 @@ void ConnectionNode::setArrowDirection(int val)
 
 int ConnectionNode::getNumAttributes() const
 {
-    return 14;
+    return 13;
 }
 
 const char *ConnectionNode::getAttributeName(int k) const
 {
     switch (k) {
-        case 0: return "channel-name";
-        case 1: return "src-module";
-        case 2: return "src-module-index";
-        case 3: return "src-gate";
-        case 4: return "src-gate-plusplus";
-        case 5: return "src-gate-index";
-        case 6: return "src-gate-subg";
-        case 7: return "dest-module";
-        case 8: return "dest-module-index";
-        case 9: return "dest-gate";
-        case 10: return "dest-gate-plusplus";
-        case 11: return "dest-gate-index";
-        case 12: return "dest-gate-subg";
-        case 13: return "arrow-direction";
+        case 0: return "src-module";
+        case 1: return "src-module-index";
+        case 2: return "src-gate";
+        case 3: return "src-gate-plusplus";
+        case 4: return "src-gate-index";
+        case 5: return "src-gate-subg";
+        case 6: return "dest-module";
+        case 7: return "dest-module-index";
+        case 8: return "dest-gate";
+        case 9: return "dest-gate-plusplus";
+        case 10: return "dest-gate-index";
+        case 11: return "dest-gate-subg";
+        case 12: return "arrow-direction";
         default: return 0;
     }
 }
@@ -1491,20 +1609,19 @@ const char *ConnectionNode::getAttributeName(int k) const
 const char *ConnectionNode::getAttribute(int k) const
 {
     switch (k) {
-        case 0: return channelName.c_str();
-        case 1: return srcModule.c_str();
-        case 2: return srcModuleIndex.c_str();
-        case 3: return srcGate.c_str();
-        case 4: return boolToString(srcGatePlusplus);
-        case 5: return srcGateIndex.c_str();
-        case 6: return enumToString(srcGateSubg, subgate_vals, subgate_nums, subgate_n);
-        case 7: return destModule.c_str();
-        case 8: return destModuleIndex.c_str();
-        case 9: return destGate.c_str();
-        case 10: return boolToString(destGatePlusplus);
-        case 11: return destGateIndex.c_str();
-        case 12: return enumToString(destGateSubg, subgate_vals, subgate_nums, subgate_n);
-        case 13: return enumToString(arrowDirection, arrowdir_vals, arrowdir_nums, arrowdir_n);
+        case 0: return srcModule.c_str();
+        case 1: return srcModuleIndex.c_str();
+        case 2: return srcGate.c_str();
+        case 3: return boolToString(srcGatePlusplus);
+        case 4: return srcGateIndex.c_str();
+        case 5: return enumToString(srcGateSubg, subgate_vals, subgate_nums, subgate_n);
+        case 6: return destModule.c_str();
+        case 7: return destModuleIndex.c_str();
+        case 8: return destGate.c_str();
+        case 9: return boolToString(destGatePlusplus);
+        case 10: return destGateIndex.c_str();
+        case 11: return enumToString(destGateSubg, subgate_vals, subgate_nums, subgate_n);
+        case 12: return enumToString(arrowDirection, arrowdir_vals, arrowdir_nums, arrowdir_n);
         default: return 0;
     }
 }
@@ -1512,20 +1629,19 @@ const char *ConnectionNode::getAttribute(int k) const
 void ConnectionNode::setAttribute(int k, const char *val)
 {
     switch (k) {
-        case 0: channelName = val; break;
-        case 1: srcModule = val; break;
-        case 2: srcModuleIndex = val; break;
-        case 3: srcGate = val; break;
-        case 4: srcGatePlusplus = stringToBool(val); break;
-        case 5: srcGateIndex = val; break;
-        case 6: srcGateSubg = stringToEnum(val, subgate_vals, subgate_nums, subgate_n); break;
-        case 7: destModule = val; break;
-        case 8: destModuleIndex = val; break;
-        case 9: destGate = val; break;
-        case 10: destGatePlusplus = stringToBool(val); break;
-        case 11: destGateIndex = val; break;
-        case 12: destGateSubg = stringToEnum(val, subgate_vals, subgate_nums, subgate_n); break;
-        case 13: arrowDirection = stringToEnum(val, arrowdir_vals, arrowdir_nums, arrowdir_n); break;
+        case 0: srcModule = val; break;
+        case 1: srcModuleIndex = val; break;
+        case 2: srcGate = val; break;
+        case 3: srcGatePlusplus = stringToBool(val); break;
+        case 4: srcGateIndex = val; break;
+        case 5: srcGateSubg = stringToEnum(val, subgate_vals, subgate_nums, subgate_n); break;
+        case 6: destModule = val; break;
+        case 7: destModuleIndex = val; break;
+        case 8: destGate = val; break;
+        case 9: destGatePlusplus = stringToBool(val); break;
+        case 10: destGateIndex = val; break;
+        case 11: destGateSubg = stringToEnum(val, subgate_vals, subgate_nums, subgate_n); break;
+        case 12: arrowDirection = stringToEnum(val, arrowdir_vals, arrowdir_nums, arrowdir_n); break;
         default: ;
     }
 }
@@ -1536,17 +1652,16 @@ const char *ConnectionNode::getAttributeDefault(int k) const
         case 0: return "";
         case 1: return "";
         case 2: return "";
-        case 3: return "";
-        case 4: return "false";
+        case 3: return "false";
+        case 4: return "";
         case 5: return "";
         case 6: return "";
         case 7: return "";
         case 8: return "";
-        case 9: return "";
-        case 10: return "false";
+        case 9: return "false";
+        case 10: return "";
         case 11: return "";
         case 12: return "";
-        case 13: return "";
         default: return 0;
     }
 }
@@ -1566,126 +1681,72 @@ ExpressionNode *ConnectionNode::getFirstExpressionChild() const
     return (ExpressionNode *)getFirstChildWithTag(NED_EXPRESSION);
 }
 
-ParametersNode *ConnectionNode::getFirstParametersChild() const
+ChannelSpecNode *ConnectionNode::getFirstChannelSpecChild() const
 {
-    return (ParametersNode *)getFirstChildWithTag(NED_PARAMETERS);
+    return (ChannelSpecNode *)getFirstChildWithTag(NED_CHANNEL_SPEC);
 }
 
-int ChannelInterfaceNode::getNumAttributes() const
+int ChannelSpecNode::getNumAttributes() const
 {
-    return 1;
+    return 3;
 }
 
-const char *ChannelInterfaceNode::getAttributeName(int k) const
+const char *ChannelSpecNode::getAttributeName(int k) const
 {
     switch (k) {
-        case 0: return "name";
+        case 0: return "type";
+        case 1: return "like-type";
+        case 2: return "like-param";
         default: return 0;
     }
 }
 
-const char *ChannelInterfaceNode::getAttribute(int k) const
+const char *ChannelSpecNode::getAttribute(int k) const
 {
     switch (k) {
-        case 0: return name.c_str();
+        case 0: return type.c_str();
+        case 1: return likeType.c_str();
+        case 2: return likeParam.c_str();
         default: return 0;
     }
 }
 
-void ChannelInterfaceNode::setAttribute(int k, const char *val)
+void ChannelSpecNode::setAttribute(int k, const char *val)
 {
     switch (k) {
-        case 0: name = val; break;
+        case 0: type = val; break;
+        case 1: likeType = val; break;
+        case 2: likeParam = val; break;
         default: ;
     }
 }
 
-const char *ChannelInterfaceNode::getAttributeDefault(int k) const
+const char *ChannelSpecNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return "";
+        case 1: return "";
+        case 2: return "";
         default: return 0;
     }
 }
 
-ChannelInterfaceNode *ChannelInterfaceNode::getNextChannelInterfaceNodeSibling() const
+ChannelSpecNode *ChannelSpecNode::getNextChannelSpecNodeSibling() const
 {
-    return (ChannelInterfaceNode *)getNextSiblingWithTag(NED_CHANNEL_INTERFACE);
+    return (ChannelSpecNode *)getNextSiblingWithTag(NED_CHANNEL_SPEC);
 }
 
-WhitespaceNode *ChannelInterfaceNode::getFirstWhitespaceChild() const
+WhitespaceNode *ChannelSpecNode::getFirstWhitespaceChild() const
 {
     return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
 }
 
-ExtendsNode *ChannelInterfaceNode::getFirstExtendsChild() const
+ExpressionNode *ChannelSpecNode::getFirstExpressionChild() const
 {
-    return (ExtendsNode *)getFirstChildWithTag(NED_EXTENDS);
+    return (ExpressionNode *)getFirstChildWithTag(NED_EXPRESSION);
 }
 
-ParametersNode *ChannelInterfaceNode::getFirstParametersChild() const
-{
-    return (ParametersNode *)getFirstChildWithTag(NED_PARAMETERS);
-}
-
-int ChannelNode::getNumAttributes() const
-{
-    return 1;
-}
-
-const char *ChannelNode::getAttributeName(int k) const
-{
-    switch (k) {
-        case 0: return "name";
-        default: return 0;
-    }
-}
-
-const char *ChannelNode::getAttribute(int k) const
-{
-    switch (k) {
-        case 0: return name.c_str();
-        default: return 0;
-    }
-}
-
-void ChannelNode::setAttribute(int k, const char *val)
-{
-    switch (k) {
-        case 0: name = val; break;
-        default: ;
-    }
-}
-
-const char *ChannelNode::getAttributeDefault(int k) const
-{
-    switch (k) {
-        case 0: return "";
-        default: return 0;
-    }
-}
-
-ChannelNode *ChannelNode::getNextChannelNodeSibling() const
-{
-    return (ChannelNode *)getNextSiblingWithTag(NED_CHANNEL);
-}
-
-WhitespaceNode *ChannelNode::getFirstWhitespaceChild() const
-{
-    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
-}
-
-ExtendsNode *ChannelNode::getFirstExtendsChild() const
-{
-    return (ExtendsNode *)getFirstChildWithTag(NED_EXTENDS);
-}
-
-InterfaceNameNode *ChannelNode::getFirstInterfaceNameChild() const
-{
-    return (InterfaceNameNode *)getFirstChildWithTag(NED_INTERFACE_NAME);
-}
-
-ParametersNode *ChannelNode::getFirstParametersChild() const
+ParametersNode *ChannelSpecNode::getFirstParametersChild() const
 {
     return (ParametersNode *)getFirstChildWithTag(NED_PARAMETERS);
 }
@@ -3315,6 +3376,8 @@ NEDElement *NEDElementFactory::createNodeWithTag(const char *tagname)
     if (tagname[0]=='s' && !strcmp(tagname,"simple-module"))  return new SimpleModuleNode();
     if (tagname[0]=='m' && !strcmp(tagname,"module-interface"))  return new ModuleInterfaceNode();
     if (tagname[0]=='c' && !strcmp(tagname,"compound-module"))  return new CompoundModuleNode();
+    if (tagname[0]=='c' && !strcmp(tagname,"channel-interface"))  return new ChannelInterfaceNode();
+    if (tagname[0]=='c' && !strcmp(tagname,"channel"))  return new ChannelNode();
     if (tagname[0]=='p' && !strcmp(tagname,"parameters"))  return new ParametersNode();
     if (tagname[0]=='p' && !strcmp(tagname,"param-group"))  return new ParamGroupNode();
     if (tagname[0]=='p' && !strcmp(tagname,"param"))  return new ParamNode();
@@ -3329,8 +3392,7 @@ NEDElement *NEDElementFactory::createNodeWithTag(const char *tagname)
     if (tagname[0]=='s' && !strcmp(tagname,"submodule"))  return new SubmoduleNode();
     if (tagname[0]=='c' && !strcmp(tagname,"connections"))  return new ConnectionsNode();
     if (tagname[0]=='c' && !strcmp(tagname,"connection"))  return new ConnectionNode();
-    if (tagname[0]=='c' && !strcmp(tagname,"channel-interface"))  return new ChannelInterfaceNode();
-    if (tagname[0]=='c' && !strcmp(tagname,"channel"))  return new ChannelNode();
+    if (tagname[0]=='c' && !strcmp(tagname,"channel-spec"))  return new ChannelSpecNode();
     if (tagname[0]=='c' && !strcmp(tagname,"connection-group"))  return new ConnectionGroupNode();
     if (tagname[0]=='l' && !strcmp(tagname,"loop"))  return new LoopNode();
     if (tagname[0]=='c' && !strcmp(tagname,"condition"))  return new ConditionNode();
@@ -3372,6 +3434,8 @@ NEDElement *NEDElementFactory::createNodeWithTag(int tagcode)
         case NED_SIMPLE_MODULE: return new SimpleModuleNode();
         case NED_MODULE_INTERFACE: return new ModuleInterfaceNode();
         case NED_COMPOUND_MODULE: return new CompoundModuleNode();
+        case NED_CHANNEL_INTERFACE: return new ChannelInterfaceNode();
+        case NED_CHANNEL: return new ChannelNode();
         case NED_PARAMETERS: return new ParametersNode();
         case NED_PARAM_GROUP: return new ParamGroupNode();
         case NED_PARAM: return new ParamNode();
@@ -3386,8 +3450,7 @@ NEDElement *NEDElementFactory::createNodeWithTag(int tagcode)
         case NED_SUBMODULE: return new SubmoduleNode();
         case NED_CONNECTIONS: return new ConnectionsNode();
         case NED_CONNECTION: return new ConnectionNode();
-        case NED_CHANNEL_INTERFACE: return new ChannelInterfaceNode();
-        case NED_CHANNEL: return new ChannelNode();
+        case NED_CHANNEL_SPEC: return new ChannelSpecNode();
         case NED_CONNECTION_GROUP: return new ConnectionGroupNode();
         case NED_LOOP: return new LoopNode();
         case NED_CONDITION: return new ConditionNode();
