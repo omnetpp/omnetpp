@@ -6,10 +6,6 @@
         <smallIcon xsi:type="gmftool:DefaultImage"/>
         <largeIcon xsi:type="gmftool:DefaultImage"/>
       </tools>
-      <tools xsi:type="gmftool:CreationTool" title="Connection" description="Create new Connection">
-        <smallIcon xsi:type="gmftool:DefaultImage"/>
-        <largeIcon xsi:type="gmftool:DefaultImage"/>
-      </tools>
       <tools xsi:type="gmftool:CreationTool" title="SimpleModule" description="Create new SimpleModule">
         <smallIcon xsi:type="gmftool:DefaultImage"/>
         <largeIcon xsi:type="gmftool:DefaultImage"/>

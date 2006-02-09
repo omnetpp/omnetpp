@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.omnetpp.ned2.editor.graph; singleton:=true
-Bundle-Version: 4.0.0
+Bundle-Version: 1.0.0
 Bundle-ClassPath: .
 Bundle-Activator: org.omnetpp.ned2.editor.graph.gmf.editor.part.Ned2DiagramEditorPlugin
 Bundle-Vendor: %providerName
@@ -27,5 +27,5 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.gmf.runtime.diagram.ui.resources.editor.ide,
  org.eclipse.gmf.runtime.notation.providers,
  org.omnetpp.ned2.model;visibility:=reexport,
- org.omnetpp.ned2.provider.tree
+ org.omnetpp.ned2.model.edit;visibility:=reexport
 Eclipse-LazyStart: true

@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Omnetpp NED2 language model tree providers
-Bundle-SymbolicName: org.omnetpp.ned2.provider.tree;singleton:=true
+Bundle-SymbolicName: org.omnetpp.ned2.model.edit;singleton:=true
 Bundle-Version: 4.0.0
 Bundle-ClassPath: .
 Bundle-Activator: org.omnetpp.ned2.provider.tree.Ned2TreeProviderPlugin$Implementation
