@@ -113,6 +113,7 @@ struct ParserState
     ParametersNode *parameters;
     ParamGroupNode *paramgroup;
     ParamNode *param;
+    PatternNode *pattern;
     PropertyNode *property;
     KeyValueNode *keyvalue;
     TypesNode *types;
@@ -616,9 +617,9 @@ param_typenamevalue
                 }
         | '/' pattern '/' '=' paramvalue
                 {
-                  //FIXME create '/pattern/' type param!!
-                  ps.param = addParameter(ps.parameters, @2);
-                  addExpression(ps.param, "value",@5,$5);
+                  ps.pattern = (PatternNode *)createNodeWithTag(NED_PATTERN, ps.parameters);
+                  ps.pattern->setPattern(toString(@2));
+                  addExpression(ps.pattern, "value",@5,$5);
                 }
 
 paramtype
