@@ -1,14 +1,14 @@
 #
 # Global definitions
 #
-OPP_CORE=..\..\core
+OMNETPP_ROOT=..\..
 
-!include $(OPP_CORE)\configuser.vc
+!include $(OMNETPP_ROOT)\configuser.vc
 
 JDK="D:\Program Files\Java\jdk1.5.0_04"
 SWIG="D:\home\tools\SWIG-1.3.25\swig.exe"
 
-SCAVE_ENGINE=$(OPP_CORE)\src\scave
+SCAVE_ENGINE=$(OMNETPP_ROOT)\src\scave
 
 
 #
@@ -38,7 +38,7 @@ JAVADIR = src\$(JAVAPKG:.=\)
 #
 default: scave_engine.dll
 
-engine_wrap.cxx: engine.i plove.i $(HEADERS) $(JAVADIR)\*.java
+engine_wrap.cxx: engine.i plove.i $(HEADERS)
 	-del $(JAVADIR)\*.java >nul
 	$(SWIG) -c++ -java -package $(JAVAPKG) -I$(SCAVE_ENGINE) -outdir $(JAVADIR) engine.i
 
