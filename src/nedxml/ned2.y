@@ -953,7 +953,7 @@ likeparam
         : '<' '>'
         | '<' '@' NAME '>'
         | '<' qualifier '.' '@' NAME '>' /* note: qualifier here must be "this" */
-        | '<' expression '>' /* XXX expression is the source of one shift-reduce conflict because it may contain '>' */
+        | '<' expression '>' /* XXX this expression is the source of one shift-reduce conflict because it may contain '>' */
         ;
 
 /*
@@ -1249,7 +1249,8 @@ opt_condition
 condition
         : IF expression
                 {
-                  //FIXME
+                  ps.condition = (ConditionNode *)createNodeWithTag(NED_CONDITION, ps.component); //FIXME parent!!!!
+                  addExpression(ps.condition, "condition",@2,$2);
                 }
         ;
 
