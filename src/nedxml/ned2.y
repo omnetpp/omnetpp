@@ -151,7 +151,7 @@ void setComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos);
 
 ParamNode *addParameter(NEDElement *params, YYLTYPE namepos);
 GateNode *addGate(NEDElement *gates, YYLTYPE namepos, int is_in, int is_vector );
-SubmoduleNode *addSubmodule(NEDElement *submods, YYLTYPE namepos, YYLTYPE typepos,YYLTYPE likeparampos);
+//SubmoduleNode *addSubmodule(NEDElement *submods, YYLTYPE namepos, YYLTYPE typepos,YYLTYPE likeparampos);
 LoopNode *addLoop(NEDElement *conngroup, YYLTYPE varnamepos);
 
 YYLTYPE trimBrackets(YYLTYPE vectorpos);
@@ -920,35 +920,33 @@ submodule
         ;
 
 submoduleheader
-        : NAME ':' NAME
+        : submodulename ':' NAME
                 {
-                  ps.submod = addSubmodule(ps.submods, @1, @3, NULLPOS);
+                  ps.submod->setType(toString(@3));
                 }
-        | NAME vector ':' NAME
+        | submodulename ':' likeparam LIKE NAME
                 {
-                  ps.submod = addSubmodule(ps.submods, @1, @4, NULLPOS);
-                  addVector(ps.submod, "vector-size",@2,$2);
-                  //setComments(ps.submod,@1,@4);
+                  ps.submod->setLikeParam(toString(@3)); //FIXME
+                  ps.submod->setLikeType(toString(@5));
                 }
-        | NAME ':' likephrase
+        | submodulename ':' likeparam LIKE '*'
                 {
-                  ps.submod = addSubmodule(ps.submods, @1, @3, NULLPOS);
-                  //FIXME LIKE
-                }
-        | NAME vector ':' likephrase
-                {
-                  ps.submod = addSubmodule(ps.submods, @1, @4, NULLPOS);
-                  addVector(ps.submod, "vector-size",@2,$2);
-                  //FIXME LIKE
+                  ps.submod->setLikeParam(toString(@3)); //FIXME
                 }
         ;
 
-/*
- * Like Phrase (also used for connection channels)
- */
-likephrase
-        : likeparam LIKE NAME
-        | likeparam LIKE '*'
+submodulename
+        : NAME
+                {
+                  ps.submod = (SubmoduleNode *)createNodeWithTag(NED_SUBMODULE, ps.submods);
+                  ps.submod->setName(toString(@1));
+                }
+        |  NAME vector
+                {
+                  ps.submod = (SubmoduleNode *)createNodeWithTag(NED_SUBMODULE, ps.submods);
+                  ps.submod->setName(toString(@1));
+                  addVector(ps.submod, "vector-size",@2,$2);
+                }
         ;
 
 likeparam
@@ -1227,10 +1225,16 @@ channelspec_header
                   ps.chanspec = (ChannelSpecNode *)createNodeWithTag(NED_CHANNEL_SPEC, ps.conn);
                   ps.chanspec->setType(toString(@1));
                 }
-        | likephrase
+        | likeparam LIKE NAME
                 {
                   ps.chanspec = (ChannelSpecNode *)createNodeWithTag(NED_CHANNEL_SPEC, ps.conn);
-                  ps.chanspec->setType(toString(@1));
+                  ps.chanspec->setLikeParam(toString(@1)); //FIXME
+                  ps.chanspec->setLikeType(toString(@3));
+                }
+        | likeparam LIKE '*'
+                {
+                  ps.chanspec = (ChannelSpecNode *)createNodeWithTag(NED_CHANNEL_SPEC, ps.conn);
+                  ps.chanspec->setLikeParam(toString(@1)); //FIXME
                 }
         ;
 
@@ -1651,15 +1655,15 @@ GateNode *addGate(NEDElement *gates, YYLTYPE namepos, int is_in, int is_vector )
    return gate;
 }
 
-SubmoduleNode *addSubmodule(NEDElement *submods, YYLTYPE namepos, YYLTYPE typepos,YYLTYPE likeparampos)
-{
-   SubmoduleNode *submod = (SubmoduleNode *)createNodeWithTag(NED_SUBMODULE,submods);
-   submod->setName( toString( namepos) );
-//FIXME   submod->setTypeName( toString( typepos) );
-//FIXME   submod->setLikeParam( toString( likeparampos) );
-
-   return submod;
-}
+//SubmoduleNode *addSubmodule(NEDElement *submods, YYLTYPE namepos, YYLTYPE typepos,YYLTYPE likeparampos)
+//{
+//   SubmoduleNode *submod = (SubmoduleNode *)createNodeWithTag(NED_SUBMODULE,submods);
+//   submod->setName( toString( namepos) );
+////FIXME   submod->setTypeName( toString( typepos) );
+////FIXME   submod->setLikeParam( toString( likeparampos) );
+//
+//   return submod;
+//}
 
 LoopNode *addLoop(NEDElement *conngroup, YYLTYPE varnamepos)
 {
