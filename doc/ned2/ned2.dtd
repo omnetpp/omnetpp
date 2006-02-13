@@ -51,6 +51,14 @@
      name               NMTOKEN   #REQUIRED
      is-network         (true|false) "false">
 
+<!ELEMENT channel-interface (whitespace*, extends*, parameters?)>
+<!ATTLIST channel-interface
+     name                NMTOKEN   #REQUIRED>
+
+<!ELEMENT channel (whitespace*, extends?, interface-name*, parameters?)>
+<!ATTLIST channel
+     name                NMTOKEN   #REQUIRED>
+
 <!ELEMENT parameters (whitespace*, (property|param|pattern|param-group)*)>
 <!ATTLIST parameters
     is-implicit         (true|false)  "true">
@@ -62,12 +70,14 @@
      type               (double|int|string|bool|xml) #IMPLIED
      is-function        (true|false)  "false"
      name               NMTOKEN   #REQUIRED
-     value              CDATA     #IMPLIED>
+     value              CDATA     #IMPLIED
+     is-default         (true|false)  "false">
 
 <!ELEMENT pattern (whitespace*, expression?, property*)>
 <!ATTLIST pattern
      pattern            CDATA     #REQUIRED
-     value              CDATA     #REQUIRED>
+     value              CDATA     #REQUIRED
+     is-default         (true|false)  "false">
 
 <!ELEMENT property (whitespace*, key-value*)>
 <!ATTLIST property
@@ -77,7 +87,7 @@
 <!ELEMENT key-value (whitespace*)>
 <!ATTLIST key-value
      key                CDATA     #IMPLIED
-     value              CDATA     #IMPLIED>
+     value              CDATA     #IMPLIED> <!-- FIXME use text&value, as in literal? or use literal here? -->
 
 <!ELEMENT gates (whitespace*, (gate|gate-group)*)>
 
@@ -87,7 +97,7 @@
 <!ATTLIST gate
      name               NMTOKEN   #REQUIRED
      type               (input|output|inout) #REQUIRED
-     is-vector          (true|false) false
+     is-vector          (true|false) "false"
      vector-size        CDATA     #IMPLIED>
 
 <!ELEMENT types (whitespace*, (channel|channel-interface|simple-module|
@@ -105,11 +115,10 @@
 
 <!ELEMENT connections (whitespace*, (connection|connection-group)*)>
 <!ATTLIST connections
-     check-unconnected (true|false) "true">
+     allow-unconnected (true|false) "false">
 
-<!ELEMENT connection (whitespace*, expression*, parameters?)>
+<!ELEMENT connection (whitespace*, expression*, channel-spec?)>
 <!ATTLIST connection
-     channel-name        NMTOKEN   #IMPLIED
      src-module          NMTOKEN   #IMPLIED
      src-module-index    CDATA     #IMPLIED
      src-gate            NMTOKEN   #REQUIRED
@@ -124,13 +133,11 @@
      dest-gate-subg      (i|o)     #IMPLIED
      arrow-direction    (l2r|r2l|bidir) #REQUIRED>
 
-<!ELEMENT channel-interface (whitespace*, extends*, parameters?)>
-<!ATTLIST channel-interface
-     name                NMTOKEN   #REQUIRED>
-
-<!ELEMENT channel (whitespace*, extends?, interface-name*, parameters?)>
-<!ATTLIST channel
-     name                NMTOKEN   #REQUIRED>
+<!ELEMENT channel-spec (whitespace*, expression*, parameters?)>
+<!ATTLIST channel-spec
+     type               NMTOKEN   #IMPLIED
+     like-type          NMTOKEN   #IMPLIED
+     like-param         CDATA     #IMPLIED>
 
 <!ELEMENT connection-group (whitespace*, (loop|condition)*, connection*)>
 
