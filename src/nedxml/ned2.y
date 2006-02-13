@@ -156,6 +156,7 @@ GateNode *addGate(NEDElement *gates, YYLTYPE namepos, int is_in, int is_vector )
 LoopNode *addLoop(NEDElement *conngroup, YYLTYPE varnamepos);
 
 YYLTYPE trimBrackets(YYLTYPE vectorpos);
+YYLTYPE trimAngleBrackets(YYLTYPE vectorpos);
 YYLTYPE trimQuotes(YYLTYPE vectorpos);
 YYLTYPE trimDoubleBraces(YYLTYPE vectorpos);
 void swapAttributes(NEDElement *node, const char *attr1, const char *attr2);
@@ -174,6 +175,7 @@ LiteralNode *createQuantity(const char *text);
 NEDElement *unaryMinus(NEDElement *node);
 
 void addVector(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr);
+void addLikeParam(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr);
 void addExpression(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr);
 
 %}
@@ -840,6 +842,7 @@ opt_typeblock
 typeblock
         : TYPES ':'
                 {
+                  // FIXME check for further nested types
                   ps.types = (TypesNode *)createNodeWithTag(NED_TYPES, ps.blockscope.top());
                   //setComments(ps.types,@1,@2);
                   ps.inTypes = true;
@@ -931,12 +934,12 @@ submoduleheader
                 }
         | submodulename ':' likeparam LIKE NAME
                 {
-                  ps.submod->setLikeParam(toString(@3)); //FIXME
+                  addLikeParam(ps.submod, "like-param", @3, $3);
                   ps.submod->setLikeType(toString(@5));
                 }
         | submodulename ':' likeparam LIKE '*'
                 {
-                  ps.submod->setLikeParam(toString(@3)); //FIXME
+                  addLikeParam(ps.submod, "like-param", @3, $3);
                 }
         ;
 
@@ -956,9 +959,13 @@ submodulename
 
 likeparam
         : '<' '>'
+                { $$ = NULL; }
         | '<' '@' NAME '>'
+                { $$ = NULL; }
         | '<' qualifier '.' '@' NAME '>' /* note: qualifier here must be "this" */
+                { $$ = NULL; }
         | '<' expression '>' /* XXX this expression is the source of one shift-reduce conflict because it may contain '>' */
+                { $$ = $2; }
         ;
 
 /*
@@ -1233,13 +1240,13 @@ channelspec_header
         | likeparam LIKE NAME
                 {
                   ps.chanspec = (ChannelSpecNode *)createNodeWithTag(NED_CHANNEL_SPEC, ps.conn);
-                  ps.chanspec->setLikeParam(toString(@1)); //FIXME
+                  addLikeParam(ps.chanspec, "like-param", @1, $1);
                   ps.chanspec->setLikeType(toString(@3));
                 }
         | likeparam LIKE '*'
                 {
                   ps.chanspec = (ChannelSpecNode *)createNodeWithTag(NED_CHANNEL_SPEC, ps.conn);
-                  ps.chanspec->setLikeParam(toString(@1)); //FIXME
+                  addLikeParam(ps.chanspec, "like-param", @1, $1);
                 }
         ;
 
@@ -1686,6 +1693,14 @@ YYLTYPE trimBrackets(YYLTYPE vectorpos)
    return vectorpos;
 }
 
+YYLTYPE trimAngleBrackets(YYLTYPE vectorpos)
+{
+   // should check it's really angle brackets that get chopped off
+   vectorpos.first_column++;
+   vectorpos.last_column--;
+   return vectorpos;
+}
+
 YYLTYPE trimQuotes(YYLTYPE vectorpos)
 {
    // should check it's really quotes that get chopped off
@@ -1705,6 +1720,14 @@ YYLTYPE trimDoubleBraces(YYLTYPE vectorpos)
 void addVector(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr)
 {
    addExpression(elem, attrname, trimBrackets(exprpos), expr);
+}
+
+void addLikeParam(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr)
+{
+   if (ps.parseExpressions && !expr)
+       elem->setAttribute(attrname, toString(trimAngleBrackets(exprpos)));
+   else
+       addExpression(elem, attrname, trimAngleBrackets(exprpos), expr);
 }
 
 void addExpression(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr)

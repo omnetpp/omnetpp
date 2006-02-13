@@ -177,7 +177,14 @@ bool processFile(const char *fname)
 
     // DTD validation and additional basic validation
     NEDDTDValidator dtdvalidator;
+try{
     dtdvalidator.validate(tree);
+}catch(NEDException*e){
+    // FIXME embed exception handling in validate()!
+    fprintf(stderr,"nedtool: NEDException: %s\n",e->errorMessage());
+    delete tree;
+    return false;
+}
 /*
     if (errorsOccurred())
     {

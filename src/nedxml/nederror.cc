@@ -81,6 +81,6 @@ NEDException::NEDException(const char *msgformat...)
 
     errormsg = message;
 
-    //*(char *)0 = 0;
+__asm int 3; //FIXME
 }
 
