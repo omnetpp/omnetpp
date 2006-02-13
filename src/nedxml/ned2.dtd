@@ -97,7 +97,7 @@
 <!ATTLIST gate
      name               NMTOKEN   #REQUIRED
      type               (input|output|inout) #REQUIRED
-     is-vector          (true|false) false
+     is-vector          (true|false) "false"
      vector-size        CDATA     #IMPLIED>
 
 <!ELEMENT types (whitespace*, (channel|channel-interface|simple-module|
