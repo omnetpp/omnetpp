@@ -39,7 +39,7 @@ class ParamGroupNode;
 class ParamNode;
 class PatternNode;
 class PropertyNode;
-class KeyValueNode;
+class PropertyKeyNode;
 class GatesNode;
 class GateGroupNode;
 class GateNode;
@@ -100,7 +100,7 @@ enum NEDElementCode {
     NED_PARAM,
     NED_PATTERN,
     NED_PROPERTY,
-    NED_KEY_VALUE,
+    NED_PROPERTY_KEY,
     NED_GATES,
     NED_GATE_GROUP,
     NED_GATE,
@@ -336,7 +336,7 @@ class ImportNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;property-decl&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT property-decl (whitespace*, key-value*, property*)>
+ * <!ELEMENT property-decl (whitespace*, property-key*, property*)>
  * <!ATTLIST property-decl
  *      name               NMTOKEN   #REQUIRED>
  * </pre>
@@ -373,7 +373,7 @@ class PropertyDeclNode : public NEDElement
 
     virtual PropertyDeclNode *getNextPropertyDeclNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
-    virtual KeyValueNode *getFirstKeyValueChild() const;
+    virtual PropertyKeyNode *getFirstPropertyKeyChild() const;
     virtual PropertyNode *getFirstPropertyChild() const;
     //@}
 };
@@ -923,7 +923,7 @@ class PatternNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;property&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT property (whitespace*, key-value*, condition?)>
+ * <!ELEMENT property (whitespace*, property-key*, condition?)>
  * <!ATTLIST property
  *      is-implicit        (true|false) "false"
  *      name               NMTOKEN   #REQUIRED>
@@ -964,38 +964,38 @@ class PropertyNode : public NEDElement
 
     virtual PropertyNode *getNextPropertyNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
-    virtual KeyValueNode *getFirstKeyValueChild() const;
+    virtual PropertyKeyNode *getFirstPropertyKeyChild() const;
     virtual ConditionNode *getFirstConditionChild() const;
     //@}
 };
 
 /**
- * GENERATED CLASS. Represents the &lt;key-value&gt; XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;property-key&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT key-value (whitespace*, literal)>
- * <!ATTLIST key-value
+ * <!ELEMENT property-key (whitespace*, literal?)>
+ * <!ATTLIST property-key
  *      key                CDATA     #IMPLIED>
  * </pre>
  * 
  * @ingroup Data
  */
-class KeyValueNode : public NEDElement
+class PropertyKeyNode : public NEDElement
 {
   private:
     std::string key;
   public:
     /** @name Constructors, destructor */
     //@{
-    KeyValueNode() {applyDefaults();}
-    KeyValueNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~KeyValueNode() {}
+    PropertyKeyNode() {applyDefaults();}
+    PropertyKeyNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~PropertyKeyNode() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
-    virtual const char *getTagName() const {return "key-value";}
-    virtual int getTagCode() const {return NED_KEY_VALUE;}
+    virtual const char *getTagName() const {return "property-key";}
+    virtual int getTagCode() const {return NED_PROPERTY_KEY;}
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
@@ -1008,7 +1008,7 @@ class KeyValueNode : public NEDElement
     const char * getKey() const  {return key.c_str();}
     void setKey(const char * val)  {key = val;}
 
-    virtual KeyValueNode *getNextKeyValueNodeSibling() const;
+    virtual PropertyKeyNode *getNextPropertyKeyNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
     virtual LiteralNode *getFirstLiteralChild() const;
     //@}

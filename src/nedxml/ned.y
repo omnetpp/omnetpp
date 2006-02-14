@@ -154,7 +154,7 @@ struct ParserState
     ParamGroupNode *paramgroup;
     ParamNode *param;
     PropertyNode *property;
-    KeyValueNode *keyvalue;
+    PropertyKeyNode *propkey;
     GatesNode *gates;
     GateGroupNode *gategroup;
     GateNode *gate;

@@ -128,7 +128,7 @@ void NEDSemanticValidator::validateElement(PropertyNode *node)
     // FIXME revise
 }
 
-void NEDSemanticValidator::validateElement(KeyValueNode *node)
+void NEDSemanticValidator::validateElement(PropertyKeyNode *node)
 {
     // FIXME revise
 }

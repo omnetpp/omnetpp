@@ -25,7 +25,7 @@
 <!ATTLIST import
      filename           CDATA     #REQUIRED>
 
-<!ELEMENT property-decl (whitespace*, key-value*, property*)>
+<!ELEMENT property-decl (whitespace*, property-key*, property*)>
 <!ATTLIST property-decl
      name               NMTOKEN   #REQUIRED>
 
@@ -79,13 +79,13 @@
      value              CDATA     #REQUIRED
      is-default         (true|false)  "false">
 
-<!ELEMENT property (whitespace*, key-value*, condition?)>
+<!ELEMENT property (whitespace*, property-key*, condition?)>
 <!ATTLIST property
      is-implicit        (true|false) "false"
      name               NMTOKEN   #REQUIRED>
 
-<!ELEMENT key-value (whitespace*, literal)>
-<!ATTLIST key-value
+<!ELEMENT property-key (whitespace*, literal?)>
+<!ATTLIST property-key
      key                CDATA     #IMPLIED>
 
 <!ELEMENT gates (whitespace*, (gate|gate-group)*)>

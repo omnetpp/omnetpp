@@ -59,7 +59,7 @@ void NEDDTDValidator::validateElement(ImportNode *node)
 
 void NEDDTDValidator::validateElement(PropertyDeclNode *node)
 {
-    int tags[] = {NED_WHITESPACE,NED_KEY_VALUE,NED_PROPERTY, NED_NULL};
+    int tags[] = {NED_WHITESPACE,NED_PROPERTY_KEY,NED_PROPERTY, NED_NULL};
     char mult[] = {'*','*','*', 0};
     checkSequence(node, tags, mult);
 
@@ -192,7 +192,7 @@ void NEDDTDValidator::validateElement(PatternNode *node)
 
 void NEDDTDValidator::validateElement(PropertyNode *node)
 {
-    int tags[] = {NED_WHITESPACE,NED_KEY_VALUE,NED_CONDITION, NED_NULL};
+    int tags[] = {NED_WHITESPACE,NED_PROPERTY_KEY,NED_CONDITION, NED_NULL};
     char mult[] = {'*','*','?', 0};
     checkSequence(node, tags, mult);
 
@@ -202,10 +202,10 @@ void NEDDTDValidator::validateElement(PropertyNode *node)
     checkNameAttribute(node, "name");
 }
 
-void NEDDTDValidator::validateElement(KeyValueNode *node)
+void NEDDTDValidator::validateElement(PropertyKeyNode *node)
 {
     int tags[] = {NED_WHITESPACE,NED_LITERAL, NED_NULL};
-    char mult[] = {'*','1', 0};
+    char mult[] = {'*','?', 0};
     checkSequence(node, tags, mult);
 
 }

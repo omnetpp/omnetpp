@@ -320,9 +320,9 @@ WhitespaceNode *PropertyDeclNode::getFirstWhitespaceChild() const
     return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
 }
 
-KeyValueNode *PropertyDeclNode::getFirstKeyValueChild() const
+PropertyKeyNode *PropertyDeclNode::getFirstPropertyKeyChild() const
 {
-    return (KeyValueNode *)getFirstChildWithTag(NED_KEY_VALUE);
+    return (PropertyKeyNode *)getFirstChildWithTag(NED_PROPERTY_KEY);
 }
 
 PropertyNode *PropertyDeclNode::getFirstPropertyChild() const
@@ -1088,9 +1088,9 @@ WhitespaceNode *PropertyNode::getFirstWhitespaceChild() const
     return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
 }
 
-KeyValueNode *PropertyNode::getFirstKeyValueChild() const
+PropertyKeyNode *PropertyNode::getFirstPropertyKeyChild() const
 {
-    return (KeyValueNode *)getFirstChildWithTag(NED_KEY_VALUE);
+    return (PropertyKeyNode *)getFirstChildWithTag(NED_PROPERTY_KEY);
 }
 
 ConditionNode *PropertyNode::getFirstConditionChild() const
@@ -1098,12 +1098,12 @@ ConditionNode *PropertyNode::getFirstConditionChild() const
     return (ConditionNode *)getFirstChildWithTag(NED_CONDITION);
 }
 
-int KeyValueNode::getNumAttributes() const
+int PropertyKeyNode::getNumAttributes() const
 {
     return 1;
 }
 
-const char *KeyValueNode::getAttributeName(int k) const
+const char *PropertyKeyNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "key";
@@ -1111,7 +1111,7 @@ const char *KeyValueNode::getAttributeName(int k) const
     }
 }
 
-const char *KeyValueNode::getAttribute(int k) const
+const char *PropertyKeyNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return key.c_str();
@@ -1119,7 +1119,7 @@ const char *KeyValueNode::getAttribute(int k) const
     }
 }
 
-void KeyValueNode::setAttribute(int k, const char *val)
+void PropertyKeyNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: key = val; break;
@@ -1127,7 +1127,7 @@ void KeyValueNode::setAttribute(int k, const char *val)
     }
 }
 
-const char *KeyValueNode::getAttributeDefault(int k) const
+const char *PropertyKeyNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return "";
@@ -1135,17 +1135,17 @@ const char *KeyValueNode::getAttributeDefault(int k) const
     }
 }
 
-KeyValueNode *KeyValueNode::getNextKeyValueNodeSibling() const
+PropertyKeyNode *PropertyKeyNode::getNextPropertyKeyNodeSibling() const
 {
-    return (KeyValueNode *)getNextSiblingWithTag(NED_KEY_VALUE);
+    return (PropertyKeyNode *)getNextSiblingWithTag(NED_PROPERTY_KEY);
 }
 
-WhitespaceNode *KeyValueNode::getFirstWhitespaceChild() const
+WhitespaceNode *PropertyKeyNode::getFirstWhitespaceChild() const
 {
     return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
 }
 
-LiteralNode *KeyValueNode::getFirstLiteralChild() const
+LiteralNode *PropertyKeyNode::getFirstLiteralChild() const
 {
     return (LiteralNode *)getFirstChildWithTag(NED_LITERAL);
 }
@@ -3417,7 +3417,7 @@ NEDElement *NEDElementFactory::createNodeWithTag(const char *tagname)
     if (tagname[0]=='p' && !strcmp(tagname,"param"))  return new ParamNode();
     if (tagname[0]=='p' && !strcmp(tagname,"pattern"))  return new PatternNode();
     if (tagname[0]=='p' && !strcmp(tagname,"property"))  return new PropertyNode();
-    if (tagname[0]=='k' && !strcmp(tagname,"key-value"))  return new KeyValueNode();
+    if (tagname[0]=='p' && !strcmp(tagname,"property-key"))  return new PropertyKeyNode();
     if (tagname[0]=='g' && !strcmp(tagname,"gates"))  return new GatesNode();
     if (tagname[0]=='g' && !strcmp(tagname,"gate-group"))  return new GateGroupNode();
     if (tagname[0]=='g' && !strcmp(tagname,"gate"))  return new GateNode();
@@ -3475,7 +3475,7 @@ NEDElement *NEDElementFactory::createNodeWithTag(int tagcode)
         case NED_PARAM: return new ParamNode();
         case NED_PATTERN: return new PatternNode();
         case NED_PROPERTY: return new PropertyNode();
-        case NED_KEY_VALUE: return new KeyValueNode();
+        case NED_PROPERTY_KEY: return new PropertyKeyNode();
         case NED_GATES: return new GatesNode();
         case NED_GATE_GROUP: return new GateGroupNode();
         case NED_GATE: return new GateNode();

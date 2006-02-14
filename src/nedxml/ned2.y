@@ -119,7 +119,7 @@ struct ParserState
     ParamNode *param;
     PatternNode *pattern;
     PropertyNode *property;
-    KeyValueNode *keyvalue;
+    PropertyKeyNode *propkey;
     TypesNode *types;
     GatesNode *gates;
     GateGroupNode *gategroup;
@@ -267,7 +267,7 @@ propertydecl_keys
 propertydecl_key
         : NAME
                 {
-                  ps.keyvalue = (KeyValueNode *)createNodeWithTag(NED_KEY_VALUE, ps.propertydecl);
+                  ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.propertydecl);
                 }
         ;
 
@@ -739,22 +739,32 @@ property_keys
 property_key
         : NAME '=' property_value
                 {
-                  ps.keyvalue = (KeyValueNode *)createNodeWithTag(NED_KEY_VALUE, ps.property);
-                  ps.keyvalue->setKey(toString(@1));
-                  ps.keyvalue->appendChild($3);
+                  ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
+                  ps.propkey->setKey(toString(@1));
+                  ps.propkey->appendChild($3);
                 }
         | property_value
                 {
-                  ps.keyvalue = (KeyValueNode *)createNodeWithTag(NED_KEY_VALUE, ps.property);
-                  ps.keyvalue->appendChild($1);
+                  ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
+                  ps.propkey->appendChild($1);
                 }
         ;
 
 property_value
         : NAME
                 { $$ = createLiteral(NED_CONST_STRING, toString(@1)); /*FIXME store both text&value*/ }
-        | literal       /* literal is: NAME | TRUE_ | FALSE_ | INTCONSTANT | REALCONSTANT | STRINGCONSTANT | CHARCONSTANT | quantity */
-                { $$ = $1; }
+        | STRINGCONSTANT
+                { $$ = createLiteral(NED_CONST_STRING, toString(trimQuotes(@1))); /*FIXME store both text&value*/ }
+        | TRUE_
+                { $$ = createLiteral(NED_CONST_BOOL, "true"); }
+        | FALSE_
+                { $$ = createLiteral(NED_CONST_BOOL, "false"); }
+        | INTCONSTANT
+                { $$ = createLiteral(NED_CONST_INT, toString(@1)); /*FIXME store both text&value*/ }
+        | REALCONSTANT
+                { $$ = createLiteral(NED_CONST_DOUBLE, toString(@1)); /*FIXME store both text&value*/ }
+        | quantity
+                { $$ = createQuantity(toString(@1)); }
         ;
 
 /*
@@ -1506,7 +1516,6 @@ numliteral
                 { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_DOUBLE, toString(@1)); /*FIXME store both text&value*/ }
         | quantity
                 { if (ps.parseExpressions) $$ = createQuantity(toString(@1)); }
-
         ;
 
 quantity

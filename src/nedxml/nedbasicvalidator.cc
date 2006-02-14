@@ -245,7 +245,7 @@ void NEDBasicValidator::validateElement(PropertyNode *node)
     //FIXME revise
 }
 
-void NEDBasicValidator::validateElement(KeyValueNode *node)
+void NEDBasicValidator::validateElement(PropertyKeyNode *node)
 {
     //FIXME revise
 }
