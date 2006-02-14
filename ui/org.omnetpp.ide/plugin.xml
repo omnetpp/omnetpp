@@ -2,6 +2,17 @@
 <?eclipse version="3.0"?>
 <plugin>
 
+     <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="org.omnetpp.ide.GraphAndTextEditor"
+            default="true"
+            extensions="gned"
+            icon="icons/gned.gif"
+            id="org.omnetpp.ide.gteditor"
+            name="Graphical and Textual NED Editor">
+      </editor>
+   </extension>
    <extension
          id="gned2"
          point="org.eclipse.core.runtime.applications">

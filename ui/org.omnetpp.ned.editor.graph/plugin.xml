@@ -2,18 +2,6 @@
 <?eclipse version="3.0"?>
 <plugin>
 
-     <extension
-         point="org.eclipse.ui.editors">
-      <editor
-            default="true"
-            name="NED Graphical Module Editor"
-            extensions="gned"
-            icon="images/_internal/gned.gif"
-            class="org.omnetpp.ned.editor.graph.ModuleEditor"
-            contributorClass="org.omnetpp.ned.editor.graph.actions.ModuleActionBarContributor"
-            id="org.omnetpp.ned.editor.graph.ModuleEditor">
-      </editor>
-   </extension>
    <extension
          point="org.eclipse.ui.newWizards">
       <category

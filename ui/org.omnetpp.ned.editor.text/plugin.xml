@@ -7,18 +7,6 @@
 <!-- Text based NED editor                                                       -->
 <!-- =========================================================================== -->
 
-   <extension
-         point="org.eclipse.ui.editors">
-      <editor
-            class="org.omnetpp.ned.editor.text.NedEditor"
-            contributorClass="org.omnetpp.ned.editor.text.NedActionContributor"
-            default="true"
-            extensions="%nedFileExtensions"
-            icon="icons/16/gned.gif"
-            id="org.omnetpp.ned.editor.text.NedEditor"
-            name="%nedEditorName">
-      </editor>
-   </extension>
    
    <extension
          id="NedDocumentSetupParticipant"

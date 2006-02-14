@@ -22,8 +22,8 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.model.*;
-import org.omnetpp.ned.model.ModelUtil;
-import org.omnetpp.ned.model.swig.*;
+//import org.omnetpp.ned.model.ModelUtil;
+//import org.omnetpp.ned.model.swig.*;
 
 public class ModuleEditorPlugin extends AbstractUIPlugin {
 
@@ -37,18 +37,18 @@ public class ModuleEditorPlugin extends AbstractUIPlugin {
             singleton = this;
         }
         // XXX remove below. only for testing
-        NEDParser np = new NEDParser();
-        np.setParseExpressions(false);
-        np.parseFile("c:/temp/tictoc.ned");
-        NEDElement treeRoot = np.getTree();
-        System.out.println(treeRoot.getTagName());
-        NEDGenerator ng = new NEDGenerator();
-        ng.setNewSyntax(false);
-        System.out.println(ng.generate(treeRoot, ""));
-        System.out.println(ModelUtil.printSwigElement(treeRoot));
-        
-        // generate EMF tree
-        System.out.println(ModelUtil.swig2emf(treeRoot));
+//        NEDParser np = new NEDParser();
+//        np.setParseExpressions(false);
+//        np.parseFile("c:/temp/tictoc.ned");
+//        NEDElement treeRoot = np.getTree();
+//        System.out.println(treeRoot.getTagName());
+//        NEDGenerator ng = new NEDGenerator();
+//        ng.setNewSyntax(false);
+//        System.out.println(ng.generate(treeRoot, ""));
+//        System.out.println(ModelUtil.printSwigElement(treeRoot));
+//        
+//        // generate EMF tree
+//        System.out.println(ModelUtil.swig2emf(treeRoot));
     }
 
     public static ModuleEditorPlugin getDefault() {
