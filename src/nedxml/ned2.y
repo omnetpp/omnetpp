@@ -568,7 +568,7 @@ paramgroup
                 {
                     ps.inGroup = false;
                     if ($1)
-                        ps.paramgroup->appendChild($1);
+                        ps.paramgroup->appendChild($1); // append optional condition
                 }
         ;
 
@@ -596,8 +596,8 @@ param
           opt_inline_properties opt_condition ';'
                 {
                   ps.propertyscope.pop();
-                  if ($2)
-                      ps.paramgroup->appendChild($2);
+                  if ($4)
+                      ps.param->appendChild($4); // append optional condition
                 }
         ;
 
@@ -712,7 +712,7 @@ property
         : property_namevalue opt_condition ';'
                 {
                   if ($2)
-                      ps.property->appendChild($2);
+                      ps.property->appendChild($2); // append optional condition
                 }
         ;
 
@@ -834,7 +834,7 @@ gate
                   //XXXX add back:
                   /*
                   if ($4)
-                      ps.gate->appendChild($4);
+                      ps.gate->appendChild($4); // append optional condition
                   */
                 }
         ;
