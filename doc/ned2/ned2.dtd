@@ -25,7 +25,7 @@
 <!ATTLIST import
      filename           CDATA     #REQUIRED>
 
-<!ELEMENT property-decl (whitespace*, key-value*, property*)>
+<!ELEMENT property-decl (whitespace*, property-key*, property*)>
 <!ATTLIST property-decl
      name               NMTOKEN   #REQUIRED>
 
@@ -61,7 +61,7 @@
 
 <!ELEMENT parameters (whitespace*, (property|param|pattern|param-group)*)>
 <!ATTLIST parameters
-    is-implicit         (true|false)  "true">
+    is-implicit         (true|false)  "false">
 
 <!ELEMENT param-group (whitespace*, (property|param|pattern)*, condition?)>
 
@@ -79,13 +79,13 @@
      value              CDATA     #REQUIRED
      is-default         (true|false)  "false">
 
-<!ELEMENT property (whitespace*, key-value*, condition?)>
+<!ELEMENT property (whitespace*, property-key*, condition?)>
 <!ATTLIST property
      is-implicit        (true|false) "false"
      name               NMTOKEN   #REQUIRED>
 
-<!ELEMENT key-value (whitespace*, literal)>
-<!ATTLIST key-value
+<!ELEMENT property-key (whitespace*, literal?)>
+<!ATTLIST property-key
      key                CDATA     #IMPLIED>
 
 <!ELEMENT gates (whitespace*, (gate|gate-group)*)>
@@ -116,7 +116,7 @@
 <!ATTLIST connections
      allow-unconnected (true|false) "false">
 
-<!ELEMENT connection (whitespace*, expression*, channel-spec?, (loop|condition)*)>
+<!ELEMENT connection (whitespace*, expression*, channel-spec?, where?)>
 <!ATTLIST connection
      src-module          NMTOKEN   #IMPLIED
      src-module-index    CDATA     #IMPLIED
@@ -138,7 +138,9 @@
      like-type          NMTOKEN   #IMPLIED
      like-param         CDATA     #IMPLIED>
 
-<!ELEMENT connection-group (whitespace*, (loop|condition)*, connection*)>
+<!ELEMENT connection-group (whitespace*, connection*, where?)>
+
+<!ELEMENT where (whitespace*, (loop|condition)*)>
 
 <!ELEMENT loop (whitespace*, expression*)>
 <!ATTLIST loop
