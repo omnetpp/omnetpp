@@ -1835,12 +1835,13 @@ WhereNode *ConnectionGroupNode::getFirstWhereChild() const
 
 int WhereNode::getNumAttributes() const
 {
-    return 0;
+    return 1;
 }
 
 const char *WhereNode::getAttributeName(int k) const
 {
     switch (k) {
+        case 0: return "at-front";
         default: return 0;
     }
 }
@@ -1848,6 +1849,7 @@ const char *WhereNode::getAttributeName(int k) const
 const char *WhereNode::getAttribute(int k) const
 {
     switch (k) {
+        case 0: return boolToString(atFront);
         default: return 0;
     }
 }
@@ -1855,6 +1857,7 @@ const char *WhereNode::getAttribute(int k) const
 void WhereNode::setAttribute(int k, const char *val)
 {
     switch (k) {
+        case 0: atFront = stringToBool(val); break;
         default: ;
     }
 }
@@ -1862,6 +1865,7 @@ void WhereNode::setAttribute(int k, const char *val)
 const char *WhereNode::getAttributeDefault(int k) const
 {
     switch (k) {
+        case 0: return "false";
         default: return 0;
     }
 }

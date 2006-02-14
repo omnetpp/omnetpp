@@ -1551,7 +1551,8 @@ class ConnectionGroupNode : public NEDElement
  * 
  * <pre>
  * <!ELEMENT where (whitespace*, (loop|condition)*)>
- * 
+ * <!ATTLIST where
+ *      at-front           (true|false) "false">
  * </pre>
  * 
  * @ingroup Data
@@ -1559,6 +1560,7 @@ class ConnectionGroupNode : public NEDElement
 class WhereNode : public NEDElement
 {
   private:
+    bool atFront;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -1580,6 +1582,8 @@ class WhereNode : public NEDElement
 
     /** @name Typed access to attributes, children and siblings */
     //@{
+    bool getAtFront() const  {return atFront;}
+    void setAtFront(bool val)  {atFront = val;}
 
     virtual WhereNode *getNextWhereNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;

@@ -336,6 +336,8 @@ void NEDDTDValidator::validateElement(WhereNode *node)
     };
     checkSeqOfChoices(node, choices, sizeof(choices)/sizeof(Choice));
 
+    const char *vals0[] = {"true","false"};
+    checkEnumeratedAttribute(node, "at-front", vals0, sizeof(vals0)/sizeof(const char *));
 }
 
 void NEDDTDValidator::validateElement(LoopNode *node)

@@ -1076,6 +1076,7 @@ connectiongroup  /* note: semicolon at end is mandatory (cannot be opt_semicolon
                 {
                   ps.inGroup = false;
                   ps.conngroup->appendChild(ps.where);  // XXX appendChild($1) crashes, $1 being NULL (???)
+                  ps.where->setAtFront(true);
                 }
         | '{'
                 {
@@ -1103,6 +1104,7 @@ whereclause
         : WHERE
                 {
                   ps.where = (WhereNode *)createNodeWithTag(NED_WHERE);
+                  ps.where->setAtFront(false); // by default
                 }
           whereitems
         ;
