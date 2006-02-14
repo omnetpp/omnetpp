@@ -1508,7 +1508,7 @@ class ChannelSpecNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;connection-group&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT connection-group (whitespace*, where?, connection*)>
+ * <!ELEMENT connection-group (whitespace*, connection*, where?)>
  * 
  * </pre>
  * 
@@ -1541,8 +1541,8 @@ class ConnectionGroupNode : public NEDElement
 
     virtual ConnectionGroupNode *getNextConnectionGroupNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
-    virtual WhereNode *getFirstWhereChild() const;
     virtual ConnectionNode *getFirstConnectionChild() const;
+    virtual WhereNode *getFirstWhereChild() const;
     //@}
 };
 

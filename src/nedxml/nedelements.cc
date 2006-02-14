@@ -1823,14 +1823,14 @@ WhitespaceNode *ConnectionGroupNode::getFirstWhitespaceChild() const
     return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
 }
 
-WhereNode *ConnectionGroupNode::getFirstWhereChild() const
-{
-    return (WhereNode *)getFirstChildWithTag(NED_WHERE);
-}
-
 ConnectionNode *ConnectionGroupNode::getFirstConnectionChild() const
 {
     return (ConnectionNode *)getFirstChildWithTag(NED_CONNECTION);
+}
+
+WhereNode *ConnectionGroupNode::getFirstWhereChild() const
+{
+    return (WhereNode *)getFirstChildWithTag(NED_WHERE);
 }
 
 int WhereNode::getNumAttributes() const

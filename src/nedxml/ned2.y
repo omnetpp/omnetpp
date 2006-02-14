@@ -88,7 +88,6 @@ struct ParserState
 {
     bool parseExpressions;
     bool storeSourceCode;
-    bool inLoop;
     bool inTypes;
     bool inGroup;
     std::stack<NEDElement *> propertyscope; // top(): where to insert properties as we parse them
@@ -1089,7 +1088,7 @@ connectiongroup  /* note: semicolon at end is mandatory (cannot be opt_semicolon
           connections_nogroup '}' ';'
                 {
                   ps.inGroup = false;
-                  ps.conngroup->appendChild($1);
+                  ps.conngroup->appendChild(ps.where);  // XXX appendChild($1) crashes, $1 being NULL (???)
                 }
         | '{'
                 {
@@ -1212,13 +1211,13 @@ leftgatespec
 leftmod
         : NAME vector
                 {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule( toString(@1) );
                   addVector(ps.conn, "src-module-index",@2,$2);
                 }
         | NAME
                 {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule( toString(@1) );
                 }
         ;
@@ -1243,20 +1242,20 @@ leftgate
 parentleftgate
         : NAME
                 {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
                 }
         | NAME vector
                 {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
                   addVector(ps.conn, "src-gate-index",@2,$2);
                 }
         | NAME PLUSPLUS
                 {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
                   ps.conn->setSrcGatePlusplus(true);

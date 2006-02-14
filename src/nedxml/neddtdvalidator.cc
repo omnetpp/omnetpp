@@ -322,8 +322,8 @@ void NEDDTDValidator::validateElement(ChannelSpecNode *node)
 
 void NEDDTDValidator::validateElement(ConnectionGroupNode *node)
 {
-    int tags[] = {NED_WHITESPACE,NED_WHERE,NED_CONNECTION, NED_NULL};
-    char mult[] = {'*','?','*', 0};
+    int tags[] = {NED_WHITESPACE,NED_CONNECTION,NED_WHERE, NED_NULL};
+    char mult[] = {'*','*','?', 0};
     checkSequence(node, tags, mult);
 
 }

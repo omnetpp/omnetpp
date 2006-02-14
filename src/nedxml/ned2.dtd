@@ -138,7 +138,7 @@
      like-type          NMTOKEN   #IMPLIED
      like-param         CDATA     #IMPLIED>
 
-<!ELEMENT connection-group (whitespace*, where?, connection*)>
+<!ELEMENT connection-group (whitespace*, connection*, where?)>
 
 <!ELEMENT where (whitespace*, (loop|condition)*)>
 
