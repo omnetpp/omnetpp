@@ -54,28 +54,42 @@ void NEDDTDValidatorBase::checkSequence(NEDElement *node, int tags[], char mult[
         NEDError(node, "DTD validation error: child element '%s' unexpected", p->getTagName());
 }
 
+static int isInVector(int a, int v[])
+{
+    for (int i=0; v[i]; i++)  // v[] is zero-terminated
+        if (v[i]==a)
+            return true;
+    return false;
+}
+
 void NEDDTDValidatorBase::tryCheckChoice(NEDElement *node, NEDElement *&curchild, int tags[], char mult)
 {
     // note: 'node' argument is solely used by NEDError() (when curchild==NULL)
     int i;
-    if (mult=='1' || mult=='+')
+    if (mult=='?')
+    {
+        if (curchild && isInVector(curchild->getTagCode(), tags))
+            curchild = curchild->getNextSibling();
+    }
+    else if (mult=='1' || mult=='+')
     {
         if (!curchild)
-             {NEDError(node,"DTD validation error: child element of multiplicity '1' or '+' missing\n"); return;}
+            {NEDError(node,"DTD validation error: child element of multiplicity '1' or '+' missing\n"); return;}
         for (i=0; tags[i]; i++)
-             if (curchild->getTagCode()==tags[i])
-                 break;
+            if (curchild->getTagCode()==tags[i])
+                break;
         if (!tags[i])
             return; // curchild didn't match
         curchild = curchild->getNextSibling();
     }
+
     if (mult=='+' || mult=='*')
     {
         while (curchild)
         {
             for (i=0; tags[i]; i++)
                 if (curchild->getTagCode()==tags[i])
-                   break;
+                    break;
             if (!tags[i])
                 return; // curchild didn't match
             curchild = curchild->getNextSibling();
