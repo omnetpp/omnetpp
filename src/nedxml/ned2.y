@@ -95,8 +95,9 @@ struct ParserState
     std::stack<NEDElement *> blockscope;    // top(): where to insert parameters, gates, etc
     std::stack<NEDElement *> typescope;     // top(): as blockscope, but ignore submodules and connection channels
 
-    /* tmp flags, used with param */
+    /* tmp flags, used with param and gate */
     int paramType;
+    int gateType;
     bool isFunction;
     bool isDefault;
 
@@ -152,8 +153,8 @@ void setComments(NEDElement *node, YYLTYPE pos);
 void setComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos);
 
 ParamNode *addParameter(NEDElement *params, YYLTYPE namepos);
-GateNode *addGate(NEDElement *gates, YYLTYPE namepos, int is_in, int is_vector );
-//SubmoduleNode *addSubmodule(NEDElement *submods, YYLTYPE namepos, YYLTYPE typepos,YYLTYPE likeparampos);
+GateNode *addGate(NEDElement *gates, YYLTYPE namepos);
+//SubmoduleNode *addSubmodule(NEDElement *submods, YYLTYPE namepos, YYLTYPE typepos,YYLTYPE likeparampos); XXXX
 LoopNode *addLoop(NEDElement *conngroup, YYLTYPE varnamepos);
 
 YYLTYPE trimBrackets(YYLTYPE vectorpos);
@@ -805,11 +806,22 @@ gatesitem
         ;
 
 gategroup
-        : condition '{' gates_nogroup '}'
-        | '{' gates_nogroup '}'
+        : opt_condition '{'
+                {
+                    if (ps.inGroup)
+                       ; // FIXME issue error message: nested groups not allowed
+                    ps.inGroup = true;
+                    ps.gategroup = (GateGroupNode *)createNodeWithTag(NED_GATE_GROUP, ps.gates);
+                }
+          gates_nogroup '}'
+                {
+                    ps.inGroup = false;
+                    if ($1)
+                        ps.gategroup->appendChild($1); // append optional condition
+                }
         ;
 
-gates_nogroup   /* same as gates, but without the gategroup rule */
+gates_nogroup   /* FIXME eliminate "nogroup" stuff!!! same as gates, but without the gategroup rule */
         : gates_nogroup gate
                 {
                   //setComments(ps.gate,@2);
@@ -841,17 +853,45 @@ gate
 
 gate_typenamesize
         : gatetype NAME
+                {
+                  ps.gate = addGate(ps.inGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @2);
+                  ps.gate->setType(ps.gateType);
+                }
         | gatetype NAME '[' ']'
-        | gatetype NAME '[' expression ']'
+                {
+                  ps.gate = addGate(ps.inGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @2);
+                  ps.gate->setType(ps.gateType);
+                  ps.gate->setIsVector(true);
+                }
+        | gatetype NAME vector
+                {
+                  ps.gate = addGate(ps.inGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @2);
+                  ps.gate->setType(ps.gateType);
+                  addVector(ps.gate, "vector-size",@3,$3);
+                }
         | NAME
+                {
+                  ps.gate = addGate(ps.inGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @1);
+                }
         | NAME '[' ']'
-        | NAME '[' expression ']'
+                {
+                  ps.gate = addGate(ps.inGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @1);
+                  ps.gate->setIsVector(true);
+                }
+        | NAME vector
+                {
+                  ps.gate = addGate(ps.inGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @1);
+                  addVector(ps.gate, "vector-size",@2,$2);
+                }
         ;
 
 gatetype
         : INPUT_
+                { ps.gateType = NED_GATEDIR_INPUT; }
         | OUTPUT_
+                { ps.gateType = NED_GATEDIR_OUTPUT; }
         | INOUT_
+                { ps.gateType = NED_GATEDIR_INOUT; }
         ;
 
 /*
@@ -1685,12 +1725,10 @@ ParamNode *addParameter(NEDElement *params, YYLTYPE namepos)
    return param;
 }
 
-GateNode *addGate(NEDElement *gates, YYLTYPE namepos, int is_in, int is_vector )
+GateNode *addGate(NEDElement *gates, YYLTYPE namepos)
 {
    GateNode *gate = (GateNode *)createNodeWithTag(NED_GATE,gates);
    gate->setName( toString( namepos) );
-//FIXME   gate->setDirection(is_in ? NED_GATEDIR_INPUT : NED_GATEDIR_OUTPUT);
-//FIXME   gate->setIsVector(is_vector);
    return gate;
 }
 

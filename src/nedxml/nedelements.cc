@@ -1100,14 +1100,13 @@ ConditionNode *PropertyNode::getFirstConditionChild() const
 
 int KeyValueNode::getNumAttributes() const
 {
-    return 2;
+    return 1;
 }
 
 const char *KeyValueNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "key";
-        case 1: return "value";
         default: return 0;
     }
 }
@@ -1116,7 +1115,6 @@ const char *KeyValueNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return key.c_str();
-        case 1: return value.c_str();
         default: return 0;
     }
 }
@@ -1125,7 +1123,6 @@ void KeyValueNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: key = val; break;
-        case 1: value = val; break;
         default: ;
     }
 }
@@ -1134,7 +1131,6 @@ const char *KeyValueNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return "";
-        case 1: return "";
         default: return 0;
     }
 }
@@ -1147,6 +1143,11 @@ KeyValueNode *KeyValueNode::getNextKeyValueNodeSibling() const
 WhitespaceNode *KeyValueNode::getFirstWhitespaceChild() const
 {
     return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+}
+
+LiteralNode *KeyValueNode::getFirstLiteralChild() const
+{
+    return (LiteralNode *)getFirstChildWithTag(NED_LITERAL);
 }
 
 int GatesNode::getNumAttributes() const

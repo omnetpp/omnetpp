@@ -973,10 +973,9 @@ class PropertyNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;key-value&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT key-value (whitespace*)>
+ * <!ELEMENT key-value (whitespace*, literal)>
  * <!ATTLIST key-value
- *      key                CDATA     #IMPLIED
- *      value              CDATA     #IMPLIED>
+ *      key                CDATA     #IMPLIED>
  * </pre>
  * 
  * @ingroup Data
@@ -985,7 +984,6 @@ class KeyValueNode : public NEDElement
 {
   private:
     std::string key;
-    std::string value;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -1009,11 +1007,10 @@ class KeyValueNode : public NEDElement
     //@{
     const char * getKey() const  {return key.c_str();}
     void setKey(const char * val)  {key = val;}
-    const char * getValue() const  {return value.c_str();}
-    void setValue(const char * val)  {value = val;}
 
     virtual KeyValueNode *getNextKeyValueNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
+    virtual LiteralNode *getFirstLiteralChild() const;
     //@}
 };
 
