@@ -562,28 +562,12 @@ paramgroup
                        NEDError(ps.paramgroup,"nested groups are not allowed");
                     ps.inGroup = true;
                 }
-          params_nogroup '}'
+          params '}'
                 {
                     ps.inGroup = false;
                     if ($1)
                         ps.paramgroup->appendChild($1); // append optional condition
                 }
-        ;
-
-params_nogroup   /* FIXME ELIMINATE NOGROUP STUFF!!!!!! same as params, but without the paramgroup rule */
-        : params_nogroup paramsitem_nogroup
-                {
-                  //setComments(ps.param,@2);
-                }
-        | paramsitem_nogroup
-                {
-                  //setComments(ps.param,@1);
-                }
-        ;
-
-paramsitem_nogroup
-        : param
-        | property
         ;
 
 param
@@ -594,6 +578,8 @@ param
           opt_inline_properties opt_condition ';'
                 {
                   ps.propertyscope.pop();
+                  if (ps.inGroup && $4)
+                       NEDError(ps.param,"conditionals inside groups are not allowed");
                   if ($4)
                       ps.param->appendChild($4); // append optional condition
                 }
@@ -709,6 +695,8 @@ pattern_elem
 property
         : property_namevalue opt_condition ';'
                 {
+                  if (ps.inGroup && $2)
+                       NEDError(ps.param,"conditionals inside groups are not allowed");
                   if ($2)
                       ps.property->appendChild($2); // append optional condition
                 }
@@ -815,22 +803,11 @@ gategroup
                        NEDError(ps.gategroup,"nested groups are not allowed");
                     ps.inGroup = true;
                 }
-          gates_nogroup '}'
+          gates '}'
                 {
                     ps.inGroup = false;
                     if ($1)
                         ps.gategroup->appendChild($1); // append optional condition
-                }
-        ;
-
-gates_nogroup   /* FIXME eliminate "nogroup" stuff!!! same as gates, but without the gategroup rule */
-        : gates_nogroup gate
-                {
-                  //setComments(ps.gate,@2);
-                }
-        | gate
-                {
-                  //setComments(ps.gate,@1);
                 }
         ;
 
@@ -845,6 +822,8 @@ gate
           opt_inline_properties opt_condition ';'
                 {
                   ps.propertyscope.pop();
+                  if (ps.inGroup && $4)
+                       NEDError(ps.param,"conditionals inside groups are not allowed");
                   if ($4)
                       ps.gate->appendChild($4); // append optional condition
                 }
@@ -1072,6 +1051,8 @@ connectionsitem
         : connectiongroup
         | connection opt_whereclause ';'
                 {
+                  if (ps.inGroup && $2)
+                       NEDError(ps.param,"conditionals inside groups are not allowed");
                   if ($2)
                       ps.conn->appendChild($2);
                 }
@@ -1085,7 +1066,7 @@ connectiongroup  /* note: semicolon at end is mandatory (cannot be opt_semicolon
                      NEDError(ps.conngroup,"nested groups are not allowed");
                   ps.inGroup = true;
                 }
-          connections_nogroup '}' ';'
+          connections '}' ';'
                 {
                   ps.inGroup = false;
                   ps.conngroup->appendChild(ps.where);  // XXX appendChild($1) crashes, $1 being NULL (???)
@@ -1097,30 +1078,11 @@ connectiongroup  /* note: semicolon at end is mandatory (cannot be opt_semicolon
                      NEDError(ps.conngroup,"nested groups are not allowed");
                   ps.inGroup = true;
                 }
-          connections_nogroup '}' opt_whereclause ';'
+          connections '}' opt_whereclause ';'
                 {
                   ps.inGroup = false;
                   if ($5)
                       ps.conngroup->appendChild($5);
-                }
-        ;
-
-connections_nogroup   /* same as connections, but without the connectiongroup rule */
-        : connections_nogroup connectionsitem_nogroup
-                {
-                  //setComments(ps.gate,@2);
-                }
-        | connectionsitem_nogroup
-                {
-                  //setComments(ps.gate,@1);
-                }
-        ;
-
-connectionsitem_nogroup
-        : connection opt_whereclause ';' /* nested "where" is in fact illegal, but let validation find that out */
-                {
-                  if ($2)
-                      ps.conn->appendChild($2);
                 }
         ;
 
