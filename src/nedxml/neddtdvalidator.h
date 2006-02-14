@@ -64,6 +64,7 @@ class NEDDTDValidator : public NEDDTDValidatorBase
     virtual void validateElement(ConnectionNode *node);
     virtual void validateElement(ChannelSpecNode *node);
     virtual void validateElement(ConnectionGroupNode *node);
+    virtual void validateElement(WhereNode *node);
     virtual void validateElement(LoopNode *node);
     virtual void validateElement(ConditionNode *node);
     virtual void validateElement(ExpressionNode *node);

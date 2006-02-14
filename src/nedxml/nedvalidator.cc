@@ -59,6 +59,7 @@ void  NEDValidatorBase::validateElement(NEDElement *node)
         case NED_CONNECTION: validateElement((ConnectionNode *) node); break;
         case NED_CHANNEL_SPEC: validateElement((ChannelSpecNode *) node); break;
         case NED_CONNECTION_GROUP: validateElement((ConnectionGroupNode *) node); break;
+        case NED_WHERE: validateElement((WhereNode *) node); break;
         case NED_LOOP: validateElement((LoopNode *) node); break;
         case NED_CONDITION: validateElement((ConditionNode *) node); break;
         case NED_EXPRESSION: validateElement((ExpressionNode *) node); break;

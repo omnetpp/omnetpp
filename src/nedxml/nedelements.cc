@@ -1710,14 +1710,9 @@ ChannelSpecNode *ConnectionNode::getFirstChannelSpecChild() const
     return (ChannelSpecNode *)getFirstChildWithTag(NED_CHANNEL_SPEC);
 }
 
-LoopNode *ConnectionNode::getFirstLoopChild() const
+WhereNode *ConnectionNode::getFirstWhereChild() const
 {
-    return (LoopNode *)getFirstChildWithTag(NED_LOOP);
-}
-
-ConditionNode *ConnectionNode::getFirstConditionChild() const
-{
-    return (ConditionNode *)getFirstChildWithTag(NED_CONDITION);
+    return (WhereNode *)getFirstChildWithTag(NED_WHERE);
 }
 
 int ChannelSpecNode::getNumAttributes() const
@@ -1828,19 +1823,67 @@ WhitespaceNode *ConnectionGroupNode::getFirstWhitespaceChild() const
     return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
 }
 
-LoopNode *ConnectionGroupNode::getFirstLoopChild() const
+WhereNode *ConnectionGroupNode::getFirstWhereChild() const
 {
-    return (LoopNode *)getFirstChildWithTag(NED_LOOP);
-}
-
-ConditionNode *ConnectionGroupNode::getFirstConditionChild() const
-{
-    return (ConditionNode *)getFirstChildWithTag(NED_CONDITION);
+    return (WhereNode *)getFirstChildWithTag(NED_WHERE);
 }
 
 ConnectionNode *ConnectionGroupNode::getFirstConnectionChild() const
 {
     return (ConnectionNode *)getFirstChildWithTag(NED_CONNECTION);
+}
+
+int WhereNode::getNumAttributes() const
+{
+    return 0;
+}
+
+const char *WhereNode::getAttributeName(int k) const
+{
+    switch (k) {
+        default: return 0;
+    }
+}
+
+const char *WhereNode::getAttribute(int k) const
+{
+    switch (k) {
+        default: return 0;
+    }
+}
+
+void WhereNode::setAttribute(int k, const char *val)
+{
+    switch (k) {
+        default: ;
+    }
+}
+
+const char *WhereNode::getAttributeDefault(int k) const
+{
+    switch (k) {
+        default: return 0;
+    }
+}
+
+WhereNode *WhereNode::getNextWhereNodeSibling() const
+{
+    return (WhereNode *)getNextSiblingWithTag(NED_WHERE);
+}
+
+WhitespaceNode *WhereNode::getFirstWhitespaceChild() const
+{
+    return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+}
+
+LoopNode *WhereNode::getFirstLoopChild() const
+{
+    return (LoopNode *)getFirstChildWithTag(NED_LOOP);
+}
+
+ConditionNode *WhereNode::getFirstConditionChild() const
+{
+    return (ConditionNode *)getFirstChildWithTag(NED_CONDITION);
 }
 
 int LoopNode::getNumAttributes() const
@@ -3428,6 +3471,7 @@ NEDElement *NEDElementFactory::createNodeWithTag(const char *tagname)
     if (tagname[0]=='c' && !strcmp(tagname,"connection"))  return new ConnectionNode();
     if (tagname[0]=='c' && !strcmp(tagname,"channel-spec"))  return new ChannelSpecNode();
     if (tagname[0]=='c' && !strcmp(tagname,"connection-group"))  return new ConnectionGroupNode();
+    if (tagname[0]=='w' && !strcmp(tagname,"where"))  return new WhereNode();
     if (tagname[0]=='l' && !strcmp(tagname,"loop"))  return new LoopNode();
     if (tagname[0]=='c' && !strcmp(tagname,"condition"))  return new ConditionNode();
     if (tagname[0]=='e' && !strcmp(tagname,"expression"))  return new ExpressionNode();
@@ -3486,6 +3530,7 @@ NEDElement *NEDElementFactory::createNodeWithTag(int tagcode)
         case NED_CONNECTION: return new ConnectionNode();
         case NED_CHANNEL_SPEC: return new ChannelSpecNode();
         case NED_CONNECTION_GROUP: return new ConnectionGroupNode();
+        case NED_WHERE: return new WhereNode();
         case NED_LOOP: return new LoopNode();
         case NED_CONDITION: return new ConditionNode();
         case NED_EXPRESSION: return new ExpressionNode();

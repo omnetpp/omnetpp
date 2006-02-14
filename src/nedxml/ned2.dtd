@@ -116,7 +116,7 @@
 <!ATTLIST connections
      allow-unconnected (true|false) "false">
 
-<!ELEMENT connection (whitespace*, expression*, channel-spec?, (loop|condition)*)>
+<!ELEMENT connection (whitespace*, expression*, channel-spec?, where?)>
 <!ATTLIST connection
      src-module          NMTOKEN   #IMPLIED
      src-module-index    CDATA     #IMPLIED
@@ -138,7 +138,9 @@
      like-type          NMTOKEN   #IMPLIED
      like-param         CDATA     #IMPLIED>
 
-<!ELEMENT connection-group (whitespace*, (loop|condition)*, connection*)>
+<!ELEMENT connection-group (whitespace*, where?, connection*)>
+
+<!ELEMENT where (whitespace*, (loop|condition)*)>
 
 <!ELEMENT loop (whitespace*, expression*)>
 <!ATTLIST loop

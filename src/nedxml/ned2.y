@@ -127,9 +127,10 @@ struct ParserState
     SubmodulesNode *submods;
     SubmoduleNode *submod;
     ConnectionsNode *conns;
+    ConnectionGroupNode *conngroup;
     ConnectionNode *conn;
     ChannelSpecNode *chanspec;
-    ConnectionGroupNode *conngroup;
+    WhereNode *where;
     LoopNode *loop;
     ConditionNode *condition;
 } ps;
@@ -845,11 +846,8 @@ gate
           opt_inline_properties opt_condition ';'
                 {
                   ps.propertyscope.pop();
-                  //XXXX add back:
-                  /*
                   if ($4)
                       ps.gate->appendChild($4); // append optional condition
-                  */
                 }
         ;
 
@@ -1073,14 +1071,39 @@ connections
 
 connectionsitem
         : connectiongroup
-        | connection whereclause ';'
-        | connection ';'
+        | connection opt_whereclause ';'
+                {
+                  if ($2)
+                      ps.conn->appendChild($2);
+                }
         ;
 
 connectiongroup  /* note: semicolon at end is mandatory (cannot be opt_semicolon because it'd be ambiguous where "where" clause in "{a-->b;} where i>0 {c-->d;}" belongs) */
-        : whereclause '{' connections_nogroup '}' ';'
-        | '{' connections_nogroup '}' whereclause ';'
-        | '{' connections_nogroup '}' ';'
+        : whereclause '{'
+                {
+                  if (ps.inGroup)
+                     ; // FIXME issue error message: nested groups not allowed
+                  ps.inGroup = true;
+                  ps.conngroup = (ConnectionGroupNode *)createNodeWithTag(NED_CONNECTION_GROUP, ps.conns);
+                }
+          connections_nogroup '}' ';'
+                {
+                  ps.inGroup = false;
+                  ps.conngroup->appendChild($1);
+                }
+        | '{'
+                {
+                  if (ps.inGroup)
+                     ; // FIXME issue error message: nested groups not allowed
+                  ps.inGroup = true;
+                  ps.conngroup = (ConnectionGroupNode *)createNodeWithTag(NED_CONNECTION_GROUP, ps.conns);
+                }
+          connections_nogroup '}' opt_whereclause ';'
+                {
+                  ps.inGroup = false;
+                  if ($4)
+                      ps.conngroup->appendChild($4);
+                }
         ;
 
 connections_nogroup   /* same as connections, but without the connectiongroup rule */
@@ -1095,12 +1118,26 @@ connections_nogroup   /* same as connections, but without the connectiongroup ru
         ;
 
 connectionsitem_nogroup
-        : connection whereclause ';' /* nested "where" is in fact illegal, but let validation find that out */
-        | connection ';'
+        : connection opt_whereclause ';' /* nested "where" is in fact illegal, but let validation find that out */
+                {
+                  if ($2)
+                      ps.conn->appendChild($2);
+                }
+        ;
+
+opt_whereclause
+        : whereclause
+            { $$ = ps.where; }
+        |
+            { $$ = NULL; }
         ;
 
 whereclause
-        : WHERE whereitems
+        : WHERE
+                {
+                  ps.where = (WhereNode *)createNodeWithTag(NED_WHERE);
+                }
+          whereitems
         ;
 
 whereitems
@@ -1110,13 +1147,17 @@ whereitems
 
 whereitem
         : expression   /* that is, a condition */
+                {
+                  ps.condition = (ConditionNode *)createNodeWithTag(NED_CONDITION, ps.where);
+                  addExpression(ps.condition, "condition",@1,$1);
+                }
         | loop
         ;
 
 loop
         : NAME '=' expression TO expression
                 {
-                  ps.loop = addLoop(ps.conngroup,@1);
+                  ps.loop = addLoop(ps.where, @1);
                   addExpression(ps.loop, "from-value",@3,$3);
                   addExpression(ps.loop, "to-value",@5,$5);
                   //setComments(ps.loop,@1,@5);
