@@ -37,7 +37,7 @@ simple VeryFastQueue extends Queue  // "extends" inherits gates as well (they do
     parameters: // this keyword is optional
         msgPerSec = 1000000;  // no type -> sets base class' parameter
         bool isVeryFast = true;  // add new parameter
-        novalue @addedproperty;	// attach a property to novalue parameter without assigning a value to it
+        novalue @addedproperty; // attach a property to novalue parameter without assigning a value to it
 };
 
 simple QueueWithFourInputs extends Queue
@@ -213,8 +213,8 @@ module Host
         app[i].toTcp <--> { @display("c=red"); delay=0; } <--> tcp.toApp;
 
         // connect both directions separately (impl: 1 bidir obj, plus 2 child objects on-demand)
-        app[i].toTcp$out --> { @display("c=red"); delay=0; } --> tcp.toApp$in; // or .i, .o ?
-        app[i].toTcp$in <-- { @display("c=red"); delay=0; } <-- tcp.toApp$out;
+        app[i].toTcp$o --> { @display("c=red"); delay=0; } --> tcp.toApp$i;
+        app[i].toTcp$i <-- { @display("c=red"); delay=0; } <-- tcp.toApp$o;
 
         tcp.toNetw <--> ip.toTcp;
 
