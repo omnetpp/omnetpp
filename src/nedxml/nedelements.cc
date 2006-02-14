@@ -790,7 +790,7 @@ void ParametersNode::setAttribute(int k, const char *val)
 const char *ParametersNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "true";
+        case 0: return "false";
         default: return 0;
     }
 }

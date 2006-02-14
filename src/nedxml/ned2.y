@@ -151,7 +151,6 @@ void setComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos);
 
 ParamNode *addParameter(NEDElement *params, YYLTYPE namepos);
 GateNode *addGate(NEDElement *gates, YYLTYPE namepos);
-//SubmoduleNode *addSubmodule(NEDElement *submods, YYLTYPE namepos, YYLTYPE typepos,YYLTYPE likeparampos); XXXX
 LoopNode *addLoop(NEDElement *conngroup, YYLTYPE varnamepos);
 
 YYLTYPE trimBrackets(YYLTYPE vectorpos);
@@ -204,7 +203,6 @@ definition
         | compoundmoduledefinition
         | networkdefinition
         | moduleinterfacedefinition
-                { if (ps.storeSourceCode) storeComponentSourceCode(ps.component, @$); } /*FIXME won't work*/
         ;
 
 packagedeclaration         /* TBD package is currently not supported */
@@ -279,6 +277,7 @@ channeldefinition
                   ps.typescope.push(ps.component);
                   ps.blockscope.push(ps.component);
                   ps.parameters = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.component);
+                  ps.parameters->setIsImplicit(true);
                   ps.propertyscope.push(ps.parameters);
                 }
             opt_paramblock
@@ -347,6 +346,7 @@ channelinterfacedefinition
                   ps.typescope.push(ps.component);
                   ps.blockscope.push(ps.component);
                   ps.parameters = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.component);
+                  ps.parameters->setIsImplicit(true);
                   ps.propertyscope.push(ps.parameters);
                 }
             opt_paramblock
@@ -390,6 +390,7 @@ simplemoduledefinition
                   ps.typescope.push(ps.component);
                   ps.blockscope.push(ps.component);
                   ps.parameters = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.component);
+                  ps.parameters->setIsImplicit(true);
                   ps.propertyscope.push(ps.parameters);
                 }
             opt_paramblock
@@ -424,6 +425,7 @@ compoundmoduledefinition
                   ps.typescope.push(ps.component);
                   ps.blockscope.push(ps.component);
                   ps.parameters = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.component);
+                  ps.parameters->setIsImplicit(true);
                   ps.propertyscope.push(ps.parameters);
                 }
             opt_paramblock
@@ -461,6 +463,7 @@ networkdefinition
                   ps.typescope.push(ps.component);
                   ps.blockscope.push(ps.component);
                   ps.parameters = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.component);
+                  ps.parameters->setIsImplicit(true);
                   ps.propertyscope.push(ps.parameters);
                 }
             opt_paramblock
@@ -499,6 +502,7 @@ moduleinterfacedefinition
                   ps.typescope.push(ps.component);
                   ps.blockscope.push(ps.component);
                   ps.parameters = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.component);
+                  ps.parameters->setIsImplicit(true);
                   ps.propertyscope.push(ps.parameters);
                 }
             opt_paramblock
@@ -531,7 +535,7 @@ opt_paramblock
         : opt_params   /* "parameters" keyword is optional */
         | PARAMETERS ':'
                 {
-                  ps.parameters->setIsImplicit(false);  /* FIXME flip the default in the dtd? is-EXplicit=false lenne a default? */
+                  ps.parameters->setIsImplicit(false);
                 }
           opt_params
         ;
@@ -887,9 +891,10 @@ opt_typeblock
 typeblock
         : TYPES ':'
                 {
-                  // FIXME check for further nested types
                   ps.types = (TypesNode *)createNodeWithTag(NED_TYPES, ps.blockscope.top());
                   //setComments(ps.types,@1,@2);
+                  if (ps.inTypes)
+                     NEDError(ps.paramgroup,"more than one level of type nesting is not allowed");
                   ps.inTypes = true;
                 }
            opt_localtypes
@@ -1298,6 +1303,7 @@ channelspec
         | channelspec_header '{'
                 {
                   ps.parameters = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.chanspec);
+                  ps.parameters->setIsImplicit(true);
                   ps.propertyscope.push(ps.parameters);
                 }
             opt_paramblock
@@ -1732,16 +1738,6 @@ GateNode *addGate(NEDElement *gates, YYLTYPE namepos)
    return gate;
 }
 
-//SubmoduleNode *addSubmodule(NEDElement *submods, YYLTYPE namepos, YYLTYPE typepos,YYLTYPE likeparampos)
-//{
-//   SubmoduleNode *submod = (SubmoduleNode *)createNodeWithTag(NED_SUBMODULE,submods);
-//   submod->setName( toString( namepos) );
-////FIXME   submod->setTypeName( toString( typepos) );
-////FIXME   submod->setLikeParam( toString( likeparampos) );
-//
-//   return submod;
-//}
-
 LoopNode *addLoop(NEDElement *conngroup, YYLTYPE varnamepos)
 {
    LoopNode *loop = (LoopNode *)createNodeWithTag(NED_LOOP,conngroup);
@@ -1869,7 +1865,7 @@ IdentNode *createIdent(const char *param, const char *paramindex, const char *mo
 {
    IdentNode *par = (IdentNode *)createNodeWithTag(NED_IDENT);
    par->setName(param);
-//FIXME   if (paramindex) par->setParamIndex(paramindex);
+   // if (paramindex) par->setParamIndex(paramindex);
    if (module) par->setModule(module);
    if (moduleindex) par->setModuleIndex(moduleindex);
    return par;

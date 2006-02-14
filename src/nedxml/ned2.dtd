@@ -61,7 +61,7 @@
 
 <!ELEMENT parameters (whitespace*, (property|param|pattern|param-group)*)>
 <!ATTLIST parameters
-    is-implicit         (true|false)  "true">
+    is-implicit         (true|false)  "false">
 
 <!ELEMENT param-group (whitespace*, (property|param|pattern)*, condition?)>
 

@@ -718,7 +718,7 @@ class ChannelNode : public NEDElement
  * <pre>
  * <!ELEMENT parameters (whitespace*, (property|param|pattern|param-group)*)>
  * <!ATTLIST parameters
- *     is-implicit         (true|false)  "true">
+ *     is-implicit         (true|false)  "false">
  * </pre>
  * 
  * @ingroup Data
