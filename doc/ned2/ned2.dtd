@@ -84,10 +84,9 @@
      is-implicit        (true|false) "false"
      name               NMTOKEN   #REQUIRED>
 
-<!ELEMENT key-value (whitespace*)>
+<!ELEMENT key-value (whitespace*, literal)>
 <!ATTLIST key-value
-     key                CDATA     #IMPLIED
-     value              CDATA     #IMPLIED> <!-- FIXME use text&value, as in literal? or use literal here? -->
+     key                CDATA     #IMPLIED>
 
 <!ELEMENT gates (whitespace*, (gate|gate-group)*)>
 
