@@ -1101,8 +1101,8 @@ connectiongroup  /* note: semicolon at end is mandatory (cannot be opt_semicolon
           connections_nogroup '}' opt_whereclause ';'
                 {
                   ps.inGroup = false;
-                  if ($4)
-                      ps.conngroup->appendChild($4);
+                  if ($5)
+                      ps.conngroup->appendChild($5);
                 }
         ;
 
