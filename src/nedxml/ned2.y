@@ -1719,13 +1719,6 @@ void setComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos)
 //XXX    setRightComment(node, pos);
 }
 
-//ChannelAttrNode *addChanAttr(NEDElement *channel, const char *attrname)
-//{
-//    ChannelAttrNode *chanattr = (ChannelAttrNode *)createNodeWithTag(NED_CHANNEL_ATTR, channel );
-//    chanattr->setName( attrname );
-//    return chanattr;
-//}
-
 ParamNode *addParameter(NEDElement *params, YYLTYPE namepos)
 {
    ParamNode *param = (ParamNode *)createNodeWithTag(NED_PARAM,params);
