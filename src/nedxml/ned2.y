@@ -557,10 +557,10 @@ paramsitem
 paramgroup
         : opt_condition '{'
                 {
-                    if (ps.inGroup)
-                       ; // FIXME issue error message: nested groups not allowed
-                    ps.inGroup = true;
                     ps.paramgroup = (ParamGroupNode *)createNodeWithTag(NED_PARAM_GROUP, ps.parameters);
+                    if (ps.inGroup)
+                       NEDError(ps.paramgroup,"nested groups are not allowed");
+                    ps.inGroup = true;
                 }
           params_nogroup '}'
                 {
@@ -810,10 +810,10 @@ gatesitem
 gategroup
         : opt_condition '{'
                 {
-                    if (ps.inGroup)
-                       ; // FIXME issue error message: nested groups not allowed
-                    ps.inGroup = true;
                     ps.gategroup = (GateGroupNode *)createNodeWithTag(NED_GATE_GROUP, ps.gates);
+                    if (ps.inGroup)
+                       NEDError(ps.gategroup,"nested groups are not allowed");
+                    ps.inGroup = true;
                 }
           gates_nogroup '}'
                 {
@@ -1080,10 +1080,10 @@ connectionsitem
 connectiongroup  /* note: semicolon at end is mandatory (cannot be opt_semicolon because it'd be ambiguous where "where" clause in "{a-->b;} where i>0 {c-->d;}" belongs) */
         : whereclause '{'
                 {
-                  if (ps.inGroup)
-                     ; // FIXME issue error message: nested groups not allowed
-                  ps.inGroup = true;
                   ps.conngroup = (ConnectionGroupNode *)createNodeWithTag(NED_CONNECTION_GROUP, ps.conns);
+                  if (ps.inGroup)
+                     NEDError(ps.conngroup,"nested groups are not allowed");
+                  ps.inGroup = true;
                 }
           connections_nogroup '}' ';'
                 {
@@ -1092,10 +1092,10 @@ connectiongroup  /* note: semicolon at end is mandatory (cannot be opt_semicolon
                 }
         | '{'
                 {
-                  if (ps.inGroup)
-                     ; // FIXME issue error message: nested groups not allowed
-                  ps.inGroup = true;
                   ps.conngroup = (ConnectionGroupNode *)createNodeWithTag(NED_CONNECTION_GROUP, ps.conns);
+                  if (ps.inGroup)
+                     NEDError(ps.conngroup,"nested groups are not allowed");
+                  ps.inGroup = true;
                 }
           connections_nogroup '}' opt_whereclause ';'
                 {
@@ -1608,16 +1608,16 @@ int runparse (NEDParser *p,NedFileNode *nf,bool parseexpr, bool storesrc, const 
     try {
         ret = yyparse();
     } catch (NEDException *e) {
-        NEDError(NULL, "internal error while parsing: %s", e->errorMessage());
+        INTERNAL_ERROR1(NULL, "error during parsing: %s", e->errorMessage());
         delete e;
         return 0;
     }
 
     // more sanity checks
     if (ps.propertyscope.size()!=1 || ps.propertyscope.top()!=ps.nedfile)
-        NEDError(NULL, "internal error while parsing: imbalanced propertyscope");
+        INTERNAL_ERROR0(NULL, "error during parsing: imbalanced propertyscope");
     if (!ps.blockscope.empty() || !ps.typescope.empty())
-        NEDError(NULL, "internal error while parsing: imbalanced blockscope or typescope");
+        INTERNAL_ERROR0(NULL, "error during parsing: imbalanced blockscope or typescope");
 
     return ret;
 }
