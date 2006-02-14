@@ -3,12 +3,6 @@
   targetNamespace='http://omnetpp.org/schema/ned2'
   xmlns:ned2='http://omnetpp.org/schema/ned2'>
 
-  <complexType name='files'>
-   <sequence>
-    <element name='ned-file' type='ned2:ned-file' minOccurs='0' maxOccurs='unbounded'/>
-   </sequence>
-  </complexType>
-
   <complexType name='ned-file'>
    <sequence>
     <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
@@ -98,12 +92,32 @@
    <attribute name='is-network' type='boolean' default='false'/>
   </complexType>
 
+  <complexType name='channel-interface'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='extends' type='ned2:extends' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='parameters' type='ned2:parameters' minOccurs='0' maxOccurs='1'/>
+   </sequence>
+   <attribute name='name' type='NMTOKEN' use='required'/>
+  </complexType>
+
+  <complexType name='channel'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='extends' type='ned2:extends' minOccurs='0' maxOccurs='1'/>
+    <element name='interface-name' type='ned2:interface-name' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='parameters' type='ned2:parameters' minOccurs='0' maxOccurs='1'/>
+   </sequence>
+   <attribute name='name' type='NMTOKEN' use='required'/>
+  </complexType>
+
   <complexType name='parameters'>
    <sequence>
     <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
     <choice minOccurs='0' maxOccurs='unbounded'>
      <element name='property' type='ned2:property'/>
      <element name='param' type='ned2:param'/>
+     <element name='pattern' type='ned2:pattern'/>
      <element name='param-group' type='ned2:param-group'/>
     </choice>
    </sequence>
@@ -117,6 +131,7 @@
     <choice minOccurs='0' maxOccurs='unbounded'>
      <element name='property' type='ned2:property'/>
      <element name='param' type='ned2:param'/>
+     <element name='pattern' type='ned2:pattern'/>
     </choice>
    </sequence>
   </complexType>
@@ -131,6 +146,18 @@
    <attribute name='is-function' type='boolean' default='false'/>
    <attribute name='name' type='NMTOKEN' use='required'/>
    <attribute name='value' type='string' use='optional'/>
+   <attribute name='is-default' type='boolean' default='false'/>
+  </complexType>
+
+  <complexType name='pattern'>
+   <sequence>
+    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='expression' type='ned2:expression' minOccurs='0' maxOccurs='1'/>
+    <element name='property' type='ned2:property' minOccurs='0' maxOccurs='unbounded'/>
+   </sequence>
+   <attribute name='pattern' type='string' use='required'/>
+   <attribute name='value' type='string' use='required'/>
+   <attribute name='is-default' type='boolean' default='false'/>
   </complexType>
 
   <complexType name='property'>
@@ -145,9 +172,9 @@
   <complexType name='key-value'>
    <sequence>
     <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='literal' type='ned2:literal'/>
    </sequence>
    <attribute name='key' type='string' use='optional'/>
-   <attribute name='value' type='string' use='optional'/>
   </complexType>
 
   <complexType name='gates'>
@@ -222,16 +249,15 @@
      <element name='connection-group' type='ned2:connection-group'/>
     </choice>
    </sequence>
-   <attribute name='check-unconnected' type='boolean' default='true'/>
+   <attribute name='allow-unconnected' type='boolean' default='false'/>
   </complexType>
 
   <complexType name='connection'>
    <sequence>
     <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
     <element name='expression' type='ned2:expression' minOccurs='0' maxOccurs='unbounded'/>
-    <element name='parameters' type='ned2:parameters' minOccurs='0' maxOccurs='1'/>
+    <element name='channel-spec' type='ned2:channel-spec' minOccurs='0' maxOccurs='1'/>
    </sequence>
-   <attribute name='channel-name' type='NMTOKEN' use='optional'/>
    <attribute name='src-module' type='NMTOKEN' use='optional'/>
    <attribute name='src-module-index' type='string' use='optional'/>
    <attribute name='src-gate' type='NMTOKEN' use='required'/>
@@ -247,23 +273,15 @@
    <attribute name='arrow-direction' type='string' use='required'/>
   </complexType>
 
-  <complexType name='channel-interface'>
+  <complexType name='channel-spec'>
    <sequence>
     <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
-    <element name='extends' type='ned2:extends' minOccurs='0' maxOccurs='unbounded'/>
+    <element name='expression' type='ned2:expression' minOccurs='0' maxOccurs='unbounded'/>
     <element name='parameters' type='ned2:parameters' minOccurs='0' maxOccurs='1'/>
    </sequence>
-   <attribute name='name' type='NMTOKEN' use='required'/>
-  </complexType>
-
-  <complexType name='channel'>
-   <sequence>
-    <element name='whitespace' type='ned2:whitespace' minOccurs='0' maxOccurs='unbounded'/>
-    <element name='extends' type='ned2:extends' minOccurs='0' maxOccurs='1'/>
-    <element name='interface-name' type='ned2:interface-name' minOccurs='0' maxOccurs='unbounded'/>
-    <element name='parameters' type='ned2:parameters' minOccurs='0' maxOccurs='1'/>
-   </sequence>
-   <attribute name='name' type='NMTOKEN' use='required'/>
+   <attribute name='type' type='NMTOKEN' use='optional'/>
+   <attribute name='like-type' type='NMTOKEN' use='optional'/>
+   <attribute name='like-param' type='string' use='optional'/>
   </complexType>
 
   <complexType name='connection-group'>

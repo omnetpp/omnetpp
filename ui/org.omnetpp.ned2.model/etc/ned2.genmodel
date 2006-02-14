@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <genmodel:GenModel xmi:version="2.0"
     xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
-    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" copyrightText=""
-    modelDirectory="/org.omnetpp.ned2.model/src" editDirectory="/org.omnetpp.ned2.provider.tree/src"
-    editorDirectory="/org.omnetpp.ned2.editor.tree/src" modelPluginID="org.omnetpp.ned2.model"
-    templateDirectory="" redirection="" modelName="ned2" modelPluginClass="org.omnetpp.ned2.model.ModelPlugin"
-    editPluginClass="org.omnetpp.ned2.provider.tree.Ned2TreeProviderPlugin" editorPluginClass="org.omnetpp.ned2.editor.tree.Ned2TreeEditorPlugin"
-    rootImplementsInterface="" suppressInterfaces="true" featureMapWrapperInterface=""
-    featureMapWrapperInternalInterface="" featureMapWrapperClass="" codeFormatting="true"
-    testSuiteClass="org.omnetpp.ned2.model.tests.Ned2AllTests" booleanFlagsField=""
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/org.omnetpp.ned2.model/src"
+    editDirectory="/org.omnetpp.ned2.provider/src" editorDirectory="/org.omnetpp.ned2.editor.tree/src"
+    modelPluginID="org.omnetpp.ned2.model" modelName="ned2" modelPluginClass="org.omnetpp.ned2.model.Ned2ModelPlugin"
+    editPluginClass="org.omnetpp.ned2.provider.Ned2EditPlugin" editorPluginClass="org.omnetpp.ned2.editor.tree.Ned2EditorPlugin"
+    suppressInterfaces="true" featureMapWrapperClass="" codeFormatting="true" testSuiteClass="org.omnetpp.ned2.model.tests.ned2AllTests"
     importerID="org.eclipse.xsd.ecore.importer">
   <foreignModel>ned2.xsd</foreignModel>
   <genPackages prefix="Ned2" basePackage="org.omnetpp" resource="XML" disposableProviderFactory="true"
       interfacePackageSuffix="model" metaDataPackageSuffix="model.meta" classPackageSuffix="model.impl"
-      utilityPackageSuffix="model.util" providerPackageSuffix="provider.tree" presentationPackageSuffix="editor.tree"
-      testsPackageSuffix="model.tests" ecorePackage="ned2.ecore#/">
+      utilityPackageSuffix="model.util" presentationPackageSuffix="editor.tree" testsPackageSuffix="model.tests"
+      ecorePackage="ned2.ecore#/">
     <genClasses ecoreClass="ned2.ecore#//Channel">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Channel/whitespace"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Channel/extends"/>
@@ -27,6 +24,14 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//ChannelInterface/extends"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//ChannelInterface/parameters"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//ChannelInterface/name"/>
+    </genClasses>
+    <genClasses ecoreClass="ned2.ecore#//ChannelSpec">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//ChannelSpec/whitespace"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//ChannelSpec/expression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//ChannelSpec/parameters"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//ChannelSpec/likeParam"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//ChannelSpec/likeType"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//ChannelSpec/type"/>
     </genClasses>
     <genClasses ecoreClass="ned2.ecore#//CompoundModule">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//CompoundModule/whitespace"/>
@@ -48,10 +53,8 @@
     <genClasses ecoreClass="ned2.ecore#//Connection">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Connection/whitespace"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Connection/expression"/>
-      <genFeatures property="None" children="true" createChild="true" propertyCategory=""
-          propertyDescription="" ecoreFeature="ecore:EReference ned2.ecore#//Connection/parameters"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Connection/channelSpec"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Connection/arrowDirection"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Connection/channelName"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Connection/destGate"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Connection/destGateIndex"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Connection/destGatePlusplus"/>
@@ -77,37 +80,27 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute ned2.ecore#//Connections/group"/>
       <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned2.ecore#//Connections/connection"/>
       <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned2.ecore#//Connections/connectionGroup"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Connections/checkUnconnected"/>
-    </genClasses>
-    <genClasses ecoreClass="ned2.ecore#//Const">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Const/whitespace"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Const/text"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Const/type"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Const/unitType"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Const/value"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Connections/allowUnconnected"/>
     </genClasses>
     <genClasses ecoreClass="ned2.ecore#//Expression">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Expression/whitespace"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Expression/operator"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Expression/function"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Expression/ref"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Expression/const"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Expression/ident"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Expression/literal"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Expression/target"/>
     </genClasses>
     <genClasses ecoreClass="ned2.ecore#//Extends">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Extends/whitespace"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Extends/name"/>
     </genClasses>
-    <genClasses ecoreClass="ned2.ecore#//Files">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Files/nedFile"/>
-    </genClasses>
     <genClasses ecoreClass="ned2.ecore#//Function">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Function/whitespace"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute ned2.ecore#//Function/group"/>
       <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned2.ecore#//Function/operator"/>
       <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned2.ecore#//Function/function"/>
-      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned2.ecore#//Function/ref"/>
-      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned2.ecore#//Function/const"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned2.ecore#//Function/ident"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned2.ecore#//Function/literal"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Function/name"/>
     </genClasses>
     <genClasses ecoreClass="ned2.ecore#//Gate">
@@ -130,6 +123,13 @@
       <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned2.ecore#//Gates/gate"/>
       <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned2.ecore#//Gates/gateGroup"/>
     </genClasses>
+    <genClasses ecoreClass="ned2.ecore#//Ident">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Ident/whitespace"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Ident/expression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Ident/module"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Ident/moduleIndex"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Ident/name"/>
+    </genClasses>
     <genClasses ecoreClass="ned2.ecore#//Import">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Import/whitespace"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Import/filename"/>
@@ -140,11 +140,19 @@
     </genClasses>
     <genClasses ecoreClass="ned2.ecore#//KeyValue">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//KeyValue/whitespace"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//KeyValue/literal"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//KeyValue/key"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//KeyValue/value"/>
+    </genClasses>
+    <genClasses ecoreClass="ned2.ecore#//Literal">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Literal/whitespace"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Literal/text"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Literal/type"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Literal/unitType"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Literal/value"/>
     </genClasses>
     <genClasses ecoreClass="ned2.ecore#//Loop">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Loop/whitespace"/>
+      <genFeatures property="None" children="true" createChild="true" propertyCategory=""
+          propertyDescription="" ecoreFeature="ecore:EReference ned2.ecore#//Loop/whitespace"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Loop/expression"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Loop/fromValue"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Loop/paramName"/>
@@ -161,7 +169,7 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//NedFile/whitespace"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute ned2.ecore#//NedFile/group"/>
       <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned2.ecore#//NedFile/import"/>
-      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned2.ecore#//NedFile/propertydef"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned2.ecore#//NedFile/propertyDecl"/>
       <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned2.ecore#//NedFile/property"/>
       <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned2.ecore#//NedFile/channel"/>
       <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned2.ecore#//NedFile/channelInterface"/>
@@ -176,17 +184,17 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute ned2.ecore#//Operator/group"/>
       <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned2.ecore#//Operator/operator"/>
       <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned2.ecore#//Operator/function"/>
-      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned2.ecore#//Operator/ref"/>
-      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned2.ecore#//Operator/const"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned2.ecore#//Operator/ident"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned2.ecore#//Operator/literal"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Operator/name"/>
     </genClasses>
     <genClasses ecoreClass="ned2.ecore#//Param">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Param/whitespace"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Param/expression"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Param/property"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Param/isDefault"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Param/isFunction"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Param/name"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Param/qualifier"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Param/type"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Param/value"/>
     </genClasses>
@@ -195,6 +203,7 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute ned2.ecore#//Parameters/group"/>
       <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned2.ecore#//Parameters/property"/>
       <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned2.ecore#//Parameters/param"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned2.ecore#//Parameters/pattern"/>
       <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned2.ecore#//Parameters/paramGroup"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Parameters/isImplicit"/>
     </genClasses>
@@ -204,26 +213,27 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute ned2.ecore#//ParamGroup/group"/>
       <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned2.ecore#//ParamGroup/property"/>
       <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned2.ecore#//ParamGroup/param"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference ned2.ecore#//ParamGroup/pattern"/>
+    </genClasses>
+    <genClasses ecoreClass="ned2.ecore#//Pattern">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Pattern/whitespace"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Pattern/expression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Pattern/property"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Pattern/isDefault"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Pattern/pattern"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Pattern/value"/>
     </genClasses>
     <genClasses ecoreClass="ned2.ecore#//Property">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Property/whitespace"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Property/keyValue"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Property/property"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Property/isImplicit"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Property/name"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Property/qualifier"/>
     </genClasses>
-    <genClasses ecoreClass="ned2.ecore#//Propertydef">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Propertydef/whitespace"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Propertydef/keyValue"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Propertydef/property"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Propertydef/name"/>
-    </genClasses>
-    <genClasses ecoreClass="ned2.ecore#//Ref">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Ref/whitespace"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//Ref/expression"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Ref/module"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Ref/moduleIndex"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//Ref/name"/>
+    <genClasses ecoreClass="ned2.ecore#//PropertyDecl">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//PropertyDecl/whitespace"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//PropertyDecl/keyValue"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//PropertyDecl/property"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ned2.ecore#//PropertyDecl/name"/>
     </genClasses>
     <genClasses ecoreClass="ned2.ecore#//SimpleModule">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ned2.ecore#//SimpleModule/whitespace"/>
