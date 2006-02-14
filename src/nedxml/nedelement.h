@@ -202,7 +202,8 @@ class NEDElement
      * the default value of the kth attribute, as defined in the DTD.
      *
      * It should return NULL if k is out of range (i.e. negative or greater than
-     * getNumAttributes()).
+     * getNumAttributes()), or if the attribute is #REQUIRED; and return ""
+     * if the attribute is #IMPLIED.
      */
     virtual const char *getAttributeDefault(int k) const = 0;
 

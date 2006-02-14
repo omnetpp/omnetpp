@@ -168,7 +168,7 @@ void NEDDTDValidator::validateElement(ParamNode *node)
     char mult[] = {'*','?','*', 0};
     checkSequence(node, tags, mult);
 
-    const char *vals0[] = {"double","int","string","bool","xml"};
+    const char *vals0[] = {"double","int","string","bool","xml",""};
     checkEnumeratedAttribute(node, "type", vals0, sizeof(vals0)/sizeof(const char *));
     const char *vals1[] = {"true","false"};
     checkEnumeratedAttribute(node, "is-function", vals1, sizeof(vals1)/sizeof(const char *));
@@ -296,14 +296,14 @@ void NEDDTDValidator::validateElement(ConnectionNode *node)
     checkNameAttribute(node, "src-gate");
     const char *vals3[] = {"true","false"};
     checkEnumeratedAttribute(node, "src-gate-plusplus", vals3, sizeof(vals3)/sizeof(const char *));
-    const char *vals5[] = {"i","o"};
+    const char *vals5[] = {"i","o",""};
     checkEnumeratedAttribute(node, "src-gate-subg", vals5, sizeof(vals5)/sizeof(const char *));
     checkNameAttribute(node, "dest-module");
     checkRequiredAttribute(node, "dest-gate");
     checkNameAttribute(node, "dest-gate");
     const char *vals9[] = {"true","false"};
     checkEnumeratedAttribute(node, "dest-gate-plusplus", vals9, sizeof(vals9)/sizeof(const char *));
-    const char *vals11[] = {"i","o"};
+    const char *vals11[] = {"i","o",""};
     checkEnumeratedAttribute(node, "dest-gate-subg", vals11, sizeof(vals11)/sizeof(const char *));
     checkRequiredAttribute(node, "arrow-direction");
     const char *vals12[] = {"l2r","r2l","bidir"};

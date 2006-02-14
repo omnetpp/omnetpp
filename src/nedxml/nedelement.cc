@@ -117,7 +117,7 @@ void NEDElement::applyDefaults()
     for (int i=0; i<n; i++)
     {
         const char *defaultval = getAttributeDefault(i);
-        if (defaultval && defaultval[0])
+        if (defaultval)
             setAttribute(i,defaultval);
     }
 }

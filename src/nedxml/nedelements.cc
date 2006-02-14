@@ -29,16 +29,16 @@ static const char *arrowdir_vals[] = {"l2r", "r2l", "bidir"};
 static int arrowdir_nums[] = {NED_ARROWDIR_L2R, NED_ARROWDIR_R2L, NED_ARROWDIR_BIDIR};
 static const int arrowdir_n = 3;
 
-static const char *partype_vals[] = {"double", "int", "string", "bool", "xml"};
-static int partype_nums[] = {NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};
-static const int partype_n = 5;
+static const char *partype_vals[] = {"", "double", "int", "string", "bool", "xml"};
+static int partype_nums[] = {NED_PARTYPE_NONE, NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};
+static const int partype_n = 6;
 
 static const char *littype_vals[] = {"double", "int", "string", "bool", "unit"};
 static int littype_nums[] = {NED_CONST_DOUBLE, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_UNIT};
 static const int littype_n = 5;
 
-static const char *subgate_vals[] = {"i", "o", ""};
-static int subgate_nums[] = {NED_SUBGATE_I, NED_SUBGATE_O, NED_SUBGATE_BOTH};
+static const char *subgate_vals[] = {"", "i", "o"};
+static int subgate_nums[] = {NED_SUBGATE_NONE, NED_SUBGATE_I, NED_SUBGATE_O};
 static const int subgate_n = 3;
 
 int FilesNode::getNumAttributes() const
@@ -124,7 +124,7 @@ void NedFileNode::setAttribute(int k, const char *val)
 const char *NedFileNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
+        case 0: return NULL;
         case 1: return "";
         default: return 0;
     }
@@ -215,8 +215,8 @@ void WhitespaceNode::setAttribute(int k, const char *val)
 const char *WhitespaceNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
-        case 1: return "";
+        case 0: return NULL;
+        case 1: return NULL;
         default: return 0;
     }
 }
@@ -258,7 +258,7 @@ void ImportNode::setAttribute(int k, const char *val)
 const char *ImportNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
+        case 0: return NULL;
         default: return 0;
     }
 }
@@ -305,7 +305,7 @@ void PropertyDeclNode::setAttribute(int k, const char *val)
 const char *PropertyDeclNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
+        case 0: return NULL;
         default: return 0;
     }
 }
@@ -362,7 +362,7 @@ void ExtendsNode::setAttribute(int k, const char *val)
 const char *ExtendsNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
+        case 0: return NULL;
         default: return 0;
     }
 }
@@ -409,7 +409,7 @@ void InterfaceNameNode::setAttribute(int k, const char *val)
 const char *InterfaceNameNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
+        case 0: return NULL;
         default: return 0;
     }
 }
@@ -456,7 +456,7 @@ void SimpleModuleNode::setAttribute(int k, const char *val)
 const char *SimpleModuleNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
+        case 0: return NULL;
         default: return 0;
     }
 }
@@ -523,7 +523,7 @@ void ModuleInterfaceNode::setAttribute(int k, const char *val)
 const char *ModuleInterfaceNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
+        case 0: return NULL;
         default: return 0;
     }
 }
@@ -588,7 +588,7 @@ void CompoundModuleNode::setAttribute(int k, const char *val)
 const char *CompoundModuleNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
+        case 0: return NULL;
         case 1: return "false";
         default: return 0;
     }
@@ -671,7 +671,7 @@ void ChannelInterfaceNode::setAttribute(int k, const char *val)
 const char *ChannelInterfaceNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
+        case 0: return NULL;
         default: return 0;
     }
 }
@@ -728,7 +728,7 @@ void ChannelNode::setAttribute(int k, const char *val)
 const char *ChannelNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
+        case 0: return NULL;
         default: return 0;
     }
 }
@@ -940,7 +940,7 @@ const char *ParamNode::getAttributeDefault(int k) const
     switch (k) {
         case 0: return "";
         case 1: return "false";
-        case 2: return "";
+        case 2: return NULL;
         case 3: return "";
         case 4: return "false";
         default: return 0;
@@ -1005,8 +1005,8 @@ void PatternNode::setAttribute(int k, const char *val)
 const char *PatternNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
-        case 1: return "";
+        case 0: return NULL;
+        case 1: return NULL;
         case 2: return "false";
         default: return 0;
     }
@@ -1068,7 +1068,7 @@ const char *PropertyNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return "false";
-        case 1: return "";
+        case 1: return NULL;
         default: return 0;
     }
 }
@@ -1292,9 +1292,9 @@ void GateNode::setAttribute(int k, const char *val)
 const char *GateNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
-        case 1: return "";
-        case 2: return false;
+        case 0: return NULL;
+        case 1: return NULL;
+        case 2: return "false";
         case 3: return "";
         default: return 0;
     }
@@ -1480,7 +1480,7 @@ void SubmoduleNode::setAttribute(int k, const char *val)
 const char *SubmoduleNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
+        case 0: return NULL;
         case 1: return "";
         case 2: return "";
         case 3: return "";
@@ -1659,17 +1659,17 @@ const char *ConnectionNode::getAttributeDefault(int k) const
     switch (k) {
         case 0: return "";
         case 1: return "";
-        case 2: return "";
+        case 2: return NULL;
         case 3: return "false";
         case 4: return "";
         case 5: return "";
         case 6: return "";
         case 7: return "";
-        case 8: return "";
+        case 8: return NULL;
         case 9: return "false";
         case 10: return "";
         case 11: return "";
-        case 12: return "";
+        case 12: return NULL;
         default: return 0;
     }
 }
@@ -1855,7 +1855,7 @@ void LoopNode::setAttribute(int k, const char *val)
 const char *LoopNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
+        case 0: return NULL;
         case 1: return "";
         case 2: return "";
         default: return 0;
@@ -2028,7 +2028,7 @@ void OperatorNode::setAttribute(int k, const char *val)
 const char *OperatorNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
+        case 0: return NULL;
         default: return 0;
     }
 }
@@ -2095,7 +2095,7 @@ void FunctionNode::setAttribute(int k, const char *val)
 const char *FunctionNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
+        case 0: return NULL;
         default: return 0;
     }
 }
@@ -2170,7 +2170,7 @@ const char *IdentNode::getAttributeDefault(int k) const
     switch (k) {
         case 0: return "";
         case 1: return "";
-        case 2: return "";
+        case 2: return NULL;
         default: return 0;
     }
 }
@@ -2237,7 +2237,7 @@ void LiteralNode::setAttribute(int k, const char *val)
 const char *LiteralNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
+        case 0: return NULL;
         case 1: return "";
         case 2: return "";
         case 3: return "";
@@ -2392,7 +2392,7 @@ void CplusplusNode::setAttribute(int k, const char *val)
 const char *CplusplusNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
+        case 0: return NULL;
         case 1: return "";
         case 2: return "\n";
         case 3: return "\n";
@@ -2451,7 +2451,7 @@ void StructDeclNode::setAttribute(int k, const char *val)
 const char *StructDeclNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
+        case 0: return NULL;
         case 1: return "";
         case 2: return "\n";
         case 3: return "\n";
@@ -2513,7 +2513,7 @@ void ClassDeclNode::setAttribute(int k, const char *val)
 const char *ClassDeclNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
+        case 0: return NULL;
         case 1: return "false";
         case 2: return "";
         case 3: return "\n";
@@ -2573,7 +2573,7 @@ void MessageDeclNode::setAttribute(int k, const char *val)
 const char *MessageDeclNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
+        case 0: return NULL;
         case 1: return "";
         case 2: return "\n";
         case 3: return "\n";
@@ -2632,7 +2632,7 @@ void EnumDeclNode::setAttribute(int k, const char *val)
 const char *EnumDeclNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
+        case 0: return NULL;
         case 1: return "";
         case 2: return "\n";
         case 3: return "\n";
@@ -2697,7 +2697,7 @@ void EnumNode::setAttribute(int k, const char *val)
 const char *EnumNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
+        case 0: return NULL;
         case 1: return "";
         case 2: return "";
         case 3: return "";
@@ -2819,7 +2819,7 @@ void EnumFieldNode::setAttribute(int k, const char *val)
 const char *EnumFieldNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
+        case 0: return NULL;
         case 1: return "";
         case 2: return "";
         case 3: return "\n";
@@ -2884,7 +2884,7 @@ void MessageNode::setAttribute(int k, const char *val)
 const char *MessageNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
+        case 0: return NULL;
         case 1: return "";
         case 2: return "";
         case 3: return "";
@@ -2961,7 +2961,7 @@ void ClassNode::setAttribute(int k, const char *val)
 const char *ClassNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
+        case 0: return NULL;
         case 1: return "";
         case 2: return "";
         case 3: return "";
@@ -3038,7 +3038,7 @@ void StructNode::setAttribute(int k, const char *val)
 const char *StructNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
+        case 0: return NULL;
         case 1: return "";
         case 2: return "";
         case 3: return "";
@@ -3183,7 +3183,7 @@ void FieldNode::setAttribute(int k, const char *val)
 const char *FieldNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
+        case 0: return NULL;
         case 1: return "";
         case 2: return "false";
         case 3: return "false";
@@ -3304,7 +3304,7 @@ void MsgpropertyNode::setAttribute(int k, const char *val)
 const char *MsgpropertyNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
+        case 0: return NULL;
         case 1: return "";
         case 2: return "";
         case 3: return "\n";
@@ -3354,7 +3354,7 @@ void UnknownNode::setAttribute(int k, const char *val)
 const char *UnknownNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return "";
+        case 0: return NULL;
         default: return 0;
     }
 }

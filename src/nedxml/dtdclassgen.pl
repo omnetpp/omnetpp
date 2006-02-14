@@ -257,9 +257,9 @@ print H "};\n\n";
 
 print H "enum {NED_GATEDIR_INPUT, NED_GATEDIR_OUTPUT, NED_GATEDIR_INOUT};\n";
 print H "enum {NED_ARROWDIR_R2L, NED_ARROWDIR_L2R, NED_ARROWDIR_BIDIR};\n";
-print H "enum {NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};\n";
+print H "enum {NED_PARTYPE_NONE, NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};\n";
 print H "enum {NED_CONST_DOUBLE, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_UNIT};\n";
-print H "enum {NED_SUBGATE_I, NED_SUBGATE_O, NED_SUBGATE_BOTH};\n";
+print H "enum {NED_SUBGATE_NONE, NED_SUBGATE_I, NED_SUBGATE_O};\n";
 
 print H "\n";
 
@@ -271,16 +271,16 @@ print CC "static const char *arrowdir_vals[] = {\"l2r\", \"r2l\", \"bidir\"};\n"
 print CC "static int arrowdir_nums[] = {NED_ARROWDIR_L2R, NED_ARROWDIR_R2L, NED_ARROWDIR_BIDIR};\n";
 print CC "static const int arrowdir_n = 3;\n";
 print CC "\n";
-print CC "static const char *partype_vals[] = {\"double\", \"int\", \"string\", \"bool\", \"xml\"};\n";
-print CC "static int partype_nums[] = {NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};\n";
-print CC "static const int partype_n = 5;\n";
+print CC "static const char *partype_vals[] = {\"\", \"double\", \"int\", \"string\", \"bool\", \"xml\"};\n";
+print CC "static int partype_nums[] = {NED_PARTYPE_NONE, NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};\n";
+print CC "static const int partype_n = 6;\n";
 print CC "\n";
 print CC "static const char *littype_vals[] = {\"double\", \"int\", \"string\", \"bool\", \"unit\"};\n";
 print CC "static int littype_nums[] = {NED_CONST_DOUBLE, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_UNIT};\n";
 print CC "static const int littype_n = 5;\n";
 print CC "\n";
-print CC "static const char *subgate_vals[] = {\"i\", \"o\", \"\"};\n";
-print CC "static int subgate_nums[] = {NED_SUBGATE_I, NED_SUBGATE_O, NED_SUBGATE_BOTH};\n";
+print CC "static const char *subgate_vals[] = {\"\", \"i\", \"o\"};\n";
+print CC "static int subgate_nums[] = {NED_SUBGATE_NONE, NED_SUBGATE_I, NED_SUBGATE_O};\n";
 print CC "static const int subgate_n = 3;\n";
 print CC "\n";
 
@@ -435,8 +435,10 @@ foreach $element (@elements)
     {
         $attval = $attvals[$i];
         $attval =~ s/\&#10;/\\n/g;
-        if ($attval eq "#REQUIRED" || $attval eq "#IMPLIED") {
+        if ($attval eq "#IMPLIED") {
             print CC "        case $i: return \"\";\n";
+        } elsif ($attval eq "#REQUIRED") {
+            print CC "        case $i: return NULL;\n";
         } else {
             print CC "        case $i: return $attval;\n";
         }
@@ -718,6 +720,9 @@ foreach $element (@elements)
                $vals .= "\"".$e."\",";
             }
             $vals =~ s/,$//;
+            if ($attval eq "#IMPLIED") {
+               $vals .= ",\"\"";
+            }
             print DTDVAL_CC "    const char *vals${i}[] = {$vals};\n";
             print DTDVAL_CC "    checkEnumeratedAttribute(node, \"$attname\", vals$i, sizeof(vals$i)/sizeof(const char *));\n";
         }

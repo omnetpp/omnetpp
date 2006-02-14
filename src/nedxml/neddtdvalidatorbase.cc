@@ -16,6 +16,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdio.h>
+#include <assert.h>
 #include "nederror.h"
 #include "neddtdvalidatorbase.h"
 
@@ -108,28 +109,29 @@ void NEDDTDValidatorBase::checkEmpty(NEDElement *node)
 void NEDDTDValidatorBase::checkRequiredAttribute(NEDElement *node, const char *attr)
 {
     const char *s = node->getAttribute(attr);
-    if (!s || !*s)
-        NEDError(node,"DTD validation error: required attribute %s is empty", attr);
+    assert(s);
+    if (!*s)
+        NEDError(node,"DTD validation error: required attribute '%s' is empty", attr);
 }
 
 void NEDDTDValidatorBase::checkEnumeratedAttribute(NEDElement *node, const char *attr, const char *vals[], int n)
 {
     const char *s = node->getAttribute(attr);
-    if (!s || !*s)
-        {NEDError(node,"DTD validation error: required attribute %s is empty", attr); return;}
+    assert(s);
     for (int i=0; i<n; i++)
         if (!strcmp(s, vals[i]))
             return;
     if (n==0)
-        INTERNAL_ERROR1(node,"no allowed values for enumerated attribute %s", attr);
-    NEDError(node,"DTD validation error: invalid value for attribute %s, not one of the "
-                  "enumerated values ('%s',...)", attr, vals[0]);
+        INTERNAL_ERROR1(node,"no allowed values for enumerated attribute '%s'", attr);
+    NEDError(node,"DTD validation error: invalid value '%s' for attribute '%s', not one of the "
+                  "enumerated values ('%s',...)", s, attr, vals[0]);
 }
 
 void NEDDTDValidatorBase::checkNameAttribute(NEDElement *node, const char *attr)
 {
     const char *s = node->getAttribute(attr);
-    if (!s || !*s)
+    assert(s);
+    if (!*s)
         return;
     if (!isalpha(*s) && *s!='_')
         NEDError(node,"DTD validation error: attribute %s='%s' starts with invalid character (valid NED identifier expected)", attr, node->getAttribute(attr));
@@ -141,7 +143,8 @@ void NEDDTDValidatorBase::checkNameAttribute(NEDElement *node, const char *attr)
 void NEDDTDValidatorBase::checkCommentAttribute(NEDElement *node, const char *attr)
 {
     const char *s = node->getAttribute(attr);
-    if (!s || !*s)
+    assert(s);
+    if (!*s)
         return;
     bool incomment = false;
     for (; *s; s++)
@@ -170,7 +173,8 @@ void NEDDTDValidatorBase::checkNMTokenAttribute(NEDElement *node, const char *at
     // NED (and C++) identifiers which allow ASCII letters, digits and underscore ONLY.
     //
     const char *s = node->getAttribute(attr);
-    if (!s || !*s)
+    assert(s);
+    if (!*s)
         return;
     for (; *s; s++)
         if (!isalpha(*s) && !isdigit(*s) && *s!='_')

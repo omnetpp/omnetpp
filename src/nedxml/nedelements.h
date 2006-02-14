@@ -139,9 +139,9 @@ enum NEDElementCode {
 
 enum {NED_GATEDIR_INPUT, NED_GATEDIR_OUTPUT, NED_GATEDIR_INOUT};
 enum {NED_ARROWDIR_R2L, NED_ARROWDIR_L2R, NED_ARROWDIR_BIDIR};
-enum {NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};
+enum {NED_PARTYPE_NONE, NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};
 enum {NED_CONST_DOUBLE, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_UNIT};
-enum {NED_SUBGATE_I, NED_SUBGATE_O, NED_SUBGATE_BOTH};
+enum {NED_SUBGATE_NONE, NED_SUBGATE_I, NED_SUBGATE_O};
 
 /**
  * GENERATED CLASS. Represents the &lt;files&gt; XML element in memory. DTD declaration:
@@ -1107,7 +1107,7 @@ class GateGroupNode : public NEDElement
  * <!ATTLIST gate
  *      name               NMTOKEN   #REQUIRED
  *      type               (input|output|inout) #REQUIRED
- *      is-vector          (true|false) false
+ *      is-vector          (true|false) "false"
  *      vector-size        CDATA     #IMPLIED>
  * </pre>
  * 

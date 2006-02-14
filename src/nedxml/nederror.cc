@@ -80,7 +80,5 @@ NEDException::NEDException(const char *msgformat...)
     va_end(va);
 
     errormsg = message;
-
-__asm int 3; //FIXME
 }
 
