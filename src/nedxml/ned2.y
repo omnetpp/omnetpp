@@ -196,23 +196,15 @@ somedefinitions
 
 definition
         : import
-
         | propertydecl
-                { }
         | fileproperty
-                { }
         | channeldefinition
-                { if (ps.storeSourceCode) storeComponentSourceCode(ps.component, @1); } /*FIXME won't work!!! if there's an embedded type in it, that'll hijack ps.component */
         | channelinterfacedefinition
-                { if (ps.storeSourceCode) storeComponentSourceCode(ps.component, @1); }
         | simplemoduledefinition
-                { if (ps.storeSourceCode) storeComponentSourceCode(ps.component, @1); }
         | compoundmoduledefinition
-                { if (ps.storeSourceCode) storeComponentSourceCode(ps.component, @1); }
         | networkdefinition
-                { if (ps.storeSourceCode) storeComponentSourceCode(ps.component, @1); }
         | moduleinterfacedefinition
-                { if (ps.storeSourceCode) storeComponentSourceCode(ps.component, @1); }
+                { if (ps.storeSourceCode) storeComponentSourceCode(ps.component, @$); } /*FIXME won't work*/
         ;
 
 packagedeclaration         /* TBD package is currently not supported */
@@ -559,7 +551,7 @@ paramgroup
                 {
                     ps.paramgroup = (ParamGroupNode *)createNodeWithTag(NED_PARAM_GROUP, ps.parameters);
                     if (ps.inGroup)
-                       NEDError(ps.paramgroup,"nested groups are not allowed");
+                       NEDError(ps.paramgroup,"nested parameter groups are not allowed");
                     ps.inGroup = true;
                 }
           params '}'
@@ -579,7 +571,7 @@ param
                 {
                   ps.propertyscope.pop();
                   if (ps.inGroup && $4)
-                       NEDError(ps.param,"conditionals inside groups are not allowed");
+                       NEDError(ps.param,"conditional parameters inside parameter/property groups are not allowed");
                   if ($4)
                       ps.param->appendChild($4); // append optional condition
                 }
@@ -696,7 +688,7 @@ property
         : property_namevalue opt_condition ';'
                 {
                   if (ps.inGroup && $2)
-                       NEDError(ps.param,"conditionals inside groups are not allowed");
+                       NEDError(ps.param,"conditional properties inside parameter/property groups are not allowed");
                   if ($2)
                       ps.property->appendChild($2); // append optional condition
                 }
@@ -800,7 +792,7 @@ gategroup
                 {
                     ps.gategroup = (GateGroupNode *)createNodeWithTag(NED_GATE_GROUP, ps.gates);
                     if (ps.inGroup)
-                       NEDError(ps.gategroup,"nested groups are not allowed");
+                       NEDError(ps.gategroup,"nested gate groups are not allowed");
                     ps.inGroup = true;
                 }
           gates '}'
@@ -823,7 +815,7 @@ gate
                 {
                   ps.propertyscope.pop();
                   if (ps.inGroup && $4)
-                       NEDError(ps.param,"conditionals inside groups are not allowed");
+                       NEDError(ps.param,"conditional gates inside gate groups are not allowed");
                   if ($4)
                       ps.gate->appendChild($4); // append optional condition
                 }
@@ -1004,7 +996,11 @@ likeparam
         | '<' '@' NAME '>'
                 { $$ = NULL; }
         | '<' qualifier '.' '@' NAME '>' /* note: qualifier here must be "this" */
-                { $$ = NULL; }
+                {
+                  if (strcmp(toString(@2),"this")!=0)
+                       NEDError(NULL,"invalid property qualifier `%s', only `this' is allowed here", toString(@2));
+                  $$ = NULL;
+                }
         | '<' expression '>' /* XXX this expression is the source of one shift-reduce conflict because it may contain '>' */
                 { $$ = $2; }
         ;
@@ -1052,7 +1048,7 @@ connectionsitem
         | connection opt_whereclause ';'
                 {
                   if (ps.inGroup && $2)
-                       NEDError(ps.param,"conditionals inside groups are not allowed");
+                       NEDError(ps.param,"conditional connections inside connection groups are not allowed");
                   if ($2)
                       ps.conn->appendChild($2);
                 }
@@ -1063,7 +1059,7 @@ connectiongroup  /* note: semicolon at end is mandatory (cannot be opt_semicolon
                 {
                   ps.conngroup = (ConnectionGroupNode *)createNodeWithTag(NED_CONNECTION_GROUP, ps.conns);
                   if (ps.inGroup)
-                     NEDError(ps.conngroup,"nested groups are not allowed");
+                     NEDError(ps.conngroup,"nested connection groups are not allowed");
                   ps.inGroup = true;
                 }
           connections '}' ';'
@@ -1075,7 +1071,7 @@ connectiongroup  /* note: semicolon at end is mandatory (cannot be opt_semicolon
                 {
                   ps.conngroup = (ConnectionGroupNode *)createNodeWithTag(NED_CONNECTION_GROUP, ps.conns);
                   if (ps.inGroup)
-                     NEDError(ps.conngroup,"nested groups are not allowed");
+                     NEDError(ps.conngroup,"nested connection groups are not allowed");
                   ps.inGroup = true;
                 }
           connections '}' opt_whereclause ';'
@@ -1281,12 +1277,12 @@ opt_subgate
         : '$' NAME
                 {
                   const char *s = toString(@2);
-                  if (!strcmp(s,"in"))
+                  if (!strcmp(s,"i"))
                       ps.subgate = NED_SUBGATE_I;
-                  else if (!strcmp(s,"out"))
+                  else if (!strcmp(s,"o"))
                       ps.subgate = NED_SUBGATE_O;
                   else
-                      ;//FIXME error
+                       NEDError(NULL,"invalid subgate spec `%s', must be `i' or `o'", toString(@2));
                 }
         |
                 {  ps.subgate = NED_SUBGATE_NONE; }
