@@ -65,35 +65,25 @@ static int isInVector(int a, int v[])
 void NEDDTDValidatorBase::tryCheckChoice(NEDElement *node, NEDElement *&curchild, int tags[], char mult)
 {
     // note: 'node' argument is solely used by NEDError() (when curchild==NULL)
-    int i;
     if (mult=='?')
     {
+        // skip optional matching element
         if (curchild && isInVector(curchild->getTagCode(), tags))
             curchild = curchild->getNextSibling();
     }
     else if (mult=='1' || mult=='+')
     {
-        if (!curchild)
+        // match and skip first element of "1" or "+" sequence
+        if (!curchild || !isInVector(curchild->getTagCode(), tags))
             {NEDError(node,"DTD validation error: child element of multiplicity '1' or '+' missing\n"); return;}
-        for (i=0; tags[i]; i++)
-            if (curchild->getTagCode()==tags[i])
-                break;
-        if (!tags[i])
-            return; // curchild didn't match
         curchild = curchild->getNextSibling();
     }
 
     if (mult=='+' || mult=='*')
     {
-        while (curchild)
-        {
-            for (i=0; tags[i]; i++)
-                if (curchild->getTagCode()==tags[i])
-                    break;
-            if (!tags[i])
-                return; // curchild didn't match
+        // skip potential further elements of "+" or "*" sequence
+        while (curchild && isInVector(curchild->getTagCode(), tags))
             curchild = curchild->getNextSibling();
-        }
     }
 }
 
