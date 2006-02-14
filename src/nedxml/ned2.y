@@ -95,11 +95,12 @@ struct ParserState
     std::stack<NEDElement *> blockscope;    // top(): where to insert parameters, gates, etc
     std::stack<NEDElement *> typescope;     // top(): as blockscope, but ignore submodules and connection channels
 
-    /* tmp flags, used with param and gate */
+    /* tmp flags, used with param, gate and conn */
     int paramType;
     int gateType;
     bool isFunction;
     bool isDefault;
+    int subgate;
 
     /* tmp flags, used with msg fields */
     bool isAbstract;
@@ -1151,8 +1152,10 @@ connection
         ;
 
 leftgatespec
-        : leftmod '.' leftgate
-        | parentleftgate
+        : leftmod '.' leftgate opt_subgate
+                { ps.conn->setSrcGateSubg(ps.subgate); }
+        | parentleftgate opt_subgate
+                { ps.conn->setSrcGateSubg(ps.subgate); }
         ;
 
 leftmod
@@ -1170,16 +1173,16 @@ leftmod
         ;
 
 leftgate
-        : NAME opt_subgate
+        : NAME
                 {
                   ps.conn->setSrcGate( toString( @1) );
                 }
-        | NAME vector opt_subgate
+        | NAME vector
                 {
                   ps.conn->setSrcGate( toString( @1) );
                   addVector(ps.conn, "src-gate-index",@2,$2);
                 }
-        | NAME PLUSPLUS opt_subgate
+        | NAME PLUSPLUS
                 {
                   ps.conn->setSrcGate( toString( @1) );
                   ps.conn->setSrcGatePlusplus(true);
@@ -1187,20 +1190,20 @@ leftgate
         ;
 
 parentleftgate
-        : NAME opt_subgate
+        : NAME
                 {
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
                 }
-        | NAME vector opt_subgate
+        | NAME vector
                 {
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
                   addVector(ps.conn, "src-gate-index",@2,$2);
                 }
-        | NAME PLUSPLUS opt_subgate
+        | NAME PLUSPLUS
                 {
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
@@ -1210,8 +1213,10 @@ parentleftgate
         ;
 
 rightgatespec
-        : rightmod '.' rightgate
-        | parentrightgate
+        : rightmod '.' rightgate opt_subgate
+                { ps.conn->setDestGateSubg(ps.subgate); }
+        | parentrightgate opt_subgate
+                { ps.conn->setDestGateSubg(ps.subgate); }
         ;
 
 rightmod
@@ -1227,16 +1232,16 @@ rightmod
         ;
 
 rightgate
-        : NAME opt_subgate
+        : NAME
                 {
                   ps.conn->setDestGate( toString( @1) );
                 }
-        | NAME vector opt_subgate
+        | NAME vector
                 {
                   ps.conn->setDestGate( toString( @1) );
                   addVector(ps.conn, "dest-gate-index",@2,$2);
                 }
-        | NAME PLUSPLUS opt_subgate
+        | NAME PLUSPLUS
                 {
                   ps.conn->setDestGate( toString( @1) );
                   ps.conn->setDestGatePlusplus(true);
@@ -1244,16 +1249,16 @@ rightgate
         ;
 
 parentrightgate
-        : NAME opt_subgate
+        : NAME
                 {
                   ps.conn->setDestGate( toString( @1) );
                 }
-        | NAME vector opt_subgate
+        | NAME vector
                 {
                   ps.conn->setDestGate( toString( @1) );
                   addVector(ps.conn, "dest-gate-index",@2,$2);
                 }
-        | NAME PLUSPLUS opt_subgate
+        | NAME PLUSPLUS
                 {
                   ps.conn->setDestGate( toString( @1) );
                   ps.conn->setDestGatePlusplus(true);
@@ -1262,7 +1267,17 @@ parentrightgate
 
 opt_subgate
         : '$' NAME
+                {
+                  const char *s = toString(@2);
+                  if (!strcmp(s,"in"))
+                      ps.subgate = NED_SUBGATE_I;
+                  else if (!strcmp(s,"out"))
+                      ps.subgate = NED_SUBGATE_O;
+                  else
+                      ;//FIXME error
+                }
         |
+                {  ps.subgate = NED_SUBGATE_NONE; }
         ;
 
 channelspec
