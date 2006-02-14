@@ -141,6 +141,8 @@
 <!ELEMENT connection-group (whitespace*, connection*, where?)>
 
 <!ELEMENT where (whitespace*, (loop|condition)*)>
+<!ATTLIST where
+     at-front           (true|false) "false">
 
 <!ELEMENT loop (whitespace*, expression*)>
 <!ATTLIST loop
