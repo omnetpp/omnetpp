@@ -90,6 +90,7 @@ struct ParserState
     bool storeSourceCode;
     bool inLoop;
     bool inTypes;
+    bool inGroup;
     std::stack<NEDElement *> propertyscope; // top(): where to insert properties as we parse them
     std::stack<NEDElement *> blockscope;    // top(): where to insert parameters, gates, etc
     std::stack<NEDElement *> typescope;     // top(): as blockscope, but ignore submodules and connection channels
@@ -556,11 +557,22 @@ paramsitem
         ;
 
 paramgroup
-        : condition '{' params_nogroup '}'
-        | '{' params_nogroup '}'
+        : opt_condition '{'
+                {
+                    if (ps.inGroup)
+                       ; // FIXME issue error message: nested groups not allowed
+                    ps.inGroup = true;
+                    ps.paramgroup = (ParamGroupNode *)createNodeWithTag(NED_PARAM_GROUP, ps.parameters);
+                }
+          params_nogroup '}'
+                {
+                    ps.inGroup = false;
+                    if ($1)
+                        ps.paramgroup->appendChild($1);
+                }
         ;
 
-params_nogroup   /* same as params, but without the paramgroup rule */
+params_nogroup   /* FIXME ELIMINATE NOGROUP STUFF!!!!!! same as params, but without the paramgroup rule */
         : params_nogroup paramsitem_nogroup
                 {
                   //setComments(ps.param,@2);
@@ -584,6 +596,8 @@ param
           opt_inline_properties opt_condition ';'
                 {
                   ps.propertyscope.pop();
+                  if ($2)
+                      ps.paramgroup->appendChild($2);
                 }
         ;
 
@@ -593,13 +607,13 @@ param
 param_typenamevalue
         : paramtype opt_function NAME
                 {
-                  ps.param = addParameter(ps.parameters, @3);
+                  ps.param = addParameter(ps.inGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters, @3);
                   ps.param->setType(ps.paramType);
                   ps.param->setIsFunction(ps.isFunction);
                 }
         | paramtype opt_function NAME '=' paramvalue
                 {
-                  ps.param = addParameter(ps.parameters, @3);
+                  ps.param = addParameter(ps.inGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters, @3);
                   ps.param->setType(ps.paramType);
                   ps.param->setIsFunction(ps.isFunction);
                   addExpression(ps.param, "value",@5,$5);
@@ -607,23 +621,23 @@ param_typenamevalue
                 }
         | NAME '=' paramvalue
                 {
-                  ps.param = addParameter(ps.parameters, @1);
+                  ps.param = addParameter(ps.inGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters, @1);
                   addExpression(ps.param, "value",@3,$3);
                   ps.param->setIsDefault(ps.isDefault);
                 }
         | NAME
                 {
-                  ps.param = addParameter(ps.parameters, @1);
+                  ps.param = addParameter(ps.inGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters, @1);
                 }
         | TYPENAME '=' paramvalue  /* this is to assign module type with the "<> like Foo" syntax */
                 {
-                  ps.param = addParameter(ps.parameters, @1);
+                  ps.param = addParameter(ps.inGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters, @1);
                   addExpression(ps.param, "value",@3,$3);
                   ps.param->setIsDefault(ps.isDefault);
                 }
         | '/' pattern '/' '=' paramvalue
                 {
-                  ps.pattern = (PatternNode *)createNodeWithTag(NED_PATTERN, ps.parameters);
+                  ps.pattern = (PatternNode *)createNodeWithTag(NED_PATTERN, ps.inGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters);
                   ps.pattern->setPattern(toString(@2));
                   addExpression(ps.pattern, "value",@5,$5);
                   ps.pattern->setIsDefault(ps.isDefault);
@@ -696,6 +710,10 @@ pattern_elem
  */
 property
         : property_namevalue opt_condition ';'
+                {
+                  if ($2)
+                      ps.property->appendChild($2);
+                }
         ;
 
 property_namevalue
@@ -813,6 +831,11 @@ gate
           opt_inline_properties opt_condition ';'
                 {
                   ps.propertyscope.pop();
+                  //XXXX add back:
+                  /*
+                  if ($4)
+                      ps.gate->appendChild($4);
+                  */
                 }
         ;
 
@@ -1255,14 +1278,17 @@ channelspec_header
  */
 opt_condition
         : condition
+           { $$ = $1; }
         |
+           { $$ = NULL; }
         ;
 
 condition
         : IF expression
                 {
-                  ps.condition = (ConditionNode *)createNodeWithTag(NED_CONDITION, ps.component); //FIXME parent!!!!
+                  ps.condition = (ConditionNode *)createNodeWithTag(NED_CONDITION);
                   addExpression(ps.condition, "condition",@2,$2);
+                  $$ = ps.condition;
                 }
         ;
 

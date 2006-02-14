@@ -868,11 +868,6 @@ WhitespaceNode *ParamGroupNode::getFirstWhitespaceChild() const
     return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
 }
 
-ConditionNode *ParamGroupNode::getFirstConditionChild() const
-{
-    return (ConditionNode *)getFirstChildWithTag(NED_CONDITION);
-}
-
 PropertyNode *ParamGroupNode::getFirstPropertyChild() const
 {
     return (PropertyNode *)getFirstChildWithTag(NED_PROPERTY);
@@ -886,6 +881,11 @@ ParamNode *ParamGroupNode::getFirstParamChild() const
 PatternNode *ParamGroupNode::getFirstPatternChild() const
 {
     return (PatternNode *)getFirstChildWithTag(NED_PATTERN);
+}
+
+ConditionNode *ParamGroupNode::getFirstConditionChild() const
+{
+    return (ConditionNode *)getFirstChildWithTag(NED_CONDITION);
 }
 
 void ParamNode::setType(int val)
@@ -965,6 +965,11 @@ ExpressionNode *ParamNode::getFirstExpressionChild() const
 PropertyNode *ParamNode::getFirstPropertyChild() const
 {
     return (PropertyNode *)getFirstChildWithTag(NED_PROPERTY);
+}
+
+ConditionNode *ParamNode::getFirstConditionChild() const
+{
+    return (ConditionNode *)getFirstChildWithTag(NED_CONDITION);
 }
 
 int PatternNode::getNumAttributes() const
@@ -1086,6 +1091,11 @@ WhitespaceNode *PropertyNode::getFirstWhitespaceChild() const
 KeyValueNode *PropertyNode::getFirstKeyValueChild() const
 {
     return (KeyValueNode *)getFirstChildWithTag(NED_KEY_VALUE);
+}
+
+ConditionNode *PropertyNode::getFirstConditionChild() const
+{
+    return (ConditionNode *)getFirstChildWithTag(NED_CONDITION);
 }
 
 int KeyValueNode::getNumAttributes() const
@@ -1235,14 +1245,14 @@ WhitespaceNode *GateGroupNode::getFirstWhitespaceChild() const
     return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
 }
 
-ConditionNode *GateGroupNode::getFirstConditionChild() const
-{
-    return (ConditionNode *)getFirstChildWithTag(NED_CONDITION);
-}
-
 GateNode *GateGroupNode::getFirstGateChild() const
 {
     return (GateNode *)getFirstChildWithTag(NED_GATE);
+}
+
+ConditionNode *GateGroupNode::getFirstConditionChild() const
+{
+    return (ConditionNode *)getFirstChildWithTag(NED_CONDITION);
 }
 
 void GateNode::setType(int val)
@@ -1318,6 +1328,11 @@ ExpressionNode *GateNode::getFirstExpressionChild() const
 PropertyNode *GateNode::getFirstPropertyChild() const
 {
     return (PropertyNode *)getFirstChildWithTag(NED_PROPERTY);
+}
+
+ConditionNode *GateNode::getFirstConditionChild() const
+{
+    return (ConditionNode *)getFirstChildWithTag(NED_CONDITION);
 }
 
 int TypesNode::getNumAttributes() const
@@ -1692,6 +1707,16 @@ ExpressionNode *ConnectionNode::getFirstExpressionChild() const
 ChannelSpecNode *ConnectionNode::getFirstChannelSpecChild() const
 {
     return (ChannelSpecNode *)getFirstChildWithTag(NED_CHANNEL_SPEC);
+}
+
+LoopNode *ConnectionNode::getFirstLoopChild() const
+{
+    return (LoopNode *)getFirstChildWithTag(NED_LOOP);
+}
+
+ConditionNode *ConnectionNode::getFirstConditionChild() const
+{
+    return (ConditionNode *)getFirstChildWithTag(NED_CONDITION);
 }
 
 int ChannelSpecNode::getNumAttributes() const

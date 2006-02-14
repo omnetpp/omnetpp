@@ -63,9 +63,9 @@
 <!ATTLIST parameters
     is-implicit         (true|false)  "true">
 
-<!ELEMENT param-group (whitespace*, condition, (property|param|pattern)*)>
+<!ELEMENT param-group (whitespace*, (property|param|pattern)*, condition?)>
 
-<!ELEMENT param (whitespace*, expression?, property*)>
+<!ELEMENT param (whitespace*, expression?, property*, condition?)>
 <!ATTLIST param
      type               (double|int|string|bool|xml) #IMPLIED
      is-function        (true|false)  "false"
@@ -79,7 +79,7 @@
      value              CDATA     #REQUIRED
      is-default         (true|false)  "false">
 
-<!ELEMENT property (whitespace*, key-value*)>
+<!ELEMENT property (whitespace*, key-value*, condition?)>
 <!ATTLIST property
      is-implicit        (true|false) "false"
      name               NMTOKEN   #REQUIRED>
@@ -91,9 +91,9 @@
 
 <!ELEMENT gates (whitespace*, (gate|gate-group)*)>
 
-<!ELEMENT gate-group (whitespace*, condition, gate*)>
+<!ELEMENT gate-group (whitespace*, gate*, condition?)>
 
-<!ELEMENT gate (whitespace*, expression?, property*)>
+<!ELEMENT gate (whitespace*, expression?, property*, condition?)>
 <!ATTLIST gate
      name               NMTOKEN   #REQUIRED
      type               (input|output|inout) #REQUIRED
@@ -117,7 +117,7 @@
 <!ATTLIST connections
      allow-unconnected (true|false) "false">
 
-<!ELEMENT connection (whitespace*, expression*, channel-spec?)>
+<!ELEMENT connection (whitespace*, expression*, channel-spec?, (loop|condition)*)>
 <!ATTLIST connection
      src-module          NMTOKEN   #IMPLIED
      src-module-index    CDATA     #IMPLIED

@@ -155,8 +155,8 @@ void NEDDTDValidator::validateElement(ParamGroupNode *node)
 {
     Choice choices[] = {
         {{NED_WHITESPACE, NED_NULL}, '*'},
-        {{NED_CONDITION, NED_NULL}, '1'},
         {{NED_PROPERTY, NED_PARAM, NED_PATTERN, NED_NULL}, '*'},
+        {{NED_CONDITION, NED_NULL}, '?'},
     };
     checkSeqOfChoices(node, choices, sizeof(choices)/sizeof(Choice));
 
@@ -164,8 +164,8 @@ void NEDDTDValidator::validateElement(ParamGroupNode *node)
 
 void NEDDTDValidator::validateElement(ParamNode *node)
 {
-    int tags[] = {NED_WHITESPACE,NED_EXPRESSION,NED_PROPERTY, NED_NULL};
-    char mult[] = {'*','?','*', 0};
+    int tags[] = {NED_WHITESPACE,NED_EXPRESSION,NED_PROPERTY,NED_CONDITION, NED_NULL};
+    char mult[] = {'*','?','*','?', 0};
     checkSequence(node, tags, mult);
 
     const char *vals0[] = {"double","int","string","bool","xml",""};
@@ -192,8 +192,8 @@ void NEDDTDValidator::validateElement(PatternNode *node)
 
 void NEDDTDValidator::validateElement(PropertyNode *node)
 {
-    int tags[] = {NED_WHITESPACE,NED_KEY_VALUE, NED_NULL};
-    char mult[] = {'*','*', 0};
+    int tags[] = {NED_WHITESPACE,NED_KEY_VALUE,NED_CONDITION, NED_NULL};
+    char mult[] = {'*','*','?', 0};
     checkSequence(node, tags, mult);
 
     const char *vals0[] = {"true","false"};
@@ -222,16 +222,16 @@ void NEDDTDValidator::validateElement(GatesNode *node)
 
 void NEDDTDValidator::validateElement(GateGroupNode *node)
 {
-    int tags[] = {NED_WHITESPACE,NED_CONDITION,NED_GATE, NED_NULL};
-    char mult[] = {'*','1','*', 0};
+    int tags[] = {NED_WHITESPACE,NED_GATE,NED_CONDITION, NED_NULL};
+    char mult[] = {'*','*','?', 0};
     checkSequence(node, tags, mult);
 
 }
 
 void NEDDTDValidator::validateElement(GateNode *node)
 {
-    int tags[] = {NED_WHITESPACE,NED_EXPRESSION,NED_PROPERTY, NED_NULL};
-    char mult[] = {'*','?','*', 0};
+    int tags[] = {NED_WHITESPACE,NED_EXPRESSION,NED_PROPERTY,NED_CONDITION, NED_NULL};
+    char mult[] = {'*','?','*','?', 0};
     checkSequence(node, tags, mult);
 
     checkRequiredAttribute(node, "name");
@@ -287,9 +287,13 @@ void NEDDTDValidator::validateElement(ConnectionsNode *node)
 
 void NEDDTDValidator::validateElement(ConnectionNode *node)
 {
-    int tags[] = {NED_WHITESPACE,NED_EXPRESSION,NED_CHANNEL_SPEC, NED_NULL};
-    char mult[] = {'*','*','?', 0};
-    checkSequence(node, tags, mult);
+    Choice choices[] = {
+        {{NED_WHITESPACE, NED_NULL}, '*'},
+        {{NED_EXPRESSION, NED_NULL}, '*'},
+        {{NED_CHANNEL_SPEC, NED_NULL}, '?'},
+        {{NED_LOOP, NED_CONDITION, NED_NULL}, '*'},
+    };
+    checkSeqOfChoices(node, choices, sizeof(choices)/sizeof(Choice));
 
     checkNameAttribute(node, "src-module");
     checkRequiredAttribute(node, "src-gate");

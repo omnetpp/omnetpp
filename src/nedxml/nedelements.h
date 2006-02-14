@@ -762,7 +762,7 @@ class ParametersNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;param-group&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT param-group (whitespace*, condition, (property|param|pattern)*)>
+ * <!ELEMENT param-group (whitespace*, (property|param|pattern)*, condition?)>
  * 
  * </pre>
  * 
@@ -795,10 +795,10 @@ class ParamGroupNode : public NEDElement
 
     virtual ParamGroupNode *getNextParamGroupNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
-    virtual ConditionNode *getFirstConditionChild() const;
     virtual PropertyNode *getFirstPropertyChild() const;
     virtual ParamNode *getFirstParamChild() const;
     virtual PatternNode *getFirstPatternChild() const;
+    virtual ConditionNode *getFirstConditionChild() const;
     //@}
 };
 
@@ -806,7 +806,7 @@ class ParamGroupNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;param&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT param (whitespace*, expression?, property*)>
+ * <!ELEMENT param (whitespace*, expression?, property*, condition?)>
  * <!ATTLIST param
  *      type               (double|int|string|bool|xml) #IMPLIED
  *      is-function        (true|false)  "false"
@@ -861,6 +861,7 @@ class ParamNode : public NEDElement
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
     virtual ExpressionNode *getFirstExpressionChild() const;
     virtual PropertyNode *getFirstPropertyChild() const;
+    virtual ConditionNode *getFirstConditionChild() const;
     //@}
 };
 
@@ -922,7 +923,7 @@ class PatternNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;property&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT property (whitespace*, key-value*)>
+ * <!ELEMENT property (whitespace*, key-value*, condition?)>
  * <!ATTLIST property
  *      is-implicit        (true|false) "false"
  *      name               NMTOKEN   #REQUIRED>
@@ -964,6 +965,7 @@ class PropertyNode : public NEDElement
     virtual PropertyNode *getNextPropertyNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
     virtual KeyValueNode *getFirstKeyValueChild() const;
+    virtual ConditionNode *getFirstConditionChild() const;
     //@}
 };
 
@@ -1061,7 +1063,7 @@ class GatesNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;gate-group&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT gate-group (whitespace*, condition, gate*)>
+ * <!ELEMENT gate-group (whitespace*, gate*, condition?)>
  * 
  * </pre>
  * 
@@ -1094,8 +1096,8 @@ class GateGroupNode : public NEDElement
 
     virtual GateGroupNode *getNextGateGroupNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
-    virtual ConditionNode *getFirstConditionChild() const;
     virtual GateNode *getFirstGateChild() const;
+    virtual ConditionNode *getFirstConditionChild() const;
     //@}
 };
 
@@ -1103,7 +1105,7 @@ class GateGroupNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;gate&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT gate (whitespace*, expression?, property*)>
+ * <!ELEMENT gate (whitespace*, expression?, property*, condition?)>
  * <!ATTLIST gate
  *      name               NMTOKEN   #REQUIRED
  *      type               (input|output|inout) #REQUIRED
@@ -1154,6 +1156,7 @@ class GateNode : public NEDElement
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
     virtual ExpressionNode *getFirstExpressionChild() const;
     virtual PropertyNode *getFirstPropertyChild() const;
+    virtual ConditionNode *getFirstConditionChild() const;
     //@}
 };
 
@@ -1357,7 +1360,7 @@ class ConnectionsNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;connection&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT connection (whitespace*, expression*, channel-spec?)>
+ * <!ELEMENT connection (whitespace*, expression*, channel-spec?, (loop|condition)*)>
  * <!ATTLIST connection
  *      src-module          NMTOKEN   #IMPLIED
  *      src-module-index    CDATA     #IMPLIED
@@ -1444,6 +1447,8 @@ class ConnectionNode : public NEDElement
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
     virtual ExpressionNode *getFirstExpressionChild() const;
     virtual ChannelSpecNode *getFirstChannelSpecChild() const;
+    virtual LoopNode *getFirstLoopChild() const;
+    virtual ConditionNode *getFirstConditionChild() const;
     //@}
 };
 
