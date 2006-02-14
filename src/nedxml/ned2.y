@@ -137,13 +137,9 @@ NEDElement *createNodeWithTag(int tagcode, NEDElement *parent=NULL);
 
 PropertyNode *addProperty(NEDElement *node, const char *name);  // directly under the node
 PropertyNode *addComponentProperty(NEDElement *node, const char *name); // into ParametersNode child of node
-KeyValueNode *addPropertyValue(PropertyNode *prop, const char *key, YYLTYPE valuepos);
 
 PropertyNode *storeSourceCode(NEDElement *node, YYLTYPE tokenpos);  // directly under the node
 PropertyNode *storeComponentSourceCode(NEDElement *node, YYLTYPE tokenpos); // into ParametersNode child
-
-PropertyNode *storeDisplayString(NEDElement *node, YYLTYPE tokenpos);  // directly under the node
-PropertyNode *storeComponentDisplayString(NEDElement *node, YYLTYPE tokenpos); // into ParametersNode child
 
 void setFileComment(NEDElement *node);
 void setBannerComment(NEDElement *node, YYLTYPE tokenpos);
@@ -742,27 +738,22 @@ property_keys
 property_key
         : NAME '=' property_value
                 {
-                  //FIXME use addPropertyValue() function?
                   ps.keyvalue = (KeyValueNode *)createNodeWithTag(NED_KEY_VALUE, ps.property);
                   ps.keyvalue->setKey(toString(@1));
-                  ps.keyvalue->setValue(toString(@3));
+                  ps.keyvalue->appendChild($3);
                 }
         | property_value
                 {
                   ps.keyvalue = (KeyValueNode *)createNodeWithTag(NED_KEY_VALUE, ps.property);
-                  ps.keyvalue->setValue(toString(@1));
+                  ps.keyvalue->appendChild($1);
                 }
         ;
 
-property_value  /* FIXME use LiteralNode and its rules here? */
-        : TRUE_
-        | FALSE_
-        | NAME
-        | INTCONSTANT
-        | REALCONSTANT
-        | STRINGCONSTANT
-        | CHARCONSTANT
-        | quantity
+property_value
+        : NAME
+                { $$ = createLiteral(NED_CONST_STRING, toString(@1)); /*FIXME store both text&value*/ }
+        | literal       /* literal is: NAME | TRUE_ | FALSE_ | INTCONSTANT | REALCONSTANT | STRINGCONSTANT | CHARCONSTANT | quantity */
+                { $$ = $1; }
         ;
 
 /*
@@ -1441,10 +1432,8 @@ expr
 
 simple_expr
         : parameter_expr
-        | stringliteral
-        | boolliteral
-        | numliteral
         | special_expr
+        | literal
         ;
 
 parameter_expr
@@ -1466,13 +1455,6 @@ qualifier
         | NAME vector
         ;
 
-boolliteral
-        : TRUE_
-                { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_BOOL, "true"); }
-        | FALSE_
-                { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_BOOL, "false"); }
-        ;
-
 special_expr
         : INDEX_
                 { if (ps.parseExpressions) $$ = createFunction("index"); }
@@ -1484,9 +1466,22 @@ special_expr
                 { if (ps.parseExpressions) $$ = createFunction("sizeof", createIdent(toString(@5), NULL, toString(@3))); }
         ;
 
+literal
+        : stringliteral
+        | boolliteral
+        | numliteral
+        ;
+
 stringliteral
         : STRINGCONSTANT
                 { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_STRING, toString(trimQuotes(@1))); /*FIXME store both text&value*/ }
+        ;
+
+boolliteral
+        : TRUE_
+                { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_BOOL, "true"); }
+        | FALSE_
+                { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_BOOL, "false"); }
         ;
 
 numliteral
@@ -1627,14 +1622,6 @@ PropertyNode *addComponentProperty(NEDElement *node, const char *name)
     return prop;
 }
 
-KeyValueNode *addPropertyValue(PropertyNode *prop, const char *key, YYLTYPE valuepos)
-{
-    KeyValueNode *propval = (KeyValueNode *)createNodeWithTag(NED_KEY_VALUE, prop);
-    propval->setKey(key);
-    propval->setValue(toString(valuepos));
-    return propval;
-}
-
 //
 // Spec Properties: source code, display string
 //
@@ -1643,7 +1630,7 @@ PropertyNode *storeSourceCode(NEDElement *node, YYLTYPE tokenpos)
 {
      PropertyNode *prop = addProperty(node, "sourcecode");
      prop->setIsImplicit(true);
-     addPropertyValue(prop, NULL, tokenpos);
+     prop->appendChild(createLiteral(NED_CONST_STRING, toString(tokenpos)));
      return prop;
 }
 
@@ -1651,23 +1638,7 @@ PropertyNode *storeComponentSourceCode(NEDElement *node, YYLTYPE tokenpos)
 {
      PropertyNode *prop = addComponentProperty(node, "sourcecode");
      prop->setIsImplicit(true);
-     addPropertyValue(prop, NULL, tokenpos);
-     return prop;
-}
-
-PropertyNode *storeDisplayString(NEDElement *node, YYLTYPE tokenpos)
-{
-     PropertyNode *prop = addComponentProperty(node, "display");
-     prop->setIsImplicit(true);
-     addPropertyValue(prop, NULL, tokenpos);
-     return prop;
-}
-
-PropertyNode *storeComponentDisplayString(NEDElement *node, YYLTYPE tokenpos)
-{
-     PropertyNode *prop = addComponentProperty(node, "display");
-     prop->setIsImplicit(true);
-     addPropertyValue(prop, NULL, tokenpos);
+     prop->appendChild(createLiteral(NED_CONST_STRING, toString(tokenpos)));
      return prop;
 }
 
