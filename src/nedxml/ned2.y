@@ -288,6 +288,8 @@ channeldefinition
                   ps.blockscope.pop();
                   ps.typescope.pop();
                   setTrailingComment(ps.component,@4);
+                  if (ps.storeSourceCode)
+                      storeComponentSourceCode(ps.component, @$);
                 }
         ;
 
@@ -354,6 +356,8 @@ channelinterfacedefinition
                   ps.blockscope.pop();
                   ps.typescope.pop();
                   setTrailingComment(ps.component,@4);
+                  if (ps.storeSourceCode)
+                      storeComponentSourceCode(ps.component, @$);
                 }
         ;
 
@@ -396,6 +400,8 @@ simplemoduledefinition
                   ps.blockscope.pop();
                   ps.typescope.pop();
                   setTrailingComment(ps.component,@6);
+                  if (ps.storeSourceCode)
+                      storeComponentSourceCode(ps.component, @$);
                 }
         ;
 
@@ -431,6 +437,8 @@ compoundmoduledefinition
                   ps.blockscope.pop();
                   ps.typescope.pop();
                   setTrailingComment(ps.component,@9);
+                  if (ps.storeSourceCode)
+                      storeComponentSourceCode(ps.component, @$);
                 }
         ;
 
@@ -466,6 +474,8 @@ networkdefinition
                   ps.blockscope.pop();
                   ps.typescope.pop();
                   setTrailingComment(ps.component,@5);
+                  if (ps.storeSourceCode)
+                      storeComponentSourceCode(ps.component, @$);
                 }
         ;
 
@@ -499,6 +509,8 @@ moduleinterfacedefinition
                   ps.blockscope.pop();
                   ps.typescope.pop();
                   setTrailingComment(ps.component,@6);
+                  if (ps.storeSourceCode)
+                      storeComponentSourceCode(ps.component, @$);
                 }
         ;
 
@@ -898,19 +910,12 @@ localtypes
 
 localtype
         : propertydecl
-                { /*TBD*/ }
         | channeldefinition
-                { if (ps.storeSourceCode) storeComponentSourceCode(ps.component, @1); } /*FIXME won't work*/
         | channelinterfacedefinition
-                { if (ps.storeSourceCode) storeComponentSourceCode(ps.component, @1); }
         | simplemoduledefinition
-                { if (ps.storeSourceCode) storeComponentSourceCode(ps.component, @1); }
         | compoundmoduledefinition
-                { if (ps.storeSourceCode) storeComponentSourceCode(ps.component, @1); }
         | networkdefinition
-                { if (ps.storeSourceCode) storeComponentSourceCode(ps.component, @1); }
         | moduleinterfacedefinition
-                { if (ps.storeSourceCode) storeComponentSourceCode(ps.component, @1); }
         ;
 
 /*
