@@ -226,53 +226,121 @@ void NEDGenerator::doPropertyDecl(PropertyDeclNode *node, const char *indent, bo
 
 void NEDGenerator::doExtends(ExtendsNode *node, const char *indent, bool islast, const char *)
 {
-    out << "extends " << node->getName();
+    out << "extends " << node->getName() << " ";
 }
 
 void NEDGenerator::doInterfaceName(InterfaceNameNode *node, const char *indent, bool islast, const char *)
 {
-    out << "like " << node->getName();
+    out << "like " << node->getName() << " ";
 }
 
 void NEDGenerator::doSimpleModule(SimpleModuleNode *node, const char *indent, bool islast, const char *)
 {
-    out << "simple " << node->getName();
-    generateChildren(node, indent);
+    out << "simple " << node->getName() << " ";
+    generateChildrenWithType(node, NED_EXTENDS, increaseIndent(indent));
+    generateChildrenWithType(node, NED_INTERFACE_NAME, increaseIndent(indent));
+
+    out << indent << "\n{\n";
+
+    generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
+    generateChildrenWithType(node, NED_GATES, increaseIndent(indent));
+
+    out << indent << "}\n\n";
 }
 
 void NEDGenerator::doModuleInterface(ModuleInterfaceNode *node, const char *indent, bool islast, const char *)
 {
-    out << "interface " << node->getName();
-    generateChildren(node, indent);
+    out << "interface " << node->getName() << " ";
+    generateChildrenWithType(node, NED_EXTENDS, increaseIndent(indent));
+
+    out << indent << "\n{\n";
+
+    generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
+    generateChildrenWithType(node, NED_GATES, increaseIndent(indent));
+
+    out << indent << "}\n\n";
 }
 
 void NEDGenerator::doCompoundModule(CompoundModuleNode *node, const char *indent, bool islast, const char *)
 {
-    out << "module " << node->getName();
-    generateChildren(node, indent);
+    out << "module " << node->getName() << " ";
+    generateChildrenWithType(node, NED_EXTENDS, increaseIndent(indent));
+    generateChildrenWithType(node, NED_INTERFACE_NAME, increaseIndent(indent));
+
+    out << indent << "\n{\n";
+
+    generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
+    generateChildrenWithType(node, NED_GATES, increaseIndent(indent));
+    generateChildrenWithType(node, NED_TYPES, increaseIndent(indent));
+    generateChildrenWithType(node, NED_SUBMODULES, increaseIndent(indent));
+    generateChildrenWithType(node, NED_CONNECTIONS, increaseIndent(indent));
+
+    out << indent << "}\n\n";
 }
 
 void NEDGenerator::doChannelInterface(ChannelInterfaceNode *node, const char *indent, bool islast, const char *)
 {
-    out << "channelinterface " << node->getName();
-    generateChildren(node, indent);
+    out << "channelinterface " << node->getName() << " ";
+    generateChildrenWithType(node, NED_EXTENDS, increaseIndent(indent));
+
+    out << indent << "\n{\n";
+
+    generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
+
+    out << indent << "}\n\n";
 }
 
 void NEDGenerator::doChannel(ChannelNode *node, const char *indent, bool islast, const char *)
 {
-    out << "channel " << node->getName();
-    generateChildren(node, indent);
+    out << "channel " << node->getName() << " ";
+    generateChildrenWithType(node, NED_EXTENDS, increaseIndent(indent));
+    generateChildrenWithType(node, NED_INTERFACE_NAME, increaseIndent(indent));
+
+    out << indent << "\n{\n";
+
+    generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
+
+    out << indent << "}\n\n";
 }
 
 void NEDGenerator::doParameters(ParametersNode *node, const char *indent, bool islast, const char *)
 {
-    out << "parameters: ";
-    generateChildren(node, indent);
+    out << indent << "parameters:\n";
+    generateChildren(node, increaseIndent(indent));
 }
 
-void NEDGenerator::doParamGroup(ParamGroupNode *node, const char *indent, bool islast, const char *) {}
-void NEDGenerator::doParam(ParamNode *node, const char *indent, bool islast, const char *) {}
-void NEDGenerator::doPattern(PatternNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doParamGroup(ParamGroupNode *node, const char *indent, bool islast, const char *)
+{
+    out << indent << "{\n";
+    generateChildren(node, increaseIndent(indent));
+    out << indent << "}\n";
+}
+
+void NEDGenerator::doParam(ParamNode *node, const char *indent, bool islast, const char *)
+{
+    out << indent;
+    switch (node->getType())
+    {
+        case NED_PARTYPE_NONE:   break;
+        case NED_PARTYPE_DOUBLE: out << "double "; break;
+        case NED_PARTYPE_INT:    out << "int "; break;
+        case NED_PARTYPE_STRING: out << "string "; break;
+        case NED_PARTYPE_BOOL:   out << "bool "; break;
+        case NED_PARTYPE_XML:    out << "xml "; break;
+        default: INTERNAL_ERROR0(node, "wrong type");
+    }
+    out << node->getName() << " = ";
+    printExpression(node, "value",indent);
+    generateChildren(node, indent);
+    out << ";\n";
+}
+
+void NEDGenerator::doPattern(PatternNode *node, const char *indent, bool islast, const char *)
+{
+    out << indent << "{\n";
+    generateChildren(node, indent);
+    out << indent << "}\n";
+}
 
 void NEDGenerator::doProperty(PropertyNode *node, const char *indent, bool islast, const char *)
 {
@@ -291,8 +359,8 @@ void NEDGenerator::doPropertyKey(PropertyKeyNode *node, const char *indent, bool
 
 void NEDGenerator::doGates(GatesNode *node, const char *indent, bool islast, const char *)
 {
-    out << "gates: ";
-    generateChildren(node, indent);
+    out << indent << "gates:\n";
+    generateChildren(node, increaseIndent(indent));
 }
 
 void NEDGenerator::doGateGroup(GateGroupNode *node, const char *indent, bool islast, const char *) {}
@@ -300,22 +368,22 @@ void NEDGenerator::doGate(GateNode *node, const char *indent, bool islast, const
 
 void NEDGenerator::doTypes(TypesNode *node, const char *indent, bool islast, const char *)
 {
-    out << "types: ";
-    generateChildren(node, indent);
+    out << indent << "types:\n";
+    generateChildren(node, increaseIndent(indent));
 }
 
 void NEDGenerator::doSubmodules(SubmodulesNode *node, const char *indent, bool islast, const char *)
 {
-    out << "submodules: ";
-    generateChildren(node, indent);
+    out << indent << "submodules:\n";
+    generateChildren(node, increaseIndent(indent));
 }
 
 void NEDGenerator::doSubmodule(SubmoduleNode *node, const char *indent, bool islast, const char *) {}
 
 void NEDGenerator::doConnections(ConnectionsNode *node, const char *indent, bool islast, const char *)
 {
-    out << "connections: ";
-    generateChildren(node, indent);
+    out << indent << "connections:\n";
+    generateChildren(node, increaseIndent(indent));
 }
 
 void NEDGenerator::doConnection(ConnectionNode *node, const char *indent, bool islast, const char *) {}
