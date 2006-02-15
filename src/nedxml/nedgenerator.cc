@@ -498,101 +498,6 @@ void NEDGenerator::printGate(NEDElement *conn, const char *modname, const char *
 }
 
 /*XXX
-void NEDGenerator::doChannel(ChannelNode *node, const char *indent, bool islast, const char *)
-{
-    //XXX appendBannerComment(node->getBannerComment(), indent);
-    out << indent << "channel " << node->getName();
-    //XXX appendRightComment(node->getRightComment(), indent);
-    if (newsyntax) out << indent << "{";
-    generateChildren(node, increaseIndent(indent));
-    out << indent << (newsyntax?"}":"endchannel");
-    //XXX appendTrailingComment(node->getTrailingComment(), "");
-}
-
-void NEDGenerator::doChanattr(ChannelAttrNode *node, const char *indent, bool islast, const char *)
-{
-    //XXX appendBannerComment(node->getBannerComment(), indent);
-    out << indent << node->getName() << " ";
-    printExpression(node, "value",indent);
-    out << ";";
-    //XXX appendRightComment(node->getRightComment(), indent);
-}
-
-void NEDGenerator::doNetwork(NetworkNode *node, const char *indent, bool islast, const char *)
-{
-    //XXX appendBannerComment(node->getBannerComment(), indent);
-    out << indent << "network " << node->getName() << " : " << node->getType();
-    //XXX appendRightComment(node->getRightComment(), indent);
-    if (newsyntax) out << indent << "{";
-
-    generateChildrenWithType(node, NED_SUBSTMACHINES, increaseIndent(indent));
-    generateChildrenWithType(node, NED_SUBSTPARAMS, increaseIndent(indent));
-
-    out << indent << (newsyntax?"}":"endnetwork");
-    //XXX appendTrailingComment(node->getTrailingComment(), "");
-}
-
-void NEDGenerator::doSimple(SimpleModuleNode *node, const char *indent, bool islast, const char *)
-{
-    //XXX appendBannerComment(node->getBannerComment(), indent);
-    out << indent << "simple " << node->getName();
-    //XXX appendRightComment(node->getRightComment(), indent);
-    if (newsyntax) out << indent << "{";
-
-    generateChildrenWithType(node, NED_MACHINES, increaseIndent(indent));
-    generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
-    generateChildrenWithType(node, NED_GATES, increaseIndent(indent));
-
-    out << indent << (newsyntax?"}":"endsimple");
-    //XXX appendTrailingComment(node->getTrailingComment(), "");
-}
-
-void NEDGenerator::doModule(CompoundModuleNode *node, const char *indent, bool islast, const char *)
-{
-    //XXX appendBannerComment(node->getBannerComment(), indent);
-    out << indent << "module " << node->getName();
-    //XXX appendRightComment(node->getRightComment(), indent);
-    if (newsyntax) out << indent << "{";
-
-    generateChildrenWithType(node, NED_MACHINES, increaseIndent(indent));
-    generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
-    generateChildrenWithType(node, NED_GATES, increaseIndent(indent));
-    generateChildrenWithType(node, NED_SUBMODULES, increaseIndent(indent));
-    generateChildrenWithType(node, NED_CONNECTIONS, increaseIndent(indent));
-    generateChildrenWithType(node, NED_DISPLAY_STRING, increaseIndent(indent));
-
-    out << indent << (newsyntax?"}":"endmodule");
-    //XXX appendTrailingComment(node->getTrailingComment(), "");
-}
-
-void NEDGenerator::doParams(ParamsNode *node, const char *indent, bool islast, const char *)
-{
-    //XXX appendBannerComment(node->getBannerComment(), indent);
-    out << indent << "parameters:";
-    //XXX appendRightComment(node->getRightComment(), indent);
-    generateChildren(node, increaseIndent(indent));
-}
-
-void NEDGenerator::doParam(ParamNode *node, const char *indent, bool islast, const char *)
-{
-    //XXX appendBannerComment(node->getBannerComment(), indent);
-    out << indent << node->getName() << ": " << node->getDataType();
-    if (islast || newsyntax) {
-        out << ";";
-    } else {
-        out << ",";
-    }
-    //XXX appendRightComment(node->getRightComment(), indent);
-}
-
-void NEDGenerator::doGates(GatesNode *node, const char *indent, bool islast, const char *)
-{
-    //XXX appendBannerComment(node->getBannerComment(), indent);
-    out << indent << "gates:";
-    //XXX appendRightComment(node->getRightComment(), indent);
-    generateChildren(node, increaseIndent(indent));
-}
-
 void NEDGenerator::doGate(GateNode *node, const char *indent, bool islast, const char *)
 {
     //XXX appendBannerComment(node->getBannerComment(), indent);
@@ -602,34 +507,6 @@ void NEDGenerator::doGate(GateNode *node, const char *indent, bool islast, const
     }
     out << ";";
     //XXX appendRightComment(node->getRightComment(), indent);
-}
-
-void NEDGenerator::doMachines(MachinesNode *node, const char *indent, bool islast, const char *)
-{
-    //XXX appendBannerComment(node->getBannerComment(), indent);
-    out << indent << "machines:";
-    //XXX appendRightComment(node->getRightComment(), indent);
-    generateChildren(node, increaseIndent(indent));
-}
-
-void NEDGenerator::doMachine(MachineNode *node, const char *indent, bool islast, const char *)
-{
-    //XXX appendBannerComment(node->getBannerComment(), indent);
-    out << indent << node->getName();
-    if (islast || newsyntax) {
-        out << ";";
-    } else {
-        out << ",";
-    }
-    //XXX appendRightComment(node->getRightComment(), indent);
-}
-
-void NEDGenerator::doSubmodules(SubmodulesNode *node, const char *indent, bool islast, const char *)
-{
-    //XXX appendBannerComment(node->getBannerComment(), indent);
-    out << indent << "submodules:";
-    //XXX appendRightComment(node->getRightComment(), indent);
-    generateChildren(node, increaseIndent(indent));
 }
 
 void NEDGenerator::doSubmodule(SubmoduleNode *node, const char *indent, bool islast, const char *)
@@ -703,29 +580,6 @@ void NEDGenerator::doGatesize(GatesizeNode *node, const char *indent, bool islas
     //XXX appendRightComment(node->getRightComment(), indent);
 }
 
-void NEDGenerator::doSubstmachines(SubstmachinesNode *node, const char *indent, bool islast, const char *)
-{
-    //XXX appendBannerComment(node->getBannerComment(), indent);
-    out << indent << "on";
-    printIfExpression(node, "condition",indent);
-    out << ":";
-
-    //XXX appendRightComment(node->getRightComment(), indent);
-    generateChildren(node, increaseIndent(indent));
-}
-
-void NEDGenerator::doSubstmachine(SubstmachineNode *node, const char *indent, bool islast, const char *)
-{
-    //XXX appendBannerComment(node->getBannerComment(), indent);
-    out << indent << node->getName();
-    if (islast || newsyntax) {
-        out << ";";
-    } else {
-        out << ",";
-    }
-    //XXX appendRightComment(node->getRightComment(), indent);
-}
-
 void NEDGenerator::doConnections(ConnectionsNode *node, const char *indent, bool islast, const char *)
 {
     //XXX appendBannerComment(node->getBannerComment(), indent);
@@ -753,59 +607,6 @@ void NEDGenerator::printGate(NEDElement *conn, const char *modname, const char *
         out << "++";
     else
         printVector(conn, gateindexattr,indent);
-}
-
-void NEDGenerator::doConnection(ConnectionNode *node, const char *indent, bool islast, const char *)
-{
-    //XXX appendBannerComment(node->getBannerComment(), indent);
-
-    //  direction
-    const char *arrow;
-    bool srcfirst;
-    if (node->getArrowDirection()==NED_ARROWDIR_L2R) {
-        arrow = " -->";
-        srcfirst = true;
-    } else {
-        arrow = " <--";
-        srcfirst = false;
-    }
-
-    // print src
-    out << indent;
-    if (srcfirst) {
-        printGate(node, node->getSrcModule(), "src-module-index", node->getSrcGate(), "src-gate-index", node->getSrcGatePlusplus(), indent);
-    } else {
-        printGate(node, node->getDestModule(), "dest-module-index", node->getDestGate(), "dest-gate-index", node->getDestGatePlusplus(), indent);
-    }
-
-    // arrow
-    out << arrow;
-
-    // print channel attributes
-    generateChildrenWithType(node, NED_CONN_ATTR, indent, arrow);
-
-    // print dest
-    out << " ";
-    if (srcfirst) {
-        printGate(node, node->getDestModule(), "dest-module-index", node->getDestGate(), "dest-gate-index", node->getDestGatePlusplus(), indent);
-    } else {
-        printGate(node, node->getSrcModule(), "src-module-index", node->getSrcGate(), "src-gate-index", node->getSrcGatePlusplus(), indent);
-    }
-
-    // print 'if' clause
-    printIfExpression(node, "condition",indent);
-
-    // print display string
-    DisplayStringNode *dispstr = (DisplayStringNode *) node->getFirstChildWithTag(NED_DISPLAY_STRING);
-    if (dispstr)
-    {
-        out << " display \"" << dispstr->getValue() << "\"";
-    }
-
-    out << ";";
-
-    // print comments
-    //XXX appendRightComment(node->getRightComment(), indent);
 }
 
 void NEDGenerator::doConnattr(ConnAttrNode *node, const char *indent, bool islast, const char *arrow)
@@ -855,13 +656,6 @@ void NEDGenerator::doLoopvar(LoopVarNode *node, const char *indent, bool islast,
     printExpression(node, "to-value",indent);
     if (!islast) out << ", ";
     //XXX appendRightComment(node->getRightComment(), indent);
-}
-
-void NEDGenerator::doDisplaystring(DisplayStringNode *node, const char *indent, bool islast, const char *)
-{
-    //XXX appendBannerComment(node->getBannerComment(), indent);
-    out << indent << "display: \"" << node->getValue() << "\";";
-    appendInlineRightComment(node->getRightComment(), "");
 }
 */
 
