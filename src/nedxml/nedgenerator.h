@@ -125,21 +125,20 @@ class NEDGenerator
     void doWhere(WhereNode *node, const char *indent, bool islast, const char *);
     void doLoop(LoopNode *node, const char *indent, bool islast, const char *);
     void doCondition(ConditionNode *node, const char *indent, bool islast, const char *);
-/*XXX
     void printGate(NEDElement *conn, const char *modname, const char *modindexattr,
                    const char *gatename, const char *gateindexattr, bool isplusplus,
                    const char *indent);
 
+    // expressions
     void doExpression(ExpressionNode *node, const char *indent, bool islast, const char *);
     int getOperatorPriority(const char *op, int args);
     bool isOperatorLeftAssoc(const char *op);
     void doOperator(OperatorNode *node, const char *indent, bool islast, const char *);
     void doFunction(FunctionNode *node, const char *indent, bool islast, const char *);
-    void doParamref(IdentNode *node, const char *indent, bool islast, const char *);
-    void doIdent(ObsoleteIdentNode *node, const char *indent, bool islast, const char *);
-    void doConst(LiteralNode *node, const char *indent, bool islast, const char *);
-*/
+    void doIdent(IdentNode *node, const char *indent, bool islast, const char *);
+    void doLiteral(LiteralNode *node, const char *indent, bool islast, const char *);
 
+    // msg stuff
     void doCplusplus(CplusplusNode *node, const char *indent, bool islast, const char *);
     void doStructDecl(StructDeclNode *node, const char *indent, bool islast, const char *);
     void doClassDecl(ClassDeclNode *node, const char *indent, bool islast, const char *);

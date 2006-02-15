@@ -611,6 +611,7 @@ void NEDGenerator::doDisplaystring(DisplayStringNode *node, const char *indent, 
     out << indent << "display: \"" << node->getValue() << "\";";
     appendInlineRightComment(node->getRightComment(), "");
 }
+*/
 
 void NEDGenerator::doExpression(ExpressionNode *node, const char *indent, bool islast, const char *)
 {
@@ -768,29 +769,18 @@ void NEDGenerator::doFunction(FunctionNode *node, const char *indent, bool islas
     out << ")";
 }
 
-void NEDGenerator::doParamref(IdentNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doIdent(IdentNode *node, const char *indent, bool islast, const char *)
 {
-    if (node->getIsAncestor())
-        out << "ancestor ";
-
-    if (node->getIsRef())
-        out << "ref ";
-
     if (strnotnull(node->getModule())) {
         out << node->getModule();
         printVector(node, "module-index", indent);
         out << ".";
     }
 
-    out << node->getParamName();
-}
-
-void NEDGenerator::doIdent(ObsoleteIdentNode *node, const char *indent, bool islast, const char *)
-{
     out << node->getName();
 }
 
-void NEDGenerator::doConst(LiteralNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doLiteral(LiteralNode *node, const char *indent, bool islast, const char *)
 {
     bool isstring = (node->getType()==NED_CONST_STRING);
 
@@ -802,7 +792,6 @@ void NEDGenerator::doConst(LiteralNode *node, const char *indent, bool islast, c
     }
     if (isstring) out << "\"";
 }
-*/
 
 void NEDGenerator::doCplusplus(CplusplusNode *node, const char *indent, bool islast, const char *)
 {
@@ -1031,20 +1020,16 @@ void NEDGenerator::generateNedItem(NEDElement *node, const char *indent, bool is
             doLoop((LoopNode *)node, indent, islast, arg); break;
         case NED_CONDITION:
             doCondition((ConditionNode *)node, indent, islast, arg); break;
-/*XXX
         case NED_EXPRESSION:
             doExpression((ExpressionNode *)node, indent, islast, arg); break;
         case NED_OPERATOR:
             doOperator((OperatorNode *)node, indent, islast, arg); break;
         case NED_FUNCTION:
             doFunction((FunctionNode *)node, indent, islast, arg); break;
-        case NED_PARAM_REF:
-            doParamref((IdentNode *)node, indent, islast, arg); break;
-        case NED_OBSOLETE_IDENT:
-            doIdent((ObsoleteIdentNode *)node, indent, islast, arg); break;
+        case NED_IDENT:
+            doIdent((IdentNode *)node, indent, islast, arg); break;
         case NED_LITERAL:
-            doConst((LiteralNode *)node, indent, islast, arg); break;
-*/
+            doLiteral((LiteralNode *)node, indent, islast, arg); break;
         case NED_CPLUSPLUS:
             doCplusplus((CplusplusNode *)node, indent, islast, arg); break;
         case NED_STRUCT_DECL:
