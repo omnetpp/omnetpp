@@ -478,6 +478,7 @@ void NEDGenerator::doConnectionGroup(ConnectionGroupNode *node, const char *inde
     out << indent << "{\n";
     generateChildren(node, increaseIndent(indent));
     out << indent << "}\n";
+    generateChildrenWithType(node, NED_WHERE, increaseIndent(indent));
 }
 
 void NEDGenerator::doWhere(WhereNode *node, const char *indent, bool islast, const char *)
@@ -527,29 +528,6 @@ void NEDGenerator::doGate(GateNode *node, const char *indent, bool islast, const
     }
     out << ";";
     //XXX appendRightComment(node->getRightComment(), indent);
-}
-
-void NEDGenerator::doSubmodule(SubmoduleNode *node, const char *indent, bool islast, const char *)
-{
-    //XXX appendBannerComment(node->getBannerComment(), indent);
-    out << indent << node->getName() << ": ";
-    if (strnotnull(node->getLikeParam())) {
-        out << node->getLikeParam();
-        printVector(node, "vector-size",indent);
-        out << " like " << node->getType();
-    }
-    else
-    {
-        out << node->getType();
-        printVector(node, "vector-size",indent);
-    }
-    out << ";";
-    //XXX appendRightComment(node->getRightComment(), indent);
-
-    generateChildrenWithType(node, NED_SUBSTMACHINES, increaseIndent(indent));
-    generateChildrenWithType(node, NED_SUBSTPARAMS, increaseIndent(indent));
-    generateChildrenWithType(node, NED_GATESIZES, increaseIndent(indent));
-    generateChildrenWithType(node, NED_DISPLAY_STRING, increaseIndent(indent));
 }
 
 void NEDGenerator::doSubstparams(SubstparamsNode *node, const char *indent, bool islast, const char *)
@@ -653,29 +631,6 @@ void NEDGenerator::doConnattr(ConnAttrNode *node, const char *indent, bool islas
     if (islast) {
         out << arrow;
     }
-}
-
-void NEDGenerator::doForloop(ForLoopNode *node, const char *indent, bool islast, const char *)
-{
-    //XXX appendBannerComment(node->getBannerComment(), indent);
-    out << indent << "for ";
-    generateChildrenWithType(node, NED_LOOP_VAR, increaseIndent(indent));
-    out << " do";
-    //XXX appendRightComment(node->getRightComment(), indent);
-    generateChildrenWithType(node, NED_CONNECTION, increaseIndent(indent));
-    out << indent << "endfor;";
-    //XXX appendTrailingComment(node->getTrailingComment(), "");
-}
-
-void NEDGenerator::doLoopvar(LoopVarNode *node, const char *indent, bool islast, const char *)
-{
-    //XXX appendBannerComment(node->getBannerComment(), indent);
-    out << node->getParamName() << "=";
-    printExpression(node, "from-value",indent);
-    out << "..";
-    printExpression(node, "to-value",indent);
-    if (!islast) out << ", ";
-    //XXX appendRightComment(node->getRightComment(), indent);
 }
 */
 
