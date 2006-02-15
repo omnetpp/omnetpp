@@ -22,8 +22,6 @@ public class NedEditPartFactory implements EditPartFactory {
 
         if (model instanceof Wire)
             child = new WireEditPart();
-        else if (model instanceof Comment)
-            child = new CommentEditPart();
         else if (model instanceof Module)
             child = new ModuleEditPart();
         else if (model instanceof SimpleModule)

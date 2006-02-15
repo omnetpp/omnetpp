@@ -14,14 +14,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.gef.palette.*;
+import org.eclipse.gef.palette.CombinedTemplateCreationEntry;
+import org.eclipse.gef.palette.ConnectionCreationToolEntry;
+import org.eclipse.gef.palette.MarqueeToolEntry;
+import org.eclipse.gef.palette.PaletteContainer;
+import org.eclipse.gef.palette.PaletteDrawer;
+import org.eclipse.gef.palette.PaletteEntry;
+import org.eclipse.gef.palette.PaletteGroup;
+import org.eclipse.gef.palette.PaletteRoot;
+import org.eclipse.gef.palette.PaletteSeparator;
+import org.eclipse.gef.palette.PaletteStack;
+import org.eclipse.gef.palette.PanningSelectionToolEntry;
+import org.eclipse.gef.palette.ToolEntry;
 import org.eclipse.gef.requests.SimpleFactory;
 import org.eclipse.gef.tools.MarqueeSelectionTool;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.*;
+import org.omnetpp.ned.editor.graph.model.ModelFactory;
+import org.omnetpp.ned.editor.graph.model.Module;
+import org.omnetpp.ned.editor.graph.model.SimpleModule;
 //import org.omnetpp.ned.model.ModelUtil;
 //import org.omnetpp.ned.model.swig.*;
 
@@ -30,6 +43,10 @@ public class ModuleEditorPlugin extends AbstractUIPlugin {
     public final static String PLUGIN_ID = "org.omnetpp.ned.editor.graph";
 
     private static ModuleEditorPlugin singleton;
+    
+    static {
+    	System.out.println("ModuleEditorPlugin loaded");
+    }
 
     public ModuleEditorPlugin() {
         super();
@@ -139,15 +156,6 @@ public class ModuleEditorPlugin extends AbstractUIPlugin {
         entries.add(combined);
 
         entries.add(new PaletteSeparator());
-
-        combined = new CombinedTemplateCreationEntry(
-                "Comment",
-                "A comment box to add remark to the diagram",
-                TemplateConstants.COMMENT, new SimpleFactory(Comment.class), 
-                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_LABEL),
-                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_LABEL,"l",null,24)
-        );
-        entries.add(combined);
 
         drawer.addAll(entries);
         return drawer;

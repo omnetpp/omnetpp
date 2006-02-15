@@ -19,11 +19,11 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
-import org.omnetpp.ned.editor.graph.figures.BentCornerFigure;
 import org.omnetpp.ned.editor.graph.figures.ModuleFeedbackFigure;
+import org.omnetpp.ned.editor.graph.figures.SimpleModuleFigure;
 import org.omnetpp.ned.editor.graph.misc.ColorFactory;
-import org.omnetpp.ned.editor.graph.model.Comment;
 import org.omnetpp.ned.editor.graph.model.Module;
+import org.omnetpp.ned.editor.graph.model.SimpleModule;
 
 /**
  * 
@@ -44,7 +44,7 @@ public class NedResizableEditPolicy extends ResizableEditPolicy {
     }
 
     protected IFigure createFigure(GraphicalEditPart part, IFigure parent) {
-        IFigure child = getCustomFeedbackFigure(part.getModel());
+        IFigure child = getCustomFeedbackFigure(part, part.getModel());
         
         if (parent != null) parent.add(child);
 
@@ -67,14 +67,11 @@ public class NedResizableEditPolicy extends ResizableEditPolicy {
         return child;
     }
 
-    protected IFigure getCustomFeedbackFigure(Object modelPart) {
+    protected IFigure getCustomFeedbackFigure(GraphicalEditPart part, Object modelPart) {
         IFigure figure;
 
         if (modelPart instanceof Module)
             figure = new ModuleFeedbackFigure();
-        else if (modelPart instanceof Comment)
-            // FIXME currently the CommentFigure is crashing in sun's BiDi implementation during dragging
-            figure = new BentCornerFigure();
 // XXX specialized feedback figure can be set here        
 //        else if (modelPart instanceof SimpleModule)
 //            figure = new SimpleModuleFigure();

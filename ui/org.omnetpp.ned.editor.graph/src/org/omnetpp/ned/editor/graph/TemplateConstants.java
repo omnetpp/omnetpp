@@ -20,8 +20,6 @@ public class TemplateConstants {
 
     public static final String MODULE = "module template"; //$NON-NLS-1$
 
-    public static final String COMMENT = "comment template"; //$NON-NLS-1$
-
     public static final String TEMPLATE_FULL_ADDER = "full adder template"; //$NON-NLS-1$
 
     public static final String TEMPLATE_HALF_ADDER = "half adder template"; //$NON-NLS-1$

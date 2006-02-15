@@ -67,10 +67,7 @@ public class CloneCommand extends Command {
             newPart = new SimpleModule();
         } else if (oldPart instanceof Module) {
             newPart = new Module();
-        } else if (oldPart instanceof Comment) {
-            newPart = new Comment();
-            ((Comment) newPart).setLabelContents(((Comment) oldPart).getLabelContents());
-        }
+        } 
 
         if (oldPart instanceof Container) {
             Iterator i = ((Container) oldPart).getChildren().iterator();

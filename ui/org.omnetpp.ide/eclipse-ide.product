@@ -39,14 +39,9 @@
       <plugin id="org.eclipse.core.resources.win32"/>
       <plugin id="org.eclipse.core.runtime"/>
       <plugin id="org.eclipse.core.runtime.compatibility"/>
+      <plugin id="org.eclipse.core.runtime.compatibility.registry"/>
       <plugin id="org.eclipse.core.variables"/>
       <plugin id="org.eclipse.draw2d"/>
-      <plugin id="org.eclipse.emf.common"/>
-      <plugin id="org.eclipse.emf.common.ui"/>
-      <plugin id="org.eclipse.emf.ecore"/>
-      <plugin id="org.eclipse.emf.ecore.xmi"/>
-      <plugin id="org.eclipse.emf.edit"/>
-      <plugin id="org.eclipse.emf.edit.ui"/>
       <plugin id="org.eclipse.equinox.common"/>
       <plugin id="org.eclipse.equinox.preferences"/>
       <plugin id="org.eclipse.equinox.registry"/>
@@ -54,6 +49,7 @@
       <plugin id="org.eclipse.help"/>
       <plugin id="org.eclipse.help.appserver"/>
       <plugin id="org.eclipse.help.base"/>
+      <plugin id="org.eclipse.help.ui"/>
       <plugin id="org.eclipse.jface"/>
       <plugin id="org.eclipse.jface.text"/>
       <plugin id="org.eclipse.osgi"/>
@@ -78,9 +74,6 @@
       <plugin id="org.omnetpp.ide"/>
       <plugin id="org.omnetpp.ned.editor.graph"/>
       <plugin id="org.omnetpp.ned.editor.text"/>
-      <plugin id="org.omnetpp.ned.model"/>
-      <plugin id="org.omnetpp.ned.model.editor"/>
-      <plugin id="org.omnetpp.ned.provider"/>
       <plugin id="org.omnetpp.scave"/>
       <plugin id="org.omnetpp.scave.engine"/>
    </plugins>

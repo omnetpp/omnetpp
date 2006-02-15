@@ -13,24 +13,39 @@ package org.omnetpp.ned.editor.graph.edit.policies;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.draw2d.*;
+import org.eclipse.draw2d.ColorConstants;
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.PositionConstants;
+import org.eclipse.draw2d.RectangleFigure;
+import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.gef.*;
+import org.eclipse.gef.EditPart;
+import org.eclipse.gef.EditPolicy;
+import org.eclipse.gef.GraphicalEditPart;
+import org.eclipse.gef.LayerConstants;
+import org.eclipse.gef.Request;
+import org.eclipse.gef.RequestConstants;
+import org.eclipse.gef.SnapToGuides;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
 import org.eclipse.gef.rulers.RulerProvider;
-import org.omnetpp.ned.editor.graph.edit.CommentEditPart;
-import org.omnetpp.ned.editor.graph.figures.BentCornerFigure;
 import org.omnetpp.ned.editor.graph.figures.ModuleFigure;
 import org.omnetpp.ned.editor.graph.misc.ColorFactory;
 import org.omnetpp.ned.editor.graph.misc.DesktopLayoutEditPolicy;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.*;
-import org.omnetpp.ned.editor.graph.model.commands.*;
+import org.omnetpp.ned.editor.graph.model.Container;
+import org.omnetpp.ned.editor.graph.model.Guide;
+import org.omnetpp.ned.editor.graph.model.Module;
+import org.omnetpp.ned.editor.graph.model.NedElement;
+import org.omnetpp.ned.editor.graph.model.commands.AddCommand;
+import org.omnetpp.ned.editor.graph.model.commands.ChangeGuideCommand;
+import org.omnetpp.ned.editor.graph.model.commands.CloneCommand;
+import org.omnetpp.ned.editor.graph.model.commands.CreateCommand;
+import org.omnetpp.ned.editor.graph.model.commands.SetConstraintCommand;
 
 
 // FIXME objects do not attach properly to guides
@@ -176,10 +191,6 @@ public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
     protected EditPolicy createChildEditPolicy(EditPart child) {
         ResizableEditPolicy policy = new NedResizableEditPolicy();
-        // comment figures can be resized only horizontally
-        if (child instanceof CommentEditPart) {
-            policy.setResizeDirections(PositionConstants.EAST | PositionConstants.WEST);
-        }
         return policy;
     }
 
@@ -196,9 +207,6 @@ public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
         if (createRequest.getNewObject() instanceof Module)
             figure = new ModuleFigure();
-        else if (createRequest.getNewObject() instanceof Comment)
-            // FIXME currently the CommentFigure is crashing in sun's BiDi implementation during dragging
-            figure = new BentCornerFigure();
         else {
             figure = new RectangleFigure();
             ((RectangleFigure) figure).setXOR(true);
