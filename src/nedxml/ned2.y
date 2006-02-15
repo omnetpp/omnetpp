@@ -960,6 +960,9 @@ submodule
         | submoduleheader '{'
                 {
                   ps.blockscope.push(ps.submod);
+                  ps.parameters = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.submod);
+                  ps.parameters->setIsImplicit(true);
+                  ps.propertyscope.push(ps.parameters);
                   //setComments(ps.submod,@1,@2);
                 }
           opt_paramblock
@@ -967,6 +970,7 @@ submodule
           '}' opt_semicolon
                 {
                   ps.blockscope.pop();
+                  ps.propertyscope.pop();
                 }
         ;
 
