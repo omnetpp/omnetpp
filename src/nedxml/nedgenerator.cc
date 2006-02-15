@@ -217,31 +217,117 @@ void NEDGenerator::doImport(ImportNode *node, const char *indent, bool islast, c
     out << indent << "import \"" << node->getFilename() << "\";" << "\n";
 }
 
-void NEDGenerator::doPropertyDecl(PropertyDeclNode *node, const char *indent, bool islast, const char *) {}
-void NEDGenerator::doExtends(ExtendsNode *node, const char *indent, bool islast, const char *) {}
-void NEDGenerator::doInterfaceName(InterfaceNameNode *node, const char *indent, bool islast, const char *) {}
-void NEDGenerator::doSimpleModule(SimpleModuleNode *node, const char *indent, bool islast, const char *) {}
-void NEDGenerator::doModuleInterface(ModuleInterfaceNode *node, const char *indent, bool islast, const char *) {}
-void NEDGenerator::doCompoundModule(CompoundModuleNode *node, const char *indent, bool islast, const char *) {}
-void NEDGenerator::doChannelInterface(ChannelInterfaceNode *node, const char *indent, bool islast, const char *) {}
-void NEDGenerator::doChannel(ChannelNode *node, const char *indent, bool islast, const char *) {}
-void NEDGenerator::doParameters(ParametersNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doPropertyDecl(PropertyDeclNode *node, const char *indent, bool islast, const char *)
+{
+    out << indent << "property " << node->getName();
+    generateChildren(node, indent);
+    out << ";" << "\n";
+}
+
+void NEDGenerator::doExtends(ExtendsNode *node, const char *indent, bool islast, const char *)
+{
+    out << "extends " << node->getName();
+}
+
+void NEDGenerator::doInterfaceName(InterfaceNameNode *node, const char *indent, bool islast, const char *)
+{
+    out << "like " << node->getName();
+}
+
+void NEDGenerator::doSimpleModule(SimpleModuleNode *node, const char *indent, bool islast, const char *)
+{
+    out << "simple " << node->getName();
+    generateChildren(node, indent);
+}
+
+void NEDGenerator::doModuleInterface(ModuleInterfaceNode *node, const char *indent, bool islast, const char *)
+{
+    out << "interface " << node->getName();
+    generateChildren(node, indent);
+}
+
+void NEDGenerator::doCompoundModule(CompoundModuleNode *node, const char *indent, bool islast, const char *)
+{
+    out << "module " << node->getName();
+    generateChildren(node, indent);
+}
+
+void NEDGenerator::doChannelInterface(ChannelInterfaceNode *node, const char *indent, bool islast, const char *)
+{
+    out << "channelinterface " << node->getName();
+    generateChildren(node, indent);
+}
+
+void NEDGenerator::doChannel(ChannelNode *node, const char *indent, bool islast, const char *)
+{
+    out << "channel " << node->getName();
+    generateChildren(node, indent);
+}
+
+void NEDGenerator::doParameters(ParametersNode *node, const char *indent, bool islast, const char *)
+{
+    out << "parameters: ";
+    generateChildren(node, indent);
+}
+
 void NEDGenerator::doParamGroup(ParamGroupNode *node, const char *indent, bool islast, const char *) {}
 void NEDGenerator::doParam(ParamNode *node, const char *indent, bool islast, const char *) {}
 void NEDGenerator::doPattern(PatternNode *node, const char *indent, bool islast, const char *) {}
-void NEDGenerator::doProperty(PropertyNode *node, const char *indent, bool islast, const char *) {}
-void NEDGenerator::doPropertyKey(PropertyKeyNode *node, const char *indent, bool islast, const char *) {}
-void NEDGenerator::doGates(GatesNode *node, const char *indent, bool islast, const char *) {}
+
+void NEDGenerator::doProperty(PropertyNode *node, const char *indent, bool islast, const char *)
+{
+    if (!node->getIsImplicit())
+    {
+        out << "@" << node->getName();
+        generateChildren(node, indent);
+    }
+}
+
+void NEDGenerator::doPropertyKey(PropertyKeyNode *node, const char *indent, bool islast, const char *)
+{
+    out << node->getKey();
+    generateChildren(node, indent);
+}
+
+void NEDGenerator::doGates(GatesNode *node, const char *indent, bool islast, const char *)
+{
+    out << "gates: ";
+    generateChildren(node, indent);
+}
+
 void NEDGenerator::doGateGroup(GateGroupNode *node, const char *indent, bool islast, const char *) {}
 void NEDGenerator::doGate(GateNode *node, const char *indent, bool islast, const char *) {}
-void NEDGenerator::doTypes(TypesNode *node, const char *indent, bool islast, const char *) {}
-void NEDGenerator::doSubmodules(SubmodulesNode *node, const char *indent, bool islast, const char *) {}
+
+void NEDGenerator::doTypes(TypesNode *node, const char *indent, bool islast, const char *)
+{
+    out << "types: ";
+    generateChildren(node, indent);
+}
+
+void NEDGenerator::doSubmodules(SubmodulesNode *node, const char *indent, bool islast, const char *)
+{
+    out << "submodules: ";
+    generateChildren(node, indent);
+}
+
 void NEDGenerator::doSubmodule(SubmoduleNode *node, const char *indent, bool islast, const char *) {}
-void NEDGenerator::doConnections(ConnectionsNode *node, const char *indent, bool islast, const char *) {}
+
+void NEDGenerator::doConnections(ConnectionsNode *node, const char *indent, bool islast, const char *)
+{
+    out << "connections: ";
+    generateChildren(node, indent);
+}
+
 void NEDGenerator::doConnection(ConnectionNode *node, const char *indent, bool islast, const char *) {}
 void NEDGenerator::doChannelSpec(ChannelSpecNode *node, const char *indent, bool islast, const char *) {}
 void NEDGenerator::doConnectionGroup(ConnectionGroupNode *node, const char *indent, bool islast, const char *) {}
-void NEDGenerator::doWhere(WhereNode *node, const char *indent, bool islast, const char *) {}
+
+void NEDGenerator::doWhere(WhereNode *node, const char *indent, bool islast, const char *)
+{
+    out << "where ";
+    generateChildren(node, indent);
+}
+
 void NEDGenerator::doLoop(LoopNode *node, const char *indent, bool islast, const char *) {}
 void NEDGenerator::doCondition(ConditionNode *node, const char *indent, bool islast, const char *) {}
 
