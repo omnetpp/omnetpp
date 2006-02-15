@@ -221,7 +221,7 @@ void NEDGenerator::doPropertyDecl(PropertyDeclNode *node, const char *indent, bo
 {
     out << indent << "property " << node->getName();
     generateChildren(node, indent);
-    out << ";" << "\n";
+    out << ";\n\n";
 }
 
 void NEDGenerator::doExtends(ExtendsNode *node, const char *indent, bool islast, const char *)
@@ -340,15 +340,21 @@ void NEDGenerator::doParam(ParamNode *node, const char *indent, bool islast, con
 
 void NEDGenerator::doPattern(PatternNode *node, const char *indent, bool islast, const char *)
 {
-    out << indent << "{\n";
-    generateChildren(node, indent);
-    out << indent << "}\n";
+    out << indent << "/" << node->getPattern() << "/ = ";
+    printExpression(node, "value",indent);
+
+    generateChildrenWithType(node, NED_PROPERTY, increaseIndent(indent), " ");
+    generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));
+    out << ";\n";
 }
 
 void NEDGenerator::doProperty(PropertyNode *node, const char *indent, bool islast, const char *sep)
 {
     if (!node->getIsImplicit())
     {
+        // if sep==NULL, print as standalone property (with indent and ";"), otherwise as inline property
+        if (!sep)
+            out << indent;
         out << "@" << node->getName();
         if (node->getFirstChildWithTag(NED_PROPERTY_KEY))
         {
@@ -356,9 +362,11 @@ void NEDGenerator::doProperty(PropertyNode *node, const char *indent, bool islas
             generateChildrenWithType(node, NED_PROPERTY_KEY, increaseIndent(indent), ",");
             out << ")";
         }
+        if (!sep)
+            out << ";\n";
+        else if (!islast)
+            out << sep;
     }
-    if (!islast && sep)
-        out << sep;
 }
 
 void NEDGenerator::doPropertyKey(PropertyKeyNode *node, const char *indent, bool islast, const char *sep)
@@ -396,7 +404,9 @@ void NEDGenerator::doGate(GateNode *node, const char *indent, bool islast, const
     out << node->getName();
     //XX vector << " = ";
     // printExpression(node, "value",indent);
-    generateChildren(node, indent);
+
+    generateChildrenWithType(node, NED_PROPERTY, increaseIndent(indent), " ");
+    generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));
     out << ";\n";
 }
 
@@ -433,7 +443,7 @@ void NEDGenerator::doSubmodule(SubmoduleNode *node, const char *indent, bool isl
 
 void NEDGenerator::doConnections(ConnectionsNode *node, const char *indent, bool islast, const char *)
 {
-    if (!node->getAllowUnconnected()) {
+    if (node->getAllowUnconnected()) {
         out << indent << "connections allowunconnected:\n";
     } else {
         out << indent << "connections:\n";
