@@ -468,8 +468,17 @@ void NEDGenerator::doConnection(ConnectionNode *node, const char *indent, bool i
     out << ";\n";
 }
 
-void NEDGenerator::doChannelSpec(ChannelSpecNode *node, const char *indent, bool islast, const char *) {}
-void NEDGenerator::doConnectionGroup(ConnectionGroupNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doChannelSpec(ChannelSpecNode *node, const char *indent, bool islast, const char *)
+{
+    out << "todo-channelspec-todo ";
+}
+
+void NEDGenerator::doConnectionGroup(ConnectionGroupNode *node, const char *indent, bool islast, const char *)
+{
+    out << indent << "{\n";
+    generateChildren(node, increaseIndent(indent));
+    out << indent << "}\n";
+}
 
 void NEDGenerator::doWhere(WhereNode *node, const char *indent, bool islast, const char *)
 {
@@ -477,8 +486,19 @@ void NEDGenerator::doWhere(WhereNode *node, const char *indent, bool islast, con
     generateChildren(node, indent);
 }
 
-void NEDGenerator::doLoop(LoopNode *node, const char *indent, bool islast, const char *) {}
-void NEDGenerator::doCondition(ConditionNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doLoop(LoopNode *node, const char *indent, bool islast, const char *)
+{
+    out << node->getParamName() << "=";
+    printExpression(node, "from-value",indent);
+    out << "..";
+    printExpression(node, "to-value",indent);
+}
+
+void NEDGenerator::doCondition(ConditionNode *node, const char *indent, bool islast, const char *)
+{
+    out << "if ";
+    printExpression(node, "condition",indent);
+}
 
 void NEDGenerator::printGate(NEDElement *conn, const char *modname, const char *modindexattr,
                              const char *gatename, const char *gateindexattr, bool isplusplus,
