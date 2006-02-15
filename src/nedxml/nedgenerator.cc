@@ -101,6 +101,21 @@ void NEDGenerator::generateChildrenWithType(NEDElement *node, int tagcode, const
 
 //---------------------------------------------------------------------------
 
+bool NEDGenerator::hasExpression(NEDElement *node, const char *attr)
+{
+    if (strnotnull(node->getAttribute(attr)))
+    {
+        return true;
+    }
+    else
+    {
+        for (ExpressionNode *expr=(ExpressionNode *)node->getFirstChildWithTag(NED_EXPRESSION); expr; expr=expr->getNextExpressionNodeSibling())
+            if (strnotnull(expr->getTarget()) && !strcmp(expr->getTarget(),attr))
+                return true;
+        return false;
+    }
+}
+
 void NEDGenerator::printExpression(NEDElement *node, const char *attr, const char *indent)
 {
     if (strnotnull(node->getAttribute(attr)))
@@ -110,12 +125,8 @@ void NEDGenerator::printExpression(NEDElement *node, const char *attr, const cha
     else
     {
         for (ExpressionNode *expr=(ExpressionNode *)node->getFirstChildWithTag(NED_EXPRESSION); expr; expr=expr->getNextExpressionNodeSibling())
-        {
             if (strnotnull(expr->getTarget()) && !strcmp(expr->getTarget(),attr))
-            {
                 generateNedItem(expr, indent, false, NULL);
-            }
-        }
     }
 }
 
@@ -292,7 +303,10 @@ void NEDGenerator::doChannelInterface(ChannelInterfaceNode *node, const char *in
 
 void NEDGenerator::doChannel(ChannelNode *node, const char *indent, bool islast, const char *)
 {
-    out << indent << "channel " << node->getName() << " ";
+    out << indent << "channel ";
+    if (node->getIsWithcppclass())
+        out << "withcppclass ";
+    out << node->getName() << " ";
     generateChildrenWithType(node, NED_EXTENDS, increaseIndent(indent));
     generateChildrenWithType(node, NED_INTERFACE_NAME, increaseIndent(indent));
 
@@ -330,8 +344,14 @@ void NEDGenerator::doParam(ParamNode *node, const char *indent, bool islast, con
         case NED_PARTYPE_XML:    out << "xml "; break;
         default: INTERNAL_ERROR0(node, "wrong type");
     }
-    out << node->getName() << " = ";
-    printExpression(node, "value",indent);
+    if (node->getIsFunction())
+        out << "function ";
+    out << node->getName();
+    if (hasExpression(node,"value"))
+    {
+        out << " = ";
+        printExpression(node, "value",indent);
+    }
 
     generateChildrenWithType(node, NED_PROPERTY, increaseIndent(indent), " ");
     generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));

@@ -671,6 +671,7 @@ class ChannelInterfaceNode : public NEDElement
  * <pre>
  * <!ELEMENT channel (whitespace*, extends?, interface-name*, parameters?)>
  * <!ATTLIST channel
+ *      is-withcppclass     (true|false)  "false"
  *      name                NMTOKEN   #REQUIRED>
  * </pre>
  * 
@@ -679,6 +680,7 @@ class ChannelInterfaceNode : public NEDElement
 class ChannelNode : public NEDElement
 {
   private:
+    bool isWithcppclass;
     std::string name;
   public:
     /** @name Constructors, destructor */
@@ -701,6 +703,8 @@ class ChannelNode : public NEDElement
 
     /** @name Typed access to attributes, children and siblings */
     //@{
+    bool getIsWithcppclass() const  {return isWithcppclass;}
+    void setIsWithcppclass(bool val)  {isWithcppclass = val;}
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
 

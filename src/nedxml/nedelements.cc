@@ -698,13 +698,14 @@ ParametersNode *ChannelInterfaceNode::getFirstParametersChild() const
 
 int ChannelNode::getNumAttributes() const
 {
-    return 1;
+    return 2;
 }
 
 const char *ChannelNode::getAttributeName(int k) const
 {
     switch (k) {
-        case 0: return "name";
+        case 0: return "is-withcppclass";
+        case 1: return "name";
         default: return 0;
     }
 }
@@ -712,7 +713,8 @@ const char *ChannelNode::getAttributeName(int k) const
 const char *ChannelNode::getAttribute(int k) const
 {
     switch (k) {
-        case 0: return name.c_str();
+        case 0: return boolToString(isWithcppclass);
+        case 1: return name.c_str();
         default: return 0;
     }
 }
@@ -720,7 +722,8 @@ const char *ChannelNode::getAttribute(int k) const
 void ChannelNode::setAttribute(int k, const char *val)
 {
     switch (k) {
-        case 0: name = val; break;
+        case 0: isWithcppclass = stringToBool(val); break;
+        case 1: name = val; break;
         default: ;
     }
 }
@@ -728,7 +731,8 @@ void ChannelNode::setAttribute(int k, const char *val)
 const char *ChannelNode::getAttributeDefault(int k) const
 {
     switch (k) {
-        case 0: return NULL;
+        case 0: return "false";
+        case 1: return NULL;
         default: return 0;
     }
 }

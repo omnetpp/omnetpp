@@ -303,7 +303,8 @@ channelheader
         | CHANNEL WITHCPPCLASS NAME
                 {
                   ps.component = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
-                  ((ChannelNode *)ps.component)->setName(toString(@2));
+                  ((ChannelNode *)ps.component)->setName(toString(@3));
+                  ((ChannelNode *)ps.component)->setIsWithcppclass(true);
                   //setComments(ps.component,@1,@2);
                 }
            opt_inheritance

@@ -57,6 +57,7 @@
 
 <!ELEMENT channel (whitespace*, extends?, interface-name*, parameters?)>
 <!ATTLIST channel
+     is-withcppclass     (true|false)  "false"
      name                NMTOKEN   #REQUIRED>
 
 <!ELEMENT parameters (whitespace*, (property|param|pattern|param-group)*)>
