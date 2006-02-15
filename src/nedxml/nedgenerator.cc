@@ -332,7 +332,9 @@ void NEDGenerator::doParam(ParamNode *node, const char *indent, bool islast, con
     }
     out << node->getName() << " = ";
     printExpression(node, "value",indent);
-    generateChildren(node, indent);
+
+    generateChildrenWithType(node, NED_PROPERTY, increaseIndent(indent), " ");
+    generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));
     out << ";\n";
 }
 
@@ -343,19 +345,28 @@ void NEDGenerator::doPattern(PatternNode *node, const char *indent, bool islast,
     out << indent << "}\n";
 }
 
-void NEDGenerator::doProperty(PropertyNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doProperty(PropertyNode *node, const char *indent, bool islast, const char *sep)
 {
     if (!node->getIsImplicit())
     {
         out << "@" << node->getName();
-        generateChildren(node, indent);
+        if (node->getFirstChildWithTag(NED_PROPERTY_KEY))
+        {
+            out << "(";
+            generateChildrenWithType(node, NED_PROPERTY_KEY, increaseIndent(indent), ",");
+            out << ")";
+        }
     }
+    if (!islast && sep)
+        out << sep;
 }
 
-void NEDGenerator::doPropertyKey(PropertyKeyNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doPropertyKey(PropertyKeyNode *node, const char *indent, bool islast, const char *sep)
 {
     out << node->getKey();
     generateChildren(node, indent);
+    if (!islast && sep)
+        out << sep;
 }
 
 void NEDGenerator::doGates(GatesNode *node, const char *indent, bool islast, const char *)
