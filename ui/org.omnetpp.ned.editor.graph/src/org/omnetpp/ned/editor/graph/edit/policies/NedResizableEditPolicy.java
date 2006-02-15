@@ -22,8 +22,8 @@ import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.omnetpp.ned.editor.graph.figures.ModuleFeedbackFigure;
 import org.omnetpp.ned.editor.graph.figures.SimpleModuleFigure;
 import org.omnetpp.ned.editor.graph.misc.ColorFactory;
-import org.omnetpp.ned.editor.graph.model.Module;
-import org.omnetpp.ned.editor.graph.model.SimpleModule;
+import org.omnetpp.ned.editor.graph.model.CompoundModule;
+import org.omnetpp.ned.editor.graph.model.Submodule;
 
 /**
  * 
@@ -70,7 +70,7 @@ public class NedResizableEditPolicy extends ResizableEditPolicy {
     protected IFigure getCustomFeedbackFigure(GraphicalEditPart part, Object modelPart) {
         IFigure figure;
 
-        if (modelPart instanceof Module)
+        if (modelPart instanceof CompoundModule)
             figure = new ModuleFeedbackFigure();
 // XXX specialized feedback figure can be set here        
 //        else if (modelPart instanceof SimpleModule)

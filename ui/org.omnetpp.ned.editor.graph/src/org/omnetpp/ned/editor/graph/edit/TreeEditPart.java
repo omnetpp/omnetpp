@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedTreeEditPolicy;
 import org.omnetpp.ned.editor.graph.model.Container;
-import org.omnetpp.ned.editor.graph.model.NedElement;
+import org.omnetpp.ned.editor.graph.model.NedNode;
 
 /**
  * EditPart for Logic components in the Tree.
@@ -65,8 +65,8 @@ public class TreeEditPart extends org.eclipse.gef.editparts.AbstractTreeEditPart
      * 
      * @return Model of this.
      */
-    protected NedElement getLogicSubpart() {
-        return (NedElement) getModel();
+    protected NedNode getLogicSubpart() {
+        return (NedNode) getModel();
     }
 
     /**

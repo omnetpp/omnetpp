@@ -20,7 +20,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.ned.editor.graph.figures.properties.*;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
-import org.omnetpp.ned.editor.graph.model.SimpleModule;
+import org.omnetpp.ned.editor.graph.model.Submodule;
 
 public class SimpleModuleFigure extends NedFigure implements HandleBounds, 
     DisplayRangeSupport, DisplayNameSupport, DisplayTooltipSupport, DisplayQueueSupport, 
@@ -50,15 +50,15 @@ public class SimpleModuleFigure extends NedFigure implements HandleBounds,
         // anchors TEMPORARY
         PinnableNoncentralChopboxAnchor outputConnectionAnchor = new PinnableNoncentralChopboxAnchor(this);
         outputConnectionAnchor.setRelRefPoint(0.5, 0.8);
-        addSourceConnectionAnchor(outputConnectionAnchor, SimpleModule.TERMINAL_OUT);
+        addSourceConnectionAnchor(outputConnectionAnchor, Submodule.TERMINAL_OUT);
 
         PinnableNoncentralChopboxAnchor inputConnectionAnchorA, inputConnectionAnchorB;
         inputConnectionAnchorA = new PinnableNoncentralChopboxAnchor(this, 0.2, 0.0);
         inputConnectionAnchorA.setPinnedDown(false);
-        addTargetConnectionAnchor(inputConnectionAnchorA, SimpleModule.TERMINAL_A);
+        addTargetConnectionAnchor(inputConnectionAnchorA, Submodule.TERMINAL_A);
         inputConnectionAnchorB = new PinnableNoncentralChopboxAnchor(this, 0.8, 0.0);
         inputConnectionAnchorB.setPinnedDown(false);
-        addTargetConnectionAnchor(inputConnectionAnchorB, SimpleModule.TERMINAL_B);
+        addTargetConnectionAnchor(inputConnectionAnchorB, Submodule.TERMINAL_B);
   
         setLayoutManager(new StackLayout());
 

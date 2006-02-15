@@ -13,9 +13,9 @@ package org.omnetpp.ned.editor.graph.model.commands;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.Module;
+import org.omnetpp.ned.editor.graph.model.CompoundModule;
 import org.omnetpp.ned.editor.graph.model.Container;
-import org.omnetpp.ned.editor.graph.model.NedElement;
+import org.omnetpp.ned.editor.graph.model.NedNode;
 
 /**
  * Adds a newly created element to the model (similar to the AddCommand)
@@ -25,7 +25,7 @@ import org.omnetpp.ned.editor.graph.model.NedElement;
  */
 public class CreateCommand extends org.eclipse.gef.commands.Command {
 
-    private NedElement child;
+    private NedNode child;
     private Rectangle rect;
     private Container parent;
     private int index = -1;
@@ -54,7 +54,7 @@ public class CreateCommand extends org.eclipse.gef.commands.Command {
     }
 
     private Insets getInsets() {
-        if (child instanceof Module) return new Insets(2, 0, 2, 0);
+        if (child instanceof CompoundModule) return new Insets(2, 0, 2, 0);
         return new Insets();
     }
 
@@ -62,7 +62,7 @@ public class CreateCommand extends org.eclipse.gef.commands.Command {
         parent.addChild(child, index);
     }
 
-    public void setChild(NedElement subpart) {
+    public void setChild(NedNode subpart) {
         child = subpart;
     }
 

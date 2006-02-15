@@ -18,29 +18,40 @@ import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.gef.*;
+import org.eclipse.gef.AccessibleAnchorProvider;
+import org.eclipse.gef.AccessibleEditPart;
+import org.eclipse.gef.AutoexposeHelper;
+import org.eclipse.gef.CompoundSnapToHelper;
+import org.eclipse.gef.EditPolicy;
+import org.eclipse.gef.ExposeHelper;
+import org.eclipse.gef.MouseWheelHelper;
+import org.eclipse.gef.SnapToGeometry;
+import org.eclipse.gef.SnapToGrid;
+import org.eclipse.gef.SnapToGuides;
+import org.eclipse.gef.SnapToHelper;
 import org.eclipse.gef.editparts.ViewportAutoexposeHelper;
 import org.eclipse.gef.editparts.ViewportExposeHelper;
 import org.eclipse.gef.editparts.ViewportMouseWheelHelper;
 import org.eclipse.gef.editpolicies.SnapFeedbackPolicy;
 import org.eclipse.gef.rulers.RulerProvider;
-import org.omnetpp.ned.editor.graph.edit.policies.ContainerHighlightEditPolicy;
+import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.omnetpp.ned.editor.graph.edit.policies.NedLayoutEditPolicy;
 import org.omnetpp.ned.editor.graph.figures.ModuleFigure;
-import org.omnetpp.ned.editor.graph.model.Module;
+import org.omnetpp.ned.editor.graph.model.CompoundModule;
 
 /**
  * Holds a circuit, which is a container capable of holding other
  * LogicEditParts.
  */
-public class ModuleEditPart extends ContainerEditPart {
+public class CompoundModuleEditPart extends ContainerEditPart {
+
 
     protected void createEditPolicies() {
         super.createEditPolicies();
         installEditPolicy(EditPolicy.LAYOUT_ROLE, new NedLayoutEditPolicy((XYLayout) getContentPane()
                 .getLayoutManager()));
 // No container highlighting for the moment
-        installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE, new ContainerHighlightEditPolicy());
+//        installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE, new ContainerHighlightEditPolicy());
         installEditPolicy("Snap Feedback", new SnapFeedbackPolicy()); //$NON-NLS-1$
     }
 
@@ -66,8 +77,8 @@ public class ModuleEditPart extends ContainerEditPart {
         return getModuleFigure().getContentsPane();
     }
 
-    protected Module getModule() {
-        return (Module) getModel();
+    protected CompoundModule getModule() {
+        return (CompoundModule) getModel();
     }
 
     public Object getAdapter(Class key) {

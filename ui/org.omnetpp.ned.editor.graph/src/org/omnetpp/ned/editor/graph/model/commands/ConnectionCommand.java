@@ -16,7 +16,7 @@ import java.util.Vector;
 import org.eclipse.gef.commands.Command;
 
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.NedElement;
+import org.omnetpp.ned.editor.graph.model.NedNode;
 import org.omnetpp.ned.editor.graph.model.Wire;
 
 /**
@@ -26,13 +26,13 @@ import org.omnetpp.ned.editor.graph.model.Wire;
  */
 public class ConnectionCommand extends Command {
 
-    protected NedElement oldSource;
+    protected NedNode oldSource;
     protected String oldSourceTerminal;
-    protected NedElement oldTarget;
+    protected NedNode oldTarget;
     protected String oldTargetTerminal;
-    protected NedElement source;
+    protected NedNode source;
     protected String sourceGate;
-    protected NedElement target;
+    protected NedNode target;
     protected String targetGate;
     protected Wire wire;
 
@@ -85,7 +85,7 @@ public class ConnectionCommand extends Command {
         return MessageFactory.ConnectionCommand_Description;
     }
 
-    public NedElement getSource() {
+    public NedNode getSource() {
         return source;
     }
 
@@ -93,7 +93,7 @@ public class ConnectionCommand extends Command {
         return sourceGate;
     }
 
-    public NedElement getTarget() {
+    public NedNode getTarget() {
         return target;
     }
 
@@ -109,7 +109,7 @@ public class ConnectionCommand extends Command {
         execute();
     }
 
-    public void setSource(NedElement newSource) {
+    public void setSource(NedNode newSource) {
         source = newSource;
     }
 
@@ -117,7 +117,7 @@ public class ConnectionCommand extends Command {
         sourceGate = newSourceGate;
     }
 
-    public void setTarget(NedElement newTarget) {
+    public void setTarget(NedNode newTarget) {
         target = newTarget;
     }
 

@@ -12,7 +12,7 @@ package org.omnetpp.ned.editor.graph.edit.policies;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.requests.GroupRequest;
-import org.omnetpp.ned.editor.graph.model.NedElement;
+import org.omnetpp.ned.editor.graph.model.NedNode;
 import org.omnetpp.ned.editor.graph.model.NedFile;
 import org.omnetpp.ned.editor.graph.model.commands.DeleteCommand;
 
@@ -22,7 +22,7 @@ public class NedComponentEditPolicy extends org.eclipse.gef.editpolicies.Compone
         Object parent = getHost().getParent().getModel();
         DeleteCommand deleteCmd = new DeleteCommand();
         deleteCmd.setParent((NedFile) parent);
-        deleteCmd.setChild((NedElement) getHost().getModel());
+        deleteCmd.setChild((NedNode) getHost().getModel());
         return deleteCmd;
     }
 

@@ -22,15 +22,12 @@ public class NedEditPartFactory implements EditPartFactory {
 
         if (model instanceof Wire)
             child = new WireEditPart();
-        else if (model instanceof Module)
-            child = new ModuleEditPart();
-        else if (model instanceof SimpleModule)
-            child = new SimpleModuleEditPart();
-        // Module (which is also a container) was already handled so this one
-        // must be the root object (which is only a container)
-        // FIXME this looks really weird that the root element of the model is a Conainer only
-        // some subclass could have been introduced to make it nicer
-        else if (model instanceof NedFile) child = new DiagramEditPart();
+        else if (model instanceof CompoundModule)
+            child = new CompoundModuleEditPart();
+        else if (model instanceof Submodule)
+            child = new SubmoduleEditPart();
+        else if (model instanceof NedFile) child = new NedFileDiagramEditPart();
+
         child.setModel(model);
         return child;
     }

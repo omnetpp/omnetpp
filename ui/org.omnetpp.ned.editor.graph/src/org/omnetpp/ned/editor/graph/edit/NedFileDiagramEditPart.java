@@ -56,7 +56,7 @@ import org.omnetpp.ned.editor.graph.model.NedFile;
  * LogicEditorPart, to hold the entire model. It is sort of a blank board where
  * all other EditParts get added.
  */
-public class DiagramEditPart extends ContainerEditPart implements LayerConstants {
+public class NedFileDiagramEditPart extends ContainerEditPart implements LayerConstants {
 
     protected AccessibleEditPart createAccessible() {
         return new AccessibleGraphicalEditPart() {

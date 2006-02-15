@@ -24,7 +24,7 @@ import org.omnetpp.ned.editor.graph.misc.MessageFactory;
  * @author rhornig
  *
  */
-public class Container extends NedElement {
+public class Container extends NedNode {
 //    static final long serialVersionUID = 1;
 
     protected List<PropertySupport> children = new ArrayList<PropertySupport>();

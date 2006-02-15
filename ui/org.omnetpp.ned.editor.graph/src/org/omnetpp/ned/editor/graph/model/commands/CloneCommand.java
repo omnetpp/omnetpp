@@ -40,7 +40,7 @@ public class CloneCommand extends Command {
         parts = new LinkedList();
     }
 
-    public void addPart(NedElement part, Rectangle newBounds) {
+    public void addPart(NedNode part, Rectangle newBounds) {
         parts.add(part);
         if (bounds == null) {
             bounds = new HashMap();
@@ -48,7 +48,7 @@ public class CloneCommand extends Command {
         bounds.put(part, newBounds);
     }
 
-    public void addPart(NedElement part, int index) {
+    public void addPart(NedNode part, int index) {
         parts.add(part);
         if (indices == null) {
             indices = new HashMap();
@@ -56,21 +56,21 @@ public class CloneCommand extends Command {
         indices.put(part, new Integer(index));
     }
 
-    protected void clonePart(NedElement oldPart, Container newParent, Rectangle newBounds,
+    protected void clonePart(NedNode oldPart, Container newParent, Rectangle newBounds,
             List newConnections, Map connectionPartMap, int index) {
-        NedElement newPart = null;
+        NedNode newPart = null;
 
-        if (oldPart instanceof SimpleModule) {
-            newPart = new SimpleModule();
-        } else if (oldPart instanceof Module) {
-            newPart = new Module();
+        if (oldPart instanceof Submodule) {
+            newPart = new Submodule();
+        } else if (oldPart instanceof CompoundModule) {
+            newPart = new CompoundModule();
         } 
 
         if (oldPart instanceof Container) {
             Iterator i = ((Container) oldPart).getChildren().iterator();
             while (i.hasNext()) {
                 // for children they will not need new bounds
-                clonePart((NedElement) i.next(), (Container) newPart, null, newConnections,
+                clonePart((NedNode) i.next(), (Container) newPart, null, newConnections,
                         connectionPartMap, -1);
             }
         }
@@ -129,9 +129,9 @@ public class CloneCommand extends Command {
 
         Iterator i = parts.iterator();
 
-        NedElement part = null;
+        NedNode part = null;
         while (i.hasNext()) {
-            part = (NedElement) i.next();
+            part = (NedNode) i.next();
             if (bounds != null && bounds.containsKey(part)) {
                 clonePart(part, parent, (Rectangle) bounds.get(part), newConnections, connectionPartMap, -1);
             } else if (indices != null && indices.containsKey(part)) {
@@ -148,9 +148,9 @@ public class CloneCommand extends Command {
 
         while (c.hasNext()) {
             Wire conn = (Wire) c.next();
-            NedElement source = conn.getSource();
+            NedNode source = conn.getSource();
             if (connectionPartMap.containsKey(source)) {
-                conn.setSource((NedElement) connectionPartMap.get(source));
+                conn.setSource((NedNode) connectionPartMap.get(source));
                 conn.attachSource();
                 conn.attachTarget();
             }
@@ -164,12 +164,12 @@ public class CloneCommand extends Command {
 
     public void redo() {
         for (Iterator iter = newTopLevelParts.iterator(); iter.hasNext();)
-            parent.addChild((NedElement) iter.next());
+            parent.addChild((NedNode) iter.next());
         for (Iterator iter = newConnections.iterator(); iter.hasNext();) {
             Wire conn = (Wire) iter.next();
-            NedElement source = conn.getSource();
+            NedNode source = conn.getSource();
             if (connectionPartMap.containsKey(source)) {
-                conn.setSource((NedElement) connectionPartMap.get(source));
+                conn.setSource((NedNode) connectionPartMap.get(source));
                 conn.attachSource();
                 conn.attachTarget();
             }
@@ -178,7 +178,7 @@ public class CloneCommand extends Command {
 
     public void undo() {
         for (Iterator iter = newTopLevelParts.iterator(); iter.hasNext();)
-            parent.removeChild((NedElement) iter.next());
+            parent.removeChild((NedNode) iter.next());
     }
 
 }

@@ -16,7 +16,7 @@ import java.util.List;
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.model.Container;
-import org.omnetpp.ned.editor.graph.model.NedElement;
+import org.omnetpp.ned.editor.graph.model.NedNode;
 import org.omnetpp.ned.editor.graph.model.Wire;
 
 /**
@@ -26,7 +26,7 @@ import org.omnetpp.ned.editor.graph.model.Wire;
  */
 public class DeleteCommand extends Command {
 
-    private NedElement child;
+    private NedNode child;
     private Container parent;
     private int vAlign, hAlign;
     private int index = -1;
@@ -37,11 +37,11 @@ public class DeleteCommand extends Command {
         super(MessageFactory.DeleteCommand_Label);
     }
 
-    private void deleteConnections(NedElement part) {
+    private void deleteConnections(NedNode part) {
         if (part instanceof Container) {
             List children = ((Container) part).getChildren();
             for (int i = 0; i < children.size(); i++)
-                deleteConnections((NedElement) children.get(i));
+                deleteConnections((NedNode) children.get(i));
         }
         sourceConnections.addAll(part.getSourceConnections());
         for (int i = 0; i < sourceConnections.size(); i++) {
@@ -86,7 +86,7 @@ public class DeleteCommand extends Command {
         targetConnections.clear();
     }
 
-    public void setChild(NedElement c) {
+    public void setChild(NedNode c) {
         child = c;
     }
 

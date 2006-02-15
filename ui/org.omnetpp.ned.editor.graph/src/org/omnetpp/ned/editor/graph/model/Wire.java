@@ -25,7 +25,7 @@ public class Wire extends PropertySupport {
     static final String TARGET = "target";
     static final String TARGETGATE = "targetGate";
 
-    protected NedElement source, target;
+    protected NedNode source, target;
     protected String sourceGate, targetGate;
     protected List<Bendpoint> bendpoints = new ArrayList<Bendpoint>();
     protected String display;
@@ -54,7 +54,7 @@ public class Wire extends PropertySupport {
         return bendpoints;
     }
 
-    public NedElement getSource() {
+    public NedNode getSource() {
         return source;
     }
 
@@ -62,7 +62,7 @@ public class Wire extends PropertySupport {
         return sourceGate;
     }
 
-    public NedElement getTarget() {
+    public NedNode getTarget() {
         return target;
     }
 
@@ -90,7 +90,7 @@ public class Wire extends PropertySupport {
         firePropertyChange(BENDPOINT, null, null);//$NON-NLS-1$
     }
 
-    public void setSource(NedElement e) {
+    public void setSource(NedNode e) {
         Object old = source;
         source = e;
         firePropertyChange(SOURCE, old, source);//$NON-NLS-1$
@@ -102,7 +102,7 @@ public class Wire extends PropertySupport {
         firePropertyChange(SOURCEGATE, old, sourceGate);//$NON-NLS-1$
     }
 
-    public void setTarget(NedElement e) {
+    public void setTarget(NedNode e) {
         Object old = target;
         target = e;
         firePropertyChange(TARGET, old, target);//$NON-NLS-1$

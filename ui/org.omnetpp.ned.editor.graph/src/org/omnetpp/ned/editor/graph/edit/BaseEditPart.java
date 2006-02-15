@@ -26,7 +26,7 @@ import org.omnetpp.ned.editor.graph.figures.NedFigure;
 import org.omnetpp.ned.editor.graph.figures.properties.*;
 import org.omnetpp.ned.editor.graph.misc.ColorFactory;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
-import org.omnetpp.ned.editor.graph.model.NedElement;
+import org.omnetpp.ned.editor.graph.model.NedNode;
 import org.omnetpp.ned.editor.graph.model.Wire;
 import org.omnetpp.ned.editor.graph.properties.DisplayPropertySource;
 
@@ -37,13 +37,10 @@ import org.omnetpp.ned.editor.graph.properties.DisplayPropertySource;
 abstract public class BaseEditPart extends org.eclipse.gef.editparts.AbstractGraphicalEditPart implements
         NodeEditPart, PropertyChangeListener {
 
-    private AccessibleEditPart acc;
-
-    
     public void activate() {
         if (isActive()) return;
         super.activate();
-        // register as listener at the model object
+        // register as listener of the model object
         getNedElement().addPropertyChangeListener(this);
     }
 
@@ -52,7 +49,6 @@ abstract public class BaseEditPart extends org.eclipse.gef.editparts.AbstractGra
         installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE, new NedNodeEditPolicy());
     }
 
-    abstract protected AccessibleEditPart createAccessible();
 
     /**
      * Makes the EditPart insensible to changes in the model by removing itself
@@ -64,18 +60,13 @@ abstract public class BaseEditPart extends org.eclipse.gef.editparts.AbstractGra
         getNedElement().removePropertyChangeListener(this);
     }
 
-    protected AccessibleEditPart getAccessibleEditPart() {
-        if (acc == null) acc = createAccessible();
-        return acc;
-    }
-
     /**
      * Returns the model associated with this as a NedElement.
      * 
      * @return The model of this as a NedElement.
      */
-    protected NedElement getNedElement() {
-        return (NedElement) getModel();
+    protected NedNode getNedElement() {
+        return (NedNode) getModel();
     }
 
     /**
@@ -166,16 +157,16 @@ abstract public class BaseEditPart extends org.eclipse.gef.editparts.AbstractGra
      */
     public void propertyChange(PropertyChangeEvent evt) {
         String prop = evt.getPropertyName();
-        if (NedElement.PROP_CHILDREN.equals(prop)) {
+        if (NedNode.PROP_CHILDREN.equals(prop)) {
             if (evt.getOldValue() instanceof Integer)
                 // new child
                 addChild(createChild(evt.getNewValue()), ((Integer) evt.getOldValue()).intValue());
             else
                 // remove child
                 removeChild((EditPart) getViewer().getEditPartRegistry().get(evt.getOldValue()));
-        } else if (NedElement.PROP_INPUTS.equals(prop))
+        } else if (NedNode.PROP_INPUTS.equals(prop))
             refreshTargetConnections();
-        else if (NedElement.PROP_OUTPUTS.equals(prop))
+        else if (NedNode.PROP_OUTPUTS.equals(prop))
             refreshSourceConnections();
         else
             refreshVisuals();

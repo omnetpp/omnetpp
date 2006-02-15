@@ -32,9 +32,9 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.ModelFactory;
-import org.omnetpp.ned.editor.graph.model.Module;
-import org.omnetpp.ned.editor.graph.model.SimpleModule;
+import org.omnetpp.ned.editor.graph.model.NedModelFactory;
+import org.omnetpp.ned.editor.graph.model.CompoundModule;
+import org.omnetpp.ned.editor.graph.model.Submodule;
 //import org.omnetpp.ned.model.ModelUtil;
 //import org.omnetpp.ned.model.swig.*;
 
@@ -44,10 +44,6 @@ public class ModuleEditorPlugin extends AbstractUIPlugin {
 
     private static ModuleEditorPlugin singleton;
     
-    static {
-    	System.out.println("ModuleEditorPlugin loaded");
-    }
-
     public ModuleEditorPlugin() {
         super();
         if (singleton == null) {
@@ -140,7 +136,7 @@ public class ModuleEditorPlugin extends AbstractUIPlugin {
         combined = new CombinedTemplateCreationEntry(
                 "Submodule",
                 "A submodule that can be placed in any compound module",
-                TemplateConstants.SIMPLE_MODULE, new SimpleFactory(SimpleModule.class), 
+                TemplateConstants.SIMPLE_MODULE, new SimpleFactory(Submodule.class), 
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE,"l",null,24)
         );
@@ -149,7 +145,7 @@ public class ModuleEditorPlugin extends AbstractUIPlugin {
         combined = new CombinedTemplateCreationEntry(
                 "Module",
                 "A compound module that is built up from several other modules",
-                TemplateConstants.MODULE, new SimpleFactory(Module.class), 
+                TemplateConstants.MODULE, new SimpleFactory(CompoundModule.class), 
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE,"l",null,24)
         );
@@ -171,7 +167,7 @@ public class ModuleEditorPlugin extends AbstractUIPlugin {
         CombinedTemplateCreationEntry combined = new CombinedTemplateCreationEntry(
                 "Ring",
                 "Arrange nodes in a ring topology",
-                TemplateConstants.TEMPLATE_HALF_ADDER, ModelFactory.getHalfAdderFactory(),
+                TemplateConstants.TEMPLATE_HALF_ADDER, NedModelFactory.getHalfAdderFactory(),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE,"l",null,24) //$NON-NLS-1$
         );
@@ -180,7 +176,7 @@ public class ModuleEditorPlugin extends AbstractUIPlugin {
         combined = new CombinedTemplateCreationEntry(
                 "Mesh",
                 "Arrange nodes in a mesh topology",
-                TemplateConstants.TEMPLATE_FULL_ADDER, ModelFactory.getFullAdderFactory(),
+                TemplateConstants.TEMPLATE_FULL_ADDER, NedModelFactory.getFullAdderFactory(),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE,"l",null,24)
         );
@@ -200,7 +196,7 @@ public class ModuleEditorPlugin extends AbstractUIPlugin {
         CombinedTemplateCreationEntry combined = new CombinedTemplateCreationEntry(
                 "EthMAC",
                 "Ethernet MAC protocol module",
-                TemplateConstants.TEMPLATE_HALF_ADDER, ModelFactory.getHalfAdderFactory(),
+                TemplateConstants.TEMPLATE_HALF_ADDER, NedModelFactory.getHalfAdderFactory(),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE,"l",null,24)
         );
@@ -209,7 +205,7 @@ public class ModuleEditorPlugin extends AbstractUIPlugin {
         combined = new CombinedTemplateCreationEntry(
                 "IPv4",
                 "Internet protocol v4 module",
-                TemplateConstants.TEMPLATE_FULL_ADDER, ModelFactory.getFullAdderFactory(),
+                TemplateConstants.TEMPLATE_FULL_ADDER, NedModelFactory.getFullAdderFactory(),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE,"l",null,24)
         );

@@ -20,11 +20,11 @@ import org.eclipse.gef.requests.CreationFactory;
  * @author rhornig
  *
  */
-public class ModelFactory {
+public class NedModelFactory {
 
     NedFile root;
 
-    protected static void connect(NedElement e1, String t1, NedElement e2, String t2) {
+    protected static void connect(NedNode e1, String t1, NedNode e2, String t2) {
         Wire wire = new Wire();
         wire.setSource(e1);
         wire.setSourceGate(t1);
@@ -34,65 +34,65 @@ public class ModelFactory {
         wire.attachTarget();
     }
 
-    public static Module createFullAdder() {
-        final SimpleModule or;
-        final Module circuit, circuit1, circuit2;
+    public static CompoundModule createFullAdder() {
+        final Submodule or;
+        final CompoundModule circuit, circuit1, circuit2;
 
         circuit1 = createHalfAdder();
         circuit2 = createHalfAdder();
         circuit1.setLocation(new Point(2, 10));
         circuit2.setLocation(new Point(38, 90));
 
-        circuit = new Module();
+        circuit = new CompoundModule();
         circuit.setSize(new Dimension(120, 216));
-        or = new SimpleModule();
+        or = new Submodule();
         or.setLocation(new Point(22, 162));
 
         circuit.addChild(circuit1);
         circuit.addChild(circuit2);
 
-        connect(circuit, Module.TERMINALS_OUT[0], circuit1, Module.TERMINALS_IN[0]);
-        connect(circuit, Module.TERMINALS_OUT[2], circuit1, Module.TERMINALS_IN[3]);
-        connect(circuit, Module.TERMINALS_OUT[3], circuit2, Module.TERMINALS_IN[3]);
-        connect(circuit1, Module.TERMINALS_OUT[7], circuit2, Module.TERMINALS_IN[0]);
+        connect(circuit, CompoundModule.TERMINALS_OUT[0], circuit1, CompoundModule.TERMINALS_IN[0]);
+        connect(circuit, CompoundModule.TERMINALS_OUT[2], circuit1, CompoundModule.TERMINALS_IN[3]);
+        connect(circuit, CompoundModule.TERMINALS_OUT[3], circuit2, CompoundModule.TERMINALS_IN[3]);
+        connect(circuit1, CompoundModule.TERMINALS_OUT[7], circuit2, CompoundModule.TERMINALS_IN[0]);
 
         circuit.addChild(or);
-        connect(or, SimpleModule.TERMINAL_OUT, circuit, Module.TERMINALS_IN[4]);
-        connect(circuit1, Module.TERMINALS_OUT[4], or, SimpleModule.TERMINAL_A);
-        connect(circuit2, Module.TERMINALS_OUT[4], or, SimpleModule.TERMINAL_B);
-        connect(circuit2, Module.TERMINALS_OUT[7], circuit, Module.TERMINALS_IN[7]);
+        connect(or, Submodule.TERMINAL_OUT, circuit, CompoundModule.TERMINALS_IN[4]);
+        connect(circuit1, CompoundModule.TERMINALS_OUT[4], or, Submodule.TERMINAL_A);
+        connect(circuit2, CompoundModule.TERMINALS_OUT[4], or, Submodule.TERMINAL_B);
+        connect(circuit2, CompoundModule.TERMINALS_OUT[7], circuit, CompoundModule.TERMINALS_IN[7]);
 
         return circuit;
     }
 
-    public static Module createHalfAdder() {
-        SimpleModule and, xor;
-        Module circuit;
+    public static CompoundModule createHalfAdder() {
+        Submodule and, xor;
+        CompoundModule circuit;
 
-        circuit = new Module();
+        circuit = new CompoundModule();
         circuit.setSize(new Dimension(60, 70));
-        and = new SimpleModule();
+        and = new Submodule();
         and.setLocation(new Point(2, 12));
-        xor = new SimpleModule();
+        xor = new Submodule();
         xor.setLocation(new Point(22, 12));
 
         circuit.addChild(xor);
         circuit.addChild(and);
 
-        connect(circuit, Module.TERMINALS_OUT[0], and, SimpleModule.TERMINAL_A);
-        connect(circuit, Module.TERMINALS_OUT[3], and, SimpleModule.TERMINAL_B);
-        connect(circuit, Module.TERMINALS_OUT[0], xor, SimpleModule.TERMINAL_A);
-        connect(circuit, Module.TERMINALS_OUT[3], xor, SimpleModule.TERMINAL_B);
+        connect(circuit, CompoundModule.TERMINALS_OUT[0], and, Submodule.TERMINAL_A);
+        connect(circuit, CompoundModule.TERMINALS_OUT[3], and, Submodule.TERMINAL_B);
+        connect(circuit, CompoundModule.TERMINALS_OUT[0], xor, Submodule.TERMINAL_A);
+        connect(circuit, CompoundModule.TERMINALS_OUT[3], xor, Submodule.TERMINAL_B);
 
-        connect(and, SimpleModule.TERMINAL_OUT, circuit, Module.TERMINALS_IN[4]);
-        connect(xor, SimpleModule.TERMINAL_OUT, circuit, Module.TERMINALS_IN[7]);
+        connect(and, Submodule.TERMINAL_OUT, circuit, CompoundModule.TERMINALS_IN[4]);
+        connect(xor, Submodule.TERMINAL_OUT, circuit, CompoundModule.TERMINALS_IN[7]);
         return circuit;
     }
 
     public static Object createLargeModel() {
         NedFile root = new NedFile();
 
-        final Module circuit1, circuit2, circuit3, circuit4;
+        final CompoundModule circuit1, circuit2, circuit3, circuit4;
 
         //
         circuit1 = createHalfAdder();
@@ -103,12 +103,12 @@ public class ModelFactory {
         circuit2 = createFullAdder();
         circuit2.setLocation(new Point(305, 104));
         root.addChild(circuit2);
-        connect(circuit1, Module.TERMINALS_OUT[4], circuit2, Module.TERMINALS_IN[3]);
+        connect(circuit1, CompoundModule.TERMINALS_OUT[4], circuit2, CompoundModule.TERMINALS_IN[3]);
         //
         circuit3 = createFullAdder();
         circuit3.setLocation(new Point(155, 104));
         root.addChild(circuit3);
-        connect(circuit2, Module.TERMINALS_OUT[4], circuit3, Module.TERMINALS_IN[3]);
+        connect(circuit2, CompoundModule.TERMINALS_OUT[4], circuit3, CompoundModule.TERMINALS_IN[3]);
         //
         circuit4 = createFullAdder();
         circuit4.setLocation(new Point(5, 104));
@@ -150,7 +150,7 @@ public class ModelFactory {
 
         NedFile root = new NedFile();
 
-        Module circuit1;
+        CompoundModule circuit1;
 
         circuit1 = createHalfAdder();
         circuit1.setLocation(new Point(50, 50));

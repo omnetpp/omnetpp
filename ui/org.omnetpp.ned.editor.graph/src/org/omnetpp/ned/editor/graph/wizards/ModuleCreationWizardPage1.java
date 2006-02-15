@@ -33,7 +33,7 @@ import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.eclipse.ui.ide.IDE;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.ModelFactory;
+import org.omnetpp.ned.editor.graph.model.NedModelFactory;
 import org.omnetpp.ned.editor.graph.model.NedFile;
 
 public class ModuleCreationWizardPage1 extends WizardNewFileCreationPage implements SelectionListener {
@@ -85,7 +85,7 @@ public class ModuleCreationWizardPage1 extends WizardNewFileCreationPage impleme
 
     protected InputStream getInitialContents() {
         NedFile ld = new NedFile();
-        if (modelSelected == 2) ld = (NedFile) ModelFactory.createLargeModel();
+        if (modelSelected == 2) ld = (NedFile) NedModelFactory.createLargeModel();
         ByteArrayInputStream bais = null;
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();

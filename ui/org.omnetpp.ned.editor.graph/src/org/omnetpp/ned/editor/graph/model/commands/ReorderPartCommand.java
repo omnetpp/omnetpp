@@ -14,7 +14,7 @@ import org.eclipse.gef.commands.Command;
 
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.model.Container;
-import org.omnetpp.ned.editor.graph.model.NedElement;
+import org.omnetpp.ned.editor.graph.model.NedNode;
 
 /**
  * Move a child to a different position in the parent's list
@@ -26,10 +26,10 @@ import org.omnetpp.ned.editor.graph.model.NedElement;
 public class ReorderPartCommand extends Command {
 
     private int oldIndex, newIndex;
-    private NedElement child;
+    private NedNode child;
     private Container parent;
 
-    public ReorderPartCommand(NedElement child, Container parent, int newIndex) {
+    public ReorderPartCommand(NedNode child, Container parent, int newIndex) {
         super(MessageFactory.ReorderPartCommand_Label);
         this.child = child;
         this.parent = parent;

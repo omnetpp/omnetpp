@@ -29,7 +29,7 @@ import org.omnetpp.ned.editor.graph.properties.LocationPropertySource;
  * @author rhornig
  *
  */
-abstract public class NedElement extends PropertySupport {
+abstract public class NedNode extends PropertySupport {
 
     protected static int count;
     private String name = "";
@@ -64,7 +64,7 @@ abstract public class NedElement extends PropertySupport {
         displayPS = new DisplayPropertySource(display);
     }
 
-    public NedElement() {
+    public NedNode() {
         setName(getNewID());
     }
 

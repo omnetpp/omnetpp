@@ -21,7 +21,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.ned.editor.graph.ModuleEditorPlugin;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.SimpleModule;
+import org.omnetpp.ned.editor.graph.model.Submodule;
 
 public class IncrementDecrementAction extends org.eclipse.gef.ui.actions.SelectionAction {
 
@@ -63,7 +63,7 @@ public class IncrementDecrementAction extends org.eclipse.gef.ui.actions.Selecti
             if (!(o instanceof EditPart)) return false;
             EditPart part = (EditPart) o;
             // HR changed to be effective on simple modules only
-            if (!(part.getModel() instanceof SimpleModule)) return false;
+            if (!(part.getModel() instanceof Submodule)) return false;
         }
         return true;
     }

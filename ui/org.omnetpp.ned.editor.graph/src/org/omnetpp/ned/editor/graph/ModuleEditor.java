@@ -405,12 +405,7 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
 
     protected static final int DEFAULT_PALETTE_SIZE = 130;
 
-    static {
-    	System.out.println("Editor loaded");
-    }
-
     public ModuleEditor() {
-    	System.out.println("Editor started");
         ModuleEditorPlugin.getDefault().getPreferenceStore().setDefault(PALETTE_SIZE, DEFAULT_PALETTE_SIZE);
         setEditDomain(new DefaultEditDomain(this));
     }

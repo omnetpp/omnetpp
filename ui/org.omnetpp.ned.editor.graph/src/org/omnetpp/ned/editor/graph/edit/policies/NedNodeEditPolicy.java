@@ -20,7 +20,7 @@ import org.eclipse.gef.requests.ReconnectRequest;
 import org.omnetpp.ned.editor.graph.edit.BaseEditPart;
 import org.omnetpp.ned.editor.graph.edit.WireEditPart;
 import org.omnetpp.ned.editor.graph.figures.NedFigure;
-import org.omnetpp.ned.editor.graph.model.NedElement;
+import org.omnetpp.ned.editor.graph.model.NedNode;
 import org.omnetpp.ned.editor.graph.model.Wire;
 import org.omnetpp.ned.editor.graph.model.commands.ConnectionCommand;
 
@@ -67,8 +67,8 @@ public class NedNodeEditPolicy extends org.eclipse.gef.editpolicies.GraphicalNod
         return (BaseEditPart) getHost();
     }
 
-    protected NedElement getLogicSubpart() {
-        return (NedElement) getHost().getModel();
+    protected NedNode getLogicSubpart() {
+        return (NedNode) getHost().getModel();
     }
 
     protected Command getReconnectTargetCommand(ReconnectRequest request) {

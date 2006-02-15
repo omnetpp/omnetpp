@@ -20,12 +20,12 @@ import org.eclipse.gef.AccessibleAnchorProvider;
 import org.eclipse.gef.AccessibleEditPart;
 import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.omnetpp.ned.editor.graph.figures.SimpleModuleFigure;
-import org.omnetpp.ned.editor.graph.model.SimpleModule;
+import org.omnetpp.ned.editor.graph.model.Submodule;
 
 /**
  * EditPart for holding gates in the Logic Example.
  */
-public class SimpleModuleEditPart extends BaseEditPart {
+public class SubmoduleEditPart extends BaseEditPart {
 
     /**
      * Returns a newly created Figure of this.
@@ -51,18 +51,10 @@ public class SimpleModuleEditPart extends BaseEditPart {
      * 
      * @return Model of this as a SimpleModule
      */
-    protected SimpleModule getSimpleModule() {
-        return (SimpleModule) getModel();
+    protected Submodule getSimpleModule() {
+        return (Submodule) getModel();
     }
     
-    protected AccessibleEditPart createAccessible() {
-        return new AccessibleGraphicalEditPart() {
-            public void getName(AccessibleEvent e) {
-                e.result = getSimpleModule().toString();
-            }
-        };
-    }
-
     public Object getAdapter(Class key) {
         if (key == AccessibleAnchorProvider.class) return new DefaultAccessibleAnchorProvider() {
             public List getSourceAnchorLocations() {

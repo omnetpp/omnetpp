@@ -19,7 +19,7 @@ import org.omnetpp.ned.editor.graph.misc.MessageFactory;
  * @author rhornig
  *
  */
-public class SimpleModule extends NedElement {
+public class Submodule extends NedNode {
 
 //    static final long serialVersionUID = 1;
     private static int count;

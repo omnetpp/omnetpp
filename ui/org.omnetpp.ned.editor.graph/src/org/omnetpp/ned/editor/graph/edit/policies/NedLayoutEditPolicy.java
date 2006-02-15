@@ -35,8 +35,8 @@ import org.omnetpp.ned.editor.graph.misc.ColorFactory;
 import org.omnetpp.ned.editor.graph.misc.DesktopLayoutEditPolicy;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.model.Container;
-import org.omnetpp.ned.editor.graph.model.Module;
-import org.omnetpp.ned.editor.graph.model.NedElement;
+import org.omnetpp.ned.editor.graph.model.CompoundModule;
+import org.omnetpp.ned.editor.graph.model.NedNode;
 import org.omnetpp.ned.editor.graph.model.commands.AddCommand;
 import org.omnetpp.ned.editor.graph.model.commands.CloneCommand;
 import org.omnetpp.ned.editor.graph.model.commands.CreateCommand;
@@ -56,7 +56,7 @@ public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
     }
 
     protected Command createAddCommand(Request request, EditPart childEditPart, Object constraint) {
-        NedElement part = (NedElement) childEditPart.getModel();
+        NedNode part = (NedNode) childEditPart.getModel();
         Rectangle rect = (Rectangle) constraint;
 
         AddCommand add = new AddCommand();
@@ -96,7 +96,7 @@ public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
         // create the constraint change command 
         SetConstraintCommand cmd = new SetConstraintCommand();
-        NedElement part = (NedElement) child.getModel();
+        NedNode part = (NedNode) child.getModel();
         cmd.setPart(part);
         cmd.setLocation(modelConstraint);
         Command result = cmd;
@@ -165,7 +165,7 @@ public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
     protected IFigure createSizeOnDropFeedback(CreateRequest createRequest) {
         IFigure figure;
 
-        if (createRequest.getNewObject() instanceof Module)
+        if (createRequest.getNewObject() instanceof CompoundModule)
             figure = new ModuleFigure();
         else {
             figure = new RectangleFigure();
@@ -224,7 +224,7 @@ public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
         while (i.hasNext()) {
             currPart = (GraphicalEditPart) i.next();
-            clone.addPart((NedElement) currPart.getModel(), (Rectangle) getConstraintForClone(currPart,
+            clone.addPart((NedNode) currPart.getModel(), (Rectangle) getConstraintForClone(currPart,
                     request));
         }
 
@@ -235,7 +235,7 @@ public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
     protected Command getCreateCommand(CreateRequest request) {
         CreateCommand create = new CreateCommand();
         create.setParent((Container) getHost().getModel());
-        NedElement newPart = (NedElement) request.getNewObject();
+        NedNode newPart = (NedNode) request.getNewObject();
         create.setChild(newPart);
         Rectangle constraint = (Rectangle) getConstraintFor(request);
         create.setLocation(constraint);
@@ -250,7 +250,7 @@ public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
      * @see org.eclipse.gef.editpolicies.LayoutEditPolicy#getCreationFeedbackOffset(org.eclipse.gef.requests.CreateRequest)
      */
     protected Insets getCreationFeedbackOffset(CreateRequest request) {
-        if (request.getNewObject() instanceof Module)
+        if (request.getNewObject() instanceof CompoundModule)
             return new Insets(2, 0, 2, 0);
         return new Insets();
     }

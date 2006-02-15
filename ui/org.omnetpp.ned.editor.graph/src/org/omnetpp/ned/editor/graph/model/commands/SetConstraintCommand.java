@@ -15,7 +15,7 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.NedElement;
+import org.omnetpp.ned.editor.graph.model.NedNode;
 
 /**
  * Change the size and location of the element
@@ -28,7 +28,7 @@ public class SetConstraintCommand extends org.eclipse.gef.commands.Command {
     private Dimension newSize;
     private Point oldPos;
     private Dimension oldSize;
-    private NedElement part;
+    private NedNode part;
 
     public void execute() {
         oldSize = part.getSize();
@@ -55,7 +55,7 @@ public class SetConstraintCommand extends org.eclipse.gef.commands.Command {
         newPos = p;
     }
 
-    public void setPart(NedElement part) {
+    public void setPart(NedNode part) {
         this.part = part;
     }
 

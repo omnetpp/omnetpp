@@ -22,8 +22,8 @@ public class ElementFactory implements CreationFactory {
     }
 
     public Object getNewObject() {
-        if (TemplateConstants.SIMPLE_MODULE.equals(template)) return new SimpleModule();
-        if (TemplateConstants.MODULE.equals(template)) return new Module();
+        if (TemplateConstants.SIMPLE_MODULE.equals(template)) return new Submodule();
+        if (TemplateConstants.MODULE.equals(template)) return new CompoundModule();
 
         return null;
     }
