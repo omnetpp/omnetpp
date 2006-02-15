@@ -34,9 +34,6 @@ public class CloneCommand extends Command {
     private List parts, newTopLevelParts, newConnections;
     private Container parent;
     private Map bounds, indices, connectionPartMap;
-    private ChangeGuideCommand vGuideCommand, hGuideCommand;
-    private Guide hGuide, vGuide;
-    private int hAlignment, vAlignment;
 
     public CloneCommand() {
         super(MessageFactory.CloneCommand_Label);
@@ -159,17 +156,6 @@ public class CloneCommand extends Command {
             }
         }
 
-        if (hGuide != null) {
-            hGuideCommand = new ChangeGuideCommand((NedElement) connectionPartMap.get(parts.get(0)), true);
-            hGuideCommand.setNewGuide(hGuide, hAlignment);
-            hGuideCommand.execute();
-        }
-
-        if (vGuide != null) {
-            vGuideCommand = new ChangeGuideCommand((NedElement) connectionPartMap.get(parts.get(0)), false);
-            vGuideCommand.setNewGuide(vGuide, vAlignment);
-            vGuideCommand.execute();
-        }
     }
 
     public void setParent(Container parent) {
@@ -188,23 +174,9 @@ public class CloneCommand extends Command {
                 conn.attachTarget();
             }
         }
-        if (hGuideCommand != null) hGuideCommand.redo();
-        if (vGuideCommand != null) vGuideCommand.redo();
-    }
-
-    public void setGuide(Guide guide, int alignment, boolean isHorizontal) {
-        if (isHorizontal) {
-            hGuide = guide;
-            hAlignment = alignment;
-        } else {
-            vGuide = guide;
-            vAlignment = alignment;
-        }
     }
 
     public void undo() {
-        if (hGuideCommand != null) hGuideCommand.undo();
-        if (vGuideCommand != null) vGuideCommand.undo();
         for (Iterator iter = newTopLevelParts.iterator(); iter.hasNext();)
             parent.removeChild((NedElement) iter.next());
     }

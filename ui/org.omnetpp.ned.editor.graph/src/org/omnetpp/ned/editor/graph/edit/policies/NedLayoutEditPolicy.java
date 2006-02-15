@@ -15,7 +15,6 @@ import java.util.List;
 
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Insets;
@@ -26,29 +25,24 @@ import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
-import org.eclipse.gef.SnapToGuides;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
-import org.eclipse.gef.rulers.RulerProvider;
 import org.omnetpp.ned.editor.graph.figures.ModuleFigure;
 import org.omnetpp.ned.editor.graph.misc.ColorFactory;
 import org.omnetpp.ned.editor.graph.misc.DesktopLayoutEditPolicy;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.model.Container;
-import org.omnetpp.ned.editor.graph.model.Guide;
 import org.omnetpp.ned.editor.graph.model.Module;
 import org.omnetpp.ned.editor.graph.model.NedElement;
 import org.omnetpp.ned.editor.graph.model.commands.AddCommand;
-import org.omnetpp.ned.editor.graph.model.commands.ChangeGuideCommand;
 import org.omnetpp.ned.editor.graph.model.commands.CloneCommand;
 import org.omnetpp.ned.editor.graph.model.commands.CreateCommand;
 import org.omnetpp.ned.editor.graph.model.commands.SetConstraintCommand;
 
 
-// FIXME objects do not attach properly to guides
 public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
     public NedLayoutEditPolicy(XYLayout layout) {
@@ -56,36 +50,6 @@ public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
         setXyLayout(layout);
     }
 
-    protected Command chainGuideAttachmentCommand(Request request, NedElement part, Command cmd,
-            boolean horizontal) {
-        Command result = cmd;
-
-        // Attach to guide, if one is given
-        Integer guidePos = (Integer) request.getExtendedData().get(
-                horizontal ? SnapToGuides.KEY_HORIZONTAL_GUIDE : SnapToGuides.KEY_VERTICAL_GUIDE);
-        if (guidePos != null) {
-            int alignment = ((Integer) request.getExtendedData().get(
-                    horizontal ? SnapToGuides.KEY_HORIZONTAL_ANCHOR : SnapToGuides.KEY_VERTICAL_ANCHOR))
-                    .intValue();
-            ChangeGuideCommand cgm = new ChangeGuideCommand(part, horizontal);
-            cgm.setNewGuide(findGuideAt(guidePos.intValue(), horizontal), alignment);
-            result = result.chain(cgm);
-        }
-
-        return result;
-    }
-
-    protected Command chainGuideDetachmentCommand(Request request, NedElement part, Command cmd,
-            boolean horizontal) {
-        Command result = cmd;
-
-        // Detach from guide, if none is given
-        Integer guidePos = (Integer) request.getExtendedData().get(
-                horizontal ? SnapToGuides.KEY_HORIZONTAL_GUIDE : SnapToGuides.KEY_VERTICAL_GUIDE);
-        if (guidePos == null) result = result.chain(new ChangeGuideCommand(part, horizontal));
-
-        return result;
-    }
 
     protected Command createAddCommand(EditPart child, Object constraint) {
         return null;
@@ -107,11 +71,7 @@ public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
         setConstraint.setLabel(MessageFactory.LogicXYLayoutEditPolicy_AddCommandLabelText);
         setConstraint.setDebugLabel("LogicXYEP setConstraint");//$NON-NLS-1$
 
-        Command cmd = add.chain(setConstraint);
-        cmd = chainGuideAttachmentCommand(request, part, cmd, true);
-        cmd = chainGuideAttachmentCommand(request, part, cmd, false);
-        cmd = chainGuideDetachmentCommand(request, part, cmd, true);
-        return chainGuideDetachmentCommand(request, part, cmd, false);
+        return setConstraint;
     }
 
     /*
@@ -141,50 +101,50 @@ public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
         cmd.setLocation(modelConstraint);
         Command result = cmd;
 
-        if ((request.getResizeDirection() & PositionConstants.NORTH_SOUTH) != 0) {
-            Integer guidePos = (Integer) request.getExtendedData().get(SnapToGuides.KEY_HORIZONTAL_GUIDE);
-            if (guidePos != null) {
-                result = chainGuideAttachmentCommand(request, part, result, true);
-            } else if (part.getHorizontalGuide() != null) {
-                // SnapToGuides didn't provide a horizontal guide, but this part
-                // is attached
-                // to a horizontal guide. Now we check to see if the part is
-                // attached to
-                // the guide along the edge being resized. If that is the case,
-                // we need to
-                // detach the part from the guide; otherwise, we leave it alone.
-                int alignment = part.getHorizontalGuide().getAlignment(part);
-                int edgeBeingResized = 0;
-                if ((request.getResizeDirection() & PositionConstants.NORTH) != 0)
-                    edgeBeingResized = -1;
-                else
-                    edgeBeingResized = 1;
-                if (alignment == edgeBeingResized) result = result.chain(new ChangeGuideCommand(part, true));
-            }
-        }
-
-        if ((request.getResizeDirection() & PositionConstants.EAST_WEST) != 0) {
-            Integer guidePos = (Integer) request.getExtendedData().get(SnapToGuides.KEY_VERTICAL_GUIDE);
-            if (guidePos != null) {
-                result = chainGuideAttachmentCommand(request, part, result, false);
-            } else if (part.getVerticalGuide() != null) {
-                int alignment = part.getVerticalGuide().getAlignment(part);
-                int edgeBeingResized = 0;
-                if ((request.getResizeDirection() & PositionConstants.WEST) != 0)
-                    edgeBeingResized = -1;
-                else
-                    edgeBeingResized = 1;
-                if (alignment == edgeBeingResized)
-                    result = result.chain(new ChangeGuideCommand(part, false));
-            }
-        }
-
-        if (request.getType().equals(REQ_MOVE_CHILDREN) || request.getType().equals(REQ_ALIGN_CHILDREN)) {
-            result = chainGuideAttachmentCommand(request, part, result, true);
-            result = chainGuideAttachmentCommand(request, part, result, false);
-            result = chainGuideDetachmentCommand(request, part, result, true);
-            result = chainGuideDetachmentCommand(request, part, result, false);
-        }
+//        if ((request.getResizeDirection() & PositionConstants.NORTH_SOUTH) != 0) {
+//            Integer guidePos = (Integer) request.getExtendedData().get(SnapToGuides.KEY_HORIZONTAL_GUIDE);
+//            if (guidePos != null) {
+//                result = chainGuideAttachmentCommand(request, part, result, true);
+//            } else if (part.getHorizontalGuide() != null) {
+//                // SnapToGuides didn't provide a horizontal guide, but this part
+//                // is attached
+//                // to a horizontal guide. Now we check to see if the part is
+//                // attached to
+//                // the guide along the edge being resized. If that is the case,
+//                // we need to
+//                // detach the part from the guide; otherwise, we leave it alone.
+//                int alignment = part.getHorizontalGuide().getAlignment(part);
+//                int edgeBeingResized = 0;
+//                if ((request.getResizeDirection() & PositionConstants.NORTH) != 0)
+//                    edgeBeingResized = -1;
+//                else
+//                    edgeBeingResized = 1;
+//                if (alignment == edgeBeingResized) result = result.chain(new ChangeGuideCommand(part, true));
+//            }
+//        }
+//
+//        if ((request.getResizeDirection() & PositionConstants.EAST_WEST) != 0) {
+//            Integer guidePos = (Integer) request.getExtendedData().get(SnapToGuides.KEY_VERTICAL_GUIDE);
+//            if (guidePos != null) {
+//                result = chainGuideAttachmentCommand(request, part, result, false);
+//            } else if (part.getVerticalGuide() != null) {
+//                int alignment = part.getVerticalGuide().getAlignment(part);
+//                int edgeBeingResized = 0;
+//                if ((request.getResizeDirection() & PositionConstants.WEST) != 0)
+//                    edgeBeingResized = -1;
+//                else
+//                    edgeBeingResized = 1;
+//                if (alignment == edgeBeingResized)
+//                    result = result.chain(new ChangeGuideCommand(part, false));
+//            }
+//        }
+//
+//        if (request.getType().equals(REQ_MOVE_CHILDREN) || request.getType().equals(REQ_ALIGN_CHILDREN)) {
+//            result = chainGuideAttachmentCommand(request, part, result, true);
+//            result = chainGuideAttachmentCommand(request, part, result, false);
+//            result = chainGuideDetachmentCommand(request, part, result, true);
+//            result = chainGuideDetachmentCommand(request, part, result, false);
+//        }
 
         return result;
     }
@@ -218,12 +178,6 @@ public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
         addFeedback(figure);
 
         return figure;
-    }
-
-    protected Guide findGuideAt(int pos, boolean horizontal) {
-        RulerProvider provider = ((RulerProvider) getHost().getViewer().getProperty(
-                horizontal ? RulerProvider.PROPERTY_VERTICAL_RULER : RulerProvider.PROPERTY_HORIZONTAL_RULER));
-        return (Guide) provider.getGuideAt(pos);
     }
 
     protected Command getAddCommand(Request generic) {
@@ -274,21 +228,6 @@ public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
                     request));
         }
 
-        // Attach to horizontal guide, if one is given
-        Integer guidePos = (Integer) request.getExtendedData().get(SnapToGuides.KEY_HORIZONTAL_GUIDE);
-        if (guidePos != null) {
-            int hAlignment = ((Integer) request.getExtendedData().get(SnapToGuides.KEY_HORIZONTAL_ANCHOR))
-                    .intValue();
-            clone.setGuide(findGuideAt(guidePos.intValue(), true), hAlignment, true);
-        }
-
-        // Attach to vertical guide, if one is given
-        guidePos = (Integer) request.getExtendedData().get(SnapToGuides.KEY_VERTICAL_GUIDE);
-        if (guidePos != null) {
-            int vAlignment = ((Integer) request.getExtendedData().get(SnapToGuides.KEY_VERTICAL_ANCHOR))
-                    .intValue();
-            clone.setGuide(findGuideAt(guidePos.intValue(), false), vAlignment, false);
-        }
 
         return clone;
     }
@@ -302,8 +241,7 @@ public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
         create.setLocation(constraint);
         create.setLabel(MessageFactory.LogicXYLayoutEditPolicy_CreateCommandLabelText);
 
-        Command cmd = chainGuideAttachmentCommand(request, newPart, create, true);
-        return chainGuideAttachmentCommand(request, newPart, cmd, false);
+        return create;
     }
 
     /*

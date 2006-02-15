@@ -30,7 +30,7 @@ public class NedEditPartFactory implements EditPartFactory {
         // must be the root object (which is only a container)
         // FIXME this looks really weird that the root element of the model is a Conainer only
         // some subclass could have been introduced to make it nicer
-        else if (model instanceof Container) child = new DiagramEditPart();
+        else if (model instanceof NedFile) child = new DiagramEditPart();
         child.setModel(model);
         return child;
     }

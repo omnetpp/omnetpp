@@ -22,7 +22,7 @@ import org.eclipse.gef.requests.CreationFactory;
  */
 public class ModelFactory {
 
-    Container root;
+    NedFile root;
 
     protected static void connect(NedElement e1, String t1, NedElement e2, String t2) {
         Wire wire = new Wire();
@@ -90,7 +90,7 @@ public class ModelFactory {
     }
 
     public static Object createLargeModel() {
-        Container root = new Container();
+        NedFile root = new NedFile();
 
         final Module circuit1, circuit2, circuit3, circuit4;
 
@@ -142,13 +142,13 @@ public class ModelFactory {
     }
 
     public Object createEmptyModel() {
-        root = new Container();
+        root = new NedFile();
         return root;
     }
 
     static public Object createModel() {
 
-        Container root = new Container();
+        NedFile root = new NedFile();
 
         Module circuit1;
 

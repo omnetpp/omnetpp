@@ -10,39 +10,103 @@
  *******************************************************************************/
 package org.omnetpp.ned.editor.graph;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
 
-import org.eclipse.core.resources.*;
-import org.eclipse.core.runtime.*;
-import org.eclipse.draw2d.*;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.draw2d.DelegatingLayout;
+import org.eclipse.draw2d.FigureCanvas;
+import org.eclipse.draw2d.FreeformLayer;
+import org.eclipse.draw2d.Layer;
+import org.eclipse.draw2d.LayeredPane;
+import org.eclipse.draw2d.LightweightSystem;
+import org.eclipse.draw2d.MarginBorder;
+import org.eclipse.draw2d.PositionConstants;
+import org.eclipse.draw2d.Viewport;
 import org.eclipse.draw2d.parts.ScrollableThumbnail;
 import org.eclipse.draw2d.parts.Thumbnail;
-import org.eclipse.gef.*;
+import org.eclipse.gef.ContextMenuProvider;
+import org.eclipse.gef.DefaultEditDomain;
+import org.eclipse.gef.EditPartViewer;
+import org.eclipse.gef.KeyHandler;
+import org.eclipse.gef.KeyStroke;
+import org.eclipse.gef.LayerConstants;
+import org.eclipse.gef.MouseWheelHandler;
+import org.eclipse.gef.MouseWheelZoomHandler;
+import org.eclipse.gef.RootEditPart;
+import org.eclipse.gef.SnapToGeometry;
+import org.eclipse.gef.SnapToGrid;
 import org.eclipse.gef.dnd.TemplateTransferDragSourceListener;
 import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.palette.PaletteRoot;
 import org.eclipse.gef.rulers.RulerProvider;
-import org.eclipse.gef.ui.actions.*;
+import org.eclipse.gef.ui.actions.ActionRegistry;
+import org.eclipse.gef.ui.actions.AlignmentAction;
+import org.eclipse.gef.ui.actions.CopyTemplateAction;
+import org.eclipse.gef.ui.actions.DirectEditAction;
+import org.eclipse.gef.ui.actions.GEFActionConstants;
+import org.eclipse.gef.ui.actions.MatchHeightAction;
+import org.eclipse.gef.ui.actions.MatchWidthAction;
+import org.eclipse.gef.ui.actions.ToggleGridAction;
+import org.eclipse.gef.ui.actions.ToggleRulerVisibilityAction;
+import org.eclipse.gef.ui.actions.ToggleSnapToGeometryAction;
+import org.eclipse.gef.ui.actions.ZoomInAction;
+import org.eclipse.gef.ui.actions.ZoomOutAction;
 import org.eclipse.gef.ui.palette.PaletteViewer;
 import org.eclipse.gef.ui.palette.PaletteViewerProvider;
 import org.eclipse.gef.ui.palette.FlyoutPaletteComposite.FlyoutPreferences;
-import org.eclipse.gef.ui.parts.*;
+import org.eclipse.gef.ui.parts.ContentOutlinePage;
+import org.eclipse.gef.ui.parts.GraphicalEditorWithFlyoutPalette;
+import org.eclipse.gef.ui.parts.GraphicalViewerKeyHandler;
+import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
+import org.eclipse.gef.ui.parts.TreeViewer;
 import org.eclipse.gef.ui.rulers.RulerComposite;
 import org.eclipse.gef.ui.stackview.CommandStackInspectorPage;
-import org.eclipse.jface.action.*;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.ui.*;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IPartListener;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.dialogs.SaveAsDialog;
@@ -57,14 +121,11 @@ import org.omnetpp.ned.editor.graph.dnd.TextTransferDropTargetListener;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
 import org.omnetpp.ned.editor.graph.edit.TreePartFactory;
 import org.omnetpp.ned.editor.graph.figures.properties.LayerSupport;
-import org.omnetpp.ned.editor.graph.misc.*;
+import org.omnetpp.ned.editor.graph.misc.ImageFactory;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.misc.ModulePaletteCustomizer;
-import org.omnetpp.ned.editor.graph.misc.ModuleRulerProvider;
 import org.omnetpp.ned.editor.graph.model.Container;
-import org.omnetpp.ned.editor.graph.model.Ruler;
-
-import sun.security.action.GetLongAction;
+import org.omnetpp.ned.editor.graph.model.NedFile;
 
 public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
     
@@ -328,7 +389,7 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
         }
     };
 
-    private Container logicDiagram = new Container();
+    private NedFile nedFileDiagram = new NedFile();
 
     private boolean savePreviouslyNeeded = false;
 
@@ -529,8 +590,8 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
         return sharedKeyHandler;
     }
 
-    protected Container getDiagram() {
-        return logicDiagram;
+    protected NedFile getDiagram() {
+        return nedFileDiagram;
     }
 
     protected FlyoutPreferences getPalettePreferences() {
@@ -668,20 +729,21 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
 
     protected void loadProperties() {
         // Ruler properties
-        Ruler ruler = getDiagram().getRuler(PositionConstants.WEST);
-        RulerProvider provider = null;
-        if (ruler != null) {
-            provider = new ModuleRulerProvider(ruler);
-        }
-        getGraphicalViewer().setProperty(RulerProvider.PROPERTY_VERTICAL_RULER, provider);
-        ruler = getDiagram().getRuler(PositionConstants.NORTH);
-        provider = null;
-        if (ruler != null) {
-            provider = new ModuleRulerProvider(ruler);
-        }
-        getGraphicalViewer().setProperty(RulerProvider.PROPERTY_HORIZONTAL_RULER, provider);
-        getGraphicalViewer().setProperty(RulerProvider.PROPERTY_RULER_VISIBILITY,
-                new Boolean(getDiagram().getRulerVisibility()));
+//        Ruler ruler = null;
+//        Ruler ruler = getDiagram().getRuler(PositionConstants.WEST);
+//        RulerProvider provider = null;
+//        if (ruler != null) {
+//            provider = new RulerProvider(ruler);
+//        }
+//        getGraphicalViewer().setProperty(RulerProvider.PROPERTY_VERTICAL_RULER, provider);
+//        ruler = getDiagram().getRuler(PositionConstants.NORTH);
+//        provider = null;
+//        if (ruler != null) {
+//            provider = new RulerProvider(ruler);
+//        }
+//        getGraphicalViewer().setProperty(RulerProvider.PROPERTY_HORIZONTAL_RULER, provider);
+//        getGraphicalViewer().setProperty(RulerProvider.PROPERTY_RULER_VISIBILITY,
+//                new Boolean(getDiagram().getRulerVisibility()));
 
         // Snap to Geometry property
         getGraphicalViewer().setProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED,
@@ -749,9 +811,6 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
     }
 
     protected void saveProperties() {
-        getDiagram().setRulerVisibility(
-                ((Boolean) getGraphicalViewer().getProperty(RulerProvider.PROPERTY_RULER_VISIBILITY))
-                        .booleanValue());
         getDiagram()
                 .setGridEnabled(
                         ((Boolean) getGraphicalViewer().getProperty(SnapToGrid.PROPERTY_GRID_ENABLED))
@@ -770,7 +829,7 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
         try {
             InputStream is = file.getContents(false);
             ObjectInputStream ois = new ObjectInputStream(is);
-            setLogicDiagram((Container) ois.readObject());
+            setLogicDiagram((NedFile) ois.readObject());
             ois.close();
         } catch (Exception e) {
             // This is just an example. All exceptions caught here.
@@ -788,8 +847,8 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
         }
     }
 
-    public void setLogicDiagram(Container diagram) {
-        logicDiagram = diagram;
+    public void setLogicDiagram(NedFile diagram) {
+        nedFileDiagram = diagram;
     }
 
     private void setSavePreviouslyNeeded(boolean value) {

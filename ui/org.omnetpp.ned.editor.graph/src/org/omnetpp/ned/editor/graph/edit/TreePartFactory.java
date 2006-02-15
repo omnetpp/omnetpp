@@ -12,12 +12,12 @@ package org.omnetpp.ned.editor.graph.edit;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;
-import org.omnetpp.ned.editor.graph.model.Container;
+import org.omnetpp.ned.editor.graph.model.NedFile;
 
 public class TreePartFactory implements EditPartFactory {
 
     public EditPart createEditPart(EditPart context, Object model) {
-        if (model instanceof Container) return new ContainerTreeEditPart(model);
+        if (model instanceof NedFile) return new ContainerTreeEditPart(model);
         return new TreeEditPart(model);
     }
 

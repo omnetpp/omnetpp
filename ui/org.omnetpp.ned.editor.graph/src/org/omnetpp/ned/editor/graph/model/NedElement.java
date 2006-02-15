@@ -31,8 +31,8 @@ import org.omnetpp.ned.editor.graph.properties.LocationPropertySource;
  */
 abstract public class NedElement extends PropertySupport {
 
+    protected static int count;
     private String name = "";
-    private Guide verticalGuide, horizontalGuide;
     protected Hashtable<String, Wire> inputs = new Hashtable<String, Wire>(7);
     protected Point location = new Point(0, 0);
     protected Vector<Wire> outputs = new Vector<Wire>(4, 4);
@@ -68,6 +68,10 @@ abstract public class NedElement extends PropertySupport {
         setName(getNewID());
     }
 
+	public String getNewID() {
+	    return Integer.toString(count++);
+	}
+
     public String getName() {
         return name;
     }
@@ -77,8 +81,6 @@ abstract public class NedElement extends PropertySupport {
         name = s;
         firePropertyChange(PROP_NAME, oldName, name); //$NON-NLS-1$
     }
-
-    abstract protected String getNewID();
 
     public void connectInput(Wire w) {
         inputs.put(w.getTargetGate(), w);
@@ -225,22 +227,6 @@ abstract public class NedElement extends PropertySupport {
         displayPS.setPropertyValue(DisplayPropertySource.PROP_X, p.x);
         displayPS.setPropertyValue(DisplayPropertySource.PROP_Y, p.y);
         setDisplay(displayPS.getValue());
-    }
-
-    public Guide getVerticalGuide() {
-        return verticalGuide;
-    }
-
-    public void setVerticalGuide(Guide vGuide) {
-        verticalGuide = vGuide;
-    }
-
-    public Guide getHorizontalGuide() {
-        return horizontalGuide;
-    }
-
-    public void setHorizontalGuide(Guide hGuide) {
-        horizontalGuide = hGuide;
     }
 
 }

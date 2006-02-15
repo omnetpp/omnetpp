@@ -10,7 +10,10 @@
  *******************************************************************************/
 package org.omnetpp.ned.editor.graph.wizards;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.ObjectOutputStream;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -19,7 +22,10 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -27,8 +33,8 @@ import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.eclipse.ui.ide.IDE;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.Container;
 import org.omnetpp.ned.editor.graph.model.ModelFactory;
+import org.omnetpp.ned.editor.graph.model.NedFile;
 
 public class ModuleCreationWizardPage1 extends WizardNewFileCreationPage implements SelectionListener {
 
@@ -78,8 +84,8 @@ public class ModuleCreationWizardPage1 extends WizardNewFileCreationPage impleme
     }
 
     protected InputStream getInitialContents() {
-        Container ld = new Container();
-        if (modelSelected == 2) ld = (Container) ModelFactory.createLargeModel();
+        NedFile ld = new NedFile();
+        if (modelSelected == 2) ld = (NedFile) ModelFactory.createLargeModel();
         ByteArrayInputStream bais = null;
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();

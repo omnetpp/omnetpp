@@ -14,10 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.gef.commands.Command;
-
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.model.Container;
-import org.omnetpp.ned.editor.graph.model.Guide;
 import org.omnetpp.ned.editor.graph.model.NedElement;
 import org.omnetpp.ned.editor.graph.model.Wire;
 
@@ -30,7 +28,6 @@ public class DeleteCommand extends Command {
 
     private NedElement child;
     private Container parent;
-    private Guide vGuide, hGuide;
     private int vAlign, hAlign;
     private int index = -1;
     private List sourceConnections = new ArrayList();
@@ -60,34 +57,14 @@ public class DeleteCommand extends Command {
         }
     }
 
-    private void detachFromGuides(NedElement part) {
-        if (part.getVerticalGuide() != null) {
-            vGuide = part.getVerticalGuide();
-            vAlign = vGuide.getAlignment(part);
-            vGuide.detachPart(part);
-        }
-        if (part.getHorizontalGuide() != null) {
-            hGuide = part.getHorizontalGuide();
-            hAlign = hGuide.getAlignment(part);
-            hGuide.detachPart(part);
-        }
-
-    }
-
     public void execute() {
         primExecute();
     }
 
     protected void primExecute() {
         deleteConnections(child);
-        detachFromGuides(child);
         index = parent.getChildren().indexOf(child);
         parent.removeChild(child);
-    }
-
-    private void reattachToGuides(NedElement part) {
-        if (vGuide != null) vGuide.attachPart(part, vAlign);
-        if (hGuide != null) hGuide.attachPart(part, hAlign);
     }
 
     public void redo() {
@@ -120,7 +97,6 @@ public class DeleteCommand extends Command {
     public void undo() {
         parent.addChild(child, index);
         restoreConnections();
-        reattachToGuides(child);
     }
 
 }

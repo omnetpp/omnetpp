@@ -40,7 +40,7 @@ public class ModuleEditPart extends ContainerEditPart {
         installEditPolicy(EditPolicy.LAYOUT_ROLE, new NedLayoutEditPolicy((XYLayout) getContentPane()
                 .getLayoutManager()));
 // No container highlighting for the moment
-//        installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE, new ContainerHighlightEditPolicy());
+        installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE, new ContainerHighlightEditPolicy());
         installEditPolicy("Snap Feedback", new SnapFeedbackPolicy()); //$NON-NLS-1$
     }
 

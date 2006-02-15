@@ -12,11 +12,9 @@ package org.omnetpp.ned.editor.graph.edit;
 
 import java.util.List;
 
-import org.eclipse.swt.accessibility.AccessibleEvent;
-
 import org.eclipse.gef.AccessibleEditPart;
 import org.eclipse.gef.EditPolicy;
-
+import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.omnetpp.ned.editor.graph.edit.policies.NedContainerEditPolicy;
 import org.omnetpp.ned.editor.graph.model.Container;
 
@@ -27,7 +25,7 @@ abstract public class ContainerEditPart extends BaseEditPart {
     protected AccessibleEditPart createAccessible() {
         return new AccessibleGraphicalEditPart() {
             public void getName(AccessibleEvent e) {
-                e.result = getContainerModel().toString();
+//                e.result = getContainerModel().toString();
             }
         };
     }
@@ -45,17 +43,17 @@ abstract public class ContainerEditPart extends BaseEditPart {
      * 
      * @return Container of this.
      */
-    protected Container getContainerModel() {
-        return (Container) getModel();
-    }
+//    protected Container getContainerModel() {
+//        return (Container) getModel();
+//    }
 
     /**
      * Returns the children of this through the model.
      * 
      * @return Children of this as a List.
      */
-    protected List getModelChildren() {
-        return getContainerModel().getChildren();
-    }
+//    protected List getModelChildren() {
+//        return getContainerModel().getChildren();
+//    }
 
 }

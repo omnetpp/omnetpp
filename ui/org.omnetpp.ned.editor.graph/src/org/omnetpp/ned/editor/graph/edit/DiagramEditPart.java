@@ -14,8 +14,29 @@ import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.draw2d.*;
-import org.eclipse.gef.*;
+import org.eclipse.draw2d.AutomaticRouter;
+import org.eclipse.draw2d.BendpointConnectionRouter;
+import org.eclipse.draw2d.ConnectionAnchor;
+import org.eclipse.draw2d.ConnectionLayer;
+import org.eclipse.draw2d.FanRouter;
+import org.eclipse.draw2d.Figure;
+import org.eclipse.draw2d.FreeformLayer;
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.ManhattanConnectionRouter;
+import org.eclipse.draw2d.MarginBorder;
+import org.eclipse.draw2d.ShortestPathConnectionRouter;
+import org.eclipse.draw2d.XYLayout;
+import org.eclipse.gef.AccessibleEditPart;
+import org.eclipse.gef.CompoundSnapToHelper;
+import org.eclipse.gef.ConnectionEditPart;
+import org.eclipse.gef.DragTracker;
+import org.eclipse.gef.EditPolicy;
+import org.eclipse.gef.LayerConstants;
+import org.eclipse.gef.Request;
+import org.eclipse.gef.SnapToGeometry;
+import org.eclipse.gef.SnapToGrid;
+import org.eclipse.gef.SnapToGuides;
+import org.eclipse.gef.SnapToHelper;
 import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
 import org.eclipse.gef.editpolicies.SnapFeedbackPolicy;
 import org.eclipse.gef.requests.SelectionRequest;
@@ -28,6 +49,7 @@ import org.omnetpp.ned.editor.graph.edit.policies.NedLayoutEditPolicy;
 import org.omnetpp.ned.editor.graph.misc.FreeformDesktopLayout;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.model.Container;
+import org.omnetpp.ned.editor.graph.model.NedFile;
 
 /**
  * Holds all other NedEditParts under this. It is activated by
@@ -140,7 +162,7 @@ public class DiagramEditPart extends ContainerEditPart implements LayerConstants
     }
 
     public void propertyChange(PropertyChangeEvent evt) {
-        if (Container.PROP_ROUTER.equals(evt.getPropertyName()))
+        if (NedFile.PROP_ROUTER.equals(evt.getPropertyName()))
             refreshVisuals();
         else
             super.propertyChange(evt);
@@ -150,11 +172,11 @@ public class DiagramEditPart extends ContainerEditPart implements LayerConstants
         ConnectionLayer cLayer = (ConnectionLayer) getLayer(CONNECTION_LAYER);
         cLayer.setAntialias(SWT.ON);
 
-        if (getContainerModel().getConnectionRouter().equals(Container.ROUTER_MANUAL)) {
+        if (((NedFile)getModel()).getConnectionRouter().equals(NedFile.ROUTER_MANUAL)) {
             AutomaticRouter router = new FanRouter();
             router.setNextRouter(new BendpointConnectionRouter());
             cLayer.setConnectionRouter(router);
-        } else if (getContainerModel().getConnectionRouter().equals(Container.ROUTER_MANHATTAN))
+        } else if (((NedFile)getModel()).getConnectionRouter().equals(NedFile.ROUTER_MANHATTAN))
             cLayer.setConnectionRouter(new ManhattanConnectionRouter());
         else
             cLayer.setConnectionRouter(new ShortestPathConnectionRouter(getFigure()));
