@@ -372,13 +372,13 @@ channelinterfaceheader
         ;
 
 opt_interfaceinheritance
-        : EXTENDS interfacenames
+        : EXTENDS extendsnames
         |
         ;
 
-interfacenames
-        : interfacenames ',' NAME
-        | NAME
+extendsnames
+        : extendsnames ',' extendsname
+        | extendsname
         ;
 
 /*

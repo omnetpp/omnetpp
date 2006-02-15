@@ -401,7 +401,24 @@ void NEDGenerator::doSubmodules(SubmodulesNode *node, const char *indent, bool i
     generateChildren(node, increaseIndent(indent));
 }
 
-void NEDGenerator::doSubmodule(SubmoduleNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doSubmodule(SubmoduleNode *node, const char *indent, bool islast, const char *)
+{
+    out << indent << node->getName() << ": ";
+    if (strnotnull(node->getLikeParam())) {
+        out << node->getLikeParam();
+        printVector(node, "vector-size",indent);
+        out << " like " << node->getType();
+    }
+    else
+    {
+        out << node->getType();
+        printVector(node, "vector-size",indent);
+    }
+    out << ";\n";
+
+    generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
+    generateChildrenWithType(node, NED_GATES, increaseIndent(indent));
+}
 
 void NEDGenerator::doConnections(ConnectionsNode *node, const char *indent, bool islast, const char *)
 {
