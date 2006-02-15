@@ -149,10 +149,9 @@ module Host
         apps: <> like TCPApp;
         tcp: TCP {
             mss = 1024;
-        };
+        }
         ip: IP;
         ppp[sizeof(pppPort)]: PPP;
-
     connections allowunconnected:
         app[i].toTcp <--> { @display("c=red"); delay=0; } <--> tcp.toApp;
         app[i].toTcp$o --> { @display("c=red"); delay=0; } --> tcp.toApp$i;
@@ -225,7 +224,8 @@ module Network
     parameters:
         @isnetwork(true);
     submodules:
-        hosts[100] : Host {}
+        hosts[100] : Host {
+        }
     connections:
         host[0].pppPort++ <--> host[1].pppPort++;
         host[0].pppPort++ <--> host[3].pppPort++;
@@ -234,7 +234,8 @@ module Network
 network RandomGraph
 {
     submodules:
-        node[100]: Node {}
+        node[100]: Node {
+        }
     connections:
         node[i].port++ <--> node[j].port++ where i=0..98, j=i+1..99, uniform()<0.3;
         where i=0..98, j=i+1..99, uniform()<0.3 {
