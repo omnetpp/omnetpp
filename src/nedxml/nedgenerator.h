@@ -26,7 +26,7 @@ using std::ostream;
  *
  * @ingroup NEDGenerator
  */
-void generateNed(ostream& out, NEDElement *node, bool newsyntax);
+void generateNed(ostream& out, NEDElement *node);
 
 /**
  * Generates NED code from a NED object tree.
@@ -37,7 +37,6 @@ void generateNed(ostream& out, NEDElement *node, bool newsyntax);
 class NEDGenerator
 {
   protected:
-    bool newsyntax;
     int indentsize;
     ostream& out;
 
@@ -57,12 +56,6 @@ class NEDGenerator
      * Sets the indent size in the generated NED code. Default is 4 spaces.
      */
     void setIndentSize(int indentsize);
-
-    /**
-     * Sets if new NED syntax (e.g. using curly braces like module { ... }
-     * instead of module ... endmodule) should be used. Default is true.
-     */
-    void setNewSyntax(bool value);
 
     /**
      * Generates NED code. Takes object tree and base indentation.
@@ -104,8 +97,8 @@ class NEDGenerator
     //@{
     void doNedfiles(FilesNode *node, const char *indent, bool islast, const char *);
     void doNedfile(NedFileNode *node, const char *indent, bool islast, const char *);
-    void doImports(ImportNode *node, const char *indent, bool islast, const char *);
-    void doImport(ImportedFileNode *node, const char *indent, bool islast, const char *);
+    void doImport(ImportNode *node, const char *indent, bool islast, const char *);
+/*XXX
     void doChannel(ChannelNode *node, const char *indent, bool islast, const char *);
     void doChanattr(ChannelAttrNode *node, const char *indent, bool islast, const char *);
     void doNetwork(NetworkNode *node, const char *indent, bool islast, const char *);
@@ -142,6 +135,7 @@ class NEDGenerator
     void doParamref(IdentNode *node, const char *indent, bool islast, const char *);
     void doIdent(ObsoleteIdentNode *node, const char *indent, bool islast, const char *);
     void doConst(LiteralNode *node, const char *indent, bool islast, const char *);
+*/
 
     void doCplusplus(CplusplusNode *node, const char *indent, bool islast, const char *);
     void doStructDecl(StructDeclNode *node, const char *indent, bool islast, const char *);
@@ -157,7 +151,7 @@ class NEDGenerator
     void doFields(FieldsNode *node, const char *indent, bool islast, const char *);
     void doField(FieldNode *node, const char *indent, bool islast, const char *);
     void doProperties(PropertiesNode *node, const char *indent, bool islast, const char *);
-    void doProperty(PropertyNode *node, const char *indent, bool islast, const char *);
+    void doMsgproperty(MsgpropertyNode *node, const char *indent, bool islast, const char *);
     //@}
 };
 
