@@ -422,11 +422,52 @@ void NEDGenerator::doSubmodule(SubmoduleNode *node, const char *indent, bool isl
 
 void NEDGenerator::doConnections(ConnectionsNode *node, const char *indent, bool islast, const char *)
 {
-    out << indent << "connections:\n";
+    if (!node->getAllowUnconnected()) {
+        out << indent << "connections allowunconnected:\n";
+    } else {
+        out << indent << "connections:\n";
+    }
     generateChildren(node, increaseIndent(indent));
 }
 
-void NEDGenerator::doConnection(ConnectionNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doConnection(ConnectionNode *node, const char *indent, bool islast, const char *)
+{
+    //  direction
+    const char *arrow;
+    bool srcfirst;
+    switch (node->getArrowDirection())
+    {
+        case NED_ARROWDIR_L2R:   arrow = " -->"; srcfirst = true; break;
+        case NED_ARROWDIR_R2L:   arrow = " <--"; srcfirst = false; break;
+        case NED_ARROWDIR_BIDIR: arrow = " <-->"; srcfirst = true; break;
+        default: INTERNAL_ERROR0(node, "wrong arrow-dir");
+    }
+
+    // print src
+    out << indent;
+    if (srcfirst) {
+        printGate(node, node->getSrcModule(), "src-module-index", node->getSrcGate(), "src-gate-index", node->getSrcGatePlusplus(), indent);
+    } else {
+        printGate(node, node->getDestModule(), "dest-module-index", node->getDestGate(), "dest-gate-index", node->getDestGatePlusplus(), indent);
+    }
+
+    // arrow
+    out << arrow;
+
+    // print channel attributes
+    generateChildrenWithType(node, NED_CHANNEL_SPEC, indent, arrow);
+
+    // print dest
+    out << " ";
+    if (srcfirst) {
+        printGate(node, node->getDestModule(), "dest-module-index", node->getDestGate(), "dest-gate-index", node->getDestGatePlusplus(), indent);
+    } else {
+        printGate(node, node->getSrcModule(), "src-module-index", node->getSrcGate(), "src-gate-index", node->getSrcGatePlusplus(), indent);
+    }
+
+    out << ";\n";
+}
+
 void NEDGenerator::doChannelSpec(ChannelSpecNode *node, const char *indent, bool islast, const char *) {}
 void NEDGenerator::doConnectionGroup(ConnectionGroupNode *node, const char *indent, bool islast, const char *) {}
 
@@ -438,6 +479,23 @@ void NEDGenerator::doWhere(WhereNode *node, const char *indent, bool islast, con
 
 void NEDGenerator::doLoop(LoopNode *node, const char *indent, bool islast, const char *) {}
 void NEDGenerator::doCondition(ConditionNode *node, const char *indent, bool islast, const char *) {}
+
+void NEDGenerator::printGate(NEDElement *conn, const char *modname, const char *modindexattr,
+                             const char *gatename, const char *gateindexattr, bool isplusplus,
+                             const char *indent)
+{
+    if (strnotnull(modname)) {
+        out << modname;
+        printVector(conn, modindexattr,indent);
+        out << ".";
+    }
+
+    out << gatename;
+    if (isplusplus)
+        out << "++";
+    else
+        printVector(conn, gateindexattr,indent);
+}
 
 /*XXX
 void NEDGenerator::doChannel(ChannelNode *node, const char *indent, bool islast, const char *)
