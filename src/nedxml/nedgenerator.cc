@@ -230,7 +230,7 @@ void NEDGenerator::doImport(ImportNode *node, const char *indent, bool islast, c
 
 void NEDGenerator::doPropertyDecl(PropertyDeclNode *node, const char *indent, bool islast, const char *)
 {
-    out << indent << "property " << node->getName();
+    out << indent << "property @" << node->getName();
     generateChildren(node, indent);
     out << ";\n\n";
 }
@@ -455,10 +455,18 @@ void NEDGenerator::doSubmodule(SubmoduleNode *node, const char *indent, bool isl
         out << node->getType();
         printVector(node, "vector-size",indent);
     }
-    out << ";\n";
 
-    generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
-    generateChildrenWithType(node, NED_GATES, increaseIndent(indent));
+    if (!node->getFirstChildWithTag(NED_PARAMETERS) && !node->getFirstChildWithTag(NED_GATES))
+    {
+        out << ";\n";
+    }
+    else
+    {
+        out << " {\n";
+        generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
+        generateChildrenWithType(node, NED_GATES, increaseIndent(indent));
+        out << indent << "}\n";
+    }
 }
 
 void NEDGenerator::doConnections(ConnectionsNode *node, const char *indent, bool islast, const char *)

@@ -105,7 +105,7 @@
 
 <!ELEMENT submodules (whitespace*, submodule*)>
 
-<!ELEMENT submodule (whitespace*, expression*, parameters?, gates?)>
+<!ELEMENT submodule (whitespace*, expression*, parameters?, gates?)>  <!-- FIXME needs condition? -->
 <!ATTLIST submodule
      name               NMTOKEN   #REQUIRED
      type               NMTOKEN   #IMPLIED
