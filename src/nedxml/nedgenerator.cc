@@ -217,6 +217,34 @@ void NEDGenerator::doImport(ImportNode *node, const char *indent, bool islast, c
     out << indent << "import \"" << node->getFilename() << "\";" << "\n";
 }
 
+void NEDGenerator::doPropertyDecl(PropertyDeclNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doExtends(ExtendsNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doInterfaceName(InterfaceNameNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doSimpleModule(SimpleModuleNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doModuleInterface(ModuleInterfaceNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doCompoundModule(CompoundModuleNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doChannelInterface(ChannelInterfaceNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doChannel(ChannelNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doParameters(ParametersNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doParamGroup(ParamGroupNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doParam(ParamNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doPattern(PatternNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doProperty(PropertyNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doPropertyKey(PropertyKeyNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doGates(GatesNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doGateGroup(GateGroupNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doGate(GateNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doTypes(TypesNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doSubmodules(SubmodulesNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doSubmodule(SubmoduleNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doConnections(ConnectionsNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doConnection(ConnectionNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doChannelSpec(ChannelSpecNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doConnectionGroup(ConnectionGroupNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doWhere(WhereNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doLoop(LoopNode *node, const char *indent, bool islast, const char *) {}
+void NEDGenerator::doCondition(ConditionNode *node, const char *indent, bool islast, const char *) {}
+
 /*XXX
 void NEDGenerator::doChannel(ChannelNode *node, const char *indent, bool islast, const char *)
 {
@@ -949,57 +977,61 @@ void NEDGenerator::generateNedItem(NEDElement *node, const char *indent, bool is
             doNedfile((NedFileNode *)node, indent, islast, arg); break;
         case NED_IMPORT:
             doImport((ImportNode *)node, indent, islast, arg); break;
-/*XXX
+        case NED_PROPERTY_DECL:
+            doPropertyDecl((PropertyDeclNode *)node, indent, islast, arg); break;
+        case NED_EXTENDS:
+            doExtends((ExtendsNode *)node, indent, islast, arg); break;
+        case NED_INTERFACE_NAME:
+            doInterfaceName((InterfaceNameNode *)node, indent, islast, arg); break;
+        case NED_SIMPLE_MODULE:
+            doSimpleModule((SimpleModuleNode *)node, indent, islast, arg); break;
+        case NED_MODULE_INTERFACE:
+            doModuleInterface((ModuleInterfaceNode *)node, indent, islast, arg); break;
+        case NED_COMPOUND_MODULE:
+            doCompoundModule((CompoundModuleNode *)node, indent, islast, arg); break;
+        case NED_CHANNEL_INTERFACE:
+            doChannelInterface((ChannelInterfaceNode *)node, indent, islast, arg); break;
         case NED_CHANNEL:
             doChannel((ChannelNode *)node, indent, islast, arg); break;
-        case NED_CHANNEL_ATTR:
-            doChanattr((ChannelAttrNode *)node, indent, islast, arg); break;
-        case NED_NETWORK:
-            doNetwork((NetworkNode *)node, indent, islast, arg); break;
-        case NED_SIMPLE_MODULE:
-            doSimple((SimpleModuleNode *)node, indent, islast, arg); break;
-        case NED_COMPOUND_MODULE:
-            doModule((CompoundModuleNode *)node, indent, islast, arg); break;
         case NED_PARAMETERS:
-            doParams((ParamsNode *)node, indent, islast, arg); break;
+            doParameters((ParametersNode *)node, indent, islast, arg); break;
+        case NED_PARAM_GROUP:
+            doParamGroup((ParamGroupNode *)node, indent, islast, arg); break;
         case NED_PARAM:
             doParam((ParamNode *)node, indent, islast, arg); break;
+        case NED_PATTERN:
+            doPattern((PatternNode *)node, indent, islast, arg); break;
+        case NED_PROPERTY:
+            doProperty((PropertyNode *)node, indent, islast, arg); break;
+        case NED_PROPERTY_KEY:
+            doPropertyKey((PropertyKeyNode *)node, indent, islast, arg); break;
         case NED_GATES:
             doGates((GatesNode *)node, indent, islast, arg); break;
+        case NED_GATE_GROUP:
+            doGateGroup((GateGroupNode *)node, indent, islast, arg); break;
         case NED_GATE:
             doGate((GateNode *)node, indent, islast, arg); break;
-        case NED_MACHINES:
-            doMachines((MachinesNode *)node, indent, islast, arg); break;
-        case NED_MACHINE:
-            doMachine((MachineNode *)node, indent, islast, arg); break;
+        case NED_TYPES:
+            doTypes((TypesNode *)node, indent, islast, arg); break;
         case NED_SUBMODULES:
             doSubmodules((SubmodulesNode *)node, indent, islast, arg); break;
         case NED_SUBMODULE:
             doSubmodule((SubmoduleNode *)node, indent, islast, arg); break;
-        case NED_SUBSTPARAMS:
-            doSubstparams((SubstparamsNode *)node, indent, islast, arg); break;
-        case NED_SUBSTPARAM:
-            doSubstparam((SubstparamNode *)node, indent, islast, arg); break;
-        case NED_GATESIZES:
-            doGatesizes((GatesizesNode *)node, indent, islast, arg); break;
-        case NED_GATESIZE:
-            doGatesize((GatesizeNode *)node, indent, islast, arg); break;
-        case NED_SUBSTMACHINES:
-            doSubstmachines((SubstmachinesNode *)node, indent, islast, arg); break;
-        case NED_SUBSTMACHINE:
-            doSubstmachine((SubstmachineNode *)node, indent, islast, arg); break;
         case NED_CONNECTIONS:
             doConnections((ConnectionsNode *)node, indent, islast, arg); break;
         case NED_CONNECTION:
             doConnection((ConnectionNode *)node, indent, islast, arg); break;
-        case NED_CONN_ATTR:
-            doConnattr((ConnAttrNode *)node, indent, islast, arg); break;
-        case NED_FOR_LOOP:
-            doForloop((ForLoopNode *)node, indent, islast, arg); break;
-        case NED_LOOP_VAR:
-            doLoopvar((LoopVarNode *)node, indent, islast, arg); break;
-        case NED_DISPLAY_STRING:
-            doDisplaystring((DisplayStringNode *)node, indent, islast, arg); break;
+        case NED_CHANNEL_SPEC:
+            doChannelSpec((ChannelSpecNode *)node, indent, islast, arg); break;
+        case NED_CONNECTION_GROUP:
+            doConnectionGroup((ConnectionGroupNode *)node, indent, islast, arg); break;
+        case NED_WHERE:
+            doWhere((WhereNode *)node, indent, islast, arg); break;
+        case NED_LOOP:
+            doLoop((LoopNode *)node, indent, islast, arg); break;
+        case NED_CONDITION:
+            doCondition((ConditionNode *)node, indent, islast, arg); break;
+/*XXX
         case NED_EXPRESSION:
             doExpression((ExpressionNode *)node, indent, islast, arg); break;
         case NED_OPERATOR:
