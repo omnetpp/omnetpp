@@ -353,7 +353,6 @@ network PPPNet
     connections:
         node[0].g++ <--> PPPLineModule <--> node[1].g++;
         node[0].g++ <--> PPPLineModule <--> node[3].g++;
-
 }
 
 simple Gen
