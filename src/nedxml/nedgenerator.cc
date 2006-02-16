@@ -387,10 +387,10 @@ void NEDGenerator::doGate(GateNode *node, const char *indent, bool islast, const
     out << indent;
     switch (node->getType())
     {
-        //case NED_GATEDIR_INPUT:  break;  //FIXME should be NONE!!!! check dtd too!
-        case NED_GATEDIR_INPUT:  out << "input "; break;
-        case NED_GATEDIR_OUTPUT: out << "output "; break;
-        case NED_GATEDIR_INOUT:  out << "inout "; break;
+        case NED_GATETYPE_NONE:   break;
+        case NED_GATETYPE_INPUT:  out << "input "; break;
+        case NED_GATETYPE_OUTPUT: out << "output "; break;
+        case NED_GATETYPE_INOUT:  out << "inout "; break;
         default: INTERNAL_ERROR0(node, "wrong type");
     }
     out << node->getName();
@@ -545,7 +545,7 @@ void NEDGenerator::printGate(NEDElement *conn, const char *modname, const char *
 void NEDGenerator::doGate(GateNode *node, const char *indent, bool islast, const char *)
 {
     //XXX appendBannerComment(node->getBannerComment(), indent);
-    out << indent << (node->getType()==NED_GATEDIR_INPUT ? "in: " : "out: ") << node->getName();
+    out << indent << (node->getType()==NED_GATETYPE_INPUT ? "in: " : "out: ") << node->getName();
     if (node->getIsVector()) {
         out << "[]";
     }

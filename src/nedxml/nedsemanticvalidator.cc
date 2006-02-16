@@ -200,9 +200,9 @@ void NEDSemanticValidator::checkGate(GateNode *gate, bool hasGateIndex, bool isI
         NEDError(conn, "%s: missing gate index ('%s' is a vector gate)", q, gate->getName());
 
     // check gate direction, check if vector
-    if (isInput && gate->getType()==NED_GATEDIR_OUTPUT)
+    if (isInput && gate->getType()==NED_GATETYPE_OUTPUT)
         NEDError(conn, "%s: input gate expected but '%s' is an output gate", q, gate->getName());
-    else if (!isInput && gate->getType()==NED_GATEDIR_INPUT)
+    else if (!isInput && gate->getType()==NED_GATETYPE_INPUT)
         NEDError(conn, "%s: output gate expected but '%s' is an input gate", q, gate->getName());
 }
 

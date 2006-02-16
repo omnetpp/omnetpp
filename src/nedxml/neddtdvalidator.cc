@@ -238,8 +238,7 @@ void NEDDTDValidator::validateElement(GateNode *node)
 
     checkRequiredAttribute(node, "name");
     checkNameAttribute(node, "name");
-    checkRequiredAttribute(node, "type");
-    const char *vals1[] = {"input","output","inout"};
+    const char *vals1[] = {"input","output","inout",""};
     checkEnumeratedAttribute(node, "type", vals1, sizeof(vals1)/sizeof(const char *));
     const char *vals2[] = {"true","false"};
     checkEnumeratedAttribute(node, "is-vector", vals2, sizeof(vals2)/sizeof(const char *));

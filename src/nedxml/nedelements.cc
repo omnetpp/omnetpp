@@ -21,9 +21,9 @@
 #include "nederror.h"
 #include "nedelements.h"
 
-static const char *gatetype_vals[] = {"input", "output", "inout"};
-static int gatetype_nums[] = {NED_GATEDIR_INPUT, NED_GATEDIR_OUTPUT, NED_GATEDIR_INOUT};
-static const int gatetype_n = 3;
+static const char *gatetype_vals[] = {"", "input", "output", "inout"};
+static int gatetype_nums[] = {NED_GATETYPE_NONE, NED_GATETYPE_INPUT, NED_GATETYPE_OUTPUT, NED_GATETYPE_INOUT};
+static const int gatetype_n = 4;
 
 static const char *arrowdir_vals[] = {"l2r", "r2l", "bidir"};
 static int arrowdir_nums[] = {NED_ARROWDIR_L2R, NED_ARROWDIR_R2L, NED_ARROWDIR_BIDIR};
@@ -1308,7 +1308,7 @@ const char *GateNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return NULL;
-        case 1: return NULL;
+        case 1: return "";
         case 2: return "false";
         case 3: return "";
         default: return 0;

@@ -139,7 +139,7 @@ enum NEDElementCode {
     NED_UNKNOWN
 };
 
-enum {NED_GATEDIR_INPUT, NED_GATEDIR_OUTPUT, NED_GATEDIR_INOUT};
+enum {NED_GATETYPE_NONE, NED_GATETYPE_INPUT, NED_GATETYPE_OUTPUT, NED_GATETYPE_INOUT};
 enum {NED_ARROWDIR_R2L, NED_ARROWDIR_L2R, NED_ARROWDIR_BIDIR};
 enum {NED_PARTYPE_NONE, NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};
 enum {NED_CONST_DOUBLE, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_UNIT};
@@ -1111,7 +1111,7 @@ class GateGroupNode : public NEDElement
  * <!ELEMENT gate (whitespace*, expression?, property*, condition?)>
  * <!ATTLIST gate
  *      name               NMTOKEN   #REQUIRED
- *      type               (input|output|inout) #REQUIRED
+ *      type               (input|output|inout) #IMPLIED
  *      is-vector          (true|false) "false"
  *      vector-size        CDATA     #IMPLIED>
  * </pre>

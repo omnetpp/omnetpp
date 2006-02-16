@@ -874,11 +874,11 @@ gate_typenamesize
 
 gatetype
         : INPUT_
-                { ps.gateType = NED_GATEDIR_INPUT; }
+                { ps.gateType = NED_GATETYPE_INPUT; }
         | OUTPUT_
-                { ps.gateType = NED_GATEDIR_OUTPUT; }
+                { ps.gateType = NED_GATETYPE_OUTPUT; }
         | INOUT_
-                { ps.gateType = NED_GATEDIR_INOUT; }
+                { ps.gateType = NED_GATETYPE_INOUT; }
         ;
 
 /*
