@@ -135,7 +135,7 @@ module OSPFRouting like TCPUDPApp
 
 property @host;
 
-property @host2 (foo, bar);
+property @host2(foo, bar);
 
 module Host
 {
@@ -415,6 +415,6 @@ network Network
                     portA[34];
                     portB[3];
                 }
-        };
+        }
 }
 
