@@ -66,7 +66,7 @@ LIBXML_DIR=$(TOOLS_DIR:\=/)/libxml2-2.6.20.win32
 PERL=perl.exe
 
 # flex/bison: only needed it you want to modify NEDC or GNED
-YACC=$(TOOLS_DIR:\=/)/UnxUtils/usr/local/wbin/bison.exe
+YACC=$(TOOLS_DIR:\=/)/bison-2.1/bin/bison.exe
 LEX=$(TOOLS_DIR:\=/)/UnxUtils/usr/local/wbin/flex.exe
 
 # Doxygen is needed for generating HTML documentation from C++
