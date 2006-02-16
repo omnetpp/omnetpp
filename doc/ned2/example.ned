@@ -283,7 +283,7 @@ network Network   // "network" is exactly as "module", but: not gates
             //...
         };
     submodules:
-        hosts[100] : HostX;
+        hosts[100]: HostX;
     connections:
         host[0].pppPort++ <--> PPPLink <--> host[1].pppPort++;
         host[0].pppPort++ <--> PPPLink {@display("c=green");} <--> host[3].pppPort++;
@@ -295,7 +295,7 @@ module Network
     parameters:
         @isnetwork(true);  // alternative to the "network" keyword
     submodules:
-        hosts[100] : Host {}
+        hosts[100]: Host {}
     connections:
         host[0].pppPort++ <--> host[1].pppPort++;
         host[0].pppPort++ <--> host[3].pppPort++;
@@ -338,7 +338,7 @@ module Host
         apps[N]: <> like TCPApp;  // uses "typename" virtual parameter (idea of @type property was discarded)
         apps[N]: <appType> like TCPApp;   // all modules are the same type (appType); conceptually, <> operator converts string to type
         //apps[]: <appType[]> like TCPApp;  // with string arrays; not yet implemented
-        tcp : TCP;
+        tcp: TCP;
 };
 
 network Network
@@ -377,7 +377,7 @@ network Network
     parameters:
         string channelType;
     submodules:
-        hosts[100] : HostX;
+        hosts[100]: HostX;
     connections:
         host[0].pppPort++ <--> <channelType> like PPPLikeChannel <--> host[1].pppPort++;
         host[0].pppPort++ <--> <> like PPPLikeChannel <--> host[1].pppPort++; // how to specify typename?
@@ -494,7 +494,7 @@ simple Gen
 network Network
 {
     submodules:
-        hosts[100] : Host {
+        hosts[100]: Host {
             parameters:
                 // first the special cases. Stops at first match. index is reserved word.
                 @display("c=green") if index==3;
@@ -512,6 +512,5 @@ network Network
                     portB[3];
                 }
         };
-
 };
 

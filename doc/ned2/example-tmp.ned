@@ -1,5 +1,3 @@
-package generic.queueing;
-
 import "foo.ned";
 @someproperty(somekey);
 simple Queue
@@ -57,8 +55,8 @@ simple TCP
         string tcpAlgorithmClass @choice("TCPTahoe", "TCPReno", "TCPNoCongestionControl", "DumbTCP");
         string tcpAlgorithmClass @classname("ITCPAlgorithm");
         @kernel(starttime=49);
-        @recordstats(id="stat1", storeintervall=5,averaging=true);
-        @recordstats(id="stat2", storeintervall=9,averaging=false);
+        @recordstats(id="stat1", storeintervall=5, averaging=true);
+        @recordstats(id="stat2", storeintervall=9, averaging=false);
         @display("i=block/transport");
     gates:
         inout toApp[] @labels(TCPControlInfo);
@@ -200,19 +198,19 @@ network Network
     parameters:
         int a;
     types:
-        channel PPPLink 
+        channel PPPLink
         {
             parameters:
                 @display("c=red");
                 delay = 10us;
         }
 
-        module HostX extends Host 
+        module HostX extends Host
         {
         }
 
     submodules:
-        hosts[100] : HostX;
+        hosts[100]: HostX;
     connections:
         host[0].pppPort++ <--> PPPLink <--> host[1].pppPort++;
         host[0].pppPort++ <--> PPPLink {@display("c=green");} <--> host[3].pppPort++;
@@ -224,7 +222,7 @@ module Network
     parameters:
         @isnetwork(true);
     submodules:
-        hosts[100] : Host {
+        hosts[100]: Host {
         }
     connections:
         host[0].pppPort++ <--> host[1].pppPort++;
@@ -262,7 +260,7 @@ module Host
         apps[N]: <> like *;
         apps[N]: <> like TCPApp;
         apps[N]: <appType> like TCPApp;
-        tcp : TCP;
+        tcp: TCP;
 }
 
 network Network
@@ -294,7 +292,7 @@ network Network
     parameters:
         string channelType;
     submodules:
-        hosts[100] : HostX;
+        hosts[100]: HostX;
     connections:
         host[0].pppPort++ <--> <channelType> like PPPLikeChannel <--> host[1].pppPort++;
         host[0].pppPort++ <--> <> like PPPLikeChannel <--> host[1].pppPort++;
@@ -304,9 +302,9 @@ network Network
 
 channel PPPLine
 {
-   parameters:
-      @labels(PPP);
-      @display("o=blue,3");
+    parameters:
+        @labels(PPP);
+        @display("o=blue,3");
 }
 
 module EtherMAC
@@ -317,8 +315,8 @@ module EtherMAC
 
 channel PPPLine
 {
-   parameters:
-      @deliverOnFirstBit;
+    parameters:
+        @deliverOnFirstBit;
 }
 
 channel withcppclass PPPLine
@@ -328,22 +326,22 @@ channel withcppclass PPPLine
 interface IBidirectionalChannel
 {
     gates:
-       inout a;
-       inout b;
+        inout a;
+        inout b;
 }
 
 interface IUnidirectionalChannel
 {
     gates:
-       input i;
-       output o;
+        input i;
+        output o;
 }
 
 module PPPLineModule like IBidirectionalChannel
 {
     gates:
-       inout a;
-       inout b;
+        inout a;
+        inout b;
 }
 
 network PPPNet
@@ -392,14 +390,14 @@ simple Gen
         double datarate @unit(bps);
         double filelengthBytes @unit(bytes);
         double distance @unit(meter);
-        string className = default("FIFO") @choice("FIFO","LIFO");
+        string className = default("FIFO") @choice("FIFO", "LIFO");
         double time = 10h 30s @unit(sec);
 }
 
 network Network
 {
     submodules:
-        hosts[100] : Host {
+        hosts[100]: Host {
             parameters:
                 @display("c=green") if index==3;
                 @display("c=red");
