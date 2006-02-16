@@ -130,47 +130,20 @@ void NEDGenerator::printExpression(NEDElement *node, const char *attr, const cha
     }
 }
 
-void NEDGenerator::printVector(NEDElement *node, const char *attr, const char *indent)
+void NEDGenerator::printOptVector(NEDElement *node, const char *attr, const char *indent)
 {
-    if (strnotnull(node->getAttribute(attr)))
+    if (hasExpression(node,attr))
     {
-        out << "[" << node->getAttribute(attr) << "]";
-    }
-    else
-    {
-        for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
-        {
-            if (child->getTagCode()==NED_EXPRESSION &&
-                 strnotnull(((ExpressionNode *)child)->getTarget()) &&
-                 !strcmp(((ExpressionNode *)child)->getTarget(),attr))
-            {
-                out << "[";
-                generateNedItem(child, indent, false, NULL);
-                out << "]";
-            }
-        }
+        out << "[";
+        printExpression(node,attr,indent);
+        out << "]";
     }
 }
 
 void NEDGenerator::printIfExpression(NEDElement *node, const char *attr, const char *indent)
 {
-    if (strnotnull(node->getAttribute(attr)))
-    {
-        out << " if " << node->getAttribute(attr);
-    }
-    else
-    {
-        for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
-        {
-            if (child->getTagCode()==NED_EXPRESSION &&
-                 strnotnull(((ExpressionNode *)child)->getTarget()) &&
-                 !strcmp(((ExpressionNode *)child)->getTarget(),attr))
-            {
-                out << " if ";
-                generateNedItem(child, indent, false, NULL);
-            }
-        }
-    }
+    out << "ifXXX ";
+    printExpression(node,attr,indent);
 }
 
 
@@ -223,7 +196,6 @@ void NEDGenerator::doNedfile(NedFileNode *node, const char *indent, bool, const 
 
 void NEDGenerator::doImport(ImportNode *node, const char *indent, bool islast, const char *)
 {
-    // things would probably get simpler if we allowed one filename per "import" directive only...
     //XXX appendBannerComment(node->getBannerComment(), indent);
     out << indent << "import \"" << node->getFilename() << "\";" << "\n";
 }
@@ -422,8 +394,9 @@ void NEDGenerator::doGate(GateNode *node, const char *indent, bool islast, const
         default: INTERNAL_ERROR0(node, "wrong type");
     }
     out << node->getName();
-    //XX vector << " = ";
-    // printExpression(node, "value",indent);
+    if (node->getIsVector())
+        out << "[]";
+    printOptVector(node, "vector-size",indent);
 
     generateChildrenWithType(node, NED_PROPERTY, increaseIndent(indent), " ");
     generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));
@@ -444,16 +417,17 @@ void NEDGenerator::doSubmodules(SubmodulesNode *node, const char *indent, bool i
 
 void NEDGenerator::doSubmodule(SubmoduleNode *node, const char *indent, bool islast, const char *)
 {
-    out << indent << node->getName() << ": ";
+    out << indent << node->getName();
+    printOptVector(node, "vector-size",indent);
+    out << ": ";
+
     if (strnotnull(node->getLikeParam())) {
         out << node->getLikeParam();
-        printVector(node, "vector-size",indent);
         out << " like " << node->getType();
     }
     else
     {
         out << node->getType();
-        printVector(node, "vector-size",indent);
     }
 
     if (!node->getFirstChildWithTag(NED_PARAMETERS) && !node->getFirstChildWithTag(NED_GATES))
@@ -556,7 +530,7 @@ void NEDGenerator::printGate(NEDElement *conn, const char *modname, const char *
 {
     if (strnotnull(modname)) {
         out << modname;
-        printVector(conn, modindexattr,indent);
+        printOptVector(conn, modindexattr,indent);
         out << ".";
     }
 
@@ -564,7 +538,7 @@ void NEDGenerator::printGate(NEDElement *conn, const char *modname, const char *
     if (isplusplus)
         out << "++";
     else
-        printVector(conn, gateindexattr,indent);
+        printOptVector(conn, gateindexattr,indent);
 }
 
 /*XXX
@@ -618,7 +592,7 @@ void NEDGenerator::doGatesize(GatesizeNode *node, const char *indent, bool islas
 {
     //XXX appendBannerComment(node->getBannerComment(), indent);
     out << indent << node->getName();
-    printVector(node, "vector-size",indent);
+    printOptVector(node, "vector-size",indent);
     if (islast || newsyntax) {
         out << ";";
     } else {
@@ -645,7 +619,7 @@ void NEDGenerator::printGate(NEDElement *conn, const char *modname, const char *
 {
     if (strnotnull(modname)) {
         out << modname;
-        printVector(conn, modindexattr,indent);
+        printOptVector(conn, modindexattr,indent);
         out << ".";
     }
 
@@ -653,7 +627,7 @@ void NEDGenerator::printGate(NEDElement *conn, const char *modname, const char *
     if (isplusplus)
         out << "++";
     else
-        printVector(conn, gateindexattr,indent);
+        printOptVector(conn, gateindexattr,indent);
 }
 
 void NEDGenerator::doConnattr(ConnAttrNode *node, const char *indent, bool islast, const char *arrow)
@@ -843,7 +817,7 @@ void NEDGenerator::doIdent(IdentNode *node, const char *indent, bool islast, con
 {
     if (strnotnull(node->getModule())) {
         out << node->getModule();
-        printVector(node, "module-index", indent);
+        printOptVector(node, "module-index", indent);
         out << ".";
     }
 
