@@ -98,7 +98,7 @@ class NEDParser
 
     // INTERNAL: error and debug handling, called from grammar file
     void error(const char *msg, int line);
-    void dbg(YYLTYPE lc, const char *what);
+    //void dbg(YYLTYPE lc, const char *what);
 };
 
 #endif
