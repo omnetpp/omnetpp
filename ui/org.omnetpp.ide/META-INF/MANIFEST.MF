@@ -15,5 +15,6 @@ Require-Bundle: org.eclipse.ui,
  org.omnetpp.ned.editor.graph,
  org.omnetpp.ned.editor.text,
  org.omnetpp.scave,
- org.omnetpp.scave.engine
+ org.omnetpp.scave.engine,
+ org.omnetpp.ned2.model
 Eclipse-LazyStart: true

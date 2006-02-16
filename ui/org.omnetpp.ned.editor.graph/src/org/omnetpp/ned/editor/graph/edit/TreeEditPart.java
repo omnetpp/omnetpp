@@ -17,7 +17,6 @@ import java.util.List;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;

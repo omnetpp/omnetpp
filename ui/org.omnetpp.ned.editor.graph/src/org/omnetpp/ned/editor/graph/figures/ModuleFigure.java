@@ -10,7 +10,16 @@
  *******************************************************************************/
 package org.omnetpp.ned.editor.graph.figures;
 
-import org.eclipse.draw2d.*;
+import org.eclipse.draw2d.ColorConstants;
+import org.eclipse.draw2d.FreeformLayer;
+import org.eclipse.draw2d.FreeformLayeredPane;
+import org.eclipse.draw2d.FreeformViewport;
+import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.Layer;
+import org.eclipse.draw2d.LayeredPane;
+import org.eclipse.draw2d.ScrollPane;
+import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -109,7 +118,6 @@ public class ModuleFigure extends NedFigure implements LayerSupport, HandleBound
     }
 
     protected void layoutConnectionAnchors() {
-        int x;
         for (int i = 0; i < 4; i++) {
             getOutputConnectionAnchor(i + 4).setPinnedLocationX(0.125 + i / 4.0);
             getInputConnectionAnchor(i).setPinnedLocationX(0.125 + i / 4.0);

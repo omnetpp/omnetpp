@@ -34,6 +34,9 @@ import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.model.CompoundModule;
 import org.omnetpp.ned.editor.graph.model.NedModelFactory;
 import org.omnetpp.ned.editor.graph.model.Submodule;
+import org.omnetpp.ned2.model.ModelUtil;
+import org.omnetpp.ned2.model.swig.NEDElement;
+import org.omnetpp.ned2.model.swig.NEDParser;
 
 public class ModuleEditorPlugin extends AbstractUIPlugin {
 
@@ -47,11 +50,11 @@ public class ModuleEditorPlugin extends AbstractUIPlugin {
             singleton = this;
         }
         // XXX remove below. only for testing
-//        NEDParser np = new NEDParser();
-//        np.setParseExpressions(false);
-//        np.parseFile("c:/temp/tictoc.ned");
-//        NEDElement treeRoot = np.getTree();
-//        System.out.println(treeRoot.getTagName());
+        NEDParser np = new NEDParser();
+        np.setParseExpressions(false);
+        np.parseFile("c:/temp/example.ned");
+        NEDElement treeRoot = np.getTree();
+        System.out.println(ModelUtil.printSwigElement(treeRoot));
 //        NEDGenerator ng = new NEDGenerator();
 //        ng.setNewSyntax(false);
 //        System.out.println(ng.generate(treeRoot, ""));

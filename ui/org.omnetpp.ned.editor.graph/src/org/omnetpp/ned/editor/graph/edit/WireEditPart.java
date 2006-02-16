@@ -18,18 +18,14 @@ import java.util.List;
 import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.ManhattanConnectionRouter;
-import org.eclipse.draw2d.PolygonDecoration;
 import org.eclipse.draw2d.PolylineConnection;
 import org.eclipse.draw2d.RelativeBendpoint;
-import org.eclipse.gef.AccessibleEditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
-import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.omnetpp.ned.editor.graph.edit.policies.WireBendpointEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.WireEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.WireEndpointEditPolicy;
 import org.omnetpp.ned.editor.graph.figures.FigureFactory;
-import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.model.Wire;
 import org.omnetpp.ned.editor.graph.model.WireBendpoint;
 
@@ -38,8 +34,6 @@ import org.omnetpp.ned.editor.graph.model.WireBendpoint;
  * 
  */
 public class WireEditPart extends AbstractConnectionEditPart implements PropertyChangeListener {
-
-    AccessibleEditPart acc;
 
     public void activate() {
         super.activate();
@@ -72,7 +66,7 @@ public class WireEditPart extends AbstractConnectionEditPart implements Property
      * @return The created Figure.
      */
     protected IFigure createFigure() {
-    	Connection connx = FigureFactory.createNewBendableWire(getWire());
+    	Connection connx = FigureFactory.createNewWire(getWire());
     	return connx;    }
 
     public void deactivate() {
@@ -83,15 +77,6 @@ public class WireEditPart extends AbstractConnectionEditPart implements Property
     public void deactivateFigure() {
         getFigure().removePropertyChangeListener(Connection.PROPERTY_CONNECTION_ROUTER, this);
         super.deactivateFigure();
-    }
-
-    public AccessibleEditPart getAccessibleEditPart() {
-        if (acc == null) acc = new AccessibleGraphicalEditPart() {
-            public void getName(AccessibleEvent e) {
-                e.result = MessageFactory.Wire_LabelText;
-            }
-        };
-        return acc;
     }
 
     /**

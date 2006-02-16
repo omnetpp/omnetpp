@@ -8,14 +8,6 @@ import org.omnetpp.ned.editor.graph.model.Wire;
 
 public class FigureFactory {
 
-	public static PolylineConnection createNewBendableWire(Wire wire) {
-		PolylineConnection conn = new PolylineConnection();
-		conn.addRoutingListener(RoutingAnimator.getDefault());
-		// conn.setSourceDecoration(new PolygonDecoration());
-		// conn.setTargetDecoration(new PolylineDecoration());
-		return conn;
-	}
-
 public static PolylineConnection createNewWire(Wire wire) {
 
 		PolylineConnection conn = new PolylineConnection();
@@ -40,7 +32,9 @@ public static PolylineConnection createNewWire(Wire wire) {
 		}
 		conn.setTargetDecoration(arrow);
 		return conn;
-	}	public static IFigure createModule() {
+	}	
+
+    public static IFigure createModule() {
 		ModuleFigure f = new ModuleFigure();
 		return f;
 	}

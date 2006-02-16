@@ -10,7 +10,10 @@
  *******************************************************************************/
 package org.omnetpp.ned.editor.graph.edit.policies;
 
-import org.eclipse.draw2d.*;
+import org.eclipse.draw2d.Connection;
+import org.eclipse.draw2d.ConnectionAnchor;
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.PolylineConnection;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.Request;
@@ -18,7 +21,6 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
 import org.omnetpp.ned.editor.graph.edit.BaseEditPart;
-import org.omnetpp.ned.editor.graph.edit.WireEditPart;
 import org.omnetpp.ned.editor.graph.figures.FigureFactory;
 import org.omnetpp.ned.editor.graph.figures.NedFigure;
 import org.omnetpp.ned.editor.graph.model.NedNode;

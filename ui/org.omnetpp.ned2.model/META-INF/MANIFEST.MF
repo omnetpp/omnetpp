@@ -4,13 +4,8 @@ Bundle-Name: %pluginName
 Bundle-SymbolicName: org.omnetpp.ned2.model; singleton:=true
 Bundle-Version: 4.0.0
 Bundle-ClassPath: .
-Bundle-Activator: org.omnetpp.ned2.model.ModelPlugin$Implementation
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Export-Package: org.omnetpp.ned2.model,
- org.omnetpp.ned2.model.meta,
- org.omnetpp.ned2.model.util
-Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.emf.ecore;visibility:=reexport,
- org.eclipse.emf.ecore.xmi;visibility:=reexport
+ org.omnetpp.ned2.model.swig
 Eclipse-LazyStart: true

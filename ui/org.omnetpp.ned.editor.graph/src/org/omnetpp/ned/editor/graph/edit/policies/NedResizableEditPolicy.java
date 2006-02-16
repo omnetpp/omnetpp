@@ -20,10 +20,8 @@ import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.omnetpp.ned.editor.graph.figures.ModuleFeedbackFigure;
-import org.omnetpp.ned.editor.graph.figures.SimpleModuleFigure;
 import org.omnetpp.ned.editor.graph.misc.ColorFactory;
 import org.omnetpp.ned.editor.graph.model.CompoundModule;
-import org.omnetpp.ned.editor.graph.model.Submodule;
 
 /**
  * 

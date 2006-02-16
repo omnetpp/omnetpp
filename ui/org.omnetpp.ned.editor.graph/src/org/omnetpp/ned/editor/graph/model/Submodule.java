@@ -11,7 +11,6 @@
 package org.omnetpp.ned.editor.graph.model;
 
 import org.eclipse.draw2d.geometry.Dimension;
-import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 
 /**
  * Model object that represent a submodule that cannot contain any other
