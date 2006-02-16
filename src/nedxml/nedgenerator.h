@@ -80,6 +80,7 @@ class NEDGenerator
 
     /** @name Utilities */
     //@{
+    void printInheritance(NEDElement *node, const char *indent);
     bool hasExpression(NEDElement *node, const char *attr);
     void printExpression(NEDElement *node, const char *attr, const char *indent);
     void printOptVector(NEDElement *node, const char *attr, const char *indent);

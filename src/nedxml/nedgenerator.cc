@@ -101,6 +101,20 @@ void NEDGenerator::generateChildrenWithType(NEDElement *node, int tagcode, const
 
 //---------------------------------------------------------------------------
 
+void NEDGenerator::printInheritance(NEDElement *node, const char *indent)
+{
+    if (node->getFirstChildWithTag(NED_EXTENDS))
+    {
+        out << " extends";
+        generateChildrenWithType(node, NED_EXTENDS, increaseIndent(indent), ",");
+    }
+    if (node->getFirstChildWithTag(NED_INTERFACE_NAME))
+    {
+        out << " like";
+        generateChildrenWithType(node, NED_INTERFACE_NAME, increaseIndent(indent), ",");
+    }
+}
+
 bool NEDGenerator::hasExpression(NEDElement *node, const char *attr)
 {
     if (strnotnull(node->getAttribute(attr)))
@@ -207,22 +221,24 @@ void NEDGenerator::doPropertyDecl(PropertyDeclNode *node, const char *indent, bo
     out << ";\n\n";
 }
 
-void NEDGenerator::doExtends(ExtendsNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doExtends(ExtendsNode *node, const char *indent, bool islast, const char *sep)
 {
-    out << "extends " << node->getName() << " ";
+    out << " " << node->getName();
+    if (!islast && sep)
+        out << sep;
 }
 
-void NEDGenerator::doInterfaceName(InterfaceNameNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doInterfaceName(InterfaceNameNode *node, const char *indent, bool islast, const char *sep)
 {
-    out << "like " << node->getName() << " ";
+    out << " " << node->getName();
+    if (!islast && sep)
+        out << sep;
 }
 
 void NEDGenerator::doSimpleModule(SimpleModuleNode *node, const char *indent, bool islast, const char *)
 {
-    out << indent << "simple " << node->getName() << " ";
-    generateChildrenWithType(node, NED_EXTENDS, increaseIndent(indent));
-    generateChildrenWithType(node, NED_INTERFACE_NAME, increaseIndent(indent));
-
+    out << indent << "simple " << node->getName();
+    printInheritance(node, indent);
     out << "\n" << indent << "{\n";
 
     generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
@@ -233,9 +249,8 @@ void NEDGenerator::doSimpleModule(SimpleModuleNode *node, const char *indent, bo
 
 void NEDGenerator::doModuleInterface(ModuleInterfaceNode *node, const char *indent, bool islast, const char *)
 {
-    out << indent << "interface " << node->getName() << " ";
-    generateChildrenWithType(node, NED_EXTENDS, increaseIndent(indent));
-
+    out << indent << "interface " << node->getName();
+    printInheritance(node, indent);
     out << "\n" << indent << "{\n";
 
     generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
@@ -246,10 +261,8 @@ void NEDGenerator::doModuleInterface(ModuleInterfaceNode *node, const char *inde
 
 void NEDGenerator::doCompoundModule(CompoundModuleNode *node, const char *indent, bool islast, const char *)
 {
-    out << indent << (node->getIsNetwork() ? "network" : "module") << " " << node->getName() << " ";
-    generateChildrenWithType(node, NED_EXTENDS, increaseIndent(indent));
-    generateChildrenWithType(node, NED_INTERFACE_NAME, increaseIndent(indent));
-
+    out << indent << (node->getIsNetwork() ? "network" : "module") << " " << node->getName();
+    printInheritance(node, indent);
     out << "\n" << indent << "{\n";
 
     generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
@@ -263,9 +276,8 @@ void NEDGenerator::doCompoundModule(CompoundModuleNode *node, const char *indent
 
 void NEDGenerator::doChannelInterface(ChannelInterfaceNode *node, const char *indent, bool islast, const char *)
 {
-    out << indent << "channelinterface " << node->getName() << " ";
-    generateChildrenWithType(node, NED_EXTENDS, increaseIndent(indent));
-
+    out << indent << "channelinterface " << node->getName();
+    printInheritance(node, indent);
     out << "\n" << indent << "{\n";
 
     generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
@@ -278,10 +290,8 @@ void NEDGenerator::doChannel(ChannelNode *node, const char *indent, bool islast,
     out << indent << "channel ";
     if (node->getIsWithcppclass())
         out << "withcppclass ";
-    out << node->getName() << " ";
-    generateChildrenWithType(node, NED_EXTENDS, increaseIndent(indent));
-    generateChildrenWithType(node, NED_INTERFACE_NAME, increaseIndent(indent));
-
+    out << node->getName();
+    printInheritance(node, indent);
     out << "\n" << indent << "{\n";
 
     generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
