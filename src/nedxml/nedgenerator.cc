@@ -374,7 +374,12 @@ void NEDGenerator::doProperty(PropertyNode *node, const char *indent, bool islas
 void NEDGenerator::doPropertyKey(PropertyKeyNode *node, const char *indent, bool islast, const char *sep)
 {
     out << node->getKey();
-    generateChildren(node, indent);
+    if (node->getFirstChildWithTag(NED_LITERAL))
+    {
+        if (strnotnull(node->getKey()))
+            out << "=";
+        generateChildrenWithType(node, NED_LITERAL, increaseIndent(indent),",");
+    }
     if (!islast && sep)
         out << sep;
 }
