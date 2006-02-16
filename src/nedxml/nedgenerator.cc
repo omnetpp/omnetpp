@@ -553,6 +553,9 @@ void NEDGenerator::doConnection(ConnectionNode *node, const char *indent, bool i
         printGate(node, node->getSrcModule(), "src-module-index", node->getSrcGate(), "src-gate-index", node->getSrcGatePlusplus(), indent);
     }
 
+    if (node->getFirstChildWithTag(NED_WHERE))
+        generateChildrenWithType(node, NED_WHERE, indent);
+
     out << ";\n";
 }
 
@@ -587,16 +590,31 @@ void NEDGenerator::doChannelSpec(ChannelSpecNode *node, const char *indent, bool
 
 void NEDGenerator::doConnectionGroup(ConnectionGroupNode *node, const char *indent, bool islast, const char *)
 {
-    out << indent << "{\n";
-    generateChildren(node, increaseIndent(indent));
-    out << indent << "}\n";
-    generateChildrenWithType(node, NED_WHERE, increaseIndent(indent));
+    WhereNode *where = (WhereNode *)node->getFirstChildWithTag(NED_WHERE);
+
+    out << indent;
+    if (where && where->getAtFront())
+    {
+        generateChildrenWithType(node, NED_WHERE, increaseIndent(indent));
+        out << " ";
+    }
+
+    out << "{\n";
+    generateChildrenWithType(node, NED_CONNECTION, increaseIndent(indent));
+    out << indent << "}";
+
+    if (where && !where->getAtFront())
+    {
+        out << " ";
+        generateChildrenWithType(node, NED_WHERE, increaseIndent(indent));
+    }
+    out << ";\n";
 }
 
 void NEDGenerator::doWhere(WhereNode *node, const char *indent, bool islast, const char *)
 {
     out << "where ";
-    generateChildren(node, indent);
+    generateChildren(node, indent, ",");
 }
 
 void NEDGenerator::doLoop(LoopNode *node, const char *indent, bool islast, const char *)
