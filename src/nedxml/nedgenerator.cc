@@ -431,13 +431,17 @@ void NEDGenerator::doSubmodule(SubmoduleNode *node, const char *indent, bool isl
     printOptVector(node, "vector-size",indent);
     out << ": ";
 
-    if (strnotnull(node->getLikeParam())) {
-        out << node->getLikeParam();
-        out << " like " << node->getType();
+    if (strnotnull(node->getType()))
+    {
+        out << node->getType();
     }
     else
     {
-        out << node->getType();
+        out << "<" << node->getLikeParam() << ">";
+        if (strnotnull(node->getLikeType()))
+            out << " like " << node->getLikeType();
+        else
+            out << " like *";
     }
 
     if (!node->getFirstChildWithTag(NED_PARAMETERS) && !node->getFirstChildWithTag(NED_GATES))
