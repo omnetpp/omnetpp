@@ -96,7 +96,7 @@
 <!ELEMENT gate (whitespace*, expression?, property*, condition?)>
 <!ATTLIST gate
      name               NMTOKEN   #REQUIRED
-     type               (input|output|inout) #REQUIRED
+     type               (input|output|inout) #IMPLIED
      is-vector          (true|false) "false"
      vector-size        CDATA     #IMPLIED>
 
@@ -110,6 +110,7 @@
      name               NMTOKEN   #REQUIRED
      type               NMTOKEN   #IMPLIED
      like-type          NMTOKEN   #IMPLIED
+     like-any           (true|false) "false" <!-- set if "like *" -->
      like-param         CDATA     #IMPLIED
      vector-size        CDATA     #IMPLIED>
 
@@ -137,6 +138,7 @@
 <!ATTLIST channel-spec
      type               NMTOKEN   #IMPLIED
      like-type          NMTOKEN   #IMPLIED
+     like-any           (true|false) "false" <!-- set if "like *" -->
      like-param         CDATA     #IMPLIED>
 
 <!ELEMENT connection-group (whitespace*, connection*, where?)>
