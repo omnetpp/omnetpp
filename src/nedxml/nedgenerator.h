@@ -72,11 +72,14 @@ class NEDGenerator
     /** Dispatch to various doXXX() methods according to node type */
     void generateNedItem(NEDElement *node, const char *indent, bool islast, const char *arg=NULL);;
 
-    /** Invoke generateNedItem() with all children */
+    /** Invoke generateNedItem() on all children */
     void generateChildren(NEDElement *node, const char *indent, const char *arg=NULL);
 
-    /** Invoke generateNedItem() with all children of the given tagcode */
+    /** Invoke generateNedItem() on all children of the given tagcode */
     void generateChildrenWithType(NEDElement *node, int tagcode, const char *indent, const char *arg=0);
+
+    /** Invoke generateNedItem() on children of the given tagcodes (NED_NULL-terminated array) */
+    void generateChildrenWithTypes(NEDElement *node, int tagcodes[], const char *indent, const char *arg=0);
 
     /** @name Utilities */
     //@{

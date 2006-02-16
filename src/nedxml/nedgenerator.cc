@@ -77,9 +77,7 @@ inline bool strnotnull(const char *s)
 void NEDGenerator::generateChildren(NEDElement *node, const char *indent, const char *arg)
 {
     for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
-    {
         generateNedItem(child, indent, child==node->getLastChild(), arg);
-    }
 }
 
 void NEDGenerator::generateChildrenWithType(NEDElement *node, int tagcode, const char *indent, const char *arg)
@@ -87,19 +85,35 @@ void NEDGenerator::generateChildrenWithType(NEDElement *node, int tagcode, const
     // find last
     NEDElement *lastWithTag = NULL;
     for (NEDElement *child1=node->getFirstChild(); child1; child1=child1->getNextSibling())
-    {
         if (child1->getTagCode()==tagcode)
              lastWithTag = child1;
-    }
 
     // now the recursive call
     for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
-    {
         if (child->getTagCode()==tagcode)
-        {
             generateNedItem(child, indent, child==lastWithTag, arg);
-        }
-    }
+}
+
+static int isInVector(int a, int v[])
+{
+    for (int i=0; v[i]; i++)  // v[] is zero-terminated
+        if (v[i]==a)
+            return true;
+    return false;
+}
+
+void NEDGenerator::generateChildrenWithTypes(NEDElement *node, int tagcodes[], const char *indent, const char *arg)
+{
+    // find last
+    NEDElement *lastWithTag = NULL;
+    for (NEDElement *child1=node->getFirstChild(); child1; child1=child1->getNextSibling())
+        if (isInVector(child1->getTagCode(), tagcodes))
+             lastWithTag = child1;
+
+    // now the recursive call
+    for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
+        if (isInVector(child->getTagCode(), tagcodes))
+            generateNedItem(child, indent, child==lastWithTag, arg);
 }
 
 //---------------------------------------------------------------------------
@@ -111,6 +125,7 @@ void NEDGenerator::printInheritance(NEDElement *node, const char *indent)
         out << " extends";
         generateChildrenWithType(node, NED_EXTENDS, increaseIndent(indent), ",");
     }
+
     if (node->getFirstChildWithTag(NED_INTERFACE_NAME))
     {
         out << " like";
@@ -323,18 +338,14 @@ void NEDGenerator::doParameters(ParametersNode *node, const char *indent, bool i
 
 void NEDGenerator::doParamGroup(ParamGroupNode *node, const char *indent, bool islast, const char *)
 {
-    if (indent)
-        out << indent << "{\n";
-    else
-        out << " {";  // inline params, used for channel-spec in connections
+    out << indent;
+    generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));
+    out << "{\n";
 
-    const char *subindent = indent ? increaseIndent(indent) : DEFAULTINDENT;
-    generateChildren(node, subindent);
+    int tags[] = {NED_PROPERTY, NED_PARAM, NED_PATTERN, NED_NULL};
+    generateChildrenWithTypes(node, tags, increaseIndent(indent));
 
-    if (indent)
-        out << indent << "}\n";
-    else
-        out << "}";
+    out << indent << "}\n";
 }
 
 void NEDGenerator::doParam(ParamNode *node, const char *indent, bool islast, const char *)
@@ -429,8 +440,12 @@ void NEDGenerator::doGates(GatesNode *node, const char *indent, bool islast, con
 
 void NEDGenerator::doGateGroup(GateGroupNode *node, const char *indent, bool islast, const char *)
 {
-    out << indent << "{\n";
-    generateChildren(node, increaseIndent(indent));
+    out << indent;
+    generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));
+    out << "{\n";
+
+    generateChildrenWithType(node, NED_GATE, increaseIndent(indent));
+
     out << indent << "}\n";
 }
 
