@@ -217,7 +217,12 @@ void NEDGenerator::doImport(ImportNode *node, const char *indent, bool islast, c
 void NEDGenerator::doPropertyDecl(PropertyDeclNode *node, const char *indent, bool islast, const char *)
 {
     out << indent << "property @" << node->getName();
-    generateChildren(node, indent);
+    if (node->getFirstChildWithTag(NED_PROPERTY_KEY))
+    {
+        out << "(";
+        generateChildrenWithType(node, NED_PROPERTY_KEY, increaseIndent(indent), ",");
+        out << ")";
+    }
     out << ";\n\n";
 }
 

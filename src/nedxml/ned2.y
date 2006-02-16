@@ -258,6 +258,7 @@ propertydecl_key
         : NAME
                 {
                   ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.propertydecl);
+                  ps.propkey->setKey(toString(@1));
                 }
         ;
 
