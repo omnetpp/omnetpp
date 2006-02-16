@@ -633,18 +633,23 @@ void NEDGenerator::doWhere(WhereNode *node, const char *indent, bool islast, con
     generateChildren(node, indent, ",");
 }
 
-void NEDGenerator::doLoop(LoopNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doLoop(LoopNode *node, const char *indent, bool islast, const char *sep)
 {
     out << node->getParamName() << "=";
     printExpression(node, "from-value",indent);
     out << "..";
     printExpression(node, "to-value",indent);
+
+    if (!islast)
+        out << sep;
 }
 
-void NEDGenerator::doCondition(ConditionNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doCondition(ConditionNode *node, const char *indent, bool islast, const char *sep)
 {
     out << "if ";
     printExpression(node, "condition",indent);
+    if (!islast)
+        out << sep;
 }
 
 void NEDGenerator::printGate(NEDElement *conn, const char *modname, const char *modindexattr,
@@ -671,122 +676,6 @@ void NEDGenerator::printGate(NEDElement *conn, const char *modname, const char *
         default: INTERNAL_ERROR0(conn, "wrong subg type");
     }
 }
-
-/*XXX
-void NEDGenerator::doGate(GateNode *node, const char *indent, bool islast, const char *)
-{
-    //XXX appendBannerComment(node->getBannerComment(), indent);
-    out << indent << (node->getType()==NED_GATETYPE_INPUT ? "in: " : "out: ") << node->getName();
-    if (node->getIsVector()) {
-        out << "[]";
-    }
-    out << ";";
-    //XXX appendRightComment(node->getRightComment(), indent);
-}
-
-void NEDGenerator::doSubstparams(SubstparamsNode *node, const char *indent, bool islast, const char *)
-{
-    //XXX appendBannerComment(node->getBannerComment(), indent);
-    out << indent << "parameters";
-    printIfExpression(node, "condition",indent);
-    out << ":";
-
-    //XXX appendRightComment(node->getRightComment(), indent);
-    generateChildren(node, increaseIndent(indent));
-}
-
-void NEDGenerator::doSubstparam(SubstparamNode *node, const char *indent, bool islast, const char *)
-{
-    //XXX appendBannerComment(node->getBannerComment(), indent);
-    out << indent << node->getName() << " = ";
-    printExpression(node, "value",indent);
-    if (islast || newsyntax) {
-        out << ";";
-    } else {
-        out << ",";
-    }
-    //XXX appendRightComment(node->getRightComment(), indent);
-}
-
-void NEDGenerator::doGatesizes(GatesizesNode *node, const char *indent, bool islast, const char *)
-{
-    //XXX appendBannerComment(node->getBannerComment(), indent);
-    out << indent << "gatesizes";
-    printIfExpression(node, "condition",indent);
-    out << ":";
-
-    //XXX appendRightComment(node->getRightComment(), indent);
-    generateChildren(node, increaseIndent(indent));
-}
-
-void NEDGenerator::doGatesize(GatesizeNode *node, const char *indent, bool islast, const char *)
-{
-    //XXX appendBannerComment(node->getBannerComment(), indent);
-    out << indent << node->getName();
-    printOptVector(node, "vector-size",indent);
-    if (islast || newsyntax) {
-        out << ";";
-    } else {
-        out << ",";
-    }
-    //XXX appendRightComment(node->getRightComment(), indent);
-}
-
-void NEDGenerator::doConnections(ConnectionsNode *node, const char *indent, bool islast, const char *)
-{
-    //XXX appendBannerComment(node->getBannerComment(), indent);
-    if (!node->getCheckUnconnected()) {
-        out << indent << "connections nocheck:";
-    } else {
-        out << indent << "connections:";
-    }
-    //XXX appendRightComment(node->getRightComment(), indent);
-    generateChildren(node, increaseIndent(indent));
-}
-
-void NEDGenerator::printGate(NEDElement *conn, const char *modname, const char *modindexattr,
-                             const char *gatename, const char *gateindexattr, bool isplusplus,
-                             const char *indent)
-{
-    if (strnotnull(modname)) {
-        out << modname;
-        printOptVector(conn, modindexattr,indent);
-        out << ".";
-    }
-
-    out << gatename;
-    if (isplusplus)
-        out << "++";
-    else
-        printOptVector(conn, gateindexattr,indent);
-}
-
-void NEDGenerator::doConnattr(ConnAttrNode *node, const char *indent, bool islast, const char *arrow)
-{
-    if (!strcmp(node->getName(),"channel")) {
-        // must look like this:
-        //     <conn-attr name="channel" value="mychanneltype">
-        // or like this:
-        //     <conn-attr name="channel">
-        //         <expression target="value">
-        //             <const type="string" value="mychanneltype"/>
-        //         </expression>
-        //     </conn-attr>
-        NEDElement *expr=node->getFirstChildWithTag(NED_EXPRESSION);
-        LiteralNode *aconst = (LiteralNode *)(expr ? expr->getFirstChildWithTag(NED_LITERAL) : NULL);
-        bool exprOk = aconst && aconst->getType()==NED_CONST_STRING;
-        const char *channelname = exprOk ? aconst->getValue() : node->getValue();
-        out << " " << channelname << " ";
-    } else {
-        out << " " << node->getName() << " ";
-        printExpression(node, "value",indent);
-    }
-    appendInlineRightComment(node->getRightComment(), "");
-    if (islast) {
-        out << arrow;
-    }
-}
-*/
 
 void NEDGenerator::doExpression(ExpressionNode *node, const char *indent, bool islast, const char *)
 {
