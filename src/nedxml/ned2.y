@@ -1812,6 +1812,7 @@ void swapConnection(NEDElement *conn)
    swapAttributes(conn, "src-gate", "dest-gate");
    swapAttributes(conn, "src-gate-index", "dest-gate-index");
    swapAttributes(conn, "src-gate-plusplus", "dest-gate-plusplus");
+   swapAttributes(conn, "src-gate-subg", "dest-gate-subg");
 
    swapExpressionChildren(conn, "src-module-index", "dest-module-index");
    swapExpressionChildren(conn, "src-gate-index", "dest-gate-index");

@@ -132,7 +132,7 @@ class NEDGenerator
     void doCondition(ConditionNode *node, const char *indent, bool islast, const char *);
     void printGate(NEDElement *conn, const char *modname, const char *modindexattr,
                    const char *gatename, const char *gateindexattr, bool isplusplus,
-                   const char *indent);
+                   int gatesubg, const char *indent);
 
     // expressions
     void doExpression(ExpressionNode *node, const char *indent, bool islast, const char *);

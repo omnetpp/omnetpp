@@ -546,9 +546,9 @@ void NEDGenerator::doConnection(ConnectionNode *node, const char *indent, bool i
     // print src
     out << indent;
     if (srcfirst) {
-        printGate(node, node->getSrcModule(), "src-module-index", node->getSrcGate(), "src-gate-index", node->getSrcGatePlusplus(), indent);
+        printGate(node, node->getSrcModule(), "src-module-index", node->getSrcGate(), "src-gate-index", node->getSrcGatePlusplus(), node->getSrcGateSubg(), indent);
     } else {
-        printGate(node, node->getDestModule(), "dest-module-index", node->getDestGate(), "dest-gate-index", node->getDestGatePlusplus(), indent);
+        printGate(node, node->getDestModule(), "dest-module-index", node->getDestGate(), "dest-gate-index", node->getDestGatePlusplus(), node->getDestGateSubg(), indent);
     }
 
     // arrow
@@ -564,9 +564,9 @@ void NEDGenerator::doConnection(ConnectionNode *node, const char *indent, bool i
     // print dest
     out << " ";
     if (srcfirst) {
-        printGate(node, node->getDestModule(), "dest-module-index", node->getDestGate(), "dest-gate-index", node->getDestGatePlusplus(), indent);
+        printGate(node, node->getDestModule(), "dest-module-index", node->getDestGate(), "dest-gate-index", node->getDestGatePlusplus(), node->getDestGateSubg(), indent);
     } else {
-        printGate(node, node->getSrcModule(), "src-module-index", node->getSrcGate(), "src-gate-index", node->getSrcGatePlusplus(), indent);
+        printGate(node, node->getSrcModule(), "src-module-index", node->getSrcGate(), "src-gate-index", node->getSrcGatePlusplus(), node->getSrcGateSubg(), indent);
     }
 
     if (node->getFirstChildWithTag(NED_WHERE))
@@ -649,7 +649,7 @@ void NEDGenerator::doCondition(ConditionNode *node, const char *indent, bool isl
 
 void NEDGenerator::printGate(NEDElement *conn, const char *modname, const char *modindexattr,
                              const char *gatename, const char *gateindexattr, bool isplusplus,
-                             const char *indent)
+                             int gatesubg, const char *indent)
 {
     if (strnotnull(modname)) {
         out << modname;
@@ -662,6 +662,14 @@ void NEDGenerator::printGate(NEDElement *conn, const char *modname, const char *
         out << "++";
     else
         printOptVector(conn, gateindexattr,indent);
+
+    switch (gatesubg)
+    {
+        case NED_SUBGATE_NONE: break;
+        case NED_SUBGATE_I: out << "$i"; break;
+        case NED_SUBGATE_O: out << "$o"; break;
+        default: INTERNAL_ERROR0(conn, "wrong subg type");
+    }
 }
 
 /*XXX
