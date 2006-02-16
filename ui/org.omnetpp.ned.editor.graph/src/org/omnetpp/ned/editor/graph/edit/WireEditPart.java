@@ -15,7 +15,12 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.draw2d.*;
+import org.eclipse.draw2d.Connection;
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.ManhattanConnectionRouter;
+import org.eclipse.draw2d.PolygonDecoration;
+import org.eclipse.draw2d.PolylineConnection;
+import org.eclipse.draw2d.RelativeBendpoint;
 import org.eclipse.gef.AccessibleEditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
@@ -23,6 +28,7 @@ import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.omnetpp.ned.editor.graph.edit.policies.WireBendpointEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.WireEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.WireEndpointEditPolicy;
+import org.omnetpp.ned.editor.graph.figures.FigureFactory;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.model.Wire;
 import org.omnetpp.ned.editor.graph.model.WireBendpoint;
@@ -60,32 +66,14 @@ public class WireEditPart extends AbstractConnectionEditPart implements Property
         installEditPolicy(EditPolicy.CONNECTION_ROLE, new WireEditPolicy());
     }
 
-    public static PolylineConnection createNewWire(Wire wire) {
-
-        PolylineConnection conn = new PolylineConnection();
-        PolygonDecoration arrow;
-
-        if (wire == null)
-            arrow = null;
-        else {
-            arrow = new PolygonDecoration();
-            arrow.setTemplate(PolygonDecoration.TRIANGLE_TIP);
-            arrow.setScale(8, 4);
-        }
-        conn.setTargetDecoration(arrow);
-        return conn;
-    }
-
     /**
      * Returns a newly created Figure to represent the connection.
      * 
      * @return The created Figure.
      */
     protected IFigure createFigure() {
-        if (getWire() == null) return null;
-        Connection connx = createNewWire(getWire());
-        return connx;
-    }
+    	Connection connx = FigureFactory.createNewBendableWire(getWire());
+    	return connx;    }
 
     public void deactivate() {
         getWire().removePropertyChangeListener(this);

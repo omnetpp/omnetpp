@@ -10,15 +10,13 @@
  *******************************************************************************/
 package org.omnetpp.ned.editor.graph.misc;
 
+import org.eclipse.draw2d.PrintFigureOperation;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
-
-import org.eclipse.jface.dialogs.Dialog;
-
-import org.eclipse.draw2d.PrintFigureOperation;
 
 /**
  * @author Eric Bordeau
@@ -37,7 +35,7 @@ public class PrintModeDialog extends Dialog {
     }
 
     protected void configureShell(Shell newShell) {
-        newShell.setText("Select Print Mode");
+        newShell.setText(MessageFactory.PrintDialog_Title);
         super.configureShell(newShell);
     }
 
@@ -45,17 +43,17 @@ public class PrintModeDialog extends Dialog {
         Composite composite = (Composite) super.createDialogArea(parent);
 
         tile = new Button(composite, SWT.RADIO);
-        tile.setText("Tile");
+        tile.setText(MessageFactory.PrintDialog_Tile);
         tile.setSelection(true);
 
         fitPage = new Button(composite, SWT.RADIO);
-        fitPage.setText("Fit Page");
+        fitPage.setText(MessageFactory.PrintDialog_Page);
 
         fitWidth = new Button(composite, SWT.RADIO);
-        fitWidth.setText("Fit Width");
+        fitWidth.setText(MessageFactory.PrintDialog_Width);
 
         fitHeight = new Button(composite, SWT.RADIO);
-        fitHeight.setText("Fit Height");
+        fitHeight.setText(MessageFactory.PrintDialog_Height);
 
         return composite;
     }

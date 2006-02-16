@@ -33,6 +33,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.draw2d.DelegatingLayout;
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.FreeformLayer;
@@ -56,10 +57,10 @@ import org.eclipse.gef.RootEditPart;
 import org.eclipse.gef.SnapToGeometry;
 import org.eclipse.gef.SnapToGrid;
 import org.eclipse.gef.dnd.TemplateTransferDragSourceListener;
+import org.eclipse.gef.dnd.TemplateTransferDropTargetListener;
 import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.palette.PaletteRoot;
-import org.eclipse.gef.rulers.RulerProvider;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.actions.AlignmentAction;
 import org.eclipse.gef.ui.actions.CopyTemplateAction;
@@ -74,14 +75,12 @@ import org.eclipse.gef.ui.actions.ZoomInAction;
 import org.eclipse.gef.ui.actions.ZoomOutAction;
 import org.eclipse.gef.ui.palette.PaletteViewer;
 import org.eclipse.gef.ui.palette.PaletteViewerProvider;
-import org.eclipse.gef.ui.palette.FlyoutPaletteComposite.FlyoutPreferences;
 import org.eclipse.gef.ui.parts.ContentOutlinePage;
 import org.eclipse.gef.ui.parts.GraphicalEditorWithFlyoutPalette;
 import org.eclipse.gef.ui.parts.GraphicalViewerKeyHandler;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.gef.ui.parts.TreeViewer;
 import org.eclipse.gef.ui.rulers.RulerComposite;
-import org.eclipse.gef.ui.stackview.CommandStackInspectorPage;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
@@ -89,6 +88,8 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.util.SafeRunnable;
+import org.eclipse.jface.util.TransferDropTargetListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.events.DisposeEvent;
@@ -116,7 +117,6 @@ import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.omnetpp.ned.editor.graph.actions.IncrementDecrementAction;
 import org.omnetpp.ned.editor.graph.actions.ModulePasteTemplateAction;
-import org.omnetpp.ned.editor.graph.dnd.ModuleTemplateTransferDropTargetListener;
 import org.omnetpp.ned.editor.graph.dnd.TextTransferDropTargetListener;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
 import org.omnetpp.ned.editor.graph.edit.TreePartFactory;
@@ -124,7 +124,6 @@ import org.omnetpp.ned.editor.graph.figures.properties.LayerSupport;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.misc.ModulePaletteCustomizer;
-import org.omnetpp.ned.editor.graph.model.Container;
 import org.omnetpp.ned.editor.graph.model.NedFile;
 
 public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
@@ -177,7 +176,8 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
             getSite().registerContextMenu("org.eclipse.gef.examples.logic.outline.contextmenu", //$NON-NLS-1$
                     provider, getSite().getSelectionProvider());
             getViewer().setKeyHandler(getCommonKeyHandler());
-            getViewer().addDropTargetListener(new ModuleTemplateTransferDropTargetListener(getViewer()));
+            getViewer().addDropTargetListener((TransferDropTargetListener)
+        			new TemplateTransferDropTargetListener(getViewer()));
             IToolBarManager tbm = getSite().getActionBars().getToolBarManager();
             showOutlineAction = new Action() {
                 public void run() {
@@ -391,8 +391,6 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
 
     private NedFile nedFileDiagram = new NedFile();
 
-    private boolean savePreviouslyNeeded = false;
-
     private ResourceTracker resourceListener = new ResourceTracker();
 
     private RulerComposite rulerComp;
@@ -415,16 +413,8 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
     }
 
     public void commandStackChanged(EventObject event) {
-        if (isDirty()) {
-            if (!savePreviouslyNeeded()) {
-                setSavePreviouslyNeeded(true);
-                firePropertyChange(IEditorPart.PROP_DIRTY);
-            }
-        } else {
-            setSavePreviouslyNeeded(false);
-            firePropertyChange(IEditorPart.PROP_DIRTY);
-        }
-        super.commandStackChanged(event);
+    	firePropertyChange(IEditorPart.PROP_DIRTY);
+    	super.commandStackChanged(event);
     }
 
     protected void configureGraphicalViewer() {
@@ -487,7 +477,7 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
         getGraphicalControl().addListener(SWT.Deactivate, listener);
     }
 
-    protected void createOutputStream(OutputStream os) throws IOException {
+    protected void writeToOutputStream(OutputStream os) throws IOException {
         ObjectOutputStream out = new ObjectOutputStream(os);
         out.writeObject(getDiagram());
         out.close();
@@ -536,21 +526,20 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
         super.dispose();
     }
 
-    public void doSave(IProgressMonitor progressMonitor) {
-        try {
-            editorSaving = true;
-            saveProperties();
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            createOutputStream(out);
-            IFile file = ((IFileEditorInput) getEditorInput()).getFile();
-            file.setContents(new ByteArrayInputStream(out.toByteArray()), true, false, progressMonitor);
-            out.close();
-            getCommandStack().markSaveLocation();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            editorSaving = false;
-        }
+    public void doSave(final IProgressMonitor progressMonitor) {
+    	editorSaving = true;
+    	SafeRunner.run(new SafeRunnable() {
+    		public void run() throws Exception {
+    			saveProperties();
+    			ByteArrayOutputStream out = new ByteArrayOutputStream();
+    			writeToOutputStream(out);
+    			IFile file = ((IFileEditorInput)getEditorInput()).getFile();
+    			file.setContents(new ByteArrayInputStream(out.toByteArray()), 
+    							true, false, progressMonitor);
+    			getCommandStack().markSaveLocation();
+    		}
+    	});
+    	editorSaving = false;
     }
 
     public void doSaveAs() {
@@ -558,7 +547,6 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
     }
 
     public Object getAdapter(Class type) {
-        if (type == CommandStackInspectorPage.class) return new CommandStackInspectorPage(getCommandStack());
         if (type == IContentOutlinePage.class) {
             outlinePage = new OutlinePage(new TreeViewer());
             return outlinePage;
@@ -589,33 +577,6 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
         return nedFileDiagram;
     }
 
-    protected FlyoutPreferences getPalettePreferences() {
-        return new FlyoutPreferences() {
-            public int getDockLocation() {
-                return ModuleEditorPlugin.getDefault().getPreferenceStore().getInt(PALETTE_DOCK_LOCATION);
-            }
-
-            public int getPaletteState() {
-                return ModuleEditorPlugin.getDefault().getPreferenceStore().getInt(PALETTE_STATE);
-            }
-
-            public int getPaletteWidth() {
-                return ModuleEditorPlugin.getDefault().getPreferenceStore().getInt(PALETTE_SIZE);
-            }
-
-            public void setDockLocation(int location) {
-                ModuleEditorPlugin.getDefault().getPreferenceStore().setValue(PALETTE_DOCK_LOCATION, location);
-            }
-
-            public void setPaletteState(int state) {
-                ModuleEditorPlugin.getDefault().getPreferenceStore().setValue(PALETTE_STATE, state);
-            }
-
-            public void setPaletteWidth(int width) {
-                ModuleEditorPlugin.getDefault().getPreferenceStore().setValue(PALETTE_SIZE, width);
-            }
-        };
-    }
 
     protected PaletteRoot getPaletteRoot() {
         if (root == null) {
@@ -640,10 +601,10 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
         super.initializeGraphicalViewer();
         getGraphicalViewer().setContents(getDiagram());
 
-        getGraphicalViewer().addDropTargetListener(
-                new ModuleTemplateTransferDropTargetListener(getGraphicalViewer()));
-        getGraphicalViewer().addDropTargetListener(
-                new TextTransferDropTargetListener(getGraphicalViewer(), TextTransfer.getInstance()));
+        getGraphicalViewer().addDropTargetListener((TransferDropTargetListener)
+    			new TemplateTransferDropTargetListener(getGraphicalViewer()));
+        getGraphicalViewer().addDropTargetListener((TransferDropTargetListener)
+        		new TextTransferDropTargetListener(getGraphicalViewer(), TextTransfer.getInstance()));
     }
 
     protected void createActions() {
@@ -755,7 +716,7 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
         ZoomManager manager = (ZoomManager) getGraphicalViewer().getProperty(ZoomManager.class.toString());
         if (manager != null) manager.setZoom(getDiagram().getZoom());
         // Scroll-wheel Zoom
-        getGraphicalViewer().setProperty(MouseWheelHandler.KeyGenerator.getKey(SWT.CTRL),
+        getGraphicalViewer().setProperty(MouseWheelHandler.KeyGenerator.getKey(SWT.MOD1),
                 MouseWheelZoomHandler.SINGLETON);
 
     }
@@ -777,7 +738,7 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
                     saveProperties();
                     try {
                         ByteArrayOutputStream out = new ByteArrayOutputStream();
-                        createOutputStream(out);
+                        writeToOutputStream(out);
                         file.create(new ByteArrayInputStream(out.toByteArray()), true, monitor);
                         out.close();
                     } catch (Exception e) {
@@ -801,10 +762,6 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
         return true;
     }
 
-    private boolean savePreviouslyNeeded() {
-        return savePreviouslyNeeded;
-    }
-
     protected void saveProperties() {
         getDiagram()
                 .setGridEnabled(
@@ -817,7 +774,7 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
         if (manager != null) getDiagram().setZoom(manager.getZoom());
     }
 
-    public void setInput(IEditorInput input) {
+    protected void setInput(IEditorInput input) {
         superSetInput(input);
 
         IFile file = ((IFileEditorInput) input).getFile();
@@ -844,10 +801,6 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
 
     public void setLogicDiagram(NedFile diagram) {
         nedFileDiagram = diagram;
-    }
-
-    private void setSavePreviouslyNeeded(boolean value) {
-        savePreviouslyNeeded = value;
     }
 
     protected void superSetInput(IEditorInput input) {

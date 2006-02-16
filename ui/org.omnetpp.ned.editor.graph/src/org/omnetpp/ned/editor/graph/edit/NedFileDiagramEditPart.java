@@ -14,6 +14,7 @@ import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.draw2d.Animation;
 import org.eclipse.draw2d.AutomaticRouter;
 import org.eclipse.draw2d.BendpointConnectionRouter;
 import org.eclipse.draw2d.ConnectionAnchor;
@@ -48,7 +49,6 @@ import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.omnetpp.ned.editor.graph.edit.policies.NedLayoutEditPolicy;
 import org.omnetpp.ned.editor.graph.misc.FreeformDesktopLayout;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.Container;
 import org.omnetpp.ned.editor.graph.model.NedFile;
 
 /**
@@ -109,7 +109,7 @@ public class NedFileDiagramEditPart extends ContainerEditPart implements LayerCo
             if (val != null && val.booleanValue()) snapStrategies.add(new SnapToGrid(this));
 
             if (snapStrategies.size() == 0) return null;
-            if (snapStrategies.size() == 1) return (SnapToHelper) snapStrategies.get(0);
+            if (snapStrategies.size() == 1) return snapStrategies.get(0);
 
             SnapToHelper ss[] = new SnapToHelper[snapStrategies.size()];
             for (int i = 0; i < snapStrategies.size(); i++)
@@ -169,17 +169,19 @@ public class NedFileDiagramEditPart extends ContainerEditPart implements LayerCo
     }
 
     protected void refreshVisuals() {
-        ConnectionLayer cLayer = (ConnectionLayer) getLayer(CONNECTION_LAYER);
-        cLayer.setAntialias(SWT.ON);
+    	Animation.markBegin();
+    	ConnectionLayer cLayer = (ConnectionLayer) getLayer(CONNECTION_LAYER);
+    	cLayer.setAntialias(SWT.ON);
 
-        if (((NedFile)getModel()).getConnectionRouter().equals(NedFile.ROUTER_MANUAL)) {
-            AutomaticRouter router = new FanRouter();
-            router.setNextRouter(new BendpointConnectionRouter());
-            cLayer.setConnectionRouter(router);
-        } else if (((NedFile)getModel()).getConnectionRouter().equals(NedFile.ROUTER_MANHATTAN))
-            cLayer.setConnectionRouter(new ManhattanConnectionRouter());
-        else
-            cLayer.setConnectionRouter(new ShortestPathConnectionRouter(getFigure()));
+    	if (((NedFile)getModel()).getConnectionRouter().equals(NedFile.ROUTER_MANUAL)) {
+    		AutomaticRouter router = new FanRouter();
+    		router.setNextRouter(new BendpointConnectionRouter());
+    		cLayer.setConnectionRouter(router);
+    	} else if (((NedFile)getModel()).getConnectionRouter().equals(NedFile.ROUTER_MANHATTAN))
+    		cLayer.setConnectionRouter(new ManhattanConnectionRouter());
+    	else
+    		cLayer.setConnectionRouter(new ShortestPathConnectionRouter(getFigure()));
+    	Animation.run(400);
     }
 
 }

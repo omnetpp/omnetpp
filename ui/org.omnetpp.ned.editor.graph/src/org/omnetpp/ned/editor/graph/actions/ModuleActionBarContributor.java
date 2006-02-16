@@ -44,7 +44,6 @@ public class ModuleActionBarContributor extends org.eclipse.gef.ui.actions.Actio
     protected void buildActions() {
         addRetargetAction(new UndoRetargetAction());
         addRetargetAction(new RedoRetargetAction());
-        addRetargetAction(new DeleteRetargetAction());
 
         addRetargetAction(new IncrementRetargetAction());
         addRetargetAction(new DecrementRetargetAction());
@@ -79,6 +78,7 @@ public class ModuleActionBarContributor extends org.eclipse.gef.ui.actions.Actio
         addGlobalActionKey(ActionFactory.PRINT.getId());
         addGlobalActionKey(ActionFactory.SELECT_ALL.getId());
         addGlobalActionKey(ActionFactory.PASTE.getId());
+        addGlobalActionKey(ActionFactory.DELETE.getId());
     }
 
     /**

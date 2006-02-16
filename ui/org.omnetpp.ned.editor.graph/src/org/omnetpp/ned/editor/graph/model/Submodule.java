@@ -28,7 +28,7 @@ public class Submodule extends NedNode {
             TERMINAL_B = "B"; //$NON-NLS-1$
 
     public String toString() {
-        return MessageFactory.Simple_LabelText + " #" + getName(); //$NON-NLS-1$
+        return "Submodule: " + getName(); //$NON-NLS-1$
     }
 
     public String getNewID() {

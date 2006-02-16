@@ -96,7 +96,7 @@ public class NedResizableEditPolicy extends ResizableEditPolicy {
     }
 
     /**
-     * @see org.eclipse.gef.editpolicies.NonResizableEditPolicy#initialFeedbackRectangle()
+     * @see org.eclipse.gef.editpolicies.NonResizableEditPolicy#getInitialFeedbackBounds()
      */
     protected Rectangle getInitialFeedbackBounds() {
         return getHostFigure().getBounds();

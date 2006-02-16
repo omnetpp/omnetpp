@@ -13,7 +13,6 @@ package org.omnetpp.ned.editor.graph;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.gef.palette.CombinedTemplateCreationEntry;
 import org.eclipse.gef.palette.ConnectionCreationToolEntry;
 import org.eclipse.gef.palette.MarqueeToolEntry;
@@ -32,11 +31,9 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.NedModelFactory;
 import org.omnetpp.ned.editor.graph.model.CompoundModule;
+import org.omnetpp.ned.editor.graph.model.NedModelFactory;
 import org.omnetpp.ned.editor.graph.model.Submodule;
-//import org.omnetpp.ned.model.ModelUtil;
-//import org.omnetpp.ned.model.swig.*;
 
 public class ModuleEditorPlugin extends AbstractUIPlugin {
 
@@ -68,10 +65,6 @@ public class ModuleEditorPlugin extends AbstractUIPlugin {
         return singleton;
     }
 
-    public static String getString(String key) {
-        return Platform.getResourceString(ModuleEditorPlugin.getDefault().getBundle(), key);
-    }
-
     public static ImageDescriptor imageDescriptorFromPlugin(String image_path) {
         return AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, image_path);
     }
@@ -98,20 +91,23 @@ public class ModuleEditorPlugin extends AbstractUIPlugin {
 
         List<PaletteEntry> entries = new ArrayList<PaletteEntry>();
 
-        ToolEntry tool = new PanningSelectionToolEntry("Arrow","Select and manipulate");
+        ToolEntry tool = new PanningSelectionToolEntry();
         entries.add(tool);
         root.setDefaultEntry(tool);
 
-        PaletteStack marqueeStack = new PaletteStack("Marquee Tools", "", null);
-        MarqueeToolEntry mte;
-        marqueeStack.add(mte = new MarqueeToolEntry("Modules","Marquee tool to select only modules and submodules"));
-        mte.setToolProperty(MarqueeSelectionTool.PROPERTY_MARQUEE_BEHAVIOR, MarqueeSelectionTool.BEHAVIOR_NODES_CONTAINED);
-        marqueeStack.add(mte = new MarqueeToolEntry("Connections", "Marquee tool to select only connections"));
-        mte.setToolProperty(MarqueeSelectionTool.PROPERTY_MARQUEE_BEHAVIOR, MarqueeSelectionTool.BEHAVIOR_CONNECTIONS_TOUCHED);
-        marqueeStack.add(new MarqueeToolEntry("All", "Marquee tool to select anything"));
-        mte.setToolProperty(MarqueeSelectionTool.PROPERTY_MARQUEE_BEHAVIOR, MarqueeSelectionTool.BEHAVIOR_NODES_AND_CONNECTIONS);
-        marqueeStack.setUserModificationPermission(PaletteEntry.PERMISSION_NO_MODIFICATION);
-        entries.add(marqueeStack);
+    	PaletteStack marqueeStack = new PaletteStack(MessageFactory.Marquee_Stack, "", null); //$NON-NLS-1$
+    	marqueeStack.add(new MarqueeToolEntry());
+    	MarqueeToolEntry marquee = new MarqueeToolEntry();
+    	marquee.setToolProperty(MarqueeSelectionTool.PROPERTY_MARQUEE_BEHAVIOR, 
+    			new Integer(MarqueeSelectionTool.BEHAVIOR_CONNECTIONS_TOUCHED));
+    	marqueeStack.add(marquee);
+    	marquee = new MarqueeToolEntry();
+    	marquee.setToolProperty(MarqueeSelectionTool.PROPERTY_MARQUEE_BEHAVIOR, 
+    			new Integer(MarqueeSelectionTool.BEHAVIOR_CONNECTIONS_TOUCHED 
+    			| MarqueeSelectionTool.BEHAVIOR_NODES_CONTAINED));
+    	marqueeStack.add(marquee);
+    	marqueeStack.setUserModificationPermission(PaletteEntry.PERMISSION_NO_MODIFICATION);
+    	entries.add(marqueeStack);
 
         tool = new ConnectionCreationToolEntry(
                 "Connection",
@@ -136,7 +132,7 @@ public class ModuleEditorPlugin extends AbstractUIPlugin {
         combined = new CombinedTemplateCreationEntry(
                 "Submodule",
                 "A submodule that can be placed in any compound module",
-                TemplateConstants.SIMPLE_MODULE, new SimpleFactory(Submodule.class), 
+                new SimpleFactory(Submodule.class), 
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE,"l",null,24)
         );
@@ -145,7 +141,7 @@ public class ModuleEditorPlugin extends AbstractUIPlugin {
         combined = new CombinedTemplateCreationEntry(
                 "Module",
                 "A compound module that is built up from several other modules",
-                TemplateConstants.MODULE, new SimpleFactory(CompoundModule.class), 
+                new SimpleFactory(CompoundModule.class), 
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE,"l",null,24)
         );
@@ -167,7 +163,7 @@ public class ModuleEditorPlugin extends AbstractUIPlugin {
         CombinedTemplateCreationEntry combined = new CombinedTemplateCreationEntry(
                 "Ring",
                 "Arrange nodes in a ring topology",
-                TemplateConstants.TEMPLATE_HALF_ADDER, NedModelFactory.getHalfAdderFactory(),
+                NedModelFactory.getHalfAdderFactory(),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE,"l",null,24) //$NON-NLS-1$
         );
@@ -176,7 +172,7 @@ public class ModuleEditorPlugin extends AbstractUIPlugin {
         combined = new CombinedTemplateCreationEntry(
                 "Mesh",
                 "Arrange nodes in a mesh topology",
-                TemplateConstants.TEMPLATE_FULL_ADDER, NedModelFactory.getFullAdderFactory(),
+                NedModelFactory.getFullAdderFactory(),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE,"l",null,24)
         );
@@ -196,7 +192,7 @@ public class ModuleEditorPlugin extends AbstractUIPlugin {
         CombinedTemplateCreationEntry combined = new CombinedTemplateCreationEntry(
                 "EthMAC",
                 "Ethernet MAC protocol module",
-                TemplateConstants.TEMPLATE_HALF_ADDER, NedModelFactory.getHalfAdderFactory(),
+                NedModelFactory.getHalfAdderFactory(),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE,"l",null,24)
         );
@@ -205,7 +201,7 @@ public class ModuleEditorPlugin extends AbstractUIPlugin {
         combined = new CombinedTemplateCreationEntry(
                 "IPv4",
                 "Internet protocol v4 module",
-                TemplateConstants.TEMPLATE_FULL_ADDER, NedModelFactory.getFullAdderFactory(),
+                NedModelFactory.getFullAdderFactory(),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE,"l",null,24)
         );

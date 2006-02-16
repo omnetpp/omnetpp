@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
@@ -92,11 +93,7 @@ public class TreeEditPart extends org.eclipse.gef.editparts.AbstractTreeEditPart
     }
 
     /**
-     * Refreshes the Widget of this based on the property given to update. All
-     * major properties are updated irrespective of the property input.
-     * 
-     * @param property
-     *            Property to be refreshed.
+	 * Refreshes the visual properties of the TreeItem for this part.
      */
     protected void refreshVisuals() {
         if (getWidget() instanceof Tree) return;

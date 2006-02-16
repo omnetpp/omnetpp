@@ -19,6 +19,7 @@ import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
 import org.omnetpp.ned.editor.graph.edit.BaseEditPart;
 import org.omnetpp.ned.editor.graph.edit.WireEditPart;
+import org.omnetpp.ned.editor.graph.figures.FigureFactory;
 import org.omnetpp.ned.editor.graph.figures.NedFigure;
 import org.omnetpp.ned.editor.graph.model.NedNode;
 import org.omnetpp.ned.editor.graph.model.Wire;
@@ -27,7 +28,7 @@ import org.omnetpp.ned.editor.graph.model.commands.ConnectionCommand;
 public class NedNodeEditPolicy extends org.eclipse.gef.editpolicies.GraphicalNodeEditPolicy {
 
     protected Connection createDummyConnection(Request req) {
-        PolylineConnection conn = WireEditPart.createNewWire(null);
+        PolylineConnection conn = FigureFactory.createNewWire(null);
         return conn;
     }
 

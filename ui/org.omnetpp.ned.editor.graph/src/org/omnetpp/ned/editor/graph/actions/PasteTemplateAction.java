@@ -12,22 +12,15 @@ package org.omnetpp.ned.editor.graph.actions;
 
 import java.util.List;
 
-import org.eclipse.swt.dnd.Clipboard;
-import org.eclipse.swt.dnd.TransferData;
-import org.eclipse.swt.widgets.Display;
-
-import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.actions.ActionFactory;
-
 import org.eclipse.draw2d.geometry.Point;
-
-import org.eclipse.gef.EditPart;
+import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.commands.Command;
-import org.eclipse.gef.dnd.TemplateTransfer;
 import org.eclipse.gef.requests.CreateRequest;
 import org.eclipse.gef.requests.CreationFactory;
+import org.eclipse.gef.ui.actions.Clipboard;
 import org.eclipse.gef.ui.actions.SelectionAction;
-
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.actions.ActionFactory;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 
 /**
@@ -54,8 +47,10 @@ public abstract class PasteTemplateAction extends SelectionAction {
      * @see org.eclipse.gef.ui.actions.WorkbenchPartAction#calculateEnabled()
      */
     protected boolean calculateEnabled() {
-        Command command = createPasteCommand();
-        return command != null && command.canExecute();
+//        Command command = createPasteCommand();
+//        return command != null && command.canExecute();
+// TODO Workaround for Bug 82622/39369.  Should be removed when 39369 is fixed.
+    	return true;
     }
 
     /**
@@ -65,18 +60,25 @@ public abstract class PasteTemplateAction extends SelectionAction {
      * @return the paste command
      */
     protected Command createPasteCommand() {
-        List selection = getSelectedObjects();
-        if (selection == null || selection.size() != 1) return null;
-        Object template = getClipboardContents();
-        if (template == null) return null;
-        CreateRequest request = new CreateRequest();
-        CreationFactory factory = getFactory(template);
-        if (factory == null) return null;
-        request.setFactory(factory);
-        request.setLocation(getPasteLocation());
-        Object obj = selection.get(0);
-        if (obj instanceof EditPart) return ((EditPart) obj).getCommand(request);
-        return null;
+    	Command result = null;
+    	List selection = getSelectedObjects();
+    	if (selection != null && selection.size() == 1) {
+    		Object obj = selection.get(0);
+    		if (obj instanceof GraphicalEditPart) {
+    			GraphicalEditPart gep = (GraphicalEditPart)obj;
+    			Object template = getClipboardContents();
+    			if (template != null) {
+    				CreationFactory factory = getFactory(template);
+    				if (factory != null) {
+    					CreateRequest request = new CreateRequest();
+    					request.setFactory(factory);
+    					request.setLocation(getPasteLocation(gep));
+    					result = gep.getCommand(request);
+    				}
+    			}
+    		}
+    	}
+    	return result;
     }
 
     /**
@@ -87,17 +89,7 @@ public abstract class PasteTemplateAction extends SelectionAction {
      * @return the clipboard's contents
      */
     protected Object getClipboardContents() {
-        Object result = null;
-        Clipboard cb = new Clipboard(Display.getDefault());
-        TransferData[] transferTypes = cb.getAvailableTypes();
-        for (int i = 0; i < transferTypes.length; i++) {
-            if (TemplateTransfer.getInstance().isSupportedType(transferTypes[i])) {
-                result = org.eclipse.gef.ui.actions.Clipboard.getDefault().getContents();
-                break;
-            }
-        }
-        cb.dispose();
-        return result;
+    	return Clipboard.getDefault().getContents();
     }
 
     /**
@@ -111,12 +103,16 @@ public abstract class PasteTemplateAction extends SelectionAction {
      *            the template Object; it will never be <code>null</code>
      * @return a Factory
      */
-    protected abstract CreationFactory getFactory(Object template);
-
+    protected CreationFactory getFactory(Object template) {
+    	if (template instanceof CreationFactory)
+    		return (CreationFactory)template;
+    	return null;
+    }
+    
     /**
      * @return the location at which
      */
-    protected abstract Point getPasteLocation();
+    protected abstract Point getPasteLocation(GraphicalEditPart container);
 
     /**
      * @see org.eclipse.gef.ui.actions.EditorPartAction#init()

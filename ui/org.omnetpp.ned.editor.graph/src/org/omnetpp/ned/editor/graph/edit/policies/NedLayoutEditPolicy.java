@@ -51,10 +51,6 @@ public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
     }
 
 
-    protected Command createAddCommand(EditPart child, Object constraint) {
-        return null;
-    }
-
     protected Command createAddCommand(Request request, EditPart childEditPart, Object constraint) {
         NedNode part = (NedNode) childEditPart.getModel();
         Rectangle rect = (Rectangle) constraint;
@@ -255,10 +251,6 @@ public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
         return new Insets();
     }
 
-    protected Command getDeleteDependantCommand(Request request) {
-        return null;
-    }
-
     /**
      * Returns the layer used for displaying feedback.
      * 
@@ -268,8 +260,4 @@ public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
         return getLayer(LayerConstants.SCALED_FEEDBACK_LAYER);
     }
 
-    protected Command getOrphanChildrenCommand(Request request) {
-        return null;
-    }
-    
 }

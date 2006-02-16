@@ -42,7 +42,7 @@ public class ModulePaletteCustomizer extends PaletteCustomizer {
     }
 
     /**
-     * @see org.eclipse.gef.ui.palette.PaletteCustomizer#dialogClosed(PaletteEntry)
+     * @see org.eclipse.gef.ui.palette.PaletteCustomizer#save()
      */
     public void save() {
     }
