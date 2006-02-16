@@ -592,6 +592,7 @@ param
                        NEDError(ps.param,"conditional parameters inside parameter/property groups are not allowed");
                   if ($4)
                       ps.param->appendChild($4); // append optional condition
+                      // FIXME typename and "if" cannot occur together!!!
                 }
         ;
 
@@ -836,6 +837,7 @@ gate
                        NEDError(ps.param,"conditional gates inside gate groups are not allowed");
                   if ($4)
                       ps.gate->appendChild($4); // append optional condition
+                      // FIXME typename and "if" cannot occur together!!!
                 }
         ;
 

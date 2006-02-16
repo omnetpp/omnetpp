@@ -19,6 +19,9 @@
 #include "nederror.h"
 
 
+#define DEFAULTINDENT "            "
+
+
 void generateNed(ostream& out, NEDElement *node)
 {
     NEDGenerator nedgen(out);
@@ -48,6 +51,10 @@ void NEDGenerator::generate(NEDElement *node, const char *indent)
 
 const char *NEDGenerator::increaseIndent(const char *indent)
 {
+    // NULL means we don't use indentation (ie with channel-spec params) -- leave that alone
+    if (!indent)
+        return NULL;
+
     // biggest possible indent: ~70 chars:
     static char spaces[] = "                                                                     ";
 
@@ -306,21 +313,41 @@ void NEDGenerator::doChannel(ChannelNode *node, const char *indent, bool islast,
 
 void NEDGenerator::doParameters(ParametersNode *node, const char *indent, bool islast, const char *)
 {
+    // inside channel-spec, everything has to be on one line except it'd be too long
+    // (rule of thumb: if it contains a param group or "parameters:" keyword is explicit)
+    bool inlineParams = node->getParent()->getTagCode()==NED_CHANNEL_SPEC &&
+                        node->getIsImplicit() &&
+                        !node->getFirstChildWithTag(NED_PARAM_GROUP);
+
     if (!node->getIsImplicit())
         out << indent << "parameters:\n";
-    generateChildren(node, increaseIndent(indent));
+
+    generateChildren(node, inlineParams ? NULL : increaseIndent(indent));
 }
 
 void NEDGenerator::doParamGroup(ParamGroupNode *node, const char *indent, bool islast, const char *)
 {
-    out << indent << "{\n";
-    generateChildren(node, increaseIndent(indent));
-    out << indent << "}\n";
+    if (indent)
+        out << indent << "{\n";
+    else
+        out << " {";  // inline params, used for channel-spec in connections
+
+    const char *subindent = indent ? increaseIndent(indent) : DEFAULTINDENT;
+    generateChildren(node, subindent);
+
+    if (indent)
+        out << indent << "}\n";
+    else
+        out << "}";
 }
 
 void NEDGenerator::doParam(ParamNode *node, const char *indent, bool islast, const char *)
 {
-    out << indent;
+    if (indent)
+        out << indent;
+    else
+        out << " ";  // inline params, used for channel-spec in connections
+
     switch (node->getType())
     {
         case NED_PARTYPE_NONE:   break;
@@ -340,9 +367,14 @@ void NEDGenerator::doParam(ParamNode *node, const char *indent, bool islast, con
         printExpression(node, "value",indent);
     }
 
-    generateChildrenWithType(node, NED_PROPERTY, increaseIndent(indent), " ");
-    generateChildrenWithType(node, NED_CONDITION, increaseIndent(indent));
-    out << ";\n";
+    const char *subindent = indent ? increaseIndent(indent) : DEFAULTINDENT;
+    generateChildrenWithType(node, NED_PROPERTY, subindent, " ");
+    generateChildrenWithType(node, NED_CONDITION, subindent);
+
+    if (indent)
+        out << ";\n";
+    else
+        out << ";";
 }
 
 void NEDGenerator::doPattern(PatternNode *node, const char *indent, bool islast, const char *)
@@ -360,16 +392,19 @@ void NEDGenerator::doProperty(PropertyNode *node, const char *indent, bool islas
     if (!node->getIsImplicit())
     {
         // if sep==NULL, print as standalone property (with indent and ";"), otherwise as inline property
-        if (!sep)
+        if (!sep && indent)
             out << indent;
         out << "@" << node->getName();
         if (node->getFirstChildWithTag(NED_PROPERTY_KEY))
         {
             out << "(";
-            generateChildrenWithType(node, NED_PROPERTY_KEY, increaseIndent(indent), ",");
+            const char *subindent = indent ? increaseIndent(indent) : DEFAULTINDENT;
+            generateChildrenWithType(node, NED_PROPERTY_KEY, subindent, ",");
             out << ")";
         }
-        if (!sep)
+        if (!sep && !indent)
+            out << ";";
+        else if (!sep)
             out << ";\n";
         else if (!islast)
             out << sep;
@@ -550,7 +585,7 @@ void NEDGenerator::doChannelSpec(ChannelSpecNode *node, const char *indent, bool
     {
         out << " { ";
         generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
-        out << indent << " }";
+        out << " }";
     }
 }
 
