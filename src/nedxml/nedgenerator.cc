@@ -391,13 +391,14 @@ void NEDGenerator::doProperty(PropertyNode *node, const char *indent, bool islas
         if (!sep && indent)
             out << indent;
         out << "@" << node->getName();
+        const char *subindent = indent ? increaseIndent(indent) : DEFAULTINDENT;
         if (node->getFirstChildWithTag(NED_PROPERTY_KEY))
         {
             out << "(";
-            const char *subindent = indent ? increaseIndent(indent) : DEFAULTINDENT;
             generateChildrenWithType(node, NED_PROPERTY_KEY, subindent, ",");
             out << ")";
         }
+        generateChildrenWithType(node, NED_CONDITION, subindent);
         if (!sep && !indent)
             out << ";";
         else if (!sep)
