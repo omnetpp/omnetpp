@@ -51,7 +51,7 @@
 //%ignore NEDSemanticValidator::validateElement;
 
 //
-// The following code is from "19.9.7 Adding Java downcasts to polymorphic return types" 
+// The following code is from "19.9.7 Adding Java downcasts to polymorphic return types"
 // in the SWIG Manual
 //
 %typemap(jni) NEDElement *NEDElement::getParent "jobject"
@@ -81,57 +81,59 @@
 */
 
 /* FIXME find a better way... */
-%ignore ChannelAttrNode;
-%ignore ChannelNode;
-%ignore ClassDeclNode;
-%ignore ClassNode;
-%ignore CompoundModuleNode;
-%ignore ConnAttrNode;
-%ignore ConnectionNode;
-%ignore ConnectionsNode;
-%ignore ConstNode;
-%ignore CplusplusNode;
-%ignore DisplayStringNode;
-%ignore EnumDeclNode;
-%ignore EnumFieldNode;
-%ignore EnumFieldsNode;
-%ignore EnumNode;
-%ignore ExpressionNode;
-%ignore FieldNode;
-%ignore FieldsNode;
-%ignore ForLoopNode;
-%ignore FunctionNode;
-%ignore GateNode;
-%ignore GatesizeNode;
-%ignore GatesizesNode;
-%ignore GatesNode;
-%ignore IdentNode;
-%ignore ImportedFileNode;
-%ignore ImportNode;
-%ignore LoopVarNode;
-%ignore MachineNode;
-%ignore MachinesNode;
-%ignore MessageDeclNode;
-%ignore MessageNode;
-%ignore NedFileNode;
-%ignore NedFilesNode;
-%ignore NetworkNode;
-%ignore OperatorNode;
-%ignore ParamNode;
-%ignore ParamRefNode;
-%ignore ParamsNode;
-%ignore PropertiesNode;
-%ignore PropertyNode;
-%ignore SimpleModuleNode;
-%ignore StructDeclNode;
-%ignore StructNode;
-%ignore SubmoduleNode;
-%ignore SubmodulesNode;
-%ignore SubstmachineNode;
-%ignore SubstmachinesNode;
-%ignore SubstparamNode;
-%ignore SubstparamsNode;
-%ignore UnknownNode;
+%ignore  FilesNode;
+%ignore  NedFileNode;
+%ignore  WhitespaceNode;
+%ignore  ImportNode;
+%ignore  PropertyDeclNode;
+%ignore  ExtendsNode;
+%ignore  InterfaceNameNode;
+%ignore  SimpleModuleNode;
+%ignore  ModuleInterfaceNode;
+%ignore  CompoundModuleNode;
+%ignore  ChannelInterfaceNode;
+%ignore  ChannelNode;
+%ignore  ParametersNode;
+%ignore  ParamGroupNode;
+%ignore  ParamNode;
+%ignore  PatternNode;
+%ignore  PropertyNode;
+%ignore  PropertyKeyNode;
+%ignore  GatesNode;
+%ignore  GateGroupNode;
+%ignore  GateNode;
+%ignore  TypesNode;
+%ignore  SubmodulesNode;
+%ignore  SubmoduleNode;
+%ignore  ConnectionsNode;
+%ignore  ConnectionNode;
+%ignore  ChannelSpecNode;
+%ignore  ConnectionGroupNode;
+%ignore  WhereNode;
+%ignore  LoopNode;
+%ignore  ConditionNode;
+%ignore  ExpressionNode;
+%ignore  OperatorNode;
+%ignore  FunctionNode;
+%ignore  IdentNode;
+%ignore  LiteralNode;
+%ignore  MsgFileNode;
+%ignore  CplusplusNode;
+%ignore  StructDeclNode;
+%ignore  ClassDeclNode;
+%ignore  MessageDeclNode;
+%ignore  EnumDeclNode;
+%ignore  EnumNode;
+%ignore  EnumFieldsNode;
+%ignore  EnumFieldNode;
+%ignore  MessageNode;
+%ignore  ClassNode;
+%ignore  StructNode;
+%ignore  FieldsNode;
+%ignore  FieldNode;
+%ignore  PropertiesNode;
+%ignore  MsgpropertyNode;
+%ignore  UnknownNode;
 
 
 /* Let's just grab the original header file here */
@@ -142,10 +144,10 @@
 
 %include "nedvalidator.h"
 %include "neddtdvalidator.h"
-%include "nedbasicvalidator.h"
+//%include "nedbasicvalidator.h"
 
-%include "nedcompiler.h"
-// %include "nedfilebuffer.h"
-%include "nedsemanticvalidator.h"
+//%include "nedcompiler.h"
+//%include "nedfilebuffer.h"
+//%include "nedsemanticvalidator.h"
 //%include "cppgenerator.h"
 
