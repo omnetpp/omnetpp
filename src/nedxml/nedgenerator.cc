@@ -826,15 +826,18 @@ void NEDGenerator::doIdent(IdentNode *node, const char *indent, bool islast, con
 
 void NEDGenerator::doLiteral(LiteralNode *node, const char *indent, bool islast, const char *)
 {
-    bool isstring = (node->getType()==NED_CONST_STRING);
-
-    if (isstring) out << "\"";
-    if (strnotnull(node->getText())) {
+    if (strnotnull(node->getText()))
+    {
         out << node->getText();
-    } else {
-        out << node->getValue();
     }
-    if (isstring) out << "\"";
+    else
+    {
+        // fallback: when original text is not present, use value
+        bool isstring = (node->getType()==NED_CONST_STRING);
+        if (isstring) out << "\"";
+        out << node->getValue();
+        if (isstring) out << "\"";
+    }
 }
 
 void NEDGenerator::doCplusplus(CplusplusNode *node, const char *indent, bool islast, const char *)
