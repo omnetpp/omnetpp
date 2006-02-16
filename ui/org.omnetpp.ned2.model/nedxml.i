@@ -7,12 +7,12 @@
 #include "nedelements.h"
 
 #include "neddtdvalidator.h"
-#include "nedbasicvalidator.h"
+// #include "nedbasicvalidator.h"
 
-#include "nedcompiler.h"
+// #include "nedcompiler.h"
 #include "nedfilebuffer.h"
-#include "nedsemanticvalidator.h"
-#include "cppgenerator.h"
+// #include "nedsemanticvalidator.h"
+// #include "cppgenerator.h"
 %}
 
 %include "std_string.i"
