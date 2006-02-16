@@ -51,10 +51,6 @@ void NEDGenerator::generate(NEDElement *node, const char *indent)
 
 const char *NEDGenerator::increaseIndent(const char *indent)
 {
-    // NULL means we don't use indentation (ie with channel-spec params) -- leave that alone
-    if (!indent)
-        return NULL;
-
     // biggest possible indent: ~70 chars:
     static char spaces[] = "                                                                     ";
 
