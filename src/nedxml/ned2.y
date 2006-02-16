@@ -988,6 +988,7 @@ submoduleheader
         | submodulename ':' likeparam LIKE '*'
                 {
                   addLikeParam(ps.submod, "like-param", @3, $3);
+                  ps.submod->setLikeAny(true);
                 }
         ;
 
@@ -1342,6 +1343,7 @@ channelspec_header
                 {
                   ps.chanspec = (ChannelSpecNode *)createNodeWithTag(NED_CHANNEL_SPEC, ps.conn);
                   addLikeParam(ps.chanspec, "like-param", @1, $1);
+                  ps.chanspec->setLikeAny(true);
                 }
         ;
 

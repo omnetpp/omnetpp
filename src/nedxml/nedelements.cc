@@ -1458,7 +1458,7 @@ SubmoduleNode *SubmodulesNode::getFirstSubmoduleChild() const
 
 int SubmoduleNode::getNumAttributes() const
 {
-    return 5;
+    return 6;
 }
 
 const char *SubmoduleNode::getAttributeName(int k) const
@@ -1467,8 +1467,9 @@ const char *SubmoduleNode::getAttributeName(int k) const
         case 0: return "name";
         case 1: return "type";
         case 2: return "like-type";
-        case 3: return "like-param";
-        case 4: return "vector-size";
+        case 3: return "like-any";
+        case 4: return "like-param";
+        case 5: return "vector-size";
         default: return 0;
     }
 }
@@ -1479,8 +1480,9 @@ const char *SubmoduleNode::getAttribute(int k) const
         case 0: return name.c_str();
         case 1: return type.c_str();
         case 2: return likeType.c_str();
-        case 3: return likeParam.c_str();
-        case 4: return vectorSize.c_str();
+        case 3: return boolToString(likeAny);
+        case 4: return likeParam.c_str();
+        case 5: return vectorSize.c_str();
         default: return 0;
     }
 }
@@ -1491,8 +1493,9 @@ void SubmoduleNode::setAttribute(int k, const char *val)
         case 0: name = val; break;
         case 1: type = val; break;
         case 2: likeType = val; break;
-        case 3: likeParam = val; break;
-        case 4: vectorSize = val; break;
+        case 3: likeAny = stringToBool(val); break;
+        case 4: likeParam = val; break;
+        case 5: vectorSize = val; break;
         default: ;
     }
 }
@@ -1503,8 +1506,9 @@ const char *SubmoduleNode::getAttributeDefault(int k) const
         case 0: return NULL;
         case 1: return "";
         case 2: return "";
-        case 3: return "";
+        case 3: return "false";
         case 4: return "";
+        case 5: return "";
         default: return 0;
     }
 }
@@ -1721,7 +1725,7 @@ WhereNode *ConnectionNode::getFirstWhereChild() const
 
 int ChannelSpecNode::getNumAttributes() const
 {
-    return 3;
+    return 4;
 }
 
 const char *ChannelSpecNode::getAttributeName(int k) const
@@ -1729,7 +1733,8 @@ const char *ChannelSpecNode::getAttributeName(int k) const
     switch (k) {
         case 0: return "type";
         case 1: return "like-type";
-        case 2: return "like-param";
+        case 2: return "like-any";
+        case 3: return "like-param";
         default: return 0;
     }
 }
@@ -1739,7 +1744,8 @@ const char *ChannelSpecNode::getAttribute(int k) const
     switch (k) {
         case 0: return type.c_str();
         case 1: return likeType.c_str();
-        case 2: return likeParam.c_str();
+        case 2: return boolToString(likeAny);
+        case 3: return likeParam.c_str();
         default: return 0;
     }
 }
@@ -1749,7 +1755,8 @@ void ChannelSpecNode::setAttribute(int k, const char *val)
     switch (k) {
         case 0: type = val; break;
         case 1: likeType = val; break;
-        case 2: likeParam = val; break;
+        case 2: likeAny = stringToBool(val); break;
+        case 3: likeParam = val; break;
         default: ;
     }
 }
@@ -1759,7 +1766,8 @@ const char *ChannelSpecNode::getAttributeDefault(int k) const
     switch (k) {
         case 0: return "";
         case 1: return "";
-        case 2: return "";
+        case 2: return "false";
+        case 3: return "";
         default: return 0;
     }
 }

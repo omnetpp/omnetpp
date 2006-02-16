@@ -1259,6 +1259,7 @@ class SubmodulesNode : public NEDElement
  *      name               NMTOKEN   #REQUIRED
  *      type               NMTOKEN   #IMPLIED
  *      like-type          NMTOKEN   #IMPLIED
+ *      like-any           (true|false) "false" 
  *      like-param         CDATA     #IMPLIED
  *      vector-size        CDATA     #IMPLIED>
  * </pre>
@@ -1271,6 +1272,7 @@ class SubmoduleNode : public NEDElement
     std::string name;
     std::string type;
     std::string likeType;
+    bool likeAny;
     std::string likeParam;
     std::string vectorSize;
   public:
@@ -1300,6 +1302,8 @@ class SubmoduleNode : public NEDElement
     void setType(const char * val)  {type = val;}
     const char * getLikeType() const  {return likeType.c_str();}
     void setLikeType(const char * val)  {likeType = val;}
+    bool getLikeAny() const  {return likeAny;}
+    void setLikeAny(bool val)  {likeAny = val;}
     const char * getLikeParam() const  {return likeParam.c_str();}
     void setLikeParam(const char * val)  {likeParam = val;}
     const char * getVectorSize() const  {return vectorSize.c_str();}
@@ -1462,6 +1466,7 @@ class ConnectionNode : public NEDElement
  * <!ATTLIST channel-spec
  *      type               NMTOKEN   #IMPLIED
  *      like-type          NMTOKEN   #IMPLIED
+ *      like-any           (true|false) "false" 
  *      like-param         CDATA     #IMPLIED>
  * </pre>
  * 
@@ -1472,6 +1477,7 @@ class ChannelSpecNode : public NEDElement
   private:
     std::string type;
     std::string likeType;
+    bool likeAny;
     std::string likeParam;
   public:
     /** @name Constructors, destructor */
@@ -1498,6 +1504,8 @@ class ChannelSpecNode : public NEDElement
     void setType(const char * val)  {type = val;}
     const char * getLikeType() const  {return likeType.c_str();}
     void setLikeType(const char * val)  {likeType = val;}
+    bool getLikeAny() const  {return likeAny;}
+    void setLikeAny(bool val)  {likeAny = val;}
     const char * getLikeParam() const  {return likeParam.c_str();}
     void setLikeParam(const char * val)  {likeParam = val;}
 

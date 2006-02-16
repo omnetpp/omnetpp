@@ -431,17 +431,23 @@ void NEDGenerator::doSubmodule(SubmoduleNode *node, const char *indent, bool isl
     printOptVector(node, "vector-size",indent);
     out << ": ";
 
-    if (strnotnull(node->getType()))
+    if (node->getLikeAny() || strnotnull(node->getLikeType()))
     {
-        out << node->getType();
+        // "like" version
+        out << "<";
+        if (strnotnull(node->getLikeParam()))
+            printExpression(node, "like-param", indent); // this (incidentally) also works if like-param contains a property (ie. starts with "@")
+        out << ">";
+
+        if (strnotnull(node->getLikeType()))
+            out << " like " << node->getLikeType();
+        if (node->getLikeAny())
+            out << " like *";
     }
     else
     {
-        out << "<" << node->getLikeParam() << ">";
-        if (strnotnull(node->getLikeType()))
-            out << " like " << node->getLikeType();
-        else
-            out << " like *";
+        // "like"-less
+        out << node->getType();
     }
 
     if (!node->getFirstChildWithTag(NED_PARAMETERS) && !node->getFirstChildWithTag(NED_GATES))
@@ -492,7 +498,11 @@ void NEDGenerator::doConnection(ConnectionNode *node, const char *indent, bool i
     out << arrow;
 
     // print channel attributes
-    generateChildrenWithType(node, NED_CHANNEL_SPEC, indent, arrow);
+    if (node->getFirstChildWithTag(NED_CHANNEL_SPEC))
+    {
+        generateChildrenWithType(node, NED_CHANNEL_SPEC, indent);
+        out << arrow;
+    }
 
     // print dest
     out << " ";
@@ -507,7 +517,31 @@ void NEDGenerator::doConnection(ConnectionNode *node, const char *indent, bool i
 
 void NEDGenerator::doChannelSpec(ChannelSpecNode *node, const char *indent, bool islast, const char *)
 {
-    out << "todo-channelspec-todo ";
+    if (node->getLikeAny() || strnotnull(node->getLikeType()))
+    {
+        // "like" version
+        out << " <";
+        if (strnotnull(node->getLikeParam()))
+            printExpression(node, "like-param", indent); // this (incidentally) also works if like-param contains a property (ie. starts with "@")
+        out << ">";
+
+        if (strnotnull(node->getLikeType()))
+            out << " like " << node->getLikeType();
+        if (node->getLikeAny())
+            out << " like *";
+    }
+    else if (strnotnull(node->getType()))
+    {
+        // concrete channel type
+        out << " " << node->getType();
+    }
+
+    if (node->getFirstChildWithTag(NED_PARAMETERS))
+    {
+        out << " { ";
+        generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
+        out << indent << " }";
+    }
 }
 
 void NEDGenerator::doConnectionGroup(ConnectionGroupNode *node, const char *indent, bool islast, const char *)
