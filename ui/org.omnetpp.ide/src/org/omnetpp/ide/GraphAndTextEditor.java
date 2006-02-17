@@ -73,7 +73,7 @@ public class GraphAndTextEditor extends MultiPageEditorPart implements
 			String textEditorContent = ModelUtil.generateNedSource(nedModel);
 			TextDocument td = new TextDocument();
 			IDocument editorDoc = 
-				((TextFileDocumentProvider)nedEditor.getDocumentProvider()).getDocument(null);
+				((TextFileDocumentProvider)nedEditor.getDocumentProvider()).getDocument(getEditorInput());
 			editorDoc.set(textEditorContent);
 				
 		}
