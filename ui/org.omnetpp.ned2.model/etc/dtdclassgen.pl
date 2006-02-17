@@ -151,6 +151,8 @@ foreach $element (@elements)
         $ucvarname = $varname;
         $ucvarname =~ s/(.)(.*)/uc($1).$2/e;
 
+        if ($varname eq "package") {$varname = "package_";}
+
         $enumname = "";
         if ($atttypes[$i] eq '(true|false)') {
            $argtype = "boolean";
