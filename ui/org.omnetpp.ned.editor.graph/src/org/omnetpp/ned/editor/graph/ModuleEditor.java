@@ -75,6 +75,7 @@ import org.eclipse.gef.ui.actions.ZoomInAction;
 import org.eclipse.gef.ui.actions.ZoomOutAction;
 import org.eclipse.gef.ui.palette.PaletteViewer;
 import org.eclipse.gef.ui.palette.PaletteViewerProvider;
+import org.eclipse.gef.ui.palette.FlyoutPaletteComposite.FlyoutPreferences;
 import org.eclipse.gef.ui.parts.ContentOutlinePage;
 import org.eclipse.gef.ui.parts.GraphicalEditorWithFlyoutPalette;
 import org.eclipse.gef.ui.parts.GraphicalViewerKeyHandler;
@@ -232,7 +233,7 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
         }
 
         protected void initializeOutlineViewer() {
-            setContents(getDiagramModel());
+            setContents(getModel());
         }
 
         protected void initializeOverview() {
@@ -479,7 +480,7 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
 
     protected void writeToOutputStream(OutputStream os) throws IOException {
         ObjectOutputStream out = new ObjectOutputStream(os);
-        out.writeObject(getDiagramModel());
+        out.writeObject(getModel());
         out.close();
     }
 
@@ -573,10 +574,6 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
         return sharedKeyHandler;
     }
 
-    protected NedFile getDiagramModel() {
-        return nedFileModel;
-    }
-
 
     protected PaletteRoot getPaletteRoot() {
         if (root == null) {
@@ -599,7 +596,7 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
 
     protected void initializeGraphicalViewer() {
         super.initializeGraphicalViewer();
-        getGraphicalViewer().setContents(getDiagramModel());
+        getGraphicalViewer().setContents(getModel());
 
         getGraphicalViewer().addDropTargetListener((TransferDropTargetListener)
     			new TemplateTransferDropTargetListener(getGraphicalViewer()));
@@ -684,37 +681,20 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
     }
 
     protected void loadProperties() {
-        // Ruler properties
-//        Ruler ruler = null;
-//        Ruler ruler = getDiagram().getRuler(PositionConstants.WEST);
-//        RulerProvider provider = null;
-//        if (ruler != null) {
-//            provider = new RulerProvider(ruler);
-//        }
-//        getGraphicalViewer().setProperty(RulerProvider.PROPERTY_VERTICAL_RULER, provider);
-//        ruler = getDiagram().getRuler(PositionConstants.NORTH);
-//        provider = null;
-//        if (ruler != null) {
-//            provider = new RulerProvider(ruler);
-//        }
-//        getGraphicalViewer().setProperty(RulerProvider.PROPERTY_HORIZONTAL_RULER, provider);
-//        getGraphicalViewer().setProperty(RulerProvider.PROPERTY_RULER_VISIBILITY,
-//                new Boolean(getDiagram().getRulerVisibility()));
-
         // Snap to Geometry property
         getGraphicalViewer().setProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED,
-                new Boolean(getDiagramModel().isSnapToGeometryEnabled()));
+                new Boolean(getModel().isSnapToGeometryEnabled()));
 
         // Grid properties
         getGraphicalViewer().setProperty(SnapToGrid.PROPERTY_GRID_ENABLED,
-                new Boolean(getDiagramModel().isGridEnabled()));
+                new Boolean(getModel().isGridEnabled()));
         // We keep grid visibility and enablement in sync
         getGraphicalViewer().setProperty(SnapToGrid.PROPERTY_GRID_VISIBLE,
-                new Boolean(getDiagramModel().isGridEnabled()));
+                new Boolean(getModel().isGridEnabled()));
 
         // Zoom
         ZoomManager manager = (ZoomManager) getGraphicalViewer().getProperty(ZoomManager.class.toString());
-        if (manager != null) manager.setZoom(getDiagramModel().getZoom());
+        if (manager != null) manager.setZoom(getModel().getZoom());
         // Scroll-wheel Zoom
         getGraphicalViewer().setProperty(MouseWheelHandler.KeyGenerator.getKey(SWT.MOD1),
                 MouseWheelZoomHandler.SINGLETON);
@@ -763,44 +743,48 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
     }
 
     protected void saveProperties() {
-        getDiagramModel()
+        getModel()
                 .setGridEnabled(
                         ((Boolean) getGraphicalViewer().getProperty(SnapToGrid.PROPERTY_GRID_ENABLED))
                                 .booleanValue());
-        getDiagramModel().setSnapToGeometry(
+        getModel().setSnapToGeometry(
                 ((Boolean) getGraphicalViewer().getProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED))
                         .booleanValue());
         ZoomManager manager = (ZoomManager) getGraphicalViewer().getProperty(ZoomManager.class.toString());
-        if (manager != null) getDiagramModel().setZoom(manager.getZoom());
+        if (manager != null) getModel().setZoom(manager.getZoom());
     }
 
     protected void setInput(IEditorInput input) {
         superSetInput(input);
-
-        IFile file = ((IFileEditorInput) input).getFile();
-        try {
-            InputStream is = file.getContents(false);
-            ObjectInputStream ois = new ObjectInputStream(is);
-            setLogicDiagram((NedFile) ois.readObject());
-            ois.close();
-        } catch (Exception e) {
-            // This is just an example. All exceptions caught here.
-            e.printStackTrace();
-        }
+// XXX temporaryly disabled
+//        IFile file = ((IFileEditorInput) input).getFile();
+//        try {
+//            InputStream is = file.getContents(false);
+//            ObjectInputStream ois = new ObjectInputStream(is);
+//            setLogicDiagram((NedFile) ois.readObject());
+//            ois.close();
+//        } catch (Exception e) {
+//            // This is just an example. All exceptions caught here.
+//            e.printStackTrace();
+//        }
 
         if (!editorSaving) {
             if (getGraphicalViewer() != null) {
-                getGraphicalViewer().setContents(getDiagramModel());
+                getGraphicalViewer().setContents(getModel());
                 loadProperties();
             }
             if (outlinePage != null) {
-                outlinePage.setContents(getDiagramModel());
+                outlinePage.setContents(getModel());
             }
         }
     }
 
-    public void setLogicDiagram(NedFile diagram) {
-        nedFileModel = diagram;
+    protected NedFile getModel() {
+        return nedFileModel;
+    }
+
+    public void setModel(NedFile model) {
+        nedFileModel = model;
     }
 
     protected void superSetInput(IEditorInput input) {

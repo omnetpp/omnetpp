@@ -8,7 +8,7 @@
             class="org.omnetpp.ide.GraphAndTextEditor"
             contributorClass="org.omnetpp.ned.editor.graph.actions.ModuleActionBarContributor"
             default="true"
-            extensions="xned"
+            extensions="ned"
             icon="icons/gned.gif"
             id="org.omnetpp.ide.gteditor"
             name="GNED Dual Editor">

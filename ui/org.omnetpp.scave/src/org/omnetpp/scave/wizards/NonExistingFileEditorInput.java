@@ -18,6 +18,7 @@ import org.eclipse.ui.part.FileEditorInput;
  * Represents newly created editor inputs that haven't been saved yet
  * ("Untitled 3.sdataset").
  */
+// FIXME use NullEditorInput instead
 public class NonExistingFileEditorInput extends FileEditorInput {
 	public NonExistingFileEditorInput(IFile file) {
     	super(file);

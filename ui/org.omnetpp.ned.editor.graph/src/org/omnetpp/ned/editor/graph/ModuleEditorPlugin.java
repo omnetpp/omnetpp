@@ -50,11 +50,12 @@ public class ModuleEditorPlugin extends AbstractUIPlugin {
             singleton = this;
         }
         // XXX remove below. only for testing
-        NEDParser np = new NEDParser();
-        np.setParseExpressions(false);
-        np.parseFile("c:/temp/example.ned");
-        NEDElement treeRoot = np.getTree();
-        System.out.println(ModelUtil.printSwigElement(treeRoot));
+//        NEDParser np = new NEDParser();
+//        np.setParseExpressions(false);
+//        np.parseFile("c:/temp/example.ned");
+//        NEDElement treeRoot = np.getTree();
+//        System.out.println(ModelUtil.printSwigElement(treeRoot));
+        
 //        NEDGenerator ng = new NEDGenerator();
 //        ng.setNewSyntax(false);
 //        System.out.println(ng.generate(treeRoot, ""));

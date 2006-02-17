@@ -34,8 +34,8 @@ import org.omnetpp.ned.editor.graph.figures.ModuleFigure;
 import org.omnetpp.ned.editor.graph.misc.ColorFactory;
 import org.omnetpp.ned.editor.graph.misc.DesktopLayoutEditPolicy;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.Container;
 import org.omnetpp.ned.editor.graph.model.CompoundModule;
+import org.omnetpp.ned.editor.graph.model.Container;
 import org.omnetpp.ned.editor.graph.model.NedNode;
 import org.omnetpp.ned.editor.graph.model.commands.AddCommand;
 import org.omnetpp.ned.editor.graph.model.commands.CloneCommand;
@@ -259,5 +259,4 @@ public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
     protected IFigure getFeedbackLayer() {
         return getLayer(LayerConstants.SCALED_FEEDBACK_LAYER);
     }
-
 }

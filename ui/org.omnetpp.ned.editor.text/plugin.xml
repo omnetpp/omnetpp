@@ -13,7 +13,7 @@
          name="%documentSetupParticipantName"
          point="org.eclipse.core.filebuffers.documentSetup">
       <participant
-            extensions="%nedFileExtensions"
+            extensions="ned"
             class="org.omnetpp.ned.editor.text.NedDocumentSetupParticipant">
       </participant>
    </extension>

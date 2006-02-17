@@ -17,12 +17,14 @@
 
    <windowImages i16="eclipse.gif" i32="eclipse32.gif" i48="eclipse48.gif"/>
 
+
    <launcher>
       <solaris/>
       <win useIco="false">
          <bmp/>
       </win>
    </launcher>
+
 
    <plugins>
       <plugin id="org.apache.lucene"/>
@@ -74,6 +76,7 @@
       <plugin id="org.omnetpp.ide"/>
       <plugin id="org.omnetpp.ned.editor.graph"/>
       <plugin id="org.omnetpp.ned.editor.text"/>
+      <plugin id="org.omnetpp.ned2.model"/>
       <plugin id="org.omnetpp.scave"/>
       <plugin id="org.omnetpp.scave.engine"/>
    </plugins>

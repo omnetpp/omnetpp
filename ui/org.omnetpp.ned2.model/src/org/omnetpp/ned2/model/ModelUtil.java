@@ -1,21 +1,51 @@
 package org.omnetpp.ned2.model;
 
 import org.omnetpp.ned2.model.swig.NEDElement;
+import org.omnetpp.ned2.model.swig.NEDGenerator;
+import org.omnetpp.ned2.model.swig.NEDParser;
 
 public class ModelUtil {
 //    private static final String NED_EMF_MODEL_PACKAGE = "org.omnetpp.ned.model.emf";
 
-    public static String printSwigElement(NEDElement swigNode) {
-        String result = "";
+	public static String generateNedSource(NEDElement treeRoot) {
+      NEDGenerator ng = new NEDGenerator();
+      return ng.generate(treeRoot, "");
+	}
+	
+	public static NEDElement parseNedSource(String source) {
+        NEDParser np = new NEDParser();
+        np.setParseExpressions(false);
+        np.parseText(source);
+        NEDElement treeRoot = np.getTree();
+        // XXX just for debugging
+        System.out.println(ModelUtil.printSwigElementTree(treeRoot,""));
+        return treeRoot;
+	}
+	
+	public static NEDElement loadNedSource(String fname) {
+        NEDParser np = new NEDParser();
+        np.setParseExpressions(false);
+        np.parseFile(fname);
+        NEDElement treeRoot = np.getTree();
+        // XXX just for debugging
+        System.out.println(ModelUtil.printSwigElementTree(treeRoot, ""));
+        return treeRoot;
+	}
+
+	public static String printSwigElementTree(NEDElement swigNode, String indent) {
+        String result = indent;
         result += "<"+ swigNode.getTagName();
         for(int i=0; i < swigNode.getNumAttributes(); ++i)
             result += " "+swigNode.getAttributeName(i)+"=\""+swigNode.getAttribute(i)+"\"";
-        result += "> \n";
-        
-        for(NEDElement child = swigNode.getFirstChild(); child != null; child = child.getNextSibling())
-            result += printSwigElement(child);
-        
-        result += "</"+ swigNode.getTagName()+">\n";
+        if (swigNode.getFirstChild() == null) {
+        	result += "/> \n";
+        } else {
+        	result += "> \n";
+        	for(NEDElement child = swigNode.getFirstChild(); child != null; child = child.getNextSibling())
+        		result += printSwigElementTree(child, indent+"  ");
+
+        	result += indent + "</"+ swigNode.getTagName()+">\n";
+        }
         return result;
     }
 

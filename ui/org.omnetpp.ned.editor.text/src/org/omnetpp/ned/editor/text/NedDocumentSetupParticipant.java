@@ -27,10 +27,10 @@ public class NedDocumentSetupParticipant implements IDocumentSetupParticipant {
 			IDocumentExtension3 extension3= (IDocumentExtension3) document;
             
             // content assist partitioner setup
-            IDocumentPartitioner contantPartitioner = 
+            IDocumentPartitioner contentPartitioner = 
                 new FastPartitioner(new NedContentAssistPartitionScanner(), NedContentAssistPartitionScanner.SUPPORTED_PARTITION_TYPES);
-			extension3.setDocumentPartitioner(NedContentAssistPartitionScanner.PARTITIONING_ID, contantPartitioner);
-			contantPartitioner.connect(document);
+			extension3.setDocumentPartitioner(NedContentAssistPartitionScanner.PARTITIONING_ID, contentPartitioner);
+			contentPartitioner.connect(document);
 
             // syntax highlighter partitioner setup
             IDocumentPartitioner highlightPartitioner = 

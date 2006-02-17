@@ -25,6 +25,7 @@ import org.eclipse.ui.editors.text.ILocationProvider;
 /**
  * @since 3.1
  */
+// FIXME delete me
 public class NonExistingFileEditorInput_OLD implements IEditorInput, ILocationProvider {
 
 	private static int fgNonExisting= 0;

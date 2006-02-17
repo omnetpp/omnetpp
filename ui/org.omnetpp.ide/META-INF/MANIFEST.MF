@@ -7,6 +7,7 @@ Bundle-Activator: org.omnetpp.ide.Activator
 Bundle-Vendor: OpenSim Ltd.
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
+ org.eclipse.ui.ide,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.ui.editors,
@@ -16,5 +17,6 @@ Require-Bundle: org.eclipse.ui,
  org.omnetpp.ned.editor.text,
  org.omnetpp.scave,
  org.omnetpp.scave.engine,
- org.omnetpp.ned2.model
+ org.omnetpp.ned2.model,
+ org.eclipse.jface.text
 Eclipse-LazyStart: true
