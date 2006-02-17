@@ -4,13 +4,11 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.text.IDocument;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.editors.text.TextFileDocumentProvider;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.omnetpp.ned.editor.graph.ModuleEditor;
 import org.omnetpp.ned.editor.text.NedEditor;
@@ -70,12 +68,10 @@ public class GraphAndTextEditor extends MultiPageEditorPart implements
 	protected void pageChange(int newPageIndex) {
 		super.pageChange(newPageIndex);
 		if (newPageIndex == textPageIndex) {
+			// generate text representation from the model 
 			String textEditorContent = ModelUtil.generateNedSource(nedModel);
-			TextDocument td = new TextDocument();
-			IDocument editorDoc = 
-				((TextFileDocumentProvider)nedEditor.getDocumentProvider()).getDocument(getEditorInput());
-			editorDoc.set(textEditorContent);
-				
+			// put it into the text editor
+			nedEditor.setText(textEditorContent);
 		}
 	}
 
@@ -101,5 +97,4 @@ public class GraphAndTextEditor extends MultiPageEditorPart implements
 		// TODO Auto-generated method stub
 
 	}
-
 }

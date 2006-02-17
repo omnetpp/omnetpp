@@ -164,6 +164,14 @@ public class NedEditor extends TextEditor {
 			fOutlinePage.setInput(input);
 	}
 	
+	/**
+	 * Set the content of the text editor
+	 * @param content
+	 */
+	public void setText(String content) {
+		getDocumentProvider().getDocument(getEditorInput()).set(content);
+	}
+	
 	/*
 	 * @see org.eclipse.ui.texteditor.ExtendedTextEditor#editorContextMenuAboutToShow(org.eclipse.jface.action.IMenuManager)
 	 */
