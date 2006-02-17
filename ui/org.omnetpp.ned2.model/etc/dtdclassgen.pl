@@ -223,9 +223,7 @@ foreach $element (@elements)
     $decl =~ s/^/ * /mg;
 
     print JAVA "package $javapackage;\n\n";
-    print JAVA "import NEDElement;\n";
-    print JAVA "import NEDElementTags;\n";
-    print JAVA "import NEDElementUtil;\n\n";
+    print JAVA "//import $javapackage.*;\n\n";
     print JAVA "/**\n";
     print JAVA " * GENERATED CLASS. Represents the &lt;$element&gt; XML element in memory. DTD declaration:\n";
     print JAVA " * \n";
@@ -311,7 +309,7 @@ foreach $element (@elements)
         if ($attval eq "#IMPLIED") {
             print JAVA "            case $i: return \"\";\n";
         } elsif ($attval eq "#REQUIRED") {
-            print JAVA "            case $i: return NULL;\n";
+            print JAVA "            case $i: return null;\n";
         } else {
             print JAVA "            case $i: return $attval;\n";
         }
@@ -344,8 +342,8 @@ foreach $element (@elements)
 
     for ($i=0; $i<$childcount; $i++)
     {
-        print JAVA "    public $elementclass{$children[$i]} getFirst$childvars[$i]Child()\n";
-        print JAVA "        return ($childclass)getFirstChildWithTag($enumname{$children[$i]});\n";
+        print JAVA "    public $elementclass{$children[$i]} getFirst$childvars[$i]Child() {\n";
+        print JAVA "        return ($elementclass{$children[$i]})getFirstChildWithTag($enumname{$children[$i]});\n";
         print JAVA "    }\n\n";
     }
     print JAVA "};\n\n";
