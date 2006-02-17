@@ -227,13 +227,11 @@ foreach $element (@elements)
     print JAVA "package $javapackage;\n\n";
     print JAVA "//import $javapackage.*;\n\n";
     print JAVA "/**\n";
-    print JAVA " * GENERATED CLASS. Represents the &lt;$element&gt; XML element in memory. DTD declaration:\n";
+    print JAVA " * GENERATED CLASS. Represents the &lt;$element&gt; XML element. DTD declaration:\n";
     print JAVA " * \n";
     print JAVA " * <pre>\n";
     print JAVA $decl;
     print JAVA " * </pre>\n";
-    print JAVA " * \n";
-    print JAVA " * \@ingroup Data\n";
     print JAVA " */\n";
     print JAVA "public class $elementclass extends NEDElement implements NEDElementTags, NEDElementUtil\n";
     print JAVA "{\n";
