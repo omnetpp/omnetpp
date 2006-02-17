@@ -1586,19 +1586,25 @@ int runparse (NEDParser *p,NedFileNode *nf,bool parseexpr, bool storesrc, const 
 
     // parse
     int ret;
-    try {
+    try
+    {
         ret = yyparse();
-    } catch (NEDException *e) {
+    }
+    catch (NEDException *e)
+    {
         INTERNAL_ERROR1(NULL, "error during parsing: %s", e->errorMessage());
         delete e;
         return 0;
     }
 
-    // more sanity checks
-    if (ps.propertyscope.size()!=1 || ps.propertyscope.top()!=ps.nedfile)
-        INTERNAL_ERROR0(NULL, "error during parsing: imbalanced propertyscope");
-    if (!ps.blockscope.empty() || !ps.typescope.empty())
-        INTERNAL_ERROR0(NULL, "error during parsing: imbalanced blockscope or typescope");
+    if (!errorsOccurred())
+    {
+        // more sanity checks
+        if (ps.propertyscope.size()!=1 || ps.propertyscope.top()!=ps.nedfile)
+            INTERNAL_ERROR0(NULL, "error during parsing: imbalanced propertyscope");
+        if (!ps.blockscope.empty() || !ps.typescope.empty())
+            INTERNAL_ERROR0(NULL, "error during parsing: imbalanced blockscope or typescope");
+    }
 
     return ret;
 }
