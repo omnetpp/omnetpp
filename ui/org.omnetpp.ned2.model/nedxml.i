@@ -41,14 +41,10 @@
 %ignore NEDElement::setUserData(NEDElementUserData *);
 %ignore NEDElement::getUserData() const;
 
-%ignore generateNed(ostream&, NEDElement *, bool);
+%ignore generateNed(ostream&, NEDElement *);
 %ignore NEDGenerator::generate(ostream&, NEDElement *, const char *);
 
 %ignore ltstr;
-
-//%ignore NEDDTDValidator::validateElement;
-//%ignore NEDBasicValidator::validateElement;
-//%ignore NEDSemanticValidator::validateElement;
 
 //
 // The following code is from "19.9.7 Adding Java downcasts to polymorphic return types"
@@ -143,6 +139,7 @@
 %include "nedelements.h"
 
 %include "nedvalidator.h"
+%include "neddtdvalidatorbase.h"
 %include "neddtdvalidator.h"
 //%include "nedbasicvalidator.h"
 

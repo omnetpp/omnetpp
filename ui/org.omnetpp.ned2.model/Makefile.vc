@@ -39,7 +39,7 @@ JAVADIR = src\$(JAVAPKG:.=\)
 default: nedxml_engine.dll
 
 nedxml_wrap.cxx: nedxml.i $(HEADERS)
-	-del java\*.java >nul
+	-del $(JAVADIR)\*.java >nul
 	$(SWIG) -c++ -java -package $(JAVAPKG) -I$(NEDXML) -outdir $(JAVADIR) nedxml.i
 
 nedxml_engine.dll : $(OBJS)
