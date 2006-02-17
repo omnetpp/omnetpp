@@ -41,6 +41,7 @@ class NEDValidatorBase
     /** Dispatches to the corresponding overloaded validateElement() function */
     virtual void validateElement(NEDElement *node);
 
+  protected:
     /** @name Validation functions, to be implemented in subclasses */
     //@{
     virtual void validateElement(FilesNode *node) = 0;

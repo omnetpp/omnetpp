@@ -34,6 +34,7 @@ class NEDDTDValidator : public NEDDTDValidatorBase
     NEDDTDValidator() {}
     virtual ~NEDDTDValidator() {}
 
+  protected:
     /** @name Validation functions */
     //@{
     virtual void validateElement(FilesNode *node);

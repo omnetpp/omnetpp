@@ -38,14 +38,13 @@ class NEDGenerator
 {
   protected:
     int indentsize;
-    ostream& out;
+    ostream *outp;
 
   public:
     /**
-     * Constructor. Takes an output stream where the generated NED code
-     * will be written.
+     * Constructor.
      */
-    NEDGenerator(ostream& out);
+    NEDGenerator();
 
     /**
      * Destructor.
@@ -58,9 +57,15 @@ class NEDGenerator
     void setIndentSize(int indentsize);
 
     /**
-     * Generates NED code. Takes object tree and base indentation.
+     * Generates NED code. Takes an output stream where the generated NED code
+     * will be written, the object tree and the base indentation.
      */
-    void generate(NEDElement *node, const char *indent);
+    void generate(ostream& out, NEDElement *node, const char *indent);
+
+    /**
+     * Generates NED code and returns it as a string.
+     */
+    std::string generate(NEDElement *node, const char *indent);
 
   protected:
     /** @name Change indentation level */

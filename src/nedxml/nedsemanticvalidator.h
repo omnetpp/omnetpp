@@ -53,6 +53,7 @@ class NEDSemanticValidator : public NEDValidatorBase
     /** Destructor */
     virtual ~NEDSemanticValidator();
 
+  protected:
     /** @name Validator methods */
     //@{
     virtual void validateElement(FilesNode *node);

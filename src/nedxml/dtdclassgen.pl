@@ -553,7 +553,9 @@ print VAL_H "    //\@}\n\n";
 print VAL_H "    /** Validates the node recursively */\n";
 print VAL_H "    virtual void validate(NEDElement *node);\n";
 print VAL_H "    /** Dispatches to the corresponding overloaded validateElement() function */\n";
-print VAL_H "    virtual void validateElement(NEDElement *node);\n\n";
+print VAL_H "    virtual void validateElement(NEDElement *node);\n";
+print VAL_H "\n";
+print VAL_H "  protected:\n";
 print VAL_H "    /** \@name Validation functions, to be implemented in subclasses */\n";
 print VAL_H "    //\@{\n";
 foreach $element (@elements)
@@ -612,7 +614,9 @@ print DTDVAL_H "class NEDDTDValidator : public NEDDTDValidatorBase\n";
 print DTDVAL_H "{\n";
 print DTDVAL_H "  public:\n";
 print DTDVAL_H "    NEDDTDValidator() {}\n";
-print DTDVAL_H "    virtual ~NEDDTDValidator() {}\n\n";
+print DTDVAL_H "    virtual ~NEDDTDValidator() {}\n";
+print DTDVAL_H "\n";
+print DTDVAL_H "  protected:\n";
 print DTDVAL_H "    /** \@name Validation functions */\n";
 print DTDVAL_H "    //\@{\n";
 foreach $element (@elements)

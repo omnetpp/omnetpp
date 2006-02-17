@@ -56,6 +56,7 @@ class NEDBasicValidator : public NEDValidatorBase
      */
     virtual ~NEDBasicValidator() {}
 
+  protected:
     /** @name Validator methods */
     //@{
     virtual void validateElement(FilesNode *node);
