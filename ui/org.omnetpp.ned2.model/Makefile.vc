@@ -36,7 +36,7 @@ JAVADIR = src\$(JAVAPKG:.=\)
 #
 # Targets
 #
-default: nedxml_engine.dll
+default: nedxml_engine.dll javaclasses
 
 nedxml_wrap.cxx: nedxml.i $(HEADERS)
 	-del $(JAVADIR)\*.java >nul
@@ -51,6 +51,9 @@ depend:
 clean:
 	-del engine_wrap.cxx *.obj *.exp *.lib java\*.java test*.exe nedxml_engine.dll 2> nul
 	-del *.ilk *.idb *.pdb *.pch 2> nul
+
+javaclasses:
+	perl etc/dtdclassgen.pl $(OMNETPP_ROOT)/doc/ned2/ned2.dtd org.omnetpp.ned2.model src/org/omnetpp/ned2/model
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
