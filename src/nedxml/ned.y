@@ -616,34 +616,44 @@ submodules_old
 submodule_old
         : NAME ':' NAME opt_semicolon
                 {
-                  ps.submod = addSubmodule(ps.submods, @1, @3, NULLPOS);
-                  setComments(ps.submod,@1,@4);
+                  ps.submod = (SubmoduleNode *)createNodeWithTag(NED_SUBMODULE, ps.submods);
+                  ps.submod->setName(toString(@1));
+                  ps.submod->setType(toString(@3));
+                  //setComments(ps.submod,@1,@4);
                 }
           submodule_body_old
                 {
                 }
         | NAME ':' NAME vector opt_semicolon
                 {
-                  ps.submod = addSubmodule(ps.submods, @1, @3, NULLPOS);
+                  ps.submod = (SubmoduleNode *)createNodeWithTag(NED_SUBMODULE, ps.submods);
+                  ps.submod->setName(toString(@1));
+                  ps.submod->setType(toString(@3));
                   addVector(ps.submod, "vector-size",@4,$4);
-                  setComments(ps.submod,@1,@5);
+                  //setComments(ps.submod,@1,@5);
                 }
           submodule_body_old
                 {
                 }
         | NAME ':' NAME LIKE NAME opt_semicolon
                 {
-                  ps.submod = addSubmodule(ps.submods, @1, @5, @3);
-                  setComments(ps.submod,@1,@6);
+                  ps.submod = (SubmoduleNode *)createNodeWithTag(NED_SUBMODULE, ps.submods);
+                  ps.submod->setName(toString(@1));
+                  ps.submod->setLikeType(toString(@5));
+                  ps.submod->setLikeParam(toString(@3)); //FIXME store as expression!!!
+                  //setComments(ps.submod,@1,@6);
                 }
           submodule_body_old
                 {
                 }
         | NAME ':' NAME vector LIKE NAME opt_semicolon
                 {
-                  ps.submod = addSubmodule(ps.submods, @1, @6, @3);
+                  ps.submod = (SubmoduleNode *)createNodeWithTag(NED_SUBMODULE, ps.submods);
+                  ps.submod->setName(toString(@1));
+                  ps.submod->setLikeType(toString(@5));
+                  ps.submod->setLikeParam(toString(@3)); //FIXME store as expression!!!
                   addVector(ps.submod, "vector-size",@4,$4);
-                  setComments(ps.submod,@1,@7);
+                  //setComments(ps.submod,@1,@7);
                 }
           submodule_body_old
                 {
@@ -823,14 +833,15 @@ connection_old
 loopconnection_old
         : FOR
                 {
-                  ps.forloop = (ForLoopNode *)createNodeWithTag(NED_FOR_LOOP, ps.conns );
+                  ps.conngroup = (ConnectionGroupNode *)createNodeWithTag(NED_CONNECTION_GROUP, ps.conns);
+                  ps.where = (WhereNode *)createNodeWithTag(NED_WHERE, ps.conngroup);
                   ps.inLoop=1;
                 }
           loopvarlist_old DO notloopconnections_old ENDFOR opt_semicolon
                 {
                   ps.inLoop=0;
-                  setComments(ps.forloop,@1,@4);
-                  setTrailingComment(ps.forloop,@6);
+                  //setComments(ps.where,@1,@4);
+                  //setTrailingComment(ps.where,@6);
                 }
         ;
 
@@ -842,17 +853,17 @@ loopvarlist_old
 loopvar_old
         : NAME '=' expression TO expression
                 {
-                  ps.loopvar = addLoopVar(ps.forloop,@1);
-                  addExpression(ps.loopvar, "from-value",@3,$3);
-                  addExpression(ps.loopvar, "to-value",@5,$5);
-                  setComments(ps.loopvar,@1,@5);
+                  ps.loop = addLoop(ps.where,@1);
+                  addExpression(ps.loop, "from-value",@3,$3);
+                  addExpression(ps.loop, "to-value",@5,$5);
+                  setComments(ps.loop,@1,@5);
                 }
         ;
 
 opt_conncondition_old
         : IF expression
                 {
-                  addExpression(ps.conn, "condition",@2,$2);
+                  addExpression(ps.conn, "condition",@2,$2); //FIXME is condition in a conngroup allowed?
                 }
         |
         ;
@@ -907,13 +918,13 @@ leftgatespec_old
 leftmod_old
         : NAME vector
                 {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.forloop : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule( toString(@1) );
                   addVector(ps.conn, "src-module-index",@2,$2);
                 }
         | NAME
                 {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.forloop : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule( toString(@1) );
                 }
         ;
@@ -938,20 +949,20 @@ leftgate_old
 parentleftgate_old
         : NAME vector
                 {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.forloop : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
                   addVector(ps.conn, "src-gate-index",@2,$2);
                 }
         | NAME
                 {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.forloop : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
                 }
         | NAME PLUSPLUS
                 {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.forloop : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
                   ps.conn->setSrcGatePlusplus(true);
