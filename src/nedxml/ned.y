@@ -507,7 +507,7 @@ parameter_old
                 }
         | NAME ':' ANYTYPE
                 {
-                  NEDError(ps.params,"type 'anytype' not supported any more");
+                  NEDError(ps.params,"type 'anytype' no longer supported");
                 }
         ;
 
@@ -762,7 +762,10 @@ gatesize_old
 opt_submod_displayblock_old
         : DISPLAY ':' STRINGCONSTANT ';'
                 {
-                  addDisplayString(ps.submod,@3);
+                  ps.property = addComponentProperty(ps.submod, "display");
+                  ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
+                  LiteralNode *literal = createLiteral(NED_CONST_STRING, trimQuotes(@3), @3);
+                  ps.propkey->appendChild(literal);
                 }
         |
         ;
@@ -1176,25 +1179,24 @@ parameter_expr
                 }
         | REF NAME
                 {
-                  $$ = createParamRef(toString(@2));
-                  ((ParamRefNode *)$$)->setIsRef(true);
+                  if (ps.parseExpressions) $$ = createIdent(toString(@2));
+                  NEDError(ps.params,"`ref' modifier no longer supported (add `function' "
+                                     "modifier to destination parameter instead)");
                 }
         | REF ANCESTOR NAME
                 {
-                  $$ = createParamRef(toString(@3));
-                  ((ParamRefNode *)$$)->setIsRef(true);
-                  ((ParamRefNode *)$$)->setIsAncestor(true);
+                  if (ps.parseExpressions) $$ = createIdent(toString(@3));
+                  NEDError(ps.params,"`ancestor' and `ref' modifiers no longer supported");
                 }
         | ANCESTOR REF NAME
                 {
-                  $$ = createParamRef(toString(@3));
-                  ((ParamRefNode *)$$)->setIsRef(true);
-                  ((ParamRefNode *)$$)->setIsAncestor(true);
+                  if (ps.parseExpressions) $$ = createIdent(toString(@3));
+                  NEDError(ps.params,"`ancestor' and `ref' modifiers no longer supported");
                 }
         | ANCESTOR NAME
                 {
-                  $$ = createParamRef(toString(@2));
-                  ((ParamRefNode *)$$)->setIsAncestor(true);
+                  if (ps.parseExpressions) $$ = createIdent(toString(@2));
+                  NEDError(ps.params,"`ancestor' modifier no longer supported");
                 }
         ;
 
@@ -1445,10 +1447,10 @@ properties
 property
         : NAME '=' propertyvalue ';'
                 {
-                  ps.property = (PropertyNode *)createNodeWithTag(NED_PROPERTY, ps.properties);
-                  ps.property->setName(toString(@1));
-                  ps.property->setValue(toString(@3));
-                  setComments(ps.property,@1,@3);
+                  ps.msgproperty = (MsgpropertyNode *)createNodeWithTag(NED_MSGPROPERTY, ps.properties);
+                  ps.msgproperty->setName(toString(@1));
+                  ps.msgproperty->setValue(toString(@3));
+                  setComments(ps.msgproperty,@1,@3);
                 }
         ;
 
