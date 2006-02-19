@@ -412,7 +412,10 @@ opt_displayblock_old
 displayblock_old
         : DISPLAY ':' STRINGCONSTANT ';'
                 {
-                  addDisplayString(ps.module,@3);
+                  ps.property = addComponentProperty(ps.module, "display");
+                  ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
+                  LiteralNode *literal = createLiteral(NED_CONST_STRING, trimQuotes(@3), @3);
+                  ps.propkey->appendChild(literal);
                 }
         ;
 
@@ -457,43 +460,54 @@ parameters_old
 parameter_old
         : NAME
                 {
-                  ps.param = addParameter(ps.params,@1,TYPE_NUMERIC);
+                  ps.param = addParameter(ps.params, @1);
+                  ps.param->setType(NED_PARTYPE_DOUBLE);
+                  ps.param->setIsFunction(true); // because CONST is missing
                 }
         | NAME ':' NUMERICTYPE
                 {
-                  ps.param = addParameter(ps.params,@1,TYPE_NUMERIC);
+                  ps.param = addParameter(ps.params, @1);
+                  ps.param->setType(NED_PARTYPE_DOUBLE);
+                  ps.param->setIsFunction(true); // because CONST is missing
                 }
         | CONSTDECL NAME /* for compatibility */
                 {
-                  ps.param = addParameter(ps.params,@2,TYPE_CONST_NUM);
+                  ps.param = addParameter(ps.params, @1);
+                  ps.param->setType(NED_PARTYPE_DOUBLE);
                 }
         | NAME ':' CONSTDECL
                 {
-                  ps.param = addParameter(ps.params,@1,TYPE_CONST_NUM);
+                  ps.param = addParameter(ps.params, @1);
+                  ps.param->setType(NED_PARTYPE_DOUBLE);
                 }
         | NAME ':' CONSTDECL NUMERICTYPE
                 {
-                  ps.param = addParameter(ps.params,@1,TYPE_CONST_NUM);
+                  ps.param = addParameter(ps.params, @1);
+                  ps.param->setType(NED_PARTYPE_DOUBLE);
                 }
         | NAME ':' NUMERICTYPE CONSTDECL
                 {
-                  ps.param = addParameter(ps.params,@1,TYPE_CONST_NUM);
+                  ps.param = addParameter(ps.params, @1);
+                  ps.param->setType(NED_PARTYPE_DOUBLE);
                 }
         | NAME ':' STRINGTYPE
                 {
-                  ps.param = addParameter(ps.params,@1,TYPE_STRING);
+                  ps.param = addParameter(ps.params, @1);
+                  ps.param->setType(NED_PARTYPE_STRING);
                 }
         | NAME ':' BOOLTYPE
                 {
-                  ps.param = addParameter(ps.params,@1,TYPE_BOOL);
+                  ps.param = addParameter(ps.params, @1);
+                  ps.param->setType(NED_PARTYPE_BOOL);
                 }
         | NAME ':' XMLTYPE
                 {
-                  ps.param = addParameter(ps.params,@1,TYPE_XML);
+                  ps.param = addParameter(ps.params, @1);
+                  ps.param->setType(NED_PARTYPE_XML);
                 }
         | NAME ':' ANYTYPE
                 {
-                  ps.param = addParameter(ps.params,@1,TYPE_ANYTYPE);
+                  NEDError(ps.params,"type 'anytype' not supported any more");
                 }
         ;
 
