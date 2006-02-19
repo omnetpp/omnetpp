@@ -136,7 +136,7 @@ struct ParserState
     WhitespaceNode *whitespace;
     ImportNode *import;
     //PropertyDeclNode *propertydecl;
-    //ExtendsNode *extends;
+    ExtendsNode *extends;
     //InterfaceNameNode *interfacename;
     ChannelNode *channel;
     NEDElement *module;  // in fact, CompoundModuleNode* or SimpleModule*
@@ -301,9 +301,11 @@ channeldefinition_old
 channelheader_old
         : CHANNEL NAME
                 {
-                  ps.channel = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.nedfile );
+                  ps.channel = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.nedfile);
                   ps.channel->setName(toString(@2));
-                  setComments(ps.channel,@1,@2);
+                  ps.params = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.channel);
+                  ps.params->setIsImplicit(true);
+                  //setComments(ps.channel,@1,@2);
                 }
         ;
 
@@ -315,15 +317,17 @@ opt_channelattrblock_old
 channelattrblock_old
         : channelattrblock_old CHANATTRNAME expression opt_semicolon
                 {
-                  ps.chanattr = addChanAttr(ps.channel,toString(@2));
-                  addExpression(ps.chanattr, "value",@3,$3);
-                  setComments(ps.channel,@2,@3);
+                  ps.params->setIsImplicit(false);
+                  ps.param = addParameter(ps.params, @2);
+                  addExpression(ps.param, "value",@3,$3);
+                  //setComments(ps.param,@2,@3);
                 }
         | CHANATTRNAME expression opt_semicolon
                 {
-                  ps.chanattr = addChanAttr(ps.channel,toString(@1));
-                  addExpression(ps.chanattr, "value",@2,$2);
-                  setComments(ps.channel,@1,@2);
+                  ps.params->setIsImplicit(false);
+                  ps.param = addParameter(ps.params, @1);
+                  addExpression(ps.param, "value",@2,$2);
+                  //setComments(ps.param,@1,@2);
                 }
         ;
 
@@ -682,7 +686,7 @@ substparamblocks_old
 substparamblock_old
         : PARAMETERS ':'
                 {
-                  ps.substparams = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.inNetwork ? (NEDElement *)ps.network : (NEDElement *)ps.submod );
+                  ps.substparams = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.inNetwork ? (NEDElement *)ps.module : (NEDElement *)ps.submod);
                   setComments(ps.substparams,@1,@2);
                 }
           opt_substparameters_old
@@ -690,7 +694,7 @@ substparamblock_old
                 }
         | PARAMETERS IF expression ':'
                 {
-                  ps.substparams = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.inNetwork ? (NEDElement *)ps.network : (NEDElement *)ps.submod );
+                  ps.substparams = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.inNetwork ? (NEDElement *)ps.module : (NEDElement *)ps.submod);
                   addExpression(ps.substparams, "condition",@3,$3);
                   setComments(ps.substparams,@1,@4);
                 }
@@ -1051,8 +1055,12 @@ networkdefinition_old
 networkheader_old
         : NETWORK NAME ':' NAME opt_semicolon
                 {
-                  ps.network = addNetwork(ps.nedfile,@2,@4);
-                  setComments(ps.network,@1,@5);
+                  ps.module = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.nedfile );
+                  ((CompoundModuleNode *)ps.module)->setName(toString(@2));
+                  ((CompoundModuleNode *)ps.module)->setIsNetwork(true);
+                  ps.extends = (ExtendsNode *)createNodeWithTag(NED_EXTENDS, ps.module);
+                  ps.extends->setName(toString(@4));
+                  //setComments(ps.module,@1,@5);
                   ps.inNetwork=1;
                 }
         ;
@@ -1060,7 +1068,7 @@ networkheader_old
 endnetwork_old
         : ENDNETWORK opt_semicolon
                 {
-                  setTrailingComment(ps.network,@1);
+                  //setTrailingComment(ps.module,@1);
                   ps.inNetwork=0;
                 }
         ;
