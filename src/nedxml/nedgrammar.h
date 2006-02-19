@@ -89,7 +89,6 @@ void yy_delete_buffer(struct yy_buffer_state *);
 
 int runparse (NEDParser *p,NedFileNode *nf,bool parseexpr,bool storesrc, const char *sourcefname);
 
-extern int use_chanattrname_token;
 
 #endif
 

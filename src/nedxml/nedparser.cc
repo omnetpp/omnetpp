@@ -26,6 +26,8 @@
 #include "nedelements.h"
 #include "nederror.h"
 
+#include "nedgrammar.h"
+
 
 //--------
 

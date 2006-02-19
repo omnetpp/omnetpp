@@ -82,7 +82,7 @@ static YYLTYPE NULLPOS={0,0,0,0,0,0};
 
 static const char *sourcefilename;
 
-NEDParser *np;
+static NEDParser *np;
 
 struct ParserState
 {

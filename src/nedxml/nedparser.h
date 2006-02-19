@@ -18,7 +18,6 @@
 
 #include <stdio.h>
 
-#include "nedgrammar.h"
 #include "nedelement.h"
 
 class NEDFileBuffer;

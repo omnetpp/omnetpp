@@ -118,7 +118,7 @@ static YYLTYPE NULLPOS={0,0,0,0,0,0};
 
 static const char *sourcefilename;
 
-NEDParser *np; // FIXME will clash with new one
+static NEDParser *np;
 
 struct ParserState
 {
@@ -868,7 +868,7 @@ loopvar_old
 opt_conncondition_old
         : IF expression
                 {
-                  addExpression(ps.conn, "condition",@2,$2); //FIXME is condition in a conngroup allowed?
+                  addExpression(ps.conn, "condition",@2,$2); //FIXME add WHERE+CONDITION; is condition in a conngroup allowed?
                 }
         |
         ;

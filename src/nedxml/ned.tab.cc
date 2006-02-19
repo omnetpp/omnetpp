@@ -290,7 +290,7 @@ static YYLTYPE NULLPOS={0,0,0,0,0,0};
 
 static const char *sourcefilename;
 
-NEDParser *np; // FIXME will clash with new one
+static NEDParser *np;
 
 struct ParserState
 {
