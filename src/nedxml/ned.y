@@ -550,13 +550,16 @@ gatesI_old
 gateI_old
         : NAME '[' ']'
                 {
-                  ps.gate = addGate(ps.gates, @1, 1, 1 );
-                  setComments(ps.gate,@1,@3);
+                  ps.gate = addGate(ps.gates, @1);
+                  ps.gate->setType(NED_GATETYPE_INPUT);
+                  ps.gate->setIsVector(true);
+                  //setComments(ps.gate,@1,@3);
                 }
         | NAME
                 {
-                  ps.gate = addGate(ps.gates, @1, 1, 0 );
-                  setComments(ps.gate,@1);
+                  ps.gate = addGate(ps.gates, @1);
+                  ps.gate->setType(NED_GATETYPE_INPUT);
+                  //setComments(ps.gate,@1);
                 }
         ;
 
@@ -568,13 +571,16 @@ gatesO_old
 gateO_old
         : NAME '[' ']'
                 {
-                  ps.gate = addGate(ps.gates, @1, 0, 1 );
-                  setComments(ps.gate,@1,@3);
+                  ps.gate = addGate(ps.gates, @1);
+                  ps.gate->setType(NED_GATETYPE_OUTPUT);
+                  ps.gate->setIsVector(true);
+                  //setComments(ps.gate,@1,@3);
                 }
         | NAME
                 {
-                  ps.gate = addGate(ps.gates, @1, 0, 0 );
-                  setComments(ps.gate,@1);
+                  ps.gate = addGate(ps.gates, @1);
+                  ps.gate->setType(NED_GATETYPE_OUTPUT);
+                  //setComments(ps.gate,@1,@3);
                 }
         ;
 
@@ -782,7 +788,7 @@ connblock_old
         : CONNECTIONS NOCHECK ':'
                 {
                   ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.module );
-                  ps.conns->setCheckUnconnected(false);
+                  ps.conns->setAllowUnconnected(true);
                   setComments(ps.conns,@1,@3);
                 }
           opt_connections_old
@@ -791,7 +797,7 @@ connblock_old
         | CONNECTIONS ':'
                 {
                   ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.module );
-                  ps.conns->setCheckUnconnected(true);
+                  ps.conns->setAllowUnconnected(false);
                   setComments(ps.conns,@1,@2);
                 }
           opt_connections_old
@@ -854,7 +860,11 @@ opt_conncondition_old
 opt_conn_displaystr_old
         : DISPLAY STRINGCONSTANT
                 {
-                  addDisplayString(ps.conn,@2);
+                  //FIXME add chanspec here if doesn't exist!
+                  ps.property = addComponentProperty(ps.chanspec, "display");
+                  ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
+                  LiteralNode *literal = createLiteral(NED_CONST_STRING, trimQuotes(@2), @2);
+                  ps.propkey->appendChild(literal);
                 }
         |
         ;
