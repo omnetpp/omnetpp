@@ -114,16 +114,6 @@ void yyerror (const char *s);
 #include "nedelements.h"
 #include "nedutil.h"
 
-/*
- * use_chanattrname_token:
- * It turns on/off recognizing the "delay", "error", "datarate" words
- * as CHANATTRNAME tokens. If it's off, they're simply returned as NAME.
- * The CHANATTRNAME token is necessary to get the parsing of connection
- * attributes right with the old NED syntax -- in the new syntax
- * they should be treated as any arbitrary word (NAME).
- */
-int use_chanattrname_token;
-
 static YYLTYPE NULLPOS={0,0,0,0,0,0};
 
 static const char *sourcefilename;
@@ -151,14 +141,19 @@ struct ParserState
     ChannelNode *channel;
     NEDElement *module;  // in fact, CompoundModuleNode* or SimpleModule*
     //ModuleInterfaceNode *moduleinterface;
-    ParametersNode *parameters;
-    ParamGroupNode *paramgroup;
+    ParametersNode *params;
+    //ParamGroupNode *paramgroup;
     ParamNode *param;
+    ParametersNode *substparams;
+    ParamGroupNode *substparamgroup;
+    ParamNode *substparam;
     PropertyNode *property;
     PropertyKeyNode *propkey;
     GatesNode *gates;
-    GateGroupNode *gategroup;
     GateNode *gate;
+    GatesNode *gatesizes;
+    GateGroupNode *gatesizesgroup;
+    GateNode *gatesize;
     SubmodulesNode *submods;
     SubmoduleNode *submod;
     ConnectionsNode *conns;
@@ -356,7 +351,6 @@ simpledefinition_old
 simpleheader_old
         : SIMPLE NAME
                 {
-                  use_chanattrname_token = 1;
                   ps.module = (SimpleModuleNode *)createNodeWithTag(NED_SIMPLE_MODULE, ps.nedfile );
                   ((SimpleModuleNode *)ps.module)->setName(toString(@2));
                   setComments(ps.module,@1,@2);
@@ -390,7 +384,6 @@ moduledefinition_old
 moduleheader_old
         : MODULE NAME
                 {
-                  use_chanattrname_token = 1;
                   ps.module = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.nedfile );
                   ((CompoundModuleNode *)ps.module)->setName(toString(@2));
                   setComments(ps.module,@1,@2);
@@ -434,7 +427,7 @@ opt_paramblock_old
 paramblock_old
         : PARAMETERS ':'
                 {
-                  ps.params = (ParamsNode *)createNodeWithTag(NED_PARAMS, ps.module );
+                  ps.params = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.module );
                   setComments(ps.params,@1,@2);
                 }
           opt_parameters_old
@@ -659,7 +652,7 @@ substparamblocks_old
 substparamblock_old
         : PARAMETERS ':'
                 {
-                  ps.substparams = (SubstparamsNode *)createNodeWithTag(NED_SUBSTPARAMS, ps.inNetwork ? (NEDElement *)ps.network : (NEDElement *)ps.submod );
+                  ps.substparams = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.inNetwork ? (NEDElement *)ps.network : (NEDElement *)ps.submod );
                   setComments(ps.substparams,@1,@2);
                 }
           opt_substparameters_old
@@ -667,7 +660,7 @@ substparamblock_old
                 }
         | PARAMETERS IF expression ':'
                 {
-                  ps.substparams = (SubstparamsNode *)createNodeWithTag(NED_SUBSTPARAMS, ps.inNetwork ? (NEDElement *)ps.network : (NEDElement *)ps.submod );
+                  ps.substparams = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.inNetwork ? (NEDElement *)ps.network : (NEDElement *)ps.submod );
                   addExpression(ps.substparams, "condition",@3,$3);
                   setComments(ps.substparams,@1,@4);
                 }
@@ -707,7 +700,7 @@ opt_gatesizeblocks_old
 gatesizeblock_old
         : GATESIZES ':'
                 {
-                  ps.gatesizes = (GatesizesNode *)createNodeWithTag(NED_GATESIZES, ps.submod );
+                  ps.gatesizes = (GatesNode *)createNodeWithTag(NED_GATES, ps.submod );
                   setComments(ps.gatesizes,@1,@2);
                 }
           opt_gatesizes_old
@@ -715,7 +708,7 @@ gatesizeblock_old
                 }
         | GATESIZES IF expression ':'
                 {
-                  ps.gatesizes = (GatesizesNode *)createNodeWithTag(NED_GATESIZES, ps.submod );
+                  ps.gatesizes = (GatesNode *)createNodeWithTag(NED_GATES, ps.submod );
                   addExpression(ps.gatesizes, "condition",@3,$3);
                   setComments(ps.gatesizes,@1,@4);
                 }
@@ -857,24 +850,24 @@ notloopconnections_old
 notloopconnection_old
         : leftgatespec_old RIGHT_ARROW rightgatespec_old opt_conncondition_old opt_conn_displaystr_old comma_or_semicolon
                 {
-                  ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
+                  ps.conn->setArrowDirection(NED_ARROWDIR_L2R);
                   setComments(ps.conn,@1,@5);
                 }
         | leftgatespec_old RIGHT_ARROW channeldescr_old RIGHT_ARROW rightgatespec_old opt_conncondition_old opt_conn_displaystr_old comma_or_semicolon
                 {
-                  ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
+                  ps.conn->setArrowDirection(NED_ARROWDIR_L2R);
                   setComments(ps.conn,@1,@7);
                 }
         | leftgatespec_old LEFT_ARROW rightgatespec_old opt_conncondition_old opt_conn_displaystr_old comma_or_semicolon
                 {
                   swapConnection(ps.conn);
-                  ps.conn->setArrowDirection(NED_ARROWDIR_LEFT);
+                  ps.conn->setArrowDirection(NED_ARROWDIR_R2L);
                   setComments(ps.conn,@1,@5);
                 }
         | leftgatespec_old LEFT_ARROW channeldescr_old LEFT_ARROW rightgatespec_old opt_conncondition_old opt_conn_displaystr_old comma_or_semicolon
                 {
                   swapConnection(ps.conn);
-                  ps.conn->setArrowDirection(NED_ARROWDIR_LEFT);
+                  ps.conn->setArrowDirection(NED_ARROWDIR_R2L);
                   setComments(ps.conn,@1,@7);
                 }
         ;
