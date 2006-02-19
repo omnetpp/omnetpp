@@ -2142,7 +2142,7 @@ yyreduce:
                   ps.channel->setName(toString((yylsp[0])));
                   ps.params = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.channel);
                   ps.params->setIsImplicit(true);
-                  //setComments(ps.channel,@1,@2);
+                  setComments(ps.channel,(yylsp[-1]),(yylsp[0]));
                 ;}
     break;
 
@@ -2152,7 +2152,7 @@ yyreduce:
                   ps.params->setIsImplicit(false);
                   ps.param = addParameter(ps.params, (yylsp[-2]));
                   addExpression(ps.param, "value",(yylsp[-1]),(yyvsp[-1]));
-                  //setComments(ps.param,@2,@3);
+                  setComments(ps.param,(yylsp[-2]),(yylsp[-1]));
                 ;}
     break;
 
@@ -2162,7 +2162,7 @@ yyreduce:
                   ps.params->setIsImplicit(false);
                   ps.param = addParameter(ps.params, (yylsp[-2]));
                   addExpression(ps.param, "value",(yylsp[-1]),(yyvsp[-1]));
-                  //setComments(ps.param,@1,@2);
+                  setComments(ps.param,(yylsp[-2]),(yylsp[-1]));
                 ;}
     break;
 
@@ -2365,7 +2365,7 @@ yyreduce:
                   ps.gate = addGate(ps.gates, (yylsp[-2]));
                   ps.gate->setType(NED_GATETYPE_INPUT);
                   ps.gate->setIsVector(true);
-                  //setComments(ps.gate,@1,@3);
+                  setComments(ps.gate,(yylsp[-2]),(yylsp[0]));
                 ;}
     break;
 
@@ -2374,7 +2374,7 @@ yyreduce:
     {
                   ps.gate = addGate(ps.gates, (yylsp[0]));
                   ps.gate->setType(NED_GATETYPE_INPUT);
-                  //setComments(ps.gate,@1);
+                  setComments(ps.gate,(yylsp[0]));
                 ;}
     break;
 
@@ -2384,7 +2384,7 @@ yyreduce:
                   ps.gate = addGate(ps.gates, (yylsp[-2]));
                   ps.gate->setType(NED_GATETYPE_OUTPUT);
                   ps.gate->setIsVector(true);
-                  //setComments(ps.gate,@1,@3);
+                  setComments(ps.gate,(yylsp[-2]),(yylsp[0]));
                 ;}
     break;
 
@@ -2393,7 +2393,7 @@ yyreduce:
     {
                   ps.gate = addGate(ps.gates, (yylsp[0]));
                   ps.gate->setType(NED_GATETYPE_OUTPUT);
-                  //setComments(ps.gate,@1,@3);
+                  setComments(ps.gate,(yylsp[0]),(yylsp[0]));
                 ;}
     break;
 
@@ -2417,7 +2417,7 @@ yyreduce:
                   ps.submod = (SubmoduleNode *)createNodeWithTag(NED_SUBMODULE, ps.submods);
                   ps.submod->setName(toString((yylsp[-3])));
                   ps.submod->setType(toString((yylsp[-1])));
-                  //setComments(ps.submod,@1,@4);
+                  setComments(ps.submod,(yylsp[-3]),(yylsp[0]));
                 ;}
     break;
 
@@ -2434,7 +2434,7 @@ yyreduce:
                   ps.submod->setName(toString((yylsp[-4])));
                   ps.submod->setType(toString((yylsp[-2])));
                   addVector(ps.submod, "vector-size",(yylsp[-1]),(yyvsp[-1]));
-                  //setComments(ps.submod,@1,@5);
+                  setComments(ps.submod,(yylsp[-4]),(yylsp[0]));
                 ;}
     break;
 
@@ -2451,7 +2451,7 @@ yyreduce:
                   ps.submod->setName(toString((yylsp[-5])));
                   ps.submod->setLikeType(toString((yylsp[-1])));
                   ps.submod->setLikeParam(toString((yylsp[-3]))); //FIXME store as expression!!!
-                  //setComments(ps.submod,@1,@6);
+                  setComments(ps.submod,(yylsp[-5]),(yylsp[0]));
                 ;}
     break;
 
@@ -2469,7 +2469,7 @@ yyreduce:
                   ps.submod->setLikeType(toString((yylsp[-2])));
                   ps.submod->setLikeParam(toString((yylsp[-4]))); //FIXME store as expression!!!
                   addVector(ps.submod, "vector-size",(yylsp[-3]),(yyvsp[-3]));
-                  //setComments(ps.submod,@1,@7);
+                  setComments(ps.submod,(yylsp[-6]),(yylsp[0]));
                 ;}
     break;
 
@@ -2511,7 +2511,7 @@ yyreduce:
   case 107:
 #line 720 "ned.y"
     {
-                  ps.substparam = addSubstparam(ps.substparams,(yylsp[-2]));
+                  ps.substparam = addParameter(ps.substparams,(yylsp[-2]));
                   addExpression(ps.substparam, "value",(yylsp[0]),(yyvsp[0]));
                   setComments(ps.substparam,(yylsp[-2]),(yylsp[0]));
                 ;}
@@ -2534,7 +2534,7 @@ yyreduce:
   case 112:
 #line 745 "ned.y"
     {
-                  ps.gatesizes = (GatesNode *)createNodeWithTag(NED_GATES, ps.submod );
+                  ps.gatesizes = (GatesNode *)createNodeWithTag(NED_GATES, ps.submod);
                   addExpression(ps.gatesizes, "condition",(yylsp[-1]),(yyvsp[-1]));
                   setComments(ps.gatesizes,(yylsp[-3]),(yylsp[0]));
                 ;}
@@ -2549,7 +2549,7 @@ yyreduce:
   case 118:
 #line 767 "ned.y"
     {
-                  ps.gatesize = addGateSize(ps.gatesizes,(yylsp[-1]));
+                  ps.gatesize = addGate(ps.gatesizes,(yylsp[-1]));
                   addVector(ps.gatesize, "vector-size",(yylsp[0]),(yyvsp[0]));
 
                   setComments(ps.gatesize,(yylsp[-1]),(yylsp[0]));
@@ -2559,7 +2559,7 @@ yyreduce:
   case 119:
 #line 774 "ned.y"
     {
-                  ps.gatesize = addGateSize(ps.gatesizes,(yylsp[0]));
+                  ps.gatesize = addGate(ps.gatesizes,(yylsp[0]));
                   setComments(ps.gatesize,(yylsp[0]));
                 ;}
     break;
@@ -2617,7 +2617,7 @@ yyreduce:
 #line 846 "ned.y"
     {
                   ps.inLoop=0;
-                  //setComments(ps.where,@1,@4);
+                  setComments(ps.where,(yylsp[-6]),(yylsp[-3]));
                   //setTrailingComment(ps.where,@6);
                 ;}
     break;
@@ -2854,7 +2854,7 @@ yyreduce:
                   ((CompoundModuleNode *)ps.module)->setIsNetwork(true);
                   ps.extends = (ExtendsNode *)createNodeWithTag(NED_EXTENDS, ps.module);
                   ps.extends->setName(toString((yylsp[-1])));
-                  //setComments(ps.module,@1,@5);
+                  setComments(ps.module,(yylsp[-4]),(yylsp[0]));
                   ps.inNetwork=1;
                 ;}
     break;
@@ -3975,6 +3975,7 @@ ChannelSpecNode *createChannelSpec(NEDElement *conn)
    ChannelSpecNode *chanspec = (ChannelSpecNode *)createNodeWithTag(NED_CHANNEL_SPEC, ps.conn);
    ps.params = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, chanspec);
    ps.params->setIsImplicit(true);
+   return chanspec;
 }
 
 YYLTYPE trimBrackets(YYLTYPE vectorpos)

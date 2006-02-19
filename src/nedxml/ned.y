@@ -306,7 +306,7 @@ channelheader_old
                   ps.channel->setName(toString(@2));
                   ps.params = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.channel);
                   ps.params->setIsImplicit(true);
-                  //setComments(ps.channel,@1,@2);
+                  setComments(ps.channel,@1,@2);
                 }
         ;
 
@@ -321,14 +321,14 @@ channelattrblock_old
                   ps.params->setIsImplicit(false);
                   ps.param = addParameter(ps.params, @2);
                   addExpression(ps.param, "value",@3,$3);
-                  //setComments(ps.param,@2,@3);
+                  setComments(ps.param,@2,@3);
                 }
         | CHANATTRNAME expression opt_semicolon
                 {
                   ps.params->setIsImplicit(false);
                   ps.param = addParameter(ps.params, @1);
                   addExpression(ps.param, "value",@2,$2);
-                  //setComments(ps.param,@1,@2);
+                  setComments(ps.param,@1,@2);
                 }
         ;
 
@@ -558,13 +558,13 @@ gateI_old
                   ps.gate = addGate(ps.gates, @1);
                   ps.gate->setType(NED_GATETYPE_INPUT);
                   ps.gate->setIsVector(true);
-                  //setComments(ps.gate,@1,@3);
+                  setComments(ps.gate,@1,@3);
                 }
         | NAME
                 {
                   ps.gate = addGate(ps.gates, @1);
                   ps.gate->setType(NED_GATETYPE_INPUT);
-                  //setComments(ps.gate,@1);
+                  setComments(ps.gate,@1);
                 }
         ;
 
@@ -579,13 +579,13 @@ gateO_old
                   ps.gate = addGate(ps.gates, @1);
                   ps.gate->setType(NED_GATETYPE_OUTPUT);
                   ps.gate->setIsVector(true);
-                  //setComments(ps.gate,@1,@3);
+                  setComments(ps.gate,@1,@3);
                 }
         | NAME
                 {
                   ps.gate = addGate(ps.gates, @1);
                   ps.gate->setType(NED_GATETYPE_OUTPUT);
-                  //setComments(ps.gate,@1,@3);
+                  setComments(ps.gate,@1,@1);
                 }
         ;
 
@@ -624,7 +624,7 @@ submodule_old
                   ps.submod = (SubmoduleNode *)createNodeWithTag(NED_SUBMODULE, ps.submods);
                   ps.submod->setName(toString(@1));
                   ps.submod->setType(toString(@3));
-                  //setComments(ps.submod,@1,@4);
+                  setComments(ps.submod,@1,@4);
                 }
           submodule_body_old
                 {
@@ -635,7 +635,7 @@ submodule_old
                   ps.submod->setName(toString(@1));
                   ps.submod->setType(toString(@3));
                   addVector(ps.submod, "vector-size",@4,$4);
-                  //setComments(ps.submod,@1,@5);
+                  setComments(ps.submod,@1,@5);
                 }
           submodule_body_old
                 {
@@ -646,7 +646,7 @@ submodule_old
                   ps.submod->setName(toString(@1));
                   ps.submod->setLikeType(toString(@5));
                   ps.submod->setLikeParam(toString(@3)); //FIXME store as expression!!!
-                  //setComments(ps.submod,@1,@6);
+                  setComments(ps.submod,@1,@6);
                 }
           submodule_body_old
                 {
@@ -658,7 +658,7 @@ submodule_old
                   ps.submod->setLikeType(toString(@5));
                   ps.submod->setLikeParam(toString(@3)); //FIXME store as expression!!!
                   addVector(ps.submod, "vector-size",@4,$4);
-                  //setComments(ps.submod,@1,@7);
+                  setComments(ps.submod,@1,@7);
                 }
           submodule_body_old
                 {
@@ -718,7 +718,7 @@ substparameters_old
 substparameter_old
         : NAME '=' expression
                 {
-                  ps.substparam = addSubstparam(ps.substparams,@1);
+                  ps.substparam = addParameter(ps.substparams,@1);
                   addExpression(ps.substparam, "value",@3,$3);
                   setComments(ps.substparam,@1,@3);
                 }
@@ -743,7 +743,7 @@ gatesizeblock_old
                 }
         | GATESIZES IF expression ':'
                 {
-                  ps.gatesizes = (GatesNode *)createNodeWithTag(NED_GATES, ps.submod );
+                  ps.gatesizes = (GatesNode *)createNodeWithTag(NED_GATES, ps.submod);
                   addExpression(ps.gatesizes, "condition",@3,$3);
                   setComments(ps.gatesizes,@1,@4);
                 }
@@ -765,14 +765,14 @@ gatesizes_old
 gatesize_old
         : NAME vector
                 {
-                  ps.gatesize = addGateSize(ps.gatesizes,@1);
+                  ps.gatesize = addGate(ps.gatesizes,@1);
                   addVector(ps.gatesize, "vector-size",@2,$2);
 
                   setComments(ps.gatesize,@1,@2);
                 }
         | NAME
                 {
-                  ps.gatesize = addGateSize(ps.gatesizes,@1);
+                  ps.gatesize = addGate(ps.gatesizes,@1);
                   setComments(ps.gatesize,@1);
                 }
         ;
@@ -845,7 +845,7 @@ loopconnection_old
           loopvarlist_old DO notloopconnections_old ENDFOR opt_semicolon
                 {
                   ps.inLoop=0;
-                  //setComments(ps.where,@1,@4);
+                  setComments(ps.where,@1,@4);
                   //setTrailingComment(ps.where,@6);
                 }
         ;
@@ -1069,7 +1069,7 @@ networkheader_old
                   ((CompoundModuleNode *)ps.module)->setIsNetwork(true);
                   ps.extends = (ExtendsNode *)createNodeWithTag(NED_EXTENDS, ps.module);
                   ps.extends->setName(toString(@4));
-                  //setComments(ps.module,@1,@5);
+                  setComments(ps.module,@1,@5);
                   ps.inNetwork=1;
                 }
         ;
@@ -1840,6 +1840,7 @@ ChannelSpecNode *createChannelSpec(NEDElement *conn)
    ChannelSpecNode *chanspec = (ChannelSpecNode *)createNodeWithTag(NED_CHANNEL_SPEC, ps.conn);
    ps.params = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, chanspec);
    ps.params->setIsImplicit(true);
+   return chanspec;
 }
 
 YYLTYPE trimBrackets(YYLTYPE vectorpos)
