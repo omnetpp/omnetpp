@@ -19,7 +19,7 @@
  *=============================================================*/
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992,2002 Andras Varga
+  Copyright (C) 1992,2006 Andras Varga
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -106,7 +106,7 @@
 
 int yylex (void);
 void yyrestart(FILE *);
-void yyerror (char *s);
+void yyerror (const char *s);
 
 
 #include "nedparser.h"
@@ -128,14 +128,14 @@ static YYLTYPE NULLPOS={0,0,0,0,0,0};
 
 static const char *sourcefilename;
 
-NEDParser *np;
+NEDParser *np; // FIXME will clash with new one
 
 struct ParserState
 {
     bool parseExpressions;
     bool storeSourceCode;
-//    bool inLoop;
-//    bool inNetwork;
+    bool inLoop;
+    bool inNetwork;
 
     /* tmp flags, used with msg fields */
     bool isAbstract;
@@ -144,12 +144,13 @@ struct ParserState
     /* NED-I: modules, channels, networks */
     NedFileNode *nedfile;
     WhitespaceNode *whitespace;
-    ImportNode *imports;
-    PropertyDeclNode *propertydecl;
-    ExtendsNode *extends;
-    InterfaceNameNode *interfacename;
+    ImportNode *import;
+    //PropertyDeclNode *propertydecl;
+    //ExtendsNode *extends;
+    //InterfaceNameNode *interfacename;
+    ChannelNode *channel;
     NEDElement *module;  // in fact, CompoundModuleNode* or SimpleModule*
-    ModuleInterfaceNode *moduleinterface;
+    //ModuleInterfaceNode *moduleinterface;
     ParametersNode *parameters;
     ParamGroupNode *paramgroup;
     ParamNode *param;
@@ -161,10 +162,10 @@ struct ParserState
     SubmodulesNode *submods;
     SubmoduleNode *submod;
     ConnectionsNode *conns;
+    ConnectionGroupNode *conngroup;
     ConnectionNode *conn;
-    ChannelInterfaceNode *channelinterface;
-    ChannelNode *channel;
-    ConnectionGroupNode *connectiongroup;
+    ChannelSpecNode *chanspec;
+    WhereNode *where;
     LoopNode *loop;
     ConditionNode *condition;
 
@@ -189,6 +190,12 @@ struct ParserState
 
 NEDElement *createNodeWithTag(int tagcode, NEDElement *parent=NULL);
 
+PropertyNode *addProperty(NEDElement *node, const char *name);  // directly under the node
+PropertyNode *addComponentProperty(NEDElement *node, const char *name); // into ParametersNode child of node
+
+PropertyNode *storeSourceCode(NEDElement *node, YYLTYPE tokenpos);  // directly under the node
+PropertyNode *storeComponentSourceCode(NEDElement *node, YYLTYPE tokenpos); // into ParametersNode child
+
 void setFileComment(NEDElement *node);
 void setBannerComment(NEDElement *node, YYLTYPE tokenpos);
 void setRightComment(NEDElement *node, YYLTYPE tokenpos);
@@ -196,19 +203,12 @@ void setTrailingComment(NEDElement *node, YYLTYPE tokenpos);
 void setComments(NEDElement *node, YYLTYPE pos);
 void setComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos);
 
-ChannelAttrNode *addChanAttr(NEDElement *channel, const char *attrname);
-ParamNode *addParameter(NEDElement *params, YYLTYPE namepos, int type);
-GateNode *addGate(NEDElement *gates, YYLTYPE namepos, int is_in, int is_vector );
-SubmoduleNode *addSubmodule(NEDElement *submods, YYLTYPE namepos, YYLTYPE typepos,YYLTYPE likeparampos);
-GatesizeNode *addGateSize(NEDElement *gatesizes, YYLTYPE namepos);
-SubstparamNode *addSubstparam(NEDElement *substparams, YYLTYPE namepos);
-SubstmachineNode *addSubstmachine(NEDElement *substmachines, YYLTYPE namepos);
-ConnAttrNode *addConnAttr(NEDElement *conn, const char *attrname);
-LoopVarNode *addLoopVar(NEDElement *forloop, YYLTYPE varnamepos);
-NetworkNode *addNetwork(NEDElement *nedfile, YYLTYPE namepos, YYLTYPE typepos);
-DisplayStringNode *addDisplayString(NEDElement *parent, YYLTYPE dispstrpos);
+ParamNode *addParameter(NEDElement *params, YYLTYPE namepos);
+GateNode *addGate(NEDElement *gates, YYLTYPE namepos);
+LoopNode *addLoop(NEDElement *conngroup, YYLTYPE varnamepos);
 
 YYLTYPE trimBrackets(YYLTYPE vectorpos);
+YYLTYPE trimAngleBrackets(YYLTYPE vectorpos);
 YYLTYPE trimQuotes(YYLTYPE vectorpos);
 YYLTYPE trimDoubleBraces(YYLTYPE vectorpos);
 void swapAttributes(NEDElement *node, const char *attr1, const char *attr2);
@@ -221,14 +221,13 @@ const char *toString(long);
 ExpressionNode *createExpression(NEDElement *expr);
 OperatorNode *createOperator(const char *op, NEDElement *operand1, NEDElement *operand2=NULL, NEDElement *operand3=NULL);
 FunctionNode *createFunction(const char *funcname, NEDElement *arg1=NULL, NEDElement *arg2=NULL, NEDElement *arg3=NULL, NEDElement *arg4=NULL);
-ParamRefNode *createParamRef(const char *param, const char *paramindex=NULL, const char *module=NULL, const char *moduleindex=NULL);
-ObsoleteIdentNode *createObsoleteIdent(const char *name);
-LiteralNode *createLiteral(int type, const char *value, const char *text=NULL);
-LiteralNode *createTimeConst(const char *text);
-NEDElement *createParamRefOrIdent(const char *name);
+IdentNode *createIdent(const char *param, const char *paramindex=NULL, const char *module=NULL, const char *moduleindex=NULL);
+LiteralNode *createLiteral(int type, YYLTYPE valuepos, YYLTYPE textpos);
+LiteralNode *createQuantity(const char *text);
 NEDElement *unaryMinus(NEDElement *node);
 
 void addVector(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr);
+void addLikeParam(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr);
 void addExpression(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr);
 
 %}
@@ -251,13 +250,13 @@ definition
         : import
 
         | channeldefinition_old
-                { if (ps.storeSourceCode) ps.channel->setSourceCode(toString(@1)); }
+                { if (ps.storeSourceCode) storeComponentSourceCode(ps.channel, @1); }
         | simpledefinition_old
-                { if (ps.storeSourceCode) ((SimpleModuleNode *)ps.module)->setSourceCode(toString(@1)); }
+                { if (ps.storeSourceCode) storeComponentSourceCode(ps.module, @1); }
         | moduledefinition_old
-                { if (ps.storeSourceCode) ((CompoundModuleNode *)ps.module)->setSourceCode(toString(@1)); }
+                { if (ps.storeSourceCode) storeComponentSourceCode(ps.module, @1); }
         | networkdefinition_old
-                { if (ps.storeSourceCode) ps.network->setSourceCode(toString(@1)); }
+                { if (ps.storeSourceCode) storeComponentSourceCode(ps.module, @1); }
 
         | cplusplus
         | struct_decl
@@ -266,13 +265,13 @@ definition
         | enum_decl
 
         | enum
-                { if (ps.storeSourceCode) ps.enump->setSourceCode(toString(@1)); }
+                { if (ps.storeSourceCode) storeComponentSourceCode(ps.enump, @1); }
         | message
-                { if (ps.storeSourceCode) ps.messagep->setSourceCode(toString(@1)); }
+                { if (ps.storeSourceCode) storeComponentSourceCode(ps.messagep, @1); }
         | class
-                { if (ps.storeSourceCode) ps.classp->setSourceCode(toString(@1)); }
+                { if (ps.storeSourceCode) storeComponentSourceCode(ps.classp, @1); }
         | struct
-                { if (ps.storeSourceCode) ps.structp->setSourceCode(toString(@1)); }
+                { if (ps.storeSourceCode) storeComponentSourceCode(ps.structp, @1); }
         ;
 
 /*
@@ -280,14 +279,7 @@ definition
  */
 import
         : INCLUDE
-                {
-                  ps.imports = (ImportNode *)createNodeWithTag(NED_IMPORT, ps.nedfile );
-                  setComments(ps.imports,@1);
-                }
           filenames ';'
-                {
-                  // NOTE: no setTrailingComment(ps.imports,@3) -- comment already stored with last filename */
-                }
         ;
 
 filenames
@@ -298,7 +290,7 @@ filenames
 filename
         : STRINGCONSTANT
                 {
-                  ps.import = (ImportedFileNode *)createNodeWithTag(NED_IMPORTED_FILE, ps.imports );
+                  ps.import = (ImportNode *)createNodeWithTag(NED_IMPORT, ps.nedfile );
                   ps.import->setFilename(toString(trimQuotes(@1)));
                   setComments(ps.import,@1);
                 }
@@ -1043,9 +1035,8 @@ endnetwork_old
         ;
 
 /*
- * Common part - old and new
+ * Common part
  */
-
 vector
         : '[' expression ']'
                 { $$ = $2; }
@@ -1166,17 +1157,15 @@ expr
 
 simple_expr
         : parameter_expr
-        | stringliteral
-        | boolliteral
-        | numliteral
         | special_expr
+        | literal
         ;
 
 parameter_expr
         : NAME
                 {
                   // if there's no modifier, might be a loop variable too
-                  $$ = createParamRefOrIdent(toString(@1));
+                  if (ps.parseExpressions) $$ = createIdent(toString(@1));
                 }
         | REF NAME
                 {
@@ -1202,35 +1191,40 @@ parameter_expr
                 }
         ;
 
-boolliteral
-        : TRUE_
-                { $$ = createLiteral(NED_CONST_BOOL, "true"); }
-        | FALSE_
-                { $$ = createLiteral(NED_CONST_BOOL, "false"); }
-        ;
-
 special_expr
         : SUBMODINDEX
                 { if (ps.parseExpressions) $$ = createFunction("index"); }
         | SUBMODINDEX '(' ')'
                 { if (ps.parseExpressions) $$ = createFunction("index"); }
         | SIZEOF '(' NAME ')'
-                { if (ps.parseExpressions) $$ = createFunction("sizeof", createObsoleteIdent(toString(@3))); }
+                { if (ps.parseExpressions) $$ = createFunction("sizeof", createIdent(toString(@3))); }
+        ;
+
+literal
+        : stringliteral
+        | boolliteral
+        | numliteral
         ;
 
 stringliteral
         : STRINGCONSTANT
-                { $$ = createLiteral(NED_CONST_STRING, toString(trimQuotes(@1))); }
+                { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_STRING, trimQuotes(@1), @1); }
+        ;
+
+boolliteral
+        : TRUE_
+                { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_BOOL, @1, @1); }
+        | FALSE_
+                { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_BOOL, @1, @1); }
         ;
 
 numliteral
         : INTCONSTANT
-                { $$ = createLiteral(NED_CONST_INT, toString(@1)); }
+                { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_INT, @1, @1); }
         | REALCONSTANT
-                { $$ = createLiteral(NED_CONST_REAL, toString(@1)); }
+                { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_DOUBLE, @1, @1); }
         | quantity
-                { $$ = createTimeConst(toString(@1)); }
-
+                { if (ps.parseExpressions) $$ = createQuantity(toString(@1)); }
         ;
 
 quantity
@@ -1621,6 +1615,7 @@ int runparse (NEDParser *p,NedFileNode *nf,bool parseexpr, bool storesrc, const 
     if (yyin)
         yyrestart( yyin );
 
+    // create parser state and NEDFileNode
     np = p;
     ps.nedfile = nf;
     ps.parseExpressions = parseexpr;
@@ -1628,19 +1623,26 @@ int runparse (NEDParser *p,NedFileNode *nf,bool parseexpr, bool storesrc, const 
     sourcefilename = sourcefname;
 
     if (storesrc)
-        ps.nedfile->setSourceCode(np->nedsource->getFullText());
+        storeSourceCode(ps.nedfile, np->nedsource->getFullTextPos());
 
-    try {
-        return yyparse();
-    } catch (NEDException *e) {
-        NEDError(NULL, "internal error while parsing: %s", e->errorMessage());
+    // parse
+    int ret;
+    try
+    {
+        ret = yyparse();
+    }
+    catch (NEDException *e)
+    {
+        INTERNAL_ERROR1(NULL, "error during parsing: %s", e->errorMessage());
         delete e;
         return 0;
     }
+
+    return ret;
 }
 
 
-void yyerror (char *s)
+void yyerror (const char *s)
 {
     if (strlen(s))
         strcpy(yyfailure, s);
@@ -1681,30 +1683,78 @@ NEDElement *createNodeWithTag(int tagcode, NEDElement *parent)
     return e;
 }
 
+//
+// Properties
+//
+
+PropertyNode *addProperty(NEDElement *node, const char *name)
+{
+    PropertyNode *prop = (PropertyNode *)createNodeWithTag(NED_PROPERTY, node);
+    prop->setName(name);
+    return prop;
+}
+
+PropertyNode *addComponentProperty(NEDElement *node, const char *name)
+{
+    // add propery under the ParametersNode; create that if not yet exists
+    NEDElement *params = node->getFirstChildWithTag(NED_PARAMETERS);
+    if (!params)
+        params = createNodeWithTag(NED_PARAMETERS, node);
+    PropertyNode *prop = (PropertyNode *)createNodeWithTag(NED_PROPERTY, params);
+    prop->setName(name);
+    return prop;
+}
+
+//
+// Spec Properties: source code, display string
+//
+
+PropertyNode *storeSourceCode(NEDElement *node, YYLTYPE tokenpos)
+{
+     PropertyNode *prop = addProperty(node, "sourcecode");
+     prop->setIsImplicit(true);
+     PropertyKeyNode *propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, prop);
+     propkey->appendChild(createLiteral(NED_CONST_STRING, tokenpos, tokenpos));  // FIXME don't store it twice
+     return prop;
+}
+
+PropertyNode *storeComponentSourceCode(NEDElement *node, YYLTYPE tokenpos)
+{
+     PropertyNode *prop = addComponentProperty(node, "sourcecode");
+     prop->setIsImplicit(true);
+     PropertyKeyNode *propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, prop);
+     propkey->appendChild(createLiteral(NED_CONST_STRING, tokenpos, tokenpos));  // FIXME don't store it twice
+     return prop;
+}
+
+//
+// Comments
+//
+
 void setFileComment(NEDElement *node)
 {
-    node->setAttribute("file-comment", np->nedsource->getFileComment() );
+//XXX    node->setAttribute("file-comment", np->nedsource->getFileComment() );
 }
 
 void setBannerComment(NEDElement *node, YYLTYPE tokenpos)
 {
-    node->setAttribute("banner-comment", np->nedsource->getBannerComment(tokenpos) );
+//XXX    node->setAttribute("banner-comment", np->nedsource->getBannerComment(tokenpos) );
 }
 
 void setRightComment(NEDElement *node, YYLTYPE tokenpos)
 {
-    node->setAttribute("right-comment", np->nedsource->getTrailingComment(tokenpos) );
+//XXX    node->setAttribute("right-comment", np->nedsource->getTrailingComment(tokenpos) );
 }
 
 void setTrailingComment(NEDElement *node, YYLTYPE tokenpos)
 {
-    node->setAttribute("trailing-comment", np->nedsource->getTrailingComment(tokenpos) );
+//XXX    node->setAttribute("trailing-comment", np->nedsource->getTrailingComment(tokenpos) );
 }
 
 void setComments(NEDElement *node, YYLTYPE pos)
 {
-    setBannerComment(node, pos);
-    setRightComment(node, pos);
+//XXX    setBannerComment(node, pos);
+//XXX    setRightComment(node, pos);
 }
 
 void setComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos)
@@ -1713,110 +1763,42 @@ void setComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos)
     pos.last_line = lastpos.last_line;
     pos.last_column = lastpos.last_column;
 
-    setBannerComment(node, pos);
-    setRightComment(node, pos);
+//XXX    setBannerComment(node, pos);
+//XXX    setRightComment(node, pos);
 }
 
-ChannelAttrNode *addChanAttr(NEDElement *channel, const char *attrname)
+ParamNode *addParameter(NEDElement *params, YYLTYPE namepos)
 {
-    ChannelAttrNode *chanattr = (ChannelAttrNode *)createNodeWithTag(NED_CHANNEL_ATTR, channel );
-    chanattr->setName( attrname );
-    return chanattr;
-}
-
-ParamNode *addParameter(NEDElement *params, YYLTYPE namepos, int type)
-{
-   const char *s;
-   switch (type)
-   {
-       case TYPE_NUMERIC:   s = "numeric"; break;
-       case TYPE_CONST_NUM: s = "numeric const"; break;
-       case TYPE_STRING:    s = "string"; break;
-       case TYPE_BOOL:      s = "bool"; break;
-       case TYPE_XML:       s = "xml"; break;
-       case TYPE_ANYTYPE:   s = "anytype"; break;
-       default: s="?";
-   }
-
    ParamNode *param = (ParamNode *)createNodeWithTag(NED_PARAM,params);
    param->setName( toString( namepos) );
-   param->setDataType( s );
    return param;
 }
 
-GateNode *addGate(NEDElement *gates, YYLTYPE namepos, int is_in, int is_vector )
+GateNode *addGate(NEDElement *gates, YYLTYPE namepos)
 {
    GateNode *gate = (GateNode *)createNodeWithTag(NED_GATE,gates);
    gate->setName( toString( namepos) );
-   gate->setDirection(is_in ? NED_GATEDIR_INPUT : NED_GATEDIR_OUTPUT);
-   gate->setIsVector(is_vector);
    return gate;
 }
 
-SubmoduleNode *addSubmodule(NEDElement *submods, YYLTYPE namepos, YYLTYPE typepos,YYLTYPE likeparampos)
+LoopNode *addLoop(NEDElement *conngroup, YYLTYPE varnamepos)
 {
-   SubmoduleNode *submod = (SubmoduleNode *)createNodeWithTag(NED_SUBMODULE,submods);
-   submod->setName( toString( namepos) );
-   submod->setTypeName( toString( typepos) );
-   submod->setLikeParam( toString( likeparampos) );
-
-   return submod;
-}
-
-GatesizeNode *addGateSize(NEDElement *gatesizes, YYLTYPE namepos)
-{
-   GatesizeNode *gatesize = (GatesizeNode *)createNodeWithTag(NED_GATESIZE,gatesizes);
-   gatesize->setName( toString( namepos) );
-   return gatesize;
-}
-
-SubstparamNode *addSubstparam(NEDElement *substparams, YYLTYPE namepos)
-{
-   SubstparamNode *substparam = (SubstparamNode *)createNodeWithTag(NED_SUBSTPARAM,substparams);
-   substparam->setName( toString( namepos) );
-   return substparam;
-}
-
-SubstmachineNode *addSubstmachine(NEDElement *substmachines, YYLTYPE namepos)
-{
-   SubstmachineNode *substmachine = (SubstmachineNode *)createNodeWithTag(NED_SUBSTMACHINE,substmachines);
-   substmachine->setName( toString( namepos) );
-   return substmachine;
-}
-
-LoopVarNode *addLoopVar(NEDElement *forloop, YYLTYPE varnamepos)
-{
-   LoopVarNode *loopvar = (LoopVarNode *)createNodeWithTag(NED_LOOP_VAR,forloop);
-   loopvar->setParamName( toString( varnamepos) );
-   return loopvar;
-}
-
-ConnAttrNode *addConnAttr(NEDElement *conn, const char *attrname)
-{
-    ConnAttrNode *connattr = (ConnAttrNode *)createNodeWithTag(NED_CONN_ATTR,conn);
-    connattr->setName( attrname );
-    return connattr;
-}
-
-
-NetworkNode *addNetwork(NEDElement *nedfile, YYLTYPE namepos, YYLTYPE typepos)
-{
-   NetworkNode *network = (NetworkNode *)createNodeWithTag(NED_NETWORK,nedfile);
-   network->setName( toString( namepos) );
-   network->setTypeName( toString( typepos) );
-   return network;
-}
-
-DisplayStringNode *addDisplayString(NEDElement *parent, YYLTYPE dispstrpos)
-{
-   DisplayStringNode *dispstr = (DisplayStringNode *)createNodeWithTag(NED_DISPLAY_STRING,parent);
-   dispstr->setValue( toString( trimQuotes(dispstrpos)) );
-   return dispstr;
+   LoopNode *loop = (LoopNode *)createNodeWithTag(NED_LOOP,conngroup);
+   loop->setParamName( toString( varnamepos) );
+   return loop;
 }
 
 YYLTYPE trimBrackets(YYLTYPE vectorpos)
 {
    // should check it's really brackets that get chopped off
+   vectorpos.first_column++;
+   vectorpos.last_column--;
+   return vectorpos;
+}
+
+YYLTYPE trimAngleBrackets(YYLTYPE vectorpos)
+{
+   // should check it's really angle brackets that get chopped off
    vectorpos.first_column++;
    vectorpos.last_column--;
    return vectorpos;
@@ -1843,6 +1825,14 @@ void addVector(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDEleme
    addExpression(elem, attrname, trimBrackets(exprpos), expr);
 }
 
+void addLikeParam(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr)
+{
+   if (ps.parseExpressions && !expr)
+       elem->setAttribute(attrname, toString(trimAngleBrackets(exprpos)));
+   else
+       addExpression(elem, attrname, trimAngleBrackets(exprpos), expr);
+}
+
 void addExpression(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr)
 {
    if (ps.parseExpressions) {
@@ -1860,6 +1850,7 @@ void swapConnection(NEDElement *conn)
    swapAttributes(conn, "src-gate", "dest-gate");
    swapAttributes(conn, "src-gate-index", "dest-gate-index");
    swapAttributes(conn, "src-gate-plusplus", "dest-gate-plusplus");
+   swapAttributes(conn, "src-gate-subg", "dest-gate-subg");
 
    swapExpressionChildren(conn, "src-module-index", "dest-module-index");
    swapExpressionChildren(conn, "src-gate-index", "dest-gate-index");
@@ -1914,36 +1905,29 @@ ExpressionNode *createExpression(NEDElement *expr)
    return expression;
 }
 
-ParamRefNode *createParamRef(const char *param, const char *paramindex, const char *module, const char *moduleindex)
+IdentNode *createIdent(const char *param, const char *paramindex, const char *module, const char *moduleindex)
 {
-   ParamRefNode *par = (ParamRefNode *)createNodeWithTag(NED_PARAM_REF);
-   par->setParamName(param);
-   if (paramindex) par->setParamIndex(paramindex);
+   IdentNode *par = (IdentNode *)createNodeWithTag(NED_IDENT);
+   par->setName(param);
+   // if (paramindex) par->setParamIndex(paramindex);
    if (module) par->setModule(module);
    if (moduleindex) par->setModuleIndex(moduleindex);
    return par;
 }
 
-ObsoleteIdentNode *createObsoleteIdent(const char *name)
-{
-   ObsoleteIdentNode *ident = (ObsoleteIdentNode *)createNodeWithTag(NED_OBSOLETE_IDENT);
-   ident->setName(name);
-   return ident;
-}
-
-LiteralNode *createLiteral(int type, const char *value, const char *text)
+LiteralNode *createLiteral(int type, YYLTYPE valuepos, YYLTYPE textpos)
 {
    LiteralNode *c = (LiteralNode *)createNodeWithTag(NED_LITERAL);
    c->setType(type);
-   if (value) c->setValue(value);
-   if (text) c->setText(text);
+   c->setValue(toString(valuepos));
+   c->setText(toString(textpos));
    return c;
 }
 
-LiteralNode *createTimeConst(const char *text)
+LiteralNode *createQuantity(const char *text)
 {
    LiteralNode *c = (LiteralNode *)createNodeWithTag(NED_LITERAL);
-   c->setType(NED_CONST_TIME);
+   c->setType(NED_CONST_UNIT);
    if (text) c->setText(text);
 
    double t = NEDStrToSimtime(text);
@@ -1960,22 +1944,6 @@ LiteralNode *createTimeConst(const char *text)
    return c;
 }
 
-NEDElement *createParamRefOrIdent(const char *name)
-{
-    // determine if 'name' can be a loop variable. if so, use createObsoleteIdent()
-    bool isvar = false;
-    if (ps.inLoop)
-    {
-        for (NEDElement *child=ps.forloop->getFirstChildWithTag(NED_LOOP_VAR); child; child=child->getNextSiblingWithTag(NED_LOOP_VAR))
-        {
-            LoopVarNode *loopvar = (LoopVarNode *)child;
-            if (!strcmp(loopvar->getParamName(),name))
-                isvar = true;
-        }
-    }
-    return isvar ? (NEDElement *)createObsoleteIdent(name) : (NEDElement *)createParamRef(name);
-}
-
 NEDElement *unaryMinus(NEDElement *node)
 {
     // if not a constant, must appy unary minus operator
@@ -1985,7 +1953,7 @@ NEDElement *unaryMinus(NEDElement *node)
     LiteralNode *constNode = (LiteralNode *)node;
 
     // only int and real constants can be negative, string, bool, etc cannot
-    if (constNode->getType()!=NED_CONST_INT && constNode->getType()!=NED_CONST_REAL)
+    if (constNode->getType()!=NED_CONST_INT && constNode->getType()!=NED_CONST_DOUBLE)
     {
        char msg[140];
        sprintf(msg,"unary minus not accepted before '%.100s'",constNode->getValue());

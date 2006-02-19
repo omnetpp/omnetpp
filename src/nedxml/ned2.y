@@ -1902,7 +1902,7 @@ LiteralNode *createQuantity(const char *text)
    if (t<0)
    {
        char msg[130];
-       sprintf(msg,"invalid time constant '%.100s'",text);
+       sprintf(msg,"invalid constant '%.100s'",text);
        np->error(msg, pos.li);
    }
    char buf[32];
