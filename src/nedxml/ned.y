@@ -201,6 +201,7 @@ void setComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos);
 ParamNode *addParameter(NEDElement *params, YYLTYPE namepos);
 GateNode *addGate(NEDElement *gates, YYLTYPE namepos);
 LoopNode *addLoop(NEDElement *conngroup, YYLTYPE varnamepos);
+ChannelSpecNode *createChannelSpec(NEDElement *conn);
 
 YYLTYPE trimBrackets(YYLTYPE vectorpos);
 YYLTYPE trimAngleBrackets(YYLTYPE vectorpos);
@@ -875,7 +876,8 @@ opt_conncondition_old
 opt_conn_displaystr_old
         : DISPLAY STRINGCONSTANT
                 {
-                  //FIXME add chanspec here if doesn't exist!
+                  if (!ps.chanspec)
+                      ps.chanspec = createChannelSpec(ps.conn);
                   ps.property = addComponentProperty(ps.chanspec, "display");
                   ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
                   LiteralNode *literal = createLiteral(NED_CONST_STRING, trimQuotes(@2), @2);
@@ -925,11 +927,13 @@ leftmod_old
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule( toString(@1) );
                   addVector(ps.conn, "src-module-index",@2,$2);
+                  ps.chanspec = NULL;   // none yet -- we'll create it on-demand
                 }
         | NAME
                 {
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule( toString(@1) );
+                  ps.chanspec = NULL;   // none yet -- we'll create it on-demand
                 }
         ;
 
@@ -1028,18 +1032,23 @@ parentrightgate_old
 channeldescr_old
         : NAME
                 {
-                  ps.connattr = addConnAttr(ps.conn,"channel");
-                  addExpression(ps.connattr, "value",@1,createExpression(createLiteral(NED_CONST_STRING, toString(@1))));
+                  if (!ps.chanspec)
+                      ps.chanspec = createChannelSpec(ps.conn);
+                  ps.chanspec->setType(toString(@1));
                 }
         | CHANATTRNAME expression
                 {
-                  ps.connattr = addConnAttr(ps.conn,toString(@1));
-                  addExpression(ps.connattr, "value",@2,$2);
+                  if (!ps.chanspec)
+                      ps.chanspec = createChannelSpec(ps.conn);
+                  ps.param = addParameter(ps.params, @1);
+                  addExpression(ps.param, "value",@2,$2);
                 }
         | channeldescr_old CHANATTRNAME expression
                 {
-                  ps.connattr = addConnAttr(ps.conn,toString(@2));
-                  addExpression(ps.connattr, "value",@3,$3);
+                  if (!ps.chanspec)
+                      ps.chanspec = createChannelSpec(ps.conn);
+                  ps.param = addParameter(ps.params, @2);
+                  addExpression(ps.param, "value",@3,$3);
                 }
         ;
 
@@ -1824,6 +1833,13 @@ LoopNode *addLoop(NEDElement *conngroup, YYLTYPE varnamepos)
    LoopNode *loop = (LoopNode *)createNodeWithTag(NED_LOOP,conngroup);
    loop->setParamName( toString( varnamepos) );
    return loop;
+}
+
+ChannelSpecNode *createChannelSpec(NEDElement *conn)
+{
+   ChannelSpecNode *chanspec = (ChannelSpecNode *)createNodeWithTag(NED_CHANNEL_SPEC, ps.conn);
+   ps.params = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, chanspec);
+   ps.params->setIsImplicit(true);
 }
 
 YYLTYPE trimBrackets(YYLTYPE vectorpos)
