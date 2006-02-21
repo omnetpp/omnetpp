@@ -14,13 +14,17 @@
 #
 
 $filename = $ARGV[0];
-$filename =~ /./ || die "*** usage: prog dtdfile package outdir\n";
+$filename =~ /./ || die "*** usage: prog dtdfile importpackage package outdir\n";
 
-$javapackage = $ARGV[1];
-$javapackage =~ /./ || die "*** usage: prog dtdfile package outdir\n";
+$javaimportedpackage = $ARGV[1];
+$javaimportedpackage =~ /./ || die "*** usage: prog dtdfile importpackage package outdir\n";
 
-$outdir = $ARGV[2];
-$outdir =~ /./ || die "*** usage: prog dtdfile package outdir\n";
+$javapackage = $ARGV[2];
+$javapackage =~ /./ || die "*** usage: prog dtdfile importpackage package outdir\n";
+
+$outdir = $ARGV[3];
+$outdir =~ /./ || die "*** usage: prog dtdfile importpackage package outdir\n";
+
 
 $buf="";
 open(IN,$filename) || die "*** cannot open input file $filename";
@@ -225,7 +229,7 @@ foreach $element (@elements)
     $decl =~ s/^/ * /mg;
 
     print JAVA "package $javapackage;\n\n";
-    print JAVA "//import $javapackage.*;\n\n";
+    print JAVA "import $javaimportedpackage.*;\n\n";
     print JAVA "/**\n";
     print JAVA " * GENERATED CLASS. Represents the &lt;$element&gt; XML element. DTD declaration:\n";
     print JAVA " * \n";

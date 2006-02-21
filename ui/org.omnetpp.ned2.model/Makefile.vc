@@ -18,8 +18,12 @@ COPTS=$(CFLAGS) -I$(JDK)\include -I$(JDK)\include\win32 -I$(NEDXML)
 
 OBJS = nedxml_wrap.obj
 HEADERS = $(NEDXML)\*.h
-JAVAPKG = org.omnetpp.ned2.model.swig
-JAVADIR = src\$(JAVAPKG:.=\)
+BASEPKG = org.omnetpp.ned2.model
+SWIGPKG = $(BASEPKG).swig
+SWIGDIR = src\$(SWIGPKG:.=\)
+JMODELPKG = $(BASEPKG).pojo
+JMODELDIR = src\$(JMODELPKG:.=\)
+
 
 #
 # Automatic rules
@@ -39,8 +43,8 @@ JAVADIR = src\$(JAVAPKG:.=\)
 default: nedxml_engine.dll javaclasses
 
 nedxml_wrap.cxx: nedxml.i $(HEADERS)
-	-del $(JAVADIR)\*.java >nul
-	$(SWIG) -c++ -java -package $(JAVAPKG) -I$(NEDXML) -outdir $(JAVADIR) nedxml.i
+	-del $(SWIGDIR)\*.java >nul
+	$(SWIG) -c++ -java -package $(SWIGPKG) -I$(NEDXML) -outdir $(SWIGDIR) nedxml.i
 
 nedxml_engine.dll : $(OBJS)
 	$(LINK) /dll /out:"nedxml_engine.dll" $(OBJS) $(NEDXML)/nedxml.lib $(LDFLAGS)
@@ -53,7 +57,7 @@ clean:
 	-del *.ilk *.idb *.pdb *.pch 2> nul
 
 javaclasses:
-	perl etc/dtdclassgen.pl $(OMNETPP_ROOT)/doc/ned2/ned2.dtd org.omnetpp.ned2.model src/org/omnetpp/ned2/model
+	perl etc/dtdclassgen.pl $(OMNETPP_ROOT)/doc/ned2/ned2.dtd $(BASEPKG) $(JMODELPKG) $(JMODELDIR)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
