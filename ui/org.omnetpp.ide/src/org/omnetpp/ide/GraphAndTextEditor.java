@@ -35,16 +35,15 @@ public class GraphAndTextEditor extends MultiPageEditorPart implements
 	// open ned file and parse it to crate the document model
 	private void loadDoc(IEditorInput editorInput) {
 		IFileEditorInput fileInput = (IFileEditorInput)editorInput;
-//		try {
+		try {
 			// FIXME do it simpler if possible
 			String filename = fileInput.getFile().getLocation().toFile().getPath();
-			System.out.println(filename);
 			nedModel = ModelUtil.loadNedSource(filename);
 			
-//		} catch (Exception e) {
-//			MessageDialog.openError(new Shell(), "Error opening file",
-//					"Error opening file "+fileInput.getName()+": "+e.getMessage());
-//		}
+		} catch (Exception e) {
+			MessageDialog.openError(new Shell(), "Error opening file",
+					"Error opening file "+fileInput.getName()+": "+e.getMessage());
+		}
 	}
 	
 	@Override

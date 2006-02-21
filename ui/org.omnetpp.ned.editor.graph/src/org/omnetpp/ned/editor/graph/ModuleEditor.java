@@ -756,17 +756,16 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
 
     protected void setInput(IEditorInput input) {
         superSetInput(input);
-// XXX temporaryly disabled
-//        IFile file = ((IFileEditorInput) input).getFile();
-//        try {
-//            InputStream is = file.getContents(false);
-//            ObjectInputStream ois = new ObjectInputStream(is);
-//            setLogicDiagram((NedFile) ois.readObject());
-//            ois.close();
-//        } catch (Exception e) {
-//            // This is just an example. All exceptions caught here.
-//            e.printStackTrace();
-//        }
+        IFile file = ((IFileEditorInput) input).getFile();
+        try {
+            InputStream is = file.getContents(false);
+            ObjectInputStream ois = new ObjectInputStream(is);
+            setModel((NedFile) ois.readObject());
+            ois.close();
+        } catch (Exception e) {
+            // This is just an example. All exceptions caught here.
+            e.printStackTrace();
+        }
 
         if (!editorSaving) {
             if (getGraphicalViewer() != null) {

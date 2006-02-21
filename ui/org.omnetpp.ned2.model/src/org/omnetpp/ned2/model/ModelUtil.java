@@ -18,9 +18,9 @@ public class ModelUtil {
 		np.setParseExpressions(false);
 		np.parseText(source);
 		NEDElement treeRoot = np.getTree();
-		System.out.println("SWIG TREE: \n" + printSwigElementTree(treeRoot, ""));
+//		System.out.println("SWIG TREE: \n" + printSwigElementTree(treeRoot, ""));
 		org.omnetpp.ned2.model.NEDElement tmpEl = swig2pojo(treeRoot);
-		System.out.println("POJO TREE: \n" + printPojoElementTree(tmpEl, ""));
+//		System.out.println("POJO TREE: \n" + printPojoElementTree(tmpEl, ""));
 		return tmpEl;
 	}
 
@@ -29,15 +29,14 @@ public class ModelUtil {
 		np.setParseExpressions(false);
 		np.parseFile(fname);
 		NEDElement treeRoot = np.getTree();
-		System.out.println("SWIG TREE: \n" + printSwigElementTree(treeRoot, ""));
+//		System.out.println("SWIG TREE: \n" + printSwigElementTree(treeRoot, ""));
 		org.omnetpp.ned2.model.NEDElement tmpEl = swig2pojo(treeRoot);
-		System.out.println("POJO TREE: \n" + printPojoElementTree(tmpEl, ""));
+//		System.out.println("POJO TREE: \n" + printPojoElementTree(tmpEl, ""));
 		return tmpEl;
 	}
 
 	// WARNING there are two differenet NEDElement types hadled in this function 
 	public static org.omnetpp.ned2.model.NEDElement swig2pojo(NEDElement swigNode) {
-
 		org.omnetpp.ned2.model.NEDElement pojoNode = 
 			org.omnetpp.ned2.model.pojo.NEDElementFactory
 				.createNodeWithTag(swigNode.getTagCode());
