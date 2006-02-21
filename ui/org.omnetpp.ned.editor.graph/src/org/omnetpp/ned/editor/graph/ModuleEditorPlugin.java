@@ -46,20 +46,6 @@ public class ModuleEditorPlugin extends AbstractUIPlugin {
         if (singleton == null) {
             singleton = this;
         }
-        // XXX remove below. only for testing
-//        NEDParser np = new NEDParser();
-//        np.setParseExpressions(false);
-//        np.parseFile("c:/temp/example.ned");
-//        NEDElement treeRoot = np.getTree();
-//        System.out.println(ModelUtil.printSwigElement(treeRoot));
-        
-//        NEDGenerator ng = new NEDGenerator();
-//        ng.setNewSyntax(false);
-//        System.out.println(ng.generate(treeRoot, ""));
-//        System.out.println(ModelUtil.printSwigElement(treeRoot));
-//        
-//        // generate EMF tree
-//        System.out.println(ModelUtil.swig2emf(treeRoot));
     }
 
     public static ModuleEditorPlugin getDefault() {

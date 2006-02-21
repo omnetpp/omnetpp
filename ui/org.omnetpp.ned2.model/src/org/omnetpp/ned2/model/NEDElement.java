@@ -1,5 +1,7 @@
 package org.omnetpp.ned2.model;
 
+import java.util.Iterator;
+
 
 /**
  * Base class for objects in a NED object tree, the XML-based
@@ -8,7 +10,7 @@ package org.omnetpp.ned2.model;
  * NEDElement provides a DOM-like, generic access to the tree;
  * subclasses additionally provide a typed interface.
  */
-public abstract class NEDElement
+public abstract class NEDElement implements Iterable<NEDElement>
 {
     private long id;
     private String srcloc;
@@ -20,7 +22,30 @@ public abstract class NEDElement
     private Object userdata;
     private static long lastid;
 
-    protected static boolean stringToBool(String s)
+    public Iterator<NEDElement> iterator() {
+    	final NEDElement e = this;
+		return new Iterator () {
+			private NEDElement oldChild = null;
+			private NEDElement child = e.getFirstChild();
+
+			public boolean hasNext() {
+				return child != null;
+			}
+
+			public Object next() {
+				oldChild = child;
+				child = child.getNextSibling();
+				return oldChild;
+			}
+
+			public void remove() {
+				oldChild.getParent().removeChild(oldChild);
+			}
+		
+		};
+	}
+
+	protected static boolean stringToBool(String s)
     {
         if (s.equals("true"))
             return true;

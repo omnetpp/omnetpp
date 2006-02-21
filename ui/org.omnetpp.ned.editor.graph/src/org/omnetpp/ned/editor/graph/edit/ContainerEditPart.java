@@ -10,8 +10,11 @@
  *******************************************************************************/
 package org.omnetpp.ned.editor.graph.edit;
 
+import java.util.List;
+
 import org.eclipse.gef.EditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedContainerEditPolicy;
+import org.omnetpp.ned.editor.graph.model.Container;
 
 /**
  * Provides support for Container EditParts.
@@ -26,4 +29,8 @@ abstract public class ContainerEditPart extends BaseEditPart {
         installEditPolicy(EditPolicy.CONTAINER_ROLE, new NedContainerEditPolicy());
     }
 
+    protected List getModelChildren() {
+    	return ((Container)getModel()).getChildren();
+    }
+    
 }

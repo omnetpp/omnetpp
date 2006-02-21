@@ -6,7 +6,6 @@
          point="org.eclipse.ui.editors">
       <editor
             class="org.omnetpp.ide.GraphAndTextEditor"
-            contributorClass="org.omnetpp.ned.editor.graph.actions.ModuleActionBarContributor"
             default="true"
             extensions="ned"
             icon="icons/gned.gif"

@@ -14,6 +14,8 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 
 import org.eclipse.gef.requests.CreationFactory;
+import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
 
 /**
  * Used to create new example models. Used by the create wizard
@@ -162,5 +164,24 @@ public class NedModelFactory {
         if (root == null) createLargeModel();
         return root;
     }
+    
+    public static NedFile pojo2gmodel(NEDElement pojoRoot) {
+    	NedFile rootElement = new NedFile();
+    	
+    	for(NEDElement ne : pojoRoot) {
+    		if (ne instanceof CompoundModuleNode) {
+    			CompoundModuleNode compModNode = (CompoundModuleNode)ne;
+    			
+    			CompoundModule compMod = new CompoundModule();
+    	        compMod.setSize(new Dimension(120, 216));
+    	        compMod.setName(compModNode.getName());
+    	        rootElement.addChild(compMod);
+    		}
+    		
+    	}
+    	
+    	return rootElement;
+	}	
+    	
 
 }

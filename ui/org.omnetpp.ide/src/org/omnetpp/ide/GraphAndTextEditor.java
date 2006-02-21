@@ -11,6 +11,8 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.omnetpp.ned.editor.graph.ModuleEditor;
+import org.omnetpp.ned.editor.graph.model.NedFile;
+import org.omnetpp.ned.editor.graph.model.NedModelFactory;
 import org.omnetpp.ned.editor.text.NedEditor;
 import org.omnetpp.ned2.model.ModelUtil;
 import org.omnetpp.ned2.model.NEDElement;
@@ -39,7 +41,6 @@ public class GraphAndTextEditor extends MultiPageEditorPart implements
 			// FIXME do it simpler if possible
 			String filename = fileInput.getFile().getLocation().toFile().getPath();
 			nedModel = ModelUtil.loadNedSource(filename);
-			
 		} catch (Exception e) {
 			MessageDialog.openError(new Shell(), "Error opening file",
 					"Error opening file "+fileInput.getName()+": "+e.getMessage());
@@ -56,6 +57,12 @@ public class GraphAndTextEditor extends MultiPageEditorPart implements
 			setPageText(graphPageIndex,"Graphical");
 			textPageIndex = addPage(nedEditor, getEditorInput());
 			setPageText(textPageIndex,"Text");
+			// fill graph editor with data
+			NedFile graphTreeRoot = NedModelFactory.pojo2gmodel(nedModel);
+			graphEditor.setModel(graphTreeRoot);
+			// fill text editor
+			String textEditorContent = ModelUtil.generateNedSource(nedModel);
+			nedEditor.setText(textEditorContent);
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -71,6 +78,7 @@ public class GraphAndTextEditor extends MultiPageEditorPart implements
 			String textEditorContent = ModelUtil.generateNedSource(nedModel);
 			// put it into the text editor
 			nedEditor.setText(textEditorContent);
+		} else if (newPageIndex == graphPageIndex) {
 		}
 	}
 

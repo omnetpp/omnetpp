@@ -756,16 +756,25 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
 
     protected void setInput(IEditorInput input) {
         superSetInput(input);
-        IFile file = ((IFileEditorInput) input).getFile();
-        try {
-            InputStream is = file.getContents(false);
-            ObjectInputStream ois = new ObjectInputStream(is);
-            setModel((NedFile) ois.readObject());
-            ois.close();
-        } catch (Exception e) {
-            // This is just an example. All exceptions caught here.
-            e.printStackTrace();
-        }
+//        IFile file = ((IFileEditorInput) input).getFile();
+//        try {
+//            InputStream is = file.getContents(false);
+//            ObjectInputStream ois = new ObjectInputStream(is);
+//            setModel((NedFile) ois.readObject());
+//            ois.close();
+//        } catch (Exception e) {
+//            // This is just an example. All exceptions caught here.
+//            e.printStackTrace();
+//        }
+
+    }
+
+    protected NedFile getModel() {
+        return nedFileModel;
+    }
+
+    public void setModel(NedFile model) {
+        nedFileModel = model;
 
         if (!editorSaving) {
             if (getGraphicalViewer() != null) {
@@ -776,14 +785,6 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
                 outlinePage.setContents(getModel());
             }
         }
-    }
-
-    protected NedFile getModel() {
-        return nedFileModel;
-    }
-
-    public void setModel(NedFile model) {
-        nedFileModel = model;
     }
 
     protected void superSetInput(IEditorInput input) {

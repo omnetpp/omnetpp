@@ -330,17 +330,17 @@ foreach $element (@elements)
 
     for ($i=0; $i<$attcount; $i++)
     {
-        print JAVA "    $argtypes[$i] get$ucvarnames[$i]() {\n";
+        print JAVA "    public $argtypes[$i] get$ucvarnames[$i]() {\n";
         print JAVA "        return $varnames[$i];\n";
         print JAVA "    }\n\n";
 
         if ($argtypes[$i] eq "int") {
-            print JAVA "    void set$ucvarnames[$i]($argtypes[$i] val) {\n";
+            print JAVA "    public void set$ucvarnames[$i]($argtypes[$i] val) {\n";
             print JAVA "        validateEnum(val, $enumnames[$i]_vals, $enumnames[$i]_nums, $enumnames[$i]_n);\n";
             print JAVA "        $varnames[$i] = val;\n";
             print JAVA "    }\n\n";
         } else {
-            print JAVA "    void set$ucvarnames[$i]($argtypes[$i] val) {\n";
+            print JAVA "    public void set$ucvarnames[$i]($argtypes[$i] val) {\n";
             print JAVA "        $varnames[$i] = val;\n";
             print JAVA "    }\n\n";
         }
