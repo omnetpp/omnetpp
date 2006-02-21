@@ -1559,7 +1559,7 @@ extern int yydebug; /* needed if compiled with yacc --VA */
 
 extern char textbuf[];
 
-int runparse (NEDParser *p,NedFileNode *nf,bool parseexpr, bool storesrc, const char *sourcefname)
+int doParseNED2 (NEDParser *p,NedFileNode *nf,bool parseexpr, bool storesrc, const char *sourcefname)
 {
 #if YYDEBUG != 0      /* #if added --VA */
     yydebug = YYDEBUGGING_ON;

@@ -31,8 +31,9 @@ OBJS= nedelements.obj nedelement.obj nederror.obj \
       ned2.tab.obj lex.ned2yy.obj \
       nedutil.obj nedgenerator.obj xmlgenerator.obj \
       nedxmlparser.obj nedsaxhandler.obj saxparser_$(XMLPARSER).obj \
-      ned.tab.obj lex.nedyy.obj \
-      msg2.tab.obj lex.msg2yy.obj
+#      ned.tab.obj lex.nedyy.obj \
+#      msg2.tab.obj lex.msg2yy.obj
+
 # FIXME end temporary def
 
 # FIXME begin temporary rules
@@ -131,12 +132,15 @@ cppmsggenerator.obj: cppmsggenerator.cc \
   cppexprgenerator.h \
   nedcompiler.h
 lex.ned2yy.obj: lex.ned2yy.cc \
+  ./unistd.h \
   nedgrammar.h \
   ned2.tab.h
 lex.nedyy.obj: lex.nedyy.cc \
+  ./unistd.h \
   nedgrammar.h \
   ned.tab.h
 lex.yy.obj: lex.yy.cc \
+  ./unistd.h \
   nedgrammar.h \
   ned.tab.h
 ned.tab.obj: ned.tab.cc \
@@ -170,6 +174,7 @@ nedcompiler.obj: nedcompiler.cc \
   nedsemanticvalidator.h \
   nedelement.h \
   nedelements.h \
+  nedgrammar.h \
   neddtdvalidatorbase.h \
   nedvalidator.h
 neddtdvalidator.obj: neddtdvalidator.cc \
@@ -198,7 +203,8 @@ nederror.obj: nederror.cc \
 nedfilebuffer.obj: nedfilebuffer.cc \
   nedfilebuffer.h \
   nedparser.h \
-  nedelement.h
+  nedelement.h \
+  nedgrammar.h
 nedgenerator.obj: nedgenerator.cc \
   nedgenerator.h \
   nederror.h \
@@ -257,6 +263,7 @@ tmp_nedtool.obj: tmp_nedtool.cc \
   xmlgenerator.h \
   ../utils/ver.h \
   nedelement.h \
+  nedgrammar.h \
   nedelements.h \
   neddtdvalidatorbase.h \
   nedvalidator.h

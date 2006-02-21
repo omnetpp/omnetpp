@@ -182,26 +182,18 @@ char textbuf[TEXTBUF_LEN];
 
 %%
 
-/***************************************************
-* yywrap() -created 11 july 1995 alex paalvast
-*    used to signal end of inputstream
-*    not used with flex (only with lex) --VA
-***************************************************/
-//#ifndef yywrap
 int yywrap(void)
 {
-         return 1;
+     return 1;
 }
-//#endif
 
-/***************************************************
-* comment() -created 6 july 1995 alex paalvast
-* - discards all remaining characters of a line of
-*   text from the inputstream.
-* - the characters are read with the input() and
-*   unput() functions.
-* - input() is sometimes called yyinput()...
-***************************************************/
+/*
+ * - discards all remaining characters of a line of
+ *   text from the inputstream.
+ * - the characters are read with the input() and
+ *   unput() functions.
+ * - input() is sometimes called yyinput()...
+ */
 #ifdef __cplusplus
 #define input  yyinput
 #endif
@@ -211,62 +203,59 @@ int yywrap(void)
 
 void comment(void)
 {
-        int c;
-        while ((c = input())!='\n' && c!=0 && c!=EOF);
-        if (c=='\n') unput(c);
+    int c;
+    while ((c = input())!='\n' && c!=0 && c!=EOF);
+    if (c=='\n') unput(c);
 }
 
-/***************************************************
-* count() -created 6 july 1995 alex paalvast; edited by VA
-* - counts the line and column number of the current token in `pos'
-* - keeps a record of the complete current line in `textbuf[]'
-* - yytext[] is the current token passed by (f)lex
-***************************************************/
-
+/*
+ * - counts the line and column number of the current token in `pos'
+ * - keeps a record of the complete current line in `textbuf[]'
+ * - yytext[] is the current token passed by (f)lex
+ */
 void _count(int updateprevpos)
 {
-        static int textbuflen;
-        int i;
+    static int textbuflen;
+    int i;
 
-        /* printf("DBG: count(): prev=%d,%d  pos=%d,%d yytext=>>%s<<\n",
-               prevpos.li, prevpos.co, pos.li, pos.co, yytext);
-        */
+    /* printf("DBG: count(): prev=%d,%d  pos=%d,%d yytext=>>%s<<\n",
+           prevpos.li, prevpos.co, pos.li, pos.co, yytext);
+    */
 
-        /* init textbuf */
-        if (pos.li==1 && pos.co==0) {
-                textbuf[0]='\0'; textbuflen=0;
+    /* init textbuf */
+    if (pos.li==1 && pos.co==0) {
+        textbuf[0]='\0'; textbuflen=0;
+    }
+
+    if (updateprevpos) {
+        prevpos = pos;
+    }
+    for (i = 0; yytext[i] != '\0'; i++) {
+        if (yytext[i] == '\n') {
+            pos.co = 0;
+            pos.li++;
+            textbuflen=0; textbuf[0]='\0';
+        } else if (yytext[i] == '\t')
+            pos.co += 8 - (pos.co % 8);
+        else
+            pos.co++;
+        if (yytext[i] != '\n') {
+            if (textbuflen < TEXTBUF_LEN-5) {
+                textbuf[textbuflen++]=yytext[i]; textbuf[textbuflen]='\0';
+            }
+            else if (textbuflen == TEXTBUF_LEN-5) {
+                strcpy(textbuf+textbuflen, "...");
+                textbuflen++;
+            } else {
+                /* line too long -- ignore */
+            }
         }
-
-        if (updateprevpos) {
-                prevpos = pos;
-        }
-        for (i = 0; yytext[i] != '\0'; i++) {
-                if (yytext[i] == '\n') {
-                        pos.co = 0;
-                        pos.li++;
-                        textbuflen=0; textbuf[0]='\0';
-                } else if (yytext[i] == '\t')
-                        pos.co += 8 - (pos.co % 8);
-                else
-                        pos.co++;
-                if (yytext[i] != '\n') {
-                        if (textbuflen < TEXTBUF_LEN-5) {
-                            textbuf[textbuflen++]=yytext[i]; textbuf[textbuflen]='\0';
-                        }
-                        else if (textbuflen == TEXTBUF_LEN-5) {
-                            strcpy(textbuf+textbuflen, "...");
-                            textbuflen++;
-                        } else {
-                            /* line too long -- ignore */
-                        }
-                }
-        }
-        /* printf("li=%d co=%d\n", pos.li, pos.co); good for debugging... */
-        yylloc.first_line   = prevpos.li;
-        yylloc.first_column = prevpos.co;
-        yylloc.last_line    = pos.li;
-        yylloc.last_column  = pos.co;
-
+    }
+    /* printf("li=%d co=%d\n", pos.li, pos.co); good for debugging... */
+    yylloc.first_line   = prevpos.li;
+    yylloc.first_column = prevpos.co;
+    yylloc.last_line    = pos.li;
+    yylloc.last_column  = pos.co;
 }
 
 void count(void)
@@ -279,13 +268,4 @@ void extendCount(void)
     _count(0);
 }
 
-/***************************************************
-* jar_yyrestart() -created by VA
-***************************************************/
-void jar_yyrestart(FILE *_yyin)
-{
-#ifdef FLEX_SCANNER
-    yyrestart( _yyin );
-#endif
-}
 
