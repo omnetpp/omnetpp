@@ -274,7 +274,7 @@ foreach $element (@elements)
     print JAVA "        switch (k) {\n";
     for ($i=0; $i<$attcount; $i++)
     {
-        if ($argtypes[$i] eq "String ") {
+        if ($argtypes[$i] eq "String") {
             print JAVA "            case $i: return $varnames[$i].c_str();\n";
         }
         elsif ($argtypes[$i] eq "boolean") {
@@ -282,6 +282,9 @@ foreach $element (@elements)
         }
         elsif ($argtypes[$i] eq "int") {
             print JAVA "            case $i: return enumToString($varnames[$i], $enumnames[$i]_vals, $enumnames[$i]_nums, $enumnames[$i]_n);\n";
+        }
+        else {
+            die "what is $argtypes[$i]???";
         }
     }
     print JAVA "            default: return null;\n";
@@ -291,7 +294,7 @@ foreach $element (@elements)
     print JAVA "        switch (k) {\n";
     for ($i=0; $i<$attcount; $i++)
     {
-        if ($argtypes[$i] eq "String ") {
+        if ($argtypes[$i] eq "String") {
             print JAVA "            case $i: $varnames[$i] = val; break;\n";
         }
         elsif ($argtypes[$i] eq "boolean") {
@@ -299,6 +302,9 @@ foreach $element (@elements)
         }
         elsif ($argtypes[$i] eq "int") {
             print JAVA "            case $i: $varnames[$i] = stringToEnum(val, $enumnames[$i]_vals, $enumnames[$i]_nums, $enumnames[$i]_n); break;\n";
+        }
+        else {
+            die "what is $argtypes[$i]???";
         }
     }
     print JAVA "            default: ;\n";
