@@ -379,3 +379,40 @@ foreach $element (@elements)
 
 print JAVA "};\n\n";
 
+
+#------------------------------------------------------------------------
+#
+# Factory class
+#
+
+$javafile = "$outdir/NEDElementFactory.java";
+open(JAVA,">$javafile") || die "*** cannot open output file $javafile";
+
+print JAVA "package $javapackage;\n\n";
+print JAVA "/**\n";
+print JAVA " * GENERATED CLASS.\n";
+print JAVA " */\n";
+print JAVA "public class NEDElementFactory\n";
+print JAVA "{\n";
+
+print JAVA "    public NEDElement createNodeWithTag(String tagname) {\n";
+foreach $element (@elements)
+{
+    print JAVA "        if (tagname.equals(\"$element\"))\n";
+    print JAVA "            return new $elementclass{$element}();\n";
+}
+print JAVA "        else\n";
+print JAVA "            throw new RuntimeException(\"invalid tagname \"+tagname);\n";
+print JAVA "    }\n\n";
+
+print JAVA "    public NEDElement createNodeWithTag(int tagcode) {\n";
+foreach $element (@elements)
+{
+    print JAVA "        if (tagcode=$enumname{$element})\n";
+    print JAVA "            return new $elementclass{$element}();\n";
+}
+print JAVA "        else\n";
+print JAVA "            throw new RuntimeException(\"invalid tagcode \"+tagcode);\n";
+print JAVA "    }\n\n";
+print JAVA "};\n\n";
+
