@@ -65,18 +65,18 @@ bool NEDParser::parseFile(const char *fname)
     if (!nedsource->readFile(newfilename))
         {NEDError(NULL, "cannot read %s", fname); return false;}
 
-    // get file comment
-    NedFileNode *nedfile = new NedFileNode();
-    //FIXME nedfile->setBannerComment(nedsource->getFileComment());
-
     // store file name -- with slashes always, even on Windows
-    std::string slashfname = fname;
-    for (char *s=const_cast<char *>(slashfname.data()); *s; s++)
+    std::string fnamewithslash = fname;
+    for (char *s=const_cast<char *>(fnamewithslash.data()); *s; s++)
         if (*s=='\\')
             *s='/';
-    nedfile->setFilename(slashfname.c_str());
 
     tree = nedfile;
+
+    // get file comment
+    NedFileNode *nedfile = new NedFileNode();
+    nedfile->setFilename(fnamewithslash.c_str());
+    //FIXME nedfile->setBannerComment(nedsource->getFileComment());
 
     // init and call parser
     yyout = stdout;
