@@ -30,7 +30,6 @@ import org.eclipse.ui.texteditor.TextEditorAction;
 import org.eclipse.ui.texteditor.TextOperationAction;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.omnetpp.ned.editor.text.outline.NedContentOutlinePage;
-import org.omnetpp.ned2.model.swig.NEDElement;
 
 
 /**
@@ -165,7 +164,7 @@ public class NedEditor extends TextEditor {
 	}
 	
 	/**
-	 * Set the content of the text editor
+	 * Sets the content of the text editor with the given string
 	 * @param content
 	 */
 	public void setText(String content) {

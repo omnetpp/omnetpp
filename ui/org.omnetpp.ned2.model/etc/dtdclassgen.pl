@@ -275,7 +275,7 @@ foreach $element (@elements)
     for ($i=0; $i<$attcount; $i++)
     {
         if ($argtypes[$i] eq "String") {
-            print JAVA "            case $i: return $varnames[$i].c_str();\n";
+            print JAVA "            case $i: return $varnames[$i];\n";
         }
         elsif ($argtypes[$i] eq "boolean") {
             print JAVA "            case $i: return boolToString($varnames[$i]);\n";
@@ -395,13 +395,14 @@ $javafile = "$outdir/NEDElementFactory.java";
 open(JAVA,">$javafile") || die "*** cannot open output file $javafile";
 
 print JAVA "package $javapackage;\n\n";
+print JAVA "import $javaimportedpackage.*;\n\n";
 print JAVA "/**\n";
 print JAVA " * GENERATED CLASS.\n";
 print JAVA " */\n";
-print JAVA "public class NEDElementFactory\n";
+print JAVA "public class NEDElementFactory implements NEDElementTags\n";
 print JAVA "{\n";
 
-print JAVA "    public NEDElement createNodeWithTag(String tagname) {\n";
+print JAVA "    public static NEDElement createNodeWithTag(String tagname) {\n";
 foreach $element (@elements)
 {
     print JAVA "        if (tagname.equals(\"$element\"))\n";
@@ -411,10 +412,10 @@ print JAVA "        else\n";
 print JAVA "            throw new RuntimeException(\"invalid tagname \"+tagname);\n";
 print JAVA "    }\n\n";
 
-print JAVA "    public NEDElement createNodeWithTag(int tagcode) {\n";
+print JAVA "    public static NEDElement createNodeWithTag(int tagcode) {\n";
 foreach $element (@elements)
 {
-    print JAVA "        if (tagcode=$enumname{$element})\n";
+    print JAVA "        if (tagcode==$enumname{$element})\n";
     print JAVA "            return new $elementclass{$element}();\n";
 }
 print JAVA "        else\n";

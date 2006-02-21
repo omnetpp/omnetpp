@@ -7,6 +7,5 @@ Bundle-ClassPath: .
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Export-Package: org.omnetpp.ned2.model,
- org.omnetpp.ned2.model.pojo,
- org.omnetpp.ned2.model.swig
+ org.omnetpp.ned2.model.pojo
 Eclipse-LazyStart: true

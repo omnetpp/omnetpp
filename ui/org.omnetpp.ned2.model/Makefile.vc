@@ -53,7 +53,7 @@ depend:
 	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc
 
 clean:
-	-del engine_wrap.cxx *.obj *.exp *.lib java\*.java test*.exe nedxml_engine.dll 2> nul
+	-del engine_wrap.cxx *.obj *.exp *.lib $(JMODELDIR)\*.java $(SWIGDIR)\*.java nedxml_engine.dll 2> nul
 	-del *.ilk *.idb *.pdb *.pch 2> nul
 
 javaclasses:

@@ -34,9 +34,6 @@ import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.model.CompoundModule;
 import org.omnetpp.ned.editor.graph.model.NedModelFactory;
 import org.omnetpp.ned.editor.graph.model.Submodule;
-import org.omnetpp.ned2.model.ModelUtil;
-import org.omnetpp.ned2.model.swig.NEDElement;
-import org.omnetpp.ned2.model.swig.NEDParser;
 
 public class ModuleEditorPlugin extends AbstractUIPlugin {
 
