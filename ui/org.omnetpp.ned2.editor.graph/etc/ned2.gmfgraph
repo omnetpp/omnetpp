@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<gmfgraph:Canvas xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gmfgraph="http://www.eclipse.org/gmf/2005/GraphicalDefinition" name="Ned2FileDiagram">
-  <figures name="default" implementationBundle="">
-    <figures xsi:type="gmfgraph:Rectangle" name="CompoundModuleFigure"/>
-    <figures xsi:type="gmfgraph:Rectangle" name="SubmoduleFigure" layoutManager="" lineKind="LINE_DOT"/>
-  </figures>
-  <nodes name="SimpleModule" figure="SubmoduleFigure"/>
-  <nodes name="CompoundModule" figure="CompoundModuleFigure" resizeConstraint="EAST"/>
-</gmfgraph:Canvas>
