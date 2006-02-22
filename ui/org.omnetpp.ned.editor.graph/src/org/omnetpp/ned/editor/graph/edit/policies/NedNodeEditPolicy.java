@@ -20,11 +20,11 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
-import org.omnetpp.ned.editor.graph.edit.BaseEditPart;
+import org.omnetpp.ned.editor.graph.edit.NedNodeEditPart;
 import org.omnetpp.ned.editor.graph.figures.FigureFactory;
 import org.omnetpp.ned.editor.graph.figures.NedFigure;
-import org.omnetpp.ned.editor.graph.model.NedNode;
-import org.omnetpp.ned.editor.graph.model.Wire;
+import org.omnetpp.ned.editor.graph.model.NedNodeModel;
+import org.omnetpp.ned.editor.graph.model.WireModel;
 import org.omnetpp.ned.editor.graph.model.commands.ConnectionCommand;
 
 public class NedNodeEditPolicy extends org.eclipse.gef.editpolicies.GraphicalNodeEditPolicy {
@@ -45,7 +45,7 @@ public class NedNodeEditPolicy extends org.eclipse.gef.editpolicies.GraphicalNod
 
     protected Command getConnectionCreateCommand(CreateConnectionRequest request) {
         ConnectionCommand command = new ConnectionCommand();
-        command.setWire(new Wire());
+        command.setWire(new WireModel());
         command.setSource(getLogicSubpart());
         ConnectionAnchor ctor = getLogicEditPart().getSourceConnectionAnchor(request);
         command.setSourceGate(getLogicEditPart().getGate(ctor));
@@ -66,18 +66,18 @@ public class NedNodeEditPolicy extends org.eclipse.gef.editpolicies.GraphicalNod
         return getLayer(LayerConstants.SCALED_FEEDBACK_LAYER);
     }
 
-    protected BaseEditPart getLogicEditPart() {
-        return (BaseEditPart) getHost();
+    protected NedNodeEditPart getLogicEditPart() {
+        return (NedNodeEditPart) getHost();
     }
 
-    protected NedNode getLogicSubpart() {
-        return (NedNode) getHost().getModel();
+    protected NedNodeModel getLogicSubpart() {
+        return (NedNodeModel) getHost().getModel();
     }
 
     protected Command getReconnectTargetCommand(ReconnectRequest request) {
 
         ConnectionCommand cmd = new ConnectionCommand();
-        cmd.setWire((Wire) request.getConnectionEditPart().getModel());
+        cmd.setWire((WireModel) request.getConnectionEditPart().getModel());
 
         ConnectionAnchor ctor = getLogicEditPart().getTargetConnectionAnchor(request);
         cmd.setTarget(getLogicSubpart());
@@ -87,7 +87,7 @@ public class NedNodeEditPolicy extends org.eclipse.gef.editpolicies.GraphicalNod
 
     protected Command getReconnectSourceCommand(ReconnectRequest request) {
         ConnectionCommand cmd = new ConnectionCommand();
-        cmd.setWire((Wire) request.getConnectionEditPart().getModel());
+        cmd.setWire((WireModel) request.getConnectionEditPart().getModel());
 
         ConnectionAnchor ctor = getLogicEditPart().getSourceConnectionAnchor(request);
         cmd.setSource(getLogicSubpart());

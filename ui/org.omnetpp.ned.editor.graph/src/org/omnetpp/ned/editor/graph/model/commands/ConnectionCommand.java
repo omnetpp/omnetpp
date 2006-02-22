@@ -16,8 +16,8 @@ import java.util.Vector;
 import org.eclipse.gef.commands.Command;
 
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.NedNode;
-import org.omnetpp.ned.editor.graph.model.Wire;
+import org.omnetpp.ned.editor.graph.model.NedNodeModel;
+import org.omnetpp.ned.editor.graph.model.WireModel;
 
 /**
  * (Re)assigns a wire object to source/target submodule gates
@@ -26,15 +26,15 @@ import org.omnetpp.ned.editor.graph.model.Wire;
  */
 public class ConnectionCommand extends Command {
 
-    protected NedNode oldSource;
+    protected NedNodeModel oldSource;
     protected String oldSourceTerminal;
-    protected NedNode oldTarget;
+    protected NedNodeModel oldTarget;
     protected String oldTargetTerminal;
-    protected NedNode source;
+    protected NedNodeModel source;
     protected String sourceGate;
-    protected NedNode target;
+    protected NedNodeModel target;
     protected String targetGate;
-    protected Wire wire;
+    protected WireModel wire;
 
     public ConnectionCommand() {
         super(MessageFactory.ConnectionCommand_Label);
@@ -49,7 +49,7 @@ public class ConnectionCommand extends Command {
             Vector conns = target.getConnections();
             Iterator i = conns.iterator();
             while (i.hasNext()) {
-                Wire conn = (Wire) i.next();
+                WireModel conn = (WireModel) i.next();
                 if (targetGate != null && conn.getTargetGate() != null)
                     if (conn.getTargetGate().equals(targetGate) && conn.getTarget().equals(target))
                         return false;
@@ -85,7 +85,7 @@ public class ConnectionCommand extends Command {
         return MessageFactory.ConnectionCommand_Description;
     }
 
-    public NedNode getSource() {
+    public NedNodeModel getSource() {
         return source;
     }
 
@@ -93,7 +93,7 @@ public class ConnectionCommand extends Command {
         return sourceGate;
     }
 
-    public NedNode getTarget() {
+    public NedNodeModel getTarget() {
         return target;
     }
 
@@ -101,7 +101,7 @@ public class ConnectionCommand extends Command {
         return targetGate;
     }
 
-    public Wire getWire() {
+    public WireModel getWire() {
         return wire;
     }
 
@@ -109,7 +109,7 @@ public class ConnectionCommand extends Command {
         execute();
     }
 
-    public void setSource(NedNode newSource) {
+    public void setSource(NedNodeModel newSource) {
         source = newSource;
     }
 
@@ -117,7 +117,7 @@ public class ConnectionCommand extends Command {
         sourceGate = newSourceGate;
     }
 
-    public void setTarget(NedNode newTarget) {
+    public void setTarget(NedNodeModel newTarget) {
         target = newTarget;
     }
 
@@ -125,7 +125,7 @@ public class ConnectionCommand extends Command {
         targetGate = newTargetGate;
     }
 
-    public void setWire(Wire w) {
+    public void setWire(WireModel w) {
         wire = w;
         oldSource = w.getSource();
         oldTarget = w.getTarget();

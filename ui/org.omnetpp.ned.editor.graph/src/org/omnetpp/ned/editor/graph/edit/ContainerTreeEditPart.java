@@ -17,7 +17,7 @@ import org.eclipse.gef.RootEditPart;
 import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedContainerEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedTreeContainerEditPolicy;
-import org.omnetpp.ned.editor.graph.model.NedFile;
+import org.omnetpp.ned.editor.graph.model.NedFileModel;
 
 /**
  * Tree EditPart for the Container.
@@ -49,8 +49,8 @@ public class ContainerTreeEditPart extends TreeEditPart {
      * 
      * @return Model of this.
      */
-    protected NedFile getContainerModel() {
-        return (NedFile) getModel();
+    protected NedFileModel getContainerModel() {
+        return (NedFileModel) getModel();
     }
 
     /**

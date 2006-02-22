@@ -15,9 +15,9 @@ import java.util.List;
 
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.Container;
-import org.omnetpp.ned.editor.graph.model.NedNode;
-import org.omnetpp.ned.editor.graph.model.Wire;
+import org.omnetpp.ned.editor.graph.model.ContainerModel;
+import org.omnetpp.ned.editor.graph.model.NedNodeModel;
+import org.omnetpp.ned.editor.graph.model.WireModel;
 
 /**
  * Deletes an object from the model and also removes all associated connections
@@ -26,8 +26,8 @@ import org.omnetpp.ned.editor.graph.model.Wire;
  */
 public class DeleteCommand extends Command {
 
-    private NedNode child;
-    private Container parent;
+    private NedNodeModel child;
+    private ContainerModel parent;
     private int vAlign, hAlign;
     private int index = -1;
     private List sourceConnections = new ArrayList();
@@ -37,21 +37,21 @@ public class DeleteCommand extends Command {
         super(MessageFactory.DeleteCommand_Label);
     }
 
-    private void deleteConnections(NedNode part) {
-        if (part instanceof Container) {
-            List children = ((Container) part).getChildren();
+    private void deleteConnections(NedNodeModel part) {
+        if (part instanceof ContainerModel) {
+            List children = ((ContainerModel) part).getChildren();
             for (int i = 0; i < children.size(); i++)
-                deleteConnections((NedNode) children.get(i));
+                deleteConnections((NedNodeModel) children.get(i));
         }
         sourceConnections.addAll(part.getSourceConnections());
         for (int i = 0; i < sourceConnections.size(); i++) {
-            Wire wire = (Wire) sourceConnections.get(i);
+            WireModel wire = (WireModel) sourceConnections.get(i);
             wire.detachSource();
             wire.detachTarget();
         }
         targetConnections.addAll(part.getTargetConnections());
         for (int i = 0; i < targetConnections.size(); i++) {
-            Wire wire = (Wire) targetConnections.get(i);
+            WireModel wire = (WireModel) targetConnections.get(i);
             wire.detachSource();
             wire.detachTarget();
         }
@@ -73,24 +73,24 @@ public class DeleteCommand extends Command {
 
     private void restoreConnections() {
         for (int i = 0; i < sourceConnections.size(); i++) {
-            Wire wire = (Wire) sourceConnections.get(i);
+            WireModel wire = (WireModel) sourceConnections.get(i);
             wire.attachSource();
             wire.attachTarget();
         }
         sourceConnections.clear();
         for (int i = 0; i < targetConnections.size(); i++) {
-            Wire wire = (Wire) targetConnections.get(i);
+            WireModel wire = (WireModel) targetConnections.get(i);
             wire.attachSource();
             wire.attachTarget();
         }
         targetConnections.clear();
     }
 
-    public void setChild(NedNode c) {
+    public void setChild(NedNodeModel c) {
         child = c;
     }
 
-    public void setParent(Container p) {
+    public void setParent(ContainerModel p) {
         parent = p;
     }
 

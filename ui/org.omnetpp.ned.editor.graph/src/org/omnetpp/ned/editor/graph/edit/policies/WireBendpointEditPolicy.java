@@ -16,7 +16,7 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.requests.BendpointRequest;
 
-import org.omnetpp.ned.editor.graph.model.Wire;
+import org.omnetpp.ned.editor.graph.model.WireModel;
 import org.omnetpp.ned.editor.graph.model.commands.BendpointCommand;
 import org.omnetpp.ned.editor.graph.model.commands.CreateBendpointCommand;
 import org.omnetpp.ned.editor.graph.model.commands.DeleteBendpointCommand;
@@ -39,7 +39,7 @@ public class WireBendpointEditPolicy extends org.eclipse.gef.editpolicies.Bendpo
         conn.translateToRelative(ref2);
 
         com.setRelativeDimensions(p.getDifference(ref1), p.getDifference(ref2));
-        com.setWire((Wire) request.getSource().getModel());
+        com.setWire((WireModel) request.getSource().getModel());
         com.setIndex(request.getIndex());
         return com;
     }
@@ -60,7 +60,7 @@ public class WireBendpointEditPolicy extends org.eclipse.gef.editpolicies.Bendpo
         conn.translateToRelative(ref2);
 
         com.setRelativeDimensions(p.getDifference(ref1), p.getDifference(ref2));
-        com.setWire((Wire) request.getSource().getModel());
+        com.setWire((WireModel) request.getSource().getModel());
         com.setIndex(request.getIndex());
         return com;
     }
@@ -69,7 +69,7 @@ public class WireBendpointEditPolicy extends org.eclipse.gef.editpolicies.Bendpo
         BendpointCommand com = new DeleteBendpointCommand();
         Point p = request.getLocation();
         com.setLocation(p);
-        com.setWire((Wire) request.getSource().getModel());
+        com.setWire((WireModel) request.getSource().getModel());
         com.setIndex(request.getIndex());
         return com;
     }

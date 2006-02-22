@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.omnetpp.ned.editor.graph.model.commands;
 
-import org.omnetpp.ned.editor.graph.model.WireBendpoint;
+import org.omnetpp.ned.editor.graph.model.WireBendpointModel;
 
 /**
  * Creates a new bendpoint on an existing wire
@@ -20,7 +20,7 @@ import org.omnetpp.ned.editor.graph.model.WireBendpoint;
 public class CreateBendpointCommand extends BendpointCommand {
 
     public void execute() {
-        WireBendpoint wbp = new WireBendpoint();
+        WireBendpointModel wbp = new WireBendpointModel();
         wbp.setRelativeDimensions(getFirstRelativeDimension(), getSecondRelativeDimension());
         getWire().insertBendpoint(getIndex(), wbp);
         super.execute();

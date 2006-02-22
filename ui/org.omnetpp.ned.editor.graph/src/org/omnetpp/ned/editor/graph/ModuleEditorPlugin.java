@@ -31,9 +31,9 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.CompoundModule;
+import org.omnetpp.ned.editor.graph.model.CompoundModuleModel;
 import org.omnetpp.ned.editor.graph.model.NedModelFactory;
-import org.omnetpp.ned.editor.graph.model.Submodule;
+import org.omnetpp.ned.editor.graph.model.SubmoduleModel;
 
 public class ModuleEditorPlugin extends AbstractUIPlugin {
 
@@ -119,7 +119,7 @@ public class ModuleEditorPlugin extends AbstractUIPlugin {
         combined = new CombinedTemplateCreationEntry(
                 "Submodule",
                 "A submodule that can be placed in any compound module",
-                new SimpleFactory(Submodule.class), 
+                new SimpleFactory(SubmoduleModel.class), 
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE,"l",null,24)
         );
@@ -128,7 +128,7 @@ public class ModuleEditorPlugin extends AbstractUIPlugin {
         combined = new CombinedTemplateCreationEntry(
                 "Module",
                 "A compound module that is built up from several other modules",
-                new SimpleFactory(CompoundModule.class), 
+                new SimpleFactory(CompoundModuleModel.class), 
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE,"l",null,24)
         );

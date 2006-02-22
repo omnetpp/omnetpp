@@ -26,7 +26,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.handles.HandleBounds;
 import org.omnetpp.ned.editor.graph.figures.properties.LayerSupport;
 import org.omnetpp.ned.editor.graph.misc.FreeformDesktopLayout;
-import org.omnetpp.ned.editor.graph.model.CompoundModule;
+import org.omnetpp.ned.editor.graph.model.CompoundModuleModel;
 
 public class ModuleFigure extends NedFigure implements LayerSupport, HandleBounds {
 
@@ -85,8 +85,8 @@ public class ModuleFigure extends NedFigure implements LayerSupport, HandleBound
                 in.setPinnedLocationY(0.0);
                 out.setPinnedLocationY(1.0);
             }
-            addSourceConnectionAnchor(out, CompoundModule.TERMINALS_OUT[i]);
-            addTargetConnectionAnchor(out, CompoundModule.TERMINALS_IN[i]);
+            addSourceConnectionAnchor(out, CompoundModuleModel.TERMINALS_OUT[i]);
+            addTargetConnectionAnchor(out, CompoundModuleModel.TERMINALS_IN[i]);
 
         }
     }
@@ -103,11 +103,11 @@ public class ModuleFigure extends NedFigure implements LayerSupport, HandleBound
     }
 
     protected PinnableNoncentralChopboxAnchor getInputConnectionAnchor(int i) {
-        return (PinnableNoncentralChopboxAnchor) getConnectionAnchor(CompoundModule.TERMINALS_IN[i]);
+        return (PinnableNoncentralChopboxAnchor) getConnectionAnchor(CompoundModuleModel.TERMINALS_IN[i]);
     }
 
     protected PinnableNoncentralChopboxAnchor getOutputConnectionAnchor(int i) {
-        return (PinnableNoncentralChopboxAnchor) getConnectionAnchor(CompoundModule.TERMINALS_OUT[i]);
+        return (PinnableNoncentralChopboxAnchor) getConnectionAnchor(CompoundModuleModel.TERMINALS_OUT[i]);
     }
 
     public Dimension getPreferredSize(int w, int h) {

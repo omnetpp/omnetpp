@@ -18,7 +18,7 @@ import org.eclipse.draw2d.geometry.Dimension;
  * @author rhornig
  *
  */
-public class Submodule extends NedNode {
+public class SubmoduleModel extends NedNodeModel {
 
 //    static final long serialVersionUID = 1;
     private static int count;
@@ -38,7 +38,7 @@ public class Submodule extends NedNode {
 //        return new Dimension(-1, -1);
 //    }
 
-    public void removeOutput(Wire w) {
+    public void removeOutput(WireModel w) {
         outputs.remove(w);
     }
 

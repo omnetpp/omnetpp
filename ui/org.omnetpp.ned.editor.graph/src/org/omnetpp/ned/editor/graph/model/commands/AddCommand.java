@@ -11,8 +11,8 @@
 package org.omnetpp.ned.editor.graph.model.commands;
 
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.Container;
-import org.omnetpp.ned.editor.graph.model.NedNode;
+import org.omnetpp.ned.editor.graph.model.ContainerModel;
+import org.omnetpp.ned.editor.graph.model.NedNodeModel;
 
 /**
  * This command adds a child element to a root model element (Container)
@@ -21,8 +21,8 @@ import org.omnetpp.ned.editor.graph.model.NedNode;
  */
 public class AddCommand extends org.eclipse.gef.commands.Command {
 
-    private NedNode child;
-    private Container parent;
+    private NedNodeModel child;
+    private ContainerModel parent;
     private int index = -1;
 
     public AddCommand() {
@@ -36,7 +36,7 @@ public class AddCommand extends org.eclipse.gef.commands.Command {
             parent.addChild(child, index);
     }
 
-    public Container getParent() {
+    public ContainerModel getParent() {
         return parent;
     }
 
@@ -47,7 +47,7 @@ public class AddCommand extends org.eclipse.gef.commands.Command {
             parent.addChild(child, index);
     }
 
-    public void setChild(NedNode subpart) {
+    public void setChild(NedNodeModel subpart) {
         child = subpart;
     }
 
@@ -55,7 +55,7 @@ public class AddCommand extends org.eclipse.gef.commands.Command {
         index = i;
     }
 
-    public void setParent(Container newParent) {
+    public void setParent(ContainerModel newParent) {
         parent = newParent;
     }
 

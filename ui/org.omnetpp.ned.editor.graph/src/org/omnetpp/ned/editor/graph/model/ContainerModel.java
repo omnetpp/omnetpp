@@ -24,22 +24,17 @@ import org.omnetpp.ned.editor.graph.misc.MessageFactory;
  * @author rhornig
  *
  */
-public class Container extends NedNode {
+public class ContainerModel extends ModelElementBase {
 //    static final long serialVersionUID = 1;
+    public static final String PROP_CHILDREN = "children"; //$NON-NLS-1$
 
-    protected List<PropertySupport> children = new ArrayList<PropertySupport>();
-    public Container() {
-        size.width = 100;
-        size.height = 100;
-        location.x = 20;
-        location.y = 20;
-    }
+    protected List<ModelElementBase> children = new ArrayList<ModelElementBase>();
 
-    public void addChild(PropertySupport child) {
+    public void addChild(ModelElementBase child) {
         addChild(child, -1);
     }
 
-    public void addChild(PropertySupport child, int index) {
+    public void addChild(ModelElementBase child, int index) {
         if (index >= 0)
             children.add(index, child);
         else
@@ -55,7 +50,7 @@ public class Container extends NedNode {
         s.defaultReadObject();
     }
 
-    public void removeChild(PropertySupport child) {
+    public void removeChild(ModelElementBase child) {
         children.remove(child);
         fireChildRemoved(PROP_CHILDREN, child);
     }

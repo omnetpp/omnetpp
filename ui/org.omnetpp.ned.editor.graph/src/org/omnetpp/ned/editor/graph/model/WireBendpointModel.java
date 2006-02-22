@@ -14,14 +14,14 @@ import org.eclipse.draw2d.Bendpoint;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 
-public class WireBendpoint implements java.io.Serializable, Bendpoint {
+public class WireBendpointModel implements java.io.Serializable, Bendpoint {
 
 //    static final long serialVersionUID = 1;
 
     private float weight = 0.5f;
     private Dimension d1, d2;
 
-    public WireBendpoint() {
+    public WireBendpointModel() {
     }
 
     public Dimension getFirstRelativeDimension() {

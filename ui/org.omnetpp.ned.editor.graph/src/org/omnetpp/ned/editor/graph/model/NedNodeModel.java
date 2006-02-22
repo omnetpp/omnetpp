@@ -29,13 +29,13 @@ import org.omnetpp.ned.editor.graph.properties.LocationPropertySource;
  * @author rhornig
  *
  */
-abstract public class NedNode extends PropertySupport {
+abstract public class NedNodeModel extends ContainerModel {
 
     protected static int count;
     private String name = "";
-    protected Hashtable<String, Wire> inputs = new Hashtable<String, Wire>(7);
+    protected Hashtable<String, WireModel> inputs = new Hashtable<String, WireModel>(7);
     protected Point location = new Point(0, 0);
-    protected Vector<Wire> outputs = new Vector<Wire>(4, 4);
+    protected Vector<WireModel> outputs = new Vector<WireModel>(4, 4);
 //    static final long serialVersionUID = 1;
     protected Dimension size = new Dimension(-1, -1);
     protected String display;
@@ -46,7 +46,6 @@ abstract public class NedNode extends PropertySupport {
     public static final String PROP_SIZE = "size"; //$NON-NLS-1$
     public static final String PROP_LOCATION = "location"; //$NON-NLS-1$
     public static final String PROP_NAME = "name"; //$NON-NLS-1$
-    public static final String PROP_CHILDREN = "children"; //$NON-NLS-1$
     public static final String PROP_INPUTS = "inputs"; //$NON-NLS-1$
     public static final String PROP_OUTPUTS = "outputs"; //$NON-NLS-1$
 
@@ -64,7 +63,7 @@ abstract public class NedNode extends PropertySupport {
         displayPS = new DisplayPropertySource(display);
     }
 
-    public NedNode() {
+    public NedNodeModel() {
         setName(getNewID());
     }
 
@@ -82,22 +81,22 @@ abstract public class NedNode extends PropertySupport {
         firePropertyChange(PROP_NAME, oldName, name); //$NON-NLS-1$
     }
 
-    public void connectInput(Wire w) {
+    public void connectInput(WireModel w) {
         inputs.put(w.getTargetGate(), w);
         fireStructureChange(PROP_INPUTS, w);
     }
 
-    public void connectOutput(Wire w) {
+    public void connectOutput(WireModel w) {
         outputs.addElement(w);
         fireStructureChange(PROP_OUTPUTS, w);
     }
 
-    public void disconnectInput(Wire w) {
+    public void disconnectInput(WireModel w) {
         inputs.remove(w.getTargetGate());
         fireStructureChange(PROP_INPUTS, w);
     }
 
-    public void disconnectOutput(Wire w) {
+    public void disconnectOutput(WireModel w) {
         outputs.removeElement(w);
         fireStructureChange(PROP_OUTPUTS, w);
     }

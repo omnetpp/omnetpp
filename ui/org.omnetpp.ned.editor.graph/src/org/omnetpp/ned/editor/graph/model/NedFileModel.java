@@ -4,7 +4,7 @@ import org.eclipse.ui.views.properties.ComboBoxPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 
-public class NedFile extends Container {
+public class NedFileModel extends ContainerModel {
     public static String PROP_ROUTER = "router"; //$NON-NLS-1$
     public static Integer ROUTER_MANUAL = new Integer(0);
     public static Integer ROUTER_MANHATTAN = new Integer(1);
@@ -32,7 +32,7 @@ public class NedFile extends Container {
 	 * @return Array of property descriptors.
 	 */
 	public IPropertyDescriptor[] getPropertyDescriptors() {
-	    if (getClass().equals(Container.class)) {
+	    if (getClass().equals(ContainerModel.class)) {
 	        ComboBoxPropertyDescriptor cbd = new ComboBoxPropertyDescriptor(PROP_ROUTER,
 	                "Connection router", new String[] {
 	                        "Manual", "Manhattan", "Shortest path" });

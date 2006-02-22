@@ -26,16 +26,15 @@ import org.omnetpp.ned.editor.graph.figures.NedFigure;
 import org.omnetpp.ned.editor.graph.figures.properties.*;
 import org.omnetpp.ned.editor.graph.misc.ColorFactory;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
-import org.omnetpp.ned.editor.graph.model.NedNode;
-import org.omnetpp.ned.editor.graph.model.Wire;
+import org.omnetpp.ned.editor.graph.model.NedNodeModel;
+import org.omnetpp.ned.editor.graph.model.WireModel;
 import org.omnetpp.ned.editor.graph.properties.DisplayPropertySource;
 
 /**
  * Base abstract controller for NedModel and NedFigures. Provides support for 
  * connection handling and common display attributes.
  */
-abstract public class BaseEditPart extends org.eclipse.gef.editparts.AbstractGraphicalEditPart implements
-        NodeEditPart, PropertyChangeListener {
+abstract public class NedNodeEditPart extends ContainerEditPart {
 
     public void activate() {
         if (isActive()) return;
@@ -45,6 +44,7 @@ abstract public class BaseEditPart extends org.eclipse.gef.editparts.AbstractGra
     }
 
     protected void createEditPolicies() {
+        super.createEditPolicies();
         installEditPolicy(EditPolicy.COMPONENT_ROLE, new NedComponentEditPolicy());
         installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE, new NedNodeEditPolicy());
     }
@@ -65,8 +65,8 @@ abstract public class BaseEditPart extends org.eclipse.gef.editparts.AbstractGra
      * 
      * @return The model of this as a NedElement.
      */
-    protected NedNode getNedElement() {
-        return (NedNode) getModel();
+    protected NedNodeModel getNedElement() {
+        return (NedNodeModel) getModel();
     }
 
     /**
@@ -102,7 +102,7 @@ abstract public class BaseEditPart extends org.eclipse.gef.editparts.AbstractGra
      * @return ConnectionAnchor.
      */
     public ConnectionAnchor getSourceConnectionAnchor(ConnectionEditPart connEditPart) {
-        Wire wire = (Wire) connEditPart.getModel();
+        WireModel wire = (WireModel) connEditPart.getModel();
         return getNedFigure().getConnectionAnchor(wire.getSourceGate());
     }
 
@@ -123,7 +123,7 @@ abstract public class BaseEditPart extends org.eclipse.gef.editparts.AbstractGra
      * @return ConnectionAnchor.
      */
     public ConnectionAnchor getTargetConnectionAnchor(ConnectionEditPart connEditPart) {
-        Wire wire = (Wire) connEditPart.getModel();
+        WireModel wire = (WireModel) connEditPart.getModel();
         return getNedFigure().getConnectionAnchor(wire.getTargetGate());
     }
 
@@ -157,16 +157,16 @@ abstract public class BaseEditPart extends org.eclipse.gef.editparts.AbstractGra
      */
     public void propertyChange(PropertyChangeEvent evt) {
         String prop = evt.getPropertyName();
-        if (NedNode.PROP_CHILDREN.equals(prop)) {
+        if (NedNodeModel.PROP_CHILDREN.equals(prop)) {
             if (evt.getOldValue() instanceof Integer)
                 // new child
                 addChild(createChild(evt.getNewValue()), ((Integer) evt.getOldValue()).intValue());
             else
                 // remove child
                 removeChild((EditPart) getViewer().getEditPartRegistry().get(evt.getOldValue()));
-        } else if (NedNode.PROP_INPUTS.equals(prop))
+        } else if (NedNodeModel.PROP_INPUTS.equals(prop))
             refreshTargetConnections();
-        else if (NedNode.PROP_OUTPUTS.equals(prop))
+        else if (NedNodeModel.PROP_OUTPUTS.equals(prop))
             refreshSourceConnections();
         else
             refreshVisuals();

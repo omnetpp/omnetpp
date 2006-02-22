@@ -34,9 +34,9 @@ import org.omnetpp.ned.editor.graph.figures.ModuleFigure;
 import org.omnetpp.ned.editor.graph.misc.ColorFactory;
 import org.omnetpp.ned.editor.graph.misc.DesktopLayoutEditPolicy;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.CompoundModule;
-import org.omnetpp.ned.editor.graph.model.Container;
-import org.omnetpp.ned.editor.graph.model.NedNode;
+import org.omnetpp.ned.editor.graph.model.CompoundModuleModel;
+import org.omnetpp.ned.editor.graph.model.ContainerModel;
+import org.omnetpp.ned.editor.graph.model.NedNodeModel;
 import org.omnetpp.ned.editor.graph.model.commands.AddCommand;
 import org.omnetpp.ned.editor.graph.model.commands.CloneCommand;
 import org.omnetpp.ned.editor.graph.model.commands.CreateCommand;
@@ -52,11 +52,11 @@ public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
 
     protected Command createAddCommand(Request request, EditPart childEditPart, Object constraint) {
-        NedNode part = (NedNode) childEditPart.getModel();
+        NedNodeModel part = (NedNodeModel) childEditPart.getModel();
         Rectangle rect = (Rectangle) constraint;
 
         AddCommand add = new AddCommand();
-        add.setParent((Container) getHost().getModel());
+        add.setParent((ContainerModel) getHost().getModel());
         add.setChild(part);
         add.setLabel(MessageFactory.LogicXYLayoutEditPolicy_AddCommandLabelText);
         add.setDebugLabel("LogicXYEP add subpart");//$NON-NLS-1$
@@ -92,7 +92,7 @@ public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
         // create the constraint change command 
         SetConstraintCommand cmd = new SetConstraintCommand();
-        NedNode part = (NedNode) child.getModel();
+        NedNodeModel part = (NedNodeModel) child.getModel();
         cmd.setPart(part);
         cmd.setLocation(modelConstraint);
         Command result = cmd;
@@ -161,7 +161,7 @@ public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
     protected IFigure createSizeOnDropFeedback(CreateRequest createRequest) {
         IFigure figure;
 
-        if (createRequest.getNewObject() instanceof CompoundModule)
+        if (createRequest.getNewObject() instanceof CompoundModuleModel)
             figure = new ModuleFigure();
         else {
             figure = new RectangleFigure();
@@ -213,14 +213,14 @@ public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
     protected Command getCloneCommand(ChangeBoundsRequest request) {
         CloneCommand clone = new CloneCommand();
 
-        clone.setParent((Container) getHost().getModel());
+        clone.setParent((ContainerModel) getHost().getModel());
 
         Iterator i = request.getEditParts().iterator();
         GraphicalEditPart currPart = null;
 
         while (i.hasNext()) {
             currPart = (GraphicalEditPart) i.next();
-            clone.addPart((NedNode) currPart.getModel(), (Rectangle) getConstraintForClone(currPart,
+            clone.addPart((NedNodeModel) currPart.getModel(), (Rectangle) getConstraintForClone(currPart,
                     request));
         }
 
@@ -230,8 +230,8 @@ public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
     protected Command getCreateCommand(CreateRequest request) {
         CreateCommand create = new CreateCommand();
-        create.setParent((Container) getHost().getModel());
-        NedNode newPart = (NedNode) request.getNewObject();
+        create.setParent((ContainerModel) getHost().getModel());
+        NedNodeModel newPart = (NedNodeModel) request.getNewObject();
         create.setChild(newPart);
         Rectangle constraint = (Rectangle) getConstraintFor(request);
         create.setLocation(constraint);
@@ -246,7 +246,7 @@ public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
      * @see org.eclipse.gef.editpolicies.LayoutEditPolicy#getCreationFeedbackOffset(org.eclipse.gef.requests.CreateRequest)
      */
     protected Insets getCreationFeedbackOffset(CreateRequest request) {
-        if (request.getNewObject() instanceof CompoundModule)
+        if (request.getNewObject() instanceof CompoundModuleModel)
             return new Insets(2, 0, 2, 0);
         return new Insets();
     }

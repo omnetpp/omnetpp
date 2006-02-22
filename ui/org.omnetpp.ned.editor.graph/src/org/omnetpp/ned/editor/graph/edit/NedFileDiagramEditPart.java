@@ -49,7 +49,7 @@ import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.omnetpp.ned.editor.graph.edit.policies.NedLayoutEditPolicy;
 import org.omnetpp.ned.editor.graph.misc.FreeformDesktopLayout;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.NedFile;
+import org.omnetpp.ned.editor.graph.model.NedFileModel;
 
 /**
  * Holds all other NedEditParts under this. It is activated by
@@ -162,10 +162,11 @@ public class NedFileDiagramEditPart extends ContainerEditPart implements LayerCo
     }
 
     public void propertyChange(PropertyChangeEvent evt) {
-        if (NedFile.PROP_ROUTER.equals(evt.getPropertyName()))
+        if (NedFileModel.PROP_ROUTER.equals(evt.getPropertyName()))
             refreshVisuals();
-        else
-            super.propertyChange(evt);
+// XXX check wheter this is reqiored        
+//        else
+//            super.propertyChange(evt);
     }
 
     protected void refreshVisuals() {
@@ -173,11 +174,11 @@ public class NedFileDiagramEditPart extends ContainerEditPart implements LayerCo
     	ConnectionLayer cLayer = (ConnectionLayer) getLayer(CONNECTION_LAYER);
     	cLayer.setAntialias(SWT.ON);
 
-    	if (((NedFile)getModel()).getConnectionRouter().equals(NedFile.ROUTER_MANUAL)) {
+    	if (((NedFileModel)getModel()).getConnectionRouter().equals(NedFileModel.ROUTER_MANUAL)) {
     		AutomaticRouter router = new FanRouter();
     		router.setNextRouter(new BendpointConnectionRouter());
     		cLayer.setConnectionRouter(router);
-    	} else if (((NedFile)getModel()).getConnectionRouter().equals(NedFile.ROUTER_MANHATTAN))
+    	} else if (((NedFileModel)getModel()).getConnectionRouter().equals(NedFileModel.ROUTER_MANHATTAN))
     		cLayer.setConnectionRouter(new ManhattanConnectionRouter());
     	else
     		cLayer.setConnectionRouter(new ShortestPathConnectionRouter(getFigure()));

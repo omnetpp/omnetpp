@@ -17,7 +17,7 @@ import org.omnetpp.ned.editor.graph.misc.MessageFactory;
  * @author rhornig
  *
  */
-public class CompoundModule extends Container {
+public class CompoundModuleModel extends NedNodeModel {
 
 //    static final long serialVersionUID = 1;
 

@@ -12,8 +12,8 @@ package org.omnetpp.ned.editor.graph.edit.policies;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.requests.GroupRequest;
-import org.omnetpp.ned.editor.graph.model.NedNode;
-import org.omnetpp.ned.editor.graph.model.NedFile;
+import org.omnetpp.ned.editor.graph.model.NedNodeModel;
+import org.omnetpp.ned.editor.graph.model.NedFileModel;
 import org.omnetpp.ned.editor.graph.model.commands.DeleteCommand;
 
 public class NedComponentEditPolicy extends org.eclipse.gef.editpolicies.ComponentEditPolicy {
@@ -21,8 +21,8 @@ public class NedComponentEditPolicy extends org.eclipse.gef.editpolicies.Compone
     protected Command createDeleteCommand(GroupRequest request) {
         Object parent = getHost().getParent().getModel();
         DeleteCommand deleteCmd = new DeleteCommand();
-        deleteCmd.setParent((NedFile) parent);
-        deleteCmd.setChild((NedNode) getHost().getModel());
+        deleteCmd.setParent((NedFileModel) parent);
+        deleteCmd.setChild((NedNodeModel) getHost().getModel());
         return deleteCmd;
     }
 

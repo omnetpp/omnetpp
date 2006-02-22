@@ -20,8 +20,8 @@ import org.eclipse.gef.requests.CreateRequest;
 import org.eclipse.gef.requests.GroupRequest;
 
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.Container;
-import org.omnetpp.ned.editor.graph.model.NedNode;
+import org.omnetpp.ned.editor.graph.model.ContainerModel;
+import org.omnetpp.ned.editor.graph.model.NedNodeModel;
 import org.omnetpp.ned.editor.graph.model.commands.OrphanChildCommand;
 
 public class NedContainerEditPolicy extends ContainerEditPolicy {
@@ -36,8 +36,8 @@ public class NedContainerEditPolicy extends ContainerEditPolicy {
                 MessageFactory.LogicContainerEditPolicy_OrphanCommandLabelText);
         for (int i = 0; i < parts.size(); i++) {
             OrphanChildCommand orphan = new OrphanChildCommand();
-            orphan.setChild((NedNode) ((EditPart) parts.get(i)).getModel());
-            orphan.setParent((Container) getHost().getModel());
+            orphan.setChild((NedNodeModel) ((EditPart) parts.get(i)).getModel());
+            orphan.setParent((ContainerModel) getHost().getModel());
             orphan.setLabel(MessageFactory.LogicElementEditPolicy_OrphanCommandLabelText);
             result.add(orphan);
         }

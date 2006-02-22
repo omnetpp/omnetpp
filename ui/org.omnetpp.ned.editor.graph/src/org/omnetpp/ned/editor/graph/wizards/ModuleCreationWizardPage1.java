@@ -33,7 +33,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.eclipse.ui.ide.IDE;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.NedFile;
+import org.omnetpp.ned.editor.graph.model.NedFileModel;
 import org.omnetpp.ned.editor.graph.model.NedModelFactory;
 
 public class ModuleCreationWizardPage1 extends WizardNewFileCreationPage
@@ -90,9 +90,9 @@ public class ModuleCreationWizardPage1 extends WizardNewFileCreationPage
 	}
 
 	protected InputStream getInitialContents() {
-		NedFile ld = new NedFile();
+		NedFileModel ld = new NedFileModel();
 		if (modelSelected == 2)
-			ld = (NedFile) NedModelFactory.createLargeModel();
+			ld = (NedFileModel) NedModelFactory.createLargeModel();
 		ByteArrayInputStream bais = null;
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();

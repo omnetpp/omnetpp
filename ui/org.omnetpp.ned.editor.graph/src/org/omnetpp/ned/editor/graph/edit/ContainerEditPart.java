@@ -10,27 +10,29 @@
  *******************************************************************************/
 package org.omnetpp.ned.editor.graph.edit;
 
+import java.beans.PropertyChangeListener;
 import java.util.List;
 
 import org.eclipse.gef.EditPolicy;
+import org.eclipse.gef.NodeEditPart;
 import org.omnetpp.ned.editor.graph.edit.policies.NedContainerEditPolicy;
-import org.omnetpp.ned.editor.graph.model.Container;
+import org.omnetpp.ned.editor.graph.model.ContainerModel;
 
 /**
  * Provides support for Container EditParts.
  */
-abstract public class ContainerEditPart extends BaseEditPart {
+abstract public class ContainerEditPart extends org.eclipse.gef.editparts.AbstractGraphicalEditPart implements
+ PropertyChangeListener  {
 
     /**
      * Installs the desired EditPolicies for this.
      */
     protected void createEditPolicies() {
-        super.createEditPolicies();
         installEditPolicy(EditPolicy.CONTAINER_ROLE, new NedContainerEditPolicy());
     }
 
     protected List getModelChildren() {
-    	return ((Container)getModel()).getChildren();
+    	return ((ContainerModel)getModel()).getChildren();
     }
     
 }

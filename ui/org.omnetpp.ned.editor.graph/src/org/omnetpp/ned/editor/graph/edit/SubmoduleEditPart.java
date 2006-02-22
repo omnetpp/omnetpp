@@ -20,12 +20,12 @@ import org.eclipse.gef.AccessibleAnchorProvider;
 import org.eclipse.gef.AccessibleEditPart;
 import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.omnetpp.ned.editor.graph.figures.SimpleModuleFigure;
-import org.omnetpp.ned.editor.graph.model.Submodule;
+import org.omnetpp.ned.editor.graph.model.SubmoduleModel;
 
 /**
  * EditPart for holding gates in the Logic Example.
  */
-public class SubmoduleEditPart extends BaseEditPart {
+public class SubmoduleEditPart extends NedNodeEditPart {
 
     /**
      * Returns a newly created Figure of this.
@@ -51,8 +51,8 @@ public class SubmoduleEditPart extends BaseEditPart {
      * 
      * @return Model of this as a SimpleModule
      */
-    protected Submodule getSimpleModule() {
-        return (Submodule) getModel();
+    protected SubmoduleModel getSimpleModule() {
+        return (SubmoduleModel) getModel();
     }
     
     public Object getAdapter(Class key) {

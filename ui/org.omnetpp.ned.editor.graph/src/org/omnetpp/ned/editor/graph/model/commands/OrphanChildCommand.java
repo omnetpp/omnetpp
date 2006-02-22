@@ -17,8 +17,8 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.commands.Command;
 
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.Container;
-import org.omnetpp.ned.editor.graph.model.NedNode;
+import org.omnetpp.ned.editor.graph.model.ContainerModel;
+import org.omnetpp.ned.editor.graph.model.NedNodeModel;
 
 /**
  * This command removes a model element from its parent.
@@ -29,8 +29,8 @@ import org.omnetpp.ned.editor.graph.model.NedNode;
 public class OrphanChildCommand extends Command {
 
     private Point oldLocation;
-    private Container diagram;
-    private NedNode child;
+    private ContainerModel diagram;
+    private NedNodeModel child;
     private int index;
 
     public OrphanChildCommand() {
@@ -48,11 +48,11 @@ public class OrphanChildCommand extends Command {
         diagram.removeChild(child);
     }
 
-    public void setChild(NedNode child) {
+    public void setChild(NedNodeModel child) {
         this.child = child;
     }
 
-    public void setParent(Container parent) {
+    public void setParent(ContainerModel parent) {
         diagram = parent;
     }
 

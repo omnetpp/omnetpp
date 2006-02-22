@@ -125,7 +125,7 @@ import org.omnetpp.ned.editor.graph.figures.properties.LayerSupport;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.misc.ModulePaletteCustomizer;
-import org.omnetpp.ned.editor.graph.model.NedFile;
+import org.omnetpp.ned.editor.graph.model.NedFileModel;
 
 public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
     
@@ -390,7 +390,7 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
         }
     };
 
-    private NedFile nedFileModel = new NedFile();
+    private NedFileModel nedFileModel = new NedFileModel();
 
     private ResourceTracker resourceListener = new ResourceTracker();
 
@@ -769,11 +769,11 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
 
     }
 
-    protected NedFile getModel() {
+    protected NedFileModel getModel() {
         return nedFileModel;
     }
 
-    public void setModel(NedFile model) {
+    public void setModel(NedFileModel model) {
         nedFileModel = model;
 
         if (!editorSaving) {

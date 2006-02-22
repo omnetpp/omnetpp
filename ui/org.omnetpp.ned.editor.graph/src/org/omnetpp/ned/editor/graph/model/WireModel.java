@@ -16,7 +16,7 @@ import java.util.Vector;
 
 import org.eclipse.draw2d.Bendpoint;
 
-public class Wire extends PropertySupport {
+public class WireModel extends ModelElementBase {
 
 //    static final long serialVersionUID = 1;
     static final String BENDPOINT = "bendpoint";
@@ -25,7 +25,7 @@ public class Wire extends PropertySupport {
     static final String TARGET = "target";
     static final String TARGETGATE = "targetGate";
 
-    protected NedNode source, target;
+    protected NedNodeModel source, target;
     protected String sourceGate, targetGate;
     protected List<Bendpoint> bendpoints = new ArrayList<Bendpoint>();
     protected String display;
@@ -54,7 +54,7 @@ public class Wire extends PropertySupport {
         return bendpoints;
     }
 
-    public NedNode getSource() {
+    public NedNodeModel getSource() {
         return source;
     }
 
@@ -62,7 +62,7 @@ public class Wire extends PropertySupport {
         return sourceGate;
     }
 
-    public NedNode getTarget() {
+    public NedNodeModel getTarget() {
         return target;
     }
 
@@ -90,7 +90,7 @@ public class Wire extends PropertySupport {
         firePropertyChange(BENDPOINT, null, null);//$NON-NLS-1$
     }
 
-    public void setSource(NedNode e) {
+    public void setSource(NedNodeModel e) {
         Object old = source;
         source = e;
         firePropertyChange(SOURCE, old, source);//$NON-NLS-1$
@@ -102,7 +102,7 @@ public class Wire extends PropertySupport {
         firePropertyChange(SOURCEGATE, old, sourceGate);//$NON-NLS-1$
     }
 
-    public void setTarget(NedNode e) {
+    public void setTarget(NedNodeModel e) {
         Object old = target;
         target = e;
         firePropertyChange(TARGET, old, target);//$NON-NLS-1$

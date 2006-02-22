@@ -32,7 +32,7 @@ import org.omnetpp.ned.editor.graph.model.*;
 public class CloneCommand extends Command {
 
     private List parts, newTopLevelParts, newConnections;
-    private Container parent;
+    private ContainerModel parent;
     private Map bounds, indices, connectionPartMap;
 
     public CloneCommand() {
@@ -40,7 +40,7 @@ public class CloneCommand extends Command {
         parts = new LinkedList();
     }
 
-    public void addPart(NedNode part, Rectangle newBounds) {
+    public void addPart(NedNodeModel part, Rectangle newBounds) {
         parts.add(part);
         if (bounds == null) {
             bounds = new HashMap();
@@ -48,7 +48,7 @@ public class CloneCommand extends Command {
         bounds.put(part, newBounds);
     }
 
-    public void addPart(NedNode part, int index) {
+    public void addPart(NedNodeModel part, int index) {
         parts.add(part);
         if (indices == null) {
             indices = new HashMap();
@@ -56,29 +56,29 @@ public class CloneCommand extends Command {
         indices.put(part, new Integer(index));
     }
 
-    protected void clonePart(NedNode oldPart, Container newParent, Rectangle newBounds,
+    protected void clonePart(NedNodeModel oldPart, ContainerModel newParent, Rectangle newBounds,
             List newConnections, Map connectionPartMap, int index) {
-        NedNode newPart = null;
+        NedNodeModel newPart = null;
 
-        if (oldPart instanceof Submodule) {
-            newPart = new Submodule();
-        } else if (oldPart instanceof CompoundModule) {
-            newPart = new CompoundModule();
+        if (oldPart instanceof SubmoduleModel) {
+            newPart = new SubmoduleModel();
+        } else if (oldPart instanceof CompoundModuleModel) {
+            newPart = new CompoundModuleModel();
         } 
 
-        if (oldPart instanceof Container) {
-            Iterator i = ((Container) oldPart).getChildren().iterator();
+        if (oldPart instanceof ContainerModel) {
+            Iterator i = ((ContainerModel) oldPart).getChildren().iterator();
             while (i.hasNext()) {
                 // for children they will not need new bounds
-                clonePart((NedNode) i.next(), (Container) newPart, null, newConnections,
+                clonePart((NedNodeModel) i.next(), (ContainerModel) newPart, null, newConnections,
                         connectionPartMap, -1);
             }
         }
 
         Iterator i = oldPart.getTargetConnections().iterator();
         while (i.hasNext()) {
-            Wire connection = (Wire) i.next();
-            Wire newConnection = new Wire();
+            WireModel connection = (WireModel) i.next();
+            WireModel newConnection = new WireModel();
             newConnection.setTarget(newPart);
             newConnection.setTargetGate(connection.getTargetGate());
             newConnection.setSourceGate(connection.getSourceGate());
@@ -88,8 +88,8 @@ public class CloneCommand extends Command {
             Vector newBendPoints = new Vector();
 
             while (b.hasNext()) {
-                WireBendpoint bendPoint = (WireBendpoint) b.next();
-                WireBendpoint newBendPoint = new WireBendpoint();
+                WireBendpointModel bendPoint = (WireBendpointModel) b.next();
+                WireBendpointModel newBendPoint = new WireBendpointModel();
                 newBendPoint.setRelativeDimensions(bendPoint.getFirstRelativeDimension(), bendPoint
                         .getSecondRelativeDimension());
                 newBendPoint.setWeight(bendPoint.getWeight());
@@ -129,9 +129,9 @@ public class CloneCommand extends Command {
 
         Iterator i = parts.iterator();
 
-        NedNode part = null;
+        NedNodeModel part = null;
         while (i.hasNext()) {
-            part = (NedNode) i.next();
+            part = (NedNodeModel) i.next();
             if (bounds != null && bounds.containsKey(part)) {
                 clonePart(part, parent, (Rectangle) bounds.get(part), newConnections, connectionPartMap, -1);
             } else if (indices != null && indices.containsKey(part)) {
@@ -147,10 +147,10 @@ public class CloneCommand extends Command {
         Iterator c = newConnections.iterator();
 
         while (c.hasNext()) {
-            Wire conn = (Wire) c.next();
-            NedNode source = conn.getSource();
+            WireModel conn = (WireModel) c.next();
+            NedNodeModel source = conn.getSource();
             if (connectionPartMap.containsKey(source)) {
-                conn.setSource((NedNode) connectionPartMap.get(source));
+                conn.setSource((NedNodeModel) connectionPartMap.get(source));
                 conn.attachSource();
                 conn.attachTarget();
             }
@@ -158,18 +158,18 @@ public class CloneCommand extends Command {
 
     }
 
-    public void setParent(Container parent) {
+    public void setParent(ContainerModel parent) {
         this.parent = parent;
     }
 
     public void redo() {
         for (Iterator iter = newTopLevelParts.iterator(); iter.hasNext();)
-            parent.addChild((NedNode) iter.next());
+            parent.addChild((NedNodeModel) iter.next());
         for (Iterator iter = newConnections.iterator(); iter.hasNext();) {
-            Wire conn = (Wire) iter.next();
-            NedNode source = conn.getSource();
+            WireModel conn = (WireModel) iter.next();
+            NedNodeModel source = conn.getSource();
             if (connectionPartMap.containsKey(source)) {
-                conn.setSource((NedNode) connectionPartMap.get(source));
+                conn.setSource((NedNodeModel) connectionPartMap.get(source));
                 conn.attachSource();
                 conn.attachTarget();
             }
@@ -178,7 +178,7 @@ public class CloneCommand extends Command {
 
     public void undo() {
         for (Iterator iter = newTopLevelParts.iterator(); iter.hasNext();)
-            parent.removeChild((NedNode) iter.next());
+            parent.removeChild((NedNodeModel) iter.next());
     }
 
 }

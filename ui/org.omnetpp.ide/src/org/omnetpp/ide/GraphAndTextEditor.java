@@ -11,7 +11,7 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.omnetpp.ned.editor.graph.ModuleEditor;
-import org.omnetpp.ned.editor.graph.model.NedFile;
+import org.omnetpp.ned.editor.graph.model.NedFileModel;
 import org.omnetpp.ned.editor.graph.model.NedModelFactory;
 import org.omnetpp.ned.editor.text.NedEditor;
 import org.omnetpp.ned2.model.ModelUtil;
@@ -58,7 +58,7 @@ public class GraphAndTextEditor extends MultiPageEditorPart implements
 			textPageIndex = addPage(nedEditor, getEditorInput());
 			setPageText(textPageIndex,"Text");
 			// fill graph editor with data
-			NedFile graphTreeRoot = NedModelFactory.pojo2gmodel(nedModel);
+			NedFileModel graphTreeRoot = NedModelFactory.pojo2gmodel(nedModel);
 			graphEditor.setModel(graphTreeRoot);
 			// fill text editor
 			String textEditorContent = ModelUtil.generateNedSource(nedModel);

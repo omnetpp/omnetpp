@@ -15,7 +15,7 @@ import org.eclipse.draw2d.geometry.Point;
 
 import org.eclipse.gef.commands.Command;
 
-import org.omnetpp.ned.editor.graph.model.Wire;
+import org.omnetpp.ned.editor.graph.model.WireModel;
 
 /**
  * Base class for different bend point related commands like
@@ -27,7 +27,7 @@ public class BendpointCommand extends Command {
 
     protected int index;
     protected Point location;
-    protected Wire wire;
+    protected WireModel wire;
     private Dimension d1, d2;
 
     protected Dimension getFirstRelativeDimension() {
@@ -46,7 +46,7 @@ public class BendpointCommand extends Command {
         return location;
     }
 
-    protected Wire getWire() {
+    protected WireModel getWire() {
         return wire;
     }
 
@@ -67,7 +67,7 @@ public class BendpointCommand extends Command {
         location = p;
     }
 
-    public void setWire(Wire w) {
+    public void setWire(WireModel w) {
         wire = w;
     }
 

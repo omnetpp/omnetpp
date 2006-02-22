@@ -23,14 +23,14 @@ import org.eclipse.gef.editpolicies.TreeContainerEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
 
-import org.omnetpp.ned.editor.graph.model.Container;
-import org.omnetpp.ned.editor.graph.model.NedNode;
+import org.omnetpp.ned.editor.graph.model.ContainerModel;
+import org.omnetpp.ned.editor.graph.model.NedNodeModel;
 import org.omnetpp.ned.editor.graph.model.commands.CreateCommand;
 import org.omnetpp.ned.editor.graph.model.commands.ReorderPartCommand;
 
 public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
 
-    protected Command createCreateCommand(NedNode child, Rectangle r, int index, String label) {
+    protected Command createCreateCommand(NedNodeModel child, Rectangle r, int index, String label) {
         CreateCommand cmd = new CreateCommand();
         Rectangle rect;
         if (r == null) {
@@ -40,7 +40,7 @@ public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
             rect = r;
         }
         cmd.setLocation(rect);
-        cmd.setParent((Container) getHost().getModel());
+        cmd.setParent((ContainerModel) getHost().getModel());
         cmd.setChild(child);
         cmd.setLabel(label);
         if (index >= 0) cmd.setIndex(index);
@@ -58,7 +58,7 @@ public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
             if (isAncestor(child, getHost()))
                 command.add(UnexecutableCommand.INSTANCE);
             else {
-                NedNode childModel = (NedNode) child.getModel();
+                NedNodeModel childModel = (NedNodeModel) child.getModel();
                 command.add(createCreateCommand(childModel, new Rectangle(
                         new org.eclipse.draw2d.geometry.Point(), childModel.getSize()), index,
                         "Reparent NedElement"));//$NON-NLS-1$
@@ -68,7 +68,7 @@ public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
     }
 
     protected Command getCreateCommand(CreateRequest request) {
-        NedNode child = (NedNode) request.getNewObject();
+        NedNodeModel child = (NedNodeModel) request.getNewObject();
         int index = findIndexOfTreeItemAt(request.getLocation());
         return createCreateCommand(child, null, index, "Create NedElement");//$NON-NLS-1$
     }
@@ -89,7 +89,7 @@ public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
             } else if (oldIndex <= tempIndex) {
                 tempIndex--;
             }
-            command.add(new ReorderPartCommand((NedNode) child.getModel(), (Container) getHost()
+            command.add(new ReorderPartCommand((NedNodeModel) child.getModel(), (ContainerModel) getHost()
                     .getModel(), tempIndex));
         }
         return command;

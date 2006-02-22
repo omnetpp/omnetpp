@@ -26,8 +26,8 @@ import org.omnetpp.ned.editor.graph.edit.policies.WireBendpointEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.WireEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.WireEndpointEditPolicy;
 import org.omnetpp.ned.editor.graph.figures.FigureFactory;
-import org.omnetpp.ned.editor.graph.model.Wire;
-import org.omnetpp.ned.editor.graph.model.WireBendpoint;
+import org.omnetpp.ned.editor.graph.model.WireModel;
+import org.omnetpp.ned.editor.graph.model.WireBendpointModel;
 
 /**
  * Implements a Connection Editpart to represnt a Wire like connection.
@@ -84,8 +84,8 @@ public class WireEditPart extends AbstractConnectionEditPart implements Property
      * 
      * @return Model of this as <code>Wire</code>
      */
-    protected Wire getWire() {
-        return (Wire) getModel();
+    protected WireModel getWire() {
+        return (WireModel) getModel();
     }
 
     /**
@@ -124,7 +124,7 @@ public class WireEditPart extends AbstractConnectionEditPart implements Property
         List modelConstraint = getWire().getBendpoints();
         List figureConstraint = new ArrayList();
         for (int i = 0; i < modelConstraint.size(); i++) {
-            WireBendpoint wbp = (WireBendpoint) modelConstraint.get(i);
+            WireBendpointModel wbp = (WireBendpointModel) modelConstraint.get(i);
             RelativeBendpoint rbp = new RelativeBendpoint(getConnectionFigure());
             rbp.setRelativeDimensions(wbp.getFirstRelativeDimension(), wbp.getSecondRelativeDimension());
             rbp.setWeight((i + 1) / ((float) modelConstraint.size() + 1));

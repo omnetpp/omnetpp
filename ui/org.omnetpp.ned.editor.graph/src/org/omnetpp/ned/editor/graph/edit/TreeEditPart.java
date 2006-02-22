@@ -21,8 +21,8 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedTreeEditPolicy;
-import org.omnetpp.ned.editor.graph.model.Container;
-import org.omnetpp.ned.editor.graph.model.NedNode;
+import org.omnetpp.ned.editor.graph.model.ContainerModel;
+import org.omnetpp.ned.editor.graph.model.NedNodeModel;
 
 /**
  * EditPart for Logic components in the Tree.
@@ -65,8 +65,8 @@ public class TreeEditPart extends org.eclipse.gef.editparts.AbstractTreeEditPart
      * 
      * @return Model of this.
      */
-    protected NedNode getLogicSubpart() {
-        return (NedNode) getModel();
+    protected NedNodeModel getLogicSubpart() {
+        return (NedNodeModel) getModel();
     }
 
     /**
@@ -80,7 +80,7 @@ public class TreeEditPart extends org.eclipse.gef.editparts.AbstractTreeEditPart
     }
 
     public void propertyChange(PropertyChangeEvent change) {
-        if (change.getPropertyName().equals(Container.PROP_CHILDREN)) {
+        if (change.getPropertyName().equals(ContainerModel.PROP_CHILDREN)) {
             if (change.getOldValue() instanceof Integer)
                 // new child
                 addChild(createChild(change.getNewValue()), ((Integer) change.getOldValue()).intValue());

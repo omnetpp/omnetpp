@@ -20,13 +20,13 @@ public class NedEditPartFactory implements EditPartFactory {
     public EditPart createEditPart(EditPart context, Object model) {
         EditPart child = null;
 
-        if (model instanceof Wire)
+        if (model instanceof WireModel)
             child = new WireEditPart();
-        else if (model instanceof CompoundModule)
+        else if (model instanceof CompoundModuleModel)
             child = new CompoundModuleEditPart();
-        else if (model instanceof Submodule)
+        else if (model instanceof SubmoduleModel)
             child = new SubmoduleEditPart();
-        else if (model instanceof NedFile) child = new NedFileDiagramEditPart();
+        else if (model instanceof NedFileModel) child = new NedFileDiagramEditPart();
 
         child.setModel(model);
         return child;
