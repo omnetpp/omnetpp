@@ -16,6 +16,7 @@ import org.omnetpp.ned.editor.graph.model.NedModelFactory;
 import org.omnetpp.ned.editor.text.NedEditor;
 import org.omnetpp.ned2.model.ModelUtil;
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.pojo.NedFileNode;
 
 public class GraphAndTextEditor extends MultiPageEditorPart implements
 		IResourceChangeListener {
@@ -44,6 +45,7 @@ public class GraphAndTextEditor extends MultiPageEditorPart implements
 		} catch (Exception e) {
 			MessageDialog.openError(new Shell(), "Error opening file",
 					"Error opening file "+fileInput.getName()+": "+e.getMessage());
+			e.printStackTrace();
 		}
 	}
 	
@@ -58,7 +60,7 @@ public class GraphAndTextEditor extends MultiPageEditorPart implements
 			textPageIndex = addPage(nedEditor, getEditorInput());
 			setPageText(textPageIndex,"Text");
 			// fill graph editor with data
-			NedFileModel graphTreeRoot = NedModelFactory.pojo2nedFileModel(nedModel);
+			NedFileModel graphTreeRoot = NedModelFactory.pojo2nedFileModel((NedFileNode)nedModel);
 			graphEditor.setModel(graphTreeRoot);
 			// fill text editor
 			String textEditorContent = ModelUtil.generateNedSource(nedModel);

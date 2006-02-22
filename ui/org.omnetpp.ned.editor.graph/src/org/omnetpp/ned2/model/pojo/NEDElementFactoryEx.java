@@ -4,11 +4,6 @@ import org.omnetpp.ned2.model.NEDElement;
 
 public class NEDElementFactoryEx extends NEDElementFactory {
 	
-	static {
-		// warning ONLY one factory should be initialized
-		setInstance(new NEDElementFactoryEx());
-	}
-
 	public NEDElement createNodeWithTag(String tagname) {
         if (tagname.equals("ned-file"))
             return new NedFileNodeEx();

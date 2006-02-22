@@ -257,12 +257,12 @@ foreach $element (@elements)
         print JAVA "    public static final String $attnameconsts[$i] = \"$attnames[$i]\";\n";
     }
     print JAVA "\n";
-    print JAVA "    /** Constructor is package private, use factory class instead */\n";
-    print JAVA "    $elementclass() {\n";
+    print JAVA "    /** You should never create an instance directly, use factory class instead */\n";
+    print JAVA "    public $elementclass() {\n";
     print JAVA "        applyDefaults();\n";
     print JAVA "    }\n\n";
-    print JAVA "    /** Constructor is package private, use factory class instead */\n";
-    print JAVA "    $elementclass(NEDElement parent) {\n";
+    print JAVA "    /** You should never create an instance directly, use factory class instead */\n";
+    print JAVA "    public $elementclass(NEDElement parent) {\n";
     print JAVA "        super(parent);\n";
     print JAVA "        applyDefaults();\n";
     print JAVA "    }\n\n";

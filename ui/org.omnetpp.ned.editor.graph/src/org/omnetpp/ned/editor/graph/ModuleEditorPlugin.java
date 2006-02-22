@@ -34,6 +34,7 @@ import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.model.CompoundModuleModel;
 import org.omnetpp.ned.editor.graph.model.NedModelFactory;
 import org.omnetpp.ned.editor.graph.model.SubmoduleModel;
+import org.omnetpp.ned2.model.pojo.NEDElementFactoryEx;
 
 public class ModuleEditorPlugin extends AbstractUIPlugin {
 
@@ -46,6 +47,10 @@ public class ModuleEditorPlugin extends AbstractUIPlugin {
         if (singleton == null) {
             singleton = this;
         }
+        
+        // initialize the model factory
+   		NEDElementFactoryEx.setInstance(new NEDElementFactoryEx());
+
     }
 
     public static ModuleEditorPlugin getDefault() {

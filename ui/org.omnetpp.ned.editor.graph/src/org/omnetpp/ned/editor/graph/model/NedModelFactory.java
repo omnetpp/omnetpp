@@ -187,8 +187,6 @@ public class NedModelFactory {
     	for(NEDElement itCompoundModule : node) {
     		if (itCompoundModule instanceof SubmodulesNode) {
     			
-    			
-    	        result.addChild(pojo2compoundModuleModel((CompoundModuleNode)itCompoundModule));
     		}
     	}
         
