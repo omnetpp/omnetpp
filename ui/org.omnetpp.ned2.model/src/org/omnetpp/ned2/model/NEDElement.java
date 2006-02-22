@@ -496,27 +496,49 @@ public abstract class NEDElement implements Iterable<NEDElement>
 	 * The new value can be obtained using getAttribute(attr). 
 	 */
 	protected void attributeChanged(String attr) {
-		NEDChangeListener[] tmp = listeners.getListeners();
-		for (int i=0; i<tmp.length; i++)
-			tmp[i].attributeChanged(this,attr);
+		// climb up to find 1st node to notify
+		NEDElement node = this;
+		while (node != null && node.listeners == null)
+			node = node.getParent();
+		if (node.listeners != null) {
+			// notify
+			NEDChangeListener[] tmp = node.listeners.getListeners();
+			for (int i=0; i<tmp.length; i++)
+				tmp[i].attributeChanged(this,attr);
+		}
 	}
 
 	/**
 	 * Callback, invoked when a child element gets inserted 
 	 */
-	protected void childInserted(NEDElement where, NEDElement node) {
-		NEDChangeListener[] tmp = listeners.getListeners();
-		for (int i=0; i<tmp.length; i++)
-			tmp[i].childInserted(this, where, node);
+	protected void childInserted(NEDElement where, NEDElement child) {
+		// climb up to find 1st node to notify
+		NEDElement node = this;
+		while (node != null && node.listeners == null)
+			node = node.getParent();
+		if (node.listeners != null) {
+			// notify
+			NEDChangeListener[] tmp = listeners.getListeners();
+			for (int i=0; i<tmp.length; i++)
+				tmp[i].childInserted(this, where, child);
+		}
 	}
 
 	/**
 	 * Callback, invoked when a child element gets removed 
 	 */
-	protected void childRemoved(NEDElement node) {
-		NEDChangeListener[] tmp = listeners.getListeners();
-		for (int i=0; i<tmp.length; i++)
-			tmp[i].childRemoved(this, node);
+	protected void childRemoved(NEDElement child) {
+		// climb up to find 1st node to notify
+		NEDElement node = this;
+		while (node != null && node.listeners == null)
+			node = node.getParent();
+		if (node.listeners != null) {
+			// notify
+			NEDChangeListener[] tmp = listeners.getListeners();
+			for (int i=0; i<tmp.length; i++)
+				tmp[i].childRemoved(this, child);
+
+		}
 	}
 };
 
