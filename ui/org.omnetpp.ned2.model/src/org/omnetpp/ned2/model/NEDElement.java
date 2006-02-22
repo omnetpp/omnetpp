@@ -24,7 +24,7 @@ public abstract class NEDElement implements Iterable<NEDElement>
 
     public Iterator<NEDElement> iterator() {
     	final NEDElement e = this;
-		return new Iterator () {
+		return new Iterator<NEDElement> () {
 			private NEDElement oldChild = null;
 			private NEDElement child = e.getFirstChild();
 
@@ -32,7 +32,7 @@ public abstract class NEDElement implements Iterable<NEDElement>
 				return child != null;
 			}
 
-			public Object next() {
+			public NEDElement next() {
 				oldChild = child;
 				child = child.getNextSibling();
 				return oldChild;
