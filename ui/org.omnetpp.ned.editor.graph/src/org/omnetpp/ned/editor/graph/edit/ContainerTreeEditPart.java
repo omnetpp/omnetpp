@@ -17,7 +17,7 @@ import org.eclipse.gef.RootEditPart;
 import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedContainerEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedTreeContainerEditPolicy;
-import org.omnetpp.ned.editor.graph.model.NedFileModel;
+import org.omnetpp.ned.editor.graph.model.old.NedFileModel;
 
 /**
  * Tree EditPart for the Container.

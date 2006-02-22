@@ -12,9 +12,9 @@ package org.omnetpp.ned.editor.graph.edit.policies;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.requests.GroupRequest;
-import org.omnetpp.ned.editor.graph.model.NedNodeModel;
-import org.omnetpp.ned.editor.graph.model.NedFileModel;
 import org.omnetpp.ned.editor.graph.model.commands.DeleteCommand;
+import org.omnetpp.ned.editor.graph.model.old.NedFileModel;
+import org.omnetpp.ned.editor.graph.model.old.NedNodeModel;
 
 public class NedComponentEditPolicy extends org.eclipse.gef.editpolicies.ComponentEditPolicy {
 

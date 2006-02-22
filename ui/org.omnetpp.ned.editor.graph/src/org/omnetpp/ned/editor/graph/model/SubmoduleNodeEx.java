@@ -1,6 +1,7 @@
-package org.omnetpp.ned2.model.pojo;
+package org.omnetpp.ned.editor.graph.model;
 
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.pojo.PropertyNode;
 import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 
 public class SubmoduleNodeEx extends SubmoduleNode {

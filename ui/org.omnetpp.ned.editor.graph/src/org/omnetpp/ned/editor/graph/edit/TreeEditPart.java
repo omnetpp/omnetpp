@@ -21,8 +21,8 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedTreeEditPolicy;
-import org.omnetpp.ned.editor.graph.model.ContainerModel;
-import org.omnetpp.ned.editor.graph.model.NedNodeModel;
+import org.omnetpp.ned.editor.graph.model.old.ContainerModel;
+import org.omnetpp.ned.editor.graph.model.old.NedNodeModel;
 
 /**
  * EditPart for Logic components in the Tree.

@@ -26,8 +26,8 @@ import org.omnetpp.ned.editor.graph.figures.NedFigure;
 import org.omnetpp.ned.editor.graph.figures.properties.*;
 import org.omnetpp.ned.editor.graph.misc.ColorFactory;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
-import org.omnetpp.ned.editor.graph.model.NedNodeModel;
-import org.omnetpp.ned.editor.graph.model.WireModel;
+import org.omnetpp.ned.editor.graph.model.old.NedNodeModel;
+import org.omnetpp.ned.editor.graph.model.old.WireModel;
 import org.omnetpp.ned.editor.graph.properties.DisplayPropertySource;
 
 /**

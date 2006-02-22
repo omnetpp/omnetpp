@@ -49,7 +49,7 @@ import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.omnetpp.ned.editor.graph.edit.policies.NedLayoutEditPolicy;
 import org.omnetpp.ned.editor.graph.misc.FreeformDesktopLayout;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.NedFileModel;
+import org.omnetpp.ned.editor.graph.model.old.NedFileModel;
 
 /**
  * Holds all other NedEditParts under this. It is activated by

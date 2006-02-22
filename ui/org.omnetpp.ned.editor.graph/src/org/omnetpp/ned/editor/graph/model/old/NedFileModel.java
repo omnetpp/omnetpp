@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.model;
+package org.omnetpp.ned.editor.graph.model.old;
 
 import org.eclipse.ui.views.properties.ComboBoxPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;

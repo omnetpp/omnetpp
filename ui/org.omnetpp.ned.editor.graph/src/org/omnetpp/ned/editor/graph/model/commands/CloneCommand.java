@@ -23,6 +23,12 @@ import org.eclipse.gef.commands.Command;
 
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.model.*;
+import org.omnetpp.ned.editor.graph.model.old.CompoundModuleModel;
+import org.omnetpp.ned.editor.graph.model.old.ContainerModel;
+import org.omnetpp.ned.editor.graph.model.old.NedNodeModel;
+import org.omnetpp.ned.editor.graph.model.old.SubmoduleModel;
+import org.omnetpp.ned.editor.graph.model.old.WireBendpointModel;
+import org.omnetpp.ned.editor.graph.model.old.WireModel;
 
 /**
  * Clones a set of parts (copy operation)

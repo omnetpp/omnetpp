@@ -16,7 +16,7 @@ import java.util.List;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.NodeEditPart;
 import org.omnetpp.ned.editor.graph.edit.policies.NedContainerEditPolicy;
-import org.omnetpp.ned.editor.graph.model.ContainerModel;
+import org.omnetpp.ned.editor.graph.model.old.ContainerModel;
 
 /**
  * Provides support for Container EditParts.

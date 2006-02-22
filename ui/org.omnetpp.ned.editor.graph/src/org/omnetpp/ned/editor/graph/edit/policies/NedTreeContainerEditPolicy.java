@@ -23,10 +23,10 @@ import org.eclipse.gef.editpolicies.TreeContainerEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
 
-import org.omnetpp.ned.editor.graph.model.ContainerModel;
-import org.omnetpp.ned.editor.graph.model.NedNodeModel;
 import org.omnetpp.ned.editor.graph.model.commands.CreateCommand;
 import org.omnetpp.ned.editor.graph.model.commands.ReorderPartCommand;
+import org.omnetpp.ned.editor.graph.model.old.ContainerModel;
+import org.omnetpp.ned.editor.graph.model.old.NedNodeModel;
 
 public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
 

@@ -33,8 +33,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.eclipse.ui.ide.IDE;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.NedFileModel;
-import org.omnetpp.ned.editor.graph.model.NedModelFactory;
+import org.omnetpp.ned.editor.graph.model.old.NedFileModel;
+import org.omnetpp.ned.editor.graph.model.old.NedModelFactory;
 
 public class ModuleCreationWizardPage1 extends WizardNewFileCreationPage
 		implements SelectionListener {

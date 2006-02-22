@@ -17,8 +17,8 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.commands.Command;
 
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.ContainerModel;
-import org.omnetpp.ned.editor.graph.model.NedNodeModel;
+import org.omnetpp.ned.editor.graph.model.old.ContainerModel;
+import org.omnetpp.ned.editor.graph.model.old.NedNodeModel;
 
 /**
  * This command removes a model element from its parent.

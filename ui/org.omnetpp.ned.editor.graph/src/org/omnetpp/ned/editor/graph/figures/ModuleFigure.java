@@ -26,7 +26,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.handles.HandleBounds;
 import org.omnetpp.ned.editor.graph.figures.properties.LayerSupport;
 import org.omnetpp.ned.editor.graph.misc.FreeformDesktopLayout;
-import org.omnetpp.ned.editor.graph.model.CompoundModuleModel;
+import org.omnetpp.ned.editor.graph.model.old.CompoundModuleModel;
 
 public class ModuleFigure extends NedFigure implements LayerSupport, HandleBounds {
 

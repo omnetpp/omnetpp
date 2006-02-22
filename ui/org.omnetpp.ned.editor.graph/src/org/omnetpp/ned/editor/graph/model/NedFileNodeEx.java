@@ -1,9 +1,10 @@
-package org.omnetpp.ned2.model.pojo;
+package org.omnetpp.ned.editor.graph.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.pojo.NedFileNode;
 
 public class NedFileNodeEx extends NedFileNode {
 	

@@ -125,7 +125,7 @@ import org.omnetpp.ned.editor.graph.figures.properties.LayerSupport;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.misc.ModulePaletteCustomizer;
-import org.omnetpp.ned.editor.graph.model.NedFileModel;
+import org.omnetpp.ned.editor.graph.model.old.NedFileModel;
 
 public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
     

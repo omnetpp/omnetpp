@@ -16,8 +16,8 @@ import java.util.Vector;
 import org.eclipse.gef.commands.Command;
 
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.NedNodeModel;
-import org.omnetpp.ned.editor.graph.model.WireModel;
+import org.omnetpp.ned.editor.graph.model.old.NedNodeModel;
+import org.omnetpp.ned.editor.graph.model.old.WireModel;
 
 /**
  * (Re)assigns a wire object to source/target submodule gates

@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.omnetpp.ned.editor.graph.model;
+package org.omnetpp.ned.editor.graph.model.old;
 
 import java.util.ArrayList;
 import java.util.List;

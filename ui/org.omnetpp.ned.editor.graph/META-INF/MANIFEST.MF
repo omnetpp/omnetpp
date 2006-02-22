@@ -26,5 +26,6 @@ Export-Package: org.omnetpp.ned.editor.graph,
  org.omnetpp.ned.editor.graph.misc,
  org.omnetpp.ned.editor.graph.model,
  org.omnetpp.ned.editor.graph.model.commands,
+ org.omnetpp.ned.editor.graph.model.old,
  org.omnetpp.ned.editor.graph.properties,
  org.omnetpp.ned.editor.graph.wizards

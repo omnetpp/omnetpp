@@ -34,13 +34,13 @@ import org.omnetpp.ned.editor.graph.figures.ModuleFigure;
 import org.omnetpp.ned.editor.graph.misc.ColorFactory;
 import org.omnetpp.ned.editor.graph.misc.DesktopLayoutEditPolicy;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.CompoundModuleModel;
-import org.omnetpp.ned.editor.graph.model.ContainerModel;
-import org.omnetpp.ned.editor.graph.model.NedNodeModel;
 import org.omnetpp.ned.editor.graph.model.commands.AddCommand;
 import org.omnetpp.ned.editor.graph.model.commands.CloneCommand;
 import org.omnetpp.ned.editor.graph.model.commands.CreateCommand;
 import org.omnetpp.ned.editor.graph.model.commands.SetConstraintCommand;
+import org.omnetpp.ned.editor.graph.model.old.CompoundModuleModel;
+import org.omnetpp.ned.editor.graph.model.old.ContainerModel;
+import org.omnetpp.ned.editor.graph.model.old.NedNodeModel;
 
 
 public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {

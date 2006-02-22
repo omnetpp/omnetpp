@@ -16,11 +16,11 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.requests.BendpointRequest;
 
-import org.omnetpp.ned.editor.graph.model.WireModel;
 import org.omnetpp.ned.editor.graph.model.commands.BendpointCommand;
 import org.omnetpp.ned.editor.graph.model.commands.CreateBendpointCommand;
 import org.omnetpp.ned.editor.graph.model.commands.DeleteBendpointCommand;
 import org.omnetpp.ned.editor.graph.model.commands.MoveBendpointCommand;
+import org.omnetpp.ned.editor.graph.model.old.WireModel;
 
 public class WireBendpointEditPolicy extends org.eclipse.gef.editpolicies.BendpointEditPolicy {
 

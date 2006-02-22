@@ -20,7 +20,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.ned.editor.graph.figures.properties.*;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
-import org.omnetpp.ned.editor.graph.model.SubmoduleModel;
+import org.omnetpp.ned.editor.graph.model.old.SubmoduleModel;
 
 public class SimpleModuleFigure extends NedFigure implements HandleBounds, 
     DisplayRangeSupport, DisplayNameSupport, DisplayTooltipSupport, DisplayQueueSupport, 

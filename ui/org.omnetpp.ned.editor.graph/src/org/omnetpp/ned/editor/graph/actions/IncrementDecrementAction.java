@@ -19,7 +19,7 @@ import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.SubmoduleModel;
+import org.omnetpp.ned.editor.graph.model.old.SubmoduleModel;
 
 public class IncrementDecrementAction extends org.eclipse.gef.ui.actions.SelectionAction {
 

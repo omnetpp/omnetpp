@@ -20,9 +20,9 @@ import org.eclipse.gef.requests.CreateRequest;
 import org.eclipse.gef.requests.GroupRequest;
 
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.ContainerModel;
-import org.omnetpp.ned.editor.graph.model.NedNodeModel;
 import org.omnetpp.ned.editor.graph.model.commands.OrphanChildCommand;
+import org.omnetpp.ned.editor.graph.model.old.ContainerModel;
+import org.omnetpp.ned.editor.graph.model.old.NedNodeModel;
 
 public class NedContainerEditPolicy extends ContainerEditPolicy {
 

@@ -20,7 +20,7 @@ import org.eclipse.gef.AccessibleAnchorProvider;
 import org.eclipse.gef.AccessibleEditPart;
 import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.omnetpp.ned.editor.graph.figures.SimpleModuleFigure;
-import org.omnetpp.ned.editor.graph.model.SubmoduleModel;
+import org.omnetpp.ned.editor.graph.model.old.SubmoduleModel;
 
 /**
  * EditPart for holding gates in the Logic Example.

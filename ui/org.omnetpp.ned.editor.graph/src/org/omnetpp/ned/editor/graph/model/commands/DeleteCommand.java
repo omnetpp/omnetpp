@@ -15,9 +15,9 @@ import java.util.List;
 
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.ContainerModel;
-import org.omnetpp.ned.editor.graph.model.NedNodeModel;
-import org.omnetpp.ned.editor.graph.model.WireModel;
+import org.omnetpp.ned.editor.graph.model.old.ContainerModel;
+import org.omnetpp.ned.editor.graph.model.old.NedNodeModel;
+import org.omnetpp.ned.editor.graph.model.old.WireModel;
 
 /**
  * Deletes an object from the model and also removes all associated connections

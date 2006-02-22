@@ -14,6 +14,10 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;
 
 import org.omnetpp.ned.editor.graph.model.*;
+import org.omnetpp.ned.editor.graph.model.old.CompoundModuleModel;
+import org.omnetpp.ned.editor.graph.model.old.NedFileModel;
+import org.omnetpp.ned.editor.graph.model.old.SubmoduleModel;
+import org.omnetpp.ned.editor.graph.model.old.WireModel;
 
 public class NedEditPartFactory implements EditPartFactory {
 

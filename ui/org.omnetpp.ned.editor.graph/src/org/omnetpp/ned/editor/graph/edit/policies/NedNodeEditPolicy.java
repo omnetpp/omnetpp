@@ -23,9 +23,9 @@ import org.eclipse.gef.requests.ReconnectRequest;
 import org.omnetpp.ned.editor.graph.edit.NedNodeEditPart;
 import org.omnetpp.ned.editor.graph.figures.FigureFactory;
 import org.omnetpp.ned.editor.graph.figures.NedFigure;
-import org.omnetpp.ned.editor.graph.model.NedNodeModel;
-import org.omnetpp.ned.editor.graph.model.WireModel;
 import org.omnetpp.ned.editor.graph.model.commands.ConnectionCommand;
+import org.omnetpp.ned.editor.graph.model.old.NedNodeModel;
+import org.omnetpp.ned.editor.graph.model.old.WireModel;
 
 public class NedNodeEditPolicy extends org.eclipse.gef.editpolicies.GraphicalNodeEditPolicy {
 

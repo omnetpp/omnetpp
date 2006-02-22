@@ -13,8 +13,8 @@ package org.omnetpp.ned.editor.graph.model.commands;
 import org.eclipse.gef.commands.Command;
 
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.ContainerModel;
-import org.omnetpp.ned.editor.graph.model.NedNodeModel;
+import org.omnetpp.ned.editor.graph.model.old.ContainerModel;
+import org.omnetpp.ned.editor.graph.model.old.NedNodeModel;
 
 /**
  * Move a child to a different position in the parent's list

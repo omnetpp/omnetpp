@@ -31,10 +31,10 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.CompoundModuleModel;
-import org.omnetpp.ned.editor.graph.model.NedModelFactory;
-import org.omnetpp.ned.editor.graph.model.SubmoduleModel;
-import org.omnetpp.ned2.model.pojo.NEDElementFactoryEx;
+import org.omnetpp.ned.editor.graph.model.NEDElementFactoryEx;
+import org.omnetpp.ned.editor.graph.model.old.CompoundModuleModel;
+import org.omnetpp.ned.editor.graph.model.old.NedModelFactory;
+import org.omnetpp.ned.editor.graph.model.old.SubmoduleModel;
 
 public class ModuleEditorPlugin extends AbstractUIPlugin {
 

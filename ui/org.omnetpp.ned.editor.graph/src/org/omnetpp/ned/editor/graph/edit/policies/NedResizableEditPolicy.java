@@ -21,7 +21,7 @@ import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.omnetpp.ned.editor.graph.figures.ModuleFeedbackFigure;
 import org.omnetpp.ned.editor.graph.misc.ColorFactory;
-import org.omnetpp.ned.editor.graph.model.CompoundModuleModel;
+import org.omnetpp.ned.editor.graph.model.old.CompoundModuleModel;
 
 /**
  * 
