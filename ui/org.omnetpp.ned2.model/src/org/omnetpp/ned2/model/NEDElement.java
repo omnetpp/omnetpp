@@ -284,6 +284,14 @@ public abstract class NEDElement implements Iterable<NEDElement>
     }
 
     /**
+     * Called when an attribute changes value. The new value can be obtained 
+     * using getAttribute(attr). 
+     */
+    public void attributeChanged(String attr) 
+    {
+    }
+    
+    /**
      * Returns the parent element, or null if this element has no parent.
      */
     public NEDElement getParent()

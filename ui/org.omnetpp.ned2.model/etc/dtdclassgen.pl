@@ -143,6 +143,7 @@ foreach $element (@elements)
     # attribute names, types
     @varnames = ();
     @ucvarnames = ();
+    @attnameconsts = ();
     @argtypes = ();
     @enumnames = ();
     for ($i=0; $i<$attcount; $i++)
@@ -154,6 +155,9 @@ foreach $element (@elements)
 
         $ucvarname = $varname;
         $ucvarname =~ s/(.)(.*)/uc($1).$2/e;
+
+        $attnameconst = "ATT_".uc($attnames[$i]);
+        $attnameconst =~ s/-/_/eg;
 
         if ($varname eq "package") {$varname = "package_";}
 
@@ -188,12 +192,14 @@ foreach $element (@elements)
         }
         push(@varnames,$varname);
         push(@ucvarnames,$ucvarname);
+        push(@attnameconsts,$attnameconst);
         push(@argtypes,$argtype);
         push(@enumnames,$enumname);
     }
 
     $att_varnames{$element} = [ @varnames ];
     $att_ucvarnames{$element} = [ @ucvarnames ];
+    $att_attnameconsts{$element} = [ @attnameconsts ];
     $att_argtypes{$element} = [ @argtypes ];
     $att_enumnames{$element} = [ @enumnames ];
 }
@@ -219,6 +225,7 @@ foreach $element (@elements)
     @childvars = @{$childvars{$element}};
     @varnames = @{$att_varnames{$element}};
     @ucvarnames = @{$att_ucvarnames{$element}};
+    @attnameconsts = @{$att_attnameconsts{$element}};
     @argtypes = @{$att_argtypes{$element}};
     @enumnames = @{$att_enumnames{$element}};
 
@@ -245,10 +252,17 @@ foreach $element (@elements)
         print JAVA "    private $vartype $varnames[$i];\n";
     }
     print JAVA "\n";
-    print JAVA "    public $elementclass() {\n";
+    for ($i=0; $i<$attcount; $i++)
+    {
+        print JAVA "    public static final String $attnameconsts[$i] = \"$attnames[$i]\";\n";
+    }
+    print JAVA "\n";
+    print JAVA "    /** Constructor is package private, use factory class instead */\n";
+    print JAVA "    $elementclass() {\n";
     print JAVA "        applyDefaults();\n";
     print JAVA "    }\n\n";
-    print JAVA "    public $elementclass(NEDElement parent) {\n";
+    print JAVA "    /** Constructor is package private, use factory class instead */\n";
+    print JAVA "    $elementclass(NEDElement parent) {\n";
     print JAVA "        super(parent);\n";
     print JAVA "        applyDefaults();\n";
     print JAVA "    }\n\n";
@@ -265,7 +279,7 @@ foreach $element (@elements)
     print JAVA "        switch (k) {\n";
     for ($i=0; $i<$attcount; $i++)
     {
-        print JAVA "            case $i: return \"$attnames[$i]\";\n";
+        print JAVA "            case $i: return $attnameconsts[$i];\n";
     }
     print JAVA "            default: return null;\n";
     print JAVA "        }\n";
@@ -295,13 +309,13 @@ foreach $element (@elements)
     for ($i=0; $i<$attcount; $i++)
     {
         if ($argtypes[$i] eq "String") {
-            print JAVA "            case $i: $varnames[$i] = val; break;\n";
+            print JAVA "            case $i: set$ucvarnames[$i](val); break;\n";
         }
         elsif ($argtypes[$i] eq "boolean") {
-            print JAVA "            case $i: $varnames[$i] = stringToBool(val); break;\n";
+            print JAVA "            case $i: set$ucvarnames[$i](stringToBool(val)); break;\n";
         }
         elsif ($argtypes[$i] eq "int") {
-            print JAVA "            case $i: $varnames[$i] = stringToEnum(val, $enumnames[$i]_vals, $enumnames[$i]_nums, $enumnames[$i]_n); break;\n";
+            print JAVA "            case $i: set$ucvarnames[$i](stringToEnum(val, $enumnames[$i]_vals, $enumnames[$i]_nums, $enumnames[$i]_n)); break;\n";
         }
         else {
             die "what is $argtypes[$i]???";
@@ -338,10 +352,12 @@ foreach $element (@elements)
             print JAVA "    public void set$ucvarnames[$i]($argtypes[$i] val) {\n";
             print JAVA "        validateEnum(val, $enumnames[$i]_vals, $enumnames[$i]_nums, $enumnames[$i]_n);\n";
             print JAVA "        $varnames[$i] = val;\n";
+            print JAVA "        attributeChanged($attnameconsts[$i]);\n";
             print JAVA "    }\n\n";
         } else {
             print JAVA "    public void set$ucvarnames[$i]($argtypes[$i] val) {\n";
             print JAVA "        $varnames[$i] = val;\n";
+            print JAVA "        attributeChanged($attnameconsts[$i]);\n";
             print JAVA "    }\n\n";
         }
 
