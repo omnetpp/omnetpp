@@ -484,11 +484,14 @@ public abstract class NEDElement implements Iterable<NEDElement>
 	}
 
 	public void addListener(NEDChangeListener l) {
+		if (listeners == null)
+			listeners = new NEDChangeListenerList();
 		listeners.add(l);
 	}
 
 	public void removeListener(NEDChangeListener l) {
-		listeners.remove(l);
+		if (listeners != null)
+			listeners.remove(l);
 	}
 
 	/**
