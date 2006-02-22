@@ -58,7 +58,7 @@ public class GraphAndTextEditor extends MultiPageEditorPart implements
 			textPageIndex = addPage(nedEditor, getEditorInput());
 			setPageText(textPageIndex,"Text");
 			// fill graph editor with data
-			NedFileModel graphTreeRoot = NedModelFactory.pojo2gmodel(nedModel);
+			NedFileModel graphTreeRoot = NedModelFactory.pojo2nedFileModel(nedModel);
 			graphEditor.setModel(graphTreeRoot);
 			// fill text editor
 			String textEditorContent = ModelUtil.generateNedSource(nedModel);

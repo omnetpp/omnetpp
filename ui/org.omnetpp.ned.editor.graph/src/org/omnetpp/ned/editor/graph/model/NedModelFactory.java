@@ -16,6 +16,8 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.requests.CreationFactory;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
+import org.omnetpp.ned2.model.pojo.NedFileNode;
+import org.omnetpp.ned2.model.pojo.SubmodulesNode;
 
 /**
  * Used to create new example models. Used by the create wizard
@@ -165,23 +167,31 @@ public class NedModelFactory {
         return root;
     }
     
-    public static NedFileModel pojo2gmodel(NEDElement pojoRoot) {
-    	NedFileModel rootElement = new NedFileModel();
+    public static NedFileModel pojo2nedFileModel(NedFileNode node) {
+    	NedFileModel result = new NedFileModel();
     	
-    	for(NEDElement ne : pojoRoot) {
-    		if (ne instanceof CompoundModuleNode) {
-    			CompoundModuleNode compModNode = (CompoundModuleNode)ne;
-    			
-    			CompoundModuleModel compMod = new CompoundModuleModel();
-    	        compMod.setSize(new Dimension(120, 216));
-    	        compMod.setName(compModNode.getName());
-    	        rootElement.addChild(compMod);
+    	for(NEDElement ni : node) {
+    		if (ni instanceof CompoundModuleNode) {
+    	        result.addChild(pojo2compoundModuleModel((CompoundModuleNode)ni));
     		}
-    		
     	}
-    	
-    	return rootElement;
+    	return result;
 	}	
     	
+    public static CompoundModuleModel pojo2compoundModuleModel(CompoundModuleNode node) {
+		CompoundModuleModel result = new CompoundModuleModel();
+        result.setSize(new Dimension(120, 216));
+        result.setName(node.getName());
 
+        // add submodules as children
+    	for(NEDElement itCompoundModule : node) {
+    		if (itCompoundModule instanceof SubmodulesNode) {
+    			
+    			
+    	        result.addChild(pojo2compoundModuleModel((CompoundModuleNode)itCompoundModule));
+    		}
+    	}
+        
+        return result;
+    }
 }

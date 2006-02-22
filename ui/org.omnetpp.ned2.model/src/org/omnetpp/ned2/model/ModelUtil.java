@@ -1,5 +1,6 @@
 package org.omnetpp.ned2.model;
 
+import org.omnetpp.ned2.model.pojo.NEDElementFactory;
 import org.omnetpp.ned2.model.swig.NEDElement;
 import org.omnetpp.ned2.model.swig.NEDGenerator;
 import org.omnetpp.ned2.model.swig.NEDParser;
@@ -37,9 +38,8 @@ public class ModelUtil {
 
 	// WARNING there are two differenet NEDElement types hadled in this function 
 	public static org.omnetpp.ned2.model.NEDElement swig2pojo(NEDElement swigNode) {
-		org.omnetpp.ned2.model.NEDElement pojoNode = 
-			org.omnetpp.ned2.model.pojo.NEDElementFactory
-				.createNodeWithTag(swigNode.getTagCode());
+		org.omnetpp.ned2.model.NEDElement pojoNode = NEDElementFactory.getInstance() 
+			.createNodeWithTag(swigNode.getTagCode());
 
 		// set the attributes
 		for (int i = 0; i < swigNode.getNumAttributes(); ++i) {

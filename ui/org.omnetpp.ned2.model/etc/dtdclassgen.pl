@@ -417,8 +417,17 @@ print JAVA " * GENERATED CLASS.\n";
 print JAVA " */\n";
 print JAVA "public class NEDElementFactory implements NEDElementTags\n";
 print JAVA "{\n";
-
-print JAVA "    public static NEDElement createNodeWithTag(String tagname) {\n";
+print JAVA "    private static NEDElementFactory instance;\n";
+print JAVA "\n";
+print JAVA "    public static NEDElementFactory getInstance() {\n";
+print JAVA "        return instance;\n";
+print JAVA "    }\n";
+print JAVA "\n";
+print JAVA "    public static void setInstance(NEDElementFactory inst) {\n";
+print JAVA "        instance = inst;\n";
+print JAVA "    }\n";
+print JAVA "\n";
+print JAVA "    public NEDElement createNodeWithTag(String tagname) {\n";
 foreach $element (@elements)
 {
     print JAVA "        if (tagname.equals(\"$element\"))\n";
@@ -428,7 +437,7 @@ print JAVA "        else\n";
 print JAVA "            throw new RuntimeException(\"invalid tagname \"+tagname);\n";
 print JAVA "    }\n\n";
 
-print JAVA "    public static NEDElement createNodeWithTag(int tagcode) {\n";
+print JAVA "    public NEDElement createNodeWithTag(int tagcode) {\n";
 foreach $element (@elements)
 {
     print JAVA "        if (tagcode==$enumname{$element})\n";
