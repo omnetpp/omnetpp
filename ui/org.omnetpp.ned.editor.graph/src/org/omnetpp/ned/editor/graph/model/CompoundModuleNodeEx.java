@@ -6,7 +6,7 @@ import java.util.List;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
 
-public class CompoundModuleNodeEx extends CompoundModuleNode {
+public class CompoundModuleNodeEx extends CompoundModuleNode implements INedComponent{
 
 	public List<SubmoduleNodeEx> getSubmodules() {
 		List<SubmoduleNodeEx> result = new ArrayList<SubmoduleNodeEx>();
@@ -26,4 +26,11 @@ public class CompoundModuleNodeEx extends CompoundModuleNode {
 		return result;
 	}
 
+	public String getDisplayString() {
+		return NedElementExUtil.getDisplayString(this); 
+	}
+	
+	public void setDisplayString(String dspString) {
+		NedElementExUtil.setDisplayString(this, dspString);
+	}
 }
