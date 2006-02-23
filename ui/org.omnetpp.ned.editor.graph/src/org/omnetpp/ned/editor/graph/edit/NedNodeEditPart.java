@@ -11,23 +11,32 @@
 package org.omnetpp.ned.editor.graph.edit;
 
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.List;
 
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.gef.*;
+import org.eclipse.gef.EditPart;
+import org.eclipse.gef.EditPolicy;
+import org.eclipse.gef.GraphicalEditPart;
+import org.eclipse.gef.Request;
 import org.eclipse.gef.requests.DropRequest;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedNodeEditPolicy;
 import org.omnetpp.ned.editor.graph.figures.NedFigure;
-import org.omnetpp.ned.editor.graph.figures.properties.*;
+import org.omnetpp.ned.editor.graph.figures.properties.DisplayCalloutSupport;
+import org.omnetpp.ned.editor.graph.figures.properties.DisplayInfoTextSupport;
+import org.omnetpp.ned.editor.graph.figures.properties.DisplayNameSupport;
+import org.omnetpp.ned.editor.graph.figures.properties.DisplayQueueSupport;
+import org.omnetpp.ned.editor.graph.figures.properties.DisplayRangeSupport;
+import org.omnetpp.ned.editor.graph.figures.properties.DisplayShapeSupport;
+import org.omnetpp.ned.editor.graph.figures.properties.DisplayTooltipSupport;
 import org.omnetpp.ned.editor.graph.misc.ColorFactory;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
+import org.omnetpp.ned.editor.graph.model.INedComponent;
+import org.omnetpp.ned.editor.graph.model.INedModelElement;
 import org.omnetpp.ned.editor.graph.model.old.NedNodeModel;
-import org.omnetpp.ned.editor.graph.model.old.WireModel;
 import org.omnetpp.ned.editor.graph.properties.DisplayPropertySource;
 
 /**
@@ -35,13 +44,6 @@ import org.omnetpp.ned.editor.graph.properties.DisplayPropertySource;
  * connection handling and common display attributes.
  */
 abstract public class NedNodeEditPart extends ContainerEditPart {
-
-    public void activate() {
-        if (isActive()) return;
-        super.activate();
-        // register as listener of the model object
-        getNedElement().addPropertyChangeListener(this);
-    }
 
     protected void createEditPolicies() {
         super.createEditPolicies();
@@ -51,31 +53,12 @@ abstract public class NedNodeEditPart extends ContainerEditPart {
 
 
     /**
-     * Makes the EditPart insensible to changes in the model by removing itself
-     * from the model's list of listeners.
-     */
-    public void deactivate() {
-        if (!isActive()) return;
-        super.deactivate();
-        getNedElement().removePropertyChangeListener(this);
-    }
-
-    /**
-     * Returns the model associated with this as a NedElement.
-     * 
-     * @return The model of this as a NedElement.
-     */
-    protected NedNodeModel getNedElement() {
-        return (NedNodeModel) getModel();
-    }
-
-    /**
      * Returns a list of connections for which this is the source.
      * 
      * @return List of connections.
      */
     protected List getModelSourceConnections() {
-        return getNedElement().getSourceConnections();
+        return ((INedComponent)getNEDModel()).getSourceConnections();
     }
 
     /**
@@ -84,7 +67,7 @@ abstract public class NedNodeEditPart extends ContainerEditPart {
      * @return List of connections.
      */
     protected List getModelTargetConnections() {
-        return getNedElement().getTargetConnections();
+        return ((INedComponent)getNEDModel()).getTargetConnections();
     }
 
     /**
@@ -101,10 +84,10 @@ abstract public class NedNodeEditPart extends ContainerEditPart {
      * 
      * @return ConnectionAnchor.
      */
-    public ConnectionAnchor getSourceConnectionAnchor(ConnectionEditPart connEditPart) {
-        WireModel wire = (WireModel) connEditPart.getModel();
-        return getNedFigure().getConnectionAnchor(wire.getSourceGate());
-    }
+//    public ConnectionAnchor getSourceConnectionAnchor(ConnectionEditPart connEditPart) {
+//    	ConnectionNodeEx conn = (ConnectionNodeEx) connEditPart.getModel();
+//        return getNedFigure().getConnectionAnchor(conn.getSourceGate());
+//    }
 
     /**
      * Returns the connection anchor of a source connection which is at the
@@ -122,10 +105,10 @@ abstract public class NedNodeEditPart extends ContainerEditPart {
      * 
      * @return ConnectionAnchor.
      */
-    public ConnectionAnchor getTargetConnectionAnchor(ConnectionEditPart connEditPart) {
-        WireModel wire = (WireModel) connEditPart.getModel();
-        return getNedFigure().getConnectionAnchor(wire.getTargetGate());
-    }
+//    public ConnectionAnchor getTargetConnectionAnchor(ConnectionEditPart connEditPart) {
+//        ConnectionNodeEx conn = (ConnectionNodeEx) connEditPart.getModel();
+//        return getNedFigure().getConnectionAnchor(conn.getTargetGate());
+//    }
 
     /**
      * Returns the connection anchor of a terget connection which is at the
@@ -175,23 +158,35 @@ abstract public class NedNodeEditPart extends ContainerEditPart {
     /**
      * Updates the visual aspect of this.
      */
+    // FIXME most of this stuff should go to SubmoduleEditPart.refreshVisuls()
     protected void refreshVisuals() {
         
         // define the properties that determine the visual appearence
         
+    	INedComponent model = (INedComponent)getNEDModel();
+    	
         // parse a dispaly string, so it's easier to get values from it.
-        DisplayPropertySource dps = new DisplayPropertySource(getNedElement().getDisplay());
+    	String displayStr = model.getDisplayString();
+        DisplayPropertySource dps = 
+        	new DisplayPropertySource(displayStr);
         
         // setup the figure's properties
 
         Integer x = dps.getIntegerPropertyDef(DisplayPropertySource.PROP_X);
         Integer y = dps.getIntegerPropertyDef(DisplayPropertySource.PROP_Y);
+        Integer w = dps.getIntegerPropertyDef(DisplayPropertySource.PROP_W);
+        Integer h = dps.getIntegerPropertyDef(DisplayPropertySource.PROP_H);
+        // FIXME hardcoded
+        if(x == null) x = 100;
+        if(y == null) y = 100;
+        if(h == null) h = -1;
+        if(w == null) w = -1;
         // set the location and size using the models helper methods
-        Rectangle constraint = new Rectangle(getNedElement().getLocation(), getNedElement().getSize());
+        Rectangle constraint = new Rectangle(x, y, w, h);
         ((GraphicalEditPart) getParent()).setLayoutConstraint(this, getFigure(), constraint);
         // check if the figure supports the name decoration
         if(getNedFigure() instanceof DisplayNameSupport)
-            ((DisplayNameSupport)getNedFigure()).setName(getNedElement().getName());
+            ((DisplayNameSupport)getNedFigure()).setName(model.getName());
         // range support
         if(getNedFigure() instanceof DisplayRangeSupport)
             ((DisplayRangeSupport)getNedFigure()).setRange(

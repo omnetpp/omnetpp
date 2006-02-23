@@ -1,38 +1,73 @@
-/*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
 package org.omnetpp.ned.editor.graph.edit;
 
-import java.beans.PropertyChangeListener;
-import java.util.List;
-
 import org.eclipse.gef.EditPolicy;
-import org.eclipse.gef.NodeEditPart;
+import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.omnetpp.ned.editor.graph.edit.policies.NedContainerEditPolicy;
-import org.omnetpp.ned.editor.graph.model.old.ContainerModel;
+import org.omnetpp.ned.editor.graph.model.INedModelElement;
+import org.omnetpp.ned2.model.NEDChangeListener;
+import org.omnetpp.ned2.model.NEDElement;
 
 /**
  * Provides support for Container EditParts.
  */
-abstract public class ContainerEditPart extends org.eclipse.gef.editparts.AbstractGraphicalEditPart implements
- PropertyChangeListener  {
+abstract public class ContainerEditPart 
+   extends AbstractGraphicalEditPart implements NEDChangeListener  {
+
+    public void activate() {
+        if (isActive()) return;
+        super.activate();
+        // register as listener of the model object
+        getNEDModel().addListener(this);
+    }
+
+    /**
+     * Makes the EditPart insensible to changes in the model by removing itself
+     * from the model's list of listeners.
+     */
+    public void deactivate() {
+        if (!isActive()) return;
+        super.deactivate();
+        getNEDModel().removeListener(this);
+    }
 
     /**
      * Installs the desired EditPolicies for this.
      */
     protected void createEditPolicies() {
+    	// XXX check wheter this policy is ok on Submodule too?
         installEditPolicy(EditPolicy.CONTAINER_ROLE, new NedContainerEditPolicy());
     }
 
-//    protected List getModelChildren() {
-//    	return ((ContainerModel)getModel()).getChildren();
-//    }
-    
+    /**
+     * Returns the model associated with this as a NEDElement.
+     * 
+     * @return The model of this as a NedElement.
+     */
+    protected INedModelElement getNEDModel() {
+        return (INedModelElement) getModel();
+    }
+
+    // TODO we must pass the old element too
+    public void attributeChanged(NEDElement node, String attr) {
+		refreshVisuals();
+
+		refreshSourceConnections();
+		refreshTargetConnections();
+	}
+
+	public void childInserted(NEDElement node, NEDElement where, NEDElement child) {
+		refreshChildren();
+		// TODO connection adding and removal should be optimzed (eg. use a separate 
+		// connection added/removed event)
+		// maybe refreshTargetConnections() is not needed here
+		refreshSourceConnections();
+		refreshTargetConnections();
+	}
+
+	public void childRemoved(NEDElement node, NEDElement child) {
+		refreshChildren();
+
+		refreshSourceConnections();
+		refreshTargetConnections();
+	}
 }

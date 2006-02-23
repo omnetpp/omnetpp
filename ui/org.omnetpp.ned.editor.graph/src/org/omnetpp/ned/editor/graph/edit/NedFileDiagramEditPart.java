@@ -10,26 +10,17 @@
  *******************************************************************************/
 package org.omnetpp.ned.editor.graph.edit;
 
-import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.draw2d.Animation;
-import org.eclipse.draw2d.AutomaticRouter;
-import org.eclipse.draw2d.BendpointConnectionRouter;
-import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.ConnectionLayer;
-import org.eclipse.draw2d.FanRouter;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FreeformLayer;
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.ManhattanConnectionRouter;
 import org.eclipse.draw2d.MarginBorder;
-import org.eclipse.draw2d.ShortestPathConnectionRouter;
 import org.eclipse.draw2d.XYLayout;
-import org.eclipse.gef.AccessibleEditPart;
 import org.eclipse.gef.CompoundSnapToHelper;
-import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.DragTracker;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.LayerConstants;
@@ -45,11 +36,9 @@ import org.eclipse.gef.rulers.RulerProvider;
 import org.eclipse.gef.tools.DeselectAllTracker;
 import org.eclipse.gef.tools.MarqueeDragTracker;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.omnetpp.ned.editor.graph.edit.policies.NedLayoutEditPolicy;
 import org.omnetpp.ned.editor.graph.misc.FreeformDesktopLayout;
-import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.old.NedFileModel;
+import org.omnetpp.ned.editor.graph.model.NedFileNodeEx;
 
 /**
  * Holds all other NedEditParts under this. It is activated by
@@ -57,14 +46,6 @@ import org.omnetpp.ned.editor.graph.model.old.NedFileModel;
  * all other EditParts get added.
  */
 public class NedFileDiagramEditPart extends ContainerEditPart implements LayerConstants {
-
-    protected AccessibleEditPart createAccessible() {
-        return new AccessibleGraphicalEditPart() {
-            public void getName(AccessibleEvent e) {
-                e.result = MessageFactory.LogicDiagram_LabelText;
-            }
-        };
-    }
 
     /**
      * Installs EditPolicies specific to this.
@@ -130,59 +111,58 @@ public class NedFileDiagramEditPart extends ContainerEditPart implements LayerCo
      * 
      * @return ConnectionAnchor
      */
-    public ConnectionAnchor getSourceConnectionAnchor(ConnectionEditPart editPart) {
-        return null;
-    }
+//    public ConnectionAnchor getSourceConnectionAnchor(ConnectionEditPart editPart) {
+//        return null;
+//    }
 
     /**
      * Returns <code>NULL</code> as it does not hold any connections.
      * 
      * @return ConnectionAnchor
      */
-    public ConnectionAnchor getSourceConnectionAnchor(int x, int y) {
-        return null;
-    }
+//    public ConnectionAnchor getSourceConnectionAnchor(int x, int y) {
+//        return null;
+//    }
 
     /**
      * Returns <code>NULL</code> as it does not hold any connections.
      * 
      * @return ConnectionAnchor
      */
-    public ConnectionAnchor getTargetConnectionAnchor(ConnectionEditPart editPart) {
-        return null;
-    }
+//    public ConnectionAnchor getTargetConnectionAnchor(ConnectionEditPart editPart) {
+//        return null;
+//    }
 
     /**
      * Returns <code>NULL</code> as it does not hold any connections.
      * 
      * @return ConnectionAnchor
      */
-    public ConnectionAnchor getTargetConnectionAnchor(int x, int y) {
-        return null;
-    }
+//    public ConnectionAnchor getTargetConnectionAnchor(int x, int y) {
+//        return null;
+//    }
 
-    public void propertyChange(PropertyChangeEvent evt) {
-        if (NedFileModel.PROP_ROUTER.equals(evt.getPropertyName()))
-            refreshVisuals();
-// XXX check wheter this is reqiored        
-//        else
-//            super.propertyChange(evt);
-    }
-
+    
+    // FIXME 
     protected void refreshVisuals() {
     	Animation.markBegin();
     	ConnectionLayer cLayer = (ConnectionLayer) getLayer(CONNECTION_LAYER);
     	cLayer.setAntialias(SWT.ON);
 
-    	if (((NedFileModel)getModel()).getConnectionRouter().equals(NedFileModel.ROUTER_MANUAL)) {
-    		AutomaticRouter router = new FanRouter();
-    		router.setNextRouter(new BendpointConnectionRouter());
-    		cLayer.setConnectionRouter(router);
-    	} else if (((NedFileModel)getModel()).getConnectionRouter().equals(NedFileModel.ROUTER_MANHATTAN))
-    		cLayer.setConnectionRouter(new ManhattanConnectionRouter());
-    	else
-    		cLayer.setConnectionRouter(new ShortestPathConnectionRouter(getFigure()));
+// FIXME setting connection routers    	
+//    	if (((NedFileModel)getModel()).getConnectionRouter().equals(NedFileModel.ROUTER_MANUAL)) {
+//    		AutomaticRouter router = new FanRouter();
+//    		router.setNextRouter(new BendpointConnectionRouter());
+//    		cLayer.setConnectionRouter(router);
+//    	} else if (((NedFileModel)getModel()).getConnectionRouter().equals(NedFileModel.ROUTER_MANHATTAN))
+//    		cLayer.setConnectionRouter(new ManhattanConnectionRouter());
+//    	else
+//    		cLayer.setConnectionRouter(new ShortestPathConnectionRouter(getFigure()));
     	Animation.run(400);
+    }
+
+    protected List getModelChildren() {
+    	return ((NedFileNodeEx)getNEDModel()).getCompoundModules();
     }
 
 }

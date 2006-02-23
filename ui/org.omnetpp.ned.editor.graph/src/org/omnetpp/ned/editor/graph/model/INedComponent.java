@@ -2,15 +2,11 @@ package org.omnetpp.ned.editor.graph.model;
 
 import java.util.List;
 
-import org.omnetpp.ned2.model.pojo.ConnectionsNode;
-
-
-
 /**
  * Parameters, gates, inheritence, name, display string
  * @author rhornig
  */
-public interface INedComponent {
+public interface INedComponent extends INedModelElement {
 
 	/**
 	 * Returns name attribute 

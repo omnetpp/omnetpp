@@ -503,7 +503,7 @@ public abstract class NEDElement implements Iterable<NEDElement>
 		NEDElement node = this;
 		while (node != null && node.listeners == null)
 			node = node.getParent();
-		if (node.listeners != null) {
+		if (node != null) {
 			// notify
 			NEDChangeListener[] tmp = node.listeners.getListeners();
 			for (int i=0; i<tmp.length; i++)
@@ -519,7 +519,7 @@ public abstract class NEDElement implements Iterable<NEDElement>
 		NEDElement node = this;
 		while (node != null && node.listeners == null)
 			node = node.getParent();
-		if (node.listeners != null) {
+		if (node != null) {
 			// notify
 			NEDChangeListener[] tmp = listeners.getListeners();
 			for (int i=0; i<tmp.length; i++)
@@ -535,7 +535,7 @@ public abstract class NEDElement implements Iterable<NEDElement>
 		NEDElement node = this;
 		while (node != null && node.listeners == null)
 			node = node.getParent();
-		if (node.listeners != null) {
+		if (node != null) {
 			// notify
 			NEDChangeListener[] tmp = listeners.getListeners();
 			for (int i=0; i<tmp.length; i++)

@@ -125,7 +125,9 @@ import org.omnetpp.ned.editor.graph.figures.properties.LayerSupport;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.misc.ModulePaletteCustomizer;
+import org.omnetpp.ned.editor.graph.model.NedFileNodeEx;
 import org.omnetpp.ned.editor.graph.model.old.NedFileModel;
+import org.omnetpp.ned2.model.NEDElement;
 
 public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
     
@@ -390,7 +392,7 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
         }
     };
 
-    private NedFileModel nedFileModel = new NedFileModel();
+    private NedFileNodeEx nedFileModel;
 
     private ResourceTracker resourceListener = new ResourceTracker();
 
@@ -682,19 +684,19 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
 
     protected void loadProperties() {
         // Snap to Geometry property
-        getGraphicalViewer().setProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED,
-                new Boolean(getModel().isSnapToGeometryEnabled()));
-
-        // Grid properties
-        getGraphicalViewer().setProperty(SnapToGrid.PROPERTY_GRID_ENABLED,
-                new Boolean(getModel().isGridEnabled()));
-        // We keep grid visibility and enablement in sync
-        getGraphicalViewer().setProperty(SnapToGrid.PROPERTY_GRID_VISIBLE,
-                new Boolean(getModel().isGridEnabled()));
+//        getGraphicalViewer().setProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED,
+//                new Boolean(getModel().isSnapToGeometryEnabled()));
+//
+//        // Grid properties
+//        getGraphicalViewer().setProperty(SnapToGrid.PROPERTY_GRID_ENABLED,
+//                new Boolean(getModel().isGridEnabled()));
+//        // We keep grid visibility and enablement in sync
+//        getGraphicalViewer().setProperty(SnapToGrid.PROPERTY_GRID_VISIBLE,
+//                new Boolean(getModel().isGridEnabled()));
 
         // Zoom
         ZoomManager manager = (ZoomManager) getGraphicalViewer().getProperty(ZoomManager.class.toString());
-        if (manager != null) manager.setZoom(getModel().getZoom());
+//        if (manager != null) manager.setZoom(getModel().getZoom());
         // Scroll-wheel Zoom
         getGraphicalViewer().setProperty(MouseWheelHandler.KeyGenerator.getKey(SWT.MOD1),
                 MouseWheelZoomHandler.SINGLETON);
@@ -743,15 +745,15 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
     }
 
     protected void saveProperties() {
-        getModel()
-                .setGridEnabled(
-                        ((Boolean) getGraphicalViewer().getProperty(SnapToGrid.PROPERTY_GRID_ENABLED))
-                                .booleanValue());
-        getModel().setSnapToGeometry(
-                ((Boolean) getGraphicalViewer().getProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED))
-                        .booleanValue());
-        ZoomManager manager = (ZoomManager) getGraphicalViewer().getProperty(ZoomManager.class.toString());
-        if (manager != null) getModel().setZoom(manager.getZoom());
+//        getModel()
+//                .setGridEnabled(
+//                        ((Boolean) getGraphicalViewer().getProperty(SnapToGrid.PROPERTY_GRID_ENABLED))
+//                                .booleanValue());
+//        getModel().setSnapToGeometry(
+//                ((Boolean) getGraphicalViewer().getProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED))
+//                        .booleanValue());
+//        ZoomManager manager = (ZoomManager) getGraphicalViewer().getProperty(ZoomManager.class.toString());
+//        if (manager != null) getModel().setZoom(manager.getZoom());
     }
 
     protected void setInput(IEditorInput input) {
@@ -769,12 +771,12 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
 
     }
 
-    protected NedFileModel getModel() {
+    protected NedFileNodeEx getModel() {
         return nedFileModel;
     }
 
-    public void setModel(NedFileModel model) {
-        nedFileModel = model;
+    public void setModel(NedFileNodeEx nedModel) {
+        nedFileModel = nedModel;
 
         if (!editorSaving) {
             if (getGraphicalViewer() != null) {

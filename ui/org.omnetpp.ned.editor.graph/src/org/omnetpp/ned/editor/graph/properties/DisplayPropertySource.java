@@ -237,6 +237,9 @@ public class DisplayPropertySource implements IPropertySource, IPropertySource2 
     
     public void setValue(String dispString) {
         // create a new parsed representation
+//    	if (dispString == null) 
+//    		dispString = "";
+    	
         propParser = new DisplayStringParser(dispString);
     }
     

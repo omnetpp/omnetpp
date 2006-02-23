@@ -25,6 +25,7 @@ import org.eclipse.gef.editpolicies.SnapFeedbackPolicy;
 import org.eclipse.gef.rulers.RulerProvider;
 import org.omnetpp.ned.editor.graph.edit.policies.NedLayoutEditPolicy;
 import org.omnetpp.ned.editor.graph.figures.ModuleFigure;
+import org.omnetpp.ned.editor.graph.model.CompoundModuleNodeEx;
 import org.omnetpp.ned.editor.graph.model.old.CompoundModuleModel;
 
 public class CompoundModuleEditPart extends NedNodeEditPart {
@@ -109,4 +110,7 @@ public class CompoundModuleEditPart extends NedNodeEditPart {
         return super.getAdapter(key);
     }
 
+    protected List getModelChildren() {
+    	return ((CompoundModuleNodeEx)getNEDModel()).getSubmodules();
+    }
 }
