@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
+import org.omnetpp.ned2.model.pojo.ConnectionsNode;
 
 public class CompoundModuleNodeEx extends CompoundModuleNode implements INedComponent{
 
@@ -32,5 +33,15 @@ public class CompoundModuleNodeEx extends CompoundModuleNode implements INedComp
 	
 	public void setDisplayString(String dspString) {
 		NedElementExUtil.setDisplayString(this, dspString);
+	}
+
+	public List<ConnectionNodeEx> getSourceConnections() {
+		ConnectionsNode conns = getFirstConnectionsChild();
+		return NedElementExUtil.getSourceConnections(conns, "");
+	}
+
+	public List<ConnectionNodeEx> getTargetConnections() {
+		ConnectionsNode conns = getFirstConnectionsChild();
+		return NedElementExUtil.getTargetConnections(conns, "");
 	}
 }

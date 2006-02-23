@@ -31,8 +31,8 @@ abstract public class ContainerEditPart extends org.eclipse.gef.editparts.Abstra
         installEditPolicy(EditPolicy.CONTAINER_ROLE, new NedContainerEditPolicy());
     }
 
-    protected List getModelChildren() {
-    	return ((ContainerModel)getModel()).getChildren();
-    }
+//    protected List getModelChildren() {
+//    	return ((ContainerModel)getModel()).getChildren();
+//    }
     
 }
