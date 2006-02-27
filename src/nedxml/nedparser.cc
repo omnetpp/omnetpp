@@ -71,12 +71,12 @@ bool NEDParser::parseFile(const char *fname)
         if (*s=='\\')
             *s='/';
 
-    tree = nedfile;
-
     // get file comment
     NedFileNode *nedfile = new NedFileNode();
     nedfile->setFilename(fnamewithslash.c_str());
     //FIXME nedfile->setBannerComment(nedsource->getFileComment());
+
+    tree = nedfile;
 
     // init and call parser
     yyout = stdout;

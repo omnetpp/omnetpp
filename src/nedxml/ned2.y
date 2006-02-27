@@ -86,6 +86,8 @@ static NEDParser *np;
 
 struct ParserState
 {
+    void reset();
+
     bool parseExpressions;
     bool storeSourceCode;
     bool inTypes;
@@ -1575,6 +1577,7 @@ int doParseNED2 (NEDParser *p,NedFileNode *nf,bool parseexpr, bool storesrc, con
 
     // create parser state and NEDFileNode
     np = p;
+    ps.reset();
     ps.nedfile = nf;
     ps.parseExpressions = parseexpr;
     ps.storeSourceCode = storesrc;
@@ -1609,6 +1612,12 @@ int doParseNED2 (NEDParser *p,NedFileNode *nf,bool parseexpr, bool storesrc, con
     return ret;
 }
 
+
+void ParserState::reset()
+{
+    static ParserState cleanps;
+    *this = cleanps;
+}
 
 void yyerror (const char *s)
 {

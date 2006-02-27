@@ -261,7 +261,6 @@ tmp_nedtool.obj: tmp_nedtool.cc \
   nedsemanticvalidator.h \
   nedgenerator.h \
   xmlgenerator.h \
-  ../utils/ver.h \
   nedelement.h \
   nedgrammar.h \
   nedelements.h \
