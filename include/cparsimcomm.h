@@ -30,6 +30,15 @@ class cCommBuffer;
 
 
 /**
+ * Maximum number of partitions for parallel simulation.
+ *
+ * @ingroup ParsimBrief
+ * @ingroup Parsim
+ */
+#define MAX_PARSIM_PARTITIONS  255   // because srcprocid in cMessage is 8-bit
+
+
+/**
  * Basic communications layer for parallel simulation. It provides an
  * abstraction layer above MPI, PVM, shared-memory communications, etc.
  *

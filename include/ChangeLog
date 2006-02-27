@@ -2,6 +2,10 @@
 
 	* cenvir.h: added getParsimProcId() and getParsimNumPartitions()
 
+	* crng.h: added parsimProcId and parsimNumPartitions to the args of 
+	cRNG::initialize(), as every partition should get different random
+	number streams
+
 2006-01-12  ------ omnetpp-3.2p1 released ------
 
 2006-01-10  Andras Varga
