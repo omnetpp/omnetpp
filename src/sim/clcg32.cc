@@ -24,16 +24,23 @@
 Register_Class(cLCG32);
 
 
-void cLCG32::initialize(int runNumber, int id, int numRngs, cConfiguration *cfg)
+void cLCG32::initialize(int runNumber, int rngId, int numRngs,
+                        int /*parsimProcId*/, int parsimNumPartitions,
+                        cConfiguration *cfg)
 {
+    if (parsimNumPartitions>1)
+        throw new cRuntimeError("The cLCG32 RNG is not suitable for parallel simulation runs "
+                                "because of its short cycle -- please select cMersenneTwister "
+                                "in the configuration instead");
+
     char section[16], entry[32];
     sprintf(section, "Run %d", runNumber);
-    sprintf(entry, "seed-%d-lcg32", id);
+    sprintf(entry, "seed-%d-lcg32", rngId);
 
     seed = cfg->getAsInt2(section, "General", entry);
     if (cfg->notFound())
     {
-        int autoSeedIndex = runNumber*numRngs + id;
+        int autoSeedIndex = runNumber*numRngs + rngId;
         if (autoSeedIndex>=256)
             ev << "Warning: LCG32: out of the 256 auto seed values, wrapping around "
                   "-- decrease num-rngs=" << numRngs << " value or run numbers, "

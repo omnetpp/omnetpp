@@ -19,25 +19,45 @@
 #include "util.h"
 #include "cexception.h"
 #include "cmersennetwister.h"
+#include "cparsimcomm.h"  // MAX_PARSIM_PARTITIONS
 
 
 Register_Class(cMersenneTwister);
 
 
-void cMersenneTwister::initialize(int runNumber, int id, int numRngs, cConfiguration *cfg)
+void cMersenneTwister::initialize(int runNumber, int rngId, int numRngs,
+                                  int parsimProcId, int parsimNumPartitions,
+                                  cConfiguration *cfg)
 {
-    char section[16], entry[32];
+    char section[16], entry[40], entry2[40];
     sprintf(section, "Run %d", runNumber);
-    sprintf(entry, "seed-%d-mt", id);
+    sprintf(entry, "seed-%d-mt", rngId);
+    sprintf(entry2, "seed-%d-mt-p%d", rngId, parsimProcId);
 
-    unsigned long seed = cfg->getAsInt2(section, "General", entry);
-    if (cfg->notFound())
+    unsigned long seed;
+    if (parsimNumPartitions>1)
     {
-        // use the following number as seed, and hope that all seed values
-        // are well apart in the 2^19937-long sequence (it should hold if
-        // someone did the work of testing the initialization routine).
-        seed = runNumber*numRngs + id;
+        // with parallel simulation, every partition should get distinct streams
+        seed = cfg->getAsInt2(section, "General", entry2);
+        if (cfg->notFound())
+        {
+            if (cfg->exists2(section, "General", entry))
+                ev << "Warning: cMersenneTwister: ignoring config entry " << entry << "=<seed>"
+                   << " for parallel simulation -- please use partition-specific variant "
+                   << entry2 << "=<seed>\n";
+            seed = (runNumber*numRngs + rngId)*MAX_PARSIM_PARTITIONS + parsimProcId;
+        }
     }
+    else
+    {
+        seed = cfg->getAsInt2(section, "General", entry);
+        if (cfg->notFound())
+            seed = runNumber*numRngs + rngId;
+    }
+
+    // use the following number as seed, and hope that all seed values
+    // are well apart in the 2^19937-long sequence (it should hold if
+    // someone did the work of testing the initialization routine).
     rng.seed(seed);
 }
 
