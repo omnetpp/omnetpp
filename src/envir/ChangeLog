@@ -1,3 +1,7 @@
+2006-02-27  Andras Varga
+
+	* cenvir.cc: implemented getParsimProcId() and getParsimNumPartitions()
+
 2006-02-06  Andras Varga
 
 	* envir.cc: undisposedObject() to print warning if it's called after 

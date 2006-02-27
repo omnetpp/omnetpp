@@ -565,6 +565,17 @@ class ENVIR_API cEnvir : public std::ostream
     char **argVector();
 
     /**
+     * Returns the partitionID when parallel simulation is active.
+     */
+    int getParsimProcId();
+
+    /**
+     * Returns the number of partitions when parallel simulation is active;
+     * otherwise it returns 0.
+     */
+    int getParsimNumPartitions();
+
+    /**
      * The function underlying cSimulation::getUniqueNumber().
      */
     unsigned long getUniqueNumber();

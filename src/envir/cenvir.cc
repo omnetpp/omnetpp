@@ -537,6 +537,16 @@ char **cEnvir::argVector()
     return app->argList()->argVector();
 }
 
+int cEnvir::getParsimProcId()
+{
+    return app->getParsimProcId();
+}
+
+int cEnvir::getParsimNumPartitions()
+{
+    return app->getParsimNumPartitions();
+}
+
 unsigned long cEnvir::getUniqueNumber()
 {
     return app->getUniqueNumber();
