@@ -31,10 +31,10 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
+import org.omnetpp.ned.editor.graph.model.CompoundModuleNodeEx;
 import org.omnetpp.ned.editor.graph.model.NEDElementFactoryEx;
-import org.omnetpp.ned.editor.graph.model.old.CompoundModuleModel;
+import org.omnetpp.ned.editor.graph.model.SubmoduleNodeEx;
 import org.omnetpp.ned.editor.graph.model.old.NedModelFactory;
-import org.omnetpp.ned.editor.graph.model.old.SubmoduleModel;
 
 public class ModuleEditorPlugin extends AbstractUIPlugin {
 
@@ -121,19 +121,21 @@ public class ModuleEditorPlugin extends AbstractUIPlugin {
 
         CombinedTemplateCreationEntry combined;
 
+        // FIXME component must be created using the correct factory
         combined = new CombinedTemplateCreationEntry(
                 "Submodule",
                 "A submodule that can be placed in any compound module",
-                new SimpleFactory(SubmoduleModel.class), 
+                new SimpleFactory(SubmoduleNodeEx.class), 
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SIMPLE,"l",null,24)
         );
         entries.add(combined);
 
+        // FIXME component must be created using the correct factory
         combined = new CombinedTemplateCreationEntry(
                 "Module",
                 "A compound module that is built up from several other modules",
-                new SimpleFactory(CompoundModuleModel.class), 
+                new SimpleFactory(CompoundModuleNodeEx.class), 
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE,"l",null,24)
         );

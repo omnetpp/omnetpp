@@ -24,7 +24,7 @@ import org.omnetpp.ned.editor.graph.misc.MessageFactory;
  * @author rhornig
  *
  */
-public class ContainerModel extends ModelElementBase {
+public class ContainerModelX extends ModelElementBase {
 //    static final long serialVersionUID = 1;
     public static final String PROP_CHILDREN = "children"; //$NON-NLS-1$
 

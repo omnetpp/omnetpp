@@ -14,9 +14,11 @@ import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
-import org.eclipse.jface.action.*;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.actions.ActionFactory;
-import org.omnetpp.ned.editor.graph.actions.IncrementDecrementAction;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 
 public class ModuleEditorContextMenuProvider extends ContextMenuProvider {
@@ -53,11 +55,6 @@ public class ModuleEditorContextMenuProvider extends ContextMenuProvider {
         action = getActionRegistry().getAction(GEFActionConstants.DIRECT_EDIT);
         if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
 
-        action = getActionRegistry().getAction(IncrementDecrementAction.INCREMENT);
-        if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_REST, action);
-
-        action = getActionRegistry().getAction(IncrementDecrementAction.DECREMENT);
-        if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_REST, action);
 
         // Alignment Actions
         MenuManager submenu = new MenuManager(MessageFactory.AlignmentAction_AlignSubmenu_ActionLabelText);

@@ -13,7 +13,6 @@ package org.omnetpp.ned.editor.graph.edit;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;
 import org.omnetpp.ned.editor.graph.model.NedFileNodeEx;
-import org.omnetpp.ned.editor.graph.model.old.NedFileModel;
 
 public class TreePartFactory implements EditPartFactory {
 

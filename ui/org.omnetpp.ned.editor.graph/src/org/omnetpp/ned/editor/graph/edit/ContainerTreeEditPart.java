@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.omnetpp.ned.editor.graph.edit;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.gef.EditPolicy;
@@ -17,7 +18,7 @@ import org.eclipse.gef.RootEditPart;
 import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedContainerEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedTreeContainerEditPolicy;
-import org.omnetpp.ned.editor.graph.model.old.NedFileModel;
+import org.omnetpp.ned2.model.NEDElement;
 
 /**
  * Tree EditPart for the Container.
@@ -45,22 +46,18 @@ public class ContainerTreeEditPart extends TreeEditPart {
     }
 
     /**
-     * Returns the model of this as a Container.
-     * 
-     * @return Model of this.
-     */
-    protected NedFileModel getContainerModel() {
-        return (NedFileModel) getModel();
-    }
-
-    /**
      * Returns the children of this from the model, as this is capable enough of
      * holding EditParts.
      * 
      * @return List of children.
      */
     protected List getModelChildren() {
-        return getContainerModel().getChildren();
+        NEDElement currElem = ((NEDElement)getModel());
+        List result = new ArrayList();
+        for(NEDElement child : currElem) {
+        	result.add(child);
+        }
+        return result;
     }
 
 }

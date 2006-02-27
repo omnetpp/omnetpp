@@ -11,7 +11,6 @@
 package org.omnetpp.ned.editor.graph.edit;
 
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,14 +20,16 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedTreeEditPolicy;
-import org.omnetpp.ned.editor.graph.model.old.ContainerModel;
-import org.omnetpp.ned.editor.graph.model.old.NedNodeModel;
+import org.omnetpp.ned.editor.graph.model.INedComponent;
+import org.omnetpp.ned.editor.graph.model.INedModelElement;
+import org.omnetpp.ned2.model.NEDChangeListener;
+import org.omnetpp.ned2.model.NEDElement;
 
 /**
  * EditPart for Logic components in the Tree.
  */
 public class TreeEditPart extends org.eclipse.gef.editparts.AbstractTreeEditPart implements
-        PropertyChangeListener {
+        NEDChangeListener {
 
     /**
      * Constructor initializes this with the given model.
@@ -42,7 +43,7 @@ public class TreeEditPart extends org.eclipse.gef.editparts.AbstractTreeEditPart
 
     public void activate() {
         super.activate();
-        getLogicSubpart().addPropertyChangeListener(this);
+        ((INedModelElement)getModel()).addListener(this);
     }
 
     /**
@@ -56,17 +57,8 @@ public class TreeEditPart extends org.eclipse.gef.editparts.AbstractTreeEditPart
     }
 
     public void deactivate() {
-        getLogicSubpart().removePropertyChangeListener(this);
+        ((INedModelElement)getModel()).removeListener(this);
         super.deactivate();
-    }
-
-    /**
-     * Returns the model of this as a LogicSubPart.
-     * 
-     * @return Model of this.
-     */
-    protected NedNodeModel getLogicSubpart() {
-        return (NedNodeModel) getModel();
     }
 
     /**
@@ -79,29 +71,28 @@ public class TreeEditPart extends org.eclipse.gef.editparts.AbstractTreeEditPart
         return Collections.EMPTY_LIST;
     }
 
-    public void propertyChange(PropertyChangeEvent change) {
-        if (change.getPropertyName().equals(ContainerModel.PROP_CHILDREN)) {
-            if (change.getOldValue() instanceof Integer)
-                // new child
-                addChild(createChild(change.getNewValue()), ((Integer) change.getOldValue()).intValue());
-            else
-                // remove child
-                removeChild((EditPart) getViewer().getEditPartRegistry().get(change.getOldValue()));
-        } else
-            refreshVisuals();
-    }
-
     /**
 	 * Refreshes the visual properties of the TreeItem for this part.
      */
     protected void refreshVisuals() {
         if (getWidget() instanceof Tree) return;
         TreeItem item = (TreeItem) getWidget();
-        setWidgetText(getLogicSubpart().toString());
+        setWidgetText(((INedComponent)getModel()).getName());
         // TODO here we should create an image for the tree element
 //        Image image = getLogicSubpart().getIcon();
 //        if (image != null) image.setBackground(item.getParent().getBackground());
 //        setWidgetImage(image);
     }
 
+	public void attributeChanged(NEDElement node, String attr) {
+        refreshVisuals();
+	}
+
+	public void childInserted(NEDElement node, NEDElement where, NEDElement child) {
+        refreshVisuals();
+	}
+
+	public void childRemoved(NEDElement node, NEDElement child) {
+        refreshVisuals();
+	}
 }

@@ -35,8 +35,6 @@ import org.omnetpp.ned.editor.graph.figures.properties.DisplayTooltipSupport;
 import org.omnetpp.ned.editor.graph.misc.ColorFactory;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
 import org.omnetpp.ned.editor.graph.model.INedComponent;
-import org.omnetpp.ned.editor.graph.model.INedModelElement;
-import org.omnetpp.ned.editor.graph.model.old.NedNodeModel;
 import org.omnetpp.ned.editor.graph.properties.DisplayPropertySource;
 
 /**
@@ -128,31 +126,6 @@ abstract public class NedNodeEditPart extends ContainerEditPart {
      */
     final public String getGate(ConnectionAnchor c) {
         return getNedFigure().getGate(c);
-    }
-
-    /**
-     * Handles changes in properties of this. It is activated through the
-     * PropertyChangeListener. It updates children, source and target
-     * connections, and the visuals of this based on the property changed.
-     * 
-     * @param evt
-     *            Event which details the property change.
-     */
-    public void propertyChange(PropertyChangeEvent evt) {
-        String prop = evt.getPropertyName();
-        if (NedNodeModel.PROP_CHILDREN.equals(prop)) {
-            if (evt.getOldValue() instanceof Integer)
-                // new child
-                addChild(createChild(evt.getNewValue()), ((Integer) evt.getOldValue()).intValue());
-            else
-                // remove child
-                removeChild((EditPart) getViewer().getEditPartRegistry().get(evt.getOldValue()));
-        } else if (NedNodeModel.PROP_INPUTS.equals(prop))
-            refreshTargetConnections();
-        else if (NedNodeModel.PROP_OUTPUTS.equals(prop))
-            refreshSourceConnections();
-        else
-            refreshVisuals();
     }
 
     /**

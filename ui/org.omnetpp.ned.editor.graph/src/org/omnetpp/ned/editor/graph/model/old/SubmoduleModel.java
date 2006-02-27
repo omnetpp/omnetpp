@@ -18,7 +18,7 @@ import org.eclipse.draw2d.geometry.Dimension;
  * @author rhornig
  *
  */
-public class SubmoduleModel extends NedNodeModel {
+public class SubmoduleModelX extends NedNodeModel {
 
 //    static final long serialVersionUID = 1;
     private static int count;

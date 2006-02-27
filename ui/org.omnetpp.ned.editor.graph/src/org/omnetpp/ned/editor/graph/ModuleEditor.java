@@ -13,8 +13,6 @@ package org.omnetpp.ned.editor.graph;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -54,8 +52,6 @@ import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.MouseWheelHandler;
 import org.eclipse.gef.MouseWheelZoomHandler;
 import org.eclipse.gef.RootEditPart;
-import org.eclipse.gef.SnapToGeometry;
-import org.eclipse.gef.SnapToGrid;
 import org.eclipse.gef.dnd.TemplateTransferDragSourceListener;
 import org.eclipse.gef.dnd.TemplateTransferDropTargetListener;
 import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
@@ -75,7 +71,6 @@ import org.eclipse.gef.ui.actions.ZoomInAction;
 import org.eclipse.gef.ui.actions.ZoomOutAction;
 import org.eclipse.gef.ui.palette.PaletteViewer;
 import org.eclipse.gef.ui.palette.PaletteViewerProvider;
-import org.eclipse.gef.ui.palette.FlyoutPaletteComposite.FlyoutPreferences;
 import org.eclipse.gef.ui.parts.ContentOutlinePage;
 import org.eclipse.gef.ui.parts.GraphicalEditorWithFlyoutPalette;
 import org.eclipse.gef.ui.parts.GraphicalViewerKeyHandler;
@@ -116,7 +111,6 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
-import org.omnetpp.ned.editor.graph.actions.IncrementDecrementAction;
 import org.omnetpp.ned.editor.graph.actions.ModulePasteTemplateAction;
 import org.omnetpp.ned.editor.graph.dnd.TextTransferDropTargetListener;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
@@ -126,8 +120,6 @@ import org.omnetpp.ned.editor.graph.misc.ImageFactory;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.misc.ModulePaletteCustomizer;
 import org.omnetpp.ned.editor.graph.model.NedFileNodeEx;
-import org.omnetpp.ned.editor.graph.model.old.NedFileModel;
-import org.omnetpp.ned2.model.NEDElement;
 
 public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
     
@@ -163,10 +155,6 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
             id = ActionFactory.REDO.getId();
             bars.setGlobalActionHandler(id, registry.getAction(id));
             id = ActionFactory.DELETE.getId();
-            bars.setGlobalActionHandler(id, registry.getAction(id));
-            id = IncrementDecrementAction.INCREMENT;
-            bars.setGlobalActionHandler(id, registry.getAction(id));
-            id = IncrementDecrementAction.DECREMENT;
             bars.setGlobalActionHandler(id, registry.getAction(id));
             bars.updateActionBars();
         }
@@ -623,14 +611,6 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
         getSelectionActions().add(action.getId());
 
         action = new ModulePasteTemplateAction(this);
-        registry.registerAction(action);
-        getSelectionActions().add(action.getId());
-
-        action = new IncrementDecrementAction(this, true);
-        registry.registerAction(action);
-        getSelectionActions().add(action.getId());
-
-        action = new IncrementDecrementAction(this, false);
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
 

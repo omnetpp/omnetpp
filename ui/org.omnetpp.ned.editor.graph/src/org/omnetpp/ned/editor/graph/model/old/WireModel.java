@@ -16,7 +16,7 @@ import java.util.Vector;
 
 import org.eclipse.draw2d.Bendpoint;
 
-public class WireModel extends ModelElementBase {
+public class WireModelX extends ModelElementBase {
 
 //    static final long serialVersionUID = 1;
     static final String BENDPOINT = "bendpoint";

@@ -11,16 +11,30 @@
 package org.omnetpp.ned.editor.graph.figures;
 
 
-import org.eclipse.draw2d.*;
+import org.eclipse.draw2d.Ellipse;
+import org.eclipse.draw2d.ImageFigure;
+import org.eclipse.draw2d.Label;
+import org.eclipse.draw2d.Layer;
+import org.eclipse.draw2d.PositionConstants;
+import org.eclipse.draw2d.RectangleFigure;
+import org.eclipse.draw2d.RoundedRectangle;
+import org.eclipse.draw2d.Shape;
+import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.PrecisionPoint;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.handles.HandleBounds;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
-import org.omnetpp.ned.editor.graph.figures.properties.*;
+import org.omnetpp.ned.editor.graph.figures.properties.DisplayCalloutSupport;
+import org.omnetpp.ned.editor.graph.figures.properties.DisplayInfoTextSupport;
+import org.omnetpp.ned.editor.graph.figures.properties.DisplayNameSupport;
+import org.omnetpp.ned.editor.graph.figures.properties.DisplayQueueSupport;
+import org.omnetpp.ned.editor.graph.figures.properties.DisplayRangeSupport;
+import org.omnetpp.ned.editor.graph.figures.properties.DisplayShapeSupport;
+import org.omnetpp.ned.editor.graph.figures.properties.DisplayTooltipSupport;
+import org.omnetpp.ned.editor.graph.figures.properties.LayerSupport;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
-import org.omnetpp.ned.editor.graph.model.old.SubmoduleModel;
 
 public class SimpleModuleFigure extends NedFigure implements HandleBounds, 
     DisplayRangeSupport, DisplayNameSupport, DisplayTooltipSupport, DisplayQueueSupport, 
@@ -50,15 +64,15 @@ public class SimpleModuleFigure extends NedFigure implements HandleBounds,
         // anchors TEMPORARY
         PinnableNoncentralChopboxAnchor outputConnectionAnchor = new PinnableNoncentralChopboxAnchor(this);
         outputConnectionAnchor.setRelRefPoint(0.5, 0.8);
-        addSourceConnectionAnchor(outputConnectionAnchor, SubmoduleModel.TERMINAL_OUT);
+        addSourceConnectionAnchor(outputConnectionAnchor, "OUT");
 
         PinnableNoncentralChopboxAnchor inputConnectionAnchorA, inputConnectionAnchorB;
         inputConnectionAnchorA = new PinnableNoncentralChopboxAnchor(this, 0.2, 0.0);
         inputConnectionAnchorA.setPinnedDown(false);
-        addTargetConnectionAnchor(inputConnectionAnchorA, SubmoduleModel.TERMINAL_A);
+        addTargetConnectionAnchor(inputConnectionAnchorA, "IN1");
         inputConnectionAnchorB = new PinnableNoncentralChopboxAnchor(this, 0.8, 0.0);
         inputConnectionAnchorB.setPinnedDown(false);
-        addTargetConnectionAnchor(inputConnectionAnchorB, SubmoduleModel.TERMINAL_B);
+        addTargetConnectionAnchor(inputConnectionAnchorB, "IN2");
   
         setLayoutManager(new StackLayout());
 

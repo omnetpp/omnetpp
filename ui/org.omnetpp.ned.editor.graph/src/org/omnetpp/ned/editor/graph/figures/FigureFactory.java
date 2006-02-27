@@ -5,7 +5,6 @@ import org.eclipse.draw2d.PolygonDecoration;
 import org.eclipse.draw2d.PolylineConnection;
 import org.eclipse.draw2d.RoutingAnimator;
 import org.omnetpp.ned.editor.graph.model.ConnectionNodeEx;
-import org.omnetpp.ned.editor.graph.model.old.WireModel;
 
 public class FigureFactory {
 

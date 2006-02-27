@@ -26,7 +26,6 @@ import org.eclipse.gef.rulers.RulerProvider;
 import org.omnetpp.ned.editor.graph.edit.policies.NedLayoutEditPolicy;
 import org.omnetpp.ned.editor.graph.figures.ModuleFigure;
 import org.omnetpp.ned.editor.graph.model.CompoundModuleNodeEx;
-import org.omnetpp.ned.editor.graph.model.old.CompoundModuleModel;
 
 public class CompoundModuleEditPart extends NedNodeEditPart {
 
@@ -60,10 +59,6 @@ public class CompoundModuleEditPart extends NedNodeEditPart {
 
     public IFigure getContentPane() {
         return getModuleFigure().getContentsPane();
-    }
-
-    protected CompoundModuleModel getModule() {
-        return (CompoundModuleModel) getModel();
     }
 
     public Object getAdapter(Class key) {

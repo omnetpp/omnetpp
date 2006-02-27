@@ -45,9 +45,6 @@ public class ModuleActionBarContributor extends org.eclipse.gef.ui.actions.Actio
         addRetargetAction(new UndoRetargetAction());
         addRetargetAction(new RedoRetargetAction());
 
-        addRetargetAction(new IncrementRetargetAction());
-        addRetargetAction(new DecrementRetargetAction());
-
         addRetargetAction(new AlignmentRetargetAction(PositionConstants.LEFT));
         addRetargetAction(new AlignmentRetargetAction(PositionConstants.CENTER));
         addRetargetAction(new AlignmentRetargetAction(PositionConstants.RIGHT));
@@ -89,8 +86,6 @@ public class ModuleActionBarContributor extends org.eclipse.gef.ui.actions.Actio
         tbm.add(getAction(ActionFactory.REDO.getId()));
 
         tbm.add(new Separator());
-        tbm.add(getAction(IncrementDecrementAction.DECREMENT));
-        tbm.add(getAction(IncrementDecrementAction.INCREMENT));
 
         tbm.add(new Separator());
         tbm.add(getAction(GEFActionConstants.ALIGN_LEFT));

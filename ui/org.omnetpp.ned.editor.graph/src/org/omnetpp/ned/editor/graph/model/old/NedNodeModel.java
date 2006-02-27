@@ -29,7 +29,7 @@ import org.omnetpp.ned.editor.graph.properties.LocationPropertySource;
  * @author rhornig
  *
  */
-abstract public class NedNodeModel extends ContainerModel {
+abstract public class NedNodeModelX extends ContainerModel {
 
     protected static int count;
     private String name = "";

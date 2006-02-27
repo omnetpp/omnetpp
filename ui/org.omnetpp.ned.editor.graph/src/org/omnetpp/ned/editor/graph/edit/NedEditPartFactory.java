@@ -6,10 +6,6 @@ import org.omnetpp.ned.editor.graph.model.CompoundModuleNodeEx;
 import org.omnetpp.ned.editor.graph.model.ConnectionNodeEx;
 import org.omnetpp.ned.editor.graph.model.NedFileNodeEx;
 import org.omnetpp.ned.editor.graph.model.SubmoduleNodeEx;
-import org.omnetpp.ned.editor.graph.model.old.CompoundModuleModel;
-import org.omnetpp.ned.editor.graph.model.old.NedFileModel;
-import org.omnetpp.ned.editor.graph.model.old.SubmoduleModel;
-import org.omnetpp.ned.editor.graph.model.old.WireModel;
 
 public class NedEditPartFactory implements EditPartFactory {
 

@@ -4,7 +4,7 @@ import org.eclipse.ui.views.properties.ComboBoxPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 
-public class NedFileModel extends ContainerModel {
+public class NedFileModelX extends ContainerModel {
     public static String PROP_ROUTER = "router"; //$NON-NLS-1$
     public static Integer ROUTER_MANUAL = new Integer(0);
     public static Integer ROUTER_MANHATTAN = new Integer(1);

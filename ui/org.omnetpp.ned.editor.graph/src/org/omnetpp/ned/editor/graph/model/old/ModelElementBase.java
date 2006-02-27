@@ -24,7 +24,7 @@ import org.eclipse.ui.views.properties.IPropertySource;
  * @author rhornig
  *
  */
-abstract public class ModelElementBase implements IPropertySource, Cloneable, Serializable {
+abstract public class ModelElementBaseX implements IPropertySource, Cloneable, Serializable {
 
 
     transient protected PropertyChangeSupport listeners = new PropertyChangeSupport(this);
