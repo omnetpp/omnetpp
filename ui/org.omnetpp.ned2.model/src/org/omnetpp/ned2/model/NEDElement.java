@@ -111,7 +111,8 @@ public abstract class NEDElement implements Iterable<NEDElement>
 	public NEDElement(NEDElement parent)
 	{
 		super();
-		parent.appendChild(this);
+		if (parent)
+			parent.appendChild(this);
 	}
 
 	/**

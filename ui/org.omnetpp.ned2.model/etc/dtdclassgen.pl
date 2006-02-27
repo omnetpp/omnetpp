@@ -428,20 +428,27 @@ print JAVA "        instance = inst;\n";
 print JAVA "    }\n";
 print JAVA "\n";
 print JAVA "    public NEDElement createNodeWithTag(String tagname) {\n";
+print JAVA "        return createNodeWithTag(tagname, null);\n";
+print JAVA "    }\n\n";
+print JAVA "    public NEDElement createNodeWithTag(String tagname, NEDElement parent) {\n";
 foreach $element (@elements)
 {
     print JAVA "        if (tagname.equals(\"$element\"))\n";
-    print JAVA "            return new $elementclass{$element}();\n";
+    print JAVA "            return new $elementclass{$element}(parent);\n";
 }
 print JAVA "        else\n";
 print JAVA "            throw new RuntimeException(\"invalid tagname \"+tagname);\n";
 print JAVA "    }\n\n";
 
 print JAVA "    public NEDElement createNodeWithTag(int tagcode) {\n";
+print JAVA "        return createNodeWithTag(tagcode, null);\n";
+print JAVA "    }\n\n";
+
+print JAVA "    public NEDElement createNodeWithTag(int tagcode, NEDElement parent) {\n";
 foreach $element (@elements)
 {
     print JAVA "        if (tagcode==$enumname{$element})\n";
-    print JAVA "            return new $elementclass{$element}();\n";
+    print JAVA "            return new $elementclass{$element}(parent);\n";
 }
 print JAVA "        else\n";
 print JAVA "            throw new RuntimeException(\"invalid tagcode \"+tagcode);\n";
