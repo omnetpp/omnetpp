@@ -8,6 +8,10 @@ import org.omnetpp.ned2.model.pojo.NedFileNode;
 
 public class NedFileNodeEx extends NedFileNode implements INedModelElement {
 	
+	public NedFileNodeEx(NEDElement parent) {
+		super(parent);
+	}
+
 	public List<CompoundModuleNodeEx> getCompoundModules() {
 		List<CompoundModuleNodeEx> result = new ArrayList<CompoundModuleNodeEx>();
 		for(NEDElement currChild : this) 

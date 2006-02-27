@@ -26,18 +26,23 @@ import org.omnetpp.ned.editor.graph.edit.policies.WireBendpointEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.WireEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.WireEndpointEditPolicy;
 import org.omnetpp.ned.editor.graph.figures.FigureFactory;
+import org.omnetpp.ned.editor.graph.model.ConnectionNodeEx;
 import org.omnetpp.ned.editor.graph.model.old.WireBendpointModel;
 import org.omnetpp.ned.editor.graph.model.old.WireModel;
+import org.omnetpp.ned2.model.NEDChangeListener;
+import org.omnetpp.ned2.model.NEDElement;
 
 /**
  * Implements a Connection Editpart to represnt a Wire like connection.
  * 
  */
-public class WireEditPart extends AbstractConnectionEditPart implements PropertyChangeListener {
+// TODO remove dependency from PropertyCHangeListener
+public class WireEditPart extends AbstractConnectionEditPart implements PropertyChangeListener, NEDChangeListener {
 
     public void activate() {
         super.activate();
-        getWire().addPropertyChangeListener(this);
+        // register as listener of the model object
+        getWire().addListener(this);
     }
 
     public void activateFigure() {
@@ -70,7 +75,8 @@ public class WireEditPart extends AbstractConnectionEditPart implements Property
     	return connx;    }
 
     public void deactivate() {
-        getWire().removePropertyChangeListener(this);
+        // register as listener of the model object
+        getWire().removeListener(this);
         super.deactivate();
     }
 
@@ -84,8 +90,8 @@ public class WireEditPart extends AbstractConnectionEditPart implements Property
      * 
      * @return Model of this as <code>Wire</code>
      */
-    protected WireModel getWire() {
-        return (WireModel) getModel();
+    protected ConnectionNodeEx getWire() {
+        return (ConnectionNodeEx) getModel();
     }
 
     /**
@@ -110,10 +116,6 @@ public class WireEditPart extends AbstractConnectionEditPart implements Property
             refreshBendpoints();
             refreshBendpointEditPolicy();
         }
-        if ("value".equals(property)) //$NON-NLS-1$
-            refreshVisuals();
-        if ("bendpoint".equals(property)) //$NON-NLS-1$
-            refreshBendpoints();
     }
 
     /**
@@ -147,12 +149,18 @@ public class WireEditPart extends AbstractConnectionEditPart implements Property
      */
     protected void refreshVisuals() {
         refreshBendpoints();
-        // TODO no need for this any more.We can adjust the visual apearence based on the model
-        // on the model here 
-
-//        if (getWire().getValue())
-//            getWireFigure().setForegroundColor(alive);
-//        else
-//            getWireFigure().setForegroundColor(dead);
+        // TODO implement display property support for connections here
     }
+
+	public void attributeChanged(NEDElement node, String attr) {
+        refreshVisuals();
+	}
+
+	public void childInserted(NEDElement node, NEDElement where, NEDElement child) {
+        refreshVisuals();
+	}
+
+	public void childRemoved(NEDElement node, NEDElement child) {
+        refreshVisuals();
+	}
 }

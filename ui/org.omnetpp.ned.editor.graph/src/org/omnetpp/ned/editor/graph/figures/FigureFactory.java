@@ -4,11 +4,12 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.PolygonDecoration;
 import org.eclipse.draw2d.PolylineConnection;
 import org.eclipse.draw2d.RoutingAnimator;
+import org.omnetpp.ned.editor.graph.model.ConnectionNodeEx;
 import org.omnetpp.ned.editor.graph.model.old.WireModel;
 
 public class FigureFactory {
 
-public static PolylineConnection createNewWire(WireModel wire) {
+public static PolylineConnection createNewWire(ConnectionNodeEx wire) {
 
 		PolylineConnection conn = new PolylineConnection();
 		conn.addRoutingListener(RoutingAnimator.getDefault());

@@ -58,7 +58,7 @@ abstract public class NedNodeEditPart extends ContainerEditPart {
      * @return List of connections.
      */
     protected List getModelSourceConnections() {
-        return ((INedComponent)getNEDModel()).getSourceConnections();
+        return ((INedComponent)getNEDModel()).getSrcConnections();
     }
 
     /**
@@ -67,7 +67,7 @@ abstract public class NedNodeEditPart extends ContainerEditPart {
      * @return List of connections.
      */
     protected List getModelTargetConnections() {
-        return ((INedComponent)getNEDModel()).getTargetConnections();
+        return ((INedComponent)getNEDModel()).getDestConnections();
     }
 
     /**

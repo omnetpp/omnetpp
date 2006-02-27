@@ -5,28 +5,28 @@ import org.omnetpp.ned2.model.pojo.NEDElementFactory;
 
 public class NEDElementFactoryEx extends NEDElementFactory {
 	
-	public NEDElement createNodeWithTag(String tagname) {
+	public NEDElement createNodeWithTag(String tagname, NEDElement parent) {
         if (tagname.equals("ned-file"))
-            return new NedFileNodeEx();
+            return new NedFileNodeEx(parent);
         if (tagname.equals("compound-module"))
-            return new CompoundModuleNodeEx();
+            return new CompoundModuleNodeEx(parent);
         if (tagname.equals("submodule"))
-            return new SubmoduleNodeEx();
+            return new SubmoduleNodeEx(parent);
         if (tagname.equals("connection"))
-            return new ConnectionNodeEx();
+            return new ConnectionNodeEx(parent);
 
-        return super.createNodeWithTag(tagname);
+        return super.createNodeWithTag(tagname, parent);
 	}
 
-	public NEDElement createNodeWithTag(int tagcode) {
+	public NEDElement createNodeWithTag(int tagcode, NEDElement parent) {
         if (tagcode==NED_NED_FILE)
-            return new NedFileNodeEx();
+            return new NedFileNodeEx(parent);
         if (tagcode==NED_COMPOUND_MODULE)
-            return new CompoundModuleNodeEx();
+            return new CompoundModuleNodeEx(parent);
         if (tagcode==NED_SUBMODULE)
-            return new SubmoduleNodeEx();
+            return new SubmoduleNodeEx(parent);
         if (tagcode==NED_CONNECTION)
-            return new ConnectionNodeEx();
-		return super.createNodeWithTag(tagcode);
+            return new ConnectionNodeEx(parent);
+		return super.createNodeWithTag(tagcode, parent);
 	}
 }

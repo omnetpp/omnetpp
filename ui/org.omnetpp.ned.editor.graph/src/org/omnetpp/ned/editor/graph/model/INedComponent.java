@@ -33,12 +33,37 @@ public interface INedComponent extends INedModelElement {
      * (ie this compound module or submodule; for others it returns
      * null.) 
      */
-    public List<ConnectionNodeEx> getSourceConnections();
+    public List<ConnectionNodeEx> getSrcConnections();
 
     /**
      * Returns connections whose "dest" side is this component 
      * (ie this compound module or submodule; for others it returns
      * null.) 
      */
-	public List<ConnectionNodeEx> getTargetConnections();
+	public List<ConnectionNodeEx> getDestConnections();
+	
+
+	/**
+	 * add a connection to the node. this should be called only from the
+	 * ConnectionNodeEx calss. DO NOT call this from the application directly
+	 */
+	public void addSrcConnection(ConnectionNodeEx conn);
+
+	/**
+	 * remove a connection to the node. this should be called only from the
+	 * ConnectionNodeEx calss. DO NOT call this from the application directly
+	 */
+	public void removeSrcConnection(ConnectionNodeEx conn);
+
+	/**
+	 * add a connection to the node. this should be called only from the
+	 * ConnectionNodeEx calss. DO NOT call this from the application directly
+	 */
+	public void addDestConnection(ConnectionNodeEx conn);
+
+	/**
+	 * remove a connection to the node. this should be called only from the
+	 * ConnectionNodeEx calss. DO NOT call this from the application directly
+	 */
+	public void removeDestConnection(ConnectionNodeEx conn);
 }

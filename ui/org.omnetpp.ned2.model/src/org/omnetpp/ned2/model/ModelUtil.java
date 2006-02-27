@@ -20,7 +20,7 @@ public class ModelUtil {
 		np.parseText(source);
 		NEDElement treeRoot = np.getTree();
 //		System.out.println("SWIG TREE: \n" + printSwigElementTree(treeRoot, ""));
-		org.omnetpp.ned2.model.NEDElement tmpEl = swig2pojo(treeRoot);
+		org.omnetpp.ned2.model.NEDElement tmpEl = swig2pojo(treeRoot, null);
 //		System.out.println("POJO TREE: \n" + printPojoElementTree(tmpEl, ""));
 		return tmpEl;
 	}
@@ -31,15 +31,15 @@ public class ModelUtil {
 		np.parseFile(fname);
 		NEDElement treeRoot = np.getTree();
 //		System.out.println("SWIG TREE: \n" + printSwigElementTree(treeRoot, ""));
-		org.omnetpp.ned2.model.NEDElement tmpEl = swig2pojo(treeRoot);
+		org.omnetpp.ned2.model.NEDElement tmpEl = swig2pojo(treeRoot, null);
 //		System.out.println("POJO TREE: \n" + printPojoElementTree(tmpEl, ""));
 		return tmpEl;
 	}
 
 	// WARNING there are two differenet NEDElement types hadled in this function 
-	public static org.omnetpp.ned2.model.NEDElement swig2pojo(NEDElement swigNode) {
+	public static org.omnetpp.ned2.model.NEDElement swig2pojo(NEDElement swigNode, org.omnetpp.ned2.model.NEDElement parent) {
 		org.omnetpp.ned2.model.NEDElement pojoNode = NEDElementFactory.getInstance() 
-			.createNodeWithTag(swigNode.getTagCode());
+			.createNodeWithTag(swigNode.getTagCode(), parent);
 
 		// set the attributes
 		for (int i = 0; i < swigNode.getNumAttributes(); ++i) {
@@ -49,7 +49,7 @@ public class ModelUtil {
 		// create child nodes
 		for (NEDElement child = swigNode.getFirstChild(); child != null; child = child
 				.getNextSibling()) {
-			pojoNode.appendChild(swig2pojo(child));
+			swig2pojo(child, pojoNode);
 		}
 
 		return pojoNode;
