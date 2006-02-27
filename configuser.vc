@@ -65,7 +65,7 @@ LIBXML_DIR=d:/home/tools/libxml2-2.6.20.win32
 PERL=perl.exe
 
 # flex/bison: only needed it you want to modify NEDC or GNED
-YACC=D:/home/tools/UnxUtils/usr/local/wbin/bison.exe
+YACC=D:/home/tools/bison-2.1/bin/bison.exe
 LEX=D:/home/tools/UnxUtils/usr/local/wbin/flex.exe
 
 # Doxygen is needed for generating HTML documentation from C++
@@ -97,7 +97,7 @@ SCALARS_IF_POSSIBLE=scalars
 # This option is available at present for Tkenv, GNED, Scalars and Plove.
 # Set the following variables to "yes" to enable embedding Tcl files.
 #
-EMBED_TCL_CODE=yes
+EMBED_TCL_CODE=no
 
 #
 # It is possible to compile GNED, Scalars and Plove as Windows GUI apps
