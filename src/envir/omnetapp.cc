@@ -603,7 +603,7 @@ void TOmnetApp::readPerRunOptions(int run_no)
         cRNG *rng;
         CREATE_BY_CLASSNAME(rng, opt_rng_class.c_str(), cRNG, "random number generator");
         rngs[i] = rng;
-        rngs[i]->initialize(run_no, i, num_rngs, getConfig());
+        rngs[i]->initialize(run_no, i, num_rngs, getParsimProcId(), getParsimNumPartitions(), getConfig());
     }
 
     // init nextuniquenumber -- startRun() is too late because simple module ctors have run by then
