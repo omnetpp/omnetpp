@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedTreeEditPolicy;
-import org.omnetpp.ned.editor.graph.model.INedComponent;
+import org.omnetpp.ned.editor.graph.model.INedNode;
 import org.omnetpp.ned.editor.graph.model.INedModelElement;
 import org.omnetpp.ned2.model.NEDChangeListener;
 import org.omnetpp.ned2.model.NEDElement;
@@ -77,7 +77,7 @@ public class TreeEditPart extends org.eclipse.gef.editparts.AbstractTreeEditPart
     protected void refreshVisuals() {
         if (getWidget() instanceof Tree) return;
         TreeItem item = (TreeItem) getWidget();
-        setWidgetText(((INedComponent)getModel()).getName());
+        setWidgetText(((INedNode)getModel()).getName());
         // TODO here we should create an image for the tree element
 //        Image image = getLogicSubpart().getIcon();
 //        if (image != null) image.setBackground(item.getParent().getBackground());

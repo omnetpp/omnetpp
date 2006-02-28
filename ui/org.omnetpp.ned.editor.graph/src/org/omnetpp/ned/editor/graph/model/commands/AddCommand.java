@@ -1,18 +1,8 @@
-/*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
 package org.omnetpp.ned.editor.graph.model.commands;
 
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.old.ContainerModel;
-import org.omnetpp.ned.editor.graph.model.old.NedNodeModel;
+import org.omnetpp.ned.editor.graph.model.INedContainer;
+import org.omnetpp.ned.editor.graph.model.INedNode;
 
 /**
  * This command adds a child element to a root model element (Container)
@@ -21,8 +11,8 @@ import org.omnetpp.ned.editor.graph.model.old.NedNodeModel;
  */
 public class AddCommand extends org.eclipse.gef.commands.Command {
 
-    private NedNodeModel child;
-    private ContainerModel parent;
+    private INedNode child;
+    private INedContainer parent;
     private int index = -1;
 
     public AddCommand() {
@@ -31,23 +21,23 @@ public class AddCommand extends org.eclipse.gef.commands.Command {
 
     public void execute() {
         if (index < 0)
-            parent.addChild(child);
+            parent.addModelChild(child);
         else
-            parent.addChild(child, index);
+            parent.insertModelChild(index, child);
     }
 
-    public ContainerModel getParent() {
+    public INedContainer getParent() {
         return parent;
     }
 
     public void redo() {
         if (index < 0)
-            parent.addChild(child);
+            parent.addModelChild(child);
         else
-            parent.addChild(child, index);
+            parent.insertModelChild(index, child);
     }
 
-    public void setChild(NedNodeModel subpart) {
+    public void setChild(INedNode subpart) {
         child = subpart;
     }
 
@@ -55,12 +45,12 @@ public class AddCommand extends org.eclipse.gef.commands.Command {
         index = i;
     }
 
-    public void setParent(ContainerModel newParent) {
+    public void setParent(INedContainer newParent) {
         parent = newParent;
     }
 
     public void undo() {
-        parent.removeChild(child);
+        parent.removeModelChild(child);
     }
 
 }

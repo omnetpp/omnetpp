@@ -1,14 +1,14 @@
 package org.omnetpp.ned.editor.graph.model;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 
-public class CompoundModuleNodeEx extends CompoundModuleNode implements INedComponent{
+public class CompoundModuleNodeEx extends CompoundModuleNode 
+								  implements INedContainer, INedNode {
 
 	// srcConns contains all connections where the sourcemodule is this module
 	protected List<ConnectionNodeEx> srcConns = new ArrayList<ConnectionNodeEx>();
@@ -81,4 +81,29 @@ public class CompoundModuleNodeEx extends CompoundModuleNode implements INedComp
 		destConns.remove(conn);
 		// TODO add property change event (connection removed)
 	}
+
+	public void addModelChild(INedNode child) {
+		getFirstSubmodulesChild().appendChild((NEDElement)child);
+	}
+
+	public void removeModelChild(INedNode child) {		
+		getFirstSubmodulesChild().removeChild((NEDElement)child);
+	}
+
+	public void insertModelChild(int index, INedNode child) {
+		NEDElement insertBefore = getFirstSubmodulesChild().getFirstChild();
+		for(int i=0; (i<index) && (insertBefore!=null); ++i) 
+			insertBefore = insertBefore.getNextSibling();
+		
+		getFirstSubmodulesChild().insertChildBefore(insertBefore, (NEDElement)child);
+	}
+
+	public void insertModelChild(INedNode insertBefore, INedNode child) {
+		getFirstSubmodulesChild().insertChildBefore((NEDElement)insertBefore, (NEDElement)child);
+	}
+
+	public List<? extends INedNode> getModelChildren() {
+		return getSubmodules();
+	}
+
 }

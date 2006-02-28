@@ -2,11 +2,13 @@ package org.omnetpp.ned.editor.graph.model;
 
 import java.util.List;
 
+import org.eclipse.draw2d.geometry.Point;
+
 /**
  * Parameters, gates, inheritence, name, display string
  * @author rhornig
  */
-public interface INedComponent extends INedModelElement {
+public interface INedNode extends INedModelElement {
 
 	/**
 	 * Returns name attribute 
@@ -27,6 +29,8 @@ public interface INedComponent extends INedModelElement {
 	 * Sets display string property 
 	 */
     public void setDisplayString(String dspString);
+    
+    public Point getLocation();
 
     /**
      * Returns connections whose "src" side is this component 

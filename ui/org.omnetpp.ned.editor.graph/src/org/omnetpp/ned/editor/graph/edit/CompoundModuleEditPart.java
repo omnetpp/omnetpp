@@ -106,6 +106,6 @@ public class CompoundModuleEditPart extends NedNodeEditPart {
     }
 
     protected List getModelChildren() {
-    	return ((CompoundModuleNodeEx)getNEDModel()).getSubmodules();
+    	return ((CompoundModuleNodeEx)getNEDModel()).getModelChildren();
     }
 }

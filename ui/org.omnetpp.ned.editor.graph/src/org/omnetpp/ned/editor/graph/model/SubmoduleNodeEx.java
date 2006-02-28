@@ -8,7 +8,7 @@ import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.pojo.ConnectionsNode;
 import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 
-public class SubmoduleNodeEx extends SubmoduleNode implements INedComponent {
+public class SubmoduleNodeEx extends SubmoduleNode implements INedNode {
 
 	// srcConns contains all connections where the sourcemodule is this module
 	protected List<ConnectionNodeEx> srcConns = new ArrayList<ConnectionNodeEx>();

@@ -354,11 +354,16 @@ public abstract class NEDElement implements Iterable<NEDElement>
 	 * Inserts the given element just before the specified child element
 	 * in the child element list.
 	 *
-	 * The where element must be a child of this element.
+	 * The where element must be a child of this element. If where == NULL
+	 * the node is appended at the end of the list. 
 	 * The node pointer passed should not be null.
 	 */
 	public void insertChildBefore(NEDElement where, NEDElement node)
 	{
+		if(where == null) {
+			appendChild(node);
+			return;
+		}
 		if (node.parent!=null)
 			node.parent.removeChild(node);
 		node.parent = this;

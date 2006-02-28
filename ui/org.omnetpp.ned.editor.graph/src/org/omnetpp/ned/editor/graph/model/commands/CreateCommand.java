@@ -1,33 +1,21 @@
-/*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
 package org.omnetpp.ned.editor.graph.model.commands;
 
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.old.CompoundModuleModel;
-import org.omnetpp.ned.editor.graph.model.old.ContainerModel;
-import org.omnetpp.ned.editor.graph.model.old.NedNodeModel;
+import org.omnetpp.ned.editor.graph.model.INedContainer;
+import org.omnetpp.ned.editor.graph.model.INedNode;
 
 /**
- * Adds a newly created element to the model (similar to the AddCommand)
- * TODO check what is the difference between these two commands. Do we need both?
+ * Adds a newly created element to the model
  * @author rhornig
  *
  */
 public class CreateCommand extends org.eclipse.gef.commands.Command {
 
-    private NedNodeModel child;
+    private INedNode child;
     private Rectangle rect;
-    private ContainerModel parent;
+    private INedContainer parent;
     private int index = -1;
 
     public CreateCommand() {

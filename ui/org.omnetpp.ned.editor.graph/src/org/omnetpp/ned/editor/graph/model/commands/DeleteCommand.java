@@ -1,13 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
 package org.omnetpp.ned.editor.graph.model.commands;
 
 import java.util.ArrayList;
@@ -15,6 +5,8 @@ import java.util.List;
 
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
+import org.omnetpp.ned.editor.graph.model.INedContainer;
+import org.omnetpp.ned.editor.graph.model.INedNode;
 import org.omnetpp.ned.editor.graph.model.old.ContainerModel;
 import org.omnetpp.ned.editor.graph.model.old.NedNodeModel;
 import org.omnetpp.ned.editor.graph.model.old.WireModel;
@@ -26,8 +18,8 @@ import org.omnetpp.ned.editor.graph.model.old.WireModel;
  */
 public class DeleteCommand extends Command {
 
-    private NedNodeModel child;
-    private ContainerModel parent;
+    private INedNode child;
+    private INedContainer parent;
     private int vAlign, hAlign;
     private int index = -1;
     private List sourceConnections = new ArrayList();
@@ -37,9 +29,9 @@ public class DeleteCommand extends Command {
         super(MessageFactory.DeleteCommand_Label);
     }
 
-    private void deleteConnections(NedNodeModel part) {
-        if (part instanceof ContainerModel) {
-            List children = ((ContainerModel) part).getChildren();
+    private void deleteConnections(INedNode part) {
+        if (part instanceof INedContainer) {
+            List<INedNode> children = ((INedContainer) part).getModelChildren();
             for (int i = 0; i < children.size(); i++)
                 deleteConnections((NedNodeModel) children.get(i));
         }

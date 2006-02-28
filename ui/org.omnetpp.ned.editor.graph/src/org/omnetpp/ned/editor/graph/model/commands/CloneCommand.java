@@ -1,13 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
 package org.omnetpp.ned.editor.graph.model.commands;
 
 import java.util.HashMap;
@@ -15,20 +5,19 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.eclipse.draw2d.geometry.Rectangle;
-
 import org.eclipse.gef.commands.Command;
-
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.*;
-import org.omnetpp.ned.editor.graph.model.old.CompoundModuleModel;
-import org.omnetpp.ned.editor.graph.model.old.ContainerModel;
-import org.omnetpp.ned.editor.graph.model.old.NedNodeModel;
-import org.omnetpp.ned.editor.graph.model.old.SubmoduleModel;
-import org.omnetpp.ned.editor.graph.model.old.WireBendpointModel;
-import org.omnetpp.ned.editor.graph.model.old.WireModel;
+import org.omnetpp.ned.editor.graph.model.CompoundModuleNodeEx;
+import org.omnetpp.ned.editor.graph.model.ConnectionNodeEx;
+import org.omnetpp.ned.editor.graph.model.INedContainer;
+import org.omnetpp.ned.editor.graph.model.INedModelElement;
+import org.omnetpp.ned.editor.graph.model.INedNode;
+import org.omnetpp.ned.editor.graph.model.NEDElementFactoryEx;
+import org.omnetpp.ned.editor.graph.model.NedElementExUtil;
+import org.omnetpp.ned.editor.graph.model.SubmoduleNodeEx;
+import org.omnetpp.ned2.model.NEDElement;
 
 /**
  * Clones a set of parts (copy operation)
@@ -38,7 +27,7 @@ import org.omnetpp.ned.editor.graph.model.old.WireModel;
 public class CloneCommand extends Command {
 
     private List parts, newTopLevelParts, newConnections;
-    private ContainerModel parent;
+    private INedContainer parent;
     private Map bounds, indices, connectionPartMap;
 
     public CloneCommand() {
@@ -46,7 +35,7 @@ public class CloneCommand extends Command {
         parts = new LinkedList();
     }
 
-    public void addPart(NedNodeModel part, Rectangle newBounds) {
+    public void addPart(INedModelElement part, Rectangle newBounds) {
         parts.add(part);
         if (bounds == null) {
             bounds = new HashMap();
@@ -54,7 +43,7 @@ public class CloneCommand extends Command {
         bounds.put(part, newBounds);
     }
 
-    public void addPart(NedNodeModel part, int index) {
+    public void addPart(INedModelElement part, int index) {
         parts.add(part);
         if (indices == null) {
             indices = new HashMap();
@@ -62,62 +51,29 @@ public class CloneCommand extends Command {
         indices.put(part, new Integer(index));
     }
 
-    protected void clonePart(NedNodeModel oldPart, ContainerModel newParent, Rectangle newBounds,
+    protected void clonePart(INedModelElement oldPart, INedContainer newParent, Rectangle newBounds,
             List newConnections, Map connectionPartMap, int index) {
-        NedNodeModel newPart = null;
+    	NEDElement newPart = null;
 
-        if (oldPart instanceof SubmoduleModel) {
-            newPart = new SubmoduleModel();
-        } else if (oldPart instanceof CompoundModuleModel) {
-            newPart = new CompoundModuleModel();
+        if (oldPart instanceof SubmoduleNodeEx) {
+            newPart = NEDElementFactoryEx.getInstance().createNodeWithTag(NedElementExUtil.NED_SUBMODULE);
+        } else if (oldPart instanceof CompoundModuleNodeEx) {
+            newPart = NEDElementFactoryEx.getInstance().createNodeWithTag(NedElementExUtil.NED_COMPOUND_MODULE);
         } 
 
-        if (oldPart instanceof ContainerModel) {
-            Iterator i = ((ContainerModel) oldPart).getChildren().iterator();
+        if (oldPart instanceof INedContainer) {
+            Iterator i = ((INedContainer)oldPart).getModelChildren().iterator();
             while (i.hasNext()) {
                 // for children they will not need new bounds
-                clonePart((NedNodeModel) i.next(), (ContainerModel) newPart, null, newConnections,
-                        connectionPartMap, -1);
+                clonePart((INedModelElement) i.next(), (INedContainer) newPart, 
+                		null, newConnections, connectionPartMap, -1);
             }
-        }
-
-        Iterator i = oldPart.getTargetConnections().iterator();
-        while (i.hasNext()) {
-            WireModel connection = (WireModel) i.next();
-            WireModel newConnection = new WireModel();
-            newConnection.setTarget(newPart);
-            newConnection.setTargetGate(connection.getTargetGate());
-            newConnection.setSourceGate(connection.getSourceGate());
-            newConnection.setSource(connection.getSource());
-
-            Iterator b = connection.getBendpoints().iterator();
-            Vector newBendPoints = new Vector();
-
-            while (b.hasNext()) {
-                WireBendpointModel bendPoint = (WireBendpointModel) b.next();
-                WireBendpointModel newBendPoint = new WireBendpointModel();
-                newBendPoint.setRelativeDimensions(bendPoint.getFirstRelativeDimension(), bendPoint
-                        .getSecondRelativeDimension());
-                newBendPoint.setWeight(bendPoint.getWeight());
-                newBendPoints.add(newBendPoint);
-            }
-
-            newConnection.setBendpoints(newBendPoints);
-            newConnections.add(newConnection);
         }
 
         if (index < 0) {
-            newParent.addChild(newPart);
+            newParent.addModelChild((INedNode)newPart);
         } else {
-            newParent.addChild(newPart, index);
-        }
-
-        newPart.setSize(oldPart.getSize());
-
-        if (newBounds != null) {
-            newPart.setLocation(newBounds.getTopLeft());
-        } else {
-            newPart.setLocation(oldPart.getLocation());
+            newParent.insertModelChild(index, (INedNode)newPart);
         }
 
         // keep track of the new parts so we can delete them in undo
@@ -135,9 +91,9 @@ public class CloneCommand extends Command {
 
         Iterator i = parts.iterator();
 
-        NedNodeModel part = null;
+        INedModelElement part = null;
         while (i.hasNext()) {
-            part = (NedNodeModel) i.next();
+            part = (INedModelElement) i.next();
             if (bounds != null && bounds.containsKey(part)) {
                 clonePart(part, parent, (Rectangle) bounds.get(part), newConnections, connectionPartMap, -1);
             } else if (indices != null && indices.containsKey(part)) {
@@ -153,38 +109,34 @@ public class CloneCommand extends Command {
         Iterator c = newConnections.iterator();
 
         while (c.hasNext()) {
-            WireModel conn = (WireModel) c.next();
-            NedNodeModel source = conn.getSource();
+            ConnectionNodeEx conn = (ConnectionNodeEx) c.next();
+            INedModelElement source = conn.getSrcModuleRef();
             if (connectionPartMap.containsKey(source)) {
-                conn.setSource((NedNodeModel) connectionPartMap.get(source));
-                conn.attachSource();
-                conn.attachTarget();
+                conn.setSrcModuleRef((INedNode)connectionPartMap.get(source));
             }
         }
 
     }
 
-    public void setParent(ContainerModel parent) {
+    public void setParent(INedContainer parent) {
         this.parent = parent;
     }
 
     public void redo() {
         for (Iterator iter = newTopLevelParts.iterator(); iter.hasNext();)
-            parent.addChild((NedNodeModel) iter.next());
+            parent.addModelChild((INedNode) iter.next());
         for (Iterator iter = newConnections.iterator(); iter.hasNext();) {
-            WireModel conn = (WireModel) iter.next();
-            NedNodeModel source = conn.getSource();
+            ConnectionNodeEx conn = (ConnectionNodeEx) iter.next();
+            INedNode source = conn.getSrcModuleRef();
             if (connectionPartMap.containsKey(source)) {
-                conn.setSource((NedNodeModel) connectionPartMap.get(source));
-                conn.attachSource();
-                conn.attachTarget();
+                conn.setSrcModuleRef(((INedNode) connectionPartMap.get(source)));
             }
         }
     }
 
     public void undo() {
         for (Iterator iter = newTopLevelParts.iterator(); iter.hasNext();)
-            parent.removeChild((NedNodeModel) iter.next());
+            parent.removeModelChild((INedNode) iter.next());
     }
 
 }

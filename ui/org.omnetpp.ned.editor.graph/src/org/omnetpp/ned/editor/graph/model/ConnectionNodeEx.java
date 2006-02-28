@@ -3,22 +3,23 @@ package org.omnetpp.ned.editor.graph.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.omnetpp.ned.editor.graph.model.old.WireBendpointModel;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
 
 public class ConnectionNodeEx extends ConnectionNode {
-	private INedComponent srcModuleRef;
-	private INedComponent destModuleRef;
+	private INedNode srcModuleRef;
+	private INedNode destModuleRef;
 
 	public ConnectionNodeEx(NEDElement parent) {
 		super(parent);
 	}
 
-	public INedComponent getSrcModuleRef() {
+	public INedNode getSrcModuleRef() {
 		return srcModuleRef;
 	}
 	
-	public void setSrcModuleRef(INedComponent srcModule) {
+	public void setSrcModuleRef(INedNode srcModule) {
 		assert(srcModule != null);
 		if(srcModuleRef == srcModule) 
 			return;
@@ -30,11 +31,11 @@ public class ConnectionNodeEx extends ConnectionNode {
 		attributeChanged(ATT_SRC_MODULE);
 	}
 
-	public INedComponent getDestModuleRef() {
+	public INedNode getDestModuleRef() {
 		return destModuleRef;
 	}
 
-	public void setDestModuleRef(INedComponent destModule) {
+	public void setDestModuleRef(INedNode destModule) {
 		assert(destModule != null);
 		if (destModuleRef == destModule)
 			return;
@@ -72,14 +73,14 @@ public class ConnectionNodeEx extends ConnectionNode {
 		setSrcModuleRef(getSubmoduleByName(val));
 	}
 	
-	private INedComponent getSubmoduleByName(String moduleName) {
+	private INedNode getSubmoduleByName(String moduleName) {
 		CompoundModuleNodeEx compMod = (CompoundModuleNodeEx)getParentWithTag(NED_COMPOUND_MODULE);
 		assert (compMod != null);
 		// check if the module name is empty. we should return the parent compoud module
 		if("".equals(moduleName)) 
 			return compMod;
 		else {
-			INedComponent subMod = compMod.getSubmoduleByName(moduleName);
+			INedNode subMod = compMod.getSubmoduleByName(moduleName);
 			if (subMod == null) throw new IllegalArgumentException("Nonexistent submodule: "+moduleName);
 			return subMod;
 		}
@@ -88,6 +89,14 @@ public class ConnectionNodeEx extends ConnectionNode {
 	public List getBendpoints() {
 		// TODO Implement bendpoints model
 		return new ArrayList();
+	}
+
+	public void insertBendpoint(int index, WireBendpointModel wbp) {
+		// TODO Implement this
+	}
+
+	public void removeBendpoint(int index) {
+		// TODO Implement this
 	}
 	
 }
