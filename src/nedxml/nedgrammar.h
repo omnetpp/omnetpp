@@ -1,12 +1,10 @@
-/***************************************************/
-/*  File: nedgrammar.h                             */
-/*                                                 */
-/*  Part of OMNeT++/OMNEST                         */
-/*                                                 */
-/*  Contents:                                      */
-/*    declarations shared by ned.lex and ned.y     */
-/*                                                 */
-/***************************************************/
+//==========================================================================
+//  NEDGRAMMAR.H - part of
+//
+//                     OMNeT++/OMNEST
+//            Discrete System Simulation in C++
+//
+//==========================================================================
 
 /*--------------------------------------------------------------*
   Copyright (C) 2002-2005 Andras Varga
@@ -17,6 +15,10 @@
 
 #ifndef __NEDGRAMMAR_H
 #define __NEDGRAMMAR_H
+
+//
+// misc bison/flex related stuff, shared among *.lex, *.y and nedparser.cc/h files
+//
 
 class NEDElement;
 class NEDParser;
