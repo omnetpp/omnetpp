@@ -518,7 +518,6 @@ comma_or_semicolon : ',' | ';' ;
 // general bison/flex stuff:
 //
 
-char yyfailure[250] = "";
 extern int yydebug; /* needed if compiled with yacc --VA */
 
 extern char textbuf[];
@@ -531,8 +530,6 @@ int doParseMSG2 (NEDParser *p,MsgFileNode *nf,bool parseexpr, bool storesrc, con
     pos.co = 0;
     pos.li = 1;
     prevpos = pos;
-
-    strcpy (yyfailure, "");
 
     if (yyin)
         yyrestart( yyin );
@@ -555,16 +552,15 @@ int doParseMSG2 (NEDParser *p,MsgFileNode *nf,bool parseexpr, bool storesrc, con
     }
 }
 
-void yyerror (char *s)
+void yyerror (const char *s)
 {
-    if (strlen(s))
-        strcpy(yyfailure, s);
-
     // chop newline
-    if (yyfailure[strlen(yyfailure)-1] == '\n')
-        yyfailure[strlen(yyfailure)-1] = '\0';
+    char buf[250];
+    strcpy(buf, s);
+    if (buf[strlen(buf)-1] == '\n')
+        buf[strlen(buf)-1] = '\0';
 
-    np->error(yyfailure, pos.li);
+    np->error(buf, pos.li);
 }
 
 const char *toString(YYLTYPE pos)

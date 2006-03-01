@@ -51,11 +51,6 @@ void comment(void);
 void count(void);
 void extendCount(void);
 
-#define WARN(m) \
-        sprintf (yyfailure, "! %s", m); \
-        yyerror (""); \
-        yyfailure [0] = 0;
-
 /* Vars updated by count(): */
 LineColumn pos,prevpos;
 
