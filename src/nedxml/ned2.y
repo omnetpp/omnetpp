@@ -77,10 +77,8 @@ void yyerror (const char *s);
 #include "nedutil.h"
 #include "nedyylib.h"
 
-struct ParserState
+static struct NED2ParserState
 {
-    void reset();
-
     bool inTypes;
     bool inGroup;
     std::stack<NEDElement *> propertyscope; // top(): where to insert properties as we parse them
@@ -126,6 +124,12 @@ struct ParserState
     LoopNode *loop;
     ConditionNode *condition;
 } ps;
+
+static void resetParserState()
+{
+    static NED2ParserState cleanps;
+    ps = cleanps;
+}
 
 %}
 
@@ -1505,11 +1509,7 @@ opt_semicolon : ';' | ;
 // general bison/flex stuff:
 //
 
-extern int yydebug; /* needed if compiled with yacc --VA */
-
-extern char textbuf[];
-
-int doParseNED2 (NEDParser *p,NedFileNode *nf,bool parseexpr, bool storesrc, const char *sourcefname)
+int doParseNED2(NEDParser *p, NedFileNode *nf)
 {
 #if YYDEBUG != 0      /* #if added --VA */
     yydebug = YYDEBUGGING_ON;
@@ -1523,11 +1523,11 @@ int doParseNED2 (NEDParser *p,NedFileNode *nf,bool parseexpr, bool storesrc, con
 
     // create parser state and NEDFileNode
     np = p;
-    ps.reset();
+    resetParserState();
     ps.nedfile = nf;
     ps.propertyscope.push(ps.nedfile);
 
-    if (storesrc)
+    if (np->getStoreSourceFlag())
         storeSourceCode(ps.nedfile, np->nedsource->getFullTextPos());
 
     // parse
@@ -1553,13 +1553,6 @@ int doParseNED2 (NEDParser *p,NedFileNode *nf,bool parseexpr, bool storesrc, con
     }
 
     return ret;
-}
-
-
-void ParserState::reset()
-{
-    static ParserState cleanps;
-    *this = cleanps;
 }
 
 void yyerror (const char *s)

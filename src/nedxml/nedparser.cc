@@ -85,7 +85,7 @@ bool NEDParser::parseFile(const char *fname)
     yyin = fopen(newfilename,"r");
     if (!yyin)
         {NEDError(NULL, "cannot read %s", fname); return false;}
-    doParseNED2(this,nedfile,parseexpr,storesrc,fname);
+    doParseNED2(this,nedfile);
     fclose(yyin);
 
     // num_errors contains number of parse errors
@@ -115,7 +115,7 @@ bool NEDParser::parseText(const char *nedtext)
     struct yy_buffer_state *handle = yy_scan_string(nedtext);
     if (!handle)
         {NEDError(NULL, "unable to allocate work memory"); return false;}
-    doParseNED2(this,nedfile,parseexpr,storesrc,"generated-code");
+    doParseNED2(this,nedfile);
     yy_delete_buffer(handle);
 
     // num_errors contains number of parse errors

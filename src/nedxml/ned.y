@@ -113,10 +113,8 @@ void yyerror (const char *s);
 #include "nedutil.h"
 #include "nedyylib.h"
 
-struct ParserState
+static struct NEDParserState
 {
-    void reset();
-
     bool inLoop;
     bool inNetwork;
 
@@ -175,6 +173,12 @@ struct ParserState
     FieldsNode *fields;
     FieldNode *field;
 } ps;
+
+static void resetParserState()
+{
+    static NEDParserState cleanps;
+    ps = cleanps;
+}
 
 %}
 
@@ -1593,10 +1597,6 @@ comma_or_semicolon : ',' | ';' ;
 // general bison/flex stuff:
 //
 
-extern int yydebug; /* needed if compiled with yacc --VA */
-
-extern char textbuf[];
-
 int doParseNED (NEDParser *p,NedFileNode *nf,bool parseexpr, bool storesrc, const char *sourcefname)
 {
 #if YYDEBUG != 0      /* #if added --VA */
@@ -1611,7 +1611,7 @@ int doParseNED (NEDParser *p,NedFileNode *nf,bool parseexpr, bool storesrc, cons
 
     // create parser state and NEDFileNode
     np = p;
-    ps.reset();
+    resetParserState();
     ps.nedfile = nf;
 
     if (storesrc)
@@ -1631,13 +1631,6 @@ int doParseNED (NEDParser *p,NedFileNode *nf,bool parseexpr, bool storesrc, cons
     }
 
     return ret;
-}
-
-
-void ParserState::reset()
-{
-    static ParserState cleanps;
-    *this = cleanps;
 }
 
 void yyerror (const char *s)

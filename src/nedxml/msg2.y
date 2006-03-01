@@ -68,7 +68,7 @@ void yyerror (char *s);
 #include "nedelements.h"
 #include "nedutil.h"
 
-struct ParserState
+static struct MSGParserState
 {
     /* tmp flags, used with msg fields */
     bool isAbstract;
@@ -93,6 +93,12 @@ struct ParserState
     FieldsNode *fields;
     FieldNode *field;
 } ps;
+
+static void resetParserState()
+{
+    static MSGParserState cleanps;
+    ps = cleanps;
+}
 
 NEDElement *createNodeWithTag(int tagcode, NEDElement *parent=NULL);
 
@@ -508,10 +514,6 @@ comma_or_semicolon : ',' | ';' ;
 // general bison/flex stuff:
 //
 
-extern int yydebug; /* needed if compiled with yacc --VA */
-
-extern char textbuf[];
-
 int doParseMSG2 (NEDParser *p,MsgFileNode *nf,bool parseexpr, bool storesrc, const char *sourcefname)
 {
 #if YYDEBUG != 0      /* #if added --VA */
@@ -526,9 +528,7 @@ int doParseMSG2 (NEDParser *p,MsgFileNode *nf,bool parseexpr, bool storesrc, con
 
     np = p;
     ps.msgfile = nf;
-    np->getParseExpressionsFlag() = parseexpr;
-    np->getStoreSourceFlag() = storesrc;
-    sourcefilename = sourcefname;
+    resetParserState();
 
     if (storesrc)
         ps.msgfile->setSourceCode(np->nedsource->getFullText());
