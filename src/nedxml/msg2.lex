@@ -43,9 +43,10 @@ S  [ \t\v\n\r\f]
 # include <unistd.h>  // isatty
 #endif
 
-// #include "nedgrammar.h"
+#include "nedgrammar.h"
 #include "msg2.tab.h"
 
+#define yylloc msg2yylloc
 extern YYSTYPE yylval;
 extern YYLTYPE yylloc;
 
@@ -99,8 +100,6 @@ static char textbuf[TEXTBUF_LEN];
 <cplusplusbody>{S}      { extendCount(); }
 <cplusplusbody>.        { extendCount(); }
 
-"++"                    { count(); return PLUSPLUS; }
-
 ";"                     { count(); return (';'); }
 ","                     { count(); return (','); }
 ":"                     { count(); return (':'); }
@@ -114,7 +113,7 @@ static char textbuf[TEXTBUF_LEN];
 "."                     { count(); return ('.'); }
 "?"                     { count(); return ('?'); }
 
-/* FIXME are the next ones really needed? */
+   /* FIXME are the next ones really needed? */
 
 "||"                    { count(); return OR; }
 "&&"                    { count(); return AND; }
@@ -134,12 +133,12 @@ static char textbuf[TEXTBUF_LEN];
 "*"                     { count(); return '*'; }
 "/"                     { count(); return '/'; }
 "%"                     { count(); return '%'; }
+"<"                     { count(); return '<'; }
+">"                     { count(); return '>'; }
 
 "=="                    { count(); return EQ; }
 "!="                    { count(); return NE; }
-"<"                     { count(); return LS; }
 "<="                    { count(); return LE; }
-">"                     { count(); return GT; }
 ">="                    { count(); return GE; }
 
 {S}                     { count(); }

@@ -34,6 +34,9 @@ X  [0-9a-fA-F]
 E  [Ee][+-]?{D}+
 S  [ \t\v\n\r\f]
 
+%x cplusplusbody
+
+
 %{
 #include <string.h>
 

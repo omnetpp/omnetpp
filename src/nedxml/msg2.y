@@ -23,7 +23,7 @@
 %token TRUE_ FALSE_
 %token BOOLTYPE CHARTYPE SHORTTYPE INTTYPE LONGTYPE DOUBLETYPE UNSIGNED_ STRINGTYPE
 
-%token EQ NE GT GE LS LE
+%token EQ NE GE LE
 %token AND OR XOR NOT
 %token BIN_AND BIN_OR BIN_XOR BIN_COMPL
 %token SHIFT_LEFT SHIFT_RIGHT
@@ -33,7 +33,7 @@
 /* Operator precedences (low to high) and associativity */
 %left '?' ':'
 %left AND OR XOR
-%left EQ NE GT GE LS LE
+%left EQ NE '>' GE '<' LE
 %left BIN_AND BIN_OR BIN_XOR
 %left SHIFT_LEFT SHIFT_RIGHT
 %left '+' '-'
@@ -59,16 +59,28 @@
 #include <string.h>         /* YYVERBOSE needs it */
 #endif
 
-int yylex (void);
+#define yylloc msg2yylloc
+#define yyin msg2yyin
+#define yyout msg2yyout
+#define yyrestart msg2yyrestart
+#define yy_scan_string msg2yy_scan_string
+#define yy_delete_buffer msg2yy_delete_buffer
+extern FILE *yyin;
+extern FILE *yyout;
+struct yy_buffer_state;
+struct yy_buffer_state *yy_scan_string(const char *str);
+void yy_delete_buffer(struct yy_buffer_state *);
 void yyrestart(FILE *);
-void yyerror (char *s);
+int yylex();
+void yyerror (const char *s);
 
 #include "nedparser.h"
 #include "nedfilebuffer.h"
 #include "nedelements.h"
 #include "nedutil.h"
+#include "nedyylib.h"
 
-static struct MSGParserState
+static struct MSG2ParserState
 {
     /* tmp flags, used with msg fields */
     bool isAbstract;
@@ -96,32 +108,16 @@ static struct MSGParserState
 
 static void resetParserState()
 {
-    static MSGParserState cleanps;
+    static MSG2ParserState cleanps;
     ps = cleanps;
 }
-
-NEDElement *createNodeWithTag(int tagcode, NEDElement *parent=NULL);
-
-void setFileComment(NEDElement *node);
-void setBannerComment(NEDElement *node, YYLTYPE tokenpos);
-void setRightComment(NEDElement *node, YYLTYPE tokenpos);
-void setTrailingComment(NEDElement *node, YYLTYPE tokenpos);
-void setComments(NEDElement *node, YYLTYPE pos);
-void setComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos);
-
-YYLTYPE trimBrackets(YYLTYPE vectorpos);
-YYLTYPE trimQuotes(YYLTYPE vectorpos);
-YYLTYPE trimDoubleBraces(YYLTYPE vectorpos);
-
-const char *toString(YYLTYPE);
-const char *toString(long);
 
 %}
 
 %%
 
 /*
- * Top-level components (no shift-reduce conflict here)
+ * Top-level components
  */
 networkdescription
         : somedefinitions
@@ -506,43 +502,64 @@ quantity
 
 opt_semicolon : ';' | ;
 
-comma_or_semicolon : ',' | ';' ;
-
 %%
 
 //----------------------------------------------------------------------
 // general bison/flex stuff:
 //
 
-int doParseMSG2 (NEDParser *p,MsgFileNode *nf,bool parseexpr, bool storesrc, const char *sourcefname)
+NEDElement *doParseMSG2(NEDParser *p, const char *nedtext)
 {
 #if YYDEBUG != 0      /* #if added --VA */
     yydebug = YYDEBUGGING_ON;
 #endif
+
+    // reset the lexer
     pos.co = 0;
     pos.li = 1;
     prevpos = pos;
 
-    if (yyin)
-        yyrestart( yyin );
+    yyin = NULL;
+    yyout = stderr; // not used anyway
 
+    // alloc buffer
+    struct yy_buffer_state *handle = yy_scan_string(nedtext);
+    if (!handle)
+        {NEDError(NULL, "unable to allocate work memory"); return false;}
+
+    // create parser state and NEDFileNode
     np = p;
-    ps.msgfile = nf;
     resetParserState();
+    ps.msgfile = new MsgFileNode();
 
-    if (storesrc)
-        ps.msgfile->setSourceCode(np->nedsource->getFullText());
+    // store file name with slashes always, even on Windows -- neddoc relies on that
+    ps.msgfile->setFilename(slashifyFilename(np->getFileName()).c_str());
 
-    try {
-        return yyparse();
-    } catch (NEDException *e) {
-        NEDError(NULL, "internal error while parsing: %s", e->errorMessage());
+    // store file comment
+    //FIXME ps.msgfile->setBannerComment(nedsource->getFileComment());
+
+    if (np->getStoreSourceFlag())
+        storeSourceCode(ps.msgfile, np->nedsource->getFullTextPos());
+
+    // parse
+    int ret;
+    try
+    {
+        ret = yyparse();
+    }
+    catch (NEDException *e)
+    {
+        INTERNAL_ERROR1(NULL, "error during parsing: %s", e->errorMessage());
+        yy_delete_buffer(handle);
         delete e;
         return 0;
     }
+
+    yy_delete_buffer(handle);
+    return ps.msgfile;
 }
 
-void yyerror (const char *s)
+void yyerror(const char *s)
 {
     // chop newline
     char buf[250];
@@ -552,94 +569,4 @@ void yyerror (const char *s)
 
     np->error(buf, pos.li);
 }
-
-const char *toString(YYLTYPE pos)
-{
-    return np->nedsource->get(pos);
-}
-
-const char *toString(long l)
-{
-    static char buf[32];
-    sprintf(buf,"%ld", l);
-    return buf;
-}
-
-NEDElement *createNodeWithTag(int tagcode, NEDElement *parent)
-{
-    // create via a factory
-    NEDElement *e = NEDElementFactory::getInstance()->createNodeWithTag(tagcode);
-
-    // "debug info"
-    char buf[200];
-    sprintf(buf,"%s:%d",sourcefilename, pos.li);
-    e->setSourceLocation(buf);
-
-    // add to parent
-    if (parent)
-       parent->appendChild(e);
-
-    return e;
-}
-
-void setFileComment(NEDElement *node)
-{
-    node->setAttribute("file-comment", np->nedsource->getFileComment() );
-}
-
-void setBannerComment(NEDElement *node, YYLTYPE tokenpos)
-{
-    node->setAttribute("banner-comment", np->nedsource->getBannerComment(tokenpos) );
-}
-
-void setRightComment(NEDElement *node, YYLTYPE tokenpos)
-{
-    node->setAttribute("right-comment", np->nedsource->getTrailingComment(tokenpos) );
-}
-
-void setTrailingComment(NEDElement *node, YYLTYPE tokenpos)
-{
-    node->setAttribute("trailing-comment", np->nedsource->getTrailingComment(tokenpos) );
-}
-
-void setComments(NEDElement *node, YYLTYPE pos)
-{
-    setBannerComment(node, pos);
-    setRightComment(node, pos);
-}
-
-void setComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos)
-{
-    YYLTYPE pos = firstpos;
-    pos.last_line = lastpos.last_line;
-    pos.last_column = lastpos.last_column;
-
-    setBannerComment(node, pos);
-    setRightComment(node, pos);
-}
-
-YYLTYPE trimBrackets(YYLTYPE vectorpos)
-{
-   // should check it's really brackets that get chopped off
-   vectorpos.first_column++;
-   vectorpos.last_column--;
-   return vectorpos;
-}
-
-YYLTYPE trimQuotes(YYLTYPE vectorpos)
-{
-   // should check it's really quotes that get chopped off
-   vectorpos.first_column++;
-   vectorpos.last_column--;
-   return vectorpos;
-}
-
-YYLTYPE trimDoubleBraces(YYLTYPE vectorpos)
-{
-   // should check it's really '{{' and '}}' that get chopped off
-   vectorpos.first_column+=2;
-   vectorpos.last_column-=2;
-   return vectorpos;
-}
-
 
