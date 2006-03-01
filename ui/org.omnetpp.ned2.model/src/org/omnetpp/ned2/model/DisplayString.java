@@ -1,8 +1,8 @@
-package org.omnetpp.ned.editor.graph.properties;
+package org.omnetpp.ned2.model;
 
 import java.util.*;
 
-public class DisplayStringParser {
+public class DisplayString {
 
     // map that stores the currently available tags 
     private LinkedHashMap<String, Tag> tagMap = new LinkedHashMap<String, Tag>();
@@ -111,7 +111,7 @@ public class DisplayStringParser {
      * Create a display string tokenizer class
      * @param value The string to be parsed
      */
-    public DisplayStringParser(String value) {
+    public DisplayString(String value) {
         if (value != null)
             parseString(value);
     }

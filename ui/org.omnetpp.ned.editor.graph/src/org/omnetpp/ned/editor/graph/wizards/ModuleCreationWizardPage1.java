@@ -1,13 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
 package org.omnetpp.ned.editor.graph.wizards;
 
 import java.io.ByteArrayInputStream;
@@ -35,7 +25,6 @@ import org.eclipse.ui.ide.IDE;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.model.NEDElementFactoryEx;
 import org.omnetpp.ned.editor.graph.model.NedFileNodeEx;
-import org.omnetpp.ned.editor.graph.model.old.NedModelFactory;
 import org.omnetpp.ned2.model.pojo.NEDElementTags;
 
 public class ModuleCreationWizardPage1 extends WizardNewFileCreationPage

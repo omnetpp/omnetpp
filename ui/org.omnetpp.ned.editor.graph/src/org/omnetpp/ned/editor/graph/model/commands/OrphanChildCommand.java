@@ -1,24 +1,12 @@
-/*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
 package org.omnetpp.ned.editor.graph.model.commands;
 
 import java.util.List;
 
 import org.eclipse.draw2d.geometry.Point;
-
 import org.eclipse.gef.commands.Command;
-
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.old.ContainerModel;
-import org.omnetpp.ned.editor.graph.model.old.NedNodeModel;
+import org.omnetpp.ned.editor.graph.model.INedContainer;
+import org.omnetpp.ned.editor.graph.model.INedNode;
 
 /**
  * This command removes a model element from its parent.
@@ -29,8 +17,8 @@ import org.omnetpp.ned.editor.graph.model.old.NedNodeModel;
 public class OrphanChildCommand extends Command {
 
     private Point oldLocation;
-    private ContainerModel diagram;
-    private NedNodeModel child;
+    private INedContainer diagram;
+    private INedNode child;
     private int index;
 
     public OrphanChildCommand() {
@@ -38,27 +26,27 @@ public class OrphanChildCommand extends Command {
     }
 
     public void execute() {
-        List children = diagram.getChildren();
+        List children = diagram.getModelChildren();
         index = children.indexOf(child);
-        oldLocation = child.getLocation();
-        diagram.removeChild(child);
+        oldLocation = child.getTransientLocation();
+        diagram.removeModelChild(child);
     }
 
     public void redo() {
-        diagram.removeChild(child);
+        diagram.removeModelChild(child);
     }
 
-    public void setChild(NedNodeModel child) {
+    public void setChild(INedNode child) {
         this.child = child;
     }
 
-    public void setParent(ContainerModel parent) {
+    public void setParent(INedContainer parent) {
         diagram = parent;
     }
 
     public void undo() {
-        child.setLocation(oldLocation);
-        diagram.addChild(child, index);
+        child.setTransientLocation(oldLocation);
+        diagram.insertModelChild(index, child);
     }
 
 }

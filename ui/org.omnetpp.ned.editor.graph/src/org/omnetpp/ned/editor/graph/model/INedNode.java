@@ -2,7 +2,9 @@ package org.omnetpp.ned.editor.graph.model;
 
 import java.util.List;
 
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
+import org.omnetpp.ned2.model.DisplayString;
 
 /**
  * Parameters, gates, inheritence, name, display string
@@ -26,14 +28,10 @@ public interface INedNode extends INedModelElement {
     public String getDisplayString();
 
 	/**
-	 * Sets display string property 
+	 * Sets the display string property 
 	 */
     public void setDisplayString(String dspString);
     
-    public Point getLocation();
-    public void setLocation(Point loc);
-    
-
     /**
      * Returns connections whose "src" side is this component 
      * (ie this compound module or submodule; for others it returns
@@ -72,4 +70,20 @@ public interface INedNode extends INedModelElement {
 	 * ConnectionNodeEx calss. DO NOT call this from the application directly
 	 */
 	public void removeDestConnection(ConnectionNodeEx conn);
+
+	/**
+	 * Set the TEMPORARY location of the node
+	 * @param location
+	 */
+	public void setTransientLocation(Point location);
+
+	/**
+	 * Get the TEMPORARY location of the node
+	 * @param location
+	 */
+	public Point getTransientLocation();
+	
+	public Dimension getSize();
+	public void setSize(Dimension size);
+
 }

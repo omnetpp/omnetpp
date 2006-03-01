@@ -1,13 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
 package org.omnetpp.ned.editor.graph.edit.policies;
 
 import java.util.Iterator;
@@ -21,7 +11,7 @@ import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.omnetpp.ned.editor.graph.figures.ModuleFeedbackFigure;
 import org.omnetpp.ned.editor.graph.misc.ColorFactory;
-import org.omnetpp.ned.editor.graph.model.old.CompoundModuleModel;
+import org.omnetpp.ned.editor.graph.model.CompoundModuleNodeEx;
 
 /**
  * 
@@ -68,7 +58,7 @@ public class NedResizableEditPolicy extends ResizableEditPolicy {
     protected IFigure getCustomFeedbackFigure(GraphicalEditPart part, Object modelPart) {
         IFigure figure;
 
-        if (modelPart instanceof CompoundModuleModel)
+        if (modelPart instanceof CompoundModuleNodeEx)
             figure = new ModuleFeedbackFigure();
 // XXX specialized feedback figure can be set here        
 //        else if (modelPart instanceof SimpleModule)

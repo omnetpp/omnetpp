@@ -1,6 +1,5 @@
 package org.omnetpp.ned.editor.graph.model.commands;
 
-import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.model.INedContainer;
@@ -28,29 +27,18 @@ public class CreateCommand extends org.eclipse.gef.commands.Command {
 
     public void execute() {
         if (rect != null) {
-            Insets expansion = getInsets();
-            if (!rect.isEmpty())
-                rect.expand(expansion);
-            else {
-                rect.x -= expansion.left;
-                rect.y -= expansion.top;
-            }
-            child.setLocation(rect.getLocation());
-            if (!rect.isEmpty()) child.setSize(rect.getSize());
+            child.setTransientLocation(rect.getLocation());
+            // TODO chiled size must be set correctly in the displaystring
+            // if (!rect.isEmpty()) child.setSize(rect.getSize());
         }
         redo();
     }
 
-    private Insets getInsets() {
-        if (child instanceof CompoundModuleModel) return new Insets(2, 0, 2, 0);
-        return new Insets();
-    }
-
     public void redo() {
-        parent.addChild(child, index);
+        parent.insertModelChild(index, child );
     }
 
-    public void setChild(NedNodeModel subpart) {
+    public void setChild(INedNode subpart) {
         child = subpart;
     }
 
@@ -62,12 +50,12 @@ public class CreateCommand extends org.eclipse.gef.commands.Command {
         rect = r;
     }
 
-    public void setParent(ContainerModel newParent) {
+    public void setParent(INedContainer newParent) {
         parent = newParent;
     }
 
     public void undo() {
-        parent.removeChild(child);
+        parent.removeModelChild(child);
     }
 
 }

@@ -1,13 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
 package org.omnetpp.ned.editor.graph;
 
 import java.util.ArrayList;
@@ -34,7 +24,6 @@ import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.model.CompoundModuleNodeEx;
 import org.omnetpp.ned.editor.graph.model.NEDElementFactoryEx;
 import org.omnetpp.ned.editor.graph.model.SubmoduleNodeEx;
-import org.omnetpp.ned.editor.graph.model.old.NedModelFactory;
 
 public class ModuleEditorPlugin extends AbstractUIPlugin {
 
@@ -154,23 +143,23 @@ public class ModuleEditorPlugin extends AbstractUIPlugin {
 
         List entries = new ArrayList();
 
-        CombinedTemplateCreationEntry combined = new CombinedTemplateCreationEntry(
-                "Ring",
-                "Arrange nodes in a ring topology",
-                NedModelFactory.getHalfAdderFactory(),
-                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE),
-                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE,"l",null,24) //$NON-NLS-1$
-        );
-        entries.add(combined);
-
-        combined = new CombinedTemplateCreationEntry(
-                "Mesh",
-                "Arrange nodes in a mesh topology",
-                NedModelFactory.getFullAdderFactory(),
-                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE),
-                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE,"l",null,24)
-        );
-        entries.add(combined);
+//        CombinedTemplateCreationEntry combined = new CombinedTemplateCreationEntry(
+//                "Ring",
+//                "Arrange nodes in a ring topology",
+//                NedModelFactory.getHalfAdderFactory(),
+//                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE),
+//                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE,"l",null,24) //$NON-NLS-1$
+//        );
+//        entries.add(combined);
+//
+//        combined = new CombinedTemplateCreationEntry(
+//                "Mesh",
+//                "Arrange nodes in a mesh topology",
+//                NedModelFactory.getFullAdderFactory(),
+//                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE),
+//                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE,"l",null,24)
+//        );
+//        entries.add(combined);
 
         drawer.addAll(entries);
         return drawer;
@@ -183,23 +172,23 @@ public class ModuleEditorPlugin extends AbstractUIPlugin {
 
         List entries = new ArrayList();
 
-        CombinedTemplateCreationEntry combined = new CombinedTemplateCreationEntry(
-                "EthMAC",
-                "Ethernet MAC protocol module",
-                NedModelFactory.getHalfAdderFactory(),
-                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE),
-                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE,"l",null,24)
-        );
-        entries.add(combined);
-
-        combined = new CombinedTemplateCreationEntry(
-                "IPv4",
-                "Internet protocol v4 module",
-                NedModelFactory.getFullAdderFactory(),
-                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE),
-                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE,"l",null,24)
-        );
-        entries.add(combined);
+//        CombinedTemplateCreationEntry combined = new CombinedTemplateCreationEntry(
+//                "EthMAC",
+//                "Ethernet MAC protocol module",
+//                NedModelFactory.getHalfAdderFactory(),
+//                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE),
+//                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE,"l",null,24)
+//        );
+//        entries.add(combined);
+//
+//        combined = new CombinedTemplateCreationEntry(
+//                "IPv4",
+//                "Internet protocol v4 module",
+//                NedModelFactory.getFullAdderFactory(),
+//                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE),
+//                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_MODULE,"l",null,24)
+//        );
+//        entries.add(combined);
 
         drawer.addAll(entries);
         return drawer;

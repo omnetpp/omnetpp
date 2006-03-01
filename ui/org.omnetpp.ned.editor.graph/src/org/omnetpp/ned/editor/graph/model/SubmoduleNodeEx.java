@@ -1,11 +1,11 @@
 package org.omnetpp.ned.editor.graph.model;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.draw2d.geometry.Point;
 import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.pojo.ConnectionsNode;
 import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 
 public class SubmoduleNodeEx extends SubmoduleNode implements INedNode {
@@ -14,6 +14,8 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INedNode {
 	protected List<ConnectionNodeEx> srcConns = new ArrayList<ConnectionNodeEx>();
 	// destConns contains all connections where the destmodule is this module
 	protected List<ConnectionNodeEx> destConns = new ArrayList<ConnectionNodeEx>();
+	protected Dimension size;
+	protected Point location;
 	
 	public SubmoduleNodeEx(NEDElement parent) {
 		super(parent);
@@ -61,5 +63,22 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INedNode {
 		assert(destConns.contains(conn));
 		destConns.remove(conn);
 		// TODO add property change event (connection removed)
+	}
+	public Point getTransientLocation() {
+		return location;
+	}
+
+	public void setTransientLocation(Point location) {
+		this.location = location;
+	}
+
+	public Dimension getSize() {
+		// TODO this must be retrieved from the displayString
+		return size;
+	}
+
+	public void setSize(Dimension size) {
+		// TODO This MUST be strored in the displaystring
+		this.size = size;
 	}
 }

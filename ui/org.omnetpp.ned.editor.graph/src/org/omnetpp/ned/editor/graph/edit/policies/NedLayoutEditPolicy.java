@@ -1,13 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2001, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
 package org.omnetpp.ned.editor.graph.edit.policies;
 
 import java.util.Iterator;
@@ -34,13 +24,13 @@ import org.omnetpp.ned.editor.graph.figures.ModuleFigure;
 import org.omnetpp.ned.editor.graph.misc.ColorFactory;
 import org.omnetpp.ned.editor.graph.misc.DesktopLayoutEditPolicy;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
+import org.omnetpp.ned.editor.graph.model.CompoundModuleNodeEx;
+import org.omnetpp.ned.editor.graph.model.INedContainer;
+import org.omnetpp.ned.editor.graph.model.INedNode;
 import org.omnetpp.ned.editor.graph.model.commands.AddCommand;
 import org.omnetpp.ned.editor.graph.model.commands.CloneCommand;
 import org.omnetpp.ned.editor.graph.model.commands.CreateCommand;
 import org.omnetpp.ned.editor.graph.model.commands.SetConstraintCommand;
-import org.omnetpp.ned.editor.graph.model.old.CompoundModuleModel;
-import org.omnetpp.ned.editor.graph.model.old.ContainerModel;
-import org.omnetpp.ned.editor.graph.model.old.NedNodeModel;
 
 
 public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
@@ -52,11 +42,11 @@ public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
 
     protected Command createAddCommand(Request request, EditPart childEditPart, Object constraint) {
-        NedNodeModel part = (NedNodeModel) childEditPart.getModel();
+        INedNode part = (INedNode) childEditPart.getModel();
         Rectangle rect = (Rectangle) constraint;
 
         AddCommand add = new AddCommand();
-        add.setParent((ContainerModel) getHost().getModel());
+        add.setParent((INedContainer) getHost().getModel());
         add.setChild(part);
         add.setLabel(MessageFactory.LogicXYLayoutEditPolicy_AddCommandLabelText);
         add.setDebugLabel("LogicXYEP add subpart");//$NON-NLS-1$
@@ -92,7 +82,7 @@ public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
         // create the constraint change command 
         SetConstraintCommand cmd = new SetConstraintCommand();
-        NedNodeModel part = (NedNodeModel) child.getModel();
+        INedNode part = (INedNode) child.getModel();
         cmd.setPart(part);
         cmd.setLocation(modelConstraint);
         Command result = cmd;
@@ -161,7 +151,7 @@ public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
     protected IFigure createSizeOnDropFeedback(CreateRequest createRequest) {
         IFigure figure;
 
-        if (createRequest.getNewObject() instanceof CompoundModuleModel)
+        if (createRequest.getNewObject() instanceof CompoundModuleNodeEx)
             figure = new ModuleFigure();
         else {
             figure = new RectangleFigure();
@@ -213,14 +203,14 @@ public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
     protected Command getCloneCommand(ChangeBoundsRequest request) {
         CloneCommand clone = new CloneCommand();
 
-        clone.setParent((ContainerModel) getHost().getModel());
+        clone.setParent((INedContainer) getHost().getModel());
 
         Iterator i = request.getEditParts().iterator();
         GraphicalEditPart currPart = null;
 
         while (i.hasNext()) {
             currPart = (GraphicalEditPart) i.next();
-            clone.addPart((NedNodeModel) currPart.getModel(), (Rectangle) getConstraintForClone(currPart,
+            clone.addPart((INedNode) currPart.getModel(), (Rectangle) getConstraintForClone(currPart,
                     request));
         }
 
@@ -230,8 +220,8 @@ public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
     protected Command getCreateCommand(CreateRequest request) {
         CreateCommand create = new CreateCommand();
-        create.setParent((ContainerModel) getHost().getModel());
-        NedNodeModel newPart = (NedNodeModel) request.getNewObject();
+        create.setParent((INedContainer) getHost().getModel());
+        INedNode newPart = (INedNode) request.getNewObject();
         create.setChild(newPart);
         Rectangle constraint = (Rectangle) getConstraintFor(request);
         create.setLocation(constraint);
@@ -246,7 +236,7 @@ public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
      * @see org.eclipse.gef.editpolicies.LayoutEditPolicy#getCreationFeedbackOffset(org.eclipse.gef.requests.CreateRequest)
      */
     protected Insets getCreationFeedbackOffset(CreateRequest request) {
-        if (request.getNewObject() instanceof CompoundModuleModel)
+        if (request.getNewObject() instanceof CompoundModuleNodeEx)
             return new Insets(2, 0, 2, 0);
         return new Insets();
     }

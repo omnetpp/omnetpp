@@ -17,6 +17,7 @@ import java.util.List;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.ui.views.properties.*;
 import org.omnetpp.ned.editor.graph.misc.ColorFactory;
+import org.omnetpp.ned2.model.DisplayString;
 
 // TODO Colors cannot be edited by hand. A derived ColorCellEditor is required
 // TODO Some property needs a combo box cell editor
@@ -75,7 +76,7 @@ public class DisplayPropertySource implements IPropertySource, IPropertySource2 
     protected static LinkedHashMap<String,IntDesc> propDescMap = new LinkedHashMap<String,IntDesc>();
     protected static IPropertyDescriptor[] propertyDescArray;
     // string parser for handling the parsing of the display string  
-    protected DisplayStringParser propParser;
+    protected DisplayString propParser;
 
     // static initializer block to init the property descriptors
     static {
@@ -240,7 +241,7 @@ public class DisplayPropertySource implements IPropertySource, IPropertySource2 
 //    	if (dispString == null) 
 //    		dispString = "";
     	
-        propParser = new DisplayStringParser(dispString);
+        propParser = new DisplayString(dispString);
     }
     
     public String getValue() {
@@ -293,10 +294,10 @@ public class DisplayPropertySource implements IPropertySource, IPropertySource2 
         if(value.startsWith("$"))
             value = variableDefaults.getStringProperty(propName);
         // if tag was present, but the argument was empty, look for default values
-        if(DisplayStringParser.Tag.DEFAULT_VALUE.equals(value))
+        if(DisplayString.Tag.DEFAULT_VALUE.equals(value))
             value = emprtyDefaults.getStringProperty(propName);
         // if no default was defined for this tag/argument return default_value
-        if(value == null) return DisplayStringParser.Tag.DEFAULT_VALUE;
+        if(value == null) return DisplayString.Tag.DEFAULT_VALUE;
 
         return value;
     }
@@ -316,7 +317,7 @@ public class DisplayPropertySource implements IPropertySource, IPropertySource2 
             strVal = variableDefaults.getStringProperty(propName);
         
         // otherwise use the original one
-        if (!DisplayStringParser.Tag.DEFAULT_VALUE.equals(strVal))
+        if (!DisplayString.Tag.DEFAULT_VALUE.equals(strVal))
             try {
                 return Integer.valueOf(strVal);
             } catch (NumberFormatException e) { 
@@ -349,11 +350,11 @@ public class DisplayPropertySource implements IPropertySource, IPropertySource2 
         IntDesc pd = propDescMap.get(propName);
         // no such property
         if(pd == null)
-            tagVal = DisplayStringParser.Tag.DEFAULT_VALUE;  
+            tagVal = DisplayString.Tag.DEFAULT_VALUE;  
         else
             tagVal = propParser.getTagArg(pd.tagName, pd.tagPos );
         // if the tag does not exists yet, return default empty value
-        if (tagVal == null) tagVal = DisplayStringParser.Tag.DEFAULT_VALUE; 
+        if (tagVal == null) tagVal = DisplayString.Tag.DEFAULT_VALUE; 
         
         if(pd.descriptorClass == ColorPropertyDescriptor.class)
             return ColorFactory.asRGB(tagVal);
@@ -386,7 +387,7 @@ public class DisplayPropertySource implements IPropertySource, IPropertySource2 
         if(pd == null) return false;  
         
         String val = propParser.getTagArg(pd.tagName, pd.tagPos);
-        return val != null && !DisplayStringParser.Tag.DEFAULT_VALUE.equals(val);
+        return val != null && !DisplayString.Tag.DEFAULT_VALUE.equals(val);
     }
 
     public String toString() {

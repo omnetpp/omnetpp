@@ -3,7 +3,7 @@ package org.omnetpp.ned.editor.graph.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.omnetpp.ned.editor.graph.model.old.WireBendpointModel;
+import org.eclipse.draw2d.Bendpoint;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
 
@@ -91,11 +91,15 @@ public class ConnectionNodeEx extends ConnectionNode {
 		return new ArrayList();
 	}
 
-	public void insertBendpoint(int index, WireBendpointModel wbp) {
+	public void insertBendpoint(int index, Bendpoint wbp) {
 		// TODO Implement this
 	}
 
 	public void removeBendpoint(int index) {
+		// TODO Implement this
+	}
+
+	public void setBendpoint(int index, Bendpoint bp) {
 		// TODO Implement this
 	}
 	

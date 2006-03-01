@@ -1,20 +1,9 @@
-/*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
 package org.omnetpp.ned.editor.graph.edit.policies;
 
 import java.util.List;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
-
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
@@ -22,15 +11,14 @@ import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gef.editpolicies.TreeContainerEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
-
+import org.omnetpp.ned.editor.graph.model.INedContainer;
+import org.omnetpp.ned.editor.graph.model.INedNode;
 import org.omnetpp.ned.editor.graph.model.commands.CreateCommand;
 import org.omnetpp.ned.editor.graph.model.commands.ReorderPartCommand;
-import org.omnetpp.ned.editor.graph.model.old.ContainerModel;
-import org.omnetpp.ned.editor.graph.model.old.NedNodeModel;
 
 public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
 
-    protected Command createCreateCommand(NedNodeModel child, Rectangle r, int index, String label) {
+    protected Command createCreateCommand(INedNode child, Rectangle r, int index, String label) {
         CreateCommand cmd = new CreateCommand();
         Rectangle rect;
         if (r == null) {
@@ -40,7 +28,7 @@ public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
             rect = r;
         }
         cmd.setLocation(rect);
-        cmd.setParent((ContainerModel) getHost().getModel());
+        cmd.setParent((INedContainer) getHost().getModel());
         cmd.setChild(child);
         cmd.setLabel(label);
         if (index >= 0) cmd.setIndex(index);
@@ -58,7 +46,7 @@ public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
             if (isAncestor(child, getHost()))
                 command.add(UnexecutableCommand.INSTANCE);
             else {
-                NedNodeModel childModel = (NedNodeModel) child.getModel();
+                INedNode childModel = (INedNode) child.getModel();
                 command.add(createCreateCommand(childModel, new Rectangle(
                         new org.eclipse.draw2d.geometry.Point(), childModel.getSize()), index,
                         "Reparent NedElement"));//$NON-NLS-1$
@@ -68,7 +56,7 @@ public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
     }
 
     protected Command getCreateCommand(CreateRequest request) {
-        NedNodeModel child = (NedNodeModel) request.getNewObject();
+    	INedNode child = (INedNode) request.getNewObject();
         int index = findIndexOfTreeItemAt(request.getLocation());
         return createCreateCommand(child, null, index, "Create NedElement");//$NON-NLS-1$
     }
@@ -89,7 +77,7 @@ public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
             } else if (oldIndex <= tempIndex) {
                 tempIndex--;
             }
-            command.add(new ReorderPartCommand((NedNodeModel) child.getModel(), (ContainerModel) getHost()
+            command.add(new ReorderPartCommand((INedNode) child.getModel(), (INedContainer) getHost()
                     .getModel(), tempIndex));
         }
         return command;

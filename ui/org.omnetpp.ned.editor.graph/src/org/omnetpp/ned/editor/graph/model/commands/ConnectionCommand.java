@@ -1,23 +1,12 @@
-/*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
 package org.omnetpp.ned.editor.graph.model.commands;
 
 import java.util.Iterator;
 import java.util.Vector;
 
 import org.eclipse.gef.commands.Command;
-
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.old.NedNodeModel;
-import org.omnetpp.ned.editor.graph.model.old.WireModel;
+import org.omnetpp.ned.editor.graph.model.ConnectionNodeEx;
+import org.omnetpp.ned.editor.graph.model.INedNode;
 
 /**
  * (Re)assigns a wire object to source/target submodule gates
@@ -26,15 +15,15 @@ import org.omnetpp.ned.editor.graph.model.old.WireModel;
  */
 public class ConnectionCommand extends Command {
 
-    protected NedNodeModel oldSource;
+    protected INedNode oldSource;
     protected String oldSourceTerminal;
-    protected NedNodeModel oldTarget;
+    protected INedNode oldTarget;
     protected String oldTargetTerminal;
-    protected NedNodeModel source;
+    protected INedNode source;
     protected String sourceGate;
-    protected NedNodeModel target;
+    protected INedNode target;
     protected String targetGate;
-    protected WireModel wire;
+    protected ConnectionNodeEx wire;
 
     public ConnectionCommand() {
         super(MessageFactory.ConnectionCommand_Label);
@@ -45,39 +34,34 @@ public class ConnectionCommand extends Command {
      * Input output gate config consistency can be checked here
      */
     public boolean canExecute() {
-        if (target != null) {
-            Vector conns = target.getConnections();
-            Iterator i = conns.iterator();
-            while (i.hasNext()) {
-                WireModel conn = (WireModel) i.next();
-                if (targetGate != null && conn.getTargetGate() != null)
-                    if (conn.getTargetGate().equals(targetGate) && conn.getTarget().equals(target))
-                        return false;
-            }
-        }
+//        if (target != null) {
+//            Vector conns = target.getConnections();
+//            Iterator i = conns.iterator();
+//            while (i.hasNext()) {
+//                WireModel conn = (WireModel) i.next();
+//                if (targetGate != null && conn.getTargetGate() != null)
+//                    if (conn.getTargetGate().equals(targetGate) && conn.getTarget().equals(target))
+//                        return false;
+//            }
+//        }
         return true;
     }
 
     public void execute() {
         if (source != null) {
-            wire.detachSource();
-            wire.setSource(source);
-            wire.setSourceGate(sourceGate);
-            wire.attachSource();
+            wire.setSrcModuleRef(source);
+//            wire.setSourceGate(sourceGate);
         }
         if (target != null) {
-            wire.detachTarget();
-            wire.setTarget(target);
-            wire.setTargetGate(targetGate);
-            wire.attachTarget();
+//            wire.detachTarget();
+            wire.setDestModuleRef(target);
+//            wire.setTargetGate(targetGate);
         }
         if (source == null && target == null) {
-            wire.detachSource();
-            wire.detachTarget();
-            wire.setTarget(null);
-            wire.setSource(null);
-            wire.setTargetGate(null);
-            wire.setSourceGate(null);
+            wire.setDestModuleRef(null);
+            wire.setSrcModuleRef(null);
+//            wire.setTargetGate(null);
+//            wire.setSourceGate(null);
         }
     }
 
@@ -85,7 +69,7 @@ public class ConnectionCommand extends Command {
         return MessageFactory.ConnectionCommand_Description;
     }
 
-    public NedNodeModel getSource() {
+    public INedNode getSource() {
         return source;
     }
 
@@ -93,7 +77,7 @@ public class ConnectionCommand extends Command {
         return sourceGate;
     }
 
-    public NedNodeModel getTarget() {
+    public INedNode getTarget() {
         return target;
     }
 
@@ -101,7 +85,7 @@ public class ConnectionCommand extends Command {
         return targetGate;
     }
 
-    public WireModel getWire() {
+    public ConnectionNodeEx getWire() {
         return wire;
     }
 
@@ -109,7 +93,7 @@ public class ConnectionCommand extends Command {
         execute();
     }
 
-    public void setSource(NedNodeModel newSource) {
+    public void setSource(INedNode newSource) {
         source = newSource;
     }
 
@@ -117,7 +101,7 @@ public class ConnectionCommand extends Command {
         sourceGate = newSourceGate;
     }
 
-    public void setTarget(NedNodeModel newTarget) {
+    public void setTarget(INedNode newTarget) {
         target = newTarget;
     }
 
@@ -125,30 +109,29 @@ public class ConnectionCommand extends Command {
         targetGate = newTargetGate;
     }
 
-    public void setWire(WireModel w) {
+    public void setWire(ConnectionNodeEx w) {
         wire = w;
-        oldSource = w.getSource();
-        oldTarget = w.getTarget();
-        oldSourceTerminal = w.getSourceGate();
-        oldTargetTerminal = w.getTargetGate();
+        oldSource = w.getSrcModuleRef();
+        oldTarget = w.getDestModuleRef();
+        // TODO implement gate handling
+//        oldSourceTerminal = w.getSourceGate();
+//        oldTargetTerminal = w.getTargetGate();
     }
 
     public void undo() {
-        source = wire.getSource();
-        target = wire.getTarget();
-        sourceGate = wire.getSourceGate();
-        targetGate = wire.getTargetGate();
+        source = wire.getSrcModuleRef();
+        target = wire.getDestModuleRef();
+//        sourceGate = wire.getSourceGate();
+//        targetGate = wire.getTargetGate();
 
-        wire.detachSource();
-        wire.detachTarget();
+//        wire.detachSource();
+//        wire.detachTarget();
 
-        wire.setSource(oldSource);
-        wire.setTarget(oldTarget);
-        wire.setSourceGate(oldSourceTerminal);
-        wire.setTargetGate(oldTargetTerminal);
+        wire.setSrcModuleRef(oldSource);
+        wire.setDestModuleRef(oldTarget);
+//        wire.setSourceGate(oldSourceTerminal);
+//        wire.setTargetGate(oldTargetTerminal);
 
-        wire.attachSource();
-        wire.attachTarget();
     }
 
 }

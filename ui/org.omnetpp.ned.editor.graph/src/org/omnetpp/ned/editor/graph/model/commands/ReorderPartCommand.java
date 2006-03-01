@@ -1,20 +1,9 @@
-/*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
 package org.omnetpp.ned.editor.graph.model.commands;
 
 import org.eclipse.gef.commands.Command;
-
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.old.ContainerModel;
-import org.omnetpp.ned.editor.graph.model.old.NedNodeModel;
+import org.omnetpp.ned.editor.graph.model.INedContainer;
+import org.omnetpp.ned.editor.graph.model.INedNode;
 
 /**
  * Move a child to a different position in the parent's list
@@ -26,10 +15,10 @@ import org.omnetpp.ned.editor.graph.model.old.NedNodeModel;
 public class ReorderPartCommand extends Command {
 
     private int oldIndex, newIndex;
-    private NedNodeModel child;
-    private ContainerModel parent;
+    private INedNode child;
+    private INedContainer parent;
 
-    public ReorderPartCommand(NedNodeModel child, ContainerModel parent, int newIndex) {
+    public ReorderPartCommand(INedNode child, INedContainer parent, int newIndex) {
         super(MessageFactory.ReorderPartCommand_Label);
         this.child = child;
         this.parent = parent;
@@ -37,14 +26,14 @@ public class ReorderPartCommand extends Command {
     }
 
     public void execute() {
-        oldIndex = parent.getChildren().indexOf(child);
-        parent.removeChild(child);
-        parent.addChild(child, newIndex);
+        oldIndex = parent.getModelChildren().indexOf(child);
+        parent.removeModelChild(child);
+        parent.insertModelChild(newIndex, child);
     }
 
     public void undo() {
-        parent.removeChild(child);
-        parent.addChild(child, oldIndex);
+        parent.removeModelChild(child);
+        parent.insertModelChild(oldIndex, child);
     }
 
 }

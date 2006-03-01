@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.omnetpp.ned.editor.graph.model.old;
+package org.omnetpp.ned.editor.graph.model;
 
 import org.eclipse.draw2d.Bendpoint;
 import org.eclipse.draw2d.geometry.Dimension;

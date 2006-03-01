@@ -3,6 +3,8 @@ package org.omnetpp.ned.editor.graph.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.draw2d.geometry.Point;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned2.model.pojo.SubmoduleNode;
@@ -14,6 +16,9 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 	protected List<ConnectionNodeEx> srcConns = new ArrayList<ConnectionNodeEx>();
 	// destConns contains all connections where the destmodule is this module
 	protected List<ConnectionNodeEx> destConns = new ArrayList<ConnectionNodeEx>();
+	
+	protected Point location;
+	protected Dimension size;
 	
 	public CompoundModuleNodeEx(NEDElement parent) {
 		super(parent);
@@ -106,4 +111,21 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 		return getSubmodules();
 	}
 
+	public Point getTransientLocation() {
+		return location;
+	}
+
+	public void setTransientLocation(Point location) {
+		this.location = location;
+	}
+
+	public Dimension getSize() {
+		// TODO this must be retrieved from the displayString
+		return size;
+	}
+
+	public void setSize(Dimension size) {
+		// TODO This MUST be strored in the displaystring
+		this.size = size;
+	}
 }
