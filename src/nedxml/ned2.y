@@ -1509,7 +1509,7 @@ opt_semicolon : ';' | ;
 // general bison/flex stuff:
 //
 
-int doParseNED2(NEDParser *p, NedFileNode *nf)
+NEDElement *doParseNED2(NEDParser *p, const char *nedtext)
 {
 #if YYDEBUG != 0      /* #if added --VA */
     yydebug = YYDEBUGGING_ON;
@@ -1518,13 +1518,25 @@ int doParseNED2(NEDParser *p, NedFileNode *nf)
     pos.li = 1;
     prevpos = pos;
 
-    if (yyin)
-        yyrestart( yyin );
+    struct yy_buffer_state *handle = yy_scan_string(nedtext);
+    if (!handle)
+        {NEDError(NULL, "unable to allocate work memory"); return false;}
 
     // create parser state and NEDFileNode
     np = p;
     resetParserState();
-    ps.nedfile = nf;
+    ps.nedfile = new NedFileNode();
+
+    // store file name -- with slashes always, even on Windows
+    std::string fnamewithslash = np->getFileName();
+    for (char *s=const_cast<char *>(fnamewithslash.data()); *s; s++)
+        if (*s=='\\')
+            *s='/';
+    ps.nedfile->setFilename(fnamewithslash.c_str());
+
+    // store file comment
+    //FIXME ps.nedfile->setBannerComment(nedsource->getFileComment());
+
     ps.propertyscope.push(ps.nedfile);
 
     if (np->getStoreSourceFlag())
@@ -1539,6 +1551,7 @@ int doParseNED2(NEDParser *p, NedFileNode *nf)
     catch (NEDException *e)
     {
         INTERNAL_ERROR1(NULL, "error during parsing: %s", e->errorMessage());
+        yy_delete_buffer(handle);
         delete e;
         return 0;
     }
@@ -1551,11 +1564,11 @@ int doParseNED2(NEDParser *p, NedFileNode *nf)
         if (!ps.blockscope.empty() || !ps.typescope.empty())
             INTERNAL_ERROR0(NULL, "error during parsing: imbalanced blockscope or typescope");
     }
-
-    return ret;
+    yy_delete_buffer(handle);
+    return ps.nedfile;
 }
 
-void yyerror (const char *s)
+void yyerror(const char *s)
 {
     // chop newline
     char buf[250];

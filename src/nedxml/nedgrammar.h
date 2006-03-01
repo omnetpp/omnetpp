@@ -87,7 +87,7 @@ struct yy_buffer_state;
 struct yy_buffer_state *yy_scan_string(const char *str);
 void yy_delete_buffer(struct yy_buffer_state *);
 
-int doParseNED2 (NEDParser *p,NedFileNode *nf);
+NEDElement *doParseNED2(NEDParser *p, const char *nedtext);
 
 
 #endif

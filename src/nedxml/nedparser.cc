@@ -67,26 +67,8 @@ bool NEDParser::parseFile(const char *fname)
     if (!nedsource->readFile(newfilename))
         {NEDError(NULL, "cannot read %s", fname); return false;}
 
-    // store file name -- with slashes always, even on Windows
-    std::string fnamewithslash = fname;
-    for (char *s=const_cast<char *>(fnamewithslash.data()); *s; s++)
-        if (*s=='\\')
-            *s='/';
-
-    // get file comment
-    NedFileNode *nedfile = new NedFileNode();
-    nedfile->setFilename(fnamewithslash.c_str());
-    //FIXME nedfile->setBannerComment(nedsource->getFileComment());
-
-    tree = nedfile;
-
-    // init and call parser
-    yyout = stdout;
-    yyin = fopen(newfilename,"r");
-    if (!yyin)
-        {NEDError(NULL, "cannot read %s", fname); return false;}
-    doParseNED2(this,nedfile);
-    fclose(yyin);
+    const char *nedtext = nedsource->getFullText();
+    tree = doParseNED2(this, nedtext);
 
     // num_errors contains number of parse errors
     return true;
@@ -104,19 +86,7 @@ bool NEDParser::parseText(const char *nedtext)
     if (!nedsource->setData(nedtext))
         {NEDError(NULL, "unable to allocate work memory"); return false;}
 
-    // get file comment
-    NedFileNode *nedfile = new NedFileNode();
-    //FIXME nedfile->setBannerComment(nedsource->getFileComment());
-    tree = nedfile;
-
-    // init and call parser
-    yyin = NULL;
-    yyout = stdout;
-    struct yy_buffer_state *handle = yy_scan_string(nedtext);
-    if (!handle)
-        {NEDError(NULL, "unable to allocate work memory"); return false;}
-    doParseNED2(this,nedfile);
-    yy_delete_buffer(handle);
+    tree = doParseNED2(this, nedtext);
 
     // num_errors contains number of parse errors
     return true;
