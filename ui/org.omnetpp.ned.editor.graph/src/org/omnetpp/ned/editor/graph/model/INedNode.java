@@ -31,6 +31,8 @@ public interface INedNode extends INedModelElement {
     public void setDisplayString(String dspString);
     
     public Point getLocation();
+    public void setLocation(Point loc);
+    
 
     /**
      * Returns connections whose "src" side is this component 
