@@ -16,9 +16,13 @@
 #ifndef __NEDYYLIB_H
 #define __NEDYYLIB_H
 
+#include <string>
 #include "nedelements.h"
 #include "nedgrammar.h"
 #include "nedparser.h"
+
+
+std::string slashifyFilename(const char *fname);
 
 NEDElement *createNodeWithTag(int tagcode, NEDElement *parent=NULL);
 

@@ -47,23 +47,21 @@ S  [ \t\v\n\r\f]
 #include "nedgrammar.h"
 #include "ned2.tab.h"
 
+#define yylloc ned2yylloc
 extern YYSTYPE yylval;
 extern YYLTYPE yylloc;
 
 // wrap symbols to allow several .lex files coexist
-#define comment     msgcomment
-#define count       msgcount
-#define extendCount msgextendCount
+#define comment     ned2comment
+#define count       ned2count
+#define extendCount ned2extendCount
 
 void comment(void);
 void count(void);
 void extendCount(void);
 
-/* Vars updated by count(): */
-LineColumn pos,prevpos;
-
 #define TEXTBUF_LEN 1024
-char textbuf[TEXTBUF_LEN];
+static char textbuf[TEXTBUF_LEN];
 
 %}
 

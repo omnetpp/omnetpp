@@ -16,7 +16,19 @@
 
 #include "nedyylib.h"
 #include "nedfilebuffer.h"
+#include "nedgrammar.h"
 
+// this global var is shared by all lexers
+LineColumn pos, prevpos;
+
+std::string slashifyFilename(const char *fname)
+{
+    std::string fnamewithslash = np->getFileName();
+    for (char *s=const_cast<char *>(fnamewithslash.data()); *s; s++)
+        if (*s=='\\')
+            *s='/';
+    return fnamewithslash;
+}
 
 const char *toString(YYLTYPE pos)
 {

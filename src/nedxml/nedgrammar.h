@@ -18,8 +18,6 @@
 #ifndef __NEDGRAMMAR_H
 #define __NEDGRAMMAR_H
 
-#define yylloc ned2yylloc
-
 class NEDElement;
 class NEDParser;
 
@@ -27,7 +25,7 @@ class NEDParser;
 
 #ifndef YYLTYPE
 struct my_yyltype {
-   int dumy;
+   int dummy;
    int first_line, first_column;
    int last_line, last_column;
    char *text;
@@ -38,20 +36,7 @@ struct my_yyltype {
 #endif
 
 typedef struct {int li; int co;} LineColumn;
-
-extern LineColumn pos,prevpos;
-
-
-// FIXME: move to .y files
-#define yy_scan_string ned2yy_scan_string
-#define yyin ned2yyin
-#define yyout ned2yyout
-#define yyrestart ned2yyrestart
-extern FILE *yyin;
-extern FILE *yyout;
-struct yy_buffer_state;
-struct yy_buffer_state *yy_scan_string(const char *str);
-void yy_delete_buffer(struct yy_buffer_state *);
+extern LineColumn pos, prevpos;
 
 NEDElement *doParseNED2(NEDParser *p, const char *nedtext);
 

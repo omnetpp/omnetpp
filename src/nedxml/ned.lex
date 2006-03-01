@@ -53,11 +53,8 @@ void comment(void);
 void count(void);
 void extendCount(void);
 
-/* Vars updated by count(): */
-LineColumn pos,prevpos;
-
 #define TEXTBUF_LEN 1024
-char textbuf[TEXTBUF_LEN];
+static char textbuf[TEXTBUF_LEN];
 
 %}
 

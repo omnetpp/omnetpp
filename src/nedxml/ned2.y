@@ -67,9 +67,21 @@
 #include <string.h>         /* YYVERBOSE needs it */
 #endif
 
-int yylex (void);
+#define yylloc ned2yylloc
+#define yyin ned2yyin
+#define yyout ned2yyout
+#define yyrestart ned2yyrestart
+#define yy_scan_string ned2yy_scan_string
+#define yy_delete_buffer ned2yy_delete_buffer
+extern FILE *yyin;
+extern FILE *yyout;
+struct yy_buffer_state;
+struct yy_buffer_state *yy_scan_string(const char *str);
+void yy_delete_buffer(struct yy_buffer_state *);
 void yyrestart(FILE *);
+int yylex();
 void yyerror (const char *s);
+void resetlexer();
 
 #include "nedparser.h"
 #include "nedfilebuffer.h"
@@ -1514,6 +1526,8 @@ NEDElement *doParseNED2(NEDParser *p, const char *nedtext)
 #if YYDEBUG != 0      /* #if added --VA */
     yydebug = YYDEBUGGING_ON;
 #endif
+
+    // reset the lexer
     pos.co = 0;
     pos.li = 1;
     prevpos = pos;
@@ -1521,6 +1535,7 @@ NEDElement *doParseNED2(NEDParser *p, const char *nedtext)
     yyin = NULL;
     yyout = stderr; // not used anyway
 
+    // alloc buffer
     struct yy_buffer_state *handle = yy_scan_string(nedtext);
     if (!handle)
         {NEDError(NULL, "unable to allocate work memory"); return false;}
@@ -1530,12 +1545,8 @@ NEDElement *doParseNED2(NEDParser *p, const char *nedtext)
     resetParserState();
     ps.nedfile = new NedFileNode();
 
-    // store file name -- with slashes always, even on Windows
-    std::string fnamewithslash = np->getFileName();
-    for (char *s=const_cast<char *>(fnamewithslash.data()); *s; s++)
-        if (*s=='\\')
-            *s='/';
-    ps.nedfile->setFilename(fnamewithslash.c_str());
+    // store file name with slashes always, even on Windows -- neddoc relies on that
+    ps.nedfile->setFilename(slashifyFilename(np->getFileName()).c_str());
 
     // store file comment
     //FIXME ps.nedfile->setBannerComment(nedsource->getFileComment());
