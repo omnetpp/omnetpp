@@ -66,26 +66,7 @@ bool NEDParser::parseFile(const char *fname)
     if (!nedsource->readFile(newfilename))
         {NEDError(NULL, "cannot read %s", fname); return false;}
 
-    clearErrors();
-    tree = doParseNED2(this, nedsource->getFullText());
-
-    if (errorsOccurred())
-    {
-        delete tree;
-        clearErrors();
-        tree = doParseNED(this, nedsource->getFullText());
-    }
-    if (errorsOccurred())
-    {
-        delete tree;
-        clearErrors();
-        tree = doParseMSG2(this, nedsource->getFullText());
-    }
-    if (errorsOccurred())
-    {
-        delete tree;
-        tree = NULL;
-    }
+    tree = tryParse();
 
     // true if OK
     return tree!=NULL;
@@ -102,12 +83,38 @@ bool NEDParser::parseText(const char *nedtext)
     if (!nedsource->setData(nedtext))
         {NEDError(NULL, "unable to allocate work memory"); return false;}
 
-    tree = doParseNED2(this, nedtext);
+    tree = tryParse();
 
-    // num_errors contains number of parse errors
-    return true;
+    // true if OK
+    return tree!=NULL;
 }
 
+NEDElement *NEDParser::tryParse()
+{
+    NEDElement *tmp;
+
+    clearErrors();
+    tmp = doParseNED2(this, nedsource->getFullText());
+
+    if (errorsOccurred())
+    {
+        delete tmp;
+        clearErrors();
+        tmp = doParseNED(this, nedsource->getFullText());
+    }
+    if (errorsOccurred())
+    {
+        delete tmp;
+        clearErrors();
+        tmp = doParseMSG2(this, nedsource->getFullText());
+    }
+    if (errorsOccurred())
+    {
+        delete tmp;
+        tmp = NULL;
+    }
+    return tmp;
+}
 
 NEDElement *NEDParser::getTree()
 {

@@ -46,13 +46,15 @@ extern NEDParser *np;
 class NEDParser
 {
   public:
-    NEDFileBuffer *nedsource;  // NED File object
+    NEDFileBuffer *nedsource;  // represents the source file
 
   protected:
     bool parseexpr;            // whether to parse expressions or not
     bool storesrc;             // whether to fill in sourceCode attributes
     const char *filename;      // file being parsed
     NEDElement *tree;          // tree to build
+
+    NEDElement *tryParse();
 
   public:
     /**
