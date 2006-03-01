@@ -41,7 +41,7 @@ extern LineColumn pos, prevpos;
 
 NEDElement *doParseNED2(NEDParser *p, const char *nedtext);
 NEDElement *doParseNED(NEDParser *p, const char *nedtext);
-NEDElement *doParseMSG(NEDParser *p, const char *nedtext);
+NEDElement *doParseMSG2(NEDParser *p, const char *nedtext);
 
 
 #endif

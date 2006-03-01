@@ -45,8 +45,6 @@ S  [ \t\v\n\r\f]
 extern YYSTYPE yylval;
 extern YYLTYPE yylloc;
 
-extern bool use_chanattrname_token;
-
 // wrap symbols to allow several .lex files coexist
 #define comment     nedcomment
 #define count       nedcount
@@ -65,11 +63,11 @@ static char textbuf[TEXTBUF_LEN];
 "//"                    { comment(); }
 "--"                    { comment(); }
 
-"import"                { count(); use_chanattrname_token = 0; return INCLUDE; }
-"network"               { count(); use_chanattrname_token = 0; return NETWORK; }
-"module"                { count(); use_chanattrname_token = 0; return MODULE; }
-"simple"                { count(); use_chanattrname_token = 0; return SIMPLE; }
-"channel"               { count(); use_chanattrname_token = 1; return CHANNEL; }
+"import"                { count(); return INCLUDE; }
+"network"               { count(); return NETWORK; }
+"module"                { count(); return MODULE; }
+"simple"                { count(); return SIMPLE; }
+"channel"               { count(); return CHANNEL; }
 "for"                   { count(); return FOR; }
 "do"                    { count(); return DO; }
 "true"                  { count(); return TRUE_; }
@@ -110,12 +108,12 @@ static char textbuf[TEXTBUF_LEN];
 "xml"                   { count(); return XMLTYPE; }
 "anytype"               { count(); return ANYTYPE; }
 
-"cplusplus"             { count(); use_chanattrname_token = 0; return CPLUSPLUS; }
-"struct"                { count(); use_chanattrname_token = 0; return STRUCT; }
-"message"               { count(); use_chanattrname_token = 0; return MESSAGE; }
-"class"                 { count(); use_chanattrname_token = 0; return CLASS; }
-"noncobject"            { count(); use_chanattrname_token = 0; return NONCOBJECT; }
-"enum"                  { count(); use_chanattrname_token = 0; return ENUM; }
+"cplusplus"             { count(); return CPLUSPLUS; }
+"struct"                { count(); return STRUCT; }
+"message"               { count(); return MESSAGE; }
+"class"                 { count(); return CLASS; }
+"noncobject"            { count(); return NONCOBJECT; }
+"enum"                  { count(); return ENUM; }
 "extends"               { count(); return EXTENDS; }
 "fields"                { count(); return FIELDS; }
 "properties"            { count(); return PROPERTIES; }
@@ -129,9 +127,9 @@ static char textbuf[TEXTBUF_LEN];
 "double"                { count(); return DOUBLETYPE; }
 "unsigned"              { count(); return UNSIGNED_; }
 
-"delay"                 { count(); return use_chanattrname_token ? CHANATTRNAME : NAME; }
-"error"                 { count(); return use_chanattrname_token ? CHANATTRNAME : NAME; }
-"datarate"              { count(); return use_chanattrname_token ? CHANATTRNAME : NAME; }
+"delay"                 { count(); return CHANATTRNAME; }
+"error"                 { count(); return CHANATTRNAME; }
+"datarate"              { count(); return CHANATTRNAME; }
 
 {L}({L}|{D})*           { count(); return NAME; }
 {D}+                    { count(); return INTCONSTANT; }

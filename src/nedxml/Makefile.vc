@@ -132,15 +132,19 @@ cppmsggenerator.obj: cppmsggenerator.cc \
   cppexprgenerator.h \
   nedcompiler.h
 lex.msg2yy.obj: lex.msg2yy.cc \
+  ./unistd.h \
   nedyydefs.h \
   msg2.tab.h
 lex.ned2yy.obj: lex.ned2yy.cc \
+  ./unistd.h \
   nedyydefs.h \
   ned2.tab.h
 lex.nedyy.obj: lex.nedyy.cc \
+  ./unistd.h \
   nedyydefs.h \
   ned.tab.h
 lex.yy.obj: lex.yy.cc \
+  ./unistd.h \
   nedyydefs.h \
   ned.tab.h
 msg2.tab.obj: msg2.tab.cc \

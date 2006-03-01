@@ -52,7 +52,6 @@ bool NEDParser::parseFile(const char *fname)
     // init class members
     NEDFileBuffer nf;
     nedsource = &nf;
-    num_errors = 0;
     filename = fname;
 
     // cosmetics on file name: substitute "~"
@@ -67,11 +66,29 @@ bool NEDParser::parseFile(const char *fname)
     if (!nedsource->readFile(newfilename))
         {NEDError(NULL, "cannot read %s", fname); return false;}
 
-    const char *nedtext = nedsource->getFullText();
-    tree = doParseNED2(this, nedtext);
+    clearErrors();
+    tree = doParseNED2(this, nedsource->getFullText());
 
-    // num_errors contains number of parse errors
-    return true;
+    if (errorsOccurred())
+    {
+        delete tree;
+        clearErrors();
+        tree = doParseNED(this, nedsource->getFullText());
+    }
+    if (errorsOccurred())
+    {
+        delete tree;
+        clearErrors();
+        tree = doParseMSG2(this, nedsource->getFullText());
+    }
+    if (errorsOccurred())
+    {
+        delete tree;
+        tree = NULL;
+    }
+
+    // true if OK
+    return tree!=NULL;
 }
 
 bool NEDParser::parseText(const char *nedtext)
@@ -79,7 +96,6 @@ bool NEDParser::parseText(const char *nedtext)
     // init global vars
     NEDFileBuffer nf;
     nedsource = &nf;
-    num_errors = 0;
     filename = "buffer";
 
     // load whole file into memory
@@ -96,7 +112,7 @@ bool NEDParser::parseText(const char *nedtext)
 NEDElement *NEDParser::getTree()
 {
     NEDElement *ret = tree;
-    tree = 0;
+    tree = NULL;
     return ret;
 }
 
@@ -104,7 +120,6 @@ NEDElement *NEDParser::getTree()
 void NEDParser::error(const char *msg, int line)
 {
     NEDError(NULL, "%s:%d: %s", filename, line, msg);
-    num_errors++;
 }
 
 /*
@@ -117,14 +132,4 @@ void NEDParser::dbg(YYLTYPE lc, char *what)
 }
 */
 
-//-----------------------------------------------------------------------
-// Usage:
-//
-//    NEDParser _np;
-//    np = &_np;
-//    return np->parseFile(interp, fname, nedfilekey, nedarray, errorsarray);
-//
-//    NEDParser _np;
-//    np = &_np;
-//    return np->parseText(interp, nedtext, nedfilekey, nedarray, errorsarray);
 
