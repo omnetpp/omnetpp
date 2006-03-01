@@ -4,7 +4,7 @@ Queues
 Queues is a queueing network tutorial and basic queueing library for OMNeT++,
 based on the Fifo sample simulation.
 
-Author: Nicky van Foreest (n.d.vanforeest@math.utwente.nl)
+Author: Nicky van Foreest (vanforeest@gmail.com)
 License: GPL
 
 Features:
