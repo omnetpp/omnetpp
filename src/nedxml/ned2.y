@@ -67,29 +67,21 @@
 #include <string.h>         /* YYVERBOSE needs it */
 #endif
 
-
 int yylex (void);
 void yyrestart(FILE *);
 void yyerror (const char *s);
-
 
 #include "nedparser.h"
 #include "nedfilebuffer.h"
 #include "nedelements.h"
 #include "nedutil.h"
-
-static YYLTYPE NULLPOS={0,0,0,0,0,0};
-
-static const char *sourcefilename;
-
-static NEDParser *np;
+#include "nedyylib.h"
 
 struct ParserState
 {
     void reset();
 
-    bool parseExpressions;
-    bool storeSourceCode;
+    bool storeSourceCode;  // FIXME use np->getStoreSourceFlag() instead
     bool inTypes;
     bool inGroup;
     std::stack<NEDElement *> propertyscope; // top(): where to insert properties as we parse them
@@ -135,48 +127,6 @@ struct ParserState
     LoopNode *loop;
     ConditionNode *condition;
 } ps;
-
-NEDElement *createNodeWithTag(int tagcode, NEDElement *parent=NULL);
-
-PropertyNode *addProperty(NEDElement *node, const char *name);  // directly under the node
-PropertyNode *addComponentProperty(NEDElement *node, const char *name); // into ParametersNode child of node
-
-PropertyNode *storeSourceCode(NEDElement *node, YYLTYPE tokenpos);  // directly under the node
-PropertyNode *storeComponentSourceCode(NEDElement *node, YYLTYPE tokenpos); // into ParametersNode child
-
-void setFileComment(NEDElement *node);
-void setBannerComment(NEDElement *node, YYLTYPE tokenpos);
-void setRightComment(NEDElement *node, YYLTYPE tokenpos);
-void setTrailingComment(NEDElement *node, YYLTYPE tokenpos);
-void setComments(NEDElement *node, YYLTYPE pos);
-void setComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos);
-
-ParamNode *addParameter(NEDElement *params, YYLTYPE namepos);
-GateNode *addGate(NEDElement *gates, YYLTYPE namepos);
-LoopNode *addLoop(NEDElement *conngroup, YYLTYPE varnamepos);
-
-YYLTYPE trimBrackets(YYLTYPE vectorpos);
-YYLTYPE trimAngleBrackets(YYLTYPE vectorpos);
-YYLTYPE trimQuotes(YYLTYPE vectorpos);
-YYLTYPE trimDoubleBraces(YYLTYPE vectorpos);
-void swapAttributes(NEDElement *node, const char *attr1, const char *attr2);
-void swapExpressionChildren(NEDElement *node, const char *attr1, const char *attr2);
-void swapConnection(NEDElement *conn);
-
-const char *toString(YYLTYPE);
-const char *toString(long);
-
-ExpressionNode *createExpression(NEDElement *expr);
-OperatorNode *createOperator(const char *op, NEDElement *operand1, NEDElement *operand2=NULL, NEDElement *operand3=NULL);
-FunctionNode *createFunction(const char *funcname, NEDElement *arg1=NULL, NEDElement *arg2=NULL, NEDElement *arg3=NULL, NEDElement *arg4=NULL);
-IdentNode *createIdent(const char *param, const char *paramindex=NULL, const char *module=NULL, const char *moduleindex=NULL);
-LiteralNode *createLiteral(int type, YYLTYPE valuepos, YYLTYPE textpos);
-LiteralNode *createQuantity(const char *text);
-NEDElement *unaryMinus(NEDElement *node);
-
-void addVector(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr);
-void addLikeParam(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr);
-void addExpression(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr);
 
 %}
 
@@ -290,7 +240,7 @@ channeldefinition
                   ps.blockscope.pop();
                   ps.typescope.pop();
                   setTrailingComment(ps.component,@4);
-                  if (ps.storeSourceCode)
+                  if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
                 }
         ;
@@ -360,7 +310,7 @@ channelinterfacedefinition
                   ps.blockscope.pop();
                   ps.typescope.pop();
                   setTrailingComment(ps.component,@4);
-                  if (ps.storeSourceCode)
+                  if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
                 }
         ;
@@ -405,7 +355,7 @@ simplemoduledefinition
                   ps.blockscope.pop();
                   ps.typescope.pop();
                   setTrailingComment(ps.component,@6);
-                  if (ps.storeSourceCode)
+                  if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
                 }
         ;
@@ -443,7 +393,7 @@ compoundmoduledefinition
                   ps.blockscope.pop();
                   ps.typescope.pop();
                   setTrailingComment(ps.component,@9);
-                  if (ps.storeSourceCode)
+                  if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
                 }
         ;
@@ -481,7 +431,7 @@ networkdefinition
                   ps.blockscope.pop();
                   ps.typescope.pop();
                   setTrailingComment(ps.component,@5);
-                  if (ps.storeSourceCode)
+                  if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
                 }
         ;
@@ -517,7 +467,7 @@ moduleinterfacedefinition
                   ps.blockscope.pop();
                   ps.typescope.pop();
                   setTrailingComment(ps.component,@6);
-                  if (ps.storeSourceCode)
+                  if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
                 }
         ;
@@ -1383,11 +1333,11 @@ expression
         :
           expr
                 {
-                  if (ps.parseExpressions) $$ = createExpression($1);
+                  if (np->getParseExpressionsFlag()) $$ = createExpression($1);
                 }
         | xmldocvalue
                 {
-                  if (ps.parseExpressions) $$ = createExpression($1);
+                  if (np->getParseExpressionsFlag()) $$ = createExpression($1);
                 }
         ;
 
@@ -1396,9 +1346,9 @@ expression
  */
 xmldocvalue
         : XMLDOC '(' stringliteral ',' stringliteral ')'
-                { if (ps.parseExpressions) $$ = createFunction("xmldoc", $3, $5); }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction("xmldoc", $3, $5); }
         | XMLDOC '(' stringliteral ')'
-                { if (ps.parseExpressions) $$ = createFunction("xmldoc", $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction("xmldoc", $3); }
         ;
 
 expr
@@ -1409,73 +1359,73 @@ expr
                 { $$ = $3; /*FIXME*/ }
 
         | expr '+' expr
-                { if (ps.parseExpressions) $$ = createOperator("+", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("+", $1, $3); }
         | expr '-' expr
-                { if (ps.parseExpressions) $$ = createOperator("-", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("-", $1, $3); }
         | expr '*' expr
-                { if (ps.parseExpressions) $$ = createOperator("*", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("*", $1, $3); }
         | expr '/' expr
-                { if (ps.parseExpressions) $$ = createOperator("/", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("/", $1, $3); }
         | expr '%' expr
-                { if (ps.parseExpressions) $$ = createOperator("%", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("%", $1, $3); }
         | expr '^' expr
-                { if (ps.parseExpressions) $$ = createOperator("^", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("^", $1, $3); }
 
         | '-' expr
                 %prec UMIN
-                { if (ps.parseExpressions) $$ = unaryMinus($2); }
+                { if (np->getParseExpressionsFlag()) $$ = unaryMinus($2); }
 
         | expr EQ expr
-                { if (ps.parseExpressions) $$ = createOperator("==", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("==", $1, $3); }
         | expr NE expr
-                { if (ps.parseExpressions) $$ = createOperator("!=", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("!=", $1, $3); }
         | expr '>' expr
-                { if (ps.parseExpressions) $$ = createOperator(">", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator(">", $1, $3); }
         | expr GE expr
-                { if (ps.parseExpressions) $$ = createOperator(">=", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator(">=", $1, $3); }
         | expr '<' expr
-                { if (ps.parseExpressions) $$ = createOperator("<", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("<", $1, $3); }
         | expr LE expr
-                { if (ps.parseExpressions) $$ = createOperator("<=", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("<=", $1, $3); }
 
         | expr AND expr
-                { if (ps.parseExpressions) $$ = createOperator("&&", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("&&", $1, $3); }
         | expr OR expr
-                { if (ps.parseExpressions) $$ = createOperator("||", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("||", $1, $3); }
         | expr XOR expr
-                { if (ps.parseExpressions) $$ = createOperator("##", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("##", $1, $3); }
 
         | NOT expr
                 %prec UMIN
-                { if (ps.parseExpressions) $$ = createOperator("!", $2); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("!", $2); }
 
         | expr BIN_AND expr
-                { if (ps.parseExpressions) $$ = createOperator("&", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("&", $1, $3); }
         | expr BIN_OR expr
-                { if (ps.parseExpressions) $$ = createOperator("|", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("|", $1, $3); }
         | expr BIN_XOR expr
-                { if (ps.parseExpressions) $$ = createOperator("#", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("#", $1, $3); }
 
         | BIN_COMPL expr
                 %prec UMIN
-                { if (ps.parseExpressions) $$ = createOperator("~", $2); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("~", $2); }
         | expr SHIFT_LEFT expr
-                { if (ps.parseExpressions) $$ = createOperator("<<", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("<<", $1, $3); }
         | expr SHIFT_RIGHT expr
-                { if (ps.parseExpressions) $$ = createOperator(">>", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator(">>", $1, $3); }
         | expr '?' expr ':' expr
-                { if (ps.parseExpressions) $$ = createOperator("?:", $1, $3, $5); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("?:", $1, $3, $5); }
 
         | NAME '(' ')'
-                { if (ps.parseExpressions) $$ = createFunction(toString(@1)); }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1)); }
         | NAME '(' expr ')'
-                { if (ps.parseExpressions) $$ = createFunction(toString(@1), $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1), $3); }
         | NAME '(' expr ',' expr ')'
-                { if (ps.parseExpressions) $$ = createFunction(toString(@1), $3, $5); }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1), $3, $5); }
         | NAME '(' expr ',' expr ',' expr ')'
-                { if (ps.parseExpressions) $$ = createFunction(toString(@1), $3, $5, $7); }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1), $3, $5, $7); }
         | NAME '(' expr ',' expr ',' expr ',' expr ')'
-                { if (ps.parseExpressions) $$ = createFunction(toString(@1), $3, $5, $7, $9); }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1), $3, $5, $7, $9); }
          ;
 
 simple_expr
@@ -1488,12 +1438,12 @@ parameter_expr
         : NAME
                 {
                   // if there's no modifier, might be a loop variable too
-                  if (ps.parseExpressions) $$ = createIdent(toString(@1));
+                  if (np->getParseExpressionsFlag()) $$ = createIdent(toString(@1));
                 }
         | qualifier '.' NAME
                 {
                   // if there's no modifier, might be a loop variable too
-                  if (ps.parseExpressions) $$ = createIdent(toString(@1));
+                  if (np->getParseExpressionsFlag()) $$ = createIdent(toString(@1));
                 }
         ;
 
@@ -1505,13 +1455,13 @@ qualifier
 
 special_expr
         : INDEX_
-                { if (ps.parseExpressions) $$ = createFunction("index"); }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction("index"); }
         | INDEX_ '(' ')'
-                { if (ps.parseExpressions) $$ = createFunction("index"); }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction("index"); }
         | SIZEOF '(' NAME ')'
-                { if (ps.parseExpressions) $$ = createFunction("sizeof", createIdent(toString(@3))); }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction("sizeof", createIdent(toString(@3))); }
         | SIZEOF '(' NAME '.' NAME ')'
-                { if (ps.parseExpressions) $$ = createFunction("sizeof", createIdent(toString(@5), NULL, toString(@3))); }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction("sizeof", createIdent(toString(@5), NULL, toString(@3))); }
         ;
 
 literal
@@ -1522,23 +1472,23 @@ literal
 
 stringliteral
         : STRINGCONSTANT
-                { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_STRING, trimQuotes(@1), @1); }
+                { if (np->getParseExpressionsFlag()) $$ = createLiteral(NED_CONST_STRING, trimQuotes(@1), @1); }
         ;
 
 boolliteral
         : TRUE_
-                { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_BOOL, @1, @1); }
+                { if (np->getParseExpressionsFlag()) $$ = createLiteral(NED_CONST_BOOL, @1, @1); }
         | FALSE_
-                { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_BOOL, @1, @1); }
+                { if (np->getParseExpressionsFlag()) $$ = createLiteral(NED_CONST_BOOL, @1, @1); }
         ;
 
 numliteral
         : INTCONSTANT
-                { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_INT, @1, @1); }
+                { if (np->getParseExpressionsFlag()) $$ = createLiteral(NED_CONST_INT, @1, @1); }
         | REALCONSTANT
-                { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_DOUBLE, @1, @1); }
+                { if (np->getParseExpressionsFlag()) $$ = createLiteral(NED_CONST_DOUBLE, @1, @1); }
         | quantity
-                { if (ps.parseExpressions) $$ = createQuantity(toString(@1)); }
+                { if (np->getParseExpressionsFlag()) $$ = createQuantity(toString(@1)); }
         ;
 
 quantity
@@ -1576,10 +1526,7 @@ int doParseNED2 (NEDParser *p,NedFileNode *nf,bool parseexpr, bool storesrc, con
     np = p;
     ps.reset();
     ps.nedfile = nf;
-    ps.parseExpressions = parseexpr;
-    ps.storeSourceCode = storesrc;
     ps.propertyscope.push(ps.nedfile);
-    sourcefilename = sourcefname;
 
     if (storesrc)
         storeSourceCode(ps.nedfile, np->nedsource->getFullTextPos());
@@ -1627,319 +1574,3 @@ void yyerror (const char *s)
     np->error(buf, pos.li);
 }
 
-const char *toString(YYLTYPE pos)
-{
-    return np->nedsource->get(pos);
-}
-
-const char *toString(long l)
-{
-    static char buf[32];
-    sprintf(buf,"%ld", l);
-    return buf;
-}
-
-NEDElement *createNodeWithTag(int tagcode, NEDElement *parent)
-{
-    // create via a factory
-    NEDElement *e = NEDElementFactory::getInstance()->createNodeWithTag(tagcode);
-
-    // "debug info"
-    char buf[200];
-    sprintf(buf,"%s:%d",sourcefilename, pos.li);
-    e->setSourceLocation(buf);
-
-    // add to parent
-    if (parent)
-       parent->appendChild(e);
-
-    return e;
-}
-
-//
-// Properties
-//
-
-PropertyNode *addProperty(NEDElement *node, const char *name)
-{
-    PropertyNode *prop = (PropertyNode *)createNodeWithTag(NED_PROPERTY, node);
-    prop->setName(name);
-    return prop;
-}
-
-PropertyNode *addComponentProperty(NEDElement *node, const char *name)
-{
-    // add propery under the ParametersNode; create that if not yet exists
-    NEDElement *params = node->getFirstChildWithTag(NED_PARAMETERS);
-    if (!params)
-        params = createNodeWithTag(NED_PARAMETERS, node);
-    PropertyNode *prop = (PropertyNode *)createNodeWithTag(NED_PROPERTY, params);
-    prop->setName(name);
-    return prop;
-}
-
-//
-// Spec Properties: source code, display string
-//
-
-PropertyNode *storeSourceCode(NEDElement *node, YYLTYPE tokenpos)
-{
-     PropertyNode *prop = addProperty(node, "sourcecode");
-     prop->setIsImplicit(true);
-     PropertyKeyNode *propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, prop);
-     propkey->appendChild(createLiteral(NED_CONST_STRING, tokenpos, tokenpos));  // FIXME don't store it twice
-     return prop;
-}
-
-PropertyNode *storeComponentSourceCode(NEDElement *node, YYLTYPE tokenpos)
-{
-     PropertyNode *prop = addComponentProperty(node, "sourcecode");
-     prop->setIsImplicit(true);
-     PropertyKeyNode *propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, prop);
-     propkey->appendChild(createLiteral(NED_CONST_STRING, tokenpos, tokenpos));  // FIXME don't store it twice
-     return prop;
-}
-
-//
-// Comments
-//
-
-void setFileComment(NEDElement *node)
-{
-//XXX    node->setAttribute("file-comment", np->nedsource->getFileComment() );
-}
-
-void setBannerComment(NEDElement *node, YYLTYPE tokenpos)
-{
-//XXX    node->setAttribute("banner-comment", np->nedsource->getBannerComment(tokenpos) );
-}
-
-void setRightComment(NEDElement *node, YYLTYPE tokenpos)
-{
-//XXX    node->setAttribute("right-comment", np->nedsource->getTrailingComment(tokenpos) );
-}
-
-void setTrailingComment(NEDElement *node, YYLTYPE tokenpos)
-{
-//XXX    node->setAttribute("trailing-comment", np->nedsource->getTrailingComment(tokenpos) );
-}
-
-void setComments(NEDElement *node, YYLTYPE pos)
-{
-//XXX    setBannerComment(node, pos);
-//XXX    setRightComment(node, pos);
-}
-
-void setComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos)
-{
-    YYLTYPE pos = firstpos;
-    pos.last_line = lastpos.last_line;
-    pos.last_column = lastpos.last_column;
-
-//XXX    setBannerComment(node, pos);
-//XXX    setRightComment(node, pos);
-}
-
-ParamNode *addParameter(NEDElement *params, YYLTYPE namepos)
-{
-   ParamNode *param = (ParamNode *)createNodeWithTag(NED_PARAM,params);
-   param->setName( toString( namepos) );
-   return param;
-}
-
-GateNode *addGate(NEDElement *gates, YYLTYPE namepos)
-{
-   GateNode *gate = (GateNode *)createNodeWithTag(NED_GATE,gates);
-   gate->setName( toString( namepos) );
-   return gate;
-}
-
-LoopNode *addLoop(NEDElement *conngroup, YYLTYPE varnamepos)
-{
-   LoopNode *loop = (LoopNode *)createNodeWithTag(NED_LOOP,conngroup);
-   loop->setParamName( toString( varnamepos) );
-   return loop;
-}
-
-YYLTYPE trimBrackets(YYLTYPE vectorpos)
-{
-   // should check it's really brackets that get chopped off
-   vectorpos.first_column++;
-   vectorpos.last_column--;
-   return vectorpos;
-}
-
-YYLTYPE trimAngleBrackets(YYLTYPE vectorpos)
-{
-   // should check it's really angle brackets that get chopped off
-   vectorpos.first_column++;
-   vectorpos.last_column--;
-   return vectorpos;
-}
-
-YYLTYPE trimQuotes(YYLTYPE vectorpos)
-{
-   // should check it's really quotes that get chopped off
-   vectorpos.first_column++;
-   vectorpos.last_column--;
-   return vectorpos;
-}
-
-YYLTYPE trimDoubleBraces(YYLTYPE vectorpos)
-{
-   // should check it's really '{{' and '}}' that get chopped off
-   vectorpos.first_column+=2;
-   vectorpos.last_column-=2;
-   return vectorpos;
-}
-
-void addVector(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr)
-{
-   addExpression(elem, attrname, trimBrackets(exprpos), expr);
-}
-
-void addLikeParam(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr)
-{
-   if (ps.parseExpressions && !expr)
-       elem->setAttribute(attrname, toString(trimAngleBrackets(exprpos)));
-   else
-       addExpression(elem, attrname, trimAngleBrackets(exprpos), expr);
-}
-
-void addExpression(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr)
-{
-   if (ps.parseExpressions) {
-       elem->appendChild(expr);
-       ((ExpressionNode *)expr)->setTarget(attrname);
-   } else {
-       elem->setAttribute(attrname, toString(exprpos));
-   }
-}
-
-void swapConnection(NEDElement *conn)
-{
-   swapAttributes(conn, "src-module", "dest-module");
-   swapAttributes(conn, "src-module-index", "dest-module-index");
-   swapAttributes(conn, "src-gate", "dest-gate");
-   swapAttributes(conn, "src-gate-index", "dest-gate-index");
-   swapAttributes(conn, "src-gate-plusplus", "dest-gate-plusplus");
-   swapAttributes(conn, "src-gate-subg", "dest-gate-subg");
-
-   swapExpressionChildren(conn, "src-module-index", "dest-module-index");
-   swapExpressionChildren(conn, "src-gate-index", "dest-gate-index");
-}
-
-void swapAttributes(NEDElement *node, const char *attr1, const char *attr2)
-{
-   std::string oldv1(node->getAttribute(attr1));
-   node->setAttribute(attr1,node->getAttribute(attr2));
-   node->setAttribute(attr2,oldv1.c_str());
-}
-
-void swapExpressionChildren(NEDElement *node, const char *attr1, const char *attr2)
-{
-   ExpressionNode *expr1, *expr2;
-   for (expr1=(ExpressionNode *)node->getFirstChildWithTag(NED_EXPRESSION); expr1; expr1=expr1->getNextExpressionNodeSibling())
-      if (!strcmp(expr1->getTarget(),attr1))
-          break;
-   for (expr2=(ExpressionNode *)node->getFirstChildWithTag(NED_EXPRESSION); expr2; expr2=expr2->getNextExpressionNodeSibling())
-      if (!strcmp(expr2->getTarget(),attr2))
-          break;
-
-   if (expr1) expr1->setTarget(attr2);
-   if (expr2) expr2->setTarget(attr1);
-}
-
-OperatorNode *createOperator(const char *op, NEDElement *operand1, NEDElement *operand2, NEDElement *operand3)
-{
-   OperatorNode *opnode = (OperatorNode *)createNodeWithTag(NED_OPERATOR);
-   opnode->setName(op);
-   opnode->appendChild(operand1);
-   if (operand2) opnode->appendChild(operand2);
-   if (operand3) opnode->appendChild(operand3);
-   return opnode;
-}
-
-FunctionNode *createFunction(const char *funcname, NEDElement *arg1, NEDElement *arg2, NEDElement *arg3, NEDElement *arg4)
-{
-   FunctionNode *funcnode = (FunctionNode *)createNodeWithTag(NED_FUNCTION);
-   funcnode->setName(funcname);
-   if (arg1) funcnode->appendChild(arg1);
-   if (arg2) funcnode->appendChild(arg2);
-   if (arg3) funcnode->appendChild(arg3);
-   if (arg4) funcnode->appendChild(arg4);
-   return funcnode;
-}
-
-ExpressionNode *createExpression(NEDElement *expr)
-{
-   ExpressionNode *expression = (ExpressionNode *)createNodeWithTag(NED_EXPRESSION);
-   expression->appendChild(expr);
-   return expression;
-}
-
-IdentNode *createIdent(const char *param, const char *paramindex, const char *module, const char *moduleindex)
-{
-   IdentNode *par = (IdentNode *)createNodeWithTag(NED_IDENT);
-   par->setName(param);
-   // if (paramindex) par->setParamIndex(paramindex);
-   if (module) par->setModule(module);
-   if (moduleindex) par->setModuleIndex(moduleindex);
-   return par;
-}
-
-LiteralNode *createLiteral(int type, YYLTYPE valuepos, YYLTYPE textpos)
-{
-   LiteralNode *c = (LiteralNode *)createNodeWithTag(NED_LITERAL);
-   c->setType(type);
-   c->setValue(toString(valuepos));
-   c->setText(toString(textpos));
-   return c;
-}
-
-LiteralNode *createQuantity(const char *text)
-{
-   LiteralNode *c = (LiteralNode *)createNodeWithTag(NED_LITERAL);
-   c->setType(NED_CONST_UNIT);
-   if (text) c->setText(text);
-
-   double t = 0; //NEDStrToSimtime(text);  // FIXME...
-   if (t<0)
-   {
-       char msg[130];
-       sprintf(msg,"invalid constant '%.100s'",text);
-       np->error(msg, pos.li);
-   }
-   char buf[32];
-   sprintf(buf,"%g",t);
-   c->setValue(buf);
-
-   return c;
-}
-
-NEDElement *unaryMinus(NEDElement *node)
-{
-    // if not a constant, must appy unary minus operator
-    if (node->getTagCode()!=NED_LITERAL)
-        return createOperator("-", node);
-
-    LiteralNode *constNode = (LiteralNode *)node;
-
-    // only int and real constants can be negative, string, bool, etc cannot
-    if (constNode->getType()!=NED_CONST_INT && constNode->getType()!=NED_CONST_DOUBLE)
-    {
-       char msg[140];
-       sprintf(msg,"unary minus not accepted before '%.100s'",constNode->getValue());
-       np->error(msg, pos.li);
-       return node;
-    }
-
-    // prepend the constant with a '-'
-    char *buf = new char[strlen(constNode->getValue())+2];
-    buf[0] = '-';
-    strcpy(buf+1, constNode->getValue());
-    constNode->setValue(buf);
-    delete [] buf;
-
-    return node;
-}

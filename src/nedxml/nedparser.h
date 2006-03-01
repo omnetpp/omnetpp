@@ -23,6 +23,7 @@
 
 class NEDFileBuffer;
 class NEDParser;
+
 extern NEDParser *np;
 
 /* to EXPR_TYPE: */
@@ -79,6 +80,21 @@ class NEDParser
      * Default is false.
      */
     void setStoreSource(bool b) {storesrc = b;}
+
+    /**
+     * Returns the "parse expressions" flag; see setParseExpressions().
+     */
+    bool getParseExpressionsFlag() {return parseexpr;}
+
+    /**
+     * Returns the "store source code" flag; see setStoreSource().
+     */
+    bool getStoreSourceFlag() {return storesrc;}
+
+    /**
+     * May only be called during parsing. It returns the name of the source file being parsed.
+     */
+    const char *getFileName() {return filename;}
 
     /**
      * Parse the given file. Result can be obtained from getTree().

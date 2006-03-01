@@ -29,6 +29,8 @@
 #include "nedgrammar.h"
 
 
+NEDParser *np;
+
 //--------
 
 NEDParser::NEDParser()

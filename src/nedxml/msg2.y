@@ -63,23 +63,13 @@ int yylex (void);
 void yyrestart(FILE *);
 void yyerror (char *s);
 
-
 #include "nedparser.h"
 #include "nedfilebuffer.h"
 #include "nedelements.h"
 #include "nedutil.h"
 
-static YYLTYPE NULLPOS={0,0,0,0,0,0};
-
-static const char *sourcefilename;
-
-NEDParser *np;
-
 struct ParserState
 {
-    bool storeSourceCode;
-    bool parseExpressions; //FIXME currently unused; needed?
-
     /* tmp flags, used with msg fields */
     bool isAbstract;
     bool isReadonly;
@@ -144,13 +134,13 @@ definition
         | enum_decl
 
         | enum
-                { if (ps.storeSourceCode) ps.enump->setSourceCode(toString(@1)); }
+                { if (np->getStoreSourceFlag()) ps.enump->setSourceCode(toString(@1)); }
         | message
-                { if (ps.storeSourceCode) ps.messagep->setSourceCode(toString(@1)); }
+                { if (np->getStoreSourceFlag()) ps.messagep->setSourceCode(toString(@1)); }
         | class
-                { if (ps.storeSourceCode) ps.classp->setSourceCode(toString(@1)); }
+                { if (np->getStoreSourceFlag()) ps.classp->setSourceCode(toString(@1)); }
         | struct
-                { if (ps.storeSourceCode) ps.structp->setSourceCode(toString(@1)); }
+                { if (np->getStoreSourceFlag()) ps.structp->setSourceCode(toString(@1)); }
         ;
 
 cplusplus
@@ -536,8 +526,8 @@ int doParseMSG2 (NEDParser *p,MsgFileNode *nf,bool parseexpr, bool storesrc, con
 
     np = p;
     ps.msgfile = nf;
-    ps.parseExpressions = parseexpr;
-    ps.storeSourceCode = storesrc;
+    np->getParseExpressionsFlag() = parseexpr;
+    np->getStoreSourceFlag() = storesrc;
     sourcefilename = sourcefname;
 
     if (storesrc)

@@ -103,27 +103,17 @@
 #include <string.h>         /* YYVERBOSE needs it */
 #endif
 
-
 int yylex (void);
 void yyrestart(FILE *);
 void yyerror (const char *s);
-
 
 #include "nedparser.h"
 #include "nedfilebuffer.h"
 #include "nedelements.h"
 #include "nedutil.h"
 
-static YYLTYPE NULLPOS={0,0,0,0,0,0};
-
-static const char *sourcefilename;
-
-static NEDParser *np;
-
 struct ParserState
 {
-    bool parseExpressions;
-    bool storeSourceCode;
     bool inLoop;
     bool inNetwork;
 
@@ -246,13 +236,13 @@ definition
         : import
 
         | channeldefinition_old
-                { if (ps.storeSourceCode) storeComponentSourceCode(ps.channel, @1); }
+                { if (np->getStoreSourceFlag()) storeComponentSourceCode(ps.channel, @1); }
         | simpledefinition_old
-                { if (ps.storeSourceCode) storeComponentSourceCode(ps.module, @1); }
+                { if (np->getStoreSourceFlag()) storeComponentSourceCode(ps.module, @1); }
         | moduledefinition_old
-                { if (ps.storeSourceCode) storeComponentSourceCode(ps.module, @1); }
+                { if (np->getStoreSourceFlag()) storeComponentSourceCode(ps.module, @1); }
         | networkdefinition_old
-                { if (ps.storeSourceCode) storeComponentSourceCode(ps.module, @1); }
+                { if (np->getStoreSourceFlag()) storeComponentSourceCode(ps.module, @1); }
 
         | cplusplus
         | struct_decl
@@ -261,13 +251,13 @@ definition
         | enum_decl
 
         | enum
-                { if (ps.storeSourceCode) storeComponentSourceCode(ps.enump, @1); }
+                { if (np->getStoreSourceFlag()) storeComponentSourceCode(ps.enump, @1); }
         | message
-                { if (ps.storeSourceCode) storeComponentSourceCode(ps.messagep, @1); }
+                { if (np->getStoreSourceFlag()) storeComponentSourceCode(ps.messagep, @1); }
         | class
-                { if (ps.storeSourceCode) storeComponentSourceCode(ps.classp, @1); }
+                { if (np->getStoreSourceFlag()) storeComponentSourceCode(ps.classp, @1); }
         | struct
-                { if (ps.storeSourceCode) storeComponentSourceCode(ps.structp, @1); }
+                { if (np->getStoreSourceFlag()) storeComponentSourceCode(ps.structp, @1); }
         ;
 
 /*
@@ -1094,15 +1084,15 @@ expression
         :
           expr
                 {
-                  if (ps.parseExpressions) $$ = createExpression($1);
+                  if (np->getParseExpressionsFlag()) $$ = createExpression($1);
                 }
         | inputvalue
                 {
-                  if (ps.parseExpressions) $$ = createExpression($1);
+                  if (np->getParseExpressionsFlag()) $$ = createExpression($1);
                 }
         | xmldocvalue
                 {
-                  if (ps.parseExpressions) $$ = createExpression($1);
+                  if (np->getParseExpressionsFlag()) $$ = createExpression($1);
                 }
         ;
 
@@ -1112,20 +1102,20 @@ expression
 
 inputvalue
         : INPUT_ '(' expr ',' expr ')'
-                { if (ps.parseExpressions) $$ = createFunction("input", $3, $5); }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction("input", $3, $5); }
         | INPUT_ '(' expr ')'
-                { if (ps.parseExpressions) $$ = createFunction("input", $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction("input", $3); }
         | INPUT_ '(' ')'
-                { if (ps.parseExpressions) $$ = createFunction("input"); }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction("input"); }
         | INPUT_
-                { if (ps.parseExpressions) $$ = createFunction("input"); }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction("input"); }
         ;
 
 xmldocvalue
         : XMLDOC '(' stringliteral ',' stringliteral ')'
-                { if (ps.parseExpressions) $$ = createFunction("xmldoc", $3, $5); }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction("xmldoc", $3, $5); }
         | XMLDOC '(' stringliteral ')'
-                { if (ps.parseExpressions) $$ = createFunction("xmldoc", $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction("xmldoc", $3); }
         ;
 
 expr
@@ -1134,73 +1124,73 @@ expr
                 { $$ = $2; }
 
         | expr '+' expr
-                { if (ps.parseExpressions) $$ = createOperator("+", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("+", $1, $3); }
         | expr '-' expr
-                { if (ps.parseExpressions) $$ = createOperator("-", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("-", $1, $3); }
         | expr '*' expr
-                { if (ps.parseExpressions) $$ = createOperator("*", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("*", $1, $3); }
         | expr '/' expr
-                { if (ps.parseExpressions) $$ = createOperator("/", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("/", $1, $3); }
         | expr '%' expr
-                { if (ps.parseExpressions) $$ = createOperator("%", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("%", $1, $3); }
         | expr '^' expr
-                { if (ps.parseExpressions) $$ = createOperator("^", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("^", $1, $3); }
 
         | '-' expr
                 %prec UMIN
-                { if (ps.parseExpressions) $$ = unaryMinus($2); }
+                { if (np->getParseExpressionsFlag()) $$ = unaryMinus($2); }
 
         | expr EQ expr
-                { if (ps.parseExpressions) $$ = createOperator("==", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("==", $1, $3); }
         | expr NE expr
-                { if (ps.parseExpressions) $$ = createOperator("!=", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("!=", $1, $3); }
         | expr GT expr
-                { if (ps.parseExpressions) $$ = createOperator(">", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator(">", $1, $3); }
         | expr GE expr
-                { if (ps.parseExpressions) $$ = createOperator(">=", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator(">=", $1, $3); }
         | expr LS expr
-                { if (ps.parseExpressions) $$ = createOperator("<", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("<", $1, $3); }
         | expr LE expr
-                { if (ps.parseExpressions) $$ = createOperator("<=", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("<=", $1, $3); }
 
         | expr AND expr
-                { if (ps.parseExpressions) $$ = createOperator("&&", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("&&", $1, $3); }
         | expr OR expr
-                { if (ps.parseExpressions) $$ = createOperator("||", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("||", $1, $3); }
         | expr XOR expr
-                { if (ps.parseExpressions) $$ = createOperator("##", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("##", $1, $3); }
 
         | NOT expr
                 %prec UMIN
-                { if (ps.parseExpressions) $$ = createOperator("!", $2); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("!", $2); }
 
         | expr BIN_AND expr
-                { if (ps.parseExpressions) $$ = createOperator("&", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("&", $1, $3); }
         | expr BIN_OR expr
-                { if (ps.parseExpressions) $$ = createOperator("|", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("|", $1, $3); }
         | expr BIN_XOR expr
-                { if (ps.parseExpressions) $$ = createOperator("#", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("#", $1, $3); }
 
         | BIN_COMPL expr
                 %prec UMIN
-                { if (ps.parseExpressions) $$ = createOperator("~", $2); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("~", $2); }
         | expr SHIFT_LEFT expr
-                { if (ps.parseExpressions) $$ = createOperator("<<", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("<<", $1, $3); }
         | expr SHIFT_RIGHT expr
-                { if (ps.parseExpressions) $$ = createOperator(">>", $1, $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator(">>", $1, $3); }
         | expr '?' expr ':' expr
-                { if (ps.parseExpressions) $$ = createOperator("?:", $1, $3, $5); }
+                { if (np->getParseExpressionsFlag()) $$ = createOperator("?:", $1, $3, $5); }
 
         | NAME '(' ')'
-                { if (ps.parseExpressions) $$ = createFunction(toString(@1)); }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1)); }
         | NAME '(' expr ')'
-                { if (ps.parseExpressions) $$ = createFunction(toString(@1), $3); }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1), $3); }
         | NAME '(' expr ',' expr ')'
-                { if (ps.parseExpressions) $$ = createFunction(toString(@1), $3, $5); }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1), $3, $5); }
         | NAME '(' expr ',' expr ',' expr ')'
-                { if (ps.parseExpressions) $$ = createFunction(toString(@1), $3, $5, $7); }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1), $3, $5, $7); }
         | NAME '(' expr ',' expr ',' expr ',' expr ')'
-                { if (ps.parseExpressions) $$ = createFunction(toString(@1), $3, $5, $7, $9); }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1), $3, $5, $7, $9); }
          ;
 
 simple_expr
@@ -1213,38 +1203,38 @@ parameter_expr
         : NAME
                 {
                   // if there's no modifier, might be a loop variable too
-                  if (ps.parseExpressions) $$ = createIdent(toString(@1));
+                  if (np->getParseExpressionsFlag()) $$ = createIdent(toString(@1));
                 }
         | REF NAME
                 {
-                  if (ps.parseExpressions) $$ = createIdent(toString(@2));
+                  if (np->getParseExpressionsFlag()) $$ = createIdent(toString(@2));
                   NEDError(ps.params,"`ref' modifier no longer supported (add `function' "
                                      "modifier to destination parameter instead)");
                 }
         | REF ANCESTOR NAME
                 {
-                  if (ps.parseExpressions) $$ = createIdent(toString(@3));
+                  if (np->getParseExpressionsFlag()) $$ = createIdent(toString(@3));
                   NEDError(ps.params,"`ancestor' and `ref' modifiers no longer supported");
                 }
         | ANCESTOR REF NAME
                 {
-                  if (ps.parseExpressions) $$ = createIdent(toString(@3));
+                  if (np->getParseExpressionsFlag()) $$ = createIdent(toString(@3));
                   NEDError(ps.params,"`ancestor' and `ref' modifiers no longer supported");
                 }
         | ANCESTOR NAME
                 {
-                  if (ps.parseExpressions) $$ = createIdent(toString(@2));
+                  if (np->getParseExpressionsFlag()) $$ = createIdent(toString(@2));
                   NEDError(ps.params,"`ancestor' modifier no longer supported");
                 }
         ;
 
 special_expr
         : SUBMODINDEX
-                { if (ps.parseExpressions) $$ = createFunction("index"); }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction("index"); }
         | SUBMODINDEX '(' ')'
-                { if (ps.parseExpressions) $$ = createFunction("index"); }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction("index"); }
         | SIZEOF '(' NAME ')'
-                { if (ps.parseExpressions) $$ = createFunction("sizeof", createIdent(toString(@3))); }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction("sizeof", createIdent(toString(@3))); }
         ;
 
 literal
@@ -1255,23 +1245,23 @@ literal
 
 stringliteral
         : STRINGCONSTANT
-                { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_STRING, trimQuotes(@1), @1); }
+                { if (np->getParseExpressionsFlag()) $$ = createLiteral(NED_CONST_STRING, trimQuotes(@1), @1); }
         ;
 
 boolliteral
         : TRUE_
-                { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_BOOL, @1, @1); }
+                { if (np->getParseExpressionsFlag()) $$ = createLiteral(NED_CONST_BOOL, @1, @1); }
         | FALSE_
-                { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_BOOL, @1, @1); }
+                { if (np->getParseExpressionsFlag()) $$ = createLiteral(NED_CONST_BOOL, @1, @1); }
         ;
 
 numliteral
         : INTCONSTANT
-                { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_INT, @1, @1); }
+                { if (np->getParseExpressionsFlag()) $$ = createLiteral(NED_CONST_INT, @1, @1); }
         | REALCONSTANT
-                { if (ps.parseExpressions) $$ = createLiteral(NED_CONST_DOUBLE, @1, @1); }
+                { if (np->getParseExpressionsFlag()) $$ = createLiteral(NED_CONST_DOUBLE, @1, @1); }
         | quantity
-                { if (ps.parseExpressions) $$ = createQuantity(toString(@1)); }
+                { if (np->getParseExpressionsFlag()) $$ = createQuantity(toString(@1)); }
         ;
 
 quantity
@@ -1662,8 +1652,8 @@ int doParseNED (NEDParser *p,NedFileNode *nf,bool parseexpr, bool storesrc, cons
     // create parser state and NEDFileNode
     np = p;
     ps.nedfile = nf;
-    ps.parseExpressions = parseexpr;
-    ps.storeSourceCode = storesrc;
+    np->getParseExpressionsFlag() = parseexpr;
+    np->getStoreSourceFlag() = storesrc;
     sourcefilename = sourcefname;
 
     if (storesrc)
@@ -1877,7 +1867,7 @@ void addVector(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDEleme
 
 void addLikeParam(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr)
 {
-   if (ps.parseExpressions && !expr)
+   if (np->getParseExpressionsFlag() && !expr)
        elem->setAttribute(attrname, toString(trimAngleBrackets(exprpos)));
    else
        addExpression(elem, attrname, trimAngleBrackets(exprpos), expr);
@@ -1885,7 +1875,7 @@ void addLikeParam(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDEl
 
 void addExpression(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr)
 {
-   if (ps.parseExpressions) {
+   if (np->getParseExpressionsFlag()) {
        elem->appendChild(expr);
        ((ExpressionNode *)expr)->setTarget(attrname);
    } else {
