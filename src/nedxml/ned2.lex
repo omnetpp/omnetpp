@@ -37,10 +37,7 @@ S  [ \t\v\n\r\f]
 %{
 #include <string.h>
 
-#if defined(__BORLANDC__)
-# include <io.h>
-# pragma warn -rch  /*turn off tons of 'Unreachable code' warnings --VA */
-#elif defined(_MSC_VER)
+#if defined(_MSC_VER)
 # include <io.h>
 # define isatty _isatty
 #else
@@ -52,6 +49,11 @@ S  [ \t\v\n\r\f]
 
 extern YYSTYPE yylval;
 extern YYLTYPE yylloc;
+
+// wrap symbols to allow several .lex files coexist
+#define comment     msgcomment
+#define count       msgcount
+#define extendCount msgextendCount
 
 void comment(void);
 void count(void);
