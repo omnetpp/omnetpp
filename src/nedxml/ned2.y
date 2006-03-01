@@ -1518,6 +1518,9 @@ NEDElement *doParseNED2(NEDParser *p, const char *nedtext)
     pos.li = 1;
     prevpos = pos;
 
+    yyin = NULL;
+    yyout = stderr; // not used anyway
+
     struct yy_buffer_state *handle = yy_scan_string(nedtext);
     if (!handle)
         {NEDError(NULL, "unable to allocate work memory"); return false;}
