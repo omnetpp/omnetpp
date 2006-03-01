@@ -81,7 +81,6 @@ struct ParserState
 {
     void reset();
 
-    bool storeSourceCode;  // FIXME use np->getStoreSourceFlag() instead
     bool inTypes;
     bool inGroup;
     std::stack<NEDElement *> propertyscope; // top(): where to insert properties as we parse them
