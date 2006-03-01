@@ -21,9 +21,10 @@
 class NEDElement;
 class NEDParser;
 
-#define YYSTYPE   NEDElement*
+#ifdef YYLTYPE
+#error 'YYLTYPE defined before nedgrammar.h -- type clash?'
+#endif
 
-#ifndef YYLTYPE
 struct my_yyltype {
    int dummy;
    int first_line, first_column;
@@ -31,14 +32,14 @@ struct my_yyltype {
    char *text;
 };
 #define YYLTYPE  struct my_yyltype
-#else
-#error 'YYLTYPE defined before nedgrammar.h -- type clash?'
-#endif
+#define YYSTYPE  NEDElement*
 
 typedef struct {int li; int co;} LineColumn;
 extern LineColumn pos, prevpos;
 
 NEDElement *doParseNED2(NEDParser *p, const char *nedtext);
+NEDElement *doParseNED(NEDParser *p, const char *nedtext);
+NEDElement *doParseMSG(NEDParser *p, const char *nedtext);
 
 
 #endif

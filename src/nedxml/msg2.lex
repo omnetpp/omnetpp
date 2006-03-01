@@ -178,7 +178,7 @@ void comment(void)
  * - keeps a record of the complete current line in `textbuf[]'
  * - yytext[] is the current token passed by (f)lex
  */
-void _count(int updateprevpos)
+static void _count(int updateprevpos)
 {
     static int textbuflen;
     int i;

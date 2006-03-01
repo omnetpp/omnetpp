@@ -41,13 +41,16 @@ S  [ \t\v\n\r\f]
 #include "nedgrammar.h"
 #include "ned.tab.h"
 
+#define yylloc nedyylloc
 extern YYSTYPE yylval;
 extern YYLTYPE yylloc;
 
+extern bool use_chanattrname_token;
+
 // wrap symbols to allow several .lex files coexist
-#define comment     msgcomment
-#define count       msgcount
-#define extendCount msgextendCount
+#define comment     nedcomment
+#define count       nedcount
+#define extendCount nedextendCount
 
 void comment(void);
 void count(void);
@@ -221,7 +224,7 @@ void comment(void)
  * - keeps a record of the complete current line in `textbuf[]'
  * - yytext[] is the current token passed by (f)lex
  */
-void _count(int updateprevpos)
+static void _count(int updateprevpos)
 {
     static int textbuflen;
     int i;

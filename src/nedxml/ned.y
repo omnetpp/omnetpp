@@ -103,8 +103,19 @@
 #include <string.h>         /* YYVERBOSE needs it */
 #endif
 
-int yylex (void);
+#define yylloc nedyylloc
+#define yyin nedyyin
+#define yyout nedyyout
+#define yyrestart nedyyrestart
+#define yy_scan_string nedyy_scan_string
+#define yy_delete_buffer nedyy_delete_buffer
+extern FILE *yyin;
+extern FILE *yyout;
+struct yy_buffer_state;
+struct yy_buffer_state *yy_scan_string(const char *str);
+void yy_delete_buffer(struct yy_buffer_state *);
 void yyrestart(FILE *);
+int yylex();
 void yyerror (const char *s);
 
 #include "nedparser.h"
@@ -179,6 +190,8 @@ static void resetParserState()
     static NEDParserState cleanps;
     ps = cleanps;
 }
+
+ChannelSpecNode *createChannelSpec(NEDElement *conn);
 
 %}
 
@@ -1597,24 +1610,37 @@ comma_or_semicolon : ',' | ';' ;
 // general bison/flex stuff:
 //
 
-int doParseNED (NEDParser *p,NedFileNode *nf,bool parseexpr, bool storesrc, const char *sourcefname)
+NEDElement *doParseNED(NEDParser *p, const char *nedtext)
 {
 #if YYDEBUG != 0      /* #if added --VA */
     yydebug = YYDEBUGGING_ON;
 #endif
+
+    // reset the lexer
     pos.co = 0;
     pos.li = 1;
     prevpos = pos;
 
-    if (yyin)
-        yyrestart( yyin );
+    yyin = NULL;
+    yyout = stderr; // not used anyway
+
+    // alloc buffer
+    struct yy_buffer_state *handle = yy_scan_string(nedtext);
+    if (!handle)
+        {NEDError(NULL, "unable to allocate work memory"); return false;}
 
     // create parser state and NEDFileNode
     np = p;
     resetParserState();
-    ps.nedfile = nf;
+    ps.nedfile = new NedFileNode();
 
-    if (storesrc)
+    // store file name with slashes always, even on Windows -- neddoc relies on that
+    ps.nedfile->setFilename(slashifyFilename(np->getFileName()).c_str());
+
+    // store file comment
+    //FIXME ps.nedfile->setBannerComment(nedsource->getFileComment());
+
+    if (np->getStoreSourceFlag())
         storeSourceCode(ps.nedfile, np->nedsource->getFullTextPos());
 
     // parse
@@ -1626,14 +1652,16 @@ int doParseNED (NEDParser *p,NedFileNode *nf,bool parseexpr, bool storesrc, cons
     catch (NEDException *e)
     {
         INTERNAL_ERROR1(NULL, "error during parsing: %s", e->errorMessage());
+        yy_delete_buffer(handle);
         delete e;
         return 0;
     }
 
-    return ret;
+    yy_delete_buffer(handle);
+    return ps.nedfile;
 }
 
-void yyerror (const char *s)
+void yyerror(const char *s)
 {
     // chop newline
     char buf[250];
@@ -1642,5 +1670,14 @@ void yyerror (const char *s)
         buf[strlen(buf)-1] = '\0';
 
     np->error(buf, pos.li);
+}
+
+// this function depends too much on ps, cannot be put into nedyylib.cc
+ChannelSpecNode *createChannelSpec(NEDElement *conn)
+{
+   ChannelSpecNode *chanspec = (ChannelSpecNode *)createNodeWithTag(NED_CHANNEL_SPEC, ps.conn);
+   ps.params = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, chanspec);
+   ps.params->setIsImplicit(true);
+   return chanspec;
 }
 

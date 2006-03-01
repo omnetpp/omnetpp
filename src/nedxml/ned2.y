@@ -81,7 +81,6 @@ void yy_delete_buffer(struct yy_buffer_state *);
 void yyrestart(FILE *);
 int yylex();
 void yyerror (const char *s);
-void resetlexer();
 
 #include "nedparser.h"
 #include "nedfilebuffer.h"
