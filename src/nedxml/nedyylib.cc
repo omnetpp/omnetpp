@@ -16,7 +16,7 @@
 
 #include "nedyylib.h"
 #include "nedfilebuffer.h"
-#include "nedgrammar.h"
+#include "nedyydefs.h"
 
 // this global var is shared by all lexers
 LineColumn pos, prevpos;

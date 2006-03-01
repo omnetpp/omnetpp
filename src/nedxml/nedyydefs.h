@@ -24,7 +24,7 @@ class NEDElement;
 class NEDParser;
 
 #ifdef YYLTYPE
-#error 'YYLTYPE defined before nedgrammar.h -- type clash?'
+#error 'YYLTYPE defined before nedyydefs.h -- type clash?'
 #endif
 
 struct my_yyltype {

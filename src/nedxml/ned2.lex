@@ -47,7 +47,7 @@ S  [ \t\v\n\r\f]
 # include <unistd.h>  // isatty
 #endif
 
-#include "nedgrammar.h"
+#include "nedyydefs.h"
 #include "ned2.tab.h"
 
 #define yylloc ned2yylloc

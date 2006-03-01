@@ -19,7 +19,7 @@
 #include <stdio.h>
 
 #include "nedelement.h"
-#include "nedgrammar.h" // FIXME to be removed from here
+#include "nedyydefs.h" // FIXME to be removed from here
 
 class NEDFileBuffer;
 class NEDParser;

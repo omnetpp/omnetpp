@@ -639,7 +639,7 @@ char *yytext;
 # include <unistd.h>
 #endif
 
-#include "nedgrammar.h"
+#include "nedyydefs.h"
 #include "ned.tab.h"
 
 extern YYSTYPE yylval;

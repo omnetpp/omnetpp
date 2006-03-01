@@ -48,7 +48,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "nedgrammar.h"
+#include "nedyydefs.h"
 #include "nederror.h"
 
 #define YYDEBUG 1           /* allow debugging */

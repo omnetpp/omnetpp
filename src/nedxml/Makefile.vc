@@ -132,23 +132,19 @@ cppmsggenerator.obj: cppmsggenerator.cc \
   cppexprgenerator.h \
   nedcompiler.h
 lex.msg2yy.obj: lex.msg2yy.cc \
-  ./unistd.h \
-  nedgrammar.h \
+  nedyydefs.h \
   msg2.tab.h
 lex.ned2yy.obj: lex.ned2yy.cc \
-  ./unistd.h \
-  nedgrammar.h \
+  nedyydefs.h \
   ned2.tab.h
 lex.nedyy.obj: lex.nedyy.cc \
-  ./unistd.h \
-  nedgrammar.h \
+  nedyydefs.h \
   ned.tab.h
 lex.yy.obj: lex.yy.cc \
-  ./unistd.h \
-  nedgrammar.h \
+  nedyydefs.h \
   ned.tab.h
 msg2.tab.obj: msg2.tab.cc \
-  nedgrammar.h \
+  nedyydefs.h \
   nederror.h \
   nedparser.h \
   nedfilebuffer.h \
@@ -157,7 +153,7 @@ msg2.tab.obj: msg2.tab.cc \
   nedyylib.h \
   nedelement.h
 ned.tab.obj: ned.tab.cc \
-  nedgrammar.h \
+  nedyydefs.h \
   nederror.h \
   nedparser.h \
   nedfilebuffer.h \
@@ -166,7 +162,7 @@ ned.tab.obj: ned.tab.cc \
   nedyylib.h \
   nedelement.h
 ned2.tab.obj: ned2.tab.cc \
-  nedgrammar.h \
+  nedyydefs.h \
   nederror.h \
   nedparser.h \
   nedfilebuffer.h \
@@ -189,7 +185,7 @@ nedcompiler.obj: nedcompiler.cc \
   nedsemanticvalidator.h \
   nedelement.h \
   nedelements.h \
-  nedgrammar.h \
+  nedyydefs.h \
   neddtdvalidatorbase.h \
   nedvalidator.h
 neddtdvalidator.obj: neddtdvalidator.cc \
@@ -219,7 +215,7 @@ nedfilebuffer.obj: nedfilebuffer.cc \
   nedfilebuffer.h \
   nedparser.h \
   nedelement.h \
-  nedgrammar.h
+  nedyydefs.h
 nedgenerator.obj: nedgenerator.cc \
   nedgenerator.h \
   nederror.h \
@@ -230,7 +226,7 @@ nedparser.obj: nedparser.cc \
   nedfilebuffer.h \
   nedelements.h \
   nederror.h \
-  nedgrammar.h \
+  nedyydefs.h \
   nedelement.h
 nedsaxhandler.obj: nedsaxhandler.cc \
   nedsaxhandler.h \
@@ -262,7 +258,7 @@ nedxmlparser.obj: nedxmlparser.cc \
 nedyylib.obj: nedyylib.cc \
   nedyylib.h \
   nedfilebuffer.h \
-  nedgrammar.h \
+  nedyydefs.h \
   nedelements.h \
   nedparser.h \
   nedelement.h
@@ -285,7 +281,7 @@ tmp_nedtool.obj: tmp_nedtool.cc \
   xmlgenerator.h \
   ../utils/ver.h \
   nedelement.h \
-  nedgrammar.h \
+  nedyydefs.h \
   nedelements.h \
   neddtdvalidatorbase.h \
   nedvalidator.h

@@ -38,7 +38,7 @@ S  [ \t\v\n\r\f]
 # include <unistd.h>
 #endif
 
-#include "nedgrammar.h"
+#include "nedyydefs.h"
 #include "ned.tab.h"
 
 #define yylloc nedyylloc

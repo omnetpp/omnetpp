@@ -18,7 +18,7 @@
 
 #include <string>
 #include "nedelements.h"
-#include "nedgrammar.h"
+#include "nedyydefs.h"
 #include "nedparser.h"
 
 
