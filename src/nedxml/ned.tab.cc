@@ -716,21 +716,21 @@ static const unsigned short int yyrline[] =
      469,   473,   474,   478,   485,   494,   495,   499,   506,   518,
      519,   524,   523,   534,   535,   539,   540,   545,   544,   555,
      554,   566,   565,   577,   576,   591,   600,   601,   605,   606,
-     611,   610,   619,   618,   631,   632,   636,   637,   641,   653,
-     654,   659,   658,   667,   666,   678,   679,   683,   684,   688,
-     695,   706,   713,   720,   721,   726,   725,   735,   734,   746,
-     747,   751,   752,   756,   757,   762,   761,   797,   798,   802,
-     812,   830,   834,   843,   847,   848,   852,   857,   862,   868,
-     877,   878,   882,   889,   898,   903,   907,   915,   923,   930,
-     941,   942,   946,   951,   958,   963,   967,   975,   980,   984,
-     993,   999,  1006,  1019,  1025,  1038,  1049,  1055,  1059,  1063,
-    1074,  1076,  1078,  1080,  1085,  1087,  1092,  1093,  1096,  1098,
-    1100,  1102,  1104,  1106,  1109,  1113,  1115,  1117,  1119,  1121,
-    1123,  1126,  1128,  1130,  1133,  1137,  1139,  1141,  1144,  1147,
-    1149,  1151,  1154,  1156,  1158,  1160,  1162,  1167,  1168,  1169,
-    1173,  1178,  1184,  1189,  1194,  1202,  1204,  1206,  1211,  1212,
-    1213,  1217,  1222,  1224,  1229,  1231,  1233,  1238,  1239,  1240,
-    1241,  1244,  1244,  1246,  1246
+     611,   610,   620,   619,   633,   634,   638,   639,   643,   655,
+     656,   661,   660,   670,   669,   682,   683,   687,   688,   692,
+     699,   710,   717,   724,   725,   730,   729,   739,   738,   750,
+     751,   755,   756,   760,   761,   766,   765,   801,   802,   806,
+     816,   834,   838,   847,   851,   852,   856,   861,   866,   872,
+     881,   882,   886,   893,   902,   907,   911,   919,   927,   934,
+     945,   946,   950,   955,   962,   967,   971,   979,   984,   988,
+     997,  1003,  1010,  1023,  1029,  1042,  1053,  1059,  1063,  1067,
+    1078,  1080,  1082,  1084,  1089,  1091,  1096,  1097,  1100,  1102,
+    1104,  1106,  1108,  1110,  1113,  1117,  1119,  1121,  1123,  1125,
+    1127,  1130,  1132,  1134,  1137,  1141,  1143,  1145,  1148,  1151,
+    1153,  1155,  1158,  1160,  1162,  1164,  1166,  1171,  1172,  1173,
+    1177,  1182,  1188,  1193,  1198,  1206,  1208,  1210,  1215,  1216,
+    1217,  1221,  1226,  1228,  1233,  1235,  1237,  1242,  1243,  1244,
+    1245,  1248,  1248,  1250,  1250
 };
 #endif
 
@@ -2240,20 +2240,22 @@ yyreduce:
   case 90:
 #line 611 "ned.y"
     {
+                  // FIXME check if already exists!!! (multiple blocks must be merged)
                   ps.substparams = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.inNetwork ? (NEDElement *)ps.module : (NEDElement *)ps.submod);
                   setComments(ps.substparams,(yylsp[-1]),(yylsp[0]));
                 ;}
     break;
 
   case 91:
-#line 616 "ned.y"
+#line 617 "ned.y"
     {
                 ;}
     break;
 
   case 92:
-#line 619 "ned.y"
+#line 620 "ned.y"
     {
+                  // FIXME make conditional paramgroup!!!
                   ps.substparams = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.inNetwork ? (NEDElement *)ps.module : (NEDElement *)ps.submod);
                   addExpression(ps.substparams, "condition",(yylsp[-1]),(yyvsp[-1]));
                   setComments(ps.substparams,(yylsp[-3]),(yylsp[0]));
@@ -2261,13 +2263,13 @@ yyreduce:
     break;
 
   case 93:
-#line 625 "ned.y"
+#line 627 "ned.y"
     {
                 ;}
     break;
 
   case 98:
-#line 642 "ned.y"
+#line 644 "ned.y"
     {
                   ps.substparam = addParameter(ps.substparams,(yylsp[-2]));
                   addExpression(ps.substparam, "value",(yylsp[0]),(yyvsp[0]));
@@ -2276,22 +2278,24 @@ yyreduce:
     break;
 
   case 101:
-#line 659 "ned.y"
+#line 661 "ned.y"
     {
+                  // FIXME check if already exists!!! (multiple blocks must be merged)
                   ps.gatesizes = (GatesNode *)createNodeWithTag(NED_GATES, ps.submod );
                   setComments(ps.gatesizes,(yylsp[-1]),(yylsp[0]));
                 ;}
     break;
 
   case 102:
-#line 664 "ned.y"
+#line 667 "ned.y"
     {
                 ;}
     break;
 
   case 103:
-#line 667 "ned.y"
+#line 670 "ned.y"
     {
+                  // FIXME make conditional gategroup!!!
                   ps.gatesizes = (GatesNode *)createNodeWithTag(NED_GATES, ps.submod);
                   addExpression(ps.gatesizes, "condition",(yylsp[-1]),(yyvsp[-1]));
                   setComments(ps.gatesizes,(yylsp[-3]),(yylsp[0]));
@@ -2299,13 +2303,13 @@ yyreduce:
     break;
 
   case 104:
-#line 673 "ned.y"
+#line 677 "ned.y"
     {
                 ;}
     break;
 
   case 109:
-#line 689 "ned.y"
+#line 693 "ned.y"
     {
                   ps.gatesize = addGate(ps.gatesizes,(yylsp[-1]));
                   addVector(ps.gatesize, "vector-size",(yylsp[0]),(yyvsp[0]));
@@ -2315,7 +2319,7 @@ yyreduce:
     break;
 
   case 110:
-#line 696 "ned.y"
+#line 700 "ned.y"
     {
                   ps.gatesize = addGate(ps.gatesizes,(yylsp[0]));
                   setComments(ps.gatesize,(yylsp[0]));
@@ -2323,7 +2327,7 @@ yyreduce:
     break;
 
   case 111:
-#line 707 "ned.y"
+#line 711 "ned.y"
     {
                   ps.property = addComponentProperty(ps.submod, "display");
                   ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
@@ -2333,7 +2337,7 @@ yyreduce:
     break;
 
   case 115:
-#line 726 "ned.y"
+#line 730 "ned.y"
     {
                   ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.module );
                   ps.conns->setAllowUnconnected(true);
@@ -2342,13 +2346,13 @@ yyreduce:
     break;
 
   case 116:
-#line 732 "ned.y"
+#line 736 "ned.y"
     {
                 ;}
     break;
 
   case 117:
-#line 735 "ned.y"
+#line 739 "ned.y"
     {
                   ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.module );
                   ps.conns->setAllowUnconnected(false);
@@ -2357,13 +2361,13 @@ yyreduce:
     break;
 
   case 118:
-#line 741 "ned.y"
+#line 745 "ned.y"
     {
                 ;}
     break;
 
   case 125:
-#line 762 "ned.y"
+#line 766 "ned.y"
     {
                   ps.conngroup = (ConnectionGroupNode *)createNodeWithTag(NED_CONNECTION_GROUP, ps.conns);
                   ps.where = (WhereNode *)createNodeWithTag(NED_WHERE, ps.conngroup);
@@ -2372,7 +2376,7 @@ yyreduce:
     break;
 
   case 126:
-#line 768 "ned.y"
+#line 772 "ned.y"
     {
                   ps.inLoop=0;
                   setComments(ps.where,(yylsp[-6]),(yylsp[-3]));
@@ -2402,7 +2406,7 @@ yyreduce:
     break;
 
   case 129:
-#line 803 "ned.y"
+#line 807 "ned.y"
     {
                   ps.loop = addLoop(ps.where,(yylsp[-4]));
                   addExpression(ps.loop, "from-value",(yylsp[-2]),(yyvsp[-2]));
@@ -2412,7 +2416,7 @@ yyreduce:
     break;
 
   case 130:
-#line 813 "ned.y"
+#line 817 "ned.y"
     {
                   if (!ps.inLoop)
                   {
@@ -2433,7 +2437,7 @@ yyreduce:
     break;
 
   case 132:
-#line 835 "ned.y"
+#line 839 "ned.y"
     {
                   if (!ps.chanspec)
                       ps.chanspec = createChannelSpec(ps.conn);
@@ -2445,7 +2449,7 @@ yyreduce:
     break;
 
   case 136:
-#line 853 "ned.y"
+#line 857 "ned.y"
     {
                   ps.conn->setArrowDirection(NED_ARROWDIR_L2R);
                   setComments(ps.conn,(yylsp[-5]),(yylsp[-1]));
@@ -2453,7 +2457,7 @@ yyreduce:
     break;
 
   case 137:
-#line 858 "ned.y"
+#line 862 "ned.y"
     {
                   ps.conn->setArrowDirection(NED_ARROWDIR_L2R);
                   setComments(ps.conn,(yylsp[-7]),(yylsp[-1]));
@@ -2461,7 +2465,7 @@ yyreduce:
     break;
 
   case 138:
-#line 863 "ned.y"
+#line 867 "ned.y"
     {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_R2L);
@@ -2470,7 +2474,7 @@ yyreduce:
     break;
 
   case 139:
-#line 869 "ned.y"
+#line 873 "ned.y"
     {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_R2L);
@@ -2479,7 +2483,7 @@ yyreduce:
     break;
 
   case 142:
-#line 883 "ned.y"
+#line 887 "ned.y"
     {
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule( toString((yylsp[-1])) );
@@ -2489,7 +2493,7 @@ yyreduce:
     break;
 
   case 143:
-#line 890 "ned.y"
+#line 894 "ned.y"
     {
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule( toString((yylsp[0])) );
@@ -2498,7 +2502,7 @@ yyreduce:
     break;
 
   case 144:
-#line 899 "ned.y"
+#line 903 "ned.y"
     {
                   ps.conn->setSrcGate( toString( (yylsp[-1])) );
                   addVector(ps.conn, "src-gate-index",(yylsp[0]),(yyvsp[0]));
@@ -2506,14 +2510,14 @@ yyreduce:
     break;
 
   case 145:
-#line 904 "ned.y"
+#line 908 "ned.y"
     {
                   ps.conn->setSrcGate( toString( (yylsp[0])) );
                 ;}
     break;
 
   case 146:
-#line 908 "ned.y"
+#line 912 "ned.y"
     {
                   ps.conn->setSrcGate( toString( (yylsp[-1])) );
                   ps.conn->setSrcGatePlusplus(true);
@@ -2521,7 +2525,7 @@ yyreduce:
     break;
 
   case 147:
-#line 916 "ned.y"
+#line 920 "ned.y"
     {
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
@@ -2532,7 +2536,7 @@ yyreduce:
     break;
 
   case 148:
-#line 924 "ned.y"
+#line 928 "ned.y"
     {
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
@@ -2542,7 +2546,7 @@ yyreduce:
     break;
 
   case 149:
-#line 931 "ned.y"
+#line 935 "ned.y"
     {
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
@@ -2553,7 +2557,7 @@ yyreduce:
     break;
 
   case 152:
-#line 947 "ned.y"
+#line 951 "ned.y"
     {
                   ps.conn->setDestModule( toString((yylsp[-1])) );
                   addVector(ps.conn, "dest-module-index",(yylsp[0]),(yyvsp[0]));
@@ -2561,14 +2565,14 @@ yyreduce:
     break;
 
   case 153:
-#line 952 "ned.y"
+#line 956 "ned.y"
     {
                   ps.conn->setDestModule( toString((yylsp[0])) );
                 ;}
     break;
 
   case 154:
-#line 959 "ned.y"
+#line 963 "ned.y"
     {
                   ps.conn->setDestGate( toString( (yylsp[-1])) );
                   addVector(ps.conn, "dest-gate-index",(yylsp[0]),(yyvsp[0]));
@@ -2576,14 +2580,14 @@ yyreduce:
     break;
 
   case 155:
-#line 964 "ned.y"
+#line 968 "ned.y"
     {
                   ps.conn->setDestGate( toString( (yylsp[0])) );
                 ;}
     break;
 
   case 156:
-#line 968 "ned.y"
+#line 972 "ned.y"
     {
                   ps.conn->setDestGate( toString( (yylsp[-1])) );
                   ps.conn->setDestGatePlusplus(true);
@@ -2591,7 +2595,7 @@ yyreduce:
     break;
 
   case 157:
-#line 976 "ned.y"
+#line 980 "ned.y"
     {
                   ps.conn->setDestGate( toString( (yylsp[-1])) );
                   addVector(ps.conn, "dest-gate-index",(yylsp[0]),(yyvsp[0]));
@@ -2599,14 +2603,14 @@ yyreduce:
     break;
 
   case 158:
-#line 981 "ned.y"
+#line 985 "ned.y"
     {
                   ps.conn->setDestGate( toString( (yylsp[0])) );
                 ;}
     break;
 
   case 159:
-#line 985 "ned.y"
+#line 989 "ned.y"
     {
                   ps.conn->setDestGate( toString( (yylsp[-1])) );
                   ps.conn->setDestGatePlusplus(true);
@@ -2614,7 +2618,7 @@ yyreduce:
     break;
 
   case 160:
-#line 994 "ned.y"
+#line 998 "ned.y"
     {
                   if (!ps.chanspec)
                       ps.chanspec = createChannelSpec(ps.conn);
@@ -2623,7 +2627,7 @@ yyreduce:
     break;
 
   case 161:
-#line 1000 "ned.y"
+#line 1004 "ned.y"
     {
                   if (!ps.chanspec)
                       ps.chanspec = createChannelSpec(ps.conn);
@@ -2633,7 +2637,7 @@ yyreduce:
     break;
 
   case 162:
-#line 1007 "ned.y"
+#line 1011 "ned.y"
     {
                   if (!ps.chanspec)
                       ps.chanspec = createChannelSpec(ps.conn);
@@ -2643,7 +2647,7 @@ yyreduce:
     break;
 
   case 164:
-#line 1026 "ned.y"
+#line 1030 "ned.y"
     {
                   ps.module = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.nedfile );
                   ((CompoundModuleNode *)ps.module)->setName(toString((yylsp[-3])));
@@ -2656,7 +2660,7 @@ yyreduce:
     break;
 
   case 165:
-#line 1039 "ned.y"
+#line 1043 "ned.y"
     {
                   //setTrailingComment(ps.module,@1);
                   ps.inNetwork=0;
@@ -2664,294 +2668,294 @@ yyreduce:
     break;
 
   case 166:
-#line 1050 "ned.y"
+#line 1054 "ned.y"
     { (yyval) = (yyvsp[-1]); ;}
     break;
 
   case 167:
-#line 1056 "ned.y"
-    {
-                  if (np->getParseExpressionsFlag()) (yyval) = createExpression((yyvsp[0]));
-                ;}
-    break;
-
-  case 168:
 #line 1060 "ned.y"
     {
                   if (np->getParseExpressionsFlag()) (yyval) = createExpression((yyvsp[0]));
                 ;}
     break;
 
-  case 169:
+  case 168:
 #line 1064 "ned.y"
     {
                   if (np->getParseExpressionsFlag()) (yyval) = createExpression((yyvsp[0]));
                 ;}
     break;
 
+  case 169:
+#line 1068 "ned.y"
+    {
+                  if (np->getParseExpressionsFlag()) (yyval) = createExpression((yyvsp[0]));
+                ;}
+    break;
+
   case 170:
-#line 1075 "ned.y"
+#line 1079 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createFunction("input", (yyvsp[-3]), (yyvsp[-1])); ;}
     break;
 
   case 171:
-#line 1077 "ned.y"
+#line 1081 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createFunction("input", (yyvsp[-1])); ;}
     break;
 
   case 172:
-#line 1079 "ned.y"
+#line 1083 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createFunction("input"); ;}
     break;
 
   case 173:
-#line 1081 "ned.y"
+#line 1085 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createFunction("input"); ;}
     break;
 
   case 174:
-#line 1086 "ned.y"
+#line 1090 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createFunction("xmldoc", (yyvsp[-3]), (yyvsp[-1])); ;}
     break;
 
   case 175:
-#line 1088 "ned.y"
+#line 1092 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createFunction("xmldoc", (yyvsp[-1])); ;}
     break;
 
   case 177:
-#line 1094 "ned.y"
+#line 1098 "ned.y"
     { (yyval) = (yyvsp[-1]); ;}
     break;
 
   case 178:
-#line 1097 "ned.y"
+#line 1101 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createOperator("+", (yyvsp[-2]), (yyvsp[0])); ;}
     break;
 
   case 179:
-#line 1099 "ned.y"
+#line 1103 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createOperator("-", (yyvsp[-2]), (yyvsp[0])); ;}
     break;
 
   case 180:
-#line 1101 "ned.y"
+#line 1105 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createOperator("*", (yyvsp[-2]), (yyvsp[0])); ;}
     break;
 
   case 181:
-#line 1103 "ned.y"
+#line 1107 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createOperator("/", (yyvsp[-2]), (yyvsp[0])); ;}
     break;
 
   case 182:
-#line 1105 "ned.y"
+#line 1109 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createOperator("%", (yyvsp[-2]), (yyvsp[0])); ;}
     break;
 
   case 183:
-#line 1107 "ned.y"
+#line 1111 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createOperator("^", (yyvsp[-2]), (yyvsp[0])); ;}
     break;
 
   case 184:
-#line 1111 "ned.y"
+#line 1115 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = unaryMinus((yyvsp[0])); ;}
     break;
 
   case 185:
-#line 1114 "ned.y"
+#line 1118 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createOperator("==", (yyvsp[-2]), (yyvsp[0])); ;}
     break;
 
   case 186:
-#line 1116 "ned.y"
+#line 1120 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createOperator("!=", (yyvsp[-2]), (yyvsp[0])); ;}
     break;
 
   case 187:
-#line 1118 "ned.y"
+#line 1122 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createOperator(">", (yyvsp[-2]), (yyvsp[0])); ;}
     break;
 
   case 188:
-#line 1120 "ned.y"
+#line 1124 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createOperator(">=", (yyvsp[-2]), (yyvsp[0])); ;}
     break;
 
   case 189:
-#line 1122 "ned.y"
+#line 1126 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createOperator("<", (yyvsp[-2]), (yyvsp[0])); ;}
     break;
 
   case 190:
-#line 1124 "ned.y"
+#line 1128 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createOperator("<=", (yyvsp[-2]), (yyvsp[0])); ;}
     break;
 
   case 191:
-#line 1127 "ned.y"
+#line 1131 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createOperator("&&", (yyvsp[-2]), (yyvsp[0])); ;}
     break;
 
   case 192:
-#line 1129 "ned.y"
+#line 1133 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createOperator("||", (yyvsp[-2]), (yyvsp[0])); ;}
     break;
 
   case 193:
-#line 1131 "ned.y"
+#line 1135 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createOperator("##", (yyvsp[-2]), (yyvsp[0])); ;}
     break;
 
   case 194:
-#line 1135 "ned.y"
+#line 1139 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createOperator("!", (yyvsp[0])); ;}
     break;
 
   case 195:
-#line 1138 "ned.y"
+#line 1142 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createOperator("&", (yyvsp[-2]), (yyvsp[0])); ;}
     break;
 
   case 196:
-#line 1140 "ned.y"
+#line 1144 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createOperator("|", (yyvsp[-2]), (yyvsp[0])); ;}
     break;
 
   case 197:
-#line 1142 "ned.y"
+#line 1146 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createOperator("#", (yyvsp[-2]), (yyvsp[0])); ;}
     break;
 
   case 198:
-#line 1146 "ned.y"
+#line 1150 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createOperator("~", (yyvsp[0])); ;}
     break;
 
   case 199:
-#line 1148 "ned.y"
+#line 1152 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createOperator("<<", (yyvsp[-2]), (yyvsp[0])); ;}
     break;
 
   case 200:
-#line 1150 "ned.y"
+#line 1154 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createOperator(">>", (yyvsp[-2]), (yyvsp[0])); ;}
     break;
 
   case 201:
-#line 1152 "ned.y"
+#line 1156 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createOperator("?:", (yyvsp[-4]), (yyvsp[-2]), (yyvsp[0])); ;}
     break;
 
   case 202:
-#line 1155 "ned.y"
+#line 1159 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createFunction(toString((yylsp[-2]))); ;}
     break;
 
   case 203:
-#line 1157 "ned.y"
+#line 1161 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createFunction(toString((yylsp[-3])), (yyvsp[-1])); ;}
     break;
 
   case 204:
-#line 1159 "ned.y"
+#line 1163 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createFunction(toString((yylsp[-5])), (yyvsp[-3]), (yyvsp[-1])); ;}
     break;
 
   case 205:
-#line 1161 "ned.y"
+#line 1165 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createFunction(toString((yylsp[-7])), (yyvsp[-5]), (yyvsp[-3]), (yyvsp[-1])); ;}
     break;
 
   case 206:
-#line 1163 "ned.y"
+#line 1167 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createFunction(toString((yylsp[-9])), (yyvsp[-7]), (yyvsp[-5]), (yyvsp[-3]), (yyvsp[-1])); ;}
     break;
 
   case 210:
-#line 1174 "ned.y"
+#line 1178 "ned.y"
     {
                   // if there's no modifier, might be a loop variable too
-                  if (np->getParseExpressionsFlag()) (yyval) = createIdent(toString((yylsp[0])));
+                  if (np->getParseExpressionsFlag()) (yyval) = createIdent((yylsp[0]));
                 ;}
     break;
 
   case 211:
-#line 1179 "ned.y"
+#line 1183 "ned.y"
     {
-                  if (np->getParseExpressionsFlag()) (yyval) = createIdent(toString((yylsp[0])));
+                  if (np->getParseExpressionsFlag()) (yyval) = createIdent((yylsp[0]));
                   NEDError(ps.params,"`ref' modifier no longer supported (add `function' "
                                      "modifier to destination parameter instead)");
                 ;}
     break;
 
   case 212:
-#line 1185 "ned.y"
+#line 1189 "ned.y"
     {
-                  if (np->getParseExpressionsFlag()) (yyval) = createIdent(toString((yylsp[0])));
+                  if (np->getParseExpressionsFlag()) (yyval) = createIdent((yylsp[0]));
                   NEDError(ps.params,"`ancestor' and `ref' modifiers no longer supported");
                 ;}
     break;
 
   case 213:
-#line 1190 "ned.y"
+#line 1194 "ned.y"
     {
-                  if (np->getParseExpressionsFlag()) (yyval) = createIdent(toString((yylsp[0])));
+                  if (np->getParseExpressionsFlag()) (yyval) = createIdent((yylsp[0]));
                   NEDError(ps.params,"`ancestor' and `ref' modifiers no longer supported");
                 ;}
     break;
 
   case 214:
-#line 1195 "ned.y"
+#line 1199 "ned.y"
     {
-                  if (np->getParseExpressionsFlag()) (yyval) = createIdent(toString((yylsp[0])));
+                  if (np->getParseExpressionsFlag()) (yyval) = createIdent((yylsp[0]));
                   NEDError(ps.params,"`ancestor' modifier no longer supported");
                 ;}
     break;
 
   case 215:
-#line 1203 "ned.y"
+#line 1207 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createFunction("index"); ;}
     break;
 
   case 216:
-#line 1205 "ned.y"
+#line 1209 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createFunction("index"); ;}
     break;
 
   case 217:
-#line 1207 "ned.y"
-    { if (np->getParseExpressionsFlag()) (yyval) = createFunction("sizeof", createIdent(toString((yylsp[-1])))); ;}
+#line 1211 "ned.y"
+    { if (np->getParseExpressionsFlag()) (yyval) = createFunction("sizeof", createIdent((yylsp[-1]))); ;}
     break;
 
   case 221:
-#line 1218 "ned.y"
+#line 1222 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createLiteral(NED_CONST_STRING, trimQuotes((yylsp[0])), (yylsp[0])); ;}
     break;
 
   case 222:
-#line 1223 "ned.y"
+#line 1227 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createLiteral(NED_CONST_BOOL, (yylsp[0]), (yylsp[0])); ;}
     break;
 
   case 223:
-#line 1225 "ned.y"
+#line 1229 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createLiteral(NED_CONST_BOOL, (yylsp[0]), (yylsp[0])); ;}
     break;
 
   case 224:
-#line 1230 "ned.y"
+#line 1234 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createLiteral(NED_CONST_INT, (yylsp[0]), (yylsp[0])); ;}
     break;
 
   case 225:
-#line 1232 "ned.y"
+#line 1236 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createLiteral(NED_CONST_DOUBLE, (yylsp[0]), (yylsp[0])); ;}
     break;
 
   case 226:
-#line 1234 "ned.y"
+#line 1238 "ned.y"
     { if (np->getParseExpressionsFlag()) (yyval) = createQuantity(toString((yylsp[0]))); ;}
     break;
 
@@ -2960,7 +2964,7 @@ yyreduce:
     }
 
 /* Line 1126 of yacc.c.  */
-#line 2964 "ned.tab.c"
+#line 2968 "ned.tab.c"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -3235,7 +3239,7 @@ yyreturn:
 }
 
 
-#line 1248 "ned.y"
+#line 1252 "ned.y"
 
 
 //----------------------------------------------------------------------

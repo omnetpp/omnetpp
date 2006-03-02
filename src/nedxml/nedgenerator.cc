@@ -506,8 +506,7 @@ void NEDGenerator::doSubmodule(SubmoduleNode *node, const char *indent, bool isl
     {
         // "like" version
         OUT << "<";
-        if (strnotnull(node->getLikeParam()))
-            printExpression(node, "like-param", indent); // this (incidentally) also works if like-param contains a property (ie. starts with "@")
+        printExpression(node, "like-param", indent); // this (incidentally) also works if like-param contains a property (ie. starts with "@")
         OUT << ">";
 
         if (strnotnull(node->getLikeType()))
@@ -596,8 +595,7 @@ void NEDGenerator::doChannelSpec(ChannelSpecNode *node, const char *indent, bool
     {
         // "like" version
         OUT << " <";
-        if (strnotnull(node->getLikeParam()))
-            printExpression(node, "like-param", indent); // this (incidentally) also works if like-param contains a property (ie. starts with "@")
+        printExpression(node, "like-param", indent); // this (incidentally) also works if like-param contains a property (ie. starts with "@")
         OUT << ">";
 
         if (strnotnull(node->getLikeType()))

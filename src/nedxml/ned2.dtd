@@ -77,7 +77,7 @@
 <!ELEMENT pattern (whitespace*, expression?, property*)>
 <!ATTLIST pattern
      pattern            CDATA     #REQUIRED
-     value              CDATA     #REQUIRED
+     value              CDATA     #IMPLIED
      is-default         (true|false)  "false">
 
 <!ELEMENT property (whitespace*, property-key*, condition?)>

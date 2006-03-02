@@ -980,15 +980,20 @@ likeparam
                 { $$ = NULL; }
         | '<' '@' NAME '>'
                 { $$ = NULL; }
-        | '<' qualifier '.' '@' NAME '>' /* note: qualifier here must be "this" */
-                {
-                  if (strcmp(toString(@2),"this")!=0)
-                       NEDError(NULL,"invalid property qualifier `%s', only `this' is allowed here", toString(@2));
-                  $$ = NULL;
-                }
+        | '<' thisqualifier '.' '@' NAME '>'
+                { $$ = NULL; }
         | '<' expression '>' /* XXX this expression is the source of one shift-reduce conflict because it may contain '>' */
                 { $$ = $2; }
         ;
+
+thisqualifier
+        : THIS_
+        | NAME
+                { NEDError(NULL,"invalid property qualifier `%s', only `this' is allowed here", toString(@1)); }
+        | NAME vector
+                { NEDError(NULL,"invalid property qualifier `%s', only `this' is allowed here", toString(@1)); }
+        ;
+
 
 /*
  * Connections
@@ -1032,6 +1037,9 @@ connectionsitem
         : connectiongroup
         | connection opt_whereclause ';'
                 {
+                  ps.chanspec = (ChannelSpecNode *)ps.conn->getFirstChildWithTag(NED_CHANNEL_SPEC);
+                  if (ps.chanspec)
+                      ps.conn->appendChild(ps.conn->removeChild(ps.chanspec)); // move channelspec to conform DTD
                   if (ps.inGroup && $2)
                        NEDError(ps.param,"conditional connections inside connection groups are not allowed");
                   if ($2)
@@ -1370,7 +1378,7 @@ expr
         | '(' expr ')'
                 { $$ = $2; }
         | CONST_ '(' expr ')'
-                { $$ = $3; /*FIXME*/ }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction("const", $3); }
 
         | expr '+' expr
                 { if (np->getParseExpressionsFlag()) $$ = createOperator("+", $1, $3); }
@@ -1443,28 +1451,20 @@ expr
          ;
 
 simple_expr
-        : parameter_expr
+        : identifier
         | special_expr
         | literal
         ;
 
-parameter_expr
+identifier
         : NAME
-                {
-                  // if there's no modifier, might be a loop variable too
-                  if (np->getParseExpressionsFlag()) $$ = createIdent(toString(@1));
-                }
-        | qualifier '.' NAME
-                {
-                  // if there's no modifier, might be a loop variable too
-                  if (np->getParseExpressionsFlag()) $$ = createIdent(toString(@1));
-                }
-        ;
-
-qualifier
-        : THIS_
-        | NAME  /* submodule name */
-        | NAME vector
+                { if (np->getParseExpressionsFlag()) $$ = createIdent(@1); }
+        | THIS_ '.' NAME
+                { if (np->getParseExpressionsFlag()) $$ = createIdent(@3, @1); }
+        | NAME '.' NAME
+                { if (np->getParseExpressionsFlag()) $$ = createIdent(@3, @1); }
+        | NAME vector '.' NAME
+                { if (np->getParseExpressionsFlag()) $$ = createIdent(@4, @1, $2); }
         ;
 
 special_expr
@@ -1472,10 +1472,8 @@ special_expr
                 { if (np->getParseExpressionsFlag()) $$ = createFunction("index"); }
         | INDEX_ '(' ')'
                 { if (np->getParseExpressionsFlag()) $$ = createFunction("index"); }
-        | SIZEOF '(' NAME ')'
-                { if (np->getParseExpressionsFlag()) $$ = createFunction("sizeof", createIdent(toString(@3))); }
-        | SIZEOF '(' NAME '.' NAME ')'
-                { if (np->getParseExpressionsFlag()) $$ = createFunction("sizeof", createIdent(toString(@5), NULL, toString(@3))); }
+        | SIZEOF '(' identifier ')'
+                { if (np->getParseExpressionsFlag()) $$ = createFunction("sizeof", $3); }
         ;
 
 literal

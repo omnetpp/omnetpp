@@ -187,7 +187,6 @@ void NEDDTDValidator::validateElement(PatternNode *node)
     checkSequence(node, tags, mult);
 
     checkRequiredAttribute(node, "pattern");
-    checkRequiredAttribute(node, "value");
     const char *vals2[] = {"true","false"};
     checkEnumeratedAttribute(node, "is-default", vals2, sizeof(vals2)/sizeof(const char *));
 }

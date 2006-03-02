@@ -878,7 +878,7 @@ class ParamNode : public NEDElement
  * <!ELEMENT pattern (whitespace*, expression?, property*)>
  * <!ATTLIST pattern
  *      pattern            CDATA     #REQUIRED
- *      value              CDATA     #REQUIRED
+ *      value              CDATA     #IMPLIED
  *      is-default         (true|false)  "false">
  * </pre>
  * 

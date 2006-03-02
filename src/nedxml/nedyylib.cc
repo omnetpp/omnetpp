@@ -281,14 +281,23 @@ ExpressionNode *createExpression(NEDElement *expr)
    return expression;
 }
 
-IdentNode *createIdent(const char *param, const char *paramindex, const char *module, const char *moduleindex)
+IdentNode *createIdent(YYLTYPE parampos)
 {
-   IdentNode *par = (IdentNode *)createNodeWithTag(NED_IDENT);
-   par->setName(param);
-   // if (paramindex) par->setParamIndex(paramindex);
-   if (module) par->setModule(module);
-   if (moduleindex) par->setModuleIndex(moduleindex);
-   return par;
+   IdentNode *ident = (IdentNode *)createNodeWithTag(NED_IDENT);
+   ident->setName(toString(parampos));
+   return ident;
+}
+
+IdentNode *createIdent(YYLTYPE parampos, YYLTYPE modulepos, NEDElement *moduleindexexpr)
+{
+   IdentNode *ident = (IdentNode *)createNodeWithTag(NED_IDENT);
+   ident->setName(toString(parampos));
+   ident->setModule(toString(modulepos));
+   if (moduleindexexpr) {
+       ((ExpressionNode *)moduleindexexpr)->setTarget("module-index");
+       ident->appendChild(moduleindexexpr);
+   }
+   return ident;
 }
 
 LiteralNode *createLiteral(int type, YYLTYPE valuepos, YYLTYPE textpos)

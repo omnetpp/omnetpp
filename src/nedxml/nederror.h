@@ -21,6 +21,21 @@
 
 #include "nedelement.h"
 
+
+/**
+ * Stores error messages
+ */
+class NEDErrorStore
+{
+    private:
+        enum Category {INFO, WARNING, ERROR, FATAL};
+        struct Entry {
+            int category;
+            std::string location;
+            std::string errortext;
+        };
+};
+
 /**
  * Adds a compiler error message. Currently the message is printed to the standard
  * error; this is going to be refined.

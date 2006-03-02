@@ -609,6 +609,7 @@ substparamblocks_old
 substparamblock_old
         : PARAMETERS ':'
                 {
+                  // FIXME check if already exists!!! (multiple blocks must be merged)
                   ps.substparams = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.inNetwork ? (NEDElement *)ps.module : (NEDElement *)ps.submod);
                   setComments(ps.substparams,@1,@2);
                 }
@@ -617,6 +618,7 @@ substparamblock_old
                 }
         | PARAMETERS IF expression ':'
                 {
+                  // FIXME make conditional paramgroup!!!
                   ps.substparams = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.inNetwork ? (NEDElement *)ps.module : (NEDElement *)ps.submod);
                   addExpression(ps.substparams, "condition",@3,$3);
                   setComments(ps.substparams,@1,@4);
@@ -657,6 +659,7 @@ opt_gatesizeblocks_old
 gatesizeblock_old
         : GATESIZES ':'
                 {
+                  // FIXME check if already exists!!! (multiple blocks must be merged)
                   ps.gatesizes = (GatesNode *)createNodeWithTag(NED_GATES, ps.submod );
                   setComments(ps.gatesizes,@1,@2);
                 }
@@ -665,6 +668,7 @@ gatesizeblock_old
                 }
         | GATESIZES IF expression ':'
                 {
+                  // FIXME make conditional gategroup!!!
                   ps.gatesizes = (GatesNode *)createNodeWithTag(NED_GATES, ps.submod);
                   addExpression(ps.gatesizes, "condition",@3,$3);
                   setComments(ps.gatesizes,@1,@4);
@@ -1173,27 +1177,27 @@ parameter_expr
         : NAME
                 {
                   // if there's no modifier, might be a loop variable too
-                  if (np->getParseExpressionsFlag()) $$ = createIdent(toString(@1));
+                  if (np->getParseExpressionsFlag()) $$ = createIdent(@1);
                 }
         | REF NAME
                 {
-                  if (np->getParseExpressionsFlag()) $$ = createIdent(toString(@2));
+                  if (np->getParseExpressionsFlag()) $$ = createIdent(@2);
                   NEDError(ps.params,"`ref' modifier no longer supported (add `function' "
                                      "modifier to destination parameter instead)");
                 }
         | REF ANCESTOR NAME
                 {
-                  if (np->getParseExpressionsFlag()) $$ = createIdent(toString(@3));
+                  if (np->getParseExpressionsFlag()) $$ = createIdent(@3);
                   NEDError(ps.params,"`ancestor' and `ref' modifiers no longer supported");
                 }
         | ANCESTOR REF NAME
                 {
-                  if (np->getParseExpressionsFlag()) $$ = createIdent(toString(@3));
+                  if (np->getParseExpressionsFlag()) $$ = createIdent(@3);
                   NEDError(ps.params,"`ancestor' and `ref' modifiers no longer supported");
                 }
         | ANCESTOR NAME
                 {
-                  if (np->getParseExpressionsFlag()) $$ = createIdent(toString(@2));
+                  if (np->getParseExpressionsFlag()) $$ = createIdent(@2);
                   NEDError(ps.params,"`ancestor' modifier no longer supported");
                 }
         ;
@@ -1204,7 +1208,7 @@ special_expr
         | SUBMODINDEX '(' ')'
                 { if (np->getParseExpressionsFlag()) $$ = createFunction("index"); }
         | SIZEOF '(' NAME ')'
-                { if (np->getParseExpressionsFlag()) $$ = createFunction("sizeof", createIdent(toString(@3))); }
+                { if (np->getParseExpressionsFlag()) $$ = createFunction("sizeof", createIdent(@3)); }
         ;
 
 literal
