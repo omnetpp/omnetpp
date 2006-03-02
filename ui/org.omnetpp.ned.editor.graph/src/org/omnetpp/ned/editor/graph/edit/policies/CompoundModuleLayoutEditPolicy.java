@@ -33,9 +33,9 @@ import org.omnetpp.ned.editor.graph.model.commands.CreateCommand;
 import org.omnetpp.ned.editor.graph.model.commands.SetConstraintCommand;
 
 
-public class NedLayoutEditPolicy extends DesktopLayoutEditPolicy {
+public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
-    public NedLayoutEditPolicy(XYLayout layout) {
+    public CompoundModuleLayoutEditPolicy(XYLayout layout) {
         super();
         setXyLayout(layout);
     }

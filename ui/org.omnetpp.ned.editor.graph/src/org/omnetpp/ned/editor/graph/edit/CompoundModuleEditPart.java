@@ -23,7 +23,7 @@ import org.eclipse.gef.editparts.ViewportExposeHelper;
 import org.eclipse.gef.editparts.ViewportMouseWheelHelper;
 import org.eclipse.gef.editpolicies.SnapFeedbackPolicy;
 import org.eclipse.gef.rulers.RulerProvider;
-import org.omnetpp.ned.editor.graph.edit.policies.NedLayoutEditPolicy;
+import org.omnetpp.ned.editor.graph.edit.policies.CompoundModuleLayoutEditPolicy;
 import org.omnetpp.ned.editor.graph.figures.ModuleFigure;
 import org.omnetpp.ned.editor.graph.model.CompoundModuleNodeEx;
 
@@ -32,10 +32,8 @@ public class CompoundModuleEditPart extends NedNodeEditPart {
 
     protected void createEditPolicies() {
         super.createEditPolicies();
-        installEditPolicy(EditPolicy.LAYOUT_ROLE, new NedLayoutEditPolicy((XYLayout) getContentPane()
+        installEditPolicy(EditPolicy.LAYOUT_ROLE, new CompoundModuleLayoutEditPolicy((XYLayout) getContentPane()
                 .getLayoutManager()));
-// No container highlighting for the moment
-//        installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE, new ContainerHighlightEditPolicy());
         installEditPolicy("Snap Feedback", new SnapFeedbackPolicy()); //$NON-NLS-1$
     }
 

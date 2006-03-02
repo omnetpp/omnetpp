@@ -12,25 +12,26 @@ public static PolylineConnection createNewWire(ConnectionNodeEx wire) {
 
 		PolylineConnection conn = new PolylineConnection();
 		conn.addRoutingListener(RoutingAnimator.getDefault());
-		PolygonDecoration arrow;
+//		PolygonDecoration arrow;
+//
+//		if (wire == null )
+//			arrow = null;
+//		else {
+//			arrow = new PolygonDecoration();
+//			arrow.setTemplate(PolygonDecoration.INVERTED_TRIANGLE_TIP);
+//			arrow.setScale(5, 2.5);
+//		}
+//		conn.setSourceDecoration(arrow);
 
-		if (wire == null )
-			arrow = null;
-		else {
-			arrow = new PolygonDecoration();
-			arrow.setTemplate(PolygonDecoration.INVERTED_TRIANGLE_TIP);
-			arrow.setScale(5, 2.5);
-		}
-		conn.setSourceDecoration(arrow);
+//		if (wire == null)
+//			arrow = null;
+//		else {
+//			arrow = new PolygonDecoration();
+//			arrow.setTemplate(PolygonDecoration.INVERTED_TRIANGLE_TIP);
+//			arrow.setScale(5, 2.5);
+//		}
+//		conn.setTargetDecoration(arrow);
 
-		if (wire == null)
-			arrow = null;
-		else {
-			arrow = new PolygonDecoration();
-			arrow.setTemplate(PolygonDecoration.INVERTED_TRIANGLE_TIP);
-			arrow.setScale(5, 2.5);
-		}
-		conn.setTargetDecoration(arrow);
 		return conn;
 	}	
 

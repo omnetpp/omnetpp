@@ -8,7 +8,9 @@ import org.eclipse.draw2d.geometry.Point;
 import org.omnetpp.ned.editor.graph.properties.DisplayPropertySource;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
+import org.omnetpp.ned2.model.pojo.ConnectionsNode;
 import org.omnetpp.ned2.model.pojo.SubmoduleNode;
+import org.omnetpp.ned2.model.pojo.SubmodulesNode;
 
 public class CompoundModuleNodeEx extends CompoundModuleNode 
 								  implements INedContainer, INedNode {
@@ -32,7 +34,10 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 
 	public List<SubmoduleNodeEx> getSubmodules() {
 		List<SubmoduleNodeEx> result = new ArrayList<SubmoduleNodeEx>();
-		for(NEDElement currChild : getFirstSubmodulesChild()) 
+		SubmodulesNode submodulesNode = getFirstSubmodulesChild();
+		if (submodulesNode == null)
+			return result;
+		for(NEDElement currChild : submodulesNode) 
 			if (currChild instanceof SubmoduleNodeEx) 
 				result.add((SubmoduleNodeEx)currChild);
 				
@@ -40,13 +45,19 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 	}
 
 	public SubmoduleNodeEx getSubmoduleByName(String submoduleName) {
-		return (SubmoduleNodeEx)getFirstSubmodulesChild()
+		SubmodulesNode submodulesNode = getFirstSubmodulesChild();
+		if (submoduleName == null)
+			return null;
+		return (SubmoduleNodeEx)submodulesNode
 					.getFirstChildWithAttribute(NED_SUBMODULE, SubmoduleNode.ATT_NAME, submoduleName);
 	}
 
 	public List<ConnectionNodeEx> getConnections() {
 		List<ConnectionNodeEx> result = new ArrayList<ConnectionNodeEx>();
-		for(NEDElement currChild : getFirstConnectionsChild()) 
+		ConnectionsNode connectionsNode = getFirstConnectionsChild();
+		if (connectionsNode == null)
+			return result;
+		for(NEDElement currChild : connectionsNode) 
 			if (currChild instanceof ConnectionNodeEx) 
 				result.add((ConnectionNodeEx)currChild);
 				
@@ -94,6 +105,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 	}
 
 	public void insertModelChild(int index, INedNode child) {
+		// FIXME check wheter Submodules node exists
 		NEDElement insertBefore = getFirstSubmodulesChild().getFirstChild();
 		for(int i=0; (i<index) && (insertBefore!=null); ++i) 
 			insertBefore = insertBefore.getNextSibling();
