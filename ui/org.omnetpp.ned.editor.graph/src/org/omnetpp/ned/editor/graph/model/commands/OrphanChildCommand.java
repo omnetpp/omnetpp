@@ -28,7 +28,7 @@ public class OrphanChildCommand extends Command {
     public void execute() {
         List children = diagram.getModelChildren();
         index = children.indexOf(child);
-        oldLocation = child.getTransientLocation();
+        oldLocation = child.getLocation();
         diagram.removeModelChild(child);
     }
 
@@ -45,7 +45,7 @@ public class OrphanChildCommand extends Command {
     }
 
     public void undo() {
-        child.setTransientLocation(oldLocation);
+        child.setLocation(oldLocation);
         diagram.insertModelChild(index, child);
     }
 

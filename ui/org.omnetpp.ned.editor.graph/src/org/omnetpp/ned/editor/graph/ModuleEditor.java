@@ -751,7 +751,7 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
 
     }
 
-    protected NedFileNodeEx getModel() {
+    public NedFileNodeEx getModel() {
         return nedFileModel;
     }
 

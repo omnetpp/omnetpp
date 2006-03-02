@@ -72,18 +72,27 @@ public interface INedNode extends INedModelElement {
 	public void removeDestConnection(ConnectionNodeEx conn);
 
 	/**
-	 * Set the TEMPORARY location of the node
+	 * Helper function to set the location of the node
 	 * @param location
 	 */
-	public void setTransientLocation(Point location);
+	public void setLocation(Point location);
 
 	/**
-	 * Get the TEMPORARY location of the node
+	 * Helper function to get the location of the node
 	 * @param location
 	 */
-	public Point getTransientLocation();
+	public Point getLocation();
 	
+	/**
+	 * Helper function to get the size of the node
+	 * @return
+	 */
 	public Dimension getSize();
+	
+	/**
+	 * Helper function to set the size of the node
+	 * @param size
+	 */
 	public void setSize(Dimension size);
 
 }

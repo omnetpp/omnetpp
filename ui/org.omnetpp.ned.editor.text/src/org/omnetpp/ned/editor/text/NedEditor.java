@@ -171,6 +171,13 @@ public class NedEditor extends TextEditor {
 		getDocumentProvider().getDocument(getEditorInput()).set(content);
 	}
 	
+	/**
+	 * @return The content of the text editor
+	 */
+	public String getText() {
+		return getDocumentProvider().getDocument(getEditorInput()).get();
+	}
+
 	/*
 	 * @see org.eclipse.ui.texteditor.ExtendedTextEditor#editorContextMenuAboutToShow(org.eclipse.jface.action.IMenuManager)
 	 */

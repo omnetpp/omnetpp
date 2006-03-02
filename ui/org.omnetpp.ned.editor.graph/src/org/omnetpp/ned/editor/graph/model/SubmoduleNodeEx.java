@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
+import org.omnetpp.ned.editor.graph.properties.DisplayPropertySource;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 
@@ -14,8 +15,6 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INedNode {
 	protected List<ConnectionNodeEx> srcConns = new ArrayList<ConnectionNodeEx>();
 	// destConns contains all connections where the destmodule is this module
 	protected List<ConnectionNodeEx> destConns = new ArrayList<ConnectionNodeEx>();
-	protected Dimension size;
-	protected Point location;
 	
 	public SubmoduleNodeEx(NEDElement parent) {
 		super(parent);
@@ -64,21 +63,32 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INedNode {
 		destConns.remove(conn);
 		// TODO add property change event (connection removed)
 	}
-	public Point getTransientLocation() {
-		return location;
+
+	public Point getLocation() {
+		DisplayPropertySource dps = new DisplayPropertySource(getDisplayString());
+
+		return new Point (dps.getIntPropertyDef(DisplayPropertySource.PROP_X, 0),
+						  dps.getIntPropertyDef(DisplayPropertySource.PROP_Y, 0));
 	}
 
-	public void setTransientLocation(Point location) {
-		this.location = location;
+	public void setLocation(Point location) {
+		DisplayPropertySource dps = new DisplayPropertySource(getDisplayString());
+		dps.setPropertyValue(DisplayPropertySource.PROP_X, location.x);
+		dps.setPropertyValue(DisplayPropertySource.PROP_Y, location.y);
+		setDisplayString(dps.getValue());
 	}
 
 	public Dimension getSize() {
-		// TODO this must be retrieved from the displayString
-		return size;
+		DisplayPropertySource dps = new DisplayPropertySource(getDisplayString());
+
+		return new Dimension(dps.getIntPropertyDef(DisplayPropertySource.PROP_W, 0),
+						     dps.getIntPropertyDef(DisplayPropertySource.PROP_H, 0));
 	}
 
 	public void setSize(Dimension size) {
-		// TODO This MUST be strored in the displaystring
-		this.size = size;
+		DisplayPropertySource dps = new DisplayPropertySource(getDisplayString());
+		dps.setPropertyValue(DisplayPropertySource.PROP_W, size.width);
+		dps.setPropertyValue(DisplayPropertySource.PROP_H, size.height);
+		setDisplayString(dps.getValue());
 	}
 }

@@ -20,30 +20,27 @@ public class GraphAndTextEditor extends MultiPageEditorPart implements
 
 	private ModuleEditor graphEditor;
 	private NedEditor nedEditor;
-	// contains the edited ned file's parsed tree
-	private NedFileNodeEx nedModel = null;
 	private int graphPageIndex;
 	private int textPageIndex;
 	
 	public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
 		super.init(site, editorInput);
 		setPartName(editorInput.getName());
-		// load and parse the editor's input ned file
-		loadDoc(editorInput);
 	}
 	
 	// open ned file and parse it to crate the document model
-	private void loadDoc(IEditorInput editorInput) {
+	private NedFileNodeEx loadDoc(IEditorInput editorInput) {
 		IFileEditorInput fileInput = (IFileEditorInput)editorInput;
 		try {
 			// FIXME do it simpler if possible
 			String filename = fileInput.getFile().getLocation().toFile().getPath();
-			nedModel = (NedFileNodeEx)ModelUtil.loadNedSource(filename);
+			return (NedFileNodeEx)ModelUtil.loadNedSource(filename);
 		} catch (Exception e) {
 			MessageDialog.openError(new Shell(), "Error opening file",
 					"Error opening file "+fileInput.getName()+": "+e.getMessage());
 			e.printStackTrace();
 		}
+		return null;
 	}
 	
 	@Override
@@ -53,15 +50,16 @@ public class GraphAndTextEditor extends MultiPageEditorPart implements
 		
 		try {
 			// fill graphical editor
-			graphEditor.setModel(nedModel);
+			// load and parse the editor's input ned file
+			NedFileNodeEx modelRoot = loadDoc(getEditorInput());
+			graphEditor.setModel(modelRoot);
 			graphPageIndex = addPage(graphEditor, getEditorInput());
 			setPageText(graphPageIndex,"Graphical");
 
 			// fill text editor
 			textPageIndex = addPage(nedEditor, getEditorInput());
 			setPageText(textPageIndex,"Text");
-			String textEditorContent = ModelUtil.generateNedSource(nedModel);
-			nedEditor.setText(textEditorContent);
+			// don't fill the text editor, because the graph editor is the default one
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -73,11 +71,14 @@ public class GraphAndTextEditor extends MultiPageEditorPart implements
 	protected void pageChange(int newPageIndex) {
 		super.pageChange(newPageIndex);
 		if (newPageIndex == textPageIndex) {
-			// generate text representation from the model 
-			String textEditorContent = ModelUtil.generateNedSource(nedModel);
+			// generate text representation from the model
+			NedFileNodeEx modelRoot = graphEditor.getModel();
+			String textEditorContent = ModelUtil.generateNedSource(modelRoot);
 			// put it into the text editor
 			nedEditor.setText(textEditorContent);
 		} else if (newPageIndex == graphPageIndex) {
+			NedFileNodeEx modelRoot = (NedFileNodeEx)ModelUtil.parseNedSource(nedEditor.getText());
+			graphEditor.setModel(modelRoot);
 		}
 	}
 

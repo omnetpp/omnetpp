@@ -88,6 +88,9 @@ public class NedElementExUtil implements NEDElementTags, NEDElementUtil {
 		// finally set the value of display string
 		literalNode.setType(NED_CONST_STRING);
 		literalNode.setValue(dspString);
+		// invalidate the text representation so next time the code will 
+		// be generated from VALUE not from the text attribute
+		literalNode.setText(null);
 	}
 	
     /**

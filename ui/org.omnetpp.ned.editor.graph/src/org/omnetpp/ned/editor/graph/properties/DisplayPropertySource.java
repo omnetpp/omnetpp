@@ -27,7 +27,7 @@ import org.omnetpp.ned2.model.DisplayString;
 // TODO implement the property list as Enum ?
 // FIXME default handling isstill not ok. Block size etc is not defaults to -1 is left empty
 public class DisplayPropertySource implements IPropertySource, IPropertySource2 {
-    // contains the default fallback values for the different tags if a varianle is usedin that position
+    // contains the default fallback values for the different tags if a variable is used in that position
     private static DisplayPropertySource variableDefaults 
         = new DisplayPropertySource("i=,,30;i2=,,30;is=40;b=40,40,rect,#8080ff,black,2;t=,t,blue;r=100,,black,1");
     // contains the default fallback values for the different tags if it is empty
@@ -232,18 +232,23 @@ public class DisplayPropertySource implements IPropertySource, IPropertySource2 
             this.sourceClass = sourceClass;
         }
     }
+    
     public DisplayPropertySource(String dispString) {
         setValue(dispString);
     }
     
+    /**
+     * Set the content and parse it 
+     * @param dispString
+     */
     public void setValue(String dispString) {
-        // create a new parsed representation
-//    	if (dispString == null) 
-//    		dispString = "";
-    	
         propParser = new DisplayString(dispString);
     }
     
+    
+    /**
+     * @return The readable display string
+     */
     public String getValue() {
         return propParser.toString();
     }
