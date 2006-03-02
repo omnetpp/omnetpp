@@ -33,8 +33,8 @@
 %}
 
 // These are only public for technical reasons, shouldn't be wrapped
-%ignore NEDParser::tree;
 %ignore NEDParser::nedsource;
+%ignore NEDParser::error(const char *, int);
 %ignore np;
 
 %ignore NEDElementUserData;
