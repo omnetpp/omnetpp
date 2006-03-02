@@ -110,7 +110,6 @@ clean:
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-aaa.obj: aaa.cc
 cppexprgenerator.obj: cppexprgenerator.cc \
   nedcompiler.h \
   cppexprgenerator.h \

@@ -55,11 +55,12 @@ class NEDParser
     bool parseexpr;            // whether to parse expressions or not
     bool storesrc;             // whether to fill in sourceCode attributes
     const char *filename;      // file being parsed
-    NEDElement *tree;          // tree to build
 
-    enum {FT_NED2, FT_NED, FT_MSG2}; // guessFileType() retval
-    int guessFileType(const char *txt);
-    NEDElement *tryParse();
+    bool loadFile(const char *fname);
+    bool loadText(const char *nedtext);
+    NEDElement *parseNED();
+    NEDElement *parseMSG();
+    static bool guessIsNEDInNewSyntax(const char *txt);
 
   public:
     /**
@@ -102,20 +103,28 @@ class NEDParser
     const char *getFileName() {return filename;}
 
     /**
-     * Parse the given file. Result can be obtained from getTree().
+     * Parse the given NED file and return the result tree.
+     * Returns NULL if there was an error.
      */
-    bool parseFile(const char *fname);
+    NEDElement *parseNEDFile(const char *fname);
 
     /**
-     * Parse the given NED text. Result can be obtained from getTree().
+     * Parse the given NED source and return the result tree.
+     * Returns NULL if there was an error.
      */
-    bool parseText(const char *nedtext);
+    NEDElement *parseNEDText(const char *nedtext);
 
     /**
-     * Returns the object tree which is the result of the parsing.
-     * Further calls to getTree() result in NULL pointer to be returned.
+     * Parse the given MSG (.msg) file and return the result tree.
+     * Returns NULL if there was an error.
      */
-    NEDElement *getTree();
+    NEDElement *parseMSGFile(const char *fname);
+
+    /**
+     * Parse the given MSG source and return the result tree.
+     * Returns NULL if there was an error.
+     */
+    NEDElement *parseMSGText(const char *nedtext);
 };
 
 #endif

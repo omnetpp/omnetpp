@@ -35,24 +35,51 @@ NEDParser *np;
 
 NEDParser::NEDParser()
 {
-    tree = 0;
-    nedsource = 0;
-
+    nedsource = NULL;
     parseexpr = true;
     storesrc = false;
 }
 
 NEDParser::~NEDParser()
 {
-    delete tree;
+    delete nedsource;
 }
 
-bool NEDParser::parseFile(const char *fname)
+NEDElement *NEDParser::parseNEDFile(const char *fname)
+{
+    if (!loadFile(fname))
+        return NULL;
+    return parseNED();
+}
+
+NEDElement *NEDParser::parseNEDText(const char *nedtext)
+{
+    if (!loadText(nedtext))
+        return NULL;
+    return parseNED();
+}
+
+NEDElement *NEDParser::parseMSGFile(const char *fname)
+{
+    if (!loadFile(fname))
+        return NULL;
+    return parseMSG();
+}
+
+NEDElement *NEDParser::parseMSGText(const char *nedtext)
+{
+    if (!loadText(nedtext))
+        return NULL;
+    return parseMSG();
+}
+
+bool NEDParser::loadFile(const char *fname)
 {
     // init class members
-    NEDFileBuffer nf;
-    nedsource = &nf;
+    if (nedsource) delete nedsource;
+    nedsource = new NEDFileBuffer();
     filename = fname;
+    clearErrors();
 
     // cosmetics on file name: substitute "~"
     char newfilename[1000];
@@ -65,74 +92,41 @@ bool NEDParser::parseFile(const char *fname)
     // load whole file into memory
     if (!nedsource->readFile(newfilename))
         {NEDError(NULL, "cannot read %s", fname); return false;}
-
-    tree = tryParse();
-
-    // true if OK
-    return tree!=NULL;
+    return true;
 }
 
-bool NEDParser::parseText(const char *nedtext)
+bool NEDParser::loadText(const char *nedtext)
 {
-    // init global vars
-    NEDFileBuffer nf;
-    nedsource = &nf;
+    // init vars
+    if (nedsource) delete nedsource;
+    nedsource = new NEDFileBuffer();
     filename = "buffer";
+    clearErrors();
 
-    // load whole file into memory
+    // prepare nedsource object
     if (!nedsource->setData(nedtext))
         {NEDError(NULL, "unable to allocate work memory"); return false;}
-
-    tree = tryParse();
-
-    // true if OK
-    return tree!=NULL;
+    return true;
 }
 
-NEDElement *NEDParser::tryParse()
+NEDElement *NEDParser::parseNED()
 {
-guessFileType(nedsource->getFullText());
-
-    NEDElement *tmp;
-
     clearErrors();
-    tmp = doParseNED2(this, nedsource->getFullText());
-
-    if (errorsOccurred())
-    {
-        delete tmp;
-        clearErrors();
-        tmp = doParseNED(this, nedsource->getFullText());
-    }
-    if (errorsOccurred())
-    {
-        delete tmp;
-        clearErrors();
-        tmp = doParseMSG2(this, nedsource->getFullText());
-    }
-    if (errorsOccurred())
-    {
-        delete tmp;
-        tmp = NULL;
-    }
-    return tmp;
+    if (guessIsNEDInNewSyntax(nedsource->getFullText()))
+        return ::doParseNED2(this, nedsource->getFullText());
+    else
+        return ::doParseNED(this, nedsource->getFullText());
 }
 
-NEDElement *NEDParser::getTree()
+NEDElement *NEDParser::parseMSG()
 {
-    NEDElement *ret = tree;
-    tree = NULL;
-    return ret;
+    clearErrors();
+    return ::doParseMSG2(this, nedsource->getFullText());
 }
 
-void NEDParser::error(const char *msg, int line)
+bool NEDParser::guessIsNEDInNewSyntax(const char *txt)
 {
-    NEDError(NULL, "%s:%d: %s", filename, line, msg);
-}
-
-int NEDParser::guessFileType(const char *txt)
-{
-    // first, remove all comments
+    // first, remove all comments and string literals
     char *buf = new char [strlen(txt)+1];
     const char *s;
     char *d;
@@ -160,21 +154,23 @@ int NEDParser::guessFileType(const char *txt)
     }
     *d = '\0';
 
-    // try to recognize things in it
-    bool hasCurlyBrace = strchr(buf,'{') || strchr(buf,'}');
+    // Only in NED2 are curly braces {} and "@" allowed and widely used.
+    // If a NED2 source doesn't contain none of those, it might only contain
+    // imports (but what for?), and may as well be parsed as old NED.
+    // Note: searching for keywords would not be a bulletproof solution because
+    // old NED keywords are not reserved in NED2; moreover we'd have to search
+    // "whole words only" so strstr() is no good.
 
-    // FIXME only if it's "whole word"; not bulletproof because old NED keywords are not
-    // reserved in NED2
-    bool hasOldNedKeyword = strstr(buf,"endmodule") || strstr(buf,"endsimple") ||
-                            strstr(buf,"endchannel") || strstr(buf,"endnetwork");
-    bool hasMsgKeyword = strstr(buf,"{{") || strstr(buf,"}}") || strstr(buf,"cplusplus") ||
-                         strstr(buf,"message") || strstr(buf,"struct") || strstr(buf,"class") ||
-                         strstr(buf,"enum");
-
-    int ret = hasCurlyBrace ? FT_NED2 : hasOldNedKeyword ? FT_NED : FT_NED2; // may be msg as well
+    bool isNewSyntax = strchr(buf,'{') || strchr(buf,'}') || strchr(buf,'@');
 
     // cleanup
     delete [] buf;
-    return ret;
+
+    return isNewSyntax;
+}
+
+void NEDParser::error(const char *msg, int line)
+{
+    NEDError(NULL, "%s:%d: %s", filename, line, msg);
 }
 

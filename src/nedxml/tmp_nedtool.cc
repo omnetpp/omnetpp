@@ -166,8 +166,7 @@ bool processFile(const char *fname)
         NEDParser parser;
         parser.setParseExpressions(!opt_unparsedexpr);
         parser.setStoreSource(opt_storesrc);
-        parser.parseFile(fname);
-        tree = parser.getTree();
+        tree = (ftype==NED_FILE) ? parser.parseNEDFile(fname) : parser.parseMSGFile(fname);
     }
     if (errorsOccurred())
     {

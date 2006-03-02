@@ -184,7 +184,7 @@ NEDElement *NEDClassicImportResolver::loadImport(const char *import)
     // load and parse it
     NEDParser parser;
     parser.setParseExpressions(true);
-    parser.parseFile(fpath.c_str());
+    parser.parseNEDFile(fpath.c_str());
     NEDElement *tree = parser.getTree();
 
     return tree;
