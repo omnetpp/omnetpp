@@ -48,12 +48,17 @@ class NEDParser
   public:
     NEDFileBuffer *nedsource;  // represents the source file
 
+    // INTERNAL: error and debug handling, called from grammar file
+    void error(const char *msg, int line);
+
   protected:
     bool parseexpr;            // whether to parse expressions or not
     bool storesrc;             // whether to fill in sourceCode attributes
     const char *filename;      // file being parsed
     NEDElement *tree;          // tree to build
 
+    enum {FT_NED2, FT_NED, FT_MSG2}; // guessFileType() retval
+    int guessFileType(const char *txt);
     NEDElement *tryParse();
 
   public:
@@ -111,10 +116,6 @@ class NEDParser
      * Further calls to getTree() result in NULL pointer to be returned.
      */
     NEDElement *getTree();
-
-    // INTERNAL: error and debug handling, called from grammar file
-    void error(const char *msg, int line);
-    //void dbg(YYLTYPE lc, const char *what);
 };
 
 #endif

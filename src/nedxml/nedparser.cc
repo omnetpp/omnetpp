@@ -91,6 +91,8 @@ bool NEDParser::parseText(const char *nedtext)
 
 NEDElement *NEDParser::tryParse()
 {
+guessFileType(nedsource->getFullText());
+
     NEDElement *tmp;
 
     clearErrors();
@@ -123,20 +125,56 @@ NEDElement *NEDParser::getTree()
     return ret;
 }
 
-
 void NEDParser::error(const char *msg, int line)
 {
     NEDError(NULL, "%s:%d: %s", filename, line, msg);
 }
 
-/*
-void NEDParser::dbg(YYLTYPE lc, char *what)
+int NEDParser::guessFileType(const char *txt)
 {
-    printf("%s: %d,%d,%d,%d=%s.\n",
-            what,
-            lc.first_line,lc.first_column,lc.last_line,lc.last_column,
-            nedsource->get(lc));
-}
-*/
+    // first, remove all comments
+    char *buf = new char [strlen(txt)+1];
+    const char *s;
+    char *d;
+    for (s=txt, d=buf; *s; )
+    {
+        if (*s=='/' && *(s+1)=='/') {
+            // if there's a comment, skip rest of the line
+            s += 2;
+            while (*s && *s!='\r' && *s!='\n')
+                s++;
+        }
+        else if (*s=='"') {
+            // leave out string literals as well
+            s++;
+            while (*s && *s!='\r' && *s!='\n' && *s!='"')
+                if (*s++=='\\')
+                    s++;
+            if (*s=='"')
+                s++;
+        }
+        else {
+            // copy everything else
+            *d++ = *s++;
+        }
+    }
+    *d = '\0';
 
+    // try to recognize things in it
+    bool hasCurlyBrace = strchr(buf,'{') || strchr(buf,'}');
+
+    // FIXME only if it's "whole word"; not bulletproof because old NED keywords are not
+    // reserved in NED2
+    bool hasOldNedKeyword = strstr(buf,"endmodule") || strstr(buf,"endsimple") ||
+                            strstr(buf,"endchannel") || strstr(buf,"endnetwork");
+    bool hasMsgKeyword = strstr(buf,"{{") || strstr(buf,"}}") || strstr(buf,"cplusplus") ||
+                         strstr(buf,"message") || strstr(buf,"struct") || strstr(buf,"class") ||
+                         strstr(buf,"enum");
+
+    int ret = hasCurlyBrace ? FT_NED2 : hasOldNedKeyword ? FT_NED : FT_NED2; // may be msg as well
+
+    // cleanup
+    delete [] buf;
+    return ret;
+}
 

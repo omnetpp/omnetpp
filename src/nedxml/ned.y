@@ -75,18 +75,10 @@
 
 /*
  * Note:
- * This file contains about 3 shift-reduce conflicts around 'expression'.
- * The rest (7-8 shift-reduce conflicts) are because for some reason
- * (without reason, actually) the grammar has difficulty recognizing
- * submodule boundaries. You can verify this by temporarily allowing only
- * one submodule (in rule for 'opt_submodules', replace 'submodules' with
- * 'submodule'). I couldn't figure out how to solve this yet.
+ * This file contains about 5 shift-reduce conflicts, 3 of them around 'expression'.
  *
  * Plus one (real) ambiguity exists between submodule display string
  * and compound module display string if no connections are present.
- *
- * bison's "%expect nn" option cannot be used to suppress the
- * warning message because %expect is not recognized by yacc
  */
 
 
@@ -137,14 +129,10 @@ static struct NEDParserState
     NedFileNode *nedfile;
     WhitespaceNode *whitespace;
     ImportNode *import;
-    //PropertyDeclNode *propertydecl;
     ExtendsNode *extends;
-    //InterfaceNameNode *interfacename;
     ChannelNode *channel;
     NEDElement *module;  // in fact, CompoundModuleNode* or SimpleModule*
-    //ModuleInterfaceNode *moduleinterface;
     ParametersNode *params;
-    //ParamGroupNode *paramgroup;
     ParamNode *param;
     ParametersNode *substparams;
     ParamGroupNode *substparamgroup;
@@ -165,24 +153,6 @@ static struct NEDParserState
     WhereNode *where;
     LoopNode *loop;
     ConditionNode *condition;
-
-    /* NED-II: message subclassing */
-    CplusplusNode *cplusplus;
-    StructDeclNode *structdecl;
-    ClassDeclNode *classdecl;
-    MessageDeclNode *messagedecl;
-    EnumDeclNode *enumdecl;
-    EnumNode *enump;
-    MessageNode *messagep;
-    ClassNode *classp;
-    StructNode *structp;
-    NEDElement *msgclassorstruct;
-    EnumFieldsNode *enumfields;
-    EnumFieldNode *enumfield;
-    PropertiesNode *properties;
-    MsgpropertyNode *msgproperty;
-    FieldsNode *fields;
-    FieldNode *field;
 } ps;
 
 static void resetParserState()
@@ -220,21 +190,6 @@ definition
                 { if (np->getStoreSourceFlag()) storeComponentSourceCode(ps.module, @1); }
         | networkdefinition_old
                 { if (np->getStoreSourceFlag()) storeComponentSourceCode(ps.module, @1); }
-
-        | cplusplus
-        | struct_decl
-        | class_decl
-        | message_decl
-        | enum_decl
-
-        | enum
-                { if (np->getStoreSourceFlag()) storeComponentSourceCode(ps.enump, @1); }
-        | message
-                { if (np->getStoreSourceFlag()) storeComponentSourceCode(ps.messagep, @1); }
-        | class
-                { if (np->getStoreSourceFlag()) storeComponentSourceCode(ps.classp, @1); }
-        | struct
-                { if (np->getStoreSourceFlag()) storeComponentSourceCode(ps.structp, @1); }
         ;
 
 /*
@@ -814,6 +769,27 @@ loopconnection_old
                   ps.inLoop=0;
                   setComments(ps.where,@1,@4);
                   //setTrailingComment(ps.where,@6);
+
+                  // optimize: if there's exactly one connection inside the loop, eliminate conngroup
+                  if (ps.conngroup->getNumChildrenWithTag(NED_CONNECTION)==1)
+                  {
+                      ps.conngroup->removeChild(ps.conn);
+                      ps.conns->insertChildBefore(ps.conngroup, ps.conn);
+                      ps.conn->appendChild(ps.conngroup->removeChild(ps.where));
+                      delete ps.conns->removeChild(ps.conngroup);
+                  }
+                  else
+                  {
+                      // move ps.where to the end
+                      ps.conngroup->appendChild(ps.conngroup->removeChild(ps.where));
+                      ps.where->setAtFront(true);
+
+                      // we're only prepared for "for" loops with 1 connection inside
+                      if (ps.where->getNumChildrenWithTag(NED_CONDITION)!=0)
+                          NEDError(ps.conngroup, "cannot process NED-I syntax of several "
+                                   "conditional connections within a `for' loop -- "
+                                   "please split it to several `for' loops");
+                  }
                 }
         ;
 
@@ -835,7 +811,21 @@ loopvar_old
 opt_conncondition_old
         : IF expression
                 {
-                  addExpression(ps.conn, "condition",@2,$2); //FIXME add WHERE+CONDITION; is condition in a conngroup allowed?
+                  if (!ps.inLoop)
+                  {
+                      // add where+condition to conn
+                      ps.where = (WhereNode *)createNodeWithTag(NED_WHERE, ps.conn);
+                      ps.condition = (ConditionNode *)createNodeWithTag(NED_CONDITION, ps.where);
+                      addExpression(ps.condition, "condition",@2,$2);
+                  }
+                  else
+                  {
+                      // inside a for loop: append condition to its "where".
+                      // at the end we'll need to make sure there's only one connection in the loop!
+                      // (otherwise we'd have to check all conns have exactly the same condition)
+                      ps.condition = (ConditionNode *)createNodeWithTag(NED_CONDITION, ps.where);
+                      addExpression(ps.condition, "condition",@2,$2);
+                  }
                 }
         |
         ;
@@ -894,13 +884,13 @@ leftmod_old
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule( toString(@1) );
                   addVector(ps.conn, "src-module-index",@2,$2);
-                  ps.chanspec = NULL;   // none yet -- we'll create it on-demand
+                  ps.chanspec = NULL;   // signal that there's no chanspec for this conn yet
                 }
         | NAME
                 {
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule( toString(@1) );
-                  ps.chanspec = NULL;   // none yet -- we'll create it on-demand
+                  ps.chanspec = NULL;   // signal that there's no chanspec for this conn yet
                 }
         ;
 
@@ -928,12 +918,14 @@ parentleftgate_old
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
                   addVector(ps.conn, "src-gate-index",@2,$2);
+                  ps.chanspec = NULL;   // signal that there's no chanspec for this conn yet
                 }
         | NAME
                 {
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
+                  ps.chanspec = NULL;   // signal that there's no chanspec for this conn yet
                 }
         | NAME PLUSPLUS
                 {
@@ -941,6 +933,7 @@ parentleftgate_old
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
                   ps.conn->setSrcGatePlusplus(true);
+                  ps.chanspec = NULL;   // signal that there's no chanspec for this conn yet
                 }
         ;
 
@@ -1246,358 +1239,6 @@ quantity
         | quantity REALCONSTANT NAME
         | INTCONSTANT NAME
         | REALCONSTANT NAME
-        ;
-
-/*
- * NED-2: Message subclassing (no shift-reduce conflict here)
- */
-
-cplusplus
-        : CPLUSPLUS CPLUSPLUSBODY opt_semicolon
-                {
-                  ps.cplusplus = (CplusplusNode *)createNodeWithTag(NED_CPLUSPLUS, ps.nedfile );
-                  ps.cplusplus->setBody(toString(trimDoubleBraces(@2)));
-                  setComments(ps.cplusplus,@1,@2);
-                }
-        ;
-
-struct_decl
-        : STRUCT NAME ';'
-                {
-                  ps.structdecl = (StructDeclNode *)createNodeWithTag(NED_STRUCT_DECL, ps.nedfile );
-                  ps.structdecl->setName(toString(@2));
-                  setComments(ps.structdecl,@1,@2);
-                }
-        ;
-
-class_decl
-        : CLASS NAME ';'
-                {
-                  ps.classdecl = (ClassDeclNode *)createNodeWithTag(NED_CLASS_DECL, ps.nedfile );
-                  ps.classdecl->setName(toString(@2));
-                  ps.classdecl->setIsCobject(true);
-                  setComments(ps.classdecl,@1,@2);
-                }
-        | CLASS NONCOBJECT NAME ';'
-                {
-                  ps.classdecl = (ClassDeclNode *)createNodeWithTag(NED_CLASS_DECL, ps.nedfile );
-                  ps.classdecl->setIsCobject(false);
-                  ps.classdecl->setName(toString(@3));
-                  setComments(ps.classdecl,@1,@2);
-                }
-        ;
-
-message_decl
-        : MESSAGE NAME ';'
-                {
-                  ps.messagedecl = (MessageDeclNode *)createNodeWithTag(NED_MESSAGE_DECL, ps.nedfile );
-                  ps.messagedecl->setName(toString(@2));
-                  setComments(ps.messagedecl,@1,@2);
-                }
-        ;
-
-enum_decl
-        : ENUM NAME ';'
-                {
-                  ps.enumdecl = (EnumDeclNode *)createNodeWithTag(NED_ENUM_DECL, ps.nedfile );
-                  ps.enumdecl->setName(toString(@2));
-                  setComments(ps.enumdecl,@1,@2);
-                }
-        ;
-
-enum
-        : ENUM NAME '{'
-                {
-                  ps.enump = (EnumNode *)createNodeWithTag(NED_ENUM, ps.nedfile );
-                  ps.enump->setName(toString(@2));
-                  setComments(ps.enump,@1,@2);
-                  ps.enumfields = (EnumFieldsNode *)createNodeWithTag(NED_ENUM_FIELDS, ps.enump);
-                }
-          opt_enumfields '}' opt_semicolon
-                {
-                  setTrailingComment(ps.enump,@6);
-                }
-        | ENUM NAME EXTENDS NAME '{'
-                {
-                  ps.enump = (EnumNode *)createNodeWithTag(NED_ENUM, ps.nedfile );
-                  ps.enump->setName(toString(@2));
-                  ps.enump->setExtendsName(toString(@4));
-                  setComments(ps.enump,@1,@4);
-                  ps.enumfields = (EnumFieldsNode *)createNodeWithTag(NED_ENUM_FIELDS, ps.enump);
-                }
-          opt_enumfields '}' opt_semicolon
-                {
-                  setTrailingComment(ps.enump,@8);
-                }
-        ;
-
-opt_enumfields
-        : enumfields
-        |
-        ;
-
-enumfields
-        : enumfields enumfield
-        | enumfield
-        ;
-
-enumfield
-        : NAME ';'
-                {
-                  ps.enumfield = (EnumFieldNode *)createNodeWithTag(NED_ENUM_FIELD, ps.enumfields);
-                  ps.enumfield->setName(toString(@1));
-                  setComments(ps.enumfield,@1,@1);
-                }
-        | NAME '=' enumvalue ';'
-                {
-                  ps.enumfield = (EnumFieldNode *)createNodeWithTag(NED_ENUM_FIELD, ps.enumfields);
-                  ps.enumfield->setName(toString(@1));
-                  ps.enumfield->setValue(toString(@3));
-                  setComments(ps.enumfield,@1,@3);
-                }
-        ;
-
-message
-        : MESSAGE NAME '{'
-                {
-                  ps.msgclassorstruct = ps.messagep = (MessageNode *)createNodeWithTag(NED_MESSAGE, ps.nedfile );
-                  ps.messagep->setName(toString(@2));
-                  setComments(ps.messagep,@1,@2);
-                }
-          opt_propertiesblock opt_fieldsblock '}' opt_semicolon
-                {
-                  setTrailingComment(ps.messagep,@7);
-                }
-        | MESSAGE NAME EXTENDS NAME '{'
-                {
-                  ps.msgclassorstruct = ps.messagep = (MessageNode *)createNodeWithTag(NED_MESSAGE, ps.nedfile );
-                  ps.messagep->setName(toString(@2));
-                  ps.messagep->setExtendsName(toString(@4));
-                  setComments(ps.messagep,@1,@4);
-                }
-          opt_propertiesblock opt_fieldsblock '}' opt_semicolon
-                {
-                  setTrailingComment(ps.messagep,@9);
-                }
-        ;
-
-class
-        : CLASS NAME '{'
-                {
-                  ps.msgclassorstruct = ps.classp = (ClassNode *)createNodeWithTag(NED_CLASS, ps.nedfile );
-                  ps.classp->setName(toString(@2));
-                  setComments(ps.classp,@1,@2);
-                }
-          opt_propertiesblock opt_fieldsblock '}' opt_semicolon
-                {
-                  setTrailingComment(ps.classp,@7);
-                }
-        | CLASS NAME EXTENDS NAME '{'
-                {
-                  ps.msgclassorstruct = ps.classp = (ClassNode *)createNodeWithTag(NED_CLASS, ps.nedfile );
-                  ps.classp->setName(toString(@2));
-                  ps.classp->setExtendsName(toString(@4));
-                  setComments(ps.classp,@1,@4);
-                }
-          opt_propertiesblock opt_fieldsblock '}' opt_semicolon
-                {
-                  setTrailingComment(ps.classp,@9);
-                }
-        ;
-
-struct
-        : STRUCT NAME '{'
-                {
-                  ps.msgclassorstruct = ps.structp = (StructNode *)createNodeWithTag(NED_STRUCT, ps.nedfile );
-                  ps.structp->setName(toString(@2));
-                  setComments(ps.structp,@1,@2);
-                }
-          opt_propertiesblock opt_fieldsblock '}' opt_semicolon
-                {
-                  setTrailingComment(ps.structp,@7);
-                }
-        | STRUCT NAME EXTENDS NAME '{'
-                {
-                  ps.msgclassorstruct = ps.structp = (StructNode *)createNodeWithTag(NED_STRUCT, ps.nedfile );
-                  ps.structp->setName(toString(@2));
-                  ps.structp->setExtendsName(toString(@4));
-                  setComments(ps.structp,@1,@4);
-                }
-          opt_propertiesblock opt_fieldsblock '}' opt_semicolon
-                {
-                  setTrailingComment(ps.structp,@9);
-                }
-        ;
-
-opt_propertiesblock
-        : PROPERTIES ':'
-                {
-                  ps.properties = (PropertiesNode *)createNodeWithTag(NED_PROPERTIES, ps.msgclassorstruct);
-                  setComments(ps.properties,@1);
-                }
-          opt_properties
-        |
-        ;
-
-opt_properties
-        : properties
-        |
-        ;
-
-properties
-        : properties property
-        | property
-        ;
-
-property
-        : NAME '=' propertyvalue ';'
-                {
-                  ps.msgproperty = (MsgpropertyNode *)createNodeWithTag(NED_MSGPROPERTY, ps.properties);
-                  ps.msgproperty->setName(toString(@1));
-                  ps.msgproperty->setValue(toString(@3));
-                  setComments(ps.msgproperty,@1,@3);
-                }
-        ;
-
-propertyvalue
-        : STRINGCONSTANT
-        | INTCONSTANT
-        | REALCONSTANT
-        | quantity
-        | TRUE_
-        | FALSE_
-        ;
-
-opt_fieldsblock
-        : FIELDS ':'
-                {
-                  ps.fields = (FieldsNode *)createNodeWithTag(NED_FIELDS, ps.msgclassorstruct);
-                  setComments(ps.fields,@1);
-                }
-          opt_fields
-        |
-        ;
-
-opt_fields
-        : fields
-        |
-        ;
-
-fields
-        : fields field
-        | field
-        ;
-
-field
-        : fieldmodifiers fielddatatype NAME
-                {
-                  ps.field = (FieldNode *)createNodeWithTag(NED_FIELD, ps.fields);
-                  ps.field->setName(toString(@3));
-                  ps.field->setDataType(toString(@2));
-                  ps.field->setIsAbstract(ps.isAbstract);
-                  ps.field->setIsReadonly(ps.isReadonly);
-                }
-           opt_fieldvector opt_fieldenum opt_fieldvalue ';'
-                {
-                  setComments(ps.field,@1,@7);
-                }
-        | fieldmodifiers NAME
-                {
-                  ps.field = (FieldNode *)createNodeWithTag(NED_FIELD, ps.fields);
-                  ps.field->setName(toString(@2));
-                  ps.field->setIsAbstract(ps.isAbstract);
-                  ps.field->setIsReadonly(ps.isReadonly);
-                }
-           opt_fieldvector opt_fieldenum opt_fieldvalue ';'
-                {
-                  setComments(ps.field,@1,@6);
-                }
-        ;
-
-fieldmodifiers
-        : ABSTRACT
-                { ps.isAbstract = true; ps.isReadonly = false; }
-        | READONLY
-                { ps.isAbstract = false; ps.isReadonly = true; }
-        | ABSTRACT READONLY
-                { ps.isAbstract = true; ps.isReadonly = true; }
-        | READONLY ABSTRACT
-                { ps.isAbstract = true; ps.isReadonly = true; }
-        |
-                { ps.isAbstract = false; ps.isReadonly = false; }
-        ;
-
-fielddatatype
-        : NAME
-        | NAME '*'
-
-        | CHARTYPE
-        | SHORTTYPE
-        | INTTYPE
-        | LONGTYPE
-
-        | UNSIGNED_ CHARTYPE
-        | UNSIGNED_ SHORTTYPE
-        | UNSIGNED_ INTTYPE
-        | UNSIGNED_ LONGTYPE
-
-        | DOUBLETYPE
-        | STRINGTYPE
-        | BOOLTYPE
-        ;
-
-
-opt_fieldvector
-        : '[' INTCONSTANT ']'
-                {
-                  ps.field->setIsVector(true);
-                  ps.field->setVectorSize(toString(@2));
-                }
-        | '[' NAME ']'
-                {
-                  ps.field->setIsVector(true);
-                  ps.field->setVectorSize(toString(@2));
-                }
-        | '[' ']'
-                {
-                  ps.field->setIsVector(true);
-                }
-        |
-        ;
-
-opt_fieldenum
-        : ENUM '(' NAME ')'
-                {
-                  ps.field->setEnumName(toString(@3));
-                }
-        |
-        ;
-
-opt_fieldvalue
-        : '=' fieldvalue
-                {
-                  ps.field->setDefaultValue(toString(@2));
-                }
-        |
-        ;
-
-fieldvalue
-        : STRINGCONSTANT
-        | CHARCONSTANT
-        | INTCONSTANT
-        | '-' INTCONSTANT
-        | REALCONSTANT
-        | '-' REALCONSTANT
-        | quantity
-        | TRUE_
-        | FALSE_
-        | NAME
-        ;
-
-enumvalue
-        : INTCONSTANT
-        | '-' INTCONSTANT
-        | NAME
         ;
 
 opt_semicolon : ';' | ;
