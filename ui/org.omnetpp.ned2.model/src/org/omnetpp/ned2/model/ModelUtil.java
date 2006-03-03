@@ -23,7 +23,7 @@ public class ModelUtil {
 		NEDParser np = new NEDParser(errors);
 		np.setParseExpressions(false);
 		NEDElement treeRoot = np.parseNEDText(source);
-		if (treeRoot == null)
+		if (treeRoot == null || !errors.empty())
 			return null;
 		org.omnetpp.ned2.model.NEDElement tmpEl = swig2pojo(treeRoot, null);
 		return tmpEl;
