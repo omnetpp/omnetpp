@@ -16,7 +16,7 @@ import org.eclipse.draw2d.geometry.Point;
  */
 public class BasicSpringEmbedderLayouter extends AbstractGraphLayouter
 {
-    class Anchor
+    static class Anchor
     {
         Object name;      // anchor name
         double x, y;      // position
@@ -24,7 +24,7 @@ public class BasicSpringEmbedderLayouter extends AbstractGraphLayouter
         double dx, dy;    // internal: movement at each step (NOT preserved across iterations!)
     };
 
-    class Node
+    static class Node
     {
         Object key;        // node "handle"
         boolean fixed;     // allowed to move?
@@ -37,7 +37,7 @@ public class BasicSpringEmbedderLayouter extends AbstractGraphLayouter
         int color;         // internal: connected nodes share the same color
     };
 
-    class Edge
+    static class Edge
     {
         Node from;
         Node to;
@@ -49,7 +49,7 @@ public class BasicSpringEmbedderLayouter extends AbstractGraphLayouter
     List<Edge> edges;
 
 	//#ifdef USE_CONTRACTING_BOX
-	//    class Box
+	//    static class Box
 	//    {
 	//        boolean fixed;   // allowed to move?
 	//        double x1, y1;   // coordinates
