@@ -21,9 +21,30 @@
 #include <stdlib.h>
 #include "nederror.h"
 
-static bool err = false;
 
-void NEDError(NEDElement *context, const char *message, ...)
+void NEDErrorStore::doAdd(NEDElement *context, int category, const char *message)
+{
+    entries.push_back(Entry());
+    Entry& e = entries.back();
+
+    const char *loc = context ? context->getSourceLocation() : NULL;
+
+    e.location = loc ? loc : "";
+    e.category = category;
+    e.message = message;
+
+    if (doprint)
+    {
+        if (loc)
+            fprintf(stderr, "%s: error: %s\n", loc, message);
+        else if (context)
+            fprintf(stderr, "<%s>: error: %s\n", context->getTagName(), message);
+        else
+            fprintf(stderr, "error: %s\n", message);
+   }
+}
+
+void NEDErrorStore::add(NEDElement *context, const char *message, ...)
 {
     va_list va;
     va_start(va, message);
@@ -31,27 +52,57 @@ void NEDError(NEDElement *context, const char *message, ...)
     vsprintf(messagebuf,message,va);
     va_end(va);
 
-    const char *loc = context ? context->getSourceLocation() : NULL;
-    if (loc)
-        fprintf(stderr, "%s: error: %s\n", loc, messagebuf);
-    else if (context)
-        fprintf(stderr, "<%s>: error: %s\n", context->getTagName(), messagebuf);
-    else
-        fprintf(stderr, "error: %s\n", messagebuf);
-
-    err = true;
+    doAdd(context, ERRCAT_ERROR, messagebuf);
 }
 
-bool errorsOccurred()
+void NEDErrorStore::add(NEDElement *context, int category, const char *message, ...)
 {
-    return err;
+    va_list va;
+    va_start(va, message);
+    char messagebuf[1024];
+    vsprintf(messagebuf,message,va);
+    va_end(va);
+
+    doAdd(context, category, messagebuf);
 }
 
-void clearErrors()
+const char *NEDErrorStore::errorCategory(int i) const
 {
-    err = false;
+    if (i<0 || i>=entries.size()) return NULL;
+    return categoryName(entries[i].category);
 }
 
+int NEDErrorStore::errorCategoryCode(int i) const
+{
+    if (i<0 || i>=entries.size()) return -1;
+    return entries[i].category;
+}
+
+const char *NEDErrorStore::errorLocation(int i) const
+{
+    if (i<0 || i>=entries.size()) return NULL;
+    return entries[i].location.c_str();
+}
+
+const char *NEDErrorStore::errorText(int i) const
+{
+    if (i<0 || i>=entries.size()) return NULL;
+    return entries[i].message.c_str();
+}
+
+const char *NEDErrorStore::categoryName(int cat)
+{
+    switch (cat)
+    {
+        case ERRCAT_INFO:    return "Info";
+        case ERRCAT_WARNING: return "Warning";
+        case ERRCAT_ERROR:   return "Error";
+        case ERRCAT_FATAL:   return "Fatal";
+        default:             return "???";
+    }
+}
+
+//---
 
 void NEDInternalError(const char *file, int line, NEDElement *context, const char *message, ...)
 {

@@ -19,8 +19,11 @@
 #ifndef __NEDERROR_H
 #define __NEDERROR_H
 
+#include <vector>
 #include "nedelement.h"
 
+
+enum NEDErrorCategory {ERRCAT_INFO, ERRCAT_WARNING, ERRCAT_ERROR, ERRCAT_FATAL};
 
 /**
  * Stores error messages
@@ -28,12 +31,33 @@
 class NEDErrorStore
 {
     private:
-        enum Category {INFO, WARNING, ERROR, FATAL};
         struct Entry {
             int category;
             std::string location;
-            std::string errortext;
+            std::string message;
         };
+
+        std::vector<Entry> entries;
+        bool doprint;
+
+     private:
+        void doAdd(NEDElement *context, int category, const char *message);
+
+     public:
+        NEDErrorStore() {}
+        ~NEDErrorStore() {}
+        void setPrintToStderr(bool p) {doprint = p;}
+        void add(NEDElement *context, const char *message, ...);
+        void add(NEDElement *context, int category, const char *message, ...);
+        bool empty() const {return entries.empty();}
+        int numErrors() const {return entries.size();}
+        void clear() {entries.clear();}
+
+        const char *errorCategory(int i) const;
+        int errorCategoryCode(int i) const;
+        const char *errorLocation(int i) const;
+        const char *errorText(int i) const;
+        static const char *categoryName(int cat);
 };
 
 /**
