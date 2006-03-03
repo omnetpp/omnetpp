@@ -17,7 +17,6 @@ import org.eclipse.draw2d.Animation;
 import org.eclipse.draw2d.ConnectionLayer;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FreeformLayer;
-import org.eclipse.draw2d.FreeformLayout;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.XYLayout;
@@ -38,6 +37,7 @@ import org.eclipse.gef.tools.DeselectAllTracker;
 import org.eclipse.gef.tools.MarqueeDragTracker;
 import org.eclipse.swt.SWT;
 import org.omnetpp.ned.editor.graph.edit.policies.CompoundModuleLayoutEditPolicy;
+import org.omnetpp.ned.editor.graph.misc.FreeformDesktopLayout;
 import org.omnetpp.ned.editor.graph.model.NedFileNodeEx;
 
 /**
@@ -57,7 +57,6 @@ public class NedFileDiagramEditPart extends ContainerEditPart implements LayerCo
         installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE, null);
         installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE, null);
         installEditPolicy(EditPolicy.COMPONENT_ROLE, new RootComponentEditPolicy());
-//        installEditPolicy(EditPolicy.LAYOUT_ROLE, new NedFileLayoutEditPolicy());
         installEditPolicy(EditPolicy.LAYOUT_ROLE, new CompoundModuleLayoutEditPolicy((XYLayout)getContentPane().getLayoutManager()));
 
         installEditPolicy("Snap Feedback", new SnapFeedbackPolicy()); //$NON-NLS-1$
@@ -70,13 +69,8 @@ public class NedFileDiagramEditPart extends ContainerEditPart implements LayerCo
      */
     protected IFigure createFigure() {
         Figure f = new FreeformLayer();
-//        Figure f = new Layer();
-//        ToolbarLayout toolLayoutMan = new ToolbarLayout();
-//        toolLayoutMan.setVertical(true);
-//        f.setLayoutManager(toolLayoutMan);
-        f.setLayoutManager(new FreeformLayout());
-        f.setBorder(new MarginBorder(10));
-        // f.setBorder(new GroupBoxBorder(" Module "));
+        f.setLayoutManager(new FreeformDesktopLayout());
+        f.setBorder(new MarginBorder(5));
         return f;
     }
 
@@ -110,43 +104,7 @@ public class NedFileDiagramEditPart extends ContainerEditPart implements LayerCo
         return new MarqueeDragTracker();
     }
 
-    /**
-     * Returns <code>NULL</code> as it does not hold any connections.
-     * 
-     * @return ConnectionAnchor
-     */
-//    public ConnectionAnchor getSourceConnectionAnchor(ConnectionEditPart editPart) {
-//        return null;
-//    }
 
-    /**
-     * Returns <code>NULL</code> as it does not hold any connections.
-     * 
-     * @return ConnectionAnchor
-     */
-//    public ConnectionAnchor getSourceConnectionAnchor(int x, int y) {
-//        return null;
-//    }
-
-    /**
-     * Returns <code>NULL</code> as it does not hold any connections.
-     * 
-     * @return ConnectionAnchor
-     */
-//    public ConnectionAnchor getTargetConnectionAnchor(ConnectionEditPart editPart) {
-//        return null;
-//    }
-
-    /**
-     * Returns <code>NULL</code> as it does not hold any connections.
-     * 
-     * @return ConnectionAnchor
-     */
-//    public ConnectionAnchor getTargetConnectionAnchor(int x, int y) {
-//        return null;
-//    }
-
-    
     // FIXME 
     protected void refreshVisuals() {
     	Animation.markBegin();

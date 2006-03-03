@@ -1,13 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
 package org.omnetpp.ned.editor.graph;
 
 import java.io.ByteArrayInputStream;
@@ -468,12 +458,6 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
         getGraphicalControl().addListener(SWT.Deactivate, listener);
     }
 
-    protected void writeToOutputStream(OutputStream os) throws IOException {
-        ObjectOutputStream out = new ObjectOutputStream(os);
-        out.writeObject(getModel());
-        out.close();
-    }
-
     protected CustomPalettePage createPalettePage() {
         return new CustomPalettePage(getPaletteViewerProvider()) {
             public void init(IPageSite pageSite) {
@@ -523,7 +507,8 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
     		public void run() throws Exception {
     			saveProperties();
     			ByteArrayOutputStream out = new ByteArrayOutputStream();
-    			writeToOutputStream(out);
+// TODO save the contents of theeditor
+//    			writeToOutputStream(out);
     			IFile file = ((IFileEditorInput)getEditorInput()).getFile();
     			file.setContents(new ByteArrayInputStream(out.toByteArray()), 
     							true, false, progressMonitor);
@@ -700,7 +685,8 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
                     saveProperties();
                     try {
                         ByteArrayOutputStream out = new ByteArrayOutputStream();
-                        writeToOutputStream(out);
+// TODO save the contents of the file                        
+//                        writeToOutputStream(out);
                         file.create(new ByteArrayInputStream(out.toByteArray()), true, monitor);
                         out.close();
                     } catch (Exception e) {

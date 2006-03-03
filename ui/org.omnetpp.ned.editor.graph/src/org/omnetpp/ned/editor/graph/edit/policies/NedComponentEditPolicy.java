@@ -1,6 +1,5 @@
 package org.omnetpp.ned.editor.graph.edit.policies;
 
-import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.requests.GroupRequest;
 import org.omnetpp.ned.editor.graph.model.INedContainer;
@@ -15,10 +14,4 @@ public class NedComponentEditPolicy extends org.eclipse.gef.editpolicies.Compone
         deleteCmd.setChild((INedNode) getHost().getModel());
         return deleteCmd;
     }
-
-	@Override
-	public boolean understandsRequest(Request req) {
-		return true;
-	}
-
 }

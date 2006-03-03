@@ -108,8 +108,12 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 	}
 
 	public void insertModelChild(int index, INedNode child) {
-		// FIXME check wheter Submodules node exists
-		NEDElement insertBefore = getFirstSubmodulesChild().getFirstChild();
+		// check wheter Submodules node exists and create one if does not
+		SubmodulesNode snode = getFirstSubmodulesChild();
+		if (snode == null) 
+			snode = (SubmodulesNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementFactoryEx.NED_SUBMODULES, this);
+		
+		NEDElement insertBefore = snode.getFirstChild();
 		for(int i=0; (i<index) && (insertBefore!=null); ++i) 
 			insertBefore = insertBefore.getNextSibling();
 		
@@ -117,7 +121,12 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 	}
 
 	public void insertModelChild(INedNode insertBefore, INedNode child) {
-		getFirstSubmodulesChild().insertChildBefore((NEDElement)insertBefore, (NEDElement)child);
+		// check wheter Submodules node exists and create one if does not
+		SubmodulesNode snode = getFirstSubmodulesChild();
+		if (snode == null) 
+			snode = (SubmodulesNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementFactoryEx.NED_SUBMODULES, this);
+		
+		snode.insertChildBefore((NEDElement)insertBefore, (NEDElement)child);
 	}
 
 	public List<? extends INedNode> getModelChildren() {
