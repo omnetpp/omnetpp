@@ -29,10 +29,12 @@
  */
 class NEDValidatorBase
 {
+  protected:
+    NEDErrorStore *errors;
   public:
     /** @name Constructor, destructor */
     //@{
-    NEDValidatorBase() {}
+    NEDValidatorBase(NEDErrorStore *e) {errors = e;}
     virtual ~NEDValidatorBase() {}
     //@}
 

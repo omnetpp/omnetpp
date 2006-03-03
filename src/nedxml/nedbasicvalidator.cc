@@ -113,7 +113,7 @@ void NEDBasicValidator::checkUniqueness(NEDElement *node, int childtype, const c
         {
             const char *attr2 = child2->getAttribute(attr);
             if (attr1 && attr2 && !strcmp(attr1,attr2))
-                NEDError(child1, "name '%s' not unique",attr1);
+                errors->add(child1, "name '%s' not unique",attr1);
         }
     }
 }
@@ -133,14 +133,14 @@ void NEDBasicValidator::checkExpressionAttributes(NEDElement *node, const char *
                 if (!strcmp(target, attrs[i]))
                     break;
             if (i==n)
-                NEDError(child, "'expression' element with invalid target attribute '%s'",target);
+                errors->add(child, "'expression' element with invalid target attribute '%s'",target);
         }
     }
     else
     {
         // check: should be no Expression children at all
         if (node->getFirstChildWithTag(NED_EXPRESSION))
-            NEDError(node, "'expression' element found while using non-parsed expressions\n");
+            errors->add(node, "'expression' element found while using non-parsed expressions\n");
     }
 
     // check mandatory expressions are there
@@ -156,13 +156,13 @@ void NEDBasicValidator::checkExpressionAttributes(NEDElement *node, const char *
                    if (strnotnull(expr->getTarget()) && !strcmp(expr->getTarget(),attrs[i]))
                        break;
                if (!expr)
-                   NEDError(node, "expression-valued attribute '%s' not present in parsed form (missing 'expression' element)", attrs[i]);
+                   errors->add(node, "expression-valued attribute '%s' not present in parsed form (missing 'expression' element)", attrs[i]);
            }
            else
            {
                // attribute must be there
                if (!node->getAttribute(attrs[i]) || !(node->getAttribute(attrs[i]))[0])
-                   NEDError(node, "missing attribute '%s'", attrs[i]);
+                   errors->add(node, "missing attribute '%s'", attrs[i]);
            }
        }
     }
@@ -295,7 +295,7 @@ void NEDBasicValidator::validateElement(SubmoduleNode *node)
             INTERNAL_ERROR0(node,"occurs outside a compound-module");
         NEDElement *params = compound->getFirstChildWithTag(NED_PARAMETERS);
         if (!params || params->getFirstChildWithAttribute(NED_PARAM, "name", paramName)==NULL)
-            {NEDError(node, "compound module has no parameter named '%s'", paramName);return;}
+            {errors->add(node, "compound module has no parameter named '%s'", paramName);return;}
     }
 }
 
@@ -353,9 +353,9 @@ void NEDBasicValidator::validateElement(ConnectionNode *node)
     bool srcGateIx =  node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "src-gate-index")!=NULL;
     bool destGateIx = node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "dest-gate-index")!=NULL;
     if (srcGateIx && node->getSrcGatePlusplus())
-        NEDError(node, "wrong source gate: cannot have both gate index and '++' operator specified");
+        errors->add(node, "wrong source gate: cannot have both gate index and '++' operator specified");
     if (destGateIx && node->getDestGatePlusplus())
-        NEDError(node, "wrong destination gate: cannot have both gate index and '++' operator specified");
+        errors->add(node, "wrong destination gate: cannot have both gate index and '++' operator specified");
 }
 
 void NEDBasicValidator::validateElement(ChannelInterfaceNode *node)
@@ -401,7 +401,7 @@ void NEDBasicValidator::validateElement(OperatorNode *node)
     // next list uses space as separator, so make sure op does not contain space
     if (strchr(op, ' '))
     {
-        NEDError(node, "invalid operator '%s' (contains space)",op);
+        errors->add(node, "invalid operator '%s' (contains space)",op);
         return;
     }
 
@@ -414,29 +414,29 @@ void NEDBasicValidator::validateElement(OperatorNode *node)
     if (strstr("! ~",op))
     {
          if (args!=1)
-            NEDError(node, "operator '%s' should have 1 operand, not %d", op, args);
+            errors->add(node, "operator '%s' should have 1 operand, not %d", op, args);
     }
     // unary or binary?
     else if (strstr("-",op))
     {
          if (args!=1 && args!=2)
-            NEDError(node, "operator '%s' should have 1 or 2 operands, not %d", op, args);
+            errors->add(node, "operator '%s' should have 1 or 2 operands, not %d", op, args);
     }
     // binary?
     else if (strstr("+ * / % ^ == != > >= < <= && || ## & | # << >>",op))
     {
          if (args!=2)
-            NEDError(node, "operator '%s' should have 2 operands, not %d", op, args);
+            errors->add(node, "operator '%s' should have 2 operands, not %d", op, args);
     }
     // tertiary?
     else if (strstr("?:",op))
     {
          if (args!=3)
-            NEDError(node, "operator '%s' should have 3 operands, not %d", op, args);
+            errors->add(node, "operator '%s' should have 3 operands, not %d", op, args);
     }
     else
     {
-        NEDError(node, "invalid operator '%s'",op);
+        errors->add(node, "invalid operator '%s'",op);
     }
 }
 
@@ -451,7 +451,7 @@ void NEDBasicValidator::validateElement(FunctionNode *node)
     if (!strcmp(func,"index"))
     {
          if (args!=0)
-             NEDError(node, "operator 'index' does not take arguments");
+             errors->add(node, "operator 'index' does not take arguments");
 
          // find expression and submodule node we're under
          NEDElement *parent = node->getParent();
@@ -464,17 +464,17 @@ void NEDBasicValidator::validateElement(FunctionNode *node)
          NEDElement *submod = parent;
 
          if (!submod || submod->getFirstChildWithAttribute(NED_EXPRESSION, "target", "vector-size")==NULL)
-             NEDError(node, "'index' may only occur in a submodule vector's definition");
+             errors->add(node, "'index' may only occur in a submodule vector's definition");
          if (expr->getParent()==submod)
-             NEDError(node, "'index' is not allowed here");
+             errors->add(node, "'index' is not allowed here");
          return;
     }
     else if (!strcmp(func,"sizeof"))
     {
          if (args!=1)
-             NEDError(node, "operator 'sizeof' takes one argument");
+             errors->add(node, "operator 'sizeof' takes one argument");
          //else if (node->getFirstChild()->getTagCode()!=NED_IDENT)
-         //    NEDError(node, "argument of operator 'sizeof' should be an identifier");
+         //    errors->add(node, "argument of operator 'sizeof' should be an identifier");
          else
          {
              // TBD further check it's an existing parent module gate or submodule name
@@ -484,26 +484,26 @@ void NEDBasicValidator::validateElement(FunctionNode *node)
     else if (!strcmp(func,"input"))
     {
          if (args>2)
-             NEDError(node, "operator 'input' takes 0, 1 or 2 arguments");
+             errors->add(node, "operator 'input' takes 0, 1 or 2 arguments");
          NEDElement *op1 = node->getFirstChild();
          NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
          if (args==2)
              if (op2->getTagCode()!=NED_LITERAL || ((LiteralNode *)op2)->getType()!=NED_CONST_STRING)
-                 NEDError(node, "second argument to 'input()' must be a string literal (prompt text)");
+                 errors->add(node, "second argument to 'input()' must be a string literal (prompt text)");
          NEDElement *parent = node->getParent();
          if (parent->getTagCode()!=NED_EXPRESSION)
-             NEDError(node, "'input()' occurs in wrong place");
+             errors->add(node, "'input()' occurs in wrong place");
          return;
     }
     else if (!strcmp(func,"xmldoc"))
     {
          if (args!=1 && args!=2)
-             {NEDError(node, "'xmldoc()' takes 1 or 2 arguments");return;}
+             {errors->add(node, "'xmldoc()' takes 1 or 2 arguments");return;}
          NEDElement *op1 = node->getFirstChild();
          NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
          if (op1->getTagCode()!=NED_LITERAL || ((LiteralNode *)op1)->getType()!=NED_CONST_STRING ||
              (op2 && (op2->getTagCode()!=NED_LITERAL || ((LiteralNode *)op2)->getType()!=NED_CONST_STRING)))
-             NEDError(node, "'xmldoc()' arguments must be string literals");
+             errors->add(node, "'xmldoc()' arguments must be string literals");
          return;
     }
 
@@ -524,7 +524,7 @@ void NEDBasicValidator::validateElement(FunctionNode *node)
     }
     if (name_found && !argc_matches)
     {
-        NEDError(node, "function '%s' cannot take %d operands", func, args);
+        errors->add(node, "function '%s' cannot take %d operands", func, args);
     }
 }
 
@@ -549,9 +549,9 @@ void NEDBasicValidator::validateElement(IdentNode *node)
         {
             // FIXME TODO
             //if (node->getParentWithTag(NED_FOR_LOOP))
-            //    NEDError(node, "no compound module parameter or loop variable named '%s'", paramName);
+            //    errors->add(node, "no compound module parameter or loop variable named '%s'", paramName);
             //else
-            //    NEDError(node, "compound module has no parameter named '%s'", paramName);
+            //    errors->add(node, "compound module has no parameter named '%s'", paramName);
         }
     }
 }
@@ -570,7 +570,7 @@ void NEDBasicValidator::validateElement(IdentNode *node)
 //    if (!forloop)
 //        INTERNAL_ERROR1(node,"loop variable '%s' occurs outside for loop", name);
 //    if (forloop->getFirstChildWithAttribute(NED_LOOP_VAR, "param-name", name)==NULL)
-//        NEDError(node, "no loop variable named '%s' in enclosing for loop", name);
+//        errors->add(node, "no loop variable named '%s' in enclosing for loop", name);
 //}
 
 void NEDBasicValidator::validateElement(LiteralNode *node)
@@ -587,7 +587,7 @@ void NEDBasicValidator::validateElement(LiteralNode *node)
     {
         // check bool
         if (strcmp(value,"true") && strcmp(value,"false"))
-            NEDError(node, "bool constant should be 'true' or 'false'");
+            errors->add(node, "bool constant should be 'true' or 'false'");
         // TBD check that if text is present, it's the same as value
     }
     else if (type==NED_CONST_INT)
@@ -596,7 +596,7 @@ void NEDBasicValidator::validateElement(LiteralNode *node)
         char *s;
         strtol(value, &s, 0);
         if (s && *s)
-            NEDError(node, "invalid integer constant '%s'", value);
+            errors->add(node, "invalid integer constant '%s'", value);
         // TBD check that if text is present, it's the same as value
     }
     else if (type==NED_CONST_DOUBLE)
@@ -605,7 +605,7 @@ void NEDBasicValidator::validateElement(LiteralNode *node)
         char *s;
         strtod(value, &s);
         if (s && *s)
-            NEDError(node, "invalid real constant '%s'", value);
+            errors->add(node, "invalid real constant '%s'", value);
         // TBD check that if text is present, it's the same as value
     }
     else if (type==NED_CONST_STRING)
@@ -619,7 +619,7 @@ void NEDBasicValidator::validateElement(LiteralNode *node)
         char *s;
         strtod(value, &s);
         if (s && *s)
-            NEDError(node, "invalid value for unit constant '%s' (expected as real number)", value);
+            errors->add(node, "invalid value for unit constant '%s' (expected as real number)", value);
     }
 }
 
@@ -681,35 +681,35 @@ void NEDBasicValidator::validateElement(FieldNode *node)
     bool isStruct = !strcmp(classNode->getTagName(), "struct");
 
     if (node->getIsAbstract() && isStruct)
-          NEDError(node, "a struct cannot have abstract fields");
+          errors->add(node, "a struct cannot have abstract fields");
 
     if (node->getIsAbstract() && strnotnull(node->getDefaultValue()))
-         NEDError(node, "an abstract field cannot be assigned a default value");
+         errors->add(node, "an abstract field cannot be assigned a default value");
 
     if (node->getIsVector() && strnull(node->getVectorSize()) && isStruct)
-         NEDError(node, "a struct cannot have dynamic array fields");
+         errors->add(node, "a struct cannot have dynamic array fields");
 
     // if (strnotnull(node->getDataType())) // type is there
     // {
     //      if (defined in base class too)
     //      {
     //          if (!node->getIsReadonly())
-    //              NEDError(node, "field is already declared in a base class (only readonly fields can be overridden)");
+    //              errors->add(node, "field is already declared in a base class (only readonly fields can be overridden)");
     //          if (node->getIsReadonly() && type is not the same)
-    //              NEDError(node, "field is already declared in a base class with a different type");
+    //              errors->add(node, "field is already declared in a base class with a different type");
     //      }
     // }
 
     if (strnull(node->getDataType())) // type is missing
     {
          if (node->getIsAbstract())
-             NEDError(node, "an abstract field needs a type");
+             errors->add(node, "an abstract field needs a type");
          if (node->getIsVector())
-             NEDError(node, "cannot set array field of the base class");
+             errors->add(node, "cannot set array field of the base class");
          if (strnotnull(node->getEnumName()))
-             NEDError(node, "cannot specify enum for base class field");
+             errors->add(node, "cannot specify enum for base class field");
          if (strnull(node->getDefaultValue()))
-             NEDError(node, "missing field type");
+             errors->add(node, "missing field type");
     }
 
     // TBD check syntax of default value, and that its type agrees with field type

@@ -32,7 +32,7 @@ std::string slashifyFilename(const char *fname)
 
 const char *toString(YYLTYPE pos)
 {
-    return np->nedsource->get(pos);
+    return np->getSource()->get(pos);
 }
 
 const char *toString(long l)
@@ -109,22 +109,22 @@ PropertyNode *storeComponentSourceCode(NEDElement *node, YYLTYPE tokenpos)
 
 void setFileComment(NEDElement *node)
 {
-//XXX    node->setAttribute("file-comment", np->nedsource->getFileComment() );
+//XXX    node->setAttribute("file-comment", np->getSource()->getFileComment() );
 }
 
 void setBannerComment(NEDElement *node, YYLTYPE tokenpos)
 {
-//XXX    node->setAttribute("banner-comment", np->nedsource->getBannerComment(tokenpos) );
+//XXX    node->setAttribute("banner-comment", np->getSource()->getBannerComment(tokenpos) );
 }
 
 void setRightComment(NEDElement *node, YYLTYPE tokenpos)
 {
-//XXX    node->setAttribute("right-comment", np->nedsource->getTrailingComment(tokenpos) );
+//XXX    node->setAttribute("right-comment", np->getSource()->getTrailingComment(tokenpos) );
 }
 
 void setTrailingComment(NEDElement *node, YYLTYPE tokenpos)
 {
-//XXX    node->setAttribute("trailing-comment", np->nedsource->getTrailingComment(tokenpos) );
+//XXX    node->setAttribute("trailing-comment", np->getSource()->getTrailingComment(tokenpos) );
 }
 
 void setComments(NEDElement *node, YYLTYPE pos)

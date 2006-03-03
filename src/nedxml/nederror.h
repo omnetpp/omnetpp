@@ -4,9 +4,6 @@
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
-// Contents:
-//   error handling functions
-//
 //==========================================================================
 
 /*--------------------------------------------------------------*
@@ -44,37 +41,56 @@ class NEDErrorStore
         void doAdd(NEDElement *context, int category, const char *message);
 
      public:
+        /**
+         * Ctor
+         */
         NEDErrorStore() {}
         ~NEDErrorStore() {}
+
+        /**
+         * If set, errors get dumped to stderr as well as stored
+         */
         void setPrintToStderr(bool p) {doprint = p;}
+
+        /**
+         * Add an error message with the default category being ERROR.
+         */
         void add(NEDElement *context, const char *message, ...);
+
+        /**
+         * Add an error message.
+         */
         void add(NEDElement *context, int category, const char *message, ...);
+
+        /**
+         * Return true if there're no messages stored.
+         */
         bool empty() const {return entries.empty();}
+
+        /**
+         * Number of messages stored.
+         */
         int numErrors() const {return entries.size();}
+
+        /**
+         * Discard all messages stored.
+         */
         void clear() {entries.clear();}
 
+        /** @name Returns properties of the ith message stored (i=0..numErrors-1) */
+        //@{
         const char *errorCategory(int i) const;
         int errorCategoryCode(int i) const;
         const char *errorLocation(int i) const;
         const char *errorText(int i) const;
+        //@}
+
+        /**
+         * Convert categories from numeric to textual form.
+         */
         static const char *categoryName(int cat);
 };
 
-/**
- * Adds a compiler error message. Currently the message is printed to the standard
- * error; this is going to be refined.
- */
-void NEDError(NEDElement *context, const char *message, ...);
-
-/**
- * Returns true if NEDError() has been called since the last clearErrors().
- */
-bool errorsOccurred();
-
-/**
- * Resets the flag used by errorsOccurred().
- */
-void clearErrors();
 
 #define INTERNAL_ERROR0(context,msg) NEDInternalError(__FILE__,__LINE__,context,msg)
 #define INTERNAL_ERROR1(context,msg,arg1) NEDInternalError(__FILE__,__LINE__,context,msg,arg1)
@@ -90,7 +106,7 @@ void NEDInternalError(const char *file, int line, NEDElement *context, const cha
 
 
 /**
- * Low-level routines throw an exception instead of calling NEDError().
+ * Low-level routines throw an exception instead of calling NEDErrorStore->add().
  */
 class NEDException
 {

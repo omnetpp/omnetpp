@@ -525,7 +525,7 @@ NEDElement *doParseMSG2(NEDParser *p, const char *nedtext)
     // alloc buffer
     struct yy_buffer_state *handle = yy_scan_string(nedtext);
     if (!handle)
-        {NEDError(NULL, "unable to allocate work memory"); return false;}
+        {np->getErrors()->add(NULL, "unable to allocate work memory"); return false;}
 
     // create parser state and NEDFileNode
     np = p;
@@ -539,7 +539,7 @@ NEDElement *doParseMSG2(NEDParser *p, const char *nedtext)
     //FIXME ps.msgfile->setBannerComment(nedsource->getFileComment());
 
     if (np->getStoreSourceFlag())
-        storeSourceCode(ps.msgfile, np->nedsource->getFullTextPos());
+        storeSourceCode(ps.msgfile, np->getSource()->getFullTextPos());
 
     // parse
     int ret;

@@ -136,7 +136,7 @@ void createFileNameWithSuffix(char *outfname, const char *infname, const char *s
     strcpy(s,suffix);
 }
 
-bool processFile(const char *fname)
+bool processFile(const char *fname, NEDErrorStore *errors)
 {
     if (opt_verbose) fprintf(stdout,"processing '%s'...\n",fname);
 
@@ -156,26 +156,26 @@ bool processFile(const char *fname)
 
     // process input tree
     NEDElement *tree = 0;
-    clearErrors();
+    errors->clear();
     if (ftype==XML_FILE)
     {
-        tree = parseXML(fname);
+        tree = parseXML(fname, errors);
     }
     else if (ftype==NED_FILE || ftype==MSG_FILE)
     {
-        NEDParser parser;
+        NEDParser parser(errors);
         parser.setParseExpressions(!opt_unparsedexpr);
         parser.setStoreSource(opt_storesrc);
         tree = (ftype==NED_FILE) ? parser.parseNEDFile(fname) : parser.parseMSGFile(fname);
     }
-    if (errorsOccurred())
+    if (!errors->empty())
     {
         delete tree;
         return false;
     }
 
     // DTD validation and additional basic validation
-    NEDDTDValidator dtdvalidator;
+    NEDDTDValidator dtdvalidator(errors);
 try{
     dtdvalidator.validate(tree);
 }catch(NEDException*e){
@@ -185,7 +185,7 @@ try{
     return false;
 }
 /*
-    if (errorsOccurred())
+    if (!errors->empty())
     {
         delete tree;
         return false;
@@ -193,9 +193,9 @@ try{
 */
 
 /*FIXME FIXME FIXME validation temporarily commented out FIXME FIXME
-    NEDBasicValidator basicvalidator(!opt_unparsedexpr);
+    NEDBasicValidator basicvalidator(!opt_unparsedexpr, errors);
     basicvalidator.validate(tree);
-    if (errorsOccurred())
+    if (!errors->empty())
     {
         delete tree;
         return false;
@@ -211,18 +211,18 @@ try{
         if (!opt_noimports)
         {
             // invoke NEDCompiler (will process imports and do semantic validation)
-//XXX            NEDCompiler nedc(&filecache, &symboltable, &importresolver);
+//XXX            NEDCompiler nedc(&filecache, &symboltable, &importresolver, errors);
 //XXX            nedc.validate(tree);
         }
         else
         {
             // simple semantic validation (without imports)
-//XXX            NEDSemanticValidator validator(!opt_unparsedexpr,&symboltable);
+//XXX            NEDSemanticValidator validator(!opt_unparsedexpr,&symboltable, errors);
 //XXX            validator.validate(tree);
         }
     }
 /*
-    if (errorsOccurred())
+    if (!errors->empty())
     {
         delete tree;
         return false;
@@ -268,7 +268,7 @@ try{
         else if (opt_genned || opt_genmsg)
         {
             ofstream out(outfname);
-            generateNed(out, tree);
+            generateNed(out, tree, errors);
             out.close();
         }
         else
@@ -283,14 +283,14 @@ try{
 
         delete tree;
 
-        if (errorsOccurred())
+        if (!errors->empty())
             return false;
     }
     return true;
 }
 
 
-bool processListFile(const char *listfilename, bool istemplistfile)
+bool processListFile(const char *listfilename, bool istemplistfile, NEDErrorStore *errors)
 {
     const int maxline=1024;
     char line[maxline];
@@ -333,7 +333,7 @@ bool processListFile(const char *listfilename, bool istemplistfile)
         if (fname[0]=='@')
         {
             bool istmp = (fname[1]=='@');
-            if (!processListFile(fname+(istmp?2:1), istmp))
+            if (!processListFile(fname+(istmp?2:1), istmp, errors))
             {
                 in.close();
                 return false;
@@ -341,7 +341,7 @@ bool processListFile(const char *listfilename, bool istemplistfile)
         }
         else if (fname[0] && fname[0]!='#')
         {
-            if (!processFile(fname))
+            if (!processFile(fname, errors))
             {
                 in.close();
                 return false;
@@ -377,6 +377,10 @@ int main(int argc, char **argv)
         printUsage();
         return 0;
     }
+
+    NEDErrorStore errorstore;
+    NEDErrorStore *errors = &errorstore;
+    errors->setPrintToStderr(true);
 
     // process options
     for (int i=1; i<argc; i++)
@@ -507,7 +511,7 @@ int main(int argc, char **argv)
         {
             // treat @listfile and @@listfile differently
             bool istmp = (argv[i][1]=='@');
-            if (!processListFile(argv[i]+(istmp?2:1), istmp))
+            if (!processListFile(argv[i]+(istmp?2:1), istmp, errors))
                 return 1;
         }
         else
@@ -525,7 +529,7 @@ int main(int argc, char **argv)
             }
             while (fname)
             {
-                if (!processFile(fname)) return 1;
+                if (!processFile(fname, errors)) return 1;
                 fname = findNextFile();
             }
             findCleanup();
@@ -537,7 +541,7 @@ int main(int argc, char **argv)
 
     if (opt_mergeoutput)
     {
-        if (errorsOccurred())
+        if (!errors->empty())
         {
             delete outputtree;
             return 1;
@@ -567,7 +571,7 @@ int main(int argc, char **argv)
 
         delete outputtree;
 
-        if (errorsOccurred())
+        if (!errors->empty())
             return 1;
     }
 

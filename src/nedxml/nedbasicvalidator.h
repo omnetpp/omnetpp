@@ -49,7 +49,8 @@ class NEDBasicValidator : public NEDValidatorBase
      * parsed or unparsed expressions in the tree (This affects the validation
      * process.)
      */
-    NEDBasicValidator(bool parsedExpr) {parsedExpressions=parsedExpr;}
+    NEDBasicValidator(bool parsedExpr, NEDErrorStore *e)
+        : NEDValidatorBase(e) {parsedExpressions=parsedExpr;}
 
     /**
      * Destructor.

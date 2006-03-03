@@ -48,7 +48,7 @@ class NEDSemanticValidator : public NEDValidatorBase
 
   public:
     /** Constructor */
-    NEDSemanticValidator(bool parsedExpr, NEDSymbolTable *symbtab);
+    NEDSemanticValidator(bool parsedExpr, NEDSymbolTable *symbtab, NEDErrorStore *e);
 
     /** Destructor */
     virtual ~NEDSemanticValidator();

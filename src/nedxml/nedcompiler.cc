@@ -192,11 +192,12 @@ NEDElement *NEDClassicImportResolver::loadImport(const char *import)
 
 //-----------
 
-NEDCompiler::NEDCompiler(NEDFileCache *fcache, NEDSymbolTable *symbtab, NEDImportResolver *importres)
+NEDCompiler::NEDCompiler(NEDFileCache *fcache, NEDSymbolTable *symbtab, NEDImportResolver *importres, NEDErrorStore *e)
 {
     filecache = fcache;
     symboltable = symbtab;
     importresolver = importres;
+    errors = e;
 }
 
 NEDCompiler::~NEDCompiler()
@@ -225,11 +226,11 @@ void NEDCompiler::doValidate(NEDElement *tree)
     // DTD validation and additional basic validation
     NEDDTDValidator dtdvalidator;
     dtdvalidator.validate(tree);
-    if (errorsOccurred()) return;
+    if (!errors->empty()) return;
 
     NEDBasicValidator basicvalidator(true);
     basicvalidator.validate(tree);
-    if (errorsOccurred()) return;
+    if (!errors->empty()) return;
 
     // import what's necessary and do semantic checks meanwhile
     for (NEDElement *node=tree->getFirstChild(); node; node=node->getNextSibling())
@@ -261,7 +262,7 @@ void NEDCompiler::doValidate(NEDElement *tree)
                         // if couldn't load, skip
                         if (!importedtree)
                         {
-                           NEDError(import, "could not import '%s'",fname);
+                           errors->add(import, "could not import '%s'",fname);
                            continue;
                         }
 
@@ -281,7 +282,7 @@ void NEDCompiler::doValidate(NEDElement *tree)
             // semantic validation for this top-level element
             NEDSemanticValidator validator(true,symboltable);
             validator.validate(node);
-            // no return on errorsOccurred() -- keep on until end of this file
+            // no return on errors -- keep on until end of this file
 
             // add to symbol table
             symboltable->add(node);

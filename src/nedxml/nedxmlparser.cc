@@ -18,16 +18,16 @@
 #include "nedsaxhandler.h"
 #include "nederror.h"
 
-NEDElement *parseXML(const char *filename)
+NEDElement *parseXML(const char *filename, NEDErrorStore *errors)
 {
-    NEDSAXHandler sh(filename);
+    NEDSAXHandler sh(filename, errors);
     SAXParser parser;
 
     parser.setHandler(&sh);
     bool ok = parser.parse(filename);
     if (!ok)
     {
-        NEDError(NULL, "Error reading `%s': %s", filename, parser.getErrorMessage());
+        errors->add(NULL, "Error reading `%s': %s", filename, parser.getErrorMessage());
         return 0;
     }
     return sh.getTree();

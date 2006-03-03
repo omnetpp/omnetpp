@@ -2099,7 +2099,7 @@ yyreduce:
   case 50:
 #line 436 "ned.y"
     {
-                  NEDError(ps.params,"type 'anytype' no longer supported");
+                  np->getErrors()->add(ps.params,"type 'anytype' no longer supported");
                 ;}
     break;
 
@@ -2398,7 +2398,7 @@ yyreduce:
 
                       // we're only prepared for "for" loops with 1 connection inside
                       if (ps.where->getNumChildrenWithTag(NED_CONDITION)!=0)
-                          NEDError(ps.conngroup, "cannot process NED-I syntax of several "
+                          np->getErrors()->add(ps.conngroup, "cannot process NED-I syntax of several "
                                    "conditional connections within a `for' loop -- "
                                    "please split it to several `for' loops");
                   }
@@ -2885,7 +2885,7 @@ yyreduce:
 #line 1183 "ned.y"
     {
                   if (np->getParseExpressionsFlag()) (yyval) = createIdent((yylsp[0]));
-                  NEDError(ps.params,"`ref' modifier no longer supported (add `function' "
+                  np->getErrors()->add(ps.params,"`ref' modifier no longer supported (add `function' "
                                      "modifier to destination parameter instead)");
                 ;}
     break;
@@ -2894,7 +2894,7 @@ yyreduce:
 #line 1189 "ned.y"
     {
                   if (np->getParseExpressionsFlag()) (yyval) = createIdent((yylsp[0]));
-                  NEDError(ps.params,"`ancestor' and `ref' modifiers no longer supported");
+                  np->getErrors()->add(ps.params,"`ancestor' and `ref' modifiers no longer supported");
                 ;}
     break;
 
@@ -2902,7 +2902,7 @@ yyreduce:
 #line 1194 "ned.y"
     {
                   if (np->getParseExpressionsFlag()) (yyval) = createIdent((yylsp[0]));
-                  NEDError(ps.params,"`ancestor' and `ref' modifiers no longer supported");
+                  np->getErrors()->add(ps.params,"`ancestor' and `ref' modifiers no longer supported");
                 ;}
     break;
 
@@ -2910,7 +2910,7 @@ yyreduce:
 #line 1199 "ned.y"
     {
                   if (np->getParseExpressionsFlag()) (yyval) = createIdent((yylsp[0]));
-                  NEDError(ps.params,"`ancestor' modifier no longer supported");
+                  np->getErrors()->add(ps.params,"`ancestor' modifier no longer supported");
                 ;}
     break;
 
@@ -3263,7 +3263,7 @@ NEDElement *doParseNED(NEDParser *p, const char *nedtext)
     // alloc buffer
     struct yy_buffer_state *handle = yy_scan_string(nedtext);
     if (!handle)
-        {NEDError(NULL, "unable to allocate work memory"); return false;}
+        {np->getErrors()->add(NULL, "unable to allocate work memory"); return false;}
 
     // create parser state and NEDFileNode
     np = p;
@@ -3277,7 +3277,7 @@ NEDElement *doParseNED(NEDParser *p, const char *nedtext)
     //FIXME ps.nedfile->setBannerComment(nedsource->getFileComment());
 
     if (np->getStoreSourceFlag())
-        storeSourceCode(ps.nedfile, np->nedsource->getFullTextPos());
+        storeSourceCode(ps.nedfile, np->getSource()->getFullTextPos());
 
     // parse
     int ret;

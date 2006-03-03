@@ -32,7 +32,7 @@ using std::ostream;
  *
  * @ingroup CppGenerator
  */
-void generateCpp(ostream& out, ostream& outh, NEDElement *node, NEDSymbolTable *symtab);
+void generateCpp(ostream& out, ostream& outh, NEDElement *node, NEDSymbolTable *symtab, NEDErrorStore *errors);
 
 
 /**
@@ -48,6 +48,7 @@ class NEDCppGenerator
   protected:
     ostream& out;  // stream for writing .cc file
     ostream& outh; // stream for writing .h file
+    NEDErrorStore *errors;
 
     bool in_network;
     std::string submodule_var;
@@ -68,7 +69,7 @@ class NEDCppGenerator
      * (stream for the C++ source code and stream for the C++ header),
      * and the symbol table.
      */
-    NEDCppGenerator(ostream& out, ostream& outh, NEDSymbolTable *symtab);
+    NEDCppGenerator(ostream& out, ostream& outh, NEDSymbolTable *symtab, NEDErrorStore *e);
 
     /**
      * Destructor.

@@ -28,9 +28,9 @@ using std::ostream;
 #define NEDC_VERSION_HEX "0x0302"
 
 
-void generateCpp(ostream& out, ostream& outh, NEDElement *node, NEDSymbolTable *symtab)
+void generateCpp(ostream& out, ostream& outh, NEDElement *node, NEDSymbolTable *symtab, NEDErrorStore *errors)
 {
-    NEDCppGenerator cppgen(out, outh, symtab);
+    NEDCppGenerator cppgen(out, outh, symtab, errors);
     cppgen.generate(node);
 }
 
@@ -41,11 +41,12 @@ inline bool strnotnull(const char *s)
 
 //-----------------------------------------------------------------------
 
-NEDCppGenerator::NEDCppGenerator(ostream& _out, ostream& _outh, NEDSymbolTable *symtab) :
+NEDCppGenerator::NEDCppGenerator(ostream& _out, ostream& _outh, NEDSymbolTable *symtab, NEDErrorStore *e) :
   out(_out), outh(_outh), exprgen(_out,symtab), symboltable(symtab)
 {
     indentsize = 4;
     in_network = false;
+    errors = e;
 }
 
 NEDCppGenerator::~NEDCppGenerator()

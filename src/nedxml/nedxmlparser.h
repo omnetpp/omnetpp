@@ -18,13 +18,14 @@
 #define __NEDXMLPARSER_H
 
 #include "nedelement.h"
+#include "nederror.h"
 
 /**
  * Simple front-end to NED XML parsing: invokes SAXParser with NEDSAXHandler.
  *
  * @ingroup XMLParser
  */
-NEDElement *parseXML(const char *filename);
+NEDElement *parseXML(const char *filename, NEDErrorStore *errors);
 
 #endif
 

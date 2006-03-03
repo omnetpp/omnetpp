@@ -18,6 +18,7 @@
 
 
 #include "nedelement.h"
+#include "nederror.h"
 #include "saxparser.h"
 
 
@@ -44,12 +45,13 @@ class NEDSAXHandler : public SAXHandler
     NEDElement *root;
     NEDElement *current;
     const char *sourcefilename;
+    NEDErrorStore *errors;
 
   public:
     /**
      * Constructor. Filename is necessary to create correct src-loc info.
      */
-    NEDSAXHandler(const char *filename);
+    NEDSAXHandler(const char *filename, NEDErrorStore *e);
 
     /**
      * Destructor

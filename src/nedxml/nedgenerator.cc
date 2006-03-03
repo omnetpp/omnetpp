@@ -24,9 +24,9 @@
 #define DEFAULTINDENT "            "
 
 
-void generateNed(ostream& out, NEDElement *node)
+void generateNed(ostream& out, NEDElement *node, NEDErrorStore *e)
 {
-    NEDGenerator nedgen;
+    NEDGenerator nedgen(e);
     nedgen.generate(out, node, "");
 }
 
@@ -34,10 +34,11 @@ void generateNed(ostream& out, NEDElement *node)
 
 #define OUT  (*outp)
 
-NEDGenerator::NEDGenerator()
+NEDGenerator::NEDGenerator(NEDErrorStore *e)
 {
     outp = NULL;
     indentsize = 4;
+    errors = e;
 }
 
 NEDGenerator::~NEDGenerator()

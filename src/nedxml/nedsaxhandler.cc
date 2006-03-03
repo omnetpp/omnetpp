@@ -19,10 +19,11 @@
 #include "nederror.h"
 
 
-NEDSAXHandler::NEDSAXHandler(const char *fname)
+NEDSAXHandler::NEDSAXHandler(const char *fname, NEDErrorStore *e)
 {
     root = current = 0;
     sourcefilename = fname;
+    errors = e;
 }
 
 NEDSAXHandler::~NEDSAXHandler()
@@ -45,7 +46,7 @@ void NEDSAXHandler::startElement(const char *name, const char **atts)
     try {
         node = NEDElementFactory::getInstance()->createNodeWithTag(name);
     } catch (NEDException *e) {
-        NEDError(current, "error: %s", e->errorMessage());
+        errors->add(current, "error: %s", e->errorMessage());
         delete e;
         node = new UnknownNode();
         node->setAttribute("element", name);
@@ -63,7 +64,7 @@ void NEDSAXHandler::startElement(const char *name, const char **atts)
             try {
                 node->setAttribute(atts[i], atts[i+1]);
             } catch (NEDException *e) {
-                NEDError(node, "error in attribute '%s': %s", atts[i],e->errorMessage());
+                errors->add(node, "error in attribute '%s': %s", atts[i],e->errorMessage());
                 delete e;
             }
         }

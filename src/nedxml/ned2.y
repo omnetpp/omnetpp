@@ -535,7 +535,7 @@ paramgroup
                 {
                     ps.paramgroup = (ParamGroupNode *)createNodeWithTag(NED_PARAM_GROUP, ps.parameters);
                     if (ps.inGroup)
-                       NEDError(ps.paramgroup,"nested parameter groups are not allowed");
+                       np->getErrors()->add(ps.paramgroup,"nested parameter groups are not allowed");
                     ps.inGroup = true;
                 }
           params '}'
@@ -555,7 +555,7 @@ param
                 {
                   ps.propertyscope.pop();
                   if (ps.inGroup && $4)
-                       NEDError(ps.param,"conditional parameters inside parameter/property groups are not allowed");
+                       np->getErrors()->add(ps.param,"conditional parameters inside parameter/property groups are not allowed");
                   if ($4)
                       ps.param->appendChild($4); // append optional condition
                       // FIXME typename and "if" cannot occur together!!!
@@ -673,7 +673,7 @@ property
         : property_namevalue opt_condition ';'
                 {
                   if (ps.inGroup && $2)
-                       NEDError(ps.param,"conditional properties inside parameter/property groups are not allowed");
+                       np->getErrors()->add(ps.param,"conditional properties inside parameter/property groups are not allowed");
                   if ($2)
                       ps.property->appendChild($2); // append optional condition
                 }
@@ -777,7 +777,7 @@ gategroup
                 {
                     ps.gategroup = (GateGroupNode *)createNodeWithTag(NED_GATE_GROUP, ps.gates);
                     if (ps.inGroup)
-                       NEDError(ps.gategroup,"nested gate groups are not allowed");
+                       np->getErrors()->add(ps.gategroup,"nested gate groups are not allowed");
                     ps.inGroup = true;
                 }
           gates '}'
@@ -800,7 +800,7 @@ gate
                 {
                   ps.propertyscope.pop();
                   if (ps.inGroup && $4)
-                       NEDError(ps.param,"conditional gates inside gate groups are not allowed");
+                       np->getErrors()->add(ps.param,"conditional gates inside gate groups are not allowed");
                   if ($4)
                       ps.gate->appendChild($4); // append optional condition
                       // FIXME typename and "if" cannot occur together!!!
@@ -864,7 +864,7 @@ typeblock
                   ps.types = (TypesNode *)createNodeWithTag(NED_TYPES, ps.blockscope.top());
                   //setComments(ps.types,@1,@2);
                   if (ps.inTypes)
-                     NEDError(ps.paramgroup,"more than one level of type nesting is not allowed");
+                     np->getErrors()->add(ps.paramgroup,"more than one level of type nesting is not allowed");
                   ps.inTypes = true;
                 }
            opt_localtypes
@@ -989,9 +989,9 @@ likeparam
 thisqualifier
         : THIS_
         | NAME
-                { NEDError(NULL,"invalid property qualifier `%s', only `this' is allowed here", toString(@1)); }
+                { np->getErrors()->add(NULL,"invalid property qualifier `%s', only `this' is allowed here", toString(@1)); }
         | NAME vector
-                { NEDError(NULL,"invalid property qualifier `%s', only `this' is allowed here", toString(@1)); }
+                { np->getErrors()->add(NULL,"invalid property qualifier `%s', only `this' is allowed here", toString(@1)); }
         ;
 
 
@@ -1041,7 +1041,7 @@ connectionsitem
                   if (ps.chanspec)
                       ps.conn->appendChild(ps.conn->removeChild(ps.chanspec)); // move channelspec to conform DTD
                   if (ps.inGroup && $2)
-                       NEDError(ps.param,"conditional connections inside connection groups are not allowed");
+                       np->getErrors()->add(ps.param,"conditional connections inside connection groups are not allowed");
                   if ($2)
                       ps.conn->appendChild($2);
                 }
@@ -1052,7 +1052,7 @@ connectiongroup  /* note: semicolon at end is mandatory (cannot be opt_semicolon
                 {
                   ps.conngroup = (ConnectionGroupNode *)createNodeWithTag(NED_CONNECTION_GROUP, ps.conns);
                   if (ps.inGroup)
-                     NEDError(ps.conngroup,"nested connection groups are not allowed");
+                     np->getErrors()->add(ps.conngroup,"nested connection groups are not allowed");
                   ps.inGroup = true;
                 }
           connections '}' ';'
@@ -1065,7 +1065,7 @@ connectiongroup  /* note: semicolon at end is mandatory (cannot be opt_semicolon
                 {
                   ps.conngroup = (ConnectionGroupNode *)createNodeWithTag(NED_CONNECTION_GROUP, ps.conns);
                   if (ps.inGroup)
-                     NEDError(ps.conngroup,"nested connection groups are not allowed");
+                     np->getErrors()->add(ps.conngroup,"nested connection groups are not allowed");
                   ps.inGroup = true;
                 }
           connections '}' opt_whereclause ';'
@@ -1277,7 +1277,7 @@ opt_subgate
                   else if (!strcmp(s,"o"))
                       ps.subgate = NED_SUBGATE_O;
                   else
-                       NEDError(NULL,"invalid subgate spec `%s', must be `i' or `o'", toString(@2));
+                       np->getErrors()->add(NULL,"invalid subgate spec `%s', must be `i' or `o'", toString(@2));
                 }
         |
                 {  ps.subgate = NED_SUBGATE_NONE; }
@@ -1535,7 +1535,7 @@ NEDElement *doParseNED2(NEDParser *p, const char *nedtext)
     // alloc buffer
     struct yy_buffer_state *handle = yy_scan_string(nedtext);
     if (!handle)
-        {NEDError(NULL, "unable to allocate work memory"); return false;}
+        {np->getErrors()->add(NULL, "unable to allocate work memory"); return false;}
 
     // create parser state and NEDFileNode
     np = p;
@@ -1551,7 +1551,7 @@ NEDElement *doParseNED2(NEDParser *p, const char *nedtext)
     ps.propertyscope.push(ps.nedfile);
 
     if (np->getStoreSourceFlag())
-        storeSourceCode(ps.nedfile, np->nedsource->getFullTextPos());
+        storeSourceCode(ps.nedfile, np->getSource()->getFullTextPos());
 
     // parse
     int ret;
@@ -1567,7 +1567,7 @@ NEDElement *doParseNED2(NEDParser *p, const char *nedtext)
         return 0;
     }
 
-    if (!errorsOccurred())
+    if (np->getErrors()->empty())
     {
         // more sanity checks
         if (ps.propertyscope.size()!=1 || ps.propertyscope.top()!=ps.nedfile)

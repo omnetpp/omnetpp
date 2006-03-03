@@ -33,11 +33,12 @@ NEDParser *np;
 
 //--------
 
-NEDParser::NEDParser()
+NEDParser::NEDParser(NEDErrorStore *e)
 {
     nedsource = NULL;
     parseexpr = true;
     storesrc = false;
+    errors = e;
 }
 
 NEDParser::~NEDParser()
@@ -79,7 +80,7 @@ bool NEDParser::loadFile(const char *fname)
     if (nedsource) delete nedsource;
     nedsource = new NEDFileBuffer();
     filename = fname;
-    clearErrors();
+    errors->clear();
 
     // cosmetics on file name: substitute "~"
     char newfilename[1000];
@@ -91,7 +92,7 @@ bool NEDParser::loadFile(const char *fname)
 
     // load whole file into memory
     if (!nedsource->readFile(newfilename))
-        {NEDError(NULL, "cannot read %s", fname); return false;}
+        {errors->add(NULL, "cannot read %s", fname); return false;}
     return true;
 }
 
@@ -101,17 +102,17 @@ bool NEDParser::loadText(const char *nedtext)
     if (nedsource) delete nedsource;
     nedsource = new NEDFileBuffer();
     filename = "buffer";
-    clearErrors();
+    errors->clear();
 
     // prepare nedsource object
     if (!nedsource->setData(nedtext))
-        {NEDError(NULL, "unable to allocate work memory"); return false;}
+        {errors->add(NULL, "unable to allocate work memory"); return false;}
     return true;
 }
 
 NEDElement *NEDParser::parseNED()
 {
-    clearErrors();
+    errors->clear();
     if (guessIsNEDInNewSyntax(nedsource->getFullText()))
         return ::doParseNED2(this, nedsource->getFullText());
     else
@@ -120,7 +121,7 @@ NEDElement *NEDParser::parseNED()
 
 NEDElement *NEDParser::parseMSG()
 {
-    clearErrors();
+    errors->clear();
     return ::doParseMSG2(this, nedsource->getFullText());
 }
 
@@ -171,6 +172,6 @@ bool NEDParser::guessIsNEDInNewSyntax(const char *txt)
 
 void NEDParser::error(const char *msg, int line)
 {
-    NEDError(NULL, "%s:%d: %s", filename, line, msg);
+    errors->add(NULL, "%s:%d: %s", filename, line, msg);
 }
 

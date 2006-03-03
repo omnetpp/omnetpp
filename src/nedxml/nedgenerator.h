@@ -18,6 +18,7 @@
 
 #include <iostream>
 #include "nedelements.h"
+#include "nederror.h"
 
 using std::ostream;
 
@@ -26,7 +27,7 @@ using std::ostream;
  *
  * @ingroup NEDGenerator
  */
-void generateNed(ostream& out, NEDElement *node);
+void generateNed(ostream& out, NEDElement *node, NEDErrorStore *e);
 
 /**
  * Generates NED code from a NED object tree.
@@ -39,12 +40,13 @@ class NEDGenerator
   protected:
     int indentsize;
     ostream *outp;
+    NEDErrorStore *errors;
 
   public:
     /**
      * Constructor.
      */
-    NEDGenerator();
+    NEDGenerator(NEDErrorStore *errors);
 
     /**
      * Destructor.

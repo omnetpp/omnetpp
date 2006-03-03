@@ -191,6 +191,7 @@ class NEDCompiler
     NEDFileCache *filecache;
     NEDSymbolTable *symboltable;
     NEDImportResolver *importresolver;
+    NEDErrorStore *errors;
 
     void addImport(const char *name);
     bool isImported(const char *name);
@@ -198,7 +199,7 @@ class NEDCompiler
 
   public:
     /** Constructor */
-    NEDCompiler(NEDFileCache *fcache, NEDSymbolTable *symtab, NEDImportResolver *importres);
+    NEDCompiler(NEDFileCache *fcache, NEDSymbolTable *symtab, NEDImportResolver *importres, NEDErrorStore *e);
 
     /** Destructor */
     virtual ~NEDCompiler();

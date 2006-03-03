@@ -31,7 +31,7 @@
 class NEDDTDValidator : public NEDDTDValidatorBase
 {
   public:
-    NEDDTDValidator() {}
+    NEDDTDValidator(NEDErrorStore *e) : NEDDTDValidatorBase(e) {}
     virtual ~NEDDTDValidator() {}
 
   protected:

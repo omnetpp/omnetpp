@@ -19,7 +19,8 @@
 #include <stdio.h>
 
 #include "nedelement.h"
-#include "nedyydefs.h" // FIXME to be removed from here
+#include "nedyydefs.h"
+#include "nederror.h"
 
 class NEDFileBuffer;
 class NEDParser;
@@ -46,15 +47,18 @@ extern NEDParser *np;
 class NEDParser
 {
   public:
-    NEDFileBuffer *nedsource;  // represents the source file
-
     // INTERNAL: error and debug handling, called from grammar file
     void error(const char *msg, int line);
+
+    NEDErrorStore *getErrors() {return errors;}
+    NEDFileBuffer *getSource() {return nedsource;}
 
   protected:
     bool parseexpr;            // whether to parse expressions or not
     bool storesrc;             // whether to fill in sourceCode attributes
     const char *filename;      // file being parsed
+    NEDErrorStore *errors;     // accumulates error messages
+    NEDFileBuffer *nedsource;  // represents the source file
 
     bool loadFile(const char *fname);
     bool loadText(const char *nedtext);
@@ -66,7 +70,7 @@ class NEDParser
     /**
      * Constructor.
      */
-    NEDParser();
+    NEDParser(NEDErrorStore *e);
 
     /**
      * Destructor.

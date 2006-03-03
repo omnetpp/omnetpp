@@ -4,9 +4,6 @@
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
-// Contents:
-//   NEDError, NEDInternalError functions
-//
 //==========================================================================
 
 /*--------------------------------------------------------------*

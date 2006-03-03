@@ -47,6 +47,8 @@ class NEDDTDValidatorBase : public NEDValidatorBase
     void checkCommentAttribute(NEDElement *node, const char *attr);
     void checkNMTokenAttribute(NEDElement *node, const char *attr);
     //@}
+  public:
+    NEDDTDValidatorBase(NEDErrorStore *e) : NEDValidatorBase(e) {}
 };
 
 #endif
