@@ -2,6 +2,7 @@
 
 %{
 #include "nedelement.h"
+#include "nederror.h"
 #include "nedparser.h"
 #include "nedgenerator.h"
 #include "nedelements.h"
@@ -33,15 +34,20 @@
 %}
 
 // These are only public for technical reasons, shouldn't be wrapped
-%ignore NEDParser::nedsource;
+%ignore NEDParser::getSource();
+%ignore NEDParser::getErrors();
 %ignore NEDParser::error(const char *, int);
+
 %ignore np;
+
+%ignore NEDElementStore::add(NEDElement *, const char *, ...);
+%ignore NEDElementStore::add(NEDElement *, int, const char *, ...);
 
 %ignore NEDElementUserData;
 %ignore NEDElement::setUserData(NEDElementUserData *);
 %ignore NEDElement::getUserData() const;
 
-%ignore generateNed(ostream&, NEDElement *);
+%ignore generateNed(ostream&, NEDElement *, NEDErrorStore *);
 %ignore NEDGenerator::generate(ostream&, NEDElement *, const char *);
 
 %ignore ltstr;
@@ -134,6 +140,7 @@
 
 /* Let's just grab the original header file here */
 %include "nedelement.h"
+%include "nederror.h"
 %include "nedparser.h"
 %include "nedgenerator.h"
 %include "nedelements.h"
