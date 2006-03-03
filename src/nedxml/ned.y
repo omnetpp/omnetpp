@@ -1074,7 +1074,7 @@ expression
  * Expressions (3 shift-reduce conflicts here)
  */
 
-inputvalue
+inputvalue  /* FIXME turn to isDefault=true, @prompt!!! */
         : INPUT_ '(' expr ',' expr ')'
                 { if (np->getParseExpressionsFlag()) $$ = createFunction("input", $3, $5); }
         | INPUT_ '(' expr ')'
