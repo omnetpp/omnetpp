@@ -49,9 +49,9 @@ public class BasicSpringEmbedderLayouter extends AbstractGraphLayouter
     List<Edge> edges;
 
 	//#ifdef USE_CONTRACTING_BOX
-	//    struct Box
+	//    class Box
 	//    {
-	//        boolean fixed;      // allowed to move?
+	//        boolean fixed;   // allowed to move?
 	//        double x1, y1;   // coordinates
 	//        double x2, y2;
 	//
@@ -93,14 +93,6 @@ public class BasicSpringEmbedderLayouter extends AbstractGraphLayouter
         repulsiveForce = 50;
         attractionForce = 0.3;
     }
-
-//    void addMovableNode(Object mod, int width, int height);
-//    void addFixedNode(Object mod, int x, int y, int width, int height);
-//    void addAnchoredNode(Object mod, Object anchorname, int offx, int offy, int width, int height);
-//    void addEdge(Object from, Object to, int len=0);
-//    void addEdgeToBorder(Object from, int len=0);
-//    virtual void execute();
-//    void getNodePosition(Object mod, int& x, int& y);
 
     /**
      * Set repulsive force
