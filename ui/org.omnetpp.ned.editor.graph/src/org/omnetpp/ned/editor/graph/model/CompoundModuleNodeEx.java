@@ -20,6 +20,9 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 	// destConns contains all connections where the destmodule is this module
 	protected List<ConnectionNodeEx> destConns = new ArrayList<ConnectionNodeEx>();
 	
+	public CompoundModuleNodeEx() {
+	}
+
 	public CompoundModuleNodeEx(NEDElement parent) {
 		super(parent);
 	}

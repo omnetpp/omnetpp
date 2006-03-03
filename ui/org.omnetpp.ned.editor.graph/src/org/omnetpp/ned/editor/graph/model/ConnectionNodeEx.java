@@ -11,10 +11,27 @@ public class ConnectionNodeEx extends ConnectionNode {
 	private INedNode srcModuleRef;
 	private INedNode destModuleRef;
 
+	public ConnectionNodeEx() {
+	}
+
 	public ConnectionNodeEx(NEDElement parent) {
 		super(parent);
 	}
 
+    public String getAttributeDefault(int k) {
+        // Override the default value of "src-module" and "dest-module" to null (==unset).
+    	// The original value of "" causes an exception if we create a ConnectionNodeEx
+    	// without a parent, because applyDefaults() in the ctor would try to set 
+    	// srcModuleRef/destModuleRef to the enclosing compound module (which doesn't exist).
+    	// Ctor without parent is needed by GEF's CreationTool, see org.eclipse.gef.requests.SimpleFactory.
+    	assert(getAttributeName(0).equals(ATT_SRC_MODULE) && getAttributeName(6).equals(ATT_DEST_MODULE));
+        switch (k) {
+            case 0: return null;
+            case 6: return null;
+            default: return super.getAttributeDefault(k);
+        }
+    }
+	
 	public INedNode getSrcModuleRef() {
 		return srcModuleRef;
 	}

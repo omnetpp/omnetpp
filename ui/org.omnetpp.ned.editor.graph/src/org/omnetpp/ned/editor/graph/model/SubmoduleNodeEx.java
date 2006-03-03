@@ -16,6 +16,10 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INedNode {
 	// destConns contains all connections where the destmodule is this module
 	protected List<ConnectionNodeEx> destConns = new ArrayList<ConnectionNodeEx>();
 	
+
+	public SubmoduleNodeEx() {
+	}
+
 	public SubmoduleNodeEx(NEDElement parent) {
 		super(parent);
 	}

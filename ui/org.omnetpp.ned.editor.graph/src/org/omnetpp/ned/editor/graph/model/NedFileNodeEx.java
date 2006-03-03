@@ -8,6 +8,9 @@ import org.omnetpp.ned2.model.pojo.NedFileNode;
 
 public class NedFileNodeEx extends NedFileNode implements INedContainer, INedModelElement {
 	
+	public NedFileNodeEx() {
+	}
+
 	public NedFileNodeEx(NEDElement parent) {
 		super(parent);
 	}
