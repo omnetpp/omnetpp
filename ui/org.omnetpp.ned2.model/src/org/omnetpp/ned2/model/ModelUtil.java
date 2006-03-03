@@ -2,6 +2,7 @@ package org.omnetpp.ned2.model;
 
 import org.omnetpp.ned2.model.pojo.NEDElementFactory;
 import org.omnetpp.ned2.model.swig.NEDElement;
+import org.omnetpp.ned2.model.swig.NEDErrorStore;
 import org.omnetpp.ned2.model.swig.NEDGenerator;
 import org.omnetpp.ned2.model.swig.NEDParser;
 
@@ -10,12 +11,16 @@ public class ModelUtil {
 	// "org.omnetpp.ned.model.emf";
 
 	public static String generateNedSource(org.omnetpp.ned2.model.NEDElement treeRoot) {
-		NEDGenerator ng = new NEDGenerator();
+		NEDErrorStore errors = new NEDErrorStore();
+		errors.setPrintToStderr(true); //XXX
+		NEDGenerator ng = new NEDGenerator(errors);
 		return ng.generate(pojo2swig(treeRoot), "");
 	}
 
 	public static org.omnetpp.ned2.model.NEDElement parseNedSource(String source) {
-		NEDParser np = new NEDParser();
+		NEDErrorStore errors = new NEDErrorStore();
+		errors.setPrintToStderr(true); //XXX
+		NEDParser np = new NEDParser(errors);
 		np.setParseExpressions(false);
 		NEDElement treeRoot = np.parseNEDText(source);
 		if (treeRoot == null)
@@ -25,7 +30,9 @@ public class ModelUtil {
 	}
 
 	public static org.omnetpp.ned2.model.NEDElement loadNedSource(String fname) {
-		NEDParser np = new NEDParser();
+		NEDErrorStore errors = new NEDErrorStore();
+		errors.setPrintToStderr(true); //XXX
+		NEDParser np = new NEDParser(errors);
 		np.setParseExpressions(false);
 		NEDElement treeRoot = np.parseNEDFile(fname);
 //		System.out.println(printSwigElementTree(treeRoot, ""));
