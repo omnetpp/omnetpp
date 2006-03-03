@@ -6,11 +6,12 @@
          point="org.eclipse.ui.editors">
       <editor
             class="org.omnetpp.ide.GraphAndTextEditor"
+            contributorClass="org.omnetpp.ned.editor.graph.actions.GNedEditorActionBarContributor"
             default="true"
             extensions="ned"
             icon="icons/gned.gif"
             id="org.omnetpp.ide.gteditor"
-            name="GNED Dual Editor">
+            name="GTNED Dual Editor">
       </editor>
    </extension>
    <extension

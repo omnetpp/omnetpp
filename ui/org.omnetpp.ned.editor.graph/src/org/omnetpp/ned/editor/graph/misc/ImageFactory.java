@@ -10,6 +10,7 @@ public class ImageFactory {
     private final static String IMAGE_DIR = "/images/"; 
     private final static String INTERNAL_DIR = "_internal/"; 
     private final static String TOOL_IMAGE_DIR = INTERNAL_DIR + "toolbar/";
+    private final static String MODEL_IMAGE_DIR = INTERNAL_DIR + "model/";
     
     public final static String TOOLBAR_IMAGE_WIZARDBANNER = TOOL_IMAGE_DIR + "module";
     public final static String TOOLBAR_IMAGE_GROW = TOOL_IMAGE_DIR + "grow";
@@ -24,6 +25,17 @@ public class ImageFactory {
     public final static String TOOLBAR_IMAGE_SIMPLE = TOOL_IMAGE_DIR + "simple";
     public final static String TOOLBAR_IMAGE_LABEL = TOOL_IMAGE_DIR + "label";
     
+    public final static String MODEL_IMAGE_CHANNEL = MODEL_IMAGE_DIR + "Channel";
+    public final static String MODEL_IMAGE_COMPOUNDMODULE = MODEL_IMAGE_DIR + "CompoundModule";
+    public final static String MODEL_IMAGE_CONNECTION = MODEL_IMAGE_DIR + "Connection";
+    public final static String MODEL_IMAGE_GATE = MODEL_IMAGE_DIR + "Gate";
+    public final static String MODEL_IMAGE_IMPORT = MODEL_IMAGE_DIR + "Import";
+    public final static String MODEL_IMAGE_INVALID = MODEL_IMAGE_DIR + "Invalid";
+    public final static String MODEL_IMAGE_PARAM = MODEL_IMAGE_DIR + "Param";
+    public final static String MODEL_IMAGE_PROPERTY = MODEL_IMAGE_DIR + "Property";
+    public final static String MODEL_IMAGE_SIMPLEMODULE = MODEL_IMAGE_DIR + "SimpleModule";
+    public final static String MODEL_IMAGE_SUBMODULE = MODEL_IMAGE_DIR + "Submodule";
+
     private final static String DEFAULT_NAME = IMAGE_DIR + INTERNAL_DIR + "default.png";  
     public final static String DEFAULT_KEY = "__default__";  
 

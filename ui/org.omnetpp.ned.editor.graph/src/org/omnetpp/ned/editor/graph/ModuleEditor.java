@@ -2,9 +2,6 @@ package org.omnetpp.ned.editor.graph;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
@@ -104,7 +101,7 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.omnetpp.ned.editor.graph.actions.ModulePasteTemplateAction;
 import org.omnetpp.ned.editor.graph.dnd.TextTransferDropTargetListener;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
-import org.omnetpp.ned.editor.graph.edit.TreePartFactory;
+import org.omnetpp.ned.editor.graph.edit.NedTreeEditPartFactory;
 import org.omnetpp.ned.editor.graph.figures.properties.LayerSupport;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
@@ -151,7 +148,7 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
 
         protected void configureOutlineViewer() {
             getViewer().setEditDomain(getEditDomain());
-            getViewer().setEditPartFactory(new TreePartFactory());
+            getViewer().setEditPartFactory(new NedTreeEditPartFactory());
             ContextMenuProvider provider = new ModuleEditorContextMenuProvider(getViewer(), getActionRegistry());
             getViewer().setContextMenu(provider);
             getSite().registerContextMenu("org.eclipse.gef.examples.logic.outline.contextmenu", //$NON-NLS-1$

@@ -108,7 +108,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 	}
 
 	public void insertModelChild(int index, INedNode child) {
-		// check wheter Submodules node exists and create one if does not
+		// check wheter Submodules node exists and create one if doesn't
 		SubmodulesNode snode = getFirstSubmodulesChild();
 		if (snode == null) 
 			snode = (SubmodulesNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementFactoryEx.NED_SUBMODULES, this);
@@ -121,7 +121,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 	}
 
 	public void insertModelChild(INedNode insertBefore, INedNode child) {
-		// check wheter Submodules node exists and create one if does not
+		// check wheter Submodules node exists and create one if doesn't
 		SubmodulesNode snode = getFirstSubmodulesChild();
 		if (snode == null) 
 			snode = (SubmodulesNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementFactoryEx.NED_SUBMODULES, this);

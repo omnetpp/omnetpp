@@ -53,13 +53,19 @@ public class NedFileDiagramEditPart extends ContainerEditPart implements LayerCo
     protected void createEditPolicies() {
         super.createEditPolicies();
 
+        // NedFile cannot be connectoed to anything via connections
         installEditPolicy(EditPolicy.NODE_ROLE, null);
+        // 
         installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE, null);
+        // nedfile cannot be selected
         installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE, null);
+        // this is a root edit part, so it cannot be deleted
         installEditPolicy(EditPolicy.COMPONENT_ROLE, new RootComponentEditPolicy());
+        // install a layout edit policy, this one provides also the creation commands
+        // TODO this should be changed to a vertical toolbar layout
         installEditPolicy(EditPolicy.LAYOUT_ROLE, new CompoundModuleLayoutEditPolicy((XYLayout)getContentPane().getLayoutManager()));
-
-        installEditPolicy("Snap Feedback", new SnapFeedbackPolicy()); //$NON-NLS-1$
+        // have some snap feedback once it enabled
+        // installEditPolicy("Snap Feedback", new SnapFeedbackPolicy()); //$NON-NLS-1$
     }
 
     /**
