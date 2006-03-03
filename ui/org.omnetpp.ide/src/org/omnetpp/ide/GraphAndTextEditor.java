@@ -2,17 +2,16 @@ package org.omnetpp.ide;
 
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.gef.ui.views.palette.PalettePage;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.MultiPageEditorPart;
-import org.eclipse.ui.part.WorkbenchPart;
 import org.omnetpp.ned.editor.graph.ModuleEditor;
 import org.omnetpp.ned.editor.graph.model.NedFileNodeEx;
 import org.omnetpp.ned.editor.text.NedEditor;
@@ -23,9 +22,9 @@ public class GraphAndTextEditor extends MultiPageEditorPart implements
 
 	private ModuleEditor graphEditor;
 	private NedEditor nedEditor;
-	private IAdaptable currentEditor;
 	private int graphPageIndex;
 	private int textPageIndex;
+	private boolean insidePageChange = false;
 	
 	public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
 		super.init(site, editorInput);
@@ -50,8 +49,6 @@ public class GraphAndTextEditor extends MultiPageEditorPart implements
 	@Override
 	protected void createPages() {
 		graphEditor = new ModuleEditor();
-		currentEditor = graphEditor;
-		
 		nedEditor = new NedEditor();
 		
 		try {
@@ -76,23 +73,51 @@ public class GraphAndTextEditor extends MultiPageEditorPart implements
 	@Override
 	protected void pageChange(int newPageIndex) {
 		super.pageChange(newPageIndex);
-		if (newPageIndex == textPageIndex) {
-			currentEditor = nedEditor;
+		
+        //	prevent recursive call from setActivePage() below
+		if (insidePageChange)
+			return;
+		insidePageChange = true;
+
+		if (newPageIndex == textPageIndex) { 
+			// switch from graphics to text:
 			// generate text representation from the model
 			NedFileNodeEx modelRoot = graphEditor.getModel();
 			String textEditorContent = ModelUtil.generateNedSource(modelRoot);
 			// put it into the text editor
 			nedEditor.setText(textEditorContent);
-		} else if (newPageIndex == graphPageIndex) {
-			currentEditor = graphEditor;
+		} 
+		else if (newPageIndex == graphPageIndex) { 
+			// switch from text to graphics
 			NedFileNodeEx modelRoot = (NedFileNodeEx)ModelUtil.parseNedSource(nedEditor.getText());
-			graphEditor.setModel(modelRoot);
+			if (modelRoot!=null) {
+				// give the backparsed model to the graphical editor 
+				graphEditor.setModel(modelRoot);
+			}
+			else {
+				// parse error: switch back immediately to text view (we should never have 
+				// switched away from it in the first place)
+				setActivePage(textPageIndex);
+				
+				// ask user what to do
+		        MessageBox messageBox = new MessageBox(getEditorSite().getShell(), 
+		        		                               SWT.ICON_WARNING | SWT.YES | SWT.NO);
+		        messageBox.setText("Warning");
+		        messageBox.setMessage("The editor contents has syntax errors, "+
+		        		              "switching is only possible with losing text mode changes. "+
+		        		              "Do you want to revert to graphics view (and lose your changes)?"); // XXX better dialog, with "Continue editing" and "Lose changes" buttons
+		        int buttonID = messageBox.open();
+		        if (buttonID==SWT.YES) {
+					setActivePage(graphPageIndex);
+		        }
+			}
 		}
+		insidePageChange = false;
 	}
 
 	@Override
 	public Object getAdapter(Class type) {
-		Object adapter = currentEditor.getAdapter(type);
+		Object adapter = getActiveEditor().getAdapter(type);
 		if (adapter == null) 
 			adapter = super.getAdapter(type);
 		return adapter;
