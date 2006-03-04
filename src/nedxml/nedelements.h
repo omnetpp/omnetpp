@@ -194,6 +194,7 @@ class FilesNode : public NEDElement
  *                     channel-interface|simple-module|compound-module|module-interface)*)>
  * <!ATTLIST ned-file
  *      filename           CDATA     #REQUIRED
+ *      version            CDATA     #IMPLIED
  *      package            CDATA     #IMPLIED>
  * </pre>
  * 
@@ -203,6 +204,7 @@ class NedFileNode : public NEDElement
 {
   private:
     std::string filename;
+    std::string version;
     std::string package;
   public:
     /** @name Constructors, destructor */
@@ -227,6 +229,8 @@ class NedFileNode : public NEDElement
     //@{
     const char * getFilename() const  {return filename.c_str();}
     void setFilename(const char * val)  {filename = val;}
+    const char * getVersion() const  {return version.c_str();}
+    void setVersion(const char * val)  {version = val;}
     const char * getPackage() const  {return package.c_str();}
     void setPackage(const char * val)  {package = val;}
 

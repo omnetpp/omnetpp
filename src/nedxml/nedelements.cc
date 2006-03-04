@@ -91,14 +91,15 @@ MsgFileNode *FilesNode::getFirstMsgFileChild() const
 
 int NedFileNode::getNumAttributes() const
 {
-    return 2;
+    return 3;
 }
 
 const char *NedFileNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "filename";
-        case 1: return "package";
+        case 1: return "version";
+        case 2: return "package";
         default: return 0;
     }
 }
@@ -107,7 +108,8 @@ const char *NedFileNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return filename.c_str();
-        case 1: return package.c_str();
+        case 1: return version.c_str();
+        case 2: return package.c_str();
         default: return 0;
     }
 }
@@ -116,7 +118,8 @@ void NedFileNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: filename = val; break;
-        case 1: package = val; break;
+        case 1: version = val; break;
+        case 2: package = val; break;
         default: ;
     }
 }
@@ -126,6 +129,7 @@ const char *NedFileNode::getAttributeDefault(int k) const
     switch (k) {
         case 0: return NULL;
         case 1: return "";
+        case 2: return "";
         default: return 0;
     }
 }

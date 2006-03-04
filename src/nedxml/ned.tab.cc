@@ -3272,6 +3272,7 @@ NEDElement *doParseNED(NEDParser *p, const char *nedtext)
 
     // store file name with slashes always, even on Windows -- neddoc relies on that
     ps.nedfile->setFilename(slashifyFilename(np->getFileName()).c_str());
+    ps.nedfile->setVersion("1");
 
     // store file comment
     //FIXME ps.nedfile->setBannerComment(nedsource->getFileComment());
