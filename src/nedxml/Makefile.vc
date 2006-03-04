@@ -29,8 +29,7 @@ OBJS= nedelements.obj nedelement.obj nederror.obj \
       nedbasicvalidator.obj nedsemanticvalidator.obj \
       nedfilebuffer.obj nedparser.obj nedyylib.obj \
       ned2.tab.obj lex.ned2yy.obj \
-      nedutil.obj nedgenerator.obj xmlgenerator.obj \
-      ned1generator.obj \
+      nedutil.obj ned2generator.obj ned1generator.obj xmlgenerator.obj \
       nedxmlparser.obj nedsaxhandler.obj saxparser_$(XMLPARSER).obj \
       ned.tab.obj lex.nedyy.obj \
       msg2.tab.obj lex.msg2yy.obj

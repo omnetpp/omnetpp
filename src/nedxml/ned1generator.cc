@@ -26,7 +26,7 @@
 #define A_NED2_FEATURE  "a NED2 feature and cannot be expressed in the old NED syntax"
 
 
-void generateNed1(ostream& out, NEDElement *node, NEDErrorStore *e)
+void generateNED1(ostream& out, NEDElement *node, NEDErrorStore *e)
 {
     NED1Generator nedgen(e);
     nedgen.generate(out, node, "");

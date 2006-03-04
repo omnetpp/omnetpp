@@ -24,7 +24,7 @@
 #define DEFAULTINDENT "            "
 
 
-void generateNed2(ostream& out, NEDElement *node, NEDErrorStore *e)
+void generateNED2(ostream& out, NEDElement *node, NEDErrorStore *e)
 {
     NED2Generator nedgen(e);
     nedgen.generate(out, node, "");

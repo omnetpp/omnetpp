@@ -269,8 +269,8 @@ try{
         else if (opt_genned || opt_genmsg)
         {
             ofstream out(outfname);
-//XXX            generateNed(out, tree, errors);
-            generateNed1(out, tree, errors);
+//XXX            generateNED2(out, tree, errors);
+            generateNED1(out, tree, errors);
             out.close();
         }
         else
@@ -565,7 +565,7 @@ int main(int argc, char **argv)
         if (opt_genxml)
             generateXML(out, outputtree, opt_srcloc);
         else if (opt_genned)
-;//XXX            generateNed(out, outputtree, opt_newsyntax);
+;//XXX            generateNED(out, outputtree, opt_newsyntax);
         else
             return 1; // mergeoutput with C++ output not supported
             // generateCpp(out, cout, outputtree);

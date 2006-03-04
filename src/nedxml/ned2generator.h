@@ -27,7 +27,7 @@ using std::ostream;
  *
  * @ingroup NED2Generator
  */
-void generateNed2(ostream& out, NEDElement *node, NEDErrorStore *e);
+void generateNED2(ostream& out, NEDElement *node, NEDErrorStore *e);
 
 /**
  * Generates NED code from a NED object tree.
