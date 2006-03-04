@@ -4,7 +4,8 @@
 #include "nedelement.h"
 #include "nederror.h"
 #include "nedparser.h"
-#include "nedgenerator.h"
+#include "ned2generator.h"
+#include "ned1generator.h"
 #include "nedelements.h"
 
 #include "neddtdvalidator.h"
@@ -21,6 +22,9 @@
 %include "enums.swg"
 %javaconst(1);
 
+namespace std {
+//class ostream;
+};
 
 %pragma(java) jniclasscode=%{
   static {
@@ -40,15 +44,18 @@
 
 %ignore np;
 
-%ignore NEDElementStore::add(NEDElement *, const char *, ...);
-%ignore NEDElementStore::add(NEDElement *, int, const char *, ...);
-
 %ignore NEDElementUserData;
 %ignore NEDElement::setUserData(NEDElementUserData *);
 %ignore NEDElement::getUserData() const;
 
-%ignore generateNed(ostream&, NEDElement *, NEDErrorStore *);
-%ignore NEDGenerator::generate(ostream&, NEDElement *, const char *);
+%ignore generateNED1(std::ostream&, NEDElement *, NEDErrorStore *);
+%ignore generateNED2(std::ostream&, NEDElement *, NEDErrorStore *);
+
+// XXX for some reason, SWIG doesn't give a s&%$# about the following ignores:
+%ignore NEDElementStore::add(NEDElement *, const char *, ...);
+%ignore NEDElementStore::add(NEDElement *, int, const char *, ...);
+%ignore NEDGenerator1::generate(std::ostream&, NEDElement *, const char *);
+%ignore NEDGenerator2::generate(std::ostream&, NEDElement *, const char *);
 
 %ignore ltstr;
 
@@ -142,7 +149,8 @@
 %include "nedelement.h"
 %include "nederror.h"
 %include "nedparser.h"
-%include "nedgenerator.h"
+%include "ned2generator.h"
+%include "ned1generator.h"
 %include "nedelements.h"
 
 %include "nedvalidator.h"
