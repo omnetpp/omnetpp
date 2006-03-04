@@ -83,7 +83,7 @@ public class GraphAndTextEditor extends MultiPageEditorPart implements
 			// switch from graphics to text:
 			// generate text representation from the model
 			NedFileNodeEx modelRoot = graphEditor.getModel();
-			String textEditorContent = ModelUtil.generateNedSource(modelRoot);
+			String textEditorContent = ModelUtil.generateNedSource(modelRoot, false);
 			// put it into the text editor
 			nedEditor.setText(textEditorContent);
 		} 
