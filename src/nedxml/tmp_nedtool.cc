@@ -29,6 +29,7 @@
 #include "nedbasicvalidator.h"
 #include "nedsemanticvalidator.h"
 #include "nedgenerator.h"
+#include "ned1generator.h"
 #include "xmlgenerator.h"
 //XXX #include "cppgenerator.h"
 //XXX #include "nedcompiler.h"
@@ -268,7 +269,8 @@ try{
         else if (opt_genned || opt_genmsg)
         {
             ofstream out(outfname);
-            generateNed(out, tree, errors);
+//XXX            generateNed(out, tree, errors);
+            generateNed1(out, tree, errors);
             out.close();
         }
         else

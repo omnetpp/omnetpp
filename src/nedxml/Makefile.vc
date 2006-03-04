@@ -30,6 +30,7 @@ OBJS= nedelements.obj nedelement.obj nederror.obj \
       nedfilebuffer.obj nedparser.obj nedyylib.obj \
       ned2.tab.obj lex.ned2yy.obj \
       nedutil.obj nedgenerator.obj xmlgenerator.obj \
+      ned1generator.obj \
       nedxmlparser.obj nedsaxhandler.obj saxparser_$(XMLPARSER).obj \
       ned.tab.obj lex.nedyy.obj \
       msg2.tab.obj lex.msg2yy.obj
@@ -164,6 +165,11 @@ ned.tab.obj: ned.tab.cc \
   nedutil.h \
   nedyylib.h \
   nedelement.h
+ned1generator.obj: ned1generator.cc \
+  ned1generator.h \
+  nederror.h \
+  nedelements.h \
+  nedelement.h
 ned2.tab.obj: ned2.tab.cc \
   nedyydefs.h \
   nederror.h \
@@ -283,6 +289,7 @@ tmp_nedtool.obj: tmp_nedtool.cc \
   nedbasicvalidator.h \
   nedsemanticvalidator.h \
   nedgenerator.h \
+  ned1generator.h \
   xmlgenerator.h \
   ../utils/ver.h \
   nedelement.h \

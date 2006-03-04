@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __NED1GENERATOR_H
-#define __NED1GENERATOR_H
+#ifndef __NEDGENERATOR_H
+#define __NEDGENERATOR_H
 
 #include <iostream>
 #include "nedelements.h"
@@ -23,19 +23,19 @@
 using std::ostream;
 
 /**
- * Simple front-end to NED1Generator.
+ * Simple front-end to NED2Generator.
  *
- * @ingroup NED1Generator
+ * @ingroup NED2Generator
  */
-void generateNed1(ostream& out, NEDElement *node, NEDErrorStore *e);
+void generateNed2(ostream& out, NEDElement *node, NEDErrorStore *e);
 
 /**
  * Generates NED code from a NED object tree.
  * Assumes object tree has already passed all validation stages (DTD, basic, semantic).
  *
- * @ingroup NED1Generator
+ * @ingroup NED2Generator
  */
-class NED1Generator
+class NED2Generator
 {
   protected:
     int indentsize;
@@ -46,12 +46,12 @@ class NED1Generator
     /**
      * Constructor.
      */
-    NED1Generator(NEDErrorStore *errors);
+    NED2Generator(NEDErrorStore *errors);
 
     /**
      * Destructor.
      */
-    ~NED1Generator();
+    ~NED2Generator();
 
     /**
      * Sets the indent size in the generated NED code. Default is 4 spaces.
@@ -149,6 +149,23 @@ class NED1Generator
     void doFunction(FunctionNode *node, const char *indent, bool islast, const char *);
     void doIdent(IdentNode *node, const char *indent, bool islast, const char *);
     void doLiteral(LiteralNode *node, const char *indent, bool islast, const char *);
+
+    // msg stuff
+    void doCplusplus(CplusplusNode *node, const char *indent, bool islast, const char *);
+    void doStructDecl(StructDeclNode *node, const char *indent, bool islast, const char *);
+    void doClassDecl(ClassDeclNode *node, const char *indent, bool islast, const char *);
+    void doMessageDecl(MessageDeclNode *node, const char *indent, bool islast, const char *);
+    void doEnumDecl(EnumDeclNode *node, const char *indent, bool islast, const char *);
+    void doEnum(EnumNode *node, const char *indent, bool islast, const char *);
+    void doEnumFields(EnumFieldsNode *node, const char *indent, bool islast, const char *);
+    void doEnumField(EnumFieldNode *node, const char *indent, bool islast, const char *);
+    void doMessage(MessageNode *node, const char *indent, bool islast, const char *);
+    void doClass(ClassNode *node, const char *indent, bool islast, const char *);
+    void doStruct(StructNode *node, const char *indent, bool islast, const char *);
+    void doFields(FieldsNode *node, const char *indent, bool islast, const char *);
+    void doField(FieldNode *node, const char *indent, bool islast, const char *);
+    void doProperties(PropertiesNode *node, const char *indent, bool islast, const char *);
+    void doMsgproperty(MsgpropertyNode *node, const char *indent, bool islast, const char *);
     //@}
 };
 
