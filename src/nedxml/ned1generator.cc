@@ -20,6 +20,7 @@
 #include "ned1generator.h"
 #include "nederror.h"
 
+using std::ostream;
 
 #define DEFAULTINDENT "            "
 

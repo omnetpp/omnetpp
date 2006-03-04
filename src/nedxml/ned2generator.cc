@@ -17,12 +17,12 @@
 #include <string.h>
 #include <string>
 #include <sstream>
-#include "nedgenerator.h"
+#include "ned2generator.h"
 #include "nederror.h"
 
+using std::ostream;
 
 #define DEFAULTINDENT "            "
-
 
 void generateNED2(ostream& out, NEDElement *node, NEDErrorStore *e)
 {

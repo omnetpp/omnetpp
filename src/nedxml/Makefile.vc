@@ -178,6 +178,11 @@ ned2.tab.obj: ned2.tab.cc \
   nedutil.h \
   nedyylib.h \
   nedelement.h
+ned2generator.obj: ned2generator.cc \
+  ned2generator.h \
+  nederror.h \
+  nedelements.h \
+  nedelement.h
 nedbasicvalidator.obj: nedbasicvalidator.cc \
   nederror.h \
   nedbasicvalidator.h \
@@ -225,11 +230,6 @@ nedfilebuffer.obj: nedfilebuffer.cc \
   nedelement.h \
   nedyydefs.h \
   nederror.h
-nedgenerator.obj: nedgenerator.cc \
-  nedgenerator.h \
-  nederror.h \
-  nedelements.h \
-  nedelement.h
 nedparser.obj: nedparser.cc \
   nedparser.h \
   nedfilebuffer.h \
@@ -287,7 +287,7 @@ tmp_nedtool.obj: tmp_nedtool.cc \
   neddtdvalidator.h \
   nedbasicvalidator.h \
   nedsemanticvalidator.h \
-  nedgenerator.h \
+  ned2generator.h \
   ned1generator.h \
   xmlgenerator.h \
   ../utils/ver.h \

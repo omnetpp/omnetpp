@@ -20,14 +20,13 @@
 #include "nedelements.h"
 #include "nederror.h"
 
-using std::ostream;
 
 /**
  * Simple front-end to NED1Generator.
  *
  * @ingroup NED1Generator
  */
-void generateNED1(ostream& out, NEDElement *node, NEDErrorStore *e);
+void generateNED1(std::ostream& out, NEDElement *node, NEDErrorStore *e);
 
 /**
  * Generates NED code from a NED object tree.
@@ -39,7 +38,7 @@ class NED1Generator
 {
   protected:
     int indentsize;
-    ostream *outp;
+    std::ostream *outp;
     NEDErrorStore *errors;
 
   public:
@@ -62,7 +61,7 @@ class NED1Generator
      * Generates NED code. Takes an output stream where the generated NED code
      * will be written, the object tree and the base indentation.
      */
-    void generate(ostream& out, NEDElement *node, const char *indent);
+    void generate(std::ostream& out, NEDElement *node, const char *indent);
 
     /**
      * Generates NED code and returns it as a string.

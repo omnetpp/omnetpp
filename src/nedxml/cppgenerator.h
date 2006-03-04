@@ -25,14 +25,13 @@
 #include "cppexprgenerator.h"
 #include "nedcompiler.h" // for NEDSymbolTable
 
-using std::ostream;
 
 /**
  * Simple front-end to NEDCppGenerator.
  *
  * @ingroup CppGenerator
  */
-void generateCpp(ostream& out, ostream& outh, NEDElement *node, NEDSymbolTable *symtab, NEDErrorStore *errors);
+void generateCpp(std::ostream& out, std::ostream& outh, NEDElement *node, NEDSymbolTable *symtab, NEDErrorStore *errors);
 
 
 /**
@@ -69,7 +68,7 @@ class NEDCppGenerator
      * (stream for the C++ source code and stream for the C++ header),
      * and the symbol table.
      */
-    NEDCppGenerator(ostream& out, ostream& outh, NEDSymbolTable *symtab, NEDErrorStore *e);
+    NEDCppGenerator(std::ostream& out, std::ostream& outh, NEDSymbolTable *symtab, NEDErrorStore *e);
 
     /**
      * Destructor.

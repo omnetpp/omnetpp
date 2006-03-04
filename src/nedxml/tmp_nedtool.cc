@@ -28,7 +28,7 @@
 #include "neddtdvalidator.h"
 #include "nedbasicvalidator.h"
 #include "nedsemanticvalidator.h"
-#include "nedgenerator.h"
+#include "ned2generator.h"
 #include "ned1generator.h"
 #include "xmlgenerator.h"
 //XXX #include "cppgenerator.h"
