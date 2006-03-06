@@ -10,6 +10,7 @@ import org.omnetpp.ned2.model.pojo.ConnectionNode;
 public class ConnectionNodeEx extends ConnectionNode {
 	private INedNode srcModuleRef;
 	private INedNode destModuleRef;
+	private transient NEDChangeListenerList listeners = new NEDChangeListenerList();
 
 	public ConnectionNodeEx() {
 	}
@@ -119,5 +120,27 @@ public class ConnectionNodeEx extends ConnectionNode {
 	public void setBendpoint(int index, Bendpoint bp) {
 		// TODO Implement this
 	}
-	
+
+	public void addListener(INEDChangeListener l) {
+		listeners.add(l);
+	}
+
+	public void removeListener(INEDChangeListener l) {
+    	listeners.remove(l);
+	}
+
+	public void fireAttributeChanged(NEDElement node, String attr) {
+		for (INEDChangeListener l : listeners)
+			l.attributeChanged(node, attr);
+	}
+
+	public void fireChildInserted(NEDElement node, NEDElement where, NEDElement child) {
+		for (INEDChangeListener l : listeners)
+			l.childInserted(node, where, child);
+	}
+
+	public void fireChildRemoved(NEDElement node, NEDElement child) {
+		for (INEDChangeListener l : listeners)
+			l.childRemoved(node, child);
+	}
 }

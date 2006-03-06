@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
-import org.omnetpp.ned2.model.DisplayString;
 
 /**
  * Parameters, gates, inheritence, name, display string

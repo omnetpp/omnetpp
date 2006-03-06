@@ -20,8 +20,6 @@ public abstract class NEDElement implements Iterable<NEDElement>
 	private NEDElement nextsibling;
 	private static long lastid;
 
-	private transient NEDChangeListenerList listeners;
-
 	public Iterator<NEDElement> iterator() {
 		final NEDElement e = this;
 		return new Iterator<NEDElement> () {
@@ -489,65 +487,47 @@ public abstract class NEDElement implements Iterable<NEDElement>
 		return parent;
 	}
 
-	public void addListener(NEDChangeListener l) {
-		if (listeners == null)
-			listeners = new NEDChangeListenerList();
-		listeners.add(l);
-	}
-
-	public void removeListener(NEDChangeListener l) {
-		if (listeners != null)
-			listeners.remove(l);
-	}
-
 	/**
 	 * Callback, invoked when an attribute changes value. 
 	 * The new value can be obtained using getAttribute(attr). 
 	 */
 	protected void attributeChanged(String attr) {
-		// climb up to find 1st node to notify
+		// climb up to find 1st node that supports firing notifications
 		NEDElement node = this;
-		while (node != null && node.listeners == null)
+		while (node != null && !(node instanceof INotifiableNEDElement))
 			node = node.getParent();
-		if (node != null) {
-			// notify
-			NEDChangeListener[] tmp = node.listeners.getListeners();
-			for (int i=0; i<tmp.length; i++)
-				tmp[i].attributeChanged(this,attr);
-		}
+
+		// notify
+		if (node != null)
+			((INotifiableNEDElement)node).fireAttributeChanged(this,attr);
 	}
 
 	/**
 	 * Callback, invoked when a child element gets inserted 
 	 */
 	protected void childInserted(NEDElement where, NEDElement child) {
-		// climb up to find 1st node to notify
+		// climb up to find 1st node that supports firing notifications
 		NEDElement node = this;
-		while (node != null && node.listeners == null)
+		while (node != null && !(node instanceof INotifiableNEDElement))
 			node = node.getParent();
-		if (node != null) {
-			// notify
-			NEDChangeListener[] tmp = node.listeners.getListeners();
-			for (int i=0; i<tmp.length; i++)
-				tmp[i].childInserted(this, where, child);
-		}
+
+		// notify
+		if (node != null)
+			((INotifiableNEDElement)node).fireChildInserted(this, where, child);
 	}
 
 	/**
 	 * Callback, invoked when a child element gets removed 
 	 */
 	protected void childRemoved(NEDElement child) {
-		// climb up to find 1st node to notify
+		// climb up to find 1st node that supports firing notifications
 		NEDElement node = this;
-		while (node != null && node.listeners == null)
+		while (node != null && !(node instanceof INotifiableNEDElement))
 			node = node.getParent();
-		if (node != null) {
-			// notify
-			NEDChangeListener[] tmp = node.listeners.getListeners();
-			for (int i=0; i<tmp.length; i++)
-				tmp[i].childRemoved(this, child);
 
-		}
+		// notify
+		if (node != null)
+			((INotifiableNEDElement)node).fireChildRemoved(this, child);
 	}
 };
 

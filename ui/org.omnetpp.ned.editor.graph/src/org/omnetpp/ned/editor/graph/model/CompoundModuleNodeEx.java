@@ -19,7 +19,9 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 	protected List<ConnectionNodeEx> srcConns = new ArrayList<ConnectionNodeEx>();
 	// destConns contains all connections where the destmodule is this module
 	protected List<ConnectionNodeEx> destConns = new ArrayList<ConnectionNodeEx>();
-	
+
+	private transient NEDChangeListenerList listeners = new NEDChangeListenerList();
+
 	public CompoundModuleNodeEx() {
 	}
 
@@ -165,5 +167,28 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 		dps.setPropertyValue(DisplayPropertySource.PROP_W, size.width);
 		dps.setPropertyValue(DisplayPropertySource.PROP_H, size.height);
 		setDisplayString(dps.getValue());
+	}
+
+	public void addListener(INEDChangeListener l) {
+		listeners.add(l);
+	}
+
+	public void removeListener(INEDChangeListener l) {
+    	listeners.remove(l);
+	}
+
+	public void fireAttributeChanged(NEDElement node, String attr) {
+		for (INEDChangeListener l : listeners)
+			l.attributeChanged(node, attr);
+	}
+
+	public void fireChildInserted(NEDElement node, NEDElement where, NEDElement child) {
+		for (INEDChangeListener l : listeners)
+			l.childInserted(node, where, child);
+	}
+
+	public void fireChildRemoved(NEDElement node, NEDElement child) {
+		for (INEDChangeListener l : listeners)
+			l.childRemoved(node, child);
 	}
 }

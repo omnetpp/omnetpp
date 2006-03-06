@@ -89,7 +89,7 @@
          id="omnetppide"
          point="org.eclipse.core.runtime.products">
       <product
-            application="org.omnetpp.ide.gned2"
+            application="org.eclipse.ui.ide.workbench"
             name="OMNeT++ IDE">
          <property
                name="aboutText"

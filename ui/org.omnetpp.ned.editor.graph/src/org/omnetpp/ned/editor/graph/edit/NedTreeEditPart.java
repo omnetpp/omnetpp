@@ -10,12 +10,12 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedTreeEditPolicy;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
-import org.omnetpp.ned.editor.graph.misc.NedImageDescriptor;
 import org.omnetpp.ned.editor.graph.model.CompoundModuleNodeEx;
 import org.omnetpp.ned.editor.graph.model.ConnectionNodeEx;
+import org.omnetpp.ned.editor.graph.model.INedModelElement;
+import org.omnetpp.ned.editor.graph.model.INEDChangeListener;
 import org.omnetpp.ned.editor.graph.model.NedElementExUtil;
 import org.omnetpp.ned.editor.graph.model.SubmoduleNodeEx;
-import org.omnetpp.ned2.model.NEDChangeListener;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned2.model.pojo.ChannelNode;
@@ -43,7 +43,7 @@ import org.omnetpp.ned2.model.pojo.TypesNode;
  * EditPart for Logic components in the Tree.
  */
 public class NedTreeEditPart extends org.eclipse.gef.editparts.AbstractTreeEditPart implements
-        NEDChangeListener {
+        INEDChangeListener {
 
     /**
      * Constructor initializes this with the given model.
@@ -57,7 +57,7 @@ public class NedTreeEditPart extends org.eclipse.gef.editparts.AbstractTreeEditP
 
     public void activate() {
         super.activate();
-        ((NEDElement)getModel()).addListener(this);
+        ((INedModelElement)getModel()).addListener(this);
     }
 
     /**
@@ -69,7 +69,7 @@ public class NedTreeEditPart extends org.eclipse.gef.editparts.AbstractTreeEditP
     }
 
     public void deactivate() {
-        ((NEDElement)getModel()).removeListener(this);
+        ((INedModelElement)getModel()).removeListener(this);
         super.deactivate();
     }
 

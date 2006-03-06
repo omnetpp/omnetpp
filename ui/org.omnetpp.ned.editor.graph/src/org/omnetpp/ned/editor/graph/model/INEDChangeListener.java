@@ -1,11 +1,13 @@
-package org.omnetpp.ned2.model;
+package org.omnetpp.ned.editor.graph.model;
+
+import org.omnetpp.ned2.model.NEDElement;
 
 
 /**
  * Implement this to get notified about changes in a NED tree.
  * @author andras
  */
-public interface NEDChangeListener {
+public interface INEDChangeListener {
 
     /**
      * Callback, invoked when an attribute changes value. 

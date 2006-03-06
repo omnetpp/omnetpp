@@ -4,14 +4,14 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.omnetpp.ned.editor.graph.edit.policies.NedContainerEditPolicy;
 import org.omnetpp.ned.editor.graph.model.INedModelElement;
-import org.omnetpp.ned2.model.NEDChangeListener;
+import org.omnetpp.ned.editor.graph.model.INEDChangeListener;
 import org.omnetpp.ned2.model.NEDElement;
 
 /**
  * Provides support for Container EditParts.
  */
 abstract public class ContainerEditPart 
-   extends AbstractGraphicalEditPart implements NEDChangeListener  {
+   extends AbstractGraphicalEditPart implements INEDChangeListener  {
 
     public void activate() {
         if (isActive()) return;
