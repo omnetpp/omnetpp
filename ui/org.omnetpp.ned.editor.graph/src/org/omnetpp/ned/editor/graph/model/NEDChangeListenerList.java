@@ -2,28 +2,13 @@ package org.omnetpp.ned.editor.graph.model;
 
 import java.util.Iterator;
 
+import org.omnetpp.ned2.model.NEDElement;
 
 
-public class NEDChangeListenerList implements Iterable<INEDChangeListener> {
+
+public class NEDChangeListenerList {
 
 	INEDChangeListener[] array = new INEDChangeListener[0];
-
-	public Iterator<INEDChangeListener> iterator() {
-		return new Iterator<INEDChangeListener> () {
-			private int i = 0;
-			public boolean hasNext() {
-				return i!=array.length;
-			}
-
-			public INEDChangeListener next() {
-				return array[i++];
-			}
-
-			public void remove() {
-				throw new UnsupportedOperationException();
-			}
-		};
-	}
 
 	public void add(INEDChangeListener l) {
 		array = copyArray(array.length+1);
@@ -51,5 +36,20 @@ public class NEDChangeListenerList implements Iterable<INEDChangeListener> {
 		INEDChangeListener[] newArray = new INEDChangeListener[array.length];
 		System.arraycopy(array, 0, newArray, 0, array.length);
 		return newArray;
+	}
+
+	public void fireAttributeChanged(NEDElement node, String attr) {
+		for (INEDChangeListener l : getListeners())
+			l.attributeChanged(node, attr);
+	}
+
+	public void fireChildInserted(NEDElement node, NEDElement where, NEDElement child) {
+		for (INEDChangeListener l : getListeners())
+			l.childInserted(node, where, child);
+	}
+
+	public void fireChildRemoved(NEDElement node, NEDElement child) {
+		for (INEDChangeListener l : getListeners())
+			l.childRemoved(node, child);
 	}
 }

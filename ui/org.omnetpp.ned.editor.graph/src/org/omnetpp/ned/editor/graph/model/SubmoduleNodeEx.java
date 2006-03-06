@@ -106,17 +106,14 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INedNode {
 	}
 
 	public void fireAttributeChanged(NEDElement node, String attr) {
-		for (INEDChangeListener l : listeners)
-			l.attributeChanged(node, attr);
+		listeners.fireAttributeChanged(node, attr);
 	}
 
 	public void fireChildInserted(NEDElement node, NEDElement where, NEDElement child) {
-		for (INEDChangeListener l : listeners)
-			l.childInserted(node, where, child);
+		listeners.fireChildInserted(node, where, child);
 	}
 
 	public void fireChildRemoved(NEDElement node, NEDElement child) {
-		for (INEDChangeListener l : listeners)
-			l.childRemoved(node, child);
+		listeners.fireChildRemoved(node, child);
 	}
 }
