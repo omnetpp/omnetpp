@@ -12,8 +12,7 @@ import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.model.CompoundModuleNodeEx;
 import org.omnetpp.ned.editor.graph.model.ConnectionNodeEx;
 import org.omnetpp.ned.editor.graph.model.INedContainer;
-import org.omnetpp.ned.editor.graph.model.INedModelElement;
-import org.omnetpp.ned.editor.graph.model.INedNode;
+import org.omnetpp.ned.editor.graph.model.INedModule;
 import org.omnetpp.ned.editor.graph.model.NEDElementFactoryEx;
 import org.omnetpp.ned.editor.graph.model.NedElementExUtil;
 import org.omnetpp.ned.editor.graph.model.SubmoduleNodeEx;
@@ -35,7 +34,7 @@ public class CloneCommand extends Command {
         parts = new LinkedList();
     }
 
-    public void addPart(INedModelElement part, Rectangle newBounds) {
+    public void addPart(NEDElement part, Rectangle newBounds) {
         parts.add(part);
         if (bounds == null) {
             bounds = new HashMap();
@@ -43,7 +42,7 @@ public class CloneCommand extends Command {
         bounds.put(part, newBounds);
     }
 
-    public void addPart(INedModelElement part, int index) {
+    public void addPart(NEDElement part, int index) {
         parts.add(part);
         if (indices == null) {
             indices = new HashMap();
@@ -51,7 +50,7 @@ public class CloneCommand extends Command {
         indices.put(part, new Integer(index));
     }
 
-    protected void clonePart(INedModelElement oldPart, INedContainer newParent, Rectangle newBounds,
+    protected void clonePart(NEDElement oldPart, INedContainer newParent, Rectangle newBounds,
             List newConnections, Map connectionPartMap, int index) {
     	NEDElement newPart = null;
 
@@ -65,15 +64,15 @@ public class CloneCommand extends Command {
             Iterator i = ((INedContainer)oldPart).getModelChildren().iterator();
             while (i.hasNext()) {
                 // for children they will not need new bounds
-                clonePart((INedModelElement) i.next(), (INedContainer) newPart, 
+                clonePart((NEDElement) i.next(), (INedContainer) newPart, 
                 		null, newConnections, connectionPartMap, -1);
             }
         }
 
         if (index < 0) {
-            newParent.addModelChild((INedNode)newPart);
+            newParent.addModelChild((INedModule)newPart);
         } else {
-            newParent.insertModelChild(index, (INedNode)newPart);
+            newParent.insertModelChild(index, (INedModule)newPart);
         }
 
         // keep track of the new parts so we can delete them in undo
@@ -91,9 +90,9 @@ public class CloneCommand extends Command {
 
         Iterator i = parts.iterator();
 
-        INedModelElement part = null;
+        NEDElement part = null;
         while (i.hasNext()) {
-            part = (INedModelElement) i.next();
+            part = (NEDElement) i.next();
             if (bounds != null && bounds.containsKey(part)) {
                 clonePart(part, parent, (Rectangle) bounds.get(part), newConnections, connectionPartMap, -1);
             } else if (indices != null && indices.containsKey(part)) {
@@ -110,9 +109,9 @@ public class CloneCommand extends Command {
 
         while (c.hasNext()) {
             ConnectionNodeEx conn = (ConnectionNodeEx) c.next();
-            INedModelElement source = conn.getSrcModuleRef();
+            INedModule source = conn.getSrcModuleRef();
             if (connectionPartMap.containsKey(source)) {
-                conn.setSrcModuleRef((INedNode)connectionPartMap.get(source));
+                conn.setSrcModuleRef((INedModule)connectionPartMap.get(source));
             }
         }
 
@@ -124,19 +123,19 @@ public class CloneCommand extends Command {
 
     public void redo() {
         for (Iterator iter = newTopLevelParts.iterator(); iter.hasNext();)
-            parent.addModelChild((INedNode) iter.next());
+            parent.addModelChild((INedModule) iter.next());
         for (Iterator iter = newConnections.iterator(); iter.hasNext();) {
             ConnectionNodeEx conn = (ConnectionNodeEx) iter.next();
-            INedNode source = conn.getSrcModuleRef();
+            INedModule source = conn.getSrcModuleRef();
             if (connectionPartMap.containsKey(source)) {
-                conn.setSrcModuleRef(((INedNode) connectionPartMap.get(source)));
+                conn.setSrcModuleRef(((INedModule) connectionPartMap.get(source)));
             }
         }
     }
 
     public void undo() {
         for (Iterator iter = newTopLevelParts.iterator(); iter.hasNext();)
-            parent.removeModelChild((INedNode) iter.next());
+            parent.removeModelChild((INedModule) iter.next());
     }
 
 }

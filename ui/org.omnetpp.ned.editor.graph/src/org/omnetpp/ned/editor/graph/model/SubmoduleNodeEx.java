@@ -9,15 +9,13 @@ import org.omnetpp.ned.editor.graph.properties.DisplayPropertySource;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 
-public class SubmoduleNodeEx extends SubmoduleNode implements INedNode {
+public class SubmoduleNodeEx extends SubmoduleNode implements INedModule {
 
 	// srcConns contains all connections where the sourcemodule is this module
 	protected List<ConnectionNodeEx> srcConns = new ArrayList<ConnectionNodeEx>();
 	// destConns contains all connections where the destmodule is this module
 	protected List<ConnectionNodeEx> destConns = new ArrayList<ConnectionNodeEx>();
 	
-	private transient NEDChangeListenerList listeners = new NEDChangeListenerList();
-
 	public SubmoduleNodeEx() {
 	}
 
@@ -97,23 +95,4 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INedNode {
 		setDisplayString(dps.getValue());
 	}
 
-	public void addListener(INEDChangeListener l) {
-		listeners.add(l);
-	}
-
-	public void removeListener(INEDChangeListener l) {
-    	listeners.remove(l);
-	}
-
-	public void fireAttributeChanged(NEDElement node, String attr) {
-		listeners.fireAttributeChanged(node, attr);
-	}
-
-	public void fireChildInserted(NEDElement node, NEDElement where, NEDElement child) {
-		listeners.fireChildInserted(node, where, child);
-	}
-
-	public void fireChildRemoved(NEDElement node, NEDElement child) {
-		listeners.fireChildRemoved(node, child);
-	}
 }

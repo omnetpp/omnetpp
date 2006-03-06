@@ -14,7 +14,7 @@ import org.omnetpp.ned.editor.graph.edit.NedNodeEditPart;
 import org.omnetpp.ned.editor.graph.figures.FigureFactory;
 import org.omnetpp.ned.editor.graph.figures.NedFigure;
 import org.omnetpp.ned.editor.graph.model.ConnectionNodeEx;
-import org.omnetpp.ned.editor.graph.model.INedNode;
+import org.omnetpp.ned.editor.graph.model.INedModule;
 import org.omnetpp.ned.editor.graph.model.NEDElementFactoryEx;
 import org.omnetpp.ned.editor.graph.model.NedElementExUtil;
 import org.omnetpp.ned.editor.graph.model.commands.ConnectionCommand;
@@ -62,8 +62,8 @@ public class NedNodeEditPolicy extends org.eclipse.gef.editpolicies.GraphicalNod
         return (NedNodeEditPart) getHost();
     }
 
-    protected INedNode getNedNodeModel() {
-        return (INedNode) getHost().getModel();
+    protected INedModule getNedNodeModel() {
+        return (INedModule) getHost().getModel();
     }
 
     protected Command getReconnectTargetCommand(ReconnectRequest request) {

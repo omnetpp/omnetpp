@@ -3,8 +3,7 @@ package org.omnetpp.ned.editor.graph.edit;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.omnetpp.ned.editor.graph.edit.policies.NedContainerEditPolicy;
-import org.omnetpp.ned.editor.graph.model.INedModelElement;
-import org.omnetpp.ned.editor.graph.model.INEDChangeListener;
+import org.omnetpp.ned2.model.INEDChangeListener;
 import org.omnetpp.ned2.model.NEDElement;
 
 /**
@@ -43,8 +42,8 @@ abstract public class ContainerEditPart
      * 
      * @return The model of this as a NedElement.
      */
-    protected INedModelElement getNEDModel() {
-        return (INedModelElement) getModel();
+    protected NEDElement getNEDModel() {
+        return (NEDElement) getModel();
     }
 
     // TODO we must pass the old element too

@@ -1,6 +1,5 @@
-package org.omnetpp.ned.editor.graph.model;
+package org.omnetpp.ned2.model;
 
-import org.omnetpp.ned2.model.NEDElement;
 
 
 /**

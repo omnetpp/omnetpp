@@ -22,7 +22,7 @@ import org.omnetpp.ned.editor.graph.figures.properties.DisplayShapeSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayTooltipSupport;
 import org.omnetpp.ned.editor.graph.misc.ColorFactory;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
-import org.omnetpp.ned.editor.graph.model.INedNode;
+import org.omnetpp.ned.editor.graph.model.INedModule;
 import org.omnetpp.ned.editor.graph.properties.DisplayPropertySource;
 
 /**
@@ -44,7 +44,7 @@ abstract public class NedNodeEditPart extends ContainerEditPart {
      * @return List of connections.
      */
     protected List getModelSourceConnections() {
-        return ((INedNode)getNEDModel()).getSrcConnections();
+        return ((INedModule)getNEDModel()).getSrcConnections();
     }
 
     /**
@@ -53,7 +53,7 @@ abstract public class NedNodeEditPart extends ContainerEditPart {
      * @return List of connections.
      */
     protected List getModelTargetConnections() {
-        return ((INedNode)getNEDModel()).getDestConnections();
+        return ((INedModule)getNEDModel()).getDestConnections();
     }
 
     /**
@@ -124,7 +124,7 @@ abstract public class NedNodeEditPart extends ContainerEditPart {
         
         // define the properties that determine the visual appearence
         
-    	INedNode model = (INedNode)getNEDModel();
+    	INedModule model = (INedModule)getNEDModel();
     	
         // parse a dispaly string, so it's easier to get values from it.
     	String displayStr = model.getDisplayString();

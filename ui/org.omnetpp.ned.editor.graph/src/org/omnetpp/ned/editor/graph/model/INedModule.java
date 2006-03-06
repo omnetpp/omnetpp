@@ -6,10 +6,10 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 
 /**
- * Parameters, gates, inheritence, name, display string
+ * CompoundModule, Submodule model interface
  * @author rhornig
  */
-public interface INedNode extends INedModelElement {
+public interface INedModule {
 
 	/**
 	 * Returns name attribute 

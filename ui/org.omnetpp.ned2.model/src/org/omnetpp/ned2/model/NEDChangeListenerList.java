@@ -1,8 +1,5 @@
-package org.omnetpp.ned.editor.graph.model;
+package org.omnetpp.ned2.model;
 
-import java.util.Iterator;
-
-import org.omnetpp.ned2.model.NEDElement;
 
 
 
@@ -38,16 +35,28 @@ public class NEDChangeListenerList {
 		return newArray;
 	}
 
+	/**
+     * Send notification about an attribute change of a node to all locally registered
+     * listeners 
+	 */
 	public void fireAttributeChanged(NEDElement node, String attr) {
 		for (INEDChangeListener l : getListeners())
 			l.attributeChanged(node, attr);
 	}
 
+    /**
+     * Send notification about a child insertion into a node to all locally registered
+     * listeners 
+     */
 	public void fireChildInserted(NEDElement node, NEDElement where, NEDElement child) {
 		for (INEDChangeListener l : getListeners())
 			l.childInserted(node, where, child);
 	}
 
+    /**
+     * Send notification about a child removal from a node to all locally registered
+     * listeners 
+     */
 	public void fireChildRemoved(NEDElement node, NEDElement child) {
 		for (INEDChangeListener l : getListeners())
 			l.childRemoved(node, child);

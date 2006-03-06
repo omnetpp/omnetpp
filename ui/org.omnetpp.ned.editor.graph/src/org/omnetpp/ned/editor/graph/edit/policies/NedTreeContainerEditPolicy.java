@@ -12,13 +12,13 @@ import org.eclipse.gef.editpolicies.TreeContainerEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
 import org.omnetpp.ned.editor.graph.model.INedContainer;
-import org.omnetpp.ned.editor.graph.model.INedNode;
+import org.omnetpp.ned.editor.graph.model.INedModule;
 import org.omnetpp.ned.editor.graph.model.commands.CreateCommand;
 import org.omnetpp.ned.editor.graph.model.commands.ReorderPartCommand;
 
 public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
 
-    protected Command createCreateCommand(INedNode child, Rectangle r, int index, String label) {
+    protected Command createCreateCommand(INedModule child, Rectangle r, int index, String label) {
         CreateCommand cmd = new CreateCommand();
         Rectangle rect;
         if (r == null) {
@@ -46,7 +46,7 @@ public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
             if (isAncestor(child, getHost()))
                 command.add(UnexecutableCommand.INSTANCE);
             else {
-                INedNode childModel = (INedNode) child.getModel();
+                INedModule childModel = (INedModule) child.getModel();
                 command.add(createCreateCommand(childModel, new Rectangle(
                         new org.eclipse.draw2d.geometry.Point(), childModel.getSize()), index,
                         "Reparent NedElement"));//$NON-NLS-1$
@@ -56,7 +56,7 @@ public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
     }
 
     protected Command getCreateCommand(CreateRequest request) {
-    	INedNode child = (INedNode) request.getNewObject();
+    	INedModule child = (INedModule) request.getNewObject();
         int index = findIndexOfTreeItemAt(request.getLocation());
         return createCreateCommand(child, null, index, "Create NedElement");//$NON-NLS-1$
     }
@@ -77,7 +77,7 @@ public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
             } else if (oldIndex <= tempIndex) {
                 tempIndex--;
             }
-            command.add(new ReorderPartCommand((INedNode) child.getModel(), (INedContainer) getHost()
+            command.add(new ReorderPartCommand((INedModule) child.getModel(), (INedContainer) getHost()
                     .getModel(), tempIndex));
         }
         return command;

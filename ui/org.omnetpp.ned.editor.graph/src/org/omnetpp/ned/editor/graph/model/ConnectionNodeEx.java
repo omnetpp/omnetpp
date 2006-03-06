@@ -8,9 +8,8 @@ import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
 
 public class ConnectionNodeEx extends ConnectionNode {
-	private INedNode srcModuleRef;
-	private INedNode destModuleRef;
-	private transient NEDChangeListenerList listeners = new NEDChangeListenerList();
+	private INedModule srcModuleRef;
+	private INedModule destModuleRef;
 
 	public ConnectionNodeEx() {
 	}
@@ -33,11 +32,11 @@ public class ConnectionNodeEx extends ConnectionNode {
         }
     }
 	
-	public INedNode getSrcModuleRef() {
+	public INedModule getSrcModuleRef() {
 		return srcModuleRef;
 	}
 	
-	public void setSrcModuleRef(INedNode srcModule) {
+	public void setSrcModuleRef(INedModule srcModule) {
 		assert(srcModule != null);
 		if(srcModuleRef == srcModule) 
 			return;
@@ -46,14 +45,14 @@ public class ConnectionNodeEx extends ConnectionNode {
 			srcModuleRef.removeSrcConnection(this);
 		srcModuleRef = srcModule;
 		srcModuleRef.addSrcConnection(this);
-		attributeChanged(ATT_SRC_MODULE);
+		fireAttributeChangedToAncestors(ATT_SRC_MODULE);
 	}
 
-	public INedNode getDestModuleRef() {
+	public INedModule getDestModuleRef() {
 		return destModuleRef;
 	}
 
-	public void setDestModuleRef(INedNode destModule) {
+	public void setDestModuleRef(INedModule destModule) {
 		assert(destModule != null);
 		if (destModuleRef == destModule)
 			return;
@@ -62,7 +61,7 @@ public class ConnectionNodeEx extends ConnectionNode {
 			destModuleRef.removeDestConnection(this);
 		destModuleRef = destModule;
 		destModuleRef.addDestConnection(this);
-		attributeChanged(ATT_DEST_MODULE);
+		fireAttributeChangedToAncestors(ATT_DEST_MODULE);
 	}
 
 	@Override
@@ -91,14 +90,14 @@ public class ConnectionNodeEx extends ConnectionNode {
 		setSrcModuleRef(getSubmoduleByName(val));
 	}
 	
-	private INedNode getSubmoduleByName(String moduleName) {
+	private INedModule getSubmoduleByName(String moduleName) {
 		CompoundModuleNodeEx compMod = (CompoundModuleNodeEx)getParentWithTag(NED_COMPOUND_MODULE);
 		assert (compMod != null);
 		// check if the module name is empty. we should return the parent compoud module
 		if("".equals(moduleName)) 
 			return compMod;
 		else {
-			INedNode subMod = compMod.getSubmoduleByName(moduleName);
+			INedModule subMod = compMod.getSubmoduleByName(moduleName);
 			if (subMod == null) throw new IllegalArgumentException("Nonexistent submodule: "+moduleName);
 			return subMod;
 		}
@@ -121,23 +120,4 @@ public class ConnectionNodeEx extends ConnectionNode {
 		// TODO Implement this
 	}
 
-	public void addListener(INEDChangeListener l) {
-		listeners.add(l);
-	}
-
-	public void removeListener(INEDChangeListener l) {
-    	listeners.remove(l);
-	}
-
-	public void fireAttributeChanged(NEDElement node, String attr) {
-		listeners.fireAttributeChanged(node, attr);
-	}
-
-	public void fireChildInserted(NEDElement node, NEDElement where, NEDElement child) {
-		listeners.fireChildInserted(node, where, child);
-	}
-
-	public void fireChildRemoved(NEDElement node, NEDElement child) {
-		listeners.fireChildRemoved(node, child);
-	}
 }

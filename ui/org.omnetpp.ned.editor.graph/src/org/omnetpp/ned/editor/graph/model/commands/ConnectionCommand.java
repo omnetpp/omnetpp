@@ -6,7 +6,7 @@ import java.util.Vector;
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.model.ConnectionNodeEx;
-import org.omnetpp.ned.editor.graph.model.INedNode;
+import org.omnetpp.ned.editor.graph.model.INedModule;
 
 /**
  * (Re)assigns a wire object to source/target submodule gates
@@ -15,13 +15,13 @@ import org.omnetpp.ned.editor.graph.model.INedNode;
  */
 public class ConnectionCommand extends Command {
 
-    protected INedNode oldSource;
+    protected INedModule oldSource;
     protected String oldSourceTerminal;
-    protected INedNode oldTarget;
+    protected INedModule oldTarget;
     protected String oldTargetTerminal;
-    protected INedNode source;
+    protected INedModule source;
     protected String sourceGate;
-    protected INedNode target;
+    protected INedModule target;
     protected String targetGate;
     protected ConnectionNodeEx wire;
 
@@ -69,7 +69,7 @@ public class ConnectionCommand extends Command {
         return MessageFactory.ConnectionCommand_Description;
     }
 
-    public INedNode getSource() {
+    public INedModule getSource() {
         return source;
     }
 
@@ -77,7 +77,7 @@ public class ConnectionCommand extends Command {
         return sourceGate;
     }
 
-    public INedNode getTarget() {
+    public INedModule getTarget() {
         return target;
     }
 
@@ -93,7 +93,7 @@ public class ConnectionCommand extends Command {
         execute();
     }
 
-    public void setSource(INedNode newSource) {
+    public void setSource(INedModule newSource) {
         source = newSource;
     }
 
@@ -101,7 +101,7 @@ public class ConnectionCommand extends Command {
         sourceGate = newSourceGate;
     }
 
-    public void setTarget(INedNode newTarget) {
+    public void setTarget(INedModule newTarget) {
         target = newTarget;
     }
 

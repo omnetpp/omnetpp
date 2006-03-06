@@ -6,8 +6,7 @@ import java.util.List;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.pojo.NedFileNode;
 
-public class NedFileNodeEx extends NedFileNode implements INedContainer, INedModelElement {
-	private transient NEDChangeListenerList listeners = new NEDChangeListenerList();
+public class NedFileNodeEx extends NedFileNode implements INedContainer {
 	
 	public NedFileNodeEx() {
 	}
@@ -25,15 +24,15 @@ public class NedFileNodeEx extends NedFileNode implements INedContainer, INedMod
 		return result;
 	}
 	
-	public void addModelChild(INedNode child) {
+	public void addModelChild(INedModule child) {
 		appendChild((NEDElement)child);
 	}
 
-	public void removeModelChild(INedNode child) {		
+	public void removeModelChild(INedModule child) {		
 		removeChild((NEDElement)child);
 	}
 
-	public void insertModelChild(int index, INedNode child) {
+	public void insertModelChild(int index, INedModule child) {
 		NEDElement insertBefore = getFirstChild();
 		for(int i=0; (i<index) && (insertBefore!=null); ++i) 
 			insertBefore = insertBefore.getNextSibling();
@@ -41,35 +40,16 @@ public class NedFileNodeEx extends NedFileNode implements INedContainer, INedMod
 		insertChildBefore(insertBefore, (NEDElement)child);
 	}
 
-	public void insertModelChild(INedNode insertBefore, INedNode child) {
+	public void insertModelChild(INedModule insertBefore, INedModule child) {
 		insertChildBefore((NEDElement)insertBefore, (NEDElement)child);
 	}
 
-	public List<? extends INedNode> getModelChildren() {
-		List<INedNode> result = new ArrayList<INedNode>();
+	public List<? extends INedModule> getModelChildren() {
+		List<INedModule> result = new ArrayList<INedModule>();
 		for(NEDElement currChild : this) 
-				result.add((INedNode)currChild);
+				result.add((INedModule)currChild);
 				
 		return result;
 	}
 
-	public void addListener(INEDChangeListener l) {
-		listeners.add(l);
-	}
-
-	public void removeListener(INEDChangeListener l) {
-    	listeners.remove(l);
-	}
-
-	public void fireAttributeChanged(NEDElement node, String attr) {
-		listeners.fireAttributeChanged(node, attr);
-	}
-
-	public void fireChildInserted(NEDElement node, NEDElement where, NEDElement child) {
-		listeners.fireChildInserted(node, where, child);
-	}
-
-	public void fireChildRemoved(NEDElement node, NEDElement child) {
-		listeners.fireChildRemoved(node, child);
-	}
 }

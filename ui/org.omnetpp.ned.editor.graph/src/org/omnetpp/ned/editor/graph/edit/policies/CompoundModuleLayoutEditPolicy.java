@@ -25,11 +25,12 @@ import org.omnetpp.ned.editor.graph.misc.ColorFactory;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.model.CompoundModuleNodeEx;
 import org.omnetpp.ned.editor.graph.model.INedContainer;
-import org.omnetpp.ned.editor.graph.model.INedNode;
+import org.omnetpp.ned.editor.graph.model.INedModule;
 import org.omnetpp.ned.editor.graph.model.commands.AddCommand;
 import org.omnetpp.ned.editor.graph.model.commands.CloneCommand;
 import org.omnetpp.ned.editor.graph.model.commands.CreateCommand;
 import org.omnetpp.ned.editor.graph.model.commands.SetConstraintCommand;
+import org.omnetpp.ned2.model.NEDElement;
 
 
 public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
@@ -41,7 +42,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
 
     protected Command createAddCommand(Request request, EditPart childEditPart, Object constraint) {
-        INedNode part = (INedNode) childEditPart.getModel();
+        INedModule part = (INedModule) childEditPart.getModel();
         Rectangle rect = (Rectangle) constraint;
 
         AddCommand add = new AddCommand();
@@ -81,7 +82,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
         // create the constraint change command 
         SetConstraintCommand cmd = new SetConstraintCommand();
-        INedNode part = (INedNode) child.getModel();
+        INedModule part = (INedModule) child.getModel();
         cmd.setPart(part);
         cmd.setLocation(modelConstraint);
         Command result = cmd;
@@ -209,7 +210,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
         while (i.hasNext()) {
             currPart = (GraphicalEditPart) i.next();
-            clone.addPart((INedNode) currPart.getModel(), (Rectangle) getConstraintForClone(currPart,
+            clone.addPart((NEDElement) currPart.getModel(), (Rectangle) getConstraintForClone(currPart,
                     request));
         }
 
@@ -220,7 +221,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
     protected Command getCreateCommand(CreateRequest request) {
         CreateCommand create = new CreateCommand();
         create.setParent((INedContainer) getHost().getModel());
-        INedNode newPart = (INedNode) request.getNewObject();
+        INedModule newPart = (INedModule) request.getNewObject();
         create.setChild(newPart);
         Rectangle constraint = (Rectangle) getConstraintFor(request);
         create.setLocation(constraint);

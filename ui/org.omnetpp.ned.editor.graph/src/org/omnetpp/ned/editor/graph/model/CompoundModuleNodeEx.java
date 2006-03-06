@@ -13,14 +13,12 @@ import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 import org.omnetpp.ned2.model.pojo.SubmodulesNode;
 
 public class CompoundModuleNodeEx extends CompoundModuleNode 
-								  implements INedContainer, INedNode {
+								  implements INedContainer, INedModule {
 
 	// srcConns contains all connections where the sourcemodule is this module
 	protected List<ConnectionNodeEx> srcConns = new ArrayList<ConnectionNodeEx>();
 	// destConns contains all connections where the destmodule is this module
 	protected List<ConnectionNodeEx> destConns = new ArrayList<ConnectionNodeEx>();
-
-	private transient NEDChangeListenerList listeners = new NEDChangeListenerList();
 
 	public CompoundModuleNodeEx() {
 	}
@@ -101,15 +99,15 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 		// TODO add property change event (connection removed)
 	}
 
-	public void addModelChild(INedNode child) {
+	public void addModelChild(INedModule child) {
 		getFirstSubmodulesChild().appendChild((NEDElement)child);
 	}
 
-	public void removeModelChild(INedNode child) {		
+	public void removeModelChild(INedModule child) {		
 		getFirstSubmodulesChild().removeChild((NEDElement)child);
 	}
 
-	public void insertModelChild(int index, INedNode child) {
+	public void insertModelChild(int index, INedModule child) {
 		// check wheter Submodules node exists and create one if doesn't
 		SubmodulesNode snode = getFirstSubmodulesChild();
 		if (snode == null) 
@@ -122,7 +120,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 		getFirstSubmodulesChild().insertChildBefore(insertBefore, (NEDElement)child);
 	}
 
-	public void insertModelChild(INedNode insertBefore, INedNode child) {
+	public void insertModelChild(INedModule insertBefore, INedModule child) {
 		// check wheter Submodules node exists and create one if doesn't
 		SubmodulesNode snode = getFirstSubmodulesChild();
 		if (snode == null) 
@@ -131,7 +129,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 		snode.insertChildBefore((NEDElement)insertBefore, (NEDElement)child);
 	}
 
-	public List<? extends INedNode> getModelChildren() {
+	public List<? extends INedModule> getModelChildren() {
 		return getSubmodules();
 	}
 
@@ -169,23 +167,4 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 		setDisplayString(dps.getValue());
 	}
 
-	public void addListener(INEDChangeListener l) {
-		listeners.add(l);
-	}
-
-	public void removeListener(INEDChangeListener l) {
-    	listeners.remove(l);
-	}
-
-	public void fireAttributeChanged(NEDElement node, String attr) {
-		listeners.fireAttributeChanged(node, attr);
-	}
-
-	public void fireChildInserted(NEDElement node, NEDElement where, NEDElement child) {
-		listeners.fireChildInserted(node, where, child);
-	}
-
-	public void fireChildRemoved(NEDElement node, NEDElement child) {
-		listeners.fireChildRemoved(node, child);
-	}
 }

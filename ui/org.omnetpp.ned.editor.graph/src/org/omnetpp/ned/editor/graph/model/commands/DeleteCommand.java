@@ -7,7 +7,7 @@ import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.model.ConnectionNodeEx;
 import org.omnetpp.ned.editor.graph.model.INedContainer;
-import org.omnetpp.ned.editor.graph.model.INedNode;
+import org.omnetpp.ned.editor.graph.model.INedModule;
 
 /**
  * Deletes an object from the model and also removes all associated connections
@@ -16,7 +16,7 @@ import org.omnetpp.ned.editor.graph.model.INedNode;
  */
 public class DeleteCommand extends Command {
 
-    private INedNode child;
+    private INedModule child;
     private INedContainer parent;
     private int index = -1;
     private List<ConnectionNodeEx> srcConns = new ArrayList<ConnectionNodeEx>();
@@ -26,10 +26,10 @@ public class DeleteCommand extends Command {
         super(MessageFactory.DeleteCommand_Label);
     }
 
-    private void deleteConnections(INedNode part) {
+    private void deleteConnections(INedModule part) {
         if (part instanceof INedContainer) {
         	// delete all children
-            for (INedNode currChild : ((INedContainer) part).getModelChildren())
+            for (INedModule currChild : ((INedContainer) part).getModelChildren())
                 deleteConnections(currChild);
         }
         srcConns.addAll(part.getSrcConnections());
@@ -73,7 +73,7 @@ public class DeleteCommand extends Command {
         destConns.clear();
     }
 
-    public void setChild(INedNode c) {
+    public void setChild(INedModule c) {
         child = c;
     }
 

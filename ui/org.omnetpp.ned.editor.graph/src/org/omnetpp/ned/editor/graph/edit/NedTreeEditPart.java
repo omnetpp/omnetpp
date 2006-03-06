@@ -12,10 +12,9 @@ import org.omnetpp.ned.editor.graph.edit.policies.NedTreeEditPolicy;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
 import org.omnetpp.ned.editor.graph.model.CompoundModuleNodeEx;
 import org.omnetpp.ned.editor.graph.model.ConnectionNodeEx;
-import org.omnetpp.ned.editor.graph.model.INedModelElement;
-import org.omnetpp.ned.editor.graph.model.INEDChangeListener;
 import org.omnetpp.ned.editor.graph.model.NedElementExUtil;
 import org.omnetpp.ned.editor.graph.model.SubmoduleNodeEx;
+import org.omnetpp.ned2.model.INEDChangeListener;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned2.model.pojo.ChannelNode;
@@ -57,7 +56,7 @@ public class NedTreeEditPart extends org.eclipse.gef.editparts.AbstractTreeEditP
 
     public void activate() {
         super.activate();
-        ((INedModelElement)getModel()).addListener(this);
+        ((NEDElement)getModel()).addListener(this);
     }
 
     /**
@@ -69,7 +68,7 @@ public class NedTreeEditPart extends org.eclipse.gef.editparts.AbstractTreeEditP
     }
 
     public void deactivate() {
-        ((INedModelElement)getModel()).removeListener(this);
+        ((NEDElement)getModel()).removeListener(this);
         super.deactivate();
     }
 

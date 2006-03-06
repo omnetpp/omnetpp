@@ -27,8 +27,8 @@ import org.omnetpp.ned.editor.graph.edit.policies.WireEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.WireEndpointEditPolicy;
 import org.omnetpp.ned.editor.graph.figures.FigureFactory;
 import org.omnetpp.ned.editor.graph.model.ConnectionNodeEx;
-import org.omnetpp.ned.editor.graph.model.INEDChangeListener;
 import org.omnetpp.ned.editor.graph.model.WireBendpointModel;
+import org.omnetpp.ned2.model.INEDChangeListener;
 import org.omnetpp.ned2.model.NEDElement;
 
 /**
