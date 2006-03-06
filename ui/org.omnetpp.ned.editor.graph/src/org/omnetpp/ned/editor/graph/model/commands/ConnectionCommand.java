@@ -1,8 +1,5 @@
 package org.omnetpp.ned.editor.graph.model.commands;
 
-import java.util.Iterator;
-import java.util.Vector;
-
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.model.ConnectionNodeEx;

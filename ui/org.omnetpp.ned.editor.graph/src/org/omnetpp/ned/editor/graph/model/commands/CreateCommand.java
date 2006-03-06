@@ -28,7 +28,7 @@ public class CreateCommand extends org.eclipse.gef.commands.Command {
     public void execute() {
         if (rect != null) {
             child.setLocation(rect.getLocation());
-            // TODO chiled size must be set correctly in the displaystring
+            // TODO child size must be set correctly in the displaystring
             // if (!rect.isEmpty()) child.setSize(rect.getSize());
         }
         redo();

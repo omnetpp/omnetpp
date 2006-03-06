@@ -137,9 +137,9 @@ abstract public class NedNodeEditPart extends ContainerEditPart {
         Integer y = dps.getIntegerPropertyDef(DisplayPropertySource.PROP_Y);
         Integer w = dps.getIntegerPropertyDef(DisplayPropertySource.PROP_W);
         Integer h = dps.getIntegerPropertyDef(DisplayPropertySource.PROP_H);
-        // FIXME hardcoded
-        if(x == null) x = 100;
-        if(y == null) y = 100;
+        // FIXME hardcoded use 
+        if(x == null) x = 0;
+        if(y == null) y = 0;
         if(h == null) h = -1;
         if(w == null) w = -1;
         // set the location and size using the models helper methods

@@ -375,7 +375,10 @@ public class DisplayPropertySource implements IPropertySource, IPropertySource2 
         if(value instanceof RGB)
             value = ColorFactory.asString((RGB)value);
         
-        propParser.setTagArg(pd.tagName, pd.tagPos, value.toString());
+        if (value != null)        
+            propParser.setTagArg(pd.tagName, pd.tagPos, value.toString());
+        else 
+            propParser.setTagArg(pd.tagName, pd.tagPos, null);
     }
 
 //  FIXME resetting a property does not fire model change events

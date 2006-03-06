@@ -17,12 +17,20 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INedModule {
 	protected List<ConnectionNodeEx> destConns = new ArrayList<ConnectionNodeEx>();
 	
 	public SubmoduleNodeEx() {
+        init();
 	}
 
 	public SubmoduleNodeEx(NEDElement parent) {
 		super(parent);
+        init();
 	}
 
+    private void init() {
+        // TODO correctly handle the initial naming for new nodes (name most be unique)
+        setName("unnamed");
+        setType("node");
+    }
+    
 	public String getDisplayString() {
 		return NedElementExUtil.getDisplayString(this); 
 	}
@@ -76,8 +84,15 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INedModule {
 
 	public void setLocation(Point location) {
 		DisplayPropertySource dps = new DisplayPropertySource(getDisplayString());
-		dps.setPropertyValue(DisplayPropertySource.PROP_X, location.x);
-		dps.setPropertyValue(DisplayPropertySource.PROP_Y, location.y);
+        
+        if (location == null) {
+            // if location is not specified, remove the constraint from thedisplay string
+            dps.resetPropertyValue(DisplayPropertySource.PROP_X);
+        } else {
+            // if location is specifie set the location (p) constraint in the displaystring 
+            dps.setPropertyValue(DisplayPropertySource.PROP_X, location.x);
+            dps.setPropertyValue(DisplayPropertySource.PROP_Y, location.y);
+        }
 		setDisplayString(dps.getValue());
 	}
 
@@ -90,8 +105,15 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INedModule {
 
 	public void setSize(Dimension size) {
 		DisplayPropertySource dps = new DisplayPropertySource(getDisplayString());
-		dps.setPropertyValue(DisplayPropertySource.PROP_W, size.width);
-		dps.setPropertyValue(DisplayPropertySource.PROP_H, size.height);
+        
+		if (size == null || size.width <0 || size.height<0) {
+            // if the size is unspecified, remove the size constraint from the model
+            dps.resetPropertyValue(DisplayPropertySource.PROP_W);
+        } else {
+            // if the size is specified, add a size constraint to the model
+            dps.setPropertyValue(DisplayPropertySource.PROP_W, size.width);
+		    dps.setPropertyValue(DisplayPropertySource.PROP_H, size.height);
+        }
 		setDisplayString(dps.getValue());
 	}
 
