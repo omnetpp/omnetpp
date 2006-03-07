@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
-import org.omnetpp.ned.editor.graph.properties.DisplayPropertySource;
+import org.omnetpp.ned.editor.graph.properties.SubmoduleDisplayPropertySource;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 
@@ -76,43 +76,43 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INedModule {
 	}
 
 	public Point getLocation() {
-		DisplayPropertySource dps = new DisplayPropertySource(getDisplayString());
+		SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(getDisplayString());
 
-		return new Point (dps.getIntPropertyDef(DisplayPropertySource.PROP_X, 0),
-						  dps.getIntPropertyDef(DisplayPropertySource.PROP_Y, 0));
+		return new Point (dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_X, 0),
+						  dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_Y, 0));
 	}
 
 	public void setLocation(Point location) {
-		DisplayPropertySource dps = new DisplayPropertySource(getDisplayString());
+		SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(getDisplayString());
         
         if (location == null) {
             // if location is not specified, remove the constraint from thedisplay string
-            dps.resetPropertyValue(DisplayPropertySource.PROP_X);
+            dps.resetPropertyValue(SubmoduleDisplayPropertySource.PROP_X);
         } else {
             // if location is specifie set the location (p) constraint in the displaystring 
-            dps.setPropertyValue(DisplayPropertySource.PROP_X, location.x);
-            dps.setPropertyValue(DisplayPropertySource.PROP_Y, location.y);
+            dps.setPropertyValue(SubmoduleDisplayPropertySource.PROP_X, location.x);
+            dps.setPropertyValue(SubmoduleDisplayPropertySource.PROP_Y, location.y);
         }
 		setDisplayString(dps.getValue());
 	}
 
 	public Dimension getSize() {
-		DisplayPropertySource dps = new DisplayPropertySource(getDisplayString());
+		SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(getDisplayString());
 
-		return new Dimension(dps.getIntPropertyDef(DisplayPropertySource.PROP_W, 0),
-						     dps.getIntPropertyDef(DisplayPropertySource.PROP_H, 0));
+		return new Dimension(dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_W, 0),
+						     dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_H, 0));
 	}
 
 	public void setSize(Dimension size) {
-		DisplayPropertySource dps = new DisplayPropertySource(getDisplayString());
+		SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(getDisplayString());
         
 		if (size == null || size.width <0 || size.height<0) {
             // if the size is unspecified, remove the size constraint from the model
-            dps.resetPropertyValue(DisplayPropertySource.PROP_W);
+            dps.resetPropertyValue(SubmoduleDisplayPropertySource.PROP_W);
         } else {
             // if the size is specified, add a size constraint to the model
-            dps.setPropertyValue(DisplayPropertySource.PROP_W, size.width);
-		    dps.setPropertyValue(DisplayPropertySource.PROP_H, size.height);
+            dps.setPropertyValue(SubmoduleDisplayPropertySource.PROP_W, size.width);
+		    dps.setPropertyValue(SubmoduleDisplayPropertySource.PROP_H, size.height);
         }
 		setDisplayString(dps.getValue());
 	}

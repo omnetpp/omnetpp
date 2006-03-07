@@ -59,7 +59,7 @@ public abstract class AbstractGraphLayouter
      *
      * offx, offy: offset to anchor point
      */
-    public abstract void addAnchoredNode(Object mod, Object anchor, int offx, int offy, int width, int height);
+    public abstract void addAnchoredNode(Object mod, String anchor, int offx, int offy, int width, int height);
 
     /**
      * Add connection (graph edge)

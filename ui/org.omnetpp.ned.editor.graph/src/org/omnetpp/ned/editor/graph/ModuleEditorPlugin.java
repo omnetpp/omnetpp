@@ -3,6 +3,7 @@ package org.omnetpp.ned.editor.graph;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.gef.palette.CombinedTemplateCreationEntry;
 import org.eclipse.gef.palette.ConnectionCreationToolEntry;
 import org.eclipse.gef.palette.MarqueeToolEntry;
@@ -24,6 +25,8 @@ import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.model.CompoundModuleNodeEx;
 import org.omnetpp.ned.editor.graph.model.NEDElementFactoryEx;
 import org.omnetpp.ned.editor.graph.model.SubmoduleNodeEx;
+import org.omnetpp.ned.editor.graph.properties.NedPropertySourceAdapterFactory;
+import org.omnetpp.ned2.model.NEDElement;
 
 public class ModuleEditorPlugin extends AbstractUIPlugin {
 
@@ -39,6 +42,9 @@ public class ModuleEditorPlugin extends AbstractUIPlugin {
         
         // initialize the model factory
    		NEDElementFactoryEx.setInstance(new NEDElementFactoryEx());
+        // initialize the model's property source factory
+        Platform.getAdapterManager().registerAdapters(new NedPropertySourceAdapterFactory(), 
+                                                      NEDElement.class);
 
     }
 

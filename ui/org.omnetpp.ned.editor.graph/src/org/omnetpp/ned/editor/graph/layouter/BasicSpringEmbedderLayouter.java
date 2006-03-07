@@ -18,7 +18,7 @@ public class BasicSpringEmbedderLayouter extends AbstractGraphLayouter
 {
     static class Anchor
     {
-        Object name;      // anchor name
+        String name;      // anchor name
         double x, y;      // position
         int refcount;     // how many nodes are anchored to it
         double dx, dy;    // internal: movement at each step (NOT preserved across iterations!)
@@ -150,7 +150,7 @@ public class BasicSpringEmbedderLayouter extends AbstractGraphLayouter
 	}
 
 	@Override
-	public void addAnchoredNode(Object mod, Object anchorname, int offx, int offy, int width, int height) {
+	public void addAnchoredNode(Object mod, String anchorname, int offx, int offy, int width, int height) {
 	    assert(findNode(mod)==null);
 
 	    haveAnchoredNode = true;

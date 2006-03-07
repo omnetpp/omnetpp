@@ -1,6 +1,9 @@
 package org.omnetpp.ned2.model;
 
+import java.util.HashMap;
 import java.util.Iterator;
+
+import org.eclipse.core.runtime.PlatformObject;
 
 /**
  * Base class for objects in a NED object tree, the XML-based
@@ -8,8 +11,10 @@ import java.util.Iterator;
  * subclass represent an XML element.
  * NEDElement provides a DOM-like, generic access to the tree;
  * subclasses additionally provide a typed interface.
+ * It extends PlatformObject to have a default IAdaptable implementation
+ * primarily for PropertySheet support 
  */
-public abstract class NEDElement implements Iterable<NEDElement>
+public abstract class NEDElement extends PlatformObject implements Iterable<NEDElement> 
 {
 	private long id;
 	private String srcloc;
@@ -19,6 +24,8 @@ public abstract class NEDElement implements Iterable<NEDElement>
 	private NEDElement prevsibling;
 	private NEDElement nextsibling;
 	private static long lastid;
+    private HashMap userData;
+    
     private transient NEDChangeListenerList listeners = null;
 
 	public Iterator<NEDElement> iterator() {
@@ -547,6 +554,28 @@ public abstract class NEDElement implements Iterable<NEDElement>
     public void removeListener(INEDChangeListener listener) {
         if(listeners != null)
             listeners.remove(listener);
+    }
+  
+    /**
+     * UserData not belonging directly to the model can be stored using a key. If the value
+     * is NULL the data will be deleted. 
+     */
+    public void setUserData(Object key, Object value) {
+        if (userData == null)
+            userData = new HashMap();
+        if(value != null)
+            userData.put(key, value);
+        else 
+            userData.remove(key);
+    }
+    
+    /**
+     * @return User specific data, not belonging to the model directly
+     */
+    public Object getUserData(Object key) {
+        if(userData != null)
+            return userData.get(key);
+        return null;
     }
 };
 

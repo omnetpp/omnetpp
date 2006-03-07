@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
-import org.omnetpp.ned.editor.graph.properties.DisplayPropertySource;
+import org.omnetpp.ned.editor.graph.properties.SubmoduleDisplayPropertySource;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned2.model.pojo.ConnectionsNode;
@@ -134,36 +134,38 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 	}
 
 	public Point getLocation() {
+        // FIXME should be compound module property source
 		String dispstring = getDisplayString();
-		DisplayPropertySource dps = new DisplayPropertySource(dispstring);
+		SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(dispstring);
 
-		return new Point (dps.getIntPropertyDef(DisplayPropertySource.PROP_X, 0),
-						  dps.getIntPropertyDef(DisplayPropertySource.PROP_Y, 0));
+		return new Point (dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_X, 0),
+						  dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_Y, 0));
 	}
 
 	public void setLocation(Point location) {
+        // FIXME should be compound module property source
 		String dispstring = getDisplayString();
-		DisplayPropertySource dps = new DisplayPropertySource(dispstring);
+		SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(dispstring);
 
-		dps.setPropertyValue(DisplayPropertySource.PROP_X, location.x);
-		dps.setPropertyValue(DisplayPropertySource.PROP_Y, location.y);
+		dps.setPropertyValue(SubmoduleDisplayPropertySource.PROP_X, location.x);
+		dps.setPropertyValue(SubmoduleDisplayPropertySource.PROP_Y, location.y);
 		setDisplayString(dps.getValue());
 	}
 
 	public Dimension getSize() {
 		String dispstring = getDisplayString();
-		DisplayPropertySource dps = new DisplayPropertySource(dispstring);
+		SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(dispstring);
 
-		return new Dimension(dps.getIntPropertyDef(DisplayPropertySource.PROP_W, 0),
-						     dps.getIntPropertyDef(DisplayPropertySource.PROP_H, 0));
+		return new Dimension(dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_W, 0),
+						     dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_H, 0));
 	}
 
 	public void setSize(Dimension size) {
 		String dispstring = getDisplayString();
-		DisplayPropertySource dps = new DisplayPropertySource(dispstring);
+		SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(dispstring);
 
-		dps.setPropertyValue(DisplayPropertySource.PROP_W, size.width);
-		dps.setPropertyValue(DisplayPropertySource.PROP_H, size.height);
+		dps.setPropertyValue(SubmoduleDisplayPropertySource.PROP_W, size.width);
+		dps.setPropertyValue(SubmoduleDisplayPropertySource.PROP_H, size.height);
 		setDisplayString(dps.getValue());
 	}
 
