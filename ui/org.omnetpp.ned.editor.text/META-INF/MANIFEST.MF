@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: %pluginName
+Bundle-Name: Textual NED Module Editor
 Bundle-SymbolicName: org.omnetpp.ned.editor.text; singleton:=true
 Bundle-Version: 4.0.0
-Bundle-Activator: org.omnetpp.ned.editor.text.NedEditorPlugin
-Bundle-Vendor: %providerName
+Bundle-Activator: org.omnetpp.ned.editor.text.TextualNedEditorPlugin
+Bundle-Vendor: OpenSim Ltd.
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,

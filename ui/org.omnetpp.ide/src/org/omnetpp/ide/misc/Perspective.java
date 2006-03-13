@@ -1,4 +1,4 @@
-package org.omnetpp.ide;
+package org.omnetpp.ide.misc;
 
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;

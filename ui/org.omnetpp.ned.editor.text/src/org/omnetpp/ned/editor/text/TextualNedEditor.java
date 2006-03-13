@@ -35,7 +35,7 @@ import org.omnetpp.ned.editor.text.outline.NedContentOutlinePage;
 /**
  * Java specific text editor.
  */
-public class NedEditor extends TextEditor {
+public class TextualNedEditor extends TextEditor {
 	
 	private class DefineFoldingRegionAction extends TextEditorAction {
 
@@ -85,11 +85,11 @@ public class NedEditor extends TextEditor {
 	/**
 	 * Default constructor.
 	 */
-	public NedEditor() {
+	public TextualNedEditor() {
 		super();
 	}
 	
-	/** The <code>NedEditor</code> implementation of this 
+	/** The <code>TextualNedEditor</code> implementation of this 
 	 * <code>AbstractTextEditor</code> method extend the 
 	 * actions to add those specific to the receiver
 	 */
@@ -108,7 +108,7 @@ public class NedEditor extends TextEditor {
 		setAction("DefineFoldingRegion", a); //$NON-NLS-1$
 	}
 	
-	/** The <code>NedEditor</code> implementation of this 
+	/** The <code>TextualNedEditor</code> implementation of this 
 	 * <code>AbstractTextEditor</code> method performs any extra 
 	 * disposal actions required by the ned editor.
 	 */
@@ -118,7 +118,7 @@ public class NedEditor extends TextEditor {
 		super.dispose();
 	}
 	
-	/** The <code>NedEditor</code> implementation of this 
+	/** The <code>TextualNedEditor</code> implementation of this 
 	 * <code>AbstractTextEditor</code> method performs any extra 
 	 * revert behavior required by the ned editor.
 	 */
@@ -128,7 +128,7 @@ public class NedEditor extends TextEditor {
 			fOutlinePage.update();
 	}
 	
-	/** The <code>NedEditor</code> implementation of this 
+	/** The <code>TextualNedEditor</code> implementation of this 
 	 * <code>AbstractTextEditor</code> method performs any extra 
 	 * save behavior required by the ned editor.
 	 * 
@@ -140,7 +140,7 @@ public class NedEditor extends TextEditor {
 			fOutlinePage.update();
 	}
 	
-	/** The <code>NedEditor</code> implementation of this 
+	/** The <code>TextualNedEditor</code> implementation of this 
 	 * <code>AbstractTextEditor</code> method performs any extra 
 	 * save as behavior required by the ned editor.
 	 */
@@ -150,7 +150,7 @@ public class NedEditor extends TextEditor {
 			fOutlinePage.update();
 	}
 	
-	/** The <code>NedEditor</code> implementation of this 
+	/** The <code>TextualNedEditor</code> implementation of this 
 	 * <code>AbstractTextEditor</code> method performs sets the 
 	 * input of the outline page after AbstractTextEditor has set input.
 	 * 
@@ -188,7 +188,7 @@ public class NedEditor extends TextEditor {
 		addAction(menu, "DefineFoldingRegion");  //$NON-NLS-1$
 	}
 	
-	/** The <code>NedEditor</code> implementation of this 
+	/** The <code>TextualNedEditor</code> implementation of this 
 	 * <code>AbstractTextEditor</code> method performs gets
 	 * the ned content outline page if request is for a an 
 	 * outline page.

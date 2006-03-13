@@ -3,11 +3,12 @@ package org.omnetpp.ide;
 import org.eclipse.core.runtime.IPlatformRunnable;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
+import org.omnetpp.ide.misc.ApplicationWorkbenchAdvisor;
 
 /**
  * This class controls all aspects of the application's execution
  */
-public class GNED2Application implements IPlatformRunnable {
+public class OmnetIdeApplication implements IPlatformRunnable {
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.core.runtime.IPlatformRunnable#run(java.lang.Object)

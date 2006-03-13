@@ -1,13 +1,15 @@
-package org.omnetpp.ned.editor.text;
+package org.omnetpp.ned.editor.text.actions;
 
 
 import org.eclipse.jface.action.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.editors.text.TextEditorActionContributor;
 import org.eclipse.ui.texteditor.*;
+import org.omnetpp.ned.editor.text.NedEditorMessages;
 
 /**
  * Contributes interesting Java actions to the desktop's Edit menu and the toolbar.
+ * FIXME this class is not used/referenced currently
  */
 public class NedActionContributor extends TextEditorActionContributor {
 

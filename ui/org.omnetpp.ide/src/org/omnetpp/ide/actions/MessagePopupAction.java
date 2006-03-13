@@ -1,8 +1,10 @@
-package org.omnetpp.ide;
+package org.omnetpp.ide.actions;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.omnetpp.ide.OmnetIdePlugin;
+import org.omnetpp.ide.misc.ICommandIds;
 
 
 public class MessagePopupAction extends Action {
@@ -16,7 +18,7 @@ public class MessagePopupAction extends Action {
         setId(ICommandIds.CMD_OPEN_MESSAGE);
         // Associate the action with a pre-defined command, to allow key bindings.
         setActionDefinitionId(ICommandIds.CMD_OPEN_MESSAGE);
-        setImageDescriptor(org.omnetpp.ide.Activator.getImageDescriptor("/icons/sample3.gif"));
+        setImageDescriptor(org.omnetpp.ide.OmnetIdePlugin.getImageDescriptor("/icons/sample3.gif"));
     }
 
     public void run() {

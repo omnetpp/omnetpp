@@ -8,20 +8,21 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.MultiPageEditorPart;
-import org.omnetpp.ned.editor.graph.ModuleEditor;
+import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.graph.model.NedFileNodeEx;
-import org.omnetpp.ned.editor.text.NedEditor;
+import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned2.model.ModelUtil;
 
-public class GraphAndTextEditor extends MultiPageEditorPart implements
+public class MultiPageNedEditor extends MultiPageEditorPart implements
 		IResourceChangeListener {
 
-	private ModuleEditor graphEditor;
-	private NedEditor nedEditor;
+	private GraphicalNedEditor graphEditor;
+	private TextualNedEditor nedEditor;
 	private int graphPageIndex;
 	private int textPageIndex;
 	private boolean insidePageChange = false;
@@ -48,8 +49,8 @@ public class GraphAndTextEditor extends MultiPageEditorPart implements
 	
 	@Override
 	protected void createPages() {
-		graphEditor = new ModuleEditor();
-		nedEditor = new NedEditor();
+		graphEditor = new GraphicalNedEditor();
+		nedEditor = new TextualNedEditor();
 		
 		try {
 			// fill graphical editor
@@ -145,4 +146,5 @@ public class GraphAndTextEditor extends MultiPageEditorPart implements
 		// TODO Auto-generated method stub
 
 	}
+
 }

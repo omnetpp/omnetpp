@@ -1,4 +1,4 @@
-package org.omnetpp.ide;
+package org.omnetpp.ide.misc;
 
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchAdvisor;

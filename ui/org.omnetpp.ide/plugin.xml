@@ -5,13 +5,12 @@
      <extension
          point="org.eclipse.ui.editors">
       <editor
-            class="org.omnetpp.ide.GraphAndTextEditor"
-            contributorClass="org.omnetpp.ned.editor.graph.actions.GNedEditorActionBarContributor"
-            default="true"
+            class="org.omnetpp.ide.MultiPageNedEditor"
+            default="false"
             extensions="ned"
             icon="icons/gned.gif"
             id="org.omnetpp.ide.gteditor"
-            name="GTNED Dual Editor">
+            name="GNED Editor">
       </editor>
    </extension>
    <extension
@@ -19,7 +18,7 @@
          point="org.eclipse.core.runtime.applications">
       <application>
          <run
-               class="org.omnetpp.ide.GNED2Application">
+               class="org.omnetpp.ide.OmnetIdeApplication">
          </run>
       </application>
    </extension>
@@ -27,7 +26,7 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             name="NED Editiing"
-            class="org.omnetpp.ide.Perspective"
+            class="org.omnetpp.ide.misc.Perspective"
             id="org.omnetpp.ide.perspective">
       </perspective>
    </extension>
@@ -37,14 +36,14 @@
             name="Message"
             allowMultiple="true"
             icon="icons/sample2.gif"
-            class="org.omnetpp.ide.View"
+            class="org.omnetpp.ide.misc.View"
             id="org.omnetpp.ide.view">
       </view>
       <view
             name="Mailboxes"
             allowMultiple="true"
             icon="icons/sample3.gif"
-            class="org.omnetpp.ide.NavigationView"
+            class="org.omnetpp.ide.misc.NavigationView"
             id="org.omnetpp.ide.navigationView">
       </view>
    </extension>

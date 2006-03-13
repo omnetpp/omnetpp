@@ -24,7 +24,6 @@ public class SubmoduleDisplayPropertySource extends DisplayPropertySource {
     protected static LinkedHashMap<String,IntDesc> propDescMap = new LinkedHashMap<String,IntDesc>();
     protected static IPropertyDescriptor[] propertyDescArray;
 
-    SubmoduleNodeEx linkedModel = null;
     // contains the default fallback values for the different tags if a variable is used in that position
     private static DisplayPropertySource variableDefaults 
         = new SubmoduleDisplayPropertySource("i=,,30;i2=,,30;is=40;b=40,40,rect,#8080ff,black,2;t=,t,blue;r=100,,black,1");
@@ -208,8 +207,8 @@ public class SubmoduleDisplayPropertySource extends DisplayPropertySource {
     }
     
     public SubmoduleDisplayPropertySource(SubmoduleNodeEx model) {
-        linkedModel = model;
-        setValue(linkedModel.getDisplayString());
+        super(model);
+        setValue(((SubmoduleNodeEx)nedModel).getDisplayString());
     }
 
     @Override
@@ -237,7 +236,14 @@ public class SubmoduleDisplayPropertySource extends DisplayPropertySource {
     
     @Override
     protected void fireDisplayStringChanged() {
-        linkedModel.setDisplayString(getValue());
+        if(nedModel != null)
+            ((SubmoduleNodeEx)nedModel).setDisplayString(getValue());
+    }
+
+    @Override
+    public void modelChanged() {
+        if(nedModel != null)
+            setValue(((SubmoduleNodeEx)nedModel).getDisplayString());
     }
 
 }

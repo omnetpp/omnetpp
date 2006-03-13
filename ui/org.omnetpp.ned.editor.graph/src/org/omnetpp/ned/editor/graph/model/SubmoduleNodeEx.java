@@ -76,14 +76,18 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INedModule {
 	}
 
 	public Point getLocation() {
-		SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(getDisplayString());
+        // FIXME get the propertysource from the model if it is already registered
+        String str = getDisplayString();
+		SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(str);
 
 		return new Point (dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_X, 0),
 						  dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_Y, 0));
 	}
 
 	public void setLocation(Point location) {
-		SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(getDisplayString());
+        // FIXME get the propertysource from the model if it is already registered
+        String str = getDisplayString();
+        SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(str);
         
         if (location == null) {
             // if location is not specified, remove the constraint from thedisplay string
@@ -97,6 +101,7 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INedModule {
 	}
 
 	public Dimension getSize() {
+        // FIXME get the propertysource from the model if it is already registered
 		SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(getDisplayString());
 
 		return new Dimension(dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_W, 0),
@@ -104,6 +109,7 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INedModule {
 	}
 
 	public void setSize(Dimension size) {
+        // FIXME get the propertysource from the model if it is already registered
 		SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(getDisplayString());
         
 		if (size == null || size.width <0 || size.height<0) {

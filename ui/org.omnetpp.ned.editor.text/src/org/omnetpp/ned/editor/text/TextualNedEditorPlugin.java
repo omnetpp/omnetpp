@@ -17,14 +17,14 @@ import org.omnetpp.ned.editor.text.assist.NedContextType;
  * Plugin implementing text based NED editor for OMNeT++.
  * 
  */
-public class NedEditorPlugin extends AbstractUIPlugin {
+public class TextualNedEditorPlugin extends AbstractUIPlugin {
 	
     public final static String PLUGIN_ID = "org.omnetpp.ned.editor.text";
 
     /** Key to store custom templates. */
     private static final String CUSTOM_TEMPLATES_KEY = "org.omnetpp.ned.editor.text.customtemplates"; //$NON-NLS-1$
 	
-	private static NedEditorPlugin fgInstance;
+	private static TextualNedEditorPlugin fgInstance;
 	private NedContentAssistPartitionScanner fPartitionScanner;
     /** The template store. */
     private TemplateStore fStore;
@@ -36,11 +36,11 @@ public class NedEditorPlugin extends AbstractUIPlugin {
 	 * 
 	 * @param descriptor
 	 */
-//	public NedEditorPlugin(IPluginDescriptor descriptor) {
+//	public TextualNedEditorPlugin(IPluginDescriptor descriptor) {
 //		super(descriptor);
 //		fgInstance= this;
 //	}
-    public NedEditorPlugin() {
+    public TextualNedEditorPlugin() {
         super();
         fgInstance= this;
     }
@@ -50,7 +50,7 @@ public class NedEditorPlugin extends AbstractUIPlugin {
 	 * 
 	 * @return the default plugin instance
 	 */
-	public static NedEditorPlugin getDefault() {
+	public static TextualNedEditorPlugin getDefault() {
 		return fgInstance;
 	}
 	

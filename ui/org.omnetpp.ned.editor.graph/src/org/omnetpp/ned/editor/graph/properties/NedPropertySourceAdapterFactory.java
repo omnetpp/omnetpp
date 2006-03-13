@@ -27,7 +27,8 @@ public  class NedPropertySourceAdapterFactory implements IAdapterFactory {
                 adapter = new SubmodulePropertySource((SubmoduleNodeEx)nedModel);
             
             // store the created adapter into the model so we can reuse it later
-            nedModel.setUserData(IPROPERTY_SOURCE_ADAPTER, adapter);
+            if(adapter != null) 
+                nedModel.setUserData(IPROPERTY_SOURCE_ADAPTER, adapter);
             return adapter;
         }
 

@@ -108,7 +108,7 @@ import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.misc.ModulePaletteCustomizer;
 import org.omnetpp.ned.editor.graph.model.NedFileNodeEx;
 
-public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
+public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
     
     
     class OutlinePage extends ContentOutlinePage implements IAdaptable {
@@ -149,7 +149,7 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
         protected void configureOutlineViewer() {
             getViewer().setEditDomain(getEditDomain());
             getViewer().setEditPartFactory(new NedTreeEditPartFactory());
-            ContextMenuProvider provider = new ModuleEditorContextMenuProvider(getViewer(), getActionRegistry());
+            ContextMenuProvider provider = new GraphicalNedEditorContextMenuProvider(getViewer(), getActionRegistry());
             getViewer().setContextMenu(provider);
             getSite().registerContextMenu("org.eclipse.gef.examples.logic.outline.contextmenu", //$NON-NLS-1$
                     provider, getSite().getSelectionProvider());
@@ -191,13 +191,14 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
                 thumbnail = null;
             }
             super.dispose();
-            ModuleEditor.this.outlinePage = null;
+            GraphicalNedEditor.this.outlinePage = null;
             outlinePage = null;
         }
 
         public Object getAdapter(Class type) {
             if (type == ZoomManager.class)
                 return getGraphicalViewer().getProperty(ZoomManager.class.toString());
+            
             return null;
         }
 
@@ -337,7 +338,7 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
         // "Save As"
         // or close the editor.
         public void partActivated(IWorkbenchPart part) {
-            if (part != ModuleEditor.this) return;
+            if (part != GraphicalNedEditor.this) return;
             if (!((IFileEditorInput) getEditorInput()).getFile().exists()) {
                 Shell shell = getSite().getShell();
                 String title = MessageFactory.GraphicalEditor_FILE_DELETED_TITLE_UI;
@@ -381,13 +382,13 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
 
     protected static final int DEFAULT_PALETTE_SIZE = 130;
 
-    public ModuleEditor() {
-        ModuleEditorPlugin.getDefault().getPreferenceStore().setDefault(PALETTE_SIZE, DEFAULT_PALETTE_SIZE);
+    public GraphicalNedEditor() {
+        GraphicalNedEditorPlugin.getDefault().getPreferenceStore().setDefault(PALETTE_SIZE, DEFAULT_PALETTE_SIZE);
         setEditDomain(new DefaultEditDomain(this));
     }
 
     protected void closeEditor(boolean save) {
-        getSite().getPage().closeEditor(ModuleEditor.this, save);
+        getSite().getPage().closeEditor(GraphicalNedEditor.this, save);
     }
 
     public void commandStackChanged(EventObject event) {
@@ -428,7 +429,7 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
         viewer.setRootEditPart(root);
 
         viewer.setEditPartFactory(new NedEditPartFactory());
-        ContextMenuProvider provider = new ModuleEditorContextMenuProvider(viewer, getActionRegistry());
+        ContextMenuProvider provider = new GraphicalNedEditorContextMenuProvider(viewer, getActionRegistry());
         viewer.setContextMenu(provider);
         getSite().registerContextMenu("org.omnetpp.ned.editor.graph.contextmenu", //$NON-NLS-1$
                 provider, viewer);
@@ -549,7 +550,7 @@ public class ModuleEditor extends GraphicalEditorWithFlyoutPalette {
 
     protected PaletteRoot getPaletteRoot() {
         if (root == null) {
-            root = ModuleEditorPlugin.createPalette();
+            root = GraphicalNedEditorPlugin.createPalette();
         }
         return root;
     }

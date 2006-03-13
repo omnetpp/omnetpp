@@ -7,15 +7,15 @@ import org.osgi.framework.BundleContext;
 /**
  * The main plugin class to be used in the desktop.
  */
-public class Activator extends AbstractUIPlugin {
+public class OmnetIdePlugin extends AbstractUIPlugin {
 
 	//The shared instance.
-	private static Activator plugin;
+	private static OmnetIdePlugin plugin;
 	
 	/**
 	 * The constructor.
 	 */
-	public Activator() {
+	public OmnetIdePlugin() {
 		plugin = this;
 	}
 
@@ -39,7 +39,7 @@ public class Activator extends AbstractUIPlugin {
 	 *
 	 * @return the shared instance.
 	 */
-	public static Activator getDefault() {
+	public static OmnetIdePlugin getDefault() {
 		return plugin;
 	}
 

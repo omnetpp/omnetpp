@@ -22,7 +22,7 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.RetargetAction;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 
-public class GNedEditorActionBarContributor extends org.eclipse.gef.ui.actions.ActionBarContributor {
+public class GraphicalNedEditorActionBarContributor extends org.eclipse.gef.ui.actions.ActionBarContributor {
 
     /**
      * @see org.eclipse.gef.ui.actions.ActionBarContributor#buildActions()

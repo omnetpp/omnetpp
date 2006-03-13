@@ -4,12 +4,12 @@ import java.util.LinkedHashMap;
 
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.ui.views.properties.ColorPropertyDescriptor;
-import org.eclipse.ui.views.properties.IPropertySource2;
 import org.omnetpp.ned.editor.graph.misc.ColorFactory;
 import org.omnetpp.ned2.model.DisplayString;
+import org.omnetpp.ned2.model.NEDElement;
 
 // TODO implement the property list as Enum ?
-abstract public class DisplayPropertySource implements IPropertySource2 {
+abstract public class DisplayPropertySource extends AbstractNedPropertySource {
 
     // string parser for handling the parsing of the display string  
     protected DisplayString dispString;
@@ -41,13 +41,16 @@ abstract public class DisplayPropertySource implements IPropertySource2 {
     }
     
     public DisplayPropertySource() {
-        
     }
     
     public DisplayPropertySource(String dispString) {
         setValue(dispString);
     }
     
+    public DisplayPropertySource(NEDElement model) {
+        super(model);
+    }
+
     /**
      * Set the content and parse it 
      * @param dispString
@@ -55,7 +58,6 @@ abstract public class DisplayPropertySource implements IPropertySource2 {
     public void setValue(String dispStr) {
         dispString = new DisplayString(dispStr);
     }
-    
     
     /**
      * @return The readable display string

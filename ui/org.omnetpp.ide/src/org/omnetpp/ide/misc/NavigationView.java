@@ -1,4 +1,4 @@
-package org.omnetpp.ide;
+package org.omnetpp.ide.misc;
 
 import java.util.ArrayList;
 

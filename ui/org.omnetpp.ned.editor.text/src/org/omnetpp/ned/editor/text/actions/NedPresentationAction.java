@@ -1,8 +1,9 @@
-package org.omnetpp.ned.editor.text;
+package org.omnetpp.ned.editor.text.actions;
 
 
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.TextEditorAction;
+import org.omnetpp.ned.editor.text.NedEditorMessages;
 
 /**
  * A toolbar action which toggles the presentation model of the

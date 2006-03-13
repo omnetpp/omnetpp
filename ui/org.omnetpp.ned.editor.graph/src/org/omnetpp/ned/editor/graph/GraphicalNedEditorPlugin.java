@@ -28,13 +28,13 @@ import org.omnetpp.ned.editor.graph.model.SubmoduleNodeEx;
 import org.omnetpp.ned.editor.graph.properties.NedPropertySourceAdapterFactory;
 import org.omnetpp.ned2.model.NEDElement;
 
-public class ModuleEditorPlugin extends AbstractUIPlugin {
+public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
 
     public final static String PLUGIN_ID = "org.omnetpp.ned.editor.graph";
 
-    private static ModuleEditorPlugin singleton;
+    private static GraphicalNedEditorPlugin singleton;
     
-    public ModuleEditorPlugin() {
+    public GraphicalNedEditorPlugin() {
         super();
         if (singleton == null) {
             singleton = this;
@@ -48,7 +48,7 @@ public class ModuleEditorPlugin extends AbstractUIPlugin {
 
     }
 
-    public static ModuleEditorPlugin getDefault() {
+    public static GraphicalNedEditorPlugin getDefault() {
         return singleton;
     }
 

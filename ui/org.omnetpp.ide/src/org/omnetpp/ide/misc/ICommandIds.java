@@ -1,4 +1,4 @@
-package org.omnetpp.ide;
+package org.omnetpp.ide.misc;
 
 /**
  * Interface defining the application's command IDs.

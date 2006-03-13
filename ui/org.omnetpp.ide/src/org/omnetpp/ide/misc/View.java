@@ -1,4 +1,4 @@
-package org.omnetpp.ide;
+package org.omnetpp.ide.misc;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.JFaceResources;

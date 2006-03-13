@@ -19,7 +19,7 @@ import org.eclipse.jface.text.templates.TemplateCompletionProcessor;
 import org.eclipse.jface.text.templates.TemplateContextType;
 import org.eclipse.jface.text.templates.TemplateProposal;
 import org.eclipse.swt.graphics.Image;
-import org.omnetpp.ned.editor.text.NedEditorPlugin;
+import org.omnetpp.ned.editor.text.TextualNedEditorPlugin;
 
 /**
  * Generic incremental type completion processor.
@@ -125,7 +125,7 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
      * @return all templates
      */
     protected Template[] getTemplates(String contextTypeId) {
-        return NedEditorPlugin.getDefault().getTemplateStore().getTemplates();
+        return TextualNedEditorPlugin.getDefault().getTemplateStore().getTemplates();
     }
 
     /**
@@ -136,7 +136,7 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
      * @return the supported XML context type
      */
     protected TemplateContextType getContextType(ITextViewer viewer, IRegion region) {
-        return NedEditorPlugin.getDefault().getContextTypeRegistry().getContextType(NedContextType.DEFAULT_CONTEXT_TYPE);
+        return TextualNedEditorPlugin.getDefault().getContextTypeRegistry().getContextType(NedContextType.DEFAULT_CONTEXT_TYPE);
     }
 
     /**
@@ -146,10 +146,10 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
      * @return the defaul template image
      */
     protected Image getImage(Template template) {
-        ImageRegistry registry= NedEditorPlugin.getDefault().getImageRegistry();
+        ImageRegistry registry= TextualNedEditorPlugin.getDefault().getImageRegistry();
         Image image= registry.get(DEFAULT_IMAGE);
         if (image == null) {
-            ImageDescriptor desc= NedEditorPlugin.imageDescriptorFromPlugin(DEFAULT_IMAGE); //$NON-NLS-1$
+            ImageDescriptor desc= TextualNedEditorPlugin.imageDescriptorFromPlugin(DEFAULT_IMAGE); //$NON-NLS-1$
             registry.put(DEFAULT_IMAGE, desc);
             image= registry.get(DEFAULT_IMAGE);
         }

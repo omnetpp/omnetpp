@@ -1,4 +1,4 @@
-package org.omnetpp.ide;
+package org.omnetpp.ide.actions;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.GroupMarker;
@@ -16,6 +16,7 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
+import org.omnetpp.ide.misc.View;
 
 /**
  * An action bar advisor is responsible for creating, adding, and disposing of the

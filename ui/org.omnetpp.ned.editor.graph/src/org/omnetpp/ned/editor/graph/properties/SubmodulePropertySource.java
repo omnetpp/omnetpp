@@ -12,7 +12,7 @@ public class SubmodulePropertySource extends AbstractNedPropertySource {
     public static String PROP_TYPE = "type"; //$NON-NLS-1$
     public static String PROP_DISPLAY = "display"; //$NON-NLS-1$
     protected static IPropertyDescriptor[] descriptors;
-
+    
     static {
         PropertyDescriptor nameProp = new TextPropertyDescriptor(PROP_NAME, "Name");
         PropertyDescriptor typeProp = new TextPropertyDescriptor(PROP_TYPE, "Type");
@@ -20,8 +20,13 @@ public class SubmodulePropertySource extends AbstractNedPropertySource {
         descriptors = new IPropertyDescriptor[] { nameProp, typeProp, displayProp };
     }
 
+    protected SubmoduleDisplayPropertySource submoduleDisplayPropertySource;
+    
     public SubmodulePropertySource(NEDElement model) {
         super(model);
+        // create a nested displayPropertySource source for the model
+        submoduleDisplayPropertySource = 
+            new SubmoduleDisplayPropertySource((SubmoduleNodeEx)model);
     }
 
     public Object getEditableValue() {
@@ -41,8 +46,7 @@ public class SubmodulePropertySource extends AbstractNedPropertySource {
             return ((SubmoduleNodeEx)nedModel).getType(); 
         }
         if (PROP_DISPLAY.equals(propName)) { 
-            // FIXME must return the cached version not always a new instance
-            return new SubmoduleDisplayPropertySource((SubmoduleNodeEx)nedModel); 
+            return submoduleDisplayPropertySource; 
         }
         return null;
     }
@@ -74,7 +78,9 @@ public class SubmodulePropertySource extends AbstractNedPropertySource {
 
     @Override
     public void modelChanged() {
-        
+        // NO need to implement a listener because we do not cache any data 
+        // from the model
+        // the displayStringPropertySource listens for modelchanges on its own
     }
 
 }
