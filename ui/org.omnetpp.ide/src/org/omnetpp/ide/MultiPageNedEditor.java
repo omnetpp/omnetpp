@@ -50,6 +50,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 	@Override
 	protected void createPages() {
 		graphEditor = new GraphicalNedEditor();
+        graphEditor.setEmbeddingEditor(this);
 		nedEditor = new TextualNedEditor();
 		
 		try {

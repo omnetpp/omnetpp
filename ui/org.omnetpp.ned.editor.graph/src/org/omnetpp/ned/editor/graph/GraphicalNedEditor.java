@@ -73,6 +73,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.jface.util.TransferDropTargetListener;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.events.DisposeEvent;
@@ -96,6 +97,7 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.IPageSite;
+import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.omnetpp.ned.editor.graph.actions.ModulePasteTemplateAction;
@@ -374,6 +376,8 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
 
     private RulerComposite rulerComp;
 
+    private MultiPageEditorPart embeddingEditor;
+
     protected static final String PALETTE_DOCK_LOCATION = "Dock location"; //$NON-NLS-1$
 
     protected static final String PALETTE_SIZE = "Palette Size"; //$NON-NLS-1$
@@ -385,6 +389,10 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
     public GraphicalNedEditor() {
         GraphicalNedEditorPlugin.getDefault().getPreferenceStore().setDefault(PALETTE_SIZE, DEFAULT_PALETTE_SIZE);
         setEditDomain(new DefaultEditDomain(this));
+    }
+    
+    public void setEmbeddingEditor(MultiPageEditorPart parent) {
+        embeddingEditor = parent; 
     }
 
     protected void closeEditor(boolean save) {
@@ -778,6 +786,20 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
     protected void setSite(IWorkbenchPartSite site) {
         super.setSite(site);
         getSite().getWorkbenchWindow().getPartService().addPartListener(partListener);
+    }
+
+
+    // XXX HACK OVERRIDDEN because selection does not work if the editor is embedded in a multipage editor
+    // GraphicalEditor doesn't accept the selection change event if embedded in a multipage editor
+    // hack can be removed once the issue corrected in GEF
+    // see bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=107703
+    // see http://dev.eclipse.org/newslists/news.eclipse.tools.gef/msg10485.html
+    @Override
+    public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+        // update actions ONLY if we are the active editor or the parent editor which is a multipage editor
+        if (this.equals(getSite().getPage().getActiveEditor()) ||
+                embeddingEditor.equals(getSite().getPage().getActiveEditor()))
+            updateActions(getSelectionActions());
     }
 
 }

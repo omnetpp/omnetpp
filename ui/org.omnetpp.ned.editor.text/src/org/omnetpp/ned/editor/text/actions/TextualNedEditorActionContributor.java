@@ -6,27 +6,26 @@ import org.eclipse.ui.*;
 import org.eclipse.ui.editors.text.TextEditorActionContributor;
 import org.eclipse.ui.texteditor.*;
 import org.omnetpp.ned.editor.text.NedEditorMessages;
+import org.omnetpp.ned.editor.text.TextualNedEditor;
 
 /**
  * Contributes interesting Java actions to the desktop's Edit menu and the toolbar.
  * FIXME this class is not used/referenced currently
  */
-public class NedActionContributor extends TextEditorActionContributor {
+public class TextualNedEditorActionContributor extends TextEditorActionContributor {
 
 	protected RetargetTextEditorAction fContentAssistProposal;
 	protected RetargetTextEditorAction fContentAssistTip;
-	protected TextEditorAction fTogglePresentation;
 
 	/**
 	 * Default constructor.
 	 */
-	public NedActionContributor() {
+	public TextualNedEditorActionContributor() {
 		super();
 		fContentAssistProposal= new RetargetTextEditorAction(NedEditorMessages.getResourceBundle(), "ContentAssistProposal."); //$NON-NLS-1$
 		fContentAssistProposal.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS); 
 		fContentAssistTip= new RetargetTextEditorAction(NedEditorMessages.getResourceBundle(), "ContentAssistTip."); //$NON-NLS-1$
 		fContentAssistTip.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_CONTEXT_INFORMATION);
-		fTogglePresentation= new NedPresentationAction();
 	}
 	
 	/*
@@ -42,12 +41,6 @@ public class NedActionContributor extends TextEditorActionContributor {
 			editMenu.add(fContentAssistProposal);
 			editMenu.add(fContentAssistTip);
 		}	
-		
-		IToolBarManager toolBarManager= bars.getToolBarManager();
-		if (toolBarManager != null) {
-			toolBarManager.add(new Separator());
-			toolBarManager.add(fTogglePresentation);
-		}
 	}
 	
 	private void doSetActiveEditor(IEditorPart part) {
@@ -60,8 +53,6 @@ public class NedActionContributor extends TextEditorActionContributor {
 		fContentAssistProposal.setAction(getAction(editor, "ContentAssistProposal")); //$NON-NLS-1$
 		fContentAssistTip.setAction(getAction(editor, "ContentAssistTip")); //$NON-NLS-1$
 
-		fTogglePresentation.setEditor(editor);
-		fTogglePresentation.update();
 	}
 	
 	/*

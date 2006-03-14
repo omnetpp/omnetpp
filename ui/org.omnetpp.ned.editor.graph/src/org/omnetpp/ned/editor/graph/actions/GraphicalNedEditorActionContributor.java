@@ -22,7 +22,7 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.RetargetAction;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 
-public class GraphicalNedEditorActionBarContributor extends org.eclipse.gef.ui.actions.ActionBarContributor {
+public class GraphicalNedEditorActionContributor extends org.eclipse.gef.ui.actions.ActionBarContributor {
 
     /**
      * @see org.eclipse.gef.ui.actions.ActionBarContributor#buildActions()
@@ -43,9 +43,6 @@ public class GraphicalNedEditorActionBarContributor extends org.eclipse.gef.ui.a
 
         addRetargetAction(new MatchWidthRetargetAction());
         addRetargetAction(new MatchHeightRetargetAction());
-
-        addRetargetAction(new RetargetAction(GEFActionConstants.TOGGLE_RULER_VISIBILITY,
-                GEFMessages.ToggleRulerVisibility_Label, IAction.AS_CHECK_BOX));
 
         addRetargetAction(new RetargetAction(GEFActionConstants.TOGGLE_SNAP_TO_GEOMETRY,
                 GEFMessages.ToggleSnapToGeometry_Label, IAction.AS_CHECK_BOX));
@@ -101,7 +98,6 @@ public class GraphicalNedEditorActionBarContributor extends org.eclipse.gef.ui.a
         viewMenu.add(getAction(GEFActionConstants.ZOOM_IN));
         viewMenu.add(getAction(GEFActionConstants.ZOOM_OUT));
         viewMenu.add(new Separator());
-        viewMenu.add(getAction(GEFActionConstants.TOGGLE_RULER_VISIBILITY));
         viewMenu.add(getAction(GEFActionConstants.TOGGLE_GRID_VISIBILITY));
         viewMenu.add(getAction(GEFActionConstants.TOGGLE_SNAP_TO_GEOMETRY));
         viewMenu.add(new Separator());

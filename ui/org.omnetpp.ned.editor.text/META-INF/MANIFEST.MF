@@ -17,6 +17,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.omnetpp.ned2.model
 Eclipse-LazyStart: true
 Export-Package: org.omnetpp.ned.editor.text,
+ org.omnetpp.ned.editor.text.actions,
  org.omnetpp.ned.editor.text.assist,
  org.omnetpp.ned.editor.text.highlight,
  org.omnetpp.ned.editor.text.outline,
