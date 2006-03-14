@@ -75,6 +75,7 @@ cGate *cPlaceHolderModule::createGateObject(const char *gname, char tp)
 //#include "cptrpassingmpicomm.h"
 #include "cnosynchronization.h"
 #include "cnullmessageprot.h"
+#include "cispeventlogger.h"
 #include "cidealsimulationprot.h"
 #include "clinkdelaylookahead.h"
 #include <stdio.h>
@@ -86,8 +87,9 @@ void parsim_dummy()
     //cPtrPassingMPICommunications ppmc;
     cNoSynchronization ns;
     cNullMessageProtocol np;
+    cISPEventLogger iel;
     cIdealSimulationProtocol ip;
     cLinkDelayLookahead ldla;
     // prevent "unused variable" warnings:
-    (void)fc; (void)npc; (void)ns; (void)np; (void)ip; (void)ldla;
+    (void)fc; (void)npc; (void)ns; (void)np; (void)iel; (void)ip; (void)ldla;
 }
