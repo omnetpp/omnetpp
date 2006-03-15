@@ -75,31 +75,40 @@ SIM_API double truncnormal(double mean, double stddev, int rng=0);
 
 /**
  * Returns a random variate from the gamma distribution with parameters
- * alpha>0, beta>0.
+ * alpha>0, theta>0. Alpha is known as the "shape" parameter, and theta
+ * as the "scale" parameter.
+ *
+ * Some sources in the literature use the inverse scale parameter
+ * beta = 1 / theta, called the "rate" parameter. Various other notations
+ * can be found in the literature; our usage of (alpha,theta) is consistent
+ * with Wikipedia and Mathematica (Wolfram Research).
  *
  * Gamma is the generalization of the Erlang distribution for non-integer
  * k values, which becomes the alpha parameter. The chi-square distribution
  * is a special case of the gamma distribution.
  *
- * The expected value of this distribution is beta/alpha; for special case
- * alpha=1, it becomes the exponential distribution with mean=beta.
+ * For alpha=1, Gamma becomes the exponential distribution with mean=theta.
  *
- * Generation method depends on the value of alpha:
+ * The mean of this distribution is alpha*theta, and variance is alpha*theta<sup>2</sup>.
  *
- *   - alpha=1: gamma_d(1,beta)=exponential(beta)
- *   - 0<alpha<1: Acceptance-Rejection due to Ahrens/Dieter
- *     (see LawKelton page 463, Algo 1.-3.)
- *   - alpha>1: Acceptance-Rejection due to Cheng
- *     (see LawKelton page 464, Algo 1.-4.)
+ * Generation: if alpha=1, it is generated as exponential(theta).
+ *
+ * For alpha>1, we make use of the acceptance-rejection method in
+ * "A Simple Method for Generating Gamma Variables", George Marsaglia and
+ * Wai Wan Tsang, ACM Transactions on Mathematical Software, Vol. 26, No. 3,
+ * September 2000.
+ *
+ * The alpha<1 case makes use of the alpha>1 algorithm, as suggested by the
+ * above paper.
  *
  * @remark the name gamma_d is chosen to avoid ambiguity with
  * a function of the same name
  *
- * @param alpha >0
- * @param beta  >0
+ * @param alpha >0  the "shape" parameter
+ * @param theta >0  the "scale" parameter
  * @param rng the underlying random number generator
  */
-SIM_API double gamma_d(double alpha, double beta, int rng=0);
+SIM_API double gamma_d(double alpha, double theta, int rng=0);
 
 /**
  * Returns a random variate from the beta distribution with parameters

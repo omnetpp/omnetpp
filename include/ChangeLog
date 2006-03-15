@@ -1,3 +1,8 @@
+2006-03-15  Andras Varga
+
+	* distrib.h: fixed a documentation bug and refined description of
+	gamma_d() [feedback from Patrick McDonnell]
+
 2006-02-27  Andras Varga
 
 	* cenvir.h: added getParsimProcId() and getParsimNumPartitions()

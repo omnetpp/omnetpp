@@ -180,29 +180,29 @@ static double gamma_MarsagliaTransf(double alpha, int rng)
 {
     ASSERT(alpha<1);
 
-    return gamma_ChengFeast79(1+alpha,rng) * pow(genk_dblrand(rng), 1/alpha);
-    //return gamma_Marsaglia2000(1+alpha,rng) * pow(genk_dblrand(rng), 1/alpha);
+    //return gamma_ChengFeast79(1+alpha,rng) * pow(genk_dblrand(rng), 1/alpha);
+    return gamma_Marsaglia2000(1+alpha,rng) * pow(genk_dblrand(rng), 1/alpha); // faster
 }
 
-double gamma_d(double alpha, double beta, int rng)
+double gamma_d(double alpha, double theta, int rng)
 {
-    if (alpha<=0 || beta<=0)
-        throw new cRuntimeError("gamma(): alpha and beta params must be positive "
-                                "(alpha=%lg, beta=%lg)", alpha, beta);
+    if (alpha<=0 || theta<=0)
+        throw new cRuntimeError("gamma(): alpha and theta params must be positive "
+                                "(alpha=%lg, theta=%lg)", alpha, theta);
 
     if (fabs(alpha - 1.0) <= DBL_EPSILON)
     {
-        return exponential(beta, rng);
+        return exponential(theta, rng);
     }
     else if (alpha < 1.0)
     {
-        //return beta * gamma_AhrensDieter74(alpha, rng); // implementation is bogus, see above
-        return beta * gamma_MarsagliaTransf(alpha, rng);
+        //return theta * gamma_AhrensDieter74(alpha, rng); // implementation is bogus, see above
+        return theta * gamma_MarsagliaTransf(alpha, rng);
     }
     else // if (alpha > 1.0)
     {
-        return beta * gamma_Marsaglia2000(alpha, rng);
-        //return beta * gamma_ChengFeast79(alpha, rng);
+        //return theta * gamma_ChengFeast79(alpha, rng);
+        return theta * gamma_Marsaglia2000(alpha, rng);  // faster
     }
 }
 
