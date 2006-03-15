@@ -141,40 +141,61 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 		snode.insertChildBefore((NEDElement)insertBefore, (NEDElement)child);
 	}
 
-	public Point getLocation() {
-        // FIXME should be compound module property srcModule
-		String dispstring = getDisplayString();
-		SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(dispstring);
+    public Point getLocation() {
+        // FIXME get the propertysource from the model if it is already registered
+        String str = getDisplayString();
+        SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(str);
+        Integer x = dps.getIntegerProperty(SubmoduleDisplayPropertySource.PROP_X);
+        Integer y = dps.getIntegerProperty(SubmoduleDisplayPropertySource.PROP_Y);
+        // if it's unspecified in any direction we should return a NULL constraint
+        if (x == null || y == null)
+            return null;
+        
+        return new Point (x,y);
+    }
 
-		return new Point (dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_X, 0),
-						  dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_Y, 0));
-	}
+    public void setLocation(Point location) {
+        // FIXME get the propertysource from the model if it is already registered
+        String str = getDisplayString();
+        SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(str);
+        
+        // if location is not specified, remove the constraint from thedisplay string
+        if (location == null) {
+            dps.resetPropertyValue(SubmoduleDisplayPropertySource.PROP_X);
+            dps.resetPropertyValue(SubmoduleDisplayPropertySource.PROP_Y);
+        } else { 
+            dps.setPropertyValue(SubmoduleDisplayPropertySource.PROP_X, location.x);
+            dps.setPropertyValue(SubmoduleDisplayPropertySource.PROP_Y, location.y);
+        }
 
-	public void setLocation(Point location) {
-        // FIXME should be compound module property srcModule
-		String dispstring = getDisplayString();
-		SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(dispstring);
+        setDisplayString(dps.getValue());
+    }
 
-		dps.setPropertyValue(SubmoduleDisplayPropertySource.PROP_X, location.x);
-		dps.setPropertyValue(SubmoduleDisplayPropertySource.PROP_Y, location.y);
-		setDisplayString(dps.getValue());
-	}
+    public Dimension getSize() {
+        // FIXME get the propertysource from the model if it is already registered
+        SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(getDisplayString());
 
-	public Dimension getSize() {
-		String dispstring = getDisplayString();
-		SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(dispstring);
+        return new Dimension(dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_W, -1),
+                             dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_H, -1));
+    }
 
-		return new Dimension(dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_W, 0),
-						     dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_H, 0));
-	}
+    public void setSize(Dimension size) {
+        // FIXME get the propertysource from the model if it is already registered
+        SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(getDisplayString());
+        
+        // if the size is unspecified, remove the size constraint from the model
+        if (size == null || size.width < 0 ) 
+            dps.resetPropertyValue(SubmoduleDisplayPropertySource.PROP_W);
+        else
+            dps.setPropertyValue(SubmoduleDisplayPropertySource.PROP_W, size.width);
 
-	public void setSize(Dimension size) {
-		String dispstring = getDisplayString();
-		SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(dispstring);
-
-		dps.setPropertyValue(SubmoduleDisplayPropertySource.PROP_W, size.width);
-		dps.setPropertyValue(SubmoduleDisplayPropertySource.PROP_H, size.height);
-		setDisplayString(dps.getValue());
-	}
+        // if the size is unspecified, remove the size constraint from the model
+        if (size == null || size.height < 0) 
+            dps.resetPropertyValue(SubmoduleDisplayPropertySource.PROP_H);
+        else
+            dps.setPropertyValue(SubmoduleDisplayPropertySource.PROP_H, size.height);
+        
+        setDisplayString(dps.getValue());
+    }
 
 }

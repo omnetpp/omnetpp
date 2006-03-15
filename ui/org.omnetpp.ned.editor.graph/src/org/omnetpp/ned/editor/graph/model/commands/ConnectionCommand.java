@@ -27,8 +27,11 @@ public class ConnectionCommand extends Command {
     protected NEDElement parentNode = null;
     protected ConnectionNode connNodeNextSibling = null;
 
-    public ConnectionCommand() {
-        super(MessageFactory.ConnectionCommand_Label);
+    public String getLabel() {
+        if (connNode != null 
+                && srcModule == null && destModule == null)
+            return "Delete connection";
+        return "Move connection";
     }
 
     
@@ -81,10 +84,6 @@ public class ConnectionCommand extends Command {
         connNode.setSrcGate(oldSrcGate);
         connNode.setDestModuleRef(oldDestModule);
         connNode.setDestGate(oldDestGate);
-    }
-
-    public String getLabel() {
-        return MessageFactory.ConnectionCommand_Description;
     }
 
     public INedModule getSrcModule() {

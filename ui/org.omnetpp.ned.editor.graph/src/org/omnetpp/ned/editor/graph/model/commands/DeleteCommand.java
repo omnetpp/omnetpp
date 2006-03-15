@@ -37,10 +37,6 @@ public class DeleteCommand extends Command {
     private ModuleUndoItem moduleUndoItem = new ModuleUndoItem(); 
     private List<ConnectionUndoItem> connectionUndoItems = new ArrayList<ConnectionUndoItem>();
 
-    public DeleteCommand() {
-        super(MessageFactory.DeleteCommand_Label);
-    }
-
     private void deleteConnections(INedModule module) {
         // TODO maybe it would be enough to iterate through ALL connections one time
         // no need to separate src and dest connections
@@ -76,6 +72,8 @@ public class DeleteCommand extends Command {
     }
 
     public void execute() {
+        // FIXME label is not used by this comand. Maybe a BUG??? 
+        setLabel("Delete " + moduleUndoItem.node.getName());
         primExecute();
     }
 

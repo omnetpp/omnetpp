@@ -53,7 +53,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
         SetConstraintCommand setConstraint = new SetConstraintCommand();
         setConstraint.setLocation(rect);
-        setConstraint.setPart(part);
+        setConstraint.setModule(part);
         setConstraint.setLabel(MessageFactory.LogicXYLayoutEditPolicy_AddCommandLabelText);
         setConstraint.setDebugLabel("LogicXYEP setConstraint");//$NON-NLS-1$
 
@@ -83,7 +83,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
         // create the constraint change command 
         SetConstraintCommand cmd = new SetConstraintCommand();
         INedModule part = (INedModule) child.getModel();
-        cmd.setPart(part);
+        cmd.setModule(part);
         cmd.setLocation(modelConstraint);
         // if size constrant is not specified, then remove it from the model too
         if ((modelConstraint.width < 0 || modelConstraint.height < 0) && part.getSize() == null)

@@ -79,9 +79,13 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INedModule {
         // FIXME get the propertysource from the model if it is already registered
         String str = getDisplayString();
 		SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(str);
-
-		return new Point (dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_X, 0),
-						  dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_Y, 0));
+        Integer x = dps.getIntegerProperty(SubmoduleDisplayPropertySource.PROP_X);
+        Integer y = dps.getIntegerProperty(SubmoduleDisplayPropertySource.PROP_Y);
+        // if it's unspecified in any direction we should return a NULL constraint
+        if (x == null || y == null)
+            return null;
+		
+        return new Point (x,y);
 	}
 
 	public void setLocation(Point location) {
@@ -89,37 +93,42 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INedModule {
         String str = getDisplayString();
         SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(str);
         
+        // if location is not specified, remove the constraint from thedisplay string
         if (location == null) {
-            // if location is not specified, remove the constraint from thedisplay string
             dps.resetPropertyValue(SubmoduleDisplayPropertySource.PROP_X);
-        } else {
-            // if location is specifie set the location (p) constraint in the displaystring 
+            dps.resetPropertyValue(SubmoduleDisplayPropertySource.PROP_Y);
+        } else { 
             dps.setPropertyValue(SubmoduleDisplayPropertySource.PROP_X, location.x);
             dps.setPropertyValue(SubmoduleDisplayPropertySource.PROP_Y, location.y);
         }
-		setDisplayString(dps.getValue());
+
+        setDisplayString(dps.getValue());
 	}
 
 	public Dimension getSize() {
         // FIXME get the propertysource from the model if it is already registered
 		SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(getDisplayString());
 
-		return new Dimension(dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_W, 0),
-						     dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_H, 0));
+		return new Dimension(dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_W, -1),
+						     dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_H, -1));
 	}
 
 	public void setSize(Dimension size) {
         // FIXME get the propertysource from the model if it is already registered
 		SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(getDisplayString());
         
-		if (size == null || size.width <0 || size.height<0) {
-            // if the size is unspecified, remove the size constraint from the model
+        // if the size is unspecified, remove the size constraint from the model
+		if (size == null || size.width < 0 ) 
             dps.resetPropertyValue(SubmoduleDisplayPropertySource.PROP_W);
-        } else {
-            // if the size is specified, add a size constraint to the model
+        else
             dps.setPropertyValue(SubmoduleDisplayPropertySource.PROP_W, size.width);
-		    dps.setPropertyValue(SubmoduleDisplayPropertySource.PROP_H, size.height);
-        }
+
+        // if the size is unspecified, remove the size constraint from the model
+        if (size == null || size.height < 0) 
+            dps.resetPropertyValue(SubmoduleDisplayPropertySource.PROP_H);
+        else
+            dps.setPropertyValue(SubmoduleDisplayPropertySource.PROP_H, size.height);
+        
 		setDisplayString(dps.getValue());
 	}
 
