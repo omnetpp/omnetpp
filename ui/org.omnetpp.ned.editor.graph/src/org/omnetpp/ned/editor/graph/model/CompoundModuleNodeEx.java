@@ -14,7 +14,7 @@ import org.omnetpp.ned2.model.pojo.SubmodulesNode;
 
 public class CompoundModuleNodeEx extends CompoundModuleNode 
 								  implements INedContainer, INedModule {
-
+    
 	// srcConns contains all connections where the sourcemodule is this module
 	protected List<ConnectionNodeEx> srcConns = new ArrayList<ConnectionNodeEx>();
 	// destConns contains all connections where the destmodule is this module
@@ -67,6 +67,10 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 		return result;
 	}
 
+    public List<? extends INedModule> getModelChildren() {
+        return getSubmodules();
+    }
+
 	public List<ConnectionNodeEx> getSrcConnections() {
 		return srcConns;
 	}
@@ -75,36 +79,44 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 		return destConns;
 	}
 	
-	public void addSrcConnection(ConnectionNodeEx conn) {
-		assert(!srcConns.contains(conn));
-		srcConns.add(conn);
-		// TODO add property change event (connection added)
-	}
+    public void addSrcConnection(ConnectionNodeEx conn) {
+        assert(!srcConns.contains(conn));
+        srcConns.add(conn);
+        fireAttributeChangedToAncestors(ATT_SRC_CONNECTION);
+    }
 
-	public void removeSrcConnection(ConnectionNodeEx conn) {
-		assert(srcConns.contains(conn));
-		srcConns.remove(conn);
-		// TODO add property change event (connection removed)
-	}
+    public void removeSrcConnection(ConnectionNodeEx conn) {
+        assert(srcConns.contains(conn));
+        srcConns.remove(conn);
+        fireAttributeChangedToAncestors(ATT_SRC_CONNECTION);
+    }
 
-	public void addDestConnection(ConnectionNodeEx conn) {
-		assert(!destConns.contains(conn));
-		destConns.add(conn);
-		// TODO add property change event (connection added)
-	}
+    public void addDestConnection(ConnectionNodeEx conn) {
+        assert(!destConns.contains(conn));
+        destConns.add(conn);
+        fireAttributeChangedToAncestors(ATT_DEST_CONNECTION);
+    }
 
-	public void removeDestConnection(ConnectionNodeEx conn) {
-		assert(destConns.contains(conn));
-		destConns.remove(conn);
-		// TODO add property change event (connection removed)
-	}
+    public void removeDestConnection(ConnectionNodeEx conn) {
+        assert(destConns.contains(conn));
+        destConns.remove(conn);
+        fireAttributeChangedToAncestors(ATT_DEST_CONNECTION);
+    }
 
 	public void addModelChild(INedModule child) {
-		getFirstSubmodulesChild().appendChild((NEDElement)child);
+        SubmodulesNode snode = getFirstSubmodulesChild();
+        if (snode == null) 
+            snode = (SubmodulesNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementFactoryEx.NED_SUBMODULES, this);
+
+        snode.appendChild((NEDElement)child);
 	}
 
 	public void removeModelChild(INedModule child) {		
-		getFirstSubmodulesChild().removeChild((NEDElement)child);
+        SubmodulesNode snode = getFirstSubmodulesChild();
+        if (snode == null) 
+            snode = (SubmodulesNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementFactoryEx.NED_SUBMODULES, this);
+		
+        snode.removeChild((NEDElement)child);
 	}
 
 	public void insertModelChild(int index, INedModule child) {
@@ -117,7 +129,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 		for(int i=0; (i<index) && (insertBefore!=null); ++i) 
 			insertBefore = insertBefore.getNextSibling();
 		
-		getFirstSubmodulesChild().insertChildBefore(insertBefore, (NEDElement)child);
+		snode.insertChildBefore(insertBefore, (NEDElement)child);
 	}
 
 	public void insertModelChild(INedModule insertBefore, INedModule child) {
@@ -127,10 +139,6 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 			snode = (SubmodulesNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementFactoryEx.NED_SUBMODULES, this);
 		
 		snode.insertChildBefore((NEDElement)insertBefore, (NEDElement)child);
-	}
-
-	public List<? extends INedModule> getModelChildren() {
-		return getSubmodules();
 	}
 
 	public Point getLocation() {

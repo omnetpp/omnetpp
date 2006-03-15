@@ -27,10 +27,10 @@ public class AttachedLayer extends Layer implements AncestorListener {
         this.translation = (translation == null) ? new Point(0,0) : translation;
         setLayoutManager(new StackLayout());
         
-        // add the atached fig as our child
+        // add the attached fig as our child
         add(attachedFig);
 
-        // NOTE that it would be much better to register ourselves in addNotify
+        // XXX NOTE that it would be much better to register ourselves in addNotify
         // and deregister  in removeNotify, however this causes a weird bug, that prevents
         // sending a notification to the next ancestor listener. Seems that we SHOULD NOT
         // modify (add/remove) to a listener list when directly in a notication processing.
@@ -42,6 +42,21 @@ public class AttachedLayer extends Layer implements AncestorListener {
         // (should provide a way of firing to all listener, even if the listener list is beeing modified) 
         refFigure.addAncestorListener(this);
     }
+
+    
+//    @Override
+//    public void addNotify() {
+//        super.addNotify();
+//        refFigure.addAncestorListener(this);
+//    }
+//
+//
+//    @Override
+//    public void removeNotify() {
+//        refFigure.removeAncestorListener(this);
+//        super.removeNotify();
+//    }
+
 
     /**
      * Static factory method to attach a figure to an other. It creates a wrapper LocatableFigure around
@@ -113,7 +128,8 @@ public class AttachedLayer extends Layer implements AncestorListener {
 
     public void ancestorRemoved(IFigure ancestor) {
         // remove ourselves too from our parent if the reference figure is removed
-        getParent().remove(this);
+        if (getParent() != null)
+            getParent().remove(this);
     }
 
     /**

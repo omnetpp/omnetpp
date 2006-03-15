@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.edit;
+package org.omnetpp.ned.editor.graph.edit.outline;
 
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.RootEditPart;

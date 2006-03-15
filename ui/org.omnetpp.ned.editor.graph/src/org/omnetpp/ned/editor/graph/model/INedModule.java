@@ -11,7 +11,10 @@ import org.eclipse.draw2d.geometry.Point;
  */
 public interface INedModule {
 
-	/**
+    public final String ATT_SRC_CONNECTION = "srcConnection";
+    public final String ATT_DEST_CONNECTION = "destConnection";
+
+    /**
 	 * Returns name attribute 
 	 */
 	public String getName();
@@ -49,24 +52,28 @@ public interface INedModule {
 	/**
 	 * add a connection to the node. this should be called only from the
 	 * ConnectionNodeEx calss. DO NOT call this from the application directly
+     * use ConnectionNodeEx.setSrcModuleRef instead
 	 */
 	public void addSrcConnection(ConnectionNodeEx conn);
 
 	/**
 	 * remove a connection to the node. this should be called only from the
 	 * ConnectionNodeEx calss. DO NOT call this from the application directly
+     * use ConnectionNodeEx.setSrcModuleRef instead
 	 */
 	public void removeSrcConnection(ConnectionNodeEx conn);
 
 	/**
 	 * add a connection to the node. this should be called only from the
 	 * ConnectionNodeEx calss. DO NOT call this from the application directly
+     * use ConnectionNodeEx.setDestModuleRef instead
 	 */
 	public void addDestConnection(ConnectionNodeEx conn);
 
 	/**
 	 * remove a connection to the node. this should be called only from the
 	 * ConnectionNodeEx calss. DO NOT call this from the application directly
+     * use ConnectionNodeEx.setDestModuleRef instead
 	 */
 	public void removeDestConnection(ConnectionNodeEx conn);
 

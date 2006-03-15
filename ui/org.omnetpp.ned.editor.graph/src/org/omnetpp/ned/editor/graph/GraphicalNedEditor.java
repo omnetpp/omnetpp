@@ -103,7 +103,7 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.omnetpp.ned.editor.graph.actions.ModulePasteTemplateAction;
 import org.omnetpp.ned.editor.graph.dnd.TextTransferDropTargetListener;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
-import org.omnetpp.ned.editor.graph.edit.NedTreeEditPartFactory;
+import org.omnetpp.ned.editor.graph.edit.outline.NedTreeEditPartFactory;
 import org.omnetpp.ned.editor.graph.figures.properties.LayerSupport;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;

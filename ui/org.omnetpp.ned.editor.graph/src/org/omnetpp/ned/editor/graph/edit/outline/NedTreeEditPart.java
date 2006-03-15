@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.edit;
+package org.omnetpp.ned.editor.graph.edit.outline;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -189,18 +189,27 @@ public class NedTreeEditPart extends org.eclipse.gef.editparts.AbstractTreeEditP
 		} 
 		else if (model instanceof ConnectionNodeEx) {
 			ConnectionNodeEx node = (ConnectionNodeEx)model;
-			String srclabel = node.getSrcModule();
-			srclabel += !"".equals(node.getSrcModuleIndex()) ? 
-						     "["+node.getSrcModuleIndex()+"]" : "";
-			srclabel += "."+node.getSrcGate();
-			srclabel += !"".equals(node.getSrcGateIndex()) ? 
-					         "["+node.getSrcGateIndex()+"]" : "";
-			String destlabel = node.getDestModule();
-			destlabel += !"".equals(node.getDestModuleIndex()) ? 
-						"["+node.getDestModuleIndex()+"]" : "";
-			destlabel += "."+node.getDestGate();
-			destlabel += !"".equals(node.getDestGateIndex()) ? 
-				       	"["+node.getDestGateIndex()+"]" : "";
+			StringBuffer srclabel = new StringBuffer();
+            if (!"".equals(node.getSrcModule())) {
+                srclabel.append(node.getSrcModule());
+                srclabel.append(!"".equals(node.getSrcModuleIndex()) ? 
+                                 "["+node.getSrcModuleIndex()+"]" : "");
+                srclabel.append(".");
+            }
+			srclabel.append(node.getSrcGate());
+			srclabel.append(!"".equals(node.getSrcGateIndex()) ? 
+					         "["+node.getSrcGateIndex()+"]" : "");
+			
+            StringBuffer destlabel = new StringBuffer();
+            if(!"".equals(node.getDestModule())) {
+                destlabel.append(node.getDestModule());
+                destlabel.append(!"".equals(node.getDestModuleIndex()) ? 
+                        "["+node.getDestModuleIndex()+"]" : "");
+                destlabel.append(".");
+            }
+			destlabel.append(node.getDestGate());
+			destlabel.append(!"".equals(node.getDestGateIndex()) ? 
+				       	"["+node.getDestGateIndex()+"]" : "");
             switch (node.getArrowDirection()) {
                 case NedElementExUtil.NED_ARROWDIR_L2R :
                     label = srclabel + " --> " + destlabel;
@@ -232,10 +241,10 @@ public class NedTreeEditPart extends org.eclipse.gef.editparts.AbstractTreeEditP
 	}
 
 	public void childInserted(NEDElement node, NEDElement where, NEDElement child) {
-        refreshVisuals();
+        refreshChildren();
 	}
 
 	public void childRemoved(NEDElement node, NEDElement child) {
-        refreshVisuals();
+        refreshChildren();
 	}
 }

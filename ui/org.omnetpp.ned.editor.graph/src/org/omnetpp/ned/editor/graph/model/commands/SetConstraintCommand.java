@@ -5,6 +5,8 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.model.INedModule;
+import org.omnetpp.ned2.model.ModelUtil;
+import org.omnetpp.ned2.model.NEDElement;
 
 /**
  * Change the size and location of the element
@@ -17,11 +19,13 @@ public class SetConstraintCommand extends org.eclipse.gef.commands.Command {
     private Dimension newSize;
     private Point oldPos;
     private Dimension oldSize;
-    private INedModule part;
+    private INedModule module;
 
     public void execute() {
-        oldSize = part.getSize();
-        oldPos = part.getLocation();
+        // XXX just for debugging
+        System.out.println(ModelUtil.printPojoElementTree((NEDElement)module, ""));
+        oldSize = module.getSize();
+        oldPos = module.getLocation();
         redo();
     }
 
@@ -31,8 +35,8 @@ public class SetConstraintCommand extends org.eclipse.gef.commands.Command {
     }
 
     public void redo() {
-        part.setSize(newSize);
-        part.setLocation(newPos);
+        module.setSize(newSize);
+        module.setLocation(newPos);
     }
 
     public void setLocation(Rectangle r) {
@@ -45,7 +49,7 @@ public class SetConstraintCommand extends org.eclipse.gef.commands.Command {
     }
 
     public void setPart(INedModule part) {
-        this.part = part;
+        this.module = part;
     }
 
     public void setSize(Dimension p) {
@@ -53,8 +57,8 @@ public class SetConstraintCommand extends org.eclipse.gef.commands.Command {
     }
 
     public void undo() {
-        part.setSize(oldSize);
-        part.setLocation(oldPos);
+        module.setSize(oldSize);
+        module.setLocation(oldPos);
     }
 
 }

@@ -37,15 +37,16 @@ public class ConnectionNodeEx extends ConnectionNode {
 	}
 	
 	public void setSrcModuleRef(INedModule srcModule) {
-		assert(srcModule != null);
 		if(srcModuleRef == srcModule) 
 			return;
 		
 		if (srcModuleRef != null) 
 			srcModuleRef.removeSrcConnection(this);
 		srcModuleRef = srcModule;
-		srcModuleRef.addSrcConnection(this);
-		fireAttributeChangedToAncestors(ATT_SRC_MODULE);
+        if(srcModuleRef != null)
+            srcModuleRef.addSrcConnection(this);
+		
+        fireAttributeChangedToAncestors(ATT_SRC_MODULE);
 	}
 
 	public INedModule getDestModuleRef() {
@@ -53,21 +54,22 @@ public class ConnectionNodeEx extends ConnectionNode {
 	}
 
 	public void setDestModuleRef(INedModule destModule) {
-		assert(destModule != null);
 		if (destModuleRef == destModule)
 			return;
 		
 		if (destModuleRef != null) 
 			destModuleRef.removeDestConnection(this);
 		destModuleRef = destModule;
-		destModuleRef.addDestConnection(this);
-		fireAttributeChangedToAncestors(ATT_DEST_MODULE);
+        if (destModuleRef != null)
+            destModuleRef.addDestConnection(this);
+		
+        fireAttributeChangedToAncestors(ATT_DEST_MODULE);
 	}
 
 	@Override
 	public String getDestModule() {
 		// if the destination is the compound module, do not return its name  
-		if(destModuleRef instanceof CompoundModuleNodeEx)
+		if(destModuleRef == null || destModuleRef instanceof CompoundModuleNodeEx)
 			return "";
 		return getDestModuleRef().getName();
 	}
@@ -75,7 +77,7 @@ public class ConnectionNodeEx extends ConnectionNode {
 	@Override
 	public String getSrcModule() {
 		// if the destination is the compound module, do not return its name  
-		if(srcModuleRef instanceof CompoundModuleNodeEx)
+		if(srcModuleRef == null || srcModuleRef instanceof CompoundModuleNodeEx)
 			return "";
 		return getSrcModuleRef().getName();
 	}

@@ -60,28 +60,13 @@ public class CompoundModuleEditPart extends NedNodeEditPart {
     }
 
     public Object getAdapter(Class key) {
+        
         if (key == AutoexposeHelper.class) return new ViewportAutoexposeHelper(this);
+        
         if (key == ExposeHelper.class) return new ViewportExposeHelper(this);
-        if (key == AccessibleAnchorProvider.class) return new DefaultAccessibleAnchorProvider() {
-            public List getSourceAnchorLocations() {
-                List list = new ArrayList();
-                Vector sourceAnchors = getNedFigure().getSourceConnectionAnchors();
-                Vector targetAnchors = getNedFigure().getTargetConnectionAnchors();
-                for (int i = 0; i < sourceAnchors.size(); i++) {
-                    ConnectionAnchor sourceAnchor = (ConnectionAnchor) sourceAnchors.get(i);
-                    ConnectionAnchor targetAnchor = (ConnectionAnchor) targetAnchors.get(i);
-                    list
-                            .add(new Rectangle(sourceAnchor.getReferencePoint(), targetAnchor
-                                    .getReferencePoint()).getCenter());
-                }
-                return list;
-            }
 
-            public List getTargetAnchorLocations() {
-                return getSourceAnchorLocations();
-            }
-        };
         if (key == MouseWheelHelper.class) return new ViewportMouseWheelHelper(this);
+
         // snap to grig/guide adaptor
         if (key == SnapToHelper.class) {
             List snapStrategies = new ArrayList();
@@ -100,6 +85,7 @@ public class CompoundModuleEditPart extends NedNodeEditPart {
                 ss[i] = (SnapToHelper) snapStrategies.get(i);
             return new CompoundSnapToHelper(ss);
         }
+        
         return super.getAdapter(key);
     }
 

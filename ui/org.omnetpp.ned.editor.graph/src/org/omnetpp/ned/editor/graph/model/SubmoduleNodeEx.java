@@ -11,7 +11,7 @@ import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 
 public class SubmoduleNodeEx extends SubmoduleNode implements INedModule {
 
-	// srcConns contains all connections where the sourcemodule is this module
+    // srcConns contains all connections where the sourcemodule is this module
 	protected List<ConnectionNodeEx> srcConns = new ArrayList<ConnectionNodeEx>();
 	// destConns contains all connections where the destmodule is this module
 	protected List<ConnectionNodeEx> destConns = new ArrayList<ConnectionNodeEx>();
@@ -51,29 +51,29 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INedModule {
 		return destConns;
 	}
 
-	public void addSrcConnection(ConnectionNodeEx conn) {
-		assert(!srcConns.contains(conn));
-		srcConns.add(conn);
-		// TODO add property change event (connection added)
-	}
+    public void addSrcConnection(ConnectionNodeEx conn) {
+        assert(!srcConns.contains(conn));
+        srcConns.add(conn);
+        fireAttributeChangedToAncestors(ATT_SRC_CONNECTION);
+    }
 
-	public void removeSrcConnection(ConnectionNodeEx conn) {
-		assert(srcConns.contains(conn));
-		srcConns.remove(conn);
-		// TODO add property change event (connection removed)
-	}
+    public void removeSrcConnection(ConnectionNodeEx conn) {
+        assert(srcConns.contains(conn));
+        srcConns.remove(conn);
+        fireAttributeChangedToAncestors(ATT_SRC_CONNECTION);
+    }
 
-	public void addDestConnection(ConnectionNodeEx conn) {
-		assert(!destConns.contains(conn));
-		destConns.add(conn);
-		// TODO add property change event (connection added)
-	}
+    public void addDestConnection(ConnectionNodeEx conn) {
+        assert(!destConns.contains(conn));
+        destConns.add(conn);
+        fireAttributeChangedToAncestors(ATT_DEST_CONNECTION);
+    }
 
-	public void removeDestConnection(ConnectionNodeEx conn) {
-		assert(destConns.contains(conn));
-		destConns.remove(conn);
-		// TODO add property change event (connection removed)
-	}
+    public void removeDestConnection(ConnectionNodeEx conn) {
+        assert(destConns.contains(conn));
+        destConns.remove(conn);
+        fireAttributeChangedToAncestors(ATT_DEST_CONNECTION);
+    }
 
 	public Point getLocation() {
         // FIXME get the propertysource from the model if it is already registered
@@ -122,5 +122,10 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INedModule {
         }
 		setDisplayString(dps.getValue());
 	}
+
+    @Override
+    public String debugString() {
+        return "srcConnSize="+srcConns.size()+" destConnSize="+destConns.size();
+    }
 
 }

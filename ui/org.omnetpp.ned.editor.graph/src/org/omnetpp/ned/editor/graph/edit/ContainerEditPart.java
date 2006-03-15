@@ -3,6 +3,7 @@ package org.omnetpp.ned.editor.graph.edit;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.omnetpp.ned.editor.graph.edit.policies.NedContainerEditPolicy;
+import org.omnetpp.ned.editor.graph.model.INedModule;
 import org.omnetpp.ned2.model.INEDChangeListener;
 import org.omnetpp.ned2.model.NEDElement;
 
@@ -48,25 +49,32 @@ abstract public class ContainerEditPart
 
     // TODO we must pass the old element too
     public void attributeChanged(NEDElement node, String attr) {
-		refreshVisuals();
+        if (INedModule.ATT_SRC_CONNECTION.equals(attr))
+            refreshSourceConnections();
+        
+        else if (INedModule.ATT_DEST_CONNECTION.equals(attr)) 
+            refreshTargetConnections();
+        
+        else    
+            refreshVisuals();
 
-		refreshSourceConnections();
-		refreshTargetConnections();
 	}
 
 	public void childInserted(NEDElement node, NEDElement where, NEDElement child) {
+        // TODO connection adding and removal should be optimzed (eg. use a separate 
+        // connection added/removed event)
+        // maybe refreshTargetConnections() is not needed here
+//        refreshVisuals();
 		refreshChildren();
-		// TODO connection adding and removal should be optimzed (eg. use a separate 
-		// connection added/removed event)
-		// maybe refreshTargetConnections() is not needed here
-		refreshSourceConnections();
-		refreshTargetConnections();
+//		refreshSourceConnections();
+//		refreshTargetConnections();
 	}
 
 	public void childRemoved(NEDElement node, NEDElement child) {
+//        refreshVisuals();
 		refreshChildren();
 
-		refreshSourceConnections();
-		refreshTargetConnections();
+//		refreshSourceConnections();
+//		refreshTargetConnections();
 	}
 }

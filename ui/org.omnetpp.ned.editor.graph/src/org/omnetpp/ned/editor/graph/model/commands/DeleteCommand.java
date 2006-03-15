@@ -8,6 +8,8 @@ import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.model.ConnectionNodeEx;
 import org.omnetpp.ned.editor.graph.model.INedContainer;
 import org.omnetpp.ned.editor.graph.model.INedModule;
+import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.pojo.ConnectionsNode;
 
 /**
  * Deletes an object from the model and also removes all associated connections
@@ -16,33 +18,60 @@ import org.omnetpp.ned.editor.graph.model.INedModule;
  */
 public class DeleteCommand extends Command {
 
-    private INedModule child;
-    private INedContainer parent;
+    // an inner class to store data to be able to undo a connection deletion
+    private static class ConnectionUndoItem {
+        public ConnectionNodeEx node;            // the NODE that was deleted
+        public ConnectionsNode parent;           // the parent of the deletednode
+        public ConnectionNodeEx nextSibling;     // the next sibling to be able to insert it back into the correct position
+        public INedModule srcModule;             // the src module the connection was originally attached to
+        public INedModule destModule;            // the dest module the connection was originally attached to
+    }
+    
+    private static class ModuleUndoItem {
+        public INedModule node;
+        public INedContainer parent;
+        public INedModule nextSibling;
+    }
+
     private int index = -1;
-    private List<ConnectionNodeEx> srcConns = new ArrayList<ConnectionNodeEx>();
-    private List<ConnectionNodeEx> destConns = new ArrayList<ConnectionNodeEx>();
+    private ModuleUndoItem moduleUndoItem = new ModuleUndoItem(); 
+    private List<ConnectionUndoItem> connectionUndoItems = new ArrayList<ConnectionUndoItem>();
 
     public DeleteCommand() {
         super(MessageFactory.DeleteCommand_Label);
     }
 
-    private void deleteConnections(INedModule part) {
-        if (part instanceof INedContainer) {
-        	// delete all children
-            for (INedModule currChild : ((INedContainer) part).getModelChildren())
-                deleteConnections(currChild);
+    private void deleteConnections(INedModule module) {
+        // TODO maybe it would be enough to iterate through ALL connections one time
+        // no need to separate src and dest connections
+        for (ConnectionNodeEx wire : module.getSrcConnections()) {
+            // store all data required to undo the operation
+            ConnectionUndoItem uitem = new ConnectionUndoItem();
+            uitem.node = wire;
+            uitem.parent = (ConnectionsNode)wire.getParent();
+            uitem.nextSibling = (ConnectionNodeEx)wire.getNextConnectionNodeSibling();
+            uitem.srcModule = wire.getSrcModuleRef();
+            uitem.destModule = wire.getDestModuleRef();
+            connectionUndoItems.add(uitem);
+            // now detach the connection from the other module on the destination side
+            wire.setDestModuleRef(null);    // detach the destination end of the connections
+            // remove it from the model too
+            wire.removeFromParent();
         }
-        srcConns.addAll(part.getSrcConnections());
-        for (int i = 0; i < srcConns.size(); i++) {
-            ConnectionNodeEx wire = srcConns.get(i);
-            wire.setSrcModuleRef(null);		// remove the connections
-//            wire.setDestModuleRef(null);
-        }
-        destConns.addAll(part.getDestConnections());
-        for (int i = 0; i < destConns.size(); i++) {
-        	ConnectionNodeEx wire = destConns.get(i);
-//            wire.setSrcModuleRef(null);		// remove the connections
-            wire.setDestModuleRef(null);
+        
+        for (ConnectionNodeEx wire : module.getDestConnections()) {
+            // store all data required to undo the operation
+            ConnectionUndoItem uitem = new ConnectionUndoItem();
+            uitem.node = wire;
+            uitem.parent = (ConnectionsNode)wire.getParent();
+            uitem.nextSibling = (ConnectionNodeEx)wire.getNextConnectionNodeSibling();
+            uitem.srcModule = wire.getSrcModuleRef();
+            uitem.destModule = wire.getDestModuleRef();
+            connectionUndoItems.add(uitem);
+            // now detach the connection from the other module on the destination side
+            wire.setSrcModuleRef(null);    // detach the destination end of the connections
+            // remove it from the model too
+            wire.removeFromParent();
         }
     }
 
@@ -51,9 +80,9 @@ public class DeleteCommand extends Command {
     }
 
     protected void primExecute() {
-        deleteConnections(child);
-        index = parent.getModelChildren().indexOf(child);
-        parent.removeModelChild(child);
+        deleteConnections(moduleUndoItem.node);
+        index = moduleUndoItem.parent.getModelChildren().indexOf(moduleUndoItem.node);
+        moduleUndoItem.parent.removeModelChild(moduleUndoItem.node);
     }
 
     public void redo() {
@@ -61,28 +90,29 @@ public class DeleteCommand extends Command {
     }
 
     private void restoreConnections() {
-        for (ConnectionNodeEx wire : srcConns) {
-            wire.setSrcModuleRef(child);
-//            wire.setDestModuleRef(null);
+        // we have to iterate backwards, so all element will be put 
+        // back into its correct place
+        for (int i = connectionUndoItems.size()-1; i>=0; --i) {
+            ConnectionUndoItem ui = connectionUndoItems.get(i);
+            // attach to the nodes it was originally attached to
+            ui.node.setSrcModuleRef(ui.srcModule);
+            ui.node.setDestModuleRef(ui.destModule);
+            // put it back to the model in the correct position
+            ui.parent.insertChildBefore(ui.nextSibling, ui.node);
         }
-        srcConns.clear();
-        for (ConnectionNodeEx wire : destConns) {
-//            wire.setSrcModuleRef(null);
-            wire.setDestModuleRef(child);;
-        }
-        destConns.clear();
+        connectionUndoItems.clear();
     }
 
     public void setChild(INedModule c) {
-        child = c;
+        moduleUndoItem.node = c;
     }
 
     public void setParent(INedContainer p) {
-        parent = p;
+        moduleUndoItem.parent = p;
     }
 
     public void undo() {
-        parent.insertModelChild(index, child);
+        moduleUndoItem.parent.insertModelChild(index, moduleUndoItem.node);
         restoreConnections();
     }
 

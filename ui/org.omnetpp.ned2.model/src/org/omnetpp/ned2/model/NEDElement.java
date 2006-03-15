@@ -577,5 +577,19 @@ public abstract class NEDElement extends PlatformObject implements Iterable<NEDE
             return userData.get(key);
         return null;
     }
+    
+    /**
+     * remove this node from the parent.
+     */
+    public void removeFromParent() {
+        getParent().removeChild(this);
+    }
+    
+    /**
+     * @return Derived classes can override to print extra transient data for debugging
+     */
+    public String debugString() {
+        return "";
+    }
 };
 

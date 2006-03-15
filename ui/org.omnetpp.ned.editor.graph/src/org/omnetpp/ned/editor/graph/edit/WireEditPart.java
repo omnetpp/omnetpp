@@ -1,13 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
 package org.omnetpp.ned.editor.graph.edit;
 
 import java.beans.PropertyChangeEvent;
@@ -18,14 +8,15 @@ import java.util.List;
 import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.ManhattanConnectionRouter;
+import org.eclipse.draw2d.PolygonDecoration;
 import org.eclipse.draw2d.PolylineConnection;
 import org.eclipse.draw2d.RelativeBendpoint;
+import org.eclipse.draw2d.RoutingAnimator;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
 import org.omnetpp.ned.editor.graph.edit.policies.WireBendpointEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.WireEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.WireEndpointEditPolicy;
-import org.omnetpp.ned.editor.graph.figures.FigureFactory;
 import org.omnetpp.ned.editor.graph.model.ConnectionNodeEx;
 import org.omnetpp.ned.editor.graph.model.WireBendpointModel;
 import org.omnetpp.ned2.model.INEDChangeListener;
@@ -35,7 +26,7 @@ import org.omnetpp.ned2.model.NEDElement;
  * Implements a Connection Editpart to represnt a Wire like connection.
  * 
  */
-// TODO remove dependency from PropertyCHangeListener
+// TODO remove dependency from PropertyChangeListener
 public class WireEditPart extends AbstractConnectionEditPart implements PropertyChangeListener, INEDChangeListener {
 
     public void activate() {
@@ -70,11 +61,24 @@ public class WireEditPart extends AbstractConnectionEditPart implements Property
      * @return The created Figure.
      */
     protected IFigure createFigure() {
-    	Connection connx = FigureFactory.createNewWire(getWire());
-    	return connx;    }
+        PolylineConnection conn = new PolylineConnection();
+        conn.addRoutingListener(RoutingAnimator.getDefault());
+        PolygonDecoration arrow;
+
+        // draw an arrow at the target side if it's not a bidirectional connection
+        if (getWire().getArrowDirection() == ConnectionNodeEx.NED_ARROWDIR_BIDIR)
+            arrow = null;
+        else {
+            arrow = new PolygonDecoration();
+            arrow.setTemplate(PolygonDecoration.TRIANGLE_TIP);
+            arrow.setScale(6, 3);
+            conn.setTargetDecoration(arrow);
+        }
+    	return conn;    
+    }
 
     public void deactivate() {
-        // register as listener of the model object
+        // deregister as listener of the model object
         getWire().removeListener(this);
         super.deactivate();
     }
@@ -93,14 +97,6 @@ public class WireEditPart extends AbstractConnectionEditPart implements Property
         return (ConnectionNodeEx) getModel();
     }
 
-    /**
-     * Returns the Figure associated with this, which draws the Wire.
-     * 
-     * @return Figure of this.
-     */
-    protected IFigure getWireFigure() {
-        return (PolylineConnection) getFigure();
-    }
 
     /**
      * Listens to changes in properties of the Wire (like the contents being

@@ -1,17 +1,14 @@
 package org.omnetpp.ned.editor.graph.edit.policies;
 
-import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.PolylineConnection;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.LayerConstants;
-import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.editpolicies.GraphicalNodeEditPolicy;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
 import org.omnetpp.ned.editor.graph.edit.NedNodeEditPart;
-import org.omnetpp.ned.editor.graph.figures.FigureFactory;
 import org.omnetpp.ned.editor.graph.figures.NedFigure;
 import org.omnetpp.ned.editor.graph.model.ConnectionNodeEx;
 import org.omnetpp.ned.editor.graph.model.INedModule;
@@ -19,12 +16,7 @@ import org.omnetpp.ned.editor.graph.model.NEDElementFactoryEx;
 import org.omnetpp.ned.editor.graph.model.NedElementExUtil;
 import org.omnetpp.ned.editor.graph.model.commands.ConnectionCommand;
 
-public class NedNodeEditPolicy extends org.eclipse.gef.editpolicies.GraphicalNodeEditPolicy {
-
-    protected Connection createDummyConnection(Request req) {
-        PolylineConnection conn = FigureFactory.createNewWire(null);
-        return conn;
-    }
+public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
 
     protected Command getConnectionCompleteCommand(CreateConnectionRequest request) {
         ConnectionCommand command = (ConnectionCommand) request.getStartCommand();

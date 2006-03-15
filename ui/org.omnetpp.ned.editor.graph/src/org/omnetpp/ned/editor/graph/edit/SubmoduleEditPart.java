@@ -3,9 +3,6 @@ package org.omnetpp.ned.editor.graph.edit;
 import org.eclipse.draw2d.IFigure;
 import org.omnetpp.ned.editor.graph.figures.SimpleModuleFigure;
 
-/**
- * EditPart for holding gates in the Logic Example.
- */
 public class SubmoduleEditPart extends NedNodeEditPart {
 
     /**

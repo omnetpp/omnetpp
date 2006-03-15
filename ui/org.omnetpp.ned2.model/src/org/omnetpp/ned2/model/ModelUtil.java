@@ -22,7 +22,7 @@ public class ModelUtil {
 	public static String generateNedSource(org.omnetpp.ned2.model.NEDElement treeRoot, boolean keepSyntax) {
 		NEDErrorStore errors = new NEDErrorStore();
 		errors.setPrintToStderr(true); //XXX just for debugging
-		if (treeRoot instanceof NedFileNode && "1".equals(((NedFileNode)treeRoot).getVersion())) {
+		if (keepSyntax && treeRoot instanceof NedFileNode && "1".equals(((NedFileNode)treeRoot).getVersion())) {
 			NED1Generator ng = new NED1Generator(errors);
 			return ng.generate(pojo2swig(treeRoot), ""); // TODO check NEDErrorStore for conversion errors!! 
 		}
@@ -146,10 +146,15 @@ public class ModelUtil {
 		for (int i = 0; i < pojoNode.getNumAttributes(); ++i)
 			result += " " + pojoNode.getAttributeName(i) + "=\""
 					+ pojoNode.getAttribute(i) + "\"";
+        
+        String debugString = pojoNode.debugString();
+        if (!"".equals(debugString))
+                debugString = "<!-- "+debugString + " -->";
+        
 		if (pojoNode.getFirstChild() == null) {
-			result += "/> \n";
+			result += "/> " +  debugString + "\n";
 		} else {
-			result += "> \n";
+			result += "> " +  debugString + "\n";
 			for (org.omnetpp.ned2.model.NEDElement child = pojoNode.getFirstChild(); child != null; child = child
 					.getNextSibling())
 				result += printPojoElementTree(child, indent + "  ");
