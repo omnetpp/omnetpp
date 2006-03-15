@@ -456,9 +456,9 @@ static double _wrap_truncnormal(double m, double d)
     return truncnormal(m, d);
 }
 
-static double _wrap_gamma_d(double alpha, double beta)
+static double _wrap_gamma_d(double alpha, double theta)
 {
-    return gamma_d(alpha, beta);
+    return gamma_d(alpha, theta);
 }
 
 static double _wrap_beta(double alpha1, double alpha2)
@@ -594,9 +594,9 @@ static double _wrap_truncnormal_with_rng(double m, double d, double rng)
     return truncnormal(m, d, (int)rng);
 }
 
-static double _wrap_gamma_d_with_rng(double alpha, double beta, double rng)
+static double _wrap_gamma_d_with_rng(double alpha, double theta, double rng)
 {
-    return gamma_d(alpha, beta, (int)rng);
+    return gamma_d(alpha, theta, (int)rng);
 }
 
 static double _wrap_beta_with_rng(double alpha1, double alpha2, double rng)
