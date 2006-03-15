@@ -1,3 +1,9 @@
+2006-03-15  Andras Varga
+
+	* distrib.cc: gamma_d() was bogus for the alpha<1 case [reported by
+	Patrick McDonnell]. For alpha>1, use Marsaglia2000 instead of 
+	Cheng-Feast79.
+
 2006-02-27  Andras Varga
 
 	* cmersennetwister.cc, clcg32.cc: initialize() updated for parallel

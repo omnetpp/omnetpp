@@ -48,6 +48,11 @@ double exponential(double p, int rng)
     return -p * log(genk_dblrand(rng));
 }
 
+double unit_normal(int rng)
+{
+    return sqrt(-2.0*log(genk_dblrand(rng)))*cos(PI*2*genk_dblrand(rng));
+}
+
 double normal(double m, double d, int rng)
 {
     return m + d *  sqrt(-2.0*log(genk_dblrand(rng)))*cos(PI*2*genk_dblrand(rng));
@@ -63,6 +68,122 @@ double truncnormal(double m, double d, int rng)
     return res;
 }
 
+/*
+ * internal, for alpha<1. THIS IMPLEMENTATION SEEMS TO BE BOGUS, we use
+ * gamma_MarsagliaTransf() instead.
+ */
+static double gamma_AhrensDieter74(double alpha, int rng)
+{
+    ASSERT(alpha<1);
+
+    double b = (M_E + alpha) / M_E;
+
+    double Y;
+    for (;;)
+    {
+        double U1, U2, P;
+
+        // step 1
+        U1 = normal(0, 1, rng);
+        P = b * U1;
+        if (P > 1)
+        {
+            // step 3
+            Y = -log((b - P) / alpha);
+            U2 = normal(0, 1, rng);
+            if (U2 <= pow(Y, alpha - 1.0))
+                break; // accept Y
+        }
+        else
+        {
+            // step 2
+            Y = pow(P, (1 / alpha));
+            U2 = normal(0, 1, rng);
+            if (U2 <= exp(-Y))
+                break;  // accept Y
+        }
+    }
+    return Y;
+}
+
+/*
+ * internal, for alpha>1.
+ */
+static double gamma_ChengFeast79(double alpha, int rng)
+{
+    ASSERT(alpha>1);
+
+    double a = 1.0 / sqrt(2.0 * alpha - 1);
+    double b = alpha - log(4.0);
+    double q = alpha + 1.0 / a;
+    double theta = 4.5;
+    double d = 1 + log(theta);
+
+    double Y;
+    for (;;)
+    {
+        double U1, U2, V, Z, W;
+
+        // step 1
+        U1 = genk_dblrand(rng);
+        U2 = genk_dblrand(rng);
+
+        // step 2
+        V = a * log(U1 / (1.0 - U1));
+        Y = alpha * exp(V);
+        Z = U1 * U1 * U2;
+        W = b + q * V - Y;
+
+        // step 3
+        if (W + d - theta * Z >= .0)
+            break;  // accept Y
+
+        // step 4
+        if (W >= log(Z))
+            break;  // accept Y
+    }
+    return Y;
+}
+
+/*
+ * internal, for alpha>1.
+ *
+ * From: "A Simple Method for Generating Gamma Variables", George Marsaglia and
+ * Wai Wan Tsang, ACM Transactions on Mathematical Software, Vol. 26, No. 3,
+ * September 2000. Available online.
+ */
+static double gamma_Marsaglia2000(double a, int rng)
+{
+    ASSERT(a>1);
+
+    double d,c,x,v,u;
+    d = a - 1.0/3.0;
+    c = 1.0/sqrt(9.0*d);
+    for(;;)
+    {
+        do {x = unit_normal(rng); v = 1.0 + c*x;} while (v<=0);
+        v = v*v*v; u = genk_dblrand(rng);
+        if (u < 1.0 - 0.0331*(x*x)*(x*x))
+            return d*v;
+        if (log(u)<0.5*x*x + d*(1.0-v+log(v)))
+            return d*v;
+    }
+}
+
+/*
+ * internal, for alpha<1.
+ *
+ * We can derive the alpha<1 case from the alpha>1 case. See "Note" at the
+ * end of Section 6 of the Marsaglia2000 paper (see above).
+ */
+static double gamma_MarsagliaTransf(double alpha, int rng)
+{
+    ASSERT(alpha<1);
+
+    return gamma_ChengFeast79(1+alpha,rng) * pow(genk_dblrand(rng), 1/alpha);
+    //return gamma_Marsaglia2000(1+alpha,rng) * pow(genk_dblrand(rng), 1/alpha);
+}
+
 double gamma_d(double alpha, double beta, int rng)
 {
     if (alpha<=0 || beta<=0)
@@ -75,67 +196,13 @@ double gamma_d(double alpha, double beta, int rng)
     }
     else if (alpha < 1.0)
     {
-        double b = (M_E + alpha) / M_E;
-
-        double Y;
-        for (;;)
-        {
-            double U1, U2, P;
-
-            // step 1
-            U1 = normal(0, 1, rng);
-            P = b * U1;
-            if (P > 1)
-            {
-                // step 3
-                Y = -log((b - P) / alpha);
-                U2 = normal(0, 1, rng);
-                if (U2 <= pow(Y, alpha - 1.0))
-                    break; // accept Y
-            }
-            else
-            {
-                // step 2
-                Y = pow(P, (1 / alpha));
-                U2 = normal(0, 1, rng);
-                if (U2 <= exp(-Y))
-                    break;  // accept Y
-            }
-        }
-        return beta * Y;
+        //return beta * gamma_AhrensDieter74(alpha, rng); // implementation is bogus, see above
+        return beta * gamma_MarsagliaTransf(alpha, rng);
     }
     else // if (alpha > 1.0)
     {
-        double a = 1.0 / sqrt(2.0 * alpha - 1);
-        double b = alpha - log(4.0);
-        double q = alpha + 1.0 / a;
-        double theta = 4.5;
-        double d = 1 + log(theta);
-
-        double Y;
-        for (;;)
-        {
-            double U1, U2, V, Z, W;
-
-            // step 1
-            U1 = genk_dblrand(rng);
-            U2 = genk_dblrand(rng);
-
-            // step 2
-            V = a * log(U1 / (1.0 - U1));
-            Y = alpha * exp(V);
-            Z = U1 * U1 * U2;
-            W = b + q * V - Y;
-
-            // step 3
-            if (W + d - theta * Z >= .0)
-                break;  // accept Y
-
-            // step 4
-            if (W >= log(Z))
-                break;  // accept Y
-        }
-        return beta * Y;
+        return beta * gamma_Marsaglia2000(alpha, rng);
+        //return beta * gamma_ChengFeast79(alpha, rng);
     }
 }
 
