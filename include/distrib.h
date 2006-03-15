@@ -87,7 +87,7 @@ SIM_API double truncnormal(double mean, double stddev, int rng=0);
  * Generation method depends on the value of alpha:
  *
  *   - alpha=1: gamma_d(1,beta)=exponential(beta)
- *   - 0<alpha<1: Acceptance-Rejection due to Ahrends/Dieter
+ *   - 0<alpha<1: Acceptance-Rejection due to Ahrens/Dieter
  *     (see LawKelton page 463, Algo 1.-3.)
  *   - alpha>1: Acceptance-Rejection due to Cheng
  *     (see LawKelton page 464, Algo 1.-4.)
