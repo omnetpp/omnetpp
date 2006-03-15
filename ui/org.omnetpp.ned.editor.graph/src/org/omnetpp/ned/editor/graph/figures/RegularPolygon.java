@@ -77,7 +77,7 @@ public class RegularPolygon extends Polygon {
     // than the calculated bounding box
     // FIXME check and test for 0 width or hight (div by zero!!!)
     protected PointList createScaledAndTranslatedPointList(PointList templList, Rectangle requestedBounds) {
-        // calculate the width of the target boundary
+        // calculate the width of the destModule boundary
         Rectangle targetBounds = requestedBounds.getCopy();
         // if both dimension is free (negative) use the preferred size
         if (targetBounds.width < 0 && targetBounds.height < 0 )
@@ -94,7 +94,7 @@ public class RegularPolygon extends Polygon {
         // keep the aspect ratio and use the same scaling factor for both dimension
         if(requestedBounds.width < 0) wScale = hScale;
         if(requestedBounds.height < 0) hScale = wScale;
-        // scale the bounds to the target size
+        // scale the bounds to the destModule size
         templBounds.scale(wScale, hScale);
         // calculate the required translation taking into account the linewidth too
         double dx = targetBounds.x - templBounds.x + (double)getLineWidth()/2;

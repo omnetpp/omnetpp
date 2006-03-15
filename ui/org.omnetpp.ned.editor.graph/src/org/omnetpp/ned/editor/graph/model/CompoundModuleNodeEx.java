@@ -142,7 +142,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 	}
 
 	public Point getLocation() {
-        // FIXME should be compound module property source
+        // FIXME should be compound module property srcModule
 		String dispstring = getDisplayString();
 		SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(dispstring);
 
@@ -151,7 +151,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 	}
 
 	public void setLocation(Point location) {
-        // FIXME should be compound module property source
+        // FIXME should be compound module property srcModule
 		String dispstring = getDisplayString();
 		SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(dispstring);
 

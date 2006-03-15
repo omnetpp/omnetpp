@@ -65,7 +65,7 @@ public class WireEditPart extends AbstractConnectionEditPart implements Property
         conn.addRoutingListener(RoutingAnimator.getDefault());
         PolygonDecoration arrow;
 
-        // draw an arrow at the target side if it's not a bidirectional connection
+        // draw an arrow at the destModule side if it's not a bidirectional connection
         if (getWire().getArrowDirection() == ConnectionNodeEx.NED_ARROWDIR_BIDIR)
             arrow = null;
         else {

@@ -4,23 +4,28 @@ import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.model.ConnectionNodeEx;
 import org.omnetpp.ned.editor.graph.model.INedModule;
+import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.pojo.ConnectionNode;
+import org.omnetpp.ned2.model.pojo.ConnectionsNode;
 
 /**
- * (Re)assigns a wire object to source/target submodule gates
+ * (Re)assigns a wire object to srcModule/destModule submodule gates
  * @author rhornig
  *
  */
 public class ConnectionCommand extends Command {
 
-    protected INedModule oldSource;
-    protected String oldSourceTerminal;
-    protected INedModule oldTarget;
-    protected String oldTargetTerminal;
-    protected INedModule source;
-    protected String sourceGate;
-    protected INedModule target;
-    protected String targetGate;
-    protected ConnectionNodeEx wire;
+    protected INedModule oldSrcModule;
+    protected String oldSrcGate;
+    protected INedModule oldDestModule;
+    protected String oldDestGate;
+    protected INedModule srcModule;
+    protected String srcGate;
+    protected INedModule destModule;
+    protected String destGate;
+    protected ConnectionNodeEx connNode;
+    protected NEDElement parentNode = null;
+    protected ConnectionNode connNodeNextSibling = null;
 
     public ConnectionCommand() {
         super(MessageFactory.ConnectionCommand_Label);
@@ -31,104 +36,99 @@ public class ConnectionCommand extends Command {
      * Input output gate config consistency can be checked here
      */
     public boolean canExecute() {
-//        if (target != null) {
-//            Vector conns = target.getConnections();
-//            Iterator i = conns.iterator();
-//            while (i.hasNext()) {
-//                WireModel conn = (WireModel) i.next();
-//                if (targetGate != null && conn.getTargetGate() != null)
-//                    if (conn.getTargetGate().equals(targetGate) && conn.getTarget().equals(target))
-//                        return false;
-//            }
-//        }
         return true;
     }
 
     public void execute() {
-        if (source != null) {
-            wire.setSrcModuleRef(source);
-//            wire.setSourceGate(sourceGate);
+        if (srcModule != null) 
+            connNode.setSrcModuleRef(srcModule);
+        
+        if (srcGate != null)
+            connNode.setSrcGate(srcGate);
+        
+        if (destModule != null) 
+            connNode.setDestModuleRef(destModule);
+        
+        if (destGate != null)
+            connNode.setDestGate(destGate);
+
+        // if both src and dest module should be detached then remove it 
+        // from the model totally (ie delete it)
+        if (srcModule == null && destModule == null) {
+            // just store the NEXT sibling so we can put it back during undo to the right place
+            connNodeNextSibling = connNode.getNextConnectionNodeSibling();
+            // store the parent too so we now where to put it back during undo
+            parentNode = connNode.getParent();
+            // now detach from both src and dest modules
+            connNode.setSrcModuleRef(null);
+            connNode.setDestModuleRef(null);
+            // and remove from the parent too
+            connNode.removeFromParent();
         }
-        if (target != null) {
-//            wire.detachTarget();
-            wire.setDestModuleRef(target);
-//            wire.setTargetGate(targetGate);
-        }
-        if (source == null && target == null) {
-            wire.setDestModuleRef(null);
-            wire.setSrcModuleRef(null);
-//            wire.setTargetGate(null);
-//            wire.setSourceGate(null);
-        }
-    }
-
-    public String getLabel() {
-        return MessageFactory.ConnectionCommand_Description;
-    }
-
-    public INedModule getSource() {
-        return source;
-    }
-
-    public java.lang.String getSourceGate() {
-        return sourceGate;
-    }
-
-    public INedModule getTarget() {
-        return target;
-    }
-
-    public String getTargetGate() {
-        return targetGate;
-    }
-
-    public ConnectionNodeEx getWire() {
-        return wire;
     }
 
     public void redo() {
         execute();
     }
 
-    public void setSource(INedModule newSource) {
-        source = newSource;
-    }
-
-    public void setSourceGate(String newSourceGate) {
-        sourceGate = newSourceGate;
-    }
-
-    public void setTarget(INedModule newTarget) {
-        target = newTarget;
-    }
-
-    public void setTargetGate(String newTargetGate) {
-        targetGate = newTargetGate;
-    }
-
-    public void setWire(ConnectionNodeEx w) {
-        wire = w;
-        oldSource = w.getSrcModuleRef();
-        oldTarget = w.getDestModuleRef();
-        // TODO implement gate handling
-//        oldSourceTerminal = w.getSourceGate();
-//        oldTargetTerminal = w.getTargetGate();
-    }
-
     public void undo() {
-        source = wire.getSrcModuleRef();
-        target = wire.getDestModuleRef();
-//        sourceGate = wire.getSourceGate();
-//        targetGate = wire.getTargetGate();
+        // if it was removed from the model, put it back
+        if (connNode.getParent() == null && parentNode != null)
+            parentNode.insertChildBefore(connNodeNextSibling, connNode);
+        
+        // attach to the original modules and gates
+        connNode.setSrcModuleRef(oldSrcModule);
+        connNode.setSrcGate(oldSrcGate);
+        connNode.setDestModuleRef(oldDestModule);
+        connNode.setDestGate(oldDestGate);
+    }
 
-//        wire.detachSource();
-//        wire.detachTarget();
+    public String getLabel() {
+        return MessageFactory.ConnectionCommand_Description;
+    }
 
-        wire.setSrcModuleRef(oldSource);
-        wire.setDestModuleRef(oldTarget);
-//        wire.setSourceGate(oldSourceTerminal);
-//        wire.setTargetGate(oldTargetTerminal);
+    public INedModule getSrcModule() {
+        return srcModule;
+    }
 
+    public void setSrcModule(INedModule newSrcModule) {
+        srcModule = newSrcModule;
+    }
+
+    public String getSrcGate() {
+        return srcGate;
+    }
+
+    public void setSrcGate(String newSrcGate) {
+        srcGate = newSrcGate;
+    }
+
+    public INedModule getDestModule() {
+        return destModule;
+    }
+
+    public void setDestModule(INedModule newDestModule) {
+        destModule = newDestModule;
+    }
+
+    public String getDestGate() {
+        return destGate;
+    }
+
+    public void setDestGate(String newDestGate) {
+        destGate = newDestGate;
+    }
+
+    public ConnectionNodeEx getConnectionNode() {
+        return connNode;
+    }
+
+    public void setConnectionNode(ConnectionNodeEx conn) {
+        connNode = conn;
+        oldSrcModule = conn.getSrcModuleRef();
+        oldDestModule = conn.getDestModuleRef();
+        oldSrcGate = conn.getSrcGate();
+        oldDestGate = conn.getDestGate();
     }
 
 }

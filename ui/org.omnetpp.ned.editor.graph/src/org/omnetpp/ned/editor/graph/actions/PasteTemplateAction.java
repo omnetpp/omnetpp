@@ -85,7 +85,7 @@ public abstract class PasteTemplateAction extends SelectionAction {
     /**
      * Returns the appropriate Factory object to be used for the specified
      * template. This Factory is used on the CreateRequest that is sent to the
-     * target EditPart. Note that the given template might be from a palette for
+     * destModule EditPart. Note that the given template might be from a palette for
      * a different GEF-based editor. In that case, this method can return
      * <code>null</code>.
      * 

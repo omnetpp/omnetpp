@@ -20,19 +20,19 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
 
     protected Command getConnectionCompleteCommand(CreateConnectionRequest request) {
         ConnectionCommand command = (ConnectionCommand) request.getStartCommand();
-        command.setTarget(getNedNodeModel());
+        command.setDestModule(getNedNodeModel());
         ConnectionAnchor ctor = getNedNodeEditPart().getTargetConnectionAnchor(request);
         if (ctor == null) return null;
-        command.setTargetGate(getNedNodeEditPart().getGate(ctor));
+        command.setDestGate(getNedNodeEditPart().getGate(ctor));
         return command;
     }
 
     protected Command getConnectionCreateCommand(CreateConnectionRequest request) {
         ConnectionCommand command = new ConnectionCommand();
-        command.setWire((ConnectionNodeEx)NEDElementFactoryEx.getInstance().createNodeWithTag(NedElementExUtil.NED_CONNECTION));
-        command.setSource(getNedNodeModel());
+        command.setConnectionNode((ConnectionNodeEx)NEDElementFactoryEx.getInstance().createNodeWithTag(NedElementExUtil.NED_CONNECTION));
+        command.setSrcModule(getNedNodeModel());
         ConnectionAnchor ctor = getNedNodeEditPart().getSourceConnectionAnchor(request);
-        command.setSourceGate(getNedNodeEditPart().getGate(ctor));
+        command.setSrcGate(getNedNodeEditPart().getGate(ctor));
         request.setStartCommand(command);
         return command;
     }
@@ -61,21 +61,21 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
     protected Command getReconnectTargetCommand(ReconnectRequest request) {
 
         ConnectionCommand cmd = new ConnectionCommand();
-        cmd.setWire((ConnectionNodeEx) request.getConnectionEditPart().getModel());
+        cmd.setConnectionNode((ConnectionNodeEx) request.getConnectionEditPart().getModel());
 
         ConnectionAnchor ctor = getNedNodeEditPart().getTargetConnectionAnchor(request);
-        cmd.setTarget(getNedNodeModel());
-        cmd.setTargetGate(getNedNodeEditPart().getGate(ctor));
+        cmd.setDestModule(getNedNodeModel());
+        cmd.setDestGate(getNedNodeEditPart().getGate(ctor));
         return cmd;
     }
 
     protected Command getReconnectSourceCommand(ReconnectRequest request) {
         ConnectionCommand cmd = new ConnectionCommand();
-        cmd.setWire((ConnectionNodeEx) request.getConnectionEditPart().getModel());
+        cmd.setConnectionNode((ConnectionNodeEx) request.getConnectionEditPart().getModel());
 
         ConnectionAnchor ctor = getNedNodeEditPart().getSourceConnectionAnchor(request);
-        cmd.setSource(getNedNodeModel());
-        cmd.setSourceGate(getNedNodeEditPart().getGate(ctor));
+        cmd.setSrcModule(getNedNodeModel());
+        cmd.setSrcGate(getNedNodeEditPart().getGate(ctor));
         return cmd;
     }
 

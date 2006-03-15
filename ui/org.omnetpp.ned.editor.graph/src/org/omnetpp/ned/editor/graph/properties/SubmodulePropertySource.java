@@ -24,7 +24,7 @@ public class SubmodulePropertySource extends AbstractNedPropertySource {
     
     public SubmodulePropertySource(NEDElement model) {
         super(model);
-        // create a nested displayPropertySource source for the model
+        // create a nested displayPropertySource srcModule for the model
         submoduleDisplayPropertySource = 
             new SubmoduleDisplayPropertySource((SubmoduleNodeEx)model);
     }

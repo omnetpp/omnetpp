@@ -9,7 +9,7 @@ public class WireEditPolicy extends org.eclipse.gef.editpolicies.ConnectionEditP
 
     protected Command getDeleteCommand(GroupRequest request) {
         ConnectionCommand c = new ConnectionCommand();
-        c.setWire((ConnectionNodeEx) getHost().getModel());
+        c.setConnectionNode((ConnectionNodeEx) getHost().getModel());
         return c;
     }
 

@@ -103,8 +103,8 @@ public class CloneCommand extends Command {
             }
         }
 
-        // go through and set the source of each connection to the proper
-        // source.
+        // go through and set the srcModule of each connection to the proper
+        // srcModule.
         Iterator c = newConnections.iterator();
 
         while (c.hasNext()) {

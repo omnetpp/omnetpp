@@ -39,7 +39,7 @@ abstract public class NedNodeEditPart extends ContainerEditPart {
 
 
     /**
-     * Returns a list of connections for which this is the source.
+     * Returns a list of connections for which this is the srcModule.
      * 
      * @return List of connections.
      */
@@ -48,7 +48,7 @@ abstract public class NedNodeEditPart extends ContainerEditPart {
     }
 
     /**
-     * Returns a list of connections for which this is the target.
+     * Returns a list of connections for which this is the destModule.
      * 
      * @return List of connections.
      */
@@ -66,7 +66,7 @@ abstract public class NedNodeEditPart extends ContainerEditPart {
     }
 
     /**
-     * Returns the connection anchor for the given ConnectionEditPart's source.
+     * Returns the connection anchor for the given ConnectionEditPart's srcModule.
      * 
      * @return ConnectionAnchor.
      */
@@ -76,7 +76,7 @@ abstract public class NedNodeEditPart extends ContainerEditPart {
 //    }
 
     /**
-     * Returns the connection anchor of a source connection which is at the
+     * Returns the connection anchor of a srcModule connection which is at the
      * given point.
      * 
      * @return ConnectionAnchor.
@@ -87,7 +87,7 @@ abstract public class NedNodeEditPart extends ContainerEditPart {
     }
 
     /**
-     * Returns the connection anchor for the given ConnectionEditPart's target.
+     * Returns the connection anchor for the given ConnectionEditPart's destModule.
      * 
      * @return ConnectionAnchor.
      */

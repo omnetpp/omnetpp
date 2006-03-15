@@ -42,7 +42,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         
         // initialize the model factory
    		NEDElementFactoryEx.setInstance(new NEDElementFactoryEx());
-        // initialize the model's property source factory
+        // initialize the model's property srcModule factory
         Platform.getAdapterManager().registerAdapters(new NedPropertySourceAdapterFactory(), 
                                                       NEDElement.class);
 
