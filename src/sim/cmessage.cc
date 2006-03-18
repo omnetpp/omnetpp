@@ -67,7 +67,7 @@ cMessage::cMessage(const char *name, int k, long ln, int pri, bool err) : cObjec
     contextptr = NULL;
     ctrlp = NULL;
     sharecount = 0;
-    srcprocid = 0;
+    srcprocid = -1;
 
     frommod=fromgate=-1;
     tomod=togate=-1;
@@ -261,7 +261,7 @@ cMessage& cMessage::operator=(const cMessage& msg)
     len = msg.len;
     error = msg.error;
     tstamp = msg.tstamp;
-    srcprocid = msg.srcprocid; // probably redundant
+    srcprocid = msg.srcprocid;
 
     created = msg.created;
 

@@ -36,16 +36,14 @@
 class cISPEventLogger : public cNullMessageProtocol
 {
   protected:
-    // stores one external event, as needed for the ISP algorithm
-    struct ExternalEvent {
-        simtime_t t;    // time of event
-        int srcProcId;  // origin of event
-    };
-    FILE *fout;  // the event log file
+    FILE *fout;  // the event log file (stores ExternalEvent's)
 
   protected:
-    // helper
-    bool isExternalMessage(cMessage *msg);
+    // Overridden to set message priority to sourceProcId. We do the same in
+    // cIdealSimulationProtocol. This ensures that messages with equal
+    // timestamps will get processed in the same order in both protocols,
+    // whatever the concrete timing conditions.
+    void processReceivedMessage(cMessage *msg, int destModuleId, int destGateId, int sourceProcId);
 
   public:
     /**
@@ -69,6 +67,12 @@ class cISPEventLogger : public cNullMessageProtocol
      * The addition to the base class is closing the file.
      */
     virtual void endRun();
+
+    /**
+     * Overridden to check that the model doesn't set message priority which
+     * we need for our own purposes.
+     */
+    void processOutgoingMessage(cMessage *msg, int procId, int moduleId, int gateId, void *data);
 
     /**
      * Scheduler function. The addition to the base class is

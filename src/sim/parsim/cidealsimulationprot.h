@@ -38,13 +38,14 @@ class cCommBuffer;
  */
 class cIdealSimulationProtocol : public cParsimProtocolBase
 {
-  protected:
+  public:
     // stores one external event, as needed for the ISP algorithm
     struct ExternalEvent {
         simtime_t t;    // time of event
         int srcProcId;  // origin of event
     };
 
+  protected:
     bool debug;
     FILE *fin;  // the event log file
     ExternalEvent nextExternalEvent; // holds the next event
@@ -56,14 +57,12 @@ class cIdealSimulationProtocol : public cParsimProtocolBase
     int nextPos;          // position of 1st unused item in table
 
   protected:
-    // process cMessages received from other partitions
+    // process cMessages received from other partitions; see same method in2
+    // cISPEventLogger for more explanation
     virtual void processReceivedMessage(cMessage *msg, int destModuleId, int destGateId, int sourceProcId);
 
     // read an event from event log file
     virtual void readNextRecordedEvent();
-
-    // helper function
-    bool isExternalMessage(cMessage *msg);
 
   public:
     /**
