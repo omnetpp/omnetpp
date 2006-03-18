@@ -544,10 +544,13 @@ void cSimpleModule::arrived( cMessage *msg, int ongate, simtime_t t)
 {
     if (state==sENDED)
         throw new cRuntimeError(eMODFIN,fullPath().c_str());
-    if (t<simTime())
-        throw new cRuntimeError("causality violation: message `%s' arrival time %s at module `%s' "
+    if (t<simTime()) {
+        if (msg->srcProcId()==-1) ev.printf("E   %.15g !!!\n",msg->arrivalTime()); else ev.printf("E %d %.15g",msg->srcProcId(),msg->arrivalTime());
+        if (msg->srcProcId()==-1) printf("E   %.15g !!!\n",msg->arrivalTime()); else printf("E %d %.15g",msg->srcProcId(),msg->arrivalTime());
+        throw new cRuntimeError("causality violation: message `%s' from %d arrival time %s at module `%s' "
                                 "is earlier than current simulation time",
-                                msg->name(), simtimeToStr(t), fullPath().c_str());
+                                msg->name(), msg->srcProcId(), simtimeToStr(t), fullPath().c_str());
+    }
     msg->setArrival(this, ongate, t);
     simulation.msgQueue.insert( msg );
 }

@@ -505,9 +505,10 @@ void TOmnetApp::processFileName(opp_string& fname)
                                     fname.c_str());
         int pid = getpid();
 
-        // add ".<hostname>.<pid>" to fname
+        // add ".<hostname>.<pid>" to fname (note: parsimProcId cannot be appended
+        // because of initialization order)
         opp_string origfname = fname;
-        fname.reserve(strlen(origfname.c_str())+1+strlen(hostname)+10+1);
+        fname.reserve(strlen(origfname.c_str())+strlen(hostname)+30);
         sprintf(fname.buffer(),"%s.%s.%d", origfname.buffer(), hostname, pid);
     }
 }

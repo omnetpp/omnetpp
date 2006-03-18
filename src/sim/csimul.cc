@@ -611,9 +611,11 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
     // because of reception of external events, but it doesn't matter -- simtime
     // will be overwritten by selectNextModule() with the correct value
     // before executing the next event.
-    cMessage *maybe_next_msg = msgQueue.peekFirst();
-    if (maybe_next_msg)
-        sim_time = maybe_next_msg->arrivalTime();
+    //XXXcMessage *maybe_next_msg = msgQueue.peekFirst();
+    //XXXif (maybe_next_msg)
+    //XXX    sim_time = maybe_next_msg->arrivalTime(); // FIXME BUG!!!! parsim will fail with causality error 
+                                                       // if something still arrives in the meantime. 
+                                                       // better: tkenv should call guessSimTime() or something like that!!!!
 }
 
 void cSimulation::transferToMain()
