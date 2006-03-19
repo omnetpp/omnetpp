@@ -467,7 +467,7 @@ bool TOmnetTkApp::doRunSimulation()
         // exit conditions
         if (untilmodule_reached) break;
         if (breakpointhit_flag || stopsimulation_flag) break;
-        if (rununtil_time>0 && simulation.simTime()>=rununtil_time) break;
+        if (rununtil_time>0 && simulation.guessNextSimtime()>=rununtil_time) break;
         if (rununtil_event>0 && simulation.eventNumber()>=rununtil_event) break;
 
         // delay loop for slow simulation
@@ -540,7 +540,7 @@ bool TOmnetTkApp::doRunSimulationExpress()
         checkTimeLimits();
     }
     while(  !breakpointhit_flag && !stopsimulation_flag &&
-            (rununtil_time<=0 || simulation.simTime()<rununtil_time) &&
+            (rununtil_time<=0 || simulation.guessNextSimtime()<rununtil_time) &&
             (rununtil_event<=0 || simulation.eventNumber()<rununtil_event)
          );
     return false;
@@ -871,7 +871,7 @@ void TOmnetTkApp::updateSimtimeDisplay()
                         "Event #", buf,
                         "}", NULL ));
     CHK(Tcl_VarEval(interp, TIME_LABEL " config -text {"
-                        "T=", simtimeToStr( simulation.simTime() ),
+                        "T=", simtimeToStr(simulation.guessNextSimtime()),
                         "}", NULL ));
 
     // statistics
@@ -958,7 +958,7 @@ void TOmnetTkApp::printEventBanner(cSimpleModule *module)
     {
         sprintf(banner,"** Event #%ld.  T=%s.  Module #%u `%s'\n",
                 simulation.eventNumber(),
-                simtimeToStr( simulation.simTime() ),
+                simtimeToStr(simulation.simTime()),
                 module->id(),
                 module->fullPath().c_str()
               );
@@ -967,7 +967,7 @@ void TOmnetTkApp::printEventBanner(cSimpleModule *module)
     {
         sprintf(banner,"** Event #%ld.  T=%s.  Module `%s' (id=%u). Phase `%s'.\n",
                 simulation.eventNumber(),
-                simtimeToStr( simulation.simTime() ),
+                simtimeToStr(simulation.simTime()),
                 module->fullPath().c_str(),
                 module->id(),
                 module->phase()

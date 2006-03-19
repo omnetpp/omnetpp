@@ -330,8 +330,8 @@ proc create_omnetpp_window {} {
     pack .statusbar3.eventspersimsec -anchor n -expand 1 -fill x -side left
 
     set help_tips(.statusbar.networklabel)  {Network currently set up for execution}
-    set help_tips(.statusbar.eventlabel)    {Current event number}
-    set help_tips(.statusbar.timelabel)     {Current simulation time}
+    set help_tips(.statusbar.eventlabel)    {Sequence number of next event}
+    set help_tips(.statusbar.timelabel)     {Simulation time of next event)}
     set help_tips(.statusbar.nextlabel)     {Module where next event will occur}
 
     set help_tips(.statusbar2.feslength)    {Number of events (messages) currently scheduled}
