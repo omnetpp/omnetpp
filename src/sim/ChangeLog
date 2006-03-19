@@ -1,3 +1,10 @@
+2006-03-19  Andras Varga
+
+	* csimul.cc: added implementation of guessNextEvent() etc. Removed
+	updating simTime() from doOneEvent() which interfered with some 
+	parallel simulation algorithms (caused false "causality violation"
+	errors).
+
 2006-03-15  Andras Varga
 
 	* distrib.cc: gamma_d() was bogus for the alpha<1 case [reported by

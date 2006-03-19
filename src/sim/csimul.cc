@@ -490,25 +490,25 @@ cSimpleModule *cSimulation::selectNextModule()
     return modp;
 }
 
-cSimpleModule *cSimulation::guessNextModule()
+cMessage *cSimulation::guessNextEvent()
 {
-    // Guess what's the next event, to be displayed in the GUI.
-    // We shouldn't cause any change anywhere.
-
-    // is a send() or a pause() pending?
-    if (backtomod!=NULL)
-    {
-        cSimpleModule *p = backtomod;
-        return p;
-    }
-
-    // determine the probable next event. No call to cSheduler!!!
-    cMessage *msg = msgQueue.peekFirst();
-    if (!msg)
-        return NULL;
-
+    // determine the probable next event. No call to cSheduler!
     // TBD if this event is "not good" (no module or module ended),
     // we might look for another event, but this is not done right now.
+    return msgQueue.peekFirst();
+}
+
+simtime_t cSimulation::guessNextSimtime()
+{
+    cMessage *msg = guessNextEvent();
+    return msg==NULL ? -1 : msg->arrivalTime();
+}
+
+cSimpleModule *cSimulation::guessNextModule()
+{
+    cMessage *msg = guessNextEvent();
+    if (!msg)
+        return NULL;
 
     // check if dest module exists and still running
     if (msg->arrivalModuleId()==-1)
@@ -518,7 +518,6 @@ cSimpleModule *cSimulation::guessNextModule()
         return NULL;
     if (modp->moduleState()==sENDED)
         return NULL;
-
     return modp;
 }
 
@@ -603,19 +602,12 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
     // increment event count
     event_num++;
 
-    // simulation time (as read via simTime() from modules) is set in
-    // selectNextModule()) which is called right before the next doOneEvent().
-    // However, for Tkenv code (single-stepping, "Run until") it's too late,
-    // so we have to update simtime for Tkenv's benefit here. (If we run parallel
-    // simulation, the actual event may be different from what we expect here
-    // because of reception of external events, but it doesn't matter -- simtime
-    // will be overwritten by selectNextModule() with the correct value
-    // before executing the next event.
-    //XXXcMessage *maybe_next_msg = msgQueue.peekFirst();
-    //XXXif (maybe_next_msg)
-    //XXX    sim_time = maybe_next_msg->arrivalTime(); // FIXME BUG!!!! parsim will fail with causality error 
-                                                       // if something still arrives in the meantime. 
-                                                       // better: tkenv should call guessSimTime() or something like that!!!!
+    // Note: simulation time (as read via simTime() from modules) is updated
+    // in selectNextModule()) called right before the next doOneEvent().
+    // It must not be updated here, because it will interfere with parallel 
+    // simulation (cIdealSimulationProtocol, etc) that relies on simTime() 
+    // returning the time of the last executed event. If Tkenv wants to display
+    // the time of the next event, it should call guessNextSimtime().
 }
 
 void cSimulation::transferToMain()
