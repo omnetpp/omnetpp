@@ -279,8 +279,8 @@ class SIM_API cSimulation : public cObject
     int  runNumber() const           {return run_number;}
 
     /**
-     * WARNING: INTERNAL USE ONLY. This method should NEVER be invoked from 
-     * simulation models, only from scheduler classes subclassed from 
+     * WARNING: INTERNAL USE ONLY. This method should NEVER be invoked from
+     * simulation models, only from scheduler classes subclassed from
      * cScheduler.
      */
     void setSimTime(simtime_t time) { sim_time = time; }
@@ -313,22 +313,42 @@ class SIM_API cSimulation : public cObject
     cSimpleModule *selectNextModule();
 
     /**
-     * This is the lite version of selectNextModule(). It is currently only
-     * used from within Tkenv to display the name of the module where the
-     * next event will occur, and it should only be used for similar
-     * purposes, and you should definately NOT call doOneEvent() with its
-     * return value.
+     * To be called between events from the environment of the simulation
+     * (e.g. from Tkenv), this function returns pointer to the event
+     * at the head of the FES. It is only guaranteed to be the next event
+     * with sequential simulation; with parallel, distributed or real-time
+     * simulation there might be another event coming from other processes
+     * with a yet smaller timestamp.
      *
-     * This method is careful not to change anything, anywhere. It never
-     * throws an exception, and especially, it does NOT invoke the scheduler
+     * This method is careful not to change anything. It never throws
+     * an exception, and especially, it does NOT invoke the scheduler
      * (see cScheduler) because e.g. its parallel simulation incarnations
      * might do subtle things to keep events synchronized in various
-     * partitions of the parallel simulation. It just looks at the
-     * currently scheduled messages. As a result, sometimes (with parallel
-     * or real-time simulation), the returned module may not be actually
-     * the one executing the next event.
+     * partitions of the parallel simulation.
+     */
+    cMessage *guessNextEvent();
+
+    /**
+     * To be called between events from the environment of the simulation
+     * (e.g. from Tkenv), this function returns the module associated
+     * with the event at the head of the FES. It returns NULL if the
+     * FES is empty, there is no module associated with the event, or
+     * the module has already finished.
+     *
+     * Based on guessNextEvent(); see further comments there.
      */
     cSimpleModule *guessNextModule();
+
+    /**
+     * To be called between events from the environment of the simulation
+     * (e.g. Tkenv), this function returns the simulation time of the event
+     * at the head of the FES. In contrast, simTime() returns the time of the
+     * last executed (or currently executing) event. Returns a negative value
+     * if the FES is empty.
+     *
+     * Based on guessNextEvent(); see further comments there.
+     */
+    simtime_t guessNextSimtime();
 
     /**
      * Executes one event. The argument should be the module

@@ -1,3 +1,7 @@
+2006-03-19  Andras Varga
+
+	* csimul.h: added method guessNextEvent() for use from Tkenv.
+
 2006-03-15  Andras Varga
 
 	* distrib.h: fixed a documentation bug and refined description of
