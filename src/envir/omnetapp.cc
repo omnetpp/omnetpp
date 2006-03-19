@@ -857,7 +857,9 @@ void TOmnetApp::checkTimeLimits()
 {
     if (opt_simtimelimit!=0 && simulation.simTime()>=opt_simtimelimit)
          throw new cTerminationException(eSIMTIME);
-    if (opt_cputimelimit==0)
+    if (opt_cputimelimit==0) // no limit
+         return;
+    if (ev.disable_tracing && simulation.eventNumber()&0xFF!=0) // optimize: in Express mode, don't call gettimeofday() on every event
          return;
     timeval now;
     gettimeofday(&now, NULL);
