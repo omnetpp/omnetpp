@@ -289,7 +289,21 @@ public abstract class NEDElement extends PlatformObject implements Iterable<NEDE
 		return parent;
 	}
 
-	/**
+    /**
+     * Returns the index'th child element, or null if this element
+     * has no children.
+     */
+    public NEDElement getChild(int index)
+    {
+        int i = 0;
+        for(NEDElement elem : this) {
+            if (i >= index)
+                return elem;
+        }
+        return null;
+    }
+
+    /**
 	 * Returns pointer to the first child element, or null if this element
 	 * has no children.
 	 */

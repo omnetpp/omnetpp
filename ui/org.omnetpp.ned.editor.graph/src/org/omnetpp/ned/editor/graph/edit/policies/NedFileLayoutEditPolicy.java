@@ -7,6 +7,7 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
 import org.omnetpp.ned.editor.graph.model.INedContainer;
@@ -71,8 +72,11 @@ protected Command createMoveChildCommand(EditPart child, EditPart after) {
 	int newIndex = getHost().getChildren().indexOf(after);
 	if (newIndex > oldIndex)
 		newIndex--;
-	ReorderPartCommand command = new ReorderPartCommand(childModel, parentModel, newIndex);
-	return command;
+    
+    
+//	ReorderPartCommand command = new ReorderPartCommand(childModel, parentModel, newIndex);
+//	return command;
+    return UnexecutableCommand.INSTANCE;
 }
 
 protected Command getCreateCommand(CreateRequest request) {

@@ -57,7 +57,12 @@ public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
 
     protected Command getCreateCommand(CreateRequest request) {
     	INedModule child = (INedModule) request.getNewObject();
+    	// FIXME kivenni a target editpartot es azt beadni a create commandnak hogy
+        // abbol szamolja a szulo es a szomszed modell objektumot
+        EditPart targetEditPart = getTargetEditPart(request);
+        
         int index = findIndexOfTreeItemAt(request.getLocation());
+        System.out.println("Pos: "+index +" "+ findTreeItemAt(request.getLocation()) +" "+request.getLocation().toString());
         return createCreateCommand(child, null, index, "Create NedElement");//$NON-NLS-1$
     }
 
@@ -66,7 +71,7 @@ public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
         List editparts = request.getEditParts();
         List children = getHost().getChildren();
         int newIndex = findIndexOfTreeItemAt(request.getLocation());
-
+        
         for (int i = 0; i < editparts.size(); i++) {
             EditPart child = (EditPart) editparts.get(i);
             int tempIndex = newIndex;
@@ -77,8 +82,8 @@ public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
             } else if (oldIndex <= tempIndex) {
                 tempIndex--;
             }
-            command.add(new ReorderPartCommand((INedModule) child.getModel(), (INedContainer) getHost()
-                    .getModel(), tempIndex));
+// FIXME removed for debugging            
+//            command.add(new ReorderPartCommand((INedModule) child.getModel(), (INedContainer) getHost().getModel(), tempIndex));
         }
         return command;
     }

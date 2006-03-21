@@ -2,38 +2,37 @@ package org.omnetpp.ned.editor.graph.model.commands;
 
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.INedContainer;
-import org.omnetpp.ned.editor.graph.model.INedModule;
+import org.omnetpp.ned2.model.NEDElement;
 
 /**
  * Move a child to a different position in the parent's list
- * Used by the tree containe policy to drang and drop in the outline tree
- * TODO Do we need this functionality at all? Is it useful?
+ * Used by the tree container policy to drag and drop in the outline tree
  * @author rhornig
  *
  */
 public class ReorderPartCommand extends Command {
 
-    private int oldIndex, newIndex;
-    private INedModule child;
-    private INedContainer parent;
+    private NEDElement node;
+    private NEDElement parent;
+    private NEDElement oldInsertBeforePos;
+    private NEDElement newInsertChildBefore;
 
-    public ReorderPartCommand(INedModule child, INedContainer parent, int newIndex) {
+    public ReorderPartCommand(NEDElement insertBefore, NEDElement child) {
         super(MessageFactory.ReorderPartCommand_Label);
-        this.child = child;
-        this.parent = parent;
-        this.newIndex = newIndex;
+        node = child;
+        parent = child.getParent();
+        newInsertChildBefore = insertBefore;
     }
 
     public void execute() {
-        oldIndex = parent.getModelChildren().indexOf(child);
-        parent.removeModelChild(child);
-        parent.insertModelChild(newIndex, child);
+        oldInsertBeforePos = node.getNextSibling();
+        node.removeFromParent();
+        parent.insertChildBefore(newInsertChildBefore, node);
     }
 
     public void undo() {
-        parent.removeModelChild(child);
-        parent.insertModelChild(oldIndex, child);
+        node.removeFromParent();
+        parent.insertChildBefore(oldInsertBeforePos, node);
     }
 
 }
