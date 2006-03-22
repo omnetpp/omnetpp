@@ -100,5 +100,10 @@ public interface INedModule {
 	 * @param size
 	 */
 	public void setSize(Dimension size);
+    
+    /**
+     * Removes this node from the parent
+     */
+    public void removeFromParent();
 
 }

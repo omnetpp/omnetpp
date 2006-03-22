@@ -14,7 +14,7 @@ import org.eclipse.core.runtime.PlatformObject;
  * It extends PlatformObject to have a default IAdaptable implementation
  * primarily for PropertySheet support 
  */
-public abstract class NEDElement extends PlatformObject implements Iterable<NEDElement> 
+public abstract class NEDElement extends PlatformObject implements Iterable<NEDElement>
 {
 	private long id;
 	private String srcloc;
@@ -605,5 +605,47 @@ public abstract class NEDElement extends PlatformObject implements Iterable<NEDE
     public String debugString() {
         return "";
     }
+
+    /**
+     * Creates a shallow copy of the tree, but removes it from the tree hierarchy and throws away all children
+     */
+    public NEDElement dup(NEDElement parent) {
+        NEDElement cloned = null;
+
+        try {
+            cloned = this.getClass().newInstance();
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+        
+        if (parent != null) 
+            parent.appendChild(cloned);
+
+        for(int i = 0; i< getNumAttributes(); ++i) {
+            try {
+                cloned.setAttribute(i, getAttribute(i));
+            } catch (Exception e) {
+                // IF we cannot set the attribute now (ie for srcModule destName, we should skip it)
+            }
+        }
+        
+        return cloned;
+    }
+    
+    /**
+     * Creates a deep copy of the tree
+     * @return
+     */
+    public NEDElement deepDup(NEDElement parent) {
+        NEDElement result = dup(parent);
+        
+        for (NEDElement child : this) 
+            child.deepDup(result);
+        
+        return result;
+    }
+    
 };
 

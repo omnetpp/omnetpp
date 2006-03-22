@@ -41,4 +41,9 @@ public interface INedContainer {
 	 * @param child
 	 */
 	public void removeModelChild(INedModule child);
+
+    /**
+     * Removes this node from the parent
+     */
+    public void removeFromParent();
 }

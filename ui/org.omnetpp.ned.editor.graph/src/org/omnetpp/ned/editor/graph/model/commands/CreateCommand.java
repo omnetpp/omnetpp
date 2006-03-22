@@ -1,7 +1,6 @@
 package org.omnetpp.ned.editor.graph.model.commands;
 
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.model.INedContainer;
 import org.omnetpp.ned.editor.graph.model.INedModule;
 
@@ -10,6 +9,8 @@ import org.omnetpp.ned.editor.graph.model.INedModule;
  * @author rhornig
  *
  */
+
+//TODO do not use index to position the child. Use the next sibling child istead
 public class CreateCommand extends org.eclipse.gef.commands.Command {
 
     private INedModule child;
@@ -17,19 +18,17 @@ public class CreateCommand extends org.eclipse.gef.commands.Command {
     private INedContainer parent;
     private int index = -1;
 
-    public CreateCommand() {
-        super(MessageFactory.CreateCommand_Label);
-    }
-
     public boolean canExecute() {
         return child != null && parent != null;
     }
 
     public void execute() {
+        setLabel("Create " + child.getName());
+
         if (rect != null) {
             child.setLocation(rect.getLocation());
-            // TODO child size must be set correctly in the displaystring
-            // if (!rect.isEmpty()) child.setSize(rect.getSize());
+            if (!rect.isEmpty()) 
+                child.setSize(rect.getSize());
         }
         redo();
     }
@@ -38,8 +37,8 @@ public class CreateCommand extends org.eclipse.gef.commands.Command {
         parent.insertModelChild(index, child );
     }
 
-    public void setChild(INedModule subpart) {
-        child = subpart;
+    public void setChild(INedModule module) {
+        child = module;
     }
 
     public void setIndex(int index) {

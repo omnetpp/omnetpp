@@ -1,7 +1,6 @@
 package org.omnetpp.ned.editor.graph.model.commands;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -13,108 +12,91 @@ import org.omnetpp.ned.editor.graph.model.CompoundModuleNodeEx;
 import org.omnetpp.ned.editor.graph.model.ConnectionNodeEx;
 import org.omnetpp.ned.editor.graph.model.INedContainer;
 import org.omnetpp.ned.editor.graph.model.INedModule;
-import org.omnetpp.ned.editor.graph.model.NEDElementFactoryEx;
-import org.omnetpp.ned.editor.graph.model.NedElementExUtil;
-import org.omnetpp.ned.editor.graph.model.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.pojo.ConnectionsNode;
 
 /**
- * Clones a set of parts (copy operation)
+ * Clones a set of modules (copy operation)
  * @author rhornig
  *
  */
 public class CloneCommand extends Command {
 
-    private List parts, newTopLevelParts, newConnections;
+    private List<INedModule> modules, newModules;
+    private List<ConnectionNodeEx> newConnections;
     private INedContainer parent;
-    private Map bounds, indices, connectionPartMap;
+    private Map<INedModule, Rectangle> bounds;
+    private Map<INedModule, Integer> indices;
+    private Map<INedModule, INedModule> old2newMapping;
 
     public CloneCommand() {
         super(MessageFactory.CloneCommand_Label);
-        parts = new LinkedList();
+        modules = new LinkedList<INedModule> ();
     }
 
-    public void addPart(NEDElement part, Rectangle newBounds) {
-        parts.add(part);
+    public void addModule(INedModule mod, Rectangle newBounds) {
+        modules.add(mod);
         if (bounds == null) {
-            bounds = new HashMap();
+            bounds = new HashMap<INedModule, Rectangle>();
         }
-        bounds.put(part, newBounds);
+        bounds.put(mod, newBounds);
     }
 
-    public void addPart(NEDElement part, int index) {
-        parts.add(part);
+    public void addModule(INedModule mod, int index) {
+        modules.add(mod);
         if (indices == null) {
-            indices = new HashMap();
+            indices = new HashMap<INedModule, Integer>();
         }
-        indices.put(part, new Integer(index));
+        indices.put(mod, index);
     }
 
-    protected void clonePart(NEDElement oldPart, INedContainer newParent, Rectangle newBounds,
-            List newConnections, Map connectionPartMap, int index) {
-    	NEDElement newPart = null;
+    /**
+     * Clone the provided connection
+     * @param oldConn
+     */
+    protected ConnectionNodeEx cloneConnection(ConnectionNodeEx oldConn, INedModule srcModuleRef, INedModule destModuleRef) {
+            
+        ConnectionsNode connectionParent = null;
+        if (parent instanceof CompoundModuleNodeEx)
+            connectionParent = ((CompoundModuleNodeEx)parent).getFirstConnectionsChild();
+        
+        ConnectionNodeEx newConn = (ConnectionNodeEx)oldConn.deepDup(null);
+            
+        connectionParent.appendChild(newConn);
+        newConn.setSrcModuleRef(srcModuleRef);
+        newConn.setDestModuleRef(destModuleRef);
 
-        if (oldPart instanceof SubmoduleNodeEx) {
-            newPart = NEDElementFactoryEx.getInstance().createNodeWithTag(NedElementExUtil.NED_SUBMODULE);
-        } else if (oldPart instanceof CompoundModuleNodeEx) {
-            newPart = NEDElementFactoryEx.getInstance().createNodeWithTag(NedElementExUtil.NED_COMPOUND_MODULE);
-        } 
+        newConnections.add(newConn);
 
-        if (oldPart instanceof INedContainer) {
-            Iterator i = ((INedContainer)oldPart).getModelChildren().iterator();
-            while (i.hasNext()) {
-                // for children they will not need new bounds
-                clonePart((NEDElement) i.next(), (INedContainer) newPart, 
-                		null, newConnections, connectionPartMap, -1);
-            }
-        }
+        return newConn;
+    }
+    
+    protected INedModule cloneModule(INedModule oldModule, Rectangle newBounds, int index) {
+    	INedModule newModule = null;
+
+        // duplicate the subtree but do not add to the new parent yet
+        newModule = (INedModule)((NEDElement)oldModule).deepDup(null);
+        newModule.setLocation(newBounds.getLocation());
+        newModule.setName(oldModule.getName()+"_copy");
 
         if (index < 0) {
-            newParent.addModelChild((INedModule)newPart);
+            parent.addModelChild(newModule);
         } else {
-            newParent.insertModelChild(index, (INedModule)newPart);
+            parent.insertModelChild(index, newModule);
         }
 
-        // keep track of the new parts so we can delete them in undo
-        // keep track of the oldpart -> newpart map so that we can properly
-        // attach
-        // all connections.
-        if (newParent == parent) newTopLevelParts.add(newPart);
-        connectionPartMap.put(oldPart, newPart);
+        // keep track of the new modules so we can delete them in undo
+        newModules.add(newModule);
+        
+        // keep track of the newModule -> OldModule map so that we can properly
+        // attach all connections later.
+        old2newMapping.put(oldModule, newModule);
+        
+        return newModule;
     }
 
     public void execute() {
-        connectionPartMap = new HashMap();
-        newConnections = new LinkedList();
-        newTopLevelParts = new LinkedList();
-
-        Iterator i = parts.iterator();
-
-        NEDElement part = null;
-        while (i.hasNext()) {
-            part = (NEDElement) i.next();
-            if (bounds != null && bounds.containsKey(part)) {
-                clonePart(part, parent, (Rectangle) bounds.get(part), newConnections, connectionPartMap, -1);
-            } else if (indices != null && indices.containsKey(part)) {
-                clonePart(part, parent, null, newConnections, connectionPartMap,
-                        ((Integer) indices.get(part)).intValue());
-            } else {
-                clonePart(part, parent, null, newConnections, connectionPartMap, -1);
-            }
-        }
-
-        // go through and set the srcModule of each connection to the proper
-        // srcModule.
-        Iterator c = newConnections.iterator();
-
-        while (c.hasNext()) {
-            ConnectionNodeEx conn = (ConnectionNodeEx) c.next();
-            INedModule source = conn.getSrcModuleRef();
-            if (connectionPartMap.containsKey(source)) {
-                conn.setSrcModuleRef((INedModule)connectionPartMap.get(source));
-            }
-        }
-
+        redo();
     }
 
     public void setParent(INedContainer parent) {
@@ -122,20 +104,41 @@ public class CloneCommand extends Command {
     }
 
     public void redo() {
-        for (Iterator iter = newTopLevelParts.iterator(); iter.hasNext();)
-            parent.addModelChild((INedModule) iter.next());
-        for (Iterator iter = newConnections.iterator(); iter.hasNext();) {
-            ConnectionNodeEx conn = (ConnectionNodeEx) iter.next();
-            INedModule source = conn.getSrcModuleRef();
-            if (connectionPartMap.containsKey(source)) {
-                conn.setSrcModuleRef(((INedModule) connectionPartMap.get(source)));
+        old2newMapping = new HashMap<INedModule, INedModule>();
+        newConnections = new LinkedList<ConnectionNodeEx>();
+        newModules = new LinkedList<INedModule>();
+
+        for (INedModule mod : modules){
+            if (bounds != null && bounds.containsKey(mod)) {
+                cloneModule(mod, bounds.get(mod), -1);
+            } else if (indices != null && indices.containsKey(mod)) {
+                cloneModule(mod, null, indices.get(mod));
+            } else {
+                cloneModule(mod, null, -1);
             }
         }
+
+        // go through all modules that were previously cloned and check all the source connections
+        for (INedModule oldSrcMod : modules)
+            for (ConnectionNodeEx oldConn : oldSrcMod.getSrcConnections()) {
+                INedModule oldDestMod = oldConn.getDestModuleRef();
+                // if the destination side was also selected clone this connection connection too 
+                // TODO future: clone the connections ONLY if they are selected too
+                if (old2newMapping.containsKey(oldDestMod)) {
+                    INedModule newSrcMod = old2newMapping.get(oldSrcMod);
+                    INedModule newDestMod = old2newMapping.get(oldDestMod);
+                    cloneConnection(oldConn, newSrcMod, newDestMod);
+                }
+            }
     }
 
     public void undo() {
-        for (Iterator iter = newTopLevelParts.iterator(); iter.hasNext();)
-            parent.removeModelChild((INedModule) iter.next());
+        for (INedModule mod : newModules)
+            mod.removeFromParent();
+        
+        for (ConnectionNodeEx conn : newConnections)
+            conn.removeFromParent();
+        
     }
 
 }

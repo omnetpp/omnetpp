@@ -214,7 +214,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
         while (i.hasNext()) {
             currPart = (GraphicalEditPart) i.next();
-            clone.addPart((NEDElement) currPart.getModel(), (Rectangle) getConstraintForClone(currPart,
+            clone.addModule((INedModule)currPart.getModel(), (Rectangle) getConstraintForClone(currPart,
                     request));
         }
 

@@ -7,6 +7,7 @@ import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.model.INedContainer;
 import org.omnetpp.ned.editor.graph.model.INedModule;
+import org.omnetpp.ned2.model.NEDElement;
 
 /**
  * This command removes a model element from its parent.
@@ -17,23 +18,20 @@ import org.omnetpp.ned.editor.graph.model.INedModule;
 public class OrphanChildCommand extends Command {
 
     private Point oldLocation;
-    private INedContainer diagram;
+    private INedContainer container;
     private INedModule child;
-    private int index;
-
-    public OrphanChildCommand() {
-        super(MessageFactory.OrphanChildCommand_Label);
-    }
+    private NEDElement insertBeforeChild;
 
     public void execute() {
-        List children = diagram.getModelChildren();
-        index = children.indexOf(child);
+        setLabel("Remove " + child.getName());
+
+        insertBeforeChild = ((NEDElement)child).getNextSibling();
         oldLocation = child.getLocation();
-        diagram.removeModelChild(child);
+       redo();
     }
 
     public void redo() {
-        diagram.removeModelChild(child);
+        container.removeModelChild(child);
     }
 
     public void setChild(INedModule child) {
@@ -41,12 +39,12 @@ public class OrphanChildCommand extends Command {
     }
 
     public void setParent(INedContainer parent) {
-        diagram = parent;
+        container = parent;
     }
 
     public void undo() {
         child.setLocation(oldLocation);
-        diagram.insertModelChild(index, child);
+        container.insertModelChild((INedModule)insertBeforeChild, child);
     }
 
 }

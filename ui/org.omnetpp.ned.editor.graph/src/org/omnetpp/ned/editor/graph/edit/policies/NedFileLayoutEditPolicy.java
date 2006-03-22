@@ -41,7 +41,7 @@ protected Command getCloneCommand(ChangeBoundsRequest request) {
 	
 	while (i.hasNext()) {
 		currPart = (GraphicalEditPart)i.next();
-		clone.addPart((NedFileNodeEx)currPart.getModel(), index++);
+		clone.addModule((INedModule)currPart.getModel(), index++);
 	}
 	
 	return clone;
