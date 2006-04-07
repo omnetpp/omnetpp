@@ -7,10 +7,6 @@ import org.omnetpp.ned2.model.NEDElement;
 
 abstract public class AbstractNedPropertySource 
                             implements IPropertySource2, INEDChangeListener {
-    
-    protected NEDElement nedModel;
-    
-
     /**
      * Default construtor doesn't register itself as a model listener 
      */
@@ -18,13 +14,12 @@ abstract public class AbstractNedPropertySource
     }
     
     AbstractNedPropertySource(NEDElement model) {
-        nedModel = model;
         // register the propertysource as a listener for the model so it will be notified
-        // once someone chanes the underlying model
-        nedModel.addListener(this);
+        // once someone changes the underlying model
+        model.addListener(this);
     }
-
-    // the following methods noify the 
+    
+    // the following methods notify the property source 
     public void attributeChanged(NEDElement node, String attr) {
         modelChanged();
     }
@@ -51,5 +46,6 @@ abstract public class AbstractNedPropertySource
     
     abstract public void setPropertyValue(Object id, Object value);
     
-    abstract public void modelChanged();
+    public void modelChanged() {
+    }
 }

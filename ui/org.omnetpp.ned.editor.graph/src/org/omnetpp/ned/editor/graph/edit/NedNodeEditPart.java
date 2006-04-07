@@ -24,6 +24,8 @@ import org.omnetpp.ned.editor.graph.misc.ColorFactory;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
 import org.omnetpp.ned.editor.graph.model.INedModule;
 import org.omnetpp.ned.editor.graph.properties.SubmoduleDisplayPropertySource;
+import org.omnetpp.ned2.model.DisplayString;
+import org.omnetpp.ned2.model.DisplayString.Prop;
 
 /**
  * Base abstract controller for NedModel and NedFigures. Provides support for 
@@ -127,21 +129,14 @@ abstract public class NedNodeEditPart extends ContainerEditPart {
     	INedModule model = (INedModule)getNEDModel();
     	
         // parse a dispaly string, so it's easier to get values from it.
-    	String displayStr = model.getDisplayString();
-        SubmoduleDisplayPropertySource dps = 
-        	new SubmoduleDisplayPropertySource(displayStr);
+        DisplayString dps = model.getDisplayString();
         
         // setup the figure's properties
 
-        Integer x = dps.getIntegerPropertyDef(SubmoduleDisplayPropertySource.PROP_X);
-        Integer y = dps.getIntegerPropertyDef(SubmoduleDisplayPropertySource.PROP_Y);
-        Integer w = dps.getIntegerPropertyDef(SubmoduleDisplayPropertySource.PROP_W);
-        Integer h = dps.getIntegerPropertyDef(SubmoduleDisplayPropertySource.PROP_H);
-        // FIXME hardcoded use 
-        if(x == null) x = 0;
-        if(y == null) y = 0;
-        if(h == null) h = -1;
-        if(w == null) w = -1;
+        Integer x = dps.getAsIntDef(DisplayString.Prop.X, 0);
+        Integer y = dps.getAsIntDef(DisplayString.Prop.Y, 0);
+        Integer w = dps.getAsIntDef(DisplayString.Prop.WIDTH, -1);
+        Integer h = dps.getAsIntDef(DisplayString.Prop.HEIGHT, -1);
         // set the location and size using the models helper methods
         Rectangle constraint = new Rectangle(x, y, w, h);
         ((GraphicalEditPart) getParent()).setLayoutConstraint(this, getFigure(), constraint);
@@ -151,48 +146,48 @@ abstract public class NedNodeEditPart extends ContainerEditPart {
         // range support
         if(getNedFigure() instanceof DisplayRangeSupport)
             ((DisplayRangeSupport)getNedFigure()).setRange(
-                    dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_RANGE, -1),
-                    ColorFactory.asColor(dps.getStringPropertyDef(SubmoduleDisplayPropertySource.PROP_RANGEFILLCOL)),
-                    ColorFactory.asColor(dps.getStringPropertyDef(SubmoduleDisplayPropertySource.PROP_RANGEBORDERCOL)),
-                    dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_RANGEBORDERWIDTH, -1));
+                    dps.getAsIntDef(DisplayString.Prop.RANGE, -1),
+                    ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.RANGEFILLCOL)),
+                    ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.RANGEBORDERCOL)),
+                    dps.getAsIntDef(DisplayString.Prop.RANGEBORDERWIDTH, -1));
         // tooltip support
         if(getNedFigure() instanceof DisplayTooltipSupport)
             ((DisplayTooltipSupport)getNedFigure()).setTooltipText(
-                    dps.getStringPropertyDef(SubmoduleDisplayPropertySource.PROP_TOOLTIP));
+                    dps.getAsStringDef(DisplayString.Prop.TOOLTIP));
         // queue length support
         if(getNedFigure() instanceof DisplayQueueSupport)
             ((DisplayQueueSupport)getNedFigure()).setQueueText(
-                    dps.getStringPropertyDef(SubmoduleDisplayPropertySource.PROP_QUEUE));
+                    dps.getAsStringDef(DisplayString.Prop.QUEUE));
         // additional text support
         if(getNedFigure() instanceof DisplayInfoTextSupport)
             ((DisplayInfoTextSupport)getNedFigure()).setInfoText(
-                    dps.getStringPropertyDef(SubmoduleDisplayPropertySource.PROP_TEXT), 
-                    dps.getStringPropertyDef(SubmoduleDisplayPropertySource.PROP_TEXTPOS),
-                    ColorFactory.asColor(dps.getStringPropertyDef(SubmoduleDisplayPropertySource.PROP_TEXTCOLOR)));
+                    dps.getAsStringDef(DisplayString.Prop.TEXT), 
+                    dps.getAsStringDef(DisplayString.Prop.TEXTPOS),
+                    ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.TEXTCOLOR)));
         // shape support
         if(getNedFigure() instanceof DisplayShapeSupport) {
-            String imgSize = dps.getStringPropertyDef(SubmoduleDisplayPropertySource.PROP_IMAGESIZE);
+            String imgSize = dps.getAsStringDef(DisplayString.Prop.IMAGESIZE);
             Image img = ImageFactory.getImage(
-                    dps.getStringPropertyDef(SubmoduleDisplayPropertySource.PROP_IMAGE), 
+                    dps.getAsStringDef(DisplayString.Prop.IMAGE), 
                     imgSize,
-                    ColorFactory.asRGB(dps.getStringPropertyDef(SubmoduleDisplayPropertySource.PROP_IMAGECOLOR)),
-                    dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_IMAGECOLORPCT,0));
+                    ColorFactory.asRGB(dps.getAsStringDef(DisplayString.Prop.IMAGECOLOR)),
+                    dps.getAsIntDef(DisplayString.Prop.IMAGECOLORPCT,0));
             
             // set the figure properties
             ((DisplayShapeSupport)getNedFigure()).setShape(img, 
-                    dps.getStringPropertyDef(SubmoduleDisplayPropertySource.PROP_SHAPE), 
-                    dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_W, -1), 
-                    dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_H, -1),
-                    ColorFactory.asColor(dps.getStringPropertyDef(SubmoduleDisplayPropertySource.PROP_FILLCOL)),
-                    ColorFactory.asColor(dps.getStringPropertyDef(SubmoduleDisplayPropertySource.PROP_BORDERCOL)),
-                    dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_BORDERWIDTH, -1));
+                    dps.getAsStringDef(DisplayString.Prop.SHAPE), 
+                    dps.getAsIntDef(DisplayString.Prop.WIDTH, -1), 
+                    dps.getAsIntDef(DisplayString.Prop.HEIGHT, -1),
+                    ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.FILLCOL)),
+                    ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.BORDERCOL)),
+                    dps.getAsIntDef(DisplayString.Prop.BORDERWIDTH, -1));
             // set the decoration image properties
             ((DisplayShapeSupport)getNedFigure()).setImageDecoration(
                     ImageFactory.getImage(
-                            dps.getStringPropertyDef(SubmoduleDisplayPropertySource.PROP_OVIMAGE),
+                            dps.getAsStringDef(DisplayString.Prop.OVIMAGE),
                             null,
-                            ColorFactory.asRGB(dps.getStringPropertyDef(SubmoduleDisplayPropertySource.PROP_OVIMAGECOLOR)),
-                            dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_OVIMAGECOLORPCT,0)));
+                            ColorFactory.asRGB(dps.getAsStringDef(DisplayString.Prop.OVIMAGECOLOR)),
+                            dps.getAsIntDef(DisplayString.Prop.OVIMAGECOLORPCT,0)));
 
         }
         

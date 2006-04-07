@@ -5,6 +5,7 @@ import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 import org.omnetpp.ned.editor.graph.model.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.SubmoduleDisplayString;
 
 public class SubmodulePropertySource extends AbstractNedPropertySource {
 
@@ -20,30 +21,33 @@ public class SubmodulePropertySource extends AbstractNedPropertySource {
         descriptors = new IPropertyDescriptor[] { nameProp, typeProp, displayProp };
     }
 
+    protected SubmoduleNodeEx model;
     protected SubmoduleDisplayPropertySource submoduleDisplayPropertySource;
     
-    public SubmodulePropertySource(NEDElement model) {
-        super(model);
-        // create a nested displayPropertySource srcModule for the model
+    public SubmodulePropertySource(SubmoduleNodeEx submoduleNodeModel) {
+        super(submoduleNodeModel);
+        model = submoduleNodeModel;
+        // create a nested displayPropertySource
         submoduleDisplayPropertySource = 
-            new SubmoduleDisplayPropertySource((SubmoduleNodeEx)model);
+            new SubmoduleDisplayPropertySource(model);
     }
 
     public Object getEditableValue() {
-        // maybe we should create a copy from the model object here??? 
-        return nedModel;
+        // we don't need this if we don't want to embed this property source into an other propertysource
+        return model.getName();
     }
 
     public IPropertyDescriptor[] getPropertyDescriptors() {
         return descriptors;
     }
 
+    @Override
     public Object getPropertyValue(Object propName) {
         if (PROP_NAME.equals(propName)) { 
-            return ((SubmoduleNodeEx)nedModel).getName(); 
+            return model.getName(); 
         }
         if (PROP_TYPE.equals(propName)) { 
-            return ((SubmoduleNodeEx)nedModel).getType(); 
+            return model.getType(); 
         }
         if (PROP_DISPLAY.equals(propName)) { 
             return submoduleDisplayPropertySource; 
@@ -51,36 +55,35 @@ public class SubmodulePropertySource extends AbstractNedPropertySource {
         return null;
     }
 
-    public boolean isPropertySet(Object propName) {
-        return PROP_NAME.equals(propName) || PROP_TYPE.equals(propName);
-    }
-
-    public void resetPropertyValue(Object propName) {
-    }
-
+    @Override
     public void setPropertyValue(Object propName, Object value) {
-        SubmoduleNodeEx subModule = ((SubmoduleNodeEx)nedModel); 
         if (PROP_NAME.equals(propName)) {
-            subModule.setName(value.toString());
+            model.setName(value.toString());
         }
         if (PROP_TYPE.equals(propName)) {
-            subModule.setType(value.toString());
+            model.setType(value.toString());
         }
         if (PROP_DISPLAY.equals(propName)) {
-            subModule.setDisplayString(value.toString());
+            model.setDisplayString(new SubmoduleDisplayString(value.toString()));
         }
     }
 
     @Override
-    public boolean isPropertyResettable(Object id) {
-        return true;
+    public boolean isPropertySet(Object propName) {
+        return PROP_NAME.equals(propName) || PROP_TYPE.equals(propName) ||
+            PROP_DISPLAY.equals(propName);
     }
 
     @Override
-    public void modelChanged() {
-        // NO need to implement a listener because we do not cache any data 
-        // from the model
-        // the displayStringPropertySource listens for modelchanges on its own
+    public void resetPropertyValue(Object propName) {
+        if (PROP_DISPLAY.equals(propName)) {
+            model.setDisplayString(null);
+        }
+    }
+
+    @Override
+    public boolean isPropertyResettable(Object propName) {
+        return PROP_DISPLAY.equals(propName);
     }
 
 }

@@ -5,12 +5,12 @@ import java.util.List;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
-import org.omnetpp.ned.editor.graph.properties.SubmoduleDisplayPropertySource;
+import org.omnetpp.ned2.model.DisplayString;
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.SubmoduleDisplayString;
 import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 
 public class SubmoduleNodeEx extends SubmoduleNode implements INedModule {
-
     // srcConns contains all connections where the sourcemodule is this module
 	protected List<ConnectionNodeEx> srcConns = new ArrayList<ConnectionNodeEx>();
 	// destConns contains all connections where the destmodule is this module
@@ -31,12 +31,13 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INedModule {
         setType("node");
     }
     
-	public String getDisplayString() {
-		return NedElementExUtil.getDisplayString(this); 
+	public DisplayString getDisplayString() {
+        // TODO mabe we should cache the created DisplayString object for performance reasons?
+		return new SubmoduleDisplayString(NedElementExUtil.getDisplayString(this)); 
 	}
 	
-	public void setDisplayString(String dspString) {
-		NedElementExUtil.setDisplayString(this, dspString);
+	public void setDisplayString(DisplayString dspString) {
+		NedElementExUtil.setDisplayString(this, dspString.toString());
 	}
 
 	protected CompoundModuleNodeEx getCompoundModule() {
@@ -75,62 +76,56 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INedModule {
         fireAttributeChangedToAncestors(ATT_DEST_CONNECTION);
     }
 
-	public Point getLocation() {
-        // FIXME get the propertysource from the model if it is already registered
-        String str = getDisplayString();
-		SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(str);
-        Integer x = dps.getIntegerProperty(SubmoduleDisplayPropertySource.PROP_X);
-        Integer y = dps.getIntegerProperty(SubmoduleDisplayPropertySource.PROP_Y);
+    public Point getLocation() {
+        DisplayString dps = getDisplayString();
+        Integer x = dps.getAsInteger(DisplayString.Prop.X);
+        Integer y = dps.getAsInteger(DisplayString.Prop.Y);
         // if it's unspecified in any direction we should return a NULL constraint
         if (x == null || y == null)
             return null;
-		
-        return new Point (x,y);
-	}
-
-	public void setLocation(Point location) {
-        // FIXME get the propertysource from the model if it is already registered
-        String str = getDisplayString();
-        SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(str);
         
-        // if location is not specified, remove the constraint from thedisplay string
+        return new Point (x,y);
+    }
+
+    public void setLocation(Point location) {
+        DisplayString dps = getDisplayString();
+        
+        // if location is not specified, remove the constraint from the display string
         if (location == null) {
-            dps.resetPropertyValue(SubmoduleDisplayPropertySource.PROP_X);
-            dps.resetPropertyValue(SubmoduleDisplayPropertySource.PROP_Y);
+            dps.set(DisplayString.Prop.X, null);
+            dps.set(DisplayString.Prop.Y, null);
         } else { 
-            dps.setPropertyValue(SubmoduleDisplayPropertySource.PROP_X, location.x);
-            dps.setPropertyValue(SubmoduleDisplayPropertySource.PROP_Y, location.y);
+            dps.set(DisplayString.Prop.X, location.x);
+            dps.set(DisplayString.Prop.Y, location.y);
         }
 
-        setDisplayString(dps.getValue());
-	}
+        setDisplayString(dps);
+    }
 
-	public Dimension getSize() {
-        // FIXME get the propertysource from the model if it is already registered
-		SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(getDisplayString());
+    public Dimension getSize() {
+        DisplayString dps = getDisplayString();
 
-		return new Dimension(dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_W, -1),
-						     dps.getIntPropertyDef(SubmoduleDisplayPropertySource.PROP_H, -1));
-	}
+        return new Dimension(dps.getAsIntDef(DisplayString.Prop.WIDTH, -1),
+                             dps.getAsIntDef(DisplayString.Prop.HEIGHT, -1));
+    }
 
-	public void setSize(Dimension size) {
-        // FIXME get the propertysource from the model if it is already registered
-		SubmoduleDisplayPropertySource dps = new SubmoduleDisplayPropertySource(getDisplayString());
+    public void setSize(Dimension size) {
+        DisplayString dps = getDisplayString();
         
         // if the size is unspecified, remove the size constraint from the model
-		if (size == null || size.width < 0 ) 
-            dps.resetPropertyValue(SubmoduleDisplayPropertySource.PROP_W);
+        if (size == null || size.width < 0 ) 
+            dps.set(DisplayString.Prop.WIDTH, null);
         else
-            dps.setPropertyValue(SubmoduleDisplayPropertySource.PROP_W, size.width);
+            dps.set(DisplayString.Prop.WIDTH, size.width);
 
         // if the size is unspecified, remove the size constraint from the model
         if (size == null || size.height < 0) 
-            dps.resetPropertyValue(SubmoduleDisplayPropertySource.PROP_H);
+            dps.set(DisplayString.Prop.HEIGHT, null);
         else
-            dps.setPropertyValue(SubmoduleDisplayPropertySource.PROP_H, size.height);
+            dps.set(DisplayString.Prop.HEIGHT, size.height);
         
-		setDisplayString(dps.getValue());
-	}
+        setDisplayString(dps);
+    }
 
     @Override
     public String debugString() {

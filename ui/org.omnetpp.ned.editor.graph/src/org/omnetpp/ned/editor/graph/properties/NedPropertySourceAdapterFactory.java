@@ -2,6 +2,7 @@ package org.omnetpp.ned.editor.graph.properties;
 
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.ui.views.properties.IPropertySource;
+import org.omnetpp.ned.editor.graph.model.CompoundModuleNodeEx;
 import org.omnetpp.ned.editor.graph.model.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.NEDElement;
 

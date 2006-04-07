@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
+import org.omnetpp.ned2.model.DisplayString;
 
 /**
  * CompoundModule, Submodule model interface
@@ -27,12 +28,12 @@ public interface INedModule {
 	/**
 	 * Returns display string property, or null 
 	 */
-    public String getDisplayString();
+    public DisplayString getDisplayString();
 
 	/**
 	 * Sets the display string property 
 	 */
-    public void setDisplayString(String dspString);
+    public void setDisplayString(DisplayString dspString);
     
     /**
      * Returns connections whose "src" side is this component 

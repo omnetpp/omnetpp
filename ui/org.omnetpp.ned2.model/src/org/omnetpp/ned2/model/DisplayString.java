@@ -1,22 +1,133 @@
 package org.omnetpp.ned2.model;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.Vector;
 
+/**
+ * This class is responsible for parsing and creating display strings in the correct format.
+ * Defines all possible properties that can be used and also adds meta information to the 
+ * properties
+ * @author rhornig
+ *
+ */
+// FIXME default handling is still not ok. Block size etc is not defaults to -1 if left empty
 public class DisplayString {
 
-    // map that stores the currently available tags 
-    private LinkedHashMap<String, Tag> tagMap = new LinkedHashMap<String, Tag>();
+    // the argument types supported by the display string
+    public enum PropType { String, Integer, Color, Image }
 
-    public class Tag {
-        public final static String DEFAULT_VALUE = "";
-        private String name = DEFAULT_VALUE;
+    public enum Tag { p, b, i, is, i2, r, q, t, tt }
+    
+    // tag grouping 
+    public enum PropGroup {
+        Position, Shape, Image, Range, Text
+    }
+    // describes ALL possible tag values and arguments and adds additional info, 
+    // including type, tagname, position inside the tag and
+    // user readable name and description
+    public enum Prop {
+        X(Tag.p, 0, PropType.Integer , PropGroup.Position , "x", "X position of the module"),
+        Y(Tag.p, 1, PropType.Integer, PropGroup.Position, "y", "Y position of the module"),
+        LAYOUT(Tag.p, 2, PropType.String, PropGroup.Position, "layout", "Layouting algorithm. (row,r / column,col,c / matrix,m / ring,ri / exact,e,x)"),
+        LAYOUT_PAR1(Tag.p, 3, PropType.String, PropGroup.Position, "layout par1", "1st layout parameter"),
+        LAYOUT_PAR2(Tag.p, 4, PropType.String, PropGroup.Position, "layout par2", "2nd layout parameter"),
+        LAYOUT_PAR3(Tag.p, 5, PropType.String, PropGroup.Position, "layout par3", "3rd layout parameter"),
+        // B tag
+        WIDTH(Tag.b, 0, PropType.Integer, PropGroup.Position, "shape width", "Width of shape. Default: match the image size or shape height (-1)"),
+        HEIGHT(Tag.b, 1, PropType.Integer, PropGroup.Position, "shape height", "Height of shape. Default: match the image size or shape width (-1)"),
+        SHAPE(Tag.b, 2, PropType.String, PropGroup.Shape, "shape", "Shape of object (rect / rect2 / rrect / oval / tri / tri2 / hex / hex2). Default: rect"),
+        // former O tag
+        FILLCOL(Tag.b, 3, PropType.Color, PropGroup.Shape, "shape fill color", "Fill color of the shape. Default: light blue"),
+        BORDERCOL(Tag.b, 4, PropType.Color, PropGroup.Shape, "shape border color", "Border color of the shape. Default: black"),
+        BORDERWIDTH(Tag.b, 5, PropType.Integer, PropGroup.Shape, "shape border width", "Border width of the shape. Default: 2"),
+        // I tag
+        IMAGE(Tag.i, 0, PropType.Image, PropGroup.Image, "image", "An icon or image representing the object"),
+        IMAGECOLOR(Tag.i, 1, PropType.Color, PropGroup.Image, "image color", "A color to colorize the image"),
+        IMAGECOLORPCT(Tag.i, 2, PropType.Integer, PropGroup.Image, "image colorization", "Amount of colorization in percent"),
+        // IS tag
+        IMAGESIZE(Tag.is, 0, PropType.String, PropGroup.Image, "image size", "The size of the image (vs / s / l / vl)"),
+        // I2 tag
+        OVIMAGE(Tag.i2, 0, PropType.Image, PropGroup.Image, "overlay image", "An icon or image added to the upper rigt corner of the original image"),
+        OVIMAGECOLOR(Tag.i2, 1, PropType.Color, PropGroup.Image, "overlay image color", "A color to colorize the overlay image"),
+        OVIMAGECOLORPCT(Tag.i2, 2, PropType.Integer, PropGroup.Image, "overlay image colorization", "Amount of colorization in percent"),
+        // R tag
+        RANGE(Tag.r, 0, PropType.Integer, PropGroup.Range, "range", "Radius of the range indicator"),
+        RANGEFILLCOL(Tag.r, 1, PropType.Color, PropGroup.Range, "range fill color", "Fill color of the range indicator"),
+        RANGEBORDERCOL(Tag.r, 2, PropType.Color, PropGroup.Range, "range border color", "Border color of the range indicator. Default: black"),
+        RANGEBORDERWIDTH(Tag.r, 3, PropType.Integer, PropGroup.Range, "range border width", "Border width of the range indicator. Default: 1"),
+        // Q tag
+        QUEUE(Tag.q, 0, PropType.String, PropGroup.Text, "queue", "Queue name to display"),
+        // T tag
+        TEXT(Tag.t, 0, PropType.String, PropGroup.Text, "text", "Additional text to display"),
+        TEXTPOS(Tag.t, 1, PropType.String, PropGroup.Text, "text position", "Position of the text (l / r / t). Default: t"),
+        TEXTCOLOR(Tag.t, 2, PropType.Color, PropGroup.Text, "text color", "Color of the displayed text. Default: blue"),
+        // TT tag
+        TOOLTIP(Tag.tt, 0, PropType.String, PropGroup.Text, "tooltip", "Tooltip to be displayed over the object");
+        // end of tag definition
+        
+        // define additional metadata for the tags
+        private final Tag tag;
+        private final int pos;
+        private final PropType type;
+        private final PropGroup group;
+        private final String visibleName;
+        private final String visibleDesc;
+        
+        Prop(Tag tag, int tagPos, PropType argType, PropGroup tagGroup, 
+                String visibleName, String visibleDesc ) {
+            this.tag = tag;
+            this.pos = tagPos;
+            this.type = argType;
+            this.group = tagGroup;
+            this.visibleName = visibleName;
+            this.visibleDesc = visibleDesc;
+        }
+
+        public PropType getType() {
+            return type;
+        }
+
+        public Tag getTag() {
+            return tag;
+        }
+
+        public PropGroup getGroup() {
+            return group;
+        }
+
+        public int getPos() {
+            return pos;
+        }
+
+        public String getVisibleName() {
+            return visibleName;
+        }
+
+        public String getVisibleDesc() {
+            return visibleDesc;
+        }
+    } // end of TagArg enum definition
+    
+    // hold default values (if specified in derived calsses)
+    protected DisplayString variableDefaults = null; 
+    protected DisplayString emptyDefaults = null;
+
+    // map that stores the currently available tag instances 
+    private Map<String, TagInstance> tagMap = new LinkedHashMap<String, TagInstance>();
+
+    public class TagInstance {
+        public final static String EMPTY_VALUE = "";
+        public final static String NONE_VALUE = "-";
+        private String name = EMPTY_VALUE;
         private Vector<String> args = new Vector<String>(1);
 
         /**
          * Creates a tag by parsing the given string
          * @param tagString
          */
-        public Tag(String tagString) {
+        public TagInstance(String tagString) {
             if (tagString != null)
                 parseTag(tagString);
         }
@@ -31,11 +142,11 @@ public class DisplayString {
         /**
          * Returns a tag argument at the given position
          * @param pos
-         * @return The value os that position or <code>DEFAULT_VALUE</code> if does not exist 
+         * @return The value os that position or <code>EMPTY_VALUE</code> if does not exist 
          */
         public String getArg(int pos) {
             if (pos < 0 || pos >= args.size() || args.get(pos) == null) 
-                return DEFAULT_VALUE;
+                return EMPTY_VALUE;
             return args.get(pos);
         }
 
@@ -56,7 +167,7 @@ public class DisplayString {
          */
         public boolean isDefault() {
             for(String val : args)
-                if(val != null && !DEFAULT_VALUE.equals(val)) return false; 
+                if(val != null && !EMPTY_VALUE.equals(val)) return false; 
             return true;
         }
         
@@ -68,7 +179,7 @@ public class DisplayString {
             // check for the last non default value
             int endPos;
             for(endPos = args.size() - 1; endPos>0; endPos--)
-                if(args.get(endPos) != null && !DEFAULT_VALUE.equals(args.get(endPos))) break;
+                if(args.get(endPos) != null && !EMPTY_VALUE.equals(args.get(endPos))) break;
             // if there are unnecessary default values at the end, throw them away
             if(endPos < args.size() - 1) args.setSize(endPos + 1);
             
@@ -83,12 +194,12 @@ public class DisplayString {
         }
         
         /**
-         * @return the string representation of the tag or <code>DEFAULT_VALUE</code>
+         * @return the string representation of the tag or <code>EMPTY_VALUE</code>
          * if all the args are default
          */
         public String toString() {
             // return an empty string if all the values are default
-            if (isDefault()) return DEFAULT_VALUE;
+            if (isDefault()) return EMPTY_VALUE;
             return getName()+"="+getArgString();
         }
         
@@ -118,52 +229,92 @@ public class DisplayString {
 
     /**
      * Returns the value of the given tag on the given position
-     * @param tagName Tag to be checked
+     * @param tag TagInstance to be checked
      * @param pos Position (0 based)
-     * @return Tag arg's value or <code>DEFAULT_VALUE</code> if empty or <code>null</code> if tag does not exist at all 
+     * @return TagInstance arg's value or <code>EMPTY_VALUE</code> if empty 
+     * or <code>null</code> if tag does not exist at all 
      */
-    public String getTagArg(String tagName, int pos) {
-        Tag tag = getTag(tagName);
-        // if tag doesn't exsist return default value
-        if (tag == null) return null;
+    protected String getTagArg(Tag tag, int pos) {
+        TagInstance tagInst = getTag(tag);
+        // if tag doesn't exsist return null
+        if (tagInst == null) return null;
         // check for the value itself
-        String val = tag.getArg(pos);
-        if(val == null) val = Tag.DEFAULT_VALUE;
+        String val = tagInst.getArg(pos);
+        if(val == null) val = TagInstance.EMPTY_VALUE;
         return val;
     }
     
     /**
+     * @param tagName
+     * @param pos
+     * @param defaultDspStr generic defaults 
+     * @param defaultVariableDspStr defaults used if a variable is present at the location
+     * @return TagInstance arg's value or <code>EMPTY_VALUE</code> if empty and no default is defined 
+     * or <code>null</code> if tag does not exist at all 
+     */
+    protected String getTagArgUsingDefs(Tag tagName, int pos) {
+        TagInstance tag = getTag(tagName);
+        // if the tag does'nt exist do not apply any defaults 
+        if (tag == null) 
+            return null;
+        // get the value
+        String value = tag.getArg(pos);
+        if (variableDefaults !=null && value.startsWith("$"))
+            value = variableDefaults.getTagArg(tagName, pos);
+        // if tag was present, but the argument was empty, look for default values
+        if (emptyDefaults!=null && TagInstance.EMPTY_VALUE.equals(value))
+            value = emptyDefaults.getTagArg(tagName, pos);
+        // if no default was defined for this tag/argument return empty value
+        if (value == null) 
+            return TagInstance.EMPTY_VALUE;
+        
+        return value;
+    }
+
+    /**
      * Sets the value of a tag at a given position. Extends the tag vector if necessary
-     * @param tagName Name of the tag
+     * @param tag Name of the tag
      * @param pos Position to be updated (0 based)
      * @param newValue New value to be stored
      */
-    public void setTagArg(String tagName, int pos, String newValue) {
-        Tag tag = getTag(tagName);
+    protected void setTagArg(Tag tag, int pos, String newValue) {
+        TagInstance tagInstance = getTag(tag);
         // if the tag dos not exist add it to the map
-        if (tag == null) {
-            tag = new Tag(tagName);
-            tagMap.put(tagName, tag);
+        if (tagInstance == null) {
+            tagInstance = new TagInstance(tag.name());
+            tagMap.put(tag.name(), tagInstance);
         }
-        tag.setArg(pos, newValue);
+        tagInstance.setArg(pos, newValue);
     }
     
     /**
      * Returns the tag with a given name
-     * @param tagName equested tagname
+     * @param tag equested tagname
      * @return The requested tag or <code>NULL</code> if does not exist
      */
-    public Tag getTag(String tagName) {
-        return tagMap.get(tagName);
+    protected TagInstance getTag(Tag tag) {
+        return tagMap.get(tag.name());
     }
     
+    // parse the display string into tags along ;
+    private void parseString(String str) {
+        // tokenize along ;
+        Scanner scr = new Scanner(str);
+        scr.useDelimiter(";");
+        while (scr.hasNext()) {
+            TagInstance parsedTag = new TagInstance(scr.next().trim());
+            tagMap.put(parsedTag.getName(), parsedTag);
+        }
+
+    }
+
     /**
      * @return the full display string
      */
     public String toString() {
         StringBuffer sb = new StringBuffer(50);
         boolean firstTag = true;
-        for(Tag tag : tagMap.values()) {
+        for(TagInstance tag : tagMap.values()) {
             String tagVal = tag.toString();
             if(!tagVal.equals("")) {
                 if(firstTag) firstTag = false;
@@ -175,16 +326,64 @@ public class DisplayString {
         
         return sb.toString();
     }
-    
-    // parse the display string into tags along ;
-    private void parseString(String str) {
-        // tokenize along ;
-        Scanner scr = new Scanner(str);
-        scr.useDelimiter(";");
-        while (scr.hasNext()) {
-            Tag parsedTag = new Tag(scr.next().trim());
-            tagMap.put(parsedTag.getName(), parsedTag);
-        }
 
+    /**
+     * @param property
+     * @return Null if tag does not exist, TagInstance.EMPTY_VALUE if the value is empty or the property value itself
+     */
+    public String getAsString(Prop property) {
+        return getTagArg(property.tag, property.pos);
+    }
+
+    /**
+     * Returns the property value as an Integer
+     * @param property
+     * @return The value as Integer or 0 if value was empty or non number, 
+     *  and <code>null</code> if the tag was not present at all
+     */
+    public Integer getAsInteger(Prop property) {
+        String strVal = getAsString(property);
+        // if tag not present at all
+        if(strVal == null) return null;
+        try {
+            return Integer.valueOf(strVal);
+        } catch (NumberFormatException e) { }
+        return new Integer(0);
+    }
+
+    public String getAsStringDef(Prop property) {
+        return getTagArgUsingDefs(property.tag, property.pos);
+    }
+
+    public Integer getAsIntegerDef(Prop property) {
+        String strVal = getAsString(property);
+        // if tag not present at all
+        if(strVal == null) return null;
+        try {
+            return Integer.valueOf(strVal);
+        } catch (NumberFormatException e) { }
+        return new Integer(0);
+    }
+    
+    public int getAsIntDef(Prop propName, int defValue) {
+        int val = defValue;
+        try {
+            val = getAsIntegerDef(propName).intValue();
+        } catch (Exception e) {
+        }
+        return val;
+    }
+
+    /**
+     * Sets the specified property to the given value in the displaystring
+     * @param property Property to be set
+     * @param value 
+     */
+    public void set(Prop property, String value) {
+        setTagArg(property.tag, property.pos, value);
+    }
+
+    public void set(Prop property, int value) {
+        setTagArg(property.tag, property.pos, String.valueOf(value));
     }
 }
