@@ -39,6 +39,7 @@ public abstract class NewDocActionDelegate implements IWorkbenchWindowActionDele
 	 */
 	public void run(IAction action) {
 		// FIXME we ignore Action here -- shouldn't we?
+		// FIXME sometimes window is null and createNewFile() crashes
 		IFile file = ActionUtil.createNewFile(window, getNewFileName());
 		if (file==null) {
 			// TODO some error message or whatever

@@ -9,6 +9,10 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.ui.views.properties.IPropertySheetPage;
+import org.eclipse.ui.views.properties.IPropertySource;
+import org.eclipse.ui.views.properties.IPropertySourceProvider;
+import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.CategoryPlot;
@@ -27,10 +31,11 @@ import org.omnetpp.scave.model.ScalarDatasetStrategy;
  * Editor for scalar datasets.
  */
 public class ScalarChartEditor extends DatasetEditor {
-
+	
 	public ScalarChartEditor() {
 		super(new ScalarDatasetStrategy());
 	}
+	
 
 	/**
 	 * Creates the Chart page of the multi-page editor.
@@ -70,7 +75,7 @@ public class ScalarChartEditor extends DatasetEditor {
 
 		// create chart
 		JFreeChart jfreechart = ChartFactory.createBarChart3D(
-				"Scalars Chart", "Category", "Value",
+				"Title", "Category", "Value",
 				categorydataset, PlotOrientation.VERTICAL,
 				true, true, false);
 		CategoryPlot categoryplot = jfreechart.getCategoryPlot();
@@ -105,5 +110,27 @@ public class ScalarChartEditor extends DatasetEditor {
 			chart.getCategoryPlot().setDataset(ds);
 			chartWrapper.refresh();
 		}
+	}
+
+	public Object getAdapter(Class adapter)	{
+		/*if (adapter == IPropertySource.class)
+			return chartProps;
+		else*/ if (adapter == IPropertySheetPage.class)
+		{
+			PropertySheetPage page =  new PropertySheetPage();
+			page.setPropertySourceProvider(new IPropertySourceProvider() {
+				public IPropertySource getPropertySource(Object object) {
+					if (object instanceof IPropertySource)
+						return (IPropertySource)object;
+					else if (object == chartWrapper)
+						return new ChartProperties(chartWrapper);
+					else
+						return null;
+				}
+			});
+			return page;
+		}
+		else
+			return super.getAdapter(adapter);
 	}
 }

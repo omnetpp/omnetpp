@@ -12,6 +12,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -37,7 +41,6 @@ import org.eclipse.ui.part.EditorActionBarContributor;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
-
 import org.omnetpp.scave.charting.InteractiveChart;
 import org.omnetpp.scave.engine.File;
 import org.omnetpp.scave.engine.IDList;
@@ -128,6 +131,8 @@ public abstract class DatasetEditor extends MultiPageEditorPart implements IReso
 				markDirty();
 				updateChart();
 			}});
+		
+		getSite().setSelectionProvider(new SelectionProvider());
 	}
 
 	private IDList openDoc(IEditorInput editorInput) {
@@ -167,6 +172,7 @@ public abstract class DatasetEditor extends MultiPageEditorPart implements IReso
 	public void dispose() {
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
 		filterPanel.dispose();
+		getSite().setSelectionProvider(null);
 		super.dispose();
 	}
 
@@ -495,5 +501,28 @@ public abstract class DatasetEditor extends MultiPageEditorPart implements IReso
 
 		return actionBars.getStatusLineManager();
 	}
-
+	
+	class SelectionProvider implements ISelectionProvider
+	{
+		public SelectionProvider() {
+		}
+		
+		public void addSelectionChangedListener(ISelectionChangedListener listener) {
+			// TODO Auto-generated method stub
+		}
+	
+		public void removeSelectionChangedListener(ISelectionChangedListener listener) {
+			// TODO Auto-generated method stub
+		}
+	
+		public ISelection getSelection() {
+			if (chartWrapper != null)
+				return new StructuredSelection(chartWrapper);
+			else
+				return null;
+		}
+	
+		public void setSelection(ISelection selection) {
+		}
+	}
 }
