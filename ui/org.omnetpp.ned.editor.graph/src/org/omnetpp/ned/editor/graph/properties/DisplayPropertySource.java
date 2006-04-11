@@ -26,7 +26,7 @@ abstract public class DisplayPropertySource extends AbstractNedPropertySource {
     protected IPropertyDescriptor[] propertyDescArray = null;
     // by default supports all possible properties defined in DisplayString 
     protected EnumSet<DisplayString.Prop> supportedProperties 
-                  = EnumSet.allOf(DisplayString.Prop.class);
+                  = EnumSet.noneOf(DisplayString.Prop.class);
 
     public DisplayPropertySource(NEDElement model) {
         super(model);
@@ -87,87 +87,6 @@ abstract public class DisplayPropertySource extends AbstractNedPropertySource {
         return this.toString();
     }
 
-    /**
-     * @param propName
-     * @return Null if tag does not exist, TagInstance.EMPTY_VALUE if the value is empty or the property value itself
-     */
-//    public String getStringProperty(String propName) {
-//        IntDesc pd = getPropDescMap().get(propName);
-//        // unknown tag
-//        if(pd == null) return null;
-//
-//        return dispString.getTagArg(pd.tagName, pd.tagPos );
-//    }
-
-
-    /**
-     * Returns the property value as an Integer
-     * @param propName
-     * @return The value as Integer or 0 if value was empty or non number, 
-     *  and <code>null</code> if the tag was not present at all
-     */
-//    public Integer getIntegerProperty(String propName) {
-//        String strVal = getStringProperty(propName);
-//        // if tag not present at all
-//        if(strVal == null) return null;
-//        try {
-//            return Integer.valueOf(strVal);
-//        } catch (NumberFormatException e) { }
-//        return new Integer(0);
-//    }
-
-    // returns the tag value as string or the default value 
-//    public String getStringPropertyDef(String propName) {
-//        IntDesc pd = getPropDescMap().get(propName);
-//        // unknown tag
-//        if(pd == null) return null;
-//
-//        return dispString.getTagArgUsingDefs(pd.tagName, pd.tagPos );
-//    }
-    
-    /**
-     * @param prop
-     * @return The value of property as Integer / 
-     * the variableDefault if it is a variable ($var) / the global default value / 0 if no 
-     * defaults were specified / <code>null</code> if the tag itself does not exist 
-     */
-    // TODO move this to the DisplayString class (getTagArgAsIntUsingDef etc)
-//    public Integer getIntegerPropertyDef(String propName) {
-//        String strVal = getStringProperty(propName);
-//        // if tag not present at all
-//        if(strVal == null) return null;
-//        // check if this is a variable (starting with $) and use the variable deault set
-////        if(strVal.startsWith("$"))
-////            strVal = getVariableDefaults().getStringProperty(propName);
-//        
-//        // otherwise use the original one
-//        if (!DisplayString.TagInstance.EMPTY_VALUE.equals(strVal))
-//            try {
-//                return Integer.valueOf(strVal);
-//            } catch (NumberFormatException e) { 
-//                return new Integer(0); 
-//            }
-//        // look for 'empty' default value if no values were specified either in dispstring or as variable default
-////        strVal = getEmptyDefaults().getStringProperty(propName);
-//        // return 0 if no default defined
-//        if(strVal == null) return new Integer(0);
-//        try {
-//            return Integer.valueOf(strVal);
-//        } catch (NumberFormatException e) { }
-//        // return 0 if conversion was again unsuccessful
-//        return new Integer(0);
-//    }
-    
-
-//    public int getIntPropertyDef(String propName, int defValue) {
-//        int val = defValue;
-//        try {
-//            val = getIntegerPropertyDef(propName).intValue();
-//        } catch (Exception e) {
-//        }
-//        return val;
-//    }
-    
     // property request for property sheet
     public Object getPropertyValue(Object propObj) {
         DisplayString.Prop prop = (DisplayString.Prop)propObj;

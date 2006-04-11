@@ -3,15 +3,15 @@ package org.omnetpp.ned.editor.graph.properties;
 import java.util.EnumSet;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
-import org.omnetpp.ned.editor.graph.model.SubmoduleNodeEx;
+import org.omnetpp.ned.editor.graph.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.DisplayString;
 
-public class SubmoduleDisplayPropertySource extends DisplayPropertySource {
+public class ConnectionDisplayPropertySource extends DisplayPropertySource {
     protected static IPropertyDescriptor[] propertyDescArray;
-    protected SubmoduleNodeEx model;
+    protected ConnectionNodeEx model;
 
 
-    public SubmoduleDisplayPropertySource(SubmoduleNodeEx model) {
+    public ConnectionDisplayPropertySource(ConnectionNodeEx model) {
         super(model);
         this.model = model;
         setDisplayString(model.getDisplayString());

@@ -5,10 +5,8 @@ import java.util.List;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
-import org.omnetpp.ned.editor.graph.properties.SubmoduleDisplayPropertySource;
 import org.omnetpp.ned2.model.DisplayString;
 import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.DisplayString.Prop;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned2.model.pojo.ConnectionsNode;
 import org.omnetpp.ned2.model.pojo.SubmoduleNode;

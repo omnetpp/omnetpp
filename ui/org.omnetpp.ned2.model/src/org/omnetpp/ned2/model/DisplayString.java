@@ -18,11 +18,13 @@ public class DisplayString {
     // the argument types supported by the display string
     public enum PropType { String, Integer, Color, Image }
 
-    public enum Tag { p, b, i, is, i2, r, q, t, tt }
+    public enum Tag { p, b, i, is, i2, r, q, t, tt,  // submodule tags 
+                      bgp, bgb, bgi, bgtt, bgg,      // compound module background tags
+                      m, a, ls, bp }                 // connection tags
     
     // tag grouping 
     public enum PropGroup {
-        Position, Shape, Image, Range, Text
+        Position, Shape, Style, Image, Range, Text, Connection, Misc
     }
     // describes ALL possible tag values and arguments and adds additional info, 
     // including type, tagname, position inside the tag and
@@ -39,19 +41,19 @@ public class DisplayString {
         HEIGHT(Tag.b, 1, PropType.Integer, PropGroup.Position, "shape height", "Height of shape. Default: match the image size or shape width (-1)"),
         SHAPE(Tag.b, 2, PropType.String, PropGroup.Shape, "shape", "Shape of object (rect / rect2 / rrect / oval / tri / tri2 / hex / hex2). Default: rect"),
         // former O tag
-        FILLCOL(Tag.b, 3, PropType.Color, PropGroup.Shape, "shape fill color", "Fill color of the shape. Default: light blue"),
-        BORDERCOL(Tag.b, 4, PropType.Color, PropGroup.Shape, "shape border color", "Border color of the shape. Default: black"),
-        BORDERWIDTH(Tag.b, 5, PropType.Integer, PropGroup.Shape, "shape border width", "Border width of the shape. Default: 2"),
+        FILLCOL(Tag.b, 3, PropType.Color, PropGroup.Style, "shape fill color", "Fill color of the shape. Default: light blue"),
+        BORDERCOL(Tag.b, 4, PropType.Color, PropGroup.Style, "shape border color", "Border color of the shape. Default: black"),
+        BORDERWIDTH(Tag.b, 5, PropType.Integer, PropGroup.Style, "shape border width", "Border width of the shape. Default: 2"),
         // I tag
         IMAGE(Tag.i, 0, PropType.Image, PropGroup.Image, "image", "An icon or image representing the object"),
         IMAGECOLOR(Tag.i, 1, PropType.Color, PropGroup.Image, "image color", "A color to colorize the image"),
-        IMAGECOLORPCT(Tag.i, 2, PropType.Integer, PropGroup.Image, "image colorization", "Amount of colorization in percent"),
+        IMAGECOLORPCT(Tag.i, 2, PropType.Integer, PropGroup.Image, "image colorization", "Amount of colorization in percent Default: 30%"),
         // IS tag
         IMAGESIZE(Tag.is, 0, PropType.String, PropGroup.Image, "image size", "The size of the image (vs / s / l / vl)"),
         // I2 tag
         OVIMAGE(Tag.i2, 0, PropType.Image, PropGroup.Image, "overlay image", "An icon or image added to the upper rigt corner of the original image"),
         OVIMAGECOLOR(Tag.i2, 1, PropType.Color, PropGroup.Image, "overlay image color", "A color to colorize the overlay image"),
-        OVIMAGECOLORPCT(Tag.i2, 2, PropType.Integer, PropGroup.Image, "overlay image colorization", "Amount of colorization in percent"),
+        OVIMAGECOLORPCT(Tag.i2, 2, PropType.Integer, PropGroup.Image, "overlay image colorization", "Amount of colorization in percent Default: 30%"),
         // R tag
         RANGE(Tag.r, 0, PropType.Integer, PropGroup.Range, "range", "Radius of the range indicator"),
         RANGEFILLCOL(Tag.r, 1, PropType.Color, PropGroup.Range, "range fill color", "Fill color of the range indicator"),
@@ -64,7 +66,40 @@ public class DisplayString {
         TEXTPOS(Tag.t, 1, PropType.String, PropGroup.Text, "text position", "Position of the text (l / r / t). Default: t"),
         TEXTCOLOR(Tag.t, 2, PropType.Color, PropGroup.Text, "text color", "Color of the displayed text. Default: blue"),
         // TT tag
-        TOOLTIP(Tag.tt, 0, PropType.String, PropGroup.Text, "tooltip", "Tooltip to be displayed over the object");
+        TOOLTIP(Tag.tt, 0, PropType.String, PropGroup.Text, "tooltip", "Tooltip to be displayed over the object"),
+        // BGP tag
+        MODULE_X(Tag.bgp, 0, PropType.Integer, PropGroup.Position, "backgorund x", "Module background horizontal displacement"),
+        MODULE_Y(Tag.bgp, 1, PropType.Integer, PropGroup.Position, "backgorund y", "Module background vertical displacement"),
+        // BGB tag
+        MODULE_WIDTH(Tag.bgb, 0, PropType.Integer, PropGroup.Position, "shape width", "Width of shape. Default: match the image size or shape height (-1)"),
+        MODULE_HEIGHT(Tag.bgb, 1, PropType.Integer, PropGroup.Position, "shape height", "Height of shape. Default: match the image size or shape width (-1)"),
+        MODULE_FILLCOL(Tag.bgb, 2, PropType.Color, PropGroup.Style, "shape fill color", "Fill color of the shape. Default: light blue"),
+        MODULE_BORDERCOL(Tag.bgb, 3, PropType.Color, PropGroup.Style, "shape border color", "Border color of the shape. Default: black"),
+        MODULE_BORDERWIDTH(Tag.bgb, 4, PropType.Integer, PropGroup.Style, "shape border width", "Border width of the shape. Default: 2"),
+        // BGTT tag
+        MODULE_TOOLTIP(Tag.bgtt, 0, PropType.String, PropGroup.Text, "tooltip", "Tooltip to be displayed over the module's background"),
+        // BGI tag
+        BACKGROUND_IMAGE(Tag.bgi, 0, PropType.Image, PropGroup.Image, "image", "An image to be displayed as a module background"),
+        BACKGROUND_IMAGEARRANGEMENT(Tag.bgi, 1, PropType.String, PropGroup.Image, "arrangement", "How to arrange the module's background image (Tile / Scretch) Default: scretch"),
+        // BGG tag
+        BACKGROUND_GRID_X(Tag.bgg, 0, PropType.Integer, PropGroup.Misc, "grid x", "Horizontal grid division"),
+        BACKGROUND_GRID_Y(Tag.bgg, 1, PropType.Integer, PropGroup.Misc, "grid y", "Vertical grid division"),
+        // line / connection properties
+        ROUTING_MODE(Tag.m, 0, PropType.String, PropGroup.Connection, "routing", "Routing mode ([m]anual, manhatta[n], [s]hortestpath) Default: manual"),
+        ROUTING_CONSTRAINT(Tag.m, 1, PropType.String, PropGroup.Connection, "routing constraint", "possible constraints: ([s]outh, [n]orth, [e]ast, [w]est)"),
+        // a tag (anchoring)
+        ANCHOR_SRCX(Tag.a, 0, PropType.Integer, PropGroup.Position, "source anchor X", "Relative horizontal position of the anchor on the source module side"),
+        ANCHOR_SRCY(Tag.a, 1, PropType.Integer, PropGroup.Position, "source anchor Y", "Relative vertical position of the anchor on the source module side"),
+        ANCHOR_DSTX(Tag.a, 2, PropType.Integer, PropGroup.Position, "destination anchor X", "Relative horizontal position of the anchor on the destination module side"),
+        ANCHOR_DSTY(Tag.a, 3, PropType.Integer, PropGroup.Position, "destination anchor Y", "Relative vertical position of the anchor on the destination module side"),
+        // ls tag (line styling)
+        CONNECTION_COL(Tag.ls, 0, PropType.Color, PropGroup.Style, "color", "Connection color. Default: black"),
+        CONNECTION_WIDTH(Tag.ls, 1, PropType.Integer, PropGroup.Style, "line width", "Connection line width. Default: 1"),
+        CONNECTION_LINE(Tag.ls, 2, PropType.String, PropGroup.Style, "line style", "Connection line style ([s]olid, [d]otted). Default: solid"),
+        CONNECTION_SEGMENTS(Tag.ls, 3, PropType.String, PropGroup.Style, "segments", "Connection segmenets ([l]ine, [s]pline). Default: line"),
+        // bp tag (bendpoints)
+        BENDPOINT_X(Tag.bp, 0, PropType.Integer, PropGroup.Connection, "Bendpoint X", "Relative horizontal bendpoint location"),
+        BENDPOINT_Y(Tag.bp, 1, PropType.Integer, PropGroup.Connection, "Bendpoint Y", "Relative vertical bendpoint location");
         // end of tag definition
         
         // define additional metadata for the tags
@@ -356,7 +391,7 @@ public class DisplayString {
     }
 
     public Integer getAsIntegerDef(Prop property) {
-        String strVal = getAsString(property);
+        String strVal = getAsStringDef(property);
         // if tag not present at all
         if(strVal == null) return null;
         try {

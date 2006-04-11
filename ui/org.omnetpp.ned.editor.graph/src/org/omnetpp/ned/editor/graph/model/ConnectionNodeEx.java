@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.draw2d.Bendpoint;
+import org.omnetpp.ned2.model.ConnectionDisplayString;
+import org.omnetpp.ned2.model.DisplayString;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
 
-public class ConnectionNodeEx extends ConnectionNode {
+public class ConnectionNodeEx extends ConnectionNode implements IDisplayString {
 	private INedModule srcModuleRef;
 	private INedModule destModuleRef;
 
@@ -121,5 +123,23 @@ public class ConnectionNodeEx extends ConnectionNode {
 	public void setBendpoint(int index, Bendpoint bp) {
 		// TODO Implement this
 	}
+
+    public DisplayString getDisplayString() {
+        // TODO mabe we should cache the created DisplayString object for performance reasons?
+        NEDElement channelSpecNode = getFirstChildWithTag(NED_CHANNEL_SPEC);
+        if (channelSpecNode == null)
+            return null;
+        return new ConnectionDisplayString(NedElementExUtil.getDisplayString(channelSpecNode)); 
+    }
+    
+    public void setDisplayString(DisplayString dspString) {
+        // look for the channel spec block. If not present create it
+        NEDElement channelSpecNode = getFirstChildWithTag(NED_CHANNEL_SPEC);
+        if (channelSpecNode == null) {
+            channelSpecNode = NEDElementFactoryEx.getInstance().createNodeWithTag(NED_CHANNEL_SPEC);
+            appendChild(channelSpecNode);
+        }
+        NedElementExUtil.setDisplayString(channelSpecNode, dspString.toString());
+    }
 
 }

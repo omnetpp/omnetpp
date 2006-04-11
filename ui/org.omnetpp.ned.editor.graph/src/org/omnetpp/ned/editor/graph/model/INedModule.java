@@ -4,13 +4,12 @@ import java.util.List;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
-import org.omnetpp.ned2.model.DisplayString;
 
 /**
  * CompoundModule, Submodule model interface
  * @author rhornig
  */
-public interface INedModule {
+public interface INedModule extends IDisplayString {
 
     public final String ATT_SRC_CONNECTION = "srcConnection";
     public final String ATT_DEST_CONNECTION = "destConnection";
@@ -26,16 +25,6 @@ public interface INedModule {
     public void setName(String name);
 
 	/**
-	 * Returns display string property, or null 
-	 */
-    public DisplayString getDisplayString();
-
-	/**
-	 * Sets the display string property 
-	 */
-    public void setDisplayString(DisplayString dspString);
-    
-    /**
      * Returns connections whose "src" side is this component 
      * (ie this compound module or submodule; for others it returns
      * null.) 

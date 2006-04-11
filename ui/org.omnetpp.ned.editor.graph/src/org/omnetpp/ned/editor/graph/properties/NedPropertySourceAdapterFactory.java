@@ -3,6 +3,7 @@ package org.omnetpp.ned.editor.graph.properties;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.omnetpp.ned.editor.graph.model.CompoundModuleNodeEx;
+import org.omnetpp.ned.editor.graph.model.ConnectionNodeEx;
 import org.omnetpp.ned.editor.graph.model.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.NEDElement;
 
@@ -13,9 +14,6 @@ import org.omnetpp.ned2.model.NEDElement;
  */
 public  class NedPropertySourceAdapterFactory implements IAdapterFactory {
         private static String IPROPERTY_SOURCE_ADAPTER = "IPROPERTY_SOURCE_ADAPTER";
-        // TODO this method culd be optimized if we would store/cache the created adapter
-        // back into the NEDElement and create new one ONLY if no acapter is currently cached
-        // ie. NEDElement must have a setPropertySource, getPropertySource method.
         public Object getAdapter(Object model, Class adapterType) {
             // try to get the adapter from the model (if it was previously created)
             NEDElement nedModel = (NEDElement)model;
@@ -27,6 +25,12 @@ public  class NedPropertySourceAdapterFactory implements IAdapterFactory {
             if (nedModel instanceof SubmoduleNodeEx) 
                 adapter = new SubmodulePropertySource((SubmoduleNodeEx)nedModel);
             
+            if (nedModel instanceof CompoundModuleNodeEx) 
+                adapter = new CompoundModulePropertySource((CompoundModuleNodeEx)nedModel);
+
+            if (nedModel instanceof ConnectionNodeEx) 
+                adapter = new ConnectionPropertySource((ConnectionNodeEx)nedModel);
+
             // store the created adapter into the model so we can reuse it later
             if(adapter != null) 
                 nedModel.setUserData(IPROPERTY_SOURCE_ADAPTER, adapter);

@@ -10,6 +10,7 @@ import org.omnetpp.ned2.model.pojo.ChannelNode;
 import org.omnetpp.ned2.model.pojo.ChannelSpecNode;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned2.model.pojo.ConnectionGroupNode;
+import org.omnetpp.ned2.model.pojo.ConnectionNode;
 import org.omnetpp.ned2.model.pojo.ConnectionsNode;
 import org.omnetpp.ned2.model.pojo.LiteralNode;
 import org.omnetpp.ned2.model.pojo.ModuleInterfaceNode;
@@ -50,7 +51,7 @@ public class NedElementExUtil implements NEDElementTags, NEDElementUtil {
 			!(node instanceof SubmoduleNode) &&
 			!(node instanceof SimpleModuleNode) &&
 			!(node instanceof ModuleInterfaceNode) &&
-			!(node instanceof ChannelNode) &&
+            !(node instanceof ChannelNode) &&
 			!(node instanceof ChannelInterfaceNode) &&
 			!(node instanceof ChannelSpecNode))
 				throw new IllegalArgumentException("Node does not support display property");
