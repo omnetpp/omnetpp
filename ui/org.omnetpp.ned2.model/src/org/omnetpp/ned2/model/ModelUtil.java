@@ -58,17 +58,24 @@ public class ModelUtil {
 	 * @return null if there was an error during parsing.
 	 */
 	public static org.omnetpp.ned2.model.NEDElement loadNedSource(String fname) {
+        // parse NED using native code		
 		NEDErrorStore errors = new NEDErrorStore();
 		errors.setPrintToStderr(true); //XXX
 		NEDParser np = new NEDParser(errors);
 		np.setParseExpressions(false);
 		NEDElement treeRoot = np.parseNEDFile(fname);
-//		System.out.println(printSwigElementTree(treeRoot, ""));
-		
+		System.out.println(printSwigElementTree(treeRoot, ""));
 		if (treeRoot == null)
 			return null;
-		org.omnetpp.ned2.model.NEDElement tmpEl = swig2pojo(treeRoot, null);
-		return tmpEl;
+
+        // convert to plain Java -- ..Ex classes may thow exceptions in the meantime		
+		try {
+			org.omnetpp.ned2.model.NEDElement tmpEl = swig2pojo(treeRoot, null);
+			return tmpEl;
+		} catch (Exception e) {
+			e.printStackTrace(); //XXX
+			return null;
+		} 
 	}
 
 	/**
