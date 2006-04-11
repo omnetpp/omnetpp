@@ -64,8 +64,8 @@ public class ModelUtil {
 		NEDParser np = new NEDParser(errors);
 		np.setParseExpressions(false);
 		NEDElement treeRoot = np.parseNEDFile(fname);
-		System.out.println(printSwigElementTree(treeRoot, ""));
-		if (treeRoot == null)
+		//System.out.println(printSwigElementTree(treeRoot, ""));
+		if (treeRoot == null || !errors.empty())
 			return null;
 
         // convert to plain Java -- ..Ex classes may thow exceptions in the meantime		
