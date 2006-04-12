@@ -4,17 +4,20 @@ import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
 
 /**
- * The main plugin class to be used in the desktop.
+ * Plugin that manages background NED parsing and provides access to NED files' contents.
  */
-public class Activator extends Plugin {
+public class NEDResourcesPlugin extends Plugin {
 
-	//The shared instance.
-	private static Activator plugin;
+	// The shared instance.
+	private static NEDResourcesPlugin plugin;
+
+	// The actual NED cache
+	private NEDResources resources = new NEDResources();
 	
 	/**
 	 * The constructor.
 	 */
-	public Activator() {
+	public NEDResourcesPlugin() {
 		plugin = this;
 	}
 
@@ -35,11 +38,15 @@ public class Activator extends Plugin {
 
 	/**
 	 * Returns the shared instance.
-	 *
-	 * @return the shared instance.
 	 */
-	public static Activator getDefault() {
+	public static NEDResourcesPlugin getDefault() {
 		return plugin;
 	}
 
+	/**
+	 * Returns the NED file cache of the shared instance of the plugin
+	 */
+	public static NEDResources getNEDResources() {
+		return plugin.resources;
+	}
 }
