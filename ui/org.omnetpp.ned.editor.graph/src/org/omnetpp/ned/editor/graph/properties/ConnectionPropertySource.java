@@ -8,14 +8,14 @@ import org.omnetpp.ned2.model.SubmoduleDisplayString;
 
 public class ConnectionPropertySource extends AbstractNedPropertySource {
 
-    public static String PROP_NAME = "name"; //$NON-NLS-1$
-    public static String PROP_DISPLAY = "display"; //$NON-NLS-1$
     protected static IPropertyDescriptor[] descriptors;
     
+    public enum Prop { Channel, SrcModule, DestModule , Display }
+
     static {
-        PropertyDescriptor nameProp = new TextPropertyDescriptor(PROP_NAME, "Name");
-        PropertyDescriptor displayProp = new TextPropertyDescriptor(PROP_DISPLAY, "Display");
-        descriptors = new IPropertyDescriptor[] { nameProp, displayProp };
+        PropertyDescriptor channelProp = new TextPropertyDescriptor(Prop.Channel, "Channel");
+        PropertyDescriptor displayProp = new TextPropertyDescriptor(Prop.Display, "Display");
+        descriptors = new IPropertyDescriptor[] { channelProp, displayProp };
     }
 
     protected ConnectionNodeEx model;
@@ -40,10 +40,10 @@ public class ConnectionPropertySource extends AbstractNedPropertySource {
 
     @Override
     public Object getPropertyValue(Object propName) {
-        if (PROP_NAME.equals(propName)) { 
-            return model.toString(); 
+        if (Prop.Channel.equals(propName)) { 
+            return model.getChannelType(); 
         }
-        if (PROP_DISPLAY.equals(propName)) { 
+        if (Prop.Display.equals(propName)) { 
             return connectionDisplayPropertySource; 
         }
         return null;
@@ -51,29 +51,29 @@ public class ConnectionPropertySource extends AbstractNedPropertySource {
 
     @Override
     public void setPropertyValue(Object propName, Object value) {
-        if (PROP_NAME.equals(propName)) {
-//            model.setName(value.toString());
+        if (Prop.Channel.equals(propName)) {
+            model.setChannelType(value.toString());
         }
-        if (PROP_DISPLAY.equals(propName)) {
+        if (Prop.Display.equals(propName)) {
             model.setDisplayString(new SubmoduleDisplayString(value.toString()));
         }
     }
 
     @Override
     public boolean isPropertySet(Object propName) {
-        return PROP_NAME.equals(propName) || PROP_DISPLAY.equals(propName);
+        return Prop.Channel.equals(propName) || Prop.Display.equals(propName);
     }
 
     @Override
     public void resetPropertyValue(Object propName) {
-        if (PROP_DISPLAY.equals(propName)) {
+        if (Prop.Display.equals(propName)) {
             model.setDisplayString(null);
         }
     }
 
     @Override
     public boolean isPropertyResettable(Object propName) {
-        return PROP_DISPLAY.equals(propName);
+        return Prop.Display.equals(propName);
     }
 
 }

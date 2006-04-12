@@ -15,6 +15,7 @@ import org.omnetpp.ned2.model.pojo.ConnectionsNode;
 import org.omnetpp.ned2.model.pojo.LiteralNode;
 import org.omnetpp.ned2.model.pojo.ModuleInterfaceNode;
 import org.omnetpp.ned2.model.pojo.NEDElementTags;
+import org.omnetpp.ned2.model.pojo.ParametersNode;
 import org.omnetpp.ned2.model.pojo.PropertyKeyNode;
 import org.omnetpp.ned2.model.pojo.PropertyNode;
 import org.omnetpp.ned2.model.pojo.SimpleModuleNode;
@@ -24,8 +25,13 @@ public class NedElementExUtil implements NEDElementTags, NEDElementUtil {
 	public static final String DISPLAY_PROPERTY = "display";
 	
 	public static String getDisplayString(NEDElement node) {
-		// check all parameters
-		try {
+        // channel node is special. we have to look inside the channelSpec node for the display string
+        if (node instanceof ConnectionNode) {
+            NEDElement channelSpecNode = node.getFirstChildWithTag(NED_CHANNEL_SPEC);
+            node = channelSpecNode;
+        }
+
+        try {
 			for(NEDElement currElement : node.getFirstChildWithTag(NED_PARAMETERS))
 				if(currElement instanceof PropertyNode) {
 					PropertyNode currProp = (PropertyNode)currElement;
@@ -50,16 +56,31 @@ public class NedElementExUtil implements NEDElementTags, NEDElementUtil {
 		if (!(node instanceof CompoundModuleNode) &&
 			!(node instanceof SubmoduleNode) &&
 			!(node instanceof SimpleModuleNode) &&
-			!(node instanceof ModuleInterfaceNode) &&
+            !(node instanceof ModuleInterfaceNode) &&
+            !(node instanceof ConnectionNode) &&
             !(node instanceof ChannelNode) &&
 			!(node instanceof ChannelInterfaceNode) &&
 			!(node instanceof ChannelSpecNode))
 				throw new IllegalArgumentException("Node does not support display property");
 		
+        // the connection node is special because the display string is stored inside its 
+        // channel spec node, so we must create that too
+        if (node instanceof ConnectionNode) {
+            NEDElement channelSpecNode = node.getFirstChildWithTag(NED_CHANNEL_SPEC);
+            if (channelSpecNode == null) {
+                channelSpecNode = NEDElementFactoryEx.getInstance().createNodeWithTag(NED_CHANNEL_SPEC);
+                node.appendChild(channelSpecNode);
+            }
+            // use the new channel spec node as the container of display string
+            node = channelSpecNode;
+        }
+            
+        
 		// look for the parameters block (in therory it must be present)
 		NEDElement paramsNode = node.getFirstChildWithTag(NED_PARAMETERS);
 		if (paramsNode == null) {
 			paramsNode = NEDElementFactoryEx.getInstance().createNodeWithTag(NED_PARAMETERS);
+            ((ParametersNode)paramsNode).setIsImplicit(true);
 			node.appendChild(paramsNode);
 		}
 		
@@ -70,6 +91,12 @@ public class NedElementExUtil implements NEDElementTags, NEDElementUtil {
 			((PropertyNode)displayPropertyNode).setName(DISPLAY_PROPERTY);
 			paramsNode.appendChild(displayPropertyNode);
 		}
+
+        // if displayString was set to "" (empty) we want to delete the whole diaplay property node
+        if ("".equals(dspString)){
+            paramsNode.removeChild(displayPropertyNode);
+            return;
+        }
 		
 		// look for propertykey
 		NEDElement propertyKeyNode = displayPropertyNode.getFirstChildWithAttribute(NED_PROPERTY_KEY, PropertyKeyNode.ATT_KEY, ""); 

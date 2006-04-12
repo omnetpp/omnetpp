@@ -7,6 +7,7 @@ import org.eclipse.draw2d.Bendpoint;
 import org.omnetpp.ned2.model.ConnectionDisplayString;
 import org.omnetpp.ned2.model.DisplayString;
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.pojo.ChannelSpecNode;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
 
 public class ConnectionNodeEx extends ConnectionNode implements IDisplayString {
@@ -126,20 +127,27 @@ public class ConnectionNodeEx extends ConnectionNode implements IDisplayString {
 
     public DisplayString getDisplayString() {
         // TODO mabe we should cache the created DisplayString object for performance reasons?
-        NEDElement channelSpecNode = getFirstChildWithTag(NED_CHANNEL_SPEC);
-        if (channelSpecNode == null)
-            return null;
-        return new ConnectionDisplayString(NedElementExUtil.getDisplayString(channelSpecNode)); 
+        return new ConnectionDisplayString(NedElementExUtil.getDisplayString(this)); 
     }
     
     public void setDisplayString(DisplayString dspString) {
-        // look for the channel spec block. If not present create it
-        NEDElement channelSpecNode = getFirstChildWithTag(NED_CHANNEL_SPEC);
-        if (channelSpecNode == null) {
-            channelSpecNode = NEDElementFactoryEx.getInstance().createNodeWithTag(NED_CHANNEL_SPEC);
-            appendChild(channelSpecNode);
-        }
-        NedElementExUtil.setDisplayString(channelSpecNode, dspString.toString());
+        NedElementExUtil.setDisplayString(this, dspString.toString());
     }
 
+    public String getChannelType() {
+        ChannelSpecNode channelSpecNode = (ChannelSpecNode)getFirstChildWithTag(NED_CHANNEL_SPEC);
+        if(channelSpecNode == null) 
+            return "";
+        
+        return channelSpecNode.getType();
+    }
+    
+    public void setChannelType(String type) {
+        ChannelSpecNode channelSpecNode = (ChannelSpecNode)getFirstChildWithTag(NED_CHANNEL_SPEC);
+            if (channelSpecNode == null) {
+                channelSpecNode = (ChannelSpecNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NED_CHANNEL_SPEC);
+                appendChild(channelSpecNode);
+            }
+            channelSpecNode.setType(type);
+    }
 }
