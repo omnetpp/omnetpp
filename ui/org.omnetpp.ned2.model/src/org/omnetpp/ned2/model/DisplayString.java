@@ -19,7 +19,7 @@ public class DisplayString {
     public enum PropType { String, Integer, Color, Image }
 
     public enum Tag { p, b, i, is, i2, r, q, t, tt,  // submodule tags 
-                      bgp, bgb, bgi, bgtt, bgg,      // compound module background tags
+                      bgp, bgb, bgi, bgtt, bgg, bgs, // compound module background tags
                       m, a, ls, bp }                 // connection tags
     
     // tag grouping 
@@ -30,6 +30,8 @@ public class DisplayString {
     // including type, tagname, position inside the tag and
     // user readable name and description
     public enum Prop {
+        // SUBMODULE / SIMPLEMODULE propeties
+        // do not change the first and last element of the property group
         X(Tag.p, 0, PropType.Integer , PropGroup.Position , "x", "X position of the module"),
         Y(Tag.p, 1, PropType.Integer, PropGroup.Position, "y", "Y position of the module"),
         LAYOUT(Tag.p, 2, PropType.String, PropGroup.Position, "layout", "Layouting algorithm. (row,r / column,col,c / matrix,m / ring,ri / exact,e,x)"),
@@ -67,7 +69,11 @@ public class DisplayString {
         TEXTCOLOR(Tag.t, 2, PropType.Color, PropGroup.Text, "text color", "Color of the displayed text. Default: blue"),
         // TT tag
         TOOLTIP(Tag.tt, 0, PropType.String, PropGroup.Text, "tooltip", "Tooltip to be displayed over the object"),
+        // END of SUB/SIMPLE MODULE properties
+
+        // START of COMPOUNDMODULE properties
         // BGP tag
+        // do not change the first and last element of the property group
         MODULE_X(Tag.bgp, 0, PropType.Integer, PropGroup.Position, "backgorund x", "Module background horizontal displacement"),
         MODULE_Y(Tag.bgp, 1, PropType.Integer, PropGroup.Position, "backgorund y", "Module background vertical displacement"),
         // BGB tag
@@ -79,12 +85,21 @@ public class DisplayString {
         // BGTT tag
         MODULE_TOOLTIP(Tag.bgtt, 0, PropType.String, PropGroup.Text, "tooltip", "Tooltip to be displayed over the module's background"),
         // BGI tag
-        BACKGROUND_IMAGE(Tag.bgi, 0, PropType.Image, PropGroup.Image, "image", "An image to be displayed as a module background"),
-        BACKGROUND_IMAGEARRANGEMENT(Tag.bgi, 1, PropType.String, PropGroup.Image, "arrangement", "How to arrange the module's background image (Tile / Scretch) Default: scretch"),
+        MODULE_IMAGE(Tag.bgi, 0, PropType.Image, PropGroup.Image, "image", "An image to be displayed as a module background"),
+        MODULE_IMAGEARRANGEMENT(Tag.bgi, 1, PropType.String, PropGroup.Image, "arrangement", "How to arrange the module's background image (Tile / Scretch) Default: scretch"),
         // BGG tag
-        BACKGROUND_GRID_X(Tag.bgg, 0, PropType.Integer, PropGroup.Misc, "grid x", "Horizontal grid division"),
-        BACKGROUND_GRID_Y(Tag.bgg, 1, PropType.Integer, PropGroup.Misc, "grid y", "Vertical grid division"),
-        // line / connection properties
+        MODULE_MAXTICKDISTANCE(Tag.bgg, 0, PropType.Integer, PropGroup.Misc, "grid tick distance", "Maximum distance between two ticks measured in pixels"),
+        MODULE_TICKNUMBER(Tag.bgg, 1, PropType.Integer, PropGroup.Misc, "grid tick number", "Number of minor ticks between two major one"),
+        MODULE_GRIDCOL(Tag.bgg, 3, PropType.Color, PropGroup.Style, "grid color", "Color of grid"),
+        // module scaling mixel per unit
+        MODULE_X_SCALE(Tag.bgs, 0, PropType.Integer, PropGroup.Misc, "X scaling", "Number of horizontal pixels per unit"),
+        MODULE_X_UNIT(Tag.bgs, 1, PropType.String, PropGroup.Text, "X unit", "Name of horizontal unit"),
+        MODULE_Y_SCALE(Tag.bgs, 2, PropType.Integer, PropGroup.Misc, "vertical scale", "Number of vertical pixels per unit"),
+        MODULE_Y_UNIT(Tag.bgs, 3, PropType.String, PropGroup.Text, "Y unit", "Name of vertical unit"),
+        // END of COMPOUNDMODULE properties
+        
+        // START of CONNECTION properties
+        // do not change the first and last element of the property group
         ROUTING_MODE(Tag.m, 0, PropType.String, PropGroup.Connection, "routing", "Routing mode ([m]anual, manhatta[n], [s]hortestpath) Default: manual"),
         ROUTING_CONSTRAINT(Tag.m, 1, PropType.String, PropGroup.Connection, "routing constraint", "possible constraints: ([s]outh, [n]orth, [e]ast, [w]est)"),
         // a tag (anchoring)
@@ -100,6 +115,7 @@ public class DisplayString {
         // bp tag (bendpoints)
         BENDPOINT_X(Tag.bp, 0, PropType.Integer, PropGroup.Connection, "Bendpoint X", "Relative horizontal bendpoint location"),
         BENDPOINT_Y(Tag.bp, 1, PropType.Integer, PropGroup.Connection, "Bendpoint Y", "Relative vertical bendpoint location");
+        // END of CONNECTION properties
         // end of tag definition
         
         // define additional metadata for the tags

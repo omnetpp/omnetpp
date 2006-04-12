@@ -15,7 +15,8 @@ public class SubmoduleDisplayPropertySource extends DisplayPropertySource {
         super(model);
         this.model = model;
         setDisplayString(model.getDisplayString());
-        supportedProperties = EnumSet.allOf(DisplayString.Prop.class);
+        supportedProperties = EnumSet.range(DisplayString.Prop.X, 
+                                            DisplayString.Prop.TOOLTIP);
     }
 
     @Override
