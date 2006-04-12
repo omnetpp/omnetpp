@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+
+   <extension
+         id="nedbuilder"
+         name="OMNeT++ NED Builder"
+         point="org.eclipse.core.resources.builders">
+      <builder
+            hasNature="true">
+         <run
+               class="org.omnetpp.resources.builder.NEDBuilder">
+         </run>
+      </builder>
+   </extension>
+   <extension
+         id="nednature"
+         name="OMNeT++ NED Nature"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="org.omnetpp.resources.builder.NEDNature">
+         </run>
+      </runtime>
+      <builder
+            id="org.omnetpp.resources.nedbuilder">
+      </builder>
+   </extension>
+   <extension
+         id="xmlProblem"
+         name="XML Problem"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+   </extension>
+
+</plugin>
