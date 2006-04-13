@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
-
    <extension
          id="nedbuilder"
          name="OMNeT++ NED Builder"
@@ -26,16 +25,4 @@
             id="org.omnetpp.resources.nedbuilder">
       </builder>
    </extension>
-   <extension
-         id="xmlProblem"
-         name="XML Problem"
-         point="org.eclipse.core.resources.markers">
-      <super
-            type="org.eclipse.core.resources.problemmarker">
-      </super>
-      <persistent
-            value="true">
-      </persistent>
-   </extension>
-
 </plugin>

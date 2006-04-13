@@ -13,6 +13,12 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
+/**
+ * Parses NED files in the background.
+ *
+ * Configured in plugin.xml to run if project has org.omnetpp.nednature nature set in .project.
+ * (Wizard has to set it on new OMNeT++ projects)
+ */
 public class NEDBuilder extends IncrementalProjectBuilder {
 
 	public static final String BUILDER_ID = "org.omnetpp.resources.nedbuilder";
@@ -74,6 +80,7 @@ public class NEDBuilder extends IncrementalProjectBuilder {
 	}
 
 	void handleResourceChange(IResource resource) {
+		// XXX should only regard files within a folder designated as "source folder" (persistent attribute!)
 		if (resource instanceof IFile && resource.getName().endsWith(".ned")) {
 			IFile file = (IFile) resource;
 			NEDResourcesPlugin.getNEDResources().readNEDFile(file);

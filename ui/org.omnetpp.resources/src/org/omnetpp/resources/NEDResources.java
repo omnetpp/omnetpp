@@ -4,12 +4,9 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.omnetpp.ned2.model.ModelUtil;
 import org.omnetpp.ned2.model.NEDElement;
@@ -21,18 +18,17 @@ import org.omnetpp.ned2.model.pojo.SimpleModuleNode;
 
 /**
  * Parses all NED files in the workspace and makes them available
- * for other plugins for consistence checks among NED files etc. 
+ * for other plugins for consistence checks among NED files etc.
+ *  
+ * Its readNEDFile(IFile file) method gets invoked by NEDBuilder.
  * 
- * XXX should this be an IncrementalProjectBuilder ?
- * XXX should use AbstractDocumentProvider for NED files editing? 
+ * XXX should use AbstractDocumentProvider for NED files editing? see DocumentProviderRegistry ? 
  * XXX display error markers in the Explorer view: see org.eclipse.jdt.ui.ProblemsLabelDecorator
  * XXX too many get() methods -- see which ones are actually needed...
  *
  * @author andras
  */
 public class NEDResources {
-
-	public static String NED_FILE_EXTENSION = "ned";
 
 	// stores parsed contents of NED files
 	private Hashtable<IFile, NEDElement> nedFiles = new Hashtable<IFile, NEDElement>();
@@ -140,36 +136,36 @@ public class NEDResources {
 		return components.get(name);
 	}
 	
+//	public void reread() {
+//		nedFiles.clear();
+//		components.clear();
+//    	IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+//    	iterateResourceContainer(workspaceRoot);
+//    }
+//
+//	private void iterateResourceContainer(IContainer parent) {
+//		try {
+//			for (IResource res : parent.members()) {
+//				if (res instanceof IContainer) {
+//					//System.out.println("container: "+res);
+//					iterateResourceContainer((IContainer)res);
+//				}
+//				else if (res instanceof IFile) {
+//					IFile file = (IFile)res;
+//					if (NED_FILE_EXTENSION.equals(file.getFileExtension())) {
+//						readNEDFile(file);
+//					}
+//				}
+//			}
+//		} catch (CoreException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
+
 	/**
-	 * Traverse workspace and parse all NED files again
+	 * Gets called from incremental builder 
 	 */
-	public void reread() {
-		nedFiles.clear();
-		components.clear();
-    	IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-    	iterateResourceContainer(workspaceRoot);
-    }
-
-	private void iterateResourceContainer(IContainer parent) {
-		try {
-			for (IResource res : parent.members()) {
-				if (res instanceof IContainer) {
-					//System.out.println("container: "+res);
-					iterateResourceContainer((IContainer)res);
-				}
-				else if (res instanceof IFile) {
-					IFile file = (IFile)res;
-					if (NED_FILE_EXTENSION.equals(file.getFileExtension())) {
-						readNEDFile(file);
-					}
-				}
-			}
-		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
 	public void readNEDFile(IFile file) {
 		// read NED file textually, and store it
 		//String text = readFile(file);
