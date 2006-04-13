@@ -5,8 +5,8 @@ import java.util.List;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.INedContainer;
-import org.omnetpp.ned.editor.graph.model.INedModule;
+import org.omnetpp.ned2.model.INedContainer;
+import org.omnetpp.ned2.model.INedModule;
 import org.omnetpp.ned2.model.NEDElement;
 
 /**

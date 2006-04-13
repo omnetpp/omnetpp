@@ -3,9 +3,9 @@ package org.omnetpp.ned.editor.graph.properties;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
-import org.omnetpp.ned.editor.graph.model.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.SubmoduleDisplayString;
+import org.omnetpp.ned2.model.SubmoduleNodeEx;
 
 public class SubmodulePropertySource extends AbstractNedPropertySource {
 

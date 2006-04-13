@@ -3,7 +3,7 @@ package org.omnetpp.ned.editor.graph.properties;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
-import org.omnetpp.ned.editor.graph.model.ConnectionNodeEx;
+import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.SubmoduleDisplayString;
 
 public class ConnectionPropertySource extends AbstractNedPropertySource {

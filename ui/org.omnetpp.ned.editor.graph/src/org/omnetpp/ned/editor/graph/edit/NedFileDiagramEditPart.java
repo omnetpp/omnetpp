@@ -38,7 +38,7 @@ import org.eclipse.gef.tools.MarqueeDragTracker;
 import org.eclipse.swt.SWT;
 import org.omnetpp.ned.editor.graph.edit.policies.CompoundModuleLayoutEditPolicy;
 import org.omnetpp.ned.editor.graph.misc.FreeformDesktopLayout;
-import org.omnetpp.ned.editor.graph.model.NedFileNodeEx;
+import org.omnetpp.ned2.model.NedFileNodeEx;
 
 /**
  * Holds all other NedEditParts under this. It is activated by

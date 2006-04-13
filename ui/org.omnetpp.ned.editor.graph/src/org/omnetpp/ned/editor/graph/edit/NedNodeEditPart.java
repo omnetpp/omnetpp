@@ -22,9 +22,9 @@ import org.omnetpp.ned.editor.graph.figures.properties.DisplayShapeSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayTooltipSupport;
 import org.omnetpp.ned.editor.graph.misc.ColorFactory;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
-import org.omnetpp.ned.editor.graph.model.INedModule;
 import org.omnetpp.ned.editor.graph.properties.SubmoduleDisplayPropertySource;
 import org.omnetpp.ned2.model.DisplayString;
+import org.omnetpp.ned2.model.INedModule;
 import org.omnetpp.ned2.model.DisplayString.Prop;
 
 /**

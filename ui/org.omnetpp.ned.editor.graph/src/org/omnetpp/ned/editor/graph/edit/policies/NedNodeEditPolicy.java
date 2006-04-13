@@ -10,11 +10,11 @@ import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
 import org.omnetpp.ned.editor.graph.edit.NedNodeEditPart;
 import org.omnetpp.ned.editor.graph.figures.NedFigure;
-import org.omnetpp.ned.editor.graph.model.ConnectionNodeEx;
-import org.omnetpp.ned.editor.graph.model.INedModule;
-import org.omnetpp.ned.editor.graph.model.NEDElementFactoryEx;
-import org.omnetpp.ned.editor.graph.model.NedElementExUtil;
 import org.omnetpp.ned.editor.graph.model.commands.ConnectionCommand;
+import org.omnetpp.ned2.model.ConnectionNodeEx;
+import org.omnetpp.ned2.model.INedModule;
+import org.omnetpp.ned2.model.NEDElementFactoryEx;
+import org.omnetpp.ned2.model.NedElementExUtil;
 
 public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
 

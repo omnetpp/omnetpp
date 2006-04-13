@@ -1,8 +1,8 @@
 package org.omnetpp.ned.editor.graph.model.commands;
 
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.omnetpp.ned.editor.graph.model.INedContainer;
-import org.omnetpp.ned.editor.graph.model.INedModule;
+import org.omnetpp.ned2.model.INedContainer;
+import org.omnetpp.ned2.model.INedModule;
 
 /**
  * Adds a newly created element to the model

@@ -3,7 +3,7 @@ package org.omnetpp.ned.editor.graph.properties;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
-import org.omnetpp.ned.editor.graph.model.CompoundModuleNodeEx;
+import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.SubmoduleDisplayString;
 
 public class CompoundModulePropertySource extends AbstractNedPropertySource {

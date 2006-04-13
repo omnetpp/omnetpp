@@ -8,9 +8,9 @@ import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.editpolicies.ContainerEditPolicy;
 import org.eclipse.gef.requests.CreateRequest;
 import org.eclipse.gef.requests.GroupRequest;
-import org.omnetpp.ned.editor.graph.model.INedContainer;
-import org.omnetpp.ned.editor.graph.model.INedModule;
 import org.omnetpp.ned.editor.graph.model.commands.OrphanChildCommand;
+import org.omnetpp.ned2.model.INedContainer;
+import org.omnetpp.ned2.model.INedModule;
 
 public class NedContainerEditPolicy extends ContainerEditPolicy {
 

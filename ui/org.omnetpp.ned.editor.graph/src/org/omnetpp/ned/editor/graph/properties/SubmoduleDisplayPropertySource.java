@@ -3,8 +3,8 @@ package org.omnetpp.ned.editor.graph.properties;
 import java.util.EnumSet;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
-import org.omnetpp.ned.editor.graph.model.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.DisplayString;
+import org.omnetpp.ned2.model.SubmoduleNodeEx;
 
 public class SubmoduleDisplayPropertySource extends DisplayPropertySource {
     protected static IPropertyDescriptor[] propertyDescArray;

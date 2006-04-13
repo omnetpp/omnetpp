@@ -3,7 +3,7 @@ package org.omnetpp.ned.editor.graph.model.commands;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.omnetpp.ned.editor.graph.model.INedModule;
+import org.omnetpp.ned2.model.INedModule;
 
 /**
  * Change the size and location of the element

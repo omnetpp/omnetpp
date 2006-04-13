@@ -23,8 +23,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.eclipse.ui.ide.IDE;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.NEDElementFactoryEx;
-import org.omnetpp.ned.editor.graph.model.NedFileNodeEx;
+import org.omnetpp.ned2.model.NEDElementFactoryEx;
+import org.omnetpp.ned2.model.NedFileNodeEx;
 import org.omnetpp.ned2.model.pojo.NEDElementTags;
 
 public class ModuleCreationWizardPage1 extends WizardNewFileCreationPage

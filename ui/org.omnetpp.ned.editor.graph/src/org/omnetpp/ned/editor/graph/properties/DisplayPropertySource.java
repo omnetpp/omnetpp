@@ -36,7 +36,7 @@ abstract public class DisplayPropertySource extends AbstractNedPropertySource {
      * @param prop The property we want a descriptor for
      * @return The property descriptor used for the property
      */
-    protected IPropertyDescriptor getPropertyDescriptor(DisplayString.Prop prop) {
+    public static IPropertyDescriptor getPropertyDescriptor(DisplayString.Prop prop) {
         // TODO we need separate property descriptors for integers and the Images
         PropertyDescriptor pdesc;
         if(prop.getType() == DisplayString.PropType.String)

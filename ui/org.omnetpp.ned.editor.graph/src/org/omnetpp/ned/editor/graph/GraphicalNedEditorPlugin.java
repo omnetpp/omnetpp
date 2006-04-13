@@ -22,11 +22,11 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.ned.editor.graph.misc.ImageFactory;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
-import org.omnetpp.ned.editor.graph.model.CompoundModuleNodeEx;
-import org.omnetpp.ned.editor.graph.model.NEDElementFactoryEx;
-import org.omnetpp.ned.editor.graph.model.SubmoduleNodeEx;
 import org.omnetpp.ned.editor.graph.properties.NedPropertySourceAdapterFactory;
+import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.NEDElementFactoryEx;
+import org.omnetpp.ned2.model.SubmoduleNodeEx;
 
 public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
 
@@ -40,8 +40,6 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
             singleton = this;
         }
         
-        // initialize the model factory
-   		NEDElementFactoryEx.setInstance(new NEDElementFactoryEx());
         // initialize the model's property srcModule factory
         Platform.getAdapterManager().registerAdapters(new NedPropertySourceAdapterFactory(), 
                                                       NEDElement.class);

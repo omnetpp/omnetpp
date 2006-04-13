@@ -1,7 +1,7 @@
 package org.omnetpp.ned.editor.graph.model.commands;
 
-import org.omnetpp.ned.editor.graph.model.INedContainer;
-import org.omnetpp.ned.editor.graph.model.INedModule;
+import org.omnetpp.ned2.model.INedContainer;
+import org.omnetpp.ned2.model.INedModule;
 
 /**
  * This command adds a child element to a container model element 

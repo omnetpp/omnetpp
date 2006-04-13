@@ -2,10 +2,10 @@ package org.omnetpp.ned.editor.graph.edit;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;
-import org.omnetpp.ned.editor.graph.model.CompoundModuleNodeEx;
-import org.omnetpp.ned.editor.graph.model.ConnectionNodeEx;
-import org.omnetpp.ned.editor.graph.model.NedFileNodeEx;
-import org.omnetpp.ned.editor.graph.model.SubmoduleNodeEx;
+import org.omnetpp.ned2.model.CompoundModuleNodeEx;
+import org.omnetpp.ned2.model.ConnectionNodeEx;
+import org.omnetpp.ned2.model.NedFileNodeEx;
+import org.omnetpp.ned2.model.SubmoduleNodeEx;
 
 public class NedEditPartFactory implements EditPartFactory {
 

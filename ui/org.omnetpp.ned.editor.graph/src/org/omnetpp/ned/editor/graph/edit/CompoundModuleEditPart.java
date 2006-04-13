@@ -25,7 +25,7 @@ import org.eclipse.gef.editpolicies.SnapFeedbackPolicy;
 import org.eclipse.gef.rulers.RulerProvider;
 import org.omnetpp.ned.editor.graph.edit.policies.CompoundModuleLayoutEditPolicy;
 import org.omnetpp.ned.editor.graph.figures.ModuleFigure;
-import org.omnetpp.ned.editor.graph.model.CompoundModuleNodeEx;
+import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 
 public class CompoundModuleEditPart extends NedNodeEditPart {
 
