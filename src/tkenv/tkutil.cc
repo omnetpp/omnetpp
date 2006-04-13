@@ -110,7 +110,7 @@ void setObjectListResult(Tcl_Interp *interp, cCollectObjectsVisitor *visitor)
    int n = visitor->getArraySize();
    cObject **objs = visitor->getArray();
    const int ptrsize = 21; // one ptr should be max 20 chars (good for even 64bit-ptrs)
-   char *buf = Tcl_Alloc(ptrsize*n);
+   char *buf = Tcl_Alloc(ptrsize*n+1);
    char *s=buf;
    for (int i=0; i<n; i++)
    {
