@@ -11,6 +11,7 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.omnetpp.resources.NEDResources;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
 /**
@@ -18,6 +19,8 @@ import org.omnetpp.resources.NEDResourcesPlugin;
  *
  * Configured in plugin.xml to run if project has org.omnetpp.nednature nature set in .project.
  * (Wizard has to set it on new OMNeT++ projects)
+ * 
+ * XXX What if a NED file gets deleted? do we handle that correctly?
  */
 public class NEDBuilder extends IncrementalProjectBuilder {
 
@@ -80,10 +83,9 @@ public class NEDBuilder extends IncrementalProjectBuilder {
 	}
 
 	void handleResourceChange(IResource resource) {
-		// XXX should only regard files within a folder designated as "source folder" (persistent attribute!)
-		if (resource instanceof IFile && resource.getName().endsWith(".ned")) {
-			IFile file = (IFile) resource;
-			NEDResourcesPlugin.getNEDResources().readNEDFile(file);
+		NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
+		if (nedResources.isNEDFile(resource)) {
+			nedResources.readNEDFile((IFile) resource);
 		}
 	}
 

@@ -1,13 +1,16 @@
 package org.omnetpp.resources;
 
 import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.ui.texteditor.DocumentProviderRegistry;
+import org.eclipse.ui.texteditor.IDocumentProvider;
+import org.eclipse.ui.texteditor.IElementStateListener;
 import org.omnetpp.ned2.model.ModelUtil;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
@@ -31,25 +34,24 @@ import org.omnetpp.ned2.model.pojo.SimpleModuleNode;
 public class NEDResources {
 
 	// stores parsed contents of NED files
-	private Hashtable<IFile, NEDElement> nedFiles = new Hashtable<IFile, NEDElement>();
-
-	// stores textual contents of NED files
-	private Hashtable<IFile, String> nedSources = new Hashtable<IFile, String>();
+	private HashMap<IFile, NEDElement> nedFiles = new HashMap<IFile, NEDElement>();
 
 	// table of toplevel components (points into nedFiles trees)
-	private Hashtable<String, NEDElement> components = new Hashtable<String, NEDElement>();
+	private HashMap<String, NEDElement> components = new HashMap<String, NEDElement>();
+	private HashMap<String, IFile> componentFiles = new HashMap<String, IFile>();
 
-	// table of toplevel components, classified (points into nedFiles trees)
-	private Hashtable<String, NEDElement> modules = new Hashtable<String, NEDElement>();
-	private Hashtable<String, NEDElement> channels = new Hashtable<String, NEDElement>();
-	private Hashtable<String, NEDElement> moduleInterfaces = new Hashtable<String, NEDElement>();
-	private Hashtable<String, NEDElement> channelInterfaces = new Hashtable<String, NEDElement>();
+	// tables of toplevel components, classified (points into nedFiles trees)
+    boolean needsRehash = false;  // if tables below need to be rebuilt
+	private HashMap<String, NEDElement> modules = new HashMap<String, NEDElement>();
+	private HashMap<String, NEDElement> channels = new HashMap<String, NEDElement>();
+	private HashMap<String, NEDElement> moduleInterfaces = new HashMap<String, NEDElement>();
+	private HashMap<String, NEDElement> channelInterfaces = new HashMap<String, NEDElement>();
 
 	/**
 	 * Returns NED files in the workspace.
 	 */
-	public Enumeration<IFile> getNEDFiles() {
-		return nedSources.keys();
+	public Set<IFile> getNEDFiles() {
+		return nedFiles.keySet();
 	}
 
 	/**
@@ -60,16 +62,11 @@ public class NEDResources {
 	}
 
 	/**
-	 * Returns a textual contents of NED file
-	 */
-	public String getNEDFileSource(IFile file) {
-		return nedSources.get(file);
-	}
-
-	/**
 	 * Returns all components in the NED files.
 	 */
 	public Collection<NEDElement> getAllComponents() {
+		if (needsRehash)
+			rehash();
 		return components.values();
 	}
 
@@ -77,6 +74,8 @@ public class NEDResources {
 	 * Returns all simple and compound modules in the NED files.
 	 */
 	public Collection<NEDElement> getModules() {
+		if (needsRehash)
+			rehash();
 		return modules.values();
 	}
 
@@ -84,6 +83,8 @@ public class NEDResources {
 	 * Returns all channels in the NED files.
 	 */
 	public Collection<NEDElement> getChannels() {
+		if (needsRehash)
+			rehash();
 		return channels.values();
 	}
 
@@ -91,6 +92,8 @@ public class NEDResources {
 	 * Returns all module interfaces in the NED files.
 	 */
 	public Collection<NEDElement> getModuleInterfaces() {
+		if (needsRehash)
+			rehash();
 		return moduleInterfaces.values();
 	}
 
@@ -98,78 +101,70 @@ public class NEDResources {
 	 * Returns all channel interfaces in the NED files.
 	 */
 	public Collection<NEDElement> getChannelInterfaces() {
+		if (needsRehash)
+			rehash();
 		return channelInterfaces.values();
 	}
 
 	/**
 	 * Returns all module names in the NED files.
 	 */
-	public Enumeration<String> getModuleNames() {
-		return modules.keys();
+	public Set<String> getModuleNames() {
+		if (needsRehash)
+			rehash();
+		return modules.keySet();
 	}
 
 	/**
 	 * Returns all channel names in the NED files.
 	 */
-	public Enumeration<String> getChannelNames() {
-		return channels.keys();
+	public Set<String> getChannelNames() {
+		if (needsRehash)
+			rehash();
+		return channels.keySet();
 	}
 
 	/**
 	 * Returns all module interface names in the NED files.
 	 */
-	public Enumeration<String> getModuleInterfaceNames() {
-		return moduleInterfaces.keys();
+	public Set<String> getModuleInterfaceNames() {
+		if (needsRehash)
+			rehash();
+		return moduleInterfaces.keySet();
 	}
 
 	/**
 	 * Returns all channel interface names in the NED files.
 	 */
-	public Enumeration<String> getChannelInterfaceNames() {
-		return channelInterfaces.keys();
+	public Set<String> getChannelInterfaceNames() {
+		if (needsRehash)
+			rehash();
+		return channelInterfaces.keySet();
 	}
 
 	/**
 	 * Returns a component by name.
 	 */
 	public NEDElement getComponent(String name) {
+		if (needsRehash)
+			rehash();
 		return components.get(name);
 	}
-	
-//	public void reread() {
-//		nedFiles.clear();
-//		components.clear();
-//    	IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-//    	iterateResourceContainer(workspaceRoot);
-//    }
-//
-//	private void iterateResourceContainer(IContainer parent) {
-//		try {
-//			for (IResource res : parent.members()) {
-//				if (res instanceof IContainer) {
-//					//System.out.println("container: "+res);
-//					iterateResourceContainer((IContainer)res);
-//				}
-//				else if (res instanceof IFile) {
-//					IFile file = (IFile)res;
-//					if (NED_FILE_EXTENSION.equals(file.getFileExtension())) {
-//						readNEDFile(file);
-//					}
-//				}
-//			}
-//		} catch (CoreException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
+
+	/**
+	 *
+	 */
+	public boolean isNEDFile(Object element) {
+		// XXX should only regard files within a folder designated as "source folder" (persistent attribute!)
+		return element instanceof IFile && ((IFile) element).getFileExtension().equals("ned"); // XXX hardcoded constant
+	}
 
 	/**
 	 * Gets called from incremental builder 
 	 */
 	public void readNEDFile(IFile file) {
-		// read NED file textually, and store it
-		//String text = readFile(file);
-		
+		// XXX check if it's in documentprovider
+
 		// parse the NED file and put it into the hash table
 		System.out.println("parsing nedfile: "+file);
 		String fileName = file.getLocation().toFile().getPath();
@@ -178,24 +173,23 @@ public class NEDResources {
 			System.out.println(" ERROR");
 
 			try {
-				// XXX experimental: adds an entry to the Problems view
 				file.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ZERO);
 				addMarker(file, IMarker.SEVERITY_ERROR, "cannot parse", 1); //XXX refine
 			} catch (CoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.out.println("EXCEPTION: "+e.getMessage()); //XXX
+				//e.printStackTrace();
 			}
+			forgetNEDFile(file);
 		}
 		else {
 			System.out.println(" stored");
 			try {
 				file.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ZERO);
-				addMarker(file, IMarker.SEVERITY_INFO, "parsed fine!!!", 1); //XXX refine
+				addMarker(file, IMarker.SEVERITY_INFO, "parsed fine!!!", 1); //XXX remove
 			} catch (CoreException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			insertNEDFile(file, tree);
+			storeNEDFileContents(file, tree);
 		}
 	}
 
@@ -208,36 +202,58 @@ public class NEDResources {
 		}
 	}
 
-	private void insertNEDFile(IFile file, NEDElement tree) {
+	private void forgetNEDFile(IFile file) {
+		nedFiles.remove(file);
+		needsRehash = true;
+	}
+
+	private void storeNEDFileContents(IFile file, NEDElement tree) {
 		// store NED file contents
 		nedFiles.put(file, tree);
-		
-		// find toplevel components in the file, and put them into tables
-		for (NEDElement node : tree) {
-			String name = null;
-			if (node instanceof ChannelNode) {
-				name = ((ChannelNode)node).getName();
-				channels.put(name, node);
-			}
-			else if (node instanceof ChannelInterfaceNode) {
-				name = ((ChannelInterfaceNode)node).getName();
-				channelInterfaces.put(name, node);
-			}
-			else if (node instanceof SimpleModuleNode) {
-				name = ((SimpleModuleNode)node).getName();
-				modules.put(name, node);
-			}
-			else if (node instanceof CompoundModuleNode) {
-				name = ((CompoundModuleNode)node).getName();
-				modules.put(name, node);
-			}
-			else if (node instanceof ModuleInterfaceNode) {
-				name = ((ModuleInterfaceNode)node).getName();
-				moduleInterfaces.put(name, node);
-			}
+		needsRehash = true;
+	}
+ 
+	protected void rehash() {
+		// Rebuild hashtables after NED files change
+		components.clear();
+		componentFiles.clear();
+		channels.clear();
+		channelInterfaces.clear();
+		modules.clear();
+		moduleInterfaces.clear();
 
-			if (name!=null)
-				components.put(name, node);
+		// find toplevel components in each file, and register them
+		for (IFile file : nedFiles.keySet()) {
+            NEDElement tree = nedFiles.get(file);
+            for (NEDElement node : tree) {
+            	String name = null;
+            	if (node instanceof ChannelNode) {
+            		name = ((ChannelNode)node).getName();
+            		channels.put(name, node);
+            	}
+            	else if (node instanceof ChannelInterfaceNode) {
+            		name = ((ChannelInterfaceNode)node).getName();
+            		channelInterfaces.put(name, node);
+            	}
+            	else if (node instanceof SimpleModuleNode) {
+            		name = ((SimpleModuleNode)node).getName();
+            		modules.put(name, node);
+            	}
+            	else if (node instanceof CompoundModuleNode) {
+            		name = ((CompoundModuleNode)node).getName();
+            		modules.put(name, node);
+            	}
+            	else if (node instanceof ModuleInterfaceNode) {
+            		name = ((ModuleInterfaceNode)node).getName();
+            		moduleInterfaces.put(name, node);
+            	}
+
+            	if (name!=null) {
+            		components.put(name, node);
+            		componentFiles.put(name, file);  // XXX warn about duplicates
+            	}
+ 			}
 		}
+		needsRehash = false;
 	}
 }
