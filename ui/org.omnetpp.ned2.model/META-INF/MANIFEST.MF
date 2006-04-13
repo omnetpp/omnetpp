@@ -9,4 +9,8 @@ Bundle-Localization: plugin
 Export-Package: org.omnetpp.ned2.model,
  org.omnetpp.ned2.model.pojo,
  org.omnetpp.ned2.model.swig
-Require-Bundle: org.eclipse.core.runtime
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui,
+ org.eclipse.draw2d
+Eclipse-LazyStart: true
+Bundle-Activator: org.omnetpp.ned2.model.NEDModelPlugin
