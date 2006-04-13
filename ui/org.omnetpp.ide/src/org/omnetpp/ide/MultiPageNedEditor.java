@@ -14,9 +14,9 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
-import org.omnetpp.ned.editor.graph.model.NedFileNodeEx;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned2.model.ModelUtil;
+import org.omnetpp.ned2.model.NedFileNodeEx;
 
 public class MultiPageNedEditor extends MultiPageEditorPart implements
 		IResourceChangeListener {
