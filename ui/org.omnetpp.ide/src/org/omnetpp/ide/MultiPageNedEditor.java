@@ -33,7 +33,9 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 	public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
 		super.init(site, editorInput);
 		setPartName(editorInput.getName());
-        // XXX error message if editorInput is not FileEditorInput
+        if (!(editorInput instanceof IFileEditorInput))
+            throw new PartInitException("Invalid input type!");
+        
         NEDResourcesPlugin.getNEDResources().connect(((IFileEditorInput)editorInput).getFile());
 	}
 	
