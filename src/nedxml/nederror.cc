@@ -19,12 +19,13 @@
 #include "nederror.h"
 
 
-void NEDErrorStore::doAdd(NEDElement *context, int category, const char *message)
+void NEDErrorStore::doAdd(NEDElement *context, const char *loc, int category, const char *message)
 {
     entries.push_back(Entry());
     Entry& e = entries.back();
 
-    const char *loc = context ? context->getSourceLocation() : NULL;
+    if (!loc && context)
+        loc = context->getSourceLocation();
 
     e.location = loc ? loc : "";
     e.category = category;
@@ -49,7 +50,7 @@ void NEDErrorStore::add(NEDElement *context, const char *message, ...)
     vsprintf(messagebuf,message,va);
     va_end(va);
 
-    doAdd(context, ERRCAT_ERROR, messagebuf);
+    doAdd(context, NULL, ERRCAT_ERROR, messagebuf);
 }
 
 void NEDErrorStore::add(NEDElement *context, int category, const char *message, ...)
@@ -60,7 +61,18 @@ void NEDErrorStore::add(NEDElement *context, int category, const char *message, 
     vsprintf(messagebuf,message,va);
     va_end(va);
 
-    doAdd(context, category, messagebuf);
+    doAdd(context, NULL, category, messagebuf);
+}
+
+void NEDErrorStore::add(int category, const char *location, const char *message, ...)
+{
+    va_list va;
+    va_start(va, message);
+    char messagebuf[1024];
+    vsprintf(messagebuf,message,va);
+    va_end(va);
+
+    doAdd(NULL, location, category, messagebuf);
 }
 
 const char *NEDErrorStore::errorCategory(int i) const

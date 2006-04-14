@@ -38,7 +38,7 @@ class NEDErrorStore
         bool doprint;
 
      private:
-        void doAdd(NEDElement *context, int category, const char *message);
+        void doAdd(NEDElement *context, const char *loc, int category, const char *message);
 
      public:
         /**
@@ -61,6 +61,11 @@ class NEDErrorStore
          * Add an error message.
          */
         void add(NEDElement *context, int category, const char *message, ...);
+
+        /**
+         * Add an error message.
+         */
+        void add(int category, const char *location, const char *message, ...);
 
         /**
          * Return true if there're no messages stored.

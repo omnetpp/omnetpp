@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <sstream>
 
 #include "nedparser.h"
 #include "nedfilebuffer.h"
@@ -172,6 +173,8 @@ bool NEDParser::guessIsNEDInNewSyntax(const char *txt)
 
 void NEDParser::error(const char *msg, int line)
 {
-    errors->add(NULL, "%s:%d: %s", filename, line, msg);
+    std::stringstream os;
+    os << filename << ":" << line;
+    errors->add(NULL, os.str().c_str(), "%s", msg);
 }
 

@@ -38,8 +38,8 @@ class cISPEventLogger : public cNullMessageProtocol
   protected:
     // stores one external event, as needed for the ISP algorithm
     struct ExternalEvent {
-        simtime_t t;    // time of event
-        int srcProcId;  // origin of event
+        simtime_t t;      // time of event
+        short srcProcId;  // origin of event
     };
     FILE *fout;  // the event log file
 
