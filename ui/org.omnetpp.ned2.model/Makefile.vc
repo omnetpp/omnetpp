@@ -40,9 +40,12 @@ JMODELDIR = src\$(JMODELPKG:.=\)
 #
 # Targets
 #
-default: nedxml_engine.dll javaclasses
+default: genjava runswig nedxml_engine.dll
 
-nedxml_wrap.cxx: nedxml.i $(HEADERS)
+genjava:
+	perl etc/dtdclassgen.pl $(OMNETPP_ROOT)/doc/ned2/ned2.dtd $(BASEPKG) $(JMODELPKG) $(JMODELDIR)
+
+runswig:
 	-del $(SWIGDIR)\*.java >nul
 	$(SWIG) -c++ -java -package $(SWIGPKG) -I$(NEDXML) -outdir $(SWIGDIR) nedxml.i
 
@@ -55,9 +58,6 @@ depend:
 clean:
 	-del engine_wrap.cxx *.obj *.exp *.lib $(JMODELDIR)\*.java $(SWIGDIR)\*.java nedxml_engine.dll 2> nul
 	-del *.ilk *.idb *.pdb *.pch 2> nul
-
-javaclasses:
-	perl etc/dtdclassgen.pl $(OMNETPP_ROOT)/doc/ned2/ned2.dtd $(BASEPKG) $(JMODELPKG) $(JMODELDIR)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

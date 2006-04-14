@@ -38,9 +38,9 @@ public class ModelUtil {
 	 * @param source source code as string
 	 * @return null if there was an error during parsing.
 	 */
-	public static org.omnetpp.ned2.model.NEDElement parseNedSource(String source) {
-		NEDErrorStore errors = new NEDErrorStore();
-		errors.setPrintToStderr(true); //XXX just for debugging
+	public static org.omnetpp.ned2.model.NEDElement parseNedSource(String source, NEDErrorStore errors) {
+		//XXX NEDErrorStore errors = new NEDErrorStore();
+		//XXX errors.setPrintToStderr(true);
 		NEDParser np = new NEDParser(errors);
 		np.setParseExpressions(false);
 		NEDElement treeRoot = np.parseNEDText(source); // TODO check NEDErrorStore for errors
@@ -57,10 +57,10 @@ public class ModelUtil {
 	 * @param fname file name
 	 * @return null if there was an error during parsing.
 	 */
-	public static org.omnetpp.ned2.model.NEDElement loadNedSource(String fname) {
+	public static org.omnetpp.ned2.model.NEDElement loadNedSource(String fname, NEDErrorStore errors) {
         // parse NED using native code		
-		NEDErrorStore errors = new NEDErrorStore();
-		errors.setPrintToStderr(true); //XXX
+		//XXX NEDErrorStore errors = new NEDErrorStore();
+		//XXX errors.setPrintToStderr(true);
 		NEDParser np = new NEDParser(errors);
 		np.setParseExpressions(false);
 		NEDElement treeRoot = np.parseNEDFile(fname);
@@ -80,7 +80,7 @@ public class ModelUtil {
 
 	/**
 	 * Converts a native C++ (SWIG-wrapped) NEDElement tree to a plain java tree.  
-	 * WARNING there are two differenet NEDElement types hadled in this function. 
+	 * WARNING there are two different NEDElement types hadled in this function. 
 	 */
 	public static org.omnetpp.ned2.model.NEDElement swig2pojo(NEDElement swigNode, org.omnetpp.ned2.model.NEDElement parent) {
 		org.omnetpp.ned2.model.NEDElement pojoNode = NEDElementFactory.getInstance() 
