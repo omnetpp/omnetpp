@@ -116,7 +116,8 @@ public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
 
 	@Override
 	public IReconciler getReconciler(ISourceViewer sourceViewer) {
-		// based on: JavaSourceViewerConfiguration.getReconciler() in JDT which
+		// Installs background NED parsing.
+		// Based on: JavaSourceViewerConfiguration.getReconciler() in JDT which
 		// creates and configures JavaReconciler; than in turn will eventually
 		// result in calls to org.eclipse.jdt.internal.compiler.parser.Parser.
 		MonoReconciler reconciler = new MonoReconciler(new NEDReconcileStrategy(editor), true);

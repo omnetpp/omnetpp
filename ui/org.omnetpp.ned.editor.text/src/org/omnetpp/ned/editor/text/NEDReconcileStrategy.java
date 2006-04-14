@@ -10,6 +10,10 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
+/**
+ * This class has one instance per NED editor, and performs 
+ * background NED parsing.
+ */
 public class NEDReconcileStrategy implements IReconcilingStrategy {
 
 	private IEditorPart editor= null; // because NEDResourcesPlugin needs IFile!
@@ -33,6 +37,8 @@ public class NEDReconcileStrategy implements IReconcilingStrategy {
 		Assert.isTrue(editor.getEditorInput() instanceof IFileEditorInput); // NEDEditor only accepts file input
 		IFile file = ((IFileEditorInput)editor.getEditorInput()).getFile();
 		String nedtext = document.get();
+
+		// perform parsing (of full text, we ignore the changed region)
 		NEDResourcesPlugin.getNEDResources().setNEDFileContents(file, nedtext);
 	}
 
