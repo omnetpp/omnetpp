@@ -1,5 +1,6 @@
 package org.omnetpp.ide;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -8,68 +9,68 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned2.model.ModelUtil;
 import org.omnetpp.ned2.model.NedFileNodeEx;
+import org.omnetpp.resources.NEDResourcesPlugin;
 
 public class MultiPageNedEditor extends MultiPageEditorPart implements
 		IResourceChangeListener {
 
-	private GraphicalNedEditor graphEditor;
+    private GraphicalNedEditor graphEditor;
 	private TextualNedEditor nedEditor;
 	private int graphPageIndex;
 	private int textPageIndex;
 	private boolean insidePageChange = false;
+    private boolean initPhase = true;
 	
 	public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
 		super.init(site, editorInput);
 		setPartName(editorInput.getName());
+        // XXX error message if editorInput is not FileEditorInput
+        NEDResourcesPlugin.getNEDResources().connect(((IFileEditorInput)editorInput).getFile());
 	}
 	
-	// open ned file and parse it to crate the document model
-	private NedFileNodeEx loadDoc(IEditorInput editorInput) {
-		IFileEditorInput fileInput = (IFileEditorInput)editorInput;
-		try {
-			// FIXME do it simpler if possible
-			String filename = fileInput.getFile().getLocation().toFile().getPath();
-			return (NedFileNodeEx)ModelUtil.loadNedSource(filename);
-		} catch (Exception e) {
-			MessageDialog.openError(new Shell(), "Error opening file",
-					"Error opening file "+fileInput.getName()+": "+e.getMessage());
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
+    @Override
+    public void dispose() {
+        super.dispose();
+        NEDResourcesPlugin.getNEDResources().disconnect(((IFileEditorInput)getEditorInput()).getFile());
+    }
+
 	@Override
 	protected void createPages() {
 		graphEditor = new GraphicalNedEditor();
         graphEditor.setEmbeddingEditor(this);
 		nedEditor = new TextualNedEditor();
-		
+        IFile ifile = ((FileEditorInput)getEditorInput()).getFile();
+        
 		try {
-			// fill graphical editor
-			// load and parse the editor's input ned file
-			NedFileNodeEx modelRoot = loadDoc(getEditorInput());
-			graphEditor.setModel(modelRoot);
-			graphPageIndex = addPage(graphEditor, getEditorInput());
-			setPageText(graphPageIndex,"Graphical");
+            // fill graphical editor
+            NedFileNodeEx modelRoot = 
+                (NedFileNodeEx)NEDResourcesPlugin.getNEDResources().getNEDFileContents(ifile);
+            graphEditor.setModel(modelRoot);
 
-			// fill text editor
-			textPageIndex = addPage(nedEditor, getEditorInput());
-			setPageText(textPageIndex,"Text");
-			// don't fill the text editor, because the graph editor is the default one
+            // fill text editor
+            graphPageIndex = addPage(graphEditor, getEditorInput());
+            setPageText(graphPageIndex,"Graphical");
+
+            textPageIndex = addPage(nedEditor, getEditorInput());
+            setPageText(textPageIndex,"Text");
+
+            if (modelRoot != null)
+                setActivePage(graphPageIndex);
+            
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+        initPhase = false;
 	}
 	
 	@Override
@@ -85,18 +86,31 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 			// switch from graphics to text:
 			// generate text representation from the model
 			NedFileNodeEx modelRoot = graphEditor.getModel();
-			String textEditorContent = ModelUtil.generateNedSource(modelRoot, false);
-			// put it into the text editor
-			nedEditor.setText(textEditorContent);
+            IFile ifile = ((FileEditorInput)getEditorInput()).getFile();
+            
+            // put the acual model state back to the incremental builder
+            NEDResourcesPlugin.getNEDResources().setNEDFileContents(ifile, modelRoot);
+            
+            // generate the text representation
+            String textEditorContent = ModelUtil.generateNedSource(modelRoot, false);
+            // put it into the text editor
+            nedEditor.setText(textEditorContent);
 		} 
 		else if (newPageIndex == graphPageIndex) { 
 			// switch from text to graphics
-			NedFileNodeEx modelRoot = (NedFileNodeEx)ModelUtil.parseNedSource(nedEditor.getText());
-			if (modelRoot!=null) {
+            IFile ifile = ((FileEditorInput)getEditorInput()).getFile();
+            NEDResourcesPlugin.getNEDResources().setNEDFileContents(ifile, nedEditor.getText());
+
+            NedFileNodeEx modelRoot = 
+                (NedFileNodeEx)NEDResourcesPlugin.getNEDResources().getNEDFileContents(ifile);
+			
+            if (modelRoot != null) {
 				// give the backparsed model to the graphical editor 
 				graphEditor.setModel(modelRoot);
 			}
-			else {
+            // 
+			else if (!initPhase) {
+                // this happens when the parsing was unsuccessful when we wanted to switch from text to graph mode
 				// parse error: switch back immediately to text view (we should never have 
 				// switched away from it in the first place)
 				setActivePage(textPageIndex);
@@ -112,7 +126,10 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 		        if (buttonID==SWT.YES) {
 					setActivePage(graphPageIndex);
 		        }
-			}
+			} else {
+                // parsing error occured during the initial file loading
+                setActivePage(textPageIndex);
+            }
 		}
 		insidePageChange = false;
 	}
@@ -144,8 +161,8 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 	}
 
 	public void resourceChanged(IResourceChangeEvent event) {
-		// TODO Auto-generated method stub
-
+		// TODO implement content ReGet from the incremental builder
+        // or close the editor if the file was deleted
 	}
 
 }

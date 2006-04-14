@@ -10,6 +10,8 @@ import org.omnetpp.ned2.model.SubmoduleNodeEx;
 public class NedEditPartFactory implements EditPartFactory {
 
     public EditPart createEditPart(EditPart context, Object model) {
+        if (model == null) return null;
+
         EditPart child = null;
 
         if (model instanceof NedFileNodeEx) 
@@ -21,7 +23,7 @@ public class NedEditPartFactory implements EditPartFactory {
         else if (model instanceof ConnectionNodeEx)
             child = new WireEditPart();
         else
-        	System.out.println("Unknown model element: " + model.toString());
+                System.out.println("Unknown model element: " + model.toString());
         child.setModel(model);
         return child;
     }
