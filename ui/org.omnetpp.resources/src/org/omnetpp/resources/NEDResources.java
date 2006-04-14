@@ -3,6 +3,7 @@ package org.omnetpp.resources;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -15,6 +16,7 @@ import org.omnetpp.ned2.model.pojo.ChannelNode;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned2.model.pojo.ModuleInterfaceNode;
 import org.omnetpp.ned2.model.pojo.SimpleModuleNode;
+import org.omnetpp.ned2.model.swig.NEDErrorStore;
 
 /**
  * Parses all NED files in the workspace and makes them available
@@ -184,19 +186,13 @@ public class NEDResources {
 	 */
 	public void setNEDFileContents(IFile file, String text) {
 		// parse the NED text and put it into the hash table
-		// XXX this is a copy/paste of code in readNEDFile() -- factor out common part! 
 		System.out.println("parsing ned text for file "+file);
-		NEDElement tree = ModelUtil.parseNedSource(text);
+		NEDErrorStore errors = new NEDErrorStore();
+		//errors.setPrintToStderr(true);
+		NEDElement tree = ModelUtil.parseNedSource(text, errors);
 		if (tree==null) {
 			System.out.println(" ERROR");
-
-			try {
-				file.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ZERO);
-				addMarker(file, IMarker.SEVERITY_ERROR, "cannot parse editor contents", 1); //XXX refine
-			} catch (CoreException e) {
-				System.out.println("EXCEPTION: "+e.getMessage()); //XXX
-				//e.printStackTrace();
-			}
+            convertErrorsToMarkers(file, errors);
 			forgetNEDFile(file);
 		}
 		else {
@@ -229,17 +225,12 @@ public class NEDResources {
 		// parse the NED file and put it into the hash table
 		System.out.println("parsing nedfile: "+file);
 		String fileName = file.getLocation().toFile().getPath();
-		NEDElement tree = ModelUtil.loadNedSource(fileName);
+		NEDErrorStore errors = new NEDErrorStore();
+		//errors.setPrintToStderr(true);
+		NEDElement tree = ModelUtil.loadNedSource(fileName, errors);
 		if (tree==null) {
 			System.out.println(" ERROR");
-
-			try {
-				file.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ZERO);
-				addMarker(file, IMarker.SEVERITY_ERROR, "cannot parse file", 1); //XXX refine
-			} catch (CoreException e) {
-				System.out.println("EXCEPTION: "+e.getMessage()); //XXX
-				//e.printStackTrace();
-			}
+            convertErrorsToMarkers(file, errors);
 			forgetNEDFile(file);
 		}
 		else {
@@ -251,6 +242,22 @@ public class NEDResources {
 				e.printStackTrace();
 			}
 			storeNEDFileContents(file, tree);
+		}
+	}
+
+	private void convertErrorsToMarkers(IFile file, NEDErrorStore errors) {
+		try {
+			file.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ZERO);
+			for (int i=0; i<errors.numErrors(); i++) {
+                // XXX hack: parse out line number from string. NEDErrorStore should rather store line number as int...
+				String loc = errors.errorLocation(i);
+				StringTokenizer t = new StringTokenizer(loc,":");
+				while (t.hasMoreTokens()) loc = t.nextToken();
+				int line = 1;
+				try {line = Integer.parseInt(loc);} catch (Exception e) {}
+				addMarker(file, IMarker.SEVERITY_ERROR, errors.errorText(i), line);
+			}
+		} catch (CoreException e) {
 		}
 	}
 
