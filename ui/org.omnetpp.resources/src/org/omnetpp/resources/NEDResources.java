@@ -183,8 +183,32 @@ public class NEDResources {
 	 * NED editors should call this when editor content changes
 	 */
 	public void setNEDFileContents(IFile file, String text) {
-		// XXX parse it, then call:
-		//storeNEDFileContents(file, tree);
+		// parse the NED text and put it into the hash table
+		// XXX this is a copy/paste of code in readNEDFile() -- factor out common part! 
+		System.out.println("parsing ned text for file "+file);
+		NEDElement tree = ModelUtil.parseNedSource(text);
+		if (tree==null) {
+			System.out.println(" ERROR");
+
+			try {
+				file.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ZERO);
+				addMarker(file, IMarker.SEVERITY_ERROR, "cannot parse editor contents", 1); //XXX refine
+			} catch (CoreException e) {
+				System.out.println("EXCEPTION: "+e.getMessage()); //XXX
+				//e.printStackTrace();
+			}
+			forgetNEDFile(file);
+		}
+		else {
+			System.out.println(" stored");
+			try {
+				file.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ZERO);
+				addMarker(file, IMarker.SEVERITY_INFO, "editor contents parsed OK", 1); //XXX remove
+			} catch (CoreException e) {
+				e.printStackTrace();
+			}
+			storeNEDFileContents(file, tree);
+		}
 	}
 
 	/**
@@ -211,7 +235,7 @@ public class NEDResources {
 
 			try {
 				file.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ZERO);
-				addMarker(file, IMarker.SEVERITY_ERROR, "cannot parse", 1); //XXX refine
+				addMarker(file, IMarker.SEVERITY_ERROR, "cannot parse file", 1); //XXX refine
 			} catch (CoreException e) {
 				System.out.println("EXCEPTION: "+e.getMessage()); //XXX
 				//e.printStackTrace();
@@ -222,7 +246,7 @@ public class NEDResources {
 			System.out.println(" stored");
 			try {
 				file.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ZERO);
-				addMarker(file, IMarker.SEVERITY_INFO, "parsed fine!!!", 1); //XXX remove
+				addMarker(file, IMarker.SEVERITY_INFO, "file parsed OK", 1); //XXX remove
 			} catch (CoreException e) {
 				e.printStackTrace();
 			}
