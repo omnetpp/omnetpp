@@ -33,6 +33,8 @@ public class NEDResources {
 	// stores parsed contents of NED files
 	private HashMap<IFile, NEDElement> nedFiles = new HashMap<IFile, NEDElement>();
 
+	private HashMap<IFile, Integer> connectCount = new HashMap<IFile, Integer>();
+	
 	// table of toplevel components (points into nedFiles trees)
 	private HashMap<String, NEDElement> components = new HashMap<String, NEDElement>();
 	private HashMap<String, IFile> componentFiles = new HashMap<String, IFile>();
@@ -157,10 +159,48 @@ public class NEDResources {
 	}
 
 	/**
+	 * NED editors should call this when they get opened
+	 */
+	public void connect(IFile file) {
+		if (connectCount.containsKey(file))
+			connectCount.put(file, connectCount.get(file)+1);
+		else
+			connectCount.put(file, 1);
+	}
+
+	/**
+	 * NED editors should call this when they get closed
+	 */
+	public void disconnect(IFile file) {
+		int count = connectCount.get(file);  // must exist
+		if (count<=1)
+			connectCount.remove(file);
+		else
+			connectCount.put(file, count-1);
+	}
+
+	/**
+	 * NED editors should call this when editor content changes
+	 */
+	public void setNEDFileContents(IFile file, String text) {
+		// XXX parse it, then call:
+		//storeNEDFileContents(file, tree);
+	}
+
+	/**
+	 * NED editors should call this when editor content changes
+	 */
+	public void setNEDFileContents(IFile file, NEDElement tree) {
+		storeNEDFileContents(file, tree);
+	}
+
+	/**
 	 * Gets called from incremental builder 
 	 */
 	public void readNEDFile(IFile file) {
-		// XXX check if it's in documentprovider
+		// if this file is currently loaded in an editor, we don't read it from disk
+		if (connectCount.containsKey(file))
+			return;
 
 		// parse the NED file and put it into the hash table
 		System.out.println("parsing nedfile: "+file);
@@ -223,31 +263,46 @@ public class NEDResources {
 		for (IFile file : nedFiles.keySet()) {
             NEDElement tree = nedFiles.get(file);
             for (NEDElement node : tree) {
+            	// find node's name and where it should be inserted
             	String name = null;
+            	HashMap<String, NEDElement> map = null;
             	if (node instanceof ChannelNode) {
             		name = ((ChannelNode)node).getName();
-            		channels.put(name, node);
+            		map = channels;
             	}
             	else if (node instanceof ChannelInterfaceNode) {
             		name = ((ChannelInterfaceNode)node).getName();
-            		channelInterfaces.put(name, node);
+            		map = channelInterfaces;
             	}
             	else if (node instanceof SimpleModuleNode) {
             		name = ((SimpleModuleNode)node).getName();
-            		modules.put(name, node);
+            		map = modules;
             	}
             	else if (node instanceof CompoundModuleNode) {
             		name = ((CompoundModuleNode)node).getName();
-            		modules.put(name, node);
+            		map = modules;
             	}
             	else if (node instanceof ModuleInterfaceNode) {
             		name = ((ModuleInterfaceNode)node).getName();
-            		moduleInterfaces.put(name, node);
+            		map = moduleInterfaces;
             	}
 
+            	// if one of the above types (name!=null), check if duplicate and store it if not
             	if (name!=null) {
-            		components.put(name, node);
-            		componentFiles.put(name, file);  // XXX warn about duplicates
+            		if (components.containsKey(name)) {
+            			// duplicate: warning
+            			try {
+                			IFile otherFile = componentFiles.get(name);
+							String message = node.getTagName()+" '"+name+"' already defined in "+otherFile.getLocation().toOSString(); 
+							addMarker(file, IMarker.SEVERITY_WARNING, message, 1);
+						} catch (CoreException e) {
+						}
+            		}
+            		else {
+            			map.put(name, node);
+            			components.put(name, node);
+            			componentFiles.put(name, file);
+            		}
             	}
  			}
 		}
