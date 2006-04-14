@@ -70,7 +70,6 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        initPhase = false;
 	}
 	
 	@Override
@@ -88,7 +87,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 			NedFileNodeEx modelRoot = graphEditor.getModel();
             IFile ifile = ((FileEditorInput)getEditorInput()).getFile();
             
-            // put the acual model state back to the incremental builder
+            // put the actual model state back to the incremental builder
             NEDResourcesPlugin.getNEDResources().setNEDFileContents(ifile, modelRoot);
             
             // generate the text representation
@@ -110,28 +109,39 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 			}
             // 
 			else if (!initPhase) {
-                // this happens when the parsing was unsuccessful when we wanted to switch from text to graph mode
+                // this happens if the parsing was unsuccessful when we wanted to switch from text to graph mode
 				// parse error: switch back immediately to text view (we should never have 
 				// switched away from it in the first place)
 				setActivePage(textPageIndex);
 				
 				// ask user what to do
-		        MessageBox messageBox = new MessageBox(getEditorSite().getShell(), 
-		        		                               SWT.ICON_WARNING | SWT.YES | SWT.NO);
-		        messageBox.setText("Warning");
-		        messageBox.setMessage("The editor contents has syntax errors, "+
-		        		              "switching is only possible with losing text mode changes. "+
-		        		              "Do you want to revert to graphics view (and lose your changes)?"); // XXX better dialog, with "Continue editing" and "Lose changes" buttons
-		        int buttonID = messageBox.open();
-		        if (buttonID==SWT.YES) {
-					setActivePage(graphPageIndex);
-		        }
+                if (graphEditor.getModel() != null) {
+                    MessageBox messageBox = new MessageBox(getEditorSite().getShell(), 
+                            SWT.ICON_WARNING | SWT.YES | SWT.NO);
+                    messageBox.setText("Warning");
+                    messageBox.setMessage("The editor contents has syntax errors, "+
+                            "switching is only possible with losing text mode changes. "+
+                    "Do you want to revert to graphics view (and lose your changes)?"); 
+                    // XXX better dialog, with "Continue editing" and "Lose changes" buttons
+                    int buttonID = messageBox.open();
+                    if (buttonID==SWT.YES) 
+                        setActivePage(graphPageIndex);
+                } else {
+                    // there is no meaningful content inside the graphical editor, so ther is no point to switch there
+                    MessageBox messageBox = new MessageBox(getEditorSite().getShell(), 
+                            SWT.ICON_WARNING | SWT.OK);
+                    messageBox.setText("Warning");
+                    messageBox.setMessage("The editor contents has syntax errors, "+
+                            "switching is not possible. ");
+                    messageBox.open();
+                }
 			} else {
                 // parsing error occured during the initial file loading
                 setActivePage(textPageIndex);
             }
 		}
 		insidePageChange = false;
+        initPhase = false;
 	}
 
 	@Override
