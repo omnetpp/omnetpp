@@ -5,6 +5,7 @@ import org.omnetpp.ned2.model.pojo.NedFileNode;
 import org.omnetpp.ned2.model.swig.NED1Generator;
 import org.omnetpp.ned2.model.swig.NED2Generator;
 import org.omnetpp.ned2.model.swig.NEDElement;
+import org.omnetpp.ned2.model.swig.NEDErrorCategory;
 import org.omnetpp.ned2.model.swig.NEDErrorStore;
 import org.omnetpp.ned2.model.swig.NEDParser;
 
@@ -39,16 +40,20 @@ public class ModelUtil {
 	 * @return null if there was an error during parsing.
 	 */
 	public static org.omnetpp.ned2.model.NEDElement parseNedSource(String source, NEDErrorStore errors) {
-		//XXX NEDErrorStore errors = new NEDErrorStore();
-		//XXX errors.setPrintToStderr(true);
-		NEDParser np = new NEDParser(errors);
-		np.setParseExpressions(false);
-		NEDElement treeRoot = np.parseNEDText(source); // TODO check NEDErrorStore for errors
-        // TODO run validation code? DTDValidation, BasicValidation, etc...
-		if (treeRoot == null || !errors.empty())
+		try {
+			NEDParser np = new NEDParser(errors);
+			np.setParseExpressions(false);
+			NEDElement treeRoot = np.parseNEDText(source); // TODO check NEDErrorStore for errors
+			if (treeRoot == null || !errors.empty())
+				return null;
+			// TODO run validation code? DTDValidation, BasicValidation, etc...
+			org.omnetpp.ned2.model.NEDElement tmpEl = swig2pojo(treeRoot, null);
+			return tmpEl;
+		} catch (RuntimeException e) {
+			errors.add(NEDErrorCategory.ERRCAT_ERROR.ordinal(), "", "internal error: "+e);
+			e.printStackTrace(); //XXX should go into the log
 			return null;
-		org.omnetpp.ned2.model.NEDElement tmpEl = swig2pojo(treeRoot, null);
-		return tmpEl;
+		}
 	}
 
 	/**
@@ -58,24 +63,22 @@ public class ModelUtil {
 	 * @return null if there was an error during parsing.
 	 */
 	public static org.omnetpp.ned2.model.NEDElement loadNedSource(String fname, NEDErrorStore errors) {
-        // parse NED using native code		
-		//XXX NEDErrorStore errors = new NEDErrorStore();
-		//XXX errors.setPrintToStderr(true);
-		NEDParser np = new NEDParser(errors);
-		np.setParseExpressions(false);
-		NEDElement treeRoot = np.parseNEDFile(fname);
-		//System.out.println(printSwigElementTree(treeRoot, ""));
-		if (treeRoot == null || !errors.empty())
-			return null;
-
-        // convert to plain Java -- ..Ex classes may thow exceptions in the meantime		
-		try {
+        try {
+			// parse NED using native code		
+			NEDParser np = new NEDParser(errors);
+			np.setParseExpressions(false);
+			NEDElement treeRoot = np.parseNEDFile(fname);
+			//System.out.println(printSwigElementTree(treeRoot, ""));
+			if (treeRoot == null || !errors.empty())
+				return null;
+			// TODO run validation code? DTDValidation, BasicValidation, etc...
 			org.omnetpp.ned2.model.NEDElement tmpEl = swig2pojo(treeRoot, null);
 			return tmpEl;
-		} catch (Exception e) {
-			e.printStackTrace(); //XXX
+		} catch (RuntimeException e) {
+			errors.add(NEDErrorCategory.ERRCAT_ERROR.ordinal(), "", "internal error: "+e);
+			e.printStackTrace(); //XXX should go into the log
 			return null;
-		} 
+		}
 	}
 
 	/**

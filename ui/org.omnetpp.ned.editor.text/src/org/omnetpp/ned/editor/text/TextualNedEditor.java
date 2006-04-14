@@ -220,7 +220,7 @@ public class TextualNedEditor extends TextEditor {
 	 */
 	protected void initializeEditor() {
 		super.initializeEditor();
-		setSourceViewerConfiguration(new NedSourceViewerConfiguration());
+		setSourceViewerConfiguration(new NedSourceViewerConfiguration(this));
 	}
 	
 	/*

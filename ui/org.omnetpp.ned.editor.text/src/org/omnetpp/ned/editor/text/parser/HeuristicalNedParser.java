@@ -12,7 +12,8 @@ public class HeuristicalNedParser implements INedFileParser {
      * @return an element collection representing the parsed input
      */
     public NedElement parse(IDocument doc) {
-        // TODO heuristic parsing should come here
+		// TODO heuristic parsing should come here
+    	System.out.println("HeuristicalNedParser.parse() called");
         NedElement result;
         result = new NedElement(null, "Hello world", 20, 40);
         new NedElement(result, "Bello world", 56, 56);

@@ -1,15 +1,23 @@
 package org.omnetpp.ned.editor.text;
 
 
-import org.eclipse.jface.text.*;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jface.text.DefaultIndentLineAutoEditStrategy;
+import org.eclipse.jface.text.IAutoEditStrategy;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.ITextDoubleClickStrategy;
+import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
+import org.eclipse.jface.text.reconciler.IReconciler;
+import org.eclipse.jface.text.reconciler.MonoReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
+import org.eclipse.ui.IEditorPart;
 import org.omnetpp.ned.editor.text.assist.NedCompletionProcessor;
 import org.omnetpp.ned.editor.text.assist.NedContentAssistPartitionScanner;
 import org.omnetpp.ned.editor.text.assist.NedDocCompletionProcessor;
@@ -28,7 +36,10 @@ import org.omnetpp.ned.editor.text.util.NedTextHover;
  */
 public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
 
-	public NedSourceViewerConfiguration() {
+	private IEditorPart editor = null; // because NEDReconcileStrategy will need IFile from editorInput
+
+	public NedSourceViewerConfiguration(IEditorPart editor) {
+		this.editor = editor;
 	}
 	
 	public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
@@ -101,5 +112,18 @@ public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
 	
 	public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
 		return new NedTextHover();
+	}
+
+	@Override
+	public IReconciler getReconciler(ISourceViewer sourceViewer) {
+		// based on: JavaSourceViewerConfiguration.getReconciler() in JDT which
+		// creates and configures JavaReconciler; than in turn will eventually
+		// result in calls to org.eclipse.jdt.internal.compiler.parser.Parser.
+		MonoReconciler reconciler = new MonoReconciler(new NEDReconcileStrategy(editor), true);
+		reconciler.setIsIncrementalReconciler(false);
+		reconciler.setIsAllowedToModifyDocument(false);
+		reconciler.setProgressMonitor(new NullProgressMonitor());
+		reconciler.setDelay(500);
+		return reconciler;
 	}
 }

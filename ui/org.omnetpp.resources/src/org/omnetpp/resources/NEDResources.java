@@ -186,17 +186,14 @@ public class NEDResources {
 	 */
 	public void setNEDFileContents(IFile file, String text) {
 		// parse the NED text and put it into the hash table
-		System.out.println("parsing ned text for file "+file);
 		NEDErrorStore errors = new NEDErrorStore();
-		//errors.setPrintToStderr(true);
+		errors.setPrintToStderr(false);
 		NEDElement tree = ModelUtil.parseNedSource(text, errors);
 		if (tree==null) {
-			System.out.println(" ERROR");
             convertErrorsToMarkers(file, errors);
 			forgetNEDFile(file);
 		}
 		else {
-			System.out.println(" stored");
 			try {
 				file.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ZERO);
 				addMarker(file, IMarker.SEVERITY_INFO, "editor contents parsed OK", 1); //XXX remove
@@ -223,18 +220,15 @@ public class NEDResources {
 			return;
 
 		// parse the NED file and put it into the hash table
-		System.out.println("parsing nedfile: "+file);
 		String fileName = file.getLocation().toFile().getPath();
 		NEDErrorStore errors = new NEDErrorStore();
-		//errors.setPrintToStderr(true);
+		errors.setPrintToStderr(false);
 		NEDElement tree = ModelUtil.loadNedSource(fileName, errors);
 		if (tree==null) {
-			System.out.println(" ERROR");
             convertErrorsToMarkers(file, errors);
 			forgetNEDFile(file);
 		}
 		else {
-			System.out.println(" stored");
 			try {
 				file.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ZERO);
 				addMarker(file, IMarker.SEVERITY_INFO, "file parsed OK", 1); //XXX remove
