@@ -63,6 +63,8 @@ class NEDElement
     NEDElement *nextsibling;
     NEDElementUserData *userdata;
     static long lastid;
+    static long numcreated;
+    static long numexisting;
 
   protected:
     static bool stringToBool(const char *s);
@@ -330,6 +332,22 @@ class NEDElement
      */
     NEDElement *getParentWithTag(int tagcode);
     //@}
+
+    /** @name Counters */
+    //@{
+
+    /**
+     * Returns NEDElements constructed so far (this number can only increase).
+     */
+    static long getNumCreated() {return numcreated;}
+
+    /**
+     * Returns NEDElements currently existing (created minus deleted).
+     * Useful for detecting memory leaks.
+     */
+    static long getNumExisting() {return numexisting;}
+    //@}
+
 
     /** @name User data */
     //@{

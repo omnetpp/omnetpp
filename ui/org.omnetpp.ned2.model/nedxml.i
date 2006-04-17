@@ -37,6 +37,10 @@ namespace std {
   }
 %}
 
+// parse functions return new objects, supposed to be deleted from Java
+%newobject NEDParser::parseNEDText(const char *);
+%newobject NEDParser::parseNEDFile(const char *);
+
 // These are only public for technical reasons, shouldn't be wrapped
 %ignore NEDParser::getSource();
 %ignore NEDParser::getErrors();
@@ -62,6 +66,7 @@ namespace std {
 //
 // The following code is from "19.9.7 Adding Java downcasts to polymorphic return types"
 // in the SWIG Manual
+// XXX probably not needed
 //
 %typemap(jni) NEDElement *NEDElement::getParent "jobject"
 %typemap(jtype) NEDElement *NEDElement::getParent "NEDElement"

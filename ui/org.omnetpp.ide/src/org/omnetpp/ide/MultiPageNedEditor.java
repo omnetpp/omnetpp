@@ -20,6 +20,11 @@ import org.omnetpp.ned2.model.ModelUtil;
 import org.omnetpp.ned2.model.NedFileNodeEx;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
+/**
+ * Multi-page NED editor.
+ * 
+ * TODO react to resource changes (reread if file changed, close if file deleted) 
+ */
 public class MultiPageNedEditor extends MultiPageEditorPart implements
 		IResourceChangeListener {
 

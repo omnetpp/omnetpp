@@ -1,9 +1,11 @@
 package org.omnetpp.ned2.model;
 
+import org.eclipse.core.runtime.Assert;
 import org.omnetpp.ned2.model.pojo.NEDElementFactory;
 import org.omnetpp.ned2.model.pojo.NedFileNode;
 import org.omnetpp.ned2.model.swig.NED1Generator;
 import org.omnetpp.ned2.model.swig.NED2Generator;
+import org.omnetpp.ned2.model.swig.NEDDTDValidator;
 import org.omnetpp.ned2.model.swig.NEDElement;
 import org.omnetpp.ned2.model.swig.NEDErrorCategory;
 import org.omnetpp.ned2.model.swig.NEDErrorStore;
@@ -40,47 +42,55 @@ public class ModelUtil {
 	 * @return null if there was an error during parsing.
 	 */
 	public static org.omnetpp.ned2.model.NEDElement parseNedSource(String source, NEDErrorStore errors) {
-		try {
-			NEDParser np = new NEDParser(errors);
-			np.setParseExpressions(false);
-			NEDElement treeRoot = np.parseNEDText(source); // TODO check NEDErrorStore for errors
-			if (treeRoot == null || !errors.empty())
-				return null;
-			// TODO run validation code? DTDValidation, BasicValidation, etc...
-			org.omnetpp.ned2.model.NEDElement tmpEl = swig2pojo(treeRoot, null);
-			return tmpEl;
-		} catch (RuntimeException e) {
-			errors.add(NEDErrorCategory.ERRCAT_ERROR.ordinal(), "", "internal error: "+e);
-			e.printStackTrace(); //XXX should go into the log
-			return null;
-		}
+        return parse(source, null, errors);
 	}
 
 	/**
 	 * Load and parse NED file to a NEDElement tree.
 	 * 
-	 * @param fname file name
+	 * @param filename file name
 	 * @return null if there was an error during parsing.
 	 */
-	public static org.omnetpp.ned2.model.NEDElement loadNedSource(String fname, NEDErrorStore errors) {
-        try {
-			// parse NED using native code		
+	public static org.omnetpp.ned2.model.NEDElement loadNedSource(String filename, NEDErrorStore errors) {
+        return parse(null, filename, errors);
+	}
+
+	/**
+	 * Parse the given source or the given file.
+	 */
+	private static org.omnetpp.ned2.model.NEDElement parse(String source, String filename, NEDErrorStore errors) {
+		Assert.isTrue((source==null)!=(filename==null)); // exactly one of them is given
+		try {
+			// parse
 			NEDParser np = new NEDParser(errors);
 			np.setParseExpressions(false);
-			NEDElement treeRoot = np.parseNEDFile(fname);
-			//System.out.println(printSwigElementTree(treeRoot, ""));
-			if (treeRoot == null || !errors.empty())
+			NEDElement swigTree = source!=null ? np.parseNEDText(source) : np.parseNEDFile(filename);
+			if (swigTree == null || !errors.empty()) {
+				if (swigTree!=null) swigTree.delete();
 				return null;
-			// TODO run validation code? DTDValidation, BasicValidation, etc...
-			org.omnetpp.ned2.model.NEDElement tmpEl = swig2pojo(treeRoot, null);
-			return tmpEl;
+			}
+
+			// validate
+			NEDDTDValidator dtdvalidator = new NEDDTDValidator(errors);
+			dtdvalidator.validate(swigTree);
+			if (!errors.empty()) {
+				swigTree.delete();
+				return null;
+			}
+			//NEDBasicValidator basicvalidator = new NEDBasicValidator(errors);
+			//basicvalidator.validate(swigTree);
+
+			// convert tree to pure Java objects
+			org.omnetpp.ned2.model.NEDElement pojoTree = swig2pojo(swigTree, null);
+			swigTree.delete();
+			return pojoTree;
 		} catch (RuntimeException e) {
 			errors.add(NEDErrorCategory.ERRCAT_ERROR.ordinal(), "", "internal error: "+e);
 			e.printStackTrace(); //XXX should go into the log
 			return null;
 		}
 	}
-
+	
 	/**
 	 * Converts a native C++ (SWIG-wrapped) NEDElement tree to a plain java tree.  
 	 * WARNING there are two different NEDElement types hadled in this function. 
@@ -93,6 +103,7 @@ public class ModelUtil {
 		for (int i = 0; i < swigNode.getNumAttributes(); ++i) {
 			pojoNode.setAttribute(i, swigNode.getAttribute(i));
 		}
+		pojoNode.setSourceLocation(swigNode.getSourceLocation());
 
 		// create child nodes
 		for (NEDElement child = swigNode.getFirstChild(); child != null; child = child
@@ -118,6 +129,7 @@ public class ModelUtil {
 			value = (value == null) ? "" : value;
 			swigNode.setAttribute(i, value);
 		}
+		swigNode.setSourceLocation(pojoNode.getSourceLocation());
 
 		// create child nodes
 		for (org.omnetpp.ned2.model.NEDElement child = pojoNode.getFirstChild(); 

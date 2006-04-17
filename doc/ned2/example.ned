@@ -1,5 +1,90 @@
-
+//
 // File comment (copyright statement, whatever...)
+//
+
+//
+// NAME SCOPES:
+// - all component type names must be unique
+// - identifier names within a component must be unique (gate/param/submod
+//   names, "where" loopvars)
+//
+// TODO:
+// - add constants, modelled after Java's public static final stuff
+//     module Foo {
+//       parameters:
+//         constant string RADIO_FREQ=1.4e9; //Hz
+//         constant string LOOPBACK_IP_ADDRESS="127.0.0.1";
+//     }
+//   and usage: Foo.RADIO_FREQ.
+//
+// - rules of inheritance must be defined exactly!
+//     o for inner types:
+//        - can I define an inner type with the same name in subclasses?
+//     o for properties:
+//        - contents will be merged (rules like for display strings: values on
+//          same key and same position will overwrite old ones)
+//     o for parameters:
+//        - type cannot be redefined
+//        - value, once given, cannot be redefined in subclasses (what if either one is conditional????)
+//     o for gates:
+//        - type cannot be redefined
+//        - vector size, once given, cannot be redefined in subclasses (what if either one is conditional????)
+//     o for gate/parameter properties:
+//        - extra properties can be added
+//        - existing properties can be overridden/extended like for standalone properties (?)
+//     o for submodules:
+//        - TBD
+//     o for connections:
+//        - TBD
+//
+// - rules of conditionals must be defined exactly!    
+//     o for inner types:
+//        - no such thing
+//     o for properties:
+//        - TBD
+//     o for parameters:
+//        - declarations (ie with type) cannot be conditional!
+//     o for gates:
+//        - declarations (ie with type) cannot be conditional!
+//     o for submodules:
+//        - TBD
+//     o for connections:
+//        - TBD
+//
+// STATIC ANALYSIS IS NO GOOD WITH CONDITIONALS:
+// as param values, gate size, param/gate/module/submodule properties may 
+// involve conditionals, they are UNDETERMINABLE with static analysis!!!
+//
+// INCONSISTENCY:
+// with wildcards, FIRST match counts; with conditional assignments, LAST match
+// counts (it's impossible to do the other way!!!)
+//
+// and: parameter once assigned in base class or type MUST be allowed to be
+// set to a different value in subclass/place of usage!!!
+//
+// this must be allowed:
+//  { 
+//    parameters:
+//      int a;
+//      a = 3 if index==1;
+//      a = 5;
+//  }
+//
+// TOO MANY PROBLEMS WITH CONDITIONAL ASSIGNMENT: move condition *inside*
+// the assignment instead of wrapping it? (extended ?: syntax).
+// That would solve the issue that whether a parameter conditionally assigned
+// in a base class should be regarded as assigned in the subclass (analysed
+// statically not during runtime!!!) Then conditionals could be moved
+// into the expression syntax altogether!!!! and we could get rid of 
+// gate groups and param groups...
+//
+// example:
+//   par = (5 if index<3, 0 otherwise);   
+// generalized (v1 if c1, v2 if c2, v3 if c3, otherwise vdefault);
+// same as (c1 ? v1 : c2 ? v2 : c3 ? v3 : vdefault)
+//
+// STILL PROBLEM: what to do with conditional properties? like this:
+//   @display("c=green") if index==3;    <=== how to write this?
 //
 
 package generic.queueing;  // default package for following components
@@ -455,7 +540,7 @@ network Net
     parameters:
         double function iatime;
     submodules:
-        gen1: Gen {
+        gen1: Gen {  // there is no submodule group or conditional submodule; nor submodule refinement in subclasses
             interArrivalTime = 50s 200ms;
         }
         gen2: Gen {
@@ -496,16 +581,15 @@ network Network
     submodules:
         hosts[100]: Host {
             parameters:
-                // first the special cases. Stops at first match. index is reserved word.
                 @display("c=green") if index==3;
                 @display("c=red");
                 parX = 45 if index>9;
                 if index>9 {
-                    parY = 3;
+                    parY = 3;  // declarations cannot be conditional, only assignments or refinements!
                     parZ = 655;
                 }
             gates:
-                port[5] if index==3;
+                port[5] if index==3;  // declarations cannot be conditional, only assignments or refinements!
                 port[8];
                 if index>9 {
                     portA[34];

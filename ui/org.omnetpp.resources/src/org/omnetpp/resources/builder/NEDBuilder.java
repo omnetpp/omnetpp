@@ -41,6 +41,7 @@ public class NEDBuilder extends IncrementalProjectBuilder {
 				break;
 			case IResourceDelta.REMOVED:
 				// handle removed resource
+				handleResourceDeletion(resource);
 				break;
 			case IResourceDelta.CHANGED:
 				// handle changed resource
@@ -67,8 +68,7 @@ public class NEDBuilder extends IncrementalProjectBuilder {
 	 * @see org.eclipse.core.internal.events.InternalBuilder#build(int,
 	 *      java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	protected IProject[] build(int kind, Map args, IProgressMonitor monitor)
-			throws CoreException {
+	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
 		if (kind == FULL_BUILD) {
 			fullBuild(monitor);
 		} else {
@@ -79,16 +79,27 @@ public class NEDBuilder extends IncrementalProjectBuilder {
 				incrementalBuild(delta, monitor);
 			}
 		}
+		
+		// rebuild tables
+		NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
+		nedResources.rehashIfNeeded();
 		return null;
 	}
 
-	void handleResourceChange(IResource resource) {
+	protected void handleResourceChange(IResource resource) {
 		NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
 		if (nedResources.isNEDFile(resource)) {
 			nedResources.readNEDFile((IFile) resource);
 		}
 	}
 
+	protected void handleResourceDeletion(IResource resource) {
+		NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
+		if (nedResources.isNEDFile(resource)) {
+			nedResources.forgetNEDFile((IFile) resource);
+		}
+	}
+	
 	protected void fullBuild(final IProgressMonitor monitor) throws CoreException {
 		try {
 			getProject().accept(new SampleResourceVisitor());

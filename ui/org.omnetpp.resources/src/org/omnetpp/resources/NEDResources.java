@@ -8,6 +8,7 @@ import java.util.StringTokenizer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.omnetpp.ned2.model.ModelUtil;
 import org.omnetpp.ned2.model.NEDElement;
@@ -24,91 +25,97 @@ import org.omnetpp.ned2.model.swig.NEDErrorStore;
  *  
  * Its readNEDFile(IFile file) method gets invoked by NEDBuilder.
  * 
- * XXX should use AbstractDocumentProvider for NED files editing? see DocumentProviderRegistry ? 
  * XXX display error markers in the Explorer view: see org.eclipse.jdt.ui.ProblemsLabelDecorator
- * XXX too many get() methods -- see which ones are actually needed...
- *
+ * XXX default installation should have "workspace auto refresh" enabled, and "Problems view" shown!!! 
+ * XXX when something changes, must invalidate internal hash tables of stored NEDComponents by calling their componentsChanged()!!!
+ *  
  * @author andras
  */
-public class NEDResources {
+public class NEDResources implements INEDComponentResolver {
 
+	// markers created during parsing
+	public static final String NEDPROBLEM_MARKERID = "org.omnetpp.resources.nedproblem";
+
+	// markers created in rehash()
+	public static final String NEDCONSISTENCYPROBLEM_MARKERID = "org.omnetpp.resources.nedconsistencyproblem";
+	
 	// stores parsed contents of NED files
 	private HashMap<IFile, NEDElement> nedFiles = new HashMap<IFile, NEDElement>();
 
 	private HashMap<IFile, Integer> connectCount = new HashMap<IFile, Integer>();
 	
 	// table of toplevel components (points into nedFiles trees)
-	private HashMap<String, NEDElement> components = new HashMap<String, NEDElement>();
+	private HashMap<String, INEDComponent> components = new HashMap<String, INEDComponent>();
 	private HashMap<String, IFile> componentFiles = new HashMap<String, IFile>();
 
 	// tables of toplevel components, classified (points into nedFiles trees)
     boolean needsRehash = false;  // if tables below need to be rebuilt
-	private HashMap<String, NEDElement> modules = new HashMap<String, NEDElement>();
-	private HashMap<String, NEDElement> channels = new HashMap<String, NEDElement>();
-	private HashMap<String, NEDElement> moduleInterfaces = new HashMap<String, NEDElement>();
-	private HashMap<String, NEDElement> channelInterfaces = new HashMap<String, NEDElement>();
+	private HashMap<String, INEDComponent> modules = new HashMap<String, INEDComponent>();
+	private HashMap<String, INEDComponent> channels = new HashMap<String, INEDComponent>();
+	private HashMap<String, INEDComponent> moduleInterfaces = new HashMap<String, INEDComponent>();
+	private HashMap<String, INEDComponent> channelInterfaces = new HashMap<String, INEDComponent>();
 
-	/**
-	 * Returns NED files in the workspace.
+	/* (non-Javadoc)
+	 * @see org.omnetpp.resources.INEDComponentResolver#getNEDFiles()
 	 */
 	public Set<IFile> getNEDFiles() {
 		return nedFiles.keySet();
 	}
 
-	/**
-	 * Returns parsed contents of a NED file. Returns null if file was not parseable.
+	/* (non-Javadoc)
+	 * @see org.omnetpp.resources.INEDComponentResolver#getNEDFileContents(org.eclipse.core.resources.IFile)
 	 */
 	public NEDElement getNEDFileContents(IFile file) {
 		return nedFiles.get(file);
 	}
 
-	/**
-	 * Returns all components in the NED files.
+	/* (non-Javadoc)
+	 * @see org.omnetpp.resources.INEDComponentResolver#getAllComponents()
 	 */
-	public Collection<NEDElement> getAllComponents() {
+	public Collection<INEDComponent> getAllComponents() {
 		if (needsRehash)
 			rehash();
 		return components.values();
 	}
 
-	/**
-	 * Returns all simple and compound modules in the NED files.
+	/* (non-Javadoc)
+	 * @see org.omnetpp.resources.INEDComponentResolver#getModules()
 	 */
-	public Collection<NEDElement> getModules() {
+	public Collection<INEDComponent> getModules() {
 		if (needsRehash)
 			rehash();
 		return modules.values();
 	}
 
-	/**
-	 * Returns all channels in the NED files.
+	/* (non-Javadoc)
+	 * @see org.omnetpp.resources.INEDComponentResolver#getChannels()
 	 */
-	public Collection<NEDElement> getChannels() {
+	public Collection<INEDComponent> getChannels() {
 		if (needsRehash)
 			rehash();
 		return channels.values();
 	}
 
-	/**
-	 * Returns all module interfaces in the NED files.
+	/* (non-Javadoc)
+	 * @see org.omnetpp.resources.INEDComponentResolver#getModuleInterfaces()
 	 */
-	public Collection<NEDElement> getModuleInterfaces() {
+	public Collection<INEDComponent> getModuleInterfaces() {
 		if (needsRehash)
 			rehash();
 		return moduleInterfaces.values();
 	}
 
-	/**
-	 * Returns all channel interfaces in the NED files.
+	/* (non-Javadoc)
+	 * @see org.omnetpp.resources.INEDComponentResolver#getChannelInterfaces()
 	 */
-	public Collection<NEDElement> getChannelInterfaces() {
+	public Collection<INEDComponent> getChannelInterfaces() {
 		if (needsRehash)
 			rehash();
 		return channelInterfaces.values();
 	}
 
-	/**
-	 * Returns all module names in the NED files.
+	/* (non-Javadoc)
+	 * @see org.omnetpp.resources.INEDComponentResolver#getModuleNames()
 	 */
 	public Set<String> getModuleNames() {
 		if (needsRehash)
@@ -116,8 +123,8 @@ public class NEDResources {
 		return modules.keySet();
 	}
 
-	/**
-	 * Returns all channel names in the NED files.
+	/* (non-Javadoc)
+	 * @see org.omnetpp.resources.INEDComponentResolver#getChannelNames()
 	 */
 	public Set<String> getChannelNames() {
 		if (needsRehash)
@@ -125,8 +132,8 @@ public class NEDResources {
 		return channels.keySet();
 	}
 
-	/**
-	 * Returns all module interface names in the NED files.
+	/* (non-Javadoc)
+	 * @see org.omnetpp.resources.INEDComponentResolver#getModuleInterfaceNames()
 	 */
 	public Set<String> getModuleInterfaceNames() {
 		if (needsRehash)
@@ -134,8 +141,8 @@ public class NEDResources {
 		return moduleInterfaces.keySet();
 	}
 
-	/**
-	 * Returns all channel interface names in the NED files.
+	/* (non-Javadoc)
+	 * @see org.omnetpp.resources.INEDComponentResolver#getChannelInterfaceNames()
 	 */
 	public Set<String> getChannelInterfaceNames() {
 		if (needsRehash)
@@ -143,10 +150,10 @@ public class NEDResources {
 		return channelInterfaces.keySet();
 	}
 
-	/**
-	 * Returns a component by name.
+	/* (non-Javadoc)
+	 * @see org.omnetpp.resources.INEDComponentResolver#getComponent(java.lang.String)
 	 */
-	public NEDElement getComponent(String name) {
+	public INEDComponent getComponent(String name) {
 		if (needsRehash)
 			rehash();
 		return components.get(name);
@@ -157,7 +164,7 @@ public class NEDResources {
 	 */
 	public boolean isNEDFile(Object element) {
 		// XXX should only regard files within a folder designated as "source folder" (persistent attribute!)
-		return element instanceof IFile && ((IFile) element).getFileExtension().equals("ned"); // XXX hardcoded constant
+		return element instanceof IFile && "ned".equals(((IFile) element).getFileExtension()); // XXX hardcoded constant
 	}
 
 	/**
@@ -195,20 +202,24 @@ public class NEDResources {
 		}
 		else {
 			try {
-				file.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ZERO);
-				addMarker(file, IMarker.SEVERITY_INFO, "editor contents parsed OK", 1); //XXX remove
+				file.deleteMarkers(NEDPROBLEM_MARKERID, true, IResource.DEPTH_ZERO);
+				addMarker(file, NEDPROBLEM_MARKERID, IMarker.SEVERITY_INFO, "editor contents parsed OK", 1); //XXX remove
 			} catch (CoreException e) {
-				e.printStackTrace();
 			}
 			storeNEDFileContents(file, tree);
 		}
+		rehashIfNeeded();
 	}
 
 	/**
 	 * NED editors should call this when editor content changes
 	 */
 	public void setNEDFileContents(IFile file, NEDElement tree) {
-		storeNEDFileContents(file, tree);
+		if (tree==null)
+			forgetNEDFile(file);  // XXX rather: it should never be called with tree==null!
+		else
+			storeNEDFileContents(file, tree);
+		rehashIfNeeded();
 	}
 
 	/**
@@ -231,9 +242,8 @@ public class NEDResources {
 		else {
 			try {
 				file.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ZERO);
-				addMarker(file, IMarker.SEVERITY_INFO, "file parsed OK", 1); //XXX remove
+				addMarker(file, NEDPROBLEM_MARKERID, IMarker.SEVERITY_INFO, "file parsed OK", 1); //XXX remove
 			} catch (CoreException e) {
-				e.printStackTrace();
 			}
 			storeNEDFileContents(file, tree);
 		}
@@ -241,42 +251,62 @@ public class NEDResources {
 
 	private void convertErrorsToMarkers(IFile file, NEDErrorStore errors) {
 		try {
-			file.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ZERO);
+			file.deleteMarkers(NEDPROBLEM_MARKERID, true, IResource.DEPTH_ZERO);
+			//System.out.println("markers removed: "+NEDPROBLEM_MARKERID+" from "+file);
 			for (int i=0; i<errors.numErrors(); i++) {
                 // XXX hack: parse out line number from string. NEDErrorStore should rather store line number as int...
 				String loc = errors.errorLocation(i);
-				StringTokenizer t = new StringTokenizer(loc,":");
-				while (t.hasMoreTokens()) loc = t.nextToken();
-				int line = 1;
-				try {line = Integer.parseInt(loc);} catch (Exception e) {}
-				addMarker(file, IMarker.SEVERITY_ERROR, errors.errorText(i), line);
+				int line = parseLineNumber(loc);
+				addMarker(file, NEDPROBLEM_MARKERID, IMarker.SEVERITY_ERROR, errors.errorText(i), line);
 			}
 		} catch (CoreException e) {
 		}
 	}
 
-	private void addMarker(IFile file, int severity, String message, int line) throws CoreException {
-		IMarker marker = file.createMarker(IMarker.PROBLEM);
+	private int parseLineNumber(String loc) {
+		StringTokenizer t = new StringTokenizer(loc,":");
+		while (t.hasMoreTokens()) loc = t.nextToken();
+		int line = 1;
+		try {line = Integer.parseInt(loc);} catch (Exception e) {}
+		return line;
+	}
+
+	private void addMarker(IFile file, String type, int severity, String message, int line) throws CoreException {
+		IMarker marker = file.createMarker(type);
 		if (marker.exists()) {
 			marker.setAttribute(IMarker.MESSAGE, message);
 			marker.setAttribute(IMarker.SEVERITY, severity);
 			marker.setAttribute(IMarker.LINE_NUMBER, line);
+			//System.out.println("marker added: "+type+" on "+file+": "+message);
 		}
 	}
 
-	private void forgetNEDFile(IFile file) {
+	public void forgetNEDFile(IFile file) {
 		nedFiles.remove(file);
 		needsRehash = true;
 	}
 
 	private void storeNEDFileContents(IFile file, NEDElement tree) {
 		// store NED file contents
+		Assert.isTrue(tree!=null);
 		nedFiles.put(file, tree);
 		needsRehash = true;
 	}
  
-	protected void rehash() {
-		// Rebuild hashtables after NED files change
+	/**
+	 * Calls rehash() if internal tables are out of date.
+	 */
+	public void rehashIfNeeded() {
+		if (needsRehash)
+			rehash();
+	}
+
+	/**
+	 * Rebuild hash tables after NED resource change. Note: some errors 
+	 * such as duplicate names only get detected when this gets run! 
+	 */
+	private void rehash() {
+		long t0 = System.currentTimeMillis();
 		components.clear();
 		componentFiles.clear();
 		channels.clear();
@@ -286,11 +316,19 @@ public class NEDResources {
 
 		// find toplevel components in each file, and register them
 		for (IFile file : nedFiles.keySet()) {
-            NEDElement tree = nedFiles.get(file);
+			// remove old consistency problem markers from file, before we proceed to add new ones
+			try {
+				file.deleteMarkers(NEDCONSISTENCYPROBLEM_MARKERID, true, IResource.DEPTH_ZERO);
+				//System.out.println("markers removed: "+NEDCONSISTENCYPROBLEM_MARKERID+" from "+file);
+			} catch (CoreException e) {
+			}
+
+			// iterate on NED file contents, and register each componentt in our hash tables
+			NEDElement tree = nedFiles.get(file);
             for (NEDElement node : tree) {
             	// find node's name and where it should be inserted
             	String name = null;
-            	HashMap<String, NEDElement> map = null;
+            	HashMap<String, INEDComponent> map = null;
             	if (node instanceof ChannelNode) {
             		name = ((ChannelNode)node).getName();
             		map = channels;
@@ -312,25 +350,33 @@ public class NEDResources {
             		map = moduleInterfaces;
             	}
 
-            	// if one of the above types (name!=null), check if duplicate and store it if not
+            	// if node is a component (name!=null), check if duplicate and store it if not
             	if (name!=null) {
             		if (components.containsKey(name)) {
-            			// duplicate: warning
+            			// it is a duplicate: issue warning
             			try {
                 			IFile otherFile = componentFiles.get(name);
-							String message = node.getTagName()+" '"+name+"' already defined in "+otherFile.getLocation().toOSString(); 
-							addMarker(file, IMarker.SEVERITY_WARNING, message, 1);
+							String message = node.getTagName()+" '"+name+"' already defined in "+otherFile.getLocation().toOSString();
+							int line = parseLineNumber(node.getSourceLocation());
+							addMarker(file, NEDCONSISTENCYPROBLEM_MARKERID, IMarker.SEVERITY_WARNING, message, line); 
 						} catch (CoreException e) {
 						}
             		}
             		else {
-            			map.put(name, node);
-            			components.put(name, node);
+            			INEDComponent component = new NEDComponent(node, this); 
+            			map.put(name, component);
+            			components.put(name, component);
             			componentFiles.put(name, file);
             		}
             	}
  			}
 		}
+
+		long dt = System.currentTimeMillis() - t0;
+		System.out.println("rehash() took "+dt+"ms");
+		System.out.println("native NEDElements: "+org.omnetpp.ned2.model.swig.NEDElement.getNumExisting()+" / "+org.omnetpp.ned2.model.swig.NEDElement.getNumCreated());
+
+		// TODO: "semantic validator" should run here!!!
 		needsRehash = false;
 	}
 }

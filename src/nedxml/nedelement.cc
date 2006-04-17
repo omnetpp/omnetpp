@@ -26,6 +26,8 @@ using std::ostream;
 
 
 long NEDElement::lastid = 0;
+long NEDElement::numcreated = 0;
+long NEDElement::numexisting = 0;
 
 bool NEDElement::stringToBool(const char *s)
 {
@@ -82,6 +84,8 @@ NEDElement::NEDElement()
     userdata = 0;
 
     id = ++lastid;
+    numcreated++;
+    numexisting++;
 }
 
 NEDElement::NEDElement(NEDElement *parent)
@@ -94,6 +98,8 @@ NEDElement::NEDElement(NEDElement *parent)
     userdata = 0;
 
     id = ++lastid;
+    numcreated++;
+    numexisting++;
 
     parent->appendChild(this);
 }
@@ -109,6 +115,7 @@ NEDElement::~NEDElement()
     {
         delete removeChild(firstchild);
     }
+    numexisting--;
 }
 
 void NEDElement::applyDefaults()
