@@ -5,13 +5,21 @@ import java.util.Set;
 import org.omnetpp.ned2.model.NEDElement;
 
 /**
- * Primarily for supporting content assist-style functionality.
+ * Wraps a NED component: a ChannelNode, ChannelInterfaceNode, SimpleModuleNode, 
+ * CompoundModuleNode or ModuleInterfaceNode subtree; provides easy lookup 
+ * of its gates, parameters, properties, submodules, inner types.
+ * This class is primarily for supporting content assist-style functionality.
+ *
  * XXX: stuff like getType(), getDocu(), getValue() etc should be declared on the Ex classes!
  * XXX: getContainingComponent() should be defined on Ex classes as well
  */
 public interface INEDComponent {
+	/**
+	 * Returns underlying NEDElement subtree.
+	 */
 	public NEDElement getNEDElement();
 	
+	// TODO comment!
 	// these methods are for members declared on this component (ie exluding inherited ones)
 	// member: gate/param/property/submod/innertype
 	public Set<String> getOwnMemberNames();

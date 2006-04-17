@@ -27,7 +27,8 @@ import org.omnetpp.ned2.model.swig.NEDErrorStore;
  * 
  * XXX display error markers in the Explorer view: see org.eclipse.jdt.ui.ProblemsLabelDecorator
  * XXX default installation should have "workspace auto refresh" enabled, and "Problems view" shown!!! 
- * XXX when something changes, must invalidate internal hash tables of stored NEDComponents by calling their componentsChanged()!!!
+ * XXX when something changes, we always rebuild INEDComponents. This is not needed -- rather, we
+ *     should just call NEDComponent.componentsChanged()! (PERFORMANCE)
  *  
  * @author andras
  */
@@ -160,15 +161,15 @@ public class NEDResources implements INEDComponentResolver {
 	}
 
 	/**
-	 *
+	 * Determines if a resource is a NED file, that is, if it should be parsed.
 	 */
-	public boolean isNEDFile(Object element) {
+	public boolean isNEDFile(IResource resource) {
 		// XXX should only regard files within a folder designated as "source folder" (persistent attribute!)
-		return element instanceof IFile && "ned".equals(((IFile) element).getFileExtension()); // XXX hardcoded constant
+		return resource instanceof IFile && "ned".equals(((IFile) resource).getFileExtension()); // XXX hardcoded constant
 	}
 
 	/**
-	 * NED editors should call this when they get opened
+	 * NED editors should call this when they get opened.
 	 */
 	public void connect(IFile file) {
 		if (connectCount.containsKey(file))
@@ -178,7 +179,7 @@ public class NEDResources implements INEDComponentResolver {
 	}
 
 	/**
-	 * NED editors should call this when they get closed
+	 * NED editors should call this when they get closed.
 	 */
 	public void disconnect(IFile file) {
 		int count = connectCount.get(file);  // must exist
@@ -189,7 +190,7 @@ public class NEDResources implements INEDComponentResolver {
 	}
 
 	/**
-	 * NED editors should call this when editor content changes
+	 * NED editors should call this when editor content changes.
 	 */
 	public void setNEDFileContents(IFile file, String text) {
 		// parse the NED text and put it into the hash table
@@ -212,7 +213,7 @@ public class NEDResources implements INEDComponentResolver {
 	}
 
 	/**
-	 * NED editors should call this when editor content changes
+	 * NED editors should call this when editor content changes.
 	 */
 	public void setNEDFileContents(IFile file, NEDElement tree) {
 		if (tree==null)
@@ -223,7 +224,7 @@ public class NEDResources implements INEDComponentResolver {
 	}
 
 	/**
-	 * Gets called from incremental builder 
+	 * Gets called from incremental builder. 
 	 */
 	public void readNEDFile(IFile file) {
 		// if this file is currently loaded in an editor, we don't read it from disk
@@ -306,7 +307,7 @@ public class NEDResources implements INEDComponentResolver {
 	 * such as duplicate names only get detected when this gets run! 
 	 */
 	private void rehash() {
-		long t0 = System.currentTimeMillis();
+		long startMillis = System.currentTimeMillis();
 		components.clear();
 		componentFiles.clear();
 		channels.clear();
@@ -372,11 +373,16 @@ public class NEDResources implements INEDComponentResolver {
  			}
 		}
 
-		long dt = System.currentTimeMillis() - t0;
-		System.out.println("rehash() took "+dt+"ms");
-		System.out.println("native NEDElements: "+org.omnetpp.ned2.model.swig.NEDElement.getNumExisting()+" / "+org.omnetpp.ned2.model.swig.NEDElement.getNumCreated());
-
 		// TODO: "semantic validator" should run here!!!
 		needsRehash = false;
+		
+		//XXX temporary code, just testing:
+		for (INEDComponent c : components.values()) {
+			c.getMemberNames();  // force resolution of inheritance
+		}
+
+		long dt = System.currentTimeMillis() - startMillis;
+		System.out.println("rehash() took "+dt+"ms");
+		System.out.println("native NEDElements: "+org.omnetpp.ned2.model.swig.NEDElement.getNumExisting()+" / "+org.omnetpp.ned2.model.swig.NEDElement.getNumCreated());
 	}
 }

@@ -71,8 +71,8 @@ public class ModelUtil {
 			}
 
 			// validate
-			NEDDTDValidator dtdvalidator = new NEDDTDValidator(errors);
-			dtdvalidator.validate(swigTree);
+			//XXX NEDDTDValidator dtdvalidator = new NEDDTDValidator(errors);
+			//XXX dtdvalidator.validate(swigTree);
 			if (!errors.empty()) {
 				swigTree.delete();
 				return null;
