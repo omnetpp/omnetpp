@@ -6,14 +6,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.TextPresentation;
-import org.eclipse.jface.text.contentassist.*;
+import org.eclipse.jface.text.contentassist.ContextInformation;
+import org.eclipse.jface.text.contentassist.ICompletionProposal;
+import org.eclipse.jface.text.contentassist.IContextInformation;
+import org.eclipse.jface.text.contentassist.IContextInformationPresenter;
+import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.eclipse.jface.text.rules.IWordDetector;
 import org.omnetpp.ned.editor.text.NedEditorMessages;
 import org.omnetpp.ned.editor.text.NedHelper;
@@ -64,88 +67,116 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
     public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
     	List result = new ArrayList();
 
-    	// XXX experimental: use hint word to make proposals...
-    	String hintWord = getWordBefore(viewer, documentOffset, NedHelper.nedWordDetector);
-    	System.out.println("NedCompletionProcessor.computeCompletionProposals(): hintword:"+hintWord);
-    	if ("extends".equals(hintWord)) {
-        	// XXX offer type list
-    		String words[] = NEDResourcesPlugin.getNEDResources().getModuleNames().toArray(new String[0]);
-            result.addAll(createProposals(viewer, documentOffset, NedHelper.nedWordDetector,
-                    "", words, ""));
-            System.out.println(words.length);
-        }
+    	String context = getCompletionContext(viewer, documentOffset, NedHelper.nedWordDetector);
+    	System.out.println("NedCompletionProcessor.computeCompletionProposals(): context: >>"+context+"<<");
+
+    	NEDResources res = NEDResourcesPlugin.getNEDResources();    	
+
+    	// match various "extends" clauses
+    	if (context.matches(".* simple .* extends +[^ ]*"))
+			addProposals(viewer, documentOffset, result, res.getModuleNames());
+    	else if (context.matches(".* module .* extends +[^ ]*"))
+			addProposals(viewer, documentOffset, result, res.getModuleNames());
+    	else if (context.matches(".* channel .* extends +[^ ]*"))
+			addProposals(viewer, documentOffset, result, res.getChannelNames());
+    	else if (context.matches(".* interface .* extends +[^ ]*"))
+			addProposals(viewer, documentOffset, result, res.getModuleInterfaceNames());
+    	else if (context.matches(".* channelinterface .* extends +[^ ]*"))
+			addProposals(viewer, documentOffset, result, res.getChannelInterfaceNames());
+
+    	// match "like" clauses
+    	// XXX ":" matches "gates:", "parameters:" etc as well!!!
+    	if (context.matches(".* simple .* like +[^ ]*"))
+			addProposals(viewer, documentOffset, result, res.getModuleInterfaceNames());
+    	else if (context.matches(".* module .* like +[^ ]*"))
+			addProposals(viewer, documentOffset, result, res.getModuleInterfaceNames());
+    	else if (context.matches(".* channel .* like +[^ ]*"))
+			addProposals(viewer, documentOffset, result, res.getChannelInterfaceNames());
+    	else if (context.matches(".*:.* like +[^ ]*")) // match "submod : ModuleType" syntax
+			addProposals(viewer, documentOffset, result, res.getModuleInterfaceNames());
+    	else if (context.matches(".*: +[^ ]*"))
+			addProposals(viewer, documentOffset, result, res.getModuleNames());
+
+    	// expressions
+    	if (context.matches(".*=.*")) {
+    		//XXX parameter names, gate names, types,...
+			addProposals(viewer, documentOffset, result, NedHelper.proposedNedFunctions);
+			addProposals(viewer, documentOffset, result, NedHelper.proposedConstants);
+    	}
+
+    	// propose parameter and gate types
+    	if (context.matches(" [a-z]*")) {
+    		// XXX only if we are in "parameters" or "gates"
+    		addProposals(viewer, documentOffset, result, NedHelper.proposedNedTypes);
+    	}
+
+    	//XXX create proposals for connections section
     	
-        // TODO maybe the order should be checked 
-        result.addAll(createProposals(viewer, documentOffset, NedHelper.nedWordDetector,
-                    "", NedHelper.proposedNedKeywords, ""));
-
-        result.addAll(createProposals(viewer, documentOffset, NedHelper.nedWordDetector,
-                    "", NedHelper.proposedNedTypes, ""));
-
-        result.addAll(createProposals(viewer, documentOffset, NedHelper.nedWordDetector,
-                "", NedHelper.proposedNedFunctions, "()"));
-
-        result.addAll(createProposals(viewer, documentOffset, NedHelper.nedWordDetector,
-                "", NedHelper.proposedConstants, ""));
-
-        // sort all the functions together
-        //Collections.sort(result, CompletionProposalComparator.getInstance());
+		// offer keywords as fallback
+    	addProposals(viewer, documentOffset, result, NedHelper.proposedNedKeywords);
 
         // get all the template proposals from the parent
+    	//XXX filter templates to compound module section!!!
         List templateList = Arrays.asList(super.computeCompletionProposals(viewer, documentOffset));
         Collections.sort(templateList, CompletionProposalComparator.getInstance());
         result.addAll(templateList);
-
         
         return (ICompletionProposal[]) result.toArray(new ICompletionProposal[result.size()]);
-    } 
-	
-	private String getWordBefore(ITextViewer viewer, int documentOffset, IWordDetector wordDetector) {
-		// Example: if cursor is just after "submod[i+3].to", we'd like to get back "submod"
+    }
+
+	private void addProposals(ITextViewer viewer, int documentOffset, List result, String[] proposals) {
+		result.addAll(createProposals(viewer, documentOffset, NedHelper.nedWordDetector, "", proposals, ""));
+	}
+
+	private void addProposals(ITextViewer viewer, int documentOffset, List result, Set<String> proposals) {
+		result.addAll(createProposals(viewer, documentOffset, NedHelper.nedWordDetector, "", proposals.toArray(new String[0]), ""));
+	}
+
+	private String getCompletionContext(ITextViewer viewer, int documentOffset, IWordDetector wordDetector) {
 		IDocument docu = viewer.getDocument();
         int offset = documentOffset;
         try {
-            // go backwards, skipping the current word.
-            while (offset > 0) {
-            	char c = docu.getChar(offset - 1);
-            	if (!wordDetector.isWordPart(c) && !wordDetector.isWordStart(c))
-            		break;
-                offset--;
-            }
+    		int lineno = docu.getLineOfOffset(offset);
+    		int lineStartOffset = docu.getLineOffset(lineno);
+        	String context = docu.get(lineStartOffset, offset-lineStartOffset);
+        	while (lineno>0) {
+        		// get previous line
+        		lineno--;
+        		lineStartOffset = docu.getLineOffset(lineno);
+        		String line = docu.get(lineStartOffset, offset-lineStartOffset);
+        		
+        		// strip comment from it
+        		int commentPos = line.indexOf("//");  // string constants may also contain "//", but let's ignore that...
+        		if (commentPos!=-1)
+        			line = line.substring(0, commentPos);
 
-            // go backwards, skipping punctuation. 
-            // simplification: we don't go over to previous line because it 
-            // might end in a comment ("//") which we'd have to detect...
-            //
-            while (offset > 0) {
-            	char c = docu.getChar(offset - 1);
-            	if (c=='\n' || c==';' || c=='{' || c=='}')
-            		return null;  // no word until end of previous "thing"
-            	if (wordDetector.isWordPart(c))
-            		break;
-            	offset--;
-            }
+        		// if line contains ";" or curly brace, stop there
+        		int pos = line.indexOf(';');
+        		int p2 = line.indexOf('{');
+        		if (p2>=0 && p2<pos)
+        			pos = p2;
+        		int p3 = line.indexOf('{');
+        		if (p3>=0 && p3<pos)
+        			pos = p3;
+        		if (pos>=0)
+        			line = line.substring(pos+1); // chop substring before ";" etc
 
-            // we need the word here
-            int wordEndOffset = offset;
-
-            // find the first char that may not be the trailing part of a word.
-            while (offset > 0 && wordDetector.isWordPart(docu.getChar(offset - 1)))
-                offset--;
-            
-            // check if the first char of the word is also ok.
-            if (offset > 0 && wordDetector.isWordStart(docu.getChar(offset - 1)))
-                offset--;
-
-            // return word
-            int wordBegOffset = offset;
-            return docu.get(wordBegOffset, wordEndOffset-wordBegOffset);
+        		// prepend to completion context
+        		context = line.trim()+" "+context;
+        		
+        		if (pos>=0)
+        			break;
+        	}
+        	context = context.replace('\t', ' ');
+        	context = context.replace('\n', ' ');
+        	context = context.replace('\r', ' ');
+        	return context;
 
         } catch (BadLocationException e) {
         	return null;
         }
 	}
-
+	
 	public IContextInformation[] computeContextInformation(ITextViewer viewer, int documentOffset) {
 		IContextInformation[] result= new IContextInformation[5];
 		for (int i= 0; i < result.length; i++)

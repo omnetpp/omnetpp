@@ -2,6 +2,7 @@ package org.omnetpp.ned.editor.text.assist;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -72,6 +73,8 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
             prefix = viewer.getDocument().get(wordRegion.getOffset(), documentOffset - wordRegion.getOffset());
         } catch (BadLocationException e) { }
 
+        Arrays.sort(proposalString);
+        
         for (int i = 0 ;i < proposalString.length; ++i) {
             String prop = startStr + proposalString[i] + endStr;
             if (prop.startsWith(prefix) )
