@@ -1,7 +1,5 @@
 package org.omnetpp.scave.properties;
 
-import java.awt.Font;
-
 import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.DialogCellEditor;
@@ -45,37 +43,38 @@ public class FontPropertyDescriptor extends PropertyDescriptor {
 			}
 		};
 	}
-}
-
-class FontDialogCellEditor extends DialogCellEditor {
-
-	protected FontDialogCellEditor(Composite parent) {
-		super(parent);
-	}
-
-	protected Object openDialogBox(Control cellEditorWindow) {
-		FontDialog fontDialog = new FontDialog( cellEditorWindow.getShell());
-		
-		FontData value = (FontData)getValue();
-		
-		if (value != null)
-			fontDialog.setFontList(new FontData[] {value});
-		FontData fd = fontDialog.open();
-			
-		if (fd != null) {
-			value = fd;
-		}
-		return value;
-	}
 	
-    @Override
-	protected void updateContents(Object value) {
-    	Label label = getDefaultLabel();
-    	if (label != null) {
-    		String text = ""; //$NON-NLS-1$
-    		if (value != null && value instanceof FontData)
-    			text = StringConverter.asString((FontData)value);
-    		label.setText(text);
-    	}
-    }
+	static class FontDialogCellEditor extends DialogCellEditor {
+
+		protected FontDialogCellEditor(Composite parent) {
+			super(parent);
+		}
+
+		protected Object openDialogBox(Control cellEditorWindow) {
+			FontDialog fontDialog = new FontDialog( cellEditorWindow.getShell());
+			
+			FontData value = (FontData)getValue();
+			
+			if (value != null)
+				fontDialog.setFontList(new FontData[] {value});
+			FontData fd = fontDialog.open();
+				
+			if (fd != null) {
+				value = fd;
+			}
+			return value;
+		}
+		
+	    @Override
+		protected void updateContents(Object value) {
+	    	Label label = getDefaultLabel();
+	    	if (label != null) {
+	    		String text = ""; //$NON-NLS-1$
+	    		if (value != null && value instanceof FontData)
+	    			text = StringConverter.asString((FontData)value);
+	    		label.setText(text);
+	    	}
+	    }
+	}
 }
+

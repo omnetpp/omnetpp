@@ -7,9 +7,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.ui.views.properties.ColorPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
+import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 
 public abstract class PropertySource implements IPropertySource {
 
@@ -93,10 +97,54 @@ public abstract class PropertySource implements IPropertySource {
 	}
 	
 	private boolean isPropertyGetter(Method method) {
-		return method.getName().startsWith("get") &&
+		String methodName = method.getName();
+		int modifiers = method.getModifiers();
+		
+		return (methodName.startsWith("get") || methodName.startsWith("is")) &&
 			method.getParameterTypes().length == 0 &&
-			Modifier.isPublic(method.getModifiers()) &&
+			Modifier.isPublic(modifiers) && !Modifier.isStatic(modifiers) &&
 			method.isAnnotationPresent(Property.class);
+	}
+	
+	private String propNameFromGetterName(String getterName) {
+		if (getterName.startsWith("get"))
+			return getterName.substring(3);
+		else
+			return getterName.substring(2);
+	}
+	
+	private String displayNameFromPropName(String propName) {
+		String[] syllables = syllabize(propName);
+		for (int i = 0; i < syllables.length; ++i)
+			syllables[i] = syllables[i].toLowerCase();
+		return unsplit(syllables, " ");
+	}
+	
+	private static String[] syllabize(String str) {
+		int startIndex = 0;
+		ArrayList<String> syllables = new ArrayList<String>();
+		int len = str.length();
+		for (int i = 0; i < len; ++i) {
+			if (i > startIndex && Character.isUpperCase(str.charAt(i))) {
+				syllables.add(str.substring(startIndex, i));
+				startIndex = i;
+			}
+		}
+		if (startIndex < len)
+			syllables.add(str.substring(startIndex));
+		
+		return (String[])syllables.toArray(new String[syllables.size()]);
+	}
+	
+	private static String unsplit(String[] strings, String separator) {
+		StringBuffer sb =  new StringBuffer();
+		int lastIndex = strings.length - 1;
+		for (int i = 0; i < strings.length; ++i) {
+			sb.append(strings[i]);
+			if (i != lastIndex)
+				sb.append(separator);
+		}
+		return sb.toString();
 	}
 	
 	private static Method getPropertySetter(Class propClass, String propName, Class propType) {
@@ -124,18 +172,16 @@ public abstract class PropertySource implements IPropertySource {
 		return null;
 	}
 	
-	private String propNameFromGetterName(String getterName) {
-		return getterName.substring(3);
-	}
-	
 	private IPropertyDescriptor createPropertyDescriptor(Property property, String propName, Class propType)
 		throws Exception
 	{
 		String id = property.id().length() > 0 ? property.id() : propName;
-		String displayName = property.displayName().length() > 0 ? property.displayName() : propName;
+		String displayName = property.displayName().length() > 0 ?
+								property.displayName() :
+								displayNameFromPropName(propName);
 		String category = property.category();
 		String description = property.description();
-		Class descriptorClass = property.descriptorClass();
+		Class descriptorClass = getPropertyDescriptorClass(property.descriptorClass(), propType);
 		
 		Constructor constructor = descriptorClass.getConstructor(new Class[] {Object.class, String.class});
 		PropertyDescriptor descriptor =
@@ -150,10 +196,31 @@ public abstract class PropertySource implements IPropertySource {
 		return descriptor;
 	}
 	
+	public Class getPropertyDescriptorClass(Class declaredDescriptorClass, Class propType) {
+		if (declaredDescriptorClass == PropertyDescriptor.class) {
+			if (propType == String.class)
+				return TextPropertyDescriptor.class;
+			if (propType == Boolean.class || propType == boolean.class)
+				return CheckboxPropertyDescriptor.class;
+			else if (propType == Double.class || propType == double.class)
+				return NumberPropertyDescriptor.class;
+			else if (propType == RGB.class)
+				return ColorPropertyDescriptor.class;
+			else if (propType == FontData.class)
+				return FontPropertyDescriptor.class;
+		}
+		return declaredDescriptorClass;
+	}
+	
 	// TODO: this method should exists somewhere else
 	public static boolean equals(Object obj1, Object obj2) {
 		return obj1 == null && obj2 == null ||
 			   obj1 != null && obj1.equals(obj2);
+	}
+	
+	@Override
+	public String toString() {
+		return "";
 	}
 
 	/*

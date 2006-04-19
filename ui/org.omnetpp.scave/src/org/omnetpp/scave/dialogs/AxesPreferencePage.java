@@ -16,5 +16,4 @@ public class AxesPreferencePage extends PreferencePage {
 	protected Control createContents(Composite parent) {
 		return new AxesPreferencePanel(parent, SWT.NONE);
 	}
-
 }

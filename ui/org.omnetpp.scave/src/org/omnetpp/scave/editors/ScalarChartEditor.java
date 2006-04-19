@@ -9,10 +9,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.ui.views.properties.IPropertySheetPage;
-import org.eclipse.ui.views.properties.IPropertySource;
-import org.eclipse.ui.views.properties.IPropertySourceProvider;
-import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.CategoryPlot;
@@ -110,27 +106,5 @@ public class ScalarChartEditor extends DatasetEditor {
 			chart.getCategoryPlot().setDataset(ds);
 			chartWrapper.refresh();
 		}
-	}
-
-	public Object getAdapter(Class adapter)	{
-		/*if (adapter == IPropertySource.class)
-			return chartProps;
-		else*/ if (adapter == IPropertySheetPage.class)
-		{
-			PropertySheetPage page =  new PropertySheetPage();
-			page.setPropertySourceProvider(new IPropertySourceProvider() {
-				public IPropertySource getPropertySource(Object object) {
-					if (object instanceof IPropertySource)
-						return (IPropertySource)object;
-					else if (object == chartWrapper)
-						return new ChartProperties(chartWrapper);
-					else
-						return null;
-				}
-			});
-			return page;
-		}
-		else
-			return super.getAdapter(adapter);
 	}
 }

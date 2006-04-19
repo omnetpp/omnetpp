@@ -41,6 +41,10 @@ import org.eclipse.ui.part.EditorActionBarContributor;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+import org.eclipse.ui.views.properties.IPropertySheetPage;
+import org.eclipse.ui.views.properties.IPropertySource;
+import org.eclipse.ui.views.properties.IPropertySourceProvider;
+import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.omnetpp.scave.charting.InteractiveChart;
 import org.omnetpp.scave.engine.File;
 import org.omnetpp.scave.engine.IDList;
@@ -403,6 +407,22 @@ public abstract class DatasetEditor extends MultiPageEditorPart implements IReso
 			}
 			return outlinePage;
 		}
+		else if (required == IPropertySheetPage.class)
+		{
+			PropertySheetPage page =  new PropertySheetPage();
+			page.setPropertySourceProvider(new IPropertySourceProvider() {
+				public IPropertySource getPropertySource(Object object) {
+					if (object instanceof IPropertySource)
+						return (IPropertySource)object;
+					else if (object == chartWrapper)
+						return new ChartProperties(chartWrapper);
+					else
+						return null;
+				}
+			});
+			return page;
+		}
+
 		return super.getAdapter(required);
 	}
 
