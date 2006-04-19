@@ -88,7 +88,7 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
      * @param wordDetector A specific word detector to detect in-word characters
      * @return The region that should be replaced
      */
-    private IRegion detectWordRegion(ITextViewer viewer, int documentOffset, IWordDetector wordDetector) {
+    protected IRegion detectWordRegion(ITextViewer viewer, int documentOffset, IWordDetector wordDetector) {
         int offset = documentOffset;
         int length = 0;
         
