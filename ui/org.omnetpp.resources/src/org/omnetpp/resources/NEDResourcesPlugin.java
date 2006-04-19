@@ -14,7 +14,7 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 
 	// The actual NED cache
 	private NEDResources resources = new NEDResources();
-	
+
 	/**
 	 * The constructor.
 	 */

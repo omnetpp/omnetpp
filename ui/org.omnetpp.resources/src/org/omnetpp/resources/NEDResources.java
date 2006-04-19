@@ -26,6 +26,7 @@ import org.omnetpp.ned2.model.swig.NEDErrorStore;
  * Its readNEDFile(IFile file) method gets invoked by NEDBuilder.
  * 
  * XXX display error markers in the Explorer view: see org.eclipse.jdt.ui.ProblemsLabelDecorator
+ * XXX should do full rebuild when Eclipse starts up!!!
  * XXX default installation should have "workspace auto refresh" enabled, and "Problems view" shown!!! 
  * XXX when something changes, we always rebuild INEDComponents. This is not needed -- rather, we
  *     should just call NEDComponent.componentsChanged()! (PERFORMANCE)
@@ -307,7 +308,7 @@ public class NEDResources implements INEDComponentResolver {
 	 * such as duplicate names only get detected when this gets run! 
 	 */
 	private void rehash() {
-		long startMillis = System.currentTimeMillis();
+		//long startMillis = System.currentTimeMillis();
 		components.clear();
 		componentFiles.clear();
 		channels.clear();
@@ -381,8 +382,8 @@ public class NEDResources implements INEDComponentResolver {
 			c.getMemberNames();  // force resolution of inheritance
 		}
 
-		long dt = System.currentTimeMillis() - startMillis;
-		System.out.println("rehash() took "+dt+"ms");
-		System.out.println("native NEDElements: "+org.omnetpp.ned2.model.swig.NEDElement.getNumExisting()+" / "+org.omnetpp.ned2.model.swig.NEDElement.getNumCreated());
+		//long dt = System.currentTimeMillis() - startMillis;
+		//System.out.println("rehash() took "+dt+"ms");
+		//System.out.println("memleak check: native NEDElements: "+org.omnetpp.ned2.model.swig.NEDElement.getNumExisting()+" / "+org.omnetpp.ned2.model.swig.NEDElement.getNumCreated());
 	}
 }

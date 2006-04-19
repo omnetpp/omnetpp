@@ -26,7 +26,7 @@ public class NEDBuilder extends IncrementalProjectBuilder {
 
 	public static final String BUILDER_ID = "org.omnetpp.resources.nedbuilder";
 
-	class SampleDeltaVisitor implements IResourceDeltaVisitor {
+	class NEDDeltaVisitor implements IResourceDeltaVisitor {
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -53,7 +53,7 @@ public class NEDBuilder extends IncrementalProjectBuilder {
 		}
 	}
 
-	class SampleResourceVisitor implements IResourceVisitor {
+	class NEDResourceVisitor implements IResourceVisitor {
 		public boolean visit(IResource resource) {
 			handleResourceChange(resource);
 			//return true to continue visiting children.
@@ -102,13 +102,13 @@ public class NEDBuilder extends IncrementalProjectBuilder {
 	
 	protected void fullBuild(final IProgressMonitor monitor) throws CoreException {
 		try {
-			getProject().accept(new SampleResourceVisitor());
+			getProject().accept(new NEDResourceVisitor());
 		} catch (CoreException e) {
 		}
 	}
 
 	protected void incrementalBuild(IResourceDelta delta, IProgressMonitor monitor) throws CoreException {
 		// the visitor does the work.
-		delta.accept(new SampleDeltaVisitor());
+		delta.accept(new NEDDeltaVisitor());
 	}
 }
