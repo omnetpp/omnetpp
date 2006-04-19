@@ -173,6 +173,7 @@ definition
 
 packagedeclaration         /* TBD package is currently not supported */
         : PACKAGE packagename ';'
+        | PACKAGE error ';' /* error recovery rule */
         ;
 
 packagename                /* TBD package is currently not supported */
@@ -191,6 +192,7 @@ import
                   ps.import->setFilename(toString(trimQuotes(@2)));
                   //setComments(ps.import,@1);
                 }
+        | IMPORT error ';' /* error recovery rule */
         ;
 
 /*
@@ -199,6 +201,8 @@ import
 propertydecl
         : propertydecl_header opt_inline_properties ';'
         | propertydecl_header '(' opt_propertydecl_keys ')' opt_inline_properties ';'
+        | propertydecl_header error ';'
+        | PROPERTY error ';'
         ;
 
 propertydecl_header
@@ -257,6 +261,8 @@ channeldefinition
                   if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
                 }
+        | channelheader error '}' /* error recovery rule */
+        | CHANNEL error '}' /* error recovery rule */
         ;
 
 channelheader
@@ -327,6 +333,8 @@ channelinterfacedefinition
                   if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
                 }
+        | channelinterfaceheader error '}' /* error recovery rule */
+        | CHANNELINTERFACE error '}' /* error recovery rule */
         ;
 
 channelinterfaceheader
@@ -372,6 +380,8 @@ simplemoduledefinition
                   if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
                 }
+        | simplemoduleheader error '}' /* error recovery rule */
+        | SIMPLE error '}' /* error recovery rule */
         ;
 
 simplemoduleheader
@@ -410,6 +420,8 @@ compoundmoduledefinition
                   if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
                 }
+        | compoundmoduleheader error '}' /* error recovery rule */
+        | MODULE error '}' /* error recovery rule */
         ;
 
 compoundmoduleheader
@@ -448,6 +460,8 @@ networkdefinition
                   if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
                 }
+        | networkheader error '}' /* error recovery rule */
+        | NETWORK error '}' /* error recovery rule */
         ;
 
 networkheader
@@ -484,6 +498,8 @@ moduleinterfacedefinition
                   if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
                 }
+        | moduleinterfaceheader error '}' /* error recovery rule */
+        | INTERFACE error '}' /* error recovery rule */
         ;
 
 moduleinterfaceheader
@@ -560,6 +576,11 @@ param
                       ps.param->appendChild($4); // append optional condition
                       // FIXME typename and "if" cannot occur together!!!
                 }
+        | param_typenamevalue error ';' /* error recovery rule */
+        | paramtype error ';' /* error recovery rule */
+        | TYPENAME error ';' /* error recovery rule */
+        | '/' error ';' /* error recovery rule */
+        | error ';' /* error recovery rule */
         ;
 
 /*
@@ -677,6 +698,9 @@ property
                   if ($2)
                       ps.property->appendChild($2); // append optional condition
                 }
+        | property_namevalue error ';' /* error recovery rule */
+        | property_name error ';' /* error recovery rule; causes shift-reduce, but still necessary for missing-")" errors */
+        | '@' error ';' /* error recovery rule */
         ;
 
 property_namevalue
@@ -805,6 +829,9 @@ gate
                       ps.gate->appendChild($4); // append optional condition
                       // FIXME typename and "if" cannot occur together!!!
                 }
+        | gate_typenamesize error ';' /* error recovery rule */
+        | gatetype error ';' /* error recovery rule */
+        | error ';' /* error recovery rule */
         ;
 
 gate_typenamesize
