@@ -37,8 +37,6 @@ public class NedAnnotationHover implements IAnnotationHover {
                     annotationText += ann.getText();
                 }
             }
-            
-            // TODO check the sourceViewer.getAnnotationModel() too
             return annotationText;
         } catch (BadLocationException e) {
         }

@@ -1,27 +1,25 @@
 package org.omnetpp.ned.editor.graph.properties;
 
+import java.util.Set;
+
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
-import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned.editor.graph.misc.EditableComboBoxPropertyDescriptor;
 import org.omnetpp.ned2.model.SubmoduleDisplayString;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
+import org.omnetpp.resources.NEDResourcesPlugin;
 
 public class SubmodulePropertySource extends AbstractNedPropertySource {
 
-    protected static IPropertyDescriptor[] descriptors;
+    protected IPropertyDescriptor[] descriptors;
     
     public enum Prop { Name, Type, Display }
 
-    static {
-        PropertyDescriptor nameProp = new TextPropertyDescriptor(Prop.Name, "Name");
-        PropertyDescriptor typeProp = new TextPropertyDescriptor(Prop.Type, "Type");
-        PropertyDescriptor displayProp = new TextPropertyDescriptor(Prop.Display, "Display");
-        descriptors = new IPropertyDescriptor[] { nameProp, typeProp, displayProp };
-    }
-
     protected SubmoduleNodeEx model;
     protected SubmoduleDisplayPropertySource submoduleDisplayPropertySource;
+    protected EditableComboBoxPropertyDescriptor typeProp;
+
     
     public SubmodulePropertySource(SubmoduleNodeEx submoduleNodeModel) {
         super(submoduleNodeModel);
@@ -29,6 +27,12 @@ public class SubmodulePropertySource extends AbstractNedPropertySource {
         // create a nested displayPropertySource
         submoduleDisplayPropertySource = 
             new SubmoduleDisplayPropertySource(model);
+        
+        // set up property descriptors
+        PropertyDescriptor nameProp = new TextPropertyDescriptor(Prop.Name, "Name");
+        PropertyDescriptor displayProp = new TextPropertyDescriptor(Prop.Display, "Display");
+        typeProp = new EditableComboBoxPropertyDescriptor(Prop.Type, "Type");
+        descriptors = new IPropertyDescriptor[] { nameProp, typeProp, displayProp };
     }
 
     public Object getEditableValue() {
@@ -37,6 +41,15 @@ public class SubmodulePropertySource extends AbstractNedPropertySource {
     }
 
     public IPropertyDescriptor[] getPropertyDescriptors() {
+        // fill in the type combobox
+        Set<String> moduleNames = NEDResourcesPlugin.getNEDResources().getModuleNames();
+// XXX
+        for (String s : moduleNames) 
+            System.out.println(s);
+        System.out.println();
+        
+        typeProp.setItems(moduleNames);
+        
         return descriptors;
     }
 
