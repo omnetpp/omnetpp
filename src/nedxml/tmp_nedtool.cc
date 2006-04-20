@@ -169,11 +169,11 @@ bool processFile(const char *fname, NEDErrorStore *errors)
         parser.setStoreSource(opt_storesrc);
         tree = (ftype==NED_FILE) ? parser.parseNEDFile(fname) : parser.parseMSGFile(fname);
     }
-    if (!errors->empty())
-    {
-        delete tree;
-        return false;
-    }
+//    if (!errors->empty())
+//    {
+//        delete tree;
+//        return false;
+//    }
 
     // DTD validation and additional basic validation
     NEDDTDValidator dtdvalidator(errors);
@@ -269,8 +269,8 @@ try{
         else if (opt_genned || opt_genmsg)
         {
             ofstream out(outfname);
-//XXX            generateNED2(out, tree, errors);
-            generateNED1(out, tree, errors);
+            generateNED2(out, tree, errors);
+//XXX            generateNED1(out, tree, errors);
             out.close();
         }
         else

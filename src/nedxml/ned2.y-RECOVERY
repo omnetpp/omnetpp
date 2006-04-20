@@ -51,20 +51,6 @@
 /* requires at least bison 1.50 (tested with bison 2.1) */
 %glr-parser
 
-/* A note about parser error recovery. We only add error recovery rules to
- * toplevel elements. Attempting to add such rules to inner nonterminals (param, gate,
- * submodule, etc) has caused erratic behaviour when the synchronizing token
- * (";" or "}") was missing from the input, because bison executed pretty
- * much random rules during recovery. (For example, if a ";" is missing then the
- * parser may eat up everything into the middle of the next compound module where
- * it finally founds a ";" to synchronize on, and starts shifting tokens on the
- * stack from there, and matches them to rules applicable in that context).
- *
- * The actions in this grammar assume that they're being executed in the order
- * prescribed by the grammar, and don't tolerate that rather random behaviour
- * during which bison recovers from various parse errors.
- */
-
 %{
 
 #include <stdio.h>
@@ -203,7 +189,8 @@ definition
 
 packagedeclaration         /* TBD package is currently not supported */
         : PACKAGE packagename ';'
-        ; /* no error recovery rule -- see discussion at top */
+        | PACKAGE error ';' /* error recovery rule */
+        ;
 
 packagename                /* TBD package is currently not supported */
         : packagename '.' NAME
@@ -221,7 +208,8 @@ import
                   ps.import->setFilename(toString(trimQuotes(@2)));
                   //setComments(ps.import,@1);
                 }
-        ; /* no error recovery rule -- see discussion at top */
+        | IMPORT error ';' /* error recovery rule */
+        ;
 
 /*
  * Property declaration
@@ -229,7 +217,9 @@ import
 propertydecl
         : propertydecl_header opt_inline_properties ';'
         | propertydecl_header '(' opt_propertydecl_keys ')' opt_inline_properties ';'
-        ; /* no error recovery rule -- see discussion at top */
+        | propertydecl_header error ';'
+        | PROPERTY error ';' /* error recovery rule */
+        ;
 
 propertydecl_header
         : PROPERTY '@' NAME
@@ -288,9 +278,9 @@ channeldefinition
                       storeComponentSourceCode(ps.component, @$);
                 }
         | channelheader error '}' /* error recovery rule */
-                { restoreGlobalParserState(); yyerrok; }
+                {restoreGlobalParserState();}
         | CHANNEL error '}' /* error recovery rule */
-                { restoreGlobalParserState(); yyerrok; }
+                {restoreGlobalParserState();}
         ;
 
 channelheader
@@ -362,9 +352,9 @@ channelinterfacedefinition
                       storeComponentSourceCode(ps.component, @$);
                 }
         | channelinterfaceheader error '}' /* error recovery rule */
-                { restoreGlobalParserState(); yyerrok; }
+                {restoreGlobalParserState();}
         | CHANNELINTERFACE error '}' /* error recovery rule */
-                { restoreGlobalParserState(); yyerrok; }
+                {restoreGlobalParserState();}
         ;
 
 channelinterfaceheader
@@ -411,9 +401,9 @@ simplemoduledefinition
                       storeComponentSourceCode(ps.component, @$);
                 }
         | simplemoduleheader error '}' /* error recovery rule */
-                { restoreGlobalParserState(); yyerrok; }
+                {restoreGlobalParserState();}
         | SIMPLE error '}' /* error recovery rule */
-                { restoreGlobalParserState(); yyerrok; }
+                {restoreGlobalParserState();}
         ;
 
 simplemoduleheader
@@ -453,9 +443,9 @@ compoundmoduledefinition
                       storeComponentSourceCode(ps.component, @$);
                 }
         | compoundmoduleheader error '}' /* error recovery rule */
-                { restoreGlobalParserState(); yyerrok; }
+                {restoreGlobalParserState();}
         | MODULE error '}' /* error recovery rule */
-                { restoreGlobalParserState(); yyerrok; }
+                {restoreGlobalParserState();}
         ;
 
 compoundmoduleheader
@@ -495,9 +485,9 @@ networkdefinition
                       storeComponentSourceCode(ps.component, @$);
                 }
         | networkheader error '}' /* error recovery rule */
-                { restoreGlobalParserState(); yyerrok; }
+                {restoreGlobalParserState();}
         | NETWORK error '}' /* error recovery rule */
-                { restoreGlobalParserState(); yyerrok; }
+                {restoreGlobalParserState();}
         ;
 
 networkheader
@@ -535,9 +525,9 @@ moduleinterfacedefinition
                       storeComponentSourceCode(ps.component, @$);
                 }
         | moduleinterfaceheader error '}' /* error recovery rule */
-                { restoreGlobalParserState(); yyerrok; }
+                {restoreGlobalParserState();}
         | INTERFACE error '}' /* error recovery rule */
-                { restoreGlobalParserState(); yyerrok; }
+                {restoreGlobalParserState();}
         ;
 
 moduleinterfaceheader
@@ -614,7 +604,12 @@ param
                       ps.param->appendChild($4); // append optional condition
                       // FIXME typename and "if" cannot occur together!!!
                 }
-        ; /* no error recovery rule -- see discussion at top */
+        | param_typenamevalue error ';' /* error recovery rule */
+        | paramtype error ';' /* error recovery rule */
+        | TYPENAME error ';' /* error recovery rule */
+        | '/' error ';' /* error recovery rule */
+        | error ';' /* error recovery rule */
+        ;
 
 /*
  * Parameter
@@ -731,7 +726,10 @@ property
                   if ($2)
                       ps.property->appendChild($2); // append optional condition
                 }
-        ; /* no error recovery rule -- see discussion at top */
+        | property_namevalue error ';' /* error recovery rule */
+        | property_name error ';' /* error recovery rule; causes shift-reduce, but still necessary for missing-")" errors */
+        | '@' error ';' /* error recovery rule */
+        ;
 
 property_namevalue
         : property_name
@@ -861,7 +859,10 @@ gate
                       ps.gate->appendChild($4); // append optional condition
                       // FIXME typename and "if" cannot occur together!!!
                 }
-        ; /* no error recovery rule -- see discussion at top */
+        | gate_typenamesize error ';' /* error recovery rule */
+        | gatetype error ';' /* error recovery rule */
+        | error ';' /* error recovery rule */
+        ;
 
 gate_typenamesize
         : gatetype NAME
@@ -1000,7 +1001,11 @@ submodule
                   ps.blockscope.pop();
                   ps.propertyscope.pop();
                 }
-        ; /* no error recovery rule -- see discussion at top */
+        | submoduleheader error '}' /* error recovery rule */
+        | submoduleheader error ';' /* error recovery rule */
+        | submodulename error '}' /* error recovery rule */
+        | submodulename error ';' /* error recovery rule */
+        ;
 
 submoduleheader
         : submodulename ':' NAME
@@ -1105,7 +1110,10 @@ connectionsitem
                   if ($2)
                       ps.conn->appendChild($2);
                 }
-        ; /* no error recovery rule -- see discussion at top */
+        | connection error ';' /* error recovery rule */
+        | leftgatespec error ';' /* error recovery rule */
+        | NAME error ';' /* error recovery rule */
+        ;
 
 connectiongroup  /* note: semicolon at end is mandatory (cannot be opt_semicolon because it'd be ambiguous where "where" clause in "{a-->b;} where i>0 {c-->d;}" belongs) */
         : whereclause '{'
