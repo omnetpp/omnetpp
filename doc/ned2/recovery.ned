@@ -47,17 +47,28 @@ simple gates8 { gates: blabla[12] bla; output ooo; }
 simple gates9 { gates: blabla[12] if ...; output ooo; }
 
 // syntax error in submodules
-module submod0 { submodules: bla; foo:Foo; } // submodtype is empty
+module submod0 { submodules: bla; foo:Foo; } // submodtype will be empty
 module submod1 { submodules: bla bla; foo:Foo; }
 module submod2 { submodules: bla : Bla Bla; foo:Foo; }
 module submod3 { submodules: bla : Bla like $$$; foo:Foo; }
-module submod4 { submodules: bla bla {} foo:Foo; phi:Phi;} // submodtype is empty
+module submod4 { submodules: bla bla {} foo:Foo; phi:Phi;} // submodtype will be empty
 module submod5 { submodules: bla : Bla Bla {} foo:Foo; phi:Phi;}
 module submod6 { submodules: bla : Bla like $$$ {} foo:Foo; phi:Phi;}
-// module submod7 { submodules: bla : Bla { $@$@ } foo:Foo; } -- gets lost completely :(
+module submod7 { submodules: bla : Bla {delay=1} foo:Foo; } // gets lost and swallows half of next module
+          b:B; connections: a.out-->b.in;}
 
+// syntax error in connections
+module conn1 { submodules: a:A; b:B; connections: a; a.out-->b.in;}
+module conn2 { submodules: a:A; b:B; connections: a.; a.out-->b.in;}   // creates bogus module param "a"...
+module conn3 { submodules: a:A; b:B; connections: a.ooo; a.out-->b.in;}
+module conn4 { submodules: a:A; b:B; connections: a.ooo-->; a.out-->b.in;}
+module conn5 { submodules: a:A; b:B; connections: a.ooo-->b.; a.out-->b.in;}
+module conn6 { submodules: a:A; b:B; connections: a.ooo-->b.iii bla; a.out-->b.in;}
+module conn7 { submodules: a:A; b:B; connections: a.ooo-->b.iii a.ooo2-->b.iii2; a.out-->b.in;}
+module conn8 { submodules: a:A; b:B; connections: a.ooo-->{delay=1;-->b.iii; a.out-->b.in;} // gets lost and swallows half of next module
+module conn9 { submodules: a:A; b:B; connections: a.ooo-->{delay=1}-->b.iii; a.out-->b.in;} // gets lost and swallows half of next module
 
-//TODO connections!  paramgroups, gategroups?
+//TODO paramgroups, gategroups?
 
 network Network
 {
