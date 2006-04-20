@@ -47,13 +47,14 @@ simple gates8 { gates: blabla[12] bla; output ooo; }
 simple gates9 { gates: blabla[12] if ...; output ooo; }
 
 // syntax error in submodules
-module submod1 { submodules: bla bla; foo:Foo; }  // FIXME ??????
+module submod0 { submodules: bla; foo:Foo; } // submodtype is empty
+module submod1 { submodules: bla bla; foo:Foo; }
 module submod2 { submodules: bla : Bla Bla; foo:Foo; }
 module submod3 { submodules: bla : Bla like $$$; foo:Foo; }
-module submod4 { submodules: bla bla {} foo:Foo; }   // FIXME submodtype gets empty!!!!
-module submod5 { submodules: bla : Bla Bla {} foo:Foo; phi:Phi;}  // note: foo gets lost, but phi is OK
-module submod6 { submodules: bla : Bla like $$$ {} foo:Foo; phi:Phi;}  // note: foo gets lost, but phi is OK
-module submod7 { submodules: bla : Bla { $@$@ } foo:Foo; }
+module submod4 { submodules: bla bla {} foo:Foo; phi:Phi;} // submodtype is empty
+module submod5 { submodules: bla : Bla Bla {} foo:Foo; phi:Phi;}
+module submod6 { submodules: bla : Bla like $$$ {} foo:Foo; phi:Phi;}
+// module submod7 { submodules: bla : Bla { $@$@ } foo:Foo; } -- gets lost completely :(
 
 
 //TODO connections!  paramgroups, gategroups?
