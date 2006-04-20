@@ -142,6 +142,22 @@ static void resetParserState()
     ps = cleanps;
 }
 
+static NED2ParserState globalps;  // for error recovery
+
+static void restoreGlobalParserState()  // for error recovery
+{
+    ps = globalps;
+}
+
+static void assertNonEmpty(std::stack<NEDElement *>& somescope) {
+    // for error recovery: STL stack::top() crashes if stack is empty
+    if (somescope.empty())
+    {
+        INTERNAL_ERROR0(NULL, "error during parsing: scope stack empty");
+        somescope.push(NULL);
+    }
+}
+
 %}
 
 %%
@@ -202,7 +218,7 @@ propertydecl
         : propertydecl_header opt_inline_properties ';'
         | propertydecl_header '(' opt_propertydecl_keys ')' opt_inline_properties ';'
         | propertydecl_header error ';'
-        | PROPERTY error ';'
+        | PROPERTY error ';' /* error recovery rule */
         ;
 
 propertydecl_header
@@ -262,7 +278,9 @@ channeldefinition
                       storeComponentSourceCode(ps.component, @$);
                 }
         | channelheader error '}' /* error recovery rule */
+                {restoreGlobalParserState();}
         | CHANNEL error '}' /* error recovery rule */
+                {restoreGlobalParserState();}
         ;
 
 channelheader
@@ -334,7 +352,9 @@ channelinterfacedefinition
                       storeComponentSourceCode(ps.component, @$);
                 }
         | channelinterfaceheader error '}' /* error recovery rule */
+                {restoreGlobalParserState();}
         | CHANNELINTERFACE error '}' /* error recovery rule */
+                {restoreGlobalParserState();}
         ;
 
 channelinterfaceheader
@@ -381,7 +401,9 @@ simplemoduledefinition
                       storeComponentSourceCode(ps.component, @$);
                 }
         | simplemoduleheader error '}' /* error recovery rule */
+                {restoreGlobalParserState();}
         | SIMPLE error '}' /* error recovery rule */
+                {restoreGlobalParserState();}
         ;
 
 simplemoduleheader
@@ -421,7 +443,9 @@ compoundmoduledefinition
                       storeComponentSourceCode(ps.component, @$);
                 }
         | compoundmoduleheader error '}' /* error recovery rule */
+                {restoreGlobalParserState();}
         | MODULE error '}' /* error recovery rule */
+                {restoreGlobalParserState();}
         ;
 
 compoundmoduleheader
@@ -461,7 +485,9 @@ networkdefinition
                       storeComponentSourceCode(ps.component, @$);
                 }
         | networkheader error '}' /* error recovery rule */
+                {restoreGlobalParserState();}
         | NETWORK error '}' /* error recovery rule */
+                {restoreGlobalParserState();}
         ;
 
 networkheader
@@ -499,7 +525,9 @@ moduleinterfacedefinition
                       storeComponentSourceCode(ps.component, @$);
                 }
         | moduleinterfaceheader error '}' /* error recovery rule */
+                {restoreGlobalParserState();}
         | INTERFACE error '}' /* error recovery rule */
+                {restoreGlobalParserState();}
         ;
 
 moduleinterfaceheader
@@ -711,6 +739,7 @@ property_namevalue
 property_name
         : '@' NAME
                 {
+                  assertNonEmpty(ps.propertyscope);
                   ps.property = addProperty(ps.propertyscope.top(), toString(@2));
                 }
         ;
@@ -767,6 +796,7 @@ opt_gateblock
 gateblock
         : GATES ':'
                 {
+                  assertNonEmpty(ps.blockscope);
                   ps.gates = (GatesNode *)createNodeWithTag(NED_GATES, ps.blockscope.top());
                   //setComments(ps.gates,@1,@2);
                 }
@@ -888,6 +918,7 @@ opt_typeblock
 typeblock
         : TYPES ':'
                 {
+                  assertNonEmpty(ps.blockscope);
                   ps.types = (TypesNode *)createNodeWithTag(NED_TYPES, ps.blockscope.top());
                   //setComments(ps.types,@1,@2);
                   if (ps.inTypes)
@@ -931,6 +962,7 @@ opt_submodblock
 submodblock
         : SUBMODULES ':'
                 {
+                  assertNonEmpty(ps.blockscope);
                   ps.submods = (SubmodulesNode *)createNodeWithTag(NED_SUBMODULES, ps.blockscope.top());
                   //setComments(ps.submods,@1,@2);
                 }
@@ -1037,6 +1069,7 @@ opt_connblock
 connblock
         : CONNECTIONS ALLOWUNCONNECTED ':'
                 {
+                  assertNonEmpty(ps.blockscope);
                   ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.blockscope.top());
                   ps.conns->setAllowUnconnected(true);
                   //setComments(ps.conns,@1,@3);
@@ -1046,6 +1079,7 @@ connblock
                 }
         | CONNECTIONS ':'
                 {
+                  assertNonEmpty(ps.blockscope);
                   ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.blockscope.top());
                   //setComments(ps.conns,@1,@2);
                 }
@@ -1076,6 +1110,9 @@ connectionsitem
                   if ($2)
                       ps.conn->appendChild($2);
                 }
+        | connection error ';' /* error recovery rule */
+        | leftgatespec error ';' /* error recovery rule */
+        | NAME error ';' /* error recovery rule */
         ;
 
 connectiongroup  /* note: semicolon at end is mandatory (cannot be opt_semicolon because it'd be ambiguous where "where" clause in "{a-->b;} where i>0 {c-->d;}" belongs) */
@@ -1326,7 +1363,6 @@ channelspec
           '}'
                 {
                   ps.propertyscope.pop();
-                  ps.blockscope.pop();
                 }
         ;
 
@@ -1581,6 +1617,8 @@ NEDElement *doParseNED2(NEDParser *p, const char *nedtext)
     //FIXME ps.nedfile->setBannerComment(nedsource->getFileComment());
 
     ps.propertyscope.push(ps.nedfile);
+
+    globalps = ps; // remember this for error recovery
 
     if (np->getStoreSourceFlag())
         storeSourceCode(ps.nedfile, np->getSource()->getFullTextPos());
