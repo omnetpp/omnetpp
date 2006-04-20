@@ -33,8 +33,30 @@ simple param1 { $#%@; cost=0.5; }
 simple param2 { delay $%#; cost=0.5; }
 simple param3 { delay bla bla = 10; cost=0.5; }
 simple param4 { delay=%$; cost=0.5; }
+simple param5 { delay=10 if ...; cost=0.5; }
 
-//TODO: gates, submodules, connections!
+// syntax error in gates
+simple gates1 { gates: input inout iii; output ooo; }
+simple gates2 { gates: input blabla bla; output ooo; }
+simple gates3 { gates: input bla[; output ooo; }
+simple gates4 { gates: input bla[12; output ooo; }
+simple gates5 { gates: blabla iii; output ooo; }
+simple gates6 { gates: blabla[; output ooo; }
+simple gates7 { gates: blabla[12; output ooo; }
+simple gates8 { gates: blabla[12] bla; output ooo; }
+simple gates9 { gates: blabla[12] if ...; output ooo; }
+
+// syntax error in submodules
+module submod1 { submodules: bla bla; foo:Foo; }  // FIXME ??????
+module submod2 { submodules: bla : Bla Bla; foo:Foo; }
+module submod3 { submodules: bla : Bla like $$$; foo:Foo; }
+module submod4 { submodules: bla bla {} foo:Foo; }   // FIXME submodtype gets empty!!!!
+module submod5 { submodules: bla : Bla Bla {} foo:Foo; phi:Phi;}  // note: foo gets lost, but phi is OK
+module submod6 { submodules: bla : Bla like $$$ {} foo:Foo; phi:Phi;}  // note: foo gets lost, but phi is OK
+module submod7 { submodules: bla : Bla { $@$@ } foo:Foo; }
+
+
+//TODO connections!  paramgroups, gategroups?
 
 network Network
 {
