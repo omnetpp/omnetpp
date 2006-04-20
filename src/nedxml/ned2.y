@@ -969,9 +969,10 @@ submodule
                   ps.blockscope.pop();
                   ps.propertyscope.pop();
                 }
-        | submoduleheader '{' error '}' /* error recovery rule */
+        | submoduleheader error '}' /* error recovery rule */
         | submoduleheader error ';' /* error recovery rule */
         | submodulename error '}' /* error recovery rule */
+        | submodulename error ';' /* error recovery rule */
         ;
 
 submoduleheader
