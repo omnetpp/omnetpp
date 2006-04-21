@@ -10,8 +10,6 @@ import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.ned.editor.graph.figures.ModuleFeedbackFigure;
-import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 
 /**
  * 
@@ -59,18 +57,11 @@ public class NedResizableEditPolicy extends ResizableEditPolicy {
     protected IFigure getCustomFeedbackFigure(GraphicalEditPart part, Object modelPart) {
         IFigure figure;
 
-        if (modelPart instanceof CompoundModuleNodeEx)
-            figure = new ModuleFeedbackFigure();
-// XXX specialized feedback figure can be set here        
-//        else if (modelPart instanceof SimpleModule)
-//            figure = new SimpleModuleFigure();
-        else {
-            figure = new RectangleFigure();
-            ((RectangleFigure) figure).setXOR(true);
-            ((RectangleFigure) figure).setFill(true);
-            figure.setBackgroundColor(ColorFactory.ghostFillColor);
-            figure.setForegroundColor(ColorConstants.white);
-        }
+        figure = new RectangleFigure();
+        ((RectangleFigure) figure).setXOR(true);
+        ((RectangleFigure) figure).setFill(true);
+        figure.setBackgroundColor(ColorFactory.ghostFillColor);
+        figure.setForegroundColor(ColorConstants.white);
 
         return figure;
     }

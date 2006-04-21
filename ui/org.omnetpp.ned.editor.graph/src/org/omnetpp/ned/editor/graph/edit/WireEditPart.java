@@ -17,6 +17,7 @@ import org.eclipse.gef.editparts.AbstractConnectionEditPart;
 import org.omnetpp.ned.editor.graph.edit.policies.WireBendpointEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.WireEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.WireEndpointEditPolicy;
+import org.omnetpp.ned.editor.graph.figures.WireFigure;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.INEDChangeListener;
 import org.omnetpp.ned2.model.NEDElement;
@@ -27,14 +28,22 @@ import org.omnetpp.ned2.model.WireBendpointModel;
  * Implements a Connection Editpart to represnt a Wire like connection.
  * 
  */
-// TODO remove dependency from PropertyChangeListener
 public class WireEditPart extends AbstractConnectionEditPart implements PropertyChangeListener, INEDChangeListener {
 
     @Override
     public void activate() {
+        if (isActive()) return;
         super.activate();
         // register as listener of the model object
         getWire().addListener(this);
+    }
+
+    @Override
+    public void deactivate() {
+        if (!isActive()) return;
+        // deregister as listener of the model object
+        getWire().removeListener(this);
+        super.deactivate();
     }
 
     @Override
@@ -66,7 +75,7 @@ public class WireEditPart extends AbstractConnectionEditPart implements Property
      */
     @Override
     protected IFigure createFigure() {
-        PolylineConnection conn = new PolylineConnection();
+        WireFigure conn = new WireFigure();
         conn.addRoutingListener(RoutingAnimator.getDefault());
         PolygonDecoration arrow;
 
@@ -80,13 +89,6 @@ public class WireEditPart extends AbstractConnectionEditPart implements Property
             conn.setTargetDecoration(arrow);
         }
     	return conn;    
-    }
-
-    @Override
-    public void deactivate() {
-        // deregister as listener of the model object
-        getWire().removeListener(this);
-        super.deactivate();
     }
 
     @Override
@@ -152,6 +154,8 @@ public class WireEditPart extends AbstractConnectionEditPart implements Property
     @Override
     protected void refreshVisuals() {
         refreshBendpoints();
+        // XXX do we need this here?
+        // refreshBendpointEditPolicy();
         // TODO implement display property support for connections here
     }
 

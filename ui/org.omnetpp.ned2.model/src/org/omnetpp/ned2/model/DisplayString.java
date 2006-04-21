@@ -110,7 +110,7 @@ public class DisplayString {
         // ls tag (line styling)
         CONNECTION_COL(Tag.ls, 0, PropType.Color, PropGroup.Style, "color", "Connection color. Default: black"),
         CONNECTION_WIDTH(Tag.ls, 1, PropType.Integer, PropGroup.Style, "line width", "Connection line width. Default: 1"),
-        CONNECTION_LINE(Tag.ls, 2, PropType.String, PropGroup.Style, "line style", "Connection line style ([s]olid, [d]otted). Default: solid"),
+        CONNECTION_STYLE(Tag.ls, 2, PropType.String, PropGroup.Style, "line style", "Connection line style ([s]olid, [d]otted). Default: solid"),
         CONNECTION_SEGMENTS(Tag.ls, 3, PropType.String, PropGroup.Style, "segments", "Connection segmenets ([l]ine, [s]pline). Default: line"),
         // bp tag (bendpoints)
         BENDPOINTS(Tag.bp, 0, PropType.Integer, PropGroup.Connection, "bendpoints", "bendpoint locations");
