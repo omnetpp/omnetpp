@@ -212,7 +212,7 @@ public class ChartProperties extends PropertySource {
 		public double defaultForegroundAlpha() { return Plot.DEFAULT_FOREGROUND_ALPHA; }
 	}
 	
-	public static class CategoryRendererKind
+	public static class CategoryRendererKind extends PropertySource
 	{
 		CategoryItemRenderer renderer;
 		static Map<Class,CategoryRendererKind> renderers = new HashMap<Class,CategoryRendererKind>(2);
@@ -222,13 +222,14 @@ public class ChartProperties extends PropertySource {
 			renderers.put(renderer.getClass(), this);
 		}
 		
-		public final static CategoryRendererKind BAR = new CategoryRendererKind(new BarRenderer()); 
-		public final static CategoryRendererKind BAR3D = new CategoryRendererKind(new BarRenderer3D());
-		public final static CategoryRendererKind STACKED_BAR = new CategoryRendererKind(new StackedBarRenderer());
-		public final static CategoryRendererKind STACKED_BAR3D = new CategoryRendererKind(new StackedBarRenderer3D());
-		public final static CategoryRendererKind AREA = new CategoryRendererKind(new AreaRenderer());
-		public final static CategoryRendererKind INTERVAL_BAR = new CategoryRendererKind(new IntervalBarRenderer());
-		public final static CategoryRendererKind LAYERED_BAR = new CategoryRendererKind(new LayeredBarRenderer());
+		public final static CategoryRendererKind
+			BAR = new CategoryRendererKind(new BarRenderer()), 
+			BAR3D = new CategoryRendererKind(new BarRenderer3D()),
+			STACKED_BAR = new CategoryRendererKind(new StackedBarRenderer()),
+			STACKED_BAR3D = new CategoryRendererKind(new StackedBarRenderer3D()),
+			AREA = new CategoryRendererKind(new AreaRenderer()),
+			INTERVAL_BAR = new CategoryRendererKind(new IntervalBarRenderer()),
+			LAYERED_BAR = new CategoryRendererKind(new LayeredBarRenderer());
 		
 		
 		public CategoryItemRenderer getRenderer() {
@@ -238,6 +239,16 @@ public class ChartProperties extends PropertySource {
 		public static CategoryRendererKind get(CategoryItemRenderer renderer) {
 			return renderers.get(renderer.getClass());
 		}
+
+		@Override
+		public Object getEditableValue() {
+			return this;
+		}
+
+		double val;
+		@Property
+		public double getDoubleVal() { return val; }
+		public void setDoubleVal(double val) { this.val = val; }
 	}
 
 	public class CategoryPlotProperties extends PlotProperties
@@ -278,10 +289,11 @@ public class ChartProperties extends PropertySource {
 			renderers.put(renderer.getClass(), this);
 		}
 		
-		public final static XYRendererKind LINE = new XYRendererKind(new XYLineAndShapeRenderer(true, false));
-		public final static XYRendererKind AREA = new XYRendererKind(new XYAreaRenderer()); 
-		public final static XYRendererKind BAR = new XYRendererKind(new XYBarRenderer());
-		public final static XYRendererKind DOT = new XYRendererKind(new XYDotRenderer());
+		public final static XYRendererKind
+			LINE = new XYRendererKind(new XYLineAndShapeRenderer(true, false)),
+			AREA = new XYRendererKind(new XYAreaRenderer()),
+			BAR = new XYRendererKind(new XYBarRenderer()),
+			DOT = new XYRendererKind(new XYDotRenderer());
 		
 		public XYItemRenderer getRenderer() {
 			return renderer;

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.ComboBoxLabelProvider;
@@ -24,6 +25,16 @@ public class EnumPropertyDescriptor extends PropertyDescriptor {
 		super(id, displayName);
 		names = EmptyStringArray;
 		values = EmptyObjectArray;
+		
+		setLabelProvider(new LabelProvider() {
+			public String getText(Object value) {
+				if (value != null)
+					for (int i = 0; i < values.length; ++i)
+						if (value.equals(values[i]))
+							return names[i];
+				return "";
+			}
+		});
 	}
 	
 	public void setEnumType(Class enumType)
@@ -51,29 +62,33 @@ public class EnumPropertyDescriptor extends PropertyDescriptor {
 	}
 	
 	public CellEditor createPropertyEditor(Composite parent) {
-        CellEditor editor = new ComboBoxCellEditor(parent, names, SWT.READ_ONLY);
+        CellEditor editor = new EnumCellEditor(parent);
         if (getValidator() != null)
             editor.setValidator(getValidator());
         return editor;
     }
+	
+	class EnumCellEditor extends ComboBoxCellEditor {
+		
+		public EnumCellEditor(Composite parent) {
+			super(parent, names, SWT.READ_ONLY);
+		}
 
-    public ILabelProvider getLabelProvider() {
-        if (isLabelProviderSet())
-            return super.getLabelProvider();
-        else
-            return new ComboBoxLabelProvider(names);
-    }	
-	
-	public Object getValue(int index)
-	{
-		return values[index];
-	}
-	
-	public int getIndex(Object value)
-	{
-		for (int i = 0; i < values.length; ++i)
-			if (values[i].equals(value))
-				return i;
-		return -1;
+		@Override
+		protected Object doGetValue() {
+			int index = (Integer)super.doGetValue();
+			return 0 <= index && index < values.length ? values[index] : null;
+		}
+
+		@Override
+		protected void doSetValue(Object value) {
+			if (value != null)
+				for(int i = 0; i < values.length; ++i)
+					if (value.equals(values[i])) {
+						super.doSetValue(i);
+						return;
+					}
+		}
 	}
 }
+
