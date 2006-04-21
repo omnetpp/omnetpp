@@ -21,13 +21,13 @@ import org.eclipse.jface.text.contentassist.IContextInformationPresenter;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.omnetpp.ned.editor.text.NedEditorMessages;
 import org.omnetpp.ned.editor.text.NedHelper;
+import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 import org.omnetpp.resources.INEDComponent;
 import org.omnetpp.resources.NEDResources;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
 // TODO a better structure is needed for storing the completion proposals
-// TODO proposalas should be context sensitive
-// TODO even name and type proposalas can be done, once the NED files can be parsed in the background
 // TODO context help can be supported, to show the documentation of the proposed keyword
 /**
  * NED completion processor.
@@ -96,7 +96,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 		String line = info.linePrefixTrimmed;
 		INEDComponent parentComponent = null;
 		if (info.componentName!=null)
-			parentComponent = res.getComponent(info.componentName); 
+			parentComponent = res.getComponent(info.componentName); //XXX parse NED file ourselves instead!!!! with error-tolerant version of the parser 
 		INEDComponent submoduleType = null;
 		if (info.submoduleTypeName!=null)
 			submoduleType = res.getComponent(info.submoduleTypeName); 
@@ -237,10 +237,13 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 	    	else if (line.endsWith(".")) { 
 	    		// after dot: offer gates of given submodule
 	    		if (parentComponent!=null) {
-	    			//XXX TODO: match out submod name, look it up and display its gates
+					String submodTypeName = extractSubmoduleTypeName(line, parentComponent);
+					INEDComponent submodType = res.getComponent(submodTypeName);
+					if (submodType!=null)
+						addProposals(viewer, documentOffset, result, submodType.getGateNames(), "gate");
 	    		}
-	    	}  		
-		}
+	    	}
+		}  		
 		
 		// offer keywords as fallback -- removed because those proposals rarely made sense
 		//if (result.isEmpty())
@@ -257,6 +260,23 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 		System.out.println("Proposal creation: "+millis+"ms");
 	    
 	    return (ICompletionProposal[]) result.toArray(new ICompletionProposal[result.size()]);
+	}
+
+	private String extractSubmoduleTypeName(String line, INEDComponent parentComponent) {
+		// identifier followed by ".", potentially a submodule index ("[something]") in between
+		Matcher matcher = Pattern.compile("([A-Za-z_][A-Za-z0-9_]*) *(\\[[^\\[\\]]*\\])? *\\.").matcher(line);
+		if (matcher.lookingAt()) {
+			String submoduleName = matcher.group(1);
+			NEDElement submodNode = parentComponent.getMember(submoduleName);
+			if (submodNode instanceof SubmoduleNode) {
+				SubmoduleNode submod = (SubmoduleNode) submodNode;
+				String submodTypeName = submod.getType();
+				if (submodTypeName==null)
+					submodTypeName = submod.getLikeType();
+				return submodTypeName;
+			}
+		}
+		return null; // bad luck
 	}
 
 	private void addProposals(ITextViewer viewer, int documentOffset, List result, String[] proposals, String description) {

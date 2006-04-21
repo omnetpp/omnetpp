@@ -10,7 +10,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 
 /**
- * This class contains all the possible keywords for syntaxt highlighting and context assist functions.
+ * This class contains all the possible keywords for syntax highlighting and context assist functions.
  *
  * @author rhornig
  *
@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.Display;
 public class NedHelper {
 
     /**
-     * Convinience method, to returna system default color. Color constans come from SWT class e.g. SWT.COLOR_RED
+     * Convenience method, to return a system default color. Color constants come from SWT class e.g. SWT.COLOR_RED
      * @param color
      * @return
      */
