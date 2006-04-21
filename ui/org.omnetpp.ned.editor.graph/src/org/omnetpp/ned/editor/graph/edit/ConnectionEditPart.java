@@ -8,16 +8,14 @@ import java.util.List;
 import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.ManhattanConnectionRouter;
-import org.eclipse.draw2d.PolygonDecoration;
-import org.eclipse.draw2d.PolylineConnection;
 import org.eclipse.draw2d.RelativeBendpoint;
 import org.eclipse.draw2d.RoutingAnimator;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
-import org.omnetpp.ned.editor.graph.edit.policies.WireBendpointEditPolicy;
-import org.omnetpp.ned.editor.graph.edit.policies.WireEditPolicy;
-import org.omnetpp.ned.editor.graph.edit.policies.WireEndpointEditPolicy;
-import org.omnetpp.ned.editor.graph.figures.WireFigure;
+import org.omnetpp.ned.editor.graph.edit.policies.ConnectionBendpointEditPolicy;
+import org.omnetpp.ned.editor.graph.edit.policies.ConnectionEditPolicy;
+import org.omnetpp.ned.editor.graph.edit.policies.ConnectionEndpointEditPolicy;
+import org.omnetpp.ned.editor.graph.figures.ConnectionFigure;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.INEDChangeListener;
 import org.omnetpp.ned2.model.NEDElement;
@@ -28,21 +26,21 @@ import org.omnetpp.ned2.model.WireBendpointModel;
  * Implements a Connection Editpart to represnt a Wire like connection.
  * 
  */
-public class WireEditPart extends AbstractConnectionEditPart implements PropertyChangeListener, INEDChangeListener {
+public class ConnectionEditPart extends AbstractConnectionEditPart implements PropertyChangeListener, INEDChangeListener {
 
     @Override
     public void activate() {
         if (isActive()) return;
         super.activate();
         // register as listener of the model object
-        getWire().addListener(this);
+        getConnectionModel().addListener(this);
     }
 
     @Override
     public void deactivate() {
         if (!isActive()) return;
         // deregister as listener of the model object
-        getWire().removeListener(this);
+        getConnectionModel().removeListener(this);
         super.deactivate();
     }
 
@@ -56,16 +54,22 @@ public class WireEditPart extends AbstractConnectionEditPart implements Property
         getFigure().addPropertyChangeListener(Connection.PROPERTY_CONNECTION_ROUTER, this);
     }
 
+    @Override
+    public void deactivateFigure() {
+        getFigure().removePropertyChangeListener(Connection.PROPERTY_CONNECTION_ROUTER, this);
+        super.deactivateFigure();
+    }
+
     /**
      * Adds extra EditPolicies as required.
      */
     @Override
     protected void createEditPolicies() {
-        installEditPolicy(EditPolicy.CONNECTION_ENDPOINTS_ROLE, new WireEndpointEditPolicy());
+        installEditPolicy(EditPolicy.CONNECTION_ENDPOINTS_ROLE, new ConnectionEndpointEditPolicy());
         // Note that the Connection is already added to the diagram and knows
         // its Router.
         refreshBendpointEditPolicy();
-        installEditPolicy(EditPolicy.CONNECTION_ROLE, new WireEditPolicy());
+        installEditPolicy(EditPolicy.CONNECTION_ROLE, new ConnectionEditPolicy());
     }
 
     /**
@@ -75,34 +79,18 @@ public class WireEditPart extends AbstractConnectionEditPart implements Property
      */
     @Override
     protected IFigure createFigure() {
-        WireFigure conn = new WireFigure();
+        ConnectionFigure conn = new ConnectionFigure();
         conn.addRoutingListener(RoutingAnimator.getDefault());
-        PolygonDecoration arrow;
 
-        // draw an arrow at the destModule side if it's not a bidirectional connection
-        if (getWire().getArrowDirection() == NEDElementUtil.NED_ARROWDIR_BIDIR)
-            arrow = null;
-        else {
-            arrow = new PolygonDecoration();
-            arrow.setTemplate(PolygonDecoration.TRIANGLE_TIP);
-            arrow.setScale(6, 3);
-            conn.setTargetDecoration(arrow);
-        }
-    	return conn;    
-    }
-
-    @Override
-    public void deactivateFigure() {
-        getFigure().removePropertyChangeListener(Connection.PROPERTY_CONNECTION_ROUTER, this);
-        super.deactivateFigure();
+        return conn;    
     }
 
     /**
-     * Returns the model of this represented as a Wire.
+     * Returns the model associated to this editpart as a ConnectionNodeEx
      * 
      * @return Model of this as <code>Wire</code>
      */
-    protected ConnectionNodeEx getWire() {
+    protected ConnectionNodeEx getConnectionModel() {
         return (ConnectionNodeEx) getModel();
     }
 
@@ -127,7 +115,7 @@ public class WireEditPart extends AbstractConnectionEditPart implements Property
      */
     protected void refreshBendpoints() {
         if (getConnectionFigure().getConnectionRouter() instanceof ManhattanConnectionRouter) return;
-        List modelConstraint = getWire().getBendpoints();
+        List modelConstraint = getConnectionModel().getBendpoints();
         List figureConstraint = new ArrayList();
         for (int i = 0; i < modelConstraint.size(); i++) {
             WireBendpointModel wbp = (WireBendpointModel) modelConstraint.get(i);
@@ -143,7 +131,7 @@ public class WireEditPart extends AbstractConnectionEditPart implements Property
         if (getConnectionFigure().getConnectionRouter() instanceof ManhattanConnectionRouter)
             installEditPolicy(EditPolicy.CONNECTION_BENDPOINTS_ROLE, null);
         else
-            installEditPolicy(EditPolicy.CONNECTION_BENDPOINTS_ROLE, new WireBendpointEditPolicy());
+            installEditPolicy(EditPolicy.CONNECTION_BENDPOINTS_ROLE, new ConnectionBendpointEditPolicy());
     }
 
     /**
@@ -157,6 +145,11 @@ public class WireEditPart extends AbstractConnectionEditPart implements Property
         // XXX do we need this here?
         // refreshBendpointEditPolicy();
         // TODO implement display property support for connections here
+        // draw an arrow at the destModule side if it's not a bidirectional connection
+        ConnectionFigure conn = (ConnectionFigure)getFigure();  
+        
+        conn.setArrowEnabled(getConnectionModel().getArrowDirection() != NEDElementUtil.NED_ARROWDIR_BIDIR);
+
     }
 
 	public void attributeChanged(NEDElement node, String attr) {

@@ -4,7 +4,7 @@ import org.eclipse.draw2d.PolylineConnection;
 import org.eclipse.gef.GraphicalEditPart;
 import org.omnetpp.common.color.ColorFactory;
 
-public class WireEndpointEditPolicy extends org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy {
+public class ConnectionEndpointEditPolicy extends org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy {
 
     @Override
     protected void addSelectionHandles() {

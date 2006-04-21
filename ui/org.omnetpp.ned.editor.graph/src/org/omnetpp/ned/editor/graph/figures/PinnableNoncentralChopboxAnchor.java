@@ -4,7 +4,7 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 
-public class PinnableNoncentralChopboxAnchor extends NoncentralChocboxAnchor {
+public class PinnableNoncentralChopboxAnchor extends NoncentralChopboxAnchor {
     // fixed location if the anchor is pinned (relative in owner area ie 0.0 - 1.0)
     private double pinnedLocationX = 0.5f;
     private double pinnedLocationY = 0.5f;

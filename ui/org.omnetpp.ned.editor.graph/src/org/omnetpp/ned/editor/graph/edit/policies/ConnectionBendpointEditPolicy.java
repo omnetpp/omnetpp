@@ -10,7 +10,7 @@ import org.omnetpp.ned.editor.graph.model.commands.DeleteBendpointCommand;
 import org.omnetpp.ned.editor.graph.model.commands.MoveBendpointCommand;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
 
-public class WireBendpointEditPolicy extends org.eclipse.gef.editpolicies.BendpointEditPolicy {
+public class ConnectionBendpointEditPolicy extends org.eclipse.gef.editpolicies.BendpointEditPolicy {
 
     @Override
     protected Command getCreateBendpointCommand(BendpointRequest request) {

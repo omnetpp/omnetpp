@@ -4,7 +4,7 @@ import org.eclipse.draw2d.*;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 
-public class NoncentralChocboxAnchor extends ChopboxAnchor {
+public class NoncentralChopboxAnchor extends ChopboxAnchor {
 
     // centrum point (relative in owner area ie 0.0 - 1.0)
     private double relRefPointX = 0.5f;
@@ -15,7 +15,7 @@ public class NoncentralChocboxAnchor extends ChopboxAnchor {
      * in the owner's area (by default towards the center of the owner). 
      * @param owner Owner figue
      */
-    public NoncentralChocboxAnchor(IFigure owner) {
+    public NoncentralChopboxAnchor(IFigure owner) {
         super(owner);
     }
 
@@ -26,7 +26,7 @@ public class NoncentralChocboxAnchor extends ChopboxAnchor {
      * @param rX Relative place in owner (0.0 - 1.0)
      * @param rY Relative place in owner (0.0 - 1.0)
      */
-    public NoncentralChocboxAnchor(IFigure owner, double rX, double rY) {
+    public NoncentralChopboxAnchor(IFigure owner, double rX, double rY) {
         super(owner);
         setRelRefPoint(rX, rY);
     }

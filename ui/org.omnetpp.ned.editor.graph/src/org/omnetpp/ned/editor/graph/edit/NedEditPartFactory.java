@@ -21,7 +21,7 @@ public class NedEditPartFactory implements EditPartFactory {
         else if (model instanceof SubmoduleNodeEx)
             child = new SubmoduleEditPart();
         else if (model instanceof ConnectionNodeEx)
-            child = new WireEditPart();
+            child = new ConnectionEditPart();
         else
                 System.out.println("Unknown model element: " + model.toString());
         child.setModel(model);

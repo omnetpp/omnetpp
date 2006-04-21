@@ -5,7 +5,7 @@ import org.eclipse.gef.requests.GroupRequest;
 import org.omnetpp.ned.editor.graph.model.commands.ConnectionCommand;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
 
-public class WireEditPolicy extends org.eclipse.gef.editpolicies.ConnectionEditPolicy {
+public class ConnectionEditPolicy extends org.eclipse.gef.editpolicies.ConnectionEditPolicy {
 
     @Override
     protected Command getDeleteCommand(GroupRequest request) {
