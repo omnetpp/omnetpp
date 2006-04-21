@@ -65,7 +65,7 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
      * @param proposalString
      * @return List of proposals
      */
-    protected List createProposals(ITextViewer viewer, int documentOffset, IWordDetector wordDetector, String startStr, String[] proposalString, String endStr) {
+    protected List createProposals(ITextViewer viewer, int documentOffset, IWordDetector wordDetector, String startStr, String[] proposalString, String endStr, String description) {
         List propList = new ArrayList();
         IRegion wordRegion = detectWordRegion(viewer, documentOffset, wordDetector); 
         String prefix = "";
@@ -77,8 +77,10 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
         
         for (int i = 0 ;i < proposalString.length; ++i) {
             String prop = startStr + proposalString[i] + endStr;
-            if (prop.startsWith(prefix) )
-                propList.add(new CompletionProposal(prop, wordRegion.getOffset(), wordRegion.getLength(), prop.length()));
+            if (prop.startsWith(prefix)) {
+            	String displayText = description==null ? prop : prop+" - "+description;
+                propList.add(new CompletionProposal(prop, wordRegion.getOffset(), wordRegion.getLength(), prop.length(), null, displayText, null, null));
+            }
         }
 
         return propList;

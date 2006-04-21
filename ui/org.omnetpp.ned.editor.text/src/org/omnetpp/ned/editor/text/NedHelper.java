@@ -107,10 +107,17 @@ public class NedHelper {
     public final static String[] proposedPrivateDocTodo = highlightPrivateDocTodo;
     public final static String[] proposedDocTags = highlightDocTags;
     public final static String[] proposedDocKeywords = highlightDocKeywords;
-    public final static String[] proposedNedTypes = { "bool", "double", "function", "inout", "input", "int", "output", "string", "xml" };
-    public final static String[] proposedNedKeywords = { "allowunconnected", "channel", "channelinterface", "connections:", "extends", "gates:", "if", "import", "index", "interface", "like", "module", "network", "package", "parameters:", "property", "simple", "submodules:", "this", "typename", "types:", "where", "withcppclass" };
+    public final static String[] proposedNedParamTypes = { "bool", "double", "int", "string", "bool function", "double function", "int function", "string function", "xml" };
+    public final static String[] proposedNedGateTypes = { "inout", "input", "output" };
+    public final static String[] proposedNedGlobalStartingKeywords = { "channel", "channel withcppclass", "channelinterface", "import", "interface", "module", "network", "package", "property", "simple"};
+    public final static String[] proposedNedSectionNameKeywords = {"connections:", "connections allowunconnected:", "gates:", "parameters:", "submodules:", "types:"};
+    public final static String[] proposedNedConnsKeywords = {"allowunconnected"};
+    public final static String[] proposedNedOtherKeywords = {"extends", "if", "index", "like", "this", "typename", "where"};
     public final static String[] proposedNedFunctions = { "acos", "asin", "atan", "atan2", "bernoulli", "beta", "binomial", "cauchy", "ceil", "chi_square", "const", "cos", "default", "erlang_k", "exp", "exponential", "fabs", "floor", "fmod", "gamma_d", "genk_exponential", "genk_intuniform", "genk_normal", "genk_truncnormal", "genk_uniform", "geometric", "hypergeometric", "hypot", "intuniform", "log", "log10", "lognormal", "max", "min", "negbinomial", "normal", "pareto_shifted", "poisson", "pow", "sin", "sizeof", "sqrt", "student_t", "tan", "triang", "truncnormal", "uniform", "weibull", "xmldoc" };
     public final static String[] proposedConstants = { "false", "true" };
+    public final static String[] proposedNedComponentPropertyNames = {"display"}; //XXX check what gets actually supported! also: "recordstats", "kernel", ... 
+    public final static String[] proposedNedParamPropertyNames = {"prompt", "choice", "classname"}; //XXX check this list before release  
+    public final static String[] proposedNedGatePropertyNames = {"labels", "inlabels", "outlabels"}; //XXX check this list before release
 
     // MSG specific completions - not used currently
 //    public final static String[] proposedMsgTypes = { "anytype", "bool", "char", "double", "int", "long", "numeric", "short", "string", "unsigned", "xml" };

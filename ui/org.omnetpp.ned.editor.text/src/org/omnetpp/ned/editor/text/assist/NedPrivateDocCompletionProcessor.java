@@ -14,7 +14,7 @@ public class NedPrivateDocCompletionProcessor extends IncrementalCompletionProce
     public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
         List result = 
             createProposals(viewer, documentOffset, NedHelper.nedWordDetector,
-                    "", NedHelper.proposedPrivateDocTodo, " ");
+                    "", NedHelper.proposedPrivateDocTodo, " ", null);
 
         Collections.sort(result, CompletionProposalComparator.getInstance());
         return (ICompletionProposal[]) result.toArray(new ICompletionProposal[result.size()]);

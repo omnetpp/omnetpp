@@ -16,12 +16,12 @@ public class NedDocCompletionProcessor extends IncrementalCompletionProcessor {
     public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
         List result = 
             createProposals(viewer, documentOffset, NedHelper.nedAtWordDetector,
-                    "@", NedHelper.proposedDocKeywords, " ");
+                    "@", NedHelper.proposedDocKeywords, " ", null);
 
         result.addAll(createProposals(viewer, documentOffset, NedHelper.nedDocTagDetector, 
-                "<", NedHelper.proposedDocTags, "> "));
+                "<", NedHelper.proposedDocTags, "> ", null));
         result.addAll(createProposals(viewer, documentOffset, NedHelper.nedDocTagDetector, 
-                "</", NedHelper.proposedDocTags, "> "));
+                "</", NedHelper.proposedDocTags, "> ", null));
         
 //        Collections.sort(result, CompletionProposalComparator.getInstance());
         return (ICompletionProposal[]) result.toArray(new ICompletionProposal[result.size()]);
