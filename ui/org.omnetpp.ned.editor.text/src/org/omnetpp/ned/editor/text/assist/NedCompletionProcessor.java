@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -69,7 +71,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 
     	String context = getCompletionContext(viewer, documentOffset, NedHelper.nedWordDetector);
     	System.out.println("NedCompletionProcessor.computeCompletionProposals(): context: >>"+context+"<<");
-
+    	getComponentName(viewer, documentOffset); //XXXX
     	NEDResources res = NEDResourcesPlugin.getNEDResources();    	
 
     	// match various "extends" clauses
@@ -171,6 +173,61 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
         	context = context.replace('\n', ' ');
         	context = context.replace('\r', ' ');
         	return context;
+
+        } catch (BadLocationException e) {
+        	return null;
+        }
+	}
+
+	private String getComponentName(ITextViewer viewer, int documentOffset) {
+		IDocument docu = viewer.getDocument();
+        int offset = documentOffset;
+        try {
+    		String source = docu.get(0,offset);
+    		// kill string literals
+			source = source.replaceAll("\".*\"", "\"...\"");
+    		// kill comments
+    		source = source.replaceAll("(?m)//.*", "");
+    		// kill {...} regions (including bodies of inner types, etc)
+    		while (source.matches("(?s).*\\{[^\\{\\}]*\\}.*"))
+    			source = source.replaceAll("(?s)\\{[^\\{\\}]*\\}", "@@");
+
+			// detect what section we are in 
+			String section;
+			if (source.matches("(?s).*\\bconnections\\b.*"))
+				section = "connections";
+			else if (source.matches("(?s).*\\btypes\\b.*"))
+				section = "types";
+			else if (source.matches("(?s).*\\bsubmodules\\b.*\\bgates\\b.*"))
+				section = "submodule-gates";
+			else if (source.matches("(?s).*\\bsubmodules\\b.*\\{.*"))
+				section = "submodule-parameters";
+			else if (source.matches("(?s).*\\bsubmodules\\b.*"))
+				section = "submodules";
+			else if (source.matches("(?s).*\\bgates\\b.*"))
+				section = "gates";
+			else if (source.matches("(?s).*\\{.*"))
+				section = "parameters";
+			else
+				section = "global";
+
+			// detect module name
+			String pat = "(?s).*(simple|module|network|channel|interface|channelinterface)\\s+(withcppclass\\s+)?([A-Za-z_][A-Za-z0-9_]+)";
+			Matcher matcher = Pattern.compile(pat).matcher(source);
+			String componentName = null;
+			if (matcher.lookingAt())
+				componentName = matcher.group(3);
+
+			// detect submodule type
+			String pat2 = "(?s).*[:\\s]([A-Za-z_][A-Za-z0-9_]+)\\s*\\{";
+			Matcher matcher2 = Pattern.compile(pat2).matcher(source);
+			String submoduleTypeName = null;
+			if (matcher2.lookingAt())
+				submoduleTypeName = matcher2.group(1);
+			
+			System.out.println(">>>"+source+"<<<");
+			System.out.println("SECTION:"+section+"  COMPONENT:"+componentName+"  SUBMODTYPENAME:"+submoduleTypeName);
+        	return "";
 
         } catch (BadLocationException e) {
         	return null;
