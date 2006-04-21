@@ -22,6 +22,7 @@ public class ModuleCreationWizard extends Wizard implements INewWizard {
 
     private IWorkbench workbench;
 
+    @Override
     public void addPages() {
         logicPage = new ModuleCreationWizardPage1(workbench, selection);
         addPage(logicPage);
@@ -32,6 +33,7 @@ public class ModuleCreationWizard extends Wizard implements INewWizard {
         selection = currentSelection;
     }
 
+    @Override
     public boolean performFinish() {
         return logicPage.finish();
     }

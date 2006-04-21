@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
-import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.INedContainer;
@@ -95,6 +94,7 @@ public class CloneCommand extends Command {
         return newModule;
     }
 
+    @Override
     public void execute() {
         redo();
     }
@@ -103,6 +103,7 @@ public class CloneCommand extends Command {
         this.parent = parent;
     }
 
+    @Override
     public void redo() {
         old2newMapping = new HashMap<INedModule, INedModule>();
         newConnections = new LinkedList<ConnectionNodeEx>();
@@ -132,6 +133,7 @@ public class CloneCommand extends Command {
             }
     }
 
+    @Override
     public void undo() {
         for (INedModule mod : newModules)
             mod.removeFromParent();

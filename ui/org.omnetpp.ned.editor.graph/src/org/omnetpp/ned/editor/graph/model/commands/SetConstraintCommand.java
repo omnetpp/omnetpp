@@ -18,12 +18,14 @@ public class SetConstraintCommand extends org.eclipse.gef.commands.Command {
     private Dimension oldSize;
     private INedModule module;
 
+    @Override
     public String getLabel() {
         if (oldSize.equals(newSize)) 
             return "Move " + module.getName();
         return "Resize " + module.getName();
     }
 
+    @Override
     public void execute() {
         // XXX just for debugging
 //        System.out.println(ModelUtil.printPojoElementTree((NEDElement)module, ""));
@@ -32,6 +34,7 @@ public class SetConstraintCommand extends org.eclipse.gef.commands.Command {
         redo();
     }
 
+    @Override
     public void redo() {
         module.setSize(newSize);
         module.setLocation(newPos);
@@ -54,6 +57,7 @@ public class SetConstraintCommand extends org.eclipse.gef.commands.Command {
         newSize = p;
     }
 
+    @Override
     public void undo() {
         module.setSize(oldSize);
         module.setLocation(oldPos);

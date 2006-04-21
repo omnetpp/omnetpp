@@ -1,7 +1,6 @@
 package org.omnetpp.ned.editor.graph.model.commands;
 
 import org.eclipse.gef.commands.Command;
-import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned2.model.NEDElement;
 
 /**
@@ -24,12 +23,14 @@ public class ReorderPartCommand extends Command {
         newInsertChildBefore = insertBefore;
     }
 
+    @Override
     public void execute() {
         oldInsertBeforePos = node.getNextSibling();
         node.removeFromParent();
         parent.insertChildBefore(newInsertChildBefore, node);
     }
 
+    @Override
     public void undo() {
         node.removeFromParent();
         parent.insertChildBefore(oldInsertBeforePos, node);

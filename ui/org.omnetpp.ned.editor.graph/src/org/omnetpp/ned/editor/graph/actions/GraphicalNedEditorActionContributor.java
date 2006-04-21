@@ -20,13 +20,13 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.RetargetAction;
-import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 
 public class GraphicalNedEditorActionContributor extends org.eclipse.gef.ui.actions.ActionBarContributor {
 
     /**
      * @see org.eclipse.gef.ui.actions.ActionBarContributor#buildActions()
      */
+    @Override
     protected void buildActions() {
         addRetargetAction(new UndoRetargetAction());
         addRetargetAction(new RedoRetargetAction());
@@ -54,6 +54,7 @@ public class GraphicalNedEditorActionContributor extends org.eclipse.gef.ui.acti
     /**
      * @see org.eclipse.gef.ui.actions.ActionBarContributor#declareGlobalActionKeys()
      */
+    @Override
     protected void declareGlobalActionKeys() {
         addGlobalActionKey(ActionFactory.PRINT.getId());
         addGlobalActionKey(ActionFactory.SELECT_ALL.getId());
@@ -64,6 +65,7 @@ public class GraphicalNedEditorActionContributor extends org.eclipse.gef.ui.acti
     /**
      * @see org.eclipse.ui.part.EditorActionBarContributor#contributeToToolBar(IToolBarManager)
      */
+    @Override
     public void contributeToToolBar(IToolBarManager tbm) {
         tbm.add(getAction(ActionFactory.UNDO.getId()));
         tbm.add(getAction(ActionFactory.REDO.getId()));
@@ -92,6 +94,7 @@ public class GraphicalNedEditorActionContributor extends org.eclipse.gef.ui.acti
     /**
      * @see org.eclipse.ui.part.EditorActionBarContributor#contributeToMenu(IMenuManager)
      */
+    @Override
     public void contributeToMenu(IMenuManager menubar) {
         super.contributeToMenu(menubar);
         MenuManager viewMenu = new MenuManager("View");

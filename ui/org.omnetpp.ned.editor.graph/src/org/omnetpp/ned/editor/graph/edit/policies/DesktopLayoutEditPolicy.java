@@ -14,6 +14,7 @@ public abstract class DesktopLayoutEditPolicy extends XYLayoutEditPolicy {
      *  @return The equivalent model constraint (location pointing to the figure's refpoint)
      * @see org.eclipse.gef.editpolicies.ConstrainedLayoutEditPolicy#getConstraintFor(org.eclipse.draw2d.geometry.Rectangle)
      */
+    @Override
     public Object getConstraintFor(Rectangle rect) {
         return new Rectangle(rect.getCenter(), rect.getSize());
     }

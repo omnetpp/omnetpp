@@ -8,6 +8,7 @@ import org.omnetpp.ned2.model.INedModule;
 
 public class NedComponentEditPolicy extends org.eclipse.gef.editpolicies.ComponentEditPolicy {
 
+    @Override
     protected Command createDeleteCommand(GroupRequest request) {
         DeleteCommand deleteCmd = new DeleteCommand();
         deleteCmd.setParent((INedContainer)getHost().getParent().getModel());

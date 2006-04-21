@@ -22,10 +22,8 @@ import org.omnetpp.ned.editor.graph.figures.properties.DisplayQueueSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayRangeSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayShapeSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayTooltipSupport;
-import org.omnetpp.ned.editor.graph.properties.SubmoduleDisplayPropertySource;
 import org.omnetpp.ned2.model.DisplayString;
 import org.omnetpp.ned2.model.INedModule;
-import org.omnetpp.ned2.model.DisplayString.Prop;
 
 /**
  * Base abstract controller for NedModel and NedFigures. Provides support for 
@@ -33,6 +31,7 @@ import org.omnetpp.ned2.model.DisplayString.Prop;
  */
 abstract public class NedNodeEditPart extends ContainerEditPart {
 
+    @Override
     protected void createEditPolicies() {
         super.createEditPolicies();
         installEditPolicy(EditPolicy.COMPONENT_ROLE, new NedComponentEditPolicy());
@@ -45,6 +44,7 @@ abstract public class NedNodeEditPart extends ContainerEditPart {
      * 
      * @return List of connections.
      */
+    @Override
     protected List getModelSourceConnections() {
         return ((INedModule)getNEDModel()).getSrcConnections();
     }
@@ -54,6 +54,7 @@ abstract public class NedNodeEditPart extends ContainerEditPart {
      * 
      * @return List of connections.
      */
+    @Override
     protected List getModelTargetConnections() {
         return ((INedModule)getNEDModel()).getDestConnections();
     }
@@ -122,6 +123,7 @@ abstract public class NedNodeEditPart extends ContainerEditPart {
      * Updates the visual aspect of this.
      */
     // FIXME most of this stuff should go to SubmoduleEditPart.refreshVisuls()
+    @Override
     protected void refreshVisuals() {
         
         // define the properties that determine the visual appearence

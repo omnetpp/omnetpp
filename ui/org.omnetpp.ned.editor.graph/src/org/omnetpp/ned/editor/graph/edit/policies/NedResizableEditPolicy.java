@@ -23,6 +23,7 @@ public class NedResizableEditPolicy extends ResizableEditPolicy {
      * 
      * @return the new feedback figure
      */
+    @Override
     protected IFigure createDragSourceFeedbackFigure() {
         IFigure figure = createFigure((GraphicalEditPart) getHost(), null);
 
@@ -79,6 +80,7 @@ public class NedResizableEditPolicy extends ResizableEditPolicy {
      * 
      * @return the feedback layer
      */
+    @Override
     protected IFigure getFeedbackLayer() {
         return getLayer(LayerConstants.SCALED_FEEDBACK_LAYER);
     }
@@ -86,10 +88,12 @@ public class NedResizableEditPolicy extends ResizableEditPolicy {
     /**
      * @see org.eclipse.gef.editpolicies.NonResizableEditPolicy#getInitialFeedbackBounds()
      */
+    @Override
     protected Rectangle getInitialFeedbackBounds() {
         return getHostFigure().getBounds();
     }
 
+    @Override
     protected void addSelectionHandles() {
         super.addSelectionHandles();
         getLayer(LayerConstants.HANDLE_LAYER).setForegroundColor(ColorFactory.highlight);

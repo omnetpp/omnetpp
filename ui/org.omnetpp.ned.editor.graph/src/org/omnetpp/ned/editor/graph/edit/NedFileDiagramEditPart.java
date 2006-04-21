@@ -30,7 +30,6 @@ import org.eclipse.gef.SnapToGrid;
 import org.eclipse.gef.SnapToGuides;
 import org.eclipse.gef.SnapToHelper;
 import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
-import org.eclipse.gef.editpolicies.SnapFeedbackPolicy;
 import org.eclipse.gef.requests.SelectionRequest;
 import org.eclipse.gef.rulers.RulerProvider;
 import org.eclipse.gef.tools.DeselectAllTracker;
@@ -50,6 +49,7 @@ public class NedFileDiagramEditPart extends ContainerEditPart implements LayerCo
     /**
      * Installs EditPolicies specific to this.
      */
+    @Override
     protected void createEditPolicies() {
         super.createEditPolicies();
 
@@ -73,6 +73,7 @@ public class NedFileDiagramEditPart extends ContainerEditPart implements LayerCo
      * 
      * @return Figure.
      */
+    @Override
     protected IFigure createFigure() {
         Figure f = new FreeformLayer();
         f.setLayoutManager(new FreeformDesktopLayout());
@@ -83,6 +84,7 @@ public class NedFileDiagramEditPart extends ContainerEditPart implements LayerCo
     /**
      * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
      */
+    @Override
     public Object getAdapter(Class adapter) {
         if (adapter == SnapToHelper.class) {
             List snapStrategies = new ArrayList();
@@ -104,6 +106,7 @@ public class NedFileDiagramEditPart extends ContainerEditPart implements LayerCo
         return super.getAdapter(adapter);
     }
 
+    @Override
     public DragTracker getDragTracker(Request req) {
         if (req instanceof SelectionRequest && ((SelectionRequest) req).getLastButtonPressed() == 3)
             return new DeselectAllTracker(this);
@@ -112,6 +115,7 @@ public class NedFileDiagramEditPart extends ContainerEditPart implements LayerCo
 
 
     // FIXME 
+    @Override
     protected void refreshVisuals() {
     	Animation.markBegin();
     	ConnectionLayer cLayer = (ConnectionLayer) getLayer(CONNECTION_LAYER);
@@ -129,6 +133,7 @@ public class NedFileDiagramEditPart extends ContainerEditPart implements LayerCo
     	Animation.run(400);
     }
 
+    @Override
     protected List getModelChildren() {
     	return ((NedFileNodeEx)getNEDModel()).getCompoundModules();
     }

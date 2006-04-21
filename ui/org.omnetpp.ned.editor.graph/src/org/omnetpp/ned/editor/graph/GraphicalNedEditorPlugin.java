@@ -21,11 +21,9 @@ import org.eclipse.gef.tools.MarqueeSelectionTool;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.properties.NedPropertySourceAdapterFactory;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.NEDElementFactoryEx;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
 
 public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
@@ -98,7 +96,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
                 "Connection",
                 "The connection tool can be used to connect various modules and submodules",
                 null, 
-                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_CONNECTION),//$NON-NLS-1$
+                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_CONNECTION),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_CONNECTION,"l", null, 24)//$NON-NLS-1$
         );
         entries.add(tool);
@@ -143,7 +141,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
     static private PaletteContainer createTemplatesDrawer() {
         PaletteDrawer drawer = new PaletteDrawer(
                 "Templates",
-                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_TEMPLATE)); //$NON-NLS-1$
+                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_TEMPLATE)); 
 
         List entries = new ArrayList();
 
@@ -172,7 +170,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
     static private PaletteContainer createImportsDrawer() {
         PaletteDrawer drawer = new PaletteDrawer(
                 "Imports",
-                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_TEMPLATE)); //$NON-NLS-1$
+                ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_TEMPLATE)); 
 
         List entries = new ArrayList();
 

@@ -106,7 +106,6 @@ import org.omnetpp.ned.editor.graph.dnd.TextTransferDropTargetListener;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
 import org.omnetpp.ned.editor.graph.edit.outline.NedTreeEditPartFactory;
 import org.omnetpp.ned.editor.graph.figures.properties.LayerSupport;
-import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.misc.ModulePaletteCustomizer;
 import org.omnetpp.ned2.model.NedFileNodeEx;
 
@@ -135,6 +134,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
             super(viewer);
         }
 
+        @Override
         public void init(IPageSite pageSite) {
             super.init(pageSite);
             ActionRegistry registry = getActionRegistry();
@@ -160,6 +160,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         			new TemplateTransferDropTargetListener(getViewer()));
             IToolBarManager tbm = getSite().getActionBars().getToolBarManager();
             showOutlineAction = new Action() {
+                @Override
                 public void run() {
                     showPage(ID_OUTLINE);
                 }
@@ -167,6 +168,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
             showOutlineAction.setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_OUTLINE));
             tbm.add(showOutlineAction);
             showOverviewAction = new Action() {
+                @Override
                 public void run() {
                     showPage(ID_OVERVIEW);
                 }
@@ -176,6 +178,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
             showPage(ID_OUTLINE);
         }
 
+        @Override
         public void createControl(Composite parent) {
             pageBook = new PageBook(parent, SWT.NONE);
             outline = getViewer().createControl(pageBook);
@@ -186,6 +189,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
             initializeOutlineViewer();
         }
 
+        @Override
         public void dispose() {
             unhookOutlineViewer();
             if (thumbnail != null) {
@@ -204,6 +208,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
             return null;
         }
 
+        @Override
         public Control getControl() {
             return pageBook;
         }
@@ -398,11 +403,13 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         getSite().getPage().closeEditor(GraphicalNedEditor.this, save);
     }
 
+    @Override
     public void commandStackChanged(EventObject event) {
     	firePropertyChange(IEditorPart.PROP_DIRTY);
     	super.commandStackChanged(event);
     }
 
+    @Override
     protected void configureGraphicalViewer() {
         super.configureGraphicalViewer();
         ScrollingGraphicalViewer viewer = (ScrollingGraphicalViewer) getGraphicalViewer();
@@ -463,8 +470,10 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         getGraphicalControl().addListener(SWT.Deactivate, listener);
     }
 
+    @Override
     protected CustomPalettePage createPalettePage() {
         return new CustomPalettePage(getPaletteViewerProvider()) {
+            @Override
             public void init(IPageSite pageSite) {
                 super.init(pageSite);
                 IAction copy = getActionRegistry().getAction(ActionFactory.COPY.getId());
@@ -473,16 +482,19 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         };
     }
 
+    @Override
     protected PaletteViewerProvider createPaletteViewerProvider() {
         return new PaletteViewerProvider(getEditDomain()) {
             private IMenuListener menuListener;
 
+            @Override
             protected void configurePaletteViewer(PaletteViewer viewer) {
                 super.configurePaletteViewer(viewer);
                 viewer.setCustomizer(new ModulePaletteCustomizer());
                 viewer.addDragSourceListener(new TemplateTransferDragSourceListener(viewer));
             }
 
+            @Override
             protected void hookPaletteViewer(PaletteViewer viewer) {
                 super.hookPaletteViewer(viewer);
                 final CopyTemplateAction copy = (CopyTemplateAction) getActionRegistry().getAction(
@@ -498,6 +510,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         };
     }
 
+    @Override
     public void dispose() {
         getSite().getWorkbenchWindow().getPartService().removePartListener(partListener);
         partListener = null;
@@ -506,6 +519,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         super.dispose();
     }
 
+    @Override
     public void doSave(final IProgressMonitor progressMonitor) {
     	editorSaving = true;
     	SafeRunner.run(new SafeRunnable() {
@@ -523,10 +537,12 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
     	editorSaving = false;
     }
 
+    @Override
     public void doSaveAs() {
         performSaveAs();
     }
 
+    @Override
     public Object getAdapter(Class type) {
         if (type == IContentOutlinePage.class) {
             outlinePage = new OutlinePage(new TreeViewer());
@@ -537,6 +553,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         return super.getAdapter(type);
     }
 
+    @Override
     protected Control getGraphicalControl() {
         return rulerComp;
     }
@@ -555,6 +572,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
     }
 
 
+    @Override
     protected PaletteRoot getPaletteRoot() {
         if (root == null) {
             root = GraphicalNedEditorPlugin.createPalette();
@@ -574,6 +592,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         }
     }
 
+    @Override
     protected void initializeGraphicalViewer() {
         super.initializeGraphicalViewer();
         getGraphicalViewer().setContents(getModel());
@@ -584,6 +603,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         		new TextTransferDropTargetListener(getGraphicalViewer(), TextTransfer.getInstance()));
     }
 
+    @Override
     protected void createActions() {
         super.createActions();
         ActionRegistry registry = getActionRegistry();
@@ -638,6 +658,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
      * 
      * @see org.eclipse.gef.ui.parts.GraphicalEditor#createGraphicalViewer(org.eclipse.swt.widgets.Composite)
      */
+    @Override
     protected void createGraphicalViewer(Composite parent) {
         rulerComp = new RulerComposite(parent, SWT.NONE);
         super.createGraphicalViewer(rulerComp);
@@ -648,6 +669,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         return (FigureCanvas) getGraphicalViewer().getControl();
     }
 
+    @Override
     public boolean isSaveAsAllowed() {
         return true;
     }
@@ -686,6 +708,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
 
         if (!file.exists()) {
             WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
+                @Override
                 public void execute(final IProgressMonitor monitor) {
                     saveProperties();
                     try {
@@ -727,6 +750,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
 //        if (manager != null) getModel().setZoom(manager.getZoom());
     }
 
+    @Override
     protected void setInput(IEditorInput input) {
         superSetInput(input);
 //        IFile file = ((IFileEditorInput) input).getFile();
@@ -782,6 +806,7 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
         }
     }
 
+    @Override
     protected void setSite(IWorkbenchPartSite site) {
         super.setSite(site);
         getSite().getWorkbenchWindow().getPartService().addPartListener(partListener);

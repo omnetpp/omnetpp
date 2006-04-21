@@ -69,6 +69,7 @@ public class RegularPolygon extends Polygon {
      * If both dimension is negative, the figure will use its preferred size, or request the size
      * from the underlying layout manager.  
      */
+    @Override
     public void setBounds(Rectangle rect) {
         setPoints(createScaledAndTranslatedPointList(templatePointList, rect));
     }

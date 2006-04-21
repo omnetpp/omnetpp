@@ -6,6 +6,7 @@ import org.omnetpp.common.color.ColorFactory;
 
 public class WireEndpointEditPolicy extends org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy {
 
+    @Override
     protected void addSelectionHandles() {
         super.addSelectionHandles();
         getConnectionFigure().setLineWidth(2);
@@ -16,6 +17,7 @@ public class WireEndpointEditPolicy extends org.eclipse.gef.editpolicies.Connect
         return (PolylineConnection) ((GraphicalEditPart) getHost()).getFigure();
     }
 
+    @Override
     protected void removeSelectionHandles() {
         super.removeSelectionHandles();
         getConnectionFigure().setLineWidth(0);

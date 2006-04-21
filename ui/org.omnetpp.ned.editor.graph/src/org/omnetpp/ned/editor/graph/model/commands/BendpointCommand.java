@@ -38,6 +38,7 @@ public class BendpointCommand extends Command {
         return conn;
     }
 
+    @Override
     public void redo() {
         execute();
     }

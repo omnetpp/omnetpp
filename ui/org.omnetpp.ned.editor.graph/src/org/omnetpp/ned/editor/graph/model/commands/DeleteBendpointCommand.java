@@ -11,12 +11,14 @@ public class DeleteBendpointCommand extends BendpointCommand {
 
     private Bendpoint bendpoint;
 
+    @Override
     public void execute() {
         bendpoint = (Bendpoint) getWire().getBendpoints().get(getIndex());
         getWire().removeBendpoint(getIndex());
         super.execute();
     }
 
+    @Override
     public void undo() {
         super.undo();
         getWire().insertBendpoint(getIndex(), bendpoint);

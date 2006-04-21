@@ -24,6 +24,7 @@ public class TextTransferDropTargetListener extends AbstractTransferDropTargetLi
         super(viewer, xfer);
     }
 
+    @Override
     protected Request createTargetRequest() {
         return new NativeDropRequest();
     }
@@ -32,6 +33,7 @@ public class TextTransferDropTargetListener extends AbstractTransferDropTargetLi
         return (NativeDropRequest) getTargetRequest();
     }
 
+    @Override
     protected void updateTargetRequest() {
         getNativeDropRequest().setData(getCurrentEvent().data);
     }

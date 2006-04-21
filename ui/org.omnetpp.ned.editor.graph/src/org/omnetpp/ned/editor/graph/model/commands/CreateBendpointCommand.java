@@ -9,6 +9,7 @@ import org.omnetpp.ned2.model.WireBendpointModel;
  */
 public class CreateBendpointCommand extends BendpointCommand {
 
+    @Override
     public void execute() {
         WireBendpointModel wbp = new WireBendpointModel();
         wbp.setRelativeDimensions(getFirstRelativeDimension(), getSecondRelativeDimension());
@@ -16,6 +17,7 @@ public class CreateBendpointCommand extends BendpointCommand {
         super.execute();
     }
 
+    @Override
     public void undo() {
         super.undo();
         getWire().removeBendpoint(getIndex());

@@ -38,6 +38,7 @@ public class ModuleFeedbackBorder extends ModuleBorder {
         }
     }
 
+    @Override
     public void paint(IFigure figure, Graphics g, Insets in) {
         g.setXORMode(true);
         g.setForegroundColor(ColorConstants.white);

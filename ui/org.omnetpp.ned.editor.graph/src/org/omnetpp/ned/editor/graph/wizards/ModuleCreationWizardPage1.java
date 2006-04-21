@@ -22,9 +22,9 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.eclipse.ui.ide.IDE;
-import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned2.model.NEDElementFactoryEx;
 import org.omnetpp.ned2.model.NedFileNodeEx;
+import org.omnetpp.ned2.model.pojo.NEDElementFactory;
 import org.omnetpp.ned2.model.pojo.NEDElementTags;
 
 public class ModuleCreationWizardPage1 extends WizardNewFileCreationPage
@@ -50,7 +50,8 @@ public class ModuleCreationWizardPage1 extends WizardNewFileCreationPage
 		this.workbench = aWorkbench;
 	}
 
-	public void createControl(Composite parent) {
+	@Override
+    public void createControl(Composite parent) {
 		super.createControl(parent);
 		this.setFileName("emptyModel" + exampleCount + ".logic"); //$NON-NLS-2$//$NON-NLS-1$
 
@@ -78,8 +79,9 @@ public class ModuleCreationWizardPage1 extends WizardNewFileCreationPage
 		setPageComplete(validatePage());
 	}
 
-	protected InputStream getInitialContents() {
-		NedFileNodeEx ld = (NedFileNodeEx)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementTags.NED_NED_FILE);
+	@Override
+    protected InputStream getInitialContents() {
+		NedFileNodeEx ld = (NedFileNodeEx)NEDElementFactory.getInstance().createNodeWithTag(NEDElementTags.NED_NED_FILE);
 		ByteArrayInputStream bais = null;
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();

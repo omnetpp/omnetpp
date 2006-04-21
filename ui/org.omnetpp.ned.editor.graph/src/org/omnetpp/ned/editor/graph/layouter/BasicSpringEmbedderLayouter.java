@@ -408,7 +408,7 @@ public class BasicSpringEmbedderLayouter extends AbstractGraphLayouter
             double vy = e.to.y - e.from.y;
             double len = Math.sqrt(vx * vx + vy * vy);
             len = (len == 0) ? 1.0 : len;
-            double f = attractionForce * (double)(e.len - len) / len;
+            double f = attractionForce * (e.len - len) / len;
             double dx = f * vx;
             double dy = f * vy;
 

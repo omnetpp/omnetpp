@@ -20,6 +20,7 @@ import org.omnetpp.ned.editor.graph.edit.policies.WireEndpointEditPolicy;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.INEDChangeListener;
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.NEDElementUtil;
 import org.omnetpp.ned2.model.WireBendpointModel;
 
 /**
@@ -29,12 +30,14 @@ import org.omnetpp.ned2.model.WireBendpointModel;
 // TODO remove dependency from PropertyChangeListener
 public class WireEditPart extends AbstractConnectionEditPart implements PropertyChangeListener, INEDChangeListener {
 
+    @Override
     public void activate() {
         super.activate();
         // register as listener of the model object
         getWire().addListener(this);
     }
 
+    @Override
     public void activateFigure() {
         super.activateFigure();
         /*
@@ -47,6 +50,7 @@ public class WireEditPart extends AbstractConnectionEditPart implements Property
     /**
      * Adds extra EditPolicies as required.
      */
+    @Override
     protected void createEditPolicies() {
         installEditPolicy(EditPolicy.CONNECTION_ENDPOINTS_ROLE, new WireEndpointEditPolicy());
         // Note that the Connection is already added to the diagram and knows
@@ -60,13 +64,14 @@ public class WireEditPart extends AbstractConnectionEditPart implements Property
      * 
      * @return The created Figure.
      */
+    @Override
     protected IFigure createFigure() {
         PolylineConnection conn = new PolylineConnection();
         conn.addRoutingListener(RoutingAnimator.getDefault());
         PolygonDecoration arrow;
 
         // draw an arrow at the destModule side if it's not a bidirectional connection
-        if (getWire().getArrowDirection() == ConnectionNodeEx.NED_ARROWDIR_BIDIR)
+        if (getWire().getArrowDirection() == NEDElementUtil.NED_ARROWDIR_BIDIR)
             arrow = null;
         else {
             arrow = new PolygonDecoration();
@@ -77,12 +82,14 @@ public class WireEditPart extends AbstractConnectionEditPart implements Property
     	return conn;    
     }
 
+    @Override
     public void deactivate() {
         // deregister as listener of the model object
         getWire().removeListener(this);
         super.deactivate();
     }
 
+    @Override
     public void deactivateFigure() {
         getFigure().removePropertyChangeListener(Connection.PROPERTY_CONNECTION_ROUTER, this);
         super.deactivateFigure();
@@ -142,6 +149,7 @@ public class WireEditPart extends AbstractConnectionEditPart implements Property
      * changes the wire color depending on the state of Wire.
      * 
      */
+    @Override
     protected void refreshVisuals() {
         refreshBendpoints();
         // TODO implement display property support for connections here

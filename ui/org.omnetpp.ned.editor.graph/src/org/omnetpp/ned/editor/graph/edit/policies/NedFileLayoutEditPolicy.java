@@ -13,7 +13,6 @@ import org.eclipse.gef.requests.CreateRequest;
 import org.omnetpp.ned.editor.graph.model.commands.AddCommand;
 import org.omnetpp.ned.editor.graph.model.commands.CloneCommand;
 import org.omnetpp.ned.editor.graph.model.commands.CreateCommand;
-import org.omnetpp.ned.editor.graph.model.commands.ReorderPartCommand;
 import org.omnetpp.ned2.model.INedContainer;
 import org.omnetpp.ned2.model.INedModule;
 import org.omnetpp.ned2.model.NedFileNodeEx;
@@ -29,6 +28,7 @@ public class NedFileLayoutEditPolicy
  * @param request the Clone Request
  * @return A command to perform the Clone.
  */
+@Override
 protected Command getCloneCommand(ChangeBoundsRequest request) {
 	CloneCommand clone = new CloneCommand();
 	clone.setParent((NedFileNodeEx)getHost().getModel());
@@ -47,6 +47,7 @@ protected Command getCloneCommand(ChangeBoundsRequest request) {
 	return clone;
 }
 	
+@Override
 protected Command createAddCommand(EditPart child, EditPart after) {
 	AddCommand command = new AddCommand();
 	command.setChild((INedModule)child.getModel());
@@ -59,12 +60,14 @@ protected Command createAddCommand(EditPart child, EditPart after) {
 /**
  * @see org.eclipse.gef.editpolicies.LayoutEditPolicy#createChildEditPolicy(org.eclipse.gef.EditPart)
  */
+@Override
 protected EditPolicy createChildEditPolicy(EditPart child) {
 	NedResizableEditPolicy policy = new NedResizableEditPolicy();
 	policy.setResizeDirections(0);
 	return policy;
 }
 
+@Override
 protected Command createMoveChildCommand(EditPart child, EditPart after) {
 	INedModule childModel = (INedModule)child.getModel();
 	INedContainer parentModel = (INedContainer)getHost().getModel();
@@ -79,6 +82,7 @@ protected Command createMoveChildCommand(EditPart child, EditPart after) {
     return UnexecutableCommand.INSTANCE;
 }
 
+@Override
 protected Command getCreateCommand(CreateRequest request) {
 	CreateCommand command = new CreateCommand();
 	EditPart after = getInsertionReference(request);

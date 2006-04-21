@@ -35,11 +35,13 @@ public class SubmodulePropertySource extends AbstractNedPropertySource {
         descriptors = new IPropertyDescriptor[] { nameProp, typeProp, displayProp };
     }
 
+    @Override
     public Object getEditableValue() {
         // we don't need this if we don't want to embed this property source into an other propertysource
         return model.getName();
     }
 
+    @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
         // fill in the type combobox
         Set<String> moduleNames = NEDResourcesPlugin.getNEDResources().getModuleNames();

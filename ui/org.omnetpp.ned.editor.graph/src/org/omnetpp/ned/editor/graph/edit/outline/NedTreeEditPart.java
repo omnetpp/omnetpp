@@ -14,6 +14,7 @@ import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.INEDChangeListener;
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.NEDElementUtil;
 import org.omnetpp.ned2.model.NedElementExUtil;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
@@ -54,6 +55,7 @@ public class NedTreeEditPart extends org.eclipse.gef.editparts.AbstractTreeEditP
         super(model);
     }
 
+    @Override
     public void activate() {
         super.activate();
         ((NEDElement)getModel()).addListener(this);
@@ -62,11 +64,13 @@ public class NedTreeEditPart extends org.eclipse.gef.editparts.AbstractTreeEditP
     /**
      * Creates and installs pertinent EditPolicies for this.
      */
+    @Override
     protected void createEditPolicies() {
         installEditPolicy(EditPolicy.COMPONENT_ROLE, new NedComponentEditPolicy());
         installEditPolicy(EditPolicy.PRIMARY_DRAG_ROLE, new NedTreeEditPolicy());
     }
 
+    @Override
     public void deactivate() {
         ((NEDElement)getModel()).removeListener(this);
         super.deactivate();
@@ -78,6 +82,7 @@ public class NedTreeEditPart extends org.eclipse.gef.editparts.AbstractTreeEditP
      * 
      * @return List of children.
      */
+    @Override
     protected List getModelChildren() {
         List result = new ArrayList();
         NEDElement currElem = ((NEDElement)getModel());
@@ -211,10 +216,10 @@ public class NedTreeEditPart extends org.eclipse.gef.editparts.AbstractTreeEditP
 			destlabel.append(!"".equals(node.getDestGateIndex()) ? 
 				       	"["+node.getDestGateIndex()+"]" : "");
             switch (node.getArrowDirection()) {
-                case NedElementExUtil.NED_ARROWDIR_L2R :
+                case NEDElementUtil.NED_ARROWDIR_L2R :
                     label = srclabel + " --> " + destlabel;
                     break;
-                case NedElementExUtil.NED_ARROWDIR_R2L :
+                case NEDElementUtil.NED_ARROWDIR_R2L :
                     label = destlabel + " <-- " + srclabel;
                     break;
                 default :

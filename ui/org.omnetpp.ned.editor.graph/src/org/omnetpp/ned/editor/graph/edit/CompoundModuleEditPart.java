@@ -2,13 +2,8 @@ package org.omnetpp.ned.editor.graph.edit;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
-
-import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.XYLayout;
-import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.gef.AccessibleAnchorProvider;
 import org.eclipse.gef.AutoexposeHelper;
 import org.eclipse.gef.CompoundSnapToHelper;
 import org.eclipse.gef.EditPolicy;
@@ -30,6 +25,7 @@ import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 public class CompoundModuleEditPart extends NedNodeEditPart {
 
 
+    @Override
     protected void createEditPolicies() {
         super.createEditPolicies();
         installEditPolicy(EditPolicy.LAYOUT_ROLE, new CompoundModuleLayoutEditPolicy((XYLayout) getContentPane()
@@ -42,6 +38,7 @@ public class CompoundModuleEditPart extends NedNodeEditPart {
      * 
      * @return Figure representing the module.
      */
+    @Override
     protected IFigure createFigure() {
         return new ModuleFigure();
     }
@@ -55,10 +52,12 @@ public class CompoundModuleEditPart extends NedNodeEditPart {
         return (ModuleFigure) getFigure();
     }
 
+    @Override
     public IFigure getContentPane() {
         return getModuleFigure().getContentsPane();
     }
 
+    @Override
     public Object getAdapter(Class key) {
         
         if (key == AutoexposeHelper.class) return new ViewportAutoexposeHelper(this);
@@ -78,7 +77,7 @@ public class CompoundModuleEditPart extends NedNodeEditPart {
             if (val != null && val.booleanValue()) snapStrategies.add(new SnapToGrid(this));
 
             if (snapStrategies.size() == 0) return null;
-            if (snapStrategies.size() == 1) return (SnapToHelper) snapStrategies.get(0);
+            if (snapStrategies.size() == 1) return snapStrategies.get(0);
 
             SnapToHelper ss[] = new SnapToHelper[snapStrategies.size()];
             for (int i = 0; i < snapStrategies.size(); i++)
@@ -89,6 +88,7 @@ public class CompoundModuleEditPart extends NedNodeEditPart {
         return super.getAdapter(key);
     }
 
+    @Override
     protected List getModelChildren() {
     	return ((CompoundModuleNodeEx)getNEDModel()).getModelChildren();
     }

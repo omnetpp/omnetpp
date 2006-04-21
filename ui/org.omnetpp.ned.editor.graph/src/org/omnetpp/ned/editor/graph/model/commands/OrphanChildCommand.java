@@ -1,10 +1,7 @@
 package org.omnetpp.ned.editor.graph.model.commands;
 
-import java.util.List;
-
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.commands.Command;
-import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned2.model.INedContainer;
 import org.omnetpp.ned2.model.INedModule;
 import org.omnetpp.ned2.model.NEDElement;
@@ -22,6 +19,7 @@ public class OrphanChildCommand extends Command {
     private INedModule child;
     private NEDElement insertBeforeChild;
 
+    @Override
     public void execute() {
         setLabel("Remove " + child.getName());
 
@@ -30,6 +28,7 @@ public class OrphanChildCommand extends Command {
        redo();
     }
 
+    @Override
     public void redo() {
         container.removeModelChild(child);
     }
@@ -42,6 +41,7 @@ public class OrphanChildCommand extends Command {
         container = parent;
     }
 
+    @Override
     public void undo() {
         child.setLocation(oldLocation);
         container.insertModelChild((INedModule)insertBeforeChild, child);

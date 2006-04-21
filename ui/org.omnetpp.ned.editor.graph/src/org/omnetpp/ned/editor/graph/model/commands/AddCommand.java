@@ -15,6 +15,7 @@ public class AddCommand extends org.eclipse.gef.commands.Command {
     private INedContainer parent;
     private int index = -1;
 
+    @Override
     public void execute() {
         setLabel("Add " + child.getName());
         
@@ -28,6 +29,7 @@ public class AddCommand extends org.eclipse.gef.commands.Command {
         return parent;
     }
 
+    @Override
     public void redo() {
         if (index < 0)
             parent.addModelChild(child);
@@ -47,6 +49,7 @@ public class AddCommand extends org.eclipse.gef.commands.Command {
         parent = newParent;
     }
 
+    @Override
     public void undo() {
         parent.removeModelChild(child);
     }

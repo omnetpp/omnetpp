@@ -29,16 +29,19 @@ public class PrintModeDialog extends Dialog {
         super(shell);
     }
 
+    @Override
     protected void cancelPressed() {
         setReturnCode(-1);
         close();
     }
 
+    @Override
     protected void configureShell(Shell newShell) {
         newShell.setText("Print ned file");
         super.configureShell(newShell);
     }
 
+    @Override
     protected Control createDialogArea(Composite parent) {
         Composite composite = (Composite) super.createDialogArea(parent);
 
@@ -58,6 +61,7 @@ public class PrintModeDialog extends Dialog {
         return composite;
     }
 
+    @Override
     protected void okPressed() {
         int returnCode = -1;
         if (tile.getSelection())

@@ -29,11 +29,13 @@ public class ConnectionPropertySource extends AbstractNedPropertySource {
             new ConnectionDisplayPropertySource(model);
     }
 
+    @Override
     public Object getEditableValue() {
         // we don't need this if we don't want to embed this property source into an other propertysource
         return model.toString();
     }
 
+    @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
         return descriptors;
     }

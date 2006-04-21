@@ -36,12 +36,14 @@ public class PinnableNoncentralChopboxAnchor extends NoncentralChocboxAnchor {
     }
 
 
+    @Override
     public Point getLocation(Point foreignRef) {
         if (!isPinnedDown()) return super.getLocation(foreignRef);
         // if we are pinned, return the current fixed reference point as the location
         return getReferencePoint();
     }
 
+    @Override
     public Point getReferencePoint() {
         if (!isPinnedDown()) return super.getReferencePoint();
         

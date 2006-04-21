@@ -29,11 +29,13 @@ public class CompoundModulePropertySource extends AbstractNedPropertySource {
             new CompoundModuleDisplayPropertySource(model);
     }
 
+    @Override
     public Object getEditableValue() {
         // we don't need this if we don't want to embed this property source into an other propertysource
         return model.getName();
     }
 
+    @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
         return descriptors;
     }

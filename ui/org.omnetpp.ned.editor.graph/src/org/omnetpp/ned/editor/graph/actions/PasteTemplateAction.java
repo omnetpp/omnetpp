@@ -11,7 +11,6 @@ import org.eclipse.gef.ui.actions.Clipboard;
 import org.eclipse.gef.ui.actions.SelectionAction;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.actions.ActionFactory;
-import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 
 /**
  * If the current object on the clipboard is a valid template, this action will
@@ -36,6 +35,7 @@ public abstract class PasteTemplateAction extends SelectionAction {
      *         executable command
      * @see org.eclipse.gef.ui.actions.WorkbenchPartAction#calculateEnabled()
      */
+    @Override
     protected boolean calculateEnabled() {
 //        Command command = createPasteCommand();
 //        return command != null && command.canExecute();
@@ -107,6 +107,7 @@ public abstract class PasteTemplateAction extends SelectionAction {
     /**
      * @see org.eclipse.gef.ui.actions.EditorPartAction#init()
      */
+    @Override
     protected void init() {
         setId(ActionFactory.PASTE.getId());
         setText("Paste");
@@ -115,6 +116,7 @@ public abstract class PasteTemplateAction extends SelectionAction {
     /**
      * Executes the command returned by {@link #createPasteCommand()}.
      */
+    @Override
     public void run() {
         execute(createPasteCommand());
     }

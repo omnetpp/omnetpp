@@ -14,12 +14,14 @@ import org.omnetpp.ned2.model.INedModule;
 
 public class NedContainerEditPolicy extends ContainerEditPolicy {
 
+    @Override
     protected Command getCreateCommand(CreateRequest request) {
     	// it does not provide a creation command because the ...LayoutPolicy already
     	// provides it
         return null;
     }
 
+    @Override
     public Command getOrphanChildrenCommand(GroupRequest request) {
         List parts = request.getEditParts();
         CompoundCommand result = new CompoundCommand("Orphan children");

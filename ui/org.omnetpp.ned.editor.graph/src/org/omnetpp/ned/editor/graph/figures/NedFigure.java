@@ -159,13 +159,14 @@ public class NedFigure extends Figure {
      * @return
      */
     public ConnectionAnchor getConnectionAnchor(String gate) {
-        return (ConnectionAnchor) connectionAnchors.get(gate);
+        return connectionAnchors.get(gate);
     }
     
     /* (non-Javadoc)
      * @see org.eclipse.draw2d.IFigure#paint(org.eclipse.draw2d.Graphics)
      * Enable antialiasing for all derived figures
      */
+    @Override
     public void paint(Graphics graphics) {
         graphics.setAntialias(SWT.ON);
         super.paint(graphics);

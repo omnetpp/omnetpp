@@ -10,6 +10,7 @@ public class SubmoduleEditPart extends NedNodeEditPart {
      * 
      * @return A new Figure of this.
      */
+    @Override
     protected IFigure createFigure() {
         
         return new SimpleModuleFigure();

@@ -24,6 +24,7 @@ public class ModulePasteTemplateAction extends PasteTemplateAction {
      * 
      * @see org.omnetpp.ned.editor.graph.actions.PasteTemplateAction#getPasteLocation(GraphicalEditPart)
      */
+    @Override
     protected Point getPasteLocation(GraphicalEditPart container) {
     	Point result = new Point(10, 10);
     	IFigure fig = container.getContentPane();

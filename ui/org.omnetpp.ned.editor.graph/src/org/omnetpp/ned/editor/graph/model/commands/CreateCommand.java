@@ -18,10 +18,12 @@ public class CreateCommand extends org.eclipse.gef.commands.Command {
     private INedContainer parent;
     private int index = -1;
 
+    @Override
     public boolean canExecute() {
         return child != null && parent != null;
     }
 
+    @Override
     public void execute() {
         setLabel("Create " + child.getName());
 
@@ -33,6 +35,7 @@ public class CreateCommand extends org.eclipse.gef.commands.Command {
         redo();
     }
 
+    @Override
     public void redo() {
         parent.insertModelChild(index, child );
     }
@@ -53,6 +56,7 @@ public class CreateCommand extends org.eclipse.gef.commands.Command {
         parent = newParent;
     }
 
+    @Override
     public void undo() {
         parent.removeModelChild(child);
     }

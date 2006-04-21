@@ -12,6 +12,7 @@ import org.omnetpp.ned2.model.ConnectionNodeEx;
 
 public class WireBendpointEditPolicy extends org.eclipse.gef.editpolicies.BendpointEditPolicy {
 
+    @Override
     protected Command getCreateBendpointCommand(BendpointRequest request) {
         CreateBendpointCommand com = new CreateBendpointCommand();
         Point p = request.getLocation();
@@ -32,6 +33,7 @@ public class WireBendpointEditPolicy extends org.eclipse.gef.editpolicies.Bendpo
         return com;
     }
 
+    @Override
     protected Command getMoveBendpointCommand(BendpointRequest request) {
         MoveBendpointCommand com = new MoveBendpointCommand();
         Point p = request.getLocation();
@@ -53,6 +55,7 @@ public class WireBendpointEditPolicy extends org.eclipse.gef.editpolicies.Bendpo
         return com;
     }
 
+    @Override
     protected Command getDeleteBendpointCommand(BendpointRequest request) {
         BendpointCommand com = new DeleteBendpointCommand();
         Point p = request.getLocation();

@@ -95,6 +95,7 @@ public class SimpleModuleFigure extends NedFigure implements HandleBounds,
 //        rectShapeFigure.setBorder(lb);
     }
 
+    @Override
     public void addNotify() {
         // functions here need to access the parent or ancestor figures, so these setup
         // procedures cannot be done in the constructor

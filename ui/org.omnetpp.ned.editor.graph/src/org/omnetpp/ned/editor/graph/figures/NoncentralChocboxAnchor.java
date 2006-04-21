@@ -43,11 +43,13 @@ public class NoncentralChocboxAnchor extends ChopboxAnchor {
     /**
      * @see org.eclipse.draw2d.AbstractConnectionAnchor#ancestorMoved(IFigure)
      */
+    @Override
     public void ancestorMoved(IFigure figure) {
         if (figure instanceof ScalableFigure) return;
         super.ancestorMoved(figure);
     }
 
+    @Override
     protected Rectangle getBox() {
         // if the owner is a label use only its icon area 
         if(getOwner() instanceof Label) {
@@ -60,6 +62,7 @@ public class NoncentralChocboxAnchor extends ChopboxAnchor {
 
     
     // TODO maybe implement a constraint that the anchor should move only on allowed sides of the box
+    @Override
     public Point getLocation(Point foreignRef) {
 
         Rectangle r = new Rectangle(getBox());
@@ -81,8 +84,8 @@ public class NoncentralChocboxAnchor extends ChopboxAnchor {
         }
         
 
-        if (r.isEmpty() || (foreignRef.x == (int)o.x && foreignRef.y == (int)o.y))
-            return new Point((int)o.x, (int)o.y);  //This avoids divide-by-zero
+        if (r.isEmpty() || (foreignRef.x == o.x && foreignRef.y == o.y))
+            return new Point(o.x, o.y);  //This avoids divide-by-zero
 
         double dx = foreignRef.x - o.x;
         double dy = foreignRef.y - o.y;
@@ -99,6 +102,7 @@ public class NoncentralChocboxAnchor extends ChopboxAnchor {
      * Reference point is the same where the connections are heading 
      * @see org.eclipse.draw2d.ConnectionAnchor#getReferencePoint()
      */
+    @Override
     public Point getReferencePoint() {
         Rectangle r = new Rectangle(getBox());
         r.translate(-1, -1);

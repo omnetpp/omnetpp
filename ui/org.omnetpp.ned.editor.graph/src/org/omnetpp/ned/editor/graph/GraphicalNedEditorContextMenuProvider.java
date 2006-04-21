@@ -9,7 +9,6 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.actions.ActionFactory;
-import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 
 public class GraphicalNedEditorContextMenuProvider extends ContextMenuProvider {
 
@@ -25,6 +24,7 @@ public class GraphicalNedEditorContextMenuProvider extends ContextMenuProvider {
      * 
      * @see org.eclipse.gef.ContextMenuProvider#menuAboutToShow(org.eclipse.jface.action.IMenuManager)
      */
+    @Override
     public void buildContextMenu(IMenuManager manager) {
         GEFActionConstants.addStandardActionGroups(manager);
 

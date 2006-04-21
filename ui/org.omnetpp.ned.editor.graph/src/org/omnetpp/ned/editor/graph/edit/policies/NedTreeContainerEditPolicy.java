@@ -12,7 +12,6 @@ import org.eclipse.gef.editpolicies.TreeContainerEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
 import org.omnetpp.ned.editor.graph.model.commands.CreateCommand;
-import org.omnetpp.ned.editor.graph.model.commands.ReorderPartCommand;
 import org.omnetpp.ned2.model.INedContainer;
 import org.omnetpp.ned2.model.INedModule;
 
@@ -35,6 +34,7 @@ public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
         return cmd;
     }
 
+    @Override
     protected Command getAddCommand(ChangeBoundsRequest request) {
         CompoundCommand command = new CompoundCommand();
         command.setDebugLabel("Add in NedTreeContainerEditPolicy");//$NON-NLS-1$
@@ -55,6 +55,7 @@ public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
         return command;
     }
 
+    @Override
     protected Command getCreateCommand(CreateRequest request) {
     	INedModule child = (INedModule) request.getNewObject();
     	// FIXME kivenni a target editpartot es azt beadni a create commandnak hogy
@@ -66,6 +67,7 @@ public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
         return createCreateCommand(child, null, index, "Create NedElement");//$NON-NLS-1$
     }
 
+    @Override
     protected Command getMoveChildrenCommand(ChangeBoundsRequest request) {
         CompoundCommand command = new CompoundCommand();
         List editparts = request.getEditParts();

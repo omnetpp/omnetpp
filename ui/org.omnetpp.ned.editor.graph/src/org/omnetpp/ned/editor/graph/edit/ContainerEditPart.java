@@ -13,6 +13,7 @@ import org.omnetpp.ned2.model.NEDElement;
 abstract public class ContainerEditPart 
    extends AbstractGraphicalEditPart implements INEDChangeListener  {
 
+    @Override
     public void activate() {
         if (isActive()) return;
         super.activate();
@@ -24,6 +25,7 @@ abstract public class ContainerEditPart
      * Makes the EditPart insensible to changes in the model by removing itself
      * from the model's list of listeners.
      */
+    @Override
     public void deactivate() {
         if (!isActive()) return;
         super.deactivate();
@@ -33,6 +35,7 @@ abstract public class ContainerEditPart
     /**
      * Installs the desired EditPolicies for this.
      */
+    @Override
     protected void createEditPolicies() {
     	// XXX check wheter this policy is ok on Submodule too?
         installEditPolicy(EditPolicy.CONTAINER_ROLE, new NedContainerEditPolicy());

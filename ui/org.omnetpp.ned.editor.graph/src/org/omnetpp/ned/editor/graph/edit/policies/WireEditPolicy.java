@@ -7,6 +7,7 @@ import org.omnetpp.ned2.model.ConnectionNodeEx;
 
 public class WireEditPolicy extends org.eclipse.gef.editpolicies.ConnectionEditPolicy {
 
+    @Override
     protected Command getDeleteCommand(GroupRequest request) {
         ConnectionCommand c = new ConnectionCommand();
         c.setConnectionNode((ConnectionNodeEx) getHost().getModel());

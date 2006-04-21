@@ -13,6 +13,7 @@ public class MoveBendpointCommand extends BendpointCommand {
 
     private Bendpoint oldBendpoint;
 
+    @Override
     public void execute() {
         WireBendpointModel bp = new WireBendpointModel();
         bp.setRelativeDimensions(getFirstRelativeDimension(), getSecondRelativeDimension());
@@ -29,6 +30,7 @@ public class MoveBendpointCommand extends BendpointCommand {
         oldBendpoint = bp;
     }
 
+    @Override
     public void undo() {
         super.undo();
         getWire().setBendpoint(getIndex(), getOldBendpoint());

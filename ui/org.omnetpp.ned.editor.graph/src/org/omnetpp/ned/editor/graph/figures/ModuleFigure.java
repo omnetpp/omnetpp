@@ -109,6 +109,7 @@ public class ModuleFigure extends NedFigure implements LayerSupport, HandleBound
         return (PinnableNoncentralChopboxAnchor) getConnectionAnchor("OUT"+i);
     }
 
+    @Override
     public Dimension getPreferredSize(int w, int h) {
         Dimension prefSize = super.getPreferredSize(w, h);
         Dimension defaultSize = new Dimension(100, 100);
@@ -128,16 +129,19 @@ public class ModuleFigure extends NedFigure implements LayerSupport, HandleBound
     /**
      * @see org.eclipse.draw2d.Figure#paintFigure(Graphics)
      */
+    @Override
     protected void paintFigure(Graphics graphics) {
         Rectangle rect = getBounds().getCopy();
         rect.crop(new Insets(2, 0, 2, 0));
         graphics.fillRectangle(rect);
     }
 
+    @Override
     public String toString() {
         return "ModuleFigure"; //$NON-NLS-1$
     }
 
+    @Override
     public void validate() {
         if (isValid()) return;
         layoutConnectionAnchors();

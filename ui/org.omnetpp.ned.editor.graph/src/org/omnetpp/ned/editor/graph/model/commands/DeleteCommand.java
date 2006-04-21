@@ -69,6 +69,7 @@ public class DeleteCommand extends Command {
         }
     }
 
+    @Override
     public void execute() {
         // FIXME label is not used by this comand. Maybe a BUG??? 
         setLabel("Delete " + moduleUndoItem.node.getName());
@@ -81,6 +82,7 @@ public class DeleteCommand extends Command {
         moduleUndoItem.parent.removeModelChild(moduleUndoItem.node);
     }
 
+    @Override
     public void redo() {
         primExecute();
     }
@@ -107,6 +109,7 @@ public class DeleteCommand extends Command {
         moduleUndoItem.parent = p;
     }
 
+    @Override
     public void undo() {
         moduleUndoItem.parent.insertModelChild(index, moduleUndoItem.node);
         restoreConnections();

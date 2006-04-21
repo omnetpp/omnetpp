@@ -67,6 +67,7 @@ abstract public class DisplayPropertySource extends AbstractNedPropertySource {
         }
     }
 
+    @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
         if (propertyDescArray == null)
             createPropertyDescriptors();
@@ -88,6 +89,7 @@ abstract public class DisplayPropertySource extends AbstractNedPropertySource {
     }
 
     // property request for property sheet
+    @Override
     public Object getPropertyValue(Object propObj) {
         DisplayString.Prop prop = (DisplayString.Prop)propObj;
         String tagVal = displayString.getAsString(prop);
@@ -101,6 +103,7 @@ abstract public class DisplayPropertySource extends AbstractNedPropertySource {
         return tagVal;
     }
 
+    @Override
     public void setPropertyValue(Object propObj, Object value) {
         DisplayString.Prop prop = (DisplayString.Prop)propObj;
         // if it is a color, convert it to string
@@ -115,20 +118,24 @@ abstract public class DisplayPropertySource extends AbstractNedPropertySource {
         fireDisplayStringChanged();
     }
 
+    @Override
     public void resetPropertyValue(Object prop) {
         displayString.set((DisplayString.Prop)prop, null);
         fireDisplayStringChanged();
     }
 
+    @Override
     public boolean isPropertySet(Object prop) {
         String val = displayString.getAsString((DisplayString.Prop)prop);
         return val != null && !DisplayString.TagInstance.EMPTY_VALUE.equals(val);
     }
 
+    @Override
     public String toString() {
         return displayString.toString();
     }
 
+    @Override
     public boolean isPropertyResettable(Object id) {
         return true;
     }

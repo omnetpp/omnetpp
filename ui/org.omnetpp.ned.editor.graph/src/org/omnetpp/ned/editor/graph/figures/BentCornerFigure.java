@@ -53,6 +53,7 @@ public class BentCornerFigure extends Figure {
     /**
      * @see org.eclipse.draw2d.Figure#paintFigure(org.eclipse.draw2d.Graphics)
      */
+    @Override
     protected void paintFigure(Graphics graphics) {
         Rectangle rect = getBounds().getCopy();
 

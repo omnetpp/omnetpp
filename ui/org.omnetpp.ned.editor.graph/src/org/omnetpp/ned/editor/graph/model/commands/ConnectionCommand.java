@@ -1,12 +1,10 @@
 package org.omnetpp.ned.editor.graph.model.commands;
 
 import org.eclipse.gef.commands.Command;
-import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.INedModule;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
-import org.omnetpp.ned2.model.pojo.ConnectionsNode;
 
 /**
  * (Re)assigns a wire object to srcModule/destModule submodule gates
@@ -27,6 +25,7 @@ public class ConnectionCommand extends Command {
     protected NEDElement parentNode = null;
     protected ConnectionNode connNodeNextSibling = null;
 
+    @Override
     public String getLabel() {
         if (connNode != null 
                 && srcModule == null && destModule == null)
@@ -38,10 +37,12 @@ public class ConnectionCommand extends Command {
     /**
      * Input output gate config consistency can be checked here
      */
+    @Override
     public boolean canExecute() {
         return true;
     }
 
+    @Override
     public void execute() {
         if (srcModule != null) 
             connNode.setSrcModuleRef(srcModule);
@@ -70,10 +71,12 @@ public class ConnectionCommand extends Command {
         }
     }
 
+    @Override
     public void redo() {
         execute();
     }
 
+    @Override
     public void undo() {
         // if it was removed from the model, put it back
         if (connNode.getParent() == null && parentNode != null)

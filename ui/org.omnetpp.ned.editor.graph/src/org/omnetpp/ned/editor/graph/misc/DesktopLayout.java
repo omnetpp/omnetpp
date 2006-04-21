@@ -18,6 +18,7 @@ public class DesktopLayout extends XYLayout {
      * 
      * @see LayoutManager#layout(IFigure)
      */
+    @Override
     public void layout(IFigure parent) {
         Iterator children = parent.getChildren().iterator();
         Point offset = getOrigin(parent);

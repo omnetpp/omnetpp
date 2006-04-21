@@ -22,7 +22,6 @@ import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.ned.editor.graph.figures.ModuleFigure;
-import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.model.commands.AddCommand;
 import org.omnetpp.ned.editor.graph.model.commands.CloneCommand;
 import org.omnetpp.ned.editor.graph.model.commands.CreateCommand;
@@ -30,7 +29,6 @@ import org.omnetpp.ned.editor.graph.model.commands.SetConstraintCommand;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.INedContainer;
 import org.omnetpp.ned2.model.INedModule;
-import org.omnetpp.ned2.model.NEDElement;
 
 
 public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
@@ -64,11 +62,13 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
      * @see org.eclipse.gef.editpolicies.ConstrainedLayoutEditPolicy#createChangeConstraintCommand(org.eclipse.gef.EditPart,
      *      java.lang.Object)
      */
+    @Override
     protected Command createChangeConstraintCommand(EditPart child, Object constraint) {
         return null;
     }
 
     // called when the editpart is moved or resized
+    @Override
     protected Command createChangeConstraintCommand(ChangeBoundsRequest request, EditPart child,
             Object constraint) {
         // HACK for fixing issue when the model returns unspecified size (-1,-1)
@@ -139,6 +139,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
         return result;
     }
 
+    @Override
     protected EditPolicy createChildEditPolicy(EditPart child) {
         ResizableEditPolicy policy = new NedResizableEditPolicy();
         return policy;
@@ -152,6 +153,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
     
     // this command is created when the user adds a new child by drag/resizing with a creation
     // tool selected. ie. specifying the width/length for the new child along with the location
+    @Override
     protected IFigure createSizeOnDropFeedback(CreateRequest createRequest) {
         IFigure figure;
 
@@ -170,6 +172,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
         return figure;
     }
 
+    @Override
     protected Command getAddCommand(Request generic) {
         ChangeBoundsRequest request = (ChangeBoundsRequest) generic;
         List editParts = request.getEditParts();
@@ -204,6 +207,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
      *            the Clone Request
      * @return A command to perform the Clone.
      */
+    @Override
     protected Command getCloneCommand(ChangeBoundsRequest request) {
         CloneCommand clone = new CloneCommand();
 
@@ -222,6 +226,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
         return clone;
     }
 
+    @Override
     protected Command getCreateCommand(CreateRequest request) {
         CreateCommand create = new CreateCommand();
         create.setParent((INedContainer) getHost().getModel());
@@ -239,6 +244,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
      * 
      * @see org.eclipse.gef.editpolicies.LayoutEditPolicy#getCreationFeedbackOffset(org.eclipse.gef.requests.CreateRequest)
      */
+    @Override
     protected Insets getCreationFeedbackOffset(CreateRequest request) {
         if (request.getNewObject() instanceof CompoundModuleNodeEx)
             return new Insets(2, 0, 2, 0);
@@ -250,6 +256,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
      * 
      * @return the feedback layer
      */
+    @Override
     protected IFigure getFeedbackLayer() {
         return getLayer(LayerConstants.SCALED_FEEDBACK_LAYER);
     }

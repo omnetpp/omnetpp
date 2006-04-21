@@ -15,9 +15,12 @@ import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.INedModule;
 import org.omnetpp.ned2.model.NEDElementFactoryEx;
 import org.omnetpp.ned2.model.NedElementExUtil;
+import org.omnetpp.ned2.model.pojo.NEDElementFactory;
+import org.omnetpp.ned2.model.pojo.NEDElementTags;
 
 public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
 
+    @Override
     protected Command getConnectionCompleteCommand(CreateConnectionRequest request) {
         ConnectionCommand command = (ConnectionCommand) request.getStartCommand();
         command.setDestModule(getNedNodeModel());
@@ -27,9 +30,10 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
         return command;
     }
 
+    @Override
     protected Command getConnectionCreateCommand(CreateConnectionRequest request) {
         ConnectionCommand command = new ConnectionCommand();
-        command.setConnectionNode((ConnectionNodeEx)NEDElementFactoryEx.getInstance().createNodeWithTag(NedElementExUtil.NED_CONNECTION));
+        command.setConnectionNode((ConnectionNodeEx)NEDElementFactory.getInstance().createNodeWithTag(NEDElementTags.NED_CONNECTION));
         command.setSrcModule(getNedNodeModel());
         ConnectionAnchor ctor = getNedNodeEditPart().getSourceConnectionAnchor(request);
         command.setSrcGate(getNedNodeEditPart().getGate(ctor));
@@ -42,6 +46,7 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
      * 
      * @see org.eclipse.gef.editpolicies.GraphicalEditPolicy#getFeedbackLayer()
      */
+    @Override
     protected IFigure getFeedbackLayer() {
         /*
          * Fix for Bug# 66590 Feedback needs to be added to the scaled feedback
@@ -58,6 +63,7 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
         return (INedModule) getHost().getModel();
     }
 
+    @Override
     protected Command getReconnectTargetCommand(ReconnectRequest request) {
 
         ConnectionCommand cmd = new ConnectionCommand();
@@ -69,6 +75,7 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
         return cmd;
     }
 
+    @Override
     protected Command getReconnectSourceCommand(ReconnectRequest request) {
         ConnectionCommand cmd = new ConnectionCommand();
         cmd.setConnectionNode((ConnectionNodeEx) request.getConnectionEditPart().getModel());
