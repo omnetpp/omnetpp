@@ -1,4 +1,4 @@
-package org.omnetpp.scave.properties;
+package org.omnetpp.common.properties;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -6,11 +6,9 @@ import java.util.ArrayList;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
-import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.views.properties.ComboBoxLabelProvider;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 
 public class EnumPropertyDescriptor extends PropertyDescriptor {

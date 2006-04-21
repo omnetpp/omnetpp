@@ -43,9 +43,9 @@ import org.jfree.ui.RectangleInsets;
 import org.jfree.ui.VerticalAlignment;
 
 import org.omnetpp.scave.charting.ChartSWTWrapper;
-import org.omnetpp.scave.properties.EnumPropertyDescriptor;
-import org.omnetpp.scave.properties.Property;
-import org.omnetpp.scave.properties.PropertySource;
+import org.omnetpp.common.properties.EnumPropertyDescriptor;
+import org.omnetpp.common.properties.Property;
+import org.omnetpp.common.properties.PropertySource;
 
 public class ChartProperties extends PropertySource {
 

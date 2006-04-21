@@ -1,4 +1,4 @@
-package org.omnetpp.scave.properties;
+package org.omnetpp.common.properties;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

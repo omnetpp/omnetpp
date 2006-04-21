@@ -1,4 +1,4 @@
-package org.omnetpp.scave.properties;
+package org.omnetpp.common.properties;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellEditorValidator;
