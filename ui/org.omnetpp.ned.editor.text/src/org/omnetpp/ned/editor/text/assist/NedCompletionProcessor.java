@@ -41,7 +41,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 	protected static class Validator implements IContextInformationValidator, IContextInformationPresenter {
 
 		protected int fInstallOffset;
-
+		
 		/*
 		 * @see IContextInformationValidator#isContextInformationValid(int)
 		 */
@@ -64,50 +64,69 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 		}
 	}
 
+	// for CompletionInfo.sectionType
+	protected static final int SECT_GLOBAL = 0;
+	protected static final int SECT_PARAMETERS = 1;
+	protected static final int SECT_GATES = 2;
+	protected static final int SECT_TYPES = 3;
+	protected static final int SECT_CONNECTIONS = 4;
+	protected static final int SECT_SUBMODULES = 5;
+	protected static final int SECT_SUBMODULE_PARAMETERS = 6;
+	protected static final int SECT_SUBMODULE_GATES = 7;
+	
+	protected static class CompletionInfo {
+		public String linePrefix; // relevant line (lines) just before the insertion point
+		public String componentName;
+		public int sectionType; // SECT_xxx
+		public String submoduleTypeName;
+	}
+	
 	protected IContextInformationValidator fValidator= new Validator();
 
     public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
+    	long startMillis = System.currentTimeMillis(); // measure time
+   	
     	List result = new ArrayList();
 
-    	String context = getCompletionContext(viewer, documentOffset, NedHelper.nedWordDetector);
-    	System.out.println("NedCompletionProcessor.computeCompletionProposals(): context: >>"+context+"<<");
-    	getComponentName(viewer, documentOffset); //XXXX
+    	// find out where we are: in which module, submodule, which section etc.
+    	CompletionInfo info = computeCompletionInfo(viewer, documentOffset);
     	NEDResources res = NEDResourcesPlugin.getNEDResources();    	
 
+    	String line = info.linePrefix;
+    	
     	// match various "extends" clauses
-    	if (context.matches(".* simple .* extends +[^ ]*"))
+    	if (line.matches(".* simple .* extends +[^ ]*"))
 			addProposals(viewer, documentOffset, result, res.getModuleNames());
-    	else if (context.matches(".* module .* extends +[^ ]*"))
+    	else if (line.matches(".* module .* extends +[^ ]*"))
 			addProposals(viewer, documentOffset, result, res.getModuleNames());
-    	else if (context.matches(".* channel .* extends +[^ ]*"))
+    	else if (line.matches(".* channel .* extends +[^ ]*"))
 			addProposals(viewer, documentOffset, result, res.getChannelNames());
-    	else if (context.matches(".* interface .* extends +[^ ]*"))
+    	else if (line.matches(".* interface .* extends +[^ ]*"))
 			addProposals(viewer, documentOffset, result, res.getModuleInterfaceNames());
-    	else if (context.matches(".* channelinterface .* extends +[^ ]*"))
+    	else if (line.matches(".* channelinterface .* extends +[^ ]*"))
 			addProposals(viewer, documentOffset, result, res.getChannelInterfaceNames());
 
     	// match "like" clauses
-    	// XXX ":" matches "gates:", "parameters:" etc as well!!!
-    	if (context.matches(".* simple .* like +[^ ]*"))
+    	if (line.matches(".* simple .* like +[^ ]*"))
 			addProposals(viewer, documentOffset, result, res.getModuleInterfaceNames());
-    	else if (context.matches(".* module .* like +[^ ]*"))
+    	else if (line.matches(".* module .* like +[^ ]*"))
 			addProposals(viewer, documentOffset, result, res.getModuleInterfaceNames());
-    	else if (context.matches(".* channel .* like +[^ ]*"))
+    	else if (line.matches(".* channel .* like +[^ ]*"))
 			addProposals(viewer, documentOffset, result, res.getChannelInterfaceNames());
-    	else if (context.matches(".*:.* like +[^ ]*")) // match "submod : ModuleType" syntax
+    	else if (line.matches(".*:.* like +[^ ]*")) // match "submod : ModuleType" syntax
 			addProposals(viewer, documentOffset, result, res.getModuleInterfaceNames());
-    	else if (context.matches(".*: +[^ ]*"))
+    	else if (line.matches(".*: +[^ ]*"))
 			addProposals(viewer, documentOffset, result, res.getModuleNames());
 
     	// expressions
-    	if (context.matches(".*=.*")) {
+    	if (line.matches(".*=.*")) {
     		//XXX parameter names, gate names, types,...
 			addProposals(viewer, documentOffset, result, NedHelper.proposedNedFunctions);
 			addProposals(viewer, documentOffset, result, NedHelper.proposedConstants);
     	}
 
     	// propose parameter and gate types
-    	if (context.matches(" [a-z]*")) {
+    	if (line.matches(" [a-z]*")) {
     		// XXX only if we are in "parameters" or "gates"
     		addProposals(viewer, documentOffset, result, NedHelper.proposedNedTypes);
     	}
@@ -122,6 +141,9 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
         List templateList = Arrays.asList(super.computeCompletionProposals(viewer, documentOffset));
         Collections.sort(templateList, CompletionProposalComparator.getInstance());
         result.addAll(templateList);
+
+    	long millis = System.currentTimeMillis()-startMillis;
+    	System.out.println("Proposal creation: "+millis+"ms");
         
         return (ICompletionProposal[]) result.toArray(new ICompletionProposal[result.size()]);
     }
@@ -134,100 +156,70 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 		result.addAll(createProposals(viewer, documentOffset, NedHelper.nedWordDetector, "", proposals.toArray(new String[0]), ""));
 	}
 
-	private String getCompletionContext(ITextViewer viewer, int documentOffset, IWordDetector wordDetector) {
-		IDocument docu = viewer.getDocument();
-        int offset = documentOffset;
-        try {
-    		int lineno = docu.getLineOfOffset(offset);
-    		int lineStartOffset = docu.getLineOffset(lineno);
-        	String context = docu.get(lineStartOffset, offset-lineStartOffset);
-        	while (lineno>0) {
-        		// get previous line
-        		lineno--;
-        		lineStartOffset = docu.getLineOffset(lineno);
-        		String line = docu.get(lineStartOffset, offset-lineStartOffset);
-        		
-        		// strip comment from it
-        		int commentPos = line.indexOf("//");  // string constants may also contain "//", but let's ignore that...
-        		if (commentPos!=-1)
-        			line = line.substring(0, commentPos);
-
-        		// if line contains ";" or curly brace, stop there
-        		int pos = line.indexOf(';');
-        		int p2 = line.indexOf('{');
-        		if (p2>=0 && p2<pos)
-        			pos = p2;
-        		int p3 = line.indexOf('{');
-        		if (p3>=0 && p3<pos)
-        			pos = p3;
-        		if (pos>=0)
-        			line = line.substring(pos+1); // chop substring before ";" etc
-
-        		// prepend to completion context
-        		context = line.trim()+" "+context;
-        		
-        		if (pos>=0)
-        			break;
-        	}
-        	context = context.replace('\t', ' ');
-        	context = context.replace('\n', ' ');
-        	context = context.replace('\r', ' ');
-        	return context;
-
-        } catch (BadLocationException e) {
-        	return null;
-        }
-	}
-
-	private String getComponentName(ITextViewer viewer, int documentOffset) {
+	private CompletionInfo computeCompletionInfo(ITextViewer viewer, int documentOffset) {
 		IDocument docu = viewer.getDocument();
         int offset = documentOffset;
         try {
     		String source = docu.get(0,offset);
     		// kill string literals
-			source = source.replaceAll("\".*\"", "\"...\"");
+			source = source.replaceAll("\".*\"", "\"###\"");
     		// kill comments
     		source = source.replaceAll("(?m)//.*", "");
+
+    		// completion prefix (linePrefix): stuff after last semicolon, 
+    		// curly brace, "parameters:", "gates:", "connections:" etc. 
+    		String prefix = source;
+    		prefix = prefix.replaceFirst("(?s).*[;\\{\\}]", "");
+    		prefix = prefix.replaceFirst("(?s).*\\b(parameters|gates|types|connections|connections\\s+[a-z]+)\\s*:", "");
+    		prefix = prefix.replaceAll("(?s)\\s+", " "); // normalize whitespace
+
     		// kill {...} regions (including bodies of inner types, etc)
     		while (source.matches("(?s).*\\{[^\\{\\}]*\\}.*"))
-    			source = source.replaceAll("(?s)\\{[^\\{\\}]*\\}", "@@");
+    			source = source.replaceAll("(?s)\\{[^\\{\\}]*\\}", "###");
 
 			// detect what section we are in 
-			String section;
+			int sectionType;
 			if (source.matches("(?s).*\\bconnections\\b.*"))
-				section = "connections";
+				sectionType = SECT_CONNECTIONS;
 			else if (source.matches("(?s).*\\btypes\\b.*"))
-				section = "types";
+				sectionType = SECT_TYPES;
 			else if (source.matches("(?s).*\\bsubmodules\\b.*\\bgates\\b.*"))
-				section = "submodule-gates";
+				sectionType = SECT_SUBMODULE_GATES;
 			else if (source.matches("(?s).*\\bsubmodules\\b.*\\{.*"))
-				section = "submodule-parameters";
+				sectionType = SECT_SUBMODULE_PARAMETERS;
 			else if (source.matches("(?s).*\\bsubmodules\\b.*"))
-				section = "submodules";
+				sectionType = SECT_SUBMODULES;
 			else if (source.matches("(?s).*\\bgates\\b.*"))
-				section = "gates";
+				sectionType = SECT_GATES;
 			else if (source.matches("(?s).*\\{.*"))
-				section = "parameters";
+				sectionType = SECT_PARAMETERS;
 			else
-				section = "global";
+				sectionType = SECT_GLOBAL;
 
-			// detect module name
+			// detect module name: identifier after last "simple", "module", etc.
 			String pat = "(?s).*(simple|module|network|channel|interface|channelinterface)\\s+(withcppclass\\s+)?([A-Za-z_][A-Za-z0-9_]+)";
 			Matcher matcher = Pattern.compile(pat).matcher(source);
 			String componentName = null;
 			if (matcher.lookingAt())
 				componentName = matcher.group(3);
 
-			// detect submodule type
+			// detect submodule type: last occurrence of "identifier {"
 			String pat2 = "(?s).*[:\\s]([A-Za-z_][A-Za-z0-9_]+)\\s*\\{";
 			Matcher matcher2 = Pattern.compile(pat2).matcher(source);
 			String submoduleTypeName = null;
 			if (matcher2.lookingAt())
 				submoduleTypeName = matcher2.group(1);
-			
-			System.out.println(">>>"+source+"<<<");
-			System.out.println("SECTION:"+section+"  COMPONENT:"+componentName+"  SUBMODTYPENAME:"+submoduleTypeName);
-        	return "";
+
+			//System.out.println(">>>"+source+"<<<");
+			System.out.println("SECTIONTYPE:"+sectionType+"  COMPONENT:"+componentName+"  SUBMODTYPENAME:"+submoduleTypeName);
+			System.out.println("PREFIX:"+prefix);
+
+			CompletionInfo ret = new CompletionInfo();
+			ret.linePrefix = prefix;
+			ret.componentName = componentName;
+			ret.sectionType = sectionType;
+			ret.submoduleTypeName = submoduleTypeName;
+			return ret;
 
         } catch (BadLocationException e) {
         	return null;
