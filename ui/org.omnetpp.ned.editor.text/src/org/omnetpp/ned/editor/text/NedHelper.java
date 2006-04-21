@@ -112,7 +112,8 @@ public class NedHelper {
     public final static String[] proposedNedGlobalStartingKeywords = { "channel", "channel withcppclass", "channelinterface", "import", "interface", "module", "network", "package", "property", "simple"};
     public final static String[] proposedNedSectionNameKeywords = {"connections:", "connections allowunconnected:", "gates:", "parameters:", "submodules:", "types:"};
     public final static String[] proposedNedConnsKeywords = {"allowunconnected"};
-    public final static String[] proposedNedOtherKeywords = {"extends", "if", "index", "like", "this", "typename", "where"};
+    public final static String[] proposedNedInheritanceKeywords = {"extends", "like"};
+    public final static String[] proposedNedOtherKeywords = {"if", "index", "this", "typename", "where"};
     public final static String[] proposedNedFunctions = { "acos", "asin", "atan", "atan2", "bernoulli", "beta", "binomial", "cauchy", "ceil", "chi_square", "const", "cos", "default", "erlang_k", "exp", "exponential", "fabs", "floor", "fmod", "gamma_d", "genk_exponential", "genk_intuniform", "genk_normal", "genk_truncnormal", "genk_uniform", "geometric", "hypergeometric", "hypot", "intuniform", "log", "log10", "lognormal", "max", "min", "negbinomial", "normal", "pareto_shifted", "poisson", "pow", "sin", "sizeof", "sqrt", "student_t", "tan", "triang", "truncnormal", "uniform", "weibull", "xmldoc" };
     public final static String[] proposedConstants = { "false", "true" };
     public final static String[] proposedNedComponentPropertyNames = {"display"}; //XXX check what gets actually supported! also: "recordstats", "kernel", ... 
