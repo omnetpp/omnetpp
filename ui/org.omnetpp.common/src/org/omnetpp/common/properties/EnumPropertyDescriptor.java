@@ -26,11 +26,8 @@ public class EnumPropertyDescriptor extends PropertyDescriptor {
 		
 		setLabelProvider(new LabelProvider() {
 			public String getText(Object value) {
-				if (value != null)
-					for (int i = 0; i < values.length; ++i)
-						if (value.equals(values[i]))
-							return names[i];
-				return "";
+				String name = getName(value);
+				return name != null ? name : "";
 			}
 		});
 	}
@@ -57,6 +54,22 @@ public class EnumPropertyDescriptor extends PropertyDescriptor {
 		
 		this.values = values.toArray();
 		this.names = names.toArray(new String[names.size()]);
+	}
+	
+	public String getName(Object value) {
+		if (value != null)
+			for (int i = 0; i < values.length; ++i)
+				if (value.equals(values[i]))
+					return names[i];
+		return null;
+	}
+	
+	public Object getValue(String name) {
+		if (name != null)
+			for (int i = 0; i < names.length; ++i)
+				if (name.equals(names[i]))
+					return values[i];
+		return null;
 	}
 	
 	public CellEditor createPropertyEditor(Composite parent) {

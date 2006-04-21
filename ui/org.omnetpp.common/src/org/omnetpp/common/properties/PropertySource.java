@@ -222,7 +222,7 @@ public abstract class PropertySource implements IPropertySource {
 	public String toString() {
 		return "";
 	}
-
+	
 	/*
 	 * The rest is the implementation of IPropertySource interface.
 	 */
@@ -263,8 +263,6 @@ public abstract class PropertySource implements IPropertySource {
 		Object value = null;
 		try {
 			value = info.getter.invoke(this);
-			//if (info.descriptor instanceof EnumPropertyDescriptor)
-			//	value = ((EnumPropertyDescriptor)info.descriptor).getIndex(value);
 		} catch (Exception e) { }
 		return value;
 	}
@@ -273,8 +271,6 @@ public abstract class PropertySource implements IPropertySource {
 		PropInfo info = getInfo((String)id);
 		if (info != null && info.setter != null)
 			try {
-				//if (info.descriptor instanceof EnumPropertyDescriptor)
-				//	value = ((EnumPropertyDescriptor)info.descriptor).getValue((Integer)value);
 				info.setter.invoke(this, new Object[] {value});
 			} catch (Exception e) { }
 	}

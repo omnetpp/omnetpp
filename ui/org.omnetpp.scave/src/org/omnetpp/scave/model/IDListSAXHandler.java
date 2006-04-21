@@ -24,7 +24,9 @@ public class IDListSAXHandler extends DefaultHandler implements IDListXMLConsts 
 	private File currentFile;
 
     // maps run IDs to run references (because in the XML file, items refer to runs by an id)
-	HashMap runIdToRunMap = new HashMap();
+	HashMap<String,Run> runIdToRunMap = new HashMap<String,Run>();
+	
+	private String skipedElement;
 
 	public void startDocument() {
 	}
@@ -33,6 +35,9 @@ public class IDListSAXHandler extends DefaultHandler implements IDListXMLConsts 
 	}
 
 	public void startElement(String uri, String localName, String qName, Attributes atts) {
+		if (skipedElement != null)
+			return;
+		
 		//System.out.println("<" + qName + ">");
 		if (qName.equals(EL_FILE)) {
 			String fileName = atts.getValue(ATT_FILENAME);
@@ -71,7 +76,7 @@ public class IDListSAXHandler extends DefaultHandler implements IDListXMLConsts 
 			if (runId==null || moduleName==null || name==null)
 				throw new RuntimeException("invalid file format: missing or invalid XML attribute");
 			//System.out.println("ITEM: run="+runId+" module="+moduleName+" name="+name);
-			Run run = (Run) runIdToRunMap.get(runId);
+			Run run = runIdToRunMap.get(runId);
 			if (run==null)
 				throw new RuntimeException("invalid file format: no run with id="+runId);
 			long id = resultFileManager.getItemByName(run, moduleName, name);
@@ -82,12 +87,15 @@ public class IDListSAXHandler extends DefaultHandler implements IDListXMLConsts 
 		}
 		else {
 			if (qName!=EL_SCAVE && qName!=EL_DATASET && qName!=EL_INCLUDE && qName!=EL_FILES && qName!=EL_FILE && qName!=EL_RUN)
-				throw new RuntimeException("invalid file format: unknown XML tag '"+qName+"'");
+				//throw new RuntimeException("invalid file format: unknown XML tag '"+qName+"'");
+				skipedElement = qName;
 		}
 	}
 
 	public void endElement(String uri, String localName, String qName) {
 		//System.out.println("</" + qName + ">");
+		if (skipedElement != null && skipedElement.equals(qName))
+			skipedElement = null;
 	}
 
 	public void characters(char[] ch, int offset, int length) {

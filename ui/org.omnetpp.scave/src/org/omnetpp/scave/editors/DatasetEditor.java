@@ -1,6 +1,11 @@
 package org.omnetpp.scave.editors;
 
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -45,6 +50,9 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.IPropertySourceProvider;
 import org.eclipse.ui.views.properties.PropertySheetPage;
+import org.omnetpp.common.properties.PropertySource;
+import org.omnetpp.common.properties.PropertySourceIO;
+import org.omnetpp.common.xml.XMLWriter;
 import org.omnetpp.scave.charting.InteractiveChart;
 import org.omnetpp.scave.engine.File;
 import org.omnetpp.scave.engine.IDList;
@@ -58,6 +66,7 @@ import org.omnetpp.scave.panel.DatasetContentOutlinePage;
 import org.omnetpp.scave.panel.FilterPanel;
 import org.omnetpp.scave.plugin.ScavePlugin;
 import org.omnetpp.scave.wizards.NonExistingFileEditorInput;
+import static org.omnetpp.scave.model.IDListXMLConsts.*;
 
 
 /**
@@ -253,19 +262,10 @@ public abstract class DatasetEditor extends MultiPageEditorPart implements IReso
 
 		// figure out file name
 		String fileName = fileInput.getFile().getLocation().toFile().getAbsolutePath();
-
-		try {
-			// FIXME use progressmonitor AND implement as "long running task"!
-			// save the file
-			IDListIO.save(dataset.get(), fileName, progressMonitor);
-
-			// saved successfully
+		boolean success = performSave(fileName, progressMonitor);
+		if (success) {
 			isModelDirty = false;
 			firePropertyChange(PROP_DIRTY);
-
-		} catch (Exception e) {
-			MessageDialog.openError(new Shell(), "Error saving file",
-					"Error saving file "+fileName+": "+e.getMessage());
 		}
 	}
 
@@ -277,6 +277,49 @@ public abstract class DatasetEditor extends MultiPageEditorPart implements IReso
 	public void doSaveAs() {
 		performSaveAs(getProgressMonitor());
 	}
+	
+	protected boolean performSave(String fileName, IProgressMonitor progressMonitor) {
+		// FIXME use progressmonitor AND implement as "long running task"!
+		Exception exception = null;
+		String errorMsg = null;
+		try {
+			OutputStream os = new FileOutputStream(fileName);
+			XMLWriter writer = new XMLWriter(os, "UTF-8", 2);
+			writer.writeXMLHeader();
+			writer.writeStartElement(EL_SCAVE);
+	        writer.writeAttribute(ATT_VERSION, FILEFORMAT_VERSION);
+			IDListIO.save(dataset.get(), writer, progressMonitor);
+			saveChart(writer);
+			writer.writeEndElement(EL_SCAVE);
+			writer.close();
+			return true;
+		} catch (FileNotFoundException e) {
+			errorMsg = "Cannot open file: ";
+			exception = e;
+			return false;
+		} catch (IOException e) {
+			errorMsg = "Error when saving file: ";
+			exception = e;
+			return false;
+		} finally {
+			if (exception != null)
+				MessageDialog.openError(new Shell(), "Error saving file",
+						errorMsg + fileName + " (" + exception.getMessage() + ")");
+				
+				
+		}
+		
+	}
+	
+	public void saveChart(XMLWriter writer) throws IOException {
+		if (chartWrapper != null) {
+			writer.writeStartElement("chart");
+			PropertySource propertySource = new ChartProperties(chartWrapper);
+			PropertySourceIO.save(propertySource, writer);
+			writer.writeEndElement("chart");
+		}
+	}
+	
 
 	/**
 	 * Asks the user for the workspace path of a file resource and saves the
@@ -325,26 +368,14 @@ public abstract class DatasetEditor extends MultiPageEditorPart implements IReso
 		IFile file= workspace.getRoot().getFile(filePath);
 		final IFileEditorInput newInput = new FileEditorInput(file);
 
-		boolean success= false;
-		try {
-			// FIXME use progressmonitor AND implement as "long running task"!
-			String fileName = newInput.getFile().getLocation().toFile().getAbsolutePath();
-			IDListIO.save(dataset.get(), fileName, progressMonitor);
-			success= true;
-
-		} catch (Exception x) {
-			String title = "Error during save";
-			String msg = "Error during save: " + x.getMessage();
-			MessageDialog.openError(shell, title, msg);
-		} finally {
-			if (success) {
-				// saved successfully
-				setInput(newInput);
-				setPartName(newInput.getName());
-				isModelDirty = false;
-				firePropertyChange(PROP_DIRTY);
-				firePropertyChange(PROP_INPUT); // FIXME navigator doesn't get notified that a new file has been created
-			}
+		String fileName = newInput.getFile().getLocation().toFile().getAbsolutePath();
+		boolean success = performSave(fileName, progressMonitor);
+		if (success) {
+			setInput(newInput);
+			setPartName(newInput.getName());
+			isModelDirty = false;
+			firePropertyChange(PROP_DIRTY);
+			firePropertyChange(PROP_INPUT); // FIXME navigator doesn't get notified that a new file has been created
 		}
 
 		if (progressMonitor != null)

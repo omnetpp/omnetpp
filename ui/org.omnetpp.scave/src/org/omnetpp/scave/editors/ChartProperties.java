@@ -244,11 +244,6 @@ public class ChartProperties extends PropertySource {
 		public Object getEditableValue() {
 			return this;
 		}
-
-		double val;
-		@Property
-		public double getDoubleVal() { return val; }
-		public void setDoubleVal(double val) { this.val = val; }
 	}
 
 	public class CategoryPlotProperties extends PlotProperties
