@@ -203,11 +203,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 		// complete submodule type name
 		if (info.sectionType == SECT_SUBMODULES) {
 			System.out.println("testing proposals for SUBMODULES scope");
-			if (line.matches(".*\\bconnections")) {
-				// user forgot "allowunconnected" keyword
-				addProposals(viewer, documentOffset, result, NedHelper.proposedNedConnsKeywords, null);
-			}
-			else if (line.matches(".*:")) {
+			if (line.matches(".*:")) {
 				// XXX offer "like" template too
 				addProposals(viewer, documentOffset, result, res.getModuleNames(), "module type");
 			}
@@ -226,7 +222,11 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 	
 		if (info.sectionType == SECT_CONNECTIONS) {
 			System.out.println("testing proposals for CONNECTIONS scope");
-			//XXX offer templates
+			if (line.matches(".*\\bconnections")) {
+				// user forgot "allowunconnected" keyword
+				addProposals(viewer, documentOffset, result, NedHelper.proposedNedConnsKeywords, null);
+			}
+			//XXX offer templates for connection, loop connection, connection with channel, etc
 	    	if (line.equals("") || line.endsWith("-->") || line.endsWith("<-->") || line.endsWith("<--")) { 
 	    		// right at line start or after arrow: offer submodule names and parent module's gates
 	    		if (parentComponent!=null) {
@@ -327,6 +327,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 			//System.out.println(">>>"+source+"<<<");
 			System.out.println("SECTIONTYPE:"+sectionType+"  COMPONENT:"+componentName+"  SUBMODTYPENAME:"+submoduleTypeName);
 			System.out.println("PREFIX: >>"+prefix+"<<");
+			System.out.println("PREFIX2: >>"+prefix2+"<<");
 
 			CompletionInfo ret = new CompletionInfo();
 			ret.linePrefix = prefix;
