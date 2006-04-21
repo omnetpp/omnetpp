@@ -8,8 +8,10 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.common.color.ColorFactory;
 
 public class ModuleBorder extends AbstractBorder {
+	
+	public final static int HEADER_HEIGHT = 42;
 
-    protected static Insets insets = new Insets(8, 36, 8, 6);
+    protected static Insets insets = new Insets(HEADER_HEIGHT, 0, 0, 0);
     public Insets getInsets(IFigure figure) {
         return insets;
     }
@@ -21,21 +23,7 @@ public class ModuleBorder extends AbstractBorder {
         g.setBackgroundColor(ColorFactory.logicGreen);
 
         // Draw the sides of the border
-        g.fillRectangle(r.x, r.y + 2, r.width, 6);
-        g.fillRectangle(r.x, r.bottom() - 8, r.width, 6);
-        g.fillRectangle(r.x, r.y + 2, 6, r.height - 4);
-        g.fillRectangle(r.right() - 6, r.y + 2, 6, r.height - 4);
-
-        // Outline the border
-        g.setForegroundColor(ColorFactory.connectorGreen);
-        g.drawLine(r.x, r.y + 2, r.right() - 1, r.y + 2);
-        g.drawLine(r.x, r.bottom() - 3, r.right() - 1, r.bottom() - 3);
-        g.drawLine(r.x, r.y + 2, r.x, r.bottom() - 3);
-        g.drawLine(r.right() - 1, r.bottom() - 3, r.right() - 1, r.y + 2);
-
-        r.crop(new Insets(1, 1, 0, 0));
-        r.expand(1, 1);
-        r.crop(getInsets(figure));
+        g.fillRectangle(r.x, r.y, r.width, insets.getHeight());
     }
 
 }
