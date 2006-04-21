@@ -77,25 +77,25 @@ public class DisplayString {
         MODULE_X(Tag.bgp, 0, PropType.Integer, PropGroup.Position, "backgorund x", "Module background horizontal displacement"),
         MODULE_Y(Tag.bgp, 1, PropType.Integer, PropGroup.Position, "backgorund y", "Module background vertical displacement"),
         // BGB tag
-        MODULE_WIDTH(Tag.bgb, 0, PropType.Integer, PropGroup.Position, "shape width", "Width of shape. Default: match the image size or shape height (-1)"),
-        MODULE_HEIGHT(Tag.bgb, 1, PropType.Integer, PropGroup.Position, "shape height", "Height of shape. Default: match the image size or shape width (-1)"),
-        MODULE_FILLCOL(Tag.bgb, 2, PropType.Color, PropGroup.Style, "shape fill color", "Fill color of the shape. Default: light blue"),
-        MODULE_BORDERCOL(Tag.bgb, 3, PropType.Color, PropGroup.Style, "shape border color", "Border color of the shape. Default: black"),
-        MODULE_BORDERWIDTH(Tag.bgb, 4, PropType.Integer, PropGroup.Style, "shape border width", "Border width of the shape. Default: 2"),
+        MODULE_WIDTH(Tag.bgb, 0, PropType.Integer, PropGroup.Position, "backgorund width", "Width of shape. Default: match the image size or shape height (-1)"),
+        MODULE_HEIGHT(Tag.bgb, 1, PropType.Integer, PropGroup.Position, "backgorund height", "Height of shape. Default: match the image size or shape width (-1)"),
+        MODULE_FILLCOL(Tag.bgb, 2, PropType.Color, PropGroup.Style, "backgorund fill color", "Fill color of the shape. Default: light blue"),
+        MODULE_BORDERCOL(Tag.bgb, 3, PropType.Color, PropGroup.Style, "backgorund border color", "Border color of the shape. Default: black"),
+        MODULE_BORDERWIDTH(Tag.bgb, 4, PropType.Integer, PropGroup.Style, "backgorund border width", "Border width of the shape. Default: 2"),
         // BGTT tag
-        MODULE_TOOLTIP(Tag.bgtt, 0, PropType.String, PropGroup.Text, "tooltip", "Tooltip to be displayed over the module's background"),
+        MODULE_TOOLTIP(Tag.bgtt, 0, PropType.String, PropGroup.Text, "backgorund tooltip", "Tooltip to be displayed over the module's background"),
         // BGI tag
-        MODULE_IMAGE(Tag.bgi, 0, PropType.Image, PropGroup.Image, "image", "An image to be displayed as a module background"),
-        MODULE_IMAGEARRANGEMENT(Tag.bgi, 1, PropType.String, PropGroup.Image, "arrangement", "How to arrange the module's background image (Tile / Scretch) Default: scretch"),
+        MODULE_IMAGE(Tag.bgi, 0, PropType.Image, PropGroup.Image, "backgorund image", "An image to be displayed as a module background"),
+        MODULE_IMAGEARRANGEMENT(Tag.bgi, 1, PropType.String, PropGroup.Image, "backgorund arrangement", "How to arrange the module's background image (Tile / Scretch) Default: scretch"),
         // BGG tag
-        MODULE_MAXTICKDISTANCE(Tag.bgg, 0, PropType.Integer, PropGroup.Misc, "grid tick distance", "Maximum distance between two ticks measured in pixels"),
-        MODULE_TICKNUMBER(Tag.bgg, 1, PropType.Integer, PropGroup.Misc, "grid tick number", "Number of minor ticks between two major one"),
-        MODULE_GRIDCOL(Tag.bgg, 3, PropType.Color, PropGroup.Style, "grid color", "Color of grid"),
+        MODULE_MAXTICKDISTANCE(Tag.bgg, 0, PropType.Integer, PropGroup.Misc, "backgorund grid tick distance", "Maximum distance between two ticks measured in pixels"),
+        MODULE_TICKNUMBER(Tag.bgg, 1, PropType.Integer, PropGroup.Misc, "backgorund grid tick number", "Number of minor ticks between two major one"),
+        MODULE_GRIDCOL(Tag.bgg, 3, PropType.Color, PropGroup.Style, "backgorund grid color", "Color of grid"),
         // module scaling mixel per unit
-        MODULE_X_SCALE(Tag.bgs, 0, PropType.Integer, PropGroup.Misc, "X scaling", "Number of horizontal pixels per unit"),
-        MODULE_X_UNIT(Tag.bgs, 1, PropType.String, PropGroup.Text, "X unit", "Name of horizontal unit"),
-        MODULE_Y_SCALE(Tag.bgs, 2, PropType.Integer, PropGroup.Misc, "vertical scale", "Number of vertical pixels per unit"),
-        MODULE_Y_UNIT(Tag.bgs, 3, PropType.String, PropGroup.Text, "Y unit", "Name of vertical unit"),
+        MODULE_X_SCALE(Tag.bgs, 0, PropType.Integer, PropGroup.Misc, "backgorund X scaling", "Number of horizontal pixels per unit"),
+        MODULE_X_UNIT(Tag.bgs, 1, PropType.String, PropGroup.Text, "backgorund X unit", "Name of horizontal unit"),
+        MODULE_Y_SCALE(Tag.bgs, 2, PropType.Integer, PropGroup.Misc, "backgorund vertical scale", "Number of vertical pixels per unit"),
+        MODULE_Y_UNIT(Tag.bgs, 3, PropType.String, PropGroup.Text, "backgorund Y unit", "Name of vertical unit"),
         // END of COMPOUNDMODULE properties
         
         // START of CONNECTION properties
@@ -103,18 +103,17 @@ public class DisplayString {
         ROUTING_MODE(Tag.m, 0, PropType.String, PropGroup.Connection, "routing", "Routing mode ([m]anual, manhatta[n], [s]hortestpath) Default: manual"),
         ROUTING_CONSTRAINT(Tag.m, 1, PropType.String, PropGroup.Connection, "routing constraint", "possible constraints: ([s]outh, [n]orth, [e]ast, [w]est)"),
         // a tag (anchoring)
-        ANCHOR_SRCX(Tag.a, 0, PropType.Integer, PropGroup.Position, "source anchor X", "Relative horizontal position of the anchor on the source module side"),
-        ANCHOR_SRCY(Tag.a, 1, PropType.Integer, PropGroup.Position, "source anchor Y", "Relative vertical position of the anchor on the source module side"),
-        ANCHOR_DSTX(Tag.a, 2, PropType.Integer, PropGroup.Position, "destination anchor X", "Relative horizontal position of the anchor on the destination module side"),
-        ANCHOR_DSTY(Tag.a, 3, PropType.Integer, PropGroup.Position, "destination anchor Y", "Relative vertical position of the anchor on the destination module side"),
+        ANCHOR_SRCX(Tag.a, 0, PropType.Integer, PropGroup.Position, "source anchor x", "Relative horizontal position of the anchor on the source module side"),
+        ANCHOR_SRCY(Tag.a, 1, PropType.Integer, PropGroup.Position, "source anchor y", "Relative vertical position of the anchor on the source module side"),
+        ANCHOR_DSTX(Tag.a, 2, PropType.Integer, PropGroup.Position, "destination anchor x", "Relative horizontal position of the anchor on the destination module side"),
+        ANCHOR_DSTY(Tag.a, 3, PropType.Integer, PropGroup.Position, "destination anchor y", "Relative vertical position of the anchor on the destination module side"),
         // ls tag (line styling)
         CONNECTION_COL(Tag.ls, 0, PropType.Color, PropGroup.Style, "color", "Connection color. Default: black"),
         CONNECTION_WIDTH(Tag.ls, 1, PropType.Integer, PropGroup.Style, "line width", "Connection line width. Default: 1"),
         CONNECTION_LINE(Tag.ls, 2, PropType.String, PropGroup.Style, "line style", "Connection line style ([s]olid, [d]otted). Default: solid"),
         CONNECTION_SEGMENTS(Tag.ls, 3, PropType.String, PropGroup.Style, "segments", "Connection segmenets ([l]ine, [s]pline). Default: line"),
         // bp tag (bendpoints)
-        BENDPOINT_X(Tag.bp, 0, PropType.Integer, PropGroup.Connection, "Bendpoint X", "Relative horizontal bendpoint location"),
-        BENDPOINT_Y(Tag.bp, 1, PropType.Integer, PropGroup.Connection, "Bendpoint Y", "Relative vertical bendpoint location");
+        BENDPOINTS(Tag.bp, 0, PropType.Integer, PropGroup.Connection, "bendpoints", "bendpoint locations");
         // END of CONNECTION properties
         // end of tag definition
         

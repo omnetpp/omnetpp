@@ -18,7 +18,7 @@ public class ReorderPartCommand extends Command {
     private NEDElement newInsertChildBefore;
 
     public ReorderPartCommand(NEDElement insertBefore, NEDElement child) {
-        super(MessageFactory.ReorderPartCommand_Label);
+        super("Reorder");
         node = child;
         parent = child.getParent();
         newInsertChildBefore = insertBefore;

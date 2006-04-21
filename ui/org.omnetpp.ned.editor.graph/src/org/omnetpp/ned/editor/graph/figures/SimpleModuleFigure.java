@@ -26,6 +26,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.handles.HandleBounds;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayCalloutSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayInfoTextSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayNameSupport;
@@ -34,7 +35,6 @@ import org.omnetpp.ned.editor.graph.figures.properties.DisplayRangeSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayShapeSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayTooltipSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.LayerSupport;
-import org.omnetpp.ned.editor.graph.misc.ImageFactory;
 
 public class SimpleModuleFigure extends NedFigure implements HandleBounds, 
     DisplayRangeSupport, DisplayNameSupport, DisplayTooltipSupport, DisplayQueueSupport, 

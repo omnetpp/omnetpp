@@ -14,7 +14,7 @@ import org.eclipse.draw2d.*;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.PointList;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.omnetpp.ned.editor.graph.misc.ColorFactory;
+import org.omnetpp.common.color.ColorFactory;
 
 public class ModuleBorder extends AbstractBorder {
 

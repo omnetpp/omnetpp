@@ -35,7 +35,7 @@ public class PrintModeDialog extends Dialog {
     }
 
     protected void configureShell(Shell newShell) {
-        newShell.setText(MessageFactory.PrintDialog_Title);
+        newShell.setText("Print ned file");
         super.configureShell(newShell);
     }
 
@@ -43,17 +43,17 @@ public class PrintModeDialog extends Dialog {
         Composite composite = (Composite) super.createDialogArea(parent);
 
         tile = new Button(composite, SWT.RADIO);
-        tile.setText(MessageFactory.PrintDialog_Tile);
+        tile.setText("Print dialog title");
         tile.setSelection(true);
 
         fitPage = new Button(composite, SWT.RADIO);
-        fitPage.setText(MessageFactory.PrintDialog_Page);
+        fitPage.setText("Page");
 
         fitWidth = new Button(composite, SWT.RADIO);
-        fitWidth.setText(MessageFactory.PrintDialog_Width);
+        fitWidth.setText("Width");
 
         fitHeight = new Button(composite, SWT.RADIO);
-        fitHeight.setText(MessageFactory.PrintDialog_Height);
+        fitHeight.setText("Height");
 
         return composite;
     }

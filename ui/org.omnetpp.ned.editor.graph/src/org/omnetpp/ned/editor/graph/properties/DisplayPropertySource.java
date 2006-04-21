@@ -7,7 +7,7 @@ import org.eclipse.ui.views.properties.ColorPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
-import org.omnetpp.ned.editor.graph.misc.ColorFactory;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.ned2.model.DisplayString;
 import org.omnetpp.ned2.model.NEDElement;
 

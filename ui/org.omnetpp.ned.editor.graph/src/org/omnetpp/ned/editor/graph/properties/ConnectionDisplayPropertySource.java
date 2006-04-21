@@ -17,7 +17,7 @@ public class ConnectionDisplayPropertySource extends DisplayPropertySource {
         setDisplayString(model.getDisplayString());
         // define which properties should be displayed in the property sheet
         supportedProperties = EnumSet.range(DisplayString.Prop.ROUTING_MODE, 
-                                            DisplayString.Prop.BENDPOINT_Y);
+                                            DisplayString.Prop.BENDPOINTS);
         supportedProperties.addAll(EnumSet.range(DisplayString.Prop.TEXT, DisplayString.Prop.TEXTPOS));
         supportedProperties.add(DisplayString.Prop.TOOLTIP);
     }

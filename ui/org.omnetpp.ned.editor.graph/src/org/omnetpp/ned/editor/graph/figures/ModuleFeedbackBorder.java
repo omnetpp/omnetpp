@@ -15,7 +15,7 @@ import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.omnetpp.ned.editor.graph.misc.ColorFactory;
+import org.omnetpp.common.color.ColorFactory;
 
 public class ModuleFeedbackBorder extends ModuleBorder {
 

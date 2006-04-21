@@ -30,7 +30,7 @@ public class CloneCommand extends Command {
     private Map<INedModule, INedModule> old2newMapping;
 
     public CloneCommand() {
-        super(MessageFactory.CloneCommand_Label);
+        super("Clone");
         modules = new LinkedList<INedModule> ();
     }
 

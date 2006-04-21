@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.misc;
+package org.omnetpp.common.color;
 
 import java.util.HashMap;
 

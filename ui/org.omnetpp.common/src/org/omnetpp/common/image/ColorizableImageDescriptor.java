@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.misc;
+package org.omnetpp.common.image;
 
 import java.io.*;
 
@@ -15,7 +15,7 @@ import org.eclipse.swt.graphics.RGB;
  * An ImageDescriptor used in NED editor. Supports coloring and preferred size. 
  *
  */
-public class NedImageDescriptor extends ImageDescriptor {
+public class ColorizableImageDescriptor extends ImageDescriptor {
 
     /**
      * The class whose resource directory contain the file, 
@@ -52,7 +52,7 @@ public class NedImageDescriptor extends ImageDescriptor {
      *   <code>null</code>
      * @param filename the name of the file
      */
-    NedImageDescriptor(Class clazz, String filename) {
+    ColorizableImageDescriptor(Class clazz, String filename) {
         this.location = clazz;
         this.name = filename;
     }
@@ -73,10 +73,10 @@ public class NedImageDescriptor extends ImageDescriptor {
      * Method declared on Object.
      */
     public boolean equals(Object o) {
-        if (!(o instanceof NedImageDescriptor)) {
+        if (!(o instanceof ColorizableImageDescriptor)) {
             return false;
         }
-        NedImageDescriptor other = (NedImageDescriptor) o;
+        ColorizableImageDescriptor other = (ColorizableImageDescriptor) o;
         if (location != null) {
             if (!location.equals(other.location)) {
                 return false;
@@ -127,7 +127,7 @@ public class NedImageDescriptor extends ImageDescriptor {
     }
 
     /**
-     * Checks whather the specified resource or file behind the descriptor exists
+     * Checks whether the specified resource or file behind the descriptor exists
      * @return <code>ture</code> if respurce is present <code>false</code> otherwise
      */
     public boolean canCreate() {

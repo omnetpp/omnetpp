@@ -20,8 +20,8 @@ import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.ned.editor.graph.figures.ModuleFigure;
-import org.omnetpp.ned.editor.graph.misc.ColorFactory;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.model.commands.AddCommand;
 import org.omnetpp.ned.editor.graph.model.commands.CloneCommand;
@@ -48,13 +48,13 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
         AddCommand add = new AddCommand();
         add.setParent((INedContainer) getHost().getModel());
         add.setChild(part);
-        add.setLabel(MessageFactory.LogicXYLayoutEditPolicy_AddCommandLabelText);
+        add.setLabel("Add");
         add.setDebugLabel("LogicXYEP add subpart");//$NON-NLS-1$
 
         SetConstraintCommand setConstraint = new SetConstraintCommand();
         setConstraint.setLocation(rect);
         setConstraint.setModule(part);
-        setConstraint.setLabel(MessageFactory.LogicXYLayoutEditPolicy_AddCommandLabelText);
+        setConstraint.setLabel("Add");
         setConstraint.setDebugLabel("LogicXYEP setConstraint");//$NON-NLS-1$
 
         return setConstraint;
@@ -229,7 +229,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
         create.setChild(newPart);
         Rectangle constraint = (Rectangle) getConstraintFor(request);
         create.setLocation(constraint);
-        create.setLabel(MessageFactory.LogicXYLayoutEditPolicy_CreateCommandLabelText);
+        create.setLabel("Add");
 
         return create;
     }

@@ -20,7 +20,7 @@ import org.eclipse.gef.requests.SimpleFactory;
 import org.eclipse.gef.tools.MarqueeSelectionTool;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.omnetpp.ned.editor.graph.misc.ImageFactory;
+import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.properties.NedPropertySourceAdapterFactory;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
@@ -72,7 +72,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
     }
 
     static private PaletteContainer createControlGroup(PaletteRoot root) {
-        PaletteGroup controlGroup = new PaletteGroup(MessageFactory.LogicPlugin_Category_ControlGroup_Label);
+        PaletteGroup controlGroup = new PaletteGroup("Control group");
 
         List<PaletteEntry> entries = new ArrayList<PaletteEntry>();
 
@@ -80,7 +80,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         entries.add(tool);
         root.setDefaultEntry(tool);
 
-    	PaletteStack marqueeStack = new PaletteStack(MessageFactory.Marquee_Stack, "", null); //$NON-NLS-1$
+    	PaletteStack marqueeStack = new PaletteStack("Marq", "", null); //$NON-NLS-1$
     	marqueeStack.add(new MarqueeToolEntry());
     	MarqueeToolEntry marquee = new MarqueeToolEntry();
     	marquee.setToolProperty(MarqueeSelectionTool.PROPERTY_MARQUEE_BEHAVIOR, 

@@ -109,7 +109,7 @@ public abstract class PasteTemplateAction extends SelectionAction {
      */
     protected void init() {
         setId(ActionFactory.PASTE.getId());
-        setText(MessageFactory.PasteAction_ActionLabelText);
+        setText("Paste");
     }
 
     /**

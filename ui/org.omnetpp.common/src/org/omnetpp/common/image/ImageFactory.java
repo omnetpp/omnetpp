@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.misc;
+package org.omnetpp.common.image;
 
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -49,7 +49,7 @@ public class ImageFactory {
             imageDirs = omnetppBitmapPath.split(";");
         // create and register a default / notfound image 
         imageRegistry.put(DEFAULT_KEY, 
-                new NedImageDescriptor(ImageFactory.class, DEFAULT_NAME));
+                new ColorizableImageDescriptor(ImageFactory.class, DEFAULT_NAME));
     }
     
     /**
@@ -154,10 +154,10 @@ public class ImageFactory {
             return null;
 
         // adjust the colorization and size parameteres for the descriptor
-        if(result instanceof NedImageDescriptor) {
-            ((NedImageDescriptor)result).setColorization(shade);
-            ((NedImageDescriptor)result).setColorizationWeight(weight);
-            ((NedImageDescriptor)result).setPreferredWidth(imageSize);
+        if(result instanceof ColorizableImageDescriptor) {
+            ((ColorizableImageDescriptor)result).setColorization(shade);
+            ((ColorizableImageDescriptor)result).setColorizationWeight(weight);
+            ((ColorizableImageDescriptor)result).setPreferredWidth(imageSize);
         }
         
         // add it to the image registry, so later we can reuse it. The key provides the
@@ -201,8 +201,8 @@ public class ImageFactory {
      * @param baseName basic name of the figure
      * @return The file object describing for the given name
      */
-    private static NedImageDescriptor createDescriptor(String baseName) {
-        NedImageDescriptor result;
+    private static ColorizableImageDescriptor createDescriptor(String baseName) {
+        ColorizableImageDescriptor result;
         // TODO svg support missing
         for(String currPath : imageDirs) 
             if ((result = createDescriptor(null, currPath, baseName, "png")) != null) 
@@ -228,9 +228,9 @@ public class ImageFactory {
      * @param ext extension to be used
      * @return The ImageDescriptor or <code>null</code> if does exist.
      */
-    private static NedImageDescriptor createDescriptor(Class refClass, String dir, String fileName, String ext) {
+    private static ColorizableImageDescriptor createDescriptor(Class refClass, String dir, String fileName, String ext) {
         String name = (new Path(dir)).append(fileName).addFileExtension(ext).toString();
-        NedImageDescriptor iDesc = new NedImageDescriptor(refClass, name);
+        ColorizableImageDescriptor iDesc = new ColorizableImageDescriptor(refClass, name);
         // check if the resource exists
         if(iDesc.canCreate()) return iDesc;
         

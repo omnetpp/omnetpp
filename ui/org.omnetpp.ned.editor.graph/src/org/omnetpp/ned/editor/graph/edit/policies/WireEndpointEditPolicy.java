@@ -2,7 +2,7 @@ package org.omnetpp.ned.editor.graph.edit.policies;
 
 import org.eclipse.draw2d.PolylineConnection;
 import org.eclipse.gef.GraphicalEditPart;
-import org.omnetpp.ned.editor.graph.misc.ColorFactory;
+import org.omnetpp.common.color.ColorFactory;
 
 public class WireEndpointEditPolicy extends org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy {
 

@@ -100,12 +100,12 @@ import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.graph.actions.ModulePasteTemplateAction;
 import org.omnetpp.ned.editor.graph.dnd.TextTransferDropTargetListener;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
 import org.omnetpp.ned.editor.graph.edit.outline.NedTreeEditPartFactory;
 import org.omnetpp.ned.editor.graph.figures.properties.LayerSupport;
-import org.omnetpp.ned.editor.graph.misc.ImageFactory;
 import org.omnetpp.ned.editor.graph.misc.MessageFactory;
 import org.omnetpp.ned.editor.graph.misc.ModulePaletteCustomizer;
 import org.omnetpp.ned2.model.NedFileNodeEx;
@@ -343,10 +343,9 @@ public class GraphicalNedEditor extends GraphicalEditorWithFlyoutPalette {
             if (part != GraphicalNedEditor.this) return;
             if (!((IFileEditorInput) getEditorInput()).getFile().exists()) {
                 Shell shell = getSite().getShell();
-                String title = MessageFactory.GraphicalEditor_FILE_DELETED_TITLE_UI;
-                String message = MessageFactory.GraphicalEditor_FILE_DELETED_WITHOUT_SAVE_INFO;
-                String[] buttons = { MessageFactory.GraphicalEditor_SAVE_BUTTON_UI,
-                        MessageFactory.GraphicalEditor_CLOSE_BUTTON_UI };
+                String title = "File Deleted";
+                String message = "The file has been deleted from the file system.";
+                String[] buttons = { "Save", "Close" };
                 MessageDialog dialog = new MessageDialog(shell, title, null, message, MessageDialog.QUESTION,
                         buttons, 0);
                 if (dialog.open() == 0) {

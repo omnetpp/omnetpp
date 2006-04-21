@@ -94,7 +94,7 @@ public class GraphicalNedEditorActionContributor extends org.eclipse.gef.ui.acti
      */
     public void contributeToMenu(IMenuManager menubar) {
         super.contributeToMenu(menubar);
-        MenuManager viewMenu = new MenuManager(MessageFactory.ViewMenu_LabelText);
+        MenuManager viewMenu = new MenuManager("View");
         viewMenu.add(getAction(GEFActionConstants.ZOOM_IN));
         viewMenu.add(getAction(GEFActionConstants.ZOOM_OUT));
         viewMenu.add(new Separator());

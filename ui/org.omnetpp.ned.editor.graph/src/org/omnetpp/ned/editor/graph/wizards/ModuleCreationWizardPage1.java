@@ -43,8 +43,8 @@ public class ModuleCreationWizardPage1 extends WizardNewFileCreationPage
 	public ModuleCreationWizardPage1(IWorkbench aWorkbench,
 			IStructuredSelection selection) {
 		super("sampleLogicPage1", selection); //$NON-NLS-1$
-		this.setTitle(MessageFactory.CreateLogicPage1_Title);
-		this.setDescription(MessageFactory.CreateLogicPage1_Description);
+		this.setTitle("Create a NED file");
+		this.setDescription("This wizard allows you to create a new netwrok topology file");
 		this.setImageDescriptor(ImageDescriptor.createFromFile(getClass(),
 				"icons/logicbanner.gif")); //$NON-NLS-1$
 		this.workbench = aWorkbench;
@@ -59,20 +59,18 @@ public class ModuleCreationWizardPage1 extends WizardNewFileCreationPage
 		// sample section generation group
 		Group group = new Group(composite, SWT.NONE);
 		group.setLayout(new GridLayout());
-		group.setText(MessageFactory.CreateLogicPage1_ModelNames_GroupName);
+		group.setText("Group 1");
 		group.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
 				| GridData.HORIZONTAL_ALIGN_FILL));
 
 		// sample section generation checkboxes
 		model1 = new Button(group, SWT.RADIO);
-		model1
-				.setText(MessageFactory.CreateLogicPage1_ModelNames_EmptyModelName);
+		model1.setText("Empty model");
 		model1.addSelectionListener(this);
 		model1.setSelection(true);
 
 		model2 = new Button(group, SWT.RADIO);
-		model2
-				.setText(MessageFactory.CreateLogicPage1_ModelNames_FourBitAdderModelName);
+		model2.setText("Example model");
 		model2.addSelectionListener(this);
 
 		new Label(composite, SWT.NONE);

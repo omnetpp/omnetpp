@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.misc;
+package org.omnetpp.common.properties;
 
 import java.util.Collection;
 
@@ -36,7 +36,7 @@ public class EditableComboBoxPropertyDescriptor extends TextPropertyDescriptor {
      */
     @Override
     public CellEditor createPropertyEditor(Composite parent) {
-        editor = new EditableComboBoxCellEditor(parent, values, SWT.DROP_DOWN);
+        editor = new EditableComboBoxCellEditor(parent, values);
 
         if (getValidator() != null) {
             editor.setValidator(getValidator());

@@ -47,7 +47,7 @@ public class GraphicalNedEditorContextMenuProvider extends ContextMenuProvider {
 
 
         // Alignment Actions
-        MenuManager submenu = new MenuManager(MessageFactory.AlignmentAction_AlignSubmenu_ActionLabelText);
+        MenuManager submenu = new MenuManager("&Align");
 
         action = getActionRegistry().getAction(GEFActionConstants.ALIGN_LEFT);
         if (action.isEnabled()) submenu.add(action);

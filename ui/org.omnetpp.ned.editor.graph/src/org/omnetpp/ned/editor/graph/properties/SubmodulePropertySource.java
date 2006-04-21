@@ -5,7 +5,7 @@ import java.util.Set;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
-import org.omnetpp.ned.editor.graph.misc.EditableComboBoxPropertyDescriptor;
+import org.omnetpp.common.properties.EditableComboBoxPropertyDescriptor;
 import org.omnetpp.ned2.model.SubmoduleDisplayString;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
 import org.omnetpp.resources.NEDResourcesPlugin;
@@ -43,11 +43,6 @@ public class SubmodulePropertySource extends AbstractNedPropertySource {
     public IPropertyDescriptor[] getPropertyDescriptors() {
         // fill in the type combobox
         Set<String> moduleNames = NEDResourcesPlugin.getNEDResources().getModuleNames();
-// XXX
-        for (String s : moduleNames) 
-            System.out.println(s);
-        System.out.println();
-        
         typeProp.setItems(moduleNames);
         
         return descriptors;

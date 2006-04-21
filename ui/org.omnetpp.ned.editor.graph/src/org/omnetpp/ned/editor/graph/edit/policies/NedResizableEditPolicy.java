@@ -9,8 +9,8 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.ned.editor.graph.figures.ModuleFeedbackFigure;
-import org.omnetpp.ned.editor.graph.misc.ColorFactory;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 
 /**

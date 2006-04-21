@@ -4,6 +4,9 @@ Bundle-Name: Common Plug-in
 Bundle-SymbolicName: org.omnetpp.common
 Bundle-Version: 4.0.0
 Bundle-Localization: plugin
-Require-Bundle: org.eclipse.ui.views,
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui.views,
  org.eclipse.jface
-Export-Package: org.omnetpp.common.properties
+Export-Package: org.omnetpp.common.color,
+ org.omnetpp.common.image,
+ org.omnetpp.common.properties
