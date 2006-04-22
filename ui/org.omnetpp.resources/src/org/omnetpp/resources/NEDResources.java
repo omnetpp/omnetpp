@@ -184,10 +184,14 @@ public class NEDResources implements INEDComponentResolver {
 	 */
 	public void disconnect(IFile file) {
 		int count = connectCount.get(file);  // must exist
-		if (count<=1)
+		if (count<=1) {
+			// there's no open editor -- remove counter and re-read last saved state from disk
 			connectCount.remove(file);
-		else
+			readNEDFile(file);
+		}
+		else {
 			connectCount.put(file, count-1);
+		}
 	}
 
 	/**
@@ -198,18 +202,13 @@ public class NEDResources implements INEDComponentResolver {
 		NEDErrorStore errors = new NEDErrorStore();
 		errors.setPrintToStderr(false);
 		NEDElement tree = ModelUtil.parseNedSource(text, errors);
-		if (tree==null) {
-            convertErrorsToMarkers(file, errors);
+		convertErrorsToMarkers(file, errors);
+
+		// store it even if there were errors (needed by content assist)
+		if (tree==null)
 			forgetNEDFile(file);
-		}
-		else {
-			try {
-				file.deleteMarkers(NEDPROBLEM_MARKERID, true, IResource.DEPTH_ZERO);
-				addMarker(file, NEDPROBLEM_MARKERID, IMarker.SEVERITY_INFO, "editor contents parsed OK", 1); //XXX remove
-			} catch (CoreException e) {
-			}
+		else 
 			storeNEDFileContents(file, tree);
-		}
 		rehashIfNeeded();
 	}
 
@@ -235,32 +234,27 @@ public class NEDResources implements INEDComponentResolver {
 		// parse the NED file and put it into the hash table
 		String fileName = file.getLocation().toFile().getPath();
 		NEDErrorStore errors = new NEDErrorStore();
-		errors.setPrintToStderr(false);
 		NEDElement tree = ModelUtil.loadNedSource(fileName, errors);
-		if (tree==null) {
-            convertErrorsToMarkers(file, errors);
+		convertErrorsToMarkers(file, errors);
+
+		// only store it if there were no errors
+		if (tree==null || !errors.empty())
 			forgetNEDFile(file);
-		}
-		else {
-			try {
-				file.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ZERO);
-				addMarker(file, NEDPROBLEM_MARKERID, IMarker.SEVERITY_INFO, "file parsed OK", 1); //XXX remove
-			} catch (CoreException e) {
-			}
+		else 
 			storeNEDFileContents(file, tree);
-		}
 	}
 
 	private void convertErrorsToMarkers(IFile file, NEDErrorStore errors) {
 		try {
 			file.deleteMarkers(NEDPROBLEM_MARKERID, true, IResource.DEPTH_ZERO);
-			//System.out.println("markers removed: "+NEDPROBLEM_MARKERID+" from "+file);
 			for (int i=0; i<errors.numErrors(); i++) {
                 // XXX hack: parse out line number from string. NEDErrorStore should rather store line number as int...
 				String loc = errors.errorLocation(i);
 				int line = parseLineNumber(loc);
 				addMarker(file, NEDPROBLEM_MARKERID, IMarker.SEVERITY_ERROR, errors.errorText(i), line);
 			}
+			if (errors.numErrors()==0)
+				addMarker(file, NEDPROBLEM_MARKERID, IMarker.SEVERITY_INFO, "parsed OK", 1); //XXX remove
 		} catch (CoreException e) {
 		}
 	}
@@ -378,9 +372,9 @@ public class NEDResources implements INEDComponentResolver {
 		needsRehash = false;
 		
 		//XXX temporary code, just testing:
-		for (INEDComponent c : components.values()) {
-			c.getMemberNames();  // force resolution of inheritance
-		}
+		//for (INEDComponent c : components.values()) {
+		//	c.getMemberNames();  // force resolution of inheritance
+		//}
 
 		//long dt = System.currentTimeMillis() - startMillis;
 		//System.out.println("rehash() took "+dt+"ms");

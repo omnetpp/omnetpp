@@ -29,6 +29,7 @@ import org.omnetpp.resources.NEDResourcesPlugin;
 
 // TODO a better structure is needed for storing the completion proposals
 // TODO context help can be supported, to show the documentation of the proposed keyword
+// TODO why doesn't content assist automatically appear when I type space or "." ?
 /**
  * NED completion processor.
  */
@@ -96,7 +97,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 		String line = info.linePrefixTrimmed;
 		INEDComponent parentComponent = null;
 		if (info.componentName!=null)
-			parentComponent = res.getComponent(info.componentName); //XXX parse NED file ourselves instead!!!! with error-tolerant version of the parser 
+			parentComponent = res.getComponent(info.componentName); // hopefully autobuilder (reconciler) has already run on current source  
 		INEDComponent submoduleType = null;
 		if (info.submoduleTypeName!=null)
 			submoduleType = res.getComponent(info.submoduleTypeName); 

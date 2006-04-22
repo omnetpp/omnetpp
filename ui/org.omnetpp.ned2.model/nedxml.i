@@ -9,6 +9,7 @@
 #include "nedelements.h"
 
 #include "neddtdvalidator.h"
+#include "nedtools.h"
 // #include "nedbasicvalidator.h"
 
 // #include "nedcompiler.h"
@@ -161,6 +162,7 @@ namespace std {
 %include "nedvalidator.h"
 %include "neddtdvalidatorbase.h"
 %include "neddtdvalidator.h"
+%include "nedtools.h"
 //%include "nedbasicvalidator.h"
 
 //%include "nedcompiler.h"

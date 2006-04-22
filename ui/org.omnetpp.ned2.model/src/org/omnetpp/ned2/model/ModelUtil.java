@@ -10,6 +10,7 @@ import org.omnetpp.ned2.model.swig.NEDElement;
 import org.omnetpp.ned2.model.swig.NEDErrorCategory;
 import org.omnetpp.ned2.model.swig.NEDErrorStore;
 import org.omnetpp.ned2.model.swig.NEDParser;
+import org.omnetpp.ned2.model.swig.NEDTools;
 
 public class ModelUtil {
 	// private static final String NED_EMF_MODEL_PACKAGE =
@@ -20,7 +21,7 @@ public class ModelUtil {
 	 * does not have to be NedFileNode, any subtree can be converted
 	 * to source form.
 	 * 
-	 * @param keepSyntax if set, sources parsed in old syntax (NED-1) will be generated in onld syntax as well 
+	 * @param keepSyntax if set, sources parsed in old syntax (NED-1) will be generated in old syntax as well 
 	 */
 	public static String generateNedSource(org.omnetpp.ned2.model.NEDElement treeRoot, boolean keepSyntax) {
 		NEDErrorStore errors = new NEDErrorStore();
@@ -36,27 +37,26 @@ public class ModelUtil {
 	}
 
 	/**
-	 * Parse NED source and return it as a NEDElement tree.
-	 * 
-	 * @param source source code as string
-	 * @return null if there was an error during parsing.
+	 * Parse NED source and return it as a NEDElement tree. The parser implements recovery, and 
+	 * a tree may be returned even if there were errors. Callers should check the 
+	 * NEDErrorStore.
 	 */
 	public static org.omnetpp.ned2.model.NEDElement parseNedSource(String source, NEDErrorStore errors) {
         return parse(source, null, errors);
 	}
 
 	/**
-	 * Load and parse NED file to a NEDElement tree.
-	 * 
-	 * @param filename file name
-	 * @return null if there was an error during parsing.
+	 * Load and parse NED file to a NEDElement tree. The parser implements recovery, and 
+	 * a tree may be returned even if there were errors. Callers should check the 
+	 * NEDErrorStore.
 	 */
 	public static org.omnetpp.ned2.model.NEDElement loadNedSource(String filename, NEDErrorStore errors) {
         return parse(null, filename, errors);
 	}
 
 	/**
-	 * Parse the given source or the given file.
+	 * Parse the given source or the given file. Try to return a non-null tree even in case 
+	 * of parse errors. However, returned tree is always guaranteed to conform to the DTD. 
 	 */
 	private static org.omnetpp.ned2.model.NEDElement parse(String source, String filename, NEDErrorStore errors) {
 		Assert.isTrue((source==null)!=(filename==null)); // exactly one of them is given
@@ -65,15 +65,23 @@ public class ModelUtil {
 			NEDParser np = new NEDParser(errors);
 			np.setParseExpressions(false);
 			NEDElement swigTree = source!=null ? np.parseNEDText(source) : np.parseNEDFile(filename);
-			if (swigTree == null || !errors.empty()) {
-				if (swigTree!=null) swigTree.delete();
+			if (swigTree == null)
 				return null;
+			if (!errors.empty()) {
+				// There were parse errors, and the tree built may not be entirely correct.
+				// Typical problems are "mandatory attribute missing" esp with connections,
+				// due to parse errors before filling in the connection element was completed.
+				// Here we try to check and repair the tree by discarding elements that cause 
+				// DTD validation error.
+				NEDTools.repairNEDElementTree(swigTree);
 			}
 
-			// validate
-			//XXX NEDDTDValidator dtdvalidator = new NEDDTDValidator(errors);
-			//XXX dtdvalidator.validate(swigTree);
-			if (!errors.empty()) {
+			// run DTD validation (once again)
+			NEDDTDValidator dtdvalidator = new NEDDTDValidator(errors);
+			int errs = errors.numErrors();
+			dtdvalidator.validate(swigTree);
+			if (errors.numErrors()!=errs) {
+				// DTD validation produced additional errors -- give up
 				swigTree.delete();
 				return null;
 			}
@@ -84,7 +92,8 @@ public class ModelUtil {
 			org.omnetpp.ned2.model.NEDElement pojoTree = swig2pojo(swigTree, null);
 			swigTree.delete();
 			return pojoTree;
-		} catch (RuntimeException e) {
+		} 
+		catch (RuntimeException e) {
 			errors.add(NEDErrorCategory.ERRCAT_ERROR.ordinal(), "", "internal error: "+e);
 			//e.printStackTrace(); //XXX should go into the log
 			return null;

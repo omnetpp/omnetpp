@@ -288,9 +288,9 @@ channeldefinition
                       storeComponentSourceCode(ps.component, @$);
                 }
         | channelheader error '}' /* error recovery rule */
-                { restoreGlobalParserState(); yyerrok; }
+                { restoreGlobalParserState(); }
         | CHANNEL error '}' /* error recovery rule */
-                { restoreGlobalParserState(); yyerrok; }
+                { restoreGlobalParserState(); }
         ;
 
 channelheader
@@ -362,9 +362,9 @@ channelinterfacedefinition
                       storeComponentSourceCode(ps.component, @$);
                 }
         | channelinterfaceheader error '}' /* error recovery rule */
-                { restoreGlobalParserState(); yyerrok; }
+                { restoreGlobalParserState(); }
         | CHANNELINTERFACE error '}' /* error recovery rule */
-                { restoreGlobalParserState(); yyerrok; }
+                { restoreGlobalParserState(); }
         ;
 
 channelinterfaceheader
@@ -411,9 +411,9 @@ simplemoduledefinition
                       storeComponentSourceCode(ps.component, @$);
                 }
         | simplemoduleheader error '}' /* error recovery rule */
-                { restoreGlobalParserState(); yyerrok; }
+                { restoreGlobalParserState(); }
         | SIMPLE error '}' /* error recovery rule */
-                { restoreGlobalParserState(); yyerrok; }
+                { restoreGlobalParserState(); }
         ;
 
 simplemoduleheader
@@ -453,9 +453,9 @@ compoundmoduledefinition
                       storeComponentSourceCode(ps.component, @$);
                 }
         | compoundmoduleheader error '}' /* error recovery rule */
-                { restoreGlobalParserState(); yyerrok; }
+                { restoreGlobalParserState(); }
         | MODULE error '}' /* error recovery rule */
-                { restoreGlobalParserState(); yyerrok; }
+                { restoreGlobalParserState(); }
         ;
 
 compoundmoduleheader
@@ -495,9 +495,9 @@ networkdefinition
                       storeComponentSourceCode(ps.component, @$);
                 }
         | networkheader error '}' /* error recovery rule */
-                { restoreGlobalParserState(); yyerrok; }
+                { restoreGlobalParserState(); }
         | NETWORK error '}' /* error recovery rule */
-                { restoreGlobalParserState(); yyerrok; }
+                { restoreGlobalParserState(); }
         ;
 
 networkheader
@@ -535,9 +535,9 @@ moduleinterfacedefinition
                       storeComponentSourceCode(ps.component, @$);
                 }
         | moduleinterfaceheader error '}' /* error recovery rule */
-                { restoreGlobalParserState(); yyerrok; }
+                { restoreGlobalParserState(); }
         | INTERFACE error '}' /* error recovery rule */
-                { restoreGlobalParserState(); yyerrok; }
+                { restoreGlobalParserState(); }
         ;
 
 moduleinterfaceheader
