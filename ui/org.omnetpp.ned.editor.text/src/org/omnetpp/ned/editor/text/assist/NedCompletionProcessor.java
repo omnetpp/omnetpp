@@ -148,14 +148,22 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 			// provide global start keywords and section names
 	    	if (info.sectionType==SECT_GLOBAL || info.sectionType==SECT_TYPES) {
 				addProposals(viewer, documentOffset, result, NedHelper.proposedNedGlobalStartingKeywords, null);
-			    addProposals(viewer, documentOffset, result, NedHelper.proposedNedGlobalTempl);
 	    	}
 	    	else if (info.sectionType==SECT_PARAMETERS || info.sectionType==SECT_GATES || 
 					info.sectionType==SECT_TYPES || info.sectionType==SECT_SUBMODULES) { 
 	    		addProposals(viewer, documentOffset, result, NedHelper.proposedNedSectionNameKeywords, null);
 	    	}
-	    	else if (info.sectionType==SECT_SUBMODULE_PARAMETERS)
+	    	else if (info.sectionType==SECT_SUBMODULE_PARAMETERS) {
 	    		addProposals(viewer, documentOffset, result, new String[]{"gates:"}, "keyword"); //XXX string constant
+	    	}
+
+	    	// offer templates
+	    	if (info.sectionType==SECT_GLOBAL || info.sectionType==SECT_TYPES) {
+			    addProposals(viewer, documentOffset, result, NedHelper.proposedNedGlobalTempl);
+	    	}
+	    	else if (info.sectionType==SECT_SUBMODULES) {
+	    		addProposals(viewer, documentOffset, result, NedHelper.proposedNedSubmoduleTempl);
+	    	}
 		}    	
 	
 		// offer existing and standard property names after "@"
@@ -242,8 +250,8 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 				// user forgot "allowunconnected" keyword
 				addProposals(viewer, documentOffset, result, NedHelper.proposedNedConnsKeywords, null);
 			}
-			//XXX offer templates for connection, loop connection, connection with channel, etc
-	    	if (line.equals("") || line.endsWith("-->") || line.endsWith("<-->") || line.endsWith("<--")) { 
+
+			if (line.equals("") || line.endsWith("-->") || line.endsWith("<-->") || line.endsWith("<--")) { 
 	    		// right at line start or after arrow: offer submodule names and parent module's gates
 	    		if (parentComponent!=null) {
 	    			addProposals(viewer, documentOffset, result, parentComponent.getSubmodNames(), "submodule");
@@ -260,6 +268,9 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 						addProposals(viewer, documentOffset, result, submodType.getGateNames(), "gate");
 	    		}
 	    	}
+
+			// offer templates for connection, loop connection, connection with channel, etc
+		    addProposals(viewer, documentOffset, result, NedHelper.proposedNedConnectionTempl);
 		}  		
 		
 		// offer keywords as fallback -- removed because those proposals rarely made sense
@@ -329,7 +340,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
     		String prefix = source;
     		prefix = prefix.replaceAll("(?s)\\s+", " "); // normalize whitespace
     		prefix = prefix.replaceFirst(".*[;\\{\\}]", "");
-    		prefix = prefix.replaceFirst(".*\\b(parameters|gates|types|connections|connections +[a-z]+) *:", "");
+    		prefix = prefix.replaceFirst(".*\\b(parameters|gates|types|submodules|connections|connections +[a-z]+) *:", "");
     		String prefix2 = prefix.replaceFirst("[a-zA-Z_][a-zA-Z0-9_]*$", "").trim(); // chop off last word
 
     		// kill {...} regions (including bodies of inner types, etc)

@@ -95,7 +95,7 @@ public class NedHelper {
     }
 
     // word lists for syntax highlighting
-    // TODO these are both for NED and MSG files. Once a separate MSG editor is done keywords sould be splitted
+    // TODO these are both for NED and MSG files. Once a separate MSG editor is done keywords should be split
     public final static String[] highlightPrivateDocTodo = { "CHECKME", "FIXME", "TBD", "TODO" };
     public final static String[] highlightDocTags = { "a", "b", "body", "br", "center", "caption", "code", "dd", "dfn", "dl", "dt", "em", "form", "font", "hr", "h1", "h2", "h3", "i", "input", "img", "li", "meta", "multicol", "ol", "p", "small", "span", "strong", "sub", "sup", "table", "td", "th", "tr", "tt", "kbd", "ul", "var" };
     public final static String[] highlightDocKeywords = { "author", "bug", "date", "see", "since", "todo", "version", "warning" };
@@ -187,7 +187,7 @@ public class NedHelper {
     public final static Template[] proposedNedGlobalTempl = new Template[] {
     	makeTemplate("import", "import NED file", 
     			"import \"${FileName}\";\n"),
-        makeTemplate("simple", "create simple module",
+        makeTemplate("simple1", "create simple module",
         		"//\n// TODO description\n//\n"+
         		"simple ${SomeModule} {\n"+
         		"    parameters:\n"+
@@ -204,7 +204,7 @@ public class NedHelper {
         		"    parameters:\n"+
         		"    gates:\n"+
         		"}\n${cursor}\n"),
-        makeTemplate("module", "create compound module",
+        makeTemplate("module1", "create compound module",
         		"//\n// TODO description\n//\n"+
         		"module ${SomeModule} {\n"+
         		"    parameters:\n"+
@@ -231,19 +231,19 @@ public class NedHelper {
 				"    parameters:\n"+
 				"    gates:\n"+
 				"}\n${cursor}\n"),
-        makeTemplate("network", "create network",
+        makeTemplate("network1", "create network",
         		"//\n// TODO description\n//\n"+
         		"network ${SomeNetwork} {\n"+
         		"    parameters:\n"+
         		"    submodules:\n"+
         		"    connections:\n"+
         		"}\n${cursor}\n"),
-        makeTemplate("network", "create network instantiating a module",
+        makeTemplate("network2", "create network instantiating a module",
         		"//\n// TODO description\n//\n"+
         		"network ${SomeNetwork} extends ${SomeModule} {\n"+
         		"    parameters:\n"+
         		"}\n${cursor}\n"),
-        makeTemplate("channel", "create channel",
+        makeTemplate("channel1", "create channel",
         		"//\n// TODO description\n//\n"+
         		"channel ${SomeChannel} {\n"+
         		"    parameters:\n"+
@@ -259,6 +259,42 @@ public class NedHelper {
         		"    parameters:\n"+
         		"    gates:\n"+
         		"}\n${cursor}\n"),
+    };
+    public final static Template[] proposedNedSubmoduleTempl = new Template[] {
+        makeTemplate("submodule1", "submodule",
+        		"        ${someSubmodule} : ${SomeModule};\n"),
+        makeTemplate("submodule2", "submodule vector",
+		"        ${someSubmodule}[${size}] : ${SomeModule};\n"),
+		makeTemplate("submodule3", "submodule with variable type",
+		"        ${someSubmodule} : <${stringParameter}> like ${SomeInterface};\n"),
+        makeTemplate("submodule4", "submodule with parameter settings",
+        		"        ${someSubmodule} : ${SomeModule} {\n"+
+        		"            //...\n"+
+        		"        }\n${cursor}\n"),
+        makeTemplate("submodule5", "submodule with gate size settings",
+        		"        ${someSubmodule} : ${SomeModule} {\n"+
+        		"            gates:\n"+
+        		"        }\n${cursor}\n"),
+    };
+    public final static Template[] proposedNedConnectionTempl = new Template[] {
+        makeTemplate("connection1", "two one-way connections",
+        		"        ${mod1}.${outgate1} --> ${mod2}.${ingate2};\n"+
+        		"        ${mod1}.${ingate1} <-- ${mod2}.${outgate2};\n"),
+        makeTemplate("connection2", "a single two-way connection (inout gates)",
+				"        ${mod1}.${inoutgate1} <--> ${mod2}.${inoutgate2};\n"),
+        makeTemplate("connection3", "connecting an inout gate with an input and an output",
+        		"        ${mod1}.${outgate} --> ${mod2}.${inoutgate}$$i;\n"+
+        		"        ${mod1}.${ingate} <-- ${mod2}.${inoutgate}$$o;\n"),
+        makeTemplate("connection4", "connections to parent (2x one-way)",
+        		"        ${mod}.${outgate} --> ${parentout};\n"+
+        		"        ${mod}.${ingate} <-- ${parentin};\n"),
+        makeTemplate("connection5", "connection with predefined channel",
+        		"        ${mod1}.${inout1} <--> ${SomeChannel} <--> ${mod2}.${inout2};\n"),
+        makeTemplate("connection6", "connection with channel parameters",
+        		"        ${mod1}.${inout1} <--> {delay=${delay}; datarate=${txrate}; error=${ber}} <--> ${mod2}.${inout2};\n"),
+        makeTemplate("connection7", "connection with predefined channel parameterized",
+        		"        ${mod1}.${inout1} <--> ${SomeChannel} {${customParam}=${value};} <--> ${mod2}.${inout2};\n"),
+        //XXX with [], with ++, with "where", connection templates...
     };
 
     private static Template makeTemplate(String name, String description, String pattern) {
