@@ -255,6 +255,7 @@ foreach $element (@elements)
 }
 print H "};\n\n";
 
+print H "// Note: zero *must* be a valid value for all enums, because that gets set in the ctor if there's not default\n";
 print H "enum {NED_GATETYPE_NONE, NED_GATETYPE_INPUT, NED_GATETYPE_OUTPUT, NED_GATETYPE_INOUT};\n";
 print H "enum {NED_ARROWDIR_R2L, NED_ARROWDIR_L2R, NED_ARROWDIR_BIDIR};\n";
 print H "enum {NED_PARTYPE_NONE, NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};\n";
@@ -327,8 +328,8 @@ foreach $element (@elements)
     print H "  public:\n";
     print H "    /** \@name Constructors, destructor */\n";
     print H "    //\@{\n";
-    print H "    $elementclass() {applyDefaults();}\n";
-    print H "    $elementclass(NEDElement *parent) : NEDElement(parent) {applyDefaults();}\n";
+    print H "    $elementclass();\n";
+    print H "    $elementclass(NEDElement *parent);\n";
     print H "    virtual ~$elementclass() {}\n";
     print H "    //\@}\n";
     print H "\n";
@@ -365,6 +366,7 @@ foreach $element (@elements)
         }
 
     }
+
     print H "\n";
     print H "    virtual $elementclass *getNext${elementclass}Sibling() const;\n";
     for ($i=0; $i<$childcount; $i++)
@@ -373,6 +375,26 @@ foreach $element (@elements)
     }
     print H "    //\@}\n";
     print H "};\n\n";
+
+    print CC "$elementclass\:\:$elementclass()\n";
+    print CC "{\n";
+    for ($i=0; $i<$attcount; $i++)
+    {
+        print CC "    $varnames[$i] = false;\n" if ($argtypes[$i] eq "bool");
+        print CC "    $varnames[$i] = 0;\n" if ($argtypes[$i] eq "int");
+    }
+    print CC "    applyDefaults();\n";
+    print CC "}\n\n";
+
+    print CC "$elementclass\:\:$elementclass(NEDElement *parent) : NEDElement(parent)\n";
+    print CC "{\n";
+    for ($i=0; $i<$attcount; $i++)
+    {
+        print CC "    $varnames[$i] = false;\n" if ($argtypes[$i] eq "bool");
+        print CC "    $varnames[$i] = 0;\n" if ($argtypes[$i] eq "int");
+    }
+    print CC "    applyDefaults();\n";
+    print CC "}\n\n";
 
     print CC "int $elementclass\:\:getNumAttributes() const\n";
     print CC "{\n";

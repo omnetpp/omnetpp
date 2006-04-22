@@ -41,6 +41,16 @@ static const char *subgate_vals[] = {"", "i", "o"};
 static int subgate_nums[] = {NED_SUBGATE_NONE, NED_SUBGATE_I, NED_SUBGATE_O};
 static const int subgate_n = 3;
 
+FilesNode::FilesNode()
+{
+    applyDefaults();
+}
+
+FilesNode::FilesNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
+}
+
 int FilesNode::getNumAttributes() const
 {
     return 0;
@@ -87,6 +97,16 @@ NedFileNode *FilesNode::getFirstNedFileChild() const
 MsgFileNode *FilesNode::getFirstMsgFileChild() const
 {
     return (MsgFileNode *)getFirstChildWithTag(NED_MSG_FILE);
+}
+
+NedFileNode::NedFileNode()
+{
+    applyDefaults();
+}
+
+NedFileNode::NedFileNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
 }
 
 int NedFileNode::getNumAttributes() const
@@ -184,6 +204,16 @@ ModuleInterfaceNode *NedFileNode::getFirstModuleInterfaceChild() const
     return (ModuleInterfaceNode *)getFirstChildWithTag(NED_MODULE_INTERFACE);
 }
 
+WhitespaceNode::WhitespaceNode()
+{
+    applyDefaults();
+}
+
+WhitespaceNode::WhitespaceNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
+}
+
 int WhitespaceNode::getNumAttributes() const
 {
     return 2;
@@ -228,6 +258,16 @@ const char *WhitespaceNode::getAttributeDefault(int k) const
 WhitespaceNode *WhitespaceNode::getNextWhitespaceNodeSibling() const
 {
     return (WhitespaceNode *)getNextSiblingWithTag(NED_WHITESPACE);
+}
+
+ImportNode::ImportNode()
+{
+    applyDefaults();
+}
+
+ImportNode::ImportNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
 }
 
 int ImportNode::getNumAttributes() const
@@ -275,6 +315,16 @@ ImportNode *ImportNode::getNextImportNodeSibling() const
 WhitespaceNode *ImportNode::getFirstWhitespaceChild() const
 {
     return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+}
+
+PropertyDeclNode::PropertyDeclNode()
+{
+    applyDefaults();
+}
+
+PropertyDeclNode::PropertyDeclNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
 }
 
 int PropertyDeclNode::getNumAttributes() const
@@ -334,6 +384,16 @@ PropertyNode *PropertyDeclNode::getFirstPropertyChild() const
     return (PropertyNode *)getFirstChildWithTag(NED_PROPERTY);
 }
 
+ExtendsNode::ExtendsNode()
+{
+    applyDefaults();
+}
+
+ExtendsNode::ExtendsNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
+}
+
 int ExtendsNode::getNumAttributes() const
 {
     return 1;
@@ -381,6 +441,16 @@ WhitespaceNode *ExtendsNode::getFirstWhitespaceChild() const
     return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
 }
 
+InterfaceNameNode::InterfaceNameNode()
+{
+    applyDefaults();
+}
+
+InterfaceNameNode::InterfaceNameNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
+}
+
 int InterfaceNameNode::getNumAttributes() const
 {
     return 1;
@@ -426,6 +496,16 @@ InterfaceNameNode *InterfaceNameNode::getNextInterfaceNameNodeSibling() const
 WhitespaceNode *InterfaceNameNode::getFirstWhitespaceChild() const
 {
     return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+}
+
+SimpleModuleNode::SimpleModuleNode()
+{
+    applyDefaults();
+}
+
+SimpleModuleNode::SimpleModuleNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
 }
 
 int SimpleModuleNode::getNumAttributes() const
@@ -495,6 +575,16 @@ GatesNode *SimpleModuleNode::getFirstGatesChild() const
     return (GatesNode *)getFirstChildWithTag(NED_GATES);
 }
 
+ModuleInterfaceNode::ModuleInterfaceNode()
+{
+    applyDefaults();
+}
+
+ModuleInterfaceNode::ModuleInterfaceNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
+}
+
 int ModuleInterfaceNode::getNumAttributes() const
 {
     return 1;
@@ -555,6 +645,18 @@ ParametersNode *ModuleInterfaceNode::getFirstParametersChild() const
 GatesNode *ModuleInterfaceNode::getFirstGatesChild() const
 {
     return (GatesNode *)getFirstChildWithTag(NED_GATES);
+}
+
+CompoundModuleNode::CompoundModuleNode()
+{
+    isNetwork = false;
+    applyDefaults();
+}
+
+CompoundModuleNode::CompoundModuleNode(NEDElement *parent) : NEDElement(parent)
+{
+    isNetwork = false;
+    applyDefaults();
 }
 
 int CompoundModuleNode::getNumAttributes() const
@@ -643,6 +745,16 @@ ConnectionsNode *CompoundModuleNode::getFirstConnectionsChild() const
     return (ConnectionsNode *)getFirstChildWithTag(NED_CONNECTIONS);
 }
 
+ChannelInterfaceNode::ChannelInterfaceNode()
+{
+    applyDefaults();
+}
+
+ChannelInterfaceNode::ChannelInterfaceNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
+}
+
 int ChannelInterfaceNode::getNumAttributes() const
 {
     return 1;
@@ -698,6 +810,18 @@ ExtendsNode *ChannelInterfaceNode::getFirstExtendsChild() const
 ParametersNode *ChannelInterfaceNode::getFirstParametersChild() const
 {
     return (ParametersNode *)getFirstChildWithTag(NED_PARAMETERS);
+}
+
+ChannelNode::ChannelNode()
+{
+    isWithcppclass = false;
+    applyDefaults();
+}
+
+ChannelNode::ChannelNode(NEDElement *parent) : NEDElement(parent)
+{
+    isWithcppclass = false;
+    applyDefaults();
 }
 
 int ChannelNode::getNumAttributes() const
@@ -764,6 +888,18 @@ InterfaceNameNode *ChannelNode::getFirstInterfaceNameChild() const
 ParametersNode *ChannelNode::getFirstParametersChild() const
 {
     return (ParametersNode *)getFirstChildWithTag(NED_PARAMETERS);
+}
+
+ParametersNode::ParametersNode()
+{
+    isImplicit = false;
+    applyDefaults();
+}
+
+ParametersNode::ParametersNode(NEDElement *parent) : NEDElement(parent)
+{
+    isImplicit = false;
+    applyDefaults();
 }
 
 int ParametersNode::getNumAttributes() const
@@ -833,6 +969,16 @@ ParamGroupNode *ParametersNode::getFirstParamGroupChild() const
     return (ParamGroupNode *)getFirstChildWithTag(NED_PARAM_GROUP);
 }
 
+ParamGroupNode::ParamGroupNode()
+{
+    applyDefaults();
+}
+
+ParamGroupNode::ParamGroupNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
+}
+
 int ParamGroupNode::getNumAttributes() const
 {
     return 0;
@@ -900,6 +1046,22 @@ void ParamNode::setType(int val)
 {
     validateEnum(val, partype_vals, partype_nums, partype_n);
     type = val;
+}
+
+ParamNode::ParamNode()
+{
+    type = 0;
+    isFunction = false;
+    isDefault = false;
+    applyDefaults();
+}
+
+ParamNode::ParamNode(NEDElement *parent) : NEDElement(parent)
+{
+    type = 0;
+    isFunction = false;
+    isDefault = false;
+    applyDefaults();
 }
 
 int ParamNode::getNumAttributes() const
@@ -980,6 +1142,18 @@ ConditionNode *ParamNode::getFirstConditionChild() const
     return (ConditionNode *)getFirstChildWithTag(NED_CONDITION);
 }
 
+PatternNode::PatternNode()
+{
+    isDefault = false;
+    applyDefaults();
+}
+
+PatternNode::PatternNode(NEDElement *parent) : NEDElement(parent)
+{
+    isDefault = false;
+    applyDefaults();
+}
+
 int PatternNode::getNumAttributes() const
 {
     return 3;
@@ -1045,6 +1219,18 @@ PropertyNode *PatternNode::getFirstPropertyChild() const
     return (PropertyNode *)getFirstChildWithTag(NED_PROPERTY);
 }
 
+PropertyNode::PropertyNode()
+{
+    isImplicit = false;
+    applyDefaults();
+}
+
+PropertyNode::PropertyNode(NEDElement *parent) : NEDElement(parent)
+{
+    isImplicit = false;
+    applyDefaults();
+}
+
 int PropertyNode::getNumAttributes() const
 {
     return 2;
@@ -1106,6 +1292,16 @@ ConditionNode *PropertyNode::getFirstConditionChild() const
     return (ConditionNode *)getFirstChildWithTag(NED_CONDITION);
 }
 
+PropertyKeyNode::PropertyKeyNode()
+{
+    applyDefaults();
+}
+
+PropertyKeyNode::PropertyKeyNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
+}
+
 int PropertyKeyNode::getNumAttributes() const
 {
     return 1;
@@ -1156,6 +1352,16 @@ WhitespaceNode *PropertyKeyNode::getFirstWhitespaceChild() const
 LiteralNode *PropertyKeyNode::getFirstLiteralChild() const
 {
     return (LiteralNode *)getFirstChildWithTag(NED_LITERAL);
+}
+
+GatesNode::GatesNode()
+{
+    applyDefaults();
+}
+
+GatesNode::GatesNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
 }
 
 int GatesNode::getNumAttributes() const
@@ -1209,6 +1415,16 @@ GateNode *GatesNode::getFirstGateChild() const
 GateGroupNode *GatesNode::getFirstGateGroupChild() const
 {
     return (GateGroupNode *)getFirstChildWithTag(NED_GATE_GROUP);
+}
+
+GateGroupNode::GateGroupNode()
+{
+    applyDefaults();
+}
+
+GateGroupNode::GateGroupNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
 }
 
 int GateGroupNode::getNumAttributes() const
@@ -1268,6 +1484,20 @@ void GateNode::setType(int val)
 {
     validateEnum(val, gatetype_vals, gatetype_nums, gatetype_n);
     type = val;
+}
+
+GateNode::GateNode()
+{
+    type = 0;
+    isVector = false;
+    applyDefaults();
+}
+
+GateNode::GateNode(NEDElement *parent) : NEDElement(parent)
+{
+    type = 0;
+    isVector = false;
+    applyDefaults();
 }
 
 int GateNode::getNumAttributes() const
@@ -1344,6 +1574,16 @@ ConditionNode *GateNode::getFirstConditionChild() const
     return (ConditionNode *)getFirstChildWithTag(NED_CONDITION);
 }
 
+TypesNode::TypesNode()
+{
+    applyDefaults();
+}
+
+TypesNode::TypesNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
+}
+
 int TypesNode::getNumAttributes() const
 {
     return 0;
@@ -1412,6 +1652,16 @@ ModuleInterfaceNode *TypesNode::getFirstModuleInterfaceChild() const
     return (ModuleInterfaceNode *)getFirstChildWithTag(NED_MODULE_INTERFACE);
 }
 
+SubmodulesNode::SubmodulesNode()
+{
+    applyDefaults();
+}
+
+SubmodulesNode::SubmodulesNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
+}
+
 int SubmodulesNode::getNumAttributes() const
 {
     return 0;
@@ -1458,6 +1708,18 @@ WhitespaceNode *SubmodulesNode::getFirstWhitespaceChild() const
 SubmoduleNode *SubmodulesNode::getFirstSubmoduleChild() const
 {
     return (SubmoduleNode *)getFirstChildWithTag(NED_SUBMODULE);
+}
+
+SubmoduleNode::SubmoduleNode()
+{
+    likeAny = false;
+    applyDefaults();
+}
+
+SubmoduleNode::SubmoduleNode(NEDElement *parent) : NEDElement(parent)
+{
+    likeAny = false;
+    applyDefaults();
 }
 
 int SubmoduleNode::getNumAttributes() const
@@ -1542,6 +1804,18 @@ GatesNode *SubmoduleNode::getFirstGatesChild() const
     return (GatesNode *)getFirstChildWithTag(NED_GATES);
 }
 
+ConnectionsNode::ConnectionsNode()
+{
+    allowUnconnected = false;
+    applyDefaults();
+}
+
+ConnectionsNode::ConnectionsNode(NEDElement *parent) : NEDElement(parent)
+{
+    allowUnconnected = false;
+    applyDefaults();
+}
+
 int ConnectionsNode::getNumAttributes() const
 {
     return 1;
@@ -1615,6 +1889,26 @@ void ConnectionNode::setArrowDirection(int val)
 {
     validateEnum(val, arrowdir_vals, arrowdir_nums, arrowdir_n);
     arrowDirection = val;
+}
+
+ConnectionNode::ConnectionNode()
+{
+    srcGatePlusplus = false;
+    srcGateSubg = 0;
+    destGatePlusplus = false;
+    destGateSubg = 0;
+    arrowDirection = 0;
+    applyDefaults();
+}
+
+ConnectionNode::ConnectionNode(NEDElement *parent) : NEDElement(parent)
+{
+    srcGatePlusplus = false;
+    srcGateSubg = 0;
+    destGatePlusplus = false;
+    destGateSubg = 0;
+    arrowDirection = 0;
+    applyDefaults();
 }
 
 int ConnectionNode::getNumAttributes() const
@@ -1727,6 +2021,18 @@ WhereNode *ConnectionNode::getFirstWhereChild() const
     return (WhereNode *)getFirstChildWithTag(NED_WHERE);
 }
 
+ChannelSpecNode::ChannelSpecNode()
+{
+    likeAny = false;
+    applyDefaults();
+}
+
+ChannelSpecNode::ChannelSpecNode(NEDElement *parent) : NEDElement(parent)
+{
+    likeAny = false;
+    applyDefaults();
+}
+
 int ChannelSpecNode::getNumAttributes() const
 {
     return 4;
@@ -1796,6 +2102,16 @@ ParametersNode *ChannelSpecNode::getFirstParametersChild() const
     return (ParametersNode *)getFirstChildWithTag(NED_PARAMETERS);
 }
 
+ConnectionGroupNode::ConnectionGroupNode()
+{
+    applyDefaults();
+}
+
+ConnectionGroupNode::ConnectionGroupNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
+}
+
 int ConnectionGroupNode::getNumAttributes() const
 {
     return 0;
@@ -1847,6 +2163,18 @@ ConnectionNode *ConnectionGroupNode::getFirstConnectionChild() const
 WhereNode *ConnectionGroupNode::getFirstWhereChild() const
 {
     return (WhereNode *)getFirstChildWithTag(NED_WHERE);
+}
+
+WhereNode::WhereNode()
+{
+    atFront = false;
+    applyDefaults();
+}
+
+WhereNode::WhereNode(NEDElement *parent) : NEDElement(parent)
+{
+    atFront = false;
+    applyDefaults();
 }
 
 int WhereNode::getNumAttributes() const
@@ -1904,6 +2232,16 @@ LoopNode *WhereNode::getFirstLoopChild() const
 ConditionNode *WhereNode::getFirstConditionChild() const
 {
     return (ConditionNode *)getFirstChildWithTag(NED_CONDITION);
+}
+
+LoopNode::LoopNode()
+{
+    applyDefaults();
+}
+
+LoopNode::LoopNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
 }
 
 int LoopNode::getNumAttributes() const
@@ -1966,6 +2304,16 @@ ExpressionNode *LoopNode::getFirstExpressionChild() const
     return (ExpressionNode *)getFirstChildWithTag(NED_EXPRESSION);
 }
 
+ConditionNode::ConditionNode()
+{
+    applyDefaults();
+}
+
+ConditionNode::ConditionNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
+}
+
 int ConditionNode::getNumAttributes() const
 {
     return 1;
@@ -2016,6 +2364,16 @@ WhitespaceNode *ConditionNode::getFirstWhitespaceChild() const
 ExpressionNode *ConditionNode::getFirstExpressionChild() const
 {
     return (ExpressionNode *)getFirstChildWithTag(NED_EXPRESSION);
+}
+
+ExpressionNode::ExpressionNode()
+{
+    applyDefaults();
+}
+
+ExpressionNode::ExpressionNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
 }
 
 int ExpressionNode::getNumAttributes() const
@@ -2085,6 +2443,16 @@ LiteralNode *ExpressionNode::getFirstLiteralChild() const
     return (LiteralNode *)getFirstChildWithTag(NED_LITERAL);
 }
 
+OperatorNode::OperatorNode()
+{
+    applyDefaults();
+}
+
+OperatorNode::OperatorNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
+}
+
 int OperatorNode::getNumAttributes() const
 {
     return 1;
@@ -2150,6 +2518,16 @@ IdentNode *OperatorNode::getFirstIdentChild() const
 LiteralNode *OperatorNode::getFirstLiteralChild() const
 {
     return (LiteralNode *)getFirstChildWithTag(NED_LITERAL);
+}
+
+FunctionNode::FunctionNode()
+{
+    applyDefaults();
+}
+
+FunctionNode::FunctionNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
 }
 
 int FunctionNode::getNumAttributes() const
@@ -2219,6 +2597,16 @@ LiteralNode *FunctionNode::getFirstLiteralChild() const
     return (LiteralNode *)getFirstChildWithTag(NED_LITERAL);
 }
 
+IdentNode::IdentNode()
+{
+    applyDefaults();
+}
+
+IdentNode::IdentNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
+}
+
 int IdentNode::getNumAttributes() const
 {
     return 3;
@@ -2285,6 +2673,18 @@ void LiteralNode::setType(int val)
     type = val;
 }
 
+LiteralNode::LiteralNode()
+{
+    type = 0;
+    applyDefaults();
+}
+
+LiteralNode::LiteralNode(NEDElement *parent) : NEDElement(parent)
+{
+    type = 0;
+    applyDefaults();
+}
+
 int LiteralNode::getNumAttributes() const
 {
     return 4;
@@ -2342,6 +2742,16 @@ LiteralNode *LiteralNode::getNextLiteralNodeSibling() const
 WhitespaceNode *LiteralNode::getFirstWhitespaceChild() const
 {
     return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+}
+
+MsgFileNode::MsgFileNode()
+{
+    applyDefaults();
+}
+
+MsgFileNode::MsgFileNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
 }
 
 int MsgFileNode::getNumAttributes() const
@@ -2440,6 +2850,16 @@ StructNode *MsgFileNode::getFirstStructChild() const
     return (StructNode *)getFirstChildWithTag(NED_STRUCT);
 }
 
+CplusplusNode::CplusplusNode()
+{
+    applyDefaults();
+}
+
+CplusplusNode::CplusplusNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
+}
+
 int CplusplusNode::getNumAttributes() const
 {
     return 4;
@@ -2499,6 +2919,16 @@ WhitespaceNode *CplusplusNode::getFirstWhitespaceChild() const
     return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
 }
 
+StructDeclNode::StructDeclNode()
+{
+    applyDefaults();
+}
+
+StructDeclNode::StructDeclNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
+}
+
 int StructDeclNode::getNumAttributes() const
 {
     return 4;
@@ -2556,6 +2986,18 @@ StructDeclNode *StructDeclNode::getNextStructDeclNodeSibling() const
 WhitespaceNode *StructDeclNode::getFirstWhitespaceChild() const
 {
     return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+}
+
+ClassDeclNode::ClassDeclNode()
+{
+    isCobject = false;
+    applyDefaults();
+}
+
+ClassDeclNode::ClassDeclNode(NEDElement *parent) : NEDElement(parent)
+{
+    isCobject = false;
+    applyDefaults();
 }
 
 int ClassDeclNode::getNumAttributes() const
@@ -2621,6 +3063,16 @@ WhitespaceNode *ClassDeclNode::getFirstWhitespaceChild() const
     return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
 }
 
+MessageDeclNode::MessageDeclNode()
+{
+    applyDefaults();
+}
+
+MessageDeclNode::MessageDeclNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
+}
+
 int MessageDeclNode::getNumAttributes() const
 {
     return 4;
@@ -2680,6 +3132,16 @@ WhitespaceNode *MessageDeclNode::getFirstWhitespaceChild() const
     return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
 }
 
+EnumDeclNode::EnumDeclNode()
+{
+    applyDefaults();
+}
+
+EnumDeclNode::EnumDeclNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
+}
+
 int EnumDeclNode::getNumAttributes() const
 {
     return 4;
@@ -2737,6 +3199,16 @@ EnumDeclNode *EnumDeclNode::getNextEnumDeclNodeSibling() const
 WhitespaceNode *EnumDeclNode::getFirstWhitespaceChild() const
 {
     return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+}
+
+EnumNode::EnumNode()
+{
+    applyDefaults();
+}
+
+EnumNode::EnumNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
 }
 
 int EnumNode::getNumAttributes() const
@@ -2811,6 +3283,16 @@ EnumFieldsNode *EnumNode::getFirstEnumFieldsChild() const
     return (EnumFieldsNode *)getFirstChildWithTag(NED_ENUM_FIELDS);
 }
 
+EnumFieldsNode::EnumFieldsNode()
+{
+    applyDefaults();
+}
+
+EnumFieldsNode::EnumFieldsNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
+}
+
 int EnumFieldsNode::getNumAttributes() const
 {
     return 2;
@@ -2865,6 +3347,16 @@ WhitespaceNode *EnumFieldsNode::getFirstWhitespaceChild() const
 EnumFieldNode *EnumFieldsNode::getFirstEnumFieldChild() const
 {
     return (EnumFieldNode *)getFirstChildWithTag(NED_ENUM_FIELD);
+}
+
+EnumFieldNode::EnumFieldNode()
+{
+    applyDefaults();
+}
+
+EnumFieldNode::EnumFieldNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
 }
 
 int EnumFieldNode::getNumAttributes() const
@@ -2924,6 +3416,16 @@ EnumFieldNode *EnumFieldNode::getNextEnumFieldNodeSibling() const
 WhitespaceNode *EnumFieldNode::getFirstWhitespaceChild() const
 {
     return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+}
+
+MessageNode::MessageNode()
+{
+    applyDefaults();
+}
+
+MessageNode::MessageNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
 }
 
 int MessageNode::getNumAttributes() const
@@ -3003,6 +3505,16 @@ FieldsNode *MessageNode::getFirstFieldsChild() const
     return (FieldsNode *)getFirstChildWithTag(NED_FIELDS);
 }
 
+ClassNode::ClassNode()
+{
+    applyDefaults();
+}
+
+ClassNode::ClassNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
+}
+
 int ClassNode::getNumAttributes() const
 {
     return 6;
@@ -3078,6 +3590,16 @@ PropertiesNode *ClassNode::getFirstPropertiesChild() const
 FieldsNode *ClassNode::getFirstFieldsChild() const
 {
     return (FieldsNode *)getFirstChildWithTag(NED_FIELDS);
+}
+
+StructNode::StructNode()
+{
+    applyDefaults();
+}
+
+StructNode::StructNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
 }
 
 int StructNode::getNumAttributes() const
@@ -3157,6 +3679,16 @@ FieldsNode *StructNode::getFirstFieldsChild() const
     return (FieldsNode *)getFirstChildWithTag(NED_FIELDS);
 }
 
+FieldsNode::FieldsNode()
+{
+    applyDefaults();
+}
+
+FieldsNode::FieldsNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
+}
+
 int FieldsNode::getNumAttributes() const
 {
     return 2;
@@ -3211,6 +3743,22 @@ WhitespaceNode *FieldsNode::getFirstWhitespaceChild() const
 FieldNode *FieldsNode::getFirstFieldChild() const
 {
     return (FieldNode *)getFirstChildWithTag(NED_FIELD);
+}
+
+FieldNode::FieldNode()
+{
+    isAbstract = false;
+    isReadonly = false;
+    isVector = false;
+    applyDefaults();
+}
+
+FieldNode::FieldNode(NEDElement *parent) : NEDElement(parent)
+{
+    isAbstract = false;
+    isReadonly = false;
+    isVector = false;
+    applyDefaults();
 }
 
 int FieldNode::getNumAttributes() const
@@ -3296,6 +3844,16 @@ WhitespaceNode *FieldNode::getFirstWhitespaceChild() const
     return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
 }
 
+PropertiesNode::PropertiesNode()
+{
+    applyDefaults();
+}
+
+PropertiesNode::PropertiesNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
+}
+
 int PropertiesNode::getNumAttributes() const
 {
     return 2;
@@ -3350,6 +3908,16 @@ WhitespaceNode *PropertiesNode::getFirstWhitespaceChild() const
 MsgpropertyNode *PropertiesNode::getFirstMsgpropertyChild() const
 {
     return (MsgpropertyNode *)getFirstChildWithTag(NED_MSGPROPERTY);
+}
+
+MsgpropertyNode::MsgpropertyNode()
+{
+    applyDefaults();
+}
+
+MsgpropertyNode::MsgpropertyNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
 }
 
 int MsgpropertyNode::getNumAttributes() const
@@ -3409,6 +3977,16 @@ MsgpropertyNode *MsgpropertyNode::getNextMsgpropertyNodeSibling() const
 WhitespaceNode *MsgpropertyNode::getFirstWhitespaceChild() const
 {
     return (WhitespaceNode *)getFirstChildWithTag(NED_WHITESPACE);
+}
+
+UnknownNode::UnknownNode()
+{
+    applyDefaults();
+}
+
+UnknownNode::UnknownNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
 }
 
 int UnknownNode::getNumAttributes() const

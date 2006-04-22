@@ -139,6 +139,7 @@ enum NEDElementCode {
     NED_UNKNOWN
 };
 
+// Note: zero *must* be a valid value for all enums, because that gets set in the ctor if there's not default
 enum {NED_GATETYPE_NONE, NED_GATETYPE_INPUT, NED_GATETYPE_OUTPUT, NED_GATETYPE_INOUT};
 enum {NED_ARROWDIR_R2L, NED_ARROWDIR_L2R, NED_ARROWDIR_BIDIR};
 enum {NED_PARTYPE_NONE, NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};
@@ -161,8 +162,8 @@ class FilesNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    FilesNode() {applyDefaults();}
-    FilesNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    FilesNode();
+    FilesNode(NEDElement *parent);
     virtual ~FilesNode() {}
     //@}
 
@@ -209,8 +210,8 @@ class NedFileNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    NedFileNode() {applyDefaults();}
-    NedFileNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    NedFileNode();
+    NedFileNode(NEDElement *parent);
     virtual ~NedFileNode() {}
     //@}
 
@@ -267,8 +268,8 @@ class WhitespaceNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    WhitespaceNode() {applyDefaults();}
-    WhitespaceNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    WhitespaceNode();
+    WhitespaceNode(NEDElement *parent);
     virtual ~WhitespaceNode() {}
     //@}
 
@@ -312,8 +313,8 @@ class ImportNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    ImportNode() {applyDefaults();}
-    ImportNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    ImportNode();
+    ImportNode(NEDElement *parent);
     virtual ~ImportNode() {}
     //@}
 
@@ -356,8 +357,8 @@ class PropertyDeclNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    PropertyDeclNode() {applyDefaults();}
-    PropertyDeclNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    PropertyDeclNode();
+    PropertyDeclNode(NEDElement *parent);
     virtual ~PropertyDeclNode() {}
     //@}
 
@@ -402,8 +403,8 @@ class ExtendsNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    ExtendsNode() {applyDefaults();}
-    ExtendsNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    ExtendsNode();
+    ExtendsNode(NEDElement *parent);
     virtual ~ExtendsNode() {}
     //@}
 
@@ -446,8 +447,8 @@ class InterfaceNameNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    InterfaceNameNode() {applyDefaults();}
-    InterfaceNameNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    InterfaceNameNode();
+    InterfaceNameNode(NEDElement *parent);
     virtual ~InterfaceNameNode() {}
     //@}
 
@@ -490,8 +491,8 @@ class SimpleModuleNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    SimpleModuleNode() {applyDefaults();}
-    SimpleModuleNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    SimpleModuleNode();
+    SimpleModuleNode(NEDElement *parent);
     virtual ~SimpleModuleNode() {}
     //@}
 
@@ -538,8 +539,8 @@ class ModuleInterfaceNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    ModuleInterfaceNode() {applyDefaults();}
-    ModuleInterfaceNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    ModuleInterfaceNode();
+    ModuleInterfaceNode(NEDElement *parent);
     virtual ~ModuleInterfaceNode() {}
     //@}
 
@@ -588,8 +589,8 @@ class CompoundModuleNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    CompoundModuleNode() {applyDefaults();}
-    CompoundModuleNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    CompoundModuleNode();
+    CompoundModuleNode(NEDElement *parent);
     virtual ~CompoundModuleNode() {}
     //@}
 
@@ -641,8 +642,8 @@ class ChannelInterfaceNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    ChannelInterfaceNode() {applyDefaults();}
-    ChannelInterfaceNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    ChannelInterfaceNode();
+    ChannelInterfaceNode(NEDElement *parent);
     virtual ~ChannelInterfaceNode() {}
     //@}
 
@@ -689,8 +690,8 @@ class ChannelNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    ChannelNode() {applyDefaults();}
-    ChannelNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    ChannelNode();
+    ChannelNode(NEDElement *parent);
     virtual ~ChannelNode() {}
     //@}
 
@@ -738,8 +739,8 @@ class ParametersNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    ParametersNode() {applyDefaults();}
-    ParametersNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    ParametersNode();
+    ParametersNode(NEDElement *parent);
     virtual ~ParametersNode() {}
     //@}
 
@@ -784,8 +785,8 @@ class ParamGroupNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    ParamGroupNode() {applyDefaults();}
-    ParamGroupNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    ParamGroupNode();
+    ParamGroupNode(NEDElement *parent);
     virtual ~ParamGroupNode() {}
     //@}
 
@@ -838,8 +839,8 @@ class ParamNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    ParamNode() {applyDefaults();}
-    ParamNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    ParamNode();
+    ParamNode(NEDElement *parent);
     virtual ~ParamNode() {}
     //@}
 
@@ -897,8 +898,8 @@ class PatternNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    PatternNode() {applyDefaults();}
-    PatternNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    PatternNode();
+    PatternNode(NEDElement *parent);
     virtual ~PatternNode() {}
     //@}
 
@@ -949,8 +950,8 @@ class PropertyNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    PropertyNode() {applyDefaults();}
-    PropertyNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    PropertyNode();
+    PropertyNode(NEDElement *parent);
     virtual ~PropertyNode() {}
     //@}
 
@@ -997,8 +998,8 @@ class PropertyKeyNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    PropertyKeyNode() {applyDefaults();}
-    PropertyKeyNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    PropertyKeyNode();
+    PropertyKeyNode(NEDElement *parent);
     virtual ~PropertyKeyNode() {}
     //@}
 
@@ -1040,8 +1041,8 @@ class GatesNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    GatesNode() {applyDefaults();}
-    GatesNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    GatesNode();
+    GatesNode(NEDElement *parent);
     virtual ~GatesNode() {}
     //@}
 
@@ -1082,8 +1083,8 @@ class GateGroupNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    GateGroupNode() {applyDefaults();}
-    GateGroupNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    GateGroupNode();
+    GateGroupNode(NEDElement *parent);
     virtual ~GateGroupNode() {}
     //@}
 
@@ -1132,8 +1133,8 @@ class GateNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    GateNode() {applyDefaults();}
-    GateNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    GateNode();
+    GateNode(NEDElement *parent);
     virtual ~GateNode() {}
     //@}
 
@@ -1184,8 +1185,8 @@ class TypesNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    TypesNode() {applyDefaults();}
-    TypesNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    TypesNode();
+    TypesNode(NEDElement *parent);
     virtual ~TypesNode() {}
     //@}
 
@@ -1229,8 +1230,8 @@ class SubmodulesNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    SubmodulesNode() {applyDefaults();}
-    SubmodulesNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    SubmodulesNode();
+    SubmodulesNode(NEDElement *parent);
     virtual ~SubmodulesNode() {}
     //@}
 
@@ -1282,8 +1283,8 @@ class SubmoduleNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    SubmoduleNode() {applyDefaults();}
-    SubmoduleNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    SubmoduleNode();
+    SubmoduleNode(NEDElement *parent);
     virtual ~SubmoduleNode() {}
     //@}
 
@@ -1339,8 +1340,8 @@ class ConnectionsNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    ConnectionsNode() {applyDefaults();}
-    ConnectionsNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    ConnectionsNode();
+    ConnectionsNode(NEDElement *parent);
     virtual ~ConnectionsNode() {}
     //@}
 
@@ -1409,8 +1410,8 @@ class ConnectionNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    ConnectionNode() {applyDefaults();}
-    ConnectionNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    ConnectionNode();
+    ConnectionNode(NEDElement *parent);
     virtual ~ConnectionNode() {}
     //@}
 
@@ -1486,8 +1487,8 @@ class ChannelSpecNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    ChannelSpecNode() {applyDefaults();}
-    ChannelSpecNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    ChannelSpecNode();
+    ChannelSpecNode(NEDElement *parent);
     virtual ~ChannelSpecNode() {}
     //@}
 
@@ -1536,8 +1537,8 @@ class ConnectionGroupNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    ConnectionGroupNode() {applyDefaults();}
-    ConnectionGroupNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    ConnectionGroupNode();
+    ConnectionGroupNode(NEDElement *parent);
     virtual ~ConnectionGroupNode() {}
     //@}
 
@@ -1580,8 +1581,8 @@ class WhereNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    WhereNode() {applyDefaults();}
-    WhereNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    WhereNode();
+    WhereNode(NEDElement *parent);
     virtual ~WhereNode() {}
     //@}
 
@@ -1630,8 +1631,8 @@ class LoopNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    LoopNode() {applyDefaults();}
-    LoopNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    LoopNode();
+    LoopNode(NEDElement *parent);
     virtual ~LoopNode() {}
     //@}
 
@@ -1679,8 +1680,8 @@ class ConditionNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    ConditionNode() {applyDefaults();}
-    ConditionNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    ConditionNode();
+    ConditionNode(NEDElement *parent);
     virtual ~ConditionNode() {}
     //@}
 
@@ -1724,8 +1725,8 @@ class ExpressionNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    ExpressionNode() {applyDefaults();}
-    ExpressionNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    ExpressionNode();
+    ExpressionNode(NEDElement *parent);
     virtual ~ExpressionNode() {}
     //@}
 
@@ -1772,8 +1773,8 @@ class OperatorNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    OperatorNode() {applyDefaults();}
-    OperatorNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    OperatorNode();
+    OperatorNode(NEDElement *parent);
     virtual ~OperatorNode() {}
     //@}
 
@@ -1820,8 +1821,8 @@ class FunctionNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    FunctionNode() {applyDefaults();}
-    FunctionNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    FunctionNode();
+    FunctionNode(NEDElement *parent);
     virtual ~FunctionNode() {}
     //@}
 
@@ -1872,8 +1873,8 @@ class IdentNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    IdentNode() {applyDefaults();}
-    IdentNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    IdentNode();
+    IdentNode(NEDElement *parent);
     virtual ~IdentNode() {}
     //@}
 
@@ -1927,8 +1928,8 @@ class LiteralNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    LiteralNode() {applyDefaults();}
-    LiteralNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    LiteralNode();
+    LiteralNode(NEDElement *parent);
     virtual ~LiteralNode() {}
     //@}
 
@@ -1980,8 +1981,8 @@ class MsgFileNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    MsgFileNode() {applyDefaults();}
-    MsgFileNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    MsgFileNode();
+    MsgFileNode(NEDElement *parent);
     virtual ~MsgFileNode() {}
     //@}
 
@@ -2041,8 +2042,8 @@ class CplusplusNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    CplusplusNode() {applyDefaults();}
-    CplusplusNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    CplusplusNode();
+    CplusplusNode(NEDElement *parent);
     virtual ~CplusplusNode() {}
     //@}
 
@@ -2097,8 +2098,8 @@ class StructDeclNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    StructDeclNode() {applyDefaults();}
-    StructDeclNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    StructDeclNode();
+    StructDeclNode(NEDElement *parent);
     virtual ~StructDeclNode() {}
     //@}
 
@@ -2155,8 +2156,8 @@ class ClassDeclNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    ClassDeclNode() {applyDefaults();}
-    ClassDeclNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    ClassDeclNode();
+    ClassDeclNode(NEDElement *parent);
     virtual ~ClassDeclNode() {}
     //@}
 
@@ -2213,8 +2214,8 @@ class MessageDeclNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    MessageDeclNode() {applyDefaults();}
-    MessageDeclNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    MessageDeclNode();
+    MessageDeclNode(NEDElement *parent);
     virtual ~MessageDeclNode() {}
     //@}
 
@@ -2269,8 +2270,8 @@ class EnumDeclNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    EnumDeclNode() {applyDefaults();}
-    EnumDeclNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    EnumDeclNode();
+    EnumDeclNode(NEDElement *parent);
     virtual ~EnumDeclNode() {}
     //@}
 
@@ -2329,8 +2330,8 @@ class EnumNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    EnumNode() {applyDefaults();}
-    EnumNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    EnumNode();
+    EnumNode(NEDElement *parent);
     virtual ~EnumNode() {}
     //@}
 
@@ -2386,8 +2387,8 @@ class EnumFieldsNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    EnumFieldsNode() {applyDefaults();}
-    EnumFieldsNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    EnumFieldsNode();
+    EnumFieldsNode(NEDElement *parent);
     virtual ~EnumFieldsNode() {}
     //@}
 
@@ -2439,8 +2440,8 @@ class EnumFieldNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    EnumFieldNode() {applyDefaults();}
-    EnumFieldNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    EnumFieldNode();
+    EnumFieldNode(NEDElement *parent);
     virtual ~EnumFieldNode() {}
     //@}
 
@@ -2499,8 +2500,8 @@ class MessageNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    MessageNode() {applyDefaults();}
-    MessageNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    MessageNode();
+    MessageNode(NEDElement *parent);
     virtual ~MessageNode() {}
     //@}
 
@@ -2565,8 +2566,8 @@ class ClassNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    ClassNode() {applyDefaults();}
-    ClassNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    ClassNode();
+    ClassNode(NEDElement *parent);
     virtual ~ClassNode() {}
     //@}
 
@@ -2631,8 +2632,8 @@ class StructNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    StructNode() {applyDefaults();}
-    StructNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    StructNode();
+    StructNode(NEDElement *parent);
     virtual ~StructNode() {}
     //@}
 
@@ -2689,8 +2690,8 @@ class FieldsNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    FieldsNode() {applyDefaults();}
-    FieldsNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    FieldsNode();
+    FieldsNode(NEDElement *parent);
     virtual ~FieldsNode() {}
     //@}
 
@@ -2754,8 +2755,8 @@ class FieldNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    FieldNode() {applyDefaults();}
-    FieldNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    FieldNode();
+    FieldNode(NEDElement *parent);
     virtual ~FieldNode() {}
     //@}
 
@@ -2818,8 +2819,8 @@ class PropertiesNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    PropertiesNode() {applyDefaults();}
-    PropertiesNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    PropertiesNode();
+    PropertiesNode(NEDElement *parent);
     virtual ~PropertiesNode() {}
     //@}
 
@@ -2871,8 +2872,8 @@ class MsgpropertyNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    MsgpropertyNode() {applyDefaults();}
-    MsgpropertyNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    MsgpropertyNode();
+    MsgpropertyNode(NEDElement *parent);
     virtual ~MsgpropertyNode() {}
     //@}
 
@@ -2921,8 +2922,8 @@ class UnknownNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    UnknownNode() {applyDefaults();}
-    UnknownNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    UnknownNode();
+    UnknownNode(NEDElement *parent);
     virtual ~UnknownNode() {}
     //@}
 
