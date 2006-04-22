@@ -50,7 +50,7 @@ public class NedAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 	 * @throws BadLocationException in case the line numbers are invalid in the document
 	 */
 	 protected int findMatchingOpenBracket(IDocument document, int line, int end, int closingBracketIncrease) throws BadLocationException {
-
+	    int origLine = line;
 		int start= document.getLineOffset(line);
 		int brackcount= getBracketCount(document, start, end, false) - closingBracketIncrease;
 
@@ -65,6 +65,7 @@ public class NedAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 			int lineend= linestart + document.getLineLength(line) - 1;
 			brackcount += getBracketCount(document, linestart, lineend, false);
 		}
+		System.out.println("findMatchingOpenBracket() of line "+origLine+": "+line);		
 		return line;
 	}
 	
