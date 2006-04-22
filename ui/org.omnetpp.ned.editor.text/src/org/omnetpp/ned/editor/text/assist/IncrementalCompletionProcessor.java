@@ -3,6 +3,7 @@ package org.omnetpp.ned.editor.text.assist;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
@@ -17,9 +19,12 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.rules.IWordDetector;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateCompletionProcessor;
+import org.eclipse.jface.text.templates.TemplateContext;
 import org.eclipse.jface.text.templates.TemplateContextType;
+import org.eclipse.jface.text.templates.TemplateException;
 import org.eclipse.jface.text.templates.TemplateProposal;
 import org.eclipse.swt.graphics.Image;
+import org.omnetpp.ned.editor.text.NedHelper;
 import org.omnetpp.ned.editor.text.TextualNedEditorPlugin;
 
 /**
@@ -123,14 +128,58 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
         
     }
 
+	/**
+	 * This method is necessary because TemplateCompletionProcessor.computeCompletionProposals()
+	 * doesn't let us specify what templates we want to add, but insists on calling
+	 * getTemplates() instread. This is a copy of that computeCompletionProposals(), with
+	 * Template[] added to the arg list. 
+	 *
+	 * @author andras
+	 * @see org.eclipse.jface.text.contentassist.IContentAssistProcessor#computeCompletionProposals(org.eclipse.jface.text.ITextViewer, int)
+	 */
+	public ICompletionProposal[] createTemplateProposals(ITextViewer viewer, int offset, Template[] templates) {
+
+		ITextSelection selection= (ITextSelection) viewer.getSelectionProvider().getSelection();
+
+		// adjust offset to end of normalized selection
+		if (selection.getOffset() == offset)
+			offset= selection.getOffset() + selection.getLength();
+
+		String prefix= extractPrefix(viewer, offset);
+		Region region= new Region(offset - prefix.length(), prefix.length());
+		TemplateContext context= createContext(viewer, region);
+		if (context == null)
+			return new ICompletionProposal[0];
+
+		context.setVariable("selection", selection.getText()); // name of the selection variables {line, word}_selection //$NON-NLS-1$
+
+		//Template[] templates= getTemplates(context.getContextType().getId());
+
+		List matches= new ArrayList();
+		for (int i= 0; i < templates.length; i++) {
+			Template template= templates[i];
+			try {
+				context.getContextType().validate(template.getPattern());
+			} catch (TemplateException e) {
+				continue;
+			}
+			if (template.matches(prefix, context.getContextType().getId()))
+				matches.add(createProposal(template, context, (IRegion) region, getRelevance(template, prefix)));
+		}
+
+		Collections.sort(matches, CompletionProposalComparator.getInstance());
+
+		return (ICompletionProposal[]) matches.toArray(new ICompletionProposal[matches.size()]);
+	}
+    
     /**
-     * Simply return all templates.
+     * Returns the all templates for this contextTypeId.
      * 
-     * @param contextTypeId the context type, ignored in this implementation
+     * @param contextTypeId the context type
      * @return all templates
      */
     protected Template[] getTemplates(String contextTypeId) {
-        return TextualNedEditorPlugin.getDefault().getTemplateStore().getTemplates();
+        return TextualNedEditorPlugin.getDefault().getTemplateStore().getTemplates(contextTypeId);
     }
 
     /**

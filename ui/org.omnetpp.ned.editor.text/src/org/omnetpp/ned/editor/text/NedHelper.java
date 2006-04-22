@@ -5,9 +5,11 @@ import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.IWhitespaceDetector;
 import org.eclipse.jface.text.rules.IWordDetector;
 import org.eclipse.jface.text.rules.Token;
+import org.eclipse.jface.text.templates.Template;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.ned.editor.text.assist.NedContextType;
 
 /**
  * This class contains all the possible keywords for syntax highlighting and context assist functions.
@@ -114,15 +116,73 @@ public class NedHelper {
     public final static String[] proposedNedConnsKeywords = {"allowunconnected"};
     public final static String[] proposedNedInheritanceKeywords = {"extends", "like"};
     public final static String[] proposedNedOtherKeywords = {"if", "index", "this", "typename", "where"};
-    public final static String[] proposedNedFunctions = { "acos", "asin", "atan", "atan2", "bernoulli", "beta", "binomial", "cauchy", "ceil", "chi_square", "const", "cos", "default", "erlang_k", "exp", "exponential", "fabs", "floor", "fmod", "gamma_d", "genk_exponential", "genk_intuniform", "genk_normal", "genk_truncnormal", "genk_uniform", "geometric", "hypergeometric", "hypot", "intuniform", "log", "log10", "lognormal", "max", "min", "negbinomial", "normal", "pareto_shifted", "poisson", "pow", "sin", "sizeof", "sqrt", "student_t", "tan", "triang", "truncnormal", "uniform", "weibull", "xmldoc" }; //XXX offer as template
+    public final static String[] proposedNedFunctions = { "acos", "asin", "atan", "atan2", "bernoulli", "beta", "binomial", "cauchy", "ceil", "chi_square", "const", "cos", "default", "erlang_k", "exp", "exponential", "fabs", "floor", "fmod", "gamma_d", "genk_exponential", "genk_intuniform", "genk_normal", "genk_truncnormal", "genk_uniform", "geometric", "hypergeometric", "hypot", "intuniform", "log", "log10", "lognormal", "max", "min", "negbinomial", "normal", "pareto_shifted", "poisson", "pow", "sin", "sizeof", "sqrt", "student_t", "tan", "triang", "truncnormal", "uniform", "weibull", "xmldoc" };
     public final static String[] proposedConstants = { "false", "true" };
     public final static String[] proposedNedComponentPropertyNames = {"display(...)"}; //XXX offer as template! check what gets actually supported! also: "recordstats", "kernel", ... 
     public final static String[] proposedNedParamPropertyNames = {"prompt(...)", "choice(...)", "classname(...)"}; //XXX check this list before release  
     public final static String[] proposedNedGatePropertyNames = {"labels(...)", "inlabels(...)", "outlabels(...)"}; //XXX check this list before release
 
     // MSG specific completions - not used currently
-//    public final static String[] proposedMsgTypes = { "bool", "char", "double", "int", "long", "numeric", "short", "string", "unsigned", "xml" };
-//    public final static String[] proposedMsgKeywords = { "abstract", "ancestor", "channel", "class", "connections", "const", "cplusplus", "datarate", "delay", "display", "do", "endchannel", "endfor", "endmodule", "endnetwork", "endsimple", "enum", "error", "extends", "fields", "for", "gates", "gatesizes", "if", "import", "in:", "index", "like", "message", "module", "network", "nocheck", "noncobject", "on", "out:", "parameters", "properties", "ref", "simple", "sizeof", "struct", "submodules", "to" };
+    //  public final static String[] proposedMsgTypes = { "bool", "char", "double", "int", "long", "numeric", "short", "string", "unsigned", "xml" };
+    //  public final static String[] proposedMsgKeywords = { "abstract", "ancestor", "channel", "class", "connections", "const", "cplusplus", "datarate", "delay", "display", "do", "endchannel", "endfor", "endmodule", "endnetwork", "endsimple", "enum", "error", "extends", "fields", "for", "gates", "gatesizes", "if", "import", "in:", "index", "like", "message", "module", "network", "nocheck", "noncobject", "on", "out:", "parameters", "properties", "ref", "simple", "sizeof", "struct", "submodules", "to" };
+
+    public final static Template[] proposedNedOperatorsTempl = new Template[] {
+    	makeShortTemplate("const(${x})", "operator"),
+    	makeShortTemplate("default(${x})", "operator"),
+    	makeShortTemplate("sizeof(${gate-or-submod})", "operator"),
+    	makeShortTemplate("xmldoc(${filename}, ${opt_xpath})", "operator"),
+    };
+    public final static Template[] proposedNedFunctionsTempl = new Template[] {
+    	makeShortTemplate("acos(${x})", "function"),
+    	makeShortTemplate("asin(${x})", "function"),
+    	makeShortTemplate("atan(${x})", "function"),
+    	makeShortTemplate("atan2(${x},${y})", "function"),
+    	makeShortTemplate("sin(${x})", "function"),
+    	makeShortTemplate("cos(${x})", "function"),
+    	makeShortTemplate("tan(${x})", "function"),
+    	makeShortTemplate("ceil(${x})", "function"),
+    	makeShortTemplate("floor(${x})", "function"),
+    	makeShortTemplate("max(${a},${b})", "function"),
+    	makeShortTemplate("min(${a},${b})", "function"),
+    	makeShortTemplate("exp(${x})", "function"),
+    	makeShortTemplate("pow(${x},${y})", "function"),
+    	makeShortTemplate("sqrt(${x})", "function"),
+    	makeShortTemplate("fabs(${x})", "function"),
+    	makeShortTemplate("fmod(${x},${y})", "function"),
+    	makeShortTemplate("hypot(${x},${y})", "function"),
+    	makeShortTemplate("log(${x})", "function"),
+    	makeShortTemplate("log10(${x})", "function"),
+    };
+    public final static Template[] proposedNedDistributionsTempl = new Template[] {
+    	// continuous
+    	makeShortTemplate("beta(${alpha1}, ${alpha2}, ${opt_rngnum})", "distribution"),
+    	makeShortTemplate("cauchy(${a}, ${b}, ${opt_rngnum})", "distribution"),
+    	makeShortTemplate("chi_square(${k}, ${opt_rngnum})", "distribution"),
+    	makeShortTemplate("erlang_k(${k}, ${mean}, ${opt_rngnum})", "distribution"),
+    	makeShortTemplate("exponential(${mean}, ${opt_rngnum})", "distribution"),
+    	makeShortTemplate("gamma_d(${alpha}, ${beta}, ${opt_rngnum})", "distribution"),
+    	makeShortTemplate("lognormal(${m}, ${w}, ${opt_rngnum})", "distribution"),
+    	makeShortTemplate("normal(${mean}, ${stddev}, ${opt_rngnum})", "distribution"),
+    	makeShortTemplate("pareto_shifted(${a}, ${b}, ${c}, ${opt_rngnum})", "distribution"),
+    	makeShortTemplate("student_t(${i}, ${opt_rngnum})", "distribution"),
+    	makeShortTemplate("triang(${a}, ${b}, ${c}, ${opt_rngnum})", "distribution"),
+    	makeShortTemplate("truncnormal(${mean}, ${stddev}, ${opt_rngnum})", "distribution"),
+    	makeShortTemplate("uniform(${a}, ${b}, ${opt_rngnum})", "distribution"),
+    	makeShortTemplate("weibull(${a}, ${b}, ${opt_rngnum})", "distribution"),
+
+    	// discrete
+    	makeShortTemplate("bernoulli(${p}, ${opt_rngnum})", "distribution"),
+    	makeShortTemplate("binomial(${n}, ${p}, ${opt_rngnum})", "distribution"),
+    	makeShortTemplate("geometric(${p}, ${opt_rngnum})", "distribution"),
+    	makeShortTemplate("intuniform(${a}, ${b}, ${opt_rngnum})", "distribution"),
+    	makeShortTemplate("negbinomial(${n}, ${p}, ${opt_rngnum})", "distribution"),
+    	makeShortTemplate("poisson(${lambda}, ${opt_rngnum})", "distribution"),
+    };
+
+    private static Template makeShortTemplate(String pattern, String description) {
+    	String name = pattern.replaceAll("\\$\\{(.*?)\\}", "$1");  // remove ${} from parameters
+    	return new Template(name, description, NedContextType.DEFAULT_CONTEXT_TYPE, pattern, false);
+    }
 
     // whitespace and word detectors for tokenization
     public final static NedWhitespaceDetector nedWhitespaceDetector = new NedWhitespaceDetector();

@@ -1,10 +1,8 @@
 package org.omnetpp.ned.editor.text.assist;
 
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -14,12 +12,11 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.TextPresentation;
-import org.eclipse.jface.text.contentassist.ContextInformation;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationPresenter;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
-import org.omnetpp.ned.editor.text.NedEditorMessages;
+import org.eclipse.jface.text.templates.Template;
 import org.omnetpp.ned.editor.text.NedHelper;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.pojo.SubmoduleNode;
@@ -209,8 +206,13 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 				}
 			}
 			addProposals(viewer, documentOffset, result, NedHelper.proposedConstants, null);
-			addProposals(viewer, documentOffset, result, NedHelper.proposedNedFunctions, "function"); //XXX arg help?
-			addProposals(viewer, documentOffset, result, NedHelper.proposedNedOtherKeywords, null);
+
+			//addProposals(viewer, documentOffset, result, NedHelper.proposedNedFunctions, "function");
+		    addProposals(viewer, documentOffset, result, NedHelper.proposedNedOperatorsTempl);
+		    addProposals(viewer, documentOffset, result, NedHelper.proposedNedDistributionsTempl);
+		    addProposals(viewer, documentOffset, result, NedHelper.proposedNedFunctionsTempl);
+
+		    addProposals(viewer, documentOffset, result, NedHelper.proposedNedOtherKeywords, null);
 		}
 	
 		// complete submodule type name
@@ -266,10 +268,8 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 	    // get all the template proposals from the parent
 		//XXX update templates (templates/ned.xml) to current NED syntax!!!
 		//XXX filter templates according to compound module section!!!
-	    List templateList = Arrays.asList(super.computeCompletionProposals(viewer, documentOffset));
-	    Collections.sort(templateList, CompletionProposalComparator.getInstance());
-	    result.addAll(templateList);
-	
+	    result.addAll(Arrays.asList(super.computeCompletionProposals(viewer, documentOffset)));
+	    
 		long millis = System.currentTimeMillis()-startMillis;
 		System.out.println("Proposal creation: "+millis+"ms");
 	    
@@ -309,6 +309,10 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 		result.addAll(createProposals(viewer, documentOffset, NedHelper.nedWordDetector, "", proposals.toArray(new String[0]), "", description));
 	}
 
+	private void addProposals(ITextViewer viewer, int documentOffset, List result, Template[] templates) {
+	    result.addAll(Arrays.asList(createTemplateProposals(viewer, documentOffset, templates)));
+	}
+	
 	private CompletionInfo computeCompletionInfo(ITextViewer viewer, int documentOffset) {
 		IDocument docu = viewer.getDocument();
         int offset = documentOffset;
@@ -385,12 +389,14 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 	}
 	
 	public IContextInformation[] computeContextInformation(ITextViewer viewer, int documentOffset) {
-		IContextInformation[] result= new IContextInformation[5];
-		for (int i= 0; i < result.length; i++)
-			result[i]= new ContextInformation(
-				MessageFormat.format(NedEditorMessages.getString("CompletionProcessor.ContextInfo.display.pattern"), new Object[] { new Integer(i), new Integer(documentOffset) }),  //$NON-NLS-1$
-				MessageFormat.format(NedEditorMessages.getString("CompletionProcessor.ContextInfo.value.pattern"), new Object[] { new Integer(i), new Integer(documentOffset - 5), new Integer(documentOffset + 5)})); //$NON-NLS-1$
-		return result;
+		//XXX what the heck is this?
+		//		IContextInformation[] result= new IContextInformation[5];
+		//		for (int i= 0; i < result.length; i++)
+		//			result[i]= new ContextInformation(
+		//				MessageFormat.format(NedEditorMessages.getString("CompletionProcessor.ContextInfo.display.pattern"), new Object[] { new Integer(i), new Integer(documentOffset) }),  //$NON-NLS-1$
+		//				MessageFormat.format(NedEditorMessages.getString("CompletionProcessor.ContextInfo.value.pattern"), new Object[] { new Integer(i), new Integer(documentOffset - 5), new Integer(documentOffset + 5)})); //$NON-NLS-1$
+		//		return result;
+		return null;
 	}
 	
 	public char[] getCompletionProposalAutoActivationCharacters() {
