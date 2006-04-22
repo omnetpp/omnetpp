@@ -75,7 +75,7 @@ void NEDDTDValidatorBase::tryCheckChoice(NEDElement *node, NEDElement *&curchild
     {
         // match and skip first element of "1" or "+" sequence
         if (!curchild || !isInVector(curchild->getTagCode(), tags))
-            {errors->add(node,"DTD validation error: child element of multiplicity '1' or '+' missing\n"); return;}
+            {errors->add(node,"DTD validation error: child element of multiplicity '1' or '+' missing"); return;}
         curchild = curchild->getNextSibling();
     }
 

@@ -13,6 +13,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include "nedtools.h"
 #include "nederror.h"
 #include "neddtdvalidator.h"
 
@@ -23,9 +24,9 @@ void NEDTools::repairNEDElementTree(NEDElement *tree)
     {
         // try DTD validation, and find first problem
         NEDErrorStore errors;
-        NEDDTDValidator dtdvalidator(errors);
+        NEDDTDValidator dtdvalidator(&errors);
         dtdvalidator.validate(tree);
-        if (errors->empty())
+        if (errors.empty())
             break; // we're done
         NEDElement *errnode = errors.errorContext(0);
         if (!errnode)

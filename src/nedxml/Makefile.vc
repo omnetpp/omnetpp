@@ -19,7 +19,7 @@ COPTS=$(CFLAGS) $(XML_CFLAGS) /I. /Fd"nedxml.pdb"
 #      ned2.tab.obj lex.ned2yy.obj \
 #      msg2.tab.obj lex.msg2yy.obj \
 #      ned.tab.obj lex.nedyy.obj \
-#      nedutil.obj nedgenerator.obj xmlgenerator.obj \
+#      nedutil.obj nedgenerator.obj xmlgenerator.obj nedtools.obj \
 #      nedxmlparser.obj nedsaxhandler.obj saxparser_$(XMLPARSER).obj \
 #      nedcompiler.obj cppgenerator.obj cppmsggenerator.obj cppexprgenerator.obj
 
@@ -28,7 +28,7 @@ OBJS= nedelements.obj nedelement.obj nederror.obj \
       nedvalidator.obj neddtdvalidator.obj neddtdvalidatorbase.obj \
       nedbasicvalidator.obj nedsemanticvalidator.obj \
       nedfilebuffer.obj nedparser.obj nedyylib.obj \
-      ned2.tab.obj lex.ned2yy.obj \
+      ned2.tab.obj lex.ned2yy.obj nedtools.obj \
       nedutil.obj ned2generator.obj ned1generator.obj xmlgenerator.obj \
       nedxmlparser.obj nedsaxhandler.obj saxparser_$(XMLPARSER).obj \
       ned.tab.obj lex.nedyy.obj \
@@ -250,6 +250,14 @@ nedsemanticvalidator.obj: nedsemanticvalidator.cc \
   nedelement.h \
   nedvalidator.h \
   nedelements.h
+nedtools.obj: nedtools.cc \
+  nedtools.h \
+  nederror.h \
+  neddtdvalidator.h \
+  nedelement.h \
+  nedelements.h \
+  neddtdvalidatorbase.h \
+  nedvalidator.h
 nedutil.obj: nedutil.cc \
   nederror.h \
   nedutil.h \

@@ -29,6 +29,7 @@ class NEDErrorStore
 {
     private:
         struct Entry {
+            NEDElement *context;
             int category;
             std::string location;
             std::string message;
@@ -87,6 +88,7 @@ class NEDErrorStore
         const char *errorCategory(int i) const;
         int errorCategoryCode(int i) const;
         const char *errorLocation(int i) const;
+        NEDElement *errorContext(int i) const;
         const char *errorText(int i) const;
         //@}
 

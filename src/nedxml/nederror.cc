@@ -27,6 +27,7 @@ void NEDErrorStore::doAdd(NEDElement *context, const char *loc, int category, co
     if (!loc && context)
         loc = context->getSourceLocation();
 
+    e.context = context;
     e.location = loc ? loc : "";
     e.category = category;
     e.message = message;
@@ -91,6 +92,12 @@ const char *NEDErrorStore::errorLocation(int i) const
 {
     if (i<0 || i>=entries.size()) return NULL;
     return entries[i].location.c_str();
+}
+
+NEDElement *NEDErrorStore::errorContext(int i) const
+{
+    if (i<0 || i>=entries.size()) return NULL;
+    return entries[i].context;
 }
 
 const char *NEDErrorStore::errorText(int i) const
