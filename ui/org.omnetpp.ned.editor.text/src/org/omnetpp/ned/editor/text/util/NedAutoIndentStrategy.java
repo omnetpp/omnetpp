@@ -5,7 +5,7 @@ import org.eclipse.jface.text.*;
 import org.omnetpp.ned.editor.text.NedEditorMessages;
 
 
-// TODO autoindent strategy must be matched to NED format
+// TODO autoindent strategy must be matched to NED format (make use of lineContainsSectionKeyword())
 /**
  * Auto indent line strategy sensitive to brackets.
  */

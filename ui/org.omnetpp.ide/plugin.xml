@@ -90,16 +90,16 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="org.eclipse.ui.ide.workbench"
-            name="%productName">
+            name="OMNeT++ IDE">
          <property
                name="aboutText"
-               value="%productBlurb"/>
+               value="%aboutText"/>
          <property
                name="windowImages"
-               value="eclipse.gif,eclipse32.gif,eclipse48.gif"/>
+               value="icons/sample2.gif"/>
          <property
                name="aboutImage"
-               value="eclipse_lg.gif"/>
+               value="product_lg.gif"/>
       </product>
    </extension>
 

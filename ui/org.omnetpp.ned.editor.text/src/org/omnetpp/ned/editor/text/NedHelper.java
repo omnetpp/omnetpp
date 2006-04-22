@@ -129,7 +129,7 @@ public class NedHelper {
     public final static Template[] proposedNedOperatorsTempl = new Template[] {
     	makeShortTemplate("const(${x})", "operator"),
     	makeShortTemplate("default(${x})", "operator"),
-    	makeShortTemplate("sizeof(${gate-or-submod})", "operator"),
+    	makeShortTemplate("sizeof(${gateOrSubmod})", "operator"),
     	makeShortTemplate("xmldoc(${filename}, ${opt_xpath})", "operator"),
     };
     public final static Template[] proposedNedFunctionsTempl = new Template[] {

@@ -129,7 +129,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 				addProposals(viewer, documentOffset, result, res.getChannelInterfaceNames(), "channel interface type");
 
 			if (!line.equals("") && !line.matches("\\b(extends|like)\\b"))
-				addProposals(viewer, documentOffset, result, NedHelper.proposedNedInheritanceKeywords, "keyword");
+				addProposals(viewer, documentOffset, result, NedHelper.proposedNedInheritanceKeywords, null);
 		}
 	
 		// propose line start: param names, gate names, keywords
@@ -159,7 +159,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 	    		addProposals(viewer, documentOffset, result, NedHelper.proposedNedSectionNameKeywords, null);
 	    	}
 	    	else if (info.sectionType==SECT_SUBMODULE_PARAMETERS) {
-	    		addProposals(viewer, documentOffset, result, new String[]{"gates:"}, "keyword"); //XXX string constant
+	    		addProposals(viewer, documentOffset, result, new String[]{"gates:"}, null);
 	    	}
 
 	    	// offer templates
