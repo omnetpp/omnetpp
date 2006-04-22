@@ -77,7 +77,7 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
         
         for (int i = 0 ;i < proposalString.length; ++i) {
             String prop = startStr + proposalString[i] + endStr;
-            if (prop.startsWith(prefix)) {
+            if (prop.toLowerCase().startsWith(prefix.toLowerCase())) {
             	String displayText = description==null ? prop : prop+" - "+description;
                 propList.add(new CompletionProposal(prop, wordRegion.getOffset(), wordRegion.getLength(), prop.length(), null, displayText, null, null));
             }

@@ -175,8 +175,9 @@ public class NEDResources implements INEDComponentResolver {
 	public void connect(IFile file) {
 		if (connectCount.containsKey(file))
 			connectCount.put(file, connectCount.get(file)+1);
-		else
+		else {
 			connectCount.put(file, 1);
+		}
 	}
 
 	/**

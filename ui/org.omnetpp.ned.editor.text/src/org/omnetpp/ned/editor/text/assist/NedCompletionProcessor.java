@@ -29,7 +29,6 @@ import org.omnetpp.resources.NEDResourcesPlugin;
 
 // TODO a better structure is needed for storing the completion proposals
 // TODO context help can be supported, to show the documentation of the proposed keyword
-// TODO why doesn't content assist automatically appear when I type space or "." ?
 /**
  * NED completion processor.
  */
@@ -177,7 +176,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 		}
 		
 		// expressions: after "=", opening "[", "if" or "where"
-		if (line.contains("=") || line.matches(".*\\b(if|where)\\b.*") || line.matches(".*\\[[^\\]]*")) {
+		if (line.contains("=") || line.matches(".*\\b(if|where)\\b.*") || containsOpenBracket(line)) {
 			System.out.println("proposals for expressions");
 	
 			// offer parameter names, gate names, types,...
@@ -188,9 +187,22 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 			else if (line.matches(".*\\bsizeof *\\(")) {
 				if (parentComponent!=null) {
 					addProposals(viewer, documentOffset, result, parentComponent.getGateNames(), "gate");
-					addProposals(viewer, documentOffset, result, parentComponent.getSubmodNames(), "gate");
+					addProposals(viewer, documentOffset, result, parentComponent.getSubmodNames(), "submodule");
 				}
 			}
+	    	else if (line.endsWith(".")) { 
+	    		// after dot: offer params (and after sizeof(), gates too) of given submodule
+	    		if (parentComponent!=null) {
+					String submodTypeName = extractSubmoduleTypeName(line, parentComponent);
+					System.out.println(" offering params of type "+submodTypeName);
+					INEDComponent submodType = res.getComponent(submodTypeName);
+					if (submodType!=null) {
+						if (line.matches(".*\\bsizeof *\\(.*"))
+							addProposals(viewer, documentOffset, result, submodType.getGateNames(), "gate");
+						addProposals(viewer, documentOffset, result, submodType.getParamNames(), "param");
+					}
+	    		}
+	    	}
 			else {
 				if (parentComponent!=null) {
 					addProposals(viewer, documentOffset, result, parentComponent.getParamNames(), "parameter");
@@ -239,6 +251,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 	    		// after dot: offer gates of given submodule
 	    		if (parentComponent!=null) {
 					String submodTypeName = extractSubmoduleTypeName(line, parentComponent);
+					System.out.println(" offering gates of type "+submodTypeName);
 					INEDComponent submodType = res.getComponent(submodTypeName);
 					if (submodType!=null)
 						addProposals(viewer, documentOffset, result, submodType.getGateNames(), "gate");
@@ -263,16 +276,24 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 	    return (ICompletionProposal[]) result.toArray(new ICompletionProposal[result.size()]);
 	}
 
+	private boolean containsOpenBracket(String line) {
+		while (line.matches(".*\\[[^\\[\\]]*\\].*"))
+			line = line.replaceAll("\\[[^\\[\\]]*\\]", "###");
+        return line.contains("[");
+	}
+
 	private String extractSubmoduleTypeName(String line, INEDComponent parentComponent) {
+		// first, get rid of everything before any arrow(s), because it causes a problem for the next regexp
+		line = line.replaceFirst("^.*(-->|<--|<-->)", "");
 		// identifier followed by ".", potentially a submodule index ("[something]") in between
-		Matcher matcher = Pattern.compile("([A-Za-z_][A-Za-z0-9_]*) *(\\[[^\\[\\]]*\\])? *\\.").matcher(line);
-		if (matcher.lookingAt()) {
+		Matcher matcher = Pattern.compile("([A-Za-z_][A-Za-z0-9_]*) *(\\[[^\\[\\]]*\\])? *\\.$").matcher(line);
+		if (matcher.find()) { // use find() because line may start with garbage 
 			String submoduleName = matcher.group(1);
 			NEDElement submodNode = parentComponent.getMember(submoduleName);
 			if (submodNode instanceof SubmoduleNode) {
 				SubmoduleNode submod = (SubmoduleNode) submodNode;
 				String submodTypeName = submod.getType();
-				if (submodTypeName==null)
+				if (submodTypeName==null || submodTypeName.equals(""))
 					submodTypeName = submod.getLikeType();
 				return submodTypeName;
 			}
