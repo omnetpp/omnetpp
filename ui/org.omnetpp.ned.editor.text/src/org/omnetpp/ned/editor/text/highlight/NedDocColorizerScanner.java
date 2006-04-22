@@ -23,7 +23,7 @@ public class NedDocColorizerScanner extends RuleBasedScanner {
         // this is the default token for a comment
         setDefaultReturnToken(NedHelper.docDefaultToken);
 
-		List list= new ArrayList();
+		List<IRule> list= new ArrayList<IRule>();
 
         // Add word rule for supported HTML tags
         // FIXME does not match if token is followed immediately with some characters

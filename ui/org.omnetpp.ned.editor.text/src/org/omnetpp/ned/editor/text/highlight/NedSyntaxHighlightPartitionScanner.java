@@ -28,7 +28,7 @@ public class NedSyntaxHighlightPartitionScanner extends RuleBasedPartitionScanne
 		IToken nedDocToken= new Token(NED_DOC);
         IToken nedPrivateDocToken= new Token(NED_PRIVATE_DOC);
 
-		List rules= new ArrayList();
+		List<IRule> rules= new ArrayList<IRule>();
 
         // Add rule for single line private comments.
         rules.add(new EndOfLineRule("//#", nedPrivateDocToken)); //$NON-NLS-1$

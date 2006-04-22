@@ -16,7 +16,7 @@ public class NedVariableResolver extends TemplateVariableResolver {
 	 * @see org.eclipse.jface.text.templates.TemplateVariableResolver#resolveAll(org.eclipse.jface.text.templates.TemplateContext)
 	 */
 	protected String[] resolveAll(TemplateContext context) {
-		String[] proposals= new String[] { "${srcDir}", "${dstDir}" }; //$NON-NLS-1$ //$NON-NLS-2$
+		String[] proposals = new String[] { "${srcDir}", "${dstDir}" }; //$NON-NLS-1$ //$NON-NLS-2$
 		
 		Arrays.sort(proposals, new Comparator() {
 

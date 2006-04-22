@@ -84,7 +84,7 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
     public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
 		long startMillis = System.currentTimeMillis(); // measure time
 	
-		List result = new ArrayList();
+		List<ICompletionProposal> result = new ArrayList<ICompletionProposal>();
 	
 		// find out where we are: in which module, submodule, which section etc.
 		CompletionInfo info = computeCompletionInfo(viewer, documentOffset);
@@ -279,8 +279,8 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 	
 	    // get all the template proposals from the parent
 		//XXX update templates (templates/ned.xml) to current NED syntax!!!
-		//XXX filter templates according to compound module section!!!
-	    result.addAll(Arrays.asList(super.computeCompletionProposals(viewer, documentOffset)));
+	    List<ICompletionProposal> tmp = Arrays.asList(super.computeCompletionProposals(viewer, documentOffset));
+	    result.addAll(tmp);
 	    
 		long millis = System.currentTimeMillis()-startMillis;
 		System.out.println("Proposal creation: "+millis+"ms");
@@ -313,15 +313,15 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 		return null; // bad luck
 	}
 
-	private void addProposals(ITextViewer viewer, int documentOffset, List result, String[] proposals, String description) {
+	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, String[] proposals, String description) {
 		result.addAll(createProposals(viewer, documentOffset, NedHelper.nedWordDetector, "", proposals, "", description));
 	}
 
-	private void addProposals(ITextViewer viewer, int documentOffset, List result, Set<String> proposals, String description) {
+	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, Set<String> proposals, String description) {
 		result.addAll(createProposals(viewer, documentOffset, NedHelper.nedWordDetector, "", proposals.toArray(new String[0]), "", description));
 	}
 
-	private void addProposals(ITextViewer viewer, int documentOffset, List result, Template[] templates) {
+	private void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, Template[] templates) {
 	    result.addAll(Arrays.asList(createTemplateProposals(viewer, documentOffset, templates)));
 	}
 	

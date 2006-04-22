@@ -20,7 +20,7 @@ public class NedCodeColorizerScanner extends RuleBasedScanner {
 
         setDefaultReturnToken(NedHelper.codeDefaultToken);
 
-		List rules= new ArrayList();
+		List<IRule> rules= new ArrayList<IRule>();
 
         // Add rule for strings
 		rules.add(new SingleLineRule("\"", "\"", NedHelper.codeStringToken, '\\'));

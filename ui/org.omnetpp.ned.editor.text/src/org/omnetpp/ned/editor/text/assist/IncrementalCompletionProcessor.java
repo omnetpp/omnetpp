@@ -24,7 +24,6 @@ import org.eclipse.jface.text.templates.TemplateContextType;
 import org.eclipse.jface.text.templates.TemplateException;
 import org.eclipse.jface.text.templates.TemplateProposal;
 import org.eclipse.swt.graphics.Image;
-import org.omnetpp.ned.editor.text.NedHelper;
 import org.omnetpp.ned.editor.text.TextualNedEditorPlugin;
 
 /**
@@ -70,8 +69,8 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
      * @param proposalString
      * @return List of proposals
      */
-    protected List createProposals(ITextViewer viewer, int documentOffset, IWordDetector wordDetector, String startStr, String[] proposalString, String endStr, String description) {
-        List propList = new ArrayList();
+    protected List<ICompletionProposal> createProposals(ITextViewer viewer, int documentOffset, IWordDetector wordDetector, String startStr, String[] proposalString, String endStr, String description) {
+        List<ICompletionProposal> propList = new ArrayList<ICompletionProposal>();
         IRegion wordRegion = detectWordRegion(viewer, documentOffset, wordDetector); 
         String prefix = "";
         try {
@@ -155,7 +154,7 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
 
 		//Template[] templates= getTemplates(context.getContextType().getId());
 
-		List matches= new ArrayList();
+		List<ICompletionProposal> matches = new ArrayList<ICompletionProposal>();
 		for (int i= 0; i < templates.length; i++) {
 			Template template= templates[i];
 			try {

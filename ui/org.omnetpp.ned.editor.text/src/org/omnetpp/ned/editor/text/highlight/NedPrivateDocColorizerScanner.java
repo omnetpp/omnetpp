@@ -25,7 +25,7 @@ public class NedPrivateDocColorizerScanner extends RuleBasedScanner {
         // this is the default token for a comment
         setDefaultReturnToken(NedHelper.docPrivateDefaultToken);
 
-		List list= new ArrayList();
+		List<IRule> list= new ArrayList<IRule>();
         
         // Add word rule for private comment hints
         WordRule hintRule= new WordRule(NedHelper.nedWordDetector, Token.UNDEFINED);

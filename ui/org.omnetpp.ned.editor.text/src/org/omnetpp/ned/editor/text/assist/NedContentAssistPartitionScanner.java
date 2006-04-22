@@ -41,10 +41,10 @@ public class NedContentAssistPartitionScanner extends RuleBasedPartitionScanner 
 
 		IToken nedDocToken= new Token(NED_DOC);
         IToken nedPrivateDocToken= new Token(NED_PRIVATE_DOC);
-        IToken nedCodeToken= new Token(NED_CODE);
+        //IToken nedCodeToken= new Token(NED_CODE);
         IToken nedStringToken= new Token(NED_STRING);
 
-		List rules= new ArrayList();
+		List<IPredicateRule> rules= new ArrayList<IPredicateRule>();
 
         // Add rule for single line private comments.
         rules.add(new EndOfLineRule("//#", nedPrivateDocToken)); //$NON-NLS-1$

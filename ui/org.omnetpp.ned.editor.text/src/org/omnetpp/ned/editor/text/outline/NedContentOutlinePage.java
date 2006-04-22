@@ -1,7 +1,6 @@
 package org.omnetpp.ned.editor.text.outline;
 
 
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
@@ -58,7 +57,7 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 
 		super.selectionChanged(event);
 
-		ISelection selection= event.getSelection();
+//		ISelection selection= event.getSelection();
 //		if (selection.isEmpty())
 //			fTextEditor.resetHighlightRange();
 //		else {

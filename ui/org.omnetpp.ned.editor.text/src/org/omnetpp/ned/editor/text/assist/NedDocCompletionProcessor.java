@@ -14,7 +14,7 @@ import org.omnetpp.ned.editor.text.NedHelper;
 public class NedDocCompletionProcessor extends IncrementalCompletionProcessor {
 
     public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
-        List result = 
+        List<ICompletionProposal> result = 
             createProposals(viewer, documentOffset, NedHelper.nedAtWordDetector,
                     "@", NedHelper.proposedDocKeywords, " ", null);
 

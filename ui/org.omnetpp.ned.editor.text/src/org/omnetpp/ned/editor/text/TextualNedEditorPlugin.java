@@ -10,7 +10,6 @@ import org.eclipse.jface.text.templates.persistence.TemplateStore;
 import org.eclipse.ui.editors.text.templates.ContributionContextTypeRegistry;
 import org.eclipse.ui.editors.text.templates.ContributionTemplateStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.omnetpp.ned.editor.text.assist.NedContentAssistPartitionScanner;
 import org.omnetpp.ned.editor.text.assist.NedContextType;
 
 /**
@@ -25,7 +24,8 @@ public class TextualNedEditorPlugin extends AbstractUIPlugin {
     private static final String CUSTOM_TEMPLATES_KEY = "org.omnetpp.ned.editor.text.customtemplates"; //$NON-NLS-1$
 	
 	private static TextualNedEditorPlugin fgInstance;
-	private NedContentAssistPartitionScanner fPartitionScanner;
+	//private NedContentAssistPartitionScanner fPartitionScanner;
+	
     /** The template store. */
     private TemplateStore fStore;
     /** The context type registry. */

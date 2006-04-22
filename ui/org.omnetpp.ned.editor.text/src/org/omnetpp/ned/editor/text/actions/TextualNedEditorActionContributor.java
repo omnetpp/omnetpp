@@ -1,12 +1,16 @@
 package org.omnetpp.ned.editor.text.actions;
 
 
-import org.eclipse.jface.action.*;
-import org.eclipse.ui.*;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.editors.text.TextEditorActionContributor;
-import org.eclipse.ui.texteditor.*;
+import org.eclipse.ui.texteditor.ITextEditor;
+import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
+import org.eclipse.ui.texteditor.RetargetTextEditorAction;
 import org.omnetpp.ned.editor.text.NedEditorMessages;
-import org.omnetpp.ned.editor.text.TextualNedEditor;
 
 /**
  * Contributes interesting Java actions to the desktop's Edit menu and the toolbar.
