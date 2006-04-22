@@ -61,9 +61,9 @@ public class NedAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 			if (line < 0) {
 				return -1;
 			}
-			start= document.getLineOffset(line);
-			end= start + document.getLineLength(line) - 1;
-			brackcount += getBracketCount(document, start, end, false);
+			int linestart= document.getLineOffset(line);
+			int lineend= linestart + document.getLineLength(line) - 1;
+			brackcount += getBracketCount(document, linestart, lineend, false);
 		}
 		return line;
 	}
@@ -90,25 +90,26 @@ public class NedAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 				case '/' :
 					if (begin < end) {
 						char next= document.getChar(begin);
-						if (next == '*') {
-							// a comment starts, advance to the comment end
-							begin= getCommentEnd(document, begin + 1, end);
-						} else if (next == '/') {
+//XXX					if (next == '*') {
+//							// a comment starts, advance to the comment end
+//							begin= getCommentEnd(document, begin + 1, end);
+//						} else if (next == '/') {
+						if (next == '/') {
 							// '//'-comment: nothing to do anymore on this line 
 							begin= end;
 						}
 					}
 					break;
-				case '*' :
-					if (begin < end) {
-						char next= document.getChar(begin);
-						if (next == '/') {
-							// we have been in a comment: forget what we read before
-							bracketcount= 0;
-							begin++;
-						}
-					}
-					break;
+//XXX			case '*' :
+//					if (begin < end) {
+//						char next= document.getChar(begin);
+//						if (next == '/') {
+//							// we have been in a comment: forget what we read before
+//							bracketcount= 0;
+//							begin++;
+//						}
+//					}
+//					break;
 				case '{' :
 					bracketcount++;
 					ignoreCloseBrackets= false;
@@ -119,7 +120,7 @@ public class NedAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 					}
 					break;
 				case '"' :
-				case '\'' :
+//XXX				case '\'' :
 					begin= getStringEnd(document, begin, end, curr);
 					break;
 				default :
@@ -128,28 +129,28 @@ public class NedAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 		return bracketcount;
 	}
 	
-	/**
-	 * Returns the end position of a comment starting at the given <code>position</code>.
-	 * 
-	 * @param document - the document being parsed
-	 * @param position - the start position for the search
-	 * @param end - the end position for the search
-	 * @return the end position of a comment starting at the given <code>position</code>
-	 * @throws BadLocationException in case <code>position</code> and <code>end</code> are invalid in the document
-	 */
-	 private int getCommentEnd(IDocument document, int position, int end) throws BadLocationException {
-		int currentPosition = position;
-		while (currentPosition < end) {
-			char curr= document.getChar(currentPosition);
-			currentPosition++;
-			if (curr == '*') {
-				if (currentPosition < end && document.getChar(currentPosition) == '/') {
-					return currentPosition + 1;
-				}
-			}
-		}
-		return end;
-	}
+//XXX	/**
+//	 * Returns the end position of a comment starting at the given <code>position</code>.
+//	 * 
+//	 * @param document - the document being parsed
+//	 * @param position - the start position for the search
+//	 * @param end - the end position for the search
+//	 * @return the end position of a comment starting at the given <code>position</code>
+//	 * @throws BadLocationException in case <code>position</code> and <code>end</code> are invalid in the document
+//	 */
+//	 private int getCommentEnd(IDocument document, int position, int end) throws BadLocationException {
+//		int currentPosition = position;
+//		while (currentPosition < end) {
+//			char curr= document.getChar(currentPosition);
+//			currentPosition++;
+//			if (curr == '*') {
+//				if (currentPosition < end && document.getChar(currentPosition) == '/') {
+//					return currentPosition + 1;
+//				}
+//			}
+//		}
+//		return end;
+//	}
 	
 	/**
 	 * Returns the content of the given line without the leading whitespace.
@@ -168,7 +169,46 @@ public class NedAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 		}
 		return ""; //$NON-NLS-1$
 	}
-	
+
+	/**
+	 * Returns true if there is a section keyword ("parameters", "gates", "types", "submodules", "connections")
+	 * on the given line.
+	 * 
+	 * @param document - the document being parsed
+	 * @param line - the line being searched
+	 * @return true if we found a section keyword
+	 * @throws BadLocationException in case <code>line</code> is invalid in the document
+	 */
+	 protected boolean lineContainsSectionKeyword(IDocument document, int line) throws BadLocationException {
+		 if (line < 0)
+			 return false;
+
+		 final String[] keywords = {"parameters", "gates", "types", "submodules", "connections"};
+		 int start= document.getLineOffset(line);
+		 int len = document.getLineLength(line) - 1;
+		 String linestr = document.get(start, len);
+		 for (int i=0; i<len-3; i++) {
+			 //	If we reach a '//', stop. Also stop if we find string constant:
+			 // if a section keyword occurs on the same line with a string literal,
+			 // indentation is seriously broken anyway so autoindent won't matter...
+			 if (linestr.charAt(i)=='/' && linestr.charAt(i+1)=='/')
+				 break;
+			 if (linestr.charAt(i)=='\"')
+				 break; 
+			 
+			 for (String keyword : keywords) {
+				 int klen = keyword.length();
+				 if (linestr.regionMatches(i, keyword, 0, klen) &&
+					 (i==0 || !Character.isJavaIdentifierPart(linestr.charAt(i-1))) &&
+					 (i+klen>=len || !Character.isJavaIdentifierPart(linestr.charAt(i+klen)))) 
+				 {
+					 return true;
+				 }
+			 }
+		 }
+		 return false;
+	 }
+	 
 	/**
 	 * Returns the position of the <code>character</code> in the <code>document</code> after <code>position</code>.
 	 * 
@@ -211,12 +251,14 @@ public class NedAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 
 			StringBuffer buf= new StringBuffer(command.text);
 			if (command.offset < docLength && document.getChar(command.offset) == '}') {
+				// if user just typed '}', find matching '{' and apply the indent of that line
 				int indLine= findMatchingOpenBracket(document, line, command.offset, 0);
 				if (indLine == -1) {
 					indLine= line;
 				}
 				buf.append(getIndentOfLine(document, indLine));
 			} else {
+				// use indent of previous line, plus one tab for each opening brace
 				int start= document.getLineOffset(line);
 				int whiteend= findEndOfWhiteSpace(document, start, command.offset);
 				buf.append(document.get(start, whiteend - start));

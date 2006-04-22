@@ -26,6 +26,11 @@ import org.omnetpp.resources.NEDResourcesPlugin;
 
 // TODO a better structure is needed for storing the completion proposals
 // TODO context help can be supported, to show the documentation of the proposed keyword
+// TODO if we want F4 "Open Declaration": see
+//    action org.eclipse.jdt.ui.edit.text.java.open.editor
+//    org.eclipse.jdt.ui.actions.IJavaEditorActionDefinitionIds
+//    org.eclipse.jdt.internal.ui.infoviews.SourceView
+//    org.eclipse.jdt.ui.actions.OpenEditorActionGroup
 /**
  * NED completion processor.
  */
