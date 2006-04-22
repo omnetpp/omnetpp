@@ -184,6 +184,87 @@ public class NedHelper {
     	return new Template(name, description, NedContextType.DEFAULT_CONTEXT_TYPE, pattern, false);
     }
 
+    public final static Template[] proposedNedGlobalTempl = new Template[] {
+    	makeTemplate("import", "import NED file", 
+    			"import \"${FileName}\";\n"),
+        makeTemplate("simple", "create simple module",
+        		"//\n// TODO description\n//\n"+
+        		"simple ${SomeModule} {\n"+
+        		"    parameters:\n"+
+        		"    gates:\n"+
+        		"}\n${cursor}\n"),
+        makeTemplate("simple2", "specialize simple module",
+        		"//\n// TODO description\n//\n"+
+        		"simple ${SomeModule} extends ${AnotherModule} {\n"+
+        		"    parameters:\n"+
+        		"}\n${cursor}\n"),
+        makeTemplate("simple3", "simple module complying an interface",
+        		"//\n// TODO description\n//\n"+
+        		"simple ${SomeModule} like ${SomeInterface} {\n"+
+        		"    parameters:\n"+
+        		"    gates:\n"+
+        		"}\n${cursor}\n"),
+        makeTemplate("module", "create compound module",
+        		"//\n// TODO description\n//\n"+
+        		"module ${SomeModule} {\n"+
+        		"    parameters:\n"+
+        		"    gates:\n"+
+        		"    submodules:\n"+
+        		"    connections:\n"+
+        		"}\n${cursor}\n"),
+        makeTemplate("module2", "specialize compound module",
+        		"//\n// TODO description\n//\n"+
+        		"module ${SomeModule} extends ${AnotherModule} {\n"+
+        		"    parameters:\n"+
+        		"}\n${cursor}\n"),
+        makeTemplate("module3", "compound module complying an interface",
+        		"//\n// TODO description\n//\n"+
+        		"module ${SomeModule} like ${SomeInterface} {\n"+
+        		"    parameters:\n"+
+        		"    gates:\n"+
+        		"    submodules:\n"+
+        		"    connections:\n"+
+        		"}\n${cursor}\n"),
+		makeTemplate("interface", "create module interface",
+				"//\n// TODO description\n//\n"+
+				"interface ${SomeInterface} {\n"+
+				"    parameters:\n"+
+				"    gates:\n"+
+				"}\n${cursor}\n"),
+        makeTemplate("network", "create network",
+        		"//\n// TODO description\n//\n"+
+        		"network ${SomeNetwork} {\n"+
+        		"    parameters:\n"+
+        		"    submodules:\n"+
+        		"    connections:\n"+
+        		"}\n${cursor}\n"),
+        makeTemplate("network", "create network instantiating a module",
+        		"//\n// TODO description\n//\n"+
+        		"network ${SomeNetwork} extends ${SomeModule} {\n"+
+        		"    parameters:\n"+
+        		"}\n${cursor}\n"),
+        makeTemplate("channel", "create channel",
+        		"//\n// TODO description\n//\n"+
+        		"channel ${SomeChannel} {\n"+
+        		"    parameters:\n"+
+        		"}\n${cursor}\n"),
+        makeTemplate("channel2", "channel with underlying C++ class", //XXX revise name
+        		"//\n// TODO description\n//\n"+
+        		"channel withcppclass ${SomeChannel} {\n"+
+        		"    parameters:\n"+
+        		"}\n${cursor}\n"),
+        makeTemplate("channelinterface", "create channel interface",
+        		"//\n// TODO description\n//\n"+
+        		"channelinterface ${SomeChannelInterface} {\n"+
+        		"    parameters:\n"+
+        		"    gates:\n"+
+        		"}\n${cursor}\n"),
+    };
+
+    private static Template makeTemplate(String name, String description, String pattern) {
+    	return new Template(name, description, NedContextType.DEFAULT_CONTEXT_TYPE, pattern, false);
+    }
+    		
     // whitespace and word detectors for tokenization
     public final static NedWhitespaceDetector nedWhitespaceDetector = new NedWhitespaceDetector();
     public final static NedWordDetector nedWordDetector = new NedWordDetector();

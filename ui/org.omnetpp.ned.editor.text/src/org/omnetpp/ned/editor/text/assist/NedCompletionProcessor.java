@@ -128,7 +128,6 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 		}
 	
 		// propose line start: param names, gate names, keywords
-		// XXX propose templates too?
 		if (line.equals("")) { 
 			// offer param and gate names
 			if (info.sectionType == SECT_PARAMETERS && parentComponent!=null)
@@ -147,8 +146,10 @@ public class NedCompletionProcessor extends IncrementalCompletionProcessor {
 					addProposals(viewer, documentOffset, result, NedHelper.proposedNedGateTypes, null);
 	
 			// provide global start keywords and section names
-	    	if (info.sectionType==SECT_GLOBAL || info.sectionType==SECT_TYPES)
+	    	if (info.sectionType==SECT_GLOBAL || info.sectionType==SECT_TYPES) {
 				addProposals(viewer, documentOffset, result, NedHelper.proposedNedGlobalStartingKeywords, null);
+			    addProposals(viewer, documentOffset, result, NedHelper.proposedNedGlobalTempl);
+	    	}
 	    	else if (info.sectionType==SECT_PARAMETERS || info.sectionType==SECT_GATES || 
 					info.sectionType==SECT_TYPES || info.sectionType==SECT_SUBMODULES) { 
 	    		addProposals(viewer, documentOffset, result, NedHelper.proposedNedSectionNameKeywords, null);

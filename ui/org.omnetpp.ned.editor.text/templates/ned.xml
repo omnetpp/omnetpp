@@ -3,12 +3,12 @@
 
 <template context="org.omnetpp.ned.editor.text.default"
 id="org.omnetpp.ned.editor.text.template.import"
-name="import" description="import a NED file" 
+name="custom template: import" description="import a NED file" 
 ><![CDATA[import "${file_name}";${cursor}]]></template>
 
 <template context="org.omnetpp.ned.editor.text.default" 
 id="org.omnetpp.ned.editor.text.template.createsimple" 
-name="simple" description="create a simple module" 
+name="custom template: simple" description="create a simple module" 
 >simple ${module_name}
 	parameters: ${cursor}
 	gates: ${cursor}
@@ -16,7 +16,7 @@ endsimple${cursor}</template>
 
 <template context="org.omnetpp.ned.editor.text.default" 
 id="org.omnetpp.ned.editor.text.template.createcompound" 
-name="module" description="create a compound module" 
+name="custom template: module" description="create a compound module" 
 >module ${module_name}
 	parameters:
 	gates:
@@ -26,40 +26,40 @@ endmodule${cursor}</template>
 
 <template context="org.omnetpp.ned.editor.text.default" 
 id="org.omnetpp.ned.editor.text.template.createnetwork" 
-name="network" description="create a network" 
+name="custom template: network" description="create a network" 
 >network ${network_name} : ${module_type}
 	parameters: ${cursor}
 endnetwork${cursor}</template>
 
 <template context="org.omnetpp.ned.editor.text.default" 
 id="org.omnetpp.ned.editor.text.template.display" 
-name="display" description="add display string" 
+name="custom template: display" description="add display string" 
 >display: "p=${x},${y},${layout};i=${icon}";${cursor}</template>
 
 <template context="org.omnetpp.ned.editor.text.default" 
 id="org.omnetpp.ned.editor.text.template.for_empty" 
-name="forloop" description="an empty for loop" 
+name="custom template: forloop" description="an empty for loop" 
 >for ${i} = ${start}..${end} do
 	${selection}
 endfor;${cursor}</template>
 
 <template context="org.omnetpp.ned.editor.text.default" 
 id="org.omnetpp.ned.editor.text.template.for_bus" 
-name="forbus" description="connect modules with a bus" 
+name="custom template: forbus" description="connect modules with a bus" 
 >for i = 0..${n}-1 do
 	${node1}.${out}[i] --> ${node2}.${in}[i];
 endfor;${cursor}</template>
 
 <template context="org.omnetpp.ned.editor.text.default" 
 id="org.omnetpp.ned.editor.text.template.for_star" 
-name="forstar" description="connect modules in a star topology" 
+name="custom template: forstar" description="connect modules in a star topology" 
 >for i = 0..${n}-1 do
 	${central}.${out}[i] --> ${satellite}[i].${in};
 endfor;${cursor}</template>
 
 <template context="org.omnetpp.ned.editor.text.default" 
 id="org.omnetpp.ned.editor.text.template.for_bintree" 
-name="forbintree" description="connect modules in a binary tree topology" 
+name="custom template: forbintree" description="connect modules in a binary tree topology" 
 >for i = 0..2^(${height}-1)-2 do
 	${node}[i].${downleft} --> ${node}[2*i+1].${fromupper};
 	${node}[i].${downright} --> ${node}[2*i+2].${fromupper};
@@ -67,28 +67,28 @@ endfor;${cursor}</template>
 
 <template context="org.omnetpp.ned.editor.text.default" 
 id="org.omnetpp.ned.editor.text.template.for_chain" 
-name="forchain" description="connect modules in a chain topology" 
+name="custom template: forchain" description="connect modules in a chain topology" 
 >for i = 0..${n}-2 do
 	${node}[i].${out} --> ${node}[i+1].${in};
 endfor;${cursor}</template>
 
 <template context="org.omnetpp.ned.editor.text.default" 
 id="org.omnetpp.ned.editor.text.template.for_fullgraph" 
-name="forfullgraph" description="connect modules in a full graph topology" 
+name="custom template: forfullgraph" description="connect modules in a full graph topology" 
 >for i = 0..${n}-1, j=0..${n}-1 do
 	${node}[i].${out}[j] --> ${node}[j].${in}[i] if i!=j;
 endfor;${cursor}</template>
 
 <template context="org.omnetpp.ned.editor.text.default" 
 id="org.omnetpp.ned.editor.text.template.for_randomgraph" 
-name="forrandomgraph" description="connect modules in a random graph topology" 
+name="custom template: forrandomgraph" description="connect modules in a random graph topology" 
 ><![CDATA[for i = 0..${n}-1, j=0..${n}-1 do
 	${node}[i].${out}[j] --> ${node}[j].${in}[i] if i!=j && uniform(0,1) < ${connectedness};
 endfor;${cursor}]]></template>
 
 <template context="org.omnetpp.ned.editor.text.default" 
 id="org.omnetpp.ned.editor.text.template.for_mesh" 
-name="formesh" description="connect modules in a mesh topology" 
+name="custom template: formesh" description="connect modules in a mesh topology" 
 >for i=0..${height}-1, j=0..${width}-1 do
 	${node}[i*${width}+j].${down} --> ${node}[(i+1)*${width}+j].${up} if i!=${height}-1;
 	${node}[i*${width}+j].${right} --> ${node}[i*${width}+j+1].${left} if j!=${width}-1;
@@ -96,7 +96,7 @@ endfor;${cursor}</template>
 
 <template context="org.omnetpp.ned.editor.text.default" 
 id="org.omnetpp.ned.editor.text.template.for_hexgrid" 
-name="forhexgrid" description="connect modules in a hexagonal grid topology" 
+name="custom template: forhexgrid" description="connect modules in a hexagonal grid topology" 
 ><![CDATA[for i = 0 .. ${rows}*${cols}-1 do
 	${node}[i].${n} <-- ${node}[i-2*${cols}].${s} if i+1>2*${cols};
 	${node}[i].${nw} <-- ${node}[${cols}-(i/${cols}+1)%2].${se} if i%(2*${cols})!=0 && i+1>${cols};
@@ -105,7 +105,7 @@ endfor;${cursor}]]></template>
 
 <template context="org.omnetpp.ned.editor.text.default" 
 id="org.omnetpp.ned.editor.text.template.for_ring" 
-name="forring" description="connect modules in a ring topology" 
+name="custom template: forring" description="connect modules in a ring topology" 
 >for i = 0..${n}-1 do
 	${node}[i].${out} --> ${node}[(i+1) % ${n}].${in};
 endfor;${cursor}</template>
