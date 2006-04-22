@@ -35,6 +35,7 @@ void NEDTools::repairNEDElementTree(NEDElement *tree)
             break; // we can't help if root node is wrong
 
         // throw out problem node, and try again
+        //printf("DBG: repairNEDElementTree: discarding <%s>\n", errnode->getTagName());
         errnode->getParent()->removeChild(errnode);
     }
 }

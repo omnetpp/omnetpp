@@ -31,6 +31,7 @@
 #include "ned2generator.h"
 #include "ned1generator.h"
 #include "xmlgenerator.h"
+#include "nedtools.h"
 //XXX #include "cppgenerator.h"
 //XXX #include "nedcompiler.h"
 #include "platdep/misc.h"
@@ -174,6 +175,8 @@ bool processFile(const char *fname, NEDErrorStore *errors)
 //        delete tree;
 //        return false;
 //    }
+
+NEDTools::repairNEDElementTree(tree);
 
     // DTD validation and additional basic validation
     NEDDTDValidator dtdvalidator(errors);

@@ -45,7 +45,7 @@ class NEDErrorStore
         /**
          * Ctor
          */
-        NEDErrorStore() {}
+        NEDErrorStore() {doprint = false;}
         ~NEDErrorStore() {}
 
         /**

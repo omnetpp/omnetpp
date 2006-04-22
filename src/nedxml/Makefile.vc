@@ -298,6 +298,7 @@ tmp_nedtool.obj: tmp_nedtool.cc \
   ned2generator.h \
   ned1generator.h \
   xmlgenerator.h \
+  nedtools.h \
   ../utils/ver.h \
   nedelement.h \
   nedyydefs.h \
