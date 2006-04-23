@@ -99,6 +99,13 @@ void NEDXMLGenerator::doGenerate(ostream& out, NEDElement *node, int level)
         out << " src-loc=\"";
         printAttrValue(out, node->getSourceLocation());
         out << "\"";
+
+        const NEDSourceRegion& r = node->getSourceRegion();
+        if (r.startLine>0) // filled in
+        {
+            out << " src-region=\"" << r.startLine << ":" << r.startColumn << "-"
+                << r.endLine << ":" << r.endColumn << "\"";
+        }
     }
 
     // output attributes, but only if they differ from their default values
