@@ -149,6 +149,16 @@ void NEDElement::setSourceLocation(const char *loc)
     srcloc = loc;
 }
 
+const NEDSourceRegion& NEDElement::getSourceRegion() const
+{
+    return srcregion;
+}
+
+void NEDElement::setSourceRegion(const NEDSourceRegion& region)
+{
+    srcregion = region;
+}
+
 int NEDElement::lookupAttribute(const char *attr) const
 {
     int n = getNumAttributes();

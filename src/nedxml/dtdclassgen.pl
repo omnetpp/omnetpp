@@ -599,14 +599,21 @@ print VAL_CC "}\n\n";
 
 print VAL_CC "void  NEDValidatorBase::validateElement(NEDElement *node)\n";
 print VAL_CC "{\n";
-print VAL_CC "    switch (node->getTagCode()) {\n";
+print VAL_CC "    try {\n";
+print VAL_CC "        switch (node->getTagCode()) {\n";
 foreach $element (@elements)
 {
     $element =~ /^(.)/;
     $startletter = $1;
-    print VAL_CC "        case $enumname{$element}: validateElement(($elementclass{$element} *) node); break;\n";
+    print VAL_CC "            case $enumname{$element}: validateElement(($elementclass{$element} *) node); break;\n";
 }
-print VAL_CC "        default: INTERNAL_ERROR1(node,\"validateElement(): unknown tag '%s'\", node->getTagName());\n";
+print VAL_CC "            default: INTERNAL_ERROR1(node,\"validateElement(): unknown tag '%s'\", node->getTagName());\n";
+print VAL_CC "        }\n";
+print VAL_CC "    }\n";
+print VAL_CC "    catch (NEDException *e)\n";
+print VAL_CC "    {\n";
+print VAL_CC "        INTERNAL_ERROR1(node,\"validateElement(): NEDException: %s\", e->errorMessage());\n";
+print VAL_CC "        delete e;\n";
 print VAL_CC "    }\n";
 print VAL_CC "}\n\n";
 

@@ -42,6 +42,22 @@ class NEDElementUserData
     virtual ~NEDElementUserData() {}
 };
 
+
+/**
+ * Stores a line:col..line:col region in a source file. Used for mapping
+ * NEDElements back to the source code.
+ *
+ * @ingroup Data
+ */
+struct NEDSourceRegion
+{
+    NEDSourceRegion() {startLine=startColumn=endLine=endColumn=0;}
+    int startLine;
+    int startColumn;
+    int endLine;
+    int endColumn;
+};
+
 /**
  * Base class for objects in a NED object tree, the XML-based
  * in-memory representation for NED files. An instance of a NEDElement
@@ -56,6 +72,7 @@ class NEDElement
   private:
     long id;
     std::string srcloc;
+    NEDSourceRegion srcregion;
     NEDElement *parent;
     NEDElement *firstchild;
     NEDElement *lastchild;
@@ -129,6 +146,18 @@ class NEDElement
      * where this element originally came from). Called by the (NED/XML) parser.
      */
     virtual void setSourceLocation(const char *loc);
+
+    /**
+     * Returns the source region, containing a line:col region in the source file
+     * that corresponds to this element.
+     */
+    virtual const NEDSourceRegion& getSourceRegion() const;
+
+    /**
+     * Sets source region, containing a line:col region in the source file
+     * that corresponds to this element. Called by the (NED/XML) parser.
+     */
+    virtual void setSourceRegion(const NEDSourceRegion& region);
     //@}
 
     /** @name Generic access to attributes (Methods have to be redefined in subclasses!) */
