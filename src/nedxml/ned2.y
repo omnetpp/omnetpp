@@ -576,7 +576,6 @@ opt_paramblock
           opt_params
                 { storePos(ps.parameters, @$); }
         ;
-/////////////////////////// storePos done up to here //////////////////////////////////
 
 opt_params
         : params
@@ -613,6 +612,7 @@ paramgroup
                     ps.inGroup = false;
                     if ($1)
                         ps.paramgroup->appendChild($1); // append optional condition
+                    storePos(ps.paramgroup, @$);
                 }
         ;
 
@@ -625,10 +625,25 @@ param
                 {
                   ps.propertyscope.pop();
                   if (ps.inGroup && $4)
-                       np->getErrors()->add(ps.param,"conditional parameters inside parameter/property groups are not allowed");
+                      np->getErrors()->add(ps.param,"conditional parameters inside parameter/property groups are not allowed");
+                  if ($4 && ps.param->getType()!=NED_PARTYPE_NONE)
+                      np->getErrors()->add(ps.param,"parameter declaration cannot be conditional");
                   if ($4)
                       ps.param->appendChild($4); // append optional condition
-                      // FIXME typename and "if" cannot occur together!!!
+                  storePos(ps.param, @$);
+                }
+        | pattern_value
+                {
+                  ps.propertyscope.push(ps.pattern);
+                }
+          opt_inline_properties opt_condition ';'
+                {
+                  ps.propertyscope.pop();
+                  if (ps.inGroup && $4)
+                       np->getErrors()->add(ps.pattern,"conditional parameters inside parameter/property groups are not allowed");
+                  if ($4)
+                      ps.pattern->appendChild($4); // append optional condition
+                  storePos(ps.pattern, @$);
                 }
         ; /* no error recovery rule -- see discussion at top */
 
@@ -666,13 +681,17 @@ param_typenamevalue
                   addExpression(ps.param, "value",@3,$3);
                   ps.param->setIsDefault(ps.isDefault);
                 }
-        | '/' pattern '/' '=' paramvalue
+        ;
+
+pattern_value
+        : '/' pattern '/' '=' paramvalue
                 {
                   ps.pattern = (PatternNode *)createNodeWithTag(NED_PATTERN, ps.inGroup ? (NEDElement *)ps.paramgroup : (NEDElement *)ps.parameters);
                   ps.pattern->setPattern(toString(@2));
                   addExpression(ps.pattern, "value",@5,$5);
                   ps.pattern->setIsDefault(ps.isDefault);
                 }
+        ;
 
 paramtype
         : DOUBLETYPE
@@ -746,6 +765,7 @@ property
                        np->getErrors()->add(ps.param,"conditional properties inside parameter/property groups are not allowed");
                   if ($2)
                       ps.property->appendChild($2); // append optional condition
+                  storePos(ps.property, @$);
                 }
         ; /* no error recovery rule -- see discussion at top */
 
@@ -778,11 +798,13 @@ property_key
                   ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
                   ps.propkey->setKey(toString(@1));
                   ps.propkey->appendChild($3);
+                  storePos(ps.propkey, @$);
                 }
         | property_value
                 {
                   ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
                   ps.propkey->appendChild($1);
+                  storePos(ps.propkey, @$);
                 }
         ;
 
@@ -820,6 +842,7 @@ gateblock
                 }
           opt_gates
                 {
+                  storePos(ps.gates, @$);
                 }
         ;
 
@@ -857,6 +880,7 @@ gategroup
                     ps.inGroup = false;
                     if ($1)
                         ps.gategroup->appendChild($1); // append optional condition
+                    storePos(ps.gategroup, @$);
                 }
         ;
 
@@ -872,10 +896,12 @@ gate
                 {
                   ps.propertyscope.pop();
                   if (ps.inGroup && $4)
-                       np->getErrors()->add(ps.param,"conditional gates inside gate groups are not allowed");
+                       np->getErrors()->add(ps.gate,"conditional gates inside gate groups are not allowed");
+                  if ($4 && ps.gate->getType()!=NED_GATETYPE_NONE)
+                      np->getErrors()->add(ps.gate,"gate declaration cannot be conditional");
                   if ($4)
                       ps.gate->appendChild($4); // append optional condition
-                      // FIXME typename and "if" cannot occur together!!!
+                  storePos(ps.gate, @$);
                 }
         ; /* no error recovery rule -- see discussion at top */
 
@@ -943,6 +969,7 @@ typeblock
            opt_localtypes
                 {
                   ps.inTypes = false;
+                  storePos(ps.types, @$);
                 }
         ;
 
@@ -983,6 +1010,7 @@ submodblock
                 }
           opt_submodules
                 {
+                  storePos(ps.submods, @$);
                 }
         ;
 
@@ -1015,6 +1043,7 @@ submodule
                 {
                   ps.blockscope.pop();
                   ps.propertyscope.pop();
+                  storePos(ps.submod, @$);
                 }
         ; /* no error recovery rule -- see discussion at top */
 
@@ -1087,6 +1116,7 @@ connblock
                 }
           opt_connections
                 {
+                  storePos(ps.conns, @$);
                 }
         | CONNECTIONS ':'
                 {
@@ -1096,6 +1126,7 @@ connblock
                 }
           opt_connections
                 {
+                  storePos(ps.conns, @$);
                 }
         ;
 
@@ -1117,9 +1148,10 @@ connectionsitem
                   if (ps.chanspec)
                       ps.conn->appendChild(ps.conn->removeChild(ps.chanspec)); // move channelspec to conform DTD
                   if (ps.inGroup && $2)
-                       np->getErrors()->add(ps.param,"conditional connections inside connection groups are not allowed");
+                       np->getErrors()->add(ps.conn,"conditional connections inside connection groups are not allowed");
                   if ($2)
                       ps.conn->appendChild($2);
+                  storePos(ps.conn, @$);
                 }
         ; /* no error recovery rule -- see discussion at top */
 
@@ -1136,6 +1168,7 @@ connectiongroup  /* note: semicolon at end is mandatory (cannot be opt_semicolon
                   ps.inGroup = false;
                   ps.conngroup->appendChild(ps.where);  // XXX appendChild($1) crashes, $1 being NULL (???)
                   ps.where->setAtFront(true);
+                  storePos(ps.conngroup, @$);
                 }
         | '{'
                 {
@@ -1149,6 +1182,7 @@ connectiongroup  /* note: semicolon at end is mandatory (cannot be opt_semicolon
                   ps.inGroup = false;
                   if ($5)
                       ps.conngroup->appendChild($5);
+                  storePos(ps.conngroup, @$);
                 }
         ;
 
@@ -1166,6 +1200,9 @@ whereclause
                   ps.where->setAtFront(false); // by default
                 }
           whereitems
+                {
+                  storePos(ps.where, @$);
+                }
         ;
 
 whereitems
@@ -1178,6 +1215,7 @@ whereitem
                 {
                   ps.condition = (ConditionNode *)createNodeWithTag(NED_CONDITION, ps.where);
                   addExpression(ps.condition, "condition",@1,$1);
+                  storePos(ps.condition, @$);
                 }
         | loop
         ;
@@ -1189,6 +1227,7 @@ loop
                   addExpression(ps.loop, "from-value",@3,$3);
                   addExpression(ps.loop, "to-value",@5,$5);
                   //setComments(ps.loop,@1,@5);
+                  storePos(ps.loop, @$);
                 }
         ;
 
@@ -1371,6 +1410,7 @@ channelspec
           '}'
                 {
                   ps.propertyscope.pop();
+                  storePos(ps.chanspec, @$);
                 }
         ;
 
@@ -1414,6 +1454,7 @@ condition
                 {
                   ps.condition = (ConditionNode *)createNodeWithTag(NED_CONDITION);
                   addExpression(ps.condition, "condition",@2,$2);
+                  storePos(ps.condition, @$);
                   $$ = ps.condition;
                 }
         ;
@@ -1441,6 +1482,7 @@ expression
 /*
  * Expressions
  */
+/* FIXME TBD: storePos() stuff for expressions */
 xmldocvalue
         : XMLDOC '(' stringliteral ',' stringliteral ')'
                 { if (np->getParseExpressionsFlag()) $$ = createFunction("xmldoc", $3, $5); }
