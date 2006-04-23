@@ -146,7 +146,7 @@ const char *NEDElement::getSourceLocation() const
 
 void NEDElement::setSourceLocation(const char *loc)
 {
-    srcloc = loc;
+    srcloc = loc ? loc : "";
 }
 
 const NEDSourceRegion& NEDElement::getSourceRegion() const
