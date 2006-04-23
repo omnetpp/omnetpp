@@ -2,6 +2,7 @@ package org.omnetpp.resources;
 
 import java.util.Set;
 
+import org.eclipse.core.resources.IFile;
 import org.omnetpp.ned2.model.NEDElement;
 
 /**
@@ -18,6 +19,19 @@ public interface INEDComponent {
 	 * Returns underlying NEDElement subtree.
 	 */
 	public NEDElement getNEDElement();
+
+	/**
+	 * Returns NED file containing the definition. 
+	 */
+	public IFile getNEDFile();
+
+	/**
+	 * Returns the list of nesting NED elements that extend over the given line:column
+	 * in the source file. The list contains the component's root node as well.
+	 * Returns null if there is no match (the component's declaration doesn't contain
+	 * the given line:column, or source region info is missing from the NEDElement tree).
+	 */
+	public NEDElement[] getNEDElementsAt(int line, int column);
 	
 	// TODO comment!
 	// these methods are for members declared on this component (ie exluding inherited ones)

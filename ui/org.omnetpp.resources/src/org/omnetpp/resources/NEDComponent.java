@@ -5,8 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.NEDSourceRegion;
 import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned2.model.pojo.ChannelNode;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
@@ -27,6 +29,7 @@ public class NEDComponent implements INEDComponent, NEDElementTags {
 	protected INEDComponentResolver resolver;
 	
 	protected NEDElement componentNode;
+	protected IFile file;
 	
 	// own stuff
 	protected HashMap<String, NEDElement> ownProperties = new HashMap<String, NEDElement>();
@@ -52,10 +55,12 @@ public class NEDComponent implements INEDComponent, NEDElementTags {
 	/**
 	 * Constructor
 	 * @param node NEDElement tree to be wrapped
+	 * @param nedfile file containing the definition
 	 * @param res will be used to resolve inheritance (collect gates, params etc from base classes)
 	 */
-	public NEDComponent(NEDElement node, INEDComponentResolver res) {
+	public NEDComponent(NEDElement node, IFile nedfile, INEDComponentResolver res) {
 		resolver = res;
+		file = nedfile;
 		componentNode = node;
 		
 		// collect stuff from component declaration
@@ -166,6 +171,33 @@ public class NEDComponent implements INEDComponent, NEDElementTags {
 	/* INEDComponent method */
 	public NEDElement getNEDElement() {
 		return componentNode;
+	}
+
+	/* INEDComponent method */
+	public IFile getNEDFile() {
+		return file;
+	}
+
+	/* INEDComponent method */
+	public NEDElement[] getNEDElementsAt(int line, int column) {
+		ArrayList<NEDElement> list = new ArrayList<NEDElement>();
+		NEDSourceRegion region = componentNode.getSourceRegion();
+		if (region!=null && region.contains(line, column)) {
+			list.add(componentNode);
+			collectNEDElements(componentNode, line, column, list);
+			return list.toArray(new NEDElement[list.size()]);
+		}
+		return null;
+	}
+	
+	private void collectNEDElements(NEDElement node, int line, int column, ArrayList<NEDElement> list) {
+		for (NEDElement child : node) {
+			NEDSourceRegion region = child.getSourceRegion();
+			if (region!=null && region.contains(line, column)) {
+				list.add(child);
+				collectNEDElements(child, line, column, list); // children fall inside parent's region
+			}
+		}
 	}
 
 	/* INEDComponent method */

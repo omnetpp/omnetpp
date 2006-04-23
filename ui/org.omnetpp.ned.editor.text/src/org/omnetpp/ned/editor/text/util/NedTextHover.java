@@ -1,6 +1,8 @@
 package org.omnetpp.ned.editor.text.util;
 
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
@@ -9,8 +11,12 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.rules.IWordDetector;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IFileEditorInput;
 import org.omnetpp.ned.editor.text.NedHelper;
 import org.omnetpp.ned2.model.ModelUtil;
+import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.NEDSourceRegion;
 import org.omnetpp.resources.INEDComponent;
 import org.omnetpp.resources.NEDResources;
 import org.omnetpp.resources.NEDResourcesPlugin;
@@ -18,20 +24,30 @@ import org.omnetpp.resources.NEDResourcesPlugin;
 /**
  * Example implementation for an <code>ITextHover</code> which hovers over NED code.
  */
+// TODO for the "F2 to focus" stuff, see ITextHoverExtension & IInformationControlCreator
 public class NedTextHover implements ITextHover {
+
+	private IEditorPart editor = null; // because NEDReconcileStrategy will need IFile from editorInput
+	
+	public NedTextHover(IEditorPart editor) {
+		this.editor = editor;
+	}
 
 	public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {
 		String word = getWordUnderCursor(textViewer, hoverRegion, NedHelper.nedWordDetector);
 
 		// if we find a NED component with that name, display its source code
-		// TODO for the "F2 to focus" stuff, see ITextHoverExtension & IInformationControlCreator
 		NEDResources res = NEDResourcesPlugin.getNEDResources();    	
 		INEDComponent component = res.getComponent(word);
 		if (component!=null)
 			return ModelUtil.generateNedSource(component.getNEDElement(), true);
 
+		//XXX just for debugging
+		return getNEDElementsUnderCursor(textViewer, hoverRegion);
+		
 		// otherwise, give up (TODO we might try harder though, ie using context info)
-		return word; //+": not a NED module, channel or interface";
+		//return "";
+		//return word;
 		
 //XXX
 //        String msg = "Default";
@@ -60,7 +76,47 @@ public class NedTextHover implements ITextHover {
 //		}
 //		return NedEditorMessages.getString("NedTextHover.emptySelection"); //$NON-NLS-1$
 	}
+
+	private String getNEDElementsUnderCursor(ITextViewer textViewer, IRegion hoverRegion) {
+		try {
+			// find out line:column
+			NEDResources res = NEDResourcesPlugin.getNEDResources();    	
+			IDocument docu = textViewer.getDocument();
+			int line = docu.getLineOfOffset(hoverRegion.getOffset());
+			int column = hoverRegion.getOffset() - docu.getLineOffset(line);
+			line++;  // IDocument is 0-based
+			
+			// find out file
+			Assert.isTrue(editor.getEditorInput() instanceof IFileEditorInput); // NEDEditor only accepts file input
+			IFile file = ((IFileEditorInput)editor.getEditorInput()).getFile();
+			
+			// find component and NEDElements under the cursor 
+			INEDComponent c = res.getComponentAt(file, line);
+			String result = "";
+			if (c!=null) {
+				NEDElement[] nodes = c.getNEDElementsAt(line, column);
+				if (nodes!=null) {
+					for (int i=nodes.length-1; i>=0; i--) {
+						result += "<"+nodes[i].getTagName()+">: "+getDocumentRegion(docu, nodes[i].getSourceRegion())+"\n----------\n";
+					}
+				}
+			}
+			return result;
+		} catch (BadLocationException e) {
+			return null;
+		}
+	}
 	
+	private String getDocumentRegion(IDocument docu, NEDSourceRegion region) {
+		try {
+			int startOffset = docu.getLineOffset(region.startLine-1)+region.startColumn;
+			int endOffset = docu.getLineOffset(region.endLine-1)+region.endColumn;
+			return docu.get(startOffset, endOffset-startOffset);
+		} catch (BadLocationException e) {
+			return null;
+		}
+	}
+    
 	private String getWordUnderCursor(ITextViewer viewer, IRegion region, IWordDetector wordDetector) {
 		try {
 			// if mouse hovers over a selection, return that
@@ -91,10 +147,9 @@ public class NedTextHover implements ITextHover {
 				length++;
 			
 			return docu.get(offset, length);
-		
 		} catch (BadLocationException e) {
+			return null;
 		}
-		return null;
 	}
 
 	public IRegion getHoverRegion(ITextViewer textViewer, int offset) {

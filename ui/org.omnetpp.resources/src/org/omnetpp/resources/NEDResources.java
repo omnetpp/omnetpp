@@ -12,6 +12,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.omnetpp.ned2.model.ModelUtil;
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.NEDSourceRegion;
 import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned2.model.pojo.ChannelNode;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
@@ -48,7 +49,6 @@ public class NEDResources implements INEDComponentResolver {
 	
 	// table of toplevel components (points into nedFiles trees)
 	private HashMap<String, INEDComponent> components = new HashMap<String, INEDComponent>();
-	private HashMap<String, IFile> componentFiles = new HashMap<String, IFile>();
 
 	// tables of toplevel components, classified (points into nedFiles trees)
     boolean needsRehash = false;  // if tables below need to be rebuilt
@@ -69,6 +69,20 @@ public class NEDResources implements INEDComponentResolver {
 	 */
 	public NEDElement getNEDFileContents(IFile file) {
 		return nedFiles.get(file);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.omnetpp.resources.INEDComponentResolver#getComponentAt(org.eclipse.core.resources.IFile, int)
+	 */
+	public INEDComponent getComponentAt(IFile file, int lineNumber) {
+		for (INEDComponent component : components.values()) {
+			if (component.getNEDFile()==file) {
+				NEDSourceRegion region = component.getNEDElement().getSourceRegion();
+				if (region!=null && region.containsLine(lineNumber))
+					return component;
+			}
+		}
+		return null;
 	}
 
 	/* (non-Javadoc)
@@ -307,7 +321,6 @@ public class NEDResources implements INEDComponentResolver {
 		if (!needsRehash)
 			return;
 		components.clear();
-		componentFiles.clear();
 		channels.clear();
 		channelInterfaces.clear();
 		modules.clear();
@@ -354,7 +367,7 @@ public class NEDResources implements INEDComponentResolver {
             		if (components.containsKey(name)) {
             			// it is a duplicate: issue warning
             			try {
-                			IFile otherFile = componentFiles.get(name);
+                			IFile otherFile = components.get(name).getNEDFile();
 							String message = node.getTagName()+" '"+name+"' already defined in "+otherFile.getLocation().toOSString();
 							int line = parseLineNumber(node.getSourceLocation());
 							addMarker(file, NEDCONSISTENCYPROBLEM_MARKERID, IMarker.SEVERITY_WARNING, message, line); 
@@ -362,10 +375,9 @@ public class NEDResources implements INEDComponentResolver {
 						}
             		}
             		else {
-            			INEDComponent component = new NEDComponent(node, this); 
+            			INEDComponent component = new NEDComponent(node, file, this); 
             			map.put(name, component);
             			components.put(name, component);
-            			componentFiles.put(name, file);
             		}
             	}
  			}
@@ -383,4 +395,5 @@ public class NEDResources implements INEDComponentResolver {
 		//System.out.println("rehash() took "+dt+"ms");
 		//System.out.println("memleak check: native NEDElements: "+org.omnetpp.ned2.model.swig.NEDElement.getNumExisting()+" / "+org.omnetpp.ned2.model.swig.NEDElement.getNumCreated());
 	}
+
 }

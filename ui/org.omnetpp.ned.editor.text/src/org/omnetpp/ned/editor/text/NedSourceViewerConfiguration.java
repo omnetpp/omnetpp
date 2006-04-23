@@ -111,7 +111,7 @@ public class NedSourceViewerConfiguration extends SourceViewerConfiguration {
 	}
 	
 	public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
-		return new NedTextHover();
+		return new NedTextHover(editor);
 	}
 
 	@Override

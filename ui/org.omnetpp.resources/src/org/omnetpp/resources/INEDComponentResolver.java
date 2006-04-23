@@ -19,6 +19,13 @@ public interface INEDComponentResolver {
 	public abstract NEDElement getNEDFileContents(IFile file);
 
 	/**
+	 * Returns a component declated at the given file/line. The line number should 
+	 * point into the declaration of the component. Returns null if no such component 
+	 * was found.
+	 */
+	public abstract INEDComponent getComponentAt(IFile file, int lineNumber);
+	
+	/**
 	 * Returns all components in the NED files.
 	 */
 	public abstract Collection<INEDComponent> getAllComponents();

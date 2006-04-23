@@ -1028,6 +1028,7 @@ submodule
         : submoduleheader ';'
                 {
                   //setComments(ps.submod,@1,@2);
+                  storePos(ps.submod, @$);
                 }
         | submoduleheader '{'
                 {

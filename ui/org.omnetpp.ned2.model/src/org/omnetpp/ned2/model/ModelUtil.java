@@ -10,6 +10,7 @@ import org.omnetpp.ned2.model.swig.NEDElement;
 import org.omnetpp.ned2.model.swig.NEDErrorCategory;
 import org.omnetpp.ned2.model.swig.NEDErrorStore;
 import org.omnetpp.ned2.model.swig.NEDParser;
+import org.omnetpp.ned2.model.swig.NEDSourceRegion;
 import org.omnetpp.ned2.model.swig.NEDTools;
 
 public class ModelUtil {
@@ -112,11 +113,21 @@ public class ModelUtil {
 		for (int i = 0; i < swigNode.getNumAttributes(); ++i) {
 			pojoNode.setAttribute(i, swigNode.getAttribute(i));
 		}
+		
+		// copy source location info
 		pojoNode.setSourceLocation(swigNode.getSourceLocation());
+		NEDSourceRegion swigRegion = swigNode.getSourceRegion();
+		if (swigRegion.getStartLine()!=0) {
+            org.omnetpp.ned2.model.NEDSourceRegion pojoRegion = new org.omnetpp.ned2.model.NEDSourceRegion();
+            pojoRegion.startLine = swigRegion.getStartLine();
+            pojoRegion.startColumn = swigRegion.getStartColumn();
+            pojoRegion.endLine = swigRegion.getEndLine();
+            pojoRegion.endColumn = swigRegion.getEndColumn();
+            pojoNode.setSourceRegion(pojoRegion);
+		}
 
 		// create child nodes
-		for (NEDElement child = swigNode.getFirstChild(); child != null; child = child
-				.getNextSibling()) {
+		for (NEDElement child = swigNode.getFirstChild(); child != null; child = child.getNextSibling()) {
 			swig2pojo(child, pojoNode);
 		}
 
