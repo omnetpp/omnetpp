@@ -101,6 +101,8 @@ public class NedTextHover implements ITextHover {
 					}
 				}
 			}
+			if (result.equals("")) 
+				result= "nothing known at line "+line;
 			return result;
 		} catch (BadLocationException e) {
 			return null;
