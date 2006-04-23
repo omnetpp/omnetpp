@@ -229,7 +229,9 @@ import
  */
 propertydecl
         : propertydecl_header opt_inline_properties ';'
+                { storePos(ps.propertydecl, @$); }
         | propertydecl_header '(' opt_propertydecl_keys ')' opt_inline_properties ';'
+                { storePos(ps.propertydecl, @$); }
         ; /* no error recovery rule -- see discussion at top */
 
 propertydecl_header
@@ -256,6 +258,7 @@ propertydecl_key
                 {
                   ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.propertydecl);
                   ps.propkey->setKey(toString(@1));
+                  storePos(ps.propkey, @$);
                 }
         ;
 
@@ -264,6 +267,7 @@ propertydecl_key
  */
 fileproperty
         : property_namevalue ';'
+                { storePos(ps.property, @$); }
         ;
 
 /*
@@ -325,6 +329,7 @@ extendsname
                 {
                   ps.extends = (ExtendsNode *)createNodeWithTag(NED_EXTENDS, ps.component);
                   ps.extends->setName(toString(@1));
+                  storePos(ps.extends, @$);
                 }
         ;
 
@@ -338,6 +343,7 @@ likename
                 {
                   ps.interfacename = (InterfaceNameNode *)createNodeWithTag(NED_INTERFACE_NAME, ps.component);
                   ps.interfacename->setName(toString(@1));
+                  storePos(ps.interfacename, @$);
                 }
         ;
 
@@ -562,12 +568,15 @@ moduleinterfaceheader
  */
 opt_paramblock
         : opt_params   /* "parameters" keyword is optional */
+                { storePos(ps.parameters, @$); /* XXX delete this element if empty? */}
         | PARAMETERS ':'
                 {
                   ps.parameters->setIsImplicit(false);
                 }
           opt_params
+                { storePos(ps.parameters, @$); }
         ;
+/////////////////////////// storePos done up to here //////////////////////////////////
 
 opt_params
         : params
