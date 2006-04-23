@@ -59,6 +59,16 @@ NEDElement *createNodeWithTag(int tagcode, NEDElement *parent)
     return e;
 }
 
+void storePos(NEDElement *node, YYLTYPE pos)
+{
+   NEDSourceRegion region;
+   region.startLine = pos.first_line;
+   region.startColumn = pos.first_column;
+   region.endLine = pos.last_line;
+   region.endColumn = pos.last_column;
+   node->setSourceRegion(region);
+}
+
 //
 // Properties
 //

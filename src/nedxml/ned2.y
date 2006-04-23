@@ -219,6 +219,7 @@ import
                 {
                   ps.import = (ImportNode *)createNodeWithTag(NED_IMPORT, ps.nedfile);
                   ps.import->setFilename(toString(trimQuotes(@2)));
+                  storePos(ps.import,@$);
                   //setComments(ps.import,@1);
                 }
         ; /* no error recovery rule -- see discussion at top */
@@ -286,9 +287,10 @@ channeldefinition
                   setTrailingComment(ps.component,@4);
                   if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
+                  storePos(ps.component, @$);
                 }
         | channelheader error '}' /* error recovery rule */
-                { restoreGlobalParserState(); }
+                { storePos(ps.component, @$); restoreGlobalParserState(); }
         | CHANNEL error '}' /* error recovery rule */
                 { restoreGlobalParserState(); }
         ;
@@ -360,9 +362,10 @@ channelinterfacedefinition
                   setTrailingComment(ps.component,@4);
                   if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
+                  storePos(ps.component, @$);
                 }
         | channelinterfaceheader error '}' /* error recovery rule */
-                { restoreGlobalParserState(); }
+                { storePos(ps.component, @$); restoreGlobalParserState(); }
         | CHANNELINTERFACE error '}' /* error recovery rule */
                 { restoreGlobalParserState(); }
         ;
@@ -409,9 +412,10 @@ simplemoduledefinition
                   setTrailingComment(ps.component,@6);
                   if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
+                  storePos(ps.component, @$);
                 }
         | simplemoduleheader error '}' /* error recovery rule */
-                { restoreGlobalParserState(); }
+                { storePos(ps.component, @$); restoreGlobalParserState(); }
         | SIMPLE error '}' /* error recovery rule */
                 { restoreGlobalParserState(); }
         ;
@@ -451,9 +455,10 @@ compoundmoduledefinition
                   setTrailingComment(ps.component,@9);
                   if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
+                  storePos(ps.component, @$);
                 }
         | compoundmoduleheader error '}' /* error recovery rule */
-                { restoreGlobalParserState(); }
+                { storePos(ps.component, @$); restoreGlobalParserState(); }
         | MODULE error '}' /* error recovery rule */
                 { restoreGlobalParserState(); }
         ;
@@ -493,9 +498,10 @@ networkdefinition
                   setTrailingComment(ps.component,@5);
                   if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
+                  storePos(ps.component, @$);
                 }
         | networkheader error '}' /* error recovery rule */
-                { restoreGlobalParserState(); }
+                { storePos(ps.component, @$); restoreGlobalParserState(); }
         | NETWORK error '}' /* error recovery rule */
                 { restoreGlobalParserState(); }
         ;
@@ -533,9 +539,10 @@ moduleinterfacedefinition
                   setTrailingComment(ps.component,@6);
                   if (np->getStoreSourceFlag())
                       storeComponentSourceCode(ps.component, @$);
+                  storePos(ps.component, @$);
                 }
         | moduleinterfaceheader error '}' /* error recovery rule */
-                { restoreGlobalParserState(); }
+                { storePos(ps.component, @$); restoreGlobalParserState(); }
         | INTERFACE error '}' /* error recovery rule */
                 { restoreGlobalParserState(); }
         ;
