@@ -302,8 +302,10 @@ public class NEDResources implements INEDComponentResolver {
 	 * Rebuild hash tables after NED resource change. Note: some errors 
 	 * such as duplicate names only get detected when this gets run! 
 	 */
-	private void rehash() {
+	private synchronized void rehash() {
 		//long startMillis = System.currentTimeMillis();
+		if (!needsRehash)
+			return;
 		components.clear();
 		componentFiles.clear();
 		channels.clear();

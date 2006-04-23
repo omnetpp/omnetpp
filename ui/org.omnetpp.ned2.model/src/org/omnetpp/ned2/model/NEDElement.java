@@ -18,13 +18,14 @@ public abstract class NEDElement extends PlatformObject implements Iterable<NEDE
 {
 	private long id;
 	private String srcloc;
+	private NEDSourceRegion srcregion;
 	private NEDElement parent;
 	private NEDElement firstchild;
 	private NEDElement lastchild;
 	private NEDElement prevsibling;
 	private NEDElement nextsibling;
 	private static long lastid;
-    private HashMap userData;
+    private HashMap<Object,Object> userData;
     
     private transient NEDChangeListenerList listeners = null;
 
@@ -167,7 +168,23 @@ public abstract class NEDElement extends PlatformObject implements Iterable<NEDE
 		srcloc = loc;
 	}
 
-	/**
+    /**
+     * Returns the source region, containing a line:col region in the source file
+     * that corresponds to this element.
+     */
+	public NEDSourceRegion getSourceRegion() {
+		return srcregion;
+	}
+
+    /**
+     * Sets source region, containing a line:col region in the source file
+     * that corresponds to this element. Info comes from the NED parser.
+     */
+	public void setSourceRegion(NEDSourceRegion region) {
+		srcregion = region;
+	}
+
+    /**
 	 * Sets every attribute to its default value (as returned by getAttributeDefault()).
 	 * Attributes without a default value are not affected.
 	 *
@@ -576,7 +593,7 @@ public abstract class NEDElement extends PlatformObject implements Iterable<NEDE
      */
     public void setUserData(Object key, Object value) {
         if (userData == null)
-            userData = new HashMap();
+            userData = new HashMap<Object,Object>();
         if(value != null)
             userData.put(key, value);
         else 
