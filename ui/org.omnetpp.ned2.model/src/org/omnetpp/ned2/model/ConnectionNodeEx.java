@@ -100,7 +100,7 @@ public class ConnectionNodeEx extends ConnectionNode implements IDisplayString {
 			return compMod;
 		else {
 			INedModule subMod = compMod.getSubmoduleByName(moduleName);
-			if (subMod == null) throw new IllegalArgumentException("Nonexistent submodule: "+moduleName);
+			if (subMod == null) throw new NEDElementException(this, "no such submodule: "+moduleName);
 			return subMod;
 		}
 	}

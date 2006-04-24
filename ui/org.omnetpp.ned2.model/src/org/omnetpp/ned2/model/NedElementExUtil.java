@@ -59,7 +59,7 @@ public class NedElementExUtil implements NEDElementTags, NEDElementUtil {
             !(node instanceof ChannelNode) &&
 			!(node instanceof ChannelInterfaceNode) &&
 			!(node instanceof ChannelSpecNode))
-				throw new IllegalArgumentException("Node does not support display property");
+				throw new NEDElementException(node, "Node does not support display property");
 		
         // the connection node is special because the display string is stored inside its 
         // channel spec node, so we must create that too

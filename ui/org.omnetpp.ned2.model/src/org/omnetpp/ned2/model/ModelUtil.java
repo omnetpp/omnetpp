@@ -13,9 +13,11 @@ import org.omnetpp.ned2.model.swig.NEDParser;
 import org.omnetpp.ned2.model.swig.NEDSourceRegion;
 import org.omnetpp.ned2.model.swig.NEDTools;
 
+/**
+ * Utility functions
+ */
+// FIXME if "noexistent submodule" exception is thrown, then no tree is built!
 public class ModelUtil {
-	// private static final String NED_EMF_MODEL_PACKAGE =
-	// "org.omnetpp.ned.model.emf";
 
 	/**
 	 * Generate NED code from the given NEDElement tree. The root node
@@ -90,7 +92,7 @@ public class ModelUtil {
 			//basicvalidator.validate(swigTree);
 
 			// convert tree to pure Java objects
-			org.omnetpp.ned2.model.NEDElement pojoTree = swig2pojo(swigTree, null);
+			org.omnetpp.ned2.model.NEDElement pojoTree = swig2pojo(swigTree, null, errors);
 			swigTree.delete();
 			return pojoTree;
 		} 
@@ -105,33 +107,53 @@ public class ModelUtil {
 	 * Converts a native C++ (SWIG-wrapped) NEDElement tree to a plain java tree.  
 	 * WARNING there are two different NEDElement types hadled in this function. 
 	 */
-	public static org.omnetpp.ned2.model.NEDElement swig2pojo(NEDElement swigNode, org.omnetpp.ned2.model.NEDElement parent) {
-		org.omnetpp.ned2.model.NEDElement pojoNode = NEDElementFactory.getInstance() 
-			.createNodeWithTag(swigNode.getTagCode(), parent);
+	public static org.omnetpp.ned2.model.NEDElement swig2pojo(NEDElement swigNode, org.omnetpp.ned2.model.NEDElement parent, NEDErrorStore errors) {
+		org.omnetpp.ned2.model.NEDElement pojoNode = null; 
+		try {
+			pojoNode = NEDElementFactory.getInstance().createNodeWithTag(swigNode.getTagCode(), parent);
 
-		// set the attributes
-		for (int i = 0; i < swigNode.getNumAttributes(); ++i) {
-			pojoNode.setAttribute(i, swigNode.getAttribute(i));
+			// set the attributes
+			for (int i = 0; i < swigNode.getNumAttributes(); ++i) {
+				pojoNode.setAttribute(i, swigNode.getAttribute(i));
+			}
+
+			// copy source location info
+			pojoNode.setSourceLocation(swigNode.getSourceLocation());
+			NEDSourceRegion swigRegion = swigNode.getSourceRegion();
+			if (swigRegion.getStartLine()!=0) {
+				org.omnetpp.ned2.model.NEDSourceRegion pojoRegion = new org.omnetpp.ned2.model.NEDSourceRegion();
+				pojoRegion.startLine = swigRegion.getStartLine();
+				pojoRegion.startColumn = swigRegion.getStartColumn();
+				pojoRegion.endLine = swigRegion.getEndLine();
+				pojoRegion.endColumn = swigRegion.getEndColumn();
+				pojoNode.setSourceRegion(pojoRegion);
+			}
+
+			// create child nodes
+			for (NEDElement child = swigNode.getFirstChild(); child != null; child = child.getNextSibling()) {
+				swig2pojo(child, pojoNode, errors);
+			}
+
+			return pojoNode;
+		} 
+		catch (NEDElementException e) {
+			// prepare for errors during tree building, most notably 
+			// "Nonexistent submodule" thrown from ConnectionNodeEx.
+			errors.add(swigNode, e.getMessage()); // error message
+			if (pojoNode!=null) {
+				// throw out element that caused the error.
+				// it's not so easy to get rid of a ConnectionNodeEx though.
+				// XXX build "removal support" into NEDElement instead of this ugly cast...?
+				if (pojoNode instanceof ConnectionNodeEx) {
+					ConnectionNodeEx conn = (ConnectionNodeEx)pojoNode;
+					conn.setSrcModuleRef(null);
+					conn.setDestModuleRef(null);
+				}
+				parent.removeChild(pojoNode);
+			}
+			return null;
 		}
 		
-		// copy source location info
-		pojoNode.setSourceLocation(swigNode.getSourceLocation());
-		NEDSourceRegion swigRegion = swigNode.getSourceRegion();
-		if (swigRegion.getStartLine()!=0) {
-            org.omnetpp.ned2.model.NEDSourceRegion pojoRegion = new org.omnetpp.ned2.model.NEDSourceRegion();
-            pojoRegion.startLine = swigRegion.getStartLine();
-            pojoRegion.startColumn = swigRegion.getStartColumn();
-            pojoRegion.endLine = swigRegion.getEndLine();
-            pojoRegion.endColumn = swigRegion.getEndColumn();
-            pojoNode.setSourceRegion(pojoRegion);
-		}
-
-		// create child nodes
-		for (NEDElement child = swigNode.getFirstChild(); child != null; child = child.getNextSibling()) {
-			swig2pojo(child, pojoNode);
-		}
-
-		return pojoNode;
 	}	
 
 	/**
