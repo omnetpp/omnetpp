@@ -176,7 +176,7 @@ bool processFile(const char *fname, NEDErrorStore *errors)
 //        return false;
 //    }
 
-NEDTools::repairNEDElementTree(tree);
+//NEDTools::repairNEDElementTree(tree);
 
     // DTD validation and additional basic validation
     NEDDTDValidator dtdvalidator(errors);

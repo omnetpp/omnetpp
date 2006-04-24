@@ -84,6 +84,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 #include "nedyydefs.h"
 #include "nederror.h"
 
@@ -340,9 +341,18 @@ displayblock_old
         : DISPLAY ':' STRINGCONSTANT ';'
                 {
                   ps.property = addComponentProperty(ps.module, "display");
+                  ps.params = (ParametersNode *)ps.module->getFirstChildWithTag(NED_PARAMETERS); // previous line doesn't set it
                   ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
                   LiteralNode *literal = createLiteral(NED_CONST_STRING, trimQuotes(@3), @3);
                   ps.propkey->appendChild(literal);
+
+                  // move parameters section in front of potential gates section
+                  if (ps.params && ps.module->getFirstChild()!=ps.params)
+                  {
+                      assert(ps.params->getParent()==ps.module);
+                      ps.module->removeChild(ps.params);
+                      ps.module->insertChildBefore(ps.module->getFirstChild(), ps.params);
+                  }
                 }
         ;
 
@@ -710,9 +720,18 @@ opt_submod_displayblock_old
         : DISPLAY ':' STRINGCONSTANT ';'
                 {
                   ps.property = addComponentProperty(ps.submod, "display");
+                  ps.substparams = (ParametersNode *)ps.submod->getFirstChildWithTag(NED_PARAMETERS); // previous line doesn't set it
                   ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
                   LiteralNode *literal = createLiteral(NED_CONST_STRING, trimQuotes(@3), @3);
                   ps.propkey->appendChild(literal);
+
+                  // move parameters section in front of potential gatesizes section
+                  if (ps.substparams && ps.submod->getFirstChild()!=ps.substparams)
+                  {
+                      assert(ps.substparams->getParent()==ps.submod);
+                      ps.submod->removeChild(ps.substparams);
+                      ps.submod->insertChildBefore(ps.submod->getFirstChild(), ps.substparams);
+                  }
                 }
         |
         ;
