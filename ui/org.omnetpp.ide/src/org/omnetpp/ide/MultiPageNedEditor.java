@@ -18,6 +18,7 @@ import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.text.TextualNedEditor;
 import org.omnetpp.ned2.model.ModelUtil;
 import org.omnetpp.ned2.model.NedFileNodeEx;
+import org.omnetpp.resources.NEDResources;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
 /**
@@ -59,8 +60,8 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
         
 		try {
             // fill graphical editor
-            NedFileNodeEx modelRoot = 
-                (NedFileNodeEx)NEDResourcesPlugin.getNEDResources().getNEDFileContents(ifile);
+			NEDResources res = NEDResourcesPlugin.getNEDResources();
+            NedFileNodeEx modelRoot = (NedFileNodeEx)res.getNEDFileContents(ifile);
             graphEditor.setModel(modelRoot);
 
             // fill text editor
@@ -70,12 +71,12 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
             textPageIndex = addPage(nedEditor, getEditorInput());
             setPageText(textPageIndex,"Text");
 
-            if (modelRoot != null)
+            // only start in graphics mode if there's no error in the file
+            if (!res.containsNEDErrors(ifile))
                 setActivePage(graphPageIndex);
             
 		} catch (PartInitException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e.printStackTrace();  //XXX handle it? let it propagate?
 		}
 	}
 	
@@ -88,6 +89,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 			return;
 		insidePageChange = true;
 
+		NEDResources res = NEDResourcesPlugin.getNEDResources();
 		if (newPageIndex == textPageIndex) { 
 			// switch from graphics to text:
 			// generate text representation from the model
@@ -95,7 +97,7 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
             IFile ifile = ((FileEditorInput)getEditorInput()).getFile();
             
             // put the actual model state back to the incremental builder
-            NEDResourcesPlugin.getNEDResources().setNEDFileContents(ifile, modelRoot);
+            res.setNEDFileContents(ifile, modelRoot);
             
             // generate the text representation
             String textEditorContent = ModelUtil.generateNedSource(modelRoot, false);
@@ -105,47 +107,43 @@ public class MultiPageNedEditor extends MultiPageEditorPart implements
 		else if (newPageIndex == graphPageIndex) { 
 			// switch from text to graphics
             IFile ifile = ((FileEditorInput)getEditorInput()).getFile();
-            NEDResourcesPlugin.getNEDResources().setNEDFileContents(ifile, nedEditor.getText());
+            res.setNEDFileContents(ifile, nedEditor.getText());
 
-            NedFileNodeEx modelRoot = 
-                (NedFileNodeEx)NEDResourcesPlugin.getNEDResources().getNEDFileContents(ifile);
+            NedFileNodeEx modelRoot = (NedFileNodeEx)res.getNEDFileContents(ifile);
 			
-            if (modelRoot != null) {
+            // only start in graphics mode if there's no error in the file
+            if (!res.containsNEDErrors(ifile)) {
 				// give the backparsed model to the graphical editor 
 				graphEditor.setModel(modelRoot);
 			}
-            // 
-			else if (!initPhase) {
+			else {
                 // this happens if the parsing was unsuccessful when we wanted to switch from text to graph mode
 				// parse error: switch back immediately to text view (we should never have 
 				// switched away from it in the first place)
 				setActivePage(textPageIndex);
 				
-				// ask user what to do
-                if (graphEditor.getModel() != null) {
-                    MessageBox messageBox = new MessageBox(getEditorSite().getShell(), 
-                            SWT.ICON_WARNING | SWT.YES | SWT.NO);
-                    messageBox.setText("Warning");
-                    messageBox.setMessage("The editor contents has syntax errors, "+
-                            "switching is only possible with losing text mode changes. "+
-                    "Do you want to revert to graphics view (and lose your changes)?"); 
-                    // XXX better dialog, with "Continue editing" and "Lose changes" buttons
-                    int buttonID = messageBox.open();
-                    if (buttonID==SWT.YES) 
-                        setActivePage(graphPageIndex);
-                } else {
-                    // there is no meaningful content inside the graphical editor, so ther is no point to switch there
-                    MessageBox messageBox = new MessageBox(getEditorSite().getShell(), 
-                            SWT.ICON_WARNING | SWT.OK);
-                    messageBox.setText("Warning");
-                    messageBox.setMessage("The editor contents has syntax errors, "+
-                            "switching is not possible. ");
-                    messageBox.open();
-                }
-			} else {
-                // parsing error occured during the initial file loading
-                setActivePage(textPageIndex);
-            }
+				//XXX old code: ask user what to do
+				//    if (graphEditor.getModel() != null) {
+				//        MessageBox messageBox = new MessageBox(getEditorSite().getShell(), 
+				//                SWT.ICON_WARNING | SWT.YES | SWT.NO);
+				//        messageBox.setText("Warning");
+				//        messageBox.setMessage("The editor contents has syntax errors, "+
+				//                "switching is only possible with losing text mode changes. "+
+				//        "Do you want to revert to graphics view (and lose your changes)?"); 
+				//        // XXX better dialog, with "Continue editing" and "Lose changes" buttons
+				//        int buttonID = messageBox.open();
+				//        if (buttonID==SWT.YES) 
+				//            setActivePage(graphPageIndex);
+				//    } else {
+
+				if (!initPhase) {
+					MessageBox messageBox = new MessageBox(getEditorSite().getShell(), SWT.ICON_WARNING | SWT.OK);
+					messageBox.setText("Warning");
+					messageBox.setMessage("The editor contents has errors, switching is not possible. "+
+					                      "Please fix the errors first.");
+					messageBox.open();
+	            }
+			}
 		}
 		insidePageChange = false;
         initPhase = false;

@@ -11,68 +11,75 @@ public interface INEDComponentResolver {
 	/**
 	 * Returns NED files in the workspace.
 	 */
-	public abstract Set<IFile> getNEDFiles();
+	public Set<IFile> getNEDFiles();
 
 	/**
-	 * Returns parsed contents of a NED file. Returns null if file was not parseable.
+	 * Returns parsed contents of a NED file. Returns a potentially incomplete tree 
+	 * if the file has parse errors; one can call containsNEDErrors() to find out 
+	 * if that is the case. 
 	 */
-	public abstract NEDElement getNEDFileContents(IFile file);
+	public NEDElement getNEDFileContents(IFile file);
 
+	/**
+	 * Returns true if the given NED file has errors.
+	 */
+	public boolean containsNEDErrors(IFile file);
+	
 	/**
 	 * Returns a component declated at the given file/line. The line number should 
 	 * point into the declaration of the component. Returns null if no such component 
 	 * was found.
 	 */
-	public abstract INEDComponent getComponentAt(IFile file, int lineNumber);
+	public INEDComponent getComponentAt(IFile file, int lineNumber);
 	
 	/**
 	 * Returns all components in the NED files.
 	 */
-	public abstract Collection<INEDComponent> getAllComponents();
+	public Collection<INEDComponent> getAllComponents();
 
 	/**
 	 * Returns all simple and compound modules in the NED files.
 	 */
-	public abstract Collection<INEDComponent> getModules();
+	public Collection<INEDComponent> getModules();
 
 	/**
 	 * Returns all channels in the NED files.
 	 */
-	public abstract Collection<INEDComponent> getChannels();
+	public Collection<INEDComponent> getChannels();
 
 	/**
 	 * Returns all module interfaces in the NED files.
 	 */
-	public abstract Collection<INEDComponent> getModuleInterfaces();
+	public Collection<INEDComponent> getModuleInterfaces();
 
 	/**
 	 * Returns all channel interfaces in the NED files.
 	 */
-	public abstract Collection<INEDComponent> getChannelInterfaces();
+	public Collection<INEDComponent> getChannelInterfaces();
 
 	/**
 	 * Returns all module names in the NED files.
 	 */
-	public abstract Set<String> getModuleNames();
+	public Set<String> getModuleNames();
 
 	/**
 	 * Returns all channel names in the NED files.
 	 */
-	public abstract Set<String> getChannelNames();
+	public Set<String> getChannelNames();
 
 	/**
 	 * Returns all module interface names in the NED files.
 	 */
-	public abstract Set<String> getModuleInterfaceNames();
+	public Set<String> getModuleInterfaceNames();
 
 	/**
 	 * Returns all channel interface names in the NED files.
 	 */
-	public abstract Set<String> getChannelInterfaceNames();
+	public Set<String> getChannelInterfaceNames();
 
 	/**
 	 * Returns a component by name.
 	 */
-	public abstract INEDComponent getComponent(String name);
+	public INEDComponent getComponent(String name);
 
 }

@@ -72,6 +72,29 @@ public class NEDResources implements INEDComponentResolver {
 	}
 
 	/* (non-Javadoc)
+	 * @see org.omnetpp.resources.INEDComponentResolver#containsNEDErrors(org.eclipse.core.resources.IFile)
+	 */
+	public boolean containsNEDErrors(IFile file) {
+        return hasErrorMarker(file, NEDPROBLEM_MARKERID) || hasErrorMarker(file, NEDCONSISTENCYPROBLEM_MARKERID);
+	}
+
+	/**
+	 * True if the file has any marker of the given marker type id (or subclass) 
+	 * with severity ERROR; or if an error occurred while checking the markers. 
+	 */
+	private boolean hasErrorMarker(IFile file, String markerType) {
+		try {
+        	IMarker[] markers = file.findMarkers(markerType, true, IFile.DEPTH_ZERO);
+        	for (IMarker marker : markers) 
+        		if (marker.getAttribute(IMarker.SEVERITY,IMarker.SEVERITY_ERROR)==IMarker.SEVERITY_ERROR)
+        			return true;
+        	return false;
+        } catch (CoreException e) {
+			return true;
+		}
+	}
+	
+	/* (non-Javadoc)
 	 * @see org.omnetpp.resources.INEDComponentResolver#getComponentAt(org.eclipse.core.resources.IFile, int)
 	 */
 	public INEDComponent getComponentAt(IFile file, int lineNumber) {
