@@ -21,7 +21,7 @@ import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.ned.editor.graph.figures.ModuleFigure;
+import org.omnetpp.ned.editor.graph.figures.CompoundModuleFigure;
 import org.omnetpp.ned.editor.graph.model.commands.AddCommand;
 import org.omnetpp.ned.editor.graph.model.commands.CloneCommand;
 import org.omnetpp.ned.editor.graph.model.commands.CreateCommand;
@@ -158,7 +158,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
         IFigure figure;
 
         if (createRequest.getNewObject() instanceof CompoundModuleNodeEx)
-            figure = new ModuleFigure();
+            figure = new CompoundModuleFigure();
         else {
             figure = new RectangleFigure();
             ((RectangleFigure) figure).setXOR(true);

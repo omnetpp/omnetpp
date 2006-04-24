@@ -7,7 +7,7 @@ import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.common.color.ColorFactory;
 
-public class ModuleBorder extends AbstractBorder {
+public class CompoundModuleBorder extends AbstractBorder {
 	
 	public final static int HEADER_HEIGHT = 42;
 

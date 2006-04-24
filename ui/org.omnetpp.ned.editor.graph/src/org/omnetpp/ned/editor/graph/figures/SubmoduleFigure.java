@@ -26,7 +26,7 @@ import org.omnetpp.ned.editor.graph.figures.properties.DisplayShapeSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayTooltipSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.LayerSupport;
 
-public class SimpleModuleFigure extends NedFigure implements HandleBounds, 
+public class SubmoduleFigure extends NedFigure implements HandleBounds, 
     DisplayRangeSupport, DisplayNameSupport, DisplayTooltipSupport, DisplayQueueSupport, 
     DisplayInfoTextSupport, DisplayCalloutSupport, DisplayShapeSupport {
 
@@ -50,7 +50,7 @@ public class SimpleModuleFigure extends NedFigure implements HandleBounds,
     protected Shape rangeFigure = new Ellipse();
     protected CalloutFigure calloutFigure = new CalloutFigure();
 
-    public SimpleModuleFigure() {
+    public SubmoduleFigure() {
         // anchors TEMPORARY
         PinnableNoncentralChopboxAnchor outputConnectionAnchor = new PinnableNoncentralChopboxAnchor(this);
         outputConnectionAnchor.setRelRefPoint(0.5, 0.8);

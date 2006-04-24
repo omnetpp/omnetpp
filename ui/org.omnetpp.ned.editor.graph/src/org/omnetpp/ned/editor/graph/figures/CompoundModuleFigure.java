@@ -17,15 +17,15 @@ import org.eclipse.gef.handles.HandleBounds;
 import org.omnetpp.ned.editor.graph.figures.properties.LayerSupport;
 import org.omnetpp.ned.editor.graph.misc.FreeformDesktopLayout;
 
-public class ModuleFigure extends NedFigure implements LayerSupport, HandleBounds {
+public class CompoundModuleFigure extends NedFigure implements LayerSupport, HandleBounds {
 
     private Layer pane;
     private LayeredPane layeredPane;
 
-    public ModuleFigure() {
+    public CompoundModuleFigure() {
         super();
         
-        setBorder(new ModuleBorder());
+        setBorder(new CompoundModuleBorder());
         setLayoutManager(new StackLayout());
 
         // create scroller and viewport to manage the scrollbars and scrolling
@@ -88,7 +88,7 @@ public class ModuleFigure extends NedFigure implements LayerSupport, HandleBound
      * @see org.eclipse.gef.handles.HandleBounds#getHandleBounds()
      */
     public Rectangle getHandleBounds() {
-        return getBounds().getCropped(new Insets(2, 0, 2, 0));
+        return getBounds().getCropped(new Insets(CompoundModuleBorder.HEADER_HEIGHT, 0, 0, 0));
     }
 
     protected PinnableNoncentralChopboxAnchor getInputConnectionAnchor(int i) {
@@ -122,7 +122,7 @@ public class ModuleFigure extends NedFigure implements LayerSupport, HandleBound
     @Override
     protected void paintFigure(Graphics graphics) {
         Rectangle rect = getBounds().getCopy();
-        rect.crop(new Insets(2, 0, 2, 0));
+        rect.crop(new Insets(CompoundModuleBorder.HEADER_HEIGHT, 0, 0, 0));
         graphics.fillRectangle(rect);
     }
 
