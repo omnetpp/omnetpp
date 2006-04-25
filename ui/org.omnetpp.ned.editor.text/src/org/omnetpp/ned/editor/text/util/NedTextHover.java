@@ -39,6 +39,7 @@ public class NedTextHover implements ITextHover {
 		// if we find a NED component with that name, display its source code
 		NEDResources res = NEDResourcesPlugin.getNEDResources();    	
 		INEDComponent component = res.getComponent(word);
+		
 		if (component!=null)
 			return ModelUtil.generateNedSource(component.getNEDElement(), true);
 

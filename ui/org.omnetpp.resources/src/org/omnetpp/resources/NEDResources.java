@@ -68,6 +68,8 @@ public class NEDResources implements INEDComponentResolver {
 	 * @see org.omnetpp.resources.INEDComponentResolver#getNEDFileContents(org.eclipse.core.resources.IFile)
 	 */
 	public NEDElement getNEDFileContents(IFile file) {
+		if (needsRehash)
+			rehash();
 		return nedFiles.get(file);
 	}
 
@@ -98,8 +100,10 @@ public class NEDResources implements INEDComponentResolver {
 	 * @see org.omnetpp.resources.INEDComponentResolver#getComponentAt(org.eclipse.core.resources.IFile, int)
 	 */
 	public INEDComponent getComponentAt(IFile file, int lineNumber) {
+		if (needsRehash)
+			rehash();
 		for (INEDComponent component : components.values()) {
-			if (component.getNEDFile()==file) {
+			if (component.getNEDFile().equals(file)) {
 				NEDSourceRegion region = component.getNEDElement().getSourceRegion();
 				if (region!=null && region.containsLine(lineNumber))
 					return component;
@@ -291,8 +295,8 @@ public class NEDResources implements INEDComponentResolver {
 				int line = parseLineNumber(loc);
 				addMarker(file, NEDPROBLEM_MARKERID, IMarker.SEVERITY_ERROR, errors.errorText(i), line);
 			}
-			if (errors.numErrors()==0)
-				addMarker(file, NEDPROBLEM_MARKERID, IMarker.SEVERITY_INFO, "parsed OK", 1); //XXX remove
+			//if (errors.numErrors()==0)
+			//	addMarker(file, NEDPROBLEM_MARKERID, IMarker.SEVERITY_INFO, "parsed OK", 1); //XXX remove
 		} catch (CoreException e) {
 		}
 	}

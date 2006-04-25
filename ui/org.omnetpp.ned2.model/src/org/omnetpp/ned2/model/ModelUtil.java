@@ -127,7 +127,7 @@ public class ModelUtil {
 				pojoRegion.endLine = swigRegion.getEndLine();
 				pojoRegion.endColumn = swigRegion.getEndColumn();
 				pojoNode.setSourceRegion(pojoRegion);
-			}
+			} 
 
 			// create child nodes
 			for (NEDElement child = swigNode.getFirstChild(); child != null; child = child.getNextSibling()) {
