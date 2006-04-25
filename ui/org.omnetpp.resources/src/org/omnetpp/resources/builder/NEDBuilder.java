@@ -9,6 +9,7 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.omnetpp.resources.NEDResources;
@@ -110,5 +111,24 @@ public class NEDBuilder extends IncrementalProjectBuilder {
 	protected void incrementalBuild(IResourceDelta delta, IProgressMonitor monitor) throws CoreException {
 		// the visitor does the work.
 		delta.accept(new NEDDeltaVisitor());
+	}
+
+	/**
+	 * The sole purpose of this method is to be called on startup
+	 * from NEDResourcesPlugin.start(). To be removed on the long term.  
+	 */
+	public static void runFullBuild() {
+		try {
+			IResource wsroot = ResourcesPlugin.getWorkspace().getRoot();
+			wsroot.accept(new IResourceVisitor() {
+				public boolean visit(IResource resource) {
+					NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
+					if (nedResources.isNEDFile(resource))
+						nedResources.readNEDFile((IFile) resource);
+					return true;
+				}
+			});
+		} catch (CoreException e) {
+		}
 	}
 }

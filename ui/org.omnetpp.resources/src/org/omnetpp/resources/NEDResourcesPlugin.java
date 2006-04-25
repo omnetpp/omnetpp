@@ -1,7 +1,8 @@
 package org.omnetpp.resources;
 
-import org.eclipse.ui.plugin.*;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.omnetpp.resources.builder.NEDBuilder;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -27,6 +28,17 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+
+		// XXX this is most probably NOT the way to archieve that
+		// all NED files get parsed on startup. At minimum, this should
+		// be done in the background, as a long-running operation with an 
+		// IProgressMonitor...
+		// Cf. quote from org.eclipse.core.runtime.Plugin: 
+		//   "Note 2: This method is intended to perform simple initialization 
+		//   of the plug-in environment. The platform may terminate initializers 
+		//   that do not complete in a timely fashion."
+		// So we should find a better way.
+		NEDBuilder.runFullBuild();
 	}
 
 	/**
