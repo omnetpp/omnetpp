@@ -111,6 +111,7 @@ public class NedTextHover implements ITextHover {
 	
 	private String getDocumentRegion(IDocument docu, NEDSourceRegion region) {
 		try {
+			//XXX +column is not good: must take tab chars into account!!
 			int startOffset = docu.getLineOffset(region.startLine-1)+region.startColumn;
 			int endOffset = docu.getLineOffset(region.endLine-1)+region.endColumn;
 			return docu.get(startOffset, endOffset-startOffset);

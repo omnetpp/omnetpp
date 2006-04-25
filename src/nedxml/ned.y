@@ -121,6 +121,7 @@ static struct NEDParserState
 {
     bool inLoop;
     bool inNetwork;
+    bool inGroup;
 
     /* tmp flags, used with msg fields */
     bool isAbstract;
@@ -163,6 +164,9 @@ static void resetParserState()
 }
 
 ChannelSpecNode *createChannelSpec(NEDElement *conn);
+void removeRedundantChanSpecParams();
+void createSubstparamsNodeIfNotExists();
+void createGatesizesNodeIfNotExists();
 
 %}
 
@@ -619,8 +623,7 @@ substparamblocks_old
 substparamblock_old
         : PARAMETERS ':'
                 {
-                  // FIXME check if already exists!!! (multiple blocks must be merged)
-                  ps.substparams = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.inNetwork ? (NEDElement *)ps.module : (NEDElement *)ps.submod);
+                  createSubstparamsNodeIfNotExists();
                   setComments(ps.substparams,@1,@2);
                 }
           opt_substparameters_old
@@ -628,13 +631,17 @@ substparamblock_old
                 }
         | PARAMETERS IF expression ':'
                 {
-                  // FIXME make conditional paramgroup!!!
-                  ps.substparams = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.inNetwork ? (NEDElement *)ps.module : (NEDElement *)ps.submod);
-                  addExpression(ps.substparams, "condition",@3,$3);
-                  setComments(ps.substparams,@1,@4);
+                  // make conditional paramgroup
+                  createSubstparamsNodeIfNotExists();
+                  ps.substparamgroup = (ParamGroupNode *)createNodeWithTag(NED_PARAM_GROUP, ps.substparams);
+                  ps.inGroup = true;
+                  setComments(ps.substparamgroup,@1,@4);
                 }
           opt_substparameters_old
                 {
+                  ps.condition = (ConditionNode *)createNodeWithTag(NED_CONDITION, ps.substparamgroup);
+                  addExpression(ps.condition, "condition",@3,$3);
+                  ps.inGroup = false;
                 }
 
         ;
@@ -652,7 +659,8 @@ substparameters_old
 substparameter_old
         : NAME '=' expression
                 {
-                  ps.substparam = addParameter(ps.substparams,@1);
+                  NEDElement *parent = ps.inGroup ? (NEDElement *)ps.substparamgroup : (NEDElement *)ps.substparams;
+                  ps.substparam = addParameter(parent,@1);
                   addExpression(ps.substparam, "value",@3,$3);
                   setComments(ps.substparam,@1,@3);
                 }
@@ -669,8 +677,7 @@ opt_gatesizeblocks_old
 gatesizeblock_old
         : GATESIZES ':'
                 {
-                  // FIXME check if already exists!!! (multiple blocks must be merged)
-                  ps.gatesizes = (GatesNode *)createNodeWithTag(NED_GATES, ps.submod );
+                  createGatesizesNodeIfNotExists();
                   setComments(ps.gatesizes,@1,@2);
                 }
           opt_gatesizes_old
@@ -678,13 +685,17 @@ gatesizeblock_old
                 }
         | GATESIZES IF expression ':'
                 {
-                  // FIXME make conditional gategroup!!!
-                  ps.gatesizes = (GatesNode *)createNodeWithTag(NED_GATES, ps.submod);
-                  addExpression(ps.gatesizes, "condition",@3,$3);
-                  setComments(ps.gatesizes,@1,@4);
+                  // make conditional gategroup
+                  createGatesizesNodeIfNotExists();
+                  ps.gatesizesgroup = (GateGroupNode *)createNodeWithTag(NED_GATE_GROUP, ps.gatesizes);
+                  ps.inGroup = true;
+                  setComments(ps.gatesizesgroup,@1,@4);
                 }
           opt_gatesizes_old
                 {
+                  ps.condition = (ConditionNode *)createNodeWithTag(NED_CONDITION, ps.gatesizesgroup);
+                  addExpression(ps.condition, "condition",@3,$3);
+                  ps.inGroup = false;
                 }
         ;
 
@@ -701,7 +712,8 @@ gatesizes_old
 gatesize_old
         : NAME vector
                 {
-                  ps.gatesize = addGate(ps.gatesizes,@1);
+                  NEDElement *parent = ps.inGroup ? (NEDElement *)ps.gatesizesgroup : (NEDElement *)ps.gatesizes;
+                  ps.gatesize = addGate(parent,@1);
                   addVector(ps.gatesize, "vector-size",@2,$2);
 
                   setComments(ps.gatesize,@1,@2);
@@ -880,6 +892,7 @@ notloopconnection_old
         | leftgatespec_old RIGHT_ARROW channeldescr_old RIGHT_ARROW rightgatespec_old opt_conncondition_old opt_conn_displaystr_old comma_or_semicolon
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_L2R);
+                  removeRedundantChanSpecParams();
                   setComments(ps.conn,@1,@7);
                 }
         | leftgatespec_old LEFT_ARROW rightgatespec_old opt_conncondition_old opt_conn_displaystr_old comma_or_semicolon
@@ -892,6 +905,7 @@ notloopconnection_old
                 {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_R2L);
+                  removeRedundantChanSpecParams();
                   setComments(ps.conn,@1,@7);
                 }
         ;
@@ -1013,6 +1027,10 @@ parentrightgate_old
 
 
 channeldescr_old
+        : channelattrs_old
+        ;
+
+channelattrs_old
         : NAME
                 {
                   if (!ps.chanspec)
@@ -1026,7 +1044,7 @@ channeldescr_old
                   ps.param = addParameter(ps.params, @1);
                   addExpression(ps.param, "value",@2,$2);
                 }
-        | channeldescr_old CHANATTRNAME expression
+        | channelattrs_old CHANATTRNAME expression
                 {
                   if (!ps.chanspec)
                       ps.chanspec = createChannelSpec(ps.conn);
@@ -1344,5 +1362,28 @@ ChannelSpecNode *createChannelSpec(NEDElement *conn)
    ps.params = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, chanspec);
    ps.params->setIsImplicit(true);
    return chanspec;
+}
+
+void createSubstparamsNodeIfNotExists()
+{
+   // check if already exists (multiple blocks must be merged)
+   NEDElement *parent = ps.inNetwork ? (NEDElement *)ps.module : (NEDElement *)ps.submod;
+   ps.substparams = (ParametersNode *)parent->getFirstChildWithTag(NED_PARAMETERS);
+   if (!ps.substparams)
+       ps.substparams = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, parent);
+}
+
+void createGatesizesNodeIfNotExists()
+{
+   // check if already exists (multiple blocks must be merged)
+   ps.gatesizes = (GatesNode *)ps.submod->getFirstChildWithTag(NED_GATES);
+   if (!ps.gatesizes)
+       ps.gatesizes = (GatesNode *)createNodeWithTag(NED_GATES, ps.submod);
+}
+
+void removeRedundantChanSpecParams()
+{
+    if (ps.chanspec && !ps.params->getFirstChild())
+        delete ps.chanspec->removeChild(ps.params);
 }
 
