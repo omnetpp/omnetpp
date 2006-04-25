@@ -479,7 +479,7 @@ print JAVA "    public void validateElement(NEDElement node) {\n";
 print JAVA "        switch (node.getTagCode()) {\n";
 foreach $element (@elements)
 {
-    print JAVA "            case $enumname{$element}: validateElement(($elementclass{$element}) node);\n";
+    print JAVA "            case $enumname{$element}: validateElement(($elementclass{$element}) node); break;\n";
 }
 print JAVA "        }\n";
 print JAVA "    }\n\n";

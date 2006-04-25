@@ -410,8 +410,21 @@ public class NEDResources implements INEDComponentResolver {
  			}
 		}
 
-		// TODO: "semantic validator" should run here!!!
+		// rehash done!
 		needsRehash = false;
+
+		// run "semantic validator" for each file
+		INEDErrorStore errors = new INEDErrorStore() {  // XXX make better one
+			public void add(NEDElement context, String message) {
+				System.out.println(context.getSourceLocation()+": "+message);
+			}
+		};
+		for (IFile file : nedFiles.keySet()) {
+			NEDValidator validator = new NEDValidator(this, errors);
+			NEDElement tree = nedFiles.get(file);
+			validator.validate(tree);
+		}
+
 		
 		//XXX temporary code, just testing:
 		//for (INEDComponent c : components.values()) {

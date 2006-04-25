@@ -1,4 +1,4 @@
-package org.omnetpp.ned2.model;
+package org.omnetpp.resources;
 
 import org.omnetpp.ned2.model.pojo.AbstractNEDValidator;
 import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
@@ -54,14 +54,26 @@ import org.omnetpp.ned2.model.pojo.TypesNode;
 import org.omnetpp.ned2.model.pojo.UnknownNode;
 import org.omnetpp.ned2.model.pojo.WhereNode;
 import org.omnetpp.ned2.model.pojo.WhitespaceNode;
+import org.omnetpp.ned2.model.swig.NEDErrorStore;
 
 /**
  * Validates consistency of NED files.
  * 
  * @author andras
  */
+//XXX move to org.omnetpp.ned2.model plugin? then INEDComponent, 
+// INEDComponentResolver etc would have to be moved as well, and that plugin
+// would have to depend on org.eclipse.resources because of IFile!!!
 public class NEDValidator extends AbstractNEDValidator {
 
+	INEDComponentResolver resolver;
+	INEDErrorStore errors;
+    
+	public NEDValidator(INEDComponentResolver resolver, INEDErrorStore errors) {
+		this.resolver = resolver;
+		this.errors = errors;
+	}
+    
     protected void validateElement(FilesNode node) {}
 
     protected void validateElement(NedFileNode node) {}
@@ -72,7 +84,12 @@ public class NEDValidator extends AbstractNEDValidator {
 
     protected void validateElement(PropertyDeclNode node) {}
 
-    protected void validateElement(ExtendsNode node) {}
+    protected void validateElement(ExtendsNode node) {
+    	String name = node.getName();
+    	INEDComponent e = resolver.getComponent(name);
+    	if (e==null)
+    		errors.add(node, "no such component: "+name);
+    }
 
     protected void validateElement(InterfaceNameNode node) {}
 
