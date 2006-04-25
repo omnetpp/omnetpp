@@ -3,10 +3,14 @@
 //
 
 //
+// FIXME simple Foo extends AnotherSimple: does Foo have C++ code?????????
+// FIXME module Foo extends AnotherSimple: allowed????? 
+//
+//
 // NAME SCOPES:
 // - all component type names must be unique
-// - identifier names within a component must be unique (gate/param/submod
-//   names, "where" loopvars)
+// - identifier names within a component must be unique (ie a param cannot
+//   be named the same as a gate, a submodule or an inner type)
 //
 // TODO:
 // - add constants, modelled after Java's public static final stuff
