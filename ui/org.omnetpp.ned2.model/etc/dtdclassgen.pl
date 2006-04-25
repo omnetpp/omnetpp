@@ -455,3 +455,37 @@ print JAVA "            throw new RuntimeException(\"invalid tagcode \"+tagcode)
 print JAVA "    }\n\n";
 print JAVA "};\n\n";
 
+#------------------------------------------------------------------------
+#
+# Validator class
+#
+
+$javafile = "$outdir/AbstractNEDValidator.java";
+open(JAVA,">$javafile") || die "*** cannot open output file $javafile";
+
+print JAVA "package $javapackage;\n\n";
+print JAVA "import $javaimportedpackage.*;\n\n";
+print JAVA "/**\n";
+print JAVA " * GENERATED CLASS. Base class for NED validators.\n";
+print JAVA " */\n";
+print JAVA "public abstract class AbstractNEDValidator implements NEDElementTags\n";
+print JAVA "{\n";
+print JAVA "    public void validate(NEDElement node) {\n";
+print JAVA "        validateElement(node);\n";
+print JAVA "        for (NEDElement child : node)\n";
+print JAVA "            validate(child);\n";
+print JAVA "    }\n\n";
+print JAVA "    public void validateElement(NEDElement node) {\n";
+print JAVA "        switch (node.getTagCode()) {\n";
+foreach $element (@elements)
+{
+    print JAVA "            case $enumname{$element}: validateElement(($elementclass{$element}) node);\n";
+}
+print JAVA "        }\n";
+print JAVA "    }\n\n";
+foreach $element (@elements)
+{
+    print JAVA "    abstract protected void validateElement($elementclass{$element} node);\n";
+}
+print JAVA "};\n\n";
+

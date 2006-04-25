@@ -16,7 +16,6 @@ import org.omnetpp.ned2.model.swig.NEDTools;
 /**
  * Utility functions
  */
-// FIXME if "noexistent submodule" exception is thrown, then no tree is built!
 public class ModelUtil {
 
 	/**
