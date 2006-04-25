@@ -119,7 +119,7 @@ simple Queue
 };
 
 simple VeryFastQueue extends Queue { }  // "simple": VeryFastQueue C++ class required!!!
-module VeryFastQueue extends Queue { }  // "module": no VeryFastQueue C++ class! (Queue C++ class used)
+module VeryFastQueue extends Queue { }  // "module": no VeryFastQueue C++ class! (Queue C++ class used) FIXME can it add submodules etc????????????????????????????????????????????????????
 
 simple VeryFastQueue extends Queue  // "extends" inherits gates as well (they don't have to be repeated here)
 {
