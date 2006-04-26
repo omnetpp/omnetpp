@@ -414,12 +414,17 @@ public class NEDResources implements INEDComponentResolver {
 		needsRehash = false;
 
 		// run "semantic validator" for each file
-		INEDErrorStore errors = new INEDErrorStore() {  // XXX make better one
-			public void add(NEDElement context, String message) {
-				System.out.println(context.getSourceLocation()+": "+message);
-			}
-		};
 		for (IFile file : nedFiles.keySet()) {
+			final IFile ifile = file;
+			INEDErrorStore errors = new INEDErrorStore() {  // XXX make better one
+				public void add(NEDElement context, String message) {
+					int line = parseLineNumber(context.getSourceLocation());
+					try {
+						addMarker(ifile, NEDCONSISTENCYPROBLEM_MARKERID, IMarker.SEVERITY_ERROR, message, line);
+					} catch (CoreException e) {
+					} 
+				}
+			};
 			NEDValidator validator = new NEDValidator(this, errors);
 			NEDElement tree = nedFiles.get(file);
 			validator.validate(tree);

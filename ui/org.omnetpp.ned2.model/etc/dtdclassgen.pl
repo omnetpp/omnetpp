@@ -470,12 +470,8 @@ print JAVA " * GENERATED CLASS. Base class for NED validators.\n";
 print JAVA " */\n";
 print JAVA "public abstract class AbstractNEDValidator implements NEDElementTags\n";
 print JAVA "{\n";
-print JAVA "    public void validate(NEDElement node) {\n";
-print JAVA "        validateElement(node);\n";
-print JAVA "        for (NEDElement child : node)\n";
-print JAVA "            validate(child);\n";
-print JAVA "    }\n\n";
-print JAVA "    public void validateElement(NEDElement node) {\n";
+print JAVA "    abstract public void validate(NEDElement node);\n\n";
+print JAVA "    protected void validateElement(NEDElement node) {\n";
 print JAVA "        switch (node.getTagCode()) {\n";
 foreach $element (@elements)
 {
