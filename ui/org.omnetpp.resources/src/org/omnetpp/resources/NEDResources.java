@@ -12,11 +12,14 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.omnetpp.ned2.model.ModelUtil;
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.NEDElementUtil;
 import org.omnetpp.ned2.model.NEDSourceRegion;
 import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned2.model.pojo.ChannelNode;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned2.model.pojo.ModuleInterfaceNode;
+import org.omnetpp.ned2.model.pojo.ParamNode;
+import org.omnetpp.ned2.model.pojo.ParametersNode;
 import org.omnetpp.ned2.model.pojo.SimpleModuleNode;
 import org.omnetpp.ned2.model.swig.NEDErrorStore;
 
@@ -51,12 +54,40 @@ public class NEDResources implements INEDComponentResolver {
 	private HashMap<String, INEDComponent> components = new HashMap<String, INEDComponent>();
 
 	// tables of toplevel components, classified (points into nedFiles trees)
-    boolean needsRehash = false;  // if tables below need to be rebuilt
+    private boolean needsRehash = false;  // if tables below need to be rebuilt
 	private HashMap<String, INEDComponent> modules = new HashMap<String, INEDComponent>();
 	private HashMap<String, INEDComponent> channels = new HashMap<String, INEDComponent>();
 	private HashMap<String, INEDComponent> moduleInterfaces = new HashMap<String, INEDComponent>();
 	private HashMap<String, INEDComponent> channelInterfaces = new HashMap<String, INEDComponent>();
 
+	private INEDComponent defaultChannelType = null;
+
+	/**
+	 * Constructor.
+	 */
+	public NEDResources() {
+		// create default channel type... 
+		ChannelNode channel = new ChannelNode();
+		channel.setName("BasicChannel");
+		ParametersNode params = new ParametersNode(channel);
+		createImplicitChannelParameter(params, "delay", NEDElementUtil.NED_PARTYPE_DOUBLE);
+		createImplicitChannelParameter(params, "error", NEDElementUtil.NED_PARTYPE_DOUBLE);
+		createImplicitChannelParameter(params, "datarate", NEDElementUtil.NED_PARTYPE_DOUBLE);
+		defaultChannelType = new NEDComponent(channel, null, this); 
+	}	
+
+	/* utility method */
+	protected NEDElement createImplicitChannelParameter(NEDElement parent, String name, int type) {
+		ParamNode param = new ParamNode(parent);
+		param.setName(name);
+		param.setType(type);
+		param.setIsFunction(false);
+		param.setIsDefault(false);
+		//TODO add default value of zero
+		param.setSourceLocation("internal");
+		return param;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.omnetpp.resources.INEDComponentResolver#getNEDFiles()
 	 */
@@ -80,6 +111,13 @@ public class NEDResources implements INEDComponentResolver {
         return hasErrorMarker(file, NEDPROBLEM_MARKERID) || hasErrorMarker(file, NEDCONSISTENCYPROBLEM_MARKERID);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.omnetpp.resources.INEDComponentResolver#getDefaultChannelType()
+	 */
+	public INEDComponent getDefaultChannelType() {
+		return defaultChannelType;
+	}
+	
 	/**
 	 * True if the file has any marker of the given marker type id (or subclass) 
 	 * with severity ERROR; or if an error occurred while checking the markers. 
@@ -103,7 +141,7 @@ public class NEDResources implements INEDComponentResolver {
 		if (needsRehash)
 			rehash();
 		for (INEDComponent component : components.values()) {
-			if (component.getNEDFile().equals(file)) {
+			if (file.equals(component.getNEDFile())) {
 				NEDSourceRegion region = component.getNEDElement().getSourceRegion();
 				if (region!=null && region.containsLine(lineNumber))
 					return component;
@@ -440,5 +478,4 @@ public class NEDResources implements INEDComponentResolver {
 		//System.out.println("rehash() took "+dt+"ms");
 		//System.out.println("memleak check: native NEDElements: "+org.omnetpp.ned2.model.swig.NEDElement.getNumExisting()+" / "+org.omnetpp.ned2.model.swig.NEDElement.getNumCreated());
 	}
-
 }

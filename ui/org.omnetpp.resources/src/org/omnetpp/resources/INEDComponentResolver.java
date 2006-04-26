@@ -16,12 +16,16 @@ public interface INEDComponentResolver {
 	/**
 	 * Returns parsed contents of a NED file. Returns a potentially incomplete tree 
 	 * if the file has parse errors; one can call containsNEDErrors() to find out 
-	 * if that is the case. 
+	 * if that is the case.
+	 *  
+	 * @param file - must not be null
 	 */
 	public NEDElement getNEDFileContents(IFile file);
 
 	/**
 	 * Returns true if the given NED file has errors.
+	 *  
+	 * @param file - must not be null
 	 */
 	public boolean containsNEDErrors(IFile file);
 	
@@ -29,6 +33,8 @@ public interface INEDComponentResolver {
 	 * Returns a component declated at the given file/line. The line number should 
 	 * point into the declaration of the component. Returns null if no such component 
 	 * was found.
+	 *  
+	 * @param file - must not be null
 	 */
 	public INEDComponent getComponentAt(IFile file, int lineNumber);
 	
@@ -81,5 +87,11 @@ public interface INEDComponentResolver {
 	 * Returns a component by name.
 	 */
 	public INEDComponent getComponent(String name);
+	
+	/**
+	 * Return a component representing the implicit base class of channels.
+	 * It has the classic parameters: delay, error and datarate.
+	 */
+	public INEDComponent getDefaultChannelType();
 
 }

@@ -68,6 +68,8 @@ import org.omnetpp.ned2.model.pojo.WhitespaceNode;
 // XXX move to org.omnetpp.ned2.model plugin? then INEDComponent,
 // INEDComponentResolver etc would have to be moved as well, and that plugin
 // would have to depend on org.eclipse.resources because of IFile!!!
+//
+// XXX Channels: one must explicitly extend "BasicChannel" to have the default channel parameters!!!
 public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil {
 
 	INEDComponentResolver resolver;
@@ -179,11 +181,12 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
         // init
 		componentNode = node;
 		Assert.isTrue(members.isEmpty());
-		
-		// for channels, we have to pretend they have three implicit parameters...
-		createImplicitParameter("delay", NED_PARTYPE_DOUBLE);
-		createImplicitParameter("error", NED_PARTYPE_DOUBLE);
-		createImplicitParameter("datarate", NED_PARTYPE_DOUBLE);
+
+		// pretend it inherits from the default channel type, and take over parameters from there
+		//XXX what if it has its own "extends" clause...? 
+		INEDComponent defaultChannel = resolver.getDefaultChannelType();
+		for (String memberName : defaultChannel.getMemberNames())
+			members.put(memberName, defaultChannel.getMember(memberName));
 		
 		// do the work
 		validateChildren(node);
@@ -192,19 +195,6 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 		// clean up
 		componentNode = null;
 		members.clear();
-		Assert.isTrue(members.isEmpty());
-	}
-
-	/* utility method */
-	protected void createImplicitParameter(String name, int type) {
-		ParamNode param = new ParamNode();
-		param.setName(name);
-		param.setType(type);
-		param.setIsFunction(false);
-		param.setIsDefault(false);
-		//TODO add default value of zero
-		param.setSourceLocation("internal");
-		members.put(param.getName(), param);
 	}
 
 	/* utility method */
@@ -220,7 +210,6 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 		// clean up
 		componentNode = null;
 		members.clear();
-		Assert.isTrue(members.isEmpty());
 	}
 
 	protected void validateElement(ParametersNode node) {
