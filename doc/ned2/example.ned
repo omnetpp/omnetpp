@@ -4,7 +4,7 @@
 
 //
 // FIXME simple Foo extends AnotherSimple: does Foo have C++ code?????????
-// FIXME module Foo extends AnotherSimple: allowed????? 
+// FIXME module Foo extends AnotherSimple: allowed?????
 //
 //
 // NAME SCOPES:
@@ -13,6 +13,23 @@
 //   be named the same as a gate, a submodule or an inner type)
 //
 // TODO:
+// - CHANNELS: two implicit channel types:
+//         channel withcppclass BasicChannel {
+//             double delay = 0;  // make it "double function" ???
+//             double error = 0;
+//             double datarate = 0;
+//         };
+//         channel withcppclass NullChannel {
+//         };
+//   When defining new channels, BasicChannel or NullChannel must be explicitly
+//   named as the base class: "channel Foo extends BasicChannel {...}"!!!
+//   Plain "channel Foo {...}" is ILLEGAL (what should be the underlying C++ class???)
+//   "channel withcppclass Foo {...}" is OK.
+//
+//
+// - EXTRA PARAMS: is it possible to add extra params in submodules?
+//   and in channels? (like "cost", "color"!!!)
+//
 // - add constants, modelled after Java's public static final stuff
 //     module Foo {
 //       parameters:
@@ -30,9 +47,11 @@
 //     o for parameters:
 //        - type cannot be redefined
 //        - value, once given, cannot be redefined in subclasses (what if either one is conditional????)
+//            ==> we must allow assignments anywhere!!!!
 //     o for gates:
 //        - type cannot be redefined
 //        - vector size, once given, cannot be redefined in subclasses (what if either one is conditional????)
+//            ==> we must allow setting the gate size anywhere!!!!
 //     o for gate/parameter properties:
 //        - extra properties can be added
 //        - existing properties can be overridden/extended like for standalone properties (?)
@@ -41,7 +60,7 @@
 //     o for connections:
 //        - TBD
 //
-// - rules of conditionals must be defined exactly!    
+// - rules of conditionals must be defined exactly!
 //     o for inner types:
 //        - no such thing
 //     o for properties:
@@ -56,7 +75,7 @@
 //        - TBD
 //
 // STATIC ANALYSIS IS NO GOOD WITH CONDITIONALS:
-// as param values, gate size, param/gate/module/submodule properties may 
+// as param values, gate size, param/gate/module/submodule properties may
 // involve conditionals, they are UNDETERMINABLE with static analysis!!!
 //
 // INCONSISTENCY:
@@ -67,7 +86,7 @@
 // set to a different value in subclass/place of usage!!!
 //
 // this must be allowed:
-//  { 
+//  {
 //    parameters:
 //      int a;
 //      a = 3 if index==1;
@@ -79,11 +98,11 @@
 // That would solve the issue that whether a parameter conditionally assigned
 // in a base class should be regarded as assigned in the subclass (analysed
 // statically not during runtime!!!) Then conditionals could be moved
-// into the expression syntax altogether!!!! and we could get rid of 
+// into the expression syntax altogether!!!! and we could get rid of
 // gate groups and param groups...
 //
 // example:
-//   par = (5 if index<3, 0 otherwise);   
+//   par = (5 if index<3, 0 otherwise);
 // generalized (v1 if c1, v2 if c2, v3 if c3, otherwise vdefault);
 // same as (c1 ? v1 : c2 ? v2 : c3 ? v3 : vdefault)
 //
