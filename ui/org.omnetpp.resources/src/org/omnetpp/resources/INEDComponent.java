@@ -16,6 +16,11 @@ import org.omnetpp.ned2.model.NEDElement;
  */
 public interface INEDComponent {
 	/**
+	 * Convenience method: returns the name of the module/interface/channel/etc.
+	 */
+	public String getName();
+	
+	/**
 	 * Returns underlying NEDElement subtree.
 	 */
 	public NEDElement getNEDElement();

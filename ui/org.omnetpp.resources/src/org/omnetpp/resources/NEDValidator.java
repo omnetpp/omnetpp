@@ -79,9 +79,11 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 	
 	// non-null while we're validating a submodule
 	SubmoduleNode submoduleNode;
+	INEDComponent submoduleType; // null for the "like *" case(!); valid while submoduleNode!=null
 
 	// non-null while we're validating a channelspec of a connection
 	ChannelSpecNode channelSpecNode;
+	INEDComponent channelSpecType; // may be null; valid while channelSpecNode!=null
 
 	// members of the component currently being validated
 	HashMap<String, NEDElement> members = new HashMap<String, NEDElement>();
@@ -114,6 +116,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 	}
 
 	protected void validateElement(ImportNode node) {
+		//TODO check if file exists?
 		validateChildren(node);
 	}
 
@@ -197,8 +200,9 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 		ParamNode param = new ParamNode();
 		param.setName(name);
 		param.setType(type);
-		param.setIsFunction(false); //XXX check...
-		param.setIsDefault(false); //XXX check...
+		param.setIsFunction(false);
+		param.setIsDefault(false);
+		//TODO add default value of zero
 		param.setSourceLocation("internal");
 		members.put(param.getName(), param);
 	}
@@ -228,40 +232,74 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 	}
 
 	protected void validateElement(ParamNode node) {
-		//XXX validate submodule parameters too!!!! and chanspec parameters too!!!
-		if (submoduleNode==null && channelSpecNode==null) {
-			if (node.getParent() instanceof ParamGroupNode) {
-				// definitions not allowed inside groups
-				if (node.getType() != NED_PARTYPE_NONE) {
-					errors.add(node, "parameters cannot be defined inside a group");
-					return;
-				}
-				// conditionals not allowed inside groups
-				if (node.getFirstChildWithTag(NED_CONDITION) != null) {
-					errors.add(node, "conditionals are not allowed inside a group");
-					return;
-				}
+		// structural, not checked by the DTD
+		if (node.getParent() instanceof ParamGroupNode) {
+			// definitions not allowed inside groups
+			if (node.getType() != NED_PARTYPE_NONE) {
+				errors.add(node, "parameters cannot be defined inside a group");
+				return;
+			}
+			// conditionals not allowed inside groups
+			if (node.getFirstChildWithTag(NED_CONDITION) != null) {
+				errors.add(node, "conditionals are not allowed inside a group");
+				return;
+			}
+		}
+
+		// parameter definitions
+		String parname = node.getName();
+		if (node.getType()!=NED_PARTYPE_NONE) {
+			// check definitions: allowed here at all?
+			if (submoduleNode!=null || channelSpecNode!=null) {
+				errors.add(node, "new parameters can only be defined on a (module/channel) type");
+				return;
 			}
 
-			String parname = node.getName();
-			if (node.getType() != NED_PARTYPE_NONE) {
-				// check definitions: the param must NOT exist already
-				if (members.containsKey(parname)) {
-					errors.add(node, "'"+parname+"': already defined at "+members.get(parname).getSourceLocation()); // and may not be a parameter at all...
-					return;
-				}
-				members.put(parname, node);
+			// param must NOT exist already
+			if (members.containsKey(parname)) {
+				errors.add(node, "'"+parname+"': already defined at "+members.get(parname).getSourceLocation()); // and may not be a parameter at all...
+				return;
 			}
-			else {
-				// check assignments: the param must exist already
-				if (!members.containsKey(parname)) {
-					errors.add(node, "'"+parname+"': undefined parameter");
-					return;
-				}
-			}
-			ParamNode decl = (ParamNode)members.get(parname);
-			//XXX: check expression matches type in the declaration
+			members.put(parname, node);
 		}
+
+		// check assignments: the param must exist already, find definition
+		ParamNode decl = null;
+		if (submoduleNode!=null) {
+			// inside a submodule's definition
+			if (submoduleType==null) {
+				errors.add(node, "cannot assign parameters of a submodule of unknown type");
+				return;
+			}
+			decl = (ParamNode) submoduleType.getMember(parname);
+			if (decl==null || decl.getTagCode()!=NED_PARAM) {
+				errors.add(node, "'"+parname+"': type '"+submoduleType.getName()+"' has no such parameter");
+				return;
+			}
+		}
+		else if (channelSpecNode!=null) {
+			// inside a connection's channel spec
+			if (channelSpecType==null) {
+				errors.add(node, "cannot assign parameters of a channel of unknown type");
+				return;
+			}
+			decl = (ParamNode) channelSpecType.getMember(parname);
+			if (decl==null || decl.getTagCode()!=NED_PARAM) {
+				errors.add(node, "'"+parname+"': type '"+submoduleType.getName()+"' has no such parameter");
+				return;
+			}
+		}
+		else {
+			// global "parameters" section of type
+			if (!members.containsKey(parname)) {
+				errors.add(node, "'"+parname+"': undefined parameter");
+				return;
+			}
+			decl = (ParamNode)members.get(parname);
+		}
+
+		//XXX: check expression matches type in the declaration
+
 		validateChildren(node);
 	}
 
@@ -298,6 +336,46 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 	}
 
 	protected void validateElement(SubmoduleNode node) {
+		// find submodule type
+		String name = node.getName();  
+		String typeName = node.getType();  
+		String likeTypeName = node.getLikeType();  
+		if (typeName!=null && !typeName.equals("")) {
+			// normal case
+			submoduleType = resolver.getComponent(typeName);
+			if (submoduleType == null) {
+				errors.add(node, "'"+typeName+"': no such module type");
+				return;
+			}
+			int typeTag = submoduleType.getNEDElement().getTagCode();
+			if (typeTag!=NED_SIMPLE_MODULE && typeTag!=NED_COMPOUND_MODULE) {
+				errors.add(node, "'"+typeName+"' is not a module type");
+				return;
+			}
+		}
+		else if ("*".equals(likeTypeName)) {
+			// unchecked "like"...
+			submoduleType = null;
+		}
+		else if (likeTypeName!=null && !likeTypeName.equals("")) {
+			// "like" case
+			submoduleType = resolver.getComponent(likeTypeName);
+			if (submoduleType == null) {
+				errors.add(node, "'"+likeTypeName+"': no such module or interface type");
+				return;
+			}
+			int typeTag = submoduleType.getNEDElement().getTagCode();
+			if (typeTag!=NED_SIMPLE_MODULE && typeTag!=NED_COMPOUND_MODULE && typeTag!=NED_MODULE_INTERFACE) {
+				errors.add(node, "'"+typeName+"' is not a module or interface type");
+				return;
+			}
+		}
+		else {
+			errors.add(node, "no type info for '"+name+"'"); // should never happen
+			return;
+		}
+		
+		// validate contents
 		submoduleNode = node;
 		validateChildren(node);
 		submoduleNode = null;

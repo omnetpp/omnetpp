@@ -169,6 +169,11 @@ public class NEDComponent implements INEDComponent, NEDElementTags {
 	}
 
 	/* INEDComponent method */
+	public String getName() {
+		return componentNode.getAttribute("name");
+	}
+	
+	/* INEDComponent method */
 	public NEDElement getNEDElement() {
 		return componentNode;
 	}
