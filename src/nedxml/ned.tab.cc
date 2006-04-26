@@ -2094,7 +2094,7 @@ yyreduce:
   case 43:
 #line 428 "ned.y"
     {
-                  ps.param = addParameter(ps.params, (yylsp[-1]));
+                  ps.param = addParameter(ps.params, (yylsp[0]));
                   ps.param->setType(NED_PARTYPE_DOUBLE);
                   storePos(ps.param, (yyloc));
                 ;}

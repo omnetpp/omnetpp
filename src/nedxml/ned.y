@@ -426,7 +426,7 @@ parameter_old
                 }
         | CONSTDECL NAME /* for compatibility */
                 {
-                  ps.param = addParameter(ps.params, @1);
+                  ps.param = addParameter(ps.params, @2);
                   ps.param->setType(NED_PARTYPE_DOUBLE);
                   storePos(ps.param, @$);
                 }
