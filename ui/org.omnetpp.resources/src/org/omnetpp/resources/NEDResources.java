@@ -60,20 +60,26 @@ public class NEDResources implements INEDComponentResolver {
 	private HashMap<String, INEDComponent> moduleInterfaces = new HashMap<String, INEDComponent>();
 	private HashMap<String, INEDComponent> channelInterfaces = new HashMap<String, INEDComponent>();
 
-	private INEDComponent defaultChannelType = null;
+	private INEDComponent basicChannelType = null;
+	private INEDComponent nullChannelType = null;
 
 	/**
 	 * Constructor.
 	 */
 	public NEDResources() {
-		// create default channel type... 
-		ChannelNode channel = new ChannelNode();
-		channel.setName("BasicChannel");
-		ParametersNode params = new ParametersNode(channel);
+		// create builtin type NullChannel
+		ChannelNode nullChannel= new ChannelNode();
+		nullChannel.setName("NullChannel");
+		nullChannelType = new NEDComponent(nullChannel, null, this); 
+
+		// create builtin type BasicChannel
+		ChannelNode basicChannel = new ChannelNode();
+		basicChannel.setName("BasicChannel");
+		ParametersNode params = new ParametersNode(basicChannel);
 		createImplicitChannelParameter(params, "delay", NEDElementUtil.NED_PARTYPE_DOUBLE);
 		createImplicitChannelParameter(params, "error", NEDElementUtil.NED_PARTYPE_DOUBLE);
 		createImplicitChannelParameter(params, "datarate", NEDElementUtil.NED_PARTYPE_DOUBLE);
-		defaultChannelType = new NEDComponent(channel, null, this); 
+		basicChannelType = new NEDComponent(basicChannel, null, this); 
 	}	
 
 	/* utility method */
@@ -111,13 +117,6 @@ public class NEDResources implements INEDComponentResolver {
         return hasErrorMarker(file, NEDPROBLEM_MARKERID) || hasErrorMarker(file, NEDCONSISTENCYPROBLEM_MARKERID);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.omnetpp.resources.INEDComponentResolver#getDefaultChannelType()
-	 */
-	public INEDComponent getDefaultChannelType() {
-		return defaultChannelType;
-	}
-	
 	/**
 	 * True if the file has any marker of the given marker type id (or subclass) 
 	 * with severity ERROR; or if an error occurred while checking the markers. 
@@ -391,6 +390,9 @@ public class NEDResources implements INEDComponentResolver {
 		modules.clear();
 		moduleInterfaces.clear();
 
+		components.put(nullChannelType.getName(), nullChannelType);
+		components.put(basicChannelType.getName(), basicChannelType);
+		
 		// find toplevel components in each file, and register them
 		for (IFile file : nedFiles.keySet()) {
 			// remove old consistency problem markers from file, before we proceed to add new ones

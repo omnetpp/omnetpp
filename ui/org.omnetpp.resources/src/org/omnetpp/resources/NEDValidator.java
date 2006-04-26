@@ -178,23 +178,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 	}
 
 	protected void validateElement(ChannelNode node) {
-        // init
-		componentNode = node;
-		Assert.isTrue(members.isEmpty());
-
-		// pretend it inherits from the default channel type, and take over parameters from there
-		//XXX what if it has its own "extends" clause...? 
-		INEDComponent defaultChannel = resolver.getDefaultChannelType();
-		for (String memberName : defaultChannel.getMemberNames())
-			members.put(memberName, defaultChannel.getMember(memberName));
-		
-		// do the work
-		validateChildren(node);
-		//XXX check compliance to "like" interfaces
-		
-		// clean up
-		componentNode = null;
-		members.clear();
+		doValidateComponent(node); 
 	}
 
 	/* utility method */
@@ -274,7 +258,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 			}
 			decl = (ParamNode) channelSpecType.getMember(parname);
 			if (decl==null || decl.getTagCode()!=NED_PARAM) {
-				errors.add(node, "'"+parname+"': type '"+submoduleType.getName()+"' has no such parameter");
+				errors.add(node, "'"+parname+"': type '"+channelSpecType.getName()+"' has no such parameter");
 				return;
 			}
 		}
@@ -379,6 +363,45 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 	}
 
 	protected void validateElement(ChannelSpecNode node) {
+		// find submodule type
+		String typeName = node.getType();  
+		String likeTypeName = node.getLikeType();  
+		if (typeName!=null && !typeName.equals("")) {
+			// normal case
+			channelSpecType = resolver.getComponent(typeName);
+			if (channelSpecType == null) {
+				errors.add(node, "'"+typeName+"': no such channel type");
+				return;
+			}
+			int typeTag = channelSpecType.getNEDElement().getTagCode();
+			if (typeTag!=NED_CHANNEL) {
+				errors.add(node, "'"+typeName+"' is not a channel type");
+				return;
+			}
+		}
+		else if ("*".equals(likeTypeName)) {
+			// unchecked "like"...
+			channelSpecType = null;
+		}
+		else if (likeTypeName!=null && !likeTypeName.equals("")) {
+			// "like" case
+			channelSpecType = resolver.getComponent(likeTypeName);
+			if (channelSpecType == null) {
+				errors.add(node, "'"+likeTypeName+"': no such channel or channel interface type");
+				return;
+			}
+			int typeTag = channelSpecType.getNEDElement().getTagCode();
+			if (typeTag!=NED_CHANNEL && typeTag!=NED_CHANNEL_INTERFACE) {
+				errors.add(node, "'"+typeName+"' is not a channel or channel interface type");
+				return;
+			}
+		}
+		else {
+			// fallback: type is BasicChannel
+			channelSpecType = resolver.getComponent("BasicChannel");
+			Assert.isTrue(channelSpecType!=null);
+		}
+
 		channelSpecNode = node;
 		validateChildren(node);
 		channelSpecNode = null;

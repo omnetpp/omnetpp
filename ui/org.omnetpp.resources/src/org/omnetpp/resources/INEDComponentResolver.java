@@ -88,10 +88,4 @@ public interface INEDComponentResolver {
 	 */
 	public INEDComponent getComponent(String name);
 	
-	/**
-	 * Return a component representing the implicit base class of channels.
-	 * It has the classic parameters: delay, error and datarate.
-	 */
-	public INEDComponent getDefaultChannelType();
-
 }
