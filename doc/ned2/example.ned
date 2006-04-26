@@ -26,6 +26,9 @@
 //   Plain "channel Foo {...}" is ILLEGAL (what should be the underlying C++ class???)
 //   "channel withcppclass Foo {...}" is OK.
 //
+//   Inside connections, BasicChannel is the default: "--> {...} -->" means
+//   "--> BasicChannel {...} -->"
+//
 //
 // - EXTRA PARAMS: is it possible to add extra params in submodules?
 //   and in channels? (like "cost", "color"!!!)
