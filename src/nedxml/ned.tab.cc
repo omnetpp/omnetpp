@@ -2291,7 +2291,7 @@ yyreduce:
     {
                   ps.submod = (SubmoduleNode *)createNodeWithTag(NED_SUBMODULE, ps.submods);
                   ps.submod->setName(toString((yylsp[-6])));
-                  ps.submod->setLikeType(toString((yylsp[-2])));
+                  ps.submod->setLikeType(toString((yylsp[-1])));
                   ps.submod->setLikeParam(toString((yylsp[-4]))); //FIXME store as expression!!!
                   addVector(ps.submod, "vector-size",(yylsp[-3]),(yyvsp[-3]));
                   setComments(ps.submod,(yylsp[-6]),(yylsp[0]));

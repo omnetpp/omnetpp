@@ -620,7 +620,7 @@ submodule_old
                 {
                   ps.submod = (SubmoduleNode *)createNodeWithTag(NED_SUBMODULE, ps.submods);
                   ps.submod->setName(toString(@1));
-                  ps.submod->setLikeType(toString(@5));
+                  ps.submod->setLikeType(toString(@6));
                   ps.submod->setLikeParam(toString(@3)); //FIXME store as expression!!!
                   addVector(ps.submod, "vector-size",@4,$4);
                   setComments(ps.submod,@1,@7);
