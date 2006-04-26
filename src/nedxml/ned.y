@@ -1091,7 +1091,11 @@ parentrightgate_old
 
 channeldescr_old
         : channelattrs_old
-                { storePos(ps.chanspec, @$); }
+                {
+                  storePos(ps.chanspec, @$);
+                  if (ps.chanspec->getFirstChildWithTag(NED_PARAMETERS)!=NULL)
+                      storePos(ps.params, @$);
+                }
         ;
 
 channelattrs_old
@@ -1101,19 +1105,18 @@ channelattrs_old
                       ps.chanspec = createChannelSpec(ps.conn);
                   ps.chanspec->setType(toString(@1));
                 }
-        | CHANATTRNAME expression
+        | chanattr_old
+        | channelattrs_old chanattr_old
+        ;
+
+chanattr_old
+        : CHANATTRNAME expression
                 {
                   if (!ps.chanspec)
                       ps.chanspec = createChannelSpec(ps.conn);
                   ps.param = addParameter(ps.params, @1);
                   addExpression(ps.param, "value",@2,$2);
-                }
-        | channelattrs_old CHANATTRNAME expression
-                {
-                  if (!ps.chanspec)
-                      ps.chanspec = createChannelSpec(ps.conn);
-                  ps.param = addParameter(ps.params, @2);
-                  addExpression(ps.param, "value",@3,$3);
+                  storePos(ps.param, @$);
                 }
         ;
 
