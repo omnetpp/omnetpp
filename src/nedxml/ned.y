@@ -216,6 +216,7 @@ filename
                   ps.import = (ImportNode *)createNodeWithTag(NED_IMPORT, ps.nedfile );
                   ps.import->setFilename(toString(trimQuotes(@1)));
                   setComments(ps.import,@1);
+                  storePos(ps.import, @$);
                 }
         ;
 
@@ -224,6 +225,7 @@ filename
  */
 channeldefinition_old
         : channelheader_old opt_channelattrblock_old endchannel_old
+                { storePos(ps.channel, @$); }
         ;
 
 channelheader_old
@@ -240,6 +242,7 @@ channelheader_old
 opt_channelattrblock_old
         :
         | channelattrblock_old
+                { storePos(ps.params, @$); }
         ;
 
 channelattrblock_old
@@ -249,6 +252,7 @@ channelattrblock_old
                   ps.param = addParameter(ps.params, @2);
                   addExpression(ps.param, "value",@3,$3);
                   setComments(ps.param,@2,@3);
+                  storePos(ps.param, @2); // XXX rather: @2..@4
                 }
         | CHANATTRNAME expression opt_semicolon
                 {
@@ -256,6 +260,7 @@ channelattrblock_old
                   ps.param = addParameter(ps.params, @1);
                   addExpression(ps.param, "value",@2,$2);
                   setComments(ps.param,@1,@2);
+                  storePos(ps.param, @$);
                 }
         ;
 
@@ -278,6 +283,7 @@ simpledefinition_old
             opt_paramblock_old
             opt_gateblock_old
           endsimple_old
+                { storePos(ps.module, @$); }
         ;
 
 simpleheader_old
@@ -311,6 +317,7 @@ moduledefinition_old
             opt_connblock_old
             opt_displayblock_old
           endmodule_old
+                { storePos(ps.module, @$); }
         ;
 
 moduleheader_old
@@ -349,6 +356,9 @@ displayblock_old
                   ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
                   LiteralNode *literal = createLiteral(NED_CONST_STRING, trimQuotes(@3), @3);
                   ps.propkey->appendChild(literal);
+                  storePos(ps.propkey, @$);
+                  storePos(literal, @3);
+                  storePos(ps.property, @$);
 
                   // move parameters section in front of potential gates section
                   if (ps.params && ps.module->getFirstChild()!=ps.params)
@@ -376,6 +386,7 @@ paramblock_old
                 }
           opt_parameters_old
                 {
+                  storePos(ps.params, @$);
                 }
         ;
 
@@ -404,47 +415,56 @@ parameter_old
                   ps.param = addParameter(ps.params, @1);
                   ps.param->setType(NED_PARTYPE_DOUBLE);
                   ps.param->setIsFunction(true); // because CONST is missing
+                  storePos(ps.param, @$);
                 }
         | NAME ':' NUMERICTYPE
                 {
                   ps.param = addParameter(ps.params, @1);
                   ps.param->setType(NED_PARTYPE_DOUBLE);
                   ps.param->setIsFunction(true); // because CONST is missing
+                  storePos(ps.param, @$);
                 }
         | CONSTDECL NAME /* for compatibility */
                 {
                   ps.param = addParameter(ps.params, @1);
                   ps.param->setType(NED_PARTYPE_DOUBLE);
+                  storePos(ps.param, @$);
                 }
         | NAME ':' CONSTDECL
                 {
                   ps.param = addParameter(ps.params, @1);
                   ps.param->setType(NED_PARTYPE_DOUBLE);
+                  storePos(ps.param, @$);
                 }
         | NAME ':' CONSTDECL NUMERICTYPE
                 {
                   ps.param = addParameter(ps.params, @1);
                   ps.param->setType(NED_PARTYPE_DOUBLE);
+                  storePos(ps.param, @$);
                 }
         | NAME ':' NUMERICTYPE CONSTDECL
                 {
                   ps.param = addParameter(ps.params, @1);
                   ps.param->setType(NED_PARTYPE_DOUBLE);
+                  storePos(ps.param, @$);
                 }
         | NAME ':' STRINGTYPE
                 {
                   ps.param = addParameter(ps.params, @1);
                   ps.param->setType(NED_PARTYPE_STRING);
+                  storePos(ps.param, @$);
                 }
         | NAME ':' BOOLTYPE
                 {
                   ps.param = addParameter(ps.params, @1);
                   ps.param->setType(NED_PARTYPE_BOOL);
+                  storePos(ps.param, @$);
                 }
         | NAME ':' XMLTYPE
                 {
                   ps.param = addParameter(ps.params, @1);
                   ps.param->setType(NED_PARTYPE_XML);
+                  storePos(ps.param, @$);
                 }
         | NAME ':' ANYTYPE
                 {
@@ -468,6 +488,7 @@ gateblock_old
                 }
           opt_gates_old
                 {
+                  storePos(ps.gates, @$);
                 }
         ;
 
@@ -495,12 +516,14 @@ gateI_old
                   ps.gate->setType(NED_GATETYPE_INPUT);
                   ps.gate->setIsVector(true);
                   setComments(ps.gate,@1,@3);
+                  storePos(ps.gate, @$);
                 }
         | NAME
                 {
                   ps.gate = addGate(ps.gates, @1);
                   ps.gate->setType(NED_GATETYPE_INPUT);
                   setComments(ps.gate,@1);
+                  storePos(ps.gate, @$);
                 }
         ;
 
@@ -516,12 +539,14 @@ gateO_old
                   ps.gate->setType(NED_GATETYPE_OUTPUT);
                   ps.gate->setIsVector(true);
                   setComments(ps.gate,@1,@3);
+                  storePos(ps.gate, @$);
                 }
         | NAME
                 {
                   ps.gate = addGate(ps.gates, @1);
                   ps.gate->setType(NED_GATETYPE_OUTPUT);
                   setComments(ps.gate,@1,@1);
+                  storePos(ps.gate, @$);
                 }
         ;
 
@@ -541,6 +566,7 @@ submodblock_old
                 }
           opt_submodules_old
                 {
+                  storePos(ps.submods, @$);
                 }
         ;
 
@@ -564,6 +590,7 @@ submodule_old
                 }
           submodule_body_old
                 {
+                  storePos(ps.submod, @$);
                 }
         | NAME ':' NAME vector opt_semicolon
                 {
@@ -575,6 +602,7 @@ submodule_old
                 }
           submodule_body_old
                 {
+                  storePos(ps.submod, @$);
                 }
         | NAME ':' NAME LIKE NAME opt_semicolon
                 {
@@ -586,6 +614,7 @@ submodule_old
                 }
           submodule_body_old
                 {
+                  storePos(ps.submod, @$);
                 }
         | NAME ':' NAME vector LIKE NAME opt_semicolon
                 {
@@ -598,6 +627,7 @@ submodule_old
                 }
           submodule_body_old
                 {
+                  storePos(ps.submod, @$);
                 }
         ;
 
@@ -612,6 +642,7 @@ submodule_body_old
  */
 opt_substparamblocks_old
         : substparamblocks_old
+                { storePos(ps.substparams, @$); /*must do it here because there might be multiple (conditional) gatesizes/parameters sections */ }
         |
         ;
 
@@ -641,6 +672,7 @@ substparamblock_old
                 {
                   ps.condition = (ConditionNode *)createNodeWithTag(NED_CONDITION, ps.substparamgroup);
                   addExpression(ps.condition, "condition",@3,$3);
+                  storePos(ps.substparamgroup, @$);
                   ps.inGroup = false;
                 }
 
@@ -663,6 +695,7 @@ substparameter_old
                   ps.substparam = addParameter(parent,@1);
                   addExpression(ps.substparam, "value",@3,$3);
                   setComments(ps.substparam,@1,@3);
+                  storePos(ps.substparam, @$);
                 }
         ;
 
@@ -670,8 +703,14 @@ substparameter_old
  * Gatesizes - old syntax
  */
 opt_gatesizeblocks_old
-        : opt_gatesizeblocks_old gatesizeblock_old
+        : gatesizeblocks_old
+                { storePos(ps.gatesizes, @$); /*must do it here because there might be multiple (conditional) gatesizes/parameters sections */ }
         |
+        ;
+
+gatesizeblocks_old
+        : gatesizeblocks_old gatesizeblock_old
+        | gatesizeblock_old
         ;
 
 gatesizeblock_old
@@ -696,6 +735,7 @@ gatesizeblock_old
                   ps.condition = (ConditionNode *)createNodeWithTag(NED_CONDITION, ps.gatesizesgroup);
                   addExpression(ps.condition, "condition",@3,$3);
                   ps.inGroup = false;
+                  storePos(ps.gatesizesgroup, @$);
                 }
         ;
 
@@ -715,13 +755,14 @@ gatesize_old
                   NEDElement *parent = ps.inGroup ? (NEDElement *)ps.gatesizesgroup : (NEDElement *)ps.gatesizes;
                   ps.gatesize = addGate(parent,@1);
                   addVector(ps.gatesize, "vector-size",@2,$2);
-
                   setComments(ps.gatesize,@1,@2);
+                  storePos(ps.gatesize, @$);
                 }
         | NAME
                 {
                   ps.gatesize = addGate(ps.gatesizes,@1);
                   setComments(ps.gatesize,@1);
+                  storePos(ps.gatesize, @$);
                 }
         ;
 
@@ -736,6 +777,9 @@ opt_submod_displayblock_old
                   ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
                   LiteralNode *literal = createLiteral(NED_CONST_STRING, trimQuotes(@3), @3);
                   ps.propkey->appendChild(literal);
+                  storePos(ps.propkey, @$);
+                  storePos(literal, @3);
+                  storePos(ps.property, @$);
 
                   // move parameters section in front of potential gatesizes section
                   if (ps.substparams && ps.submod->getFirstChild()!=ps.substparams)
@@ -765,6 +809,7 @@ connblock_old
                 }
           opt_connections_old
                 {
+                  storePos(ps.conns, @$);
                 }
         | CONNECTIONS ':'
                 {
@@ -774,6 +819,7 @@ connblock_old
                 }
           opt_connections_old
                 {
+                  storePos(ps.conns, @$);
                 }
         ;
 
@@ -804,6 +850,7 @@ loopconnection_old
                   ps.inLoop=0;
                   setComments(ps.where,@1,@4);
                   //setTrailingComment(ps.where,@6);
+                  storePos(ps.where, @3);
 
                   // optimize: if there's exactly one connection inside the loop, eliminate conngroup
                   if (ps.conngroup->getNumChildrenWithTag(NED_CONNECTION)==1)
@@ -812,12 +859,14 @@ loopconnection_old
                       ps.conns->insertChildBefore(ps.conngroup, ps.conn);
                       ps.conn->appendChild(ps.conngroup->removeChild(ps.where));
                       delete ps.conns->removeChild(ps.conngroup);
+                      storePos(ps.conn, @$);
                   }
                   else
                   {
                       // move ps.where to the end
                       ps.conngroup->appendChild(ps.conngroup->removeChild(ps.where));
                       ps.where->setAtFront(true);
+                      storePos(ps.conngroup, @$);
 
                       // we're only prepared for "for" loops with 1 connection inside
                       if (ps.where->getNumChildrenWithTag(NED_CONDITION)!=0)
@@ -840,6 +889,7 @@ loopvar_old
                   addExpression(ps.loop, "from-value",@3,$3);
                   addExpression(ps.loop, "to-value",@5,$5);
                   setComments(ps.loop,@1,@5);
+                  storePos(ps.loop, @$);
                 }
         ;
 
@@ -852,6 +902,8 @@ opt_conncondition_old
                       ps.where = (WhereNode *)createNodeWithTag(NED_WHERE, ps.conn);
                       ps.condition = (ConditionNode *)createNodeWithTag(NED_CONDITION, ps.where);
                       addExpression(ps.condition, "condition",@2,$2);
+                      storePos(ps.where, @$);
+                      storePos(ps.condition, @$);
                   }
                   else
                   {
@@ -860,6 +912,7 @@ opt_conncondition_old
                       // (otherwise we'd have to check all conns have exactly the same condition)
                       ps.condition = (ConditionNode *)createNodeWithTag(NED_CONDITION, ps.where);
                       addExpression(ps.condition, "condition",@2,$2);
+                      storePos(ps.condition, @$);
                   }
                 }
         |
@@ -868,12 +921,18 @@ opt_conncondition_old
 opt_conn_displaystr_old
         : DISPLAY STRINGCONSTANT
                 {
+                  bool hadChanSpec = ps.chanspec!=NULL;
                   if (!ps.chanspec)
                       ps.chanspec = createChannelSpec(ps.conn);
                   ps.property = addComponentProperty(ps.chanspec, "display");
                   ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
                   LiteralNode *literal = createLiteral(NED_CONST_STRING, trimQuotes(@2), @2);
                   ps.propkey->appendChild(literal);
+                  storePos(ps.propkey, @$);
+                  storePos(literal, @2);
+                  storePos(ps.property, @$);
+                  if (!hadChanSpec)
+                      storePos(ps.chanspec, @$);
                 }
         |
         ;
@@ -888,18 +947,21 @@ notloopconnection_old
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_L2R);
                   setComments(ps.conn,@1,@5);
+                  storePos(ps.conn, @$);
                 }
         | leftgatespec_old RIGHT_ARROW channeldescr_old RIGHT_ARROW rightgatespec_old opt_conncondition_old opt_conn_displaystr_old comma_or_semicolon
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_L2R);
                   removeRedundantChanSpecParams();
                   setComments(ps.conn,@1,@7);
+                  storePos(ps.conn, @$);
                 }
         | leftgatespec_old LEFT_ARROW rightgatespec_old opt_conncondition_old opt_conn_displaystr_old comma_or_semicolon
                 {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_R2L);
                   setComments(ps.conn,@1,@5);
+                  storePos(ps.conn, @$);
                 }
         | leftgatespec_old LEFT_ARROW channeldescr_old LEFT_ARROW rightgatespec_old opt_conncondition_old opt_conn_displaystr_old comma_or_semicolon
                 {
@@ -907,6 +969,7 @@ notloopconnection_old
                   ps.conn->setArrowDirection(NED_ARROWDIR_R2L);
                   removeRedundantChanSpecParams();
                   setComments(ps.conn,@1,@7);
+                  storePos(ps.conn, @$);
                 }
         ;
 
@@ -1028,6 +1091,7 @@ parentrightgate_old
 
 channeldescr_old
         : channelattrs_old
+                { storePos(ps.chanspec, @$); }
         ;
 
 channelattrs_old
@@ -1060,6 +1124,7 @@ networkdefinition_old
         : networkheader_old
             opt_substparamblocks_old
           endnetwork_old
+                { storePos(ps.module, @$); }
         ;
 
 networkheader_old
@@ -1071,6 +1136,7 @@ networkheader_old
                   ps.extends = (ExtendsNode *)createNodeWithTag(NED_EXTENDS, ps.module);
                   ps.extends->setName(toString(@4));
                   setComments(ps.module,@1,@5);
+                  storePos(ps.extends, @4);
                   ps.inNetwork=1;
                 }
         ;
