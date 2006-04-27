@@ -13,7 +13,8 @@
 //   be named the same as a gate, a submodule or an inner type)
 //
 // TODO:
-// - CHANNELS: two implicit channel types:
+// - CHANNELS: two implicit (built-in) channel types exist: NullChannel, BasicChannel.
+//   Their names can be referenced, ie one can write "channel X extends NullChannel..."
 //         channel withcppclass BasicChannel {
 //             double delay = 0;  // make it "double function" ???
 //             double error = 0;
@@ -21,17 +22,22 @@
 //         };
 //         channel withcppclass NullChannel {
 //         };
-//   When defining new channels, BasicChannel or NullChannel must be explicitly
-//   named as the base class: "channel Foo extends BasicChannel {...}"!!!
-//   Plain "channel Foo {...}" is ILLEGAL (what should be the underlying C++ class???)
-//   "channel withcppclass Foo {...}" is OK.
+// - Channel inheritance:  ultimate base class is always a "channel withcppclass";
+//   "channel withcppclass X extends Y" is ILLEGAL! (ie "withcppclass" can only be
+//   an ultimate base class).
 //
-//   Inside connections, BasicChannel is the default: "--> {...} -->" means
-//   "--> BasicChannel {...} -->"
+// - alternative name for "channel withcppclass": "channelbase X {...}" ???
 //
+// - The default base class is BasicChannel. That is:
+//     1. "--> {...} -->" means "--> BasicChannel {...} -->"
+//     2. "channel X {...}" means "channel X extends BasicChannel {...}"
 //
-// - EXTRA PARAMS: is it possible to add extra params in submodules?
-//   and in channels? (like "cost", "color"!!!)
+// - module inheritance: "module X extends ASimpleMod" is equivalent to
+//   "simple X extends ASimpleMod". It is NOT possible to write a simple module
+//   and reuse an existing interface for it via "extends".
+//
+// - Extra params CANNOT be added in submodules and connection channelspecs --
+//   they can only be added in new types...
 //
 // - add constants, modelled after Java's public static final stuff
 //     module Foo {
