@@ -31,6 +31,11 @@
 // - module inheritance: "module X extends ASimpleModule" is ILLEGAL, as is
 //   "simple X extends ACompoundModule".
 //
+// - "simple X extends ASimpleModule": inherits the C++ implementation of ASimpleModule!
+//   (That is, code CANNOT be modified via "extends" -- it always stays the same,
+//   that of the ultimate base class.) Subclass may add new parameters and gates
+//   (if it makes sense...) and set parameters and gate vector sizes.
+//
 // - "module X extends ACompoundModule": subclass may add further submodules and
 //   gates and connections as well!
 //
