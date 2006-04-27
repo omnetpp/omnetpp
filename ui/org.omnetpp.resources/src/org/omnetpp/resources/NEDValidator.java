@@ -91,6 +91,9 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 	// members of the component currently being validated
 	HashMap<String, NEDElement> members = new HashMap<String, NEDElement>();
 
+	// contents of the "types:" section of the component currently being validated
+	HashMap<String, INEDComponent> innerTypes = new HashMap<String, INEDComponent>();
+	
 	public NEDValidator(INEDComponentResolver resolver, INEDErrorStore errors) {
 		this.resolver = resolver;
 		this.errors = errors;
@@ -139,10 +142,11 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 		}
 		int thisType = componentNode.getTagCode();
 		int extendsType = e.getNEDElement().getTagCode();
-		if (thisType != extendsType) { // XXX loosen condition if "module Foo extends ASimple" is legal!
+		if (thisType != extendsType) {
 			errors.add(node, "'"+name+"' is not a "+componentNode.getTagName());
 			return;
 		}
+		//XXX enforce channel inheritance rules, wrt "withcppclass" keyword
 
 		// if all OK, add inherited members to our member list
 		for (String memberName : e.getMemberNames()) {
@@ -187,6 +191,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
         // init
 		componentNode = node;
 		Assert.isTrue(members.isEmpty());
+		Assert.isTrue(innerTypes.isEmpty());
 		
 		// do the work
 		validateChildren(node);
@@ -195,6 +200,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 		// clean up
 		componentNode = null;
 		members.clear();
+		innerTypes.clear();
 	}
 
 	protected void validateElement(ParametersNode node) {
@@ -369,7 +375,25 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 	}
 
 	protected void validateElement(TypesNode node) {
-		validateChildren(node);
+		for (NEDElement child : node) {
+			NEDValidator validator = new NEDValidator(resolver, errors);
+			switch (child.getTagCode()) {
+				case NED_WHITESPACE: 
+					break;
+				case NED_SIMPLE_MODULE:
+				case NED_MODULE_INTERFACE:
+				case NED_COMPOUND_MODULE:
+				case NED_CHANNEL_INTERFACE:
+				case NED_CHANNEL: 
+					validator.validate(child);
+					String name = child.getAttribute("name");
+					innerTypes.put(name, resolver.wrapNEDElement(child));
+					members.put(name, child);
+					break;
+				default: 
+					Assert.isTrue(false, "unexpected element type: "+child.getTagName());
+			}
+		}
 	}
 
 	protected void validateElement(SubmodulesNode node) {
@@ -383,7 +407,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 		String likeTypeName = node.getLikeType();  
 		if (typeName!=null && !typeName.equals("")) {
 			// normal case
-			submoduleType = resolver.getComponent(typeName);
+			submoduleType = resolveTypeName(typeName);
 			if (submoduleType == null) {
 				errors.add(node, "'"+typeName+"': no such module type");
 				return;
@@ -400,7 +424,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 		}
 		else if (likeTypeName!=null && !likeTypeName.equals("")) {
 			// "like" case
-			submoduleType = resolver.getComponent(likeTypeName);
+			submoduleType = resolveTypeName(likeTypeName);
 			if (submoduleType == null) {
 				errors.add(node, "'"+likeTypeName+"': no such module or interface type");
 				return;
@@ -422,6 +446,13 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 		submoduleNode = null;
 	}
 
+	protected INEDComponent resolveTypeName(String typeName) {
+		INEDComponent component = innerTypes.get(typeName);
+		if (component!=null)
+			return component;
+		return resolver.getComponent(typeName);
+	}
+
 	protected void validateElement(ConnectionsNode node) {
 		validateChildren(node);
 	}
@@ -436,7 +467,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 		String likeTypeName = node.getLikeType();  
 		if (typeName!=null && !typeName.equals("")) {
 			// normal case
-			channelSpecType = resolver.getComponent(typeName);
+			channelSpecType = resolveTypeName(typeName);
 			if (channelSpecType == null) {
 				errors.add(node, "'"+typeName+"': no such channel type");
 				return;

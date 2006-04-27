@@ -87,5 +87,12 @@ public interface INEDComponentResolver {
 	 * Returns a component by name.
 	 */
 	public INEDComponent getComponent(String name);
+
+	/**
+	 * Creates and returns an INEDComponent for the given NEDElement representing
+	 * a module type, channel type, etc. The component will NOT be registered
+	 * in the resolver. This method was created for handling inner types.
+	 */
+	public INEDComponent wrapNEDElement(NEDElement componentNode);
 	
 }

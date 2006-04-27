@@ -18,6 +18,7 @@ import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned2.model.pojo.ChannelNode;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned2.model.pojo.ModuleInterfaceNode;
+import org.omnetpp.ned2.model.pojo.NedFileNode;
 import org.omnetpp.ned2.model.pojo.ParamNode;
 import org.omnetpp.ned2.model.pojo.ParametersNode;
 import org.omnetpp.ned2.model.pojo.SimpleModuleNode;
@@ -237,6 +238,13 @@ public class NEDResources implements INEDComponentResolver {
 		if (needsRehash)
 			rehash();
 		return components.get(name);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.omnetpp.resources.INEDComponentResolver#wrapNEDElement(org.omnetpp.ned2.model.NEDElement)
+	 */
+	public INEDComponent wrapNEDElement(NEDElement componentNode) {
+		return new NEDComponent(componentNode, null, this); 
 	}
 
 	/**
@@ -465,8 +473,8 @@ public class NEDResources implements INEDComponentResolver {
 					} 
 				}
 			};
-			NEDValidator validator = new NEDValidator(this, errors);
-			NEDElement tree = nedFiles.get(file);
+			NEDFileValidator validator = new NEDFileValidator(this, errors);
+			NedFileNode tree = (NedFileNode) nedFiles.get(file);
 			validator.validate(tree);
 		}
 
