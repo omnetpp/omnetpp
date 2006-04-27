@@ -230,7 +230,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 				return;
 			}
 
-			// param must NOT exist already
+			// param must NOT exist yet
 			if (members.containsKey(parname)) {
 				errors.add(node, "'"+parname+"': already defined at "+members.get(parname).getSourceLocation()); // and may not be a parameter at all...
 				return;

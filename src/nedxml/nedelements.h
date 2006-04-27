@@ -984,7 +984,7 @@ class PropertyNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;property-key&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT property-key (whitespace*, literal?)>
+ * <!ELEMENT property-key (whitespace*, literal*)>
  * <!ATTLIST property-key
  *      key                CDATA     #IMPLIED>
  * </pre>

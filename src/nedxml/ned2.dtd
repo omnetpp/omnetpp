@@ -86,7 +86,7 @@
      is-implicit        (true|false) "false"
      name               NMTOKEN   #REQUIRED>
 
-<!ELEMENT property-key (whitespace*, literal?)>
+<!ELEMENT property-key (whitespace*, literal*)>
 <!ATTLIST property-key
      key                CDATA     #IMPLIED>
 

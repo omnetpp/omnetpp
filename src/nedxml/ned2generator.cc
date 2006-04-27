@@ -253,7 +253,7 @@ void NED2Generator::doPropertyDecl(PropertyDeclNode *node, const char *indent, b
     if (node->getFirstChildWithTag(NED_PROPERTY_KEY))
     {
         OUT << "(";
-        generateChildrenWithType(node, NED_PROPERTY_KEY, increaseIndent(indent), ", ");
+        generateChildrenWithType(node, NED_PROPERTY_KEY, increaseIndent(indent), "; ");
         OUT << ")";
     }
     OUT << ";\n\n";
@@ -434,7 +434,7 @@ void NED2Generator::doProperty(PropertyNode *node, const char *indent, bool isla
         if (node->getFirstChildWithTag(NED_PROPERTY_KEY))
         {
             OUT << "(";
-            generateChildrenWithType(node, NED_PROPERTY_KEY, subindent, ", ");
+            generateChildrenWithType(node, NED_PROPERTY_KEY, subindent, "; ");
             OUT << ")";
         }
         generateChildrenWithType(node, NED_CONDITION, subindent);
@@ -452,7 +452,7 @@ void NED2Generator::doPropertyKey(PropertyKeyNode *node, const char *indent, boo
     {
         if (strnotnull(node->getKey()))
             OUT << "=";
-        generateChildrenWithType(node, NED_LITERAL, increaseIndent(indent),", ");
+        generateChildrenWithType(node, NED_LITERAL, increaseIndent(indent),",");
     }
     if (!islast && sep)
         OUT << sep;

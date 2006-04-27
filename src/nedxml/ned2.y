@@ -116,6 +116,7 @@ static struct NED2ParserState
     bool isFunction;
     bool isDefault;
     int subgate;
+    std::vector<NEDElement *> propvals; // temporarily collects property values
 
     /* tmp flags, used with msg fields */
     bool isAbstract;
@@ -249,7 +250,7 @@ opt_propertydecl_keys
         ;
 
 propertydecl_keys
-        : propertydecl_keys ',' propertydecl_key
+        : propertydecl_keys ';' propertydecl_key
         | propertydecl_key
         ;
 
@@ -779,6 +780,7 @@ property_name
                 {
                   assertNonEmpty(ps.propertyscope);
                   ps.property = addProperty(ps.propertyscope.top(), toString(@2));
+                  ps.propvals.clear(); // just to be safe
                 }
         ;
 
@@ -788,24 +790,36 @@ opt_property_keys
         ;
 
 property_keys
-        : property_keys ',' property_key
+        : property_keys ';' property_key
         | property_key
         ;
 
 property_key
-        : NAME '=' property_value
+        : NAME '=' property_values
                 {
                   ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
                   ps.propkey->setKey(toString(@1));
-                  ps.propkey->appendChild($3);
+                  for (int i=0; i<ps.propvals.size(); i++)
+                      ps.propkey->appendChild(ps.propvals[i]);
+                  ps.propvals.clear();
                   storePos(ps.propkey, @$);
                 }
-        | property_value
+        | property_values
                 {
                   ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
                   ps.propkey->appendChild($1);
+                  for (int i=0; i<ps.propvals.size(); i++)
+                      ps.propkey->appendChild(ps.propvals[i]);
+                  ps.propvals.clear();
                   storePos(ps.propkey, @$);
                 }
+        ;
+
+property_values
+        : property_values ',' property_value
+                { ps.propvals.push_back($3); }
+        | property_value
+                { ps.propvals.push_back($1); }
         ;
 
 property_value
@@ -823,6 +837,8 @@ property_value
                 { $$ = createLiteral(NED_CONST_DOUBLE, @1, @1); }
         | quantity
                 { $$ = createQuantity(toString(@1)); }
+        | '-'  /* to mark empty value (no value) */
+                { $$ = createLiteral(NED_CONST_STRING, @1, @1); }
         ;
 
 /*
