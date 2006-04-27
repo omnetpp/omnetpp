@@ -183,6 +183,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 	}
 
 	protected void validateElement(ChannelNode node) {
+		//XXX check: exactly one of "extends" and "withcppclass" must be present!!!
 		doValidateComponent(node); 
 	}
 
@@ -436,7 +437,8 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 			}
 		}
 		else {
-			errors.add(node, "no type info for '"+name+"'"); // should never happen
+			// XXXX   the "<> like *" case comes here but it should NOT!!!
+			errors.add(node, "no type info for '"+name+"'");  // should never happen
 			return;
 		}
 		

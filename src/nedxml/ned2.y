@@ -161,7 +161,8 @@ static NED2ParserState globalps;  // for error recovery
 
 static void restoreGlobalParserState()  // for error recovery
 {
-    ps = globalps;
+    ps = globalps;  // FIXME we can get this while editing in the "types:" section:
+                    //    "INTERNAL ERROR: ned2.y:171: error during parsing: scope stack empty"
 }
 
 static void assertNonEmpty(std::stack<NEDElement *>& somescope) {
