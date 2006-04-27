@@ -52,45 +52,37 @@
 //     }
 //   and usage: Foo.RADIO_FREQ.
 //
-// - rules of inheritance must be defined exactly!
+// - rules of inheritance:
 //     o for inner types:
-//        - can I define an inner type with the same name in subclasses?
+//        - can I define an inner type with the same name in subclasses? NO
 //     o for properties:
 //        - contents will be merged (rules like for display strings: values on
 //          same key and same position will overwrite old ones)
 //     o for parameters:
 //        - type cannot be redefined
-//        - value, once given, cannot be redefined in subclasses (what if either one is conditional????)
-//            ==> we must allow assignments anywhere!!!!
+//        - value may be redefined in subclasses or place of usage
 //     o for gates:
 //        - type cannot be redefined
-//        - vector size, once given, cannot be redefined in subclasses (what if either one is conditional????)
-//            ==> we must allow setting the gate size anywhere!!!!
+//        - vector size may be redefined in subclasses or place of usage
 //     o for gate/parameter properties:
 //        - extra properties can be added
 //        - existing properties can be overridden/extended like for standalone properties (?)
 //     o for submodules:
-//        - TBD
+//        - new submodules may be added, but inherited ones cannot be modified
 //     o for connections:
-//        - TBD
+//        - new connections may be added, but inherited ones cannot be modified
 //
 // - rules of conditionals must be defined exactly!
-//     o for inner types:
-//        - no such thing
-//     o for properties:
-//        - TBD
-//     o for parameters:
-//        - declarations (ie with type) cannot be conditional!
-//     o for gates:
-//        - declarations (ie with type) cannot be conditional!
-//     o for submodules:
-//        - TBD
-//     o for connections:
-//        - TBD
+//     o for inner types: NO CONDITIONAL
+//     o for properties: YES
+//     o for parameters: YES
+//     o for gates: YES
+//     o for submodules: NO
+//     o for connections: YES
 //
 // STATIC ANALYSIS IS NO GOOD WITH CONDITIONALS:
 // as param values, gate size, param/gate/module/submodule properties may
-// involve conditionals, they are UNDETERMINABLE with static analysis!!!
+// involve conditionals, they are UNDETERMINABLE with static analysis.
 //
 // INCONSISTENCY:
 // with wildcards, FIRST match counts; with conditional assignments, LAST match
@@ -151,10 +143,9 @@ simple Queue
         inout thirdGate;
 };
 
-simple VeryFastQueue extends Queue { }  // "simple": VeryFastQueue C++ class required!!!
-module VeryFastQueue extends Queue { }  // "module": no VeryFastQueue C++ class! (Queue C++ class used) FIXME can it add submodules etc????????????????????????????????????????????????????
+simple VeryFastQueue1 extends Queue { }  // uses "Queue" C++ class
 
-simple VeryFastQueue extends Queue  // "extends" inherits gates as well (they don't have to be repeated here)
+simple VeryFastQueue2 extends Queue  // uses "Queue" C++ class; inherits params/gates
 {
     parameters: // this keyword is optional
         msgPerSec = 1000000;  // no type -> sets base class' parameter
@@ -174,7 +165,7 @@ simple QueueWithNInputs extends Queue
     parameters:
         int numInputs @prompt("Number of input ports"); // add new parameter
     gates:
-        input in[numInputs];  // sets vector gate size to a fixed value
+        in[numInputs];  // sets vector gate size to a fixed value
 };
 
 // property syntax:
@@ -206,30 +197,32 @@ simple QueueWithNInputs extends Queue
 //       @display(i=,-);     ====> removes "red", so results is "i=device/pc,,77"
 //
 //
-simple TCP
+simple TCP1
 {
     parameters:
         int mss; // maximum segmentsize
         int advertisedWindow; // in bytes (Note: normally, NIC queues should be at least this size)
-        string tcpAlgorithmClass @choice("TCPTahoe", "TCPReno", "TCPNoCongestionControl", "DumbTCP"); // "..."
-        string tcpAlgorithmClass @classname("ITCPAlgorithm"); // alternative syntax:
+        string tcpAlgorithmClass1 @choice("TCPTahoe", "TCPReno", "TCPNoCongestionControl", "DumbTCP"); // "..."
+        string tcpAlgorithmClass2 @classname("ITCPAlgorithm"); // alternative syntax:
                                                              // specify it accepts a class name, and specify base class
         @kernel(starttime=49);
         @recordstats[stat1](storeintervall=5;averaging=true); // recording seqNum etc. into output vectors on/off, 'id' is the primary key (must be unique)
         @recordstats[stat2](storeintervall=9;averaging=false); // recording seqNum etc. into output vectors on/off
-        @display("i=block/transport");
+        @display(i="block/transport");
     gates:
         inout toApp[] @labels(TCPControlInfo);  // inout; label means "sends/expects msg with TCPControlInfo"
         inout toNetw @labels(TCPSegment);       // inout; label means "sends/expects TCPSegment"
-};
+}
 
-simple MobileHost
+
+module MobileHost1
 {
     parameters:
         double x;
         double y;
-        @display("p=$x,$y"); // $paramname is only resolved at runtime
+        @display(p="$x","$y"); // $paramname is only resolved at runtime
 };
+
 
 //
 //    // Alternative: gate types as identifiers not strings.
@@ -245,7 +238,7 @@ simple MobileHost
 //    gatetype EthernetBus;
 //
 
-simple TCP {
+simple TCP2 {
     gates:
         // receiver's labels must be superset of sender's labels (must be able to receive anything sent to it)
         // inout gates: labels must be exactly the same (superset relation must hold in both directions)
@@ -253,7 +246,7 @@ simple TCP {
         inout toNetw @inlabels(tcp2net) @outlabels(net2tcp);
 };
 
-simple Queue {
+simple Queue2 {
     gates:
         input in[]; // means @labels("*");
         output out; // means @labels("*");
@@ -263,7 +256,7 @@ simple Queue {
 //
 // modules that can be connected to TCP
 //
-interface TCPApp   // no C++ impl; cannot be instantiated
+interface ITCPApp   // no C++ impl; cannot be instantiated
 {
     gates:
         inout toTCP @inlabels(tcp2app) @outlabels(app2tcp);
@@ -272,7 +265,7 @@ interface TCPApp   // no C++ impl; cannot be instantiated
 //
 // modules that can be connected to UDP
 //
-interface UDPApp
+interface IUDPApp
 {
     gates:
         inout toUDP @inlabels(udp2app) @outlabels(app2udp);
@@ -288,7 +281,7 @@ simple GenericFTPApp
 }
 
 
-module FTPApp extends GenericFTPApp like TCPApp   // or: like TCPApp
+simple FTPApp extends GenericFTPApp like ITCPApp   // or: like TCPApp
 {
     parameters:
         connectInterval = 10s;
@@ -297,23 +290,23 @@ module FTPApp extends GenericFTPApp like TCPApp   // or: like TCPApp
     // then they have to match the "like" interfaces.
 }
 
-module FlexibleApp like TCPApp, UDPApp // may be connected to *either* TCP or UDP
+module FlexibleApp like ITCPApp, IUDPApp // may be connected to *either* TCP or UDP
 {
     parameters:
-        connectInterval = 10s;
-        fileLength = normal(10Mb, 1Mb);
+        double connectInterval = 10s;
+        int fileLength = normal(10Mb, 1Mb);
     gates:
         inout toTCP @inlabels(tcp2app) @outlabels(app2tcp);
         inout toUDP @inlabels(udp2app) @outlabels(app2udp);
 }
 
 
-interface TCPUDPApp extends TCPApp, UDPApp   // both TCP and UDP gates required!!! (e.g. OSPF)
+interface ITCPUDPApp extends ITCPApp, IUDPApp   // both TCP and UDP gates required!!! (e.g. OSPF)
 {
-   // if there're conflicting gates/params between TCPApp & UDPApp ==> error
+   // if there're conflicting gates/params between ITCPApp & IUDPApp ==> error
 }
 
-module OSPFRouting like TCPUDPApp // connects to *both* TCP and UDP
+module OSPFRouting like ITCPUDPApp // connects to *both* TCP and UDP
 {
 }
 
@@ -326,6 +319,8 @@ property @prop2[](foo;bar);  // valid key names MUST be declared (only declared 
 @prop2[three](,,,foo);
 @prop2[four](,,,foo,,);
 @prop2[five](foo=1,2,-,4;bar=40,,0);
+
+property @syntax error $#%$#%
 
 module Host
 {
