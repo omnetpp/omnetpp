@@ -39,6 +39,8 @@
 // - "module X extends ACompoundModule": subclass may add further submodules and
 //   gates and connections as well!
 //
+//     XXX TODO: revise all "extends" examples below!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+//
 // - Extra params CANNOT be added in submodules and connection channelspecs --
 //   they can only be added in new types...
 //
