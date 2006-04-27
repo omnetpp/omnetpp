@@ -32,9 +32,11 @@
 //     1. "--> {...} -->" means "--> BasicChannel {...} -->"
 //     2. "channel X {...}" means "channel X extends BasicChannel {...}"
 //
-// - module inheritance: "module X extends ASimpleMod" is equivalent to
-//   "simple X extends ASimpleMod". It is NOT possible to write a simple module
-//   and reuse an existing interface for it via "extends".
+// - module inheritance: "module X extends ASimpleModule" is ILLEGAL, as is
+//   "simple X extends ACompoundModule".
+//
+// - "module X extends ACompoundModule": subclass may add further submodules and
+//   gates and connections as well!
 //
 // - Extra params CANNOT be added in submodules and connection channelspecs --
 //   they can only be added in new types...
