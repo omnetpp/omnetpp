@@ -921,6 +921,7 @@ gate_typenamesize
                 {
                   ps.gate = addGate(ps.inGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @2);
                   ps.gate->setType(ps.gateType);
+                  ps.gate->setIsVector(true);
                   addVector(ps.gate, "vector-size",@3,$3);
                 }
         | NAME
@@ -935,6 +936,7 @@ gate_typenamesize
         | NAME vector
                 {
                   ps.gate = addGate(ps.inGroup ? (NEDElement *)ps.gategroup : (NEDElement *)ps.gates, @1);
+                  ps.gate->setIsVector(true);
                   addVector(ps.gate, "vector-size",@2,$2);
                 }
         ;

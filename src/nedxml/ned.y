@@ -233,6 +233,8 @@ channelheader_old
                 {
                   ps.channel = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.nedfile);
                   ps.channel->setName(toString(@2));
+                  ps.extends = (ExtendsNode *)createNodeWithTag(NED_EXTENDS, ps.channel);
+                  ps.extends->setName("BasicChannel"); // implicit base class "BasicChannel"
                   ps.params = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.channel);
                   ps.params->setIsImplicit(true);
                   setComments(ps.channel,@1,@2);
@@ -754,6 +756,7 @@ gatesize_old
                 {
                   NEDElement *parent = ps.inGroup ? (NEDElement *)ps.gatesizesgroup : (NEDElement *)ps.gatesizes;
                   ps.gatesize = addGate(parent,@1);
+                  ps.gatesize->setIsVector(true);
                   addVector(ps.gatesize, "vector-size",@2,$2);
                   setComments(ps.gatesize,@1,@2);
                   storePos(ps.gatesize, @$);

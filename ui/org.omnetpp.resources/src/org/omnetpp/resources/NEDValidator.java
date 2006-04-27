@@ -68,8 +68,6 @@ import org.omnetpp.ned2.model.pojo.WhitespaceNode;
 // XXX move to org.omnetpp.ned2.model plugin? then INEDComponent,
 // INEDComponentResolver etc would have to be moved as well, and that plugin
 // would have to depend on org.eclipse.resources because of IFile!!!
-//
-// XXX Channels: one must explicitly extend "BasicChannel" to have the default channel parameters!!!
 public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil {
 
 	INEDComponentResolver resolver;
@@ -223,8 +221,12 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 		String parname = node.getName();
 		if (node.getType()!=NED_PARTYPE_NONE) {
 			// check definitions: allowed here at all?
-			if (submoduleNode!=null || channelSpecNode!=null) {
-				errors.add(node, "new parameters can only be defined on a (module/channel) type");
+			if (submoduleNode!=null) {
+				errors.add(node, "'"+parname+"': new parameters can only be defined on a module type, but not per submodule");
+				return;
+			}
+			if (channelSpecNode!=null) {
+				errors.add(node, "'"+parname+"': new channel parameters can only be defined on a channel type, but not per connection");
 				return;
 			}
 
@@ -297,6 +299,69 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 	}
 
 	protected void validateElement(GateNode node) {
+		// structural, not checked by the DTD
+		if (node.getParent() instanceof GateGroupNode) {
+			// definitions not allowed inside groups
+			if (node.getType() != NED_GATETYPE_NONE) {
+				errors.add(node, "gates cannot be defined inside a group");
+				return;
+			}
+			// conditionals not allowed inside groups
+			if (node.getFirstChildWithTag(NED_CONDITION) != null) {
+				errors.add(node, "conditionals are not allowed inside a group");
+				return;
+			}
+		}
+
+		// gate definitions
+		String gatename = node.getName();
+		if (node.getType()!=NED_GATETYPE_NONE) {
+			// check definitions: allowed here at all?
+			if (submoduleNode!=null) {
+				errors.add(node, "'"+gatename+"': new gates can only be defined on a module type, but not per submodule");
+				return;
+			}
+
+			// gate must NOT exist already
+			if (members.containsKey(gatename)) {
+				errors.add(node, "'"+gatename+"': already defined at "+members.get(gatename).getSourceLocation()); // and may not be a parameter at all...
+				return;
+			}
+			members.put(gatename, node);
+		}
+
+		// for further checks: the gate must exist already, find definition
+		GateNode decl = null;
+		if (submoduleNode!=null) {
+			// inside a submodule's definition
+			if (submoduleType==null) {
+				errors.add(node, "cannot configure gates of a submodule of unknown type");
+				return;
+			}
+			decl = (GateNode) submoduleType.getMember(gatename);
+			if (decl==null || decl.getTagCode()!=NED_GATE) {
+				errors.add(node, "'"+gatename+"': type '"+submoduleType.getName()+"' has no such gate");
+				return;
+			}
+		}
+		else {
+			// global "gates" section of module
+			if (!members.containsKey(gatename)) {
+				errors.add(node, "'"+gatename+"': undefined gate");
+				return;
+			}
+			decl = (GateNode)members.get(gatename);
+		}
+
+		// check vector/non vector stuff
+        if (decl.getIsVector() && (!node.getIsVector())) {
+			errors.add(node, "missing []: '"+gatename+"' was declared as a vector gate at "+decl.getSourceLocation());
+			return;
+        }
+        if (!decl.getIsVector() && node.getIsVector()) {
+			errors.add(node, "'"+gatename+"' was declared as a non-vector gate at "+decl.getSourceLocation());
+			return;
+        }
 		validateChildren(node);
 	}
 
@@ -363,7 +428,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 	}
 
 	protected void validateElement(ChannelSpecNode node) {
-		// find submodule type
+		// find channel type
 		String typeName = node.getType();  
 		String likeTypeName = node.getLikeType();  
 		if (typeName!=null && !typeName.equals("")) {
@@ -402,6 +467,7 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 			Assert.isTrue(channelSpecType!=null);
 		}
 
+		// validate contents
 		channelSpecNode = node;
 		validateChildren(node);
 		channelSpecNode = null;
@@ -443,6 +509,8 @@ public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil
 		validateChildren(node);
 	}
 
+	/*------MSG----------------------------------------------------*/
+	
 	protected void validateElement(MsgFileNode node) {
 		validateChildren(node);
 	}
