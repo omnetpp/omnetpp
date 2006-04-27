@@ -851,8 +851,14 @@ property_value
                 { $$ = createLiteral(NED_CONST_DOUBLE, @1, @1); }
         | quantity
                 { $$ = createQuantity(toString(@1)); }
-        | '-'  /* to mark empty value (no value) */
-                { $$ = createLiteral(NED_CONST_STRING, @1, @1); }
+        | '-'  /* antivalue ("remove existing value from this position") */
+                { $$ = createLiteral(NED_CONST_SPEC, @1, @1); }
+        |  /* nothing (no value) */
+                {
+                  LiteralNode *node = (LiteralNode *)createNodeWithTag(NED_LITERAL);
+                  node->setType(NED_CONST_SPEC); // and leave both value and text at ""
+                  $$ = node;
+                }
         ;
 
 /*

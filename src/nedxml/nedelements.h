@@ -143,7 +143,7 @@ enum NEDElementCode {
 enum {NED_GATETYPE_NONE, NED_GATETYPE_INPUT, NED_GATETYPE_OUTPUT, NED_GATETYPE_INOUT};
 enum {NED_ARROWDIR_R2L, NED_ARROWDIR_L2R, NED_ARROWDIR_BIDIR};
 enum {NED_PARTYPE_NONE, NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};
-enum {NED_CONST_DOUBLE, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_UNIT};
+enum {NED_CONST_DOUBLE, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_UNIT,NED_CONST_SPEC};
 enum {NED_SUBGATE_NONE, NED_SUBGATE_I, NED_SUBGATE_O};
 
 /**
@@ -1918,7 +1918,7 @@ class IdentNode : public NEDElement
  * <pre>
  * <!ELEMENT literal (whitespace*)>
  * <!ATTLIST literal
- *      type  (double|int|string|bool|unit)  #REQUIRED
+ *      type  (double|int|string|bool|unit|spec)  #REQUIRED
  *      unit-type           CDATA     #IMPLIED
  *      text                CDATA     #IMPLIED
  *      value               CDATA     #IMPLIED>

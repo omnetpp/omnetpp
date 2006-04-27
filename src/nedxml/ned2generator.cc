@@ -874,7 +874,7 @@ void NED2Generator::doIdent(IdentNode *node, const char *indent, bool islast, co
     OUT << node->getName();
 }
 
-void NED2Generator::doLiteral(LiteralNode *node, const char *indent, bool islast, const char *)
+void NED2Generator::doLiteral(LiteralNode *node, const char *indent, bool islast, const char *sep)
 {
     if (strnotnull(node->getText()))
     {
@@ -888,6 +888,8 @@ void NED2Generator::doLiteral(LiteralNode *node, const char *indent, bool islast
         OUT << node->getValue();
         if (isstring) OUT << "\"";
     }
+    if (!islast)
+        OUT << sep;
 }
 
 void NED2Generator::doCplusplus(CplusplusNode *node, const char *indent, bool islast, const char *)

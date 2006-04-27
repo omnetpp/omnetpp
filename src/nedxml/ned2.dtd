@@ -188,10 +188,12 @@
 
 <!ELEMENT literal (whitespace*)>
 <!-- Note: value is in fact REQUIRED, but empty attr value should
-     also be accepted because that represents the "" string literal
+     also be accepted because that represents the "" string literal;
+     "spec" is for properties, to store the null value and "-",
+     the antivalue.
  -->
 <!ATTLIST literal
-     type  (double|int|string|bool|unit)  #REQUIRED
+     type  (double|int|string|bool|unit|spec)  #REQUIRED
      unit-type           CDATA     #IMPLIED
      text                CDATA     #IMPLIED
      value               CDATA     #IMPLIED>
