@@ -61,6 +61,7 @@ NEDElement *createNodeWithTag(int tagcode, NEDElement *parent)
 
 void storePos(NEDElement *node, YYLTYPE pos)
 {
+   if (!node) return;  //XXX or: assert()
    NEDSourceRegion region;
    region.startLine = pos.first_line;
    region.startColumn = pos.first_column;

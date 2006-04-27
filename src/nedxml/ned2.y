@@ -1008,7 +1008,7 @@ typeblock
            opt_localtypes
                 {
                   ps.inTypes = false;
-                  storePos(ps.types, @$);
+                  storePos(ps.types, @$);  // FIXME "struct ps" gets reset if there's a parse error in a subcomponent!!!! (see end of rule channeldefinition, etc)
                 }
         ;
 
