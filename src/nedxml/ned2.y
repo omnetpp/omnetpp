@@ -838,6 +838,8 @@ property_values
 property_value
         : NAME
                 { $$ = createLiteral(NED_CONST_STRING, @1, @1); }
+        | '$' NAME
+                { $$ = createLiteral(NED_CONST_STRING, @$, @$); }
         | STRINGCONSTANT
                 { $$ = createLiteral(NED_CONST_STRING, trimQuotes(@1), @1); }
         | TRUE_
