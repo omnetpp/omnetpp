@@ -3,10 +3,6 @@
 //
 
 //
-// FIXME simple Foo extends AnotherSimple: does Foo have C++ code?????????
-// FIXME module Foo extends AnotherSimple: allowed?????
-//
-//
 // NAME SCOPES:
 // - all component type names must be unique
 // - identifier names within a component must be unique (ie a param cannot
