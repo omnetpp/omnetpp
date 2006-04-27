@@ -27,6 +27,7 @@
 // - The default base class is BasicChannel. That is:
 //     1. "--> {...} -->" means "--> BasicChannel {...} -->"
 //     2. "channel X {...}" means "channel X extends BasicChannel {...}"
+//        XXX wouldn't it be better to force the user spell out "extends BasicChannel"?? one less exception!!!
 //
 // - module inheritance: "module X extends ASimpleModule" is ILLEGAL, as is
 //   "simple X extends ACompoundModule".
@@ -44,7 +45,7 @@
 // - "module X extends ACompoundModule": subclass may add further submodules and
 //   gates and connections as well!
 //
-//     XXX TODO: revise all "extends" examples below!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+//     XXX TODO: revise all "extends" examples below!
 //
 // - Extra params CANNOT be added in submodules and connection channelspecs --
 //   they can only be added in new types...
@@ -326,7 +327,7 @@ property @prop2[](foo;bar);  // valid key names MUST be declared (only declared 
 @prop2[five](foo=1,2,-,4;bar=40,,0);
 
 
-module Host
+module Host0
 {
     parameters:
         @host;  // custom properties can serve as "marker interfaces"
@@ -413,9 +414,9 @@ network Network1   // "network" is exactly as "module", but: not gates
                 double delay = 10us;  // TODO distance-based delay spec?
         };
         module HostX extends Host1 {
-            //...
+            double linkspeed; 
         };
-        //channel SomeLink { }
+        channel SomeLink extends BasicChannel {};
     submodules:
         host[100]: HostX;
     connections:
@@ -457,13 +458,13 @@ module Host2
         apps[N]: <appType> like TCPApp; // they're all of the same type
 };
 
-module Host3
+module ConfigurableHost
 {
     parameters:
         int N;
     submodules:
         app: <> like TCPApp;
-        apps[N]: <> like *; // uses "typename" virtual parameter, type unchecked
+        apps[N]: <> like *; // uses "typename" virtual parameter, type unchecked  FIXME do we need this???
         apps[N]: <> like TCPApp;  // uses "typename" virtual parameter (idea of @type property was discarded)
         apps[N]: <appType> like TCPApp;   // all modules are the same type (appType); conceptually, <> operator converts string to type
         //apps[]: <appType[]> like TCPApp;  // with string arrays; not yet implemented
@@ -473,7 +474,7 @@ module Host3
 network Network2
 {
     submodules:
-        host: Host {
+        host: ConfigurableHost {
             N = 5;
             /apps[0].typename/ = "FTPApp";  // "typename" is a keyword
             /apps[1..4].typename/ = "WebBrowserApp";
@@ -488,6 +489,7 @@ interface IHost {}
 network Network3
 {
     submodules:
+        // this is also legal:
         host: <> like IHost {
             typename = "FTPApp";
         }
@@ -506,7 +508,7 @@ network Network4
     parameters:
         string channelType;
     submodules:
-        hosts[100]: HostX;
+        host[100]: Host0;
     connections:
         host[0].pppPort++ <--> <channelType> like IPPPChannel <--> host[1].pppPort++;
         host[0].pppPort++ <--> <> like IPPPChannel <--> host[1].pppPort++; // how to specify typename?
@@ -523,12 +525,12 @@ channel PPPLine
 };
 
 // channel delivers (gate expects) message on reception of first bit or last bit?
-module EtherMAC
+module EtherMAC1
 {
     gates:
         inout gate @deliverOnFirstBit;
 }
-channel PPPLine
+channel PPPLine1
 {
    parameters:
       @deliverOnFirstBit;
@@ -536,7 +538,7 @@ channel PPPLine
 
 // channel with or without corresponding C++ class
 // (@withcppclass property idea was discarded)
-channel withcppclass PPPLine   // FIXME find better syntax...
+channel withcppclass PPPLine2   // FIXME find better syntax...
 {
 };
 
@@ -565,6 +567,7 @@ module PPPLineModule like IBidirectionalChannel // <-- marks PPPLineModule as su
 network PPPNet
 {
     types:
+        simple Node { gates: inout g; }  //FIXME how could this be implemented in C++? what's the class name??
         
     submodules:
         node[10]: Node;
@@ -623,6 +626,8 @@ simple Gen1
 // conditional parameters
 network Network6
 {
+	types:
+	    simple 
     submodules:
         hosts[100]: Host {
             parameters:
