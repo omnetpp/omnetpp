@@ -26,6 +26,7 @@ public interface NEDElementUtil
     public static final int  NED_CONST_STRING = 403;
     public static final int  NED_CONST_BOOL = 404;
     public static final int  NED_CONST_UNIT = 405;
+    public static final int  NED_CONST_SPEC = 406;
 
     public static final int  NED_SUBGATE_NONE = 500;
     public static final int  NED_SUBGATE_I = 501;
@@ -43,9 +44,9 @@ public interface NEDElementUtil
     public static final int partype_nums[] = {NED_PARTYPE_NONE, NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};
     public static final int partype_n = 6;
 
-    public static final String littype_vals[] = {"double", "int", "string", "bool", "unit"};
-    public static final int littype_nums[] = {NED_CONST_DOUBLE, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_UNIT};
-    public static final int littype_n = 5;
+    public static final String littype_vals[] = {"double", "int", "string", "bool", "unit", "spec"};
+    public static final int littype_nums[] = {NED_CONST_DOUBLE, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_UNIT, NED_CONST_SPEC};
+    public static final int littype_n = 6;
 
     public static final String subgate_vals[] = {"", "i", "o"};
     public static final int subgate_nums[] = {NED_SUBGATE_NONE, NED_SUBGATE_I, NED_SUBGATE_O};

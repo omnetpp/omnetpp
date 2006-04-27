@@ -68,6 +68,9 @@ import org.omnetpp.ned2.model.pojo.WhitespaceNode;
 // XXX move to org.omnetpp.ned2.model plugin? then INEDComponent,
 // INEDComponentResolver etc would have to be moved as well, and that plugin
 // would have to depend on org.eclipse.resources because of IFile!!!
+//
+// FIXME validation of embedded types!!!!
+//
 public class NEDValidator extends AbstractNEDValidator implements NEDElementUtil {
 
 	INEDComponentResolver resolver;

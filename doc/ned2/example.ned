@@ -128,7 +128,7 @@ package generic.queueing;  // default package for following components
 
 import "foo.ned";
 
-@someproperty(somekey); // file-level property
+@someproperty(somekey;otherkey); // file-level property
 
 //
 // Simple FIFO module with a msg/sec processing rate and a finite buffer
@@ -137,7 +137,7 @@ import "foo.ned";
 simple Queue
 {
     parameters: // this keyword is optional
-        @display("i=queue");   // default presentation
+        @display(i="queue");   // default presentation
         double msgPerSec = default(100); // maybe overridden by another default()
         int capacity = 100;  // fixed value, cannot be overridden
         int processingTime = exponential(10); // const value returns always the same number
@@ -178,27 +178,33 @@ simple QueueWithNInputs extends Queue
 };
 
 // property syntax:
-//   @propertyname(key="value", key="value", key=5, key=false, key=true,
-//                 "value", value, this value, 5, true, false, 10s 531ms, etc)
+//   @propertyname(key="value1","value2"; key="value"; key=5; key=false; key=true;
+//                 "value", value, this value, 5, true, false, 10s 531ms)
 //   @propertyname;             // propertyname.default="true"
 //   @propertyname(false);      // propertyname.default="false"
 //   @propertyname(Hello);      // propertyname.default="Hello"
 //   @propertyname(Hello,World);// propertyname.default={"Hello","World"}
 //   @propertyname("egy","ketto",3,more=true);  // propertyname.default={"egy","ketto","3","..."}, ~.more="true"
 //   @propertyname(10s 531ms);  // propertyname.default="10s 531ms"
-//   @propertyname(starttime=10s 531ms);  // propertyname.starttime="10s 531ms"
+//   @propertyname(starttime=10s 531ms,true);  // propertyname.starttime={"10s 531ms",true}
 //
-//   value in itself is interpreted as belonging to key "default"
-//   for other key, one can only specify with "="
+// value in itself is interpreted as belonging to key "default"; and one can override
+// it with the key=... syntax.
 //
 // property representation:
-//   list of key-value pairs; either key or value can be empty
+//   list of key-valuelist pairs; either key or valuelist can be empty
 // actual storage may be:
 //   hashtable based on key; content is a list (vector) of values
 //
-// one property name may occur more than once !!! (properties themselves cannot be
-// stored in hashtable! or: store in hastable of property vectors)
-// in this case the tag 'id' must be used as a primary key to identidy the proper property eg.
+// One property name may occur more than once; runtime effect is that the keys/values will be merged.
+// Rules of property merging:
+//  - a value at a key/position OVERWRITES earlier value at same key/position.
+//  - the '-' value removes value from that position; one van write literal minus as "-"
+//    example:
+//       @display(i="device/pc",red,10);
+//       @display(i=,,77);   ====> results in "i=device/pc,red,77"
+//       @display(i=,-);     ====> removes "red", so results is "i=device/pc,,77"
+//
 //
 simple TCP
 {
@@ -209,8 +215,8 @@ simple TCP
         string tcpAlgorithmClass @classname("ITCPAlgorithm"); // alternative syntax:
                                                              // specify it accepts a class name, and specify base class
         @kernel(starttime=49);
-        @recordstats(id="stat1", storeintervall=5,averaging=true); // recording seqNum etc. into output vectors on/off, 'id' is the primary key (must be unique)
-        @recordstats(id="stat2", storeintervall=9,averaging=false); // recording seqNum etc. into output vectors on/off
+        @recordstats[stat1](storeintervall=5;averaging=true); // recording seqNum etc. into output vectors on/off, 'id' is the primary key (must be unique)
+        @recordstats[stat2](storeintervall=9;averaging=false); // recording seqNum etc. into output vectors on/off
         @display("i=block/transport");
     gates:
         inout toApp[] @labels(TCPControlInfo);  // inout; label means "sends/expects msg with TCPControlInfo"
@@ -312,8 +318,14 @@ module OSPFRouting like TCPUDPApp // connects to *both* TCP and UDP
 }
 
 
-property @host;  // properties must be declared (guard against typos); values for the default key are accepted
-property @host2 (foo, bar);  // valid key names MUST be declared (only declared keys can be used)
+property @prop1;  // properties must be declared (guard against typos); values for the default key are accepted
+property @prop2[](foo;bar);  // valid key names MUST be declared (only declared keys can be used)
+
+@prop2[one];
+@prop2[two]();
+@prop2[three](,,,foo);
+@prop2[four](,,,foo,,);
+@prop2[five](foo=1,2,-,4;bar=40,,0);
 
 module Host
 {
