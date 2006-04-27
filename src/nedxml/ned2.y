@@ -799,8 +799,7 @@ property_name
         ;
 
 opt_property_keys
-        : property_keys
-        |
+        : property_keys  /* can't allow epsilon rule here, because @foo() would result in "ambiguous syntax" :( */
         ;
 
 property_keys
