@@ -31,6 +31,11 @@
 // - module inheritance: "module X extends ASimpleModule" is ILLEGAL, as is
 //   "simple X extends ACompoundModule".
 //
+// XXX What about this: "module X extends ASimple" instead of "simple X extends ASimple"??
+//   Otherwise, if base type's implementation gets changed from simple to compound,
+//   all subclasses will have to be changed!!!! It can be still asserted that
+//   one doesn't try to add submodules to it in the subclass.
+//
 // - "simple X extends ASimpleModule": inherits the C++ implementation of ASimpleModule!
 //   (That is, code CANNOT be modified via "extends" -- it always stays the same,
 //   that of the ultimate base class.) Subclass may add new parameters and gates
@@ -220,7 +225,7 @@ module MobileHost1
     parameters:
         double x;
         double y;
-        @display(p="$x","$y"); // $paramname is only resolved at runtime
+        @display(p=$x,$y); // $paramname is only resolved at runtime
 };
 
 
@@ -320,7 +325,6 @@ property @prop2[](foo;bar);  // valid key names MUST be declared (only declared 
 @prop2[four](,,,foo,,);
 @prop2[five](foo=1,2,-,4;bar=40,,0);
 
-property @syntax error $#%$#%
 
 module Host
 {
@@ -331,8 +335,8 @@ module Host
         inout ethPort[] @labels(Ethernet);  // type label implies "EthernetFrame" and UTP
         inout ethBusPort[] @labels(EthernetBus);  // type label implies "EthernetFrame" and coaxial cable
     submodules:
-        apps: <> like TCPApp;
-        tcp: TCP {
+        app: <> like TCPApp;
+        tcp: TCP1 {
             mss = 1024;
         };
         ip: IP;
@@ -349,33 +353,32 @@ module Host
 
         // IP to network interfaces
         ppp[i].toNetw <--> ip.toIf[i] where i=0..sizeof(ppp)-1;
-
-        ppp[i].toNetw <--> ip.toIf++ where i=0..sizeof(ppp)-1;
-        eth[i].toNetw <--> ip.toIf++ where i=0..sizeof(eth)-1;
+        // or:  ..... <--> ip.toIf++ where...
 
         // network interfaces to parent
         ppp[i].phy <--> pppPort[i] where i=0..sizeof(ppp)-1;
-        eth[i].phy <--> ethPort[i] where i=0..sizeof(eth)-1;
 };
 
 //
 // parameter scopes
 //
-module Host
+simple UDP1 { int maxpk; }
+
+module Host1
 {
     parameters:
-        int delay;
+        double delay;
         int mss0 = 1000;
         int mss = 500;
     submodules:
-        udp: UDP {
+        udp: UDP1 {
             maxpk = 2000;
         }
-        tcp: TCP {
+        tcp: TCP1 {
             // reserved keywords: "this"
             // scope on right side: "parent"; one can explicitly write "this."
             // left side scope is always "this."
-            mss0 = 200;
+            int mss0 = 200;
             mss = mss0; // --> 1000 (parent's)
             mss = this.mss0; // --> 200
             mss = mss;  // --> 500 (parent's)
@@ -385,20 +388,21 @@ module Host
         tcp.out --> {delay = delay;} --> ip.in;
 };
 
+//property @syntax error $#%$#%
 
 channel Eth
 {
     parameters:
         @display("c=red");
         @labels(PPP, Eth);
-        delay = 10us;  // TODO distance-based delay spec?
-        delay = dist2delay(15m, 200000);
-        delay = dist2delay(15m); // default 200,000 km/s
+        double delay1 = 10us;  // TODO distance-based delay spec?
+        double delay2 = dist2delay(15m, 200000);
+        double delay3 = dist2delay(15m); // default 200,000 km/s
         // channel parameters are implemented exactly like module parameters
 };
 
 
-network Network   // "network" is exactly as "module", but: not gates
+network Network1   // "network" is exactly as "module", but: not gates
 {
     parameters:
         int a;
@@ -406,29 +410,26 @@ network Network   // "network" is exactly as "module", but: not gates
         channel PPPLink {
             parameters:
                 @display("c=red");
-                delay = 10us;  // TODO distance-based delay spec?
+                double delay = 10us;  // TODO distance-based delay spec?
         };
-        module HostX extends Host {
+        module HostX extends Host1 {
             //...
         };
+        //channel SomeLink { }
     submodules:
-        hosts[100]: HostX;
+        host[100]: HostX;
     connections:
         host[0].pppPort++ <--> PPPLink <--> host[1].pppPort++;
         host[0].pppPort++ <--> PPPLink {@display("c=green");} <--> host[3].pppPort++;
         host[0].pppPort[host[0].destgate] <--> SomeLink {datarate = host[0].linkspeed;} <--> host[3].pppPort++;
 };
 
-module Network
+
+simple Node 
 {
-    parameters:
-        @isnetwork(true);  // alternative to the "network" keyword
-    submodules:
-        hosts[100]: Host {}
-    connections:
-        host[0].pppPort++ <--> host[1].pppPort++;
-        host[0].pppPort++ <--> host[3].pppPort++;
-};
+	gates:
+        inout port;
+}
 
 network RandomGraph
 {
@@ -438,17 +439,16 @@ network RandomGraph
         // brief syntax:
         node[i].port++ <--> node[j].port++ where i=0..98, j=i+1..99, uniform()<0.3;
 
+        // using a connection group 
         where i=0..98, j=i+1..99, uniform()<0.3 {
             node[i].port++ <--> node[j].port++;
-            node2[i].port++ <--> node2[j].port++;
         };
-
 };
 
 //
 // "like" syntax:
 //
-module Host
+module Host2
 {
     parameters:
         int N;
@@ -457,7 +457,7 @@ module Host
         apps[N]: <appType> like TCPApp; // they're all of the same type
 };
 
-module Host
+module Host3
 {
     parameters:
         int N;
@@ -470,7 +470,7 @@ module Host
         tcp: TCP;
 };
 
-network Network
+network Network2
 {
     submodules:
         host: Host {
@@ -483,10 +483,12 @@ network Network
         }
 };
 
-network Network2
+interface IHost {}
+
+network Network3
 {
     submodules:
-        host: <> like AbstractHost {
+        host: <> like IHost {
             typename = "FTPApp";
         }
         // would be the same as:
@@ -495,21 +497,19 @@ network Network2
 
 
 
-channelinterface PPPLikeChannel
-{
-};
+channelinterface IPPPChannel {}
 
 
 // "like" syntax for channels
-network Network
+network Network4
 {
     parameters:
         string channelType;
     submodules:
         hosts[100]: HostX;
     connections:
-        host[0].pppPort++ <--> <channelType> like PPPLikeChannel <--> host[1].pppPort++;
-        host[0].pppPort++ <--> <> like PPPLikeChannel <--> host[1].pppPort++; // how to specify typename?
+        host[0].pppPort++ <--> <channelType> like IPPPChannel <--> host[1].pppPort++;
+        host[0].pppPort++ <--> <> like IPPPChannel <--> host[1].pppPort++; // how to specify typename?
         host[0].pppPort++ <--> <channelType> like * <--> host[1].pppPort++;
         host[0].pppPort++ <--> <> like * <--> host[1].pppPort++; // how to specify typename?
 };
@@ -564,6 +564,8 @@ module PPPLineModule like IBidirectionalChannel // <-- marks PPPLineModule as su
 // example usage of modules as channels
 network PPPNet
 {
+    types:
+        
     submodules:
         node[10]: Node;
     connections:
@@ -579,7 +581,7 @@ simple Gen
     parameters:
         double function interArrivalTime;
 }
-network Net
+network Network5
 {
     parameters:
         double function iatime;
@@ -600,7 +602,7 @@ network Net
 }
 
 // units
-simple Gen
+simple Gen1
 {
     parameters:
         double time = 10d 4h 34mi 23s 123ms 675us 999ns; // minutes is "mi" not "m"!!!! change strToSimtime()!!!!
@@ -608,19 +610,18 @@ simple Gen
         double filelengthBytes = 10TB 10GB 100MB 654KB 34B;
         double distance = 100km 33m 230mm;
 
-        double time @unit(sec);
-        double datarate @unit(bps);
-        double filelengthBytes @unit(bytes);
-        double distance @unit(meter);
+        double time2 @unit(sec);
+        double datarate2 @unit(bps);
+        double filelengthBytes2 @unit(bytes);
+        double distance2 @unit(meter);
 
-        string className = default("FIFO")
-            @choice("FIFO","LIFO");
+        string className = default("FIFO") @choice("FIFO","LIFO");
 
-        double time = 10h 30s @unit(sec);
+        double time3 = 10h 30s @unit(sec);
 }
 
 // conditional parameters
-network Network
+network Network6
 {
     submodules:
         hosts[100]: Host {
@@ -641,4 +642,3 @@ network Network
                 }
         };
 };
-
