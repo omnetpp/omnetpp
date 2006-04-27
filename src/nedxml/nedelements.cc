@@ -319,23 +319,26 @@ WhitespaceNode *ImportNode::getFirstWhitespaceChild() const
 
 PropertyDeclNode::PropertyDeclNode()
 {
+    isArray = false;
     applyDefaults();
 }
 
 PropertyDeclNode::PropertyDeclNode(NEDElement *parent) : NEDElement(parent)
 {
+    isArray = false;
     applyDefaults();
 }
 
 int PropertyDeclNode::getNumAttributes() const
 {
-    return 1;
+    return 2;
 }
 
 const char *PropertyDeclNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "name";
+        case 1: return "is-array";
         default: return 0;
     }
 }
@@ -344,6 +347,7 @@ const char *PropertyDeclNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return name.c_str();
+        case 1: return boolToString(isArray);
         default: return 0;
     }
 }
@@ -352,6 +356,7 @@ void PropertyDeclNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: name = val; break;
+        case 1: isArray = stringToBool(val); break;
         default: ;
     }
 }
@@ -360,6 +365,7 @@ const char *PropertyDeclNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return NULL;
+        case 1: return "false";
         default: return 0;
     }
 }
@@ -1233,7 +1239,7 @@ PropertyNode::PropertyNode(NEDElement *parent) : NEDElement(parent)
 
 int PropertyNode::getNumAttributes() const
 {
-    return 2;
+    return 3;
 }
 
 const char *PropertyNode::getAttributeName(int k) const
@@ -1241,6 +1247,7 @@ const char *PropertyNode::getAttributeName(int k) const
     switch (k) {
         case 0: return "is-implicit";
         case 1: return "name";
+        case 2: return "index";
         default: return 0;
     }
 }
@@ -1250,6 +1257,7 @@ const char *PropertyNode::getAttribute(int k) const
     switch (k) {
         case 0: return boolToString(isImplicit);
         case 1: return name.c_str();
+        case 2: return index.c_str();
         default: return 0;
     }
 }
@@ -1259,6 +1267,7 @@ void PropertyNode::setAttribute(int k, const char *val)
     switch (k) {
         case 0: isImplicit = stringToBool(val); break;
         case 1: name = val; break;
+        case 2: index = val; break;
         default: ;
     }
 }
@@ -1268,6 +1277,7 @@ const char *PropertyNode::getAttributeDefault(int k) const
     switch (k) {
         case 0: return "false";
         case 1: return NULL;
+        case 2: return "";
         default: return 0;
     }
 }

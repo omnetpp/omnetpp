@@ -250,6 +250,8 @@ void NED2Generator::doImport(ImportNode *node, const char *indent, bool islast, 
 void NED2Generator::doPropertyDecl(PropertyDeclNode *node, const char *indent, bool islast, const char *)
 {
     OUT << indent << "property @" << node->getName();
+    if (node->getIsArray())
+        OUT << "[]";
     if (node->getFirstChildWithTag(NED_PROPERTY_KEY))
     {
         OUT << "(";
@@ -430,6 +432,8 @@ void NED2Generator::doProperty(PropertyNode *node, const char *indent, bool isla
         if (sep)
             OUT << " ";
         OUT << "@" << node->getName();
+        if (strnotnull(node->getIndex()))
+            OUT << "[" << node->getIndex() << "]";
         const char *subindent = indent ? increaseIndent(indent) : DEFAULTINDENT;
         if (node->getFirstChildWithTag(NED_PROPERTY_KEY))
         {

@@ -28,7 +28,8 @@
 
 <!ELEMENT property-decl (whitespace*, property-key*, property*)>
 <!ATTLIST property-decl
-     name               NMTOKEN   #REQUIRED>
+     name               NMTOKEN   #REQUIRED
+     is-array           (true|false) "false">
 
 <!ELEMENT extends (whitespace*)>
 <!ATTLIST extends
@@ -84,7 +85,8 @@
 <!ELEMENT property (whitespace*, property-key*, condition?)>
 <!ATTLIST property
      is-implicit        (true|false) "false"
-     name               NMTOKEN   #REQUIRED>
+     name               NMTOKEN   #REQUIRED
+     index              NMTOKEN   #IMPLIED>
 
 <!ELEMENT property-key (whitespace*, literal*)>
 <!ATTLIST property-key

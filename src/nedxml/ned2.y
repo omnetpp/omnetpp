@@ -242,6 +242,13 @@ propertydecl_header
                   ps.propertydecl->setName(toString(@3));
                   //setComments(ps.propertydecl,@1);
                 }
+        | PROPERTY '@' NAME '[' ']'
+                {
+                  ps.propertydecl = (PropertyDeclNode *)createNodeWithTag(NED_PROPERTY_DECL, ps.nedfile);
+                  ps.propertydecl->setName(toString(@3));
+                  ps.propertydecl->setIsArray(true);
+                  //setComments(ps.propertydecl,@1);
+                }
         ;
 
 opt_propertydecl_keys
@@ -780,6 +787,13 @@ property_name
                 {
                   assertNonEmpty(ps.propertyscope);
                   ps.property = addProperty(ps.propertyscope.top(), toString(@2));
+                  ps.propvals.clear(); // just to be safe
+                }
+        | '@' NAME '[' NAME ']'
+                {
+                  assertNonEmpty(ps.propertyscope);
+                  ps.property = addProperty(ps.propertyscope.top(), toString(@2));
+                  ps.property->setIndex(toString(@4));
                   ps.propvals.clear(); // just to be safe
                 }
         ;

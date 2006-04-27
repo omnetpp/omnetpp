@@ -345,7 +345,8 @@ class ImportNode : public NEDElement
  * <pre>
  * <!ELEMENT property-decl (whitespace*, property-key*, property*)>
  * <!ATTLIST property-decl
- *      name               NMTOKEN   #REQUIRED>
+ *      name               NMTOKEN   #REQUIRED
+ *      is-array           (true|false) "false">
  * </pre>
  * 
  * @ingroup Data
@@ -354,6 +355,7 @@ class PropertyDeclNode : public NEDElement
 {
   private:
     std::string name;
+    bool isArray;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -377,6 +379,8 @@ class PropertyDeclNode : public NEDElement
     //@{
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
+    bool getIsArray() const  {return isArray;}
+    void setIsArray(bool val)  {isArray = val;}
 
     virtual PropertyDeclNode *getNextPropertyDeclNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
@@ -937,7 +941,8 @@ class PatternNode : public NEDElement
  * <!ELEMENT property (whitespace*, property-key*, condition?)>
  * <!ATTLIST property
  *      is-implicit        (true|false) "false"
- *      name               NMTOKEN   #REQUIRED>
+ *      name               NMTOKEN   #REQUIRED
+ *      index              NMTOKEN   #IMPLIED>
  * </pre>
  * 
  * @ingroup Data
@@ -947,6 +952,7 @@ class PropertyNode : public NEDElement
   private:
     bool isImplicit;
     std::string name;
+    std::string index;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -972,6 +978,8 @@ class PropertyNode : public NEDElement
     void setIsImplicit(bool val)  {isImplicit = val;}
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
+    const char * getIndex() const  {return index.c_str();}
+    void setIndex(const char * val)  {index = val;}
 
     virtual PropertyNode *getNextPropertyNodeSibling() const;
     virtual WhitespaceNode *getFirstWhitespaceChild() const;
