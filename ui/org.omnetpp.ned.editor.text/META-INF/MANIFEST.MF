@@ -15,13 +15,13 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.views,
  org.eclipse.core.resources,
  org.omnetpp.ned2.model,
- org.omnetpp.resources
+ org.omnetpp.resources,
+ org.omnetpp.common
 Eclipse-LazyStart: true
 Export-Package: org.omnetpp.ned.editor.text,
  org.omnetpp.ned.editor.text.actions,
  org.omnetpp.ned.editor.text.assist,
  org.omnetpp.ned.editor.text.highlight,
  org.omnetpp.ned.editor.text.outline,
- org.omnetpp.ned.editor.text.parser,
  org.omnetpp.ned.editor.text.util
 Bundle-ClassPath: .
