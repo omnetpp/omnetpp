@@ -491,7 +491,7 @@ void NED2Generator::doGate(GateNode *node, const char *indent, bool islast, cons
         default: INTERNAL_ERROR0(node, "wrong type");
     }
     OUT << node->getName();
-    if (node->getIsVector())
+    if (node->getIsVector() && !hasExpression(node,"vector-size"))
         OUT << "[]";
     printOptVector(node, "vector-size",indent);
 
