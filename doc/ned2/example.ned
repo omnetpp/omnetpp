@@ -58,6 +58,11 @@
 //     }
 //   and usage: Foo.RADIO_FREQ.
 //
+// - XXX do we need to support the "like *" phrase?
+//
+// - XXX IBidirectionalChannel, IUnidirectionalChannel: if a module
+//   is "like" them, can it also be "like" channel interfaces...?
+//
 // - rules of inheritance:
 //     o for inner types:
 //        - can I define an inner type with the same name in subclasses? NO
@@ -119,7 +124,7 @@
 // same as (c1 ? v1 : c2 ? v2 : c3 ? v3 : vdefault)
 //
 // STILL PROBLEM: what to do with conditional properties? like this:
-//   @display("c=green") if index==3;    <=== how to write this?
+//   @display(c="green") if index==3;    <=== how to write this?
 //
 
 package generic.queueing;  // default package for following components
@@ -320,6 +325,7 @@ module OSPFRouting like ITCPUDPApp // connects to *both* TCP and UDP
 property @prop1;  // properties must be declared (guard against typos); values for the default key are accepted
 property @prop2[](foo;bar);  // valid key names MUST be declared (only declared keys can be used)
 
+//property examples
 @prop2[one];
 @prop2[two]();
 @prop2[three](,,,foo);
@@ -344,11 +350,11 @@ module Host0
         ppp[sizeof(pppPort)]: PPP;
 
     connections allowunconnected:
-        app[i].toTcp <--> { @display("c=red"); delay=0; } <--> tcp.toApp;
+        app[i].toTcp <--> { @display(c="red"); delay=0; } <--> tcp.toApp;
 
         // connect both directions separately (impl: 1 bidir obj, plus 2 child objects on-demand)
-        app[i].toTcp$o --> { @display("c=red"); delay=0; } --> tcp.toApp$i;
-        app[i].toTcp$i <-- { @display("c=red"); delay=0; } <-- tcp.toApp$o;
+        app[i].toTcp$o --> { @display(c="red"); delay=0; } --> tcp.toApp$i;
+        app[i].toTcp$i <-- { @display(c="red"); delay=0; } <-- tcp.toApp$o;
 
         tcp.toNetw <--> ip.toTcp;
 
@@ -371,20 +377,25 @@ module Host1
         double delay;
         int mss0 = 1000;
         int mss = 500;
+    types:
+        simple TCP1X extends TCP1 {
+        	int tmp;
+        }
     submodules:
         udp: UDP1 {
             maxpk = 2000;
         }
-        tcp: TCP1 {
+        tcp: TCP1X {
             // reserved keywords: "this"
             // scope on right side: "parent"; one can explicitly write "this."
             // left side scope is always "this."
-            int mss0 = 200;
+            tmp = 200;
             mss = mss0; // --> 1000 (parent's)
-            mss = this.mss0; // --> 200
+            mss = this.tmp; // --> 200
             mss = mss;  // --> 500 (parent's)
             mss = udp.maxpk;
         }
+        ip : IP {}
      connections:
         tcp.out --> {delay = delay;} --> ip.in;
 };
@@ -394,7 +405,7 @@ module Host1
 channel Eth
 {
     parameters:
-        @display("c=red");
+        @display(c="red");
         @labels(PPP, Eth);
         double delay1 = 10us;  // TODO distance-based delay spec?
         double delay2 = dist2delay(15m, 200000);
@@ -410,23 +421,23 @@ network Network1   // "network" is exactly as "module", but: not gates
     types: // defines locally used channel and module types  FIXME allow types before gates/params as well?
         channel PPPLink {
             parameters:
-                @display("c=red");
+                @display(c="red");
                 double delay = 10us;  // TODO distance-based delay spec?
         };
         module HostX extends Host1 {
-            double linkspeed; 
+            double linkspeed;
         };
         channel SomeLink extends BasicChannel {};
     submodules:
         host[100]: HostX;
     connections:
         host[0].pppPort++ <--> PPPLink <--> host[1].pppPort++;
-        host[0].pppPort++ <--> PPPLink {@display("c=green");} <--> host[3].pppPort++;
+        host[0].pppPort++ <--> PPPLink {@display(c="green");} <--> host[3].pppPort++;
         host[0].pppPort[host[0].destgate] <--> SomeLink {datarate = host[0].linkspeed;} <--> host[3].pppPort++;
 };
 
 
-simple Node 
+simple Node
 {
 	gates:
         inout port;
@@ -440,7 +451,7 @@ network RandomGraph
         // brief syntax:
         node[i].port++ <--> node[j].port++ where i=0..98, j=i+1..99, uniform()<0.3;
 
-        // using a connection group 
+        // using a connection group
         where i=0..98, j=i+1..99, uniform()<0.3 {
             node[i].port++ <--> node[j].port++;
         };
@@ -521,7 +532,7 @@ channel PPPLine
 {
    parameters:
       @labels(PPP); // must be a superset of sender gates' labels (must be able to handle at least those pks, and possible more)
-      @display("o=blue,3");
+      @display(o="blue",3);
 };
 
 // channel delivers (gate expects) message on reception of first bit or last bit?
@@ -568,7 +579,7 @@ network PPPNet
 {
     types:
         simple Node { gates: inout g; }  //FIXME how could this be implemented in C++? what's the class name??
-        
+
     submodules:
         node[10]: Node;
     connections:
@@ -627,12 +638,21 @@ simple Gen1
 network Network6
 {
 	types:
-	    simple 
+	    simple Host {
+	    	parameters:
+		    	int parX;
+		    	int parY;
+		    	int parZ;
+	    	gates:
+	    		input port[];
+	    		inout portA[];
+	    		inout portB[];
+	    }
     submodules:
         hosts[100]: Host {
             parameters:
-                @display("c=green") if index==3;
-                @display("c=red");
+                @display(c="green") if index==3;
+                @display(c="red");
                 parX = 45 if index>9;
                 if index>9 {
                     parY = 3;  // declarations cannot be conditional, only assignments or refinements!
@@ -647,3 +667,4 @@ network Network6
                 }
         };
 };
+

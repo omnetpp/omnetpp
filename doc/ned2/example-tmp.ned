@@ -3,7 +3,7 @@ import "foo.ned";
 simple Queue
 {
     parameters:
-        @display("i=queue");
+        @display(i="queue");
         double msgPerSec = default(100);
         int capacity = 100;
         int processingTime = exponential(10);
@@ -55,9 +55,9 @@ simple TCP
         string tcpAlgorithmClass @choice("TCPTahoe", "TCPReno", "TCPNoCongestionControl", "DumbTCP");
         string tcpAlgorithmClass @classname("ITCPAlgorithm");
         @kernel(starttime=49);
-        @recordstats(id="stat1", storeintervall=5, averaging=true);
-        @recordstats(id="stat2", storeintervall=9, averaging=false);
-        @display("i=block/transport");
+        @recordstats[stat1](storeintervall=5; averaging=true);
+        @recordstats[stat2](storeintervall=9; averaging=false);
+        @display(i="block/transport");
     gates:
         inout toApp[] @labels(TCPControlInfo);
         inout toNetw @labels(TCPSegment);
@@ -68,7 +68,7 @@ simple MobileHost
     parameters:
         double x;
         double y;
-        @display("p=$x,$y");
+        @display(p=$x,$y);
 }
 
 simple TCP
@@ -133,7 +133,7 @@ module OSPFRouting like TCPUDPApp
 
 property @host;
 
-property @host2(foo, bar);
+property @host2(foo; bar);
 
 module Host
 {
@@ -151,9 +151,9 @@ module Host
         ip: IP;
         ppp[sizeof(pppPort)]: PPP;
     connections allowunconnected:
-        app[i].toTcp <--> { @display("c=red"); delay=0; } <--> tcp.toApp;
-        app[i].toTcp$o --> { @display("c=red"); delay=0; } --> tcp.toApp$i;
-        app[i].toTcp$i <-- { @display("c=red"); delay=0; } <-- tcp.toApp$o;
+        app[i].toTcp <--> { @display(c=red); delay=0; } <--> tcp.toApp;
+        app[i].toTcp$o --> { @display(c=red); delay=0; } --> tcp.toApp$i;
+        app[i].toTcp$i <-- { @display(c=red); delay=0; } <-- tcp.toApp$o;
         tcp.toNetw <--> ip.toTcp;
         ppp[i].toNetw <--> ip.toIf[i] where i=0..sizeof(ppp)-1;
         ppp[i].toNetw <--> ip.toIf++ where i=0..sizeof(ppp)-1;
@@ -186,7 +186,7 @@ module Host
 channel Eth
 {
     parameters:
-        @display("c=red");
+        @display(c=red);
         @labels(PPP, Eth);
         delay = 10us;
         delay = dist2delay(15m, 200000);
@@ -201,7 +201,7 @@ network Network
         channel PPPLink
         {
             parameters:
-                @display("c=red");
+                @display(c=red);
                 delay = 10us;
         }
 
@@ -213,7 +213,7 @@ network Network
         hosts[100]: HostX;
     connections:
         host[0].pppPort++ <--> PPPLink <--> host[1].pppPort++;
-        host[0].pppPort++ <--> PPPLink {@display("c=green");} <--> host[3].pppPort++;
+        host[0].pppPort++ <--> PPPLink {@display(c=green);} <--> host[3].pppPort++;
         host[0].pppPort[host[0].destgate] <--> SomeLink {datarate = host[0].linkspeed;} <--> host[3].pppPort++;
 }
 
@@ -304,7 +304,7 @@ channel PPPLine
 {
     parameters:
         @labels(PPP);
-        @display("o=blue,3");
+        @display(o=blue,3);
 }
 
 module EtherMAC
@@ -399,8 +399,8 @@ network Network
     submodules:
         hosts[100]: Host {
             parameters:
-                @display("c=green") if index==3;
-                @display("c=red");
+                @display(c=green) if index==3;
+                @display(c=red);
                 parX = 45 if index>9;
                 if index>9 {
                     parY = 3;
