@@ -10,7 +10,6 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
-import org.omnetpp.ned.editor.text.parser.HeuristicalNedParser;
 
 /**
  */
@@ -18,7 +17,6 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 
 
 	protected Object fInput;
-    protected HeuristicalNedParser hp;
 	protected IDocumentProvider fDocumentProvider;
 	protected ITextEditor fTextEditor;
 
@@ -32,8 +30,6 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 		super();
 		fDocumentProvider= provider;
 		fTextEditor= editor;
-        
-        hp = new HeuristicalNedParser();
 	}
 	
 	/* (non-Javadoc)
@@ -47,7 +43,7 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 		viewer.setContentProvider(new WorkbenchContentProvider());
 		viewer.setLabelProvider(new WorkbenchLabelProvider());
 		viewer.addSelectionChangedListener(this);
-        viewer.setInput(hp.getContentOutline(null));
+        viewer.setInput(null);  //XXX 
 	}
 	
 	/* (non-Javadoc)
@@ -79,6 +75,7 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 	 */
 	public void setInput(Object input) {
 		fInput= input;
+		System.out.println(this+".setInput( " + input+ ") called");
 		update();
 	}
 	
@@ -92,7 +89,8 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 			Control control= viewer.getControl();
 			if (control != null && !control.isDisposed()) {
 				control.setRedraw(false);
-				viewer.setInput(hp.getContentOutline(null));
+				System.out.println(this+".update() called");
+				//viewer.setInput(hp.getContentOutline(null)); XXX
 				viewer.expandAll();
 				control.setRedraw(true);
 			}

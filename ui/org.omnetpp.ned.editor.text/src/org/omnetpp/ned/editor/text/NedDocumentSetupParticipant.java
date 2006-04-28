@@ -7,7 +7,6 @@ import org.eclipse.jface.text.IDocumentPartitioner;
 import org.eclipse.jface.text.rules.FastPartitioner;
 import org.omnetpp.ned.editor.text.assist.NedContentAssistPartitionScanner;
 import org.omnetpp.ned.editor.text.highlight.NedSyntaxHighlightPartitionScanner;
-import org.omnetpp.ned.editor.text.outline.NedOutlinePartitionScanner;
 
 /**
  * 
@@ -39,10 +38,11 @@ public class NedDocumentSetupParticipant implements IDocumentSetupParticipant {
             highlightPartitioner.connect(document);
             
             // outline partitioner setup
-            IDocumentPartitioner outlinePartitioner = 
-                new FastPartitioner(new NedOutlinePartitionScanner(), NedOutlinePartitionScanner.SUPPORTED_PARTITION_TYPES);
-            extension3.setDocumentPartitioner(NedOutlinePartitionScanner.PARTITIONING_ID, outlinePartitioner);
-            outlinePartitioner.connect(document);
+            // XXX unused code
+            //IDocumentPartitioner outlinePartitioner = 
+            //    new FastPartitioner(new NedOutlinePartitionScanner(), NedOutlinePartitionScanner.SUPPORTED_PARTITION_TYPES);
+            //extension3.setDocumentPartitioner(NedOutlinePartitionScanner.PARTITIONING_ID, outlinePartitioner);
+            //outlinePartitioner.connect(document);
 		}
 	}
 }

@@ -76,8 +76,8 @@ public class NedElement implements IWorkbenchAdapter, IAdaptable {
     public Object getAdapter(Class adapter) {
         if (adapter == IWorkbenchAdapter.class)
             return this;
-        if (adapter == IPropertySource.class)
-            return new NedElementProperties(this);
+        //if (adapter == IPropertySource.class)
+        //    return new NedElementProperties(this);
         return null;
     }
 
