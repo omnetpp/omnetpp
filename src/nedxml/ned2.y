@@ -161,8 +161,7 @@ static NED2ParserState globalps;  // for error recovery
 
 static void restoreGlobalParserState()  // for error recovery
 {
-    ps = globalps;  // FIXME we can get this while editing in the "types:" section:
-                    //    "INTERNAL ERROR: ned2.y:171: error during parsing: scope stack empty"
+    ps = globalps;
 }
 
 static void assertNonEmpty(std::stack<NEDElement *>& somescope) {
@@ -201,6 +200,32 @@ definition
         | compoundmoduledefinition
         | networkdefinition
         | moduleinterfacedefinition
+        | ';'
+
+        | channelinterfaceheader error '}'
+                { storePos(ps.component, @$); restoreGlobalParserState(); }
+        | CHANNELINTERFACE error '}'
+                { restoreGlobalParserState(); }
+        | simplemoduleheader error '}'
+                { storePos(ps.component, @$); restoreGlobalParserState(); }
+        | SIMPLE error '}'
+                { restoreGlobalParserState(); }
+        | compoundmoduleheader error '}'
+                { storePos(ps.component, @$); restoreGlobalParserState(); }
+        | MODULE error '}'
+                { restoreGlobalParserState(); }
+        | networkheader error '}'
+                { storePos(ps.component, @$); restoreGlobalParserState(); }
+        | NETWORK error '}'
+                { restoreGlobalParserState(); }
+        | moduleinterfaceheader error '}'
+                { storePos(ps.component, @$); restoreGlobalParserState(); }
+        | INTERFACE error '}'
+                { restoreGlobalParserState(); }
+        | channelheader error '}'
+                { storePos(ps.component, @$); restoreGlobalParserState(); }
+        | CHANNEL error '}'
+                { restoreGlobalParserState(); }
         ;
 
 packagedeclaration         /* TBD package is currently not supported */
@@ -292,7 +317,7 @@ channeldefinition
                   ps.propertyscope.push(ps.parameters);
                 }
             opt_paramblock
-          '}' opt_semicolon
+          '}'
                 {
                   ps.propertyscope.pop();
                   ps.blockscope.pop();
@@ -302,10 +327,6 @@ channeldefinition
                       storeComponentSourceCode(ps.component, @$);
                   storePos(ps.component, @$);
                 }
-        | channelheader error '}' /* error recovery rule */
-                { storePos(ps.component, @$); restoreGlobalParserState(); }
-        | CHANNEL error '}' /* error recovery rule */
-                { restoreGlobalParserState(); }
         ;
 
 channelheader
@@ -369,7 +390,7 @@ channelinterfacedefinition
                   ps.propertyscope.push(ps.parameters);
                 }
             opt_paramblock
-          '}' opt_semicolon
+          '}'
                 {
                   ps.propertyscope.pop();
                   ps.blockscope.pop();
@@ -379,10 +400,6 @@ channelinterfacedefinition
                       storeComponentSourceCode(ps.component, @$);
                   storePos(ps.component, @$);
                 }
-        | channelinterfaceheader error '}' /* error recovery rule */
-                { storePos(ps.component, @$); restoreGlobalParserState(); }
-        | CHANNELINTERFACE error '}' /* error recovery rule */
-                { restoreGlobalParserState(); }
         ;
 
 channelinterfaceheader
@@ -419,7 +436,7 @@ simplemoduledefinition
                 }
             opt_paramblock
             opt_gateblock
-          '}' opt_semicolon
+          '}'
                 {
                   ps.propertyscope.pop();
                   ps.blockscope.pop();
@@ -429,10 +446,6 @@ simplemoduledefinition
                       storeComponentSourceCode(ps.component, @$);
                   storePos(ps.component, @$);
                 }
-        | simplemoduleheader error '}' /* error recovery rule */
-                { storePos(ps.component, @$); restoreGlobalParserState(); }
-        | SIMPLE error '}' /* error recovery rule */
-                { restoreGlobalParserState(); }
         ;
 
 simplemoduleheader
@@ -462,7 +475,7 @@ compoundmoduledefinition
             opt_typeblock
             opt_submodblock
             opt_connblock
-          '}' opt_semicolon
+          '}'
                 {
                   ps.propertyscope.pop();
                   ps.blockscope.pop();
@@ -472,10 +485,6 @@ compoundmoduledefinition
                       storeComponentSourceCode(ps.component, @$);
                   storePos(ps.component, @$);
                 }
-        | compoundmoduleheader error '}' /* error recovery rule */
-                { storePos(ps.component, @$); restoreGlobalParserState(); }
-        | MODULE error '}' /* error recovery rule */
-                { restoreGlobalParserState(); }
         ;
 
 compoundmoduleheader
@@ -505,7 +514,7 @@ networkdefinition
             opt_typeblock
             opt_submodblock
             opt_connblock
-          '}' opt_semicolon
+          '}'
                 {
                   ps.propertyscope.pop();
                   ps.blockscope.pop();
@@ -515,10 +524,6 @@ networkdefinition
                       storeComponentSourceCode(ps.component, @$);
                   storePos(ps.component, @$);
                 }
-        | networkheader error '}' /* error recovery rule */
-                { storePos(ps.component, @$); restoreGlobalParserState(); }
-        | NETWORK error '}' /* error recovery rule */
-                { restoreGlobalParserState(); }
         ;
 
 networkheader
@@ -546,7 +551,7 @@ moduleinterfacedefinition
                 }
             opt_paramblock
             opt_gateblock
-          '}' opt_semicolon
+          '}'
                 {
                   ps.propertyscope.pop();
                   ps.blockscope.pop();
@@ -556,10 +561,6 @@ moduleinterfacedefinition
                       storeComponentSourceCode(ps.component, @$);
                   storePos(ps.component, @$);
                 }
-        | moduleinterfaceheader error '}' /* error recovery rule */
-                { storePos(ps.component, @$); restoreGlobalParserState(); }
-        | INTERFACE error '}' /* error recovery rule */
-                { restoreGlobalParserState(); }
         ;
 
 moduleinterfaceheader
@@ -577,7 +578,13 @@ moduleinterfaceheader
  */
 opt_paramblock
         : opt_params   /* "parameters" keyword is optional */
-                { storePos(ps.parameters, @$); /* XXX delete this element if empty? */}
+                {
+                  storePos(ps.parameters, @$);
+                  if (!ps.parameters->getFirstChild()) { // delete "parameters" element if empty
+                      ps.parameters->getParent()->removeChild(ps.parameters);
+                      delete ps.parameters;
+                  }
+                }
         | PARAMETERS ':'
                 {
                   ps.parameters->setIsImplicit(false);
@@ -1009,7 +1016,7 @@ typeblock
            opt_localtypes
                 {
                   ps.inTypes = false;
-                  storePos(ps.types, @$);  // FIXME "struct ps" gets reset if there's a parse error in a subcomponent!!!! (see end of rule channeldefinition, etc)
+                  storePos(ps.types, @$);
                 }
         ;
 
@@ -1031,6 +1038,7 @@ localtype
         | compoundmoduledefinition
         | networkdefinition
         | moduleinterfacedefinition
+        | ';'
         ;
 
 /*
@@ -1668,7 +1676,10 @@ quantity
         | REALCONSTANT NAME
         ;
 
-opt_semicolon : ';' | ;
+opt_semicolon
+        : ';'
+        |
+        ;
 
 %%
 
