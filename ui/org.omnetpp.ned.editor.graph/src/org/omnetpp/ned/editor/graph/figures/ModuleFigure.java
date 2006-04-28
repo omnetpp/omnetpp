@@ -161,4 +161,11 @@ public class ModuleFigure extends Figure {
         graphics.setAntialias(SWT.ON);
         super.paint(graphics);
     }
+
+    static public void debugPrintFigureHierarchy(Figure f, String indent) {
+    	System.out.println(indent+f.getClass().getSimpleName()+"@"+f.hashCode()+"  "+f.getBounds()+" opaque="+f.isOpaque());
+    	for (Object child : f.getChildren()) {
+    		debugPrintFigureHierarchy((Figure)child, indent+"    ");
+    	}
+    }
 }

@@ -8,8 +8,8 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editpolicies.GraphicalNodeEditPolicy;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
-import org.omnetpp.ned.editor.graph.edit.NedNodeEditPart;
-import org.omnetpp.ned.editor.graph.figures.NedFigure;
+import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
+import org.omnetpp.ned.editor.graph.figures.ModuleFigure;
 import org.omnetpp.ned.editor.graph.model.commands.ConnectionCommand;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.INedModule;
@@ -55,8 +55,8 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
         return getLayer(LayerConstants.SCALED_FEEDBACK_LAYER);
     }
 
-    protected NedNodeEditPart getNedNodeEditPart() {
-        return (NedNodeEditPart) getHost();
+    protected ModuleEditPart getNedNodeEditPart() {
+        return (ModuleEditPart) getHost();
     }
 
     protected INedModule getNedNodeModel() {
@@ -86,8 +86,8 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
         return cmd;
     }
 
-    protected NedFigure getNodeFigure() {
-        return (NedFigure) ((GraphicalEditPart) getHost()).getFigure();
+    protected ModuleFigure getNodeFigure() {
+        return (ModuleFigure) ((GraphicalEditPart) getHost()).getFigure();
     }
 
 }

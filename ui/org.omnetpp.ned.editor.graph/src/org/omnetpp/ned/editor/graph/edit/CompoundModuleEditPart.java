@@ -2,6 +2,7 @@ package org.omnetpp.ned.editor.graph.edit;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -25,18 +26,15 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.graph.edit.policies.CompoundModuleLayoutEditPolicy;
 import org.omnetpp.ned.editor.graph.figures.CompoundModuleFigure;
-import org.omnetpp.ned.editor.graph.figures.properties.DisplayCalloutSupport;
-import org.omnetpp.ned.editor.graph.figures.properties.DisplayInfoTextSupport;
-import org.omnetpp.ned.editor.graph.figures.properties.DisplayNameSupport;
-import org.omnetpp.ned.editor.graph.figures.properties.DisplayQueueSupport;
-import org.omnetpp.ned.editor.graph.figures.properties.DisplayRangeSupport;
+import org.omnetpp.ned.editor.graph.figures.properties.DisplayBackgroundSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayShapeSupport;
+import org.omnetpp.ned.editor.graph.figures.properties.DisplayTitleSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayTooltipSupport;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.DisplayString;
 import org.omnetpp.ned2.model.INedModule;
 
-public class CompoundModuleEditPart extends NedNodeEditPart {
+public class CompoundModuleEditPart extends ModuleEditPart {
 
 
     @Override
@@ -129,19 +127,48 @@ public class CompoundModuleEditPart extends NedNodeEditPart {
         // set the location and size using the models helper methods
         Rectangle constraint = new Rectangle(x, y, w, h);
         ((GraphicalEditPart) getParent()).setLayoutConstraint(this, getFigure(), constraint);
+
         // check if the figure supports the name decoration
-        if(getNedFigure() instanceof DisplayNameSupport)
-            ((DisplayNameSupport)getNedFigure()).setName(model.getName());
+        if(getNedFigure() instanceof DisplayTitleSupport) {
+        	// set the name and type + other inof on compound module
+            ((DisplayTitleSupport)getNedFigure()).setName(model.getName());
+            // set the icon showing the default representation in the titlebar
+            Image img = ImageFactory.getImage(
+                    dps.getAsStringDef(DisplayString.Prop.IMAGE), 
+                    dps.getAsStringDef(DisplayString.Prop.IMAGESIZE),
+                    ColorFactory.asRGB(dps.getAsStringDef(DisplayString.Prop.IMAGECOLOR)),
+                    dps.getAsIntDef(DisplayString.Prop.IMAGECOLORPCT,0));
+            ((DisplayTitleSupport)getNedFigure()).setDefaultShape(img, 
+                    dps.getAsStringDef(DisplayString.Prop.SHAPE), 
+                    dps.getAsIntDef(DisplayString.Prop.WIDTH, -1), 
+                    dps.getAsIntDef(DisplayString.Prop.HEIGHT, -1),
+                    ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.FILLCOL)),
+                    ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.BORDERCOL)),
+                    dps.getAsIntDef(DisplayString.Prop.BORDERWIDTH, -1));
+        }
+        
         // tooltip support
         if(getNedFigure() instanceof DisplayTooltipSupport)
             ((DisplayTooltipSupport)getNedFigure()).setTooltipText(
                     dps.getAsStringDef(DisplayString.Prop.TOOLTIP));
-        // shape support
+        
+        // backgorund color / image
+        if(getNedFigure() instanceof DisplayBackgroundSupport) {
+            Image img = ImageFactory.getImage(
+                    dps.getAsStringDef(DisplayString.Prop.MODULE_IMAGE),
+                    null, null, 0);
+            ((DisplayBackgroundSupport)getNedFigure()).setBackgorund(img, 
+            		DisplayBackgroundSupport.ImageArrangement.Scretch, 
+            		ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.MODULE_FILLCOL)), 
+            		ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.MODULE_BORDERCOL)), 
+            		dps.getAsIntDef(DisplayString.Prop.MODULE_BORDERWIDTH, -1));
+        }
+        
+        // default icon / shape support
         if(getNedFigure() instanceof DisplayShapeSupport) {
-            String imgSize = dps.getAsStringDef(DisplayString.Prop.IMAGESIZE);
             Image img = ImageFactory.getImage(
                     dps.getAsStringDef(DisplayString.Prop.IMAGE), 
-                    imgSize,
+                    dps.getAsStringDef(DisplayString.Prop.IMAGESIZE),
                     ColorFactory.asRGB(dps.getAsStringDef(DisplayString.Prop.IMAGECOLOR)),
                     dps.getAsIntDef(DisplayString.Prop.IMAGECOLORPCT,0));
             
@@ -153,13 +180,6 @@ public class CompoundModuleEditPart extends NedNodeEditPart {
                     ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.FILLCOL)),
                     ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.BORDERCOL)),
                     dps.getAsIntDef(DisplayString.Prop.BORDERWIDTH, -1));
-            // set the decoration image properties
-            ((DisplayShapeSupport)getNedFigure()).setImageDecoration(
-                    ImageFactory.getImage(
-                            dps.getAsStringDef(DisplayString.Prop.OVIMAGE),
-                            null,
-                            ColorFactory.asRGB(dps.getAsStringDef(DisplayString.Prop.OVIMAGECOLOR)),
-                            dps.getAsIntDef(DisplayString.Prop.OVIMAGECOLORPCT,0)));
 
         }
         

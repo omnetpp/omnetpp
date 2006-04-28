@@ -14,7 +14,7 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.graph.edit.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.NedNodeEditPolicy;
-import org.omnetpp.ned.editor.graph.figures.NedFigure;
+import org.omnetpp.ned.editor.graph.figures.ModuleFigure;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayCalloutSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayInfoTextSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayNameSupport;
@@ -29,7 +29,7 @@ import org.omnetpp.ned2.model.INedModule;
  * Base abstract controller for NedModel and NedFigures. Provides support for 
  * connection handling and common display attributes.
  */
-abstract public class NedNodeEditPart extends ContainerEditPart {
+abstract public class ModuleEditPart extends ContainerEditPart {
 
     @Override
     protected void createEditPolicies() {
@@ -64,8 +64,8 @@ abstract public class NedNodeEditPart extends ContainerEditPart {
      * 
      * @return Figure as a NedFigure.
      */
-    protected NedFigure getNedFigure() {
-        return (NedFigure) getFigure();
+    protected ModuleFigure getNedFigure() {
+        return (ModuleFigure) getFigure();
     }
 
     /**

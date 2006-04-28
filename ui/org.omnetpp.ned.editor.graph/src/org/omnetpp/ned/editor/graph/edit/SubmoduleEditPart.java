@@ -17,7 +17,7 @@ import org.omnetpp.ned.editor.graph.figures.properties.DisplayTooltipSupport;
 import org.omnetpp.ned2.model.DisplayString;
 import org.omnetpp.ned2.model.INedModule;
 
-public class SubmoduleEditPart extends NedNodeEditPart {
+public class SubmoduleEditPart extends ModuleEditPart {
 
     /**
      * Returns a newly created Figure of this.
