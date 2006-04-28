@@ -10,11 +10,11 @@ import org.eclipse.swt.SWT;
 import org.omnetpp.ned.editor.graph.figures.properties.LayerSupport;
 
 /**
- * Supports adding / removing conections to a node
+ * Supports adding / removing conections to a node. It is a generic 'Module' (anything that can have connections)
  * @author rhornig
  *
  */
-public class NedFigure extends Figure {
+public class ModuleFigure extends Figure {
 
     private Hashtable<String, ConnectionAnchor> connectionAnchors 
                 = new Hashtable<String, ConnectionAnchor>(7);
@@ -24,7 +24,7 @@ public class NedFigure extends Figure {
                 = new Vector<ConnectionAnchor>(2, 2);
 
     /**
-     * Returns a kayer from any ancestor that supports multiple layers for decorations
+     * Returns a layer from any ancestor that supports multiple layers for decorations
      * @param id Layer id
      * @return The layer with teh given id from any ancestor that inpmelements tha LayerSupport IF
      */
@@ -160,12 +160,5 @@ public class NedFigure extends Figure {
     public void paint(Graphics graphics) {
         graphics.setAntialias(SWT.ON);
         super.paint(graphics);
-    }
-    
-    static public void debugPrintFigureHierarchy(Figure f, String indent) {
-    	System.out.println(indent+f.getClass().getSimpleName()+"@"+f.hashCode()+"  "+f.getBounds());
-    	for (Object child : f.getChildren()) {
-    		debugPrintFigureHierarchy((Figure)child, indent+"    ");
-    	}
     }
 }

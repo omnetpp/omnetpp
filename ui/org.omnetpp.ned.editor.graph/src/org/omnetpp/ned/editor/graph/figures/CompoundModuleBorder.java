@@ -1,29 +1,86 @@
 package org.omnetpp.ned.editor.graph.figures;
 
-import org.eclipse.draw2d.AbstractBorder;
-import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.geometry.Insets;
-import org.eclipse.draw2d.geometry.Rectangle;
-import org.omnetpp.common.color.ColorFactory;
+import org.eclipse.draw2d.CompoundBorder;
+import org.eclipse.draw2d.LabeledBorder;
+import org.eclipse.draw2d.TitleBarBorder;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Image;
 
-public class CompoundModuleBorder extends AbstractBorder {
+public class CompoundModuleBorder extends CompoundBorder implements LabeledBorder
+{
+	/**
+	 * Constructs a FrameBorder with its label set to the name of the {@link TitleBarBorder}
+	 * class.
+	 * 
+	 * @since 2.0
+	 */
+	public CompoundModuleBorder() { 
+		inner = new CompoundModuleLineBorder();
+		outer = new CompoundModuleTitleBarBorder();
+	}
+
+	/**
+	 * Constructs a FrameBorder with the title set to the passed String.
+	 *
+	 * @param label  label or title of the frame.
+	 * @since 2.0
+	 */
+	public CompoundModuleBorder(String label) {
+		this();
+		setLabel(label);
+	}
+
+	public CompoundModuleTitleBarBorder getTitleBorder() {
+		return (CompoundModuleTitleBarBorder)outer;
+	}
+
+	public CompoundModuleLineBorder getLineBorder() {
+		return (CompoundModuleLineBorder)inner;
+	}
+
+	/**
+	 * @return the label for this border
+	 */
+	public String getLabel() {
+		return getTitleBorder().getLabel();
+	}
+
+	/**
+	 * Sets the label for this border.
+	 * @param label the label
+	 */
+	public void setLabel(String label) {
+		getTitleBorder().setLabel(label);
+	}
+
+	/**
+	 * Sets the font for this border's label.
+	 * @param font the font
+	 */
+	public void setFont(Font font) {
+		getTitleBorder().setFont(font);
+	}
 	
-	public final static int HEADER_HEIGHT = 42;
+	public void setTitleBackgroundColor(Color color) {
+		getTitleBorder().setBackgroundColor(color);
+	}
 
-    protected static Insets insets = new Insets(HEADER_HEIGHT, 0, 0, 0);
-    public Insets getInsets(IFigure figure) {
-        return insets;
-    }
+	public void setColor(Color color) {
+		getLineBorder().setColor(color);
+		getTitleBorder().setBackgroundColor(color);
+	}
 
-    public void paint(IFigure figure, Graphics g, Insets in) {
-        Rectangle r = figure.getBounds().getCropped(in);
-
-        g.setForegroundColor(ColorFactory.logicGreen);
-        g.setBackgroundColor(ColorFactory.logicGreen);
-
-        // Draw the sides of the border
-        g.fillRectangle(r.x, r.y, r.width, insets.getHeight());
-    }
+	/**
+	 * Sets the line width for this border.
+	 * @param width The line width
+	 */
+	public void setWidth(int width) {
+		getLineBorder().setWidth(width);
+	}
+	
+	public void setImage(Image img) {
+		getTitleBorder().setImage(img);
+	}
 
 }

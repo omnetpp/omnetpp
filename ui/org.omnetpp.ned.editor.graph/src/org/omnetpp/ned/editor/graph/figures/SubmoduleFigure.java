@@ -26,7 +26,7 @@ import org.omnetpp.ned.editor.graph.figures.properties.DisplayShapeSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayTooltipSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.LayerSupport;
 
-public class SubmoduleFigure extends NedFigure implements HandleBounds, 
+public class SubmoduleFigure extends ModuleFigure implements HandleBounds, 
     DisplayRangeSupport, DisplayNameSupport, DisplayTooltipSupport, DisplayQueueSupport, 
     DisplayInfoTextSupport, DisplayCalloutSupport, DisplayShapeSupport {
 
@@ -91,8 +91,8 @@ public class SubmoduleFigure extends NedFigure implements HandleBounds,
         // procedures cannot be done in the constructor
 
         // look for decorator layers among the ancestor
-        foregroundLayer = getAncestorLayer(LayerSupport.FRONT_DECORATION_LAYER);
-        backgroundLayer = getAncestorLayer(LayerSupport.BACK_DECORATION_LAYER);
+        foregroundLayer = getAncestorLayer(LayerSupport.LayerID.FrontDecoration);
+        backgroundLayer = getAncestorLayer(LayerSupport.LayerID.BackgroundDecoration);
         
         // add mainf figures
         add(rectShapeFigure);

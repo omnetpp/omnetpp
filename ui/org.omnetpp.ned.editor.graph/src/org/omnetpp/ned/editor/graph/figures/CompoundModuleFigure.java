@@ -1,6 +1,5 @@
 package org.omnetpp.ned.editor.graph.figures;
 
-import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.FreeformLayer;
 import org.eclipse.draw2d.FreeformLayeredPane;
 import org.eclipse.draw2d.FreeformViewport;
@@ -11,23 +10,49 @@ import org.eclipse.draw2d.LayeredPane;
 import org.eclipse.draw2d.ScrollPane;
 import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.handles.HandleBounds;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
+import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.ned.editor.graph.figures.properties.DisplayBackgroundSupport;
+import org.omnetpp.ned.editor.graph.figures.properties.DisplayTitleSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.LayerSupport;
 import org.omnetpp.ned.editor.graph.misc.FreeformDesktopLayout;
 
-public class CompoundModuleFigure extends NedFigure implements LayerSupport, HandleBounds {
+public class CompoundModuleFigure extends ModuleFigure 
+				implements DisplayBackgroundSupport, DisplayTitleSupport,
+				LayerSupport, HandleBounds {
 
     private Layer pane;
     private LayeredPane layeredPane;
+    private Image backgroundImage;
+    private ImageArrangement backgroundImageArr = ImageArrangement.Scretch;
 
+    // background layer to provide bacground coloring, images and grid drawing
+    class BackgroundLayer extends FreeformLayer {
+
+    	
+		@Override
+		protected void paintFigure(Graphics graphics) {
+	        Rectangle clientRect = getClientArea();
+	        // draw background image
+	        if (backgroundImage != null) {
+	            Rectangle imageRect = new Rectangle(backgroundImage.getBounds());
+	            if (backgroundImageArr.equals(ImageArrangement.Scretch))
+	            	graphics.drawImage(backgroundImage, imageRect, clientRect);
+		        // TODO implement centered and tiled image arrangement
+
+	        }
+		}
+    }
+    
     public CompoundModuleFigure() {
         super();
-        
         setBorder(new CompoundModuleBorder());
+        getCompoundModuleBorder().getTitleBorder().setPadding(5);
+        
         setLayoutManager(new StackLayout());
-
         // create scroller and viewport to manage the scrollbars and scrolling
         ScrollPane scrollpane = new ScrollPane();
         // add the maint layer to the scroller pane
@@ -37,13 +62,13 @@ public class CompoundModuleFigure extends NedFigure implements LayerSupport, Han
 
         layeredPane = new FreeformLayeredPane();
         layeredPane.setLayoutManager(new StackLayout());
-        layeredPane.addLayerAfter(pane, LayerSupport.DEFAULT_LAYER, null);
-        layeredPane.addLayerBefore(new FreeformLayer(), LayerSupport.BACK_DECORATION_LAYER, LayerSupport.DEFAULT_LAYER);
-        layeredPane.addLayerAfter(new FreeformLayer(), LayerSupport.FRONT_DECORATION_LAYER, LayerSupport.DEFAULT_LAYER);
+        layeredPane.addLayerAfter(pane, LayerSupport.LayerID.Default, null);
+        layeredPane.addLayerBefore(new BackgroundLayer(), LayerID.Background, LayerID.Default);
+        layeredPane.addLayerBefore(new FreeformLayer(), LayerID.BackgroundDecoration, LayerID.Default);
+        layeredPane.addLayerAfter(new FreeformLayer(), LayerID.FrontDecoration, LayerID.Default);
         
         scrollpane.setViewport(new FreeformViewport());
         scrollpane.setContents(layeredPane);
-        
         add(scrollpane);
 
         // this effectively creates the following hierechy:
@@ -51,13 +76,12 @@ public class CompoundModuleFigure extends NedFigure implements LayerSupport, Han
         // -- viewportPane
         // ---- FreeformLayeredPane (viewportContent)
         // ------ backgroundLayer
+        // ------ backgroundDecorationLayer
         // ------ pane
-        // ------ foregroundLayer
+        // ------ foregroundDecorationLayer
         
         
         createConnectionAnchors();
-        setBackgroundColor(ColorConstants.lightGray);
-        
     }
 
     protected void createConnectionAnchors() {
@@ -88,7 +112,9 @@ public class CompoundModuleFigure extends NedFigure implements LayerSupport, Han
      * @see org.eclipse.gef.handles.HandleBounds#getHandleBounds()
      */
     public Rectangle getHandleBounds() {
-        return getBounds().getCropped(new Insets(CompoundModuleBorder.HEADER_HEIGHT, 0, 0, 0));
+    	// the selection handle should exclude the outer (title) border
+        return getBounds().getCropped(
+        		((CompoundModuleBorder)getBorder()).getOuterBorder().getInsets(this));
     }
 
     protected PinnableNoncentralChopboxAnchor getInputConnectionAnchor(int i) {
@@ -116,21 +142,6 @@ public class CompoundModuleFigure extends NedFigure implements LayerSupport, Han
         }
     }
 
-    /**
-     * @see org.eclipse.draw2d.Figure#paintFigure(Graphics)
-     */
-    @Override
-    protected void paintFigure(Graphics graphics) {
-        Rectangle rect = getBounds().getCopy();
-        rect.crop(new Insets(CompoundModuleBorder.HEADER_HEIGHT, 0, 0, 0));
-        graphics.fillRectangle(rect);
-    }
-
-    @Override
-    public String toString() {
-        return "ModuleFigure"; //$NON-NLS-1$
-    }
-
     @Override
     public void validate() {
         if (isValid()) return;
@@ -138,15 +149,36 @@ public class CompoundModuleFigure extends NedFigure implements LayerSupport, Han
         super.validate();
     }
 
-    public Rectangle getIconBounds() {
-        // for the moment we return the whole client area of the figure
-        return getBounds();
+    /**
+     * Helper function to return the current border 
+     * @return
+     */
+    protected CompoundModuleBorder getCompoundModuleBorder() {
+    	return (CompoundModuleBorder)getBorder();
     }
-
+    
     public Layer getLayer(Object layerId) {
         return layeredPane.getLayer(layerId);
     }
-    
-    
+
+	public void setBackgorund(Image img, ImageArrangement arrange, Color backgroundColor, Color borderColor, int borderWidth) {
+		getCompoundModuleBorder().setColor(borderColor);
+		getCompoundModuleBorder().setWidth(borderWidth);
+		setBackgroundColor(backgroundColor);
+		backgroundImage = img;
+		backgroundImageArr = arrange;
+		invalidate();
+	}
+
+	public void setDefaultShape(Image img, String shape, int shapeWidth, int shapeHeight, Color shapeFillColor, Color shapeBorderColor, int shapeBorderWidth) {
+		getCompoundModuleBorder().setImage(img);
+		// TODO support shapes too
+		invalidate();
+	}
+
+	public void setName(String name) {
+		getCompoundModuleBorder().setLabel(name);
+		invalidate();
+	}
 
 }
