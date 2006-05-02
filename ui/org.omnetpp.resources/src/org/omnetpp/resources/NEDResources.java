@@ -17,6 +17,8 @@ import org.omnetpp.ned2.model.NEDSourceRegion;
 import org.omnetpp.ned2.model.pojo.ChannelInterfaceNode;
 import org.omnetpp.ned2.model.pojo.ChannelNode;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
+import org.omnetpp.ned2.model.pojo.GateNode;
+import org.omnetpp.ned2.model.pojo.GatesNode;
 import org.omnetpp.ned2.model.pojo.ModuleInterfaceNode;
 import org.omnetpp.ned2.model.pojo.NedFileNode;
 import org.omnetpp.ned2.model.pojo.ParamNode;
@@ -63,25 +65,63 @@ public class NEDResources implements INEDComponentResolver {
 
 	private INEDComponent basicChannelType = null;
 	private INEDComponent nullChannelType = null;
+	private INEDComponent bidirChannelType = null;
+	private INEDComponent unidirChannelType = null;
 
 	/**
 	 * Constructor.
 	 */
 	public NEDResources() {
-		// create builtin type NullChannel
+		createBuiltInNEDTypes(); 
+	}
+
+	/**
+	 * Create channel and interface types that are predefined in NED.
+	 */
+	protected void createBuiltInNEDTypes() {
+		// create built-in channel type NullChannel
 		ChannelNode nullChannel= new ChannelNode();
 		nullChannel.setName("NullChannel");
+		nullChannel.setIsWithcppclass(true);
 		nullChannelType = new NEDComponent(nullChannel, null, this); 
 
-		// create builtin type BasicChannel
+		// create built-in channel type BasicChannel
 		ChannelNode basicChannel = new ChannelNode();
 		basicChannel.setName("BasicChannel");
+		basicChannel.setIsWithcppclass(true);
 		ParametersNode params = new ParametersNode(basicChannel);
 		createImplicitChannelParameter(params, "delay", NEDElementUtil.NED_PARTYPE_DOUBLE);
 		createImplicitChannelParameter(params, "error", NEDElementUtil.NED_PARTYPE_DOUBLE);
 		createImplicitChannelParameter(params, "datarate", NEDElementUtil.NED_PARTYPE_DOUBLE);
 		basicChannelType = new NEDComponent(basicChannel, null, this); 
+		
+        //
+		// create built-in interfaces that allow modules to be used as channels
+        //  interface IBidirectionalChannel { gates: inout a; inout b; }
+		//  interface IUnidirectionalChannel {gates: input i; output o; }
+		//
+		ModuleInterfaceNode bidirChannel = new ModuleInterfaceNode();
+		bidirChannel.setName("IBidirectionalChannel");
+		GatesNode gates = new GatesNode(bidirChannel);
+		createGate(gates, "a", NEDElementUtil.NED_GATETYPE_INOUT);
+		createGate(gates, "b", NEDElementUtil.NED_GATETYPE_INOUT);
+		bidirChannelType = new NEDComponent(bidirChannel, null, this); 
+		
+		ModuleInterfaceNode unidirChannel = new ModuleInterfaceNode();
+		unidirChannel.setName("IUnidirectionalChannel");
+		GatesNode gates2 = new GatesNode(unidirChannel);
+		createGate(gates2, "i", NEDElementUtil.NED_GATETYPE_INPUT);
+		createGate(gates2, "o", NEDElementUtil.NED_GATETYPE_OUTPUT);
+		unidirChannelType = new NEDComponent(unidirChannel, null, this);
 	}	
+
+	/* utility method */
+	protected NEDElement createGate(GatesNode gates, String name, int type) {
+		GateNode g = new GateNode(gates);
+		g.setName(name);
+		g.setType(type);
+		return g;
+	}
 
 	/* utility method */
 	protected NEDElement createImplicitChannelParameter(NEDElement parent, String name, int type) {
@@ -400,6 +440,8 @@ public class NEDResources implements INEDComponentResolver {
 
 		components.put(nullChannelType.getName(), nullChannelType);
 		components.put(basicChannelType.getName(), basicChannelType);
+		components.put(bidirChannelType.getName(), bidirChannelType);
+		components.put(unidirChannelType.getName(), unidirChannelType);
 		
 		// find toplevel components in each file, and register them
 		for (IFile file : nedFiles.keySet()) {
@@ -443,9 +485,15 @@ public class NEDResources implements INEDComponentResolver {
             			// it is a duplicate: issue warning
             			try {
                 			IFile otherFile = components.get(name).getNEDFile();
-							String message = node.getTagName()+" '"+name+"' already defined in "+otherFile.getLocation().toOSString();
-							int line = parseLineNumber(node.getSourceLocation());
-							addMarker(file, NEDCONSISTENCYPROBLEM_MARKERID, IMarker.SEVERITY_WARNING, message, line); 
+                			int line = parseLineNumber(node.getSourceLocation());
+							if (otherFile==null) {
+								String message = node.getTagName()+" '"+name+"' is a built-in type and cannot be redefined";
+								addMarker(file, NEDCONSISTENCYPROBLEM_MARKERID, IMarker.SEVERITY_ERROR, message, line); 
+							}
+							else {
+								String message = node.getTagName()+" '"+name+"' already defined in "+otherFile.getLocation().toOSString();
+							    addMarker(file, NEDCONSISTENCYPROBLEM_MARKERID, IMarker.SEVERITY_WARNING, message, line);
+							}
 						} catch (CoreException e) {
 						}
             		}
@@ -464,7 +512,7 @@ public class NEDResources implements INEDComponentResolver {
 		// run "semantic validator" for each file
 		for (IFile file : nedFiles.keySet()) {
 			final IFile ifile = file;
-			INEDErrorStore errors = new INEDErrorStore() {  // XXX make better one
+			INEDErrorStore errors = new INEDErrorStore() {  // XXX make a better one
 				public void add(NEDElement context, String message) {
 					int line = parseLineNumber(context.getSourceLocation());
 					try {

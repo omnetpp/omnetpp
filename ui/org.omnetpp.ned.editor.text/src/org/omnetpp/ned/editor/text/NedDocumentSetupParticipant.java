@@ -9,8 +9,10 @@ import org.omnetpp.ned.editor.text.assist.NedContentAssistPartitionScanner;
 import org.omnetpp.ned.editor.text.highlight.NedSyntaxHighlightPartitionScanner;
 
 /**
- * 
+ * Configures the NED editor by adding all sorts of features into it 
  */
+//TODO "F3 Goto declaration" or ctrl-click "Follow Hyperlink" feature
+//FIXME: trying to use ctrl-H "Search" with NED files open result in "SWTException: Invalid thread access"!
 public class NedDocumentSetupParticipant implements IDocumentSetupParticipant {
 	
 	/**

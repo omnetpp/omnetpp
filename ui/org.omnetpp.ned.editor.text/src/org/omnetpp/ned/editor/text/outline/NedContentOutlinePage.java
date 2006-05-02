@@ -79,7 +79,7 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 		}
 
 		public Image getImage(Object obj) {
-			return ImageFactory.getImage(ImageFactory.TOOLBAR_IMAGE_MODULE); //XXX refine; factor out common part with graphical editor?
+			return ImageFactory.getImage(ImageFactory.TOOLBAR_IMAGE_SIMPLE); //XXX refine; factor out common part with graphical editor?
 		}
 	}
 
@@ -116,11 +116,12 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 		super.selectionChanged(event);
 		//System.out.println(this+".selectionChanged( " + event + ") called");
 
-		ISelection selection= event.getSelection();
+		ISelection selection = event.getSelection();
 		if (selection.isEmpty())
 			fTextEditor.resetHighlightRange();
 		else {
 			NEDElement node = (NEDElement) ((IStructuredSelection) selection).getFirstElement();
+			//System.out.println("selected: "+node);
 			NEDSourceRegion region = node.getSourceRegion();
 			if (region!=null) {
 				IDocument docu = fDocumentProvider.getDocument(fInput);
@@ -130,20 +131,11 @@ public class NedContentOutlinePage extends ContentOutlinePage {
 					fTextEditor.setHighlightRange(startOffset, endOffset-startOffset, true);
 				} catch (BadLocationException e) {
 				}
-
+				catch (IllegalArgumentException x) {
+					fTextEditor.resetHighlightRange();
+				}
 			}
-			System.out.println("selected: "+node);
 		}
-
-//			TopLevelKeyword segment= (TopLevelKeyword) ((IStructuredSelection) selection).getFirstElement();
-//			int start= segment.position.getOffset();
-//			int length= segment.position.getLength();
-//			try {
-//				fTextEditor.setHighlightRange(start, length, true);
-//			} catch (IllegalArgumentException x) {
-//				fTextEditor.resetHighlightRange();
-//			}
-//		}
 	}
 	
 	/**

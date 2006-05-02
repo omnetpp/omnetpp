@@ -25,6 +25,7 @@ import org.omnetpp.ned2.model.pojo.WhitespaceNode;
 //would have to depend on org.eclipse.resources because of IFile!!!
 
 //FIXME validation of embedded types!!!!
+//FIXME finish validator functions! e.g. turn on expression parsing
 
 public class NEDFileValidator implements NEDElementUtil, NEDElementTags {
 	INEDComponentResolver resolver;

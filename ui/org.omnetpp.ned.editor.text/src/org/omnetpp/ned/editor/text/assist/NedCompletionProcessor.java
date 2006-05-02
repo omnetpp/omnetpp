@@ -31,6 +31,7 @@ import org.omnetpp.resources.NEDResourcesPlugin;
 //    org.eclipse.jdt.ui.actions.IJavaEditorActionDefinitionIds
 //    org.eclipse.jdt.internal.ui.infoviews.SourceView
 //    org.eclipse.jdt.ui.actions.OpenEditorActionGroup
+// FIXME gets confused inside the "types:" section
 /**
  * NED completion processor.
  */
