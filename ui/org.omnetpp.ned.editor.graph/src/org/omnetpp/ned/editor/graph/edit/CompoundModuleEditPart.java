@@ -157,11 +157,19 @@ public class CompoundModuleEditPart extends ModuleEditPart {
             Image img = ImageFactory.getImage(
                     dps.getAsStringDef(DisplayString.Prop.MODULE_IMAGE),
                     null, null, 0);
-            ((DisplayBackgroundSupport)getNedFigure()).setBackgorund(img, 
-            		DisplayBackgroundSupport.ImageArrangement.Scretch, 
+            // TODO get image arrangement correctly
+            ((DisplayBackgroundSupport)getNedFigure()).setBackgorund(
+            		img, 
+            		DisplayBackgroundSupport.ImageArrangement.FIXED, 
             		ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.MODULE_FILLCOL)), 
             		ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.MODULE_BORDERCOL)), 
             		dps.getAsIntDef(DisplayString.Prop.MODULE_BORDERWIDTH, -1));
+            
+            // grid support
+            ((DisplayBackgroundSupport)getNedFigure()).setGrid(
+            		dps.getAsIntDef(DisplayString.Prop.MODULE_MAXTICKDISTANCE, -1), 
+            		dps.getAsIntDef(DisplayString.Prop.MODULE_TICKNUMBER, -1), 
+            		ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.MODULE_GRIDCOL)));
         }
         
         // default icon / shape support
@@ -171,7 +179,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
                     dps.getAsStringDef(DisplayString.Prop.IMAGESIZE),
                     ColorFactory.asRGB(dps.getAsStringDef(DisplayString.Prop.IMAGECOLOR)),
                     dps.getAsIntDef(DisplayString.Prop.IMAGECOLORPCT,0));
-            
+                        
             // set the figure properties
             ((DisplayShapeSupport)getNedFigure()).setShape(img, 
                     dps.getAsStringDef(DisplayString.Prop.SHAPE), 

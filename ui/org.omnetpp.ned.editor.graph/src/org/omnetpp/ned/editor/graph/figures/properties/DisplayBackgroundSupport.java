@@ -5,7 +5,7 @@ import org.eclipse.swt.graphics.Image;
 
 public interface DisplayBackgroundSupport {
 
-	enum ImageArrangement {Scretch, Center, Tile }
+	enum ImageArrangement {FIXED, SCRETCH, TILED }
 	
 	/**
 	 * Adjusts compound module background parameteres
@@ -17,4 +17,11 @@ public interface DisplayBackgroundSupport {
 	 */
 	public void setBackgorund(Image img, ImageArrangement arrange, 
 			Color backgroundColor, Color borderColor, int borderWidth);
+	
+	/**
+	 * @param tickDistance Maximum distance between two ticks measured in pixels
+	 * @param noOfTics Number of minor ticks between two major one
+	 * @param gridColor Grid color
+	 */
+	public void setGrid(int tickDistance, int noOfTics, Color gridColor);
 }

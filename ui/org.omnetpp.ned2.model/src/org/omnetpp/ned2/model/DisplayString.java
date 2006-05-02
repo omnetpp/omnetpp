@@ -86,7 +86,7 @@ public class DisplayString {
         MODULE_TOOLTIP(Tag.bgtt, 0, PropType.String, PropGroup.Text, "backgorund tooltip", "Tooltip to be displayed over the module's background"),
         // BGI tag
         MODULE_IMAGE(Tag.bgi, 0, PropType.Image, PropGroup.Image, "backgorund image", "An image to be displayed as a module background"),
-        MODULE_IMAGEARRANGEMENT(Tag.bgi, 1, PropType.String, PropGroup.Image, "backgorund arrangement", "How to arrange the module's background image (Tile / Scretch / Center) Default: scretch"),
+        MODULE_IMAGEARRANGEMENT(Tag.bgi, 1, PropType.String, PropGroup.Image, "backgorund arrangement", "How to arrange the module's background image (fixed, tiled, strech) Default: fixed"),
         // BGG tag
         MODULE_MAXTICKDISTANCE(Tag.bgg, 0, PropType.Integer, PropGroup.Misc, "backgorund grid tick distance", "Maximum distance between two ticks measured in pixels"),
         MODULE_TICKNUMBER(Tag.bgg, 1, PropType.Integer, PropGroup.Misc, "backgorund grid tick number", "Number of minor ticks between two major one"),

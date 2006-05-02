@@ -12,9 +12,9 @@ import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.handles.HandleBounds;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
-import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayBackgroundSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayTitleSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.LayerSupport;
@@ -27,23 +27,78 @@ public class CompoundModuleFigure extends ModuleFigure
     private Layer pane;
     private LayeredPane layeredPane;
     private Image backgroundImage;
-    private ImageArrangement backgroundImageArr = ImageArrangement.Scretch;
+    private ImageArrangement backgroundImageArr = ImageArrangement.FIXED;
+    private int gridTickDistance;
+    private int gridNoOfMinorTics;
+    private Color gridColor;
+    private Color moduleBackgroundColor;
 
-    // background layer to provide bacground coloring, images and grid drawing
+    // background layer to provide background coloring, images and grid drawing
     class BackgroundLayer extends FreeformLayer {
 
     	
 		@Override
 		protected void paintFigure(Graphics graphics) {
-	        Rectangle clientRect = getClientArea();
+        	graphics.pushState();
+	        Rectangle clientRect = getBounds();
+	        clientRect.x = 0;
+	        clientRect.y = 0;
+	        // draw hatched background showing non playground area
+	        // TODO implement hatched background for non playground area
+	        
+	        // draw a solid background
+	        if (moduleBackgroundColor != null) {
+	        	graphics.setBackgroundColor(moduleBackgroundColor);
+	        	graphics.fillRectangle(clientRect);
+	        }
+	        
 	        // draw background image
 	        if (backgroundImage != null) {
 	            Rectangle imageRect = new Rectangle(backgroundImage.getBounds());
-	            if (backgroundImageArr.equals(ImageArrangement.Scretch))
+	            switch (backgroundImageArr) {
+	            case FIXED:
+	            	graphics.drawImage(backgroundImage, clientRect.getLocation());
+	            	break;
+				case SCRETCH:
 	            	graphics.drawImage(backgroundImage, imageRect, clientRect);
-		        // TODO implement centered and tiled image arrangement
-
+					break;
+				case TILED:
+					for(int y = clientRect.y; y<clientRect.bottom(); y += imageRect.height)
+						for(int x = clientRect.x; x<clientRect.right(); x += imageRect.width)
+							graphics.drawImage(backgroundImage, x, y);
+					break;
+				}
 	        }
+	        // =============================================================================
+	        // draw a grid
+	        if(gridTickDistance > 1) {
+
+	        	graphics.setForegroundColor(gridColor);
+	        	int minorTickDistance = 0;
+	        	if (gridNoOfMinorTics > 1)
+	        		minorTickDistance = gridTickDistance / gridNoOfMinorTics;
+	        	
+	        	// horizontal grid
+	        	for(int y = clientRect.y; y<clientRect.bottom(); y += gridTickDistance) {
+	        		graphics.setLineStyle(SWT.LINE_SOLID);
+	        		graphics.drawLine(clientRect.x, y, clientRect.right(), y);
+	        		// minor ticks
+	        		graphics.setLineStyle(SWT.LINE_DOT);
+	        		for(int i = 0; i <gridNoOfMinorTics; i++)
+		        		graphics.drawLine(clientRect.x, y+i*minorTickDistance, clientRect.right(), y+i*minorTickDistance);
+	        			
+	        	}
+	        	// vertical grid
+	        	for(int x = clientRect.x; x<clientRect.right(); x += gridTickDistance) {
+	        		graphics.setLineStyle(SWT.LINE_SOLID);
+	        		graphics.drawLine(x, clientRect.y, x, clientRect.bottom());
+	        		// minor ticks
+	        		graphics.setLineStyle(SWT.LINE_DOT);
+	        		for(int i = 0; i <gridNoOfMinorTics; i++)
+		        		graphics.drawLine(x+i*minorTickDistance, clientRect.y, x+i*minorTickDistance, clientRect.bottom());
+	        	}
+	        }
+        	graphics.popState();
 		}
     }
     
@@ -164,9 +219,16 @@ public class CompoundModuleFigure extends ModuleFigure
 	public void setBackgorund(Image img, ImageArrangement arrange, Color backgroundColor, Color borderColor, int borderWidth) {
 		getCompoundModuleBorder().setColor(borderColor);
 		getCompoundModuleBorder().setWidth(borderWidth);
-		setBackgroundColor(backgroundColor);
+		moduleBackgroundColor = backgroundColor;
 		backgroundImage = img;
 		backgroundImageArr = arrange;
+		invalidate();
+	}
+
+	public void setGrid(int tickDistance, int noOfTics, Color gridColor) {
+		this.gridTickDistance = tickDistance;
+		this.gridNoOfMinorTics = noOfTics;
+		this.gridColor = gridColor;
 		invalidate();
 	}
 

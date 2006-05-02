@@ -9,10 +9,6 @@ import org.eclipse.draw2d.Layer;
  */
 public interface LayerSupport {
 	enum LayerID { Background, BackgroundDecoration, Default, FrontDecoration, Connection, ToolTip } 
-//    public final static String BACKGROUND_LAYER = "Background layer";
-//    public final static String BACK_DECORATION_LAYER = "Background decoration layer";
-//    public final static String DEFAULT_LAYER = "Normal layer";
-//    public final static String FRONT_DECORATION_LAYER = "Foreground decoration layer";
 
     /**
      * @param layerId
