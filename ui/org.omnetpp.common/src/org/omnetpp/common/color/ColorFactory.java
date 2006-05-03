@@ -13,7 +13,7 @@ public class ColorFactory {
     public final static Color ghostFillColor = new Color(null, 31, 31, 31);
     public final static Color highlight = new Color(null, 255, 0, 0);
     public final static Color defaultBackground = new Color(null, 192, 192, 192);
-    public final static Color defaultBorder = new Color(null, 0, 128, 64);
+    public final static Color defaultBorder = new Color(null, 0, 0, 0);
     public final static Color defaultConnection = new Color(null, 0, 0, 0);
 
     private static ColorRegistry str2rgbRegistry = new ColorRegistry();

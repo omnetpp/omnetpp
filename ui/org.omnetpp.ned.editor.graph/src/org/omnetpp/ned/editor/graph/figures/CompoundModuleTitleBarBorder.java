@@ -105,8 +105,10 @@ public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder {
 		g.clipRect(tRect);
 		g.setFont(getFont(figure));
 		g.setForegroundColor(getTextColor());
-		g.setBackgroundColor(fillColor);
-		g.fillRectangle(tRect);
+		if (fillColor != null) {
+			g.setBackgroundColor(fillColor);
+			g.fillRectangle(tRect);
+		}
 		g.drawString(getLabel(), lx, ly);
 		if (getImage() != null) 
 			g.drawImage(getImage(), imgx, imgy);

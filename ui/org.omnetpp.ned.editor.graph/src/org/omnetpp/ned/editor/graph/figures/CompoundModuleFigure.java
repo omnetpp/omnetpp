@@ -10,11 +10,13 @@ import org.eclipse.draw2d.LayeredPane;
 import org.eclipse.draw2d.ScrollPane;
 import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.handles.HandleBounds;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Pattern;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayBackgroundSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayTitleSupport;
@@ -27,6 +29,7 @@ public class CompoundModuleFigure extends ModuleFigure
 
     private static final int DEFAULT_BORDER_WIDTH = 2;
 	private Layer pane;
+    private ScrollPane scrollpane;
     private LayeredPane layeredPane;
     private Image backgroundImage;
     private ImageArrangement backgroundImageArr = ImageArrangement.FIXED;
@@ -43,68 +46,71 @@ public class CompoundModuleFigure extends ModuleFigure
 		@Override
 		protected void paintFigure(Graphics graphics) {
         	graphics.pushState();
-	        Rectangle clientRect = getBounds();
-	        clientRect.x = 0;
-	        clientRect.y = 0;
-	        // draw hatched background showing non playground area
-	        // TODO implement hatched background for non playground area
-	        if (moduleBorderColor != null) {
-	        	graphics.setBackgroundColor(moduleBorderColor);
-	        	graphics.fillRectangle(getClientArea());
-	        }
+
+        	// get the size of the viewport (which is actually the module size)
+	        Rectangle viewportRect = new Rectangle(new Point(0,0), scrollpane.getSize());
 	        
+	        // draw outer non playground area
+	        Pattern nonplayPattern = new Pattern(null, 0,0,5,5, moduleBackgroundColor, moduleBorderColor);
+	        graphics.setBackgroundColor(moduleBackgroundColor);
+	        graphics.setBackgroundPattern(nonplayPattern);
+	        graphics.fillRectangle(getClientArea());
+
 	        // draw a solid background
 	        if (moduleBackgroundColor != null) {
 	        	graphics.setBackgroundColor(moduleBackgroundColor);
-	        	graphics.fillRectangle(clientRect);
+	        	graphics.fillRectangle(viewportRect);
 	        }
 	        
 	        // draw background image
+	        // clip the background image
+	        graphics.clipRect(viewportRect);
 	        if (backgroundImage != null) {
 	            Rectangle imageRect = new Rectangle(backgroundImage.getBounds());
 	            switch (backgroundImageArr) {
 	            case FIXED:
-	            	graphics.drawImage(backgroundImage, clientRect.getLocation());
+	            	graphics.drawImage(backgroundImage, viewportRect.getLocation());
 	            	break;
 				case SCRETCH:
-	            	graphics.drawImage(backgroundImage, imageRect, clientRect);
+	            	graphics.drawImage(backgroundImage, imageRect, viewportRect);
 					break;
 				case TILED:
-					for(int y = clientRect.y; y<clientRect.bottom(); y += imageRect.height)
-						for(int x = clientRect.x; x<clientRect.right(); x += imageRect.width)
+					for(int y = viewportRect.y; y<viewportRect.bottom(); y += imageRect.height)
+						for(int x = viewportRect.x; x<viewportRect.right(); x += imageRect.width)
 							graphics.drawImage(backgroundImage, x, y);
 					break;
 				}
 	        }
+
 	        // =============================================================================
-	        // draw a grid
+	        // draw the grid
 	        if(gridTickDistance > 1) {
 
 	        	graphics.setForegroundColor(gridColor);
-	        	int minorTickDistance = 0;
+	        	double minorTickDistance = 0;
 	        	if (gridNoOfMinorTics > 1)
-	        		minorTickDistance = gridTickDistance / gridNoOfMinorTics;
+	        		minorTickDistance = (double)gridTickDistance / gridNoOfMinorTics;
 	        	
 	        	// horizontal grid
-	        	for(int y = clientRect.y; y<clientRect.bottom(); y += gridTickDistance) {
+	        	for(int y = viewportRect.y; y<viewportRect.bottom(); y += gridTickDistance) {
 	        		graphics.setLineStyle(SWT.LINE_SOLID);
-	        		graphics.drawLine(clientRect.x, y, clientRect.right(), y);
+	        		graphics.drawLine(viewportRect.x, y, viewportRect.right(), y);
 	        		// minor ticks
 	        		graphics.setLineStyle(SWT.LINE_DOT);
-	        		for(int i = 0; i <gridNoOfMinorTics; i++)
-		        		graphics.drawLine(clientRect.x, y+i*minorTickDistance, clientRect.right(), y+i*minorTickDistance);
-	        			
+	        		for(double my = y;  my < y+gridTickDistance && my < viewportRect.bottom() && minorTickDistance > 1; my+=minorTickDistance)
+		        		graphics.drawLine(viewportRect.x, (int)my, viewportRect.right(), (int)my);
 	        	}
 	        	// vertical grid
-	        	for(int x = clientRect.x; x<clientRect.right(); x += gridTickDistance) {
+	        	for(int x = viewportRect.x; x<viewportRect.right(); x += gridTickDistance) {
 	        		graphics.setLineStyle(SWT.LINE_SOLID);
-	        		graphics.drawLine(x, clientRect.y, x, clientRect.bottom());
+	        		graphics.drawLine(x, viewportRect.y, x, viewportRect.bottom());
 	        		// minor ticks
 	        		graphics.setLineStyle(SWT.LINE_DOT);
-	        		for(int i = 0; i <gridNoOfMinorTics; i++)
-		        		graphics.drawLine(x+i*minorTickDistance, clientRect.y, x+i*minorTickDistance, clientRect.bottom());
+	        		for(double mx = x;  mx < x+gridTickDistance && mx < viewportRect.right() && minorTickDistance > 1; mx+=minorTickDistance)
+		        		graphics.drawLine((int)mx, viewportRect.y, (int)mx,viewportRect.bottom());
 	        	}
 	        }
+	        // restore the graphics state
         	graphics.popState();
 		}
     }
@@ -116,7 +122,7 @@ public class CompoundModuleFigure extends ModuleFigure
         
         setLayoutManager(new StackLayout());
         // create scroller and viewport to manage the scrollbars and scrolling
-        ScrollPane scrollpane = new ScrollPane();
+		scrollpane = new ScrollPane();
         // add the maint layer to the scroller pane
         // create the main and the decoration layers that will be added into the viewportPane
         pane = new FreeformLayer();
@@ -142,8 +148,7 @@ public class CompoundModuleFigure extends ModuleFigure
         // ------ pane
         // ------ foregroundDecorationLayer
         
-        
-        createConnectionAnchors();
+    	createConnectionAnchors();
     }
 
     protected void createConnectionAnchors() {
@@ -224,10 +229,14 @@ public class CompoundModuleFigure extends ModuleFigure
     }
 
 	public void setBackgorund(Image img, ImageArrangement arrange, Color backgroundColor, Color borderColor, int borderWidth) {
-		moduleBackgroundColor = (backgroundColor!=null) ? ColorFactory.defaultBackground : backgroundColor;
-		moduleBorderColor = (borderColor!=null) ? ColorFactory.defaultBorder : borderColor;
-		getCompoundModuleBorder().setColor(moduleBorderColor);
-		getCompoundModuleBorder().setWidth(borderWidth < 0 ? DEFAULT_BORDER_WIDTH : borderWidth);
+		moduleBackgroundColor = (backgroundColor==null) ? ColorFactory.defaultBackground : backgroundColor;
+		moduleBorderColor = (borderColor==null) ? ColorFactory.defaultBorder : borderColor;
+		
+		// the global background is the same as the border color
+		setBackgroundColor(moduleBorderColor);
+		getCompoundModuleBorder().setBorderColor(moduleBorderColor);
+		getCompoundModuleBorder().setTitleBackgroundColor(moduleBackgroundColor);
+		getCompoundModuleBorder().setBorderWidth(borderWidth < 0 ? DEFAULT_BORDER_WIDTH : borderWidth);
 		// background image
 		backgroundImage = img;
 		backgroundImageArr = arrange;
