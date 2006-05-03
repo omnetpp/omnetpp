@@ -32,6 +32,7 @@ public class CompoundModuleFigure extends ModuleFigure
     private int gridNoOfMinorTics;
     private Color gridColor;
     private Color moduleBackgroundColor;
+    private Color moduleBorderColor;
 
     // background layer to provide background coloring, images and grid drawing
     class BackgroundLayer extends FreeformLayer {
@@ -45,6 +46,8 @@ public class CompoundModuleFigure extends ModuleFigure
 	        clientRect.y = 0;
 	        // draw hatched background showing non playground area
 	        // TODO implement hatched background for non playground area
+	        graphics.setBackgroundColor(moduleBorderColor);
+	        graphics.fillRectangle(getClientArea());
 	        
 	        // draw a solid background
 	        if (moduleBackgroundColor != null) {
@@ -220,6 +223,7 @@ public class CompoundModuleFigure extends ModuleFigure
 		getCompoundModuleBorder().setColor(borderColor);
 		getCompoundModuleBorder().setWidth(borderWidth);
 		moduleBackgroundColor = backgroundColor;
+		moduleBorderColor = borderColor;
 		backgroundImage = img;
 		backgroundImageArr = arrange;
 		invalidate();

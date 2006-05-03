@@ -83,9 +83,9 @@ public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder {
 	public void paint(IFigure figure, Graphics g, Insets insets) {
 		int lx, ly, imgx, imgy;
 		int titleBarHeight = 0;
-		tempRect.setBounds(getPaintRectangle(figure, insets));
-		lx = imgx = tempRect.x;
-		ly = imgy = tempRect.y;
+		Rectangle tRect = new Rectangle(getPaintRectangle(figure, insets));
+		lx = imgx = tRect.x;
+		ly = imgy = tRect.y;
 		// compute image position
 		if (image != null) {
 			imgx += padding.left;
@@ -99,13 +99,13 @@ public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder {
 		lx += padding.left;
 		// position the text in the middle of the bar
 		ly += padding.top + (titleBarHeight - getTextExtents(figure).height - padding.getHeight())/2;
-		tempRect.height = Math.min(tempRect.height, titleBarHeight);
+		tRect.height = Math.min(tRect.height, titleBarHeight);
 
-		g.clipRect(tempRect);
+		g.clipRect(tRect);
 		g.setFont(getFont(figure));
 		g.setForegroundColor(getTextColor());
 		g.setBackgroundColor(fillColor);
-		g.fillRectangle(tempRect);
+		g.fillRectangle(tRect);
 		g.drawString(getLabel(), lx, ly);
 		if (getImage() != null) 
 			g.drawImage(getImage(), imgx, imgy);
