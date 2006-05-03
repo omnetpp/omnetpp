@@ -21,7 +21,7 @@ public class ConnectionEndpointEditPolicy extends org.eclipse.gef.editpolicies.C
     protected void removeSelectionHandles() {
         super.removeSelectionHandles();
         getConnectionFigure().setLineWidth(0);
-        getConnectionFigure().setForegroundColor(ColorFactory.connection);
+        getConnectionFigure().setForegroundColor(ColorFactory.defaultConnection);
     }
 
 }

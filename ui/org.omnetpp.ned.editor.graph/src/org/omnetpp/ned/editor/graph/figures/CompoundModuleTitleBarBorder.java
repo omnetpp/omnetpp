@@ -11,6 +11,7 @@ import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.omnetpp.common.color.ColorFactory;
 
 public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder {
 
@@ -120,6 +121,8 @@ public class CompoundModuleTitleBarBorder extends AbstractLabeledBorder {
 	 * @since 2.0
 	 */
 	public void setBackgroundColor(Color color) {
+		if (color == null)
+			color = ColorFactory.defaultBorder;
 		fillColor = color;
 	}
 

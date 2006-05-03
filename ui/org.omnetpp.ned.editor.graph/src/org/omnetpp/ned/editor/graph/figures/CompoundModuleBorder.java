@@ -6,6 +6,7 @@ import org.eclipse.draw2d.TitleBarBorder;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
+import org.omnetpp.common.color.ColorFactory;
 
 public class CompoundModuleBorder extends CompoundBorder implements LabeledBorder
 {
@@ -62,11 +63,14 @@ public class CompoundModuleBorder extends CompoundBorder implements LabeledBorde
 		getTitleBorder().setFont(font);
 	}
 	
-	public void setTitleBackgroundColor(Color color) {
-		getTitleBorder().setBackgroundColor(color);
-	}
+//	public void setTitleBackgroundColor(Color color) {
+//		getTitleBorder().setBackgroundColor(color);
+//	}
 
 	public void setColor(Color color) {
+		// null is not valid for title background use border color as default
+		if (color == null)
+			color = ColorFactory.defaultBorder;
 		getLineBorder().setColor(color);
 		getTitleBorder().setBackgroundColor(color);
 	}

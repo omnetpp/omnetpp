@@ -15,6 +15,7 @@ import org.eclipse.gef.handles.HandleBounds;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayBackgroundSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayTitleSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.LayerSupport;
@@ -24,15 +25,16 @@ public class CompoundModuleFigure extends ModuleFigure
 				implements DisplayBackgroundSupport, DisplayTitleSupport,
 				LayerSupport, HandleBounds {
 
-    private Layer pane;
+    private static final int DEFAULT_BORDER_WIDTH = 2;
+	private Layer pane;
     private LayeredPane layeredPane;
     private Image backgroundImage;
     private ImageArrangement backgroundImageArr = ImageArrangement.FIXED;
     private int gridTickDistance;
     private int gridNoOfMinorTics;
     private Color gridColor;
-    private Color moduleBackgroundColor;
-    private Color moduleBorderColor;
+    private Color moduleBackgroundColor = ColorFactory.defaultBackground;
+    private Color moduleBorderColor = ColorFactory.defaultBorder;
 
     // background layer to provide background coloring, images and grid drawing
     class BackgroundLayer extends FreeformLayer {
@@ -46,8 +48,10 @@ public class CompoundModuleFigure extends ModuleFigure
 	        clientRect.y = 0;
 	        // draw hatched background showing non playground area
 	        // TODO implement hatched background for non playground area
-	        graphics.setBackgroundColor(moduleBorderColor);
-	        graphics.fillRectangle(getClientArea());
+	        if (moduleBorderColor != null) {
+	        	graphics.setBackgroundColor(moduleBorderColor);
+	        	graphics.fillRectangle(getClientArea());
+	        }
 	        
 	        // draw a solid background
 	        if (moduleBackgroundColor != null) {
@@ -220,10 +224,11 @@ public class CompoundModuleFigure extends ModuleFigure
     }
 
 	public void setBackgorund(Image img, ImageArrangement arrange, Color backgroundColor, Color borderColor, int borderWidth) {
-		getCompoundModuleBorder().setColor(borderColor);
-		getCompoundModuleBorder().setWidth(borderWidth);
-		moduleBackgroundColor = backgroundColor;
-		moduleBorderColor = borderColor;
+		moduleBackgroundColor = (backgroundColor!=null) ? ColorFactory.defaultBackground : backgroundColor;
+		moduleBorderColor = (borderColor!=null) ? ColorFactory.defaultBorder : borderColor;
+		getCompoundModuleBorder().setColor(moduleBorderColor);
+		getCompoundModuleBorder().setWidth(borderWidth < 0 ? DEFAULT_BORDER_WIDTH : borderWidth);
+		// background image
 		backgroundImage = img;
 		backgroundImageArr = arrange;
 		invalidate();
