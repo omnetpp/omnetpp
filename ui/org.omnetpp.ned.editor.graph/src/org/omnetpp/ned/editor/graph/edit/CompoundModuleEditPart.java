@@ -152,7 +152,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
             ((DisplayTooltipSupport)getNedFigure()).setTooltipText(
                     dps.getAsStringDef(DisplayString.Prop.TOOLTIP));
         
-        // backgorund color / image
+        // background color / image
         if(getNedFigure() instanceof DisplayBackgroundSupport) {
             Image img = ImageFactory.getImage(
                     dps.getAsStringDef(DisplayString.Prop.MODULE_IMAGE),

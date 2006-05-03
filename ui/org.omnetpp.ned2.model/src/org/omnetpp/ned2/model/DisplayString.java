@@ -74,28 +74,28 @@ public class DisplayString {
         // START of COMPOUNDMODULE properties
         // BGP tag
         // do not change the first and last element of the property group
-        MODULE_X(Tag.bgp, 0, PropType.Integer, PropGroup.Position, "backgorund x", "Module background horizontal displacement"),
-        MODULE_Y(Tag.bgp, 1, PropType.Integer, PropGroup.Position, "backgorund y", "Module background vertical displacement"),
+        MODULE_X(Tag.bgp, 0, PropType.Integer, PropGroup.Position, "background x", "Module background horizontal displacement"),
+        MODULE_Y(Tag.bgp, 1, PropType.Integer, PropGroup.Position, "background y", "Module background vertical displacement"),
         // BGB tag
-        MODULE_WIDTH(Tag.bgb, 0, PropType.Integer, PropGroup.Position, "backgorund width", "Width of shape. Default: match the image size or shape height (-1)"),
-        MODULE_HEIGHT(Tag.bgb, 1, PropType.Integer, PropGroup.Position, "backgorund height", "Height of shape. Default: match the image size or shape width (-1)"),
-        MODULE_FILLCOL(Tag.bgb, 2, PropType.Color, PropGroup.Style, "backgorund fill color", "Fill color of the shape. Default: light blue"),
-        MODULE_BORDERCOL(Tag.bgb, 3, PropType.Color, PropGroup.Style, "backgorund border color", "Border color of the shape. Default: black"),
-        MODULE_BORDERWIDTH(Tag.bgb, 4, PropType.Integer, PropGroup.Style, "backgorund border width", "Border width of the shape. Default: 2"),
+        MODULE_WIDTH(Tag.bgb, 0, PropType.Integer, PropGroup.Position, "background width", "Width of shape. Default: match the image size or shape height (-1)"),
+        MODULE_HEIGHT(Tag.bgb, 1, PropType.Integer, PropGroup.Position, "background height", "Height of shape. Default: match the image size or shape width (-1)"),
+        MODULE_FILLCOL(Tag.bgb, 2, PropType.Color, PropGroup.Style, "background fill color", "Fill color of the shape. Default: light blue"),
+        MODULE_BORDERCOL(Tag.bgb, 3, PropType.Color, PropGroup.Style, "background border color", "Border color of the shape. Default: black"),
+        MODULE_BORDERWIDTH(Tag.bgb, 4, PropType.Integer, PropGroup.Style, "background border width", "Border width of the shape. Default: 2"),
         // BGTT tag
-        MODULE_TOOLTIP(Tag.bgtt, 0, PropType.String, PropGroup.Text, "backgorund tooltip", "Tooltip to be displayed over the module's background"),
+        MODULE_TOOLTIP(Tag.bgtt, 0, PropType.String, PropGroup.Text, "background tooltip", "Tooltip to be displayed over the module's background"),
         // BGI tag
-        MODULE_IMAGE(Tag.bgi, 0, PropType.Image, PropGroup.Image, "backgorund image", "An image to be displayed as a module background"),
-        MODULE_IMAGEARRANGEMENT(Tag.bgi, 1, PropType.String, PropGroup.Image, "backgorund arrangement", "How to arrange the module's background image (fixed, tiled, strech) Default: fixed"),
+        MODULE_IMAGE(Tag.bgi, 0, PropType.Image, PropGroup.Image, "background image", "An image to be displayed as a module background"),
+        MODULE_IMAGEARRANGEMENT(Tag.bgi, 1, PropType.String, PropGroup.Image, "background arrangement", "How to arrange the module's background image (fixed, tiled, strech) Default: fixed"),
         // BGG tag
-        MODULE_MAXTICKDISTANCE(Tag.bgg, 0, PropType.Integer, PropGroup.Misc, "backgorund grid tick distance", "Maximum distance between two ticks measured in pixels"),
-        MODULE_TICKNUMBER(Tag.bgg, 1, PropType.Integer, PropGroup.Misc, "backgorund grid tick number", "Number of minor ticks between two major one"),
-        MODULE_GRIDCOL(Tag.bgg, 3, PropType.Color, PropGroup.Style, "backgorund grid color", "Color of grid"),
+        MODULE_MAXTICKDISTANCE(Tag.bgg, 0, PropType.Integer, PropGroup.Misc, "background grid tick distance", "Maximum distance between two ticks measured in pixels"),
+        MODULE_TICKNUMBER(Tag.bgg, 1, PropType.Integer, PropGroup.Misc, "background grid tick number", "Number of minor ticks between two major one"),
+        MODULE_GRIDCOL(Tag.bgg, 3, PropType.Color, PropGroup.Style, "background grid color", "Color of grid"),
         // module scaling mixel per unit
-        MODULE_X_SCALE(Tag.bgs, 0, PropType.Integer, PropGroup.Misc, "backgorund X scaling", "Number of horizontal pixels per unit"),
-        MODULE_X_UNIT(Tag.bgs, 1, PropType.String, PropGroup.Text, "backgorund X unit", "Name of horizontal unit"),
-        MODULE_Y_SCALE(Tag.bgs, 2, PropType.Integer, PropGroup.Misc, "backgorund vertical scale", "Number of vertical pixels per unit"),
-        MODULE_Y_UNIT(Tag.bgs, 3, PropType.String, PropGroup.Text, "backgorund Y unit", "Name of vertical unit"),
+        MODULE_X_SCALE(Tag.bgs, 0, PropType.Integer, PropGroup.Misc, "background X scaling", "Number of horizontal pixels per unit"),
+        MODULE_X_UNIT(Tag.bgs, 1, PropType.String, PropGroup.Text, "background X unit", "Name of horizontal unit"),
+        MODULE_Y_SCALE(Tag.bgs, 2, PropType.Integer, PropGroup.Misc, "background vertical scale", "Number of vertical pixels per unit"),
+        MODULE_Y_UNIT(Tag.bgs, 3, PropType.String, PropGroup.Text, "background Y unit", "Name of vertical unit"),
         // END of COMPOUNDMODULE properties
         
         // START of CONNECTION properties
