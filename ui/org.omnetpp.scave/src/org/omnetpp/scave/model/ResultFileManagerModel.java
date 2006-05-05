@@ -12,11 +12,11 @@ public class ResultFileManagerModel extends ResultFileManager {
 
 	ModelChangeListenerList listeners = new ModelChangeListenerList();
 
-	public void addListener(ModelChangeListener l) {
+	public void addListener(IModelChangeListener l) {
 		listeners.add(l);
 	}
 
-	public void removeListener(ModelChangeListener l) {
+	public void removeListener(IModelChangeListener l) {
 		listeners.remove(l);
 	}
 

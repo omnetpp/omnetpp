@@ -14,6 +14,7 @@ public @interface Property {
 	String id() default "";
 	String displayName() default "";
 	String category() default "";
+	String[] filterFlags() default {};
 	String description() default "";
-	Class descriptorClass() default PropertyDescriptor.class;
+	Class<? extends PropertyDescriptor> descriptorClass() default PropertyDescriptor.class;
 }

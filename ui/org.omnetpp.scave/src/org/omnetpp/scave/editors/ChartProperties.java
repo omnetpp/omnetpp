@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.ui.views.properties.IPropertySheetEntry;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.Axis;
 import org.jfree.chart.axis.CategoryAxis;
@@ -50,29 +51,35 @@ import org.omnetpp.common.properties.PropertySource;
 public class ChartProperties extends PropertySource {
 
 	private ChartSWTWrapper swtChart;
+	private JFreeChart chart;
 	
-	public ChartProperties(ChartSWTWrapper swtChart)
-	{
+	public ChartProperties(ChartSWTWrapper swtChart) {
 		this.swtChart = swtChart;
+		this.chart = swtChart.getChart();
 	}
 	
-	public JFreeChart getChart() {
-		return swtChart.getChart();
+	public ChartProperties(JFreeChart chart) {
+		this.chart = chart;
 	}
+	
+	@Property
+	public RGB getBackgroundColor() { return paintToRGB(chart.getBackgroundPaint()); }
+	public void setBackgroundColor(RGB rgb) { chart.setBackgroundPaint(rgbToPaint(rgb)); }
+	public RGB defaultBackgroundColor() { return paintToRGB(JFreeChart.DEFAULT_BACKGROUND_PAINT); }
 	
 	@Property(displayName = "Title")
 	public TitleProperties getTitle() {
-		return new TitleProperties(getChart().getTitle());
+		return new TitleProperties(chart.getTitle());
 	}
 	
 	@Property(displayName = "Legend")
 	public LegendProperties getLegend() {
-		return new LegendProperties(getChart().getLegend());
+		return new LegendProperties(chart.getLegend());
 	}
 	
 	@Property(displayName = "Plot")
 	public PlotProperties getPlot() {
-		Plot plot = getChart().getPlot();
+		Plot plot = chart.getPlot();
 		if (plot instanceof CategoryPlot)
 			return new CategoryPlotProperties((CategoryPlot)plot);
 		else if (plot instanceof XYPlot)
@@ -83,7 +90,7 @@ public class ChartProperties extends PropertySource {
 	
 	@Property(displayName = "Axes")
 	public AxesProperties getAxes() {
-		Plot plot = getChart().getPlot();
+		Plot plot = chart.getPlot();
 		if (plot instanceof CategoryPlot)
 			return new CategoryPlotAxesProperties((CategoryPlot)plot);
 		else if (plot instanceof XYPlot)
@@ -93,7 +100,8 @@ public class ChartProperties extends PropertySource {
 	}
 	
 	private void refresh() {
-		swtChart.refresh();
+		if (swtChart != null)
+			swtChart.refresh();
 	}
 	
 
@@ -114,15 +122,18 @@ public class ChartProperties extends PropertySource {
 		@Property
 		public FontData getFont() { return fontToFontData(title.getFont()); }
 		public void setFont(FontData font) { title.setFont(fontDataToFont(font)); }
+		public FontData defaultFont() { return fontToFontData(TextTitle.DEFAULT_FONT); }
 
 		@Property
 		public RGB getTextColor() { return paintToRGB(title.getPaint()); }
 		public void setTextColor(RGB rgb) { title.setPaint(rgbToPaint(rgb)); }
+		public RGB defaultTextColor() { return paintToRGB(TextTitle.DEFAULT_TEXT_PAINT); }
 
 		@Property(descriptorClass = EnumPropertyDescriptor.class,
 				  category = "Layout")
 		public RectangleEdge getPosition() { return title.getPosition(); }
 		public void setPosition(RectangleEdge pos) { title.setPosition(pos); }
+		public RectangleEdge defaultPosition() { return TextTitle.DEFAULT_POSITION; }
 		
 		@Property(descriptorClass = EnumPropertyDescriptor.class,
 				  category = "Layout")
@@ -154,14 +165,19 @@ public class ChartProperties extends PropertySource {
 		@Property(descriptorClass = EnumPropertyDescriptor.class)
 		public RectangleEdge getPosition() { return legend.getPosition(); }
 		public void setPosition(RectangleEdge pos) { legend.setPosition(pos); refresh(); }
-		
+		public RectangleEdge defaultPosition() { return LegendTitle.DEFAULT_POSITION; } 
 		@Property
 		public FontData getItemFont() { return fontToFontData(legend.getItemFont()); }
 		public void setItemFont(FontData fd) { legend.setItemFont(fontDataToFont(fd)); refresh(); }
+		public FontData defaultItemFont() { return fontToFontData(LegendTitle.DEFAULT_ITEM_FONT); }
 
 		@Property
 		public RGB getItemColor() { return paintToRGB(legend.getItemPaint()); }
 		public void setItemColor(RGB rgb) { legend.setItemPaint(rgbToPaint(rgb)); refresh(); }
+		public RGB defaultItemColor() { return paintToRGB(LegendTitle.DEFAULT_ITEM_PAINT); }
+	
+		@Override
+		public InsetsProperties defaultPadding() { return new InsetsProperties(LegendTitle.DEFAULT_PADDING); }
 	}
 	
 	public class PlotProperties extends PropertySource
@@ -188,8 +204,8 @@ public class ChartProperties extends PropertySource {
 		public Image defaultBackgroundImage() { return null; }
 		
 		@Property(category = "Background")
-		public int getBackgroundImageAlignment() { return plot.getBackgroundImageAlignment(); }
-		public void setBackgroundImageAlignment(int align) { plot.setBackgroundImageAlignment(align); }
+		public double getBackgroundImageAlignment() { return plot.getBackgroundImageAlignment(); }
+		public void setBackgroundImageAlignment(double align) { plot.setBackgroundImageAlignment((int)align); }
 		
 		@Property(category = "Outline")
 		public RGB getOutlineColor() { return paintToRGB(plot.getOutlinePaint()); }
@@ -201,10 +217,10 @@ public class ChartProperties extends PropertySource {
 		public void setInsets(InsetsProperties insets) { plot.setInsets(insets.getValue()); }
 		public InsetsProperties defaultInsets() { return new InsetsProperties(Plot.DEFAULT_INSETS); }
 		
-		@Property(category = "Outline")
-		public Stroke getOutlineStroke() { return plot.getOutlineStroke(); }
-		public void setOutlineStroke(Stroke stroke) { plot.setOutlineStroke(stroke); }
-		public Stroke defaultOutlineStroke() { return Plot.DEFAULT_OUTLINE_STROKE; }
+//		@Property(category = "Outline")
+//		public Stroke getOutlineStroke() { return plot.getOutlineStroke(); }
+//		public void setOutlineStroke(Stroke stroke) { plot.setOutlineStroke(stroke); }
+//		public Stroke defaultOutlineStroke() { return Plot.DEFAULT_OUTLINE_STROKE; }
 		
 		@Property(category = "Foreground")
 		public double getForegroundAlpha() { return plot.getForegroundAlpha(); }
@@ -212,7 +228,7 @@ public class ChartProperties extends PropertySource {
 		public double defaultForegroundAlpha() { return Plot.DEFAULT_FOREGROUND_ALPHA; }
 	}
 	
-	public static class CategoryRendererKind extends PropertySource
+	public static class CategoryRendererKind
 	{
 		CategoryItemRenderer renderer;
 		static Map<Class,CategoryRendererKind> renderers = new HashMap<Class,CategoryRendererKind>(2);
@@ -238,11 +254,6 @@ public class ChartProperties extends PropertySource {
 		
 		public static CategoryRendererKind get(CategoryItemRenderer renderer) {
 			return renderers.get(renderer.getClass());
-		}
-
-		@Override
-		public Object getEditableValue() {
-			return this;
 		}
 	}
 
@@ -371,30 +382,37 @@ public class ChartProperties extends PropertySource {
 		@Property(category = "Label")
 		public FontData getLabelFont() { return fontToFontData(axis.getLabelFont()); }
 		public void setLabelFont(FontData fd) { axis.setLabelFont(fontDataToFont(fd)); }
+		public FontData defaultLabelFont() { return fontToFontData(Axis.DEFAULT_AXIS_LABEL_FONT); }
 		
 		@Property(category = "Label")
 		public RGB getLabelColor() { return paintToRGB(axis.getLabelPaint()); }
 		public void setLabelColor(RGB rgb) { axis.setLabelPaint(rgbToPaint(rgb)); }
+		public RGB defaultLabelColor() { return paintToRGB(Axis.DEFAULT_AXIS_LABEL_PAINT); }
 		
 		@Property(category = "TickLabel")
 		public boolean isTickLabelsVisible() { return axis.isTickLabelsVisible(); }
 		public void setTickLabelsVisible(boolean value) { axis.setTickLabelsVisible(value); }
+		public boolean defaultTickLabelsVisible() { return Axis.DEFAULT_TICK_LABELS_VISIBLE; }
 		
 		@Property(category = "TickLabel")
 		public FontData getTickLabelFont() { return fontToFontData(axis.getTickLabelFont()); }
 		public void setTickLabelFont(FontData fd) { axis.setTickLabelFont(fontDataToFont(fd)); }
+		public FontData defaultTickLabelFont() { return fontToFontData(Axis.DEFAULT_TICK_LABEL_FONT); }
 		
 		@Property(category = "TickLabel")
 		public RGB getTickLabelColor() { return paintToRGB(axis.getTickLabelPaint()); }
 		public void setTickLabelColor(RGB rgb) { axis.setTickLabelPaint(rgbToPaint(rgb)); }
+		public RGB defaultTickLabelColor() { return paintToRGB(Axis.DEFAULT_TICK_LABEL_PAINT); }
 		
 		@Property(category = "TickMark")
 		public boolean isTickMarksVisible() { return axis.isTickMarksVisible(); }
 		public void setTickMarksVisible(boolean value) { axis.setTickMarksVisible(value); }
-
+		public boolean defaultTickMarksVisible() { return Axis.DEFAULT_TICK_MARKS_VISIBLE; }
+		
 		@Property(category = "TickMark")
 		public RGB getTickMarksColor() { return paintToRGB(axis.getTickMarkPaint()); }
 		public void setTickMarksColor(RGB rgb) { axis.setTickMarkPaint(rgbToPaint(rgb)); }
+		public RGB defaultTickMarksColor() { return paintToRGB(Axis.DEFAULT_TICK_MARK_PAINT); }
 	}
 	
 
@@ -473,17 +491,20 @@ public class ChartProperties extends PropertySource {
 			this.block = block;
 		}
 		
-		@Property
+		@Property(filterFlags = {IPropertySheetEntry.FILTER_ID_EXPERT})
 		public InsetsProperties getMargin() { return new InsetsProperties(block.getMargin()); }
 		public void setMargin(InsetsProperties margin) { block.setMargin(margin.getValue()); refresh(); }; 
+		public InsetsProperties defaultMargin() { return new InsetsProperties(RectangleInsets.ZERO_INSETS); }
 		
 		@Property
 		public BorderProperties getBorder() { return new BorderProperties(block.getBorder()); }
 		public void setBorder(BorderProperties border) { block.setBorder(border.getValue()); refresh(); };
+		public BorderProperties defaultBorder() { return new BorderProperties(BlockBorder.NONE); }
 
-		@Property
+		@Property(filterFlags = {IPropertySheetEntry.FILTER_ID_EXPERT})
 		public InsetsProperties getPadding() { return new InsetsProperties(block.getPadding()); }
-		public void setPadding(InsetsProperties padding) { block.setPadding(padding.getValue()); refresh(); };  
+		public void setPadding(InsetsProperties padding) { block.setPadding(padding.getValue()); refresh(); };
+		public InsetsProperties defaultPadding() { return new InsetsProperties(RectangleInsets.ZERO_INSETS); }
 	}
 	
 	public class InsetsProperties extends PropertySource
@@ -502,6 +523,24 @@ public class ChartProperties extends PropertySource {
 		
 		public RectangleInsets getValue() {
 			return new RectangleInsets(top, left, bottom, right);
+		}
+		
+		public boolean equals(Object other) {
+			if (other == this)
+				return true;
+			if (!(other instanceof InsetsProperties))
+				return false;
+			
+			InsetsProperties otherInsets = (InsetsProperties)other;
+			return this.toRectangleInsets().equals(otherInsets.toRectangleInsets());
+		}
+		
+		public int hashCode() {
+			return toRectangleInsets().hashCode();
+		}
+		
+		public RectangleInsets toRectangleInsets() {
+			return new RectangleInsets(top,left,bottom,right);
 		}
 		
 		
@@ -542,7 +581,24 @@ public class ChartProperties extends PropertySource {
 		}
 		
 		public BlockBorder getValue() {
+			return toBlockBorder();
+		}
+		
+		public BlockBorder toBlockBorder() {
 			return new BlockBorder(insets, paint);
+		}
+
+		public boolean equals(Object other) {
+			if (this == other)
+				return true;
+			if (!(other instanceof BorderProperties))
+				return false;
+			BorderProperties otherBorderProps = (BorderProperties)other;
+			return this.toBlockBorder().equals(otherBorderProps.toBlockBorder());
+		}
+		
+		public int hashCode() {
+			return toBlockBorder().hashCode();
 		}
 		
 		@Property

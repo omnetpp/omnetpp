@@ -1,5 +1,6 @@
 package org.omnetpp.scave.editors;
 
+import org.omnetpp.scave.model.IDatasetStrategy;
 import org.omnetpp.scave.model.ScalarDatasetStrategy;
 
 /**
@@ -7,17 +8,12 @@ import org.omnetpp.scave.model.ScalarDatasetStrategy;
  */
 public class ScalarDatasetEditor extends DatasetEditor {
 
+	private static IDatasetStrategy strategy = new ScalarDatasetStrategy();
+
 	public ScalarDatasetEditor() {
-		super(new ScalarDatasetStrategy());
-	}
-
-	/**
-	 * Creates the pages of the multi-page editor.
-	 */
-	protected void createPages() {
-		createDatasetPage();
-
-		setupDragSource(filterPanel.getPanel().getTable());
-		setupDropTarget(filterPanel.getPanel());
+		super(strategy,
+			new IDatasetEditorPage[] {
+				new FilterPanelPage(strategy)
+			});
 	}
 }

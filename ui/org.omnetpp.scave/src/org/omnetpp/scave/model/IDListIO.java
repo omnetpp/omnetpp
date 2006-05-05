@@ -5,11 +5,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.xml.sax.SAXException;
+import org.xml.sax.ContentHandler;
 import org.omnetpp.common.xml.XMLWriter;
 import org.omnetpp.scave.engine.File;
 import org.omnetpp.scave.engine.FileList;
@@ -80,25 +77,12 @@ public class IDListIO {
 			throw new RuntimeException(e);
 		}
 	}
-
-	public static IDList load(java.io.File file, IProgressMonitor progressMonitor) {
-		try {
-			// TODO use progressMonitor
-			long t0 = System.currentTimeMillis();
-			SAXParserFactory spfactory = SAXParserFactory.newInstance();
-			SAXParser parser = spfactory.newSAXParser();
-			IDListSAXHandler a = new IDListSAXHandler();
-			parser.parse(file, a);
-			System.out.println("loading "+file.getName()+": " + (System.currentTimeMillis()-t0));
-			return a.getResult();
-
-		} catch (ParserConfigurationException e) {
-			throw new RuntimeException("internal error: "+e.getMessage(), e);
-		} catch (SAXException e) {
-			throw new RuntimeException("error parsing XML: "+e.getMessage(), e);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+	
+	public static  Map<String,ContentHandler> getContentHandlers(IDList result, IProgressMonitor progressMonitor) {
+		Map<String,ContentHandler> handlers = new HashMap<String,ContentHandler>(5);
+		IDListSAXHandler idlistHandler = new IDListSAXHandler(result);
+		handlers.put("files", idlistHandler);
+		handlers.put("dataset", idlistHandler);
+		return handlers;
 	}
-
 }

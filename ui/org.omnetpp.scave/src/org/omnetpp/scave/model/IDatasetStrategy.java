@@ -2,6 +2,7 @@ package org.omnetpp.scave.model;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.widgets.Composite;
+import org.jfree.chart.JFreeChart;
 
 import org.omnetpp.scave.engine.File;
 import org.omnetpp.scave.engine.IDList;
@@ -45,4 +46,8 @@ public interface IDatasetStrategy {
 	public File loadResultFile(String fileName);
 
 	public boolean isCompatible(IDList idList);
+	
+	public JFreeChart createEmptyChart();
+	
+	public void updateDataset(JFreeChart chart, IDList idlist);
 }

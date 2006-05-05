@@ -23,7 +23,7 @@ import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.model.IDListModel;
 import org.omnetpp.scave.model.IDListTransfer;
 import org.omnetpp.scave.model.IDatasetStrategy;
-import org.omnetpp.scave.model.ModelChangeListener;
+import org.omnetpp.scave.model.IModelChangeListener;
 import org.omnetpp.scave.plugin.ScavePlugin;
 
 /**
@@ -101,7 +101,7 @@ public class FilterPanel {
 		Assert.isTrue(this.dataset==null);
 
 		this.dataset = dataset;
-		dataset.addListener(new ModelChangeListener() {
+		dataset.addListener(new IModelChangeListener() {
 			public void handleChange() {
 				refresh();
 			}

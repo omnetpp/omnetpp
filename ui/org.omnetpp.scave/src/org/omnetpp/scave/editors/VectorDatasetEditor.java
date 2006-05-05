@@ -1,5 +1,6 @@
 package org.omnetpp.scave.editors;
 
+import org.omnetpp.scave.model.IDatasetStrategy;
 import org.omnetpp.scave.model.VectorDatasetStrategy;
 
 /**
@@ -7,17 +8,12 @@ import org.omnetpp.scave.model.VectorDatasetStrategy;
  */
 public class VectorDatasetEditor extends DatasetEditor {
 
+	private static IDatasetStrategy strategy = new VectorDatasetStrategy();
+
 	public VectorDatasetEditor() {
-		super(new VectorDatasetStrategy());
-	}
-
-	/**
-	 * Creates the pages of the multi-page editor.
-	 */
-	protected void createPages() {
-		createDatasetPage();
-
-		setupDragSource(filterPanel.getPanel().getTable());
-		setupDropTarget(filterPanel.getPanel());
+		super(strategy,
+			new IDatasetEditorPage[] {
+				new FilterPanelPage(strategy)
+			});
 	}
 }

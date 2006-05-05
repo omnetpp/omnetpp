@@ -15,7 +15,7 @@ import org.omnetpp.scave.plugin.ScavePlugin;
 public class IDListSAXHandler extends DefaultHandler implements IDListXMLConsts {
 
 	// collect result here
-	private IDList result = new IDList();
+	private IDList result;
 
 	// cached ref -- we'll need it all the time
 	private ResultFileManager resultFileManager = ScavePlugin.getDefault().resultFileManager;
@@ -27,6 +27,10 @@ public class IDListSAXHandler extends DefaultHandler implements IDListXMLConsts 
 	HashMap<String,Run> runIdToRunMap = new HashMap<String,Run>();
 	
 	private String skipedElement;
+	
+	public IDListSAXHandler(IDList result) {
+		this.result = result;
+	}
 
 	public void startDocument() {
 	}
@@ -100,9 +104,5 @@ public class IDListSAXHandler extends DefaultHandler implements IDListXMLConsts 
 
 	public void characters(char[] ch, int offset, int length) {
 		//System.out.println("(characters:" + new String(ch, offset, length)+")");
-	}
-
-	public IDList getResult() {
-		return result;
 	}
 }

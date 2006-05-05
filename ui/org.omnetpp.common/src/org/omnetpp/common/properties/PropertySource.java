@@ -11,11 +11,11 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.ui.views.properties.ColorPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
-import org.eclipse.ui.views.properties.IPropertySource;
+import org.eclipse.ui.views.properties.IPropertySource2;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 
-public abstract class PropertySource implements IPropertySource {
+public abstract class PropertySource implements IPropertySource2 {
 
 	static Map<Class,Entry> map;
 
@@ -147,7 +147,7 @@ public abstract class PropertySource implements IPropertySource {
 		return sb.toString();
 	}
 	
-	private static Method getPropertySetter(Class propClass, String propName, Class propType) {
+	private static Method getPropertySetter(Class<? extends PropertySource> propClass, String propName, Class propType) {
 		try {
 			Method method = propClass.getMethod("set" + propName, propType);
 			if (method != null) {
@@ -159,7 +159,7 @@ public abstract class PropertySource implements IPropertySource {
 		return null;
 	}
 	
-	private static Method getPropertyDefaultGetter(Class propClass, String propName, Class<?> propType) {
+	private static Method getPropertyDefaultGetter(Class<? extends PropertySource> propClass, String propName, Class<?> propType) {
 		try {
 			Method method = propClass.getMethod("default" + propName);
 			if (method != null) {
@@ -172,7 +172,7 @@ public abstract class PropertySource implements IPropertySource {
 		return null;
 	}
 	
-	private IPropertyDescriptor createPropertyDescriptor(Property property, String propName, Class propType)
+	private IPropertyDescriptor createPropertyDescriptor(Property property, String propName, Class<?> propType)
 		throws Exception
 	{
 		String id = property.id().length() > 0 ? property.id() : propName;
@@ -181,22 +181,27 @@ public abstract class PropertySource implements IPropertySource {
 								displayNameFromPropName(propName);
 		String category = property.category();
 		String description = property.description();
-		Class descriptorClass = getPropertyDescriptorClass(property.descriptorClass(), propType);
+		String[] filterFlags = property.filterFlags();
+		Class<? extends PropertyDescriptor> descriptorClass =
+			getPropertyDescriptorClass(property.descriptorClass(), propType);
 		
-		Constructor constructor = descriptorClass.getConstructor(new Class[] {Object.class, String.class});
-		PropertyDescriptor descriptor =
-			(PropertyDescriptor)constructor.newInstance(new Object[] {id, displayName});
+		Constructor<? extends PropertyDescriptor> constructor =
+			descriptorClass.getConstructor(new Class[] {Object.class, String.class});
+		PropertyDescriptor descriptor = constructor.newInstance(new Object[] {id, displayName});
 		if (descriptor instanceof EnumPropertyDescriptor)
 			((EnumPropertyDescriptor)descriptor).setEnumType(propType);
 		if (category.length() > 0)
 			descriptor.setCategory(category);
 		if (description.length() > 0)
 			descriptor.setDescription(description);
+		if (filterFlags.length > 0)
+			descriptor.setFilterFlags(filterFlags);
 		
 		return descriptor;
 	}
 	
-	public Class getPropertyDescriptorClass(Class declaredDescriptorClass, Class propType) {
+	public Class<? extends PropertyDescriptor>
+	getPropertyDescriptorClass(Class<? extends PropertyDescriptor> declaredDescriptorClass, Class<?> propType) {
 		if (declaredDescriptorClass == PropertyDescriptor.class) {
 			if (propType == String.class)
 				return TextPropertyDescriptor.class;
@@ -245,7 +250,12 @@ public abstract class PropertySource implements IPropertySource {
 				return !equals(currentValue, defaultValue);
 			} catch (Exception e) {}
 		}
-		return false;
+		return true;
+	}
+	
+	public boolean isPropertyResettable(Object id) {
+		PropInfo info = getInfo((String)id);
+		return info.defaultGetter != null && info.setter != null;
 	}
 	
 	public void resetPropertyValue(Object id) {

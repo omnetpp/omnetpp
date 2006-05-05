@@ -1,8 +1,20 @@
 package org.omnetpp.scave.model;
 
+import java.awt.Color;
+
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.widgets.Composite;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.ui.RectangleInsets;
 
+import org.omnetpp.scave.charting.ChartHelper;
 import org.omnetpp.scave.engine.File;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -46,5 +58,36 @@ public class VectorDatasetStrategy implements IDatasetStrategy {
 	public TableContentSorter createTableSorter() {
 		return new VectorTableContentSorter();
 	}
+	
+	/**
+	 * Create empty line chart.
+	 */
+	public JFreeChart createEmptyChart() {
+		// create dataset
+		XYSeriesCollection xyseriescollection = new XYSeriesCollection();
 
+		// create chart
+		JFreeChart jfreechart = ChartFactory.createXYLineChart(
+				"Line Chart", "X", "Y",
+				xyseriescollection, PlotOrientation.VERTICAL,
+				true, true, false);
+		jfreechart.setAntiAlias(false);
+		jfreechart.setBackgroundPaint(Color.white);
+		XYPlot xyplot = (XYPlot)jfreechart.getPlot();
+		xyplot.setBackgroundPaint(Color.lightGray);
+		xyplot.setAxisOffset(new RectangleInsets(5D, 5D, 5D, 5D));
+		xyplot.setDomainGridlinePaint(Color.white);
+		xyplot.setRangeGridlinePaint(Color.white);
+		XYLineAndShapeRenderer xylineandshaperenderer = (XYLineAndShapeRenderer)xyplot.getRenderer();
+		xylineandshaperenderer.setShapesVisible(false);
+		xylineandshaperenderer.setShapesFilled(false);
+		NumberAxis numberaxis = (NumberAxis)xyplot.getRangeAxis();
+		numberaxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+		return jfreechart;
+	}
+	
+	public void updateDataset(JFreeChart chart, IDList idlist) {
+		XYDataset ds = ChartHelper.createXYDataSet(idlist);
+		chart.getXYPlot().setDataset(ds);
+	}
 }
