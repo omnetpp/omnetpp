@@ -27,8 +27,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 
 	public DisplayString getDisplayString() {
         // TODO mabe we should cache the created DisplayString object for performance reasons?
-        // TODO change this to CompoundmoduleDisplayString
-		return new DisplayString(NedElementExUtil.getDisplayString(this)); 
+		return new CompoundModuleDisplayString(NedElementExUtil.getDisplayString(this)); 
 	}
 	
 	public void setDisplayString(DisplayString dspString) {
@@ -143,8 +142,8 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 
     public Point getLocation() {
         DisplayString dps = getDisplayString();
-        Integer x = dps.getAsInteger(DisplayString.Prop.X);
-        Integer y = dps.getAsInteger(DisplayString.Prop.Y);
+        Integer x = dps.getAsInteger(DisplayString.Prop.MODULE_X);
+        Integer y = dps.getAsInteger(DisplayString.Prop.MODULE_Y);
         // if it's unspecified in any direction we should return a NULL constraint
         if (x == null || y == null)
             return null;
@@ -157,11 +156,11 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
         
         // if location is not specified, remove the constraint from the display string
         if (location == null) {
-            dps.set(DisplayString.Prop.X, null);
-            dps.set(DisplayString.Prop.Y, null);
+            dps.set(DisplayString.Prop.MODULE_X, null);
+            dps.set(DisplayString.Prop.MODULE_Y, null);
         } else { 
-            dps.set(DisplayString.Prop.X, location.x);
-            dps.set(DisplayString.Prop.Y, location.y);
+            dps.set(DisplayString.Prop.MODULE_X, location.x);
+            dps.set(DisplayString.Prop.MODULE_Y, location.y);
         }
 
         setDisplayString(dps);
@@ -171,8 +170,8 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
         // FIXME get the propertysource from the model if it is already registered
         DisplayString dps = getDisplayString();
 
-        return new Dimension(dps.getAsIntDef(DisplayString.Prop.WIDTH, -1),
-                             dps.getAsIntDef(DisplayString.Prop.HEIGHT, -1));
+        return new Dimension(dps.getAsIntDef(DisplayString.Prop.MODULE_WIDTH, -1),
+                             dps.getAsIntDef(DisplayString.Prop.MODULE_HEIGHT, -1));
     }
 
     public void setSize(Dimension size) {
@@ -181,15 +180,15 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
         
         // if the size is unspecified, remove the size constraint from the model
         if (size == null || size.width < 0 ) 
-            dps.set(DisplayString.Prop.WIDTH, null);
+            dps.set(DisplayString.Prop.MODULE_WIDTH, null);
         else
-            dps.set(DisplayString.Prop.WIDTH, size.width);
+            dps.set(DisplayString.Prop.MODULE_WIDTH, size.width);
 
         // if the size is unspecified, remove the size constraint from the model
         if (size == null || size.height < 0) 
-            dps.set(DisplayString.Prop.HEIGHT, null);
+            dps.set(DisplayString.Prop.MODULE_HEIGHT, null);
         else
-            dps.set(DisplayString.Prop.HEIGHT, size.height);
+            dps.set(DisplayString.Prop.MODULE_HEIGHT, size.height);
         
         setDisplayString(dps);
     }

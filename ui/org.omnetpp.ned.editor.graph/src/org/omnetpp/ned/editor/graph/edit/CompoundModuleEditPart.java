@@ -30,6 +30,7 @@ import org.omnetpp.ned.editor.graph.figures.properties.DisplayBackgroundSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayShapeSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayTitleSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayTooltipSupport;
+import org.omnetpp.ned.editor.graph.figures.properties.DisplayBackgroundSupport.ImageArrangement;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.DisplayString;
 import org.omnetpp.ned2.model.INedModule;
@@ -107,7 +108,6 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     /**
      * Updates the visual aspect of this.
      */
-    // FIXME most of this stuff should go to SubmoduleEditPart.refreshVisuls()
     @Override
     protected void refreshVisuals() {
         
@@ -120,10 +120,10 @@ public class CompoundModuleEditPart extends ModuleEditPart {
         
         // setup the figure's properties
 
-        Integer x = dps.getAsIntDef(DisplayString.Prop.X, 0);
-        Integer y = dps.getAsIntDef(DisplayString.Prop.Y, 0);
-        Integer w = dps.getAsIntDef(DisplayString.Prop.WIDTH, -1);
-        Integer h = dps.getAsIntDef(DisplayString.Prop.HEIGHT, -1);
+        Integer x = dps.getAsIntDef(DisplayString.Prop.MODULE_X, 0);
+        Integer y = dps.getAsIntDef(DisplayString.Prop.MODULE_Y, 0);
+        Integer w = dps.getAsIntDef(DisplayString.Prop.MODULE_WIDTH, -1);
+        Integer h = dps.getAsIntDef(DisplayString.Prop.MODULE_HEIGHT, -1);
         // set the location and size using the models helper methods
         Rectangle constraint = new Rectangle(x, y, w, h);
         ((GraphicalEditPart) getParent()).setLayoutConstraint(this, getFigure(), constraint);
@@ -157,10 +157,24 @@ public class CompoundModuleEditPart extends ModuleEditPart {
             Image img = ImageFactory.getImage(
                     dps.getAsStringDef(DisplayString.Prop.MODULE_IMAGE),
                     null, null, 0);
-            // TODO get image arrangement correctly
+            
+            // decode the image arrangement
+            String imageArrangementStr = dps.getAsStringDef(DisplayString.Prop.MODULE_IMAGEARRANGEMENT);
+            imageArrangementStr = imageArrangementStr != null ? imageArrangementStr : "";
+            ImageArrangement imageArrangement;  
+            if (imageArrangementStr.toLowerCase().startsWith("t"))
+            	imageArrangement = ImageArrangement.TILE;
+            else if (imageArrangementStr.toLowerCase().startsWith("s"))
+            	imageArrangement = ImageArrangement.SCRETCH;
+            else if (imageArrangementStr.toLowerCase().startsWith("c"))
+            	imageArrangement = ImageArrangement.CENTER;
+            else
+            	imageArrangement = ImageArrangement.FIX;
+            
+            // set the background
             ((DisplayBackgroundSupport)getNedFigure()).setBackgorund(
             		img, 
-            		DisplayBackgroundSupport.ImageArrangement.FIXED, 
+            		imageArrangement, 
             		ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.MODULE_FILLCOL)), 
             		ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.MODULE_BORDERCOL)), 
             		dps.getAsIntDef(DisplayString.Prop.MODULE_BORDERWIDTH, -1));

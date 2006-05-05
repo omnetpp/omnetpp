@@ -5,7 +5,7 @@ import org.eclipse.swt.graphics.Image;
 
 public interface DisplayBackgroundSupport {
 
-	enum ImageArrangement {FIXED, SCRETCH, TILED }
+	enum ImageArrangement {FIX, SCRETCH, TILE, CENTER }
 	
 	/**
 	 * Adjusts compound module background parameteres

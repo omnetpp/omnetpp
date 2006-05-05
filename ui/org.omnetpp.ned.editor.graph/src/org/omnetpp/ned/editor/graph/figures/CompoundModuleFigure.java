@@ -32,7 +32,7 @@ public class CompoundModuleFigure extends ModuleFigure
     private ScrollPane scrollpane;
     private LayeredPane layeredPane;
     private Image backgroundImage;
-    private ImageArrangement backgroundImageArr = ImageArrangement.FIXED;
+    private ImageArrangement backgroundImageArr = ImageArrangement.FIX;
     private int gridTickDistance;
     private int gridNoOfMinorTics;
     private Color gridColor;
@@ -68,13 +68,17 @@ public class CompoundModuleFigure extends ModuleFigure
 	        if (backgroundImage != null) {
 	            Rectangle imageRect = new Rectangle(backgroundImage.getBounds());
 	            switch (backgroundImageArr) {
-	            case FIXED:
+	            case FIX:
 	            	graphics.drawImage(backgroundImage, viewportRect.getLocation());
+	            	break;
+	            case CENTER:
+	            	Point centerPoint = viewportRect.getCenter().translate(-imageRect.width/2, -imageRect.height/2);
+	            	graphics.drawImage(backgroundImage, centerPoint);
 	            	break;
 				case SCRETCH:
 	            	graphics.drawImage(backgroundImage, imageRect, viewportRect);
 					break;
-				case TILED:
+				case TILE:
 					for(int y = viewportRect.y; y<viewportRect.bottom(); y += imageRect.height)
 						for(int x = viewportRect.x; x<viewportRect.right(); x += imageRect.width)
 							graphics.drawImage(backgroundImage, x, y);
