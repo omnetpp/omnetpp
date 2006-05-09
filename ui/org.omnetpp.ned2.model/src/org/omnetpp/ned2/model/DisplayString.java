@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Vector;
 
+import org.omnetpp.ned2.model.pojo.ModuleInterfaceNode;
+
 /**
  * This class is responsible for parsing and creating display strings in the correct format.
  * Defines all possible properties that can be used and also adds meta information to the 
@@ -16,7 +18,7 @@ import java.util.Vector;
 public class DisplayString {
 
     // the argument types supported by the display string
-    public enum PropType { String, Integer, Color, Image }
+    public enum PropType { String, Integer, Float, Color, Image }
 
     public enum Tag { p, b, i, is, i2, r, q, t, tt,  // submodule tags 
                       bgp, bgb, bgi, bgtt, bgg, bgs, // compound module background tags
@@ -32,15 +34,15 @@ public class DisplayString {
     public enum Prop {
         // SUBMODULE / SIMPLEMODULE propeties
         // do not change the first and last element of the property group
-        X(Tag.p, 0, PropType.Integer , PropGroup.Position , "x", "X position of the module"),
-        Y(Tag.p, 1, PropType.Integer, PropGroup.Position, "y", "Y position of the module"),
+        X(Tag.p, 0, PropType.Float , PropGroup.Position , "x", "X position of the module"),
+        Y(Tag.p, 1, PropType.Float, PropGroup.Position, "y", "Y position of the module"),
         LAYOUT(Tag.p, 2, PropType.String, PropGroup.Position, "layout", "Layouting algorithm. (row,r / column,col,c / matrix,m / ring,ri / exact,e,x)"),
         LAYOUT_PAR1(Tag.p, 3, PropType.String, PropGroup.Position, "layout par1", "1st layout parameter"),
         LAYOUT_PAR2(Tag.p, 4, PropType.String, PropGroup.Position, "layout par2", "2nd layout parameter"),
         LAYOUT_PAR3(Tag.p, 5, PropType.String, PropGroup.Position, "layout par3", "3rd layout parameter"),
         // B tag
-        WIDTH(Tag.b, 0, PropType.Integer, PropGroup.Position, "shape width", "Width of shape. Default: match the image size or shape height (-1)"),
-        HEIGHT(Tag.b, 1, PropType.Integer, PropGroup.Position, "shape height", "Height of shape. Default: match the image size or shape width (-1)"),
+        WIDTH(Tag.b, 0, PropType.Float, PropGroup.Position, "shape width", "Width of shape. Default: match the image size or shape height (-1)"),
+        HEIGHT(Tag.b, 1, PropType.Float, PropGroup.Position, "shape height", "Height of shape. Default: match the image size or shape width (-1)"),
         SHAPE(Tag.b, 2, PropType.String, PropGroup.Shape, "shape", "Shape of object (rect / rect2 / rrect / oval / tri / tri2 / hex / hex2). Default: rect"),
         // former O tag
         FILLCOL(Tag.b, 3, PropType.Color, PropGroup.Style, "shape fill color", "Fill color of the shape. Default: light blue"),
@@ -57,7 +59,7 @@ public class DisplayString {
         OVIMAGECOLOR(Tag.i2, 1, PropType.Color, PropGroup.Image, "overlay image color", "A color to colorize the overlay image"),
         OVIMAGECOLORPCT(Tag.i2, 2, PropType.Integer, PropGroup.Image, "overlay image colorization", "Amount of colorization in percent Default: 30%"),
         // R tag
-        RANGE(Tag.r, 0, PropType.Integer, PropGroup.Range, "range", "Radius of the range indicator"),
+        RANGE(Tag.r, 0, PropType.Float, PropGroup.Range, "range", "Radius of the range indicator"),
         RANGEFILLCOL(Tag.r, 1, PropType.Color, PropGroup.Range, "range fill color", "Fill color of the range indicator"),
         RANGEBORDERCOL(Tag.r, 2, PropType.Color, PropGroup.Range, "range border color", "Border color of the range indicator. Default: black"),
         RANGEBORDERWIDTH(Tag.r, 3, PropType.Integer, PropGroup.Range, "range border width", "Border width of the range indicator. Default: 1"),
@@ -74,11 +76,11 @@ public class DisplayString {
         // START of COMPOUNDMODULE properties
         // BGP tag
         // do not change the first and last element of the property group
-        MODULE_X(Tag.bgp, 0, PropType.Integer, PropGroup.Position, "background x", "Module background horizontal displacement"),
-        MODULE_Y(Tag.bgp, 1, PropType.Integer, PropGroup.Position, "background y", "Module background vertical displacement"),
+        MODULE_X(Tag.bgp, 0, PropType.Float, PropGroup.Position, "background x", "Module background horizontal displacement"),
+        MODULE_Y(Tag.bgp, 1, PropType.Float, PropGroup.Position, "background y", "Module background vertical displacement"),
         // BGB tag
-        MODULE_WIDTH(Tag.bgb, 0, PropType.Integer, PropGroup.Position, "background width", "Width of shape. Default: match the image size or shape height (-1)"),
-        MODULE_HEIGHT(Tag.bgb, 1, PropType.Integer, PropGroup.Position, "background height", "Height of shape. Default: match the image size or shape width (-1)"),
+        MODULE_WIDTH(Tag.bgb, 0, PropType.Float, PropGroup.Position, "background width", "Width of shape. Default: match the image size or shape height (-1)"),
+        MODULE_HEIGHT(Tag.bgb, 1, PropType.Float, PropGroup.Position, "background height", "Height of shape. Default: match the image size or shape width (-1)"),
         MODULE_FILLCOL(Tag.bgb, 2, PropType.Color, PropGroup.Style, "background fill color", "Fill color of the shape. Default: light blue"),
         MODULE_BORDERCOL(Tag.bgb, 3, PropType.Color, PropGroup.Style, "background border color", "Border color of the shape. Default: black"),
         MODULE_BORDERWIDTH(Tag.bgb, 4, PropType.Integer, PropGroup.Style, "background border width", "Border width of the shape. Default: 2"),
@@ -88,14 +90,14 @@ public class DisplayString {
         MODULE_IMAGE(Tag.bgi, 0, PropType.Image, PropGroup.Image, "background image", "An image to be displayed as a module background"),
         MODULE_IMAGEARRANGEMENT(Tag.bgi, 1, PropType.String, PropGroup.Image, "background arrangement", "How to arrange the module's background image (fix, tile, strech, center) Default: fix"),
         // BGG tag
-        MODULE_MAXTICKDISTANCE(Tag.bgg, 0, PropType.Integer, PropGroup.Misc, "background grid tick distance", "Distance between two major ticks measured in pixels"),
+        MODULE_TICKDISTANCE(Tag.bgg, 0, PropType.Float, PropGroup.Misc, "background grid tick distance", "Distance between two major ticks measured in units"),
         MODULE_TICKNUMBER(Tag.bgg, 1, PropType.Integer, PropGroup.Misc, "background grid tick number", "Number of minor ticks between two major one"),
         MODULE_GRIDCOL(Tag.bgg, 3, PropType.Color, PropGroup.Style, "background grid color", "Color of grid"),
         // module scaling mixel per unit
-        MODULE_X_SCALE(Tag.bgs, 0, PropType.Integer, PropGroup.Misc, "background X scaling", "Number of horizontal pixels per unit"),
-        MODULE_X_UNIT(Tag.bgs, 1, PropType.String, PropGroup.Text, "background X unit", "Name of horizontal unit"),
-        MODULE_Y_SCALE(Tag.bgs, 2, PropType.Integer, PropGroup.Misc, "background vertical scale", "Number of vertical pixels per unit"),
-        MODULE_Y_UNIT(Tag.bgs, 3, PropType.String, PropGroup.Text, "background Y unit", "Name of vertical unit"),
+        MODULE_SCALE(Tag.bgs, 0, PropType.Float, PropGroup.Misc, "background scaling", "Number of pixels per unit"),
+        MODULE_UNIT(Tag.bgs, 1, PropType.String, PropGroup.Text, "background unit", "Name of measurement unit"),
+//        MODULE_X_TRANS(Tag.bgs, 2, PropType.Integer, PropGroup.Misc, "background y scale", "Number of vertical pixels per unit"),
+//        MODULE_Y_TRANS(Tag.bgs, 3, PropType.String, PropGroup.Text, "background y unit", "Name of vertical unit"),
         // END of COMPOUNDMODULE properties
         
         // START of CONNECTION properties
@@ -113,7 +115,7 @@ public class DisplayString {
         CONNECTION_STYLE(Tag.ls, 2, PropType.String, PropGroup.Style, "line style", "Connection line style ([s]olid, [d]otted). Default: solid"),
         CONNECTION_SEGMENTS(Tag.ls, 3, PropType.String, PropGroup.Style, "segments", "Connection segmenets ([l]ine, [s]pline). Default: line"),
         // bp tag (bendpoints)
-        BENDPOINTS(Tag.bp, 0, PropType.Integer, PropGroup.Connection, "bendpoints", "bendpoint locations");
+        BENDPOINTS(Tag.bp, 0, PropType.Float, PropGroup.Connection, "bendpoints", "bendpoint locations");
         // END of CONNECTION properties
         // end of tag definition
         
@@ -401,6 +403,16 @@ public class DisplayString {
         return new Integer(0);
     }
 
+    public Float getAsFloat(Prop property) {
+        String strVal = getAsString(property);
+        // if tag not present at all
+        if(strVal == null) return null;
+        try {
+            return Float.valueOf(strVal);
+        } catch (NumberFormatException e) { }
+        return new Float(0);
+    }
+
     public String getAsStringDef(Prop property) {
         return getTagArgUsingDefs(property.tag, property.pos);
     }
@@ -424,7 +436,34 @@ public class DisplayString {
         return val;
     }
 
-    /**
+	public float getAsFloatDef(Prop propName, float defValue) {
+        float val = defValue;
+        try {
+            val = Float.valueOf(getAsStringDef(propName));
+        } catch (Exception e) {
+        }
+        return val;
+	}
+	
+	/**
+	 * Converts the provided value (in pixel) to unit
+	 * @param pixel 
+	 * @return Value in units
+	 */
+	public float pixel2unit(int pixel) {
+		return  pixel / 2.0f;
+	}
+
+	/**
+	 * Converts the provided value (in unit) to pixel
+	 * @param unit
+	 * @return
+	 */
+	public int unit2pixel(float unit) {
+		return (int)(unit * 2);
+	}
+	
+	/**
      * Sets the specified property to the given value in the displaystring
      * @param property Property to be set
      * @param value 

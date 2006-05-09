@@ -24,4 +24,11 @@ public interface DisplayBackgroundSupport {
 	 * @param gridColor Grid color
 	 */
 	public void setGrid(int tickDistance, int noOfTics, Color gridColor);
+	
+	/**
+	 * Scaling and unit support. 
+	 * @param scale scale value (a value of 18 means: 1 unit = 18 pixels)
+	 * @param unit the unit of the dimension
+	 */
+	public void setScale(float scale, String unit);
 }

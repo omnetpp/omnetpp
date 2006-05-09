@@ -75,13 +75,13 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INedModule {
 
     public Point getLocation() {
         DisplayString dps = getDisplayString();
-        Integer x = dps.getAsInteger(DisplayString.Prop.X);
-        Integer y = dps.getAsInteger(DisplayString.Prop.Y);
+        Float x = dps.getAsFloat(DisplayString.Prop.X);
+        Float y = dps.getAsFloat(DisplayString.Prop.Y);
         // if it's unspecified in any direction we should return a NULL constraint
         if (x == null || y == null)
             return null;
         
-        return new Point (x,y);
+        return new Point (dps.unit2pixel(x), dps.unit2pixel(y));
     }
 
     public void setLocation(Point location) {
@@ -92,8 +92,8 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INedModule {
             dps.set(DisplayString.Prop.X, null);
             dps.set(DisplayString.Prop.Y, null);
         } else { 
-            dps.set(DisplayString.Prop.X, location.x);
-            dps.set(DisplayString.Prop.Y, location.y);
+            dps.set(DisplayString.Prop.X, String.valueOf(dps.pixel2unit(location.x)));
+            dps.set(DisplayString.Prop.Y, String.valueOf(dps.pixel2unit(location.y)));
         }
 
         setDisplayString(dps);
@@ -102,8 +102,12 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INedModule {
     public Dimension getSize() {
         DisplayString dps = getDisplayString();
 
-        return new Dimension(dps.getAsIntDef(DisplayString.Prop.WIDTH, -1),
-                             dps.getAsIntDef(DisplayString.Prop.HEIGHT, -1));
+        int width = dps.unit2pixel(dps.getAsFloatDef(DisplayString.Prop.WIDTH, -1.0f));
+        width = width > 0 ? width : -1; 
+        int height = dps.unit2pixel(dps.getAsFloatDef(DisplayString.Prop.HEIGHT, -1.0f));
+        height = height > 0 ? height : -1; 
+        
+        return new Dimension(width, height);
     }
 
     public void setSize(Dimension size) {
@@ -113,13 +117,13 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INedModule {
         if (size == null || size.width < 0 ) 
             dps.set(DisplayString.Prop.WIDTH, null);
         else
-            dps.set(DisplayString.Prop.WIDTH, size.width);
+            dps.set(DisplayString.Prop.WIDTH, String.valueOf(dps.pixel2unit(size.width)));
 
         // if the size is unspecified, remove the size constraint from the model
         if (size == null || size.height < 0) 
             dps.set(DisplayString.Prop.HEIGHT, null);
         else
-            dps.set(DisplayString.Prop.HEIGHT, size.height);
+            dps.set(DisplayString.Prop.HEIGHT, String.valueOf(dps.pixel2unit(size.height)));
         
         setDisplayString(dps);
     }

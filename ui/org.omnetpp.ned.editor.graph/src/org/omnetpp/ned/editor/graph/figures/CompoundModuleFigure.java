@@ -38,6 +38,8 @@ public class CompoundModuleFigure extends ModuleFigure
     private Color gridColor;
     private Color moduleBackgroundColor = ColorFactory.defaultBackground;
     private Color moduleBorderColor = ColorFactory.defaultBorder;
+    private float scale = 1.0f;
+    private String unit = "px";
 
     // background layer to provide background coloring, images and grid drawing
     class BackgroundLayer extends FreeformLayer {
@@ -46,7 +48,7 @@ public class CompoundModuleFigure extends ModuleFigure
 		@Override
 		protected void paintFigure(Graphics graphics) {
         	graphics.pushState();
-
+        	
         	// get the size of the viewport (which is actually the module size)
 	        Rectangle viewportRect = new Rectangle(new Point(0,0), scrollpane.getSize());
 	        
@@ -264,5 +266,18 @@ public class CompoundModuleFigure extends ModuleFigure
 		getCompoundModuleBorder().setLabel(name);
 		invalidate();
 	}
+
+	public void setScale(float scale, String unit) {
+		this.scale = scale;
+		this.unit = unit;
+		invalidate();
+	}
+
+	// TODO implement local coordinate system transformation
+	@Override
+	protected boolean useLocalCoordinates() {
+		return true;
+	}
+
 
 }

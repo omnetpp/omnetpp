@@ -387,6 +387,7 @@ public class NEDResources implements INEDComponentResolver {
 	}
 
 	private int parseLineNumber(String loc) {
+		if (loc == null) return 1;
 		StringTokenizer t = new StringTokenizer(loc,":");
 		while (t.hasMoreTokens()) loc = t.nextToken();
 		int line = 1;

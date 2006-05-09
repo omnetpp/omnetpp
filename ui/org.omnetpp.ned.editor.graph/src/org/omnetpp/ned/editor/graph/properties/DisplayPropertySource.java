@@ -41,6 +41,8 @@ abstract public class DisplayPropertySource extends AbstractNedPropertySource {
         PropertyDescriptor pdesc;
         if(prop.getType() == DisplayString.PropType.String)
             pdesc = new TextPropertyDescriptor(prop, prop.getVisibleName());
+        else if(prop.getType() == DisplayString.PropType.Float)
+            pdesc = new TextPropertyDescriptor(prop, prop.getVisibleName());
         else if(prop.getType() == DisplayString.PropType.Integer)
             pdesc = new TextPropertyDescriptor(prop, prop.getVisibleName());
         else if(prop.getType() == DisplayString.PropType.Image)

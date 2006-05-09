@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.XYLayout;
+import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.AutoexposeHelper;
 import org.eclipse.gef.CompoundSnapToHelper;
@@ -119,13 +120,15 @@ public class CompoundModuleEditPart extends ModuleEditPart {
         DisplayString dps = model.getDisplayString();
         
         // setup the figure's properties
-
-        Integer x = dps.getAsIntDef(DisplayString.Prop.MODULE_X, 0);
-        Integer y = dps.getAsIntDef(DisplayString.Prop.MODULE_Y, 0);
-        Integer w = dps.getAsIntDef(DisplayString.Prop.MODULE_WIDTH, -1);
-        Integer h = dps.getAsIntDef(DisplayString.Prop.MODULE_HEIGHT, -1);
+//        Integer x = dps.getAsIntDef(DisplayString.Prop.MODULE_X, 0);
+//        Integer y = dps.getAsIntDef(DisplayString.Prop.MODULE_Y, 0);
+//        Integer w = dps.getAsIntDef(DisplayString.Prop.MODULE_WIDTH, -1);
+//        Integer h = dps.getAsIntDef(DisplayString.Prop.MODULE_HEIGHT, -1);
         // set the location and size using the models helper methods
-        Rectangle constraint = new Rectangle(x, y, w, h);
+        Point loc = model.getLocation();
+        // TODO this can be removed once we will have a toolbar layout for the compoundmodules
+        if (loc == null) loc = new Point(0,0);
+        Rectangle constraint = new Rectangle(loc, model.getSize());
         ((GraphicalEditPart) getParent()).setLayoutConstraint(this, getFigure(), constraint);
 
         // check if the figure supports the name decoration
@@ -181,9 +184,14 @@ public class CompoundModuleEditPart extends ModuleEditPart {
             
             // grid support
             ((DisplayBackgroundSupport)getNedFigure()).setGrid(
-            		dps.getAsIntDef(DisplayString.Prop.MODULE_MAXTICKDISTANCE, -1), 
+            		dps.getAsIntDef(DisplayString.Prop.MODULE_TICKDISTANCE, -1), 
             		dps.getAsIntDef(DisplayString.Prop.MODULE_TICKNUMBER, -1), 
             		ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.MODULE_GRIDCOL)));
+            
+            // scaling support
+            ((DisplayBackgroundSupport)getNedFigure()).setScale(
+            		dps.getAsFloatDef(DisplayString.Prop.MODULE_SCALE, 1),
+            		dps.getAsStringDef(DisplayString.Prop.MODULE_UNIT));
         }
         
         // default icon / shape support

@@ -16,7 +16,7 @@ public class CompoundModuleDisplayPropertySource extends DisplayPropertySource {
         this.model = model;
         setDisplayString(model.getDisplayString());
         supportedProperties = EnumSet.range(DisplayString.Prop.X, 
-                                            DisplayString.Prop.MODULE_Y_UNIT);
+                                            DisplayString.Prop.MODULE_UNIT);
     }
 
     @Override

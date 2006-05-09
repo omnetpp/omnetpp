@@ -1,6 +1,7 @@
 package org.omnetpp.ned.editor.graph.edit;
 
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.swt.graphics.Image;
@@ -55,12 +56,16 @@ public class SubmoduleEditPart extends ModuleEditPart {
         
         // setup the figure's properties
 
-        Integer x = dps.getAsIntDef(DisplayString.Prop.X, 0);
-        Integer y = dps.getAsIntDef(DisplayString.Prop.Y, 0);
-        Integer w = dps.getAsIntDef(DisplayString.Prop.WIDTH, -1);
-        Integer h = dps.getAsIntDef(DisplayString.Prop.HEIGHT, -1);
+//        Integer x = dps.getAsIntDef(DisplayString.Prop.X, 0);
+//        Integer y = dps.getAsIntDef(DisplayString.Prop.Y, 0);
+//        Integer w = dps.getAsIntDef(DisplayString.Prop.WIDTH, -1);
+//        Integer h = dps.getAsIntDef(DisplayString.Prop.HEIGHT, -1);
         // set the location and size using the models helper methods
-        Rectangle constraint = new Rectangle(x, y, w, h);
+        Point loc = model.getLocation();
+        // TODO get the location from the autolayouting engine if exact position is not specified
+        if (loc == null) loc = new Point(0,0);
+        
+        Rectangle constraint = new Rectangle(loc, model.getSize());
         ((GraphicalEditPart) getParent()).setLayoutConstraint(this, getFigure(), constraint);
         // check if the figure supports the name decoration
         if(getNedFigure() instanceof DisplayNameSupport)
@@ -115,10 +120,8 @@ public class SubmoduleEditPart extends ModuleEditPart {
         
         // XXX callout bubble. just for testing
         if(getNedFigure() instanceof DisplayCalloutSupport) {
-            if (x != null) {
-                ((DisplayCalloutSupport)getNedFigure()).addCallout("Yes Sir, my position is: "+x+","+y );
-                if (x>70) ((DisplayCalloutSupport)getNedFigure()).clearCallout();
-            }
+                ((DisplayCalloutSupport)getNedFigure()).addCallout("Yes Sir, my position is: "+model.getLocation() );
+                if (model.getLocation().x >70) ((DisplayCalloutSupport)getNedFigure()).clearCallout();
         } 
     }
 }
