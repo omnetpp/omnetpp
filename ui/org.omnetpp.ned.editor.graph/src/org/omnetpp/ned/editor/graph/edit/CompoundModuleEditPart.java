@@ -32,6 +32,7 @@ import org.omnetpp.ned.editor.graph.figures.properties.DisplayShapeSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayTitleSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayTooltipSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayBackgroundSupport.ImageArrangement;
+import org.omnetpp.ned2.model.CompoundModuleDisplayString;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.DisplayString;
 import org.omnetpp.ned2.model.INedModule;
@@ -117,18 +118,14 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     	INedModule model = (INedModule)getNEDModel();
     	
         // parse a dispaly string, so it's easier to get values from it.
-        DisplayString dps = model.getDisplayString();
+    	CompoundModuleDisplayString dps = (CompoundModuleDisplayString)model.getDisplayString();
         
         // setup the figure's properties
-//        Integer x = dps.getAsIntDef(DisplayString.Prop.MODULE_X, 0);
-//        Integer y = dps.getAsIntDef(DisplayString.Prop.MODULE_Y, 0);
-//        Integer w = dps.getAsIntDef(DisplayString.Prop.MODULE_WIDTH, -1);
-//        Integer h = dps.getAsIntDef(DisplayString.Prop.MODULE_HEIGHT, -1);
         // set the location and size using the models helper methods
-        Point loc = model.getLocation();
+        Point loc = dps.getLocation();
         // TODO this can be removed once we will have a toolbar layout for the compoundmodules
         if (loc == null) loc = new Point(0,0);
-        Rectangle constraint = new Rectangle(loc, model.getSize());
+        Rectangle constraint = new Rectangle(loc, dps.getSize());
         ((GraphicalEditPart) getParent()).setLayoutConstraint(this, getFigure(), constraint);
 
         // check if the figure supports the name decoration

@@ -7,9 +7,10 @@ import org.eclipse.draw2d.Bendpoint;
 import org.omnetpp.ned2.model.pojo.ChannelSpecNode;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
 
-public class ConnectionNodeEx extends ConnectionNode implements IDisplayString {
+public class ConnectionNodeEx extends ConnectionNode implements IDisplayStringProvider {
 	private INedModule srcModuleRef;
 	private INedModule destModuleRef;
+	private ConnectionDisplayString displayString = null;
 
 	public ConnectionNodeEx() {
 	}
@@ -122,14 +123,18 @@ public class ConnectionNodeEx extends ConnectionNode implements IDisplayString {
 		// TODO Implement this
 	}
 
-    public DisplayString getDisplayString() {
-        // TODO mabe we should cache the created DisplayString object for performance reasons?
-        return new ConnectionDisplayString(NedElementExUtil.getDisplayString(this)); 
-    }
-    
-    public void setDisplayString(DisplayString dspString) {
-        NedElementExUtil.setDisplayString(this, dspString.toString());
-    }
+	public DisplayString getDisplayString() {
+		// TODO set the ancestor connection and container module correctly
+		if (displayString == null)
+			displayString = new ConnectionDisplayString(this, null, null,
+											NedElementExUtil.getDisplayString(this));
+		return displayString;
+	}
+	
+	public void displayStringChanged() {
+		// syncronize it to the underlying model 
+		NedElementExUtil.setDisplayString(this, displayString.toString());
+	}
 
     public String getChannelType() {
         ChannelSpecNode channelSpecNode = (ChannelSpecNode)getFirstChildWithTag(NED_CHANNEL_SPEC);

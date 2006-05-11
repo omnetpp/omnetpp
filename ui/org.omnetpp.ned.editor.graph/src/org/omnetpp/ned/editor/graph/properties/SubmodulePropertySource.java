@@ -6,7 +6,6 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 import org.omnetpp.common.properties.EditableComboBoxPropertyDescriptor;
-import org.omnetpp.ned2.model.SubmoduleDisplayString;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
 import org.omnetpp.resources.NEDResourcesPlugin;
 
@@ -73,7 +72,7 @@ public class SubmodulePropertySource extends AbstractNedPropertySource {
             model.setType(value.toString());
         }
         if (Prop.Display.equals(propName)) {
-            model.setDisplayString(new SubmoduleDisplayString(value.toString()));
+            model.getDisplayString().set(value.toString());
         }
     }
 
@@ -86,7 +85,7 @@ public class SubmodulePropertySource extends AbstractNedPropertySource {
     @Override
     public void resetPropertyValue(Object propName) {
         if (Prop.Display.equals(propName)) {
-            model.setDisplayString(null);
+            model.getDisplayString().set(null);
         }
     }
 

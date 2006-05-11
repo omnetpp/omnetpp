@@ -4,7 +4,6 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
-import org.omnetpp.ned2.model.SubmoduleDisplayString;
 
 public class CompoundModulePropertySource extends AbstractNedPropertySource {
 
@@ -57,7 +56,7 @@ public class CompoundModulePropertySource extends AbstractNedPropertySource {
             model.setName(value.toString());
         }
         if (Prop.Display.equals(propName)) {
-            model.setDisplayString(new SubmoduleDisplayString(value.toString()));
+            model.getDisplayString().set(value.toString());
         }
     }
 
@@ -69,7 +68,7 @@ public class CompoundModulePropertySource extends AbstractNedPropertySource {
     @Override
     public void resetPropertyValue(Object propName) {
         if (Prop.Display.equals(propName)) {
-            model.setDisplayString(null);
+            model.getDisplayString().set(null);
         }
     }
 

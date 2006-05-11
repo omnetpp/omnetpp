@@ -27,17 +27,15 @@ public class SetConstraintCommand extends org.eclipse.gef.commands.Command {
 
     @Override
     public void execute() {
-        // XXX just for debugging
-//        System.out.println(ModelUtil.printPojoElementTree((NEDElement)module, ""));
-        oldSize = module.getSize();
-        oldPos = module.getLocation();
+        oldSize = module.getDisplayString().getSize();
+        oldPos = module.getDisplayString().getLocation();
         redo();
     }
 
     @Override
     public void redo() {
-        module.setSize(newSize);
-        module.setLocation(newPos);
+        module.getDisplayString().setSize(newSize);
+        module.getDisplayString().setLocation(newPos);
     }
 
     public void setLocation(Rectangle r) {
@@ -59,8 +57,8 @@ public class SetConstraintCommand extends org.eclipse.gef.commands.Command {
 
     @Override
     public void undo() {
-        module.setSize(oldSize);
-        module.setLocation(oldPos);
+        module.getDisplayString().setSize(oldSize);
+        module.getDisplayString().setLocation(oldPos);
     }
 
 }

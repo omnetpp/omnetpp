@@ -75,7 +75,7 @@ public class CloneCommand extends Command {
 
         // duplicate the subtree but do not add to the new parent yet
         newModule = (INedModule)((NEDElement)oldModule).deepDup(null);
-        newModule.setLocation(newBounds.getLocation());
+        newModule.getDisplayString().setLocation(newBounds.getLocation());
         newModule.setName(oldModule.getName()+"_copy");
 
         if (index < 0) {

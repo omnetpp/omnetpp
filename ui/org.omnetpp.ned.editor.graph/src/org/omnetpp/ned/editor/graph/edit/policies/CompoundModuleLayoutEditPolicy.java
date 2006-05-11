@@ -82,11 +82,11 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
         // create the constraint change command 
         SetConstraintCommand cmd = new SetConstraintCommand();
-        INedModule part = (INedModule) child.getModel();
-        cmd.setModule(part);
+        INedModule module = (INedModule) child.getModel();
+        cmd.setModule(module);
         cmd.setLocation(modelConstraint);
         // if size constrant is not specified, then remove it from the model too
-        if ((modelConstraint.width < 0 || modelConstraint.height < 0) && part.getSize() == null)
+        if ((modelConstraint.width < 0 || modelConstraint.height < 0) && module.getDisplayString().getSize() == null)
             cmd.setSize(null);
         
         Command result = cmd;

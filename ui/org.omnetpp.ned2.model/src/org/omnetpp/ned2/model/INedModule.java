@@ -9,7 +9,7 @@ import org.eclipse.draw2d.geometry.Point;
  * CompoundModule, Submodule model interface
  * @author rhornig
  */
-public interface INedModule extends IDisplayString {
+public interface INedModule extends IDisplayStringProvider {
 
     public final String ATT_SRC_CONNECTION = "srcConnection";
     public final String ATT_DEST_CONNECTION = "destConnection";
@@ -67,29 +67,29 @@ public interface INedModule extends IDisplayString {
 	 */
 	public void removeDestConnection(ConnectionNodeEx conn);
 
-	/**
-	 * Helper function to set the location of the node
-	 * @param location
-	 */
-	public void setLocation(Point location);
-
-	/**
-	 * Helper function to get the location of the node
-	 * @param location
-	 */
-	public Point getLocation();
-	
-	/**
-	 * Helper function to get the size of the node
-	 * @return
-	 */
-	public Dimension getSize();
-	
-	/**
-	 * Helper function to set the size of the node
-	 * @param size
-	 */
-	public void setSize(Dimension size);
+//	/**
+//	 * Helper function to set the location of the node
+//	 * @param location
+//	 */
+//	public void setLocation(Point location);
+//
+//	/**
+//	 * Helper function to get the location of the node
+//	 * @param location
+//	 */
+//	public Point getLocation();
+//	
+//	/**
+//	 * Helper function to get the size of the node
+//	 * @return
+//	 */
+//	public Dimension getSize();
+//	
+//	/**
+//	 * Helper function to set the size of the node
+//	 * @param size
+//	 */
+//	public void setSize(Dimension size);
     
     /**
      * Removes this node from the parent

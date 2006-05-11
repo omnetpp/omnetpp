@@ -4,7 +4,6 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
-import org.omnetpp.ned2.model.SubmoduleDisplayString;
 
 public class ConnectionPropertySource extends AbstractNedPropertySource {
 
@@ -57,7 +56,7 @@ public class ConnectionPropertySource extends AbstractNedPropertySource {
             model.setChannelType(value.toString());
         }
         if (Prop.Display.equals(propName)) {
-            model.setDisplayString(new SubmoduleDisplayString(value.toString()));
+            model.getDisplayString().set(value.toString());
         }
     }
 
@@ -69,7 +68,7 @@ public class ConnectionPropertySource extends AbstractNedPropertySource {
     @Override
     public void resetPropertyValue(Object propName) {
         if (Prop.Display.equals(propName)) {
-            model.setDisplayString(null);
+            model.getDisplayString().set(null);
         }
     }
 

@@ -20,12 +20,6 @@ public class CompoundModuleDisplayPropertySource extends DisplayPropertySource {
     }
 
     @Override
-    protected void fireDisplayStringChanged() {
-        if(model != null)
-            model.setDisplayString(getDisplayString());
-    }
-
-    @Override
     public void modelChanged() {
         if(model != null)
             setDisplayString(model.getDisplayString());

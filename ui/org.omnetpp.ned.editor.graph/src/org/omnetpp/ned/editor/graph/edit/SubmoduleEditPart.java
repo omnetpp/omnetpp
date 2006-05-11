@@ -17,6 +17,7 @@ import org.omnetpp.ned.editor.graph.figures.properties.DisplayShapeSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayTooltipSupport;
 import org.omnetpp.ned2.model.DisplayString;
 import org.omnetpp.ned2.model.INedModule;
+import org.omnetpp.ned2.model.SubmoduleDisplayString;
 
 public class SubmoduleEditPart extends ModuleEditPart {
 
@@ -43,7 +44,6 @@ public class SubmoduleEditPart extends ModuleEditPart {
     /**
      * Updates the visual aspect of this.
      */
-    // FIXME most of this stuff should go to SubmoduleEditPart.refreshVisuls()
     @Override
     protected void refreshVisuals() {
         
@@ -52,20 +52,16 @@ public class SubmoduleEditPart extends ModuleEditPart {
     	INedModule model = (INedModule)getNEDModel();
     	
         // parse a dispaly string, so it's easier to get values from it.
-        DisplayString dps = model.getDisplayString();
+        SubmoduleDisplayString dps = (SubmoduleDisplayString)model.getDisplayString();
         
         // setup the figure's properties
 
-//        Integer x = dps.getAsIntDef(DisplayString.Prop.X, 0);
-//        Integer y = dps.getAsIntDef(DisplayString.Prop.Y, 0);
-//        Integer w = dps.getAsIntDef(DisplayString.Prop.WIDTH, -1);
-//        Integer h = dps.getAsIntDef(DisplayString.Prop.HEIGHT, -1);
         // set the location and size using the models helper methods
-        Point loc = model.getLocation();
+        Point loc = dps.getLocation();
         // TODO get the location from the autolayouting engine if exact position is not specified
         if (loc == null) loc = new Point(0,0);
         
-        Rectangle constraint = new Rectangle(loc, model.getSize());
+        Rectangle constraint = new Rectangle(loc, dps.getSize());
         ((GraphicalEditPart) getParent()).setLayoutConstraint(this, getFigure(), constraint);
         // check if the figure supports the name decoration
         if(getNedFigure() instanceof DisplayNameSupport)
@@ -73,7 +69,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
         // range support
         if(getNedFigure() instanceof DisplayRangeSupport)
             ((DisplayRangeSupport)getNedFigure()).setRange(
-                    dps.getAsIntDef(DisplayString.Prop.RANGE, -1),
+                    dps.getRange(),
                     ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.RANGEFILLCOL)),
                     ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.RANGEBORDERCOL)),
                     dps.getAsIntDef(DisplayString.Prop.RANGEBORDERWIDTH, -1));
@@ -120,8 +116,8 @@ public class SubmoduleEditPart extends ModuleEditPart {
         
         // XXX callout bubble. just for testing
         if(getNedFigure() instanceof DisplayCalloutSupport) {
-                ((DisplayCalloutSupport)getNedFigure()).addCallout("Yes Sir, my position is: "+model.getLocation() );
-                if (model.getLocation().x >70) ((DisplayCalloutSupport)getNedFigure()).clearCallout();
+                ((DisplayCalloutSupport)getNedFigure()).addCallout("Yes Sir, my position is: "+dps.getLocation() );
+                if (dps.getLocation().x >70) ((DisplayCalloutSupport)getNedFigure()).clearCallout();
         } 
     }
 }

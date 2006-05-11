@@ -39,15 +39,15 @@ abstract public class DisplayPropertySource extends AbstractNedPropertySource {
     public static IPropertyDescriptor getPropertyDescriptor(DisplayString.Prop prop) {
         // TODO we need separate property descriptors for integers and the Images
         PropertyDescriptor pdesc;
-        if(prop.getType() == DisplayString.PropType.String)
+        if(prop.getType() == DisplayString.PropType.STRING)
             pdesc = new TextPropertyDescriptor(prop, prop.getVisibleName());
-        else if(prop.getType() == DisplayString.PropType.Float)
+        else if(prop.getType() == DisplayString.PropType.UNIT)
             pdesc = new TextPropertyDescriptor(prop, prop.getVisibleName());
-        else if(prop.getType() == DisplayString.PropType.Integer)
+        else if(prop.getType() == DisplayString.PropType.INTEGER)
             pdesc = new TextPropertyDescriptor(prop, prop.getVisibleName());
-        else if(prop.getType() == DisplayString.PropType.Image)
+        else if(prop.getType() == DisplayString.PropType.IMAGE)
             pdesc = new TextPropertyDescriptor(prop, prop.getVisibleName());
-        else if(prop.getType() == DisplayString.PropType.Color)
+        else if(prop.getType() == DisplayString.PropType.COLOR)
             pdesc = new ColorPropertyDescriptor(prop, prop.getVisibleName());
         else 
             pdesc = new PropertyDescriptor(prop, prop.getVisibleName());  // read only editor
@@ -99,7 +99,7 @@ abstract public class DisplayPropertySource extends AbstractNedPropertySource {
         if (tagVal == null) 
             tagVal = DisplayString.TagInstance.EMPTY_VALUE; 
         
-        if(prop.getType() == DisplayString.PropType.Color)
+        if(prop.getType() == DisplayString.PropType.COLOR)
             return ColorFactory.asRGB(tagVal);
         
         return tagVal;
@@ -117,13 +117,11 @@ abstract public class DisplayPropertySource extends AbstractNedPropertySource {
         else 
             displayString.set(prop, null);
         
-        fireDisplayStringChanged();
     }
 
     @Override
     public void resetPropertyValue(Object prop) {
         displayString.set((DisplayString.Prop)prop, null);
-        fireDisplayStringChanged();
     }
 
     @Override
@@ -142,6 +140,4 @@ abstract public class DisplayPropertySource extends AbstractNedPropertySource {
         return true;
     }
     
-    abstract protected void fireDisplayStringChanged();
-
 }

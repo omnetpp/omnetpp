@@ -28,9 +28,9 @@ public class CreateCommand extends org.eclipse.gef.commands.Command {
         setLabel("Create " + child.getName());
 
         if (rect != null) {
-            child.setLocation(rect.getLocation());
+            child.getDisplayString().setLocation(rect.getLocation());
             if (!rect.isEmpty()) 
-                child.setSize(rect.getSize());
+                child.getDisplayString().setSize(rect.getSize());
         }
         redo();
     }

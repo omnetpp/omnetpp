@@ -3,8 +3,6 @@ package org.omnetpp.ned2.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.draw2d.geometry.Point;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned2.model.pojo.ConnectionsNode;
 import org.omnetpp.ned2.model.pojo.SubmoduleNode;
@@ -18,6 +16,8 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 	// destConns contains all connections where the destmodule is this module
 	protected List<ConnectionNodeEx> destConns = new ArrayList<ConnectionNodeEx>();
 
+	protected CompoundModuleDisplayString displayString = null;
+	
 	public CompoundModuleNodeEx() {
 	}
 
@@ -26,12 +26,16 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 	}
 
 	public DisplayString getDisplayString() {
-        // TODO mabe we should cache the created DisplayString object for performance reasons?
-		return new CompoundModuleDisplayString(NedElementExUtil.getDisplayString(this)); 
+		if (displayString == null)
+			// TODO set the ancestor module correctly
+			displayString = new CompoundModuleDisplayString(this, null,
+									NedElementExUtil.getDisplayString(this));
+		return displayString;
 	}
 	
-	public void setDisplayString(DisplayString dspString) {
-		NedElementExUtil.setDisplayString(this, dspString.toString());
+	public void displayStringChanged() {
+		// syncronize it to the underlying model 
+		NedElementExUtil.setDisplayString(this, displayString.toString());
 	}
 
 	public List<SubmoduleNodeEx> getSubmodules() {
@@ -140,57 +144,57 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 		snode.insertChildBefore((NEDElement)insertBefore, (NEDElement)child);
 	}
 
-    public Point getLocation() {
-        DisplayString dps = getDisplayString();
-        Integer x = dps.getAsInteger(DisplayString.Prop.MODULE_X);
-        Integer y = dps.getAsInteger(DisplayString.Prop.MODULE_Y);
-        // if it's unspecified in any direction we should return a NULL constraint
-        if (x == null || y == null)
-            return null;
-        
-        return new Point (x,y);
-    }
-
-    public void setLocation(Point location) {
-        DisplayString dps = getDisplayString();
-        
-        // if location is not specified, remove the constraint from the display string
-        if (location == null) {
-            dps.set(DisplayString.Prop.MODULE_X, null);
-            dps.set(DisplayString.Prop.MODULE_Y, null);
-        } else { 
-            dps.set(DisplayString.Prop.MODULE_X, location.x);
-            dps.set(DisplayString.Prop.MODULE_Y, location.y);
-        }
-
-        setDisplayString(dps);
-    }
-
-    public Dimension getSize() {
-        // FIXME get the propertysource from the model if it is already registered
-        DisplayString dps = getDisplayString();
-
-        return new Dimension(dps.getAsIntDef(DisplayString.Prop.MODULE_WIDTH, -1),
-                             dps.getAsIntDef(DisplayString.Prop.MODULE_HEIGHT, -1));
-    }
-
-    public void setSize(Dimension size) {
-        // FIXME get the propertysource from the model if it is already registered
-        DisplayString dps = getDisplayString();
-        
-        // if the size is unspecified, remove the size constraint from the model
-        if (size == null || size.width < 0 ) 
-            dps.set(DisplayString.Prop.MODULE_WIDTH, null);
-        else
-            dps.set(DisplayString.Prop.MODULE_WIDTH, size.width);
-
-        // if the size is unspecified, remove the size constraint from the model
-        if (size == null || size.height < 0) 
-            dps.set(DisplayString.Prop.MODULE_HEIGHT, null);
-        else
-            dps.set(DisplayString.Prop.MODULE_HEIGHT, size.height);
-        
-        setDisplayString(dps);
-    }
+//    public Point getLocation() {
+//        DisplayString dps = getDisplayString();
+//        Integer x = dps.getAsInteger(DisplayString.Prop.MODULE_X);
+//        Integer y = dps.getAsInteger(DisplayString.Prop.MODULE_Y);
+//        // if it's unspecified in any direction we should return a NULL constraint
+//        if (x == null || y == null)
+//            return null;
+//        
+//        return new Point (x,y);
+//    }
+//
+//    public void setLocation(Point location) {
+//        DisplayString dps = getDisplayString();
+//        
+//        // if location is not specified, remove the constraint from the display string
+//        if (location == null) {
+//            dps.set(DisplayString.Prop.MODULE_X, null);
+//            dps.set(DisplayString.Prop.MODULE_Y, null);
+//        } else { 
+//            dps.set(DisplayString.Prop.MODULE_X, location.x);
+//            dps.set(DisplayString.Prop.MODULE_Y, location.y);
+//        }
+//
+//        setDisplayString(dps);
+//    }
+//
+//    public Dimension getSize() {
+//        // FIXME get the propertysource from the model if it is already registered
+//        DisplayString dps = getDisplayString();
+//
+//        return new Dimension(dps.getAsIntDef(DisplayString.Prop.MODULE_WIDTH, -1),
+//                             dps.getAsIntDef(DisplayString.Prop.MODULE_HEIGHT, -1));
+//    }
+//
+//    public void setSize(Dimension size) {
+//        // FIXME get the propertysource from the model if it is already registered
+//        DisplayString dps = getDisplayString();
+//        
+//        // if the size is unspecified, remove the size constraint from the model
+//        if (size == null || size.width < 0 ) 
+//            dps.set(DisplayString.Prop.MODULE_WIDTH, null);
+//        else
+//            dps.set(DisplayString.Prop.MODULE_WIDTH, size.width);
+//
+//        // if the size is unspecified, remove the size constraint from the model
+//        if (size == null || size.height < 0) 
+//            dps.set(DisplayString.Prop.MODULE_HEIGHT, null);
+//        else
+//            dps.set(DisplayString.Prop.MODULE_HEIGHT, size.height);
+//        
+//        setDisplayString(dps);
+//    }
 
 }

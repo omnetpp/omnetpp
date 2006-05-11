@@ -48,7 +48,7 @@ public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
             else {
                 INedModule childModel = (INedModule) child.getModel();
                 command.add(createCreateCommand(childModel, new Rectangle(
-                        new org.eclipse.draw2d.geometry.Point(), childModel.getSize()), index,
+                        new org.eclipse.draw2d.geometry.Point(), childModel.getDisplayString().getSize()), index,
                         "Reparent NedElement"));//$NON-NLS-1$
             }
         }

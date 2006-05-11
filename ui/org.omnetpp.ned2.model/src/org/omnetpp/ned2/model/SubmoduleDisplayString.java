@@ -1,5 +1,6 @@
 package org.omnetpp.ned2.model;
 
+
 public class SubmoduleDisplayString extends DisplayString {
     // contains the default fallback values for the different tags if a variable is used in that position
     public static final DisplayString VARIABLE_DEFAULTS 
@@ -9,10 +10,17 @@ public class SubmoduleDisplayString extends DisplayString {
         = new DisplayString("i=,,30;i2=,,30;is=40;b=-1,-1,rect,#8080ff,black,2;t=,t,blue;r=,,black,1");
 
     
-    public SubmoduleDisplayString(String value) {
-        super(value);
+    public SubmoduleDisplayString(IDisplayStringProvider owner, IDisplayStringProvider ancestor, IDisplayStringProvider container,
+    								String value) {
+        super(owner, ancestor, container, value);
         variableDefaults = VARIABLE_DEFAULTS;
         emptyDefaults = EMPTY_DEFAULTS;
+    }
+    
+    public int getRange() {
+    	int range = unit2pixel(getAsFloatDef(DisplayString.Prop.RANGE, -1.0f));
+    	if (range <= 0) range = -1;
+    	return range;
     }
 
 }

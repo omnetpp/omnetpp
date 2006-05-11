@@ -24,7 +24,7 @@ public class OrphanChildCommand extends Command {
         setLabel("Remove " + child.getName());
 
         insertBeforeChild = ((NEDElement)child).getNextSibling();
-        oldLocation = child.getLocation();
+        oldLocation = child.getDisplayString().getLocation();
        redo();
     }
 
@@ -43,7 +43,7 @@ public class OrphanChildCommand extends Command {
 
     @Override
     public void undo() {
-        child.setLocation(oldLocation);
+        child.getDisplayString().setLocation(oldLocation);
         container.insertModelChild((INedModule)insertBeforeChild, child);
     }
 
