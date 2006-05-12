@@ -69,10 +69,12 @@ abstract public class ContainerEditPart
 
 	public void childInserted(NEDElement node, NEDElement where, NEDElement child) {
 		// TODO maybe addChild would be a better idea (faster)
+		System.out.println("childInserted on "+this+": (node="+node+", where="+where+", child="+child+")");
 		refreshChildren();
 	}
 
 	public void childRemoved(NEDElement node, NEDElement child) {
+		System.out.println("childRemoved on "+this+": (node="+node+", child="+child+")");
 		refreshChildren();
 	}
 }

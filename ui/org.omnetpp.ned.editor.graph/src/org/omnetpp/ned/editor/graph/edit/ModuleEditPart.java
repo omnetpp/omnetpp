@@ -3,6 +3,7 @@ package org.omnetpp.ned.editor.graph.edit;
 import java.util.List;
 
 import org.eclipse.draw2d.ConnectionAnchor;
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPolicy;
@@ -24,6 +25,7 @@ import org.omnetpp.ned.editor.graph.figures.properties.DisplayShapeSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayTooltipSupport;
 import org.omnetpp.ned2.model.DisplayString;
 import org.omnetpp.ned2.model.INedModule;
+import org.omnetpp.ned2.model.NEDElement;
 
 /**
  * Base abstract controller for NedModel and NedFigures. Provides support for 
@@ -31,7 +33,17 @@ import org.omnetpp.ned2.model.INedModule;
  */
 abstract public class ModuleEditPart extends ContainerEditPart {
 
-    @Override
+	/* (non-Javadoc)
+	 * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#createFigure()
+	 */
+	@Override
+	protected IFigure createFigure() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
     protected void createEditPolicies() {
         super.createEditPolicies();
         installEditPolicy(EditPolicy.COMPONENT_ROLE, new NedComponentEditPolicy());
@@ -119,5 +131,19 @@ abstract public class ModuleEditPart extends ContainerEditPart {
         return getNedFigure().getGate(c);
     }
 
+    /* (non-Javadoc)
+	 * @see org.omnetpp.ned.editor.graph.edit.ContainerEditPart#attributeChanged(org.omnetpp.ned2.model.NEDElement, java.lang.String)
+	 */
+	@Override
+	public void attributeChanged(NEDElement node, String attr) {
+		super.attributeChanged(node, attr);
+		
+		// SubmoduleNodeEx and CompoundModuleNodeEx fire ATT_SRC(DEST)_CONNECTION 
+		// attribute change if a connection gets added/removed
+		if (INedModule.ATT_SRC_CONNECTION.equals(attr))
+			refreshSourceConnections();
+		else if (INedModule.ATT_DEST_CONNECTION.equals(attr))
+			refreshTargetConnections();
+	}
 
 }
