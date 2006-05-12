@@ -37,6 +37,7 @@ import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.DisplayString;
 import org.omnetpp.ned2.model.INedModule;
 import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.DisplayString.Prop;
 
 public class CompoundModuleEditPart extends ModuleEditPart {
 
@@ -110,16 +111,17 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     }
     
     @Override
-    public void attributeChanged(NEDElement node, String attr) {
-        refreshVisuals();
-    	// TODO optimize: refreshVisuals would be enough generally
-    	// children should be refreshed ONLY if the scaling of the compound module has changed
-    	// because child coordinates and submodule ranges, sizes should be recalculated
-        // if scaleing has changed we must refresh the children too
-    	refreshChildVisuals();
+	public void propertyChanged(Prop changedProp) {
+    	// if the scaling has changed we must refresh the children too
+    	if (changedProp == Prop.MODULE_SCALE) {
+    		refreshChildrenVisuals();
+    	}
+    	// refresh only ourselves
+    	refreshVisuals();
+    	System.out.println("Compound module notification: "+changedProp.name());
 	}
-    
-    /**
+
+	/**
      * Updates the visual aspect of this.
      */
     @Override

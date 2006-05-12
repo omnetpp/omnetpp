@@ -34,7 +34,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 		return displayString;
 	}
 	
-	public void displayStringChanged(Prop changedProp) {
+	public void propertyChanged(Prop changedProp) {
 		// syncronize it to the underlying model 
 		NedElementExUtil.setDisplayString(this, displayString.toString());
 	}

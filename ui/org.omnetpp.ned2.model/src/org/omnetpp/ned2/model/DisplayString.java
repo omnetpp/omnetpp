@@ -179,6 +179,8 @@ public class DisplayString {
     protected IDisplayStringProvider ancestor = null;
     // the display string of the containing module
     protected IDisplayStringProvider container = null;
+    // listener for the display string changes (usually the controller)
+    protected IDisplayStringChangeListener changeListener = null;
     
     // map that stores the currently available tag instances 
     private Map<String, TagInstance> tagMap = new LinkedHashMap<String, TagInstance>();
@@ -580,11 +582,23 @@ public class DisplayString {
     }
     
     /**
-     * Signal a property notification 
+     * Fire a property change notification 
      * @param changedProperty The changed property or NULL if it cannot be identified
      */
     private void fireDisplayStringChanged(Prop changedProperty) {
+    	// notify the owner node (if set)
     	if (owner != null && notifyEnabled)
-    		owner.displayStringChanged(changedProperty);
+    		owner.propertyChanged(changedProperty);
+    	// and notify the registered listener (if any)
+    	if (changeListener != null && notifyEnabled)
+    		changeListener.propertyChanged(changedProperty);
     }
+
+	public IDisplayStringChangeListener getChangeListener() {
+		return changeListener;
+	}
+
+	public void setChangeListener(IDisplayStringChangeListener listener) {
+		this.changeListener = listener;
+	}
 }
