@@ -18,7 +18,6 @@ import org.omnetpp.ned2.model.pojo.ModuleInterfaceNode;
  */
 // FIXME default handling is still not ok. Block size etc is not defaults to -1 if left empty
 public class DisplayString {
-
     // the argument types supported by the display string
     public enum PropType { STRING, INTEGER, UNIT, COLOR, IMAGE }
 
@@ -165,6 +164,14 @@ public class DisplayString {
     // hold default values (if specified in derived calsses)
     protected DisplayString variableDefaults = null; 
     protected DisplayString emptyDefaults = null;
+    // whether notification is enabled or not
+    protected boolean notifyEnabled = true;
+    // the properties that define the position and width (variables, so we can redefine them in derived
+    // classes, and use a different tag (ie. bgp instead of p tag in compound module)
+    protected Prop XPosProp = Prop.X;
+    protected Prop YPosProp = Prop.Y;
+    protected Prop WidthProp = Prop.WIDTH;
+    protected Prop HeightProp = Prop.HEIGHT;
     
     // the owner of the displaystring
     protected IDisplayStringProvider owner = null;
@@ -383,7 +390,7 @@ public class DisplayString {
     			tagMap.put(parsedTag.getName(), parsedTag);
     		}
     	}
-    	fireDisplayStringChanged();
+    	fireDisplayStringChanged(null);
     }
 
     /**
@@ -478,12 +485,20 @@ public class DisplayString {
      */
     public void set(Prop property, String value) {
         setTagArg(property.tag, property.pos, value);
-        fireDisplayStringChanged();
+        fireDisplayStringChanged(property);
     }
 
     public void set(Prop property, int value) {
         setTagArg(property.tag, property.pos, String.valueOf(value));
-        fireDisplayStringChanged();
+        fireDisplayStringChanged(property);
+    }
+    
+    /**
+     * @return The scaling to be applied on the element. It is coming from the displaystring
+     * for the CompoundModule and coming from the container's displaystring for submodules
+     */
+    public float getScale() {
+    	return 1.0f;
     }
     
     // helper functions for setting and getting the location and size properties
@@ -492,8 +507,8 @@ public class DisplayString {
 	 * @param pixel 
 	 * @return Value in units
 	 */
-	public float pixel2unit(int pixel) {
-		return  pixel / 2.0f;
+	public final float pixel2unit(int pixel) {
+		return  pixel / getScale();
 	}
 
 	/**
@@ -501,13 +516,13 @@ public class DisplayString {
 	 * @param unit
 	 * @return
 	 */
-	public int unit2pixel(float unit) {
-		return (int)(unit * 2);
+	public final int unit2pixel(float unit) {
+		return (int)(unit * getScale());
 	}
 	
     public Point getLocation() {
-        Float x = getAsFloat(Prop.X);
-        Float y = getAsFloat(Prop.Y);
+        Float x = getAsFloat(XPosProp);
+        Float y = getAsFloat(YPosProp);
         // if it's unspecified in any direction we should return a NULL constraint
         if (x == null || y == null)
             return null;
@@ -516,42 +531,60 @@ public class DisplayString {
     }
 
     public void setLocation(Point location) {
-        
+    	// disable the notification so we will not send two notify for the two coordinate change
+    	notifyEnabled = false;
         // if location is not specified, remove the constraint from the display string
         if (location == null) {
-            set(Prop.X, null);
-            set(Prop.Y, null);
+            set(XPosProp, null);
+            set(YPosProp, null);
         } else { 
-            set(Prop.X, String.valueOf(pixel2unit(location.x)));
-            set(Prop.Y, String.valueOf(pixel2unit(location.y)));
+            set(XPosProp, String.valueOf(pixel2unit(location.x)));
+            set(YPosProp, String.valueOf(pixel2unit(location.y)));
         }
+    	notifyEnabled = true;
+    	// we have explicitly disabled the notification, so we have to send it now manually
+    	// be aware that location change always generates an X pos change notification regardless
+    	// which coordinate has changed
+    	fireDisplayStringChanged(XPosProp);
     }
 
     public Dimension getSize() {
-        int width = unit2pixel(getAsFloatDef(DisplayString.Prop.WIDTH, -1.0f));
+        int width = unit2pixel(getAsFloatDef(WidthProp, -1.0f));
         width = width > 0 ? width : -1; 
-        int height = unit2pixel(getAsFloatDef(DisplayString.Prop.HEIGHT, -1.0f));
+        int height = unit2pixel(getAsFloatDef(HeightProp, -1.0f));
         height = height > 0 ? height : -1; 
         
         return new Dimension(width, height);
     }
 
     public void setSize(Dimension size) {
+    	// disable the notification so we will not send two notify for the two coordinate change
+    	notifyEnabled = false;
         // if the size is unspecified, remove the size constraint from the model
         if (size == null || size.width < 0 ) 
-            set(DisplayString.Prop.WIDTH, null);
+            set(WidthProp, null);
         else
-            set(DisplayString.Prop.WIDTH, String.valueOf(pixel2unit(size.width)));
+            set(WidthProp, String.valueOf(pixel2unit(size.width)));
 
         // if the size is unspecified, remove the size constraint from the model
         if (size == null || size.height < 0) 
-            set(DisplayString.Prop.HEIGHT, null);
+            set(HeightProp, null);
         else
-            set(DisplayString.Prop.HEIGHT, String.valueOf(pixel2unit(size.height)));
+            set(HeightProp, String.valueOf(pixel2unit(size.height)));
+
+    	notifyEnabled = true;
+    	// we have explicitly disabled the notification, so we have to send it now manually
+    	// be aware that size change always generates an width change notification regardless
+    	// which coordinate has changed
+    	fireDisplayStringChanged(WidthProp);
     }
     
-    private void fireDisplayStringChanged() {
-    	if (owner != null)
-    		owner.displayStringChanged();
+    /**
+     * Signal a property notification 
+     * @param changedProperty The changed property or NULL if it cannot be identified
+     */
+    private void fireDisplayStringChanged(Prop changedProperty) {
+    	if (owner != null && notifyEnabled)
+    		owner.displayStringChanged(changedProperty);
     }
 }

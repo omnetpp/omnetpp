@@ -1,5 +1,7 @@
 package org.omnetpp.ned2.model;
 
+import org.omnetpp.ned2.model.DisplayString.Prop;
+
 
 public class SubmoduleDisplayString extends DisplayString {
     // contains the default fallback values for the different tags if a variable is used in that position
@@ -22,5 +24,14 @@ public class SubmoduleDisplayString extends DisplayString {
     	if (range <= 0) range = -1;
     	return range;
     }
+
+	@Override
+	public float getScale() {
+		float scaleFactor = 1.0f;
+		
+		if (container != null)
+			scaleFactor = container.getDisplayString().getAsFloatDef(Prop.MODULE_SCALE, 1.0f);
+		return scaleFactor;
+	}
 
 }

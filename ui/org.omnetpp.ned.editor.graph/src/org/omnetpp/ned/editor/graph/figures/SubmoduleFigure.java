@@ -43,6 +43,7 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds,
     protected ImageFigure decoratorImageFigure = new ImageFigure();
     protected Label nameFigure = new Label();
     protected AttachedLayer textAttachLayer;
+	private AttachedLayer rangeAttachLayer;
     protected Label textFigure = new Label();
     protected Label queueFigure = new Label();
     protected String queueName = "";
@@ -103,7 +104,7 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds,
         
         // setup decorations belongig to the background decoration layer
         if(backgroundLayer != null) {
-            backgroundLayer.add(new AttachedLayer(this, PositionConstants.CENTER, 
+            backgroundLayer.add(rangeAttachLayer = new AttachedLayer(this, PositionConstants.CENTER, 
                                                      rangeFigure, PositionConstants.CENTER)); 
         }
 
@@ -143,12 +144,16 @@ public class SubmoduleFigure extends ModuleFigure implements HandleBounds,
             rangeFigure.setVisible(true);
             rangeFigure.setSize(rad*2, rad*2);
         }
-        else rangeFigure.setVisible(false);
+        else { 
+        	rangeFigure.setVisible(false);
+            rangeFigure.setSize(0, 0);
+        }
         rangeFigure.setFill(fillColor != null);
         rangeFigure.setBackgroundColor(fillColor);
         rangeFigure.setOutline(borderColor != null &&  borderWidth > 0);
         rangeFigure.setForegroundColor(borderColor);
         rangeFigure.setLineWidth(borderWidth);
+        rangeAttachLayer.revalidate();
     }
     
     public void setTooltipText(String tttext) {

@@ -1,9 +1,5 @@
 package org.omnetpp.ned2.model;
 
-import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.draw2d.geometry.Point;
-
-// TODO specify the defaults correctly (module and background tags are missing
 public class CompoundModuleDisplayString extends DisplayString {
     // contains the default fallback values for the different tags if a variable is used in that position
     public static final DisplayString VARIABLE_DEFAULTS 
@@ -19,51 +15,20 @@ public class CompoundModuleDisplayString extends DisplayString {
         super(owner, ancestor, null, value);
         variableDefaults = VARIABLE_DEFAULTS;
         emptyDefaults = EMPTY_DEFAULTS;
+        // use BGP instead of P and use BGB instead of B in compound modules to define the position and size
+        XPosProp = Prop.MODULE_X;
+        YPosProp = Prop.MODULE_Y;
+        WidthProp = Prop.MODULE_WIDTH;
+        HeightProp = Prop.MODULE_HEIGHT;
     }
 
-    // overrida all location and size setter to work with module propertie tags bgb bgp instean of b and p
-    public Point getLocation() {
-        Float x = getAsFloat(Prop.MODULE_X);
-        Float y = getAsFloat(Prop.MODULE_Y);
-        // if it's unspecified in any direction we should return a NULL constraint
-        if (x == null || y == null)
-            return null;
-        
-        return new Point (unit2pixel(x), unit2pixel(y));
-    }
-
-    public void setLocation(Point location) {
-        
-        // if location is not specified, remove the constraint from the display string
-        if (location == null) {
-            set(Prop.MODULE_X, null);
-            set(Prop.MODULE_Y, null);
-        } else { 
-            set(Prop.MODULE_X, String.valueOf(pixel2unit(location.x)));
-            set(Prop.MODULE_Y, String.valueOf(pixel2unit(location.y)));
-        }
-    }
-
-    public Dimension getSize() {
-        int width = unit2pixel(getAsFloatDef(Prop.MODULE_WIDTH, -1.0f));
-        width = width > 0 ? width : -1; 
-        int height = unit2pixel(getAsFloatDef(Prop.MODULE_HEIGHT, -1.0f));
-        height = height > 0 ? height : -1; 
-        
-        return new Dimension(width, height);
-    }
-
-    public void setSize(Dimension size) {
-        // if the size is unspecified, remove the size constraint from the model
-        if (size == null || size.width < 0 ) 
-            set(Prop.MODULE_WIDTH, null);
-        else
-            set(Prop.MODULE_WIDTH, String.valueOf(pixel2unit(size.width)));
-
-        // if the size is unspecified, remove the size constraint from the model
-        if (size == null || size.height < 0) 
-            set(Prop.MODULE_HEIGHT, null);
-        else
-            set(Prop.MODULE_HEIGHT, String.valueOf(pixel2unit(size.height)));
-    }
+	/* (non-Javadoc)
+	 * @see org.omnetpp.ned2.model.DisplayString#getScale()
+	 * compound module scaling
+	 */
+	@Override
+	public float getScale() {
+		float scaleFactor = getAsFloatDef(Prop.MODULE_SCALE, 1.0f);
+		return scaleFactor;
+	}
 }

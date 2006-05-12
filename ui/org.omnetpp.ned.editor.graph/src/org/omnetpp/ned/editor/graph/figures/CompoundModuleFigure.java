@@ -272,12 +272,4 @@ public class CompoundModuleFigure extends ModuleFigure
 		this.unit = unit;
 		invalidate();
 	}
-
-	// TODO implement local coordinate system transformation
-	@Override
-	protected boolean useLocalCoordinates() {
-		return true;
-	}
-
-
 }

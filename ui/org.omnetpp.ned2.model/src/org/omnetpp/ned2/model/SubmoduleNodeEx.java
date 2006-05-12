@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
+import org.omnetpp.ned2.model.DisplayString.Prop;
 import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 
 public class SubmoduleNodeEx extends SubmoduleNode implements INedModule {
@@ -37,7 +38,7 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INedModule {
 		return displayString;
 	}
 	
-	public void displayStringChanged() {
+	public void displayStringChanged(Prop changedProp) {
 		// syncronize it to the underlying model 
 		NedElementExUtil.setDisplayString(this, displayString.toString());
 	}

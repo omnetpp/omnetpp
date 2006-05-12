@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.draw2d.Bendpoint;
+import org.omnetpp.ned2.model.DisplayString.Prop;
 import org.omnetpp.ned2.model.pojo.ChannelSpecNode;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
 
@@ -131,7 +132,7 @@ public class ConnectionNodeEx extends ConnectionNode implements IDisplayStringPr
 		return displayString;
 	}
 	
-	public void displayStringChanged() {
+	public void displayStringChanged(Prop changedProp) {
 		// syncronize it to the underlying model 
 		NedElementExUtil.setDisplayString(this, displayString.toString());
 	}

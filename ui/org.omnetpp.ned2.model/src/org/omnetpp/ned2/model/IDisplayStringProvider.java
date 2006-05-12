@@ -1,5 +1,7 @@
 package org.omnetpp.ned2.model;
 
+import org.omnetpp.ned2.model.DisplayString.Prop;
+
 
 /**
  * @author rhornig
@@ -16,7 +18,8 @@ public interface IDisplayStringProvider {
 
     /**
      * Notifies that a display string change has occured
+     * @param changedProp The property that changed or NULL if it cannot be identified
      */
-    public void displayStringChanged();
+    public void displayStringChanged(Prop changedProp);
 
 }

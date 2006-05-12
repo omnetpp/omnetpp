@@ -4,7 +4,6 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.omnetpp.ned.editor.graph.edit.policies.NedContainerEditPolicy;
 import org.omnetpp.ned2.model.INEDChangeListener;
-import org.omnetpp.ned2.model.INedModule;
 import org.omnetpp.ned2.model.NEDElement;
 
 /**
@@ -49,35 +48,31 @@ abstract public class ContainerEditPart
     protected NEDElement getNEDModel() {
         return (NEDElement) getModel();
     }
+    
+    
 
-    // TODO we must pass the old element too
     public void attributeChanged(NEDElement node, String attr) {
-        if (INedModule.ATT_SRC_CONNECTION.equals(attr))
-            refreshSourceConnections();
-        
-        else if (INedModule.ATT_DEST_CONNECTION.equals(attr)) 
-            refreshTargetConnections();
-        
-        else    
-            refreshVisuals();
-
+        refreshVisuals();
+    	// TODO optimize> refreshVisuals would be enough generally
+    	// children should be refreshed ONLY if the scaling of the compound module has changed
+    	// because shild coordinates and submodule ranges, sizes should be recalculated
+//        refreshChildVisuals();
 	}
+    
+    /**
+     * Refreshes all visuals for ALL children
+     */
+    protected void refreshChildVisuals() {
+    	for(Object child : getChildren())
+    		((ContainerEditPart)child).refreshVisuals();
+    }
 
 	public void childInserted(NEDElement node, NEDElement where, NEDElement child) {
-        // TODO connection adding and removal should be optimzed (eg. use a separate 
-        // connection added/removed event)
-        // maybe refreshTargetConnections() is not needed here
-//        refreshVisuals();
+		// TODO maybe addChild would be a better idea (faster)
 		refreshChildren();
-//		refreshSourceConnections();
-//		refreshTargetConnections();
 	}
 
 	public void childRemoved(NEDElement node, NEDElement child) {
-//        refreshVisuals();
 		refreshChildren();
-
-//		refreshSourceConnections();
-//		refreshTargetConnections();
 	}
 }

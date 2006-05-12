@@ -3,6 +3,7 @@ package org.omnetpp.ned2.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.omnetpp.ned2.model.DisplayString.Prop;
 import org.omnetpp.ned2.model.pojo.CompoundModuleNode;
 import org.omnetpp.ned2.model.pojo.ConnectionsNode;
 import org.omnetpp.ned2.model.pojo.SubmoduleNode;
@@ -33,7 +34,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 		return displayString;
 	}
 	
-	public void displayStringChanged() {
+	public void displayStringChanged(Prop changedProp) {
 		// syncronize it to the underlying model 
 		NedElementExUtil.setDisplayString(this, displayString.toString());
 	}
