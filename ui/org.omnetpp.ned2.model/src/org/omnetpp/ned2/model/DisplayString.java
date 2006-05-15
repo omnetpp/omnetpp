@@ -177,8 +177,6 @@ public class DisplayString {
     protected IDisplayStringProvider owner = null;
     // the direct ancestor's displaystring
     protected IDisplayStringProvider ancestor = null;
-    // the display string of the containing module
-    protected IDisplayStringProvider container = null;
     // listener for the display string changes (usually the controller)
     protected IDisplayStringChangeListener changeListener = null;
     
@@ -295,12 +293,11 @@ public class DisplayString {
      * @param container The container's display string used to get scaling value
      * @param value The string to be parsed
      */
-    protected DisplayString(IDisplayStringProvider owner, IDisplayStringProvider ancestor, IDisplayStringProvider container,
+    protected DisplayString(IDisplayStringProvider owner, IDisplayStringProvider ancestor,
     		             String value) {
     	this(value);
     	this.owner = owner;
     	this.ancestor = ancestor;
-    	this.container = container;
     }
 
     protected DisplayString(String value) {

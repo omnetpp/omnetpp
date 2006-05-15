@@ -12,9 +12,9 @@ public class SubmoduleDisplayString extends DisplayString {
         = new DisplayString("i=,,30;i2=,,30;is=40;b=-1,-1,rect,#8080ff,black,2;t=,t,blue;r=,,black,1");
 
     
-    public SubmoduleDisplayString(IDisplayStringProvider owner, IDisplayStringProvider ancestor, IDisplayStringProvider container,
+    public SubmoduleDisplayString(IDisplayStringProvider owner, IDisplayStringProvider ancestor,
     								String value) {
-        super(owner, ancestor, container, value);
+        super(owner, ancestor, value);
         variableDefaults = VARIABLE_DEFAULTS;
         emptyDefaults = EMPTY_DEFAULTS;
     }
@@ -29,8 +29,12 @@ public class SubmoduleDisplayString extends DisplayString {
 	public float getScale() {
 		float scaleFactor = 1.0f;
 		
-		if (container != null)
-			scaleFactor = container.getDisplayString().getAsFloatDef(Prop.MODULE_SCALE, 1.0f);
+		if (owner != null) {
+			CompoundModuleNodeEx cm = ((SubmoduleNodeEx)owner).getCompoundModule();
+			if (cm != null) {
+				scaleFactor = ((CompoundModuleDisplayString)cm.getDisplayString()).getScale();
+			}
+		}
 		return scaleFactor;
 	}
 

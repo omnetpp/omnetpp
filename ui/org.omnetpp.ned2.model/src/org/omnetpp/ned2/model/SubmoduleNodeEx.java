@@ -33,7 +33,7 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INedModule {
 	public DisplayString getDisplayString() {
 		// TODO set the ancestor module correctly
 		if (displayString == null)
-			displayString = new SubmoduleDisplayString(this, null, getCompoundModule(),
+			displayString = new SubmoduleDisplayString(this, null, 
 												NedElementExUtil.getDisplayString(this));
 		return displayString;
 	}
@@ -44,6 +44,7 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INedModule {
 	}
 
 	protected CompoundModuleNodeEx getCompoundModule() {
+		if (getParent() == null) return null;
 		return (CompoundModuleNodeEx)(getParent().getParent());
 	}
 

@@ -118,7 +118,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     	}
     	// refresh only ourselves
     	refreshVisuals();
-    	System.out.println("Compound module notification: "+changedProp.name());
+    	System.out.println("Compound module notification: "+changedProp);
 	}
 
 	/**

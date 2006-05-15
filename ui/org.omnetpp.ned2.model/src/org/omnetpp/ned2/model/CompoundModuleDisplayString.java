@@ -12,7 +12,7 @@ public class CompoundModuleDisplayString extends DisplayString {
     public CompoundModuleDisplayString(IDisplayStringProvider owner, IDisplayStringProvider ancestor,
     									String value) {
     	// a compound module display string does not have a container
-        super(owner, ancestor, null, value);
+        super(owner, ancestor, value);
         variableDefaults = VARIABLE_DEFAULTS;
         emptyDefaults = EMPTY_DEFAULTS;
         // use BGP instead of P and use BGB instead of B in compound modules to define the position and size

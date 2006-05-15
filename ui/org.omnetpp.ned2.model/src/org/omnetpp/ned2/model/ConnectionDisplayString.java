@@ -10,9 +10,9 @@ public class ConnectionDisplayString extends DisplayString {
         = new DisplayString("");
 
     
-    public ConnectionDisplayString(IDisplayStringProvider owner, IDisplayStringProvider ancestor, IDisplayStringProvider container,
+    public ConnectionDisplayString(IDisplayStringProvider owner, IDisplayStringProvider ancestor,
     								String value) {
-        super(owner, ancestor, container, value);
+        super(owner, ancestor, value);
         variableDefaults = VARIABLE_DEFAULTS;
         emptyDefaults = EMPTY_DEFAULTS;
     }

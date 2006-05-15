@@ -127,7 +127,7 @@ public class ConnectionNodeEx extends ConnectionNode implements IDisplayStringPr
 	public DisplayString getDisplayString() {
 		// TODO set the ancestor connection and container module correctly
 		if (displayString == null)
-			displayString = new ConnectionDisplayString(this, null, null,
+			displayString = new ConnectionDisplayString(this, null,
 											NedElementExUtil.getDisplayString(this));
 		return displayString;
 	}
