@@ -361,7 +361,16 @@ int cSimpleModule::sendDelayed(cMessage *msg, double delay, cGate *outgate)
         throw new cRuntimeError("send()/sendDelayed(): message pointer is NULL");
     if (msg->owner()!=this)
     {
-        if (msg->owner()==&simulation.msgQueue && msg->isSelfMessage() && msg->arrivalModuleId()==id())
+        if (this!=simulation.contextModule())
+            throw new cRuntimeError("send()/sendDelayed() of module (%s)%s called in the context of "
+                                    "module (%s)%s: method called from the latter module "
+                                    "lacks Enter_Method() or Enter_Method_Silent()? "
+                                    "Also, if message to be sent is passed from that module, "
+                                    "you'll need to call take(msg) after Enter_Method() as well",
+                                    className(), fullPath().c_str(),
+                                    simulation.contextModule()->className(),
+                                    simulation.contextModule()->fullPath().c_str());
+        else if (msg->owner()==&simulation.msgQueue && msg->isSelfMessage() && msg->arrivalModuleId()==id())
             throw new cRuntimeError("send()/sendDelayed(): cannot send message (%s)%s, it is "
                                     "currently scheduled as a self-message for this module",
                                     msg->className(), msg->name());
@@ -438,7 +447,16 @@ int cSimpleModule::sendDirect(cMessage *msg, double propdelay, cGate *togate)
         throw new cRuntimeError("sendDirect(): message pointer is NULL");
     if (msg->owner()!=this)
     {
-        if (msg->owner()==&simulation.msgQueue && msg->isSelfMessage() && msg->arrivalModuleId()==id())
+        if (this!=simulation.contextModule())
+            throw new cRuntimeError("sendDirect() of module (%s)%s called in the context of "
+                                    "module (%s)%s: method called from the latter module "
+                                    "lacks Enter_Method() or Enter_Method_Silent()? "
+                                    "Also, if message to be sent is passed from that module, "
+                                    "you'll need to call take(msg) after Enter_Method() as well",
+                                    className(), fullPath().c_str(),
+                                    simulation.contextModule()->className(),
+                                    simulation.contextModule()->fullPath().c_str());
+        else if (msg->owner()==&simulation.msgQueue && msg->isSelfMessage() && msg->arrivalModuleId()==id())
             throw new cRuntimeError("sendDirect(): cannot send message (%s)%s, it is "
                                     "currently scheduled as a self-message for this module",
                                     msg->className(), msg->name());
@@ -484,7 +502,14 @@ int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
         throw new cRuntimeError(eBACKSCHED, msg->className(), msg->name(), (double)t);
     if (msg->owner()!=this)
     {
-        if (msg->owner()==&simulation.msgQueue && msg->isSelfMessage() && msg->arrivalModuleId()==id())
+        if (this!=simulation.contextModule())
+            throw new cRuntimeError("scheduleAt() of module (%s)%s called in the context of "
+                                    "module (%s)%s: method called from the latter module "
+                                    "lacks Enter_Method() or Enter_Method_Silent()?"
+                                    className(), fullPath().c_str(),
+                                    simulation.contextModule()->className(),
+                                    simulation.contextModule()->fullPath().c_str());
+        else if (msg->owner()==&simulation.msgQueue && msg->isSelfMessage() && msg->arrivalModuleId()==id())
             throw new cRuntimeError("scheduleAt(): message (%s)%s is currently scheduled, "
                                     "use cancelEvent() before rescheduling",
                                     msg->className(), msg->name());
