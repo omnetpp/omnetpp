@@ -1,7 +1,7 @@
-/* A Bison parser, made by GNU Bison 1.875.  */
+/* A Bison parser, made by GNU Bison 2.1.  */
 
 /* Skeleton parser for Yacc-like parsing with Bison,
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -15,8 +15,8 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.  */
+   Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.  */
 
 /* As a special exception, when this file is copied by Bison into a
    Bison output file, you may use that output file without restriction.
@@ -35,6 +35,9 @@
 
 /* Identify Bison output.  */
 #define YYBISON 1
+
+/* Bison version.  */
+#define YYBISON_VERSION "2.1"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -130,6 +133,7 @@
      UMIN = 332
    };
 #endif
+/* Tokens.  */
 #define INCLUDE 258
 #define SIMPLE 259
 #define CHANNEL 260
@@ -357,6 +361,11 @@ void setDisplayString(int key, YYLTYPE dispstrpos);
 # define YYERROR_VERBOSE 0
 #endif
 
+/* Enabling the token table.  */
+#ifndef YYTOKEN_TABLE
+# define YYTOKEN_TABLE 0
+#endif
+
 #if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
 typedef int YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -381,22 +390,48 @@ typedef struct YYLTYPE
 /* Copy the second part of user declarations.  */
 
 
-/* Line 214 of yacc.c.  */
-#line 385 "ebnf.tab.c"
+/* Line 219 of yacc.c.  */
+#line 395 "ebnf.tab.c"
+
+#if ! defined (YYSIZE_T) && defined (__SIZE_TYPE__)
+# define YYSIZE_T __SIZE_TYPE__
+#endif
+#if ! defined (YYSIZE_T) && defined (size_t)
+# define YYSIZE_T size_t
+#endif
+#if ! defined (YYSIZE_T) && (defined (__STDC__) || defined (__cplusplus))
+# include <stddef.h> /* INFRINGES ON USER NAME SPACE */
+# define YYSIZE_T size_t
+#endif
+#if ! defined (YYSIZE_T)
+# define YYSIZE_T unsigned int
+#endif
+
+#ifndef YY_
+# if YYENABLE_NLS
+#  if ENABLE_NLS
+#   include <libintl.h> /* INFRINGES ON USER NAME SPACE */
+#   define YY_(msgid) dgettext ("bison-runtime", msgid)
+#  endif
+# endif
+# ifndef YY_
+#  define YY_(msgid) msgid
+# endif
+#endif
 
 #if ! defined (yyoverflow) || YYERROR_VERBOSE
 
 /* The parser invokes alloca or malloc; define the necessary symbols.  */
 
-# if YYSTACK_USE_ALLOCA
-#  define YYSTACK_ALLOC alloca
-# else
-#  ifndef YYSTACK_USE_ALLOCA
-#   if defined (alloca) || defined (_ALLOCA_H)
-#    define YYSTACK_ALLOC alloca
+# ifdef YYSTACK_USE_ALLOCA
+#  if YYSTACK_USE_ALLOCA
+#   ifdef __GNUC__
+#    define YYSTACK_ALLOC __builtin_alloca
 #   else
-#    ifdef __GNUC__
-#     define YYSTACK_ALLOC __builtin_alloca
+#    define YYSTACK_ALLOC alloca
+#    if defined (__STDC__) || defined (__cplusplus)
+#     include <stdlib.h> /* INFRINGES ON USER NAME SPACE */
+#     define YYINCLUDED_STDLIB_H
 #    endif
 #   endif
 #  endif
@@ -405,25 +440,52 @@ typedef struct YYLTYPE
 # ifdef YYSTACK_ALLOC
    /* Pacify GCC's `empty if-body' warning. */
 #  define YYSTACK_FREE(Ptr) do { /* empty */; } while (0)
-# else
-#  if defined (__STDC__) || defined (__cplusplus)
-#   include <stdlib.h> /* INFRINGES ON USER NAME SPACE */
-#   define YYSIZE_T size_t
+#  ifndef YYSTACK_ALLOC_MAXIMUM
+    /* The OS might guarantee only one guard page at the bottom of the stack,
+       and a page size can be as small as 4096 bytes.  So we cannot safely
+       invoke alloca (N) if N exceeds 4096.  Use a slightly smaller number
+       to allow for a few compiler-allocated temporary stack slots.  */
+#   define YYSTACK_ALLOC_MAXIMUM 4032 /* reasonable circa 2005 */
 #  endif
-#  define YYSTACK_ALLOC malloc
-#  define YYSTACK_FREE free
+# else
+#  define YYSTACK_ALLOC YYMALLOC
+#  define YYSTACK_FREE YYFREE
+#  ifndef YYSTACK_ALLOC_MAXIMUM
+#   define YYSTACK_ALLOC_MAXIMUM ((YYSIZE_T) -1)
+#  endif
+#  ifdef __cplusplus
+extern "C" {
+#  endif
+#  ifndef YYMALLOC
+#   define YYMALLOC malloc
+#   if (! defined (malloc) && ! defined (YYINCLUDED_STDLIB_H) \
+	&& (defined (__STDC__) || defined (__cplusplus)))
+void *malloc (YYSIZE_T); /* INFRINGES ON USER NAME SPACE */
+#   endif
+#  endif
+#  ifndef YYFREE
+#   define YYFREE free
+#   if (! defined (free) && ! defined (YYINCLUDED_STDLIB_H) \
+	&& (defined (__STDC__) || defined (__cplusplus)))
+void free (void *); /* INFRINGES ON USER NAME SPACE */
+#   endif
+#  endif
+#  ifdef __cplusplus
+}
+#  endif
 # endif
 #endif /* ! defined (yyoverflow) || YYERROR_VERBOSE */
 
 
 #if (! defined (yyoverflow) \
      && (! defined (__cplusplus) \
-	 || (YYLTYPE_IS_TRIVIAL && YYSTYPE_IS_TRIVIAL)))
+	 || (defined (YYLTYPE_IS_TRIVIAL) && YYLTYPE_IS_TRIVIAL \
+             && defined (YYSTYPE_IS_TRIVIAL) && YYSTYPE_IS_TRIVIAL)))
 
 /* A type that is properly aligned for any stack member.  */
 union yyalloc
 {
-  short yyss;
+  short int yyss;
   YYSTYPE yyvs;
     YYLTYPE yyls;
 };
@@ -434,20 +496,20 @@ union yyalloc
 /* The size of an array large to enough to hold all stacks, each with
    N elements.  */
 # define YYSTACK_BYTES(N) \
-     ((N) * (sizeof (short) + sizeof (YYSTYPE) + sizeof (YYLTYPE))	\
+     ((N) * (sizeof (short int) + sizeof (YYSTYPE) + sizeof (YYLTYPE))	\
       + 2 * YYSTACK_GAP_MAXIMUM)
 
 /* Copy COUNT objects from FROM to TO.  The source and destination do
    not overlap.  */
 # ifndef YYCOPY
-#  if 1 < __GNUC__
+#  if defined (__GNUC__) && 1 < __GNUC__
 #   define YYCOPY(To, From, Count) \
       __builtin_memcpy (To, From, (Count) * sizeof (*(From)))
 #  else
 #   define YYCOPY(To, From, Count)		\
       do					\
 	{					\
-	  register YYSIZE_T yyi;		\
+	  YYSIZE_T yyi;				\
 	  for (yyi = 0; yyi < (Count); yyi++)	\
 	    (To)[yyi] = (From)[yyi];		\
 	}					\
@@ -476,7 +538,7 @@ union yyalloc
 #if defined (__STDC__) || defined (__cplusplus)
    typedef signed char yysigned_char;
 #else
-   typedef short yysigned_char;
+   typedef short int yysigned_char;
 #endif
 
 /* YYFINAL -- State number of the termination state. */
@@ -497,7 +559,7 @@ union yyalloc
 #define YYUNDEFTOK  2
 #define YYMAXUTOK   332
 
-#define YYTRANSLATE(YYX) 						\
+#define YYTRANSLATE(YYX)						\
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
 
 /* YYTRANSLATE[YYLEX] -- Bison symbol number corresponding to YYLEX.  */
@@ -542,7 +604,7 @@ static const unsigned char yytranslate[] =
 #if YYDEBUG
 /* YYPRHS[YYN] -- Index of the first RHS symbol of rule number YYN in
    YYRHS.  */
-static const unsigned short yyprhs[] =
+static const unsigned short int yyprhs[] =
 {
        0,     0,     3,     5,     6,     9,    11,    13,    15,    17,
       19,    21,    22,    27,    31,    33,    35,    38,    42,    46,
@@ -578,7 +640,7 @@ static const unsigned short yyprhs[] =
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS. */
-static const short yyrhs[] =
+static const short int yyrhs[] =
 {
       89,     0,    -1,    90,    -1,    -1,    90,    91,    -1,    91,
       -1,    92,    -1,    96,    -1,   104,    -1,   107,    -1,   201,
@@ -683,7 +745,7 @@ static const short yyrhs[] =
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
-static const unsigned short yyrline[] =
+static const unsigned short int yyrline[] =
 {
        0,   211,   211,   212,   216,   217,   221,   222,   223,   224,
      225,   230,   229,   238,   239,   243,   252,   255,   257,   259,
@@ -719,50 +781,50 @@ static const unsigned short yyrline[] =
 };
 #endif
 
-#if YYDEBUG || YYERROR_VERBOSE
-/* YYTNME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
+#if YYDEBUG || YYERROR_VERBOSE || YYTOKEN_TABLE
+/* YYTNAME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
    First, the terminals, then, starting at YYNTOKENS, nonterminals. */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "INCLUDE", "SIMPLE", "CHANNEL", "DELAY", 
-  "ERROR", "DATARATE", "MODULE", "PARAMETERS", "GATES", "GATESIZES", 
-  "SUBMODULES", "CONNECTIONS", "DISPLAY", "IN", "OUT", "NOCHECK", 
-  "LEFT_ARROW", "RIGHT_ARROW", "FOR", "TO", "DO", "IF", "LIKE", "NETWORK", 
-  "ENDSIMPLE", "ENDMODULE", "ENDCHANNEL", "ENDNETWORK", "ENDFOR", 
-  "MACHINES", "ON", "IO_INTERFACES", "IFPAIR", "INTCONSTANT", 
-  "REALCONSTANT", "NAME", "STRING", "_TRUE", "_FALSE", "INPUT", "REF", 
-  "ANCESTOR", "NED_CONST", "NUMERICTYPE", "STRINGTYPE", "BOOLTYPE", 
-  "XMLTYPE", "ANYTYPE", "PLUS", "MIN", "MUL", "DIV", "MOD", "EXP", 
-  "SIZEOF", "SUBMODINDEX", "PLUSPLUS", "EQ", "NE", "GT", "GE", "LS", "LE", 
-  "AND", "OR", "XOR", "NOT", "BIN_AND", "BIN_OR", "BIN_XOR", "BIN_COMPL", 
-  "SHIFT_LEFT", "SHIFT_RIGHT", "INVALID_CHAR", "'?'", "':'", "UMIN", 
-  "';'", "','", "'['", "']'", "'='", "'.'", "'('", "')'", "$accept", 
-  "networkdescription", "somedefinitions", "definition", "import", "@1", 
-  "filenames", "filename", "channeldefinition", "channelheader", 
-  "endchannel", "@2", "@3", "cherror", "chdelay", "chdatarate", 
-  "simpledefinition", "simpleheader", "endsimple", "moduledefinition", 
-  "moduleheader", "endmodule", "opt_machineblock", "opt_displayblock", 
-  "opt_paramblock", "opt_gateblock", "opt_submodblock", "opt_connblock", 
-  "machineblock", "@4", "opt_machinelist", "machinelist", "machine", 
-  "displayblock", "paramblock", "@5", "opt_parameters", "parameters", 
-  "parameter", "gateblock", "@6", "opt_gates", "gates", "gatesI", "gateI", 
-  "gatesO", "gateO", "submodblock", "@7", "opt_submodules", "submodules", 
-  "submodule", "@8", "@9", "@10", "@11", "@12", "@13", "@14", "@15", 
-  "submodule_body", "@16", "opt_on_blocks", "on_blocks", "on_block", 
-  "@17", "@18", "opt_on_list", "on_list", "on_mach", 
-  "opt_substparamblocks", "substparamblocks", "substparamblock", "@19", 
-  "@20", "opt_substparameters", "substparameters", "substparameter", 
-  "opt_gatesizeblocks", "gatesizeblock", "@21", "@22", "opt_gatesizes", 
-  "gatesizes", "gatesize", "opt_submod_displayblock", "connblock", "@23", 
-  "@24", "opt_connections", "connections", "connection", "loopconnection", 
-  "@25", "loopvarlist", "loopvar", "opt_conn_condition", 
-  "opt_conn_displaystr", "notloopconnections", "notloopconnection", 
-  "gate_spec_L", "mod_L", "gate_L", "parentgate_L", "gate_spec_R", 
-  "mod_R", "gate_R", "parentgate_R", "channeldescr", "cdname", "cddelay", 
-  "cderror", "cddatarate", "network", "@26", "@27", "@28", "@29", "@30", 
-  "@31", "endnetwork", "vector", "inputvalue_or_expression", "inputvalue", 
-  "expression", "expr", "simple_expr", "parameter_expr", "string_expr", 
-  "boolconst_expr", "numconst_expr", "special_expr", "numconst", 
+  "$end", "error", "$undefined", "INCLUDE", "SIMPLE", "CHANNEL", "DELAY",
+  "ERROR", "DATARATE", "MODULE", "PARAMETERS", "GATES", "GATESIZES",
+  "SUBMODULES", "CONNECTIONS", "DISPLAY", "IN", "OUT", "NOCHECK",
+  "LEFT_ARROW", "RIGHT_ARROW", "FOR", "TO", "DO", "IF", "LIKE", "NETWORK",
+  "ENDSIMPLE", "ENDMODULE", "ENDCHANNEL", "ENDNETWORK", "ENDFOR",
+  "MACHINES", "ON", "IO_INTERFACES", "IFPAIR", "INTCONSTANT",
+  "REALCONSTANT", "NAME", "STRING", "_TRUE", "_FALSE", "INPUT", "REF",
+  "ANCESTOR", "NED_CONST", "NUMERICTYPE", "STRINGTYPE", "BOOLTYPE",
+  "XMLTYPE", "ANYTYPE", "PLUS", "MIN", "MUL", "DIV", "MOD", "EXP",
+  "SIZEOF", "SUBMODINDEX", "PLUSPLUS", "EQ", "NE", "GT", "GE", "LS", "LE",
+  "AND", "OR", "XOR", "NOT", "BIN_AND", "BIN_OR", "BIN_XOR", "BIN_COMPL",
+  "SHIFT_LEFT", "SHIFT_RIGHT", "INVALID_CHAR", "'?'", "':'", "UMIN", "';'",
+  "','", "'['", "']'", "'='", "'.'", "'('", "')'", "$accept",
+  "networkdescription", "somedefinitions", "definition", "import", "@1",
+  "filenames", "filename", "channeldefinition", "channelheader",
+  "endchannel", "@2", "@3", "cherror", "chdelay", "chdatarate",
+  "simpledefinition", "simpleheader", "endsimple", "moduledefinition",
+  "moduleheader", "endmodule", "opt_machineblock", "opt_displayblock",
+  "opt_paramblock", "opt_gateblock", "opt_submodblock", "opt_connblock",
+  "machineblock", "@4", "opt_machinelist", "machinelist", "machine",
+  "displayblock", "paramblock", "@5", "opt_parameters", "parameters",
+  "parameter", "gateblock", "@6", "opt_gates", "gates", "gatesI", "gateI",
+  "gatesO", "gateO", "submodblock", "@7", "opt_submodules", "submodules",
+  "submodule", "@8", "@9", "@10", "@11", "@12", "@13", "@14", "@15",
+  "submodule_body", "@16", "opt_on_blocks", "on_blocks", "on_block", "@17",
+  "@18", "opt_on_list", "on_list", "on_mach", "opt_substparamblocks",
+  "substparamblocks", "substparamblock", "@19", "@20",
+  "opt_substparameters", "substparameters", "substparameter",
+  "opt_gatesizeblocks", "gatesizeblock", "@21", "@22", "opt_gatesizes",
+  "gatesizes", "gatesize", "opt_submod_displayblock", "connblock", "@23",
+  "@24", "opt_connections", "connections", "connection", "loopconnection",
+  "@25", "loopvarlist", "loopvar", "opt_conn_condition",
+  "opt_conn_displaystr", "notloopconnections", "notloopconnection",
+  "gate_spec_L", "mod_L", "gate_L", "parentgate_L", "gate_spec_R", "mod_R",
+  "gate_R", "parentgate_R", "channeldescr", "cdname", "cddelay", "cderror",
+  "cddatarate", "network", "@26", "@27", "@28", "@29", "@30", "@31",
+  "endnetwork", "vector", "inputvalue_or_expression", "inputvalue",
+  "expression", "expr", "simple_expr", "parameter_expr", "string_expr",
+  "boolconst_expr", "numconst_expr", "special_expr", "numconst",
   "timeconstant", "opt_semicolon", "comma_or_semicolon", 0
 };
 #endif
@@ -770,7 +832,7 @@ static const char *const yytname[] =
 # ifdef YYPRINT
 /* YYTOKNUM[YYLEX-NUM] -- Internal token number corresponding to
    token YYLEX-NUM.  */
-static const unsigned short yytoknum[] =
+static const unsigned short int yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
@@ -859,7 +921,7 @@ static const unsigned char yyr2[] =
 /* YYDEFACT[STATE-NAME] -- Default rule to reduce with in state
    STATE-NUM when YYTABLE doesn't specify something else to do.  Zero
    means the default is an error.  */
-static const unsigned short yydefact[] =
+static const unsigned short int yydefact[] =
 {
        3,    11,     0,     0,     0,     0,     0,     2,     5,     6,
        7,     0,     8,    49,     9,    49,    10,     0,   302,    32,
@@ -916,7 +978,7 @@ static const unsigned short yydefact[] =
 };
 
 /* YYDEFGOTO[NTERM-NUM]. */
-static const short yydefgoto[] =
+static const short int yydefgoto[] =
 {
       -1,     6,     7,     8,     9,    17,    37,    38,    10,    11,
       28,   186,   128,    29,    30,    31,    12,    13,   200,    14,
@@ -937,7 +999,7 @@ static const short yydefgoto[] =
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
 #define YYPACT_NINF -443
-static const short yypact[] =
+static const short int yypact[] =
 {
      210,  -443,    62,    73,    81,    92,   150,   210,  -443,  -443,
     -443,   224,  -443,   120,  -443,   120,  -443,   145,   106,  -443,
@@ -994,7 +1056,7 @@ static const short yypact[] =
 };
 
 /* YYPGOTO[NTERM-NUM].  */
-static const short yypgoto[] =
+static const short int yypgoto[] =
 {
     -443,  -443,  -443,   542,  -443,  -443,  -443,   470,  -443,  -443,
       29,  -443,  -443,    79,   100,   105,  -443,  -443,  -443,  -443,
@@ -1017,7 +1079,7 @@ static const short yypgoto[] =
    number is the opposite.  If zero, do what YYDEFACT says.
    If YYTABLE_NINF, syntax error.  */
 #define YYTABLE_NINF -305
-static const short yytable[] =
+static const short int yytable[] =
 {
       67,    68,    93,   283,   412,   376,  -222,  -222,    41,   395,
      247,   287,    69,   427,   253,    70,   406,    24,   411,    26,
@@ -1089,7 +1151,7 @@ static const short yytable[] =
        0,     0,     0,     0,     0,     0,     0,     0,   122,   123
 };
 
-static const short yycheck[] =
+static const short int yycheck[] =
 {
       25,    26,    45,   252,   376,   344,    19,    20,    20,    23,
       18,   255,    38,   395,    24,    27,   373,     6,   375,     8,
@@ -1219,22 +1281,6 @@ static const unsigned char yystos[] =
      172
 };
 
-#if ! defined (YYSIZE_T) && defined (__SIZE_TYPE__)
-# define YYSIZE_T __SIZE_TYPE__
-#endif
-#if ! defined (YYSIZE_T) && defined (size_t)
-# define YYSIZE_T size_t
-#endif
-#if ! defined (YYSIZE_T)
-# if defined (__STDC__) || defined (__cplusplus)
-#  include <stddef.h> /* INFRINGES ON USER NAME SPACE */
-#  define YYSIZE_T size_t
-# endif
-#endif
-#if ! defined (YYSIZE_T)
-# define YYSIZE_T unsigned int
-#endif
-
 #define yyerrok		(yyerrstatus = 0)
 #define yyclearin	(yychar = YYEMPTY)
 #define YYEMPTY		(-2)
@@ -1242,7 +1288,8 @@ static const unsigned char yystos[] =
 
 #define YYACCEPT	goto yyacceptlab
 #define YYABORT		goto yyabortlab
-#define YYERROR		goto yyerrlab1
+#define YYERROR		goto yyerrorlab
+
 
 /* Like YYERROR except do call yyerror.  This remains here temporarily
    to ease the transition to the new meaning of YYERROR, for GCC.
@@ -1263,25 +1310,58 @@ do								\
       goto yybackup;						\
     }								\
   else								\
-    { 								\
-      yyerror ("syntax error: cannot back up");\
+    {								\
+      yyerror (YY_("syntax error: cannot back up")); \
       YYERROR;							\
     }								\
 while (0)
 
+
 #define YYTERROR	1
 #define YYERRCODE	256
 
-/* YYLLOC_DEFAULT -- Compute the default location (before the actions
-   are run).  */
 
+/* YYLLOC_DEFAULT -- Set CURRENT to span from RHS[1] to RHS[N].
+   If N is 0, then set CURRENT to the empty location which ends
+   the previous symbol: RHS[0] (always defined).  */
+
+#define YYRHSLOC(Rhs, K) ((Rhs)[K])
 #ifndef YYLLOC_DEFAULT
-# define YYLLOC_DEFAULT(Current, Rhs, N)         \
-  Current.first_line   = Rhs[1].first_line;      \
-  Current.first_column = Rhs[1].first_column;    \
-  Current.last_line    = Rhs[N].last_line;       \
-  Current.last_column  = Rhs[N].last_column;
+# define YYLLOC_DEFAULT(Current, Rhs, N)				\
+    do									\
+      if (N)								\
+	{								\
+	  (Current).first_line   = YYRHSLOC (Rhs, 1).first_line;	\
+	  (Current).first_column = YYRHSLOC (Rhs, 1).first_column;	\
+	  (Current).last_line    = YYRHSLOC (Rhs, N).last_line;		\
+	  (Current).last_column  = YYRHSLOC (Rhs, N).last_column;	\
+	}								\
+      else								\
+	{								\
+	  (Current).first_line   = (Current).last_line   =		\
+	    YYRHSLOC (Rhs, 0).last_line;				\
+	  (Current).first_column = (Current).last_column =		\
+	    YYRHSLOC (Rhs, 0).last_column;				\
+	}								\
+    while (0)
 #endif
+
+
+/* YY_LOCATION_PRINT -- Print the location on the stream.
+   This macro was not mandated originally: define only if we know
+   we won't break user code: when these are the locations we know.  */
+
+#ifndef YY_LOCATION_PRINT
+# if YYLTYPE_IS_TRIVIAL
+#  define YY_LOCATION_PRINT(File, Loc)			\
+     fprintf (File, "%d.%d-%d.%d",			\
+              (Loc).first_line, (Loc).first_column,	\
+              (Loc).last_line,  (Loc).last_column)
+# else
+#  define YY_LOCATION_PRINT(File, Loc) ((void) 0)
+# endif
+#endif
+
 
 /* YYLEX -- calling `yylex' with the right arguments.  */
 
@@ -1305,36 +1385,30 @@ do {						\
     YYFPRINTF Args;				\
 } while (0)
 
-# define YYDSYMPRINT(Args)			\
-do {						\
-  if (yydebug)					\
-    yysymprint Args;				\
-} while (0)
-
-# define YYDSYMPRINTF(Title, Token, Value, Location)		\
+# define YY_SYMBOL_PRINT(Title, Type, Value, Location)		\
 do {								\
   if (yydebug)							\
     {								\
       YYFPRINTF (stderr, "%s ", Title);				\
-      yysymprint (stderr, 					\
-                  Token, Value, Location);	\
+      yysymprint (stderr,					\
+                  Type, Value, Location);	\
       YYFPRINTF (stderr, "\n");					\
     }								\
 } while (0)
 
 /*------------------------------------------------------------------.
 | yy_stack_print -- Print the state stack from its BOTTOM up to its |
-| TOP (cinluded).                                                   |
+| TOP (included).                                                   |
 `------------------------------------------------------------------*/
 
 #if defined (__STDC__) || defined (__cplusplus)
 static void
-yy_stack_print (short *bottom, short *top)
+yy_stack_print (short int *bottom, short int *top)
 #else
 static void
 yy_stack_print (bottom, top)
-    short *bottom;
-    short *top;
+    short int *bottom;
+    short int *top;
 #endif
 {
   YYFPRINTF (stderr, "Stack now");
@@ -1364,13 +1438,13 @@ yy_reduce_print (yyrule)
 #endif
 {
   int yyi;
-  unsigned int yylineno = yyrline[yyrule];
-  YYFPRINTF (stderr, "Reducing stack by rule %d (line %u), ",
-             yyrule - 1, yylineno);
+  unsigned long int yylno = yyrline[yyrule];
+  YYFPRINTF (stderr, "Reducing stack by rule %d (line %lu), ",
+             yyrule - 1, yylno);
   /* Print the symbols being reduced, and their result.  */
   for (yyi = yyprhs[yyrule]; 0 <= yyrhs[yyi]; yyi++)
-    YYFPRINTF (stderr, "%s ", yytname [yyrhs[yyi]]);
-  YYFPRINTF (stderr, "-> %s\n", yytname [yyr1[yyrule]]);
+    YYFPRINTF (stderr, "%s ", yytname[yyrhs[yyi]]);
+  YYFPRINTF (stderr, "-> %s\n", yytname[yyr1[yyrule]]);
 }
 
 # define YY_REDUCE_PRINT(Rule)		\
@@ -1384,8 +1458,7 @@ do {					\
 int yydebug;
 #else /* !YYDEBUG */
 # define YYDPRINTF(Args)
-# define YYDSYMPRINT(Args)
-# define YYDSYMPRINTF(Title, Token, Value, Location)
+# define YY_SYMBOL_PRINT(Title, Type, Value, Location)
 # define YY_STACK_PRINT(Bottom, Top)
 # define YY_REDUCE_PRINT(Rule)
 #endif /* !YYDEBUG */
@@ -1400,12 +1473,8 @@ int yydebug;
    if the built-in stack extension method is used).
 
    Do not make this value too large; the results are undefined if
-   SIZE_MAX < YYSTACK_BYTES (YYMAXDEPTH)
+   YYSTACK_ALLOC_MAXIMUM < YYSTACK_BYTES (YYMAXDEPTH)
    evaluated with infinite-precision integer arithmetic.  */
-
-#if YYMAXDEPTH == 0
-# undef YYMAXDEPTH
-#endif
 
 #ifndef YYMAXDEPTH
 # define YYMAXDEPTH 10000
@@ -1428,7 +1497,7 @@ yystrlen (yystr)
      const char *yystr;
 #   endif
 {
-  register const char *yys = yystr;
+  const char *yys = yystr;
 
   while (*yys++ != '\0')
     continue;
@@ -1453,8 +1522,8 @@ yystpcpy (yydest, yysrc)
      const char *yysrc;
 #   endif
 {
-  register char *yyd = yydest;
-  register const char *yys = yysrc;
+  char *yyd = yydest;
+  const char *yys = yysrc;
 
   while ((*yyd++ = *yys++) != '\0')
     continue;
@@ -1464,7 +1533,55 @@ yystpcpy (yydest, yysrc)
 #  endif
 # endif
 
-#endif /* !YYERROR_VERBOSE */
+# ifndef yytnamerr
+/* Copy to YYRES the contents of YYSTR after stripping away unnecessary
+   quotes and backslashes, so that it's suitable for yyerror.  The
+   heuristic is that double-quoting is unnecessary unless the string
+   contains an apostrophe, a comma, or backslash (other than
+   backslash-backslash).  YYSTR is taken from yytname.  If YYRES is
+   null, do not copy; instead, return the length of what the result
+   would have been.  */
+static YYSIZE_T
+yytnamerr (char *yyres, const char *yystr)
+{
+  if (*yystr == '"')
+    {
+      size_t yyn = 0;
+      char const *yyp = yystr;
+
+      for (;;)
+	switch (*++yyp)
+	  {
+	  case '\'':
+	  case ',':
+	    goto do_not_strip_quotes;
+
+	  case '\\':
+	    if (*++yyp != '\\')
+	      goto do_not_strip_quotes;
+	    /* Fall through.  */
+	  default:
+	    if (yyres)
+	      yyres[yyn] = *yyp;
+	    yyn++;
+	    break;
+
+	  case '"':
+	    if (yyres)
+	      yyres[yyn] = '\0';
+	    return yyn;
+	  }
+    do_not_strip_quotes: ;
+    }
+
+  if (! yyres)
+    return yystrlen (yystr);
+
+  return yystpcpy (yyres, yystr) - yyres;
+}
+# endif
+
+#endif /* YYERROR_VERBOSE */
 
 
 
@@ -1490,15 +1607,17 @@ yysymprint (yyoutput, yytype, yyvaluep, yylocationp)
   (void) yylocationp;
 
   if (yytype < YYNTOKENS)
-    {
-      YYFPRINTF (yyoutput, "token %s (", yytname[yytype]);
-# ifdef YYPRINT
-      YYPRINT (yyoutput, yytoknum[yytype], *yyvaluep);
-# endif
-    }
+    YYFPRINTF (yyoutput, "token %s (", yytname[yytype]);
   else
     YYFPRINTF (yyoutput, "nterm %s (", yytname[yytype]);
 
+  YY_LOCATION_PRINT (yyoutput, *yylocationp);
+  YYFPRINTF (yyoutput, ": ");
+
+# ifdef YYPRINT
+  if (yytype < YYNTOKENS)
+    YYPRINT (yyoutput, yytoknum[yytype], *yyvaluep);
+# endif
   switch (yytype)
     {
       default:
@@ -1514,10 +1633,11 @@ yysymprint (yyoutput, yytype, yyvaluep, yylocationp)
 
 #if defined (__STDC__) || defined (__cplusplus)
 static void
-yydestruct (int yytype, YYSTYPE *yyvaluep, YYLTYPE *yylocationp)
+yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, YYLTYPE *yylocationp)
 #else
 static void
-yydestruct (yytype, yyvaluep, yylocationp)
+yydestruct (yymsg, yytype, yyvaluep, yylocationp)
+    const char *yymsg;
     int yytype;
     YYSTYPE *yyvaluep;
     YYLTYPE *yylocationp;
@@ -1526,6 +1646,10 @@ yydestruct (yytype, yyvaluep, yylocationp)
   /* Pacify ``unused variable'' warnings.  */
   (void) yyvaluep;
   (void) yylocationp;
+
+  if (!yymsg)
+    yymsg = "Deleting";
+  YY_SYMBOL_PRINT (yymsg, yytype, yyvaluep, yylocationp);
 
   switch (yytype)
     {
@@ -1554,15 +1678,15 @@ int yyparse ();
 
 
 
-/* The lookahead symbol.  */
+/* The look-ahead symbol.  */
 int yychar;
 
-/* The semantic value of the lookahead symbol.  */
+/* The semantic value of the look-ahead symbol.  */
 YYSTYPE yylval;
 
 /* Number of syntax errors so far.  */
 int yynerrs;
-/* Location data for the lookahead symbol.  */
+/* Location data for the look-ahead symbol.  */
 YYLTYPE yylloc;
 
 
@@ -1585,17 +1709,17 @@ yyparse (void)
 #else
 int
 yyparse ()
-
+    ;
 #endif
 #endif
 {
   
-  register int yystate;
-  register int yyn;
+  int yystate;
+  int yyn;
   int yyresult;
   /* Number of tokens to shift before error messages enabled.  */
   int yyerrstatus;
-  /* Lookahead token as an internal (translated) token number.  */
+  /* Look-ahead token as an internal (translated) token number.  */
   int yytoken = 0;
 
   /* Three stacks and their tools:
@@ -1607,20 +1731,21 @@ yyparse ()
      to reallocate them elsewhere.  */
 
   /* The state stack.  */
-  short	yyssa[YYINITDEPTH];
-  short *yyss = yyssa;
-  register short *yyssp;
+  short int yyssa[YYINITDEPTH];
+  short int *yyss = yyssa;
+  short int *yyssp;
 
   /* The semantic value stack.  */
   YYSTYPE yyvsa[YYINITDEPTH];
   YYSTYPE *yyvs = yyvsa;
-  register YYSTYPE *yyvsp;
+  YYSTYPE *yyvsp;
 
   /* The location stack.  */
   YYLTYPE yylsa[YYINITDEPTH];
   YYLTYPE *yyls = yylsa;
   YYLTYPE *yylsp;
-  YYLTYPE *yylerrsp;
+  /* The locations where the error started and ended. */
+  YYLTYPE yyerror_range[2];
 
 #define YYPOPSTACK   (yyvsp--, yyssp--, yylsp--)
 
@@ -1650,6 +1775,12 @@ yyparse ()
   yyssp = yyss;
   yyvsp = yyvs;
   yylsp = yyls;
+#if YYLTYPE_IS_TRIVIAL
+  /* Initialize the default location before parsing starts.  */
+  yylloc.first_line   = yylloc.last_line   = 1;
+  yylloc.first_column = yylloc.last_column = 0;
+#endif
+
   goto yysetstate;
 
 /*------------------------------------------------------------.
@@ -1675,14 +1806,14 @@ yyparse ()
 	   these so that the &'s don't force the real ones into
 	   memory.  */
 	YYSTYPE *yyvs1 = yyvs;
-	short *yyss1 = yyss;
+	short int *yyss1 = yyss;
 	YYLTYPE *yyls1 = yyls;
 
 	/* Each stack pointer address is followed by the size of the
 	   data in use in that stack, in bytes.  This used to be a
 	   conditional around just the two extra args, but that might
 	   be undefined if yyoverflow is a macro.  */
-	yyoverflow ("parser stack overflow",
+	yyoverflow (YY_("memory exhausted"),
 		    &yyss1, yysize * sizeof (*yyssp),
 		    &yyvs1, yysize * sizeof (*yyvsp),
 		    &yyls1, yysize * sizeof (*yylsp),
@@ -1693,21 +1824,21 @@ yyparse ()
       }
 #else /* no yyoverflow */
 # ifndef YYSTACK_RELOCATE
-      goto yyoverflowlab;
+      goto yyexhaustedlab;
 # else
       /* Extend the stack our own way.  */
       if (YYMAXDEPTH <= yystacksize)
-	goto yyoverflowlab;
+	goto yyexhaustedlab;
       yystacksize *= 2;
       if (YYMAXDEPTH < yystacksize)
 	yystacksize = YYMAXDEPTH;
 
       {
-	short *yyss1 = yyss;
+	short int *yyss1 = yyss;
 	union yyalloc *yyptr =
 	  (union yyalloc *) YYSTACK_ALLOC (YYSTACK_BYTES (yystacksize));
 	if (! yyptr)
-	  goto yyoverflowlab;
+	  goto yyexhaustedlab;
 	YYSTACK_RELOCATE (yyss);
 	YYSTACK_RELOCATE (yyvs);
 	YYSTACK_RELOCATE (yyls);
@@ -1739,18 +1870,18 @@ yyparse ()
 yybackup:
 
 /* Do appropriate processing given the current state.  */
-/* Read a lookahead token if we need one and don't already have one.  */
+/* Read a look-ahead token if we need one and don't already have one.  */
 /* yyresume: */
 
-  /* First try to decide what to do without reference to lookahead token.  */
+  /* First try to decide what to do without reference to look-ahead token.  */
 
   yyn = yypact[yystate];
   if (yyn == YYPACT_NINF)
     goto yydefault;
 
-  /* Not known => get a lookahead token if don't already have one.  */
+  /* Not known => get a look-ahead token if don't already have one.  */
 
-  /* YYCHAR is either YYEMPTY or YYEOF or a valid lookahead symbol.  */
+  /* YYCHAR is either YYEMPTY or YYEOF or a valid look-ahead symbol.  */
   if (yychar == YYEMPTY)
     {
       YYDPRINTF ((stderr, "Reading a token: "));
@@ -1765,7 +1896,7 @@ yybackup:
   else
     {
       yytoken = YYTRANSLATE (yychar);
-      YYDSYMPRINTF ("Next token is", yytoken, &yylval, &yylloc);
+      YY_SYMBOL_PRINT ("Next token is", yytoken, &yylval, &yylloc);
     }
 
   /* If the proper action on seeing token YYTOKEN is to reduce or to
@@ -1785,8 +1916,8 @@ yybackup:
   if (yyn == YYFINAL)
     YYACCEPT;
 
-  /* Shift the lookahead token.  */
-  YYDPRINTF ((stderr, "Shifting token %s, ", yytname[yytoken]));
+  /* Shift the look-ahead token.  */
+  YY_SYMBOL_PRINT ("Shifting", yytoken, &yylval, &yylloc);
 
   /* Discard the token being shifted unless it is eof.  */
   if (yychar != YYEOF)
@@ -1832,503 +1963,503 @@ yyreduce:
   yyval = yyvsp[1-yylen];
 
   /* Default location. */
-  YYLLOC_DEFAULT (yyloc, (yylsp - yylen), yylen);
+  YYLLOC_DEFAULT (yyloc, yylsp - yylen, yylen);
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
         case 11:
 #line 230 "ebnf.y"
     {GNED( IMPORTS_KEY = np->create("imports",NEDFILE_KEY);
-                       setComments(IMPORTS_KEY,yylsp[0]); )}
+                       setComments(IMPORTS_KEY,(yylsp[0])); );}
     break;
 
   case 12:
 #line 233 "ebnf.y"
     {/* GNED( setTrailingComment(IMPORTS_KEY,@3); )
-                  * comment already stored with last filename */}
+                  * comment already stored with last filename */;}
     break;
 
   case 15:
 #line 244 "ebnf.y"
-    {NEDC( do_include (yyvsp[0]); )
+    {NEDC( do_include ((yyvsp[0])); )
                  GNED( IMPORT_KEY = np->create("import",IMPORTS_KEY);
-                       np->set(IMPORT_KEY,"name",trimQuotes(yylsp[0]));
-                       setComments(IMPORT_KEY,yylsp[0]); )}
+                       np->set(IMPORT_KEY,"name",trimQuotes((yylsp[0])));
+                       setComments(IMPORT_KEY,(yylsp[0])); );}
     break;
 
   case 16:
 #line 253 "ebnf.y"
-    {NEDC( do_channel (yyvsp[-1], NULL, NULL, NULL); )}
+    {NEDC( do_channel ((yyvsp[-1]), NULL, NULL, NULL); );}
     break;
 
   case 17:
 #line 256 "ebnf.y"
-    {NEDC( do_channel (yyvsp[-2], yyvsp[-1], NULL, NULL); )}
+    {NEDC( do_channel ((yyvsp[-2]), (yyvsp[-1]), NULL, NULL); );}
     break;
 
   case 18:
 #line 258 "ebnf.y"
-    {NEDC( do_channel (yyvsp[-2], NULL, yyvsp[-1], NULL); )}
+    {NEDC( do_channel ((yyvsp[-2]), NULL, (yyvsp[-1]), NULL); );}
     break;
 
   case 19:
 #line 260 "ebnf.y"
-    {NEDC( do_channel (yyvsp[-2], NULL, NULL, yyvsp[-1]); )}
+    {NEDC( do_channel ((yyvsp[-2]), NULL, NULL, (yyvsp[-1])); );}
     break;
 
   case 20:
 #line 263 "ebnf.y"
-    {NEDC( do_channel (yyvsp[-3], yyvsp[-2], yyvsp[-1], NULL); )}
+    {NEDC( do_channel ((yyvsp[-3]), (yyvsp[-2]), (yyvsp[-1]), NULL); );}
     break;
 
   case 21:
 #line 265 "ebnf.y"
-    {NEDC( do_channel (yyvsp[-3], yyvsp[-2], NULL, yyvsp[-1]); )}
+    {NEDC( do_channel ((yyvsp[-3]), (yyvsp[-2]), NULL, (yyvsp[-1])); );}
     break;
 
   case 22:
 #line 267 "ebnf.y"
-    {NEDC( do_channel (yyvsp[-3], NULL, yyvsp[-2], yyvsp[-1]); )}
+    {NEDC( do_channel ((yyvsp[-3]), NULL, (yyvsp[-2]), (yyvsp[-1])); );}
     break;
 
   case 23:
 #line 269 "ebnf.y"
-    {NEDC( do_channel (yyvsp[-3], yyvsp[-1], yyvsp[-2], NULL); )}
+    {NEDC( do_channel ((yyvsp[-3]), (yyvsp[-1]), (yyvsp[-2]), NULL); );}
     break;
 
   case 24:
 #line 271 "ebnf.y"
-    {NEDC( do_channel (yyvsp[-3], yyvsp[-1], NULL, yyvsp[-2]); )}
+    {NEDC( do_channel ((yyvsp[-3]), (yyvsp[-1]), NULL, (yyvsp[-2])); );}
     break;
 
   case 25:
 #line 273 "ebnf.y"
-    {NEDC( do_channel (yyvsp[-3], NULL, yyvsp[-1], yyvsp[-2]); )}
+    {NEDC( do_channel ((yyvsp[-3]), NULL, (yyvsp[-1]), (yyvsp[-2])); );}
     break;
 
   case 26:
 #line 276 "ebnf.y"
-    {NEDC( do_channel (yyvsp[-4], yyvsp[-3], yyvsp[-2], yyvsp[-1]); )}
+    {NEDC( do_channel ((yyvsp[-4]), (yyvsp[-3]), (yyvsp[-2]), (yyvsp[-1])); );}
     break;
 
   case 27:
 #line 278 "ebnf.y"
-    {NEDC( do_channel (yyvsp[-4], yyvsp[-3], yyvsp[-1], yyvsp[-2]); )}
+    {NEDC( do_channel ((yyvsp[-4]), (yyvsp[-3]), (yyvsp[-1]), (yyvsp[-2])); );}
     break;
 
   case 28:
 #line 280 "ebnf.y"
-    {NEDC( do_channel (yyvsp[-4], yyvsp[-2], yyvsp[-3], yyvsp[-1]); )}
+    {NEDC( do_channel ((yyvsp[-4]), (yyvsp[-2]), (yyvsp[-3]), (yyvsp[-1])); );}
     break;
 
   case 29:
 #line 282 "ebnf.y"
-    {NEDC( do_channel (yyvsp[-4], yyvsp[-1], yyvsp[-3], yyvsp[-2]); )}
+    {NEDC( do_channel ((yyvsp[-4]), (yyvsp[-1]), (yyvsp[-3]), (yyvsp[-2])); );}
     break;
 
   case 30:
 #line 284 "ebnf.y"
-    {NEDC( do_channel (yyvsp[-4], yyvsp[-2], yyvsp[-1], yyvsp[-3]); )}
+    {NEDC( do_channel ((yyvsp[-4]), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[-3])); );}
     break;
 
   case 31:
 #line 286 "ebnf.y"
-    {NEDC( do_channel (yyvsp[-4], yyvsp[-1], yyvsp[-2], yyvsp[-3]); )}
+    {NEDC( do_channel ((yyvsp[-4]), (yyvsp[-1]), (yyvsp[-2]), (yyvsp[-3])); );}
     break;
 
   case 32:
 #line 291 "ebnf.y"
-    {NEDC( yyval = yyvsp[0]; inside_nonvoid_function=1;)
+    {NEDC( (yyval) = (yyvsp[0]); inside_nonvoid_function=1;)
                  GNED( CHANNEL_KEY = np->create("channel",NEDFILE_KEY);
-                       np->set(CHANNEL_KEY,"name",yylsp[0]);
-                       setComments(CHANNEL_KEY,yylsp[-1],yylsp[0]); )}
+                       np->set(CHANNEL_KEY,"name",(yylsp[0]));
+                       setComments(CHANNEL_KEY,(yylsp[-1]),(yylsp[0])); );}
     break;
 
   case 33:
 #line 300 "ebnf.y"
-    {NEDC( inside_nonvoid_function=0; )}
+    {NEDC( inside_nonvoid_function=0; );}
     break;
 
   case 34:
 #line 301 "ebnf.y"
-    {GNED( setTrailingComment(CHANNEL_KEY,yylsp[-2]); )}
+    {GNED( setTrailingComment(CHANNEL_KEY,(yylsp[-2])); );}
     break;
 
   case 35:
 #line 303 "ebnf.y"
-    {NEDC( inside_nonvoid_function=0; )}
+    {NEDC( inside_nonvoid_function=0; );}
     break;
 
   case 36:
 #line 304 "ebnf.y"
-    {GNED( setTrailingComment(CHANNEL_KEY,yylsp[-2]); )}
+    {GNED( setTrailingComment(CHANNEL_KEY,(yylsp[-2])); );}
     break;
 
   case 37:
 #line 310 "ebnf.y"
-    {NEDC( yyval = yyvsp[-1]; )
-                 GNED( CHANATTR_KEY = addChanAttr(CHANNEL_KEY,"error",yylsp[-1]);
-                       setComments(CHANATTR_KEY,yylsp[-2],yylsp[0]); )}
+    {NEDC( (yyval) = (yyvsp[-1]); )
+                 GNED( CHANATTR_KEY = addChanAttr(CHANNEL_KEY,"error",(yylsp[-1]));
+                       setComments(CHANATTR_KEY,(yylsp[-2]),(yylsp[0])); );}
     break;
 
   case 38:
 #line 317 "ebnf.y"
-    {NEDC( yyval = yyvsp[-1]; )
-                 GNED( CHANATTR_KEY = addChanAttr(CHANNEL_KEY,"delay",yylsp[-1]);
-                       setComments(CHANATTR_KEY,yylsp[-2],yylsp[0]); )}
+    {NEDC( (yyval) = (yyvsp[-1]); )
+                 GNED( CHANATTR_KEY = addChanAttr(CHANNEL_KEY,"delay",(yylsp[-1]));
+                       setComments(CHANATTR_KEY,(yylsp[-2]),(yylsp[0])); );}
     break;
 
   case 39:
 #line 324 "ebnf.y"
-    {NEDC( yyval = yyvsp[-1]; )
-                 GNED( CHANATTR_KEY = addChanAttr(CHANNEL_KEY,"datarate",yylsp[-1]);
-                       setComments(CHANATTR_KEY,yylsp[-2],yylsp[0]); )}
+    {NEDC( (yyval) = (yyvsp[-1]); )
+                 GNED( CHANATTR_KEY = addChanAttr(CHANNEL_KEY,"datarate",(yylsp[-1]));
+                       setComments(CHANATTR_KEY,(yylsp[-2]),(yylsp[0])); );}
     break;
 
   case 41:
 #line 339 "ebnf.y"
-    {NEDC( do_simple (yyvsp[-1]); )
+    {NEDC( do_simple ((yyvsp[-1])); )
                  GNED( MODULE_KEY = np->create("simple",NEDFILE_KEY);
-                       np->set(MODULE_KEY,"name", yylsp[-1]);
-                       setComments(MODULE_KEY,yylsp[-2],yylsp[0]); )}
+                       np->set(MODULE_KEY,"name", (yylsp[-1]));
+                       setComments(MODULE_KEY,(yylsp[-2]),(yylsp[0])); );}
     break;
 
   case 42:
 #line 348 "ebnf.y"
-    {NEDC( end_simple (yyvsp[-1]); )
-                 GNED( setTrailingComment(MODULE_KEY,yylsp[-1]); )}
+    {NEDC( end_simple ((yyvsp[-1])); )
+                 GNED( setTrailingComment(MODULE_KEY,(yylsp[-1])); );}
     break;
 
   case 43:
 #line 351 "ebnf.y"
     {NEDC( end_simple (NULL); )
-                 GNED( setTrailingComment(MODULE_KEY,yylsp[-1]); )}
+                 GNED( setTrailingComment(MODULE_KEY,(yylsp[-1])); );}
     break;
 
   case 45:
 #line 368 "ebnf.y"
-    {NEDC( do_module (yyvsp[-1]); )
+    {NEDC( do_module ((yyvsp[-1])); )
                  GNED( MODULE_KEY = np->create("module",NEDFILE_KEY);
-                       np->set(MODULE_KEY,"name", yylsp[-1]);
-                       setComments(MODULE_KEY,yylsp[-2],yylsp[0]); )}
+                       np->set(MODULE_KEY,"name", (yylsp[-1]));
+                       setComments(MODULE_KEY,(yylsp[-2]),(yylsp[0])); );}
     break;
 
   case 46:
 #line 376 "ebnf.y"
-    {NEDC( end_module (yyvsp[-1]); )
-                 GNED( setTrailingComment(MODULE_KEY,yylsp[-1]); )}
+    {NEDC( end_module ((yyvsp[-1])); )
+                 GNED( setTrailingComment(MODULE_KEY,(yylsp[-1])); );}
     break;
 
   case 47:
 #line 379 "ebnf.y"
     {NEDC( end_module (NULL); )
-                 GNED( setTrailingComment(MODULE_KEY,yylsp[-1]); )}
+                 GNED( setTrailingComment(MODULE_KEY,(yylsp[-1])); );}
     break;
 
   case 49:
 #line 386 "ebnf.y"
-    {NEDC( do_machine(jar_strdup("default")); )}
+    {NEDC( do_machine(jar_strdup("default")); );}
     break;
 
   case 60:
 #line 396 "ebnf.y"
     {GNED( MACHINES_KEY = np->create("machines",MODULE_KEY);
-                       setComments(MACHINES_KEY,yylsp[-1],yylsp[0]); )}
+                       setComments(MACHINES_KEY,(yylsp[-1]),(yylsp[0])); );}
     break;
 
   case 66:
 #line 413 "ebnf.y"
-    {NEDC( do_machine (yyvsp[0]); )
+    {NEDC( do_machine ((yyvsp[0])); )
                  GNED( MACHINE_KEY = np->create("machine",MACHINES_KEY);
-                       np->set(MACHINE_KEY,"name", yylsp[0]);
-                       setComments(MACHINE_KEY,yylsp[0],yylsp[0]); )}
+                       np->set(MACHINE_KEY,"name", (yylsp[0]));
+                       setComments(MACHINE_KEY,(yylsp[0]),(yylsp[0])); );}
     break;
 
   case 67:
 #line 421 "ebnf.y"
-    {NEDC( do_displaystr_enclosing (yyvsp[-1]); )
-                 GNED( setDisplayString(MODULE_KEY,yylsp[-1]); )}
+    {NEDC( do_displaystr_enclosing ((yyvsp[-1])); )
+                 GNED( setDisplayString(MODULE_KEY,(yylsp[-1])); );}
     break;
 
   case 68:
 #line 427 "ebnf.y"
     {NEDC( do_parameters (); )
                  GNED( PARAMS_KEY = np->create("params",MODULE_KEY);
-                       setComments(PARAMS_KEY,yylsp[-1],yylsp[0]); )}
+                       setComments(PARAMS_KEY,(yylsp[-1]),(yylsp[0])); );}
     break;
 
   case 72:
 #line 440 "ebnf.y"
-    {GNED( setComments(PARAM_KEY,yylsp[0]); )}
+    {GNED( setComments(PARAM_KEY,(yylsp[0])); );}
     break;
 
   case 73:
 #line 443 "ebnf.y"
-    {GNED( setComments(PARAM_KEY,yylsp[0]); )}
+    {GNED( setComments(PARAM_KEY,(yylsp[0])); );}
     break;
 
   case 74:
 #line 448 "ebnf.y"
-    {NEDC( do_parameter (yyvsp[0], TYPE_NUMERIC); )
-                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,yylsp[0],TYPE_NUMERIC); )}
+    {NEDC( do_parameter ((yyvsp[0]), TYPE_NUMERIC); )
+                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[0]),TYPE_NUMERIC); );}
     break;
 
   case 75:
 #line 451 "ebnf.y"
-    {NEDC( do_parameter (yyvsp[-2], TYPE_NUMERIC); )
-                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,yylsp[-2],TYPE_NUMERIC); )}
+    {NEDC( do_parameter ((yyvsp[-2]), TYPE_NUMERIC); )
+                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-2]),TYPE_NUMERIC); );}
     break;
 
   case 76:
 #line 454 "ebnf.y"
-    {NEDC( do_parameter (yyvsp[0], TYPE_CONST_NUM); )
-                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,yylsp[0],TYPE_CONST_NUM); )}
+    {NEDC( do_parameter ((yyvsp[0]), TYPE_CONST_NUM); )
+                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[0]),TYPE_CONST_NUM); );}
     break;
 
   case 77:
 #line 457 "ebnf.y"
-    {NEDC( do_parameter (yyvsp[-2], TYPE_CONST_NUM); )
-                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,yylsp[-2],TYPE_CONST_NUM); )}
+    {NEDC( do_parameter ((yyvsp[-2]), TYPE_CONST_NUM); )
+                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-2]),TYPE_CONST_NUM); );}
     break;
 
   case 78:
 #line 460 "ebnf.y"
-    {NEDC( do_parameter (yyvsp[-3], TYPE_CONST_NUM); )
-                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,yylsp[-3],TYPE_CONST_NUM); )}
+    {NEDC( do_parameter ((yyvsp[-3]), TYPE_CONST_NUM); )
+                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-3]),TYPE_CONST_NUM); );}
     break;
 
   case 79:
 #line 463 "ebnf.y"
-    {NEDC( do_parameter (yyvsp[-3], TYPE_CONST_NUM); )
-                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,yylsp[-3],TYPE_CONST_NUM); )}
+    {NEDC( do_parameter ((yyvsp[-3]), TYPE_CONST_NUM); )
+                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-3]),TYPE_CONST_NUM); );}
     break;
 
   case 80:
 #line 466 "ebnf.y"
-    {NEDC( do_parameter (yyvsp[-2], TYPE_STRING); )
-                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,yylsp[-2],TYPE_STRING); )}
+    {NEDC( do_parameter ((yyvsp[-2]), TYPE_STRING); )
+                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-2]),TYPE_STRING); );}
     break;
 
   case 81:
 #line 469 "ebnf.y"
-    {NEDC( do_parameter (yyvsp[-2], TYPE_BOOL); )
-                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,yylsp[-2],TYPE_BOOL); )}
+    {NEDC( do_parameter ((yyvsp[-2]), TYPE_BOOL); )
+                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-2]),TYPE_BOOL); );}
     break;
 
   case 82:
 #line 472 "ebnf.y"
-    {NEDC( do_parameter (yyvsp[-2], TYPE_XML); )
-                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,yylsp[-2],TYPE_XML); )}
+    {NEDC( do_parameter ((yyvsp[-2]), TYPE_XML); )
+                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-2]),TYPE_XML); );}
     break;
 
   case 83:
 #line 475 "ebnf.y"
-    {NEDC( do_parameter (yyvsp[-2], TYPE_ANYTYPE); )
-                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,yylsp[-2],TYPE_ANYTYPE); )}
+    {NEDC( do_parameter ((yyvsp[-2]), TYPE_ANYTYPE); )
+                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-2]),TYPE_ANYTYPE); );}
     break;
 
   case 84:
 #line 481 "ebnf.y"
     {NEDC( do_gates (); )
                  GNED( GATES_KEY = np->create("gates",MODULE_KEY);
-                       setComments(GATES_KEY,yylsp[-1],yylsp[0]); )}
+                       setComments(GATES_KEY,(yylsp[-1]),(yylsp[0])); );}
     break;
 
   case 94:
 #line 506 "ebnf.y"
-    {NEDC( do_gatedecl( yyvsp[-2], 1, 1 ); )
-                 GNED( GATE_KEY=addGate(GATES_KEY,  yylsp[-2], 1, 1 );
-                       setComments(GATE_KEY,yylsp[-2],yylsp[0]); )}
+    {NEDC( do_gatedecl( (yyvsp[-2]), 1, 1 ); )
+                 GNED( GATE_KEY=addGate(GATES_KEY,  (yylsp[-2]), 1, 1 );
+                       setComments(GATE_KEY,(yylsp[-2]),(yylsp[0])); );}
     break;
 
   case 95:
 #line 510 "ebnf.y"
-    {NEDC( do_gatedecl( yyvsp[0], 1, 0 ); )
-                 GNED( GATE_KEY=addGate(GATES_KEY,  yylsp[0], 1, 0 );
-                       setComments(GATE_KEY,yylsp[0]); )}
+    {NEDC( do_gatedecl( (yyvsp[0]), 1, 0 ); )
+                 GNED( GATE_KEY=addGate(GATES_KEY,  (yylsp[0]), 1, 0 );
+                       setComments(GATE_KEY,(yylsp[0])); );}
     break;
 
   case 98:
 #line 522 "ebnf.y"
-    {NEDC( do_gatedecl( yyvsp[-2], 0, 1 ); )
-                 GNED( GATE_KEY=addGate(GATES_KEY,  yylsp[-2], 0, 1 );
-                       setComments(GATE_KEY,yylsp[-2],yylsp[0]); )}
+    {NEDC( do_gatedecl( (yyvsp[-2]), 0, 1 ); )
+                 GNED( GATE_KEY=addGate(GATES_KEY,  (yylsp[-2]), 0, 1 );
+                       setComments(GATE_KEY,(yylsp[-2]),(yylsp[0])); );}
     break;
 
   case 99:
 #line 526 "ebnf.y"
-    {NEDC( do_gatedecl( yyvsp[0], 0, 0 ); )
-                 GNED( GATE_KEY=addGate(GATES_KEY,  yylsp[0], 0, 0 );
-                       setComments(GATE_KEY,yylsp[0]); )}
+    {NEDC( do_gatedecl( (yyvsp[0]), 0, 0 ); )
+                 GNED( GATE_KEY=addGate(GATES_KEY,  (yylsp[0]), 0, 0 );
+                       setComments(GATE_KEY,(yylsp[0])); );}
     break;
 
   case 100:
 #line 533 "ebnf.y"
     {NEDC( do_submodules (); )
                  GNED( SUBMODS_KEY = np->create("submods",MODULE_KEY);
-                       setComments(SUBMODS_KEY,yylsp[-1],yylsp[0]); )}
+                       setComments(SUBMODS_KEY,(yylsp[-1]),(yylsp[0])); );}
     break;
 
   case 106:
 #line 551 "ebnf.y"
-    {NEDC( do_submodule1 (yyvsp[-3], NULL, yyvsp[-1], NULL); )
-                 GNED( SUBMOD_KEY=addSubmodule(SUBMODS_KEY, yylsp[-3], NULLPOS, yylsp[-1], NULLPOS);
-                       setComments(SUBMOD_KEY,yylsp[-3],yylsp[0]);  )}
+    {NEDC( do_submodule1 ((yyvsp[-3]), NULL, (yyvsp[-1]), NULL); )
+                 GNED( SUBMOD_KEY=addSubmodule(SUBMODS_KEY, (yylsp[-3]), NULLPOS, (yylsp[-1]), NULLPOS);
+                       setComments(SUBMOD_KEY,(yylsp[-3]),(yylsp[0]));  );}
     break;
 
   case 107:
 #line 555 "ebnf.y"
-    {NEDC( do_submodule2 (yyvsp[-5], NULL, yyvsp[-3], NULL); )}
+    {NEDC( do_submodule2 ((yyvsp[-5]), NULL, (yyvsp[-3]), NULL); );}
     break;
 
   case 109:
 #line 558 "ebnf.y"
-    {NEDC( do_submodule1 (yyvsp[-4], yyvsp[-1], yyvsp[-2], NULL); )
-                 GNED( SUBMOD_KEY=addSubmodule(SUBMODS_KEY, yylsp[-4], yylsp[-1], yylsp[-2], NULLPOS);
-                       setComments(SUBMOD_KEY,yylsp[-4],yylsp[0]);  )}
+    {NEDC( do_submodule1 ((yyvsp[-4]), (yyvsp[-1]), (yyvsp[-2]), NULL); )
+                 GNED( SUBMOD_KEY=addSubmodule(SUBMODS_KEY, (yylsp[-4]), (yylsp[-1]), (yylsp[-2]), NULLPOS);
+                       setComments(SUBMOD_KEY,(yylsp[-4]),(yylsp[0]));  );}
     break;
 
   case 110:
 #line 562 "ebnf.y"
-    {NEDC( do_submodule2 (yyvsp[-6], yyvsp[-3], yyvsp[-4], NULL); )}
+    {NEDC( do_submodule2 ((yyvsp[-6]), (yyvsp[-3]), (yyvsp[-4]), NULL); );}
     break;
 
   case 112:
 #line 565 "ebnf.y"
-    {NEDC( do_submodule1 (yyvsp[-5], NULL, yyvsp[-3], yyvsp[-1]); )
-                 GNED( SUBMOD_KEY=addSubmodule(SUBMODS_KEY, yylsp[-5], NULLPOS, yylsp[-3], yylsp[-1]);
-                       setComments(SUBMOD_KEY,yylsp[-5],yylsp[0]);  )}
+    {NEDC( do_submodule1 ((yyvsp[-5]), NULL, (yyvsp[-3]), (yyvsp[-1])); )
+                 GNED( SUBMOD_KEY=addSubmodule(SUBMODS_KEY, (yylsp[-5]), NULLPOS, (yylsp[-3]), (yylsp[-1]));
+                       setComments(SUBMOD_KEY,(yylsp[-5]),(yylsp[0]));  );}
     break;
 
   case 113:
 #line 569 "ebnf.y"
-    {NEDC( do_submodule2 (yyvsp[-7], NULL, yyvsp[-5], yyvsp[-3]); )}
+    {NEDC( do_submodule2 ((yyvsp[-7]), NULL, (yyvsp[-5]), (yyvsp[-3])); );}
     break;
 
   case 115:
 #line 572 "ebnf.y"
-    {NEDC( do_submodule1 (yyvsp[-6], yyvsp[-3], yyvsp[-4], yyvsp[-1]); )
-                 GNED( SUBMOD_KEY=addSubmodule(SUBMODS_KEY, yylsp[-6], yylsp[-3], yylsp[-4], yylsp[-1]);
-                       setComments(SUBMOD_KEY,yylsp[-6],yylsp[0]);  )}
+    {NEDC( do_submodule1 ((yyvsp[-6]), (yyvsp[-3]), (yyvsp[-4]), (yyvsp[-1])); )
+                 GNED( SUBMOD_KEY=addSubmodule(SUBMODS_KEY, (yylsp[-6]), (yylsp[-3]), (yylsp[-4]), (yylsp[-1]));
+                       setComments(SUBMOD_KEY,(yylsp[-6]),(yylsp[0]));  );}
     break;
 
   case 116:
 #line 576 "ebnf.y"
-    {NEDC( do_submodule2 (yyvsp[-8], yyvsp[-5], yyvsp[-6], yyvsp[-3]); )}
+    {NEDC( do_submodule2 ((yyvsp[-8]), (yyvsp[-5]), (yyvsp[-6]), (yyvsp[-3])); );}
     break;
 
   case 118:
 #line 582 "ebnf.y"
-    {NEDC( do_readallparameters(); )}
+    {NEDC( do_readallparameters(); );}
     break;
 
   case 119:
 #line 585 "ebnf.y"
-    {NEDC( end_submodule (); )}
+    {NEDC( end_submodule (); );}
     break;
 
   case 121:
 #line 591 "ebnf.y"
-    {NEDC( do_empty_onlist(); )}
+    {NEDC( do_empty_onlist(); );}
     break;
 
   case 124:
 #line 601 "ebnf.y"
     {NEDC( do_onlist(); )
                  GNED( SUBSTMACHINES_KEY = np->create("substmachines",in_network?NETWORK_KEY:SUBMOD_KEY);
-                       setComments(SUBSTMACHINES_KEY,yylsp[-1],yylsp[0]); )}
+                       setComments(SUBSTMACHINES_KEY,(yylsp[-1]),(yylsp[0])); );}
     break;
 
   case 126:
 #line 606 "ebnf.y"
-    {NEDC( open_if(yyvsp[-1]); do_onlist(); )
+    {NEDC( open_if((yyvsp[-1])); do_onlist(); )
                  GNED( SUBSTMACHINES_KEY = np->create("substmachines",in_network?NETWORK_KEY:SUBMOD_KEY);
-                       np->set(SUBSTMACHINES_KEY,"condition",yylsp[-1]);
-                       setComments(SUBSTMACHINES_KEY,yylsp[-3],yylsp[0]); )}
+                       np->set(SUBSTMACHINES_KEY,"condition",(yylsp[-1]));
+                       setComments(SUBSTMACHINES_KEY,(yylsp[-3]),(yylsp[0])); );}
     break;
 
   case 127:
 #line 611 "ebnf.y"
-    {NEDC( close_if(); )}
+    {NEDC( close_if(); );}
     break;
 
   case 129:
 #line 617 "ebnf.y"
-    {NEDC( do_empty_onlist(); )}
+    {NEDC( do_empty_onlist(); );}
     break;
 
   case 132:
 #line 627 "ebnf.y"
-    {NEDC( do_on_mach(yyvsp[0]); )
-                 GNED( SUBSTMACHINE_KEY = addSubstmachine(SUBSTMACHINES_KEY,yylsp[0]);
-                       setComments(SUBSTMACHINE_KEY,yylsp[0]); )}
+    {NEDC( do_on_mach((yyvsp[0])); )
+                 GNED( SUBSTMACHINE_KEY = addSubstmachine(SUBSTMACHINES_KEY,(yylsp[0]));
+                       setComments(SUBSTMACHINE_KEY,(yylsp[0])); );}
     break;
 
   case 137:
 #line 644 "ebnf.y"
     {NEDC( do_substparams (); )
                  GNED( SUBSTPARAMS_KEY = np->create("substparams",in_network?NETWORK_KEY:SUBMOD_KEY);
-                       setComments(SUBSTPARAMS_KEY,yylsp[-1],yylsp[0]); )}
+                       setComments(SUBSTPARAMS_KEY,(yylsp[-1]),(yylsp[0])); );}
     break;
 
   case 139:
 #line 649 "ebnf.y"
-    {NEDC( open_if(yyvsp[-1]); do_substparams(); )
+    {NEDC( open_if((yyvsp[-1])); do_substparams(); )
                  GNED( SUBSTPARAMS_KEY = np->create("substparams",in_network?NETWORK_KEY:SUBMOD_KEY);
-                       np->set(SUBSTPARAMS_KEY,"condition",yylsp[-1]);
-                       setComments(SUBSTPARAMS_KEY,yylsp[-3],yylsp[0]); )}
+                       np->set(SUBSTPARAMS_KEY,"condition",(yylsp[-1]));
+                       setComments(SUBSTPARAMS_KEY,(yylsp[-3]),(yylsp[0])); );}
     break;
 
   case 140:
 #line 654 "ebnf.y"
-    {NEDC( close_if(); )}
+    {NEDC( close_if(); );}
     break;
 
   case 145:
 #line 669 "ebnf.y"
-    {NEDC( do_substparameter (yyvsp[-2], yyvsp[0]);)
-                 GNED( SUBSTPARAM_KEY = addSubstparam(SUBSTPARAMS_KEY,yylsp[-2],yylsp[0]);
-                       setComments(SUBSTPARAM_KEY,yylsp[-2],yylsp[0]); )}
+    {NEDC( do_substparameter ((yyvsp[-2]), (yyvsp[0]));)
+                 GNED( SUBSTPARAM_KEY = addSubstparam(SUBSTPARAMS_KEY,(yylsp[-2]),(yylsp[0]));
+                       setComments(SUBSTPARAM_KEY,(yylsp[-2]),(yylsp[0])); );}
     break;
 
   case 148:
 #line 681 "ebnf.y"
     {NEDC( do_gatesizes (); )
                  GNED( GATESIZES_KEY = np->create("gatesizes",SUBMOD_KEY);
-                       setComments(GATESIZES_KEY,yylsp[-1],yylsp[0]); )}
+                       setComments(GATESIZES_KEY,(yylsp[-1]),(yylsp[0])); );}
     break;
 
   case 150:
 #line 686 "ebnf.y"
-    {NEDC( open_if(yyvsp[-1]); do_gatesizes (); )
+    {NEDC( open_if((yyvsp[-1])); do_gatesizes (); )
                  GNED( GATESIZES_KEY = np->create("gatesizes",SUBMOD_KEY);
-                       np->set(GATESIZES_KEY,"condition",yylsp[-1]);
-                       setComments(GATESIZES_KEY,yylsp[-3],yylsp[0]); )}
+                       np->set(GATESIZES_KEY,"condition",(yylsp[-1]));
+                       setComments(GATESIZES_KEY,(yylsp[-3]),(yylsp[0])); );}
     break;
 
   case 151:
 #line 691 "ebnf.y"
-    {NEDC( close_if(); )}
+    {NEDC( close_if(); );}
     break;
 
   case 156:
 #line 706 "ebnf.y"
-    {NEDC( do_gatesize (yyvsp[-1], yyvsp[0]); )
-                 GNED( GATESIZE_KEY = addGateSize(GATESIZES_KEY,yylsp[-1],yylsp[0]);
-                       setComments(GATESIZE_KEY,yylsp[-1],yylsp[0]); )}
+    {NEDC( do_gatesize ((yyvsp[-1]), (yyvsp[0])); )
+                 GNED( GATESIZE_KEY = addGateSize(GATESIZES_KEY,(yylsp[-1]),(yylsp[0]));
+                       setComments(GATESIZE_KEY,(yylsp[-1]),(yylsp[0])); );}
     break;
 
   case 157:
 #line 710 "ebnf.y"
-    {NEDC( do_gatesize (yyvsp[0], NULL); )
-                 GNED( GATESIZE_KEY = addGateSize(GATESIZES_KEY,yylsp[0],NULLPOS);
-                       setComments(GATESIZE_KEY,yylsp[0]); )}
+    {NEDC( do_gatesize ((yyvsp[0]), NULL); )
+                 GNED( GATESIZE_KEY = addGateSize(GATESIZES_KEY,(yylsp[0]),NULLPOS);
+                       setComments(GATESIZE_KEY,(yylsp[0])); );}
     break;
 
   case 158:
 #line 717 "ebnf.y"
-    {NEDC( do_displaystr_submod (yyvsp[-1]); )
-                 GNED( setDisplayString(SUBMOD_KEY,yylsp[-1]); )}
+    {NEDC( do_displaystr_submod ((yyvsp[-1])); )
+                 GNED( setDisplayString(SUBMOD_KEY,(yylsp[-1])); );}
     break;
 
   case 160:
@@ -2336,7 +2467,7 @@ yyreduce:
     {NEDC( set_checkconns(0); do_connections(); )
                  GNED( CONNS_KEY = np->create("conns",MODULE_KEY);
                        np->set(CONNS_KEY,"nocheck","1");
-                       setComments(CONNS_KEY,yylsp[-2],yylsp[0]); )}
+                       setComments(CONNS_KEY,(yylsp[-2]),(yylsp[0])); );}
     break;
 
   case 162:
@@ -2344,637 +2475,638 @@ yyreduce:
     {NEDC( set_checkconns(1); do_connections(); )
                  GNED( CONNS_KEY = np->create("conns",MODULE_KEY);
                        np->set(CONNS_KEY,"nocheck","0");
-                       setComments(CONNS_KEY,yylsp[-1],yylsp[0]); )}
+                       setComments(CONNS_KEY,(yylsp[-1]),(yylsp[0])); );}
     break;
 
   case 170:
 #line 754 "ebnf.y"
     {NEDC( do_for (); )
                  GNED( FORLOOP_KEY = np->create("forloop",CONNS_KEY);
-                       in_loop=1; setComments(FORLOOP_KEY,yylsp[0]); )}
+                       in_loop=1; setComments(FORLOOP_KEY,(yylsp[0])); );}
     break;
 
   case 171:
 #line 758 "ebnf.y"
     {NEDC( end_for (); )
-                 GNED( in_loop=0; setTrailingComment(FORLOOP_KEY,yylsp[0]); )}
+                 GNED( in_loop=0; setTrailingComment(FORLOOP_KEY,(yylsp[0])); );}
     break;
 
   case 174:
 #line 769 "ebnf.y"
-    {NEDC( do_index (yyvsp[-4], yyvsp[-2], yyvsp[0]); )
-                 GNED( LOOPVAR_KEY=addLoopVar(FORLOOP_KEY,yylsp[-4],yylsp[-2],yylsp[0]);
-                       setComments(LOOPVAR_KEY,yylsp[-4],yylsp[0]); )}
+    {NEDC( do_index ((yyvsp[-4]), (yyvsp[-2]), (yyvsp[0])); )
+                 GNED( LOOPVAR_KEY=addLoopVar(FORLOOP_KEY,(yylsp[-4]),(yylsp[-2]),(yylsp[0]));
+                       setComments(LOOPVAR_KEY,(yylsp[-4]),(yylsp[0])); );}
     break;
 
   case 175:
 #line 776 "ebnf.y"
-    {NEDC( do_condition(yyvsp[0]); )
-                 GNED( np->set(CONN_KEY,"condition",yylsp[0]); )}
+    {NEDC( do_condition((yyvsp[0])); )
+                 GNED( np->set(CONN_KEY,"condition",(yylsp[0])); );}
     break;
 
   case 176:
 #line 779 "ebnf.y"
-    {NEDC( do_condition(NULL); )}
+    {NEDC( do_condition(NULL); );}
     break;
 
   case 177:
 #line 784 "ebnf.y"
-    {NEDC( yyval = yyvsp[0]; )
-                 GNED( setDisplayString(CONN_KEY,yylsp[0]); )}
+    {NEDC( (yyval) = (yyvsp[0]); )
+                 GNED( setDisplayString(CONN_KEY,(yylsp[0])); );}
     break;
 
   case 178:
 #line 787 "ebnf.y"
-    {NEDC( yyval = NULL; )}
+    {NEDC( (yyval) = NULL; );}
     break;
 
   case 181:
 #line 797 "ebnf.y"
-    {NEDC( end_connection (NULL, 'R', yyvsp[0]); )
-                 GNED( np->set(CONN_KEY,"arrowdir-l2r",1L); setComments(CONN_KEY,yylsp[-4],yylsp[0]); )}
+    {NEDC( end_connection (NULL, 'R', (yyvsp[0])); )
+                 GNED( np->set(CONN_KEY,"arrowdir-l2r",1L); setComments(CONN_KEY,(yylsp[-4]),(yylsp[0])); );}
     break;
 
   case 182:
 #line 800 "ebnf.y"
-    {NEDC( end_connection (yyvsp[-4], 'R', yyvsp[0]); )
-                 GNED( np->set(CONN_KEY,"arrowdir-l2r",1L); setComments(CONN_KEY,yylsp[-6],yylsp[0]); )}
+    {NEDC( end_connection ((yyvsp[-4]), 'R', (yyvsp[0])); )
+                 GNED( np->set(CONN_KEY,"arrowdir-l2r",1L); setComments(CONN_KEY,(yylsp[-6]),(yylsp[0])); );}
     break;
 
   case 183:
 #line 803 "ebnf.y"
-    {NEDC( end_connection (NULL, 'L', yyvsp[0]); )
+    {NEDC( end_connection (NULL, 'L', (yyvsp[0])); )
                  GNED( swapConnection(CONN_KEY);
-                       np->set(CONN_KEY,"arrowdir-l2r",0L); setComments(CONN_KEY,yylsp[-4],yylsp[0]); )}
+                       np->set(CONN_KEY,"arrowdir-l2r",0L); setComments(CONN_KEY,(yylsp[-4]),(yylsp[0])); );}
     break;
 
   case 184:
 #line 807 "ebnf.y"
-    {NEDC( end_connection (yyvsp[-4], 'L', yyvsp[0]); )
+    {NEDC( end_connection ((yyvsp[-4]), 'L', (yyvsp[0])); )
                  GNED( swapConnection(CONN_KEY);
-                 np->set(CONN_KEY,"arrowdir-l2r",0L); setComments(CONN_KEY,yylsp[-6],yylsp[0]); )}
+                 np->set(CONN_KEY,"arrowdir-l2r",0L); setComments(CONN_KEY,(yylsp[-6]),(yylsp[0])); );}
     break;
 
   case 187:
 #line 819 "ebnf.y"
-    {NEDC( do_mod_L (yyvsp[-1], yyvsp[0]); )
+    {NEDC( do_mod_L ((yyvsp[-1]), (yyvsp[0])); )
                  GNED( CONN_KEY = np->create("conn",in_loop?FORLOOP_KEY:CONNS_KEY);
-                       np->set(CONN_KEY, "src-ownerkey", findSubmoduleKey(yylsp[-1]));
-                       np->set(CONN_KEY, "src-mod-index", trimBrackets(yylsp[0])); )}
+                       np->set(CONN_KEY, "src-ownerkey", findSubmoduleKey((yylsp[-1])));
+                       np->set(CONN_KEY, "src-mod-index", trimBrackets((yylsp[0]))); );}
     break;
 
   case 188:
 #line 824 "ebnf.y"
-    {NEDC( do_mod_L (yyvsp[0], NULL); )
+    {NEDC( do_mod_L ((yyvsp[0]), NULL); )
                  GNED( CONN_KEY = np->create("conn",in_loop?FORLOOP_KEY:CONNS_KEY);
-                       np->set(CONN_KEY, "src-ownerkey", findSubmoduleKey(yylsp[0])); )}
+                       np->set(CONN_KEY, "src-ownerkey", findSubmoduleKey((yylsp[0]))); );}
     break;
 
   case 189:
 #line 831 "ebnf.y"
-    {NEDC( do_gate_L (yyvsp[-1], yyvsp[0]); )
-                 GNED( np->set(CONN_KEY, "srcgate", yylsp[-1]);
-                       np->set(CONN_KEY, "src-gate-index", trimBrackets(yylsp[0])); )}
+    {NEDC( do_gate_L ((yyvsp[-1]), (yyvsp[0])); )
+                 GNED( np->set(CONN_KEY, "srcgate", (yylsp[-1]));
+                       np->set(CONN_KEY, "src-gate-index", trimBrackets((yylsp[0]))); );}
     break;
 
   case 190:
 #line 835 "ebnf.y"
-    {NEDC( do_gate_L (yyvsp[0], NULL); )
-                 GNED( np->set(CONN_KEY, "srcgate", yylsp[0]); )}
+    {NEDC( do_gate_L ((yyvsp[0]), NULL); )
+                 GNED( np->set(CONN_KEY, "srcgate", (yylsp[0])); );}
     break;
 
   case 191:
 #line 838 "ebnf.y"
-    {NEDC( do_gate_L (yyvsp[-1], NULL); )
-                 GNED( np->set(CONN_KEY, "srcgate", yylsp[-1]);
-                       np->set(CONN_KEY, "src-gate-plusplus", "1"); )}
+    {NEDC( do_gate_L ((yyvsp[-1]), NULL); )
+                 GNED( np->set(CONN_KEY, "srcgate", (yylsp[-1]));
+                       np->set(CONN_KEY, "src-gate-plusplus", "1"); );}
     break;
 
   case 192:
 #line 845 "ebnf.y"
-    {NEDC( do_mod_L (NULL, NULL); do_gate_L (yyvsp[-1], yyvsp[0]); )
+    {NEDC( do_mod_L (NULL, NULL); do_gate_L ((yyvsp[-1]), (yyvsp[0])); )
                  GNED( CONN_KEY = np->create("conn",in_loop?FORLOOP_KEY:CONNS_KEY);
                        np->set(CONN_KEY, "src-ownerkey", MODULE_KEY);
-                       np->set(CONN_KEY, "srcgate", yylsp[-1]);
-                       np->set(CONN_KEY, "src-gate-index", trimBrackets(yylsp[0])); )}
+                       np->set(CONN_KEY, "srcgate", (yylsp[-1]));
+                       np->set(CONN_KEY, "src-gate-index", trimBrackets((yylsp[0]))); );}
     break;
 
   case 193:
 #line 851 "ebnf.y"
-    {NEDC( do_mod_L (NULL, NULL); do_gate_L (yyvsp[0], NULL); )
+    {NEDC( do_mod_L (NULL, NULL); do_gate_L ((yyvsp[0]), NULL); )
                  GNED( CONN_KEY = np->create("conn",in_loop?FORLOOP_KEY:CONNS_KEY);
                        np->set(CONN_KEY, "src-ownerkey", MODULE_KEY);
-                       np->set(CONN_KEY, "srcgate", yylsp[0]); )}
+                       np->set(CONN_KEY, "srcgate", (yylsp[0])); );}
     break;
 
   case 194:
 #line 856 "ebnf.y"
-    {NEDC( do_mod_L (NULL, NULL); do_gate_L (yyvsp[-1], NULL); )
+    {NEDC( do_mod_L (NULL, NULL); do_gate_L ((yyvsp[-1]), NULL); )
                  GNED( CONN_KEY = np->create("conn",in_loop?FORLOOP_KEY:CONNS_KEY);
                        np->set(CONN_KEY, "src-ownerkey", MODULE_KEY);
-                       np->set(CONN_KEY, "srcgate", yylsp[-1]);
-                       np->set(CONN_KEY, "src-gate-plusplus", "1");  )}
+                       np->set(CONN_KEY, "srcgate", (yylsp[-1]));
+                       np->set(CONN_KEY, "src-gate-plusplus", "1");  );}
     break;
 
   case 197:
 #line 870 "ebnf.y"
-    {NEDC( do_mod_R (yyvsp[-1], yyvsp[0]); )
-                 GNED( np->set(CONN_KEY, "dest-ownerkey", findSubmoduleKey(yylsp[-1]));
-                       np->set(CONN_KEY, "dest-mod-index", trimBrackets(yylsp[0])); )}
+    {NEDC( do_mod_R ((yyvsp[-1]), (yyvsp[0])); )
+                 GNED( np->set(CONN_KEY, "dest-ownerkey", findSubmoduleKey((yylsp[-1])));
+                       np->set(CONN_KEY, "dest-mod-index", trimBrackets((yylsp[0]))); );}
     break;
 
   case 198:
 #line 874 "ebnf.y"
-    {NEDC( do_mod_R (yyvsp[0], NULL); )
-                 GNED( np->set(CONN_KEY, "dest-ownerkey", findSubmoduleKey(yylsp[0])); )}
+    {NEDC( do_mod_R ((yyvsp[0]), NULL); )
+                 GNED( np->set(CONN_KEY, "dest-ownerkey", findSubmoduleKey((yylsp[0]))); );}
     break;
 
   case 199:
 #line 880 "ebnf.y"
-    {NEDC( do_gate_R (yyvsp[-1], yyvsp[0]); )
-                 GNED( np->set(CONN_KEY, "destgate", yylsp[-1]);
-                       np->set(CONN_KEY, "dest-gate-index", trimBrackets(yylsp[0])); )}
+    {NEDC( do_gate_R ((yyvsp[-1]), (yyvsp[0])); )
+                 GNED( np->set(CONN_KEY, "destgate", (yylsp[-1]));
+                       np->set(CONN_KEY, "dest-gate-index", trimBrackets((yylsp[0]))); );}
     break;
 
   case 200:
 #line 884 "ebnf.y"
-    {NEDC( do_gate_R (yyvsp[0], NULL); )
-                 GNED( np->set(CONN_KEY, "destgate", yylsp[0]); )}
+    {NEDC( do_gate_R ((yyvsp[0]), NULL); )
+                 GNED( np->set(CONN_KEY, "destgate", (yylsp[0])); );}
     break;
 
   case 201:
 #line 887 "ebnf.y"
-    {NEDC( do_gate_R (yyvsp[-1], NULL); )
-                 GNED( np->set(CONN_KEY, "destgate", yylsp[-1]);
-                       np->set(CONN_KEY, "dest-gate-plusplus", "1"); )}
+    {NEDC( do_gate_R ((yyvsp[-1]), NULL); )
+                 GNED( np->set(CONN_KEY, "destgate", (yylsp[-1]));
+                       np->set(CONN_KEY, "dest-gate-plusplus", "1"); );}
     break;
 
   case 202:
 #line 894 "ebnf.y"
-    {NEDC( do_mod_R (NULL, NULL); do_gate_R (yyvsp[-1], yyvsp[0]); )
+    {NEDC( do_mod_R (NULL, NULL); do_gate_R ((yyvsp[-1]), (yyvsp[0])); )
                  GNED( np->set(CONN_KEY, "dest-ownerkey", MODULE_KEY);
-                       np->set(CONN_KEY, "destgate", yylsp[-1]);
-                       np->set(CONN_KEY, "dest-gate-index", trimBrackets(yylsp[0])); )}
+                       np->set(CONN_KEY, "destgate", (yylsp[-1]));
+                       np->set(CONN_KEY, "dest-gate-index", trimBrackets((yylsp[0]))); );}
     break;
 
   case 203:
 #line 899 "ebnf.y"
-    {NEDC( do_mod_R (NULL, NULL); do_gate_R (yyvsp[0], NULL); )
+    {NEDC( do_mod_R (NULL, NULL); do_gate_R ((yyvsp[0]), NULL); )
                  GNED( np->set(CONN_KEY, "dest-ownerkey", MODULE_KEY);
-                       np->set(CONN_KEY, "destgate", yylsp[0]); )}
+                       np->set(CONN_KEY, "destgate", (yylsp[0])); );}
     break;
 
   case 204:
 #line 903 "ebnf.y"
-    {NEDC( do_mod_R (NULL, NULL); do_gate_R (yyvsp[-1], NULL); )
+    {NEDC( do_mod_R (NULL, NULL); do_gate_R ((yyvsp[-1]), NULL); )
                  GNED( np->set(CONN_KEY, "dest-ownerkey", MODULE_KEY);
-                       np->set(CONN_KEY, "destgate", yylsp[-1]);
-                       np->set(CONN_KEY, "dest-gate-plusplus", "1"); )}
+                       np->set(CONN_KEY, "destgate", (yylsp[-1]));
+                       np->set(CONN_KEY, "dest-gate-plusplus", "1"); );}
     break;
 
   case 205:
 #line 912 "ebnf.y"
-    {NEDC( yyval = do_channeldescr( NULL, NULL, NULL, NULL); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, NULL, NULL, NULL); );}
     break;
 
   case 206:
 #line 914 "ebnf.y"
-    {NEDC( yyval = do_channeldescr(yyvsp[0], NULL,NULL,NULL); )}
+    {NEDC( (yyval) = do_channeldescr((yyvsp[0]), NULL,NULL,NULL); );}
     break;
 
   case 207:
 #line 916 "ebnf.y"
-    {NEDC( yyval = do_channeldescr( NULL, yyvsp[0], NULL, NULL); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[0]), NULL, NULL); );}
     break;
 
   case 208:
 #line 918 "ebnf.y"
-    {NEDC( yyval = do_channeldescr( NULL, NULL, yyvsp[0], NULL); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, NULL, (yyvsp[0]), NULL); );}
     break;
 
   case 209:
 #line 920 "ebnf.y"
-    {NEDC( yyval = do_channeldescr( NULL, NULL, NULL, yyvsp[0]); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, NULL, NULL, (yyvsp[0])); );}
     break;
 
   case 210:
 #line 923 "ebnf.y"
-    {NEDC( yyval = do_channeldescr( NULL, yyvsp[-1], yyvsp[0], NULL); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[-1]), (yyvsp[0]), NULL); );}
     break;
 
   case 211:
 #line 925 "ebnf.y"
-    {NEDC( yyval = do_channeldescr( NULL, yyvsp[-1], NULL, yyvsp[0]); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[-1]), NULL, (yyvsp[0])); );}
     break;
 
   case 212:
 #line 927 "ebnf.y"
-    {NEDC( yyval = do_channeldescr( NULL, NULL, yyvsp[-1], yyvsp[0]); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, NULL, (yyvsp[-1]), (yyvsp[0])); );}
     break;
 
   case 213:
 #line 929 "ebnf.y"
-    {NEDC( yyval = do_channeldescr( NULL, yyvsp[0], yyvsp[-1], NULL); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[0]), (yyvsp[-1]), NULL); );}
     break;
 
   case 214:
 #line 931 "ebnf.y"
-    {NEDC( yyval = do_channeldescr( NULL, yyvsp[0], NULL, yyvsp[-1]); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[0]), NULL, (yyvsp[-1])); );}
     break;
 
   case 215:
 #line 933 "ebnf.y"
-    {NEDC( yyval = do_channeldescr( NULL, NULL, yyvsp[0], yyvsp[-1]); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, NULL, (yyvsp[0]), (yyvsp[-1])); );}
     break;
 
   case 216:
 #line 936 "ebnf.y"
-    {NEDC( yyval = do_channeldescr( NULL, yyvsp[-2], yyvsp[-1], yyvsp[0]); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0])); );}
     break;
 
   case 217:
 #line 938 "ebnf.y"
-    {NEDC( yyval = do_channeldescr( NULL, yyvsp[-2], yyvsp[0], yyvsp[-1]); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[-2]), (yyvsp[0]), (yyvsp[-1])); );}
     break;
 
   case 218:
 #line 940 "ebnf.y"
-    {NEDC( yyval = do_channeldescr( NULL, yyvsp[-1], yyvsp[-2], yyvsp[0]); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[-1]), (yyvsp[-2]), (yyvsp[0])); );}
     break;
 
   case 219:
 #line 942 "ebnf.y"
-    {NEDC( yyval = do_channeldescr( NULL, yyvsp[0], yyvsp[-2], yyvsp[-1]); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[0]), (yyvsp[-2]), (yyvsp[-1])); );}
     break;
 
   case 220:
 #line 944 "ebnf.y"
-    {NEDC( yyval = do_channeldescr( NULL, yyvsp[-1], yyvsp[0], yyvsp[-2]); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[-1]), (yyvsp[0]), (yyvsp[-2])); );}
     break;
 
   case 221:
 #line 946 "ebnf.y"
-    {NEDC( yyval = do_channeldescr( NULL, yyvsp[0], yyvsp[-1], yyvsp[-2]); )}
+    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[0]), (yyvsp[-1]), (yyvsp[-2])); );}
     break;
 
   case 222:
 #line 951 "ebnf.y"
-    {NEDC( yyval = yyvsp[0]; )
-                 GNED( CONNATTR_KEY=addConnAttr(CONN_KEY,"channel",yylsp[0]); )}
+    {NEDC( (yyval) = (yyvsp[0]); )
+                 GNED( CONNATTR_KEY=addConnAttr(CONN_KEY,"channel",(yylsp[0])); );}
     break;
 
   case 223:
 #line 957 "ebnf.y"
-    {NEDC( yyval = yyvsp[0]; )
-                 GNED( CONNATTR_KEY=addConnAttr(CONN_KEY,"delay",yylsp[0]); )}
+    {NEDC( (yyval) = (yyvsp[0]); )
+                 GNED( CONNATTR_KEY=addConnAttr(CONN_KEY,"delay",(yylsp[0])); );}
     break;
 
   case 224:
 #line 963 "ebnf.y"
-    {NEDC( yyval = yyvsp[0]; )
-                 GNED( CONNATTR_KEY=addConnAttr(CONN_KEY,"error",yylsp[0]); )}
+    {NEDC( (yyval) = (yyvsp[0]); )
+                 GNED( CONNATTR_KEY=addConnAttr(CONN_KEY,"error",(yylsp[0])); );}
     break;
 
   case 225:
 #line 969 "ebnf.y"
-    {NEDC( yyval = yyvsp[0]; )
-                 GNED( CONNATTR_KEY=addConnAttr(CONN_KEY,"datarate",yylsp[0]); )}
+    {NEDC( (yyval) = (yyvsp[0]); )
+                 GNED( CONNATTR_KEY=addConnAttr(CONN_KEY,"datarate",(yylsp[0])); );}
     break;
 
   case 226:
 #line 975 "ebnf.y"
-    {NEDC( do_system (yyvsp[-3]); )
-                 GNED( NETWORK_KEY = addNetwork(NEDFILE_KEY,yylsp[-3],yylsp[-1],NULLPOS);
-                       setComments(NETWORK_KEY,yylsp[-4],yylsp[0]); in_network=1;)}
+    {NEDC( do_system ((yyvsp[-3])); )
+                 GNED( NETWORK_KEY = addNetwork(NEDFILE_KEY,(yylsp[-3]),(yylsp[-1]),NULLPOS);
+                       setComments(NETWORK_KEY,(yylsp[-4]),(yylsp[0])); in_network=1;);}
     break;
 
   case 227:
 #line 979 "ebnf.y"
-    {NEDC( do_systemmodule (yyvsp[-5], yyvsp[-3], NULL); )}
+    {NEDC( do_systemmodule ((yyvsp[-5]), (yyvsp[-3]), NULL); );}
     break;
 
   case 228:
 #line 981 "ebnf.y"
-    {NEDC( do_readallparameters(); )}
+    {NEDC( do_readallparameters(); );}
     break;
 
   case 229:
 #line 983 "ebnf.y"
-    {NEDC( end_system (); )}
+    {NEDC( end_system (); );}
     break;
 
   case 230:
 #line 985 "ebnf.y"
-    {NEDC( do_system (yyvsp[-5]); )}
+    {NEDC( do_system ((yyvsp[-5])); );}
     break;
 
   case 231:
 #line 987 "ebnf.y"
-    {NEDC( do_systemmodule (yyvsp[-7], yyvsp[-5], yyvsp[-3]); )
-                 GNED( NETWORK_KEY = addNetwork(NEDFILE_KEY,yylsp[-7],yylsp[-5],yylsp[-3]);
-                       setComments(NETWORK_KEY,yylsp[-8],yylsp[-2]); )}
+    {NEDC( do_systemmodule ((yyvsp[-7]), (yyvsp[-5]), (yyvsp[-3])); )
+                 GNED( NETWORK_KEY = addNetwork(NEDFILE_KEY,(yylsp[-7]),(yylsp[-5]),(yylsp[-3]));
+                       setComments(NETWORK_KEY,(yylsp[-8]),(yylsp[-2])); );}
     break;
 
   case 232:
 #line 991 "ebnf.y"
-    {NEDC( do_readallparameters(); )}
+    {NEDC( do_readallparameters(); );}
     break;
 
   case 233:
 #line 993 "ebnf.y"
-    {NEDC( end_system (); )}
+    {NEDC( end_system (); );}
     break;
 
   case 234:
 #line 998 "ebnf.y"
-    {GNED( setTrailingComment(NETWORK_KEY,yylsp[-1]); in_network=0; )}
+    {GNED( setTrailingComment(NETWORK_KEY,(yylsp[-1])); in_network=0; );}
     break;
 
   case 235:
 #line 1003 "ebnf.y"
-    {NEDC( yyval = yyvsp[-1]; )}
+    {NEDC( (yyval) = (yyvsp[-1]); );}
     break;
 
   case 238:
 #line 1013 "ebnf.y"
-    {NEDC( yyval = do_inputvalue(yyvsp[-3], yyvsp[-1]); )}
+    {NEDC( (yyval) = do_inputvalue((yyvsp[-3]), (yyvsp[-1])); );}
     break;
 
   case 239:
 #line 1015 "ebnf.y"
-    {NEDC( yyval = do_inputvalue(yyvsp[-1], NULL); )}
+    {NEDC( (yyval) = do_inputvalue((yyvsp[-1]), NULL); );}
     break;
 
   case 240:
 #line 1017 "ebnf.y"
-    {NEDC( yyval = do_inputvalue(NULL, NULL); )}
+    {NEDC( (yyval) = do_inputvalue(NULL, NULL); );}
     break;
 
   case 241:
 #line 1019 "ebnf.y"
-    {NEDC( yyval = do_inputvalue(NULL, NULL); )}
+    {NEDC( (yyval) = do_inputvalue(NULL, NULL); );}
     break;
 
   case 242:
 #line 1025 "ebnf.y"
-    {NEDC( yyval = end_expr( yyvsp[0] ); )}
+    {NEDC( (yyval) = end_expr( (yyvsp[0]) ); );}
     break;
 
   case 243:
 #line 1030 "ebnf.y"
-    {NEDC( yyval = yyvsp[0]; )}
+    {NEDC( (yyval) = (yyvsp[0]); );}
     break;
 
   case 244:
 #line 1032 "ebnf.y"
-    {NEDC( yyval = yyvsp[-1]; )}
+    {NEDC( (yyval) = (yyvsp[-1]); );}
     break;
 
   case 245:
 #line 1035 "ebnf.y"
-    {NEDC( yyval = do_op( 2, '+', yyvsp[-2],yyvsp[0],NULL); )}
+    {NEDC( (yyval) = do_op( 2, '+', (yyvsp[-2]),(yyvsp[0]),NULL); );}
     break;
 
   case 246:
 #line 1037 "ebnf.y"
-    {NEDC( yyval = do_op( 2, '-', yyvsp[-2],yyvsp[0],NULL); )}
+    {NEDC( (yyval) = do_op( 2, '-', (yyvsp[-2]),(yyvsp[0]),NULL); );}
     break;
 
   case 247:
 #line 1039 "ebnf.y"
-    {NEDC( yyval = do_op( 2, '*', yyvsp[-2],yyvsp[0],NULL); )}
+    {NEDC( (yyval) = do_op( 2, '*', (yyvsp[-2]),(yyvsp[0]),NULL); );}
     break;
 
   case 248:
 #line 1041 "ebnf.y"
-    {NEDC( yyval = do_op( 2, '/', yyvsp[-2],yyvsp[0],NULL); )}
+    {NEDC( (yyval) = do_op( 2, '/', (yyvsp[-2]),(yyvsp[0]),NULL); );}
     break;
 
   case 249:
 #line 1043 "ebnf.y"
-    {NEDC( yyval = do_op( 2, '%', yyvsp[-2],yyvsp[0],NULL); )}
+    {NEDC( (yyval) = do_op( 2, '%', (yyvsp[-2]),(yyvsp[0]),NULL); );}
     break;
 
   case 250:
 #line 1045 "ebnf.y"
-    {NEDC( yyval = do_op( 2, '^', yyvsp[-2],yyvsp[0],NULL); )}
+    {NEDC( (yyval) = do_op( 2, '^', (yyvsp[-2]),(yyvsp[0]),NULL); );}
     break;
 
   case 251:
 #line 1049 "ebnf.y"
-    {NEDC( yyval = do_addminus(yyvsp[0]); )}
+    {NEDC( (yyval) = do_addminus((yyvsp[0])); );}
     break;
 
   case 252:
 #line 1052 "ebnf.y"
-    {NEDC( yyval = do_op( 2, '=', yyvsp[-2],yyvsp[0],NULL); )}
+    {NEDC( (yyval) = do_op( 2, '=', (yyvsp[-2]),(yyvsp[0]),NULL); );}
     break;
 
   case 253:
 #line 1054 "ebnf.y"
-    {NEDC( yyval = do_op( 2, '!', yyvsp[-2],yyvsp[0],NULL); )}
+    {NEDC( (yyval) = do_op( 2, '!', (yyvsp[-2]),(yyvsp[0]),NULL); );}
     break;
 
   case 254:
 #line 1056 "ebnf.y"
-    {NEDC( yyval = do_op( 2, '>', yyvsp[-2],yyvsp[0],NULL); )}
+    {NEDC( (yyval) = do_op( 2, '>', (yyvsp[-2]),(yyvsp[0]),NULL); );}
     break;
 
   case 255:
 #line 1058 "ebnf.y"
-    {NEDC( yyval = do_op( 2, '}', yyvsp[-2],yyvsp[0],NULL); )}
+    {NEDC( (yyval) = do_op( 2, '}', (yyvsp[-2]),(yyvsp[0]),NULL); );}
     break;
 
   case 256:
 #line 1060 "ebnf.y"
-    {NEDC( yyval = do_op( 2, '<', yyvsp[-2],yyvsp[0],NULL); )}
+    {NEDC( (yyval) = do_op( 2, '<', (yyvsp[-2]),(yyvsp[0]),NULL); );}
     break;
 
   case 257:
 #line 1062 "ebnf.y"
-    {NEDC( yyval = do_op( 2, '{', yyvsp[-2],yyvsp[0],NULL); )}
+    {NEDC( (yyval) = do_op( 2, '{', (yyvsp[-2]),(yyvsp[0]),NULL); );}
     break;
 
   case 258:
 #line 1065 "ebnf.y"
-    {NEDC( yyval = do_func(2,jar_strdup("bool_and"), yyvsp[-2],yyvsp[0],NULL,NULL); )}
+    {NEDC( (yyval) = do_func(2,jar_strdup("bool_and"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); );}
     break;
 
   case 259:
 #line 1067 "ebnf.y"
-    {NEDC( yyval = do_func(2,jar_strdup("bool_or"), yyvsp[-2],yyvsp[0],NULL,NULL); )}
+    {NEDC( (yyval) = do_func(2,jar_strdup("bool_or"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); );}
     break;
 
   case 260:
 #line 1069 "ebnf.y"
-    {NEDC( yyval = do_func(2,jar_strdup("bool_xor"), yyvsp[-2],yyvsp[0],NULL,NULL); )}
+    {NEDC( (yyval) = do_func(2,jar_strdup("bool_xor"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); );}
     break;
 
   case 261:
 #line 1072 "ebnf.y"
-    {NEDC( yyval = do_func(1,jar_strdup("bool_not"), yyvsp[0],NULL,NULL,NULL); )}
+    {NEDC( (yyval) = do_func(1,jar_strdup("bool_not"), (yyvsp[0]),NULL,NULL,NULL); );}
     break;
 
   case 262:
 #line 1075 "ebnf.y"
-    {NEDC( yyval = do_func(2,jar_strdup("bin_and"), yyvsp[-2],yyvsp[0],NULL,NULL); )}
+    {NEDC( (yyval) = do_func(2,jar_strdup("bin_and"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); );}
     break;
 
   case 263:
 #line 1077 "ebnf.y"
-    {NEDC( yyval = do_func(2,jar_strdup("bin_or"), yyvsp[-2],yyvsp[0],NULL,NULL); )}
+    {NEDC( (yyval) = do_func(2,jar_strdup("bin_or"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); );}
     break;
 
   case 264:
 #line 1079 "ebnf.y"
-    {NEDC( yyval = do_func(2,jar_strdup("bin_xor"), yyvsp[-2],yyvsp[0],NULL,NULL); )}
+    {NEDC( (yyval) = do_func(2,jar_strdup("bin_xor"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); );}
     break;
 
   case 265:
 #line 1082 "ebnf.y"
-    {NEDC( yyval = do_func(1,jar_strdup("bin_compl"), yyvsp[0],NULL,NULL,NULL); )}
+    {NEDC( (yyval) = do_func(1,jar_strdup("bin_compl"), (yyvsp[0]),NULL,NULL,NULL); );}
     break;
 
   case 266:
 #line 1084 "ebnf.y"
-    {NEDC( yyval = do_func(2,jar_strdup("shift_left"), yyvsp[-2],yyvsp[0],NULL,NULL); )}
+    {NEDC( (yyval) = do_func(2,jar_strdup("shift_left"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); );}
     break;
 
   case 267:
 #line 1086 "ebnf.y"
-    {NEDC( yyval = do_func(2,jar_strdup("shift_right"), yyvsp[-2],yyvsp[0],NULL,NULL); )}
+    {NEDC( (yyval) = do_func(2,jar_strdup("shift_right"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); );}
     break;
 
   case 268:
 #line 1088 "ebnf.y"
-    {NEDC( yyval = do_op( 3, '?', yyvsp[-4],yyvsp[-2],yyvsp[0]); )}
+    {NEDC( (yyval) = do_op( 3, '?', (yyvsp[-4]),(yyvsp[-2]),(yyvsp[0])); );}
     break;
 
   case 269:
 #line 1090 "ebnf.y"
-    {NEDC( yyval = do_func(0,yyvsp[-2], NULL,NULL,NULL,NULL); )}
+    {NEDC( (yyval) = do_func(0,(yyvsp[-2]), NULL,NULL,NULL,NULL); );}
     break;
 
   case 270:
 #line 1092 "ebnf.y"
-    {NEDC( yyval = do_func(1,yyvsp[-3], yyvsp[-1],NULL,NULL,NULL); )}
+    {NEDC( (yyval) = do_func(1,(yyvsp[-3]), (yyvsp[-1]),NULL,NULL,NULL); );}
     break;
 
   case 271:
 #line 1094 "ebnf.y"
-    {NEDC( yyval = do_func(2,yyvsp[-5], yyvsp[-3],yyvsp[-1],NULL,NULL); )}
+    {NEDC( (yyval) = do_func(2,(yyvsp[-5]), (yyvsp[-3]),(yyvsp[-1]),NULL,NULL); );}
     break;
 
   case 272:
 #line 1096 "ebnf.y"
-    {NEDC( yyval = do_func(3,yyvsp[-7], yyvsp[-5],yyvsp[-3],yyvsp[-1],NULL); )}
+    {NEDC( (yyval) = do_func(3,(yyvsp[-7]), (yyvsp[-5]),(yyvsp[-3]),(yyvsp[-1]),NULL); );}
     break;
 
   case 273:
 #line 1098 "ebnf.y"
-    {NEDC( yyval = do_func(3,yyvsp[-9], yyvsp[-7],yyvsp[-5],yyvsp[-3],yyvsp[-1]); )}
+    {NEDC( (yyval) = do_func(3,(yyvsp[-9]), (yyvsp[-7]),(yyvsp[-5]),(yyvsp[-3]),(yyvsp[-1])); );}
     break;
 
   case 279:
 #line 1111 "ebnf.y"
-    {NEDC( yyval = do_parname (0,0,yyvsp[0],0,1); )}
+    {NEDC( (yyval) = do_parname (0,0,(yyvsp[0]),0,1); );}
     break;
 
   case 280:
 #line 1113 "ebnf.y"
-    {NEDC( yyval = do_parname (0,0,yyvsp[0],0,0); )}
+    {NEDC( (yyval) = do_parname (0,0,(yyvsp[0]),0,0); );}
     break;
 
   case 281:
 #line 1115 "ebnf.y"
-    {NEDC( yyval = do_parname (0,0,yyvsp[0],1,1); )}
+    {NEDC( (yyval) = do_parname (0,0,(yyvsp[0]),1,1); );}
     break;
 
   case 282:
 #line 1117 "ebnf.y"
-    {NEDC( yyval = do_parname (0,0,yyvsp[0],1,0); )}
+    {NEDC( (yyval) = do_parname (0,0,(yyvsp[0]),1,0); );}
     break;
 
   case 283:
 #line 1119 "ebnf.y"
-    {NEDC( yyval = do_parname (0,0,yyvsp[0],1,0); )}
+    {NEDC( (yyval) = do_parname (0,0,(yyvsp[0]),1,0); );}
     break;
 
   case 284:
 #line 1122 "ebnf.y"
-    {NEDC( yyval = do_parname (yyvsp[-2],0,yyvsp[0],0,1); )}
+    {NEDC( (yyval) = do_parname ((yyvsp[-2]),0,(yyvsp[0]),0,1); );}
     break;
 
   case 285:
 #line 1124 "ebnf.y"
-    {NEDC( yyval = do_parname (yyvsp[-2],0,yyvsp[0],0,0); )}
+    {NEDC( (yyval) = do_parname ((yyvsp[-2]),0,(yyvsp[0]),0,0); );}
     break;
 
   case 286:
 #line 1127 "ebnf.y"
-    {NEDC( yyval = do_parname (yyvsp[-3],yyvsp[-2],yyvsp[0],0,1); )}
+    {NEDC( (yyval) = do_parname ((yyvsp[-3]),(yyvsp[-2]),(yyvsp[0]),0,1); );}
     break;
 
   case 287:
 #line 1129 "ebnf.y"
-    {NEDC( yyval = do_parname (yyvsp[-3],yyvsp[-2],yyvsp[0],0,0); )}
+    {NEDC( (yyval) = do_parname ((yyvsp[-3]),(yyvsp[-2]),(yyvsp[0]),0,0); );}
     break;
 
   case 288:
 #line 1134 "ebnf.y"
-    {NEDC( yyval = make_literal_expr(TYPE_STRING,yyvsp[0]); )}
+    {NEDC( (yyval) = make_literal_expr(TYPE_STRING,(yyvsp[0])); );}
     break;
 
   case 289:
 #line 1139 "ebnf.y"
-    {NEDC( yyval = make_literal_expr(TYPE_BOOL,jar_strdup("true")); )}
+    {NEDC( (yyval) = make_literal_expr(TYPE_BOOL,jar_strdup("true")); );}
     break;
 
   case 290:
 #line 1141 "ebnf.y"
-    {NEDC( yyval = make_literal_expr(TYPE_BOOL,jar_strdup("false")); )}
+    {NEDC( (yyval) = make_literal_expr(TYPE_BOOL,jar_strdup("false")); );}
     break;
 
   case 291:
 #line 1146 "ebnf.y"
-    {NEDC( yyval = make_literal_expr(TYPE_NUMERIC,yyvsp[0]); )}
+    {NEDC( (yyval) = make_literal_expr(TYPE_NUMERIC,(yyvsp[0])); );}
     break;
 
   case 292:
 #line 1151 "ebnf.y"
-    {NEDC( yyval = make_literal_expr(TYPE_NUMERIC,jar_strdup("(long)sub_i")); )}
+    {NEDC( (yyval) = make_literal_expr(TYPE_NUMERIC,jar_strdup("(long)sub_i")); );}
     break;
 
   case 293:
 #line 1153 "ebnf.y"
-    {NEDC( yyval = do_sizeof (yyvsp[-1]); )}
+    {NEDC( (yyval) = do_sizeof ((yyvsp[-1])); );}
     break;
 
   case 297:
 #line 1164 "ebnf.y"
-    {NEDC( yyval = do_timeconstant(yyvsp[-2],yyvsp[-1],yyvsp[0]); )}
+    {NEDC( (yyval) = do_timeconstant((yyvsp[-2]),(yyvsp[-1]),(yyvsp[0])); );}
     break;
 
   case 298:
 #line 1166 "ebnf.y"
-    {NEDC( yyval = do_timeconstant(yyvsp[-2],yyvsp[-1],yyvsp[0]); )}
+    {NEDC( (yyval) = do_timeconstant((yyvsp[-2]),(yyvsp[-1]),(yyvsp[0])); );}
     break;
 
   case 299:
 #line 1168 "ebnf.y"
-    {NEDC( yyval = do_timeconstant(yyvsp[-1],yyvsp[0],NULL); )}
+    {NEDC( (yyval) = do_timeconstant((yyvsp[-1]),(yyvsp[0]),NULL); );}
     break;
 
   case 300:
 #line 1170 "ebnf.y"
-    {NEDC( yyval = do_timeconstant(yyvsp[-1],yyvsp[0],NULL); )}
+    {NEDC( (yyval) = do_timeconstant((yyvsp[-1]),(yyvsp[0]),NULL); );}
     break;
 
 
+      default: break;
     }
 
-/* Line 991 of yacc.c.  */
-#line 2977 "ebnf.tab.c"
+/* Line 1126 of yacc.c.  */
+#line 3110 "ebnf.tab.c"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -3013,105 +3145,155 @@ yyerrlab:
 
       if (YYPACT_NINF < yyn && yyn < YYLAST)
 	{
-	  YYSIZE_T yysize = 0;
 	  int yytype = YYTRANSLATE (yychar);
-	  char *yymsg;
-	  int yyx, yycount;
+	  YYSIZE_T yysize0 = yytnamerr (0, yytname[yytype]);
+	  YYSIZE_T yysize = yysize0;
+	  YYSIZE_T yysize1;
+	  int yysize_overflow = 0;
+	  char *yymsg = 0;
+#	  define YYERROR_VERBOSE_ARGS_MAXIMUM 5
+	  char const *yyarg[YYERROR_VERBOSE_ARGS_MAXIMUM];
+	  int yyx;
 
-	  yycount = 0;
+#if 0
+	  /* This is so xgettext sees the translatable formats that are
+	     constructed on the fly.  */
+	  YY_("syntax error, unexpected %s");
+	  YY_("syntax error, unexpected %s, expecting %s");
+	  YY_("syntax error, unexpected %s, expecting %s or %s");
+	  YY_("syntax error, unexpected %s, expecting %s or %s or %s");
+	  YY_("syntax error, unexpected %s, expecting %s or %s or %s or %s");
+#endif
+	  char *yyfmt;
+	  char const *yyf;
+	  static char const yyunexpected[] = "syntax error, unexpected %s";
+	  static char const yyexpecting[] = ", expecting %s";
+	  static char const yyor[] = " or %s";
+	  char yyformat[sizeof yyunexpected
+			+ sizeof yyexpecting - 1
+			+ ((YYERROR_VERBOSE_ARGS_MAXIMUM - 2)
+			   * (sizeof yyor - 1))];
+	  char const *yyprefix = yyexpecting;
+
 	  /* Start YYX at -YYN if negative to avoid negative indexes in
 	     YYCHECK.  */
-	  for (yyx = yyn < 0 ? -yyn : 0;
-	       yyx < (int) (sizeof (yytname) / sizeof (char *)); yyx++)
-	    if (yycheck[yyx + yyn] == yyx && yyx != YYTERROR)
-	      yysize += yystrlen (yytname[yyx]) + 15, yycount++;
-	  yysize += yystrlen ("syntax error, unexpected ") + 1;
-	  yysize += yystrlen (yytname[yytype]);
-	  yymsg = (char *) YYSTACK_ALLOC (yysize);
-	  if (yymsg != 0)
-	    {
-	      char *yyp = yystpcpy (yymsg, "syntax error, unexpected ");
-	      yyp = yystpcpy (yyp, yytname[yytype]);
+	  int yyxbegin = yyn < 0 ? -yyn : 0;
 
-	      if (yycount < 5)
+	  /* Stay within bounds of both yycheck and yytname.  */
+	  int yychecklim = YYLAST - yyn;
+	  int yyxend = yychecklim < YYNTOKENS ? yychecklim : YYNTOKENS;
+	  int yycount = 1;
+
+	  yyarg[0] = yytname[yytype];
+	  yyfmt = yystpcpy (yyformat, yyunexpected);
+
+	  for (yyx = yyxbegin; yyx < yyxend; ++yyx)
+	    if (yycheck[yyx + yyn] == yyx && yyx != YYTERROR)
+	      {
+		if (yycount == YYERROR_VERBOSE_ARGS_MAXIMUM)
+		  {
+		    yycount = 1;
+		    yysize = yysize0;
+		    yyformat[sizeof yyunexpected - 1] = '\0';
+		    break;
+		  }
+		yyarg[yycount++] = yytname[yyx];
+		yysize1 = yysize + yytnamerr (0, yytname[yyx]);
+		yysize_overflow |= yysize1 < yysize;
+		yysize = yysize1;
+		yyfmt = yystpcpy (yyfmt, yyprefix);
+		yyprefix = yyor;
+	      }
+
+	  yyf = YY_(yyformat);
+	  yysize1 = yysize + yystrlen (yyf);
+	  yysize_overflow |= yysize1 < yysize;
+	  yysize = yysize1;
+
+	  if (!yysize_overflow && yysize <= YYSTACK_ALLOC_MAXIMUM)
+	    yymsg = (char *) YYSTACK_ALLOC (yysize);
+	  if (yymsg)
+	    {
+	      /* Avoid sprintf, as that infringes on the user's name space.
+		 Don't have undefined behavior even if the translation
+		 produced a string with the wrong number of "%s"s.  */
+	      char *yyp = yymsg;
+	      int yyi = 0;
+	      while ((*yyp = *yyf))
 		{
-		  yycount = 0;
-		  for (yyx = yyn < 0 ? -yyn : 0;
-		       yyx < (int) (sizeof (yytname) / sizeof (char *));
-		       yyx++)
-		    if (yycheck[yyx + yyn] == yyx && yyx != YYTERROR)
-		      {
-			const char *yyq = ! yycount ? ", expecting " : " or ";
-			yyp = yystpcpy (yyp, yyq);
-			yyp = yystpcpy (yyp, yytname[yyx]);
-			yycount++;
-		      }
+		  if (*yyp == '%' && yyf[1] == 's' && yyi < yycount)
+		    {
+		      yyp += yytnamerr (yyp, yyarg[yyi++]);
+		      yyf += 2;
+		    }
+		  else
+		    {
+		      yyp++;
+		      yyf++;
+		    }
 		}
 	      yyerror (yymsg);
 	      YYSTACK_FREE (yymsg);
 	    }
 	  else
-	    yyerror ("syntax error; also virtual memory exhausted");
+	    {
+	      yyerror (YY_("syntax error"));
+	      goto yyexhaustedlab;
+	    }
 	}
       else
 #endif /* YYERROR_VERBOSE */
-	yyerror ("syntax error");
+	yyerror (YY_("syntax error"));
     }
 
-  yylerrsp = yylsp;
+  yyerror_range[0] = yylloc;
 
   if (yyerrstatus == 3)
     {
-      /* If just tried and failed to reuse lookahead token after an
+      /* If just tried and failed to reuse look-ahead token after an
 	 error, discard it.  */
 
-      /* Return failure if at end of input.  */
-      if (yychar == YYEOF)
+      if (yychar <= YYEOF)
         {
-	  /* Pop the error token.  */
-          YYPOPSTACK;
-	  /* Pop the rest of the stack.  */
-	  while (yyss < yyssp)
-	    {
-	      YYDSYMPRINTF ("Error: popping", yystos[*yyssp], yyvsp, yylsp);
-	      yydestruct (yystos[*yyssp], yyvsp, yylsp);
-	      YYPOPSTACK;
-	    }
-	  YYABORT;
+	  /* Return failure if at end of input.  */
+	  if (yychar == YYEOF)
+	    YYABORT;
         }
-
-      YYDSYMPRINTF ("Error: discarding", yytoken, &yylval, &yylloc);
-      yydestruct (yytoken, &yylval, &yylloc);
-      yychar = YYEMPTY;
-      *++yylerrsp = yylloc;
+      else
+	{
+	  yydestruct ("Error: discarding", yytoken, &yylval, &yylloc);
+	  yychar = YYEMPTY;
+	}
     }
 
-  /* Else will try to reuse lookahead token after shifting the error
+  /* Else will try to reuse look-ahead token after shifting the error
      token.  */
-  goto yyerrlab2;
+  goto yyerrlab1;
 
 
-/*----------------------------------------------------.
-| yyerrlab1 -- error raised explicitly by an action.  |
-`----------------------------------------------------*/
+/*---------------------------------------------------.
+| yyerrorlab -- error raised explicitly by YYERROR.  |
+`---------------------------------------------------*/
+yyerrorlab:
+
+  /* Pacify compilers like GCC when the user code never invokes
+     YYERROR and the label yyerrorlab therefore never appears in user
+     code.  */
+  if (0)
+     goto yyerrorlab;
+
+  yyerror_range[0] = yylsp[1-yylen];
+  yylsp -= yylen;
+  yyvsp -= yylen;
+  yyssp -= yylen;
+  yystate = *yyssp;
+  goto yyerrlab1;
+
+
+/*-------------------------------------------------------------.
+| yyerrlab1 -- common code for both syntax error and YYERROR.  |
+`-------------------------------------------------------------*/
 yyerrlab1:
-
-  /* Suppress GCC warning that yyerrlab1 is unused when no action
-     invokes YYERROR.  */
-#if defined (__GNUC_MINOR__) && 2093 <= (__GNUC__ * 1000 + __GNUC_MINOR__) \
-    && !defined __cplusplus
-  __attribute__ ((__unused__))
-#endif
-
-  yylerrsp = yylsp;
-  *++yylerrsp = yyloc;
-  goto yyerrlab2;
-
-
-/*---------------------------------------------------------------.
-| yyerrlab2 -- pop states until the error token can be shifted.  |
-`---------------------------------------------------------------*/
-yyerrlab2:
   yyerrstatus = 3;	/* Each real token shifted decrements this.  */
 
   for (;;)
@@ -3132,22 +3314,26 @@ yyerrlab2:
       if (yyssp == yyss)
 	YYABORT;
 
-      YYDSYMPRINTF ("Error: popping", yystos[*yyssp], yyvsp, yylsp);
-      yydestruct (yystos[yystate], yyvsp, yylsp);
-      yyvsp--;
-      yystate = *--yyssp;
-      yylsp--;
+      yyerror_range[0] = *yylsp;
+      yydestruct ("Error: popping", yystos[yystate], yyvsp, yylsp);
+      YYPOPSTACK;
+      yystate = *yyssp;
       YY_STACK_PRINT (yyss, yyssp);
     }
 
   if (yyn == YYFINAL)
     YYACCEPT;
 
-  YYDPRINTF ((stderr, "Shifting error token, "));
-
   *++yyvsp = yylval;
-  YYLLOC_DEFAULT (yyloc, yylsp, (yylerrsp - yylsp));
+
+  yyerror_range[1] = yylloc;
+  /* Using YYLLOC is tempting, but would change the location of
+     the look-ahead.  YYLOC is available though. */
+  YYLLOC_DEFAULT (yyloc, yyerror_range - 1, 2);
   *++yylsp = yyloc;
+
+  /* Shift the error token. */
+  YY_SYMBOL_PRINT ("Shifting", yystos[yyn], yyvsp, yylsp);
 
   yystate = yyn;
   goto yynewstate;
@@ -3168,16 +3354,25 @@ yyabortlab:
   goto yyreturn;
 
 #ifndef yyoverflow
-/*----------------------------------------------.
-| yyoverflowlab -- parser overflow comes here.  |
-`----------------------------------------------*/
-yyoverflowlab:
-  yyerror ("parser stack overflow");
+/*-------------------------------------------------.
+| yyexhaustedlab -- memory exhaustion comes here.  |
+`-------------------------------------------------*/
+yyexhaustedlab:
+  yyerror (YY_("memory exhausted"));
   yyresult = 2;
   /* Fall through.  */
 #endif
 
 yyreturn:
+  if (yychar != YYEOF && yychar != YYEMPTY)
+     yydestruct ("Cleanup: discarding lookahead",
+		 yytoken, &yylval, &yylloc);
+  while (yyssp != yyss)
+    {
+      yydestruct ("Cleanup: popping",
+		  yystos[*yyssp], yyvsp, yylsp);
+      YYPOPSTACK;
+    }
 #ifndef yyoverflow
   if (yyss != yyssa)
     YYSTACK_FREE (yyss);
