@@ -20,5 +20,7 @@ Require-Bundle: org.eclipse.ui,
  org.omnetpp.scave.engine,
  org.omnetpp.ned2.model,
  org.eclipse.jface.text,
- org.omnetpp.resources
+ org.omnetpp.resources,
+ org.omnetpp.scave2,
+ org.omnetpp.common
 Eclipse-LazyStart: true
