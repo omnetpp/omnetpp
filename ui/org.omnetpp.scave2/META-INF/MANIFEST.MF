@@ -14,6 +14,7 @@ Require-Bundle: org.eclipse.ui,
  org.omnetpp.scave.engine,
  org.omnetpp.common,
  org.eclipse.jface.text,
- org.eclipse.ui.workbench.texteditor
+ org.eclipse.ui.workbench.texteditor,
+ org.eclipse.ui.forms
 Eclipse-LazyStart: true
 Bundle-Vendor: OpenSim Ltd.
