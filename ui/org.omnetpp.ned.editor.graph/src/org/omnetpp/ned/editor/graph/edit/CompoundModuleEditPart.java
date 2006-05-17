@@ -31,12 +31,10 @@ import org.omnetpp.ned.editor.graph.figures.properties.DisplayBackgroundSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayShapeSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayTitleSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayTooltipSupport;
-import org.omnetpp.ned.editor.graph.figures.properties.DisplayBackgroundSupport.ImageArrangement;
 import org.omnetpp.ned2.model.CompoundModuleDisplayString;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.DisplayString;
 import org.omnetpp.ned2.model.INedModule;
-import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.DisplayString.Prop;
 
 public class CompoundModuleEditPart extends ModuleEditPart {
@@ -174,28 +172,18 @@ public class CompoundModuleEditPart extends ModuleEditPart {
             
             // decode the image arrangement
             String imageArrangementStr = dps.getAsStringDef(DisplayString.Prop.MODULE_IMAGEARRANGEMENT);
-            imageArrangementStr = imageArrangementStr != null ? imageArrangementStr : "";
-            ImageArrangement imageArrangement;  
-            if (imageArrangementStr.toLowerCase().startsWith("t"))
-            	imageArrangement = ImageArrangement.TILE;
-            else if (imageArrangementStr.toLowerCase().startsWith("s"))
-            	imageArrangement = ImageArrangement.SCRETCH;
-            else if (imageArrangementStr.toLowerCase().startsWith("c"))
-            	imageArrangement = ImageArrangement.CENTER;
-            else
-            	imageArrangement = ImageArrangement.FIX;
             
             // set the background
             ((DisplayBackgroundSupport)getNedFigure()).setBackgorund(
             		img, 
-            		imageArrangement, 
+            		imageArrangementStr, 
             		ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.MODULE_FILLCOL)), 
             		ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.MODULE_BORDERCOL)), 
             		dps.getAsIntDef(DisplayString.Prop.MODULE_BORDERWIDTH, -1));
             
             // grid support
             ((DisplayBackgroundSupport)getNedFigure()).setGrid(
-            		dps.getAsIntDef(DisplayString.Prop.MODULE_TICKDISTANCE, -1), 
+            		dps.getGridTickDistance(), 
             		dps.getAsIntDef(DisplayString.Prop.MODULE_TICKNUMBER, -1), 
             		ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.MODULE_GRIDCOL)));
             

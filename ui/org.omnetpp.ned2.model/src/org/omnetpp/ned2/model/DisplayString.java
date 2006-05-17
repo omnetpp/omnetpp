@@ -519,6 +519,10 @@ public class DisplayString {
 		return (int)(unit * getScale());
 	}
 	
+    /**
+     * Converts a unit based location to pixel based
+     * @return The location property (in pixel)
+     */
     public Point getLocation() {
         Float x = getAsFloat(XPosProp);
         Float y = getAsFloat(YPosProp);
@@ -529,6 +533,9 @@ public class DisplayString {
         return new Point (unit2pixel(x), unit2pixel(y));
     }
 
+    /**
+     * @param location Where to place the element (in pixels)
+     */
     public void setLocation(Point location) {
     	// disable the notification so we will not send two notify for the two coordinate change
     	notifyEnabled = false;
@@ -547,6 +554,9 @@ public class DisplayString {
     	fireDisplayStringChanged(XPosProp);
     }
 
+    /**
+     * @return The size of element (in pixels)
+     */
     public Dimension getSize() {
         int width = unit2pixel(getAsFloatDef(WidthProp, -1.0f));
         width = width > 0 ? width : -1; 
@@ -556,6 +566,11 @@ public class DisplayString {
         return new Dimension(width, height);
     }
 
+    /**
+     * Converts the size given in pixels to unit based sorage
+     * Sets the size of the element (in pixels)
+     * @param size
+     */
     public void setSize(Dimension size) {
     	// disable the notification so we will not send two notify for the two coordinate change
     	notifyEnabled = false;

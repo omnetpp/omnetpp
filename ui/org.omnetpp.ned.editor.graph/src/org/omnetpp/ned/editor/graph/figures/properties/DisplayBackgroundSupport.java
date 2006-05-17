@@ -5,8 +5,6 @@ import org.eclipse.swt.graphics.Image;
 
 public interface DisplayBackgroundSupport {
 
-	enum ImageArrangement {FIX, SCRETCH, TILE, CENTER }
-	
 	/**
 	 * Adjusts compound module background parameteres
 	 * @param img Background image
@@ -15,7 +13,7 @@ public interface DisplayBackgroundSupport {
 	 * @param borderColor
 	 * @param borderWidth
 	 */
-	public void setBackgorund(Image img, ImageArrangement arrange, 
+	public void setBackgorund(Image img, String arrange, 
 			Color backgroundColor, Color borderColor, int borderWidth);
 	
 	/**

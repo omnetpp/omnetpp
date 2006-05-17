@@ -32,7 +32,7 @@ public class CompoundModuleFigure extends ModuleFigure
     private ScrollPane scrollpane;
     private LayeredPane layeredPane;
     private Image backgroundImage;
-    private ImageArrangement backgroundImageArr = ImageArrangement.FIX;
+    private String backgroundImageArr = "fix";
     private int gridTickDistance;
     private int gridNoOfMinorTics;
     private Color gridColor;
@@ -69,23 +69,17 @@ public class CompoundModuleFigure extends ModuleFigure
 	        graphics.clipRect(viewportRect);
 	        if (backgroundImage != null) {
 	            Rectangle imageRect = new Rectangle(backgroundImage.getBounds());
-	            switch (backgroundImageArr) {
-	            case FIX:
-	            	graphics.drawImage(backgroundImage, viewportRect.getLocation());
-	            	break;
-	            case CENTER:
-	            	Point centerPoint = viewportRect.getCenter().translate(-imageRect.width/2, -imageRect.height/2);
-	            	graphics.drawImage(backgroundImage, centerPoint);
-	            	break;
-				case SCRETCH:
-	            	graphics.drawImage(backgroundImage, imageRect, viewportRect);
-					break;
-				case TILE:
+	            if (backgroundImageArr.toLowerCase().startsWith("t"))
 					for(int y = viewportRect.y; y<viewportRect.bottom(); y += imageRect.height)
 						for(int x = viewportRect.x; x<viewportRect.right(); x += imageRect.width)
 							graphics.drawImage(backgroundImage, x, y);
-					break;
-				}
+	            else if (backgroundImageArr.toLowerCase().startsWith("s"))
+	            	graphics.drawImage(backgroundImage, imageRect, viewportRect);
+	            else if (backgroundImageArr.toLowerCase().startsWith("c")) {
+	            	Point centerPoint = viewportRect.getCenter().translate(-imageRect.width/2, -imageRect.height/2);
+	            	graphics.drawImage(backgroundImage, centerPoint);
+	            } else
+	            	graphics.drawImage(backgroundImage, viewportRect.getLocation());
 	        }
 
 	        // =============================================================================
@@ -234,7 +228,7 @@ public class CompoundModuleFigure extends ModuleFigure
         return layeredPane.getLayer(layerId);
     }
 
-	public void setBackgorund(Image img, ImageArrangement arrange, Color backgroundColor, Color borderColor, int borderWidth) {
+	public void setBackgorund(Image img, String arrange, Color backgroundColor, Color borderColor, int borderWidth) {
 		moduleBackgroundColor = (backgroundColor==null) ? ColorFactory.defaultBackground : backgroundColor;
 		moduleBorderColor = (borderColor==null) ? ColorFactory.defaultBorder : borderColor;
 		
@@ -245,7 +239,7 @@ public class CompoundModuleFigure extends ModuleFigure
 		getCompoundModuleBorder().setBorderWidth(borderWidth < 0 ? DEFAULT_BORDER_WIDTH : borderWidth);
 		// background image
 		backgroundImage = img;
-		backgroundImageArr = arrange;
+		backgroundImageArr = arrange != null ? arrange : "";
 		invalidate();
 	}
 
