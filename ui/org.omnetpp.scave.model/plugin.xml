@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+ <copyright>
+ </copyright>
+
+ $Id$
+-->
+
+<plugin
+    name = "%pluginName"
+    id = "org.omnetpp.scave.model"
+    version = "1.0.0"
+    provider-name = "%providerName"
+    class = "org.omnetpp.scave.model.provider.ScaveEditPlugin$Implementation">
+
+  <requires>
+    <import plugin="org.eclipse.core.runtime" />
+    <import plugin="org.eclipse.core.resources" export="true"/>
+    <import plugin="org.eclipse.emf.ecore" export="true"/>
+    <import plugin="org.junit" export="true"/>
+    <import plugin="org.eclipse.emf.edit" export="true"/>
+    <import plugin="org.eclipse.emf.ecore.xmi" export="true"/>
+    <import plugin="org.eclipse.emf.edit.ui" export="true"/>
+    <import plugin="org.eclipse.ui.ide" export="true"/>
+  </requires>
+
+  <runtime>
+    <library name=".">
+      <export name="*"/>
+    </library>
+  </runtime>
+
+  <extension point="org.eclipse.emf.edit.itemProviderAdapterFactories">
+    <factory 
+       uri = "null" 
+       class = "org.omnetpp.scave2.scavemodel.provider.ScaveModelItemProviderAdapterFactory"
+       supportedTypes = 
+         "org.eclipse.emf.edit.provider.IEditingDomainItemProvider
+          org.eclipse.emf.edit.provider.IStructuredItemContentProvider
+          org.eclipse.emf.edit.provider.ITreeItemContentProvider
+          org.eclipse.emf.edit.provider.IItemLabelProvider
+          org.eclipse.emf.edit.provider.IItemPropertySource" />
+  </extension>
+  
+  <extension point="org.eclipse.emf.ecore.generated_package">
+    <package
+       uri = "null"
+       class = "org.omnetpp.scave2.scavemodel.ScaveModelPackage"
+       genModel = "model/scave.genmodel" /> 
+  </extension>
+
+
+  <extension
+    point = "org.eclipse.ui.newWizards">
+    <category
+      id = "org.eclipse.emf.ecore.Wizard.category.ID"
+      name="%_UI_Wizard_category">
+    </category>
+    <wizard
+      id = "org.omnetpp.scave2.scavemodel.presentation.ScaveModelModelWizardID"
+      name = "%_UI_ScaveModelModelWizard_label"
+      class = "org.omnetpp.scave2.scavemodel.presentation.ScaveModelModelWizard"
+      category = "org.eclipse.emf.ecore.Wizard.category.ID"
+      icon = "icons/full/obj16/ScaveModelModelFile.gif">
+      <description>%_UI_ScaveModelModelWizard_description</description>
+      <selection class = "org.eclipse.core.resources.IResource" />
+    </wizard>
+  </extension>
+
+  <extension point = "org.eclipse.ui.editors">
+    <editor
+        id = "org.omnetpp.scave2.scavemodel.presentation.ScaveModelEditorID"
+        name = "%_UI_ScaveModelEditor_label"
+        icon = "icons/full/obj16/ScaveModelModelFile.gif"
+        extensions = "scavemodel"
+        class = "org.omnetpp.scave2.scavemodel.presentation.ScaveModelEditor" 
+        contributorClass="org.omnetpp.scave2.scavemodel.presentation.ScaveModelActionBarContributor" >
+    </editor>
+  </extension>    
+</plugin>
