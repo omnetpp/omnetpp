@@ -4,6 +4,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -26,6 +27,23 @@ public class OverviewPage extends ScrolledForm {
 		super(parent, style | SWT.V_SCROLL);
 		initialize();
 	}
+	
+	public Tree getInputFilesTree() {
+		InputFilesPanel panel = (InputFilesPanel)inputFilesSection.getClient();
+		return panel.getTree();
+	}
+	
+	public Tree getDatasetsTree() {
+		DatasetsPanel panel = (DatasetsPanel)datasetsSection.getClient();
+		return panel.getTree();
+	}
+	
+	public Tree getChartSheetsTree() {
+		ChartSheetsPanel panel = (ChartSheetsPanel)chartSheetsSection.getClient();
+		return panel.getTree();
+	}
+	
+	
 
 	private void initialize() {
 		setExpandHorizontal(true);

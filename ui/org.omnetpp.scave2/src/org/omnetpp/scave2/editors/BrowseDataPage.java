@@ -43,7 +43,9 @@ public class BrowseDataPage extends ScrolledForm {
 	
 	private void createTabFolder() {
 		ctabfolder = new CTabFolder(getBody(), SWT.TOP | SWT.FLAT);
-		ctabfolder.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.FILL_HORIZONTAL));
+		ctabfolder.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL |
+											  GridData.GRAB_VERTICAL |
+											  GridData.FILL_BOTH));
 		createPages();
 		ctabfolder.setSelection(0);
 	}

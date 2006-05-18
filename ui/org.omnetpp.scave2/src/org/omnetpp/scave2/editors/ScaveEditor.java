@@ -24,6 +24,11 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.part.MultiPageEditorPart;
 
 public class ScaveEditor extends MultiPageEditorPart {
+
+	private OverviewPage overviewPage;
+	private BrowseDataPage browseDataPage;
+	
+	
 	
 	/**
 	 * The constructor.
@@ -47,16 +52,16 @@ public class ScaveEditor extends MultiPageEditorPart {
 	}
 	
 	private void createOverviewPage() {
-		OverviewPage page = new OverviewPage(getContainer(), SWT.NONE);
-		setFormTitle(page, "Overview");
-		int index = addPage(page);
+		overviewPage = new OverviewPage(getContainer(), SWT.NONE);
+		setFormTitle(overviewPage, "Overview");
+		int index = addPage(overviewPage);
 		setPageText(index, "Overview");
 	}
 	
 	private void createBrowseDataPage() {
-		BrowseDataPage page = new BrowseDataPage(getContainer(), SWT.NONE);
-		setFormTitle(page, "Browse data");
-		int index = addPage(page);
+		browseDataPage = new BrowseDataPage(getContainer(), SWT.NONE);
+		setFormTitle(browseDataPage, "Browse data");
+		int index = addPage(browseDataPage);
 		setPageText(index, "Browse data");
 	}
 	
