@@ -2,30 +2,18 @@ package org.omnetpp.scave2.editors;
 
 import java.util.ArrayList;
 
-import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.swt.widgets.TabItem;
-import org.eclipse.ui.forms.events.ExpansionAdapter;
-import org.eclipse.ui.forms.events.ExpansionEvent;
-import org.eclipse.ui.forms.widgets.ColumnLayout;
-import org.eclipse.ui.forms.widgets.ExpandableComposite;
-import org.eclipse.ui.forms.widgets.FormText;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.eclipse.ui.forms.widgets.Section;
-import org.eclipse.ui.part.MultiPageEditorPart;
 
-public class ScaveEditor extends MultiPageEditorPart {
+public class ScaveEditor extends AbstractEMFModelEditor {
 
 	private OverviewPage overviewPage;
 	private BrowseDataPage browseDataPage;
@@ -38,17 +26,41 @@ public class ScaveEditor extends MultiPageEditorPart {
 	public ScaveEditor() {
 	}
 	
-	protected void createPages() {
-        setPartName("wirelessLan.scave");
+	@Override
+	protected void doCreatePages() {
+		FillLayout layout = new FillLayout();
+        getContainer().setLayout(layout);
+
         createOverviewPage();
         createBrowseDataPage();
-        createDatasetPage("queue lengths");
-        createDatasetPage("average EED");
-        createDatasetPage("frame counts");
-        createChartPage("packet loss");
-        createChartPage("delay");
+
+        configureTreeViewer(overviewPage.getInputFilesTreeViewer());
+        configureTreeViewer(overviewPage.getDatasetsTreeViewer());
+        configureTreeViewer(overviewPage.getChartSheetsTreeViewer());
+
+        overviewPage.getInputFilesTreeViewer().setInput(editingDomain.getResourceSet()); //XXX for now...
+        overviewPage.getDatasetsTreeViewer().setInput(editingDomain.getResourceSet()); //XXX for now...
+        overviewPage.getChartSheetsTreeViewer().setInput(editingDomain.getResourceSet()); //XXX for now...
+
+        addSelectionChangedListenerTo(overviewPage.getInputFilesTreeViewer());
+        addSelectionChangedListenerTo(overviewPage.getDatasetsTreeViewer());
+        addSelectionChangedListenerTo(overviewPage.getChartSheetsTreeViewer());
+        
+        //createDatasetPage("queue lengths");
+        //createDatasetPage("average EED");
+        //createDatasetPage("frame counts");
+        //createChartPage("packet loss");
+        //createChartPage("delay");
 	}
-	
+
+	private void addSelectionChangedListenerTo(TreeViewer modelViewer)	{
+		modelViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent selectionChangedEvent) {
+				handleSelectionChange(selectionChangedEvent.getSelection(), (Viewer)selectionChangedEvent.getSource());
+			}
+		});
+	}
+
 	private void createOverviewPage() {
 		overviewPage = new OverviewPage(getContainer(), SWT.NONE);
 		setFormTitle(overviewPage, "Overview");
@@ -92,27 +104,22 @@ public class ScaveEditor extends MultiPageEditorPart {
 		form.setForeground(new Color(null, 0, 128, 255));
 		form.setText(title);
 	}
+
+	public void handleSelectionChange(ISelection selection, Viewer source) {
+		setSelectionToViewer(selection, overviewPage.getInputFilesTreeViewer(), source);
+		setSelectionToViewer(selection, overviewPage.getDatasetsTreeViewer(), source);
+		setSelectionToViewer(selection, overviewPage.getChartSheetsTreeViewer(), source);
+		setSelectionToViewer(selection, contentOutlineViewer, source);
+	}
+
+	public void setSelectionToViewer(ISelection selection, Viewer target, Viewer source) {
+		if (target!=source && !selection.equals(target.getSelection()))
+			target.setSelection(selection,true);
+	}
 	
 	@Override
-	public void doSave(IProgressMonitor monitor) {
-		// TODO Auto-generated method stub
-
-	}
-	@Override
-	public void doSaveAs() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public boolean isDirty() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	@Override
-	public boolean isSaveAsAllowed() {
-		// TODO Auto-generated method stub
-		return false;
+	public void handleContentOutlineSelection(ISelection selection) {
+		handleSelectionChange(selection, contentOutlineViewer);
 	}
 }
 
