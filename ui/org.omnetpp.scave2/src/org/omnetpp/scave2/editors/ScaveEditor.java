@@ -29,9 +29,8 @@ public class ScaveEditor extends MultiPageEditorPart {
 
 	private OverviewPage overviewPage;
 	private BrowseDataPage browseDataPage;
-	private ArrayList<DatasetPage> datasetPages;
-	private ArrayList<ChartSheetPage> chartSheetPages;
-	
+	private ArrayList<DatasetPage> datasetPages = new ArrayList<DatasetPage>(3);
+	private ArrayList<ChartSheetPage> chartSheetPages = new ArrayList<ChartSheetPage>(3);
 	
 	/**
 	 * The constructor.
@@ -40,10 +39,6 @@ public class ScaveEditor extends MultiPageEditorPart {
 	}
 	
 	protected void createPages() {
-		
-        FillLayout layout = new FillLayout();
-        getContainer().setLayout(layout);
-
         setPartName("wirelessLan.scave");
         createOverviewPage();
         createBrowseDataPage();
@@ -71,15 +66,25 @@ public class ScaveEditor extends MultiPageEditorPart {
 	private void createDatasetPage(String name) {
 		DatasetPage page = new DatasetPage(getContainer(), SWT.NONE);
 		setFormTitle(page, "Dataset: " + name);
+		addDatasetPage("Dataset: " + name, page);
+	}
+	
+	private void addDatasetPage(String pageText, DatasetPage page) {
+		datasetPages.add(page);
 		int index = addPage(page);
-		setPageText(index, "Dataset: " + name);
+		setPageText(index, pageText);
 	}
 	
 	private void createChartPage(String name) {
 		ChartSheetPage page = new ChartSheetPage(getContainer(), SWT.NONE);
 		setFormTitle(page, "Charts: " + name);
+		addChartSheetPage("Charts: " + name, page);
+	}
+	
+	private void addChartSheetPage(String pageText, ChartSheetPage page) {
+		chartSheetPages.add(page);
 		int index = addPage(page);
-		setPageText(index, "Charts: " + name);
+		setPageText(index, pageText);
 	}
 	
 	private void setFormTitle(ScrolledForm form, String title) {

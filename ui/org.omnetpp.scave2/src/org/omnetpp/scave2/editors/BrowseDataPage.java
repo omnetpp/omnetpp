@@ -6,7 +6,6 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -32,17 +31,19 @@ public class BrowseDataPage extends ScrolledForm {
 	private void initialize() {
 		setBackground(ColorFactory.asColor("white"));
 		setExpandHorizontal(true);
+		setExpandVertical(true);
 		GridLayout layout = new GridLayout();
 		getBody().setLayout(layout);
 		label = new Label(getBody(), SWT.WRAP);
 		label.setText("Here you can see all data that come from the input files specified in the overview page.");
-		label.setLayoutData(new GridData());
+		label.setBackground(this.getBackground());
 		createTabFolder();
 		createButtonsPanel();
 	}
 	
 	private void createTabFolder() {
 		ctabfolder = new CTabFolder(getBody(), SWT.TOP | SWT.FLAT);
+		//ctabfolder.setBackground(this.getBackground());
 		ctabfolder.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL |
 											  GridData.GRAB_VERTICAL |
 											  GridData.FILL_BOTH));
@@ -76,6 +77,7 @@ public class BrowseDataPage extends ScrolledForm {
 	
 	private void createButtonsPanel() {
 		buttonPanel = new Composite(getBody(), SWT.NONE);
+		buttonPanel.setBackground(this.getBackground());
 		FillLayout layout = new FillLayout();
 		layout.type = SWT.HORIZONTAL;
 		layout.spacing = 5;
