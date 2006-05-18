@@ -38,6 +38,7 @@ public class ScaveEditor extends MultiPageEditorPart {
 
         setPartName("wirelessLan.scave");
         createOverviewPage();
+        createBrowseDataPage();
         createDatasetPage("queue lengths");
         createDatasetPage("average EED");
         createDatasetPage("frame counts");
@@ -50,6 +51,13 @@ public class ScaveEditor extends MultiPageEditorPart {
 		setFormTitle(page, "Overview");
 		int index = addPage(page);
 		setPageText(index, "Overview");
+	}
+	
+	private void createBrowseDataPage() {
+		BrowseDataPage page = new BrowseDataPage(getContainer(), SWT.NONE);
+		setFormTitle(page, "Browse data");
+		int index = addPage(page);
+		setPageText(index, "Browse data");
 	}
 	
 	private void createDatasetPage(String name) {

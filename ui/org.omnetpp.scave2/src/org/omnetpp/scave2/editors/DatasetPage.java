@@ -8,6 +8,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.omnetpp.common.color.ColorFactory;
 
 public class DatasetPage extends ScrolledForm {
 
@@ -20,6 +21,9 @@ public class DatasetPage extends ScrolledForm {
 	
 	private void initialize() {
 		setExpandHorizontal(true);
+		setExpandVertical(true);
+		setDelayedReflow(false);
+		setBackground(ColorFactory.asColor("white"));
 		getBody().setLayout(new FillLayout());
 		createDatasetPanel();
 	}

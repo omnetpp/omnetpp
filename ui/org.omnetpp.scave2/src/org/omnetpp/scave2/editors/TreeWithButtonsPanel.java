@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
 
 public class TreeWithButtonsPanel extends Composite {
 
@@ -37,9 +38,11 @@ public class TreeWithButtonsPanel extends Composite {
 	}
 	
 	private void initialize() {
-		this.setBounds(new Rectangle(0, 0, 500, 200));
+		setBackground(getParent().getBackground());
 		GridData gridData1 = new GridData();
 		gridData1.grabExcessHorizontalSpace = true;
+		gridData1.verticalAlignment = org.eclipse.swt.layout.GridData.FILL;
+		gridData1.grabExcessVerticalSpace = true;
 		gridData1.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
 		GridData gridData = new GridData();
 		gridData.horizontalSpan = 2;
@@ -47,7 +50,7 @@ public class TreeWithButtonsPanel extends Composite {
 		GridLayout gridLayout = new GridLayout();
 		gridLayout.numColumns = 2;
 		gridLayout.horizontalSpacing = 10;
-		label = getFormToolkit().createLabel(this, "Label");
+		label = getFormToolkit().createLabel(this, "Label", SWT.WRAP);
 		label.setLayoutData(gridData);
 		label.setBackground(this.getBackground());
 		tree = getFormToolkit().createTree(this, SWT.BORDER);
@@ -73,14 +76,13 @@ public class TreeWithButtonsPanel extends Composite {
 	 *
 	 */
 	private void createButtonPanel() {
+		FillLayout fillLayout = new FillLayout();
+		fillLayout.type = org.eclipse.swt.SWT.VERTICAL;
 		GridData gridData2 = new GridData();
 		gridData2.verticalAlignment = org.eclipse.swt.layout.GridData.BEGINNING;
-		RowLayout rowLayout = new RowLayout();
-		rowLayout.type = org.eclipse.swt.SWT.VERTICAL;
-		rowLayout.wrap = false;
 		buttonPanel = getFormToolkit().createComposite(this);
-		buttonPanel.setLayout(rowLayout);
 		buttonPanel.setLayoutData(gridData2);
+		buttonPanel.setLayout(fillLayout);
 		buttonPanel.setBackground(this.getBackground());
 	}
 }  //  @jve:decl-index=0:visual-constraint="10,10"

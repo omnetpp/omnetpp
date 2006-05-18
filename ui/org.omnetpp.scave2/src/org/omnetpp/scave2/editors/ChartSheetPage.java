@@ -3,6 +3,7 @@ package org.omnetpp.scave2.editors;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.omnetpp.common.color.ColorFactory;
 
 public class ChartSheetPage extends ScrolledForm {
 
@@ -13,6 +14,7 @@ public class ChartSheetPage extends ScrolledForm {
 	
 	private void initialize() {
 		setExpandHorizontal(true);
+		setBackground(ColorFactory.asColor("white"));
 		// TODO: create chart sheet composite
 	}
 }

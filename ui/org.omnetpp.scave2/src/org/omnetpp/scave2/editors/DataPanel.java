@@ -45,7 +45,7 @@ public class DataPanel extends Composite {
 		gridLayout.numColumns = 2;
 		gridLayout.makeColumnsEqualWidth = true;
 		gridLayout.horizontalSpacing = 10;
-		label = getFormToolkit().createLabel(this, "Here you can browse all data (vectors, scalars and histograms) that come from the input files.");
+		label = getFormToolkit().createLabel(this, "Here you can browse all data (vectors, scalars and histograms) that come from the input files.", SWT.WRAP);
 		label.setLayoutData(gridData);
 		heading1 = getFormToolkit().createLabel(this, "Physical: by file and run");
 		heading1.setLayoutData(gridData1);

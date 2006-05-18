@@ -12,6 +12,7 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.layout.FillLayout;
+import org.omnetpp.common.color.ColorFactory;
 
 public class OverviewPage extends ScrolledForm {
 
@@ -28,6 +29,7 @@ public class OverviewPage extends ScrolledForm {
 
 	private void initialize() {
 		setExpandHorizontal(true);
+		setBackground(ColorFactory.asColor("white"));
 		getBody().setLayout(new GridLayout());
 		createInputFilesSection();
 		createDataSection();
