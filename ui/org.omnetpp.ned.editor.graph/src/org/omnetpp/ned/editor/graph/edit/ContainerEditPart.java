@@ -69,7 +69,7 @@ abstract public class ContainerEditPart
     public void propertyChanged(Prop changedProp) {
 		// by default refresh all visuals if the display string has changed
         refreshVisuals();
-    	System.out.println("Container notification: "+changedProp.name());
+    	System.out.println("Container notification: "+changedProp);
 	}
 
 	public void attributeChanged(NEDElement node, String attr) {

@@ -1,6 +1,5 @@
 package org.omnetpp.ned2.model;
 
-import org.omnetpp.ned2.model.DisplayString.Prop;
 
 
 public class SubmoduleDisplayString extends DisplayString {

@@ -99,8 +99,8 @@ public class SubmoduleEditPart extends ModuleEditPart {
             // set the figure properties
             ((DisplayShapeSupport)getNedFigure()).setShape(img, 
                     dps.getAsStringDef(DisplayString.Prop.SHAPE), 
-                    dps.getAsIntDef(DisplayString.Prop.WIDTH, -1), 
-                    dps.getAsIntDef(DisplayString.Prop.HEIGHT, -1),
+                    constraint.width, 
+                    constraint.height,
                     ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.FILLCOL)),
                     ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.BORDERCOL)),
                     dps.getAsIntDef(DisplayString.Prop.BORDERWIDTH, -1));

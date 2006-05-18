@@ -356,7 +356,10 @@ public class DisplayString {
      */
     protected void setTagArg(Tag tag, int pos, String newValue) {
         TagInstance tagInstance = getTag(tag);
-        // if the tag dos not exist add it to the map
+        // if the value is empty or null and the tag does not exist, do nothing
+        if (tagInstance == null && (newValue == null || TagInstance.EMPTY_VALUE.equals(newValue)))
+        	return;
+        // if the tag does not exist add it to the map
         if (tagInstance == null) {
             tagInstance = new TagInstance(tag.name());
             tagMap.put(tag.name(), tagInstance);
