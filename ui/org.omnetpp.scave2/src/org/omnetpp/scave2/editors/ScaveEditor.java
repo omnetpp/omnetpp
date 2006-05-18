@@ -2,16 +2,14 @@ package org.omnetpp.scave2.editors;
 
 import java.util.ArrayList;
 
+import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.omnetpp.scave.model.Analysis;
 
 public class ScaveEditor extends AbstractEMFModelEditor {
 
@@ -38,12 +36,13 @@ public class ScaveEditor extends AbstractEMFModelEditor {
         configureTreeViewer(overviewPage.getDatasetsTreeViewer());
         configureTreeViewer(overviewPage.getChartSheetsTreeViewer());
 
-        //Object a = editingDomain.getResourceSet().getResources().get(0);
-        //overviewPage.getDatasetsTreeViewer().setInput(a);
+        //XXX catch potential nullpointer- and classcast exceptions during resource magic 
+        XMIResource resource = (XMIResource)editingDomain.getResourceSet().getResources().get(0);
+        Analysis analysis = (Analysis)resource.getContents().get(0);
         
-        overviewPage.getInputFilesTreeViewer().setInput(editingDomain.getResourceSet()); //XXX for now...
-        overviewPage.getDatasetsTreeViewer().setInput(editingDomain.getResourceSet()); //XXX for now...
-        overviewPage.getChartSheetsTreeViewer().setInput(editingDomain.getResourceSet()); //XXX for now...
+        overviewPage.getInputFilesTreeViewer().setInput(analysis.getInputs());
+        overviewPage.getDatasetsTreeViewer().setInput(analysis.getDatasets());
+        overviewPage.getChartSheetsTreeViewer().setInput(analysis.getChartSheets()); //XXX for now...
 
         addSelectionChangedListenerTo(overviewPage.getInputFilesTreeViewer());
         addSelectionChangedListenerTo(overviewPage.getDatasetsTreeViewer());

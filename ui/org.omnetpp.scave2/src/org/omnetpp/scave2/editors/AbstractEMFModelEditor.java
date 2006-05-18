@@ -589,24 +589,34 @@ public abstract class AbstractEMFModelEditor
 
 	/**
 	 * Utility function
+	 * XXX merge into configureTreeViewer()!
 	 */
 	protected void addSelectionChangedListenerTo(TreeViewer modelViewer)	{
 		modelViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			boolean inProgress = false; // to prevent infinite notification loops
 			public void selectionChanged(SelectionChangedEvent selectionChangedEvent) {
-				handleSelectionChange(selectionChangedEvent.getSelection(), selectionChangedEvent.getSource());
+				if (!inProgress) {
+					inProgress = true;
+					handleSelectionChange(selectionChangedEvent.getSelection(), selectionChangedEvent.getSource());
+					inProgress = false;
+				}
 			}
 		});
 	}
 
 	/**
-	 * Utility function to update selection in a viewer (TreeViewer). Infinite notification
-	 * loops are prevented by checking if the viewer already contains the selection.
+	 * Utility function to update selection in a viewer (TreeViewer).
 	 */
 	protected void setSelectionToViewer(Viewer target, ISelection selection, Object source) {
-		if (target!=null && target!=source && !selection.equals(target.getSelection()))
-			target.setSelection(selection,true);
+		if (target!=null && target!=source) {
+			if (!selection.isEmpty())
+				target.setSelection(selection,true);
+		}
 	}
 	
+	/**
+	 * Propagates the selection everywhere. Override if you have more widgets to update!
+	 */
 	protected void handleSelectionChange(ISelection selection, Object source) {
 		editorSelection = selection;
 		setSelectionToViewer(contentOutlineViewer, selection, source);
