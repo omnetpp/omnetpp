@@ -541,6 +541,8 @@ public class DisplayString {
      */
     public void setLocation(Point location) {
     	// disable the notification so we will not send two notify for the two coordinate change
+    	boolean tempNotifyState = notifyEnabled;
+    	// disable the notification so we will not send two notify for the two coordinate change
     	notifyEnabled = false;
         // if location is not specified, remove the constraint from the display string
         if (location == null) {
@@ -550,7 +552,8 @@ public class DisplayString {
             set(XPosProp, String.valueOf(pixel2unit(location.x)));
             set(YPosProp, String.valueOf(pixel2unit(location.y)));
         }
-    	notifyEnabled = true;
+        // restore original notify state
+    	notifyEnabled = tempNotifyState;
     	// we have explicitly disabled the notification, so we have to send it now manually
     	// be aware that location change always generates an X pos change notification regardless
     	// which coordinate has changed
@@ -576,6 +579,7 @@ public class DisplayString {
      */
     public void setSize(Dimension size) {
     	// disable the notification so we will not send two notify for the two coordinate change
+    	boolean tempNotifyState = notifyEnabled;
     	notifyEnabled = false;
         // if the size is unspecified, remove the size constraint from the model
         if (size == null || size.width < 0 ) 
@@ -589,11 +593,35 @@ public class DisplayString {
         else
             set(HeightProp, String.valueOf(pixel2unit(size.height)));
 
-    	notifyEnabled = true;
+        // restore original notify state
+    	notifyEnabled = tempNotifyState;
     	// we have explicitly disabled the notification, so we have to send it now manually
     	// be aware that size change always generates an width change notification regardless
     	// which coordinate has changed
     	fireDisplayStringChanged(WidthProp);
+    }
+    
+    /**
+     * Sets both the size and the location, but sends out only a SINGLE X position change message.
+     * @param loc
+     * @param size
+     */
+    public void setConstraint(Point loc, Dimension size) {
+    	// disable the notification so we will not send two notify for the two coordinate change
+    	boolean tempNotifyState = notifyEnabled;
+    	notifyEnabled = false;
+    	
+    	setLocation(loc);
+    	setSize(size);
+    	
+        // restore original notify state
+    	notifyEnabled = tempNotifyState;
+    	// we have explicitly disabled the notification, so we have to send it now manually
+    	// be aware that size change always generates an width change notification regardless
+    	// which coordinate has changed
+    	
+    	// if the layout constraint has changed we send out an X coordinate changed event
+    	fireDisplayStringChanged(XPosProp);
     }
     
     /**

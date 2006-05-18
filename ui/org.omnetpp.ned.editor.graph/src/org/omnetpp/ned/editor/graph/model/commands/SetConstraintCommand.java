@@ -34,8 +34,7 @@ public class SetConstraintCommand extends org.eclipse.gef.commands.Command {
 
     @Override
     public void redo() {
-        module.getDisplayString().setSize(newSize);
-        module.getDisplayString().setLocation(newPos);
+        module.getDisplayString().setConstraint(newPos, newSize);
     }
 
     public void setLocation(Rectangle r) {
@@ -57,8 +56,7 @@ public class SetConstraintCommand extends org.eclipse.gef.commands.Command {
 
     @Override
     public void undo() {
-        module.getDisplayString().setSize(oldSize);
-        module.getDisplayString().setLocation(oldPos);
+        module.getDisplayString().setConstraint(oldPos, oldSize);
     }
 
 }
