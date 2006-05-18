@@ -38,6 +38,9 @@ public class ScaveEditor extends AbstractEMFModelEditor {
         configureTreeViewer(overviewPage.getDatasetsTreeViewer());
         configureTreeViewer(overviewPage.getChartSheetsTreeViewer());
 
+        //Object a = editingDomain.getResourceSet().getResources().get(0);
+        //overviewPage.getDatasetsTreeViewer().setInput(a);
+        
         overviewPage.getInputFilesTreeViewer().setInput(editingDomain.getResourceSet()); //XXX for now...
         overviewPage.getDatasetsTreeViewer().setInput(editingDomain.getResourceSet()); //XXX for now...
         overviewPage.getChartSheetsTreeViewer().setInput(editingDomain.getResourceSet()); //XXX for now...
@@ -51,14 +54,6 @@ public class ScaveEditor extends AbstractEMFModelEditor {
         //createDatasetPage("frame counts");
         //createChartPage("packet loss");
         //createChartPage("delay");
-	}
-
-	private void addSelectionChangedListenerTo(TreeViewer modelViewer)	{
-		modelViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent selectionChangedEvent) {
-				handleSelectionChange(selectionChangedEvent.getSelection(), (Viewer)selectionChangedEvent.getSource());
-			}
-		});
 	}
 
 	private void createOverviewPage() {
@@ -105,21 +100,13 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 		form.setText(title);
 	}
 
-	public void handleSelectionChange(ISelection selection, Viewer source) {
-		setSelectionToViewer(selection, overviewPage.getInputFilesTreeViewer(), source);
-		setSelectionToViewer(selection, overviewPage.getDatasetsTreeViewer(), source);
-		setSelectionToViewer(selection, overviewPage.getChartSheetsTreeViewer(), source);
-		setSelectionToViewer(selection, contentOutlineViewer, source);
-	}
-
-	public void setSelectionToViewer(ISelection selection, Viewer target, Viewer source) {
-		if (target!=source && !selection.equals(target.getSelection()))
-			target.setSelection(selection,true);
-	}
-	
 	@Override
-	public void handleContentOutlineSelection(ISelection selection) {
-		handleSelectionChange(selection, contentOutlineViewer);
+	public void handleSelectionChange(ISelection selection, Object source) {
+		super.handleSelectionChange(selection, source);
+
+		setSelectionToViewer(overviewPage.getInputFilesTreeViewer(), selection, source);
+		setSelectionToViewer(overviewPage.getDatasetsTreeViewer(), selection, source);
+		setSelectionToViewer(overviewPage.getChartSheetsTreeViewer(), selection, source);
 	}
 }
 

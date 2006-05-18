@@ -55,7 +55,7 @@ public class TreeWithButtonsPanel extends Composite {
 		label = getFormToolkit().createLabel(this, "Label", SWT.WRAP);
 		label.setLayoutData(gridData);
 		label.setBackground(this.getBackground());
-		Tree tree = getFormToolkit().createTree(this, SWT.BORDER);
+		Tree tree = getFormToolkit().createTree(this, SWT.BORDER | SWT.MULTI);
 		tree.setLayoutData(gridData1);
 		treeviewer = new TreeViewer(tree);
 		this.setLayout(gridLayout);

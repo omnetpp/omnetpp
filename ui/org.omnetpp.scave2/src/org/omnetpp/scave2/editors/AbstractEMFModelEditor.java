@@ -169,7 +169,7 @@ import org.omnetpp.scave.model.provider.ScaveEditPlugin;
  */
 public abstract class AbstractEMFModelEditor
 	extends MultiPageEditorPart
-	implements IEditingDomainProvider, ISelectionProvider, IMenuListener, IViewerProvider, IGotoMarker {
+	implements IEditingDomainProvider, ISelectionProvider, IMenuListener, /*IViewerProvider,*/ IGotoMarker {
 	/**
 	 * This keeps track of the editing domain that is used to track all changes to the model.
 	 */
@@ -201,17 +201,8 @@ public abstract class AbstractEMFModelEditor
 	protected PropertySheetPage propertySheetPage;
 
 	/**
-	 * This keeps track of the active content viewer, which may be either one of the viewers in the pages or the content outline viewer.
-	 */
-	protected Viewer currentViewer;
-
-	/**
-	 * This listens to which ever viewer is active.
-	 */
-	protected ISelectionChangedListener selectionChangedListener;
-
-	/**
 	 * This keeps track of all the {@link org.eclipse.jface.viewers.ISelectionChangedListener}s that are listening to this editor.
+	 * We need this because we implement ISelectionProvider which includes having to manage a listener list.
 	 */
 	protected Collection selectionChangedListeners = new ArrayList();
 
@@ -236,7 +227,7 @@ public abstract class AbstractEMFModelEditor
 					if (((ContentOutline)p).getCurrentPage() == contentOutlinePage) {
 						getActionBarContributor().setActiveEditor(AbstractEMFModelEditor.this);
 
-						setCurrentViewer(contentOutlineViewer);
+						//setCurrentViewer(contentOutlineViewer);
 					}
 				}
 				else if (p instanceof PropertySheet) {
@@ -286,9 +277,6 @@ public abstract class AbstractEMFModelEditor
 
 	/**
 	 * Adapter used to update the problem indication when resources are demanded loaded.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
 	 */
 	protected EContentAdapter problemIndicationAdapter = 
 		new EContentAdapter() {
@@ -587,9 +575,6 @@ public abstract class AbstractEMFModelEditor
 
 	/**
 	 * This is here for the listener to be able to call it.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
 	 */
 	protected void firePropertyChange(int action) {
 		super.firePropertyChange(action);
@@ -599,29 +584,37 @@ public abstract class AbstractEMFModelEditor
 	 * This sets the selection into whichever viewer is active.
 	 */
 	public void setSelectionToViewer(Collection collection) {
-		final Collection theSelection = collection;
-		// Make sure it's okay.
-		//
-		if (theSelection != null && !theSelection.isEmpty()) {
-			// I don't know if this should be run this deferred
-			// because we might have to give the editor a chance to process the viewer update events
-			// and hence to update the views first.
-			//
-			//
-			Runnable runnable =
-				new Runnable() {
-					public void run() {
-						// Try to select the items in the current content viewer of the editor.
-						//
-						if (currentViewer != null) {
-							currentViewer.setSelection(new StructuredSelection(theSelection.toArray()), true);
-						}
-					}
-				};
-			runnable.run();
-		}
+		handleSelectionChange(new StructuredSelection(collection.toArray()), null);
 	}
 
+	/**
+	 * Utility function
+	 */
+	protected void addSelectionChangedListenerTo(TreeViewer modelViewer)	{
+		modelViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent selectionChangedEvent) {
+				handleSelectionChange(selectionChangedEvent.getSelection(), selectionChangedEvent.getSource());
+			}
+		});
+	}
+
+	/**
+	 * Utility function to update selection in a viewer (TreeViewer). Infinite notification
+	 * loops are prevented by checking if the viewer already contains the selection.
+	 */
+	protected void setSelectionToViewer(Viewer target, ISelection selection, Object source) {
+		if (target!=null && target!=source && !selection.equals(target.getSelection()))
+			target.setSelection(selection,true);
+	}
+	
+	protected void handleSelectionChange(ISelection selection, Object source) {
+		editorSelection = selection;
+		setSelectionToViewer(contentOutlineViewer, selection, source);
+		updateStatusLineManager(contentOutlineStatusLineManager, selection);
+		updateStatusLineManager(getActionBars().getStatusLineManager(), selection);
+		fireSelectionChangedEvent(selection);
+	}
+	
 	/**
 	 * This returns the editing domain as required by the {@link IEditingDomainProvider} interface.
 	 * This is important for implementing the static methods of {@link AdapterFactoryEditingDomain}
@@ -633,63 +626,7 @@ public abstract class AbstractEMFModelEditor
 
 
 	/**
-	 * This makes sure that one content viewer, either for the current page or the outline view, if it has focus,
-	 * is the current one.
-	 */
-	public void setCurrentViewer(Viewer viewer) {
-		// If it is changing...
-		//
-		if (currentViewer != viewer) {
-			if (selectionChangedListener == null) {
-				// Create the listener on demand.
-				//
-				selectionChangedListener =
-					new ISelectionChangedListener() {
-						// This just notifies those things that are affected by the section.
-						//
-						public void selectionChanged(SelectionChangedEvent selectionChangedEvent) {
-							setSelection(selectionChangedEvent.getSelection());
-						}
-					};
-			}
-
-			// Stop listening to the old one.
-			//
-			if (currentViewer != null) {
-				currentViewer.removeSelectionChangedListener(selectionChangedListener);
-			}
-
-			// Start listening to the new one.
-			//
-			if (viewer != null) {
-				viewer.addSelectionChangedListener(selectionChangedListener);
-			}
-
-			// Remember it.
-			//
-			currentViewer = viewer;
-
-			// Set the editors selection based on the current viewer's selection.
-			//
-			setSelection(currentViewer == null ? StructuredSelection.EMPTY : currentViewer.getSelection());
-		}
-	}
-
-	/**
-	 * This returns the viewer as required by the {@link IViewerProvider} interface.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public Viewer getViewer() {
-		return currentViewer;
-	}
-
-	/**
 	 * This creates a context menu for the viewer and adds a listener as well registering the menu for extension.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
 	 */
 	protected void createContextMenuFor(StructuredViewer viewer) {
 		MenuManager contextMenu = new MenuManager("#PopUp");
@@ -785,7 +722,6 @@ public abstract class AbstractEMFModelEditor
 	/**
 	 * Utility class to add content and label providers, context menu etc to a TreeViewer
 	 * that is used to edit the model.
-	 * @author Andras
 	 */
 	public void configureTreeViewer(TreeViewer modelViewer) {
 		modelViewer.setContentProvider(new AdapterFactoryContentProvider(adapterFactory));
@@ -793,20 +729,6 @@ public abstract class AbstractEMFModelEditor
 		new AdapterFactoryTreeEditor(modelViewer.getTree(), adapterFactory);
 		createContextMenuFor(modelViewer);
 	}	
-
-	/**
-	 * This is used to track the active viewer.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	protected void pageChange(int pageIndex) {
-		super.pageChange(pageIndex);
-
-		if (contentOutlinePage != null) {
-			handleContentOutlineSelection(contentOutlinePage.getSelection());
-		}
-	}
 
 	/**
 	 * This is how the framework determines which interfaces we implement.
@@ -831,9 +753,6 @@ public abstract class AbstractEMFModelEditor
 
 	/**
 	 * This accesses a cached version of the content outliner.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
 	 */
 	public IContentOutlinePage getContentOutlinePage() {
 		if (contentOutlinePage == null) {
@@ -879,14 +798,11 @@ public abstract class AbstractEMFModelEditor
 
 			// Listen to selection so that we can handle it is a special way.
 			//
-			contentOutlinePage.addSelectionChangedListener
-				(new ISelectionChangedListener() {
-					 // This ensures that we handle selections correctly.
-					 //
-					 public void selectionChanged(SelectionChangedEvent event) {
-						 handleContentOutlineSelection(event.getSelection());
-					 }
-				 });
+			contentOutlinePage.addSelectionChangedListener(new ISelectionChangedListener() {
+				public void selectionChanged(SelectionChangedEvent event) {
+					handleSelectionChange(event.getSelection(), event.getSource());
+				}
+			});
 		}
 
 		return contentOutlinePage;
@@ -894,9 +810,6 @@ public abstract class AbstractEMFModelEditor
 
 	/**
 	 * This accesses a cached version of the property sheet.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
 	 */
 	public IPropertySheetPage getPropertySheetPage() {
 		if (propertySheetPage == null) {
@@ -919,16 +832,7 @@ public abstract class AbstractEMFModelEditor
 	}
 
 	/**
-	 * This deals with how we want selection in the outliner to affect the other views.
-	 * You'll probably want to set the selection in all viewers to this selection. 
-	 */
-	public abstract void handleContentOutlineSelection(ISelection selection);
-
-	/**
 	 * This is for implementing {@link IEditorPart} and simply tests the command stack.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
 	 */
 	public boolean isDirty() {
 		return ((BasicCommandStack)editingDomain.getCommandStack()).isSaveNeeded();
@@ -936,9 +840,6 @@ public abstract class AbstractEMFModelEditor
 
 	/**
 	 * This is for implementing {@link IEditorPart} and simply saves the model file.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
 	 */
 	public void doSave(IProgressMonitor progressMonitor) {
 		// Do the work within an operation because this is a long running activity that modifies the workbench.
@@ -1010,19 +911,13 @@ public abstract class AbstractEMFModelEditor
 
 	/**
 	 * This always returns true because it is not currently supported.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
 	 */
 	public boolean isSaveAsAllowed() {
 		return true;
 	}
 
 	/**
-	 * This also changes the editor's input.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
+	 * "Save As" also changes the editor's input.
 	 */
 	public void doSaveAs() {
 		SaveAsDialog saveAsDialog= new SaveAsDialog(getSite().getShell());
@@ -1037,9 +932,7 @@ public abstract class AbstractEMFModelEditor
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
+	 * Perform "Save As"
 	 */
 	protected void doSaveAs(URI uri, IEditorInput editorInput) {
 		((Resource)editingDomain.getResourceSet().getResources().get(0)).setURI(uri);
@@ -1091,24 +984,7 @@ public abstract class AbstractEMFModelEditor
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setFocus() {
-//		if (currentViewerPane != null) {
-//			currentViewerPane.setFocus();
-//		}
-//		else {
-			getControl(getActivePage()).setFocus();
-//		}
-	}
-
-	/**
 	 * This implements {@link org.eclipse.jface.viewers.ISelectionProvider}.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
 	 */
 	public void addSelectionChangedListener(ISelectionChangedListener listener) {
 		selectionChangedListeners.add(listener);
@@ -1116,9 +992,6 @@ public abstract class AbstractEMFModelEditor
 
 	/**
 	 * This implements {@link org.eclipse.jface.viewers.ISelectionProvider}.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
 	 */
 	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
 		selectionChangedListeners.remove(listener);
@@ -1126,9 +999,6 @@ public abstract class AbstractEMFModelEditor
 
 	/**
 	 * This implements {@link org.eclipse.jface.viewers.ISelectionProvider} to return this editor's overall selection.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
 	 */
 	public ISelection getSelection() {
 		return editorSelection;
@@ -1136,47 +1006,39 @@ public abstract class AbstractEMFModelEditor
 
 	/**
 	 * This implements {@link org.eclipse.jface.viewers.ISelectionProvider} to set this editor's overall selection.
-	 * Calling this result will notify the listeners.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
+	 * Calling this will result in notifing the listeners.
 	 */
 	public void setSelection(ISelection selection) {
-		editorSelection = selection;
+		handleSelectionChange(selection, null);
+	}
 
+	/**
+	 * Notify listeners on {@link org.eclipse.jface.viewers.ISelectionProvider} about a selection change.
+	 */
+	protected void fireSelectionChangedEvent(ISelection selection) {
 		for (Iterator listeners = selectionChangedListeners.iterator(); listeners.hasNext(); ) {
 			ISelectionChangedListener listener = (ISelectionChangedListener)listeners.next();
 			listener.selectionChanged(new SelectionChangedEvent(this, selection));
 		}
-		setStatusLineManager(selection);
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setStatusLineManager(ISelection selection) {
-		IStatusLineManager statusLineManager = currentViewer != null && currentViewer == contentOutlineViewer ?
-			contentOutlineStatusLineManager : getActionBars().getStatusLineManager();
 
+	/**
+	 * Utility method to update "Selected X objects" text on the status bar.
+	 */
+	protected void updateStatusLineManager(IStatusLineManager statusLineManager, ISelection selection) {
 		if (statusLineManager != null) {
 			if (selection instanceof IStructuredSelection) {
 				Collection collection = ((IStructuredSelection)selection).toList();
-				switch (collection.size()) {
-					case 0: {
+				if (collection.size()==0) {
 						statusLineManager.setMessage(getString("_UI_NoObjectSelected"));
-						break;
-					}
-					case 1: {
+				}
+				else if (collection.size()==1) {
 						String text = new AdapterFactoryItemDelegator(adapterFactory).getText(collection.iterator().next());
 						statusLineManager.setMessage(getString("_UI_SingleObjectSelected", text));
-						break;
-					}
-					default: {
+				}
+				else {
 						statusLineManager.setMessage(getString("_UI_MultiObjectSelected", Integer.toString(collection.size())));
-						break;
-					}
 				}
 			}
 			else {
@@ -1187,9 +1049,6 @@ public abstract class AbstractEMFModelEditor
 
 	/**
 	 * This looks up a string in the plugin's plugin.properties file.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
 	 */
 	private static String getString(String key) {
 		return ScaveEditPlugin.INSTANCE.getString(key);
@@ -1197,9 +1056,6 @@ public abstract class AbstractEMFModelEditor
 
 	/**
 	 * This looks up a string in plugin.properties, making a substitution.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
 	 */
 	private static String getString(String key, Object s1) {
 		return ScaveEditPlugin.INSTANCE.getString(key, new Object [] { s1 });
@@ -1207,9 +1063,6 @@ public abstract class AbstractEMFModelEditor
 
 	/**
 	 * This implements {@link org.eclipse.jface.action.IMenuListener} to help fill the context menus with contributions from the Edit menu.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
 	 */
 	public void menuAboutToShow(IMenuManager menuManager) {
 		((IMenuListener)getEditorSite().getActionBarContributor()).menuAboutToShow(menuManager);
@@ -1243,9 +1096,7 @@ public abstract class AbstractEMFModelEditor
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
+	 * Dispose widget.
 	 */
 	public void dispose() {
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
@@ -1270,10 +1121,7 @@ public abstract class AbstractEMFModelEditor
 	}
 
 	/**
-	 * Returns whether the outline view should be presented to the user.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
+	 * Returns whether the outline view should be presented to the user (YES).
 	 */
 	protected boolean showOutlineView() {
 		return true;

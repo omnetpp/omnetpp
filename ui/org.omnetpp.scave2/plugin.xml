@@ -8,7 +8,7 @@
             name="OMNeT++ Analysis"
             extensions="scave"
             icon="icons/sample.gif"
-            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            contributorClass="org.omnetpp.scave.model.presentation.ScaveModelActionBarContributor"
             class="org.omnetpp.scave2.editors.ScaveEditor"
             id="org.omnetpp.scave2.editors.ScaveEditor">
       </editor>
