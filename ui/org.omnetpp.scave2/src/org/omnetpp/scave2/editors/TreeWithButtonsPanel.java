@@ -1,5 +1,6 @@
 package org.omnetpp.scave2.editors;
 
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
@@ -18,8 +19,9 @@ public class TreeWithButtonsPanel extends Composite {
 
 	private FormToolkit formToolkit = null;   //  @jve:decl-index=0:visual-constraint=""
 	private Label label = null;
-	private Tree tree = null;
+	private TreeViewer treeviewer = null;
 	private Composite buttonPanel = null;
+	
 	public TreeWithButtonsPanel(Composite parent, int style) {
 		super(parent, style);
 		initialize();
@@ -33,8 +35,8 @@ public class TreeWithButtonsPanel extends Composite {
 		return buttonPanel;
 	}
 	
-	public Tree getTree() {
-		return tree;
+	public TreeViewer getTreeViewer() {
+		return treeviewer;
 	}
 	
 	private void initialize() {
@@ -53,8 +55,9 @@ public class TreeWithButtonsPanel extends Composite {
 		label = getFormToolkit().createLabel(this, "Label", SWT.WRAP);
 		label.setLayoutData(gridData);
 		label.setBackground(this.getBackground());
-		tree = getFormToolkit().createTree(this, SWT.BORDER);
+		Tree tree = getFormToolkit().createTree(this, SWT.BORDER);
 		tree.setLayoutData(gridData1);
+		treeviewer = new TreeViewer(tree);
 		this.setLayout(gridLayout);
 		createButtonPanel();
 	}

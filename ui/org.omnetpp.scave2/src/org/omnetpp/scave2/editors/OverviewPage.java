@@ -1,5 +1,6 @@
 package org.omnetpp.scave2.editors;
 
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.graphics.Point;
@@ -28,22 +29,20 @@ public class OverviewPage extends ScrolledForm {
 		initialize();
 	}
 	
-	public Tree getInputFilesTree() {
+	public TreeViewer getInputFilesTreeViewer() {
 		InputFilesPanel panel = (InputFilesPanel)inputFilesSection.getClient();
-		return panel.getTree();
+		return panel.getTreeViewer();
 	}
 	
-	public Tree getDatasetsTree() {
+	public TreeViewer getDatasetsTreeViewer() {
 		DatasetsPanel panel = (DatasetsPanel)datasetsSection.getClient();
-		return panel.getTree();
+		return panel.getTreeViewer();
 	}
 	
-	public Tree getChartSheetsTree() {
+	public TreeViewer getChartSheetsTreeViewer() {
 		ChartSheetsPanel panel = (ChartSheetsPanel)chartSheetsSection.getClient();
-		return panel.getTree();
+		return panel.getTreeViewer();
 	}
-	
-	
 
 	private void initialize() {
 		setExpandHorizontal(true);

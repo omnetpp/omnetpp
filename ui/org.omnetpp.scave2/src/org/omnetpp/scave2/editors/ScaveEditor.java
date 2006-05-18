@@ -1,5 +1,7 @@
 package org.omnetpp.scave2.editors;
 
+import java.util.ArrayList;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -27,7 +29,8 @@ public class ScaveEditor extends MultiPageEditorPart {
 
 	private OverviewPage overviewPage;
 	private BrowseDataPage browseDataPage;
-	
+	private ArrayList<DatasetPage> datasetPages;
+	private ArrayList<ChartSheetPage> chartSheetPages;
 	
 	
 	/**
