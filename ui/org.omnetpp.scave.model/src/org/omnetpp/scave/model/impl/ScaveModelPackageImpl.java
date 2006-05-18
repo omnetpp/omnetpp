@@ -19,12 +19,16 @@ import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Apply;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
+import org.omnetpp.scave.model.ChartSheets;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
+import org.omnetpp.scave.model.Datasets;
 import org.omnetpp.scave.model.Deselect;
 import org.omnetpp.scave.model.Discard;
 import org.omnetpp.scave.model.Except;
 import org.omnetpp.scave.model.Group;
+import org.omnetpp.scave.model.Input;
+import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.Param;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScaveModelFactory;
@@ -158,6 +162,34 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 	 * @generated
 	 */
 	private EClass selectDeselectOpEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass inputsEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass inputEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass chartSheetsEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass datasetsEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -610,7 +642,7 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getAnalysis_Datasets() {
+	public EReference getAnalysis_Inputs() {
 		return (EReference)analysisEClass.getEStructuralFeatures().get(0);
 	}
 
@@ -619,7 +651,16 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getAnalysis_ChartPages() {
+	public EReference getAnalysis_ChartSheets() {
+		return (EReference)analysisEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getAnalysis_Datasets() {
 		return (EReference)analysisEClass.getEStructuralFeatures().get(1);
 	}
 
@@ -675,6 +716,78 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 	 */
 	public EClass getSelectDeselectOp() {
 		return selectDeselectOpEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getInputs() {
+		return inputsEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getInputs_Inputs() {
+		return (EReference)inputsEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getInput() {
+		return inputEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getInput_Name() {
+		return (EAttribute)inputEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getChartSheets() {
+		return chartSheetsEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getChartSheets_ChartSheets() {
+		return (EReference)chartSheetsEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getDatasets() {
+		return datasetsEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getDatasets_Datasets() {
+		return (EReference)datasetsEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -759,8 +872,9 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		createEAttribute(chartSheetEClass, CHART_SHEET__NAME);
 
 		analysisEClass = createEClass(ANALYSIS);
+		createEReference(analysisEClass, ANALYSIS__INPUTS);
 		createEReference(analysisEClass, ANALYSIS__DATASETS);
-		createEReference(analysisEClass, ANALYSIS__CHART_PAGES);
+		createEReference(analysisEClass, ANALYSIS__CHART_SHEETS);
 
 		selectEClass = createEClass(SELECT);
 		createEReference(selectEClass, SELECT__EXCEPTS);
@@ -771,6 +885,18 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		addDiscardOpEClass = createEClass(ADD_DISCARD_OP);
 
 		selectDeselectOpEClass = createEClass(SELECT_DESELECT_OP);
+
+		inputsEClass = createEClass(INPUTS);
+		createEReference(inputsEClass, INPUTS__INPUTS);
+
+		inputEClass = createEClass(INPUT);
+		createEAttribute(inputEClass, INPUT__NAME);
+
+		chartSheetsEClass = createEClass(CHART_SHEETS);
+		createEReference(chartSheetsEClass, CHART_SHEETS__CHART_SHEETS);
+
+		datasetsEClass = createEClass(DATASETS);
+		createEReference(datasetsEClass, DATASETS__DATASETS);
 	}
 
 	/**
@@ -864,8 +990,9 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		initEAttribute(getChartSheet_Name(), ecorePackage.getEString(), "name", null, 0, 1, ChartSheet.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(analysisEClass, Analysis.class, "Analysis", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getAnalysis_Datasets(), this.getDataset(), null, "datasets", null, 0, -1, Analysis.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getAnalysis_ChartPages(), this.getChartSheet(), null, "chartPages", null, 0, -1, Analysis.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getAnalysis_Inputs(), this.getInputs(), null, "inputs", null, 0, 1, Analysis.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getAnalysis_Datasets(), this.getDatasets(), null, "datasets", null, 0, 1, Analysis.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getAnalysis_ChartSheets(), this.getChartSheets(), null, "chartSheets", null, 0, 1, Analysis.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(selectEClass, Select.class, "Select", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getSelect_Excepts(), this.getExcept(), null, "excepts", null, 0, -1, Select.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -876,6 +1003,18 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		initEClass(addDiscardOpEClass, AddDiscardOp.class, "AddDiscardOp", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(selectDeselectOpEClass, SelectDeselectOp.class, "SelectDeselectOp", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(inputsEClass, Inputs.class, "Inputs", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getInputs_Inputs(), this.getInput(), null, "inputs", null, 0, -1, Inputs.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(inputEClass, Input.class, "Input", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getInput_Name(), ecorePackage.getEString(), "name", null, 0, 1, Input.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(chartSheetsEClass, ChartSheets.class, "ChartSheets", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getChartSheets_ChartSheets(), this.getChartSheet(), null, "chartSheets", null, 0, 1, ChartSheets.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(datasetsEClass, Datasets.class, "Datasets", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getDatasets_Datasets(), this.getDataset(), null, "datasets", null, 0, -1, Datasets.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);

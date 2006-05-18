@@ -18,8 +18,9 @@ import org.eclipse.emf.ecore.EObject;
  * <p>
  * The following features are supported:
  * <ul>
+ *   <li>{@link org.omnetpp.scave.model.Analysis#getInputs <em>Inputs</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.Analysis#getDatasets <em>Datasets</em>}</li>
- *   <li>{@link org.omnetpp.scave.model.Analysis#getChartPages <em>Chart Pages</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.Analysis#getChartSheets <em>Chart Sheets</em>}</li>
  * </ul>
  * </p>
  *
@@ -29,35 +30,81 @@ import org.eclipse.emf.ecore.EObject;
  */
 public interface Analysis extends EObject {
 	/**
-	 * Returns the value of the '<em><b>Datasets</b></em>' containment reference list.
-	 * The list contents are of type {@link org.omnetpp.scave.model.Dataset}.
+	 * Returns the value of the '<em><b>Inputs</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Inputs</em>' containment reference isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Inputs</em>' containment reference.
+	 * @see #setInputs(Inputs)
+	 * @see org.omnetpp.scave.model.ScaveModelPackage#getAnalysis_Inputs()
+	 * @model containment="true"
+	 * @generated
+	 */
+	Inputs getInputs();
+
+	/**
+	 * Sets the value of the '{@link org.omnetpp.scave.model.Analysis#getInputs <em>Inputs</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Inputs</em>' containment reference.
+	 * @see #getInputs()
+	 * @generated
+	 */
+	void setInputs(Inputs value);
+
+	/**
+	 * Returns the value of the '<em><b>Chart Sheets</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Chart Sheets</em>' containment reference isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Chart Sheets</em>' containment reference.
+	 * @see #setChartSheets(ChartSheets)
+	 * @see org.omnetpp.scave.model.ScaveModelPackage#getAnalysis_ChartSheets()
+	 * @model containment="true"
+	 * @generated
+	 */
+	ChartSheets getChartSheets();
+
+	/**
+	 * Sets the value of the '{@link org.omnetpp.scave.model.Analysis#getChartSheets <em>Chart Sheets</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Chart Sheets</em>' containment reference.
+	 * @see #getChartSheets()
+	 * @generated
+	 */
+	void setChartSheets(ChartSheets value);
+
+	/**
+	 * Returns the value of the '<em><b>Datasets</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Datasets</em>' containment reference list isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Datasets</em>' containment reference list.
+	 * @return the value of the '<em>Datasets</em>' containment reference.
+	 * @see #setDatasets(Datasets)
 	 * @see org.omnetpp.scave.model.ScaveModelPackage#getAnalysis_Datasets()
-	 * @model type="org.omnetpp.scave.model.Dataset" containment="true"
+	 * @model containment="true"
 	 * @generated
 	 */
-	EList getDatasets();
+	Datasets getDatasets();
 
 	/**
-	 * Returns the value of the '<em><b>Chart Pages</b></em>' containment reference list.
-	 * The list contents are of type {@link org.omnetpp.scave.model.ChartSheet}.
+	 * Sets the value of the '{@link org.omnetpp.scave.model.Analysis#getDatasets <em>Datasets</em>}' containment reference.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Chart Pages</em>' containment reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Chart Pages</em>' containment reference list.
-	 * @see org.omnetpp.scave.model.ScaveModelPackage#getAnalysis_ChartPages()
-	 * @model type="org.omnetpp.scave.model.ChartSheet" containment="true"
+	 * @param value the new value of the '<em>Datasets</em>' containment reference.
+	 * @see #getDatasets()
 	 * @generated
 	 */
-	EList getChartPages();
+	void setDatasets(Datasets value);
 
 } // Analysis

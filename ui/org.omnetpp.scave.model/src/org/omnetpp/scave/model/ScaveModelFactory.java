@@ -143,6 +143,42 @@ public interface ScaveModelFactory extends EFactory {
 	Deselect createDeselect();
 
 	/**
+	 * Returns a new object of class '<em>Inputs</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Inputs</em>'.
+	 * @generated
+	 */
+	Inputs createInputs();
+
+	/**
+	 * Returns a new object of class '<em>Input</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Input</em>'.
+	 * @generated
+	 */
+	Input createInput();
+
+	/**
+	 * Returns a new object of class '<em>Chart Sheets</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Chart Sheets</em>'.
+	 * @generated
+	 */
+	ChartSheets createChartSheets();
+
+	/**
+	 * Returns a new object of class '<em>Datasets</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Datasets</em>'.
+	 * @generated
+	 */
+	Datasets createDatasets();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

@@ -72,6 +72,10 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
 			case ScaveModelPackage.ANALYSIS: return createAnalysis();
 			case ScaveModelPackage.SELECT: return createSelect();
 			case ScaveModelPackage.DESELECT: return createDeselect();
+			case ScaveModelPackage.INPUTS: return createInputs();
+			case ScaveModelPackage.INPUT: return createInput();
+			case ScaveModelPackage.CHART_SHEETS: return createChartSheets();
+			case ScaveModelPackage.DATASETS: return createDatasets();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -205,6 +209,46 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
 	public Deselect createDeselect() {
 		DeselectImpl deselect = new DeselectImpl();
 		return deselect;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public Inputs createInputs() {
+		InputsImpl inputs = new InputsImpl();
+		return inputs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public Input createInput() {
+		InputImpl input = new InputImpl();
+		return input;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public ChartSheets createChartSheets() {
+		ChartSheetsImpl chartSheets = new ChartSheetsImpl();
+		return chartSheets;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public Datasets createDatasets() {
+		DatasetsImpl datasets = new DatasetsImpl();
+		return datasets;
 	}
 
 	/**

@@ -9,7 +9,7 @@
     bundleManifest="false">
   <foreignModel>scave.ecore</foreignModel>
   <genPackages prefix="ScaveModel" basePackage="org.omnetpp.scave" disposableProviderFactory="true"
-      multipleEditorPages="false" ecorePackage="scave.ecore#/">
+      ecorePackage="scave.ecore#/">
     <genClasses ecoreClass="scave.ecore#//Dataset">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Dataset/name"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Dataset/items"/>
@@ -62,8 +62,9 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//ChartSheet/name"/>
     </genClasses>
     <genClasses ecoreClass="scave.ecore#//Analysis">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Analysis/inputs"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Analysis/datasets"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Analysis/chartPages"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Analysis/chartSheets"/>
     </genClasses>
     <genClasses ecoreClass="scave.ecore#//Select">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Select/excepts"/>
@@ -73,5 +74,17 @@
     </genClasses>
     <genClasses image="false" ecoreClass="scave.ecore#//AddDiscardOp"/>
     <genClasses image="false" ecoreClass="scave.ecore#//SelectDeselectOp"/>
+    <genClasses ecoreClass="scave.ecore#//Inputs">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Inputs/inputs"/>
+    </genClasses>
+    <genClasses ecoreClass="scave.ecore#//Input">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Input/name"/>
+    </genClasses>
+    <genClasses ecoreClass="scave.ecore#//ChartSheets">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//ChartSheets/chartSheets"/>
+    </genClasses>
+    <genClasses ecoreClass="scave.ecore#//Datasets">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Datasets/datasets"/>
+    </genClasses>
   </genPackages>
 </genmodel:GenModel>

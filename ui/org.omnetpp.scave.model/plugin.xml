@@ -9,10 +9,10 @@
 -->
 
 <plugin
-    name = "%pluginName"
+    name = "OMNeT++/OMNEST Scave Model Plugin"
     id = "org.omnetpp.scave.model"
-    version = "1.0.0"
-    provider-name = "%providerName"
+    version = "4.0.0"
+    provider-name = "OpenSim Ltd."
     class = "org.omnetpp.scave.model.provider.ScaveEditPlugin$Implementation">
 
   <requires>
@@ -35,7 +35,7 @@
   <extension point="org.eclipse.emf.edit.itemProviderAdapterFactories">
     <factory 
        uri = "null" 
-       class = "org.omnetpp.scave2.scavemodel.provider.ScaveModelItemProviderAdapterFactory"
+       class = "org.omnetpp.scave.model.provider.ScaveModelItemProviderAdapterFactory"
        supportedTypes = 
          "org.eclipse.emf.edit.provider.IEditingDomainItemProvider
           org.eclipse.emf.edit.provider.IStructuredItemContentProvider
@@ -47,7 +47,7 @@
   <extension point="org.eclipse.emf.ecore.generated_package">
     <package
        uri = "null"
-       class = "org.omnetpp.scave2.scavemodel.ScaveModelPackage"
+       class = "org.omnetpp.scave.model.ScaveModelPackage"
        genModel = "model/scave.genmodel" /> 
   </extension>
 
@@ -59,9 +59,9 @@
       name="%_UI_Wizard_category">
     </category>
     <wizard
-      id = "org.omnetpp.scave2.scavemodel.presentation.ScaveModelModelWizardID"
+      id = "org.omnetpp.scave.model.presentation.ScaveModelModelWizardID"
       name = "%_UI_ScaveModelModelWizard_label"
-      class = "org.omnetpp.scave2.scavemodel.presentation.ScaveModelModelWizard"
+      class = "org.omnetpp.scave.model.presentation.ScaveModelModelWizard"
       category = "org.eclipse.emf.ecore.Wizard.category.ID"
       icon = "icons/full/obj16/ScaveModelModelFile.gif">
       <description>%_UI_ScaveModelModelWizard_description</description>
@@ -71,12 +71,13 @@
 
   <extension point = "org.eclipse.ui.editors">
     <editor
-        id = "org.omnetpp.scave2.scavemodel.presentation.ScaveModelEditorID"
+        id = "org.omnetpp.scave.model.presentation.ScaveModelEditorID"
         name = "%_UI_ScaveModelEditor_label"
         icon = "icons/full/obj16/ScaveModelModelFile.gif"
         extensions = "scavemodel"
-        class = "org.omnetpp.scave2.scavemodel.presentation.ScaveModelEditor" 
-        contributorClass="org.omnetpp.scave2.scavemodel.presentation.ScaveModelActionBarContributor" >
+        class = "org.omnetpp.scave.model.presentation.ScaveModelEditor" 
+        contributorClass="org.omnetpp.scave.model.presentation.ScaveModelActionBarContributor" >
     </editor>
   </extension>    
+  
 </plugin>

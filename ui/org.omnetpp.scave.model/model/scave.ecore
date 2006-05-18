@@ -65,10 +65,12 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Analysis">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="datasets" upperBound="-1"
-        eType="#//Dataset" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="chartPages" upperBound="-1"
-        eType="#//ChartSheet" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="inputs" eType="#//Inputs"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="datasets" eType="#//Datasets"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="chartSheets" eType="#//ChartSheets"
+        containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Select" eSuperTypes="#//SelectDeselectOp">
     <eStructuralFeatures xsi:type="ecore:EReference" name="excepts" upperBound="-1"
@@ -80,4 +82,19 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="AddDiscardOp" abstract="true" eSuperTypes="#//SetOperation #//DatasetItem"/>
   <eClassifiers xsi:type="ecore:EClass" name="SelectDeselectOp" abstract="true" eSuperTypes="#//SetOperation"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Inputs">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="inputs" upperBound="-1"
+        eType="#//InputFile" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="InputFile">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ChartSheets">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="chartSheets" eType="#//ChartSheet"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Datasets">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="datasets" upperBound="-1"
+        eType="#//Dataset" containment="true"/>
+  </eClassifiers>
 </ecore:EPackage>

@@ -6,6 +6,7 @@
  */
 package org.omnetpp.scave.model.impl;
 
+import org.eclipse.emf.common.notify.Notification;
 import java.util.Collection;
 
 import org.eclipse.emf.common.notify.NotificationChain;
@@ -15,12 +16,16 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
+import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
 import org.omnetpp.scave.model.Analysis;
+import org.omnetpp.scave.model.ChartSheets;
+import org.omnetpp.scave.model.Datasets;
+import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.ScaveModelPackage;
@@ -32,8 +37,9 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * <p>
  * The following features are implemented:
  * <ul>
+ *   <li>{@link org.omnetpp.scave.model.impl.AnalysisImpl#getInputs <em>Inputs</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.AnalysisImpl#getDatasets <em>Datasets</em>}</li>
- *   <li>{@link org.omnetpp.scave.model.impl.AnalysisImpl#getChartPages <em>Chart Pages</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.impl.AnalysisImpl#getChartSheets <em>Chart Sheets</em>}</li>
  * </ul>
  * </p>
  *
@@ -41,24 +47,34 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  */
 public class AnalysisImpl extends EObjectImpl implements Analysis {
 	/**
-	 * The cached value of the '{@link #getDatasets() <em>Datasets</em>}' containment reference list.
+	 * The cached value of the '{@link #getInputs() <em>Inputs</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getInputs()
+	 * @generated
+	 * @ordered
+	 */
+	protected Inputs inputs = null;
+
+	/**
+	 * The cached value of the '{@link #getDatasets() <em>Datasets</em>}' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see #getDatasets()
 	 * @generated
 	 * @ordered
 	 */
-	protected EList datasets = null;
+	protected Datasets datasets = null;
 
 	/**
-	 * The cached value of the '{@link #getChartPages() <em>Chart Pages</em>}' containment reference list.
+	 * The cached value of the '{@link #getChartSheets() <em>Chart Sheets</em>}' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getChartPages()
+	 * @see #getChartSheets()
 	 * @generated
 	 * @ordered
 	 */
-	protected EList chartPages = null;
+	protected ChartSheets chartSheets = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -83,10 +99,93 @@ public class AnalysisImpl extends EObjectImpl implements Analysis {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList getDatasets() {
-		if (datasets == null) {
-			datasets = new EObjectContainmentEList(Dataset.class, this, ScaveModelPackage.ANALYSIS__DATASETS);
+	public Inputs getInputs() {
+		return inputs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain basicSetInputs(Inputs newInputs, NotificationChain msgs) {
+		Inputs oldInputs = inputs;
+		inputs = newInputs;
+		if (eNotificationRequired()) {
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, ScaveModelPackage.ANALYSIS__INPUTS, oldInputs, newInputs);
+			if (msgs == null) msgs = notification; else msgs.add(notification);
 		}
+		return msgs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setInputs(Inputs newInputs) {
+		if (newInputs != inputs) {
+			NotificationChain msgs = null;
+			if (inputs != null)
+				msgs = ((InternalEObject)inputs).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - ScaveModelPackage.ANALYSIS__INPUTS, null, msgs);
+			if (newInputs != null)
+				msgs = ((InternalEObject)newInputs).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - ScaveModelPackage.ANALYSIS__INPUTS, null, msgs);
+			msgs = basicSetInputs(newInputs, msgs);
+			if (msgs != null) msgs.dispatch();
+		}
+		else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.ANALYSIS__INPUTS, newInputs, newInputs));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public ChartSheets getChartSheets() {
+		return chartSheets;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain basicSetChartSheets(ChartSheets newChartSheets, NotificationChain msgs) {
+		ChartSheets oldChartSheets = chartSheets;
+		chartSheets = newChartSheets;
+		if (eNotificationRequired()) {
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, ScaveModelPackage.ANALYSIS__CHART_SHEETS, oldChartSheets, newChartSheets);
+			if (msgs == null) msgs = notification; else msgs.add(notification);
+		}
+		return msgs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setChartSheets(ChartSheets newChartSheets) {
+		if (newChartSheets != chartSheets) {
+			NotificationChain msgs = null;
+			if (chartSheets != null)
+				msgs = ((InternalEObject)chartSheets).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - ScaveModelPackage.ANALYSIS__CHART_SHEETS, null, msgs);
+			if (newChartSheets != null)
+				msgs = ((InternalEObject)newChartSheets).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - ScaveModelPackage.ANALYSIS__CHART_SHEETS, null, msgs);
+			msgs = basicSetChartSheets(newChartSheets, msgs);
+			if (msgs != null) msgs.dispatch();
+		}
+		else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.ANALYSIS__CHART_SHEETS, newChartSheets, newChartSheets));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public Datasets getDatasets() {
 		return datasets;
 	}
 
@@ -95,11 +194,33 @@ public class AnalysisImpl extends EObjectImpl implements Analysis {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList getChartPages() {
-		if (chartPages == null) {
-			chartPages = new EObjectContainmentEList(ChartSheet.class, this, ScaveModelPackage.ANALYSIS__CHART_PAGES);
+	public NotificationChain basicSetDatasets(Datasets newDatasets, NotificationChain msgs) {
+		Datasets oldDatasets = datasets;
+		datasets = newDatasets;
+		if (eNotificationRequired()) {
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, ScaveModelPackage.ANALYSIS__DATASETS, oldDatasets, newDatasets);
+			if (msgs == null) msgs = notification; else msgs.add(notification);
 		}
-		return chartPages;
+		return msgs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setDatasets(Datasets newDatasets) {
+		if (newDatasets != datasets) {
+			NotificationChain msgs = null;
+			if (datasets != null)
+				msgs = ((InternalEObject)datasets).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - ScaveModelPackage.ANALYSIS__DATASETS, null, msgs);
+			if (newDatasets != null)
+				msgs = ((InternalEObject)newDatasets).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - ScaveModelPackage.ANALYSIS__DATASETS, null, msgs);
+			msgs = basicSetDatasets(newDatasets, msgs);
+			if (msgs != null) msgs.dispatch();
+		}
+		else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.ANALYSIS__DATASETS, newDatasets, newDatasets));
 	}
 
 	/**
@@ -109,10 +230,12 @@ public class AnalysisImpl extends EObjectImpl implements Analysis {
 	 */
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
+			case ScaveModelPackage.ANALYSIS__INPUTS:
+				return basicSetInputs(null, msgs);
 			case ScaveModelPackage.ANALYSIS__DATASETS:
-				return ((InternalEList)getDatasets()).basicRemove(otherEnd, msgs);
-			case ScaveModelPackage.ANALYSIS__CHART_PAGES:
-				return ((InternalEList)getChartPages()).basicRemove(otherEnd, msgs);
+				return basicSetDatasets(null, msgs);
+			case ScaveModelPackage.ANALYSIS__CHART_SHEETS:
+				return basicSetChartSheets(null, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -124,10 +247,12 @@ public class AnalysisImpl extends EObjectImpl implements Analysis {
 	 */
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
+			case ScaveModelPackage.ANALYSIS__INPUTS:
+				return getInputs();
 			case ScaveModelPackage.ANALYSIS__DATASETS:
 				return getDatasets();
-			case ScaveModelPackage.ANALYSIS__CHART_PAGES:
-				return getChartPages();
+			case ScaveModelPackage.ANALYSIS__CHART_SHEETS:
+				return getChartSheets();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -139,13 +264,14 @@ public class AnalysisImpl extends EObjectImpl implements Analysis {
 	 */
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case ScaveModelPackage.ANALYSIS__DATASETS:
-				getDatasets().clear();
-				getDatasets().addAll((Collection)newValue);
+			case ScaveModelPackage.ANALYSIS__INPUTS:
+				setInputs((Inputs)newValue);
 				return;
-			case ScaveModelPackage.ANALYSIS__CHART_PAGES:
-				getChartPages().clear();
-				getChartPages().addAll((Collection)newValue);
+			case ScaveModelPackage.ANALYSIS__DATASETS:
+				setDatasets((Datasets)newValue);
+				return;
+			case ScaveModelPackage.ANALYSIS__CHART_SHEETS:
+				setChartSheets((ChartSheets)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -158,11 +284,14 @@ public class AnalysisImpl extends EObjectImpl implements Analysis {
 	 */
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case ScaveModelPackage.ANALYSIS__DATASETS:
-				getDatasets().clear();
+			case ScaveModelPackage.ANALYSIS__INPUTS:
+				setInputs((Inputs)null);
 				return;
-			case ScaveModelPackage.ANALYSIS__CHART_PAGES:
-				getChartPages().clear();
+			case ScaveModelPackage.ANALYSIS__DATASETS:
+				setDatasets((Datasets)null);
+				return;
+			case ScaveModelPackage.ANALYSIS__CHART_SHEETS:
+				setChartSheets((ChartSheets)null);
 				return;
 		}
 		super.eUnset(featureID);
@@ -175,10 +304,12 @@ public class AnalysisImpl extends EObjectImpl implements Analysis {
 	 */
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
+			case ScaveModelPackage.ANALYSIS__INPUTS:
+				return inputs != null;
 			case ScaveModelPackage.ANALYSIS__DATASETS:
-				return datasets != null && !datasets.isEmpty();
-			case ScaveModelPackage.ANALYSIS__CHART_PAGES:
-				return chartPages != null && !chartPages.isEmpty();
+				return datasets != null;
+			case ScaveModelPackage.ANALYSIS__CHART_SHEETS:
+				return chartSheets != null;
 		}
 		return super.eIsSet(featureID);
 	}

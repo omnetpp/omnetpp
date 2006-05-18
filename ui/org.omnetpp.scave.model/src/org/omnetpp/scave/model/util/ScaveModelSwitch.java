@@ -206,6 +206,30 @@ public class ScaveModelSwitch {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case ScaveModelPackage.INPUTS: {
+				Inputs inputs = (Inputs)theEObject;
+				Object result = caseInputs(inputs);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case ScaveModelPackage.INPUT: {
+				Input input = (Input)theEObject;
+				Object result = caseInput(input);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case ScaveModelPackage.CHART_SHEETS: {
+				ChartSheets chartSheets = (ChartSheets)theEObject;
+				Object result = caseChartSheets(chartSheets);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case ScaveModelPackage.DATASETS: {
+				Datasets datasets = (Datasets)theEObject;
+				Object result = caseDatasets(datasets);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			default: return defaultCase(theEObject);
 		}
 	}
@@ -462,6 +486,66 @@ public class ScaveModelSwitch {
 	 * @generated
 	 */
 	public Object caseSelectDeselectOp(SelectDeselectOp object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpretting the object as an instance of '<em>Inputs</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpretting the object as an instance of '<em>Inputs</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public Object caseInputs(Inputs object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpretting the object as an instance of '<em>Input</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpretting the object as an instance of '<em>Input</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public Object caseInput(Input object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpretting the object as an instance of '<em>Chart Sheets</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpretting the object as an instance of '<em>Chart Sheets</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public Object caseChartSheets(ChartSheets object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpretting the object as an instance of '<em>Datasets</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpretting the object as an instance of '<em>Datasets</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public Object caseDatasets(Datasets object) {
 		return null;
 	}
 

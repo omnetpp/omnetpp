@@ -362,6 +362,94 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	}
 
 	/**
+	 * This keeps track of the one adapter used for all {@link org.omnetpp.scave.model.Inputs} instances.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected InputsItemProvider inputsItemProvider;
+
+	/**
+	 * This creates an adapter for a {@link org.omnetpp.scave.model.Inputs}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public Adapter createInputsAdapter() {
+		if (inputsItemProvider == null) {
+			inputsItemProvider = new InputsItemProvider(this);
+		}
+
+		return inputsItemProvider;
+	}
+
+	/**
+	 * This keeps track of the one adapter used for all {@link org.omnetpp.scave.model.Input} instances.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected InputItemProvider inputItemProvider;
+
+	/**
+	 * This creates an adapter for a {@link org.omnetpp.scave.model.Input}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public Adapter createInputAdapter() {
+		if (inputItemProvider == null) {
+			inputItemProvider = new InputItemProvider(this);
+		}
+
+		return inputItemProvider;
+	}
+
+	/**
+	 * This keeps track of the one adapter used for all {@link org.omnetpp.scave.model.ChartSheets} instances.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected ChartSheetsItemProvider chartSheetsItemProvider;
+
+	/**
+	 * This creates an adapter for a {@link org.omnetpp.scave.model.ChartSheets}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public Adapter createChartSheetsAdapter() {
+		if (chartSheetsItemProvider == null) {
+			chartSheetsItemProvider = new ChartSheetsItemProvider(this);
+		}
+
+		return chartSheetsItemProvider;
+	}
+
+	/**
+	 * This keeps track of the one adapter used for all {@link org.omnetpp.scave.model.Datasets} instances.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected DatasetsItemProvider datasetsItemProvider;
+
+	/**
+	 * This creates an adapter for a {@link org.omnetpp.scave.model.Datasets}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public Adapter createDatasetsAdapter() {
+		if (datasetsItemProvider == null) {
+			datasetsItemProvider = new DatasetsItemProvider(this);
+		}
+
+		return datasetsItemProvider;
+	}
+
+	/**
 	 * This returns the root adapter factory that contains this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -470,6 +558,10 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 		if (analysisItemProvider != null) analysisItemProvider.dispose();
 		if (selectItemProvider != null) selectItemProvider.dispose();
 		if (deselectItemProvider != null) deselectItemProvider.dispose();
+		if (inputsItemProvider != null) inputsItemProvider.dispose();
+		if (inputItemProvider != null) inputItemProvider.dispose();
+		if (chartSheetsItemProvider != null) chartSheetsItemProvider.dispose();
+		if (datasetsItemProvider != null) datasetsItemProvider.dispose();
 	}
 
 }

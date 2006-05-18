@@ -78,8 +78,9 @@ public class AnalysisItemProvider
 	public Collection getChildrenFeatures(Object object) {
 		if (childrenFeatures == null) {
 			super.getChildrenFeatures(object);
+			childrenFeatures.add(ScaveModelPackage.Literals.ANALYSIS__INPUTS);
 			childrenFeatures.add(ScaveModelPackage.Literals.ANALYSIS__DATASETS);
-			childrenFeatures.add(ScaveModelPackage.Literals.ANALYSIS__CHART_PAGES);
+			childrenFeatures.add(ScaveModelPackage.Literals.ANALYSIS__CHART_SHEETS);
 		}
 		return childrenFeatures;
 	}
@@ -127,8 +128,9 @@ public class AnalysisItemProvider
 		updateChildren(notification);
 
 		switch (notification.getFeatureID(Analysis.class)) {
+			case ScaveModelPackage.ANALYSIS__INPUTS:
 			case ScaveModelPackage.ANALYSIS__DATASETS:
-			case ScaveModelPackage.ANALYSIS__CHART_PAGES:
+			case ScaveModelPackage.ANALYSIS__CHART_SHEETS:
 				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
 				return;
 		}
@@ -147,13 +149,18 @@ public class AnalysisItemProvider
 
 		newChildDescriptors.add
 			(createChildParameter
-				(ScaveModelPackage.Literals.ANALYSIS__DATASETS,
-				 ScaveModelFactory.eINSTANCE.createDataset()));
+				(ScaveModelPackage.Literals.ANALYSIS__INPUTS,
+				 ScaveModelFactory.eINSTANCE.createInputs()));
 
 		newChildDescriptors.add
 			(createChildParameter
-				(ScaveModelPackage.Literals.ANALYSIS__CHART_PAGES,
-				 ScaveModelFactory.eINSTANCE.createChartSheet()));
+				(ScaveModelPackage.Literals.ANALYSIS__DATASETS,
+				 ScaveModelFactory.eINSTANCE.createDatasets()));
+
+		newChildDescriptors.add
+			(createChildParameter
+				(ScaveModelPackage.Literals.ANALYSIS__CHART_SHEETS,
+				 ScaveModelFactory.eINSTANCE.createChartSheets()));
 	}
 
 	/**
