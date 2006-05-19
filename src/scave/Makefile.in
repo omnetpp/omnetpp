@@ -35,7 +35,7 @@ COPTS=$(CPPFLAGS) $(CFLAGS) $(XML_CFLAGS) -I$(OMNETPP_INCL_DIR) -I. -DBUILDING_N
 
 OBJS= arraybuilder.o channel.o commonnodes.o compoundfilter.o \
       cstrtokenizer.o dataflowmanager.o datasorter.o diffquot.o \
-      exception.o filetokenizer.o filewriter.o filternodes.o \
+      eventlog.o exception.o filetokenizer.o filewriter.o filternodes.o \
       idlist.o mergernodes.o nodetype.o nodetyperegistry.o \
       patmatch.o resultfilemanager.o slidingwinavg.o util.o \
       vectorfilereader.o vectorfilewriter.o windowavg.o \

@@ -14,7 +14,7 @@ COPTS=$(CFLAGS) $(XML_CFLAGS) /I. /Fd"scave.pdb"
 
 OBJS= arraybuilder.obj channel.obj commonnodes.obj compoundfilter.obj \
       cstrtokenizer.obj dataflowmanager.obj datasorter.obj diffquot.obj \
-      exception.obj filetokenizer.obj filewriter.obj filternodes.obj \
+      eventlog.obj exception.obj filetokenizer.obj filewriter.obj filternodes.obj \
       idlist.obj mergernodes.obj nodetype.obj nodetyperegistry.obj \
       patmatch.obj resultfilemanager.obj slidingwinavg.obj util.obj \
       vectorfilereader.obj vectorfilewriter.obj windowavg.obj \
@@ -32,12 +32,16 @@ OBJS= arraybuilder.obj channel.obj commonnodes.obj compoundfilter.obj \
 #
 # Targets (TBD: build dll)
 #
-all : scave.lib
+all : scave.lib tracetool.exe
 
 scave.lib : $(OBJS)
 	$(AR) /out:scave.lib $(OBJS)
 	copy scave.lib $(OMNETPP_LIB_DIR:/=\)
 	- copy /b scave.pdb $(OMNETPP_LIB_DIR:/=\) 2>nul
+
+tracetool.exe : tracetool.obj eventlog.obj
+	$(LINK) $(LDFLAGS) /nologo /out:tracetool.exe tracetool.obj $(LIBS) ../scave/scave.lib $(XML_LIBS)
+	copy tracetool.exe $(OMNETPP_BIN_DIR:/=\)
 
 doc:
 	$(DOXYGEN:/=\) doxy.cfg
