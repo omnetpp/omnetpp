@@ -99,6 +99,12 @@ struct Run
     // these fields are concatenation of the above ones, cached for fast string matching
     std::string runName;
     std::string fileAndRunName;
+
+    // run attributes
+    std::string experimentName;
+    std::string measurementName;
+    std::string replicationName;
+    // plus we need custom labels
 };
 
 typedef std::set<std::string> StringSet;
