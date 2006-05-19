@@ -24,7 +24,8 @@ import org.omnetpp.resources.NEDResourcesPlugin;
 /**
  * Multi-page NED editor.
  * 
- * TODO react to resource changes (reread if file changed, close if file deleted) 
+ * TODO react to resource changes (reread if file changed, close if file deleted)
+ * FIXME File|Open in Eclipse won't work!!! it creates a JavaFileEditorInput which is NOT an IFileEditorInput!!! 
  */
 public class MultiPageNedEditor extends MultiPageEditorPart implements
 		IResourceChangeListener {
