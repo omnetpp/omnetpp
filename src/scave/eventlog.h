@@ -106,7 +106,9 @@ class EventLog
         EventLog(const char *logFileName);
         ~EventLog();
 
+        long getNumEvents();
         EventEntry *getEvent(long eventNumber);
+        EventEntry *getFirstEventAfter(double t);
         EventLog *traceEvent(long tracedEventNumber, bool causes = true, bool consequences = false);
         void writeTrace(FILE* fout);
 

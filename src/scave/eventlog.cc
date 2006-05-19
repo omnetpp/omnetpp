@@ -97,7 +97,7 @@ void EventLog::parseLogFile()
             {
                 if (numTokens < 8)
                 {
-                    fprintf(stderr, "Invalid format at %ld line: %s\n", lineNumber, tokensToStr(numTokens, vec));
+                    fprintf(stderr, "Invalid format at line %ld: %s\n", lineNumber, tokensToStr(numTokens, vec));
                 }
                 else
                 {
@@ -153,6 +153,11 @@ void EventLog::parseLogFile()
     }
 }
 
+long EventLog::getNumEvents()
+{
+    return eventList.size();
+}
+
 EventEntry *EventLog::getEvent(long eventNumber)
 {
     if (eventNumber<0 || eventNumber>=eventList.size() || !eventList[eventNumber])
@@ -181,6 +186,14 @@ ModuleEntry *EventLog::getModule(int moduleId, char *moduleClassName, char *modu
     moduleList.push_back(moduleEntry);
 
     return moduleEntry;
+}
+
+inline bool less_EventEntry_double(EventEntry *e, double t) {return e->simulationTime < t;}
+
+EventEntry *EventLog::getFirstEventAfter(double t)
+{
+    EventEntryList::iterator it = std::lower_bound(eventList.begin(), eventList.end(), t, less_EventEntry_double);
+    return it==eventList.end() ? NULL : *it;
 }
 
 char *EventLog::tokensToStr(int numTokens, char **vec)
