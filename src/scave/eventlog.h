@@ -22,7 +22,7 @@
 #include "filetokenizer.h"
 
 /**
- * @brief A compound or simple module extracted from the log file
+ * A compound or simple module extracted from the log file
  */
 class ModuleEntry
 {
@@ -41,17 +41,19 @@ typedef std::vector<ModuleEntry*> ModuleEntryList;
 class EventEntry;
 
 /**
- * @brief A message sent from one module to another.
+ * A message sent from one module to another.
  */
 class MessageEntry
 {
     public:
-        /** @brief Tells if this entry represents a message delivery or a message send */
+        /** Tells if this entry represents a message delivery or a message send */
         bool delivery;
         long lineNumber;
         std::string messageClassName;
         std::string messageName;
-        std::vector<std::string> logMessages;
+
+         /** These log messages actually belong to the target event, but this way we can preserve ordering of message entries within the event */
+         std::vector<std::string> logMessages;
 
         EventEntry *source;
         EventEntry *target;
@@ -72,7 +74,7 @@ class EventEntry
         long eventNumber;
         double simulationTime; // TODO: use simtime_t
         ModuleEntry *module;
-        MessageEntry* cause;
+        MessageEntry *cause;
         MessageEntryList causes;
         MessageEntryList consequences;
 
@@ -81,22 +83,23 @@ class EventEntry
         ~EventEntry();
 };
 
-typedef std::vector<EventEntry*> EventEntryList;
 
 /**
- * A trace utility to trace the causes and cosequences of a particular event back and forth in time.
+ * A trace utility to trace the causes and consequences of a particular event back and forth in time.
  */
 class EventLog
 {
     protected:
+        typedef std::vector<EventEntry*> EventEntryList;
+
         const char *logFileName;
-        /** @brief Ordered list of ModuleEntries as read from the log file */
+        /** Ordered list of ModuleEntries as read from the log file */
         ModuleEntryList moduleList;
-        /** @brief Ordered list of EventEntries as read from the log file */
+        /** Ordered list of EventEntries as read from the log file */
         EventEntryList eventList;
-        /** @brief Ordered list of MessageEntries as read from the log file */
+        /** Ordered list of MessageEntries as read from the log file */
         MessageEntryList messageList;
-        /** @brief Last traced event if any */
+        /** Last traced event if any */
         EventEntry *tracedEvent;
 
     public:

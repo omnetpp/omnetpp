@@ -101,7 +101,7 @@ void EventLog::parseLogFile()
                 }
                 else
                 {
-                    bool delivery = !strcmp(vec[0], "*");
+                    bool delivery = !strcmp(vec[0], "*");   //FIXME stricter format check overall
                     // skip [ character
                     long eventNumber = atol(vec[1] + 1);
                     long causalEventNumber = atol(vec[2]);
@@ -155,28 +155,23 @@ void EventLog::parseLogFile()
 
 EventEntry *EventLog::getEvent(long eventNumber)
 {
-    if (eventList[eventNumber] == NULL)
+    if (eventNumber<0 || eventNumber>=eventList.size() || !eventList[eventNumber])
     {
         fprintf(stderr, "Could not find event for: %ld", eventNumber);
-
         return NULL;
     }
-    else
-    {
-        return eventList[eventNumber];
-    }
+
+    return eventList[eventNumber];
 }
 
-ModuleEntry* EventLog::getModule(int moduleId, char *moduleClassName, char *moduleFullName)
+ModuleEntry *EventLog::getModule(int moduleId, char *moduleClassName, char *moduleFullName)
 {
-    for (ModuleEntryList::iterator it = moduleList.begin();
-        it != moduleList.end();
-        it++)
-    {
+    // if module with such ID already exists, return it
+    for (ModuleEntryList::iterator it = moduleList.begin(); it != moduleList.end(); it++)
         if ((*it)->moduleId == moduleId)
             return *it;
-    }
 
+    // not yet in there -- store it
     ModuleEntry *moduleEntry = new ModuleEntry();
     moduleEntry->moduleId = moduleId;
     // skip () characters
@@ -188,7 +183,7 @@ ModuleEntry* EventLog::getModule(int moduleId, char *moduleClassName, char *modu
     return moduleEntry;
 }
 
-char* EventLog::tokensToStr(int numTokens, char **vec)
+char *EventLog::tokensToStr(int numTokens, char **vec)
 {
     int length = numTokens;
 

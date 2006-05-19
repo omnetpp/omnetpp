@@ -4,6 +4,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.LightweightSystem;
+import org.eclipse.draw2d.Orientable;
+import org.eclipse.draw2d.ScrollPane;
+import org.eclipse.draw2d.Triangle;
 import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
@@ -15,8 +18,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
+import org.omnetpp.scave.engine.EventEntry;
+import org.omnetpp.scave.engine.EventLog;
 
 public class SequenceChartToolEditor extends EditorPart {
 
@@ -25,6 +31,11 @@ public class SequenceChartToolEditor extends EditorPart {
 	private Text text;
 	private Figure rootFigure;
 	private XYLayout rootLayout;
+	
+	private EventLog eventLog;  // the log file loaded
+
+	private int currentEventNumber = 0;
+	private EventLog filteredEventLog; // eventLog filtered for currentEventNumber
 	
 	public SequenceChartToolEditor() {
 		super();
@@ -36,6 +47,10 @@ public class SequenceChartToolEditor extends EditorPart {
 		setSite(site);
 		setInput(input);
 		//TODO site.setSelectionProvider(new WhateverSelectionProvider(this));
+		
+		IFileEditorInput fileInput = (IFileEditorInput)input;
+		String fileName = fileInput.getFile().getLocation().toFile().getAbsolutePath();
+		//XXX eventLog = new EventLog(fileName);
 	}
 	
 	@Override
@@ -48,13 +63,14 @@ public class SequenceChartToolEditor extends EditorPart {
 		
 		Canvas canvas = new Canvas(upper, SWT.NONE);
 		LightweightSystem lws = new LightweightSystem(canvas);
+		ScrollPane scrollPane = new ScrollPane();
+		scrollPane.setScrollBarVisibility(ScrollPane.AUTOMATIC);
 		rootFigure = new Figure();
+		scrollPane.setContents(rootFigure);
 		rootLayout = new XYLayout();
 		rootFigure.setLayoutManager(rootLayout);
-		lws.setContents(rootFigure);
+		lws.setContents(scrollPane);
 
-		drawSomething();
-		
 		// add text box into lower half
 		Composite lower = new Composite(sashForm, SWT.NONE);
 		lower.setLayout(new FillLayout());
@@ -62,7 +78,32 @@ public class SequenceChartToolEditor extends EditorPart {
 		text.setBackground(colorManager.getColor(ISeqChartColorConstants.TEXT_BG));
 
 		text.setText("Multi\nline\nText\nTest\n...\n\nMulti\nline\nText\nTest\n...\n\n");
+
+        // draw initial event graph
+		updateSequenceChart();	
 	}
+
+	/**
+	 * Goes to the given event and updates the chart.
+	 */
+	private void showSequenceChartForEvent(int eventNumber) {
+		currentEventNumber = eventNumber;
+		filteredEventLog = eventLog.traceEvent(eventNumber, true, true);
+		updateSequenceChart();
+	}
+	
+	/**
+	 * Draws the sequence chart for the current event.
+	 */
+	private void updateSequenceChart() {
+		Font someFont = new Font(null, "Arial", 12, SWT.BOLD);
+		Label label = new Label("Event "+currentEventNumber, null);
+		label.setFont(someFont);
+		rootFigure.add(label);
+		rootLayout.setConstraint(label, new Rectangle(0,0,-1,-1));
+
+		//...		
+	}		
 
 	private void drawSomething() {
 		Font someFont = new Font(null, "Arial", 12, SWT.BOLD);
@@ -72,6 +113,15 @@ public class SequenceChartToolEditor extends EditorPart {
 		rootFigure.add(label1);
 		rootLayout.setConstraint(label1, new Rectangle(10,10,-1,-1));
 
+		Triangle tria = new Triangle();
+		tria.setSize(1000, 100);
+		tria.setPreferredSize(500, 100);
+		tria.setBounds(new Rectangle(0,0,1000,200));
+		tria.setDirection(Orientable.SOUTH);
+		tria.setFill(true);
+		tria.setBackgroundColor(colorManager.getColor(ISeqChartColorConstants.DEFAULT_LINE));
+		rootFigure.add(tria);
+		rootLayout.setConstraint(tria, new Rectangle(100,100,5000,-1));
 	}
 
 	public void dispose() {
