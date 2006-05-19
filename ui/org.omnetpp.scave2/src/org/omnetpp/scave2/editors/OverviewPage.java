@@ -34,6 +34,16 @@ public class OverviewPage extends ScrolledForm {
 		return panel.getTreeViewer();
 	}
 	
+	public TreeViewer getPhysicalDataTreeViewer() {
+		DataPanel panel = (DataPanel)dataSection.getClient();
+		return panel.getPhysicalTreeViewer();
+	}
+	
+	public TreeViewer getLogicalDataTreeViewer() {
+		DataPanel panel = (DataPanel)dataSection.getClient();
+		return panel.getLogicalTreeViewer();
+	}
+	
 	public TreeViewer getDatasetsTreeViewer() {
 		DatasetsPanel panel = (DatasetsPanel)datasetsSection.getClient();
 		return panel.getTreeViewer();
@@ -43,6 +53,8 @@ public class OverviewPage extends ScrolledForm {
 		ChartSheetsPanel panel = (ChartSheetsPanel)chartSheetsSection.getClient();
 		return panel.getTreeViewer();
 	}
+	
+	
 
 	private void initialize() {
 		setExpandHorizontal(true);
@@ -81,6 +93,7 @@ public class OverviewPage extends ScrolledForm {
 		inputFilesSection.setExpanded(true);
 		inputFilesSection.setLayoutData(gridData);
 		inputFilesSection.setText("Input files");
+		inputFilesSection.setDescription("Add or drag&drop output files that should by used in this analysis.");
 		inputFilesSection.setClient(new InputFilesPanel(inputFilesSection, SWT.NONE));
 	}
 
@@ -98,6 +111,7 @@ public class OverviewPage extends ScrolledForm {
 		dataSection.setExpanded(true);
 		dataSection.setLayoutData(gridData1);
 		dataSection.setText("Data");
+		dataSection.setDescription("Here you can browse all data (vectors, scalars and histograms) that come from the input files.");
 		dataSection.setClient(new DataPanel(dataSection, SWT.NONE));
 	}
 
@@ -115,6 +129,7 @@ public class OverviewPage extends ScrolledForm {
 		datasetsSection.setExpanded(true);
 		datasetsSection.setLayoutData(gridData2);
 		datasetsSection.setText("Datasets");
+		datasetsSection.setDescription("Here you can browse the datasets you have created from the input.");
 		datasetsSection.setClient(new DatasetsPanel(datasetsSection, SWT.NONE));
 	}
 
@@ -132,6 +147,7 @@ public class OverviewPage extends ScrolledForm {
 		chartSheetsSection.setExpanded(true);
 		chartSheetsSection.setLayoutData(gridData3);
 		chartSheetsSection.setText("Chart sheets and charts");
+		chartSheetsSection.setDescription("Here you can browse the charts you have created for the datasets.");
 		chartSheetsSection.setClient(new ChartSheetsPanel(chartSheetsSection, SWT.NONE));
 	}
 }

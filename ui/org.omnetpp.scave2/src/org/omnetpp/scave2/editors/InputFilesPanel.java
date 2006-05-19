@@ -18,10 +18,8 @@ public class InputFilesPanel extends TreeWithButtonsPanel {
 	}
 	
 	private void initialize() {
-		Label label = getLabel();
 		Composite buttonPanel = getButtonPanel();
 		FormToolkit toolkit = getFormToolkit();
-		label.setText("Add or drag&drop output files that should by used in this analysis.");
 		addFileButton = toolkit.createButton(buttonPanel, "Add...", SWT.NONE);
 		addWildcardButton = toolkit.createButton(buttonPanel, "Add wildcard...", SWT.NONE);
 		removeFileButton = toolkit.createButton(buttonPanel, "Remove", SWT.NONE);

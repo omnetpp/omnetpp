@@ -18,11 +18,9 @@ public class ChartSheetsPanel extends TreeWithButtonsPanel {
 	}
 	
 	private void initialize() {
-		Label label = getLabel();
 		Composite buttonPanel = getButtonPanel();
 		FormToolkit toolkit = getFormToolkit();
-		label.setText("Here you can browse the charts you have created for the datasets.");
-		openChartSheetButton = toolkit.createButton(buttonPanel, "Open...",	SWT.NONE);
+		openChartSheetButton = toolkit.createButton(buttonPanel, "Open",	SWT.NONE);
 		newChartSheetButton = toolkit.createButton(buttonPanel, "New...", SWT.NONE);
 		removeChartSheetButton = toolkit.createButton(buttonPanel, "Remove", SWT.NONE);
 	}

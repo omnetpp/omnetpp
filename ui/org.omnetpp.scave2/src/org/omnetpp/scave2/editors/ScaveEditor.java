@@ -37,7 +37,9 @@ public class ScaveEditor extends AbstractEMFModelEditor {
         configureTreeViewer(overviewPage.getInputFilesTreeViewer());
         configureTreeViewer(overviewPage.getDatasetsTreeViewer());
         configureTreeViewer(overviewPage.getChartSheetsTreeViewer());
-
+        overviewPage.getPhysicalDataTreeViewer().setContentProvider(new InputPhysicalViewContentProvider());
+        overviewPage.getPhysicalDataTreeViewer().setLabelProvider(new InputPhysicalViewLabelProvider());
+        
         Analysis analysis = getAnalysisModelObject();
         // create mandatory objects if not exist; XXX must also prevent them from being deleted
         if (analysis.getInputs()==null)
@@ -50,7 +52,7 @@ public class ScaveEditor extends AbstractEMFModelEditor {
         overviewPage.getInputFilesTreeViewer().setInput(analysis.getInputs());
         overviewPage.getDatasetsTreeViewer().setInput(analysis.getDatasets());
         overviewPage.getChartSheetsTreeViewer().setInput(analysis.getChartSheets()); //XXX for now...
-
+        overviewPage.getPhysicalDataTreeViewer().setInput(analysis.getInputs());
         //createDatasetPage("queue lengths");
         //createDatasetPage("average EED");
         //createDatasetPage("frame counts");
