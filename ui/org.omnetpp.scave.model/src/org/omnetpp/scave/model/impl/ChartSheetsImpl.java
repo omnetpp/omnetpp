@@ -6,14 +6,21 @@
  */
 package org.omnetpp.scave.model.impl;
 
+import java.util.Collection;
+
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
+
+import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
+
+import org.eclipse.emf.ecore.util.EObjectContainmentEList;
+import org.eclipse.emf.ecore.util.InternalEList;
 
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.ChartSheets;
@@ -34,14 +41,14 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  */
 public class ChartSheetsImpl extends EObjectImpl implements ChartSheets {
 	/**
-	 * The cached value of the '{@link #getChartSheets() <em>Chart Sheets</em>}' containment reference.
+	 * The cached value of the '{@link #getChartSheets() <em>Chart Sheets</em>}' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see #getChartSheets()
 	 * @generated
 	 * @ordered
 	 */
-	protected ChartSheet chartSheets = null;
+	protected EList chartSheets = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -66,42 +73,11 @@ public class ChartSheetsImpl extends EObjectImpl implements ChartSheets {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public ChartSheet getChartSheets() {
+	public EList getChartSheets() {
+		if (chartSheets == null) {
+			chartSheets = new EObjectContainmentEList(ChartSheet.class, this, ScaveModelPackage.CHART_SHEETS__CHART_SHEETS);
+		}
 		return chartSheets;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public NotificationChain basicSetChartSheets(ChartSheet newChartSheets, NotificationChain msgs) {
-		ChartSheet oldChartSheets = chartSheets;
-		chartSheets = newChartSheets;
-		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, ScaveModelPackage.CHART_SHEETS__CHART_SHEETS, oldChartSheets, newChartSheets);
-			if (msgs == null) msgs = notification; else msgs.add(notification);
-		}
-		return msgs;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setChartSheets(ChartSheet newChartSheets) {
-		if (newChartSheets != chartSheets) {
-			NotificationChain msgs = null;
-			if (chartSheets != null)
-				msgs = ((InternalEObject)chartSheets).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - ScaveModelPackage.CHART_SHEETS__CHART_SHEETS, null, msgs);
-			if (newChartSheets != null)
-				msgs = ((InternalEObject)newChartSheets).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - ScaveModelPackage.CHART_SHEETS__CHART_SHEETS, null, msgs);
-			msgs = basicSetChartSheets(newChartSheets, msgs);
-			if (msgs != null) msgs.dispatch();
-		}
-		else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.CHART_SHEETS__CHART_SHEETS, newChartSheets, newChartSheets));
 	}
 
 	/**
@@ -112,7 +88,7 @@ public class ChartSheetsImpl extends EObjectImpl implements ChartSheets {
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 			case ScaveModelPackage.CHART_SHEETS__CHART_SHEETS:
-				return basicSetChartSheets(null, msgs);
+				return ((InternalEList)getChartSheets()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -138,7 +114,8 @@ public class ChartSheetsImpl extends EObjectImpl implements ChartSheets {
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
 			case ScaveModelPackage.CHART_SHEETS__CHART_SHEETS:
-				setChartSheets((ChartSheet)newValue);
+				getChartSheets().clear();
+				getChartSheets().addAll((Collection)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -152,7 +129,7 @@ public class ChartSheetsImpl extends EObjectImpl implements ChartSheets {
 	public void eUnset(int featureID) {
 		switch (featureID) {
 			case ScaveModelPackage.CHART_SHEETS__CHART_SHEETS:
-				setChartSheets((ChartSheet)null);
+				getChartSheets().clear();
 				return;
 		}
 		super.eUnset(featureID);
@@ -166,7 +143,7 @@ public class ChartSheetsImpl extends EObjectImpl implements ChartSheets {
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
 			case ScaveModelPackage.CHART_SHEETS__CHART_SHEETS:
-				return chartSheets != null;
+				return chartSheets != null && !chartSheets.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

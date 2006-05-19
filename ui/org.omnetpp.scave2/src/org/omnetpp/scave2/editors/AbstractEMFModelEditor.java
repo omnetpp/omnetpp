@@ -9,7 +9,6 @@ package org.omnetpp.scave2.editors;
 
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,57 +27,65 @@ import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-
+import org.eclipse.emf.common.command.BasicCommandStack;
+import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.common.command.CommandStack;
+import org.eclipse.emf.common.command.CommandStackListener;
+import org.eclipse.emf.common.notify.AdapterFactory;
+import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.ui.MarkerHelper;
+import org.eclipse.emf.common.ui.editor.ProblemEditorPart;
+import org.eclipse.emf.common.util.BasicDiagnostic;
+import org.eclipse.emf.common.util.Diagnostic;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EValidator;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.util.EContentAdapter;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.xmi.XMIResource;
+import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
+import org.eclipse.emf.edit.domain.EditingDomain;
+import org.eclipse.emf.edit.domain.IEditingDomainProvider;
+import org.eclipse.emf.edit.provider.AdapterFactoryItemDelegator;
+import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
+import org.eclipse.emf.edit.provider.ReflectiveItemProviderAdapterFactory;
+import org.eclipse.emf.edit.provider.resource.ResourceItemProviderAdapterFactory;
+import org.eclipse.emf.edit.ui.action.EditingDomainActionBarContributor;
+import org.eclipse.emf.edit.ui.celleditor.AdapterFactoryTreeEditor;
+import org.eclipse.emf.edit.ui.dnd.EditingDomainViewerDropAdapter;
+import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
+import org.eclipse.emf.edit.ui.dnd.ViewerDragAdapter;
+import org.eclipse.emf.edit.ui.provider.AdapterFactoryContentProvider;
+import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
+import org.eclipse.emf.edit.ui.util.EditUIMarkerHelper;
+import org.eclipse.emf.edit.ui.view.ExtendedPropertySheetPage;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-
-import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
-import org.eclipse.jface.viewers.TableLayout;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
-
-import org.eclipse.swt.SWT;
-
-import org.eclipse.swt.custom.CTabFolder;
-
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
-
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
-
-import org.eclipse.swt.graphics.Point;
-
-import org.eclipse.swt.layout.FillLayout;
-
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeColumn;
-
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -87,86 +94,30 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
-
+import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.dialogs.SaveAsDialog;
-
 import org.eclipse.ui.ide.IGotoMarker;
-
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
-
 import org.eclipse.ui.views.contentoutline.ContentOutline;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
-
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheet;
 import org.eclipse.ui.views.properties.PropertySheetPage;
-
-import org.eclipse.emf.common.command.BasicCommandStack;
-import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.common.command.CommandStack;
-import org.eclipse.emf.common.command.CommandStackListener;
-
-import org.eclipse.emf.common.notify.AdapterFactory;
-import org.eclipse.emf.common.notify.Notification;
-
-import org.eclipse.emf.common.ui.MarkerHelper;
-import org.eclipse.emf.common.ui.ViewerPane;
-
-import org.eclipse.emf.common.ui.editor.ProblemEditorPart;
-
-import org.eclipse.emf.common.ui.viewer.IViewerProvider;
-
-import org.eclipse.emf.common.util.BasicDiagnostic;
-import org.eclipse.emf.common.util.Diagnostic;
-import org.eclipse.emf.common.util.URI;
-
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EValidator;
-
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-
-import org.eclipse.emf.ecore.util.EContentAdapter;
-import org.eclipse.emf.ecore.util.EcoreUtil;
-
-import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
-import org.eclipse.emf.edit.domain.EditingDomain;
-import org.eclipse.emf.edit.domain.IEditingDomainProvider;
-
-import org.eclipse.emf.edit.provider.AdapterFactoryItemDelegator;
-import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
-import org.eclipse.emf.edit.provider.ReflectiveItemProviderAdapterFactory;
-
-import org.eclipse.emf.edit.provider.resource.ResourceItemProviderAdapterFactory;
-
-import org.eclipse.emf.edit.ui.action.EditingDomainActionBarContributor;
-
-import org.eclipse.emf.edit.ui.celleditor.AdapterFactoryTreeEditor;
-
-import org.eclipse.emf.edit.ui.dnd.EditingDomainViewerDropAdapter;
-import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
-import org.eclipse.emf.edit.ui.dnd.ViewerDragAdapter;
-
-import org.eclipse.emf.edit.ui.provider.AdapterFactoryContentProvider;
-import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
-
-import org.eclipse.emf.edit.ui.util.EditUIMarkerHelper;
-
-import org.eclipse.emf.edit.ui.view.ExtendedPropertySheetPage;
-
-import org.omnetpp.scave.model.provider.ScaveModelItemProviderAdapterFactory;
-
-import org.eclipse.ui.actions.WorkspaceModifyOperation;
-
+import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.provider.ScaveEditPlugin;
+import org.omnetpp.scave.model.provider.ScaveModelItemProviderAdapterFactory;
 
 
 /**
  * This is an abstract base class for EMF-based editors. Compare
  * with EMF-generated multi-page editors.
  */
+//FIXME "New Children" etc context menu is only available after clicking in the outline page at least once
+//FIXME if Datasets is empty, context menu offers "New Input File" if Inputs is selected in the content outline
+//TODO create a good wizard as well
+//TODO review and customize context menu (e.g. do we need "Validate" or "Load resource"?) 
 public abstract class AbstractEMFModelEditor
 	extends MultiPageEditorPart
 	implements IEditingDomainProvider, ISelectionProvider, IMenuListener, /*IViewerProvider,*/ IGotoMarker {
@@ -201,6 +152,15 @@ public abstract class AbstractEMFModelEditor
 	protected PropertySheetPage propertySheetPage;
 
 	/**
+	 * The selection change listener added to all viewers 
+	 */
+	ISelectionChangedListener selectionChangedListener = new ISelectionChangedListener() {
+		public void selectionChanged(SelectionChangedEvent selectionChangedEvent) {
+			handleSelectionChange(selectionChangedEvent.getSelection());
+		}
+	};
+	
+	/**
 	 * This keeps track of all the {@link org.eclipse.jface.viewers.ISelectionChangedListener}s that are listening to this editor.
 	 * We need this because we implement ISelectionProvider which includes having to manage a listener list.
 	 */
@@ -226,8 +186,6 @@ public abstract class AbstractEMFModelEditor
 				if (p instanceof ContentOutline) {
 					if (((ContentOutline)p).getCurrentPage() == contentOutlinePage) {
 						getActionBarContributor().setActiveEditor(AbstractEMFModelEditor.this);
-
-						//setCurrentViewer(contentOutlineViewer);
 					}
 				}
 				else if (p instanceof PropertySheet) {
@@ -584,45 +542,48 @@ public abstract class AbstractEMFModelEditor
 	 * This sets the selection into whichever viewer is active.
 	 */
 	public void setSelectionToViewer(Collection collection) {
-		handleSelectionChange(new StructuredSelection(collection.toArray()), null);
+		handleSelectionChange(new StructuredSelection(collection.toArray()));
 	}
 
 	/**
-	 * Utility function
-	 * XXX merge into configureTreeViewer()!
+	 * Utility function to update selection in a viewer without generating 
+	 * further notifications.
 	 */
-	protected void addSelectionChangedListenerTo(TreeViewer modelViewer)	{
-		modelViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			boolean inProgress = false; // to prevent infinite notification loops
-			public void selectionChanged(SelectionChangedEvent selectionChangedEvent) {
-				if (!inProgress) {
-					inProgress = true;
-					handleSelectionChange(selectionChangedEvent.getSelection(), selectionChangedEvent.getSource());
-					inProgress = false;
-				}
-			}
-		});
-	}
-
-	/**
-	 * Utility function to update selection in a viewer (TreeViewer).
-	 */
-	protected void setSelectionToViewer(Viewer target, ISelection selection, Object source) {
-		if (target!=null && target!=source) {
-			if (!selection.isEmpty())
-				target.setSelection(selection,true);
+	protected void setViewerSelectionNoNotify(Viewer target, ISelection selection) {
+		if (target!=null) {
+			target.removeSelectionChangedListener(selectionChangedListener);
+			target.setSelection(selection,true);
+			target.addSelectionChangedListener(selectionChangedListener);
 		}
 	}
 	
 	/**
 	 * Propagates the selection everywhere. Override if you have more widgets to update!
 	 */
-	protected void handleSelectionChange(ISelection selection, Object source) {
-		editorSelection = selection;
-		setSelectionToViewer(contentOutlineViewer, selection, source);
-		updateStatusLineManager(contentOutlineStatusLineManager, selection);
-		updateStatusLineManager(getActionBars().getStatusLineManager(), selection);
-		fireSelectionChangedEvent(selection);
+	protected void handleSelectionChange(ISelection selection) {
+		// Note: despite the check below, we still may get double notifications
+		// because TreeSelection compares its internal TreePaths instead of the 
+		// content objects, and it'll mismatch for treeviewers with different roots.
+		// But it's OK.
+		if (selection!=editorSelection && !selection.equals(editorSelection)) {
+			//System.out.println("handleSelectionChange(), size="+((IStructuredSelection)selection).size()+" first:"+((IStructuredSelection)selection).getFirstElement());
+			//System.out.println("        editorSelection: size="+((IStructuredSelection)editorSelection).size()+" first:"+((IStructuredSelection)editorSelection).getFirstElement());
+			editorSelection = selection;
+			setViewerSelectionNoNotify(contentOutlineViewer, selection);
+			updateStatusLineManager(contentOutlineStatusLineManager, selection);
+			updateStatusLineManager(getActionBars().getStatusLineManager(), selection);
+			fireSelectionChangedEvent(selection);
+		}
+	}
+
+	/**
+	 * Notify listeners on {@link org.eclipse.jface.viewers.ISelectionProvider} about a selection change.
+	 */
+	protected void fireSelectionChangedEvent(ISelection selection) {
+		for (Iterator listeners = selectionChangedListeners.iterator(); listeners.hasNext(); ) {
+			ISelectionChangedListener listener = (ISelectionChangedListener)listeners.next();
+			listener.selectionChanged(new SelectionChangedEvent(this, selection));
+		}
 	}
 	
 	/**
@@ -736,15 +697,18 @@ public abstract class AbstractEMFModelEditor
 	public void configureTreeViewer(TreeViewer modelViewer) {
 		modelViewer.setContentProvider(new AdapterFactoryContentProvider(adapterFactory));
 		modelViewer.setLabelProvider(new AdapterFactoryLabelProvider(adapterFactory));
+
 		new AdapterFactoryTreeEditor(modelViewer.getTree(), adapterFactory);
+
+		// XXX test which one is better here 
+		//modelViewer.addPostSelectionChangedListener(selectionChangedListener);
+		modelViewer.addSelectionChangedListener(selectionChangedListener);
+
 		createContextMenuFor(modelViewer);
 	}	
 
 	/**
 	 * This is how the framework determines which interfaces we implement.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
 	 */
 	public Object getAdapter(Class key) {
 		if (key.equals(IContentOutlinePage.class)) {
@@ -778,7 +742,7 @@ public abstract class AbstractEMFModelEditor
 					//
 					contentOutlineViewer.setContentProvider(new AdapterFactoryContentProvider(adapterFactory));
 					contentOutlineViewer.setLabelProvider(new AdapterFactoryLabelProvider(adapterFactory));
-					contentOutlineViewer.setInput(editingDomain.getResourceSet());
+					initializeContentOutlineViewer(contentOutlineViewer); // should call setInput()
 
 					// Make sure our popups work.
 					//
@@ -810,13 +774,18 @@ public abstract class AbstractEMFModelEditor
 			//
 			contentOutlinePage.addSelectionChangedListener(new ISelectionChangedListener() {
 				public void selectionChanged(SelectionChangedEvent event) {
-					handleSelectionChange(event.getSelection(), event.getSource());
+					handleSelectionChange(event.getSelection());
 				}
 			});
 		}
 
 		return contentOutlinePage;
 	}
+
+	/**
+	 * Should call contentOutlineViewer.setInput().
+	 */
+	protected abstract void initializeContentOutlineViewer(Viewer contentOutlineViewer);
 
 	/**
 	 * This accesses a cached version of the property sheet.
@@ -1019,19 +988,8 @@ public abstract class AbstractEMFModelEditor
 	 * Calling this will result in notifing the listeners.
 	 */
 	public void setSelection(ISelection selection) {
-		handleSelectionChange(selection, null);
+		handleSelectionChange(selection);
 	}
-
-	/**
-	 * Notify listeners on {@link org.eclipse.jface.viewers.ISelectionProvider} about a selection change.
-	 */
-	protected void fireSelectionChangedEvent(ISelection selection) {
-		for (Iterator listeners = selectionChangedListeners.iterator(); listeners.hasNext(); ) {
-			ISelectionChangedListener listener = (ISelectionChangedListener)listeners.next();
-			listener.selectionChanged(new SelectionChangedEvent(this, selection));
-		}
-	}
-
 
 	/**
 	 * Utility method to update "Selected X objects" text on the status bar.

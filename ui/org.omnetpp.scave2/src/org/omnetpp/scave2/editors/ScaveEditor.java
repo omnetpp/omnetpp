@@ -4,12 +4,14 @@ import java.util.ArrayList;
 
 import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.omnetpp.scave.model.Analysis;
+import org.omnetpp.scave.model.ScaveModelFactory;
 
 public class ScaveEditor extends AbstractEMFModelEditor {
 
@@ -36,23 +38,38 @@ public class ScaveEditor extends AbstractEMFModelEditor {
         configureTreeViewer(overviewPage.getDatasetsTreeViewer());
         configureTreeViewer(overviewPage.getChartSheetsTreeViewer());
 
-        //XXX catch potential nullpointer- and classcast exceptions during resource magic 
-        XMIResource resource = (XMIResource)editingDomain.getResourceSet().getResources().get(0);
-        Analysis analysis = (Analysis)resource.getContents().get(0);
-        
+        Analysis analysis = getAnalysisModelObject();
+        // create mandatory objects if not exist; XXX must also prevent them from being deleted
+        if (analysis.getInputs()==null)
+        	analysis.setInputs(ScaveModelFactory.eINSTANCE.createInputs());
+        if (analysis.getDatasets()==null)
+        	analysis.setDatasets(ScaveModelFactory.eINSTANCE.createDatasets());
+        if (analysis.getChartSheets()==null)
+        	analysis.setChartSheets(ScaveModelFactory.eINSTANCE.createChartSheets());
+
         overviewPage.getInputFilesTreeViewer().setInput(analysis.getInputs());
         overviewPage.getDatasetsTreeViewer().setInput(analysis.getDatasets());
         overviewPage.getChartSheetsTreeViewer().setInput(analysis.getChartSheets()); //XXX for now...
 
-        addSelectionChangedListenerTo(overviewPage.getInputFilesTreeViewer());
-        addSelectionChangedListenerTo(overviewPage.getDatasetsTreeViewer());
-        addSelectionChangedListenerTo(overviewPage.getChartSheetsTreeViewer());
-        
         //createDatasetPage("queue lengths");
         //createDatasetPage("average EED");
         //createDatasetPage("frame counts");
         //createChartPage("packet loss");
         //createChartPage("delay");
+	}
+
+    /**
+     * Utility method: Returns the Analysis object from the resource.
+     */
+    //XXX catch potential nullpointer- and classcast exceptions during resource magic 
+	public Analysis getAnalysisModelObject() {
+    	XMIResource resource = (XMIResource)editingDomain.getResourceSet().getResources().get(0);
+    	Analysis analysis = (Analysis)resource.getContents().get(0);
+    	return analysis;
+    }
+	
+	protected void initializeContentOutlineViewer(Viewer contentOutlineViewer) {
+		contentOutlineViewer.setInput(getAnalysisModelObject());
 	}
 
 	private void createOverviewPage() {
@@ -100,12 +117,12 @@ public class ScaveEditor extends AbstractEMFModelEditor {
 	}
 
 	@Override
-	public void handleSelectionChange(ISelection selection, Object source) {
-		super.handleSelectionChange(selection, source);
+	public void handleSelectionChange(ISelection selection) {
+		super.handleSelectionChange(selection);
 
-		setSelectionToViewer(overviewPage.getInputFilesTreeViewer(), selection, source);
-		setSelectionToViewer(overviewPage.getDatasetsTreeViewer(), selection, source);
-		setSelectionToViewer(overviewPage.getChartSheetsTreeViewer(), selection, source);
+		setViewerSelectionNoNotify(overviewPage.getInputFilesTreeViewer(), selection);
+		setViewerSelectionNoNotify(overviewPage.getDatasetsTreeViewer(), selection);
+		setViewerSelectionNoNotify(overviewPage.getChartSheetsTreeViewer(), selection);
 	}
 }
 

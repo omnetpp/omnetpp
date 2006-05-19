@@ -90,8 +90,8 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ChartSheets">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="chartSheets" eType="#//ChartSheet"
-        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="chartSheets" upperBound="-1"
+        eType="#//ChartSheet" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Datasets">
     <eStructuralFeatures xsi:type="ecore:EReference" name="datasets" upperBound="-1"

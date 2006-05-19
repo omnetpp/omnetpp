@@ -1294,7 +1294,7 @@ public interface ScaveModelPackage extends EPackage {
 	int CHART_SHEETS = 18;
 
 	/**
-	 * The feature id for the '<em><b>Chart Sheets</b></em>' containment reference.
+	 * The feature id for the '<em><b>Chart Sheets</b></em>' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -1944,10 +1944,10 @@ public interface ScaveModelPackage extends EPackage {
 	EClass getChartSheets();
 
 	/**
-	 * Returns the meta object for the containment reference '{@link org.omnetpp.scave.model.ChartSheets#getChartSheets <em>Chart Sheets</em>}'.
+	 * Returns the meta object for the containment reference list '{@link org.omnetpp.scave.model.ChartSheets#getChartSheets <em>Chart Sheets</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference '<em>Chart Sheets</em>'.
+	 * @return the meta object for the containment reference list '<em>Chart Sheets</em>'.
 	 * @see org.omnetpp.scave.model.ChartSheets#getChartSheets()
 	 * @see #getChartSheets()
 	 * @generated
@@ -2017,7 +2017,7 @@ public interface ScaveModelPackage extends EPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	interface Literals {
+	interface Literals  {
 		/**
 		 * The meta object literal for the '{@link org.omnetpp.scave.model.impl.DatasetImpl <em>Dataset</em>}' class.
 		 * <!-- begin-user-doc -->
@@ -2489,7 +2489,7 @@ public interface ScaveModelPackage extends EPackage {
 		EClass CHART_SHEETS = eINSTANCE.getChartSheets();
 
 		/**
-		 * The meta object literal for the '<em><b>Chart Sheets</b></em>' containment reference feature.
+		 * The meta object literal for the '<em><b>Chart Sheets</b></em>' containment reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
