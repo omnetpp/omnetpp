@@ -16,6 +16,7 @@
 #include "resultfilemanager.h"
 #include "datasorter.h"
 #include "util.h"   // strdictcmp
+#include "eventlog.h"
 %}
 
 %exception {
@@ -91,6 +92,10 @@ namespace std {
 
    %template(RunList) vector<Run*>;
    %template(FileList) vector<File*>;
+
+   specialize_std_vector(MessageEntry*);
+
+   %template(MessageEntries) vector<MessageEntry*>;
 };
 
 %typemap(javacode) IDList %{
@@ -172,6 +177,9 @@ FIX_STRING_MEMBER(Run, networkName, NetworkName);
 FIX_STRING_MEMBER(Run, date, Date);
 FIX_STRING_MEMBER(Run, runName, RunName);
 FIX_STRING_MEMBER(Run, fileAndRunName, FileAndRunName);
+FIX_STRING_MEMBER(Run, experimentName, ExperimentName);
+FIX_STRING_MEMBER(Run, measurementName, MeasurementName);
+FIX_STRING_MEMBER(Run, replicationName, ReplicationName);
 
 %rename Run::fileRef file;
 %rename ResultItem::runRef run;
@@ -216,5 +224,16 @@ int strdictcmp(const char *s1, const char *s2);
 
 // wrap the data-flow engine as well
 %include plove.i
+
+// wrap eventlog.h
+%ignore EventLog::writeTrace;
+
+FIX_STRING_MEMBER(MessageEntry, messageName, MessageName);
+FIX_STRING_MEMBER(MessageEntry, messageClassName, MessageClassName);
+
+FIX_STRING_MEMBER(ModuleEntry, moduleClassName, ModuleClassName);
+FIX_STRING_MEMBER(ModuleEntry, moduleFullName, ModuleFullName);
+
+%include "eventlog.h"
 
 
