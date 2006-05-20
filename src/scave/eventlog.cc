@@ -101,7 +101,7 @@ void EventLog::parseLogFile()
             {
                 if (numTokens < 8)
                 {
-                    fprintf(stderr, "Invalid format at line %ld: %s\n", lineNumber, tokensToStr(numTokens, vec));
+                    fprintf(stderr, "Invalid format at line %ld: %s\n", lineNumber, tokensToStr(numTokens, vec)); //XXX
                 }
                 else
                 {
@@ -152,6 +152,11 @@ void EventLog::parseLogFile()
     for (MessageEntryList::iterator it = messageList.begin(); it != messageList.end(); it++)
     {
         MessageEntry *messageEntry = *it;
+        if (!messageEntry->source || !messageEntry->target)
+        {
+            fprintf(stderr, "Internal error (?): message at line %ld does not have source or target event set\n", lineNumber); //XXX
+            continue;
+        }
         messageEntry->source->consequences.push_back(messageEntry);
         messageEntry->target->causes.push_back(messageEntry);
     }
@@ -201,6 +206,12 @@ ModuleEntry *EventLog::getOrAddModule(int moduleId, char *moduleClassName, char 
 }
 
 inline bool less_EventEntry_long(EventEntry *e, long eventNumber) {return e->eventNumber < eventNumber;}
+
+int EventLog::findEvent(EventEntry *event)
+{
+    EventEntryList::iterator it = std::lower_bound(eventList.begin(), eventList.end(), event->eventNumber, less_EventEntry_long);
+    return (it!=eventList.end() && *it==event) ? it-eventList.begin() : -1;
+}
 
 EventEntry *EventLog::getEventByNumber(long eventNumber)
 {
@@ -311,10 +322,16 @@ EventLog *EventLog::traceEvent(EventEntry *tracedEvent, bool wantCauses, bool wa
 
 void EventLog::writeTrace(FILE *fout)
 {
+    //FIXME this won't work with filtered eventlogs, where messageList is empty
     for (MessageEntryList::iterator it = messageList.begin(); it != messageList.end(); it++)
     {
         MessageEntry *messageEntry = *it;
         EventEntry *eventEntry = messageEntry->target;
+        if (!eventEntry)
+        {
+            fprintf(stderr, "Ignoring wrong message at line %ld (no target event)\n", messageEntry->lineNumber); //XXX
+            continue;
+        }
 
         if (messageEntry->delivery)
             fprintf(fout, "*");

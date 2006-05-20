@@ -108,8 +108,13 @@ class EventLog
         EventLog(const char *logFileName);
         ~EventLog();
 
+        /**
+         * Returns the number of events. Events are guaranteed to be in
+         * increasing eventNumber and time order.
+         */
         int getNumEvents();
         EventEntry *getEvent(int pos);
+        int findEvent(EventEntry *event); // returns pos, or -1 if not found
         EventEntry *getEventByNumber(long eventNumber);
         EventEntry *getFirstEventAfter(double t);
 
