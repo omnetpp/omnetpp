@@ -36,6 +36,7 @@ public class SequenceChartToolEditor extends EditorPart {
 
 	private int currentEventNumber = 0;
 	private EventLog filteredEventLog; // eventLog filtered for currentEventNumber
+    private double pixelPerSec; // scaling
 	
 	public SequenceChartToolEditor() {
 		super();
@@ -80,7 +81,8 @@ public class SequenceChartToolEditor extends EditorPart {
 		text.setText("Multi\nline\nText\nTest\n...\n\nMulti\nline\nText\nTest\n...\n\n");
 
         // draw initial event graph
-		updateSequenceChart();	
+		//updateSequenceChart();
+		drawSomething();
 	}
 
 	/**
@@ -102,26 +104,37 @@ public class SequenceChartToolEditor extends EditorPart {
 		rootFigure.add(label);
 		rootLayout.setConstraint(label, new Rectangle(0,0,-1,-1));
 
-		//...		
+		//filteredEventLog.ggetEvent(eventNumber)		
 	}		
 
 	private void drawSomething() {
-		Font someFont = new Font(null, "Arial", 12, SWT.BOLD);
-		Label label1 = new Label("Blughghgd", null);
-		label1.setFont(someFont);
-		
-		rootFigure.add(label1);
-		rootLayout.setConstraint(label1, new Rectangle(10,10,-1,-1));
+		addLabelFigure(10, 10, "Egyik vege");
+		addLabelFigure(2100, 10, "Masik vege");
+		addLabelFigure(10, 250, "Alja");
 
-		Triangle tria = new Triangle();
-		tria.setSize(1000, 100);
-		tria.setPreferredSize(500, 100);
-		tria.setBounds(new Rectangle(0,0,1000,200));
-		tria.setDirection(Orientable.SOUTH);
-		tria.setFill(true);
-		tria.setBackgroundColor(colorManager.getColor(ISeqChartColorConstants.DEFAULT_LINE));
-		rootFigure.add(tria);
-		rootLayout.setConstraint(tria, new Rectangle(100,100,5000,-1));
+//		Triangle tria = new Triangle();
+//		tria.setSize(1000, 100);
+//		tria.setPreferredSize(500, 100);
+//		tria.setBounds(new Rectangle(0,0,1000,200));
+//		tria.setDirection(Orientable.SOUTH);
+//		tria.setFill(true);
+//		tria.setBackgroundColor(colorManager.getColor(ISeqChartColorConstants.DEFAULT_LINE));
+//		rootFigure.add(tria);
+//		rootLayout.setConstraint(tria, new Rectangle(100,100,5000,-1));
+
+		SeqChartFigure sfig = new SeqChartFigure();		
+		sfig.setBackgroundColor(colorManager.getColor(ISeqChartColorConstants.DEFAULT_LINE));
+		rootFigure.add(sfig);
+		rootLayout.setConstraint(sfig, new Rectangle(100,100,2000,100));
+	}
+
+	private void addLabelFigure(int x, int y, String text) {
+		Font someFont = new Font(null, "Arial", 12, SWT.BOLD); //XXX cache fonts!
+		Label label = new Label(text, null);
+		label.setFont(someFont);
+
+		rootFigure.add(label);
+		rootLayout.setConstraint(label, new Rectangle(x,y,-1,-1));
 	}
 
 	public void dispose() {
