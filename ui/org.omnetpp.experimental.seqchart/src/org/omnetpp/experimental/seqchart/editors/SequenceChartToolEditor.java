@@ -33,10 +33,8 @@ public class SequenceChartToolEditor extends EditorPart {
 	private XYLayout rootLayout;
 	
 	private EventLog eventLog;  // the log file loaded
-
 	private int currentEventNumber = 0;
 	private EventLog filteredEventLog; // eventLog filtered for currentEventNumber
-    private double pixelPerSec; // scaling
 	
 	public SequenceChartToolEditor() {
 		super();

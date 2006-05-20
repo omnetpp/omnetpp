@@ -95,7 +95,7 @@ class EventLog
         EventLog *parent;
         /** Name of the file */;
         const char *logFileName;
-        /** Ordered list of ModuleEntries as read from the log file */
+        /** Modules that occur in the events */
         ModuleEntryList moduleList;
         /** Ordered list of EventEntries as read from the log file */
         EventEntryList eventList;
@@ -108,18 +108,24 @@ class EventLog
         EventLog(const char *logFileName);
         ~EventLog();
 
-        long getNumEvents();
+        int getNumEvents();
         EventEntry *getEvent(int pos);
         EventEntry *getEventByNumber(long eventNumber);
         EventEntry *getFirstEventAfter(double t);
+
+        int getNumModules();
+        ModuleEntry *getModule(int pos);
+
         EventLog *traceEvent(EventEntry *tracedEvent, bool wantCauses, bool wantConsequences);
         void writeTrace(FILE* fout);
 
     protected:
         EventLog(EventLog *parent);
         void parseLogFile();
-        ModuleEntry *getModule(int moduleId, char *moduleClassName, char *moduleFullName);
+        ModuleEntry *getOrAddModule(int moduleId, char *moduleClassName, char *moduleFullName);
         char *tokensToStr(int numTokens, char **vec);
 };
 
 #endif
+
+

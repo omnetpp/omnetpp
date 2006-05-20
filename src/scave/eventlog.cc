@@ -120,7 +120,7 @@ void EventLog::parseLogFile()
                         eventEntry->eventNumber = eventNumber;
                         eventEntry->simulationTime = atof(vec[3]);
                         // skip (id=
-                        eventEntry->module = getModule(atoi(vec[6] + 4), vec[4], vec[5]);
+                        eventEntry->module = getOrAddModule(atoi(vec[6] + 4), vec[4], vec[5]);
                         eventEntry->cause = messageEntry;
                         eventList.push_back(eventEntry);
                     }
@@ -157,7 +157,7 @@ void EventLog::parseLogFile()
     }
 }
 
-long EventLog::getNumEvents()
+int EventLog::getNumEvents()
 {
     return eventList.size();
 }
@@ -169,7 +169,19 @@ EventEntry *EventLog::getEvent(int pos)
     return eventList[pos];
 }
 
-ModuleEntry *EventLog::getModule(int moduleId, char *moduleClassName, char *moduleFullName)
+int EventLog::getNumModules()
+{
+    return moduleList.size();
+}
+
+ModuleEntry *EventLog::getModule(int pos)
+{
+    if (pos<0 || pos>=moduleList.size() || !moduleList[pos])
+        return NULL;
+    return moduleList[pos];
+}
+
+ModuleEntry *EventLog::getOrAddModule(int moduleId, char *moduleClassName, char *moduleFullName)
 {
     // if module with such ID already exists, return it
     for (ModuleEntryList::iterator it = moduleList.begin(); it != moduleList.end(); it++)
@@ -231,6 +243,12 @@ char *EventLog::tokensToStr(int numTokens, char **vec)
 inline bool less_EventEntryByEventNumber(EventEntry *e1, EventEntry *e2) {
     return e1->eventNumber < e2->eventNumber;
 }
+inline bool equal_EventEntryByEventNumber(EventEntry *e1, EventEntry *e2) {
+    return e1->eventNumber == e2->eventNumber;
+}
+inline bool less_ModuleById(ModuleEntry *m1, ModuleEntry *m2) {
+    return m1->moduleId < m2->moduleId;
+}
 
 EventLog *EventLog::traceEvent(EventEntry *tracedEvent, bool wantCauses, bool wantConsequences)
 {
@@ -244,33 +262,49 @@ EventLog *EventLog::traceEvent(EventEntry *tracedEvent, bool wantCauses, bool wa
         openEvents.insert(tracedEvent);
         while (openEvents.size() > 0)
         {
+            // remove one from openEvents, and add it into collectedEvents
             EventEntry *event = *openEvents.begin();
-            collectedEvents.push_back(event);  // FIXME might already be there, from another branch
             openEvents.erase(openEvents.begin());
+            collectedEvents.push_back(event);
 
+            // then add all causes to openEvents
             for (MessageEntryList::iterator it = event->causes.begin(); it!=event->causes.end(); ++it)
                 if ((*it)->source != event)
                     openEvents.insert((*it)->source);
         }
     }
+
     if (wantConsequences)
     {
         std::set<EventEntry*> openEvents;
         openEvents.insert(tracedEvent);
         while (openEvents.size() > 0)
         {
+            // remove one from openEvents, and add it into collectedEvents
             EventEntry *event = *openEvents.begin();
-            collectedEvents.push_back(event);  // FIXME might already be there, from another branch
             openEvents.erase(openEvents.begin());
+            collectedEvents.push_back(event);
 
+            // then add all consequences to openEvents
             for (MessageEntryList::iterator it = event->consequences.begin(); it!=event->consequences.end(); ++it)
                 if ((*it)->target != event)
                     openEvents.insert((*it)->target);
         }
     }
 
-    // also, filter out duplicates?
+    // sort events by event number, and filter out duplicates (if an event is reached
+    // via several different branches, it'll be a duplicate)
     sort(collectedEvents.begin(), collectedEvents.end(), less_EventEntryByEventNumber);
+    EventEntryList::iterator newEnd = unique(collectedEvents.begin(), collectedEvents.end(), equal_EventEntryByEventNumber);
+    collectedEvents.resize(newEnd - collectedEvents.begin());
+
+    // collect list of modules that occur in the filtered event list
+    std::set<ModuleEntry*> moduleSet;
+    for (int i=0; i<collectedEvents.size(); i++)
+        moduleSet.insert(collectedEvents[i]->module);
+    for (std::set<ModuleEntry*>::iterator it = moduleSet.begin(); it!=moduleSet.end(); ++it)
+        traceResult->moduleList.push_back(*it);
+    sort(traceResult->moduleList.begin(), traceResult->moduleList.end(), less_ModuleById);
 
     return traceResult;
 }
