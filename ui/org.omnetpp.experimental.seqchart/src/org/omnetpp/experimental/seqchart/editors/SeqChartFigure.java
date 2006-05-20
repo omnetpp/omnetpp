@@ -9,27 +9,51 @@ import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.graphics.Color;
 import org.omnetpp.scave.engine.EventEntry;
 import org.omnetpp.scave.engine.EventLog;
 import org.omnetpp.scave.engine.MessageEntries;
 
 public class SeqChartFigure extends Figure {
 	
-	protected double pixelsPerSec = 500;
-	protected int tickScale = -1; // -1 means step=0.1
+	protected double pixelsPerSec = 2;
+	protected int tickScale = 2; // -1 means step=0.1
 	protected EventLog eventLog;
 
+
+	public double getPixelsPerSec() {
+		return pixelsPerSec;	
+	}
+	
 	/**
 	 * Also adjusts tickScale which controls density of ticks
 	 */
 	public void setPixelsPerSec(double pps) {
 		if (pps<=0)
-			throw new IllegalArgumentException("positive value required");
+			pps = 1e-12;
 		pixelsPerSec = pps;
 		int labelWidthNeeded = 30; // pixels
 		tickScale = (int)Math.ceil(Math.log10(labelWidthNeeded/pps));
+
+		System.out.println("pixels per sec: "+pixelsPerSec);
+        
+		repaint();
 	}
 
+	/**
+	 * Increases pixels per second. 
+	 */
+	public void zoomIn() {
+		setPixelsPerSec(getPixelsPerSec() * 1.5);	
+	}
+
+	/**
+	 * Increases pixels per second. 
+	 */
+	public void zoomOut() {
+		setPixelsPerSec(getPixelsPerSec() / 1.5);	
+	}
+	
 	public EventLog getEventLog() {
 		return eventLog;
 	}
@@ -43,8 +67,6 @@ public class SeqChartFigure extends Figure {
 	 */
 	@Override
 	protected void paintFigure(Graphics graphics) {
-		setPixelsPerSec(2);  //XXX
-		
 		if (eventLog!=null) {
 			// paint axes
 			HashMap<Integer,Integer> moduleIdToAxisMap = new HashMap<Integer, Integer>();
@@ -66,6 +88,7 @@ public class SeqChartFigure extends Figure {
             if (endEvent!=null)
             	endEventIndex = eventLog.findEvent(endEvent);
             
+            graphics.setForegroundColor(new Color(null,255,0,0));
             for (int i=startEventIndex; i<endEventIndex; i++) {
             	EventEntry event = eventLog.getEvent(i);
     			Point p = getEventCoords(event, moduleIdToAxisMap);
@@ -76,7 +99,10 @@ public class SeqChartFigure extends Figure {
             	for (int j=0; j<consequences.size(); j++) {
         			Point p1 = getEventCoords(consequences.get(j).getSource(), moduleIdToAxisMap);
         			Point p2 = getEventCoords(consequences.get(j).getTarget(), moduleIdToAxisMap);
-                	graphics.drawLine(p1, p2);
+        			if (p1.y==p2.y)
+        				graphics.drawArc(p1.x, p1.y-10, p2.x-p1.x, 10, 60, 60);
+        			else
+        				graphics.drawLine(p1, p2);
             	}
             }
 		}

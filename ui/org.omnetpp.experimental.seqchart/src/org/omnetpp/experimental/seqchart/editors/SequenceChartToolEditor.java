@@ -1,12 +1,12 @@
 package org.omnetpp.experimental.seqchart.editors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.draw2d.ActionEvent;
+import org.eclipse.draw2d.ActionListener;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.LightweightSystem;
-import org.eclipse.draw2d.Orientable;
 import org.eclipse.draw2d.ScrollPane;
-import org.eclipse.draw2d.Triangle;
 import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
@@ -102,7 +102,7 @@ public class SequenceChartToolEditor extends EditorPart {
 		addLabelFigure(2100, 10, "Masik vege");
 		addLabelFigure(10, 550, "Alja");
 
-		SeqChartFigure sfig = new SeqChartFigure();		
+		final SeqChartFigure sfig = new SeqChartFigure();		
 		sfig.setBackgroundColor(colorManager.getColor(ISeqChartColorConstants.DEFAULT_LINE));
 		rootFigure.add(sfig);
 		rootLayout.setConstraint(sfig, new Rectangle(5,50,2000,500)); //XXX
@@ -111,7 +111,23 @@ public class SequenceChartToolEditor extends EditorPart {
 		sfig.setEventLog(filteredEventLog); //XXX
 		System.out.println("filtered log: "+filteredEventLog.getNumEvents()+" events in "+filteredEventLog.getNumModules()+" modules");
 
-//		Triangle tria = new Triangle();
+		org.eclipse.draw2d.Button zoomIn = new org.eclipse.draw2d.Button("Zoom in");		
+		rootFigure.add(zoomIn);
+		rootLayout.setConstraint(zoomIn, new Rectangle(10,30,-1,-1));
+		zoomIn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				sfig.zoomIn();
+			}});
+
+		org.eclipse.draw2d.Button zoomOut = new org.eclipse.draw2d.Button("Zoom out");		
+		rootFigure.add(zoomOut);
+		rootLayout.setConstraint(zoomOut, new Rectangle(80,30,-1,-1));
+		zoomOut.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				sfig.zoomOut();
+			}});
+
+		//		Triangle tria = new Triangle();
 //		tria.setSize(1000, 100);
 //		tria.setPreferredSize(500, 100);
 //		tria.setBounds(new Rectangle(0,0,1000,200));
