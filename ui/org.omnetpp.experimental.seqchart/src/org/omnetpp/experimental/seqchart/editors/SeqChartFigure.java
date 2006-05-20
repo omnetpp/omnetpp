@@ -32,7 +32,7 @@ public class SeqChartFigure extends Figure {
 		if (pps<=0)
 			pps = 1e-12;
 		pixelsPerSec = pps;
-		int labelWidthNeeded = 30; // pixels
+		int labelWidthNeeded = 50; // pixels
 		tickScale = (int)Math.ceil(Math.log10(labelWidthNeeded/pps));
 
 		System.out.println("pixels per sec: "+pixelsPerSec);
@@ -60,6 +60,7 @@ public class SeqChartFigure extends Figure {
 
 	public void setEventLog(EventLog eventLog) {
 		this.eventLog = eventLog;
+		repaint();
 	}
 
 	/**
@@ -100,12 +101,18 @@ public class SeqChartFigure extends Figure {
         			Point p1 = getEventCoords(consequences.get(j).getSource(), moduleIdToAxisMap);
         			Point p2 = getEventCoords(consequences.get(j).getTarget(), moduleIdToAxisMap);
         			if (p1.y==p2.y)
-        				graphics.drawArc(p1.x, p1.y-10, p2.x-p1.x, 10, 60, 60);
-        			else
+						drawArc(graphics, p1, p2);
+					else
         				graphics.drawLine(p1, p2);
             	}
             }
 		}
+	}
+
+	private void drawArc(Graphics graphics, Point p1, Point p2) {
+		Rectangle rect = new Rectangle(p1.x, p1.y-10, p2.x-p1.x, 20);
+		//rect.expand(rect.width, 0);
+		graphics.drawArc(rect, 0, 180);
 	}
 
 	private Point getEventCoords(EventEntry event, HashMap<Integer,Integer> moduleIdToAxisMap) {

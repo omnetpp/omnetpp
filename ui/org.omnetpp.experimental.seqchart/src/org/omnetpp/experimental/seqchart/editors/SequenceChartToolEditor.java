@@ -1,8 +1,6 @@
 package org.omnetpp.experimental.seqchart.editors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.draw2d.ActionEvent;
-import org.eclipse.draw2d.ActionListener;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.LightweightSystem;
@@ -11,9 +9,15 @@ import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
@@ -23,6 +27,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.scave.engine.EventEntry;
 import org.omnetpp.scave.engine.EventLog;
+import org.omnetpp.scave.engine.ModuleEntry;
 
 public class SequenceChartToolEditor extends EditorPart {
 
@@ -31,6 +36,8 @@ public class SequenceChartToolEditor extends EditorPart {
 	private Text text;
 	private Figure rootFigure;
 	private XYLayout rootLayout;
+	private SeqChartFigure seqChartFigure;
+	private Combo eventcombo;
 	
 	private EventLog eventLog;  // the log file loaded
 	private int currentEventNumber = 0;
@@ -60,9 +67,13 @@ public class SequenceChartToolEditor extends EditorPart {
 
 		// add canvas into the upper half
 		Composite upper = new Composite(sashForm, SWT.NONE);
-		upper.setLayout(new FillLayout());
-		
+		upper.setLayout(new GridLayout());
+
+		Composite controlStrip = createControlStrip(upper);
+		controlStrip.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+
 		Canvas canvas = new Canvas(upper, SWT.NONE);
+		canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		LightweightSystem lws = new LightweightSystem(canvas);
 		ScrollPane scrollPane = new ScrollPane();
 		scrollPane.setScrollBarVisibility(ScrollPane.AUTOMATIC);
@@ -83,6 +94,73 @@ public class SequenceChartToolEditor extends EditorPart {
         // draw initial event graph
 		//updateSequenceChart();
 		drawSomething();
+		
+		fillEventCombo();
+	}
+
+	private Composite createControlStrip(Composite upper) {
+		Composite controlStrip = new Composite(upper, SWT.NONE);
+		controlStrip.setLayout(new GridLayout(3, false));
+		eventcombo = new Combo(controlStrip, SWT.NONE);
+		eventcombo.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false));
+		eventcombo.setVisibleItemCount(20);
+		Button zoomIn = new Button(controlStrip, SWT.NONE);
+		zoomIn.setText("Zoom in");
+		Button zoomOut = new Button(controlStrip, SWT.NONE);
+		zoomOut.setText("Zoom out");
+
+		// add event handlers
+		eventcombo.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				String sel = eventcombo.getText();
+				sel = sel.trim();
+				if (sel.startsWith("All")) {
+					showFullSequenceChart();
+				} else {
+					sel = sel.replaceFirst(" .*", "");
+					sel = sel.replaceAll("#", "");
+					int eventNumber = -1;
+					try {eventNumber = Integer.parseInt(sel);} catch (NumberFormatException ex) {}
+					if (eventNumber>=0)
+						showSequenceChartForEvent(eventNumber);
+					else 
+						; //XXX dialog box: error: no such event
+				}
+			}
+			public void widgetSelected(SelectionEvent e) {
+				widgetDefaultSelected(e);
+			}});
+
+		zoomIn.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				seqChartFigure.zoomIn();
+			}
+			public void widgetSelected(SelectionEvent e) {
+				seqChartFigure.zoomIn();
+			}});
+		zoomOut.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				seqChartFigure.zoomOut();
+			}
+			public void widgetSelected(SelectionEvent e) {
+				seqChartFigure.zoomOut();
+			}});
+		return controlStrip;
+	}
+
+	private void fillEventCombo() {
+		eventcombo.removeAll();
+    	eventcombo.add("All events");
+	    for (int i=0; i<eventLog.getNumEvents(); i++) {
+	    	EventEntry event = eventLog.getEvent(i);
+	    	ModuleEntry mod = event.getModule(); 
+	    	String label = "#"+event.getEventNumber()
+	    		+" at t="+event.getSimulationTime()
+	    		+", module ("+mod.getModuleClassName()+")"+mod.getModuleFullName()+" (id="+mod.getModuleId()
+	    		+"), message ...";
+	    	eventcombo.add(label);
+	    }
+    	eventcombo.select(0);
 	}
 
 	/**
@@ -91,10 +169,16 @@ public class SequenceChartToolEditor extends EditorPart {
 	private void showSequenceChartForEvent(int eventNumber) {
 		EventEntry event = eventLog.getEventByNumber(eventNumber);
 		if (event==null) // if there's no such event, ignore request
-			return;
+			return; //XXX error dialog?
 		currentEventNumber = eventNumber;
 		filteredEventLog = eventLog.traceEvent(event, true, true);
-		rootFigure.repaint();
+		System.out.println("filtered log: "+filteredEventLog.getNumEvents()+" events in "+filteredEventLog.getNumModules()+" modules");
+		seqChartFigure.setEventLog(filteredEventLog);
+	}
+	private void showFullSequenceChart() {
+		currentEventNumber = -1;
+		filteredEventLog = null;
+		seqChartFigure.setEventLog(eventLog);
 	}
 	
 	private void drawSomething() {
@@ -102,40 +186,14 @@ public class SequenceChartToolEditor extends EditorPart {
 		addLabelFigure(2100, 10, "Masik vege");
 		addLabelFigure(10, 550, "Alja");
 
-		final SeqChartFigure sfig = new SeqChartFigure();		
-		sfig.setBackgroundColor(colorManager.getColor(ISeqChartColorConstants.DEFAULT_LINE));
-		rootFigure.add(sfig);
-		rootLayout.setConstraint(sfig, new Rectangle(5,50,2000,500)); //XXX
+		seqChartFigure = new SeqChartFigure();		
+		seqChartFigure.setBackgroundColor(colorManager.getColor(ISeqChartColorConstants.DEFAULT_LINE));
+		rootFigure.add(seqChartFigure);
+		rootLayout.setConstraint(seqChartFigure, new Rectangle(5,50,2000,500)); //XXX
 		
-		showSequenceChartForEvent(10); //XXX
-		sfig.setEventLog(filteredEventLog); //XXX
-		System.out.println("filtered log: "+filteredEventLog.getNumEvents()+" events in "+filteredEventLog.getNumModules()+" modules");
-
-		org.eclipse.draw2d.Button zoomIn = new org.eclipse.draw2d.Button("Zoom in");		
-		rootFigure.add(zoomIn);
-		rootLayout.setConstraint(zoomIn, new Rectangle(10,30,-1,-1));
-		zoomIn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				sfig.zoomIn();
-			}});
-
-		org.eclipse.draw2d.Button zoomOut = new org.eclipse.draw2d.Button("Zoom out");		
-		rootFigure.add(zoomOut);
-		rootLayout.setConstraint(zoomOut, new Rectangle(80,30,-1,-1));
-		zoomOut.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				sfig.zoomOut();
-			}});
-
-		//		Triangle tria = new Triangle();
-//		tria.setSize(1000, 100);
-//		tria.setPreferredSize(500, 100);
-//		tria.setBounds(new Rectangle(0,0,1000,200));
-//		tria.setDirection(Orientable.SOUTH);
-//		tria.setFill(true);
-//		tria.setBackgroundColor(colorManager.getColor(ISeqChartColorConstants.DEFAULT_LINE));
-//		rootFigure.add(tria);
-//		rootLayout.setConstraint(tria, new Rectangle(100,100,5000,-1));
+		filteredEventLog = eventLog; //XXX
+		seqChartFigure.setEventLog(filteredEventLog); //XXX
+		showFullSequenceChart();
 	}
 
 	private void addLabelFigure(int x, int y, String text) {
