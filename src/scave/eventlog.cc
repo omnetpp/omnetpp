@@ -13,6 +13,7 @@
 *--------------------------------------------------------------*/
 
 #include <algorithm>
+#include <set>
 #include <assert.h>
 #include "eventlog.h"
 
@@ -50,12 +51,6 @@ MessageEntry::~MessageEntry()
 }
 
 /*--------------------------------------------------------------*/
-EventLog::EventLog()
-{
-    logFileName = NULL;
-    tracedEvent = NULL;
-}
-
 EventLog::EventLog(const char *logFileName)
 {
     this->logFileName = logFileName;
@@ -64,16 +59,25 @@ EventLog::EventLog(const char *logFileName)
     parseLogFile();
 }
 
+EventLog::EventLog(EventLog *parent)
+{
+    this->parent = parent;
+    tracedEvent = tracedEvent;
+}
+
 EventLog::~EventLog()
 {
-    for (ModuleEntryList::iterator it = moduleList.begin(); it != moduleList.end(); it++)
-        delete *it;
+    if (!parent)
+    {
+        for (ModuleEntryList::iterator it = moduleList.begin(); it != moduleList.end(); it++)
+            delete *it;
 
-    for (EventEntryList::iterator it = eventList.begin(); it != eventList.end(); it++)
-        delete *it;
+        for (EventEntryList::iterator it = eventList.begin(); it != eventList.end(); it++)
+            delete *it;
 
-    for (MessageEntryList::iterator it = messageList.begin(); it != messageList.end(); it++)
-        delete *it;
+        for (MessageEntryList::iterator it = messageList.begin(); it != messageList.end(); it++)
+            delete *it;
+    }
 }
 
 void EventLog::parseLogFile()
@@ -158,15 +162,11 @@ long EventLog::getNumEvents()
     return eventList.size();
 }
 
-EventEntry *EventLog::getEvent(long eventNumber)
+EventEntry *EventLog::getEvent(int pos)
 {
-    if (eventNumber<0 || eventNumber>=eventList.size() || !eventList[eventNumber])
-    {
-        fprintf(stderr, "Could not find event for: %ld", eventNumber);
+    if (pos<0 || pos>=eventList.size() || !eventList[pos])
         return NULL;
-    }
-
-    return eventList[eventNumber];
+    return eventList[pos];
 }
 
 ModuleEntry *EventLog::getModule(int moduleId, char *moduleClassName, char *moduleFullName)
@@ -186,6 +186,14 @@ ModuleEntry *EventLog::getModule(int moduleId, char *moduleClassName, char *modu
     moduleList.push_back(moduleEntry);
 
     return moduleEntry;
+}
+
+inline bool less_EventEntry_long(EventEntry *e, long eventNumber) {return e->eventNumber < eventNumber;}
+
+EventEntry *EventLog::getEventByNumber(long eventNumber)
+{
+    EventEntryList::iterator it = std::lower_bound(eventList.begin(), eventList.end(), eventNumber, less_EventEntry_long);
+    return it==eventList.end() ? NULL : *it;
 }
 
 inline bool less_EventEntry_double(EventEntry *e, double t) {return e->simulationTime < t;}
@@ -220,50 +228,50 @@ char *EventLog::tokensToStr(int numTokens, char **vec)
     return str;
 }
 
-EventLog *EventLog::traceEvent(long tracedEventNumber, bool causes, bool consequences)
+inline bool less_EventEntryByEventNumber(EventEntry *e1, EventEntry *e2) {
+    return e1->eventNumber < e2->eventNumber;
+}
+
+EventLog *EventLog::traceEvent(EventEntry *tracedEvent, bool wantCauses, bool wantConsequences)
 {
-    EventLog *traceResult = new EventLog();
-/*
-    traceResult.clear();
-    tracedEvent = eventMap[tracedEventNumber];
+    EventLog *traceResult = new EventLog(this);
 
-    if (eventMap[tracedEventNumber] == NULL)
+    std::vector<EventEntry*>& collectedEvents = traceResult->eventList;
+
+    if (wantCauses)
     {
-        fprintf(stderr, "Event number %ld is not present in log file %s\n", tracedEventNumber, logFileName);
-        return;
-    }
-
-    std::list<long> openEventNumbers;
-    std::vector<long> collectedEventNumbers;
-    openEventNumbers.push_back(tracedEventNumber);
-
-    while (openEventNumbers.size() > 0)
-    {
-        long eventNumber = openEventNumbers.front();
-        collectedEventNumbers.push_back(eventNumber);
-        openEventNumbers.pop_back();
-        EventEntry *entry = eventMap[eventNumber];
-
-        for (std::list<long>::iterator it = entry->causalEventNumbers.begin();
-            it != entry->causalEventNumbers.end();
-            it++)
+        std::set<EventEntry*> openEvents;
+        openEvents.insert(tracedEvent);
+        while (openEvents.size() > 0)
         {
-            long causalEventNumber = *it;
+            EventEntry *event = *openEvents.begin();
+            collectedEvents.push_back(event);  // FIXME might already be there, from another branch
+            openEvents.erase(openEvents.begin());
 
-            if (eventNumber != causalEventNumber)
-                openEventNumbers.push_back(causalEventNumber);
+            for (MessageEntryList::iterator it = event->causes.begin(); it!=event->causes.end(); ++it)
+                if ((*it)->source != event)
+                    openEvents.insert((*it)->source);
+        }
+    }
+    if (wantConsequences)
+    {
+        std::set<EventEntry*> openEvents;
+        openEvents.insert(tracedEvent);
+        while (openEvents.size() > 0)
+        {
+            EventEntry *event = *openEvents.begin();
+            collectedEvents.push_back(event);  // FIXME might already be there, from another branch
+            openEvents.erase(openEvents.begin());
+
+            for (MessageEntryList::iterator it = event->consequences.begin(); it!=event->consequences.end(); ++it)
+                if ((*it)->target != event)
+                    openEvents.insert((*it)->target);
         }
     }
 
-    sort(collectedEventNumbers.begin(), collectedEventNumbers.end());
+    // also, filter out duplicates?
+    sort(collectedEvents.begin(), collectedEvents.end(), less_EventEntryByEventNumber);
 
-    for (std::vector<long>::iterator it = collectedEventNumbers.begin();
-        it != collectedEventNumbers.end();
-        it++)
-    {
-        traceResult.push_back(eventMap[*it]);
-    }
-*/
     return traceResult;
 }
 

@@ -83,7 +83,6 @@ class EventEntry
         ~EventEntry();
 };
 
-
 /**
  * A trace utility to trace the causes and consequences of a particular event back and forth in time.
  */
@@ -92,6 +91,9 @@ class EventLog
     protected:
         typedef std::vector<EventEntry*> EventEntryList;
 
+        /** If this is a filtered event log, the parent log owns the event entries and message entries */
+        EventLog *parent;
+        /** Name of the file */;
         const char *logFileName;
         /** Ordered list of ModuleEntries as read from the log file */
         ModuleEntryList moduleList;
@@ -107,15 +109,16 @@ class EventLog
         ~EventLog();
 
         long getNumEvents();
-        EventEntry *getEvent(long eventNumber);
+        EventEntry *getEvent(int pos);
+        EventEntry *getEventByNumber(long eventNumber);
         EventEntry *getFirstEventAfter(double t);
-        EventLog *traceEvent(long tracedEventNumber, bool causes = true, bool consequences = false);
+        EventLog *traceEvent(EventEntry *tracedEvent, bool wantCauses, bool wantConsequences);
         void writeTrace(FILE* fout);
 
     protected:
-        EventLog();
+        EventLog(EventLog *parent);
         void parseLogFile();
-        ModuleEntry* getModule(int moduleId, char *moduleClassName, char *moduleFullName);
+        ModuleEntry *getModule(int moduleId, char *moduleClassName, char *moduleFullName);
         char *tokensToStr(int numTokens, char **vec);
 };
 

@@ -18,14 +18,23 @@ int main(int argc, char **argv)
 {
     if (argc<3)
     {
-        fprintf(stderr, "Usage: tracetool <logfile> <eventnumber>\n");
+        fprintf(stderr, "%s: Usage: tracetool <logfile> <eventnumber>\n", argv[0]);
         exit(0);
     }
 
     EventLog eventLog(argv[1]);
     eventLog.writeTrace(stdout);
-    
-    EventLog *traceLog = eventLog.traceEvent(atol(argv[2]));
+
+    long eventNumber = atol(argv[2]);
+    EventEntry *event = eventLog.getEventByNumber(eventNumber);
+    if (event==NULL)
+    {
+        fprintf(stderr, "%s: Event #%ld not in the given trace file\n", argv[0], eventNumber);
+        exit(1);
+    }
+
+    EventLog *traceLog = eventLog.traceEvent(event, true, false);
     traceLog->writeTrace(stdout);
     delete traceLog;
+    return 0;
 }
