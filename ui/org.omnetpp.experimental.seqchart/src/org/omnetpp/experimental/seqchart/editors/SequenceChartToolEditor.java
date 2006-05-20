@@ -49,7 +49,9 @@ public class SequenceChartToolEditor extends EditorPart {
 		
 		IFileEditorInput fileInput = (IFileEditorInput)input;
 		String fileName = fileInput.getFile().getLocation().toFile().getAbsolutePath();
-		//XXX eventLog = new EventLog(fileName);
+
+		eventLog = new EventLog(fileName);
+		System.out.println("read "+eventLog.getNumEvents()+" events in "+eventLog.getNumModules()+" modules from "+fileName);
 	}
 	
 	@Override
@@ -87,28 +89,27 @@ public class SequenceChartToolEditor extends EditorPart {
 	 * Goes to the given event and updates the chart.
 	 */
 	private void showSequenceChartForEvent(int eventNumber) {
+		EventEntry event = eventLog.getEventByNumber(eventNumber);
+		if (event==null) // if there's no such event, ignore request
+			return;
 		currentEventNumber = eventNumber;
-		filteredEventLog = eventLog.traceEvent(eventNumber, true, true);
-		updateSequenceChart();
+		filteredEventLog = eventLog.traceEvent(event, true, true);
+		rootFigure.repaint();
 	}
 	
-	/**
-	 * Draws the sequence chart for the current event.
-	 */
-	private void updateSequenceChart() {
-		Font someFont = new Font(null, "Arial", 12, SWT.BOLD);
-		Label label = new Label("Event "+currentEventNumber, null);
-		label.setFont(someFont);
-		rootFigure.add(label);
-		rootLayout.setConstraint(label, new Rectangle(0,0,-1,-1));
-
-		//filteredEventLog.ggetEvent(eventNumber)		
-	}		
-
 	private void drawSomething() {
 		addLabelFigure(10, 10, "Egyik vege");
 		addLabelFigure(2100, 10, "Masik vege");
-		addLabelFigure(10, 250, "Alja");
+		addLabelFigure(10, 550, "Alja");
+
+		SeqChartFigure sfig = new SeqChartFigure();		
+		sfig.setBackgroundColor(colorManager.getColor(ISeqChartColorConstants.DEFAULT_LINE));
+		rootFigure.add(sfig);
+		rootLayout.setConstraint(sfig, new Rectangle(5,50,2000,500)); //XXX
+		
+		showSequenceChartForEvent(10); //XXX
+		sfig.setEventLog(filteredEventLog); //XXX
+		System.out.println("filtered log: "+filteredEventLog.getNumEvents()+" events in "+filteredEventLog.getNumModules()+" modules");
 
 //		Triangle tria = new Triangle();
 //		tria.setSize(1000, 100);
@@ -119,11 +120,6 @@ public class SequenceChartToolEditor extends EditorPart {
 //		tria.setBackgroundColor(colorManager.getColor(ISeqChartColorConstants.DEFAULT_LINE));
 //		rootFigure.add(tria);
 //		rootLayout.setConstraint(tria, new Rectangle(100,100,5000,-1));
-
-		SeqChartFigure sfig = new SeqChartFigure();		
-		sfig.setBackgroundColor(colorManager.getColor(ISeqChartColorConstants.DEFAULT_LINE));
-		rootFigure.add(sfig);
-		rootLayout.setConstraint(sfig, new Rectangle(100,100,2000,100));
 	}
 
 	private void addLabelFigure(int x, int y, String text) {
