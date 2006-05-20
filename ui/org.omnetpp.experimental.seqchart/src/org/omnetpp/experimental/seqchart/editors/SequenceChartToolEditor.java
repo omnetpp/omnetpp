@@ -11,6 +11,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -37,7 +38,7 @@ public class SequenceChartToolEditor extends EditorPart {
 	private Figure rootFigure;
 	private XYLayout rootLayout;
 	private SeqChartFigure seqChartFigure;
-	private Combo eventcombo;
+	private Combo eventcombo;  //XXX instead of this combo, events should be selectable from the text view at the bottom
 	
 	private EventLog eventLog;  // the log file loaded
 	private int currentEventNumber = 0;
@@ -74,6 +75,7 @@ public class SequenceChartToolEditor extends EditorPart {
 
 		Canvas canvas = new Canvas(upper, SWT.NONE);
 		canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		canvas.setBackground(new Color(null,255,255,255));
 		LightweightSystem lws = new LightweightSystem(canvas);
 		ScrollPane scrollPane = new ScrollPane();
 		scrollPane.setScrollBarVisibility(ScrollPane.AUTOMATIC);
@@ -91,11 +93,12 @@ public class SequenceChartToolEditor extends EditorPart {
 
 		text.setText("Multi\nline\nText\nTest\n...\n\nMulti\nline\nText\nTest\n...\n\n");
 
-        // draw initial event graph
-		//updateSequenceChart();
-		drawSomething();
-		
+		// add chart figure
+		addSequenceChartFigure();
+		// fill combo box with events
 		fillEventCombo();
+		// give eventLog to the chart for display
+		showFullSequenceChart();
 	}
 
 	private Composite createControlStrip(Composite upper) {
@@ -163,6 +166,15 @@ public class SequenceChartToolEditor extends EditorPart {
     	eventcombo.select(0);
 	}
 
+	private void addSequenceChartFigure() {
+		//addLabelFigure(10, 10, "Egyik vege");
+		//addLabelFigure(2100, 10, "Masik vege");
+		//addLabelFigure(10, 550, "Alja");
+		seqChartFigure = new SeqChartFigure();		
+		rootFigure.add(seqChartFigure);
+		rootLayout.setConstraint(seqChartFigure, new Rectangle(0,0,-1,-1));
+	}
+
 	/**
 	 * Goes to the given event and updates the chart.
 	 */
@@ -181,21 +193,6 @@ public class SequenceChartToolEditor extends EditorPart {
 		seqChartFigure.setEventLog(eventLog);
 	}
 	
-	private void drawSomething() {
-		addLabelFigure(10, 10, "Egyik vege");
-		addLabelFigure(2100, 10, "Masik vege");
-		addLabelFigure(10, 550, "Alja");
-
-		seqChartFigure = new SeqChartFigure();		
-		seqChartFigure.setBackgroundColor(colorManager.getColor(ISeqChartColorConstants.DEFAULT_LINE));
-		rootFigure.add(seqChartFigure);
-		rootLayout.setConstraint(seqChartFigure, new Rectangle(5,50,2000,500)); //XXX
-		
-		filteredEventLog = eventLog; //XXX
-		seqChartFigure.setEventLog(filteredEventLog); //XXX
-		showFullSequenceChart();
-	}
-
 	private void addLabelFigure(int x, int y, String text) {
 		Font someFont = new Font(null, "Arial", 12, SWT.BOLD); //XXX cache fonts!
 		Label label = new Label(text, null);

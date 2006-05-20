@@ -37,6 +37,7 @@ public class SeqChartFigure extends Figure {
 
 		System.out.println("pixels per sec: "+pixelsPerSec);
         
+		recalculatePreferredSize();
 		repaint();
 	}
 
@@ -48,7 +49,7 @@ public class SeqChartFigure extends Figure {
 	}
 
 	/**
-	 * Increases pixels per second. 
+	 * Decreases pixels per second. 
 	 */
 	public void zoomOut() {
 		setPixelsPerSec(getPixelsPerSec() / 1.5);	
@@ -60,7 +61,16 @@ public class SeqChartFigure extends Figure {
 
 	public void setEventLog(EventLog eventLog) {
 		this.eventLog = eventLog;
+		recalculatePreferredSize();
 		repaint();
+	}
+
+	private void recalculatePreferredSize() {
+		EventEntry lastEvent = eventLog.getEvent(eventLog.getNumEvents()-1);
+		int width = lastEvent==null ? 0 : (int)(lastEvent.getSimulationTime()*getPixelsPerSec());
+		width = Math.max(width, 600); // at least half a screen
+		int height = eventLog.getNumModules()*50;
+		setPreferredSize(width, height);
 	}
 
 	/**
@@ -90,20 +100,22 @@ public class SeqChartFigure extends Figure {
             	endEventIndex = eventLog.findEvent(endEvent);
             
             graphics.setForegroundColor(new Color(null,255,0,0));
+            graphics.setBackgroundColor(new Color(null,170,0,0));
             for (int i=startEventIndex; i<endEventIndex; i++) {
             	EventEntry event = eventLog.getEvent(i);
     			Point p = getEventCoords(event, moduleIdToAxisMap);
-            	graphics.drawOval(p.x-2, p.y-2, 5, 5);
+            	graphics.fillOval(p.x-2, p.y-2, 5, 5);
             	
             	// paint forward arrows for this event
             	MessageEntries consequences = event.getConsequences();
             	for (int j=0; j<consequences.size(); j++) {
         			Point p1 = getEventCoords(consequences.get(j).getSource(), moduleIdToAxisMap);
         			Point p2 = getEventCoords(consequences.get(j).getTarget(), moduleIdToAxisMap);
-        			if (p1.y==p2.y)
+        			if (p1.y==p2.y) {
 						drawArc(graphics, p1, p2);
-					else
+        			} else {
         				graphics.drawLine(p1, p2);
+        			}
             	}
             }
 		}
