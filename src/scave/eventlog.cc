@@ -42,7 +42,7 @@ EventEntry::~EventEntry()
 /*--------------------------------------------------------------*/
 MessageEntry::MessageEntry()
 {
-    delivery = false;
+    isDelivery = false;
     lineNumber = -1;
 }
 
@@ -105,16 +105,16 @@ void EventLog::parseLogFile()
                 }
                 else
                 {
-                    bool delivery = !strcmp(vec[0], "*");   //FIXME stricter format check overall
+                    bool isDelivery = !strcmp(vec[0], "*");   //FIXME stricter format check overall
                     // skip [ character
                     long eventNumber = atol(vec[1] + 1);
                     long causalEventNumber = atol(vec[2]);
 
                     messageEntry = new MessageEntry();
                     messageEntry->lineNumber = lineNumber;
-                    messageEntry->delivery = delivery;
+                    messageEntry->isDelivery = isDelivery;
 
-                    if (delivery)
+                    if (isDelivery)
                     {
                         EventEntry *eventEntry = new EventEntry();
                         eventEntry->eventNumber = eventNumber;
@@ -333,7 +333,7 @@ void EventLog::writeTrace(FILE *fout)
             continue;
         }
 
-        if (messageEntry->delivery)
+        if (messageEntry->isDelivery)
             fprintf(fout, "*");
         else
             fprintf(fout, "+");

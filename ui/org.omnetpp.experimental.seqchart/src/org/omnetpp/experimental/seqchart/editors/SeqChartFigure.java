@@ -91,6 +91,8 @@ public class SeqChartFigure extends Figure {
 	@Override
 	protected void paintFigure(Graphics graphics) {
 		if (eventLog!=null) {
+			long startMillis = System.currentTimeMillis();
+			
 			// paint axes
 			HashMap<Integer,Integer> moduleIdToAxisMap = new HashMap<Integer, Integer>();
 			for (int i=0; i<eventLog.getNumModules(); i++) {
@@ -125,6 +127,10 @@ public class SeqChartFigure extends Figure {
             		if (causes.get(j).getSource().getEventNumber() < startEventNumber)
             			drawMessageArrow(causes.get(j), moduleIdToAxisMap, graphics);
             }
+			System.out.println("repaint(): "+(System.currentTimeMillis()-startMillis)+"ms");
+			startMillis = System.currentTimeMillis();
+			System.gc();
+			System.out.println("     gc(): "+(System.currentTimeMillis()-startMillis)+"ms");
 		}
 	}
 
