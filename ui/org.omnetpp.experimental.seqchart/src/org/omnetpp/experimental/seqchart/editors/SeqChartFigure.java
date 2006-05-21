@@ -20,6 +20,13 @@ import org.omnetpp.scave.engine.MessageEntry;
  *
  * @author andras
  */
+//TODO implement "hand" to grab and move the chart
+//TODO make events and message clickable (tooltip, go there in the log, etc)
+//TODO draw "deliver" messages in a different color
+//TODO draw arrowheads
+//FIXME msg arrows that intersect the chart area but don't start or end there are not displayed (BUG!)
+//FIXME performance: create a C++ interface where we can prevent instantiating a huge number of EventEntry/MessageEntry objects
+//FIXME cache lines for the drawing (we need this to make the chart clickable as well)
 public class SeqChartFigure extends Figure {
 	
 	protected double pixelsPerSec = 2;
@@ -132,9 +139,9 @@ public class SeqChartFigure extends Figure {
 	}
 
 	private void drawArc(Graphics graphics, Point p1, Point p2) {
-		Rectangle rect = new Rectangle(p1.x, p1.y-10, p2.x-p1.x, 20);
-		//rect.expand(rect.width, 0);
-		graphics.drawArc(rect, 0, 180);
+		Rectangle.SINGLETON.setLocation(p1.x, p1.y-10);
+		Rectangle.SINGLETON.setSize(p2.x-p1.x, 20);
+		graphics.drawArc(Rectangle.SINGLETON, 0, 180);
 	}
 
 	private Point getEventCoords(EventEntry event, HashMap<Integer,Integer> moduleIdToAxisMap) {
@@ -187,5 +194,39 @@ public class SeqChartFigure extends Figure {
 	 */
 	private int timeToPixel(double t) {
 		return (int)Math.round(t * pixelsPerSec) + getBounds().x;
+	}
+
+	/**
+	 * Utility function, copied from org.eclipse.draw2d.Polyline.
+	 */
+	private boolean lineContainsPoint(int x1, int y1, int x2, int y2, int px, int py, int tolerance) {
+		Rectangle.SINGLETON.setSize(0, 0);
+		Rectangle.SINGLETON.setLocation(x1, y1);
+		Rectangle.SINGLETON.union(x2, y2);
+		Rectangle.SINGLETON.expand(tolerance, tolerance);
+		if (!Rectangle.SINGLETON.contains(px, py))
+			return false;
+
+		int v1x, v1y, v2x, v2y;
+		int numerator, denominator;
+		int result = 0;
+
+		// calculates the length squared of the cross product of two vectors, v1 & v2.
+		if (x1 != x2 && y1 != y2) {
+			v1x = x2 - x1;
+			v1y = y2 - y1;
+			v2x = px - x1;
+			v2y = py - y1;
+
+			numerator = v2x * v1y - v1x * v2y;
+
+			denominator = v1x * v1x + v1y * v1y;
+
+			result = (int)((long)numerator * numerator / denominator);
+		}
+
+		// if it is the same point, and it passes the bounding box test,
+		// the result is always true.
+		return result <= tolerance * tolerance;
 	}
 }
