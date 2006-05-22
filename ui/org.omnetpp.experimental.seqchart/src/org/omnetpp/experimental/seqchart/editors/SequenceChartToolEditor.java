@@ -9,6 +9,8 @@ import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
@@ -73,7 +75,7 @@ public class SequenceChartToolEditor extends EditorPart {
 		Composite controlStrip = createControlStrip(upper);
 		controlStrip.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-		Canvas canvas = new Canvas(upper, SWT.DOUBLE_BUFFERED);
+		final Canvas canvas = new Canvas(upper, SWT.DOUBLE_BUFFERED);
 		canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		canvas.setBackground(new Color(null,255,255,255));
 		LightweightSystem lws = new LightweightSystem(canvas);
@@ -94,11 +96,23 @@ public class SequenceChartToolEditor extends EditorPart {
 		text.setText("Multi\nline\nText\nTest\n...\n\nMulti\nline\nText\nTest\n...\n\n");
 
 		// add chart figure
-		addSequenceChartFigure();
+		addSequenceChartFigure(scrollPane);
 		// fill combo box with events
 		fillEventCombo();
 		// give eventLog to the chart for display
 		showFullSequenceChart();
+		
+//		//XXX this is an attempt at improving drag in the chart, but it apparently doesn't do the job
+//		canvas.addMouseListener(new MouseListener() {
+//			public void mouseDoubleClick(MouseEvent e) {}
+//			public void mouseDown(MouseEvent e) {
+//				System.out.println("CANVAS CAPTURED");
+//				canvas.setCapture(true);
+//			}
+//			public void mouseUp(MouseEvent e) {
+//				canvas.setCapture(false);
+//				System.out.println("CANVAS RELEASED");
+//			}});
 	}
 
 	private Composite createControlStrip(Composite upper) {
@@ -166,11 +180,12 @@ public class SequenceChartToolEditor extends EditorPart {
     	eventcombo.select(0);
 	}
 
-	private void addSequenceChartFigure() {
+	private void addSequenceChartFigure(ScrollPane scrollPane) {
 		//addLabelFigure(10, 10, "Egyik vege");
 		//addLabelFigure(2100, 10, "Masik vege");
 		//addLabelFigure(10, 550, "Alja");
-		seqChartFigure = new SeqChartFigure();		
+		seqChartFigure = new SeqChartFigure();
+		seqChartFigure.setScrollPane(scrollPane);
 		rootFigure.add(seqChartFigure);
 		rootLayout.setConstraint(seqChartFigure, new Rectangle(0,0,-1,-1));
 	}

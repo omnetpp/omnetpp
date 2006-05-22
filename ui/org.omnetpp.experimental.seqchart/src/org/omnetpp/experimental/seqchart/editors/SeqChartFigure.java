@@ -7,11 +7,15 @@ import java.util.HashMap;
 
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.draw2d.MouseEvent;
+import org.eclipse.draw2d.MouseListener;
 import org.eclipse.draw2d.MouseMotionListener;
+import org.eclipse.draw2d.ScrollPane;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Cursor;
 import org.omnetpp.scave.engine.EventEntry;
 import org.omnetpp.scave.engine.EventLog;
 import org.omnetpp.scave.engine.JavaFriendlyEventLogFacade;
@@ -23,43 +27,97 @@ import org.omnetpp.scave.engine.JavaFriendlyEventLogFacade;
  */
 //TODO implement "hand" to grab and move the chart
 //TODO make events and message clickable (tooltip, go there in the log, etc)
-//TODO draw "deliver" messages in a different color
+//TODO limit pixelsPersec to a range that makes sense (for the current eventLog)
 //TODO draw arrowheads
 //FIXME msg arrows that intersect the chart area but don't start or end there are not displayed (BUG!)
-//FIXME performance: create a C++ interface where we can prevent instantiating a huge number of EventEntry/MessageEntry objects
 //FIXME cache lines for the drawing (we need this to make the chart clickable as well)
 public class SeqChartFigure extends Figure {
+
+	private final Color EVENT_FG_COLOR = new Color(null,255,0,0);
+	private final Color EVENT_BG_COLOR = new Color(null,255,0,0);
+	private final Color MSG_COLOR = new Color(null,0,255,0);
+	private final Color DELIVERY_MSG_COLOR = new Color(null,0,0,255);
+	private final Cursor DRAGCURSOR = new Cursor(null, SWT.CURSOR_SIZEALL);
+	private static final int XMAX = 10000;
+	private static final int ANTIALIAS_TURN_ON_AT_MSEC = 100;
+	private static final int ANTIALIAS_TURN_OFF_AT_MSEC = 300;
+
+	private ScrollPane scrollPane; // parent scrollPane
+	
+	protected EventLog eventLog;
 	
 	protected double pixelsPerSec = 2;
 	protected int tickScale = 2; // -1 means step=0.1
-	protected EventLog eventLog;
+	private boolean antiAlias = true;
 
-	private final Color eventForegroundColor = new Color(null,255,0,0);
-	private final Color eventBackgroundColor = new Color(null,255,0,0);
-	private final Color msgColor = new Color(null,0,255,0);
-	private final Color deliveryMsgColor = new Color(null,0,0,255);
-	private static final int XMAX = 10000; 
+	private int dragStartX, dragStartY;
+	
 	
     public SeqChartFigure() {
-		addMouseMotionListener(new MouseMotionListener() {
-			public void mouseDragged(MouseEvent me) {}
-			public void mouseEntered(MouseEvent me) {}
-			public void mouseExited(MouseEvent me) {}
-			public void mouseMoved(MouseEvent me) {}
-			public void mouseHover(MouseEvent me) {
-				System.out.println("HOVER");
-			}
-		});
+    	setUpMouseHandling();
     }
 
-    public double getPixelsPerSec() {
+	private void setUpMouseHandling() {
+		// dragging and tooltip
+		addMouseListener(new MouseListener() {
+			public void mouseDoubleClicked(MouseEvent me) {}
+			public void mousePressed(MouseEvent me) {
+				dragStartX = me.x;
+				dragStartY = me.y;
+			}
+			public void mouseReleased(MouseEvent me) {
+				setCursor(null); // restore cursor at end of drag
+			}
+    	});
+		addMouseMotionListener(new MouseMotionListener.Stub() {
+			public void mouseDragged(MouseEvent me) {
+				// display drag cursor if not already displayed
+				if (getCursor() == null) {
+					setCursor(DRAGCURSOR);
+				}
+				// scroll by the amount moved since last drag call
+				int dx = me.x - dragStartX;
+				int dy = me.y - dragStartY;
+				scrollPane.scrollHorizontalTo(-getBounds().x-dx);
+				scrollPane.scrollVerticalTo(-getBounds().y-dy);
+				dragStartX = me.x;
+				dragStartY = me.y;
+			}
+			public void mouseHover(MouseEvent me) {
+				System.out.println("HOVER");
+				displayTooltip(me.x, me.y);
+			}
+		});
+	}
+
+	protected void displayTooltip(int x, int y) {
+		// TODO Auto-generated method stub
+	}
+
+	/**
+	 * We need to know the surrounding scroll pane to be able to scroll here and there
+	 */
+	public void setScrollPane(ScrollPane scrollPane) {
+		this.scrollPane = scrollPane;
+	}
+
+	/**
+	 * Returns chart scale (number of pixels a 1-second interval maps to).
+	 */
+	public double getPixelsPerSec() {
 		return pixelsPerSec;	
 	}
 	
 	/**
-	 * Also adjusts tickScale which controls density of ticks
+	 * Set chart scale (number of pixels a 1-second interval maps to), 
+	 * and adjusts the density of ticks.
 	 */
 	public void setPixelsPerSec(double pps) {
+		// we want to center around the time currently displayed
+		int middleX = scrollPane.getViewport().getBounds().width/2;
+		double currentTime = pixelToTime(middleX);
+		
+		// set pixels per sec, and recalculate tick spacing
 		if (pps<=0)
 			pps = 1e-12;
 		pixelsPerSec = pps;
@@ -68,7 +126,21 @@ public class SeqChartFigure extends Figure {
 
 		System.out.println("pixels per sec: "+pixelsPerSec);
         
+		// we are of different size now
 		recalculatePreferredSize();
+
+		// restore the time originally displayed
+		gotoTime(currentTime);  // this includes repaint()
+	}
+
+	/**
+	 * Scroll the canvas so to make currentTime visible 
+	 */
+	private void gotoTime(double time) {
+		double xDouble = time * pixelsPerSec;
+		System.out.println("t="+time+"   xDouble="+xDouble+"  bounds.w="+getBounds().x);
+		int x = xDouble < 0 ? 0 : xDouble>Integer.MAX_VALUE ? Integer.MAX_VALUE : (int)xDouble;
+		scrollPane.scrollHorizontalTo(x - scrollPane.getViewport().getBounds().width/2);
 		repaint();
 	}
 
@@ -76,7 +148,7 @@ public class SeqChartFigure extends Figure {
 	 * Increases pixels per second. 
 	 */
 	public void zoomIn() {
-		setPixelsPerSec(getPixelsPerSec() * 1.5);	
+		setPixelsPerSec(getPixelsPerSec() * 1.5);
 	}
 
 	/**
@@ -86,10 +158,16 @@ public class SeqChartFigure extends Figure {
 		setPixelsPerSec(getPixelsPerSec() / 1.5);	
 	}
 	
+	/**
+	 * The event log (data) to be displayed in the chart
+	 */
 	public EventLog getEventLog() {
 		return eventLog;
 	}
 
+	/**
+	 * Set the event log to be displayed in the chart
+	 */
 	public void setEventLog(EventLog eventLog) {
 		this.eventLog = eventLog;
 		recalculatePreferredSize();
@@ -121,7 +199,7 @@ public class SeqChartFigure extends Figure {
 				drawLinearAxis(graphics, y, eventLog.getModule(i).getModuleFullName());
 			}
 
-			graphics.setAntialias(SWT.ON);
+			graphics.setAntialias(antiAlias ? SWT.ON : SWT.OFF);
 			graphics.setTextAntialias(SWT.ON);
 			
 			// paint events
@@ -136,15 +214,12 @@ public class SeqChartFigure extends Figure {
 			int startEventNumber = (startEvent!=null) ? startEvent.getEventNumber() : 0;
 			int endEventNumber = (endEvent!=null) ? endEvent.getEventNumber() : Integer.MAX_VALUE;
             
-            // calculate event coordinates, and paint events
-			graphics.setForegroundColor(eventForegroundColor); 
-            graphics.setBackgroundColor(eventBackgroundColor);
+            // calculate event coordinates (we paint them after the arrows)
             for (int i=startEventIndex; i<endEventIndex; i++) {
    				int x = timeToPixel(logFacade.getEvent_i_simulationTime(i));
    				int y = moduleIdToAxisYMap.get(logFacade.getEvent_i_module_moduleId(i));
    				logFacade.setEvent_cachedX(i, x);
    				logFacade.setEvent_cachedY(i, y);
-            	graphics.fillOval(x-2, y-3, 5, 7);
             }           	
 
             // paint arrows
@@ -154,7 +229,7 @@ public class SeqChartFigure extends Figure {
             	for (int k=0; k<numConsequences; k++) {
             		if (logFacade.getEvent_i_consequences_k_hasSourceAndTarget(i, k)) {
             			// we have to calculate target event's coords if it's beyond endEventNumber
-            			graphics.setForegroundColor(logFacade.getEvent_i_consequences_k_isDelivery(i,k) ? deliveryMsgColor : msgColor); 
+            			graphics.setForegroundColor(logFacade.getEvent_i_consequences_k_isDelivery(i,k) ? DELIVERY_MSG_COLOR : MSG_COLOR); 
                 		if (logFacade.getEvent_i_consequences_k_target_eventNumber(i, k) < endEventNumber) {
                 			// both source and target event in the visible chart area, and already painted
                 			drawMessageArrow(graphics,
@@ -187,13 +262,29 @@ public class SeqChartFigure extends Figure {
                				int srcX = srcXDouble< -XMAX ? -XMAX : (int)srcXDouble;
         					int targetX = logFacade.getEvent_i_causes_k_target_cachedX(i, k);
         					int targetY = logFacade.getEvent_i_causes_k_target_cachedY(i, k);
-               				graphics.setForegroundColor(logFacade.getEvent_i_causes_k_isDelivery(i,k) ? deliveryMsgColor : msgColor); 
+               				graphics.setForegroundColor(logFacade.getEvent_i_causes_k_isDelivery(i,k) ? DELIVERY_MSG_COLOR : MSG_COLOR); 
                				drawMessageArrow(graphics, srcX, srcY, targetX, targetY);
                 		}
             		}
             	}
             }
-			System.out.println("repaint(): "+(System.currentTimeMillis()-startMillis)+"ms");
+
+			// paint events
+            graphics.setForegroundColor(EVENT_FG_COLOR); 
+            graphics.setBackgroundColor(EVENT_BG_COLOR);
+            for (int i=startEventIndex; i<endEventIndex; i++) {
+   				int x = logFacade.getEvent_i_cachedX(i);
+   				int y = logFacade.getEvent_i_cachedY(i);
+            	graphics.fillOval(x-2, y-3, 5, 7);
+            }           	
+
+            long repaintMillis = System.currentTimeMillis()-startMillis;
+            //System.out.println("repaint(): "+repaintMillis+"ms");
+            if (antiAlias && repaintMillis > ANTIALIAS_TURN_OFF_AT_MSEC)
+            	antiAlias = false;
+            else if (!antiAlias && repaintMillis < ANTIALIAS_TURN_ON_AT_MSEC)
+            	antiAlias = true;
+            //XXX also: turn it off also during painting if it's going to take too long 
 		}
 	}
 
@@ -292,4 +383,5 @@ public class SeqChartFigure extends Figure {
 		// the result is always true.
 		return result <= tolerance * tolerance;
 	}
+
 }
