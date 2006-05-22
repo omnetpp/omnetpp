@@ -12,6 +12,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Color;
 import org.omnetpp.scave.engine.EventEntry;
 import org.omnetpp.scave.engine.EventLog;
+import org.omnetpp.scave.engine.JavaFriendlyEventLogFacade;
 import org.omnetpp.scave.engine.MessageEntries;
 import org.omnetpp.scave.engine.MessageEntry;
 
@@ -94,6 +95,7 @@ public class SeqChartFigure extends Figure {
 			long startMillis = System.currentTimeMillis();
 			
 			// paint axes
+			JavaFriendlyEventLogFacade logFacade = new JavaFriendlyEventLogFacade(eventLog); 
 			HashMap<Integer,Integer> moduleIdToAxisMap = new HashMap<Integer, Integer>();
 			for (int i=0; i<eventLog.getNumModules(); i++) {
 				moduleIdToAxisMap.put(eventLog.getModule(i).getModuleId(), i);
@@ -108,53 +110,81 @@ public class SeqChartFigure extends Figure {
 			EventEntry endEvent = eventLog.getFirstEventAfter(tright);
 			int startEventIndex = (startEvent!=null) ? eventLog.findEvent(startEvent) : 0;
 			int endEventIndex = (endEvent!=null) ? eventLog.findEvent(endEvent) : eventLog.getNumEvents(); 
+
 			int startEventNumber = (startEvent!=null) ? startEvent.getEventNumber() : 0;
+			int endEventNumber = (endEvent!=null) ? endEvent.getEventNumber() : Integer.MAX_VALUE;
             
-            graphics.setForegroundColor(new Color(null,255,0,0));
-            graphics.setBackgroundColor(new Color(null,170,0,0));
+            // calculate event coordinates, and paint events
+			graphics.setForegroundColor(new Color(null,255,0,0)); //XXX cache it
+            graphics.setBackgroundColor(new Color(null,170,0,0)); //XXX cache it
             for (int i=startEventIndex; i<endEventIndex; i++) {
-            	EventEntry event = eventLog.getEvent(i);
-    			Point p = getEventCoords(event, moduleIdToAxisMap);
-            	graphics.fillOval(p.x-2, p.y-2, 5, 5);
-            	
+   				int x = timeToPixel(logFacade.getEvent_i_simulationTime(i));
+   				int axis = moduleIdToAxisMap.get(logFacade.getEvent_i_module_moduleId(i));
+   				int y = bounds.y+30+axis*50;
+   				logFacade.setEvent_cachedX(i, x);
+   				logFacade.setEvent_cachedY(i, y);
+            	graphics.fillOval(x-2, y-2, 5, 5);
+            }           	
+
+            // paint arrows
+            for (int i=startEventIndex; i<endEventIndex; i++) {
             	// paint forward arrows for this event
-            	MessageEntries consequences = event.getConsequences();
-            	for (int j=0; j<consequences.size(); j++)
-        			drawMessageArrow(consequences.get(j), moduleIdToAxisMap, graphics);
-            	// paint backward arrows that wouldn't be painted otherwise
-            	MessageEntries causes = event.getCauses();
-            	for (int j=0; j<causes.size(); j++)
-            		if (causes.get(j).getSource().getEventNumber() < startEventNumber)
-            			drawMessageArrow(causes.get(j), moduleIdToAxisMap, graphics);
+            	int numConsequences = logFacade.getEvent_i_numConsequences(i);
+            	for (int k=0; k<numConsequences; k++) {
+            		if (logFacade.getEvent_i_consequences_k_hasSourceAndTarget(i, k)) {
+            			// we have to calculate target event's coords if it's beyond endEventNumber
+            			int targetX, targetY;
+                		if (logFacade.getEvent_i_consequences_k_target_eventNumber(i, k) >= endEventNumber) {
+               				targetX = timeToPixel(logFacade.getEvent_i_consequences_k_target_simulationTime(i, k));
+               				int targetAxis = moduleIdToAxisMap.get(logFacade.getEvent_i_consequences_k_target_module_moduleId(i, k));
+               				targetY = bounds.y+30+targetAxis*50;
+                		}
+                		else {
+        					targetX = logFacade.getEvent_i_consequences_k_target_cachedX(i, k);
+        					targetY = logFacade.getEvent_i_consequences_k_target_cachedY(i, k);
+                		}
+            			drawMessageArrow(graphics,
+            					logFacade.getEvent_i_consequences_k_source_cachedX(i, k),
+            					logFacade.getEvent_i_consequences_k_source_cachedY(i, k),
+            					targetX,
+            					targetY);
+            		}
+            	}
+
+            	// paint backward arrows that we didn't paint as forward arrows
+            	int numCauses = logFacade.getEvent_i_numCauses(i);
+            	for (int k=0; k<numCauses; k++) {
+            		if (logFacade.getEvent_i_causes_k_source_eventNumber(i, k) < startEventNumber) {
+                		if (logFacade.getEvent_i_causes_k_hasSourceAndTarget(i, k)) {
+               				int srcX = timeToPixel(logFacade.getEvent_i_causes_k_source_simulationTime(i, k));
+               				int srcAxis = moduleIdToAxisMap.get(logFacade.getEvent_i_causes_k_source_module_moduleId(i, k));
+               				int srcY = bounds.y+30+srcAxis*50;
+               				System.out.println("   "+srcX+","+srcY);
+
+                			drawMessageArrow(graphics,
+                					srcX,
+                					srcY,
+                					logFacade.getEvent_i_causes_k_target_cachedX(i, k),
+                					logFacade.getEvent_i_causes_k_target_cachedY(i, k));
+                		}
+            		}
+            	}
             }
 			System.out.println("repaint(): "+(System.currentTimeMillis()-startMillis)+"ms");
-			startMillis = System.currentTimeMillis();
-			System.gc();
-			System.out.println("     gc(): "+(System.currentTimeMillis()-startMillis)+"ms");
+			//startMillis = System.currentTimeMillis();
+			//System.gc();
+			//System.out.println("     gc(): "+(System.currentTimeMillis()-startMillis)+"ms");
 		}
 	}
 
-	private void drawMessageArrow(MessageEntry msg, HashMap<Integer, Integer> moduleIdToAxisMap, Graphics graphics) {
-		Point p1 = getEventCoords(msg.getSource(), moduleIdToAxisMap);
-		Point p2 = getEventCoords(msg.getTarget(), moduleIdToAxisMap);
-		if (p1.y==p2.y) {
-			drawArc(graphics, p1, p2);
+	private void drawMessageArrow(Graphics graphics, int x1, int y1, int x2, int y2) {
+		if (y1==y2) {
+			Rectangle.SINGLETON.setLocation(x1, y1-10);
+			Rectangle.SINGLETON.setSize(x2-x1, 20);
+			graphics.drawArc(Rectangle.SINGLETON, 0, 180);
 		} else {
-			graphics.drawLine(p1, p2);
+			graphics.drawLine(x1, y1, x2, y2);
 		}
-	}
-
-	private void drawArc(Graphics graphics, Point p1, Point p2) {
-		Rectangle.SINGLETON.setLocation(p1.x, p1.y-10);
-		Rectangle.SINGLETON.setSize(p2.x-p1.x, 20);
-		graphics.drawArc(Rectangle.SINGLETON, 0, 180);
-	}
-
-	private Point getEventCoords(EventEntry event, HashMap<Integer,Integer> moduleIdToAxisMap) {
-		int x = timeToPixel(event.getSimulationTime());
-		int axis = moduleIdToAxisMap.get(event.getModule().getModuleId());
-		int y = bounds.y+30+axis*50;
-		return new Point(x,y);
 	}
 
 	/**

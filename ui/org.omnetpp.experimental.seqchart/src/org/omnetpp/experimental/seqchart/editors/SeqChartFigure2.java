@@ -7,8 +7,6 @@ import java.util.HashMap;
 
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Color;
@@ -18,20 +16,17 @@ import org.omnetpp.scave.engine.MessageEntries;
 import org.omnetpp.scave.engine.MessageEntry;
 
 /**
- * This one uses figures for arrows. 
+ * This is a sequence chart as a single figure.
  *
  * @author andras
  */
+//XXX this doesn't use the new JavaFriendlyFacade
 public class SeqChartFigure2 extends Figure {
 	
 	protected double pixelsPerSec = 2;
 	protected int tickScale = 2; // -1 means step=0.1
 	protected EventLog eventLog;
 
-	public SeqChartFigure2() {
-		setLayoutManager(new XYLayout());
-	}
-	
 	public double getPixelsPerSec() {
 		return pixelsPerSec;	
 	}
@@ -73,57 +68,7 @@ public class SeqChartFigure2 extends Figure {
 	public void setEventLog(EventLog eventLog) {
 		this.eventLog = eventLog;
 		recalculatePreferredSize();
-		
-		recreateFigures();
-	}
-
-	private void recreateFigures() {
-		removeAll();
-
-		// add figures for events
-		Color red = new Color(null,255,0,0);
-		for (int i=0; i<eventLog.getNumEvents(); i++) {
-        	EventEntry event = eventLog.getEvent(i);
-    		int x = timeToPixel(event.getSimulationTime());
-    		int y = getBounds().y+60;
-			Figure f = new Figure();
-			f.setBackgroundColor(red);
-			f.setOpaque(true);
-			add(f);
-			getLayoutManager().setConstraint(f, new Rectangle(x,y,5,5));
-		}
-
-//		// paint events
-//		Rectangle rect = graphics.getClip(new Rectangle());
-//		double tleft = pixelToTime(rect.x);
-//		double tright = pixelToTime(rect.right());
-//		EventEntry startEvent = eventLog.getFirstEventAfter(tleft);
-//		EventEntry endEvent = eventLog.getFirstEventAfter(tright);
-//		int startEventIndex = (startEvent!=null) ? eventLog.findEvent(startEvent) : 0;
-//		int endEventIndex = (endEvent!=null) ? eventLog.findEvent(endEvent) : eventLog.getNumEvents(); 
-//		int startEventNumber = (startEvent!=null) ? startEvent.getEventNumber() : 0;
-//        
-//        graphics.setForegroundColor(new Color(null,255,0,0));
-//        graphics.setBackgroundColor(new Color(null,170,0,0));
-//        for (int i=startEventIndex; i<endEventIndex; i++) {
-//        	EventEntry event = eventLog.getEvent(i);
-//			Point p = getEventCoords(event, moduleIdToAxisMap);
-//        	graphics.fillOval(p.x-2, p.y-2, 5, 5);
-//        	
-//        	// paint forward arrows for this event
-//        	MessageEntries consequences = event.getConsequences();
-//        	for (int j=0; j<consequences.size(); j++)
-//    			drawMessageArrow(consequences.get(j), moduleIdToAxisMap, graphics);
-//
-//        	// paint backward arrows that wouldn't be painted otherwise
-//        	MessageEntries causes = event.getCauses();
-//        	for (int j=0; j<causes.size(); j++)
-//        		if (causes.get(j).getSource().getEventNumber() < startEventNumber)
-//        			drawMessageArrow(causes.get(j), moduleIdToAxisMap, graphics);
-//        	//FIXME this is not quite good enough -- we have to draw all messages where 
-//        	//the arrow is at least partially on the screen (ie maybe src<tstart and target>tend!)
-//        	
-//        }
+		repaint();
 	}
 
 	private void recalculatePreferredSize() {
@@ -140,6 +85,8 @@ public class SeqChartFigure2 extends Figure {
 	@Override
 	protected void paintFigure(Graphics graphics) {
 		if (eventLog!=null) {
+			long startMillis = System.currentTimeMillis();
+			
 			// paint axes
 			HashMap<Integer,Integer> moduleIdToAxisMap = new HashMap<Integer, Integer>();
 			for (int i=0; i<eventLog.getNumModules(); i++) {
@@ -147,7 +94,37 @@ public class SeqChartFigure2 extends Figure {
 				drawLinearAxis(graphics, bounds.y+30+i*50, eventLog.getModule(i).getModuleFullName());
 			}
 
-			//XXX events and arrows are to become figures
+			// paint events
+			Rectangle rect = graphics.getClip(new Rectangle());
+			double tleft = pixelToTime(rect.x);
+			double tright = pixelToTime(rect.right());
+			EventEntry startEvent = eventLog.getFirstEventAfter(tleft);
+			EventEntry endEvent = eventLog.getFirstEventAfter(tright);
+			int startEventIndex = (startEvent!=null) ? eventLog.findEvent(startEvent) : 0;
+			int endEventIndex = (endEvent!=null) ? eventLog.findEvent(endEvent) : eventLog.getNumEvents(); 
+			int startEventNumber = (startEvent!=null) ? startEvent.getEventNumber() : 0;
+            
+            graphics.setForegroundColor(new Color(null,255,0,0));
+            graphics.setBackgroundColor(new Color(null,170,0,0));
+            for (int i=startEventIndex; i<endEventIndex; i++) {
+            	EventEntry event = eventLog.getEvent(i);
+    			Point p = getEventCoords(event, moduleIdToAxisMap);
+            	graphics.fillOval(p.x-2, p.y-2, 5, 5);
+            	
+            	// paint forward arrows for this event
+            	MessageEntries consequences = event.getConsequences();
+            	for (int j=0; j<consequences.size(); j++)
+        			drawMessageArrow(consequences.get(j), moduleIdToAxisMap, graphics);
+            	// paint backward arrows that wouldn't be painted otherwise
+            	MessageEntries causes = event.getCauses();
+            	for (int j=0; j<causes.size(); j++)
+            		if (causes.get(j).getSource().getEventNumber() < startEventNumber)
+            			drawMessageArrow(causes.get(j), moduleIdToAxisMap, graphics);
+            }
+			System.out.println("repaint(): "+(System.currentTimeMillis()-startMillis)+"ms");
+			startMillis = System.currentTimeMillis();
+			System.gc();
+			System.out.println("     gc(): "+(System.currentTimeMillis()-startMillis)+"ms");
 		}
 	}
 
@@ -162,9 +139,9 @@ public class SeqChartFigure2 extends Figure {
 	}
 
 	private void drawArc(Graphics graphics, Point p1, Point p2) {
-		Rectangle rect = new Rectangle(p1.x, p1.y-10, p2.x-p1.x, 20);
-		//rect.expand(rect.width, 0);
-		graphics.drawArc(rect, 0, 180);
+		Rectangle.SINGLETON.setLocation(p1.x, p1.y-10);
+		Rectangle.SINGLETON.setSize(p2.x-p1.x, 20);
+		graphics.drawArc(Rectangle.SINGLETON, 0, 180);
 	}
 
 	private Point getEventCoords(EventEntry event, HashMap<Integer,Integer> moduleIdToAxisMap) {
@@ -217,5 +194,39 @@ public class SeqChartFigure2 extends Figure {
 	 */
 	private int timeToPixel(double t) {
 		return (int)Math.round(t * pixelsPerSec) + getBounds().x;
+	}
+
+	/**
+	 * Utility function, copied from org.eclipse.draw2d.Polyline.
+	 */
+	private boolean lineContainsPoint(int x1, int y1, int x2, int y2, int px, int py, int tolerance) {
+		Rectangle.SINGLETON.setSize(0, 0);
+		Rectangle.SINGLETON.setLocation(x1, y1);
+		Rectangle.SINGLETON.union(x2, y2);
+		Rectangle.SINGLETON.expand(tolerance, tolerance);
+		if (!Rectangle.SINGLETON.contains(px, py))
+			return false;
+
+		int v1x, v1y, v2x, v2y;
+		int numerator, denominator;
+		int result = 0;
+
+		// calculates the length squared of the cross product of two vectors, v1 & v2.
+		if (x1 != x2 && y1 != y2) {
+			v1x = x2 - x1;
+			v1y = y2 - y1;
+			v2x = px - x1;
+			v2y = py - y1;
+
+			numerator = v2x * v1y - v1x * v2y;
+
+			denominator = v1x * v1x + v1y * v1y;
+
+			result = (int)((long)numerator * numerator / denominator);
+		}
+
+		// if it is the same point, and it passes the bounding box test,
+		// the result is always true.
+		return result <= tolerance * tolerance;
 	}
 }

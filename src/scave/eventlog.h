@@ -136,12 +136,12 @@ class EventLog
  * A class that makes it possible to extract info about events, without
  * returning objects. (Wherever a C++ method returns an object pointer,
  * SWIG-generated wrapper creates a corresponding Java object with the
- * pointer value inside. This is disastrous when dealing with huge amounts
- * of data).
+ * pointer value inside. This has disastrous effect on performance
+ * when dealing with huge amounts of data).
  *
  * IMPORTANT! Java code MUST NOT ask members of objects that don't exist!
- * Otherwise there will be a crash. For example, if getEvent_k_hasCause(k)
- * returns false, then getEvent_k_cause_messageClassName(k) will CRASH!
+ * Otherwise there will be a crash. For example, if getEvent_i_hasCause(i)
+ * returns false, then getEvent_i_cause_messageClassName(i) will CRASH!
  */
 class JavaFriendlyEventLogFacade
 {
@@ -152,64 +152,77 @@ class JavaFriendlyEventLogFacade
         EventEntry *getEvent(int pos) {return log->getEvent(pos);}
         ModuleEntry *getEvent_module(int pos) {return log->getEvent(pos)->module;}
         MessageEntry *getEvent_cause(int pos) {return log->getEvent(pos)->cause;}
-        MessageEntry *getEvent_causes(int pos, int i) {return log->getEvent(pos)->causes[i];}
-        MessageEntry *getEvent_consequences(int pos, int i) {return log->getEvent(pos)->consequences[i];}
+        MessageEntry *getEvent_causes(int pos, int k) {return log->getEvent(pos)->causes[k];}
+        MessageEntry *getEvent_consequences(int pos, int k) {return log->getEvent(pos)->consequences[k];}
 
     public:
         JavaFriendlyEventLogFacade(EventLog *eventLog) {log = eventLog;}
         ~JavaFriendlyEventLogFacade() {}
 
         int getNumEvents() {return log->getNumEvents();}
-        long getEvent_k_eventNumber(int pos) {return getEvent(pos)->eventNumber;}
-        double getEvent_k_simulationTime(int pos) {return getEvent(pos)->simulationTime;}
-        int getEvent_k_cachedX(int pos)  {return getEvent(pos)->cachedX;}
-        int getEvent_k_cachedY(int pos)  {return getEvent(pos)->cachedY;}
+        long getEvent_i_eventNumber(int pos) {return getEvent(pos)->eventNumber;}
+        double getEvent_i_simulationTime(int pos) {return getEvent(pos)->simulationTime;}
+        int getEvent_i_cachedX(int pos)  {return getEvent(pos)->cachedX;}
+        int getEvent_i_cachedY(int pos)  {return getEvent(pos)->cachedY;}
         void setEvent_cachedX(int pos, int x)  {getEvent(pos)->cachedX = x;}
         void setEvent_cachedY(int pos, int y)  {getEvent(pos)->cachedY = y;}
 
-        std::string getEvent_k_module_moduleClassName(int pos) {return getEvent_module(pos)->moduleClassName;}
-        std::string getEvent_k_module_moduleFullName(int pos)  {return getEvent_module(pos)->moduleFullName;}
-        int getEvent_k_module_moduleId(int pos) {return getEvent_module(pos)->moduleId;}
+        std::string getEvent_i_module_moduleClassName(int pos) {return getEvent_module(pos)->moduleClassName;}
+        std::string getEvent_i_module_moduleFullName(int pos)  {return getEvent_module(pos)->moduleFullName;}
+        int getEvent_i_module_moduleId(int pos) {return getEvent_module(pos)->moduleId;}
 
-        bool getEvent_k_hasCause(int pos) {return getEvent_cause(pos)!=NULL;}
-        bool getEvent_k_cause_isDelivery(int pos) {return getEvent_cause(pos)->isDelivery;}
-        long getEvent_k_cause_lineNumber(int pos) {return getEvent_cause(pos)->lineNumber;}
-        std::string getEvent_k_cause_messageClassName(int pos) {return getEvent_cause(pos)->messageClassName;}
-        std::string getEvent_k_cause_messageName(int pos) {return getEvent_cause(pos)->messageName;}
-        bool getEvent_k_cause_hasSource(int pos)  {return getEvent_cause(pos)->source!=NULL;}
-        double getEvent_k_cause_source_simulationTime(int pos)  {return getEvent_cause(pos)->source->simulationTime;}
-        int getEvent_k_cause_source_cachedX(int pos)  {return getEvent_cause(pos)->source->cachedX;}
-        int getEvent_k_cause_source_cachedY(int pos)  {return getEvent_cause(pos)->source->cachedY;}
+        bool getEvent_i_hasCause(int pos) {return getEvent_cause(pos)!=NULL;}
+        bool getEvent_i_cause_isDelivery(int pos) {return getEvent_cause(pos)->isDelivery;}
+        long getEvent_i_cause_lineNumber(int pos) {return getEvent_cause(pos)->lineNumber;}
+        std::string getEvent_i_cause_messageClassName(int pos) {return getEvent_cause(pos)->messageClassName;}
+        std::string getEvent_i_cause_messageName(int pos) {return getEvent_cause(pos)->messageName;}
+        bool getEvent_i_cause_hasSourceAndTarget(int pos, int k)  {MessageEntry *m=getEvent_cause(pos); return m->source && m->target;}
+        bool getEvent_i_cause_hasSource(int pos)  {return getEvent_cause(pos)->source!=NULL;}
+        long getEvent_i_cause_source_eventNumber(int pos)  {return getEvent_cause(pos)->source->eventNumber;}
+        double getEvent_i_cause_source_simulationTime(int pos)  {return getEvent_cause(pos)->source->simulationTime;}
+        int getEvent_i_cause_source_module_moduleId(int pos, int k)  {return getEvent_cause(pos)->source->module->moduleId;}
+        int getEvent_i_cause_source_cachedX(int pos)  {return getEvent_cause(pos)->source->cachedX;}
+        int getEvent_i_cause_source_cachedY(int pos)  {return getEvent_cause(pos)->source->cachedY;}
 
-        double getEvent_k_numCauses(int pos)  {return getEvent(pos)->causes.size();}
+        int getEvent_i_numCauses(int pos)  {return getEvent(pos)->causes.size();}
 
-        bool getEvent_k_causes_i_isDelivery(int pos, int i) {return getEvent_causes(pos,i)->isDelivery;}
-        long getEvent_k_causes_i_lineNumber(int pos, int i) {return getEvent_causes(pos,i)->lineNumber;}
-        std::string getEvent_k_causes_i_messageClassName(int pos, int i) {return getEvent_causes(pos,i)->messageClassName;}
-        std::string getEvent_k_causes_i_messageName(int pos, int i) {return getEvent_causes(pos,i)->messageName;}
-        bool getEvent_k_causes_i_hasSource(int pos, int i)  {return getEvent_causes(pos,i)->source!=NULL;}
-        double getEvent_k_causes_i_source_simulationTime(int pos, int i)  {return getEvent_causes(pos,i)->source->simulationTime;}
-        int getEvent_k_causes_i_source_cachedX(int pos, int i)  {return getEvent_causes(pos,i)->source->cachedX;}
-        int getEvent_k_causes_i_source_cachedY(int pos, int i)  {return getEvent_causes(pos,i)->source->cachedY;}
-        bool getEvent_k_causes_i_hasTarget(int pos, int i)  {return getEvent_causes(pos,i)->target!=NULL;}
-        double getEvent_k_causes_i_target_simulationTime(int pos, int i)  {return getEvent_causes(pos,i)->target->simulationTime;}
-        int getEvent_k_causes_i_target_cachedX(int pos, int i)  {return getEvent_causes(pos,i)->target->cachedX;}
-        int getEvent_k_causes_i_target_cachedY(int pos, int i)  {return getEvent_causes(pos,i)->target->cachedY;}
+        bool getEvent_i_causes_k_isDelivery(int pos, int k) {return getEvent_causes(pos,k)->isDelivery;}
+        long getEvent_i_causes_k_lineNumber(int pos, int k) {return getEvent_causes(pos,k)->lineNumber;}
+        std::string getEvent_i_causes_k_messageClassName(int pos, int k) {return getEvent_causes(pos,k)->messageClassName;}
+        std::string getEvent_i_causes_k_messageName(int pos, int k) {return getEvent_causes(pos,k)->messageName;}
+        bool getEvent_i_causes_k_hasSourceAndTarget(int pos, int k)  {MessageEntry *m=getEvent_causes(pos,k); return m->source && m->target;}
+        bool getEvent_i_causes_k_hasSource(int pos, int k)  {return getEvent_causes(pos,k)->source!=NULL;}
+        long getEvent_i_causes_k_source_eventNumber(int pos, int k)  {return getEvent_causes(pos,k)->source->eventNumber;}
+        double getEvent_i_causes_k_source_simulationTime(int pos, int k)  {return getEvent_causes(pos,k)->source->simulationTime;}
+        int getEvent_i_causes_k_source_module_moduleId(int pos, int k)  {return getEvent_causes(pos,k)->source->module->moduleId;}
+        int getEvent_i_causes_k_source_cachedX(int pos, int k)  {return getEvent_causes(pos,k)->source->cachedX;}
+        int getEvent_i_causes_k_source_cachedY(int pos, int k)  {return getEvent_causes(pos,k)->source->cachedY;}
+        bool getEvent_i_causes_k_hasTarget(int pos, int k)  {return getEvent_causes(pos,k)->target!=NULL;}
+        long getEvent_i_causes_k_target_eventNumber(int pos, int k)  {return getEvent_causes(pos,k)->target->eventNumber;}
+        double getEvent_i_causes_k_target_simulationTime(int pos, int k)  {return getEvent_causes(pos,k)->target->simulationTime;}
+        int getEvent_i_causes_k_target_module_moduleId(int pos, int k)  {return getEvent_causes(pos,k)->target->module->moduleId;}
+        int getEvent_i_causes_k_target_cachedX(int pos, int k)  {return getEvent_causes(pos,k)->target->cachedX;}
+        int getEvent_i_causes_k_target_cachedY(int pos, int k)  {return getEvent_causes(pos,k)->target->cachedY;}
 
-        double getEvent_k_numConsequences(int pos)  {return getEvent(pos)->consequences.size();}
+        int getEvent_i_numConsequences(int pos)  {return getEvent(pos)->consequences.size();}
 
-        bool getEvent_k_consequences_i_isDelivery(int pos, int i) {return getEvent_consequences(pos,i)->isDelivery;}
-        long getEvent_k_consequences_i_lineNumber(int pos, int i) {return getEvent_consequences(pos,i)->lineNumber;}
-        std::string getEvent_k_consequences_i_messageClassName(int pos, int i) {return getEvent_consequences(pos,i)->messageClassName;}
-        std::string getEvent_k_consequences_i_messageName(int pos, int i) {return getEvent_consequences(pos,i)->messageName;}
-        bool getEvent_k_consequences_i_hasSource(int pos, int i)  {return getEvent_consequences(pos,i)->source!=NULL;}
-        double getEvent_k_consequences_i_source_simulationTime(int pos, int i)  {return getEvent_consequences(pos,i)->source->simulationTime;}
-        int getEvent_k_consequences_i_source_cachedX(int pos, int i)  {return getEvent_consequences(pos,i)->source->cachedX;}
-        int getEvent_k_consequences_i_source_cachedY(int pos, int i)  {return getEvent_consequences(pos,i)->source->cachedY;}
-        bool getEvent_k_consequences_i_hasTarget(int pos, int i)  {return getEvent_consequences(pos,i)->target!=NULL;}
-        double getEvent_k_consequences_i_target_simulationTime(int pos, int i)  {return getEvent_consequences(pos,i)->target->simulationTime;}
-        int getEvent_k_consequences_i_target_cachedX(int pos, int i)  {return getEvent_consequences(pos,i)->target->cachedX;}
-        int getEvent_k_consequences_i_target_cachedY(int pos, int i)  {return getEvent_consequences(pos,i)->target->cachedY;}
+        bool getEvent_i_consequences_k_isDelivery(int pos, int k) {return getEvent_consequences(pos,k)->isDelivery;}
+        long getEvent_i_consequences_k_lineNumber(int pos, int k) {return getEvent_consequences(pos,k)->lineNumber;}
+        std::string getEvent_i_consequences_k_messageClassName(int pos, int k) {return getEvent_consequences(pos,k)->messageClassName;}
+        std::string getEvent_i_consequences_k_messageName(int pos, int k) {return getEvent_consequences(pos,k)->messageName;}
+        bool getEvent_i_consequences_k_hasSourceAndTarget(int pos, int k)  {MessageEntry *m=getEvent_consequences(pos,k); return m->source && m->target;}
+        bool getEvent_i_consequences_k_hasSource(int pos, int k)  {return getEvent_consequences(pos,k)->source!=NULL;}
+        long getEvent_i_consequences_k_source_eventNumber(int pos, int k)  {return getEvent_consequences(pos,k)->source->eventNumber;}
+        double getEvent_i_consequences_k_source_simulationTime(int pos, int k)  {return getEvent_consequences(pos,k)->source->simulationTime;}
+        int getEvent_i_consequences_k_source_module_moduleId(int pos, int k)  {return getEvent_consequences(pos,k)->source->module->moduleId;}
+        int getEvent_i_consequences_k_source_cachedX(int pos, int k)  {return getEvent_consequences(pos,k)->source->cachedX;}
+        int getEvent_i_consequences_k_source_cachedY(int pos, int k)  {return getEvent_consequences(pos,k)->source->cachedY;}
+        bool getEvent_i_consequences_k_hasTarget(int pos, int k)  {return getEvent_consequences(pos,k)->target!=NULL;}
+        long getEvent_i_consequences_k_target_eventNumber(int pos, int k)  {return getEvent_consequences(pos,k)->target->eventNumber;}
+        double getEvent_i_consequences_k_target_simulationTime(int pos, int k)  {return getEvent_consequences(pos,k)->target->simulationTime;}
+        int getEvent_i_consequences_k_target_module_moduleId(int pos, int k)  {return getEvent_consequences(pos,k)->target->module->moduleId;}
+        int getEvent_i_consequences_k_target_cachedX(int pos, int k)  {return getEvent_consequences(pos,k)->target->cachedX;}
+        int getEvent_i_consequences_k_target_cachedY(int pos, int k)  {return getEvent_consequences(pos,k)->target->cachedY;}
 };
 
 #endif
