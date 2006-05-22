@@ -73,7 +73,7 @@ public class SequenceChartToolEditor extends EditorPart {
 		Composite controlStrip = createControlStrip(upper);
 		controlStrip.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-		Canvas canvas = new Canvas(upper, SWT.NONE);
+		Canvas canvas = new Canvas(upper, SWT.DOUBLE_BUFFERED);
 		canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		canvas.setBackground(new Color(null,255,255,255));
 		LightweightSystem lws = new LightweightSystem(canvas);

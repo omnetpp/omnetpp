@@ -7,14 +7,14 @@ import java.util.HashMap;
 
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.draw2d.MouseEvent;
+import org.eclipse.draw2d.MouseMotionListener;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.omnetpp.scave.engine.EventEntry;
 import org.omnetpp.scave.engine.EventLog;
 import org.omnetpp.scave.engine.JavaFriendlyEventLogFacade;
-import org.omnetpp.scave.engine.MessageEntries;
-import org.omnetpp.scave.engine.MessageEntry;
 
 /**
  * This is a sequence chart as a single figure.
@@ -34,7 +34,25 @@ public class SeqChartFigure extends Figure {
 	protected int tickScale = 2; // -1 means step=0.1
 	protected EventLog eventLog;
 
-	public double getPixelsPerSec() {
+	private final Color eventForegroundColor = new Color(null,255,0,0);
+	private final Color eventBackgroundColor = new Color(null,255,0,0);
+	private final Color msgColor = new Color(null,0,255,0);
+	private final Color deliveryMsgColor = new Color(null,0,0,255);
+	private static final int XMAX = 10000; 
+	
+    public SeqChartFigure() {
+		addMouseMotionListener(new MouseMotionListener() {
+			public void mouseDragged(MouseEvent me) {}
+			public void mouseEntered(MouseEvent me) {}
+			public void mouseExited(MouseEvent me) {}
+			public void mouseMoved(MouseEvent me) {}
+			public void mouseHover(MouseEvent me) {
+				System.out.println("HOVER");
+			}
+		});
+    }
+
+    public double getPixelsPerSec() {
 		return pixelsPerSec;	
 	}
 	
@@ -96,12 +114,16 @@ public class SeqChartFigure extends Figure {
 			
 			// paint axes
 			JavaFriendlyEventLogFacade logFacade = new JavaFriendlyEventLogFacade(eventLog); 
-			HashMap<Integer,Integer> moduleIdToAxisMap = new HashMap<Integer, Integer>();
+			HashMap<Integer,Integer> moduleIdToAxisYMap = new HashMap<Integer, Integer>();
 			for (int i=0; i<eventLog.getNumModules(); i++) {
-				moduleIdToAxisMap.put(eventLog.getModule(i).getModuleId(), i);
-				drawLinearAxis(graphics, bounds.y+30+i*50, eventLog.getModule(i).getModuleFullName());
+				int y = bounds.y+30+i*50;
+				moduleIdToAxisYMap.put(eventLog.getModule(i).getModuleId(), y);
+				drawLinearAxis(graphics, y, eventLog.getModule(i).getModuleFullName());
 			}
 
+			graphics.setAntialias(SWT.ON);
+			graphics.setTextAntialias(SWT.ON);
+			
 			// paint events
 			Rectangle rect = graphics.getClip(new Rectangle());
 			double tleft = pixelToTime(rect.x);
@@ -115,15 +137,14 @@ public class SeqChartFigure extends Figure {
 			int endEventNumber = (endEvent!=null) ? endEvent.getEventNumber() : Integer.MAX_VALUE;
             
             // calculate event coordinates, and paint events
-			graphics.setForegroundColor(new Color(null,255,0,0)); //XXX cache it
-            graphics.setBackgroundColor(new Color(null,170,0,0)); //XXX cache it
+			graphics.setForegroundColor(eventForegroundColor); 
+            graphics.setBackgroundColor(eventBackgroundColor);
             for (int i=startEventIndex; i<endEventIndex; i++) {
    				int x = timeToPixel(logFacade.getEvent_i_simulationTime(i));
-   				int axis = moduleIdToAxisMap.get(logFacade.getEvent_i_module_moduleId(i));
-   				int y = bounds.y+30+axis*50;
+   				int y = moduleIdToAxisYMap.get(logFacade.getEvent_i_module_moduleId(i));
    				logFacade.setEvent_cachedX(i, x);
    				logFacade.setEvent_cachedY(i, y);
-            	graphics.fillOval(x-2, y-2, 5, 5);
+            	graphics.fillOval(x-2, y-3, 5, 7);
             }           	
 
             // paint arrows
@@ -133,21 +154,25 @@ public class SeqChartFigure extends Figure {
             	for (int k=0; k<numConsequences; k++) {
             		if (logFacade.getEvent_i_consequences_k_hasSourceAndTarget(i, k)) {
             			// we have to calculate target event's coords if it's beyond endEventNumber
-            			int targetX, targetY;
-                		if (logFacade.getEvent_i_consequences_k_target_eventNumber(i, k) >= endEventNumber) {
-               				targetX = timeToPixel(logFacade.getEvent_i_consequences_k_target_simulationTime(i, k));
-               				int targetAxis = moduleIdToAxisMap.get(logFacade.getEvent_i_consequences_k_target_module_moduleId(i, k));
-               				targetY = bounds.y+30+targetAxis*50;
+            			graphics.setForegroundColor(logFacade.getEvent_i_consequences_k_isDelivery(i,k) ? deliveryMsgColor : msgColor); 
+                		if (logFacade.getEvent_i_consequences_k_target_eventNumber(i, k) < endEventNumber) {
+                			// both source and target event in the visible chart area, and already painted
+                			drawMessageArrow(graphics,
+                					logFacade.getEvent_i_consequences_k_source_cachedX(i, k),
+                					logFacade.getEvent_i_consequences_k_source_cachedY(i, k),
+                					logFacade.getEvent_i_consequences_k_target_cachedX(i, k),
+                					logFacade.getEvent_i_consequences_k_target_cachedY(i, k));
                 		}
                 		else {
-        					targetX = logFacade.getEvent_i_consequences_k_target_cachedX(i, k);
-        					targetY = logFacade.getEvent_i_consequences_k_target_cachedY(i, k);
+                			// target is outside the repaint region (on the far right)
+        					int srcX = logFacade.getEvent_i_consequences_k_source_cachedX(i, k);
+        					int srcY = logFacade.getEvent_i_consequences_k_source_cachedY(i, k);
+               				double targetTime = logFacade.getEvent_i_consequences_k_target_simulationTime(i, k);
+               				double targetXDouble = timeToPixelDouble(targetTime);
+               				int targetX = targetXDouble > XMAX ? XMAX : (int)targetXDouble;
+               				int targetY = moduleIdToAxisYMap.get(logFacade.getEvent_i_consequences_k_target_module_moduleId(i, k));
+               				drawMessageArrow(graphics, srcX, srcY, targetX, targetY);
                 		}
-            			drawMessageArrow(graphics,
-            					logFacade.getEvent_i_consequences_k_source_cachedX(i, k),
-            					logFacade.getEvent_i_consequences_k_source_cachedY(i, k),
-            					targetX,
-            					targetY);
             		}
             	}
 
@@ -155,25 +180,20 @@ public class SeqChartFigure extends Figure {
             	int numCauses = logFacade.getEvent_i_numCauses(i);
             	for (int k=0; k<numCauses; k++) {
             		if (logFacade.getEvent_i_causes_k_source_eventNumber(i, k) < startEventNumber) {
+            			// source event is outside the repaint region (on the far left)
                 		if (logFacade.getEvent_i_causes_k_hasSourceAndTarget(i, k)) {
-               				int srcX = timeToPixel(logFacade.getEvent_i_causes_k_source_simulationTime(i, k));
-               				int srcAxis = moduleIdToAxisMap.get(logFacade.getEvent_i_causes_k_source_module_moduleId(i, k));
-               				int srcY = bounds.y+30+srcAxis*50;
-               				System.out.println("   "+srcX+","+srcY);
-
-                			drawMessageArrow(graphics,
-                					srcX,
-                					srcY,
-                					logFacade.getEvent_i_causes_k_target_cachedX(i, k),
-                					logFacade.getEvent_i_causes_k_target_cachedY(i, k));
+               				double srcXDouble = timeToPixelDouble(logFacade.getEvent_i_causes_k_source_simulationTime(i, k));
+               				int srcY = moduleIdToAxisYMap.get(logFacade.getEvent_i_causes_k_source_module_moduleId(i, k));
+               				int srcX = srcXDouble< -XMAX ? -XMAX : (int)srcXDouble;
+        					int targetX = logFacade.getEvent_i_causes_k_target_cachedX(i, k);
+        					int targetY = logFacade.getEvent_i_causes_k_target_cachedY(i, k);
+               				graphics.setForegroundColor(logFacade.getEvent_i_causes_k_isDelivery(i,k) ? deliveryMsgColor : msgColor); 
+               				drawMessageArrow(graphics, srcX, srcY, targetX, targetY);
                 		}
             		}
             	}
             }
 			System.out.println("repaint(): "+(System.currentTimeMillis()-startMillis)+"ms");
-			//startMillis = System.currentTimeMillis();
-			//System.gc();
-			//System.out.println("     gc(): "+(System.currentTimeMillis()-startMillis)+"ms");
 		}
 	}
 
@@ -232,6 +252,13 @@ public class SeqChartFigure extends Figure {
 		return (int)Math.round(t * pixelsPerSec) + getBounds().x;
 	}
 
+	/**
+	 * Same as timeToPixel(), but doesn't convert to int; to be used where "int" may overflow
+	 */
+	private double timeToPixelDouble(double t) {
+		return t * pixelsPerSec + getBounds().x;
+	}
+	
 	/**
 	 * Utility function, copied from org.eclipse.draw2d.Polyline.
 	 */
