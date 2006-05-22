@@ -384,4 +384,5 @@ public class SeqChartFigure extends Figure {
 		return result <= tolerance * tolerance;
 	}
 
+	
 }

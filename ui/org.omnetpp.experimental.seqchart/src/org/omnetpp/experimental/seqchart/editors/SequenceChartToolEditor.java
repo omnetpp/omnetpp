@@ -1,6 +1,7 @@
 package org.omnetpp.experimental.seqchart.editors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.LightweightSystem;
@@ -15,6 +16,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -30,11 +32,11 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.scave.engine.EventEntry;
 import org.omnetpp.scave.engine.EventLog;
+import org.omnetpp.scave.engine.JavaFriendlyEventLogFacade;
 import org.omnetpp.scave.engine.ModuleEntry;
 
 public class SequenceChartToolEditor extends EditorPart {
 
-	private ColorManager colorManager;
 	private SashForm sashForm;
 	private Text text;
 	private Figure rootFigure;
@@ -45,10 +47,11 @@ public class SequenceChartToolEditor extends EditorPart {
 	private EventLog eventLog;  // the log file loaded
 	private int currentEventNumber = 0;
 	private EventLog filteredEventLog; // eventLog filtered for currentEventNumber
-	
+
+	private final Color CANVAS_BG_COLOR = ColorConstants.white;
+
 	public SequenceChartToolEditor() {
 		super();
-		colorManager = new ColorManager();
 	}
 
 	@Override
@@ -77,7 +80,7 @@ public class SequenceChartToolEditor extends EditorPart {
 
 		final Canvas canvas = new Canvas(upper, SWT.DOUBLE_BUFFERED);
 		canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		canvas.setBackground(new Color(null,255,255,255));
+		canvas.setBackground(CANVAS_BG_COLOR);
 		LightweightSystem lws = new LightweightSystem(canvas);
 		ScrollPane scrollPane = new ScrollPane();
 		scrollPane.setScrollBarVisibility(ScrollPane.AUTOMATIC);
@@ -91,7 +94,7 @@ public class SequenceChartToolEditor extends EditorPart {
 		Composite lower = new Composite(sashForm, SWT.NONE);
 		lower.setLayout(new FillLayout());
 		text = new Text(lower, SWT.MULTI | SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL);
-		text.setBackground(colorManager.getColor(ISeqChartColorConstants.TEXT_BG));
+		text.setBackground(ColorConstants.white);
 
 		text.setText("Multi\nline\nText\nTest\n...\n\nMulti\nline\nText\nTest\n...\n\n");
 
@@ -168,13 +171,15 @@ public class SequenceChartToolEditor extends EditorPart {
 	private void fillEventCombo() {
 		eventcombo.removeAll();
     	eventcombo.add("All events");
-	    for (int i=0; i<eventLog.getNumEvents(); i++) {
-	    	EventEntry event = eventLog.getEvent(i);
-	    	ModuleEntry mod = event.getModule(); 
-	    	String label = "#"+event.getEventNumber()
-	    		+" at t="+event.getSimulationTime()
-	    		+", module ("+mod.getModuleClassName()+")"+mod.getModuleFullName()+" (id="+mod.getModuleId()
-	    		+"), message ...";
+    	JavaFriendlyEventLogFacade logFacade = new JavaFriendlyEventLogFacade(eventLog);
+	    for (int i=0; i<logFacade.getNumEvents(); i++) {
+	    	String label = "#"+logFacade.getEvent_i_eventNumber(i)
+	    		+" at t="+logFacade.getEvent_i_simulationTime(i)
+	    		+", module ("+logFacade.getEvent_i_module_moduleClassName(i)+")"
+	    		+logFacade.getEvent_i_module_moduleFullName(i)
+	    		+" (id="+logFacade.getEvent_i_module_moduleId(i)+"),"
+	    		+" message ("+logFacade.getEvent_i_cause_messageClassName(i)+")"
+	    		+logFacade.getEvent_i_cause_messageName(i);
 	    	eventcombo.add(label);
 	    }
     	eventcombo.select(0);
@@ -218,7 +223,6 @@ public class SequenceChartToolEditor extends EditorPart {
 	}
 
 	public void dispose() {
-		colorManager.dispose();
 		super.dispose();
 	}
 
