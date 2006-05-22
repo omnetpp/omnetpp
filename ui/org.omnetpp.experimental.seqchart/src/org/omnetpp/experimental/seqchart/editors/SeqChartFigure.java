@@ -3,6 +3,7 @@ package org.omnetpp.experimental.seqchart.editors;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.eclipse.draw2d.Figure;
@@ -21,6 +22,7 @@ import org.eclipse.swt.graphics.Cursor;
 import org.omnetpp.scave.engine.EventEntry;
 import org.omnetpp.scave.engine.EventLog;
 import org.omnetpp.scave.engine.JavaFriendlyEventLogFacade;
+import org.omnetpp.scave.engine.MessageEntry;
 
 /**
  * This is a sequence chart as a single figure.
@@ -33,7 +35,7 @@ import org.omnetpp.scave.engine.JavaFriendlyEventLogFacade;
 //FIXME scrollbar breaks badly when char size exceeds ~4,000,000 pixels (this means only ~0.1s resolution ticks on an 1000s trace!!! not enough!)
 //FIXME msg arrows that intersect the chart area but don't start or end there are not displayed (BUG!)
 //FIXME cache lines for the drawing (we need this to make the chart clickable as well)
-//FIXME turn on antialias when idle? (on HOVER)
+//FIXME redraw chart with antialias while user is idle?
 public class SeqChartFigure extends Figure {
 
 	private final Color EVENT_FG_COLOR = new Color(null,255,0,0);
@@ -53,18 +55,23 @@ public class SeqChartFigure extends Figure {
 	protected int tickScale = 2; // -1 means step=0.1
 	private boolean antiAlias = true;
 
-	private int dragStartX, dragStartY;
+	private int dragStartX, dragStartY; // temporary variables for drag handling
 	
 	private Layer tooltipLayer; 
 	private TooltipFigure tooltip = new TooltipFigure();
 	
-    public SeqChartFigure() {
-    	setUpMouseHandling();
+    /**
+     * Constructor
+     */
+	public SeqChartFigure() {
+    	// set up a separate layer for tooltip
     	setLayoutManager(new StackLayout());
-
-    	tooltipLayer= new Layer();
-    	add(tooltipLayer);
+    	tooltipLayer = new Layer();
     	tooltipLayer.setLayoutManager(new XYLayout());
+    	add(tooltipLayer);
+
+    	// add mouse handling
+    	setUpMouseHandling();
     }
 
 	/**
@@ -149,7 +156,6 @@ public class SeqChartFigure extends Figure {
 	private void recalculatePreferredSize() {
 		EventEntry lastEvent = eventLog.getEvent(eventLog.getNumEvents()-1);
 		int width = lastEvent==null ? 0 : (int)(lastEvent.getSimulationTime()*getPixelsPerSec());
-		System.out.println("width="+width);
 		width = Math.max(width, 600); // at least half a screen
 		int height = eventLog.getNumModules()*50;
 		setPreferredSize(width, height);
@@ -197,29 +203,33 @@ public class SeqChartFigure extends Figure {
 
             // paint arrows
             for (int i=startEventIndex; i<endEventIndex; i++) {
-            	// paint forward arrows for this event
+   				int eventX = logFacade.getEvent_i_cachedX(i);
+   				int eventY = logFacade.getEvent_i_cachedY(i);
+
+   				// paint forward arrows for this event
             	int numConsequences = logFacade.getEvent_i_numConsequences(i);
             	for (int k=0; k<numConsequences; k++) {
-            		if (logFacade.getEvent_i_consequences_k_hasSourceAndTarget(i, k)) {
+            		if (logFacade.getEvent_i_consequences_k_hasTarget(i, k)) {
             			// we have to calculate target event's coords if it's beyond endEventNumber
             			graphics.setForegroundColor(logFacade.getEvent_i_consequences_k_isDelivery(i,k) ? DELIVERY_MSG_COLOR : MSG_COLOR); 
                 		if (logFacade.getEvent_i_consequences_k_target_eventNumber(i, k) < endEventNumber) {
                 			// both source and target event in the visible chart area, and already painted
                 			drawMessageArrow(graphics,
-                					logFacade.getEvent_i_consequences_k_source_cachedX(i, k),
-                					logFacade.getEvent_i_consequences_k_source_cachedY(i, k),
+                					eventX,
+                					eventY,
                 					logFacade.getEvent_i_consequences_k_target_cachedX(i, k),
                 					logFacade.getEvent_i_consequences_k_target_cachedY(i, k));
                 		}
                 		else {
                 			// target is outside the repaint region (on the far right)
-        					int srcX = logFacade.getEvent_i_consequences_k_source_cachedX(i, k);
-        					int srcY = logFacade.getEvent_i_consequences_k_source_cachedY(i, k);
                				double targetTime = logFacade.getEvent_i_consequences_k_target_simulationTime(i, k);
                				double targetXDouble = timeToPixelDouble(targetTime);
                				int targetX = targetXDouble > XMAX ? XMAX : (int)targetXDouble;
                				int targetY = moduleIdToAxisYMap.get(logFacade.getEvent_i_consequences_k_target_module_moduleId(i, k));
-               				drawMessageArrow(graphics, srcX, srcY, targetX, targetY);
+               				logFacade.setEvent_i_consequences_k_target_cachedX(i, k, targetX);
+               				logFacade.setEvent_i_consequences_k_target_cachedY(i, k, targetY);
+
+               				drawMessageArrow(graphics, eventX, eventY, targetX, targetY);
                 		}
             		}
             	}
@@ -229,14 +239,14 @@ public class SeqChartFigure extends Figure {
             	for (int k=0; k<numCauses; k++) {
             		if (logFacade.getEvent_i_causes_k_source_eventNumber(i, k) < startEventNumber) {
             			// source event is outside the repaint region (on the far left)
-                		if (logFacade.getEvent_i_causes_k_hasSourceAndTarget(i, k)) {
+                		if (logFacade.getEvent_i_causes_k_hasSource(i, k)) {
                				double srcXDouble = timeToPixelDouble(logFacade.getEvent_i_causes_k_source_simulationTime(i, k));
                				int srcY = moduleIdToAxisYMap.get(logFacade.getEvent_i_causes_k_source_module_moduleId(i, k));
-               				int srcX = srcXDouble< -XMAX ? -XMAX : (int)srcXDouble;
-        					int targetX = logFacade.getEvent_i_causes_k_target_cachedX(i, k);
-        					int targetY = logFacade.getEvent_i_causes_k_target_cachedY(i, k);
+               				int srcX = srcXDouble < -XMAX ? -XMAX : (int)srcXDouble;
+               				logFacade.setEvent_i_causes_k_source_cachedX(i, k, srcX);
+               				logFacade.setEvent_i_causes_k_source_cachedY(i, k, srcY);
                				graphics.setForegroundColor(logFacade.getEvent_i_causes_k_isDelivery(i,k) ? DELIVERY_MSG_COLOR : MSG_COLOR); 
-               				drawMessageArrow(graphics, srcX, srcY, targetX, targetY);
+               				drawMessageArrow(graphics, srcX, srcY, eventX, eventY);
                 		}
             		}
             	}
@@ -251,6 +261,7 @@ public class SeqChartFigure extends Figure {
             	graphics.fillOval(x-2, y-3, 5, 7);
             }           	
 
+            // turn on/off anti-alias 
             long repaintMillis = System.currentTimeMillis()-startMillis;
             //System.out.println("repaint(): "+repaintMillis+"ms");
             if (antiAlias && repaintMillis > ANTIALIAS_TURN_OFF_AT_MSEC)
@@ -394,12 +405,109 @@ public class SeqChartFigure extends Figure {
 	}
 
 	protected void displayTooltip(int x, int y) {
-		tooltipLayer.removeAll();
-    	tooltipLayer.add(tooltip, new Rectangle(x-getBounds().x,y-getBounds().y+20,-1,-1));
-    	tooltip.setText("tooltip at ("+x+","+y+")");
+		String tooltipText = getTooltipText(x,y);
+		if (tooltipText!=null) {
+			tooltipLayer.removeAll();
+			tooltipLayer.add(tooltip, new Rectangle(x-getBounds().x,y-getBounds().y+20,-1,-1));
+			tooltip.setText(tooltipText);
+		}
 	}
 
 	protected void removeTooltip() {
 		tooltipLayer.removeAll();
 	}
+
+	private String getTooltipText(int x, int y) {
+		ArrayList<EventEntry> events = new ArrayList<EventEntry>();
+		ArrayList<MessageEntry> msgs = new ArrayList<MessageEntry>();
+		collectStuffUnderMouse(x, y, events, msgs);
+
+		String res = "";
+		for (EventEntry event : events) {
+			res += "Event #"+event.getEventNumber()
+	    		+" at t="+event.getSimulationTime()
+	    		+", module ("+event.getModule().getModuleClassName()+")"
+	    		+event.getModule().getModuleFullName()
+	    		+" (id="+event.getModule().getModuleId()+"),"
+	    		+" message ("+event.getCause().getMessageClassName()+")"
+	    		+event.getCause().getMessageName()+"\n";
+		}
+		for (MessageEntry msg : msgs) {
+			res += "Message ("+msg.getMessageClassName()+") "
+				+msg.getMessageName()+"\n";
+		}
+		return res.equals("") ? null : res;
+	}
+
+	private void collectStuffUnderMouse(int mouseX, int mouseY, ArrayList<EventEntry> events, ArrayList<MessageEntry> msgs) {
+		if (eventLog!=null) {
+			long startMillis = System.currentTimeMillis();
+		
+			JavaFriendlyEventLogFacade logFacade = new JavaFriendlyEventLogFacade(eventLog); 
+
+			// paint events
+			Rectangle rect = scrollPane.getViewport().getBounds();
+			double tleft = pixelToTime(rect.x);
+			double tright = pixelToTime(rect.right());
+			EventEntry startEvent = eventLog.getFirstEventAfter(tleft);
+			EventEntry endEvent = eventLog.getFirstEventAfter(tright);
+			int startEventIndex = (startEvent!=null) ? eventLog.findEvent(startEvent) : 0;
+			int endEventIndex = (endEvent!=null) ? eventLog.findEvent(endEvent) : eventLog.getNumEvents(); 
+
+			int startEventNumber = (startEvent!=null) ? startEvent.getEventNumber() : 0;
+            
+            // check events
+            for (int i=startEventIndex; i<endEventIndex; i++)
+   				if (arePointsClose(mouseX, mouseY, logFacade.getEvent_i_cachedX(i), logFacade.getEvent_i_cachedY(i), 3))
+   					events.add(eventLog.getEvent(i));
+
+            // check message arrows
+            for (int i=startEventIndex; i<endEventIndex; i++) {
+   				int eventX = logFacade.getEvent_i_cachedX(i);
+   				int eventY = logFacade.getEvent_i_cachedY(i);
+
+   				// check forward arrows for this event
+            	int numConsequences = logFacade.getEvent_i_numConsequences(i);
+            	for (int k=0; k<numConsequences; k++) {
+            		if (logFacade.getEvent_i_consequences_k_hasTarget(i, k)) {
+            			if (lineContainsPoint(
+            					eventX,
+            					eventY,
+            					logFacade.getEvent_i_consequences_k_target_cachedX(i, k),
+            					logFacade.getEvent_i_consequences_k_target_cachedY(i, k),
+            					mouseX, 
+            					mouseY,
+            					3))
+            				msgs.add(eventLog.getEvent(i).getConsequences().get(k));
+            		}
+            	}
+
+            	// check backward arrows that we didn't check as forward arrows
+            	int numCauses = logFacade.getEvent_i_numCauses(i);
+            	for (int k=0; k<numCauses; k++) {
+            		if (logFacade.getEvent_i_causes_k_source_eventNumber(i, k) < startEventNumber) {
+                		if (logFacade.getEvent_i_causes_k_hasSource(i, k)) {
+                			if (lineContainsPoint(
+                					logFacade.getEvent_i_causes_k_source_cachedX(i, k),
+                					logFacade.getEvent_i_causes_k_source_cachedY(i, k),
+                					eventX,
+                					eventY,
+                					mouseX, 
+                					mouseY,
+                					3))
+                				msgs.add(eventLog.getEvent(i).getConsequences().get(k));
+                		}
+            		}
+            	}
+            }
+
+            long millis = System.currentTimeMillis()-startMillis;
+            System.out.println("collectStuff(): "+millis+"ms");
+		}
+	}
+
+	private boolean arePointsClose(int x1, int y1, int x2, int y2, int range) {
+		return Math.abs(x2-x1) < range && Math.abs(y2-y1) < range;
+	}
+
 }
