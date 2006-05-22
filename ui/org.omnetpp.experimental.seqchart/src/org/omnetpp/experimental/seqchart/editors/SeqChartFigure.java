@@ -28,7 +28,7 @@ import org.omnetpp.scave.engine.JavaFriendlyEventLogFacade;
 //TODO implement "hand" to grab and move the chart
 //TODO make events and message clickable (tooltip, go there in the log, etc)
 //TODO limit pixelsPersec to a range that makes sense (for the current eventLog)
-//TODO draw arrowheads
+//FIXME scrollbar breaks badly when char size exceeds ~4,000,000 pixels (this means only ~0.1s resolution ticks on an 1000s trace!!! not enough!)
 //FIXME msg arrows that intersect the chart area but don't start or end there are not displayed (BUG!)
 //FIXME cache lines for the drawing (we need this to make the chart clickable as well)
 public class SeqChartFigure extends Figure {
@@ -138,7 +138,6 @@ public class SeqChartFigure extends Figure {
 	 */
 	private void gotoTime(double time) {
 		double xDouble = time * pixelsPerSec;
-		System.out.println("t="+time+"   xDouble="+xDouble+"  bounds.w="+getBounds().x);
 		int x = xDouble < 0 ? 0 : xDouble>Integer.MAX_VALUE ? Integer.MAX_VALUE : (int)xDouble;
 		scrollPane.scrollHorizontalTo(x - scrollPane.getViewport().getBounds().width/2);
 		repaint();
@@ -177,6 +176,7 @@ public class SeqChartFigure extends Figure {
 	private void recalculatePreferredSize() {
 		EventEntry lastEvent = eventLog.getEvent(eventLog.getNumEvents()-1);
 		int width = lastEvent==null ? 0 : (int)(lastEvent.getSimulationTime()*getPixelsPerSec());
+		System.out.println("width="+width);
 		width = Math.max(width, 600); // at least half a screen
 		int height = eventLog.getNumModules()*50;
 		setPreferredSize(width, height);
