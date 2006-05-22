@@ -1,7 +1,9 @@
 package org.omnetpp.experimental.seqchart.editors;
 
 import org.eclipse.draw2d.ColorConstants;
+import org.eclipse.draw2d.LineBorder;
 import org.eclipse.draw2d.MarginBorder;
+import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.text.FlowPage;
 import org.eclipse.draw2d.text.ParagraphTextLayout;
 import org.eclipse.draw2d.text.TextFlow;
@@ -11,13 +13,13 @@ public class TooltipFigure extends FlowPage {
     private TextFlow textFlow;
 
     public TooltipFigure() {
-        setBorder(new MarginBorder(2));
+        setBorder(new LineBorder(ColorConstants.tooltipForeground,1));
+        setOpaque(true);
         setBackgroundColor(ColorConstants.tooltipBackground);
-        setForegroundColor(ColorConstants.tooltipForeground);
-
+        //setForegroundColor(ColorConstants.tooltipForeground);
         textFlow = new TextFlow();
-        // FIXME hack because otherwise it throws exception in BiDi implementation
-        textFlow.setText(" ");
+        
+        textFlow.setText(" "); // XXX workaround: otherwise it throws exception in the BiDi code
         textFlow.setLayoutManager(new ParagraphTextLayout(textFlow, ParagraphTextLayout.WORD_WRAP_SOFT));
 
         add(textFlow);
@@ -37,4 +39,8 @@ public class TooltipFigure extends FlowPage {
         textFlow.setText(newText);
     }
 
+	@Override
+	public Insets getInsets() {
+		return new Insets(3,5,3,4);
+	}
 }

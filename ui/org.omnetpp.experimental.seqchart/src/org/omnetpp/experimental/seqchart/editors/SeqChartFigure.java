@@ -7,11 +7,13 @@ import java.util.HashMap;
 
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.LightweightSystem;
+import org.eclipse.draw2d.Layer;
 import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
 import org.eclipse.draw2d.MouseMotionListener;
 import org.eclipse.draw2d.ScrollPane;
+import org.eclipse.draw2d.StackLayout;
+import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -31,6 +33,7 @@ import org.omnetpp.scave.engine.JavaFriendlyEventLogFacade;
 //FIXME scrollbar breaks badly when char size exceeds ~4,000,000 pixels (this means only ~0.1s resolution ticks on an 1000s trace!!! not enough!)
 //FIXME msg arrows that intersect the chart area but don't start or end there are not displayed (BUG!)
 //FIXME cache lines for the drawing (we need this to make the chart clickable as well)
+//FIXME turn on antialias when idle? (on HOVER)
 public class SeqChartFigure extends Figure {
 
 	private final Color EVENT_FG_COLOR = new Color(null,255,0,0);
@@ -52,47 +55,17 @@ public class SeqChartFigure extends Figure {
 
 	private int dragStartX, dragStartY;
 	
+	private Layer tooltipLayer; 
+	private TooltipFigure tooltip = new TooltipFigure();
 	
     public SeqChartFigure() {
     	setUpMouseHandling();
+    	setLayoutManager(new StackLayout());
+
+    	tooltipLayer= new Layer();
+    	add(tooltipLayer);
+    	tooltipLayer.setLayoutManager(new XYLayout());
     }
-
-	private void setUpMouseHandling() {
-		// dragging and tooltip
-		addMouseListener(new MouseListener() {
-			public void mouseDoubleClicked(MouseEvent me) {}
-			public void mousePressed(MouseEvent me) {
-				dragStartX = me.x;
-				dragStartY = me.y;
-			}
-			public void mouseReleased(MouseEvent me) {
-				setCursor(null); // restore cursor at end of drag
-			}
-    	});
-		addMouseMotionListener(new MouseMotionListener.Stub() {
-			public void mouseDragged(MouseEvent me) {
-				// display drag cursor if not already displayed
-				if (getCursor() == null) {
-					setCursor(DRAGCURSOR);
-				}
-				// scroll by the amount moved since last drag call
-				int dx = me.x - dragStartX;
-				int dy = me.y - dragStartY;
-				scrollPane.scrollHorizontalTo(-getBounds().x-dx);
-				scrollPane.scrollVerticalTo(-getBounds().y-dy);
-				dragStartX = me.x;
-				dragStartY = me.y;
-			}
-			public void mouseHover(MouseEvent me) {
-				System.out.println("HOVER");
-				displayTooltip(me.x, me.y);
-			}
-		});
-	}
-
-	protected void displayTooltip(int x, int y) {
-		// TODO Auto-generated method stub
-	}
 
 	/**
 	 * We need to know the surrounding scroll pane to be able to scroll here and there
@@ -384,5 +357,49 @@ public class SeqChartFigure extends Figure {
 		return result <= tolerance * tolerance;
 	}
 
-	
+	private void setUpMouseHandling() {
+		// dragging and tooltip
+		addMouseListener(new MouseListener() {
+			public void mouseDoubleClicked(MouseEvent me) {}
+			public void mousePressed(MouseEvent me) {
+				dragStartX = me.x;
+				dragStartY = me.y;
+				removeTooltip();
+			}
+			public void mouseReleased(MouseEvent me) {
+				setCursor(null); // restore cursor at end of drag
+			}
+    	});
+		addMouseMotionListener(new MouseMotionListener.Stub() {
+			public void mouseDragged(MouseEvent me) {
+				// display drag cursor if not already displayed
+				if (getCursor() == null) {
+					setCursor(DRAGCURSOR);
+				}
+				// scroll by the amount moved since last drag call
+				int dx = me.x - dragStartX;
+				int dy = me.y - dragStartY;
+				scrollPane.scrollHorizontalTo(-getBounds().x-dx);
+				scrollPane.scrollVerticalTo(-getBounds().y-dy);
+				dragStartX = me.x;
+				dragStartY = me.y;
+			}
+			public void mouseHover(MouseEvent me) {
+				displayTooltip(me.x, me.y);
+			}
+			public void mouseMoved(MouseEvent me) {
+				removeTooltip();
+			}
+		});
+	}
+
+	protected void displayTooltip(int x, int y) {
+		tooltipLayer.removeAll();
+    	tooltipLayer.add(tooltip, new Rectangle(x-getBounds().x,y-getBounds().y+20,-1,-1));
+    	tooltip.setText("tooltip at ("+x+","+y+")");
+	}
+
+	protected void removeTooltip() {
+		tooltipLayer.removeAll();
+	}
 }
