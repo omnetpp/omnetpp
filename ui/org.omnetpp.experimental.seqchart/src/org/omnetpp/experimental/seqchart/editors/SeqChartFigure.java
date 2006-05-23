@@ -30,6 +30,7 @@ import org.omnetpp.scave.engine.MessageEntry;
  * @author andras
  */
 //TODO make events and message clickable (tooltip, go there in the log, etc)
+//FIXME C++ mode must produce message list as well... (and drawing must be based on that)
 //TODO limit pixelsPersec to a range that makes sense (for the current eventLog)
 //FIXME scrollbar breaks badly when char size exceeds ~4,000,000 pixels (this means only ~0.1s resolution ticks on an 1000s trace!!! not enough!)
 //FIXME msg arrows that intersect the chart area but don't start or end there are not displayed (BUG!)

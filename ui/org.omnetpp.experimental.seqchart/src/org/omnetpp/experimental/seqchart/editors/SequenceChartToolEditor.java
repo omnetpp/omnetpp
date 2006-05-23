@@ -135,10 +135,11 @@ public class SequenceChartToolEditor extends EditorPart {
 					sel = sel.replaceAll("#", "");
 					int eventNumber = -1;
 					try {eventNumber = Integer.parseInt(sel);} catch (NumberFormatException ex) {}
-					if (eventNumber>=0)
-						showSequenceChartForEvent(eventNumber);
-					else 
-						; //XXX dialog box: error: no such event
+					if (eventNumber<0) {
+						messageBox(SWT.ICON_ERROR, "Error", "Please specify event number as \"#nnn\".");
+						return;
+					}
+					showSequenceChartForEvent(eventNumber);
 				}
 			}
 			public void widgetSelected(SelectionEvent e) {
@@ -166,17 +167,20 @@ public class SequenceChartToolEditor extends EditorPart {
 		eventcombo.removeAll();
     	eventcombo.add("All events");
     	JavaFriendlyEventLogFacade logFacade = new JavaFriendlyEventLogFacade(eventLog);
-	    for (int i=0; i<logFacade.getNumEvents(); i++) {
-	    	String label = "#"+logFacade.getEvent_i_eventNumber(i)
-	    		+" at t="+logFacade.getEvent_i_simulationTime(i)
-	    		+", module ("+logFacade.getEvent_i_module_moduleClassName(i)+")"
-	    		+logFacade.getEvent_i_module_moduleFullName(i)
-	    		+" (id="+logFacade.getEvent_i_module_moduleId(i)+"),"
-	    		+" message ("+logFacade.getEvent_i_cause_messageClassName(i)+")"
-	    		+logFacade.getEvent_i_cause_messageName(i);
-	    	eventcombo.add(label);
-	    }
+	    for (int i=0; i<logFacade.getNumEvents(); i++) 
+	    	eventcombo.add(getLabelForEvent(logFacade, i));
     	eventcombo.select(0);
+	}
+
+	private String getLabelForEvent(JavaFriendlyEventLogFacade logFacade, int pos) {
+		String label = "#"+logFacade.getEvent_i_eventNumber(pos)
+			+" at t="+logFacade.getEvent_i_simulationTime(pos)
+			+", module ("+logFacade.getEvent_i_module_moduleClassName(pos)+")"
+			+logFacade.getEvent_i_module_moduleFullName(pos)
+			+" (id="+logFacade.getEvent_i_module_moduleId(pos)+"),"
+			+" message ("+logFacade.getEvent_i_cause_messageClassName(pos)+")"
+			+logFacade.getEvent_i_cause_messageName(pos);
+		return label;
 	}
 
 	private void setupCanvas(Canvas canvas) {
@@ -201,8 +205,10 @@ public class SequenceChartToolEditor extends EditorPart {
 				ArrayList<EventEntry> events = new ArrayList<EventEntry>();
 				ArrayList<MessageEntry> msgs = new ArrayList<MessageEntry>();
 				seqChartFigure.collectStuffUnderMouse(me.x, me.y, events, msgs);
-				System.out.println("DBLCLICK!!!");
-				if (events.size()>=1) { // XXX pop up selection dialog if there's more than one event there
+				if (events.size()>1) { 
+					//XXX pop up selection dialog instead?
+					messageBox(SWT.ICON_INFORMATION, "Information", "Ambiguous double-click: there are "+events.size()+" events under the mouse! Zooming may help.");
+				} else if (events.size()==1) {
 					showSequenceChartForEvent(events.get(0).getEventNumber());
 				}
 			}
@@ -219,17 +225,25 @@ public class SequenceChartToolEditor extends EditorPart {
 	private void showSequenceChartForEvent(int eventNumber) {
 		EventEntry event = eventLog.getEventByNumber(eventNumber);
 		if (event==null) {
-			MessageBox m = new MessageBox(canvas.getShell());
-			m.setText("Error");
-			m.setMessage("Event #"+eventNumber+" not found.");
-			m.open();
+			messageBox(SWT.ICON_ERROR, "Error", "Event #"+eventNumber+" not found.");
 			return;
 		}
 		currentEventNumber = eventNumber;
+		String eventLabel = getLabelForEvent(new JavaFriendlyEventLogFacade(eventLog), eventLog.findEvent(event));
+		eventcombo.setText(eventLabel);
+
 		filteredEventLog = eventLog.traceEvent(event, true, true);
 		System.out.println("filtered log: "+filteredEventLog.getNumEvents()+" events in "+filteredEventLog.getNumModules()+" modules");
+
 		seqChartFigure.setEventLog(filteredEventLog);
-		//XXX update event logas well
+		//XXX update event log as well
+	}
+
+	private int messageBox(int style, String title, String message) {
+		MessageBox m = new MessageBox(getEditorSite().getShell(), style);
+		m.setText(title);
+		m.setMessage(message);
+		return m.open();
 	}
 	
 	private void showFullSequenceChart() {
