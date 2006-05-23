@@ -19,6 +19,8 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.ToolTip;
 import org.omnetpp.scave.engine.EventEntry;
 import org.omnetpp.scave.engine.EventLog;
 import org.omnetpp.scave.engine.JavaFriendlyEventLogFacade;
@@ -46,6 +48,7 @@ public class SeqChartFigure extends Figure {
 	private static final int XMAX = 10000;
 	private static final int ANTIALIAS_TURN_ON_AT_MSEC = 100;
 	private static final int ANTIALIAS_TURN_OFF_AT_MSEC = 300;
+	private static final int MOUSE_TOLERANCE = 1;
 
 	private ScrollPane scrollPane; // parent scrollPane
 	
@@ -57,28 +60,19 @@ public class SeqChartFigure extends Figure {
 
 	private int dragStartX, dragStartY; // temporary variables for drag handling
 	
-	private Layer tooltipLayer; 
-	private TooltipFigure tooltip = new TooltipFigure();
+	private Canvas canvas;  // needed for tooltip creation
+	private ToolTip swtTooltip;
 	
     /**
-     * Constructor
+     * Constructor.
+	 * We need to know the surrounding scroll pane to be able to scroll here and there.
      */
-	public SeqChartFigure() {
-    	// set up a separate layer for tooltip
-    	setLayoutManager(new StackLayout());
-    	tooltipLayer = new Layer();
-    	tooltipLayer.setLayoutManager(new XYLayout());
-    	add(tooltipLayer);
+	public SeqChartFigure(Canvas canvas, ScrollPane scrollPane) {
+		this.canvas = canvas;
+		this.scrollPane = scrollPane;
 
     	// add mouse handling
     	setUpMouseHandling();
-    }
-
-	/**
-	 * We need to know the surrounding scroll pane to be able to scroll here and there
-	 */
-	public void setScrollPane(ScrollPane scrollPane) {
-		this.scrollPane = scrollPane;
 	}
 
 	/**
@@ -185,7 +179,7 @@ public class SeqChartFigure extends Figure {
 			Rectangle rect = graphics.getClip(new Rectangle());
 			double tleft = pixelToTime(rect.x);
 			double tright = pixelToTime(rect.right());
-			EventEntry startEvent = eventLog.getFirstEventAfter(tleft);
+			EventEntry startEvent = eventLog.getLastEventBefore(tleft);
 			EventEntry endEvent = eventLog.getFirstEventAfter(tright);
 			int startEventIndex = (startEvent!=null) ? eventLog.findEvent(startEvent) : 0;
 			int endEventIndex = (endEvent!=null) ? eventLog.findEvent(endEvent) : eventLog.getNumEvents(); 
@@ -334,40 +328,6 @@ public class SeqChartFigure extends Figure {
 		return t * pixelsPerSec + getBounds().x;
 	}
 	
-	/**
-	 * Utility function, copied from org.eclipse.draw2d.Polyline.
-	 */
-	private boolean lineContainsPoint(int x1, int y1, int x2, int y2, int px, int py, int tolerance) {
-		Rectangle.SINGLETON.setSize(0, 0);
-		Rectangle.SINGLETON.setLocation(x1, y1);
-		Rectangle.SINGLETON.union(x2, y2);
-		Rectangle.SINGLETON.expand(tolerance, tolerance);
-		if (!Rectangle.SINGLETON.contains(px, py))
-			return false;
-
-		int v1x, v1y, v2x, v2y;
-		int numerator, denominator;
-		int result = 0;
-
-		// calculates the length squared of the cross product of two vectors, v1 & v2.
-		if (x1 != x2 && y1 != y2) {
-			v1x = x2 - x1;
-			v1y = y2 - y1;
-			v2x = px - x1;
-			v2y = py - y1;
-
-			numerator = v2x * v1y - v1x * v2y;
-
-			denominator = v1x * v1x + v1y * v1y;
-
-			result = (int)((long)numerator * numerator / denominator);
-		}
-
-		// if it is the same point, and it passes the bounding box test,
-		// the result is always true.
-		return result <= tolerance * tolerance;
-	}
-
 	private void setUpMouseHandling() {
 		// dragging and tooltip
 		addMouseListener(new MouseListener() {
@@ -407,14 +367,17 @@ public class SeqChartFigure extends Figure {
 	protected void displayTooltip(int x, int y) {
 		String tooltipText = getTooltipText(x,y);
 		if (tooltipText!=null) {
-			tooltipLayer.removeAll();
-			tooltipLayer.add(tooltip, new Rectangle(x-getBounds().x,y-getBounds().y+20,-1,-1));
-			tooltip.setText(tooltipText);
+			swtTooltip = new ToolTip(canvas.getShell(), SWT.NONE);
+			swtTooltip.setMessage(tooltipText);
+			swtTooltip.setLocation(canvas.toDisplay(x,y+20));
+			swtTooltip.setVisible(true);
 		}
 	}
 
 	protected void removeTooltip() {
-		tooltipLayer.removeAll();
+    	swtTooltip.setVisible(false);
+    	swtTooltip.dispose();
+    	swtTooltip = null;
 	}
 
 	private String getTooltipText(int x, int y) {
@@ -449,7 +412,7 @@ public class SeqChartFigure extends Figure {
 			Rectangle rect = scrollPane.getViewport().getBounds();
 			double tleft = pixelToTime(rect.x);
 			double tright = pixelToTime(rect.right());
-			EventEntry startEvent = eventLog.getFirstEventAfter(tleft);
+			EventEntry startEvent = eventLog.getLastEventBefore(tleft);
 			EventEntry endEvent = eventLog.getFirstEventAfter(tright);
 			int startEventIndex = (startEvent!=null) ? eventLog.findEvent(startEvent) : 0;
 			int endEventIndex = (endEvent!=null) ? eventLog.findEvent(endEvent) : eventLog.getNumEvents(); 
@@ -470,14 +433,14 @@ public class SeqChartFigure extends Figure {
             	int numConsequences = logFacade.getEvent_i_numConsequences(i);
             	for (int k=0; k<numConsequences; k++) {
             		if (logFacade.getEvent_i_consequences_k_hasTarget(i, k)) {
-            			if (lineContainsPoint(
+            			if (messageArrowContainsPoint(
             					eventX,
             					eventY,
             					logFacade.getEvent_i_consequences_k_target_cachedX(i, k),
             					logFacade.getEvent_i_consequences_k_target_cachedY(i, k),
             					mouseX, 
             					mouseY,
-            					3))
+            					MOUSE_TOLERANCE))
             				msgs.add(eventLog.getEvent(i).getConsequences().get(k));
             		}
             	}
@@ -487,14 +450,14 @@ public class SeqChartFigure extends Figure {
             	for (int k=0; k<numCauses; k++) {
             		if (logFacade.getEvent_i_causes_k_source_eventNumber(i, k) < startEventNumber) {
                 		if (logFacade.getEvent_i_causes_k_hasSource(i, k)) {
-                			if (lineContainsPoint(
+                			if (messageArrowContainsPoint(
                 					logFacade.getEvent_i_causes_k_source_cachedX(i, k),
                 					logFacade.getEvent_i_causes_k_source_cachedY(i, k),
                 					eventX,
                 					eventY,
                 					mouseX, 
                 					mouseY,
-                					3))
+                					MOUSE_TOLERANCE))
                 				msgs.add(eventLog.getEvent(i).getConsequences().get(k));
                 		}
             		}
@@ -508,6 +471,65 @@ public class SeqChartFigure extends Figure {
 
 	private boolean arePointsClose(int x1, int y1, int x2, int y2, int range) {
 		return Math.abs(x2-x1) < range && Math.abs(y2-y1) < range;
+	}
+
+	private boolean messageArrowContainsPoint(int x1, int y1, int x2, int y2, int px, int py, int tolerance) {
+		if (y1==y2)
+			return halfEllipseContainsPoint(x1, x2, y1, 10, px, py, tolerance); 
+		else
+			return lineContainsPoint(x1, y1, x2, y2, px, py, tolerance); 
+	}
+	
+	private boolean halfEllipseContainsPoint(int x1, int x2, int y, int height, int px, int py, int tolerance) {
+		Rectangle.SINGLETON.setSize(0, 0);
+		Rectangle.SINGLETON.setLocation(x1, y);
+		Rectangle.SINGLETON.union(x2, y-height);
+		Rectangle.SINGLETON.expand(tolerance, tolerance);
+		if (!Rectangle.SINGLETON.contains(px, py))
+			return false;
+
+		int x = (x1+x2) / 2;
+		int rx = Math.abs(x1-x2) / 2;
+		int ry = height;
+
+		int dxnorm = (x - px) * ry / rx;
+		int dy = y - py;
+		int distSquare = dxnorm*dxnorm + dy*dy;
+		return distSquare < (ry+tolerance)*(ry+tolerance) && distSquare > (ry-tolerance)*(ry-tolerance); 
+	}
+
+	/**
+	 * Utility function, copied from org.eclipse.draw2d.Polyline.
+	 */
+	private boolean lineContainsPoint(int x1, int y1, int x2, int y2, int px, int py, int tolerance) {
+		Rectangle.SINGLETON.setSize(0, 0);
+		Rectangle.SINGLETON.setLocation(x1, y1);
+		Rectangle.SINGLETON.union(x2, y2);
+		Rectangle.SINGLETON.expand(tolerance, tolerance);
+		if (!Rectangle.SINGLETON.contains(px, py))
+			return false;
+
+		int v1x, v1y, v2x, v2y;
+		int numerator, denominator;
+		int result = 0;
+
+		// calculates the length squared of the cross product of two vectors, v1 & v2.
+		if (x1 != x2 && y1 != y2) {
+			v1x = x2 - x1;
+			v1y = y2 - y1;
+			v2x = px - x1;
+			v2y = py - y1;
+
+			numerator = v2x * v1y - v1x * v2y;
+
+			denominator = v1x * v1x + v1y * v1y;
+
+			result = (int)((long)numerator * numerator / denominator);
+		}
+
+		// if it is the same point, and it passes the bounding box test,
+		// the result is always true.
+		return result <= tolerance * tolerance;
 	}
 
 }

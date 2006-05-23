@@ -39,6 +39,7 @@ public class SequenceChartToolEditor extends EditorPart {
 
 	private SashForm sashForm;
 	private Text text;
+	private Canvas canvas;
 	private Figure rootFigure;
 	private XYLayout rootLayout;
 	private SeqChartFigure seqChartFigure;
@@ -78,7 +79,7 @@ public class SequenceChartToolEditor extends EditorPart {
 		Composite controlStrip = createControlStrip(upper);
 		controlStrip.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-		final Canvas canvas = new Canvas(upper, SWT.DOUBLE_BUFFERED);
+		canvas = new Canvas(upper, SWT.DOUBLE_BUFFERED);
 		canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		canvas.setBackground(CANVAS_BG_COLOR);
 		LightweightSystem lws = new LightweightSystem(canvas);
@@ -189,8 +190,7 @@ public class SequenceChartToolEditor extends EditorPart {
 		//addLabelFigure(10, 10, "Egyik vege");
 		//addLabelFigure(2100, 10, "Masik vege");
 		//addLabelFigure(10, 550, "Alja");
-		seqChartFigure = new SeqChartFigure();
-		seqChartFigure.setScrollPane(scrollPane);
+		seqChartFigure = new SeqChartFigure(canvas, scrollPane);
 		rootFigure.add(seqChartFigure);
 		rootLayout.setConstraint(seqChartFigure, new Rectangle(0,0,-1,-1));
 	}
