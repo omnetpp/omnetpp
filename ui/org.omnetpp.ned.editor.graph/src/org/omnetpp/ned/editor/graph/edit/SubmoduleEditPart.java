@@ -16,7 +16,7 @@ import org.omnetpp.ned.editor.graph.figures.properties.DisplayRangeSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayShapeSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayTooltipSupport;
 import org.omnetpp.ned2.model.DisplayString;
-import org.omnetpp.ned2.model.INedModule;
+import org.omnetpp.ned2.model.INamedGraphNode;
 import org.omnetpp.ned2.model.SubmoduleDisplayString;
 
 public class SubmoduleEditPart extends ModuleEditPart {
@@ -49,7 +49,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
         
         // define the properties that determine the visual appearence
         
-    	INedModule model = (INedModule)getNEDModel();
+    	INamedGraphNode model = (INamedGraphNode)getNEDModel();
     	
         // parse a dispaly string, so it's easier to get values from it.
         SubmoduleDisplayString dps = (SubmoduleDisplayString)model.getDisplayString();

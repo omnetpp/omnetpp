@@ -24,7 +24,7 @@ import org.omnetpp.ned.editor.graph.figures.properties.DisplayRangeSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayShapeSupport;
 import org.omnetpp.ned.editor.graph.figures.properties.DisplayTooltipSupport;
 import org.omnetpp.ned2.model.DisplayString;
-import org.omnetpp.ned2.model.INedModule;
+import org.omnetpp.ned2.model.INamedGraphNode;
 import org.omnetpp.ned2.model.NEDElement;
 
 /**
@@ -58,7 +58,7 @@ abstract public class ModuleEditPart extends ContainerEditPart {
      */
     @Override
     protected List getModelSourceConnections() {
-        return ((INedModule)getNEDModel()).getSrcConnections();
+        return ((INamedGraphNode)getNEDModel()).getSrcConnections();
     }
 
     /**
@@ -68,7 +68,7 @@ abstract public class ModuleEditPart extends ContainerEditPart {
      */
     @Override
     protected List getModelTargetConnections() {
-        return ((INedModule)getNEDModel()).getDestConnections();
+        return ((INamedGraphNode)getNEDModel()).getDestConnections();
     }
 
     /**
@@ -140,9 +140,9 @@ abstract public class ModuleEditPart extends ContainerEditPart {
 		
 		// SubmoduleNodeEx and CompoundModuleNodeEx fire ATT_SRC(DEST)_CONNECTION 
 		// attribute change if a connection gets added/removed
-		if (INedModule.ATT_SRC_CONNECTION.equals(attr))
+		if (INamedGraphNode.ATT_SRC_CONNECTION.equals(attr))
 			refreshSourceConnections();
-		else if (INedModule.ATT_DEST_CONNECTION.equals(attr))
+		else if (INamedGraphNode.ATT_DEST_CONNECTION.equals(attr))
 			refreshTargetConnections();
 	}
 

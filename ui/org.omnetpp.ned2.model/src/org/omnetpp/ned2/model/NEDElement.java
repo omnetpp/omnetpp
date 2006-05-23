@@ -610,10 +610,15 @@ public abstract class NEDElement extends PlatformObject implements Iterable<NEDE
     }
     
     /**
-     * remove this node from the parent.
+     * remove this node from the parent if any.
      */
     public void removeFromParent() {
-        getParent().removeChild(this);
+        if(getParent() != null) 
+        	getParent().removeChild(this);
+    }
+    
+    public boolean hasChildren() {
+    	return getFirstChild() != null;
     }
     
     /**

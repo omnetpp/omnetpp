@@ -5,7 +5,9 @@ import java.util.List;
 
 import org.omnetpp.ned2.model.pojo.NedFileNode;
 
-public class NedFileNodeEx extends NedFileNode implements INedContainer {
+// TODO ISubmoduleContainer should be changed to some more meaningful interface
+// ie we can add top level elements to nedfile but not submodules
+public class NedFileNodeEx extends NedFileNode implements ISubmoduleContainer {
 	
 	public NedFileNodeEx() {
 	}
@@ -23,15 +25,15 @@ public class NedFileNodeEx extends NedFileNode implements INedContainer {
 		return result;
 	}
 	
-	public void addModelChild(INedModule child) {
+	public void addSubmodule(INamedGraphNode child) {
 		appendChild((NEDElement)child);
 	}
 
-	public void removeModelChild(INedModule child) {		
+	public void removeSubmodule(INamedGraphNode child) {		
 		removeChild((NEDElement)child);
 	}
 
-	public void insertModelChild(int index, INedModule child) {
+	public void insertSubmodule(int index, INamedGraphNode child) {
 		NEDElement insertBefore = getFirstChild();
 		for(int i=0; (i<index) && (insertBefore!=null); ++i) 
 			insertBefore = insertBefore.getNextSibling();
@@ -39,14 +41,14 @@ public class NedFileNodeEx extends NedFileNode implements INedContainer {
 		insertChildBefore(insertBefore, (NEDElement)child);
 	}
 
-	public void insertModelChild(INedModule insertBefore, INedModule child) {
+	public void insertSubmodule(INamedGraphNode insertBefore, INamedGraphNode child) {
 		insertChildBefore((NEDElement)insertBefore, (NEDElement)child);
 	}
 
-	public List<? extends INedModule> getModelChildren() {
-		List<INedModule> result = new ArrayList<INedModule>();
+	public List<? extends INamedGraphNode> getSubmodules() {
+		List<INamedGraphNode> result = new ArrayList<INamedGraphNode>();
 		for(NEDElement currChild : this) 
-				result.add((INedModule)currChild);
+				result.add((INamedGraphNode)currChild);
 				
 		return result;
 	}

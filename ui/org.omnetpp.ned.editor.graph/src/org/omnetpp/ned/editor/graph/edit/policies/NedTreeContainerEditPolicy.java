@@ -12,12 +12,12 @@ import org.eclipse.gef.editpolicies.TreeContainerEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
 import org.omnetpp.ned.editor.graph.model.commands.CreateCommand;
-import org.omnetpp.ned2.model.INedContainer;
-import org.omnetpp.ned2.model.INedModule;
+import org.omnetpp.ned2.model.ISubmoduleContainer;
+import org.omnetpp.ned2.model.INamedGraphNode;
 
 public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
 
-    protected Command createCreateCommand(INedModule child, Rectangle r, int index, String label) {
+    protected Command createCreateCommand(INamedGraphNode child, Rectangle r, int index, String label) {
         CreateCommand cmd = new CreateCommand();
         Rectangle rect;
         if (r == null) {
@@ -27,7 +27,7 @@ public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
             rect = r;
         }
         cmd.setLocation(rect);
-        cmd.setParent((INedContainer) getHost().getModel());
+        cmd.setParent((ISubmoduleContainer) getHost().getModel());
         cmd.setChild(child);
         cmd.setLabel(label);
         if (index >= 0) cmd.setIndex(index);
@@ -46,7 +46,7 @@ public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
             if (isAncestor(child, getHost()))
                 command.add(UnexecutableCommand.INSTANCE);
             else {
-                INedModule childModel = (INedModule) child.getModel();
+                INamedGraphNode childModel = (INamedGraphNode) child.getModel();
                 command.add(createCreateCommand(childModel, new Rectangle(
                         new org.eclipse.draw2d.geometry.Point(), childModel.getDisplayString().getSize()), index,
                         "Reparent NedElement"));//$NON-NLS-1$
@@ -57,7 +57,7 @@ public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
 
     @Override
     protected Command getCreateCommand(CreateRequest request) {
-    	INedModule child = (INedModule) request.getNewObject();
+    	INamedGraphNode child = (INamedGraphNode) request.getNewObject();
     	// FIXME kivenni a target editpartot es azt beadni a create commandnak hogy
         // abbol szamolja a szulo es a szomszed modell objektumot
         EditPart targetEditPart = getTargetEditPart(request);

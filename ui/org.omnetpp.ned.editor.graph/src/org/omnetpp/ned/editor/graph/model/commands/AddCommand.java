@@ -1,7 +1,7 @@
 package org.omnetpp.ned.editor.graph.model.commands;
 
-import org.omnetpp.ned2.model.INedContainer;
-import org.omnetpp.ned2.model.INedModule;
+import org.omnetpp.ned2.model.ISubmoduleContainer;
+import org.omnetpp.ned2.model.INamedGraphNode;
 
 /**
  * This command adds a child element to a container model element 
@@ -11,8 +11,8 @@ import org.omnetpp.ned2.model.INedModule;
 // TODO do not use index to position the child. Use the next sibling child istead
 public class AddCommand extends org.eclipse.gef.commands.Command {
 
-    private INedModule child;
-    private INedContainer parent;
+    private INamedGraphNode child;
+    private ISubmoduleContainer parent;
     private int index = -1;
 
     @Override
@@ -20,24 +20,24 @@ public class AddCommand extends org.eclipse.gef.commands.Command {
         setLabel("Add " + child.getName());
         
         if (index < 0)
-            parent.addModelChild(child);
+            parent.addSubmodule(child);
         else
-            parent.insertModelChild(index, child);
+            parent.insertSubmodule(index, child);
     }
 
-    public INedContainer getParent() {
+    public ISubmoduleContainer getParent() {
         return parent;
     }
 
     @Override
     public void redo() {
         if (index < 0)
-            parent.addModelChild(child);
+            parent.addSubmodule(child);
         else
-            parent.insertModelChild(index, child);
+            parent.insertSubmodule(index, child);
     }
 
-    public void setChild(INedModule module) {
+    public void setChild(INamedGraphNode module) {
         child = module;
     }
 
@@ -45,13 +45,13 @@ public class AddCommand extends org.eclipse.gef.commands.Command {
         index = i;
     }
 
-    public void setParent(INedContainer newParent) {
+    public void setParent(ISubmoduleContainer newParent) {
         parent = newParent;
     }
 
     @Override
     public void undo() {
-        parent.removeModelChild(child);
+        parent.removeSubmodule(child);
     }
 
 }

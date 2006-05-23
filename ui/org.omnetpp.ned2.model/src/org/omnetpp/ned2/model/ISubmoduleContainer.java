@@ -7,43 +7,39 @@ import java.util.List;
  * @author rhornig
  *
  */
-public interface INedContainer {
+public interface ISubmoduleContainer {
 	
 	/**
-	 * Returns the primary child list used to display visual children.
+	 * Returns all submodule containd in the module.
 	 * @param child
 	 * @return
 	 */
-	public List<? extends INedModule> getModelChildren();
+	public List<? extends INamedGraphNode> getSubmodules();
 	
 	/**
 	 * Add a child to a container model.
 	 * @param child
 	 */
-	public void addModelChild(INedModule child);
+	public void addSubmodule(INamedGraphNode child);
 
 	/**
 	 * Insert the child at the give position.
 	 * @param child
 	 * @param index
 	 */
-	public void insertModelChild(int index, INedModule child);
+	public void insertSubmodule(int index, INamedGraphNode child);
 	
 	/**
 	 * Insert the child at the give position.
 	 * @param child Child to be inserted
 	 * @param insertBefore Sibling element where the child will be inserted
 	 */
-	public void insertModelChild(INedModule insertBefore, INedModule child);
+	public void insertSubmodule(INamedGraphNode insertBefore, INamedGraphNode child);
 
 	/**
 	 * Remove a specfic child from the parent.
 	 * @param child
 	 */
-	public void removeModelChild(INedModule child);
+	public void removeSubmodule(INamedGraphNode child);
 
-    /**
-     * Removes this node from the parent
-     */
-    public void removeFromParent();
 }

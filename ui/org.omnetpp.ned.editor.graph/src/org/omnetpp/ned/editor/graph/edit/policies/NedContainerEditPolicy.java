@@ -9,8 +9,8 @@ import org.eclipse.gef.editpolicies.ContainerEditPolicy;
 import org.eclipse.gef.requests.CreateRequest;
 import org.eclipse.gef.requests.GroupRequest;
 import org.omnetpp.ned.editor.graph.model.commands.OrphanChildCommand;
-import org.omnetpp.ned2.model.INedContainer;
-import org.omnetpp.ned2.model.INedModule;
+import org.omnetpp.ned2.model.ISubmoduleContainer;
+import org.omnetpp.ned2.model.INamedGraphNode;
 
 public class NedContainerEditPolicy extends ContainerEditPolicy {
 
@@ -27,8 +27,8 @@ public class NedContainerEditPolicy extends ContainerEditPolicy {
         CompoundCommand result = new CompoundCommand("Orphan children");
         for (int i = 0; i < parts.size(); i++) {
             OrphanChildCommand orphan = new OrphanChildCommand();
-            orphan.setChild((INedModule) ((EditPart) parts.get(i)).getModel());
-            orphan.setParent((INedContainer) getHost().getModel());
+            orphan.setChild((INamedGraphNode) ((EditPart) parts.get(i)).getModel());
+            orphan.setParent((ISubmoduleContainer) getHost().getModel());
             orphan.setLabel("Orphan child");
             result.add(orphan);
         }

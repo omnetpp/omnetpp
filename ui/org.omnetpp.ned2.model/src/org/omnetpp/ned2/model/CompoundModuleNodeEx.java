@@ -10,7 +10,7 @@ import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 import org.omnetpp.ned2.model.pojo.SubmodulesNode;
 
 public class CompoundModuleNodeEx extends CompoundModuleNode 
-								  implements INedContainer, INedModule {
+								  implements ISubmoduleContainer, INamedGraphNode {
     
 	// srcConns contains all connections where the sourcemodule is this module
 	protected List<ConnectionNodeEx> srcConns = new ArrayList<ConnectionNodeEx>();
@@ -39,7 +39,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 		NedElementExUtil.setDisplayString(this, displayString.toString());
 	}
 
-	public List<SubmoduleNodeEx> getSubmodules() {
+	public List<SubmoduleNodeEx> getSubmodulesEx() {
 		List<SubmoduleNodeEx> result = new ArrayList<SubmoduleNodeEx>();
 		SubmodulesNode submodulesNode = getFirstSubmodulesChild();
 		if (submodulesNode == null)
@@ -59,20 +59,8 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 					.getFirstChildWithAttribute(NED_SUBMODULE, SubmoduleNode.ATT_NAME, submoduleName);
 	}
 
-	public List<ConnectionNodeEx> getConnections() {
-		List<ConnectionNodeEx> result = new ArrayList<ConnectionNodeEx>();
-		ConnectionsNode connectionsNode = getFirstConnectionsChild();
-		if (connectionsNode == null)
-			return result;
-		for(NEDElement currChild : connectionsNode) 
-			if (currChild instanceof ConnectionNodeEx) 
-				result.add((ConnectionNodeEx)currChild);
-				
-		return result;
-	}
-
-    public List<? extends INedModule> getModelChildren() {
-        return getSubmodules();
+    public List<? extends INamedGraphNode> getSubmodules() {
+        return getSubmodulesEx();
     }
 
 	public List<ConnectionNodeEx> getSrcConnections() {
@@ -83,35 +71,35 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 		return destConns;
 	}
 	
-    public void addSrcConnection(ConnectionNodeEx conn) {
+    public void attachSrcConnection(ConnectionNodeEx conn) {
         assert(!srcConns.contains(conn));
         srcConns.add(conn);
         addConnection(conn);
         fireAttributeChangedToAncestors(ATT_SRC_CONNECTION);
     }
 
-    public void removeSrcConnection(ConnectionNodeEx conn) {
+    public void detachSrcConnection(ConnectionNodeEx conn) {
         assert(srcConns.contains(conn));
         srcConns.remove(conn);
         removeConnection(conn);
         fireAttributeChangedToAncestors(ATT_SRC_CONNECTION);
     }
 
-    public void addDestConnection(ConnectionNodeEx conn) {
+    public void attachDestConnection(ConnectionNodeEx conn) {
         assert(!destConns.contains(conn));
         destConns.add(conn);
         addConnection(conn);
         fireAttributeChangedToAncestors(ATT_DEST_CONNECTION);
     }
 
-    public void removeDestConnection(ConnectionNodeEx conn) {
+    public void detachDestConnection(ConnectionNodeEx conn) {
         assert(destConns.contains(conn));
         destConns.remove(conn);
         removeConnection(conn);
         fireAttributeChangedToAncestors(ATT_DEST_CONNECTION);
     }
 
-	public void addModelChild(INedModule child) {
+	public void addSubmodule(INamedGraphNode child) {
         SubmodulesNode snode = getFirstSubmodulesChild();
         if (snode == null) 
             snode = (SubmodulesNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementFactoryEx.NED_SUBMODULES, this);
@@ -119,16 +107,14 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
         snode.appendChild((NEDElement)child);
 	}
 
-	public void removeModelChild(INedModule child) {		
-//        SubmodulesNode snode = getFirstSubmodulesChild();
-//        if (snode == null) 
-//            snode = (SubmodulesNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementFactoryEx.NED_SUBMODULES, this);
-//		
-//        snode.removeChild((NEDElement)child);
+	public void removeSubmodule(INamedGraphNode child) {		
         child.removeFromParent();
+        SubmodulesNode snode = getFirstSubmodulesChild();
+		if (snode != null && !snode.hasChildren()) 
+			snode.removeFromParent();
 	}
 
-	public void insertModelChild(int index, INedModule child) {
+	public void insertSubmodule(int index, INamedGraphNode child) {
 		// check wheter Submodules node exists and create one if doesn't
 		SubmodulesNode snode = getFirstSubmodulesChild();
 		if (snode == null) 
@@ -141,7 +127,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 		snode.insertChildBefore(insertBefore, (NEDElement)child);
 	}
 
-	public void insertModelChild(INedModule insertBefore, INedModule child) {
+	public void insertSubmodule(INamedGraphNode insertBefore, INamedGraphNode child) {
 		// check wheter Submodules node exists and create one if doesn't
 		SubmodulesNode snode = getFirstSubmodulesChild();
 		if (snode == null) 
@@ -164,10 +150,23 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 	}
 
 	public void removeConnection(ConnectionNodeEx conn) {
-		// do nothing if the connectin is not in the modell
-		if(conn.getParent() == null)
-			return;
-
 		conn.removeFromParent();
+		
+		ConnectionsNode snode = getFirstConnectionsChild();
+		if (snode != null && !snode.hasChildren()) 
+			snode.removeFromParent();
 	}
+
+	public List<ConnectionNodeEx> getConnections() {
+		List<ConnectionNodeEx> result = new ArrayList<ConnectionNodeEx>();
+		ConnectionsNode connectionsNode = getFirstConnectionsChild();
+		if (connectionsNode == null)
+			return result;
+		for(NEDElement currChild : connectionsNode) 
+			if (currChild instanceof ConnectionNodeEx) 
+				result.add((ConnectionNodeEx)currChild);
+				
+		return result;
+	}
+
 }

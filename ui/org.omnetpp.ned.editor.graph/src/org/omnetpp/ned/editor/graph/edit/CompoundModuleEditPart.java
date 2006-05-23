@@ -34,7 +34,7 @@ import org.omnetpp.ned.editor.graph.figures.properties.DisplayTooltipSupport;
 import org.omnetpp.ned2.model.CompoundModuleDisplayString;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.DisplayString;
-import org.omnetpp.ned2.model.INedModule;
+import org.omnetpp.ned2.model.INamedGraphNode;
 import org.omnetpp.ned2.model.DisplayString.Prop;
 
 public class CompoundModuleEditPart extends ModuleEditPart {
@@ -105,7 +105,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 
     @Override
     protected List getModelChildren() {
-    	return ((CompoundModuleNodeEx)getNEDModel()).getModelChildren();
+    	return ((CompoundModuleNodeEx)getNEDModel()).getSubmodules();
     }
     
     @Override
@@ -127,7 +127,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
         
         // define the properties that determine the visual appearence
         
-    	INedModule model = (INedModule)getNEDModel();
+    	INamedGraphNode model = (INamedGraphNode)getNEDModel();
     	
         // parse a dispaly string, so it's easier to get values from it.
     	CompoundModuleDisplayString dps = (CompoundModuleDisplayString)model.getDisplayString();

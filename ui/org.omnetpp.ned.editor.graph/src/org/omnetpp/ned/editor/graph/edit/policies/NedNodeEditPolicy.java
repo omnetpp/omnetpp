@@ -12,7 +12,7 @@ import org.omnetpp.ned.editor.graph.edit.ModuleEditPart;
 import org.omnetpp.ned.editor.graph.figures.ModuleFigure;
 import org.omnetpp.ned.editor.graph.model.commands.ConnectionCommand;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
-import org.omnetpp.ned2.model.INedModule;
+import org.omnetpp.ned2.model.INamedGraphNode;
 import org.omnetpp.ned2.model.NEDElementFactoryEx;
 import org.omnetpp.ned2.model.NedElementExUtil;
 import org.omnetpp.ned2.model.pojo.NEDElementFactory;
@@ -61,8 +61,8 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
         return (ModuleEditPart) getHost();
     }
 
-    protected INedModule getNedNodeModel() {
-        return (INedModule) getHost().getModel();
+    protected INamedGraphNode getNedNodeModel() {
+        return (INamedGraphNode) getHost().getModel();
     }
 
     @Override

@@ -3,7 +3,7 @@ package org.omnetpp.ned.editor.graph.model.commands;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.omnetpp.ned2.model.INedModule;
+import org.omnetpp.ned2.model.INamedGraphNode;
 
 /**
  * Change the size and location of the element
@@ -16,7 +16,7 @@ public class SetConstraintCommand extends org.eclipse.gef.commands.Command {
     private Dimension newSize;
     private Point oldPos;
     private Dimension oldSize;
-    private INedModule module;
+    private INamedGraphNode module;
 
     @Override
     public String getLabel() {
@@ -46,7 +46,7 @@ public class SetConstraintCommand extends org.eclipse.gef.commands.Command {
         newPos = p;
     }
 
-    public void setModule(INedModule newModule) {
+    public void setModule(INamedGraphNode newModule) {
         module = newModule;
     }
 

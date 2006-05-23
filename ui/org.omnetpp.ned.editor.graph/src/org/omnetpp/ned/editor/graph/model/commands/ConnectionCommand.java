@@ -2,7 +2,7 @@ package org.omnetpp.ned.editor.graph.model.commands;
 
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
-import org.omnetpp.ned2.model.INedModule;
+import org.omnetpp.ned2.model.INamedGraphNode;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
 
@@ -13,13 +13,13 @@ import org.omnetpp.ned2.model.pojo.ConnectionNode;
  */
 public class ConnectionCommand extends Command {
 
-    protected INedModule oldSrcModule;
+    protected INamedGraphNode oldSrcModule;
     protected String oldSrcGate;
-    protected INedModule oldDestModule;
+    protected INamedGraphNode oldDestModule;
     protected String oldDestGate;
-    protected INedModule srcModule;
+    protected INamedGraphNode srcModule;
     protected String srcGate;
-    protected INedModule destModule;
+    protected INamedGraphNode destModule;
     protected String destGate;
     protected ConnectionNodeEx connNode;
     protected NEDElement parent = null;
@@ -90,11 +90,11 @@ public class ConnectionCommand extends Command {
         connNode.setDestGate(oldDestGate);
     }
 
-    public INedModule getSrcModule() {
+    public INamedGraphNode getSrcModule() {
         return srcModule;
     }
 
-    public void setSrcModule(INedModule newSrcModule) {
+    public void setSrcModule(INamedGraphNode newSrcModule) {
         srcModule = newSrcModule;
     }
 
@@ -106,11 +106,11 @@ public class ConnectionCommand extends Command {
         srcGate = newSrcGate;
     }
 
-    public INedModule getDestModule() {
+    public INamedGraphNode getDestModule() {
         return destModule;
     }
 
-    public void setDestModule(INedModule newDestModule) {
+    public void setDestModule(INamedGraphNode newDestModule) {
         destModule = newDestModule;
     }
 

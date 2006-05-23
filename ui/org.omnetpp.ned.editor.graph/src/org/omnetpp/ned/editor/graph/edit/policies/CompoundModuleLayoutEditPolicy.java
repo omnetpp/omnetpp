@@ -27,8 +27,8 @@ import org.omnetpp.ned.editor.graph.model.commands.CloneCommand;
 import org.omnetpp.ned.editor.graph.model.commands.CreateCommand;
 import org.omnetpp.ned.editor.graph.model.commands.SetConstraintCommand;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
-import org.omnetpp.ned2.model.INedContainer;
-import org.omnetpp.ned2.model.INedModule;
+import org.omnetpp.ned2.model.ISubmoduleContainer;
+import org.omnetpp.ned2.model.INamedGraphNode;
 
 
 public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
@@ -40,11 +40,11 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
 
     protected Command createAddCommand(Request request, EditPart childEditPart, Object constraint) {
-        INedModule part = (INedModule) childEditPart.getModel();
+        INamedGraphNode part = (INamedGraphNode) childEditPart.getModel();
         Rectangle rect = (Rectangle) constraint;
 
         AddCommand add = new AddCommand();
-        add.setParent((INedContainer) getHost().getModel());
+        add.setParent((ISubmoduleContainer) getHost().getModel());
         add.setChild(part);
         add.setLabel("Add");
         add.setDebugLabel("LogicXYEP add subpart");//$NON-NLS-1$
@@ -82,7 +82,7 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
         // create the constraint change command 
         SetConstraintCommand cmd = new SetConstraintCommand();
-        INedModule module = (INedModule) child.getModel();
+        INamedGraphNode module = (INamedGraphNode) child.getModel();
         cmd.setModule(module);
         cmd.setLocation(modelConstraint);
         // if size constrant is not specified, then remove it from the model too
@@ -211,14 +211,14 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
     protected Command getCloneCommand(ChangeBoundsRequest request) {
         CloneCommand clone = new CloneCommand();
 
-        clone.setParent((INedContainer) getHost().getModel());
+        clone.setParent((ISubmoduleContainer) getHost().getModel());
 
         Iterator i = request.getEditParts().iterator();
         GraphicalEditPart currPart = null;
 
         while (i.hasNext()) {
             currPart = (GraphicalEditPart) i.next();
-            clone.addModule((INedModule)currPart.getModel(), (Rectangle) getConstraintForClone(currPart,
+            clone.addModule((INamedGraphNode)currPart.getModel(), (Rectangle) getConstraintForClone(currPart,
                     request));
         }
 
@@ -229,8 +229,8 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
     @Override
     protected Command getCreateCommand(CreateRequest request) {
         CreateCommand create = new CreateCommand();
-        create.setParent((INedContainer) getHost().getModel());
-        INedModule newPart = (INedModule) request.getNewObject();
+        create.setParent((ISubmoduleContainer) getHost().getModel());
+        INamedGraphNode newPart = (INamedGraphNode) request.getNewObject();
         create.setChild(newPart);
         Rectangle constraint = (Rectangle) getConstraintFor(request);
         create.setLocation(constraint);

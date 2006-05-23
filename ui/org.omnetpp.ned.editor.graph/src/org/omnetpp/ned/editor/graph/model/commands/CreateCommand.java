@@ -1,8 +1,8 @@
 package org.omnetpp.ned.editor.graph.model.commands;
 
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.omnetpp.ned2.model.INedContainer;
-import org.omnetpp.ned2.model.INedModule;
+import org.omnetpp.ned2.model.ISubmoduleContainer;
+import org.omnetpp.ned2.model.INamedGraphNode;
 
 /**
  * Adds a newly created element to the model
@@ -13,9 +13,9 @@ import org.omnetpp.ned2.model.INedModule;
 //TODO do not use index to position the child. Use the next sibling child istead
 public class CreateCommand extends org.eclipse.gef.commands.Command {
 
-    private INedModule child;
+    private INamedGraphNode child;
     private Rectangle rect;
-    private INedContainer parent;
+    private ISubmoduleContainer parent;
     private int index = -1;
 
     @Override
@@ -35,10 +35,10 @@ public class CreateCommand extends org.eclipse.gef.commands.Command {
 
     @Override
     public void redo() {
-        parent.insertModelChild(index, child );
+        parent.insertSubmodule(index, child );
     }
 
-    public void setChild(INedModule module) {
+    public void setChild(INamedGraphNode module) {
         child = module;
     }
 
@@ -50,13 +50,13 @@ public class CreateCommand extends org.eclipse.gef.commands.Command {
         rect = r;
     }
 
-    public void setParent(INedContainer newParent) {
+    public void setParent(ISubmoduleContainer newParent) {
         parent = newParent;
     }
 
     @Override
     public void undo() {
-        parent.removeModelChild(child);
+        parent.removeSubmodule(child);
     }
 
 }

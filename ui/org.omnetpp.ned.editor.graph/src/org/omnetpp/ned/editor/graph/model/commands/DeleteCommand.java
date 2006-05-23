@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
-import org.omnetpp.ned2.model.INedContainer;
-import org.omnetpp.ned2.model.INedModule;
+import org.omnetpp.ned2.model.ISubmoduleContainer;
+import org.omnetpp.ned2.model.INamedGraphNode;
 import org.omnetpp.ned2.model.pojo.ConnectionsNode;
 
 /**
@@ -21,21 +21,21 @@ public class DeleteCommand extends Command {
         public ConnectionNodeEx node;            // the NODE that was deleted
         public ConnectionsNode parent;           // the parent of the deletednode
         public ConnectionNodeEx nextSibling;     // the next sibling to be able to insert it back into the correct position
-        public INedModule srcModule;             // the src module the connection was originally attached to
-        public INedModule destModule;            // the dest module the connection was originally attached to
+        public INamedGraphNode srcModule;             // the src module the connection was originally attached to
+        public INamedGraphNode destModule;            // the dest module the connection was originally attached to
     }
     
     private static class ModuleUndoItem {
-        public INedModule node;
-        public INedContainer parent;
-        public INedModule nextSibling;
+        public INamedGraphNode node;
+        public ISubmoduleContainer parent;
+        public INamedGraphNode nextSibling;
     }
 
     private int index = -1;
     private ModuleUndoItem moduleUndoItem = new ModuleUndoItem(); 
     private List<ConnectionUndoItem> connectionUndoItems = new ArrayList<ConnectionUndoItem>();
 
-    private void deleteConnections(INedModule module) {
+    private void deleteConnections(INamedGraphNode module) {
         // TODO maybe it would be enough to iterate through ALL connections one time
         // no need to separate src and dest connections
         for (ConnectionNodeEx wire : module.getSrcConnections()) {
@@ -80,8 +80,8 @@ public class DeleteCommand extends Command {
 
     protected void primExecute() {
         deleteConnections(moduleUndoItem.node);
-        index = moduleUndoItem.parent.getModelChildren().indexOf(moduleUndoItem.node);
-        moduleUndoItem.parent.removeModelChild(moduleUndoItem.node);
+        index = moduleUndoItem.parent.getSubmodules().indexOf(moduleUndoItem.node);
+        moduleUndoItem.parent.removeSubmodule(moduleUndoItem.node);
     }
 
     @Override
@@ -103,17 +103,17 @@ public class DeleteCommand extends Command {
         connectionUndoItems.clear();
     }
 
-    public void setChild(INedModule c) {
+    public void setChild(INamedGraphNode c) {
         moduleUndoItem.node = c;
     }
 
-    public void setParent(INedContainer p) {
+    public void setParent(ISubmoduleContainer p) {
         moduleUndoItem.parent = p;
     }
 
     @Override
     public void undo() {
-        moduleUndoItem.parent.insertModelChild(index, moduleUndoItem.node);
+        moduleUndoItem.parent.insertSubmodule(index, moduleUndoItem.node);
         restoreConnections();
     }
 

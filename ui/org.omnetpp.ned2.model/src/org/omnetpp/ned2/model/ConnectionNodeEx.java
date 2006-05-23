@@ -9,8 +9,8 @@ import org.omnetpp.ned2.model.pojo.ChannelSpecNode;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
 
 public class ConnectionNodeEx extends ConnectionNode implements IDisplayStringProvider {
-	private INedModule srcModuleRef;
-	private INedModule destModuleRef;
+	private INamedGraphNode srcModuleRef;
+	private INamedGraphNode destModuleRef;
 	private ConnectionDisplayString displayString = null;
 
 	public ConnectionNodeEx() {
@@ -34,36 +34,36 @@ public class ConnectionNodeEx extends ConnectionNode implements IDisplayStringPr
         }
     }
 	
-	public INedModule getSrcModuleRef() {
+	public INamedGraphNode getSrcModuleRef() {
 		return srcModuleRef;
 	}
 	
-	public void setSrcModuleRef(INedModule srcModule) {
+	public void setSrcModuleRef(INamedGraphNode srcModule) {
 		if(srcModuleRef == srcModule) 
 			return;
 		
 		if (srcModuleRef != null) 
-			srcModuleRef.removeSrcConnection(this);
+			srcModuleRef.detachSrcConnection(this);
 		srcModuleRef = srcModule;
         if(srcModuleRef != null)
-            srcModuleRef.addSrcConnection(this);
+            srcModuleRef.attachSrcConnection(this);
 		
         fireAttributeChangedToAncestors(ATT_SRC_MODULE);
 	}
 
-	public INedModule getDestModuleRef() {
+	public INamedGraphNode getDestModuleRef() {
 		return destModuleRef;
 	}
 
-	public void setDestModuleRef(INedModule destModule) {
+	public void setDestModuleRef(INamedGraphNode destModule) {
 		if (destModuleRef == destModule)
 			return;
 		
 		if (destModuleRef != null) 
-			destModuleRef.removeDestConnection(this);
+			destModuleRef.detachDestConnection(this);
 		destModuleRef = destModule;
         if (destModuleRef != null)
-            destModuleRef.addDestConnection(this);
+            destModuleRef.attachDestConnection(this);
 		
         fireAttributeChangedToAncestors(ATT_DEST_MODULE);
 	}
@@ -94,14 +94,14 @@ public class ConnectionNodeEx extends ConnectionNode implements IDisplayStringPr
 		setSrcModuleRef(getSubmoduleByName(val));
 	}
 	
-	private INedModule getSubmoduleByName(String moduleName) {
+	private INamedGraphNode getSubmoduleByName(String moduleName) {
 		CompoundModuleNodeEx compMod = (CompoundModuleNodeEx)getParentWithTag(NED_COMPOUND_MODULE);
 		assert (compMod != null);
 		// check if the module name is empty. we should return the parent compoud module
 		if("".equals(moduleName)) 
 			return compMod;
 		else {
-			INedModule subMod = compMod.getSubmoduleByName(moduleName);
+			INamedGraphNode subMod = compMod.getSubmoduleByName(moduleName);
 			if (subMod == null) throw new NEDElementException(this, "'"+moduleName+"': undefined submodule");
 			return subMod;
 		}
