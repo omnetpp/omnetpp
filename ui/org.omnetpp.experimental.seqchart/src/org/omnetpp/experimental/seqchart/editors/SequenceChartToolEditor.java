@@ -51,6 +51,7 @@ public class SequenceChartToolEditor extends EditorPart {
 	private XYLayout rootLayout;
 	private SeqChartFigure seqChartFigure;
 	private Combo eventcombo;  //XXX instead of this combo, events should be selectable from the text view at the bottom
+	private EventLogTable eventLogTable;
 	
 	private EventLog eventLog;  // the log file loaded
 	private int currentEventNumber = 0;
@@ -101,8 +102,19 @@ public class SequenceChartToolEditor extends EditorPart {
 		//eventLogTable.setInput(eventLog);
 		//EventLogTree eventLogTable = new EventLogTree(lower, SWT.MULTI);
 
-		EventLogTable eventLogTable = new EventLogTable(lower, SWT.MULTI);
-		eventLogTable.setInput(eventLog);
+		eventLogTable = new EventLogTable(lower, SWT.MULTI);
+		eventLogTable.getTable().addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+			public void widgetSelected(SelectionEvent e) {
+				int[] sel = eventLogTable.getTable().getSelectionIndices();
+				for (int i=0; i<sel.length; i++) {
+					EventEntry event = eventLog.getEvent(sel[i]); //XXX
+					event.setIsSelected(true);
+				}
+				seqChartFigure.repaint(); //XXX or just invalidate?
+			}
+		});
 		
 		// fill combo box with events
 		fillEventCombo();
@@ -210,8 +222,10 @@ public class SequenceChartToolEditor extends EditorPart {
 		rootFigure.add(seqChartFigure);
 		rootLayout.setConstraint(seqChartFigure, new Rectangle(0,0,-1,-1));
 		
+		// set up canvas mouse operations: click, double-click
 		seqChartFigure.addMouseListener(new MouseListener() {
 			public void mouseDoubleClicked(MouseEvent me) {
+				// filter for double-clicked event
 				ArrayList<EventEntry> events = new ArrayList<EventEntry>();
 				ArrayList<MessageEntry> msgs = new ArrayList<MessageEntry>();
 				seqChartFigure.collectStuffUnderMouse(me.x, me.y, events, msgs);
@@ -223,7 +237,16 @@ public class SequenceChartToolEditor extends EditorPart {
 				}
 			}
 			public void mousePressed(MouseEvent me) {
-				// XXX display stuff in the lower half
+				// goto that event in the log 
+				ArrayList<EventEntry> events = new ArrayList<EventEntry>();
+				ArrayList<MessageEntry> msgs = new ArrayList<MessageEntry>();
+				seqChartFigure.collectStuffUnderMouse(me.x, me.y, events, msgs);
+				if (events.size()>=1) { 
+					EventEntry event = events.get(0);
+					int tableIndex = eventLog.findEvent(event); //XXX
+					eventLogTable.getTable().setSelection(tableIndex);
+					eventLogTable.getTable().setTopIndex(tableIndex);
+				}
 			}
 			public void mouseReleased(MouseEvent me) {}
 		});
@@ -246,7 +269,7 @@ public class SequenceChartToolEditor extends EditorPart {
 		System.out.println("filtered log: "+filteredEventLog.getNumEvents()+" events in "+filteredEventLog.getNumModules()+" modules");
 
 		seqChartFigure.setEventLog(filteredEventLog);
-		//XXX update event log as well
+		eventLogTable.setInput(eventLog);
 	}
 
 	private int messageBox(int style, String title, String message) {
@@ -260,6 +283,7 @@ public class SequenceChartToolEditor extends EditorPart {
 		currentEventNumber = -1;
 		filteredEventLog = null;
 		seqChartFigure.setEventLog(eventLog);
+		eventLogTable.setInput(eventLog);
 	}
 	
 	private void addLabelFigure(int x, int y, String text) {

@@ -254,6 +254,10 @@ public class SeqChartFigure extends Figure {
    				int x = logFacade.getEvent_i_cachedX(i);
    				int y = logFacade.getEvent_i_cachedY(i);
             	graphics.fillOval(x-2, y-3, 5, 7);
+            	
+            	if (logFacade.getEvent_i_isSelected(i)) {
+                	graphics.drawOval(x-10, y-10, 21, 21);
+            	}
             }           	
 
             // turn on/off anti-alias 

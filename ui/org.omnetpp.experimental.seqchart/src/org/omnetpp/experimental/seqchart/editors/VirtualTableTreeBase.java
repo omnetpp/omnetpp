@@ -20,10 +20,11 @@ import org.eclipse.swt.widgets.TableItem;
  * 
  * IMPLEMENTATION NOTE. We use plain Table with SWT.VIRTUAL because
  * we have to be prepared for very large amounts of data (several hundred thousand
- * events). TableViewer doesn't scale to this amount (ContentProvider has to 
+ * lines). TableViewer doesn't scale to this amount (ContentProvider has to 
  * instantiate data for all rows, and laziness doesn't help much), and 
  * seems like VIRTUAL Tree is not really virtual either, and dies on a 
- * few thousand elements already.
+ * few thousand elements already. This code is similar to TableTree,
+ * but that one is not prepared to work well with SWT.VIRTUAL.
  * 
  * @author andras
  */
@@ -53,6 +54,10 @@ public abstract class VirtualTableTreeBase extends Composite {
 	 */
 	protected abstract void configureTableItem(TableItem item, int lineNumber);
 	
+	public Table getTable() {
+		return table;
+	}
+
 	/**
 	 * Utility, copied from TableTree. 
 	 */

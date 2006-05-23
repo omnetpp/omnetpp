@@ -75,10 +75,17 @@ class EventEntry
         double simulationTime;
         ModuleEntry *module;
         MessageEntry *cause;
-        MessageEntryList causes;
+        MessageEntryList causes;  // also includes "cause" (XXX does it?)
         MessageEntryList consequences;
-        int cachedX;  // Java code caches coordinates on chart here
-        int cachedY;  // Java code caches coordinates on chart here
+        int totalLogMessages; // total number of log messages for this event; FIXME to be filled in
+
+        // the following fields are for the convenience of the GUI
+        int cachedX; // position on canvas
+        int cachedY;
+        bool isSelected;
+        bool isExpandedInTree;
+        int tableRowIndex;
+
     public:
         EventEntry();
         ~EventEntry();
@@ -118,6 +125,7 @@ class EventLog
         int findEvent(EventEntry *event); // returns pos, or -1 if not found
         EventEntry *getEventByNumber(long eventNumber);
         EventEntry *getFirstEventAfter(double t);
+        EventEntry *getLastEventBefore(double t);
 
         int getNumModules();
         ModuleEntry *getModule(int pos);
@@ -164,8 +172,13 @@ class JavaFriendlyEventLogFacade
         double getEvent_i_simulationTime(int pos) {return getEvent(pos)->simulationTime;}
         int getEvent_i_cachedX(int pos)  {return getEvent(pos)->cachedX;}
         int getEvent_i_cachedY(int pos)  {return getEvent(pos)->cachedY;}
+        bool getEvent_i_isSelected(int pos)  {return getEvent(pos)->isSelected;}
+        bool getEvent_i_isExpandedInTree(int pos)  {return getEvent(pos)->isExpandedInTree;}
+        int getEvent_i_tableRowIndex(int pos)  {return getEvent(pos)->tableRowIndex;}
         void setEvent_cachedX(int pos, int x)  {getEvent(pos)->cachedX = x;}
         void setEvent_cachedY(int pos, int y)  {getEvent(pos)->cachedY = y;}
+        void setEvent_i_isSelected(int pos, bool sel)  {getEvent(pos)->isSelected = sel;}
+        void setEvent_i_isExpandedInTree(int pos, bool exp)  {getEvent(pos)->isExpandedInTree = exp;} //XXX modify tableRowIndex!!!
 
         std::string getEvent_i_module_moduleClassName(int pos) {return getEvent_module(pos)->moduleClassName;}
         std::string getEvent_i_module_moduleFullName(int pos)  {return getEvent_module(pos)->moduleFullName;}

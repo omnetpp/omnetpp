@@ -33,6 +33,11 @@ EventEntry::EventEntry()
     eventNumber = -1;
     simulationTime = -1;
     module = NULL;
+
+    cachedX = cachedY = 0;
+    isSelected = false;
+    isExpandedInTree = false;
+    tableRowIndex = 0;
 }
 
 EventEntry::~EventEntry()
@@ -225,6 +230,13 @@ EventEntry *EventLog::getFirstEventAfter(double t)
 {
     EventEntryList::iterator it = std::lower_bound(eventList.begin(), eventList.end(), t, less_EventEntry_double);
     return it==eventList.end() ? NULL : *it;
+}
+
+EventEntry *EventLog::getLastEventBefore(double t)
+{
+    // do getFirstEventAfter, then return the event before that
+    EventEntryList::iterator it = std::lower_bound(eventList.begin(), eventList.end(), t, less_EventEntry_double);
+    return it==eventList.begin() ? NULL : it==eventList.end() ? eventList.back() : *(it-1);
 }
 
 char *EventLog::tokensToStr(int numTokens, char **vec)
