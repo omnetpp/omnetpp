@@ -50,7 +50,8 @@ public class DeleteCommand extends Command {
             // now detach the connection from the other module on the destination side
             wire.setDestModuleRef(null);    // detach the destination end of the connections
             // remove it from the model too
-            wire.removeFromParent();
+            if (wire.getParent() != null)
+            	wire.removeFromParent();
         }
         
         for (ConnectionNodeEx wire : module.getDestConnections()) {
@@ -65,7 +66,8 @@ public class DeleteCommand extends Command {
             // now detach the connection from the other module on the destination side
             wire.setSrcModuleRef(null);    // detach the destination end of the connections
             // remove it from the model too
-            wire.removeFromParent();
+            if (wire.getParent() != null)
+            	wire.removeFromParent();
         }
     }
 
