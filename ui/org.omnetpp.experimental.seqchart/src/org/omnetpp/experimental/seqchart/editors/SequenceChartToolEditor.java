@@ -26,7 +26,6 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
@@ -37,10 +36,16 @@ import org.omnetpp.scave.engine.EventLog;
 import org.omnetpp.scave.engine.JavaFriendlyEventLogFacade;
 import org.omnetpp.scave.engine.MessageEntry;
 
+/**
+ * Sequence chart display tool. (It is not actually an editor; it is only named so
+ * because it extends EditorPart).
+ * 
+ * @author andras
+ */
 public class SequenceChartToolEditor extends EditorPart {
 
 	private SashForm sashForm;
-	private Text text;
+	//private Text text;
 	private Canvas canvas;
 	private Figure rootFigure;
 	private XYLayout rootLayout;
@@ -89,11 +94,16 @@ public class SequenceChartToolEditor extends EditorPart {
 		// add text box into lower half
 		Composite lower = new Composite(sashForm, SWT.NONE);
 		lower.setLayout(new FillLayout());
-		text = new Text(lower, SWT.MULTI | SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL);
-		text.setBackground(ColorConstants.white);
 
-		text.setText("Multi\nline\nText\nTest\n...\n\nMulti\nline\nText\nTest\n...\n\n");
+		//EventLogTable eventLogTable = new EventLogTable(lower, SWT.MULTI);
+		//EventLogTable2 eventLogTable = new EventLogTable2(lower, SWT.MULTI);
+		//EventLogTableTree eventLogTable = new EventLogTableTree(lower, SWT.MULTI);
+		//eventLogTable.setInput(eventLog);
+		//EventLogTree eventLogTable = new EventLogTree(lower, SWT.MULTI);
 
+		EventLogTable eventLogTable = new EventLogTable(lower, SWT.MULTI);
+		eventLogTable.setInput(eventLog);
+		
 		// fill combo box with events
 		fillEventCombo();
 		// give eventLog to the chart for display
