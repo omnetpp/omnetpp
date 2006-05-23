@@ -324,8 +324,10 @@ public class SeqChartFigure extends Figure {
 		return t * pixelsPerSec + getBounds().x;
 	}
 	
+	/**
+	 * Sets up dragging and tooltip.
+	 */
 	private void setUpMouseHandling() {
-		// dragging and tooltip
 		addMouseListener(new MouseListener() {
 			public void mouseDoubleClicked(MouseEvent me) {}
 			public void mousePressed(MouseEvent me) {
@@ -376,7 +378,11 @@ public class SeqChartFigure extends Figure {
     	swtTooltip = null;
 	}
 
-	private String getTooltipText(int x, int y) {
+	/**
+	 * Calls collectStuffUnderMouse(), and assembles a possibly multi-line
+	 * tooltip text from it. Returns null if there's no text to display.
+	 */
+	protected String getTooltipText(int x, int y) {
 		ArrayList<EventEntry> events = new ArrayList<EventEntry>();
 		ArrayList<MessageEntry> msgs = new ArrayList<MessageEntry>();
 		collectStuffUnderMouse(x, y, events, msgs);
