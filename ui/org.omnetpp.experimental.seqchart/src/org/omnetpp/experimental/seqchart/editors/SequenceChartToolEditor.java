@@ -1,22 +1,23 @@
 package org.omnetpp.experimental.seqchart.editors;
 
+import java.util.ArrayList;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.LightweightSystem;
+import org.eclipse.draw2d.MouseEvent;
+import org.eclipse.draw2d.MouseListener;
 import org.eclipse.draw2d.ScrollPane;
 import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -24,6 +25,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -33,7 +35,7 @@ import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.scave.engine.EventEntry;
 import org.omnetpp.scave.engine.EventLog;
 import org.omnetpp.scave.engine.JavaFriendlyEventLogFacade;
-import org.omnetpp.scave.engine.ModuleEntry;
+import org.omnetpp.scave.engine.MessageEntry;
 
 public class SequenceChartToolEditor extends EditorPart {
 
@@ -79,17 +81,10 @@ public class SequenceChartToolEditor extends EditorPart {
 		Composite controlStrip = createControlStrip(upper);
 		controlStrip.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
+		// create canvas and add chart figure
 		canvas = new Canvas(upper, SWT.DOUBLE_BUFFERED);
 		canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		canvas.setBackground(CANVAS_BG_COLOR);
-		LightweightSystem lws = new LightweightSystem(canvas);
-		ScrollPane scrollPane = new ScrollPane();
-		scrollPane.setScrollBarVisibility(ScrollPane.AUTOMATIC);
-		rootFigure = new Figure();
-		scrollPane.setContents(rootFigure);
-		rootLayout = new XYLayout();
-		rootFigure.setLayoutManager(rootLayout);
-		lws.setContents(scrollPane);
+		setupCanvas(canvas);
 
 		// add text box into lower half
 		Composite lower = new Composite(sashForm, SWT.NONE);
@@ -99,8 +94,6 @@ public class SequenceChartToolEditor extends EditorPart {
 
 		text.setText("Multi\nline\nText\nTest\n...\n\nMulti\nline\nText\nTest\n...\n\n");
 
-		// add chart figure
-		addSequenceChartFigure(scrollPane);
 		// fill combo box with events
 		fillEventCombo();
 		// give eventLog to the chart for display
@@ -186,13 +179,38 @@ public class SequenceChartToolEditor extends EditorPart {
     	eventcombo.select(0);
 	}
 
-	private void addSequenceChartFigure(ScrollPane scrollPane) {
-		//addLabelFigure(10, 10, "Egyik vege");
-		//addLabelFigure(2100, 10, "Masik vege");
-		//addLabelFigure(10, 550, "Alja");
+	private void setupCanvas(Canvas canvas) {
+		canvas.setBackground(CANVAS_BG_COLOR);
+		
+		LightweightSystem lws = new LightweightSystem(canvas);
+		ScrollPane scrollPane = new ScrollPane();
+		scrollPane.setScrollBarVisibility(ScrollPane.AUTOMATIC);
+		rootFigure = new Figure();
+		scrollPane.setContents(rootFigure);
+		rootLayout = new XYLayout();
+		rootFigure.setLayoutManager(rootLayout);
+		lws.setContents(scrollPane);
+
+		//addLabelFigure(10, 10, "Bla");
 		seqChartFigure = new SeqChartFigure(canvas, scrollPane);
 		rootFigure.add(seqChartFigure);
 		rootLayout.setConstraint(seqChartFigure, new Rectangle(0,0,-1,-1));
+		
+		seqChartFigure.addMouseListener(new MouseListener() {
+			public void mouseDoubleClicked(MouseEvent me) {
+				ArrayList<EventEntry> events = new ArrayList<EventEntry>();
+				ArrayList<MessageEntry> msgs = new ArrayList<MessageEntry>();
+				seqChartFigure.collectStuffUnderMouse(me.x, me.y, events, msgs);
+				System.out.println("DBLCLICK!!!");
+				if (events.size()>=1) { // XXX pop up selection dialog if there's more than one event there
+					showSequenceChartForEvent(events.get(0).getEventNumber());
+				}
+			}
+			public void mousePressed(MouseEvent me) {
+				// XXX display stuff in the lower half
+			}
+			public void mouseReleased(MouseEvent me) {}
+		});
 	}
 
 	/**
@@ -200,13 +218,20 @@ public class SequenceChartToolEditor extends EditorPart {
 	 */
 	private void showSequenceChartForEvent(int eventNumber) {
 		EventEntry event = eventLog.getEventByNumber(eventNumber);
-		if (event==null) // if there's no such event, ignore request
-			return; //XXX error dialog?
+		if (event==null) {
+			MessageBox m = new MessageBox(canvas.getShell());
+			m.setText("Error");
+			m.setMessage("Event #"+eventNumber+" not found.");
+			m.open();
+			return;
+		}
 		currentEventNumber = eventNumber;
 		filteredEventLog = eventLog.traceEvent(event, true, true);
 		System.out.println("filtered log: "+filteredEventLog.getNumEvents()+" events in "+filteredEventLog.getNumModules()+" modules");
 		seqChartFigure.setEventLog(filteredEventLog);
+		//XXX update event logas well
 	}
+	
 	private void showFullSequenceChart() {
 		currentEventNumber = -1;
 		filteredEventLog = null;
@@ -228,17 +253,14 @@ public class SequenceChartToolEditor extends EditorPart {
 
 	@Override
 	public void setFocus() {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void doSaveAs() {
-		// TODO Auto-generated method stub
 	}
 	
 	@Override
@@ -248,7 +270,6 @@ public class SequenceChartToolEditor extends EditorPart {
 
 	@Override
 	public boolean isSaveAsAllowed() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 }
