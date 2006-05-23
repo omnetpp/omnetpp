@@ -22,7 +22,7 @@ public class ConnectionCommand extends Command {
     protected INedModule destModule;
     protected String destGate;
     protected ConnectionNodeEx connNode;
-    protected NEDElement parentNode = null;
+    protected NEDElement parent = null;
     protected ConnectionNode connNodeNextSibling = null;
 
     @Override
@@ -55,19 +55,20 @@ public class ConnectionCommand extends Command {
         
         if (destGate != null)
             connNode.setDestGate(destGate);
-
+        
         // if both src and dest module should be detached then remove it 
         // from the model totally (ie delete it)
         if (srcModule == null && destModule == null) {
             // just store the NEXT sibling so we can put it back during undo to the right place
             connNodeNextSibling = connNode.getNextConnectionNodeSibling();
             // store the parent too so we now where to put it back during undo
-            parentNode = connNode.getParent();
+            parent = connNode.getParent();
             // now detach from both src and dest modules
             connNode.setSrcModuleRef(null);
             connNode.setDestModuleRef(null);
             // and remove from the parent too
-            connNode.removeFromParent();
+            if(connNode.getParent() != null)
+            	connNode.removeFromParent();
         }
     }
 
@@ -79,8 +80,8 @@ public class ConnectionCommand extends Command {
     @Override
     public void undo() {
         // if it was removed from the model, put it back
-        if (connNode.getParent() == null && parentNode != null)
-            parentNode.insertChildBefore(connNodeNextSibling, connNode);
+        if (connNode.getParent() == null && parent != null)
+            parent.insertChildBefore(connNodeNextSibling, connNode);
         
         // attach to the original modules and gates
         connNode.setSrcModuleRef(oldSrcModule);

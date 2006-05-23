@@ -66,31 +66,19 @@ public interface INedModule extends IDisplayStringProvider {
      * use ConnectionNodeEx.setDestModuleRef instead
 	 */
 	public void removeDestConnection(ConnectionNodeEx conn);
+	
+	/**
+	 * Add this connection to the model (connections section)
+	 * @param conn
+	 */
+	public void addConnection(ConnectionNodeEx conn);
 
-//	/**
-//	 * Helper function to set the location of the node
-//	 * @param location
-//	 */
-//	public void setLocation(Point location);
-//
-//	/**
-//	 * Helper function to get the location of the node
-//	 * @param location
-//	 */
-//	public Point getLocation();
-//	
-//	/**
-//	 * Helper function to get the size of the node
-//	 * @return
-//	 */
-//	public Dimension getSize();
-//	
-//	/**
-//	 * Helper function to set the size of the node
-//	 * @param size
-//	 */
-//	public void setSize(Dimension size);
-    
+	/**
+	 * Removes the connecion from the model
+	 * @param conn
+	 */
+	public void removeConnection(ConnectionNodeEx conn);
+	
     /**
      * Removes this node from the parent
      */

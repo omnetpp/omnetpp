@@ -33,7 +33,7 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
     @Override
     protected Command getConnectionCreateCommand(CreateConnectionRequest request) {
         ConnectionCommand command = new ConnectionCommand();
-        command.setConnectionNode((ConnectionNodeEx)NEDElementFactory.getInstance().createNodeWithTag(NEDElementTags.NED_CONNECTION));
+        command.setConnectionNode((ConnectionNodeEx)request.getNewObject());
         command.setSrcModule(getNedNodeModel());
         ConnectionAnchor ctor = getNedNodeEditPart().getSourceConnectionAnchor(request);
         command.setSrcGate(getNedNodeEditPart().getGate(ctor));

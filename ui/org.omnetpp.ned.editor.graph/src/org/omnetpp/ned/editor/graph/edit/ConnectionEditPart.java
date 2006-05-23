@@ -1,32 +1,35 @@
 package org.omnetpp.ned.editor.graph.edit;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.ManhattanConnectionRouter;
 import org.eclipse.draw2d.RelativeBendpoint;
 import org.eclipse.draw2d.RoutingAnimator;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.ned.editor.graph.edit.policies.ConnectionBendpointEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.ConnectionEditPolicy;
 import org.omnetpp.ned.editor.graph.edit.policies.ConnectionEndpointEditPolicy;
 import org.omnetpp.ned.editor.graph.figures.ConnectionFigure;
+import org.omnetpp.ned2.model.ConnectionDisplayString;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
+import org.omnetpp.ned2.model.DisplayString;
+import org.omnetpp.ned2.model.IDisplayStringChangeListener;
 import org.omnetpp.ned2.model.INEDChangeListener;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.NEDElementUtil;
+import org.omnetpp.ned2.model.SubmoduleDisplayString;
 import org.omnetpp.ned2.model.WireBendpointModel;
+import org.omnetpp.ned2.model.DisplayString.Prop;
 
 /**
  * Implements a Connection Editpart to represnt a Wire like connection.
  * 
  */
-public class ConnectionEditPart extends AbstractConnectionEditPart implements PropertyChangeListener, INEDChangeListener {
+public class ConnectionEditPart extends AbstractConnectionEditPart implements INEDChangeListener, IDisplayStringChangeListener {
 
     @Override
     public void activate() {
@@ -34,6 +37,8 @@ public class ConnectionEditPart extends AbstractConnectionEditPart implements Pr
         super.activate();
         // register as listener of the model object
         getConnectionModel().addListener(this);
+        // register to the given node's display string as a listener
+        getConnectionModel().getDisplayString().setChangeListener(this);
     }
 
     @Override
@@ -41,6 +46,8 @@ public class ConnectionEditPart extends AbstractConnectionEditPart implements Pr
         if (!isActive()) return;
         // deregister as listener of the model object
         getConnectionModel().removeListener(this);
+        // unregister from the model's display string
+        getConnectionModel().getDisplayString().setChangeListener(null);
         super.deactivate();
     }
 
@@ -51,12 +58,12 @@ public class ConnectionEditPart extends AbstractConnectionEditPart implements Pr
          * Once the figure has been added to the ConnectionLayer, start
          * listening for its router to change.
          */
-        getFigure().addPropertyChangeListener(Connection.PROPERTY_CONNECTION_ROUTER, this);
+        // getFigure().addPropertyChangeListener(Connection.PROPERTY_CONNECTION_ROUTER, this);
     }
 
     @Override
     public void deactivateFigure() {
-        getFigure().removePropertyChangeListener(Connection.PROPERTY_CONNECTION_ROUTER, this);
+        // getFigure().removePropertyChangeListener(Connection.PROPERTY_CONNECTION_ROUTER, this);
         super.deactivateFigure();
     }
 
@@ -96,21 +103,6 @@ public class ConnectionEditPart extends AbstractConnectionEditPart implements Pr
 
 
     /**
-     * Listens to changes in properties of the Wire (like the contents being
-     * carried), and reflects is in the visuals.
-     * 
-     * @param event
-     *            Event notifying the change.
-     */
-    public void propertyChange(PropertyChangeEvent event) {
-        String property = event.getPropertyName();
-        if (Connection.PROPERTY_CONNECTION_ROUTER.equals(property)) {
-            refreshBendpoints();
-            refreshBendpointEditPolicy();
-        }
-    }
-
-    /**
      * Updates the bendpoints, based on the model.
      */
     protected void refreshBendpoints() {
@@ -141,26 +133,38 @@ public class ConnectionEditPart extends AbstractConnectionEditPart implements Pr
      */
     @Override
     protected void refreshVisuals() {
-        refreshBendpoints();
+        ConnectionDisplayString dps = (ConnectionDisplayString)getConnectionModel().getDisplayString();
+
+    	refreshBendpoints();
         // XXX do we need this here?
         // refreshBendpointEditPolicy();
-        // TODO implement display property support for connections here
-        // draw an arrow at the destModule side if it's not a bidirectional connection
-        ConnectionFigure conn = (ConnectionFigure)getFigure();  
+        ConnectionFigure cfig = (ConnectionFigure)getFigure();  
         
-        conn.setArrowEnabled(getConnectionModel().getArrowDirection() != NEDElementUtil.NED_ARROWDIR_BIDIR);
-
+        cfig.setStyle(ColorFactory.asColor(dps.getAsStringDef(DisplayString.Prop.CONNECTION_COL)), 
+        				dps.getAsIntDef(DisplayString.Prop.CONNECTION_WIDTH, 1), 
+        				dps.getAsStringDef(DisplayString.Prop.CONNECTION_STYLE), 
+        				dps.getAsStringDef(DisplayString.Prop.CONNECTION_SEGMENTS));
+        
+        cfig.setArrowEnabled(getConnectionModel().getArrowDirection() != NEDElementUtil.NED_ARROWDIR_BIDIR);
     }
 
 	public void attributeChanged(NEDElement node, String attr) {
-        refreshVisuals();
+		if (node == getModel()) 
+			refreshVisuals();
 	}
 
 	public void childInserted(NEDElement node, NEDElement where, NEDElement child) {
-        refreshVisuals();
+		// DO nothing. we don't care about child addition removal in a connection subtree 
 	}
 
 	public void childRemoved(NEDElement node, NEDElement child) {
-        refreshVisuals();
+		// DO nothing. we don't care about child addition removal in a connection subtree 
+	}
+
+	public void propertyChanged(Prop changedProp) {
+		// connection router changed
+		refreshVisuals();
+        refreshBendpoints();
+        refreshBendpointEditPolicy();
 	}
 }

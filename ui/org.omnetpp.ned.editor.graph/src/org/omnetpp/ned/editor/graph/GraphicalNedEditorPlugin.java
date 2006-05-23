@@ -23,6 +23,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.graph.properties.NedPropertySourceAdapterFactory;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
+import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
 
@@ -95,7 +96,7 @@ public class GraphicalNedEditorPlugin extends AbstractUIPlugin {
         tool = new ConnectionCreationToolEntry(
                 "Connection",
                 "The connection tool can be used to connect various modules and submodules",
-                null, 
+                new SimpleFactory(ConnectionNodeEx.class), 
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_CONNECTION),
                 ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_CONNECTION,"l", null, 24)//$NON-NLS-1$
         );

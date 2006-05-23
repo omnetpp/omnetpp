@@ -236,6 +236,8 @@ public class NedTreeEditPart extends org.eclipse.gef.editparts.AbstractTreeEditP
     	TreeItem item = (TreeItem)getWidget();
     	if (image != null)
     		image.setBackground(item.getParent().getBackground());
+    	// for debugging display the model id parameter
+    	// label += " ["+model+"]";
     	setWidgetImage(image);
     	setWidgetText(label);
     }
