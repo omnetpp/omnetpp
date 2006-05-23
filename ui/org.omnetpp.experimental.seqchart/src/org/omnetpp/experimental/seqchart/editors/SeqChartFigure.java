@@ -8,13 +8,11 @@ import java.util.HashMap;
 
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.Layer;
 import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
 import org.eclipse.draw2d.MouseMotionListener;
 import org.eclipse.draw2d.ScrollPane;
-import org.eclipse.draw2d.StackLayout;
-import org.eclipse.draw2d.XYLayout;
+import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -31,13 +29,11 @@ import org.omnetpp.scave.engine.MessageEntry;
  *
  * @author andras
  */
-//TODO implement "hand" to grab and move the chart
 //TODO make events and message clickable (tooltip, go there in the log, etc)
 //TODO limit pixelsPersec to a range that makes sense (for the current eventLog)
 //FIXME scrollbar breaks badly when char size exceeds ~4,000,000 pixels (this means only ~0.1s resolution ticks on an 1000s trace!!! not enough!)
 //FIXME msg arrows that intersect the chart area but don't start or end there are not displayed (BUG!)
-//FIXME cache lines for the drawing (we need this to make the chart clickable as well)
-//FIXME redraw chart with antialias while user is idle?
+//FIXME redraw chart with antialias while user is idle? (new SafeRunnable()?)
 public class SeqChartFigure extends Figure {
 
 	private final Color EVENT_FG_COLOR = new Color(null,255,0,0);
@@ -402,7 +398,14 @@ public class SeqChartFigure extends Figure {
 		return res.equals("") ? null : res;
 	}
 
-	private void collectStuffUnderMouse(int mouseX, int mouseY, ArrayList<EventEntry> events, ArrayList<MessageEntry> msgs) {
+	/**
+	 * Determines if there are any events (EventEntry) or messages (MessageEntry)
+	 * at the given mouse coordinates, and returns them in the ArrayLists passed. 
+	 * Coordinates are canvas coordinates (more precisely, viewport coordinates).
+	 * You can call this method from mouse click, double-click or hover event 
+	 * handlers.
+	 */
+	public void collectStuffUnderMouse(int mouseX, int mouseY, ArrayList<EventEntry> events, ArrayList<MessageEntry> msgs) {
 		if (eventLog!=null) {
 			long startMillis = System.currentTimeMillis();
 		
@@ -469,6 +472,9 @@ public class SeqChartFigure extends Figure {
 		}
 	}
 
+	/**
+	 * Utility function, to detect whether use clicked (hovered) an event in the the chart
+	 */
 	private boolean arePointsClose(int x1, int y1, int x2, int y2, int range) {
 		return Math.abs(x2-x1) < range && Math.abs(y2-y1) < range;
 	}
