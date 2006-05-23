@@ -5,14 +5,16 @@ import java.util.List;
 
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
-import org.omnetpp.ned2.model.ISubmoduleContainer;
+import org.omnetpp.ned2.model.INamed;
 import org.omnetpp.ned2.model.INamedGraphNode;
+import org.omnetpp.ned2.model.NEDElement;
+import org.omnetpp.ned2.model.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.pojo.ConnectionsNode;
 
 /**
- * Deletes an object from the model and also removes all associated connections
+ * Deletes an object from the model and as a sepcial case also removes all 
+ * associated connections if the object was a SubmoduleNode 
  * @author rhornig
- *
  */
 public class DeleteCommand extends Command {
 
@@ -25,17 +27,45 @@ public class DeleteCommand extends Command {
         public INamedGraphNode destModule;            // the dest module the connection was originally attached to
     }
     
-    private static class ModuleUndoItem {
-        public INamedGraphNode node;
-        public ISubmoduleContainer parent;
-        public INamedGraphNode nextSibling;
+    private static class ElementUndoItem {
+        public NEDElement node;
+        public NEDElement parent;
+        public NEDElement nextSibling;
     }
 
-    private int index = -1;
-    private ModuleUndoItem moduleUndoItem = new ModuleUndoItem(); 
+    private ElementUndoItem elementUndoItem = new ElementUndoItem(); 
     private List<ConnectionUndoItem> connectionUndoItems = new ArrayList<ConnectionUndoItem>();
 
-    private void deleteConnections(INamedGraphNode module) {
+    public DeleteCommand(NEDElement toBeDeleted) {
+    	super();
+    	elementUndoItem.node = toBeDeleted;
+    	elementUndoItem.parent = toBeDeleted.getParent();
+    	elementUndoItem.nextSibling = toBeDeleted.getNextSibling();
+    }
+    
+    @Override
+    public void execute() {
+        // FIXME label is not used by this comand. Maybe a BUG???
+    	String label = "Delete";
+    	if (elementUndoItem.node instanceof INamed)
+    		label += " "+((INamed)elementUndoItem.node).getName();
+        setLabel(label);
+     
+        primExecute();
+    }
+
+    @Override
+    public void redo() {
+        primExecute();
+    }
+
+    @Override
+    public void undo() {
+        elementUndoItem.parent.insertChildBefore(elementUndoItem.nextSibling, elementUndoItem.node);
+        restoreConnections();
+    }
+
+    private void deleteConnections(SubmoduleNodeEx module) {
         // TODO maybe it would be enough to iterate through ALL connections one time
         // no need to separate src and dest connections
         for (ConnectionNodeEx wire : module.getSrcConnections()) {
@@ -49,9 +79,7 @@ public class DeleteCommand extends Command {
             connectionUndoItems.add(uitem);
             // now detach the connection from the other module on the destination side
             wire.setDestModuleRef(null);    // detach the destination end of the connections
-            // remove it from the model too
-            if (wire.getParent() != null)
-            	wire.removeFromParent();
+           	wire.removeFromParent();
         }
         
         for (ConnectionNodeEx wire : module.getDestConnections()) {
@@ -66,27 +94,16 @@ public class DeleteCommand extends Command {
             // now detach the connection from the other module on the destination side
             wire.setSrcModuleRef(null);    // detach the destination end of the connections
             // remove it from the model too
-            if (wire.getParent() != null)
-            	wire.removeFromParent();
+           	wire.removeFromParent();
         }
     }
 
-    @Override
-    public void execute() {
-        // FIXME label is not used by this comand. Maybe a BUG??? 
-        setLabel("Delete " + moduleUndoItem.node.getName());
-        primExecute();
-    }
-
     protected void primExecute() {
-        deleteConnections(moduleUndoItem.node);
-        index = moduleUndoItem.parent.getSubmodules().indexOf(moduleUndoItem.node);
-        moduleUndoItem.parent.removeSubmodule(moduleUndoItem.node);
-    }
-
-    @Override
-    public void redo() {
-        primExecute();
+    	// check if the element is a submodule, because its connections should be deleted too
+    	if (elementUndoItem.node instanceof SubmoduleNodeEx)
+    		deleteConnections((SubmoduleNodeEx)elementUndoItem.node);
+    	
+        elementUndoItem.node.removeFromParent();
     }
 
     private void restoreConnections() {
@@ -103,18 +120,11 @@ public class DeleteCommand extends Command {
         connectionUndoItems.clear();
     }
 
-    public void setChild(INamedGraphNode c) {
-        moduleUndoItem.node = c;
-    }
-
-    public void setParent(ISubmoduleContainer p) {
-        moduleUndoItem.parent = p;
-    }
-
-    @Override
-    public void undo() {
-        moduleUndoItem.parent.insertSubmodule(index, moduleUndoItem.node);
-        restoreConnections();
-    }
-
+//    public void setChild(INamedGraphNode c) {
+//        moduleUndoItem.node = c;
+//    }
+//
+//    public void setContainer(ISubmoduleContainer p) {
+//        moduleUndoItem.parent = p;
+//    }
 }

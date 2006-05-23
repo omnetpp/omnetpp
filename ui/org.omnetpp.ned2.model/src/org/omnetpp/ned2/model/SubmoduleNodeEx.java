@@ -41,7 +41,7 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INamedGraphNode {
 		NedElementExUtil.setDisplayString(this, displayString.toString());
 	}
 
-	protected CompoundModuleNodeEx getCompoundModule() {
+	public CompoundModuleNodeEx getCompoundModule() {
 		if (getParent() == null) return null;
 		return (CompoundModuleNodeEx)(getParent().getParent());
 	}
