@@ -9,17 +9,17 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
-import org.omnetpp.ned2.model.ISubmoduleContainer;
+import org.omnetpp.ned2.model.IConnectable;
 import org.omnetpp.ned2.model.INamedGraphNode;
+import org.omnetpp.ned2.model.ISubmoduleContainer;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.pojo.ConnectionsNode;
 
 /**
- * Clones a set of modules (copy operation)
+ * Clones a set of submodules (copy operation)
  * @author rhornig
- *
  */
-public class CloneCommand extends Command {
+public class CloneSubmoduleCommand extends Command {
 
     private List<INamedGraphNode> modules, newModules;
     private List<ConnectionNodeEx> newConnections;
@@ -28,8 +28,9 @@ public class CloneCommand extends Command {
     private Map<INamedGraphNode, Integer> indices;
     private Map<INamedGraphNode, INamedGraphNode> old2newMapping;
 
-    public CloneCommand() {
+    public CloneSubmoduleCommand(ISubmoduleContainer parent) {
         super("Clone");
+        this.parent = parent;
         modules = new LinkedList<INamedGraphNode> ();
     }
 
@@ -99,10 +100,6 @@ public class CloneCommand extends Command {
         redo();
     }
 
-    public void setParent(ISubmoduleContainer parent) {
-        this.parent = parent;
-    }
-
     @Override
     public void redo() {
         old2newMapping = new HashMap<INamedGraphNode, INamedGraphNode>();
@@ -122,7 +119,7 @@ public class CloneCommand extends Command {
         // go through all modules that were previously cloned and check all the source connections
         for (INamedGraphNode oldSrcMod : modules)
             for (ConnectionNodeEx oldConn : oldSrcMod.getSrcConnections()) {
-                INamedGraphNode oldDestMod = oldConn.getDestModuleRef();
+            	IConnectable oldDestMod = oldConn.getDestModuleRef();
                 // if the destination side was also selected clone this connection connection too 
                 // TODO future: clone the connections ONLY if they are selected too
                 if (old2newMapping.containsKey(oldDestMod)) {
@@ -140,7 +137,6 @@ public class CloneCommand extends Command {
         
         for (ConnectionNodeEx conn : newConnections)
             conn.removeFromParent();
-        
     }
 
 }

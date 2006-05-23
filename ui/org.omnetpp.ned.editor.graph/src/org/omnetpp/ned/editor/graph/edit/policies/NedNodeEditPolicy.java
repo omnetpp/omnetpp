@@ -32,10 +32,9 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
 
     @Override
     protected Command getConnectionCreateCommand(CreateConnectionRequest request) {
-        ConnectionCommand command = new ConnectionCommand();
         ConnectionNodeEx conn = (ConnectionNodeEx)request.getNewObject();
-        conn.setArrowDirection(ConnectionNodeEx.NED_ARROWDIR_L2R);
-        command.setConnectionNode(conn);
+//        conn.setArrowDirection(ConnectionNodeEx.NED_ARROWDIR_L2R);
+        ConnectionCommand command = new ConnectionCommand(conn);
         command.setSrcModule(getNedNodeModel());
         ConnectionAnchor ctor = getNedNodeEditPart().getSourceConnectionAnchor(request);
         command.setSrcGate(getNedNodeEditPart().getGate(ctor));
@@ -68,8 +67,7 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
     @Override
     protected Command getReconnectTargetCommand(ReconnectRequest request) {
 
-        ConnectionCommand cmd = new ConnectionCommand();
-        cmd.setConnectionNode((ConnectionNodeEx) request.getConnectionEditPart().getModel());
+        ConnectionCommand cmd = new ConnectionCommand((ConnectionNodeEx) request.getConnectionEditPart().getModel());
 
         ConnectionAnchor ctor = getNedNodeEditPart().getTargetConnectionAnchor(request);
         cmd.setDestModule(getNedNodeModel());
@@ -79,8 +77,7 @@ public class NedNodeEditPolicy extends GraphicalNodeEditPolicy {
 
     @Override
     protected Command getReconnectSourceCommand(ReconnectRequest request) {
-        ConnectionCommand cmd = new ConnectionCommand();
-        cmd.setConnectionNode((ConnectionNodeEx) request.getConnectionEditPart().getModel());
+        ConnectionCommand cmd = new ConnectionCommand((ConnectionNodeEx) request.getConnectionEditPart().getModel());
 
         ConnectionAnchor ctor = getNedNodeEditPart().getSourceConnectionAnchor(request);
         cmd.setSrcModule(getNedNodeModel());

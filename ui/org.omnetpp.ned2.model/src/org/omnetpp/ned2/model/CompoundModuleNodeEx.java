@@ -10,7 +10,8 @@ import org.omnetpp.ned2.model.pojo.SubmoduleNode;
 import org.omnetpp.ned2.model.pojo.SubmodulesNode;
 
 public class CompoundModuleNodeEx extends CompoundModuleNode 
-								  implements ISubmoduleContainer, INamedGraphNode {
+								  implements ISubmoduleContainer, IConnectionContainer,
+								  			 INamedGraphNode {
     
 	// srcConns contains all connections where the sourcemodule is this module
 	protected List<ConnectionNodeEx> srcConns = new ArrayList<ConnectionNodeEx>();
@@ -39,7 +40,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 		NedElementExUtil.setDisplayString(this, displayString.toString());
 	}
 
-	public List<SubmoduleNodeEx> getSubmodulesEx() {
+	public List<SubmoduleNodeEx> getSubmodules() {
 		List<SubmoduleNodeEx> result = new ArrayList<SubmoduleNodeEx>();
 		SubmodulesNode submodulesNode = getFirstSubmodulesChild();
 		if (submodulesNode == null)
@@ -58,10 +59,6 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 		return (SubmoduleNodeEx)submodulesNode
 					.getFirstChildWithAttribute(NED_SUBMODULE, SubmoduleNode.ATT_NAME, submoduleName);
 	}
-
-    public List<? extends INamedGraphNode> getSubmodules() {
-        return getSubmodulesEx();
-    }
 
 	public List<ConnectionNodeEx> getSrcConnections() {
 		return srcConns;
@@ -137,7 +134,11 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 	}
 
 	public void addConnection(ConnectionNodeEx conn) {
-		// do nothing if it's already in the modell
+		insertConnection(null, conn);
+	}
+
+	public void insertConnection(ConnectionNodeEx insertBefore, ConnectionNodeEx conn) {
+		// do nothing if it's already in the model
 		if (conn.getParent() != null)
 			return;
 		// check wheter Submodules node exists and create one if doesn't
@@ -146,7 +147,7 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 			snode = (ConnectionsNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementFactoryEx.NED_CONNECTIONS, this);
 		
 		// add it to the connections subnode
-		snode.insertChildBefore(null, (NEDElement)conn);
+		snode.insertChildBefore(insertBefore, (NEDElement)conn);
 	}
 
 	public void removeConnection(ConnectionNodeEx conn) {
@@ -168,5 +169,4 @@ public class CompoundModuleNodeEx extends CompoundModuleNode
 				
 		return result;
 	}
-
 }

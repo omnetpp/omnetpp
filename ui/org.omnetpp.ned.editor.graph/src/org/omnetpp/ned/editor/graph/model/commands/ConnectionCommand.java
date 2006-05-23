@@ -2,28 +2,30 @@ package org.omnetpp.ned.editor.graph.model.commands;
 
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
+import org.omnetpp.ned2.model.IConnectable;
+import org.omnetpp.ned2.model.IConnectionContainer;
 import org.omnetpp.ned2.model.INamedGraphNode;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
 
 /**
- * (Re)assigns a wire object to srcModule/destModule submodule gates
+ * (Re)assigns a Connection to srcModule/destModule sub/compound module gates and also adds it to the
+ * model (to the compound module's connectios section) (or removes it if the new source or destination is NULL)
  * @author rhornig
- *
  */
 public class ConnectionCommand extends Command {
 
-    protected INamedGraphNode oldSrcModule;
+    protected IConnectable oldSrcModule;
     protected String oldSrcGate;
-    protected INamedGraphNode oldDestModule;
+    protected IConnectable oldDestModule;
     protected String oldDestGate;
-    protected INamedGraphNode srcModule;
+    protected IConnectable srcModule;
     protected String srcGate;
-    protected INamedGraphNode destModule;
+    protected IConnectable destModule;
     protected String destGate;
     protected ConnectionNodeEx connNode;
-    protected NEDElement parent = null;
-    protected ConnectionNode connNodeNextSibling = null;
+    protected ConnectionNodeEx connNodeNextSibling = null;
+    protected IConnectionContainer parent = null;
 
     @Override
     public String getLabel() {
@@ -33,7 +35,13 @@ public class ConnectionCommand extends Command {
         return "Move connection";
     }
 
-    
+    public ConnectionCommand (ConnectionNodeEx conn) {
+        connNode = conn;
+        oldSrcModule = conn.getSrcModuleRef();
+        oldDestModule = conn.getDestModuleRef();
+        oldSrcGate = conn.getSrcGate();
+        oldDestGate = conn.getDestGate();
+    }
     /**
      * Input output gate config consistency can be checked here
      */
@@ -60,15 +68,14 @@ public class ConnectionCommand extends Command {
         // from the model totally (ie delete it)
         if (srcModule == null && destModule == null) {
             // just store the NEXT sibling so we can put it back during undo to the right place
-            connNodeNextSibling = connNode.getNextConnectionNodeSibling();
+            connNodeNextSibling = (ConnectionNodeEx)connNode.getNextConnectionNodeSibling();
             // store the parent too so we now where to put it back during undo
-            parent = connNode.getParent();
+            parent = (IConnectionContainer)connNode.getParent().getParent();
             // now detach from both src and dest modules
             connNode.setSrcModuleRef(null);
             connNode.setDestModuleRef(null);
             // and remove from the parent too
-            if(connNode.getParent() != null)
-            	connNode.removeFromParent();
+           	connNode.removeFromParent();
         }
     }
 
@@ -81,7 +88,7 @@ public class ConnectionCommand extends Command {
     public void undo() {
         // if it was removed from the model, put it back
         if (connNode.getParent() == null && parent != null)
-            parent.insertChildBefore(connNodeNextSibling, connNode);
+            parent.insertConnection(connNodeNextSibling, connNode);
         
         // attach to the original modules and gates
         connNode.setSrcModuleRef(oldSrcModule);
@@ -90,48 +97,19 @@ public class ConnectionCommand extends Command {
         connNode.setDestGate(oldDestGate);
     }
 
-    public INamedGraphNode getSrcModule() {
-        return srcModule;
-    }
-
     public void setSrcModule(INamedGraphNode newSrcModule) {
         srcModule = newSrcModule;
-    }
-
-    public String getSrcGate() {
-        return srcGate;
     }
 
     public void setSrcGate(String newSrcGate) {
         srcGate = newSrcGate;
     }
 
-    public INamedGraphNode getDestModule() {
-        return destModule;
-    }
-
     public void setDestModule(INamedGraphNode newDestModule) {
         destModule = newDestModule;
-    }
-
-    public String getDestGate() {
-        return destGate;
     }
 
     public void setDestGate(String newDestGate) {
         destGate = newDestGate;
     }
-
-    public ConnectionNodeEx getConnectionNode() {
-        return connNode;
-    }
-
-    public void setConnectionNode(ConnectionNodeEx conn) {
-        connNode = conn;
-        oldSrcModule = conn.getSrcModuleRef();
-        oldDestModule = conn.getDestModuleRef();
-        oldSrcGate = conn.getSrcGate();
-        oldDestGate = conn.getDestGate();
-    }
-
 }

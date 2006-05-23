@@ -11,6 +11,13 @@ public interface IConnectionContainer {
 	void addConnection(ConnectionNodeEx conn);
 
 	/**
+	 * Add this connection to the model (connections section)
+	 * @param insertBefore The sibling connection before we want to insert our conn 
+	 * @param conn
+	 */
+	void insertConnection(ConnectionNodeEx insertBefore, ConnectionNodeEx conn);
+	
+	/**
 	 * Removes the connecion from the model
 	 * @param conn
 	 */

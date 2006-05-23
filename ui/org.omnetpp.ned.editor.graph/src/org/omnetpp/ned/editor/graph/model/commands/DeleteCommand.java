@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned2.model.ConnectionNodeEx;
+import org.omnetpp.ned2.model.IConnectable;
 import org.omnetpp.ned2.model.INamed;
-import org.omnetpp.ned2.model.INamedGraphNode;
 import org.omnetpp.ned2.model.NEDElement;
 import org.omnetpp.ned2.model.SubmoduleNodeEx;
 import org.omnetpp.ned2.model.pojo.ConnectionsNode;
@@ -23,8 +23,8 @@ public class DeleteCommand extends Command {
         public ConnectionNodeEx node;            // the NODE that was deleted
         public ConnectionsNode parent;           // the parent of the deletednode
         public ConnectionNodeEx nextSibling;     // the next sibling to be able to insert it back into the correct position
-        public INamedGraphNode srcModule;             // the src module the connection was originally attached to
-        public INamedGraphNode destModule;            // the dest module the connection was originally attached to
+        public IConnectable srcModule;             // the src module the connection was originally attached to
+        public IConnectable destModule;            // the dest module the connection was originally attached to
     }
     
     private static class ElementUndoItem {
@@ -119,12 +119,4 @@ public class DeleteCommand extends Command {
         }
         connectionUndoItems.clear();
     }
-
-//    public void setChild(INamedGraphNode c) {
-//        moduleUndoItem.node = c;
-//    }
-//
-//    public void setContainer(ISubmoduleContainer p) {
-//        moduleUndoItem.parent = p;
-//    }
 }

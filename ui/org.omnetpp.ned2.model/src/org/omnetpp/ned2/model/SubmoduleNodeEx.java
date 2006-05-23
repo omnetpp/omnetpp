@@ -82,29 +82,6 @@ public class SubmoduleNodeEx extends SubmoduleNode implements INamedGraphNode {
         fireAttributeChangedToAncestors(ATT_DEST_CONNECTION);
     }
 
-//	public void addConnection(ConnectionNodeEx conn) {
-//		// do nothing if it's already in the modell
-//		if (conn.getParent() != null)
-//			return;
-//		// get the submodule's container
-//		CompoundModuleNodeEx parentModule = getCompoundModule();
-//		// check wheter Submodules node exists and create one if doesn't
-//		ConnectionsNode snode = parentModule.getFirstConnectionsChild();
-//		if (snode == null) 
-//			snode = (ConnectionsNode)NEDElementFactoryEx.getInstance().createNodeWithTag(NEDElementFactoryEx.NED_CONNECTIONS, parentModule);
-//		
-//		// add it to the connections subnode
-//		snode.insertChildBefore(null, (NEDElement)conn);
-//	}
-//
-//	public void removeConnection(ConnectionNodeEx conn) {
-//		// do nothing if the connectin is not in the modell
-//		if(conn.getParent() == null)
-//			return;
-//
-//		conn.removeFromParent();
-//	}
-
 	@Override
     public String debugString() {
         return "srcConnSize="+srcConns.size()+" destConnSize="+destConns.size();

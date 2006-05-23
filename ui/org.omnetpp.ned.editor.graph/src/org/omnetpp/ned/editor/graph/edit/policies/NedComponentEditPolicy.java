@@ -11,9 +11,6 @@ public class NedComponentEditPolicy extends org.eclipse.gef.editpolicies.Compone
 
     @Override
     protected Command createDeleteCommand(GroupRequest request) {
-        DeleteCommand deleteCmd = new DeleteCommand((NEDElement)getHost().getModel());
-//        deleteCmd.setContainer((ISubmoduleContainer)getHost().getParent().getModel());
-//        deleteCmd.setChild((INamedGraphNode) getHost().getModel());
-        return deleteCmd;
+        return new DeleteCommand((NEDElement)getHost().getModel());
     }
 }

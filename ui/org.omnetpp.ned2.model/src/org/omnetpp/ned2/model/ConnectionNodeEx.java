@@ -9,15 +9,17 @@ import org.omnetpp.ned2.model.pojo.ChannelSpecNode;
 import org.omnetpp.ned2.model.pojo.ConnectionNode;
 
 public class ConnectionNodeEx extends ConnectionNode implements IDisplayStringProvider {
-	private INamedGraphNode srcModuleRef;
-	private INamedGraphNode destModuleRef;
+	private IConnectable srcModuleRef;
+	private IConnectable destModuleRef;
 	private ConnectionDisplayString displayString = null;
 
 	public ConnectionNodeEx() {
+		setArrowDirection(ConnectionNodeEx.NED_ARROWDIR_L2R);
 	}
 
 	public ConnectionNodeEx(NEDElement parent) {
 		super(parent);
+		setArrowDirection(ConnectionNodeEx.NED_ARROWDIR_L2R);
 	}
 
     public String getAttributeDefault(int k) {
@@ -34,11 +36,11 @@ public class ConnectionNodeEx extends ConnectionNode implements IDisplayStringPr
         }
     }
 	
-	public INamedGraphNode getSrcModuleRef() {
+	public IConnectable getSrcModuleRef() {
 		return srcModuleRef;
 	}
 	
-	public void setSrcModuleRef(INamedGraphNode srcModule) {
+	public void setSrcModuleRef(IConnectable srcModule) {
 		if(srcModuleRef == srcModule) 
 			return;
 		
@@ -51,11 +53,11 @@ public class ConnectionNodeEx extends ConnectionNode implements IDisplayStringPr
         fireAttributeChangedToAncestors(ATT_SRC_MODULE);
 	}
 
-	public INamedGraphNode getDestModuleRef() {
+	public IConnectable getDestModuleRef() {
 		return destModuleRef;
 	}
 
-	public void setDestModuleRef(INamedGraphNode destModule) {
+	public void setDestModuleRef(IConnectable destModule) {
 		if (destModuleRef == destModule)
 			return;
 		
@@ -70,18 +72,20 @@ public class ConnectionNodeEx extends ConnectionNode implements IDisplayStringPr
 
 	@Override
 	public String getDestModule() {
-		// if the destination is the compound module, do not return its name  
-		if(destModuleRef == null || destModuleRef instanceof CompoundModuleNodeEx)
-			return "";
-		return getDestModuleRef().getName();
+		// if the destination is a submodule module return its name  
+		if(destModuleRef instanceof SubmoduleNodeEx) 
+			return ((INamed)destModuleRef).getName();
+		// else (if the destination is a compound module) return empty as a name
+		return "";
 	}
 
 	@Override
 	public String getSrcModule() {
-		// if the destination is the compound module, do not return its name  
-		if(srcModuleRef == null || srcModuleRef instanceof CompoundModuleNodeEx)
-			return "";
-		return getSrcModuleRef().getName();
+		// if the source is a submodule module return its name  
+		if(srcModuleRef instanceof SubmoduleNodeEx) 
+			return ((INamed)srcModuleRef).getName();
+		// else (if the source is a compound module) return empty as a name
+		return "";
 	}
 
 	@Override
