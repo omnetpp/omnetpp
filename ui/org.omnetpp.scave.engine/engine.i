@@ -96,6 +96,10 @@ namespace std {
    specialize_std_vector(MessageEntry*);
 
    %template(MessageEntries) vector<MessageEntry*>;
+
+   specialize_std_vector(const char *);
+
+   %template(PStringVector) vector<const char *>;
 };
 
 %typemap(javacode) IDList %{

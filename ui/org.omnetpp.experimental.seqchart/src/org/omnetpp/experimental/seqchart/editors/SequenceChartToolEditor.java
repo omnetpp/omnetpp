@@ -101,7 +101,7 @@ public class SequenceChartToolEditor extends EditorPart {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				// double-click or enter: filter for the current event
 				int sel = eventLogTable.getTable().getSelectionIndex();
-				EventEntry event = filteredEventLog.getEvent(sel); //XXX
+				EventEntry event = eventLogTable.eventForTableIndex(sel);
 				showSequenceChartForEvent(event.getEventNumber());
 			}
 			public void widgetSelected(SelectionEvent e) {
@@ -109,12 +109,12 @@ public class SequenceChartToolEditor extends EditorPart {
 				int[] sel = eventLogTable.getTable().getSelectionIndices();
 				filteredEventLog.deselectAllEvents();
 				for (int i=0; i<sel.length; i++) {
-					EventEntry event = filteredEventLog.getEvent(sel[i]); //XXX
+					EventEntry event = eventLogTable.eventForTableIndex(sel[i]);
 					event.setIsSelected(true);
 				}
 				// show (scroll to) currently selected event
 				int cur = eventLogTable.getTable().getSelectionIndex();
-				EventEntry curEvent = filteredEventLog.getEvent(cur); //XXX
+				EventEntry curEvent = eventLogTable.eventForTableIndex(cur);
 				seqChartFigure.gotoTime(curEvent.getSimulationTime()); 
 				seqChartFigure.repaint(); //XXX or just invalidate?
 			}
@@ -249,9 +249,7 @@ public class SequenceChartToolEditor extends EditorPart {
 				if (events.size()>=1) { 
 					EventEntry event = events.get(0);
 					event.setIsSelected(true);
-					int tableIndex = filteredEventLog.findEvent(event); //XXX
-					eventLogTable.getTable().setSelection(tableIndex);
-					eventLogTable.getTable().setTopIndex(tableIndex);
+					eventLogTable.gotoEvent(event);
 				}
 				seqChartFigure.repaint(); // as selection has changed
 			}
@@ -286,12 +284,9 @@ public class SequenceChartToolEditor extends EditorPart {
 	}
 
 	private void filteredEventLogChanged() {
-		filteredEventLog.deselectAllEvents();
-		filteredEventLog.collapseAllEvents();
 		seqChartFigure.setEventLog(filteredEventLog);
 		eventLogTable.setInput(filteredEventLog);
 	}
-
 
 	private int messageBox(int style, String title, String message) {
 		MessageBox m = new MessageBox(getEditorSite().getShell(), style);

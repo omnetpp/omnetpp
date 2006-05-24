@@ -30,6 +30,8 @@ import org.omnetpp.scave.engine.MessageEntry;
  * @author andras
  */
 //TODO limit pixelsPersec to a range that makes sense (for the current eventLog)
+//TODO draw arrowheads
+//TODO merge/hide axes
 //FIXME scrollbar breaks badly when char size exceeds ~4,000,000 pixels (this means only ~0.1s resolution ticks on an 1000s trace!!! not enough!)
 //FIXME msg arrows that intersect the chart area but don't start or end there are not displayed (BUG!)
 //FIXME redraw chart with antialias while user is idle? hints: new SafeRunnable(); or:
@@ -86,6 +88,9 @@ public class SeqChartFigure extends Figure {
 	 * and adjusts the density of ticks.
 	 */
 	public void setPixelsPerSec(double pps) {
+		if (pixelsPerSec == pps)
+			 return; // nothing to do
+		
 		// we want to center around the time currently displayed
 		int middleX = scrollPane.getViewport().getBounds().width/2;
 		double currentTime = pixelToTime(middleX);
@@ -143,6 +148,21 @@ public class SeqChartFigure extends Figure {
 	public void setEventLog(EventLog eventLog) {
 		this.eventLog = eventLog;
 
+		// adapt our zoom level to the current eventLog
+		setPixelsPerSec(suggestPixelsPerSec());
+
+		// refresh chart. We may end up doing this twice, since it's also called from 
+		// setPixelsPerSec(), but it does no harm
+		recalculatePreferredSize(); 
+		repaint();
+	}
+
+	/**
+	 * If the current pixels/sec setting doesn't look useful for the current event log,
+	 * suggest a better one. Otherwise just returns the old value. The current settings
+	 * are not changed.
+	 */
+	public double suggestPixelsPerSec() {
 		// adjust pixelsPerSec if it's way out of the range that makes sense
 		int numEvents = eventLog.getNumEvents();
 		if (numEvents>=2) {
@@ -156,18 +176,12 @@ public class SeqChartFigure extends Figure {
 			double minPixelsPerSec = eventPerSec * 10;  // we want at least 10 pixel/event
 			double maxPixelsPerSec = eventPerSec * (chartWidthPixels/10);  // we want at least 10 events on the chart
 
-			System.out.println("ev/sec="+eventPerSec+", pixelPerSec: min="+minPixelsPerSec+",  max="+maxPixelsPerSec+",  cur="+pixelsPerSec);
-
 			if (pixelsPerSec < minPixelsPerSec)
-				setPixelsPerSec(minPixelsPerSec);
+				return minPixelsPerSec;
 			else if (pixelsPerSec > maxPixelsPerSec)
-				setPixelsPerSec(maxPixelsPerSec);
+				return maxPixelsPerSec;
 		}
-
-		// refresh chart. We may end up doing this twice, since it's also called from 
-		// setPixelsPerSec(), but it does no harm
-		recalculatePreferredSize(); 
-		repaint();
+		return pixelsPerSec; // the current setting is fine
 	}
 
 	private void recalculatePreferredSize() {
@@ -465,7 +479,7 @@ public class SeqChartFigure extends Figure {
             
             // check events
             for (int i=startEventIndex; i<endEventIndex; i++)
-   				if (arePointsClose(mouseX, mouseY, logFacade.getEvent_i_cachedX(i), logFacade.getEvent_i_cachedY(i), 3))
+   				if (eventSymbolContainsPoint(mouseX, mouseY, logFacade.getEvent_i_cachedX(i), logFacade.getEvent_i_cachedY(i), MOUSE_TOLERANCE))
    					events.add(eventLog.getEvent(i));
 
             // check message arrows
@@ -518,8 +532,8 @@ public class SeqChartFigure extends Figure {
 	/**
 	 * Utility function, to detect whether use clicked (hovered) an event in the the chart
 	 */
-	private boolean arePointsClose(int x1, int y1, int x2, int y2, int range) {
-		return Math.abs(x2-x1) < range && Math.abs(y2-y1) < range;
+	private boolean eventSymbolContainsPoint(int x, int y, int px, int py, int tolerance) {
+		return Math.abs(x-px) <= 2+tolerance && Math.abs(y-py) <= 3+tolerance;
 	}
 
 	private boolean messageArrowContainsPoint(int x1, int y1, int x2, int y2, int px, int py, int tolerance) {

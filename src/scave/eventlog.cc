@@ -210,6 +210,11 @@ EventEntry *EventLog::getEvent(int pos)
     return eventList[pos];
 }
 
+EventEntry *EventLog::getLastEvent()
+{
+    return eventList.empty() ? NULL : eventList.back();
+}
+
 int EventLog::getNumModules()
 {
     return moduleList.size();
@@ -283,6 +288,22 @@ EventEntry *EventLog::getLastEventBefore(double t)
     return it==eventList.begin() ? NULL : it==eventList.end() ? eventList.back() : *(it-1);
 }
 
+inline bool less_EventEntry_tableRowIndex(int index, EventEntry *e) {return index < e->tableRowIndex;}
+
+EventEntry *EventLog::getEventByTableRowIndex(int tableRowIndex)
+{
+    //EventEntryList::iterator it = std::upper_bound(eventList.begin(), eventList.end(), tableRowIndex, less_EventEntry_tableRowIndex);
+    //return it==eventList.end() ? NULL : *it;
+
+    // FIXME replace this with some std::upper_bound() stuff like the one above (except that that one doesn't work)
+    if (eventList.empty())
+        return NULL;
+    for (int i=0; i<eventList.size(); i++)
+        if (eventList[i]->tableRowIndex > tableRowIndex)
+            return i==0 ? NULL : eventList[i-1];
+    return eventList.back();
+}
+
 void EventLog::deselectAllEvents()
 {
     int n = eventList.size();
@@ -298,7 +319,7 @@ void EventLog::expandAllEvents()
     {
          eventList[i]->isExpandedInTree = true;
          eventList[i]->tableRowIndex = currentRow;
-         currentRow += eventList[i]->numLogMessages;
+         currentRow += 1 + eventList[i]->numLogMessages;
     }
 }
 

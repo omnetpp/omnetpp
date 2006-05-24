@@ -148,11 +148,13 @@ class EventLog
          */
         int getNumEvents();
         EventEntry *getEvent(int pos);
+        EventEntry *getLastEvent(); // convenience method
         int findEvent(EventEntry *event); // returns pos, or -1 if not found
         bool containsEvent(EventEntry *event) {return findEvent(event)!=-1;}
         EventEntry *getEventByNumber(long eventNumber);
         EventEntry *getFirstEventAfter(double t);
         EventEntry *getLastEventBefore(double t);
+        EventEntry *getEventByTableRowIndex(int tableRowIndex);
 
         int getNumMessages();
         MessageEntry *getMessage(int pos);
