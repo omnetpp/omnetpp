@@ -198,7 +198,7 @@ public class SequenceChartToolEditor extends EditorPart {
 		String label = "#"+logFacade.getEvent_i_eventNumber(pos)
 			+" at t="+logFacade.getEvent_i_simulationTime(pos)
 			+", module ("+logFacade.getEvent_i_module_moduleClassName(pos)+")"
-			+logFacade.getEvent_i_module_moduleFullName(pos)
+			+logFacade.getEvent_i_module_moduleFullPath(pos)
 			+" (id="+logFacade.getEvent_i_module_moduleId(pos)+"),"
 			+" message ("+logFacade.getEvent_i_cause_messageClassName(pos)+")"
 			+logFacade.getEvent_i_cause_messageName(pos);

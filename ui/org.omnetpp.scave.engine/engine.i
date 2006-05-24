@@ -169,6 +169,13 @@ namespace std {
 }
 %enddef
 
+%define FIX_CHARPTR_MEMBER(STRUCT,MEMBER,CAPITALIZEDMEMBER)
+%ignore STRUCT::MEMBER;
+%extend STRUCT {
+   const char * get ## CAPITALIZEDMEMBER() {return self->MEMBER;}
+}
+%enddef
+
 FIX_STRING_MEMBER(File, filePath, FilePath);
 FIX_STRING_MEMBER(File, directory, Directory);
 FIX_STRING_MEMBER(File, fileName, FileName);
@@ -228,11 +235,10 @@ int strdictcmp(const char *s1, const char *s2);
 // wrap eventlog.h
 %ignore EventLog::writeTrace;
 
-FIX_STRING_MEMBER(MessageEntry, messageName, MessageName);
-FIX_STRING_MEMBER(MessageEntry, messageClassName, MessageClassName);
-
-FIX_STRING_MEMBER(ModuleEntry, moduleClassName, ModuleClassName);
-FIX_STRING_MEMBER(ModuleEntry, moduleFullName, ModuleFullName);
+FIX_CHARPTR_MEMBER(MessageEntry, messageName, MessageName);
+FIX_CHARPTR_MEMBER(MessageEntry, messageClassName, MessageClassName);
+FIX_CHARPTR_MEMBER(ModuleEntry, moduleClassName, ModuleClassName);
+FIX_STRING_MEMBER(ModuleEntry, moduleFullPath, ModuleFullPath);
 
 %include "eventlog.h"
 

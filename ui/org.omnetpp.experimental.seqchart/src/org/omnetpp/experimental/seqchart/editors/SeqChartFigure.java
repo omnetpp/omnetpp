@@ -170,7 +170,7 @@ public class SeqChartFigure extends Figure {
 			for (int i=0; i<eventLog.getNumModules(); i++) {
 				int y = bounds.y+30+i*50;
 				moduleIdToAxisYMap.put(eventLog.getModule(i).getModuleId(), y);
-				drawLinearAxis(graphics, y, eventLog.getModule(i).getModuleFullName());
+				drawLinearAxis(graphics, y, eventLog.getModule(i).getModuleFullPath());
 			}
 
 			graphics.setAntialias(antiAlias ? SWT.ON : SWT.OFF);
@@ -403,7 +403,7 @@ public class SeqChartFigure extends Figure {
 			res += "Event #"+event.getEventNumber()
 	    		+" at t="+event.getSimulationTime()
 	    		+", module ("+event.getModule().getModuleClassName()+")"
-	    		+event.getModule().getModuleFullName()
+	    		+event.getModule().getModuleFullPath()
 	    		+" (id="+event.getModule().getModuleId()+"),"
 	    		+" message ("+event.getCause().getMessageClassName()+")"
 	    		+event.getCause().getMessageName()+"\n";

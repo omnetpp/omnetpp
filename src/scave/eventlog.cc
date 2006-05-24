@@ -56,6 +56,35 @@ MessageEntry::~MessageEntry()
 }
 
 /*--------------------------------------------------------------*/
+StringPool::StringPool()
+{
+}
+
+StringPool::~StringPool()
+{
+    for (StringSet::iterator it = pool.begin(); it!=pool.end(); ++it)
+        delete [] *it;
+    //XXX test if this one is faster:
+    //while (pool.size()>0) {
+    //    delete [] *pool.begin();
+    //    pool.erase(pool.begin());
+    //}
+}
+
+const char *StringPool::get(const char *s)
+{
+    if (s==NULL)
+        return NULL;
+    StringSet::iterator it = pool.find(const_cast<char *>(s));
+    if (it!=pool.end())
+        return *it;
+    char *str = new char[strlen(s)+1];
+    strcpy(str,s);
+    pool.insert(str);
+    return str;
+}
+
+/*--------------------------------------------------------------*/
 EventLog::EventLog(const char *logFileName)
 {
     this->logFileName = logFileName;
@@ -134,10 +163,10 @@ void EventLog::parseLogFile()
                     messageEntry->target = getEvent(eventNumber);
                     // skip () characters
                     *(vec[7] + strlen(vec[7]) - 1) = '\0';
-                    messageEntry->messageClassName = vec[7] + 1;
+                    messageEntry->messageClassName = stringPool.get(vec[7] + 1);
 
                     if (numTokens == 9)
-                        messageEntry->messageName = vec[8];
+                        messageEntry->messageName = stringPool.get(vec[8]);
 
                     messageList.push_back(messageEntry);
                 }
@@ -147,7 +176,7 @@ void EventLog::parseLogFile()
                 if (messageEntry != NULL)
                 {
                     char *str = tokensToStr(numTokens - 1, vec + 1);
-                    messageEntry->logMessages.push_back(str);
+                    messageEntry->logMessages.push_back(stringPool.get(str));
                     delete [] str;
                 }
             }
@@ -191,7 +220,7 @@ ModuleEntry *EventLog::getModule(int pos)
     return moduleList[pos];
 }
 
-ModuleEntry *EventLog::getOrAddModule(int moduleId, char *moduleClassName, char *moduleFullName)
+ModuleEntry *EventLog::getOrAddModule(int moduleId, char *moduleClassName, char *moduleFullPath)
 {
     // if module with such ID already exists, return it
     for (ModuleEntryList::iterator it = moduleList.begin(); it != moduleList.end(); it++)
@@ -203,8 +232,8 @@ ModuleEntry *EventLog::getOrAddModule(int moduleId, char *moduleClassName, char 
     moduleEntry->moduleId = moduleId;
     // skip () characters
     *(moduleClassName + strlen(moduleClassName) - 1) = '\0';
-    moduleEntry->moduleClassName = moduleClassName + 1;
-    moduleEntry->moduleFullName = moduleFullName;
+    moduleEntry->moduleClassName = stringPool.get(moduleClassName + 1);
+    moduleEntry->moduleFullPath = moduleFullPath;
     moduleList.push_back(moduleEntry);
 
     return moduleEntry;
@@ -358,16 +387,13 @@ void EventLog::writeTrace(FILE *fout)
                 messageEntry->source->eventNumber,
                 12,
                 eventEntry->simulationTime,
-                eventEntry->module->moduleClassName.c_str(),
-                eventEntry->module->moduleFullName.c_str(),
+                eventEntry->module->moduleClassName,
+                eventEntry->module->moduleFullPath.c_str(),
                 eventEntry->module->moduleId,
-                messageEntry->messageClassName.c_str(),
-                messageEntry->messageName.c_str());
+                messageEntry->messageClassName,
+                messageEntry->messageName);
 
-        for (std::vector<std::string>::iterator at = messageEntry->logMessages.begin(); at != messageEntry->logMessages.end(); at++)
-        {
-            std::string logMessage = *at;
-            fprintf(fout, "  [%ld] %s\n", eventEntry->eventNumber, logMessage.c_str());
-        }
+        for (std::vector<const char *>::iterator at = messageEntry->logMessages.begin(); at != messageEntry->logMessages.end(); at++)
+            fprintf(fout, "  [%ld] %s\n", eventEntry->eventNumber, *at);
     }
 }

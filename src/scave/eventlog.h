@@ -27,8 +27,8 @@
 class ModuleEntry
 {
     public:
-        std::string moduleClassName;
-        std::string moduleFullName;
+        const char *moduleClassName; // stringpooled
+        std::string moduleFullPath;
         int moduleId;
 
     public:
@@ -49,11 +49,11 @@ class MessageEntry
         /** Tells if this entry represents a message delivery or a message send */
         bool isDelivery;
         long lineNumber;
-        std::string messageClassName;
-        std::string messageName;
+        const char *messageClassName; // stringpooled
+        const char *messageName;  // stringpooled
 
          /** These log messages actually belong to the target event, but this way we can preserve ordering of message entries within the event */
-         std::vector<std::string> logMessages;
+         std::vector<const char *> logMessages; // stringpooled
 
         EventEntry *source;
         EventEntry *target;
@@ -92,6 +92,29 @@ class EventEntry
 };
 
 /**
+ * For saving memory on the storage of (largely) constant strings that occur in
+ * many instances. (See Flyweight GoF pattern.)
+ */
+class StringPool
+{
+  protected:
+    struct strless {
+        bool operator()(const char *s1, const char *s2) const {
+            int d0 = *s1 - *s2;
+            if (d0<0) return true; else if (d0>0) return false;
+            return strcmp(s1+1,s2+1)<0;
+        }
+    };
+    typedef std::set<char *,strless> StringSet;
+    StringSet pool;
+
+  public:
+    StringPool();
+    ~StringPool();
+    const char *get(const char *s);
+};
+
+/**
  * A trace utility to trace the causes and consequences of a particular event back and forth in time.
  */
 class EventLog
@@ -111,6 +134,9 @@ class EventLog
         MessageEntryList messageList;
         /** Last traced event if any */
         EventEntry *tracedEvent;
+
+        /** String storage */
+        StringPool stringPool;
 
     public:
         EventLog(const char *logFileName);
@@ -136,7 +162,7 @@ class EventLog
     protected:
         EventLog(EventLog *parent);
         void parseLogFile();
-        ModuleEntry *getOrAddModule(int moduleId, char *moduleClassName, char *moduleFullName);
+        ModuleEntry *getOrAddModule(int moduleId, char *moduleClassName, char *moduleFullPath);
         char *tokensToStr(int numTokens, char **vec);
 };
 
@@ -181,7 +207,7 @@ class JavaFriendlyEventLogFacade
         void setEvent_i_isExpandedInTree(int pos, bool exp)  {getEvent(pos)->isExpandedInTree = exp;} //XXX modify tableRowIndex!!!
 
         std::string getEvent_i_module_moduleClassName(int pos) {return getEvent_module(pos)->moduleClassName;}
-        std::string getEvent_i_module_moduleFullName(int pos)  {return getEvent_module(pos)->moduleFullName;}
+        std::string getEvent_i_module_moduleFullPath(int pos)  {return getEvent_module(pos)->moduleFullPath;}
         int getEvent_i_module_moduleId(int pos) {return getEvent_module(pos)->moduleId;}
 
         bool getEvent_i_hasCause(int pos) {return getEvent_cause(pos)!=NULL;}

@@ -53,7 +53,7 @@ public class EventLogTable extends VirtualTableTreeBase {
 		item.setText(0, "#"+event.getEventNumber());
 		item.setText(1, ""+event.getSimulationTime()+"s");
 		item.setText(2, ""+event.getModule().getModuleClassName());
-		item.setText(3, ""+event.getModule().getModuleFullName());
+		item.setText(3, ""+event.getModule().getModuleFullPath());
 		item.setText(4, "handleMessage ("+event.getCause().getMessageClassName()+") "+event.getCause().getMessageName());
 	}
 }
