@@ -54,7 +54,7 @@ public class SequenceChartToolEditor extends EditorPart {
 	private EventLogTable eventLogTable;
 	
 	private EventLog eventLog;  // the log file loaded
-	private int currentEventNumber = 0;
+	private int currentEventNumber = -1;
 	private EventLog filteredEventLog; // eventLog filtered for currentEventNumber
 
 	private final Color CANVAS_BG_COLOR = ColorConstants.white;
@@ -108,8 +108,9 @@ public class SequenceChartToolEditor extends EditorPart {
 			}
 			public void widgetSelected(SelectionEvent e) {
 				int[] sel = eventLogTable.getTable().getSelectionIndices();
+				filteredEventLog.deselectAllEvents();
 				for (int i=0; i<sel.length; i++) {
-					EventEntry event = eventLog.getEvent(sel[i]); //XXX
+					EventEntry event = filteredEventLog.getEvent(sel[i]); //XXX
 					event.setIsSelected(true);
 				}
 				seqChartFigure.repaint(); //XXX or just invalidate?
@@ -241,9 +242,10 @@ public class SequenceChartToolEditor extends EditorPart {
 				ArrayList<EventEntry> events = new ArrayList<EventEntry>();
 				ArrayList<MessageEntry> msgs = new ArrayList<MessageEntry>();
 				seqChartFigure.collectStuffUnderMouse(me.x, me.y, events, msgs);
+				filteredEventLog.deselectAllEvents();
 				if (events.size()>=1) { 
 					EventEntry event = events.get(0);
-					int tableIndex = eventLog.findEvent(event); //XXX
+					int tableIndex = filteredEventLog.findEvent(event); //XXX
 					eventLogTable.getTable().setSelection(tableIndex);
 					eventLogTable.getTable().setTopIndex(tableIndex);
 				}
@@ -268,22 +270,29 @@ public class SequenceChartToolEditor extends EditorPart {
 		filteredEventLog = eventLog.traceEvent(event, true, true);
 		System.out.println("filtered log: "+filteredEventLog.getNumEvents()+" events in "+filteredEventLog.getNumModules()+" modules");
 
-		seqChartFigure.setEventLog(filteredEventLog);
-		eventLogTable.setInput(eventLog);
+		filteredEventLogChanged();
 	}
+
+	private void showFullSequenceChart() {
+		currentEventNumber = -1;
+		filteredEventLog = eventLog;
+
+		filteredEventLogChanged();
+	}
+
+	private void filteredEventLogChanged() {
+		filteredEventLog.deselectAllEvents();
+		filteredEventLog.collapseAllEvents();
+		seqChartFigure.setEventLog(filteredEventLog);
+		eventLogTable.setInput(filteredEventLog);
+	}
+
 
 	private int messageBox(int style, String title, String message) {
 		MessageBox m = new MessageBox(getEditorSite().getShell(), style);
 		m.setText(title);
 		m.setMessage(message);
 		return m.open();
-	}
-	
-	private void showFullSequenceChart() {
-		currentEventNumber = -1;
-		filteredEventLog = null;
-		seqChartFigure.setEventLog(eventLog);
-		eventLogTable.setInput(eventLog);
 	}
 	
 	private void addLabelFigure(int x, int y, String text) {

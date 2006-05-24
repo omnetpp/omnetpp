@@ -1,5 +1,5 @@
 //=========================================================================
-//  EVENTTRACE.H - part of
+//  EVENTLOG.H - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
@@ -12,8 +12,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __EVENTTRACE_H_
-#define __EVENTTRACE_H_
+#ifndef __EVENTLOG_H_
+#define __EVENTLOG_H_
 
 #include <sstream>
 #include <list>
@@ -77,7 +77,7 @@ class EventEntry
         MessageEntry *cause;
         MessageEntryList causes;  // also includes "cause" (XXX does it?)
         MessageEntryList consequences;
-        int totalLogMessages; // total number of log messages for this event; FIXME to be filled in
+        int numLogMessages; // total number of log messages for this event
 
         // the following fields are for the convenience of the GUI
         int cachedX; // position on canvas
@@ -125,7 +125,7 @@ class EventLog
         /** If this is a filtered event log, the parent log owns the event entries and message entries */
         EventLog *parent;
         /** Name of the file */;
-        const char *logFileName;
+        std::string logFileName;
         /** Modules that occur in the events */
         ModuleEntryList moduleList;
         /** Ordered list of EventEntries as read from the log file */
@@ -155,6 +155,13 @@ class EventLog
 
         int getNumModules();
         ModuleEntry *getModule(int pos);
+
+        // manipulating GUI vars stored in EventEntry
+        void deselectAllEvents();
+        void expandAllEvents();
+        void collapseAllEvents();
+        void expandEvent(int pos);
+        void collapseEvent(int pos);
 
         EventLog *traceEvent(EventEntry *tracedEvent, bool wantCauses, bool wantConsequences);
         void writeTrace(FILE* fout);

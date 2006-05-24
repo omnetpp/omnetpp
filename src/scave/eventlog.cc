@@ -1,5 +1,5 @@
 //=========================================================================
-//  EVENTTRACE.CC - part of
+//  EVENTLOG.CC - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
@@ -33,6 +33,7 @@ EventEntry::EventEntry()
     eventNumber = -1;
     simulationTime = -1;
     module = NULL;
+    numLogMessages = 0;
 
     cachedX = cachedY = 0;
     isSelected = false;
@@ -64,7 +65,7 @@ StringPool::~StringPool()
 {
     for (StringSet::iterator it = pool.begin(); it!=pool.end(); ++it)
         delete [] *it;
-    //XXX test if this one is faster:
+    //XXX this one may be faster, test:
     //while (pool.size()>0) {
     //    delete [] *pool.begin();
     //    pool.erase(pool.begin());
@@ -88,6 +89,7 @@ const char *StringPool::get(const char *s)
 EventLog::EventLog(const char *logFileName)
 {
     this->logFileName = logFileName;
+    parent = NULL;
     tracedEvent = NULL;
 
     parseLogFile();
@@ -116,13 +118,11 @@ EventLog::~EventLog()
 
 void EventLog::parseLogFile()
 {
-    this->logFileName = logFileName;
-    tracedEvent = NULL;
-
     long lineNumber = 0;
     MessageEntry *messageEntry = NULL;
-    FileTokenizer ftok(logFileName);
+    FileTokenizer ftok(logFileName.c_str());
 
+    // read messages and events
     while (ftok.readLine())
     {
         int numTokens = ftok.numTokens();
@@ -159,8 +159,8 @@ void EventLog::parseLogFile()
                         eventList.push_back(eventEntry);
                     }
 
-                    messageEntry->source = getEvent(causalEventNumber);
-                    messageEntry->target = getEvent(eventNumber);
+                    messageEntry->source = getEventByNumber(causalEventNumber);
+                    messageEntry->target = getEventByNumber(eventNumber);
                     // skip () characters
                     *(vec[7] + strlen(vec[7]) - 1) = '\0';
                     messageEntry->messageClassName = stringPool.get(vec[7] + 1);
@@ -183,6 +183,7 @@ void EventLog::parseLogFile()
         }
     }
 
+    // indexing: collect causes[] and consequences[] for each event; also calculate numLogMessages
     for (MessageEntryList::iterator it = messageList.begin(); it != messageList.end(); it++)
     {
         MessageEntry *messageEntry = *it;
@@ -193,6 +194,7 @@ void EventLog::parseLogFile()
         }
         messageEntry->source->consequences.push_back(messageEntry);
         messageEntry->target->causes.push_back(messageEntry);
+        messageEntry->target->numLogMessages += messageEntry->logMessages.size();
     }
 }
 
@@ -223,6 +225,7 @@ ModuleEntry *EventLog::getModule(int pos)
 ModuleEntry *EventLog::getOrAddModule(int moduleId, char *moduleClassName, char *moduleFullPath)
 {
     // if module with such ID already exists, return it
+    //FIXME warn if className or fullPath doesn't match!
     for (ModuleEntryList::iterator it = moduleList.begin(); it != moduleList.end(); it++)
         if ((*it)->moduleId == moduleId)
             return *it;
@@ -268,6 +271,65 @@ EventEntry *EventLog::getLastEventBefore(double t)
     return it==eventList.begin() ? NULL : it==eventList.end() ? eventList.back() : *(it-1);
 }
 
+void EventLog::deselectAllEvents()
+{
+    int n = eventList.size();
+    for (int i=0; i<n; i++)
+         eventList[i]->isSelected = false;
+}
+
+void EventLog::expandAllEvents()
+{
+    int n = eventList.size();
+    int currentRow = 0;
+    for (int i=0; i<n; i++)
+    {
+         eventList[i]->isExpandedInTree = true;
+         eventList[i]->tableRowIndex = currentRow;
+         currentRow += eventList[i]->numLogMessages;
+    }
+}
+
+void EventLog::collapseAllEvents()
+{
+    int n = eventList.size();
+    for (int i=0; i<n; i++)
+    {
+         eventList[i]->isExpandedInTree = false;
+         eventList[i]->tableRowIndex = i;
+    }
+}
+
+void EventLog::expandEvent(int pos)
+{
+    if (pos<0 || pos>=eventList.size())
+        return; // index out of bounds
+    if (eventList[pos]->isExpandedInTree)
+        return; // already expanded
+
+    // expand, and shift down all subsequent elements
+    eventList[pos]->isExpandedInTree = true;
+    int shiftby = eventList[pos]->numLogMessages;
+    int n = eventList.size();
+    for (int i=pos+1; i<n; i++)
+         eventList[i]->tableRowIndex += shiftby;
+}
+
+void EventLog::collapseEvent(int pos)
+{
+    if (pos<0 || pos>=eventList.size())
+        return; // index out of bounds
+    if (!eventList[pos]->isExpandedInTree)
+        return; // already collapsed
+
+    // collapse, and shift up all subsequent elements
+    eventList[pos]->isExpandedInTree = false;
+    int shiftby = eventList[pos]->numLogMessages;
+    int n = eventList.size();
+    for (int i=pos+1; i<n; i++)
+         eventList[i]->tableRowIndex -= shiftby;
+}
+
 char *EventLog::tokensToStr(int numTokens, char **vec)
 {
     int length = numTokens;
@@ -301,12 +363,17 @@ inline bool equal_EventEntryByEventNumber(EventEntry *e1, EventEntry *e2) {
 inline bool less_ModuleById(ModuleEntry *m1, ModuleEntry *m2) {
     return m1->moduleId < m2->moduleId;
 }
+inline bool less_MessageEntryBySourceEventNumber(MessageEntry *m1, MessageEntry *m2) {
+    return m1->source->eventNumber < m2->source->eventNumber;
+}
+
 
 EventLog *EventLog::traceEvent(EventEntry *tracedEvent, bool wantCauses, bool wantConsequences)
 {
     EventLog *traceResult = new EventLog(this);
 
     std::vector<EventEntry*>& collectedEvents = traceResult->eventList;
+    std::vector<MessageEntry*>& collectedMessages = traceResult->messageList;
 
     if (wantCauses)
     {
@@ -321,8 +388,15 @@ EventLog *EventLog::traceEvent(EventEntry *tracedEvent, bool wantCauses, bool wa
 
             // then add all causes to openEvents
             for (MessageEntryList::iterator it = event->causes.begin(); it!=event->causes.end(); ++it)
-                if ((*it)->source != event)
-                    openEvents.insert((*it)->source);
+            {
+                MessageEntry *msg = *it;
+                if (msg->source != NULL)
+                {
+                    collectedMessages.push_back(msg);
+                    if (msg->source != event)
+                        openEvents.insert(msg->source);
+                }
+            }
         }
     }
 
@@ -339,8 +413,15 @@ EventLog *EventLog::traceEvent(EventEntry *tracedEvent, bool wantCauses, bool wa
 
             // then add all consequences to openEvents
             for (MessageEntryList::iterator it = event->consequences.begin(); it!=event->consequences.end(); ++it)
-                if ((*it)->target != event)
-                    openEvents.insert((*it)->target);
+            {
+                MessageEntry *msg = *it;
+                if (msg->target != NULL)
+                {
+                    collectedMessages.push_back(msg);
+                    if (msg->target != event)
+                        openEvents.insert(msg->target);
+                }
+            }
         }
     }
 
@@ -357,6 +438,9 @@ EventLog *EventLog::traceEvent(EventEntry *tracedEvent, bool wantCauses, bool wa
     for (std::set<ModuleEntry*>::iterator it = moduleSet.begin(); it!=moduleSet.end(); ++it)
         traceResult->moduleList.push_back(*it);
     sort(traceResult->moduleList.begin(), traceResult->moduleList.end(), less_ModuleById);
+
+    // sort messages by "source" event number (there cannot be duplicates here)
+    sort(collectedMessages.begin(), collectedMessages.end(), less_MessageEntryBySourceEventNumber);
 
     return traceResult;
 }

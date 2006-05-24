@@ -20,7 +20,7 @@ public class EventLogTable extends VirtualTableTreeBase {
 	private EventLog eventLog;
 
 	public EventLogTable(Composite parent, int style) {
-		super(parent, SWT.NONE);
+		super(parent, style);
 		
 		table.setHeaderVisible(true);
 		table.setLinesVisible(false);
