@@ -18,6 +18,11 @@ public class SetConstraintCommand extends org.eclipse.gef.commands.Command {
     private Dimension oldSize;
     private INamedGraphNode module;
 
+    public SetConstraintCommand(INamedGraphNode newModule) {
+    	super();
+        module = newModule;
+    }
+
     @Override
     public String getLabel() {
         if (oldSize.equals(newSize)) 
@@ -37,7 +42,12 @@ public class SetConstraintCommand extends org.eclipse.gef.commands.Command {
         module.getDisplayString().setConstraint(newPos, newSize);
     }
 
-    public void setLocation(Rectangle r) {
+    @Override
+    public void undo() {
+        module.getDisplayString().setConstraint(oldPos, oldSize);
+    }
+
+    public void setConstrant(Rectangle r) {
         setLocation(r.getLocation());
         setSize(r.getSize());
     }
@@ -46,17 +56,7 @@ public class SetConstraintCommand extends org.eclipse.gef.commands.Command {
         newPos = p;
     }
 
-    public void setModule(INamedGraphNode newModule) {
-        module = newModule;
-    }
-
     public void setSize(Dimension p) {
         newSize = p;
     }
-
-    @Override
-    public void undo() {
-        module.getDisplayString().setConstraint(oldPos, oldSize);
-    }
-
 }

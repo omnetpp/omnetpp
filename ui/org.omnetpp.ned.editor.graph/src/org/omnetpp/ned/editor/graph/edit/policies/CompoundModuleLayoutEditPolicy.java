@@ -24,7 +24,7 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.ned.editor.graph.figures.CompoundModuleFigure;
 import org.omnetpp.ned.editor.graph.model.commands.AddSubmoduleCommand;
 import org.omnetpp.ned.editor.graph.model.commands.CloneSubmoduleCommand;
-import org.omnetpp.ned.editor.graph.model.commands.CreateCommand;
+import org.omnetpp.ned.editor.graph.model.commands.CreateSubmoduleCommand;
 import org.omnetpp.ned.editor.graph.model.commands.SetConstraintCommand;
 import org.omnetpp.ned2.model.CompoundModuleNodeEx;
 import org.omnetpp.ned2.model.ISubmoduleContainer;
@@ -41,15 +41,12 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
     protected Command createAddCommand(Request request, EditPart childEditPart, Object constraint) {
         INamedGraphNode child = (INamedGraphNode) childEditPart.getModel();
-        Rectangle rect = (Rectangle) constraint;
 
-        AddSubmoduleCommand add = new AddSubmoduleCommand((ISubmoduleContainer) getHost().getModel(), child);
+        AddSubmoduleCommand add = new AddSubmoduleCommand((ISubmoduleContainer)getHost().getModel(), child);
         add.setLabel("Add");
 
-        SetConstraintCommand setConstraint = new SetConstraintCommand();
-        setConstraint.setLocation(rect);
-        setConstraint.setModule(child);
-        setConstraint.setLabel("Add");
+        SetConstraintCommand setConstraint = new SetConstraintCommand(child);
+        setConstraint.setConstrant((Rectangle)constraint);
 
         return setConstraint;
     }
@@ -77,10 +74,9 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
         if (modelConstraint.height < 0) modelConstraint.y += figureBounds.height / 2;
 
         // create the constraint change command 
-        SetConstraintCommand cmd = new SetConstraintCommand();
         INamedGraphNode module = (INamedGraphNode) child.getModel();
-        cmd.setModule(module);
-        cmd.setLocation(modelConstraint);
+        SetConstraintCommand cmd = new SetConstraintCommand(module);
+        cmd.setConstrant(modelConstraint);
         // if size constrant is not specified, then remove it from the model too
         if ((modelConstraint.width < 0 || modelConstraint.height < 0) && module.getDisplayString().getSize() == null)
             cmd.setSize(null);
@@ -173,7 +169,6 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
         ChangeBoundsRequest request = (ChangeBoundsRequest) generic;
         List editParts = request.getEditParts();
         CompoundCommand command = new CompoundCommand();
-        command.setDebugLabel("Add in ConstrainedLayoutEditPolicy");//$NON-NLS-1$
         GraphicalEditPart childPart;
         Rectangle r;
         Object constraint;
@@ -220,27 +215,13 @@ public class CompoundModuleLayoutEditPolicy extends DesktopLayoutEditPolicy {
 
     @Override
     protected Command getCreateCommand(CreateRequest request) {
-        CreateCommand create = new CreateCommand();
-        create.setParent((ISubmoduleContainer) getHost().getModel());
-        INamedGraphNode newPart = (INamedGraphNode) request.getNewObject();
-        create.setChild(newPart);
-        Rectangle constraint = (Rectangle) getConstraintFor(request);
-        create.setLocation(constraint);
+        CreateSubmoduleCommand create 
+        		= new CreateSubmoduleCommand((ISubmoduleContainer) getHost().getModel(),
+        									 (INamedGraphNode) request.getNewObject());
+        create.setLocation((Rectangle)getConstraintFor(request));
         create.setLabel("Add");
 
         return create;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.gef.editpolicies.LayoutEditPolicy#getCreationFeedbackOffset(org.eclipse.gef.requests.CreateRequest)
-     */
-    @Override
-    protected Insets getCreationFeedbackOffset(CreateRequest request) {
-        if (request.getNewObject() instanceof CompoundModuleNodeEx)
-            return new Insets(2, 0, 2, 0);
-        return new Insets();
     }
 
     /**

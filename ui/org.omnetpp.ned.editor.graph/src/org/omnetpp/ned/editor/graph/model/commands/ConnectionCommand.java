@@ -5,8 +5,6 @@ import org.omnetpp.ned2.model.ConnectionNodeEx;
 import org.omnetpp.ned2.model.IConnectable;
 import org.omnetpp.ned2.model.IConnectionContainer;
 import org.omnetpp.ned2.model.INamedGraphNode;
-import org.omnetpp.ned2.model.NEDElement;
-import org.omnetpp.ned2.model.pojo.ConnectionNode;
 
 /**
  * (Re)assigns a Connection to srcModule/destModule sub/compound module gates and also adds it to the

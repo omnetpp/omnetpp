@@ -9,15 +9,19 @@ import org.omnetpp.ned2.model.INamedGraphNode;
  * @author rhornig
  *
  */
-
-//TODO do not use index to position the child. Use the next sibling child istead
-public class CreateCommand extends org.eclipse.gef.commands.Command {
+public class CreateSubmoduleCommand extends org.eclipse.gef.commands.Command {
 
     private INamedGraphNode child;
     private Rectangle rect;
     private ISubmoduleContainer parent;
     private int index = -1;
 
+    
+    public CreateSubmoduleCommand(ISubmoduleContainer parent, INamedGraphNode child) {
+    	this.child = child;
+    	this.parent = parent;
+    }
+    
     @Override
     public boolean canExecute() {
         return child != null && parent != null;
@@ -35,11 +39,12 @@ public class CreateCommand extends org.eclipse.gef.commands.Command {
 
     @Override
     public void redo() {
-        parent.insertSubmodule(index, child );
+        parent.insertSubmodule(index, child);
     }
 
-    public void setChild(INamedGraphNode module) {
-        child = module;
+    @Override
+    public void undo() {
+        parent.removeSubmodule(child);
     }
 
     public void setIndex(int index) {
@@ -49,14 +54,4 @@ public class CreateCommand extends org.eclipse.gef.commands.Command {
     public void setLocation(Rectangle r) {
         rect = r;
     }
-
-    public void setParent(ISubmoduleContainer newParent) {
-        parent = newParent;
-    }
-
-    @Override
-    public void undo() {
-        parent.removeSubmodule(child);
-    }
-
 }

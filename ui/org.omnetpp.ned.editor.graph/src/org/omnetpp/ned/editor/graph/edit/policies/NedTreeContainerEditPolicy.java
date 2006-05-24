@@ -11,14 +11,14 @@ import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gef.editpolicies.TreeContainerEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
-import org.omnetpp.ned.editor.graph.model.commands.CreateCommand;
+import org.omnetpp.ned.editor.graph.model.commands.CreateSubmoduleCommand;
 import org.omnetpp.ned2.model.ISubmoduleContainer;
 import org.omnetpp.ned2.model.INamedGraphNode;
 
 public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
 
     protected Command createCreateCommand(INamedGraphNode child, Rectangle r, int index, String label) {
-        CreateCommand cmd = new CreateCommand();
+        CreateSubmoduleCommand cmd = new CreateSubmoduleCommand((ISubmoduleContainer) getHost().getModel(),	child);
         Rectangle rect;
         if (r == null) {
             rect = new Rectangle();
@@ -27,8 +27,6 @@ public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
             rect = r;
         }
         cmd.setLocation(rect);
-        cmd.setParent((ISubmoduleContainer) getHost().getModel());
-        cmd.setChild(child);
         cmd.setLabel(label);
         if (index >= 0) cmd.setIndex(index);
         return cmd;
