@@ -20,6 +20,7 @@ import org.omnetpp.scave.engine.PStringVector;
  * @author andras
  */
 //FIXME this should actually be turned into a View!
+//FIXME also: remove getTable and provide better encapsulation instead
 public class EventLogTable extends VirtualTableTreeBase {
 	
 	private EventLog eventLog;

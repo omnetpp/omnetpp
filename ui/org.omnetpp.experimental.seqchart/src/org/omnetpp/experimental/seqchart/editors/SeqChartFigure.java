@@ -311,9 +311,16 @@ public class SeqChartFigure extends Figure {
 
 	private void drawMessageArrow(Graphics graphics, int x1, int y1, int x2, int y2) {
 		if (y1==y2) {
-			Rectangle.SINGLETON.setLocation(x1, y1-10);
-			Rectangle.SINGLETON.setSize(x2-x1, 20);
-			graphics.drawArc(Rectangle.SINGLETON, 0, 180);
+			if (x1==x2) {
+				// draw vertical line (as zero-width half ellipse) 
+				graphics.drawLine(x1, y1, x1, y1-10);
+			}
+			else {
+				// draw half ellipse
+				Rectangle.SINGLETON.setLocation(x1, y1-10);
+				Rectangle.SINGLETON.setSize(x2-x1, 20);
+				graphics.drawArc(Rectangle.SINGLETON, 0, 180);
+			}
 		} else {
 			graphics.drawLine(x1, y1, x2, y2);
 		}
@@ -329,7 +336,9 @@ public class SeqChartFigure extends Figure {
 		rect.intersect(bounds); // although looks like Clip is already set up like this
 
 		// draw axis label; may it should be "sticky" on the screen?
-		graphics.drawText(label, bounds.x, y-20); //XXX refine
+		
+		//graphics.drawText(label, bounds.x, y-20); //XXX refine
+		graphics.drawText(label, scrollPane.getViewport().getBounds().x, y-20);
 
 		// draw axis
 		graphics.drawLine(rect.x, y, rect.right(), y);
@@ -382,7 +391,7 @@ public class SeqChartFigure extends Figure {
 				dragStartY = me.y;
 				removeTooltip();
 			}
-			public void mouseReleased(MouseEvent me) {
+			public void mouseReleased(MouseEvent me) { 
 				setCursor(null); // restore cursor at end of drag
 			}
     	});
@@ -405,6 +414,7 @@ public class SeqChartFigure extends Figure {
 			}
 			public void mouseMoved(MouseEvent me) {
 				removeTooltip();
+				setCursor(null); // restore cursor at end of drag (must do it here too, because we don't get the "released" event if user releases mouse outside the canvas)
 			}
 		});
 	}
@@ -416,6 +426,7 @@ public class SeqChartFigure extends Figure {
 			swtTooltip.setMessage(tooltipText);
 			swtTooltip.setLocation(canvas.toDisplay(x,y+20));
 			swtTooltip.setVisible(true);
+			swtTooltip.setAutoHide(false);
 		}
 	}
 
@@ -436,21 +447,34 @@ public class SeqChartFigure extends Figure {
 		ArrayList<MessageEntry> msgs = new ArrayList<MessageEntry>();
 		collectStuffUnderMouse(x, y, events, msgs);
 
+		if (events.isEmpty() && msgs.isEmpty())
+			return null;
 		String res = "";
+		if (events.size()+msgs.size()>1) {
+			if (events.size()>0 && msgs.size()>0)
+				res = "Multiple hits ("+events.size()+" events, "+msgs.size()+" messages):\n";
+			else if (events.size()>0)
+				res = "Multiple hits ("+events.size()+" events):\n";
+			else
+				res = "Multiple hits ("+msgs.size()+" messages):\n";
+		}
+
 		for (EventEntry event : events) {
 			res += "Event #"+event.getEventNumber()
 	    		+" at t="+event.getSimulationTime()
-	    		+", module ("+event.getModule().getModuleClassName()+")"
+	    		+"\n    at module ("+event.getModule().getModuleClassName()+")"
 	    		+event.getModule().getModuleFullPath()
-	    		+" (id="+event.getModule().getModuleId()+"),"
-	    		+" message ("+event.getCause().getMessageClassName()+")"
+	    		+" (id="+event.getModule().getModuleId()+")"
+	    		+"\n    message ("+event.getCause().getMessageClassName()+")"
 	    		+event.getCause().getMessageName()+"\n";
 		}
+
 		for (MessageEntry msg : msgs) {
 			res += "Message ("+msg.getMessageClassName()+") "
 				+msg.getMessageName()+"\n";
 		}
-		return res.equals("") ? null : res;
+		//XXX truncate to, say, 20 lines (chop off the rest, and add "...")
+		return res;
 	}
 
 	/**
@@ -525,7 +549,7 @@ public class SeqChartFigure extends Figure {
             }
 
             long millis = System.currentTimeMillis()-startMillis;
-            System.out.println("collectStuff(): "+millis+"ms");
+            //System.out.println("collectStuff(): "+millis+"ms");
 		}
 	}
 
@@ -533,7 +557,7 @@ public class SeqChartFigure extends Figure {
 	 * Utility function, to detect whether use clicked (hovered) an event in the the chart
 	 */
 	private boolean eventSymbolContainsPoint(int x, int y, int px, int py, int tolerance) {
-		return Math.abs(x-px) <= 2+tolerance && Math.abs(y-py) <= 3+tolerance;
+		return Math.abs(x-px) <= 2+tolerance && Math.abs(y-py) <= 5+tolerance;
 	}
 
 	private boolean messageArrowContainsPoint(int x1, int y1, int x2, int y2, int px, int py, int tolerance) {
@@ -550,11 +574,14 @@ public class SeqChartFigure extends Figure {
 		Rectangle.SINGLETON.expand(tolerance, tolerance);
 		if (!Rectangle.SINGLETON.contains(px, py))
 			return false;
-
+        
 		int x = (x1+x2) / 2;
 		int rx = Math.abs(x1-x2) / 2;
 		int ry = height;
 
+        if (rx == 0)
+        	return true;
+		
 		int dxnorm = (x - px) * ry / rx;
 		int dy = y - py;
 		int distSquare = dxnorm*dxnorm + dy*dy;
