@@ -105,14 +105,23 @@ public class SequenceChartToolEditor extends EditorPart {
 		eventLogTable = new EventLogTable(lower, SWT.MULTI);
 		eventLogTable.getTable().addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
+				// double-click or enter: filter for the current event
+				int sel = eventLogTable.getTable().getSelectionIndex();
+				EventEntry event = filteredEventLog.getEvent(sel); //XXX
+				showSequenceChartForEvent(event.getEventNumber());
 			}
 			public void widgetSelected(SelectionEvent e) {
+				// mark selected events in the chart as well
 				int[] sel = eventLogTable.getTable().getSelectionIndices();
 				filteredEventLog.deselectAllEvents();
 				for (int i=0; i<sel.length; i++) {
 					EventEntry event = filteredEventLog.getEvent(sel[i]); //XXX
 					event.setIsSelected(true);
 				}
+				// show (scroll to) currently selected event
+				int cur = eventLogTable.getTable().getSelectionIndex();
+				EventEntry curEvent = filteredEventLog.getEvent(cur); //XXX
+				seqChartFigure.gotoTime(curEvent.getSimulationTime()); 
 				seqChartFigure.repaint(); //XXX or just invalidate?
 			}
 		});

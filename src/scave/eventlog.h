@@ -75,7 +75,7 @@ class EventEntry
         double simulationTime;
         ModuleEntry *module;
         MessageEntry *cause;
-        MessageEntryList causes;  // also includes "cause" (XXX does it?)
+        MessageEntryList causes;  // also includes "cause"
         MessageEntryList consequences;
         int numLogMessages; // total number of log messages for this event
 
@@ -149,9 +149,13 @@ class EventLog
         int getNumEvents();
         EventEntry *getEvent(int pos);
         int findEvent(EventEntry *event); // returns pos, or -1 if not found
+        bool containsEvent(EventEntry *event) {return findEvent(event)!=-1;}
         EventEntry *getEventByNumber(long eventNumber);
         EventEntry *getFirstEventAfter(double t);
         EventEntry *getLastEventBefore(double t);
+
+        int getNumMessages();
+        MessageEntry *getMessage(int pos);
 
         int getNumModules();
         ModuleEntry *getModule(int pos);
@@ -195,6 +199,7 @@ class JavaFriendlyEventLogFacade
         MessageEntry *getEvent_cause(int pos) {return log->getEvent(pos)->cause;}
         MessageEntry *getEvent_causes(int pos, int k) {return log->getEvent(pos)->causes[k];}
         MessageEntry *getEvent_consequences(int pos, int k) {return log->getEvent(pos)->consequences[k];}
+        MessageEntry *getMessage(int pos) {return log->getMessage(pos);}
 
     public:
         JavaFriendlyEventLogFacade(EventLog *eventLog) {log = eventLog;}
@@ -222,7 +227,9 @@ class JavaFriendlyEventLogFacade
         long getEvent_i_cause_lineNumber(int pos) {return getEvent_cause(pos)->lineNumber;}
         std::string getEvent_i_cause_messageClassName(int pos) {return getEvent_cause(pos)->messageClassName;}
         std::string getEvent_i_cause_messageName(int pos) {return getEvent_cause(pos)->messageName;}
+
         bool getEvent_i_cause_hasSource(int pos)  {return getEvent_cause(pos)->source!=NULL;}
+        bool getEvent_i_cause_source_isInFilteredSubset(int pos, EventLog *filteredSubset)  {return filteredSubset->containsEvent(getEvent_cause(pos)->source);}
         long getEvent_i_cause_source_eventNumber(int pos)  {return getEvent_cause(pos)->source->eventNumber;}
         double getEvent_i_cause_source_simulationTime(int pos)  {return getEvent_cause(pos)->source->simulationTime;}
         int getEvent_i_cause_source_module_moduleId(int pos, int k)  {return getEvent_cause(pos)->source->module->moduleId;}
@@ -238,6 +245,7 @@ class JavaFriendlyEventLogFacade
         std::string getEvent_i_causes_k_messageClassName(int pos, int k) {return getEvent_causes(pos,k)->messageClassName;}
         std::string getEvent_i_causes_k_messageName(int pos, int k) {return getEvent_causes(pos,k)->messageName;}
         bool getEvent_i_causes_k_hasSource(int pos, int k)  {return getEvent_causes(pos,k)->source!=NULL;}
+        bool getEvent_i_causes_k_source_isInFilteredSubset(int pos, int k, EventLog *filteredSubset)  {return filteredSubset->containsEvent(getEvent_causes(pos,k)->source);}
         long getEvent_i_causes_k_source_eventNumber(int pos, int k)  {return getEvent_causes(pos,k)->source->eventNumber;}
         double getEvent_i_causes_k_source_simulationTime(int pos, int k)  {return getEvent_causes(pos,k)->source->simulationTime;}
         int getEvent_i_causes_k_source_module_moduleId(int pos, int k)  {return getEvent_causes(pos,k)->source->module->moduleId;}
@@ -253,6 +261,7 @@ class JavaFriendlyEventLogFacade
         std::string getEvent_i_consequences_k_messageClassName(int pos, int k) {return getEvent_consequences(pos,k)->messageClassName;}
         std::string getEvent_i_consequences_k_messageName(int pos, int k) {return getEvent_consequences(pos,k)->messageName;}
         bool getEvent_i_consequences_k_hasTarget(int pos, int k)  {return getEvent_consequences(pos,k)->target!=NULL;}
+        bool getEvent_i_consequences_k_target_isInFilteredSubset(int pos, int k, EventLog *filteredSubset)  {return filteredSubset->containsEvent(getEvent_consequences(pos,k)->target);}
         long getEvent_i_consequences_k_target_eventNumber(int pos, int k)  {return getEvent_consequences(pos,k)->target->eventNumber;}
         double getEvent_i_consequences_k_target_simulationTime(int pos, int k)  {return getEvent_consequences(pos,k)->target->simulationTime;}
         int getEvent_i_consequences_k_target_module_moduleId(int pos, int k)  {return getEvent_consequences(pos,k)->target->module->moduleId;}
@@ -260,6 +269,33 @@ class JavaFriendlyEventLogFacade
         int getEvent_i_consequences_k_target_cachedY(int pos, int k)  {return getEvent_consequences(pos,k)->target->cachedY;}
         void setEvent_i_consequences_k_target_cachedX(int pos, int k, int x)  {getEvent_consequences(pos,k)->target->cachedX = x;}
         void setEvent_i_consequences_k_target_cachedY(int pos, int k, int y)  {getEvent_consequences(pos,k)->target->cachedY = y;}
+
+        int getNumMessages() {return log->getNumMessages();}
+
+        bool getMessage_isDelivery(int pos) {return getMessage(pos)->isDelivery;}
+        long getMessage_lineNumber(int pos) {return getMessage(pos)->lineNumber;}
+        std::string getMessage_messageClassName(int pos) {return getMessage(pos)->messageClassName;}
+        std::string getMessage_messageName(int pos) {return getMessage(pos)->messageName;}
+
+        bool getMessage_hasSource(int pos)  {return getMessage(pos)->source!=NULL;}
+        bool getMessage_source_isInFilteredSubset(int pos, EventLog *filteredSubset)  {return filteredSubset->containsEvent(getMessage(pos)->source);}
+        long getMessage_source_eventNumber(int pos)  {return getMessage(pos)->source->eventNumber;}
+        double getMessage_source_simulationTime(int pos)  {return getMessage(pos)->source->simulationTime;}
+        int getMessage_source_module_moduleId(int pos, int k)  {return getMessage(pos)->source->module->moduleId;}
+        int getMessage_source_cachedX(int pos)  {return getMessage(pos)->source->cachedX;}
+        int getMessage_source_cachedY(int pos)  {return getMessage(pos)->source->cachedY;}
+        void setMessage_source_cachedX(int pos, int x)  {getMessage(pos)->source->cachedX = x;}
+        void setMessage_source_cachedY(int pos, int y)  {getMessage(pos)->source->cachedY = y;}
+
+        bool getMessage_hasTarget(int pos)  {return getMessage(pos)->target!=NULL;}
+        bool getMessage_target_isInFilteredSubset(int pos, EventLog *filteredSubset)  {return filteredSubset->containsEvent(getMessage(pos)->target);}
+        long getMessage_target_eventNumber(int pos)  {return getMessage(pos)->target->eventNumber;}
+        double getMessage_target_simulationTime(int pos)  {return getMessage(pos)->target->simulationTime;}
+        int getMessage_target_module_moduleId(int pos, int k)  {return getMessage(pos)->target->module->moduleId;}
+        int getMessage_target_cachedX(int pos)  {return getMessage(pos)->target->cachedX;}
+        int getMessage_target_cachedY(int pos)  {return getMessage(pos)->target->cachedY;}
+        void setMessage_target_cachedX(int pos, int x)  {getMessage(pos)->target->cachedX = x;}
+        void setMessage_target_cachedY(int pos, int y)  {getMessage(pos)->target->cachedY = y;}
 };
 
 #endif

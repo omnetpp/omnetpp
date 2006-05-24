@@ -222,6 +222,18 @@ ModuleEntry *EventLog::getModule(int pos)
     return moduleList[pos];
 }
 
+int EventLog::getNumMessages()
+{
+    return messageList.size();
+}
+
+MessageEntry *EventLog::getMessage(int pos)
+{
+    if (pos<0 || pos>=messageList.size() || !messageList[pos])
+        return NULL;
+    return messageList[pos];
+}
+
 ModuleEntry *EventLog::getOrAddModule(int moduleId, char *moduleClassName, char *moduleFullPath)
 {
     // if module with such ID already exists, return it

@@ -29,8 +29,6 @@ import org.omnetpp.scave.engine.MessageEntry;
  *
  * @author andras
  */
-//TODO make events and message clickable (tooltip, go there in the log, etc)
-//FIXME C++ mode must produce message list as well... (and drawing must be based on that)
 //TODO limit pixelsPersec to a range that makes sense (for the current eventLog)
 //FIXME scrollbar breaks badly when char size exceeds ~4,000,000 pixels (this means only ~0.1s resolution ticks on an 1000s trace!!! not enough!)
 //FIXME msg arrows that intersect the chart area but don't start or end there are not displayed (BUG!)
@@ -109,9 +107,9 @@ public class SeqChartFigure extends Figure {
 	}
 
 	/**
-	 * Scroll the canvas so to make currentTime visible 
+	 * Scroll the canvas so as to make currentTime visible 
 	 */
-	private void gotoTime(double time) {
+	public void gotoTime(double time) {
 		double xDouble = time * pixelsPerSec;
 		int x = xDouble < 0 ? 0 : xDouble>Integer.MAX_VALUE ? Integer.MAX_VALUE : (int)xDouble;
 		scrollPane.scrollHorizontalTo(x - scrollPane.getViewport().getBounds().width/2);
@@ -144,7 +142,31 @@ public class SeqChartFigure extends Figure {
 	 */
 	public void setEventLog(EventLog eventLog) {
 		this.eventLog = eventLog;
-		recalculatePreferredSize();
+
+		// adjust pixelsPerSec if it's way out of the range that makes sense
+		int numEvents = eventLog.getNumEvents();
+		if (numEvents>=2) {
+			double tStart = eventLog.getEvent(0).getSimulationTime();
+			double tEnd = eventLog.getEvent(numEvents-1).getSimulationTime();
+			double eventPerSec = numEvents / (tEnd - tStart);
+
+			int chartWidthPixels = scrollPane.getViewport().getBounds().width;
+			if (chartWidthPixels<=0) chartWidthPixels = 800;  // may be 0 on startup
+
+			double minPixelsPerSec = eventPerSec * 10;  // we want at least 10 pixel/event
+			double maxPixelsPerSec = eventPerSec * (chartWidthPixels/10);  // we want at least 10 events on the chart
+
+			System.out.println("ev/sec="+eventPerSec+", pixelPerSec: min="+minPixelsPerSec+",  max="+maxPixelsPerSec+",  cur="+pixelsPerSec);
+
+			if (pixelsPerSec < minPixelsPerSec)
+				setPixelsPerSec(minPixelsPerSec);
+			else if (pixelsPerSec > maxPixelsPerSec)
+				setPixelsPerSec(maxPixelsPerSec);
+		}
+
+		// refresh chart. We may end up doing this twice, since it's also called from 
+		// setPixelsPerSec(), but it does no harm
+		recalculatePreferredSize(); 
 		repaint();
 	}
 
@@ -188,7 +210,7 @@ public class SeqChartFigure extends Figure {
 			int startEventNumber = (startEvent!=null) ? startEvent.getEventNumber() : 0;
 			int endEventNumber = (endEvent!=null) ? endEvent.getEventNumber() : Integer.MAX_VALUE;
             
-            // calculate event coordinates (we paint them after the arrows)
+            // calculate event coordinates (we'll paint them after the arrows)
             for (int i=startEventIndex; i<endEventIndex; i++) {
    				int x = timeToPixel(logFacade.getEvent_i_simulationTime(i));
    				int y = moduleIdToAxisYMap.get(logFacade.getEvent_i_module_moduleId(i));
@@ -204,7 +226,8 @@ public class SeqChartFigure extends Figure {
    				// paint forward arrows for this event
             	int numConsequences = logFacade.getEvent_i_numConsequences(i);
             	for (int k=0; k<numConsequences; k++) {
-            		if (logFacade.getEvent_i_consequences_k_hasTarget(i, k)) {
+            		if (logFacade.getEvent_i_consequences_k_hasTarget(i, k) &&
+            			logFacade.getEvent_i_consequences_k_target_isInFilteredSubset(i, k, eventLog)) {
             			// we have to calculate target event's coords if it's beyond endEventNumber
             			graphics.setForegroundColor(logFacade.getEvent_i_consequences_k_isDelivery(i,k) ? DELIVERY_MSG_COLOR : MSG_COLOR); 
                 		if (logFacade.getEvent_i_consequences_k_target_eventNumber(i, k) < endEventNumber) {
@@ -234,7 +257,8 @@ public class SeqChartFigure extends Figure {
             	for (int k=0; k<numCauses; k++) {
             		if (logFacade.getEvent_i_causes_k_source_eventNumber(i, k) < startEventNumber) {
             			// source event is outside the repaint region (on the far left)
-                		if (logFacade.getEvent_i_causes_k_hasSource(i, k)) {
+                		if (logFacade.getEvent_i_causes_k_hasSource(i, k) &&
+                    		logFacade.getEvent_i_causes_k_source_isInFilteredSubset(i, k, eventLog)) {
                				double srcXDouble = timeToPixelDouble(logFacade.getEvent_i_causes_k_source_simulationTime(i, k));
                				int srcY = moduleIdToAxisYMap.get(logFacade.getEvent_i_causes_k_source_module_moduleId(i, k));
                				int srcX = srcXDouble < -XMAX ? -XMAX : (int)srcXDouble;
@@ -452,7 +476,8 @@ public class SeqChartFigure extends Figure {
    				// check forward arrows for this event
             	int numConsequences = logFacade.getEvent_i_numConsequences(i);
             	for (int k=0; k<numConsequences; k++) {
-            		if (logFacade.getEvent_i_consequences_k_hasTarget(i, k)) {
+            		if (logFacade.getEvent_i_consequences_k_hasTarget(i, k) &&
+            			logFacade.getEvent_i_consequences_k_target_isInFilteredSubset(i, k, eventLog)) {
             			if (messageArrowContainsPoint(
             					eventX,
             					eventY,
@@ -469,7 +494,8 @@ public class SeqChartFigure extends Figure {
             	int numCauses = logFacade.getEvent_i_numCauses(i);
             	for (int k=0; k<numCauses; k++) {
             		if (logFacade.getEvent_i_causes_k_source_eventNumber(i, k) < startEventNumber) {
-                		if (logFacade.getEvent_i_causes_k_hasSource(i, k)) {
+                		if (logFacade.getEvent_i_causes_k_hasSource(i, k) &&
+                    		logFacade.getEvent_i_causes_k_source_isInFilteredSubset(i, k, eventLog)) {
                 			if (messageArrowContainsPoint(
                 					logFacade.getEvent_i_causes_k_source_cachedX(i, k),
                 					logFacade.getEvent_i_causes_k_source_cachedY(i, k),
