@@ -92,15 +92,9 @@ public class SequenceChartToolEditor extends EditorPart {
 		canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		setupCanvas(canvas);
 
-		// add text box into lower half
+		// add event log table into lower half
 		Composite lower = new Composite(sashForm, SWT.NONE);
 		lower.setLayout(new FillLayout());
-
-		//EventLogTable eventLogTable = new EventLogTable(lower, SWT.MULTI);
-		//EventLogTable2 eventLogTable = new EventLogTable2(lower, SWT.MULTI);
-		//EventLogTableTree eventLogTable = new EventLogTableTree(lower, SWT.MULTI);
-		//eventLogTable.setInput(eventLog);
-		//EventLogTree eventLogTable = new EventLogTree(lower, SWT.MULTI);
 
 		eventLogTable = new EventLogTable(lower, SWT.MULTI);
 		eventLogTable.getTable().addSelectionListener(new SelectionListener() {
@@ -131,17 +125,17 @@ public class SequenceChartToolEditor extends EditorPart {
 		// give eventLog to the chart for display
 		showFullSequenceChart();
 		
-//		//XXX this is an attempt at improving drag in the chart, but it apparently doesn't do the job
-//		canvas.addMouseListener(new MouseListener() {
-//			public void mouseDoubleClick(MouseEvent e) {}
-//			public void mouseDown(MouseEvent e) {
-//				System.out.println("CANVAS CAPTURED");
-//				canvas.setCapture(true);
-//			}
-//			public void mouseUp(MouseEvent e) {
-//				canvas.setCapture(false);
-//				System.out.println("CANVAS RELEASED");
-//			}});
+		//XXX this is an attempt at improving drag in the chart, but it apparently doesn't do the job
+		//canvas.addMouseListener(new MouseListener() {
+		//	public void mouseDoubleClick(MouseEvent e) {}
+		//	public void mouseDown(MouseEvent e) {
+		//		System.out.println("CANVAS CAPTURED");
+		//		canvas.setCapture(true);
+		//	}
+		//	public void mouseUp(MouseEvent e) {
+		//		canvas.setCapture(false);
+		//		System.out.println("CANVAS RELEASED");
+		//	}});
 	}
 
 	private Composite createControlStrip(Composite upper) {
@@ -251,13 +245,15 @@ public class SequenceChartToolEditor extends EditorPart {
 				ArrayList<EventEntry> events = new ArrayList<EventEntry>();
 				ArrayList<MessageEntry> msgs = new ArrayList<MessageEntry>();
 				seqChartFigure.collectStuffUnderMouse(me.x, me.y, events, msgs);
-				filteredEventLog.deselectAllEvents();
+				filteredEventLog.deselectAllEvents(); //we may handle ctrl-click to extend selection as well
 				if (events.size()>=1) { 
 					EventEntry event = events.get(0);
+					event.setIsSelected(true);
 					int tableIndex = filteredEventLog.findEvent(event); //XXX
 					eventLogTable.getTable().setSelection(tableIndex);
 					eventLogTable.getTable().setTopIndex(tableIndex);
 				}
+				seqChartFigure.repaint(); // as selection has changed
 			}
 			public void mouseReleased(MouseEvent me) {}
 		});
