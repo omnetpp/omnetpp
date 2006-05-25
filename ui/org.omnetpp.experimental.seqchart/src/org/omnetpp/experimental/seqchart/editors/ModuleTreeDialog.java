@@ -1,9 +1,14 @@
 package org.omnetpp.experimental.seqchart.editors;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.TreePath;
+import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
@@ -11,6 +16,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.experimental.seqchart.moduletree.ModuleTreeItem;
 
@@ -23,14 +29,16 @@ public class ModuleTreeDialog extends Dialog {
 
 	private TreeViewer treeViewer;
 	private ModuleTreeItem moduleTree;
+	private Collection<ModuleTreeItem> selection;
 	
 	/**
 	 * This method initializes the dialog
 	 */
-	public ModuleTreeDialog(Shell parentShell, ModuleTreeItem moduleTree) {
+	public ModuleTreeDialog(Shell parentShell, ModuleTreeItem moduleTree, Collection<ModuleTreeItem> selection) {
 		super(parentShell);
 		setShellStyle(getShellStyle()|SWT.RESIZE);
 		this.moduleTree = moduleTree;
+		this.selection = selection;
 	}
 
 	public void dispose() {
@@ -40,14 +48,17 @@ public class ModuleTreeDialog extends Dialog {
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
-        newShell.setText("Choose modules");
+        newShell.setText("Choose Modules");
         //PlatformUI.getWorkbench().getHelpSystem().setHelp(newShell, IReadmeConstants.SECTIONS_DIALOG_CONTEXT);
     }
 
     @Override
     protected Control createDialogArea(Composite parent) {
         Composite composite = (Composite) super.createDialogArea(parent);
-        //((GridLayout)composite.getLayout()).numColumns = 2;
+
+        Label label = new Label(composite, SWT.NONE);
+        label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        label.setText("Choose modules for chart axes:");
 
         treeViewer = new TreeViewer(composite, SWT.CHECK | SWT.BORDER);
         GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -95,11 +106,22 @@ public class ModuleTreeDialog extends Dialog {
         });
 
         treeViewer.setInput(moduleTree);
-        treeViewer.expandToLevel(2);
         
+        // set initial selection
+        if (selection!=null) {
+        	ArrayList<TreePath> paths = new ArrayList<TreePath>();
+        	for (ModuleTreeItem sel : selection)
+        		paths.add(new TreePath(sel.getPath()));
+        	treeViewer.setSelection(new TreeSelection(paths.toArray(new TreePath[0])), true);
+        }
         return composite;
+
     }
 
+    public Collection<ModuleTreeItem> getSelection() {
+    	return null;  //FIXME todo...
+    }
+    
     @Override
 	protected void createButtonsForButtonBar(Composite parent) {
 		createButton(parent, 1, "OK", true);

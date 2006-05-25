@@ -1,6 +1,6 @@
 package org.omnetpp.experimental.seqchart.moduletree;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Stores a submodule tree for ModuleTreeDialog etc.
@@ -14,6 +14,9 @@ public class ModuleTreeItem {
 	private ModuleTreeItem parentModule;
 	private ModuleTreeItem[] submodules = new ModuleTreeItem[0];
 
+	/**
+	 * Create a blank node. Can be used to create a tree root. 
+	 */
 	public ModuleTreeItem() {
 		moduleName = "<root>";
 	}
@@ -39,6 +42,30 @@ public class ModuleTreeItem {
 		submodules = newSubmodules;
 	}
 
+	/**
+	 * Returns the ModuleTreeItems from the tree root down to this element.
+	 * Useful for creating TreePath object for use with ITreeSelection for TreeViewer.
+	 */
+	public ModuleTreeItem[] getPath() {
+	    int count = 0;
+	    for (ModuleTreeItem current=this; current!=null; current=current.getParentModule())
+	    	count++;
+	    ModuleTreeItem[] path = new ModuleTreeItem[count];
+	    for (ModuleTreeItem current=this; current!=null; current=current.getParentModule())
+	    	path[--count] = current;
+	    return path;
+	}
+
+	/**
+	 * Return the path as a dot-separared string.
+	 */
+	public String getFullPathName() {
+	    String path = getModuleName();
+	    for (ModuleTreeItem current=this; current!=null; current=current.getParentModule())
+	    	path = current.getModuleName()+"."+path;
+	    return path;
+	}
+	
 	public String getModuleName() {
 		return moduleName;
 	}

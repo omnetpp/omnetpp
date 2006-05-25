@@ -1,6 +1,7 @@
 package org.omnetpp.experimental.seqchart.editors;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.ColorConstants;
@@ -211,10 +212,11 @@ public class SequenceChartToolEditor extends EditorPart {
 			treeBuilder.addModule(mod.getModuleFullPath(), mod.getModuleClassName(), mod.getModuleId());
 		}
 
-		ModuleTreeItem moduleTree = treeBuilder.getModuleTree();
+		ModuleTreeItem moduleTree = treeBuilder.getModuleTree();  //XXX turn this into a class member? and store selection...?
 
-		ModuleTreeDialog dialog = new ModuleTreeDialog(getSite().getShell(), moduleTree);
+		ModuleTreeDialog dialog = new ModuleTreeDialog(getSite().getShell(), moduleTree, null);
 		dialog.open();
+		Collection<ModuleTreeItem> selection = dialog.getSelection(); //XXX process selection...
 	}
 
 	private void fillEventCombo() {
