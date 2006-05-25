@@ -10,6 +10,7 @@ import java.util.List;
 public class ModuleTreeItem {
 	private int moduleId = -1;
 	private String moduleName;
+	private String moduleFullPath; //XXX maybe this could be cached as well?
 	private String moduleClassName;
 	private ModuleTreeItem parentModule;
 	private ModuleTreeItem[] submodules = new ModuleTreeItem[0];
@@ -30,12 +31,11 @@ public class ModuleTreeItem {
 	public ModuleTreeItem(String moduleName, ModuleTreeItem parent) {
 		setModuleName(moduleName);
 		parentModule = parent;
-		if (parentModule!=null) {
+		if (parentModule!=null)
 			parentModule.addSubmodule(this);
-		}
 	}
 	
-	public void addSubmodule(ModuleTreeItem item) {
+	private void addSubmodule(ModuleTreeItem item) {
 		ModuleTreeItem[] newSubmodules = new ModuleTreeItem[submodules.length+1];
 		System.arraycopy(submodules, 0, newSubmodules, 0, submodules.length);
 		newSubmodules[submodules.length] = item;
