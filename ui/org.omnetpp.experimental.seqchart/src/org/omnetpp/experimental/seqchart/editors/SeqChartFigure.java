@@ -285,6 +285,8 @@ public class SeqChartFigure extends Figure {
             	}
             }
 
+            System.out.println("draw msgs: "+(System.currentTimeMillis()-startMillis)+"ms");
+           
 			// paint events
             graphics.setForegroundColor(EVENT_FG_COLOR); 
             graphics.setBackgroundColor(EVENT_BG_COLOR);
@@ -300,7 +302,7 @@ public class SeqChartFigure extends Figure {
 
             // turn on/off anti-alias 
             long repaintMillis = System.currentTimeMillis()-startMillis;
-            //System.out.println("repaint(): "+repaintMillis+"ms");
+            System.out.println("repaint(): "+repaintMillis+"ms");
             if (antiAlias && repaintMillis > ANTIALIAS_TURN_OFF_AT_MSEC)
             	antiAlias = false;
             else if (!antiAlias && repaintMillis < ANTIALIAS_TURN_ON_AT_MSEC)
@@ -322,6 +324,11 @@ public class SeqChartFigure extends Figure {
 				graphics.drawArc(Rectangle.SINGLETON, 0, 180);
 			}
 		} else {
+			graphics.clipRect(Rectangle.SINGLETON);
+			if (Rectangle.SINGLETON.y > y1 && Rectangle.SINGLETON.y > y2)
+				return;
+			if (Rectangle.SINGLETON.bottom() < y1 && Rectangle.SINGLETON.bottom() < y2)
+				return;
 			graphics.drawLine(x1, y1, x2, y2);
 		}
 	}
@@ -337,8 +344,8 @@ public class SeqChartFigure extends Figure {
 
 		// draw axis label; may it should be "sticky" on the screen?
 		
-		//graphics.drawText(label, bounds.x, y-20); //XXX refine
-		graphics.drawText(label, scrollPane.getViewport().getBounds().x, y-20);
+		//graphics.drawText(label, bounds.x, y-20); 
+		graphics.drawText(label, scrollPane.getViewport().getBounds().x+5, y-20);
 
 		// draw axis
 		graphics.drawLine(rect.x, y, rect.right(), y);
@@ -549,7 +556,7 @@ public class SeqChartFigure extends Figure {
             }
 
             long millis = System.currentTimeMillis()-startMillis;
-            //System.out.println("collectStuff(): "+millis+"ms");
+            System.out.println("collectStuffUnderMouse(): "+millis+"ms");
 		}
 	}
 

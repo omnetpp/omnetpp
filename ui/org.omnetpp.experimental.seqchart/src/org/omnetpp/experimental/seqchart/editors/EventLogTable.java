@@ -75,7 +75,6 @@ public class EventLogTable extends VirtualTableTreeBase {
 				event = eventLog.getLastEventBefore(event.getSimulationTime());
 			if (event!=null) {
 				int index = tableIndexForEvent(event);
-				System.out.println("event #"+event.getEventNumber()+"  index="+index);
 				table.setSelection(index);
 				table.setTopIndex(index);
 			}
