@@ -20,6 +20,7 @@ import org.omnetpp.scave.engine.PStringVector;
  * @author andras
  */
 //FIXME this should actually be turned into a View!
+//FIXME actually implement expand/collapse! [+] and [-] images to be displayed are there in VirtualTableTreeBase; see also eventLog.collapseEvent/expandEvent 
 //FIXME also: remove getTable and provide better encapsulation instead
 public class EventLogTable extends VirtualTableTreeBase {
 	

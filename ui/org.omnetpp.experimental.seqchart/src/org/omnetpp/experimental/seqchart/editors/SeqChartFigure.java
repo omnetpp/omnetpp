@@ -54,20 +54,21 @@ public class SeqChartFigure extends Figure {
 	private static final int ANTIALIAS_TURN_OFF_AT_MSEC = 300;
 	private static final int MOUSE_TOLERANCE = 1;
 
-	private ScrollPane scrollPane; // parent scrollPane
-	
-	protected EventLog eventLog;
+	protected EventLog eventLog; // contains the data to be displayed
 	
 	protected double pixelsPerSec = 2;
 	protected int tickScale = 2; // -1 means step=0.1
-	private boolean antiAlias = true;
-
+	private boolean antiAlias = true;  // antialiasing -- this gets turned on/off automatically
+	private int axisOffset = 30;  // y coord of first axis
+	private int axisSpacing = 50; // y distance between two axes
+	
+	private Canvas canvas;  // our host widget (reference needed for tooltip creation)
+	private ScrollPane scrollPane; // parent scrollPane
+	private ToolTip swtTooltip; // the current tooltip
+	
 	private int dragStartX, dragStartY; // temporary variables for drag handling
-	
-	private Canvas canvas;  // needed for tooltip creation
-	private ToolTip swtTooltip;
-	
-    /**
+
+	/**
      * Constructor.
 	 * We need to know the surrounding scroll pane to be able to scroll here and there.
      */
@@ -191,7 +192,7 @@ public class SeqChartFigure extends Figure {
 		EventEntry lastEvent = eventLog.getEvent(eventLog.getNumEvents()-1);
 		int width = lastEvent==null ? 0 : (int)(lastEvent.getSimulationTime()*getPixelsPerSec());
 		width = Math.max(width, 600); // at least half a screen
-		int height = eventLog.getNumModules()*50;
+		int height = eventLog.getNumModules()*axisSpacing;
 		setPreferredSize(width, height);
 	}
 
@@ -207,7 +208,7 @@ public class SeqChartFigure extends Figure {
 			JavaFriendlyEventLogFacade logFacade = new JavaFriendlyEventLogFacade(eventLog); 
 			HashMap<Integer,Integer> moduleIdToAxisYMap = new HashMap<Integer, Integer>();
 			for (int i=0; i<eventLog.getNumModules(); i++) {
-				int y = bounds.y+30+i*50;
+				int y = getBounds().y + axisOffset + i*axisSpacing;
 				moduleIdToAxisYMap.put(eventLog.getModule(i).getModuleId(), y);
 				drawLinearAxis(graphics, y, eventLog.getModule(i).getModuleFullPath());
 			}
